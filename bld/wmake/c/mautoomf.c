@@ -43,7 +43,7 @@
 
 
 typedef struct {
-    int     handle;         // file handle of open obj file
+    FILE    *fp;            // file handle of open obj file
     time_t  time_stamp;     // time stamp of next dependancy comment
     char    *name;          // point to nameBuffer - name of next dependancy comment
 } omf_info;
@@ -61,18 +61,18 @@ typedef struct {
 } obj_comment;
 #include "poppck.h"
 
-static bool verifyObjFile( int fh )
-/*********************************/
+static bool verifyObjFile( FILE *fp )
+/***********************************/
 {
     struct {
         obj_record  header;
         obj_name    name;
     }   theadr;
 
-    if( lseek( fh, 0, SEEK_SET ) < 0 ) {
+    if( fseek( fp, 0, SEEK_SET ) < 0 ) {
         return( false );
     }
-    if( posix_read( fh, &theadr, sizeof( theadr ) ) != sizeof( theadr ) ) {
+    if( fread( &theadr, 1, sizeof( theadr ), fp ) != sizeof( theadr ) ) {
         return( false );
     }
     if( theadr.header.command != CMD_THEADR ) {
@@ -81,7 +81,7 @@ static bool verifyObjFile( int fh )
     if( (theadr.name.len + 2) != theadr.header.length ) {
         return( false );
     }
-    if( lseek( fh, 0, SEEK_SET ) < 0 ) {
+    if( fseek( fp, 0, SEEK_SET ) < 0 ) {
         return( false );
     }
     return( true );
@@ -91,17 +91,17 @@ static bool verifyObjFile( int fh )
 STATIC handle OMFInitFile( const char *name )
 /*******************************************/
 {
-    int     handl;
+    FILE    *fp;
     handle  ret_val;
 
     ret_val = NULL;
-    handl = open( name, O_RDONLY | O_BINARY );
-    if( handl != -1 ) {
-        fileHandle.handle = handl;
-        if( verifyObjFile( handl ) ) {
+    fp = fopen( name, "rb" );
+    if( fp != NULL ) {
+        fileHandle.fp = fp;
+        if( verifyObjFile( fp ) ) {
             ret_val = &fileHandle;
         } else {
-            close( handl );
+            fclose( fp );
         }
     }
     return( ret_val );
@@ -113,24 +113,24 @@ static bool getOMFCommentRecord( omf_info *info )
 {
     obj_record  header;
     obj_comment comment;
-    int         hdl;
+    FILE        *fp;
     size_t      len;
 
-    hdl = info->handle;
-    while( posix_read( hdl, &header, sizeof( header ) ) == sizeof( header ) ) {
+    fp = info->fp;
+    while( fread( &header, 1, sizeof( header ), fp ) == sizeof( header ) ) {
         if( header.command != CMD_COMENT ) {
             // first LNAMES record means objfile has no dependency info
             if( header.command == CMD_LNAMES ) {
                 break;
             }
-            lseek( hdl, header.length, SEEK_CUR );
+            fseek( fp, header.length, SEEK_CUR );
             continue;
         }
-        if( posix_read( hdl, &comment, sizeof( comment ) ) != sizeof( comment ) ) {
+        if( fread( &comment, 1, sizeof( comment ), fp ) != sizeof( comment ) ) {
             break;
         }
         if( comment.type != CMT_DEPENDENCY ) {
-            lseek( hdl, header.length - sizeof( comment ), SEEK_CUR );
+            fseek( fp, header.length - sizeof( comment ), SEEK_CUR );
             continue;
         }
         // NULL dependency means end of dependency info
@@ -139,7 +139,7 @@ static bool getOMFCommentRecord( omf_info *info )
         }
         // we have a dependency comment! hooray!
         len = comment.name_len + 1;
-        if( (size_t)posix_read( hdl, nameBuffer, len ) != len ) {
+        if( fread( nameBuffer, 1, len, fp ) != len ) {
             break;  // darn, it's broke
         }
         nameBuffer[len - 1] = NULLCHAR;
@@ -174,7 +174,7 @@ STATIC void OMFFiniFile( handle info )
 {
     omf_info *o = (void*)info;
 
-    close( o->handle );
+    fclose( o->fp );
 }
 
 

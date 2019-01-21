@@ -187,7 +187,7 @@ bool DeclNoInit( DECL_INFO *dinfo )
                 CompFlags.extern_C_defn_found = true;
             }
         }
-        if( ! ScopeType( scope, SCOPE_FILE ) && ! ScopeType( scope, SCOPE_BLOCK ) ){
+        if( ! ScopeType( scope, SCOPE_FILE ) && ! ScopeType( scope, SCOPE_BLOCK ) ) {
             return( false );
         }
         if( SymIsInitialized( sym ) ) {

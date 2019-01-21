@@ -65,7 +65,9 @@ search_result FindMBIndex( imp_image_handle *iih, addr_off off, unsigned *idx )
                 i = 0;
                 mb = iih->methods;
             }
-            if( i == iih->last_method ) break;
+            if( i == iih->last_method ) {
+                break;
+            }
         }
     }
     *idx = (unsigned)-1;
@@ -79,7 +81,7 @@ walk_result DIPIMPENTRY( WalkModList )( imp_image_handle *iih,
 }
 
 size_t DIPIMPENTRY( ModName )( imp_image_handle *iih,
-                    imp_mod_handle im, char *buff, size_t buff_size )
+                    imp_mod_handle imh, char *buff, size_t buff_size )
 {
     ji_ptr      name;
     size_t      len;
@@ -90,19 +92,19 @@ size_t DIPIMPENTRY( ModName )( imp_image_handle *iih,
     return( NameCopy( buff, NameBuff, buff_size, len ) );
 }
 
-char *DIPIMPENTRY( ModSrcLang )( imp_image_handle *iih, imp_mod_handle im )
+char *DIPIMPENTRY( ModSrcLang )( imp_image_handle *iih, imp_mod_handle imh )
 {
     return( "java" );
 }
 
 dip_status DIPIMPENTRY( ModInfo )( imp_image_handle *iih,
-                                imp_mod_handle im, handle_kind hk )
+                                imp_mod_handle imh, handle_kind hk )
 {
     return( DS_OK );
 }
 
 search_result DIPIMPENTRY( AddrMod )( imp_image_handle *iih, address a,
-                imp_mod_handle *im )
+                imp_mod_handle *imh )
 {
     search_result       sr;
     unsigned            i;
@@ -111,14 +113,13 @@ search_result DIPIMPENTRY( AddrMod )( imp_image_handle *iih, address a,
     switch( sr ) {
     case SR_EXACT:
     case SR_CLOSEST:
-        *im = IMH_JAVA;
+        *imh = IMH_JAVA;
         break;
     }
     return( sr );
 }
 
-address DIPIMPENTRY( ModAddr )( imp_image_handle *iih,
-                                imp_mod_handle im )
+address DIPIMPENTRY( ModAddr )( imp_image_handle *iih,  imp_mod_handle imh )
 {
     address     a;
     unsigned    i;
@@ -134,7 +135,7 @@ address DIPIMPENTRY( ModAddr )( imp_image_handle *iih,
 }
 
 dip_status DIPIMPENTRY( ModDefault )( imp_image_handle *iih,
-                imp_mod_handle im, default_kind dk, dip_type_info *ti )
+                imp_mod_handle imh, default_kind dk, dig_type_info *ti )
 {
      return( DS_FAIL );
 }

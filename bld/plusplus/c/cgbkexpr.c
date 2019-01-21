@@ -39,9 +39,9 @@
 #include "initdefs.h"
 
 typedef struct {                // CGEXPR -- codegen expression
-    cg_name expr;               // - expression
-    cg_type type;               // - expression type
-    unsigned garbage : 1;       // - true ==> is garbage
+    cg_name     expr;           // - expression
+    cg_type     type;           // - expression type
+    unsigned    garbage : 1;    // - true ==> is garbage
 } CGEXPR;
 
 static VSTK_CTL expressions;    // expressions stack
@@ -85,7 +85,7 @@ cg_name CgExprPop(              // POP CG EXPRESSION
 {
     cg_type not_used;
 
-    return CgExprPopType( &not_used );
+    return( CgExprPopType( &not_used ) );
 }
 
 
@@ -105,7 +105,7 @@ cg_name CgExprPopType(          // POP CG EXPRESSION and TYPE
         *a_type = top->type;
         retn = top->expr;
     }
-    return retn;
+    return( retn );
 }
 
 
@@ -125,25 +125,25 @@ bool CgExprPopGarbage(          // POP EXPR STACK IF TOP EXPR IS GARBAGE
     void )
 {
     CGEXPR* top;                // - top of stack
-    bool retb;                  // - true ==> garbage was popped
+    bool ok;                    // - true ==> garbage was popped
 
     top = VstkTop( &expressions );
     if( top == NULL ) {
-        retb = true;
+        ok = true;
     } else if( top->garbage ) {
         VstkPop( &expressions );
-        retb = true;
+        ok = true;
     } else {
-        retb = false;
+        ok = false;
     }
-    return( retb );
+    return( ok );
 }
 
 
 unsigned CgExprStackSize(       // RETURN # TEMPS STACKED
     void )
 {
-    return VstkDimension( &expressions );
+    return( VstkDimension( &expressions ) );
 }
 
 
@@ -169,7 +169,7 @@ static SYMBOL getExprTempSym(   // EMIT CGDone, CGTrash, OR COPY TO TEMP
         temp = NULL;
     }
     fctl->temp_dtoring = false;
-    return temp;
+    return( temp );
 }
 #endif
 
@@ -184,9 +184,9 @@ void CgExprDtored(              // DTOR CG EXPRESSION
     cg_type type;               // - expression type
 
     switch( CgExprStackSize() ) {
-      case 0 :
+    case 0 :
         break;
-      case 1 :
+    case 1 :
       { bool temp_dtoring = fctl->temp_dtoring;
         SYMBOL temp = getExprTempSym( &type, fctl, pop_type );
         if( temp_dtoring ) {
@@ -199,7 +199,7 @@ void CgExprDtored(              // DTOR CG EXPRESSION
             }
         }
       } break;
-      DbgDefault( "CgExprDtored -- too many temps" );
+    DbgDefault( "CgExprDtored -- too many temps" );
     }
 #else
     SYMBOL temp;                // - NULL or copied temp

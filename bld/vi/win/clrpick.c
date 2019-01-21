@@ -74,6 +74,8 @@ static POINT            m_pt;
 
 static void sendNewColourToolbar( void )
 {
+    window_id   toolbar_wid;
+
     /* toolbar has no text_style data in w_info format - change directly
     */
     EditVars.ToolBarColor = INDEX_FROM_XY( cursx, cursy );
@@ -82,8 +84,9 @@ static void sendNewColourToolbar( void )
                             GetSysColor( COLOR_BTNSHADOW ) );
     /* also redraw seperately
     */
-    InvalidateRect( GetToolbarWindow(), NULL, TRUE );
-    UpdateWindow( GetToolbarWindow() );
+    toolbar_wid = GetToolbarWindow();
+    InvalidateRect( toolbar_wid, NULL, TRUE );
+    UpdateWindow( toolbar_wid );
 }
 
 static void sendNewColourCurrentWindow( NewColourOps op )

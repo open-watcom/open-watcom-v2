@@ -297,30 +297,30 @@ void PrtToken(                  // PRINT PREPROC TOKEN IF REQ'D
 {
     if( CppPrinting() ) {
         switch( CurToken ) {
-          case T_BAD_CHAR:                        /* 12-apr-89 */
-          case T_BAD_TOKEN:                       /* 12-apr-89 */
-          case T_CONSTANT:
+        case T_BAD_CHAR:
+        case T_BAD_TOKEN:
+        case T_CONSTANT:
             PrtString( Buffer );
             break;
-          case T_ID:
+        case T_ID:
             idPrint();
             break;
-          case T_STRING:
+        case T_STRING:
             prt_cpp_char( '\"' );
             PrtString( Buffer );
             prt_cpp_char( '\"' );
             break;
-          case T_LSTRING:
+        case T_LSTRING:
             prt_cpp_char( 'L' );
             prt_cpp_char( '\"' );
             PrtString( Buffer );
             prt_cpp_char( '\"' );
             break;
-          case T_EOF:
-          case T_NULL:
+        case T_EOF:
+        case T_NULL:
             break;
-          default:
-            PrtString( Tokens[ CurToken ] );
+        default:
+            PrtString( Tokens[CurToken] );
         }
     }
 }
@@ -331,7 +331,8 @@ void PpParse(                   // PARSE WHEN PREPROCESSING
 {
     for(;;) {
         GetNextToken();
-        if( CurToken == T_EOF ) break;
+        if( CurToken == T_EOF )
+            break;
         PrtToken();
     }
     idMangleFini();

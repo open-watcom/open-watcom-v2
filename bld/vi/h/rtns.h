@@ -40,7 +40,7 @@ void    DeleteString( char ** );
 
 /* alias.c */
 vi_rc   SetAlias( const char * );
-vi_rc   CheckAlias( const char *, char * );
+alias_list *CheckAlias( const char *str );
 bool    CheckAbbrev( const char *, int * );
 vi_rc   Abbrev( const char * );
 vi_rc   UnAbbrev( const char * );
@@ -78,7 +78,7 @@ vi_rc   ReadAFile( linenum, const char * );
 
 /* clset.c */
 vi_rc   Set( const char * );
-const char *GetASetVal( const char *token );
+const char *GetASetVal( const char *token, char * );
 vi_rc   SettingSelected( const char *item, char *value, int *winflag );
 
 /* clsubs.c */
@@ -134,15 +134,15 @@ vi_rc   Filter( range * );
 /* dir.c */
 void    DirFini( void );
 void    GetCWD1( char ** );
-void    GetCWD2( char *, int );
+void    GetCWD2( char *, size_t );
 void    UpdateCurrentDirectory( void );
 vi_rc   ChangeDirectory( const char * );
 vi_rc   ConditionalChangeDirectory( const char * );
 void    FormatDirToFile( file *cfile, bool add_drives );
 
 /* dirdisp.c */
-vi_rc   StartFileComplete( char *, int, int, int );
-vi_rc   ContinueFileComplete( char *data, int start, int max, int what );
+vi_rc   StartFileComplete( char *data, size_t start, size_t max, vi_key what );
+vi_rc   ContinueFileComplete( char *data, size_t start, size_t max, vi_key what );
 void    PauseFileComplete( void );
 void    FinishFileComplete( void );
 
@@ -152,7 +152,7 @@ struct dirent;
 vi_rc   MyGetFileSize( const char *, long * );
 void    FormatFileEntry( direct_ent *file, char *res );
 bool    IsDirectory( char *name );
-void    GetFileInfo( direct_ent *tmp, struct dirent *nd, const char *path );
+void    GetFileInfo( direct_ent *tmp, struct dirent *dire, const char *path );
 
 /* dotmode.c */
 vi_rc   DoDotMode( void );
@@ -273,28 +273,28 @@ void    FreeErrorMsgData( void );
 void    ErrorFini( void );
 
 /* expandfn.c */
-int ExpandFileNames( char *, char *** );
+list_linenum ExpandFileNames( const char *, char *** );
 
 /* fcb.c */
 vi_rc   OpenFcbData( file * );
 vi_rc   ReadFcbData( file *, bool * );
-void    CreateFcbData( file *, int );
-int     FcbSize( fcb * );
+void    CreateFcbData( file *, size_t );
+size_t  FcbSize( fcb * );
 
 /* fcb2.c */
-vi_rc FindFcbWithLine( linenum, file *, fcb ** );
+vi_rc   FindFcbWithLine( linenum, file *, fcb ** );
 
 /* fcb3.c */
-vi_rc MergeFcbs( fcb_list *, fcb *, fcb * );
-vi_rc MergeAllFcbs( fcb_list * );
+vi_rc   MergeFcbs( fcb_list *, fcb *, fcb * );
+vi_rc   MergeAllFcbs( fcb_list * );
 
 /* fcbdmp.c */
-vi_rc WalkUndo( void );
-vi_rc HeapCheck( void );
-vi_rc FcbDump( void );
-vi_rc FcbThreadDump( void );
-vi_rc LineInfo( void );
-vi_rc SanityCheck( void );
+vi_rc   WalkUndo( void );
+vi_rc   HeapCheck( void );
+vi_rc   FcbDump( void );
+vi_rc   FcbThreadDump( void );
+vi_rc   LineInfo( void );
+vi_rc   SanityCheck( void );
 
 /* fcbdup.c */
 void    CreateDuplicateFcbList( fcb *, fcb_list * );
@@ -306,8 +306,8 @@ void    FreeEntireFcb( fcb * );
 void    FreeFcbList( fcb * );
 
 /* fcbsplit.c */
-vi_rc SplitFcbAtLine( linenum, file *, fcb * );
-vi_rc CheckCurrentFcbCapacity( void );
+vi_rc   SplitFcbAtLine( linenum, file *, fcb * );
+vi_rc   CheckCurrentFcbCapacity( void );
 
 /* fcbswap.c */
 void    FetchFcb( fcb * );
@@ -402,7 +402,7 @@ vi_rc ToggleSSbar( void );
 
 /* fini.c */
 #ifdef __WATCOMC__
-#pragma aux Quit aborts;
+#pragma aux Quit __aborts
 #endif
 void    Quit( const char **, const char *, ... );
 void    ExitEditor( int );
@@ -479,8 +479,8 @@ void    KeyAddString( const char *str );
 void    AddCurrentMouseEvent( void );
 
 /* linecfb.c */
-bool    CreateLinesFromBuffer( int, line_list *, int *, int *, short * );
-bool    CreateLinesFromFileBuffer( int, line_list *, int *, int *, short *, bool * );
+bool    CreateLinesFromBuffer( size_t, line_list *, size_t *, int *, short * );
+bool    CreateLinesFromFileBuffer( size_t, line_list *, size_t *, int *, short *, bool * );
 
 /* linedel.c */
 void    UpdateLineNumbers( linenum amt, fcb *cfcb  );
@@ -595,7 +595,7 @@ void    *MemAlloc( size_t );
 void    *MemAllocUnsafe( size_t );
 void    MemFree( void * );
 void    MemFreePtr( void ** );
-void    MemFreeList( int, char ** );
+void    MemFreeList( list_linenum, char ** );
 void    *MemReAlloc( void *, size_t );
 void    *MemReAllocUnsafe( void *ptr, size_t size );
 void    *StaticAlloc( void );
@@ -606,9 +606,14 @@ char    *MemStrDup( const char * );
 void    InitMem( void );
 void    FiniMem( void );
 
+#define _MemAllocArray(t,c)     (t *)MemAlloc( (c) * sizeof( t ) )
+#define _MemReAllocArray(p,t,c) (t *)MemReAlloc( p, (c) * sizeof( t ) )
+#define _MemAllocList(c)        (char **)MemAlloc( (c) * sizeof( char * ) )
+#define _MemReAllocList(p,c)    (char **)MemReAlloc( p, (c) * sizeof( char * ) )
+
 /* misc.c */
 long    ExecCmd( const char *, const char *, const char * );
-vi_rc   GetResponse( char *, char * );
+vi_rc   GetResponse( char *, char *, size_t );
 bool    ExitWithVerify( void );
 bool    ExitWithPrompt( bool, bool );
 bool    PromptFilesForSave( void );
@@ -667,7 +672,7 @@ void    GetEndString( char *data, char *res );
 void    ParseConfigFile( char * );
 
 /* parsecl.c */
-vi_rc   ParseCommandLine( const char *, linenum *, bool *, linenum *, bool *, int *, const char ** );
+vi_rc   ParseCommandLine( const char *, linenum *, bool *, linenum *, bool *, int *, char * );
 vi_rc   GetAddress( const char **, linenum * );
 
 /* printf.c */
@@ -677,9 +682,9 @@ void    MyFprintf( FILE *,const char *, ... );
 void    Lead( char c, int num, char *buff );
 
 /* readstr.c */
-bool    ReadStringInWindow( window_id, int, char *, char *, int, history_data * );
-vi_rc   PromptForString( char *prompt, char *buff, int maxbuff, history_data *h );
-bool    GetTextForSpecialKey( int str_max, vi_key event, char *tmp );
+bool    ReadStringInWindow( window_id, int, char *, char *, size_t, history_data * );
+vi_rc   PromptForString( char *prompt, char *buff, size_t maxbuff, history_data *h );
+bool    GetTextForSpecialKey( vi_key event, char *buff, size_t buffsize );
 void    InsertTextForSpecialKey( vi_key event, char *buff );
 
 /* replace.c */
@@ -705,7 +710,7 @@ void    FiniSavebufs( void );
 
 /* select.c */
 vi_rc   SelectItem( selectitem *si );
-vi_rc   SelectItemAndValue( window_info *, char *, char **, int , vi_rc (*)(const char *, char *, int * ), int, char **, int );
+vi_rc   SelectItemAndValue( window_info *, char *, char **, list_linenum, vi_rc (*)(const char *, char *, int * ), size_t, char **, int );
 
 /* selrgn.c */
 void    UpdateDrag( window_id, int, int );
@@ -763,9 +768,9 @@ vi_rc   NewStatusWindow( void );
 /* tab_hell.c */
 vi_rc   ExpandWhiteSpace( void );
 vi_rc   CompressWhiteSpace( void );
-bool    ExpandTabsInABufferUpToColumn( int, char *, int, char *, int );
-bool    ExpandTabsInABuffer( const char *, int, char *, int );
-int     InsertTabSpace( int, char *, bool * );
+bool    ExpandTabsInABufferUpToColumn( size_t, char *, size_t, char *, size_t );
+bool    ExpandTabsInABuffer( const char *, size_t, char *, size_t );
+size_t  InsertTabSpace( size_t, char *, bool * );
 int     GetVirtualCursorPosition( char *, int );
 int     VirtualColumnOnCurrentLine( int );
 int     RealColumnOnCurrentLine( int );
@@ -774,8 +779,8 @@ int     RealCursorPositionOnLine( linenum, int );
 int     WinRealCursorPosition( char *, int );
 int     WinVirtualCursorPosition( char *, int );
 int     VirtualLineLen( char * );
-bool    AddLeadingTabSpace( short *, char *, int );
-bool    ConvertSpacesToTabsUpToColumn( int, char *, int, char *, int );
+bool    AddLeadingTabSpace( size_t *, char *, int );
+bool    ConvertSpacesToTabsUpToColumn( size_t, char *, size_t, char *, size_t );
 bool    CursorPositionOffRight( int vc );
 
 
@@ -823,9 +828,8 @@ undo    *PopUndoStack( undo_stack *stack );
 void    PushUndoStack( undo *item, undo_stack *stack );
 
 /* wingen.c */
-vi_rc   DisplayExtraInfo( window_info *, window_id *, const char  _NEAR * _NEAR *, int );
+vi_rc   DisplayExtraInfo( window_info *, window_id *, const char **, int );
 vi_rc   NewMessageWindow( void );
-vi_rc   NewWindow2( window_id *, window_info * );
 void    Message1( const char *, ... );
 void    Message1Box( const char *, ... );
 void    Message2( const char *, ... );
@@ -842,7 +846,7 @@ void    ResetAllWindows( void );
 void    InitWordSearch( char *regword );
 vi_rc   FindColumnOfNextWordForward( line *, int *, bool, bool );
 vi_rc   FindColumnOfNextWordBackwards( line *, int *, bool, bool );
-vi_rc   GimmeCurrentWord( char *, int, bool );
+vi_rc   GimmeCurrentWord( char *, size_t, bool );
 vi_rc   GetWordBound( line *, int, bool, int *, int * );
 vi_rc   GimmeCurrentEntireWordDim( int *sc, int *ec, bool big );
 vi_rc   MarkStartOfNextWordForward( i_mark *, i_mark *, bool );

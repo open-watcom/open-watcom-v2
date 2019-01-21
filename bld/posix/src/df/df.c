@@ -70,28 +70,32 @@ static const char *usageMsg[] = {
 #if defined( __DOS__ ) || defined( __OS2__ ) && defined( _M_I86 )
 extern short CheckRemovable( char );
 #pragma aux CheckRemovable = \
-        "mov    ax,04408h" \
-        "int    021h" \
-        "cmp    ax,0fh" \
-        "jne    ok" \
-        "xor    ax,ax" \
-        "jmp    done" \
-        "ok:    inc ax" \
-        "done:" \
-        parm [bl] value[ax];
+        "mov  ax,4408h"     \
+        "int 21h"           \
+        "cmp  ax,0fh"       \
+        "jne short ok"      \
+        "xor  ax,ax"        \
+        "jmp short done"    \
+    "ok: inc  ax"           \
+    "done:"                 \
+    __parm      [__bl] \
+    __value     [__ax] \
+    __modify    []
 
 extern short CheckRemote( char );
 #pragma aux CheckRemote = \
-        "mov    ax,04409h" \
-        "int    021h" \
-        "mov    ax,-1" \
-        "jc     ibrx" \
-        "inc    ax" \
-        "test   dh,10h" \
-        "jz     ibrx" \
-        "inc    ax" \
-        "ibrx:" \
-        parm [bl] value[ax] modify[dx];
+        "mov  ax,4409h"     \
+        "int 21h"           \
+        "mov  ax,-1"        \
+        "jc short ibrx"     \
+        "inc  ax"           \
+        "test dh,10h"       \
+        "jz short ibrx"     \
+        "inc  ax"           \
+    "ibrx:"                 \
+    __parm      [__bl] \
+    __value     [__ax] \
+    __modify    [__dx]
 
 /*
  * doGetDriveType - get the type of drive A-Z

@@ -66,11 +66,13 @@
         #include <fnmatch.h>    // fnmatch is found in the standard library
     #endif
 #else
+    #include <direct.h>
   #if defined( __NETWARE__ )
     #include <fnmatch.h>
-  #endif
-    #include <direct.h>
+  #elif defined( __RDOS__ )
+  #else
     #include <dos.h>
+  #endif
 #endif
 #include "walloca.h"
 #include "guifdlg.h"
@@ -116,17 +118,6 @@ typedef enum {
     PROCESS_FAIL
 } process_rc;
 
-enum {
-    CTL_CANCEL = 1,
-    CTL_OK,
-    CTL_FILE_LIST,
-    CTL_DIR_LIST,
-    CTL_EDIT,
-    CTL_DIR_NAME,
-    CTL_FILE_TYPES,
-    CTL_DRIVES
-};
-
 #define DLG_FILE_ROWS   14
 #define DLG_FILE_COLS   65
 #define BOX_WIDTH       20
@@ -134,39 +125,77 @@ enum {
 
 #define DIR_START       27
 
+#define DLGFILE_CTLS() \
+    pick_p3(   FILENAME_TITLE,    DLG_STRING,     2,                            0,  11 ) \
+    pick_p3(   DIRECTORIES_TITLE, DLG_STRING,     DIR_START,                    0,  DIR_START + 12 ) \
+    pick_p3id( EDIT,              DLG_EDIT,       2,                            1,  BOX_WIDTH + 3 ) \
+    pick_p3id( DIR_NAME,          DLG_DYNSTRING,  DIR_START,                    1,  DLG_FILE_COLS - 1 ) \
+    pick_p4id( FILE_LIST,         DLG_LIST_BOX,   2,                            3,  2 + BOX_WIDTH,                9 ) \
+    pick_p4id( DIR_LIST,          DLG_LIST_BOX,   DIR_START,                    3,  DIR_START + BOX_WIDTH2,       9 ) \
+    pick_p3id( OK,                DLG_DEFBUTTON,  (DIR_START + BOX_WIDTH2 + 4), 4, (DIR_START + BOX_WIDTH2 + 14) ) \
+    pick_p3id( CANCEL,            DLG_BUTTON,     (DIR_START + BOX_WIDTH2 + 4), 6, (DIR_START + BOX_WIDTH2 + 14) ) \
+    pick_p3(   FILE_TYPES_TITLE,  DLG_STRING,     2,                            11, 20 ) \
+    pick_p4id( FILE_TYPES,        DLG_COMBO_BOX,  2,                            12, 2 + BOX_WIDTH + 3,            15 )
+
+#if !defined( __UNIX__ ) && !defined( __NETWARE__ )
+#define DLGFILE_DRV_CTLS() \
+    pick_p3(   DRIVES_TITLE,      DLG_STRING,     2,                            11, 20 ) \
+    pick_p4id( DRIVES,            DLG_COMBO_BOX,  2,                            12, 2 + BOX_WIDTH + 3,            15 )
+#endif
+
+enum {
+    DUMMY_ID = 100,
+    #define pick_p3(id,m,p1,p2,p3)      CTL_ ## id,
+    #define pick_p3id(id,m,p1,p2,p3)    CTL_ ## id,
+    #define pick_p4id(id,m,p1,p2,p3,p4) CTL_ ## id,
+    DLGFILE_CTLS()
+#if !defined( __UNIX__ ) && !defined( __NETWARE__ )
+    DLGFILE_DRV_CTLS()
+#endif
+    #undef pick_p4id
+    #undef pick_p3id
+    #undef pick_p3
+};
+
+enum {
+    #define pick_p3(id,m,p1,p2,p3)      id ## _IDX,
+    #define pick_p3id(id,m,p1,p2,p3)    id ## _IDX,
+    #define pick_p4id(id,m,p1,p2,p3,p4) id ## _IDX,
+    DLGFILE_CTLS()
+#if !defined( __UNIX__ ) && !defined( __NETWARE__ )
+    DLGFILE_DRV_CTLS()
+#endif
+    #undef pick_p4id
+    #undef pick_p3id
+    #undef pick_p3
+};
+
 // if dlgControls is modified then make sure the function InitDlgControls
 // matches it
 static gui_control_info dlgControls[] =
 {
-/*  0 */ DLG_STRING(    NULL,                 2,                            0,  11 ),
-/*  1 */ DLG_STRING(    NULL,                 DIR_START,                    0,  DIR_START + 12 ),
-/*  2 */ DLG_EDIT(      NULL, CTL_EDIT,       2,                            1,  BOX_WIDTH + 3 ),
-/*  3 */ DLG_DYNSTRING( NULL, CTL_DIR_NAME,   DIR_START,                    1,  DLG_FILE_COLS - 1 ),
-/*  4 */ DLG_LIST_BOX(  NULL, CTL_FILE_LIST,  2,                            3,  2 + BOX_WIDTH,                9 ),
-/*  5 */ DLG_LIST_BOX(  NULL, CTL_DIR_LIST,   DIR_START,                    3,  DIR_START + BOX_WIDTH2,       9 ),
-/*  6 */ DLG_DEFBUTTON( NULL, CTL_OK,         (DIR_START + BOX_WIDTH2 + 4), 4, (DIR_START + BOX_WIDTH2 + 14) ),
-/*  7 */ DLG_BUTTON(    NULL, CTL_CANCEL,     (DIR_START + BOX_WIDTH2 + 4), 6, (DIR_START + BOX_WIDTH2 + 14) ),
-/*  8 */ DLG_STRING(    NULL,                 2,                            11, 20 ),
-/*  9 */ DLG_COMBO_BOX( NULL, CTL_FILE_TYPES, 2,                            12, 2 + BOX_WIDTH + 3,            15 ),
+    #define pick_p3(id,m,p1,p2,p3)      m(NULL,p1,p2,p3),
+    #define pick_p3id(id,m,p1,p2,p3)    m(NULL,CTL_ ## id,p1,p2,p3),
+    #define pick_p4id(id,m,p1,p2,p3,p4) m(NULL,CTL_ ## id,p1,p2,p3,p4),
+    DLGFILE_CTLS()
 #if !defined( __UNIX__ ) && !defined( __NETWARE__ )
-/* 10 */ DLG_STRING(    NULL,                 DIR_START + 2,                11, DIR_START + 8 ),
-/* 11 */ DLG_COMBO_BOX( NULL, CTL_DRIVES,     DIR_START + 2,                12, DIR_START + BOX_WIDTH,        15 )
+    DLGFILE_DRV_CTLS()
 #endif
+    #undef pick_p4id
+    #undef pick_p3id
+    #undef pick_p3
 };
 
 static bool     ControlsInitialized = false;
 
-#define FILE_LIST_INDEX         4
-#define DIR_LIST_INDEX          5
-#define FILE_TYPES_INDEX        9
-#define DRIVE_LIST_INDEX        11
-
-#define GetDriveTextList()      ((const char **)dlgControls[DRIVE_LIST_INDEX].text)
-#define SetDriveTextList(x)     dlgControls[DRIVE_LIST_INDEX].text = ((const char *)(x))
-#define freeDriveTextList( )    freeStringList((const char ***)&dlgControls[DRIVE_LIST_INDEX].text)
-#define GetFileTypesTextList()  ((const char **)dlgControls[FILE_TYPES_INDEX].text)
-#define SetFileTypesTextList(x) dlgControls[FILE_TYPES_INDEX].text = ((const char *)(x))
-#define freeFileTypesTextList() freeStringList((const char ***)&dlgControls[FILE_TYPES_INDEX].text)
+#if !defined( __UNIX__ ) && !defined( __NETWARE__ )
+#define GetDriveTextList()      ((const char **)dlgControls[DRIVES_IDX].text)
+#define SetDriveTextList(x)     dlgControls[DRIVES_IDX].text = ((const char *)(x))
+#define freeDriveTextList( )    freeStringList((const char ***)&dlgControls[DRIVES_IDX].text)
+#endif
+#define GetFileTypesTextList()  ((const char **)dlgControls[FILE_TYPES_IDX].text)
+#define SetFileTypesTextList(x) dlgControls[FILE_TYPES_IDX].text = ((const char *)(x))
+#define freeFileTypesTextList() freeStringList((const char ***)&dlgControls[FILE_TYPES_IDX].text)
 #define GetFileExtsTextList()   (dlg.fileExtensions)
 #define SetFileExtsTextList(x)  dlg->fileExtensions = (x)
 #define freeFileExtsTextList()  freeStringList(&dlg.fileExtensions)
@@ -180,15 +209,15 @@ static bool     ControlsInitialized = false;
 
 static void InitDlgControls( void )
 {
-/*  0 */ dlgControls[0].text = LIT( File_Name_Colon );
-/*  1 */ dlgControls[1].text = LIT( Directories_Colon );
-/*  2 */ dlgControls[2].text = LIT( Empty );
-/*  3 */ dlgControls[3].text = LIT( Empty );
-/*  6 */ dlgControls[6].text = LIT( OK );
-/*  7 */ dlgControls[7].text = LIT( Cancel );
-/*  8 */ dlgControls[8].text = LIT( List_Files_of_Type_Colon );
+    dlgControls[FILENAME_TITLE_IDX].text = LIT( File_Name_Colon );
+    dlgControls[DIRECTORIES_TITLE_IDX].text = LIT( Directories_Colon );
+    dlgControls[EDIT_IDX].text = LIT( Empty );
+    dlgControls[DIR_NAME_IDX].text = LIT( Empty );
+    dlgControls[OK_IDX].text = LIT( OK );
+    dlgControls[CANCEL_IDX].text = LIT( Cancel );
+    dlgControls[FILE_TYPES_TITLE_IDX].text = LIT( List_Files_of_Type_Colon );
 #if !defined( __UNIX__ ) && !defined( __NETWARE__ )
-/* 10 */ dlgControls[10].text = LIT( Drives_Colon );
+    dlgControls[DRIVES_TITLE_IDX].text = LIT( Drives_Colon );
 #endif
 }
 
@@ -347,15 +376,17 @@ static drive_type getDriveType( char drv )
 #else
 extern short CheckRemovable( char );
 #pragma aux CheckRemovable = \
-        "mov    ax,04408h" \
-        "int    021h" \
-        "cmp    ax,0fh" \
-        "jne    ok" \
-        "xor    ax,ax" \
-        "jmp    done" \
-        "ok:    inc ax" \
-        "done:" \
-        parm [bl] value[ax];
+        "mov  ax,4408h"     \
+        "int 21h"           \
+        "cmp  ax,0fh"       \
+        "jne short ok"      \
+        "xor  ax,ax"        \
+        "jmp short done"    \
+    "ok: inc  ax"           \
+    "done:"                 \
+    __parm      [__bl] \
+    __value     [__ax] \
+    __modify    []
 
 static drive_type getDriveType( char drv )
 {
@@ -503,9 +534,6 @@ static bool buildFileTypesExts( dlg_info *dlg, const char *data )
 static bool goToDir( gui_window *gui, char *dir )
 {
     char        drive[_MAX_DRIVE];
-#if !defined( __UNIX__ ) && !defined( __NETWARE__ )
-    unsigned    total;
-#endif
     bool        removed_end;
     size_t      len;
     int         rc;
@@ -550,7 +578,7 @@ static bool goToDir( gui_window *gui, char *dir )
     splitPath( dir, drive, NULL, NULL, NULL );
     if( drive[0] != 0 ) {
 #if !defined( __UNIX__ ) && !defined( __NETWARE__ )
-        _dos_setdrive( toupper( drive[0] ) - 'A' + 1, &total );
+        _chdrive( toupper( drive[0] ) - 'A' + 1 );
 #endif
     }
     return( true );
@@ -680,11 +708,12 @@ static bool setFileList( gui_window *gui, const char *ext )
     char                ext1[_MAX_PATH];
     int                 item;
     dlg_info            *dlg = GUIGetExtra( gui );
+    bool                ok;
 
     num_items = 0;
     list = NULL;
     strcpy( ext1, ext );
-
+    ok = true;
     for( ptr = strtok( ext1, ";" ); ptr != NULL; ptr = strtok( NULL, ";" ) ) {
 
         if( getcwd( path, sizeof( path ) ) == NULL ) {
@@ -711,9 +740,8 @@ static bool setFileList( gui_window *gui, const char *ext )
                     }
 #endif
                     if( !addToList( &list, num_items, dent->d_name, strlen( dent->d_name ) ) ) {
-                        freeStringList( &list );
-                        closedir( directory );
-                        return( false );
+                        ok = false;
+                        break;
                     }
                     num_items++;
                 }
@@ -723,13 +751,15 @@ static bool setFileList( gui_window *gui, const char *ext )
     }
     GUIClearList( gui, CTL_FILE_LIST );
     if( num_items > 0 ) {
-        qsort( (void *)list, num_items, sizeof( char * ), Compare );
-        for( item = 0; item < num_items; item++ ) {
-            GUIAddText( gui, CTL_FILE_LIST, list[item] );
+        if( ok ) {
+            qsort( (void *)list, num_items, sizeof( char * ), Compare );
+            for( item = 0; item < num_items; item++ ) {
+                GUIAddText( gui, CTL_FILE_LIST, list[item] );
+            }
         }
         freeStringList( &list );
     }
-    return( true );
+    return( ok );
 
 } /* setFileList */
 
@@ -754,13 +784,14 @@ static bool setDirList( gui_window *gui )
     int                 selected_item;
     int                 num_items;
     const char          **list;
+    bool                ok;
 
     GUIClearList( gui, CTL_DIR_LIST );
     num_items = 0;
     list = NULL;
-
+    ok = true;
     if( getcwd( path, sizeof( path ) ) == NULL ) {
-        return( true );
+        return( ok );
     }
 
     if( path[strlen( path ) - 1] == FILE_SEP_CHAR ) {
@@ -775,12 +806,6 @@ static bool setDirList( gui_window *gui )
 #endif
     }
     splitPath( path, drive + 1, dir, NULL, NULL );
-
-    directory = opendir( path );
-    if( directory == NULL ) {
-        return( false );
-    }
-
     drive[0] = OPENED_DIR_CHAR;
 #if !defined( __UNIX__ ) && !defined( __NETWARE__ )
     drvlist = GetDriveTextList();
@@ -793,59 +818,66 @@ static bool setDirList( gui_window *gui )
     drive[3] = '\\';
     drive[4] = '\0';
 #endif
-    if( !addToList( &list, num_items, drive, strlen( drive ) ) ) {
+    ok = false;
+    if( addToList( &list, num_items, drive, strlen( drive ) ) ) {
+        num_items++;
+        ok = true;
+        strcpy( indent, INDENT_STR );
+        start = dir + 1;
+        for( ptr = start; *ptr != '\0'; ptr++ ) {
+            if( *ptr == FILE_SEP_CHAR ) {
+                *ptr = '\0';
+                len = strlen( indent );
+                memcpy( tmp, indent, len );
+                tmp[len++] = OPENED_DIR_CHAR;
+                strcpy( tmp + len, start );
+                if( !addToList( &list, num_items, tmp, strlen( tmp ) ) ) {
+                    ok = false;
+                    break;
+                }
+                num_items++;
+                start = ptr + 1;
+                strcat( indent, INDENT_STR );
+            }
+        }
+        if( ok ) {
+            selected_item = num_items;
+            directory = opendir( path );
+            if( directory == NULL ) {
+                ok = false;
+            } else {
+                while( (dent = readdir( directory )) != NULL ) {
+                    if( isdir( dent, path ) ) {
+                        if( ( dent->d_name[0] == '.' ) && ( ( dent->d_name[1] == 0 )
+                          || ( dent->d_name[1] == '.' && dent->d_name[2] == 0 ) ) ) {
+                            continue;
+                        }
+                        len = strlen( indent );
+                        memcpy( tmp, indent, len );
+                        tmp[len++] = UNOPENED_DIR_CHAR;
+                        strcpy( tmp + len, dent->d_name );
+                        if( !addToList( &list, num_items, tmp, strlen( tmp ) ) ) {
+                            ok = false;
+                            break;
+                        }
+                        num_items++;
+                    }
+                }
+                closedir( directory );
+                if( ok ) {
+                    qsort( (void *)list, num_items, sizeof( char * ), Compare );
+                    for( item = 0; item < num_items; item++ ) {
+                        GUIAddText( gui, CTL_DIR_LIST, list[item] );
+                    }
+                    GUISetCurrSelect( gui, CTL_DIR_LIST, selected_item - 1 );
+                }
+            }
+        }
+    }
+    if( num_items > 0 ) {
         freeStringList( &list );
-        return( false );
     }
-    num_items++;
-    strcpy( indent, INDENT_STR );
-
-    start = dir + 1;
-    for( ptr = start; *ptr != '\0'; ptr++ ) {
-        if( *ptr == FILE_SEP_CHAR ) {
-            *ptr = '\0';
-            len = strlen( indent );
-            memcpy( tmp, indent, len );
-            tmp[len++] = OPENED_DIR_CHAR;
-            strcpy( tmp + len, start );
-            if( !addToList( &list, num_items, tmp, strlen( tmp ) ) ) {
-                freeStringList( &list );
-                return( false );
-            }
-            num_items++;
-            start = ptr + 1;
-            strcat( indent, INDENT_STR );
-        }
-    }
-
-    selected_item = num_items;
-    while( ( dent = readdir( directory ) ) != NULL ) {
-        if( isdir( dent, path ) ) {
-            if( (dent->d_name[0] == '.') && ((dent->d_name[1] == 0) ||
-                (dent->d_name[1] == '.' && dent->d_name[2] == 0)) ) {
-                continue;
-            }
-            len = strlen( indent );
-            memcpy( tmp, indent, len );
-            tmp[len++] = UNOPENED_DIR_CHAR;
-            strcpy( tmp + len, dent->d_name );
-            if( !addToList( &list, num_items, tmp, strlen( tmp ) ) ) {
-                freeStringList( &list );
-                return( false );
-            }
-            num_items++;
-        }
-    }
-    closedir( directory );
-
-    qsort( (void *)list, num_items, sizeof( char * ), Compare );
-    for( item = 0; item < num_items; item++ ) {
-        GUIAddText( gui, CTL_DIR_LIST, list[item] );
-    }
-    GUISetCurrSelect( gui, CTL_DIR_LIST, selected_item - 1 );
-    freeStringList( &list );
-
-    return( true );
+    return( ok );
 
 } /* setDirList */
 
@@ -1099,7 +1131,9 @@ static bool GetFileNameGUIEventProc( gui_window *gui, gui_event gui_ev, void *pa
     gui_ctl_id  id;
     int         sel;
     char        *ptr;
+#if !defined( __UNIX__ ) && !defined( __NETWARE__ )
     char        path[_MAX_PATH];
+#endif
     dlg_info    *dlg = GUIGetExtra( gui );
 
     switch( gui_ev ) {
@@ -1141,6 +1175,7 @@ static bool GetFileNameGUIEventProc( gui_window *gui, gui_event gui_ev, void *pa
             GUISetText( gui, CTL_EDIT, ptr );
             GUIMemFree( ptr );
             return( true );
+#if !defined( __UNIX__ ) && !defined( __NETWARE__ )
         case CTL_DRIVES :
             sel = -1;
             GUIGetCurrSelect( gui, id, &sel );
@@ -1152,6 +1187,7 @@ static bool GetFileNameGUIEventProc( gui_window *gui, gui_event gui_ev, void *pa
                 GUICloseDialog( gui );
             }
             return( true );
+#endif
         case CTL_FILE_TYPES:
             sel = -1;
             GUIGetCurrSelect( gui, id, &sel );

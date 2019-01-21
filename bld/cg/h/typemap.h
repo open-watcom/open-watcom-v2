@@ -30,6 +30,6 @@
 ****************************************************************************/
 
 
-extern  type_def        *ClassType( type_class_def tipe );
+extern  type_def        *ClassType( type_class_def type_class );
 extern  type_class_def  ReturnClass( type_def *tipe, call_attributes attr );
 extern  type_class_def  TypeClass( type_def *tipe );

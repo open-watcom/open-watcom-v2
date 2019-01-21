@@ -57,8 +57,8 @@ void GetSysConfig(void)
         SysConfig.fpu = X86_587;
         break;
     }
-    SysConfig.os = MAD_OS_NT;
-    SysConfig.mad = MAD_X86;
+    SysConfig.os = DIG_OS_NT;
+    SysConfig.arch = DIG_ARCH_X86;
     SysConfig.osminor = _osminor;
     SysConfig.osmajor = _osmajor;
     SysConfig.huge_shift = 3;
@@ -121,7 +121,7 @@ void GetSysConfig( void )
 {
     SysConfig.cpu = 0;
     SysConfig.fpu = 0;
-    SysConfig.mad = MAD_AXP;
+    SysConfig.arch = DIG_ARCH_AXP;
     SysConfig.osminor = _osminor;
     SysConfig.osmajor = _osmajor;
     SysConfig.huge_shift = 0;

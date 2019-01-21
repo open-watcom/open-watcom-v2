@@ -311,65 +311,81 @@ typedef struct {
 
 #ifdef _M_I86
 extern unsigned BIOSDevCombCode( void );
-#pragma aux BIOSDevCombCode =   \
-        "xor    al,al"          \
-        CALL_INT10( 0x1a )      \
-        "cmp    al,1ah"         \
-        "jz short L1"           \
-        "sub    bx,bx"          \
-    "L1:"                       \
-    value [bx] modify exact [ax bx]
+#pragma aux BIOSDevCombCode = \
+        "xor  al,al"        \
+        CALL_INT10( 0x1a )  \
+        "cmp  al,1ah"       \
+        "jz short L1"       \
+        "sub  bx,bx"        \
+    "L1:"                   \
+    __parm              [] \
+    __value             [__bx] \
+    __modify __exact    [__ax __bx]
 #endif
 
 extern unsigned char BIOSGetMode( void );
-#pragma aux BIOSGetMode =       \
-        CALL_INT10( 0x0f )      \
-    value [al] modify exact [ax bh]
+#pragma aux BIOSGetMode = \
+        CALL_INT10( 0x0f )  \
+    __parm              [] \
+    __value             [__al] \
+    __modify __exact    [__ax __bh]
 
 extern unsigned long BIOSEGAInfo( void );
 #ifdef _M_I86
-#pragma aux BIOSEGAInfo =       \
-        "mov    bx,0ff10h"      \
-        CALL_INT10( 0x12 )      \
-    value [cx bx] modify exact [ah bx cx]
+#pragma aux BIOSEGAInfo = \
+        "mov    bx,0ff10h"  \
+        CALL_INT10( 0x12 )  \
+    __parm              [] \
+    __value             [__cx __bx] \
+    __modify __exact    [__ah __bx __cx]
 #else
-#pragma aux BIOSEGAInfo =   \
+#pragma aux BIOSEGAInfo = \
         "mov  bx,0ff10h"    \
-        CALL_INT10( 0x12 )    \
+        CALL_INT10( 0x12 )  \
         "shl  ecx,10h"      \
         "mov  cx,bx"        \
-    value [ecx] modify exact [ah bx ecx]
+    __parm              [] \
+    __value             [__ecx] \
+    __modify __exact    [__ah __bx __ecx]
 #endif
 
 #ifdef _M_I86
 extern void _DoRingBell( unsigned char );
-#pragma aux _DoRingBell =   \
+#pragma aux _DoRingBell = \
         "mov    al,7"       \
         CALL_INT10( 0x0e )  \
-    parm [bh] modify exact [ax]
+    __parm              [__bh] \
+    __value             \
+    __modify __exact    [__ax]
 #endif
 
 #ifdef _M_I86
 extern void Fillb( unsigned, unsigned, unsigned char, unsigned );
-#pragma aux Fillb =     \
+#pragma aux Fillb = \
         "rep stosb"     \
-    parm [es] [di] [al] [cx] modify exact [cx di]
+    __parm              [__es] [__di] [__al] [__cx] \
+    __value             \
+    __modify __exact    [__cx __di]
 #else
 extern void Fillb( void __far *dst, unsigned char, unsigned );
-#pragma aux Fillb =     \
+#pragma aux Fillb = \
         "rep stosb"     \
-    parm [es edi] [al] [ecx] modify exact [ecx edi]
+    __parm              [__es __edi] [__al] [__ecx] \
+    __value             \
+    __modify __exact    [__ecx __edi]
 #endif
 
 extern void VIDWait( void );
 #pragma aux VIDWait = "jmp short L1" "L1:"
 
 extern unsigned char _ReadCRTCReg( unsigned short vidport, unsigned char regnb );
-#pragma aux _ReadCRTCReg =  \
-        "out  dx,al"        \
-        "inc  dx"           \
-        "in   al,dx"        \
-    parm [dx] [al] value [al] modify exact [al dx]
+#pragma aux _ReadCRTCReg = \
+        "out  dx,al"    \
+        "inc  dx"       \
+        "in   al,dx"    \
+    __parm              [__dx] [__al] \
+    __value             [__al] \
+    __modify __exact    [__al __dx]
 
 extern void _WriteCRTCReg( unsigned short vidport, unsigned char regnb, unsigned char value );
 #pragma aux _WriteCRTCReg = \
@@ -377,24 +393,30 @@ extern void _WriteCRTCReg( unsigned short vidport, unsigned char regnb, unsigned
         "inc  dx"           \
         "mov  al,ah"        \
         "out  dx,al"        \
-    parm [dx] [al] [ah] modify exact [al dx]
+    __parm              [__dx] [__al] [__ah] \
+    __value             \
+    __modify __exact    [__al __dx]
 
 /* write ega/vga registers */
 extern void _ega_write( unsigned short, unsigned char, unsigned char );
-#pragma aux _ega_write =    \
+#pragma aux _ega_write = \
         "out  dx,ax"        \
-    parm [dx] [al] [ah] modify exact []
+    __parm              [__dx] [__al] [__ah] \
+    __value             \
+    __modify __exact    []
 
 /* read vga registers */
 extern unsigned char _vga_read( unsigned short, unsigned char );
-#pragma aux _vga_read =     \
+#pragma aux _vga_read = \
         "out  dx,al"        \
         "inc  dx"           \
         "in   al,dx"        \
-    parm [dx] [al] value [al] modify exact [al dx]
+    __parm              [__dx] [__al] \
+    __value             [__al] \
+    __modify __exact    [__al __dx]
 
 extern void _disablev( unsigned short );
-#pragma aux _disablev =     \
+#pragma aux _disablev = \
     "L1: in   al,dx"        \
         "test al,8"         \
         "jz short L1"       \
@@ -403,10 +425,12 @@ extern void _disablev( unsigned short );
         "out  dx,al"        \
         "xor  al,al"        \
         "out  dx,al"        \
-    parm [dx] modify exact [al dx]
+    __parm              [__dx] \
+    __value             \
+    __modify __exact    [__al __dx]
 
 extern void _enablev( unsigned short );
-#pragma aux _enablev =      \
+#pragma aux _enablev = \
     "L1: in   al,dx"        \
         "test al,8"         \
         "jz short L1"       \
@@ -415,87 +439,113 @@ extern void _enablev( unsigned short );
         "out  dx,al"        \
         "xor  al,al"        \
         "out  dx,al"        \
-    parm [dx] modify exact [al dx]
+    __parm              [__dx] \
+    __value             \
+    __modify __exact    [__al __dx]
 
 
 extern void BIOSSetPage( unsigned char pagenb );
-#pragma aux BIOSSetPage =   \
+#pragma aux BIOSSetPage = \
         CALL_INT10( 5 )     \
-    parm [al] modify exact [ah]
+    __parm              [__al] \
+    __value             \
+    __modify __exact    [__ah]
 
 extern unsigned char BIOSGetPage( void );
-#pragma aux BIOSGetPage =   \
+#pragma aux BIOSGetPage = \
         CALL_INT10( 0x0f )  \
-    value [bh] modify exact [ax bh]
+    __parm              [] \
+    __value             [__bh] \
+    __modify __exact    [__ax __bh]
 
 extern void BIOSSetMode( unsigned char mode );
-#pragma aux BIOSSetMode =   \
+#pragma aux BIOSSetMode = \
         CALL_INT10( 0 )     \
-    parm [al] modify exact [ax]
+    __parm              [__al] \
+    __value             \
+    __modify __exact    [__ax]
 
 extern unsigned short BIOSGetCurPos( unsigned char pagenb );
 #pragma aux BIOSGetCurPos = \
         CALL_INT10( 3 )     \
-    parm [bh] value [dx] modify exact [ax cx dx]
+    __parm              [__bh] \
+    __value             [__dx] \
+    __modify __exact    [__ax __cx __dx]
 
 extern void BIOSSetCurPos( unsigned short rowcol, unsigned char pagenb );
 #pragma aux BIOSSetCurPos = \
         CALL_INT10( 2 )     \
-    parm [dx] [bh] modify exact [ah]
+    __parm              [__dx] [__bh] \
+    __value             \
+    __modify __exact    [__ah]
 
 extern unsigned short BIOSGetCurTyp( unsigned char pagenb );
 #pragma aux BIOSGetCurTyp = \
         CALL_INT10( 3 )     \
-    parm [bh] value [cx] modify exact [ax cx dx]
+    __parm              [__bh] \
+    __value             [__cx] \
+    __modify __exact    [__ax __cx __dx]
 
 extern void BIOSSetCurTyp( unsigned short startend );
 #pragma aux BIOSSetCurTyp = \
         CALL_INT10( 1 )     \
-    parm [cx] modify exact [ah]
+    __parm              [__cx] \
+    __value             \
+    __modify __exact    [__ah]
 
 extern unsigned char BIOSGetAttr( unsigned char pagenb );
-#pragma aux BIOSGetAttr =   \
+#pragma aux BIOSGetAttr = \
         CALL_INT10( 8 )     \
-    parm [bh] value [ah] modify exact [ax]
+    __parm              [__bh] \
+    __value             [__ah] \
+    __modify __exact    [__ax]
 
 extern void BIOSSetAttr( unsigned char attr );
-#pragma aux BIOSSetAttr =   \
+#pragma aux BIOSSetAttr = \
         "xor  cx,cx"        \
         "mov  dx,3250h"     \
         "xor  al,al"        \
         CALL_INT10( 6 )     \
-    parm [bh] modify exact [ax cx dx]
+    __parm              [__bh] \
+    __value             \
+    __modify __exact    [__ax __cx __dx]
 
 extern unsigned char BIOSGetRows( void );
 #ifdef _M_I86
-#pragma aux BIOSGetRows =       \
-        "push   es"             \
-        "mov    al,30h"         \
-        "xor    bh,bh"          \
-        CALL_INT10( 0x11 )      \
-        "inc    dl"             \
-        "pop    es"             \
-    value [dl] modify exact [ax bh cx dl]
+#pragma aux BIOSGetRows = \
+        "push   es"         \
+        "mov    al,30h"     \
+        "xor    bh,bh"      \
+        CALL_INT10( 0x11 )  \
+        "inc    dl"         \
+        "pop    es"         \
+    __parm              [] \
+    __value             [__dl] \
+    __modify __exact    [__ax __bh __cx __dl]
 #else
-#pragma aux BIOSGetRows =   \
+#pragma aux BIOSGetRows = \
         "push es"           \
         "mov  al,30h"       \
         "xor  bh,bh"        \
         CALL_INT10( 0x11 )  \
         "inc  dl"           \
         "pop  es"           \
-    value [dl] modify exact [ax ebx ecx edx edi] /* workaround bug in DOS4G */
+    __parm              [] \
+    __value             [__dl] \
+    __modify __exact    [__ax __ebx __ecx __edx __edi] /* workaround bug in DOS4G */
 #endif
 
 extern unsigned short BIOSGetPoints( void );
 #ifdef _M_I86
-#pragma aux BIOSGetPoints =     \
-        "push   es"             \
-        "mov    al,30h"         \
-        "xor    bh,bh"          \
-        CALL_INT10( 0x11 )      \
-        "pop    es"             \
-    value [cx] modify exact [ax bh cx dl]
+#pragma aux BIOSGetPoints = \
+        "push   es"         \
+        "mov    al,30h"     \
+        "xor    bh,bh"      \
+        CALL_INT10( 0x11 )  \
+        "pop    es"         \
+    __parm              [] \
+    __value             [__cx] \
+    __modify __exact    [__ax __bh __cx __dl]
 #else
 #pragma aux BIOSGetPoints = \
         "push es"           \
@@ -503,11 +553,15 @@ extern unsigned short BIOSGetPoints( void );
         "xor  bh,bh"        \
         CALL_INT10( 0x11 )  \
         "pop  es"           \
-    value [cx] modify exact [ax ebx ecx edx edi] /* workaround bug in DOS4G */
+    __parm              [] \
+    __value             [__cx] \
+    __modify __exact    [__ax __ebx __ecx __edx __edi] /* workaround bug in DOS4G */
 #endif
 
 extern void BIOSEGAChrSet( unsigned char vidroutine );
 #pragma aux BIOSEGAChrSet = \
         "xor  bl,bl"        \
         CALL_INT10( 0x11 )  \
-    parm [al] modify exact [ah bl]
+    __parm              [__al] \
+    __value             \
+    __modify __exact    [__ah __bl]

@@ -75,7 +75,7 @@ SYM_TOKEN_LOCN* SymbolLocnAlloc(// ALLOCATE A SYM_TOKEN_LOCN, IF REQ'D
         *owner = loc;
         loc->u.dwh = 0;
     }
-    return loc;
+    return( loc );
 }
 
 

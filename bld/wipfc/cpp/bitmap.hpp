@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
+* Copyright (c) 2009-2018 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -32,7 +32,6 @@
 #ifndef BITMAP_INCLUDED
 #define BITMAP_INCLUDED
 
-#include "config.hpp"
 #include <cstdio>
 #include <string>
 #include "btmpblk.hpp"
@@ -41,65 +40,67 @@ class Bitmap {
 public:
     Bitmap( std::string& f );
     ~Bitmap() { };
-    STD1::uint32_t write( std::FILE* out ) const;
+    dword write( std::FILE* bmfpo ) const;
 private:
     Bitmap( const Bitmap& rhs );            //no copy
     Bitmap& operator=( const Bitmap& rhs ); //no assignment
 #pragma pack(push,1)
     struct BitmapFileHeader {
-        STD1::uint8_t  type[ 2 ];       //'BM' for input, 'bM' for output
-        STD1::uint32_t size;            //including this header, before lzw compression
-        STD1::int16_t  xHotspot;
-        STD1::int16_t  yHotspot;
-        STD1::uint32_t bitsOffset;      //offset to bitmap data
-        STD1::uint32_t bmihSize;        //size of BitmapInfoHeader16 + this entry
-        void read( std::FILE* in );
-        void write( std::FILE* out ) const;
+        byte    type[ 2 ];       //'BM' for input, 'bM' for output
+        dword   size;            //including this header, before lzw compression
+        sword   xHotspot;
+        sword   yHotspot;
+        dword   bitsOffset;      //offset to bitmap data
+        dword   bmihSize;        //size of BitmapInfoHeader16 + this entry
+        void read( std::FILE* bmfpi );
+        void write( std::FILE* bmfpo ) const;
         //followed by BitmapInfoHeaderXX
     };
     // win16 or os/2 1.x
     // used for both input and output
     struct BitmapInfoHeader16 {
-        STD1::uint16_t width;
-        STD1::uint16_t height;
-        STD1::uint16_t planes;
-        STD1::uint16_t bitsPerPixel;
-        void read( std::FILE* in );
-        void write( std::FILE* out ) const;
+        word    width;
+        word    height;
+        word    planes;
+        word    bitsPerPixel;
+        void read( std::FILE* bmfpi );
+        void write( std::FILE* bmfpo ) const;
         //followed by rgb triples if <= 8bpp
     };
     struct RGBA {
-        STD1::uint8_t   blue;
-        STD1::uint8_t   green;
-        STD1::uint8_t   red;
-        STD1::uint8_t   reserved;
-        void read( std::FILE* in );
-        };
+        byte    blue;
+        byte    green;
+        byte    red;
+        byte    reserved;
+        void read( std::FILE* bmfpi );
+    };
     struct RGB {
-        STD1::uint8_t   blue;
-        STD1::uint8_t   green;
-        STD1::uint8_t   red;
+        byte    blue;
+        byte    green;
+        byte    red;
         RGB() : blue( 0 ), green( 0 ), red( 0 ) { };
         RGB( RGBA& rhs ) : blue( rhs.blue ), green( rhs.green ), red( rhs.red ) { };
         RGB& operator=( RGBA& rhs ) { blue = rhs.blue; green = rhs.green; red = rhs.red; return *this; };
-        void read( std::FILE* in );
-        void write( std::FILE* out ) const;
+        void read( std::FILE* bmfpi );
+        void write( std::FILE* bmfpo ) const;
     };
 #pragma pack(pop)
-    BitmapFileHeader bmfh;              //read BitmapFileHeader
-    BitmapInfoHeader16 bmih;
-    std::vector< RGB > rgb;
-    STD1::uint32_t bytesPerRow;
-    STD1::uint32_t dataSize;            //size of the compressed data
-    STD1::uint16_t blockSize;           //including this word
-    std::vector< BitmapBlock > data;    //and all of the data blocks
+    void readHeader16( std::FILE* bmfpi );
+    void readHeaderW32( std::FILE* bmfpi );
+    void readHeaderOS2( std::FILE* bmfpi );
+    void findBlockSize( std::size_t width, std::size_t height, std::size_t bitsPerPixel );
+    void compress( std::FILE* bmfpi );
+    unsigned rgbByteSize() { return 1 << _bmih.bitsPerPixel; };
+
+    BitmapFileHeader            _bmfh;          //read BitmapFileHeader
+    BitmapInfoHeader16          _bmih;
+    std::vector< RGB >          _rgb;
+    dword                       _bytesPerRow;
+    dword                       _dataSize;      //size of the compressed data
+    word                        _blockSize;     //including this word
+    std::vector< BitmapBlock >  _data;          //and all of the data blocks
     typedef std::vector< BitmapBlock >::iterator DataIter;
     typedef std::vector< BitmapBlock >::const_iterator ConstDataIter;
-    void readHeader16( std::FILE* in );
-    void readHeaderW32( std::FILE* in );
-    void readHeaderOS2( std::FILE* in );
-    void findBlockSize( std::size_t width, std::size_t height, std::size_t bitsPerPixel );
-    void compress( std::FILE* in );
 };
 
 #endif //BITMAP_INCLUDED

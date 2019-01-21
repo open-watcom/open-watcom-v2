@@ -1,8 +1,11 @@
+::
+:: POSIX, ISO C/C++ time_t typedef declaration
+::
 :segment CNAME
 #ifndef _STDTIME_T_DEFINED
 #define _STDTIME_T_DEFINED
  namespace std {
-:segment QNX | LINUX
+:segment LINUX | QNX
    typedef signed long time_t;
 :elsesegment
    typedef unsigned long time_t;
@@ -16,7 +19,7 @@
  #ifndef _STDTIME_T_DEFINED
  #define _STDTIME_T_DEFINED
   namespace std {
-:segment QNX | LINUX
+:segment LINUX | QNX
     typedef signed long time_t;
 :elsesegment
     typedef unsigned long time_t;
@@ -34,7 +37,7 @@
  #ifndef _TIME_T_DEFINED
  #define _TIME_T_DEFINED
   #define _TIME_T_DEFINED_
-:segment QNX | LINUX
+:segment LINUX | QNX
   typedef signed long time_t;
 :elsesegment
   typedef unsigned long time_t;

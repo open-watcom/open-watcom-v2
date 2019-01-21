@@ -32,8 +32,10 @@
 #include <ctype.h>
 #include <time.h>
 #include <string.h>
-
 #include "dmpobj.h"
+
+
+#define BUFLEN  512
 
 enum {
     DBG_UNKNOWN,
@@ -180,10 +182,9 @@ static void doWeakLazyExtern( void )
             break;
         extern_idx = GetIndex();
         default_resolution = GetIndex();
-         Output( INDENT INDENT "EI(%u) default: EI(%u)\n", extern_idx, default_resolution );
+        Output( INDENT INDENT "EI(%u) default: EI(%u)\n", extern_idx, default_resolution );
         if( TranslateIndex ) {
-            Output( INDENT INDENT "  - '%s'   -'%s'\n", GetXname( extern_idx ),
-                    GetXname( default_resolution ) );
+            Output( INDENT INDENT "  - '%s'   -'%s'\n", GetXname( extern_idx ), GetXname( default_resolution ) );
         }
     }
 }
@@ -194,8 +195,7 @@ static void doDependency( void )
     DOSDATE_T   dos_date;
     DOSDATE_T   dos_time;
     time_t      t;
-    char        *p;
-    auto char buff[80];
+    char        buff[80];
 
     if( EndRec() ) {
         Output( INDENT "Last Dependency Record" CRLF );
@@ -205,6 +205,7 @@ static void doDependency( void )
     dos_time |= GetByte() << 8;
     dos_date = GetByte();
     dos_date |= GetByte() << 8;
+    t = d2t( dos_date, dos_time );
     Output( INDENT "File: " );
     buff[1] = '\0';
     for( len = GetByte(); len != 0; --len ) {
@@ -212,10 +213,8 @@ static void doDependency( void )
         Output( buff );
     }
     Output( CRLF );
-    t = d2t( dos_date, dos_time );
-    p = ctime( &t );
     Output( INDENT "Time Stamp: " );
-    Output( p );        // has embedded '\n'
+    Output( ctime( &t ) );      // has embedded '\n'
 }
 
 static int doDisasmDirective( void )
@@ -273,8 +272,7 @@ static void doVirtualConditional( void )
     def_idx = GetIndex();
     Output( INDENT "EI(%u) default: EI(%u)\n", idx, def_idx );
     if( TranslateIndex ) {
-        Output( INDENT "  - '%s'   -'%s'\n", GetXname( idx ),
-                GetXname( def_idx ) );
+        Output( INDENT "  - '%s'   -'%s'\n", GetXname( idx ), GetXname( def_idx ) );
     }
     while( !EndRec() ) {
         idx = GetIndex();
@@ -289,44 +287,44 @@ static int doLinkerDirective( void )
     byte        minor;
     unsigned    e1;
     unsigned    s1;
-    unsigned_32 stamp;
+    time_t      tstamp;
     Segdeflist  *sd;
+    char        *segname;
 
     ldir = GetByte();
     switch( ldir ) {
     case LDIR_SOURCE_LANGUAGE:
         major = GetByte();
         minor = GetByte();
-        Output( INDENT "WATCOM DBI: Version %u.%u  Language %R"
-                CRLF, major, minor );
+        Output( INDENT "WATCOM DBI: Version %u.%u  Language %R" CRLF, major, minor );
         return( 1 );
     case LDIR_DEFAULT_LIBRARY:
         major = GetByte();
-        Output( INDENT "Default Library: Priority %u \"%R\"" CRLF,
-            major );
+        Output( INDENT "Default Library: Priority %u \"%R\"" CRLF, major );
         return( 1 );
     case LDIR_OPT_FAR_CALLS:
         s1 = GetIndex();
         if( TranslateIndex ) {
             sd = GetSegdef( s1 );
-            Output( INDENT "Optimize Far Calls: SI(%u) - '%s'" CRLF,
-                s1, GetLname( sd->segind ) );
+            if( sd != NULL ) {
+                segname = GetLname( sd->segind );
+            } else {
+                segname = "";
+            }
+            Output( INDENT "Optimize Far Calls: SI(%u) - '%s'" CRLF, s1, segname );
         } else {
             Output( INDENT "Optimize Far Calls: SI(%u)" CRLF, s1 );
         }
         return( 1 );
     case LDIR_OPT_UNSAFE:
-        Output( INDENT "Far Call Optimization Unsafe (Last FIXUPP)"
-            CRLF );
+        Output( INDENT "Far Call Optimization Unsafe (Last FIXUPP)" CRLF );
         return( 1 );
     case LDIR_VF_TABLE_DEF:
-        Output( INDENT "Virtual Function Conditional"
-            CRLF );
+        Output( INDENT "Virtual Function Conditional" CRLF );
         doVirtualConditional();
         return( 1 );
     case LDIR_VF_PURE_DEF:
-        Output( INDENT "Pure Virtual Function Conditional"
-            CRLF );
+        Output( INDENT "Pure Virtual Function Conditional" CRLF );
         doVirtualConditional();
         return( 1 );
     case LDIR_VF_REFERENCE:
@@ -334,17 +332,14 @@ static int doLinkerDirective( void )
         s1 = GetIndex();
         if( s1 == 0 ) {
             s1 = GetIndex();
-            Output( INDENT "Virtual Function Reference EI(%u) CI(%u)"
-                CRLF, e1, s1 );
+            Output( INDENT "Virtual Function Reference EI(%u) CI(%u)" CRLF, e1, s1 );
         } else {
-            Output( INDENT "Virtual Function Reference EI(%u) SI(%u)"
-                CRLF, e1, s1 );
+            Output( INDENT "Virtual Function Reference EI(%u) SI(%u)" CRLF, e1, s1 );
         }
         return( 1 );
     case LDIR_OBJ_TIMESTAMP:
-        stamp = GetLInt();
-        Output( INDENT "Library Timestamp: %s" CRLF,
-            ctime( (time_t *)&stamp ) );
+        tstamp = GetLInt();
+        Output( INDENT "Library Timestamp: %s" CRLF, ctime( &tstamp ) );
         return( 1 );
     }
     BackupByte();
@@ -367,8 +362,7 @@ static int doMSOmf( void )
     if( RecLen < 5 ) {
         Output( INDENT "Assuming CodeView style debugging information" CRLF );
         DbgStyle = DBG_CODEVIEW;
-    }
-    else {
+    } else {
         byte    version;
 
         version = GetByte();
@@ -383,8 +377,7 @@ static int doMSOmf( void )
         } else if( strncmp( (char *)NamePtr, "HL", 2 ) == 0 ) {
             Output( INDENT "IBM HLL style debugging information version %b" CRLF, version );
             DbgStyle = DBG_HLL;
-        }
-        else {
+        } else {
             Output( INDENT "Unknown debugging information style" CRLF );
             DbgStyle = DBG_UNKNOWN;
         }
@@ -412,8 +405,9 @@ static void doDLLImport( void )
         ordinal = GetUInt();
         Output( "@%u", ordinal );
     } else {
-        if( GetName() > 0)
+        if( GetName() > 0 ) {
             Output( "Imported Name: %N" CRLF );
+        }
     }
     Output( CRLF );
 }
@@ -703,8 +697,7 @@ void ProcSegDefs( void )
             length
         );
         if( TranslateIndex ) {
-            Output( INDENT "   Seg: '%s'  Class: '%s'" CRLF,
-                GetLname( seg ), GetLname( class ) );
+            Output( INDENT "   Seg: '%s'  Class: '%s'" CRLF, GetLname( seg ), GetLname( class ) );
             AddSegdef( seg );
         }
     } else {
@@ -715,8 +708,7 @@ void ProcSegDefs( void )
         Output( INDENT "Frame: %x Offset: %X" CRLF, abs_frame, abs_offset );
     }
     if( IsIntel && align == ALIGN_LTRELOC ) {
-        Output( INDENT "LTL Data:%b Len:%x Offset:%x" CRLF,
-                ltl_dat, ltl_len, ltl_offset );
+        Output( INDENT "LTL Data:%b Len:%x Offset:%x" CRLF, ltl_dat, ltl_len, ltl_offset );
     }
 }
 
@@ -731,30 +723,32 @@ static void getBase( int indent )
 
     group = GetIndex();
     seg = GetIndex();
-    if( indent ) Output( INDENT );
+    if( indent )
+        Output( INDENT );
     if( group == 0 && seg == 0 ) {
         Output( "Frame: %x", GetUInt() );
     } else {
         if( TranslateIndex ) {
             gd = GetGrpdef( group );
             if( gd != NULL ) {
-               grpname = GetLname( gd->grpind );
+                grpname = GetLname( gd->grpind );
             } else {
-               grpname = "";
+                grpname = "";
             }
             sd = GetSegdef( seg );
             if( sd != NULL ) {
-               segname = GetLname( sd->segind );
+                segname = GetLname( sd->segind );
             } else {
-               segname = "";
+                segname = "";
             }
-            Output( "Group: %u - '%s', Seg: %u - '%s'",
-                    group, grpname, seg, segname );
+            Output( "Group: %u - '%s', Seg: %u - '%s'", group, grpname, seg, segname );
         } else {
             Output( "Group: %u, Seg: %u", group, seg );
         }
     }
-    if( indent ) Output( CRLF );
+    if( indent ) {
+        Output( CRLF );
+    }
 }
 
 void ProcLocSyms( void )
@@ -1026,8 +1020,7 @@ static unsigned_32 begData( void )
         } else {
            segname = "";
         }
-        Output( INDENT "Seg index:%u - '%s' offset:%X" CRLF,
-            seg, segname, offset );
+        Output( INDENT "Seg index:%u - '%s' offset:%X" CRLF, seg, segname, offset );
     } else {
         Output( INDENT "Seg index:%u offset:%X" CRLF, seg, offset );
     }
@@ -1482,15 +1475,14 @@ void ProcLibTrailer( FILE *fp )
     if( fseek( fp, libDictOffs, SEEK_SET ) != 0 ) {
         return;
     }
-    ResizeBuff( 512 );
+    ResizeBuff( BUFLEN );
     for( dict_block = 0; dict_block < libDictSize; ++dict_block ) {
-        if( fread( RecBuff, 512, 1, fp ) == 0 ) {
+        if( fread( RecBuff, 1, BUFLEN, fp ) != BUFLEN ) {
              break;
         }
         RecPtr = RecBuff;
-        RecLen = 512;
-        Output( CRLF "Dictionary Block %x:" CRLF
-            INDENT "Buckets:" CRLF INDENT, dict_block );
+        RecLen = BUFLEN;
+        Output( CRLF "Dictionary Block %x:" CRLF INDENT "Buckets:" CRLF INDENT, dict_block );
         for( i = 0; i < 36; i += 6 ) {
             doBucket( i ); Output( "  " );
             doBucket( i + 1 ); Output( "  " );
@@ -1501,8 +1493,7 @@ void ProcLibTrailer( FILE *fp )
         }
         doBucket( 36 );
         free = GetByte() * 2;
-        Output( CRLF INDENT "Free Byte: %x" CRLF INDENT "Entries:" CRLF,
-            free );
+        Output( CRLF INDENT "Free Byte: %x" CRLF INDENT "Entries:" CRLF, free );
         while( RecOffset() < free ) {
             i = RecOffset();
             GetName();

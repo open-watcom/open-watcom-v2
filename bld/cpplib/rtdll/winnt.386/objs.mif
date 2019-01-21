@@ -1,6 +1,6 @@
-__pifx__ =$(system).386/$(model)_$(dllname_$(convention))mt$(dllname_profile)$(dllname_debug)
 __cifx__ =$(system).386/$(libsubdir)
 __mifx__ =$(system).387/$(libsubdir)
+__pifx__ =$(system).386/$(model)_$(dllname_$(convention))mt$(dllname_profile)$(dllname_debug)
 
 dll_libs = $+ &
     $(cpplib_dir)/library/$(__pifx__).dll/plbxmt3$(dllname_$(convention)).lib &

@@ -31,7 +31,6 @@
 
 
 #include "spy.h"
-#include <malloc.h>
 #include "watini.h"
 #include "inipath.h"
 #include "log.h"

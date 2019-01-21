@@ -130,8 +130,8 @@ trap_retval ReqGet_sys_config( void )
     } else {
         qnx_osinfo( 0, &info );
     }
-    ret->sys.mad = MAD_X86;
-    ret->sys.os = MAD_OS_QNX;
+    ret->sys.arch = DIG_ARCH_X86;
+    ret->sys.os = DIG_OS_QNX;
     ret->sys.osmajor = info.version / 100;
     ret->sys.osminor = info.version % 100;
     if( info.sflags & _PSF_EMULATOR_INSTALLED ) {
@@ -302,14 +302,15 @@ trap_retval ReqChecksum_mem( void )
     return( sizeof( *ret ) );
 }
 
-#pragma aux ver_read =  ".386p"         \
-                        "verr   ax"     \
-                        "jz     L1"     \
-                        "xor    ax,ax"  \
-                        "L1:"           \
-                        parm [ax] value [ax]
-
 extern unsigned short ver_read( unsigned short );
+#pragma aux ver_read = \
+        ".386p"         \
+        "verr ax"       \
+        "jz short L1"   \
+        "xor  ax,ax"    \
+    "L1:"               \
+    __parm  [__ax] \
+    __value [__ax]
 
 static unsigned ReadGDT( read_mem_req *acc, unsigned len, void *ret )
 {

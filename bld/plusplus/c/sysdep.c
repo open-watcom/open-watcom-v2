@@ -112,5 +112,5 @@ time_t SysFileTime(             // GET TIME STAMP FOR FILE
     } else {
         time_stamp = file_info.st_mtime;
     }
-    return time_stamp;
+    return( time_stamp );
 }

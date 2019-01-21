@@ -13,7 +13,7 @@ const size_t MemBlock = 2048;
     it to the system so that "new" can use it.
 */
 
-long *failsafe = new long[MemBlock];
+long *failsafe = new long [MemBlock];
 
 /*
     Declare a customized function to handle memory
@@ -30,7 +30,7 @@ int out_of_memory_handler( unsigned size )
       /* Tell new to stop allocation attempts */
       return( 0 );
     } else {
-      delete failsafe;
+      delete[] failsafe;
       failsafe = NULL;
       printf( "Retrying allocation.\n" );
       /* Tell new to retry allocation attempt */
@@ -44,9 +44,9 @@ void main( void )
 
     /* Register existence of a new memory handler */
     _set_new_handler( out_of_memory_handler );
-    long *pmemdump = new long[MemBlock];
+    long *pmemdump = new long [MemBlock];
     for( i=1 ; pmemdump != NULL; i++ ) {
-      pmemdump = new long[MemBlock];
+      pmemdump = new long [MemBlock];
       if( pmemdump != NULL )
         printf( "Another block allocated %d\n", i );
     }

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
+* Copyright (c) 2009-2018 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -28,167 +28,203 @@
 *
 ****************************************************************************/
 
-#if defined( __unix__ ) && !defined( __UNIX__ )
-    #define __UNIX__ __unix__
-#endif
+
+#include "wipfc.hpp"
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
-#include <memory>
-#include <string>
 #include <climits>
+#include <cctype>
+#include <cwctype>
 #if defined( __UNIX__ ) || defined( __APPLE__ )
     #include <unistd.h>
 #else
     #include <direct.h>
 #endif
+#include "util.hpp"
 #include "errors.hpp"
 
 #ifndef HAVE_CONFIG_H
 #include "clibext.h"
 #endif
 
+
 void killQuotes( char * text )
+/****************************/
 {
     if( *text == '"' || *text == '\'' ) {
         char quote = *text;
-        std::memmove( text, text + 1, std::strlen( text ) * sizeof( char ) );
+        std::memmove( text, text + 1, std::strlen( text ) * sizeof( *text ) );
         char *end( std::strrchr( text, quote ) );
-        if ( end )
+        if( end ) {
             *end = '\0';
+        }
     }
 }
-/*****************************************************************************/
+
 void killQuotes( wchar_t * text )
+/*******************************/
 {
     if( *text == L'"' || *text == '\'' ) {
         wchar_t quote = *text;
-        std::memmove( text, text + 1, std::wcslen( text ) * sizeof( wchar_t ) );
+        std::memmove( text, text + 1, std::wcslen( text ) * sizeof( *text ) );
         wchar_t *end( std::wcsrchr( text, quote ) );
-        if ( end )
+        if( end ) {
             *end = L'\0';
+        }
     }
 }
-/*****************************************************************************/
+
 void killQuotes( std::string& val )
+/*********************************/
 {
-    if ( val[0] == '"' || val[0] == '\'' )
-        {
+    if( val[0] == '"' || val[0] == '\'' ) {
         val.erase( 0, 1 );
-        if( val[ val.size() - 1 ] == '"' || val[ val.size() - 1 ] == '\'' )
+        if( val[val.size() - 1] == '"' || val[val.size() - 1] == '\'' ) {
             val.erase( val.size() - 1, 1 );
         }
+    }
 }
-/*****************************************************************************/
+
 void killQuotes( std::wstring& val )
+/**********************************/
 {
-    if ( val[0] == L'"' || val[0] == L'\'' )
-        {
+    if( val[0] == L'"' || val[0] == L'\'' ) {
         val.erase( 0, 1 );
-        if( val[ val.size() - 1 ] == L'"' || val[ val.size() - 1 ] == L'\'' )
+        if( val[val.size() - 1] == L'"' || val[val.size() - 1] == L'\'' ) {
             val.erase( val.size() - 1, 1 );
         }
+    }
 }
-/*****************************************************************************/
-void splitAttribute( const std::wstring& text, std::wstring& key, std::wstring& value)
+
+void splitAttribute( const std::wstring& text, std::wstring& key, std::wstring& value )
+/*************************************************************************************/
 {
     std::wstring::size_type index( text.find( '=', 0 ) );
     key = text.substr( 0, index );
     value = text.substr( index + 1 );
     killQuotes( value );
 }
-/*****************************************************************************/
+
+bool killEOL( char *text, bool kill )
+/***********************************/
 //Allow for files with non-native end-of-lines
-void killEOL( char * text )
 {
+    bool eol = false;
+
     if( *text == '\n' || *text == '\r' ) {  //CR or LF
-        *text = '\0';
-        --text;
+        if( kill )
+            *text = '\0';
+        text--;
+        eol = true;
     }
     if( *text == '\n' || *text == '\r' ) {  //CRLF (or LFCR)
-        *text = '\0';
+        if( kill )
+            *text = '\0';
+        eol = true;
     }
+    return eol;
 }
-/*****************************************************************************/
+
+bool killEOL( wchar_t *text, bool kill )
+/**************************************/
 //Allow for files with non-native end-of-lines
-void killEOL( wchar_t * text )
 {
+    bool eol = false;
+
     if( *text == L'\n' || *text == L'\r' ) {    //CR or LF
-        *text = L'\0';
-        --text;
+        if( kill )
+            *text = L'\0';
+        text--;
+        eol = true;
     }
     if( *text == L'\n' || *text == L'\r' ) {    //CRLF (or LFCR)
-        *text = L'\0';
+        if( kill )
+            *text = L'\0';
+        eol = true;
     }
+    return eol;
 }
-/*****************************************************************************/
+
 std::string canonicalPath( char* arg )
+/************************************/
 {
-    std::auto_ptr< char > cwd( ::getcwd( 0, 0 ) );
-    std::string fullpath( cwd.get() );
+    std::string fullpath( ::getcwd( 0, 0 ) );
     std::string inFile( arg );
-#if defined( __UNIX__ ) || defined( __APPLE__ )
-    const char* srchstr = "../";
-    char sep = '/';
-#else
-    const char* srchstr = "..\\";
-    char sep = '\\';
-#endif
-    std::string::size_type idx1( inFile.find( srchstr ) );
-    if( idx1 == 0 ) {
-        while( idx1 == 0 ) {                    //must be at start of line
-            std::string::size_type idx2( fullpath.rfind( sep ) );
+    bool no_parent_ref = true;
+    // parent reference "../" must be on the begining then remove all levels
+    for( ; inFile.find( PATH_PARENT_REF ) == 0; inFile.erase( 0, 3 ) ) {
+        no_parent_ref = false;
+        std::string::size_type idx2( fullpath.rfind( PATH_SEPARATOR ) );
+        if( idx2 != std::string::npos ) {
+            fullpath.erase( idx2 );
+        } else if( !fullpath.empty() ) {
+#if !defined( __UNIX__ ) && !defined( __APPLE__ )
+            if( fullpath[fullpath.size() - 1] == ':' )
+                continue;                   // don't kill drive
+            idx2 = fullpath.find( ':' );    // don't kill drive
             if( idx2 != std::string::npos ) {
-                fullpath.erase( idx2 );
-                inFile.erase( idx1, 3 );
+                fullpath.erase( idx2 + 1 );
+                continue;
             }
-            else if( !fullpath.empty() ) {
-#if defined( __UNIX__ ) || defined( __APPLE__ )
-                idx2 = 0;
-#else
-                idx2 = fullpath.find( ':' );    //don't kill drive
-                if( idx2 != std::string::npos )
-                    ++idx2;
 #endif
-                fullpath.erase( idx2 );
-                inFile.erase( 0, 3 );
-                break;
-            }
-            idx1 = inFile.find( srchstr );
+            fullpath.erase();
         }
-        fullpath += sep;
+    }
+    if( no_parent_ref ) {
+        fullpath = inFile;
+    } else {
+        fullpath += PATH_SEPARATOR;
         fullpath += inFile;
     }
-    else
-        fullpath = inFile;
 #if !defined( __UNIX__ ) && !defined( __APPLE__ )
     if( fullpath.size() > PATH_MAX )
         throw FatalError( ERR_PATH_MAX );
 #endif
-    return fullpath;
+    return( fullpath );
 }
-/*****************************************************************************/
-void wtombstring( const std::wstring& input, std::string& output )
+
+char *skipWS( char *text )
+/************************/
 {
+    while( std::isspace( *(unsigned char *)text ) )
+        text++;
+    return( text );
+}
+
+wchar_t *skipWS( wchar_t *text )
+/******************************/
+{
+    while( std::iswspace( *text ) )
+        text++;
+    return( text );
+}
+
+std::string def_wtomb_string( const std::wstring& input )
+/*******************************************************/
+{
+    std::string output;
     for( std::size_t index = 0; index < input.size(); ++index ) {
-        char ch[ MB_LEN_MAX + 1 ];
-        int  bytes( std::wctomb( &ch[ 0 ], input[ index ] ) );
+        char ch[MB_LEN_MAX + 1];
+        int  bytes( std::wctomb( &ch[0], input[index] ) );
         if( bytes == -1 )
             throw FatalError( ERR_T_CONV );
-        ch[ bytes ] = '\0';
+        ch[bytes] = '\0';
         output += ch;
     }
+    return( output );
 }
-/*****************************************************************************/
-void mbtowstring( const std::string& input, std::wstring& output )
+
+void def_mbtow_string( const std::string& input, std::wstring& output )
+/*********************************************************************/
 {
-    std::size_t index( 0 );
-    while( index < input.size() ) {
+    int consumed;
+
+    for( std::size_t index = 0; index < input.size(); index += consumed ) {
         wchar_t wch;
-        int consumed( std::mbtowc( &wch, input.data() + index, MB_CUR_MAX ) );
+        consumed = std::mbtowc( &wch, &input[0] + index, MB_CUR_MAX );
         if( consumed == -1 )
             throw FatalError( ERR_T_CONV );
         output += wch;
-        index += consumed;
     }
 }

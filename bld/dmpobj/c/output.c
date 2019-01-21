@@ -59,7 +59,7 @@ static void flush( void )
     if( len > 0 ) {
         if( fwrite( outBuff, 1, len, outputFH ) != len ) {
             fprintf( stderr, "Write error - %s\n", strerror( errno ) );
-            leave( 20 );
+            leave( 20 );    // never return
         }
     }
 }
@@ -261,7 +261,7 @@ size_t  Output( const char *fmt, ... )
             break;
         case '<':
             len = va_arg( args, unsigned );
-            while( p - outBuffPtr < len ) {
+            while( (size_t)( p - outBuffPtr ) < len ) {
                 *p++ = ' ';
             }
             break;

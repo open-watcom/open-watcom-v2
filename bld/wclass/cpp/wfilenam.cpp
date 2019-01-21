@@ -35,10 +35,10 @@
 
 extern "C" {
     #include <stdio.h>
+    #include <stdint.h>
     #include <stdlib.h>
 #ifndef __UNIX__
     #include <direct.h>
-    #include <dos.h>
 #endif
     #include <time.h>
 #ifdef __UNIX__
@@ -66,15 +66,13 @@ typedef struct fullName {
 } FullName;
 
 #ifndef __UNIX__
-static bool setdrive( const char* drive, unsigned* olddrive )
+static bool setdrive( const char* drive, int* olddrive )
 {
     if( strlen( drive ) > 0 ) {
-        _dos_getdrive( olddrive );
-        unsigned drv = toupper( drive[0]) - 'A' + 1;    //1='A'; 2='B'; ...
+        *olddrive = _getdrive();
+        int drv = toupper( (unsigned char)drive[0] ) - 'A' + 1;    // 1='A'; 2='B'; ...
         if( *olddrive != drv ) {
-            unsigned total; _dos_setdrive( drv, &total );
-            unsigned newdrive; _dos_getdrive( &newdrive );
-            if( drv != newdrive ) {
+            if( _chdrive( drv ) ) {
                 return( false );
             }
         }
@@ -281,15 +279,14 @@ bool WEXPORT WFileName::setCWD() const
 bool WEXPORT WFileName::setCWD() const
 {
     splitpath( *this, _x.drive, _x.dir, _x.fname, _x.ext, PATHSEP_STR );
-    unsigned olddrive;
+    int olddrive;
     if( setdrive( _x.drive, &olddrive ) ) {
         if( strlen( _x.dir ) > 0 ) {
             int ret = chdir( _x.dir );
             if( ret == 0 ) {
                 return( true );
             }
-            unsigned total;
-            _dos_setdrive( olddrive, &total );
+            _chdrive( olddrive );
             return( false );
         }
         return( true );
@@ -321,11 +318,10 @@ bool WEXPORT WFileName::makeDir() const
 {
     splitpath( *this, _x.drive, _x.dir, _x.fname, _x.ext, PATHSEP_STR );
     if( strlen( _x.dir ) > 0 ) {
-        unsigned olddrive;
+        int olddrive;
         if( setdrive( _x.drive, &olddrive ) ) {
             int ret = mkdir( _x.dir );
-            unsigned total;
-            _dos_setdrive( olddrive, &total );
+            _chdrive( olddrive );
             return( ret == 0 );
         }
         return( false );
@@ -346,7 +342,7 @@ bool WEXPORT WFileName::dirExists() const
 }
 
 #ifdef __UNIX__
-bool WEXPORT WFileName::attribs( char* attribs ) const
+bool WEXPORT WFileName::attribs( unsigned* attribs ) const
 {
     /* XXX needs to be fixed: just to get it going */
     struct stat st;
@@ -356,21 +352,30 @@ bool WEXPORT WFileName::attribs( char* attribs ) const
     return( stat( *this, &st ) == 0 );
 }
 #else
-bool WEXPORT WFileName::attribs( char* attribs ) const
+bool WEXPORT WFileName::attribs( unsigned* attribs ) const
 {
-    struct find_t fileinfo;
-    #define FIND_STYLE _A_NORMAL
-    int rc = _dos_findfirst( *this, FIND_STYLE, &fileinfo );
-    if( rc == 0 ) {
-        if( attribs != NULL ) {
-            *attribs = fileinfo.attrib;
+    struct _finddata_t fileinfo;
+    intptr_t handle;
+    int rc;
+    bool found;
+
+    found = false;
+    handle = _findfirst( *this, &fileinfo );
+    if( handle != -1 ) {
+        rc = 0;
+        while( rc != -1 ) {
+            if( (fileinfo.attrib & (_A_HIDDEN | _A_SYSTEM | _A_SUBDIR | _A_VOLID)) == 0 ) {
+                if( attribs != NULL ) {
+                    *attribs = fileinfo.attrib;
+                }
+                found = true;
+                break;
+            }
+            rc = _findnext( handle, &fileinfo );
         }
+        _findclose( handle );
     }
-    #undef FIND_STYLE
-    #ifndef __WINDOWS__
-    _dos_findclose( &fileinfo );
-    #endif
-    return( rc == 0 );
+    return( found );
 }
 #endif
 
@@ -507,6 +512,7 @@ static bool isLongDirName( char* dirNames, const char *pathsep )
         }
         aDirName = strtok( NULL, pathsep );
     }
+    free( cpDirNames );
     return( rc );
 }
 
@@ -536,7 +542,7 @@ void WEXPORT WFileName::removeQuotes( char ch )
 void WEXPORT WFileName::addQuotes( char ch )
 {
     size_t len = size();
-    char* quotedName = new char[len + 3];
+    char* quotedName = new char [len + 3];
     quotedName[0] = ch;
     for( size_t i=0; i<len; i++ ) {
         quotedName[i + 1] = (*this)[i];
@@ -544,7 +550,7 @@ void WEXPORT WFileName::addQuotes( char ch )
     quotedName[len + 1] = ch;
     quotedName[len + 2] = '\0';
     (*this) = quotedName;
-    delete [] quotedName;
+    delete[] quotedName;
 }
 
 bool WEXPORT WFileName::legal() const
@@ -661,7 +667,7 @@ char WEXPORT WFileName::setPathSep( char pathsep )
 void WEXPORT WFileName::normalize()
 {
     if( PATHSEP_CHAR == '/' ) {
-        
+
     } else {
 
     }
@@ -693,7 +699,7 @@ bool WEXPORT WFileName::addPath( const char *path )
 
 #ifdef __WATCOMC__
 // Complain about defining trivial destructor inside class
-// definition only for warning levels above 8 
+// definition only for warning levels above 8
 #pragma warning 657 9
 #endif
 

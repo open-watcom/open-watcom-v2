@@ -42,4 +42,7 @@
 
 #include "ppopsdef.h"
 
+#undef PPOPNM
+#undef PPOPCG
+
 #endif

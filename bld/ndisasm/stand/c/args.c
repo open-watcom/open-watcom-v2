@@ -58,28 +58,20 @@ static const char * const banner[]={
     NULL
 };
 
-extern wd_options               Options;
-extern char                     LabelChar;
-extern char                     *ObjFileName;
-extern char                     *ListFileName;
-extern char                     *SourceFileName;
-extern bool                     source_mix;
-extern dis_format_flags         DFormat;
-
 static void printUsage( int msg )
 {
     int                 id;
     const char * const  *text;
     char                buff[MAX_RESOURCE_SIZE];
 
-    ChangePrintDest( STDERR_FILENO );
+    ChangePrintDest( stderr );
     if( msg != 0 ) {
         BufferMsg( msg );
         BufferConcatNL();
         BufferConcatNL();
         BufferPrint();
     }
-    for( text = banner; *text != '\0'; ++text ) {
+    for( text = banner; *text != NULL; ++text ) {
         Print( *text );
         Print( "\n" );
     }
@@ -315,7 +307,10 @@ return_val HandleArgs( void )
                     break;
                 default:
                     BufferMsg( INVALID_OPTION );
-                    BufferStore( "  -%c\n\n", *p );
+                    BufferConcat( "  -" );
+                    BufferConcatChar( *p );
+                    BufferConcatNL();
+                    BufferConcatNL();
                     BufferPrint();
                     printUsage( 0 );
                     error = RC_ERROR;

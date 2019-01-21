@@ -103,7 +103,7 @@ enum {
 /*
     Common overlay routines
 */
-#pragma aux __OvlExit__ aborts;
+#pragma aux __OvlExit__ __aborts
 extern  void        __near __OvlExit__( unsigned );
 extern  tiny_ret_t  __near __OvlSeek__( tiny_handle_t, unsigned long );
 extern  tiny_ret_t  __near __OvlRead__( tiny_handle_t, void __far *, unsigned );

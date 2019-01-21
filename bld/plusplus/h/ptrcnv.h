@@ -39,18 +39,18 @@
 
 typedef struct                  // PTRCNV -- information related to conversion
 {
-    TYPE pted_src;              // - source: type of object pointed at
-    TYPE pted_tgt;              // - target: type of object pointed at
-    type_flag flags_src;        // - source: flags
-    type_flag flags_tgt;        // - target: flags
-    unsigned converts        :1;// - true ==> implicit conversion ok
-    unsigned to_base         :1;// - true ==> conversion to base ptr
-    unsigned to_derived      :1;// - true ==> conversion to derived ptr
-    unsigned to_void         :1;// - true ==> conversion to void* ptr
-    unsigned cv_err_0        :1;// - true ==> CV mismatch on level 0
-    unsigned ptr_integral_ext:1;// - true ==> ptr->integer extension
-    unsigned reint_cast_ok   :1;// - true ==> reinterpret_cast ok
-    unsigned :0;                // alignment only
+    TYPE        pted_src;                   // - source: type of object pointed at
+    TYPE        pted_tgt;                   // - target: type of object pointed at
+    type_flag   flags_src;                  // - source: flags
+    type_flag   flags_tgt;                  // - target: flags
+    unsigned    converts            : 1;    // - true ==> implicit conversion ok
+    unsigned    to_base             : 1;    // - true ==> conversion to base ptr
+    unsigned    to_derived          : 1;    // - true ==> conversion to derived ptr
+    unsigned    to_void             : 1;    // - true ==> conversion to void* ptr
+    unsigned    cv_err_0            : 1;    // - true ==> CV mismatch on level 0
+    unsigned    ptr_integral_ext    : 1;    // - true ==> ptr->integer extension
+    unsigned    reint_cast_ok       : 1;    // - true ==> reinterpret_cast ok
+    unsigned                        : 0;    // alignment only
 } PTRCNV;
 
 // PROTOTYPES

@@ -76,7 +76,7 @@ static char     currTmpName[TMP_NAME_LEN];
 static char     checkFileName[LOCK_NAME_LEN] = AS_FILE EXTRA_EXT "a" AS_FILE_EXT;
 static char     checkFileTmpName[LOCK_NAME_LEN] = AS_FILE EXTRA_EXT "at" EXTRA_EXT AS_FILE_EXT;
 static char     lockFileName[LOCK_NAME_LEN] = AS_LOCK EXTRA_EXT "a" EXTRA_EXT AS_FILE_EXT;
-static int      lockFileHandle;
+static int      lockFileHandle = -1;
 
 /*
  * GetCurrentFilePath - build backup path from file name
@@ -139,7 +139,7 @@ void DoAutoSave( void )
     char        path2[FILENAME_MAX];
     char        tmp[FILENAME_MAX];
     bool        quiet;
-    FILE        *f;
+    FILE        *fp;
     vi_rc       rc;
     status_type lastst;
 
@@ -182,10 +182,10 @@ void DoAutoSave( void )
         GetCurrentFilePath( path2 );
         CurrentFile->been_autosaved = true;
         MakeTmpPath( tmp, checkFileName );
-        f = fopen( tmp, "a" );
-        if( f != NULL ) {
-            MyFprintf( f, "%s %s\n", path, path2 );
-            fclose( f );
+        fp = fopen( tmp, "a" );
+        if( fp != NULL ) {
+            MyFprintf( fp, "%s %s\n", path, path2 );
+            fclose( fp );
         }
     }
 
@@ -221,29 +221,29 @@ bool LostFileCheck( void )
     char        path[FILENAME_MAX];
     vi_key      key;
     char        ch;
-    int         off;
-    int         handle = 0;
+    size_t      off;
+    int         handle = -1;
 
     MakeTmpPath( path, lockFileName );
     off = strlen( path ) - 5;
     for( ch = START_CHAR; ch <= END_CHAR; ch++ ) {
         path[off] = ch;
         handle = sopen3( path, O_RDONLY | O_TEXT, SH_DENYRW );
-        if( handle > 0 ) {
-            MakeTmpPath( path, checkFileName );
+        if( handle < 0 )
+            continue;
+        MakeTmpPath( path, checkFileName );
+        path[off] = ch;
+        if( access( path, F_OK ) == -1 ) {
+            MakeTmpPath( path, lockFileName );
             path[off] = ch;
-            if( access( path, F_OK ) == -1 ) {
-                MakeTmpPath( path, lockFileName );
-                path[off] = ch;
-                close( handle );
-                handle = -1;
-                remove( path );
-            } else {
-                break;
-            }
+            close( handle );
+            handle = -1;
+            remove( path );
+        } else {
+            break;
         }
     }
-    if( handle > 0 ) {
+    if( handle >= 0 ) {
         close( handle );
         if( !EditFlags.RecoverLostFiles ) {
             if( !EditFlags.IgnoreLostFiles ) {
@@ -286,15 +286,15 @@ void AutoSaveInit( void )
     char        path2[FILENAME_MAX];
     char        as_path[FILENAME_MAX];
     char        asl_path[FILENAME_MAX];
-    int         len;
+    size_t      len;
     int         cnt;
-    FILE        *f;
+    FILE        *fp;
     int         pid;
     int         ch;
     int         handle;
-    int         off;
+    size_t      off;
 //    int         old_len;
-    int         i;
+    size_t      i;
     char        *p;
 
     /*
@@ -311,7 +311,7 @@ void AutoSaveInit( void )
     memcpy( &currTmpName[TMP_FNAME_LEN - len], path, len );
 #ifdef __QNX__
     {
-        int     len2, len3;
+        size_t  len2, len3;
         int     nid, uid;
 
         nid = getnid();
@@ -338,15 +338,14 @@ void AutoSaveInit( void )
         MakeTmpPath( asl_path, lockFileName );
         off = strlen( as_path ) - 5;
         for( ch = START_CHAR; ch <= END_CHAR; ch++ ) {
-            as_path[off] = ch;
-            asl_path[off] = ch;
+            as_path[off] = (char)ch;
+            asl_path[off] = (char)ch;
             handle = sopen3( as_path, O_RDONLY | O_TEXT, SH_DENYRW );
-            if( handle < 0 ) {
+            if( handle < 0 )
                 continue;
-            }
-            f = fdopen( handle, "r" );
-            if( f != NULL ) {
-                while( (p = fgets( path2, FILENAME_MAX, f )) != NULL ) {
+            fp = fdopen( handle, "r" );
+            if( fp != NULL ) {
+                while( (p = fgets( path2, FILENAME_MAX, fp )) != NULL ) {
                     for( i = strlen( p ); i && isWSorCtrlZ( p[i - 1] ); --i ) {
                         p[i - 1] = '\0';
                     }
@@ -361,7 +360,7 @@ void AutoSaveInit( void )
                     FTSRunCmds( p );
                     cnt++;
                 }
-                fclose( f );
+                fclose( fp );       // close handle
                 remove( as_path );
             } else {
                 close( handle );
@@ -384,9 +383,9 @@ void AutoSaveInit( void )
     len = strlen( path ) - strlen( lockFileName );
     off = len + CHAR_OFF;
     for( ch = START_CHAR; ch <= END_CHAR; ch++ ) {
-        path[off] = ch;
+        path[off] = (char)ch;
         lockFileHandle = sopen4( path, O_CREAT | O_TRUNC | O_RDWR | O_TEXT, SH_DENYRW, PMODE_RW );
-        if( lockFileHandle > 0 ) {
+        if( lockFileHandle >= 0 ) {
             break;
         }
     }
@@ -395,9 +394,9 @@ void AutoSaveInit( void )
         MyPrintf( "Error opening temp file - '%s'\n", strerror( errno ) );
         ExitEditor( -1 );
     }
-    lockFileName[CHAR_OFF] = ch;
-    checkFileName[CHAR_OFF] = ch;
-    checkFileTmpName[CHAR_OFF] = ch;
+    lockFileName[CHAR_OFF] = (char)ch;
+    checkFileName[CHAR_OFF] = (char)ch;
+    checkFileTmpName[CHAR_OFF] = (char)ch;
 
 } /* AutoSaveInit */
 
@@ -442,14 +441,14 @@ void SetNextAutoSaveTime( void )
  */
 void RemoveFromAutoSaveList( void )
 {
-    FILE        *f, *f2;
+    FILE        *fpi, *fpo;
     char        as_path[FILENAME_MAX];
     char        as2_path[FILENAME_MAX];
     char        path[FILENAME_MAX];
     char        path2[FILENAME_MAX];
     char        data[FILENAME_MAX];
 //    bool        found;
-    int         i;
+    size_t      i;
     char        *p;
 
     if( EditVars.AutoSaveInterval == 0 ) {
@@ -468,16 +467,16 @@ void RemoveFromAutoSaveList( void )
     GetCurrentFilePath( path );
 
 //    found = false;
-    f = fopen( as_path, "r" );
-    if( f == NULL ) {
+    fpi = fopen( as_path, "r" );
+    if( fpi == NULL ) {
         return;
     }
-    f2 = fopen( as2_path, "w" );
-    if( f2 == NULL ) {
-        fclose( f );
+    fpo = fopen( as2_path, "w" );
+    if( fpo == NULL ) {
+        fclose( fpi );
         return;
     }
-    while( (p = fgets( path2, FILENAME_MAX, f )) != NULL ) {
+    while( (p = fgets( path2, FILENAME_MAX, fpi )) != NULL ) {
         for( i = strlen( p ); i && isWSorCtrlZ( p[i - 1] ); --i ) {
             p[i - 1] = '\0';
         }
@@ -488,19 +487,19 @@ void RemoveFromAutoSaveList( void )
             if( strcmp( data, p ) == 0 ) {
 //                found = true;
                 remove( p );
-                while( fgets( data, FILENAME_MAX, f ) != NULL ) {
+                while( fgets( data, FILENAME_MAX, fpi ) != NULL ) {
                     for( i = strlen( data ); i && isWSorCtrlZ( data[i - 1] ); --i ) {
                         data[i - 1] = '\0';
                     }
-                    MyFprintf( f2, "%s\n", data );
+                    MyFprintf( fpo, "%s\n", data );
                 }
                 break;
             }
         }
-        MyFprintf( f2, "%s %s\n", data, p );
+        MyFprintf( fpo, "%s %s\n", data, p );
     }
-    fclose( f );
-    fclose( f2 );
+    fclose( fpi );
+    fclose( fpo );
     remove( as_path );
     rename( as2_path, as_path );
 

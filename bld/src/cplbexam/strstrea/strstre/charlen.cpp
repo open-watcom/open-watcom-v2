@@ -1,6 +1,6 @@
 #include <strstrea.h>
 
-void main( void ) {
+int main( void ) {
 
     char    *pch, s[20];
     int      len = 20;
@@ -15,5 +15,5 @@ void main( void ) {
     test >> s;      // skip the white space and read the other string
     cout  << "The second string in the strstream object is \""
           << s << "\"" << endl;
-    delete pch;
+    delete[] pch;
 }

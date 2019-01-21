@@ -30,6 +30,9 @@
 ****************************************************************************/
 
 
+#include "wnoret.h"
+
+
 typedef unsigned_8 dbg_err_flags; enum {
     ERR_NONE    = 0x00,
     ERR_LOC     = 0x01,
@@ -37,6 +40,9 @@ typedef unsigned_8 dbg_err_flags; enum {
     ERR_SILENT  = 0x04,
 };
 
-extern void Error( dbg_err_flags, char *, ... );
+/* this function never return to the caller */
+NO_RETURN( extern void Error( dbg_err_flags, char *, ... ) );
+/* this function return to the caller */
+extern void ErrorRet( dbg_err_flags, char *, ... );
 extern void PrevError( const char *msg );
 extern void StartupErr( const char *err );

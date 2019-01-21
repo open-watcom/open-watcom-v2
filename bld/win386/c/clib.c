@@ -82,6 +82,11 @@ void __far __pascal _clib_intr( int inter_no, union REGPACK __far *regs )
     _fintr( inter_no, regs );
 }
 
+void __far __pascal _clib_intrf( int inter_no, union REGPACK __far *regs )
+{
+    _fintrf( inter_no, regs );
+}
+
 /*
  * _dos functions are here - note that all pointers to ints must be
  * pointers to longs, since we are passing the results back to a 32

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -51,17 +52,17 @@ void InitImpCueInfo( imp_image_handle *iih )
 
     list = iih->cue_map;
     InitCueList( list );
-    list->im = IMH_NOMOD;
+    list->imh = IMH_NOMOD;
     list->last.mach.segment = 0;
     list->last.mach.offset = 0;
     list->last.next_offset = 0;
 }
 
 
-static void ResetCueInfo(  cue_list *list )
-/*****************************************/
+static void ResetCueInfo( cue_list *list )
+/****************************************/
 {
-    list->im = IMH_NOMOD;
+    list->imh = IMH_NOMOD;
     list->last.mach.segment = 0;
     list->last.mach.offset = 0;
     list->last.next_offset = 0;
@@ -76,7 +77,7 @@ bool FiniImpCueInfo( imp_image_handle *iih )
     cue_list    *list;
 
     list = iih->cue_map;
-    if( list->im != IMH_NOMOD ) {
+    if( list->imh != IMH_NOMOD ) {
         ResetCueInfo( list );
         ret = true;
     } else {
@@ -86,13 +87,13 @@ bool FiniImpCueInfo( imp_image_handle *iih )
 }
 
 
-imp_mod_handle DIPIMPENTRY( CueMod )( imp_image_handle *iih, imp_cue_handle *imp_cueh )
-/*************************************************************************************/
+imp_mod_handle DIPIMPENTRY( CueMod )( imp_image_handle *iih, imp_cue_handle *icueh )
+/**********************************************************************************/
 {
     /* unused parameters */ (void)iih;
 
     /* Return the module the source cue comes from. */
-     return( imp_cueh->im );
+     return( icueh->imh );
 }
 
 
@@ -175,8 +176,8 @@ static bool IsRelPathname( const char *name )
 }
 
 
-size_t DIPIMPENTRY( CueFile )( imp_image_handle *iih, imp_cue_handle *imp_cueh, char *buff, size_t buff_size )
-/************************************************************************************************************/
+size_t DIPIMPENTRY( CueFile )( imp_image_handle *iih, imp_cue_handle *icueh, char *buff, size_t buff_size )
+/*********************************************************************************************************/
 {
     char            *name;
     file_walk_name  wlk;
@@ -187,14 +188,14 @@ size_t DIPIMPENTRY( CueFile )( imp_image_handle *iih, imp_cue_handle *imp_cueh, 
     mod_info        *modinfo;
 
     DRSetDebug( iih->dwarf->handle );    /* must do at each call into dwarf */
-    modinfo = IMH2MODI( iih, imp_cueh->im );
+    modinfo = IMH2MODI( iih, icueh->imh );
     stmts = modinfo->stmts;
     cu_tag = modinfo->cu_tag;
     if( stmts == DRMEM_HDL_NULL || cu_tag == DRMEM_HDL_NULL ) {
         DCStatus( DS_FAIL );
         return( 0 );
     }
-    wlk.index = imp_cueh->fno;
+    wlk.index = icueh->fno;
     wlk.ret = NULL;
     wlk.num_dirs = 0;
     wlk.dirs = NULL;
@@ -243,8 +244,8 @@ static bool TheFirstCue( void *_wlk, dr_line_data *curr )
 }
 
 
-static bool FirstCue( drmem_hdl stmts, uint_16 fno, imp_cue_handle *imp_cueh )
-/****************************************************************************/
+static bool FirstCue( drmem_hdl stmts, uint_16 fno, imp_cue_handle *icueh )
+/*************************************************************************/
 {
     bool            cont;
     first_cue_wlk   wlk;
@@ -252,13 +253,13 @@ static bool FirstCue( drmem_hdl stmts, uint_16 fno, imp_cue_handle *imp_cueh )
     wlk.fno = fno;
     cont = DRWalkLines( stmts, SEG_CODE, TheFirstCue, &wlk );
     if( cont == false ) {
-        imp_cueh->fno = wlk.first.file;
-        imp_cueh->line = wlk.first.line;
-//      imp_cueh->col = wlk.first.col;
-        imp_cueh->col = 0;
-        imp_cueh->a = NilAddr;
-        imp_cueh->a.mach.segment = wlk.first.seg;
-        imp_cueh->a.mach.offset = wlk.first.offset;
+        icueh->fno = wlk.first.file;
+        icueh->line = wlk.first.line;
+//      icueh->col = wlk.first.col;
+        icueh->col = 0;
+        icueh->a = NilAddr;
+        icueh->a.mach.segment = wlk.first.seg;
+        icueh->a.mach.offset = wlk.first.offset;
     }
     return( cont );
 }
@@ -267,9 +268,9 @@ static bool FirstCue( drmem_hdl stmts, uint_16 fno, imp_cue_handle *imp_cueh )
 typedef struct {
     drmem_hdl           stmts;
     imp_image_handle    *iih;
-    imp_mod_handle      im;
+    imp_mod_handle      imh;
     DIP_IMP_CUE_WALKER  *wk;
-    imp_cue_handle      *imp_cueh;
+    imp_cue_handle      *icueh;
     void                *d;
     walk_result         wr;
 } file_walk_cue;
@@ -279,19 +280,19 @@ static bool ACueFileNum( void *_fc, dr_line_file *curr )
 {
     file_walk_cue   *fc = _fc;
     bool            cont;
-    imp_cue_handle  *imp_cueh;
+    imp_cue_handle  *icueh;
     dr_dbg_handle   saved;
 
-    imp_cueh = fc->imp_cueh;
-    imp_cueh->a = NilAddr;
-    imp_cueh->im = fc->im;
-    if( FirstCue( fc->stmts, curr->index, imp_cueh ) ) {
-        imp_cueh->fno = curr->index;
-        imp_cueh->line = 1;
-        imp_cueh->col = 0;
+    icueh = fc->icueh;
+    icueh->a = NilAddr;
+    icueh->imh = fc->imh;
+    if( FirstCue( fc->stmts, curr->index, icueh ) ) {
+        icueh->fno = curr->index;
+        icueh->line = 1;
+        icueh->col = 0;
     }
     saved = DRGetDebug();
-    fc->wr = fc->wk( fc->iih, imp_cueh, fc->d );
+    fc->wr = fc->wk( fc->iih, icueh, fc->d );
     DRSetDebug( saved );
     if( fc->wr == WR_CONTINUE ) {
         cont = true;
@@ -302,24 +303,24 @@ static bool ACueFileNum( void *_fc, dr_line_file *curr )
 }
 
 
-walk_result DIPIMPENTRY( WalkFileList )( imp_image_handle *iih, imp_mod_handle im,
-                          DIP_IMP_CUE_WALKER *wk, imp_cue_handle *imp_cueh, void *d )
-/***********************************************************************************/
+walk_result DIPIMPENTRY( WalkFileList )( imp_image_handle *iih, imp_mod_handle imh,
+                          DIP_IMP_CUE_WALKER *wk, imp_cue_handle *icueh, void *d )
+/********************************************************************************/
 {
     file_walk_cue   wlk;
     drmem_hdl       stmts;
 
     DRSetDebug( iih->dwarf->handle );    /* must do at each call into DWARF */
-    stmts = IMH2MODI( iih, im )->stmts;
+    stmts = IMH2MODI( iih, imh )->stmts;
     if( stmts == DRMEM_HDL_NULL ) {
         DCStatus( DS_FAIL );
         return( WR_CONTINUE );
     }
     wlk.stmts = stmts;
     wlk.iih = iih;
-    wlk.im = im;
+    wlk.imh = imh;
     wlk.wk = wk;
-    wlk.imp_cueh = imp_cueh;
+    wlk.icueh = icueh;
     wlk.d = d;
     wlk.wr = WR_CONTINUE;
     DRWalkLFiles( stmts, ACueFileNum, &wlk, ACueDir, NULL );
@@ -327,12 +328,12 @@ walk_result DIPIMPENTRY( WalkFileList )( imp_image_handle *iih, imp_mod_handle i
 }
 
 
-cue_fileid DIPIMPENTRY( CueFileId )( imp_image_handle *iih, imp_cue_handle *imp_cueh )
-/************************************************************************************/
+cue_fileid DIPIMPENTRY( CueFileId )( imp_image_handle *iih, imp_cue_handle *icueh )
+/*********************************************************************************/
 {
     /* unused parameters */ (void)iih;
 
-    return( imp_cueh->fno );
+    return( icueh->fno );
 }
 
 /*******************************/
@@ -386,28 +387,28 @@ static void LoadCueMap( drmem_hdl stmts, address *addr, cue_list *list )
     DCStatus be called in this case). Otherwise DS_OK should be returned
     unless an error occurred.
 */
-dip_status DIPIMPENTRY( CueAdjust )( imp_image_handle *iih,
-    imp_cue_handle *src_imp_cueh, int adj, imp_cue_handle *dst_imp_cueh )
-/***********************************************************************/
+dip_status DIPIMPENTRY( CueAdjust )( imp_image_handle *iih, imp_cue_handle *src_icueh,
+                                                int adj, imp_cue_handle *dst_icueh )
+/************************************************************************************/
 {
     drmem_hdl       stmts;
     dfline_search   start_state;
     dfline_find     find;
-    dip_status      ret;
+    dip_status      ds;
     cue_item        cue;
     cue_list        *cue_map;
     address         map_addr;
 
     DRSetDebug( iih->dwarf->handle );    /* must do at each call into DWARF */
-    stmts = IMH2MODI( iih, src_imp_cueh->im )->stmts;
+    stmts = IMH2MODI( iih, src_icueh->imh )->stmts;
     if( stmts == DRMEM_HDL_NULL ) {
         DCStatus( DS_FAIL );
-        return( DS_ERR|DS_FAIL  );
+        return( DS_ERR | DS_FAIL  );
     }
     cue_map = iih->cue_map;
-    if( cue_map->im != src_imp_cueh->im ) {
+    if( cue_map->imh != src_icueh->imh ) {
         ResetCueInfo( cue_map );
-        cue_map->im = src_imp_cueh->im;
+        cue_map->imh = src_icueh->imh;
         map_addr = NilAddr;
         LoadCueMap( stmts, &map_addr, cue_map );
     }
@@ -417,49 +418,50 @@ dip_status DIPIMPENTRY( CueAdjust )( imp_image_handle *iih,
     } else {
         start_state = LOOK_HIGH;
     }
-    cue.fno = src_imp_cueh->fno;
-    cue.line = src_imp_cueh->line;
-    cue.col = src_imp_cueh->col;
-    cue.mach = src_imp_cueh->a.mach;
+    cue.fno = src_icueh->fno;
+    cue.line = src_icueh->line;
+    cue.col = src_icueh->col;
+    cue.mach = src_icueh->a.mach;
     find = LINE_NOT;
     while( 0 != adj ) {
         find = FindCue( cue_map, &cue, start_state );
-        if( find == LINE_NOT ) break;
+        if( find == LINE_NOT )
+            break;
         --adj;
     }
-    dst_imp_cueh->im = src_imp_cueh->im;
-    dst_imp_cueh->fno = cue.fno;
-    dst_imp_cueh->line = cue.line;
-    dst_imp_cueh->col = cue.col;
-    dst_imp_cueh->a.mach = cue.mach;
-    ret = DS_FAIL;
+    dst_icueh->imh = src_icueh->imh;
+    dst_icueh->fno = cue.fno;
+    dst_icueh->line = cue.line;
+    dst_icueh->col = cue.col;
+    dst_icueh->a.mach = cue.mach;
+    ds = DS_FAIL;
     switch( find ) {
     case LINE_NOT:
         DCStatus( DS_FAIL );
-        ret = DS_ERR | DS_FAIL;
+        ds = DS_ERR | DS_FAIL;
         break;
     case LINE_WRAPPED:
-        ret = DS_WRAPPED;
+        ds = DS_WRAPPED;
         break;
     case LINE_FOUND:
-        ret = DS_OK;
+        ds = DS_OK;
         break;
     }
-    return( ret );
+    return( ds );
 }
 
 
-unsigned long DIPIMPENTRY( CueLine )( imp_image_handle *iih, imp_cue_handle *imp_cueh )
-/*************************************************************************************/
+unsigned long DIPIMPENTRY( CueLine )( imp_image_handle *iih, imp_cue_handle *icueh )
+/**********************************************************************************/
 {
     /* unused parameters */ (void)iih;
 
-    return( imp_cueh->line );
+    return( icueh->line );
 }
 
 
-unsigned DIPIMPENTRY( CueColumn )( imp_image_handle *iih, imp_cue_handle *imp_cueh )
-/**********************************************************************************/
+unsigned DIPIMPENTRY( CueColumn )( imp_image_handle *iih, imp_cue_handle *icueh )
+/*******************************************************************************/
 {
     /* unused parameters */ (void)iih;
 
@@ -467,27 +469,27 @@ unsigned DIPIMPENTRY( CueColumn )( imp_image_handle *iih, imp_cue_handle *imp_cu
      * is no column number associated with the cue, or an error occurs in
      * getting the information.
      */
-    return( imp_cueh->col );
+    return( icueh->col );
 }
 
 
-address DIPIMPENTRY( CueAddr )( imp_image_handle *iih, imp_cue_handle *imp_cueh )
-/*******************************************************************************/
+address DIPIMPENTRY( CueAddr )( imp_image_handle *iih, imp_cue_handle *icueh )
+/****************************************************************************/
 {
     address     ret;
     /* Return the address of source cue. Return NilAddr if there
      * is no address associated with the cue, or an error occurs in
      * getting the information.
      */
-    ret = imp_cueh->a;
+    ret = icueh->a;
     DCMapAddr( &ret.mach, iih->dcmap );
     return( ret );
 }
 
 
 search_result DIPIMPENTRY( AddrCue )( imp_image_handle *iih,
-                imp_mod_handle im, address addr, imp_cue_handle *imp_cueh )
-/*************************************************************************/
+                imp_mod_handle imh, address addr, imp_cue_handle *icueh )
+/***********************************************************************/
 {
     /* Search for the closest cue in the given module that has an address
      * less then or equal to the given address. If there is no such cue
@@ -500,36 +502,36 @@ search_result DIPIMPENTRY( AddrCue )( imp_image_handle *iih,
     cue_item        cue;
     drmem_hdl       stmts;
 
-    if( im == IMH_NOMOD ) {
+    if( imh == IMH_NOMOD ) {
         DCStatus( DS_FAIL );
         return( SR_NONE );
     }
     DRSetDebug( iih->dwarf->handle ); /* must do at each call into dwarf */
-    stmts = IMH2MODI( iih, im )->stmts;
+    stmts = IMH2MODI( iih, imh )->stmts;
     if( stmts == DRMEM_HDL_NULL ) {
         return( SR_NONE );
     }
     map_addr = addr;
     cue_map = iih->cue_map;
     Real2Map( iih->addr_map, &map_addr );
-    if( cue_map->im != im ) {
+    if( cue_map->imh != imh ) {
         ResetCueInfo( cue_map );
-        cue_map->im = im;
+        cue_map->imh = imh;
         LoadCueMap( stmts, &map_addr, cue_map );
     }
-    imp_cueh->im = im;
-    imp_cueh->fno = 0;
-    imp_cueh->line = 0;
-    imp_cueh->col = 0;
-    imp_cueh->a = NilAddr;
+    icueh->imh = imh;
+    icueh->fno = 0;
+    icueh->line = 0;
+    icueh->col = 0;
+    icueh->a = NilAddr;
     ret = SR_NONE;
     if( map_addr.mach.segment == cue_map->last.mach.segment
       && map_addr.mach.offset  >= cue_map->last.mach.offset
       && map_addr.mach.offset  <  cue_map->last.next_offset ) {
-        imp_cueh->fno = cue_map->last.fno;
-        imp_cueh->line = cue_map->last.line;
-        imp_cueh->col = cue_map->last.col;
-        imp_cueh->a.mach = cue_map->last.mach;
+        icueh->fno = cue_map->last.fno;
+        icueh->line = cue_map->last.line;
+        icueh->col = cue_map->last.col;
+        icueh->a.mach = cue_map->last.mach;
         if( cue_map->last.mach.offset == map_addr.mach.offset ) {
             ret = SR_EXACT;
         } else {
@@ -538,10 +540,10 @@ search_result DIPIMPENTRY( AddrCue )( imp_image_handle *iih,
         return( ret );
      }
     if( FindCueOffset( cue_map, &map_addr.mach, &cue ) ) {
-        imp_cueh->fno = cue.fno;
-        imp_cueh->line = cue.line;
-        imp_cueh->col = cue.col;
-        imp_cueh->a.mach = cue.mach;
+        icueh->fno = cue.fno;
+        icueh->line = cue.line;
+        icueh->col = cue.col;
+        icueh->a.mach = cue.mach;
         if( cue.mach.offset == map_addr.mach.offset ) {
             ret = SR_EXACT;
         } else {
@@ -554,9 +556,9 @@ search_result DIPIMPENTRY( AddrCue )( imp_image_handle *iih,
 
 
 search_result DIPIMPENTRY( LineCue )( imp_image_handle *iih,
-                imp_mod_handle im, cue_fileid file, unsigned long line,
-                unsigned column, imp_cue_handle *imp_cueh )
-/**********************************************************************/
+                imp_mod_handle imh, cue_fileid file, unsigned long line,
+                unsigned column, imp_cue_handle *icueh )
+/*********************************************************************/
 {
     search_result   ret;
     dfline_find     find;
@@ -566,19 +568,19 @@ search_result DIPIMPENTRY( LineCue )( imp_image_handle *iih,
     address         map_addr;
     cue_item        cue;
 
-    if( im == IMH_NOMOD ) {
+    if( imh == IMH_NOMOD ) {
         DCStatus( DS_FAIL );
         return( SR_NONE );
     }
     DRSetDebug( iih->dwarf->handle );    /* must do at each call into DWARF */
-    stmts = IMH2MODI( iih, im )->stmts;
+    stmts = IMH2MODI( iih, imh )->stmts;
     if( stmts == DRMEM_HDL_NULL ) {
         return( SR_NONE );
     }
-    cue_map= iih->cue_map;
-    if( cue_map->im != im ) {
+    cue_map = iih->cue_map;
+    if( cue_map->imh != imh ) {
         ResetCueInfo( cue_map );
-        cue_map->im = im;
+        cue_map->imh = imh;
         map_addr = NilAddr;
         LoadCueMap( stmts, &map_addr, cue_map );
     }
@@ -591,18 +593,18 @@ search_result DIPIMPENTRY( LineCue )( imp_image_handle *iih,
     cue.col = (uint_16)column;
     cue.mach.offset = 0;
     cue.mach.segment = 0;
-    imp_cueh->a = NilAddr;
+    icueh->a = NilAddr;
     if( line == 0 ) {
         what = LOOK_FILE;
     } else {
         what = LOOK_CLOSEST;
     }
     find = FindCue( cue_map, &cue, what );
-    imp_cueh->im = im;
-    imp_cueh->fno = cue.fno;
-    imp_cueh->line = cue.line;
-    imp_cueh->col = cue.col;
-    imp_cueh->a.mach = cue.mach;
+    icueh->imh = imh;
+    icueh->fno = cue.fno;
+    icueh->line = cue.line;
+    icueh->col = cue.col;
+    icueh->a.mach = cue.mach;
     ret = SR_NONE;
     switch( find ) {
     case LINE_CLOSEST:
@@ -619,8 +621,8 @@ search_result DIPIMPENTRY( LineCue )( imp_image_handle *iih,
 }
 
 
-int DIPIMPENTRY( CueCmp )( imp_image_handle *iih, imp_cue_handle *imp_cueh1, imp_cue_handle *imp_cueh2 )
-/******************************************************************************************************/
+int DIPIMPENTRY( CueCmp )( imp_image_handle *iih, imp_cue_handle *icueh1, imp_cue_handle *icueh2 )
+/************************************************************************************************/
 {
     /* unused parameters */ (void)iih;
 
@@ -634,21 +636,21 @@ int DIPIMPENTRY( CueCmp )( imp_image_handle *iih, imp_cue_handle *imp_cueh1, imp
      * The reason for the constraints is so that a client can sort a
      * list of handles and binary search them.
      */
-    if( imp_cueh1->im < imp_cueh2->im )
+    if( icueh1->imh < icueh2->imh )
         return( -1 );
-    if( imp_cueh1->im > imp_cueh2->im )
+    if( icueh1->imh > icueh2->imh )
         return( 1 );
-    if( imp_cueh1->fno < imp_cueh2->fno )
+    if( icueh1->fno < icueh2->fno )
         return( -1 );
-    if( imp_cueh1->fno > imp_cueh2->fno )
+    if( icueh1->fno > icueh2->fno )
         return( 1 );
-    if( imp_cueh1->line < imp_cueh2->line )
+    if( icueh1->line < icueh2->line )
         return( -1 );
-    if( imp_cueh1->line > imp_cueh2->line )
+    if( icueh1->line > icueh2->line )
         return( 1 );
-    if( imp_cueh1->col < imp_cueh2->col )
+    if( icueh1->col < icueh2->col )
         return( -1 );
-    if( imp_cueh1->col > imp_cueh2->col )
+    if( icueh1->col > icueh2->col )
         return( 1 );
     return( 0 );
 }

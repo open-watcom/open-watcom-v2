@@ -246,8 +246,8 @@ typedef struct stmtno {
 // Notes:
 // ======
 
-// 1. A negative value in "name_len" identifies the symbol as a magic symbol.
-// 2. The "name_len" field is used to identify the class of magic symbol.
+// 1. MSB of "magic_flags" identifies the symbol as a magic symbol.
+// 2. The "magic_flags" field is used to identify the class of magic symbol.
 // 3. If _CPU == 8086, the "size" field is a multiple of 16 and the
 //    "typ" field is the size modulo 16 for common blocks.
 // 4. If _OPT_CG == _ON, the "typ" field contains the segment id of the common
@@ -264,7 +264,7 @@ typedef struct named_symbol {
       unsigned_16       xsize;          // extra size information for common
     } u1;                               // blocks
     union {
-        signed char     name_len;       // length of symbol name
+        byte            name_len;       // length of symbol name
         byte            magic_flags;    // information about the magic symbol
     } u2;
     union {

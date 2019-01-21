@@ -121,7 +121,7 @@ void WCloseDir( DIR * p_dir ) {
 int WDirReadNext( DIR * p_dir, char * s ) {
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-    char path[ 128 ];
+    char path[128];
     struct dirent * e_tmp = readdir( p_dir );
     if( e_tmp == NULL ) {
         return( NO_MORE_FILES );

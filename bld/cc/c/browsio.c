@@ -260,9 +260,9 @@ static void dw_write( dw_sectnum sect, const void *block, size_t len )
     bufnum = dw_sections[sect].offset / C_DWARF_BUFSIZE;
     endbufnum = ( dw_sections[sect].offset + len ) / C_DWARF_BUFSIZE;
     if( endbufnum >= dw_sections[sect].bufcount ) {
-        newbufptrs = (char **)CMemAlloc( ( endbufnum + 1 ) * sizeof( char ** ) );
+        newbufptrs = (char **)CMemAlloc( ( endbufnum + 1 ) * sizeof( char * ) );
         if( dw_sections[sect].bufptrs != NULL ) {
-            memcpy( newbufptrs, dw_sections[sect].bufptrs, dw_sections[sect].bufcount * sizeof( char ** ) );
+            memcpy( newbufptrs, dw_sections[sect].bufptrs, dw_sections[sect].bufcount * sizeof( char * ) );
             CMemFree( dw_sections[sect].bufptrs );
         }
         dw_sections[sect].bufptrs = newbufptrs;
@@ -424,6 +424,7 @@ dw_client DwarfInit( void )
     info.producer_name = DWARF_PRODUCER_ID " V1";
     memcpy( &info.exception_handler, Environment, sizeof( jmp_buf ) );
     info.funcs = cli_funcs;
+    info.abbrev_sym = NULL;
 
     relocValues[DW_W_LOW_PC] = 0x0;
     relocValues[DW_W_HIGH_PC] = 0x1;

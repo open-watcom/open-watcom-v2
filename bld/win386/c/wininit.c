@@ -84,7 +84,7 @@ struct  fpu_area {
 
 
 extern void BreakPoint( void );
-#pragma aux BreakPoint = "int 3";
+#pragma aux BreakPoint = "int 3"
 
 #include "pushpck1.h"
 struct wstart_vars {
@@ -473,8 +473,6 @@ bool Init32BitTask( HINSTANCE thishandle, HINSTANCE prevhandle, LPSTR cmdline, i
 } /* Init32BitTask */
 
 extern void RelocateDWORD( short, long, long );
-extern void RelocateWORD( short, long, short );
-
 #pragma aux RelocateDWORD = \
         "mov     es,si" \
         "shl     edx,16" \
@@ -482,14 +480,19 @@ extern void RelocateWORD( short, long, short );
         "shl     ecx,16" \
         "mov     cx,bx" \
         "add     es:[edx],ecx" \
-        parm [si] [ax dx] [bx cx] modify[es];
+    __parm      [__si] [__ax __dx] [__bx __cx] \
+    __value     \
+    __modify    [__es]
 
+extern void RelocateWORD( short, long, short );
 #pragma aux RelocateWORD = \
         "mov     es,si" \
         "shl     edx,16" \
         "mov     dx,ax" \
         "add     es:[edx],bx" \
-        parm [si] [ax dx] [bx] modify[es];
+    __parm      [__si] [__ax __dx] [__bx] \
+    __value     \
+    __modify    [__es]
 
 /*
  * CodeRelocate - relocate a given chunk of code

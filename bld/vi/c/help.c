@@ -33,31 +33,35 @@
 #include "vi.h"
 #ifdef __WIN__
   #include "wwinhelp.h"
+#else
+  #include "viuihelp.h"
 #endif
 
 #include "clibext.h"
 
 
 #ifndef __WIN__
-static char *helpCmds =
-    "COMmandline\0"
-    "KEYS\0"
-    "REGularexpressions\0"
-    "SCRipts\0"
-    "SETtings\0"
-    "STARTing\0"
-    "\0";
-#endif
+#define HELPCMDS() \
+    pick( "COMmandline",        "cmd.hlp" ) \
+    pick( "KEYS",               "key.hlp" ) \
+    pick( "REGularexpressions", "regexp.hlp" ) \
+    pick( "SCRipts",            "script.hlp" ) \
+    pick( "SETtings",           "set.hlp" ) \
+    pick( "STARTing",           "start.hlp" )
+
+static char HelpCmdTokens[] = {
+    #define pick(t,h)   t "\0"
+    HELPCMDS()
+    #undef pick
+};
 
 char *helpFiles[] = {
-    "cmd.hlp",
-    "key.hlp",
-    "regexp.hlp",
-    "script.hlp",
-    "set.hlp",
-    "start.hlp"
+    #define pick(t,h)   h,
+    HELPCMDS()
+    #undef pick
 };
 int nHelpFiles = sizeof( helpFiles ) / sizeof( char * );
+#endif
 
 
 /*
@@ -113,12 +117,12 @@ vi_rc DoHelp( const char *data )
     char        *tstr;
     int         token;
     vi_rc       rc;
-    char        path[FILENAME_MAX];
+    char        path[_MAX_PATH];
     char        tmp[MAX_STR];
     int         i;
 
     data = SkipLeadingSpaces( data );
-    token = Tokenize( helpCmds, data, false );
+    token = Tokenize( HelpCmdTokens, data, false );
     if( token == TOK_INVALID ) {
         if( data[0] == '\0' ) {
             strcpy( tmp, "Topics: " );
@@ -126,7 +130,7 @@ vi_rc DoHelp( const char *data )
                 if( i != 0 ) {
                     strcat( tmp, ", " );
                 }
-                strcat( tmp, GetTokenString( helpCmds, i ) );
+                strcat( tmp, GetTokenString( HelpCmdTokens, i ) );
             }
             Message1( "%s", tmp );
         } else {
@@ -146,7 +150,7 @@ vi_rc DoHelp( const char *data )
     if( rc != ERR_NO_ERR ) {
         return( rc );
     }
-    tstr = GetTokenString( helpCmds, token );
+    tstr = GetTokenString( HelpCmdTokens, token );
     strcpy( tmp, tstr );
     strlwr( tmp );
     strcat( tmp, " Help" );

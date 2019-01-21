@@ -147,7 +147,7 @@ int main( int argc, char **argv ) {
 #endif
     FILE        *in;
 #ifdef __WATCOMC__
-    int     mode;
+    mode_t  mode;
     int     cnt;
     char *  file_name;
     char    fname[_MAX_FNAME];

@@ -38,10 +38,11 @@
 extern void __int7( void );
 #pragma aux __int7 "*";
 
-extern  int gorealmode( void );
+extern unsigned short gorealmode( void );
 #pragma aux gorealmode = \
         "mov ah,30h" \
-        "int 21h";
+        "int 21h" \
+    __value [__ax]
 
 extern int DPMICheckVendorSpecificAPI( char __far * );
 #pragma aux DPMICheckVendorSpecificAPI = \
@@ -53,19 +54,25 @@ extern int DPMICheckVendorSpecificAPI( char __far * );
         "sbb eax,eax" \
         "pop ds" \
         "pop es" \
-        parm [ cx esi ] modify [ edi ] value[ eax ];
+    __parm      [__cx __esi] \
+    __value     [__eax] \
+    __modify    [__edi]
 
 extern int getcr0( void );
-#pragma aux getcr0 = "mov eax,cr0" value [ eax ];
+#pragma aux getcr0 = \
+        "mov eax,cr0" \
+    __value [__eax]
 
 extern void putcr0( int );
-#pragma aux putcr0 = "mov cr0,eax" parm [ eax ];
+#pragma aux putcr0 = \
+        "mov cr0,eax" \
+    __parm [__eax]
 
 extern unsigned char IsWindows( void );
 #pragma aux IsWindows = \
         "mov ax,1600h" \
         "int 2fh" \
-        value [al];
+    __value [__al]
 
 void __set_dos_vector( unsigned, void __far * );
 #pragma aux __set_dos_vector = \
@@ -74,7 +81,7 @@ void __set_dos_vector( unsigned, void __far * );
         "mov ah,25h" \
         "int 21h" \
         "pop ds" \
-        parm caller [al] [cx edx];
+    __parm __caller [__al] [__cx __edx]
 
 extern int EMURegister2( _word, _dword );
 #pragma aux EMURegister2 = \
@@ -82,7 +89,9 @@ extern int EMURegister2( _word, _dword );
         "shr ecx,10h" \
         "mov ax, 0fa20h" \
         "int 2fh" \
-        parm[dx] [ebx] modify[ecx] value[eax];
+    __parm [__dx] [__ebx] \
+    __value [__eax] \
+    __modify [__ecx]
 
 #define EMULATING_87 4
 

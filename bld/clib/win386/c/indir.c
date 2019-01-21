@@ -36,18 +36,25 @@
 #include <stdarg.h>
 #include <windows.h>
 
-#pragma aux Invoke16BitFunction "*_" value[eax] modify[eax ebx ecx edx];
 extern DWORD Invoke16BitFunction( void );
+#pragma aux Invoke16BitFunction "*_" \
+    __parm      [] \
+    __value     [__eax] \
+    __modify    [__eax __ebx __ecx __edx]
 
 extern void Push( DWORD );
 #pragma aux Push = \
-    0x50    /* push eax */ \
-    parm [eax] modify[esp];
+        0x50    /* push eax */ \
+    __parm      [__eax] \
+    __value     \
+    __modify    [__esp]
 
 extern void PopStack( DWORD );
 #pragma aux PopStack = \
-    0x03 0xE0 /* add esp, eax */ \
-    parm [eax] modify[esp];
+        0x03 0xE0 /* add esp, eax */ \
+    __parm      [__eax] \
+    __value     \
+    __modify    [__esp]
 
 typedef struct indir {
     FARPROC         proc;

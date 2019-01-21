@@ -47,22 +47,22 @@ typedef struct cdopt_iter CDOPT_ITER;
 #define TOB_DEFS                                           \
  TOB_DEF( TOB_VBASE )           /* - virtual base       */ \
 ,TOB_DEF( TOB_DBASE )           /* - direct base        */ \
-,TOB_DEF( TOB_MEMB  )           /* - member: atomic     */ \
+,TOB_DEF( TOB_MEMB )            /* - member: atomic     */ \
 ,TOB_DEF( TOB_ARRAY )           /* - member: array      */ \
-,TOB_DEF( TOB_ORIG  )           /* - original object    */ \
-,TOB_DEF( TOB_NONE  )           /* - nothing left       */
+,TOB_DEF( TOB_ORIG )            /* - original object    */ \
+,TOB_DEF( TOB_NONE )            /* - nothing left       */
 
 #define TITER_DEFS                                                     \
- TITER_DEF( TITER_NONE        ) /* - none left                      */ \
+ TITER_DEF( TITER_NONE )        /* - none left                      */ \
 ,TITER_DEF( TITER_ARRAY_EXACT ) /* - array (exact)                  */ \
 ,TITER_DEF( TITER_ARRAY_VBASE ) /* - array (in vbase)               */ \
 ,TITER_DEF( TITER_CLASS_EXACT ) /* - class (exact)                  */ \
 ,TITER_DEF( TITER_CLASS_VBASE ) /* - class (in vbase)               */ \
 ,TITER_DEF( TITER_CLASS_DBASE ) /* - class (in dbase)               */ \
-,TITER_DEF( TITER_MEMB        ) /* - expanding thru member          */ \
-,TITER_DEF( TITER_DBASE       ) /* - expanding thru direct base     */ \
-,TITER_DEF( TITER_VBASE       ) /* - expanding thru virtual base    */ \
-,TITER_DEF( TITER_NAKED_DTOR  ) /* - naked dtor                     */
+,TITER_DEF( TITER_MEMB )        /* - expanding thru member          */ \
+,TITER_DEF( TITER_DBASE )       /* - expanding thru direct base     */ \
+,TITER_DEF( TITER_VBASE )       /* - expanding thru virtual base    */ \
+,TITER_DEF( TITER_NAKED_DTOR )  /* - naked dtor                     */
 
 typedef enum {                  // TOB -- type of object in original class
     #define TOB_DEF(a) a

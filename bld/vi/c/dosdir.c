@@ -31,7 +31,6 @@
 
 #include "vi.h"
 #include <direct.h>
-#include <dos.h>
 #include "wio.h"
 
 #include "clibext.h"
@@ -59,7 +58,7 @@ vi_rc MyGetFileSize( const char *name, long *size )
  */
 bool IsDirectory( char *name )
 {
-    struct find_t       dta;
+    struct _finddata_t  fdt;
     unsigned            rc;
 
     if( strpbrk( name, "?*" ) != NULL ) {
@@ -69,31 +68,27 @@ bool IsDirectory( char *name )
     if( rc != 0 )
         return( false ); /* not valid */
 
-    if( name[1] == DRV_SEP && name[2] == '\\' && name[3] == '\0' ) {
+    if( name[1] == DRV_SEP && name[2] == FILE_SEP && name[3] == '\0' ) {
         /* this is a root dir -- this is OK */
         return( true );
     }
 
     /* check if it is actually a sub-directory */
-    rc = _dos_findfirst( name, _A_NORMAL | _A_RDONLY | _A_HIDDEN | _A_SYSTEM | _A_SUBDIR | _A_ARCH, &dta );
-    if( rc != 0 ) {
-        return( false );
-    }
-    return( (dta.attrib & _A_SUBDIR) != 0 );
+    return( _findfirst( name, &fdt ) != -1 && (fdt.attrib & _A_SUBDIR) );
 
 } /* IsDirectory */
 
 /*
  * GetFileInfo - get info from a directory entry
  */
-void GetFileInfo( direct_ent *tmp, struct dirent *nd, const char *path )
+void GetFileInfo( direct_ent *tmp, struct dirent *dire, const char *path )
 {
     path = path;
 
-    tmp->attr = nd->d_attr;
-    tmp->date = *((date_struct *) &nd->d_date);
-    tmp->time = *((time_struct *) &nd->d_time);
-    tmp->fsize = nd->d_size;
+    tmp->attr = dire->d_attr;
+    tmp->date = *((date_struct *)&dire->d_date);
+    tmp->time = *((time_struct *)&dire->d_time);
+    tmp->fsize = dire->d_size;
 
 } /* GetFileInfo */
 
@@ -102,27 +97,25 @@ void GetFileInfo( direct_ent *tmp, struct dirent *nd, const char *path )
  */
 void FormatFileEntry( direct_ent *file, char *res )
 {
-    char        buff[FILENAME_MAX], tmp[FILENAME_MAX];
+    char        buff[11];
+    char        tmp[FILENAME_MAX];
     long        size;
 
+    size = file->fsize;
+    MySprintf( tmp, "  %S", file->name );
     if( IS_SUBDIR( file ) ) {
-        MySprintf(tmp, " " FILE_SEP_STR "%S", file->name);
-    } else {
-        if( !IsTextFile( file->name ) ) {
-            MySprintf(tmp, " *%S", file->name);
-        } else {
-            MySprintf(tmp, "  %S", file->name);
-        }
+        tmp[1] = FILE_SEP;
+        size = 0;
+    } else if( !IsTextFile( file->name ) ) {
+        tmp[1] = '*';
     }
 
     /*
-     * build attributeibutes
+     * build attributes
      */
     strcpy( buff, "-------" );
-    size = file->fsize;
     if( IS_SUBDIR( file ) ) {
         buff[0] = 'd';
-        size = 0;
     }
     if( file->attr & _A_ARCH ) {
         buff[1] = 'a';

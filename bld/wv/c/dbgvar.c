@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -39,7 +40,7 @@
 #include "dlgvarx.h"
 #include "dbgvar.h"
 #include "dbgmem.h"
-#include "spawn.h"
+#include "wspawn.h"
 #include "dui.h"
 #include "strutil.h"
 #include "dbgscan.h"
@@ -373,7 +374,7 @@ static type_display *VarDisplayAddFieldSym( type_display *parent, sym_handle *fi
 {
     int         len;
 
-    len = DIPSymName( field, NULL, SN_SOURCE, TxtBuff, TXT_LEN );
+    len = DIPSymName( field, NULL, SNT_SOURCE, TxtBuff, TXT_LEN );
     if( len == 0 )
         return( NULL );
     return( VarDisplayAddField( parent, TxtBuff ) );
@@ -558,9 +559,7 @@ static var_node *NewNode( var_info *i, unsigned len )
     new = DbgAlloc( size + type_SIZE );
     i->mem_lock = false;
     if( new == NULL ) {
-        _SwitchOn( SW_ERROR_RETURNS );
-        Error( ERR_NONE, LIT_ENG( ERR_NO_MEMORY_FOR_WINDOW ) );
-        _SwitchOff( SW_ERROR_RETURNS );
+        ErrorRet( ERR_NONE, LIT_ENG( ERR_NO_MEMORY_FOR_WINDOW ) );
         return( NULL );
     }
     memset( new, 0, size );
@@ -658,7 +657,7 @@ OVL_EXTERN walk_result DoDotNamedField( sym_walk_info swi, sym_handle *sh, void 
 
     if( swi != SWI_SYMBOL )
         return( WR_CONTINUE );
-    DIPSymName( sh, NULL, SN_SOURCE, TxtBuff, TXT_LEN );
+    DIPSymName( sh, NULL, SNT_SOURCE, TxtBuff, TXT_LEN );
     if( strcmp( TxtBuff, info->name ) != 0 )
         return( WR_CONTINUE );
     DoGivenField( sh );
@@ -705,7 +704,7 @@ OVL_EXTERN void     PushPointStackFirstField( void )
     DoPoints( TK_NONE );
     for( ;; ) {
         ExprValue( ExprSP );
-        if( ExprSP->info.kind != TK_STRUCT )
+        if( ExprSP->ti.kind != TK_STRUCT )
             break;
         PushFirstField( ExprSP->th );
     }
@@ -732,10 +731,10 @@ static bool     CheckPointerValid( void )
 
 static type_kind        TypeKind( type_handle *th )
 {
-    dip_type_info   tinfo;
+    dig_type_info       ti;
 
-    DIPTypeInfo( th, NULL, &tinfo );
-    return( tinfo.kind );
+    DIPTypeInfo( th, NULL, &ti );
+    return( ti.kind );
 }
 
 
@@ -909,7 +908,7 @@ static bool PointerToChar( void )
 {
     DIPHDL( type, th );
 
-    switch( ExprSP->info.kind ) {
+    switch( ExprSP->ti.kind ) {
     case TK_POINTER:
     case TK_ARRAY:
         DIPTypeBase( ExprSP->th, th, NULL, NULL );
@@ -929,7 +928,7 @@ static bool PointerToStruct( void )
     if( Spawn( PushPoints ) != 0 )
         return( false );
     ExprValue( ExprSP );
-    if( ExprSP->info.kind != TK_STRUCT ) {
+    if( ExprSP->ti.kind != TK_STRUCT ) {
         PopEntry();
         return( false );
     }
@@ -960,7 +959,7 @@ bool    VarExpand( var_info *i, var_node *v, long start, long end )
     if( ExprSP->th == NULL )
         return( false );
     ok = true;
-    switch( ExprSP->info.kind ) {
+    switch( ExprSP->ti.kind ) {
     case TK_STRUCT:
         ok = SpawnP( PushFirstField, ExprSP->th ) == 0;
         if( ok )
@@ -977,7 +976,7 @@ bool    VarExpand( var_info *i, var_node *v, long start, long end )
     }
     ExprValue( ExprSP );
     HDLAssign( type, v->th, ExprSP->th );
-    switch( ExprSP->info.kind ) {
+    switch( ExprSP->ti.kind ) {
     case TK_POINTER:
         if( end < start ) {
             var_node *new;
@@ -1027,15 +1026,15 @@ bool    VarExpand( var_info *i, var_node *v, long start, long end )
 static void ArrayParms( var_node *v, array_info *ainfo )
 {
     DIPHDL( type, th );
-    dip_type_info   tinfo;
+    dig_type_info       ti;
 
     if( TypeKind( v->th ) == TK_ARRAY ) {
         DIPTypeArrayInfo( v->th, ExprSP->lc, ainfo, NULL );
     } else {
         DIPTypeBase( v->th, th, NULL, NULL );
         ainfo->low_bound = 0;
-        DIPTypeInfo( th, ExprSP->lc, &tinfo );
-        ainfo->stride = tinfo.size;
+        DIPTypeInfo( th, ExprSP->lc, &ti );
+        ainfo->stride = ti.size;
     }
 }
 
@@ -1224,7 +1223,7 @@ OVL_EXTERN void     VarScanForward( void *_v )
                     if( v->display_type == NULL ) {
                         DupStack();
                         ExprValue( ExprSP );
-                        if( ExprSP->info.kind == TK_STRUCT ) {
+                        if( ExprSP->ti.kind == TK_STRUCT ) {
                             parent = VarDisplayAddStructType( ExprSP->th );
                         } else {
                             parent = NULL;
@@ -1247,7 +1246,7 @@ OVL_EXTERN void     VarScanForward( void *_v )
                         have_array_parms = true;
                         ArrayParms( v->parent, &ainfo );
                     }
-                    PushSubScript( v->element+ainfo.low_bound );
+                    PushSubScript( v->element + ainfo.low_bound );
                 }
                 break;
             case NODE_POINTS:
@@ -1258,7 +1257,7 @@ OVL_EXTERN void     VarScanForward( void *_v )
                 v->have_type = false;
                 DupStack();
                 ExprValue( ExprSP );
-                switch( ExprSP->info.kind ) {
+                switch( ExprSP->ti.kind ) {
                 case TK_STRUCT:
                     HDLAssign( type, v->th, ExprSP->th );
                     v->have_type = true;
@@ -1521,9 +1520,9 @@ void VarBaseName( var_node *v )
 {
     TxtBuff[0] = NULLCHAR;
     if( v->is_sym_handle ) {
-        if( DIPSymName( VarNodeHdl( v ), NULL, SN_SCOPED, TxtBuff, TXT_LEN ) )
+        if( DIPSymName( VarNodeHdl( v ), NULL, SNT_SCOPED, TxtBuff, TXT_LEN ) )
             return;
-        DIPSymName( VarNodeHdl( v ), NULL, SN_SOURCE, TxtBuff, TXT_LEN );
+        DIPSymName( VarNodeHdl( v ), NULL, SNT_SOURCE, TxtBuff, TXT_LEN );
     } else {
         strcpy( TxtBuff, VarNodeExpr( v ) );
     }
@@ -1576,9 +1575,9 @@ void    VarBuildName( var_info *info, var_node *v, bool just_end_bit )
                 name = LIT_ENG( field );
                 len = strlen( LIT_ENG( field ) );
             } else {
-                len = DIPSymName( field, NULL, SN_SOURCE, NULL, 0 );
+                len = DIPSymName( field, NULL, SNT_SOURCE, NULL, 0 );
                 _AllocA( name, len+1 );
-                DIPSymName( field, NULL, SN_SOURCE, name, len+1 );
+                DIPSymName( field, NULL, SNT_SOURCE, name, len+1 );
             }
             if( delay_indirect ) {
                 prio = AddToName( T_SSL_SPEC_POINTER_FIELD, name, len, prio );
@@ -1597,11 +1596,11 @@ void    VarBuildName( var_info *info, var_node *v, bool just_end_bit )
                 delay_indirect = false;
             }
             ArrayParms( v, &ainfo );
-            end = CnvLongDec( v->path->element+ainfo.low_bound, buff, sizeof( buff ) );
+            end = CnvLongDec( v->path->element + ainfo.low_bound, buff, sizeof( buff ) );
             if( just_end_bit ) {
                 *TxtBuff = NULLCHAR;
             }
-            prio = AddToName( T_SSL_SPEC_ARRAY, buff, end-buff, prio );
+            prio = AddToName( T_SSL_SPEC_ARRAY, buff, end - buff, prio );
             break;
         case NODE_POINTS:
             if( delay_indirect ) {
@@ -1770,7 +1769,7 @@ bool    VarGetStackClass( type_kind *class )
 
     DupStack();
     ExprValue( ExprSP );
-    *class = ExprSP->info.kind;
+    *class = ExprSP->ti.kind;
     followable = Followable( *class );
     PopEntry();
     return( followable );
@@ -1799,7 +1798,7 @@ bool    VarIsPointer( type_kind class )
     return( false );
 }
 
-bool VarPrintText( var_info *i, char *buff, wv_spawn_func *rtn, int len )
+bool VarPrintText( var_info *i, char *buff, wspawn_func *rtn, int len )
 {
     StartPrintBuff( buff, len );
     if( Spawn( rtn ) == 0 ) {
@@ -1964,7 +1963,7 @@ void VarBreakOnWrite( var_info *i, var_node *v )
 
     VarBuildName( i, v, false );
     name = DupStr( TxtBuff );
-    SpawnP( (wv_spawn_funcP *)BreakOnExprSP, name );
+    SpawnP( BreakOnExprSP, name );
     DbgFree( name );
 }
 
@@ -2046,7 +2045,7 @@ var_gadget_type VarGetGadget( var_node *v )
             return( VARGADGET_INHERIT_OPEN );
         }
     }
-    class = ExprSP->info.kind;
+    class = ExprSP->ti.kind;
     if( class == TK_POINTER ) {
         if( !CheckPointerValid() ) {
             return( VARGADGET_BADPOINTS );
@@ -2166,7 +2165,7 @@ char *VarGetValue( var_info *i, var_node *v )
         value = LIT_ENG( Quest_Marks );
     } else {
         value = " ";
-        switch( ExprSP->info.kind ) {
+        switch( ExprSP->ti.kind ) {
         case TK_POINTER:
             FreezeStack();
             DupStack();
@@ -2291,7 +2290,7 @@ OVL_EXTERN walk_result AddNewVar( sym_walk_info swi, sym_handle *sym, void *_d )
         DIPSymInfo( sym, NULL, &sinfo );
         if( !sinfo.is_member && sinfo.kind != SK_TYPE ) {
             if( d->v == NULL ) {
-                DIPSymName( sym, NULL, SN_SOURCE, TxtBuff, TXT_LEN );
+                DIPSymName( sym, NULL, SNT_SOURCE, TxtBuff, TXT_LEN );
                 // nyi - use SymInfo when Brian implements the "this" indicator
                 if( stricmp( TxtBuff, "this" ) == 0 ) {
                     new = VarAdd1( d->i, sym, sym_SIZE, d->i->members, true );
@@ -2558,7 +2557,7 @@ void VarInspectPointer( void )
 /**********************/
 {
     ExprValue( ExprSP );
-    if( ExprSP->info.kind == TK_ARRAY ) {
+    if( ExprSP->ti.kind == TK_ARRAY ) {
         DUIAddrInspect( ExprSP->v.loc.e[0].u.addr );
     } else {
         DUIAddrInspect( ExprSP->v.addr );
@@ -2629,7 +2628,7 @@ void VarDoAssign( var_info *i, var_node *v, const char *value )
 bool VarParentIsArray( var_node * v )
 {
     var_node            *vparent = v;
-    dip_type_info       tinfo;
+    dig_type_info       ti;
 
     while( vparent->parent != NULL ) {
         if( vparent->parent->node_type != NODE_INHERIT ) {
@@ -2642,8 +2641,8 @@ bool VarParentIsArray( var_node * v )
     if( ( vparent == v ) || ( NULL == vparent ) )
         return( false );
 
-    DIPTypeInfo( vparent->th, NULL, &tinfo );
+    DIPTypeInfo( vparent->th, NULL, &ti );
 
-    return( tinfo.kind == TK_ARRAY || vparent->fake_array );
+    return( ti.kind == TK_ARRAY || vparent->fake_array );
 }
 

@@ -30,9 +30,9 @@
 ****************************************************************************/
 
 
+#include "drwatcom.h"
 #include <process.h>
 #include <ctype.h>
-#include "drwatcom.h"
 #include "mem.h"
 
 #define PERFLIB_MAX     "software\\microsoft\\windows nt\\currentversion"\

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,7 +35,9 @@
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
-#include <mbstring.h>
+#if !defined( __RDOS__ ) && !defined( __RDOSDEV__ )
+    #include <mbstring.h>
+#endif
 #ifdef __WIDECHAR__
     #include <wctype.h>
 #endif
@@ -67,7 +70,7 @@ static int __F_NAME(addenv,waddenv)( int index, const CHAR_TYPE *name, const CHA
     env_str = lib_realloc( (void *)old_val, ( len + __F_NAME(strlen,wcslen)( newvalue ) + 2 ) * sizeof( CHAR_TYPE ) );
     if( env_str == NULL )
         return( -1 );
-    memcpy( env_str, name, len*sizeof( CHAR_TYPE ) );
+    memcpy( env_str, name, len * sizeof( CHAR_TYPE ) );
     env_str[len] = STRING( '=' );
     __F_NAME(strcpy,wcscpy)( &env_str[len + 1], newvalue );
     envp[index] = env_str;
@@ -91,9 +94,6 @@ int __F_NAME(__setenv,__wsetenv)( const CHAR_TYPE *name, const CHAR_TYPE *newval
 #else
     int     rc;
 
-    if( name == NULL || *name == NULLCHAR ) {
-        return( -1 );
-    }
   #ifdef __WIDECHAR__
     if( _RWD_wenviron == NULL ) {
         __create_wide_environment();

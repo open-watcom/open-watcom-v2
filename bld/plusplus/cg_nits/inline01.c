@@ -14,5 +14,5 @@ P *foo( void )
     p = &d;
     (*p).x = 1;
     (*p).y = 2;
-    return p;
+    return( p );
 }

@@ -90,9 +90,8 @@ void StringPool::grow()
         _numGrows += 1;
     #endif
 
-    _currBlock = (StringBlock *) new char[ _blockSize + sizeof( StringBlock ) ];
-    _endOfCurrBlock = (char *) _currBlock + _blockSize
-                        + sizeof( StringBlock ) - 1;
+    _currBlock = (StringBlock *) new char [_blockSize + sizeof( StringBlock )];
+    _endOfCurrBlock = (char *) _currBlock + _blockSize + sizeof( StringBlock ) - 1;
     _currBlock->nextBlock = _firstBlock;
     _firstBlock = _currBlock;
     _currPos = _currBlock->data;
@@ -108,7 +107,7 @@ void StringPool::ragnarok()
     while( curr != NULL ) {
         prev = curr;
         curr = curr->nextBlock;
-        delete [] (char *) prev;
+        delete[] (char *)prev;
     }
 
     _currBlock = NULL;

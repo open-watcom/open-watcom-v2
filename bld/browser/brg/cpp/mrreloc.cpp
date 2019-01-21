@@ -51,7 +51,7 @@ MergeRelocate::MergeRelocate( int numFiles )
     int i;
     typedef WCValHashDict<uint_32,MergeDIE *> * HashPtr;
 
-    _replacedDies = new HashPtr[ numFiles ];
+    _replacedDies = new HashPtr[numFiles];
 
     for( i = 0; i < _numFiles; i += 1 ) {
         _replacedDies[ i ] = new WCValHashDict<uint_32,MergeDIE *>(
@@ -79,7 +79,7 @@ MergeRelocate::~MergeRelocate()
         delete _replacedDies[ i ];
     }
 
-    delete _replacedDies;
+    delete[] _replacedDies;
     _hPool.ragnarok();
 }
 

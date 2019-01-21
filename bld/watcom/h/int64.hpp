@@ -243,28 +243,28 @@ class int64 {
         {
             I64Div( &this->_d, &a._d, &quot._d, &rem._d );
         }
-        #ifdef __SW_FPI
-            #pragma aux int64_from_double = \
-                "fld    qword ptr [esi]" \
-                "fistp  qword ptr [edi]" \
-                parm [ edi ] [ esi ]
+#ifdef __SW_FPI
+    #pragma aux int64_from_double = \
+            "fld    qword ptr [esi]" \
+            "fistp  qword ptr [edi]" \
+        __parm [__edi] [__esi]
 
-            #pragma aux int64_to_double = \
-                "fild   qword ptr [edi]" \
-                "fstp   qword ptr [esi]" \
-                parm [ edi ] [ esi ]
+    #pragma aux int64_to_double = \
+            "fild   qword ptr [edi]" \
+            "fstp   qword ptr [esi]" \
+        __parm [__edi] [__esi]
 
-            SetDouble( double d )
-            {
-                int64_from_double( &this->_d, &d );
-            }
-            double GetDouble() const
-            {
-                double d;
-                int64_to_double( &this->_d, &d );
-                return( d );
-            }
-        #endif
+        SetDouble( double d )
+        {
+            int64_from_double( &this->_d, &d );
+        }
+        double GetDouble() const
+        {
+            double d;
+            int64_to_double( &this->_d, &d );
+            return( d );
+        }
+#endif
 
     private:
         int Compare( const int64 &a ) const

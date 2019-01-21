@@ -123,10 +123,8 @@ extern bool             AsSymRelocIsClean( bool is_clean );
 extern sym_obj_hdl      AsSymObjHandle( sym_handle );
 extern void             AsSymFini( void );
 
-#ifdef _STANDALONE_
-#ifdef AS_DEBUG_DUMP
+#if defined( _STANDALONE_ ) && defined( AS_DEBUG_DUMP )
 extern void             DumpSymbolTable( void );
-#endif
 #endif
 
 #define SymInit                         AsSymInit

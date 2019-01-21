@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -29,5 +30,9 @@
 ****************************************************************************/
 
 
+#if defined( __RDOS__ ) || defined( __RDOSDEV__ )
+#define MAX_CHAR_TYPE           char
+#else
 /* must be the larger of char and wchar_t */
 #define MAX_CHAR_TYPE           wchar_t
+#endif

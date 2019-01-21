@@ -30,9 +30,9 @@
 ****************************************************************************/
 
 
+#include "drwatcom.h"
 #include <process.h>
 #include <ctype.h>
-#include "drwatcom.h"
 #include <tlhelp32.h>
 #include "mem.h"
 

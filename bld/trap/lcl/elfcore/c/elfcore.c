@@ -175,19 +175,20 @@ static int elf_read_phdr( int fd, Elf32_Ehdr *e_hdr, Elf32_Phdr **pp_hdr )
 trap_retval ReqGet_sys_config( void )
 {
     get_sys_config_ret  *ret;
-    int                 mad, os, cpu, fpu;
+    dig_arch            arch;
+    int                 os, cpu, fpu;
 
     ret = GetOutPtr( 0 );
-    if( Core.loaded && Core.plat->qcfg( Core.ctx, &mad, &os, &cpu, &fpu ) ) {
-        ret->sys.mad = mad;
-        ret->sys.os  = os;
-        ret->sys.cpu = cpu;
-        ret->sys.fpu = fpu;
+    if( Core.loaded && Core.plat->qcfg( Core.ctx, &arch, &os, &cpu, &fpu ) ) {
+        ret->sys.arch = arch;
+        ret->sys.os   = os;
+        ret->sys.cpu  = cpu;
+        ret->sys.fpu  = fpu;
     } else {
-        ret->sys.mad = MAD_X86;
-        ret->sys.os  = MAD_OS_IDUNNO;
-        ret->sys.cpu = X86_386;
-        ret->sys.fpu = X86_387;
+        ret->sys.arch = DIG_ARCH_X86;
+        ret->sys.os   = DIG_OS_IDUNNO;
+        ret->sys.cpu  = X86_386;
+        ret->sys.fpu  = X86_387;
     }
     ret->sys.osmajor = 1;
     ret->sys.osminor = 0;

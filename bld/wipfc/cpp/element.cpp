@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
+* Copyright (c) 2009-2018 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -28,18 +28,20 @@
 *
 ****************************************************************************/
 
+
+#include "wipfc.hpp"
 #include "element.hpp"
 #include "document.hpp"
 #include "page.hpp"
 
 void Element::printError( ErrCode c ) const
 {
-    document->printError( c, fileName, row, col );
+    _document->printError( c, _fileName, _row, _col );
 }
 /***************************************************************************/
-void Element::printError( ErrCode c, const std::wstring& txt ) const
+void Element::printError( ErrCode c, const std::wstring& text ) const
 {
-    document->printError( c, fileName, row, col, txt );
+    _document->printError( c, _fileName, _row, _col, text );
 }
 /***************************************************************************/
 void Element::linearize( Page* page )
@@ -50,8 +52,8 @@ void Element::linearize( Page* page )
 Element* Element::rootElement()
 {
     Element* root( this );
-    while( root->parent ) //find root element
-        root = root->parent;
+    while( root->_parent ) //find root element
+        root = root->_parent;
     return root;
 }
 

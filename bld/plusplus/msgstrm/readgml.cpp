@@ -84,7 +84,7 @@ static char MakeNewOutFile(     // MAKE NEW TEST/ERROR FILE
     MsgDscr& file_des,          // - files descriptor
     int msg_ctr )               // - message no.
 {
-    char filename[ _MAX_PATH ];
+    char filename[_MAX_PATH];
 
     MakeTestFileName( filename
                     , file_des
@@ -158,7 +158,7 @@ enum GML_TRANS                  // transitions
 ,   IGNORE                      // - ignore text
 };
 
-static GML_TRANS trans[][ MAX_STATE ] = // transitions
+static GML_TRANS trans[][MAX_STATE] = // transitions
 //\ from
 // \
 //to\READING     MSGSYM      MSGTXT      ERRGOOD     ERRBAD
@@ -183,7 +183,7 @@ static char *gmlState(          // GET NAME OF STATE
     ,   "ERRBAD"                // - - :ERRBAD read
     };
 
-    return name[ state ];
+    return( name[state] );
 }
 
 
@@ -200,7 +200,7 @@ static char *gmlTrans(          // GET NAME OF TRANSITION
     ,   "eERRBAD"               // - :eERRBAD
     };
 
-    return name[ trans ];
+    return( name[trans] );
 }
 
 GMLfilestat ReadGMLFile( MsgDscr& file_ok, MsgDscr& file_er ) {
@@ -211,7 +211,7 @@ GMLfilestat ReadGMLFile( MsgDscr& file_ok, MsgDscr& file_er ) {
 
     int             current_good_file = 0;
     int             current_bad_file = 0;
-    char            buffer[ 256 ];
+    char            buffer[256];
     int             counter = 0;
     int             line_count = 0;
 
@@ -221,7 +221,7 @@ GMLfilestat ReadGMLFile( MsgDscr& file_ok, MsgDscr& file_er ) {
     if( WOpenForRead( MsgFile, msg_file ) ) {
         cout << "Error - could not open \"" << msg_file << "\"." << endl;
         DieInFlames( );
-    };
+    }
 
     cout << "Reading message file";
 
@@ -263,42 +263,42 @@ GMLfilestat ReadGMLFile( MsgDscr& file_ok, MsgDscr& file_er ) {
         } else {
             gml_input = RD_TEXT;
         }
-        switch( trans[ gml_input ][ state ] ) {
-          case OLD_MSGSYM :
+        switch( trans[gml_input][state] ) {
+        case OLD_MSGSYM :
             Purge( out_text );
-          case NEW_MSGSYM :
+        case NEW_MSGSYM :
             ++msg_ctr;
             state = ST_MSGSYM;
             out_text << Comment << buffer;
             break;
-          case GET_MSGTXT :
+        case GET_MSGTXT :
             state = ST_MSGTXT;
             out_text << Comment << buffer;
             break;
-          case BEG_ERRGOOD :
+        case BEG_ERRGOOD :
             emitTestStart( outfile, out_text, file_ok, msg_ctr );
             current_good_file++;
             state = ST_ERRGOOD;
             break;
-          case BEG_ERRBAD :
+        case BEG_ERRBAD :
             emitTestStart( outfile, out_text, file_er, msg_ctr );
             current_bad_file++;
             state = ST_ERRBAD;
             break;
-          case WR_FILE :
+        case WR_FILE :
             if( processingMsg() ) {
                 outfile << buffer;
             }
             break;
-          case END_FILE :
+        case END_FILE :
             emitTestEnd( outfile );
-          case SET_MSGTXT :
+        case SET_MSGTXT :
             state = ST_MSGTXT;
             break;
-          case SET_READING :
+        case SET_READING :
             state = ST_READING;
             break;
-          case BAD_FOLLOW :
+        case BAD_FOLLOW :
             cout << endl
                  << "GML file at line "
                  << line_count
@@ -310,6 +310,6 @@ GMLfilestat ReadGMLFile( MsgDscr& file_ok, MsgDscr& file_er ) {
                  << endl;
             DieInFlames( );
         }
-    };
-    return GMLfilestat( current_good_file - 1, current_bad_file - 1 );
-};
+    }
+    return( GMLfilestat( current_good_file - 1, current_bad_file - 1 ) );
+}

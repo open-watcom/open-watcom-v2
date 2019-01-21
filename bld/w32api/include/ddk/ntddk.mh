@@ -4854,12 +4854,12 @@ BOOLEAN NTAPI   PshedSynchronizeExecution( PWHEA_ERROR_SOURCE_DESCRIPTOR, PKSYNC
 
 #ifdef _X86_
 /* Functions implemented with inline assembly code */
-PKPCR   KeGetCurrentKPCR( void );
-
-/* Inline assembly implementation of functions defined above */
+extern PKPCR   KeGetCurrentKPCR( void );
 #pragma aux KeGetCurrentKPCR = \
-    "mov eax, fs:[0x18]" \
-    value [eax];
+        "mov eax, fs:[0x18]" \
+    __parm              [] \
+    __value             [__eax] \
+    __modify __exact    [__eax]
 #endif
 
 /* Functions implemented as macros */

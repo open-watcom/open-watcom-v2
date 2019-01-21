@@ -13,7 +13,7 @@ void readExtFiles( FILE *in, FILE *out )
             readDictString( in, name );
             fprintf( out, "  File #%u: %ls\n", count, name );
         }
-    }
-    else
+    } else {
         fputs("  No external file references found\n", out);
+    }
 }

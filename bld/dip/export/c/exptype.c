@@ -39,10 +39,10 @@
 
 
 walk_result DIPIMPENTRY( WalkTypeList )( imp_image_handle *iih,
-                    imp_mod_handle im, DIP_IMP_TYPE_WALKER *wk, imp_type_handle *ith,
+                    imp_mod_handle imh, DIP_IMP_TYPE_WALKER *wk, imp_type_handle *ith,
                     void *d )
 {
-    /* unused parameters */ (void)iih; (void)im; (void)wk; (void)ith; (void)d;
+    /* unused parameters */ (void)iih; (void)imh; (void)wk; (void)ith; (void)d;
 
     return( WR_CONTINUE );
 }
@@ -54,18 +54,18 @@ imp_mod_handle DIPIMPENTRY( TypeMod )( imp_image_handle *iih, imp_type_handle *i
     return( IMH_EXPORT );
 }
 
-dip_status DIPIMPENTRY( TypeInfo )( imp_image_handle *iih,
-                imp_type_handle *ith, location_context *lc, dip_type_info *ti )
+dip_status DIPIMPENTRY( TypeInfo )( imp_image_handle *iih, imp_type_handle *ith, location_context *lc, dig_type_info *ti )
 {
     /* unused parameters */ (void)iih; (void)lc;
 
-    ti->modifier = TM_NONE;
-    ti->size = 0;
     if( ith->code ) {
         ti->kind = TK_CODE;
     } else {
         ti->kind = TK_DATA;
     }
+    ti->size = 0;
+    ti->modifier = TM_NONE;
+    ti->deref = false;
     return( DS_OK );
 }
 
@@ -144,19 +144,19 @@ dip_status DIPIMPENTRY( TypeAddRef )( imp_image_handle *iih, imp_type_handle *it
 {
     /* unused parameters */ (void)iih; (void)ith;
 
-    return(DS_OK);
+    return( DS_OK );
 }
 
 dip_status DIPIMPENTRY( TypeRelease )( imp_image_handle *iih, imp_type_handle *ith )
 {
     /* unused parameters */ (void)iih; (void)ith;
 
-    return(DS_OK);
+    return( DS_OK );
 }
 
 dip_status DIPIMPENTRY( TypeFreeAll )( imp_image_handle *iih )
 {
     /* unused parameters */ (void)iih;
 
-    return(DS_OK);
+    return( DS_OK );
 }

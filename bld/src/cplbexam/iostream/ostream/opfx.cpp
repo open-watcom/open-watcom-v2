@@ -20,4 +20,20 @@ lowstream &lowstream::operator<< ( char *p ) {
 
     if( opfx() ) {
         //this << p;
-        
+        //*((ostream*)this) << p;
+        tp = p;
+        while( *tp ) {
+            *tp = tolower( *tp );
+            tp++;
+        }
+        this->ostream::operator<<( p );
+        osfx();
+    }
+    return ( *this );
+}
+
+int main( void ) {
+
+    lowstream    test ( cout );
+    test << "HELLO!" << endl;
+}

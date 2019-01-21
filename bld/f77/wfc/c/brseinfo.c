@@ -33,7 +33,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <malloc.h>
+#include "walloca.h"
 #include "ftnstd.h"
 #include "errcod.h"
 #include "global.h"
@@ -136,6 +136,7 @@ void    BIInit( void ) {
     init_dwl.language = DWLANG_FORTRAN;
     init_dwl.compiler_options = DW_CM_BROWSER | DW_CM_UPPER;
     init_dwl.producer_name = DWARF_PRODUCER_ID " V1";
+    init_dwl.abbrev_sym = NULL;
     if( !setjmp( init_dwl.exception_handler ) ) {
         CLIInit( &(init_dwl.funcs), MEM_SECTION );
         cBIId = DWInit( &init_dwl );
@@ -271,7 +272,7 @@ void    BIStartComBlock( sym_id ste_ptr ) {
     char        name[MAX_SYMLEN+1];
 
     if( _GenerateBrInfo() ) {
-        memset( name, 0, MAX_SYMLEN+1 );
+        memset( name, 0, sizeof( name ) );
         DWDeclPos( cBIId, CurrFile->rec, 0 );
         currState |= BI_STATE_IN_COMMON_BLOCK;
         DWIncludeCommonBlock( cBIId, DWBeginCommonBlock( cBIId, justJunk, 0,
@@ -295,7 +296,7 @@ void    BIStartBlockData( sym_id ste_ptr ) {
     char        name[MAX_SYMLEN+1];
 
     if( _GenerateBrInfo() ) {
-        memset( name, 0, MAX_SYMLEN+1 );
+        memset( name, 0, sizeof( name ) );
         DWDeclPos( cBIId, CurrFile->rec, 0 );
         DWBeginLexicalBlock( cBIId, 0,
                 strncpy( name, ste_ptr->u.ns.name, ste_ptr->u.ns.u2.name_len ) );
@@ -548,7 +549,7 @@ static void BIOutSP( sym_id ste_ptr ) {
     } else {
         fret = BIGetSPType( ste_ptr );
     }
-    memset( name, 0, MAX_SYMLEN+1 );
+    memset( name, 0, sizeof( name ) );
     strncpy( name, ste_ptr->u.ns.name, ste_ptr->u.ns.u2.name_len );
     if( ste_ptr->u.ns.flags & SY_SENTRY ) {
         fret =    DWBeginEntryPoint( cBIId, fret, justJunk, 0, name, 0, flags );
@@ -628,7 +629,7 @@ static void BIOutDeclareSP( sym_id ste_ptr, long flags ) {
     if( ste_ptr == SubProgId ) return;
     flags |= DW_FLAG_DECLARATION;
 
-    memset( name, 0, MAX_SYMLEN+1 );
+    memset( name, 0, sizeof( name ) );
     handle = DWBeginSubroutine( cBIId, 0, BIGetSPType( ste_ptr ), justJunk,
                  0, 0, 0, 0, strncpy( name, ste_ptr->u.ns.name,
                                         ste_ptr->u.ns.u2.name_len ), 0, flags );
@@ -663,7 +664,7 @@ static void BIOutSPDumInfo( sym_id ste_ptr ) {
     dw_handle           handle;
     char                name[MAX_SYMLEN+1];
 
-    memset( name, 0, MAX_SYMLEN+1 );
+    memset( name, 0, sizeof( name ) );
     handle = DWFormalParameter( cBIId, BIGetAnyType( ste_ptr ), 0, 0,
                                 strncpy( name, ste_ptr->u.ns.name, ste_ptr->u.ns.u2.name_len ),
                                 DW_DEFAULT_NONE );
@@ -680,7 +681,7 @@ static void BIOutVar( sym_id ste_ptr ) {
     dw_handle           handle;
     char                name[MAX_SYMLEN+1];
 
-    memset( name, 0, MAX_SYMLEN+1 );
+    memset( name, 0, sizeof( name ) );
     handle = DWVariable(cBIId, BIGetAnyType(ste_ptr), 0, 0, 0,
                         strncpy(name, ste_ptr->u.ns.name, ste_ptr->u.ns.u2.name_len ),
                         0, 0 );
@@ -704,7 +705,7 @@ static void BIOutConst( sym_id ste_ptr ) {
         value = &(ste_ptr->u.ns.si.pc.value->u.cn.value);
     }
 
-    memset( name, 0, MAX_SYMLEN+1 );
+    memset( name, 0, sizeof( name ) );
     handle = DWConstant(cBIId, BIGetAnyType(ste_ptr), value,
                         ste_ptr->u.ns.xt.size, 0,
                         strncpy(name, ste_ptr->u.ns.name, ste_ptr->u.ns.u2.name_len),
@@ -849,7 +850,7 @@ static dw_handle BIGetStructType( sym_id ste_ptr, dw_handle handle ) {
     }
     ste_ptr->u.ns.xt.record->dbh = ret;
     DWDeclPos( cBIId, CurrFile->rec, 0 );
-    memset( buffer, 0, MAX_SYMLEN+1 );
+    memset( buffer, 0, sizeof( buffer ) );
     DWBeginStruct( cBIId, ret, ste_ptr->u.ns.xt.record->size,
                         strncpy( buffer, ste_ptr->u.ns.xt.record->name,
                                 ste_ptr->u.ns.xt.record->name_len ),

@@ -36,11 +36,16 @@
 #include <vector>
 #include "scancm.h"
 
+typedef struct TokenStruct {
+    const char * name;
+    short        token; // token value associated with this
+} TokenStruct;
+
 class CheckedBufferedFile;
 
 class Scanner {
 public:
-                                        Scanner( const char * fileName );
+                                        Scanner( const char * fileName, short t_string, short t_number, short t_ident, const TokenStruct *tokens, int tokcnt );
                                         ~Scanner();
 
             bool                        error( char const * errStr );
@@ -73,6 +78,11 @@ private:
             std::vector<char *>         *_strings;
 
             int                         _current;       // this character
+            const TokenStruct           *_tokens;
+            int                         _tokcnt;
+            short                       _T_String;
+            short                       _T_Number;
+            short                       _T_Ident;
 
     static  const char * const          _SpecialCharacters;
 };

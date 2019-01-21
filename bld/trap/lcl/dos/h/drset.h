@@ -30,41 +30,86 @@
 ****************************************************************************/
 
 
-#define _SET_DR         0x66 0xc1 0xe2 0x10     /* shl     edx,10H */ \
-                        0x66 0x0f 0xb7 0xc0     /* movzx   eax,ax */ \
-                        0x66 0x0b 0xc2          /* or      eax,edx */ \
-                        0x0f 0x23               /* mov     dr?,eax */
+#define EAXtoDXAX \
+    "mov  dx,ax"    \
+    "shr  eax,16"   \
+    "xchg dx,ax"
 
-#define _GET_DRa        0x0f 0x21               /* mov     eax,dr? */
-#define _GET_DRb        0x8b 0xd0               /* mov     dx,ax */ \
-                        0x66 0xc1 0xe8 0x10     /* shl     eax,16 */ \
-                        0x92                    /* xchg    dx,ax */
+#define DXAXtoEAX \
+    "xchg dx,ax"    \
+    "shl  eax,16"   \
+    "mov  ax,dx"
 
 extern void SetDR0( unsigned long );
+#pragma aux SetDR0 = \
+        ".386p"         \
+        DXAXtoEAX        \
+        "mov  dr0,eax"  \
+    __parm [__dx __ax]
 extern void SetDR1( unsigned long );
+#pragma aux SetDR1 = \
+        ".386p"         \
+        DXAXtoEAX        \
+        "mov  dr1,eax"  \
+    __parm [__dx __ax]
 extern void SetDR2( unsigned long );
+#pragma aux SetDR2 = \
+        ".386p"         \
+        DXAXtoEAX        \
+        "mov  dr2,eax"  \
+    __parm [__dx __ax]
 extern void SetDR3( unsigned long );
+#pragma aux SetDR3 = \
+        ".386p"         \
+        DXAXtoEAX        \
+        "mov  dr3,eax"  \
+    __parm [__dx __ax]
 extern void SetDR6( unsigned long );
+#pragma aux SetDR6 = \
+        ".386p"         \
+        DXAXtoEAX        \
+        "mov  dr6,eax"  \
+    __parm [__dx __ax]
 extern void SetDR7( unsigned long );
+#pragma aux SetDR7 = \
+        ".386p"         \
+        DXAXtoEAX        \
+        "mov  dr7,eax"  \
+    __parm [__dx __ax]
 
-extern unsigned long GetDR0(void);
-extern unsigned long GetDR1(void);
-extern unsigned long GetDR2(void);
-extern unsigned long GetDR3(void);
-extern unsigned long GetDR6(void);
-extern unsigned long GetDR7(void);
-
-#pragma aux SetDR0 = _SET_DR 0xc0 parm [ dx ax ];
-#pragma aux SetDR1 = _SET_DR 0xc8 parm [ dx ax ];
-#pragma aux SetDR2 = _SET_DR 0xd0 parm [ dx ax ];
-#pragma aux SetDR3 = _SET_DR 0xd8 parm [ dx ax ];
-#pragma aux SetDR6 = _SET_DR 0xf0 parm [ dx ax ];
-#pragma aux SetDR7 = _SET_DR 0xf8 parm [ dx ax ];
-
-#pragma aux GetDR0 = _GET_DRa 0xc0 _GET_DRb value [ dx ax ];
-#pragma aux GetDR1 = _GET_DRa 0xc8 _GET_DRb value [ dx ax ];
-#pragma aux GetDR2 = _GET_DRa 0xd0 _GET_DRb value [ dx ax ];
-#pragma aux GetDR3 = _GET_DRa 0xd8 _GET_DRb value [ dx ax ];
-#pragma aux GetDR6 = _GET_DRa 0xf0 _GET_DRb value [ dx ax ];
-#pragma aux GetDR7 = _GET_DRa 0xf8 _GET_DRb value [ dx ax ];
-
+extern unsigned long GetDR0( void );
+#pragma aux GetDR0 = \
+        ".386p"         \
+        "mov  eax,dr0"  \
+        EAXtoDXAX        \
+    __value [__dx __ax]
+extern unsigned long GetDR1( void );
+#pragma aux GetDR1 = \
+        ".386p"         \
+        "mov  eax,dr1"  \
+        EAXtoDXAX        \
+    __value [__dx __ax]
+extern unsigned long GetDR2( void );
+#pragma aux GetDR2 = \
+        ".386p"         \
+        "mov  eax,dr2"  \
+        EAXtoDXAX        \
+    __value [__dx __ax]
+extern unsigned long GetDR3( void );
+#pragma aux GetDR3 = \
+        ".386p"         \
+        "mov  eax,dr3"  \
+        EAXtoDXAX        \
+    __value [__dx __ax]
+extern unsigned long GetDR6( void );
+#pragma aux GetDR6 = \
+        ".386p"         \
+        "mov  eax,dr6"  \
+        EAXtoDXAX        \
+    __value [__dx __ax]
+extern unsigned long GetDR7( void );
+#pragma aux GetDR7 = \
+        ".386p"         \
+        "mov  eax,dr7"  \
+        EAXtoDXAX        \
+    __value [__dx __ax]

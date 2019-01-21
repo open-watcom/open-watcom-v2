@@ -65,9 +65,12 @@ sym_id  FindNameList( char *name, uint len ) {
 
     head = NmList;
     for(;;) {
-        if( head == NULL ) return( NULL );
+        if( head == NULL )
+            return( NULL );
         if( head->u.nl.name_len == len ) {
-            if( memcmp( name, &head->u.nl.name, len ) == 0 ) return( head );
+            if( memcmp( name, &head->u.nl.name, len ) == 0 ) {
+                return( head );
+            }
         }
         head = head->u.nl.link;
     }

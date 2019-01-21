@@ -29,10 +29,12 @@
 ****************************************************************************/
 
 
+#define StatusLinesVbuf(m,p)    StatusLines(m, VbufString(p))
+
 extern void StatusShow( bool show );
 extern void StatusFini( void );
 extern void StatusLines( int msg0, const char *message1 );
 extern void BumpStatus( long by );
 extern void StatusAmount( long parts_complete, long parts_injob );
 extern bool StatusCancelled( void );
-extern bool StatusInit( void );
+extern void StatusInit( void );

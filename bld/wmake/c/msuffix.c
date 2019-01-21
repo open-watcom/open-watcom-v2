@@ -79,7 +79,8 @@ STATIC bool freeSuffix( void *node, void *ptr )
     CREATOR *creator;
     CREATOR *creator_next;
 
-    (void)ptr; // Unused
+    /* unused parameters */ (void)ptr;
+
     FreeSafe( suffix->node.name );
     freePathRing( suffix->pathring );
 
@@ -122,25 +123,25 @@ STATIC SUFFIX *findSuffixNode( const char *name, const char **p )
  */
 {
     char        sufname[MAX_SUFFIX];
-    const char  *s;
+    const char  *n;
     char        *d;
 
     assert( name != NULL );
 
-    if( name[0] == DOT ) {
+    if( name[0] == '.' ) {
         ++name;
     }
 
     d = sufname;
-    s = name;
-    while( *s != NULLCHAR && *s != DOT ) {
-        *d++ = *s++;
+    n = name;
+    while( *n != NULLCHAR && *n != '.' ) {
+        *d++ = *n++;
     }
     *d = NULLCHAR;
 
     if( p != NULL ) {
-        if( *s == DOT ) {
-            *p = s;
+        if( *n == '.' ) {
+            *p = n;
         } else {
             *p = NULL;
         }
@@ -156,7 +157,7 @@ STATIC SUFFIX *findSuffixNode( const char *name, const char **p )
 
 
 SUFFIX *FindSuffix( const char *name )
-/*******************************************/
+/************************************/
 {
     return( findSuffixNode( name, NULL ) );
 }
@@ -165,7 +166,7 @@ SUFFIX *FindSuffix( const char *name )
 bool SufExists( const char *name )    /* with . */
 /********************************/
 {
-    assert( name != NULL && name[0] == DOT );
+    assert( name != NULL && name[0] == '.' );
 
     return( FindSuffix( name ) != NULL );
 }
@@ -181,7 +182,7 @@ STATIC void AddFrontSuffix( char const *name )
 {
     SUFFIX  *new;
 
-    assert( (name + 1) != NULL && name[0] == DOT && !SufExists( name ) );
+    assert( (name + 1) != NULL && name[0] == '.' && !SufExists( name ) );
 
     new = CallocSafe( sizeof( *new ) );
     new->node.name = FixName( StrDupSafe( name + 1 ) );
@@ -200,7 +201,7 @@ bool SufBothExist( const char *sufsuf )   /* .src.dest */
 {
     char const  *ptr;
 
-    assert( sufsuf != NULL && sufsuf[0] == DOT && strchr( sufsuf + 1, DOT ) != NULL );
+    assert( sufsuf != NULL && sufsuf[0] == '.' && strchr( sufsuf + 1, '.' ) != NULL );
 
     if( findSuffixNode( sufsuf, &ptr ) == NULL ) {
         return( false );
@@ -229,8 +230,8 @@ void AddSuffix( const char *name )
 {
     SUFFIX  *new;
 
-    assert( ( name != NULL && name[0] == DOT && !SufExists( name ) ) ||
-            ( name != NULL && name[0] == DOT && SufExists( name ) &&
+    assert( ( name != NULL && name[0] == '.' && !SufExists( name ) ) ||
+            ( name != NULL && name[0] == '.' && SufExists( name ) &&
             Glob.compat_nmake ) );
 
     new = CallocSafe( sizeof( *new ) );
@@ -261,7 +262,7 @@ STATIC void addPathToPathRing( PATHRING *pathring, const char *path )
     p = path;
     while( *p != NULLCHAR ) {
         /* find end of path in string */
-        while( *p != NULLCHAR && *p != PATH_SPLIT && *p != ';' ) {
+        while( *p != NULLCHAR && !IS_PATH_SPLIT( *p ) ) {
             ++p;
         }
         len = p - path;                                     /* get length of sub-path */
@@ -292,7 +293,7 @@ void SetSufPath( const char *name, const char *path )
 {
     SUFFIX      *suffix;
 
-    assert( name != NULL && name[0] == DOT );
+    assert( name != NULL && name[0] == '.' );
 
     suffix = FindSuffix( name );
 
@@ -354,13 +355,13 @@ char *AddCreator( const char *sufsuf )
     CREATOR     *new;
     CREATOR     **cur;
     SLIST       *slist;
-    SLIST       **sl;
+    SLIST       **pslist;
     char        *fullsufsuf;
     char        *cur_targ_path;
     char        *cur_dep_path;
     char        buf[_MAX_PATH];
 
-    assert( sufsuf != NULL && sufsuf[0] == DOT && strchr( sufsuf + 1, DOT ) != NULL );
+    assert( sufsuf != NULL && sufsuf[0] == '.' && strchr( sufsuf + 1, '.' ) != NULL );
 
     src = findSuffixNode( sufsuf, &ptr );
     dest = FindSuffix( ptr );
@@ -387,7 +388,7 @@ char *AddCreator( const char *sufsuf )
         cur_dep_path = StrDupSafe( FixName( buf ) );
     }
 
-    sl = NULL;
+    pslist = NULL;
     if( *cur != NULL && src->id == (*cur)->suffix->id ) {
         for( slist = (*cur)->slist; ; slist = slist->next ) {
             if( stricmp( slist->targ_path, cur_targ_path ) == 0 && stricmp( slist->dep_path, cur_dep_path ) == 0 ) {
@@ -400,16 +401,16 @@ char *AddCreator( const char *sufsuf )
                 return( StrDupSafe( slist->cretarg->node.name ) );
             }
             if( slist->next == NULL ) {
-                sl = &slist->next;
+                pslist = &slist->next;
                 break;
             }
         }
     }
-    if( sl == NULL ) {
+    if( pslist == NULL ) {
         new = newCreator();
         new->suffix = src;
         new->slist = NULL;
-        sl = &new->slist;
+        pslist = &new->slist;
 
         new->next = *cur;
         *cur = new;
@@ -424,8 +425,8 @@ char *AddCreator( const char *sufsuf )
     slist->cretarg->special = true;
     slist->cretarg->sufsuf  = true;
     slist->cretarg->depend = NewDepend();
-    slist->next = *sl;
-    *sl = slist;
+    slist->next = *pslist;
+    *pslist = slist;
     return( fullsufsuf );
 }
 
@@ -438,9 +439,9 @@ STATIC bool printSuf( void *node, void *ptr )
     PATHNODE    *currpath;
     SLIST       *slist;
     CLIST       *cmds;
-    bool        printed;
 
-    (void)ptr; // Unused
+    /* unused parameters */ (void)ptr;
+
     PrtMsg( INF | PSUF_SUFFIX, suffix->node.name );
     if( suffix->currpath != NULL ) {
         currpath = suffix->currpath;
@@ -448,17 +449,13 @@ STATIC bool printSuf( void *node, void *ptr )
             PrtMsg( INF | PSUF_FOUND_IN, currpath->name );
             currpath = currpath->next;
         } while( currpath != suffix->currpath );
-        printed = true;
-    } else {
-        printed = false;
+        if( suffix->creator != NULL ) {
+            PrtMsg( INF | NEWLINE );
+        }
     }
-    cur = suffix->creator;
-    if( cur != NULL && printed ) {
-        PrtMsg( INF | NEWLINE );
-    }
-    while( cur != NULL ) {
-        slist = cur->slist;
-        while( slist != NULL ) {
+
+    for( cur = suffix->creator; cur != NULL; cur = cur->next ) {
+        for( slist = cur->slist; slist != NULL; slist = slist->next ) {
             PrtMsg( INF | NEOL | PSUF_MADE_FROM, cur->suffix->node.name );
             PrintTargFlags( &slist->cretarg->attr );
             PrtMsg( INF | NEWLINE );
@@ -473,13 +470,11 @@ STATIC bool printSuf( void *node, void *ptr )
                 PrtMsg( INF | PSUF_USING_CMDS );
                 PrintCList( cmds );
             }
-            slist = slist->next;
-            if( slist != NULL ) {
+            if( slist->next != NULL ) {
                 PrtMsg( INF | NEWLINE );
             }
         }
-        cur = cur->next;
-        if( cur != NULL ) {
+        if( cur->next != NULL ) {
             PrtMsg( INF | NEWLINE );
         }
     }

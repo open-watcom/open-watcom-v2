@@ -37,7 +37,7 @@
 #endif
 #include <dos.h>
 #include "color.h"
-#include "font.h"
+#include "vifont.h"
 #include "utils.h"
 #include "banner.h"
 #include "aboutdlg.h"
@@ -46,6 +46,23 @@
 
 #include "clibext.h"
 
+
+char *windowName[] = {
+    "Buffer Window",
+    "MessageWindow",
+    "RepeatWindow",
+    "FileCompleteWindow",
+    "CommandWindow",
+    "StatusWnd",
+    "WTool",
+#ifdef __NT__
+    STATUSCLASSNAME,
+#endif
+#if 0
+    EditorName,         // nothing to change
+    "Edit Container"    // should use standard Windows colour for this
+#endif
+};
 
 static char windowBordersG[] =  {
 #if defined( __UNIX__ )
@@ -67,19 +84,19 @@ int FileSysNeedsCR( int handle )
 
 void SetGadgetString( char *str )
 {
-    size_t  i;
+    size_t  len;
 
     if( str != NULL && *str != '\0' ) {
-        i = strlen( str );
-        if( i > GADGET_SIZE ) {
-            i = GADGET_SIZE;
+        len = strlen( str );
+        if( len > GADGET_SIZE ) {
+            len = GADGET_SIZE;
         }
         if( EditVars.GadgetString == NULL ) {
             EditVars.GadgetString = MemAlloc( GADGET_SIZE + 1 );
             EditVars.GadgetString[GADGET_SIZE] = '\0';
         }
         memset( EditVars.GadgetString, ' ', GADGET_SIZE );
-        memcpy( EditVars.GadgetString, str, i );
+        memcpy( EditVars.GadgetString, str, len );
     } else {
         ReplaceString( &EditVars.GadgetString, windowBordersG );
     }
@@ -437,9 +454,6 @@ long MemSize( void )
 #endif
 }
 
-#ifdef __AXP__
-extern void     delay( unsigned int __milliseconds );
-#endif
 void MyDelay( int ms )
 {
 #if !defined( __WATCOMC__ ) && defined( _WIN64 )
@@ -455,42 +469,6 @@ void MyBeep( void )
         MessageBeep( (UINT)-1 );
     }
 }
-
-static char oldPath[FILENAME_MAX];
-static char oldDrive;
-
-/*
- * PushDirectory - save the current drive/directory
- */
-void PushDirectory( const char *orig )
-{
-    unsigned    c;
-
-    oldPath[0] = '\0';
-    _dos_getdrive( &c );
-    oldDrive = (char)c;
-    if( orig[1] == DRV_SEP ) {
-        ChangeDrive( orig[0] );
-    }
-    GetCWD2( oldPath, FILENAME_MAX );
-    ChangeDirectory( orig );
-
-} /* PushDirectory */
-
-/*
- * PopDirectory - restore the current drive/directory
- */
-void PopDirectory( void )
-{
-    unsigned    total;
-
-    if( oldPath[0] != '\0' ) {
-        ChangeDirectory( oldPath );
-    }
-    _dos_setdrive( oldDrive, &total );
-    ChangeDirectory( CurrentDirectory );
-
-} /* PopDirectory */
 
 /*
  * DoAboutBox - do an about box
@@ -520,60 +498,43 @@ void CursorOp( CursorOps op )
 
 //    ShowCursor( FALSE );
     switch( op ) {
-        case COP_INIT:
-            noDrop = LoadCursor( InstanceHandle, "NODROP" );
-            dropFt = LoadCursor( InstanceHandle, "DROPFT" );
-            dropClr = LoadCursor( InstanceHandle, "DROPCLR" );
-            dropSS = LoadCursor( InstanceHandle, "DROPSS" );
-            statMove = LoadCursor( InstanceHandle, "STATMOVE" );
-            break;
-        case COP_FINI:
-            DestroyCursor( noDrop );
-            DestroyCursor( dropClr );
-            DestroyCursor( dropFt );
-            DestroyCursor( dropSS );
-            DestroyCursor( statMove );
-            break;
-        case COP_ARROW:
-            SetCursor( LoadCursor( (HINSTANCE)NULLHANDLE, IDC_ARROW ) );
-            break;
-        case COP_DROPFT:
-            SetCursor( dropFt );
-            break;
-        case COP_DROPSS:
-            SetCursor( dropSS );
-            break;
-        case COP_DROPCLR:
-            SetCursor( dropClr );
-            break;
-        case COP_NODROP:
-            SetCursor( noDrop );
-            break;
-        case COP_STATMOVE:
-            SetCursor( statMove );
-            break;
+    case COP_INIT:
+        noDrop = LoadCursor( InstanceHandle, "NODROP" );
+        dropFt = LoadCursor( InstanceHandle, "DROPFT" );
+        dropClr = LoadCursor( InstanceHandle, "DROPCLR" );
+        dropSS = LoadCursor( InstanceHandle, "DROPSS" );
+        statMove = LoadCursor( InstanceHandle, "STATMOVE" );
+        break;
+    case COP_FINI:
+        DestroyCursor( noDrop );
+        DestroyCursor( dropClr );
+        DestroyCursor( dropFt );
+        DestroyCursor( dropSS );
+        DestroyCursor( statMove );
+        break;
+    case COP_ARROW:
+        SetCursor( LoadCursor( (HINSTANCE)NULLHANDLE, IDC_ARROW ) );
+        break;
+    case COP_DROPFT:
+        SetCursor( dropFt );
+        break;
+    case COP_DROPSS:
+        SetCursor( dropSS );
+        break;
+    case COP_DROPCLR:
+        SetCursor( dropClr );
+        break;
+    case COP_NODROP:
+        SetCursor( noDrop );
+        break;
+    case COP_STATMOVE:
+        SetCursor( statMove );
+        break;
     }
 //    ShowCursor( TRUE );
 
     lastop = op;
 }
-
-char *windowName[] = {
-    "Buffer Window",
-    "MessageWindow",
-    "RepeatWindow",
-    "FileCompleteWindow",
-    "CommandWindow",
-    "StatusWnd",
-    "WTool",
-#ifdef __NT__
-    STATUSCLASSNAME,
-#endif
-#if 0
-    EditorName,         // nothing to change
-    "Edit Container"    // should use standard Windows colour for this
-#endif
-};
 
 HWND GetOwnedWindow( POINT pt )
 {
@@ -627,11 +588,16 @@ void MoveWindowTopRight( HWND hwnd )
     /* move window to top-right corner of container
        (a tool-bar-like position)
     */
-    RECT    rcClient, rcUs;
-    RECT    rcTB;
-    POINT   pt;
-    int     clientWidth, usWidth, usHeight;
-    int     xshift, xshiftmax;
+    RECT        rcClient;
+    RECT        rcUs;
+    RECT        rcTB;
+    POINT       pt;
+    int         clientWidth;
+    int         usWidth;
+    int         usHeight;
+    int         xshift;
+    int         xshiftmax;
+    window_id   toolbar_wid;
 
     if( !BAD_ID( current_window_id ) ) {
         GetClientRect( current_window_id, &rcClient );
@@ -651,8 +617,9 @@ void MoveWindowTopRight( HWND hwnd )
         }
         pt.x += xshift;
         pt.y += 30;
-        if( GetToolbarWindow() ) {
-            GetWindowRect( GetToolbarWindow(), &rcTB );
+        toolbar_wid = GetToolbarWindow();
+        if( toolbar_wid != NULL ) {
+            GetWindowRect( toolbar_wid, &rcTB );
             pt.y += rcTB.bottom - rcTB.top;
         }
         ScreenToClient( GetParent( hwnd ), &pt );
@@ -677,26 +644,20 @@ void SetEditInt( HWND hwnd, UINT id, int value )
  */
 void UpdateBoolSetting( HWND hwnd, int token, int id, bool oldval )
 {
-    char        *str;
     char        *ptr;
     char        result[MAX_STR];
-    int         val;
+    bool        val;
 
     val = IsDlgButtonChecked( hwnd, id );
-    if( val == oldval ) {
-        return;
-    }
-    if( !val ) {
-        result[0] = 'n';
-        result[1] = 'o';
-        ptr = &result[2];
-    } else {
+    if( val != oldval ) {
         ptr = result;
+        if( !val ) {
+            *ptr++ = 'n';
+            *ptr++ = 'o';
+        }
+        strcpy( ptr, GetTokenString( SetFlagTokens, token ) );
+        Set( result );
     }
-
-    str = GetTokenString( TokensSetFlag, token );
-    strcpy( ptr, str );
-    Set( result );
 
 } /* UpdateBoolSetting */
 
@@ -708,7 +669,7 @@ void DoStrSet( char *value, int token )
     char        result[MAX_STR];
     char        *str;
 
-    str = GetTokenString( TokensSetVar, token );
+    str = GetTokenString( SetVarTokens, token );
     strcpy( result, str );
     strcat( result, " " );
     strcat( result, value );
@@ -724,10 +685,9 @@ void UpdateStrSetting( HWND hwnd, int token, int id, char *oldval )
     char        value[MAX_STR];
 
     GetDlgItemText( hwnd, id, value, sizeof( value ) );
-    if( strcmp( oldval, value ) == 0 ) {
-        return;
+    if( strcmp( oldval, value ) != 0 ) {
+        DoStrSet( value, token );
     }
-    DoStrSet( value, token );
 
 } /* UpdateStrSetting */
 
@@ -741,10 +701,9 @@ void UpdateIntSetting( HWND hwnd, int token, int id, long oldval )
 
     GetDlgItemText( hwnd, id, value, sizeof( value ) );
     lval = atol( value );
-    if( lval == oldval ) {
-        return;
+    if( lval != oldval ) {
+        DoStrSet( value, token );
     }
-    DoStrSet( value, token );
 
 } /* UpdateIntSetting */
 
@@ -820,23 +779,3 @@ static void dumpSSBlocks( ss_block *ss_start, dc_line *dcline )
     fclose( f );
 }
 #endif
-
-/*
- * ChangeDrive - change the working drive
- */
-vi_rc ChangeDrive( int drive )
-{
-    char        a;
-    unsigned    b;
-    unsigned    total, c;
-
-    a = (char) tolower( drive ) - (char) 'a';
-    b = a + 1;
-    _dos_setdrive( b, &total );
-    _dos_getdrive( &c );
-    if( b != c ) {
-        return( ERR_NO_SUCH_DRIVE );
-    }
-    return( ERR_NO_ERR );
-
-}/* ChangeDrive */

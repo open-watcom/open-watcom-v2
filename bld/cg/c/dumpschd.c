@@ -31,7 +31,7 @@
 
 
 
-#include "cgstd.h"
+#include "_cgstd.h"
 #include "coderep.h"
 #include "indvars.h"
 #include "model.h"
@@ -40,12 +40,9 @@
 #include "freelist.h"
 #include "inssched.h"
 #include "blktrim.h"
-#include "dmpinc.h"
 #include "dumpio.h"
 #include "dumpins.h"
-
-
-extern data_dag         *DataDag;
+#include "dumpschd.h"
 
 
 static void DumpADataDag( data_dag *dag )

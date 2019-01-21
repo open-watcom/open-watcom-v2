@@ -134,46 +134,44 @@ typedef enum {
     "jc   error"                        \
     "sub  ax,ax"                        \
     "error:"                            \
-    value [ax]
+    __value [__ax]
 
 /* Macro to call device helper with no error check */
 #define DEVHELP_CALL_NOCHECK            \
     "call dword ptr [Device_Help]"      \
     "sub  ax,ax"                        \
-    value [ax]
-
-
+    __value [__ax]
 
 USHORT DevHelp_SchedClock( PFN NEAR *SchedRoutineAddr );
 #pragma aux DevHelp_SchedClock =        \
     "xor  dl,dl"                        \
     DEVHELP_CALL_NOCHECK                \
-    parm caller [ax]                    \
-    modify nomemory exact [ax dl];
+    __parm __caller [__ax]              \
+    __modify __nomemory __exact [__ax __dl]
 
 
 USHORT DevHelp_DevDone( REQP_ANY *ReqPkt );
 #pragma aux DevHelp_DevDone =           \
     "mov  dl,01h"                       \
     DEVHELP_CALL                        \
-    parm caller [es bx]                 \
-    modify exact [ax dl];
+    __parm __caller [__es __bx]         \
+    __modify __exact [__ax __dl]
 
 
 USHORT DevHelp_Yield( void );
 #pragma aux DevHelp_Yield =             \
     "mov  dl,02h"                       \
     DEVHELP_CALL_NOCHECK                \
-    parm caller nomemory []             \
-    modify nomemory exact [ax dl];
+    __parm __caller __nomemory []       \
+    __modify __nomemory __exact [__ax __dl]
 
 
 USHORT DevHelp_TCYield( void );
 #pragma aux DevHelp_TCYield =           \
     "mov  dl,03h"                       \
     DEVHELP_CALL_NOCHECK                \
-    parm caller nomemory []             \
-    modify nomemory exact [ax dl];
+    __parm __caller __nomemory []       \
+    __modify __nomemory __exact [__ax __dl]
 
 
 /* DevHelp_ProcBlock wait flags */
@@ -195,11 +193,11 @@ USHORT DevHelp_ProcBlock( ULONG EventId, ULONG WaitTime, USHORT IntWaitFlag );
     "mov  dl,04h"                       \
     "call dword ptr [Device_Help]"      \
     "jc   error"                        \
-    "xor  ax,ax"                         \
+    "xor  ax,ax"                        \
     "error:"                            \
-    value [ax]                          \
-    parm caller nomemory [ax bx] [di cx] [dh] \
-    modify nomemory exact [ax bx cx dl di];
+    __value [__ax]                      \
+    __parm __caller __nomemory [__ax __bx] [__di __cx] [__dh] \
+    __modify __nomemory __exact [__ax __bx __cx __dl __di]
 
 
 USHORT DevHelp_ProcRun( ULONG EventId, PUSHORT AwakeCount );
@@ -209,9 +207,9 @@ USHORT DevHelp_ProcRun( ULONG EventId, PUSHORT AwakeCount );
     "call dword ptr [Device_Help]"      \
     "mov  es:[si],ax"                   \
     "sub  ax,ax"                        \
-    value [ax]                          \
-    parm caller nomemory [ax bx] [es si] \
-    modify exact [ax bx dl];
+    __value [__ax]                      \
+    __parm __caller __nomemory [__ax __bx] [__es __si] \
+    __modify __exact [__ax __bx __dl]
 
 
 USHORT DevHelp_SemRequest( ULONG SemHandle, ULONG SemTimeout );
@@ -220,8 +218,8 @@ USHORT DevHelp_SemRequest( ULONG SemHandle, ULONG SemTimeout );
     "xchg di,cx"                        \
     "mov  dl,06h"                       \
     DEVHELP_CALL                        \
-    parm nomemory [ax bx] [cx di]       \
-    modify nomemory exact [ax bx cx di dl];
+    __parm __nomemory [__ax __bx] [__cx __di] \
+    __modify __nomemory __exact [__ax __bx __cx __di __dl]
 
 
 USHORT DevHelp_SemClear( ULONG SemHandle );
@@ -229,8 +227,8 @@ USHORT DevHelp_SemClear( ULONG SemHandle );
     "xchg ax,bx"                        \
     "mov  dl,07h"                       \
     DEVHELP_CALL                        \
-    parm nomemory [ax bx]               \
-    modify nomemory exact [ax bx dl];
+    __parm __nomemory [__ax __bx]       \
+    __modify __nomemory __exact [__ax __bx __dl]
 
 
 /* DevHelp_SemHandle semaphore use flags */
@@ -249,17 +247,17 @@ USHORT DevHelp_SemHandle( ULONG SemKey, USHORT SemUseFlag, PULONG SemHandle );
     "mov  es:[si+2],ax"                 \
     "sub  ax,ax"                        \
     "error:"                            \
-    value [ax]                          \
-    parm nomemory [ax bx] [dh] [es si]  \
-    modify exact [ax bx dl];
+    __value [__ax]                          \
+    __parm __nomemory [__ax __bx] [__dh] [__es __si] \
+    __modify __exact [__ax __bx __dl]
 
 
 USHORT DevHelp_PushRequest( NPBYTE Queue, PBYTE ReqPktddr );
 #pragma aux DevHelp_PushRequest =       \
     "mov  dl,09h"                       \
     DEVHELP_CALL_NOCHECK                \
-    parm [si] [es bx]                   \
-    modify exact [ax dl];
+    __parm [__si] [__es __bx]           \
+    __modify __exact [__ax __dl]
 
 
 USHORT DevHelp_PullRequest( NPBYTE Queue, PBYTE FAR *ReqPktAddr );
@@ -276,25 +274,25 @@ USHORT DevHelp_PullRequest( NPBYTE Queue, PBYTE FAR *ReqPktAddr );
     "pop  es:[bx+2]"                    \
     "sub  ax,ax"                        \
     "error:"                            \
-    value [ax]                          \
-    parm [si] []                        \
-    modify exact [ax bx dl es];
+    __value [__ax]                      \
+    __parm [__si] []                    \
+    __modify __exact [__ax __bx __dl __es]
 
 
 USHORT DevHelp_PullParticular( NPBYTE Queue, PBYTE ReqPktAddr );
 #pragma aux DevHelp_PullParticular =    \
     "mov  dl,0Bh"                       \
     DEVHELP_CALL                        \
-    parm [si] [es bx]                   \
-    modify exact [ax dl];
+    __parm [__si] [__es __bx]           \
+    __modify __exact [__ax __dl]
 
 
 USHORT DevHelp_SortRequest( NPBYTE Queue, PBYTE ReqPktAddr );
 #pragma aux DevHelp_SortRequest =       \
     "mov  dl,0Ch"                       \
     DEVHELP_CALL_NOCHECK                \
-    parm [si] [es bx]                   \
-    modify exact [ax dl];
+    __parm [__si] [__es __bx]           \
+    __modify __exact [__ax __dl]
 
 
 /* DevHelp_AllocReqPacket wait flags */
@@ -317,17 +315,17 @@ USHORT DevHelp_AllocReqPacket( USHORT WaitFlag, PBYTE FAR *ReqPktAddr );
     "error:"                            \
     "mov  ax,0"                         \
     "sbb  ax,0"                         \
-    value [ax]                          \
-    parm caller [dh] []                 \
-    modify exact [ax bx dl es];
+    __value [__ax]                      \
+    __parm __caller [__dh] []           \
+    __modify __exact [__ax __bx __dl __es]
 
 
 USHORT DevHelp_FreeReqPacket( PBYTE ReqPktAddr );
 #pragma aux DevHelp_FreeReqPacket =     \
     "mov  dl,0Eh",                      \
     DEVHELP_CALL_NOCHECK                \
-    parm caller [es bx]                 \
-    modify exact [ax dl];
+    __parm __caller [__es __bx]         \
+    __modify __exact [__ax __dl]
 
 
 /* Queue header structure */
@@ -342,24 +340,24 @@ USHORT DevHelp_QueueInit( NPQUEUEHDR Queue );
 #pragma aux DevHelp_QueueInit =         \
    "mov  dl,0Fh"                        \
     DEVHELP_CALL_NOCHECK                \
-    parm [bx]                           \
-    modify exact [ax dl];
+    __parm [__bx]                       \
+    __modify __exact [__ax __dl]
 
 
 USHORT DevHelp_QueueFlush( NPQUEUEHDR Queue );
 #pragma aux DevHelp_QueueFlush =        \
     "mov  dl,10h"                       \
     DEVHELP_CALL_NOCHECK                \
-    parm [bx]                           \
-    modify exact [ax dl];
+    __parm [__bx]                       \
+    __modify __exact [__ax __dl]
 
 
 USHORT DevHelp_QueueWrite( NPQUEUEHDR Queue, UCHAR Char );
 #pragma aux DevHelp_QueueWrite =        \
     "mov  dl,11h"                       \
     DEVHELP_CALL                        \
-    parm [bx] [al]                      \
-    modify exact [ax dl];
+    __parm [__bx] [__al]                \
+    __modify __exact [__ax __dl]
 
 
 USHORT DevHelp_QueueRead( NPQUEUEHDR Queue, PBYTE Char );
@@ -370,9 +368,9 @@ USHORT DevHelp_QueueRead( NPQUEUEHDR Queue, PBYTE Char );
     "mov  es:[di],al"                   \
     "sub  ax,ax"                        \
     "error:"                            \
-    value [ax]                          \
-    parm [bx] [es di]                   \
-    modify exact [ax dl];
+    __value [__ax]                      \
+    __parm [__bx] [__es __di]           \
+    __modify __exact [__ax __dl]
 
 
 /* DevHelp_Lock flags */
@@ -392,9 +390,9 @@ USHORT DevHelp_Lock( SEL Segment, USHORT LockType, USHORT WaitFlag, PULONG LockH
     "mov  es:[di+2],ax"                 \
     "sub  ax,ax"                        \
     "error:"                            \
-    value [ax]                          \
-    parm caller [ax] [bh] [bl] [es di]  \
-    modify exact [ax dl];
+    __value [__ax]                      \
+    __parm __caller [__ax] [__bh] [__bl] [__es __di] \
+    __modify __exact [__ax __dl]
 
 
 USHORT DevHelp_UnLock( ULONG LockHandle );
@@ -402,8 +400,8 @@ USHORT DevHelp_UnLock( ULONG LockHandle );
     "xchg ax,bx"                        \
     "mov  dl,14h"                       \
     DEVHELP_CALL                        \
-    parm nomemory [ax bx]               \
-    modify nomemory exact [ax bx dl];
+    __parm __nomemory [__ax __bx]       \
+    __modify __nomemory __exact [__ax __bx __dl]
 
 
 USHORT DevHelp_PhysToVirt( ULONG PhysAddr, USHORT usLength, PVOID SelOffset, PUSHORT ModeFlag );
@@ -418,9 +416,9 @@ USHORT DevHelp_PhysToVirt( ULONG PhysAddr, USHORT usLength, PVOID SelOffset, PUS
     "mov  es:[di+2],ds"                 \
     "error:"                            \
     "pop  ds"                           \
-    value [ax]                          \
-    parm caller nomemory [bx ax] [cx] [es di] [] \
-    modify exact [ax bx dx si];
+    __value [__ax]                      \
+    __parm __caller __nomemory [__bx __ax] [__cx] [__es __di] [] \
+    __modify __exact [__ax __bx __dx __si]
 
 
 USHORT DevHelp_VirtToPhys( PVOID SelOffset, PPHYSADDR PhysAddr );
@@ -438,9 +436,9 @@ USHORT DevHelp_VirtToPhys( PVOID SelOffset, PPHYSADDR PhysAddr );
     "mov  es:[di+2],ax"                 \
     "pop  ds"                           \
     "sub  ax,ax"                        \
-    value [ax]                          \
-    parm caller nomemory [ax bx] [es di] \
-    modify exact [ax bx dl si];
+    __value [__ax]                      \
+    __parm __caller __nomemory [__ax __bx] [__es __di] \
+    __modify __exact [__ax __bx __dl __si]
 
 
 /* DevHelp_PhysToUVirt request types */
@@ -467,9 +465,9 @@ USHORT DevHelp_PhysToUVirt( ULONG PhysAddr, USHORT Length, USHORT flags, USHORT 
     "pop  es:[bx+2]"                    \
     "sub  ax,ax"                        \
     "error:"                            \
-    value [ax]                          \
-    parm caller nomemory [bx ax] [cx] [dh] [si] [] \
-    modify exact [ax bx dl es];
+    __value [__ax]                      \
+    __parm __caller __nomemory [__bx __ax] [__cx] [__dh] [__si] [] \
+    __modify __exact [__ax __bx __dl __es]
 
 
 /* DevHelp_AllocPhys allocation flags */
@@ -488,9 +486,9 @@ USHORT DevHelp_AllocPhys( ULONG lSize, USHORT MemType, PULONG PhysAddr );
     "mov  es:[di+2],ax"                 \
     "sub  ax,ax"                        \
     "error:"                            \
-    value [ax]                          \
-    parm caller nomemory [ax bx] [dh] [es di] \
-    modify exact [ax bx dx];
+    __value [__ax]                      \
+    __parm __caller __nomemory [__ax __bx] [__dh] [__es __di] \
+    __modify __exact [__ax __bx __dx]
 
 
 USHORT DevHelp_FreePhys( ULONG PhysAddr );
@@ -500,41 +498,41 @@ USHORT DevHelp_FreePhys( ULONG PhysAddr );
     "call dword ptr [Device_Help]"      \
     "mov  ax,0"                         \
     "sbb  ax,0"                         \
-    value [ax]                          \
-    parm caller nomemory [ax bx]        \
-    modify exact [ax bx dl];
+    __value [__ax]                      \
+    __parm __caller __nomemory [__ax __bx] \
+    __modify __exact [__ax __bx __dl]
 
 
 USHORT DevHelp_SetIRQ( NPFN IRQHandler, USHORT IRQLevel, USHORT SharedFlag );
 #pragma aux DevHelp_SetIRQ =            \
     "mov  dl,1Bh"                       \
     DEVHELP_CALL                        \
-    parm caller nomemory [ax] [bx] [dh] \
-    modify nomemory exact [ax dl];
+    __parm __caller __nomemory [__ax] [__bx] [__dh] \
+    __modify __nomemory __exact [__ax __dl]
 
 
 USHORT DevHelp_UnSetIRQ( USHORT IRQLevel );
 #pragma aux DevHelp_UnSetIRQ =          \
     "mov  dl,1Ch"                       \
     DEVHELP_CALL                        \
-    parm caller nomemory [bx]           \
-    modify nomemory exact [ax dl];
+    __parm __caller __nomemory [__bx]   \
+    __modify __nomemory __exact [__ax __dl]
 
 
 USHORT DevHelp_SetTimer( NPFN TimerHandler );
 #pragma aux DevHelp_SetTimer =          \
     "mov  dl,1Dh"                       \
     DEVHELP_CALL                        \
-    parm caller nomemory [ax]           \
-    modify nomemory exact [ax dl];
+    __parm __caller __nomemory [__ax]   \
+    __modify __nomemory __exact [__ax __dl]
 
 
 USHORT DevHelp_ResetTimer( NPFN TimerHandler );
 #pragma aux DevHelp_ResetTimer =        \
     "mov  dl,1Eh"                       \
     DEVHELP_CALL                        \
-    parm caller nomemory [ax]           \
-    modify nomemory exact [ax dl];
+    __parm __caller __nomemory [__ax]   \
+    __modify __nomemory __exact [__ax __dl]
 
 
 
@@ -562,9 +560,9 @@ USHORT DevHelp_GetDOSVar( DHGetDOSVar_Index VarNumber, USHORT VarMember, PPVOID 
     "mov  es:[di+0],bx"                 \
     "mov  es:[di+2],ax"                 \
     "sub  ax,ax"                        \
-    value [ax]                          \
-    parm caller nomemory [al] [cx] [es di] \
-    modify exact [ax bx dl];
+    __value [__ax]                      \
+    __parm __caller __nomemory [__al] [__cx] [__es __di] \
+    __modify __exact [__ax __bx __dl]
 
 
 /* DevHelp_SendEvent event codes */
@@ -585,9 +583,9 @@ USHORT DevHelp_SendEvent( USHORT EventType, USHORT Parm );
     "call dword ptr [Device_Help]"      \
     "mov  ax,0"                         \
     "sbb  ax,0"                         \
-    value [ax]                          \
-    parm nomemory [ah] [bx]             \
-    modify nomemory exact [ax dl];
+    __value [__ax]                      \
+    __parm __nomemory [__ah] [__bx]     \
+    __modify __nomemory __exact [__ax __dl]
 
 
 /* DevHelp_VerifyAccess access types */
@@ -600,8 +598,8 @@ USHORT DevHelp_VerifyAccess( SEL MemSelector, USHORT Length, USHORT MemOffset, U
 #pragma aux DevHelp_VerifyAccess =      \
     "mov  dl,27h"                       \
     DEVHELP_CALL                        \
-    parm caller nomemory [ax] [cx] [di] [dh] \
-    modify nomemory exact [ax dl];
+    __parm __caller __nomemory [__ax] [__cx] [__di] [__dh] \
+    __modify __nomemory __exact [__ax __dl]
 
 /* Modified version of VerifyAccess that takes a far pointer instead of selector/offset */
 USHORT DevHelp_VerifyAccessPtr( PVOID Pointer, USHORT Length, UCHAR AccessFlag );
@@ -609,8 +607,8 @@ USHORT DevHelp_VerifyAccessPtr( PVOID Pointer, USHORT Length, UCHAR AccessFlag )
     "xchg ax,di"                        \
     "mov  dl,27h"                       \
     DEVHELP_CALL                        \
-    parm caller nomemory [ax di] [cx] [dh] \
-    modify nomemory exact [ax dl di];
+    __parm __caller __nomemory [__ax __di] [__cx] [__dh] \
+    __modify __nomemory __exact [__ax __dl __di]
 
 
 
@@ -628,9 +626,9 @@ USHORT DevHelp_AttachDD( NPSZ DDName, NPIDCTABLE DDTable );
     "call dword ptr [Device_Help]"      \
     "mov  ax,0"                         \
     "sbb  ax,0"                         \
-    value [ax]                          \
-    parm caller [bx] [di]               \
-    modify exact [ax dl];
+    __value [__ax]                      \
+    __parm __caller [__bx] [__di]       \
+    __modify __exact [__ax __dl]
 
 
 USHORT DevHelp_InternalError( PSZ MsgText, USHORT MsgLength );
@@ -641,17 +639,17 @@ USHORT DevHelp_InternalError( PSZ MsgText, USHORT MsgLength );
     "pop  es"                           \
     "mov  dl,2Bh"                       \
     "jmp dword ptr es:[Device_Help]"    \
-    parm [es si] [di]                   \
-    modify nomemory exact []            \
-    aborts;
+    __parm [__es __si] [__di]           \
+    __modify __nomemory __exact []      \
+    __aborts
 
 
 USHORT DevHelp_AllocGDTSelector( PSEL Selectors, USHORT Count );
 #pragma aux DevHelp_AllocGDTSelector =  \
     "mov  dl,2Dh"                       \
     DEVHELP_CALL                        \
-    parm caller [es di] [cx]            \
-    modify nomemory exact [ax dl];
+    __parm __caller [__es __di] [__cx]  \
+    __modify __nomemory __exact [__ax __dl]
 
 
 
@@ -660,8 +658,8 @@ USHORT DevHelp_FreeGDTSelector( SEL Selector );
 #pragma aux DevHelp_FreeGDTSelector =   \
     "mov  dl,53h"                       \
     DEVHELP_CALL                        \
-    parm caller nomemory [ax]           \
-    modify nomemory exact [ax dl];
+    __parm __caller __nomemory [__ax]   \
+    __modify __nomemory __exact [__ax __dl]
 
 
 /* GDT selector mapping types for PhysToGDTSel and PageListToGDTSelector */
@@ -690,9 +688,9 @@ USHORT DevHelp_PhysToGDTSel( ULONG PhysAddr, ULONG Count, SEL Selector, UCHAR Ac
     "sub  ax,ax"                        \
     "error:"                            \
     "pop  bp"                           \
-    value [ax]                          \
-    parm caller nomemory []             \
-    modify nomemory exact [ax cx dx si];
+    __value [__ax]                      \
+    __parm __caller __nomemory []       \
+    __modify __nomemory __exact [__ax __cx __dx __si]
 
 
 
@@ -707,9 +705,9 @@ USHORT DevHelp_VirtToLin( SEL Selector, ULONG Offset, PLIN LinearAddr );
     "mov  es:[bx],eax"                  \
     "sub  ax,ax"                        \
     "error:"                            \
-    value [ax]                          \
-    parm caller nomemory [ax] []        \
-    modify exact [ax si es bx dl];
+    __value [__ax]                      \
+    __parm __caller __nomemory [__ax] [] \
+    __modify __exact [__ax __si __es __bx __dl]
 
 /* Modified version of VirtToLin that takes a far pointer instead of selector/offset */
 USHORT DevHelp_VirtToLinPtr( PVOID Pointer, PLIN LinearAddr );
@@ -724,9 +722,9 @@ USHORT DevHelp_VirtToLinPtr( PVOID Pointer, PLIN LinearAddr );
     "mov  es:[bx],eax"                  \
     "sub  ax,ax"                        \
     "error:"                            \
-    value [ax]                          \
-    parm routine nomemory [ax si] []    \
-    modify exact [ax si es bx dl];
+    __value [__ax]                      \
+    __parm __routine __nomemory [__ax __si] [] \
+    __modify __exact [__ax __si __es __bx __dl]
 
 
 
@@ -736,8 +734,8 @@ USHORT DevHelp_OpenEventSem( ULONG hEvent );
     "pop  eax"                          \
     "mov  dl,67h"                       \
     DEVHELP_CALL                        \
-    parm routine nomemory []            \
-    modify nomemory exact [ax dl];
+    __parm __routine __nomemory []      \
+    __modify __nomemory __exact [__ax __dl]
 
 
 USHORT DevHelp_CloseEventSem( ULONG hEvent );
@@ -745,8 +743,8 @@ USHORT DevHelp_CloseEventSem( ULONG hEvent );
     "pop  eax"                          \
     "mov  dl,68h"                       \
     DEVHELP_CALL                        \
-    parm routine nomemory []            \
-    modify nomemory exact [ax dl];
+    __parm __routine __nomemory []      \
+    __modify __nomemory __exact [__ax __dl]
 
 
 USHORT DevHelp_PostEventSem( ULONG hEvent );
@@ -754,8 +752,8 @@ USHORT DevHelp_PostEventSem( ULONG hEvent );
     "pop  eax"                          \
     "mov  dl,69h"                       \
     DEVHELP_CALL                        \
-    parm routine nomemory []            \
-    modify nomemory exact [ax dl];
+    __parm __routine __nomemory []      \
+    __modify __nomemory __exact [__ax __dl]
 
 
 USHORT DevHelp_ResetEventSem( ULONG hEvent, LIN pNumPosts );
@@ -764,8 +762,8 @@ USHORT DevHelp_ResetEventSem( ULONG hEvent, LIN pNumPosts );
     "pop  edi"                          \
     "mov  dl,6Ah"                       \
     DEVHELP_CALL                        \
-    parm routine nomemory []            \
-    modify exact [ax dl di];
+    __parm __routine __nomemory []      \
+    __modify __exact [__ax __dl __di]
 
 #ifdef __cplusplus
 extern "C" {

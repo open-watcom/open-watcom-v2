@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
+* Copyright (c) 2009-2018 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -42,7 +42,7 @@ class Cell;
 class Element {
 public:
     Element( Document* d, Element* p, const std::wstring* f, unsigned int r, unsigned int c ) :
-        document( d ), parent( p ), fileName( f ), row( r ), col( c ) { };
+        _document( d ), _parent( p ), _fileName( f ), _row( r ), _col( c ) { };
     virtual
     ~Element() { };
     //parse the attributes of this element, and parse allowed child elements
@@ -64,24 +64,26 @@ public:
     virtual
     void buildText( Cell* cell ) = 0;
     //get this elements containing element
-    const Element* owner() const { return parent; };
+    const Element* owner() const { return _parent; };
     //get the ultimate root element
     Element* rootElement();
     //print an error message (not during parsing)
     void printError( ErrCode c ) const;
-    void printError( ErrCode c, const std::wstring& txt ) const;
-protected:
-    Document* document;
-    Element* parent;
-    //element was parsed from this source file
-    const std::wstring* fileName;
-    //at this row
-    unsigned int row;
-    //and this column
-    unsigned int col;
+    void printError( ErrCode c, const std::wstring& text ) const;
+
 private:
     Element( const Element& rhs );              //no copy
     Element& operator=( const Element& rhs );   //no assignment
+
+protected:
+    Document*           _document;
+    Element*            _parent;
+    //element was parsed from this source file
+    const std::wstring* _fileName;
+    //at this row
+    unsigned int        _row;
+    //and this column
+    unsigned int        _col;
 };
 
 #endif //ELEMENT_INCLUDED

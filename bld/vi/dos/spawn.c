@@ -81,7 +81,7 @@ long MySpawn( const char *cmd )
      * set up checkpoint file stuff:
      */
 #if defined( USE_EMS )
-    if( !EMSBlockTest( chkSwapSize ) ) {
+    if( EMSBlockTest( chkSwapSize ) == ERR_NO_ERR ) {
         xHandle = alloca( chkSwapSize * sizeof( long ) );
         xSize = alloca( chkSwapSize * sizeof( short ) );
         for( i = 0; i < chkSwapSize; i++ ) {
@@ -93,7 +93,7 @@ long MySpawn( const char *cmd )
     }
 #endif
 #if defined( USE_XMS )
-    if( !XMSBlockTest( chkSwapSize ) ) {
+    if( XMSBlockTest( chkSwapSize ) == ERR_NO_ERR ) {
         xHandle = alloca( chkSwapSize * sizeof( long ) );
         xSize = alloca( chkSwapSize * sizeof( short ) );
         for( i = 0; i < chkSwapSize; i++ ) {

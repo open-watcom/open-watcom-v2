@@ -211,8 +211,8 @@ STATIC bool procCmd( char * cmd )
             rover = cmd;
             cmd = eatAllChars( cmd );
             name_len = cmd - rover;
-            if( name_len > _MAX_PATH ) {
-                name_len = _MAX_PATH;
+            if( name_len > _MAX_PATH - 1 ) {
+                name_len = _MAX_PATH - 1;
             }
             memcpy( SamplePath, rover, name_len );
             SamplePath[name_len] = NULLCHAR;

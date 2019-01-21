@@ -65,7 +65,7 @@ GTInheritOption::~GTInheritOption()
 //---------------------------------
 {
     delete _options;
-    delete [] _rects;
+    delete[] _rects;
 }
 
 void GTInheritOption::initialize()

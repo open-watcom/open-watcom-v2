@@ -30,7 +30,7 @@
 ****************************************************************************/
 
 
-#include "cgstd.h"
+#include "_cgstd.h"
 #include "coderep.h"
 #include "cgmem.h"
 #include "addrname.h"
@@ -39,6 +39,9 @@
 #include "seldef.h"
 #include "makeins.h"
 #include "s37sel.def"
+#include "types.h"
+#include "bldins.h"
+
 
 extern  void            HWIntGen(offset,int);
 extern  void            HWLTblGen(void *);
@@ -52,18 +55,15 @@ extern  cg_name         CGInteger(signed_32,cg_type);
 extern  cg_type         SelType(unsigned_32);
 extern  cg_name         CGBinary(cg_op,cg_name,cg_name,cg_type);
 extern  an              TreeGen(tn);
-extern  an              BGDuplicate(an);
 extern  label_handle    AskForNewLabel(void);
 extern  void           *AskForHWLabel( label_handle lbl );
 extern  type_def       *TypeAddress(cg_type);
 extern  signed_32       NumValues(select_list*,signed_32);
-extern  void            BGDone(an);
 extern  tn              TGLeaf(an);
 extern  void            CodeLabel(label_handle,unsigned);
 extern  unsigned        DepthAlign(unsigned);
 extern  seg_id          AskBackSeg(void);
 extern  seg_id          SetOP(seg_id);
-extern  type_def        *TypeAddress(cg_type);
 extern  name            *LoadTemp(name*,type_class_def);
 extern  int             SelCompare(signed_32,signed_32);
 extern  void            AddIns(instruction*);

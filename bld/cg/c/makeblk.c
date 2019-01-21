@@ -30,7 +30,7 @@
 ****************************************************************************/
 
 
-#include "cgstd.h"
+#include "_cgstd.h"
 #include "coderep.h"
 #include "cgmem.h"
 #include "cgauxinf.h"
@@ -38,7 +38,7 @@
 #include "makeins.h"
 #include "data.h"
 #include "utils.h"
-#include "stack.h"
+#include "stackcg.h"
 #include "makeaddr.h"
 #include "namelist.h"
 #include "targetin.h"
@@ -46,12 +46,9 @@
 #include "makeblk.h"
 #include "typemap.h"
 #include "blktrim.h"
+#include "bgcall.h"
 #include "feprotos.h"
 
-
-extern  void            SaveToTargProc(void);
-extern  void            RestoreFromTargProc(void);
-extern  void            InitTargProc(void);
 
 block   *MakeBlock( label_handle label, block_num edges )
 /*******************************************************/
@@ -60,7 +57,7 @@ block   *MakeBlock( label_handle label, block_num edges )
     block_edge  *edge;
     block_num   i;
 
-    blk = CGAlloc( sizeof( block ) + (edges-1)*sizeof( block_edge ) );
+    blk = CGAlloc( sizeof( block ) + ( edges - 1 ) * sizeof( block_edge ) );
     blk->next_block = NULL;
     blk->prev_block = NULL;
     blk->label = label;
@@ -187,7 +184,7 @@ void    GenBlock( block_class class, int targets )
     BlockList = CurrBlock;
     CurrBlock->next_block = NULL;
     if( targets > 1 ) {
-        new = CGAlloc( sizeof( block ) + (targets-1) * sizeof( block_edge ) );
+        new = CGAlloc( sizeof( block ) + ( targets - 1 ) * sizeof( block_edge ) );
         Copy( CurrBlock, new, sizeof( block ) );
         if( CurrBlock->ins.hd.next == (instruction *)&CurrBlock->ins ) {
             new->ins.hd.next = (instruction *)&new->ins;
@@ -235,7 +232,7 @@ block   *ReGenBlock( block *blk, label_handle lbl )
     block_num   targets;
 
     targets = blk->targets + 1;
-    new = CGAlloc( sizeof( block ) + (targets-1) * sizeof( block_edge ) );
+    new = CGAlloc( sizeof( block ) + ( targets - 1 ) * sizeof( block_edge ) );
     Copy( blk, new, sizeof( block ) + ( targets - 2 ) * sizeof( block_edge ) );
     new->edge[targets - 1].destination.u.lbl = lbl;
     new->edge[targets - 1].flags = 0;
@@ -363,14 +360,14 @@ static void *LinkReturns( void *arg )
     blk = FindBlockWithLbl( to_search );
 //    found = false;
     if( blk == NULL )
-        return( NULL );
+        return( TO_SR_VALUE( false ) );
     if( _IsBlkVisited( blk ) )
-        return( NOT_NULL );
+        return( TO_SR_VALUE( true ) );
     if( _IsBlkAttr( blk, BLK_LABEL_RETURN ) ) {
         for( i = blk->targets; i-- > 0; ) {
             if( blk->edge[i].destination.u.lbl == link_to ) {
                 /* kick out ... already linked */
-                return( NOT_NULL );
+                return( TO_SR_VALUE( true ) );
             }
         }
         blk = ReGenBlock( blk, link_to );
@@ -379,23 +376,23 @@ static void *LinkReturns( void *arg )
         _MarkBlkVisited( blk );
         if( _IsBlkAttr( blk, BLK_CALL_LABEL ) ) {
             if( blk->next_block == NULL )
-                return( (void *)(pointer_int)false );
+                return( TO_SR_VALUE( false ) );
             LinkReturnsParms[0] = link_to;
             LinkReturnsParms[1] = blk->next_block->label;
-            if( SafeRecurseCG( LinkReturns, NULL ) == NULL ) {
-                return( NULL );
+            if( !FROM_SR_VALUE( SafeRecurseCG( LinkReturns, NULL ), bool ) ) {
+                return( TO_SR_VALUE( false ) );
             }
         } else {
             for( i = blk->targets; i-- > 0; ) {
                 LinkReturnsParms[0] = link_to;
                 LinkReturnsParms[1] = blk->edge[i].destination.u.lbl;
-                if( SafeRecurseCG( LinkReturns, NULL ) == NULL ) {
-                    return( NULL );
+                if( !FROM_SR_VALUE( SafeRecurseCG( LinkReturns, NULL ), bool ) ) {
+                    return( TO_SR_VALUE( false ) );
                 }
             }
         }
     }
-    return( NOT_NULL );
+    return( TO_SR_VALUE( true ) );
 }
 
 bool        FixReturns( void )
@@ -414,7 +411,7 @@ bool        FixReturns( void )
             _MarkBlkAttr( blk, BLK_RETURNED_TO );
             LinkReturnsParms[0] = blk->next_block->label;
             LinkReturnsParms[1] = blk->edge[0].destination.u.lbl;
-            if( !LinkReturns( NULL ) ) {
+            if( !FROM_SR_VALUE( LinkReturns( NULL ), bool ) ) {
                 return( false );
             }
             for( other_blk = HeadBlock; other_blk != NULL; other_blk = other_blk->next_block ) {
@@ -487,7 +484,8 @@ bool    BlkTooBig( void )
 void    NewProc( level_depth level )
 /**********************************/
 {
-    proc_def    *new;
+    proc_def        *new;
+    name_class_def  class;
 
     if( CurrProc != NULL ) {
         SaveToTargProc();
@@ -496,11 +494,9 @@ void    NewProc( level_depth level )
         CurrProc->curr_block = CurrBlock;
         CurrProc->lasttemp = LastTemp;
         CurrProc->dummy_index = DummyIndex;
-        CurrProc->names[N_CONSTANT] = Names[N_CONSTANT];
-        CurrProc->names[N_MEMORY]   = Names[N_MEMORY];
-        CurrProc->names[N_TEMP]     = Names[N_TEMP];
-        CurrProc->names[N_REGISTER] = Names[N_REGISTER];
-        CurrProc->names[N_INDEXED]  = Names[N_INDEXED];
+        for( class = 0; class < N_CLASS_MAX; class++ ) {
+            CurrProc->names[class] = Names[class];
+        }
         CurrProc->block_by_block = BlockByBlock;
         CurrProc->ins_id = InsId;
         CurrProc->untrimmed = BlocksUnTrimmed;
@@ -531,7 +527,8 @@ void    NewProc( level_depth level )
 void    FreeProc( void )
 /**********************/
 {
-    proc_def    *oldproc;
+    proc_def        *oldproc;
+    name_class_def  class;
 
     for( CurrBlock = HeadBlock; CurrBlock != NULL; CurrBlock = HeadBlock ) {
         HeadBlock = CurrBlock->next_block;
@@ -553,11 +550,9 @@ void    FreeProc( void )
             HeadBlock = CurrProc->head_block;
             BlockList = CurrProc->tail_block;
             CurrBlock = CurrProc->curr_block;
-            Names[N_CONSTANT] = CurrProc->names[N_CONSTANT];
-            Names[N_MEMORY]   = CurrProc->names[N_MEMORY];
-            Names[N_TEMP]     = CurrProc->names[N_TEMP];
-            Names[N_REGISTER] = CurrProc->names[N_REGISTER];
-            Names[N_INDEXED]  = CurrProc->names[N_INDEXED];
+            for( class = 0; class < N_CLASS_MAX; class++ ) {
+                Names[class] = CurrProc->names[class];
+            }
             LastTemp = CurrProc->lasttemp;
             DummyIndex = CurrProc->dummy_index;
             BlockByBlock = CurrProc->block_by_block;

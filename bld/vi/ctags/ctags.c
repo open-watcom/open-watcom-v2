@@ -231,7 +231,7 @@ static void processFile( const char *arg )
     char        buff[_MAX_EXT + 5];
     char        *ext;
     file_type   ftype;
-    unsigned    tagcnt;
+    unsigned    tag_count;
 
     StartFile( arg );
     _splitpath2( arg, buff, NULL, NULL, NULL, &ext );
@@ -251,10 +251,10 @@ static void processFile( const char *arg )
     } else {
         ftype = fileType;
     }
-    tagcnt = 0;
+    tag_count = 0;
     if( VerboseFlag ) {
         printf( "Processing %s", arg );
-        tagcnt = TagCount;
+        tag_count = GetTagCount();
         fflush( stdout );
     }
     switch( ftype ) {
@@ -275,7 +275,7 @@ static void processFile( const char *arg )
         break;
     }
     if( VerboseFlag ) {
-        printf( ", %u tags.\n", TagCount - tagcnt );
+        printf( ", %u tags.\n", GetTagCount() - tag_count );
     }
     EndFile();
 
@@ -348,24 +348,18 @@ static void processOptionFile( const char *fname )
         return;
     }
     while( (ptr = fgets( option, sizeof( option ), optfile )) != NULL ) {
-        while( isspace( *ptr ) ) {
-            ptr++;
-        }
+        SKIP_SPACES( ptr );
         if( *ptr == '#' || *ptr == '\0' ) {
             continue;
         }
         cmd = ptr;
-        while( !isspace( *ptr ) && *ptr != '\0' ) {
-            ptr++;
-        }
+        SKIP_NOTSPACE( ptr );
         if( *ptr == '\0' ) {
             continue;
         }
         *ptr = '\0';
         ptr++;
-        while( isspace( *ptr ) ) {
-            ptr++;
-        }
+        SKIP_SPACES( ptr );
         if( *ptr == '\0' ) {
             continue;
         }
@@ -397,17 +391,13 @@ static void processOptionFile( const char *fname )
             for( ; *ptr != '\0'; ptr++ ) {
                 if( *ptr == 'f' ) {
                     ptr++;
-                    while( isspace( *ptr ) ) {
-                        ptr++;
-                    }
+                    SKIP_SPACES( ptr );
                     if( *ptr == '\0' ) {
                         break;
                     }
                     strcpy( tmpFileName, ptr );
                     ptr = tmpFileName;
-                    while( !isspace( *ptr ) ) {
-                        ptr++;
-                    }
+                    SKIP_NOTSPACE( ptr );
                     *ptr = '\0';
                     optarg = tmpFileName;
                     doOption( 'f' );
@@ -452,7 +442,7 @@ int main( int argc, char *argv[] )
     }
     if( appendFlag ) {
         if( VerboseFlag ) {
-            printf( "Generated %u tags.\n", TagCount );
+            printf( "Generated %u tags.\n", GetTagCount() );
         }
         ReadExtraTags( fileName );
     }
@@ -464,7 +454,7 @@ int main( int argc, char *argv[] )
 /*
  * IsTokenChar - determine if a character is part of a token
  */
-bool IsTokenChar( char ch )
+bool IsTokenChar( int ch )
 {
     if( isalnum( ch ) ) {
         return( true );

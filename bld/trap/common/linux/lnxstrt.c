@@ -33,7 +33,6 @@
 #include "trptypes.h"
 #include "trpld.h"
 #include "trpcomm.h"
-#include "lnxcomm.h"
 #include "lnxstrt.h"
 
 

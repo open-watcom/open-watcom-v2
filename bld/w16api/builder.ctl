@@ -9,12 +9,12 @@ set PROJDIR=<CWD>
 
 [ INCLUDE <OWROOT>/build/defrule.ctl ]
 
-[ BLOCK <1> rel ]
-#================
+[ BLOCK <BLDRULE> rel ]
+#======================
     cdsay <PROJDIR>
 
-[ BLOCK <1> rel cprel ]
-#======================
+[ BLOCK <BLDRULE> rel cprel ]
+#============================
     <CCCMD> wini86/*.lib                <OWRELROOT>/lib286/win/
     <CCCMD> wini86/*.h                  <OWRELROOT>/h/win/
 #    <CCCMD> <OWSRCDIR>/sdk/misc/ctl3d.h   <OWRELROOT>/h/win/

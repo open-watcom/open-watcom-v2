@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -120,16 +121,12 @@ static const char *GetTypeKind(type_kind kind)
  * @param   modifier    The type modifier.
  * @param   kind        The type kind (needed to understand the modifier).
  */
-static const char *GetTypeModifier(type_modifier modifier, type_kind kind)
+static const char *GetTypeModifier( dig_type_info *ti )
 {
-    if( modifier == TM_NONE ) {
-        return( "TM_NONE" );
+    if( ti->modifier == TM_NONE ) {
+        return( ( ti->deref ) ? "TM_NONE|TM_FLAG_DEREF" : "TM_NONE" );
     }
-    if( modifier == TM_NONE|TM_FLAG_DEREF ) {
-        return( "TM_NONE|TM_FLAG_DEREF" );
-    }
-
-    switch( kind ) {
+    switch( ti->kind ) {
     case TK_NONE:
     case TK_DATA:
     case TK_CODE:
@@ -143,54 +140,35 @@ static const char *GetTypeModifier(type_modifier modifier, type_kind kind)
     case TK_NAMESPACE:
     default:
         return( "!unknown modifier+kind!" );
-
     case TK_ADDRESS: //??
     case TK_POINTER:
-        switch( modifier ) {
-        case TM_NEAR:                       return( "TM_NEAR" );
-        case TM_NEAR|TM_FLAG_DEREF:         return( "TM_NEAR|TM_FLAG_DEREF" );
-        case TM_FAR:                        return( "TM_FAR" );
-        case TM_FAR|TM_FLAG_DEREF:          return( "TM_FAR|TM_FLAG_DEREF" );
-        case TM_HUGE:                       return( "TM_HUGE" );
-        case TM_HUGE|TM_FLAG_DEREF:         return( "TM_HUGE|TM_FLAG_DEREF" );
-        default:
-            return( "!unknown pointer modifier!" );
+        switch( ti->modifier ) {
+        case TM_NEAR:       return( ( ti->deref ) ? "TM_NEAR|TM_FLAG_DEREF" : "TM_NEAR" );
+        case TM_FAR:        return( ( ti->deref ) ? "TM_FAR|TM_FLAG_DEREF" : "TM_FAR" );
+        case TM_HUGE:       return( ( ti->deref ) ? "TM_HUGE|TM_FLAG_DEREF" : "TM_HUGE" );
         }
-
+        return( "!unknown pointer modifier!" );
     case TK_INTEGER:
-        switch( modifier ) {
-        case TM_SIGNED:                     return( "TM_SIGNED" );
-        case TM_SIGNED|TM_FLAG_DEREF:       return( "TM_SIGNED|TM_FLAG_DEREF" );
-        case TM_UNSIGNED:                   return( "TM_UNSIGNED" );
-        case TM_UNSIGNED|TM_FLAG_DEREF:     return( "TM_UNSIGNED|TM_FLAG_DEREF" );
-        default:
-            return( "!unknown integer modifier!" );
+        switch( ti->modifier ) {
+        case TM_SIGNED:     return( ( ti->deref ) ? "TM_SIGNED|TM_FLAG_DEREF" : "TM_SIGNED" );
+        case TM_UNSIGNED:   return( ( ti->deref ) ? "TM_UNSIGNED|TM_FLAG_DEREF" : "TM_UNSIGNED" );
         }
-
+        return( "!unknown integer modifier!" );
     case TK_REAL:
     case TK_COMPLEX: //??
-        switch( modifier ) {
-        case TM_IEEE:                       return( "TM_IEEE" );
-        case TM_IEEE|TM_FLAG_DEREF:         return( "TM_IEEE|TM_FLAG_DEREF" );
-        case TM_VAX1:                       return( "TM_VAX1" );
-        case TM_VAX1|TM_FLAG_DEREF:         return( "TM_VAX1|TM_FLAG_DEREF" );
-        case TM_VAX2:                       return( "TM_VAX2" );
-        case TM_VAX2|TM_FLAG_DEREF:         return( "TM_VAX2|TM_FLAG_DEREF" );
-        default:
-            return( "!unknown floating point modifier!" );
+        switch( ti->modifier ) {
+        case TM_IEEE:       return( ( ti->deref ) ? "TM_IEEE|TM_FLAG_DEREF" : "TM_IEEE" );
+        case TM_VAX1:       return( ( ti->deref ) ? "TM_VAX1|TM_FLAG_DEREF" : "TM_VAX1" );
+        case TM_VAX2:       return( ( ti->deref ) ? "TM_VAX2|TM_FLAG_DEREF" : "TM_VAX2" );
         }
-
+        return( "!unknown floating point modifier!" );
     case TK_STRING:
-        switch( modifier ) {
-        case TM_ASCII:                      return( "TM_ASCII" );
-        case TM_ASCII|TM_FLAG_DEREF:        return( "TM_ASCII|TM_FLAG_DEREF" );
-        case TM_EBCIDIC:                    return( "TM_EBCIDIC" );
-        case TM_EBCIDIC|TM_FLAG_DEREF:      return( "TM_EBCIDIC|TM_FLAG_DEREF" );
-        case TM_UNICODE:                    return( "TM_UNICODE" );
-        case TM_UNICODE|TM_FLAG_DEREF:      return( "TM_UNICODE|TM_FLAG_DEREF" );
-        default:
-            return( "!unknown string modifier!" );
+        switch( ti->modifier ) {
+        case TM_ASCII:      return( ( ti->deref ) ? "TM_ASCII|TM_FLAG_DEREF" : "TM_ASCII" );
+        case TM_EBCIDIC:    return( ( ti->deref ) ? "TM_EBCIDIC|TM_FLAG_DEREF" : "TM_EBCIDIC" );
+        case TM_UNICODE:    return( ( ti->deref ) ? "TM_UNICODE|TM_FLAG_DEREF" : "TM_UNICODE" );
         }
+        return( "!unknown string modifier!" );
     }
 }
 
@@ -220,16 +198,16 @@ static const char *GetTypeTag( symbol_type tag )
  * WalkSymList callback, the module pass.
  *
  * @returns WR_CONTINUE;
- * @param   info    Symbol walk info.
+ * @param   swi     Symbol walk info.
  * @param   sym     The Symbol.
  * @param   _idx    Pointer to the symbol index number.
  */
-static walk_result Sym2Callback( sym_walk_info info, sym_handle *sym, void *_idx )
+static walk_result Sym2Callback( sym_walk_info swi, sym_handle *sym, void *_idx )
 {
     int             *idx = (int *)_idx;
     char            buff[2048];
     unsigned        len;
-    dip_status      rc;
+    dip_status      ds;
     location_list   ll = {0};
     sym_info        sinfo;
     int             i;
@@ -238,8 +216,8 @@ static walk_result Sym2Callback( sym_walk_info info, sym_handle *sym, void *_idx
     printf( "%5d  ", ++*idx );
 
     /* symbol info */
-    rc = DIPSymInfo( sym, NULL, &sinfo );
-    if( rc == DS_OK ) {
+    ds = DIPSymInfo( sym, NULL, &sinfo );
+    if( ds == DS_OK ) {
         switch( sinfo.kind ) {
         case SK_NONE:       printf( "NONE  " ); break;
         case SK_CODE:       printf( "CODE  " ); break;
@@ -251,15 +229,15 @@ static walk_result Sym2Callback( sym_walk_info info, sym_handle *sym, void *_idx
         default:            printf( "kind=%#x!  ", sinfo.kind ); break;
         }
     } else {
-        printf( "rc=%#x  ", rc );
+        printf( "status=%#x  ", ds );
         memset( &sinfo, 0, sizeof( sinfo ) );
         sinfo.kind= SK_NONE;
     }
 
     /* location (i.e. address) */
     ll.num = MAX_LOC_ENTRIES;
-    rc = DIPSymLocation( sym, NULL, &ll );
-    if( rc == DS_OK ) {
+    ds = DIPSymLocation( sym, NULL, &ll );
+    if( ds == DS_OK ) {
         if( ll.num > 0 ) {
             if( ll.e[0].type == LT_ADDR ) {
                 printf( "%04x:%08lx  ", ll.e[0].u.addr.mach.segment, (long)ll.e[0].u.addr.mach.offset );
@@ -272,48 +250,48 @@ static walk_result Sym2Callback( sym_walk_info info, sym_handle *sym, void *_idx
     } else if( sinfo.kind == SK_CONST ) {
         ll.num = 0;
         memset( buff, 0, sizeof( buff ) );
-        rc = DIPSymValue( sym, NULL, &buff[0] );
-        if( rc == DS_OK ) {
+        ds = DIPSymValue( sym, NULL, &buff[0] );
+        if( ds == DS_OK ) {
             switch( sinfo.ret_modifier ) {
             }
             printf( "               " );
         } else {
-            printf( "SymValue rc=%#x ", rc );
+            printf( "SymValue status=%#x ", ds );
         }
     } else if( sinfo.kind == SK_NONE || sinfo.kind == SK_TYPE
             || sinfo.kind == SK_NAMESPACE ) {
         printf( "               " );
         ll.num = 0;
     } else {
-        printf( "rc=%#x  ", rc );
+        printf( "status=%#x  ", ds );
         ll.num = 0;
     }
 
-    /* info */
-    switch( info ) {
-        case SWI_SYMBOL:
-            printf( "SYMBOL    " );
-            break;
-        case SWI_INHERIT_START:
-            printf( "INH-STRT  " );
-            break;
-        case SWI_INHERIT_END:
-            printf( "INH-END   " );
-            break;
-        default:
-            printf( "%#d  ", info );
-            break;
+    /* swi */
+    switch( swi ) {
+    case SWI_SYMBOL:
+        printf( "SYMBOL    " );
+        break;
+    case SWI_INHERIT_START:
+        printf( "INH-STRT  " );
+        break;
+    case SWI_INHERIT_END:
+        printf( "INH-END   " );
+        break;
+    default:
+        printf( "%#d  ", swi );
+        break;
     }
 
     /* finally, the name. */
     /* try get the name */
     buff[0] = '\0';
-    len = DIPSymName( sym, NULL, SN_DEMANGLED, buff, sizeof( buff ) );
+    len = DIPSymName( sym, NULL, SNT_DEMANGLED, buff, sizeof( buff ) );
     if( len == 0 ) {
-        len = DIPSymName( sym, NULL, SN_OBJECT, buff, sizeof( buff ) );
+        len = DIPSymName( sym, NULL, SNT_OBJECT, buff, sizeof( buff ) );
     }
     if( len == 0 ) {
-        len = DIPSymName( sym, NULL, SN_SOURCE, buff, sizeof( buff ) );
+        len = DIPSymName( sym, NULL, SNT_SOURCE, buff, sizeof( buff ) );
     }
     if( len > 0 ) {
         printf( "%s\n", buff );
@@ -326,8 +304,8 @@ static walk_result Sym2Callback( sym_walk_info info, sym_handle *sym, void *_idx
     if( 1 ) {
         type_handle *th = alloca( DIPHandleSize( HK_TYPE ) );
 
-        rc = DIPSymType( sym, th );
-        if( rc ) {
+        ds = DIPSymType( sym, th );
+        if( ds ) {
         }
     }
 
@@ -362,8 +340,8 @@ static walk_result Type2Callback( type_handle *th, void *_idx )
     char            buff[2048];
     unsigned        len;
     symbol_type     tag;
-    dip_type_info   tinfo;
-    dip_status      rc;
+    dig_type_info   ti;
+    dip_status      ds;
 
     printf( "%5d  ", ++*idx );
 
@@ -378,24 +356,24 @@ static walk_result Type2Callback( type_handle *th, void *_idx )
     }
 
     /* type info */
-    rc = DIPTypeInfo( th, NULL, &tinfo );
-    if( rc == DS_OK ) {
-        printf( "size=%#06lx  kind=%2d %-12s  modifier=%#04x %s\n",
-                tinfo.size,
-                tinfo.kind, GetTypeKind( tinfo.kind ),
-                tinfo.modifier, GetTypeModifier( tinfo.modifier, tinfo.kind ) );
+    ds = DIPTypeInfo( th, NULL, &ti );
+    if( ds == DS_OK ) {
+        printf( "size=%#06lx  kind=%2d %-12s  modifier=%#04x deref=%d %s\n",
+                ti.size,
+                ti.kind, GetTypeKind( ti.kind ),
+                ti.modifier, ti.deref, GetTypeModifier( &ti ) );
 
-        switch( tinfo.kind ) {
+        switch( ti.kind ) {
         case TK_ARRAY: {
                 array_info ainfo;
-                rc = DIPTypeArrayInfo( th, NULL, &ainfo, NULL );
-                if( rc == DS_OK ) {
+                ds = DIPTypeArrayInfo( th, NULL, &ainfo, NULL );
+                if( ds == DS_OK ) {
                     printf( "       "
                             "low_bound=%ld num_elts=%lu stride=%lu num_dims=%u column_major=%d\n",
                             ainfo.low_bound, ainfo.num_elts, ainfo.stride,
                             ainfo.num_dims, ainfo.column_major );
                 } else {
-                    printf( "DIPTypeArrayInfo -> %d\n", rc );
+                    printf( "DIPTypeArrayInfo -> %d\n", ds );
                 }
             }
             break;
@@ -404,7 +382,7 @@ static walk_result Type2Callback( type_handle *th, void *_idx )
             break;
         }
     } else {
-        printf( "DIPTypeInfo -> %d\n", rc );
+        printf( "DIPTypeInfo -> %d\n", ds );
     }
 
     return( WR_CONTINUE );
@@ -447,7 +425,7 @@ static void CompareCues( cue_handle *cueh1, cue_handle *cueh2,
         failed |= exp_le_addr && ( addr2.mach.segment != addr1.mach.segment || addr2.mach.offset <= addr1.mach.offset );
         if( failed ) {
             printf( "FAILED: %s: cue2:{file=%#x line=%lu addr=%04x:%08lx}\n"
-                    "       %*s != cue:{file=%#x line=%lu addr=%04x:%08lx}\n",
+                    "       %*s != cue1:{file=%#x line=%lu addr=%04x:%08lx}\n",
                     operation,
                     DIPCueFileId( cueh2 ), line2, addr2.mach.segment, (long)addr2.mach.offset,
                     strlen( operation ), "",
@@ -475,7 +453,7 @@ static walk_result File2Callback( cue_handle *cueh1, void *ignored )
     search_result   search_rc;
     char            buff[1024];
     size_t          len;
-    dip_status      rc;
+    dip_status      ds;
 
     /* filename */
     buff[0] = '\0';
@@ -489,8 +467,7 @@ static walk_result File2Callback( cue_handle *cueh1, void *ignored )
     /* check the LineCue function */
     if( Opts.do_cue_tests ) {
         search_rc = DIPLineCue( mod, file_id, 0, 0, cueh2 );
-        CompareCues( cueh1, cueh2, SR_EXACT, search_rc, true, false, true, false,
-                     "DIPLineCue(,,0,)" );
+        CompareCues( cueh1, cueh2, SR_EXACT, search_rc, true, false, true, false, "DIPLineCue(,,0,)" );
     }
 
     /* lines */
@@ -512,41 +489,35 @@ static walk_result File2Callback( cue_handle *cueh1, void *ignored )
         /* do tests */
         if( Opts.do_cue_tests ) {
             if( DIPCueFileId( cueh1 ) !=  file_id ) {
-                printf( "ERROR: file id changed! new:%#lx old:%#lx\n",
-                        (long)DIPCueFileId( cueh1 ), (long)file_id );
+                printf( "ERROR: file id changed! new:%#lx old:%#lx\n", (long)DIPCueFileId( cueh1 ), (long)file_id );
             }
             if( DIPCueMod( cueh1 ) !=  mod ) {
-                printf( "ERROR: module changed! new:%#lx old:%#lx\n",
-                        (long)DIPCueMod( cueh1 ), (long)file_id );
+                printf( "ERROR: module changed! new:%#lx old:%#lx\n", (long)DIPCueMod( cueh1 ), (long)file_id );
             }
 
             /* line searches */
             search_rc = DIPLineCue( mod, file_id, line, 0, cueh2 );
-            CompareCues( cueh1, cueh2, SR_EXACT, search_rc, true, false, false, false,
-                         "DIPLineCue(,,n,)" );
+            CompareCues( cueh1, cueh2, SR_EXACT, search_rc, true, false, false, false, "DIPLineCue(,,n,)" );
             if( line > prev_line + 1 && prev_line >= 0 ) {
                 search_rc = DIPLineCue( mod, file_id, line - 1, 0, cueh2 );
-                CompareCues( prev_cueh, cueh2,
-                             prev_line == line - 1 ? SR_EXACT : SR_CLOSEST,
-                             search_rc, true, false, false, false,
-                             "DIPLineCue(,,n-1,)" );
+                CompareCues( prev_cueh, cueh2, prev_line == line - 1 ? SR_EXACT : SR_CLOSEST,
+                             search_rc, true, false, false, false, "DIPLineCue(,,n-1,)" );
             }
 
             /* address searches */
             search_rc = DIPAddrCue( mod, addr, cueh2 );
-            CompareCues( cueh1, cueh2, SR_EXACT, search_rc, false, false, true, false,
-                         "DIPAddrCue(,,n,)" );
+            CompareCues( cueh1, cueh2, SR_EXACT, search_rc, false, false, true, false, "DIPAddrCue(,,n,)" );
         }
 
 
         /* next */
-        rc = DIPCueAdjust( cueh1, 1, next_cueh );
+        ds = DIPCueAdjust( cueh1, 1, next_cueh );
         prev_cueh  = cueh1;
         cueh1      = next_cueh;
         next_cueh  = prev_cueh;
         prev_addr = addr;
         prev_line = line;
-    } while( rc == DS_OK );
+    } while( ds == DS_OK );
 
     return( WR_CONTINUE );
 }
@@ -624,19 +595,19 @@ static walk_result Mod2Callback( mod_handle mh, void *_idx )
  * WalkSymList callback.
  *
  * @returns WR_CONTINUE;
- * @param   info    Symbol walk info.
+ * @param   swi     Symbol walk info.
  * @param   sym     The Symbol.
  * @param   _idx    Pointer to the symbol index number.
  */
-static walk_result SymCallback( sym_walk_info info, sym_handle *sym, void *_idx )
+static walk_result SymCallback( sym_walk_info swi, sym_handle *sym, void *_idx )
 {
 #if 1
-    return( Sym2Callback( info, sym, _idx ) );
+    return( Sym2Callback( swi, sym, _idx ) );
 #else
     int             *idx = (int *)_idx;
     char            buff[2048];
     unsigned        len;
-    dip_status      rc;
+    dip_status      ds;
     location_list   ll = {0};
     int             i;
 
@@ -645,8 +616,8 @@ static walk_result SymCallback( sym_walk_info info, sym_handle *sym, void *_idx 
 
     /* location (i.e. address) */
     ll.num = MAX_LOC_ENTRIES;
-    rc = SymLocation( sym, NULL, &ll );
-    if( rc == DS_OK ) {
+    ds = SymLocation( sym, NULL, &ll );
+    if( ds == DS_OK ) {
         if( ll.num > 0 ) {
             if( ll.e[0].type == LT_ADDR ) {
                 printf( "%04x:%08lx  ", ll.e[0].u.addr.mach.segment, (long)ll.e[0].u.addr.mach.offset );
@@ -657,35 +628,35 @@ static walk_result SymCallback( sym_walk_info info, sym_handle *sym, void *_idx 
             printf( "               ");
         }
     } else {
-        printf( "rc=%#x  ", rc );
+        printf( "status=%#x  ", ds );
         ll.num = 0;
     }
 
-    /* info */
-    switch( info ) {
-        case SWI_SYMBOL:
-            printf("SYMBOL    ");
-            break;
-        case SWI_INHERIT_START:
-            printf("INH-STRT  ");
-            break;
-        case SWI_INHERIT_END:
-            printf("INH-END   ");
-            break;
-        default:
-            printf("%#d  ", info);
-            break;
+    /* swi */
+    switch( swi ) {
+    case SWI_SYMBOL:
+        printf("SYMBOL    ");
+        break;
+    case SWI_INHERIT_START:
+        printf("INH-STRT  ");
+        break;
+    case SWI_INHERIT_END:
+        printf("INH-END   ");
+        break;
+    default:
+        printf("%#d  ", swi);
+        break;
     }
 
     /* finally, the name. */
     /* try get the name */
     buff[0] = '\0';
-    len = DIPSymName( sym, NULL, SN_DEMANGLED, buff, sizeof( buff ) );
+    len = DIPSymName( sym, NULL, SNT_DEMANGLED, buff, sizeof( buff ) );
     if( len == 0 ) {
-        len = DIPSymName( sym, NULL, SN_OBJECT, buff, sizeof( buff ) );
+        len = DIPSymName( sym, NULL, SNT_OBJECT, buff, sizeof( buff ) );
     }
     if( len == 0 ) {
-        len = DIPSymName( sym, NULL, SN_SOURCE, buff, sizeof( buff ) );
+        len = DIPSymName( sym, NULL, SNT_SOURCE, buff, sizeof( buff ) );
     }
     if( len > 0 ) {
         printf( "%s\n", buff );
@@ -869,12 +840,13 @@ static bool InitDIP( char **dips )
         char        *ptr;
         unsigned    dips_loaded = 0;
 
-        for( ptr = *dips++; ptr; ptr = *dips++ ) {
-            int     rc = DIPLoad( ptr );
+        for( ptr = *dips++; ptr != NULL; ptr = *dips++ ) {
+            dip_status  ds;
 
-            if( rc & DS_ERR ) {
-                rc &= ~DS_ERR;
-                switch( rc ) {
+            ds = DIPLoad( ptr );
+            if( ds & DS_ERR ) {
+                ds &= ~DS_ERR;
+                switch( ds ) {
                 case DS_FOPEN_FAILED:
                     ErrorMsg( "%s - not found\n", ptr );
                     break;
@@ -888,7 +860,7 @@ static bool InitDIP( char **dips )
                     ErrorMsg( "%s - too many DIPs\n", ptr );
                     break;
                 default:
-                    ErrorMsg( "%s - rc=%#x (%d)\n", ptr, rc, rc );
+                    ErrorMsg( "%s - status=%#x (%d)\n", ptr, ds, ds );
                     break;
                 }
             } else {

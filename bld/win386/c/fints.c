@@ -35,89 +35,93 @@
 #include "dointr.h"
 
 
-extern  int                     BDDoDosCall( union REGS __far *, union REGS __far * );
-extern  int                     BDDoDosxCall( union REGS __far *, union REGS __far *, struct SREGS __far * );
+extern int  BDDoDosCall( union REGS __far *, union REGS __far * );
+#pragma aux BDDoDosCall =                         \
+        "push ds"           \
+        "push es"           \
+        "push bp"           \
+        "push cx"           \
+        "mov  ds,dx"        \
+        "mov  bp,bx"        \
+        "mov  ax,0[si]"     \
+        "mov  bx,2[si]"     \
+        "mov  cx,4[si]"     \
+        "mov  dx,6[si]"     \
+        "mov  di,10[si]"    \
+        "mov  si,8[si]"     \
+        "clc"               \
+        "int 21h"           \
+        "xchg si,bp"        \
+        "pop  ds"           \
+        "mov  0[si],ax"     \
+        "mov  2[si],bx"     \
+        "mov  4[si],cx"     \
+        "mov  6[si],dx"     \
+        "mov  8[si],bp"     \
+        "mov  10[si],di"    \
+        "pop  bp"           \
+        "pop  es"           \
+        "pop  ds"           \
+        "sbb  ax,ax"        \
+    __parm __caller [__dx __si] [__cx __bx] \
+    __value         [__ax] \
+    __modify        [__ax __dx __di]
 
-#pragma aux               BDDoDosCall =                         \
-        0x1e           /* push ds */                            \
-        0x06           /* push es         */                    \
-        0x55           /* push bp         */                    \
-        0x51           /* push cx         */                    \
-        0x8e 0xda      /* mov ds,dx */                          \
-        0x89 0xdd      /* mov bp, bx      */                    \
-        0x8b 0x44 0x00 /* mov ax, 0[ si ] */                    \
-        0x8b 0x5c 0x02 /* mov bx, 2[ si ] */                    \
-        0x8b 0x4c 0x04 /* mov cx, 4[ si ] */                    \
-        0x8b 0x54 0x06 /* mov dx, 6[ si ] */                    \
-        0x8b 0x7c 0x0a /* mov di, a[ si ] */                    \
-        0x8b 0x74 0x08 /* mov si, 8[ si ] */                    \
-        0xf8           /* clc             */                    \
-        0xcd 0x21      /* int 021h        */                    \
-        0x87 0xf5      /* xchg si, bp     */                    \
-        0x1f           /* pop ds          */                    \
-        0x89 0x44 0x00 /* mov 0[ si ], ax */                    \
-        0x89 0x5c 0x02 /* mov 2[ si ], bx */                    \
-        0x89 0x4c 0x04 /* mov 4[ si ], cx */                    \
-        0x89 0x54 0x06 /* mov 6[ si ], dx */                    \
-        0x89 0x6c 0x08 /* mov 8[ si ], bp */                    \
-        0x89 0x7c 0x0a /* mov a[ si ], di */                    \
-        0x5d           /* pop bp          */                    \
-        0x07           /* pop es          */                    \
-        0x1f           /* pop ds */                             \
-        0x19 0xc0      /* sbb ax, ax      */                    \
-        parm caller [ si dx ] [ bx cx ]                         \
-        value[ ax ]                                             \
-        modify [ ax dx di ];
-
-#pragma aux                BDDoDosxCall =            \
-        0x1e            /* push ds */                \
-        0x8e 0xdf       /* mov ds,di */              \
-        0x55            /* push bp         */        \
-        0x8e 0x07       /* mov es, [ bx ]  */        \
-        0x8b 0x6f 0x06  /* mov bp, 6[ bx ] */        \
-        0x52            /* push dx         */        \
-        0x50            /* push ax         */        \
-        0x1e            /* push ds         */        \
-        0x53            /* push bx         */        \
-        0x8e 0xd9       /* mov ds, cx      */        \
-        0x8b 0x04       /* mov ax, [ si ]  */        \
-        0x8b 0x5c 0x02  /* mov bx, 2[ si ] */        \
-        0x8b 0x4c 0x04  /* mov cx, 4[ si ] */        \
-        0x8b 0x54 0x06  /* mov dx, 6[ si ] */        \
-        0x8b 0x7c 0x0a  /* mov di, a[ si ] */        \
-        0x8b 0x74 0x08  /* mov si, 8[ si ] */        \
-        0x8e 0xdd       /* mov ds, bp      */        \
-        0xf8            /* clc             */        \
-        0xcd 0x21       /* int 21          */        \
-        0x1e            /* push ds         */        \
-        0x56            /* push si         */        \
-        0x89 0xe5       /* mov bp, sp      */        \
-        0x8b 0x76 0x08  /* mov si, 8[ bp ] */        \
-        0x8e 0x5e 0x0a  /* mov ds, a[ bp ] */        \
-        0x5d            /* pop bp          */        \
-        0x89 0x04       /* mov [ si ], ax  */        \
-        0x89 0x5c 0x02  /* mov 2[ si ], bx */        \
-        0x89 0x4c 0x04  /* mov 4[ si ], cx */        \
-        0x89 0x54 0x06  /* mov 6[ si ], dx */        \
-        0x89 0x6c 0x08  /* mov 8[ si ], bp */        \
-        0x89 0x7c 0x0a  /* mov a[ si ], di */        \
-        0x19 0xc0       /* sbb ax, ax      */        \
-        0x5b            /* pop bx          */        \
-        0x5e            /* pop si          */        \
-        0x1f            /* pop ds          */        \
-        0x8c 0x04       /* mov [ si ], es  */        \
-        0x89 0x5c 0x06  /* mov 6[ si ], bx */        \
-        0x5b            /* pop bx          */        \
-        0x5b            /* pop bx          */        \
-        0x5d            /* pop bp          */        \
-        0x1f            /* pop ds */                 \
-        parm caller [ si cx ] [ ax dx ] [ bx di ]    \
-        value [ ax ]                                 \
-        modify [ di es ];
+extern int  BDDoDosxCall( union REGS __far *, union REGS __far *, struct SREGS __far * );
+#pragma aux BDDoDosxCall = \
+        "push ds"           \
+        "mov  ds,di"        \
+        "push bp"           \
+        "mov  es,0[bx]"     \
+        "mov  bp,6[bx]"     \
+        "push dx"           \
+        "push ax"           \
+        "push ds"           \
+        "push bx"           \
+        "mov  ds,cx"        \
+        "mov  ax,0[si]"     \
+        "mov  bx,2[si]"     \
+        "mov  cx,4[si]"     \
+        "mov  dx,6[si]"     \
+        "mov  di,10[si]"    \
+        "mov  si,8[si]"     \
+        "mov  ds,bp"        \
+        "clc"               \
+        "int 21h"           \
+        "push ds"           \
+        "push si"           \
+        "mov  bp,sp"        \
+        "mov  si,8[bp]"     \
+        "mov  ds,10[bp]"    \
+        "pop  bp"           \
+        "mov  0[si],ax"     \
+        "mov  2[si],bx"     \
+        "mov  4[si],cx"     \
+        "mov  6[si],dx"     \
+        "mov  8[si],bp"     \
+        "mov  10[si],di"    \
+        "sbb  ax,ax"        \
+        "pop  bx"           \
+        "pop  si"           \
+        "pop  ds"           \
+        "mov  0[si],es"     \
+        "mov  6[si],bx"     \
+        "pop  bx"           \
+        "pop  bx"           \
+        "pop  bp"           \
+        "pop  ds"           \
+    __parm __caller [__si __cx] [__ax __dx] [__bx __di] \
+    __value         [__ax] \
+    __modify        [__di __es]
 
 void _fintr( int intno, union REGPACK __far *regs )
 {
-    _DoINTR( intno, regs );
+    _DoINTR( intno, regs, 0 );
+}
+
+void _fintrf( int intno, union REGPACK __far *regs )
+{
+    _DoINTR( intno, regs, regs->w.flags );
 }
 
 int _fintdos( union REGS __far *inregs, union REGS __far *outregs )
@@ -125,7 +129,7 @@ int _fintdos( union REGS __far *inregs, union REGS __far *outregs )
     int             status;
 
     status = BDDoDosCall( inregs, outregs );
-    outregs->x.cflag = status;
+    outregs->x.cflag = (status & 1);
     _dosretax( outregs->x.ax, status );
     return( outregs->x.ax );
 }
@@ -135,7 +139,7 @@ int _fintdosx( union REGS __far *inregs, union REGS __far *outregs, struct SREGS
     int             status;
 
     status = BDDoDosxCall( inregs, outregs, segregs );
-    outregs->x.cflag = status;
+    outregs->x.cflag = (status & 1);
     _dosretax( outregs->x.ax, status );
     return( outregs->x.ax );
 }
@@ -152,14 +156,18 @@ int _fint86x( int intno, union REGS __far *inr, union REGS __far *outr, struct S
     r.x.di = inr->x.di;
     r.x.ds = sr->ds;
     r.x.es = sr->es;
-    _fintr( intno, (union REGPACK __far *) &r );
+//    r.x.bp = 0;             /* no bp in REGS union, set to 0 */
+//    r.x.flags = ( inr->x.cflag ) ? INTR_CF : 0;
+
+    _DoINTR( intno, &r, 0 );
+
     outr->x.ax = r.x.ax;
     outr->x.bx = r.x.bx;
     outr->x.cx = r.x.cx;
     outr->x.dx = r.x.dx;
     outr->x.si = r.x.si;
     outr->x.di = r.x.di;
-    outr->x.cflag = r.x.flags & INTR_CF;
+    outr->x.cflag = ( (r.x.flags & INTR_CF) != 0 );
     sr->ds = r.x.ds;
     sr->es = r.x.es;
     return( r.x.ax );

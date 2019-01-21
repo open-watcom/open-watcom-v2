@@ -39,6 +39,7 @@
 #include "dbgio.h"
 #include "tinyio.h"
 #include "local.h"
+#include "rfx.h"
 
 
 #define SYSH2LH(sh)     (tiny_handle_t)((sh).u._32[0])
@@ -46,10 +47,11 @@
 
 extern void __buffered_keyboard_input( char * );
 #pragma aux __buffered_keyboard_input = \
-        _MOV_AH 0x0a \
+        _MOV_AH DOS_BUFF_INPUT \
         _INT_21 \
-        parm caller [ds dx] \
-        modify [ax];
+    __parm __caller [__ds __dx] \
+    __value         \
+    __modify        [__ax]
 
 static error_handle DOSErrCode( tiny_ret_t rc )
 {
@@ -125,19 +127,19 @@ void LocalGetBuff( char *buff, unsigned size )
 error_handle LocalRename( const char *from, const char *to )
 /**********************************************************/
 {
-    return( DOSErrCode( TinyRename( from, to )) );
+    return( DOSErrCode( TinyRename( from, to ) ) );
 }
 
 error_handle LocalMkDir( const char *name )
 /*****************************************/
 {
-    return( DOSErrCode( TinyMakeDir( name )) );
+    return( DOSErrCode( TinyMakeDir( name ) ) );
 }
 
 error_handle LocalRmDir( const char *name )
 /*****************************************/
 {
-    return( DOSErrCode( TinyRemoveDir( name )) );
+    return( DOSErrCode( TinyRemoveDir( name ) ) );
 }
 
 error_handle LocalSetDrv( int drv )
@@ -156,7 +158,7 @@ int LocalGetDrv( void )
 error_handle LocalSetCWD( const char *name )
 /******************************************/
 {
-    return( DOSErrCode( TinyChangeDir( name )) );
+    return( DOSErrCode( TinyChangeDir( name ) ) );
 }
 
 long LocalGetFileAttr( const char *name )
@@ -166,7 +168,7 @@ long LocalGetFileAttr( const char *name )
 
     rc = TinyGetFileAttr( name );
     if( TINY_ERROR( rc ) ) {
-        return( -1L );
+        return( RFX_INVALID_FILE_ATTRIBUTES );
     }
     return( TINY_INFO( rc ) );
 }
@@ -191,7 +193,7 @@ error_handle LocalDateTime( sys_handle sh, int *time, int *date, int set )
         rc = TinySetFileStamp( SYSH2LH( sh ), *ptime, *pdate );
     } else {
         rc = TinyGetFileStamp( SYSH2LH( sh ) );
-        file_stamp = (void *) &rc;
+        file_stamp = (void *)&rc;
         *ptime = file_stamp->time;
         *pdate = file_stamp->date;
     }

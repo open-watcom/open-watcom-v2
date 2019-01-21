@@ -9,12 +9,12 @@ set PROJDIR=<CWD>
 
 [ INCLUDE <OWROOT>/build/defrule.ctl ]
 
-[ BLOCK <1> rel ]
-#================
+[ BLOCK <BLDRULE> rel ]
+#======================
     cdsay <PROJDIR>
 
-[ BLOCK <1> rel cprel ]
-#======================
+[ BLOCK <BLDRULE> rel cprel ]
+#============================
 # Common stuff
     <CPCMD> dat/v*.cmd                <OWRELROOT>/binp/
     <CPCMD> dat/v*.bat                <OWRELROOT>/binw/
@@ -68,6 +68,9 @@ set PROJDIR=<CWD>
     <CCCMD> linuxarm/vi.exe           <OWRELROOT>/arml/vi
     <CCCMD> ctags/linuxarm/ctags.exe  <OWRELROOT>/arml/ctags
     <CCCMD> bind/linuxarm/edbind.exe  <OWRELROOT>/arml/edbind
+    <CCCMD> osxx64/vi.exe             <OWRELROOT>/osx64/vi
+    <CCCMD> ctags/osxx64/ctags.exe    <OWRELROOT>/osx64/ctags
+    <CCCMD> bind/osxx64/edbind.exe    <OWRELROOT>/osx64/edbind
 
 [ BLOCK . . ]
 

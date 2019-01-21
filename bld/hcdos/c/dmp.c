@@ -72,8 +72,7 @@ void PrintStrings( char *buf )
         if( *len != 0 ) {
             printf( "    %s\n", buf );
         }
-        buf += *len;
-        len++;
+        buf += *len++;
     }
 }
 

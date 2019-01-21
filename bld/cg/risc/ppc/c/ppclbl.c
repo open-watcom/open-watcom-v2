@@ -30,15 +30,16 @@
 ****************************************************************************/
 
 
-#include "cgstd.h"
+#include "_cgstd.h"
 #include "coderep.h"
 #include "regset.h"
 #include "addrname.h"
+#include "ppclbl.h"
 
 
-extern label_handle GetWeirdPPCDotDotLabel( label_handle lbl ) {
-/********************************************************/
-
+label_handle GetWeirdPPCDotDotLabel( label_handle lbl )
+/*****************************************************/
+{
     label_handle    new;
 
     if( _TstStatus( lbl, HAS_PPC_ALIAS ) ) {

@@ -30,7 +30,7 @@
 ****************************************************************************/
 
 
-#include "cgstd.h"
+#include "_cgstd.h"
 #include "coderep.h"
 #include "procdef.h"
 #include "model.h"
@@ -40,7 +40,11 @@
 #include "rtclass.h"
 #include "zoiks.h"
 #include "makeins.h"
+#include "bldins.h"
+#include "makeaddr.h"
+
 #include "s37call.def"
+
 
 extern    type_def              *TypeNone;
 extern    type_class_def        ClassPointer;
@@ -49,12 +53,9 @@ extern  type_length             TypeClassSize[];
 
 extern  name            *AllocRegName(hw_reg_set);
 extern  name            *AllocTemp(type_class_def);
-extern  temp_name       *BGNewTemp(type_def*);
 extern  type_def        *QParmType(type_def*);
 extern  name            *AllocUserTemp(pointer,type_class_def);
-extern  void            BGDone(an);
 extern  an              MakeTempAddr(name*,type_def*);
-extern  an              MakeAddrName(cg_class,sym_handle,type_def*);
 extern  hw_reg_set      ParmReg(type_class_def,parm_state*);
 extern  type_length     ParmMem(type_def*,parm_state*);
 extern  hw_reg_set      ActualParmReg(hw_reg_set);
@@ -238,10 +239,14 @@ static  bool    ZappedBy( cn call, reg_num reg ) {
 
     zap = CallZap( call->state );
     this = WordReg( reg );
-    if( HW_Ovlap( zap, this ) ) return( true );
-    if( !( call->state->attr & ROUTINE_OS ) ) return( false );
-    if( call->state->regs.SA == reg ) return( true );
-    if( call->state->regs.PR == reg ) return( true );
+    if( HW_Ovlap( zap, this ) )
+        return( true );
+    if( (call->state->attr & ROUTINE_OS) == 0 )
+        return( false );
+    if( call->state->regs.SA == reg )
+        return( true );
+    if( call->state->regs.PR == reg )
+        return( true );
     return( false );
 }
 
@@ -346,7 +351,7 @@ extern  void    PreCall( cn call ) {
         bump += call->parm_size;
     }
     sa = AllocRegName( WordReg( cstate->regs.SA ) );
-    if( !( state->attr & ROUTINE_OS )
+    if( (state->attr & ROUTINE_OS) == 0
       && ( cstate->attr & ROUTINE_OS ) ) {
         HW_TurnOn( used, sa->r.reg );
         AddIns( MakeBinary( OP_ADD, sp, AllocS32Const( bump ), sa, PT ) );
@@ -388,7 +393,7 @@ extern  void    PostCall( cn call ) {
     state = &CurrProc->state;
     cstate = call->state;
     fixed = FixedRegs();
-    if( !( call->ins->flags.call_flags & CALL_IGNORES_RETURN ) ){
+    if( (call->ins->flags.call_flags & CALL_IGNORES_RETURN) == 0 ) {
         reg = call->ins->result;
         if( reg->n.class == N_INDEXED ){
             reg = reg->i.index;
@@ -412,7 +417,8 @@ extern  void    PostCall( cn call ) {
     }
     if( cstate->attr & ROUTINE_OS ) {
         size = call->parm_size;
-        if( !( state->attr & ROUTINE_OS ) ) size += 18*4;
+        if( (state->attr & ROUTINE_OS) == 0 )
+            size += 18 * 4;
         reg = AllocRegName( StackReg() );
         AddIns( MakeBinary( OP_SUB, reg, AllocS32Const( size ), reg, PT ) );
     }

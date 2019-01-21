@@ -41,15 +41,18 @@
 
 
 void _os2zero64k( unsigned ax, unsigned cx, unsigned es, unsigned di );
-#pragma aux _os2zero64k =   \
-        "rep stosw"         \
-    parm caller [ax] [cx] [es] [di] modify [cx di]
+#pragma aux _os2zero64k = \
+        "rep stosw"     \
+    __parm __caller [__ax] [__cx] [__es] [__di] \
+    __value         \
+    __modify        [__cx __di]
 
 void _os2zero_rest( unsigned ax, unsigned cx, unsigned es, unsigned di );
 #pragma aux _os2zero_rest = \
-        "rep stosb"         \
-    parm caller [ax] [cx] [es] [di] modify [cx di]
-
+        "rep stosb"     \
+    __parm __caller [__ax] [__cx] [__es] [__di] \
+    __value         \
+    __modify        [__cx __di]
 
 static int only_one_bit( size_t x )
 {
@@ -66,24 +69,24 @@ static int only_one_bit( size_t x )
 
 _WCRTLINK void_hptr halloc( long n, unsigned size )
 {
-    unsigned long len;
-    USHORT      error, tseg;
-    SEL         seg;
-    USHORT      number_segments, remaining_bytes;
-    USHORT      increment;
+    unsigned long   amount;
+    USHORT          error, tseg;
+    SEL             seg;
+    USHORT          number_segments, remaining_bytes;
+    USHORT          increment;
 
-    len = (unsigned long)n * size;
-    if( len == 0 )
+    amount = (unsigned long)n * size;
+    if( amount == 0 )
         return( NULL );
-    if( (unsigned long)n > 65536 && !only_one_bit( size ) )
+    if( OVERFLOW_64K( (unsigned long)n ) && !only_one_bit( size ) )
         return( NULL );
     error = DosGetHugeShift( &increment );
     if( error ) {
         __set_errno_dos( error );
         return( NULL );
     }
-    number_segments = len >> 16;
-    remaining_bytes = len & 0xffff;
+    number_segments = amount >> 16;
+    remaining_bytes = amount & 0xffff;
     error = DosAllocHuge( number_segments, remaining_bytes, &seg, 0, 0 );
     if( error ) {
         __set_errno_dos( error );

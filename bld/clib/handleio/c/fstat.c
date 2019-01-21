@@ -49,28 +49,28 @@ extern long __getfilestamp_sfn( int handle );
 #ifdef _M_I86
 #pragma aux __getfilestamp_sfn = \
         _MOV_AX_W _GET_ DOS_FILE_DATE \
-        _INT_21         \
-        "jnc short L1"   \
-        "call __doserror_" \
-        "mov  cx,-1"    \
-        "mov  dx,cx"    \
-"L1:     mov  ax,cx"    \
-        parm caller     [bx] \
-        value           [dx ax] \
-        modify exact    [cx];
+        _INT_21             \
+        "jnc short L1"      \
+        "call __doserror_"  \
+        "mov  cx,-1"        \
+        "mov  dx,cx"        \
+    "L1: mov  ax,cx"        \
+    __parm __caller     [__bx] \
+    __value             [__dx __ax] \
+    __modify __exact    [__ax __cx __dx]
 #else
 #pragma aux __getfilestamp_sfn = \
         _MOV_AX_W _GET_ DOS_FILE_DATE \
-        _INT_21         \
-        "jnc short L1"  \
-        "call __doserror_" \
-        "mov  cx,-1"    \
-        "mov  dx,cx"    \
-"L1:     shl  edx,16"   \
-        "mov  dx,cx"    \
-        parm caller     [ebx] \
-        value           [edx] \
-        modify exact    [eax ecx];
+        _INT_21             \
+        "jnc short L1"      \
+        "call __doserror_"  \
+        "mov  cx,-1"        \
+        "mov  dx,cx"        \
+    "L1: shl  edx,16"       \
+        "mov  dx,cx"        \
+    __parm __caller     [__ebx] \
+    __value             [__edx] \
+    __modify __exact    [__eax __ecx __edx]
 #endif
 
 
@@ -78,7 +78,7 @@ extern long __getfilestamp_sfn( int handle );
 
 _WCRTLINK int _fstati64( int handle, struct _stati64 *buf )
 {
-    struct _stat        buf32;
+    struct stat         buf32;
     int                 rc;
     INT_TYPE            tmp;
 

@@ -46,6 +46,7 @@
 #include "rterrno.h"
 #include "thread.h"
 #include "seterrno.h"
+#include "pathmac.h"
 
 
 #pragma on(stack_check);
@@ -69,8 +70,8 @@ _WCRTLINK CHAR_TYPE *__F_NAME(getcwd,_wgetcwd)( CHAR_TYPE *buf, size_t size )
     }
     DosQCurDisk( &drive, &drive_map );
     path[0] = drive + 'A' - 1;
-    path[1] = ':';
-    path[2] = '\\';
+    path[1] = DRV_SEP;
+    path[2] = DIR_SEP;
     if( buf == NULL ) {
         if( (buf = malloc( max(size,pathlen+4)*CHARSIZE )) == NULL ) {
             _RWD_errno = ENOMEM;

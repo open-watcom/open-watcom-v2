@@ -130,7 +130,7 @@ long double creall(long double complex z);
 #ifndef _M_IX86
  #pragma library( "cplx.lib" )
 #elif defined(__SW_FPC)
-:segment DOS | QNX
+:segment DOS | QNX | RDOS
  #ifdef _M_I86
   #ifdef __MEDIUM__
    #pragma library ( "cplxm.lib" )
@@ -150,11 +150,11 @@ long double creall(long double complex z);
   #else
    #pragma library ( "cplx3r.lib" )
   #endif
-:segment DOS | QNX
+:segment DOS | QNX | RDOS
  #endif
 :endsegment
 #else
-:segment DOS | QNX
+:segment DOS | QNX | RDOS
  #ifdef _M_I86
   #ifdef __MEDIUM__
    #pragma library ( "cplx7m.lib" )
@@ -174,7 +174,7 @@ long double creall(long double complex z);
   #else
    #pragma library ( "cplx73r.lib" )
   #endif
-:segment DOS | QNX
+:segment DOS | QNX | RDOS
  #endif
 :endsegment
 #endif

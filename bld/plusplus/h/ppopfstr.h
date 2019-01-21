@@ -37,3 +37,5 @@
 #define PPOPOP( name, same_as ) delim IN_OP_PREFIX name
 
 #include "ppopsdef.h"
+
+#undef PPOPOP

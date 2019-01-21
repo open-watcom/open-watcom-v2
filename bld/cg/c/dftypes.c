@@ -31,7 +31,7 @@
 ****************************************************************************/
 
 
-#include "cgstd.h"
+#include "_cgstd.h"
 #include <stdio.h>
 #include <stdarg.h>
 #include <stdlib.h>
@@ -309,7 +309,7 @@ dbg_type        DFFtnArray( back_handle dims, cg_type lo_bound_tipe,
     type_def       *tipe_addr;
     dbg_type       ret;
 
-    ret = DWBeginArray( Client, base, 0,NULL, 0, 0 );
+    ret = DWBeginArray( Client, base, 0, NULL, 0, 0 );
     tipe_addr = TypeAddress( lo_bound_tipe );
     lo_tipe = DFScalar( "", lo_bound_tipe );
     count_tipe = DFScalar( "", num_elts_tipe );

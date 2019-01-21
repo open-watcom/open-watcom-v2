@@ -44,7 +44,7 @@
 #include "dbgmain.h"
 #include "dbgshow.h"
 #include "dbgupdt.h"
-#include "dbgsetfn.h"
+#include "dbgsetfg.h"
 
 #include "clibext.h"
 

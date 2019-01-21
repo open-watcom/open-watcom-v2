@@ -32,8 +32,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include <i86.h>
-#include "extender.h"
-#include "dpmi.h"
 #include "dbgdefn.h"
 #include "dsxutil.h"
 #include "dbglit.h"
@@ -55,7 +53,7 @@ static memptr                   OldInt24;
 static memptr                   OldInt28;
 static memptr                   Orig28;
 
-dos_memory      RMData;
+dpmi_dos_block  RMData;
 rm_data         __far *PMData;
 
 #if defined(__OSI__)
@@ -65,7 +63,7 @@ unsigned short  _ExtenderRealModeSelector;
 #define CTRL_BREAK_VECTOR      0x1b
 
 extern void CheckForBrk(void);
-#pragma aux CheckForBrk = "mov  ah,0xb"  "int   0x21"
+#pragma aux CheckForBrk = "mov  ah,0xb"  "int 0x21"
 
 bool TBreak( void )
 {
@@ -97,18 +95,17 @@ void GrabHandlers( void )
     OldInt23.a = MyGetRMVector( 0x23 );
     OldInt24.a = MyGetRMVector( 0x24 );
     OldInt28.a = MyGetRMVector( 0x28 );
-    MySetRMVector( 0x10, RMData.segm.rm, RM_OFF( Interrupt10 ) );
-    MySetRMVector( CTRL_BREAK_VECTOR, RMData.segm.rm, RM_OFF( Interrupt1b_23 ) );
-    MySetRMVector( 0x23, RMData.segm.rm, RM_OFF( Interrupt1b_23 ) );
-    MySetRMVector( 0x24, RMData.segm.rm, RM_OFF( Interrupt24 ) );
+    MySetRMVector( 0x10, RMData.rm, RM_OFF( Interrupt10 ) );
+    MySetRMVector( CTRL_BREAK_VECTOR, RMData.rm, RM_OFF( Interrupt1b_23 ) );
+    MySetRMVector( 0x23, RMData.rm, RM_OFF( Interrupt1b_23 ) );
+    MySetRMVector( 0x24, RMData.rm, RM_OFF( Interrupt24 ) );
     MySetRMVector( 0x28, Orig28.s.segment, Orig28.s.offset );
 }
 
 void RestoreHandlers( void )
 {
     if( PMData->oldint10.a != 0 ) {
-        MySetRMVector( 0x10, PMData->oldint10.s.segment,
-                             PMData->oldint10.s.offset );
+        MySetRMVector( 0x10, PMData->oldint10.s.segment, PMData->oldint10.s.offset );
     }
     if( OldInt1b.a ) {
         MySetRMVector( CTRL_BREAK_VECTOR, OldInt1b.s.segment, OldInt1b.s.offset );
@@ -127,8 +124,8 @@ void RestoreHandlers( void )
 static void Cleanup( void )
 {
     RestoreOrigVectors();
-    if( RMData.segm.pm != 0 ) {
-        DPMIFreeDOSMemoryBlock( RMData.segm.pm );
+    if( RMData.pm != 0 ) {
+        DPMIFreeDOSMemoryBlock( RMData.pm );
     }
 }
 
@@ -142,28 +139,26 @@ void KillDebugger( int rc )
 void GUImain( void )
 {
 #if defined(__OSI__)
-    {
-        long    result;
+    long    sel;
 
-        _Extender = DOSX_RATIONAL;
-        result = DPMIAllocateLDTDescriptors( 1 );
-        if( result < 0 ) {
-            StartupErr( LIT_ENG( Unable_to_get_rm_sel ) );
-        }
-        _ExtenderRealModeSelector = result & 0xffff;
-        if( DPMISetSegmentLimit( _ExtenderRealModeSelector, 0xfffff ) ) {
-            StartupErr( LIT_ENG( Unable_to_get_rm_sel ) );
-        }
+    _Extender = DOSX_RATIONAL;
+    sel = DPMIAllocateLDTDescriptors( 1 );
+    if( sel < 0 ) {
+        StartupErr( LIT_ENG( Unable_to_get_rm_sel ) );
+    }
+    _ExtenderRealModeSelector = sel;
+    if( DPMISetSegmentLimit( _ExtenderRealModeSelector, 0xfffff ) ) {
+        StartupErr( LIT_ENG( Unable_to_get_rm_sel ) );
     }
 #endif
     SaveOrigVectors();
     Orig28.a = MyGetRMVector( 0x28 );
 
-    RMData.dpmi_adr = DPMIAllocateDOSMemoryBlock( _NBPARAS( RMSegEnd - RMSegStart ) );
-    if( RMData.segm.pm == 0 ) {
+    RMData = DPMIAllocateDOSMemoryBlock( _NBPARAS( RMSegEnd - RMSegStart ) );
+    if( RMData.pm == 0 ) {
         StartupErr( LIT_ENG( Unable_to_alloc_DOS_mem ) );
     }
-    PMData = MK_FP( RMData.segm.pm, 0 );
+    PMData = MK_FP( RMData.pm, 0 );
     _fmemcpy( PMData, RMSegStart, RMSegEnd - RMSegStart );
     if( _osmajor == 2 ) {
         PMData->fail = 0;

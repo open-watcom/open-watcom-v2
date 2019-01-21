@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
+* Copyright (c) 2009-2018 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -34,6 +34,8 @@
 *
 ****************************************************************************/
 
+
+#include "wipfc.hpp"
 #include "note.hpp"
 #include "cell.hpp"
 #include "document.hpp"
@@ -47,10 +49,11 @@ Lexer::Token Note::parse( Lexer* lexer )
 {
     std::wstring temp;
     std::wstring* fname( new std::wstring() );
-    prepBufferName( fname, *( document->dataName() ) );
-    fname = document->addFileName( fname );
-    Lexer::Token tok( document->getNextToken() );
-    while( tok != Lexer::TAGEND ) {
+    prepBufferName( fname, *( _document->dataName() ) );
+    fname = _document->addFileName( fname );
+    Lexer::Token tok;
+
+    while( (tok = _document->getNextToken()) != Lexer::TAGEND ) {
         if( tok == Lexer::ATTRIBUTE ) {
             std::wstring key;
             std::wstring value;
@@ -59,46 +62,47 @@ Lexer::Token Note::parse( Lexer* lexer )
                 temp = L":hp2.";
                 temp += value;
                 temp += L":ehp2.";
+            } else {
+                _document->printError( ERR1_ATTRNOTDEF );
             }
-            else
-                document->printError( ERR1_ATTRNOTDEF );
-        }
-        else if( tok == Lexer::FLAG )
-            document->printError( ERR1_ATTRNOTDEF );
-        else if( tok == Lexer::ERROR_TAG )
+        } else if( tok == Lexer::FLAG ) {
+            _document->printError( ERR1_ATTRNOTDEF );
+        } else if( tok == Lexer::ERROR_TAG ) {
             throw FatalError( ERR_SYNTAX );
-        else if( tok == Lexer::END )
+        } else if( tok == Lexer::END ) {
             throw FatalError( ERR_EOF );
-        else
-            document->printError( ERR1_TAGSYNTAX );
-        tok = document->getNextToken();
+        } else {
+            _document->printError( ERR1_TAGSYNTAX );
+        }
     }
     if( temp.empty() ) {
         temp = L":hp2.";
-        temp += document->note();
+        temp += _document->note();
         temp += L":ehp2.";
     }
-    document->pushInput( new IpfBuffer( fname, document->lexerLine(),
-        document->lexerCol(), temp ) );
-    bool oldBlockParsing( document->blockParsing() );
-    document->setBlockParsing( true );
-    whiteSpace = Tag::LITERAL;
-    appendChild( new P( document, this, document->dataName(), document->lexerLine(),
-        document->lexerCol() ) );
-    tok = document->getNextToken(); //first token from buffer
+    _document->pushInput( new IpfBuffer( fname, _document->lexerLine(),
+        _document->lexerCol(), temp ) );
+    bool oldBlockParsing( _document->blockParsing() );
+    _document->setBlockParsing( true );
+    _whiteSpace = Tag::LITERAL;
+    appendChild( new P( _document, this, _document->dataName(), _document->lexerLine(),
+        _document->lexerCol() ) );
+    tok = _document->getNextToken(); //first token from buffer
     while( tok != Lexer::END ) {
-        if( parseInline( lexer, tok ) )
+        if( parseInline( lexer, tok ) ) {
             parseCleanup( lexer, tok );
+        }
     }
-    whiteSpace = Tag::NONE;
-    document->setBlockParsing( oldBlockParsing );
-    document->popInput();
-    appendChild( new WhiteSpace( document, this, document->dataName(), document->lexerLine(),
-        document->lexerCol(), L"  ", Tag::LITERAL, false ) );
-    tok = document->getNextToken(); //next token from main stream
+    _whiteSpace = Tag::NONE;
+    _document->setBlockParsing( oldBlockParsing );
+    _document->popInput();
+    appendChild( new WhiteSpace( _document, this, _document->dataName(), _document->lexerLine(),
+        _document->lexerCol(), L"  ", Tag::LITERAL, false ) );
+    tok = _document->getNextToken(); //next token from main stream
     while( tok != Lexer::END && !( tok == Lexer::TAG && lexer->tagId() == Lexer::EUSERDOC)) {
-        if( parseInline( lexer, tok ) )
+        if( parseInline( lexer, tok ) ) {
             break;
+        }
     }
     return tok;
 }

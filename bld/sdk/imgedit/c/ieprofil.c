@@ -31,7 +31,6 @@
 
 
 #include "imgedit.h"
-#include <malloc.h>
 #include "ieprofil.h"
 #include "ietoolbr.h"
 #include "ieclrpal.h"

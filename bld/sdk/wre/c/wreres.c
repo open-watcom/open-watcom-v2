@@ -30,17 +30,11 @@
 ****************************************************************************/
 
 
-#include "commonui.h"
-#include <stdio.h>
-#include <string.h>
+#include "wreglbl.h"
 #include <ddeml.h>
-
-#include "watcom.h"
 #include "waccel.h"
 #include "wmenu.h"
 #include "wstring.h"
-
-#include "wreglbl.h"
 #include "wreres.h"
 #include "wregetfn.h"
 #include "wrestrdp.h"

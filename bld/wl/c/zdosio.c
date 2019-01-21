@@ -143,9 +143,8 @@ size_t QRead( f_handle file, void *buffer, size_t len, const char *name )
     if( h < 0 ) {
         if( name != NULL ) {
             LnkMsg( ERR+MSG_IO_PROBLEM, "12", name, QErrMsg( -h ) );
-        } else {
-            return( -1 );
         }
+        return( IOERROR );
     }
     return( h );
 }
@@ -164,7 +163,7 @@ static size_t TestWrite( f_handle file, const void *buffer, size_t len, const ch
     if( name != NULL ) {
         if( h < 0 ) {
             LnkMsg( ERR+MSG_IO_PROBLEM, "12", name, QErrMsg( -h ) );
-            return( -1 );
+            return( IOERROR );
         } else if( h != len ) {
             Msg_Get( MSG_IOERRLIST_7, rc_buff );
             LnkMsg( (FTL+MSG_IO_PROBLEM) & ~OUT_MAP, "12", name, rc_buff );
@@ -273,10 +272,12 @@ bool QReadStr( f_handle file, char *dest, size_t size, const char *name )
 /* quick read string (for reading directive file) */
     bool    eof;
     char    ch;
+    size_t  len;
 
     eof = false;
     while( --size > 0 ) {
-        if( QRead( file, &ch, 1, name ) == 0 ) {
+        len = QRead( file, &ch, 1, name );
+        if( len == 0 || len == IOERROR ) {
             eof = true;
             break;
         } else if( ch != '\r' ) {

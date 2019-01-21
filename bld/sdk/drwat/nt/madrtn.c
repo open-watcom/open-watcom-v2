@@ -34,9 +34,7 @@
 #include "srchmsg.h"
 #include "madrtn.h"
 #include "madx86.h"
-#include <string.h>
 #include "dip.h"
-#include <malloc.h>
 #include "madsys1.h"
 #include "madcli.h"
 
@@ -163,10 +161,10 @@ bool InitMADInfo( void )
     if( MADInit() != MS_OK ) {
         return( false );
     }
-    if ( MADActiveSet( SysConfig.mad ) != MS_OK ){
+    if ( MADActiveSet( SysConfig.arch ) != MS_OK ){
         return( false );
     }
-    if( MADLoad(SysConfig.mad) != MS_OK  ) {
+    if( MADLoad( SysConfig.arch ) != MS_OK  ) {
         return( false );
     }
     if( !AllocMadDisasmData() ) {

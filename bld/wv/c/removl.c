@@ -80,7 +80,7 @@ bool RemoteOvlSectPos( unsigned sect, mem_block *where )
     where->start.mach.segment = ret.segment;
     where->start.mach.offset = 0;
     where->start.sect_id = sect;
-    where->start.indirect = 0;
+    where->start.indirect = false;
     return( true );
 }
 

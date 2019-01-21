@@ -31,10 +31,9 @@
 ****************************************************************************/
 
 
-#include <ctype.h>
-#include <string.h>
-#include <dos.h>
 #include "drwatcom.h"
+#include <ctype.h>
+#include <dos.h>
 #include "wclbproc.h"
 #include "segmap.h"
 #include "jdlg.h"
@@ -190,9 +189,8 @@ static walk_result CreateAllRegLists( const mad_reg_set_data *data, void *_crld 
     dc = GetDC( combo );
     GetTextExtentPoint( dc, TxtBuff, strlen( TxtBuff ), &size );
     ReleaseDC( combo, dc );
-    crld->max_len = size.cx;
-    if( crld->max_len < crld->max_len )
-        crld->max_len = crld->max_len;
+    if( crld->max_len < size.cx )
+        crld->max_len = size.cx;
     crld->reg_set = (mad_reg_set_data *)data;
     list=CreateRegList( crld );
 

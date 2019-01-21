@@ -37,31 +37,31 @@
 
 #if !defined(__WINDOWS_386__)
 
-extern  int                     DoDosCall( void *in, void *out );
-#pragma aux                     DoDosCall = \
-        "push ebp"      \
-        "push edx"      \
-        "mov eax,[edi]" \
-        "mov ebx,4[edi]"\
-        "mov ecx,8[edi]"\
-        "mov edx,12[edi]"\
-        "mov esi,16[edi]"\
-        "mov edi,20[edi]"\
-        "clc"           \
-        _INT_21         \
-        "mov ebp,edi"   \
-        "pop edi"       \
-        "mov [edi],eax" \
-        "mov 4[edi],ebx"\
-        "mov 8[edi],ecx"\
-        "mov 12[edi],edx"\
-        "mov 16[edi],esi"\
-        "mov 20[edi],ebp"\
-        "sbb eax,eax"   \
-        "pop ebp"       \
-        parm caller     [edi] [edx] \
-        value           [eax] \
-        modify          [ebx ecx edx esi edi];
+extern int      DoDosCall( void *in, void *out );
+#pragma aux DoDosCall = \
+        "push ebp"          \
+        "push edx"          \
+        "mov  eax,[edi]"    \
+        "mov  ebx,4[edi]"   \
+        "mov  ecx,8[edi]"   \
+        "mov  edx,12[edi]"  \
+        "mov  esi,16[edi]"  \
+        "mov  edi,20[edi]"  \
+        "clc"               \
+        _INT_21             \
+        "mov  ebp,edi"      \
+        "pop  edi"          \
+        "mov  [edi],eax"    \
+        "mov  4[edi],ebx"   \
+        "mov  8[edi],ecx"   \
+        "mov  12[edi],edx"  \
+        "mov  16[edi],esi"  \
+        "mov  20[edi],ebp"  \
+        "sbb  eax,eax"      \
+        "pop  ebp"          \
+    __parm __caller [__edi] [__edx] \
+    __value         [__eax] \
+    __modify        [__ebx __ecx __edx __edi __esi]
 
 #else
 #include <stddef.h>
@@ -74,7 +74,7 @@ _WCRTLINK int intdos( union REGS *inregs, union REGS *outregs )
     int status;
 
     status = DoDosCall( inregs, outregs );
-    outregs->x.cflag = status;
+    outregs->x.cflag = (status & 1);
     _dosretax( outregs->x.eax, status );
     return( outregs->x.eax );
 #else

@@ -1,7 +1,5 @@
-# Japanese text
+# Japanese text (CP932 encoding)
 
-Country=81
-CodePage=932
 Note="íç&colon."
 Caution="íç&colon."
 Warning="åxçê&colon."
@@ -15,8 +13,8 @@ ulItemId3=•
 cgraphicFontFaceName=MINCHO
 cgraphicFontWidth=6
 cgraphicFontHeight=12
-Grammer
+Grammar
 Words=0-9+A-Z+a-z+ÇO-ÇX+Ç`-Çy+ÇÅ-Çö
 RemoveNL=Å@-¸¸
-eGrammer
+eGrammar
 

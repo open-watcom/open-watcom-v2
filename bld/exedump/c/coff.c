@@ -84,10 +84,8 @@ const char *Coff_obj_name( const char *id )
         return( id );
     if( *id == '/' ) {
         offset = 0;
-        id += 1;
-        while( *id ) {
+        for( id += 1; *id != '\0'; id++ ) {
             offset = offset * 10 + ( *id - '0' );
-            id += 1;
         }
         return( &String_table[offset - 4] );
     }
@@ -161,7 +159,7 @@ static void dmp_symtab( unsigned long offset, unsigned long num_syms )
         num_aux = symtab->num_aux;
         symtab++;
         if( num_aux > 0 ) {
-            dmp_mult_data_line( (char *)symtab, 0, num_aux * sizeof( coff_symbol ) );
+            dmp_mult_data_line( (char *)symtab, 0, (unsigned_16)( num_aux * sizeof( coff_symbol ) ) );
             symtab += num_aux;
             symidx += num_aux;
         }
@@ -170,7 +168,7 @@ static void dmp_symtab( unsigned long offset, unsigned long num_syms )
     Wdputslc( "\n" );
     if( strsize != 0 ) {
         Banner( "String Table" );
-        dmp_mult_data_line( strtab, 0, strsize );
+        dmp_mult_data_line( strtab, 0, (unsigned_16)strsize );
         Wdputslc( "\n" );
     }
     free( start );
@@ -187,10 +185,10 @@ bool Dmp_coff_head( void )
 
     Wlseek( Coff_off );
     Wread( &header, sizeof( coff_file_header ) );
-    if( header.cpu_type != IMAGE_FILE_MACHINE_I386
-        && header.cpu_type != IMAGE_FILE_MACHINE_ALPHA
-        && header.cpu_type != IMAGE_FILE_MACHINE_UNKNOWN
-        && header.cpu_type != IMAGE_FILE_MACHINE_POWERPC ) {
+    if( header.cpu_type != COFF_IMAGE_FILE_MACHINE_I386
+        && header.cpu_type != COFF_IMAGE_FILE_MACHINE_ALPHA
+        && header.cpu_type != COFF_IMAGE_FILE_MACHINE_UNKNOWN
+        && header.cpu_type != COFF_IMAGE_FILE_MACHINE_POWERPC ) {
         return( false );
     }
     Banner( "COFF object file" );

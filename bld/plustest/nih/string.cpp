@@ -20,7 +20,7 @@ Authors:
         December, 1987
 
 Function:
-        
+
 Class String implements character string objects.  Operations provided
 include & (concatenation) and () (substring extraction).  Type
 conversions between String and char* are provided, permitting the two
@@ -33,14 +33,14 @@ Revision 1.1  93/02/16  16:33:28  Anthony_Scian
 
  * Revision 3.0  90/05/20  00:21:32  kgorlen
  * Release for 1st edition.
- * 
+ *
 */
 
 #include "String.ho"
 #include "Range.h"
 //#include "nihclconfig.h"
 #include "nihclIO.h"
-#include <ctype.h> 
+#include <ctype.h>
 
 #define THIS    String
 #define BASE    Object
@@ -155,7 +155,7 @@ cerr << " ...\n";
                 overlap = YES;  // src overlaps destination String
 // src overlap only tail of destination String?
                 if (src >= sp+sl) tailDelta = srclen-sl;
-                else {          
+                else {
 // src overlap this SubString?
                         if (src+srclen > sp) {  // move src to buffer
                                 srcbuf = new char[srclen];
@@ -197,7 +197,7 @@ cerr.write(src, srclen);
 cerr << endl;
 #endif
         strncpy(sp,src,srclen);         // insert src into destination
-        if (srcbuf) free(srcbuf);
+        if (srcbuf) delete[] srcbuf;
 #ifdef DEBUG
 cerr << "... result: " << *this << '\n';
 #endif
@@ -289,19 +289,19 @@ String::String(unsigned extra)
 }
 
 String::String(const char* cs)
-{ 
+{
         len = strlen(cs);
         alloc = len + DEFAULT_STRING_EXTRA + 1;
         p = (char*)malloc(alloc);
-        strcpy(p,cs); 
+        strcpy(p,cs);
 }
 
 String::String(const char* cs, unsigned extra)
-{ 
+{
         len = strlen(cs);
         alloc = len + extra + 1;
         p = (char*)malloc(alloc);
-        strcpy(p,cs); 
+        strcpy(p,cs);
 }
 
 String::String(const String& s)
@@ -311,7 +311,7 @@ String::String(const String& s)
         p = (char*)malloc(alloc);
         strcpy (p,s.p);
 }
- 
+
 String::String(const String& s, unsigned extra)
 {
         len = s.len;
@@ -398,7 +398,7 @@ void String::operator=(const char* cs)
                 alloc = len + DEFAULT_STRING_EXTRA + 1;
                 free(p);
                 p = (char*)malloc(alloc);
-        }       
+        }
         strcpy(p,cs);
 }
 
@@ -451,7 +451,7 @@ String& String::operator&=(const String& s)
         strcpy(&p[len],s.p);
         len += s.len;
         return *this;
-}       
+}
 
 String& String::operator&=(const SubString& ss)
 {
@@ -468,7 +468,7 @@ String& String::operator&=(const SubString& ss)
                         return *this;
                 }
                 else p = (char*)realloc(p,alloc);
-        }               
+        }
         strncpy(&(p[len]),ss.sp,ss.sl);
         len += ss.sl;
         p[len] = '\0';

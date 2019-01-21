@@ -74,7 +74,7 @@ void DoPlus( void )
     left = StkEntry( 1 );
     LRValue( left );
     RValue( ExprSP );
-    switch( ExprSP->info.kind ) {
+    switch( ExprSP->ti.kind ) {
     case TK_POINTER:
     case TK_ADDRESS:
         /* get the pointer as the left operand */
@@ -82,7 +82,7 @@ void DoPlus( void )
         SwapStack( 1 );
     }
     AddOp( left, ExprSP );
-    switch( left->info.kind ) {
+    switch( left->ti.kind ) {
     case TK_BOOL:
     case TK_ENUM:
     case TK_CHAR:
@@ -91,7 +91,7 @@ void DoPlus( void )
         break;
     case TK_POINTER:
     case TK_ADDRESS:
-        switch( ExprSP->info.kind ) {
+        switch( ExprSP->ti.kind ) {
         case TK_BOOL:
         case TK_ENUM:
         case TK_CHAR:
@@ -100,7 +100,7 @@ void DoPlus( void )
         default:
             Error( ERR_NONE, LIT_ENG( ERR_ILL_TYPE ) );
         }
-        if( (left->info.modifier & TM_MOD_MASK) == TM_NEAR ) {
+        if( left->ti.modifier == TM_NEAR ) {
             //NYI: 64 bit offsets
             left->v.addr.mach.offset += U32FetchTrunc( ExprSP->v.uint );
         } else {
@@ -135,17 +135,17 @@ void DoMinus( void )
     LRValue( left );
     RValue( ExprSP );
     AddOp( left, ExprSP );
-    switch( left->info.kind ) {
+    switch( left->ti.kind ) {
     case TK_BOOL:
     case TK_ENUM:
     case TK_CHAR:
     case TK_INTEGER:
         U64Sub( &left->v.uint, &ExprSP->v.uint, &left->v.uint );
-        left->info.modifier = TM_SIGNED;
+        left->ti.modifier = TM_SIGNED;
         break;
     case TK_POINTER:
     case TK_ADDRESS:
-        switch( ExprSP->info.kind ) {
+        switch( ExprSP->ti.kind ) {
         case TK_BOOL:
         case TK_CHAR:
         case TK_ENUM:
@@ -156,9 +156,9 @@ void DoMinus( void )
         case TK_POINTER:
         case TK_ADDRESS:
             I32ToI64( AddrDiff( left->v.addr, ExprSP->v.addr ), &left->v.sint );
-            left->info.kind = TK_INTEGER;
-            left->info.modifier = TM_SIGNED;
-            left->info.size = sizeof( signed_64 );
+            left->ti.kind = TK_INTEGER;
+            left->ti.modifier = TM_SIGNED;
+            left->ti.size = sizeof( signed_64 );
             left->th = NULL;
             break;
         default:
@@ -191,7 +191,7 @@ void DoMul( void )
 
     left = StkEntry( 1 );
     BinOp( left, ExprSP );
-    switch( left->info.kind ) {
+    switch( left->ti.kind ) {
     case TK_BOOL:
     case TK_ENUM:
     case TK_CHAR:
@@ -231,7 +231,7 @@ void DoDiv( void )
 
     left = StkEntry( 1 );
     BinOp( left, ExprSP );
-    switch( left->info.kind ) {
+    switch( left->ti.kind ) {
     case TK_BOOL:
     case TK_ENUM:
     case TK_CHAR:
@@ -239,7 +239,7 @@ void DoDiv( void )
         if( U64Test( &ExprSP->v.uint ) == 0 ) {
             Error( ERR_NONE, LIT_ENG( ERR_ZERO_DIV ) );
         }
-        if( (left->info.modifier & TM_MOD_MASK) == TM_UNSIGNED ) {
+        if( left->ti.modifier == TM_UNSIGNED ) {
             U64Div( &left->v.uint, &ExprSP->v.uint, &left->v.uint, NULL );
         } else {
             I64Div( &left->v.sint, &ExprSP->v.sint, &left->v.sint, NULL );
@@ -296,7 +296,7 @@ void DoMod( void )
 
     left = StkEntry( 1 );
     BinOp( left, ExprSP );
-    switch( left->info.kind ) {
+    switch( left->ti.kind ) {
     case TK_BOOL:
     case TK_ENUM:
     case TK_CHAR:
@@ -304,7 +304,7 @@ void DoMod( void )
         if( U64Test( &ExprSP->v.uint ) == 0 ) {
             Error( ERR_NONE, LIT_ENG( ERR_ZERO_MOD ) );
         }
-        if( (left->info.modifier & TM_MOD_MASK) == TM_UNSIGNED ) {
+        if( left->ti.modifier == TM_UNSIGNED ) {
             U64Div( &left->v.uint, &ExprSP->v.uint, &dummy.u, &left->v.uint );
         } else {
             I64Div( &left->v.sint, &ExprSP->v.sint, &dummy.s, &left->v.sint );
@@ -328,7 +328,7 @@ void DoAnd( void )
 
     left = StkEntry( 1 );
     BinOp( left, ExprSP );
-    switch( left->info.kind ) {
+    switch( left->ti.kind ) {
     case TK_BOOL:
     case TK_ENUM:
     case TK_CHAR:
@@ -353,7 +353,7 @@ void DoOr( void )
 
     left = StkEntry( 1 );
     BinOp( left, ExprSP );
-    switch( left->info.kind ) {
+    switch( left->ti.kind ) {
     case TK_BOOL:
     case TK_ENUM:
     case TK_CHAR:
@@ -378,7 +378,7 @@ void DoXor( void )
 
     left = StkEntry( 1 );
     BinOp( left, ExprSP );
-    switch( left->info.kind ) {
+    switch( left->ti.kind ) {
     case TK_BOOL:
     case TK_ENUM:
     case TK_CHAR:
@@ -407,14 +407,14 @@ void DoShift( void )
     ConvertTo( ExprSP, TK_INTEGER, TM_SIGNED, 0 );
     shift = I32FetchTrunc( ExprSP->v.sint );
     RValue( left );
-    switch( left->info.kind ) {
+    switch( left->ti.kind ) {
     case TK_BOOL:
     case TK_ENUM:
     case TK_CHAR:
     case TK_INTEGER:
         if( shift >= 0 ) {
             U64ShiftL( &left->v.uint, shift, &left->v.uint );
-        } else if( (left->info.modifier & TM_MOD_MASK) == TM_UNSIGNED ) {
+        } else if( left->ti.modifier == TM_UNSIGNED ) {
             U64ShiftR( &left->v.uint, -shift, &left->v.uint );
         } else {
             I64ShiftR( &left->v.sint, -shift, &left->v.sint );
@@ -445,9 +445,9 @@ void DoAddr( void )
         if( ExprSP->th != NULL ) {
             GetMADTypeDefaultAt( ExprSP->v.addr, MTK_ADDRESS, &mti );
             DIPTypePointer( ExprSP->th, TM_FAR, BITS2BYTES( mti.b.bits ), ExprSP->th );
-            ExprSP->info.kind = TK_POINTER;
+            ExprSP->ti.kind = TK_POINTER;
         } else {
-            ExprSP->info.kind = TK_ADDRESS;
+            ExprSP->ti.kind = TK_ADDRESS;
         }
         ExprSP->flags &= ~SF_FORM_MASK;
     } else {
@@ -467,7 +467,7 @@ void DoAPoints( stack_entry *stk, type_kind def )
 
     LRValue( stk );
     was_imp_addr = stk->flags & SF_IMP_ADDR;
-    switch( stk->info.kind ) {
+    switch( stk->ti.kind ) {
     case TK_BOOL:
     case TK_ENUM:
     case TK_CHAR:
@@ -476,25 +476,25 @@ void DoAPoints( stack_entry *stk, type_kind def )
         off = U32FetchTrunc( stk->v.uint );
         stk->v.addr = DefAddrSpaceForAddr( Context.execution );
         stk->v.addr.mach.offset = off;
-        stk->info.modifier = TM_NEAR;
+        stk->ti.modifier = TM_NEAR;
         /* fall through */
     case TK_POINTER:
     case TK_ADDRESS:
         if( stk->th != NULL ) {
             LocationCreate( &stk->v.loc, LT_ADDR, &stk->v.addr );
             DIPTypeBase( stk->th, stk->th, stk->lc, &stk->v.loc );
-            ClassifyEntry( stk, &stk->info );
-            if( stk->info.kind == TK_VOID ) {
+            ClassifyEntry( stk, &stk->ti );
+            if( stk->ti.kind == TK_VOID ) {
                 Error( ERR_NONE, LIT_ENG( ERR_VOID_BASE ) );
             }
         } else {
             if( def == TK_NONE )
                 def = TK_INTEGER;
-            stk->info.kind = def;
+            stk->ti.kind = def;
             switch( def ) {
             case TK_INTEGER:
-                stk->info.modifier = TM_UNSIGNED;
-                stk->info.size = DefaultSize( DK_INT );
+                stk->ti.modifier = TM_UNSIGNED;
+                stk->ti.size = DefaultSize( DK_INT );
                 break;
             case TK_ADDRESS:
                 ExprSetAddrInfo( stk, false );
@@ -522,33 +522,33 @@ void DoPoints( type_kind def )
 
 static void ConvertGiven( stack_entry *object, stack_entry *new )
 {
-    dip_type_info       new_type;
-    dip_type_info       obj_type;
+    dig_type_info       new_ti;
+    dig_type_info       obj_ti;
     DIPHDL( type, obj_th );
     DIPHDL( type, new_th );
 
     if( object->th != NULL )
         HDLAssign( type, obj_th, object->th );
-    ClassifyEntry( new, &new_type );
-    new_type.modifier &= TM_MOD_MASK; /* turn off DEREF bit */
-    ConvertTo( object, new_type.kind, new_type.modifier, new_type.size );
+    ClassifyEntry( new, &new_ti );
+    new_ti.deref = false;       /* turn off DEREF bit */
+    ConvertTo( object, new_ti.kind, new_ti.modifier, new_ti.size );
     if( object->th == NULL )
         goto no_adjust;
-    ClassifyEntry( object, &obj_type );
-    if( obj_type.kind != TK_POINTER )
+    ClassifyEntry( object, &obj_ti );
+    if( obj_ti.kind != TK_POINTER )
         goto no_adjust;
     if( AddrComp( object->v.addr, NilAddr ) == 0 )
         goto no_adjust;
     DIPTypeBase( obj_th, obj_th, NULL, NULL );
-    ClassifyType( object->lc, obj_th, &obj_type );
-    if( obj_type.kind != TK_STRUCT )
+    ClassifyType( object->lc, obj_th, &obj_ti );
+    if( obj_ti.kind != TK_STRUCT )
         goto no_adjust;
-    ClassifyEntry( new, &new_type );
-    if( new_type.kind != TK_POINTER )
+    ClassifyEntry( new, &new_ti );
+    if( new_ti.kind != TK_POINTER )
         goto no_adjust;
     DIPTypeBase( new->th, new_th, NULL, NULL );
-    ClassifyType( object->lc, new_th, &new_type );
-    if( new_type.kind != TK_STRUCT )
+    ClassifyType( object->lc, new_th, &new_ti );
+    if( new_ti.kind != TK_STRUCT )
         goto no_adjust;
     /*
      * At this point we know both the old type and the new type were
@@ -598,18 +598,18 @@ void DoConvert( void )
 void DoLConvert( void )
 {
     stack_entry     *left;
-    dip_type_info   new;
+    dig_type_info   ti;
 
     left = StkEntry( 1 );
     LValue( ExprSP );
     if( ExprSP->flags & SF_LOCATION ) {
-        ClassifyEntry( left, &new );
+        ClassifyEntry( left, &ti );
         if( ExprSP->v.loc.e[ExprSP->v.loc.num-1].type != LT_ADDR ) {
-            if( new.size > ExprSP->info.size ) {
+            if( ti.size > ExprSP->ti.size ) {
                 Error( ERR_NONE, LIT_ENG( ERR_TYPE_CONVERSION ) );
             }
         }
-        ExprSP->info = new;
+        ExprSP->ti = ti;
         MoveTH( left, ExprSP );
     } else {
         Error( ERR_NONE, LIT_ENG( ERR_TYPE_CONVERSION ) );
@@ -631,12 +631,12 @@ void DoMakeComplex( void )
     RValue( ExprSP );
     RValue( left );
     DToLD( 0.0, &zero );
-    if( ExprSP->info.kind == TK_COMPLEX ) {
+    if( ExprSP->ti.kind == TK_COMPLEX ) {
         if( LDCmp( &ExprSP->v.cmplx.im, &zero ) != 0 ) {
             Error( ERR_NONE, LIT_ENG( ERR_ILL_TYPE ) );
         }
     }
-    if( left->info.kind == TK_COMPLEX ) {
+    if( left->ti.kind == TK_COMPLEX ) {
         if( LDCmp( &left->v.cmplx.im, &zero ) != 0 ) {
             Error( ERR_NONE, LIT_ENG( ERR_ILL_TYPE ) );
         }
@@ -661,19 +661,19 @@ void DoStringConcat( void )
     RValue( left );
     RValue( rite );
     BinOp( left, rite );
-    if( left->info.kind != TK_STRING ) {
+    if( left->ti.kind != TK_STRING ) {
         Error( ERR_NONE, LIT_ENG( ERR_ILL_TYPE ) );
     }
     CreateEntry();
-    ExprSP->info.kind = TK_STRING;
-    ExprSP->info.modifier = TM_NONE;
-    ExprSP->info.size = left->info.size + rite->info.size;
-    _ChkAlloc( ExprSP->v.string.allocated, ExprSP->info.size, LIT_ENG( ERR_NO_MEMORY_FOR_EXPR ) );
+    ExprSP->ti.kind = TK_STRING;
+    ExprSP->ti.modifier = TM_NONE;
+    ExprSP->ti.size = left->ti.size + rite->ti.size;
+    _ChkAlloc( ExprSP->v.string.allocated, ExprSP->ti.size, LIT_ENG( ERR_NO_MEMORY_FOR_EXPR ) );
     LocationCreate( &ExprSP->v.string.loc, LT_INTERNAL, ExprSP->v.string.allocated );
-    LocationAssign( &ExprSP->v.string.loc, &left->v.string.loc, left->info.size, false );
-    ExprSP->v.string.loc.e[0].u.p = left->info.size +
+    LocationAssign( &ExprSP->v.string.loc, &left->v.string.loc, left->ti.size, false );
+    ExprSP->v.string.loc.e[0].u.p = left->ti.size +
                 (byte *)ExprSP->v.string.loc.e[0].u.p;
-    LocationAssign( &ExprSP->v.string.loc, &rite->v.string.loc, rite->info.size, false );
+    LocationAssign( &ExprSP->v.string.loc, &rite->v.string.loc, rite->ti.size, false );
     ExprSP->v.string.loc.e[0].u.p = ExprSP->v.string.allocated;
     CombineEntries( ExprSP, left, rite );
 }
@@ -733,7 +733,7 @@ void DoField( void )
     }
     object = StkEntry( 1 );
     LValue( object );
-    if( object->info.kind == TK_FUNCTION ) {
+    if( object->ti.kind == TK_FUNCTION ) {
         RValue( object );
         if( DeAliasAddrSym( NO_MOD, object->v.addr, sh ) == SR_NONE ) {
             Error( ERR_NONE, LIT_ENG( ERR_NO_ROUTINE ), object->v.addr );
@@ -833,28 +833,28 @@ void DoAssign( void )
     ExprResolve( ExprSP );
     LValue( ExprSP );
     if( (dest->flags & SF_NAME) && !NameResolve( dest, false ) ) {
-        if( !CreateSym( &dest->v.li, &ExprSP->info ) ) {
+        if( !CreateSym( &dest->v.li, &ExprSP->ti ) ) {
             Error( ERR_NONE, LIT_ENG( ERR_SYM_NOT_CREATED ), dest->v.li.name.start, dest->v.li.name.len );
         }
     }
     LValue( dest );
     if( dest->flags & SF_LOCATION ) {
-        if( dest->info.kind == TK_STRING ) {
-            if( ExprSP->info.kind != TK_STRING ) {
+        if( dest->ti.kind == TK_STRING ) {
+            if( ExprSP->ti.kind != TK_STRING ) {
                 Error( ERR_NONE, LIT_ENG( ERR_TYPE_CONVERSION ) );
             }
-            copy = ExprSP->info.size;
-            if( copy > dest->info.size )
-                copy = dest->info.size;
+            copy = ExprSP->ti.size;
+            if( copy > dest->ti.size )
+                copy = dest->ti.size;
             if( LocationAssign( &dest->v.loc, &ExprSP->v.loc, copy, false ) != DS_OK ) {
                 Error( ERR_NONE, LIT_ENG( ERR_NO_ACCESS ) );
             }
-            if( dest->info.size > copy ) {
+            if( dest->ti.size > copy ) {
                 /* have to pad */
                 #define PADDING "                     "
                 #define PAD_LEN (sizeof( PADDING ) - 1)
                 ll = dest->v.loc;
-                pad = dest->info.size - ExprSP->info.size;
+                pad = dest->ti.size - ExprSP->ti.size;
                 do {
                     LocationAdd( &ll, copy * 8 );
                     copy = pad;
@@ -872,7 +872,7 @@ void DoAssign( void )
             ConvertGiven( ExprSP, dest );
             ToItem( ExprSP, &item );
             LocationCreate( &src, LT_INTERNAL, &item );
-            if( LocationAssign( &dest->v.loc, &src, dest->info.size, false ) != DS_OK ) {
+            if( LocationAssign( &dest->v.loc, &src, dest->ti.size, false ) != DS_OK ) {
                 Error( ERR_NONE, LIT_ENG( ERR_NO_ACCESS ) );
             }
         }
@@ -922,7 +922,7 @@ static trap_elen MakeSCB( item_mach *item, address addr, item_type typ )
 {
     unsigned len;
 
-    len = ExprSP->info.size;
+    len = ExprSP->ti.size;
     switch( typ ) {
     case IT_NWSCB:
         item->nwscb.str = addr.mach.offset;
@@ -946,43 +946,39 @@ static trap_elen MakeSCB( item_mach *item, address addr, item_type typ )
 
 static type_modifier DerefType( type_handle *th )
 {
-    dip_type_info   ti;
+    dig_type_info   ti;
 
     if( DIPTypeInfo( th, ExprSP->lc, &ti ) != DS_OK )
         return( TM_NONE );
-    if( ti.kind != TK_POINTER )
-        return( TM_NONE );
-    if( !(ti.modifier & TM_FLAG_DEREF) )
-        return( TM_NONE );
-    return( ti.modifier & TM_MOD_MASK );
+    if( ti.kind == TK_POINTER && ti.deref )
+        return( ti.modifier );
+    return( TM_NONE );
 }
 
 static item_type DerefToSCB( type_handle *th )
 {
-    dip_type_info   ti;
+    dig_type_info   ti;
 
     if( DIPTypeInfo( th, ExprSP->lc, &ti ) != DS_OK )
         return( IT_NIL );
-    if( ti.kind != TK_POINTER )
-        return( IT_NIL );
-    if( !(ti.modifier & TM_FLAG_DEREF) )
-        return( IT_NIL );
-    switch( ti.modifier & TM_MOD_MASK ) {
-    case TM_NEAR:
-        //MAD: ????
-        if( ti.size == sizeof( addr32_off ) ) {
-            return( IT_NWSCB );
-        } else {
-            return( IT_NDSCB );
-        }
-    case TM_NONE:
-    case TM_FAR:
-    case TM_HUGE:
-        //MAD: ????
-        if( ti.size == sizeof( addr32_ptr ) ) {
-            return( IT_FWSCB );
-        } else {
-            return( IT_FDSCB );
+    if( ti.kind == TK_POINTER && ti.deref ) {
+        switch( ti.modifier ) {
+        case TM_NEAR:
+            //MAD: ????
+            if( ti.size == sizeof( addr32_off ) ) {
+                return( IT_NWSCB );
+            } else {
+                return( IT_NDSCB );
+            }
+        case TM_NONE:
+        case TM_FAR:
+        case TM_HUGE:
+            //MAD: ????
+            if( ti.size == sizeof( addr32_ptr ) ) {
+                return( IT_FWSCB );
+            } else {
+                return( IT_FDSCB );
+            }
         }
     }
     return( IT_NIL );
@@ -1015,7 +1011,7 @@ static void Addressable( bool build_scb, type_handle *parm_th )
     if( ExprSP->flags & SF_LOCATION ) {
         addr = ExprSP->v.loc.e[0].u.addr;
     } else {
-        if( ExprSP->info.kind == TK_STRING ) {
+        if( ExprSP->ti.kind == TK_STRING ) {
             src = ExprSP->v.string.loc;
         } else {
             DIPTypeBase( parm_th, th, NULL, NULL );
@@ -1025,9 +1021,9 @@ static void Addressable( bool build_scb, type_handle *parm_th )
             ToItem( ExprSP, &item );
             LocationCreate( &src, LT_INTERNAL, &item );
         }
-        addr = PokePgmStack( &src, ExprSP->info.size );
+        addr = PokePgmStack( &src, ExprSP->ti.size );
     }
-    if( build_scb && ExprSP->info.kind == TK_STRING ) {
+    if( build_scb && ExprSP->ti.kind == TK_STRING ) {
         len = MakeSCB( &item, addr, DerefToSCB( parm_th ) );
         if( len != 0 ) {
             LocationCreate( &src, LT_INTERNAL, &item );
@@ -1066,9 +1062,9 @@ void DoCall( int num_parms, bool build_scbs )
     DIPHDL( type, parm_th );
     DIPHDL( type, th );
     sym_info            rtn_si;
-    dip_type_info       this_ti;
-    dip_type_info       ti;
-    dip_type_info       ret_ti;
+    dig_type_info       this_ti;
+    dig_type_info       ti;
+    dig_type_info       ret_ti;
     item_mach           item;
     int                 parm_loc_adjust;
     int                 parm;
@@ -1079,7 +1075,7 @@ void DoCall( int num_parms, bool build_scbs )
         Error( ERR_NONE, LIT_ENG( ERR_CALL_NOT_ALLOWED ) );
     rtn_entry = StkEntry( num_parms );
     RValue( rtn_entry );
-    switch( rtn_entry->info.kind ) {
+    switch( rtn_entry->ti.kind ) {
     case TK_BOOL:
     case TK_ENUM:
     case TK_CHAR:
@@ -1090,7 +1086,7 @@ void DoCall( int num_parms, bool build_scbs )
         break;
     case TK_POINTER:
     case TK_ADDRESS:
-        if( (rtn_entry->info.modifier & TM_MOD_MASK) == TM_NEAR ) {
+        if( rtn_entry->ti.modifier == TM_NEAR ) {
             addr = Context.execution;
             addr.mach.offset = rtn_entry->v.addr.mach.offset;
         } else {
@@ -1148,7 +1144,7 @@ void DoCall( int num_parms, bool build_scbs )
         if( ds != DS_OK ) {
             LocationCreate( &ll, LT_INTERNAL, NULL );
         }
-        PushLocation( &ll, &StkEntry( parm )->info );
+        PushLocation( &ll, &StkEntry( parm )->ti );
         MoveSP( 2 );
         if( DIPTypeProcInfo( rtn_th, parm_th, parm ) == DS_OK ) {
             PushType( parm_th );
@@ -1172,7 +1168,7 @@ void DoCall( int num_parms, bool build_scbs )
         if( ds != DS_OK ) {
             LocationCreate( &ll, LT_INTERNAL, NULL );
         }
-        PushLocation( &ll, &ExprSP->info );
+        PushLocation( &ll, &ExprSP->ti );
         MoveSP( 2 );
         ++num_parms;
     }
@@ -1203,20 +1199,20 @@ void DoCall( int num_parms, bool build_scbs )
             LocationCreate( &ret_ll, LT_ADDR, &string_addr );
         } else if( rtn_si.ret_modifier != TM_NONE && !rtn_si.rtn_calloc ) {
             PushLocation( &ret_ll, NULL );
-            ExprSP->info.kind = TK_POINTER;
-            ExprSP->info.modifier = rtn_si.ret_modifier;
-            ExprSP->info.size = rtn_si.ret_size;
+            ExprSP->ti.kind = TK_POINTER;
+            ExprSP->ti.modifier = rtn_si.ret_modifier;
+            ExprSP->ti.size = rtn_si.ret_size;
             RValue( ExprSP );
             LocationCreate( &ret_ll, LT_ADDR, &ExprSP->v.addr );
             DeleteEntry( ExprSP );
         }
         if( ret_ti.kind == TK_VOID ) {
             CreateEntry();
-            ExprSP->info.kind = TK_VOID;
+            ExprSP->ti.kind = TK_VOID;
         } else {
             PushType( ret_th );
             ExprSP->v.loc = ret_ll;
-            ExprSP->info = ret_ti;
+            ExprSP->ti = ret_ti;
             ExprSP->flags = SF_LOCATION;
             RValue( ExprSP );
             if( ret_kind == RET_REFERENCE ) {
@@ -1247,10 +1243,10 @@ void InitReturnInfo( sym_handle *f, return_info *ri )
     TypeProcInfo( rtn_th, ret_th, 0 );
     TypeInfo( ret_th, &Context, &ri->ti );
     /* check if it is Fortran function returning CHARACTER blocks */
-    if( (ri->ti.kind == TK_POINTER) && (ri->ti.modifier & TM_FLAG_DEREF) ) {
+    if( (ri->ti.kind == TK_POINTER) && ri->ti.deref ) {
         ri->want_base_type = 1;
         ri->ref_size = ri->ti.size;
-        if( (ri->ti.modifier & TM_MOD_MASK) != TM_NEAR ) {
+        if( ri->ti.modifier != TM_NEAR ) {
             ri->ref_far = true;
         }
         TypeBase( ret_th, ret_th, NULL, NULL );
@@ -1274,23 +1270,23 @@ void PrepReturnInfo( sym_handle *f, return_info *ri )
     f = f;
     if( ri->rl_passed_in || ri->scb ) {
         PushLocation( &ri->ll, NULL );
-        ExprSP->info.kind = TK_POINTER;
-        ExprSP->info.size = ri->ref_size;
+        ExprSP->ti.kind = TK_POINTER;
+        ExprSP->ti.size = ri->ref_size;
         if( ri->ref_far ) {
-            ExprSP->info.modifier = TM_FAR;
+            ExprSP->ti.modifier = TM_FAR;
         } else {
-            ExprSP->info.modifier = TM_NEAR;
+            ExprSP->ti.modifier = TM_NEAR;
         }
         RValue( ExprSP );
         LocationCreate( &ri->ll, LT_ADDR, &ExprSP->v.addr );
         if( ri->scb && ri->ti.size == 0 ) {
             /* CHAR*(*) function. Get the size from the passed in SCB */
             ExprSP->v.loc = ri->ll;
-            ExprSP->info.kind = TK_INTEGER;
-            ExprSP->info.modifier = TM_UNSIGNED;
-            ExprSP->info.size = ri->ref_size;
+            ExprSP->ti.kind = TK_INTEGER;
+            ExprSP->ti.modifier = TM_UNSIGNED;
+            ExprSP->ti.size = ri->ref_size;
             if( ri->ref_far )
-                ExprSP->info.size -= sizeof( addr_seg );
+                ExprSP->ti.size -= sizeof( addr_seg );
             ExprSP->flags = SF_LOCATION;
             RValue( ExprSP );
             ri->ti.size = ExprSP->v.uint;
@@ -1310,17 +1306,17 @@ void PushReturnInfo( sym_handle *f, return_info *ri )
     }
     if( ri->ti.kind == TK_VOID ) {
         CreateEntry();
-        ExprSP->info.kind = TK_VOID;
+        ExprSP->ti.kind = TK_VOID;
         return;
     }
     if( ri->ref_size != 0 ) {
         PushLocation( &ri->ll, NULL );
-        ExprSP->info.kind = TK_POINTER;
-        ExprSP->info.size = ri->ref_size;
+        ExprSP->ti.kind = TK_POINTER;
+        ExprSP->ti.size = ri->ref_size;
         if( ri->ref_far ) {
-            ExprSP->info.modifier = TM_FAR;
+            ExprSP->ti.modifier = TM_FAR;
         } else {
-            ExprSP->info.modifier = TM_NEAR;
+            ExprSP->ti.modifier = TM_NEAR;
         }
         RValue( ExprSP );
         LocationCreate( &ri->ll, LT_ADDR, &ExprSP->v.addr );

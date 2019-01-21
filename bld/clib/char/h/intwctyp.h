@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -44,5 +45,7 @@
 #define WCTYPE_UPPER            10
 #define WCTYPE_XDIGIT           11
 #define WCTYPE_BLANK            12
+
+extern char __wctype( const char *property );
 
 #endif

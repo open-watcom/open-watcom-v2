@@ -30,13 +30,14 @@
 ****************************************************************************/
 
 
-#include "cgstd.h"
+#include "_cgstd.h"
 #include "coderep.h"
 #include "regset.h"
 #include "model.h"
-#include "tables.h"
+#include "opctable.h"
 
-opcode_entry    StubUnary[] = {
+
+static const opcode_entry    StubUnary[] = {
 /*************************/
 /*           from  to    eq            verify          reg           gen             fu  */
 _OE( _Un(    ANY,  ANY,  NONE ),       V_NO,           RG_DWORD,     G_NO,           FU_NO ),
@@ -44,22 +45,24 @@ _OE( _Un(    ANY,  ANY,  NONE ),       V_NO,           RG_,          G_UNKNOWN, 
 };
 
 
-opcode_entry    StubBinary[] = {
+static const opcode_entry    StubBinary[] = {
 /************************/
 /*           op1   op2   res   eq      verify          reg           gen             fu  */
 _OE( _Bin(   ANY,  ANY,  ANY,  NONE ), V_NO,           RG_DWORD,     G_NO,           FU_NO ),
 _OE( _Bin(   ANY,  ANY,  ANY,  NONE ), V_NO,           RG_,          G_UNKNOWN,      FU_NO ),
 };
 
-opcode_entry    StubSide[] = {
+#if 0
+static const opcode_entry    StubSide[] = {
 /******************************/
 /*           op1   op2                 verify          reg           gen             fu  */
 _OE( _Side(  ANY,  ANY ),              V_NO,           RG_DWORD,     G_NO,           FU_NO ),
 _OE( _Side(  ANY,  ANY ),              V_NO,           RG_,          G_UNKNOWN,      FU_NO ),
 };
+#endif
 
 #define LOAD_TABLE( name, reg )                                                                \
-static  opcode_entry    name[] = {                                                             \
+static const opcode_entry    name[] = {                                                             \
 /********************************/                                                             \
 /*           from  to    eq            verify          reg           gen             fu  */    \
 _OE( _UnPP(  M,    R,    NONE ),       V_NO,           RG_##reg,     G_LOAD_ADDR,    FU_ALU ), \
@@ -72,7 +75,7 @@ _OE( _Un(    ANY,  ANY,  NONE ),       V_NO,           RG_,          G_UNKNOWN, 
 LOAD_TABLE( LoadAddr2, WORD );
 LOAD_TABLE( LoadAddr8, QWORD );
 
-static  opcode_entry    LoadAddr4[] = {
+static const opcode_entry    LoadAddr4[] = {
 /*************************************/
 /*           from  to    eq            verify          reg           gen             fu  */
 _OE( _Un(    M,    ANY,  NONE ),       V_OFFSETZERO,   RG_DWORD,     R_MOVEINDEX,    FU_NO ),
@@ -81,15 +84,15 @@ _OE( _Un(    M,    M,    NONE ),       V_NO,           RG_DWORD,     R_MOVRESTEM
 _OE( _Un(    M,    ANY,  NONE ),       V_NO,           RG_DWORD_NEED,G_UNKNOWN,      FU_NO ),
 _OE( _Un(    ANY,  ANY,  NONE ),       V_NO,           RG_DWORD,     R_FORCEOP1MEM,  FU_NO ),
 _OE( _Un(    ANY,  ANY,  NONE ),       V_NO,           RG_,          G_UNKNOWN,      FU_NO ),
-}; 
+};
 
-opcode_entry    Conv[] = {
+static const opcode_entry    Conv[] = {
 /************************/
 /*           from  to    eq            verify          reg           gen             fu  */
 _OE( _Un(    ANY,  ANY,  NONE ),       V_NO,           RG_,          R_DOCVT,        FU_NO ),
 };
 
-opcode_entry    LoadUnaligned[] = {
+static const opcode_entry    LoadUnaligned[] = {
 /*********************************/
 /*           from  to    eq            verify          reg           gen             fu  */
 _OE( _Un(    M,    R,    NONE ),       V_NO,           RG_QWORD,     G_LDQ_U,        FU_NO ),
@@ -99,7 +102,7 @@ _OE( _Un(    ANY,  ANY,  NONE ),       V_NO,           RG_QWORD_NEED,G_UNKNOWN, 
 _OE( _Un(    ANY,  ANY,  NONE ),       V_NO,           RG_,          G_UNKNOWN,      FU_NO ),
 };
 
-opcode_entry    StoreUnaligned[] = {
+static const opcode_entry    StoreUnaligned[] = {
 /**********************************/
 /*           from  to    eq            verify          reg           gen             fu  */
 _OE( _Un(    R,    M,    NONE ),       V_NO,           RG_QWORD,     G_STQ_U,        FU_NO ),
@@ -109,7 +112,7 @@ _OE( _Un(    ANY,  ANY,  NONE ),       V_NO,           RG_QWORD_NEED,G_UNKNOWN, 
 _OE( _Un(    ANY,  ANY,  NONE ),       V_NO,           RG_,          G_UNKNOWN,      FU_NO ),
 };
 
-opcode_entry    NegF[] = {
+static const opcode_entry    NegF[] = {
 /************************/
 /*           from  to    eq            verify          reg           gen             fu  */
 _OE( _Un(    R,    R,    NONE ),       V_NO,           RG_FLOAT,     G_UNARY,        FU_NO ),
@@ -119,7 +122,7 @@ _OE( _Un(    ANY,  ANY,  NONE ),       V_NO,           RG_FLOAT_NEED,G_UNKNOWN, 
 _OE( _Un(    ANY,  ANY,  NONE ),       V_NO,           RG_,          G_UNKNOWN,      FU_NO ),
 };
 
-opcode_entry    MoveXX[] = {
+static const opcode_entry    MoveXX[] = {
 /**************************/
 /*           from  to    eq            verify          reg           gen             fu  */
 //_OE( _Un(    ANY,  ANY,  NONE ),       V_REG_SIZE,     RG_,          R_CHANGETYPE, FU_NO ),
@@ -133,7 +136,7 @@ _OE( _Un(    ANY,  ANY,  NONE ),       V_NO,           RG_QWORD_NEED,R_MOVEXX,  
 _OE( _Un(    ANY,  ANY,  NONE ),       V_NO,           RG_,          G_UNKNOWN,      FU_NO ),
 };
 
-opcode_entry    Move1[] = {
+static const opcode_entry    Move1[] = {
 /*************************/
 /*           from  to    eq            verify          reg           gen             fu  */
 _OE( _Un(    ANY,  ANY,  EQ_R1 ),      NVI(V_NO),      RG_,          G_NO,           FU_NO ),
@@ -151,7 +154,7 @@ _OE( _Un(    ANY,  ANY,  NONE ),       V_NO,           RG_BYTE_NEED, G_UNKNOWN, 
 _OE( _Un(    ANY,  ANY,  NONE ),       V_NO,           RG_,          G_UNKNOWN,      FU_NO ),
 };
 
-opcode_entry    Move2[] = {
+static const opcode_entry    Move2[] = {
 /*************************/
 /*           from  to    eq            verify          reg           gen             fu  */
 _OE( _Un(    ANY,  ANY,  EQ_R1 ),      NVI(V_NO),      RG_,          G_NO,           FU_NO ),
@@ -172,7 +175,7 @@ _OE( _Un(    ANY,  ANY,  NONE ),       V_NO,           RG_WORD_NEED, G_UNKNOWN, 
 _OE( _Un(    ANY,  ANY,  NONE ),       V_NO,           RG_,          G_UNKNOWN,      FU_NO ),
 };
 
-opcode_entry    Move4[] = {
+static const opcode_entry    Move4[] = {
 /*************************/
 /*           from  to    eq            verify          reg           gen             fu  */
 _OE( _Un(    ANY,  ANY,  EQ_R1 ),      NVI(V_NO),      RG_,          G_NO,           FU_NO ),
@@ -191,7 +194,7 @@ _OE( _Un(    ANY,  ANY,  NONE ),       V_NO,           RG_DWORD_NEED,G_UNKNOWN, 
 _OE( _Un(    ANY,  ANY,  NONE ),       V_NO,           RG_,          G_UNKNOWN,      FU_NO ),
 };
 
-opcode_entry    Move8[] = {
+static const opcode_entry    Move8[] = {
 /*************************/
 /*           from  to    eq            verify          reg           gen             fu  */
 _OE( _Un(    ANY,  ANY,  EQ_R1 ),      NVI(V_NO),      RG_,          G_NO,           FU_NO ),
@@ -214,7 +217,7 @@ _OE( _Un(    ANY,  ANY,  NONE ),       V_NO,           RG_,          G_UNKNOWN, 
 };
 
 #define BINARY_TABLE( name, reg )                                                              \
-opcode_entry    name[] = {                                                                     \
+static const opcode_entry    name[] = {                                                                     \
 /***************************/                                                                  \
 /*           op1   op2   res   eq      verify          reg           gen             fu  */    \
 _OE( _Bin(   R,    R,    R,    NONE ), V_NO,           RG_##reg,     G_BINARY,       FU_ALU ), \
@@ -235,21 +238,21 @@ BINARY_TABLE( Binary2, WORD  );
 BINARY_TABLE( Binary4, DWORD );
 BINARY_TABLE( Binary8, QWORD );
 
-opcode_entry    Push[] = {
+static const opcode_entry    Push[] = {
 /************************/
 /*           from  to    eq            verify          reg           gen             fu  */
 _OE( _Un(    ANY,  ANY,  NONE ),       V_NO,           RG_DWORD,     R_PUSHTOMOV,    FU_NO ),
 _OE( _Un(    ANY,  ANY,  NONE ),       V_NO,           RG_,          G_UNKNOWN,      FU_NO ),
 };
 
-opcode_entry    Pop[] = {
+static const opcode_entry    Pop[] = {
 /***********************/
 /*           from  to    eq            verify          reg           gen             fu  */
 _OE( _Un(    ANY,  ANY,  NONE ),       V_NO,           RG_DWORD,     R_POPTOMOV,     FU_NO ),
 _OE( _Un(    ANY,  ANY,  NONE ),       V_NO,           RG_,          G_UNKNOWN,      FU_NO ),
 };
 
-opcode_entry    Un1[] = {
+static const opcode_entry    Un1[] = {
 /***********************/
 /*           from  to    eq            verify          reg           gen             fu  */
 _OE( _Un(    R,    R,    NONE ),       V_NO,           RG_BYTE,      G_UNARY,        FU_ALU ),
@@ -259,7 +262,7 @@ _OE( _Un(    ANY,  ANY,  NONE ),       V_NO,           RG_BYTE_NEED, G_UNKNOWN, 
 _OE( _Un(    ANY,  ANY,  NONE ),       V_NO,           RG_,          G_UNKNOWN,      FU_NO ),
 };
 
-opcode_entry    Un2[] = {
+static const opcode_entry    Un2[] = {
 /***********************/
 /*           from  to    eq            verify          reg           gen             fu  */
 _OE( _Un(    R,    R,    NONE ),       V_NO,           RG_WORD,      G_UNARY,        FU_ALU ),
@@ -269,14 +272,14 @@ _OE( _Un(    ANY,  ANY,  NONE ),       V_NO,           RG_WORD_NEED, G_UNKNOWN, 
 _OE( _Un(    ANY,  ANY,  NONE ),       V_NO,           RG_,          G_UNKNOWN,      FU_NO ),
 };
 
-opcode_entry    Alloca4[] = {
+static const opcode_entry    Alloca4[] = {
 /***************************/
 /*           from  to    eq            verify          reg           gen             fu  */
 _OE( _Un(    ANY,  ANY,  NONE ),       V_NO,           RG_DWORD,     R_ALLOCA,       FU_NO ),
 _OE( _Un(    ANY,  ANY,  NONE ),       V_NO,           RG_,          G_UNKNOWN,      FU_NO ),
 };
 
-opcode_entry    Un4[] = {
+static const opcode_entry    Un4[] = {
 /***********************/
 /*           from  to    eq            verify          reg           gen             fu  */
 _OE( _Un(    R,    R,    NONE ),       V_NO,           RG_DWORD,     G_UNARY,        FU_ALU ),
@@ -286,7 +289,7 @@ _OE( _Un(    ANY,  ANY,  NONE ),       V_NO,           RG_DWORD_NEED,G_UNKNOWN, 
 _OE( _Un(    ANY,  ANY,  NONE ),       V_NO,           RG_,          G_UNKNOWN,      FU_NO ),
 };
 
-opcode_entry    Un8[] = {
+static const opcode_entry    Un8[] = {
 /***********************/
 /*           from  to    eq            verify          reg           gen             fu  */
 _OE( _Un(    R,    R,    NONE ),       V_NO,           RG_QWORD,     G_UNARY,        FU_ALU ),
@@ -296,7 +299,7 @@ _OE( _Un(    ANY,  ANY,  NONE ),       V_NO,           RG_QWORD_NEED,G_UNKNOWN, 
 _OE( _Un(    ANY,  ANY,  NONE ),       V_NO,           RG_,          G_UNKNOWN,      FU_NO ),
 };
 
-opcode_entry    MoveF[] = {
+static const opcode_entry    MoveF[] = {
 /*************************/
 /*           from  to    eq            verify          reg           gen             fu  */
 _OE( _Un(    ANY,  ANY,  EQ_R1 ),      NVI(V_NO),      RG_,          G_NO,           FU_NO ),
@@ -311,7 +314,7 @@ _OE( _Un(    ANY,  ANY,  NONE ),       V_NO,           RG_FLOAT_NEED,G_UNKNOWN, 
 _OE( _Un(    ANY,  ANY,  NONE ),       V_NO,           RG_,          G_UNKNOWN,      FU_NO ),
 };
 
-opcode_entry    FloatBinary[] = {
+static const opcode_entry    FloatBinary[] = {
 /*******************************/
 /*           op1   op2   res   eq      verify          reg           gen             fu  */
 _OE( _Bin(   R,    R,    R,    NONE ), V_NO,           RG_FLOAT,     G_BINARY_FP,    FU_ALU ),
@@ -325,25 +328,25 @@ _OE( _Bin(   ANY,  ANY,  ANY,  NONE ), V_NO,           RG_,          G_UNKNOWN, 
 };
 
 
-opcode_entry    DoNop[] = {
+static const opcode_entry    DoNop[] = {
 /*************************/
 /*           op1   op2   res   eq      verify          reg           gen             fu  */
 _OE( _BinPP( ANY,  ANY,  ANY,  NONE ), V_NO,           RG_,          G_NO,           FU_NO ),
 };
 
-opcode_entry    Set4[] = {
+static const opcode_entry    Set4[] = {
 /************************/
 /*           op1   op2   res   eq      verify          reg           gen             fu  */
 _OE( _Bin(   ANY,  ANY,  ANY,  NONE ), V_NO,           RG_,          R_DOSET,        FU_ALU ),
 };
 
-opcode_entry    Test4[] = {
+static const opcode_entry    Test4[] = {
 /*************************/
 /*           op1   op2   res   eq      verify          reg           gen             fu  */
 _OE( _Bin(   ANY,  ANY,  ANY,  NONE ), V_NO,           RG_,          R_DOTEST,       FU_ALU ),
 };
 
-opcode_entry    Cmp8[] = {
+static const opcode_entry    Cmp8[] = {
 /************************/
 /*           op1   op2                 verify          reg           gen             fu  */
 _OE( _Side(  R,    R ),                V_NO,           RG_QWORD,     R_SIMPCMP,      FU_NO ),
@@ -357,7 +360,7 @@ _OE( _Side(  ANY,  ANY ),              V_NO,           RG_QWORD_NEED,G_UNKNOWN, 
 _OE( _Side(  ANY,  ANY ),              V_NO,           RG_,          G_UNKNOWN,      FU_NO ),
 };
 
-opcode_entry    CmpF[] = {
+static const opcode_entry    CmpF[] = {
 /************************/
 /*           op1   op2                 verify          reg           gen             fu  */
 _OE( _Side(  R,    R ),                V_NO,           RG_FLOAT,     R_SIMPCMP,      FU_NO ),
@@ -371,51 +374,57 @@ _OE( _Side(  ANY,  ANY ),              V_NO,           RG_FLOAT_NEED,G_UNKNOWN, 
 _OE( _Side(  ANY,  ANY ),              V_NO,           RG_,          G_UNKNOWN,      FU_NO ),
 };
 
-opcode_entry    Call[] = {
+static const opcode_entry    Call[] = {
 /************************/
 /*           op1   op2   res   eq      verify          reg           gen             fu  */
 _OE( _Bin(   ANY,  ANY,  ANY,  NONE ), V_NO,           RG_,          G_CALL,         FU_NO ),
 };
 
-opcode_entry    CallI[] = {
+static const opcode_entry    CallI[] = {
 /*************************/
 /*           op1   op2   res   eq      verify          reg           gen             fu  */
 _OE( _Bin(   ANY,  ANY,  ANY,  NONE ), V_NO,           RG_,          G_CALLI,        FU_NO ),
 };
 
-opcode_entry    Rtn[] = {
+static const opcode_entry    Rtn[] = {
 /***********************/
 /*           op1   op2   res   eq      verify          reg           gen             fu  */
 _OE( _Bin(   ANY,  ANY,  ANY,  NONE ), V_NO,           RG_,          R_MAKECALL,     FU_NO ),
 };
 
-static  opcode_entry    UnaryRtn[] = {
+static const opcode_entry    UnaryRtn[] = {
 /************************************/
 /*           from  to    eq            verify          reg           gen             fu  */
 _OE( _Un(    ANY,  ANY,  NONE   ),     V_NO,           RG_,          R_MAKECALL,     FU_NO ),
 };
 
 
-opcode_entry    Promote[] = {
+static const opcode_entry    Promote[] = {
 /***************************/
 /*           op1   op2   res   eq      verify          reg           gen             fu  */
 _OE( _Bin(   ANY,  ANY,  ANY,  NONE ), V_NO,           RG_,          R_BIN2INT,      FU_NO ),
 };
 
-opcode_entry    Promote8[] = {
+static const opcode_entry    Promote8[] = {
 /****************************/
 /*           op1   op2   res   eq      verify          reg           gen             fu  */
 _OE( _Bin(   ANY,  ANY,  ANY,  NONE ), V_NO,           RG_,          R_BIN2QUAD,     FU_NO ),
 };
 
-static  opcode_entry    *OpcodeList[] = {
+static const opcode_entry    *OpcodeList[] = {
     #define pick(enum,opcode)  opcode,
     #include "_tables.h"
     #undef pick
 };
 
-extern  opcode_entry    *OpcodeTable( table_def i ) {
-/***************************************************/
-
+const opcode_entry      *OpcodeTable( table_def i )
+/*************************************************/
+{
     return( OpcodeList[i] );
+}
+
+bool    IsNop( const opcode_entry *entry )
+/****************************************/
+{
+    return( entry == DoNop );
 }

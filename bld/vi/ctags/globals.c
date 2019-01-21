@@ -41,4 +41,3 @@ bool            WantEnums;
 bool            WantClasses;
 bool            VerboseFlag;
 char            *OptEnvVar = "ctags";
-unsigned        TagCount;

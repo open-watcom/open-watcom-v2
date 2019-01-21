@@ -29,38 +29,40 @@
 ****************************************************************************/
 
 
+#define MsgBoxVbuf(w,m,t,p)         MsgBox( w, m, t, VbufString( p ))
+#define MsgBoxVbuf2(w,m,t,p1,p2)    MsgBox( w, m, t, VbufString( p1 ), VbufString( p2 ))
+
 extern bool             ModifyEnvironment( bool );
 extern bool             ModifyStartup( bool );
 extern bool             ModifyAssociations( bool );
 extern bool             ModifyUninstall( bool );
 extern bool             SpawnNextScript( );
-extern COPYFILE_ERROR   DoCopyFile( const char *, const char *, bool );
+extern COPYFILE_ERROR   DoCopyFile( const VBUF *, const VBUF *, bool );
 extern bool             CopyAllFiles( void );
 extern gui_message_return MsgBox( gui_window *, const char *, gui_message_type, ... );
 extern bool             CheckDrive( bool );
-extern bool             InitInfo( char *, char * );
-extern bool             GetDirParams( int, char **, char **, char **, char ** );
-extern bool             FreeDirParams( char **, char **, char ** );
+extern bool             InitInfo( const VBUF *, const VBUF * );
+extern bool             GetDirParams( int, char **, VBUF *, VBUF *, VBUF * );
+extern bool             FreeDirParams( void );
 extern void             CloseDownMessage( bool state );
-extern void             CloseDownProgram();
 extern bool             IsFixedDisk( char drive );
 extern bool             IsDiskette( unsigned drive );
 extern unsigned         GetClusterSize( char drive );
 extern char             GetDriveLetter( char *desc );
-extern char             *AddInstallName( char *line, bool dorealloc );
-extern char             *stristr( char *str, char *substr );
+extern void             AddInstallName( VBUF *str );
+extern char             *stristr( const char *str, const char *substr, size_t substr_len );
 extern void             Log( char *start, ... );
-extern bool             CheckUpgrade();
-extern bool             LicenseFileName( char * );
-extern char             *GetInstallName( void );
-extern bool             PromptUser( char *name, char *dlg, char *skip, char *replace, int *value );
+extern bool             CheckUpgrade( void );
+extern void             GetInstallName( VBUF * );
+extern bool             PromptUser( const VBUF *name, const char *dlg, const char *skip, const char *replace, bool *resp_replace );
 #if defined( __NT__ ) || defined( __WINDOWS__ )
-extern bool             GetRootFromPath( char *root, const char *path );
+extern bool             GetRootFromPath( VBUF *root, const char *path );
 extern disk_size        FreeSpace( const char *path );
 extern long             ClusterSize( const char *path );
+extern void             GetWindowsDirectoryVbuf( VBUF *windir );
 #endif
-extern signed int       IncrementDLLUsageCount( char *path );
-extern signed int       DecrementDLLUsageCount( char *path );
+extern signed int       IncrementDLLUsageCount( const VBUF *path );
+extern signed int       DecrementDLLUsageCount( const VBUF *path );
 extern void             ReadVariablesFile( const char * name );
 extern void             ConcatDirSep( char *dir );
 extern void             RemoveDirSep( char *dir );

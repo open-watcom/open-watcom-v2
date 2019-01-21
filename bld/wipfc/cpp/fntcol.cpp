@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
+* Copyright (c) 2009-2018 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -28,44 +28,48 @@
 *
 ****************************************************************************/
 
+
+#include "wipfc.hpp"
+#include <string>
 #include "fntcol.hpp"
 #include "errors.hpp"
+#include "outfile.hpp"
 
-FontCollection::FontCollection( int cp ) : bytes( 0 )
+
+FontCollection::FontCollection( word maxFontCount ) : _bytes( 0 ), _maxFontCount( maxFontCount )
+/**********************************************************************************************/
 {
-    fonts.reserve( 14 );
-    FontEntry fnt;
-    std::strncpy( fnt.faceName, "System Proportional", sizeof( fnt.faceName ));
-    fnt.height = 0;
-    fnt.width = 0;
-    fnt.codePage = cp;
+    _fonts.reserve( _maxFontCount );
     try {
-        add( fnt );                 //set the default font
+        add( FontEntry( L"System Proportional", 0, 0 ) );   //set the default font
     }
     catch( Class2Error &e ) {
+        (void)e;
     }
 }
-/****************************************************************************/
-std::size_t FontCollection::add( FontEntry& fnt )
+
+std::size_t FontCollection::add( const FontEntry& fnt )
+/*****************************************************/
 {
     std::size_t index( 0 );
-    for( ConstFontIter itr = fonts.begin(); itr != fonts.end(); ++itr, ++index ) {
-        if( *itr == fnt )
-            return index;
+    for( ConstFontIter itr = _fonts.begin(); itr != _fonts.end(); ++itr, ++index ) {
+        if( *itr == fnt ) {
+            return( index );
+        }
     }
-    if( fonts.size() < 15 )
-        fonts.push_back( fnt );
-    else
+    if( _fonts.size() >= _maxFontCount )
         throw Class2Error( ERR2_FONTS );
-    return fonts.size() - 1;
+    _fonts.push_back( fnt );
+    return( _fonts.size() - 1 );
 }
-/****************************************************************************/
-STD1::uint32_t FontCollection::write( std::FILE *out )
+
+dword FontCollection::write( OutFile* out )
+/*****************************************/
 {
-    STD1::uint32_t start( std::ftell( out ) );
-    for( FontIter itr = fonts.begin(); itr != fonts.end(); ++itr ) {
-        bytes += itr->write( out );
+    dword start = out->tell();
+    for( FontIter itr = _fonts.begin(); itr != _fonts.end(); ++itr ) {
+        _bytes += itr->write( out );
     }
-    return start;
+    return( start );
 
 }

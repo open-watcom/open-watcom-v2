@@ -80,7 +80,7 @@ CALL_STAB* CallStabAlloc(       // ALLOCATE CALL_STAB
     cstb->cd_arg = 0;
     CgCdArgUsed( handle );
     __dump( "allocate", cstb );
-    return cstb;
+    return( cstb );
 }
 
 
@@ -101,7 +101,7 @@ static CALL_STAB* callStabEntry(// GET CALL_STAB FOR A HANDLE
             }
         } RingIterEnd( curr );
     }
-    return retn;
+    return( retn );
 }
 
 
@@ -110,16 +110,16 @@ bool CallStabCdArgGet(          // GET CD-ARG FOR A CALL
     unsigned *a_cd_arg )        // - addr[ value for CD-ARG ]
 {
     CALL_STAB* cstb;            // - call information
-    bool retb;                  // - true ==> have CDTOR arg.
+    bool ok;                    // - true ==> have CDTOR arg.
 
     cstb = callStabEntry( handle );
     if( cstb != NULL && cstb->has_cd_arg ) {
         *a_cd_arg = cstb->cd_arg;
-        retb = true;
+        ok = true;
     } else {
-        retb = false;
+        ok = false;
     }
-    return( retb );
+    return( ok );
 }
 
 
@@ -134,7 +134,7 @@ unsigned CallStabCdArgSet(      // SET CD-ARG FOR A CALL
         cstb->has_cd_arg = true;
         cstb->cd_arg = cd_arg;
     }
-    return cd_arg;
+    return( cd_arg );
 }
 
 
@@ -155,7 +155,7 @@ SE* CallStabStateTablePosn(     // GET STATE-TABLE POSITION AT CALL POINT
     curr = callStabEntry( handle );
     DbgVerify( curr, "CallStabStateTablePosn -- no active call" );
     __dump( "inline", curr );
-    return curr->se;
+    return( curr->se );
 }
 
 

@@ -45,21 +45,21 @@ OMR ObjModelFunctionReturn(     // DETERMINE TYPE OF RETURN FOR OBJECT MODEL
 
     fun_type = FunctionDeclarationType( fun_type );
     switch( TypedefModifierRemoveOnly( fun_type->of )->id ) {
-      case TYP_VOID :
+    case TYP_VOID :
         retn = OMR_VOID;
         break;
-      case TYP_CLASS :
+    case TYP_CLASS :
         if( (fun_type->flag & TF1_PLUSPLUS) && ClassParmIsRef( StructType( fun_type->of ) ) ) {
             retn = OMR_CLASS_REF;
         } else {
             retn = OMR_CLASS_VAL;
         }
         break;
-      default :
+    default :
         retn = OMR_SCALAR;
         break;
     }
-    return retn;
+    return( retn );
 }
 
 
@@ -76,5 +76,5 @@ OMR ObjModelArgument(           // DETERMINE HOW TYPE PASSED IN OBJECT MODEL
     } else {
         retn = OMR_CLASS_VAL;
     }
-    return retn;
+    return( retn );
 }

@@ -59,85 +59,95 @@
 
 #if defined( __386__ )
  char _WCNEAR *Fmt8Digits( unsigned long value, char *p );
- #pragma aux    Fmt8Digits = \
-        "       push    ecx"\
-        "       push    edx"\
-        "       call    fmt8"\
-        "       jmp     short L4"\
-        "fmt8:  mov     ecx,10000"\
-        "       sub     edx,edx"\
-        "       cmp     eax,ecx"\
-        "       xchg    eax,edx"\
-        "       jb      short L1"\
-        "       xchg    eax,edx"\
-        "       div     ecx"\
-        "L1:    push    edx"\
-        "       call    fmt4"\
-        "       pop     eax"\
-        "fmt4:  mov     ecx,100"\
-        "       sub     edx,edx"\
-        "       cmp     eax,ecx"\
-        "       xchg    eax,edx"\
-        "       jb      short L2"\
-        "       xchg    eax,edx"\
-        "       div     cx"\
-        "L2:    push    edx"\
-        "       call    fmt2"\
-        "       pop     eax"\
-        "fmt2:  mov     cl,10"\
-        "       cmp     al,cl"\
-        "       xchg    al,ah"\
-        "       jb      short L3"\
-        "       xchg    al,ah"\
-        "       div     cl"\
-        "L3:    add     ah,'0'"\
-        "       add     al,'0'"\
-        "       mov     [ebx],al"\
-        "       inc     ebx"\
-        "       mov     [ebx],ah"\
-        "       inc     ebx"\
-        "       ret"\
-        "L4:    pop     edx"\
-        "       pop     ecx"\
-        "       xor     al,al"\
-        "       mov     [ebx],al"\
-    parm caller [eax] [ebx] value [ebx];
+ #pragma aux Fmt8Digits = \
+        "push ecx"          \
+        "push edx"          \
+        "call fmt8"         \
+        "jmp short L4"      \
+    "fmt8:"                 \
+        "mov  ecx,10000"    \
+        "sub  edx,edx"      \
+        "cmp  eax,ecx"      \
+        "xchg eax,edx"      \
+        "jb short L1"       \
+        "xchg eax,edx"      \
+        "div  ecx"          \
+    "L1: push edx"          \
+        "call fmt4"         \
+        "pop  eax"          \
+    "fmt4:"                 \
+        "mov  ecx,100"      \
+        "sub  edx,edx"      \
+        "cmp  eax,ecx"      \
+        "xchg eax,edx"      \
+        "jb short L2"       \
+        "xchg eax,edx"      \
+        "div  cx"           \
+    "L2: push edx"          \
+        "call fmt2"         \
+        "pop  eax"          \
+    "fmt2:"                 \
+        "mov  cl,10"        \
+        "cmp  al,cl"        \
+        "xchg al,ah"        \
+        "jb short L3"       \
+        "xchg al,ah"        \
+        "div  cl"           \
+    "L3: add  ah,'0'"       \
+        "add  al,'0'"       \
+        "mov  [ebx],al"     \
+        "inc  ebx"          \
+        "mov  [ebx],ah"     \
+        "inc  ebx"          \
+        "ret"               \
+    "L4: pop  edx"          \
+        "pop  ecx"          \
+        "xor  al,al"        \
+        "mov  [ebx],al"     \
+    __parm __caller [eax] [ebx] \
+    __value         [ebx] \
+    __modify        []
 #elif defined( _M_I86 )
  char _WCNEAR *Fmt8Digits( unsigned long value, char *p );
- #pragma aux    Fmt8Digits = \
-        "       push    cx"\
-        "       call    fmt8"\
-        "       jmp     short L4"\
-        "fmt8:  mov     cx,10000"\
-        "       div     cx"\
-        "       push    dx"\
-        "       call    fmt4"\
-        "       pop     ax"\
-        "fmt4:  mov     cx,100"\
-        "       sub     dx,dx"\
-        "       cmp     ax,cx"\
-        "       xchg    ax,dx"\
-        "       jb      short L2"\
-        "       xchg    ax,dx"\
-        "       div     cx"\
-        "L2:    push    dx"\
-        "       call    fmt2"\
-        "       pop     ax"\
-        "fmt2:  mov     cl,10"\
-        "       cmp     al,cl"\
-        "       xchg    al,ah"\
-        "       jb      short L3"\
-        "       xchg    al,ah"\
-        "       div     cl"\
-        "L3:    add     ax,3030h"\
-        "       mov     ss:[bx],ax"\
-        "       inc     bx"\
-        "       inc     bx"\
-        "       ret"\
-        "L4:    pop     cx"\
-        "       xor     al,al"\
-        "       mov     ss:[bx],al"\
-    parm caller [dx ax] [bx] value [bx];
+ #pragma aux Fmt8Digits = \
+        "push cx"           \
+        "call fmt8"         \
+        "jmp short L4"      \
+    "fmt8:"                 \
+        "mov  cx,10000"     \
+        "div  cx"           \
+        "push dx"           \
+        "call fmt4"         \
+        "pop  ax"           \
+    "fmt4:"                 \
+        "mov  cx,100"       \
+        "sub  dx,dx"        \
+        "cmp  ax,cx"        \
+        "xchg ax,dx"        \
+        "jb short L2"       \
+        "xchg ax,dx"        \
+        "div  cx"           \
+    "L2: push dx"           \
+        "call fmt2"         \
+        "pop  ax"           \
+    "fmt2:"                 \
+        "mov  cl,10"        \
+        "cmp  al,cl"        \
+        "xchg al,ah"        \
+        "jb short L3"       \
+        "xchg al,ah"        \
+        "div  cl"           \
+    "L3: add  ax,3030h"     \
+        "mov  ss:[bx],ax"   \
+        "inc  bx"           \
+        "inc  bx"           \
+        "ret"               \
+    "L4: pop  cx"           \
+        "xor  al,al"        \
+        "mov  ss:[bx],al"   \
+    __parm __caller [__dx __ax] [__bx] \
+    __value         [__bx] \
+    __modify        []
 #else
 static unsigned long IntPow10[] = {
     1,

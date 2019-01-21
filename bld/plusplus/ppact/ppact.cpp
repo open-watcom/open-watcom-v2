@@ -104,11 +104,12 @@ char* stxpcpy                    // STRING COPY
 {
     for( ; ; ) {
         *tgt = *src;
-        if( '\0' == *src ) break;
+        if( '\0' == *src )
+            break;
         ++ src;
         ++ tgt;
     }
-    return tgt;
+    return( tgt );
 }
 
 
@@ -166,7 +167,7 @@ void* MemAlloc<CLS>::operator new( size_t ) // OPERATOR NEW
             retn = _free.first();
             _free.erase( retn );
         }
-        return (void*)retn;
+        return( (void*)retn );
     }
 
 
@@ -228,7 +229,7 @@ CLS& Varray<CLS>::operator []               // SUBSCRIPT OPERATOR
     ( unsigned index )
 {
     if( index >= _bound ) {
-        CLS* newarr = new CLS[ index + 10 ];
+        CLS* newarr = new CLS[index + 10];
         if( 0 != _array ) {
             ::memcpy( newarr, _array, _bound * sizeof( CLS ) );
             delete[] _array;
@@ -236,7 +237,7 @@ CLS& Varray<CLS>::operator []               // SUBSCRIPT OPERATOR
         _array = newarr;
         _bound = index + 10;
     }
-    return _array[ index ];
+    return( _array[index] );
 }
 
 
@@ -245,7 +246,7 @@ CLS const & Varray<CLS>::operator []        // SUBSCRIPT OPERATOR
     ( unsigned index )
     const
 {
-    return _array[ index ];
+    return( _array[index] );
 }
 
 
@@ -270,14 +271,14 @@ struct Stk
     CLS& operator[]                         // SUBSCRIPT
         ( unsigned index )
         {
-            return _stack[ index ];
+            return( _stack[index] );
         }
 
     CLS const & operator[]                  // SUBSCRIPT
         ( unsigned index )
         const
         {
-            return _stack[ index ];
+            return( _stack[index] );
         }
 
     int empty() const;                      // TEST IF EMPTY
@@ -295,7 +296,7 @@ int Stk<CLS>::empty                         // PUSH THE STACK
     ( void )
     const
 {
-    return _sp == 0;
+    return( _sp == 0 );
 }
 
 
@@ -304,7 +305,7 @@ CLS& Stk<CLS>::push                         // PUSH THE STACK
     ( void )
 {
     ++ _sp;
-    return _stack[ _sp - 1 ];
+    return( _stack[_sp - 1] );
 }
 
 
@@ -313,7 +314,7 @@ CLS& Stk<CLS>::pop                          // POP THE STACK
     ( void )
 {
     -- _sp;
-    return _stack[ _sp ];
+    return( _stack[_sp] );
 }
 
 
@@ -321,7 +322,7 @@ template< class CLS >
 CLS& Stk<CLS>::top                          // ACCESS TOP ELEMENT
     ( void )
 {
-    return _stack[ _sp - 1 ];
+    return( _stack[_sp - 1] );
 }
 
 
@@ -366,17 +367,17 @@ struct Str
 
     char& operator [] ( unsigned index )    // operator []
         {
-            return _str[ index ];
+            return( _str[index] );
         }
 
     operator char const * () const          // conversion to const char*
         {
-            return _str;
+            return( _str );
         }
 
     operator char* ()                       // conversion to char*
         {
-            return _str;
+            return( _str );
         }
 
     Str& operator = ( Str const & );        // assignment
@@ -390,8 +391,8 @@ Str::Str                                    // CONSTRUCTOR
     : _str( 0 )
 {
     if( text != 0 && size != 0 ) {
-        _str = new char[ size + 1 ];
-        _str[ size ] = '\0';
+        _str = new char[size + 1];
+        _str[size] = '\0';
         ::memcpy( _str, text, size );
     }
 }
@@ -409,13 +410,13 @@ Str& Str::operator =                        // ASSIGNMENT
             if( size == 0 ) {
                 _str = 0;
             } else {
-                _str = new char[ size + 1 ];
-                _str[ size ] = '\0';
+                _str = new char[size + 1];
+                _str[size] = '\0';
                 ::memcpy( _str, src._str, size );
             }
         }
     }
-    return *this;
+    return( *this );
 }
 
 
@@ -582,8 +583,8 @@ protected:
                 printf( "%d %p %s %s %d "
                       , index
                       , _pstk._stack._array[index]._node
-                      , state[ _pstk._stack._array[index]._state ]
-                      , edge[ _pstk._stack._array[index]._edge ]
+                      , state[_pstk._stack._array[index]._state]
+                      , edge[_pstk._stack._array[index]._edge]
                       , _pstk._stack._array[index].inlined
                       );
                 _pstk._stack._array[index]._node->printActual( stdout );
@@ -613,10 +614,13 @@ static ExpOp* ExpOp::find( CgId id )    // FIND LIVE EXPRESSION
     ExpOp* expr;
     for( ; ; ++iter ) {
         expr = *iter;
-        if( expr == 0 ) break;
-        if( id == expr->_id ) break;
+        if( expr == 0 )
+            break;
+        if( id == expr->_id ) {
+            break;
+        }
     }
-    return expr;
+    return( expr );
 }
 
 
@@ -624,7 +628,7 @@ ExpOp* ExpOp::nodeLeft                  // GET LEFT NODE
     ( void )
     const
 {
-    return 0;
+    return( 0 );
 }
 
 
@@ -632,7 +636,7 @@ ExpOp* ExpOp::nodeRight                 // GET RIGHT NODE
     ( void )
     const
 {
-    return 0;
+    return( 0 );
 }
 
 
@@ -642,7 +646,7 @@ static ExpOp* ExpOp::popLive( CgId id ) // FIND AND REMOVE LIVE EXPRESSION
     if( expr != 0 ) {
         removeLive( expr );
     }
-    return expr;
+    return( expr );
 }
 
 
@@ -650,7 +654,7 @@ static
 ExpOp::PrintStack& ExpOp::pstackPop     // POP PRINT STACK
     ( void )
 {
-    return _pstk.pop();
+    return( _pstk.pop() );
 }
 
 
@@ -658,7 +662,7 @@ static
 ExpOp::PrintStack& ExpOp::pstackTop     // ACCESS TOP OF PRINT STACK
     ( void )
 {
-    return _pstk.top();
+    return( _pstk.top() );
 }
 
 
@@ -673,14 +677,14 @@ ExpOp::PrintStack& ExpOp::pstackPush    // PUSH ON PRINT STACK
     stk._state = state;
     stk._edge = edge_none;
     stk.inlined = inlined;
-    return stk;
+    return( stk );
 }
 
 
 static int ExpOp::pstackEmpty           // TEST IF EMPTY
     ( void )
 {
-    return _pstk.empty();
+    return( _pstk.empty() );
 }
 
 
@@ -697,14 +701,14 @@ void ExpOp::print                       // PRINT A TREE
         PrintStack & top = pstackTop();
         PrtType type = top._node->printType();
         switch( top._state ) {
-          case NS_RIGHT_BEFORE :
+        case NS_RIGHT_BEFORE :
             if( type & PRT_BEFORE_RIGHT ) {
                 pstackPush( top._node->nodeRight(), NS_RIGHT_BEFORE, 0 );
                 top._edge = edge_right_blank;
                 top._state = NS_RIGHT_ACTUAL;
                 continue;
             }
-          case NS_RIGHT_ACTUAL :
+        case NS_RIGHT_ACTUAL :
             if( type & PRT_ACTUAL_RIGHT ) {
                 pstackPush( top._node->nodeRight(), NS_RIGHT_BEFORE, 1 );
                 if( top.inlined ) {
@@ -722,7 +726,7 @@ void ExpOp::print                       // PRINT A TREE
                 }
                 continue;
             }
-          case NS_ACTUAL :
+        case NS_ACTUAL :
             if( top.inlined ) {
                 _pstk.pop();
                 continue;
@@ -743,7 +747,7 @@ void ExpOp::print                       // PRINT A TREE
                 }
                 fputc( '\n', out );
             }
-          case NS_LEFT_ACTUAL :
+        case NS_LEFT_ACTUAL :
             if( type & PRT_ACTUAL_RIGHT ) {
                 pstackPush( top._node->nodeRight(), NS_LEFT_ACTUAL, 1 );
                 if( type & PRT_AFTER_LEFT ) {
@@ -751,7 +755,7 @@ void ExpOp::print                       // PRINT A TREE
                         top._edge = edge_call;
                     } else if( type & PRT_ARG ) {
                         top._edge = edge_none;
-                        if( ! type & PRT_AFTER_LEFT ) {
+                        if( (type & PRT_AFTER_LEFT) == 0 ) {
                             ((&top)-1)->_edge = edge_left_prt;
                         }
                     } else {
@@ -767,7 +771,7 @@ void ExpOp::print                       // PRINT A TREE
                 top._state = NS_DONE;
                 continue;
             }
-          case NS_LEFT_AFTER :
+        case NS_LEFT_AFTER :
             if( type & PRT_AFTER_LEFT ) {
                 if( type & PRT_ARG ) {
                     top._node = top._node->nodeLeft();
@@ -793,9 +797,10 @@ void ExpOp::print                       // PRINT A TREE
                 }
                 continue;
             }
-          case NS_DONE :
+        case NS_DONE :
             _pstk.pop();
-            if( _pstk.empty() ) break;
+            if( _pstk.empty() )
+                break;
             continue;
         }
         break;
@@ -837,7 +842,7 @@ char* ExpOp::nodeName                   // DEFAULT NODE NAME FOR ExpOp
             p = stxpcpy( p, utoa( _id, buf, 16 ) );
         }
     }
-    return buffer;
+    return( buffer );
 }
 
 
@@ -871,7 +876,7 @@ static void ExpOp::printIndentation     // PRINT INDENTATION
     char seg[5] = "    ";
     char last;
     for( index = 0; index < bound; ++ index ) {
-        PrintStack & ps = _pstk[ index ];
+        PrintStack & ps = _pstk[index];
         EdgeType& edge = ps._edge;
         if( index == curr ) {
             if( edge == edge_right_blank ) {
@@ -918,7 +923,7 @@ ExpOp::PrtType ExpOp::printType         // DEFAULT PRINT-TYPE (ONLY SELF)
     ( void )
     const
 {
-    return PRT_ACTUAL_SELF;
+    return( PRT_ACTUAL_SELF );
 }
 
 
@@ -943,14 +948,14 @@ static void ExpOp::print                // PRINT INDENTED ENTRY
 TreePtr treeSuppLeft                    // GET LEFT OPERAND
     ( TreePtr node )                    // - node
 {
-    return TreePtr( ((ExpOp*)node)->nodeLeft() );
+    return( TreePtr( ((ExpOp*)node)->nodeLeft() ) );
 }
 
 
 TreePtr treeSuppRight                   // GET RIGHT OPERAND
     ( TreePtr node )                    // - node
 {
-    return TreePtr( ((ExpOp*)node)->nodeRight() );
+    return( TreePtr( ((ExpOp*)node)->nodeRight() ) );
 }
 
 
@@ -958,14 +963,14 @@ char const * treeSuppName               // GET NAME
     ( TreePtr node )                    // - node
 {
     static char name_buffer[120];
-    return ((ExpOp*)node)->nodeName( name_buffer );
+    return( ((ExpOp*)node)->nodeName( name_buffer ) );
 }
 
 
 unsigned treeSuppWidth                  // GET WIDTH
     ( TreePtr node )                    // - node
 {
-    return strlen( treeSuppName( node ) );
+    return( strlen( treeSuppName( node ) ) );
 }
 
 
@@ -1000,7 +1005,8 @@ static void ExpOp::verifyEmpty          // VERIFY LIVE SET IS EMPTY
     SetIter<ExpOp> iter( _live );
     for( ; ; ) {
         ExpOp* expr = *iter;
-        if( expr == 0 ) break;
+        if( expr == 0 )
+            break;
         fputs( "\nFollowing expression was not connected\n", out );
 #ifdef TRPRTDLL
         support.print( TreePtr( expr ) );
@@ -1054,7 +1060,7 @@ ExpOp* ExpBitMask::nodeLeft             // GET LEFT NODE
     ( void )
     const
 {
-    return _operand;
+    return( _operand );
 }
 
 
@@ -1069,7 +1075,7 @@ char* ExpBitMask::nodeName              // GET NODE NAME
     p = stxpcpy( p, _size );
     p = stxpcpy( p, ")" );
     ExpOp::nodeName( p );
-    return buffer;
+    return( buffer );
 }
 
 
@@ -1090,7 +1096,7 @@ ExpOp::PrtType ExpBitMask::printType    // PRINT-TYPE
     ( void )
     const
 {
-    return PrtType( PRT_ACTUAL_SELF | PRT_AFTER_LEFT );
+    return( PrtType( PRT_ACTUAL_SELF | PRT_AFTER_LEFT ) );
 }
 
 
@@ -1133,7 +1139,7 @@ char* ExpCallBack::nodeName             // GET NODE NAME
     p = stxpcpy( p, _rtn );
     p = stxpcpy( p, " " );
     p = stxpcpy( p, _data );
-    return buffer;
+    return( buffer );
 }
 
 
@@ -1187,7 +1193,7 @@ char* ExpInteger::nodeName              // GET NODE NAME
         p = stxpcpy( p, " Integer" );
         ExpOp::nodeName( p );
     }
-    return buffer;
+    return( buffer );
 }
 
 
@@ -1244,7 +1250,7 @@ char* ExpPatchNode::nodeName            // GET NODE NAME
     if( options.verbose ) {
         ExpOp::nodeName( p );
     }
-    return buffer;
+    return( buffer );
 }
 
 
@@ -1300,7 +1306,7 @@ char* ExpSym::nodeName                  // GET NODE NAME
         p = stxpcpy( p, " Symbol" );
         ExpOp::nodeName( p );
     }
-    return buffer;
+    return( buffer );
 }
 
 
@@ -1362,7 +1368,7 @@ char* ExpTemp::nodeName                 // GET NODE NAME
     if( options.verbose ) {
         ExpOp::nodeName( p );
     }
-    return buffer;
+    return( buffer );
 }
 
 
@@ -1413,7 +1419,7 @@ int ExpOpCode::inlineable               // TEST IF INLINEABLE OPCODE
     ( void )
     const
 {
-    return ::strlen( _opcode ) < 4;
+    return( ::strlen( _opcode ) < 4 );
 }
 
 
@@ -1426,7 +1432,7 @@ char* ExpOpCode::nodeName               // GET NODE NAME
     if( options.verbose ) {
         ExpOp::nodeName( p );
     }
-    return buffer;
+    return( buffer );
 }
 
 
@@ -1445,22 +1451,22 @@ void ExpOpCode::printActual             // PRINT ACTUAL
         char last;
         PrtType pt = PrtType( printType() & ~ PRT_CALL );
         switch( pt ) {
-          case PRT_ACTUAL_SELF | PRT_BEFORE_RIGHT :
+        case PRT_ACTUAL_SELF | PRT_BEFORE_RIGHT :
             last = BOX_OPCODE_UP;
             break;
-          case PRT_ACTUAL_SELF | PRT_BEFORE_RIGHT | PRT_ACTUAL_LEFT :
+        case PRT_ACTUAL_SELF | PRT_BEFORE_RIGHT | PRT_ACTUAL_LEFT :
             last = BOX_TEE_UP;
             break;
-          case PRT_ACTUAL_SELF | PRT_ACTUAL_RIGHT | PRT_AFTER_LEFT :
+        case PRT_ACTUAL_SELF | PRT_ACTUAL_RIGHT | PRT_AFTER_LEFT :
             last = BOX_TEE_DOWN;
             break;
-          case PRT_ACTUAL_SELF | PRT_AFTER_LEFT :
+        case PRT_ACTUAL_SELF | PRT_AFTER_LEFT :
             last = BOX_OPCODE_DN;
             break;
-          case PRT_ACTUAL_SELF | PRT_BEFORE_RIGHT | PRT_AFTER_LEFT :
+        case PRT_ACTUAL_SELF | PRT_BEFORE_RIGHT | PRT_AFTER_LEFT :
             last = BOX_OPCODE_UD;
             break;
-          default :
+        default :
             last = BOX_LINE_HORI;
             break;
         }
@@ -1469,7 +1475,7 @@ void ExpOpCode::printActual             // PRINT ACTUAL
     }
     fputs( opcd, out );
     if( options.verbose ) {
-        char buffer[ 32 ];
+        char buffer[32];
         fputs( ExpOp::nodeName( buffer ), out );
     }
 }
@@ -1517,7 +1523,7 @@ ExpOp* ExpUnOp::nodeLeft                // GET LEFT NODE
     ( void )
     const
 {
-    return _operand;
+    return( _operand );
 }
 
 
@@ -1525,7 +1531,7 @@ char* ExpUnOp::nodeName                 // GET NODE NAME
     ( char * buffer )                   // - buffer
     const
 {
-    return ExpOpCode::nodeName( buffer );
+    return( ExpOpCode::nodeName( buffer ) );
 }
 
 
@@ -1541,7 +1547,7 @@ ExpOp::PrtType ExpUnOp::printType       // PRINT-TYPE
     } else {
         retn = PrtType( PRT_ACTUAL_SELF | PRT_ACTUAL_LEFT );
     }
-    return retn;
+    return( retn );
 }
 
 
@@ -1606,7 +1612,7 @@ ExpOp* ExpBnOp::nodeLeft                // GET LEFT NODE
     ( void )
     const
 {
-    return _left;
+    return( _left );
 }
 
 
@@ -1614,7 +1620,7 @@ char* ExpBnOp::nodeName                 // GET NODE NAME
     ( char * buffer )                   // - buffer
     const
 {
-    return ExpOpCode::nodeName( buffer );
+    return( ExpOpCode::nodeName( buffer ) );
 }
 
 
@@ -1622,7 +1628,7 @@ ExpOp* ExpBnOp::nodeRight               // GET RIGHT NODE
     ( void )
     const
 {
-    return _right;
+    return( _right );
 }
 
 
@@ -1654,7 +1660,7 @@ ExpOp::PrtType ExpBnOp::printType       // PRINT-TYPE
                           | PRT_AFTER_LEFT );
         }
     }
-    return retn;
+    return( retn );
 }
 
 
@@ -1714,7 +1720,7 @@ char* ExpCall::nodeName                 // GET NODE NAME
         p = stxpcpy( p, handle );
         p = stxpcpy( p, " " );
     }
-    return buffer;
+    return( buffer );
 }
 
 
@@ -1745,7 +1751,7 @@ ExpOp::PrtType ExpCall::printType() const // GET PRINT TYPE
                       | PRT_ACTUAL_RIGHT
                       | PRT_CALL );
     }
-    return retn;
+    return( retn );
 }
 
 
@@ -1787,7 +1793,7 @@ char* ExpArg::nodeName                  // GET NODE NAME
     ( char * )                          // - buffer
     const
 {
-    return "ARG";
+    return( "ARG" );
 }
 
 
@@ -1804,7 +1810,7 @@ ExpOp::PrtType ExpArg::printType() const // GET PRINT TYPE
                       | PRT_ACTUAL_RIGHT
                       | PRT_ARG );
     }
-    return retn;
+    return( retn );
 }
 
 
@@ -1847,7 +1853,7 @@ char* ExpVarArgBase::nodeName           // GET NODE NAME
     if( options.verbose ) {
         ExpOp::nodeName( buffer );
     }
-    return buffer;
+    return( buffer );
 }
 
 
@@ -1881,7 +1887,7 @@ char* ExpType::nodeName                 // GET NODE NAME
 {
     char* p = buffer;
     p = stxpcpy( p, _type );
-    return buffer;
+    return( buffer );
 }
 #endif
 
@@ -1914,11 +1920,10 @@ static int isDelim( char chr )              // TEST IF DELIMITER
     if( chr == '('
      || chr == ','
      || chr == ')'
-     || chr == ','
       ) {
-        return 1;
+        return( 1 );
     } else {
-        return 0;
+        return( 0 );
     }
 }
 
@@ -1926,8 +1931,9 @@ static int isDelim( char chr )              // TEST IF DELIMITER
 static char const * scanPastGarbage         // SCAN PAST DELIMITERS, BLANKS
     ( char const *rptr )
 {
-    while( isDelim( *rptr ) || isspace( *rptr ) ) ++rptr;
-    return rptr;
+    while( isDelim( *rptr ) || isspace( *rptr ) )
+        ++rptr;
+    return( rptr );
 }
 
 
@@ -1957,12 +1963,17 @@ static char const * scanName                // SCAN A NAME
                     // handle operator()
                     char const* op = name + sizeOperator;
                     for( ; isspace(*op); ++op );
-                    if( *op == '(' && op == rptr ) continue;
+                    if( *op == '(' && op == rptr )
+                        continue;
                     ++op;
-                    if( *op == ')' && op == rptr ) continue;
+                    if( *op == ')' && op == rptr ) {
+                        continue;
+                    }
                 }
                 for( ; size > 0; --size ) {
-                    if( ! isspace( name[size-1] ) ) break;
+                    if( ! isspace( name[size-1] ) ) {
+                        break;
+                    }
                 }
                 if( size == 0 ) {
                     name = 0;
@@ -1971,7 +1982,7 @@ static char const * scanName                // SCAN A NAME
             }
         }
     }
-    return rptr;
+    return( rptr );
 }
 
 
@@ -2004,7 +2015,7 @@ static char const * scanCgh                 // SCAN cg(#)
             id = id * 16 + val;
         }
     }
-    return rptr;
+    return( rptr );
 }
 
 
@@ -2023,7 +2034,7 @@ static char const * scanCghResult           // SCAN ) -> cg(#)
             ++rptr;
         }
     }
-    return scanCgh( rptr, id );
+    return( scanCgh( rptr, id ) );
 }
 
 
@@ -2035,7 +2046,7 @@ static char const * scanString              // SCAN A STRING
     size_t size;
     rptr = scanName( rptr, src, size );
     str = Str( src, size );
-    return rptr;
+    return( rptr );
 }
 
 
@@ -2044,7 +2055,7 @@ static char const * scanInteger             // SCAN INTEGER
     ( char const * rptr
     , Str & str )
 {
-    return scanString( rptr, str );
+    return( scanString( rptr, str ) );
 }
 
 
@@ -2056,7 +2067,7 @@ static char const * scanBackHandle          // SCAN BACK-HANDLE
     size_t size;
     rptr = scanName( rptr, src, size );
     str = Str( src, size );
-    return rptr;
+    return( rptr );
 }
 
 
@@ -2065,7 +2076,7 @@ static char const * scanLabel               // SCAN LABEL
     ( char const * rptr
     , Str & str )
 {
-    return scanString( rptr, str );
+    return( scanString( rptr, str ) );
 }
 
 
@@ -2074,7 +2085,7 @@ static char const * scanOpCode              // SCAN OPCODE
     ( char const * rptr
     , Str & str )
 {
-    return scanString( rptr, str );
+    return( scanString( rptr, str ) );
 }
 
 
@@ -2096,7 +2107,7 @@ static char const * scanSymbol              // SCAN SYMBOL
         }
     }
     str = Str( src, size );
-    return rptr;
+    return( rptr );
 }
 
 
@@ -2104,7 +2115,7 @@ static char const * scanType                // SCAN TYPE
     ( char const * rptr
     , Str & str )
 {
-    return scanString( rptr, str );
+    return( scanString( rptr, str ) );
 }
 
 
@@ -2680,27 +2691,27 @@ static void processOptions                  // PROCESS OPTIONS
     for( ; *opts != '\0'; ) {
         char opt = *opts++;
         switch( opt ) {
-          case 'a' :                // a = echo actions file
+        case 'a' :                // a = echo actions file
             options.actions = 1;
             break;
-          case 'v' :                // v = verbose
+        case 'v' :                // v = verbose
             options.verbose = 1;
             break;
-          case 'h' :                // h, ? = Help
-          case '?' :
-            puts( "ppact [ options ] [ input [ output ] ]"    );
-            puts( ""                                          );
-            puts( "options: t -- print type information"      );
-            puts( "         a -- print actions file"          );
-            puts( "         h -- display help information"    );
+        case 'h' :                // h, ? = Help
+        case '?' :
+            puts( "ppact [ options ] [ input [ output ] ]" );
+            puts( "" );
+            puts( "options: t -- print type information" );
+            puts( "         a -- print actions file" );
+            puts( "         h -- display help information" );
             exit( 0 );
             break;
 #ifndef NDEBUG
-          case 'p' :
+        case 'p' :
             options.pstack = 1;
             break;
 #endif
-          default :
+        default :
             err( "invalid option(s):", opts, 0 );
         }
     }
@@ -2714,7 +2725,7 @@ int main( int argc, char* argv[] )          // MAIN-LINE
     char* file_out = 0;
     int arg;
     for( arg = 1; arg < argc; ++arg ) {
-        char* arg_text = argv[ arg ];
+        char* arg_text = argv[arg];
         if( arg_text[0] == '/' || arg_text[0] == '-' ) {
             processOptions( &arg_text[1] );
         } else if( arg_text[0] == '?' ) {
@@ -2747,7 +2758,8 @@ int main( int argc, char* argv[] )          // MAIN-LINE
     output_file = out;
 #endif
     for( ; ; ) {
-        if( 0 == fgets( buffer, sizeof( buffer ), inp ) ) break;
+        if( 0 == fgets( buffer, sizeof( buffer ), inp ) )
+            break;
         process( out );
     }
     ExpOp::verifyEmpty( out );
@@ -2757,7 +2769,7 @@ int main( int argc, char* argv[] )          // MAIN-LINE
         fclose( out );
     }
     fclose( inp );
-    return 0;
+    return( 0 );
 }
 
 // #pragma on (dump_cg)

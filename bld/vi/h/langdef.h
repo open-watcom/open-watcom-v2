@@ -28,23 +28,23 @@
 *
 ****************************************************************************/
 
-/*         enum           enumrc          name        namej       fname          descr (filter)        filter   */
-pick_lang( LANG_NONE,     VI_LANG_LANG0,  "None",     "None",     "",            "All Files",          "*.*"                            )
-pick_lang( LANG_C,        VI_LANG_LANG1,  "C",        "C",        "c.dat",       "C Files",            "*.c;*.h"                        )
-pick_lang( LANG_CPP,      VI_LANG_LANG2,  "C++",      "C++",      "cpp.dat",     "C++ Files",          "*.cpp;*.hpp;*.cxx;*.hxx;*.inl"  )
-pick_lang( LANG_FORTRAN,  VI_LANG_LANG3,  "Fortran",  "Fortran",  "fortran.dat", "Fortran Files",      "*.for;*.fi;*.f;*.inc"           )
-pick_lang( LANG_JAVA,     VI_LANG_LANG4,  "Java",     "Java",     "java.dat",    "Java(Script) Files", "*.java;*.js"                    )
-pick_lang( LANG_SQL,      VI_LANG_LANG5,  "SQL",      "SQL",      "sql.dat",     "SQL Files",          "*.sql"                          )       
-pick_lang( LANG_BAT,      VI_LANG_LANG6,  "Batch",    "Batch",    "bat.dat",     "Batch Files",        "*.bat;*.cmd"                    )
-pick_lang( LANG_BASIC,    VI_LANG_LANG7,  "Basic",    "Basic",    "basic.dat",   "Basic",              "*.bas;*.frm;*.cls"              )
-pick_lang( LANG_PERL,     VI_LANG_LANG8,  "Perl",     "Perl",     "perl.dat",    "Perl Files",         "*.pl;*.cgi"                     )
-pick_lang( LANG_HTML,     VI_LANG_LANG9,  "HTML",     "HTML",     "html.dat",    "HTML Files",         "*.htm;*.html;*.xhtml"           )
-pick_lang( LANG_WML,      VI_LANG_LANG10, "WML",      "WML",      "wml.dat",     "WML Files",          "*.wml"                          )
-pick_lang( LANG_GML,      VI_LANG_LANG11, "GML",      "GML",      "gml.dat",     "GML Files",          "*.gml"                          )
-pick_lang( LANG_DBTEST,   VI_LANG_LANG12, "DBTest",   "DBTest",   "dbtest.dat",  "DBTest",             "*.tst"                          )
-pick_lang( LANG_MAKEFILE, VI_LANG_LANG13, "Makefile", "Makefile", "mif.dat",     "Makefiles",          "makefile;*.mk;*.mif;*.mak"      )
-pick_lang( LANG_RC,       VI_LANG_LANG14, "Resource", "Resource", "rc.dat",      "Resource Files",     "*.rc;*.rh;*.dlg"                )
-pick_lang( LANG_AWK,      VI_LANG_LANG15, "AWK",      "AWK",      "awk.dat",     "AWK Files",          "*.awk"                          )
+/*    enum           enumrc          name        namej       fname          descr (filter)        filter   */
+pick( LANG_NONE,     VI_LANG_LANG0,  "None",     "None",     "",            "All Files",          "*.*"                            )
+pick( LANG_C,        VI_LANG_LANG1,  "C",        "C",        "c.dat",       "C Files",            "*.c;*.h"                        )
+pick( LANG_CPP,      VI_LANG_LANG2,  "C++",      "C++",      "cpp.dat",     "C++ Files",          "*.cpp;*.hpp;*.cxx;*.hxx;*.inl"  )
+pick( LANG_FORTRAN,  VI_LANG_LANG3,  "Fortran",  "Fortran",  "fortran.dat", "Fortran Files",      "*.for;*.fi;*.f;*.inc"           )
+pick( LANG_JAVA,     VI_LANG_LANG4,  "Java",     "Java",     "java.dat",    "Java(Script) Files", "*.java;*.js"                    )
+pick( LANG_SQL,      VI_LANG_LANG5,  "SQL",      "SQL",      "sql.dat",     "SQL Files",          "*.sql"                          )
+pick( LANG_BAT,      VI_LANG_LANG6,  "Batch",    "Batch",    "bat.dat",     "Batch Files",        "*.bat;*.cmd"                    )
+pick( LANG_BASIC,    VI_LANG_LANG7,  "Basic",    "Basic",    "basic.dat",   "Basic",              "*.bas;*.frm;*.cls"              )
+pick( LANG_PERL,     VI_LANG_LANG8,  "Perl",     "Perl",     "perl.dat",    "Perl Files",         "*.pl;*.cgi"                     )
+pick( LANG_HTML,     VI_LANG_LANG9,  "HTML",     "HTML",     "html.dat",    "HTML Files",         "*.htm;*.html;*.xhtml"           )
+pick( LANG_WML,      VI_LANG_LANG10, "WML",      "WML",      "wml.dat",     "WML Files",          "*.wml"                          )
+pick( LANG_GML,      VI_LANG_LANG11, "GML",      "GML",      "gml.dat",     "GML Files",          "*.gml"                          )
+pick( LANG_DBTEST,   VI_LANG_LANG12, "DBTest",   "DBTest",   "dbtest.dat",  "DBTest",             "*.tst"                          )
+pick( LANG_MAKEFILE, VI_LANG_LANG13, "Makefile", "Makefile", "mif.dat",     "Makefiles",          "makefile;*.mk;*.mif;*.mak"      )
+pick( LANG_RC,       VI_LANG_LANG14, "Resource", "Resource", "rc.dat",      "Resource Files",     "*.rc;*.rh;*.dlg"                )
+pick( LANG_AWK,      VI_LANG_LANG15, "AWK",      "AWK",      "awk.dat",     "AWK Files",          "*.awk"                          )
 #ifndef LANG_FILTER
-pick_lang( LANG_USER,     VI_LANG_LANG16, "User",     "User",     "user.dat",    "",                   ""                            )
+pick( LANG_USER,     VI_LANG_LANG16, "User",     "User",     "user.dat",    "",                   ""                               )
 #endif

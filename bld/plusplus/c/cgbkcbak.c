@@ -120,7 +120,7 @@ static bool ctorTestReqd(       // TEST IF CTOR-TEST REQUIRED
 static cg_name emitPatch(       // EMIT A PATCH EXPRESSION
     patch_handle* a_handle )    // - addr[ patch handle ]
 {
-    return FstabEmitStateVarPatch( a_handle, FnCtlTop() );
+    return( FstabEmitStateVarPatch( a_handle, FnCtlTop() ) );
 }
 
 
@@ -130,7 +130,7 @@ cg_name CgCallBackLeft(         // MAKE A LEFT CALL-BACK
     void* data,                 // - data for call back
     cg_type type )              // - type of expression
 {
-    return CgComma( CGCallback( fun, data ), expr, type );
+    return( CgComma( CGCallback( fun, data ), expr, type ) );
 }
 
 
@@ -140,7 +140,7 @@ cg_name CgCallBackRight(        // MAKE A RIGHT CALL-BACK
     void* data,                 // - data for call back
     cg_type type )              // - type of expression
 {
-    return CgSideEffect( expr, CGCallback( fun, data ), type );
+    return( CgSideEffect( expr, CGCallback( fun, data ), type ) );
 }
 
 
@@ -149,32 +149,32 @@ static cg_name ctorFlagSet(     // SET/RESET CTOR FLAG
     cg_op opcode,               // - set/reset opcode
     patch_handle* a_ph )        // - addr[ patch_handle ]
 {
-    unsigned offset;            // - offset of flag byte
-    unsigned mask;              // - mask for byte
-    cg_name op_flg;             // - expression for code-gen
+    cg_name         op_flg;                         // - expression for code-gen
+    unsigned        idx = FnCtlCondFlagCtor( fctl );// - offset of flag byte
+    size_t          bit_offs = BITARR_OFFS( idx );  // - offset for byte
+//    unsigned char   bit_mask = BITARR_MASK( idx );  // - mask for byte
 
-    mask = FnCtlCondFlagCtor( fctl );
-    offset = mask / 8;
-    mask &= 7;
-    op_flg = CgSymbolPlusOffset( FstabRw(), offset + CgbkInfo.size_rw_base );
+    op_flg = CgSymbolPlusOffset( FstabRw(), bit_offs + CgbkInfo.size_rw_base );
     *a_ph = BEPatch();
     op_flg = CGLVPreGets( opcode
                         , op_flg
                         , CGPatchNode( *a_ph, TY_UINT_1 )
                         , TY_UINT_1 );
-    return op_flg;
+    return( op_flg );
 }
 
 
 static void callBackCtorFlag(   // CALL-BACK FOR CTOR-FLAG AFTER CTORING
-    void* data )                // - patch entry
+    void *data )                // - patch entry
 {
-    CTOR_FLAG_SET* cfs = data;  // - patch entry
+    CTOR_FLAG_SET *cfs = data;  // - patch entry
 
     if( ctorTestReqd( FstabActualPosn(), cfs->se ) ) {
-        FN_CTL* fctl = FnCtlTop();
-        unsigned mask = 1 << ( FnCtlCondFlagCtor( fctl ) & 7 );
-        BEPatchInteger( cfs->ph_clr, 255 - mask );
+        FN_CTL *fctl = FnCtlTop();
+        unsigned idx = FnCtlCondFlagCtor( fctl );
+//        size_t bit_offs = BITARR_OFFS( idx );
+        unsigned char bit_mask = BITARR_MASK( idx );
+        BEPatchInteger( cfs->ph_clr, NOT_BITARR_MASK( bit_mask ) );
     } else {
         BEPatchInteger( cfs->ph_clr, -1 );
     }
@@ -193,12 +193,10 @@ static cg_name genCtorFlagClr(  // CLEAR CTOR FLAGGING
     if( DtmTabular( fctl ) ) {
         cfs = CarveAlloc( carve_ctor_flag );
         cfs->se = se;
-        expr = CgComma( ctorFlagSet( fctl, O_AND, &cfs->ph_clr )
-                      , expr
-                      , type );
+        expr = CgComma( ctorFlagSet( fctl, O_AND, &cfs->ph_clr ), expr, type );
         expr = CgCallBackRight( expr, &callBackCtorFlag, cfs, type );
     }
-    return expr;
+    return( expr );
 }
 
 
@@ -221,7 +219,7 @@ cg_name CgCallBackCtorStart(    // SET A CALL BACK FOR A CTOR-TEST : START
 {
     expr = genCtorFlagClr( expr, type, se );
     expr = CgCallBackLeft( expr, &setSeCtorTest, se, type );
-    return expr;
+    return( expr );
 }
 
 
@@ -229,7 +227,7 @@ cg_name CgCallBackInitRefBeg(   // START CALL-BACK FOR INIT-REF
     SE* se )                    // - state entry for init-ref variable
 {
     FstabCtorTest( FnCtlTop() );
-    return genCtorFlagClr( NULL, TY_POINTER, se );
+    return( genCtorFlagClr( NULL, TY_POINTER, se ) );
 }
 
 
@@ -292,7 +290,7 @@ static cg_name emitPatchCallBack( // EMIT CODE FOR CALL-BACK FOR STATE PATCH
     pe = CarveAlloc( carve_patch_se );
     pe->se = se;
     pe->patch = patch;
-    return CgCallBackRight( expr, rtn, pe, type );
+    return( CgCallBackRight( expr, rtn, pe, type ) );
 }
 
 
@@ -301,7 +299,7 @@ cg_name CgCallBackCtorDone(     // SET A CALL BACK FOR A CTOR-TEST : DONE
     cg_type type,               // - type of expression
     SE* se )                    // - state entry for ctored object
 {
-    return CgCallBackRight( expr, &checkCtorTest, se, type );
+    return( CgCallBackRight( expr, &checkCtorTest, se, type ) );
 }
 
 
@@ -312,7 +310,7 @@ cg_name CgCallBackAutoCtor(     // SET CALL BACKS FOR A DCL'ED AUTO
 {
     expr = CgCallBackCtorStart( expr, type, se );
     expr = CgCallBackCtorDone( expr, type, se );
-    return expr;
+    return( expr );
 }
 
 
@@ -360,7 +358,7 @@ cg_name CgCallBackTempCtor(     // SET CALL BACKS FOR TEMP CTORED
         expr = CgSideEffect( expr, emit, type );
     }
     expr = CgCallBackRight( expr, &setTempDone, te, type );
-    return expr;
+    return( expr );
 }
 
 
@@ -423,7 +421,7 @@ SE* DtorForDelBeg(              // DTORING AREA TO BE DELETED: start
     } else {
         se_dlt = NULL;
     }
-    return se_dlt;
+    return( se_dlt );
 }
 
 

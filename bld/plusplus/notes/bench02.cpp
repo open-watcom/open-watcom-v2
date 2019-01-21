@@ -64,33 +64,33 @@ struct vector {
         v[0] = d.v[0];
         v[1] = d.v[1];
         v[2] = d.v[2];
-        return *this;
+        return( *this );
     }
     vector operator *( const vector &d )
     {
         vector res(*this);
         res *= d;
-        return res;
+        return( res );
     }
     vector & operator *=( const vector &d )
     {
         v[0] *= d.v[0];
         v[1] *= d.v[1];
         v[2] *= d.v[2];
-        return *this;
+        return( *this );
     }
     vector operator +( const vector &d )
     {
         vector res(*this);
         res += d;
-        return res;
+        return( res );
     }
     vector & operator +=( const vector &d )
     {
         v[0] += d.v[0];
         v[1] += d.v[1];
         v[2] += d.v[2];
-        return *this;
+        return( *this );
     }
 };
 
@@ -103,7 +103,7 @@ vector in_reg()
         sum1 += v1 * sum1 + v1;
         sum2 += v2 * sum2 + v2;
     }
-    return vector( sum0, sum1, sum2 );
+    return( vector( sum0, sum1, sum2 ) );
 }
 
 vector in_arr()
@@ -115,7 +115,7 @@ vector in_arr()
         sum[1] += v[1] * sum[1] + v[1];
         sum[2] += v[2] * sum[2] + v[2];
     }
-    return vector( sum );
+    return( vector( sum ) );
 }
 
 vector in_vec()
@@ -125,7 +125,7 @@ vector in_vec()
     for( int i = 0; i < STEP; ++i ) {
         sum += v * sum + v;
     }
-    return sum;
+    return( sum );
 }
 
 void timer( vector ( *rtn )() )

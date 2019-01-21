@@ -108,13 +108,15 @@ void PrintExterns( externs sec_externs )
     for( loop = 0; loop < sec_externs->number; loop++ ) {
         entry = sec_externs->extern_refs[loop];
         if( prev_label != entry->label ) {
-            BufferStore( "\n%s", entry->label->label.name );
+            BufferConcatNL();
+            BufferQuoteName( entry->label->label.name );
             BufferAlignToTab( ADDRESSES_POS );
             BufferPrint();
             prev_label = entry->label;
         }
-        BufferStore( "%04X ", entry->offset );
+        BufferHexU32( 4, entry->offset );
     }
+    BufferConcatNL();
+    BufferConcatNL();
     BufferPrint();
-    Print( "\n\n" );
 }

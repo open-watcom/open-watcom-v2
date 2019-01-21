@@ -100,7 +100,7 @@ unsigned MakeAsyncRun( bool single )
             GetSysConfig();
             CheckMADChange();
         }
-        DbgRegs->mad = SysConfig.mad;
+        DbgRegs->arch = SysConfig.arch;
         /* Use 'tmp' because of alignment problems */
         tmp = ret.stack_pointer;
         MADRegSpecialSet( MSR_SP, &DbgRegs->mr, &tmp );
@@ -144,7 +144,7 @@ unsigned PollAsync( void )
             GetSysConfig();
             CheckMADChange();
         }
-        DbgRegs->mad = SysConfig.mad;
+        DbgRegs->arch = SysConfig.arch;
         /* Use 'tmp' because of alignment problems */
         tmp = ret.stack_pointer;
         MADRegSpecialSet( MSR_SP, &DbgRegs->mr, &tmp );
@@ -188,7 +188,7 @@ unsigned StopAsync( void )
             GetSysConfig();
             CheckMADChange();
         }
-        DbgRegs->mad = SysConfig.mad;
+        DbgRegs->arch = SysConfig.arch;
         /* Use 'tmp' because of alignment problems */
         tmp = ret.stack_pointer;
         MADRegSpecialSet( MSR_SP, &DbgRegs->mr, &tmp );

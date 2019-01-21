@@ -48,23 +48,19 @@ void ScanAsm( void )
     while( GetString( buff, sizeof( buff ) ) ) {
 
         buffptr = buff;
-        while( isspace( *buffptr ) ) {
-            buffptr++;
-        }
+        SKIP_SPACES( buffptr );
         if( *buffptr == '\0' ) {
             continue;
         }
         i = 0;
-        while( IsTokenChar( *buffptr ) ) {
+        while( IsTokenChar( *(unsigned char *)buffptr ) ) {
             token[i++] = *buffptr++;
         }
         if( i == 0 ) {
             continue;
         }
         token[i] = '\0';
-        while( isspace( *buffptr ) ) {
-            buffptr++;
-        }
+        SKIP_SPACES( buffptr );
         if( MyStricmp( &buffptr, "proc" ) ) {
             continue;
         }

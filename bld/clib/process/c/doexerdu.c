@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
+* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -34,10 +34,8 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <conio.h>
-#include <dos.h>
 #include <string.h>
 #include <stddef.h>
-#include <malloc.h>
 #include <process.h>
 #include <rdos.h>
 #include "rtdata.h"
@@ -46,7 +44,7 @@
 #include "_rdos.h"
 
 int _doexec( CHAR_TYPE *pgmname, CHAR_TYPE *cmdline,
-             CHAR_TYPE *envpar, 
+             CHAR_TYPE *envpar,
              const CHAR_TYPE * const argv[] )
 {
     int len;
@@ -61,6 +59,7 @@ int _doexec( CHAR_TYPE *pgmname, CHAR_TYPE *cmdline,
     int fh;
     char *drive;
     char *dir;
+    char null_repl;
 
     __F_NAME(__ccmdline,__wccmdline)( pgmname, argv, cmdline, 0 );
 
@@ -82,26 +81,32 @@ int _doexec( CHAR_TYPE *pgmname, CHAR_TYPE *cmdline,
                 while( envp && !ok) {
                     ep = strchr( envp, ';' );
                     if( ep ) {
+                        null_repl = *ep;
                         *ep = 0;
-                        ep++;
                     }
                     _makepath( p, "", envp, fname, ext );
-                    fh = RdosOpenFile( pgmname, 0 );
+                    fh = RdosOpenFile( p, 0 );
                     if( fh ) {
                         ok = 1;
                         RdosCloseFile( fh );
                     }
-                    envp = ep;
-                }                
+                    if( ep ) {
+                        *ep = null_repl;
+                        ep++;
+                        envp = ep;
+                    } else {
+                        envp = 0;
+                    }
+                }
             }
         }
     } else {
-        RdosCloseFile( fh );    
+        RdosCloseFile( fh );
         ok = 1;
     }
 
     if( ok ) {
-        RdosExec( pgmname, cmdline, 0, envpar );
+        RdosExec( p, cmdline, 0, envpar );
     }
 
     lib_free( p );

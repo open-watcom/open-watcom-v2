@@ -90,7 +90,7 @@ char *DbgSymNameFull(           // GET FULL SYMBOL NAME
 const char *DbgSymNameShort(    // GET Short SYMBOL NAME
     SYMBOL sym )                // - symbol
 {
-    return FEName( sym );
+    return( FEName( sym ) );
 }
 
 
@@ -106,7 +106,7 @@ static void printToken(         // PRINT CURRENT TOKEN
     } else if( CurToken == T_CONSTANT ) {
         printf( "T_CONSTANT of type(%d) '%s'\n", ConstType, Buffer );
     } else {
-        printf( "'%s'\n", Tokens[ CurToken ] );
+        printf( "'%s'\n", Tokens[CurToken] );
     }
 }
 
@@ -135,19 +135,19 @@ void DumpMacPush(               // DUMP PUSH OF MACRO
     const void *p_mac,          // - macro being pushed
     const void **p_args )       // - arguments
 {
-    MEDEFN const *mac = p_mac;  // - macro being pushed
+    const MEPTR mentry = (const MEPTR)p_mac; // - macro being pushed
     const char**args = (const char **)p_args;  // - arguments
     unsigned count;
     if( PragDbgToggle.dump_mtokens ) {
-        printf( "Macro Push: %s", mac->macro_name );
-        if( ( mac->macro_defn > 0 ) && ( args != NULL ) ) {
-            count = mac->parm_count;
+        printf( "Macro Push: %s", mentry->macro_name );
+        if( ( mentry->macro_defn > 0 ) && ( args != NULL ) ) {
+            count = mentry->parm_count;
             if( count == 1 ) {
                 printf( " = %s", *args );
             } else if( count > 0 ) {
                 printf( "( " );
                 for( ; --count; ) {
-                    printf( "%s%s", *args++, (count>1) ? ", " : " " );
+                    printf( "%s%s", *args++, ( count > 1 ) ? ", " : " " );
                 }
                 printf( ")" );
             }
@@ -219,13 +219,13 @@ const char *DbgOperator(        // GET CGOP NAME
     const char  *name;          // - name
 
     static const char *opnames[] = {    // - opcode names (binary,unary)
-    #include "ppopsnam.h"
+        #include "ppopsnam.h"
     };
 
     if( number < CO_MAX_OPCODES ) {
-        name = opnames[ number ];
+        name = opnames[number];
     } else if( ( number > CO_NAMES ) && ( number < CO_MAX_NAMES ) ) {
-        name = opnames[ number - CO_NAMES + CO_MAX_OPCODES - 1 ];
+        name = opnames[number - CO_NAMES + CO_MAX_OPCODES - 1];
     } else {
         name = "***INVALID***";
     }
@@ -249,7 +249,7 @@ const char *DbgIcOpcode(        // GET IC OPCODE
     }
 }
 
-enum                            // types of opcodes
+typedef enum                    // types of opcodes
 {   DBG_OPCODE_NUL              // - no operand
 ,   DBG_OPCODE_BIN              // - binary #
 ,   DBG_OPCODE_STR              // - string
@@ -258,9 +258,9 @@ enum                            // types of opcodes
 ,   DBG_OPCODE_SCP              // - scope
 ,   DBG_OPCODE_TYP              // - type
 ,   DBG_OPCODE_SRC              // - source file
-};
+} dbg_opcodes;
 
-static const uint_8 optypes[] = {
+static const dbg_opcodes optypes[] = {
     #define IC( code, type, mask ) DBG_OPCODE_##type
     #include "ic.h"
     #undef IC
@@ -270,22 +270,16 @@ void DumpCgFront(               // DUMP GENERATED CODE
     const char *prefix,         // - name added to print line
     DISK_ADDR disk_blk,         // - disk block
     DISK_OFFSET offset,         // - disk offset
-    void *instruction )         // - intermediate code
+    CGINTER *ins )              // - intermediate code
 {
-    CGINTER *ins;               // - instruction
-    const char *opcode;         // - opcode
+    const char *opcode_name;    // - opcode
     unsigned uvalue;            // - value with opcode
     VBUF vbuf;
 
-    ins = instruction;
-    opcode = DbgIcOpcode( ins->opcode );
-    if( ins->opcode == IC_EOF ) {
-        uvalue = 0;
-    } else {
-        uvalue = ins->value.uvalue;
-    }
-    switch( optypes[ ins->opcode ] ) {
-      case DBG_OPCODE_SYM :
+    opcode_name = DbgIcOpcode( ins->opcode );
+    uvalue = ins->value.uvalue;
+    switch( optypes[ins->opcode] ) {
+    case DBG_OPCODE_SYM :
         printf(                 F_NAME
                 " "             F_BUF_FMT
                 " "             F_INSTR
@@ -293,12 +287,12 @@ void DumpCgFront(               // DUMP GENERATED CODE
                 " "             F_NAME F_EOL
               , prefix
               , disk_blk, offset
-              , opcode
+              , opcode_name
               , uvalue
               , DbgSymNameFull( ins->value.pvalue, &vbuf ) );
         VbufFree( &vbuf );
         break;
-      case DBG_OPCODE_TYP :
+    case DBG_OPCODE_TYP :
       { VBUF fmt_prefix, fmt_suffix;
         FormatType( ins->value.pvalue, &fmt_prefix, &fmt_suffix );
         printf(                 F_NAME
@@ -308,22 +302,22 @@ void DumpCgFront(               // DUMP GENERATED CODE
                 " %s<id>%s" F_EOL
               , prefix
               , disk_blk, offset
-              , opcode
+              , opcode_name
               , uvalue
               , VbufString( &fmt_prefix )
               , VbufString( &fmt_suffix ) );
         VbufFree( &fmt_prefix );
         VbufFree( &fmt_suffix );
       } break;
-      case DBG_OPCODE_NUL :
+    case DBG_OPCODE_NUL :
         printf(                 F_NAME
                 " "             F_BUF_FMT
                 " "             F_INSTR F_EOL
               , prefix
               , disk_blk, offset
-              , opcode );
+              , opcode_name );
         break;
-      case DBG_OPCODE_SRC :
+    case DBG_OPCODE_SRC :
       {
         printf(                 F_EOL F_NAME
                 " "             F_BUF_FMT
@@ -331,57 +325,57 @@ void DumpCgFront(               // DUMP GENERATED CODE
                 " "             F_NAME F_EOL
               , prefix
               , disk_blk, offset
-              , opcode
+              , opcode_name
               , SrcFileFullName( ins->value.pvalue ) );
       } break;
-      case DBG_OPCODE_SCP :
+    case DBG_OPCODE_SCP :
         printf(                 F_NAME
                 " "             F_BUF_FMT
                 " "             F_INSTR
                 " "             "scope: " F_HEX F_EOL
               , prefix
               , disk_blk, offset
-              , opcode
+              , opcode_name
               , uvalue );
         break;
-      case DBG_OPCODE_STR :
-      case DBG_OPCODE_CON :
-      case DBG_OPCODE_BIN :
+    case DBG_OPCODE_STR :
+    case DBG_OPCODE_CON :
+    case DBG_OPCODE_BIN :
         switch( ins->opcode ) {
-          case IC_OPR_BINARY :
-          case IC_OPR_UNARY :
+        case IC_OPR_BINARY :
+        case IC_OPR_UNARY :
             printf(                 F_NAME
                     " "             F_BUF_FMT
                     " "             F_INSTR
                     " "             F_NAME F_EOL
                   , prefix
                   , disk_blk, offset
-                  , opcode
+                  , opcode_name
                   , DbgOperator( ins->value.uvalue ) );
             break;
-          case IC_DBG_LINE :
+        case IC_DBG_LINE :
             printf(                 F_NAME
                     " "             F_BUF_FMT
                     " "             F_INSTR
                     " "             F_DECIMAL F_EOL F_EOL
                   , prefix
                   , disk_blk, offset
-                  , opcode
+                  , opcode_name
                   , uvalue );
             break;
-          default :
+        default :
             printf(                 F_NAME
                     " "             F_BUF_FMT
                     " "             F_INSTR
                     " "             F_HEX F_EOL
                   , prefix
                   , disk_blk, offset
-                  , opcode
+                  , opcode_name
                   , uvalue );
             break;
         }
         break;
-      default :
+    default :
         CFatal( "**** UNDEFINED OPCODE TYPE *****" );
         break;
     }
@@ -501,38 +495,10 @@ void DumpSymbol(                // DUMP SYMBOL ENTRY
     }
 }
 
-#define ENTRY_ERROR             "TYP_ERROR",
-#define ENTRY_BOOL              "TYP_BOOL",
-#define ENTRY_CHAR              "TYP_CHAR",
-#define ENTRY_SCHAR             "TYP_SCHAR",
-#define ENTRY_UCHAR             "TYP_UCHAR",
-#define ENTRY_WCHAR             "TYP_WCHAR",
-#define ENTRY_SSHORT            "TYP_SSHORT",
-#define ENTRY_USHORT            "TYP_USHORT",
-#define ENTRY_SINT              "TYP_SINT",
-#define ENTRY_UINT              "TYP_UINT",
-#define ENTRY_SLONG             "TYP_SLONG",
-#define ENTRY_ULONG             "TYP_ULONG",
-#define ENTRY_SLONG64           "TYP_SLONG64",
-#define ENTRY_ULONG64           "TYP_ULONG64",
-#define ENTRY_FLOAT             "TYP_FLOAT",
-#define ENTRY_DOUBLE            "TYP_DOUBLE",
-#define ENTRY_LONG_DOUBLE       "TYP_LONG_DOUBLE",
-#define ENTRY_ENUM              "TYP_ENUM",
-#define ENTRY_POINTER           "TYP_POINTER",
-#define ENTRY_TYPEDEF           "TYP_TYPEDEF",
-#define ENTRY_CLASS             "TYP_CLASS",
-#define ENTRY_BITFIELD          "TYP_BITFIELD",
-#define ENTRY_FUNCTION          "TYP_FUNCTION",
-#define ENTRY_ARRAY             "TYP_ARRAY",
-#define ENTRY_DOT_DOT_DOT       "TYP_DOT_DOT_DOT",
-#define ENTRY_VOID              "TYP_VOID",
-#define ENTRY_MODIFIER          "TYP_MODIFIER",
-#define ENTRY_MEMBER_POINTER    "TYP_MEMBER_POINTER",
-#define ENTRY_GENERIC           "TYP_GENERIC",
-
 static const char *id_names[] = {
-    #include "type_arr.h"
+    #define pick(id,promo,promo_asm,type_text)  __STR( __PASTE( TYP_, id ) ),
+    #include "_typdefs.h"
+    #undef pick
 };
 
 static const char unknown_type[] = "***UNKNOWN**=xx";
@@ -547,10 +513,10 @@ void DumpType(                  // DUMP TYPE ENTRY
         return;
     }
     if( tp->id >= TYP_MAX ) {
-        sprintf( (char *)( unknown_type + sizeof( unknown_type ) - 2 ), "%2x", tp->id );
+        sprintf( (char *)( unknown_type + ( sizeof( unknown_type ) - 1 ) - 2 ), "%2x", tp->id );
         id = unknown_type;
     } else {
-        id = id_names[ tp->id ];
+        id = id_names[tp->id];
     }
     printf( "TYPE"          F_BADDR
             " next"         F_PTR
@@ -890,7 +856,7 @@ void DumpScope(                 // DUMP SCOPE INFO FOR SYMBOL
     if( scope->id >= SCOPE_MAX ) {
         id = "***UNKNOWN***";
     } else {
-        id = scope_names[ scope->id ];
+        id = scope_names[scope->id];
     }
     printf( "SCOPE"         F_BADDR
             " enclosing"    F_PTR
@@ -1086,15 +1052,16 @@ static void dumpPtreeFlags      // DUMP FLAGS IN PTREE NODE
     ( PTREE node )              // - node
 {
     char line[72];
-    char const * end = &line[ sizeof( line ) ];
+    char const * end = &line[sizeof( line )];
     char * cur = line;
     unsigned ctr;
     stxpcpy( cur, "" );
     for( ctr = 0; ; ++ ctr ) {
-        unsigned flag = flag_value[ ctr ];
-        if( 0 == flag ) break;
+        unsigned flag = flag_value[ctr];
+        if( 0 == flag )
+            break;
         if( flag & node->flags ) {
-            char const * name = flag_name[ ctr ];
+            char const * name = flag_name[ctr];
             unsigned size = strlen( name );
             if( end - cur <= 1 + size ) {
                 printf( flag_fmt, line );
@@ -1125,13 +1092,13 @@ static void dumpPTreeNode(      // DUMP A PARSE TREE NODE
     dup_out = 0;
     for( ; ; ) {
         switch( node->op ) {
-          case PT_ERROR :
+        case PT_ERROR :
             printf( "PT_ERROR"      F_BADDR
                     " ***** ERROR TREE *****" F_EOL
                   , node
                   );
             break;
-          case PT_INT_CONSTANT :
+        case PT_INT_CONSTANT :
             node_name = "PT_INT_CONSTANT";
             printf( F_NAME          F_BADDR
                     " flags"        F_HEX_4
@@ -1154,7 +1121,8 @@ static void dumpPTreeNode(      // DUMP A PARSE TREE NODE
             dumpLocation( &node->locn );
             dumpPtreeFlags( node );
             break;
-          case PT_FLOATING_CONSTANT : {
+        case PT_FLOATING_CONSTANT :
+          {
             char buffer[256];
 
             BFCnvFS( node->u.floating_constant, buffer, 256 );
@@ -1168,9 +1136,8 @@ static void dumpPTreeNode(      // DUMP A PARSE TREE NODE
             dumpNodeType( node );
             dumpLocation( &node->locn );
             dumpPtreeFlags( node );
-          }
-            break;
-          case PT_STRING_CONSTANT :
+          } break;
+        case PT_STRING_CONSTANT :
             stxvcpy( buffer, node->u.string->string, node->u.string->len );
             printf( "PT_STRING_CONSTANT" F_BADDR
                     " flags"        F_HEX_4
@@ -1183,7 +1150,7 @@ static void dumpPTreeNode(      // DUMP A PARSE TREE NODE
             dumpLocation( &node->locn );
             dumpPtreeFlags( node );
             break;
-          case PT_ID :
+        case PT_ID :
             printf( "PT_ID"         F_BADDR
                     " flags"        F_HEX_4
                     " cgop"         F_STRING F_NL
@@ -1203,7 +1170,7 @@ static void dumpPTreeNode(      // DUMP A PARSE TREE NODE
             dumpLocation( &node->locn );
             dumpPtreeFlags( node );
             break;
-          case PT_TYPE :
+        case PT_TYPE :
             printf( "PT_TYPE"       F_BADDR
                     " cgop"         F_STRING
                     " flags"        F_HEX_4
@@ -1219,7 +1186,7 @@ static void dumpPTreeNode(      // DUMP A PARSE TREE NODE
             dumpLocation( &node->locn );
             dumpPtreeFlags( node );
             break;
-          case PT_SYMBOL :
+        case PT_SYMBOL :
             if( node->cgop == CO_NAME_THIS ) {
                 printf( "PT_SYMBOL"     F_BADDR
                         " flags"        F_HEX_4
@@ -1258,7 +1225,7 @@ static void dumpPTreeNode(      // DUMP A PARSE TREE NODE
                 DumpSymbol( node->u.symcg.symbol );
             }
             break;
-          case PT_UNARY :
+        case PT_UNARY :
             printf( "PT_UNARY"      F_BADDR
                     F_POINTS        F_ADDR
                     " flags"        F_HEX_4
@@ -1273,7 +1240,7 @@ static void dumpPTreeNode(      // DUMP A PARSE TREE NODE
             dumpPtreeFlags( node );
             PUSH_NODE( ctl, node->u.subtree[0] );
             break;
-          case PT_BINARY :
+        case PT_BINARY :
             printf( "PT_BINARY"     F_BADDR
                     F_POINTS        F_ADDR
                     ","             F_ADDR
@@ -1291,7 +1258,7 @@ static void dumpPTreeNode(      // DUMP A PARSE TREE NODE
             PUSH_NODE( ctl, node->u.subtree[1] );
             PUSH_NODE( ctl, node->u.subtree[0] );
             break;
-          case PT_DUP_EXPR :
+        case PT_DUP_EXPR :
           { PTREE *duped;       // - duplicated expression
             printf( "PT_DUP_EXPR"   F_BADDR
                     F_POINTS        F_ADDR
@@ -1316,7 +1283,7 @@ static void dumpPTreeNode(      // DUMP A PARSE TREE NODE
                 }
             }
           } break;
-          case PT_IC :
+        case PT_IC :
             printf( "PT_IC"         F_BADDR
                     " "             F_NAME
                     " value"        F_ADDR
@@ -1328,7 +1295,7 @@ static void dumpPTreeNode(      // DUMP A PARSE TREE NODE
             dumpLocation( &node->locn );
             dumpPtreeFlags( node );
             break;
-          default :
+        default :
             printf( "***INVALID***" F_BADDR
                     " flags"        F_HEX_4
                     " op"           F_HEX_1
@@ -1451,12 +1418,18 @@ void DumpMemberPtrInfo(         // DUMP MEMBER_PTR_CAST STRUCTURE
 
     flags[0] = '\0';
     fptr = flags;
-    if( inf->safe )           fptr = stxpcpy( fptr, "safe," );
-    if( inf->init_conv )      fptr = stxpcpy( fptr, "init_conv," );
-    if( inf->delta_reqd )     fptr = stxpcpy( fptr, "delta_reqd," );
-    if( inf->mapping_reqd )   fptr = stxpcpy( fptr, "mapping_reqd," );
-    if( inf->test_reqd )      fptr = stxpcpy( fptr, "test_reqd," );
-    if( inf->single_mapping ) fptr = stxpcpy( fptr, "single_mapping," );
+    if( inf->safe )
+        fptr = stxpcpy( fptr, "safe," );
+    if( inf->init_conv )
+        fptr = stxpcpy( fptr, "init_conv," );
+    if( inf->delta_reqd )
+        fptr = stxpcpy( fptr, "delta_reqd," );
+    if( inf->mapping_reqd )
+        fptr = stxpcpy( fptr, "mapping_reqd," );
+    if( inf->test_reqd )
+        fptr = stxpcpy( fptr, "test_reqd," );
+    if( inf->single_mapping )
+        fptr = stxpcpy( fptr, "single_mapping," );
     --fptr;
     *fptr = '\0';
     printf( "MEMBER_PTR_CAST" F_BADDR

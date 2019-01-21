@@ -33,8 +33,8 @@
 #include <sys/wait.h>
 #include "linuxsys.h"
 
-_WCRTLINK pid_t waitpid( pid_t __pid, __WAIT_STATUS __stat_loc, int __options )
+_WCRTLINK pid_t waitpid( pid_t __pid, int *__stat_loc, int __options )
 {
-    syscall_res res = sys_call3( SYS_waitpid, __pid, (u_long)__stat_loc, (u_long)__options );
+    syscall_res res = sys_call4( SYS_wait4, __pid, (u_long)__stat_loc, (u_long)__options, (u_long)NULL );
     __syscall_return( pid_t, res );
 }

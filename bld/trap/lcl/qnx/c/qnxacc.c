@@ -278,7 +278,7 @@ trap_retval ReqGet_sys_config( void )
         info.fpu = ProcInfo.fpu;
         info.sflags = ProcInfo.sflags;
     }
-    ret->sys.os = MAD_OS_QNX;
+    ret->sys.os = DIG_OS_QNX;
     ret->sys.osmajor = info.version / 100;
     ret->sys.osminor = info.version % 100;
     if( info.sflags & _PSF_EMULATOR_INSTALLED ) {
@@ -325,7 +325,7 @@ trap_retval ReqGet_sys_config( void )
     } else {
         ret->sys.huge_shift = 12;
     }
-    ret->sys.mad = MAD_X86;
+    ret->sys.arch = DIG_ARCH_X86;
     return( sizeof( *ret ) );
 }
 

@@ -29,12 +29,12 @@ _WCRTLINK extern int _kbhit(void);
  _WCIRTLINK extern unsigned inpw(unsigned __port);
  _WCIRTLINK extern unsigned outp(unsigned __port, unsigned __value);
  _WCIRTLINK extern unsigned outpw(unsigned __port,unsigned __value);
-:segment DOS | QNX
+:segment DOS | QNX | RDOS
  #ifndef _M_I86
 :endsegment
   _WCIRTLINK extern unsigned inpd(unsigned __port);
   _WCIRTLINK extern unsigned outpd(unsigned __port, unsigned __value);
-:segment DOS | QNX
+:segment DOS | QNX | RDOS
  #endif
 :endsegment
 #endif
@@ -45,11 +45,11 @@ _WCRTLINK extern int vcscanf( const char *__format, __va_list __arg );
 
 #if defined(__INLINE_FUNCTIONS__) && defined(_M_IX86)
  #pragma intrinsic(inp,inpw,outp,outpw)
-:segment DOS | QNX
+:segment DOS | QNX | RDOS
  #ifndef _M_I86
 :endsegment
   #pragma intrinsic(inpd,outpd)
-:segment DOS | QNX
+:segment DOS | QNX | RDOS
  #endif
 :endsegment
 #endif

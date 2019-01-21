@@ -4,7 +4,7 @@
 DGROUP		GROUP	_DATA
 jmpshrt_TEXT		SEGMENT	WORD PUBLIC USE16 'CODE'
 		ASSUME CS:jmpshrt_TEXT, DS:DGROUP, SS:DGROUP
-    DB	01FH DUP(0,0,0,0,0,0,0,0)
+    DB	1fH DUP(0,0,0,0,0,0,0,0)
     DB	0, 0, 0, 0, 0, 0, 0, 0
 _proc1:
     mov         ax,0bH

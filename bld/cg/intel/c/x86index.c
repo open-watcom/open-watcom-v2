@@ -30,7 +30,7 @@
 ****************************************************************************/
 
 
-#include "cgstd.h"
+#include "_cgstd.h"
 #include "coderep.h"
 #include "data.h"
 #include "makeins.h"
@@ -43,17 +43,12 @@
 #include "fixindex.h"
 #include "conflict.h"
 #include "x86data.h"
+#include "x86segs.h"
+#include "x86table.h"
+#include "x86rtrn.h"
+#include "x86tls.h"
 #include "feprotos.h"
 
-
-extern  opcode_entry    String[];
-
-extern  bool            SegOver(name*);
-extern  name            *Addressable(name*,type_class_def);
-extern  name            *GetSegment(name*);
-extern  name            *NearSegment(void);
-extern  void            NoMemIndex(instruction*);
-extern  void            ExpandThreadDataRef(instruction*);
 
 static  void            Merge( name **pname, instruction *ins );
 static  void            PropSegments(void);
@@ -123,18 +118,18 @@ bool    IndexOkay( instruction *ins, name *index ) {
         is_temp_index = false;
     }
     name = index->i.index;
-    if( ins->table == String )
+    if( IsString( ins->table ) )
         return( true );
     if( name->n.class == N_REGISTER ) {
-        return( IsIndexReg( name->r.reg, name->n.name_class, is_temp_index ) );
+        return( IsIndexReg( name->r.reg, name->n.type_class, is_temp_index ) );
     }
 /* The next two lines require some explanation. If there is a CP/PT
    index still hanging around, it is because a reduction routine
    created it, so it can be handled. Normally, all CP/PT indecies are broken
    up into seg:foo[offset] before we ever get to register allocation */
-    if( name->n.name_class == CP )
+    if( name->n.type_class == CP )
         return( true );
-    if( name->n.name_class == PT )
+    if( name->n.type_class == PT )
         return( true );
     if( name->v.conflict == NULL )
         return( false );
@@ -254,7 +249,7 @@ void    AddSegment( instruction *ins ) {
             new_index = ScaleIndex( OffsetPart( index->i.index ),
                                     index->i.base,
                                     index->i.constant,
-                                    index->n.name_class,
+                                    index->n.type_class,
                                     index->n.size,
                                     index->i.scale,
                                     index->i.index_flags | X_SEGMENTED );
@@ -400,7 +395,7 @@ static  void    Merge( name **pname, instruction *ins ) {
     HW_TurnOn( tmp, ins->operands[ins->num_operands - 1]->r.reg );
     reg = AllocRegName( tmp );
     *pname = ScaleIndex( reg, index->i.base, index->i.constant,
-                         index->n.name_class, index->n.size,
+                         index->n.type_class, index->n.size,
                          index->i.scale, index->i.index_flags );
 }
 
@@ -494,13 +489,13 @@ void    FixFPConsts( instruction *ins ) {
 */
 
     opcnt               i;
-    type_class_def      class;
+    type_class_def      type_class;
 
     if( !FPCInCode() && (_IsTargetModel( FLOATING_SS ) && _IsTargetModel( FLOATING_DS )) ) {
-        class = FltClass( ins );
-        if( class != XX ) {
+        type_class = FltClass( ins );
+        if( type_class != XX ) {
             for( i = ins->num_operands; i-- > 0; ) {
-                ins->operands[i] = Addressable( ins->operands[i], class );
+                ins->operands[i] = Addressable( ins->operands[i], type_class );
             }
         }
     }

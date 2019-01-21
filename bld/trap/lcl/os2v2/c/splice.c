@@ -80,20 +80,24 @@ static long OpenFile( char *name, ULONG mode, int flags )
 }
 
 
-void doReadWord( void );
-#pragma aux doReadWord =           \
-    "mov  ax, word ptr gs:[ebx]"   \
-    "int  3";
+extern void doReadWord( void );
+#pragma aux doReadWord = \
+        "mov  ax,word ptr gs:[ebx]" \
+        "int  3"                    \
+    __parm  [] \
+    __value \
 
 void __export DoReadWord( void )
 {
     doReadWord();
 }
 
-void doWriteWord( void );
-#pragma aux doWriteWord =          \
-    "mov  word ptr gs:[ebx], ax"   \
-    "int  3";
+extern void doWriteWord( void );
+#pragma aux doWriteWord = \
+        "mov  word ptr gs:[ebx],ax" \
+        "int  3"                    \
+    __parm  [] \
+    __value \
 
 void __export DoWriteWord( void )
 {
@@ -133,11 +137,14 @@ void __export DoWritePgmScrn( char *buff, ULONG len )
 }
 
 
-void fxsave( unsigned char *addr );
-#pragma aux fxsave parm [eax] =  \
-    ".686" \
-    ".XMM" \
-    "fxsave [eax]";
+extern void fxsave( unsigned char *addr );
+#pragma aux fxsave = \
+        ".686" \
+        ".XMM" \
+        "fxsave [eax]" \
+    __parm      [__eax] \
+    __value     \
+    __modify    []
 
 void __export DoReadXMMRegs( struct x86_xmm *xmm_regs )
 {
@@ -152,11 +159,14 @@ void __export DoReadXMMRegs( struct x86_xmm *xmm_regs )
     BreakPointParm( 0 );
 }
 
-void fxrstor( unsigned char *addr );
-#pragma aux fxrstor parm [eax] =  \
-    ".XMM" \
-    ".686" \
-    "fxrstor [eax]";
+extern void fxrstor( unsigned char *addr );
+#pragma aux fxrstor = \
+        ".XMM"          \
+        ".686"          \
+        "fxrstor [eax]" \
+    __parm      [__eax] \
+    __value     \
+    __modify    []
 
 void __export DoWriteXMMRegs( struct x86_xmm *xmm_regs )
 {

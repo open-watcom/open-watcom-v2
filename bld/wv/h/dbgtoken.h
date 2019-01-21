@@ -38,6 +38,7 @@ typedef enum
     #define pick(t,c)   t,
     #include "_dbgtok.h"
     #undef pick
+    T_LINE_SEPARATOR,
     /* numbers & names for expressions and command lines */
     T_INT_NUM,
     T_REAL_NUM,
@@ -67,7 +68,7 @@ typedef enum
 } tokens;
 
 #define FIRST_CMDLN_DELIM     T_LT
-#define LAST_CMDLN_DELIM      T_UNKNOWN
+#define SIZE_CMDLN_DELIM      (T_LINE_SEPARATOR - FIRST_CMDLN_DELIM)
 #define FIRST_SSL_ESCAPE_CHAR T_SSL_ESCAPE_CHARS
 
 typedef struct {

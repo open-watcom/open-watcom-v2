@@ -161,26 +161,32 @@ static size_t compressLiteral( char *tgt, char *s, size_t len )
                 max_digs = 3;
                 for( ; ; ) {
                     chr = ( chr << 3 ) | chr_1;
-                    if( len == 0 ) break;
-                    if( --max_digs == 0 ) break;
+                    if( len == 0 )
+                        break;
+                    if( --max_digs == 0 )
+                        break;
                     chr_1 = octal_dig( *str );
-                    if( chr_1 == 8 ) break;
-                    -- len;
-                    ++ str;
+                    if( chr_1 == 8 )
+                        break;
+                    --len;
+                    ++str;
                 }
             } else if( classification == ESCAPE_HEX ) {
                 if( ( len > 1 ) && ( 16 != hex_dig( *str ) ) ) {
                     chr = 0;
                     max_digs = 8;
                     for( ; ; ) {
-                        if( len == 0 ) break;
-                        if( max_digs == 0 ) break;
+                        if( len == 0 )
+                            break;
+                        if( max_digs == 0 )
+                            break;
                         chr_1 = hex_dig( *str );
-                        if( chr_1 == 16 ) break;
+                        if( chr_1 == 16 )
+                            break;
                         chr = ( chr << 4 ) | chr_1 ;
-                        -- max_digs;
-                        ++ str;
-                        -- len;
+                        --max_digs;
+                        ++str;
+                        --len;
                     }
                 }
             } else if( classification != ESCAPE_NONE ) {
@@ -206,8 +212,8 @@ static size_t compressLiteral( char *tgt, char *s, size_t len )
                 ++ str;
                 -- len;
             } else if( flags.wide_string ) {
-                if( CompFlags.use_unicode ) {           /* 05-jun-91 */
-                    chr = UniCode[ chr ];
+                if( CompFlags.use_unicode ) {
+                    chr = UniCode[chr];
                 } else if( CompFlags.jis_to_unicode ) {
                     chr = JIS2Unicode( chr );
                 }
@@ -296,7 +302,7 @@ STRING_CONSTANT StringConcat( STRING_CONSTANT v1, STRING_CONSTANT v2 )
     if( v1->wide_string != v2->wide_string ) {
         // an error has already been diagnosed
         StringTrash( v2 );
-        return v1;
+        return( v1 );
     }
     literal = findLiteral( v1->len + v2->len );
     literal->concat = true;
@@ -310,7 +316,7 @@ STRING_CONSTANT StringConcat( STRING_CONSTANT v1, STRING_CONSTANT v2 )
         literal->multi_line = true;
     }
     literal->len = len + v2->len;
-    memcpy( &(literal->string[ len ]), v2->string, v2->len + 1 );
+    memcpy( &(literal->string[len]), v2->string, v2->len + 1 );
     StringTrash( v1 );
     StringTrash( v2 );
     ++stringCount;
@@ -330,7 +336,7 @@ size_t StringByteLength( STRING_CONSTANT s )
 /******************************************/
 {
     // byte length should include '\0' character
-    return s->len + TARGET_CHAR;
+    return( s->len + TARGET_CHAR );
 }
 
 size_t StringAWStrLen( STRING_CONSTANT s )
@@ -351,7 +357,7 @@ size_t StringAWStrLen( STRING_CONSTANT s )
 char *StringBytes( STRING_CONSTANT s )
 /************************************/
 {
-    return s->string;
+    return( s->string );
 }
 
 static int cmpString( const void *lp, const void *rp )
@@ -456,7 +462,7 @@ STRING_CONSTANT StringMapIndex( STRING_CONSTANT index )
         CFatal( "invalid string index" );
     }
 #endif
-    return( stringTranslateTable[ PCHGetUInt( index ) - PCH_FIRST_INDEX ] );
+    return( stringTranslateTable[PCHGetUInt( index ) - PCH_FIRST_INDEX] );
 }
 
 static int cmpFindString( const void *kp, const void *tp )

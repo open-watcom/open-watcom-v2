@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
+* Copyright (c) 2009-2018 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -31,44 +31,44 @@
 #ifndef IPFFILE_INCLUDED
 #define IPFFILE_INCLUDED
 
-#if defined( __unix__ ) && !defined( __UNIX__ )
-    #define __UNIX__ __unix__
-#endif
 #include <cstdio>
 #include "ipfdata.hpp"
 
+class Nls;     // forward reference
+class ICULoader;
+struct UConverter;
+
 class IpfFile : public IpfData {
 public:
-    IpfFile( const std::wstring* fname );
-    ~IpfFile() { if( stream ) std::fclose( stream ); };
+    IpfFile( const std::wstring* wfname, Nls *nls );
+    IpfFile( const std::string& sfname, const std::wstring* wfname, Nls *nls );
+    ~IpfFile();
+    //Set the file name for use in error messages
+    void setName( const std::wstring* fileName ) { _fileName = fileName; }
     //Returns the file or buffer name for use in error messages
     virtual
-    const std::wstring* name() const { return fileName; };
+    const std::wstring* name() const { return _fileName; };
     //Read a character
     virtual
     std::wint_t get();
     //Un-read a character
     virtual
     void unget( wchar_t ch );
-    //Seek to beginning
-    virtual
-    void reset() { std::rewind( stream ); };
-    //Seek to position relative to beginning
-    virtual
-    void setPos(long int offset) { std::fseek( stream, offset, SEEK_SET ); };
-    //Get the current position
-    virtual
-    long int pos() { return std::ftell( stream ); };
+    const std::wstring *gets( bool removeEOL );
+
 private:
     IpfFile( const IpfFile& rhs );              //no copy
     IpfFile& operator=( const IpfFile& rhs );   //no assignment
-    const std::wstring* fileName;
-    std::FILE* stream;
-    wchar_t ungottenChar;
-    bool ungotten;
-#if !defined( __UNIX__ ) && !defined( __APPLE__ )
-    std::wint_t readMBChar();
-#endif
+    std::wint_t  getwc();
+
+    const std::wstring*     _fileName;
+    std::FILE*              _stream;
+    wchar_t                 _ungottenChar;
+    bool                    _ungotten;
+    std::wstring            _wbuffer;
+    std::size_t             _pos;
+    ICULoader               *_icu;
+    UConverter              *_converter;
 };
 
 #endif

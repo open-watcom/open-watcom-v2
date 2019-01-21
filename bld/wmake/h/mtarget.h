@@ -47,10 +47,6 @@ typedef struct envStruct    ELIST;
 typedef struct fileList     NKLIST;
 typedef struct sufsufList   SLIST;
 
-#define BEFORE_S   "BEFORE"
-#define AFTER_S    "AFTER"
-#define DEFAULT_S  "DEFAULT"
-
 /*
  *  Attributes which are placed on the right hand side of a targ : dep line,
  *  and also may be passed in implicit rules.
@@ -177,8 +173,6 @@ struct sufsufList {
 };
 
 
-extern const TATTR  FalseAttr;
-
 extern void     TargetInit( void );
 extern void     TargetFini( void );
 
@@ -202,7 +196,7 @@ extern void     FreeCList( CLIST *rule );
 extern void     FreeDepend( DEPEND *dep );
 extern void     KillTarget( const char *name );
 
-extern void     RenameTarget( TARGET *targ, const char *newname );
+extern void     RenameTarget( const char *oldname, const char *newname );
 extern TARGET   *FindTarget( const char *name );
 extern void     PrintCList( const CLIST *list );
 extern void     PrintTargFlags( const TATTR *tattr );

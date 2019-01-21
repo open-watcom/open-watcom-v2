@@ -77,7 +77,9 @@ static vi_rc getDir( const char *dname, bool want_all_dirs )
     DIR                 *d;
     struct dirent       *dire;
     direct_ent          *tmp;
-    int                 i, j, len;
+    size_t              i;
+    size_t              j;
+    size_t              len;
     char                wild[FILENAME_MAX];
     char                path[FILENAME_MAX];
     char                ch;
@@ -87,85 +89,76 @@ static vi_rc getDir( const char *dname, bool want_all_dirs )
      * initialize for file scan
      */
     len = strlen( dname );
-    for( i = len - 1; i >= 0; i-- ) {
+    for( i = len; i > 0; i-- ) {
+        ch = dname[i - 1];
 #ifdef __UNIX__
-        if( dname[i] == '/' ) {
+        if( ch == FILE_SEP ) {
 #else
-        if( dname[i] == '/' || dname[i] == '\\' || dname[i] == DRV_SEP ) {
+        if( ch == ALT_FILE_SEP || ch == FILE_SEP || ch == DRV_SEP ) {
 #endif
             break;
         }
     }
-    for( j = 0; j < i + 1; j++ ) {
+    for( j = 0; j < i; j++ ) {
         path[j] = dname[j];
     }
-    path[i + 1] = '\0';
-    if( i >= 0 ) {
-        ch = path[i];
+    path[i] = '\0';
+    if( i > 0 ) {
+        ch = path[i - 1];
     } else {
         ch = '\0';
     }
-    for( j = i + 1; j <= len; j++ ) {
-        wild[j - i - 1] = dname[j];
+    for( j = i; j < len; j++ ) {
+        wild[j - i] = dname[j];
     }
+    wild[j - i] = '\0';
     rc = FileMatchInit( wild );
-    if( rc != ERR_NO_ERR ) {
-        return( rc );
-    }
+    if( rc == ERR_NO_ERR ) {
 #ifndef __UNIX__
-    if( ch != '\\' && ch != '/' && ch != DRV_SEP && ch != '\0' ) {
-        strcat( path, FILE_SEP_STR );
-    }
-    strcat( path, ALL_FILES_WILD_CARD );
+        if( ch != FILE_SEP && ch != ALT_FILE_SEP && ch != DRV_SEP && ch != '\0' ) {
+            strcat( path, FILE_SEP_STR );
+        }
+        strcat( path, ALL_FILES_WILD_CARD );
 #else
-    if( ch == '\0' ) {
-        path[0] = '.';
-        path[1] = '\0';
-    }
+        if( ch == '\0' ) {
+            path[0] = '.';
+            path[1] = '\0';
+        }
 #endif
-
-    for( i = 0; i < DirFileCount; i++ ) {
-        MemFreePtr( (void **)&DirFiles[i] );
-    }
-    DirFileCount = 0;
-    d = opendir( path );
-    if( d == NULL ) {
-        FileMatchFini();
-        return( ERR_FILE_NOT_FOUND );
-    }
-
-    /*
-     * loop through all directory entries
-     */
-    while( (dire = readdir( d )) != NULL ) {
-
-        if( skipEntry( dire ) )
-            continue;
-
-        if( DirFileCount >= MAX_FILES ) {
-            break;
-        }
-        if( isDirectory( dire ) ) {
-            if( !want_all_dirs ) {
-                continue;
-            }
-        } else if( !FileMatch( dire->d_name ) ) {
-            continue;
-        }
-
-        len = strlen( dire->d_name );
-        tmp = MemAlloc( offsetof( direct_ent, name ) + len + 1 );
-        GetFileInfo( tmp, dire, path );
-        memcpy( tmp->name, dire->d_name, len + 1 );
+        d = opendir( path );
+        if( d == NULL ) {
+            rc = ERR_FILE_NOT_FOUND;
+        } else {
+            /*
+             * loop through all directory entries
+             */
+            while( (dire = readdir( d )) != NULL ) {
+                if( skipEntry( dire ) )
+                    continue;
+                if( isDirectory( dire ) ) {
+                    if( !want_all_dirs ) {
+                        continue;
+                    }
+                } else if( !FileMatch( dire->d_name ) ) {
+                    continue;
+                }
+                if( DirFileCount >= MAX_FILES ) {
+                    break;
+                }
+                len = strlen( dire->d_name );
+                tmp = MemAlloc( offsetof( direct_ent, name ) + len + 1 );
+                GetFileInfo( tmp, dire, path );
+                memcpy( tmp->name, dire->d_name, len + 1 );
 #ifndef __UNIX__
-        FileLower( tmp->name );
+                FileLower( tmp->name );
 #endif
-        DirFiles[DirFileCount++] = tmp;
-
+                DirFiles[DirFileCount++] = tmp;
+            }
+            closedir( d );
+        }
+        FileMatchFini();
     }
-    closedir( d );
-    FileMatchFini();
-    return( ERR_NO_ERR );
+    return( rc );
 
 } /* getDir */
 
@@ -176,23 +169,25 @@ vi_rc GetSortDir( const char *name, bool want_all_dirs )
 {
     vi_rc       rc;
 
+    DirFini();
+
     rc = getDir( name, want_all_dirs );
-    if( rc != ERR_NO_ERR ) {
-        return( rc );
+    if( rc == ERR_NO_ERR ) {
+        if( DirFileCount > 0 ) {
+            qsort( DirFiles, DirFileCount, sizeof( direct_ent * ), compare );
+        }
     }
-    if( DirFileCount ) {
-        qsort( DirFiles, DirFileCount, sizeof( direct_ent * ), compare );
-    }
-    return( ERR_NO_ERR );
+    return( rc );
 
 } /* GetSortDir */
 
 void DirFini( void )
 {
-    int i;
+    list_linenum    i;
 
     for( i = 0; i < DirFileCount; i++ ) {
         MemFree( DirFiles[i] );
+        DirFiles[i] = NULL;
     }
     DirFileCount = 0;
 }

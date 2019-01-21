@@ -71,89 +71,99 @@ typedef int WORD;
 
 #if defined( __WATCOMC__ ) && defined( __386__ )
     /* this is intended for 386 only... */
+    #define SWAP_AUX_INFO \
+        __parm __caller     [__esi] [__edi] [__ecx] \
+        __value             \
+        __modify __exact    [__eax __ecx __edx __edi __esi]
+
     void inline_swap( char *p, char *q, size_t size );
     #pragma aux inline_swap = \
-        0x06                            /*      push es             */ \
-        0x1e                            /*      push ds             */ \
-        0x07                            /*      pop  es             */ \
-        0x0f 0xb6 0xd1                  /*      movzx   edx,cl      */ \
-        0xc1 0xe9 0x02                  /*      shr     ecx,02H     */ \
-        0x74 0x0b                       /*      je      L1          */ \
-        0x8b 0x07                       /*L2    mov     eax,[edi]   */ \
-        0x87 0x06                       /*      xchg    eax,[esi]   */ \
-        0xab                            /*      stosd               */ \
-        0x83 0xc6 0x04                  /*      add     esi,0004H   */ \
-        0x49                            /*      dec     ecx         */ \
-        0x75 0xf5                       /*      jne     L2          */ \
-        0x80 0xe2 0x03                  /*L1    and     dl,03H      */ \
-        0x74 0x09                       /*      je      L3          */ \
-        0x8a 0x07                       /*L4    mov     al,[edi]    */ \
-        0x86 0x06                       /*      xchg    al,[esi]    */ \
-        0xaa                            /*      stosb               */ \
-        0x46                            /*      inc     esi         */ \
-        0x4a                            /*      dec     edx         */ \
-        0x75 0xf7                       /*      jne     L4          */ \
-                                        /*L3                        */ \
-        0x07                            /*      pop  es             */ \
-        parm caller [esi] [edi] [ecx] \
-        value \
-        modify exact [esi edi ecx eax edx];
-    #pragma aux byteswap parm [esi] [edi] [ecx] \
-        modify exact [esi edi ecx eax edx];
-    static void byteswap( char *p, char *q, size_t size ) {
+            "push es"           \
+            "push ds"           \
+            "pop  es"           \
+            "movzx edx,cl"      \
+            "shr  ecx,2"        \
+            "je short L1"       \
+        "L2: mov  eax,[edi]"    \
+            "xchg eax,[esi]"    \
+            "stosd"             \
+            "add  esi,4"        \
+            "dec  ecx"          \
+            "jne short L2"      \
+        "L1: and  dl,3"         \
+            "je short L3"       \
+        "L4: mov  al,[edi]"     \
+            "xchg al,[esi]"     \
+            "stosb"             \
+            "inc  esi"          \
+            "dec  edx"          \
+            "jne short L4"      \
+        "L3: pop  es"           \
+        SWAP_AUX_INFO
+    #pragma aux byteswap    SWAP_AUX_INFO
+    static void byteswap( char *p, char *q, size_t size )
+    {
         inline_swap( p, q, size );
     }
 
 #elif defined( __WATCOMC__ ) && defined( _M_I86 ) && defined( __BIG_DATA__ )
+    #define SWAP_AUX_INFO \
+        __parm __caller     [__dx __si] [__es __di] [__cx] \
+        __value             \
+        __modify __exact    [__si __di __cx __ax]
+
     void inline_swap( char *p, char *q, size_t size );
     #pragma aux inline_swap = \
-        0x1e                            /*      push ds             */ \
-        0x8e 0xda                       /*      mov ds,dx           */ \
-        0xd1 0xe9                       /*      shr cx,1            */ \
-        0x74 0x0b                       /*      je L1               */ \
-        0x26 0x8b 0x05                  /*L2    mov ax,es:[di]      */ \
-        0x87 0x04                       /*      xchg ax,[si]        */ \
-        0xab                            /*      stosw               */ \
-        0x46                            /*      inc si              */ \
-        0x46                            /*      inc si              */ \
-        0x49                            /*      dec cx              */ \
-        0x75 0xf5                       /*      jne L2              */ \
-        0x73 0x07                       /*L1    jnc L3              */ \
-        0x8a 0x04                       /*      mov al,[si]         */ \
-        0x26 0x86 0x05                  /*      xchg al,es:[di]     */ \
-        0x88 0x04                       /*      mov [si],al         */ \
-        0x1f                            /*L3    pop ds              */ \
-        parm caller [dx si] [es di] [cx] \
-        value \
-        modify exact [si di cx ax];
-    #pragma aux byteswap parm [dx si] [es di] [cx] modify exact [si di cx ax];
-    static void byteswap( char *p, char *q, size_t size ) {
+            "push ds"           \
+            "mov  ds,dx"        \
+            "shr  cx,1"         \
+            "je short L1"       \
+        "L2: mov  ax,es:[di]"   \
+            "xchg ax,[si]"      \
+            "stosw"             \
+            "inc  si"           \
+            "inc  si"           \
+            "dec  cx"           \
+            "jne short L2"      \
+        "L1: jnc short L3"      \
+            "mov  al,[si]"      \
+            "xchg al,es:[di]"   \
+            "mov  [si],al"      \
+        "L3: pop  ds"           \
+        SWAP_AUX_INFO
+    #pragma aux byteswap    SWAP_AUX_INFO
+    static void byteswap( char *p, char *q, size_t size )
+    {
         inline_swap( p, q, size );
     }
 
 #elif defined( __WATCOMC__ ) && defined( _M_I86 ) && defined( __SMALL_DATA__ )
+    #define SWAP_AUX_INFO \
+        __parm __caller     [__si] [__es __di] [__cx] \
+        __value             \
+        __modify __exact    [__si __di __cx __ax]
+
     /* we'll ask for char __far *q to save us writing code to load es */
     void inline_swap( char *p, char *q, size_t size );
     #pragma aux inline_swap = \
-        0xd1 0xe9                       /*      shr cx,1            */ \
-        0x74 0x0b                       /*      je L1               */ \
-        0x26 0x8b 0x05                  /*L2    mov ax,es:[di]      */ \
-        0x87 0x04                       /*      xchg ax,[si]        */ \
-        0xab                            /*      stosw               */ \
-        0x46                            /*      inc si              */ \
-        0x46                            /*      inc si              */ \
-        0x49                            /*      dec cx              */ \
-        0x75 0xf5                       /*      jne L2              */ \
-        0x73 0x07                       /*L1    jnc L3              */ \
-        0x8a 0x04                       /*      mov al,[si]         */ \
-        0x26 0x86 0x05                  /*      xchg al,es:[di]     */ \
-        0x88 0x04                       /*      mov [si],al         */ \
-                                        /*L3                        */ \
-        parm caller [si] [es di] [cx] \
-        value \
-        modify exact [si di cx ax];
-    #pragma aux byteswap parm [si] [es di] [cx] modify exact [si di cx ax];
-    static void byteswap( char *p, char *q, size_t size ) {
+            "shr  cx,1"         \
+            "je short L1"       \
+        "L2: mov  ax,es:[di]"   \
+            "xchg ax,[si]"      \
+            "stosw"             \
+            "inc  si"           \
+            "inc  si"           \
+            "dec  cx"           \
+            "jne short L2"      \
+        "L1: jnc short L3"      \
+            "mov  al,[si]"      \
+            "xchg al,es:[di]"   \
+            "mov  [si],al"      \
+        "L3:"                   \
+        SWAP_AUX_INFO
+    #pragma aux byteswap    SWAP_AUX_INFO
+    static void byteswap( char *p, char *q, size_t size )
+    {
         inline_swap( p, q, size );
     }
 

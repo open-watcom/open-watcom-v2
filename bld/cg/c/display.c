@@ -31,7 +31,7 @@
 ****************************************************************************/
 
 
-#include "cgstd.h"
+#include "_cgstd.h"
 #include "coderep.h"
 #include "cgmem.h"
 #include "data.h"
@@ -56,38 +56,38 @@ static  name    *DisplayField( level_depth level )
     name        *reg;
 
     reg = AllocRegName( DisplayReg() );
-    return( AllocIndex( reg, NULL, (-2) * level, reg->n.name_class ) );
+    return( AllocIndex( reg, NULL, (-2) * level, reg->n.type_class ) );
 }
 
 
-extern  name    *MakeDisplay( name *op, level_depth level )
-/*********************************************************/
+name    *MakeDisplay( name *op, level_depth level )
+/*************************************************/
 {
     name        *temp;
     name        *reg;
 
     reg = AllocRegName( DisplayReg() );
     temp = AllocTemp( U2 );
-    AddIns( MakeMove( DisplayField( level ), temp, reg->n.name_class ) );
-    op = AllocIndex( temp, NULL, op->t.location, op->n.name_class );
+    AddIns( MakeMove( DisplayField( level ), temp, reg->n.type_class ) );
+    op = AllocIndex( temp, NULL, op->t.location, op->n.type_class );
     return( op );
 }
 
 
-extern  void    BigGoto( level_depth level )
-/******************************************/
+void    BigGoto( level_depth level )
+/**********************************/
 {
     name        *reg;
 
     if( level != 0 ) {
         reg = AllocRegName( DisplayReg() );
-        AddIns( MakeMove( DisplayField( level ), reg, reg->n.name_class ) );
+        AddIns( MakeMove( DisplayField( level ), reg, reg->n.type_class ) );
     }
 }
 
 
-extern  void    BigLabel( void )
-/******************************/
+void    BigLabel( void )
+/**********************/
 {
     instruction *ins;
     name        *bp;
@@ -97,8 +97,8 @@ extern  void    BigLabel( void )
         bp = AllocRegName( DisplayReg() );
         sp = AllocRegName( StackReg() );
         ins = MakeUnary( OP_LA,
-                          AllocIndex( bp, NULL, -1, bp->n.name_class ),
-                          sp, sp->n.name_class );
+                          AllocIndex( bp, NULL, -1, bp->n.type_class ),
+                          sp, sp->n.type_class );
     } else {
         ins = MakeNop();
     }
@@ -107,18 +107,18 @@ extern  void    BigLabel( void )
     AddIns( ins );
 }
 
-extern  bool    AskIsFrameIndex( name *op ) {
-/*********************************************/
-
+bool    AskIsFrameIndex( name *op )
+/*********************************/
+{
     name        *bp;
 
     bp = AllocRegName( DisplayReg() );
-    return( op == AllocIndex( bp, NULL, -1, bp->n.name_class ) );
+    return( op == AllocIndex( bp, NULL, -1, bp->n.type_class ) );
 }
 
 
-extern  abspatch_handle *NextFramePatch( void )
-/*********************************************/
+abspatch_handle *NextFramePatch( void )
+/*************************************/
 {
     frame_patch *temp;
 
@@ -129,9 +129,9 @@ extern  abspatch_handle *NextFramePatch( void )
 }
 
 
-extern  void    PatchBigLabels( offset lc ) {
-/*******************************************/
-
+void    PatchBigLabels( offset lc )
+/*********************************/
+{
     frame_patch *frame;
     frame_patch *next;
 
@@ -145,9 +145,9 @@ extern  void    PatchBigLabels( offset lc ) {
 
 
 
-extern  an      PassProcParm( an rtn ) {
-/**************************************/
-
+an      PassProcParm( an rtn )
+/****************************/
+{
     name        *op;
     name        *reg;
 
@@ -158,29 +158,29 @@ extern  an      PassProcParm( an rtn ) {
             TempOffset( op, 0, ClassPointer ),
             ClassPointer ) );
     AddIns( MakeMove( reg, TempOffset( op, TypePtr->length,
-                                       reg->n.name_class ),
-                      reg->n.name_class ) );
+                                       reg->n.type_class ),
+                      reg->n.type_class ) );
     return( AddrName( op, TypeProcParm ) );
 }
 
 
-extern  void    SaveDisplay( opcode_defs op ) {
-/*********************************************/
-
+void    SaveDisplay( opcode_defs op )
+/***********************************/
+{
     name        *reg;
 
     reg = AllocRegName( DisplayReg() );
-    AddIns( MakeUnary( op, reg, NULL, reg->n.name_class ) );
+    AddIns( MakeUnary( op, reg, NULL, reg->n.type_class ) );
 }
 
 
-extern  void    SetDisplay( name *temp ) {
-/****************************************/
-
+void    SetDisplay( name *temp )
+/******************************/
+{
     name        *reg;
 
     reg = AllocRegName( DisplayReg() );
     AddIns( MakeMove( TempOffset( temp, TypePtr->length,
-                                  reg->n.name_class ),
-                      reg, reg->n.name_class ) );
+                                  reg->n.type_class ),
+                      reg, reg->n.type_class ) );
 }

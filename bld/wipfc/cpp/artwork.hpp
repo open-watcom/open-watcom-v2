@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
+* Copyright (c) 2009-2018 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -43,15 +43,16 @@
 class Artwork : public Element {
 public:
     Artwork( Document* d, Element *p, const std::wstring* f, unsigned int r, unsigned int c ) :
-        Element( d, p, f, r, c ), linkfile( 0 ), flags( 0 ), hypergraphic( false ) { };
+        Element( d, p, f, r, c ), _linkfile( 0 ), _flags( 0 ), _hypergraphic( false ) { };
     ~Artwork() { };
-    void setHypergraphic() { hypergraphic = true; };
-    bool isHypergraphic() const { return hypergraphic; };
+    void setHypergraphic() { _hypergraphic = true; };
+    bool isHypergraphic() const { return _hypergraphic; };
     Lexer::Token parse( Lexer* lexer );
     void buildText( Cell* cell );
 private:
     Artwork( const Artwork& rhs );              //no copy
     Artwork& operator=( const Artwork& rhs );   //no assignment
+    Lexer::Token parseAttributes( Lexer* lexer );
     enum Flags {
         LEFT = 0x01,
         RIGHT = 0x02,
@@ -60,11 +61,10 @@ private:
         RUNIN = 0x10,
         ALIGNMASK = 0xF8
     };
-    std::wstring name;      //the bitmap file name
-    std::wstring* linkfile; //the link file name
-    unsigned char flags;
-    bool hypergraphic;      //bitmap is a link
-    Lexer::Token parseAttributes( Lexer* lexer );
+    std::wstring    _name;          //the bitmap file name
+    std::wstring*   _linkfile;      //the link file name
+    byte            _flags;
+    bool            _hypergraphic;  //bitmap is a link
 };
 
 #endif //ARTWORK_INCLUDED

@@ -54,7 +54,7 @@ struct B {
 
 V *B::foo()
 {
-    return new V(1);
+    return( new V(1) );
 }
 
 struct D : B {
@@ -63,7 +63,7 @@ struct D : B {
 
 DV *D::foo()
 {
-    return new DV(10);
+    return( new DV(10) );
 }
 
 void foo( B &r )

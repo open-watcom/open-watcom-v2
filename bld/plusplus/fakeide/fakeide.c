@@ -56,16 +56,16 @@
 // General Support
 //-------------------------------------------------------------------
 
-static char source_file[ _MAX_PATH ];   // source file
-static char target_file[ _MAX_PATH ];   // target file
-static char options[ 256 ];             // options
+static char source_file[_MAX_PATH]; // source file
+static char target_file[_MAX_PATH]; // target file
+static char options[256];           // options
 
 
 static char const * scanBlanks  // SCAN OVER BLANKS
     ( char const * scan )       // - scanner
 {
     for( ; *scan == ' '; ++scan );
-    return scan;
+    return( scan );
 }
 
 
@@ -84,7 +84,7 @@ static IDEBool getString           // COPY A STRING
     , char const * src )        // - source
 {
     strcpy( tgt, src );
-    return OK;
+    return( OK );
 }
 
 
@@ -98,7 +98,7 @@ static char const * fmtBool     // FORMAT A BOOL VALUE
     } else {
         retn = "FALSE";
     }
-    return retn;
+    return( retn );
 }
 
 
@@ -118,12 +118,12 @@ static int optionsWriter        // WRITE FUN (PASSED TO DLL)
 {
     _Verify( cookie == &opt_written, "optionsWriter -- bad cookie" );
     if( sizeof( opt_data ) >= opt_written + size ) {
-        memcpy( &opt_data[ opt_written ], data, size );
+        memcpy( &opt_data[opt_written], data, size );
         opt_written += size;
     } else {
         size = 0;
     }
-    return size;
+    return( size );
 }
 
 
@@ -145,12 +145,12 @@ static int optionsReader        // READ FUN (PASSED TO DLL)
 {
     _Verify( cookie == &opt_read, "optionsReader -- bad cookie" );
     if( opt_written >= opt_read + size ) {
-        memcpy( data, &opt_data[ opt_read ], size );
+        memcpy( data, &opt_data[opt_read], size );
         opt_read += size;
     } else {
         size = 0;
     }
-    return size;
+    return( size );
 }
 
 
@@ -196,7 +196,7 @@ static void dumpOptions         // DUMP SAVED OPTIONS
     fflush( stdout );
     putch( ' ' );
     for( index = 0; index < size; ++index ) {
-        putch( saved->data[ index ] );
+        putch( saved->data[index] );
     }
     puts( "" );
 }
@@ -212,7 +212,7 @@ static void *allocMem           // ALLOCATE MEMORY
     , unsigned long size )      // - size to be allocated
 {
     _Verify( hdl == FAKE_HDL, "reAllocMem -- bad handle" );
-    return malloc( size );
+    return( malloc( size ) );
 }
 
 
@@ -233,7 +233,7 @@ static void *reAllocMem         // RE-ALLOCATE MEMORY
     , unsigned long size )      // - size to be allocated
 {
     _Verify( hdl == FAKE_HDL, "reAllocMem -- bad handle" );
-    return realloc( ptr, size );
+    return( realloc( ptr, size ) );
 }
 
 
@@ -267,7 +267,7 @@ static IDEBool printMessage     // PRINT A MESSAGE
             fputs( "info: Help: ", stdout ); puts( number );
         }
     }
-    return OK;
+    return( OK );
 }
 
 
@@ -288,7 +288,7 @@ static unsigned expandMacro     // EXPAND A MACRO
     if( fmt_size <= bufsize ) {
         memcpy( buf, fmtstr, fmt_size );
     }
-    return fmt_size;
+    return( fmt_size );
 }
 
 
@@ -306,22 +306,22 @@ static IDEBool getInfo          // GET INFORMATION
 
     _Verify( hdl == FAKE_HDL, "getInfo -- bad handle" );
     switch( type ) {
-      case IDE_GET_RUN_OPTIONS :
+    case IDE_GET_RUN_OPTIONS :
         _Msg( "getInfo -- GET_RUN_OPTIONS request not implemented" );
         retn = FAILED;
         break;
-      case IDE_GET_SOURCE_FILE :
+    case IDE_GET_SOURCE_FILE :
         retn = getString( (char*)lparam, source_file );
         break;
-      case IDE_GET_TARGET_FILE :
+    case IDE_GET_TARGET_FILE :
         retn = getString( (char*)lparam, target_file );
         break;
-      default :
+    default :
         _Msg( "getInfo -- bad request" );
         retn = FAILED;
         break;
     }
-    return retn;
+    return( retn );
 }
 
 
@@ -370,29 +370,29 @@ int main()
         code = *cmd;
         cmd = scanBlanks( cmd + 1 );
         switch( code ) {
-          case '\0' :
+        case '\0' :
             continue;
-          case 'q' :
+        case 'q' :
             break;
-          case 's' :
+        case 's' :
             scanString( cmd, source_file );
             continue;
-          case 't' :
+        case 't' :
             scanString( cmd, target_file );
             continue;
-          case 'o' :
+        case 'o' :
             scanString( cmd, options );
             continue;
-          case 'c' :
+        case 'c' :
             retn = IDERunYourSelf( FAKE_HDL, options, &fatal_error );
             continue;
-          case 'r' :
+        case 'r' :
             loadOptions();
             continue;
-          case 'w' :
+        case 'w' :
             saveOptions();
             continue;
-          case '?' :
+        case '?' :
             puts( "" );
             fputs( "OPTIONS: " , stdout ); puts( options );
             fputs( "SOURCE:  " , stdout ); puts( source_file );
@@ -404,7 +404,7 @@ int main()
             puts( "Enter 'h' for help" );
             puts( "" );
             continue;
-          case 'h' :
+        case 'h' :
             puts( "" );
             puts( "o options      [ set compiler options]" );
             puts( "s source file  [ set source file]" );
@@ -418,12 +418,12 @@ int main()
             puts( "h              [ display this message ]" );
             puts( "" );
             continue;
-          default :
+        default :
             _Msg( "undecipherable crap entered" );
             continue;
         }
         break;
     }
     IDEFiniDLL( FAKE_HDL );
-    return 0;
+    return( 0 );
 }

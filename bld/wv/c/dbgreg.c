@@ -384,7 +384,7 @@ void ClearMachState( void )
         _Free( state->s.ovl );
         state->s.ovl = NULL;
         state->s.tid = 1;
-        state->s.mad = MAD_NIL;
+        state->s.arch = DIG_ARCH_NIL;
         FreeMemDelta( state );
         state = state->next;
     } while( state != StateCurr );
@@ -452,7 +452,7 @@ void SetupMachState( void )
 void CopyMachState( machine_state *from, machine_state *to )
 {
     to->tid = from->tid;
-    to->mad = from->mad;
+    to->arch = from->arch;
     memcpy( &to->mr, &from->mr, CurrRegSize );
     if( to->ovl != NULL ) {
         memcpy( to->ovl, from->ovl, OvlSize );
@@ -499,7 +499,7 @@ void CollapseMachState( void )
         return;
     if( StateCurr->prev->mem != NULL )
         return;
-    if( StateCurr->s.mad != StateCurr->prev->s.mad )
+    if( StateCurr->s.arch != StateCurr->prev->s.arch )
         return;
     curr = &StateCurr->s;
     if( !StateCurr->prev->valid )
@@ -560,7 +560,7 @@ bool AdvMachState( int action )
     }
     PrevRegs = DbgRegs;
     StateCurr->valid = true;
-    if( SysConfig.mad != MAD_MSJ ) {
+    if( SysConfig.arch != DIG_ARCH_MSJ ) {
         if( !StateCurr->next->valid ) {
             StateCurr = StateCurr->next;
         } else {
@@ -964,7 +964,7 @@ struct parsed_regs {
     const mad_reg_info  *ri;
 };
 
-void ParseRegSet( bool multiple, location_list *ll, dip_type_info *ti )
+void ParseRegSet( bool multiple, location_list *ll, dig_type_info *ti )
 {
     lookup_item         li;
     struct parsed_regs  *list, *new;
@@ -1041,7 +1041,7 @@ void RegNewValue( const mad_reg_info *reginfo,
 {
     char                        *p;
     location_list               dst_ll,src_ll;
-    dip_type_info               dst_ti,src_ti;
+    dig_type_info               dst_ti,src_ti;
     size_t                      max;
 
     if( !AdvMachState( ACTION_MODIFY_REGISTER ) )

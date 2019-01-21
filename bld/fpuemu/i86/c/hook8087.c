@@ -48,12 +48,13 @@ static void (__interrupt *old_int7)( void ) = NULL;
 unsigned char __lwrchar( unsigned char );
 #pragma aux __lwrchar = \
         "cmp al,'A'" \
-        "jb end1" \
+        "jb short L1" \
         "cmp al,'Z'" \
-        "ja end1" \
+        "ja short L1" \
         "add al,'a'-'A'" \
-        "end1: " \
-        parm [ al ] value [ al ];
+    "L1: " \
+    __parm  [__al] \
+    __value [__al]
 
 int isNO87( const char __far *s )
 /*******************************/

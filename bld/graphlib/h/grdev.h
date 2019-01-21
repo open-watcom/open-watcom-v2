@@ -31,27 +31,27 @@
 
 /* Assembly code device functions calling convention declarations */
 
-#if defined ( __386__ )
-    #pragma aux PUTDOT_FUNC  "*" parm caller [es edi] [eax] [ecx];
-    #pragma aux GETDOT_FUNC  "*" parm caller [es edi] [ecx];
-    #pragma aux FILL_FUNC    "*" parm caller [es edi] [eax] [ebx] [ecx] [edx];
-    #pragma aux COPY_FUNC    "*" parm caller [es edi] [esi eax] [ecx] [edx] [ebx];
-    #pragma aux SCAN_FUNC    "*" parm caller [es edi] [eax] [ebx] [ecx] [edx] [esi] value [bx];
-#else
+#if defined( _M_I86 )
   #if defined( VERSION2 )
-    #pragma aux PUTDOT_FUNC  "*" far parm caller [es di] [dx ax] [cx];
-    #pragma aux GETDOT_FUNC  "*" far parm caller [es di] [cx];
-    #pragma aux FILL_FUNC    "*" parm caller [es di] [si ax] [bx] [cx] [dx];
-    #pragma aux COPY_FUNC    "*" parm caller [es di] [si ax] [cx] [dx] [bx];
+    #pragma aux PUTDOT_FUNC  "*" __far __parm __caller [__es __di] [__dx __ax] [__cx]
+    #pragma aux GETDOT_FUNC  "*" __far __parm __caller [__es __di] [__cx]
+    #pragma aux FILL_FUNC    "*" __parm __caller [__es __di] [__si __ax] [__bx] [__cx] [__dx]
+    #pragma aux COPY_FUNC    "*" __parm __caller [__es __di] [__si __ax] [__cx] [__dx] [__bx]
     //endx now on stack
-    #pragma aux SCAN_FUNC    "*" parm caller [es di] [ax si] [bx] [cx] [dx] value [bx];
+    #pragma aux SCAN_FUNC    "*" __parm __caller [__es __di] [__si __ax] [__bx] [__cx] [__dx] __value [__bx]
   #else
-    #pragma aux PUTDOT_FUNC  "*" far parm caller [es di] [ax] [cx];
-    #pragma aux GETDOT_FUNC  "*" far parm caller [es di] [cx];
-    #pragma aux FILL_FUNC    "*" parm caller [es di] [ax] [bx] [cx] [dx];
-    #pragma aux COPY_FUNC    "*" parm caller [es di] [si ax] [cx] [dx] [bx];
-    #pragma aux SCAN_FUNC    "*" parm caller [es di] [ax] [bx] [cx] [dx] [si] value [bx];
+    #pragma aux PUTDOT_FUNC  "*" __far __parm __caller [__es __di] [__ax] [__cx]
+    #pragma aux GETDOT_FUNC  "*" __far __parm __caller [__es __di] [__cx]
+    #pragma aux FILL_FUNC    "*" __parm __caller [__es __di] [__ax] [__bx] [__cx] [__dx]
+    #pragma aux COPY_FUNC    "*" __parm __caller [__es __di] [__si __ax] [__cx] [__dx] [__bx]
+    #pragma aux SCAN_FUNC    "*" __parm __caller [__es __di] [__ax] [__bx] [__cx] [__dx] [__si] __value [__bx]
   #endif
+#else
+    #pragma aux PUTDOT_FUNC  "*" __parm __caller [__es __edi] [__eax] [__ecx]
+    #pragma aux GETDOT_FUNC  "*" __parm __caller [__es __edi] [__ecx]
+    #pragma aux FILL_FUNC    "*" __parm __caller [__es __edi] [__eax] [__ebx] [__ecx] [__edx]
+    #pragma aux COPY_FUNC    "*" __parm __caller [__es __edi] [__esi __eax] [__ecx] [__edx] [__ebx]
+    #pragma aux SCAN_FUNC    "*" __parm __caller [__es __edi] [__eax] [__ebx] [__ecx] [__edx] [__esi] __value [__bx]
 #endif
 
 typedef grcolor __near getdot_fn( char __far *, int );

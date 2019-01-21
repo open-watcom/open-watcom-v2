@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
+* Copyright (c) 2009-2018 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -28,18 +28,21 @@
 *
 ****************************************************************************/
 
+
+#include "wipfc.hpp"
 #include "xref.hpp"
 
-void XRef::write( std::FILE* out ) const
+void XRef::write( std::FILE* logfp ) const
 {
-    std::fprintf( out, "    ^--Referenced by %ls, line %u\n", fileName->c_str(), lineNumber );
+    std::fprintf( logfp, "    ^--Referenced by %ls, line %u\n", _fileName->c_str(), _lineNumber );
 }
 /*****************************************************************************/
 bool XRef::operator <( const XRef& rhs ) const
 {
-    if( *fileName == *rhs.fileName )
-        return lineNumber < rhs.lineNumber;
-    else
-        return *fileName < *rhs.fileName;
+    if( *_fileName == *rhs._fileName ) {
+        return _lineNumber < rhs._lineNumber;
+    } else {
+        return *_fileName < *rhs._fileName;
+    }
 }
 

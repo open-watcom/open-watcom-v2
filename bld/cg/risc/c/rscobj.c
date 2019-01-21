@@ -30,7 +30,7 @@
 ****************************************************************************/
 
 
-#include "cgstd.h"
+#include "_cgstd.h"
 #include <time.h>
 #include "coderep.h"
 #include "cgauxinf.h"
@@ -58,23 +58,18 @@
 #include "targetin.h"
 #include "cgsrtlst.h"
 #include "optmain.h"
+#include "dfsupp.h"
+#if _TARGET & _TARG_PPC
+#include "ppclbl.h"
+#endif
 #include "feprotos.h"
 
 
 #define FILE2OWLF(x)    ((owl_file_handle)(x))
 #define OWLF2FILE(x)    ((FILE *)(x))
 
-#if _TARGET & _TARG_PPC
-extern  label_handle    GetWeirdPPCDotDotLabel( label_handle );
-#endif
-extern  bool            SymIsExported( cg_sym_handle );
-extern  void            EmptyQueue( void );
-
 static  owl_section_handle      owlTocSect; // contributions to TOC for PPC
 static  owl_section_handle      globalPdata;
-
-
-
 static  owl_handle              owlHandle;
 static  owl_file_handle         owlFile;
 
@@ -409,12 +404,14 @@ static const char   *LabelName( label_handle label )
     sym = AskForLblSym( label );
     if( AskIfRTLabel( label ) ) {
         name = AskRTName( SYM2RTIDX( sym ) );
+#if _TARGET & _TARG_PPC
         if( _TstStatus( label, WEIRD_PPC_ALIAS ) ) {
             objName[0] = '.';
             objName[1] = '.';
             strcpy( &objName[2], name );
             name = &objName[0];
         }
+#endif
         return( name );
     }
     if( sym != NULL ) {
@@ -425,11 +422,13 @@ static const char   *LabelName( label_handle label )
             if( attr & FE_DLLIMPORT ) {
                 kind = DLLIMPORT;
             } else {
+#if _TARGET & _TARG_PPC
                 if( _TstStatus( label, WEIRD_PPC_ALIAS ) ) {
                     objName[0] = '.';
                     objName[1] = '.';
                     buff = &objName[2];
                 }
+#endif
             }
             DoOutObjectName( sym, NameGatherer, buff, kind );
             return( objName );

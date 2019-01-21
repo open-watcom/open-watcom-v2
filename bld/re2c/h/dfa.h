@@ -88,6 +88,7 @@ typedef struct State {
     uint            kCount;
     Ins             **kernel;
     uint            isBase:1;
+    uint            referenced:1;
     Go              go;
     Action          *action;
 } State;
@@ -100,14 +101,14 @@ typedef struct DFA {
     State           *toDo;
 } DFA;
 
-extern DFA      *DFA_new( Ins *, uint, uint, uint, Char * );
+extern DFA      *DFA_new( Ins *, uint, uint, uint, Char *, uint );
 extern void     DFA_delete( DFA * );
 extern void     DFA_addState( DFA *, State **, State * );
 extern void     DFA_emit( DFA *, FILE * );
 extern State    *State_new( void );
 
 extern Action   *Action_new_Match( State *s );
-extern Action   *Action_new_Enter( State *s, uint l );
+extern Action   *Action_new_Enter( State *s );
 extern Action   *Action_new_Save( State *s, uint i );
 extern Action   *Action_new_Move( State *s );
 extern Action   *Action_new_Rule( State *s, RegExp *r );

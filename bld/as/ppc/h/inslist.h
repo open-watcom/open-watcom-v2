@@ -142,11 +142,9 @@ extern void PPCEmit( instruction * );
 #endif
 extern bool PPCValidate( instruction * );
 
-#ifdef _STANDALONE_
-#ifdef AS_DEBUG_DUMP
+#if defined( _STANDALONE_ ) && defined( AS_DEBUG_DUMP )
 extern void             DumpOperand( ins_operand * );
 extern void             DumpIns( instruction * );
-#endif
 #endif
 
 #define InsInit                 AsInsInit

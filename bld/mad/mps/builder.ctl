@@ -8,7 +8,7 @@ set PROJDIR=<CWD>
 [ INCLUDE <OWROOT>/build/prolog.ctl ]
 
 [ BLOCK .<OWUSE_FILENAME_VERSION>. .1. ]
-#=====================================
+#=======================================
     set PROJNAME=madmps<OWBLDVER>
 
 [ BLOCK .<WATCOMBOOT>. .1. ]
@@ -19,12 +19,12 @@ set PROJDIR=<CWD>
 #==========================
     [ INCLUDE <OWROOT>/build/defdylib.ctl ]
 
-[ BLOCK <1> rel ]
-#================
+[ BLOCK <BLDRULE> rel ]
+#======================
     cdsay <PROJDIR>
 
-[ BLOCK <1> rel cprel ]
-#======================
+[ BLOCK <BLDRULE> rel cprel ]
+#============================
     <CCCMD> dos386/<PROJNAME>.mad     <OWRELROOT>/binw/
 #    <CCCMD> dos386/<PROJNAME>.sym   <OWRELROOT>/binw/<PROJNAME>.dsy
 

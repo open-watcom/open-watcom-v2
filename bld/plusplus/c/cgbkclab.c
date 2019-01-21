@@ -66,7 +66,7 @@ static COND_LABEL* condLabelFind// LOCATE SAVED CONDITIONAL LABEL
             break;
         }
     } RingIterEnd( curr )
-    return lab;
+    return( lab );
 }
 
 
@@ -82,7 +82,7 @@ label_handle CondLabelAdd       // ADD A CONDITIONAL LABEL
         lab->se = se;
         lab->label = BENewLabel();
     }
-    return lab->label;
+    return( lab->label );
 }
 
 
@@ -99,7 +99,7 @@ SE* CondLabelNext               // FIND STATE ENTRY FOR NEXT COND. LABEL
             se = curr->se;
         }
     } RingIterEnd( curr )
-    return se;
+    return( se );
 }
 
 
@@ -118,16 +118,16 @@ bool CondLabelEmit              // EMIT CONDITIONAL LABEL IF REQ'D
     , SE* se )                  // - state entry at current position
 {
     COND_LABEL* lab;            // - conditional label for current state
-    bool retb;                  // - return: true ==> label emitted
+    bool ok;                    // - return: true ==> label emitted
 
     lab = condLabelFind( a_ring, se );
     if( lab == NULL ) {
-        retb = false;
+        ok = false;
     } else {
         cgCondLabel( a_ring, lab );
-        retb = true;
+        ok = true;
     }
-    return( retb );
+    return( ok );
 }
 
 

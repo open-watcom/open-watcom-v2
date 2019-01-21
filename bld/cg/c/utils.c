@@ -29,7 +29,7 @@
 ****************************************************************************/
 
 
-#include "cgstd.h"
+#include "_cgstd.h"
 #include "utils.h"
 
 #if defined( _M_IX86 ) && defined(__WATCOMC__)

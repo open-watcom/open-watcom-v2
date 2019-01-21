@@ -9,8 +9,8 @@ echo Build host: <BLD_HOST>
 
 cdsay .
 
-[ BLOCK <1> boot bootclean ]
-#===========================
+[ BLOCK <BLDRULE> bootclean boot ]
+#=================================
 # Build Open Watcom tools using the host platform's native compiler.
 #
 # NB: The ordering of the following inclusions is significant!
@@ -20,6 +20,10 @@ cdsay .
 # If necessary, build POSIX tools (awk, sed, cp, ...)
 [ IFDEF <BLD_HOST> OS2 NT DOS ]
 [ INCLUDE <OWSRCDIR>/posix/builder.ctl ]
+[ ENDIF ]
+# Build our version of yacc
+[ INCLUDE <OWSRCDIR>/yacc/builder.ctl ]
+[ IFDEF <BLD_HOST> OS2 NT DOS ]
 [ INCLUDE <OWSRCDIR>/awk/builder.ctl ]
 [ ENDIF ]
 # Build C preprocessing utility
@@ -29,8 +33,6 @@ cdsay .
 # Start with the ORL and librarian - boot build has no other dependencies
 [ INCLUDE <OWSRCDIR>/orl/builder.ctl ]
 [ INCLUDE <OWSRCDIR>/nwlib/builder.ctl ]
-# Build our version of yacc
-[ INCLUDE <OWSRCDIR>/yacc/builder.ctl ]
 # Build wsplice and genverrc
 [ INCLUDE <OWSRCDIR>/builder/builder.ctl ]
 # Next build wres and the resource compiler
@@ -124,9 +126,10 @@ cdsay .
 #[ INCLUDE <OWSRCDIR>/wprof/builder.ctl ]
 #[ ENDIF ]
 
-[ BLOCK <1> build rel clean cprel ]
-#==================================
+[ BLOCK <1> clean build rel cprel clean1 build1 cprel1 passclean pass ]
+#======================================================================
 # Build all of Open Watcom using freshly built tools.
+# part 1
 #
 # NB: Again, the order is significant.
 # At the beginning, assume to have compilers/assemblers/librarian/linker
@@ -154,7 +157,6 @@ cdsay .
 # Continue with OSI extenders stubs.
 [ INCLUDE <OWSRCDIR>/w32loadr/builder.ctl ]
 # Now we have enough to start cross building everything else
-
 # Start with the libs used by various tools
 [ INCLUDE <OWSRCDIR>/wres/builder.ctl ]
 [ INCLUDE <OWSRCDIR>/orl/builder.ctl ]
@@ -172,6 +174,12 @@ cdsay .
 [ INCLUDE <OWSRCDIR>/cg/builder.ctl ]
 [ INCLUDE <OWSRCDIR>/cc/builder.ctl ]
 [ INCLUDE <OWSRCDIR>/plusplus/builder.ctl ]
+
+[ BLOCK <1> clean build rel cprel clean2 build2 cprel2 passclean pass ]
+#======================================================================
+# Build all of Open Watcom using freshly built tools.
+# part 2
+#
 [ INCLUDE <OWSRCDIR>/f77/wfc/builder.ctl ]
 # Resource tools, first Resource compiler
 [ INCLUDE <OWSRCDIR>/rc/builder.ctl ]
@@ -257,20 +265,20 @@ set OWTXTDOCBUILD=1
 [ INCLUDE <OWDOCSDIR>/builder.ctl ]
 set OWTXTDOCBUILD=
 
-[ BLOCK <1> docs docsclean docpdf cpdocpdf ]
-#===========================================
+[ BLOCK <BLDRULE> docsclean docs doctrav cpdoctrav ]
+#===================================================
 [ INCLUDE <OWDOCSDIR>/builder.ctl ]
 
-[ BLOCK <1> test testclean cleanlog ]
-#====================================
+[ BLOCK <BLDRULE> testclean test cleanlog ]
+#==========================================
 [ INCLUDE <OWSRCDIR>/wasmtest/builder.ctl ]
 [ INCLUDE <OWSRCDIR>/ctest/builder.ctl ]
 [ INCLUDE <OWSRCDIR>/f77test/builder.ctl ]
 [ INCLUDE <OWSRCDIR>/plustest/builder.ctl ]
 [ INCLUDE <OWSRCDIR>/clibtest/builder.ctl ]
 
-[ BLOCK <1> test cleanrel ]
-#==========================
+[ BLOCK <1> relclean passclean ]
+#===============================
     echo rm -rf <OWRELROOT>
     rm -rf <OWRELROOT>
 

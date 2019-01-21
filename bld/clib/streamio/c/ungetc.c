@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2017-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -37,8 +37,8 @@
 #ifdef __WIDECHAR__
     #include <mbstring.h>
     #include <string.h>
-    #include <wchar.h>
 #endif
+#include "libwchar.h"
 #if defined( __NT__ )
     #include <windows.h>
 #elif defined( __OS2__ )

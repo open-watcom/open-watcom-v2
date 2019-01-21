@@ -90,20 +90,24 @@
 #define INT_CTRL        0x20    /* interrupt controler port */
 #define EOI             0x20    /* End-Of-Interrupt */
 
-extern void beep( void );
-#pragma aux beep = \
-    "mov    ax,0e07h" \
-    "xor    bx,bx" \
-    "int 10h" \
-    modify [ax bx]
+extern void outc( char );
+#pragma aux outc = \
+        "mov    ah,0eh" \
+        "xor    bx,bx" \
+        "int 10h" \
+    __parm      [__al] \
+    __value     \
+    __modify    [__ax __bx]
 
 extern int _check_parrent_debugger( void );
 #pragma aux _check_parrent_debugger = \
-    "mov    ax,0FF00h" \
-    "mov    dx,11FFh" \
-    "int 21h" \
-    "sbb    ax,ax" \
-    value [ax] modify [dx]
+        "mov    ax,0FF00h" \
+        "mov    dx,11FFh" \
+        "int 21h" \
+        "sbb    ax,ax" \
+    __parm      [] \
+    __value     [__ax] \
+    __modify    [__dx]
 
 //extern char vmm_present;      /* Set if VMM 4G package is present */
 
@@ -157,17 +161,11 @@ static int hook_interrupts[] = {
 
 #if DEBUGHOTKEY
 
-extern void outc( char );
-#pragma aux outc = \
-    "mov    ah,0eh" \
-    "xor    bx,bx" \
-    "int 10h" \
-    parm [al] modify [ax bx]
-
 void outs( char *s )
 {
     char c;
-    while( c = *s++ ) {
+
+    while( (c = *s++) != '\0' ) {
         outc( c );
     }
 }
@@ -396,7 +394,7 @@ static unsigned __loadds __saveregs __cdecl __far debug_handler( unsigned int hN
             outi( debugging );
             outs( " think we're in the debugger\r\n" );
 #endif
-            beep();        /* Can't hotkey, already in control */
+            outc( 7 );        /* Can't hotkey, already in control */
             hNext = 0;
 
         } else if( client->int_id == EXC_PAGE_FAULT ) {

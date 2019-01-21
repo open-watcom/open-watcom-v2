@@ -96,7 +96,7 @@ static void* stateTableCmdAlloc(// ALLOCATE STATE-TABLE CMD
     cmd = RingCarveAlloc( allocation, hdr );
     cmd->emitted = false;
     cmd->sym = NULL;
-    return cmd;
+    return( cmd );
 }
 
 
@@ -109,14 +109,14 @@ static void* stateTableCmdAllocVar( // ALLOCATE STATE-TABLE CMD, SET VAR
 
     cmd = stateTableCmdAlloc( allocation, hdr );
     cmd->sym = CgVarRo( size, SC_STATIC, NULL );
-    return cmd;
+    return( cmd );
 }
 
 
 static SYMBOL stateTableCmdName(    // CREATE COMDEF VARIABLE FOR DTOR_CMD
     unsigned index )                // - command index
 {
-    return CgVarRo( CMD_SIZE + CgbkInfo.size_offset, SC_PUBLIC, CppNameStateTableCmd( index ) );
+    return( CgVarRo( CMD_SIZE + CgbkInfo.size_offset, SC_PUBLIC, CppNameStateTableCmd( index ) ) );
 }
 
 
@@ -130,7 +130,7 @@ SYMBOL CgCmdFnExc(              // GET SYMBOL FOR FN-EXCEPTION SPEC. COMMAND
     cmd = stateTableCmdAllocVar( carveCMD_FN_EXC, &ringCmdsFnExc,
                     CMD_SIZE + CgbkInfo.size_offset + RingCount( sigs ) * CgbkInfo.size_data_ptr );
     cmd->sigs = sigs;
-    return cmd->base.sym;
+    return( cmd->base.sym );
 }
 
 
@@ -143,7 +143,7 @@ SYMBOL CgCmdTestFlag(           // GET SYMBOL FOR TEST_FLAG CMD TO BE GEN'ED
     STATE_VAR sv_false;         // - false state
 
     cmd = NULL;
-    sv_true  = SeStateVar( se->test_flag.se_true  );
+    sv_true  = SeStateVar( se->test_flag.se_true );
     sv_false = SeStateVar( se->test_flag.se_false );
     RingIterBeg( ringCmdsTestFlag, curr ) {//{
         if(  se->test_flag.index == curr->index
@@ -159,7 +159,7 @@ SYMBOL CgCmdTestFlag(           // GET SYMBOL FOR TEST_FLAG CMD TO BE GEN'ED
         cmd->state_var_true  = sv_true;
         cmd->state_var_false = sv_false;
     }
-    return cmd->base.sym;
+    return( cmd->base.sym );
 }
 
 
@@ -183,7 +183,7 @@ SYMBOL CgCmdSetSv(              // GET SYMBOL FOR SET_SV CMD TO BE GEN'ED
         cmd->state_var = state;
         cmd->base.sym = stateTableCmdName( state + DTOR_CMD_INDEX_SETSV );
     }
-    return cmd->base.sym;
+    return( cmd->base.sym );
 }
 
 
@@ -206,7 +206,7 @@ SYMBOL CgCmdComponent(          // GET SYMBOL FOR DTC_COMP... COMMAND
     cmd->dtor = se->component.dtor;
     cmd->offset = se->component.offset;
     cmd->cmd_type = se->base.se_type;
-    return cmd->base.sym;
+    return( cmd->base.sym );
 }
 
 
@@ -218,7 +218,7 @@ SYMBOL CgCmdArrayInit(          // GET SYMBOL FOR DTC_ARRAY_INIT COMMAND
     DbgVerify( UNDEF_AREL != se->array_init.reg->offset, "cgAddCmdArrayInit -- no offset" );
     cmd = stateTableCmdAllocVar( carveCMD_ARRAY_INIT, &ringCmdsArrayInit, CMD_SIZE + CgbkInfo.size_offset );
     cmd->reg = se->array_init.reg;
-    return cmd->base.sym;
+    return( cmd->base.sym );
 }
 
 
@@ -243,7 +243,7 @@ SYMBOL CgCmdDlt1(               // GET SYMBOL FOR DTC_DLT_1
         cmd->op_del = se->dlt_1.op_del;
         cmd->offset = CgOffsetRw( se->dlt_1.offset );
     }
-    return cmd->base.sym;
+    return( cmd->base.sym );
 }
 
 
@@ -268,7 +268,7 @@ SYMBOL CgCmdDlt1Array(          // GET SYMBOL FOR DTC_DLT_1
         cmd->op_del = se->dlt_1_array.op_del;
         cmd->offset = CgOffsetRw( se->dlt_1_array.offset );
     }
-    return cmd->base.sym;
+    return( cmd->base.sym );
 }
 
 
@@ -296,7 +296,7 @@ SYMBOL CgCmdDlt2(               // GET SYMBOL FOR DTC_DLT_2
         cmd->offset = CgOffsetRw( se->dlt_2.offset );
         cmd->size   = se->dlt_2.size;
     }
-    return cmd->base.sym;
+    return( cmd->base.sym );
 }
 
 
@@ -324,7 +324,7 @@ SYMBOL CgCmdDlt2Array(          // GET SYMBOL FOR DTC_DLT_2
         cmd->offset = CgOffsetRw( se->dlt_2_array.offset );
         cmd->size   = se->dlt_2_array.size;
     }
-    return cmd->base.sym;
+    return( cmd->base.sym );
 }
 
 
@@ -343,7 +343,7 @@ SYMBOL CgCmdTry(                // GET SYMBOL FOR TRY BLOCK
     cmd->offset_var = CgOffsetRw( se->try_blk.try_impl->offset_var );
     cmd->offset_jmpbuf = CgOffsetRw( se->try_blk.try_impl->offset_jmpbuf );
     cmd->sigs = sigs;
-    return cmd->base.sym;
+    return( cmd->base.sym );
 }
 
 
@@ -354,7 +354,7 @@ SYMBOL CgCmdCtorTest(           // GET SYMBOL FOR CTOR-TEST COMMAND
 
     cmd = stateTableCmdAllocVar( carveCMD_CTOR_TEST, &ringCmdsCtorTest, CMD_SIZE + CgbkInfo.size_offset );
     cmd->flag_no = se->ctor_test.flag_no;
-    return cmd->base.sym;
+    return( cmd->base.sym );
 }
 
 
@@ -380,8 +380,8 @@ static bool cgGenerateCmdBase(      // EMIT BASE FOR COMMAND
         CgBackGenLabelInternal( base->sym );
 #if 1 // this kludge allows old run-time systems to work
         switch( code ) {
-          case DTC_ACTUAL_DBASE :
-          case DTC_ACTUAL_VBASE :
+        case DTC_ACTUAL_DBASE :
+        case DTC_ACTUAL_VBASE :
             code = DTC_COMP_DBASE;
             break;
         }
@@ -389,7 +389,7 @@ static bool cgGenerateCmdBase(      // EMIT BASE FOR COMMAND
         cgGenerateCmdCode( code );
         genning = true;
     }
-    return genning;
+    return( genning );
 }
 
 
@@ -494,12 +494,12 @@ static void cgGenerateCmdsComponent(// EMIT COMPONENT CMDS
                 const char* code;
                 VBUF vbuf;
                 switch( curr->cmd_type ) {
-                  case DTC_COMP_VBASE :   code = "DTC_COMP_VBASE"; break;
-                  case DTC_COMP_DBASE :   code = "DTC_COMP_DBASE"; break;
-                  case DTC_ACTUAL_VBASE : code = "DTC_ACTUAL_VBASE"; break;
-                  case DTC_ACTUAL_DBASE : code = "DTC_ACTUAL_DBASE"; break;
-                  case DTC_COMP_MEMB  :   code = "DTC_COMP_MEMB "; break;
-                  default:                code = "*****BAD******"; break;
+                case DTC_COMP_VBASE :   code = "DTC_COMP_VBASE"; break;
+                case DTC_COMP_DBASE :   code = "DTC_COMP_DBASE"; break;
+                case DTC_ACTUAL_VBASE : code = "DTC_ACTUAL_VBASE"; break;
+                case DTC_ACTUAL_DBASE : code = "DTC_ACTUAL_DBASE"; break;
+                case DTC_COMP_MEMB  :   code = "DTC_COMP_MEMB "; break;
+                default:                code = "*****BAD******"; break;
                 }
                 printf( "%s obj-offset=%x var-offset=%x %s\n"
                       , code

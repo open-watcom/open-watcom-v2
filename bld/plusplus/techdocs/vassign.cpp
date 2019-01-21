@@ -54,7 +54,7 @@ struct T : R, S {
 
 V & V::operator =( const V &src ) {
     cout << "assign V (" << (void*)this << "," << (void*)&src << ")" << endl;
-    return *this;
+    return( *this );
 }
 
 void assign_R( R &s, R &d )

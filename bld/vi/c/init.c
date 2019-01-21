@@ -214,11 +214,18 @@ static void checkFlags( int *argc, char *argv[], char *start[],
  */
 static void doInitializeEditor( int argc, char *argv[] )
 {
-    int             i, arg, cnt, ocnt, startcnt = 0;
+    int             i;
+    int             arg;
+    list_linenum    j;
+    list_linenum    ocnt;
+    int             startcnt = 0;
     srcline         sline;
-    int             k, j;
-    char            tmp[FILENAME_MAX], c[1];
-    char            buff[MAX_STR], file[MAX_STR], **list;
+    int             k;
+    char            tmp[_MAX_PATH];
+    char            c[1];
+    char            buff[MAX_STR];
+    char            file[MAX_STR];
+    char            **list;
     char            cmd[MAX_STR * 2];
     char            *parm;
     char            *startup[MAX_STARTUP];
@@ -339,9 +346,9 @@ static void doInitializeEditor( int argc, char *argv[] )
     if( EditVars.TagFileName == NULL ) {
         EditVars.TagFileName = DupString( "tags" );
     }
-    DotBuffer = MemAlloc( (maxdotbuffer + 2) * sizeof( vi_key ) );
-    AltDotBuffer = MemAlloc( (maxdotbuffer + 2) * sizeof( vi_key ) );
-    DotCmd = MemAlloc( (maxdotbuffer + 2) * sizeof( vi_key ) );
+    DotBuffer = _MemAllocArray( vi_key, maxdotbuffer + 2 );
+    AltDotBuffer = _MemAllocArray( vi_key, maxdotbuffer + 2 );
+    DotCmd = _MemAllocArray( vi_key, maxdotbuffer + 2 );
     SwapBlockInit( EditVars.MaxSwapBlocks );
     ReadBuffer = MemAlloc( MAX_IO_BUFFER + 6 );
     WriteBuffer = MemAlloc( MAX_IO_BUFFER + 6 );
@@ -413,7 +420,6 @@ static void doInitializeEditor( int argc, char *argv[] )
     arg = argc - 1;
     k = 1;
     while( !EditFlags.NoInitialFileLoad ) {
-
         if( cFN == nullFN && !EditFlags.UseNoName ) {
             break;
         }
@@ -478,28 +484,17 @@ static void doInitializeEditor( int argc, char *argv[] )
 
         strcat( cmd, SingleBlank );
         strcat( cmd, cFN );
-        ocnt = cnt = ExpandFileNames( cFN, &list );
-        if( cnt == 0 ) {
-            cnt = 1;
-        } else {
-            cFN = list[0];
-        }
-
-        for( j = 0; j < cnt; j++ ) {
-            rc1 = NewFile( cFN, false );
+        ocnt = ExpandFileNames( cFN, &list );
+        for( j = 0; j < ocnt; j++ ) {
+            rc1 = NewFile( list[j], false );
             if( rc1 != ERR_NO_ERR && rc1 != NEW_FILE ) {
                 FatalError( rc1 );
             }
             if( EditFlags.BreakPressed ) {
                 break;
             }
-            if( cnt > 0 && j < cnt - 1 ) {
-                cFN = list[j + 1];
-            }
         }
-        if( ocnt > 0 ) {
-            MemFreeList( ocnt, list );
-        }
+        MemFreeList( ocnt, list );
         if( EditFlags.BreakPressed ) {
             ClearBreak();
             break;

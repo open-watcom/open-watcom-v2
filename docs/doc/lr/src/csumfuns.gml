@@ -177,6 +177,8 @@ OS/2 (all)
 OS/2 (all)
 .note intr
 OS/2 (all)
+.note intrf
+OS/2 (all)
 .note _nfree
 OS/2-dll
 .note _nheapchk

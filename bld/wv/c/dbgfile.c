@@ -59,8 +59,8 @@
 
 #define CHK_DIR_SEP(c,i)    ((c) != NULLCHAR && ((c) == (i)->path_separator[0] || (c) == (i)->path_separator[1]))
 #define CHK_DRV_SEP(c,i)    ((c) != NULLCHAR && (c) == (i)->drv_separator)
+#define CHK_PATH_SEP(c,i)   ((c) != NULLCHAR && ((c) == (i)->drv_separator || (c) == (i)->path_separator[0] || (c) == (i)->path_separator[1]))
 
-#define CHECK_PATH_SEP(c,i) (CHK_DIR_SEP((c),i) || CHK_DRV_SEP((c),i))
 #define CHECK_PATH_ABS(p,i) (CHK_DIR_SEP((p)[0],i) || (p)[0] != NULLCHAR && CHK_DRV_SEP((p)[1],i) && CHK_DIR_SEP((p)[2],i))
 
 static char_ring *LclPath;
@@ -352,7 +352,7 @@ char *AppendPathDelim( char *path, obj_attrs oattrs )
     info = PathInfo( path, oattrs );
     len = strlen( path );
     end = path + len;
-    if( len == 0 || !CHECK_PATH_SEP( end[-1], info ) ) {
+    if( len == 0 || !CHK_PATH_SEP( end[-1], info ) ) {
         *end++ = info->path_separator[0];
     }
     return( end );
@@ -367,7 +367,7 @@ const char  *SkipPathInfo( char const *path, obj_attrs oattrs )
     name = path;
     info = PathInfo( path, oattrs );
     while( (c = *path++) != NULLCHAR ) {
-        if( CHECK_PATH_SEP( c, info ) ) {
+        if( CHK_PATH_SEP( c, info ) ) {
             name = path;
         }
     }
@@ -388,7 +388,7 @@ const char  *ExtPointer( char const *path, obj_attrs oattrs )
         c = *--p;
         if( p < path )
             return( end );
-        if( CHECK_PATH_SEP( c, info ) )
+        if( CHK_PATH_SEP( c, info ) )
             return( end );
         if( c == info->ext_separator ) {
             return( p );
@@ -436,7 +436,7 @@ static size_t MakeNameWithPath( obj_attrs oattrs,
         } else {
             info = &RemFile;
         }
-        if( plen > 0 && !CHECK_PATH_SEP( p[-1], &LclFile ) ) {
+        if( plen > 0 && !CHK_PATH_SEP( p[-1], &LclFile ) ) {
             *p++ = info->path_separator[0];
         }
     }
@@ -506,7 +506,7 @@ static file_handle FullPathOpenInternal( const char *name, size_t name_len, cons
     while( name_len-- > 0 ) {
         c = *name++;
         *p++ = c;
-        if( CHECK_PATH_SEP( c, file ) ) {
+        if( CHK_PATH_SEP( c, file ) ) {
             have_ext = false;
             have_path = true;
         } else if( c == file->ext_separator ) {
@@ -751,7 +751,7 @@ static FILE *MakeNameWithPathOpen( const char *path, const char *name, size_t nl
             len = rlen;
         memcpy( p, path, len );
         p += len;
-        if( !CHECK_PATH_SEP( p[-1], &LclFile ) ) {
+        if( !CHK_PATH_SEP( p[-1], &LclFile ) ) {
             if( len < rlen ) {
                 *p++ = LclFile.path_separator[0];
                 ++len;
@@ -789,7 +789,7 @@ FILE *DIGLoader( Open )( const char *name, size_t name_len, const char *ext, cha
     while( name_len-- > 0 ) {
         c = *name++;
         *p++ = c;
-        if( CHECK_PATH_SEP( c, &LclFile ) ) {
+        if( CHK_PATH_SEP( c, &LclFile ) ) {
             have_ext = false;
             have_path = true;
         } else if( c == LclFile.ext_separator ) {

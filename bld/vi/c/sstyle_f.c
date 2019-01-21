@@ -125,84 +125,77 @@ void InitFORTRANLine( char *text, linenum line_no )
 
 static void getFloat( ss_block *ss_new, char *start, int skip, int command )
 {
-    char    *text = start + skip;
+    char    *end = start + skip;
 
     ss_new->type = SE_FLOAT;
 
     switch( command ) {
     case AFTER_DOT:
-        if( !isdigit( *text ) ) {
-            if( *text == 'E' || *text == 'D' ) {
-                getFloat( ss_new, start, text - start + 1, AFTER_EXP );
+        if( !isdigit( *end ) ) {
+            if( *end == 'E' || *end == 'D' ) {
+                getFloat( ss_new, start, end - start + 1, AFTER_EXP );
                 return;
             }
-            if( *text && !isspace( *text ) && !issymbol( *text ) ) {
-                if( *text ) {
-                    text++;
+            if( *end != '\0' && !isspace( *end ) && !issymbol( *end ) ) {
+                if( *end != '\0' ) {
+                    end++;
                 }
                 ss_new->type = SE_INVALIDTEXT;
             }
             break;
         }
-        text++;
-        while( isdigit( *text ) ) {
-            text++;
-        }
-        if( *text != 'E' && *text != 'D' ) {
+        end++;
+        SKIP_DIGITS( end );
+        if( *end != 'E' && *end != 'D' ) {
             break;
         }
-        text++;
+        end++;
         // fall through
     case AFTER_EXP:
-        if( *text == '+' || *text == '-' ) {
-            text++;
+        if( *end == '+' || *end == '-' ) {
+            end++;
         }
-        if( !isdigit( *text ) ) {
-            if( *text ) {
-                text++;
+        if( !isdigit( *end ) ) {
+            if( *end != '\0' ) {
+                end++;
             }
             ss_new->type = SE_INVALIDTEXT;
             break;
         }
-        text++;
-        while( isdigit( *text ) ) {
-            text++;
-        }
-        if( *text && !isspace( *text ) && !issymbol( *text ) ) {
+        end++;
+        SKIP_DIGITS( end );
+        if( *end != '\0' && !isspace( *end ) && !issymbol( *end ) ) {
             ss_new->type = SE_INVALIDTEXT;
-            text++;
+            end++;
         }
     }
-    ss_new->len = text - start;
+    ss_new->len = end - start;
 }
 
 
 static void getNumber( ss_block *ss_new, char *start )
 {
-    char    *text = start + 1;
+    char    *end = start + 1;
     char    save_char;
     char    *save_loc;
     int     nchars;
 
-    while( isdigit( *text ) ) {
-        text++;
-    }
-
-    switch( *text ) {
+    SKIP_DIGITS( end );
+    switch( *end ) {
     case 'h':
     case 'H':
         /* Hollerith constant (string)
         */
-        save_loc = text;
-        save_char = *text;
-        *text = 0;
+        save_loc = end;
+        save_char = *end;
+        *end = 0;
         nchars = atoi( start );
-        text++;
-        while( *text != '\0' && nchars != 0 ) {
+        end++;
+        while( *end != '\0' && nchars != 0 ) {
             nchars--;
-            text++;
+            end++;
         }
-        if( *text == '\0' && nchars > 0 ) {
+        if( *end == '\0' && nchars > 0 ) {
             ss_new->type = SE_INVALIDTEXT;
         } else {
             ss_new->type = SE_STRING;
@@ -210,67 +203,57 @@ static void getNumber( ss_block *ss_new, char *start )
         *save_loc = save_char;
         break;
     case '.':
-        getFloat( ss_new, start, text - start + 1, AFTER_DOT );
+        getFloat( ss_new, start, end - start + 1, AFTER_DOT );
         return;
     case 'E':
     case 'D':
-        getFloat( ss_new, start, text - start + 1, AFTER_EXP );
+        getFloat( ss_new, start, end - start + 1, AFTER_EXP );
         return;
     default:
         ss_new->type = SE_INTEGER;
     }
-    ss_new->len = text - start;
+    ss_new->len = end - start;
 }
 
 static void getWhiteSpace( ss_block *ss_new, char *start )
 {
-    char    *text = start + 1;
-    while( isspace( *text ) ) {
-        text++;
-    }
+    char    *end = start + 1;
+
+    SKIP_SPACES( end );
     ss_new->type = SE_WHITESPACE;
-    ss_new->len = text - start;
+    ss_new->len = end - start;
 }
 
 
 static void getText( ss_block *ss_new, char *start )
 {
-    char    keyword[MAX_INPUT_LINE + 1];
-    char    *text = start;
-    int     index = 0;
+    char    *keyword;
+    char    *end = start;
 
     // eliminate leading spaces
-    while( isspace( *text ) ) {
-        text++;
-    }
-
+    SKIP_SPACES( end );
     // take copy string up to first white space
-    while( isalnum( *text ) || (*text == '_') || (*text == '$') ) {
-        keyword[index++] = toupper( *text );
-        text++;
+    keyword = end;
+    while( isalnum( *end ) || (*end == '_') || (*end == '$') ) {
+        end++;
     }
-    keyword[index] = '\0';
 
     // test if string is keyword
-    if( IsKeyword( keyword, true ) ) {
-        char *end = text;
+    if( IsKeyword( keyword, end, true ) ) {
+        char *end2 = end;
 
         ss_new->type = SE_KEYWORD;
 
         // attempt to find a "*" associated with type
-        while( isspace( *text ) ) {
-            text++;
-        }
-        if( *text == '*' ) {
-            text++;
-        } else {
-            text = end;
+        SKIP_SPACES( end2 );
+        if( *end2 == '*' ) {
+            end = ++end2;
         }
     } else {
         ss_new->type = SE_IDENTIFIER;
     }
 
-    ss_new->len = text - start;
+    ss_new->len = end - start;
 }
 
 
@@ -282,7 +265,7 @@ static void getSymbol( ss_block *ss_new, int length )
 
 static void getLiteral( ss_block *ss_new, char *start, int skip )
 {
-    char    *text;
+    char    *end;
     char    lastchar = '\0';
     bool    empty;
     bool    multiLine = flags.inString;
@@ -292,16 +275,16 @@ static void getLiteral( ss_block *ss_new, char *start, int skip )
     vi_rc   rc;
 
     empty = true;
-    for( text = start + skip; *text != '\0'; ++text ) {
-        if( text[0] == '\'' ) {
-            if( text[1] != '\'' )
+    for( end = start + skip; *end != '\0'; ++end ) {
+        if( end[0] == '\'' ) {
+            if( end[1] != '\'' )
                 break;
-            ++text;
+            ++end;
         }
         empty = false;
     }
     flags.inString = false;
-    if( *text == '\0' ) {
+    if( *end == '\0' ) {
         // if next line a continuation line, then flag flags.inString, else
         // flag unterminated string
         rc = CGimmeLinePtr( thisLine + 1, &fcb, &line );
@@ -321,25 +304,25 @@ static void getLiteral( ss_block *ss_new, char *start, int skip )
             flags.inString = true;
         }
     } else {
-        text++;
-        lastchar = tolower( *text );
+        end++;
+        lastchar = tolower( *end );
         switch( lastchar ) {
         case 'c':
-            text++;
+            end++;
             ss_new->type = SE_STRING;
             break;
         case 'x':
-            text++;
+            end++;
             ss_new->type = SE_HEX;
             break;
         case 'o':
-            text++;
+            end++;
             ss_new->type = SE_OCTAL;
             break;
         default:
             // hard to say if invalid or not - take a guess
-            if( islower( *text ) ) {
-                text++;
+            if( islower( *end ) ) {
+                end++;
                 ss_new->type = SE_INVALIDTEXT;
             } else {
                 ss_new->type = SE_STRING;
@@ -347,7 +330,7 @@ static void getLiteral( ss_block *ss_new, char *start, int skip )
             break;
         }
     }
-    ss_new->len = text - start;
+    ss_new->len = end - start;
     if( empty && !multiLine ) {
         ss_new->type = SE_INVALIDTEXT;
     }
@@ -355,13 +338,11 @@ static void getLiteral( ss_block *ss_new, char *start, int skip )
 
 static void getComment( ss_block *ss_new, char *start )
 {
-    char    *text = start + 1;
+    char    *end = start + 1;
 
-    while( *text != '\0' ) {
-        text++;
-    }
+    SKIP_TOEND( end );
     ss_new->type = SE_COMMENT;
-    ss_new->len = text - start;
+    ss_new->len = end - start;
 }
 
 static void getBeyondText( ss_block *ss_new )
@@ -378,23 +359,24 @@ static void getInvalidChar( ss_block *ss_new )
 
 static void getLabelOrWS( ss_block *ss_new, char *start, int text_col )
 {
-    char    *text = start;
-    while( isspace( *text ) && text_col <= 4 ) {
-        text++;
+    char    *end = start;
+
+    while( isspace( *end ) && text_col <= 4 ) {
+        end++;
         text_col++;
     }
-    if( *text != '\0' && text_col <= 4 ) {
+    if( *end != '\0' && text_col <= 4 ) {
         ss_new->type = SE_JUMPLABEL;
-        while( *text != '\0' && text_col <= 4 ) {
-            if( !isdigit( *text ) && !isspace( *text ) ) {
-                text++;
+        while( *end != '\0' && text_col <= 4 ) {
+            if( !isdigit( *end ) && !isspace( *end ) ) {
+                end++;
                 ss_new->type = SE_INVALIDTEXT;
                 break;
             }
-            text++;
+            end++;
             text_col++;
         }
-        ss_new->len = text - start;
+        ss_new->len = end - start;
     } else {
         getWhiteSpace( ss_new, start );
     }

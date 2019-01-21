@@ -40,7 +40,7 @@
  */
 int FindLabel( labels *labs, const char *lbl )
 {
-    int i;
+    unsigned i;
 
     for( i = 0; i < labs->cnt; i++ ) {
         if( stricmp( lbl, labs->name[i] ) == 0 )  {
@@ -66,8 +66,8 @@ vi_rc AddLabel( sfile *sf, labels *labs, const char *lbl )
     /*
      * reallocate buffers
      */
-    labs->name = MemReAlloc( labs->name, (labs->cnt + 1) * sizeof( char * ) );
-    labs->pos = MemReAlloc( labs->pos, (labs->cnt + 1) * sizeof( struct sfile * ) );
+    labs->name = _MemReAllocList( labs->name, labs->cnt + 1 );
+    labs->pos = _MemReAllocArray( labs->pos, struct sfile *, labs->cnt + 1 );
 
     /*
      * set name and position of label

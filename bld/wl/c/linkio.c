@@ -166,9 +166,8 @@ size_t QRead( f_handle file, void *buffer, size_t len, const char *name )
     if( TINY_ERROR( h ) ) {
         if( name != NULL ) {
             LnkMsg( ERR+MSG_IO_PROBLEM, "12", name, QErrMsg( TINY_INFO( h ) ) );
-        } else {
-            return( -1 );
         }
+        return( IOERROR );
     }
     return( TINY_INFO(h) );
 
@@ -188,7 +187,7 @@ static size_t TestWrite( f_handle file, const void *buffer, size_t len, const ch
     if( name != NULL ) {
         if( TINY_ERROR( h ) ) {
             LnkMsg( ERR+MSG_IO_PROBLEM, "12", name, QErrMsg( TINY_INFO( h ) ) );
-            return( -1 );
+            return( IOERROR );
         } else if( TINY_INFO( h ) != len ) {
             if( name != NULL ) {
                 Msg_Get( MSG_IOERRLIST_7, rc_buff );
@@ -305,10 +304,12 @@ bool QReadStr( f_handle file, char *dest, size_t size, const char *name )
 {
     bool            eof;
     char            ch;
+    size_t          len;
 
     eof = false;
     while( --size > 0 ) {
-        if( QRead( file, &ch, 1, name ) == 0 ) {
+        len = QRead( file, &ch, 1, name );
+        if( len == 0 || len == IOERROR ) {
             eof = true;
             break;
         } else if( ch != '\r' ) {

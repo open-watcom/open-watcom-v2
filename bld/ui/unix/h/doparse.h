@@ -32,7 +32,7 @@
 
 
 // macros for getting/setting bits in alt-char map
-#define ti_alt_map( x ) ( _ti_alt_map[( x ) / 8] != 0 && (( _ti_alt_map[( x ) / 8] >> ( ( x ) % 8 ) ) & 1) )
+#define ti_alt_map_chk( x ) ( _ti_alt_map[( x ) / 8] != 0 && (( _ti_alt_map[( x ) / 8] >> ( ( x ) % 8 ) ) & 1) )
 
 // array of bits set for chars in alternate char-set
 extern unsigned char    _ti_alt_map[32];

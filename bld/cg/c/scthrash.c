@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2016 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -31,7 +31,7 @@
 ****************************************************************************/
 
 
-#include "cgstd.h"
+#include "_cgstd.h"
 #include "coderep.h"
 #include "score.h"
 #include "makeins.h"
@@ -41,18 +41,17 @@
 #include "rgtbl.h"
 #include "expand.h"
 #include "insutil.h"
+#include "confldef.h"
+#include "liveinfo.h"
+#include "split.h"
 
 
-extern  void            UpdateLive(instruction*,instruction*);
-extern  bool            UnChangeable(instruction*);
-
-
-static  name    *FindPiece( hw_reg_set opnd, hw_reg_set frm,
-                                         hw_reg_set to ) {
-/*********************************************************
+static  name    *FindPiece( hw_reg_set opnd, hw_reg_set frm, hw_reg_set to )
+/***************************************************************************
     Find the right piece "to_piece" of "to" such that "x" is to "to" as "opnd"
     is to "frm". Eg: for 386, if opnd = AH, frm = EAX, to = EDX, then x = DH
 */
+{
     hw_reg_set  to_piece;
     hw_reg_set  frm_piece;
     hw_reg_set  tmp;
@@ -91,7 +90,7 @@ static  bool    CanChange( instruction **pins,
 /**********************************************************************/
 
     instruction         *ins;
-    opcode_entry        *try;
+    const opcode_entry  *try;
     opcnt               i;
     name                *opnd;
     bool                temp_index;
@@ -132,7 +131,7 @@ static  bool    CanChange( instruction **pins,
                         return( false );
                     new_ins->operands[i] = ScaleIndex( to, opnd->i.base,
                                                          opnd->i.constant,
-                                                         opnd->n.name_class,
+                                                         opnd->n.type_class,
                                                          opnd->n.size,
                                                          opnd->i.scale,
                                                          opnd->i.index_flags );

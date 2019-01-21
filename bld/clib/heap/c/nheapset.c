@@ -40,24 +40,30 @@
 
 #if defined( _M_I86 )
 // 16-bit Intel all models
-extern  void    _mymemset(void_fptr,unsigned,unsigned);
-#pragma aux     _mymemset =     \
+extern void     _mymemset( void_fptr, unsigned, unsigned );
+#pragma aux _mymemset = \
         memset_i86              \
-    parm caller [es di] [ax] [cx] modify exact [ax di cx]
+    __parm __caller     [__es __di] [__ax] [__cx] \
+    __value             \
+    __modify __exact    [__ax __di __cx]
 #elif defined( _M_IX86 )
 // 32-bit Intel
 #if defined( __FLAT__ )
 // flat model
-extern  void    _mymemset(void_nptr,unsigned,unsigned);
-#pragma aux     _mymemset =     \
+extern void     _mymemset( void_nptr, unsigned, unsigned );
+#pragma aux _mymemset = \
         memset_386              \
-    parm caller [edi] [eax] [ecx] modify exact [ax edi ecx]
+    __parm __caller     [__edi] [__eax] [__ecx] \
+    __value             \
+    __modify __exact    [__ax __edi __ecx]
 #else
 // all segmented models
-extern  void    _mymemset(void_fptr,unsigned,unsigned);
-#pragma aux     _mymemset =     \
+extern void     _mymemset( void_fptr, unsigned, unsigned );
+#pragma aux _mymemset = \
         memset_386              \
-    parm caller [es edi] [eax] [ecx] modify exact [ax edi ecx]
+    __parm __caller     [__es __edi] [__eax] [__ecx] \
+    __value             \
+    __modify __exact    [__ax __edi __ecx]
 #endif
 #else
 // 32-bit non-Intel targets
@@ -73,9 +79,9 @@ _WCRTLINK int _heapset( unsigned int fill )
 
 _WCRTLINK int _nheapset( unsigned int fill )
 {
-    mheapptr    heap;
-    frlptr      frl;
-    int         heap_status;
+    heapblk_nptr    heap;
+    freelist_nptr   frl;
+    int             heap_status;
 
     heap_status = _heapchk();
     if( heap_status != _HEAPOK ) {
@@ -83,9 +89,9 @@ _WCRTLINK int _nheapset( unsigned int fill )
     }
     _AccessNHeap();
 
-    for( heap = __nheapbeg; heap != NULL; heap = heap->next ) {
-        for( frl = heap->freehead.next; frl != (frlptr)&heap->freehead; frl = frl->next ) {
-            _mymemset( frl + 1, fill, frl->len - sizeof( freelistp ) );
+    for( heap = __nheapbeg; heap != NULL; heap = heap->next.nptr ) {
+        for( frl = heap->freehead.next.nptr; frl != (freelist_nptr)&heap->freehead; frl = frl->next.nptr ) {
+            _mymemset( frl + 1, fill, frl->len - sizeof( freelist ) );
         }
     }
     _ReleaseNHeap();

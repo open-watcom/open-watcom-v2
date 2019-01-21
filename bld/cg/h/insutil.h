@@ -35,3 +35,4 @@ extern void             SuffixIns( instruction *ins, instruction *suff );
 extern void             ReplIns( instruction *ins, instruction *new );
 extern instruction_id   Renumber( void );
 extern void             ClearInsBits( instruction_flags mask );
+extern block            *InsBlock( instruction *ins );

@@ -39,8 +39,8 @@
 /* Local Windows CALLBACK function prototypes */
 WINEXPORT INT_PTR CALLBACK TagListDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
 
-static int      tagCnt;
-static char     **tagList;
+static int      tagCount = 0;
+static char     **tagList = NULL;
 
 /*
  * TagListDlgProc - handle the tag selection dialog
@@ -53,7 +53,7 @@ WINEXPORT INT_PTR CALLBACK TagListDlgProc( HWND hwnd, UINT msg, WPARAM wparam, L
     case WM_INITDIALOG:
         CenterWindowInRoot( hwnd );
         SetDlgItemText( hwnd, TAGS_TAGNAME, (LPSTR) lparam );
-        for( i = 0; i < tagCnt; i++ ) {
+        for( i = 0; i < tagCount; i++ ) {
             SendDlgItemMessage( hwnd, TAGS_LISTBOX, LB_ADDSTRING, 0, (LPARAM)tagList[i] );
         }
         SendDlgItemMessage( hwnd, TAGS_LISTBOX, LB_SETCURSEL, 0, 0L );
@@ -66,8 +66,7 @@ WINEXPORT INT_PTR CALLBACK TagListDlgProc( HWND hwnd, UINT msg, WPARAM wparam, L
         case IDOK:
             i = (int)SendDlgItemMessage( hwnd, TAGS_LISTBOX, LB_GETCURSEL, 0, 0L );
             if( i == LB_ERR ) {
-                MessageBox( hwnd, "No selection", EditorName,
-                            MB_ICONEXCLAMATION | MB_OK );
+                MessageBox( hwnd, "No selection", EditorName, MB_ICONEXCLAMATION | MB_OK );
             } else {
                 EndDialog( hwnd, i );
             }
@@ -90,16 +89,16 @@ WINEXPORT INT_PTR CALLBACK TagListDlgProc( HWND hwnd, UINT msg, WPARAM wparam, L
 /*
  * PickATag - create dialog to select a specific tag
  */
-int PickATag( int clist, char **list, const char *tagname )
+list_linenum PickATag( list_linenum tag_count, char **tag_list, const char *tagname )
 {
-    DLGPROC     dlgproc;
-    int         rc;
+    DLGPROC         dlgproc;
+    list_linenum    rc;
 
-    tagCnt = clist;
-    tagList = list;
+    tagCount = (int)tag_count;
+    tagList = tag_list;
 
     dlgproc = MakeProcInstance_DLG( TagListDlgProc, InstanceHandle );
-    rc = DialogBoxParam( InstanceHandle, "TAGS", root_window_id, dlgproc, (LPARAM)tagname );
+    rc = (list_linenum)DialogBoxParam( InstanceHandle, "TAGS", root_window_id, dlgproc, (LPARAM)tagname );
     FreeProcInstance_DLG( dlgproc );
     return( rc );
 

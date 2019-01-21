@@ -46,23 +46,22 @@ _WCRTLINK int (int86x)( int intno,
     regs.w.bx = inregs->w.bx;
     regs.w.cx = inregs->w.cx;
     regs.w.dx = inregs->w.dx;
-/*  regs.w.bp = inregs->w.bp;   no bp in REGS union */
     regs.w.si = inregs->w.si;
     regs.w.di = inregs->w.di;
-    regs.w.flags = inregs->w.cflag;
     regs.w.ds = segregs->ds;
     regs.w.es = segregs->es;
+//    regs.w.bp = 0;              /* no bp in REGS union */
+//    regs.w.flags = ( inregs->w.cflag ) ? INTR_CF : 0;
 
-    _DoINTR( intno, &regs );
+    _DoINTR( intno, &regs, 0 );
 
     outregs->w.ax = regs.w.ax;
     outregs->w.bx = regs.w.bx;
     outregs->w.cx = regs.w.cx;
     outregs->w.dx = regs.w.dx;
-/*  outregs->w.bp = regs.w.bp;  no bp in REGS union */
     outregs->w.si = regs.w.si;
     outregs->w.di = regs.w.di;
-    outregs->w.cflag = regs.w.flags;
+    outregs->w.cflag = ( (regs.w.flags & INTR_CF) != 0 );
     segregs->ds = regs.w.ds;
     segregs->es = regs.w.es;
 

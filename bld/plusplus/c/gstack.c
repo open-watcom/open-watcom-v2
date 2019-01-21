@@ -73,7 +73,7 @@ GLOBAL_STACK *GStackPush( GLOBAL_STACK **head, gstack_type id )
 
     top = StackCarveAlloc( carveGLOBAL_STACK, head );
     top->id = id;
-    return top;
+    return( top );
 }
 
 void GStackPop( GLOBAL_STACK **head )

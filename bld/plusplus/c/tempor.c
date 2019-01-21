@@ -48,7 +48,7 @@ TEMP_TYPE TemporaryClass(       // SET DEFAULT CLASS FOR TEMPORARIES
 
     retn = tempClass;
     tempClass = new_type;
-    return retn;
+    return( retn );
 }
 
 
@@ -67,14 +67,14 @@ static SYMBOL makeTemporary(    // ALLOCATE A TEMPORARY
 #endif
     sym = SymMakeDummy( type, &name );
     switch( tempClass ) {
-      case TEMP_TYPE_EXPR :
-      case TEMP_TYPE_BLOCK :
+    case TEMP_TYPE_EXPR :
+    case TEMP_TYPE_BLOCK :
         id = SC_AUTO;
         break;
-      case TEMP_TYPE_STATIC :
+    case TEMP_TYPE_STATIC :
         id = SC_STATIC;
         break;
-      DbgDefault( "makeTemporary -- bad tempClass" );
+    DbgDefault( "makeTemporary -- bad tempClass" );
     }
     sym->id = id;
     if( id == SC_STATIC ) {
@@ -86,21 +86,21 @@ static SYMBOL makeTemporary(    // ALLOCATE A TEMPORARY
     } else {
         ScopeInsert( ScopeForTemps(), sym, name );
     }
-    return sym;
+    return( sym );
 }
 
 
 SYMBOL TemporaryAllocNoStorage( // ALLOCATE TEMPORARY WITHOUT STORAGE
     TYPE type )                 // - type of temporary
 {
-    return makeTemporary( type, false );
+    return( makeTemporary( type, false ) );
 }
 
 
 SYMBOL TemporaryAlloc(          // ALLOCATE TEMPORARY IN FUNCTION
     TYPE type )                 // - type of temporary
 {
-    return makeTemporary( type, true );
+    return( makeTemporary( type, true ) );
 }
 
 
@@ -110,7 +110,7 @@ static SCOPE tempScope;         // NULL or scope for temporaries
 SCOPE ScopeForTemps(            // FIND SCOPE FOR TEMPORARIES
     void )
 {
-    return tempScope == NULL ? GetCurrScope() : tempScope;
+    return( tempScope == NULL ? GetCurrScope() : tempScope );
 }
 
 

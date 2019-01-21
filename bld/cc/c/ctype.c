@@ -189,10 +189,10 @@ void CTypeInit( void )
         } else {
 #endif
             if( CTypeSizes[base_type] != 0 || base_type == TYPE_VOID || base_type == TYPE_DOT_DOT_DOT ) {
-            BaseTypes[base_type] = TypeNode( base_type, NULL );
-        } else {
-            BaseTypes[base_type] = NULL;
-        }
+                BaseTypes[base_type] = TypeNode( base_type, NULL );
+            } else {
+                BaseTypes[base_type] = NULL;
+            }
 #if 0
         }
 #endif
@@ -931,8 +931,8 @@ static target_size FieldAlign( target_size next_offset, FIELDPTR field, align_ty
 
 static DATA_TYPE UnQualifiedType( TYPEPTR typ )
 {
-    SKIP_TYPEDEFS( typ );
-    SKIP_ENUM( typ );
+    // skip typedefs, go into enum base
+    typ = SkipTypeFluff( typ );
     switch( typ->decl_type ) {
     case TYPE_BOOL:
         return( TYPE_BOOL );
@@ -1343,8 +1343,10 @@ static TYPEPTR ComplexDecl( DATA_TYPE decl_typ, bool packed )
 
 static void CheckBitfieldType( TYPEPTR typ )
 {
+    // skip typedefs
     SKIP_TYPEDEFS( typ );
     if( CompFlags.extensions_enabled ) {
+        // go into enum base
         SKIP_ENUM( typ );
     }
     switch( typ->decl_type ) {

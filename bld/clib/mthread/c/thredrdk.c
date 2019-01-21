@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
+* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -34,8 +34,6 @@
 #include <stdlib.h>
 #include <process.h>
 #include <string.h>
-#include <dos.h>
-#include <malloc.h>
 #include <rdos.h>
 #include <rdosdev.h>
 #include "rtdata.h"
@@ -54,9 +52,9 @@ typedef struct thread_args {
 } thread_args;
 
 #pragma aux begin_thread_helper "*" \
-                  parm caller [gs ebx] \
-                  value struct routine [eax] \
-                  modify [eax ebx ecx edx esi edi]
+    __parm __caller             [__gs __ebx] \
+    __value __struct __routine  [__eax] \
+    __modify                    [__eax __ebx __ecx __edx __esi __edi]
 
 static void __far begin_thread_helper( void *param )
 /********************************************************/
@@ -65,7 +63,7 @@ static void __far begin_thread_helper( void *param )
     __thread_fn         *start_addr;
     void                *arg;
 
-    td->tid = RdosGetThreadHandle();    
+    td->tid = RdosGetThreadHandle();
     start_addr = (__thread_fn *)td->start_addr;
     arg = td->argument;
     RdosSignal( td->signal );

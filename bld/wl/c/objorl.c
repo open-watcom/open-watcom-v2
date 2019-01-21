@@ -253,7 +253,7 @@ static bool CheckFlags( orl_file_handle filehdl )
     test = (typemask | LinkState) & HAVE_MACHTYPE_MASK;
     test &= test - 1;           // turn off one bit
     if( test != 0 ) {   // multiple bits were turned on.
-        LnkMsg( WRN+MSG_MACHTYPE_DIFFERENT, "s", CurrMod->f.source->file->name);
+        LnkMsg( WRN+MSG_MACHTYPE_DIFFERENT, "s", CurrMod->f.source->file->name.u.ptr );
     } else {
         LinkState |= typemask;
     }
@@ -357,7 +357,7 @@ static void AllocSeg( void *_snode, void *dummy )
     sdata = snode->entry;
     if( sdata == NULL )
         return;
-    sname = sdata->u.name;
+    sname = sdata->u.name.u.ptr;
     if( CurrMod->modinfo & MOD_IMPORT_LIB ) {
         if( sdata->isidata || sdata->iscode ) {
             if( sdata->iscode ) {
@@ -370,7 +370,7 @@ static void AllocSeg( void *_snode, void *dummy )
         }
     }
     isdbi = false;
-    if( memicmp( CoffDebugPrefix, sdata->u.name, sizeof( CoffDebugPrefix ) - 1 ) == 0 ) {
+    if( memicmp( CoffDebugPrefix, sdata->u.name.u.ptr, sizeof( CoffDebugPrefix ) - 1 ) == 0 ) {
         if( CurrMod->modinfo & MOD_IMPORT_LIB ) {
             snode->info |= SEG_DEAD;
             snode->entry = NULL;
@@ -378,14 +378,14 @@ static void AllocSeg( void *_snode, void *dummy )
             return;
         }
         isdbi = true;
-        if( stricmp( CoffDebugSymName, sdata->u.name ) == 0 ) {
+        if( stricmp( CoffDebugSymName, sdata->u.name.u.ptr ) == 0 ) {
             clname = _MSLocalClass;
-        } else if( stricmp( CoffDebugTypeName, sdata->u.name ) == 0 ) {
+        } else if( stricmp( CoffDebugTypeName, sdata->u.name.u.ptr ) == 0 ) {
             clname = _MSTypeClass;
         } else {
             clname = _DwarfClass;
         }
-    } else if( memicmp( TLSSegPrefix, sdata->u.name, sizeof( TLSSegPrefix ) - 1 ) == 0 ) {
+    } else if( memicmp( TLSSegPrefix, sdata->u.name.u.ptr, sizeof( TLSSegPrefix ) - 1 ) == 0 ) {
         clname = TLSClassName;
     } else if( sdata->iscode ) {
         clname = CodeClassName;
@@ -485,7 +485,7 @@ static orl_return DeclareSegment( orl_sec_handle sec )
     }
     sdata->is32bit = true;
     sdata->length = ORLSecGetSize( sec );
-    sdata->u.name = name;
+    sdata->u.name.u.ptr = (char *)name;
     if( flags & ORL_SEC_FLAG_EXEC ) {
         sdata->iscode = true;
     } else if( flags & ORL_SEC_FLAG_UNINITIALIZED_DATA ) {
@@ -494,7 +494,7 @@ static orl_return DeclareSegment( orl_sec_handle sec )
     } else {
         unsigned namelen;
 
-        namelen = strlen(name);
+        namelen = strlen( name );
         if( namelen >= 3 && memicmp( name + namelen - 3, "bss", 3 ) == 0 ) {
             LnkMsg( ERR+MSG_INTERNAL, "s", "Initialized BSS found" );
         }
@@ -502,8 +502,7 @@ static orl_return DeclareSegment( orl_sec_handle sec )
     }
     numlines = ORLSecGetNumLines( sec );
     if( numlines > 0 ) {
-        numlines *= sizeof( orl_linnum );
-        DBIAddLines( sdata, (const void *)ORLSecGetLines( sec ), numlines, true );
+        DBIAddLines( sdata, (const void *)ORLSecGetLines( sec ), numlines * ORL_STRUCT_SIZEOF( orl_linnum ), true );
     }
     return( ORL_OKAY );
 }
@@ -534,7 +533,7 @@ static void ImpProcSymbol( segnode *snode, orl_symbol_type type, const char *nam
             if( memicmp( name + namelen, CoffImportRefName, sizeof( CoffImportRefName ) - 1 ) == 0 ) {
                 _ChkAlloc( ImpModName, namelen + 5 );
                 memcpy( ImpModName, name, namelen );
-                if( memicmp( CurrMod->name + strlen( CurrMod->name ) - 4, ".drv", 4 ) == 0 ) { //KLUDGE!!
+                if( memicmp( CurrMod->name.u.ptr + strlen( CurrMod->name.u.ptr ) - 4, ".drv", 4 ) == 0 ) { //KLUDGE!!
                     memcpy( ImpModName + namelen, ".drv", 5 );
                 } else {
                     memcpy( ImpModName + namelen, ".dll", 5 );
@@ -594,16 +593,15 @@ static orl_return ProcSymbol( orl_symbol_handle symhdl )
     if( type & ORL_SYM_TYPE_FILE ) {
         if( (CurrMod->modinfo & MOD_GOT_NAME) == 0 ) {
             CurrMod->modinfo |= MOD_GOT_NAME;
-            _LnkFree( CurrMod->name );
-            CurrMod->name = AddStringStringTable( &PermStrings, name );
+            _LnkFree( CurrMod->name.u.ptr );
+            CurrMod->name.u.ptr = AddStringStringTable( &PermStrings, name );
         }
         return( ORL_OKAY );
     }
     if( type & ORL_SYM_TYPE_DEBUG )
         return( ORL_OKAY );
-    if( type & (ORL_SYM_TYPE_OBJECT | ORL_SYM_TYPE_FUNCTION) ||
-        (type & (ORL_SYM_TYPE_NOTYPE | ORL_SYM_TYPE_UNDEFINED) &&
-         name != NULL)) {
+    if( (type & (ORL_SYM_TYPE_OBJECT | ORL_SYM_TYPE_FUNCTION))
+      || ((type & (ORL_SYM_TYPE_NOTYPE | ORL_SYM_TYPE_UNDEFINED)) && name != NULL ) ) {
         namelen = strlen( name );
         if( namelen == 0 ) {
             BadObject();
@@ -642,7 +640,7 @@ static orl_return ProcSymbol( orl_symbol_handle symhdl )
                 name = ORLSymbolGetName( assocsymhdl );
                 namelen = strlen(name);
                 if( binding == ORL_SYM_BINDING_ALIAS ) {
-                    MakeSymAlias( sym->name, strlen(sym->name), name, namelen );
+                    MakeSymAlias( sym->name.u.ptr, strlen( sym->name.u.ptr ), name, namelen );
                 } else {
                     assocsym = SymOp( ST_CREATE | ST_REFERENCE, name, namelen );
                     DefineLazyExtdef( sym, assocsym, isweak );
@@ -822,7 +820,7 @@ static void HandleImportSymbol( const char *name )
     intname.name = name;
     intname.len = strlen( name );
     if( ImpModName == NULL ) {
-        ImpModName = FileName( CurrMod->name, strlen( CurrMod->name ), E_DLL, false );
+        ImpModName = FileName( CurrMod->name.u.ptr, strlen( CurrMod->name.u.ptr ), E_DLL, false );
     }
     modname.name = ImpModName;
     modname.len = strlen( ImpModName );
@@ -927,7 +925,7 @@ unsigned long ORLPass1( void )
     PermStartMod( CurrMod );
     filehdl = InitFile();
     if( filehdl == NULL ) {
-        LnkMsg( FTL+MSG_BAD_OBJECT, "s", CurrMod->f.source->file->name );
+        LnkMsg( FTL+MSG_BAD_OBJECT, "s", CurrMod->f.source->file->name.u.ptr );
         CurrMod->f.source->file->flags |= INSTAT_IOERR;
         return( (unsigned long)-1 );
     }

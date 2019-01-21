@@ -1,4 +1,4 @@
-#pmake: build flat cpu_386 os_osi os_dos os_linux
+#pmake: build flat cpu_386 os_osi os_dos
 #
 # strg3s.lib -- stack based 32-bit STRING library
 #

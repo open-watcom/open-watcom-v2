@@ -132,6 +132,7 @@ ins (T_DOT_XMM3,        OP_SPECIAL,  0,      OP_NONE,       0,       0,  0,     
 ins (T_AAA,             OP_NONE,     0,      OP_NONE,       OP3_NONE,0,  no_RM,  0,  0x37,     0x00,                     P_86,        0)
 ins (T_AAD,             OP_NONE,     0,      OP_NONE,       OP3_NONE,0,  0,      0,  0xD5,     0x0A,                     P_86,        0)
 ins (T_AAM,             OP_NONE,     0,      OP_NONE,       OP3_NONE,0,  0,      0,  0xD4,     0x0A,                     P_86,        0)
+ins (T_AAM,             OP_U8,       0,      OP_NONE,       OP3_NONE,0,  no_RM,  0,  0xD4,     0x00,                     P_86,        0)
 ins (T_AAS,             OP_NONE,     0,      OP_NONE,       OP3_NONE,0,  no_RM,  0,  0x3F,     0x00,                     P_86,        0)
 ins (T_ADC,             OP_R1632,    0,      OP_I8,         OP3_NONE,0,  0,      0,  0x83,     0x10,                     P_86,        0)
 ins (T_ADC,             OP_R,        0,      OP_M,          OP3_NONE,1,  0,      1,  0x12,     0x00,                     P_86,        0)

@@ -37,12 +37,14 @@
 
 #ifdef _M_I86
 extern void vertsync( void );
-#pragma aux vertsync =                                          \
-                    0xba 0xda 0x03      /* mov dx,3da   */      \
-                    0xec                /* in al,dx     */      \
-                    0xa8 0x08           /* test al,8    */      \
-                    0x74 0xfb           /* jz -5        */      \
-                modify [ax dx];
+#pragma aux vertsync = \
+        "mov  dx,3dah"  \
+    "L1: in   al,dx"    \
+        "test al,8"     \
+        "jz short L1"   \
+    __parm      [] \
+    __value     \
+    __modify    [__ax __dx]
 #endif
 
 void intern vertretrace( void )

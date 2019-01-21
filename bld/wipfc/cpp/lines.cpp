@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
+* Copyright (c) 2009-2018 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -32,6 +32,8 @@
 *
 ****************************************************************************/
 
+
+#include "wipfc.hpp"
 #include "lines.hpp"
 #include "brcmd.hpp"
 #include "cell.hpp"
@@ -44,70 +46,74 @@ Lexer::Token Lines::parse( Lexer* lexer )
 {
     Lexer::Token tok( parseAttributes( lexer ) );
     if( tok == Lexer::WHITESPACE && lexer->text()[0] == L'\n' )
-        tok = document->getNextToken(); //consume '\n' if just after tag end
+        tok = _document->getNextToken(); //consume '\n' if just after tag end
     while( tok != Lexer::END ) {
         if( parseInline( lexer, tok ) ) {
-            if( lexer->tagId() == Lexer::ELINES )
+            if( lexer->tagId() == Lexer::ELINES ) {
                 break;
-            else
+            } else {
                 parseCleanup( lexer, tok );
+            }
         }
     }
-    return tok;
+    return( tok );
 }
 /*****************************************************************************/
 Lexer::Token Lines::parseAttributes( Lexer* lexer )
 {
-    Lexer::Token tok( document->getNextToken() );
-    while( tok != Lexer::TAGEND ) {
+    Lexer::Token tok;
+
+    while( (tok = _document->getNextToken()) != Lexer::TAGEND ) {
         if( tok == Lexer::ATTRIBUTE ) {
             std::wstring key;
             std::wstring value;
             splitAttribute( lexer->text(), key, value );
             if( key == L"align" ) {
-                if( value == L"left" )
-                    alignment = LEFT;
-                else if( value == L"right" )
-                    alignment = RIGHT;
-                else if( value == L"center" )
-                    alignment = CENTER;
-                else
-                    document->printError( ERR2_VALUE );
+                if( value == L"left" ) {
+                    _alignment = LEFT;
+                } else if( value == L"right" ) {
+                    _alignment = RIGHT;
+                } else if( value == L"center" ) {
+                    _alignment = CENTER;
+                } else {
+                    _document->printError( ERR2_VALUE );
+                }
+            } else {
+                _document->printError( ERR1_ATTRNOTDEF );
             }
-            else
-                document->printError( ERR1_ATTRNOTDEF );
-        }
-        else if( tok == Lexer::FLAG )
-            document->printError( ERR1_ATTRNOTDEF );
-        else if( tok == Lexer::ERROR_TAG )
+        } else if( tok == Lexer::FLAG ) {
+            _document->printError( ERR1_ATTRNOTDEF );
+        } else if( tok == Lexer::ERROR_TAG ) {
             throw FatalError( ERR_SYNTAX );
-        else if( tok == Lexer::END )
+        } else if( tok == Lexer::END ) {
             throw FatalError( ERR_EOF );
-        else
-            document->printError( ERR1_TAGSYNTAX );
-        tok = document->getNextToken();
+        } else {
+            _document->printError( ERR1_TAGSYNTAX );
+        }
     }
-    return document->getNextToken();
+    return( _document->getNextToken() );
 }
 /*****************************************************************************/
 void Lines::buildText( Cell* cell )
 {
-    cell->addByte( 0xFC );  //toggle spacing
-    cell->addByte( 0xFF );  //esc
-    cell->addByte( 0x03 );  //size
-    cell->addByte( 0x1A );  //begin lines sequence
-    cell->addByte( alignment );
-    cell->addByte( 0xFC );  //toggle spacing
-    if( cell->textFull() )
+    cell->addByte( Cell::TOGGLE_SPACING );  //toggle spacing
+    cell->addByte( Cell::ESCAPE );          //esc
+    cell->addByte( 0x03 );                  //size
+    cell->addByte( 0x1A );                  //begin lines sequence
+    cell->add( static_cast< byte >( _alignment ) );
+    cell->addByte( Cell::TOGGLE_SPACING );  //toggle spacing
+    if( cell->textFull() ) {
         printError( ERR1_LARGEPAGE );
+    }
 }
 /*****************************************************************************/
 void ELines::buildText( Cell* cell )
 {
-    cell->addByte( 0xFF );  //esc
-    cell->addByte( 0x02 );  //size
-    cell->addByte( 0x1B );  //end lines sequence
-    if( cell->textFull() )
+    cell->addByte( Cell::ESCAPE );  //esc
+    cell->addByte( 0x02 );          //size
+    cell->addByte( 0x1B );          //end lines sequence
+    if( cell->textFull() ) {
         printError( ERR1_LARGEPAGE );
+    }
 }
 

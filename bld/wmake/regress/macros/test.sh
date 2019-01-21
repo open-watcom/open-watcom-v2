@@ -1,115 +1,119 @@
 #!/bin/sh
 
-function usage() {
+ERRORS=0
+
+usage() {
     echo usage: $0 prgname errorfile
     exit
 }
 
-function print_header() {
+print_header() {
     echo \# -----------------------------
-    echo \#   Test $TEST
+    echo \#   Macro Test $TEST
     echo \# -----------------------------
 }
 
-function do_check() {
-    if [ "$?" == "0" ]; then
-        echo \# Test $TEST successful
+do_check() {
+    if [ "$?" -eq "0" ]; then
+        echo \#      Test $1 successful
     else
-        echo \#\# MACRO \#\# >> $LOGFILE
-        echo Error: Test $TEST unsuccessful!!! | tee -a $LOGFILE
-	exit
+        echo \#\# MACRO $TEST \#\# >> $LOGFILE
+        echo Error: Test $1 unsuccessful!!! | tee -a $LOGFILE
+        ERRORS=1
     fi
 }
 
-if [ "$2" == "" ]; then 
+if [ -z "$2" ]; then 
     usage
 fi
 
 LOGFILE=$2
 echo \# ===========================
-echo \# Start Macro Tests
+echo \# Macro Tests
 echo \# ===========================
 
-TEST=1
+TEST=01
 print_header
-$1 -ms -h -f macro01 > tmp.out 2>&1
-diff -b macro01.chk tmp.out
+$1 -ms -h -f macro$TEST > test$TEST.lst 2>&1
+diff -b macro$TEST.chk test$TEST.lst
 do_check
 
-TEST=2A
+TEST=02
 print_header
-$1 -h -f macro02 > tmp.out 2>&1
-diff -b macro02a.chk tmp.out
-do_check
+$1 -h -f macro$TEST > test${TEST}a.lst 2>&1
+diff -b macro${TEST}a.chk test${TEST}a.lst
+do_check a
 
-TEST=2B
+TEST=02
 print_header
-$1 -h -ms -f macro02 > tmp.out 2>&1
-diff -b macro02b.chk tmp.out
-do_check
+$1 -h -ms -f macro$TEST > test${TEST}b.lst 2>&1
+diff -b macro${TEST}b.chk test${TEST}b.lst
+do_check b
 
-TEST=3A
+TEST=03
 print_header
-$1 -h -f macro03 > tmp.out 2>&1
-diff -b macro03a.chk tmp.out
-do_check
+$1 -h -f macro$TEST > test${TEST}a.lst 2>&1
+diff -b macro${TEST}a.chk test${TEST}a.lst
+do_check a
 
-TEST=3B
+TEST=03
 print_header
 export fubar=test depends on this environment variable
-$1 -h -ms -f macro03 > tmp.out 2>&1
+$1 -h -ms -f macro$TEST > test${TEST}b.lst 2>&1
 unset fubar
-diff -b -i macro03b.chk tmp.out
-do_check
+diff -b -i macro${TEST}b.chk test${TEST}b.lst
+do_check b
 
-TEST=4A
+TEST=04
 print_header
-$1 -h -f macro04 > tmp.out 2>&1
-diff -b macro04a.chk tmp.out
-do_check
+$1 -h -f macro$TEST > test${TEST}a.lst 2>&1
+diff -b macro${TEST}a.chk test${TEST}a.lst
+do_check a
 
-TEST=4B
+TEST=04
 print_header
-$1 -h -ms -f macro04 > tmp.out 2>&1
-diff -b macro04b.chk tmp.out
-do_check
+$1 -h -ms -f macro$TEST > test${TEST}b.lst 2>&1
+diff -b macro${TEST}b.chk test${TEST}b.lst
+do_check b
 
-TEST=5
+TEST=05
 print_header
 echo >hello.boo
 echo >hello.tmp
 echo >hello.c
-$1 -h -ms -f macro05u > tmp.out 2>&1
-diff -b macro05u.chk tmp.out
+$1 -h -ms -f macro${TEST}u > test$TEST.lst 2>&1
+diff -b macro${TEST}u.chk test$TEST.lst
 do_check
 rm hello.boo hello.tmp hello.c
 
-TEST=6
+TEST=06
 print_header
 echo >hello.obj
 echo >hello2.obj
 echo >hello.c
 echo >hello2.c
-$1 -h -ms -f macro06 -a > tmp.out 2>&1
-diff -b macro06.chk tmp.out
+$1 -h -ms -f macro$TEST -a > test$TEST.lst 2>&1
+diff -b macro$TEST.chk test$TEST.lst
 do_check
 
-TEST=7
+TEST=07
 print_header
 echo >hello.obj
 echo >hello2.obj
 echo >hello.c
 echo >hello2.c
-$1 -h -ms -m -f macro07 -a cc=wcl386 > tmp.out 2>&1
-diff -b macro07.chk tmp.out
+$1 -h -ms -m -f macro$TEST -a cc=wcl386 > test$TEST.lst 2>&1
+diff -b macro$TEST.chk test$TEST.lst
 do_check
 
-TEST=8
+TEST=08
 print_header
-$1 -h -f macro08 > tmp.out 2>&1
-diff -b macro08.chk tmp.out
+$1 -h -f macro$TEST > test$TEST.lst 2>&1
+diff -b macro$TEST.chk test$TEST.lst
 do_check
 
 rm -f hello.obj hello2.obj hello.boo hello.tmp hello.c hello2.c 
 
-rm tmp.out
+if [ "$ERRORS" -eq "0" ]; then
+    rm -f *.lst
+fi

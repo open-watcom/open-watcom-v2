@@ -87,7 +87,7 @@ ExtraRptCtr( ctr_pch_length );
 ExtraRptCtr( ctr_pch_waste );
 ExtraRptTable( ctr_pchw_region, PCHRW_MAX + 1, 1 );
 
-static pch_reloc_info relocInfo[ PCHRELOC_MAX ];
+static pch_reloc_info relocInfo[PCHRELOC_MAX];
 
 static char *pchName;
 static NAME pchDebugInfoName;
@@ -237,7 +237,9 @@ static void dumpCheckData( char *include_file )
     for( ; ; ) {
         HFileListNext( buff );
         dumpFileString( buff );
-        if( buff[0] == '\0' ) break;
+        if( buff[0] == '\0' ) {
+            break;
+        }
     }
     src = SrcFileNotReadOnly( SrcFileWalkInit() );
     for( ; src != NULL; ) {
@@ -377,7 +379,7 @@ void PCHVerifyFile( void *handle )    // DEBUG -- verify handle ok
 long PCHSeek( long offset, int type )
 {
     lseek( pchFile, offset, type );
-    return tell( pchFile );
+    return( tell( pchFile ) );
 }
 #endif
 
@@ -732,7 +734,9 @@ static bool stalePCH( char *include_file )
             if( stringIsDifferent( buff1, buff2, WARN_PCH_CONTENTS_INCLUDE ) ) {
                 return( true );
             }
-            if( buff1[0] == '\0' ) break;
+            if( buff1[0] == '\0' ) {
+                break;
+            }
         }
     }
     for( ; *readFileString( buff1 ) != '\0'; ) {
@@ -757,7 +761,7 @@ static unsigned pchReadBuffer( unsigned left_check )
     if( left == -1 || left == left_check ) {
         fail();
     }
-    return left;
+    return( left );
 }
 
 static unsigned initialRead( void )
@@ -873,7 +877,7 @@ void *PCHRead( void *p, unsigned size )
     }
     memcpy( p, buff_ptr, size );
     pch_buff_cur = buff_ptr + aligned_size;
-    return retn;
+    return( retn );
 }
 
 void *PCHReadUnaligned( void *p, unsigned size )
@@ -896,7 +900,7 @@ void *PCHReadUnaligned( void *p, unsigned size )
     }
     memcpy( p, buff_ptr, size );
     pch_buff_cur = buff_ptr + size;
-    return retn;
+    return( retn );
 }
 
 static unsigned doReadUnsigned( void )
@@ -923,9 +927,9 @@ unsigned PCHReadUInt( void )
         p_value = (unsigned *)buff_ptr;
         pch_buff_cur = end;
         value = *p_value;
-        return value;
+        return( value );
     }
-    return doReadUnsigned();
+    return( doReadUnsigned() );
 }
 
 void *PCHReadCVIndexElement( cvinit_t *data )
@@ -967,10 +971,10 @@ unsigned PCHReadUIntUnaligned( void )
         p_value = (unsigned *)buff_ptr;
         pch_buff_cur = end;
         value = *p_value;
-        return value;
+        return( value );
     }
     PCHReadUnaligned( &value, sizeof( value ) );
-    return value;
+    return( value );
 }
 
 pch_status PCHReadVerify( void )
@@ -1013,15 +1017,15 @@ pch_status PCHFiniVerify( bool writing )
 void PCHRelocStart( pch_reloc_index ri )
 /**************************************/
 {
-    relocInfo[ ri ].start = cursorWriteFilePosition();
-    DbgVerify( relocInfo[ ri ].start != 0, "PCH reloc cannot be at start of file" );
+    relocInfo[ri].start = cursorWriteFilePosition();
+    DbgVerify( relocInfo[ri].start != 0, "PCH reloc cannot be at start of file" );
 }
 
 void PCHRelocStop( pch_reloc_index ri )
 /*************************************/
 {
-    relocInfo[ ri ].stop = cursorWriteFilePosition();
-    DbgVerify( relocInfo[ ri ].start != 0 && relocInfo[ ri ].stop > relocInfo[ ri ].start, "PCH reloc stop has no matching start" );
+    relocInfo[ri].stop = cursorWriteFilePosition();
+    DbgVerify( relocInfo[ri].start != 0 && relocInfo[ri].stop > relocInfo[ri].start, "PCH reloc stop has no matching start" );
 }
 
 void PCHPerformReloc( pch_reloc_index ri )
@@ -1042,11 +1046,11 @@ void PCHPerformReloc( pch_reloc_index ri )
     if( ErrCount != 0 ) {
         return;
     }
-    start_position = relocInfo[ ri ].start;
+    start_position = relocInfo[ri].start;
     if( start_position == 0 ) {
         return;
     }
-    stop_position = relocInfo[ ri ].stop;
+    stop_position = relocInfo[ri].stop;
     pch_fname = PCHFileName();
     pchFile = sopen3( pch_fname, O_RDWR | O_BINARY | O_EXCL, SH_DENYRW );
     if( pchFile == -1 ) {
@@ -1108,7 +1112,7 @@ static void pchInit( INITFINI* defn )
 
     pchName = NULL;
     pchDebugInfoName = NULL;
-    for( cri = relocInfo; cri < &relocInfo[ PCHRELOC_MAX ]; ++cri ) {
+    for( cri = relocInfo; cri < &relocInfo[PCHRELOC_MAX]; ++cri ) {
         cri->start = 0;
     }
 #ifndef NDEBUG

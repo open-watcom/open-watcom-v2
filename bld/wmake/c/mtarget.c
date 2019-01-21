@@ -41,11 +41,15 @@
 #include "clibext.h"
 
 
+#define BEFORE_S        "BEFORE"
+#define AFTER_S         "AFTER"
+#define DEFAULT_S       "DEFAULT"
+
+#define HASH_PRIME      211
+#define CASESENSITIVE   false   // Is Target Name case sensitive
+
 /* just for people to copy in */
 const TATTR FalseAttr = { false, false, false, false, false, false, false, false };
-
-#define HASH_PRIME    211
-#define CASESENSITIVE false  // Is Target Name case sensitive
 
 STATIC HASHTAB    *targTab;
 STATIC DEPEND     *freeDepends;
@@ -95,13 +99,13 @@ SLIST *NewSList( void )
  * allocate a NKLIST, fill in default values
  */
 {
-    SLIST   *s;
+    SLIST   *slist;
 
     if( freeSLists != NULL ) {
-        s = freeSLists;
-        freeSLists = s->next;
-        memset( s, 0, sizeof( *s ) );
-        return( s );
+        slist = freeSLists;
+        freeSLists = slist->next;
+        memset( slist, 0, sizeof( *slist ) );
+        return( slist );
     }
     return( (SLIST *)CallocSafe( sizeof( SLIST ) ) );
 }
@@ -124,15 +128,19 @@ TLIST *NewTList( void )
 }
 
 
-void RenameTarget( TARGET *targ, const char *newname )
-/****************************************************/
+void RenameTarget( const char *oldname, const char *newname )
+/***********************************************************/
 {
-    (void)RemHashNode( targTab, targ->node.name, CASESENSITIVE );
-    if( targ->node.name != NULL ) {
-        FreeSafe( targ->node.name );
+    TARGET *targ;
+
+    targ = (TARGET *)RemHashNode( targTab, oldname, CASESENSITIVE );
+    if( targ != NULL ) {
+        if( targ->node.name != NULL ) {
+            FreeSafe( targ->node.name );
+        }
+        targ->node.name = FixName( StrDupSafe( newname ) );
+        AddHashNode( targTab, (HASHNODE *)targ );
     }
-    targ->node.name = FixName( StrDupSafe( newname ) );
-    AddHashNode( targTab, (HASHNODE *)targ );
 }
 
 
@@ -175,7 +183,7 @@ CLIST *DotCList( DotName dot )
     char                name[MAX_DOT_NAME];
     TARGET const        *cur;
 
-    name[0] = DOT;
+    name[0] = '.';
     FixName( strcpy( name + 1, DotNames[dot] ) );
 
     cur = FindTarget( name );
@@ -474,7 +482,7 @@ STATIC TARGET *findOrNewTarget( const char *tname, bool mentioned )
     targ = FindTarget( FixName( strcpy( name, tname ) ) );
     if( targ == NULL ) {
         targ = NewTarget( name );
-        if( name[0] == DOT && cisextc( name[1] ) ) {
+        if( name[0] == '.' && cisextc( name[1] ) ) {
             targ->special = true;
             if( stricmp( name + 1, BEFORE_S ) == 0 ||
                 stricmp( name + 1, AFTER_S )  == 0 ) {
@@ -596,7 +604,8 @@ STATIC bool printTarg( void *node, void *ptr )
     DEPEND const            *curdep;
     TLIST const             *curtlist;
 
-    (void)ptr; // Unused
+    /* unused parameters */ (void)ptr;
+
     if( targ->special ) {
         return( false );             /* don't print special targets */
     } else {
@@ -701,7 +710,8 @@ void TargAttrOrAttr( TATTR *tattr, TATTR attr )
 STATIC bool resetEx( void *targ, void *ptr )
 /******************************************/
 {
-    (void)ptr; // Unused
+    /* unused parameters */ (void)ptr;
+
     ((TARGET *)targ)->executed = true;
     return( false );
 }
@@ -719,7 +729,8 @@ STATIC bool noCmds( void *trg, void *ptr )
 {
     TARGET  *targ = trg;
 
-    (void)ptr; // Unused
+    /* unused parameters */ (void)ptr;
+
     if( targ->depend != NULL && targ->depend->clist == NULL ) {
         targ->allow_nocmd = true;
     }
@@ -740,7 +751,7 @@ STATIC RET_T cleanupLeftovers( void )
 {
     DEPEND      *dep;
     CLIST       *c;
-    SLIST       *s;
+    SLIST       *slist;
     TLIST       *t;
     FLIST       *f;
     NKLIST      *nk;
@@ -771,9 +782,9 @@ STATIC RET_T cleanupLeftovers( void )
     }
     if( freeSLists != NULL ) {
         do {
-            s = freeSLists;
-            freeSLists = s->next;
-            FreeSafe( s );
+            slist = freeSLists;
+            freeSLists = slist->next;
+            FreeSafe( slist );
         } while( freeSLists != NULL );
         return( RET_SUCCESS );
     }
@@ -819,7 +830,8 @@ void TargetInit( void )
 STATIC bool walkFree( void *targ, void *ptr )
 /*******************************************/
 {
-    (void)ptr; // Unused
+    /* unused parameters */ (void)ptr;
+
     freeTarget( (TARGET*)targ );
     return( false );
 }

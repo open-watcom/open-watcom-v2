@@ -35,16 +35,9 @@
 #include "winaux.h"
 #include "win.h"
 #include "color.h"
-#include "font.h"
+#include "vifont.h"
 #include "utils.h"
 #include "sstyle.h"
-
-static void funnyFix( RECT *rect, int x, window_id wid, char *display, int len,
-                      HDC hdc, int max_width, type_style *style, HBRUSH thisBrush );
-
-void MyTabbedTextOut( HDC hdc, char **display, int len,
-                      bool funny_italic, POINT *p, type_style *style, RECT *rect,
-                      window_id wid, char *otmp, int y );
 
 bool                AllowDisplay = true;
 static int          pageCnt;
@@ -52,7 +45,6 @@ static font_type    lastFont, thisFont;
 static vi_color     lastFore, thisFore;
 static vi_color     lastBack, thisBack;
 static HBRUSH       thisBrush;
-
 
 void ScreenPage( int page )
 {
@@ -166,7 +158,7 @@ bool SetDrawingObjects( HDC hdc, type_style *style )
 
 #ifndef BITBLT_BUFFER_DISPLAY
 
-static void funnyFix( RECT *rect, int x, window_id wid, char *display, int len,
+static void funnyFix( RECT *rect, int x, window_id wid, char *display, size_t len,
                       HDC hdc, int max_width, type_style *style, HBRUSH brush )
 {
     // FunnyItalic so draw at bit at begining and end!
@@ -194,12 +186,12 @@ static void funnyFix( RECT *rect, int x, window_id wid, char *display, int len,
     FillRect( hdc, &smallrect, brush );
 }
 
-void MyTabbedTextOut( HDC hdc,
-                      char **display,        // a reference to a string
-                      int len,               // number of chars to display
-                      bool funny_italic,     // fix up begin and end ?
-                      POINT *p,              // reference to current position
-                      type_style *style,     // current style
+static void MyTabbedTextOut( HDC hdc,
+                      char **display,       // a reference to a string
+                      size_t len,           // number of chars to display
+                      bool funny_italic,    // fix up begin and end ?
+                      POINT *p,             // reference to current position
+                      type_style *style,    // current style
                       RECT *rect,
                       window_id wid,
                       char *otmp,
@@ -208,7 +200,7 @@ void MyTabbedTextOut( HDC hdc,
     if( EditFlags.RealTabs ) {
         char    *tstring = *display;
         char    *string_end = tstring + len;
-        int     tlen;
+        size_t  tlen;
         RECT    new;
 
         while( tstring < string_end ) {
@@ -267,7 +259,8 @@ int DisplayLineInWindowWithSyntaxStyle( window_id wid, int c_line_no,
     char        *tmp, *otmp;
     dc_line     *c_line;
     RECT        rect;
-    int         height, len;
+    int         height;
+    size_t      len;
     int         x, y, indent;
     bool        changed;
     int         ssDifIndex;
@@ -293,11 +286,7 @@ int DisplayLineInWindowWithSyntaxStyle( window_id wid, int c_line_no,
 
     // set up tabs for drawing
     if( !EditFlags.RealTabs ) {
-#if defined( __WATCOMC__) && !defined( __AXP__ )
-        len = _inline_strlen( text );
-#else
         len = strlen( text );
-#endif
         otmp = tmp = StaticAlloc();
         ExpandTabsInABuffer( text, len, tmp, EditVars.MaxLine + 1 );
     } else {
@@ -457,7 +446,8 @@ int DisplayLineInWindowWithSyntaxStyle( window_id wid, int c_line_no,
     char        *tmp, *otmp;
     dc_line     *c_line;
     RECT        rect;
-    int         width, height, len;
+    int         width, height;
+    size_t      len;
     int         x, y, indent;
     bool        changed;
     int         ssDifIndex;
@@ -482,11 +472,7 @@ int DisplayLineInWindowWithSyntaxStyle( window_id wid, int c_line_no,
     rect.bottom = y + height;
 
     if( EditFlags.RealTabs ) {
-#if defined( __WATCOMC__) && !defined( __AXP__ )
-        len = _inline_strlen( text );
-#else
         len = strlen( text );
-#endif
         otmp = tmp = StaticAlloc();
         ExpandTabsInABuffer( text, len, tmp, EditVars.MaxLine + 1 );
     } else {

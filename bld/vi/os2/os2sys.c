@@ -35,6 +35,7 @@
 #include "vibios.h"
 #include <stddef.h>
 
+
 #ifdef __OS2V2__
     #define SEG16   _Seg16
     #define STUPID_UINT     unsigned long
@@ -45,45 +46,10 @@
 
 extern int      PageCnt;
 
-static char     oldPath[_MAX_PATH];
-static char     oldDisk;
-
 int FileSysNeedsCR( int handle )
 {
     return( true );
 }
-
-/*
- * PushDirectory - save the current directory
- */
-void PushDirectory( const char *orig )
-{
-    STUPID_UINT         c;
-    unsigned long       map;
-
-    oldPath[0] = '\0';
-    DosQCurDisk( &c, &map );
-    oldDisk = (char)c;
-    if( orig[1] == DRV_SEP ) {
-        ChangeDrive( orig[0] );
-    }
-    GetCWD2( oldPath, sizeof( oldPath ) );
-    ChangeDirectory( orig );
-
-} /* PushDirectory */
-
-/*
- * PopDirectory - restore the last directory
- */
-void PopDirectory( void )
-{
-    if( oldPath[0] != '\0' ) {
-        ChangeDirectory( oldPath );
-    }
-    DosSelectDisk( oldDisk );
-    ChangeDirectory( CurrentDirectory );
-
-} /* PopDirectory */
 
 /*
  * NewCursor - change cursor to insert mode type
@@ -184,22 +150,6 @@ void ScreenPage( int page )
     PageCnt += page;
 
 } /* ScreenPage */
-
-/*
- * ChangeDrive - change the working drive
- */
-vi_rc ChangeDrive( int drive )
-{
-    char        a;
-    unsigned    b;
-    a = (char) tolower( drive ) - (char) 'a';
-    b = a + 1;
-    if( DosSelectDisk( b ) ) {
-        return( ERR_NO_SUCH_DRIVE );
-    }
-    return( ERR_NO_ERR );
-
-}/* ChangeDrive */
 
 /*
  * ShiftDown - test if shift key is down

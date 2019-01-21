@@ -222,14 +222,15 @@ void Scanner::pullCommand( Token * tok )
         tok->_hasValue = false;
     } else {
         tok->_hasValue = true;
-        for( i=0; i<6; i++ ) {
+        for( i = 0; i < sizeof( num_string ) - 1; i++ ) {
             num_string[i] = static_cast<char>(current);
             current = nextch();
             if( !isdigit(current) ) {
+                i++;
                 break;
             }
         }
-        num_string[i + 1] = '\0';
+        num_string[i] = '\0';
         tok->_value = atoi( num_string );
     }
     if( current != S_ENDC && current != ' ' ) {

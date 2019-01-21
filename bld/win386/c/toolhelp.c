@@ -38,8 +38,9 @@
 #include "_windpmi.h"
 #include "_toolhlp.h"
 
-#pragma aux BackPatch_toolhelp parm [ax]
+
 extern LPVOID FAR BackPatch_toolhelp( char *strx );
+#pragma aux BackPatch_toolhelp __parm [__ax]
 
 static DWORD (FAR PASCAL *toolhelpMemoryRead)(WORD wSel, DWORD dwOffset, void FAR* lpBuffer, DWORD dwcb);
 static DWORD (FAR PASCAL *toolhelpMemoryWrite)(WORD wSel, DWORD dwOffset, void FAR* lpBuffer, DWORD dwcb);

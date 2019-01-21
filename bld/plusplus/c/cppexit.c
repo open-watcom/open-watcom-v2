@@ -76,6 +76,6 @@ void CppAtExit(                 // C++ AT-EXIT ROUTINE
 {
     if( ! exiting ) {
         DbgVerify( exit_count < MAX_EXITS, "CppAtExit: too many exits" );
-        exit_list[ exit_count++ ] = fun;
+        exit_list[exit_count++] = fun;
     }
 }

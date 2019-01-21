@@ -125,17 +125,20 @@ typedef enum {
 #define USR_FLAGS (FLG_C | FLG_P | FLG_A | FLG_Z | FLG_S | FLG_I | FLG_D | FLG_O)
 
 extern void MoveBytes( short, short, short, short, short );
-#pragma aux MoveBytes =                                  \
-/*  MoveBytes( fromseg, fromoff, toseg, tooff, len ); */ \
-       " rep    movsb "                                  \
-    parm    caller  [ds] [si] [es] [di] [cx]   \
-    modify  [si di];
+/*  MoveBytes( fromseg, fromoff, toseg, tooff, len ); */
+#pragma aux MoveBytes = \
+        "rep movsb" \
+    __parm __caller [__ds] [__si] [__es] [__di] [__cx] \
+    __value         \
+    __modify        [__si __di]
 
 extern unsigned short MyFlags( void );
 #pragma aux MyFlags = \
-       " pushf  "     \
-       " pop ax "     \
-    value [ax];
+        "pushf"     \
+        "pop  ax"   \
+    __parm          [] \
+    __value         [__ax] \
+    __modify        []
 
 extern tiny_ret_t       DOSLoadProg(char __far *, pblock __far *);
 extern addr_seg         DOSTaskPSP(void);
@@ -224,7 +227,7 @@ trap_retval ReqGet_sys_config( void )
     get_sys_config_ret  *ret;
 
     ret = GetOutPtr(0);
-    ret->sys.os = MAD_OS_DOS;
+    ret->sys.os = DIG_OS_DOS;
     ret->sys.osmajor = DOS_major;
     ret->sys.osminor = DOS_minor;
     ret->sys.cpu = CPUType;
@@ -240,7 +243,7 @@ trap_retval ReqGet_sys_config( void )
         ret->sys.fpu = X86_NO;
     }
     ret->sys.huge_shift = 12;
-    ret->sys.mad = MAD_X86;
+    ret->sys.arch = DIG_ARCH_X86;
     return( sizeof( *ret ) );
 }
 

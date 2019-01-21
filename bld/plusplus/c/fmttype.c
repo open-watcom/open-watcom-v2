@@ -61,38 +61,10 @@ typedef struct {
     type_flag   mask;
 } FMT_FLAG_INFO;
 
-#define ENTRY_ERROR             "<error> ",
-#define ENTRY_BOOL              "bool ",
-#define ENTRY_CHAR              "char ",
-#define ENTRY_SCHAR             "signed char ",
-#define ENTRY_UCHAR             "unsigned char ",
-#define ENTRY_WCHAR             "wchar_t ",
-#define ENTRY_SSHORT            "short ",
-#define ENTRY_USHORT            "unsigned short ",
-#define ENTRY_SINT              "int ",
-#define ENTRY_UINT              "unsigned ",
-#define ENTRY_SLONG             "long ",
-#define ENTRY_ULONG             "unsigned long ",
-#define ENTRY_SLONG64           "__int64 ",
-#define ENTRY_ULONG64           "unsigned __int64 ",
-#define ENTRY_FLOAT             "float ",
-#define ENTRY_DOUBLE            "double ",
-#define ENTRY_LONG_DOUBLE       "long double ",
-#define ENTRY_ENUM              "<enum> ",
-#define ENTRY_POINTER           "* ",
-#define ENTRY_TYPEDEF           "<typedef> ",
-#define ENTRY_CLASS             "<class> ",
-#define ENTRY_BITFIELD          "<bitfield> ",
-#define ENTRY_FUNCTION          "<function> ",
-#define ENTRY_ARRAY             "<array> ",
-#define ENTRY_DOT_DOT_DOT       "... ",
-#define ENTRY_VOID              "void ",
-#define ENTRY_MODIFIER          "<modifier> ",
-#define ENTRY_MEMBER_POINTER    "::* ",
-#define ENTRY_GENERIC           "? ",
-
 static const char *typeName[] = {
-    #include "type_arr.h"
+    #define pick(id,promo,promo_asm,type_text)  type_text,
+    #include "_typdefs.h"
+    #undef pick
 };
 
 static const char *errFormats[] = {
@@ -416,11 +388,11 @@ static bool willPrintModifier( TYPE type, type_flag flag )
         mask = modifierFlags[i].mask;
         if( (flag & mask) == mask ) {
             if( ( (mask & TF1_MEM_MODEL) == 0 ) || ( (DefaultMemoryFlag( type ) & mask) != mask ) ) {
-                return true;
+                return( true );
             }
         }
     }
-    return false;
+    return( false );
 }
 
 static void fmtTypeChangeState( FMT_LR *curr, FMT_LR new,
@@ -474,17 +446,24 @@ static void fmtTypePush( FMT_INFO **pStackFMT, TYPE type, FMT_CONTROL control )
         entry = StackCarveAlloc( carveFMT, pStackFMT );
         entry->type = type;
         entry->main_function = false;
-        if( type->id == TYP_ENUM ) break;
-        if( type->id == TYP_GENERIC ) break;
-        if( type->id == TYP_CHAR ) break;
-        if( type->id == TYP_BOOL ) break;
-        if( type->id == TYP_TYPEDEF && (control & FF_TYPEDEF_STOP) ) break;
+        if( type->id == TYP_ENUM )
+            break;
+        if( type->id == TYP_GENERIC )
+            break;
+        if( type->id == TYP_CHAR )
+            break;
+        if( type->id == TYP_BOOL )
+            break;
+        if( type->id == TYP_TYPEDEF && (control & FF_TYPEDEF_STOP) )
+            break;
         if( type->id == TYP_FUNCTION ) {
             if( main_function == NULL ) {
                 entry->main_function = true;
                 main_function = entry;
             }
-            if( control & FF_DROP_RETURN ) break;
+            if( control & FF_DROP_RETURN ) {
+                break;
+            }
         }
         type = type->of;
     }
@@ -495,9 +474,9 @@ const char *FormatErrorType( TYPE err_type )
 {
     DbgAssert( err_type != NULL && err_type->id == TYP_ERROR );
     if( err_type->flag & TF1_SPECIAL_FMT ) {
-        return( errFormats[ err_type->u.e.fmt ] );
+        return( errFormats[err_type->u.e.fmt] );
     }
-    return( typeName[ TYP_ERROR ] );
+    return( typeName[TYP_ERROR] );
 }
 
 void FormatFunctionType( TYPE type, VBUF *pprefix, VBUF *psuffix, int num_def,
@@ -523,8 +502,7 @@ void FormatFunctionType( TYPE type, VBUF *pprefix, VBUF *psuffix, int num_def,
         lr_state = RIGHT;
         StackFMT = NULL;
         fmtTypePush( &StackFMT, type, control );
-        top = StackPop( &StackFMT );
-        while( top ) {
+        while( (top = StackPop( &StackFMT )) != NULL ) {
             top_type = top->type;
             switch( top_type->id ) {
             case TYP_ERROR:
@@ -578,8 +556,7 @@ void FormatFunctionType( TYPE type, VBUF *pprefix, VBUF *psuffix, int num_def,
                 fmtTypeChangeState( &lr_state, RIGHT, pprefix, psuffix );
                 class_type = MemberPtrClass( top->type );
                 if( class_type != NULL ) {
-                    fmtTypeScope( class_type->u.c.scope->enclosing,
-                                  pprefix );
+                    fmtTypeScope( class_type->u.c.scope->enclosing, pprefix );
                     name = SimpleTypeName( class_type );
                     if( name != NULL ) {
                         VbufConcStr( pprefix, NameStr( name ) );
@@ -592,8 +569,9 @@ void FormatFunctionType( TYPE type, VBUF *pprefix, VBUF *psuffix, int num_def,
                 VbufConcStr( pprefix, typeName[top->type->id] );
                 break;
             case TYP_TYPEDEF:
-                if( (control & FF_TYPEDEF_STOP) == 0 ) break;
-                // otherwise drop through
+                if( (control & FF_TYPEDEF_STOP) == 0 )
+                    break;
+                // fall through
             case TYP_ENUM:
                 fmtTypeScope( top->type->u.t.scope, pprefix );
                 name = SimpleTypeName( top->type );
@@ -667,11 +645,6 @@ void FormatFunctionType( TYPE type, VBUF *pprefix, VBUF *psuffix, int num_def,
                 break;
             }
             CarveFree( carveFMT, top );
-            top = StackPop( &StackFMT );
-        }
-        while( top ) {
-            CarveFree( carveFMT, top );
-            top = StackPop( &StackFMT );
         }
         VbufTruncWhite( psuffix );
     }
@@ -704,31 +677,26 @@ void FormatPTreeList( PTREE p, VBUF *pvbuf )
 
         switch( right->op ) {
         case PT_TYPE:
-        {
+          {
             VBUF prefix, suffix;
             FormatType( right->type, &prefix, &suffix );
             VbufConcVbuf( pvbuf, &prefix );
             VbufConcVbuf( pvbuf, &suffix );
             VbufFree( &prefix );
             VbufFree( &suffix );
-        }
-        break;
-
+          } break;
         case PT_INT_CONSTANT:
             VbufConcInteger( pvbuf, right->u.int_constant );
             break;
-
         case PT_SYMBOL:
-        {
+          {
             VBUF prefix, suffix;
             FormatType( right->u.symcg.symbol->sym_type, &prefix, &suffix );
             VbufConcVbuf( pvbuf, &prefix );
             VbufConcVbuf( pvbuf, &suffix );
             VbufFree( &prefix );
             VbufFree( &suffix );
-        }
-        break;
-
+          } break;
         default:
             DbgAssert( 0 );
         }
@@ -756,7 +724,7 @@ static PTREE traverse_FormatPTreeId( PTREE curr )
         }
     }
 
-    return curr;
+    return( curr );
 }
 
 void FormatPTreeId( PTREE p, VBUF *pvbuf )

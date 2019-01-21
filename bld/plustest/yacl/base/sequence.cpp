@@ -5,7 +5,7 @@
 /*
  *
  *          Copyright (C) 1994, M. A. Sridhar
- *  
+ *
  *
  *     This software is Copyright M. A. Sridhar, 1994. You are free
  *     to copy, modify or distribute this software  as you see fit,
@@ -126,7 +126,7 @@ SegmentedSequence::SegmentedSequence (long initial_cap)
             return;
         _numSegs++;
         _segs[i]._cap = needed;
-        _totalCap = (_numSegs-1) << 13 | needed;
+        _totalCap = ((_numSegs - 1) << 13) | needed;
     }
 }
 
@@ -177,10 +177,10 @@ bool SegmentedSequence::ResizeTo    (long new_cap)
         if (_segs)
             delete [] _segs;
         _segs = dsc;
-    }    
+    }
     if (new_cap > _totalCap) { // Need to grow
         SegDesc lastSeg = {0, 0};
-        if (_totalCap & 0x1fff == 0) {
+        if ((_totalCap & 0x1fff) == 0) {
             // Our capacity is currently an exact multiple of 8192, so
             // retain the current last segment in the new data structure
             for (short i = _numSegs; i <= segs_needed-2; i++) {
@@ -205,7 +205,7 @@ bool SegmentedSequence::ResizeTo    (long new_cap)
             }
         }
         // Allocate the new last segment
-        short last_seg_size = NearestHigher2Power ((new_cap) & 0x1fff); 
+        short last_seg_size = NearestHigher2Power ((new_cap) & 0x1fff);
         if (last_seg_size == 0)
             last_seg_size = 0x1fff + 1;
         else
@@ -237,14 +237,14 @@ bool SegmentedSequence::ResizeTo    (long new_cap)
             // The new capacity is not an exact multiple of 8192, so we
             // have to shrink the last segment. Therefore,
             // copy back the contents of the old last segment
-            last_seg_size = NearestHigher2Power ((new_cap) & 0x1fff); 
+            last_seg_size = NearestHigher2Power ((new_cap) & 0x1fff);
             if (last_seg_size == 0)
                 last_seg_size = 0x1fff + 1;
             else
                 last_seg_size = maxl (8, last_seg_size);
             short current_cap = _segs[_numSegs-1]._cap;
             if (last_seg_size*2 >= current_cap &&
-                last_seg_size < current_cap) { 
+                last_seg_size < current_cap) {
                 // We hang on to memory a little longer, if the shrinkage
                 // is not too much
                 return TRUE;

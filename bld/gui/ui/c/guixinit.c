@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2018-2018 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -56,7 +57,6 @@ bool GUIWndInit( unsigned DClickInterval, gui_window_styles style )
 {
     gui_colour_set      background = { GUI_WHITE, GUI_BLUE };
 
-    GUIMemOpen();
     GUIStyle = style;
     GUIInitGraphicsMouse( style );
     if( !GUISysInit( INIT_MOUSE_INITIALIZED ) ) {

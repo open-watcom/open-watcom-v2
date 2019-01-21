@@ -115,7 +115,7 @@ static YYTOKENTYPE  scanCPPDirective( ScanValue *value )
 /* calls unless you are very careful about recurtion. */
 {
     YYTOKENTYPE token;
-    int         linenum;
+    unsigned    lineno;
 
     if( StopInvoked ) {
         RcFatalError( ERR_STOP_REQUESTED );
@@ -136,19 +136,19 @@ static YYTOKENTYPE  scanCPPDirective( ScanValue *value )
         }
         RESFREE( value->intinfo.str );
         value->intinfo.str = NULL;
-        linenum = value->intinfo.val;
+        lineno = value->intinfo.val;
 
         /* get the filename if there is one */
         token = scanDFA( value );
         if( token == Y_STRING ) {
-            RcIoSetLogicalFileInfo( linenum, value->string.string );
+            RcIoSetCurrentFileInfo( lineno, value->string.string );
             if( AddDependency( value->string.string ) ) {
                 ErrorHasOccured = true;
             }
             RESFREE( value->string.string );
             token = scanDFA( value );
         } else {
-            RcIoSetLogicalFileInfo( linenum, NULL );
+            RcIoSetCurrentFileInfo( lineno, NULL );
         }
     } else if( stricmp( value->string.string, "pragma" ) == 0 ) {
         RESFREE( value->string.string );

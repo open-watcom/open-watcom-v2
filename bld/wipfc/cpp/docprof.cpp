@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
+* Copyright (c) 2009-2018 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -25,9 +25,19 @@
 *  ========================================================================
 *
 * Description:  Process docprof tag
+*   :docprof
+*       toc=[1-6]+ (default: 123)
+*       dll=''
+*       objectname=''
+*       objectinfo=''
+*       ctrlarea=page|coverpage|both|none
+*       Must be a child of :userdoc
+* Must follow :title
 *
 ****************************************************************************/
 
+
+#include "wipfc.hpp"
 #include "docprof.hpp"
 #include "document.hpp"
 #include "controls.hpp"
@@ -36,65 +46,68 @@
 
 Lexer::Token DocProf::parse( Lexer* lexer )
 {
-    Lexer::Token tok( document->getNextToken() );
-    while( tok != Lexer::TAGEND ) {
+    Lexer::Token tok;
+
+    while( (tok = _document->getNextToken()) != Lexer::TAGEND ) {
         if( tok == Lexer::ATTRIBUTE ) {
             std::wstring key;
             std::wstring value;
             splitAttribute( lexer->text(), key, value );
-            if ( key == L"toc" ) {
-                wchar_t ch[ 2 ];
-                ch[ 0 ] = value[ value.size() - 1 ];    //last number is critical value
-                ch[ 1 ] = L'\0';
+            if( key == L"toc" ) {
+                wchar_t ch[2];
+                ch[0] = value[value.size() - 1];    //last number is critical value
+                ch[1] = L'\0';
                 int tmp( static_cast<int>( std::wcstol( ch, 0, 10 ) ) );
-                if( tmp < 1 || tmp > 6 )
-                    document->printError( ERR2_VALUE );
-                else
-                    headerCutOff = static_cast< unsigned int >( tmp );
+                if( tmp < 1 || tmp > 6 ) {
+                    _document->printError( ERR2_VALUE );
+                } else {
+                    _headerCutOff = static_cast< unsigned int >( tmp );
+                }
+            } else if( key == L"objectname" ) {
+                _objName = value;
+            } else if( key == L"dll" ) {
+                _dll = value;
+            } else if( key == L"objectinfo" ) {
+                _objInfo = value ;
+            } else if( key == L"ctrlarea" ) {
+                if( value == L"none" ) {
+                    _area = NONE;
+                } else if( value == L"coverpage" ) {
+                    _area = COVERPAGE;
+                } else if( value == L"page" ) {
+                    _area = PAGE;
+                } else if( value == L"both" ) {
+                    _area = BOTH;
+                } else {
+                    _document->printError( ERR2_VALUE );
+                }
+            } else {
+                _document->printError( ERR1_ATTRNOTDEF );
             }
-            else if( key == L"objectname" )
-                objName = value;
-            else if( key == L"dll" )
-                dll = value;
-            else if ( key == L"objectinfo" )
-                objInfo = value ;
-            else if( key == L"ctrlarea" ) {
-                if( value == L"none" )
-                    area = NONE;
-                else if( value == L"coverpage" )
-                    area = COVERPAGE;
-                else if( value == L"page" )
-                    area = PAGE;
-                else if( value == L"both" )
-                    area = BOTH;
-                else
-                    document->printError( ERR2_VALUE );
-            }
-            else
-                document->printError( ERR1_ATTRNOTDEF );
-        }
-        else if ( tok == Lexer::FLAG )
-            document->printError( ERR1_ATTRNOTDEF );
-        else if( tok == Lexer::END )
+        } else if( tok == Lexer::FLAG ) {
+            _document->printError( ERR1_ATTRNOTDEF );
+        } else if( tok == Lexer::END ) {
             throw FatalError( ERR_EOF );
-        else
-            document->printError( ERR1_TAGSYNTAX );
-        tok = document->getNextToken();
+        } else {
+            _document->printError( ERR1_TAGSYNTAX );
+        }
     }
-    return document->getNextToken();
+    return _document->getNextToken();
 }
 /***************************************************************************/
-void DocProf::build( Controls* ctrls, StringTable* strs )
+void DocProf::build( Controls* controls, StringTable* strings )
 {
-    document->setHeaderCutOff( headerCutOff );
-    if( area == NONE || area == PAGE )
-        ctrls->setCover( 0xFFFF );
-    else
-        ctrls->setCover( 0 );   //may be modified by :ctrl. tag later
-    if( !objName.empty() )
-        strs->addString( objName );
-    if( !dll.empty() )
-        strs->addString( dll );
-    if( !objInfo.empty() )
-        strs->addString( objInfo );
+    _document->setHeaderCutOff( _headerCutOff );
+    if( _area == NONE || _area == PAGE ) {
+        controls->setCover( 0xFFFF );
+    } else {
+        controls->setCover( 0 );   //may be modified by :ctrl. tag later
+    }
+    if( !_objName.empty() )
+        strings->add( _objName );
+    if( !_dll.empty() )
+        strings->add( _dll );
+    if( !_objInfo.empty() ) {
+        strings->add( _objInfo );
+    }
 }

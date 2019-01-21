@@ -334,7 +334,7 @@ void GUIChangeMenu( UIMENUITEM *menuitem, gui_menu_styles style )
     }
 }
 
-static bool GUISetMenuItems( int num_items, UIMENUITEM *menuitems, gui_menu_struct *menu )
+static bool GUISetMenuItems( int num_items, gui_menu_struct *menu, UIMENUITEM *menuitems )
 {
     while( num_items-- > 0 ) {
         uiyield();
@@ -355,7 +355,7 @@ static bool GUISetMenuItems( int num_items, UIMENUITEM *menuitems, gui_menu_stru
     return( true );
 }
 
-int GUIGetNumIgnore( gui_menu_struct *menu, int num_items )
+int GUIGetNumIgnore( int num_items, gui_menu_struct *menu )
 {
     int     num_ignore;
 
@@ -382,7 +382,7 @@ bool GUICreateMenuItems( int num_items, gui_menu_struct *menu, UIMENUITEM **pmen
         *pmenuitems = NULL;
         return( true );
     }
-    num_ignore = GUIGetNumIgnore( menu, num_items );
+    num_ignore = GUIGetNumIgnore( num_items, menu );
     if( num_ignore >= num_items ) {
         *pmenuitems = NULL;
         return( true );
@@ -392,14 +392,14 @@ bool GUICreateMenuItems( int num_items, gui_menu_struct *menu, UIMENUITEM **pmen
     if( menuitems == NULL ) {
         return( false );
     }
-    if( !GUISetMenuItems( num_items, menuitems, menu ) ) {
+    if( !GUISetMenuItems( num_items, menu, menuitems ) ) {
         return( false );
     }
     while( num_items-- > 0 ) {
         uiyield();
         if( (menu->style & GUI_STYLE_MENU_IGNORE) == 0 ) {
-            if( menu->child_num_items > 0 ) {
-                if( !GUICreateMenuItems( menu->child_num_items, menu->child, &menuitems->popup ) ) {
+            if( menu->child.num_items > 0 ) {
+                if( !GUICreateMenuItems( menu->child.num_items, menu->child.menu, &menuitems->popup ) ) {
                     return( false );
                 }
             }
@@ -437,24 +437,23 @@ static void GUIFreeVBarMenu( VBARMENU *vbarmenu )
  * CreateVBarMenu -- converts the gui_menu_struct into a VBARMENU
  */
 
-static bool CreateVBarMenu( gui_window *wnd, int num_items, gui_menu_struct *main_menu, VBARMENU **pvbarmenu )
+static bool CreateVBarMenu( gui_window *wnd, int num_items, gui_menu_struct *menu, VBARMENU **pvbarmenu )
 {
     VBARMENU    *vbarmenu;
 
     *pvbarmenu = NULL;
-    if( num_items == 0 ) {
-        return( true );
+    if( num_items > 0 ) {
+        vbarmenu = GUIAllocVBarMenu();
+        if( vbarmenu == NULL ) {
+            return( false );
+        }
+        if( !GUICreateMenuItems( num_items, menu, &vbarmenu->titles ) ) {
+            GUIFreeVBarMenu( vbarmenu );
+            return( false );
+        }
+        GUIInitHint( wnd, num_items, menu, MENU_HINT );
+        *pvbarmenu = vbarmenu;
     }
-    vbarmenu = GUIAllocVBarMenu();
-    if( vbarmenu == NULL ) {
-        return( false );
-    }
-    if( !GUICreateMenuItems( num_items, main_menu, &vbarmenu->titles ) ) {
-        GUIFreeVBarMenu( vbarmenu );
-        return( false );
-    }
-    *pvbarmenu = vbarmenu;
-    GUIInitHint( wnd, num_items, main_menu, MENU_HINT );
     return( true );
 }
 
@@ -481,11 +480,11 @@ static bool InsertMenu( gui_window *wnd, gui_menu_struct *menu, int position,
         memset( &newmenuitems[position + 1], 0, sizeof( UIMENUITEM ) );
     }
     memset( &newmenuitems[position], 0, sizeof( UIMENUITEM ) );
-    if( !GUISetMenuItems( 1, &newmenuitems[position], menu ) ) {
+    if( !GUISetMenuItems( 1, menu, &newmenuitems[position] ) ) {
         GUIMemFree( newmenuitems );
         return( false );
     }
-    if( !GUICreateMenuItems( menu->child_num_items, menu->child, &newmenuitems[position].popup ) ) {
+    if( !GUICreateMenuItems( menu->child.num_items, menu->child.menu, &newmenuitems[position].popup ) ) {
         GUIMemFree( newmenuitems );
         return( false );
     }
@@ -523,7 +522,7 @@ static bool CreateMenus( gui_window *wnd, int num_items, gui_menu_struct *menu,
         }
         num_ignore = 0;
         if( num_items > 0 ) {
-            num_ignore = GUIGetNumIgnore( menu->child, menu->child_num_items );
+            num_ignore = GUIGetNumIgnore( menu->child.num_items, menu->child.menu );
         }
         if( num_items > num_ignore ) {
             if( style & GUI_SYSTEM_MENU ) {
@@ -554,12 +553,12 @@ bool GUICreateMenus( gui_window *wnd,  gui_create_info *dlg_info )
     if( dlg_info->resource_menu != NULL ) {
         num_items = 0;
         menu = NULL;
-        GUICreateMenuStructFromRes( dlg_info->resource_menu, &menu, &num_items );
+        GUICreateMenuStructFromRes( dlg_info->resource_menu, &num_items, &menu );
         ret = CreateMenus( wnd, num_items, menu, dlg_info->parent, dlg_info->style );
-        GUIFreeGUIMenuStruct( menu, num_items );
+        GUIFreeGUIMenuStruct( num_items, menu );
         return( ret );
     } else {
-        return( CreateMenus( wnd, dlg_info->num_items, dlg_info->menu, dlg_info->parent, dlg_info->style ) );
+        return( CreateMenus( wnd, dlg_info->menu.num_items, dlg_info->menu.menu, dlg_info->parent, dlg_info->style ) );
     }
 }
 

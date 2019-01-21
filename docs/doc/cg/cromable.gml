@@ -92,6 +92,7 @@ int86x~b(1)~b~b~b~b~b~b~b~b~b
 int386~b(2)~b~b~b~b~b~b~b~b~b
 int386x~b(2)~b~b~b~b~b~b~b~b
 intr~b~b~b~b~b~b~b~b~b~b~b~b~b~b~b
+intrf~b~b~b~b~b~b~b~b~b~b~b~b~b~b
 isalnum~b~b~b~b~b~b~b~b~b~b~b~b
 isalpha~b~b~b~b~b~b~b~b~b~b~b~b
 isascii~b~b~b~b~b~b~b~b~b~b~b~b

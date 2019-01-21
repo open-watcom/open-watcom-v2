@@ -42,10 +42,10 @@ walk_result DIPIMPENTRY( WalkModList )( imp_image_handle *iih,
 }
 
 size_t DIPIMPENTRY( ModName )( imp_image_handle *iih,
-                        imp_mod_handle im, char *buff, size_t buff_size )
+                        imp_mod_handle imh, char *buff, size_t buff_size )
 {
 
-    /* unused parameters */ (void)im;
+    /* unused parameters */ (void)imh;
 
     if( buff_size > 0 ) {
         --buff_size;
@@ -57,39 +57,37 @@ size_t DIPIMPENTRY( ModName )( imp_image_handle *iih,
     return( iih->len );
 }
 
-char *DIPIMPENTRY( ModSrcLang )( imp_image_handle *iih, imp_mod_handle im )
+char *DIPIMPENTRY( ModSrcLang )( imp_image_handle *iih, imp_mod_handle imh )
 {
-    /* unused parameters */ (void)iih; (void)im;
+    /* unused parameters */ (void)iih; (void)imh;
 
     return( "c" );
 }
 
-dip_status DIPIMPENTRY( ModInfo )( imp_image_handle *iih, imp_mod_handle im, handle_kind hk )
+dip_status DIPIMPENTRY( ModInfo )( imp_image_handle *iih, imp_mod_handle imh, handle_kind hk )
 {
-    /* unused parameters */ (void)iih; (void)im; (void)hk;
+    /* unused parameters */ (void)iih; (void)imh; (void)hk;
 
     return( DS_FAIL );
 }
 
-search_result DIPIMPENTRY( AddrMod )( imp_image_handle *iih, address a,
-                imp_mod_handle *im )
+search_result DIPIMPENTRY( AddrMod )( imp_image_handle *iih, address a, imp_mod_handle *imh )
 {
     /* unused parameters */ (void)iih; (void)a;
 
     if( FindAddrBlock( iih, a.mach ) != NULL ) {
-        *im = IMH_EXPORT;
+        *imh = IMH_EXPORT;
         return( SR_CLOSEST );
     }
     return( SR_NONE );
 }
 
-address DIPIMPENTRY( ModAddr )( imp_image_handle *iih,
-                                imp_mod_handle im )
+address DIPIMPENTRY( ModAddr )( imp_image_handle *iih, imp_mod_handle imh )
 {
     address     addr;
     exp_block   *exp;
 
-    /* unused parameters */ (void)im;
+    /* unused parameters */ (void)imh;
 
     for( exp = iih->addr; exp != NULL; exp = exp->next ) {
         if( exp->code ) {
@@ -102,9 +100,9 @@ address DIPIMPENTRY( ModAddr )( imp_image_handle *iih,
 }
 
 dip_status DIPIMPENTRY( ModDefault )( imp_image_handle *iih,
-                imp_mod_handle im, default_kind dk, dip_type_info *ti )
+                imp_mod_handle imh, default_kind dk, dig_type_info *ti )
 {
-    /* unused parameters */ (void)iih; (void)im; (void)dk; (void)ti;
+    /* unused parameters */ (void)iih; (void)imh; (void)dk; (void)ti;
 
     return( DS_FAIL );
 }

@@ -30,8 +30,6 @@
 ****************************************************************************/
 
 
-#include <wwindows.h>
-#include <string.h>
 #include "wrglbl.h"
 #include "wresall.h"
 #include "wrstrdup.h"

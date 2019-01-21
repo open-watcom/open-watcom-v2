@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
+* Copyright (c) 2009-2018 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -26,68 +26,73 @@
 *
 * Description:  Process title tag
 *   :title
-*       Maximum 47 characters
+*       Maximum 47 characters + null terminator
 *
 ****************************************************************************/
 
+
+#include "wipfc.hpp"
 #include <cstdlib>
 #include <string>
 #include "title.hpp"
 #include "lexer.hpp"
 #include "document.hpp"
+#include "outfile.hpp"
 
-Lexer::Token Title::parse( Lexer* lexer, IpfHeader* hdr )
+
+Lexer::Token Title::parse( Lexer* lexer )
 {
-    Lexer::Token tok( document->getNextToken() );
-    while ( tok != Lexer::TAGEND ) {
-        if( tok == Lexer::ATTRIBUTE )
-            document->printError( ERR1_ATTRNOTDEF );
-        else if( tok == Lexer::FLAG )
-            document->printError( ERR1_ATTRNOTDEF );
-        else if( tok == Lexer::END )
+    Lexer::Token tok;
+
+    while( (tok = _document->getNextToken()) != Lexer::TAGEND ) {
+        if( tok == Lexer::ATTRIBUTE ) {
+            _document->printError( ERR1_ATTRNOTDEF );
+        } else if( tok == Lexer::FLAG ) {
+            _document->printError( ERR1_ATTRNOTDEF );
+        } else if( tok == Lexer::END ) {
             throw FatalError( ERR_EOF );
-        else
-            document->printError( ERR1_TAGSYNTAX );
-        tok = document->getNextToken();
+        } else {
+            _document->printError( ERR1_TAGSYNTAX );
+        }
     }
-    std::wstring txt;
-    unsigned int startLine( document->dataLine() );
-    tok = document->getNextToken();
-    while(  document->dataLine() == startLine ) {
+    _fileName = _document->dataName();
+    _row = _document->lexerLine();
+    _col = _document->lexerCol();
+    unsigned int startLine( _document->dataLine() );
+    tok = _document->getNextToken();
+    while(  _document->dataLine() == startLine ) {
         if( tok == Lexer::WHITESPACE ||
             tok == Lexer::WORD ||
             tok == Lexer::PUNCTUATION ) {
-            txt += lexer->text();
-        }
-        else if( tok == Lexer::ENTITY ) {
-            const std::wstring* exp( document->nameit( lexer->text() ) );
-            if( exp )
-                txt += *exp;
-            else {
+            _text += lexer->text();
+        } else if( tok == Lexer::ENTITY ) {
+            const std::wstring* exp( _document->nameit( lexer->text() ) );
+            if( exp ) {
+                _text += *exp;
+            } else {
                 try {
-                    wchar_t ch( document->entity( lexer->text() ) );
-                    txt += ch;
+                    wchar_t entityChar( _document->entityChar( lexer->text() ) );
+                    _text += entityChar;
                 }
                 catch( Class2Error& e ) {
-                    document->printError( e.code );
+                    _document->printError( e._code );
                 }
             }
-        }
-        else if( tok == Lexer::END )
+        } else if( tok == Lexer::END ) {
             throw FatalError( ERR_EOF );
-        else
+        } else {
             break;
-        tok = document->getNextToken();
-    }
-    if( txt.size() > 47 )
-        document->printError( ERR2_TEXTTOOLONG );
-    std::size_t index1 = 0;
-    std::size_t index2 = 0;
-    char *title( hdr->title );
-    while( index1 < txt.size() && index2 < 47 ) {
-        index2 += std::wctomb( title + index2, txt[ index1 ] );
-        ++index1 ;
+        }
+        tok = _document->getNextToken();
     }
     return tok;
 }
 
+void Title::build( OutFile *out )
+{
+    //build Title
+    std::string buffer( out->wtomb_string( _text ) );
+    if( buffer.size() > TITLE_SIZE - 1 )
+        _document->printError( ERR2_TEXTTOOLONG );
+    _document->setTitle( buffer );
+}

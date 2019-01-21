@@ -32,7 +32,7 @@
 
 #include "vi.h"
 #include "color.h"
-#include "font.h"
+#include "vifont.h"
 #include "utils.h"
 #include "wclbproc.h"
 #include "win.h"
@@ -49,7 +49,6 @@ window RepeatCountWindow = {
 
 static char         *className = "RepeatWindow";
 static char         repString[MAX_STR];
-static window_id    repeat_window_id;
 
 bool RepeatCountWindowInit( void )
 {
@@ -64,7 +63,7 @@ bool RepeatCountWindowInit( void )
     wc.hInstance = InstanceHandle;
     wc.hIcon = LoadIcon( (HINSTANCE)NULLHANDLE, IDI_APPLICATION );
     wc.hCursor = LoadCursor( (HINSTANCE)NULLHANDLE, IDC_ARROW );
-    wc.hbrBackground = (HBRUSH) COLOR_APPWORKSPACE;
+    wc.hbrBackground = (HBRUSH)COLOR_APPWORKSPACE;
     wc.lpszMenuName = NULL;
     wc.lpszClassName = className;
     return( RegisterClass( &wc ) != 0 );
@@ -102,7 +101,7 @@ static void drawRepeatString( void )
 /*
  * RepeatWindowProc - message procedure for the repeat count window
  */
-WINEXPORT LRESULT CALLBACK RepeatWindowProc( HWND hwnd, UINT msg, WPARAM w, LPARAM l )
+WINEXPORT LRESULT CALLBACK RepeatWindowProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
 {
     PAINTSTRUCT ps;
 
@@ -121,7 +120,7 @@ WINEXPORT LRESULT CALLBACK RepeatWindowProc( HWND hwnd, UINT msg, WPARAM w, LPAR
         SetFocus( root_window_id );
         return( 0 );
     }
-    return( DefWindowProc( hwnd, msg, w, l ) );
+    return( DefWindowProc( hwnd, msg, wparam, lparam ) );
 
 } /* RepeatWindowProc */
 
@@ -132,6 +131,7 @@ window_id NewRepeatCountWindow( void )
 {
     RECT        *size;
     POINT       p;
+    window_id   wid;
 
     size = &RepeatCountWindow.def_area;
 
@@ -140,13 +140,13 @@ window_id NewRepeatCountWindow( void )
     ClientToScreen( root_window_id, &p );
 
     repString[0] = '\0';
-    repeat_window_id = CreateWindow( className, "Repeat Count",
+    wid = CreateWindow( className, "Repeat Count",
         WS_POPUPWINDOW | WS_BORDER | WS_CLIPSIBLINGS,
         p.x, p.y, size->right - size->left, size->bottom - size->top,
         root_window_id, (HMENU)NULLHANDLE, InstanceHandle, NULL );
-    ShowWindow( repeat_window_id, SW_SHOWNORMAL );
-    UpdateWindow( repeat_window_id );
-    return( repeat_window_id );
+    ShowWindow( wid, SW_SHOWNORMAL );
+    UpdateWindow( wid );
+    return( wid );
 
 } /* NewRepeatCountWindow */
 

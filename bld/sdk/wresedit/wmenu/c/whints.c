@@ -30,9 +30,6 @@
 ****************************************************************************/
 
 
-#include "commonui.h"
-#include <stdio.h>
-#include "watcom.h"
 #include "wglbl.h"
 #include "w_menu.h"
 #include "wmain.h"

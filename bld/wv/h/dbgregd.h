@@ -39,7 +39,7 @@ typedef unsigned long           dtid_t;
 struct machine_state {
     byte                *ovl;
     dtid_t              tid;
-    dig_mad             mad;
+    dig_arch            arch;
     unsigned            : 0;    /* for alignment */
     mad_registers       mr;     /* variable size */
 };

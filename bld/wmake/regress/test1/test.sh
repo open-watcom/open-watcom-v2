@@ -1,47 +1,53 @@
 #!/bin/sh
 
-function usage() {
+OWVERBOSE=0
+ERRORS=0
+
+usage() {
     echo usage: $0 prgname errorfile
     exit
 }
 
-function print_header() {
-    echo \# -----------------------------
-    echo \#   Test $TEST
-    echo \# -----------------------------
+print_header() {
+    echo \# -------------------------------
+    echo \#   Multiple Dependents Test $TEST
+    echo \# -------------------------------
 }
 
-function do_check() {
-    if [ "$?" == "0" ]; then
-        echo \# Test $TEST successful
+do_check() {
+    if [ "$?" -eq "0" ]; then
+        echo \#      Test $1 successful
     else
-        echo \#\# INLINE \#\# >> $LOGFILE
-        echo Error: Test $TEST unsuccessful!!! | tee -a $LOGFILE
-	exit
+        echo \#\# INLINE $TEST \#\# >> $LOGFILE
+        echo Error: Test $1 unsuccessful!!! | tee -a $LOGFILE
+        ERRORS=1
     fi
 }
 
-if [ "$2" == "" ]; then 
+if [ -z "$2" ]; then 
     usage
 fi
 
 LOGFILE=$2
 
 echo \# ===========================
-echo \# Multiple Dependents Test
+echo \# Multiple Dependents Tests
 echo \# ===========================
 
-TEST=1
+TEST=01
+print_header
 $1 -h -f create
-rm -f err1.out
-echo >err1.out
-$1 -h -f maketst1 -l err1.out > tst1.out
-diff -b tst1.out tst1.chk
-diff -b err1.out err1.chk
-do_check
+echo >err$TEST.lst
+$1 -h -f maketst1 -l err$TEST.lst > test$TEST.lst
+diff -b err$TEST.chk err$TEST.lst
+do_check a
+diff -b test$TEST.chk test$TEST.lst
+do_check b
 
-rm *.obj
-rm *.out
-rm main.*
-rm foo*.c
-rm maketst1
+rm -f *.obj
+rm -f main.*
+rm -f foo*.c
+if [ "$ERRORS" -eq "0" ]; then
+    rm -f *.lst
+    rm -f maketst1
+fi

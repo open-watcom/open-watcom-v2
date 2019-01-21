@@ -1,3 +1,34 @@
+/****************************************************************************
+*
+*                            Open Watcom Project
+*
+* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
+*
+*  ========================================================================
+*
+*    This file contains Original Code and/or Modifications of Original
+*    Code as defined in and that are subject to the Sybase Open Watcom
+*    Public License version 1.0 (the 'License'). You may not use this file
+*    except in compliance with the License. BY USING THIS FILE YOU AGREE TO
+*    ALL TERMS AND CONDITIONS OF THE LICENSE. A copy of the License is
+*    provided with the Original Code and Modifications, and is also
+*    available at www.sybase.com/developer/opensource.
+*
+*    The Original Code and all software distributed under the License are
+*    distributed on an 'AS IS' basis, WITHOUT WARRANTY OF ANY KIND, EITHER
+*    EXPRESS OR IMPLIED, AND SYBASE AND ALL CONTRIBUTORS HEREBY DISCLAIM
+*    ALL SUCH WARRANTIES, INCLUDING WITHOUT LIMITATION, ANY WARRANTIES OF
+*    MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, QUIET ENJOYMENT OR
+*    NON-INFRINGEMENT. Please see the License for the specific language
+*    governing rights and limitations under the License.
+*
+*  ========================================================================
+*
+* Description:  Declaration of non-standard functions and macros used by bootstrap
+*
+****************************************************************************/
+
+
 #ifndef __WATCOMC__
 
 /* clibext.h:
@@ -155,8 +186,6 @@ typedef long    ssize_t;
 #endif
 typedef int     mode_t;
 
-extern void     _dos_getdrive( unsigned *drive );
-extern void     _dos_setdrive( unsigned drivenum, unsigned *drives );
 extern unsigned _dos_getfileattr( const char *path, unsigned *attribute );
 extern unsigned _dos_setfileattr( const char *path, unsigned attribute );
 extern int      setenv( const char *name, const char *newvalue, int overwrite );
@@ -171,9 +200,6 @@ extern unsigned _dos_getftime( void *h, unsigned *date, unsigned *time );
 extern unsigned _dos_setftime( void *h, unsigned date, unsigned time );
 extern unsigned _dos_read( void *h, void *buffer, unsigned count, unsigned *bytes );
 extern unsigned _dos_write( void *h, void const *buffer, unsigned count, unsigned *bytes );
-extern unsigned _dos_findfirst( const char *__path, unsigned __attr, find_t *__buf );
-extern unsigned _dos_findnext( struct find_t *__buf );
-extern unsigned _dos_findclose( struct find_t *__buf );
 extern unsigned sleep( unsigned );
 extern void __GetNTAccessAttr( unsigned rwmode, unsigned long *desired_access, unsigned long *attr );
 extern void __GetNTShareAttr( int mode, unsigned long *share_mode );

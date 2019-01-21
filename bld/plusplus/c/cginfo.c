@@ -554,14 +554,17 @@ static AUX_INFO *IntrinsicAuxLookup(
     AUX_INFO *inf;
 
     ifunc = InlineLookup( sym->name->name );
-    if( ifunc == NULL )  return( NULL );
+    if( ifunc == NULL )
+        return( NULL );
     if( HW_CEqual( ifunc->returns, HW_DX_AX ) ||
         HW_CEqual( ifunc->returns, HW_DS_SI ) ||
         HW_CEqual( ifunc->returns, HW_ES_DI ) ||
         HW_CEqual( ifunc->returns, HW_CX_DI ) ) {
         TYPE type;
         type = FunctionDeclarationType( sym->sym_type )->of;
-        if( CgTypeSize( type ) != 4 )  return( NULL );
+        if( CgTypeSize( type ) != 4 ) {
+            return( NULL );
+        }
     }
     inf = &InlineInfo;
     inf->cclass = (DefaultInfo.cclass & FAR_CALL) | MODIFY_EXACT;
@@ -1167,7 +1170,8 @@ void *FEAuxInfo(                // REQUEST AUXILLIARY INFORMATION
     bool isRetn = true;         // DEBUGGING: true ==> "retn" is SYMBOL
 #endif
 
-    if( buf != NULL ) CMemFreePtr( &buf );
+    if( buf != NULL )
+        CMemFreePtr( &buf );
     inf = &DefaultInfo;
     switch( (aux_class)request ) {
 #if _INTEL_CPU
@@ -1532,7 +1536,7 @@ void *FEAuxInfo(                // REQUEST AUXILLIARY INFORMATION
         }
     }
 #endif
-    return retn;
+    return( retn );
 }
 
 
@@ -1592,7 +1596,7 @@ dbg_type FEDbgRetType(           // GET DEBUG RETURN TYPE FOR SYMBOL
 const char *FEGetEnv(           // GET VALUE FOR ENV-VAR
     char const *name )          // - name of environment var
 {
-    return CppGetEnv( name );
+    return( CppGetEnv( name ) );
 }
 
 int FEMoreMem( size_t size )

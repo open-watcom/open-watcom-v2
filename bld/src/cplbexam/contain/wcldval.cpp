@@ -7,7 +7,7 @@ void data_val_prt( int data, void * str ) {
     cout << (char *)str << "[" << data << "]\n";
 }
 
-void main() {
+int main( void ) {
     try {
         test1();
     } catch( ... ) {

@@ -30,11 +30,6 @@
 ****************************************************************************/
 
 
-#include "commonui.h"
-#include <stdio.h>
-#include <string.h>
-
-#include "watcom.h"
 #include "wglbl.h"
 #include "wsetedit.h"
 #include "wmen2rc.h"

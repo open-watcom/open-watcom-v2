@@ -33,7 +33,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
-#include <malloc.h>
 #include <setjmp.h>
 #if defined( __WATCOMC__ ) || !defined( __UNIX__ )
 #include <process.h>
@@ -44,6 +43,7 @@
 #include <sys/utime.h>
 #endif
 #include "wio.h"
+#include "walloca.h"
 #include "fcenable.h"
 #include "banner.h"
 
@@ -432,8 +432,11 @@ static void ProcFile( const char *fname )
             ExcludeList = NULL;
         } else if( ftype != OBJECT ) {
             Error( "file is not a standard OBJECT or LIBRARY file" );
+            // never return
         }
-        OutFile = QOpen( TEMP_OBJ_NAME, "wb" );
+        if( OutFile == NULL ) {
+            OutFile = QOpen( TEMP_OBJ_NAME, "wb" );
+        }
         do {
             ProcessRec();
             status = ReadRec();
@@ -443,6 +446,7 @@ static void ProcFile( const char *fname )
             DoReplace();
         } else {
             Error( "premature end of file encountered" );
+            // never return
         }
         FreeList( ExcludeList );    // do this here so concatenated .obj files
         ExcludeList = NULL;         // only have the first module excluded.
@@ -551,7 +555,7 @@ size_t QRead( FILE *fp, void *buffer, size_t len )
     size_t result;
 
     result = fread( buffer, 1, len, fp );
-    if( result == -1 ) {
+    if( result == IOERROR ) {
         IOError( "problem reading file" );
     }
     return( result );
@@ -563,7 +567,7 @@ size_t QWrite( FILE *fp, const void *buffer, size_t len )
     size_t result;
 
     result = fwrite( buffer, 1, len, fp );
-    if( result == -1 ) {
+    if( result == IOERROR ) {
         IOError( "problem writing file" );
     } else if( result != len ) {
         Error( "disk full" );

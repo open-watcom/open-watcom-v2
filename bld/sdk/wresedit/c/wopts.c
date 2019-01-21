@@ -30,10 +30,6 @@
 ****************************************************************************/
 
 
-#include "commonui.h"
-#include <stdlib.h>
-#include <stdio.h>
-#include <string.h>
 #include "wglbl.h"
 #include "wgetfn.h"
 #include "wstrdup.h"

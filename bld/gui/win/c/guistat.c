@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2018-2018 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -24,8 +25,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Status Window handling
 *
 ****************************************************************************/
 
@@ -39,11 +39,15 @@
 #include "guixhook.h"
 #include "guistr.h"
 #include "guixutil.h"
+#include "guistat.h"
 
 
-statwnd                 *GUIStatusWnd;
+statwnd         *GUIStatusWnd;
 
-static void FreeStatus( void )
+static  void    (*ResizeStatus)( gui_window * ) = NULL;
+static  void    (*FreeStatus)( void )           = NULL;
+
+static void DoFreeStatus( void )
 {
     StatusWndDestroy( GUIStatusWnd );
     StatusWndFini();
@@ -62,7 +66,7 @@ static void SetStatusRect( HWND parent, WPI_RECT *status, int x, int height )
     _wpi_setwrectvalues( status, x, y, right - left, h );
 }
 
-static void ResizeStatus( gui_window *wnd )
+static void DoResizeStatus( gui_window *wnd )
 {
     WPI_RECT    status;
     GUI_RECTDIM left, top, right, bottom;
@@ -116,8 +120,8 @@ bool GUICreateStatusWindow( gui_window *wnd, gui_ord x, gui_ord height,
     if( wnd->root == NULLHANDLE ) {
         return( false );
     }
-    GUISetResizeStatus( &ResizeStatus );
-    GUISetFreeStatus( &FreeStatus );
+    ResizeStatus = &DoResizeStatus;
+    FreeStatus = &DoFreeStatus;
     if( !StatusWndInit( GUIMainHInst, NULL, 0, NULLHANDLE ) ) {
         return( false );
     }
@@ -128,7 +132,7 @@ bool GUICreateStatusWindow( gui_window *wnd, gui_ord x, gui_ord height,
     if( wnd->status == NULLHANDLE ) {
         return( false );
     }
-    ResizeStatus( wnd );
+    DoResizeStatus( wnd );
     GUIResizeBackground( wnd, true );
     return( true );
 }
@@ -187,4 +191,18 @@ bool GUIResizeStatusWindow( gui_window *wnd, gui_ord x, gui_ord height )
     _wpi_movewindow( wnd->status, left, top, right - left, bottom - top, TRUE );
     GUIResizeBackground( wnd, true );
     return( true );
+}
+
+void GUIResizeStatus( gui_window *wnd )
+{
+    if( ResizeStatus != NULL ) {
+        (*ResizeStatus)( wnd );
+    }
+}
+
+void GUIFreeStatus( void )
+{
+    if( FreeStatus != NULL ) {
+        (*FreeStatus)();
+    }
 }

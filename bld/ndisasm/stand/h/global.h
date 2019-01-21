@@ -41,4 +41,35 @@
 
 #define PREFIX_SIZE_TABS        4
 
+extern dis_format_flags     DFormat;
+extern char                 *ObjFileName;
+extern char                 *ListFileName;
+extern char                 *SourceFileName;
+extern const char           *SourceFileInObject;
+extern char                 *SourceFileInDwarf;
+extern FILE                 *SourceFile;
+
+extern char                 *CommentString;
+
+extern bool                 source_mix;
+
+extern hash_table           HandleToSectionTable;
+extern hash_table           HandleToLabelListTable;
+extern hash_table           HandleToRefListTable;
+extern hash_table           SymbolToLabelTable;
+extern hash_table           NameRecognitionTable;
+extern hash_table           SkipRefTable;
+
+extern publics_struct       Publics;
+extern section_list_struct  Sections;
+extern char                 LabelChar;
+extern char                 QuoteChar;
+extern wd_options           Options;
+
+extern orl_handle           ORLHnd;
+extern orl_file_handle      ObjFileHnd;
+extern orl_sec_handle       DebugHnd;
+extern dis_handle           DHnd;
+extern FILE                 *OutputDest;
+
 #endif

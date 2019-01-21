@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -30,5 +30,9 @@
 ****************************************************************************/
 
 
-extern  void            CnvOpToInt( instruction *, opcnt );
-extern  bool            IndexOverlaps( instruction *ins, opcnt i );
+extern void         CnvOpToInt( instruction *, opcnt );
+extern bool         IndexOverlaps( instruction *ins, opcnt i );
+extern name         *OpAdjusted( name *, int, type_class_def );
+extern name         *IntEquivalent( name * );
+extern name         *Int64Equivalent( name * );
+

@@ -38,11 +38,13 @@
  * eax will always be a lot less than 256.
  */
 extern unsigned int __ffs( int value );
-#pragma aux __ffs =     \
-    "bsf    eax,edx"    \
-    "setne  cl"         \
-    "add    al,cl"      \
-    parm [edx] value [eax] modify [ecx];
+#pragma aux __ffs = \
+        "bsf    eax,edx"    \
+        "setne  cl"         \
+        "add    al,cl"      \
+    __parm      [__edx] \
+    __value     [__eax] \
+    __modify    [__ecx]
 
 #endif
 

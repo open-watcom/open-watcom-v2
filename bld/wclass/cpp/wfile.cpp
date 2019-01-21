@@ -123,7 +123,7 @@ long WEXPORT WFile::getl()
 {
     char temp[30];
     int len = 0;
-    for( unsigned i = 0; !_eof && i <= sizeof( temp ); i++ ) {
+    for( unsigned i = 0; !_eof && i < sizeof( temp ); i++ ) {
         temp[i] = getch();
         len = i;
         if( !( isdigit( temp[i] ) || temp[i] == '-' ) ) {
@@ -230,12 +230,13 @@ bool WEXPORT WFile::puts( const char* str )
 
 bool WEXPORT WFile::printf( const char* parms... )
 {
-    char* buffer = new char[MAX_FORMATTED+1];
+    char* buffer = new char [MAX_FORMATTED + 1];
     va_list args;
     va_start( args, parms );
     vsprintf( buffer, parms, args );
+    va_end( args );
     bool ok = putBytes( buffer, strlen( buffer ) );
-    delete [] buffer;
+    delete[] buffer;
     return( ok );
 }
 
@@ -251,7 +252,7 @@ void WFile::freeBuffer()
         if( _bOffset > 0 && (_style & OStyleWrite) ) {
             write( _buffer, _bOffset );
         }
-        delete [] _buffer;
+        delete[] _buffer;
         _buffer = NULL;
     }
 }
@@ -262,7 +263,7 @@ char WFile::getByte()
         return( '\0' );
     }
     if( _buffer == NULL ) {
-        _buffer = new char[MAX_BUFFER];
+        _buffer = new char [MAX_BUFFER];
         _bOffset = _bLength = 0;
     }
     if( _bOffset >= _bLength ) {
@@ -292,7 +293,7 @@ bool WFile::putByte( char ch )
 {
     if( _ok ) {
         if( _buffer == NULL ) {
-            _buffer = new char[MAX_BUFFER];
+            _buffer = new char [MAX_BUFFER];
             _bOffset = 0;
         }
         _buffer[_bOffset++] = ch;

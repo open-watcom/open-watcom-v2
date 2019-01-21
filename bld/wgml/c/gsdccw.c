@@ -425,17 +425,14 @@ void    scr_dc( void )
         add_to_sysdir( "$tab", tab_char );
         break;
     case 4 :                            // STOP option   DUMMY processing
-
 /***************************************************************************/
 /*  this is done to allow OW help processing to continue instead of exit   */
 /*  due to premature output of text '.dc stop off' from              TBD   */
 /*        docs\doc\whelp\whelp.gml line 765                                */
 /*                                                                         */
 /***************************************************************************/
-
         scan_restart = pa + len;
-        /* fall thru */
-
+        /* fall through */
     default:                            // unknown / unimplemented option
         dc_opt_warn_len( pa, len );
         break;

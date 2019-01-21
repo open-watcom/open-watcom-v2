@@ -626,8 +626,10 @@ token_idx ExpandMacro( token_idx tok_count )
         } else if( lineis( line, "local" ) ) {
             if( nesting_depth == 0 ) {
                 AsmScan( line );
-                if( macro_local() )
+                if( macro_local() ) {
+                    AsmFree( line );
                     return( INVALID_IDX );
+                }
                 AsmFree( line );
                 continue;
             }
@@ -668,9 +670,9 @@ bool MacroDef( token_idx i, bool hidden )
     } else {
         n = INVALID_IDX;
     }
-    if( ( Parse_Pass == PASS_1 ) &&
-        ( ( n == INVALID_IDX ) || ( AsmBuffer[n].class != TC_ID ) ) ) {
-        AsmError( PROC_MUST_HAVE_A_NAME );
+    if( ( n == INVALID_IDX ) || ( AsmBuffer[n].class != TC_ID ) ) {
+        if( Parse_Pass == PASS_1 )
+            AsmError( PROC_MUST_HAVE_A_NAME );
         return( RC_ERROR );
     }
     name = AsmBuffer[n].string_ptr;
@@ -679,9 +681,11 @@ bool MacroDef( token_idx i, bool hidden )
         currproc = dir_insert( name, TAB_MACRO );
         currproc->e.macroinfo->srcfile = get_curr_srcfile();
         currproc->e.macroinfo->hidden = hidden;
-    } else if( Parse_Pass == PASS_1 ) {
-        AsmError( PROC_ALREADY_DEFINED );
-        return( RC_ERROR );
+    } else {
+        if( Parse_Pass == PASS_1 ) {
+            AsmError( PROC_ALREADY_DEFINED );
+            return( RC_ERROR );
+        }
     }
     return( macro_exam( i ) );
 }

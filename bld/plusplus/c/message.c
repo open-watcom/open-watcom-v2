@@ -127,7 +127,8 @@ static void build_file_nesting  // DUMP OUT THE INCLUDE NESTING TRACEBACK
             }
             for( src_file = err_locn.src_file; ; ) {
                 src_file = SrcFileIncluded( src_file, &line );
-                if( src_file == NULL ) break;
+                if( src_file == NULL )
+                    break;
                 fname = fileName( src_file );
                 MsgDisplayArgs( IDEMSGSEV_NOTE, INF_FILE_NEST, fname, line );
             }
@@ -190,7 +191,7 @@ static void doDecodeMessage(            // extract message from tables
 
     if( data != NULL ) {
         if( msg < data->errors_count ) {
-            strcpy( buff, data->errors_text[ msg ] );
+            strcpy( buff, data->errors_text[msg] );
             return;
         }
     }
@@ -206,7 +207,7 @@ static SYMBOL msgBuild(         // BUILD ERROR MESSAGE
 
     CBanner();
     doDecodeMessage( msgbuf, msgnum );
-    return FormatMsg( pbuf, msgbuf, args );
+    return( FormatMsg( pbuf, msgbuf, args ) );
 }
 
 
@@ -229,7 +230,7 @@ static IDEBool IDEAPI idePrt    // PRINT FOR IDE
         fputs( buffer, err_file );
         fputc( '\n', err_file );
     }
-    return 0;
+    return( 0 );
 }
 
 
@@ -290,24 +291,24 @@ static void setMsgLocation      // SET LOCATION FOR MESSAGE
     ( CTX context )             // - current context
 {
     switch( context ) {
-      case CTX_FINI :
-      case CTX_FUNC_GEN :
-      case CTX_CG_FUNC :
-      case CTX_CG_OPT :
-      case CTX_ENDFILE :
+    case CTX_FINI :
+    case CTX_FUNC_GEN :
+    case CTX_CG_FUNC :
+    case CTX_CG_OPT :
+    case CTX_ENDFILE :
         if( CompFlags.ew_switch_used ) {
-      // drops thru
-      case CTX_INIT :
-      case CTX_CMDLN_ENV :
-      case CTX_CMDLN_PGM :
-      case CTX_CMDLN_VALID :
+        /* fall through */
+    case CTX_INIT :
+    case CTX_CMDLN_ENV :
+    case CTX_CMDLN_PGM :
+    case CTX_CMDLN_VALID :
             err_locn.src_file = NULL;
             break;
         }
-        // drops thru
-      case CTX_PREINCL :
-      case CTX_FORCED_INCS :
-      case CTX_SOURCE :
+        /* fall through */
+    case CTX_PREINCL :
+    case CTX_FORCED_INCS :
+    case CTX_SOURCE :
         if( err_locn.src_file == NULL ) {
             if( SrcFilesOpen() ) {
                 SrcFileGetTokenLocn( &err_locn );
@@ -344,46 +345,46 @@ void MsgDisplay                 // DISPLAY A MESSAGE
     VbufInit( &buffer );
     sym = msgBuild( msgnum, args, &buffer );
     switch( severity ) {
-      case IDEMSGSEV_ERROR :
-      case IDEMSGSEV_WARNING :
+    case IDEMSGSEV_ERROR :
+    case IDEMSGSEV_WARNING :
         if( CompFlags.ew_switch_used ) {
             switch( context ) {
-              case CTX_INIT :
-              case CTX_FINI :
-              case CTX_CMDLN_VALID :
-              case CTX_CG_OPT :
-              case CTX_ENDFILE :
+            case CTX_INIT :
+            case CTX_FINI :
+            case CTX_CMDLN_VALID :
+            case CTX_CG_OPT :
+            case CTX_ENDFILE :
                 if( context_changed ) {
                     fmt_inf_hdr( inf_prefix );
                 }
                 break;
-              case CTX_CMDLN_ENV :
-              case CTX_CMDLN_PGM :
+            case CTX_CMDLN_ENV :
+            case CTX_CMDLN_PGM :
                 if( context_changed ) {
                     fmt_inf_hdr_switch( inf_prefix, inf );
                 }
                 break;
-              case CTX_CG_FUNC :
-              case CTX_FUNC_GEN :
+            case CTX_CG_FUNC :
+            case CTX_FUNC_GEN :
                 if( context_changed ) {
                     fmt_inf_hdr_sym( inf_prefix, (SYMBOL)inf );
                 }
                 break;
-              case CTX_PREINCL :
-              case CTX_FORCED_INCS :
-              case CTX_SOURCE :
+            case CTX_PREINCL :
+            case CTX_FORCED_INCS :
+            case CTX_SOURCE :
                 build_file_nesting();
                 break;
-              DbgDefault( "Unexpected message context" );
+            DbgDefault( "Unexpected message context" );
             }
         }
         msg_locn = &prt_locn;
         break;
-      case IDEMSGSEV_NOTE :
-      case IDEMSGSEV_NOTE_MSG :
+    case IDEMSGSEV_NOTE :
+    case IDEMSGSEV_NOTE_MSG :
         msg_locn = &notes_locn;
         break;
-      default :
+    default :
         msg_locn = NULL;
         break;
     }
@@ -594,22 +595,22 @@ static bool okToPrintMsg        // SEE IF OK TO PRINT MESSAGE
     int level;
 
     print_err = true;
-    level = msg_level[ msgnum ] & 0x0F;
-    switch( msg_level[ msgnum ] >> 4 ) {
-      case MSG_TYPE_INFO :
+    level = msg_level[msgnum] & 0x0F;
+    switch( msg_level[msgnum] >> 4 ) {
+    case MSG_TYPE_INFO :
         level = WLEVEL_NOTE;
         break;
-      case MSG_TYPE_ANSIERR :
-      case MSG_TYPE_ANSIWARN :
+    case MSG_TYPE_ANSIERR :
+    case MSG_TYPE_ANSIWARN :
         print_err = !CompFlags.extensions_enabled;
         break;
-      case MSG_TYPE_ANSI :
+    case MSG_TYPE_ANSI :
         if( !CompFlags.extensions_enabled ) {
             level = WLEVEL_ERROR;
         }
         break;
-      case MSG_TYPE_WARNING :
-      case MSG_TYPE_ERROR :
+    case MSG_TYPE_WARNING :
+    case MSG_TYPE_ERROR :
         break;
     }
     *plevel = level;
@@ -632,11 +633,11 @@ static msg_status_t doError(    // ISSUE ERROR
     va_list args,               // - varargs
     unsigned warn_inc )         // - amount to inc WngCount (if warning)
 {
-    msg_status_t retn;          // - message status
-    int level;                  // - warning level of message
+    msg_status_t retn;              // - message status
+    int level;                      // - warning level of message
     struct {
-        unsigned print_err : 1; // - true ==> print the message
-        unsigned too_many : 1;  // - true ==> too many messages
+        unsigned print_err  : 1;    // - true ==> print the message
+        unsigned too_many   : 1;    // - true ==> too many messages
     } flag;
 
 #ifndef NDEBUG
@@ -653,7 +654,7 @@ static msg_status_t doError(    // ISSUE ERROR
             if( flag.print_err && ( level == WLEVEL_ERROR ) ) {
                 internalErrCount++;
             }
-            return MS_NULL;
+            return( MS_NULL );
         } else if( ErrLimit == -1 ) {
             /* unlimited messages */
             flag.too_many = false;
@@ -687,7 +688,7 @@ static msg_status_t doError(    // ISSUE ERROR
     }
     /* turn off SetErrLoc setting */
     err_locn.src_file = NULL;
-    return retn;
+    return( retn );
 }
 
 msg_status_t CErr(              // ISSUE ERROR
@@ -720,7 +721,7 @@ msg_status_t CWarnDontCount(    // ISSUE WARNING BUT DON'T COUNT IT
 msg_status_t CErr1(             // ISSUE ERROR (NO PARAMETERS)
     MSG_NUM msgnum )            // - message number
 {
-    return CErr( msgnum );
+    return( CErr( msgnum ) );
 }
 
 
@@ -728,7 +729,7 @@ msg_status_t CErr2(             // ISSUE ERROR (int PARAMETER)
     MSG_NUM msgnum,             // - message number
     int p1 )                    // - parameter
 {
-    return CErr( msgnum, p1 );
+    return( CErr( msgnum, p1 ) );
 }
 
 
@@ -736,7 +737,7 @@ msg_status_t CErr2p(            // ISSUE ERROR (char* PARAMETER)
     MSG_NUM msgnum,             // - message number
     void const *p1 )            // - parameter
 {
-    return CErr( msgnum, p1 );
+    return( CErr( msgnum, p1 ) );
 }
 
 void CFatal(                    // ISSUE ERROR AND COMMIT SUICIDE
@@ -781,7 +782,7 @@ unsigned CErrUnsuppress(
 {
     unsigned val = suppressCount;
     suppressCount = 0;
-    return val;
+    return( val );
 }
 
 bool CErrSuppressedOccurred(
@@ -813,15 +814,15 @@ bool CErrOccurred(
 static bool warnLevelValidate(  // VALIDATE WARNING LEVEL
     int level )                 // - level to be validated
 {
-    bool retb;                  // - return: true ==> good level
+    bool ok;                    // - return: true ==> good level
 
     if( ( level < WLEVEL_MIN ) || ( level > WLEVEL_MAX ) ) {
         CErr1( ERR_PRAG_WARNING_BAD_LEVEL );
-        retb = false;
+        ok = false;
     } else {
-        retb = true;
+        ok = true;
     }
-    return( retb );
+    return( ok );
 }
 
 
@@ -834,7 +835,7 @@ static void changeLevel(        // EFFECT A LEVEL CHANGE
         orig_err_levs = CMemAlloc( sizeof( msg_level ) );
         memcpy( orig_err_levs, msg_level, sizeof( msg_level ) );
     }
-    msg_level[ msgnum ] = ( msg_level[ msgnum ] & 0xF0 ) + level;
+    msg_level[msgnum] = ( msg_level[msgnum] & 0xF0 ) + level;
 }
 
 void WarnChangeLevel(           // CHANGE WARNING LEVEL FOR A MESSAGE
@@ -845,15 +846,15 @@ void WarnChangeLevel(           // CHANGE WARNING LEVEL FOR A MESSAGE
         CErr2( ERR_PRAG_WARNING_BAD_MESSAGE, msgnum );
         return;
     }
-    switch( msg_level[ msgnum ] >> 4 ) {
-      case MSG_TYPE_ERROR :
-      case MSG_TYPE_INFO :
-      case MSG_TYPE_ANSIERR :
+    switch( msg_level[msgnum] >> 4 ) {
+    case MSG_TYPE_ERROR :
+    case MSG_TYPE_INFO :
+    case MSG_TYPE_ANSIERR :
         CErr2( ERR_PRAG_WARNING_BAD_MESSAGE, msgnum );
         break;
-      case MSG_TYPE_WARNING :
-      case MSG_TYPE_ANSI :
-      case MSG_TYPE_ANSIWARN :
+    case MSG_TYPE_WARNING :
+    case MSG_TYPE_ANSI :
+    case MSG_TYPE_ANSIWARN :
         changeLevel( level, msgnum );
         break;
     }
@@ -868,10 +869,10 @@ void WarnChangeLevels(          // CHANGE WARNING LEVELS FOR ALL MESSAGES
         for( index = 0
            ; index < ARRAY_SIZE( msg_level )
            ; ++ index ) {
-            switch( msg_level[ index ] >> 4 ) {
-              case MSG_TYPE_WARNING :
-              case MSG_TYPE_ANSI :
-              case MSG_TYPE_ANSIWARN :
+            switch( msg_level[index] >> 4 ) {
+            case MSG_TYPE_WARNING :
+            case MSG_TYPE_ANSI :
+            case MSG_TYPE_ANSIWARN :
                 changeLevel( level, index );
                 break;
             }
@@ -898,11 +899,11 @@ void InfClassDecl(              // GENERATE CLASS-DECLARATION NOTE
 void InfMacroDecl(              // GENERATE MACRO-DECLARATION NOTE
     void* parm )                // - macro definition
 {
-    MEPTR mdef;                 // - macro definition
+    MEPTR mentry;               // - macro definition
 
-    mdef = parm;
-    if( mdef->macro_flags & MFLAG_USER_DEFINED ) {
-        CErr( INF_MACRO_DECLARATION, mdef->macro_name, &mdef->defn );
+    mentry = parm;
+    if( mentry->macro_flags & MFLAG_USER_DEFINED ) {
+        CErr( INF_MACRO_DECLARATION, mentry->macro_name, &mentry->defn );
     }
 }
 
@@ -980,7 +981,7 @@ void DefAddPrototype(           // ADD PROTOTYPE FOR SYMBOL TO .DEF FILE
 unsigned ErrPCHVersion(         // PROVIDE A VERSION NUMBER FOR THE ERROR MESSAGES
     void )
 {
-    return sizeof( msg_level );
+    return( sizeof( msg_level ) );
 }
 
 
@@ -1037,7 +1038,7 @@ pch_status PCHReadErrWarnData( void )
     } else {
         orig_levels = msg_level;
     }
-    stop = &tmp_buff[ sizeof( msg_level ) ];
+    stop = &tmp_buff[sizeof( msg_level )];
     for( p = tmp_buff, o = orig_levels; p < stop; ++p, ++o ) {
         if( *p != *o ) {
             // reflect a change from the header file into current levels

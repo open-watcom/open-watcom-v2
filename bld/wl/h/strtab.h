@@ -43,7 +43,6 @@ typedef struct {
 typedef void    write_strtable_fn( void *, const char *, size_t );
 
 extern void     InitStringTable( stringtable *, bool );
-extern void     ReserveStringTable( stringtable *, size_t );
 extern char     *AddBufferStringTable( stringtable *, const void *, size_t );
 extern char     *AddSymbolStringTable( stringtable *, const char *, size_t );
 extern char     *AddStringStringTable( stringtable *, const char * );

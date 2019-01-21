@@ -30,10 +30,11 @@
 
 
 #ifndef MYASSERT_H
-#if defined( __WATCOMC__ )
-#pragma aux InternalError aborts;
-#endif
+
 extern int InternalError( const char *file, unsigned line );
+#if defined( __WATCOMC__ )
+#pragma aux InternalError __aborts
+#endif
 
 #ifndef __FNAME__
 #define __FNAME__ __FILE__

@@ -120,9 +120,7 @@ static  bool    GetDlgStatus( dlg_brk *dlg, gui_window *gui )
     }
     bp = FindBreak( tmp_bp->loc.addr );
     if( bp != NULL && bp != dlg->bp ) {
-        _SwitchOn( SW_ERROR_RETURNS );
-        Error( ERR_NONE, LIT_ENG( ERR_POINT_EXISTS ) );
-        _SwitchOff( SW_ERROR_RETURNS );
+        ErrorRet( ERR_NONE, LIT_ENG( ERR_POINT_EXISTS ) );
         return( false );
     }
     GUIDlgBuffGetText( gui, CTL_BRK_CMD_LIST, TxtBuff, TXT_LEN );

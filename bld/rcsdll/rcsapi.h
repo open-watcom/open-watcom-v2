@@ -33,7 +33,9 @@
 #if defined( __NT__ ) || defined( __WINDOWS__ )
     #include <windows.h>
 #elif defined( __OS2__ )
+    #define INCL_DOSMODULEMGR
     #include <os2.h>
+    #include "os21632.h"
 #endif
 
 #ifdef __cplusplus
@@ -66,11 +68,7 @@ extern "C" {
     typedef const char          *rcsstring;
     typedef void                *rcsdata;
     typedef unsigned long       rcshwnd;
-  #if !defined( __WATCOMC__ )
-    #define RCSAPI
-  #else
     #define RCSAPI              APIENTRY
-  #endif
 #elif defined( __DOS__ )
     typedef const char          *rcsstring;
     typedef void                *rcsdata;

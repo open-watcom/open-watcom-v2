@@ -30,7 +30,7 @@
 ****************************************************************************/
 
 
-#include "cgstd.h"
+#include "_cgstd.h"
 #include <stdio.h>
 #include "coderep.h"
 #include "optmain.h"
@@ -39,10 +39,9 @@
 #include "zoiks.h"
 #include "coff.h"
 #include "encode.h"
-#include "cgaux.h"
+#include "cgauxinf.h"
 #include "data.h"
 #include "rtrtn.h"
-#include "cgauxinf.h"
 #include "dbsyms.h"
 #include "rscconst.h"
 #include "object.h"
@@ -55,7 +54,6 @@
 #include "namelist.h"
 #include "fixindex.h"
 #include "revcond.h"
-#include "dmpinc.h"
 #include "dumpio.h"
 #include "dumpins.h"
 #include "dumptab.h"
@@ -63,8 +61,6 @@
 
 
 #define _NameReg( op )                  ( (op)->r.arch_index )
-
-#define _IsSigned( type )               ( Unsigned[type] != type )
 
 #define _BinaryOpcode( a, b )           { { a, b }, { a, b } }
 #define _SignedOpcode( a, b, c, d )     { { a, b }, { c, d } }
@@ -604,14 +600,14 @@ static  void    GenCallIndirect( instruction *call ) {
     GenMEMINS( 0x1a, AXP_RETURN_ADDR, reg_index, 0x4000 );
 }
 
-static  void    doChop( instruction *ins, type_class_def class ) {
-/****************************************************************/
-
+static  void    doChop( instruction *ins, type_class_def type_class )
+/*******************************************************************/
+{
     unsigned    size;
     unsigned    zap_mask;
 
     zap_mask = 0x00;
-    size = TypeClassSize[class];
+    size = TypeClassSize[type_class];
     switch( size ) {
     case 1:
         zap_mask = 0x01;
@@ -629,9 +625,9 @@ static  void    doChop( instruction *ins, type_class_def class ) {
     GenOPIMM( 0x12, 0x31, _NameReg( ins->operands[0] ), zap_mask, _NameReg( ins->result ) );
 }
 
-static  void    doSignExtend( instruction *ins, type_class_def from ) {
-/*********************************************************************/
-
+static  void    doSignExtend( instruction *ins, type_class_def type_class )
+/*************************************************************************/
+{
     unsigned    from_size;
     int         res_index;
     int         src_index;
@@ -639,7 +635,7 @@ static  void    doSignExtend( instruction *ins, type_class_def from ) {
 
     res_index = _NameReg( ins->result );
     src_index = _NameReg( ins->operands[0] );
-    from_size = TypeClassSize[from];
+    from_size = TypeClassSize[type_class];
     if( from_size == 4 ) {
         /* addl r31, src -> dst */
         GenOPINS( 0x10, 0x00, AXP_ZERO_SINK, src_index, res_index );

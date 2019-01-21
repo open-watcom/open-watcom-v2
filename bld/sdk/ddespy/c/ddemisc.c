@@ -29,13 +29,11 @@
 ****************************************************************************/
 
 
-#include "commonui.h"
 #include "wddespy.h"
 #include <io.h>
 #include <time.h>
-#include <stdio.h>
-#include <string.h>
 #include <stdarg.h>
+
 
 extern msglist DDEMsgs[1];
 

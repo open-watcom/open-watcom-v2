@@ -30,19 +30,20 @@
 ****************************************************************************/
 
 
-#include "cgstd.h"
+#include "_cgstd.h"
 #include "coderep.h"
 #include "vergen.h"
 #include "cfloat.h"
+#include "verify.h"
 
 #include "s37ver.def"
+
 
 extern  bool            CFIsI16(cfloat*);
 extern  bool            CFIsI32(cfloat*);
 extern  bool            IsRegPair(hw_reg_set);
 extern  hw_reg_set      LowReg(hw_reg_set);
 extern  hw_reg_set      HighReg(hw_reg_set);
-extern  bool            OtherVerify(vertype,instruction*,name*,name*,name*);
 
 extern  bool    DoVerify( vertype kind, instruction *ins ) {
 /**********************************************************/

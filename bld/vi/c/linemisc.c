@@ -84,14 +84,15 @@ vi_rc GenericJoinCurrentLineToNext( bool remsp )
     GetCurrentLine();
 
     if( remsp ) {
-        while( WorkLine->len > 0 && WorkLine->data[WorkLine->len - 1] == ' ' ) {
+        for( ; WorkLine->len > 0; WorkLine->len-- ) {
+            if( WorkLine->data[WorkLine->len - 1] != ' ' )
+                break;
             WorkLine->data[WorkLine->len - 1] = '\0';
-            WorkLine->len--;
         }
         j = FindStartOfALine( nline ) - 1;
         k = 0;
-        if( !(j == 0 && nline->data[0] == ' ') ) {
-            if( WorkLine->len != 0 ) {
+        if( !( j == 0 && nline->data[0] == ' ' ) ) {
+            if( WorkLine->len > 0 ) {
                 WorkLine->data[WorkLine->len] = ' ';
                 k = WorkLine->len + 1;
             }
@@ -135,14 +136,15 @@ vi_rc GenericJoinCurrentLineToNext( bool remsp )
  */
 vi_rc JoinCurrentLineToNext( void )
 {
-    int     i, j;
+    long    i;
+    long    j;
     vi_rc   rc;
 
     rc = ModificationTest();
     if( rc != ERR_NO_ERR ) {
         return( rc );
     }
-    i = (int) GetRepeatCount();
+    i = GetRepeatCount();
     StartUndoGroup( UndoStack );
     for( j = 0; j < i; j++ ) {
         rc = GenericJoinCurrentLineToNext( true );

@@ -31,8 +31,8 @@
 ****************************************************************************/
 
 
+#include "_cgstd.h"
 #include <stdlib.h>
-#include "cgstd.h"
 #include "coderep.h"
 #include "model.h"
 #include "addrname.h"
@@ -40,16 +40,15 @@
 #include "zoiks.h"
 #include "freelist.h"
 #include "cfloat.h"
-#include "x87.h"
+#include "fpu.h"
 #include "makeins.h"
 #include "makeaddr.h"
 #include "addrfold.h"
 #include "namelist.h"
 #include "makeblk.h"
 #include "typemap.h"
+#include "bldins.h"
 
-
-extern  void            BGDone(an);
 
 static  void    LoadTempInt( an addr );
 
@@ -147,10 +146,10 @@ static  byte    Idx[] = {
         5         /* CL_TEMP_OFFSET */
 };
 
-extern  name    *Points( an addr, type_def *tipe ) {
-/**************************************************/
-
-    type_class_def      class;
+name    *Points( an addr, type_def *tipe )
+/****************************************/
+{
+    type_class_def      type_class;
     type_length         size;
     name                *result;
     i_flags             flags;
@@ -159,7 +158,7 @@ extern  name    *Points( an addr, type_def *tipe ) {
     if( addr->format != NF_ADDR && addr->format != NF_CONS ) {
         _Zoiks( ZOIKS_024 );
     }
-    class = TypeClass( tipe );
+    type_class = TypeClass( tipe );
     size = tipe->length;
     if( addr->u.n.base != NULL ) {
         flags = X_FAKE_BASE;
@@ -178,14 +177,14 @@ extern  name    *Points( an addr, type_def *tipe ) {
     switch( addr->class ) {
     case CL_ADDR_GLOBAL:
         if( addr->u.n.name->v.offset == addr->u.n.offset
-          && addr->u.n.name->n.name_class == class
+          && addr->u.n.name->n.type_class == type_class
           && addr->u.n.name->n.size == size ) {
             result = addr->u.n.name;
         } else {
             result = (name *)SAllocMemory( addr->u.n.name->v.symbol,
                                    addr->u.n.offset,
                                    addr->u.n.name->m.memory_type,
-                                   class, size );
+                                   type_class, size );
         }
         if( addr->u.n.alignment != 0 ) {
             // NOTE: This means all references to a memory operand must
@@ -195,22 +194,22 @@ extern  name    *Points( an addr, type_def *tipe ) {
         break;
     case CL_ADDR_TEMP:
         if( addr->u.n.name->v.offset == addr->u.n.offset
-          && addr->u.n.name->n.name_class == class
+          && addr->u.n.name->n.type_class == type_class
           && addr->u.n.name->n.size == size ) {
             result = addr->u.n.name;
         } else {
-            result = STempOffset( addr->u.n.name, addr->u.n.offset, class, size );
+            result = STempOffset( addr->u.n.name, addr->u.n.offset, type_class, size );
         }
         break;
     case CL_POINTER:
-        result = ScaleIndex( addr->u.n.index, addr->u.n.base, addr->u.n.offset, class, size, 0, flags );
+        result = ScaleIndex( addr->u.n.index, addr->u.n.base, addr->u.n.offset, type_class, size, 0, flags );
         break;
     case CL_GLOBAL_INDEX:
     case CL_TEMP_INDEX:
-        result = ScaleIndex( addr->u.n.index, addr->u.n.name, addr->u.n.offset, class, size, 0, flags & ~X_FAKE_BASE );
+        result = ScaleIndex( addr->u.n.index, addr->u.n.name, addr->u.n.offset, type_class, size, 0, flags & ~X_FAKE_BASE );
         break;
     case CL_TEMP_OFFSET:
-        result = ScaleIndex( addr->u.n.name, addr->u.n.base, addr->u.n.offset, class, size, 0, flags );
+        result = ScaleIndex( addr->u.n.name, addr->u.n.base, addr->u.n.offset, type_class, size, 0, flags );
         break;
     case CL_CONS2:
 #if WORD_SIZE != 2
@@ -219,11 +218,11 @@ extern  name    *Points( an addr, type_def *tipe ) {
         addr->u.n.name = AllocIntConst( addr->u.n.offset );
         addr->class = CL_VALUE;
         LoadTempInt( addr );
-        result = ScaleIndex( addr->u.n.name, addr->u.n.base, 0, class, size, 0, flags );
+        result = ScaleIndex( addr->u.n.name, addr->u.n.base, 0, type_class, size, 0, flags );
         break;
     default:
         LoadTempInt( addr );
-        result = ScaleIndex( addr->u.n.name, addr->u.n.base, 0, class, size, 0, flags );
+        result = ScaleIndex( addr->u.n.name, addr->u.n.base, 0, type_class, size, 0, flags );
         break;
     }
     if( addr->flags & FL_VOLATILE ) {
@@ -240,9 +239,9 @@ extern  name    *Points( an addr, type_def *tipe ) {
 }
 
 
-extern  an      AddrName( name *op, type_def *tipe ) {
-/******************************************************/
-
+an      AddrName( name *op, type_def *tipe )
+/******************************************/
+{
     an  addr;
 
     addr = NewAddrName();
@@ -314,21 +313,21 @@ static  void    AddIndex( an addr, name *index, name *addend ) {
 /**************************************************************/
 
     instruction         *ins;
-    type_class_def      class;
+    type_class_def      type_class;
 
-    class = index->n.name_class;
-    if( class == XX )
-        class = addend->n.name_class; /* if index is a const ! */
-    ins = MakeBinary( OP_ADD, index, addend, AllocTemp( class ), class );
+    type_class = index->n.type_class;
+    if( type_class == XX )
+        type_class = addend->n.type_class; /* if index is a const ! */
+    ins = MakeBinary( OP_ADD, index, addend, AllocTemp( type_class ), type_class );
     index = ins->result;
     AddIns( ins );
     addr->u.n.index = index;
 }
 
 
-extern  bool    CypAddrPlus( an l_addr, an r_addr, type_def *tipe ) {
-/*******************************************************************/
-
+bool    CypAddrPlus( an l_addr, an r_addr, type_def *tipe )
+/*********************************************************/
+{
     mode_action action;
 
     if( tipe->refno == TY_HUGE_POINTER )
@@ -376,11 +375,11 @@ static        bool    AddToTypeLength( type_length x, type_length y ) {
 }
 
 
-extern  an      AddrPlus( an l_addr, an r_addr, type_def *tipe ) {
-/****************************************************************/
+an      AddrPlus( an l_addr, an r_addr, type_def *tipe )
+/******************************************************/
 
 /*       Returns NULL if code needs to be generated*/
-
+{
     mode_action action;
     an          addr;
 
@@ -523,9 +522,9 @@ static  bool    ShiftConst( an r_addr ) {
 }
 
 
-extern  bool    CypAddrShift( an l_addr, an r_addr, type_def *tipe ) {
-/********************************************************************/
-
+bool    CypAddrShift( an l_addr, an r_addr, type_def *tipe )
+/**********************************************************/
+{
     /* unused parameters */ (void)tipe;
 
     CheckPointer( l_addr );
@@ -558,15 +557,15 @@ static  bool    ShiftToTypeLength( type_length x, unsigned_16 y ) {
 }
 
 
-extern  an      AddrShift( an l_addr, an r_addr, type_def *tipe ) {
-/*****************************************************************/
+an      AddrShift( an l_addr, an r_addr, type_def *tipe )
+/*******************************************************/
 
 /*       Returns NULL if code needs to be generated*/
-
+{
     instruction         *ins;
     signed_16           rv;
     an                  addr;
-    type_class_def      class;
+    type_class_def      type_class;
 
     addr = NULL;
     if( !ShiftConst( r_addr ) )
@@ -583,9 +582,9 @@ extern  an      AddrShift( an l_addr, an r_addr, type_def *tipe ) {
         return( NULL );
     addr = NewAddrName();
     addr->u.n.offset = l_addr->u.n.offset << rv;  /* new constant after shift*/
-    class = TypeClass( tipe );
+    type_class = TypeClass( tipe );
     ins = MakeBinary( OP_LSHIFT, l_addr->u.n.name,
-            AllocIntConst( rv ), AllocTemp( class ), class );
+            AllocIntConst( rv ), AllocTemp( type_class ), type_class );
     addr->u.n.name = ins->result;
     AddIns( ins );
     addr->class = CL_TEMP_OFFSET;
@@ -596,9 +595,9 @@ extern  an      AddrShift( an l_addr, an r_addr, type_def *tipe ) {
 }
 
 
-extern  name    *GetValue( an addr, name *suggest ) {
-/***************************************************/
-
+name    *GetValue( an addr, name *suggest )
+/*****************************************/
+{
     name        *op = NULL;
     instruction *ins;
 
@@ -613,7 +612,7 @@ extern  name    *GetValue( an addr, name *suggest ) {
             break;
         case CL_TEMP_OFFSET:
             if( addr->u.n.offset != 0 ) {
-                op = MaybeTemp( suggest, addr->u.n.name->n.name_class );
+                op = MaybeTemp( suggest, addr->u.n.name->n.type_class );
                 ins = MakeBinary( OP_ADD, addr->u.n.name,
                                     AllocS32Const( addr->u.n.offset ),
                                     op, TypeClass( addr->tipe ) );
@@ -660,9 +659,9 @@ extern  name    *GetValue( an addr, name *suggest ) {
 }
 
 
-extern  name    *AddrToName( an addr ) {
-/**************************************/
-
+name    *AddrToName( an addr )
+/****************************/
+{
     name        *op;
 
     op = NULL;

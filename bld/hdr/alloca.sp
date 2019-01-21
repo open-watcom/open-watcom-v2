@@ -11,12 +11,12 @@
   #define __ALLOCA_ALIGN( s )   (((s)+(sizeof(int)-1))&~(sizeof(int)-1))
   #define __alloca( s )         __doalloca(__ALLOCA_ALIGN(s))
 
-:segment DOS
+:segment DOS | RDOS
   #ifdef _M_I86
 :endsegment
    #define alloca( s )  ((__ALLOCA_ALIGN(s)<stackavail())?__alloca(s): (void *)0)
    #define _alloca( s ) ((__ALLOCA_ALIGN(s)<stackavail())?__alloca(s): (void *)0)
-:segment DOS
+:segment DOS | RDOS
   #else
    extern void __GRO(__w_size_t __size);
    #pragma aux __GRO "*" __parm __routine []
@@ -25,17 +25,21 @@
   #endif
 :endsegment
 
-:segment DOS | QNX
+:segment DOS | QNX | RDOS
   #ifdef _M_I86
     #pragma aux __doalloca = \
             "sub sp,ax"     \
-            __parm __nomemory [__ax] __value [__sp] __modify __exact __nomemory [__sp]
+        __parm __nomemory [__ax] \
+        __value [__sp] \
+        __modify __exact __nomemory [__sp]
   #else
 :endsegment
      #pragma aux __doalloca = \
             "sub esp,eax"   \
-            __parm __nomemory [__eax] __value [__esp] __modify __exact __nomemory [__esp]
-:segment DOS | QNX
+        __parm __nomemory [__eax] \
+        __value [__esp] \
+        __modify __exact __nomemory [__esp]
+:segment DOS | QNX | RDOS
   #endif
 :endsegment
  #else

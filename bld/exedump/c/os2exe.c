@@ -130,7 +130,7 @@ static  const_string_table os2_386_msg[] = {
 };
 
 static  const_string_table os2_obj_msg[] = {
-    "4virtual memory size              = ",
+    "4virtual memory size             = ",
     "4          relocation base address          = ",
     "4          object flag bits                 = ",
     "4          object page table index          = ",
@@ -332,6 +332,7 @@ static void dmp_obj_page( object_record obj )
 {
     unsigned_32     j;
     unsigned_32     offset;
+    unsigned_32     file_ofs;
     map_entry       map;
 
     if( Form == FORM_LX ) {
@@ -343,7 +344,7 @@ static void dmp_obj_page( object_record obj )
     for( j = 0; j < obj.mapsize; ++j ) {
         Data_count++;
         Wdputs( "    page # " );
-        Putdec( Data_count );
+        Putdecbz( Data_count, 3 );
         Wdputs( "  map page = " );
         switch( Form ) {
         case FORM_LE:
@@ -353,6 +354,11 @@ static void dmp_obj_page( object_record obj )
             Puthex( map.le.page_num[0], 2 );
             Puthex( map.le.page_num[1], 2 );
             Puthex( map.le.page_num[2], 2 );
+            Wdputs( "H file ofs = " );
+            file_ofs = map.le.page_num[2] + (map.le.page_num[1] << 8) + ((unsigned_32)map.le.page_num[0] << 16);
+            if( file_ofs )
+                file_ofs = ((file_ofs - 1) * Os2_386_head.page_size) + Os2_386_head.page_off;
+            Puthex( file_ofs, 8 );
             Wdputs( "H flgs = " );
             Puthex( map.le.flags, 2 );
             Wdputs( "H " );
@@ -462,7 +468,7 @@ static void dmp_obj_table( void )
                             + i * sizeof( object_record ) );
         Wread( &os_obj, sizeof( object_record ) );
         Wdputs( "object " );
-        Putdec( i + 1 );
+        Putdecbz( i + 1, 2 );
         Wdputs( ": " );
         Dump_header( &os_obj.size, os2_obj_msg, 4 );
         Wdputs( "          flags = " );

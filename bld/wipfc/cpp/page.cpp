@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
+* Copyright (c) 2009-2018 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -28,117 +28,127 @@
 *
 ****************************************************************************/
 
+
+#include "wipfc.hpp"
 #include "page.hpp"
 #include "cell.hpp"
 #include "document.hpp"
 #include "errors.hpp"
 #include "hn.hpp"
+#include "outfile.hpp"
+
 
 void Page::buildTOC()
 {
-    ( *( elements.begin() ))->buildTOC( this );
+    ( *( _elements.begin() ))->buildTOC( this );
 }
 /***************************************************************************/
-void Page::buildLocalDictionary()
+void Page::buildLocalDictionary( OutFile* out )
 {
+    _out = out;
     bool autoSpacing( true );
-    currentCell = new Cell( document->maxLocalDictionarySize() );
-    document->addCell( currentCell );
-    cells.push_back( currentCell->index() );
-    ++toc.cellCount;
-    for( ElementIter itr = elements.begin(); itr != elements.end(); ++itr ) {
+    _currentCell = new Cell( _document->maxLocalDictionarySize() );
+    _document->addCell( _currentCell );
+    _cells.push_back( static_cast< word >( _currentCell->index() ) );
+    for( ElementIter itr = _elements.begin(); itr != _elements.end(); ++itr ) {
         std::pair< bool, bool > flags( ( *itr )->buildLocalDict( this ) );
         if( flags.first ) {
-            currentCell = new Cell( document->maxLocalDictionarySize() );
-            document->addCell( currentCell );
-            cells.push_back( currentCell->index() );
-            ++toc.cellCount;
+            _currentCell = new Cell( _document->maxLocalDictionarySize() );
+            _document->addCell( _currentCell );
+            _cells.push_back( static_cast< word >( _currentCell->index() ) );
             if( !autoSpacing )          //autoSpacing can't cross a cell boundry
-                currentCell->addByte( 0xFC );   //so turn it off so we can turn 
-            flags = ( *itr )->buildLocalDict( this ); //it back on later
+                _currentCell->addByte( Cell::TOGGLE_SPACING );  //so turn it off so we can turn
+            flags = ( *itr )->buildLocalDict( this );           //it back on later
         }
         if( flags.second )
             autoSpacing = !autoSpacing;
-        currentCell->addElement( *itr );
+        _currentCell->addElement( *itr );
     }
+    _toc.cellCount = static_cast< byte >( _cells.size() );
 }
 /***************************************************************************/
-bool Page::addWord( GlobalDictionaryWord* word )
+bool Page::addTextToLD( GlobalDictionaryWord* gdentry )
 {
-    if( word ) {    //can be 0 for unrecognized entity references
-        if( currentCell->dictFull() )
-            return true;
-        currentCell->addWord( word->index() );
-        word->onPage( idx );
+    if( gdentry ) {    //can be 0 for unrecognized entity references
+        if( _currentCell->dictFull() )
+            return( true );
+        _currentCell->addTextToLD( gdentry->index() );
+        gdentry->onPage( _index );
     }
-    return false;
+    return( false );
 }
 /***************************************************************************/
 //Write a TOC entry
-STD1::uint32_t Page::write( std::FILE* out )
+dword Page::write( OutFile* out )
 {
-    std::size_t tocsize( sizeof( TocEntry ) + toc.cellCount * sizeof( STD1::uint16_t ) );
-    if( toc.extended ) {
-        tocsize += sizeof( ExtTocEntry );
-        if( etoc.setPos )
-            tocsize += sizeof( PageOrigin );
-        if( etoc.setSize )
-            tocsize += sizeof( PageSize );
-        if( etoc.setStyle )
-            tocsize += sizeof( PageStyle );
-        if( etoc.setGroup )
-            tocsize += sizeof ( PageGroup );
-        if( etoc.setCtrl )
-            tocsize += sizeof( PageControls );
+    // calculate toc size
+    std::size_t tocsize = _toc.size();
+    if( _toc.flags.s.extended ) {
+        tocsize += _etoc.size();
+        if( _etoc.flags.s.setPos )
+            tocsize += _origin.size();
+        if( _etoc.flags.s.setSize )
+            tocsize += _size.size();
+        if( _etoc.flags.s.setStyle )
+            tocsize += _style.size();
+        if( _etoc.flags.s.setGroup )
+            tocsize += _group.size();
+        if( _etoc.flags.s.setCtrl ) {
+            tocsize += _control.size();
+        }
     }
+    // add cells size
+    tocsize += _cells.size() * sizeof( word );
+    // add title size
+    std::string title( out->wtomb_string( _title ) );
     if( tocsize + title.size() > 255 ) {
-        Hn* hn( static_cast< Hn* >( *( elements.begin() ) ) );
+        Hn* hn( static_cast< Hn* >( *( _elements.begin() ) ) );
         hn->printError( ERR2_TEXTTOOLONG );
         title.erase( 255 - tocsize );  //write only part of title
     }
     tocsize += title.size();
-    toc.size = static_cast< STD1::uint8_t >( tocsize );
-    STD1::uint32_t pos( toc.write( out ) );
-    if( toc.extended ) {
-        etoc.write( out );
-        if( etoc.setPos )
-            origin.write( out );
-        if( etoc.setSize )
-            size.write (out );
-        if( etoc.setStyle )
-            style.write( out );
-        if( etoc.setGroup )
-            group.write( out );
-        if( etoc.setCtrl )
-            controls.write( out );
+    _toc.hdrsize = static_cast< byte >( tocsize );
+    // write all out
+    dword offset = _toc.write( out );
+    if( _toc.flags.s.extended ) {
+        _etoc.write( out );
+        if( _etoc.flags.s.setPos )
+            _origin.write( out );
+        if( _etoc.flags.s.setSize )
+            _size.write( out );
+        if( _etoc.flags.s.setStyle )
+            _style.write( out );
+        if( _etoc.flags.s.setGroup )
+            _group.write( out );
+        if( _etoc.flags.s.setCtrl ) {
+            _control.write( out );
+        }
     }
-    if( std::fwrite( &cells[0], sizeof( STD1::uint16_t ), cells.size(), out ) != cells.size() )
+    if( out->put( _cells ) )
         throw FatalError( ERR_WRITE );
-    if( !title.empty() ){
-        if( std::fwrite( title.c_str(), sizeof( STD1::uint8_t ), title.size(), out ) != title.size() )
+    if( !title.empty() ) {
+        if( out->put( title ) ) {
             throw FatalError( ERR_WRITE );
+        }
     }
-    return pos;
+    return( offset );
 }
 /***************************************************************************/
-// STD1::uint8_t size
-// STD1::uint16_t parent_toc_index
-// STD1::uint16_t child_toc_index
-STD1::uint32_t Page::writeChildren( std::FILE* out ) const
+// byte size
+// word parent_toc_index
+// word child_toc_index
+dword Page::writeChildren( OutFile* out ) const
 {
-    STD1::uint32_t bytes( 0 );
-    if( !children.empty() ) {
-        STD1::uint8_t size_u8( 3 + static_cast< STD1::uint8_t >( children.size() * sizeof( STD1::uint16_t ) ) );
-        if( std::fputc( size_u8, out ) == EOF )
+    byte bytes = 0;
+    if( !_children.empty() ) {
+        bytes = static_cast< byte >( sizeof( byte ) + sizeof( _index ) + _children.size() * sizeof( word ) );
+        if( out->put( bytes ) )
             throw FatalError( ERR_WRITE );
-        ++bytes;
-        if( std::fwrite( &idx, sizeof( STD1::uint16_t ), 1, out ) != 1 )
+        if( out->put( _index ) )
             throw FatalError( ERR_WRITE );
-        bytes += sizeof( STD1::uint16_t );
-        if( std::fwrite( &children[0], sizeof( STD1::uint16_t ), children.size(), out ) != children.size() )
+        if( out->put( _children ) ) {
             throw FatalError( ERR_WRITE );
-        bytes += sizeof( STD1::uint16_t ) * children.size();
+        }
     }
-    return bytes;
+    return( bytes );
 }
-

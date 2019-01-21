@@ -72,16 +72,20 @@ static bool getNextPos( int ch, int *opos )
 /*
  * InsertTabSpace - insert tabs and white space
  */
-int InsertTabSpace( int j, char *buff, bool *tabme )
+size_t InsertTabSpace( size_t j, char *buff, bool *tabme )
 {
-    int n, extra, m, i;
-    int k = 0;
+    size_t  extra;
+    size_t  i;
+    size_t  k;
+    size_t  m;
+    size_t  n;
 
+    k = 0;
     if( *tabme ) {
         *tabme = false;
         n = EditVars.HardTab - Tab( j + 1, EditVars.HardTab );
-        extra = j - n;
-        if( extra > 0 ) {
+        if( j > n ) {
+            extra = j - n;
             m = extra / EditVars.HardTab;
             if( extra % EditVars.HardTab > 0 ) {
                 m++;
@@ -110,89 +114,83 @@ int InsertTabSpace( int j, char *buff, bool *tabme )
 
 
 /*
- * ExpandTabsInABufferUpToColumn - remove tabs only up to specified column
+ * ExpandTabsInABufferUpToColumn - expand tabs only up to specified column
  */
-bool ExpandTabsInABufferUpToColumn( int endcol, char *in, int inlen, char *out,
-                                    int outlen )
+bool ExpandTabsInABufferUpToColumn( size_t endcol, char *in, size_t inlen, char *out, size_t outsize )
 {
-    int         i, j;
+    size_t      i;
+    size_t      j;
     bool        res;
 
-    res = ExpandTabsInABuffer( in, endcol, out, outlen );
-    j = inlen - endcol;
-    i = strlen( out );
-    if( i + j >= outlen ) {
-        inlen = outlen - i + endcol;
+    if( outsize > 0 ) {
+        res = ExpandTabsInABuffer( in, endcol, out, outsize );
+        outsize--;  /* reserve space for '\0' terminator */
+        i = strlen( out );
+        j = outsize - i + endcol;
+        if( inlen > j ) {
+            inlen = j;
+        }
+        for( j = endcol; j < inlen; j++ ) {
+            out[i++] = in[j];
+        }
+        out[i] = '\0';
+        return( res );
     }
-    for( j = endcol; j < inlen; j++ ) {
-        out[i++] = in[j];
-    }
-    out[i] = '\0';
-    return( res );
+    return( false );
 
 } /* ExpandTabsInABufferUpToColumn */
 
 /*
  * ExpandTabsInABuffer - do all tabs in a buffer
  */
-bool ExpandTabsInABuffer( const char *in, int inlen, char *out, int outlen )
+bool ExpandTabsInABuffer( const char *in, size_t inlen, char *out, size_t outsize )
 {
-    int             j, k, tb, l;
-    bool            tabme = false;
-    char            ch;
+    size_t          j;
+    size_t          k;
+    size_t          tb;
+    bool            tabme;
     int             c;
 
     /*
      * run through each character
      */
-    k = 0;
-    outlen--;
-    for( j = 0; j < inlen; j++ ) {
-        /*
-         * if we have a tab, insert some spaces
-         */
-        c = (unsigned char)in[j];
-        if( c < ' ' || c > 127 ) {
-            if( c == '\t' ) {
-                TabCnt++;
-                tb = Tab( k + 1, EditVars.HardTab );
-                for( l = k; l < k + tb; l++ ) {
-                    if( l < outlen ) {
-                        out[l] = ' ';
-                    } else {
-                        out[outlen] = '\0';
-                        return( true );
+    tabme = false;
+    if( outsize > 0 ) {
+        outsize--;  /* reserve space for '\0' terminator */
+        k = 0;
+        for( j = 0; j < inlen && k < outsize; j++ ) {
+            /*
+             * if we have a tab, insert some spaces
+             */
+            c = (unsigned char)in[j];
+            if( c < ' ' || c > 127 ) {
+                if( c == '\t' ) {
+                    tabme = true;
+                    TabCnt++;
+                    tb = k + Tab( k + 1, EditVars.HardTab );
+                    if( tb > outsize )
+                        tb = outsize;
+                    while( k < tb ) {
+                        out[k++] = ' ';
                     }
-                }
-                k = l;
-                tabme = true;
-            } else if( !EditFlags.EightBits ) {
-                if( c > 127 ) {
-                    ch = '?';
-                } else {
-                    ch = c + 'A' - 1;
-                }
-                if( k + 1 < outlen ) {
+                    continue;
+                } else if( !EditFlags.EightBits ) {
+                    tabme = true;
+                    if( k + 1 >= outsize ) {
+                        break;
+                    }
+                    if( c > 127 ) {
+                        c = '?';
+                    } else {
+                        c = c + 'A' - 1;
+                    }
                     out[k++] = '^';
-                    out[k++] = ch;
-                } else {
-                    out[outlen] = '\0';
-                    return( true );
                 }
-                tabme = true;
-            } else {
-                out[k++] = c;
             }
-        } else {
-            if( k + 1 >= outlen ) {
-                break;
-            } else {
-                out[k++] = c;
-            }
+            out[k++] = c;
         }
-
+        out[k] = '\0';
     }
-    out[k] = '\0';
     return( tabme );
 
 } /* ExpandTabsInABuffer */
@@ -244,7 +242,7 @@ int WinRealCursorPosition( char *buff, int vc )
         }
     }
     return( len );
-    
+
 } /* WinRealCursorPosition */
 
 /*
@@ -426,41 +424,53 @@ int VirtualLineLen( char *buff )
 /*
  * AddLeadingTabSpace - make leading spaces tabs (if possible)
  */
-bool AddLeadingTabSpace( short *len, char *buff, int amount )
+bool AddLeadingTabSpace( size_t *len, char *buff, int amount )
 {
     char        *tmp;
-    int         start = 0, i = 0;
-    int         j, k, l;
+    size_t      i;
+    size_t      j;
+    size_t      k;
+    size_t      l;
+    size_t      start;
     bool        tabme;
-    bool        full = false;
+    bool        full;
 
     /*
      * expand leading stuff into spaces
      */
-    j = *len;
-    while( isspace( buff[start] ) ) {
+    start = 0;
+    while( isspace( buff[start] ) )
         start++;
-    }
     tmp = StaticAlloc();
-    ExpandTabsInABuffer( buff, j,  tmp, EditVars.MaxLine );
-    while( tmp[i] == ' ' ) {
+    j = *len;
+    ExpandTabsInABuffer( buff, j, tmp, EditVars.MaxLine + 1 );
+    i = 0;
+    while( tmp[i] == ' ' )
         i++;
-    }
 
     /*
      * subtract/add extra spaces
      */
-    if( amount <= 0 ) {
-        k = i + amount;
-        if( k < 0 ) {
+    full = false;
+    if( amount == 0 ) {
+        // no shift
+        k = i;
+    } else if( amount < 0 ) {
+        // shift left, amount < 0
+        l = -amount;
+        if( i < l ) {
             k = 0;
+        } else {
+            k = i - l;
         }
     } else {
-        if( i + amount >= EditVars.MaxLine ) {
+        // shift right, amount > 0
+        l = i + amount;
+        if( l >= EditVars.MaxLine ) {
             full = true;
             k = i;
         } else {
-            for( k = i; k < i + amount; k++ ) {
+            for( k = i; k < l; k++ ) {
                 tmp[k] = ' ';
             }
         }
@@ -488,10 +498,16 @@ bool AddLeadingTabSpace( short *len, char *buff, int amount )
 /*
  * ConvertSpacesToTabsUpToColumn - add tabs only up to specified column
  */
-bool ConvertSpacesToTabsUpToColumn( int endcol, char *in, int inlen, char *out,
-                                    int outlen )
+bool ConvertSpacesToTabsUpToColumn( size_t endcol, char *in, size_t inlen, char *out, size_t outlen )
 {
-    int         first_blank, j, extra, l, n, k, m, i;
+    size_t      extra;
+    size_t      first_blank;
+    size_t      i;
+    size_t      j;
+    size_t      k;
+    size_t      l;
+    size_t      m;
+    size_t      n;
     bool        blanks_inprog, tabme;
     char        oc;
     char        c;
@@ -516,7 +532,6 @@ bool ConvertSpacesToTabsUpToColumn( int endcol, char *in, int inlen, char *out,
     oc = in[endcol];
     in[endcol] = '\0';
     for( j = 0; j <= endcol; j++ ) {
-
         c = in[j];
         if( c != ' ' || in_quotes || in_single_quotes ) {
 
@@ -532,12 +547,11 @@ bool ConvertSpacesToTabsUpToColumn( int endcol, char *in, int inlen, char *out,
                 l = j - first_blank;
                 if( l > 1 ) {
                     n = EditVars.HardTab - Tab( j + 1, EditVars.HardTab );
-                    extra = l - n;
-
                     /*
                      * add tabs, then spaces
                      */
-                    if( extra > 0 ) {
+                    if( l > n ) {
+                        extra = l - n;
                         m = extra / EditVars.HardTab;
                         if( extra % EditVars.HardTab > 0 ) {
                             m++;
@@ -604,7 +618,7 @@ bool ConvertSpacesToTabsUpToColumn( int endcol, char *in, int inlen, char *out,
      */
     k--;
     in[endcol] = oc;
-    if( k + inlen >= outlen ) {
+    if( inlen > outlen - k ) {
         inlen = outlen - k;
     }
     for( j = endcol; j < inlen; j++ ) {

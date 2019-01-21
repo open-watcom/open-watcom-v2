@@ -1,3 +1,6 @@
+::
+:: POSIX, ISO C/C++ wint_t typedef declaration
+::
 :segment CNAME
 #ifndef _STDWINT_T_DEFINED
 #define _STDWINT_T_DEFINED

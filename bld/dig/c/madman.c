@@ -43,7 +43,6 @@
 #elif defined( __OS2__ )
 #include <os2.h>
 #endif
-#include "bool.h"
 #include "mad.h"
 #include "madimp.h"
 #include "madcli.h"
@@ -84,7 +83,7 @@ typedef struct mad_entry {
     char                *desc;
     mad_imp_routines    *rtns;
     mad_state_data      *sl;
-    dig_mad             mad;
+    dig_arch            arch;
     mad_sys_handle      sys_hdl;
 } mad_entry;
 
@@ -111,7 +110,7 @@ mad_status MADCLIENTRY( TypeToString )( mad_radix radix, const mad_type_info *mt
     return( MADTypeToString( radix, mti, data, buff, buff_size_p ) );
 }
 
-mad_client_routines MADClientInterface = {
+static mad_client_routines MADClientInterface = {
     MAD_MAJOR,
     MAD_MINOR,
     sizeof( mad_client_routines ),
@@ -174,16 +173,16 @@ static mad_status MADStatus( mad_status ms )
     return( ms );
 }
 
-static mad_entry *MADFind( dig_mad mad )
+static mad_entry *MADFind( dig_arch arch )
 {
     mad_entry   *curr;
 
-    if( mad == MAD_NIL )
+    if( arch == DIG_ARCH_NIL )
         return( NULL );
-    if( mad == Active->mad )
+    if( arch == Active->arch )
         return( Active );
     for( curr = MADList; curr != NULL; curr = curr->next ) {
-        if( curr->mad == mad ) {
+        if( curr->arch == arch ) {
             return( curr );
         }
     }
@@ -200,17 +199,17 @@ static mad_entry *MADFind( dig_mad mad )
 mad_status      MADInit( void )
 {
     static const struct {
-        dig_mad         mad;
+        dig_arch        arch;
         const char      *file;
         const char      *desc;
     } list[] = {
 #ifdef USE_FILENAME_VERSION
-        #define pick_mad(enum,file,desc) {enum,file strx(USE_FILENAME_VERSION),desc},
+        #define pick(enum,file,desc) {DIG_ ## enum,file strx(USE_FILENAME_VERSION),desc},
 #else
-        #define pick_mad(enum,file,desc) {enum,file,desc},
+        #define pick(enum,file,desc) {DIG_ ## enum,file,desc},
 #endif
-        #include "madarch.h"
-        #undef pick_mad
+        #include "digarch.h"
+        #undef pick
     };
 
     mad_status  ms = MS_OK;
@@ -219,7 +218,7 @@ mad_status      MADInit( void )
     MADList = NULL;
     Active = &Dummy;
     for( i = 0; i < sizeof( list ) / sizeof( list[0] ); ++i ) {
-        ms = MADRegister( list[i].mad, list[i].file, list[i].desc );
+        ms = MADRegister( list[i].arch, list[i].file, list[i].desc );
         if( ms != MS_OK ) {
             return( ms );
         }
@@ -227,7 +226,7 @@ mad_status      MADInit( void )
     return( ms );
 }
 
-mad_status      MADRegister( dig_mad mad, const char *file, const char *desc )
+mad_status      MADRegister( dig_arch arch, const char *file, const char *desc )
 {
     mad_entry   **owner;
     mad_entry   *curr;
@@ -236,7 +235,7 @@ mad_status      MADRegister( dig_mad mad, const char *file, const char *desc )
     size_t      desc_len;
 
     for( owner = &MADList; (curr = *owner) != NULL; owner = &curr->next ) {
-        if( curr->mad == mad ) {
+        if( curr->arch == arch ) {
             *owner = curr->next;
             old = Active;
             Active = curr;
@@ -246,7 +245,7 @@ mad_status      MADRegister( dig_mad mad, const char *file, const char *desc )
             Active = old;
             if( curr == Active )
                 Active = &Dummy;
-            /* MADUnload( curr->mad );  Did not work from here. */
+            /* MADUnload( curr->arch );  Did not work from here. */
             /* Removed call, and moved fixed functionality here */
             if( curr->rtns != NULL ) {
                 curr->rtns->Fini();
@@ -270,7 +269,7 @@ mad_status      MADRegister( dig_mad mad, const char *file, const char *desc )
     curr->desc = &curr->file[file_len + 1];
     curr->rtns = NULL;
     curr->sl   = NULL;
-    curr->mad  = mad;
+    curr->arch  = arch;
     curr->sys_hdl = NULL_SYSHDL;
     strcpy( curr->file, file );
     strcpy( curr->desc, desc );
@@ -283,12 +282,12 @@ OVL_EXTERN mad_status DUMMYIMPENTRY( Init )( void )
     return( MS_OK );
 }
 
-mad_status      MADLoad( dig_mad mad )
+mad_status      MADLoad( dig_arch arch )
 {
     mad_entry           *me;
     mad_status          ms;
 
-    me = MADFind( mad );
+    me = MADFind( arch );
     if( me == NULL )
         return( MADStatus( MS_ERR | MS_UNREGISTERED_MAD ) );
     if( me->rtns != NULL )
@@ -300,19 +299,19 @@ mad_status      MADLoad( dig_mad mad )
     }
     if( MADClientInterface.major != me->rtns->major || MADClientInterface.minor > me->rtns->minor ) {
         me->rtns = NULL;
-        MADUnload( mad );
+        MADUnload( arch );
         return( MADStatus( MS_ERR | MS_INVALID_MAD_VERSION ) );
     }
     ms = me->rtns->Init();
     if( ms != MS_OK ) {
         me->rtns = NULL;
-        MADUnload( mad );
+        MADUnload( arch );
         return( MADStatus( ms ) );
     }
     if( me->sl == NULL ) {
         me->sl = DIGCli( Alloc )( sizeof( *me->sl ) + me->rtns->StateSize() );
         if( me->sl == NULL ) {
-            MADUnload( mad );
+            MADUnload( arch );
             return( MADStatus( MS_ERR | MS_NO_MEM ) );
         }
         me->rtns->StateInit( (imp_mad_state_data *)&me->sl[1] );
@@ -327,11 +326,11 @@ OVL_EXTERN void DUMMYIMPENTRY( Fini )( void )
     /* never actually called */
 }
 
-void            MADUnload( dig_mad mad )
+void            MADUnload( dig_arch arch )
 {
     mad_entry   *me;
 
-    me = MADFind( mad );
+    me = MADFind( arch );
     if( me != NULL ) {
         if( me->rtns != NULL ) {
             me->rtns->Fini();
@@ -341,26 +340,26 @@ void            MADUnload( dig_mad mad )
     }
 }
 
-mad_status      MADLoaded( dig_mad mad )
+mad_status      MADLoaded( dig_arch arch )
 {
     mad_entry   *me;
 
-    me = MADFind( mad );
+    me = MADFind( arch );
     if( me == NULL )
         return( MADStatus( MS_ERR | MS_UNREGISTERED_MAD ) );
     return( me->rtns != NULL ? MS_OK : MS_FAIL );
 }
 
-dig_mad         MADActiveSet( dig_mad mad )
+dig_arch        MADActiveSet( dig_arch arch )
 {
-    dig_mad         mad_old;
+    dig_arch        arch_old;
     mad_entry       *me;
 
-    mad_old = Active->mad;
-    me = MADFind( mad );
+    arch_old = Active->arch;
+    me = MADFind( arch );
     if( me != NULL )
         Active = me;
-    return( mad_old );
+    return( arch_old );
 }
 
 OVL_EXTERN unsigned DUMMYIMPENTRY( StateSize )( void )
@@ -443,7 +442,7 @@ void            MADStateDestroy( mad_state_data *msd )
 void            MADFini( void )
 {
     while( MADList != NULL ) {
-        MADRegister( MADList->mad, NULL, NULL );
+        MADRegister( MADList->arch, NULL, NULL );
     }
 }
 
@@ -453,7 +452,7 @@ walk_result     MADWalk( MAD_WALKER *wk, void *d )
     mad_entry   *me;
 
     for( me = MADList; me != NULL; me = me->next ) {
-        wr = wk( me->mad, d );
+        wr = wk( me->arch, d );
         if( wr != WR_CONTINUE ) {
             return( wr );
         }
@@ -461,12 +460,12 @@ walk_result     MADWalk( MAD_WALKER *wk, void *d )
     return( WR_CONTINUE );
 }
 
-size_t MADNameFile( dig_mad mad, char *buff, size_t buff_size )
+size_t MADNameFile( dig_arch arch, char *buff, size_t buff_size )
 {
     mad_entry   *me;
     size_t      len;
 
-    me = MADFind( mad );
+    me = MADFind( arch );
     if( me == NULL ) {
         MADStatus( MS_ERR | MS_UNREGISTERED_MAD );
         return( 0 );
@@ -482,12 +481,12 @@ size_t MADNameFile( dig_mad mad, char *buff, size_t buff_size )
     return( len );
 }
 
-size_t MADNameDescription( dig_mad mad, char *buff, size_t buff_size )
+size_t MADNameDescription( dig_arch arch, char *buff, size_t buff_size )
 {
     mad_entry   *me;
     size_t      len;
 
-    me = MADFind( mad );
+    me = MADFind( arch );
     if( me == NULL ) {
         MADStatus( MS_ERR | MS_UNREGISTERED_MAD );
         return( 0 );
@@ -637,14 +636,14 @@ mad_radix       MADTypePreferredRadix( mad_type_handle mth )
     return( Active->rtns->TypePreferredRadix( mth ) );
 }
 
-OVL_EXTERN mad_type_handle DUMMYIMPENTRY( TypeForDIPType )( const dip_type_info *ti )
+OVL_EXTERN mad_type_handle DUMMYIMPENTRY( TypeForDIPType )( const dig_type_info *ti )
 {
     /* unused parameters */ (void)ti;
 
     return( MAD_NIL_TYPE_HANDLE );
 }
 
-mad_type_handle MADTypeForDIPType( const dip_type_info *ti )
+mad_type_handle MADTypeForDIPType( const dig_type_info *ti )
 {
     return( Active->rtns->TypeForDIPType( ti ) );
 }

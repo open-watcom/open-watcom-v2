@@ -83,11 +83,11 @@ STATIC char *FindNextSep( const char *str, bool (*chk_sep)( char ) )
 
     string_open = false;
     while( (c = *str) != NULLCHAR ) {
-        if( c == BACKSLASH ) {
+        if( c == '\\' ) {
             if( string_open && str[1] != NULLCHAR ) {
                 ++str;
             }
-        } else if( c == DOUBLEQUOTE ) {
+        } else if( c == '\"' ) {
             string_open = !string_open;
         } else if( !string_open && chk_sep( c ) ) {
             break;
@@ -140,14 +140,14 @@ char *RemoveDoubleQuotes( char *dst, size_t maxlen, const char *src )
             break;
         }
 
-        if( t == BACKSLASH ) {
+        if( t == '\\' ) {
             t = *src++;
 
-            if( t == DOUBLEQUOTE ) {
-                *dst++ = DOUBLEQUOTE;
+            if( t == '\"' ) {
+                *dst++ = '\"';
                 pos++;
             } else {
-                *dst++ = BACKSLASH;
+                *dst++ = '\\';
                 pos++;
 
                 if( pos < maxlen ) {
@@ -156,7 +156,7 @@ char *RemoveDoubleQuotes( char *dst, size_t maxlen, const char *src )
                 }
             }
         } else {
-            if( t == DOUBLEQUOTE ) {
+            if( t == '\"' ) {
                 string_open = !string_open;
             } else {
                 if( string_open ) {
@@ -206,7 +206,7 @@ char *FixName( char *name )
     }
 
     return( name );
-#elif defined( __OS2__ ) || defined( __NT__ )
+#elif defined( __OS2__ ) || defined( __NT__ ) || defined( __RDOS__ )
 /*********************************
  * convert fwd-slash to back-slash
  */
@@ -249,7 +249,7 @@ bool FNameEq( const char *a, const char *b )
 static bool FNameChrEq( char a, char b )
 /**************************************/
 {
-#if defined( __OS2__ ) || defined( __NT__ ) || defined( __DOS__ )
+#if defined( __OS2__ ) || defined( __NT__ ) || defined( __DOS__ ) || defined( __RDOS__ )
     return( ctolower( a ) == ctolower( b ) );
 #else
     return( a == b );
@@ -261,7 +261,7 @@ static bool FNameChrEq( char a, char b )
 bool FarFNameEq( const char FAR *a, const char FAR *b )
 /*****************************************************/
 {
-#if defined( __OS2__ ) || defined( __NT__ ) || defined( __DOS__ )
+#if defined( __OS2__ ) || defined( __NT__ ) || defined( __DOS__ ) || defined( __RDOS__ )
     return( _fstricmp( a, b ) == 0 );
 #else
     return( _fstrcmp( a, b ) == 0 );
@@ -418,15 +418,13 @@ const char *DoWildCard( const char *base )
     assert( path != NULL && parent != NULL );
 
     while( (entry = readdir( parent )) != NULL ) {
-#ifndef __UNIX__
-        if( (entry->d_attr & IGNORE_MASK) == 0 ) {
+#if !defined( __UNIX__ )
+        if( entry->d_attr & IGNORE_MASK )
+            continue;
 #endif
-            if( __fnmatch( pattern, entry->d_name ) ) {
-                break;
-            }
-#ifndef __UNIX__
+        if( __fnmatch( pattern, entry->d_name ) ) {
+            break;
         }
-#endif
     }
     if( entry == NULL ) {
         DoWildCardClose();
@@ -477,16 +475,16 @@ int PutEnvSafe( ENV_TRACKER *env )
     size_t      len;
 
     p = env->value;
-                                // upper case the name
+                                    // upper case the name
     while( *p != '=' && *p != NULLCHAR ) {
-        *p = (char)ctoupper( *p );
+        *p = ctoupper( *p );
         ++p;
     }
-    rc = putenv( env->value );  // put into environment
+    rc = PutEnvExt( env->value );   // put into environment
     if( p[0] == '=' && p[1] == NULLCHAR ) {
-        rc = 0;                 // we are deleting the envvar, ignore errors
+        rc = 0;                     // we are deleting the envvar, ignore errors
     }
-    len = p - env->value + 1;   // len including '='
+    len = p - env->value + 1;       // len including '='
     for( walk = &envList; *walk != NULL; walk = &(*walk)->next ) {
         if( strncmp( (*walk)->value, env->value, len ) == 0 ) {
             break;
@@ -494,13 +492,13 @@ int PutEnvSafe( ENV_TRACKER *env )
     }
     old = *walk;
     if( old != NULL ) {
-        *walk = old->next;      // unlink from chain
+        *walk = old->next;          // unlink from chain
         FreeSafe( old );
     }
-    if( p[1] != NULLCHAR ) {    // we're giving it a new value
-        env->next = envList;    // save the memory since putenv keeps a
-        envList = env;          // pointer to it...
-    } else {                    // we're deleting an old value
+    if( p[1] != NULLCHAR ) {        // we're giving it a new value
+        env->next = envList;        // save the memory since putenv keeps a
+        envList = env;              // pointer to it...
+    } else {                        // we're deleting an old value
         FreeSafe( env );
     }
     return( rc );

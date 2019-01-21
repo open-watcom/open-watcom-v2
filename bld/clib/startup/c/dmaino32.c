@@ -128,7 +128,7 @@ unsigned _LibMain( unsigned hmod, unsigned termination )
         unsigned    i;
 
         DosGetInfoBlocks( &pptib, &pppib );
-        _RWD_Envptr = pppib->pib_pchenv;
+        _Envptr = pppib->pib_pchenv;
         _LpCmdLine = pppib->pib_pchcmd;
         while( *_LpCmdLine ) {          // skip over program name
             _LpCmdLine++;

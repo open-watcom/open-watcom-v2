@@ -96,9 +96,9 @@
 #define INDIRECT 348
 #define LASTTOKEN 349
 typedef union {
-	Node	*p;
-	Cell	*cp;
-	int	i;
-	char	*s;
+    Node    *p;
+    Cell    *cp;
+    int i;
+    char    *s;
 } YYSTYPE;
 extern YYSTYPE yylval;

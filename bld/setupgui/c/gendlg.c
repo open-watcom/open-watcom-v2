@@ -39,16 +39,14 @@
 #include <stdlib.h>
 #include <stdarg.h>
 #include <stdio.h>
-
 #include "wio.h"
-#include "gui.h"
+#include "setup.h"
 #include "guiutil.h"
 #include "setupinf.h"
 #include "guistr.h"
 #include "guidlg.h"
 #include "dlgbutn.h"
 #include "genvbl.h"
-#include "setup.h"
 #include "utils.h"
 #include "gendlg.h"
 #include "dlggen.h"

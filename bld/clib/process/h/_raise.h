@@ -33,8 +33,8 @@
 extern int _raise( int sig );
 #if defined(_M_IX86)
   #if defined(_M_I86)
-    #pragma aux     _raise  "_*" parm caller [ax];
+    #pragma aux     _raise  "_*" __parm __caller [__ax]
   #else
-    #pragma aux     _raise  "_*" parm caller [eax];
+    #pragma aux     _raise  "_*" __parm __caller [__eax]
   #endif
 #endif

@@ -112,11 +112,11 @@ extern void near *__brk( unsigned );
 extern  unsigned __MemAllocator( unsigned __sz, unsigned __seg, unsigned __off);
 extern  void     __MemFree( unsigned __ptr, unsigned __seg, unsigned __off );
 #ifdef __386__
- #pragma aux __MemAllocator "*" parm [eax] [edx] [ebx];
- #pragma aux __MemFree      "*" parm [eax] [edx] [ebx];
+ #pragma aux __MemAllocator "*" __parm [__eax] [__edx] [__ebx]
+ #pragma aux __MemFree      "*" __parm [__eax] [__edx] [__ebx]
 #else
- #pragma aux __MemAllocator "*" parm [ax] [dx] [bx];
- #pragma aux __MemFree      "*" parm [ax] [dx] [bx];
+ #pragma aux __MemAllocator "*" __parm [__ax] [__dx] [__bx]
+ #pragma aux __MemFree      "*" __parm [__ax] [__dx] [__bx]
 #endif
 
 #define PARAS_IN_64K    (0x1000)

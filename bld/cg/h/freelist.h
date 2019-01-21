@@ -30,7 +30,7 @@
 ****************************************************************************/
 
 
-extern void     InitFrl(pointer **);
-extern pointer  AllocFrl(pointer **, int);
-extern void     FrlFreeSize(pointer **, pointer *, int );
-extern bool     FrlFreeAll(pointer **, int);
+extern void     InitFrl( pointer ** );
+extern pointer  AllocFrl( pointer **, size_t );
+extern void     FrlFreeSize( pointer **, pointer *, size_t );
+extern bool     FrlFreeAll( pointer **, size_t );

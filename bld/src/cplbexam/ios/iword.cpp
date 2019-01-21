@@ -1,7 +1,7 @@
 #include <iostream.h>
 #include <strstream.h>
 
-void main( void ) {
+int main( void ) {
 
     int       index1, index2;
     float     dollar1, dollar2;

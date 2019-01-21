@@ -52,7 +52,7 @@ void BrinfDeclClass             // VALID CLASS HAS BEEN DECLARED
     ( TYPE cltype )             // - class type
 ;
 MEPTR BrinfDeclMacro            // VALID MACRO HAS BEEN DECLARED
-    ( MEPTR mac )               // - macro defined
+    ( MEPTR mentry )            // - macro defined
 ;
 void BrinfDeclNamespace         // VALID NAMESPACE HAS BEEN DECLARED
     ( SYMBOL ns )               // - namespace defined
@@ -94,14 +94,14 @@ void BrinfPchRead               // PCH BROWSING TO BE STARTED
     ( void )
 ;
 MEPTR BrinfReferenceMacro       // MACRO REFERENCE
-    ( MEPTR mac )               // - macro accessed
+    ( MEPTR mentry )            // - macro accessed
 ;
 void BrinfReferenceSymbol       // SYMBOL REFERENCE
     ( TOKEN_LOCN* locn          // - location of access
     , SYMBOL sym )              // - symbol accessed
 ;
 void BrinfUndefMacro            // UNDEFINE A MACRO
-    ( MEPTR mac )               // - that macro
+    ( MEPTR mentry )            // - that macro
 ;
 void BrinfWrite                 // WRITE OUT BROWSE INFORMATION
     ( void )

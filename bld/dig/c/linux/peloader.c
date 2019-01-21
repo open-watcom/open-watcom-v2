@@ -444,7 +444,7 @@ PE_MODULE * PE_loadLibraryFile( FILE *fp, const char *szDLLName )
                 strcpy( modname, szDLLName );
             }
             hMod->modname = modname;
-            NotifyWDLoad( hMod->modname, (u_long)hMod->pbase );
+            DebuggerLoadUserModule( hMod->modname, GetCS(), (u_long)hMod->pbase );
         }
     }
 #endif
@@ -530,7 +530,7 @@ void PE_freeLibrary( PE_MODULE *hModule )
         /* Notify the Watcom Debugger of module load and let it remove symbolic info */
 #ifdef WATCOM_DEBUG_SYMBOLS
         if( hModule->modname ) {
-            NotifyWDUnload( hModule->modname );
+            DebuggerUnloadUserModule( hModule->modname );
             free( hModule->modname );
         }
 #endif

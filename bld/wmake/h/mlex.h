@@ -50,14 +50,11 @@ extern char *dep_path;    /* Current sufsuf dependent path */
  * These are used as place holders while doing macro expansion, they are
  * assumed to not be in the input stream.
  */
-#define TMP_DOL_C           '\x01'  /* replace $ with this temporarily */
-#define TMP_DOL_S           "\x01"
-#define TMP_COMMENT_C       '\x02'  /* replace $# with this temporarily */
-#define TMP_COMMENT_S       "\x02"
+#define TMP_DOLLAR          '\x01'  /* replace $ with this temporarily */
+#define TMP_COMMENT         '\x02'  /* replace $# with this temporarily */
 /* only good for microsoft option when doing partial deMacros     */
 /* for special macros            */
-#define SPECIAL_TMP_DOL_C   '\x03' /* replace $ with this temporarily */
-#define SPECIAL_TMP_DOL_S   "\x03"
+#define SPECIAL_TMP_DOLLAR  '\x03' /* replace $ with this temporarily */
 
 /*
  * Is this a special microsoft character in a macro
@@ -169,25 +166,6 @@ typedef enum {
 
 } TOKEN_O;
 
-#define COMPLEMENT      '~'
-#define LOG_NEGATION    '!'
-#define ADD             '+'
-#define SUBTRACT        '-'
-#define MULTIPLY        '*'
-#define DIVIDE          '/'
-#define MODULUS         '%'
-#define BIT_AND         '&'
-#define BIT_OR          '|'
-#define BIT_XOR         '^'
-#define EQUAL           '='
-#define LESSTHAN        '<'
-#define GREATERTHAN     '>'
-#define PAREN_LEFT      '('
-#define PAREN_RIGHT     ')'
-#define BRACKET_LEFT    '['
-#define BRACKET_RIGHT   ']'
-#define DOUBLEQUOTE     '\"'
-#define BACKSLASH       '\\'
 #define MAX_STRING      256
 #define EXIST           "EXIST"
 #define EXISTS          "EXISTS"
@@ -266,7 +244,7 @@ enum LexMode {
     LEX_MAC_DEF,    /* send back MAC_EXPAND_ON, otherwise MAC_TEXT          */
     LEX_MAC_SUBST,  /* send back all MAC tokens                             */
     LEX_PARSER,     /* send back only TOK tokens - silently do MAC stuff    */
-    LEX_PATH,       /* send back only TOK_PATH/EOL/STRM_END                 */
+    LEX_PATH,       /* send back only TOK_PATH/TOK_EOL/TOK_END              */
     LEX_MS_MAC      /* sned back tokens for microsoft demacro               */
 };
 

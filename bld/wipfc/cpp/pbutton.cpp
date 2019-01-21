@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
+* Copyright (c) 2009-2018 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -32,6 +32,8 @@
 *
 ****************************************************************************/
 
+
+#include "wipfc.hpp"
 #include <algorithm>
 #include <cwctype>
 #include "pbutton.hpp"
@@ -41,52 +43,52 @@
 
 Lexer::Token PButton::parse( Lexer* lexer )
 {
-    Lexer::Token tok( document->getNextToken() );
-    while( tok != Lexer::TAGEND ) {
+    Lexer::Token tok;
+
+    while( (tok = _document->getNextToken()) != Lexer::TAGEND ) {
         if( tok == Lexer::ATTRIBUTE ) {
             std::wstring key;
             std::wstring value;
             splitAttribute( lexer->text(), key, value );
             if( key == L"id" ) {
-                id = value;
-                std::transform( id.begin(), id.end(), id.begin(), std::towupper );
-                if( id == L"ESC" ||
-                    id == L"SEARCH" ||
-                    id == L"PRINT" ||
-                    id == L"INDEX" ||
-                    id == L"CONTENTS" ||
-                    id == L"BACK" ||
-                    id == L"FORWARD" )
-                    document->printError( ERR3_DUPID, id );
+                _id = value;
+                std::transform( _id.begin(), _id.end(), _id.begin(), std::towupper );
+                if( _id == L"ESC" ||
+                    _id == L"SEARCH" ||
+                    _id == L"PRINT" ||
+                    _id == L"INDEX" ||
+                    _id == L"CONTENTS" ||
+                    _id == L"BACK" ||
+                    _id == L"FORWARD" )
+                    _document->printError( ERR3_DUPID, _id );
+            } else if( key == L"res" ) {
+                _res = std::wcstoul( value.c_str(), 0, 10 );
+            } else if( key == L"text" ) {
+                _text = value;
+            } else {
+                _document->printError( ERR1_ATTRNOTDEF );
             }
-            else if( key == L"res" )
-                res = std::wcstoul( value.c_str(), 0, 10 );
-            else if( key == L"text" )
-                text = value;
-            else
-                document->printError( ERR1_ATTRNOTDEF );
-        }
-        else if ( tok == Lexer::FLAG )
-            document->printError( ERR1_ATTRNOTDEF );
-        else if( tok == Lexer::END )
+        } else if( tok == Lexer::FLAG ) {
+            _document->printError( ERR1_ATTRNOTDEF );
+        } else if( tok == Lexer::END ) {
             throw FatalError( ERR_EOF );
-        else
-            document->printError( ERR1_TAGSYNTAX );
-        tok = document->getNextToken();
+        } else {
+            _document->printError( ERR1_TAGSYNTAX );
+        }
     }
-    return document->getNextToken();
+    return _document->getNextToken();
 }
 /***************************************************************************/
 void PButton::build( Controls* ctrls)
 {
-    ControlButton btn( id, static_cast< STD1::uint16_t >( res ), text);
+    ControlButton btn( _id, static_cast< word >( _res ), _text );
     //don't allow duplicates of predefined buttons
-    if( id != L"ESC" &&
-        id != L"SEARCH" &&
-        id != L"PRINT" &&
-        id != L"INDEX" &&
-        id != L"CONTENTS" &&
-        id != L"BACK" &&
-        id != L"FORWARD" )
+    if( _id != L"ESC" &&
+        _id != L"SEARCH" &&
+        _id != L"PRINT" &&
+        _id != L"INDEX" &&
+        _id != L"CONTENTS" &&
+        _id != L"BACK" &&
+        _id != L"FORWARD" )
         ctrls->addButton( btn );
 }

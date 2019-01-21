@@ -128,7 +128,7 @@ typedef enum {
 static void dump_rule( unsigned rule )
 {
     unsigned                i;
-    const YYTOKENTYPE YYFAR *tok;
+    const YYTOKENTYPE YYFAR *yytoken;
     const char YYFAR        *p;
 
     if( CmdLineParms.DebugParser ) {
@@ -136,13 +136,13 @@ static void dump_rule( unsigned rule )
             RcMsgFprintf( NULL, "%c", *p );
         }
         RcMsgFprintf( NULL, " <-" );
-        tok = &yyrhstoks[yyrulebase[rule]];
+        yytoken = &yyrhstoks[yyrulebase[rule]];
         for( i = yyplentab[rule]; i != 0; --i ) {
             RcMsgFprintf( NULL, " " );
-            for( p = yytoknames[*tok]; *p; ++p ) {
+            for( p = yytoknames[*yytoken]; *p; ++p ) {
                 RcMsgFprintf( NULL, "%c", *p );
             }
-            ++tok;
+            ++yytoken;
         }
         RcMsgFprintf( NULL, "\n" );
     }
@@ -210,41 +210,32 @@ static YYTOKENTYPE yylexWIN( void )
     return( curtoken );
 }
 
-static p_action doAction( YYCHKTYPE t, parse_stack *state )
+static YYACTTYPE find_action( YYACTTYPE yyk, YYTOKENTYPE yytoken )
+{
+    int     yyi;
+
+    while( (yyi = yyk + yytoken) < 0 || yyi >= YYUSED || yychktab[yyi] != yytoken ) {
+        if( (yyi = yyk + YYPARTOKEN) < 0 || yyi >= YYUSED || yychktab[yyi] != YYPARTOKEN ) {
+            return( YYNOACTION );
+        }
+        yyk = yyacttab[yyi];
+    }
+    return( yyacttab[yyi] );
+}
+
+static p_action doAction( YYTOKENTYPE yytoken, parse_stack *state )
 {
     YYSTYPE yyval = { 0 };
     YYSTYPE *yyvp;
-    YYACTTYPE yyk;
     YYACTTYPE yyi;
     YYACTTYPE yyaction;
     YYACTTYPE rule;
     YYCHKTYPE yylhs;
 
-    for(;;) {
-        yyk = *(state->ssp);
-        yyi = yyk + t;
-        while( yyi >= YYUSED || yychktab[yyi] != t ) {
-            yyi = yyk + YYPTOKEN;
-            if( yyi >= YYUSED || yychktab[yyi] != YYPTOKEN ) {
-                goto use_d_token;
-            }
-            yyk = yyacttab[yyi];
-            yyi = yyk + t;
-        }
-        yyaction = yyacttab[yyi];
+    for( ;; ) {
+        yyaction = find_action( *(state->ssp), yytoken );
         if( yyaction == YYNOACTION ) {
-    use_d_token:
-            yyk = *(state->ssp);
-            yyi = yyk + YYDTOKEN;
-            while( yyi >= YYUSED || yychktab[yyi] != YYDTOKEN ) {
-                yyi = yyk + YYPTOKEN;
-                if( yyi >= YYUSED || yychktab[yyi] != YYPTOKEN ) {
-                    return( P_SYNTAX );
-                }
-                yyk = yyacttab[yyi];
-                yyi = yyk + YYDTOKEN;
-            }
-            yyaction = yyacttab[yyi];
+            yyaction = find_action( *(state->ssp), YYDEFTOKEN );
             if( yyaction == YYNOACTION ) {
                 return( P_SYNTAX );
             }
@@ -253,12 +244,10 @@ static p_action doAction( YYCHKTYPE t, parse_stack *state )
             if( yyaction == YYSTOP ) {
                 return( P_ACCEPT );
             }
-            state->ssp++;
-            *(state->ssp) = yyaction;
-            state->vsp++;
-            *(state->vsp) = yylval;
+            *++(state->ssp) = yyaction;
+            *++(state->vsp) = yylval;
 #ifdef YYDEBUG
-            puts_far( yytoknames[t] );
+            puts_far( yytoknames[yytoken] );
 #endif
             return( P_SHIFT );
         }
@@ -270,43 +259,23 @@ static p_action doAction( YYCHKTYPE t, parse_stack *state )
             return( P_ERROR );
         }
         yylhs = yyplhstab[rule];
-        yyk = *(state->ssp);
-        yyi = yyk + yylhs;
-        while( yyi >= YYUSED || yychktab[yyi] != yylhs ) {
-            yyi = yyk + YYPTOKEN;
-            if( yyi >= YYUSED || yychktab[yyi] != YYPTOKEN ) {
-                return( P_ERROR );
-            }
-            yyk = yyacttab[yyi];
-            yyi = yyk + yylhs;
+        yyaction = find_action( *(state->ssp), yylhs );
+        if( yyaction == YYNOACTION ) {
+            return( P_ERROR );
         }
-        state->ssp++;
-        *(state->ssp) = yyacttab[yyi];
-#if 0                                   /*** change with new yacc */
-        yyvp = state->vsp;
-#else
+        *++(state->ssp) = yyaction;
         yyvp = ++(state->vsp);
-#endif
 #ifdef YYDEBUG
         dump_rule( rule );
 #endif
         if( !yysyntaxerror ) {
             switch( rule ) {
-            /*  */
-/* */
+
             default:
-#if 0                                   /*** change with new yacc */
-                yyval = yyvp[1];
-#else
                 yyval = yyvp[0];
-#endif
             }
         }
-#if 0                               /*** change with new yacc **/
-        state->vsp++;
-#endif
         *(state->vsp) = yyval;
-        /* reduce as far as possible */
     }
 }
 
@@ -348,10 +317,10 @@ static void deleteStack( parse_stack *stack )
     }
 }
 
-static void handleError( YYTOKENTYPE token, parse_stack *state, bool error_state )
+static void handleError( YYTOKENTYPE yytoken, parse_stack *state, bool error_state )
 {
     if( !error_state ) {
-        switch( token ) {
+        switch( yytoken ) {
         case Y_INTEGER:
             RcError( ERR_SYNTAX_STR, yylval.intinfo.str );
             RcMemFree( yylval.intinfo.str );
@@ -365,7 +334,7 @@ static void handleError( YYTOKENTYPE token, parse_stack *state, bool error_state
         case Y_SCAN_ERROR:
             break;
         default:
-            RcError( ERR_SYNTAX_STR, SemWINTokenToString( token ) );
+            RcError( ERR_SYNTAX_STR, SemWINTokenToString( yytoken ) );
             break;
         }
     }
@@ -377,14 +346,14 @@ static p_action doParse( parse_stack *resource_state )
 {
     p_action    what;
     bool        error_state;
-    YYTOKENTYPE token;
+    YYTOKENTYPE yytoken;
     int         token_count;
 
     error_state = false;
     token_count = 0;
 
     do {
-        token = yylexWIN();
+        yytoken = yylexWIN();
         if( error_state ) {
             token_count++;
             if( token_count >= YYERRORTHRESHOLD ) {
@@ -392,15 +361,15 @@ static p_action doParse( parse_stack *resource_state )
             }
         }
 
-        what = doAction( token, resource_state );
+        what = doAction( yytoken, resource_state );
 
         if( what == P_SYNTAX ) {
-            handleError( token, resource_state, error_state );
+            handleError( yytoken, resource_state, error_state );
             error_state = true;
             yysyntaxerror = true;
             ErrorHasOccured = true;
             token_count = 0;
-        } else if( token == Y_INTEGER && yylval.intinfo.str != NULL ) {
+        } else if( yytoken == Y_INTEGER && yylval.intinfo.str != NULL ) {
             RcMemFree( yylval.intinfo.str );
             yylval.intinfo.str = NULL;
         }

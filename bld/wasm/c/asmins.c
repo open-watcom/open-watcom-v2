@@ -2275,6 +2275,7 @@ static bool process_reg( expr_list *opndx, int *jmp_flags )
             }
             break;
         }
+        break;
     case OP_CR:                 // Control registers
     case OP_DR:                 // Debug registers
         if( Code->info.token != T_MOV ) {

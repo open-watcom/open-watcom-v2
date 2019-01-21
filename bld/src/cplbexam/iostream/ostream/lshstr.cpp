@@ -1,6 +1,6 @@
 #include <iostream.h>
 
-void main( void ) {
+int main( void ) {
 
     char    *c = "Open Watcom C/C++ compiler.\0";
 

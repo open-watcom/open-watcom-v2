@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
+* Copyright (c) 2009-2018 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -28,50 +28,127 @@
 *
 ****************************************************************************/
 
-#include "toc.hpp"
-#include "errors.hpp"
 
-STD1::uint32_t TocEntry::write( std::FILE* out ) const
+#include "wipfc.hpp"
+#include "toc.hpp"
+#include "cell.hpp"
+#include "errors.hpp"
+#include "outfile.hpp"
+
+
+void TocEntry::buildText( Cell* cell ) const
+/******************************************/
 {
-    STD1::uint32_t offset( std::ftell( out ) );
-    if( std::fwrite( this, sizeof( TocEntry ), 1, out ) != 1 )
+    cell->add( hdrsize );
+    cell->add( flags.data );
+    cell->add( cellCount );
+}
+
+dword TocEntry::write( OutFile* out ) const
+/*****************************************/
+{
+    dword offset( out->tell() );
+    if( out->put( hdrsize ) )
+        throw FatalError( ERR_WRITE );
+    if( out->put( flags.data ) )
+        throw FatalError( ERR_WRITE );
+    if( out->put( cellCount ) )
         throw FatalError( ERR_WRITE );
     return offset;
 }
-/***************************************************************************/
-void ExtTocEntry::write( std::FILE* out ) const
+
+void ExtTocEntry::buildText( Cell* cell ) const
+/*********************************************/
 {
-    if( std::fwrite( this, sizeof( ExtTocEntry ), 1, out ) != 1 )
-        throw FatalError( ERR_WRITE );
-}
-/***************************************************************************/
-void PageOrigin::write( std::FILE* out ) const
-{
-    if( std::fwrite( this, sizeof( PageOrigin ), 1, out ) != 1 )
-        throw FatalError( ERR_WRITE );
-}
-/***************************************************************************/
-void PageSize::write( std::FILE* out ) const
-{
-    if( std::fwrite( this, sizeof( PageSize ), 1, out ) != 1 )
-        throw FatalError( ERR_WRITE );
-}
-/***************************************************************************/
-void PageStyle::write( std::FILE* out ) const
-{
-    if( std::fwrite( this, sizeof( PageStyle ), 1, out ) != 1 )
-        throw FatalError( ERR_WRITE );
-}
-/***************************************************************************/
-void PageGroup::write( std::FILE* out ) const
-{
-    if( std::fwrite( this, sizeof( PageGroup ), 1, out ) != 1 )
-        throw FatalError( ERR_WRITE );
-}
-/***************************************************************************/
-void PageControls::write( std::FILE* out ) const
-{
-    if( std::fwrite( this, sizeof( PageControls ), 1, out ) != 1 )
-        throw FatalError( ERR_WRITE );
+    cell->add( flags.data );
 }
 
+void ExtTocEntry::write( OutFile* out ) const
+/*******************************************/
+{
+    if( out->put( flags.data ) ) {
+        throw FatalError( ERR_WRITE );
+    }
+}
+
+void PageOrigin::buildText( Cell* cell ) const
+/********************************************/
+{
+    cell->add( static_cast< byte >( ( (xPosType & 0x0f) << 4 ) | (yPosType & 0x0f) ) );
+    cell->add( xpos );
+    cell->add( ypos );
+}
+
+void PageOrigin::write( OutFile* out ) const
+/******************************************/
+{
+    if( out->put( static_cast< byte >( ( (xPosType & 0x0f) << 4 ) | (yPosType & 0x0f) ) ) )
+        throw FatalError( ERR_WRITE );
+    if( out->put( xpos ) )
+        throw FatalError( ERR_WRITE );
+    if( out->put( ypos ) ) {
+        throw FatalError( ERR_WRITE );
+    }
+}
+
+void PageSize::buildText( Cell* cell ) const
+/******************************************/
+{
+    cell->add( static_cast< byte >( ( (heightType & 0x0f) << 4 ) | (widthType & 0x0f) ) );
+    cell->add( width );
+    cell->add( height );
+}
+
+void PageSize::write( OutFile* out ) const
+/****************************************/
+{
+    if( out->put( static_cast< byte >( ( (heightType & 0x0f) << 4 ) | (widthType & 0x0f) ) ) )
+        throw FatalError( ERR_WRITE );
+    if( out->put( width ) )
+        throw FatalError( ERR_WRITE );
+    if( out->put( height ) ) {
+        throw FatalError( ERR_WRITE );
+    }
+}
+
+void PageStyle::buildText( Cell* cell ) const
+/*******************************************/
+{
+    cell->add( attrs );
+}
+
+void PageStyle::write( OutFile* out ) const
+/*****************************************/
+{
+    if( out->put( attrs ) ) {
+        throw FatalError( ERR_WRITE );
+    }
+}
+
+void PageGroup::buildText( Cell* cell ) const
+/*******************************************/
+{
+    cell->add( id );
+}
+
+void PageGroup::write( OutFile* out ) const
+/*****************************************/
+{
+    if( out->put( id ) ) {
+        throw FatalError( ERR_WRITE );
+    }
+}
+
+void PageControl::buildText( Cell* cell ) const
+/*********************************************/
+{
+    cell->add( refid );
+}
+
+void PageControl::write( OutFile* out ) const
+/*******************************************/
+{
+    if( out->put( refid ) ) {
+        throw FatalError( ERR_WRITE );
+    }
+}

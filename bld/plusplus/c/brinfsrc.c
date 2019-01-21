@@ -66,7 +66,7 @@ static void writeIns            // WRITE AN INSTRUCTION
     SRCDEP const* sd;           // - dependency for open
 
     switch( opcode ) {
-      case IC_BR_SRC_BEG :
+    case IC_BR_SRC_BEG :
         curr_locn = VstkPush( &open_src );
         TokenLocnAssign( *curr_locn, cursor );
         sd = parm;
@@ -75,7 +75,7 @@ static void writeIns            // WRITE AN INSTRUCTION
         cursor.column = 0;
         BrinfWriteIns( opcode, parm );
         break;
-      case IC_BR_SRC_END :
+    case IC_BR_SRC_END :
         locn = VstkPop( &open_src );
         if( NULL == locn ) {
             cursor.src_file = NULL;
@@ -84,11 +84,11 @@ static void writeIns            // WRITE AN INSTRUCTION
         }
         BrinfWriteIns( opcode, parm );
         break;
-      case IC_BR_REF_MACRO :
+    case IC_BR_REF_MACRO :
         TokenLocnAssign( cursor, *locn );
         BrinfIcReference( opcode, parm, locn );
         break;
-      default :
+    default :
         TokenLocnAssign( cursor, *locn );
         BrinfWriteIns( opcode, parm );
         break;
@@ -145,10 +145,14 @@ void BrinfSrcSync               // SYNCHONIZE THE OPEN/CLOSE DIRECTIVES
     SRCFILE tgt = locn->src_file;
     for( ; ; ) {
         PP_INS* ins = ins_queue;
-        if( NULL == ins ) break;
+        if( NULL == ins )
+            break;
         if( cursor.src_file == tgt ) {
-            if( ins->locn.src_file != tgt ) break;
-            if( ins->opcode == IC_BR_SRC_END ) break;
+            if( ins->locn.src_file != tgt )
+                break;
+            if( ins->opcode == IC_BR_SRC_END ) {
+                break;
+            }
         }
         deQueue();
     }

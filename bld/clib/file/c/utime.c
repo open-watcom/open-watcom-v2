@@ -168,7 +168,7 @@ static unsigned _utime_sfn( const char *fname, _dos_tms *dostms )
     reg_set.h.al = 0x01;        /* write access */
     intdos( &reg_set, &reg_set );
 #endif
-    if( reg_set.x.cflag != 0 ) {
+    if( reg_set.x.cflag ) {
         switch( reg_set.w.ax ) {
         case 2:
             _RWD_errno = ENOENT;
@@ -189,14 +189,14 @@ static unsigned _utime_sfn( const char *fname, _dos_tms *dostms )
     reg_set.h.ah = DOS_FILE_DATE;
     reg_set.h.al = 1;           /* set date & time */
     intdos( &reg_set, &reg_set );
-    if( reg_set.x.cflag != 0 ) {
+    if( reg_set.x.cflag ) {
         _RWD_errno = EACCES;
         return( -1 );
     }
     reg_set.w.bx = handle;
     reg_set.h.ah = DOS_CLOSE;
     intdos( &reg_set, &reg_set );
-    if( reg_set.x.cflag != 0 ) {
+    if( reg_set.x.cflag ) {
         _RWD_errno = EACCES;
         return( -1 );
     }

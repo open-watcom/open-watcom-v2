@@ -30,15 +30,12 @@
 ****************************************************************************/
 
 
-#include <stdio.h>
-#include <string.h>
+#include "drwatcom.h"
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <dos.h>
-#include <malloc.h>
 #include <io.h>
-#include "drwatcom.h"
 #include "sopen.h"
 #include "dip.h"
 #include "dipimp.h"
@@ -236,16 +233,16 @@ void DIPCLIENTRY( AddrSection )( address *addr )
 /*
  * DIPCliStatus
  */
-void DIPCLIENTRY( Status )( dip_status stat )
+void DIPCLIENTRY( Status )( dip_status ds )
 {
-    stat = stat;
+    /* unused parameters */ (void)ds;
 }
 
 /*
- * DIPCliCurrMAD
+ * DIPCliCurrArch
  */
-dig_mad DIPCLIENTRY( CurrMAD )( void )
-/************************************/
+dig_arch DIPCLIENTRY( CurrArch )( void )
+/**************************************/
 {
-    return( MAD_X86 );
+    return( DIG_ARCH_X86 );
 }

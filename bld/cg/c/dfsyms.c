@@ -30,7 +30,7 @@
 ****************************************************************************/
 
 
-#include "cgstd.h"
+#include "_cgstd.h"
 #include <stdio.h>
 #include <stdarg.h>
 #include <stdlib.h>
@@ -472,7 +472,7 @@ void    DFBegCCU( segment_id code, dw_sym_handle dbg_pch )
     segment_id      old;
 #endif
 
-#ifndef DWARF_CU_REC_NO_PCLO_PCHI
+#ifdef DWARF_CU_REC_NO_PCLO_PCHI
     /* unused parameters */ (void *)code;
 #endif
 
@@ -1011,9 +1011,9 @@ void    DFProEnd( dbg_rtn *rtn, offset lc )
     if( access != NULL ) {
         if( *access == SYM_ACC_PUBLIC ) {
             flags |= DW_FLAG_PUBLIC;
-        }else if( *access == SYM_ACC_PROTECTED ) {
+        } else if( *access == SYM_ACC_PROTECTED ) {
             flags |= DW_FLAG_PROTECTED;
-        }else if( *access == SYM_ACC_PRIVATE ) {
+        } else if( *access == SYM_ACC_PRIVATE ) {
             flags |= DW_FLAG_PRIVATE;
         }
     }
@@ -1111,7 +1111,8 @@ void    DFRtnEnd( dbg_rtn *rtn, offset lc )
 {
     back_handle bck;
 
-    lc = 0;
+    /* unused parameters */ (void)lc;
+
     bck = rtn->end_lbl;
     OutLabel( bck->lbl );
     BEFreeBack( bck );

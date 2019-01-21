@@ -162,20 +162,24 @@ static type_id figureOutBaseType( ENUM_DATA *edata )
     step = ( edata->has_sign ) ? 2 : 1;
     for( ; index < ENUM_RNG_MAX; index += step ) {
         if( edata->next_signed ) {
-            if( I64Cmp( &edata->next_value, &(range_table[ index ].lo.s64val) ) >= 0 ) break;
+            if( I64Cmp( &edata->next_value, &(range_table[index].lo.s64val) ) >= 0 ) {
+                break;
+            }
         } else {
-            if( U64Cmp( &edata->next_value, &(range_table[ index ].hi.s64val) ) <= 0 ) break;
+            if( U64Cmp( &edata->next_value, &(range_table[index].hi.s64val) ) <= 0 ) {
+                break;
+            }
         }
     }
     if( index >= ENUM_RNG_MAX ) {
         CErr1( ERR_NO_ENUM_TYPE_POSSIBLE );
-        edata->next_value.u._32[ 0 ] = 0;
-        edata->next_value.u._32[ 1 ] = 0;
+        edata->next_value.u._32[0] = 0;
+        edata->next_value.u._32[1] = 0;
         index = ENUM_RNG_MAX - 1;
     }
     edata->index = (uint_8)index;
-    base_type = range_table[ index ].id;
-    return base_type;
+    base_type = range_table[index].id;
+    return( base_type );
 }
 
 void InitEnumState( ENUM_DATA *edata, PTREE id )
@@ -300,8 +304,8 @@ void MakeEnumMember( ENUM_DATA *edata, PTREE id, PTREE val )
         // value is not signed negative (to avoid sign extension later on)
         sym->flag |= SF_ENUM_UINT;
     }
-    incr.u._32[ I64LO32 ] = 1;
-    incr.u._32[ I64HI32 ] = 0;
+    incr.u._32[I64LO32] = 1;
+    incr.u._32[I64HI32] = 0;
     U64Add( &edata->next_value, &incr, &edata->next_value );
     // what about wrap around ? to zero?
 }

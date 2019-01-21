@@ -33,15 +33,17 @@
 #include <stddef.h>
 #include <dos.h>
 #include <conio.h>
+#include "dosfuncx.h"
 #include "rtdata.h"
 #include "defwin.h"
 
-#ifndef DEFAULT_WINDOWING
-    extern      unsigned char _os_kbhit( void );
 
-    #pragma aux _os_kbhit =  "mov ah,0bh"   \
-                             "int 21h"      \
-                             value [al];
+#ifndef DEFAULT_WINDOWING
+    extern unsigned char    _dos( unsigned char );
+    #pragma aux _dos = \
+            "int 21h"      \
+        __parm caller   [__ah] \
+        __value         [__al]
 #endif
 
 _WCRTLINK int kbhit( void )
@@ -57,6 +59,6 @@ _WCRTLINK int kbhit( void )
         return( 0 );
     }
 #else
-    return( _os_kbhit() );
+    return( _dos( DOS_INPUT_STATUS ) != 0 );
 #endif
 }

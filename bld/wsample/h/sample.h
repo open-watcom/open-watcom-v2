@@ -65,6 +65,12 @@ notes:
 #define SAMP_MINOR_VER          2
 #define SAMP_LARGEST_BLOCK      (0xfe00)
 
+#ifdef FARDATA
+#define FAR_PTR     __far
+#else
+#define FAR_PTR
+#endif
+
 #include "pushpck1.h"
 
 typedef struct samp_address {
@@ -82,18 +88,23 @@ typedef struct samp_header {
 } samp_header;
 #define SIZE_HEADER     (sizeof( samp_header ))
 
+#define SAMPLEKINDS() \
+    pick( INFO )            /* statistics for sample file */ \
+    pick( SAMPLES )         /* actual CS:EIP samples */ \
+    pick( MARK )            /* a character string occurring at a certain time */ \
+    pick( OVL_LOAD )        /* an overlay section was loaded */ \
+    pick( CODE_LOAD )       /* executable file loaded */ \
+    pick( ADDR_MAP )        /* translation from map addr's to loaded code addr' */ \
+    pick( MAIN_LOAD )       /* main executable file loaded */ \
+    pick( LAST )            /* always the last block */ \
+    pick( REMAP_SECTION )   /* overlay section(s) have moved in memory */ \
+    pick( CALLGRAPH )       /* callgraph information for samples */
+
 typedef enum samp_block_kinds {
-    SAMP_INFO           =  0, /* statistics for sample file */
-    SAMP_SAMPLES        =  1, /* actual CS:EIP samples */
-    SAMP_MARK           =  2, /* a character string occurring at a certain time */
-    SAMP_OVL_LOAD       =  3, /* an overlay section was loaded */
-    SAMP_CODE_LOAD      =  4, /* executable file loaded */
-    SAMP_ADDR_MAP       =  5, /* translation from map addr's to loaded code addr' */
-    SAMP_MAIN_LOAD      =  6, /* main executable file loaded */
-    SAMP_LAST           =  7, /* always the last block */
-    SAMP_REMAP_SECTION  =  8, /* overlay section(s) have moved in memory */
-    SAMP_CALLGRAPH      =  9, /* callgraph information for samples */
-    NUM_BLOCK_KINDS     = 10
+    #define pick(k) SAMP_ ## k,
+    SAMPLEKINDS()
+    #undef pick
+    NUM_BLOCK_KINDS
 } samp_block_kinds;
 
 

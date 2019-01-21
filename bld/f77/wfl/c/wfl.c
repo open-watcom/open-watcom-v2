@@ -101,13 +101,11 @@
 #endif
 
 #ifdef __UNIX__
-  #define ISVALIDENTRY(x)   (1)
-  #define FNM_OPTIONS       (FNM_PATHNAME | FNM_NOESCAPE)
+  #define ISVALIDENTRY(e)   (1)
+  #define FNMATCH_FLAGS     (FNM_PATHNAME | FNM_NOESCAPE)
 #else
-  // mask for illegal file types
-  #define ATTR_MASK         (_A_HIDDEN + _A_SYSTEM + _A_VOLID + _A_SUBDIR)
-  #define ISVALIDENTRY(x)   ((x->d_attr & ATTR_MASK) == 0 )
-  #define FNM_OPTIONS       (FNM_PATHNAME | FNM_NOESCAPE | FNM_IGNORECASE)
+  #define ISVALIDENTRY(e)   ((e->d_attr & (_A_HIDDEN + _A_SYSTEM + _A_VOLID + _A_SUBDIR)) == 0 )
+  #define FNMATCH_FLAGS     (FNM_PATHNAME | FNM_NOESCAPE | FNM_IGNORECASE)
 #endif
 
 #if defined( __OS2__ ) || defined( __NT__ ) || defined( __UNIX__ )
@@ -648,7 +646,7 @@ static const char *DoWildCard( const char *base )
     }
     while( (entry = readdir( wildparent )) != NULL ) {
         if( ISVALIDENTRY( entry ) ) {
-            if( fnmatch( wildpattern, entry->d_name, FNM_OPTIONS ) == 0 ) {
+            if( fnmatch( wildpattern, entry->d_name, FNMATCH_FLAGS ) == 0 ) {
                 break;
             }
         }

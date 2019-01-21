@@ -61,9 +61,9 @@
 
 extern int main( int, char **, char ** );
 #if defined( _M_I86 )
-#pragma aux main modify [sp];
+#pragma aux main __modify [__sp]
 #else
-#pragma aux main modify [esp];
+#pragma aux main __modify [__esp]
 #endif
 
 void    __near *_endheap;                   /* temporary work-around */
@@ -277,7 +277,7 @@ void _CMain( free, n, cmd, stk_bot, pid )
 }
 #else
 
-#pragma aux _s_EFG_printf __far parm [eax] [edx] [ebx]
+#pragma aux _s_EFG_printf __far __parm [__eax] [__edx] [__ebx]
 static char *_s_EFG_printf(
     char    *buffer,
     char    **args,
@@ -286,11 +286,14 @@ static char *_s_EFG_printf(
     return (*__EFG_printf)( buffer, (struct my_va_list *)args, specs );
 }
 
-extern unsigned short   _cs(void);
-#pragma aux _cs = 0x8c 0xc8 modify exact nomemory [ax];
+extern unsigned short   _cs( void );
+#pragma aux _cs = "mov  ax,cs" __value [__ax] __modify __exact __nomemory [__ax]
 
-extern void setup_es(void);
-#pragma aux setup_es = "push ds" "pop es" modify exact nomemory [es];
+extern void setup_es( void );
+#pragma aux setup_es = \
+        "push ds"   \
+        "pop es"    \
+    __modify __exact __nomemory [__es]
 
 void _CMain( int argc, char **argv, char **arge )
 {

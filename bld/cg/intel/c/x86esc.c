@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2016 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -31,7 +31,7 @@
 ****************************************************************************/
 
 
-#include "cgstd.h"
+#include "_cgstd.h"
 #include "coderep.h"
 #include "addrname.h"
 #include "symdbg.h"
@@ -50,21 +50,15 @@
 #include "x86obj.h"
 #include "x86esc.h"
 #include "encode.h"
+#include "pccode.h"
+#include "x86enc.h"
+#include "x86nopli.h"
 #include "feprotos.h"
 
 
-extern  void            EmitOffset(offset);
-extern  void            EmitPtr(pointer);
-extern  void            EmitByte(byte);
-extern  void            EmitSegId(segment_id);
-extern  void            InsertByte(byte);
-extern bool             UseImportForm(fe_attr);
-
-static void             DoRelocRef( cg_sym_handle sym, cg_class class, segment_id seg, offset val, escape_class kind );
-static  void            OutShortDisp( label_handle lbl );
-static  void            OutCodeDisp( label_handle lbl, fix_class f, bool rel, oc_class class );
-
-extern byte             *NopLists[];
+static void     DoRelocRef( cg_sym_handle sym, cg_class class, segment_id seg, offset val, escape_class kind );
+static void     OutShortDisp( label_handle lbl );
+static void     OutCodeDisp( label_handle lbl, fix_class f, bool rel, oc_class class );
 
 /* Grammar of Escapes :*/
 /**/
@@ -83,8 +77,9 @@ extern byte             *NopLists[];
 /*       LDOF means loader resolved offset*/
 /*       BASE means use F_BASE relocation*/
 
-extern  bool    CodeHasAbsPatch( oc_entry *code ) {
-/*************************************************/
+bool    CodeHasAbsPatch( oc_entry *code )
+/***************************************/
+{
     byte        *curr;
     byte        *final;
 
@@ -101,9 +96,9 @@ extern  bool    CodeHasAbsPatch( oc_entry *code ) {
 }
 
 
-extern  void    DoAbsPatch( abspatch_handle *handle, int len ) {
-/**************************************************************/
-
+void    DoAbsPatch( abspatch_handle *handle, int len )
+/****************************************************/
+{
     EmitByte( ESC );
     EmitByte( ABS );
     if( len == 1 ) {
@@ -118,18 +113,18 @@ extern  void    DoAbsPatch( abspatch_handle *handle, int len ) {
 }
 
 
-extern  void    DoFunnyRef( int segover ) {
-/*****************************************/
-
+void    DoFunnyRef( int segover )
+/*******************************/
 /* yea, i know it's backwards*/
+{
     InsertByte( segover );
     InsertByte( FUN );
     InsertByte( ESC );
 }
 
 
-extern  void  DoFESymRef( cg_sym_handle sym, cg_class class, offset val, fe_fixup_types fixup_type )
-/**************************************************************************************************/
+void  DoFESymRef( cg_sym_handle sym, cg_class class, offset val, fe_fixup_types fixup_type )
+/******************************************************************************************/
 {
     fe_attr             attr;
     escape_class        kind;
@@ -172,16 +167,16 @@ extern  void  DoFESymRef( cg_sym_handle sym, cg_class class, offset val, fe_fixu
 }
 
 
-extern  void    DoSymRef( name *opnd, offset val, bool base ) {
-/*************************************************************/
-
+void    DoSymRef( name *opnd, offset val, bool base )
+/***************************************************/
+{
     DoFESymRef( opnd->v.symbol, opnd->m.memory_type, val, base ? FE_FIX_BASE : FE_FIX_OFF );
 }
 
 
-extern  void    DoSegRef( segment_id seg ) {
-/******************************************/
-
+void    DoSegRef( segment_id seg )
+/********************************/
+{
     EmitByte( ESC );
     EmitByte( REL | BASE | OFST );
     EmitSegId( seg );
@@ -235,7 +230,7 @@ void    DoLblRef( label_handle lbl, segment_id seg,
     }
 }
 
-static void SendBytes( const void *ptr, unsigned len )
+static void SendBytes( const byte *ptr, unsigned len )
 /****************************************************/
 {
     if( len != 0 ) {
@@ -268,7 +263,7 @@ static  void    DumpSavedDebug( void )
 void DoAlignment( int len )
 /*************************/
 {
-    byte                *ptr;
+    const byte          *ptr;
     int                 nop;
     int                 i;
     unsigned            save_line;
@@ -281,7 +276,8 @@ void DoAlignment( int len )
         i = !i;
     }
     /* find the correct size NOP pattern to use */
-    for( ptr = &NopLists[i][1]; nop != len; --nop ) ptr += nop;
+    for( ptr = &NopLists[i][1]; nop != len; --nop )
+        ptr += nop;
     SendBytes( ptr, len );
     SavePendingLine( save_line );
 }
@@ -523,7 +519,7 @@ static  label_handle ExpandObj( byte *cur, int explen ) {
         }
         if( class == F_BASE ) {
             _OutFarSeg( val );
-        } else if ( class == F_OFFSET || class == F_LDR_OFFSET ) {
+        } else if( class == F_OFFSET || class == F_LDR_OFFSET ) {
             _OutFarOff( val );      /* offset */
         } else if( class == F_PTR ) {
             _OutFarOff( val );

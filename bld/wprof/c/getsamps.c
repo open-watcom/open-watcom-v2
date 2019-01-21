@@ -146,11 +146,11 @@ STATIC void procInfoBlock( clicks_t ticks, samp_data *data )
     } else {
         CurrSIOData->config = data->info.config;
         /* sanity check for non-MADified sampler */
-        if( CurrSIOData->config.mad == MAD_NIL ) {
+        if( CurrSIOData->config.arch == DIG_ARCH_NIL ) {
             CurrSIOData->config = DefSysConfig;
         }
     }
-    SetCurrentMAD( CurrSIOData->config.mad );
+    SetCurrentMAD( CurrSIOData->config.arch );
 
     CurrSIOData->timer_rate = data->info.timer_rate;
 }

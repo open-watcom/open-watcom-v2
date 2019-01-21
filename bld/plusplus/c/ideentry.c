@@ -64,7 +64,7 @@ typedef char NUMBER_STR[8];     // number string
 static void* allocMem           // ALLOCATE MEMORY
     ( size_t size )             // - size
 {
-    return CMemAlloc( size );
+    return( CMemAlloc( size ) );
 }
 #endif
 
@@ -89,7 +89,7 @@ static void* reallocMem         // RE-ALLOCATE MEMORY
     DbgVerify( size > old_size, "reallocMem -- sizes messed" );
     memcpy( new_blk, old, old_size );
     freeMem( old );
-    return new_blk;
+    return( new_blk );
 }
 
 
@@ -136,11 +136,11 @@ static void printChar           // PRINT A CHARACTER
     ( char chr )                // - to be printed
 {
     if( chr == '\n' ) {
-        printCtl.buffer[ printCtl.index ] = '\0';
+        printCtl.buffer[printCtl.index] = '\0';
         printIDE( printCtl.buffer );
         printCtl.index = 0;
     } else {
-        printCtl.buffer[ printCtl.index ] = chr;
+        printCtl.buffer[printCtl.index] = chr;
         ++ printCtl.index;
         if( printCtl.index >= printCtl.size_buf ) {
             unsigned old_size = printCtl.size_buf;
@@ -158,7 +158,8 @@ static void printString         // PRINT A STRING
 {
     for( ; ; ++str ) {
         char chr = *str;
-        if( '\0' == chr ) break;
+        if( '\0' == chr )
+            break;
         printChar( chr );
     }
 }
@@ -181,7 +182,7 @@ static void printLine           // PRINT A LINE
 unsigned IDEAPI IDEGetVersion // GET IDE VERSION
     ( void )
 {
-    return IDE_CUR_DLL_VER;
+    return( IDE_CUR_DLL_VER );
 }
 
 
@@ -193,7 +194,7 @@ IDEBool IDEAPI IDEInitDLL   // DLL INITIALIZATION
     CompInfo.idehdl = cbhdl;
     CompInfo.idecbs = cb;
     *hdl = (IDEDllHdl)cbhdl;
-    return false;
+    return( false );
 }
 
 
@@ -216,8 +217,8 @@ static void fillInputOutput( char *input, char *output )
         if( ! IDEFN(GetInfo)( CompInfo.idehdl, IDE_GET_SOURCE_FILE, 0, (IDEGetInfoLParam)&input[1] ) ) {
             input[0] = '"';
             len = strlen( &input[1] );
-            input[ 1 + len ] = '"';
-            input[ 1 + len + 1 ] = '\0';
+            input[1 + len] = '"';
+            input[1 + len + 1] = '\0';
         }
         if( ! IDEFN(GetInfo)( CompInfo.idehdl, IDE_GET_TARGET_FILE, 0, (IDEGetInfoLParam)&output[5] ) ) {
             output[0] = '-';
@@ -226,8 +227,8 @@ static void fillInputOutput( char *input, char *output )
             output[3] = '=';
             output[4] = '"';
             len = strlen( &output[5] );
-            output[ 5 + len ] = '"';
-            output[ 5 + len + 1 ] = '\0';
+            output[5 + len] = '"';
+            output[5 + len + 1] = '\0';
         }
     }
 }
@@ -249,9 +250,9 @@ IDEBool IDEAPI IDERunYourSelf // COMPILE A PROGRAM
     , const char* opts          // - options
     , IDEBool* fatal_error )    // - addr[ fatality indication ]
 {
-    DLL_DATA dllinfo;           // - information passed to DLL
-    auto char input[1+_MAX_PATH+1]; // - input file name ("<fname>")
-    auto char output[4+1+_MAX_PATH+1];//- output file name (-fo="<fname>")
+    DLL_DATA dllinfo;                           // - information passed to DLL
+    auto char input[1 + _MAX_PATH + 1];         // - input file name ("<fname>")
+    auto char output[4 + 1 + _MAX_PATH + 1];    //- output file name (-fo="<fname>")
 
     /* unused parameters */ (void)hdl;
 
@@ -273,9 +274,9 @@ IDEBool IDEAPI IDERunYourSelfArgv(// COMPILE A PROGRAM (ARGV ARGS)
     char **argv,                // - argument vector
     IDEBool* fatal_error )      // - addr[ fatality indication ]
 {
-    DLL_DATA dllinfo;           // - information passed to DLL
-    auto char input[1+_MAX_PATH+1]; // - input file name ("<fname>")
-    auto char output[4+1+_MAX_PATH+1];//- output file name (-fo="<fname>")
+    DLL_DATA dllinfo;                           // - information passed to DLL
+    auto char input[1 + _MAX_PATH + 1];         // - input file name ("<fname>")
+    auto char output[4 + 1 + _MAX_PATH + 1];    //- output file name (-fo="<fname>")
 
     /* unused parameters */ (void)hdl;
 
@@ -314,7 +315,7 @@ IDEBool IDEAPI IDEProvideHelp // PROVIDE HELP INFORMATION
     DbgVerify( hdl == CompInfo.idehdl
              , "ProvideHelp -- handle mismatch" );
     msg = msg;
-    return true;
+    return( true );
 }
 #endif
 
@@ -341,7 +342,7 @@ static IDEBool collectChar      // COLLECT A CHARACTER IF POSSIBLE
     } else {
         retn = false;
     }
-    return retn;
+    return( retn );
 }
 
 
@@ -356,7 +357,7 @@ static IDEBool collectIfChar    // COLLECT A SPECIFIC CHARACTER
     } else {
         retn = false;
     }
-    return retn;
+    return( retn );
 }
 
 
@@ -370,12 +371,15 @@ static IDEBool collectNumber    // COLLECT A NUMBER
     si->left = sizeof( NUMBER_STR ) - 1;
     retn = false;
     for( ; ; ) {
-        if( ! isdigit( *si->scan ) ) break;
+        if( ! isdigit( *si->scan ) )
+            break;
         retn = collectChar( si );
-        if( ! retn ) break;
+        if( !retn ) {
+            break;
+        }
     }
     *si->tgt = '\0';
-    return retn;
+    return( retn );
 }
 
 
@@ -391,7 +395,7 @@ static IDEBool mustBeChar       // SCAN PAST REQ'D CHARACTER
     } else {
         retn = false;
     }
-    return retn;
+    return( retn );
 }
 
 
@@ -413,7 +417,7 @@ static IDEBool mustBeText       // SCAN PAST REQ'D TEXT
             break;
         }
     }
-    return retn;
+    return( retn );
 }
 
 
@@ -446,7 +450,7 @@ static IDEBool isFileNameChar   // TEST IF CHAR IS IN FILE NAME
           retn = true;
           break;
     }
-    return retn;
+    return( retn );
 }
 
 
@@ -460,7 +464,9 @@ static IDEBool parseFileChunk   // PARSE FILE CHUNK (BETWEEN \'S)
     for( got_dot = false, got_chunk = false; ; got_chunk = true ) {
         if( isFileNameChar( *si->scan ) ) {
             retn = collectChar( si );
-            if( ! retn ) break;
+            if( ! retn ) {
+                break;
+            }
         } else if( got_dot ) {
             retn = got_chunk;
             break;
@@ -471,7 +477,7 @@ static IDEBool parseFileChunk   // PARSE FILE CHUNK (BETWEEN \'S)
             break;
         }
     }
-    return retn;
+    return( retn );
 }
 
 
@@ -499,7 +505,7 @@ static IDEBool parseFileName    // PARSE FILE NAME, IF POSSIBLE
             break;
         }
     }
-    return retn;
+    return( retn );
 }
 
 
@@ -548,7 +554,7 @@ IDEBool IDEAPI IDEParseMessage // PARSE A MESSAGE
         err->flags = 0;
         retn = true;
     }
-    return retn;
+    return( retn );
 }
 #endif
 

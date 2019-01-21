@@ -1,6 +1,6 @@
 #include <string.hpp>
 
-void main( void ) {
+int main( void ) {
 
     String    s1 ("Open Watcom C++"), s2, s3;
     char     *pch = "Open Watcom C++ compiler";

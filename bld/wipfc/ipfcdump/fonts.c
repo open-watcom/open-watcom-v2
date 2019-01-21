@@ -17,7 +17,7 @@ void readFonts(FILE *in, FILE *out)
             fprintf( out, "    FontEntry.height:   %4.4x (%hu)\n", fnt.height, fnt.height );
             fprintf( out, "    FontEntry.codePage: %4.4x (%hu)\n", fnt.codePage, fnt.codePage );
         }
+    } else {
+        fputs( "  No font data is present\n", out );
     }
-    else
-        fputs("  No font data is present\n", out);
 }

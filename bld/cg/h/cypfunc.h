@@ -30,11 +30,6 @@
 ****************************************************************************/
 
 
-extern  void        *CypCopy( const void *, void *, size_t );
-extern  void        *CypFill( void *, size_t, unsigned char );
-extern  size_t      CypLength( const char *);
-extern  bool        CypEqual( const void *, const void *, size_t );
-
 #if defined(__WATCOMC__) && defined( _M_IX86 )
 
 #if defined(__FLAT__) || defined(__SMALL__) || defined(__MEDIUM__)
@@ -42,32 +37,35 @@ extern  bool        CypEqual( const void *, const void *, size_t );
     #define _RESES  "pop     es"
     #define _SETES  "push    ds" \
                     "pop     es"
-    #define __ES
-    #define __DS
+    #define _SREG_ES
+    #define _SREG_DS
 #else
     #define _SAVES
     #define _RESES
     #define _SETES
-    #define __ES    es
-    #define __DS    ds
+    #define _SREG_ES    __es
+    #define _SREG_DS    __ds
 #endif
 
+extern void     *CypCopy( const void *, void *, size_t );
 #pragma aux CypCopy = \
         _SAVES \
         _SETES \
         "rep movsb" \
         _RESES \
-        parm routine [__DS esi] [__ES edi] [ecx] \
-        value [__ES edi]
+    __parm __routine    [_SREG_DS __esi] [_SREG_ES __edi] [__ecx] \
+    __value             [_SREG_ES __edi]
 
+extern void     *CypFill( void *, size_t, unsigned char );
 #pragma aux CypFill = \
         _SAVES \
         _SETES \
         "rep stosb" \
         _RESES \
-        parm routine [__ES edi] [ecx] [al] \
-        value [__ES edi]
+    __parm __routine    [_SREG_ES __edi] [__ecx] [__al] \
+    __value             [_SREG_ES __edi]
 
+extern size_t   CypLength( const char *);
 #pragma aux CypLength = \
         _SAVES \
         _SETES \
@@ -78,10 +76,11 @@ extern  bool        CypEqual( const void *, const void *, size_t );
         "not    ecx" \
         "dec    ecx" \
         _RESES \
-        parm routine [__ES edi] \
-        value [ecx] \
-        modify[eax]
+    __parm __routine    [_SREG_ES __edi] \
+    __value             [__ecx] \
+    __modify            [__eax]
 
+extern bool     CypEqual( const void *, const void *, size_t );
 #pragma aux CypEqual = \
         _SAVES \
         _SETES \
@@ -91,7 +90,7 @@ extern  bool        CypEqual( const void *, const void *, size_t );
         "inc    eax" \
     "L1:" \
         _RESES \
-        parm routine [__DS esi] [__ES edi] [ecx] \
-        value [al]
+    __parm __routine    [_SREG_DS __esi] [_SREG_ES __edi] [__ecx] \
+    __value             [__al]
 
 #endif

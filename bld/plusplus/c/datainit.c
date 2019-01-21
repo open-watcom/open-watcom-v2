@@ -225,7 +225,7 @@ static bool isDataInitConstant( PTREE tree
 static SYMBOL dtorableObjectInitSymbol( // SYMBOL FOR CURRENT DTORABLE OBJECT
     void )
 {
-    return currInit->auto_static ? currInit->auto_sym : currInit->sym;
+    return( currInit->auto_static ? currInit->auto_sym : currInit->sym );
 }
 
 static PTREE makeSafeSymbol( SYMBOL sym, TOKEN_LOCN *locn, SEARCH_RESULT *result )
@@ -298,7 +298,7 @@ static PTREE dataInitPadLeftSide( target_size_t start )
 static PTREE refOfSym( TYPE type, SYMBOL var )
 /********************************************/
 {
-    return NodeConvert( MakeReferenceTo( type ), MakeNodeSymbol( var ) );
+    return( NodeConvert( MakeReferenceTo( type ), MakeNodeSymbol( var ) ) );
 }
 #endif
 
@@ -406,7 +406,7 @@ static TYPE dtorableObjectType( // GET TYPE OF DTORABLE OBJECT (AT ROOT) ELEMENT
     } else {
         type = NULL;
     }
-    return type;
+    return( type );
 }
 
 static void emitDtorInitSymbol( // EMIT DTOR MARKING FOR A SYMBOL
@@ -484,7 +484,8 @@ static SYMBOL dataInitScopeOrderedNext( SYMBOL stop, SYMBOL curr )
     prev = curr;
     for(;;) {
         curr = ScopeOrderedNext( stop, curr );
-        if( curr == NULL ) break;
+        if( curr == NULL )
+            break;
         if( SymIsNextInitializableMember( &prev, curr ) ) {
             break;
         }
@@ -525,7 +526,8 @@ static target_size_t dataInitFieldSize( INITIALIZE_INFO *entry )
         for(;;) {
             DbgAssert( next != NULL );
             next = dataInitScopeOrderedNext( entry->u.c.stop, next );
-            if( next == NULL ) break;
+            if( next == NULL )
+                break;
             next_off = next->u.member_offset;
             if( next_off == 0 ) {
                 // member of the union so quit
@@ -541,7 +543,8 @@ static target_size_t dataInitFieldSize( INITIALIZE_INFO *entry )
         for(;;) {
             DbgAssert( next != NULL );
             next = dataInitScopeOrderedNext( entry->u.c.stop, next );
-            if( next == NULL ) break;
+            if( next == NULL )
+                break;
             next_off = next->u.member_offset;
             if( next_off != curr_off ) {
                 // next field
@@ -617,7 +620,7 @@ static TYPE arrayBaseStructType( // GET STRUCT TYPE OF ARRAY BASE TYPE
 {
     type = ArrayBaseType( type );
     type = StructType( type );
-    return type;
+    return( type );
 }
 
 static void dtorableObjectBeg(  // EMIT START FOR DTORABLE OBJECT IF REQ'D
@@ -658,7 +661,7 @@ static SYMBOL getCtorCalled(    // GET SCOPE-CALL TYPE FOR A CTOR
     } else {
         ctor = NULL;
     }
-    return ctor;
+    return( ctor );
 }
 
 
@@ -701,7 +704,7 @@ static PTREE emitDtorInitExpr(  // EMIT DTOR MARKING FOR AN EXPRESSION
             expr = done;
         }
     }
-    return expr;
+    return( expr );
 }
 
 static PTREE dtorableObjectCtored(// EMIT INDEX OF DTORABLE OBJECT, IF REQ'D
@@ -736,9 +739,11 @@ static PTREE dtorableObjectCtored(// EMIT INDEX OF DTORABLE OBJECT, IF REQ'D
                 eltype = arrayBaseStructType( info->type );
                 index = info->u.a.index;
                 for( prev = info->previous; prev != NULL; prev = prev->previous ) {
-                    if( prev->target != DT_ARRAY ) break;
+                    if( prev->target != DT_ARRAY )
+                        break;
                     artype = ArrayType( prev->type );
-                    if( eltype != arrayBaseStructType( artype ) ) break;
+                    if( eltype != arrayBaseStructType( artype ) )
+                        break;
                     index += prev->u.a.index * artype->u.a.array_size;
                 }
                 if( index_updated ) {
@@ -761,7 +766,7 @@ static PTREE dtorableObjectCtored(// EMIT INDEX OF DTORABLE OBJECT, IF REQ'D
             }
         }
     }
-    return expr;
+    return( expr );
 }
 
 static void dataInitPushStack( INITIALIZE_ENTRY entry, INITIALIZE_INFO *prev )
@@ -1081,20 +1086,21 @@ static bool dataInitCheckAnalyse( PTREE *pexpr )
 /**********************************************/
 {
     PTREE   expr = *pexpr;
-    bool    retb = true;        // return true if no error
+    bool    ok;             // return true if no error
 
     _dump( "- Analysed Expression ---------------------------------" );
     _dumpPTree( expr );
     _dump( "-------------------------------------------------------" );
 
     // check for error in expression
+    ok = true;
     if( ( expr->op == PT_ERROR ) || ( expr->cgop != CO_EXPR_DONE ) ) {
         PTreeErrorNode( expr );
         currInit->state = DS_ERROR;
-        retb = false;
+        ok = false;
     }
     *pexpr = expr;
-    return( retb );
+    return( ok );
 }
 
 static void setModuleInitFnScope( void )
@@ -1122,7 +1128,7 @@ static bool dataInitAnalyseExpr( PTREE *pexpr )
     PTREE       expr = *pexpr;
     PTREE       left;
     PTREE       right;
-    bool        retb;
+    bool        ok;
     TOKEN_LOCN  locn;       // - location of RHS
 
     right = PTreeExtractLocn( expr, &locn );
@@ -1155,21 +1161,21 @@ static bool dataInitAnalyseExpr( PTREE *pexpr )
         dataInitCodeFileClose();
         break;
     }
-    retb = dataInitCheckAnalyse( &expr );
+    ok = dataInitCheckAnalyse( &expr );
 
     *pexpr = expr;
-    return( retb );
+    return( ok );
 }
 
 static bool dataInitAnalyseCtor( PTREE *pexpr )
 /*********************************************/
 // return false if error in analysis
 {
-    bool     retb;
+    bool     ok;
 
     currInit->use_simple = true;
-    retb = dataInitAnalyseExpr( pexpr );
-    return( retb );
+    ok = dataInitAnalyseExpr( pexpr );
+    return( ok );
 }
 
 static void dataInitEmitExpr( PTREE node )
@@ -1502,36 +1508,37 @@ static bool dataInitIsFull( INITIALIZE_INFO *nest )
 // return true if stack entry is full
 // braces and root_type are never full
 {
-    bool retb = false;
+    bool ok;
 
+    ok = false;
     if( ( nest->entry != DE_BRACE ) && ( nest->entry != DE_ROOT_TYPE ) ) {
         switch( nest->target ) {
         case DT_SCALAR:
-            retb = true;
+            ok = true;
             break;
         case DT_ARRAY:
             if( nest->offset == nest->mem_size ) {
-                retb = true;
+                ok = true;
             }
             break;
         case DT_CLASS:
             if( nest->u.c.curr == NULL ) {
-                retb = true;
+                ok = true;
             }
             break;
         case DT_BITFIELD:
             // type has already been advanced to next aggregate entry
             if( nest->type == NULL ) {
-                retb = true;
+                ok = true;
             } else if( nest->type->id != TYP_BITFIELD ) {
-                retb = true;
+                ok = true;
             } else if( nest->type->u.b.field_start == 0 ) {
-                retb = true;
+                ok = true;
             }
             break;
         }
     }
-    return( retb );
+    return( ok );
 }
 
 static void dataInitEnQueue( target_size_t start, target_size_t size )
@@ -1753,8 +1760,8 @@ static void dataInitStashString( PTREE expr )
     target_size_t size;
     target_size_t dim;
 
-    size = StringByteLength( expr->u.string );
-    dim = StringAWStrLen( expr->u.string );
+    size = (target_size_t)StringByteLength( expr->u.string );
+    dim = (target_size_t)StringAWStrLen( expr->u.string );
     switch( currInit->location ) {
     case DL_INTERNAL_AUTO:
         mayNeedAutoStaticInitCopy();

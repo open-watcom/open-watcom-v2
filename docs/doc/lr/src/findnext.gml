@@ -1,19 +1,15 @@
 .func _findnext _findnexti64 _wfindnext _wfindnexti64
 .synop begin
 #include <&iohdr>
-int _findnext( long handle,
-               struct _finddata_t *fileinfo );
+int _findnext( intptr_t handle, struct _finddata_t *fileinfo );
 .ixfunc2 '&DosFunc' &_func
-int _findnexti64( long handle,
-                  struct _finddatai64_t *fileinfo );
+int _findnexti64( intptr_t handle, struct _finddatai64_t *fileinfo );
 .ixfunc2 '&DosFunc' &func64
 .if &'length(&wfunc.) ne 0 .do begin
-int _wfindnext( long handle,
-                struct _wfinddata_t *fileinfo );
+int _wfindnext( intptr_t handle, struct _wfinddata_t *fileinfo );
 .ixfunc2 '&DosFunc' &wfunc
 .ixfunc2 '&Wide' &wfunc
-int _wfindnexti64( long handle,
-                   struct _wfinddatai64_t *fileinfo );
+int _wfindnexti64( intptr_t handle, struct _wfinddatai64_t *fileinfo );
 .ixfunc2 '&DosFunc' &wfunc64
 .ixfunc2 '&Wide' &wfunc64
 .do end
@@ -141,7 +137,7 @@ No matching files
 void main()
   {
     struct _finddata_t  fileinfo;
-    long                handle;
+    intptr_t            handle;
     int                 rc;
 .exmp break
     /* Display name and size of "*.c" files */

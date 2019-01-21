@@ -105,9 +105,9 @@ static bool dynIsLanguage( WPARAM wparam, LPARAM lparam, HWND hwndDlg )
     WORD        id;
     WORD        cmd;
 
-    hwndDlg = hwndDlg;
+    (void)hwndDlg;
 #ifdef __NT__
-    lparam = lparam;
+    (void)lparam;
 #endif
     id = LOWORD( wparam );
     cmd = GET_WM_COMMAND_CMD( wparam, lparam );
@@ -122,9 +122,9 @@ static bool dynIsCRLFAutoDetect( WPARAM wparam, LPARAM lparam, HWND hwndDlg )
     WORD        id;
     WORD        cmd;
 
-    hwndDlg = hwndDlg;
+    (void)hwndDlg;
 #ifdef __NT__
-    lparam = lparam;
+    (void)lparam;
 #endif
     id = LOWORD( wparam );
     cmd = GET_WM_COMMAND_CMD( wparam, lparam );
@@ -352,7 +352,7 @@ static void dlgDataInit( void )
     for( fts = FTSGetFirst(); fts != NULL; fts = FTSGetNext( fts ) ) {
         ++dlgDataArray_size;
     }
-    dlgDataArray = MemAlloc( dlgDataArray_size * sizeof( dlg_data ) );
+    dlgDataArray = _MemAllocArray( dlg_data, dlgDataArray_size );
 }
 
 static void dlgDataFini( void )
@@ -378,7 +378,7 @@ static void fillFileType( HWND hwndDlg )
     ft_src      *fts;
     template_ll *template, *template1;
     char        str[_MAX_PATH];
-    int         strLen;
+    size_t      len;
     int         index;
     info        envInfo;
     info        *oldCurrentInfo;
@@ -394,11 +394,11 @@ static void fillFileType( HWND hwndDlg )
     hwndCB = GetDlgItem( hwndDlg, SETFS_FILETYPE );
     for( index = 0, fts = FTSGetFirst(); fts != NULL; fts = FTSGetNext( fts ), ++index ) {
         str[0] = '\0';
-        strLen = 0;
+        len = 0;
         template1 = FTSGetFirstTemplate( fts );
         for( template = template1; template != NULL; template = FTSGetNextTemplate( template ) ) {
-            strLen += strlen( template->data ) + 2;
-            if( strLen > sizeof( str ) ) {
+            len += strlen( template->data ) + 2;
+            if( len > sizeof( str ) ) {
                 break;
             }
             strcat( str, " " );
@@ -567,14 +567,18 @@ static long insertFT( HWND hwndDlg )
     GetWindowText( hwndCB, text, len + 1 );
 
     // attempt to insert at current position
-    index = (int)SendMessage( hwndCB, CB_FINDSTRING, -1, (LPARAM)(LPSTR)text );
-    if( index != CB_ERR && SendMessage( hwndCB, CB_GETLBTEXTLEN, index, 0L ) == strlen( text ) ) {
-        MessageBox( hwndDlg, "Template already defined", "", MB_ICONINFORMATION | MB_OK );
-        return( 0L );
+    index = (int)SendMessage( hwndCB, CB_FINDSTRING, (WPARAM)-1L, (LPARAM)(LPSTR)text );
+    if( index != CB_ERR ) {
+        index = (int)SendMessage( hwndCB, CB_GETLBTEXTLEN, index, 0L );
+        if( index != CB_ERR && index == len ) {
+            MessageBox( hwndDlg, "Template already defined", "", MB_ICONINFORMATION | MB_OK );
+            return( 0L );
+        }
     }
     // make memory space for new FT entry if necessary
     if( dlgDataArray_count + 1 > dlgDataArray_size ) {
-        dlgDataArray = MemReAlloc( dlgDataArray, ( ++dlgDataArray_size ) * sizeof( dlg_data ) );
+        dlgDataArray_size++;
+        dlgDataArray = _MemReAllocArray( dlgDataArray, dlg_data, dlgDataArray_size );
     }
     // for now, always insert at top of list
     index = 0;

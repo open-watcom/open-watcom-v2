@@ -675,7 +675,7 @@ static void WipeSym( symbol *sym )
         sym->p.import = NULL;
     } else if( IS_SYM_ALIAS(sym) ) {
         if( sym->info & SYM_FREE_ALIAS ) {
-            _LnkFree( sym->p.alias );
+            _LnkFree( sym->p.alias.u.ptr );
         }
         sym->u.aliaslen = 0;    // make sure this is nulled again
     }
@@ -879,7 +879,7 @@ static void SetSymAlias( symbol *sym, const char *target, size_t targetlen )
 /**************************************************************************/
 {
     SET_SYM_TYPE( sym, SYM_ALIAS );
-    sym->p.alias = ChkToString( target, targetlen );
+    sym->p.alias.u.ptr = ChkToString( target, targetlen );
     sym->u.aliaslen = targetlen;
     sym->info |= SYM_DEFINED;           /* an alias can't be undefined */
     sym->info &= ~SYM_WAS_LAZY;
@@ -903,7 +903,7 @@ void MakeSymAlias( const char *name, size_t namelen, const char *target, size_t 
     if( IS_SYM_ALIAS( sym ) ) {
         LnkMsg( WRN+MSG_MULTIPLE_ALIASES, "S", sym );
         if( sym->info & SYM_FREE_ALIAS ) {
-            _LnkFree( sym->p.alias );
+            _LnkFree( sym->p.alias.u.ptr );
         }
     } else if( sym->info & SYM_DEFINED ) {
         return;                 // <--------- NOTE: premature return!!!!
@@ -914,7 +914,7 @@ void MakeSymAlias( const char *name, size_t namelen, const char *target, size_t 
  * hauled in from libraries
 */
     targ = SymOp( ST_CREATE, target, targetlen );
-    SetSymAlias( sym, targ->name, targetlen );
+    SetSymAlias( sym, targ->name.u.ptr, targetlen );
 }
 
 void WeldSyms( symbol *src, symbol *targ )
@@ -922,7 +922,7 @@ void WeldSyms( symbol *src, symbol *targ )
 /* make all references to src refer to targ. (alias src to targ) */
 {
     if( targ != NULL ) {
-        SetSymAlias( src, targ->name, strlen( targ->name ) );
+        SetSymAlias( src, targ->name.u.ptr, strlen( targ->name.u.ptr ) );
     }
 }
 
@@ -932,8 +932,8 @@ static symbol *GlobalSearchSym( const char *symname, unsigned hash, size_t len )
 {
     symbol      *sym;
 
-    for( sym = GlobalSymPtrs[ hash ]; sym != NULL; sym = sym->hash ) {
-        if( len == sym->namelen_cmp && (*CmpRtn)( symname, sym->name, len ) == 0 ) {
+    for( sym = GlobalSymPtrs[hash]; sym != NULL; sym = sym->hash ) {
+        if( len == sym->namelen_cmp && (*CmpRtn)( symname, sym->name.u.ptr, len ) == 0 ) {
             break;
         }
     }
@@ -946,9 +946,9 @@ static symbol *StaticSearchSym( const char *symname, unsigned hash, size_t len )
 {
     symbol      *sym;
 
-    for( sym = StaticSymPtrs[ hash ]; sym != NULL; sym = sym->hash ) {
+    for( sym = StaticSymPtrs[hash]; sym != NULL; sym = sym->hash ) {
         if( sym->info & SYM_IN_CURRENT ) {
-            if( len == sym->namelen_cmp && memcmp( symname, sym->name, len ) == 0 ) {
+            if( len == sym->namelen_cmp && memcmp( symname, sym->name.u.ptr, len ) == 0 ) {
                 break;
             }
         }
@@ -963,11 +963,11 @@ static unsigned StaticHashFn( const char *name, size_t len )
     unsigned    modval;
 
     modval = (unsigned)CurrMod->modtime;
-    value = ScatterTable[ modval & 0xff ];
+    value = ScatterTable[modval & 0xff];
     modval >>= 8;
-    value = value ^ ScatterTable[ modval & 0xff ];
+    value = value ^ ScatterTable[modval & 0xff];
     while( len-- > 0 ) {
-        value = (value << 1) ^ ScatterTable[ *(unsigned char *)name ];
+        value = (value << 1) ^ ScatterTable[*(unsigned char *)name ];
         ++name;
     }
     return( value % STATIC_TABSIZE );
@@ -980,7 +980,7 @@ static unsigned GlobalHashFn( const char *name, size_t len )
 
     value = 0;
     while( len-- > 0 ) {
-        value = (value << 1) ^ ScatterTable[ *(unsigned char *)name | 0x20 ];
+        value = (value << 1) ^ ScatterTable[*(unsigned char *)name | 0x20];
         ++name;
     }
     return( value % GLOBAL_TABSIZE );
@@ -1024,7 +1024,7 @@ static symbol *DoSymOp( sym_flags op, const char *symname, size_t length )
     }
     if( (op & ST_FIND) == 0 ) {
         sym = AddSym();
-        sym->name = AddSymbolStringTable( &PermStrings, symname, length );
+        sym->name.u.ptr = AddSymbolStringTable( &PermStrings, symname, length );
         sym->namelen_cmp = searchlen;
 
         if( op & ST_STATIC ) {
@@ -1045,7 +1045,7 @@ symbol *UnaliasSym( sym_flags op, symbol *sym )
 {
     symbol *orig_sym = sym;
     while( sym != NULL && IS_SYM_ALIAS(sym) ) {
-        sym = DoSymOp( op, sym->p.alias, sym->u.aliaslen );
+        sym = DoSymOp( op, sym->p.alias.u.ptr, sym->u.aliaslen );
         /* circular ref, may be a weak symbol ! */
         if( sym == orig_sym ) {
             break;
@@ -1067,7 +1067,7 @@ symbol *SymOp( sym_flags op, const char *symname, size_t length )
     if( sym != NULL ) {
         if( op & ST_DEFINE ) {
             if( IS_SYM_ALIAS( sym ) && (sym->info & SYM_FREE_ALIAS) ) {
-                _LnkFree( sym->p.alias );
+                _LnkFree( sym->p.alias.u.ptr );
                 sym->info &= ~SYM_FREE_ALIAS;
             }
             sym->info |= SYM_DEFINED;
@@ -1091,10 +1091,10 @@ void ReportMultiple( symbol *sym, const char *name, size_t len )
         lev = MILD_ERR;
         LinkState |= UNDEFED_SYM_ERROR;
     }
-    if( CmpRtn( sym->name, name, len + 1 ) == 0 ) {
+    if( CmpRtn( sym->name.u.ptr, name, len + 1 ) == 0 ) {
         LnkMsg( LOC+lev+MSG_MULT_DEF, "S", sym );
     } else {
-        LnkMsg( LOC+lev+MSG_MULT_DEF_BY, "12", sym->name, name );
+        LnkMsg( LOC+lev+MSG_MULT_DEF_BY, "12", sym->name.u.ptr, name );
     }
 }
 

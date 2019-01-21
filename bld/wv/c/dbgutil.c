@@ -56,32 +56,31 @@
 
 extern char             *Language;
 
-unsigned DefaultSize( default_kind dk )
+dig_type_size DefaultSize( default_kind dk )
 {
-    dip_type_info       info;
+    dig_type_info       ti;
     mad_type_info       mti;
 
-    if( DIPModDefault( CodeAddrMod, dk, &info ) != 0 ) {
-        info.kind = TK_NONE;
-        info.size = 0;
+    if( DIPModDefault( CodeAddrMod, dk, &ti ) != DS_OK ) {
+        ti.kind = TK_NONE;
+        ti.size = 0;
     }
     mti.b.kind = MTK_BASIC;
-    if( info.size == 0 ) {
-        GetMADTypeDefaultAt( GetCodeDot(),
-                ( dk == DK_INT ) ? MTK_INTEGER : MTK_ADDRESS, &mti );
-        info.size = BITS2BYTES( mti.b.bits );
+    if( ti.size == 0 ) {
+        GetMADTypeDefaultAt( GetCodeDot(), ( dk == DK_INT ) ? MTK_INTEGER : MTK_ADDRESS, &mti );
+        ti.size = BITS2BYTES( mti.b.bits );
         if( mti.b.kind == MTK_ADDRESS ) {
-            info.size -= BITS2BYTES( mti.a.seg.bits );
+            ti.size -= BITS2BYTES( mti.a.seg.bits );
         }
     }
-    if( info.kind == TK_POINTER && info.modifier == TM_FAR ) {
+    if( ti.kind == TK_POINTER && ti.modifier == TM_FAR ) {
         if( mti.b.kind == MTK_BASIC ) {
             /* haven't gotten the info yet */
             GetMADTypeDefaultAt( GetCodeDot(), MTK_ADDRESS, &mti );
         }
-        info.size -= BITS2BYTES( mti.a.seg.bits );
+        ti.size -= BITS2BYTES( mti.a.seg.bits );
     }
-    return( info.size );
+    return( ti.size );
 }
 
 static char *DoMadLongConv( char *buff, size_t buff_len, unsigned long value, mad_radix radix, int size )
@@ -186,13 +185,13 @@ size_t QualifiedSymName( sym_handle *sh, char *name, size_t max, bool uniq )
         }
         len = name_len + 1;
     }
-    if( uniq && DIPSymName( sh, NULL, SN_DEMANGLED, NULL, 0 ) != 0 ) {
+    if( uniq && DIPSymName( sh, NULL, SNT_DEMANGLED, NULL, 0 ) != 0 ) {
         if( name != NULL ) {
             *name++ = '`';
             max--;
         }
         len++;
-        name_len = DIPSymName( sh, NULL, SN_OBJECT, name, max );
+        name_len = DIPSymName( sh, NULL, SNT_OBJECT, name, max );
         len += name_len;
         if( name != NULL ) {
             name += name_len;
@@ -202,9 +201,9 @@ size_t QualifiedSymName( sym_handle *sh, char *name, size_t max, bool uniq )
         }
         len++;
     } else {
-        rc = DIPSymName( sh, NULL, SN_SCOPED, name, max );
+        rc = DIPSymName( sh, NULL, SNT_SCOPED, name, max );
         if( rc == 0 ) {
-            rc = DIPSymName( sh, NULL, SN_SOURCE, name, max );
+            rc = DIPSymName( sh, NULL, SNT_SOURCE, name, max );
         }
         len += rc;
     }

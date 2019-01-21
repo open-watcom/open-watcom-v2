@@ -78,9 +78,9 @@ static struct {
     tc_fn_control       fn_control;
     SYMBOL              translate_fn;
     TYPE                extra_member_class;
-    unsigned            keep_going : 1;
-    unsigned            extra_members : 1;
-    unsigned            depth_diagnosed : 1;
+    unsigned            keep_going          : 1;
+    unsigned            extra_members       : 1;
+    unsigned            depth_diagnosed     : 1;
 } templateData;
 
 static CNV_DIAG diagTempParm =  // DIAGNOSIS FOR TEMPLATE ARGUMENT CONVERSION
@@ -170,7 +170,7 @@ static void popInstContext( void )
 bool IsTemplateInstantiationActive( void )
 /****************************************/
 {
-    return templateData.curr_depth > 0;
+    return( templateData.curr_depth > 0 );
 }
 
 static TYPE extractTemplateClass( TEMPLATE_CONTEXT *ctx )
@@ -288,7 +288,7 @@ static TEMPLATE_INFO *classInstTemplateInfo( TYPE cls )
 
     DbgAssert( ScopeType( scope, SCOPE_TEMPLATE_PARM ) );
 
-    return scope->owner.tinfo;
+    return( scope->owner.tinfo );
 }
 
 static TEMPLATE_INFO *classUnboundTemplateInfo( TYPE cls )
@@ -305,7 +305,7 @@ static TEMPLATE_INFO *classUnboundTemplateInfo( TYPE cls )
     scope = scope->enclosing;
     DbgAssert( ScopeType( scope, SCOPE_TEMPLATE_PARM ) );
 
-    return scope->owner.tinfo;
+    return( scope->owner.tinfo );
 }
 
 static TYPE setArgIndex( SYMBOL sym, unsigned index )
@@ -318,7 +318,7 @@ static TYPE setArgIndex( SYMBOL sym, unsigned index )
     type->u.g.index = index;
     type = CheckDupType( type );
     sym->sym_type = type;
-    return type;
+    return( type );
 }
 
 void TemplateDeclInit( TEMPLATE_DATA *data )
@@ -620,29 +620,29 @@ static NAME *getUniqueArgNames( DECL_INFO *args, TEMPLATE_SPECIALIZATION *tspec 
 static bool templateArgSame( PTREE left, PTREE right )
 {
     if( ( left->op == PT_TYPE ) && ( right->op == PT_TYPE ) ) {
-        return TypesIdentical( left->type, right->type );
+        return( TypesIdentical( left->type, right->type ) );
     } else if( ( left->op == PT_INT_CONSTANT )
             && ( right->op == PT_INT_CONSTANT ) ) {
         // integer constant
-        return ! U64Cmp( &left->u.int64_constant, &right->u.int64_constant);
+        return( ! U64Cmp( &left->u.int64_constant, &right->u.int64_constant) );
     } else if( ( left->op == PT_SYMBOL ) && ( right->op == PT_SYMBOL ) ) {
         // unbound constant
         return TypesIdentical( left->u.symcg.symbol->sym_type,
                                right->u.symcg.symbol->sym_type );
     } else if( ( left->op == PT_TYPE ) && ( right->op == PT_SYMBOL ) ) {
         // unbound constant
-        return TypesIdentical( left->type, right->u.symcg.symbol->sym_type );
+        return( TypesIdentical( left->type, right->u.symcg.symbol->sym_type ) );
     } else if( ( left->op == PT_SYMBOL ) && ( right->op == PT_TYPE ) ) {
         // unbound constant
-        return TypesIdentical( left->u.symcg.symbol->sym_type, right->type );
+        return( TypesIdentical( left->u.symcg.symbol->sym_type, right->type ) );
     } else if( ( left->op == PT_SYMBOL )
             && ( right->op == PT_INT_CONSTANT ) ) {
         // left: unbound constant, right: bound constant
-        return false;
+        return( false );
     } else if( ( left->op == PT_INT_CONSTANT )
             && ( right->op == PT_SYMBOL ) ) {
         // left: unbound constant, right: bound constant
-        return false;
+        return( false );
     }
 
     // TODO: add missing cases
@@ -650,7 +650,7 @@ static bool templateArgSame( PTREE left, PTREE right )
     DbgStmt( DumpPTree( right ) );
     CFatal( "not yet implemented: templateArgSame" );
 
-    return false;
+    return( false );
 }
 
 static TEMPLATE_SPECIALIZATION *findMatchingTemplateSpecialization(
@@ -737,14 +737,10 @@ static TEMPLATE_SPECIALIZATION *findMatchingTemplateSpecialization(
     }
 
     if( currentTemplate->args != NULL ) {
-        curr = NULL;
         stop = ScopeOrderedStart( currentTemplate->decl_scope );
-        for( ;; ) {
-            curr = ScopeOrderedNext( stop, curr );
-            if( curr == NULL ) break;
-
+        for( curr = NULL; (curr = ScopeOrderedNext( stop, curr )) != NULL; ) {
             if( ( curr->sym_type->id == TYP_TYPEDEF )
-             && ( curr->sym_type->of->id == TYP_GENERIC ) ) {
+              && ( curr->sym_type->of->id == TYP_GENERIC ) ) {
                 /* TODO: check for unused symbol */
             } else {
                 /* TODO: check for unused symbol */
@@ -761,11 +757,11 @@ static TEMPLATE_SPECIALIZATION *findMatchingTemplateSpecialization(
             /* TODO: diagnose error */
             CFatal( "not yet implemented: findMatchingTemplateSpecialization, error message" );
         }
-        return NULL;
+        return( NULL );
     }
 
     if( is_primary ) {
-        return tprimary;
+        return( tprimary );
     }
 
 
@@ -797,109 +793,112 @@ static TEMPLATE_SPECIALIZATION *findMatchingTemplateSpecialization(
         }
     } RingIterEnd( curr_spec )
 
-    return tspec;
+    return( tspec );
 }
 
 static void updateTemplatePartialOrdering( TEMPLATE_INFO *tinfo,
                                            TEMPLATE_SPECIALIZATION *tspec )
 {
     TEMPLATE_SPECIALIZATION *curr_spec;
-    unsigned i;
-    unsigned nr_specs;
+    unsigned        i;
+    unsigned        specsnum;
+    size_t          specs_offs;
+    unsigned char   specs_mask;
 
-    nr_specs = tinfo->nr_specs;
+    specsnum = tinfo->nr_specs - 2;
     if( tspec->spec_args != NULL ) {
-        tspec->ordering = CMemAlloc( 16 * ( ( nr_specs - 2 ) / 128 + 1 ) );
+        tspec->ordering = CMemAlloc( 16 * ( specsnum / 128 + 1 ) );
     }
+    specs_offs = BITARR_OFFS( specsnum );
+    specs_mask = BITARR_MASK( specsnum );
 
     i = 0;
     RingIterBeg( tinfo->specializations, curr_spec ) {
         if( curr_spec->spec_args == NULL ) {
-        } else if( curr_spec == tspec ) {
-            tspec->ordering[ i / 8 ] &= ~ ( 1 << ( i & 7 ) );
-            i++;
         } else {
-            SCOPE parm_scope;
-            unsigned char mask;
-            bool bound;
+            size_t          i_offs = BITARR_OFFS( i );
+            unsigned char   i_mask = BITARR_MASK( i );
 
-            if( ( nr_specs - 2 ) & 128 ) {
-                /* grow the bitmap as needed */
-                unsigned char *old_mem;
-
-                old_mem = curr_spec->ordering;
-                curr_spec->ordering =
-                    CMemAlloc( 16 * ( ( nr_specs - 2 ) / 128 + 1 ) );
-                memcpy( curr_spec->ordering, old_mem,
-                        16 * ( ( nr_specs - 2 ) / 128 ) );
-                CMemFree( old_mem );
-            }
-
-            parm_scope = ScopeCreate( SCOPE_TEMPLATE_SPEC_PARM );
-            ScopeSetEnclosing( parm_scope, tspec->decl_scope );
-            BindExplicitTemplateArguments( parm_scope, NULL );
-
-            bound = BindGenericTypes( parm_scope, tspec->spec_args,
-                                      curr_spec->spec_args, false, 0 );
-#ifndef NDEBUG
-            if( PragDbgToggle.templ_spec && bound ) {
-                VBUF vbuf1, vbuf2;
-
-                FormatPTreeList( curr_spec->spec_args, &vbuf1 );
-                FormatPTreeList( tspec->spec_args, &vbuf2 );
-                printf( "%s<%s> is at least as specialised as %s<%s>\n",
-                        NameStr( tinfo->sym->name->name ), VbufString( &vbuf1 ),
-                        NameStr( tinfo->sym->name->name ), VbufString( &vbuf2 ) );
-                VbufFree( &vbuf1 );
-                VbufFree( &vbuf2 );
-            }
-#endif
-
-            /* curr_spec is at least as specialized as tspec if (
-             * bindings != NULL)
-             */
-            mask = 1 << ( ( nr_specs - 2 ) & 7 );
-            curr_spec->ordering[ ( nr_specs - 2 ) / 8 ] &= ~ mask;
-            curr_spec->ordering[ ( nr_specs - 2 ) / 8 ] |=
-                bound ? mask : 0;
-
-            ScopeBurn( parm_scope );
-
-            parm_scope = ScopeCreate( SCOPE_TEMPLATE_SPEC_PARM );
-            ScopeSetEnclosing( parm_scope, curr_spec->decl_scope );
-            BindExplicitTemplateArguments( parm_scope, NULL );
-
-            bound = BindGenericTypes( parm_scope, curr_spec->spec_args,
-                                      tspec->spec_args, false, 0 );
-#ifndef NDEBUG
-            if( PragDbgToggle.templ_spec && bound ) {
-                VBUF vbuf1, vbuf2;
-
-                FormatPTreeList( tspec->spec_args, &vbuf1 );
-                FormatPTreeList( curr_spec->spec_args, &vbuf2 );
-                printf( "%s<%s> is at least as specialised as %s<%s>\n",
-                        NameStr( tinfo->sym->name->name ), VbufString( &vbuf1 ),
-                        NameStr( tinfo->sym->name->name ), VbufString( &vbuf2 ) );
-                VbufFree( &vbuf1 );
-                VbufFree( &vbuf2 );
-            }
-#endif
-
-            /* tspec is at least as specialized as curr_spec if (
-             * bindings != NULL)
-             */
-            mask = 1 << ( i & 7 );
-            tspec->ordering[ i / 8 ] &= ~ mask;
-            tspec->ordering[ i / 8 ] |= bound ? mask : 0;
-
-            ScopeBurn( parm_scope );
             i++;
+            if( curr_spec == tspec ) {
+                tspec->ordering[i_offs] &= ~i_mask;
+            } else {
+                SCOPE   parm_scope;
+                bool    bound;
+
+                if( specsnum & 128 ) {
+                    /* grow the bitmap as needed */
+                    unsigned char   *old_mem;
+
+                    old_mem = curr_spec->ordering;
+                    curr_spec->ordering = CMemAlloc( 16 * ( specsnum / 128 + 1 ) );
+                    memcpy( curr_spec->ordering, old_mem, 16 * ( specsnum / 128 ) );
+                    CMemFree( old_mem );
+                }
+
+                parm_scope = ScopeCreate( SCOPE_TEMPLATE_SPEC_PARM );
+                ScopeSetEnclosing( parm_scope, tspec->decl_scope );
+                BindExplicitTemplateArguments( parm_scope, NULL );
+
+                bound = BindGenericTypes( parm_scope, tspec->spec_args,
+                                          curr_spec->spec_args, false, 0 );
+#ifndef NDEBUG
+                if( PragDbgToggle.templ_spec && bound ) {
+                    VBUF    vbuf1;
+                    VBUF    vbuf2;
+
+                    FormatPTreeList( curr_spec->spec_args, &vbuf1 );
+                    FormatPTreeList( tspec->spec_args, &vbuf2 );
+                    printf( "%s<%s> is at least as specialised as %s<%s>\n",
+                            NameStr( tinfo->sym->name->name ), VbufString( &vbuf1 ),
+                            NameStr( tinfo->sym->name->name ), VbufString( &vbuf2 ) );
+                    VbufFree( &vbuf1 );
+                    VbufFree( &vbuf2 );
+                }
+#endif
+
+                /* curr_spec is at least as specialized as tspec if (
+                 * bindings != NULL)
+                 */
+                curr_spec->ordering[specs_offs] &= ~specs_mask;
+                curr_spec->ordering[specs_offs] |= ( bound ) ? specs_mask : 0;
+
+                ScopeBurn( parm_scope );
+
+                parm_scope = ScopeCreate( SCOPE_TEMPLATE_SPEC_PARM );
+                ScopeSetEnclosing( parm_scope, curr_spec->decl_scope );
+                BindExplicitTemplateArguments( parm_scope, NULL );
+
+                bound = BindGenericTypes( parm_scope, curr_spec->spec_args,
+                                          tspec->spec_args, false, 0 );
+#ifndef NDEBUG
+                if( PragDbgToggle.templ_spec && bound ) {
+                    VBUF    vbuf1;
+                    VBUF    vbuf2;
+
+                    FormatPTreeList( tspec->spec_args, &vbuf1 );
+                    FormatPTreeList( curr_spec->spec_args, &vbuf2 );
+                    printf( "%s<%s> is at least as specialised as %s<%s>\n",
+                            NameStr( tinfo->sym->name->name ), VbufString( &vbuf1 ),
+                            NameStr( tinfo->sym->name->name ), VbufString( &vbuf2 ) );
+                    VbufFree( &vbuf1 );
+                    VbufFree( &vbuf2 );
+                }
+#endif
+
+                /* tspec is at least as specialized as curr_spec if (
+                 * bindings != NULL)
+                 */
+                tspec->ordering[i_offs] &= ~i_mask;
+                tspec->ordering[i_offs] |= ( bound ) ? i_mask : 0;
+
+                ScopeBurn( parm_scope );
+            }
         }
     } RingIterEnd( curr_spec )
 }
 
-static TEMPLATE_SPECIALIZATION *mergeClassTemplates( TEMPLATE_DATA *data,
-                                                     SYMBOL old_sym )
+static TEMPLATE_SPECIALIZATION *mergeClassTemplates( TEMPLATE_DATA *data, SYMBOL old_sym )
 {
     DECL_INFO *args;
     TEMPLATE_INFO *tinfo;
@@ -934,9 +933,8 @@ static TEMPLATE_SPECIALIZATION *mergeClassTemplates( TEMPLATE_DATA *data,
 
         /* TODO: factor out, see fakeUpTemplateParms */
         parms = NULL;
-        curr = NULL;
         stop = ScopeOrderedStart( parm_scope );
-        while( (curr = ScopeOrderedNext( stop, curr )) != NULL ) {
+        for( curr = NULL; (curr = ScopeOrderedNext( stop, curr )) != NULL; ) {
             parm = NULL;
             switch( curr->id ) {
             case SC_TYPEDEF:
@@ -991,11 +989,11 @@ static TEMPLATE_SPECIALIZATION *mergeClassTemplates( TEMPLATE_DATA *data,
         if( ( data->num_args != tspec->num_args )
          || ! templateArgListsSame( args, tinfo ) ) {
             CErr2p( ERR_CANT_OVERLOAD_CLASS_TEMPLATES, tinfo );
-            return NULL;
+            return( NULL );
         }
     }
     if( tspec->corrupted ) {
-        return tspec;
+        return( tspec );
     }
     defn = data->defn;
     defarg_list = primary_specialization ? tinfo->defarg_list : NULL;
@@ -1026,7 +1024,7 @@ static TEMPLATE_SPECIALIZATION *mergeClassTemplates( TEMPLATE_DATA *data,
         data->defn = NULL;
     }
 
-    return tspec;
+    return( tspec );
 }
 
 static void addMemberEntry( TEMPLATE_SPECIALIZATION *tspec, SCOPE scope,
@@ -1045,7 +1043,7 @@ static void addClassTemplateMember( TEMPLATE_DATA *data, SYMBOL sym,
 {
     NAME *arg_names;
 
-    if( ( NULL == data) || ( NULL == sym) ){
+    if( ( NULL == data) || ( NULL == sym) ) {
         return;
     }
 
@@ -1107,11 +1105,8 @@ static void copyWithNewNames( SCOPE old_scope, NAME *names )
     SYMBOL stop;
     SYMBOL sym;
 
-    curr = NULL;
     stop = ScopeOrderedStart( old_scope );
-    for(;;) {
-        curr = ScopeOrderedNext( stop, curr );
-        if( curr == NULL ) break;
+    for( curr = NULL; (curr = ScopeOrderedNext( stop, curr )) != NULL; ) {
         sym = dupTemplateParm( curr );
         sym = ScopeInsert( GetCurrScope(), sym, *names );
         ++names;
@@ -1176,7 +1171,7 @@ static void defineAllClassDecls( TEMPLATE_SPECIALIZATION *tspec )
     ScopeAdjustUsing( NULL, save_scope );
 }
 
-extern int WalkTemplateInst( SYMBOL sym, AInstSCOPE fscope  )
+extern int WalkTemplateInst( SYMBOL sym, AInstSCOPE fscope )
 {
     TEMPLATE_INFO *tinfo;
     TEMPLATE_SPECIALIZATION *tspec;
@@ -1185,7 +1180,7 @@ extern int WalkTemplateInst( SYMBOL sym, AInstSCOPE fscope  )
     tinfo = sym->u.tinfo;
     RingIterBeg( tinfo->specializations, tspec ) {
         RingIterBeg( tspec->instantiations, curr ) {
-            if( !fscope( curr->scope ) ){
+            if( !fscope( curr->scope ) ) {
                 return( false );
             }
         } RingIterEnd( curr )
@@ -1347,12 +1342,11 @@ void TemplateFunctionAttachDefn( DECL_INFO *dinfo )
             parm_stop = ScopeOrderedStart( fn_inst->parm_scope );
             decl_curr = NULL;
             parm_curr = NULL;
-
-            for(;;) {
+            for( ;; ) {
                 decl_curr = ScopeOrderedNext( decl_stop, decl_curr );
                 parm_curr = ScopeOrderedNext( parm_stop, parm_curr );
-                if( ( parm_curr == NULL ) || ( decl_curr == NULL ) ) break;
-
+                if( ( parm_curr == NULL ) || ( decl_curr == NULL ) )
+                    break;
                 // reuse the symbol with a new name in a new scope
                 parm_curr->name->name_type = NULL;
                 parm_curr->name = NULL;
@@ -1492,7 +1486,7 @@ static DECL_INFO *attemptGen( arg_list *args, SYMBOL fn_templ,
 
                     fn_type1 = FunctionDeclarationType( dinfo->sym->sym_type );
                     if( fn_type1->u.f.args->num_args == 1 ) {
-                        TYPE fn_arg = fn_type1->u.f.args->type_list[ 0 ];
+                        TYPE fn_arg = fn_type1->u.f.args->type_list[0];
 
                         if( ( fn_type1->of->id == TYP_POINTER ) &&
                             ( fn_arg == fn_type1->of->of ) ) {
@@ -1591,7 +1585,7 @@ static SYMBOL buildTemplateFn( TYPE bound_type, SYMBOL sym, DECL_INFO *dinfo,
     fn_inst->inst_scope = inst_scope;
     fn_inst->processed = false;
 
-    return new_sym;
+    return( new_sym );
 }
 
 SYMBOL TemplateFunctionGenerate( SYMBOL sym, arg_list *args,
@@ -1609,7 +1603,7 @@ SYMBOL TemplateFunctionGenerate( SYMBOL sym, arg_list *args,
     control = BGT_TRIVIAL;
     dinfo = attemptGen( args, sym, templ_args, locn, &parm_scope, &control );
     if( dinfo == NULL ) {
-        return NULL;
+        return( NULL );
     }
 
     fn_type = dinfo->sym->sym_type;
@@ -1617,7 +1611,7 @@ SYMBOL TemplateFunctionGenerate( SYMBOL sym, arg_list *args,
 
     if( fn_type == NULL ) {
         FreeDeclInfo( dinfo );
-        return NULL;
+        return( NULL );
     }
 
     generated_fn = NULL;
@@ -1628,32 +1622,31 @@ SYMBOL TemplateFunctionGenerate( SYMBOL sym, arg_list *args,
 
         inst_sym = SymDefaultBase( fn_inst->bound_sym );
 
-        if( TypeCompareExclude( fn_type, inst_sym->sym_type,
-                                TC1_NOT_ENUM_CHAR ) ) {
-            SYMBOL curr1 = NULL, curr2 = NULL;
-            SYMBOL stop1, stop2;
+        if( TypeCompareExclude( fn_type, inst_sym->sym_type, TC1_NOT_ENUM_CHAR ) ) {
+            SYMBOL curr1;
+            SYMBOL curr2;
+            SYMBOL stop1;
+            SYMBOL stop2;
 
             // also need to check parameter scopes
             stop1 = ScopeOrderedStart( parm_scope );
             stop2 = ScopeOrderedStart( fn_inst->parm_scope );
-
-            for(;;) {
+            curr1 = NULL;
+            curr2 = NULL;
+            for( ;; ) {
                 curr1 = ScopeOrderedNext( stop1, curr1 );
                 curr2 = ScopeOrderedNext( stop2, curr2 );
-
                 if( ( curr1 == NULL ) || ( curr2 == NULL ) ) {
                     if( ( curr1 == NULL ) && ( curr2 == NULL ) ) {
                         // alread instantiated
                         generated_fn = fn_inst->bound_sym;
                     }
-
                     break;
                 }
 
                 if( ( curr1->id == SC_TYPEDEF )
                  && ( curr2->id == SC_TYPEDEF ) ) {
-                    if( TypeCompareExclude( curr1->sym_type, curr2->sym_type,
-                                            TC1_NULL ) ) {
+                    if( TypeCompareExclude( curr1->sym_type, curr2->sym_type, TC1_NULL ) ) {
                         continue;
                     }
                 } else if( ( curr1->id == SC_STATIC )
@@ -1662,12 +1655,11 @@ SYMBOL TemplateFunctionGenerate( SYMBOL sym, arg_list *args,
                         continue;
                     }
                 } else if( ( curr1->id == SC_ADDRESS_ALIAS )
-                        && (curr2->id == SC_ADDRESS_ALIAS ) ) {
+                        && ( curr2->id == SC_ADDRESS_ALIAS ) ) {
                     if( curr1->u.alias == curr2->u.alias ) {
                         continue;
                     }
                 }
-
                 break;
             }
         }
@@ -1704,13 +1696,13 @@ SYMBOL TemplateFunctionGenerate( SYMBOL sym, arg_list *args,
             num_args = alist->num_args;
 
             if( num_args == args->num_args ) {
-                return generated_fn;
+                return( generated_fn );
             }
 
             if( num_args != 0 ) {
                 if( num_args <= args->num_args + 1 ) {
                     if( alist->type_list[num_args - 1]->id == TYP_DOT_DOT_DOT ) {
-                        return generated_fn;
+                        return( generated_fn );
                     }
                 }
             }
@@ -1722,7 +1714,7 @@ SYMBOL TemplateFunctionGenerate( SYMBOL sym, arg_list *args,
         generated_fn = generated_fn->thread;
     }
 
-    return NULL;
+    return( NULL );
 }
 
 static void commonTemplateClass( TEMPLATE_DATA *data, PTREE id, SCOPE scope, NAME name )
@@ -1938,7 +1930,8 @@ static PTREE processClassTemplateParms( TEMPLATE_INFO *tinfo, PTREE parms, bool 
         CErr2p( ERR_TOO_MANY_TEMPLATE_PARAMETERS, tinfo );
         something_went_wrong = true;
     } else if( ! something_went_wrong ) {
-        if( ! inside_decl_scope ) {
+        parm_scope = NULL;
+        if( !inside_decl_scope ) {
             parm_scope = ScopeCreate( SCOPE_TEMPLATE_PARM );
             ScopeSetEnclosing( parm_scope, SymScope( tinfo->sym ) );
         }
@@ -1946,7 +1939,6 @@ static PTREE processClassTemplateParms( TEMPLATE_INFO *tinfo, PTREE parms, bool 
 
         list = parms;
         i = 0;
-
         for( i = 0; ; list = list->u.subtree[0] ) {
             arg_type = TypedefRemove( tprimary->type_list[i] );
             if( arg_type->id == TYP_GENERIC ) {
@@ -2104,7 +2096,7 @@ static bool sameConstantInt( SYMBOL s1, SYMBOL s2 )
 
     SymConstantValue( s1, &con1 );
     SymConstantValue( s2, &con2 );
-    return 0 == U64Cmp( &con1.u.value, &con2.u.value );
+    return( 0 == U64Cmp( &con1.u.value, &con2.u.value ) );
 }
 
 bool TemplateParmEqual( SYMBOL parm1, SYMBOL parm2 )
@@ -2114,7 +2106,7 @@ bool TemplateParmEqual( SYMBOL parm1, SYMBOL parm2 )
     SYMBOL sym2;
 
     if( SymIsConstantInt( parm1 ) && SymIsConstantInt( parm2 ) ) {
-        return sameConstantInt( parm1, parm2 );
+        return( sameConstantInt( parm1, parm2 ) );
     }
     if( SymIsTypedef( parm1 ) && SymIsTypedef( parm2 ) ) {
         return( TypesIdentical( parm1->sym_type, parm2->sym_type ) );
@@ -2167,21 +2159,18 @@ static bool sameParms( SCOPE parm_scope, PTREE parms )
     PTREE list;
     PTREE parm;
 
-    list = parms;
-    curr = NULL;
     stop = ScopeOrderedStart( parm_scope );
-    for(;;) {
-        if( list == NULL ) {
-            DbgAssert( ScopeOrderedNext( stop, curr ) == NULL );
-            return( true );
-        }
-        curr = ScopeOrderedNext( stop, curr );
-        if( curr == NULL ) break;
+    curr = NULL;
+    for( list = parms; list != NULL; list = list->u.subtree[0] ) {
+        if( (curr = ScopeOrderedNext( stop, curr )) == NULL )
+            return( false );
         parm = list->u.subtree[1];
-        if( parmsDifferent( curr, parm ) ) break;
-        list = list->u.subtree[0];
+        if( parmsDifferent( curr, parm ) ) {
+            return( false );
+        }
     }
-    return( false );
+    DbgAssert( ScopeOrderedNext( stop, curr ) == NULL );
+    return( true );
 }
 
 static SCOPE findInstScope( TEMPLATE_SPECIALIZATION *tspec, PTREE parms,
@@ -2241,7 +2230,7 @@ static SYMBOL templateArgTypedef( TYPE type )
     SYMBOL tsym;
 
     tsym = templateArgSym( SC_TYPEDEF, type );
-    return tsym;
+    return( tsym );
 }
 
 static void injectTemplateParm( SCOPE scope, PTREE parm, NAME name )
@@ -2337,8 +2326,7 @@ static TYPE instantiateClass( TEMPLATE_INFO *tinfo, PTREE parms,
         SetCurrScope( spec_parm_scope );
     }
     inst_scope = ScopeBegin( SCOPE_TEMPLATE_INST );
-    curr_instantiation = newClassInstantiation( tspec, unbound_type,
-                                                inst_scope, false );
+    curr_instantiation = newClassInstantiation( tspec, unbound_type, inst_scope, false );
     if( locn != NULL ) {
         curr_instantiation->locn = *locn;
         curr_instantiation->locn_set = true;
@@ -2426,11 +2414,10 @@ findTemplateClassSpecialization( TEMPLATE_INFO *tinfo, PTREE parms, SCOPE *parm_
 
             BindExplicitTemplateArguments( parm_scope1, NULL );
 
-            bound = BindGenericTypes( parm_scope1, spec_list,
-                                      parms, false, 0 );
+            bound = BindGenericTypes( parm_scope1, spec_list, parms, false, 0 );
             if( bound ) {
 #ifndef NDEBUG
-                if( PragDbgToggle.templ_spec && ( tinfo->nr_specs > 1 )) {
+                if( PragDbgToggle.templ_spec && ( tinfo->nr_specs > 1 ) ) {
                     VBUF vbuf;
 
                     FormatPTreeList( spec_list, &vbuf );
@@ -2443,21 +2430,21 @@ findTemplateClassSpecialization( TEMPLATE_INFO *tinfo, PTREE parms, SCOPE *parm_
                 /* we have found a matching specialization, use partial
                  * ordering rules to determine which one to use. */
                 if( candidate_list != NULL ) {
+                    size_t          i_offs = BITARR_OFFS( i );
+                    unsigned char   i_mask = BITARR_MASK( i );
+
                     RingIterBegSafe( candidate_list, candidate_iter ) {
                         bool curr_at_least_as_specialized;
                         bool candidate_at_least_as_specialized;
 
                         curr_at_least_as_specialized =
-                            curr_spec->ordering[ candidate_iter->idx / 8 ] & ( 1 << ( candidate_iter->idx & 7 ) );
-                        candidate_at_least_as_specialized =
-                            candidate_iter->tspec->ordering[ i / 8 ] & ( 1 << ( i & 7 ) );
+                            curr_spec->ordering[BITARR_OFFS( candidate_iter->idx )] & BITARR_MASK( candidate_iter->idx );
+                        candidate_at_least_as_specialized = candidate_iter->tspec->ordering[i_offs] & i_mask;
 
-                        if( curr_at_least_as_specialized
-                         && ! candidate_at_least_as_specialized ) {
+                        if( curr_at_least_as_specialized && !candidate_at_least_as_specialized ) {
                             ScopeBurn( candidate_iter->parm_scope );
                             RingPrune( &candidate_list, candidate_iter );
-                        } else if( candidate_at_least_as_specialized
-                                && ! curr_at_least_as_specialized ) {
+                        } else if( candidate_at_least_as_specialized && !curr_at_least_as_specialized ) {
                             ScopeBurn( parm_scope1 );
                             parm_scope1 = NULL;
                             break;
@@ -2466,9 +2453,7 @@ findTemplateClassSpecialization( TEMPLATE_INFO *tinfo, PTREE parms, SCOPE *parm_
                 }
 
                 if( parm_scope1 != NULL ) {
-                    candidate_iter =
-                        RingAlloc( &candidate_list,
-                                   sizeof( struct candidate_ring ) );
+                    candidate_iter = RingAlloc( &candidate_list, sizeof( struct candidate_ring ) );
                     candidate_iter->tspec = curr_spec;
                     candidate_iter->parm_scope = parm_scope1;
                     candidate_iter->idx = i;
@@ -2529,7 +2514,7 @@ findTemplateClassSpecialization( TEMPLATE_INFO *tinfo, PTREE parms, SCOPE *parm_
         tspec = tprimary;
     }
 
-    return tspec;
+    return( tspec );
 }
 
 TYPE TemplateClassReference( PTREE tid, PTREE parms )
@@ -2545,7 +2530,7 @@ TYPE TemplateClassReference( PTREE tid, PTREE parms )
 
     if( ( tid->sym_name == NULL ) && ( tid->flags & PTF_TYPENAME ) ) {
         NodeFreeDupedExpr( parms );
-        return typ;
+        return( typ );
     }
 
     DbgAssert( tid->sym_name != NULL );
@@ -2663,11 +2648,8 @@ static PTREE fakeUpTemplateParms( SCOPE parm_scope, arg_list *type_args )
 
     curr_type_arg = type_args ? type_args->type_list : NULL;
     parms = NULL;
-    curr = NULL;
     stop = ScopeOrderedStart( parm_scope );
-    for(;;) {
-        curr = ScopeOrderedNext( stop, curr );
-        if( curr == NULL ) break;
+    for( curr = NULL; (curr = ScopeOrderedNext( stop, curr )) != NULL; ) {
         if( curr->id == SC_TYPEDEF ) {
             if( curr_type_arg ) {
                 parm = PTreeType( BindTemplateClass( *curr_type_arg, NULL, false ) );
@@ -2763,7 +2745,7 @@ TYPE BoundTemplateClass( TYPE typ )
         }
     }
 
-    return ( ( tptr == NULL ) && ( bound != NULL ) ) ? bound : typ;
+    return( ( ( tptr == NULL ) && ( bound != NULL ) ) ? bound : typ );
 }
 
 TYPE BindTemplateClass( TYPE typ, TOKEN_LOCN *locn, bool deref_ptrs )
@@ -2802,7 +2784,7 @@ TYPE BindTemplateClass( TYPE typ, TOKEN_LOCN *locn, bool deref_ptrs )
         }
     }
 
-    return ( ( tptr == NULL ) && ( bound != NULL ) ) ? bound : typ;
+    return( ( ( tptr == NULL ) && ( bound != NULL ) ) ? bound : typ );
 }
 
 void TemplateHandleClassMember( DECL_INFO *dinfo )
@@ -2857,11 +2839,8 @@ static bool sameParmArgNames( SCOPE parm_scope, NAME *arg_names )
     SYMBOL curr;
     SYMBOL stop;
 
-    curr = NULL;
     stop = ScopeOrderedStart( parm_scope );
-    for(;;) {
-        curr = ScopeOrderedNext( stop, curr );
-        if( curr == NULL ) break;
+    for( curr = NULL; (curr = ScopeOrderedNext( stop, curr )) != NULL; ) {
         if( curr->name->name != *arg_names ) {
             return( false );
         }
@@ -3132,7 +3111,8 @@ void TemplateFreeDefns( void )
             RingIterBeg( tspec->instantiations, curr_instance ) {
                 for(;;) {
                     curr_member = RingPop( &(curr_instance->members) );
-                    if( curr_member == NULL ) break;
+                    if( curr_member == NULL )
+                        break;
                     FreeDeclInfo( curr_member->dinfo );
                 }
             } RingIterEnd( curr_instance)
@@ -3276,7 +3256,7 @@ bool TemplateProcessInstantiations( void )
 
     templateData.extra_members = false;
 
-    return templateData.keep_going;
+    return( templateData.keep_going );
 }
 
 bool TemplateMemberCanBeIgnored( void )
@@ -3421,15 +3401,15 @@ bool TemplateUnboundSame( TYPE ub1, TYPE ub2 )
     if( ub1_parm_scope == NULL || ub2_parm_scope == NULL ) {
         return( false );
     }
-    ub1_curr = NULL;
-    ub2_curr = NULL;
     ub1_stop = ScopeOrderedStart( ub1_parm_scope );
     ub2_stop = ScopeOrderedStart( ub2_parm_scope );
-    for(;;) {
+    ub1_curr = NULL;
+    ub2_curr = NULL;
+    for( ;; ) {
         ub1_curr = ScopeOrderedNext( ub1_stop, ub1_curr );
         ub2_curr = ScopeOrderedNext( ub2_stop, ub2_curr );
-        if( ub1_curr == NULL ) break;
-        if( ub2_curr == NULL ) break;
+        if( ub1_curr == NULL || ub2_curr == NULL )
+            break;
         DbgAssert( ub1_curr->id == ub2_curr->id );
         if( ub1_curr->id != SC_TYPEDEF ) {
             if( ! TemplateParmEqual( ub1_curr, ub2_curr ) ) {
@@ -3537,7 +3517,7 @@ static void saveTemplateSpecialization( TEMPLATE_SPECIALIZATION *s, TEMPLATE_SPE
     for( i = 0; i < s->num_args; ++i ) {
         TypePCHWrite( s->type_list[i] );
     }
-    RingIterBeg( s->member_defns, member ){
+    RingIterBeg( s->member_defns, member ) {
         ScopePCHWrite( member->scope );
         RewritePCHWrite( member->defn );
         if( member->arg_names != s->arg_names ) {

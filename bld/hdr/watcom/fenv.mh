@@ -20,7 +20,7 @@
 :include pshpackl.sp
 
 /* type for holding FPU environment */
-:segment DOS | QNX
+:segment DOS | QNX | RDOS
 #ifdef _M_I86
 typedef struct {
     unsigned short control_word;
@@ -47,7 +47,7 @@ typedef struct {
     unsigned short op_ptr_seg;
     unsigned short pad3;
 } fenv_t;
-:segment DOS | QNX
+:segment DOS | QNX | RDOS
 #endif
 :endsegment
 

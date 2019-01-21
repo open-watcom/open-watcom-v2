@@ -224,12 +224,12 @@ static void PrintRadix( int radixfmt, char base_letter, sign_class sign_type )
         if( radixfmt != 10 && radixfmt != -10 ) {
             sign_type = NUM_UNSIGNED;
         } else {
-            switch( ExprSP->info.kind ) {
+            switch( ExprSP->ti.kind ) {
             case TK_BOOL:
             case TK_CHAR:
             case TK_INTEGER:
             case TK_ENUM:
-                if( (ExprSP->info.modifier & TM_MOD_MASK) == TM_UNSIGNED ) {
+                if( ExprSP->ti.modifier == TM_UNSIGNED ) {
                     sign_type = NUM_UNSIGNED;
                 } else {
                     sign_type = NUM_SIGNED;
@@ -242,23 +242,23 @@ static void PrintRadix( int radixfmt, char base_letter, sign_class sign_type )
         }
     }
     ptr = buff;
-    switch( ExprSP->info.kind ) {
+    switch( ExprSP->ti.kind ) {
     case TK_BOOL:
     case TK_CHAR:
     case TK_ENUM:
     case TK_INTEGER:
         /* this is to get proper sign extension for 16-bit numbers */
         if( sign_type == NUM_SIGNED ) {
-            ExprSP->info.modifier = TM_SIGNED;
+            ExprSP->ti.modifier = TM_SIGNED;
         } else {
-            ExprSP->info.modifier = TM_UNSIGNED;
+            ExprSP->ti.modifier = TM_UNSIGNED;
         }
 #if 1
         {
             unsigned len = 1;
             /* If we are printing hex, expand to both nibbles */
-            if( ( ExprSP->info.modifier == TM_UNSIGNED ) && ( radixfmt == 16 || radixfmt == -16 ) && _IsOff( SW_DONT_EXPAND_HEX ) )
-                len = ExprSP->info.size * 2;
+            if( ( ExprSP->ti.modifier == TM_UNSIGNED ) && ( radixfmt == 16 || radixfmt == -16 ) && _IsOff( SW_DONT_EXPAND_HEX ) )
+                len = ExprSP->ti.size * 2;
             ConvertTo( ExprSP, TK_INTEGER, TM_UNSIGNED, sizeof( ExprSP->v.uint ) );
             ptr = FmtNum( ExprSP->v.uint, radixfmt, base_letter, sign_type, ptr, len );
         }
@@ -269,7 +269,7 @@ static void PrintRadix( int radixfmt, char base_letter, sign_class sign_type )
     case TK_ADDRESS:
     case TK_POINTER:
         AddrFix( &ExprSP->v.addr );
-        if( (ExprSP->info.modifier & TM_MOD_MASK) == TM_NEAR ) {
+        if( ExprSP->ti.modifier == TM_NEAR ) {
             mth = MADTypeDefault( MTK_ADDRESS, MAF_OFFSET, &DbgRegs->mr, &ExprSP->v.addr );
         } else {
             mth = MADTypeDefault( MTK_ADDRESS, MAF_FULL, &DbgRegs->mr, &ExprSP->v.addr );
@@ -373,8 +373,8 @@ static void PrintDouble( char format, xreal *val )
 
 static void PrintReal( char format )
 {
-    if( ExprSP->info.kind == TK_REAL ) {
-        if( ExprSP->info.size == sizeof( float ) ) {
+    if( ExprSP->ti.kind == TK_REAL ) {
+        if( ExprSP->ti.size == sizeof( float ) ) {
             _SetMaxPrec( PREC_FLOAT );
         } else {
             _SetMaxPrec( PREC_LONG_FLOAT );
@@ -393,8 +393,8 @@ static void PrintReal( char format )
 
 static void PrintComplex( char format )
 {
-    if( ExprSP->info.kind == TK_COMPLEX ) {
-        if( ExprSP->info.size == sizeof( float )*2 ) {
+    if( ExprSP->ti.kind == TK_COMPLEX ) {
+        if( ExprSP->ti.size == sizeof( float )*2 ) {
             _SetMaxPrec( PREC_FLOAT );
         } else {
             _SetMaxPrec( PREC_LONG_FLOAT );
@@ -418,14 +418,14 @@ static void PrintComplex( char format )
 void PrintChar( void )
 {
     PrtChar( '\'' );
-    switch( ExprSP->info.kind ) {
+    switch( ExprSP->ti.kind ) {
     case TK_BOOL:
     case TK_ENUM:
     case TK_INTEGER:
         PrtChar( (char) U32FetchTrunc( ExprSP->v.uint ) );
         break;
     case TK_CHAR:
-        switch( ExprSP->info.kind ) {
+        switch( ExprSP->ti.kind ) {
         case 4:
             /* 4 byte Unicode */
             PrtChar( (unsigned_32) U32FetchTrunc( ExprSP->v.uint ) );
@@ -505,7 +505,7 @@ static void PrintCharBlock( void )
 
     PrtChar( '\'' );
     ascii_start = ExprSP->v.string.loc.e[0].u.p;
-    len = ExprSP->info.size;
+    len = ExprSP->ti.size;
 
     /*
      *  If the memory required to display the string is larger than what we have to display, then
@@ -517,7 +517,7 @@ static void PrintCharBlock( void )
         overflow = 1;
     }
 
-    switch( ExprSP->info.modifier ) {
+    switch( ExprSP->ti.modifier ) {
     case TM_NONE:
     case TM_ASCII:
         PrtNeed( len );
@@ -692,9 +692,9 @@ OVL_EXTERN walk_result PrintDlgField( sym_walk_info swi, sym_handle *member_hdl,
         }
         d->first_time = false;
         DupStack();
-        len = DIPSymName( member_hdl, NULL, SN_SOURCE, NULL, 0 );
+        len = DIPSymName( member_hdl, NULL, SNT_SOURCE, NULL, 0 );
         _AllocA( name, len + 1 );
-        len = DIPSymName( member_hdl, NULL, SN_SOURCE, name, len + 1 );
+        len = DIPSymName( member_hdl, NULL, SNT_SOURCE, name, len + 1 );
         PrtStr( name, len );
         PrtChar( '=' );
         DoGivenField( member_hdl );
@@ -820,7 +820,7 @@ static unsigned ValueToName( char *buff, unsigned len )
     d.value = ExprSP->v.uint;
     DIPWalkSymList( SS_TYPE, ExprSP->th, ExactMatch, &d );
     if( d.found ) {
-        return( DIPSymName( sh, NULL, SN_SOURCE, buff, len ) );
+        return( DIPSymName( sh, NULL, SNT_SOURCE, buff, len ) );
     }
     p = buff;
     while( U64Test( &d.value ) != 0 ) {
@@ -836,7 +836,7 @@ static unsigned ValueToName( char *buff, unsigned len )
             *p++ = '+';
             --len;
         }
-        name_len = DIPSymName( sh, NULL, SN_SOURCE, p, len );
+        name_len = DIPSymName( sh, NULL, SNT_SOURCE, p, len );
         if( name_len > len )
             return( 0 );
         p += name_len;
@@ -852,7 +852,7 @@ void PrintValue( void )
     const char          *tstr;
     size_t              tlen;
 
-    switch( ExprSP->info.kind ) {
+    switch( ExprSP->ti.kind ) {
     case TK_VOID:
         break;
     case TK_ENUM:

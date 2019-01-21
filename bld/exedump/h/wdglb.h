@@ -124,13 +124,13 @@ struct relocation_item {
 };
 
 struct section_data {
-    uint        cur_offset;
-    uint        max_offset;
+    unsigned    cur_offset;
+    unsigned    max_offset;
     unsigned_8  *data;
 };
 
 typedef struct {
-    uint_32     value;
+    unsigned_32 value;
     const char  *name;
 } readable_name;
 

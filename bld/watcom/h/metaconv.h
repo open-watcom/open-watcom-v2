@@ -33,11 +33,6 @@
 #define metaware cdecl
 
 #pragma aux metaware "*" \
-        parm caller [] \
-        value \
-          struct \
-            float struct \
-          routine \
-        [eax] \
-        modify [eax ebx ecx edx]\
-        ;
+    __parm __caller [] \
+    __value __struct __float __struct __routine [__eax] \
+    __modify [__eax __ebx __ecx __edx]

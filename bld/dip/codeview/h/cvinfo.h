@@ -59,7 +59,7 @@ typedef unsigned long   virt_mem;
 struct imp_sym_handle {
     virt_mem            handle;
     unsigned short      len;
-    imp_mod_handle      im;
+    imp_mod_handle      imh;
     virt_mem            containing_type;
     virt_mem            adjustor_type;
     unsigned long       adjustor_offset;
@@ -76,7 +76,7 @@ struct imp_cue_handle {
     virt_mem            file;
     virt_mem            line;
     unsigned_16         pair;
-    imp_mod_handle      im;
+    imp_mod_handle      imh;
 };
 
 #define DIRECTORY_BLOCK_ENTRIES         256
@@ -92,7 +92,7 @@ struct imp_image_handle {
     unsigned                    map_count;
     seg_desc                    *mapping;
     virt_mem                    types_base;
-    dig_mad                     mad;
+    dig_arch                    arch;
 };
 
 typedef struct {
@@ -101,8 +101,6 @@ typedef struct {
     const void          *valp;
     unsigned long       int_val; /* only if k == TK_INTEGER */
 } numeric_leaf;
-
-extern address  NilAddr;
 
 extern imp_image_handle         *ImageList;
 
@@ -135,11 +133,11 @@ extern dip_status               TypeSymGetAddr( imp_image_handle *, imp_sym_hand
 extern dip_status               TypeSymGetValue( imp_image_handle *, imp_sym_handle *, location_context *, void * );
 extern dip_status               TypeSymGetInfo( imp_image_handle *, imp_sym_handle *, location_context *, sym_info * );
 extern dip_status               TypeCallInfo( imp_image_handle *, unsigned, cv_calls *, unsigned * );
-extern walk_result              TypeSymWalkList( imp_image_handle *, imp_type_handle *it, DIP_IMP_SYM_WALKER *wk, imp_sym_handle *is, void *d );
+extern walk_result              TypeSymWalkList( imp_image_handle *, imp_type_handle *it, DIP_IMP_SYM_WALKER *wk, imp_sym_handle *, void *d );
 extern dip_status               TypeIndexFillIn( imp_image_handle *, unsigned, imp_type_handle * );
 extern search_result            TypeSearchTagName( imp_image_handle *, lookup_item *, void * );
 extern search_result            TypeSearchNestedSym( imp_image_handle *, imp_type_handle *, lookup_item *, void * );
-extern dip_status               ImpTypeInfo( imp_image_handle *, imp_type_handle *, location_context *, dip_type_info * );
+extern dip_status               ImpTypeInfo( imp_image_handle *, imp_type_handle *, location_context *, dig_type_info * );
 extern dip_status               ImpTypeBase( imp_image_handle *, imp_type_handle *, imp_type_handle * );
 extern dip_status               TypeMemberFuncInfo( imp_image_handle *, imp_type_handle *, imp_type_handle *, imp_type_handle *, unsigned long * );
 
@@ -150,7 +148,7 @@ extern dip_status               ImpSymValue( imp_image_handle *, imp_sym_handle 
 extern dip_status               ImpSymType( imp_image_handle *, imp_sym_handle *, imp_type_handle * );
 
 extern void                     Confused(void);
-extern dip_status               DoIndirection( imp_image_handle *, dip_type_info *, location_context *, location_list * );
+extern dip_status               DoIndirection( imp_image_handle *, dig_type_info *, location_context *, location_list * );
 extern cs_compile               *GetCompInfo( imp_image_handle *, imp_mod_handle );
 
 #define T_CODE_LBL16    0x00f01

@@ -52,21 +52,20 @@ STATIC TOKEN_T lexFormQualifier( TOKEN_T tok )
 {
     STRM_T  s;
 
-    s = PreGetCH();
+    s = PreGetCHR();
 
     switch( s ) {
-        case '@':   CurAttr.u.form = FORM_FULL;            break;
-        case '*':   CurAttr.u.form = FORM_NOEXT;           break;
-        case '&':   CurAttr.u.form = FORM_NOEXT_NOPATH;    break;
-        case '.':   CurAttr.u.form = FORM_NOPATH;          break;
-        case ':':   CurAttr.u.form = FORM_PATH;            break;
-        case '!':   CurAttr.u.form = FORM_EXT;             break;
-        default:
-            PrtMsg( ERR | LOC | EXPECTING_M, M_FORM_QUALIFIER );
-            UnGetCH( s );               /* put character back */
-            CurAttr.u.form = FORM_FULL;   /* assume full name */
+    case '@':   CurAttr.u.form = FORM_FULL;            break;
+    case '*':   CurAttr.u.form = FORM_NOEXT;           break;
+    case '&':   CurAttr.u.form = FORM_NOEXT_NOPATH;    break;
+    case '.':   CurAttr.u.form = FORM_NOPATH;          break;
+    case ':':   CurAttr.u.form = FORM_PATH;            break;
+    case '!':   CurAttr.u.form = FORM_EXT;             break;
+    default:
+        PrtMsg( ERR | LOC | EXPECTING_M, M_FORM_QUALIFIER );
+        UnGetCHR( s );               /* put character back */
+        CurAttr.u.form = FORM_FULL;   /* assume full name */
     }
-
     return( tok );
 }
 
@@ -78,7 +77,7 @@ void GetModifier( void )
 
     // Modifier already eaten by CatModifier
     if( !IsPartDeMacro ) {
-        s = PreGetCH();
+        s = PreGetCHR();
         switch( s ) {
         case 'D':
         case 'd':
@@ -97,7 +96,7 @@ void GetModifier( void )
              CurAttr.u.form = FORM_NOEXT;
              break;
         default:
-             UnGetCH( s );
+             UnGetCHR( s );
         }
     }
 }
@@ -116,21 +115,20 @@ STATIC char *CatModifier( char *inString, bool destroy )
 
     assert( inString != NULL );
 
-    s = PreGetCH();
+    s = PreGetCHR();
 
     if( sismsmodifier( s ) ) {
         buffer[0] = s;
         buffer[1] = NULLCHAR;
         output = StartVec();
-        WriteVec( output, "" );
-        CatStrToVec( output, inString );
-        CatStrToVec( output, buffer );
+        WriteVec( output, inString );
+        WriteVec( output, buffer );
         if( destroy ) {
             FreeSafe( inString );
         }
         return( FinishVec( output ) );
     } else {
-        UnGetCH( s );
+        UnGetCHR( s );
         ret = StrDupSafe( inString );
         if( destroy ) {
             FreeSafe( inString );
@@ -151,18 +149,18 @@ TOKEN_T LexMSDollar( STRM_T s )
     assert( sismsspecial( s ) );
 
     if( IsPartDeMacro || !DoingUpdate ) {
-        /* we need to use SPECIAL_TMP_DOL_C to prevent recursion
+        /* we need to use SPECIAL_TMP_DOLLAR to prevent recursion
            from kicking in because recursion occurs when there are
            still dollars remaining */
-        temp[0] = SPECIAL_TMP_DOL_C;
+        temp[0] = SPECIAL_TMP_DOLLAR;
         temp[1] = s;
         if( s == '*' ) {
-            s = PreGetCH();
+            s = PreGetCHR();
             if( s == '*' ) {
                 temp[2] = s;
                 temp[3] = NULLCHAR;
             } else {
-                UnGetCH( s );
+                UnGetCHR( s );
                 temp[2] = NULLCHAR;
             }
         } else {
@@ -178,13 +176,13 @@ TOKEN_T LexMSDollar( STRM_T s )
             CurAttr.u.form = FORM_FULL;
             return( MAC_INF_DEP );
         case '*':
-            s = PreGetCH();
+            s = PreGetCHR();
             if( s == '*' ) {
                 CurAttr.u.form = FORM_FULL;
                 return( MAC_ALL_DEP );
             } else {
                 CurAttr.u.form = FORM_NOEXT;
-                UnGetCH( s );
+                UnGetCHR( s );
                 return( MAC_CUR );
             }
         case '?':
@@ -195,7 +193,7 @@ TOKEN_T LexMSDollar( STRM_T s )
             return( MAC_CUR );
 
         default:
-            UnGetCH( s );
+            UnGetCHR( s );
             return( MAC_START );
         }
     }
@@ -212,7 +210,7 @@ STATIC TOKEN_T lexDollar( void )
     STRM_T  s;
     TOKEN_T t;
 
-    s = PreGetCH();
+    s = PreGetCHR();
 
     if( (Glob.compat_nmake || Glob.compat_posix) && sismsspecial( s ) ) {
         t = LexMSDollar( s );
@@ -220,8 +218,8 @@ STATIC TOKEN_T lexDollar( void )
         return( t );
     }
     switch( s ) {
-    case DOLLAR:                            return( MAC_DOLLAR );
-    case COMMENT:                           return( MAC_COMMENT );
+    case '$':                               return( MAC_DOLLAR );
+    case COMMENT_C:                         return( MAC_COMMENT );
     case '(':                               return( MAC_OPEN );
     case '+':                               return( MAC_EXPAND_ON );
     case '-':                               return( MAC_EXPAND_OFF );
@@ -233,7 +231,7 @@ STATIC TOKEN_T lexDollar( void )
     case '<': CurAttr.u.form = FORM_FULL;   return( MAC_ALL_DEP );   /* UNIX */
     case '?': CurAttr.u.form = FORM_FULL;   return( MAC_YOUNG_DEP ); /* UNIX */
     default:
-        UnGetCH( s );
+        UnGetCHR( s );
         return( MAC_START );
     }
 }
@@ -273,13 +271,14 @@ STATIC TOKEN_T lexSubString( STRM_T s )
             pos = 0;
         }
 
-        s = PreGetCH();
+        s = PreGetCHR();
         switch( s ) {
-        case EOL:               /* always stop on these characters */
+        case '\n':
         case STRM_END:
         case STRM_MAGIC:
         case ')':
-        case DOLLAR:
+        case '$':
+            /* always stop on these characters */
             done = true;
             break;
         default:
@@ -290,7 +289,7 @@ STATIC TOKEN_T lexSubString( STRM_T s )
             }
         }
     }
-    UnGetCH( s );
+    UnGetCHR( s );
     text[pos] = NULLCHAR;
     WriteVec( vec, text );
 
@@ -308,12 +307,12 @@ TOKEN_T LexMacSubst( STRM_T s )
  */
 {
     switch( s ) {
-    case SPECIAL_TMP_DOL_C:
-    case DOLLAR:
+    case SPECIAL_TMP_DOLLAR:
+    case '$':
         return( lexDollar() );
     case ')':
         return( MAC_CLOSE );
-    case EOL:
+    case '\n':
         return( TOK_EOL );
     case STRM_END:
         return( TOK_END );
@@ -343,7 +342,7 @@ TOKEN_T LexMacDef( STRM_T s )
     if( s == STRM_MAGIC ) {
         return( TOK_MAGIC );
     }
-    if( s == EOL ) {
+    if( s == '\n' ) {
         return( TOK_EOL );
     }
 
@@ -351,9 +350,9 @@ TOKEN_T LexMacDef( STRM_T s )
 
     cur = text;
 
-    if( s == DOLLAR ) {
-        *cur++ = DOLLAR;
-        s = PreGetCH();
+    if( s == '$' ) {
+        *cur++ = '$';
+        s = PreGetCHR();
         if( s == '+' ) {
             return( MAC_EXPAND_ON );
         }
@@ -364,19 +363,19 @@ TOKEN_T LexMacDef( STRM_T s )
     while( cur - text < MAX_TOK_SIZE - 1 ) {
         *cur++ = s;
 
-        s = PreGetCH();
+        s = PreGetCHR();
 
         if(    s == STRM_END
             || s == STRM_MAGIC
-            || s == EOL
-            || s == DOLLAR
+            || s == '\n'
+            || s == '$'
             || (onlyws && !sisws( s ))
             || (!onlyws && sisws( s )) ) {
             break;
         }
     }
 
-    UnGetCH( s );
+    UnGetCHR( s );
 
     *cur = NULLCHAR;
     CurAttr.u.ptr = StrDupSafe( text );

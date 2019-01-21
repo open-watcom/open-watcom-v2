@@ -32,6 +32,7 @@
 extern const dis_range          SPARCRangeTable[];
 extern const int                SPARCRangeTablePos[];
 extern const unsigned char      SPARCMaxInsName;
+extern const dis_cpu_data       SPARCData;
 
 extern dis_handler_return SPARCSetHi( dis_handle *h, void *d, dis_dec_ins *ins );
 extern dis_handler_return SPARCBranch( dis_handle *h, void *d, dis_dec_ins *ins );

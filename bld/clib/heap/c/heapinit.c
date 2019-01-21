@@ -37,22 +37,22 @@
 #include "heap.h"
 
 
-#define FIRST_FRL(h)    ((frlptr)(h + 1))
+#define FIRST_FRL(h)    ((freelist_nptr)(h + 1))
 
-void _WCFAR __HeapInit( mheapptr heap, unsigned int amount )
+void _WCFAR __HeapInit( heapblk_nptr heap, unsigned int amount )
 {
     __nheapbeg = heap;
     heap->len  = amount - TAG_SIZE;
-    heap->prev = NULL;
-    heap->next = NULL;
-    heap->rover = &heap->freehead;
-    heap->freehead.prev = &heap->freehead;
-    heap->freehead.next = &heap->freehead;
+    heap->prev.nptr = NULL;
+    heap->next.nptr = NULL;
+    heap->rover.nptr = &heap->freehead;
+    heap->freehead.prev.nptr = &heap->freehead;
+    heap->freehead.next.nptr = &heap->freehead;
     heap->numalloc = 0;
     heap->numfree = 0;
-    FIRST_FRL( heap )->len = amount - TAG_SIZE - sizeof( miniheapblkp );
+    FIRST_FRL( heap )->len = amount - TAG_SIZE - sizeof( heapblk );
     /* fix up end of heap links */
-    SET_BLK_END( (frlptr)NEXT_BLK( FIRST_FRL( heap ) ) );
+    SET_BLK_END( (freelist_nptr)NEXT_BLK( FIRST_FRL( heap ) ) );
     /* build a block for _nfree() */
     SET_BLK_INUSE( FIRST_FRL( heap ) );
     heap->numalloc++;

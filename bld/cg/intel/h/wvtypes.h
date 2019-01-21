@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -30,25 +31,26 @@
 
 
 #if _TARGET & ( _TARG_IAPX86 | _TARG_80386 )
-extern  dbg_type        WVFtnType( const char *name, dbg_ftn_type tipe );
-extern  dbg_type        WVScalar( const char *name, cg_type tipe );
-extern  dbg_type        WVScope( const char *name );
-extern  void            WVDumpName( dbg_name name, dbg_type tipe );
-extern  void            WVBackRefType( dbg_name name, dbg_type tipe );
-extern  dbg_type        WVCharBlock( unsigned_32 len );
-extern  dbg_type        WVIndCharBlock( back_handle len, cg_type len_type, int off );
-extern  dbg_type        WVLocCharBlock( dbg_loc loc, cg_type len_type );
-extern  dbg_type        WVFtnArray( back_handle dims, cg_type lo_bound_tipe, cg_type num_elts_tipe, int off, dbg_type base );
-extern  dbg_type        WVArray( dbg_type idx, dbg_type base );
-extern  dbg_type        WVIntArray( unsigned_32 hi, dbg_type base );
-extern  dbg_type        WVEndArray( dbg_array ar );
-extern  dbg_type        WVSubRange( signed_32 lo, signed_32 hi, dbg_type base );
-extern  dbg_type        WVDereference( cg_type ptr_type, dbg_type base );
-extern  dbg_type        WVPtr( cg_type ptr_type, dbg_type base );
-extern  dbg_type        WVBasedPtr( cg_type ptr_type, dbg_type base, dbg_loc loc_segment );
-extern  dbg_type        WVEndStruct( dbg_struct st );
-extern  dbg_type        WVEndEnum( dbg_enum en );
-extern  dbg_type        WVEndProc( dbg_proc pr );
-extern  void            WVTypesEof( void );
-extern  void            WVDmpCueInfo( long_offset where );
+extern dbg_type         WVFtnType( const char *name, dbg_ftn_type tipe );
+extern dbg_type         WVScalar( const char *name, cg_type tipe );
+extern dbg_type         WVScope( const char *name );
+extern void             WVDumpName( dbg_name name, dbg_type tipe );
+extern void             WVBackRefType( dbg_name name, dbg_type tipe );
+extern dbg_type         WVCharBlock( unsigned_32 len );
+extern dbg_type         WVIndCharBlock( back_handle len, cg_type len_type, int off );
+extern dbg_type         WVLocCharBlock( dbg_loc loc, cg_type len_type );
+extern dbg_type         WVFtnArray( back_handle dims, cg_type lo_bound_tipe, cg_type num_elts_tipe, int off, dbg_type base );
+extern dbg_type         WVArray( dbg_type idx, dbg_type base );
+extern dbg_type         WVIntArray( unsigned_32 hi, dbg_type base );
+extern dbg_type         WVEndArray( dbg_array ar );
+extern dbg_type         WVSubRange( signed_32 lo, signed_32 hi, dbg_type base );
+extern dbg_type         WVDereference( cg_type ptr_type, dbg_type base );
+extern dbg_type         WVPtr( cg_type ptr_type, dbg_type base );
+extern dbg_type         WVBasedPtr( cg_type ptr_type, dbg_type base, dbg_loc loc_segment );
+extern dbg_type         WVEndStruct( dbg_struct st );
+extern dbg_type         WVEndEnum( dbg_enum en );
+extern dbg_type         WVEndProc( dbg_proc pr );
+extern void             WVTypesEof( void );
+extern void             WVDmpCueInfo( long_offset where );
+extern void             WVSrcCueLoc( void  );
 #endif

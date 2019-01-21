@@ -52,7 +52,7 @@ char * concatStr                // CONCATENATE STRING
         *tgt++ = *src++;
     }
     *tgt = '\0';
-    return tgt;
+    return( tgt );
 }
 
 
@@ -63,7 +63,7 @@ char* concatDec                 // CONCATENATE DECIMAL #
     char buf[16];               // - buffer
 
     ultoa( value, buf, 10 );
-    return concatStr( tgt, buf );
+    return( concatStr( tgt, buf ) );
 }
 
 
@@ -76,7 +76,7 @@ char* concatHex                 // CONCATENATE HEX #
     ultoa( value, buf, 16 );
     tgt[0] = '0';
     tgt[1] = 'x';
-    return concatStr( &tgt[2], buf );
+    return( concatStr( &tgt[2], buf ) );
 }
 
 
@@ -91,19 +91,19 @@ static void* my_alloc           // COVER FOR ALLOCATION
     if( 0 == p ) {
         throw Exc( "MEM", "memory exhausted", 0 );
     }
-    return p;
+    return( p );
 }
 
 
 void* operator new              // ::new
     ( size_t size )             // - size required
 {
-    return my_alloc( size );
+    return( my_alloc( size ) );
 }
 
 
 void* operator new[]            // ::new[]
     ( size_t size )             // - size required
 {
-    return my_alloc( size );
+    return( my_alloc( size ) );
 }

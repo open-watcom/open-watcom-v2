@@ -653,7 +653,7 @@ Tool WLANG "Languages"
     VSwitch 0, n????, "Include directories:", -i, =, MULTI, REQ, "\"$(%watcom)/h;$(%watcom)/h/nt\""
     VSwitch 0, l????, "Include directories:", -i, =, MULTI, REQ, "\"$(%watcom)/novh\""
     VSwitch 0, x????, "Include directories:", -i, =, MULTI, REQ, "\"$(%watcom)/lh\""
-    VSwitch 0, r????, "Include directories:", -i, =, MULTI, REQ, "\"$(%watcom)/h;$(%watcom)/rdos\""
+    VSwitch 0, r????, "Include directories:", -i, =, MULTI, REQ, "\"$(%watcom)/rh\""
     VSwitch 0, ?????, "Include files:", -fi, =, MULTI, REQ, ""
     CSwitch 0, wm???, "Use precompiled headers", -fhq, ON
     CSwitch 0, wa???, "Use precompiled headers", -fhq, ON

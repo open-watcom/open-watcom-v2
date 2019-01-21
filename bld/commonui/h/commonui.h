@@ -38,7 +38,7 @@
     #define INCL_GPIPRIMITIVES
     #include <wos2.h>
     #include "winexprt.h"
-#else
+#elif defined( __WINDOWS__ ) || defined( __NT__ )
     #ifdef __WINDOWS__
         #define INCLUDE_TOOLHELP_H
         #define INCLUDE_COMMDLG_H
@@ -50,7 +50,3 @@
         #include <commdlg.h>
     #endif
 #endif
-
-
-typedef unsigned    ctl_id;
-typedef unsigned    msg_id;

@@ -5,7 +5,7 @@ class mystream : public ostream {
     mystream ( streambuf *str ) : ios ( str ), ostream ( str ) {};
 };
 
-void main( void ) {
+int main( void ) {
 
     mystream    test ( cout.rdbuf() );
     test << "Just for fun!" << endl;

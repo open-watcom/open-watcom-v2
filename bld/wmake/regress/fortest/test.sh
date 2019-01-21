@@ -1,99 +1,98 @@
 #!/bin/sh
 
-function usage() {
+ERRORS=0
+
+usage() {
     echo usage: $0 prgname errorfile
     exit
 }
 
-function print_header() {
+print_header() {
     echo \# -----------------------------
-    echo \#   Test $TEST
+    echo \#   For Loop Test $TEST
     echo \# -----------------------------
 }
 
-function do_check() {
-    if [ "$?" == "0" ]; then
-        echo \# Test $TEST successful
+do_check() {
+    if [ "$?" -eq "0" ]; then
+        echo \#      Test successful
     else
-        echo \#\# FORTEST \#\# >> $LOGFILE
-        echo Error: Test $TEST unsuccessful!!! | tee -a $LOGFILE
-        exit
+        echo \#\# FORTEST $TEST \#\# >> $LOGFILE
+        echo Error: Test unsuccessful!!! | tee -a $LOGFILE
+        ERRORS=1
     fi
 }
 
-if [ "$2" == "" ]; then 
+if [ -z "$2" ]; then 
     usage
 fi
 
 LOGFILE=$2
 
+echo \# ===========================
+echo \# For Loop Tests
+echo \# ===========================
+
 # Need our 'rem' utility on the PATH
 PATH=../cmds:$PATH
 
-TEST=A
+TEST=01
 print_header
-rm -f tst2.out
-$1 -h -f for01 > tst2.out 2>&1
-diff tst2.out for01.chk
+$1 -h -f for$TEST > test$TEST.lst 2>&1
+diff for$TEST.chk test$TEST.lst
 do_check
 
-TEST=B
+TEST=02
 print_header
-rm -f tst2.out
-$1 -h -f for02 > tst2.out 2>&1
-diff tst2.out for02.chk
+$1 -h -f for$TEST > test$TEST.lst 2>&1
+diff for$TEST.chk test$TEST.lst
 do_check
 
-#TEST=C
+#TEST=03
 #print_header
-#rm -f tst2.out
-#$1 -h -f for03 > tst2.out 2>&1
-#diff tst2.out for03.chk
+#$1 -h -f for$TEST > test$TEST.lst 2>&1
+#diff for$TEST.chk test$TEST.lst
 #do_check
 
-TEST=D
+TEST=04
 print_header
-cat for04a.chk > tmpfile.tmp
-ls -1 >> tmpfile.tmp
-cat for04b.chk >> tmpfile.tmp
-ls -1 for?? >> tmpfile.tmp
-cat for04c.chk >> tmpfile.tmp
-rm -f tst2.out
-$1 -h -f for04 > tst2.out 2>&1
-sort < tst2.out > tst2.sort
-sort < tmpfile.tmp > tmpfile.sort
-diff tst2.sort tmpfile.sort
+echo  > test${TEST}b.lst
+cat for${TEST}a.chk > test${TEST}a.lst
+ls -1 >> test${TEST}a.lst
+cat for${TEST}b.chk >> test${TEST}a.lst
+ls -1 for?? >> test${TEST}a.lst
+cat for${TEST}c.chk >> test${TEST}a.lst
+$1 -h -f for$TEST > test${TEST}b.lst 2>&1
+sort < test${TEST}b.lst > test${TEST}bs.lst
+sort < test${TEST}a.lst > test${TEST}as.lst
+diff test${TEST}bs.lst test${TEST}as.lst
 do_check
 
-TEST=E
+TEST=05
 print_header
-rm -f tst2.out
-$1 -h -f for05 > tst2.out 2>&1
-diff tst2.out for05.chk
+$1 -h -f for$TEST > test$TEST.lst 2>&1
+diff for$TEST.chk test$TEST.lst
 do_check
 
-TEST=F
+TEST=06
 print_header
-rm -f tst2.out
-$1 -h -f for06 > tst2.out 2>&1
-diff tst2.out for06.chk
+$1 -h -f for$TEST > test$TEST.lst 2>&1
+diff for$TEST.chk test$TEST.lst
 do_check
 
-TEST=G
+TEST=07
 print_header
-rm -f tst2.out
-$1 -h -f for07 > tst2.out 2>&1
-diff tst2.out for07.chk
+$1 -h -f for$TEST > test$TEST.lst 2>&1
+diff for$TEST.chk test$TEST.lst
 do_check
 
-TEST=H
+TEST=08
 print_header
-rm -f tst2.out
-$1 -h -f for08 > tst2.out 2>&1
-diff -b tst2.out for08u.chk
+$1 -h -f for$TEST > test$TEST.lst 2>&1
+diff -b for${TEST}u.chk test$TEST.lst
 do_check
 
-
-rm -f tmpfile.*
-rm -f tst2.*
-rm -f *.o
+if [ "$ERRORS" -eq "0" ]; then
+    rm -f *.lst
+    rm -f *.o
+fi

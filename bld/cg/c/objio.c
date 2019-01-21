@@ -29,11 +29,10 @@
 ****************************************************************************/
 
 
-#include "cgstd.h"
+#include "_cgstd.h"
 #include <stdlib.h>
 #include <errno.h>
 #include <stdio.h>
-#include "cgdefs.h"
 #include "cgmem.h"
 #include "_cg.h"
 #include "cgaux.h"

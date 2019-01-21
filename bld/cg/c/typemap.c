@@ -31,17 +31,13 @@
 ****************************************************************************/
 
 
-#include "cgstd.h"
+#include "_cgstd.h"
 #include "coderep.h"
 #include "types.h"
 #include "procdef.h"
 #include "typemap.h"
+#include "maptypes.h"
 
-
-extern  type_class_def  MapPointer(cg_type);
-extern  type_class_def  MapIntReturn(cg_type);
-extern  type_class_def  MapFloat(cg_type,call_attributes);
-extern  type_class_def  MapStruct(type_length,call_attributes);
 
 static cg_type  Types[] = {
     #define pick(e,t) t,
@@ -52,10 +48,10 @@ static cg_type  Types[] = {
 };
 
 
-type_def        *ClassType( type_class_def tipe )
-/***********************************************/
+type_def        *ClassType( type_class_def type_class )
+/*****************************************************/
 {
-    return( TypeAddress( Types[tipe] ) );
+    return( TypeAddress( Types[type_class] ) );
 }
 
 

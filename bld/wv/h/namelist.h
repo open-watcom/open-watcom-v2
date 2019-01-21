@@ -46,12 +46,12 @@ typedef struct {
     bool                d2_only : 1;
 } name_list;
 
-#define SN_QUALIFIED SN_LAST
-#define SN_PARSEABLE SN_QUALIFIED+1
+#define SNT_QUALIFIED   SNT_LAST
+#define SNT_PARSEABLE   (SNT_QUALIFIED + 1)
 
 extern void             NameListAddModules( name_list *name, mod_handle mod, bool d2_only, bool dup_ok );
 extern int              NameListNumRows( name_list *name );
-extern unsigned         NameListName( name_list *name, int member_idx, char *buff, symbol_name type );
+extern unsigned         NameListName( name_list *name, int member_idx, char *buff, symbol_name_type snt );
 extern void             NameListInit( name_list *name, walk_find type );
 extern void             NameListFree( name_list *name );
 extern address          NameListAddr( name_list *name, int member_idx );

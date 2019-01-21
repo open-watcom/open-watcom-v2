@@ -136,11 +136,11 @@ section *DBIGetSect( const char *clname )
 void DBIColClass( class_entry *class )
 /************************************/
 {
-    if( stricmp( class->name, _DwarfClass ) == 0 ) {
+    if( stricmp( class->name.u.ptr, _DwarfClass ) == 0 ) {
         class->flags |= CLASS_DWARF;
-    } else if( stricmp( class->name, _MSTypeClass ) == 0 ) {
+    } else if( stricmp( class->name.u.ptr, _MSTypeClass ) == 0 ) {
         class->flags |= CLASS_MS_TYPE;
-    } else if( stricmp( class->name, _MSLocalClass ) == 0 ) {
+    } else if( stricmp( class->name.u.ptr, _MSLocalClass ) == 0 ) {
         class->flags |= CLASS_MS_LOCAL;
     }
 }

@@ -55,6 +55,8 @@
 #define EXTRA_LIB_FILE  4
 #define EXTRA_RES_FILE  5
 
+#define IOERROR         ((size_t)-1)
+
 extern char     NLSeq[];
 
 /* i/o function prototypes */

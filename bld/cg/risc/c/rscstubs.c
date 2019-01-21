@@ -31,13 +31,13 @@
 ****************************************************************************/
 
 
-#include "cgstd.h"
+#include "_cgstd.h"
 #include "coderep.h"
 #include "addrname.h"
 #include "procdef.h"
 #include "regset.h"
 #include "zoiks.h"
-#include "x87.h"
+#include "fpu.h"
 #include "objout.h"
 #include "encode.h"
 #include "object.h"
@@ -221,7 +221,7 @@ void FPOptimize( void )
 {
 }
 
-void InitFP( void )
+void FPInit( void )
 /*****************/
 {
 }
@@ -341,10 +341,10 @@ void CheckCC( instruction *ins, instruction *new_ins )
     /* unused parameters */ (void)ins; (void)new_ins;
 }
 
-bool DivIsADog( type_class_def class )
-/************************************/
+bool FPDivIsADog( type_class_def type_class )
+/*******************************************/
 {
-    return( _IsFloating( class ) );
+    return( _IsFloating( type_class ) );
 }
 
 bool AskSegNear( segment_id id )

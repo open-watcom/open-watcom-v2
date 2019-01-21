@@ -56,7 +56,7 @@ inspick( fwait,         "fwait",        0x0000009b,     0x000000ff,     X86Prefi
 // Instructions
 inspick( aaa,           "aaa",          0x00000037,     0x000000ff,     X86NoOp_8 )
 inspick( aad,           "aad",          0x00000ad5,     0x0000ffff,     X86NoOp_16 )
-inspick( aam,           "aam",          0x00000ad4,     0x0000ffff,     X86NoOp_16 )
+inspick( aam,           "aam",          0x000000d4,     0x000000ff,     X86Imm_8 )
 inspick( aas,           "aas",          0x0000003f,     0x000000ff,     X86NoOp_8 )
 inspick( adc,           "adc",          0x00000010,     0x000000fc,     X86RegModRM_16 )
 inspick( adc2,          "adc",          0x00000014,     0x000000fe,     X86ImmAcc_8 )

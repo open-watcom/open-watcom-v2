@@ -9,12 +9,12 @@ set PROJDIR=<CWD>
 
 [ INCLUDE <OWROOT>/build/deftool.ctl ]
 
-[ BLOCK <1> rel ]
-#================
+[ BLOCK <BLDRULE> rel ]
+#======================
     cdsay <PROJDIR>
 
-[ BLOCK <1> rel cprel ]
-#======================
+[ BLOCK <BLDRULE> rel cprel ]
+#============================
     <CCCMD> dos386/cvpack.exe    <OWRELROOT>/binw/
     <CCCMD> os2386/cvpack.exe    <OWRELROOT>/binp/
     <CCCMD> nt386/cvpack.exe     <OWRELROOT>/binnt/

@@ -30,11 +30,8 @@
 ****************************************************************************/
 
 
-#include "commonui.h"
-#include <stdio.h>
+#include "wrglbl.h"
 #include <stdarg.h>
-#include <string.h>
-#include "bool.h"
 #include "wrmaini.h"
 #include "wrmsg.h"
 #include "errprt.h"

@@ -30,12 +30,9 @@
 ****************************************************************************/
 
 
-#include <string.h>
-#include <stdio.h>
-#include <malloc.h>
+#include "drwatcom.h"
+#include <alloca.h>
 #include <ctype.h>
-#include <stdlib.h>
-#include "bool.h"
 #include "mad.h"
 #include "regcrt.h"
 #include "mem.h"
@@ -203,7 +200,7 @@ void GetRegStringCreate( mad_registers *regs, mad_reg_set_data *reg_set,
         for( j = i; j < num_regs; j += num_columns ) {
             if( reg_create[i].maxd < reg_create[j].maxd )
                 reg_create[i].maxd = reg_create[j].maxd;
-            if( reg_create[i].length = reg_create[j].length ) {
+            if( reg_create[i].length < reg_create[j].length ) {
                 reg_create[i].length = reg_create[j].length;
             }
         }

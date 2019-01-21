@@ -34,7 +34,7 @@
 #include <limits.h>
 #include "_srcmgt.h"
 #include "dbgdata.h"
-#include "spawn.h"
+#include "wspawn.h"
 #include "dbglit.h"
 #include "dbgerr.h"
 #include "dbgmem.h"
@@ -416,27 +416,28 @@ static image_entry *DoCreateImage( const char *exe, const char *symfile )
     image_entry         **owner;
     size_t              len;
 
-
     len = ( exe == NULL ) ? 0 : strlen( exe );
-    _ChkAlloc( image, sizeof( *image ) + len, LIT_ENG( ERR_NO_MEMORY_FOR_DEBUG ) );
-    if( image == NULL )
-        return( NULL );
-    memset( image, 0, sizeof( *image ) );
-    if( len != 0 )
-        memcpy( image->image_name, exe, len + 1 );
-    if( symfile != NULL ) {
-        _Alloc( image->symfile_name, strlen( symfile ) + 1 );
-        if( image->symfile_name == NULL ) {
-            _Free( image );
-            Error( ERR_NONE, LIT_ENG( ERR_NO_MEMORY_FOR_DEBUG ) );
-            return( NULL );
+    _Alloc( image, sizeof( *image ) + len );
+    if( image != NULL ) {
+        memset( image, 0, sizeof( *image ) );
+        if( len != 0 )
+            memcpy( image->image_name, exe, len + 1 );
+        if( symfile != NULL ) {
+            _Alloc( image->symfile_name, strlen( symfile ) + 1 );
+            if( image->symfile_name == NULL ) {
+                _Free( image );
+                image = NULL;
+            } else {
+                strcpy( image->symfile_name, symfile );
+            }
         }
-        strcpy( image->symfile_name, symfile );
+        if( image != NULL ) {
+            image->mapper = MapAddrSystem;
+            for( owner = &DbgImageList; *owner != NULL; owner = &(*owner)->link )
+                ;
+            *owner = image;
+        }
     }
-    image->mapper = MapAddrSystem;
-    for( owner = &DbgImageList; *owner != NULL; owner = &(*owner)->link )
-        ;
-    *owner = image;
     return( image );
 }
 
@@ -465,6 +466,7 @@ static image_entry *CreateImage( const char *exe, const char *symfile )
         this_name = SkipPathInfo( exe, OP_REMOTE );
         this_len = ExtPointer( exe, OP_REMOTE ) - exe;
         for( curr = LocalDebugInfo; curr != NULL; curr = curr->next ) {
+            oattrs = 0;
             curr_name = SkipPathInfo( curr->name, OP_LOCAL );
             curr_name = RealFName( curr_name, &oattrs );
             if( curr_name[0] == '@' && curr_name[1] == 'l' )
@@ -477,10 +479,10 @@ static image_entry *CreateImage( const char *exe, const char *symfile )
             }
         }
     }
-
-    _SwitchOn( SW_ERROR_RETURNS );
     image = DoCreateImage( exe, symfile );
-    _SwitchOff( SW_ERROR_RETURNS );
+    if( image == NULL ) {
+        ErrorRet( ERR_NONE, LIT_ENG( ERR_NO_MEMORY_FOR_DEBUG ) );
+    }
     return( image );
 }
 
@@ -869,6 +871,7 @@ static int DoLoadProg( const char *task, const char *symfile, error_handle *errh
 #endif
     if( task[0] == NULLCHAR )
         return( TASK_NONE );
+    oattrs = 0;
     name = FileLoc( task, &oattrs );
     if( DownLoadTask ) {
         strcpy( fullname, name );
@@ -1152,9 +1155,8 @@ static bool CopyToRemote( const char *local, const char *remote, bool strip, voi
     }
     fh_rem = FileOpen( remote, OP_REMOTE | OP_WRITE | OP_CREATE | OP_TRUNC | OP_EXEC );
     if( fh_rem == NIL_HANDLE ) {
-        Error( ERR_NONE, LIT_ENG( ERR_FILE_NOT_OPEN ), remote );
         FileClose( fh_lcl );
-        return( false );
+        Error( ERR_NONE, LIT_ENG( ERR_FILE_NOT_OPEN ), remote );
     }
     bsize = 0x8000;
     _Alloc( buff, bsize );
@@ -1421,6 +1423,9 @@ OVL_EXTERN void SymFileNew( void )
     memcpy( TxtBuff, fname, fname_len );
     TxtBuff[fname_len] = NULLCHAR;
     image = DoCreateImage( NULL, TxtBuff );
+    if( image == NULL ) {
+        Error( ERR_NONE, LIT_ENG( ERR_NO_MEMORY_FOR_DEBUG ) );
+    }
     image->mapper = MapAddrUser;
     if( !ProcImgSymInfo( image ) ) {
         FreeImage( image );
@@ -1503,18 +1508,17 @@ OVL_EXTERN void MapAddrUsrMod( image_entry *image, addr_ptr *addr,
 
 bool SymUserModLoad( const char *fname, address *loadaddr )
 {
-    size_t      fname_len;
     image_entry *image;
     map_entry   **owner;
     map_entry   *curr;
 
-    if( !fname )
-        return( true );
-
-    if( ( fname_len = strlen( fname ) ) == 0 )
+    if( *fname == '\0' )
         return( true );
 
     image = DoCreateImage( fname, fname );
+    if( image == NULL ) {
+        Error( ERR_NONE, LIT_ENG( ERR_NO_MEMORY_FOR_DEBUG ) );
+    }
     image->mapper = MapAddrUsrMod;
     if( !ProcImgSymInfo( image ) ) {
         FreeImage( image );
@@ -1524,6 +1528,7 @@ bool SymUserModLoad( const char *fname, address *loadaddr )
 
     _Alloc( curr, sizeof( *curr ) );
     if( curr == NULL ) {
+        image->map_list = NULL;
         DIPUnloadInfo( image->dip_handle );
         Error( ERR_NONE, LIT_ENG( ERR_NO_MEMORY_FOR_DEBUG ) );
     }

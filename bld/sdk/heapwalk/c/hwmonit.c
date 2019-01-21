@@ -31,7 +31,6 @@
 
 
 #include "heapwalk.h"
-#include <string.h>
 
 
 #define   MONITOR_TIMER         500

@@ -55,8 +55,7 @@ static bool isIgnorable( char c, const char *ign )
  */
 char *SkipLeadingSpaces( const char *buff )
 {
-    while( isspace( *buff ) )
-        ++buff;
+    SKIP_SPACES( buff );
     return( (char *)buff );
 
 } /* SkipLeadingSpaces */
@@ -87,8 +86,7 @@ vi_rc GetStringWithPossibleQuote2( const char **pbuff, char *st, bool allow_slas
 {
     const char  *buff = *pbuff;
 
-    while( isspace( *buff ) )
-        ++buff;
+    SKIP_SPACES( buff );
     if( allow_slash && *buff == '/' ) {
         buff = GetNextWord( buff, st, SingleSlash );
         if( *buff == '/' ) {
@@ -123,8 +121,7 @@ char *GetNextWord1( const char *buff, char *res )
 {
     char    c;
 
-    while( isspace( *buff ) )
-        ++buff;
+    SKIP_SPACES( buff );
     /*
      * get word
      */
@@ -145,8 +142,7 @@ char *GetNextWord2( const char *buff, char *res, char alt_delim )
 {
     char    c;
 
-    while( isspace( *buff ) )
-        ++buff;
+    SKIP_SPACES( buff );
     /*
      * get word
      */
@@ -156,8 +152,7 @@ char *GetNextWord2( const char *buff, char *res, char alt_delim )
         }
         if( isspace( c ) ) {
             ++buff;
-            while( isspace( *buff ) )
-                buff++;
+            SKIP_SPACES( buff );
             break;
         }
         *res++ = c;
@@ -174,15 +169,15 @@ char *GetNextWord2( const char *buff, char *res, char alt_delim )
  */
 char *GetNextWord( const char *buff, char *res, const char *ign )
 {
-    int         sl;
+    size_t      ign_len;
     char        c;
 
     /*
      * past any leading ignorable chars (if ignore list has single
      * character, then only skip past FIRST ignorable char)
      */
-    sl = strlen( ign );
-    if( sl == 1 ) {
+    ign_len = strlen( ign );
+    if( ign_len == 1 ) {
         if( isIgnorable( *buff, ign ) ) {
             ++buff;
         }
@@ -198,7 +193,7 @@ char *GetNextWord( const char *buff, char *res, const char *ign )
         /*
          * look for escaped delimiters
          */
-        if( c == '\\' && sl == 1 ) {
+        if( c == '\\' && ign_len == 1 ) {
             if( buff[1] == ign[0] ) {
                 ++buff;
                 *res++ = *buff;
@@ -224,23 +219,27 @@ char *GetNextWord( const char *buff, char *res, const char *ign )
 #if defined( __WATCOMC__ ) && defined( _M_IX86 )
 extern char toUpper( char );
 #pragma aux toUpper = \
-        "cmp    al, 061h" \
-        "jl     LL34" \
-        "cmp    al, 07ah" \
-        "jg     LL34" \
-        "sub    al, 0020H" \
-        "LL34:" \
-    parm [al] value[al];
+        "cmp  al,61h"   \
+        "jl short L1"   \
+        "cmp  al,7ah"   \
+        "jg short L1"   \
+        "sub  al,20h"   \
+    "L1:"               \
+    __parm      [__al] \
+    __value     [__al] \
+    __modify    []
 
 extern char toLower( char );
 #pragma aux toLower = \
-        "cmp    al, 041h" \
-        "jl     LL35" \
-        "cmp    al, 05ah" \
-        "jg     LL35" \
-        "add    al, 0020H" \
-        "LL35:" \
-    parm [al] value[al];
+        "cmp  al,41h"   \
+        "jl short L1"   \
+        "cmp  al,5ah"   \
+        "jg short L1"   \
+        "add  al,20h"   \
+    "L1:"               \
+    __parm      [__al] \
+    __value     [__al] \
+    __modify    []
 #else
 #define toUpper( x )    toupper( x )
 #define toLower( x )    tolower( x )
@@ -311,9 +310,7 @@ int Tokenize( const char *Tokens, const char *token, bool entireflag )
             t++;
             tkn++;
         }
-        while( *t != '\0' ) {
-            t++;
-        }
+        SKIP_TOEND( t );
         i++;
     }
     return( TOK_INVALID );
@@ -364,7 +361,7 @@ char **BuildTokenList( int num, char *list )
     char        **arr, *data, *t;
     int         k, i = 0, off = 0;
 
-    arr = MemAlloc( num * sizeof( char * ) );
+    arr = _MemAllocList( num );
     for( ;; ) {
 
         t = &list[off];

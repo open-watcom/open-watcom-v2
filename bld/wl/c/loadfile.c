@@ -331,7 +331,7 @@ static class_entry *LocateBSSClass( void )
 
     sect = (Root->areas == NULL) ? Root : NonSect;
     for( currclass = sect->classlist; currclass != NULL; currclass = currclass->next_class ) {
-        if( stricmp( currclass->name, BSSClassName ) == 0 ) {
+        if( stricmp( currclass->name.u.ptr, BSSClassName ) == 0 ) {
             return( currclass );
         }
     }
@@ -501,8 +501,8 @@ void SetStartSym( const char *name )
     if( StartInfo.type != START_UNDEFED ) {
         if( StartInfo.type == START_IS_SYM ) {
             namelen = strlen( name );
-            if( namelen != strlen( StartInfo.targ.sym->name ) || CmpRtn( StartInfo.targ.sym->name, name, namelen ) != 0 ) {
-                LnkMsg( LOC+MILD_ERR+MSG_MULT_START_ADDRS_BY, "12", StartInfo.targ.sym->name, name );
+            if( namelen != strlen( StartInfo.targ.sym->name.u.ptr ) || CmpRtn( StartInfo.targ.sym->name.u.ptr, name, namelen ) != 0 ) {
+                LnkMsg( LOC+MILD_ERR+MSG_MULT_START_ADDRS_BY, "12", StartInfo.targ.sym->name.u.ptr, name );
             }
         } else {
             LnkMsg( LOC+MILD_ERR+MSG_MULT_START_ADDRS, "12", StartInfo.mod->f.source->file->name, StartInfo.mod->name );
@@ -919,9 +919,11 @@ unsigned_32 CopyToLoad( f_handle handle, const char *name )
     unsigned_32     wrote;
 
     wrote = 0;
-    while( (amt_read = QRead( handle, TokBuff, TokSize, name )) != 0 ) {
+    amt_read = QRead( handle, TokBuff, TokSize, name );
+    while( amt_read != 0 && amt_read != IOERROR ) {
         WriteLoad( TokBuff, amt_read );
         wrote += amt_read;
+        amt_read = QRead( handle, TokBuff, TokSize, name );
     }
     return( wrote );
 }
@@ -1002,7 +1004,7 @@ static bool DoGroupLeader( void *_seg, void *_info )
     grpwriteinfo    *info = _info;
 
     // If class or sector should not be output, skip it
-    if ( !( (seg->class->flags & CLASS_NOEMIT) || (seg->segflags & SEG_NOEMIT) ) ) {
+    if( EMIT_CLASS( seg->class ) && EMIT_SEG( seg ) ) {
         info->seg_start = info->grp_start + SEG_GROUP_DELTA( seg );
         DoWriteLeader( seg, info );
     }

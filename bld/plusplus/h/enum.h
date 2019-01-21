@@ -33,16 +33,16 @@
 #ifndef _ENUM_H
 
 typedef struct {
-    SYMBOL              sym;            // typedef symbol of current enum
-    TYPE                type;           // type of current enum
-    TOKEN_LOCN          locn;           // location of typedef symbol
-    PTREE               id;             // PTREE of current enum name
-    signed_64           next_value;     // next value
-    uint_8              index;          // index into enum_ranges table
-    type_id             base_id;        // id for base type
-    uint_8              next_signed : 1;// true if next_value is signed
-    uint_8              has_sign    : 1;// true if at least one value is < 0
-    unsigned                        : 0;// alignment
+    SYMBOL          sym;                // typedef symbol of current enum
+    TYPE            type;               // type of current enum
+    TOKEN_LOCN      locn;               // location of typedef symbol
+    PTREE           id;                 // PTREE of current enum name
+    signed_64       next_value;         // next value
+    uint_8          index;              // index into enum_ranges table
+    type_id         base_id;            // id for base type
+    uint_8          next_signed : 1;    // true if next_value is signed
+    uint_8          has_sign    : 1;    // true if at least one value is < 0
+    unsigned                    : 0;    // alignment
 } ENUM_DATA;
 
 extern void InitEnumState( ENUM_DATA *, PTREE );

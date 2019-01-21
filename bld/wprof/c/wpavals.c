@@ -33,7 +33,7 @@
 #include "common.h"
 #include "aui.h"
 #include "wpaui.h"
-#include "wpavals.h"
+
 
 gui_colour_set WndColours[] = {
 

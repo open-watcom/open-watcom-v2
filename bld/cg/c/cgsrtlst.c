@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -30,13 +31,12 @@
 ****************************************************************************/
 
 
-#include "cgstd.h"
+#include "_cgstd.h"
 #include "cgmem.h"
 #include "memout.h"
 #include "cgsrtlst.h"
+#include "memmgt.h"
 
-
-extern  mem_out_action          SetMemOut(mem_out_action);
 
 #define _NEXT( list, offset ) (*((void **)((char *)list + offset)))
 
@@ -89,7 +89,7 @@ static  void            *MergeList( void *list1, void *list2,
     }
     if( list1 != NULL ) {
         *owner = list1;
-    } else if ( list2 != NULL ) {
+    } else if( list2 != NULL ) {
         *owner = list2;
     }
     return( list );
@@ -166,10 +166,9 @@ static  void            ShellSort( void **array, unsigned length,
 }
 
 
-extern  void            *SortList( void *list, unsigned next_offset,
-                                  bool (*before)(void *,void *) ) {
-/****************************************************************/
-
+void *SortList( void *list, unsigned next_offset, bool (*before)(void *,void *) )
+/*******************************************************************************/
+{
     void                *list2;
     unsigned            length;
     mem_out_action      old_memout;

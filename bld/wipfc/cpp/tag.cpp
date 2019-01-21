@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
+* Copyright (c) 2009-2018 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -28,6 +28,8 @@
 *
 ****************************************************************************/
 
+
+#include "wipfc.hpp"
 #include <functional>
 #include <algorithm>
 #include "tag.hpp"
@@ -70,7 +72,7 @@
 
 Tag::~Tag()
 {
-    for( ChildrenIter itr = children.begin(); itr != children.end(); ++itr ) {
+    for( ChildrenIter itr = _children.begin(); itr != _children.end(); ++itr ) {
         delete *itr;
     }
 }
@@ -82,295 +84,294 @@ Lexer::Token Tag::parse( Lexer* lexer )
 /***************************************************************************/
 Lexer::Token Tag::parseAttributes( Lexer* lexer )
 {
-    Lexer::Token tok( document->getNextToken() );
+    Lexer::Token tok;
+
     (void)lexer;
-    while( tok != Lexer::TAGEND ) {
-        if( tok == Lexer::ATTRIBUTE )
-            document->printError( ERR1_NOATTR );
-        else if( tok == Lexer::FLAG )
-            document->printError( ERR1_NOATTR );
-        else if( tok == Lexer::ERROR_TAG )
+
+    while( (tok = _document->getNextToken()) != Lexer::TAGEND ) {
+        if( tok == Lexer::ATTRIBUTE ) {
+            _document->printError( ERR1_NOATTR );
+        } else if( tok == Lexer::FLAG ) {
+            _document->printError( ERR1_NOATTR );
+        } else if( tok == Lexer::ERROR_TAG ) {
             throw FatalError( ERR_SYNTAX );
-        else if( tok == Lexer::END )
+        } else if( tok == Lexer::END ) {
             throw FatalError( ERR_EOF );
-        else
-            document->printError( ERR1_TAGSYNTAX );
-        tok = document->getNextToken();
+        } else {
+            _document->printError( ERR1_TAGSYNTAX );
+        }
     }
-    return document->getNextToken();    //consume TAGEND
+    return _document->getNextToken();    //consume TAGEND
 }
 /***************************************************************************/
 bool Tag::parseInline( Lexer* lexer, Lexer::Token& tok )
 {
     bool notHandled( false );
     if( tok == Lexer::WORD ) {
-        Word* word( new Word( document, this, document->dataName(),
-            document->lexerLine(), document->lexerCol(), whiteSpace ) );
-        appendChild( word );
-        tok = word->parse( lexer );
-    }
-    else if( tok == Lexer::ENTITY ) {
-        Entity* entity( new Entity( document, this, document->dataName(),
-            document->lexerLine(), document->lexerCol(), whiteSpace ) );
+        TextWord* w( new TextWord( _document, this, _document->dataName(),
+            _document->lexerLine(), _document->lexerCol(), _whiteSpace ) );
+        appendChild( w );
+        tok = w->parse( lexer );
+    } else if( tok == Lexer::ENTITY ) {
+        Entity* entity( new Entity( _document, this, _document->dataName(),
+            _document->lexerLine(), _document->lexerCol(), _whiteSpace ) );
         appendChild( entity );
         tok = entity->parse( lexer );
-    }
-    else if( tok == Lexer::PUNCTUATION ) {
-        Punctuation* punct( new Punctuation( document, this, document->dataName(),
-            document->lexerLine(), document->lexerCol(), whiteSpace ) );
+    } else if( tok == Lexer::PUNCTUATION ) {
+        Punctuation* punct( new Punctuation( _document, this, _document->dataName(),
+            _document->lexerLine(), _document->lexerCol(), _whiteSpace ) );
         appendChild( punct );
         tok = punct->parse( lexer );
-    }
-    else if( tok == Lexer::WHITESPACE ) {
-        WhiteSpace* ws( new WhiteSpace( document, this, document->dataName(),
-        document->lexerLine(), document->lexerCol(), whiteSpace ) );
+    } else if( tok == Lexer::WHITESPACE ) {
+        WhiteSpace* ws( new WhiteSpace( _document, this, _document->dataName(),
+        _document->lexerLine(), _document->lexerCol(), _whiteSpace ) );
         appendChild( ws );
         tok = ws->parse( lexer );
-    }
-    else if( tok == Lexer::COMMAND )
-        tok = document->processCommand( lexer, this );
-    else if( tok == Lexer::TAG ) {
+    } else if( tok == Lexer::COMMAND ) {
+        _document->parseCommand( lexer, this );
+        tok = _document->getNextToken();
+    } else if( tok == Lexer::TAG ) {
         switch( lexer->tagId() ) {
         //make new tag
         //append pointer to this tag's list
         case Lexer::ARTLINK:
             {
-                Element* elt( new Artlink( document, this, document->dataName(),
-                    document->lexerLine(), document->lexerCol() ) );
-                appendChild( elt );
-                tok = elt->parse( lexer );
+                Artlink *artlink = new Artlink( _document, this, _document->dataName(),
+                    _document->lexerLine(), _document->lexerCol() );
+                appendChild( artlink );
+                tok = artlink->parse( lexer );
             }
             break;
         case Lexer::EARTLINK:
             {
-                Element* elt( new EArtlink( document, this, document->dataName(),
-                    document->lexerLine(), document->lexerCol() ) );
-                appendChild( elt );
-                tok = elt->parse( lexer );
+                EArtlink *eartlink = new EArtlink( _document, this, _document->dataName(),
+                    _document->lexerLine(), _document->lexerCol() );
+                appendChild( eartlink );
+                tok = eartlink->parse( lexer );
             }
             break;
         case Lexer::ARTWORK:
             {
-                Element* elt( new Artwork( document, this, document->dataName(),
-                    document->lexerLine(), document->lexerCol() ) );
-                appendChild( elt );
-                tok = elt->parse( lexer );
+                Artwork *artwork = new Artwork( _document, this, _document->dataName(),
+                    _document->lexerLine(), _document->lexerCol() );
+                appendChild( artwork );
+                tok = artwork->parse( lexer );
             }
             break;
         case Lexer::COLOR:
             {
-                Element* elt( new Color( document, this, document->dataName(),
-                    document->lexerLine(), document->lexerCol() ) );
-                appendChild( elt );
-                tok = elt->parse( lexer );
+                Color *color = new Color( _document, this, _document->dataName(),
+                    _document->lexerLine(), _document->lexerCol() );
+                appendChild( color );
+                tok = color->parse( lexer );
             }
             break;
         case Lexer::FONT:
             {
-                Element* elt( new Font( document, this, document->dataName(),
-                    document->lexerLine(), document->lexerCol() ) );
-                appendChild( elt );
-                tok = elt->parse( lexer );
+                Font *font = new Font( _document, this, _document->dataName(),
+                    _document->lexerLine(), _document->lexerCol() );
+                appendChild( font );
+                tok = font->parse( lexer );
             }
             break;
         case Lexer::HDREF:
             {
-                Element* elt( new Hdref( document, this, document->dataName(),
-                    document->lexerLine(), document->lexerCol() ) );
-                appendChild( elt );
-                tok = elt->parse( lexer );
+                Hdref *hdref = new Hdref( _document, this, _document->dataName(),
+                    _document->lexerLine(), _document->lexerCol() );
+                appendChild( hdref );
+                tok = hdref->parse( lexer );
             }
             break;
         case Lexer::HIDE:
             {
-                Element* elt( new Hide( document, this, document->dataName(),
-                    document->lexerLine(), document->lexerCol() ) );
-                appendChild( elt );
-                tok = elt->parse( lexer );
+                Hide *hide = new Hide( _document, this, _document->dataName(),
+                    _document->lexerLine(), _document->lexerCol() );
+                appendChild( hide );
+                tok = hide->parse( lexer );
             }
             break;
         case Lexer::EHIDE:
             {
-                Element* elt( new EHide( document, this, document->dataName(),
-                    document->lexerLine(), document->lexerCol() ) );
-                appendChild( elt );
-                tok = elt->parse( lexer );
+                EHide *ehide = new EHide( _document, this, _document->dataName(),
+                    _document->lexerLine(), _document->lexerCol() );
+                appendChild( ehide );
+                tok = ehide->parse( lexer );
             }
             break;
         case Lexer::HP1:
             {
-                Element* elt( new Hpn( document, this, document->dataName(),
-                    document->lexerLine(), document->lexerCol(), 1 ) );
-                appendChild( elt );
-                tok = elt->parse( lexer );
+                Hpn *hpn = new Hpn( _document, this, _document->dataName(),
+                    _document->lexerLine(), _document->lexerCol(), 1 );
+                appendChild( hpn );
+                tok = hpn->parse( lexer );
             }
             break;
         case Lexer::HP2:
             {
-                Element* elt( new Hpn( document, this, document->dataName(),
-                    document->lexerLine(), document->lexerCol(), 2 ) );
-                appendChild( elt );
-                tok = elt->parse( lexer );
+                Hpn *hpn = new Hpn( _document, this, _document->dataName(),
+                    _document->lexerLine(), _document->lexerCol(), 2 );
+                appendChild( hpn );
+                tok = hpn->parse( lexer );
             }
             break;
         case Lexer::HP3:
             {
-                Element* elt( new Hpn( document, this, document->dataName(),
-                    document->lexerLine(), document->lexerCol(), 3 ) );
-                appendChild( elt );
-                tok = elt->parse( lexer );
+                Hpn *hpn = new Hpn( _document, this, _document->dataName(),
+                    _document->lexerLine(), _document->lexerCol(), 3 );
+                appendChild( hpn );
+                tok = hpn->parse( lexer );
             }
             break;
         case Lexer::HP4:
             {
-                Element* elt( new Hpn( document, this, document->dataName(),
-                    document->lexerLine(), document->lexerCol(), 4 ) );
-                appendChild( elt );
-                tok = elt->parse( lexer );
+                Hpn *hpn = new Hpn( _document, this, _document->dataName(),
+                    _document->lexerLine(), _document->lexerCol(), 4 );
+                appendChild( hpn );
+                tok = hpn->parse( lexer );
             }
             break;
         case Lexer::HP5:
             {
-                Element* elt( new Hpn( document, this, document->dataName(),
-                    document->lexerLine(), document->lexerCol(), 5 ) );
-                appendChild( elt );
-                tok = elt->parse( lexer );
+                Hpn *hpn = new Hpn( _document, this, _document->dataName(),
+                    _document->lexerLine(), _document->lexerCol(), 5 );
+                appendChild( hpn );
+                tok = hpn->parse( lexer );
             }
             break;
         case Lexer::HP6:
             {
-                Element* elt( new Hpn( document, this, document->dataName(),
-                    document->lexerLine(), document->lexerCol(), 6 ) );
-                appendChild( elt );
-                tok = elt->parse( lexer );
+                Hpn *hpn = new Hpn( _document, this, _document->dataName(),
+                    _document->lexerLine(), _document->lexerCol(), 6 );
+                appendChild( hpn );
+                tok = hpn->parse( lexer );
             }
             break;
         case Lexer::HP7:
             {
-                Element* elt( new Hpn( document, this, document->dataName(),
-                    document->lexerLine(), document->lexerCol(), 7 ) );
-                appendChild( elt );
-                tok = elt->parse( lexer );
+                Hpn *hpn = new Hpn( _document, this, _document->dataName(),
+                    _document->lexerLine(), _document->lexerCol(), 7 );
+                appendChild( hpn );
+                tok = hpn->parse( lexer );
             }
             break;
         case Lexer::HP8:
             {
-                Element* elt( new Hpn( document, this, document->dataName(),
-                    document->lexerLine(), document->lexerCol(), 8 ) );
-                appendChild( elt );
-                tok = elt->parse( lexer );
+                Hpn *hpn = new Hpn( _document, this, _document->dataName(),
+                    _document->lexerLine(), _document->lexerCol(), 8 );
+                appendChild( hpn );
+                tok = hpn->parse( lexer );
             }
             break;
         case Lexer::HP9:
             {
-                Element* elt( new Hpn( document, this, document->dataName(),
-                    document->lexerLine(), document->lexerCol(), 9 ) );
-                appendChild( elt );
-                tok = elt->parse( lexer );
+                Hpn *hpn = new Hpn( _document, this, _document->dataName(),
+                    _document->lexerLine(), _document->lexerCol(), 9 );
+                appendChild( hpn );
+                tok = hpn->parse( lexer );
             }
             break;
         case Lexer::EHP1:
             {
-                Element* elt( new EHpn( document, this, document->dataName(),
-                    document->lexerLine(), document->lexerCol(), 1 ) );
-                appendChild( elt );
-                tok = elt->parse( lexer );
+                EHpn *ehpn = new EHpn( _document, this, _document->dataName(),
+                    _document->lexerLine(), _document->lexerCol(), 1 );
+                appendChild( ehpn );
+                tok = ehpn->parse( lexer );
             }
             break;
         case Lexer::EHP2:
             {
-                Element* elt( new EHpn( document, this, document->dataName(),
-                    document->lexerLine(), document->lexerCol(), 2 ) );
-                appendChild( elt );
-                tok = elt->parse( lexer );
+                EHpn *ehpn = new EHpn( _document, this, _document->dataName(),
+                    _document->lexerLine(), _document->lexerCol(), 2 );
+                appendChild( ehpn );
+                tok = ehpn->parse( lexer );
             }
             break;
         case Lexer::EHP3:
             {
-                Element* elt( new EHpn( document, this, document->dataName(),
-                    document->lexerLine(), document->lexerCol(), 3 ) );
-                appendChild( elt );
-                tok = elt->parse( lexer );
+                EHpn *ehpn = new EHpn( _document, this, _document->dataName(),
+                    _document->lexerLine(), _document->lexerCol(), 3 );
+                appendChild( ehpn );
+                tok = ehpn->parse( lexer );
             }
             break;
         case Lexer::EHP4:
             {
-                Element* elt( new EHpn( document, this, document->dataName(),
-                    document->lexerLine(), document->lexerCol(), 4 ) );
-                appendChild( elt );
-                tok = elt->parse( lexer );
+                EHpn *ehpn = new EHpn( _document, this, _document->dataName(),
+                    _document->lexerLine(), _document->lexerCol(), 4 );
+                appendChild( ehpn );
+                tok = ehpn->parse( lexer );
             }
             break;
         case Lexer::EHP5:
             {
-                Element* elt( new EHpn( document, this, document->dataName(),
-                    document->lexerLine(), document->lexerCol(), 5 ) );
-                appendChild( elt );
-                tok = elt->parse( lexer );
+                EHpn *ehpn = new EHpn( _document, this, _document->dataName(),
+                    _document->lexerLine(), _document->lexerCol(), 5 );
+                appendChild( ehpn );
+                tok = ehpn->parse( lexer );
             }
             break;
         case Lexer::EHP6:
             {
-                Element* elt( new EHpn( document, this, document->dataName(),
-                    document->lexerLine(), document->lexerCol(), 6 ) );
-                appendChild( elt );
-                tok = elt->parse( lexer );
+                EHpn *ehpn = new EHpn( _document, this, _document->dataName(),
+                    _document->lexerLine(), _document->lexerCol(), 6 );
+                appendChild( ehpn );
+                tok = ehpn->parse( lexer );
             }
             break;
         case Lexer::EHP7:
             {
-                Element* elt( new EHpn( document, this, document->dataName(),
-                    document->lexerLine(), document->lexerCol(), 7 ) );
-                appendChild( elt );
-                tok = elt->parse( lexer );
+                EHpn *ehpn = new EHpn( _document, this, _document->dataName(),
+                    _document->lexerLine(), _document->lexerCol(), 7 );
+                appendChild( ehpn );
+                tok = ehpn->parse( lexer );
             }
             break;
         case Lexer::EHP8:
             {
-                Element* elt( new EHpn( document, this, document->dataName(),
-                    document->lexerLine(), document->lexerCol(), 8 ) );
-                appendChild( elt );
-                tok = elt->parse( lexer );
+                EHpn *ehpn = new EHpn( _document, this, _document->dataName(),
+                    _document->lexerLine(), _document->lexerCol(), 8 );
+                appendChild( ehpn );
+                tok = ehpn->parse( lexer );
             }
             break;
         case Lexer::EHP9:
             {
-                Element* elt( new EHpn( document, this, document->dataName(),
-                    document->lexerLine(), document->lexerCol(), 9 ) );
-                appendChild( elt );
-                tok = elt->parse( lexer );
+                EHpn *ehpn = new EHpn( _document, this, _document->dataName(),
+                    _document->lexerLine(), _document->lexerCol(), 9 );
+                appendChild( ehpn );
+                tok = ehpn->parse( lexer );
             }
             break;
         case Lexer::LINK:
             {
-                Element* elt( new Link( document, this, document->dataName(),
-                    document->lexerLine(), document->lexerCol(), whiteSpace ) );
-                appendChild( elt );
-                tok = elt->parse( lexer );
+                Link *link = new Link( _document, this, _document->dataName(),
+                    _document->lexerLine(), _document->lexerCol(), _whiteSpace );
+                appendChild( link );
+                tok = link->parse( lexer );
             }
             break;
         case Lexer::ELINK:
             {
-                Element* elt( new ELink( document, this, document->dataName(),
-                    document->lexerLine(), document->lexerCol() ) );
-                appendChild( elt );
-                tok = elt->parse( lexer );
+                ELink *elink = new ELink( _document, this, _document->dataName(),
+                    _document->lexerLine(), _document->lexerCol() );
+                appendChild( elink );
+                tok = elink->parse( lexer );
             }
             break;
         case Lexer::LM:
             {
-                Element* elt( new Lm( document, this, document->dataName(),
-                    document->lexerLine(), document->lexerCol() ) );
-                appendChild( elt );
-                tok = elt->parse( lexer );
+                Lm *lm = new Lm( _document, this, _document->dataName(),
+                    _document->lexerLine(), _document->lexerCol() );
+                appendChild( lm );
+                tok = lm->parse( lexer );
             }
             break;
         case Lexer::RM:
             {
-                Element* elt( new Rm( document, this, document->dataName(),
-                    document->lexerLine(), document->lexerCol() ) );
-                appendChild( elt );
-                tok = elt->parse( lexer );
+                Rm *rm = new Rm( _document, this, _document->dataName(),
+                    _document->lexerLine(), _document->lexerCol() );
+                appendChild( rm );
+                tok = rm->parse( lexer );
             }
             break;
         case Lexer::EUSERDOC:
@@ -379,14 +380,12 @@ bool Tag::parseInline( Lexer* lexer, Lexer::Token& tok )
             notHandled = true;
             break;
         }
-    }
-    else if( tok == Lexer::ERROR_TAG ) {
-        document->printError( ERR1_TAGNOTDEF );
-        tok = document->getNextToken();
-    }
-    else if( tok == Lexer::ERROR_ENTITY ) {
-        document->printError( ERR1_TAGNOTDEF );
-        tok = document->getNextToken();
+    } else if( tok == Lexer::ERROR_TAG ) {
+        _document->printError( ERR1_TAGNOTDEF );
+        tok = _document->getNextToken();
+    } else if( tok == Lexer::ERROR_ENTITY ) {
+        _document->printError( ERR1_TAGNOTDEF );
+        tok = _document->getNextToken();
     }
     return notHandled;
 }
@@ -394,10 +393,10 @@ bool Tag::parseInline( Lexer* lexer, Lexer::Token& tok )
 bool Tag::parseBlock( Lexer* lexer, Lexer::Token& tok )
 {
     bool notHandled( false );
-    if( !document->autoSpacing() ) {    //tag came after a word-punct combo
-        document->toggleAutoSpacing();
-        document->lastText()->setToggleSpacing();
-        document->setLastPrintable( Lexer::TAG, 0 );
+    if( !_document->autoSpacing() ) {    //tag came after a word-punct combo
+        _document->toggleAutoSpacing();
+        _document->lastText()->setToggleSpacing();
+        _document->setLastPrintable( Lexer::TAG, 0 );
     }
     if( tok == Lexer::TAG ) {
         switch( lexer->tagId() ) {
@@ -405,169 +404,169 @@ bool Tag::parseBlock( Lexer* lexer, Lexer::Token& tok )
         //append pointer to this tag's list
         case Lexer::ACVIEWPORT:
             {
-                Element* elt( new AcViewport( document, this, document->dataName(),
-                    document->lexerLine(), document->lexerCol() ) );
-                appendChild( elt );
-                tok = elt->parse( lexer );
+                AcViewport *acviewport = new AcViewport( _document, this, _document->dataName(),
+                    _document->lexerLine(), _document->lexerCol() );
+                appendChild( acviewport );
+                tok = acviewport->parse( lexer );
             }
             break;
         case Lexer::CAUTION:
             {
-                Element* elt( new Caution( document, this, document->dataName(),
-                    document->lexerLine(), document->lexerCol() ) );
-                appendChild( elt );
-                tok = elt->parse( lexer );
+                Caution *caution = new Caution( _document, this, _document->dataName(),
+                    _document->lexerLine(), _document->lexerCol() );
+                appendChild( caution );
+                tok = caution->parse( lexer );
             }
             break;
         case Lexer::ECAUTION:
             {
-                Element* elt( new ECaution( document, this, document->dataName(),
-                    document->lexerLine(), document->lexerCol() ) );
-                appendChild( elt );
-                tok = elt->parse( lexer );
+                ECaution *ecaution = new ECaution( _document, this, _document->dataName(),
+                    _document->lexerLine(), _document->lexerCol() );
+                appendChild( ecaution );
+                tok = ecaution->parse( lexer );
             }
             break;
         case Lexer::CGRAPHIC:
             {
-                Element* elt( new CGraphic( document, this, document->dataName(),
-                    document->lexerLine(), document->lexerCol() ) );
-                appendChild( elt );
-                tok = elt->parse( lexer );
+                CGraphic *cgraphic = new CGraphic( _document, this, _document->dataName(),
+                    _document->lexerLine(), _document->lexerCol() );
+                appendChild( cgraphic );
+                tok = cgraphic->parse( lexer );
             }
             break;
         case Lexer::ECGRAPHIC:
             {
-                Element* elt( new ECGraphic( document, this, document->dataName(),
-                    document->lexerLine(), document->lexerCol() ) );
-                appendChild( elt );
-                tok = elt->parse( lexer );
+                ECGraphic *ecgraphic = new ECGraphic( _document, this, _document->dataName(),
+                    _document->lexerLine(), _document->lexerCol() );
+                appendChild( ecgraphic );
+                tok = ecgraphic->parse( lexer );
             }
             break;
         case Lexer::DDF:
             {
-                Element* elt( new Ddf( document, this, document->dataName(),
-                    document->lexerLine(), document->lexerCol() ) );
-                appendChild( elt );
-                tok = elt->parse( lexer );
+                Ddf *ddf = new Ddf( _document, this, _document->dataName(),
+                    _document->lexerLine(), _document->lexerCol() );
+                appendChild( ddf );
+                tok = ddf->parse( lexer );
             }
             break;
         case Lexer::FIG:
             {
-                Element* elt( new Fig( document, this, document->dataName(),
-                    document->lexerLine(), document->lexerCol() ) );
-                appendChild( elt );
-                tok = elt->parse( lexer );
+                Fig *fig = new Fig( _document, this, _document->dataName(),
+                    _document->lexerLine(), _document->lexerCol() );
+                appendChild( fig );
+                tok = fig->parse( lexer );
             }
             break;
         case Lexer::EFIG:
             {
-                Element* elt( new EFig( document, this, document->dataName(),
-                    document->lexerLine(), document->lexerCol() ) );
-                appendChild( elt );
-                tok = elt->parse( lexer );
+                EFig *efig = new EFig( _document, this, _document->dataName(),
+                    _document->lexerLine(), _document->lexerCol() );
+                appendChild( efig );
+                tok = efig->parse( lexer );
             }
             break;
         case Lexer::LINES:
             {
-                Element* elt( new Lines( document, this, document->dataName(),
-                    document->lexerLine(), document->lexerCol() ) );
-                appendChild( elt );
-                tok = elt->parse( lexer );
+                Lines *lines = new Lines( _document, this, _document->dataName(),
+                    _document->lexerLine(), _document->lexerCol() );
+                appendChild( lines );
+                tok = lines->parse( lexer );
             }
             break;
         case Lexer::ELINES:
             {
-                Element* elt( new ELines( document, this, document->dataName(),
-                    document->lexerLine(), document->lexerCol() ) );
-                appendChild( elt );
-                tok = elt->parse( lexer );
+                ELines *elines = new ELines( _document, this, _document->dataName(),
+                    _document->lexerLine(), _document->lexerCol() );
+                appendChild( elines );
+                tok = elines->parse( lexer );
             }
             break;
         case Lexer::NOTE:
             {
-                Element* elt( new Note( document, this, document->dataName(),
-                    document->lexerLine(), document->lexerCol() ) );
-                appendChild( elt );
-                tok = elt->parse( lexer );
+                Note *note = new Note( _document, this, _document->dataName(),
+                    _document->lexerLine(), _document->lexerCol() );
+                appendChild( note );
+                tok = note->parse( lexer );
             }
             break;
         case Lexer::NT:
             {
-                Element* elt( new Nt( document, this, document->dataName(),
-                    document->lexerLine(), document->lexerCol() ) );
-                appendChild( elt );
-                tok = elt->parse( lexer );
+                Nt *nt = new Nt( _document, this, _document->dataName(),
+                    _document->lexerLine(), _document->lexerCol() );
+                appendChild( nt );
+                tok = nt->parse( lexer );
             }
             break;
         case Lexer::ENT:
             {
-                Element* elt( new ENt( document, this, document->dataName(),
-                    document->lexerLine(), document->lexerCol() ) );
-                appendChild( elt );
-                tok = elt->parse( lexer );
+                ENt *ent = new ENt( _document, this, _document->dataName(),
+                    _document->lexerLine(), _document->lexerCol() );
+                appendChild( ent );
+                tok = ent->parse( lexer );
             }
             break;
         case Lexer::LI:
         case Lexer::LP:
-            document->printError( ERR1_NOLIST );
+            _document->printError( ERR1_NOLIST );
             while( tok != Lexer::TAGEND )
-                tok = document->getNextToken();
-            tok = document->getNextToken();
+                tok = _document->getNextToken();
+            tok = _document->getNextToken();
             break;
         case Lexer::P:
             {
-                Element* elt( new P( document, this, document->dataName(),
-                    document->lexerLine(), document->lexerCol() ) );
-                appendChild( elt );
-                tok = elt->parse( lexer );
+                P *p= new P( _document, this, _document->dataName(),
+                    _document->lexerLine(), _document->lexerCol() );
+                appendChild( p );
+                tok = p->parse( lexer );
             }
             break;
         case Lexer::TABLE:
             {
-                Element* elt( new Table( document, this, document->dataName(),
-                    document->lexerLine(), document->lexerCol() ) );
-                appendChild( elt );
-                tok = elt->parse( lexer );
+                Table *table = new Table( _document, this, _document->dataName(),
+                    _document->lexerLine(), _document->lexerCol() );
+                appendChild( table );
+                tok = table->parse( lexer );
             }
             break;
         case Lexer::ETABLE:
             {
-                Element* elt( new ETable( document, this, document->dataName(),
-                    document->lexerLine(), document->lexerCol() ) );
-                appendChild( elt );
-                tok = elt->parse( lexer );
+                ETable *etable = new ETable( _document, this, _document->dataName(),
+                    _document->lexerLine(), _document->lexerCol() );
+                appendChild( etable );
+                tok = etable->parse( lexer );
             }
             break;
         case Lexer::WARNING:
             {
-                Element* elt( new Warning( document, this, document->dataName(),
-                    document->lexerLine(), document->lexerCol() ) );
-                appendChild( elt );
-                tok = elt->parse( lexer );
+                Warning *warning = new Warning( _document, this, _document->dataName(),
+                    _document->lexerLine(), _document->lexerCol() );
+                appendChild( warning );
+                tok = warning->parse( lexer );
             }
             break;
         case Lexer::EWARNING:
             {
-                Element* elt( new EWarning( document, this, document->dataName(),
-                    document->lexerLine(), document->lexerCol() ) );
-                appendChild( elt );
-                tok = elt->parse( lexer );
+                EWarning *ewarning = new EWarning( _document, this, _document->dataName(),
+                    _document->lexerLine(), _document->lexerCol() );
+                appendChild( ewarning );
+                tok = ewarning->parse( lexer );
             }
             break;
         case Lexer::XMP:
             {
-                Element* elt( new Xmp( document, this, document->dataName(),
-                    document->lexerLine(), document->lexerCol() ) );
-                appendChild( elt );
-                tok = elt->parse( lexer );
+                Xmp *xmp = new Xmp( _document, this, _document->dataName(),
+                    _document->lexerLine(), _document->lexerCol() );
+                appendChild( xmp );
+                tok = xmp->parse( lexer );
             }
             break;
         case Lexer::EXMP:
             {
-                Element* elt( new EXmp( document, this, document->dataName(),
-                    document->lexerLine(), document->lexerCol() ) );
-                appendChild( elt );
-                tok = elt->parse( lexer );
+                EXmp *exmp = new EXmp( _document, this, _document->dataName(),
+                    _document->lexerLine(), _document->lexerCol() );
+                appendChild( exmp );
+                tok = exmp->parse( lexer );
             }
             break;
         case Lexer::EUSERDOC:
@@ -590,42 +589,42 @@ bool Tag::parseListBlock( Lexer* lexer, Lexer::Token& tok )
         //append pointer to this tag's list
         case Lexer::DL:
             {
-                Element* elt( new Dl( document, this, document->dataName(),
-                    document->lexerLine(), document->lexerCol(), 0, document->leftMargin() ) );
-                appendChild( elt );
-                tok = elt->parse( lexer );
+                Dl *dl = new Dl( _document, this, _document->dataName(),
+                    _document->lexerLine(), _document->lexerCol(), 0, _document->leftMargin() );
+                appendChild( dl );
+                tok = dl->parse( lexer );
             }
             break;
         case Lexer::OL:
             {
-                Element* elt( new Ol( document, this, document->dataName(),
-                    document->dataLine(), document->dataCol(), 0, document->leftMargin() ) );
-                appendChild( elt );
-                tok = elt->parse( lexer );
+                Ol *ol = new Ol( _document, this, _document->dataName(),
+                    _document->dataLine(), _document->dataCol(), 0, _document->leftMargin() );
+                appendChild( ol );
+                tok = ol->parse( lexer );
             }
             break;
         case Lexer::PARML:
-                {
-                    Element* elt( new Parml( document, this, document->dataName(),
-                        document->dataLine(), document->dataCol(), 0, document->leftMargin() ) );
-                    appendChild( elt );
-                    tok = elt->parse( lexer );
-                }
+            {
+                Parml *parml = new Parml( _document, this, _document->dataName(),
+                    _document->dataLine(), _document->dataCol(), 0, _document->leftMargin() );
+                appendChild( parml );
+                tok = parml->parse( lexer );
+            }
             break;
         case Lexer::SL:
             {
-                Element* elt( new Sl( document, this, document->dataName(),
-                    document->dataLine(), document->dataCol(), 0, document->leftMargin() ) );
-                appendChild( elt );
-                tok = elt->parse( lexer );
+                Sl *sl = new Sl( _document, this, _document->dataName(),
+                    _document->dataLine(), _document->dataCol(), 0, _document->leftMargin() );
+                appendChild( sl );
+                tok = sl->parse( lexer );
             }
             break;
         case Lexer::UL:
             {
-                Element* elt( new Ul( document, this, document->dataName(),
-                    document->dataLine(), document->dataCol(), 0, document->leftMargin() ) );
-                appendChild( elt );
-                tok = elt->parse( lexer );
+                Ul *ul = new Ul( _document, this, _document->dataName(),
+                    _document->dataLine(), _document->dataCol(), 0, _document->leftMargin() );
+                appendChild( ul );
+                tok = ul->parse( lexer );
             }
             break;
         default:
@@ -638,29 +637,35 @@ bool Tag::parseListBlock( Lexer* lexer, Lexer::Token& tok )
 /***************************************************************************/
 void Tag::parseCleanup( Lexer* lexer, Lexer::Token& tok )
 {
-    if( lexer->tagId() == Lexer::BADTAG )
-        document->printError( ERR1_TAGNOTDEF );
-    else
-        document->printError( ERR1_TAGCONTEXT );
+    if( lexer->tagId() == Lexer::BADTAG ) {
+        _document->printError( ERR1_TAGNOTDEF );
+    } else {
+        _document->printError( ERR1_TAGCONTEXT );
+    }
     while( tok != Lexer::TAGEND )
-        tok = document->getNextToken();
-    tok = document->getNextToken();
+        tok = _document->getNextToken();
+    tok = _document->getNextToken();
 }
 /***************************************************************************/
 void Tag::buildIndex()
 {
-    std::for_each( children.begin(), children.end(), std::mem_fun( &Element::buildIndex ) );
+    for( ConstChildrenIter iter = _children.begin(); iter != _children.end(); ++iter ) {
+        ( *iter )->buildIndex();
+    }
 }
+
 /***************************************************************************/
 void Tag::linearize( Page* page )
 {
     page->addElement( this );
-    for( ConstChildrenIter iter = children.begin(); iter != children.end(); ++iter )
+    for( ConstChildrenIter iter = _children.begin(); iter != _children.end(); ++iter ) {
         ( *iter )->linearize( page );
+    }
 }
 /***************************************************************************/
 void Tag::linearizeChildren( Page* page )
 {
-    for( ConstChildrenIter iter = children.begin(); iter != children.end(); ++iter )
+    for( ConstChildrenIter iter = _children.begin(); iter != _children.end(); ++iter ) {
         ( *iter )->linearize( page );
+    }
 }

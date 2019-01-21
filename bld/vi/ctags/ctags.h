@@ -46,6 +46,10 @@ typedef enum {
 #define MAX_LINE                150
 #define MAX_STRUCT_DEPTH        64
 
+#define SKIP_SPACES(s)          while( isspace( *s ) ) s++
+#define SKIP_DIGITS(s)          while( isdigit( *s ) ) s++
+#define SKIP_NOTSPACE(s)        while( !isspace( *s ) && *s != '\0' ) s++
+
 /* global variables */
 extern bool     WantTypedefs;
 extern bool     WantMacros;
@@ -55,38 +59,37 @@ extern bool     WantUSE;
 extern bool     WantEnums;
 extern bool     WantClasses;
 extern bool     VerboseFlag;
-extern unsigned TagCount;
 
 /*
  * function prototypes
  */
 /* ctags.c */
-bool    IsTokenChar( char ch );
-int     MyStricmp( char **buf, char *literal );
-void    ErrorMsgExit( const char *, ... );
+extern bool     IsTokenChar( int ch );
+extern int      MyStricmp( char **buf, char *literal );
+extern void     ErrorMsgExit( const char *, ... );
 
 /* file.c */
-void    StartFile( const char *fname );
-void    EndFile( void );
-void    NewFileLine( void );
-int     GetChar( void );
-void    UnGetChar( int ch );
-void    RecordCurrentLineData( void );
-char    *GetCurrentLineDataPtr( void );
-const char *GetCurrentFileName( void );
-bool    GetString( char *buff, int maxbuff );
+extern void     StartFile( const char *fname );
+extern void     EndFile( void );
+extern void     NewFileLine( void );
+extern int      GetChar( void );
+extern void     UnGetChar( int ch );
+extern void     RecordCurrentLineData( void );
+extern char     *GetCurrentLineDataPtr( void );
+extern const char *GetCurrentFileName( void );
+extern bool     GetString( char *buff, int maxbuff );
 
 /* scanc.c */
-void    ScanC( void );
+extern void     ScanC( void );
 
 /* scanfor.c */
-void    ScanFortran( void );
+extern void     ScanFortran( void );
 
 /* scanasm.c */
-void    ScanAsm( void );
+extern void     ScanAsm( void );
 
 /* taglist.c */
-void    AddTag( const char *id );
-void    GenerateTagsFile( const char *fname );
-void    ReadExtraTags( const char *fname );
-
+extern void     AddTag( const char *id );
+extern void     GenerateTagsFile( const char *fname );
+extern void     ReadExtraTags( const char *fname );
+extern unsigned GetTagCount( void );

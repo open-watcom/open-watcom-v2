@@ -34,7 +34,6 @@
 #include <string.h>
 #include "watcom.h"
 #include "bool.h"
-#include "dpmi.h"
 #include "dbgdefn.h"
 #include "dsxutil.h"
 #include "envlkup.h"

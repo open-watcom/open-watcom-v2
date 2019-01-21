@@ -399,11 +399,9 @@ extern void SymFini( void ) {
     int         n;
     sym_reloc   reloc;
 
-#ifdef AS_DEBUG_DUMP
-  #ifdef _STANDALONE_
+#if defined( _STANDALONE_ ) && defined( AS_DEBUG_DUMP )
     if( _IsOption( DUMP_SYMBOL_TABLE ) )
         DumpSymbolTable();
-  #endif
 #endif
 
     reloc = SymGetReloc( true, &sym );
@@ -434,8 +432,7 @@ extern void SymFini( void ) {
     }
 }
 
-#ifdef _STANDALONE_
-#ifdef AS_DEBUG_DUMP
+#if defined( _STANDALONE_ ) && defined( AS_DEBUG_DUMP )
 
 static char classChar[] = { 'I', 'D', 'L' };
 
@@ -469,5 +466,4 @@ extern void DumpSymbolTable( void ) {
         printf( "\n" );
     }
 }
-#endif
 #endif

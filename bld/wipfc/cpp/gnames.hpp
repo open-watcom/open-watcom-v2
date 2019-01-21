@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
+* Copyright (c) 2009-2018 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -35,7 +35,6 @@
 #ifndef GNAMES_INCLUDED
 #define GNAMES_INCLUDED
 
-#include "config.hpp"
 #include <map>
 #include "gdword.hpp"
 #include "ptrops.hpp"
@@ -44,16 +43,17 @@ class GNames {
 public:
     GNames() { };
     ~GNames() { };
-    void insert( GlobalDictionaryWord* word, STD1::uint16_t toc );
+    void insert( GlobalDictionaryWord* gdentry, word toc );
     //the number of names in the collection
-    STD1::uint16_t size() const { return static_cast< STD1::uint16_t >( names.size() ); };
-    STD1::uint32_t write( std::FILE *out ) const;
+    word size() const { return static_cast< word >( _names.size() ); };
+    dword write( OutFile* out ) const;
 private:
     GNames( const GNames& rhs );            //no copy
     GNames& operator=( const GNames& rhs ); //no assignment
-    std::map< GlobalDictionaryWord*, STD1::uint16_t, ptrLess< GlobalDictionaryWord* > > names;
-    typedef std::map< GlobalDictionaryWord*, STD1::uint16_t, ptrLess< GlobalDictionaryWord* > >::const_iterator ConstNameIter;
-    typedef std::map< GlobalDictionaryWord*, STD1::uint16_t, ptrLess< GlobalDictionaryWord* > >::iterator NameIter;
+
+    std::map< GlobalDictionaryWord*, word, ptrLess< GlobalDictionaryWord* > > _names;
+    typedef std::map< GlobalDictionaryWord*, word, ptrLess< GlobalDictionaryWord* > >::const_iterator ConstNameIter;
+    typedef std::map< GlobalDictionaryWord*, word, ptrLess< GlobalDictionaryWord* > >::iterator NameIter;
 };
 
 #endif //GNAMES_INCLUDED

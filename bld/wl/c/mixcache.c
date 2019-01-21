@@ -108,9 +108,9 @@ bool CacheOpen( file_list *list )
         if( file->flags & INSTAT_FULL_CACHE ) {
             _ChkAlloc( file->cache, file->len );
             if( file->currpos != 0 ) {
-                QLSeek( file->handle, 0, SEEK_SET, file->name );
+                QLSeek( file->handle, 0, SEEK_SET, file->name.u.ptr );
             }
-            QRead( file->handle, file->cache, file->len, file->name );
+            QRead( file->handle, file->cache, file->len, file->name.u.ptr );
             file->currpos = file->len;
         } else {
             numblocks = NumCacheBlocks( file->len );
@@ -149,7 +149,7 @@ void CacheClose( file_list *list, unsigned pass )
     case 3: /* freeing structure */
         FreeObjCache( list );
         if( file->handle != NIL_FHANDLE ) {
-            QClose( file->handle, file->name );
+            QClose( file->handle, file->name.u.ptr );
             file->handle = NIL_FHANDLE;
         }
         break;
@@ -206,10 +206,10 @@ void *CacheRead( file_list *list, unsigned long pos, size_t len )
             _ChkAlloc( cache[bufnum], CACHE_PAGE_SIZE );
             newpos = (unsigned long)bufnum * CACHE_PAGE_SIZE;
             if( file->currpos != newpos ) {
-                QSeek( file->handle, newpos, file->name );
+                QSeek( file->handle, newpos, file->name.u.ptr );
             }
             file->currpos = newpos + CACHE_PAGE_SIZE;
-            QRead( file->handle, cache[bufnum], CACHE_PAGE_SIZE, file->name );
+            QRead( file->handle, cache[bufnum], CACHE_PAGE_SIZE, file->name.u.ptr );
         }
         if( amtread >= len )
             break;

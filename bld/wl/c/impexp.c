@@ -124,13 +124,13 @@ void AddToExportList( entry_export *exp )
     size_t              currlen;
 
     place = NULL;
-    len = strlen( exp->name );
+    len = strlen( exp->name.u.ptr );
     for( owner = &FmtData.u.os2.exports; (curr = *owner) != NULL; owner = &curr->next ) {
-        currlen = strlen( curr->name );
-        if( currlen == len && CmpRtn( curr->name, exp->name, len ) == 0 ) {
-            if( !IS_FMT_INCREMENTAL(ObjFormat) ) {
-                if( !IS_SYM_COMDAT(exp->sym) ) {
-                    LnkMsg( LOC+WRN+MSG_DUP_EXP_NAME, "s", curr->name );
+        currlen = strlen( curr->name.u.ptr );
+        if( currlen == len && CmpRtn( curr->name.u.ptr, exp->name.u.ptr, len ) == 0 ) {
+            if( !IS_FMT_INCREMENTAL( ObjFormat ) ) {
+                if( !IS_SYM_COMDAT( exp->sym ) ) {
+                    LnkMsg( LOC+WRN+MSG_DUP_EXP_NAME, "s", curr->name.u.ptr );
                 }
                 FreeAnExport( exp );
             }
@@ -202,7 +202,7 @@ entry_export *AllocExport( const char *name, size_t len )
     exp->isresident = false;
     exp->isfree = false;
     if( name == NULL ) {
-        exp->name = NULL;
+        exp->name.u.ptr = NULL;
     } else {
         if( (FmtData.type & MK_PE) && FmtData.u.pe.no_stdcall ) {
             chop = CheckStdCall( name, len );
@@ -211,7 +211,7 @@ entry_export *AllocExport( const char *name, size_t len )
                 len -= chop;
             }
         }
-        exp->name = AddSymbolStringTable( &PermStrings, name, len );
+        exp->name.u.ptr = AddSymbolStringTable( &PermStrings, name, len );
     }
     exp->impname = NULL;
     exp->iopl_words = 0;
@@ -273,7 +273,7 @@ static symbol *GetIATSym( symbol *sym )
     size_t      namelen;
     const char  *name;
 
-    name = sym->name;
+    name = sym->name.u.ptr;
     if( LinkState & HAVE_PPC_CODE ) {
         DbgAssert(name[0] == '.' && name[1] == '.');
         name += 2;  // skip '..' at the beginning of the name
@@ -485,7 +485,7 @@ void CheckExport( char *name, ordinal_t ordinal, exportcompare_fn *rtn )
     DEBUG(( DBG_OLD, "Oldlib export %s ordinal %l", name, ordinal ));
     prev = NULL;
     for( place = FmtData.u.os2.exports; place != NULL; place = place->next ) {
-        if( rtn( place->name, name ) == 0 ) {
+        if( rtn( place->name.u.ptr, name ) == 0 ) {
             if( place->ordinal == 0 ) {
                 place->ordinal = ordinal;
                 place = FindPlace( place );
@@ -534,7 +534,7 @@ ordinal_t FindEntryOrdinal( targ_addr addr, group_entry *grp )
 char *ImpModuleName( dll_sym_info *dll )
 /**************************************/
 {
-    return( dll->m.modnum->name );
+    return( dll->m.modnum->name.u.ptr );
 }
 
 bool IsSymElfImported( symbol *s )

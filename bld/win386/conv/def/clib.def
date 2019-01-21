@@ -15,3 +15,4 @@ int _clib_int86x(int,void *,void *,void *);
 int _clib_intdos(void *,void *);
 int _clib_intdosx(void *,void *,void *);
 void _clib_intr(int,void *);
+void _clib_intrf(int,void *);

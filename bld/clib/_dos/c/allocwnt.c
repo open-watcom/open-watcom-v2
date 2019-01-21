@@ -37,11 +37,11 @@
 #include "rtdata.h"
 #include "seterrno.h"
 
-_WCRTLINK unsigned _dos_allocmem( unsigned size, LPVOID *p_mem )
+_WCRTLINK unsigned _dos_allocmem( unsigned num_of_paras, LPVOID *p_mem )
 {
     LPVOID      ptr;
 
-    ptr = GlobalAlloc( GMEM_FIXED, size << 4 );
+    ptr = GlobalAlloc( GMEM_FIXED, num_of_paras << 4 );
     if( ptr == NULL ) {
         return( __set_errno_nt_reterr() );
     }

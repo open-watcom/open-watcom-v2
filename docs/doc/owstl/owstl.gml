@@ -1,52 +1,62 @@
+.*
+.*
+:set symbol="isbn" value="".
+.*
+:INCLUDE file='lytchg'.
+.if &e'&dohelp eq 0 .do begin
+:INCLUDE file='wnohelp'.
+.do end
+:INCLUDE file='fmtmacro'.
+:INCLUDE file='gmlmacs'.
+:INCLUDE file='xdefs'.
 :INCLUDE file='owgml'.
-
+.*
 :GDOC.
-
-:SET symbol="product" value="Open Watcom".
-
+.*
+.if &e'&dohelp eq 0 .do begin
 :FRONTM.
 :TITLEP.
-:TITLE stitle="OWSTL Developer's Guide".&product
-:TITLE.STL Developer's Guide
-:CMT :INCLUDE file='DOCTITLE'.
+:TITLE.&owstlname.
+:TITLE.Developer's Guide
+:INCLUDE file='doctitle'.
 :eTITLEP.
 :ABSTRACT.
-:INCLUDE file='COPY'.
+:INCLUDE file='copyriow'.
+:INCLUDE file='disclaim'.
+:INCLUDE file='newslett'.
 :PREFACE.
-:EMITAUTHOR.
-:ePREFACE.
+:CMT :INCLUDE file='ipfpref'.
+.pa odd
 :TOC.
-:FIGLIST.
-:eFRONTM.
-
+.pa odd
+.do end
+.*
 :BODY.
-
-:H0.Introduction 
+.*
+.if &e'&dohelp eq 1 .do begin
+:exhelp
+:INCLUDE file='&book..idx'
+:INCLUDE file='&book..tbl'
+:INCLUDE file='&book..kw'
+.do end
+.*
+.sepsect The &owstlname
 :INCLUDE file='Intro'.
-
-:H0.Algorithms
 :INCLUDE file='algorith'
-
-:H0.Deque
 :INCLUDE file='deque'.
-
-:H0.List
 :INCLUDE file='list'.
-
-:H0.Red Black Tree
 :INCLUDE file='rbtree'.
-
-:H0.Stack
 :INCLUDE file='stack'
-
-:H0.String
 :INCLUDE file='string'.
-
-:H0.Type Traits
 :INCLUDE file='type_tra'
-
-:H0.Vector
 :INCLUDE file='vector'
-
-:eBODY
+.*
+.if &e'&dohelp eq 0 .do begin
+:BACKM.
+.cd set 2
+:INDEX.
+.do end
+.*
+.cd set 1
+.cntents end_of_book
 :eGDOC.

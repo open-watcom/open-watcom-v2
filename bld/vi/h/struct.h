@@ -487,9 +487,7 @@ typedef union ss_flags {
 } ss_flags;
 
 typedef enum syntax_element {
-    SE_UNPARSED = -2,   // basically used to flag problems
-    SE_UNUSED = -1,     // use to temporarily setup a style
-    SE_TEXT = 0,        // always first
+    SE_TEXT,            // always first
     SE_WHITESPACE,      // don't mess with order (fonts in .cfg parallel #s)
     SE_SELECTION,
     SE_EOFTEXT,
@@ -508,8 +506,12 @@ typedef enum syntax_element {
     SE_STRING,
     SE_VARIABLE,
     SE_REGEXP,
-    SE_NUMTYPES,        // always last
+    SE_UNUSED,          // hidden, use to temporarily setup a style
+    SE_UNPARSED,        // hidden, basically used to flag problems
+    SE_MAXSIZE          // max style array size
 } syntax_element;
+
+#define SE_NUMTYPES     SE_UNUSED
 
 typedef struct ss_block {
     short               end;
@@ -551,7 +553,7 @@ typedef struct info {
     select_rgn          SelRgn;
     bool                IsColumnRegion      : 1;
     bool                linenumflag         : 1;
-    window_id           curr_num_window_id;
+    window_id           linenum_current_window_id;
     window_id           current_window_id;
     vi_ushort           DuplicateID;
     dc_line             *dclines;
@@ -592,7 +594,9 @@ typedef unsigned short  viattr_t;
 typedef struct {
     int                 _offs;
     char                _char;
-} hilst;
+} hichar;
+
+typedef int             list_linenum;
 
 /*
  * SelectItem data
@@ -601,15 +605,15 @@ typedef struct {
     window_info         *wi;                // info describing window to create
     char                *title;             // title of window
     char                **list;             // lines to display
-    int                 maxlist;            // number of lines in list
+    list_linenum        maxlist;            // number of lines in list
     char                *result;            // where to copy the data for the picked line
-    int                 num;                // number of the picked line
+    list_linenum        num;                // number of the picked line
     int                 *allowrl;           // allow cursor right/left (for menu bar)
-    hilst               *hilite;            // chars to highlight
-    vi_key              *retevents;         // events that simulate pressing enter
+    hichar              *hi_list;           // chars to highlight
+    const vi_key        *retevents;         // events that simulate pressing enter
     vi_key              event;              // event that caused a return
-    linenum             cln;                // current line to display
-    window_id           eiw;                // alternate window to accept events in (like the options window after fgrep...)
+    list_linenum        cln;                // current line to display
+    window_id           event_wid;          // alternate window to accept events in (like the options window after fgrep...)
     bool                show_lineno : 1;    // show lines in top-right corner
     bool                is_menu     : 1;    // is a menu we are showing
 } selectitem;
@@ -620,17 +624,17 @@ typedef struct {
 typedef struct {
     file                *f;                     // file with data for lines
     char                **vals;                 // values associated with each line
-    int                 valoff;                 // offset to display values beside line data
+    unsigned            valoff;                 // offset to display values beside line data
     window_info         *wi;                    // info describing window to create
-    linenum             sl;                     // selected line
+    list_linenum        sl;                     // selected line
     char                *title;                 // title of window
     vi_rc (*checkres)(const char *, char *, int * ); // check if selected change is valid
-    int                 *allow_rl;              // allow cursor right/left (for menu bar)
-    hilst               *hilite;                // chars to highlight
-    vi_key              *retevents;             // events that simulate pressing enter
+    int                 *allowrl;               // allow cursor right/left (for menu bar)
+    hichar              *hi_list;               // chars to highlight
+    const vi_key        *retevents;             // events that simulate pressing enter
     vi_key              event;                  // event that caused a return
-    linenum             cln;                    // current line to display
-    window_id           eiw;                    // alternate window to accept events in (like the options window after fgrep...)
+    list_linenum        cln;                    // current line to display
+    window_id           event_wid;              // alternate window to accept events in (like the options window after fgrep...)
     bool                show_lineno        : 1; // show lines in top-right corner
     bool                is_menu            : 1; // select list is a menu
     bool                has_scroll_gadgets : 1; // list has scroll gadgets
@@ -652,7 +656,7 @@ typedef struct {
 
 typedef struct {
     union {
-        FILE            *f;
+        FILE            *fp;
         int             handle;
         char            *pos;
         struct file     *cfile;
@@ -670,13 +674,13 @@ typedef struct {
     /*
      * set booleans are here
      */
-    #define PICK(a,b,c,d,e)     bool c;
+    #define PICK(a,b,c,d,e)     bool c :1;
     #include "setb.h"
     #undef PICK
     /*
      * internal booleans are here
      */
-    #define PICK(a,b)           bool a;
+    #define PICK(a,b)           bool a :1;
     #include "setbi.h"
     #undef PICK
 } eflags;               // don't forget to give default in globals.c

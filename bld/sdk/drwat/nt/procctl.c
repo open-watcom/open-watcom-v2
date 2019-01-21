@@ -30,8 +30,8 @@
 ****************************************************************************/
 
 
-#include <process.h>
 #include "drwatcom.h"
+#include <process.h>
 #include "menu.h"
 
 

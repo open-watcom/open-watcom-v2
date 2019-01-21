@@ -272,30 +272,29 @@ static void extraRptTypeUsage   // TYPE USAGE
     SRCFILE current = SrcFileCurrent();
     for( ; type != NULL; type = type->of ) {
         switch( type->id ) {
-          case TYP_ENUM :
-          case TYP_TYPEDEF :
+        case TYP_ENUM :
+        case TYP_TYPEDEF :
           { SYMBOL sym = type->u.t.sym;
             reportOnType( current, type, sym );
           } break;
-          case TYP_CLASS :
+        case TYP_CLASS :
             if( type->u.c.scope->id == SCOPE_FUNCTION ) {
                 SYMBOL sym = type->u.c.scope->owner.sym;
                 reportOnType( current, type, sym );
             }
             break;
-          case TYP_MEMBER_POINTER :
+        case TYP_MEMBER_POINTER :
             extraRptTypeUsage( type->u.mp.host );
             continue;
-          case TYP_FUNCTION :
+        case TYP_FUNCTION :
           {
             arg_list *args = type->u.f.args;
             unsigned i = args->num_args;
             while( i-- > 0 ) {
                 extraRptTypeUsage( args->type_list[i] );
             }
-          }
-          // drops thru
-          default :
+          } /* fall through */
+        default :
             continue;
         }
         break;
@@ -334,7 +333,7 @@ void ExtraRptSymDefn(           // REPORT SYMBOL DEFINITION IN PRIMARY SOURCE
     if( isReposSym( sym ) ) {
         SRCFILE current = SrcFileCurrent();
         REPO_STAT* repo = reposStat( current );
-        ++ repo->defns;
+        ++repo->defns;
     }
 }
 
@@ -440,8 +439,8 @@ static void extraRptInit(       // INITIALIZATION FOR EXTRA REPORTING
     rpt_registrations = NULL;
     carve_ctr = CarveCreate( sizeof( RPTREG_CTR ), 32 );
     carve_avg = CarveCreate( sizeof( RPTREG_AVG ), 32 );
-    carve_tab = CarveCreate( sizeof( RPTREG_TAB ),  4 );
-    carve_sf  = CarveCreate( sizeof( REPO_STAT  ), 32 );
+    carve_tab = CarveCreate( sizeof( RPTREG_TAB ), 4 );
+    carve_sf  = CarveCreate( sizeof( REPO_STAT ), 32 );
     VstkOpen( &srcFiles, sizeof( SYMBOL ), 32 );
 }
 
@@ -523,7 +522,7 @@ static RPTREG* extraRptLookupCtr( // LOOK UP CTR ENTRY
         }
     } RingIterEnd( curr )
     DbgVerify( entry != NULL, "extraRptLookup -- missing counter" );
-    return entry;
+    return( entry );
 }
 
 
@@ -551,7 +550,8 @@ static void extraRptPrintAvg(   // PRINT AN AVERAGE
     sprintf( frac_part, "%d", fract + 1000 );
     frac_part[0] = '.';
     sprintf( int_part, "%d", integ + 100000 );
-    for( p = int_part+1; *p == '0'; ++p ) *p = ' ';
+    for( p = int_part+1; *p == '0'; ++p )
+        *p = ' ';
     MsgDisplayLineArgs( int_part+1
                       , frac_part
                       , " = "
@@ -585,10 +585,10 @@ static void extraRptTable(      // PRINT A TABLE
 
     digits = 0;
     maxval = 1;
-    for( r = 0; r < reg->tab.dim_row; ++ r ) {
-        for( c = 0; c < reg->tab.dim_col; ++ c ) {
-            int val = reg->tab.table[ r * reg->tab.dim_col + c ];
-            for( ; maxval < val; ++ digits, maxval *= 10 );
+    for( r = 0; r < reg->tab.dim_row; ++r ) {
+        for( c = 0; c < reg->tab.dim_col; ++c ) {
+            int val = reg->tab.table[r * reg->tab.dim_col + c];
+            for( ; maxval < val; ++digits, maxval *= 10 );
         }
     }
     if( digits > 0 ) {
@@ -614,8 +614,8 @@ static void extraRptTable(      // PRINT A TABLE
         MsgDisplayLine( (char*)reg->tab.title );
         MsgDisplayLine( "" );
         sprintf( fmt, "%%%dd", digits + 1 );
-        for( r = 0; r < reg->tab.dim_row; ++ r ) {
-            int *row = &reg->tab.table[ r * reg->tab.dim_col ];
+        for( r = 0; r < reg->tab.dim_row; ++r ) {
+            int *row = &reg->tab.table[r * reg->tab.dim_col];
             VbufRewind( &buffer );
             if( row_lbl == NULL ) {
                 sprintf( buf, "%4d", r );
@@ -632,8 +632,8 @@ static void extraRptTable(      // PRINT A TABLE
                 VbufConcStr( &buffer, l );
                 VbufConcStr( &buffer, ": " );
             }
-            for( c = 0; c < reg->tab.dim_col; ++ c ) {
-                sprintf( buf, fmt, row[ c ] );
+            for( c = 0; c < reg->tab.dim_col; ++c ) {
+                sprintf( buf, fmt, row[c] );
                 VbufConcStr( &buffer, buf );
             }
             MsgDisplayLine( VbufString( &buffer ) );

@@ -32,7 +32,7 @@
 #include <stdlib.h>
 #include <setjmp.h>
 #include "bool.h"
-#include "spawn.h"
+#include "wspawn.h"
 #include "dbginit.h"
 
 
@@ -44,9 +44,9 @@ static jmp_buf  *ExitSP;
  * These functions only differ in the specification of the called function.
  * The defining declaration used to be made by a call of a macro.
  * Debugger-stepping through the code could not be done with that technique.
- * 
+ *
  */
-int Spawn( wv_spawn_func *func )
+int Spawn( wspawn_func *func )
 {
     jmp_buf env;
     jmp_buf *old;
@@ -64,7 +64,7 @@ int Spawn( wv_spawn_func *func )
     return( ret );
 }
 
-int SpawnP( wv_spawn_funcP *func, void *parm )
+int SpawnP( wspawn_funcP *func, void *parm )
 {
     jmp_buf env;
     jmp_buf *old;
@@ -82,7 +82,7 @@ int SpawnP( wv_spawn_funcP *func, void *parm )
     return( ret );
 }
 
-int SpawnPP( wv_spawn_funcPP *func, void *p1, void *p2 )
+int SpawnPP( wspawn_funcPP *func, void *p1, void *p2 )
 {
     jmp_buf env;
     jmp_buf *old;

@@ -9,20 +9,20 @@ set PROJDIR=<CWD>
 
 cdsay .
 
-[ BLOCK <1> build rel ]
-#======================
+[ BLOCK <BLDRULE> build rel ]
+#============================
 #    cdsay h
 #    wmake -h -i
 #   cdsay ../release
 #   wmake -h -i
 
-[ BLOCK <1> rel cprel ]
-#======================
+[ BLOCK <BLDRULE> rel cprel ]
+#============================
 #   <CPCMD> womp.exe  <OWRELROOT>/binw/womp.exe
 #   <CPCMD> wompj.exe <OWRELROOT>/binw/japan/womp.exe
 
-[ BLOCK <1> clean ]
-#==================
+[ BLOCK <BLDRULE> clean ]
+#========================
 #     rm -f h/wmpmsg.gh
 #    sweep killobjs
 

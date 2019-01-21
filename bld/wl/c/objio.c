@@ -70,14 +70,14 @@ static infilelist *AllocEntry( const char *name, const path_entry *path )
     infilelist  *entry;
 
     _PermAlloc( entry, sizeof( infilelist ) );
-    entry->name = AddStringStringTable( &PermStrings, name );
+    entry->name.u.ptr = AddStringStringTable( &PermStrings, name );
     entry->path_list = path;
     entry->prefix = NULL;
     entry->handle = NIL_FHANDLE;
     entry->cache = NULL;
     entry->len = 0;
     entry->flags = 0;
-    return entry;
+    return( entry );
 }
 
 infilelist *AllocFileEntry( const char *name, const path_entry *path )
@@ -88,7 +88,7 @@ infilelist *AllocFileEntry( const char *name, const path_entry *path )
     entry = AllocEntry( name, path );
     entry->next = CachedFiles;
     CachedFiles = entry;
-    return entry;
+    return( entry );
 }
 
 infilelist *AllocUniqueFileEntry( const char *name, const path_entry *path )
@@ -97,8 +97,8 @@ infilelist *AllocUniqueFileEntry( const char *name, const path_entry *path )
     infilelist  *entry;
 
     for( entry = CachedLibFiles; entry != NULL; entry = entry->next ) {
-        if( FNAMECMPSTR( entry->name, name ) == 0 ) {
-            return entry;       // we found 1 with the same name.
+        if( FNAMECMPSTR( entry->name.u.ptr, name ) == 0 ) {
+            return( entry );    // we found 1 with the same name.
         }
     }
     entry = AllocEntry( name, path );   // didn't find one, so allocate a new 1
@@ -108,7 +108,7 @@ infilelist *AllocUniqueFileEntry( const char *name, const path_entry *path )
     } else {
         LinkList( &CachedLibFiles, entry );
     }
-    return entry;
+    return( entry );
 }
 
 bool CleanCachedHandles( void )
@@ -121,9 +121,9 @@ bool CleanCachedHandles( void )
             break;
         }
     }
-    if( list == NULL ) 
+    if( list == NULL )
         return( false );
-    QClose( list->handle, list->name );
+    QClose( list->handle, list->name.u.ptr );
     list->handle = NIL_FHANDLE;
     return( true );
 }
@@ -156,7 +156,7 @@ char *MakeFileName( infilelist *file, char *fullname )
 {
     const char  *path = file->prefix;
 
-    strcpy( MakePath( fullname, &path ), file->name );
+    strcpy( MakePath( fullname, &path ), file->name.u.ptr );
     return( (char *)path );
 }
 
@@ -201,7 +201,7 @@ bool DoObjOpen( infilelist *file )
     char                new_name[ PATH_MAX ];
     const path_entry    *searchpath;
 
-    name = file->name;
+    name = file->name.u.ptr;
     if( file->handle != NIL_FHANDLE )
         return( true );
     file->currpos = 0;
@@ -246,19 +246,6 @@ bool DoObjOpen( infilelist *file )
     return( false );
 }
 
-unsigned_16 CalcAlign( unsigned_32 pos, unsigned_16 align )
-/****************************************************************/
-/* align file */
-{
-    unsigned_16 modulus;
-
-    modulus = pos % align;
-    if( modulus != 0 ) {
-        modulus = align - modulus;  // go to boundary.
-    }
-    return( modulus );
-}
-
 void InitTokBuff( void )
 /*****************************/
 {
@@ -286,6 +273,6 @@ void EarlyEOF( void )
 /**************************/
 {
     CurrMod->f.source->file->flags |= INSTAT_IOERR;
-    Locator( CurrMod->f.source->file->name, NULL, 0 );
+    Locator( CurrMod->f.source->file->name.u.ptr, NULL, 0 );
     LnkMsg( ERR+MSG_EARLY_EOF, NULL );
 }

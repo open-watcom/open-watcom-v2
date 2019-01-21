@@ -88,7 +88,7 @@ static unsigned short at2mode( OS_UINT attr, char *fname ) {
 #ifdef __INT64__
  _WCRTLINK int __F_NAME(_stati64,_wstati64)( CHAR_TYPE const *path, struct _stati64 *buf )
 #else
- _WCRTLINK int __F_NAME(stat,_wstat)( CHAR_TYPE const *path, struct __F_NAME(stat,_stat) *buf )
+ _WCRTLINK int __F_NAME(stat,_wstat)( CHAR_TYPE const *path, struct stat *buf )
 #endif
 {
     CHAR_TYPE const     *ptr;

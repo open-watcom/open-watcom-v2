@@ -51,14 +51,7 @@ const char _NEAR    * _NEAR BoolStr[] = {
     (const char _NEAR *)"FALSE",
     (const char _NEAR *)"TRUE"
 };
-
-/* edit options */
-const char _NEAR * _NEAR EditOpts[] = {
-    (const char _NEAR *)"<F1> Go To",
-    (const char _NEAR *)"<F2> Edit",
-    (const char _NEAR *)"<F3> Get All"
-};
-int NumEditOpts = sizeof( EditOpts ) / sizeof( EditOpts[0] );
+const char          _NEAR SpinData[] = { '-', '\\', '|', '/' };
 
 /* event data */
 event _NEAR EventList[] = {
@@ -81,7 +74,6 @@ long            NextAutoSave;
 int             HalfPageLines;
 vi_key          LastEvent;
 int             SpinCount;
-char            _NEAR SpinData[] = { '\xC4', '\\', '|', '/' };
 char            VideoPage;
 char            *EXEName;
 char            *BndMemory;
@@ -104,14 +96,15 @@ window_id       current_window_id = NO_WINDOW;
 window_id       message_window_id = NO_WINDOW;
 window_id       status_window_id = NO_WINDOW;
 window_id       menu_window_id = NO_WINDOW;
-window_id       curr_num_window_id = NO_WINDOW;
+window_id       linenum_current_window_id = NO_WINDOW;
+window_id       repeat_window_id = NO_WINDOW;
 select_rgn      SelRgn;
 
 /*
  * directory data
  */
 direct_ent      * _NEAR DirFiles[MAX_FILES];
-int             DirFileCount;
+list_linenum    DirFileCount;
 
 /*
  * key map data
@@ -124,12 +117,18 @@ key_map         *InputKeyMaps;
 /*
  * savebuf data
  */
-vi_key          _NEAR SavebufBound[MAX_SAVEBUFS] =
-                        { VI_KEY( CTRL_F1 ), VI_KEY( CTRL_F2 ),
-                          VI_KEY( CTRL_F3 ), VI_KEY( CTRL_F4 ),
-                          VI_KEY( CTRL_F5 ), VI_KEY( CTRL_F6 ),
-                          VI_KEY( CTRL_F7 ), VI_KEY( CTRL_F8 ),
-                          VI_KEY( CTRL_F9 ) };
+vi_key          _NEAR SavebufBound[MAX_SAVEBUFS] = {
+    VI_KEY( CTRL_F1 ),
+    VI_KEY( CTRL_F2 ),
+    VI_KEY( CTRL_F3 ),
+    VI_KEY( CTRL_F4 ),
+    VI_KEY( CTRL_F5 ),
+    VI_KEY( CTRL_F6 ),
+    VI_KEY( CTRL_F7 ),
+    VI_KEY( CTRL_F8 ),
+    VI_KEY( CTRL_F9 )
+};
+
 int             CurrentSavebuf = 0;     /* this is 0 based */
 char            LastSavebuf;    /* this is 1 based - users see it */
 savebuf         _NEAR Savebufs[MAX_SAVEBUFS];

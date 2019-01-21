@@ -36,7 +36,8 @@
  */
 static vi_rc JoinFcbs( fcb *fcb1, fcb *fcb2 )
 {
-    unsigned    j, k;
+    size_t  j;
+    size_t  k;
 
     /*
      * see if we can merge them
@@ -46,7 +47,7 @@ static vi_rc JoinFcbs( fcb *fcb1, fcb *fcb2 )
     }
     j = FcbSize( fcb1 );
     k = FcbSize( fcb2 );
-    if( j + k > (unsigned) MAX_IO_BUFFER ) {
+    if( j + k > MAX_IO_BUFFER ) {
         return( COULD_NOT_MERGE_FCBS );
     }
 

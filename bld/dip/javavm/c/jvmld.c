@@ -43,7 +43,7 @@ dip_status DIPIMPENTRY( LoadInfo )( FILE *fp, imp_image_handle *iih )
     unsigned    mb_size;
     dip_status  ds;
 
-    if( DCCurrMAD() != MAD_JVM )
+    if( DCCurrArch() != DIG_ARCH_JVM )
         return( DS_FAIL );
     DCSeek( fp, 0, DIG_ORG );
     if( DCRead( fp, &jcf, sizeof( jcf ) ) != sizeof( jcf ) )

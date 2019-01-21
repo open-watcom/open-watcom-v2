@@ -31,26 +31,17 @@
 ****************************************************************************/
 
 
-#include "cgstd.h"
+#include "_cgstd.h"
 #include "optwif.h"
 #include "model.h"
 #include "optmain.h"
 #include "optutil.h"
+#include "optcom.h"
+#include "optins.h"
+#include "optpull.h"
+#include "optpush.h"
+#include "optrel.h"
 
-
-extern  void            SetBranches( void );
-extern  bool            StraightenCode( ins_entry * );
-extern  void            CheckStraightenCode( ins_entry * );
-extern  ins_entry       *IsolatedCode( ins_entry * );
-extern  bool            ComTail( ins_entry *, ins_entry * );
-extern  void            RetAftrCall( ins_entry * );
-extern  bool            RetAftrLbl( ins_entry * );
-extern  void            JmpRet( ins_entry * );
-extern  bool            ComCode( ins_entry * );
-extern  void            CallRet( ins_entry * );
-extern  void            TraceCommon( ins_entry * );
-extern  void            MultiLineNums( ins_entry * );
-extern  void            CloneCode( label_handle );
 
 static  ins_entry       *Redirect( ins_entry *, ins_entry * );
 
@@ -203,8 +194,8 @@ static  bool    UnTangle2( ins_entry *jmp, ins_entry **instr )
     return( true );
 }
 
-extern  ins_entry       *Untangle( ins_entry *instr )
-/***************************************************/
+ins_entry       *Untangle( ins_entry *instr )
+/*******************************************/
 {
     ins_entry   *jmp;
     bool        change;
@@ -273,8 +264,8 @@ static  ins_entry       *Redirect( ins_entry *l_ins, ins_entry *j_ins )
 }
 
 
-extern  void    OptPush( void )
-/*****************************/
+void    OptPush( void )
+/*********************/
 {
     ins_entry   *ins;
 
@@ -335,8 +326,8 @@ extern  void    OptPush( void )
 }
 
 
-extern  void    OptPull( void )
-/*****************************/
+void    OptPull( void )
+/*********************/
 {
     oc_class    ins_class;
 

@@ -62,13 +62,13 @@ typedef enum {
 #include "img_wpi.h"
 #include "fill.h"
 #include "bits.h"
-#include "errors.h"
 #include "dialogs.h"
 #include "icon.h"
 #include "menuids.h"
 #include "mem.h"
 #include "statwnd.h"
 #include "toolbr.h"
+#include "errors.h"
 
 #define MAX_DIM             2048
 #define MIN_DIM             0
@@ -294,9 +294,9 @@ void    WriteIconLoadedText( char *filename, int num );
 /* iesave.c */
 bool    SaveBitmapToData( img_node *node, BYTE **data, size_t *size );
 bool    SaveImgToData( img_node *node, BYTE **data, size_t *size );
-BOOL    SaveFile( int how );
-BOOL    SaveFileFromNode( img_node *node, int how );
-BOOL    SaveColorPalette( void );
+bool    SaveFile( int how );
+bool    SaveFileFromNode( img_node *node, int how );
+bool    SaveColorPalette( void );
 void    SetInitialSaveDir( char *new_dir );
 char    *GetInitSaveDir( void );
 

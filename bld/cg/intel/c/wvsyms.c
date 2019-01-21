@@ -31,7 +31,7 @@
 ****************************************************************************/
 
 
-#include "cgstd.h"
+#include "_cgstd.h"
 #include "coderep.h"
 #include "cgmem.h"
 #include "zoiks.h"
@@ -44,192 +44,14 @@
 #include "objio.h"
 #include "x86dbsup.h"
 #include "dbsupp.h"
+#include "wvtypes.h"
+#include "x86objd.h"
+#include "x86obj.h"
 #include "feprotos.h"
 #include "cgprotos.h"
 
 
-extern  void            SetUpObj(bool);
-extern  void            WVSrcCueLoc( void  );
-
-/* forward declarations */
-static  void            DumpDbgBlkStart( dbg_block *blk, offset lc );
-static  void            DumpParentPtr( dbg_block *blk );
-static  void            DumpLocals( dbg_local *local );
-static  void            DumpDbgBlk( dbg_block *blk, offset lc );
-
 static  offset          CodeOffset;
-
-extern  void    WVInitDbgInfo( void )
-/***********************************/
-{
-    TypeIdx   = 0;
-    DbgLocals = 0;
-    DbgTypes  = 0;
-}
-
-extern  void    WVObjInitDbgInfo( void )
-/**************************************/
-// Called right after define seg's in Obj
-{
-    WVSrcCueLoc();
-}
-
-extern  void    WVFiniDbgInfo( void )
-/***********************************/
-{
-}
-
-extern  void    WVObjFiniDbgInfo( void )
-/**************************************/
-{
-}
-
-extern  void    WVGenStatic( cg_sym_handle sym, dbg_loc loc ) {
-/*******************************************************************/
-
-    temp_buff   temp;
-    dbg_type    tipe;
-
-    tipe = FEDbgType( sym );
-    if( LocSimpStatic( loc ) == sym ) {
-        BuffStart( &temp, SYM_VARIABLE + VAR_MODULE );
-        BuffAddr( sym );
-    } else {
-        BuffStart( &temp, SYM_VARIABLE + VAR_MODULE_LOC );
-        LocDump( LocDupl( loc ) );
-    }
-    BuffIndex( (uint) tipe );
-    BuffWSLString( FEName( sym ) );
-    BuffEnd( DbgLocals );
-}
-
-extern  void    WVSetBase( void ) {
-/****************************/
-
-
-    temp_buff   temp;
-    back_handle bck;
-
-    if( _IsModel( DBG_LOCALS ) && NeedBaseSet() ) {
-        bck = BENewBack( NULL );
-        bck->seg = AskOP();
-        OutLabel( bck->lbl );
-        CodeOffset = AskAddress( bck->lbl );
-        BuffStart( &temp, NEW_BASE+SET_BASE );
-        BuffBack( bck, 0 );
-        BuffEnd( DbgLocals );
-        BEFreeBack( bck );
-        SetUpObj( false );
-    }
-}
-
-extern  void    WVObjectPtr(  cg_type ptr_type ) {
-/**********************************************/
-    switch( TypeAddress( ptr_type )->refno ) {
-    case TY_NEAR_POINTER:
-    case TY_NEAR_CODE_PTR:
-        CurrProc->targ.debug->obj_ptr_type = POINTER_NEAR;
-        break;
-    default:
-        CurrProc->targ.debug->obj_ptr_type = POINTER_FAR;
-        break;
-    }
-}
-
-/**/
-/* Going into optimizer queue*/
-/**/
-
-
-
-/**/
-/* Coming out of optimizer queue*/
-/**/
-
-
-
-extern  void    WVBlkEnd( dbg_block *blk, offset lc ) {
-/****************************************************/
-
-
-    temp_buff   temp;
-
-    BuffStart( &temp, SYM_CODE + CODE_BLOCK );
-    DumpDbgBlk( blk, lc );
-    BuffEnd( DbgLocals );
-    DumpLocals( blk->locals );
-}
-
-
-extern  void    WVRtnEnd( dbg_rtn *rtn, offset lc ) {
-/****************************************************/
-
-
-    uint                count;
-    dbg_local           *parm;
-    dbg_local           *junk;
-    temp_buff           temp;
-    cg_sym_handle       sym;
-    dbg_type            tipe;
-    offset              off;
-    segment_id          old;
-
-    off = 0;
-    if( rtn->obj_type != DBG_NIL_TYPE ) {
-        /* is a member function */
-        old = SetOP( DbgLocals );
-        off = AskLocation();
-        BuffStart( &temp, SYM_CODE + CODE_MEMBER_SCOPE );
-        DumpParentPtr( rtn->blk );
-        BuffIndex( (uint) rtn->obj_type );
-        if( rtn->obj_loc != NULL ) {
-            BuffByte( rtn->obj_ptr_type ); /* 'this' pointer type */
-            LocDump( rtn->obj_loc );
-        }
-        BuffEnd( DbgLocals );
-        SetOP( old );
-    }
-    sym = AskForLblSym( CurrProc->label );
-    tipe = FEDbgType( sym );
-    if( *(call_class *)FindAuxInfoSym( sym, CALL_CLASS ) & FAR_CALL ) {
-        BuffStart( &temp, SYM_CODE + CODE_FAR_RTN );
-    } else {
-        BuffStart( &temp, SYM_CODE + CODE_NEAR_RTN );
-    }
-    DumpDbgBlkStart( rtn->blk, lc );
-    if( off != 0 ) {
-        BuffWord( off );
-    } else {
-        DumpParentPtr( rtn->blk );
-    }
-    BuffByte( rtn->pro_size );
-    BuffByte( lc - rtn->epi_start );
-    BuffOffset( rtn->ret_offset );
-    BuffIndex( (uint) tipe );
-    if( rtn->reeturn == NULL ) {
-        BuffByte( 0 ); /* no return location */
-    } else {
-        LocDump( rtn->reeturn );
-    }
-    count = 0;
-    parm = rtn->parms;
-    while( parm != NULL ) {
-        ++count;
-        parm = parm->link;
-    }
-    BuffByte( count );
-    parm = rtn->parms;
-    while( parm != NULL ) {
-        LocDump( parm->loc );
-        junk = parm;
-        parm = parm->link;
-        CGFree( junk );
-    }
-    BuffWSLString( FEName( AskForLblSym( CurrProc->label ) ) );
-    BuffEnd( DbgLocals );
-    DumpLocals( rtn->blk->locals );
-}
-
 
 static  void    DumpDbgBlkStart( dbg_block *blk, offset lc ) {
 /************************************************************/
@@ -297,4 +119,173 @@ static  void    DumpLocals( dbg_local *local ) {
         local = local->link;
         CGFree( junk );
     }
+}
+
+void    WVInitDbgInfo( void )
+/***************************/
+{
+    TypeIdx   = 0;
+    DbgLocals = 0;
+    DbgTypes  = 0;
+}
+
+void    WVObjInitDbgInfo( void )
+/******************************/
+// Called right after define seg's in Obj
+{
+    WVSrcCueLoc();
+}
+
+void    WVFiniDbgInfo( void )
+/***************************/
+{
+}
+
+void    WVObjFiniDbgInfo( void )
+/******************************/
+{
+}
+
+void    WVGenStatic( cg_sym_handle sym, dbg_loc loc )
+/***************************************************/
+{
+    temp_buff   temp;
+    dbg_type    tipe;
+
+    tipe = FEDbgType( sym );
+    if( LocSimpStatic( loc ) == sym ) {
+        BuffStart( &temp, SYM_VARIABLE + VAR_MODULE );
+        BuffAddr( sym );
+    } else {
+        BuffStart( &temp, SYM_VARIABLE + VAR_MODULE_LOC );
+        LocDump( LocDupl( loc ) );
+    }
+    BuffIndex( (uint) tipe );
+    BuffWSLString( FEName( sym ) );
+    BuffEnd( DbgLocals );
+}
+
+void    WVSetBase( void )
+/***********************/
+{
+    temp_buff   temp;
+    back_handle bck;
+
+    if( _IsModel( DBG_LOCALS ) && NeedBaseSet() ) {
+        bck = BENewBack( NULL );
+        bck->seg = AskOP();
+        OutLabel( bck->lbl );
+        CodeOffset = AskAddress( bck->lbl );
+        BuffStart( &temp, NEW_BASE+SET_BASE );
+        BuffBack( bck, 0 );
+        BuffEnd( DbgLocals );
+        BEFreeBack( bck );
+        SetUpObj( false );
+    }
+}
+
+void    WVObjectPtr(  cg_type ptr_type )
+/**************************************/
+{
+    switch( TypeAddress( ptr_type )->refno ) {
+    case TY_NEAR_POINTER:
+    case TY_NEAR_CODE_PTR:
+        CurrProc->targ.debug->obj_ptr_type = POINTER_NEAR;
+        break;
+    default:
+        CurrProc->targ.debug->obj_ptr_type = POINTER_FAR;
+        break;
+    }
+}
+
+/**/
+/* Going into optimizer queue*/
+/**/
+
+
+
+/**/
+/* Coming out of optimizer queue*/
+/**/
+
+
+
+void    WVBlkEnd( dbg_block *blk, offset lc )
+/*******************************************/
+{
+    temp_buff   temp;
+
+    BuffStart( &temp, SYM_CODE + CODE_BLOCK );
+    DumpDbgBlk( blk, lc );
+    BuffEnd( DbgLocals );
+    DumpLocals( blk->locals );
+}
+
+
+void    WVRtnEnd( dbg_rtn *rtn, offset lc )
+/*****************************************/
+{
+    uint                count;
+    dbg_local           *parm;
+    dbg_local           *junk;
+    temp_buff           temp;
+    cg_sym_handle       sym;
+    dbg_type            tipe;
+    offset              off;
+    segment_id          old;
+
+    off = 0;
+    if( rtn->obj_type != DBG_NIL_TYPE ) {
+        /* is a member function */
+        old = SetOP( DbgLocals );
+        off = AskLocation();
+        BuffStart( &temp, SYM_CODE + CODE_MEMBER_SCOPE );
+        DumpParentPtr( rtn->blk );
+        BuffIndex( (uint) rtn->obj_type );
+        if( rtn->obj_loc != NULL ) {
+            BuffByte( rtn->obj_ptr_type ); /* 'this' pointer type */
+            LocDump( rtn->obj_loc );
+        }
+        BuffEnd( DbgLocals );
+        SetOP( old );
+    }
+    sym = AskForLblSym( CurrProc->label );
+    tipe = FEDbgType( sym );
+    if( *(call_class *)FindAuxInfoSym( sym, CALL_CLASS ) & FAR_CALL ) {
+        BuffStart( &temp, SYM_CODE + CODE_FAR_RTN );
+    } else {
+        BuffStart( &temp, SYM_CODE + CODE_NEAR_RTN );
+    }
+    DumpDbgBlkStart( rtn->blk, lc );
+    if( off != 0 ) {
+        BuffWord( off );
+    } else {
+        DumpParentPtr( rtn->blk );
+    }
+    BuffByte( rtn->pro_size );
+    BuffByte( lc - rtn->epi_start );
+    BuffOffset( rtn->ret_offset );
+    BuffIndex( (uint) tipe );
+    if( rtn->reeturn == NULL ) {
+        BuffByte( 0 ); /* no return location */
+    } else {
+        LocDump( rtn->reeturn );
+    }
+    count = 0;
+    parm = rtn->parms;
+    while( parm != NULL ) {
+        ++count;
+        parm = parm->link;
+    }
+    BuffByte( count );
+    parm = rtn->parms;
+    while( parm != NULL ) {
+        LocDump( parm->loc );
+        junk = parm;
+        parm = parm->link;
+        CGFree( junk );
+    }
+    BuffWSLString( FEName( AskForLblSym( CurrProc->label ) ) );
+    BuffEnd( DbgLocals );
+    DumpLocals( rtn->blk->locals );
 }

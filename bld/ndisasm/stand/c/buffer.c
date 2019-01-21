@@ -41,13 +41,14 @@
 #include "formasm.h"
 #include "labproc.h"
 
-extern dis_format_flags         DFormat;
 
-static unsigned                 OutputPos = 0;
-static char                     Buffer[BUFFER_LEN] = {0};
-static char                     IntermedBuffer[BUFFER_LEN] = {0};
+static unsigned         OutputPos = 0;
+static char             Buffer[1024] = {0};
+static char             IntermedBuffer[30] = {0};
 
-void FmtHexNum( char *buff, unsigned prec, dis_value value )
+static char             *buffer_pos = Buffer;
+
+char *FmtHexNum( char *buff, unsigned prec, dis_value value )
 {
     char        *src;
     char        *dst;
@@ -87,26 +88,57 @@ void FmtHexNum( char *buff, unsigned prec, dis_value value )
             }
         }
     }
+    return( buff );
+}
+
+char *FmtLabelNum( char *buff, unsigned long value )
+{
+    sprintf( buff, "%c$%lu", LabelChar, value );
+    return( buff );
+}
+
+static void write_char( char c )
+{
+    if( buffer_pos == Buffer + sizeof( Buffer ) ) {
+        BufferPrint();
+    }
+    *buffer_pos++ = c;
+}
+
+static void write_string( const char *str )
+{
+    while( *str != '\0' ) {
+        write_char( *str++ );
+    }
 }
 
 void BufferAlignToTab( unsigned pos )
 // align the buffer to a particular tab position
 {
     unsigned            num_tabs;
-    unsigned            loop;
 
     if( pos * TAB_WIDTH < OutputPos ) {
         BufferConcatNL();
         num_tabs = pos;
     } else {
-        num_tabs = (pos * TAB_WIDTH - OutputPos + TAB_WIDTH - 1 ) / TAB_WIDTH;
+        num_tabs = ( pos * TAB_WIDTH - OutputPos + TAB_WIDTH - 1 ) / TAB_WIDTH;
     }
-    for( loop = 0; loop < num_tabs; loop++ ) {
-        IntermedBuffer[loop] = '\t';
+    while( num_tabs-- > 0 ) {
+        write_char( '\t' );
     }
-    IntermedBuffer[loop] = '\0';
-    strcat( Buffer, IntermedBuffer );
     OutputPos = pos * TAB_WIDTH;
+}
+
+static void updateOutputPosChar( char c )
+// update the position of the last character as it will be seen in output
+{
+    if( c == '\n' ) {
+        OutputPos = 0;
+    } else if( c == '\t' ) {
+        OutputPos = ((OutputPos / 8) + 1) * 8;
+    } else if( c != '\0' ) {
+        OutputPos++;
+    }
 }
 
 static void updateOutputPos( const char *string )
@@ -114,13 +146,7 @@ static void updateOutputPos( const char *string )
 {
     if( string != NULL ) {
         for( ; *string != '\0'; ++string ) {
-            if( *string == '\n' ) {
-                OutputPos = 0;
-            } else if( *string == '\t' ) {
-                OutputPos = ((OutputPos / 8) + 1) * 8;
-            } else {
-                OutputPos++;
-            }
+            updateOutputPosChar( *string );
         }
     }
 }
@@ -128,29 +154,22 @@ static void updateOutputPos( const char *string )
 void BufferConcat( const char *string )
 // concatenate a string on the end of the buffer
 {
-    strcat( Buffer, string );
+    write_string( string );
     updateOutputPos( string );
+}
+
+void BufferConcatChar( char c )
+// concatentate a character on the end of the buffer
+{
+    write_char( c );
+    updateOutputPosChar( c );
 }
 
 void BufferConcatNL( void )
 // concatentate a \n on the end of the buffer
 {
-    strcat( Buffer, "\n" );
+    write_char( '\n' );
     OutputPos = 0;
-}
-
-size_t BufferStore( const char *format, ... )
-// do the equivalent of a printf to the end of the buffer
-{
-    va_list     arg_list;
-    size_t      len;
-
-    va_start( arg_list, format );
-    len = vsprintf( IntermedBuffer, format, arg_list );
-    va_end( arg_list );
-    strcat( Buffer, IntermedBuffer );
-    updateOutputPos( IntermedBuffer );
-    return( len );
 }
 
 size_t BufferMsg( int resourceid )
@@ -168,8 +187,8 @@ size_t BufferMsg( int resourceid )
 void BufferPrint( void )
 // print the buffer to current output destination
 {
-    Print( Buffer );
-    *Buffer = '\0';
+    PrintBuffer( Buffer, buffer_pos - Buffer );
+    buffer_pos = Buffer;
 }
 
 void BufferHex( unsigned prec, dis_value value )
@@ -178,13 +197,109 @@ void BufferHex( unsigned prec, dis_value value )
     BufferConcat( IntermedBuffer );
 }
 
+void BufferHexU32( unsigned prec, uint_32 value )
+{
+    dis_value   dvalue;
+
+    dvalue.u._32[I64LO32] = value;
+    dvalue.u._32[I64HI32] = 0;
+    FmtHexNum( IntermedBuffer, prec, dvalue );
+    BufferConcat( IntermedBuffer );
+}
+
+void BufferHex2( unsigned char value )
+{
+    sprintf( IntermedBuffer, "%02X", value );
+    BufferConcat( IntermedBuffer );
+}
+
+void BufferHex4( unsigned short value )
+{
+    sprintf( IntermedBuffer, "%04X", value );
+    BufferConcat( IntermedBuffer );
+}
+
+void BufferHex8( uint_32 value )
+{
+    sprintf( IntermedBuffer, "%08X", value );
+    BufferConcat( IntermedBuffer );
+}
+
+
+void BufferDecimal( long value )
+{
+    sprintf( IntermedBuffer, "%ld", value );
+    BufferConcat( IntermedBuffer );
+}
+
+void BufferUnsigned( unsigned long value )
+{
+    sprintf( IntermedBuffer, "%lu", value );
+    BufferConcat( IntermedBuffer );
+}
+
+void BufferQuoteText( const char *text, char quote )
+{
+    BufferConcatChar( quote );
+    BufferConcat( text );
+    BufferConcatChar( quote );
+}
+
 void BufferQuoteName( const char *name )
 {
     if( NeedsQuoting( name ) ) {
-        BufferConcat( "`" );
-        BufferConcat( name );
-        BufferConcat( "`" );
+        BufferQuoteText( name, '`' );
     } else {
         BufferConcat( name );
+    }
+}
+
+void BufferLabelNum( unsigned long value )
+{
+    FmtLabelNum( IntermedBuffer, value );
+    BufferConcat( IntermedBuffer );
+}
+
+void BufferLinePrefixAddress( dis_sec_offset off, bool is32bit )
+{
+    if( is32bit ) {
+        BufferHex8( off );
+    } else {
+        BufferHex4( off );
+    }
+}
+
+void BufferLinePrefixData( unsigned_8 *data, dis_sec_offset off, dis_sec_offset total, unsigned item_size, unsigned len )
+{
+    unsigned    done;
+    union ptr {
+        unsigned_8      u8;
+        unsigned_16     u16;
+        unsigned_32     u32;
+    }           *p;
+
+    p = (union ptr *)( data + off );
+    total -= off;
+    BufferConcatChar( ' ' );
+    for( done = 0; done < len; done += item_size ) {
+        BufferConcatChar( ' ' );
+        if( done < total ) {
+            if( item_size == 1 ) {
+                BufferHex2( p->u8 );
+            } else if( item_size == 2 ) {
+                BufferHex4( p->u16 );
+            } else if( item_size == 4 ) {
+                BufferHex8( p->u32 );
+            }
+            p = (union ptr *)( (char *)p + item_size );
+        } else {
+            if( item_size == 1 ) {
+                BufferConcat( "  " );
+            } else if( item_size == 2 ) {
+                BufferConcat( "    " );
+            } else if( item_size == 4 ) {
+                BufferConcat( "        " );
+            }
+        }
     }
 }

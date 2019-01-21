@@ -36,11 +36,13 @@ extern unsigned char    _dos_switch_char( void );
 
 #if defined( __DOS__ ) && defined( __WATCOMC__ )
 
-#pragma aux     _dos_switch_char = \
-    "mov ax,3700h"  \
-    "int 21h"       \
-    "mov al,dl"     \
-    modify [dx];
+#pragma aux _dos_switch_char = \
+        "mov ax,3700h"  \
+        "int 21h"       \
+        "mov al,dl"     \
+    __parm      [] \
+    __value     [__al] \
+    __modify    [__dx]
 
 #elif defined( __UNIX__ )
     #define _dos_switch_char() '-'

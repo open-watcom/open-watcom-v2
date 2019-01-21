@@ -65,7 +65,7 @@ static unsigned FindClosestPrime( unsigned num )
         if( prime > num ) break;
         primetab++;
     } while( *primetab > 0 );
-    return prime;
+    return( prime );
 }
 
 static unsigned_32 ElfHash( char *sym_name )
@@ -85,7 +85,7 @@ static unsigned_32 ElfHash( char *sym_name )
         }
         h &= ~g;
     }
-    return h;
+    return( h );
 }
 
 ElfSymTable *CreateElfSymTable( int maxElems, stringtable *strtab )
@@ -107,37 +107,37 @@ ElfSymTable *CreateElfSymTable( int maxElems, stringtable *strtab )
     if( GetStringTableSize( tab->strtab ) == 0 ) {
         AddCharStringTable( tab->strtab, '\0' );
     }
-    return tab;
+    return( tab );
 }
 
 void AddSymElfSymTable( ElfSymTable *tab, symbol *sym )
-/************************************************************/
+/*****************************************************/
 {
     unsigned_32 hash;
 
     DbgAssert(tab->numElems < tab->maxElems);
     tab->table[tab->numElems] = sym;
-    hash = ElfHash( sym->name ) % tab->numBuckets;
+    hash = ElfHash( sym->name.u.ptr ) % tab->numBuckets;
     tab->chains[tab->numElems] = tab->buckets[hash];
     tab->buckets[hash] = tab->numElems;
     tab->numElems++;
 }
 
 int FindSymIdxElfSymTable( ElfSymTable *tab, symbol *sym )
-/***************************************************************/
+/********************************************************/
 {
     unsigned_32 hash;
     unsigned_32 idx;
     symbol *s;
 
-    hash = ElfHash(sym->name) % tab->numBuckets;
+    hash = ElfHash( sym->name.u.ptr ) % tab->numBuckets;
     idx = tab->buckets[hash];
-    DbgAssert(idx < tab->maxElems);
-    for(s = tab->table[idx]; s != NULL && s != sym;
+    DbgAssert( idx < tab->maxElems );
+    for( s = tab->table[idx]; s != NULL && s != sym;
         idx = tab->chains[idx], s = tab->table[idx] ) {
-        DbgAssert(idx < tab->maxElems);
+        DbgAssert( idx < tab->maxElems );
     }
-    return idx;
+    return( idx );
 }
 
 static unsigned_16 ElfSymSecNum( ElfHdr *hdr, symbol *sym, group_entry *group )
@@ -147,16 +147,16 @@ static unsigned_16 ElfSymSecNum( ElfHdr *hdr, symbol *sym, group_entry *group )
 
     secnum = hdr->i.grpbase;
     if( IsSymElfImported(sym) ) {
-        return SHN_UNDEF;
+        return( SHN_UNDEF );
     } else if( IS_SYM_COMMUNAL(sym) ) {
-        return SHN_COMMON;
+        return( SHN_COMMON );
     } else if( group == NULL ) {
-        return SHN_ABS;
+        return( SHN_ABS );
     } else {
-        secnum += group->grp_addr.seg-1;
+        secnum += group->grp_addr.seg - 1;
     }
     DbgAssert(group != NULL);
-    return secnum;
+    return( secnum );
 }
 
 static void SetElfSym( ElfHdr *hdr, Elf32_Sym *elfsym, symbol *sym )
@@ -214,7 +214,7 @@ void WriteElfSymTable( ElfSymTable *tab, ElfHdr *hdr, int hashidx,
     WriteLoad( &elfsym, sizeof( elfsym ) );
     for( i = 1; i < tab->numElems; i++ ) {
         sym = tab->table[i];
-        elfsym.st_name = AddStringStringTableOffs( tab->strtab, sym->name );
+        elfsym.st_name = AddStringStringTableOffs( tab->strtab, sym->name.u.ptr );
         if( tableSH->sh_info == 0 && (sym->info & SYM_STATIC) == 0 ) {
             tableSH->sh_info = i;
         }

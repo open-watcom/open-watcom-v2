@@ -34,6 +34,8 @@
 #include "pragdefn.h"
 #include "vbuf.h"
 #include "vstk.h"
+#include "name.h"
+
 
 typedef enum dump_struct_control {
     DS_BASE     = 0x0001,
@@ -52,7 +54,7 @@ static DUMP_INFO* bufferRewind(   // INITIALIZE BUFFER
     DUMP_INFO* di )             // - dump information
 {
     VbufRewind( &di->buffer );
-    return di;
+    return( di );
 }
 
 
@@ -61,7 +63,7 @@ static DUMP_INFO* bufferChr(    // CONCATENATE CHAR TO BUFFER
     char chr )                  // - to be concatenated
 {
     VbufConcChr( &di->buffer, chr );
-    return di;
+    return( di );
 }
 
 
@@ -70,7 +72,7 @@ static DUMP_INFO* bufferStr(    // CONCATENATE STRING TO BUFFER
     const char *str )           // - to be concatenated
 {
     VbufConcStr( &di->buffer, str );
-    return di;
+    return( di );
 }
 
 
@@ -86,7 +88,7 @@ static DUMP_INFO* bufferNmb(    // CONCATENATE NUMBER TO BUFFER
         sprintf( buf, "0x%X", numb );
         VbufConcStr( &di->buffer, buf );
     }
-    return di;
+    return( di );
 }
 
 
@@ -95,7 +97,7 @@ static DUMP_INFO* bufferInit(   // INITIALIZE BUFFER (NON-TITLE LINE)
 {
     di = bufferRewind( di );
     di = bufferStr( di, "    " );
-    return di;
+    return( di );
 }
 
 
@@ -110,7 +112,7 @@ static DUMP_INFO* bufferWrite(  // WRITE A BUFFER
     DUMP_INFO* di )             // - dump information
 {
     vbufWrite( &di->buffer );
-    return di;
+    return( di );
 }
 
 
@@ -129,7 +131,7 @@ static DUMP_INFO* dumpTitle(    // DUMP A TITLE LINE
     di = bufferChr( di, ' ' );
     di = bufferStr( di, class_name );
     di = bufferWrite( di );
-    return di;
+    return( di );
 }
 
 
@@ -140,7 +142,7 @@ static DUMP_INFO* dumpOffset(   // DUMP OFFSET LINE
     di = bufferStr( di, "offset of class: " );
     di = bufferNmb( di, di->offset );
     di = bufferWrite( di );
-    return di;
+    return( di );
 }
 
 
@@ -155,7 +157,7 @@ static DUMP_INFO* dumpParentage( // DUMP PARENTAGE
         di = bufferStr( di, *daughter );
         di = bufferWrite( di );
     }
-    return di;
+    return( di );
 }
 
 
@@ -178,7 +180,7 @@ static DUMP_INFO* dumpBitMemb(  // DUMP A BITFIELD MEMBER
     di = bufferStr( di, ", bit width =" );
     di = bufferNmb( di, size );
     di = bufferWrite( di );
-    return di;
+    return( di );
 }
 
 
@@ -198,7 +200,7 @@ static DUMP_INFO* dumpDataMemb( // DUMP A DATA MEMBER
     di = bufferStr( di, ", size = " );
     di = bufferNmb( di, size );
     di = bufferWrite( di );
-    return di;
+    return( di );
 }
 
 
@@ -280,7 +282,7 @@ static DUMP_INFO* dumpStruct(   // DUMP A STRUCTURE
     }
     ScopeWalkDirectBases( type->u.c.scope, dumpDirect, di );
     VstkPop( &di->stack );
-    return di;
+    return( di );
 }
 
 
@@ -340,7 +342,7 @@ void DumpObjectModelEnum(       // DUMP OBJECT MODEL: ENUM
     VBUF buffer;                // - printing buffer
     char buf[16];               // - buffer
     int numb;                   // - a numeric value
-    const char *name = NULL;    // - name to be printed
+    const char *name;           // - name to be printed
     bool sign;                  // - true ==> signed enum
     unsigned mask;              // - used to mask to true size
     unsigned val;               // - value as unsigned
@@ -350,54 +352,51 @@ void DumpObjectModelEnum(       // DUMP OBJECT MODEL: ENUM
     sym = base->u.t.sym;
     VbufInit( &buffer );
     VbufConcStr( &buffer, "Object Model for: " );
-    if( NULL == sym->name->name || NameStr( sym->name->name )[0] == '.' ) {
+    if( NULL == sym->name->name || NameStr( sym->name->name )[0] == NAME_INTERNAL_PREFIX1 ) {
         VbufConcStr( &buffer, "anonymous enum type" );
     } else {
         VbufConcStr( &buffer, NameStr( sym->name->name ) );
     }
+    name = "???";
+    sign = false;
     switch( TypedefModifierRemove( base->of ) -> id ) {
-      case TYP_CHAR :
-      case TYP_UCHAR :
+    case TYP_CHAR :
+    case TYP_UCHAR :
         name = "unsigned char";
-        sign = false;
         break;
-      case TYP_SCHAR :
+    case TYP_SCHAR :
         name = "signed char";
         sign = true;
         break;
-      case TYP_SSHORT :
+    case TYP_SSHORT :
         name = "signed short";
         sign = true;
         break;
-      case TYP_USHORT :
+    case TYP_USHORT :
         name = "unsigned short";
-        sign = false;
         break;
-      case TYP_SINT :
+    case TYP_SINT :
         name = "signed int";
         sign = true;
         break;
-      case TYP_UINT :
+    case TYP_UINT :
         name = "unsigned int";
-        sign = false;
         break;
-      case TYP_SLONG :
+    case TYP_SLONG :
         name = "signed long";
         sign = true;
         break;
-      case TYP_ULONG :
+    case TYP_ULONG :
         name = "unsigned long";
-        sign = false;
         break;
-      case TYP_SLONG64 :
+    case TYP_SLONG64 :
         name = "__int64";
         sign = true;
         break;
-      case TYP_ULONG64 :
+    case TYP_ULONG64 :
         name = "unsigned __int64";
-        sign = false;
         break;
-      DbgDefault( "DumpObjectModelEnum -- bad underlying type" );
+    DbgDefault( "DumpObjectModelEnum -- bad underlying type" );
     }
     VbufConcStr( &buffer, ", base type is " );
     VbufConcStr( &buffer, name );
@@ -408,10 +407,7 @@ void DumpObjectModelEnum(       // DUMP OBJECT MODEL: ENUM
     } else {
         mask = ( 1 << ( mask * 8 ) ) - 1;
     }
-    for( ; ; ) {
-        sym = sym->thread;
-        if( ! SymIsEnumeration( sym ) )
-            break;
+    for( sym = sym->thread; SymIsEnumeration( sym ); sym = sym->thread ) {
         VbufRewind( &buffer );
         VbufConcStr( &buffer, "    " );
         VbufConcStr( &buffer, NameStr( sym->name->name ) );

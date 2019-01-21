@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2016 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -30,7 +30,7 @@
 ****************************************************************************/
 
 
-#include "cgstd.h"
+#include "_cgstd.h"
 #include "coderep.h"
 #include "memcheck.h"
 #include "zoiks.h"
@@ -46,14 +46,13 @@
 #include "fixindex.h"
 #include "generate.h"
 #include "conflict.h"
+#include "cgaux.h"
+#include "bgcall.h"
+#include "targetin.h"
 
 
-extern  bool            DoVerify(vertype,instruction*);
-extern  void            MarkCallI(instruction);
-extern  reg_set_index   CallIPossible(instruction*);
-
-static instruction  *DoReduce( instruction *ins, opcode_entry *try, bool has_index )
-/**********************************************************************************/
+static instruction  *DoReduce( instruction *ins, const opcode_entry *try, bool has_index )
+/****************************************************************************************/
 {
     hw_reg_set  *zap;
     hw_reg_set  zap_all;
@@ -81,7 +80,7 @@ static  bool    VerifyRegs( instruction *ins, operand_types ops )
 {
 #define _Any( ops, mul )        ( ( ops & (ANY*mul) ) == (ANY*mul) )
 
-    opcode_entry        *try;
+    const opcode_entry  *try;
     hw_reg_set          *possible;
     name                *name;
     op_regs             *need;
@@ -285,10 +284,10 @@ static  operand_types   ClassifyOps( instruction *ins, bool *has_index )
 }
 
 
-opcode_entry    *FindGenEntry( instruction *ins, bool *has_index )
-/****************************************************************/
+const opcode_entry  *FindGenEntry( instruction *ins, bool *has_index )
+/********************************************************************/
 {
-    opcode_entry        *try;
+    const opcode_entry  *try;
     operand_types       ops;
     vertype             verify;
 
@@ -332,7 +331,7 @@ void    FixGenEntry( instruction *ins )
 {
 /* update the instruction to reflect new instruction needs*/
 
-    opcode_entry        *old;
+    const opcode_entry  *old;
     bool                dummy;
 
     old = ins->u.gen_table;
@@ -347,7 +346,7 @@ void    FixGenEntry( instruction *ins )
 instruction     *PostExpandIns( instruction *ins )
 /************************************************/
 {
-    opcode_entry        *try;
+    const opcode_entry  *try;
     bool                dummy;
 
     try = FindGenEntry( ins, &dummy );
@@ -364,7 +363,7 @@ instruction     *PostExpandIns( instruction *ins )
 instruction     *ExpandIns( instruction *ins )
 /********************************************/
 {
-    opcode_entry        *try;
+    const opcode_entry  *try;
     bool                has_index;
 
     try = FindGenEntry( ins, &has_index );

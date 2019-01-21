@@ -33,13 +33,18 @@
 #include "variety.h"
 #include <stddef.h>
 #include <conio.h>
+#include "dosfuncx.h"
 #include "rtdata.h"
 #include "defwin.h"
 
+
 #ifndef DEFAULT_WINDOWING
     #include "tinyio.h"
-    extern      unsigned char _dos(char);
-    #pragma aux _dos = _INT_21 parm caller [ah] value [al];
+    extern unsigned char    _dos( char );
+    #pragma aux _dos = \
+            _INT_21 \
+        __parm __caller [__ah] \
+        __value         [__al]
 #endif
 
 _WCRTLINK int getch( void )
@@ -56,7 +61,7 @@ _WCRTLINK int getch( void )
             c = _WindowsGetch( res );
         }
 #else
-        c = _dos( 8 );
+        c = _dos( DOS_GET_CHAR_NO_ECHO_CHECK );
 #endif
     }
     return( c );

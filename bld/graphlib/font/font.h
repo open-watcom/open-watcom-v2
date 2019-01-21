@@ -29,10 +29,10 @@
 ****************************************************************************/
 
 
-#if defined ( __386__ )
-    #define _FAR
+#if defined( _M_I86 )
+    #define _FAR    __far
 #else
-    #define _FAR    far
+    #define _FAR
 #endif
 
 extern char _FAR            _StdFont[];

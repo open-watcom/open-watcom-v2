@@ -34,33 +34,12 @@
     located in INTRC.ASM
 */
 
-extern void __interrupt (* FAR_PTR old_int13)();
-extern void __interrupt (* FAR_PTR old_int21)();
-extern void __interrupt (* FAR_PTR old_int28)();
+#define _CODE_BASED __based( __segname("_CODE") )
 
-extern void __interrupt (* FAR_PTR old_intx0)();
-extern void __interrupt (* FAR_PTR old_intx1)();
-extern void __interrupt (* FAR_PTR old_intx2)();
-extern void __interrupt (* FAR_PTR old_intx3)();
-extern void __interrupt (* FAR_PTR old_intx4)();
-extern void __interrupt (* FAR_PTR old_intx5)();
-extern void __interrupt (* FAR_PTR old_intx6)();
-extern void __interrupt (* FAR_PTR old_intx7)();
+extern void __interrupt (* _CODE_BASED old_intxx_handlers[])();
+extern void __interrupt (* intxx_handlers[])();
+extern unsigned char    intr_list[];
 
-extern seg_offset       __far SysCallerAddr;
-extern unsigned char    __far SysCaught;
-extern unsigned char    __far SysNoDOS;
-
-extern void __interrupt int28_handler( union INTPACK r );
-extern void __interrupt int21_handler( union INTPACK r );
-extern void __interrupt int13_handler( union INTPACK r );
-extern void __interrupt int03_handler( union INTPACK r );
-
-extern void __interrupt intx0_handler( union INTPACK r );
-extern void __interrupt intx1_handler( union INTPACK r );
-extern void __interrupt intx2_handler( union INTPACK r );
-extern void __interrupt intx3_handler( union INTPACK r );
-extern void __interrupt intx4_handler( union INTPACK r );
-extern void __interrupt intx5_handler( union INTPACK r );
-extern void __interrupt intx6_handler( union INTPACK r );
-extern void __interrupt intx7_handler( union INTPACK r );
+extern seg_offset       _CODE_BASED SysCallerAddr;
+extern unsigned char    _CODE_BASED SysCaught;
+extern unsigned char    _CODE_BASED SysNoDOS;

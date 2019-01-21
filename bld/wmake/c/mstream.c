@@ -62,6 +62,8 @@
  * is no further input available in the stream.
  */
 
+#define CTRLZ       0x1a
+
 typedef enum {                  /* the different stream types           */
     SENT_FILE,
     SENT_STR,
@@ -75,7 +77,7 @@ typedef struct streamEntry {
         struct {
             char        *cur;       /* next character to be read            */
             char        *max;       /* maximum position in buffer           */
-            int         fh;         /* Posix i/o handle                     */
+            FILE        *fp;        /* file stream handle                   */
             char        *buf;       /* beginning of buffer                  */
             UINT16      line;       /* current line number                  */
             const char  *name;      /* file name                            */
@@ -146,7 +148,7 @@ STATIC void popSENT( void )
     switch( tmp->type ) {
     case SENT_FILE:
         if( tmp->free ) {
-            close( tmp->data.file.fh );
+            fclose( tmp->data.file.fp );
             PrtMsg( DBG | INF | LOC | FINISHED_FILE, tmp->data.file.name );
         }
         FreeSafe( tmp->data.file.buf );
@@ -167,15 +169,15 @@ STATIC void popSENT( void )
 }
 
 
-STATIC void pushFH( SENT *sent, int fh )
-/***************************************
+STATIC void pushFP( SENT *sent, FILE *fp )
+/*****************************************
  * given an open file handle, this routine allocates a buffer, and pushes a
  * SENT onto the stack
  */
 {
     assert( sent != NULL );
 
-    sent->data.file.fh = fh;
+    sent->data.file.fp = fp;
     sent->data.file.buf = MallocSafe( FILE_BUFFER_SIZE );
     sent->data.file.cur = sent->data.file.buf;
     sent->data.file.max = sent->data.file.buf;
@@ -191,7 +193,7 @@ STATIC bool fillBuffer( void )
  *          false if buffer is empty (EOF)
  */
 {
-    ssize_t max;
+    size_t  max;
     SENT    *tmp;   /* just to make sure optimizer will registerize this */
 
     assert( headSent != NULL && headSent->type == SENT_FILE );
@@ -204,16 +206,16 @@ STATIC bool fillBuffer( void )
 
     tmp->data.file.cur = tmp->data.file.buf;
 
-    max = posix_read( tmp->data.file.fh, tmp->data.file.buf, FILE_BUFFER_SIZE - 1 );
-    if( max == - 1 ) {
+    max = fread( tmp->data.file.buf, 1, FILE_BUFFER_SIZE - 1, tmp->data.file.fp );
+    if( ferror( tmp->data.file.fp ) ) {
         PrtMsg( ERR | READ_ERROR, tmp->data.file.name );
         max = 0;
     } else if( max > 0 && tmp->data.file.buf[max - 1] == '\r' ) {
         /* read one more character if it ends in \r (possibly CRLF) */
-        ssize_t max2;
+        size_t  max2;
 
-        max2 = posix_read( tmp->data.file.fh, &tmp->data.file.buf[max], 1 );
-        if( max2 == -1 ) {
+        max2 = fread( &tmp->data.file.buf[max], 1, 1, tmp->data.file.fp );
+        if( ferror( tmp->data.file.fp ) ) {
             PrtMsg( ERR | READ_ERROR, tmp->data.file.name );
             max2 = 0;
         }
@@ -234,7 +236,7 @@ RET_T InsFile( const char *name, bool envsearch )
  */
 {
     SENT    *tmp;
-    int     fh;
+    FILE    *fp;
     char    path[_MAX_PATH];
 
     assert( name != NULL );
@@ -242,8 +244,8 @@ RET_T InsFile( const char *name, bool envsearch )
     if( TrySufPath( path, name, NULL, envsearch ) == RET_SUCCESS ) {
         PrtMsg( DBG | INF | LOC | ENTERING_FILE, path );
 
-        fh = sopen3( path, O_RDONLY | O_BINARY, SH_DENYWR );
-        if( fh == -1 ) {
+        fp = fopen( path, "rb" );
+        if( fp == NULL ) {
             return( RET_ERROR );
         }
 
@@ -251,10 +253,10 @@ RET_T InsFile( const char *name, bool envsearch )
         tmp->free = true;
         tmp->data.file.name = StrDupSafe( path );
 
-        pushFH( tmp, fh );
+        pushFP( tmp, fp );
 
         if( !Glob.overide ) {
-            UnGetCH( EOL );
+            UnGetCHR( '\n' );
             InsString( path, false );
             InsString( "$+$(__MAKEFILES__)$- ", false );
             DefMacro( "__MAKEFILES__" );
@@ -268,22 +270,18 @@ RET_T InsFile( const char *name, bool envsearch )
 #pragma off(check_stack);
 #endif
 
-void InsOpenFile( int fh )
+void InsOpenFile( FILE *fp )
 /********************************
  * Push an already open file into the stream (ie: stdin)
  */
 {
     SENT    *tmp;
 
-#ifndef BOOTSTRAP
-    assert( eof( fh ) == 0 );   /* not at eof, and proper fh */
-#endif
-
     tmp = getSENT( SENT_FILE );
     tmp->free = false;
     tmp->data.file.name = NULL;
 
-    pushFH( tmp, fh );
+    pushFP( tmp, fp );
 }
 
 
@@ -305,7 +303,7 @@ void InsString( const char *str, bool weFree )
 }
 
 
-void UnGetCH( STRM_T s )
+void UnGetCHR( STRM_T s )
 /******************************
  * Push back a single character
  */
@@ -345,17 +343,19 @@ STRM_T GetCHR( void )
                     }
                     popSENT();
                     flagEOF = true;
-                    return( EOL );
+                    return( '\n' );
                 }
             }
-            s = *(head->data.file.cur++);
+            s = *(unsigned char *)head->data.file.cur;
+            head->data.file.cur++;
             if( sisbarf( s ) ) {
                 /* ignore \r in \r\n */
-                if( s == '\r' && head->data.file.cur[0] == EOL ) {
-                    s = *(head->data.file.cur++);
-                } else if( Glob.compat_nmake && s == 0x1a ) {
+                if( s == '\r' && head->data.file.cur[0] == '\n' ) {
+                    s = *(unsigned char *)head->data.file.cur;
+                    head->data.file.cur++;
+                } else if( Glob.compat_nmake && s == CTRLZ ) {
                     /* embedded ^Z terminates stream in MS mode */
-                    s = EOL;
+                    s = '\n';
                     popSENT();
                     flagEOF = true;
                 } else {
@@ -365,9 +365,9 @@ STRM_T GetCHR( void )
                 }
             }
             if( s == '\f' ) {
-                s = EOL;
+                s = '\n';
             }
-            if( s == EOL ) {
+            if( s == '\n' ) {
                 head->data.file.line++;
             }
             return( s );
@@ -464,8 +464,7 @@ RET_T GetFileLine( const char **pname, UINT16 *pline )
      * evaluate improperly).
      */
     *pline = cur->data.file.line;
-    if( cur->data.file.cur > cur->data.file.buf &&
-        cur->data.file.cur[-1] == EOL ) {
+    if( cur->data.file.cur > cur->data.file.buf && cur->data.file.cur[-1] == '\n' ) {
         --(*pline);
     }
 
@@ -497,12 +496,12 @@ void dispSENT( void )
             case SENT_FILE:
                 if( cur->data.file.cur == cur->data.file.max ) {
                     pos += FmtStr( &buf[pos], "fh %d, buffer empty, line %d",
-                        cur->data.file.fh, cur->data.file.line );
+                        cur->data.file.fp, cur->data.file.line );
                 } else {
                     pos += FmtStr( &buf[pos],
                         "fh %d, in buf %d, next 0x%x, line %d",
-                        cur->data.file.fh, cur->data.file.max - cur->data.file.cur,
-                        *(cur->data.file.cur), cur->data.file.line );
+                        cur->data.file.fp, cur->data.file.max - cur->data.file.cur,
+                        *(unsigned char *)cur->data.file.cur, cur->data.file.line );
                 }
                 if( cur->data.file.name ) {
                     pos += FmtStr( &buf[pos], ", name %s", cur->data.file.name );

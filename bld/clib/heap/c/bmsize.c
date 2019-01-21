@@ -38,5 +38,5 @@
 
 _WCRTLINK size_t _bmsize( __segment seg, void_bptr cstg )
 {
-    return( GET_BLK_SIZE( (freelist _WCFAR *)( seg :> CPTR2BLK( cstg ) ) ) - TAG_SIZE );
+    return( GET_BLK_SIZE( (freelist_fptr)( seg :> CPTR2BLK( cstg ) ) ) - TAG_SIZE );
 }

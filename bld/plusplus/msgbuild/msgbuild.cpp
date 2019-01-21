@@ -87,7 +87,7 @@ static char const* scanOverWS   // SCAN OVER WHITE SPACE
     ( char const *scan )
 {
     for( ; isspace( *scan ); ++ scan );
-    return scan;
+    return( scan );
 }
 
 
@@ -95,7 +95,7 @@ static char const* scanOverBS   // SCAN OVER BLACK SPACE
     ( char const *scan )
 {
     for( ; *scan != '\0' && ! isspace( *scan ); ++ scan );
-    return scan;
+    return( scan );
 }
 
 enum ProcState                  // ProcState: processing state
@@ -190,18 +190,19 @@ static byte scanWords           // SCAN WORDS ON A LINE
     message_size = 0;
     for( word_count = 0; ; ++word_count ) {
         text = scanOverWS( text );
-        if( '\0' == *text ) break;
+        if( '\0' == *text )
+            break;
         word_beg = text;
         text = scanOverBS( text );
         unsigned size = text - word_beg;
         message_size += 1 + size;
-        words[ word_count ] = Word::newWord( word_beg, size );
+        words[word_count] = Word::newWord( word_beg, size );
     }
     if( message_size > stats.max_message ) {
         stats.max_message = message_size;
     }
     stats.space_read_in += message_size;
-    return word_count;
+    return( word_count );
 }
 
 
@@ -227,7 +228,7 @@ static byte scanLevel           // SCAN MESSAGE LEVEL
         ++ text;
     }
     checkEOL( text );
-    return retn;
+    return( retn );
 }
 
 
@@ -260,7 +261,7 @@ static void processSymbol       // PROCESS :MSGSYM
         scanError( "no symbol for :MSGSYM" );
     }
     char* sym = (char*)alloca( size + 1 );
-    sym[ size ] = '\0';
+    sym[size] = '\0';
     memcpy( sym, symbeg, size );
     bptr = concatStr( buf, "#define " );
     bptr = concatStr( bptr, sym );
@@ -303,7 +304,7 @@ static void processInput        // PROCESS INPUT
                             rec_type = kwp->rec_type;
                             msg_type = kwp->msg_type;
                             text += size;
-                            if( text[ 0 ] == '.' ) {
+                            if( text[0] == '.' ) {
                                 ++ text;
                             }
                             break;
@@ -311,69 +312,71 @@ static void processInput        // PROCESS INPUT
                     }
                 }
             }
-            if( rec_type == REC_NONE ) continue;
+            if( rec_type == REC_NONE ) {
+                continue;
+            }
         } else {
             rec_type = REC_EOF;
         }
-        ProcState next_state = stateTable[ proc_state ][ rec_type ];
+        ProcState next_state = stateTable[proc_state][rec_type];
         switch( next_state ) {
-          case GROUP_LINE :
+        case GROUP_LINE :
             groupNum++;
             symbolNum = 0;
 //          processGroup( text );
             proc_state = next_state;
             continue;
-          case SYM_NO_GRP :
-            processSymbol( text, 0, symbolNum  );
+        case SYM_NO_GRP :
+            processSymbol( text, 0, symbolNum );
             proc_state = next_state;
             continue;
-          case SYM_GROUP :
-            processSymbol( text, groupNum, symbolNum  );
+        case SYM_GROUP :
+            processSymbol( text, groupNum, symbolNum );
             proc_state = next_state;
             continue;
-          case TEXT_GROUP :
-          case TEXT_NO_GRP :
+        case TEXT_GROUP :
+        case TEXT_NO_GRP :
             processText( text, symbolNum );
             ++ symbolNum;
             proc_state = next_state;
             continue;
-          case FOUND_PHR :
+        case FOUND_PHR :
 //          processPhrase( text );
             continue;
-          case MOD_GROUP :
-          case MOD_NO_GRP :
+        case MOD_GROUP :
+        case MOD_NO_GRP :
           { byte level;
             switch( msg_type ) {
-              case MSG_TYPE_ERROR :
-              case MSG_TYPE_WARNING :
-              case MSG_TYPE_ANSI :
-              case MSG_TYPE_EXTWARN :
-              case MSG_TYPE_ANSIWARN :
+            case MSG_TYPE_ERROR :
+            case MSG_TYPE_WARNING :
+            case MSG_TYPE_ANSI :
+            case MSG_TYPE_EXTWARN :
+            case MSG_TYPE_ANSIWARN :
                 level = scanLevel( text );
                 break;
-              case MSG_TYPE_INFO :
-              case MSG_TYPE_ANSIERR :
-              case MSG_TYPE_ANSICOMP :
+            case MSG_TYPE_INFO :
+            case MSG_TYPE_ANSIERR :
+            case MSG_TYPE_ANSICOMP :
                 level = 0;
                 break;
             }
             Msg::setModifier( msg_type, level );
           } continue;
-          case PRE_EOF :
+        case PRE_EOF :
             scanError( "Premature End-of-File" );
-          case GRP_NOT_FRST :
+        case GRP_NOT_FRST :
             scanError( "Group is not first token in file" );
-          case MISPL_TXT :
+        case MISPL_TXT :
             scanError( "Misplaced text token" );
-          case MISPL_SYM :
+        case MISPL_SYM :
             scanError( "Misplaced symbol token" );
-          case MISPL_MOD :
+        case MISPL_MOD :
             scanError( "Misplaced message modifier" );
-          case DUP_MOD :
+        case DUP_MOD :
             scanError( "More than one message modifier" );
-          case FOUND_EOF :
+        case FOUND_EOF :
             break;
-          default :
+        default :
             scanError( "Error when reading new state" );
         }
         break;
@@ -492,5 +495,5 @@ int main                        // MAIN-LINE
         puts( "MSGBUILD -- unexpected exception" );
         retn = -1;
     }
-    return 0;
+    return( 0 );
 }

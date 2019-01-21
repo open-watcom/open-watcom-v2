@@ -3,12 +3,12 @@
 #include <sys/stat.h>                      // C library
 #include <fcntl.h>                         //
 
-void main( void ) {
+int main( void ) {
 
     char s[20], *bp;
     int  handle, len = 20;
 
-    bp = new char[len];
+    bp = new char [len];
     handle = open( "temp.txt", O_WRONLY | O_CREAT | O_TEXT, S_IWUSR );
     ofstream    output ( handle, bp, len );
     output << "Just for fun!" << endl;
@@ -18,6 +18,6 @@ void main( void ) {
     while( (input >> s).good() ) {
         cout << s << " " << flush;
     }
-    delete bp;
+    delete[] bp;
 }
 

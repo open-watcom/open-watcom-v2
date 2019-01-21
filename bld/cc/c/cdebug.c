@@ -30,7 +30,6 @@
 
 
 #include "cvars.h"
-#include "standard.h"
 #include "cgdefs.h"
 #include "cgswitch.h"
 #include "cgprotos.h"

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
+* Copyright (c) 2009-2018 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -33,44 +33,47 @@
 *
 ****************************************************************************/
 
+
+#include "wipfc.hpp"
 #include "xmp.hpp"
 #include "brcmd.hpp"
 #include "cell.hpp"
 #include "document.hpp"
 #include "p.hpp"
-#include "util.hpp"
+
 
 Lexer::Token Xmp::parse( Lexer* lexer )
 {
     Lexer::Token tok( parseAttributes( lexer ) );
     if( tok == Lexer::WHITESPACE && lexer->text()[0] == L'\n' )
-        tok = document->getNextToken(); //consume '\n' if just after tag end
+        tok = _document->getNextToken(); //consume '\n' if just after tag end
     while( tok != Lexer::END && !( tok == Lexer::TAG && lexer->tagId() == Lexer::EUSERDOC)) {
         if( parseInline( lexer, tok ) ) {
             if( lexer->tagId() == Lexer::EXMP )
                 break;
-            else
-                parseCleanup( lexer, tok );
-            }
+            parseCleanup( lexer, tok );
+        }
     }
     return tok;
 }
 /*****************************************************************************/
 void Xmp::buildText( Cell* cell )
 {
-    cell->addByte( 0xFF );  //esc
-    cell->addByte( 0x02 );  //size
-    cell->addByte( 0x0B );  //begin monospaced
-    if( cell->textFull() )
+    cell->addByte( Cell::ESCAPE );  //esc
+    cell->addByte( 0x02 );          //size
+    cell->addByte( 0x0B );          //begin monospaced
+    if( cell->textFull() ) {
         printError( ERR1_LARGEPAGE );
+    }
 }
 /*****************************************************************************/
 void EXmp::buildText( Cell* cell )
 {
-    cell->addByte( 0xFF );  //esc
-    cell->addByte( 0x02 );  //size
-    cell->addByte( 0x0C );  //end monospaced
-    if( cell->textFull() )
+    cell->addByte( Cell::ESCAPE );  //esc
+    cell->addByte( 0x02 );          //size
+    cell->addByte( 0x0C );          //end monospaced
+    if( cell->textFull() ) {
         printError( ERR1_LARGEPAGE );
+    }
 }
 

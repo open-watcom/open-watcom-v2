@@ -88,8 +88,10 @@ enum {
 
 extern short MouseFunction( short );
 #pragma aux MouseFunction = \
-        "int 033h" \
-    parm [ax] value [ax] modify [ax bx cx dx];
+        "int 33h" \
+    __parm      [__ax] \
+    __value     [__ax] \
+    __modify    [__bx __cx __dx]
 
 typedef struct {
     short button_status;
@@ -100,78 +102,100 @@ typedef struct {
 extern void GetMousePositionAndButtonStatus( mouse_status * );
 #ifdef _M_I86
 #pragma aux GetMousePositionAndButtonStatus = \
-        "mov ax, 03h" \
-        "push si" \
-        "int 033h" \
-        "pop si" \
-        "mov word ptr es:[si], bx" \
-        "mov word ptr es:[si+2], cx" \
-        "mov word ptr es:[si+4], dx" \
-    parm [es si] modify [ax bx cx dx];
+        "mov  ax,3" \
+        "push si"   \
+        "int 33h"   \
+        "pop  si"   \
+        "mov  word ptr es:[si],bx"   \
+        "mov  word ptr es:[si+2],cx" \
+        "mov  word ptr es:[si+4],dx" \
+    __parm      [__es __si] \
+    __value     \
+    __modify    [__ax __bx __cx __dx]
 #else
 #pragma aux GetMousePositionAndButtonStatus = \
-        "mov ax, 03h" \
-        "push esi" \
-        "int 033h" \
-        "pop esi" \
-        "mov word ptr [esi], bx" \
-        "mov word ptr 2[esi], cx" \
-        "mov word ptr 4[esi], dx" \
-    parm [esi] modify [ax bx cx dx];
+        "mov  ax,3" \
+        "push esi"  \
+        "int 33h"   \
+        "pop  esi"  \
+        "mov  word ptr [esi],bx"  \
+        "mov  word ptr 2[esi],cx" \
+        "mov  word ptr 4[esi],dx" \
+    __parm      [__esi] \
+    __value     \
+    __modify    [__ax __bx __cx __dx]
 #endif
-
-extern void SetMousePointerExclusionArea( short, short, short, short );
-#pragma aux SetMousePointerExclusionArea = \
-        "mov ax, 04h" \
-        "int 033h" \
-    parm [cx] [dx] [si] [di] modify [ax bx cx dx];
 
 extern void SetMousePointerPosition( short, short );
 #pragma aux SetMousePointerPosition = \
-        "mov ax, 04h" \
-        "int 033h" \
-    parm [cx] [dx] modify [ax bx cx dx];
+        "mov  ax,4" \
+        "int 33h"   \
+    __parm      [__cx] [__dx] \
+    __value     \
+    __modify    [__ax __bx __cx __dx]
 
 extern void SetHorizontalLimitsForPointer( short, short );
 #pragma aux SetHorizontalLimitsForPointer = \
-        "mov ax, 07h" \
-        "int 33h" \
-        parm [cx] [dx] modify [ax bx cx dx];
+        "mov  ax,7" \
+        "int 33h"   \
+    __parm      [__cx] [__dx] \
+    __value     \
+    __modify    [__ax __bx __cx __dx]
 
 extern void SetVerticalLimitsForPointer( short, short );
 #pragma aux SetVerticalLimitsForPointer = \
-        "mov ax, 08h" \
-        "int 33h" \
-    parm [cx] [dx] modify [ax bx cx dx];
+        "mov  ax,8" \
+        "int 33h"   \
+    __parm      [__cx] [__dx] \
+    __value     \
+    __modify    [__ax __bx __cx __dx]
 
 extern void SetTextPointerType( short, short, short );
 #pragma aux SetTextPointerType = \
-        "mov ax, 0ah" \
-        "int 33h" \
-    parm [bx] [cx] [dx] modify [ax bx cx dx];
+        "mov  ax,0ah"   \
+        "int 33h"       \
+    __parm      [__bx] [__cx] [__dx] \
+    __value     \
+    __modify    [__ax __bx __cx __dx]
 
 extern void SetUserDefinedMouseEventHandler( short, void __far * );
 #pragma aux SetUserDefinedMouseEventHandler = \
-        "mov ax, 0ch" \
-        "int 33h" \
-    parm [cx] [es dx] modify [ax bx cx dx];
+        "mov  ax,0ch"   \
+        "int 33h"       \
+    __parm      [__cx] [__es __dx] \
+    __value     \
+    __modify    [__ax __bx __cx __dx]
 
 extern void SetMickeysToPixelsRatio( short, short );
 #pragma aux SetMickeysToPixelsRatio = \
-        "mov ax, 0fh" \
-        "int 33h" \
-    parm [cx] [dx] modify [ax bx cx dx];
+        "mov  ax,0fh"   \
+        "int 33h"       \
+    __parm      [__cx] [__dx] \
+    __value     \
+    __modify    [__ax __bx __cx __dx]
+
+extern void SetMousePointerExclusionArea( short, short, short, short );
+#pragma aux SetMousePointerExclusionArea = \
+        "mov  ax,10h" \
+        "int 33h"   \
+    __parm [__cx] [__dx] [__si] [__di] \
+    __value     \
+    __modify [__ax __bx __cx __dx]
 
 extern void SetDoubleSpeedThreshold( short );
 #pragma aux SetDoubleSpeedThreshold = \
-        "mov ax, 13h" \
-        "int 33h" \
-    parm [dx] modify [ax bx cx dx];
+        "mov  ax,13h"   \
+        "int 33h"       \
+    __parm      [__dx] \
+    __value     \
+    __modify    [__ax __bx __cx __dx]
 
 extern void SelectPointerPage( short );
 #pragma aux SelectPointerPage = \
-        "mov ax, 1dh" \
-        "int 33h" \
-    parm [bx] modify [ax bx cx dx];
+        "mov  ax,1dh"   \
+        "int 33h"       \
+    __parm      [__bx] \
+    __value     \
+    __modify    [__ax __bx __cx __dx]
 
 #endif

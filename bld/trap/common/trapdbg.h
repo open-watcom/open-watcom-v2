@@ -32,7 +32,11 @@
 #ifdef DEBUG_TRAP
 
 #include <string.h>
+#ifdef __LINUX__
+    #include <unistd.h>
+#endif
 #include "watcom.h"
+
 
 #define DBG_STDOUT_H                    1
 #define DBG_PAGESIZE                    24      /* counting from 0 */
@@ -47,128 +51,144 @@
 #define DBG_BLANK                       0x20
 #define DBG_BELL                        0x07
 
+
 #ifdef __LINUX__
+
+
 #define _DBG_KeyWait()
 
-#include <unistd.h>
-
 extern void _DBG_DumpMultChars( uint_8 ch, uint_32 count, uint_32 fhandle );
-#pragma aux _DBG_DumpMultChars =                                        \
-    "push   ebp"                                                        \
-    "mov    ebp, esp"                                                   \
-    "sub    esp, edx"           /* make space for edx chars */          \
-    "mov    edi, esp"                                                   \
-    "mov    ecx, edx"           /* count in ecx */                      \
-    "rep    stosb"              /* replicate chars in buffer */         \
-    "mov    ecx, esp"           /* now ecx points to string */          \
-    "mov    eax,4"                                                      \
-    "int    0x80"                                                       \
-    "mov    esp, ebp"                                                   \
-    "pop    ebp"                                                        \
-    parm [ al ] [ edx ] [ ebx ]                                         \
-    modify [eax ecx esi edi];
+#pragma aux _DBG_DumpMultChars = \
+        "push ebp"                                      \
+        "mov  ebp,esp"                                  \
+        "sub  esp,edx"  /* make space for edx chars */  \
+        "mov  edi,esp"                                  \
+        "mov  ecx,edx"  /* count in ecx */              \
+        "rep  stosb"    /* replicate chars in buffer */ \
+        "mov  ecx,esp"  /* now ecx points to string */  \
+        "mov  eax,4"                                    \
+        "int  80h"                                      \
+        "mov  esp,ebp"                                  \
+        "pop  ebp"                                      \
+    __parm              [__al] [__edx] [__ebx] \
+    __value             \
+    __modify __exact    [__eax __ecx __edi]
 
 extern void _DBG_DumpChar( uint_8 ch, uint_32 fhandle );
-#pragma aux _DBG_DumpChar =                                             \
-    "push   eax"                                                        \
-    "mov    ecx, esp"           /* now ecx points to char */            \
-    "mov    edx, 1"             /* number of bytes to write */          \
-    "mov    eax,4"                                                      \
-    "int    0x80"                                                       \
-    "pop    eax"                                                        \
-    parm [ al ] [ ebx ];
+#pragma aux _DBG_DumpChar = \
+        "push eax"                                      \
+        "mov  ecx,esp"  /* now ecx points to char */    \
+        "mov  edx,1"    /* number of bytes to write */  \
+        "mov  eax,4"                                    \
+        "int  80h"                                      \
+        "pop  eax"                                      \
+    __parm              [__al] [__ebx] \
+    __value             \
+    __modify __exact    [__ecx __edx]
 
 extern uint_8 _DBG_HexChar( uint_8 digit );
-#pragma aux _DBG_HexChar =                                              \
-    "and    al, 0fh"      /* the digit is in the low 4 bits */          \
-    "cmp    al, 09h"                                                    \
-    "jg     L2"                                                         \
-    "add    al, '0'"                                                    \
-    "jmp    L3"                                                         \
-    "L2:"                                                               \
-    "sub    al, 0ah"                                                    \
-    "add    al, 'a'"                                                    \
-    "L3:"                                                               \
-    parm [ al ];
+#pragma aux _DBG_HexChar = \
+        "and  al,0fh"   /* the low 4 bits is digit */   \
+        "cmp  al,09h"                                   \
+        "jg short L2"                                   \
+        "add  al,'0'"                                   \
+        "jmp short L3"                                  \
+    "L2:"                                               \
+        "sub  al,0ah"                                   \
+        "add  al,'a'"                                   \
+    "L3:"                                               \
+    __parm              [__al] \
+    __value             [__al] \
+    __modify __exact    [__al]
 
 extern void _DBG_DumpStr( const char *str, uint_32 len, uint_32 fhandle );
-#pragma aux _DBG_DumpStr =                                              \
-    "mov    eax,4"                                                      \
-    "int    0x80"                                                       \
-    parm [ecx] [edx] [ebx];
+#pragma aux _DBG_DumpStr = \
+        "mov  eax,4"                                    \
+        "int  80h"                                      \
+    __parm              [__ecx] [__edx] [__ebx] \
+    __value             \
+    __modify __exact    [__eax]
 
-#else
+
+#else   /* !__LINUX__ */
+
 
 extern void _DBG_KeyWait( void );
-#pragma aux _DBG_KeyWait =                                              \
-    "mov        ah, 08h ",      /* read char, no echo, check ^C */      \
-    "int        21h     "                                               \
-    modify exact [ ax ];
+#pragma aux _DBG_KeyWait = \
+        "mov  ah,08h"   /* read char, no echo, check ^C */  \
+        "int  21h"                                          \
+    __parm                                                    \
+    __value                                                   \
+    __modify __exact [ax]
 
 extern void _DBG_DumpMultChars( uint_8 ch, uint_16 count, uint_16 fhandle );
-#pragma aux _DBG_DumpMultChars =                                        \
-    "push       ds      ",      /* don't modify ds */                   \
-    "push       es      ",                                              \
-    "push       bp      ",                                              \
-    "mov        bp, sp  ",                                              \
-    "sub        sp, cx  ",      /* make space for bx chars */           \
-    "mov        di, sp  ",                                              \
-    "mov        dx, ss  ",                                              \
-    "mov        es, dx  ",      /* now es:di points to temp buffer */   \
-    "mov        ds, dx  ",      /* ds needs dx, for later */            \
-    "mov        dx, cx  ",      /* save count in dx */                  \
-    "rep        stosb   ",      /* now ss:sp points to */               \
-    "mov        cx, dx  ",      /* now cx holds count */                \
-    "mov        dx, sp  ",      /* now ds:dx points to string */        \
-    "mov        ah, 40h ",      /* write bytes to file w/handle */      \
-    "int        21h     ",                                              \
-    "mov        sp, bp  ",                                              \
-    "pop        bp      ",                                              \
-    "pop        es      ",                                              \
-    "pop        ds      "                                               \
-    parm [ al ] [ cx ] [ bx ]                                           \
-    modify exact [ ax cx dx di ];
+#pragma aux _DBG_DumpMultChars = \
+        "push ds"       /* don't modify ds */                   \
+        "push es"                                               \
+        "push bp"                                               \
+        "mov  bp,sp"                                            \
+        "sub  sp,cx"    /* make space for bx chars */           \
+        "mov  di,sp"                                            \
+        "mov  dx,ss"                                            \
+        "mov  es,dx"    /* now es:di points to temp buffer */   \
+        "mov  ds,dx"    /* ds needs dx, for later */            \
+        "mov  dx,cx"    /* save count in dx */                  \
+        "rep  stosb"    /* now ss:sp points to */               \
+        "mov  cx,dx"    /* now cx holds count */                \
+        "mov  dx,sp"    /* now ds:dx points to string */        \
+        "mov  ah,40h"   /* write bytes to file w/handle */      \
+        "int  21h"                                              \
+        "mov  sp,bp"                                            \
+        "pop  bp"                                               \
+        "pop  es"                                               \
+        "pop  ds"                                               \
+    __parm              [__al] [__cx] [__bx] \
+    __value             \
+    __modify __exact    [__ax __cx __dx __di]
 
 extern void _DBG_DumpChar( uint_8 ch, uint_16 fhandle );
-#pragma aux _DBG_DumpChar =                                             \
-    "push       ds      ",      /* don't modify ds */                   \
-    "push       ax      ",                                              \
-    "mov        ax, ss  ",                                              \
-    "mov        ds, ax  ",                                              \
-    "mov        dx, sp  ",      /* now ds:dx points to char */          \
-    "mov        cx, 1   ",      /* number of bytes to write */          \
-    "mov        ah, 40h ",      /* write bytes to file w/handle */      \
-    "int        21h     ",                                              \
-    "pop        ax      ",                                              \
-    "pop        ds      "                                               \
-    parm [ al ] [ bx ]                                                  \
-    modify exact [ cx dx ];
+#pragma aux _DBG_DumpChar = \
+        "push ds"       /* don't modify ds */               \
+        "push ax"                                           \
+        "mov  ax,ss"                                        \
+        "mov  ds,ax"                                        \
+        "mov  dx,sp"    /* now ds:dx points to char */      \
+        "mov  cx,1"     /* number of bytes to write */      \
+        "mov  ah,40h"   /* write bytes to file w/handle */  \
+        "int  21h"                                          \
+        "pop  ax"                                           \
+        "pop  ds"                                           \
+    __parm              [__al] [__bx] \
+    __value             \
+    __modify __exact    [__cx __dx]
 
 extern uint_8 _DBG_HexChar( uint_8 digit );
-#pragma aux _DBG_HexChar =                                              \
-    "and        al, 0fh ",      /* the digit is in the low 4 bits */    \
-    "cmp        al, 09h ",                                              \
-    "jg         L2      ",                                              \
-    "add        al, '0' ",                                              \
-    "jmp        L3      ",                                              \
-    "L2:                ",                                              \
-    "sub        al, 0ah ",                                              \
-    "add        al, 'a' ",                                              \
-    "L3:                "                                               \
-    parm [ al ]                                                         \
-    modify exact [ al ];
+#pragma aux _DBG_HexChar = \
+        "and  al,0fh"   /* the low 4 bits is the digit */   \
+        "cmp  al,09h"                                       \
+        "jg short L2"                                       \
+        "add  al,'0'"                                       \
+        "jmp short L3"                                      \
+    "L2: sub  al,0ah"                                       \
+        "add  al,'a'"                                       \
+    "L3:"                                                   \
+    __parm              [__al] \
+    __value             [__al] \
+    __modify __exact    [__al]
 
 extern void _DBG_DumpStr( const char __far *str, uint_16 len, uint_16 fhandle );
-#pragma aux _DBG_DumpStr =                                              \
-    "push       ds      ",      /* don't modify ds */                   \
-    "xchg       ax, dx  ",      /* now ax=seg str, dx=off str */        \
-    "mov        ds, ax  ",      /* now ds:dx=str, cx=len, bx=handle */  \
-    "mov        ah, 40h ",      /* write bytes to file with handle */   \
-    "int        21h     ",                                              \
-    "pop        ds      "                                               \
-    parm [ ax dx ] [ cx ] [ bx ]                                        \
-    modify exact [ ax dx ];
-#endif
+#pragma aux _DBG_DumpStr = \
+        "push ds"       /* don't modify ds */                   \
+        "xchg ax,dx"    /* now ax=seg str, dx=off str */        \
+        "mov  ds,ax"    /* now ds:dx=str, cx=len, bx=handle */  \
+        "mov  ah,40h"   /* write bytes to file with handle */   \
+        "int  21h"                                              \
+        "pop  ds"                                               \
+    __parm              [__ax __dx] [__cx] [__bx] \
+    __value             \
+    __modify __exact    [__ax __dx]
+
+#endif  /* !__LINUX__ */
 
 
 #define _DBG_Request( n )       ( (access_req)(n) >= REQ__LAST ?        \
@@ -223,10 +243,9 @@ extern void _DBG_DumpStr( const char __far *str, uint_16 len, uint_16 fhandle );
                                   _DBG_RingBell();                      \
                                 }
 
-
-extern uint_8                   DBG_Indent;
-extern uint_8                   DBG_Lines;
-extern char                     *DBG_ReqStrings[];
+extern uint_8       DBG_Indent;
+extern uint_8       DBG_Lines;
+extern char         *DBG_ReqStrings[];
 
 
 #else

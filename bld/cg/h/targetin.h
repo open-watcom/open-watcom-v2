@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -29,17 +30,19 @@
 ****************************************************************************/
 
 
-extern  void            GenProlog( void );
-extern  void            GenEpilog( void );
-extern  void            AddCacheRegs( void );
-extern  void            InitStackDepth( block * );
-extern  int             AskDisplaySize( level_depth level );
-extern  type_length     PushSize( type_length );
-extern  void            PushLocals( void );
-extern  void            SetTempLocation( name *, type_length );
-extern  type_length     TempLocation( name * );
-extern  bool            TempAllocBefore( void *, void * );
-extern  unsigned        DepthAlign( unsigned );
-extern  void            GenCallLabel( pointer );
-extern  void            GenLabelReturn( void );
-extern  void            GenObjCode( instruction * );
+extern void             GenProlog( void );
+extern void             GenEpilog( void );
+extern void             AddCacheRegs( void );
+extern void             InitStackDepth( block * );
+extern int              AskDisplaySize( level_depth level );
+extern type_length      PushSize( type_length );
+extern void             PushLocals( void );
+extern void             SetTempLocation( name *, type_length );
+extern type_length      TempLocation( name * );
+extern bool             TempAllocBefore( void *, void * );
+extern unsigned         DepthAlign( unsigned );
+extern void             GenCallLabel( pointer );
+extern void             GenLabelReturn( void );
+extern void             GenObjCode( instruction * );
+
+extern bool             DoVerify( vertype kind, instruction *ins );

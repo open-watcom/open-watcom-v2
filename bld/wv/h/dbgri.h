@@ -32,7 +32,7 @@
 
 typedef struct {
     location_list       ll;
-    dip_type_info       ti;
+    dig_type_info       ti;
     unsigned            ref_size        : 3;
     bool                ref_far         : 1;
     bool                rl_passed_in    : 1;

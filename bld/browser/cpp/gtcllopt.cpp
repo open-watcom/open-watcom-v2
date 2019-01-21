@@ -65,7 +65,7 @@ GTCallOption::~GTCallOption()
 //---------------------------
 {
     delete _options;
-    delete [] _rects;
+    delete[] _rects;
 }
 
 void GTCallOption::initialize()

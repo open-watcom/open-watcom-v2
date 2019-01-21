@@ -97,7 +97,7 @@ static unsigned calcIndexPages( unsigned pagecnt )
 }
 
 
-unsigned calcStringBlockSize( char **str )
+static unsigned calcStringBlockSize( char **str )
 {
     unsigned    blocksize;
     unsigned    i;
@@ -118,8 +118,7 @@ unsigned long CalcIndexSize( char **str, bool gen_str )
 
     dataPageCnt = markDataPages();
     indexPageCnt = calcIndexPages( dataPageCnt );
-    ret = ( dataPageCnt + indexPageCnt ) * HLP_PAGE_SIZE
-            + dataPageCnt * sizeof( uint_16 );
+    ret = ( dataPageCnt + indexPageCnt ) * HLP_PAGE_SIZE + dataPageCnt * sizeof( uint_16 );
     if( gen_str ) {
         ret += sizeof( HelpHeader ) + calcStringBlockSize( str );
     } else {

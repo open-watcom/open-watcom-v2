@@ -30,14 +30,13 @@
 ****************************************************************************/
 
 
-#include "cgstd.h"
+#include "_cgstd.h"
 #include "coderep.h"
 #include "cfloat.h"
 #include "data.h"
 #include "intrface.h"
 #include "rgtbl.h"
 #include "namelist.h"
-#include "dmpinc.h"
 #include "dumpio.h"
 #include "dumpins.h"
 #include "dumpblk.h"
@@ -137,10 +136,10 @@ static const char * ClassNames[] = {
 };
 
 
-void    DumpClass( type_class_def tipe )
-/**************************************/
+void    DumpClass( type_class_def type_class )
+/********************************************/
 {
-    DumpString( ClassNames[tipe] );
+    DumpString( ClassNames[type_class] );
 }
 
 
@@ -515,8 +514,8 @@ void    DumpSym( name *sym )
     DumpPtr( sym );
     DumpChar( ' ' );
     DumpOperand( sym );
-    DumpClass( sym->n.name_class );
-    if( sym->n.name_class == XX ) {
+    DumpClass( sym->n.type_class );
+    if( sym->n.type_class == XX ) {
         DumpLong( sym->n.size );
     }
     if( sym->n.class == N_MEMORY || sym->n.class == N_TEMP ) {

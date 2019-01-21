@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -24,20 +25,58 @@
 *
 *  ========================================================================
 *
-* Description:  Implementation of _chdrive().
+* Description:  Set active drive.
 *
 ****************************************************************************/
 
 
 #include "variety.h"
-#include <dos.h>
 #include <direct.h>
+#if defined( __DOS__ ) || defined( __WINDOWS__ )
+    #include <dos.h>
+#elif defined( __OS2__ )
+    #include <wos2.h>
+#elif defined( __NT__ )
+    #include <windows.h>
+#elif defined( __RDOS__ ) || defined( __RDOSDEV__ )
+    #include <rdos.h>
+#endif
+#include "pathmac.h"
+
 
 _WCRTLINK int _chdrive( int drive )
 {
+#if defined( __DOS__ ) || defined( __WINDOWS__ )
     unsigned    dnum, ndrv;
 
     _dos_setdrive( drive, &ndrv );
     _dos_getdrive( &dnum );
-    return( dnum == drive ? 0 : -1 );
+    if( (int)dnum == drive )
+        return( 0 );
+#elif defined( __OS2__ )
+    OS_UINT     dnum;
+    ULONG       ndrv;
+
+    DosSelectDisk( drive );
+    DosQCurDisk( &dnum, &ndrv );
+    if( (int)dnum == drive )
+        return( 0 );
+#elif defined( __NT__ )
+    char        dir[MAX_PATH];  // [4]
+
+    dir[0] = drive + 'a' - 1;
+    dir[1] = DRV_SEP;
+    dir[2] = '.';
+    dir[3] = '\0';
+
+    SetCurrentDirectory( dir );
+    GetCurrentDirectory( sizeof( dir ), dir );
+    if( tolower( (unsigned char)dir[0] ) - 'a' + 1 == drive )
+        return( 0 );
+#elif defined( __RDOS__ ) || defined( __RDOSDEV__ )
+    RdosSetCurDrive( drive - 1 );
+    if( RdosGetCurDrive() + 1 == drive )
+        return( 0 );
+#endif
+    return( -1 );
 }

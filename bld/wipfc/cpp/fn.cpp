@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
+* Copyright (c) 2009-2018 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -34,6 +34,8 @@
 *
 ****************************************************************************/
 
+
+#include "wipfc.hpp"
 #include "fn.hpp"
 #include "cell.hpp"
 #include "document.hpp"
@@ -50,11 +52,11 @@ Lexer::Token Fn::parse( Lexer* lexer )
         if( lexer->tagId() == Lexer::EFN ) {
             tok = Tag::parseAttributes( lexer );
             break;
-        }
-        else if( parseInline( lexer, tok ) ) {
+        } else if( parseInline( lexer, tok ) ) {
             if( parseBlock( lexer, tok ) ) {
-                if( parseListBlock( lexer, tok ) )
+                if( parseListBlock( lexer, tok ) ) {
                     parseCleanup( lexer, tok );
+                }
             }
         }
     }
@@ -63,42 +65,43 @@ Lexer::Token Fn::parse( Lexer* lexer )
 /***************************************************************************/
 Lexer::Token Fn::parseAttributes( Lexer* lexer )
 {
-    Lexer::Token tok( document->getNextToken() );
-    while( tok != Lexer::TAGEND ) {
+    Lexer::Token tok;
+
+    while( (tok = _document->getNextToken()) != Lexer::TAGEND ) {
         if( tok == Lexer::ATTRIBUTE ) {
             std::wstring key;
             std::wstring value;
             splitAttribute( lexer->text(), key, value );
             if( key == L"id" ) {
-                id = new GlobalDictionaryWord( value );
-                id->toUpper();          //to uppercase
-                if( !document->isInf() )
-                    id = document->addWord( id );
+                _id = new GlobalDictionaryWord( value );
+                _id->toUpper();          //to uppercase
+                if( !_document->isInf() ) {
+                    _id = _document->addTextToGD( _id );
+                }
+            } else {
+                _document->printError( ERR1_ATTRNOTDEF );
             }
-            else
-                document->printError( ERR1_ATTRNOTDEF );
-        }
-        else if( tok == Lexer::FLAG )
-                document->printError( ERR1_ATTRNOTDEF );
-        else if( tok == Lexer::ERROR_TAG )
+        } else if( tok == Lexer::FLAG ) {
+            _document->printError( ERR1_ATTRNOTDEF );
+        } else if( tok == Lexer::ERROR_TAG ) {
             throw FatalError( ERR_SYNTAX );
-        else if( tok == Lexer::END )
+        } else if( tok == Lexer::END ) {
             throw FatalError( ERR_EOF );
-        else
-            document->printError( ERR1_TAGSYNTAX );
-        tok = document->getNextToken();
+        } else {
+            _document->printError( ERR1_TAGSYNTAX );
+        }
     }
-    if( !id )
-        document->printError( ERR1_NOFNID );
-    return document->getNextToken();    //consume TAGEND
+    if( !_id )
+        _document->printError( ERR1_NOFNID );
+    return _document->getNextToken();    //consume TAGEND
 }
 /***************************************************************************/
 void Fn::buildTOC( Page* page )
 {
-    page->setTOC( toc );
-    if( id ) {
-        TocRef tr( fileName, row, page->index() ); 
-        document->addNameOrId( id, tr );
+    page->setTOC( _toc );
+    if( _id ) {
+        TocRef tr( _fileName, _row, page->index() );
+        _document->addNameOrId( _id, tr );
     }
 }
 

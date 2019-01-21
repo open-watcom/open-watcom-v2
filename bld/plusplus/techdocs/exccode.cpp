@@ -97,7 +97,7 @@ int main()
     {   C cv( 4, 5 );
         P pv( 6, 7 );
     }
-    return ctored != dtored;
+    return( ctored != dtored );
 }
 
 

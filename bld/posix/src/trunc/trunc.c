@@ -71,7 +71,7 @@ void main( int argc, char **argv ) {
     int             fh;
     struct stat     statbuf;
     struct utimbuf  utb;
-    unsigned short  st_mode;
+    mode_t          st_mode;
 
     argv = ExpandEnv( &argc, argv );
     rxflag = 0;

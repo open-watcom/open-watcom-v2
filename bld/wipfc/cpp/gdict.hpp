@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
+* Copyright (c) 2009-2018 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -43,7 +43,6 @@
 #ifndef GLOBALDICTIONARY_INCLUDED
 #define GLOBALDICTIONARY_INCLUDED
 
-#include "config.hpp"
 #include <cstdio>
 #include <string>
 #include <set>
@@ -51,39 +50,41 @@
 #include "gdword.hpp"
 #include "ptrops.hpp"
 
+
 class GlobalDictionary {
 public:
-    GlobalDictionary() : bytes( 0 ), ftsBytes( 0 ) {};
+    GlobalDictionary() : _bytes( 0 ), _ftsBytes( 0 ) {};
     ~GlobalDictionary();
     //add a word to the collection
-    GlobalDictionaryWord* insert( GlobalDictionaryWord* word );
-    GlobalDictionaryWord* insert( std::wstring& word );
+    GlobalDictionaryWord* insert( GlobalDictionaryWord* gdentry );
+    GlobalDictionaryWord* insert( const std::wstring& text );
     //after insertions are completed, assign an index to each element
     //of the collection as if it were an array
     void convert( std::size_t count );
     //get the index of a word in the collection
-    STD1::uint16_t findIndex( std::wstring& word );
-    STD1::uint16_t findIndex( GlobalDictionaryWord* word ) { return (*words.find( word ))->index(); };
+    word findIndex( GlobalDictionaryWord *gdentry ) { return (*_words.find( gdentry ))->index(); };
+    word findIndex( const std::wstring& text );
     //get a word from the collection
-    GlobalDictionaryWord* findWord( GlobalDictionaryWord* word) { return *words.find( word ); };
-    GlobalDictionaryWord* findWord( std::wstring& word );
+    GlobalDictionaryWord* findWord( GlobalDictionaryWord *gdentry ) { return *_words.find( gdentry ); };
+    GlobalDictionaryWord* findWord( const std::wstring& text );
     //the number of elements in the collection
-    STD1::uint16_t size() const { return static_cast< STD1::uint16_t >( words.size() ); };
+    word size() const { return static_cast< word >( _words.size() ); };
     //the number of bytes written by the collection
-    STD1::uint32_t length() const { return bytes; };
+    dword length() const { return _bytes; };
     //the number of bytes of FTS data written by the collection
-    STD1::uint32_t ftsLength() const { return ftsBytes; };
-    STD1::uint32_t write( std::FILE* out );
-    bool buildFTS();
-    STD1::uint32_t writeFTS( std::FILE* out, bool big );
+    dword ftsLength() const { return _ftsBytes; };
+    dword write( OutFile* out );
+    bool buildFTS( OutFile* out );
+    dword writeFTS( OutFile* out, bool big );
 private:
     GlobalDictionary( const GlobalDictionary& rhs );            //no copy
     GlobalDictionary operator= ( const GlobalDictionary& rhs ); //no assigment
-    std::set< GlobalDictionaryWord*, ptrLess< GlobalDictionaryWord* > > words;
+
+    std::set< GlobalDictionaryWord*, ptrLess< GlobalDictionaryWord* > > _words;
     typedef std::set< GlobalDictionaryWord*, ptrLess< GlobalDictionaryWord* > >::const_iterator ConstWordIter;
     typedef std::set< GlobalDictionaryWord*, ptrLess< GlobalDictionaryWord* > >::iterator WordIter;
-    STD1::uint32_t bytes;
-    STD1::uint32_t ftsBytes;
+    dword               _bytes;
+    dword               _ftsBytes;
 };
 
 #endif //GLOBALDICTIONARY_INCLUDED

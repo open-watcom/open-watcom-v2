@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
+* Copyright (c) 2009-2018 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -34,21 +34,21 @@
 #ifndef DDF_INCLUDED
 #define DDF_INCLUDED
 
-#include "config.hpp"
 #include "element.hpp"
 
 class Ddf : public Element {
 public:
     Ddf( Document* d, Element *p, const std::wstring* f, unsigned int r, unsigned int c ) :
-        Element( d, p, f, r, c ), res( 0 ) { };
+        Element( d, p, f, r, c ), _res( 0 ) { };
     ~Ddf() { };
     Lexer::Token parse( Lexer* lexer );
     void buildText( Cell* cell );
 private:
     Ddf( const Ddf& rhs );              //no copy
     Ddf& operator=( const Ddf& rhs );   //no assignment
-    STD1::uint16_t res;
     Lexer::Token parseAttributes( Lexer* lexer );
+
+    word                _res;
 };
 
 #endif //DDF_INCLUDED

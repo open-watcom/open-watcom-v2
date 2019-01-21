@@ -53,7 +53,7 @@ pick( mad_status,                   AddrInterrupt,      ( const addr_ptr *, unsi
 pick( walk_result,                  TypeWalk,           ( mad_type_kind, MI_TYPE_WALKER *, void * ) )
 pick( mad_string,                   TypeName,           ( mad_type_handle ) )
 pick( mad_radix,                    TypePreferredRadix, ( mad_type_handle ) )
-pick( mad_type_handle,              TypeForDIPType,     ( const dip_type_info * ) )
+pick( mad_type_handle,              TypeForDIPType,     ( const dig_type_info * ) )
 pick( void,                         TypeInfo,           ( mad_type_handle, mad_type_info * ) )
 pick( mad_type_handle,              TypeDefault,        ( mad_type_kind, mad_address_format, const mad_registers *, const address * ) )
 pick( mad_status,                   TypeConvert,        ( const mad_type_info *in_mti, const void *in_d, const mad_type_info *out_mti, void *out_d, addr_seg ) )

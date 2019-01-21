@@ -31,7 +31,6 @@
 
 
 #include "wdeglbl.h"
-#include <stdio.h>
 #include <io.h>
 #include "wresall.h"
 #include "wderesin.h"
@@ -149,7 +148,7 @@ bool WdeInfoToData( WdeResInfo *info )
     LIST                *dlist;
     WdeResDlgItem       *ditem;
     void                *data;
-    uint_32             size;
+    size_t              size;
     WResLangType        def_lang;
 
 
@@ -262,11 +261,11 @@ WdeDialogBoxInfo *WdeGetItemDBI( WdeResDlgItem *ditem )
     return( dbi );
 }
 
-bool WdeGetItemData( WdeResDlgItem *ditem, void *data, uint_32 *size )
+bool WdeGetItemData( WdeResDlgItem *ditem, void *data, size_t *psize )
 {
     WdeDialogBoxInfo   *dbi;
 
-    if( ditem == NULL || data == NULL || size == NULL ) {
+    if( ditem == NULL || data == NULL || psize == NULL ) {
         return( FALSE );
     }
 
@@ -275,7 +274,7 @@ bool WdeGetItemData( WdeResDlgItem *ditem, void *data, uint_32 *size )
         return( FALSE );
     }
 
-    return( WdeDBI2Mem( dbi, data, size ) );
+    return( WdeDBI2Mem( dbi, data, psize ) );
 }
 
 WResResNode *WdeRenameWResResNode( WResTypeNode *tnode, WResResNode *rnode, WResID *name )

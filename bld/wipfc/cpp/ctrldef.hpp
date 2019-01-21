@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
+* Copyright (c) 2009-2018 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -43,16 +43,17 @@ class Document;
 
 class CtrlDef {
 public:
-    CtrlDef( Document* d ) : document( d ) { };
+    CtrlDef( Document* d ) : _document( d ) { };
     ~CtrlDef();
     Lexer::Token parse( Lexer* lexer );
     void build( Controls* ctrls );
-    void appendChild( CtrlTag* e ) { children.push_back( e ); };
+    void appendChild( CtrlTag* e ) { _children.push_back( e ); };
 private:
     CtrlDef( const CtrlDef& rhs );              //no copy
     CtrlDef& operator=( const CtrlDef& rhs );   //no assignment
-    Document* document;
-    std::vector< CtrlTag* > children;
+
+    Document                *_document;
+    std::vector< CtrlTag* > _children;
     typedef std::vector< CtrlTag* >::iterator ChildrenIter;
     typedef std::vector< CtrlTag* >::const_iterator ConstChildrenIter;
 };

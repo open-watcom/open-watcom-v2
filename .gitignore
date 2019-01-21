@@ -44,6 +44,7 @@
 *.int
 *.lbc
 *.lib
+!*.lib/
 *.lk1
 *.lnk
 *.lo[1-9]
@@ -87,6 +88,7 @@
 !/distrib/
 !/docs/
 !/travis/
+!/travis/dosbox/*
 
 !/contrib/**
 
@@ -130,6 +132,7 @@
 /bld/hdr/linux/*
 /bld/hdr/qnx/*
 /bld/hdr/quantum/*
+/bld/hdr/rdos/*
 /bld/hdr/regress/*
 #
 /bld/ide/cfg/*/*.cfg
@@ -185,6 +188,7 @@
 /bld/wipfc/*/config.status
 /bld/wipfc/*/Makefile
 /bld/wipfc/*/stamp-h1
+/bld/wipfc/test/*/*.inf
 #
 /bld/wmake/regress/cmds/*
 #

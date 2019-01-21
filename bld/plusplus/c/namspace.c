@@ -458,10 +458,10 @@ void NameSpaceUsingDeclTemplateName( PTREE tid )
 //    name_syms = sym_name->name_syms;
     if( name_type != NULL ) {
         switch( name_type->id ) {
-          case SC_CLASS_TEMPLATE:
+        case SC_CLASS_TEMPLATE:
             TemplateUsingDecl( name_type, &id_locn );
             break;
-          DbgDefault( "unexpected storage class" );
+        DbgDefault( "unexpected storage class" );
         }
     }
 

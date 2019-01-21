@@ -30,8 +30,6 @@
 ****************************************************************************/
 
 
-#include "cgstd.h"
-
 #ifdef HW_NEED_160
     #define HW_160( x ) x
     #define HW_128( x ) x
@@ -56,52 +54,44 @@
 #define __7(x) (hw_reg_part)x##_7
 
 
-#if INT_MAX == SHRT_MAX
-
-    #error Forget it - no more 16-bit hosts - buy a real machine.
-
+#define HW_0( x ) x
+#ifdef HW_NEED_160
+    #define HW_1( x )       x
+    #define HW_2( x )       x
+    #define HW_3( x )       x
+    #define HW_4( x )       x
+    #define HW_5( x )
+    #define HW_6( x )
+    #define HW_7( x )
 #else
-
-    #define HW_0( x ) x
-    #ifdef HW_NEED_160
-        #define HW_1( x )       x
-        #define HW_2( x )       x
-        #define HW_3( x )       x
-        #define HW_4( x )       x
-        #define HW_5( x )
-        #define HW_6( x )
-        #define HW_7( x )
+    #ifdef HW_NEED_64   /* don't use HW_64 here! */
+        #define HW_1( x ) x
     #else
-        #ifdef HW_NEED_64   /* don't use HW_64 here! */
-            #define HW_1( x ) x
-        #else
-            #define HW_1( x )
-        #endif
-        #define HW_2( x )
-        #define HW_3( x )
-        #define HW_4( x )
-        #define HW_5( x )
-        #define HW_6( x )
-        #define HW_7( x )
+        #define HW_1( x )
     #endif
+    #define HW_2( x )
+    #define HW_3( x )
+    #define HW_4( x )
+    #define HW_5( x )
+    #define HW_6( x )
+    #define HW_7( x )
+#endif
 
-    #ifdef HW_NEED_160
-        #define HW_DEFINE_SIMPLE( r, p_0, p_1, p_2, p_3, p_4 )  \
-            enum {                      \
-                                 r##_0 = (int)p_0  \
-                HW_64(  HW_COMMA r##_1 = (int)p_1 ) \
-                HW_96(  HW_COMMA r##_2 = (int)p_2 ) \
-                HW_128( HW_COMMA r##_3 = (int)p_3 ) \
-                HW_160( HW_COMMA r##_4 = (int)p_4 ) \
-            }
-    #else
-        #define HW_DEFINE_SIMPLE( r, p_0, p_1 )  \
-            enum {                      \
-                                 r##_0 = (int)p_0  \
-                HW_64(  HW_COMMA r##_1 = (int)p_1 )\
-            }
-    #endif
-
+#ifdef HW_NEED_160
+    #define HW_DEFINE_SIMPLE( r, p_0, p_1, p_2, p_3, p_4 )  \
+        enum {                      \
+                             r##_0 = (int)p_0  \
+            HW_64(  HW_COMMA r##_1 = (int)p_1 ) \
+            HW_96(  HW_COMMA r##_2 = (int)p_2 ) \
+            HW_128( HW_COMMA r##_3 = (int)p_3 ) \
+            HW_160( HW_COMMA r##_4 = (int)p_4 ) \
+        }
+#else
+    #define HW_DEFINE_SIMPLE( r, p_0, p_1 )  \
+        enum {                      \
+                             r##_0 = (int)p_0  \
+            HW_64(  HW_COMMA r##_1 = (int)p_1 )\
+        }
 #endif
 
 typedef unsigned hw_reg_part;

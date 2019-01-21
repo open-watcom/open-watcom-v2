@@ -193,7 +193,7 @@ static void NegImage( char _WCI86HUGE *pic, long size )
           up to 64K boundaries at a time. */
 
 {
-#if !defined( __386__ )
+#if defined( _M_I86 )
     long                max;
 
     max = _64_K - FP_OFF( pic );      // max before pointer overflows

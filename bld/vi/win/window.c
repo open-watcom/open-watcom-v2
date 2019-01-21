@@ -34,7 +34,7 @@
 #include "vi.h"
 #include "statwnd.h"
 #include "winaux.h"
-#include "font.h"
+#include "vifont.h"
 #include "wstatus.h"
 #include "win.h"
 #include "winifini.h"
@@ -205,11 +205,11 @@ int WindowAuxInfo( window_id wid, int type )
         // less than 20% of a line
         // value = area.bottom - area.top + (height / 5);
         value = area.bottom - area.top; // + height - 1;
-        value /= height;
+        value = (unsigned short)( value / height );
         break;
     case WIND_INFO_TEXT_COLS:
         value = area.right - area.left;
-        value /= FontAverageWidth( WIN_TEXT_FONT( w ) );
+        value = (unsigned short)( value / FontAverageWidth( WIN_TEXT_FONT( w ) ) );
         break;
     case WIND_INFO_HEIGHT:
         value = area.bottom - area.top;
@@ -272,7 +272,7 @@ void CloseAWindow( window_id wid )
 void CloseAChildWindow( window_id wid )
 {
     if( !BAD_ID( wid ) ) {
-        SendMessage( edit_container_id, WM_MDIDESTROY, (WPARAM)wid, 0L );
+        SendMessage( edit_container_window_id, WM_MDIDESTROY, (WPARAM)wid, 0L );
     }
 }
 
@@ -329,7 +329,7 @@ void MoveWindowToFrontDammit( window_id wid, bool scrflag )
 vi_rc MaximizeCurrentWindow( void )
 {
     if( !BAD_ID( current_window_id ) ) {
-        SendMessage( edit_container_id, WM_MDIMAXIMIZE, (WPARAM)current_window_id, 0L );
+        SendMessage( edit_container_window_id, WM_MDIMAXIMIZE, (WPARAM)current_window_id, 0L );
     }
     return( ERR_NO_ERR );
 }

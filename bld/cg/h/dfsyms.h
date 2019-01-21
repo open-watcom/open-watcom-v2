@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -46,7 +46,6 @@ extern  void    DFBlkEnd( dbg_block *blk, offset lc );
 extern  void    DFEpiBeg( dbg_rtn *rtn, offset lc );
 extern  void    DFRtnEnd( dbg_rtn *rtn, offset lc );
 extern  void    DFBegCCU( segment_id code, dw_sym_handle dbg_pch );
-extern  void    DFDefSegs( void );
 extern  void    DFLineNum( cue_state *, offset );
 extern  void    DFSegRange( void );
 extern  void    DFSymRange( cg_sym_handle, offset );

@@ -1172,6 +1172,16 @@ static void Set_FR( void )
     }
 }
 
+static void Set_FT( void )
+{
+    CompFlags.check_truncated_fnames = true;
+}
+
+static void Set_FX( void )
+{
+    CompFlags.check_truncated_fnames = false;
+}
+
 #if _CPU == 8086 || _CPU == 386
 static void SetCodeClass( void )    { CodeClassName = CopyOfParm(); }
 static void SetDataSegName( void )
@@ -1729,7 +1739,9 @@ static struct option const CFE_Options[] = {
     { "fld",    0,              Set_FLD },
     { "fo=@",   0,              Set_FO },
     { "fr=@",   0,              Set_FR },
+    { "ft",     0,              Set_FT },
     { "fti",    0,              SetTrackInc },
+    { "fx",     0,              Set_FX },
 #if _CPU == 8086 || _CPU == 386
     { "fp2",    SW_FPU0,        SetFPU },
     { "fp3",    SW_FPU3,        SetFPU },
@@ -1979,18 +1991,20 @@ static char *ReadIndirectFile( void )
 {
     char        *env;
     char        *str;
-    int         handle;
-    int         len;
+    FILE        *fp;
+    size_t      len;
     char        ch;
 
     env = NULL;
-    handle = open( TokenBuf, O_RDONLY | O_BINARY );
-    if( handle != -1 ) {
-        len = filelength( handle );
+    fp = fopen( TokenBuf, "rb" );
+    if( fp != NULL ) {
+        fseek( fp, 0, SEEK_END );
+        len = (size_t)ftell( fp );
         env = CMemAlloc( len + 1 );
-        read( handle, env, len );
+        rewind( fp );
+        fread( env, len, 1, fp );
         env[len] = '\0';
-        close( handle );
+        fclose( fp );
         // zip through characters changing \r, \n etc into ' '
         str = env;
         while( (ch = *str) != '\0' ) {
@@ -2013,42 +2027,42 @@ static char *ReadIndirectFile( void )
 
 static void ProcOptions( const char *str )
 {
-    unsigned    level;
+    int         level;
     const char  *save[MAX_NESTING];
     char        *buffers[MAX_NESTING];
     const char  *penv;
     char        *ptr;
 
     if( str != NULL ) {
-        level = 0;
-        buffers[0] = NULL;
+        level = -1;
         for( ;; ) {
             while( *str == ' ' || *str == '\t' )
                 ++str;
-            if( *str == '@' && level < MAX_NESTING ) {
-                save[level] = CollectEnvOrFileName( str + 1 );
-                ++level;
-                buffers[level] = NULL;
-                penv = FEGetEnv( TokenBuf );
-                if( penv == NULL ) {
-                    ptr = ReadIndirectFile();
+            if( *str == '@' ) {
+                str = CollectEnvOrFileName( str + 1 );
+                level++;
+                if( level < MAX_NESTING ) {
+                    save[level] = str;
+                    ptr = NULL;
+                    penv = FEGetEnv( TokenBuf );
+                    if( penv == NULL ) {
+                        ptr = ReadIndirectFile();
+                        penv = ptr;
+                    }
                     buffers[level] = ptr;
-                    penv = ptr;
+                    if( penv != NULL ) {
+                        str = penv;
+                        continue;
+                    }
                 }
-                if( penv != NULL ) {
-                    str = penv;
-                    continue;
-                }
-                str = save[--level];
+                level--;
             }
             if( *str == '\0' ) {
-                if( level == 0 )
+                if( level < 0 )
                     break;
-                if( buffers[level] != NULL ) {
-                    CMemFree( buffers[level] );
-                    buffers[level] = NULL;
-                }
-                str = save[--level];
+                CMemFree( buffers[level] );
+                str = save[level];
+                level--;
                 continue;
             }
             if( *str == '-' || *str == SwitchChar ) {

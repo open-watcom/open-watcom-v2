@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
+* Copyright (c) 2009-2018 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -34,7 +34,6 @@
 #ifndef HPN_INCLUDED
 #define HPN_INCLUDED
 
-#include "config.hpp"
 #include <vector>
 #include "tag.hpp"
 
@@ -44,16 +43,16 @@ public:
         unsigned int c, unsigned int l );
     ~Hpn() { };
     static
-    std::vector< STD1::uint8_t >& levels() { return levelStack; };
+    std::vector< byte >& levels() { return _levelStack; };
     Lexer::Token parse( Lexer* lexer );
     void buildText( Cell* cell );
 private:
     Hpn( const Hpn& rhs );              //no copy
     Hpn& operator=( const Hpn& rhs );   //no assignment
-    static
-    std::vector< STD1::uint8_t > levelStack;
-    STD1::uint8_t level;
-    STD1::uint8_t previousLevel;
+
+    static std::vector< byte >  _levelStack;
+    byte                        _level;
+    byte                        _previousLevel;
 };
 
 class EHpn : public Element {
@@ -66,8 +65,9 @@ public:
 private:
     EHpn( const EHpn& rhs );            //no copy
     EHpn& operator=( const EHpn& rhs ); //no assignment
-    STD1::uint8_t level;
-    STD1::uint8_t previousLevel;
+
+    byte                _level;
+    byte                _previousLevel;
 };
 
 #endif // HPN_INCLUDED

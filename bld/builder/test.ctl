@@ -26,8 +26,8 @@ echo Parameters 2+: <2*>
 echo Parameters 3+: <3*>
 
 
-[ BLOCK <1> build rel ]
-#======================
+[ BLOCK <BLDRULE> build rel ]
+#============================
     echo We're in block (build rel)
     [ IFDEF os_os2 <2*> ]
         echo os_os2 detected in parms 2+
@@ -40,8 +40,8 @@ echo Parameters 3+: <3*>
     [ IFDEF (os_nt) <2*> ]
         echo Oh no! Not Windows please
 
-[ BLOCK <1> rel ]
-#================
+[ BLOCK <BLDRULE> rel ]
+#======================
     echo We're in block (rel)
     [ IFDEF os_os2 <2*> ]
         echo os_os2 detected in parms <2*>
@@ -62,4 +62,3 @@ echo Parameters 3+: <3*>
     echo You shouldn't see this line with any parameters: <*>
 
 
-

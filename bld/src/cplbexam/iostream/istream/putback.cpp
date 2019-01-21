@@ -1,6 +1,6 @@
 #include <iostream.h>
 
-void main( void ) {
+int main( void ) {
 
     char    stk[20], ech;
     int     i = 0, size = 4;            //default putback size

@@ -1,6 +1,6 @@
 #include <strstrea.h>
 
-void main( void ) {
+int main( void ) {
 
     char     *pch = "Open Watcom C++", s[20];
 

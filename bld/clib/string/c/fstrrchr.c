@@ -34,26 +34,27 @@
 
 #ifdef  _M_I86
 
-extern  char _WCFAR *_fast_strrchr( const char _WCFAR *, char );
+extern char _WCFAR *_fast_strrchr( const char _WCFAR *, char );
+#pragma aux _fast_strrchr = \
+        "mov cx,-1"     \
+        "xor al,al"     \
+        "repne scasb"   \
+        "not cx"        \
+        "dec di"        \
+        "mov al,bl"     \
+        "std"           \
+        "repne scasb"   \
+        "cld"           \
+        "jne short L1"  \
+        "mov cx,di"     \
+        "inc cx"        \
+        "jmp short L2"  \
+    "L1: mov es,cx"     \
+    "L2:"               \
+    __parm __caller     [__es __di] [__bl] \
+    __value             [__es __cx] \
+    __modify __exact    [__es __cx __ax __di]
 
-#pragma aux    _fast_strrchr = \
-        0xb9 0xff 0xff  /* mov cx,ffffh */ \
-        0x30 0xc0       /* xor al,al */ \
-        0xf2 0xae       /* repne scasb */ \
-        0xf7 0xd1       /* not cx */ \
-        0x4f            /* dec di */ \
-        0x88 0xd8       /* mov al,bl */ \
-        0xfd            /* std */ \
-        0xf2 0xae       /* repne scasb */ \
-        0xfc            /* cld */ \
-        0x75 0x04       /* jne L1 */ \
-        0x89 0xf9       /* mov cx,di */ \
-        0x41            /* inc cx */ \
-        0xa9            /* hide 2 bytes */ \
-        0x8e 0xc1       /* L1: mov es,cx */ \
-        parm caller [es di] [bl] \
-        value [es cx] \
-        modify exact [es cx ax di];
 #endif
 
 /* Locate the last occurrence of c in the string pointed to by s.

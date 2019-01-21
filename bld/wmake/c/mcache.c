@@ -36,7 +36,11 @@
 #endif
 #include <sys/stat.h>
 #include <sys/types.h>
+#if defined( __RDOS__ )
+    #include "rdos.h"
+#endif
 #include "make.h"
+#include "wio.h"
 #include "mhash.h"
 #include "mmemory.h"
 #include "mmisc.h"
@@ -45,8 +49,6 @@
 #include "msg.h"
 #include "pathgrp.h"
 #include "mcache.h"
-
-#include "clibext.h"
 
 
 #if defined( __WATCOMC__ ) && !defined( __UNIX__ )
@@ -246,6 +248,11 @@ STATIC enum cacheRet cacheDir( DHEADPTR *pdhead, char *path )
         cnew->ce_tt = (time_t)-1L;
     #elif defined( __NT__ )
         cnew->ce_tt = DTAXXX_TSTAMP_OF( entry->d_dta );
+    #elif defined( __RDOS__ )
+        unsigned short date;
+        unsigned short time;
+        RdosTicsToDosTimeDate(entry->d_msb_time, entry->d_lsb_time, &date, &time);
+        cnew->ce_tt = _dos2timet( date * 0x10000L + time );
     #else
         cnew->ce_tt = _dos2timet( entry->d_date * 0x10000L + entry->d_time );
     #endif

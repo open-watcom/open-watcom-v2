@@ -51,7 +51,8 @@ static Memory bogus;    // just need to get the ctors called
 
 void PrintLine( void *parm, const char *buf, size_t len )
 {
-    parm = parm;
+    /* unused parameters */ (void)parm;
+
     fwrite( buf, 1, len, stdout );
 }
 

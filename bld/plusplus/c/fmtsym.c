@@ -68,10 +68,10 @@ static const char *fmtSymCgop( CGOP number )
 
     if( number >= ( sizeof( opNames ) / sizeof( opNames[0] ) ) ) {
         name = "***INVALID CGOP***";
-    } else if( strlen( opNames[ number ] ) == 0 ) {
+    } else if( strlen( opNames[number] ) == 0 ) {
         name = "***INVALID CGOP LENGTH***";
     } else {
-        name = opNames[ number ];
+        name = opNames[number];
     }
     return( name );
 }
@@ -265,11 +265,8 @@ void FormatTemplateParmScope( VBUF *parms, SCOPE parm_scope )
         return;
     }
     delim = templateParmStart;
-    curr = NULL;
     stop = ScopeOrderedStart( parm_scope );
-    for(;;) {
-        curr = ScopeOrderedNext( stop, curr );
-        if( curr == NULL ) break;
+    for( curr = NULL; (curr = ScopeOrderedNext( stop, curr )) != NULL; ) {
         VbufConcStr( parms, delim );
         type = curr->sym_type;
         if( SymIsConstantInt( curr ) ) {

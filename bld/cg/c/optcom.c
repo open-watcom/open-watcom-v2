@@ -30,7 +30,7 @@
 ****************************************************************************/
 
 
-#include "cgstd.h"
+#include "_cgstd.h"
 #include "optwif.h"
 #include "utils.h"
 #include "inslist.h"
@@ -40,6 +40,9 @@
 #include "encode.h"
 #include "optutil.h"
 #include "optmkins.h"
+#include "optcom.h"
+#include "optins.h"
+#include "optpull.h"
 
 
 typedef struct common_info {
@@ -47,10 +50,6 @@ typedef struct common_info {
         ins_entry   *start_del;
         uint        save;
 } common_info;
-
-extern  ins_entry       *IsolatedCode( ins_entry * );
-extern  ins_entry       *Untangle( ins_entry * );
-extern  bool            FindShort( ins_entry *, ins_entry * );
 
 static  bool    JustMoveLabel( common_info *max, ins_entry *ins )
 /***************************************************************/
@@ -213,8 +212,8 @@ static  void    FindCommon( common_info *c, ins_entry *p1, ins_entry *p2 )
   optend
 }
 
-extern  bool    ComTail( ins_entry *list, ins_entry *ins )
-/********************************************************/
+bool    ComTail( ins_entry *list, ins_entry *ins )
+/************************************************/
 {
     ins_entry           *try;
     ins_entry           *add;
@@ -272,8 +271,8 @@ extern  bool    ComTail( ins_entry *list, ins_entry *ins )
 }
 
 
-extern  bool    ComCode( ins_entry *jmp )
-/***************************************/
+bool    ComCode( ins_entry *jmp )
+/*******************************/
 {
     ins_entry   *new;
     ins_entry   *com;
@@ -328,8 +327,8 @@ extern  bool    ComCode( ins_entry *jmp )
 }
 
 
-extern  void    TraceCommon( ins_entry *lbl_ins )
-/***********************************************/
+void    TraceCommon( ins_entry *lbl_ins )
+/***************************************/
 {
     ins_entry   *ref;
     ins_entry   *ins;

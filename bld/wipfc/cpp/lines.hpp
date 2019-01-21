@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
+* Copyright (c) 2009-2018 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -40,7 +40,7 @@
 class Lines : public Tag {
 public:
     Lines( Document* d, Element *p, const std::wstring* f, unsigned int r,
-            unsigned int c ) : Tag( d, p, f, r, c, Tag::LITERAL ), alignment( LEFT ) { }
+            unsigned int c ) : Tag( d, p, f, r, c, Tag::LITERAL ), _alignment( LEFT ) { }
     ~Lines() { };
     Lexer::Token parse( Lexer* lexer );
     void buildText( Cell* cell );
@@ -49,17 +49,18 @@ protected:
 private:
     Lines( const Lines& rhs );              //no copy
     Lines& operator=( const Lines& rhs );   //no assignment
+
     enum Align {
         LEFT = 0x01,
         RIGHT = 0x02,
         CENTER = 0x04
     };
-    Align alignment;
+    Align               _alignment;
 };
 
 class ELines : public Tag {
 public:
-    ELines( Document* d, Element *p, const std::wstring* f, unsigned int r, 
+    ELines( Document* d, Element *p, const std::wstring* f, unsigned int r,
             unsigned int c ) : Tag( d, p, f, r, c ) { }
     ~ELines() { };
     void buildText( Cell* cell );

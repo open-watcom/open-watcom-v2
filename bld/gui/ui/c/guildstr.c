@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2018-2018 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -24,8 +25,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Read resources data from file
 *
 ****************************************************************************/
 
@@ -38,7 +38,6 @@
 #include <string.h>
 #include <sys/types.h>
 #include <stdio.h>
-#include "wio.h"
 #include "watcom.h"
 #include "wresdefn.h"
 #include "wressetr.h"
@@ -49,17 +48,6 @@
 #include "seekres.h"
 #include "guildstr.h"
 
-#include "clibext.h"
-
-
-#if defined( __QNX__ ) || defined( __UNIX__ )
-    #define _newline "\n"
-#else
-    #define _newline "\r\n"
-#endif
-
-#define NO_RES_MESSAGE_PREFIX "Error: could not open message resource file ("
-#define NO_RES_MESSAGE_SUFFIX ")." _newline
 
 static  HANDLE_INFO     hInstance = { 0 };
 
@@ -76,9 +64,9 @@ bool GUILoadStrInit( const char *fname )
         return( true );
     }
     CloseResFile( &hInstance );
-    posix_write( fileno( stdout ), NO_RES_MESSAGE_PREFIX, sizeof( NO_RES_MESSAGE_PREFIX ) - 1 );
-    posix_write( fileno( stdout ), fname,                 strlen( fname ) );
-    posix_write( fileno( stdout ), NO_RES_MESSAGE_SUFFIX, sizeof( NO_RES_MESSAGE_SUFFIX ) - 1 );
+    printf( NO_RES_MESSAGE_PREFIX );
+    printf( fname );
+    printf( NO_RES_MESSAGE_SUFFIX );
     return( false );
 }
 

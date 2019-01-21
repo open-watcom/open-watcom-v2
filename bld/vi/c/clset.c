@@ -73,16 +73,19 @@ static const char *getOneSetVal( int token, bool isbool, char *tmpstr, bool want
     char        *fign;
     cursor_type ct;
     int         i, j;
+    bool        bln;
 
     *tmpstr = '\0';
     str = tmpstr;
     if( isbool ) {
-        j = (int)((bool *)&EditFlags)[token];
-        if( want_boolstr ) {
-            str = BoolStr[j];
-        } else {
-            sprintf( tmpstr, "%d", j );
+        switch( token ) {
+        #define PICK( a,b,c,d,e )   case SETFLAG_T_ ## e: bln = EditFlags.c; break;
+        #include "setb.h"
+        #undef PICK
+        default:
+            return( "" );
         }
+        return( ( bln ) ? (( want_boolstr ) ? BoolStr[1] : "1") : (( want_boolstr ) ? BoolStr[0] : "0") );
     } else {
         switch( token ) {
         case SETVAR_T_STATUSSECTIONS:
@@ -313,7 +316,7 @@ static vi_rc GetNewValueDialog( char *value )
         return( rc );
     }
     WPrintfLine( wid, 1, "Old: %s", value );
-    ret = ReadStringInWindow( wid, 2, prompt, st, MAX_STR - 1, NULL );
+    ret = ReadStringInWindow( wid, 2, prompt, st, sizeof( st ), NULL );
     CloseAWindow( wid );
     SetWindowCursor();
     KillCursor();
@@ -338,12 +341,11 @@ static vi_rc processSetToken( int j, char *new, const char **pvalue, int *winfla
 {
     char        fn[MAX_STR], str[MAX_STR];
 #ifndef VICOMP
-    char        tmp[3];
     char        settokstr[TOK_MAX_LEN + 1];
     vi_rc       rc = ERR_NO_ERR;
     int         clr;
     bool        newset;
-    bool        toggle, *ptr;
+    bool        toggle;
     jmp_buf     jmpaddr;
     cursor_type ct;
     char        *name;
@@ -407,17 +409,26 @@ static vi_rc processSetToken( int j, char *new, const char **pvalue, int *winfla
      */
     *winflag = 0;
     if( isbool ) {
+        bool    flag_value;
+        bool    post;
+
         if( j >= SETFLAG_T_ ) {
             return( ERR_INVALID_SET_COMMAND );
         }
-        ptr = &(((bool *)&EditFlags)[j]);
+        flag_value = false;
+        switch( j ) {
+        #define PICK( a,b,c,d,e )   case SETFLAG_T_ ## e: flag_value = EditFlags.c; break;
+        #include "setb.h"
+        #undef PICK
+        }
         newset = bvalue;
         if( toggle ) {
-            newset = !(*ptr);
+            newset = !flag_value;
         }
+        /* processing before change */
         switch( j ) {
         case SETFLAG_T_MODELESS:
-            if( (newset && !EditFlags.Modeless) || (!newset && EditFlags.Modeless) ) {
+            if( (newset && !flag_value) || (!newset && flag_value) ) {
                 for( k = 0; k < MAX_EVENTS; k++ ) {
                     fptr = EventList[k].rtn;
                     eb = EventList[k].b;
@@ -426,7 +437,7 @@ static vi_rc processSetToken( int j, char *new, const char **pvalue, int *winfla
                     EventList[k].b = EventList[k].alt_b;
                     EventList[k].alt_b = eb;
                 }
-                if( !EditFlags.Modeless ) {
+                if( !flag_value ) {
                     if( !BAD_ID( menu_window_id ) ) {
                         UpdateCurrentStatus( CSTATUS_INSERT );
                     }
@@ -444,124 +455,133 @@ static vi_rc processSetToken( int j, char *new, const char **pvalue, int *winfla
                 */
                 SetWindowCursor();
             }
-            EditFlags.Modeless = newset;
             break;
         case SETFLAG_T_UNDO:
-            if( EditFlags.Undo && !newset ) {
+            if( flag_value && !newset ) {
                 FreeAllUndos();
             }
-            EditFlags.Undo = newset;
             break;
+        case SETFLAG_T_COLORBAR:
+  #ifdef __WIN__
+            post = true;
+            if( BAD_ID( root_window_id ) ) {
+                newset = false;
+                post = false;
+            }
+  #endif
+            break;
+        case SETFLAG_T_SSBAR:
+  #ifdef __WIN__
+            post = true;
+            if( BAD_ID( root_window_id ) ) {
+                newset = false;
+                post = false;
+            }
+  #endif
+            break;
+        case SETFLAG_T_FONTBAR:
+  #ifdef __WIN__
+            post = true;
+            if( BAD_ID( root_window_id ) ) {
+                newset = false;
+                post = false;
+            }
+  #endif
+            break;
+        case SETFLAG_T_LINENUMBERS:
+            post = false;
+            if( toggle ) {
+                newset = !flag_value;
+            }
+            if( flag_value != newset ) {
+                post = true;
+            }
+            break;
+        case SETFLAG_T_LASTEOL:
+  #ifndef __WIN__
+            newset = true;
+            toggle = false;
+  #endif
+            break;
+        }
+        /* change to new value */
+        switch( j ) {
+        #define PICK( a,b,c,d,e )   case SETFLAG_T_ ## e: EditFlags.c = newset; break;
+        #include "setb.h"
+        #undef PICK
+        }
+        /* post-processing, after change */
+        switch( j ) {
         case SETFLAG_T_STATUSINFO:
-            EditFlags.StatusInfo = newset;
   #ifdef __WIN__
             ResizeRoot();
   #endif
             rc = NewStatusWindow();
             break;
         case SETFLAG_T_WINDOWGADGETS:
-            EditFlags.WindowGadgets = newset;
             ResetAllWindows();
             *winflag = 1;
             redisplay = true;
             break;
         case SETFLAG_T_REALTABS:
-            EditFlags.RealTabs = newset;
             redisplay = true;
             break;
         case SETFLAG_T_CLOCK:
-            EditFlags.Clock = newset;
             redisplay = true;
             break;
         case SETFLAG_T_TOOLBAR:
-            EditFlags.Toolbar = newset;
   #ifdef __WIN__
             ResizeRoot();
   #endif
             break;
         case SETFLAG_T_COLORBAR:
-            EditFlags.Colorbar = newset;
   #ifdef __WIN__
-            if( BAD_ID( root_window_id ) ) {
-                EditFlags.Colorbar = false;
-            } else {
+            if( post ) {
                 RefreshColorbar();
             }
   #endif
             break;
         case SETFLAG_T_SSBAR:
-            EditFlags.SSbar = newset;
   #ifdef __WIN__
-            if( BAD_ID( root_window_id ) ) {
-                EditFlags.SSbar = false;
-            } else {
+            if( post ) {
                 RefreshSSbar();
             }
   #endif
             break;
         case SETFLAG_T_FONTBAR:
-            EditFlags.Fontbar = newset;
   #ifdef __WIN__
-            if( BAD_ID( root_window_id ) ) {
-                EditFlags.Fontbar = false;
-            } else {
+            if( post ) {
                 RefreshFontbar();
             }
   #endif
             break;
-        case SETFLAG_T_MARKLONGLINES:
-            EditFlags.MarkLongLines = newset;
-            break;
         case SETFLAG_T_MENUS:
-            EditFlags.Menus = newset;
             InitMenu();
             break;
         case SETFLAG_T_LINENUMBERS:
-            if( toggle ) {
-                newset = !EditFlags.LineNumbers;
-            }
-            if( newset != EditFlags.LineNumbers ) {
-                EditFlags.LineNumbers = newset;
+            if( post ) {
                 rc = LineNumbersSetup();
                 *winflag = 1;
             }
             break;
         case SETFLAG_T_CURRENTSTATUS:
-            EditFlags.CurrentStatus = newset;
             InitMenu();
             break;
         case SETFLAG_T_DISPLAYSECONDS:
-            EditFlags.DisplaySeconds = newset;
             redisplay = true;
             break;
         case SETFLAG_T_PPKEYWORDONLY:
-            EditFlags.PPKeywordOnly = newset;
             redisplay = true;
-            break;
-        case SETFLAG_T_LASTEOL:
-  #ifndef __WIN__
-            *ptr = true;
-            toggle = false;
-            break;
-  #endif
-        default:
-            *ptr = newset;
             break;
         }
         if( msgFlag ) {
-            if( !newset ) {
-                tmp[0] = 'n';
-                tmp[1] = 'o';
-                tmp[2] = '\0';
-            } else {
-                tmp[0] = '\0';
-            }
-            MySprintf( fn, "%s%s set", tmp, GetTokenStringCVT( TokensSetFlag, j, settokstr, true ) );
+            MySprintf( fn, "%s%s set", (newset) ? "" : "no", GetTokenStringCVT( SetFlagTokens, j, settokstr, true ) );
         }
         if( toggle ) {
             strcpy( new, BoolStr[newset] );
             (*winflag) += 1;
         }
+        /* end */
 
     /*
      * process value settings
@@ -658,7 +678,7 @@ static vi_rc processSetToken( int j, char *new, const char **pvalue, int *winfla
                 if( k <= 0 ) {
                     break;
                 }
-                EditVars.StatusSections = MemReAlloc( EditVars.StatusSections, sizeof( unsigned short ) * ( EditVars.NumStatusSections + 1 ) );
+                EditVars.StatusSections = _MemReAllocArray( EditVars.StatusSections, unsigned short, EditVars.NumStatusSections + 1 );
                 EditVars.StatusSections[EditVars.NumStatusSections] = (unsigned short)k;
                 EditVars.NumStatusSections++;
                 value = GetNextWord2( value, fn, ',' );
@@ -692,7 +712,7 @@ static vi_rc processSetToken( int j, char *new, const char **pvalue, int *winfla
             break;
         case SETVAR_T_TILECOLOR:
             if( EditVars.TileColors == NULL ) {
-                EditVars.TileColors = (type_style *) MemAlloc( sizeof( type_style ) * ( EditVars.MaxTileColors + 1 ) );
+                EditVars.TileColors = _MemAllocArray( type_style, EditVars.MaxTileColors + 1 );
                 for( i = 0; i <= EditVars.MaxTileColors; ++i ) {
                     EditVars.TileColors[i].foreground = -1;
                     EditVars.TileColors[i].background = -1;
@@ -969,7 +989,7 @@ static vi_rc processSetToken( int j, char *new, const char **pvalue, int *winfla
             case SETVAR_T_MAXTILECOLORS:
                 k = (EditVars.TileColors == NULL) ? 0 : EditVars.MaxTileColors + 1;
                 EditVars.MaxTileColors = lval;
-                EditVars.TileColors = MemReAlloc( EditVars.TileColors, sizeof( type_style ) * ( EditVars.MaxTileColors + 1 ) );
+                EditVars.TileColors = _MemReAllocArray( EditVars.TileColors, type_style, EditVars.MaxTileColors + 1 );
                 for( ; k <= EditVars.MaxTileColors; ++k ) {
                     EditVars.TileColors[k].foreground = -1;
                     EditVars.TileColors[k].background = -1;
@@ -1015,9 +1035,14 @@ static vi_rc processSetToken( int j, char *new, const char **pvalue, int *winfla
             case SETVAR_T_TOOLBARCOLOR:
                 EditVars.ToolBarColor = lval;
   #ifdef __WIN__
-                if( GetToolbarWindow() != NULL ) {
-                    InvalidateRect( GetToolbarWindow(), NULL, TRUE );
-                    UpdateWindow( GetToolbarWindow() );
+                {
+                    window_id   toolbar_wid;
+
+                    toolbar_wid = GetToolbarWindow();
+                    if( toolbar_wid != NULL ) {
+                        InvalidateRect( toolbar_wid, NULL, TRUE );
+                        UpdateWindow( toolbar_wid );
+                    }
                 }
   #endif
                 break;
@@ -1026,7 +1051,7 @@ static vi_rc processSetToken( int j, char *new, const char **pvalue, int *winfla
             }
 
             if( msgFlag ) {
-                MySprintf( fn, "%s set to %d", GetTokenStringCVT( TokensSetVar, j, settokstr, true ), lval );
+                MySprintf( fn, "%s set to %d", GetTokenStringCVT( SetVarTokens, j, settokstr, true ), lval );
             }
             break;
         }
@@ -1051,11 +1076,11 @@ vi_rc SettingSelected( const char *item, char *value, int *winflag )
     int         id;
     bool        isbool;
 
-    id = Tokenize( TokensSetVar, item, false );
+    id = Tokenize( SetVarTokens, item, false );
     if( id != TOK_INVALID ) {
         isbool = false;
     } else {
-        id = Tokenize( TokensSetFlag, item, false );
+        id = Tokenize( SetFlagTokens, item, false );
         if( id == TOK_INVALID ) {
             return( ERR_INVALID_SET_COMMAND );
         }
@@ -1085,30 +1110,34 @@ static int compareString( void const *p1, void const *p2 )
 /*
  * getSetInfo - build string of values
  */
-static int getSetInfo( char ***vals, char ***list, int *longest )
+static list_linenum getSetInfo( char ***vals, char ***list, int *longest )
 {
-    int         i, j;
-    char        settokstr[TOK_MAX_LEN + 1];
-    char        tmpstr[MAX_STR];
-    set_data    **sdata;
-    int         tc, tc1, tc2;
+    list_linenum    i;
+    int             i1;
+    int             i2;
+    char            settokstr[TOK_MAX_LEN + 1];
+    char            tmpstr[MAX_STR];
+    set_data        **sdata;
+    list_linenum    tc;
+    int             tc1;
+    int             tc2;
 
-    tc1 = GetNumberOfTokens( TokensSetVar );
-    tc2 = GetNumberOfTokens( TokensSetFlag );
+    tc1 = GetNumberOfTokens( SetVarTokens );
+    tc2 = GetNumberOfTokens( SetFlagTokens );
     tc = tc1 + tc2;
-    sdata = MemAlloc( tc * sizeof( set_data * ) );
-    *list = MemAlloc( tc * sizeof( char * ) );
-    *vals = MemAlloc( tc * sizeof( char * ) );
+    sdata = _MemAllocArray( set_data *, tc );
+    *list = _MemAllocList( tc );
+    *vals = _MemAllocList( tc );
 
-    for( i = 0; i < tc1; i++ ) {
-        sdata[i] = MemAlloc( sizeof( set_data ) );
-        sdata[i]->setting = DupString( GetTokenStringCVT( TokensSetVar, i, settokstr, true ) );
-        sdata[i]->val = DupString( getOneSetVal( i, false, tmpstr, true ) );
+    for( i1 = 0; i1 < tc1; i1++ ) {
+        sdata[i1] = MemAlloc( sizeof( set_data ) );
+        sdata[i1]->setting = DupString( GetTokenStringCVT( SetVarTokens, i1, settokstr, true ) );
+        sdata[i1]->val = DupString( getOneSetVal( i1, false, tmpstr, true ) );
     }
-    for( i = 0; i < tc2; i++ ) {
-        sdata[tc1 + i] = MemAlloc( sizeof( set_data ) );
-        sdata[tc1 + i]->setting = DupString( GetTokenStringCVT( TokensSetFlag, i, settokstr, true ) );
-        sdata[tc1 + i]->val = DupString( getOneSetVal( i, true, tmpstr, true ) );
+    for( i2 = 0; i2 < tc2; i2++ ) {
+        sdata[tc1 + i2] = MemAlloc( sizeof( set_data ) );
+        sdata[tc1 + i2]->setting = DupString( GetTokenStringCVT( SetFlagTokens, i2, settokstr, true ) );
+        sdata[tc1 + i2]->val = DupString( getOneSetVal( i2, true, tmpstr, true ) );
     }
     qsort( sdata, tc, sizeof( set_data * ), compareString );
     for( i = 0; i < tc; i++ ) {
@@ -1117,12 +1146,12 @@ static int getSetInfo( char ***vals, char ***list, int *longest )
         MemFree( sdata[i] );
     }
     MemFree( sdata );
-    i = GetLongestTokenLength( TokensSetVar );
-    j = GetLongestTokenLength( TokensSetFlag );
-    if( i > j ) {
-        *longest = i;
+    i1 = GetLongestTokenLength( SetVarTokens );
+    i2 = GetLongestTokenLength( SetFlagTokens );
+    if( i1 > i2 ) {
+        *longest = i1;
     } else {
-        *longest = j;
+        *longest = i2;
     }
     return( tc );
 
@@ -1135,18 +1164,20 @@ static int getSetInfo( char ***vals, char ***list, int *longest )
  */
 vi_rc Set( const char *name )
 {
-    char        fn[MAX_STR];
-    vi_rc       rc = ERR_NO_ERR;
-    int         j, i;
-    int         winflag;
-    const char  *pfn;
+    char            fn[MAX_STR];
+    vi_rc           rc = ERR_NO_ERR;
+    int             j;
+    int             k;
+    int             winflag;
+    const char      *pfn;
 #ifndef VICOMP
 #ifndef __WIN__
-    short       tmp;
-    int         tc;
-    char        **vals = NULL;
-    char        **list;
-    int         longest;
+    short           tmp;
+    list_linenum    tc;
+    list_linenum    i;
+    char            **vals = NULL;
+    char            **list;
+    int             longest;
 #endif
 #endif
 
@@ -1172,15 +1203,11 @@ vi_rc Set( const char *name )
   #ifndef __WIN__
         tc = getSetInfo( &vals, &list, &longest );
         tmp = setw_info.area.y2;
-        i = setw_info.area.y2 - setw_info.area.y1 + 1;
-        if( setw_info.has_border ) {
-            i -= 2;
-        }
+        i = setw_info.area.y2 - setw_info.area.y1 + BORDERDIFF( setw_info );
         if( tc < i ) {
-            setw_info.area.y2 -= (i - tc);
+            setw_info.area.y2 -= (windim)( i - tc );
         }
-        rc = SelectItemAndValue( &setw_info, "Settings", list,
-                          tc, SettingSelected, 1, vals, longest + 3 );
+        rc = SelectItemAndValue( &setw_info, "Settings", list, tc, SettingSelected, 1, vals, longest + 3 );
         setw_info.area.y2 = tmp;
         MemFreeList( tc, vals );
         MemFreeList( tc, list );
@@ -1198,23 +1225,23 @@ vi_rc Set( const char *name )
 #ifndef VICOMP
             if( !EditFlags.ScriptIsCompiled ) {
 #endif
-                j = Tokenize( TokensSetVar, fn, false );
+                j = Tokenize( SetVarTokens, fn, false );
                 if( j == TOK_INVALID ) {
                     pfn = fn;
-                    i = 1;
+                    k = 1;
                     if( tolower( pfn[0] ) == 'n' && tolower( pfn[1] ) == 'o' ) {
                         pfn += 2;
-                        i = -1;
+                        k = -1;
                     }
-                    j = Tokenize( TokensSetFlagShort, pfn, false );
+                    j = Tokenize( SetFlagShortTokens, pfn, false );
                     if( j == TOK_INVALID ) {
-                        j = Tokenize( TokensSetFlag, pfn, false );
+                        j = Tokenize( SetFlagTokens, pfn, false );
                         if( j == TOK_INVALID ) {
                             return( ERR_INVALID_SET_COMMAND );
                         }
                     }
                     j += SETVAR_T_;
-                    j *= i;
+                    j *= k;
                 }
 #ifndef VICOMP
             } else {
@@ -1241,18 +1268,17 @@ vi_rc Set( const char *name )
 /*
  * GetASetVal - get set val data
  */
-const char *GetASetVal( const char *token )
+const char *GetASetVal( const char *token, char *tmpstr )
 {
     int         j;
-    char        tmpstr[MAX_STR];
 
-    j = Tokenize( TokensSetVar, token, false );
+    j = Tokenize( SetVarTokens, token, false );
     if( j != TOK_INVALID ) {
         return( getOneSetVal( j, false, tmpstr, false ) );
     }
-    j = Tokenize( TokensSetFlagShort, token, false );
+    j = Tokenize( SetFlagShortTokens, token, false );
     if( j == TOK_INVALID ) {
-        j = Tokenize( TokensSetFlag, token, false );
+        j = Tokenize( SetFlagTokens, token, false );
     }
     if( j != TOK_INVALID ) {
         return( getOneSetVal( j, true, tmpstr, false ) );
@@ -1274,9 +1300,9 @@ char *ExpandTokenSet( char *token_no, char *buff )
         val = false;
     }
     if( tok >= SETVAR_T_ ) {
-        sprintf( buff, "%s%s", GET_BOOL_PREFIX( val ), GetTokenStringCVT( TokensSetFlag, tok - SETVAR_T_, settokstr, true ) );
+        sprintf( buff, "%s%s", GET_BOOL_PREFIX( val ), GetTokenStringCVT( SetFlagTokens, tok - SETVAR_T_, settokstr, true ) );
     } else {
-        sprintf( buff, "%s", GetTokenStringCVT( TokensSetVar, tok, settokstr, true ) );
+        sprintf( buff, "%s", GetTokenStringCVT( SetVarTokens, tok, settokstr, true ) );
     }
     return( buff );
 }

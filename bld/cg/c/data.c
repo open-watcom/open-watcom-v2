@@ -30,7 +30,7 @@
 
 
 #define HW_DEFINE_VARS
-#include "cgstd.h"
+#include "_cgstd.h"
 #include "coderep.h"
 #include "cgswitch.h"
 #include "data.h"
@@ -42,7 +42,7 @@ int                     InsId;
 int                     TempId;
 conflict_node           *ConfList;
 proc_def                *CurrProc;
-name                    *Names[N_INDEXED + 1];
+name                    *Names[N_CLASS_MAX];
 name                    *LastTemp;
 name                    *DummyIndex;
 source_line_number      SrcLine;

@@ -183,7 +183,8 @@ SetAlloc<T>::~SetAlloc          // destructor
     SetIter<T> iter( *this );
     for( ; ; ++iter ) {
         T* curr = *iter;
-        if( curr == 0 ) break;
+        if( curr == 0 )
+            break;
         delete curr;
     }
 }

@@ -37,7 +37,7 @@
 #include "dbgerr.h"
 #include "dbghook.h"
 #include "dbgio.h"
-#include "spawn.h"
+#include "wspawn.h"
 #include "dui.h"
 #include "dbgutil.h"
 #include "dbgmain.h"

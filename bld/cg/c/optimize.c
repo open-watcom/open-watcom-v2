@@ -30,11 +30,11 @@
 ****************************************************************************/
 
 
-#include "cgstd.h"
+#include "_cgstd.h"
 #include "coderep.h"
 #include "zoiks.h"
 #include "data.h"
-#include "x87.h"
+#include "fpu.h"
 #include "makeins.h"
 #include "redefby.h"
 #include "regalloc.h"
@@ -42,13 +42,12 @@
 #include "insdead.h"
 #include "score.h"
 #include "conflict.h"
+#include "cse.h"
+#include "dataflo.h"
+#include "varusage.h"
 #include "optimize.h"
+#include "liveinfo.h"
 
-
-extern  bool            PropagateMoves(void);
-extern  void            FindReferences(void);
-extern  void            MakeConflicts(void);
-extern  void            MakeLiveInfo(void);
 
 typedef enum {
     MOVEABLE        = 0x01,
@@ -227,7 +226,7 @@ void    DeadTemps( void )
             if( !SideEffect( ins ) && _IsntIns( ins, SIDE_EFFECT )
              && ins->result != NULL
              && ins->result->n.class == N_TEMP
-             && ( ins->result->v.usage & (USE_ADDRESS|HAS_MEMORY|USE_WITHIN_BLOCK|USE_IN_ANOTHER_BLOCK) ) == 0 ) {
+             && ( ins->result->v.usage & (USE_ADDRESS | HAS_MEMORY | USE_WITHIN_BLOCK | USE_IN_ANOTHER_BLOCK) ) == 0 ) {
                 FreeIns( ins );
             }
         }

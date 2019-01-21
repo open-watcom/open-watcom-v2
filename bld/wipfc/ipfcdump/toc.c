@@ -2,8 +2,9 @@
 
 #include <stdlib.h>
 #include "ipfcdump.h"
-static void readTOCEntry( FILE *, FILE *, uint32_t, size_t, size_t * );
 
+
+static void readTOCEntry( FILE *, FILE *, uint32_t, size_t, size_t * );
 
 void readTOC( FILE *in, FILE *out )
 {
@@ -69,14 +70,16 @@ static void readTOCEntry( FILE *in, FILE *out, uint32_t offset, size_t count1, s
             fputs( "    Set panel position\n", out );
             fprintf( out, "      PanelOrigin.xPosType: %4.2x (%s)\n", p.xPosType, getPosString( p.xPosType ) );
             fprintf( out, "      PanelOrigin.yPosType: %4.2x (%s)\n", p.yPosType, getPosString( p.yPosType ) );
-            if( p.xPosType == DYNAMIC )
+            if( p.xPosType == DYNAMIC ) {
                 fprintf( out, "      PanelOrigin.xPos:     %s\n", getDPosString( p.xpos ) );
-            else
+            } else {
                 fprintf( out, "      PanelOrigin.xPos:     %4.4x (%hu)\n", p.xpos, p.xpos );
-            if( p.yPosType == DYNAMIC )
+            }
+            if( p.yPosType == DYNAMIC ) {
                 fprintf( out, "      PanelOrigin.yPos:     %s\n", getDPosString( p.ypos ) );
-            else
+            } else {
                 fprintf( out, "      PanelOrigin.yPos:     %4.4x (%hu)\n", p.ypos, p.ypos );
+            }
         }
         if( etoc.setSize ) {
             PanelSize p;
@@ -85,14 +88,16 @@ static void readTOCEntry( FILE *in, FILE *out, uint32_t offset, size_t count1, s
             fputs( "    Set panel size\n", out);
             fprintf( out, "      PanelSize.widthType:  %4.2x (%s)\n", p.widthType, getPosString( p.widthType ) );
             fprintf( out, "      PanelSize.heightType: %4.2x (%s)\n", p.heightType, getPosString( p.heightType ) );
-            if( p.widthType == DYNAMIC )
+            if( p.widthType == DYNAMIC ) {
                 fprintf( out, "      PanelSize.width:      %s\n", getDPosString( p.width ) );
-            else
+            } else {
                 fprintf( out, "      PanelSize.width:      %4.4x (%hu)\n", p.width, p.width );
-            if( p.widthType == DYNAMIC)
+            }
+            if( p.widthType == DYNAMIC) {
                 fprintf( out, "      PanelSize.height:     %s\n", getDPosString( p.height ) );
-            else
+            } else {
                 fprintf( out, "      PanelSize.height:     %4.4x (%hu)\n", p.height, p.height );
+            }
         }
         if( etoc.setStyle ) {
             PanelStyle p;
@@ -101,23 +106,21 @@ static void readTOCEntry( FILE *in, FILE *out, uint32_t offset, size_t count1, s
             fputs( "    Set panel style\n", out );
             fprintf( out, "      PanelStyle.style: %4.4x (%hu)\n", p.word, p.word );
         }
-        if( etoc.setGroup)
-            {
+        if( etoc.setGroup) {
             Group g;
             textSize -= sizeof( Group );
             fread( &g, sizeof( Group ), 1, in );
             fputs( "    Set panel group\n", out );
             fprintf( out, "      Group.id: %4.4x (%hu)\n", g.id, g.id );
-            }
-        if( etoc.setCtrl)
-            {
+        }
+        if( etoc.setCtrl) {
             PanelControls p;
             textSize -= sizeof( PanelControls );
             fread( &p, sizeof( PanelControls ), 1, in );
             fputs( "    Set panel controls\n", out);
             fprintf( out, "      PanelControls.word: %4.4x (%hu)\n", p.word, p.word );
-            }
         }
+    }
     fputs( "    Cell indexes:         ", out);
     for( count2 = 0; count2 < toc.cellCount; count2++ ) {
         fread( &cellIndex, sizeof( uint16_t ), 1, in );
@@ -140,18 +143,19 @@ char *getPosString( uint8_t type )
 /*****************************************************************************/
 char *getDPosString( uint8_t type )
 {
-static char *dPos[] = {"Left", "Right", "Top", "Bottom", "Center"};
-char *value;
-if( type & DYNAMIC_LEFT)
-    value = dPos[ 0 ];
-if( type & DYNAMIC_RIGHT)
-    value = dPos[ 1 ];
-if( type & DYNAMIC_TOP)
-    value = dPos[ 2 ];
-if( type & DYNAMIC_BOTTOM)
-    value = dPos[ 3 ];
-if( type & DYNAMIC_CENTER)
-    value = dPos[ 4 ];
-return( value );
+    static char *dPos[] = {"Left", "Right", "Top", "Bottom", "Center"};
+    char *value;
+
+    if( type & DYNAMIC_LEFT)
+        value = dPos[ 0 ];
+    if( type & DYNAMIC_RIGHT)
+        value = dPos[ 1 ];
+    if( type & DYNAMIC_TOP)
+        value = dPos[ 2 ];
+    if( type & DYNAMIC_BOTTOM)
+        value = dPos[ 3 ];
+    if( type & DYNAMIC_CENTER)
+        value = dPos[ 4 ];
+    return( value );
 }
 

@@ -40,7 +40,6 @@
 #include <sys/stat.h>
 #include "sample.h"
 #include "smpstuff.h"
-#include "os.h"
 #include "wmsg.h"
 
 #define global_timer_data
@@ -99,7 +98,7 @@ extern void ResolveRateDifferences( void )
 
 unsigned long TimerRate( void )
 {
-    return( 100000000 / TICKS_PER_HUNDRED );
+    return( 100000000UL / TICKS_PER_HUNDRED );
 }
 
 unsigned SafeMargin( void )
@@ -117,9 +116,8 @@ unsigned SafeMargin( void )
         safe_wait = Ceiling / 2;
     margin = Ceiling - safe_wait;
 
-    if( margin < (TICKS_PER_HUNDRED / 100) ) {
-        Output( MsgArray[MSG_BUFF_SMALL - ERR_FIRST_MESSAGE] );
-        Output( "\r\n" );
+    if( margin < ( TICKS_PER_HUNDRED / 100UL ) ) {
+        OutputMsgNL( MSG_BUFF_SMALL );
         fatal();
     }
     return( margin );

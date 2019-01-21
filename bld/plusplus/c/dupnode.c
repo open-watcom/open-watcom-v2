@@ -99,7 +99,7 @@ static PTREE convertToTemp(     // CONVERT NODE TO FETCH OF TEMPORARY
     node->u.subtree[0] = MakeNodeSymbol( temp );
     node->u.subtree[1] = NULL;
     node->flags &= ~ PTF_DUP_VISITED;
-    return node;
+    return( node );
 }
 
 
@@ -139,7 +139,7 @@ static PTREE dupPromote(        // PROMOTE A DUPLICATE
     anc->decor = NULL;
     anc->u.subtree[0] = dup;
     anc->u.subtree[1] = node;
-    return anc;
+    return( anc );
 }
 
 
@@ -263,13 +263,13 @@ static PTREE dupProc(           // PROCESS NODE IN TREE
         }
     } else {
         switch( dup->op ) {
-          case PT_BINARY :
+        case PT_BINARY :
             setAncestor( dup, dup, dup->u.subtree[1] );
-            // drops thru
-          case PT_UNARY :
+            /* fall through */
+        case PT_UNARY :
             setAncestor( dup, dup, dup->u.subtree[0] );
             break;
-          case PT_DUP_EXPR :
+        case PT_DUP_EXPR :
             setAncestor( dup, dup->u.dup.node, dup->u.subtree[0] );
             addPromo( dup );
             break;
@@ -281,7 +281,7 @@ static PTREE dupProc(           // PROCESS NODE IN TREE
         printPromoRing( promoHdr, "Duplicates Ring" );
     }
 #endif
-    return dup;
+    return( dup );
 }
 
 
@@ -322,7 +322,7 @@ PTREE NodePromoteDups(          // PROMOTE/REMOVE DUPLICATE NODES
 #endif
         CarveFree( carvePromo, promo );
     } RingIterEndSafe( promo )
-    return dup;
+    return( dup );
 }
 
 

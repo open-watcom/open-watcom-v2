@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
+* Copyright (c) 2009-2018 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -32,90 +32,91 @@
 *
 ****************************************************************************/
 
+
+#include "wipfc.hpp"
 #include "icmd.hpp"
 #include "document.hpp"
 #include "errors.hpp"
 #include "gdword.hpp"
-#include "util.hpp"
 #include "xref.hpp"
 
 ICmd::ICmd( Document* d, Element* p, const std::wstring* f, unsigned int r, unsigned int c ) :
-    Element( d, p, f, r, c ), index( new IndexItem( IndexItem::CMD ) ),
-            parentId( 0 ), parentRes( 0 )
+    Element( d, p, f, r, c ), _index( new IndexItem( IndexItem::CMD ) ),
+            _parentId( 0 ), _parentRes( 0 )
 {
     d->addCmdIndex( this );
 }
 /*****************************************************************************/
 Lexer::Token ICmd::parse( Lexer* lexer )
 {
-    Lexer::Token tok( document->getNextToken() );
+    Lexer::Token tok;
+
     (void)lexer;
-    while( tok != Lexer::TAGEND ) {
-        if( tok == Lexer::ATTRIBUTE )
-            document->printError( ERR1_ATTRNOTDEF );
-        else if( tok == Lexer::FLAG )
-            document->printError( ERR1_ATTRNOTDEF );
-        else if( tok == Lexer::ERROR_TAG )
+
+    while( (tok = _document->getNextToken()) != Lexer::TAGEND ) {
+        if( tok == Lexer::ATTRIBUTE ) {
+            _document->printError( ERR1_ATTRNOTDEF );
+        } else if( tok == Lexer::FLAG ) {
+            _document->printError( ERR1_ATTRNOTDEF );
+        } else if( tok == Lexer::ERROR_TAG ) {
             throw FatalError( ERR_SYNTAX );
-        else if( tok == Lexer::END )
+        } else if( tok == Lexer::END ) {
             throw FatalError( ERR_EOF );
-        else
-            document->printError( ERR1_TAGSYNTAX );
-        tok = document->getNextToken();
+        } else {
+            _document->printError( ERR1_TAGSYNTAX );
+        }
     }
-    tok = document->getNextToken();    //consume TAGEND
-    std::wstring txt;
+    tok = _document->getNextToken();    //consume TAGEND
+    std::wstring text;
     while( tok != Lexer::END && !( tok == Lexer::TAG && lexer->tagId() == Lexer::EUSERDOC)) {
-        if( tok == Lexer::WORD )
-            txt += lexer->text();
-        else if( tok == Lexer::ENTITY ) {
-            const std::wstring* exp( document->nameit( lexer->text() ) );
-            if( exp )
-                txt += *exp;
-            else {
+        if( tok == Lexer::WORD ) {
+            text += lexer->text();
+        } else if( tok == Lexer::ENTITY ) {
+            const std::wstring* exp( _document->nameit( lexer->text() ) );
+            if( exp ) {
+                text += *exp;
+            } else {
                 try {
-                    wchar_t ch( document->entity( lexer->text() ) );
-                    txt += ch;
+                    wchar_t entityChar( _document->entityChar( lexer->text() ) );
+                    text += entityChar;
                 }
                 catch( Class2Error& e ) {
-                    document->printError( e.code );
+                    _document->printError( e._code );
                 }
             }
-        }
-        else if( tok == Lexer::PUNCTUATION )
-            txt += lexer->text();
-        else if( tok == Lexer::WHITESPACE ) {
+        } else if( tok == Lexer::PUNCTUATION ) {
+            text += lexer->text();
+        } else if( tok == Lexer::WHITESPACE ) {
             if( lexer->text()[0] == L'\n' ) {
-                tok = document->getNextToken();
+                tok = _document->getNextToken();
                 break;
             }
-            txt+= lexer->text();
-        }
-        else
+            text += lexer->text();
+        } else {
             break;
-        tok = document->getNextToken();
+        }
+        tok = _document->getNextToken();
     }
-    if( txt.empty() )
-        document->printError( ERR2_INOTEXT );
-    index->setText( txt );
+    if( text.empty() )
+        _document->printError( ERR2_INOTEXT );
+    _index->setText( text );
     return tok;
 }
 /*****************************************************************************/
 void ICmd::buildIndex()
 {
     try {
-        XRef xref( fileName, row );
-        if( parentRes ) {
-            index->setTOC( document->tocIndexByRes( parentRes ) );
-            document->addXRef( parentRes, xref );
-        }
-        else if( parentId ) {
-            index->setTOC( document->tocIndexById( parentId ) );
-            document->addXRef( parentId, xref );
+        XRef xref( _fileName, _row );
+        if( _parentRes ) {
+            _index->setTOC( _document->tocIndexByRes( _parentRes ) );
+            _document->addXRef( _parentRes, xref );
+        } else if( _parentId ) {
+            _index->setTOC( _document->tocIndexById( _parentId ) );
+            _document->addXRef( _parentId, xref );
         }
     }
     catch( Class1Error& e ) {
-        printError( e.code );
+        printError( e._code );
     }
 }
 

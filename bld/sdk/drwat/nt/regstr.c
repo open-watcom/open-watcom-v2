@@ -32,20 +32,18 @@
 
 
 #include "drwatcom.h"
+#include <errno.h>
+#include <alloca.h>
 #include "wclbproc.h"
 #include "regstr.h"
 #include "mad.h"
-#include <string.h>
 #include "mem.h"
 #include "regcmbo.h"
 #include "jdlg.h"
-#include "malloc.h"
-#include "string.h"
 #include "bitman.h"
 #include "madcli.h"
 #include "regedit.h"
 #include "reglist.h"
-#include <errno.h>
 #include "strcnv.h"
 
 

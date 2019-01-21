@@ -107,43 +107,6 @@ static  const_string_table cv_lnoff16_msg[] = {
 
 
 /*
- * read_name - read length-prefixed name into 'buffer'
- */
-static int read_name( char *buffer )
-/**********************************/
-{
-    unsigned_8      len;
-
-    Wread( &len, 1 );
-    Wread( buffer, len );
-    buffer[len] = '\0';
-    return( len );
-}
-
-
-/*
- * dump_name - dump length-prefixed name, align to n-byte boundary
- * return number of bytes read
- */
-static int dump_name( bool align )
-/********************************/
-{
-    char        name[256];
-    unsigned    len, pad = 0;
-
-    len = read_name( name ) + 1;
-    Wdputs( name );
-    if( align ) {
-        pad = align - (len & (align - 1));
-    }
-    if( pad ) {
-        lseek( Handle, pad, SEEK_CUR );
-    }
-    return( len + pad + 1 );
-}
-
-
-/*
  * dump_cv4_sstPublic - dump CV4 sstPublic at 'offset'
  * from 'base 'containing 'size' bytes
  */
@@ -152,24 +115,17 @@ static void dump_cv4_sstPublic( unsigned_32 base, unsigned_32 offset,
 /*******************************************************************/
 {
     cv_sst_public_16    pub16;
-    unsigned_32         read = 0;
-    unsigned_8          name_len;
-    char                name[256];
+    unsigned_32         read;
 
     Wlseek( base + offset );
     Wdputs( "==== sstPublic at offset " );
     Puthex( offset, 8 );
     Wdputslc( "\n" );
-    while( read < size ) {
+    for( read = 0; read < size; read += sizeof( pub16 ) + (unsigned_8)pub16.name[0] ) {
         Wread( &pub16, sizeof( pub16 ) );
-        name_len = (unsigned_8)pub16.name[0];
         Dump_header( &pub16, cv_sstPublic_msg, 4 );
-        read += sizeof( pub16 );
-        Wread( name, name_len );
-        name[name_len] = '\0';
         Wdputs( "  symbol name: \"" );
-        Wdputs( name );
-        read += name_len;
+        Dump_namel( pub16.name[0] );
         Wdputslc( "\"\n" );
     }
     Wdputslc( "\n" );
@@ -184,18 +140,19 @@ static void dump_cv4_sstLibraries( unsigned_32 base, unsigned_32 offset,
                                                      unsigned_32 size )
 /**********************************************************************/
 {
-    unsigned        index = 0;
-    unsigned_32     read = 0;
+    unsigned        index;
+    unsigned_32     read;
 
     Wlseek( base + offset );
     Wdputs( "==== sstLibraries at offset " );
     Puthex( offset, 8 );
     Wdputslc( "\n" );
-    while( read < size ) {
+    index = 0;
+    for( read = 0; read < size; ) {
         Wdputs( "  index: " );
         Puthex( index, 4 );
         Wdputs( "H  name: \"" );
-        read += dump_name( 0 );
+        read += Dump_name() + 1;
         Wdputslc( "\"\n" );
         ++index;
     }
@@ -219,8 +176,6 @@ static void dump_cv4_sstFileIndex( unsigned_32 base, unsigned_32 offset,
     unsigned_32     *NameRef;
     char            *Names;
     unsigned        mod, file;
-    char            name[256];
-    unsigned_8      *len;
 
     Wlseek( base + offset );
     Wdputs( "==== sstFileIndex at offset " );
@@ -245,14 +200,12 @@ static void dump_cv4_sstFileIndex( unsigned_32 base, unsigned_32 offset,
             Wdputs( "H   " );
             Puthex( file, 4 );
             Wdputs( "H   \"" );
-            len = (unsigned_8 *)(Names + NameRef[ModStart[mod] + file]);
-            memcpy( name, (char *)len + 1, *len );
-            name[*len] = '\0';
-            Wdputs( name );
+            Wdputname( Names + NameRef[ModStart[mod] + file] );
             Wdputslc( "\"\n" );
         }
     }
     Wdputslc( "\n" );
+    free( file_index );
 }
 
 
@@ -298,7 +251,7 @@ static void dump_cv4_sstModule( unsigned_32 base, unsigned_32 offset )
         Wlseek( base + offset + sizeof( mod ) - sizeof( seg ) );
     }
     Wdputs( "    module name: " );
-    dump_name( 0 );
+    Dump_name();
     Wdputslc( "\n\n" );
 }
 
@@ -324,7 +277,7 @@ static void dump_cv4_src_file( unsigned_32 base, unsigned_32 offset )
     Puthex( offset, 8 );
     Wdputs( "): \"" );
     Wlseek( base + offset + file.cSeg * sizeof( unsigned_32 ) * 3 + sizeof( unsigned_32 ) );
-    dump_name( 0 );
+    Dump_name();
     Wdputslc( "\"\n" );
 
     Dump_header( &file, cv4_src_file_msg, 4 );
@@ -382,10 +335,9 @@ static void dump_cv4_sstSrcModule( unsigned_32 base, unsigned_32 offset )
 
     /* first dump the file information */
     file_off = mod.baseSrcFile[0];
-    file_idx = 0;
-    while( file_idx < mod.cFile ) {
+    for( file_idx = 0; file_idx < mod.cFile; file_idx++ ) {
         dump_cv4_src_file( base + offset, file_off );
-        Wlseek( base + offset + sizeof( mod ) + sizeof( unsigned_32 ) * file_idx++ );
+        Wlseek( base + offset + sizeof( mod ) + sizeof( unsigned_32 ) * file_idx );
         Wread( &file_off, sizeof( file_off ) );
     }
 
@@ -460,6 +412,7 @@ static void dump_cv4_sstSegMap( unsigned_32 base, unsigned_32 offset,
         Wdputs( "\n" );
     }
     Wdputslc( "\n" );
+    free( seg_map );
 }
 
 
@@ -484,7 +437,7 @@ static void dump_cv4_sstSrcLnSeg( unsigned_32 base, unsigned_32 offset )
     Puthex( offset, 8 );
     Wdputslc( "\n" );
     Wdputs( "  source file: \"" );
-    dump_name( 2 );
+    Align_name( Dump_name() + 1, 2 );
     Wdputslc( "\"\n" );
     Wread( &src_ln, sizeof( src_ln ) );
     Dump_header( &src_ln, cv4_sstSrcLnSeg_msg, 4 );

@@ -39,7 +39,7 @@
 
 
 walk_result DIPIMPENTRY( WalkTypeList )( imp_image_handle *iih,
-                    imp_mod_handle im, DIP_IMP_TYPE_WALKER *wk, imp_type_handle *ith,
+                    imp_mod_handle imh, DIP_IMP_TYPE_WALKER *wk, imp_type_handle *ith,
                     void *d )
 {
     //TODO:
@@ -49,7 +49,9 @@ walk_result DIPIMPENTRY( WalkTypeList )( imp_image_handle *iih,
         for( each type in the module ) {
             *ith = fill in the implemenation type handle;
             wr = wk( iih, ith, d );
-            if( wr != WR_CONTINUE ) return( wr );
+            if( wr != WR_CONTINUE ) {
+                return( wr );
+            }
         }
     */
     return( WR_CONTINUE );
@@ -65,7 +67,7 @@ imp_mod_handle DIPIMPENTRY( TypeMod )( imp_image_handle *iih, imp_type_handle *i
 }
 
 dip_status DIPIMPENTRY( TypeInfo )( imp_image_handle *iih,
-                imp_type_handle *ith, location_context *lc, dip_type_info *ti )
+                imp_type_handle *ith, location_context *lc, dig_type_info *ti )
 {
     //TODO:
     /*
@@ -74,8 +76,9 @@ dip_status DIPIMPENTRY( TypeInfo )( imp_image_handle *iih,
         the size of the type (variable dimensioned arrays and the like).
     */
     ti->kind = TK_NONE;
-    ti->modifier = TM_NONE;
     ti->size = 0;
+    ti->modifier = TM_NONE;
+    ti->deref = false;
     return( DS_FAIL );
 }
 
@@ -245,7 +248,7 @@ dip_status DIPIMPENTRY( TypeAddRef )( imp_image_handle *iih, imp_type_handle *it
     /*
     ith->r->refCount++;
     */
-    return(DS_OK);
+    return( DS_OK );
 }
 
 dip_status DIPIMPENTRY( TypeRelease )( imp_image_handle *iih, imp_type_handle *ith )
@@ -253,7 +256,7 @@ dip_status DIPIMPENTRY( TypeRelease )( imp_image_handle *iih, imp_type_handle *i
     /*
     ith->r->refCount--;
     */
-    return(DS_OK);
+    return( DS_OK );
 }
 
 dip_status DIPIMPENTRY( TypeFreeAll )( imp_image_handle *iih )
@@ -267,6 +270,6 @@ dip_status DIPIMPENTRY( TypeFreeAll )( imp_image_handle *iih )
         }
     }
     */
-    return(DS_OK);
+    return( DS_OK );
 }
 

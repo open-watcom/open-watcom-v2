@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2017-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,10 +33,12 @@
 #include "variety.h"
 #include "widechar.h"
 #include <stdlib.h>
+#include <string.h>
 #include <stdarg.h>
 #include <process.h>
-#include <malloc.h>
-#include <memory.h>
+#if defined(__AXP__) || defined(__PPC__) || defined(__MIPS__)
+    #include <alloca.h>
+#endif
 #if defined( __NT__ )
     #include <windows.h>
 #elif defined( __OS2__ )

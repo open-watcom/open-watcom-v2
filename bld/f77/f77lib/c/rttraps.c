@@ -102,14 +102,17 @@ typedef void            (*fsig_func)( intstar4 );
 #endif
 
 #if (defined( __DOS__ ) || defined( __WINDOWS__ )) && defined( __386__ )
-  void _movestack( unsigned_32 );
-  #pragma aux _movestack = \
-        "push ds"            \
-        "pop  ss"             \
-        "mov  esp,eax"        \
-        parm [eax] modify [esp];
 
-  #include "realvec.h"
+void _movestack( unsigned_32 );
+#pragma aux _movestack = \
+        "push ds"       \
+        "pop  ss"       \
+        "mov  esp,eax"  \
+    __parm      [__eax] \
+    __value     \
+    __modify    [__esp]
+
+#include "realvec.h"
 
 #endif
 

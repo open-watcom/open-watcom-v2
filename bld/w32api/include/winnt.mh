@@ -6306,19 +6306,21 @@ NTSYSAPI WORD NTAPI         RtlCaptureStackBackTrace( DWORD, DWORD, PVOID *, PDW
 
 /* Functions implemented with inline assembly code */
 PVOID   GetCurrentFiber( void );
-PVOID   GetFiberData( void );
-
-/* Inline assembly implementation of functions defined above */
 #ifdef _X86_
     #pragma aux GetCurrentFiber = \
-        "mov eax, dword ptr fs:0x10" \
-        value [eax] \
-        modify [eax];
+            "mov eax, dword ptr fs:0x10" \
+        __parm              [] \
+        __value             [__eax] \
+        __modify __exact    [__eax]
+#endif
+PVOID   GetFiberData( void );
+#ifdef _X86_
     #pragma aux GetFiberData = \
-        "mov eax, dword ptr fs:0x10" \
-        "mov eax, [eax]" \
-        value [eax] \
-        modify [eax];
+            "mov eax, dword ptr fs:0x10" \
+            "mov eax, [eax]" \
+        __parm              [] \
+        __value             [__eax] \
+        __modify __exact    [__eax]
 #endif
 
 /* Functions implemented as macros */

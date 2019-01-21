@@ -31,7 +31,6 @@
 
 #include "cvars.h"
 #include "browsio.h"
-#include "standard.h"
 #include "cg.h"
 #include "cgdefs.h"
 #include "cgswitch.h"

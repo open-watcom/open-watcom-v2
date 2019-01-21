@@ -30,17 +30,19 @@
 ****************************************************************************/
 
 
-#include "cgstd.h"
+#include "_cgstd.h"
 #include "coderep.h"
 #include "procdef.h"
 #include "cfloat.h"
 #include "cgmem.h"
 #include "makeins.h"
+#include "temps.h"
+#include "varusage.h"
+
 #include "s37temps.def"
 
+
 extern  void            *SortList(void*,unsigned int,bool(*)(void*,void*));
-extern  void            CountTempRefs(void);
-extern  void            PropLocal(name*);
 extern  name            *AllocAddrConst(name*,int,constant_class,type_class_def);
 extern  cfloat          *CFCnvU32F(unsigned_32);
 extern  name            *SAllocIndex(name*,name*,type_length,type_class_def,type_length);
@@ -50,7 +52,6 @@ extern  void            PrefixIns(instruction*,instruction*);
 extern  name            *ScaleIndex(name*,name*,type_length,type_class_def,type_length,int,i_flags);
 extern  name            *AllocRegName(hw_reg_set);
 extern  hw_reg_set      DisplayReg(void);
-extern  void            FindReferences();
 extern  void            DoNothing( instruction* );
 
 extern  proc_def        *CurrProc;
@@ -110,11 +111,15 @@ extern  void    RelocParms() {
 
     name        *temp;
 
-    if( CurrProc->state.attr & (ROUTINE_ALTERNATE_AR) ) return;
+    if( CurrProc->state.attr & ROUTINE_ALTERNATE_AR )
+        return;
     for( temp = Names[ N_TEMP ]; temp != NULL; temp = temp->n.next_name ) {
-        if( ( temp->v.usage & HAS_MEMORY ) == 0 ) continue;
-        if( temp->t.temp_flags & (STACK_PARM|FAR_LOCAL) ) continue;
-        if( temp == NoseIn ) continue;
+        if( ( temp->v.usage & HAS_MEMORY ) == 0 )
+            continue;
+        if( temp->t.temp_flags & (STACK_PARM | FAR_LOCAL) )
+            continue;
+        if( temp == NoseIn )
+            continue;
         temp->t.location += CurrProc->parms.size;
     }
 }
@@ -173,8 +178,10 @@ extern  void    AdjustNearLocals( type_length size ) {
     name        *temp;
 
     for( temp = Names[ N_TEMP ]; temp != NULL; temp = temp->n.next_name ) {
-        if( ( temp->v.usage & HAS_MEMORY ) == 0 ) continue;
-        if( temp->t.temp_flags & (STACK_PARM|FAR_LOCAL) ) continue;
+        if( (temp->v.usage & HAS_MEMORY) == 0 )
+            continue;
+        if( temp->t.temp_flags & (STACK_PARM | FAR_LOCAL) )
+            continue;
         temp->t.location += size;
     }
 }
@@ -192,7 +199,8 @@ static  void    AddAliasRefs() {
     name        *alias;
 
     for( temp = Names[ N_TEMP ]; temp != NULL; temp = temp->n.next_name ) {
-        if( temp->t.temp_flags & ALIAS ) continue;
+        if( temp->t.temp_flags & ALIAS )
+            continue;
         alias = temp->t.alias;
         while( alias != temp ) {
             temp->t.u.ref_count += alias->t.u.ref_count;
@@ -213,8 +221,10 @@ static  void    ThrowOutBigTemps( type_length temp_size ) {
 
     NoseIn = NULL;
     for( temp = Names[ N_TEMP ]; temp != NULL; temp = temp->n.next_name ) {
-        if( temp_size <= SAFE ) break;
-        if( temp->t.temp_flags & (STACK_PARM|ALIAS) ) continue;
+        if( temp_size <= SAFE )
+            break;
+        if( temp->t.temp_flags & (STACK_PARM | ALIAS) )
+            continue;
         temp_size -= temp->n.size;
         NoseIn = temp;
         alias = temp;
@@ -239,8 +249,10 @@ static  void    ThrowOutParms() {
 
     NoseIn = NULL;
     for( temp = Names[ N_TEMP ]; temp != NULL; temp = temp->n.next_name ) {
-        if( temp->t.temp_flags & ALIAS ) continue;
-        if( !( temp->t.temp_flags & STACK_PARM ) ) continue;
+        if( temp->t.temp_flags & ALIAS )
+            continue;
+        if( (temp->t.temp_flags & STACK_PARM) == 0 )
+            continue;
         base = DeAlias( temp );
         place = base->t.location + ( temp->v.offset - base->v.offset );
         alias = temp;
@@ -288,16 +300,18 @@ static  void    AllocFarLocals() {
     name        *temp;
 
     for( temp = Names[ N_TEMP ]; temp != NULL; temp = temp->n.next_name ) {
-        if( !( temp->t.temp_flags & VISITED ) ) continue;
+        if( (temp->t.temp_flags & VISITED) == 0 )
+            continue;
         temp->t.temp_flags &= ~VISITED;
         temp->t.temp_flags |= FAR_LOCAL;
-        if( temp->t.temp_flags & ALIAS ) continue;
+        if( temp->t.temp_flags & ALIAS )
+            continue;
         temp->t.location = CurrProc->targ.far_local_size;
         CurrProc->targ.far_local_size += temp->n.size;
-        temp->v.usage |= HAS_MEMORY+USE_MEMORY;
+        temp->v.usage |= HAS_MEMORY | USE_MEMORY;
         PropLocal( temp );
     }
-    NoseIn->v.usage |= HAS_MEMORY+USE_MEMORY;
+    NoseIn->v.usage |= HAS_MEMORY | USE_MEMORY;
     NoseIn->t.location = 0;
     PropLocal( NoseIn );
 }
@@ -321,8 +335,10 @@ static  void    CheckOp( name **offsets, instruction *ins, name **pop ) {
     op = *pop;
     if( op->n.class == N_INDEXED ) {
         temp = op->i.index;
-        if( temp->n.class != N_TEMP ) return;
-        if( !( temp->t.temp_flags & FAR_LOCAL ) ) return;
+        if( temp->n.class != N_TEMP )
+            return;
+        if( (temp->t.temp_flags & FAR_LOCAL) == 0 )
+            return;
         new_ins = MakeMove( temp, AllocTemp( temp->n.name_class ), temp->n.name_class );
         *pop = ScaleIndex( new_ins->result, op->i.base,
                           op->i.constant, op->n.class, op->n.size,
@@ -330,8 +346,10 @@ static  void    CheckOp( name **offsets, instruction *ins, name **pop ) {
         PrefixIns( ins, new_ins );
         CheckOp( offsets, new_ins, &new_ins->operands[ 0 ] );
     }
-    if( op->n.class != N_TEMP ) return;
-    if( !( op->t.temp_flags & FAR_LOCAL ) ) return;
+    if( op->n.class != N_TEMP )
+        return;
+    if( (op->t.temp_flags & FAR_LOCAL) == 0 )
+        return;
     base = DeAlias( op );
     place = base->t.location + ( op->v.offset - base->v.offset );
     i = place/_4K;

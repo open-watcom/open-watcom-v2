@@ -31,7 +31,7 @@
 ****************************************************************************/
 
 
-#include "cgstd.h"
+#include "_cgstd.h"
 #include "zoiks.h"
 #include "coderep.h"
 #include "onexit.h"
@@ -95,9 +95,9 @@ void    FiniBlip() {
 #endif
 }
 
-bool    WantZoiks2() {
-/********************/
-
+bool    WantZoiks2( void )
+/************************/
+{
     return( false );
 }
 

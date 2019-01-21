@@ -174,10 +174,10 @@ void IterOverInpFile::process(  // PROCESS AN OUTPUT LINE
     {   IterOverSrcFile( filename, &out );
     }
     {
-        char drive[ _MAX_DRIVE ];   // - drive
-        char dir  [ _MAX_DIR   ];   // - directory
-        char fname[ _MAX_FNAME ];   // - name
-        char extn [ _MAX_EXT   ];   // - extension
+        char drive[_MAX_DRIVE]; // - drive
+        char dir[_MAX_DIR  ];   // - directory
+        char fname[_MAX_FNAME]; // - name
+        char extn[_MAX_EXT  ];  // - extension
         _splitpath( filename, drive, dir, fname, extn );
         _makepath( filename, drive, dir, fname, ".err" );
     }
@@ -215,12 +215,11 @@ int main(                       // MAIN-LINE
         retn = 0;
     } else {
         try {
-            IterOverInpFile( args[1]
-                           , &LineOut( args[2] ) );
+            IterOverInpFile( args[1], &LineOut( args[2] ) );
             retn = 0;
         } catch( ExcFile& err ) {
             retn = pgm_exception.diagnose_error( err );
         }
     }
-    return retn;
+    return( retn );
 }

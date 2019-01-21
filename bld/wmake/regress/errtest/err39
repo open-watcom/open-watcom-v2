@@ -1,5 +1,5 @@
 # ------------------------------------------
-# ERROR 39: target not mentioned in any makefile
+# ERROR 39: Target not mentioned in any makefile
 # ------------------------------------------
 
 .extensions:

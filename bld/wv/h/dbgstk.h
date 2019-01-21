@@ -66,7 +66,7 @@ typedef union {
 typedef struct stack_entry {
     struct stack_entry  *up, *dn;
     type_handle         *th;
-    dip_type_info       info;
+    dig_type_info       ti;
     stack_flags         flags;
     stack_value         v;
     location_context    *lc;

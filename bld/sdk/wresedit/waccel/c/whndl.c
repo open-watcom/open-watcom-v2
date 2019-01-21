@@ -30,11 +30,8 @@
 ****************************************************************************/
 
 
-#include "commonui.h"
-#include <string.h>
-#include <limits.h>
-#include "watcom.h"
 #include "wglbl.h"
+#include <limits.h>
 #include "wacc.h"
 #include "wlist.h"
 #include "wisedit.h"

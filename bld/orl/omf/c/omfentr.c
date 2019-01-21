@@ -48,7 +48,7 @@ omf_handle OMFENTRY OmfInit( orl_funcs *funcs )
 
     assert( funcs );
 
-    oh = ORL_CLI_ALLOC( funcs, sizeof( ORL_STRUCT( omf_handle ) ) );
+    oh = ORL_CLI_ALLOC( funcs, ORL_STRUCT_SIZEOF( omf_handle ) );
     if( oh != NULL ) {
         oh->funcs = funcs;
         oh->first_file_hnd = NULL;
@@ -81,11 +81,11 @@ orl_return OMFENTRY OmfFileInit( omf_handle oh, FILE *fp, omf_file_handle *pofh 
 
     assert( oh );
 
-    ofh = ORL_PTR_ALLOC( oh, sizeof( ORL_STRUCT( omf_file_handle ) ) );
+    ofh = ORL_PTR_ALLOC( oh, ORL_STRUCT_SIZEOF( omf_file_handle ) );
     if( ofh == NULL )
         return( ORL_OUT_OF_MEMORY );
 
-    memset( ofh, 0, sizeof( ORL_STRUCT( omf_file_handle ) ) );
+    memset( ofh, 0, ORL_STRUCT_SIZEOF( omf_file_handle ) );
     ofh->fp = fp;
 
     OmfAddFileLinks( oh, ofh );

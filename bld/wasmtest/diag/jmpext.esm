@@ -98,7 +98,7 @@ L$31:
     jne         L$32
     jmp         near ptr L$33
 L$32:
-    DB	01FH DUP(0,0,0,0,0,0,0,0)
+    DB	1fH DUP(0,0,0,0,0,0,0,0)
     DB	0, 0, 0, 0, 0, 0, 0, 0
     nop         
     nop         

@@ -1,71 +1,74 @@
 #!/bin/sh
 
-function usage() {
+ERRORS=0
+
+usage() {
     echo usage: $0 prgname errorfile
     exit
 }
 
-function print_header() {
+print_header() {
     echo \# -----------------------------
-    echo \#   Test $TEST
+    echo \#   Miscellaneous Test $TEST
     echo \# -----------------------------
 }
 
-function do_check() {
-    if [ "$?" == "0" ]; then
-        echo \# Test $TEST successful
+do_check() {
+    if [ "$?" -eq "0" ]; then
+        echo \#      Test successful
     else
-        echo \#\# MISC \#\# >> $LOGFILE
-        echo Error: Test $TEST unsuccessful!!! | tee -a $LOGFILE
-	exit
+        echo \#\# MISC $TEST \#\# >> $LOGFILE
+        echo Error: Test unsuccessful!!! | tee -a $LOGFILE
+        ERRORS=1
     fi
 }
 
-if [ "$2" == "" ]; then 
+if [ -z "$2" ]; then 
     usage
 fi
 
 LOGFILE=$2
 
 echo \# ===========================
-echo \# Start Miscellaneous Test
+echo \# Miscellaneous Tests
 echo \# ===========================
 
-TEST=1
+TEST=01
 print_header
-$1 -c -h -f misc01 > tmp.out 2>&1
-diff -b misc01.chk tmp.out
+$1 -c -h -f misc$TEST > test$TEST.lst 2>&1
+diff -b misc$TEST.chk test$TEST.lst
 do_check
 
-TEST=2
+TEST=02
 print_header
-$1 -c -h -f misc02 > tmp.out 2>&1
-diff -b misc02.chk tmp.out
+$1 -c -h -f misc$TEST > test$TEST.lst 2>&1
+diff -b misc$TEST.chk test$TEST.lst
 do_check
 
-TEST=3
+TEST=03
 print_header
-$1 -a -c -h -f misc03 > tmp.out 2>&1
-diff -b misc03.chk tmp.out
+$1 -a -c -h -f misc$TEST > test$TEST.lst 2>&1
+diff -b misc$TEST.chk test$TEST.lst
 do_check
 
-TEST=4
+TEST=04
 print_header
-$1 -a -c -h -f misc04 > tmp.out 2>&1
-diff -b -i misc04.chk tmp.out
+$1 -a -c -h -f misc$TEST > test$TEST.lst 2>&1
+diff -b -i misc$TEST.chk test$TEST.lst
 do_check
 
-TEST=5
+TEST=05
 print_header
-$1 -a -c -h -f misc05 test1 test2 test3 > tmp.out 2>&1
-diff -b misc05.chk tmp.out
+$1 -a -c -h -f misc$TEST test1 test2 test3 > test$TEST.lst 2>&1
+diff -b misc$TEST.chk test$TEST.lst
 do_check
 
-TEST=6
+TEST=06
 print_header
-
-$1 -a -c -h -f misc06u > tmp.out 2>&1
-diff -b misc06u.chk tmp.out
+$1 -a -c -h -f misc${TEST}u > test$TEST.lst 2>&1
+diff -b misc${TEST}u.chk test$TEST.lst
 do_check
 
-rm -f tmp.out
+if [ "$ERRORS" -eq "0" ]; then
+    rm -f *.lst
+fi

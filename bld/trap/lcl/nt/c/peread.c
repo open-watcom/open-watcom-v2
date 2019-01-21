@@ -98,10 +98,10 @@ int GetEXEHeader( HANDLE handle, header_info *hi, WORD *stack )
             return( FALSE );
         }
         if( hi->u.neh.target == TARGET_WINDOWS ) {
-            DWORD       off;
-            int         len;
-            DWORD       bytes;
-            DWORD       pos;
+            DWORD           off;
+            unsigned char   len;
+            DWORD           bytes;
+            DWORD           pos;
 
             off = nh_offset + hi->u.neh.resident_off;
             if( SetFilePointer( handle, off, NULL, FILE_BEGIN ) == INVALID_SET_FILE_POINTER ) {

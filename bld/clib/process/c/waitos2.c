@@ -34,7 +34,7 @@
 #include <process.h>
 
 
-_WCRTLINK int wait( int *status )
-    {
-        return( cwait( status, 0, 0 ) );
-    }
+_WCRTLINK pid_t wait( int *status )
+{
+    return( cwait( status, 0, 0 ) );
+}

@@ -134,7 +134,7 @@ static const char               MkdiskInf[] = "mksetup.inf";
 #define PRODUCT_LINE    3
 
 
-static char                     *BootText[ NUM_LINES ] =
+static char                     *BootText[NUM_LINES] =
 {
 "",
 "",
@@ -194,14 +194,23 @@ static char *mygets( char *buf, size_t len, FILE *fp )
         q = p;
         while( *q == ' ' || *q == '\t' )
             ++q;
+        got = strlen( q );
         if( p != q )
-            strcpy( p, q );
-        got = strlen( p );
-        if( got <= 1 )
+            memmove( p, q, got + 1 );
+        /* check '\n' char */
+        if( got == 0 || p[got - 1] != '\n' )
             break;
-        got -= 2;
-        if( p[got] != '\\' || p[got + 1] != '\n' )
+        /* skip '\n' */
+        got--;
+        /* check continuation char '\\' */
+        if( got == 0 || p[got - 1] != '\\' ) {
+            /* terminate buffer */
+            p[got] = '\0';
             break;
+        }
+        /* skip '\\' */
+        got--;
+        /* continuation, append next line to the buffer */
         p += got;
         len -= got;
     }
@@ -269,7 +278,7 @@ void CreateBootFile()
 
     line = PRODUCT_LINE;
     for( list = BootTextList; list != NULL; list = list->next ) {
-        BootText[ line ] = list->item;
+        BootText[line] = list->item;
         ++line;
     }
     fp = fopen( "__boot__", "w" );
@@ -277,7 +286,7 @@ void CreateBootFile()
         printf( "Cannot create boot text file '__boot__'\n" );
     } else {
         for( line = 0; line < NUM_LINES; ++line ) {
-            fprintf( fp, "%s\n", BootText[ line ] );
+            fprintf( fp, "%s\n", BootText[line] );
         }
         fclose( fp );
     }
@@ -460,8 +469,8 @@ bool CheckParms( int *pargc, char **pargv[] )
         printf( "Usage: mkdisk [-x] <product> <size> <file_list> <pack_dir> <rel_root>\n" );
         return( false );
     }
-    Product = argv[ 1 ];
-    size = argv[ 2 ];
+    Product = argv[1];
+    size = argv[2];
     if( strcmp( size, "360" ) == 0 ) {
         DiskSize = DISK_360;
         MaxDiskFiles = DISK_360_FN;
@@ -482,12 +491,12 @@ bool CheckParms( int *pargc, char **pargv[] )
         printf( "SIZE must be one of 360, 720, 1.2, 1.4\n" );
         return( false );
     }
-    PackDir  = argv[ 4 ];
+    PackDir  = argv[4];
     if( stat( PackDir, &stat_buf ) != 0 ) {  // exists
         printf( "\nDirectory '%s' does not exist\n", PackDir );
         return( false );
     }
-    RelRoot  = argv[ 5 ];
+    RelRoot  = argv[5];
     if( stat( RelRoot, &stat_buf ) != 0 ) {  // exists
         printf( "\nDirectory '%s' does not exist\n", RelRoot );
         return( false );
@@ -590,7 +599,7 @@ bool AddFile( char *path, char *old_path, char redist, const char *file, const c
     struct stat         stat_buf;
     char                *p;
     char                *root_file;
-    char                src[ _MAX_PATH ], dst[ _MAX_PATH ];
+    char                src[_MAX_PATH], dst[_MAX_PATH];
     size_list           *ns,*sl;
 
     if( !IS_EMPTY( rel_file ) ) {
@@ -759,14 +768,14 @@ bool ReadList( FILE *fp )
     char        *condition;
     char        *patch;
     char        *dst_var;
-    char        buf[ 512 ];
+    char        buf[512];
     char        redist;
     bool        no_error;
 
     printf( "Checking files...\n" );
     no_error = true;
     while( fgets( buf, sizeof( buf ), fp ) != NULL ) {
-        buf[ strlen( buf ) - 1 ] = '\0';
+        buf[strlen( buf ) - 1] = '\0';
         redist = buf[0];
         path = strtok( buf + 1, " \t" );
         if( path == NULL ) {
@@ -822,7 +831,7 @@ bool ReadList( FILE *fp )
 
 #define STRING_include          "include="
 #define STRING_icon             "icon="
-#define STRING_supplimental     "supplimental="
+#define STRING_supplemental     "supplemental="
 #define STRING_ini              "ini="
 #define STRING_auto             "auto="
 #define STRING_cfg              "cfg="
@@ -874,7 +883,7 @@ static char *ReplaceEnv( char *file_name )
 // value of the environment variable
 {
     char                *p, *q, *e, *var;
-    char                buff[ _MAX_PATH ];
+    char                buff[_MAX_PATH];
 
     // copy and make changes into 'buff'
     q = buff;
@@ -911,6 +920,74 @@ static char *ReplaceEnv( char *file_name )
     }
 }
 
+static bool processLine( const char *line, LIST **list )
+{
+    LIST            *new;
+
+    new = malloc( sizeof( LIST ) );
+    if( new == NULL ) {
+        return( true );
+    }
+    new->next = NULL;
+    if( STRING_IS( line, new, STRING_icon ) ) {
+        AddToList( new, &IconList );
+    } else if( STRING_IS( line, new, STRING_supplemental ) ) {
+        AddToList( new, &SupplimentList );
+    } else if( STRING_IS( line, new, STRING_ini ) ) {
+        AddToList( new, &IniList );
+    } else if( STRING_IS( line, new, STRING_auto ) ) {
+        AddToList( new, &AutoList );
+    } else if( STRING_IS( line, new, STRING_cfg ) ) {
+        AddToList( new, &CfgList );
+    } else if( STRING_IS( line, new, STRING_autoset ) ) {
+        AddToList( new, &AutoSetList );
+    } else if( STRING_IS( line, new, STRING_spawnafter ) ) {
+        AddToList( new, &AfterList );
+    } else if( STRING_IS( line, new, STRING_spawnbefore ) ) {
+        AddToList( new, &BeforeList );
+    } else if( STRING_IS( line, new, STRING_spawnend ) ) {
+        AddToList( new, &EndList );
+    } else if( STRING_IS( line, new, STRING_env ) ) {
+        AddToList( new, &EnvList );
+    } else if( STRING_IS( line, new, STRING_dialog ) ) {
+        AddToList( new, &DialogList );
+    } else if( STRING_IS( line, new, STRING_boottext ) ) {
+        AddToList( new, &BootTextList );
+    } else if( STRING_IS( line, new, STRING_exe ) ) {
+        new->item = ReplaceEnv( new->item );
+        AddToList( new, &ExeList );
+    } else if( STRING_IS( line, new, STRING_label ) ) {
+        AddToList( new, &LabelList );
+    } else if( STRING_IS( line, new, STRING_upgrade ) ) {
+        AddToList( new, &UpgradeList );
+    } else if( STRING_IS( line, new, STRING_deletedialog ) ) {
+        new->type = DELETE_DIALOG;
+        AddToList( new, &DeleteList );
+    } else if( STRING_IS( line, new, STRING_deletefile ) ) {
+        new->type = DELETE_FILE;
+        AddToList( new, &DeleteList );
+    } else if( STRING_IS( line, new, STRING_deletedir ) ) {
+        new->type = DELETE_DIR;
+        AddToList( new, &DeleteList );
+    } else if( STRING_IS( line, new, STRING_language ) ) {
+        Lang = new->item[0] - '0';
+        free( new->item );
+        free( new );
+    } else if( STRING_IS( line, new, STRING_forcedll ) ) {
+        AddToList( new, &ForceDLLInstallList );
+    } else if( STRING_IS( line, new, STRING_assoc ) ) {
+        AddToList( new, &AssociationList );
+    } else if( STRING_IS( line, new, STRING_errmsg ) ) {
+        AddToList( new, &ErrMsgList );
+    } else if( STRING_IS( line, new, STRING_setuperrmsg ) ) {
+        AddToList( new, &SetupErrMsgList );
+    } else {
+        new->item = strdup( line );
+        AddToList( new, list );
+    }
+    return( false );
+}
+
 #define SECTION_BUF_SIZE 8192   // allow long text strings
 
 static char             SectionBuf[SECTION_BUF_SIZE];
@@ -918,108 +995,48 @@ static char             SectionBuf[SECTION_BUF_SIZE];
 void ReadSection( FILE *fp, const char *section, LIST **list )
 /************************************************************/
 {
-    LIST                *new;
-    int                 file_curr = 0;
-    FILE                *file_stack[20];
+    int             file_curr = 0;
+    FILE            *file_stack[20];
+    bool            found;
 
-    Setup = "setup.exe";
+    found = false;
     for( ;; ) {
-        if( mygets( SectionBuf, sizeof( SectionBuf ), fp ) == NULL ) {
-            printf( "%s section not found in '%s'\n", section, MkdiskInf );
-            return;
-        }
-        if( SectionBuf[ 0 ] == '#' || SectionBuf[ 0 ] == '\0' )
-            continue;
-        SectionBuf[ strlen( SectionBuf ) - 1 ] = '\0';
-        if( stricmp( SectionBuf, section ) == 0 ) {
-            break;
-        }
-    }
-    for( ;; ) {
-        if( mygets( SectionBuf, sizeof( SectionBuf ), fp ) == NULL ) {
-            if( --file_curr >= 0 ) {
+        if( mygets( SectionBuf, SECTION_BUF_SIZE, fp ) == NULL ) {
+            if( file_curr-- > 0 ) {
                 fclose( fp );
                 fp = file_stack[file_curr];
                 continue;
-            } else {
+            }
+            break;
+        }
+        if( SectionBuf[0]== '#' || SectionBuf[0]== '\0' )
+            continue;
+        if( SectionBuf[0] == '[' && SectionBuf[strlen( SectionBuf ) - 1] == ']' ) {
+            if( stricmp( SectionBuf, section ) == 0 ) {
+                found = true;
+            } else if( found ) {
                 break;
             }
+        } else if( found ) {
+            if( strnicmp( SectionBuf, STRING_setup, sizeof( STRING_setup ) - 1 ) == 0 ) {
+                free( Setup );
+                Setup = ReplaceEnv( strdup( SectionBuf + sizeof( STRING_setup ) - 1 ) );
+            } else if( strnicmp( SectionBuf, STRING_include, sizeof( STRING_include ) - 1 ) == 0 ) {
+                file_stack[file_curr++] = fp;
+                fp = PathOpen( SectionBuf + sizeof( STRING_include ) - 1 );
+            } else if( processLine( SectionBuf, list ) ) {
+                fclose( fp );
+                while( file_curr-- > 0 ) {
+                    fp = file_stack[file_curr];
+                    fclose( fp );
+                }
+                printf( "\nOut of memory\n" );
+                exit( 1 );
+            }
         }
-        if( SectionBuf[ 0 ] == '#' || SectionBuf[ 0 ] == '\0' )
-            continue;
-        SectionBuf[ strlen( SectionBuf ) - 1 ] = '\0';
-        if( SectionBuf[ 0 ] == '\0' )
-            break;
-        if( strnicmp( SectionBuf, "setup=", 6 ) == 0 ) {
-            Setup = strdup( &SectionBuf[6] );
-            Setup = ReplaceEnv( Setup );
-            continue;
-        }
-        new = malloc( sizeof( LIST ) );
-        if( new == NULL ) {
-            printf( "\nOut of memory\n" );
-            exit( 1 );
-        }
-        new->next = NULL;
-        if( STRING_IS( SectionBuf, new, STRING_include ) ) {
-            file_stack[file_curr++] = fp;
-            fp = PathOpen( new->item );
-            free( new->item );
-            free( new );
-        } else if( STRING_IS( SectionBuf, new, STRING_icon ) ) {
-            AddToList( new, &IconList );
-        } else if( STRING_IS( SectionBuf, new, STRING_supplimental ) ) {
-            AddToList( new, &SupplimentList );
-        } else if( STRING_IS( SectionBuf, new, STRING_ini ) ) {
-            AddToList( new, &IniList );
-        } else if( STRING_IS( SectionBuf, new, STRING_auto ) ) {
-            AddToList( new, &AutoList );
-        } else if( STRING_IS( SectionBuf, new, STRING_cfg ) ) {
-            AddToList( new, &CfgList );
-        } else if( STRING_IS( SectionBuf, new, STRING_autoset ) ) {
-            AddToList( new, &AutoSetList );
-        } else if( STRING_IS( SectionBuf, new, STRING_spawnafter ) ) {
-            AddToList( new, &AfterList );
-        } else if( STRING_IS( SectionBuf, new, STRING_spawnbefore ) ) {
-            AddToList( new, &BeforeList );
-        } else if( STRING_IS( SectionBuf, new, STRING_spawnend ) ) {
-            AddToList( new, &EndList );
-        } else if( STRING_IS( SectionBuf, new, STRING_env ) ) {
-            AddToList( new, &EnvList );
-        } else if( STRING_IS( SectionBuf, new, STRING_dialog ) ) {
-            AddToList( new, &DialogList );
-        } else if( STRING_IS( SectionBuf, new, STRING_boottext ) ) {
-            AddToList( new, &BootTextList );
-        } else if( STRING_IS( SectionBuf, new, STRING_exe ) ) {
-            AddToList( new, &ExeList );
-            new->item = ReplaceEnv( new->item );
-        } else if( STRING_IS( SectionBuf, new, STRING_label ) ) {
-            AddToList( new, &LabelList );
-        } else if( STRING_IS( SectionBuf, new, STRING_upgrade ) ) {
-            AddToList( new, &UpgradeList );
-        } else if( STRING_IS( SectionBuf, new, STRING_deletedialog ) ) {
-            new->type = DELETE_DIALOG;
-            AddToList( new, &DeleteList );
-        } else if( STRING_IS( SectionBuf, new, STRING_deletefile ) ) {
-            new->type = DELETE_FILE;
-            AddToList( new, &DeleteList );
-        } else if( STRING_IS( SectionBuf, new, STRING_deletedir ) ) {
-            new->type = DELETE_DIR;
-            AddToList( new, &DeleteList );
-        } else if( STRING_IS( SectionBuf, new, STRING_language ) ) {
-            Lang = new->item[0] - '0';
-            free( new->item );
-            free( new );
-        } else if( STRING_IS( SectionBuf, new, STRING_forcedll ) ) {
-            AddToList( new, &ForceDLLInstallList );
-        } else if( STRING_IS( SectionBuf, new, STRING_errmsg ) ) {
-            AddToList( new, &ErrMsgList );
-        } else if( STRING_IS( SectionBuf, new, STRING_setuperrmsg ) ) {
-            AddToList( new, &SetupErrMsgList );
-        } else {
-            new->item = strdup( SectionBuf );
-            AddToList( new, list );
-        }
+    }
+    if( !found ) {
+        printf( "%s section not found in '%s'\n", section, MksetupInf );
     }
 }
 
@@ -1028,7 +1045,7 @@ void ReadInfFile( void )
 /**********************/
 {
     FILE                *fp;
-    char                ver_buf[ 80 ];
+    char                ver_buf[80];
 
     fp = PathOpen( MkdiskInf );
     if( fp == NULL ) {
@@ -1076,7 +1093,7 @@ void DumpSizes( FILE *fp, FILE_INFO *curr )
             fprintf( fp, "%s", csize->dst_var );
         }
         if( csize->redist != ' ' ) {
-            // 's' for supplimental file (not deleted)
+            // 's' for supplemental file (not deleted)
             fprintf( fp, "!%c", tolower( csize->redist ) );
         }
         if( csize->dst_var ) {
@@ -1124,7 +1141,6 @@ void DumpFile( FILE *out, char *fname )
 {
     FILE                *in;
     char                *buf;
-    size_t              len;
 
     in = PathOpen( fname );
     if( in == NULL ) {
@@ -1140,11 +1156,8 @@ void DumpFile( FILE *out, char *fname )
         if( mygets( buf, SECTION_BUF_SIZE, in ) == NULL ) {
             break;
         }
-        if( strnicmp( buf, "include=", 8 ) == 0 ) {
-            len = strlen( buf );
-            if( buf[len - 1] == '\n' )
-                buf[len - 1] = '\0';
-            DumpFile( out, buf + 8 );
+        if( strnicmp( buf, STRING_include, sizeof( STRING_include ) - 1 ) == 0 ) {
+            DumpFile( out, buf + sizeof( STRING_include ) - 1 );
         } else {
             fputs( buf, out );
         }
@@ -1185,7 +1198,7 @@ int CreateScript( long init_size, unsigned padding )
         fprintf( fp, "%s", list->item );
         for( list2 = SupplimentList; list2 != NULL; list2 = list2->next ) {
             if( stricmp( list->item, list2->item ) == 0 ) {
-                fprintf( fp, ",supplimental" );
+                fprintf( fp, ",supplemental" );
             }
         }
         fprintf( fp, "\n" );
@@ -1456,9 +1469,9 @@ int main( int argc, char *argv[] )
     if( !CheckParms( &argc, &argv ) ) {
         return( 1 );
     }
-    fp = fopen( argv[ 3 ], "r" );
+    fp = fopen( argv[3], "r" );
     if( fp == NULL ) {
-        printf( "Cannot open '%s'\n", argv[ 3 ] );
+        printf( "Cannot open '%s'\n", argv[3] );
         return( 1 );
     }
     printf( "Reading Info File...\n" );

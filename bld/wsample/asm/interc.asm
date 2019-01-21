@@ -24,8 +24,7 @@
 ;*
 ;*  ========================================================================
 ;*
-;* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-;*               DESCRIBE IT HERE!
+;* Description:  Interrupt handling stuff (16-bit DOS code only)
 ;*
 ;*****************************************************************************
 
@@ -46,6 +45,28 @@
 DGROUP  group   _DATA
 _DATA   segment word public 'DATA'
         extrn   _Save_Request       : word
+
+                public  _intxx_handlers
+_intxx_handlers label dword
+                dd      int03_handler_
+                dd      int13_handler_
+                dd      int21_handler_
+                dd      int28_handler_
+                dd      intx0_handler_
+                dd      intx1_handler_
+                dd      intx2_handler_
+                dd      intx3_handler_
+                dd      intx4_handler_
+                dd      intx5_handler_
+                dd      intx6_handler_
+                dd      intx7_handler_
+
+                public  _intr_list
+_intr_list      label byte
+                db      3, 0x13, 0x21, 0x28
+                db      0xff, 0xff, 0xff, 0xff
+                db      0xff, 0xff, 0xff, 0xff
+
 _DATA   ends
 
 _TEXT   segment word public 'CODE'
@@ -62,13 +83,12 @@ InDOSAddr       dd      ?
 ErrorModeAddr   dd      ?
 InBIOS          dw      ?
 
-                public  _old_int28,_old_int21,_old_int13
-_old_int28      dd      ?
-_old_int21      dd      ?
+                public  _old_intxx_handlers
+_old_intxx_handlers label dword
+_old_int03      dd      ?
 _old_int13      dd      ?
-
-                public  _old_intx0,_old_intx1,_old_intx2,_old_intx3
-                public  _old_intx4,_old_intx5,_old_intx6,_old_intx7
+_old_int21      dd      ?
+_old_int28      dd      ?
 _old_intx0      dd      ?
 _old_intx1      dd      ?
 _old_intx2      dd      ?
@@ -94,7 +114,6 @@ _sysCaller      db      ?
 ;
 ; *** INT 13 handler ***
 ;
-        public  int13_handler_
 int13_handler_  proc    far
         inc     word ptr cs:InBIOS  ; say we're in the BIOS
         pushf                       ; invoke old handler
@@ -131,7 +150,6 @@ ovl_handler_    endp
 ;
 ; *** INT 03 Handler ***
 ;
-        public  int03_handler_
 int03_handler_  proc    far     ; mark interceptor
         push    bp              ; save bp
         mov     bp,sp           ; get access to stack
@@ -195,7 +213,6 @@ UnHook1 LABEL   near
 ;
 ; *** INT 21 Handler ***
 ;
-        public  int21_handler_
 int21_handler_ proc far
         pushf
         cmp     cs:_sysCaller,0
@@ -253,7 +270,6 @@ int21_handler_  endp
 ;
 ; *** INT 28 Handler ***
 ;
-        public  int28_handler_
 int28_handler_  proc    far
         pushf
         push    ds              ; get addressability for DGROUP
@@ -278,49 +294,41 @@ int28_handler_  endp
 ;
 ; *** INT XX Handlers *** (used by /i option)
 ;
-        public  intx0_handler_
 intx0_handler_ proc far
         call    intxx_splice
         jmp     cs:_old_intx0
 intx0_handler_ endp
 
-        public  intx1_handler_
 intx1_handler_ proc far
         call    intxx_splice
         jmp     cs:_old_intx1
 intx1_handler_ endp
 
-        public  intx2_handler_
 intx2_handler_ proc far
         call    intxx_splice
         jmp     cs:_old_intx2
 intx2_handler_ endp
 
-        public  intx3_handler_
 intx3_handler_ proc far
         call    intxx_splice
         jmp     cs:_old_intx3
 intx3_handler_ endp
 
-        public  intx4_handler_
 intx4_handler_ proc far
         call    intxx_splice
         jmp     cs:_old_intx4
 intx4_handler_ endp
 
-        public  intx5_handler_
 intx5_handler_ proc far
         call    intxx_splice
         jmp     cs:_old_intx5
 intx5_handler_ endp
 
-        public  intx6_handler_
 intx6_handler_ proc far
         call    intxx_splice
         jmp     cs:_old_intx6
 intx6_handler_ endp
 
-        public  intx7_handler_
 intx7_handler_ proc far
         call    intxx_splice
         jmp     cs:_old_intx7
@@ -330,7 +338,6 @@ intx7_handler_ endp
 ; intxx_splice -- an INT XX has occurred; check whether an application
 ;                 return address is stored already (will be set if it isn't)
 ;
-public intxx_splice
 intxx_splice proc near
         pushf
         cmp     cs:_sysCaller,0
@@ -431,7 +438,7 @@ try_again LABEL near
         jne     try_test_op             ; if it's not CMP
 
         mov     bx,es:[di][(LF1-LF2)+2] ; found offset
-        jmp     VSuccess
+        jmp     Vsuccess
 
 try_test_op LABEL near
         mov     ax,word ptr cs:LF3+1    ; TEST opcode (+1 skips SS override)

@@ -39,9 +39,9 @@
 
 #define LO_WORD( lng )      (unsigned)( lng )
 
-#define MN_CEIL     1
-#define MX_CEIL     63          /* in kilobytes (must never exceed 63k) */
-#define DEF_CEIL    MX_CEIL
+#define MN_CEIL         1U
+#define MX_CEIL         63U     /* in kilobytes (must never exceed 63k) */
+#define DEF_CEIL        MX_CEIL
 
 #define TIMER0          0x40    /* timer port */
 #define INT_CTRL        0x20    /* interrupt controler port */
@@ -104,6 +104,11 @@ extern void REPORT_TYPE report( void );
 extern void             fatal( void );
 
 extern void             Output( const char FAR_PTR * );
+extern void             OutputNL( void );
+extern void             OutputMsg( int msg );
+extern void             OutputMsgNL( int msg );
+extern void             OutputMsgParmNL( int msg, const char FAR_PTR *str );
+extern void             OutputMsgCharNL( int msg, char chr );
 extern unsigned         GetNumber( unsigned, unsigned, char **, unsigned );
 extern void             StopAndSave( void );
 extern void             WriteCodeLoad( seg_offset, const char *, samp_block_kinds );

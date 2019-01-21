@@ -5,7 +5,7 @@
 /*
  *
  *          Copyright (C) 1994, M. A. Sridhar
- *  
+ *
  *
  *     This software is Copyright M. A. Sridhar, 1994. You are free
  *     to copy, modify or distribute this software  as you see fit,
@@ -435,7 +435,7 @@ bool CL_BitSet::IsUniversal () const
 CL_IntegerSet CL_BitSet::AsSet () const
 {
     CL_IntegerSet aSet;
-    
+
     long offset = 0;
     for (long i = 0; i < _count; i++, offset += BitsInLong) {
         register ulong mask = 1;
@@ -450,7 +450,7 @@ CL_IntegerSet CL_BitSet::AsSet () const
 }
 
 
-            
+
 CL_BitSet& CL_BitSet::operator = (const CL_BitSet& o)
 {
     if (!PrepareToChange())
@@ -560,9 +560,9 @@ CL_BitSet CL_BitSet::operator ~ () const
 //     }
 //     return t;
 // }
-// 
-// 
-// 
+//
+//
+//
 // // Difference:
 // CL_Set<long> CL_BitSet::operator - (const CL_Set<long>& s) const
 // {
@@ -577,9 +577,9 @@ CL_BitSet CL_BitSet::operator ~ () const
 //     }
 //     return t - s;
 // }
-// 
-// 
-// 
+//
+//
+//
 // // Intersection:
 // CL_Set<long> CL_BitSet::operator * (const CL_Set<long>& s) const
 // {
@@ -594,11 +594,11 @@ CL_BitSet CL_BitSet::operator ~ () const
 //     }
 //     return t * s;
 // }
-// 
-// 
-// 
-// 
-// 
+//
+//
+//
+//
+//
 bool CL_BitSet::operator == (const CL_IntegerSet& o) const
 {
     if (Size() != o.Size())
@@ -655,7 +655,7 @@ bool CL_BitSet::IncludesAll (const CL_BitSet& o) const
     for (register long i = 0; i < n; i++) {
         register ulong p = _rep[i];
         register ulong q = o._rep[i];
-        if (p | q != p)
+        if ((p | q) != p)
             return FALSE;
     }
     return TRUE;
@@ -686,7 +686,7 @@ bool CL_BitSet::ReadFrom (const CL_Stream& s)
         return FALSE;
     if (new_count != _count) {
         ulong* new_rep   = new ulong [new_count];
-        if (!new_rep) 
+        if (!new_rep)
             return FALSE; // No memory
         if (_rep)
             delete [] _rep;
@@ -757,7 +757,7 @@ void CL_BitSetIterator::BeginFromRank (long l)
                     break;
             }
         _tblIndex = j;
-            
+
     }
 }
 

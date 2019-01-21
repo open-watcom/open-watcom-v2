@@ -96,18 +96,25 @@ static char *GetNextWordNT( const char *buff, char *res )
  */
 vi_rc EditFile( const char *name, bool dammit )
 {
-    char        *fn, **list, *currfn;
-    int         i, cnt, ocnt;
-    int         j, len;
-    window_id   wid = NO_WINDOW;
-    char        cdir[FILENAME_MAX];
-    info        *ci, *il;
-    bool        usedir = false;
-    char        mask[FILENAME_MAX];
-    bool        reset_dir;
-    int         index;
-    char        *altname = NULL;
-    vi_rc       rc;
+    char            *fn;
+    char            **list;
+    char            *currfn;
+    list_linenum    i;
+    list_linenum    ocnt;
+    size_t          j;
+    size_t          k;
+    size_t          len;
+    window_id       wid = NO_WINDOW;
+    char            cdir[FILENAME_MAX];
+    info            *ci;
+    info            *il;
+    bool            usedir = false;
+    char            mask[FILENAME_MAX];
+    bool            reset_dir;
+#ifdef __WIN__
+    char            *altname = NULL;
+#endif
+    vi_rc           rc;
 
     fn = MemAlloc( FILENAME_MAX );
 
@@ -121,6 +128,7 @@ vi_rc EditFile( const char *name, bool dammit )
         ++name;
         usedir = true;
     }
+    mask[0] = '\0';
     fn[0] = '\0';
 //    if( NextWord1FN( name, fn ) <= 0 )
     if( GetStringWithPossibleQuote2( &name, fn, false ) != ERR_NO_ERR ) {
@@ -135,18 +143,15 @@ vi_rc EditFile( const char *name, bool dammit )
         }
         len = strlen( fn );
         if( len > 0 ) {
-            strcpy( mask, fn );
-            cnt = 0;
-            for( i = len; i-- > 0; ) {
-                if( fn[i] == FILE_SEP ) {
-                    for( j = i + 1; j <= len; j++ ) {
-                        mask[j - (i + 1)] = fn[j];
-                    }
-                    cnt = i;
+            for( j = len; j > 0; j-- ) {
+                if( fn[j - 1] == FILE_SEP ) {
                     break;
                 }
             }
-            fn[cnt] = '\0';
+            for( k = j; k <= len; k++ ) {
+                mask[k - j] = fn[k];
+            }
+            fn[j] = '\0';
         }
         if( fn[0] != '\0' ) {
             rc = SelectFileOpen( fn, &fn, mask, true );
@@ -155,7 +160,8 @@ vi_rc EditFile( const char *name, bool dammit )
             if( name[0] == '\0' ) {
                 altname = MemAlloc( 1000 );
                 rc = SelectFileOpen( CurrentDirectory, &altname, mask, true );
-                name = GetNextFileName( altname, fn );  // if multiple, kill path
+                name = GetNextFileName( altname, fn );
+                // if multiple, skip first item ( path )
                 if( isMultipleFiles( name ) ) {
                     name = GetNextFileName( name, fn ); // get 1st name
                 }
@@ -166,7 +172,6 @@ vi_rc EditFile( const char *name, bool dammit )
             rc = SelectFileOpen( CurrentDirectory, &fn, mask, true );
 #endif
         }
-
         if( rc != ERR_NO_ERR || fn[0] == '\0' ) {
             MemFree( fn );
             SetCWD( cdir );
@@ -200,20 +205,13 @@ vi_rc EditFile( const char *name, bool dammit )
                 break;
             }
         }
-        currfn = fn;
-        ocnt = cnt = ExpandFileNames( currfn, &list );
-        if( !cnt ) {
-            cnt = 1;
-        } else {
-            currfn = list[0];
-        }
+        ocnt = ExpandFileNames( fn, &list );
 
         /*
          * loop through all expanded files
          */
-        index = 1;
-        while( cnt > 0 ) {
-            cnt--;
+        for( i = 0; i < ocnt; i++ ) {
+            currfn = list[i];
             /*
              * quit current file if ! specified, else just save current state
              */
@@ -231,8 +229,7 @@ vi_rc EditFile( const char *name, bool dammit )
                 FreeUndoStacks();
                 FreeMarkList();
                 FreeEntireFile( CurrentFile );
-                MemFree( DeleteLLItem( (ss **)&InfoHead, (ss **)&InfoTail,
-                         (ss *)CurrentInfo ) );
+                MemFree( DeleteLLItem( (ss **)&InfoHead, (ss **)&InfoTail, (ss *)CurrentInfo ) );
                 CurrentInfo = NULL;
                 current_window_id = NO_WINDOW;
             } else {
@@ -258,21 +255,25 @@ vi_rc EditFile( const char *name, bool dammit )
                     char dir[_MAX_DIR];
                     char fname[_MAX_FNAME];
                     char ext[_MAX_EXT];
-                    size_t path_len;
 
                     _splitpath( il->CurrentFile->name, drive, dir, fname, ext );
                     if( drive[0] == '\0' ) {
                         _splitpath( il->CurrentFile->home, drive, NULL, NULL, NULL );
                     }
                     strcpy( path, il->CurrentFile->home );
-                    path_len = strlen( path );
-                    if( path_len-- > 0 ) {
-#ifdef __UNIX__
-                        if( path[path_len] != FILE_SEP ) {
-#else
-                        if( path[path_len] != DRV_SEP && path[path_len] != FILE_SEP ) {
+                    len = strlen( path );
+                    if( len > 0 ) {
+                        switch( path[len - 1] ) {
+                        case FILE_SEP:
+#if !defined( __UNIX__ )
+                        case ALT_FILE_SEP:
+                        case DRV_SEP:
 #endif
-                            strcat( path, FILE_SEP_STR );
+                            break;
+                        default:
+                            path[len++] = FILE_SEP;
+                            path[len] = '\0';
+                            break;
                         }
                     }
                     if( dir[0] == '\0' ) {
@@ -310,15 +311,9 @@ vi_rc EditFile( const char *name, bool dammit )
                     break;
                 }
             }
-            if( cnt > 0 ) {
-                currfn = list[index];
-                index++;
-            }
         }
+        MemFreeList( ocnt, list );
 
-        if( ocnt > 0 ) {
-            MemFreeList( ocnt, list );
-        }
         if( EditFlags.BreakPressed ) {
             ClearBreak();
             break;
@@ -326,9 +321,11 @@ vi_rc EditFile( const char *name, bool dammit )
         name = GetNextFileName( name, fn );
     } while( *fn != '\0' );
 
+#ifdef __WIN__
     if( altname != NULL ) {
         MemFree( altname );
     }
+#endif
     MemFree( fn );
 
 #ifdef __WIN__
@@ -343,29 +340,36 @@ vi_rc EditFile( const char *name, bool dammit )
 } /* EditFile */
 
 #ifndef __WIN__
-static const char _NEAR *_NEAR fileOpts[] =  {
-    (const char _NEAR *)"<F1> Go To",
-    (const char _NEAR *)"<F2> Quit",
-    (const char _NEAR *)"<F3> Save & Quit"
+
+static const char *fileOpts[] =  {
+    (const char *)"<F1> Go To",
+    (const char *)"<F2> Quit",
+    (const char *)"<F3> Save & Quit"
 };
 
-#define NUM_OPTS sizeof( fileOpts ) / sizeof( fileOpts[0] )
+static const vi_key     fileopts_evlist[] = {
+    VI_KEY( F1 ),
+    VI_KEY( F2 ),
+    VI_KEY( F3 ),
+    VI_KEY( DUMMY )
+};
 
 /*
  * EditFileFromList - edit from file in current active list
  */
 vi_rc EditFileFromList( void )
 {
-    int         i, tmp, j, n = 0, fcnt;
-    window_id   wid;
-    bool        repeat = true;
-    info        *cinfo;
-    char        **list, modchar;
-    vi_key      evlist[4] = { VI_KEY( F1 ), VI_KEY( F2 ), VI_KEY( F3 ), VI_KEY( DUMMY ) };
-    bool        show_lineno;
-    window_info wi;
-    selectitem  si;
-    vi_rc       rc;
+    list_linenum    i;
+    int             tmp;
+    list_linenum    n;
+    list_linenum    fcnt;
+    window_id       wid;
+    bool            repeat;
+    info            *cinfo;
+    char            **list;
+    window_info     wi;
+    selectitem      si;
+    vi_rc           rc;
 
     /*
      * set up options for file list
@@ -373,67 +377,61 @@ vi_rc EditFileFromList( void )
     memcpy( &wi, &extraw_info, sizeof( window_info ) );
     wi.area.x1 = 2;
     wi.area.x2 = 19;
-    rc = DisplayExtraInfo( &wi, &wid, fileOpts, NUM_OPTS );
-    if( rc != ERR_NO_ERR ) {
-        return( rc );
-    }
-
-    while( repeat > 0 ) {
-
-        /*
-         * set up for this pass
-         */
-        repeat = false;
-        MoveWindowToFrontDammit( wid, false );
-        SaveCurrentInfo();
-
-        /*
-         * allocate a buffer for strings, add strings
-         */
-        list = (char **) MemAlloc( GimmeFileCount() * sizeof( char * ) );
-        for( j = 0, cinfo = InfoHead; cinfo != NULL; cinfo = cinfo->next, ++j ) {
-            list[j] = MemAlloc( strlen( cinfo->CurrentFile->name ) + 3 );
-            if( cinfo->CurrentFile->modified ) {
-                modchar = '*';
-            } else {
-                modchar = ' ';
+    rc = DisplayExtraInfo( &wi, &wid, fileOpts, sizeof( fileOpts ) / sizeof( fileOpts[0] ) );
+    if( rc == ERR_NO_ERR ) {
+        n = 0;
+        repeat = true;
+        while( repeat ) {
+            /*
+             * set up for this pass
+             */
+            MoveWindowToFrontDammit( wid, false );
+            SaveCurrentInfo();
+            /*
+             * allocate a buffer for strings, add strings
+             */
+            fcnt = GimmeFileCount();
+            list = _MemAllocList( fcnt );
+            cinfo = InfoHead;
+            for( i = 0; i < fcnt; i++ ) {
+                list[i] = MemAlloc( strlen( cinfo->CurrentFile->name ) + 3 );
+                MySprintf( list[i], "  %s", cinfo->CurrentFile->name );
+                if( cinfo->CurrentFile->modified ) {
+                    list[i][0] = '*';
+                }
+                cinfo = cinfo->next;
             }
-            MySprintf( list[j], "%c %s", modchar, cinfo->CurrentFile->name );
-        }
-        fcnt = j;
-        tmp = filelistw_info.area.y2;
-        i = filelistw_info.area.y2 - filelistw_info.area.y1 + 1;
-        if( filelistw_info.has_border ) {
-            i -= 2;
-        }
-        if( j < i ) {
-            filelistw_info.area.y2 -= ( i - j );
-        }
-        show_lineno = true;
-
-        /*
-         * get file
-         */
-        if( n + 1 > j ) {
-            n = j - 1;
-        }
-        memset( &si, 0, sizeof( si ) );
-        si.wi = &filelistw_info;
-        si.title = "Current Files";
-        si.list = list;
-        si.maxlist = j;
-        si.num = n;
-        si.retevents = evlist;
-        si.event = VI_KEY( DUMMY );
-        si.show_lineno = show_lineno;
-        si.cln = n + 1;
-        si.eiw = wid;
-        rc = SelectItem( &si );
-        n = si.num;
-        if( rc == ERR_NO_ERR ) {
-            if( n >= 0 ) {
+            tmp = filelistw_info.area.y2;
+            i = filelistw_info.area.y2 - filelistw_info.area.y1 + BORDERDIFF( filelistw_info );
+            if( i > fcnt ) {
+                filelistw_info.area.y2 -= (windim)( i - fcnt );
+            }
+            /*
+             * get file
+             */
+            if( n > fcnt - 1 ) {
+                n = fcnt - 1;
+            }
+            si.is_menu = false;
+            si.show_lineno = true;
+            si.wi = &filelistw_info;
+            si.title = "Current Files";
+            si.list = list;
+            si.maxlist = fcnt;
+            si.result = NULL;
+            si.num = n;
+            si.allowrl = NULL;
+            si.hi_list = NULL;
+            si.retevents = fileopts_evlist;
+            si.event = VI_KEY( DUMMY );
+            si.cln = n + 1;
+            si.event_wid = wid;
+            rc = SelectItem( &si );
+            n = si.num;
+            repeat = false;
+            if( rc == ERR_NO_ERR && n >= 0 ) {
                 cinfo = InfoHead;
-                for( j = 0; j < n; ++j ) {
+                while( n-- > 0 ) {
                     cinfo = cinfo->next;
                 }
                 BringUpFile( cinfo, true );
@@ -455,17 +453,14 @@ vi_rc EditFileFromList( void )
                     break;
                 }
             }
+            filelistw_info.area.y2 = tmp;
+            MemFreeList( fcnt, list );
         }
-
-        filelistw_info.area.y2 = tmp;
-        MemFreeList( fcnt, list );
-
+        /*
+         * get rid of option stuff
+         */
+        CloseAWindow( wid );
     }
-
-    /*
-     * get rid of option stuff
-     */
-    CloseAWindow( wid );
     return( rc );
 
 } /* EditFileFromList */

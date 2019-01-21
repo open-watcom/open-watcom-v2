@@ -1,42 +1,43 @@
+set cmdwipfc=wipfc
+if not "%1" == "" set cmdwipfc=%1
 call env.bat
 echo Test pos1
-wipfc -i .\pos\pos1.ipf
+%cmdwipfc% -q -i .\pos\pos1.ipf
 echo Test pos2
-wipfc -i .\pos\pos2.ipf
+%cmdwipfc% -q -i .\pos\pos2.ipf
 echo Test pos3
-wipfc -i .\pos\pos3.ipf
+%cmdwipfc% -q -i .\pos\pos3.ipf
 echo Test pos4
-wipfc -i .\pos\pos4.ipf
+%cmdwipfc% -q -i .\pos\pos4.ipf
 echo Test pos5
-wipfc -i .\pos\pos5.ipf
+%cmdwipfc% -q -i .\pos\pos5.ipf
 echo Test pos6
-wipfc -i .\pos\pos6.ipf
+%cmdwipfc% -q -i .\pos\pos6.ipf
 echo Test pos7
-wipfc -i .\pos\pos7.ipf
+%cmdwipfc% -q -i .\pos\pos7.ipf
 echo Test pos8
-wipfc -i .\pos\pos8.ipf
+%cmdwipfc% -q -i .\pos\pos8.ipf
 echo Test pos9
-wipfc -i .\pos\pos9.ipf
+%cmdwipfc% -q -i .\pos\pos9.ipf
 echo Test pos10
-wipfc -i .\pos\pos10.ipf
+%cmdwipfc% -q -i .\pos\pos10.ipf
 echo Test neg1
-wipfc -i .\neg\neg1.ipf
+%cmdwipfc% -q -i .\neg\neg1.ipf
 echo Test neg2
-wipfc -i .\neg\neg2.ipf
+%cmdwipfc% -q -i .\neg\neg2.ipf
 echo Test neg3
-wipfc -i .\neg\neg3.ipf
+%cmdwipfc% -q -i .\neg\neg3.ipf
 echo Test neg4
-wipfc -i .\neg\neg4.ipf
+%cmdwipfc% -q -i .\neg\neg4.ipf
 echo Test neg5
-wipfc -i .\neg\neg5.ipf
+%cmdwipfc% -q -i .\neg\neg5.ipf
 echo Test neg6
-wipfc -i .\neg\neg6.ipf
+%cmdwipfc% -q -i .\neg\neg6.ipf
 echo Test neg7
-wipfc -i .\neg\neg7.ipf
+%cmdwipfc% -q -i .\neg\neg7.ipf
 echo Test neg8
-wipfc -i .\neg\neg8.ipf
+%cmdwipfc% -q -i .\neg\neg8.ipf
 echo Test neg9
-wipfc -i .\neg\neg9.ipf
+%cmdwipfc% -q -i .\neg\neg9.ipf
 echo Test neg10
-wipfc -i .\neg\neg10.ipf
-
+%cmdwipfc% -q -i .\neg\neg10.ipf

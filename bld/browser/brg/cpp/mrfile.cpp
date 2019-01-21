@@ -220,39 +220,39 @@ void MergeFile::copyFormTo( MergeFile& out, dr_section sect,
         bufLen = readByte( sect, off );
         out.writeByte( (uint_8) bufLen );
         if( bufLen ) {
-            buffer = new char[ bufLen ];
+            buffer = new char [bufLen];
             readBlock( sect, off, buffer, bufLen );
             out.writeBlock( buffer, bufLen );
-            delete [] buffer;
+            delete[] buffer;
         }
         break;
     case DW_FORM_block2:
         bufLen = readWord( sect, off );
         out.writeWord( (uint_16) bufLen );
         if( bufLen ) {
-            buffer = new char[ bufLen ];
+            buffer = new char [bufLen];
             readBlock( sect, off, buffer, bufLen );
             out.writeBlock( buffer, bufLen );
-            delete [] buffer;
+            delete[] buffer;
         }
         break;
     case DW_FORM_block4:
         bufLen = readDWord( sect, off );
         out.writeDWord( bufLen );
         if( bufLen ) {
-            buffer = new char[ bufLen ];
+            buffer = new char [bufLen];
             readBlock( sect, off, buffer, bufLen );
             out.writeBlock( buffer, bufLen );
-            delete [] buffer;
+            delete[] buffer;
         }
         break;
     case DW_FORM_block:
         bufLen = readULEB128( sect, off );
         if( bufLen ) {
-            buffer = new char[ bufLen ];
+            buffer = new char [bufLen];
             readBlock( sect, off, buffer, bufLen );
             out.writeBlock( buffer, bufLen );
-            delete [] buffer;
+            delete[] buffer;
         }
         break;
     case DW_FORM_data8:
@@ -462,7 +462,7 @@ uint_32 MergeFile::readForm( dr_section sect, uint_32& off, uint_32 form,
 
 
 // Complain about defining trivial destructor inside class
-// definition only for warning levels above 8 
+// definition only for warning levels above 8
 #pragma warning 657 9
 
 MergeFile::~MergeFile()

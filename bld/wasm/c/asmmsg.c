@@ -124,6 +124,8 @@ void AsmErr( int msgnum, ... )
         print_include_file_nesting_structure();
     } else {
         PrtMsg1( "", ERR_TOO_MANY_ERRORS, args1, args2 );
+        va_end( args1 );
+        va_end( args2 );
         AsmSuicide();
     }
 }
@@ -160,7 +162,7 @@ static void PrtMsg1( char *prefix, int msgnum, va_list args1, va_list args2 )
     if( ErrFile == NULL )
         OpenErrFile();
     PutMsg( errout, prefix, msgnum, args1 );
-    fflush( errout );                       /* 27-feb-90 */
+    fflush( errout );
     if( ErrFile ) {
         Errfile_Written = true;
         PutMsg( ErrFile, prefix, msgnum, args2 );
@@ -178,6 +180,7 @@ void PrtMsg( int msgnum, ... )
         OpenErrFile();
     va_start( args1, msgnum );
     PutMsg( errout, "Warning!", msgnum, args1 );
+    va_end( args1 );
     fflush( errout );
 }
 
@@ -255,5 +258,5 @@ void PrintStats( void )
 #ifdef DEBUG_OUT
     printf( "%u passes\n", Parse_Pass + 1 );
 #endif
-    fflush( stdout );                   /* 27-feb-90 for QNX */
+    fflush( stdout );
 }

@@ -43,28 +43,31 @@
 
 #ifdef _M_I86
   #ifdef __BIG_DATA__
-    #define AUX_INFO    \
-        parm caller     [dx ax] \
-        modify exact    [ax dx];
+    #define AUX_INFO \
+        __parm __caller     [__dx __ax] \
+        __value             [__ax] \
+        __modify __exact    [__ax __dx]
   #else
-    #define AUX_INFO    \
-        parm caller     [dx] \
-        modify exact    [ax];
+    #define AUX_INFO \
+        __parm __caller     [__dx] \
+        __value             [__ax] \
+        __modify __exact    [__ax]
   #endif
 #else
-    #define AUX_INFO    \
-        parm caller     [edx] \
-        modify exact    [eax];
+    #define AUX_INFO \
+        __parm __caller     [__edx] \
+        __value             [__eax] \
+        __modify __exact    [__eax]
 #endif
 
 extern unsigned __rmdir_sfn( const char *path );
-#pragma aux __rmdir_sfn = \
-        _SET_DSDX       \
-        _MOV_AH DOS_RMDIR \
-        _INT_21         \
-        _RST_DS         \
+#pragma aux __rmdir_sfn =   \
+        _SET_DSDX           \
+        _MOV_AH DOS_RMDIR   \
+        _INT_21             \
+        _RST_DS             \
         "call __doserror1_" \
-        AUX_INFO
+    AUX_INFO
 
 #if defined( __WATCOM_LFN__ ) && !defined( __WIDECHAR__ )
 static tiny_ret_t _rmdir_lfn( const char *path )

@@ -293,6 +293,11 @@ char *DUILoadString( dui_res_id id )
     return( WndLoadString( id ) );
 }
 
+void DUIFreeString( void *ptr )
+{
+    WndFree( ptr );
+}
+
 bool DUIAskIfAsynchOk( void )
 {
     return( WndDisplayMessage( LIT_DUI( WARN_Asynch_Event ), LIT_ENG( Empty ), GUI_YES_NO ) == GUI_RET_YES );

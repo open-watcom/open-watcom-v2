@@ -125,7 +125,7 @@ char *WlibGetEnv( const char *name )
     return( NULL );
 
 }
-void FatalResError( void )
+void FatalResError( char *msg )
 {
     IDEMsgInfo          msg_info;
 
@@ -134,7 +134,7 @@ void FatalResError( void )
         msg_info.flags = 0;
         msg_info.helpfile = NULL;
         msg_info.helpid = 0;
-        msg_info.msg = NO_RES_MESSAGE;
+        msg_info.msg = msg;
         IdeCbs->PrintWithInfo( IdeHdl, &msg_info );
     }
     longjmp( Env, 1 );

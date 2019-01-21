@@ -32,6 +32,7 @@
 #include <string.h>
 #include <stdio.h>
 #include "walloca.h"
+#include "yacc.h"
 
 
 FILE *fpopen( char *path, char *name )

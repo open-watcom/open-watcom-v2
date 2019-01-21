@@ -29,10 +29,8 @@
 ****************************************************************************/
 
 
-#include <wwindows.h>
-#include <string.h>
-#include <limits.h>
 #include "wrglbl.h"
+#include <limits.h>
 #include "wresdefn.h"
 
 

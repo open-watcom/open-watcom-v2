@@ -30,16 +30,16 @@
 ****************************************************************************/
 
 
-#include "cgstd.h"
+#include "_cgstd.h"
 #include <stdlib.h>
 #include "coderep.h"
 #include "data.h"
 #include "split.h"
 #include "namelist.h"
+#include "verify.h"
+#include "targetin.h"
 #include "feprotos.h"
 
-
-extern  bool    OtherVerify( vertype, instruction *, name *, name *, name * );
 
 static  bool    ByteConst( name *operand )
 /****************************************/
@@ -125,18 +125,18 @@ static  type_class_def  InsTypeClass( instruction *ins )
     return( ins->type_class );
 }
 
-static  bool    Aligned( name *op, type_length align, type_class_def tipe )
-/*************************************************************************/
+static  bool    Aligned( name *op, type_length align, type_class_def type_class )
+/*******************************************************************************/
 {
     type_length         natural;
     type_length         actual;
 
     assert( align <= 8 );
     assert( op->n.class == N_TEMP || op->n.class == N_MEMORY || op->n.class == N_INDEXED );
-    if( tipe == XX ) {
+    if( type_class == XX ) {
         natural = 1;    // FIXME - should be largest element of this structure
     } else {
-        natural = TypeClassSize[tipe];
+        natural = TypeClassSize[type_class];
     }
     if( natural == 2 ) {
         if( _IsntTargetModel( ALIGNED_SHORT ) ) {
@@ -164,7 +164,7 @@ static  bool    Aligned( name *op, type_length align, type_class_def tipe )
             actual = FlagsToAlignment( op->i.index_flags );
         }
         if( ( op->i.constant % 8 ) != 0 ) {
-            if( op->i.constant & 0x07 < actual ) {
+            if( (op->i.constant & 0x07) < actual ) {
                 actual = op->i.constant & 0x07;
             }
         }
@@ -173,8 +173,8 @@ static  bool    Aligned( name *op, type_length align, type_class_def tipe )
     return( false );
 }
 
-extern  bool    DoVerify( vertype kind, instruction *ins )
-/********************************************************/
+bool    DoVerify( vertype kind, instruction *ins )
+/************************************************/
 {
     name                *op;
 

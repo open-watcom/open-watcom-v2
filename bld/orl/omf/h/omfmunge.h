@@ -35,6 +35,8 @@
 #include "omfglbl.h"
 #include "omftype.h"
 
+extern orl_return       OmfAddLName( omf_file_handle ofh, const char *buffer, omf_string_len len );
+
 extern orl_return       OmfAddLIData( omf_file_handle ofh, bool is32,
                                       omf_idx seg, omf_sec_offset offset,
                                       omf_bytes buffer, omf_rec_size len, bool comdat );
@@ -42,10 +44,6 @@ extern orl_return       OmfAddLIData( omf_file_handle ofh, bool is32,
 extern orl_return       OmfAddLEData( omf_file_handle ofh, bool is32,
                                       omf_idx seg, omf_sec_offset offset,
                                       omf_bytes buffer, omf_rec_size len, bool comdat );
-
-extern orl_return       OmfAddLName( omf_file_handle ofh, char *buffer, omf_string_len len, omf_rectyp typ );
-
-extern orl_return       OmfAddExtName( omf_file_handle ofh, char *buffer, omf_string_len len, omf_rectyp typ );
 
 extern orl_return       OmfAddFixupp( omf_file_handle ofh, bool is32, int mode,
                                       int location, omf_sec_offset offset,
@@ -56,7 +54,7 @@ extern orl_return       OmfAddBakpat( omf_file_handle ofh, unsigned_8 loctype,
                                       omf_sec_offset location, omf_idx segidx,
                                       omf_idx symidx, omf_sec_addend disp );
 
-extern orl_return       OmfAddExtDef( omf_file_handle ofh, omf_string name, omf_rectyp typ );
+extern orl_return       OmfAddExtDef( omf_file_handle ofh, const char *name, omf_string_len len, omf_rectyp typ );
 
 extern orl_return       OmfAddComDat( omf_file_handle ofh, bool is32, int flags,
                                       int attr, int align,
@@ -71,7 +69,7 @@ extern orl_return       OmfAddSegDef( omf_file_handle ofh, bool is32, orl_sec_al
 
 extern orl_return       OmfAddPubDef( omf_file_handle ofh, bool is32,
                                       omf_idx group, omf_idx seg,
-                                      omf_frame frame, char *buffer, omf_string_len len,
+                                      omf_frame frame, const char *buffer, omf_string_len len,
                                       omf_sec_offset offset, omf_rectyp typ );
 
 extern orl_return       OmfAddGrpDef( omf_file_handle ofh, omf_idx name, omf_idx *segs, unsigned num_segs );

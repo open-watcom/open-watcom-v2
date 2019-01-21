@@ -33,7 +33,7 @@
 #include "cg.h"
 #include "cgdefs.h"
 #include "cgswitch.h"
-#include "standard.h"
+#include "cgstd.h"
 #include "cgaux.h"
 #include "langenv.h"
 #include "cgprotos.h"
@@ -969,6 +969,16 @@ void SegInit( void )
     userSegment = FIRST_USER_SEGMENT;
     for( segid = 0; segid < FIRST_PRIVATE_SEGMENT; segid++ ) {
         SegAlignment[segid] = TARGET_INT;
+    }
+}
+
+void SegFini( void )
+{
+    user_seg    *useg;
+
+    while( (useg = userSegments) != NULL ) {
+        userSegments = useg->next;
+        CMemFree( useg );
     }
 }
 

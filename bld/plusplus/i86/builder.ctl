@@ -11,8 +11,8 @@ set PROJDIR=<CWD>
 
 [ INCLUDE <OWROOT>/build/defrule.ctl ]
 
-[ BLOCK <1> rel ]
-#================
+[ BLOCK <BLDRULE> rel ]
+#======================
     cdsay <PROJDIR>
 
 [ BLOCK <BINTOOL> build ]
@@ -27,8 +27,8 @@ set PROJDIR=<CWD>
     rm -f <OWBINDIR>/bwpp<CMDEXT>
     rm -f <OWBINDIR>/bwppdi86<DYEXT>
 
-[ BLOCK <1> rel cprel ]
-#======================
+[ BLOCK <BLDRULE> rel cprel ]
+#============================
     <CCCMD> dos386/wpp.exe          <OWRELROOT>/binw/
     <CCCMD> dos386/wpp.sym          <OWRELROOT>/binw/
     <CCCMD> dos386/wppi8601.int     <OWRELROOT>/binw/
@@ -61,6 +61,8 @@ set PROJDIR=<CWD>
     <CCCMD> linuxx64/wppi8601.int   <OWRELROOT>/binl64/
     <CCCMD> linuxarm/wpp.exe        <OWRELROOT>/arml/wpp
     <CCCMD> linuxarm/wppi8601.int   <OWRELROOT>/arml/
+    <CCCMD> osxx64/wpp.exe          <OWRELROOT>/osx64/wpp
+    <CCCMD> osxx64/wppi8601.int     <OWRELROOT>/osx64/
 
 [ BLOCK . . ]
 

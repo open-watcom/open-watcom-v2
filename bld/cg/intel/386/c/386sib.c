@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2016 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -30,7 +30,7 @@
 ****************************************************************************/
 
 
-#include "cgstd.h"
+#include "_cgstd.h"
 #include "coderep.h"
 #include "cgmem.h"
 #include "data.h"
@@ -39,9 +39,8 @@
 #include "namelist.h"
 #include "rgtbl.h"
 #include "sib.h"
+#include "fixindex.h"
 
-
-extern  void            ReplaceOperand( instruction *, name *, name * );
 
 typedef struct sib_info {
     struct sib_info     *next;
@@ -217,7 +216,7 @@ bool FoldIntoIndex( instruction *ins )
         for( curr_sib = sib_head; curr_sib != NULL; curr_sib = curr_sib->next ) {
             new_x = ScaleIndex( curr_sib->reg, curr_sib->index->i.base,
                                 curr_sib->index->i.constant + curr_sib->offset,
-                                curr_sib->index->n.name_class,
+                                curr_sib->index->n.type_class,
                                 curr_sib->index->n.size, curr_sib->scale,
                                 curr_sib->flags );
             ReplaceOperand( curr_sib->ins, curr_sib->index, new_x );

@@ -70,7 +70,8 @@ unsigned        PPPutOffset( link_packet *pkt, unsigned new_point )
     unsigned    old;
 
     old = pkt->buff->len;
-    if( new_point != 0 ) pkt->buff->len = new_point;
+    if( new_point != 0 )
+        pkt->buff->len = new_point;
     return( old );
 }
 
@@ -105,6 +106,7 @@ unsigned        PPPutString( link_packet *pkt, unsigned header, const void *stri
                 /* nothing to do */
             }
             len = (unsigned_8 *)p - (unsigned_8 *)string;
+            break;
         default:
             len = strlen( string );
             break;
@@ -113,11 +115,11 @@ unsigned        PPPutString( link_packet *pkt, unsigned header, const void *stri
     }
     new = PPPutU16LO( pkt, header );
     if( len > 0 ) {
-        #ifdef PKT_BIG_ENDIAN
-            #error Unicode on big endian system not supported yet
-        #else
-            PPPutData( pkt, MKALIGNSIZE( 1, len ), string );
-        #endif
+#ifdef PKT_BIG_ENDIAN
+        #error Unicode on big endian system not supported yet
+#else
+        PPPutData( pkt, MKALIGNSIZE( 1, len ), string );
+#endif
     }
     return( new );
 }
@@ -153,7 +155,8 @@ unsigned        PPGetOffset( link_packet *pkt, unsigned new_point )
     unsigned    old;
 
     old = pkt->curr;
-    if( new_point != 0 ) pkt->curr = new_point;
+    if( new_point != 0 )
+        pkt->curr = new_point;
     return( old );
 }
 
@@ -194,11 +197,11 @@ unsigned        PPGetString( link_packet *pkt, void *buff )
     header = PPGetU16LO( pkt );
     len = PS_SIZEGET( header );
     if( buff != NULL ) {
-        #ifdef PKT_BIG_ENDIAN
-            #error Unicode not supported on big endian machines yet
-        #else
-            memcpy( buff, &pkt->buff->data[pkt->curr], len );
-        #endif
+#ifdef PKT_BIG_ENDIAN
+        #error Unicode not supported on big endian machines yet
+#else
+        memcpy( buff, &pkt->buff->data[pkt->curr], len );
+#endif
         end = (unsigned_8 *)buff + len;
         switch( PS_ENCODEGET( header ) ) {
         case PCE_UNICODE:

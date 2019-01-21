@@ -947,7 +947,7 @@ static void check_need_32bit( obj_rec *objr ) {
 
     struct fixup        *fix;
 
-    fix = objr->d.fixup.fixup;
+    fix = objr->d.fixupp.fixup;
     for( ;; ) {
         if( fix == NULL )
             break;
@@ -994,21 +994,21 @@ static void write_ledata( void )
             get_fixup_list( CurrSeg->seg->e.seginfo->start_loc, &fl16, &fl32 );
             /* Process Fixup, if any */
             if( fl16 != NULL ) {
-                objr = ObjNewRec( CMD_FIXUP );
+                objr = ObjNewRec( CMD_FIXUPP );
                 objr->is_32 = 0;
-                objr->d.fixup.fixup = fl16;
+                objr->d.fixupp.fixup = fl16;
                 write_record( objr, true );
             }
             if( fl32 != NULL ) {
-                objr = ObjNewRec( CMD_FIXUP );
+                objr = ObjNewRec( CMD_FIXUPP );
                 objr->is_32 = 1;
-                objr->d.fixup.fixup = fl32;
+                objr->d.fixupp.fixup = fl32;
                 write_record( objr, true );
             }
 #else
             get_fixup_list( CurrSeg->seg->e.seginfo->start_loc, &fl );
-            objr = ObjNewRec( CMD_FIXUP );
-            objr->d.fixup.fixup = FixupListHead;
+            objr = ObjNewRec( CMD_FIXUPP );
+            objr->d.fixupp.fixup = FixupListHead;
             check_need_32bit( objr );
             write_record( objr, true );
 #endif
@@ -1190,9 +1190,7 @@ static unsigned long OnePass( char *string )
     IfCondInit();
     ProcStackInit();
 
-    for(;;) {
-        if( ScanLine( string, MAX_LINE_LEN ) == NULL )
-            break; // EOF
+    while( ScanLine( string, MAX_LINE_LEN ) ) {
         AsmLine( string );
         if( EndDirectiveFound ) {
             break;
@@ -1226,9 +1224,7 @@ void WriteObjModule( void )
     prev_total = OnePass( string );
     if( EndDirectiveFound ) {
         if( !Options.stop_at_end ) {
-            for( ;; ) {
-                if( ScanLine( string, MAX_LINE_LEN ) == NULL )
-                    break;
+            while( ScanLine( string, MAX_LINE_LEN ) ) {
                 p = string;
                 while( isspace( *p ) )
                     ++p;
@@ -1273,7 +1269,7 @@ void WriteObjModule( void )
 #endif
         curr_total = OnePass( string );
         // remove all remaining lines and deallocate corresponding memory
-        while( ScanLine( string, MAX_LINE_LEN ) != NULL ) {
+        while( ScanLine( string, MAX_LINE_LEN ) ) {
         }
         while( PopLineQueue() ) {
         }

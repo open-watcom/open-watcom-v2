@@ -190,8 +190,8 @@ static int CountMenus( gui_menu_struct *menu )
         return( 0 );
     }
     num_items = 1;
-    for( item = 0; item < menu->child_num_items; item++ ) {
-        num_items += CountMenus( &menu->child[item] );
+    for( item = 0; item < menu->child.num_items; item++ ) {
+        num_items += CountMenus( &menu->child.menu[item] );
     }
     return( num_items );
 }
@@ -203,8 +203,8 @@ static void InsertHint( gui_menu_struct *menu, gui_hint_struct *hint, int *index
     hint[*index].id = menu->id;
     hint[*index].hinttext = menu->hinttext;
     (*index)++;
-    for( item = 0; item < menu->child_num_items; item++ ) {
-        InsertHint( &menu->child[item], hint, index );
+    for( item = 0; item < menu->child.num_items; item++ ) {
+        InsertHint( &menu->child.menu[item], hint, index );
     }
 }
 
@@ -259,6 +259,22 @@ void GUIInitHint( gui_window *wnd, int num_items, gui_menu_struct *menu, hint_ty
     }
 }
 
+void GUIFiniHint( gui_window *wnd, hint_type type )
+{
+    gui_hint_struct     *hint_struct;
+    int                 hint_num_items;
+
+    if( type == TOOL_HINT ) {
+        return;
+    }
+    if( GetStructNum( &wnd->hint, type, &hint_struct, &hint_num_items ) ) {
+        if( hint_struct != NULL ) {
+            GUIMemFree( hint_struct );
+        }
+        SetStructNum( &wnd->hint, type, NULL, 0 );
+    }
+}
+
 void GUIInitToolbarHint( gui_window *wnd, int num_items, gui_toolbar_struct *toolinfo )
 {
     int                 item;
@@ -289,6 +305,6 @@ void GUIFreeHint( gui_window *wnd )
     hint_type   type;
 
     for( type = FIRST_HINT; type <= LAST_HINT; type++ ) {
-        GUIInitHint( wnd, 0, NULL, type );
+        GUIFiniHint( wnd, type );
     }
 }

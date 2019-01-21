@@ -12,6 +12,10 @@
     #define YYPARSER DialogParser
 
     extern Dialog *     CurrDialog;
+
+    #define xtokens tokens_dlg
+    #define xtokcnt tokcnt_dlg
+    #define xfind   find_action_dlg
 %}
 
 %token T_String
@@ -107,6 +111,10 @@ dialog_line
         | T_Ident T_Dialog dialog_header_list T_Number ',' T_Number ',' T_Number ',' T_Number
           { 
             assert( CurrDialog == NULL );
+
+            if( CurrDialog != NULL ) {
+                delete CurrDialog;
+            }
             CurrDialog = new Dialog( _scanner->getIdent( $1 ), Rect( $4, $6, $8, $10 ) );
           }
         ;
@@ -206,3 +214,34 @@ rectangle
 
 %%
 
+const TokenStruct xtokens[] = {
+    { "BEGIN",          T_Begin },
+    { "CAPTION",        T_Caption },
+    { "CHECKBOX",       T_CheckBox },
+    { "COMBOBOX",       T_ComboBox },
+    { "CONTROL",        T_Control },
+    { "CTEXT",          T_CText },
+    { "DEFPUSHBUTTON",  T_DefPushButton },
+    { "DIALOG",         T_Dialog },
+    { "DISCARDABLE",    T_Discardable },
+    { "DLGINCLUDE",     T_DialogInclude },
+    { "EDITTEXT",       T_EditText },
+    { "END",            T_End },
+    { "FIXED",          T_Fixed },
+    { "FONT",           T_Font },
+    { "GROUPBOX",       T_GroupBox },
+    { "ICON",           T_Icon },
+    { "IMPURE",         T_Impure },
+    { "LISTBOX",        T_ListBox },
+    { "LTEXT",          T_LText },
+    { "MOVEABLE",       T_Moveable },
+    { "PRELOAD",        T_Preload },
+    { "PUSHBUTTON",     T_PushButton },
+    { "RADIOBUTTON",    T_RadioButton },
+    { "RCDATA",         T_RCData },
+    { "RTEXT",          T_RText },
+    { "SCROLLBAR",      T_ScrollBar },
+    { "STYLE",          T_Style },
+};
+
+const int   xtokcnt = sizeof( xtokens ) / sizeof( xtokens[0] );

@@ -30,13 +30,13 @@
 ****************************************************************************/
 
 
-#include "cgstd.h"
+#include "_cgstd.h"
 #include "coderep.h"
 #include "zoiks.h"
 #include "tree.h"
 #include "cfloat.h"
 #include "data.h"
-#include "x87.h"
+#include "fpu.h"
 #include "makeins.h"
 #include "foldins.h"
 #include "utils.h"
@@ -55,6 +55,9 @@
 #include "treefold.h"
 #include "fixindex.h"
 #include "generate.h"
+#include "flograph.h"
+#include "cse.h"
+#include "varusage.h"
 #include "feprotos.h"
 
 
@@ -77,15 +80,6 @@ typedef enum {
         OP_DIES,
         RESULT_DIES
 } who_dies;
-
-extern float_handle     CnvCFToType(float_handle,type_def*);
-extern void             MakeFlowGraph(void);
-extern void             FindReferences(void);
-
-/* forward declarations */
-static void             TreeBits( block *root );
-static void             DeleteFromList( instruction **owner, instruction *ins, instruction *new );
-static void             CleanTableEntries( block *root );
 
 static instruction      *ExprHeads[LAST_CSE_OP + 1];
 static bool             LeaveIndVars;
@@ -258,8 +252,8 @@ static  bool    StretchEdges( void )
 }
 
 
-extern  bool    PropRegsOne( void )
-/*********************************/
+bool    PropRegsOne( void )
+/*************************/
 /*
  * We can't propagate registers very far, but one instruction is safe.
  * This is specially for the case when we have a(b(x)). We'll generate
@@ -320,6 +314,63 @@ extern  bool    PropRegsOne( void )
 }
 
 
+static  void    TreeBits( block *root )
+/**************************************
+    Label the partition (tree) with bits such that block A is the
+    ancestor of block B IFF _BLKBITS(A) & _BLKBITS(B) == _BLKBITS(A).
+    Simply speaking, we add a new bit for every node in the tree.  A
+    child node gets its parents bit set plus one new one for itself.
+    This allows for simple ancestor, sibling, first common ancestor
+    checking.
+*/
+{
+    block       *daddy;
+    a_bit_set   next_bit;
+    bool        change;
+    block       *blk;
+    instruction *ins;
+    block       **owner;
+
+    next_bit = 1;
+    _BLKBITS( root ) = next_bit;
+    do {
+        change = false;
+        for( blk = root->u.partition; blk != root; blk = blk->u.partition ) {
+            daddy = blk->input_edges->source;
+            if( _BLKBITS( blk ) == 0 && _BLKBITS( daddy ) ) {
+                next_bit <<= 1;
+                if( next_bit == 0 )
+                    break;
+                _BLKBITS( blk ) = _BLKBITS( daddy ) | next_bit;
+                change = true;
+            }
+        }
+        if( next_bit == 0 ) {
+            break;
+        }
+    } while( change );
+
+    /* rip off any blocks in the partition without bits*/
+    /* and propagate the bits through the instructions*/
+
+    owner = &root->u.partition;
+    for( ;; ) {
+        blk = *owner;
+        for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
+            _INSBITS( ins ) = _BLKBITS( blk );
+        }
+        if( _BLKBITS( blk ) == EMPTY ) {
+            *owner = blk->u.partition;
+        } else {
+            owner = &blk->u.partition;
+        }
+        if( blk == root ) {
+            break;
+        }
+    }
+}
+
+
 static  void    FindPartition( void )
 /************************************
     Partition the flow graph into trees, with root indicated by
@@ -363,65 +414,8 @@ static  void    FindPartition( void )
 }
 
 
-static  void    TreeBits( block *root )
-/**************************************
-    Label the partition (tree) with bits such that block A is the
-    ancestor of block B IFF _BLKBITS(A) & _BLKBITS(B) == _BLKBITS(A).
-    Simply speaking, we add a new bit for every node in the tree.  A
-    child node gets its parents bit set plus one new one for itself.
-    This allows for simple ancestor, sibling, first common ancestor
-    checking.
-*/
-{
-    block       *daddy;
-    a_bit_set   next_bit;
-    bool        change;
-    block       *blk;
-    instruction *ins;
-    block       **owner;
-
-    next_bit = 1;
-    _BLKBITS( root ) = next_bit;
-    for( change = true; change; ) {
-        change = false;
-        for( blk = root->u.partition; blk != root; blk = blk->u.partition ) {
-            daddy = blk->input_edges->source;
-            if( _BLKBITS( blk ) == 0 && _BLKBITS( daddy ) ) {
-                next_bit <<= 1;
-                if( next_bit == 0 )
-                    break;
-                _BLKBITS( blk ) = _BLKBITS( daddy ) | next_bit;
-                change = true;
-            }
-        }
-        if( next_bit == 0 ) {
-            break;
-        }
-    }
-
-    /* rip off any blocks in the partition without bits*/
-    /* and propagate the bits through the instructions*/
-
-    owner = &root->u.partition;
-    for( ;; ) {
-        blk = *owner;
-        for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
-            _INSBITS( ins ) = _BLKBITS( blk );
-        }
-        if( _BLKBITS( blk ) == EMPTY ) {
-            *owner = blk->u.partition;
-        } else {
-            owner = &blk->u.partition;
-        }
-        if( blk == root ) {
-            break;
-        }
-    }
-}
-
-
-extern  void    SetCSEBits( instruction *ins, instruction *new_ins )
-/*******************************************************************
+void    SetCSEBits( instruction *ins, instruction *new_ins )
+/***********************************************************
     set the ancestor bits of "new_ins" to be the same as "ins".
 */
 {
@@ -473,10 +467,8 @@ static  instruction *WhichIsAncestor( instruction *ins1, instruction *ins2 )
         first = ins2;
     } else { /* find a hoist point*/
         bits1 &= bits2;
-        for( ins = ins1; ins->head.opcode != OP_BLOCK; ) {
-            ins = ins->head.next;
-        }
-        for( blk = _BLOCK( ins ); _BLKBITS( blk ) != bits1; ) {
+        blk = InsBlock( ins1 );
+        while( _BLKBITS( blk ) != bits1 ) {
             blk = blk->u.partition;
         }
         for( first = blk->ins.hd.prev; first->head.opcode == OP_NOP; first = first->head.prev ) {
@@ -509,9 +501,8 @@ static  void    CleanPartition( void )
 }
 
 
-static  bool    CanCrossBlocks( instruction *ins1,
-                                instruction *ins2, name *op )
-/************************************************************
+static bool CanCrossBlocks( instruction *ins1, instruction *ins2, name *op )
+/***************************************************************************
     If we're generating a partial routine, we cannot cause an
     existing N_TEMP to cross blocks, due to an assumption
     in ForceTempsMemory.
@@ -539,7 +530,7 @@ static  void    UseInOther( instruction *ins1, instruction *ins2, name *op )
     if( _INSBITS( ins1 ) != _INSBITS( ins2 ) ) {
         if( op->n.class == N_MEMORY ) {
             op->v.usage |= USE_IN_ANOTHER_BLOCK;
-        } else if ( op->n.class == N_TEMP ) {
+        } else if( op->n.class == N_TEMP ) {
             op->t.temp_flags |= CROSSES_BLOCKS;
         }
     }
@@ -624,20 +615,13 @@ static  bool            HoistLooksGood( instruction *target, instruction *orig )
     out of a switch statement.
 */
 {
-    instruction         *ins;
     block               *target_blk;
     block               *blk;
 
     if( OptForSize > 50 )
         return( true );
-    for( ins = target; ins->head.opcode != OP_BLOCK; ) {
-        ins = ins->head.next;
-    }
-    target_blk = _BLOCK( ins );
-    for( ins = orig; ins->head.opcode != OP_BLOCK; ) {
-        ins = ins->head.next;
-    }
-    blk = _BLOCK( ins );
+    target_blk = InsBlock( target );
+    blk = InsBlock( orig );
     if( blk == target_blk )
         return( true );
     while( blk != NULL ) {
@@ -672,7 +656,7 @@ static  instruction     *ProcessExpr( instruction *ins1, instruction *ins2, bool
     instruction         *new_ins;
     instruction         *dead_or_new_ins;
     name                *temp;
-    type_class_def      class;
+    type_class_def      type_class;
     who_dies            killed;
     opcnt               i;
 
@@ -708,16 +692,16 @@ static  instruction     *ProcessExpr( instruction *ins1, instruction *ins2, bool
         if( (ins1->ins_flags & INS_DEFINES_OWN_OPERAND) == 0 ) {
             killed = BinOpsLiveFrom( ins1, ins2, ins1->operands[0], ins1->operands[i], ins1->result );
             if( killed != OP_DIES ) {
-                class = ins1->result->n.name_class;
+                type_class = ins1->result->n.type_class;
                 if( killed == RESULT_DIES || !CanCrossBlocks( ins1, ins2, ins1->result ) ) {
-                    temp = AllocTemp( class );
-                    new_ins = MakeMove( temp, ins1->result, class );
+                    temp = AllocTemp( type_class );
+                    new_ins = MakeMove( temp, ins1->result, type_class );
                     ins1->result = temp;
                     SuffixIns( ins1, new_ins );
                     SetCSEBits( ins1, new_ins );
                     FPNotStack( temp );
                 }
-                new_ins = MakeMove( ins1->result, ins2->result, class );
+                new_ins = MakeMove( ins1->result, ins2->result, type_class );
                 UseInOther( ins1, ins2, ins1->result );
                 dead_or_new_ins = ins2;
                 SetCSEBits( ins2, new_ins );
@@ -733,22 +717,22 @@ static  instruction     *ProcessExpr( instruction *ins1, instruction *ins2, bool
           && BinOpsLiveFrom( first->head.next, ins2, ins2->operands[0], ins2->operands[i], NULL ) == ALL_LIVE
           && HoistLooksGood( first, ins1 )
           && HoistLooksGood( first, ins2 ) ) {
-            class = ins1->type_class;
-            temp = AllocTemp( class );
+            type_class = ins1->type_class;
+            temp = AllocTemp( type_class );
             temp->t.temp_flags |= CROSSES_BLOCKS;
             if( _OpIsBinary( ins1->head.opcode ) ) {
-                new_ins = MakeBinary( ins1->head.opcode, ins1->operands[0], ins1->operands[1], temp, class );
+                new_ins = MakeBinary( ins1->head.opcode, ins1->operands[0], ins1->operands[1], temp, type_class );
             } else {
-                new_ins = MakeUnary( ins1->head.opcode, ins1->operands[0], temp, class );
+                new_ins = MakeUnary( ins1->head.opcode, ins1->operands[0], temp, type_class );
             }
             new_ins->base_type_class = ins1->base_type_class;
             dead_or_new_ins = new_ins;
             SetCSEBits( first, new_ins );
             SuffixIns( first, new_ins );
-            new_ins = MakeMove( temp, ins1->result, class );
+            new_ins = MakeMove( temp, ins1->result, type_class );
             SetCSEBits( ins1, new_ins );
             SuffixIns( ins1, new_ins );
-            new_ins = MakeMove( temp, ins2->result, class );
+            new_ins = MakeMove( temp, ins2->result, type_class );
             SetCSEBits( ins2, new_ins );
             SuffixIns( ins2, new_ins );
         }
@@ -799,7 +783,7 @@ static  bool    ProcessDivide( instruction *ins1, instruction *ins2 )
 
     if( ins1->type_class != ins2->type_class )
         return( false );
-    if( !DivIsADog( ins1->type_class ) )
+    if( !FPDivIsADog( ins1->type_class ) )
         return( false );
     if( ins1->operands[1] != ins2->operands[1] )
         return( false );
@@ -831,6 +815,19 @@ static  bool    ProcessDivide( instruction *ins1, instruction *ins2 )
         }
     }
     return( false );
+}
+
+
+static  void    DeleteFromList( instruction **owner,
+                                instruction *ins, instruction *new )
+/*******************************************************************
+    pull an instruction of a "like" opcode list.
+*/
+{
+    while( *owner != ins ) {
+        owner = &_INSLINK( *owner );
+    }
+    *owner = new;
 }
 
 static  bool    DoOneOpcode( opcode_defs opcode )
@@ -930,6 +927,27 @@ static  bool    DoDivides( void )
 }
 
 
+static  void    CleanTableEntries( block *root )
+/***********************************************
+    Clean up the _INSLINK and _PARTITION fields in partition "root"
+*/
+{
+    instruction *ins;
+    block       *blk;
+
+    blk = root;
+    for( ;; ) {
+        for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
+            _INSLINK( ins ) = NULL;
+        }
+        blk = blk->u.partition;
+        if( blk == root ) {
+            break;
+        }
+    }
+}
+
+
 static  bool    DoArithOps( block *root )
 /****************************************
     Given a partition whose root is "root", do common subexpressions and
@@ -1007,19 +1025,6 @@ static  bool    PropagateExprs( void )
         }
     }
     return( change );
-}
-
-
-static  void    DeleteFromList( instruction **owner,
-                                instruction *ins, instruction *new )
-/*******************************************************************
-    pull an instruction of a "like" opcode list.
-*/
-{
-    while( *owner != ins ) {
-        owner = &_INSLINK( *owner );
-    }
-    *owner = new;
 }
 
 
@@ -1311,27 +1316,6 @@ static  void    CleanMoves( block *root )
 }
 
 
-static  void    CleanTableEntries( block *root )
-/***********************************************
-    Clean up the _INSLINK and _PARTITION fields in partition "root"
-*/
-{
-    instruction *ins;
-    block       *blk;
-
-    blk = root;
-    for( ;; ) {
-        for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
-            _INSLINK( ins ) = NULL;
-        }
-        blk = blk->u.partition;
-        if( blk == root ) {
-            break;
-        }
-    }
-}
-
-
 static  bool    PropOpnd( instruction *ins, name **op,
                           instruction *definition, bool backward,
                           bool is_opnd )
@@ -1378,12 +1362,12 @@ static  bool    PropOpnd( instruction *ins, name **op,
                     }
                 } else if( opnd->n.class == N_INDEXED && definition->result->n.class == N_TEMP ) {
                     if( defop->n.class == N_TEMP
-                          && defop->n.name_class==opnd->i.index->n.name_class
+                          && defop->n.type_class==opnd->i.index->n.type_class
                           && CanCrossBlocks( definition, ins, defop ) ) {
                         UseInOther( definition, ins, defop );
                         *op = ScaleIndex( defop, opnd->i.base,
                                         opnd->i.constant,
-                                        opnd->n.name_class, opnd->n.size,
+                                        opnd->n.type_class, opnd->n.size,
                                         opnd->i.scale, opnd->i.index_flags );
                         change = true;
                     } else if( defop->n.class == N_CONSTANT
@@ -1419,14 +1403,14 @@ static  bool    PropOpnd( instruction *ins, name **op,
                             case N_TEMP:
                                 *op = STempOffset( base,
                                                 disp,
-                                                opnd->n.name_class,
+                                                opnd->n.type_class,
                                                 opnd->n.size );
                                 break;
                             case N_MEMORY:
                                 *op = (name *)SAllocMemory( base->v.symbol,
                                             base->v.offset + disp,
                                             base->m.memory_type,
-                                            opnd->n.name_class,
+                                            opnd->n.type_class,
                                             opnd->n.size );
                                 break;
                             default:
@@ -1566,8 +1550,8 @@ static  bool    DoPropagateMoves( void )
     return( change );
 }
 
-extern  bool    PropagateMoves( void )
-/*************************************
+bool    PropagateMoves( void )
+/*****************************
     Do copy propagation.
 */
 {
@@ -1583,7 +1567,7 @@ extern  bool    PropagateMoves( void )
 }
 
 
-extern  bool    CommonSex( bool leave_indvars_alone )
+bool    CommonSex( bool leave_indvars_alone )
 /****************************************************
     Do COMMON SubEXpression and related optimizations.
 */

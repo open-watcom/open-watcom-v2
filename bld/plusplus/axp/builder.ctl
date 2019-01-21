@@ -11,8 +11,8 @@ set PROJDIR=<CWD>
 
 [ INCLUDE <OWROOT>/build/defrule.ctl ]
 
-[ BLOCK <1> rel ]
-#================
+[ BLOCK <BLDRULE> rel ]
+#======================
     cdsay <PROJDIR>
 
 [ BLOCK <BINTOOL> build ]
@@ -27,8 +27,8 @@ set PROJDIR=<CWD>
     rm -f <OWBINDIR>/bwppaxp<CMDEXT>
     rm -f <OWBINDIR>/bwppdaxp<DYEXT>
 
-[ BLOCK <1> rel cprel ]
-#======================
+[ BLOCK <BLDRULE> rel cprel ]
+#============================
     <CCCMD> dos386/wppaxp.exe       <OWRELROOT>/binw/
     <CCCMD> dos386/wppaxp.sym       <OWRELROOT>/binw/
     <CCCMD> dos386/wppaxp01.int     <OWRELROOT>/binw/
@@ -58,6 +58,8 @@ set PROJDIR=<CWD>
     <CCCMD> linuxx64/wppaxp01.int   <OWRELROOT>/binl64/
     <CCCMD> linuxarm/wppaxp.exe     <OWRELROOT>/arml/wppaxp
     <CCCMD> linuxarm/wppaxp01.int   <OWRELROOT>/arml/
+    <CCCMD> osxx64/wppaxp.exe       <OWRELROOT>/osx64/wppaxp
+    <CCCMD> osxx64/wppaxp01.int     <OWRELROOT>/osx64/
 
 [ BLOCK . . ]
 

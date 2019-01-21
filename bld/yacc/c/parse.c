@@ -41,6 +41,9 @@
 
 #define INIT_RHS_SIZE       16
 
+#define TYPENAME_FIRST_CHAR(x) (isalpha(x)||x=='_')
+#define TYPENAME_NEXT_CHAR(x) (isalpha(x)||isdigit(x)||x=='_'||x=='.')
+
 typedef enum {
     /* ASCII_MIN = 0x0000 */
     /* ASCII_MAX = 0x00FF */
@@ -65,809 +68,214 @@ typedef enum {
 } a_token;
 
 typedef struct y_token {
-    struct y_token  *next;
-    token_n         value;
-    char            name[1];
+    struct y_token      *next;
+    token_n             value;
+    char                name[1];
 } y_token;
 
-static void                 copycurl( void );
-static void                 copyUniqueActions( void );
-static void                 copyact( rule_n, a_sym *, a_sym **, unsigned, unsigned );
-static void                 lineinfo( void );
-static a_token              scan( unsigned used );
-static void                 need( char *pat );
-static int                  eatcrud( void );
-static int                  nextc( void );
-static int                  lastc( void );
-static void                 addbuf( int ch );
-static char                 *dupbuf( void );
+typedef struct xlat_entry {
+    int                 c;
+    char                *x;
+} xlat_entry;
 
-int lineno = { 1 };
+typedef struct rule_case {
+    struct rule_case    *next;
+    a_sym               *lhs;
+    rule_n              pnum;
+} rule_case;
 
-static unsigned             bufused;
-static unsigned             bufmax;
-static char                 *buf = { NULL };
+typedef struct uniq_case {
+    struct uniq_case    *next;
+    char                *action;
+    rule_case           *rules;
+} uniq_case;
 
-static int                  ch = { ' ' };
-static a_token              token;
-static int                  value;
+a_SR_conflict           *ambiguousstates;
 
-typedef struct uniq_case    uniq_case;
-typedef struct rule_case    rule_case;
-struct rule_case {
-    rule_case   *next;
-    a_sym       *lhs;
-    rule_n      pnum;
+int                     lineno = { 1 };
+
+static unsigned         bufused;
+static unsigned         bufmax;
+static char             *buf = { NULL };
+
+static int              ch = { ' ' };
+static a_token          token;
+static tok_value        value;
+
+static unsigned long    actionsCombined;
+static uniq_case        *caseActions;
+
+static y_token          *tokens_head = NULL;
+static y_token          *tokens_tail = NULL;
+
+static char             *union_name = NULL;
+
+static xlat_entry       xlat[] = {
+    { '~',      "TILDE" },
+    { '`',      "BACKQUOTE" },
+    { '!',      "EXCLAMATION" },
+    { '@',      "AT" },
+    { '#',      "SHARP" },
+    { '$',      "DOLLAR" },
+    { '%',      "PERCENT" },
+    { '^',      "XOR" },
+    { '&',      "AND" },
+    { '*',      "TIMES" },
+    { '(',      "LPAREN" },
+    { ')',      "RPAREN" },
+    { '-',      "MINUS" },
+    { '+',      "PLUS" },
+    { '=',      "EQUAL" },
+    { '[',      "LSQUARE" },
+    { ']',      "RSQUARE" },
+    { '{',      "LBRACE" },
+    { '}',      "RBRACE" },
+    { '\\',     "BACKSLASH" },
+    { '|',      "OR" },
+    { ':',      "COLON" },
+    { ';',      "SEMICOLON" },
+    { '\'',     "QUOTE" },
+    { '"',      "DQUOTE" },
+    { '<',      "LT" },
+    { '>',      "GT" },
+    { '.',      "DOT" },
+    { ',',      "COMMA" },
+    { '/',      "DIVIDE" },
+    { '?',      "QUESTION" },
+    { '\0',     NULL }
 };
-struct uniq_case {
-    uniq_case   *next;
-    char        *action;
-    rule_case   *rules;
-};
 
-static unsigned long        actionsCombined;
-static uniq_case            *caseActions;
-
-a_SR_conflict               *ambiguousstates;
-
-#define TYPENAME_FIRST_CHAR(x) (isalpha(x)||x=='_')
-#define TYPENAME_NEXT_CHAR(x) (isalpha(x)||isdigit(x)||x=='_'||x=='.')
-
-static y_token  *tokens_head = NULL;
-static y_token  *tokens_tail = NULL;
-
-static a_token scan_typename( unsigned used )
+static void addbuf( int c )
 {
-    bufused = used;
-    if( TYPENAME_FIRST_CHAR( ch ) ) {
-        do {
-            addbuf( ch );
+    if( bufused == bufmax ) {
+        bufmax += BUF_INCR;
+        if( buf != NULL ) {
+            buf = REALLOC( buf, bufmax, char );
+        } else {
+            buf = MALLOC( bufmax, char );
+        }
+    }
+    buf[bufused++] = (char)c;
+}
+
+static void addstr( char *p )
+{
+    while( *p != '\0' ) {
+        addbuf( *(unsigned char *)p );
+        ++p;
+    }
+}
+
+static int nextc( void )
+{
+    if( (ch = fgetc( yaccin )) == '\r' ) {
+        ch = fgetc( yaccin );
+    }
+    if( ch == '\n' ) {
+        ++lineno;
+    }
+    return( ch );
+}
+
+static bool xlat_char( bool special, int c )
+{
+    xlat_entry  *t;
+    char        buff[16];
+
+    if( isalpha( c ) || isdigit( c ) || c == '_' ) {
+        if( special ) {
+            addbuf( '_' );
+        }
+        addbuf( c );
+        return( false );
+    }
+    /* NYI: add %translate 'c' XXXX in case user doesn't like our name */
+    addbuf( '_' );
+    for( t = xlat; t->x != NULL; ++t ) {
+        if( t->c == c ) {
+            addstr( t->x );
+            return( true );
+        }
+    }
+    warn( "'x' token contains unknown character '%c' (\\x%x)\n", c, c );
+    addbuf( 'X' );
+    sprintf( buff, "%x", c );
+    addstr( buff );
+    return( true );
+}
+
+static void xlat_token( void )
+{
+    bool special;
+
+    addbuf( 'Y' );
+    special = true;
+    for( ;; ) {
+        nextc();
+        if( ch == EOF || ch == '\n' ) {
+            msg( "invalid 'x' token" );
+            break;
+        }
+        if( ch == '\'' )
+            break;
+        if( ch == '\\' ) {
+            special = xlat_char( special, ch );
             nextc();
-        } while( TYPENAME_NEXT_CHAR( ch ) );
-        token = T_TYPENAME;
+        }
+        special = xlat_char( special, ch );
     }
     addbuf( '\0' );
-    value = 0;
-    return( token );
+    value.id = 0;
+    token = T_IDENTIFIER;
 }
 
-static char *get_typename( char *src )
+static int eatcrud( void )
 {
-    int             c;
+    int prev;
 
-    c = *(unsigned char *)src;
-    if( TYPENAME_FIRST_CHAR( c ) ) {
-        do {
-            c = *(unsigned char *)(++src);
-        } while( TYPENAME_NEXT_CHAR( c ) );
-    }
-    return( src );
-}
-
-static a_sym *make_sym( char *name, token_n tokval )
-{
-    a_sym *p;
-
-    p = addsym( name );
-    p->token = tokval;
-    return( p );
-}
-
-static a_SR_conflict *make_unique_ambiguity( a_sym *sym, unsigned index )
-{
-    a_SR_conflict   *am;
-
-    for( am = ambiguousstates; am != NULL; am = am->next ) {
-        if( am->id == index ) {
-            if( am->sym != sym ) {
-                msg( "ambiguity %u deals with %s, not %s.\n",
-                     index, am->sym->name, sym->name );
-                break;
-            }
-            return( am );
-        }
-    }
-    am = MALLOC( 1, a_SR_conflict );
-    am->next = ambiguousstates;
-    am->sym = sym;
-    am->id = index;
-    am->state = NULL;
-    am->shift = NULL;
-    am->thread = NULL;
-    am->reduce = 0;
-    ambiguousstates = am;
-    return( am );
-}
-
-static void tlist_remove( char *name )
-{
-    y_token *curr;
-    y_token *last;
-
-    last = NULL;
-    for( curr = tokens_head; curr != NULL; curr = curr->next ) {
-        if( strcmp( name, curr->name ) == 0 ) {
-            if( last == NULL ) {
-                tokens_head = curr->next;
-            } else {
-                last->next = curr->next;
-            }
-            if( curr->next == NULL ) {
-                tokens_tail = last;
-            }
-            FREE( curr );
+    for( ;; nextc() ) {
+        switch( ch ) {
+        case ' ':
+        case '\t':
+        case '\r':
+        case '\n':
+        case '\f':
             break;
-        }
-        last = curr;
-    }
-}
-
-static void tlist_add( char *name, token_n tokval )
-{
-    y_token *tmp;
-    y_token *curr;
-
-    for( curr = tokens_head; curr != NULL; curr = curr->next ) {
-        if( strcmp( name, curr->name ) == 0 ) {
-            curr->value = tokval;
-            return;
-        }
-    }
-    tmp = (y_token *)MALLOC( strlen( name ) + sizeof( y_token ), char );
-    strcpy( tmp->name, name );
-    tmp->value = tokval;
-    tmp->next = NULL;
-    if( tokens_head == NULL ) {
-        tokens_head = tmp;
-    }
-    if( tokens_tail != NULL ) {
-        tokens_tail->next = tmp;
-    }
-    tokens_tail = tmp;
-}
-
-static void dump_header( char *union_name )
-{
-    const char  *fmt;
-    const char  *ttype;
-    y_token     *t;
-    y_token     *tmp;
-
-    if( fastflag || bigflag || compactflag ) {
-        ttype = "unsigned short";
-    } else {
-        ttype = "unsigned char";
-    }
-    if( enumflag ) {
-        fprintf( tokout, "typedef enum yytokentype {\n" );
-        fmt = "\t%-20s = 0x%02x,\n";
-    } else {
-        fmt = "#define %-20s 0x%02x\n";
-    }
-    t = tokens_head;
-    while( t != NULL ) {
-        fprintf( tokout, fmt, t->name, t->value );
-        tmp = t;
-        t = t->next;
-        FREE( tmp );
-    }
-    if( enumflag ) {
-        fprintf( tokout, "\tYTOKEN_ENUMSIZE_SETUP = (%s)-1\n", ttype );
-        fprintf( tokout, "} yytokentype;\n" );
-    } else {
-        fprintf( tokout, "typedef %s yytokentype;\n", ttype );
-    }
-    if( union_name != NULL ) {
-        fprintf( tokout, "#ifndef __YYSTYPE_DEFINED\n" );
-        fprintf( tokout, "#define __YYSTYPE_DEFINED\n" );
-        fprintf( tokout, "typedef union %s YYSTYPE;\n", union_name );
-        fprintf( tokout, "#endif\n" );
-        FREE( union_name );
-    }
-}
-
-void defs( void )
-{
-    token_n     gentoken;
-    a_sym       *sym;
-    int         ctype;
-    char        *type;
-    a_prec      prec;
-    char        *union_name = NULL;
-
-    eofsym = make_sym( "$eof", TOKEN_EOF );
-    nosym = make_sym( "$impossible", TOKEN_IMPOSSIBLE );
-    errsym = make_sym( "error", TOKEN_ERROR );
-    if( denseflag ) {
-        gentoken = TOKEN_DENSE_BASE;
-    } else {
-        gentoken = TOKEN_SPARSE_BASE;
-    }
-    scan( 0 );
-    prec.prec = 0;
-    prec.assoc = NON_ASSOC;
-    for( ; token != T_MARK; ) {
-        switch( token ) {
-        case T_START:
-            if( scan( 0 ) != T_IDENTIFIER )
-                msg( "Identifier needed after %%start.\n" );
-            startsym = addsym( buf );
-            scan( 0 );
-            break;
-        case T_UNION:
-            if( scan( 0 ) != '{' ) {
-                msg( "Need '{' after %%union.\n" );
+        case '/':
+            if( nextc() != '*' ) {
+                if( ch == '\n' ) {
+                    --lineno;
+                }
+                ungetc( ch, yaccin );
+                return( '/' );
             }
-            fprintf( actout, "#ifndef __YYSTYPE_DEFINED\n" );
-            fprintf( actout, "#define __YYSTYPE_DEFINED\n" );
-            fprintf( actout, "typedef union " );
-            lineinfo();
-            fprintf( actout, "%s YYSTYPE;\n", buf );
-            fprintf( actout, "#endif\n" );
-            if( union_name == NULL ) {
-                union_name = MALLOC( strlen( buf ) + 1, char );
-                strcpy( union_name, buf );
-            } else {
-                msg( "%union already defined\n" );
-            }
-            scan( 0 );
-            break;
-        case T_LCURL:
-            lineinfo();
-            copycurl();
-            scan( 0 );
-            break;
-        case T_KEYWORD_ID:
-            switch( scan( 0 ) ) {
-            case T_IDENTIFIER:
-                sym = addsym( buf );
-                if( sym->token == 0 ) {
-                    msg( "Token must be assigned number before %keyword_id\n" );
-                }
-                value = sym->token;
-                break;
-            case T_NUMBER:
-                break;
-            default:
-                msg( "Expecting identifier or number.\n" );
-            }
-            keyword_id_low = value;
-            switch( scan( 0 ) ) {
-            case T_IDENTIFIER:
-                sym = addsym( buf );
-                if( sym->token == 0 ) {
-                    msg( "Token must be assigned number before %keyword_id\n" );
-                }
-                value = sym->token;
-                break;
-            case T_NUMBER:
-                break;
-            default:
-                msg( "Expecting identifier or number.\n" );
-            }
-            keyword_id_high = value;
-            scan( 0 );
-            break;
-        case T_LEFT:
-        case T_RIGHT:
-        case T_NONASSOC:
-            ++prec.prec;
-            prec.assoc = value;
-            // pass through
-        case T_TOKEN:
-        case T_TYPE:
-            ctype = token;
-            if( scan( 0 ) == '<' ) {
-                if( scan_typename( 0 ) != T_TYPENAME ) {
-                    msg( "Expecting type specifier.\n" );
-                }
-                type = dupbuf();
-                if( scan( 0 ) != '>' ) {
-                    msg( "Expecting '>'.\n" );
-                }
-                scan( 0 );
-            } else {
-                type = NULL;
-            }
-            while( token == T_IDENTIFIER ) {
-                sym = addsym( buf );
-                if( type != NULL && sym->type != NULL ) {
-                    if( strcmp( sym->type, type ) != 0 ) {
-                        msg( "'%s' type redeclared from '%s' to '%s'\n",
-                            buf, sym->type, type );
-                    }
-                }
-                sym->type = type;
-                if( ctype == T_TYPE ) {
-                    scan( 0 );
-                } else {
-                    if( sym->token == 0 ) {
-                        sym->token = (token_n)value;
-                    }
-                    if( ctype != T_TOKEN ) {
-                        sym->prec = prec;
-                    }
-                    if( scan( 0 ) == T_NUMBER ) {
-                        if( sym->token != 0 ) {
-                            if( sym->name[0] != '\'' ) {
-                                tlist_remove( sym->name );
-                            }
-                        }
-                        sym->token = (token_n)value;
-                        scan( 0 );
-                    }
-                    if( sym->token == 0 ) {
-                        sym->token = gentoken++;
-                    }
-                    if( sym->name[0] != '\'' ) {
-                        tlist_add( sym->name, sym->token );
-                    }
-                }
-                if( token == ',' ) {
-                    scan( 0 );
+            for( prev = '\0'; nextc() != '/' || prev != '*'; prev = ch ) {
+                if( ch == EOF ) {
+                    return( ch );
                 }
             }
             break;
         default:
-            msg( "Incorrect syntax.\n" );
-        }
-    }
-    scan( 0 );
-    dump_header( union_name );
-}
-
-static bool scanambig( unsigned used, a_SR_conflict_list **list )
-{
-    bool                    absorbed_something;
-    unsigned                index;
-    a_sym                   *sym;
-    a_SR_conflict           *am;
-    a_SR_conflict_list      *en;
-
-    absorbed_something = false;
-    for( ; token == T_AMBIG; ) {
-        /* syntax is "%ambig <number> <token>" */
-        /* token has already been scanned by scanprec() */
-        if( scan( used ) != T_NUMBER || value < 0 ) {
-            msg( "Expecting a non-negative number after %ambig.\n" );
-            break;
-        }
-        index = value;
-        if( scan( used ) != T_IDENTIFIER ) {
-            msg( "Expecting a token name after %ambig <number>.\n" );
-            break;
-        }
-        sym = findsym( buf );
-        if( sym == NULL ) {
-            msg( "Unknown token specified in %ambig directive.\n" );
-            break;
-        }
-        if( sym->token == 0 ) {
-            msg( "Non-terminal specified in %ambig directive.\n" );
-            break;
-        }
-        scan( used );
-        absorbed_something = true;
-        am = make_unique_ambiguity( sym, index );
-        en = MALLOC( 1, a_SR_conflict_list );
-        en->next = *list;
-        en->thread = am->thread;
-        en->pro = NULL;
-        en->conflict = am;
-        am->thread = en;
-        *list = en;
-    }
-    return( absorbed_something );
-}
-
-static bool scanprec( unsigned used, a_sym **precsym )
-{
-    if( token != T_PREC )
-        return( false );
-    if( scan( used ) != T_IDENTIFIER || (*precsym = findsym( buf )) == NULL || (*precsym)->token == 0 ) {
-        msg( "Expecting a token after %prec.\n" );
-    }
-    scan( used );
-    return( true );
-}
-
-static void scanextra( unsigned used, a_sym **psym, a_SR_conflict_list **pSR )
-{
-    scan( used );
-    for( ;; ) {
-        if( !scanprec( used, psym ) && !scanambig( used, pSR ) ) {
-            break;
+            return( ch );
         }
     }
 }
 
-static char *type_name( char *type )
+static void need( char *pat )
 {
-    if( type == NULL ) {
-        return( "** no type **" );
-    }
-    return( type );
-}
-
-void rules( void )
-{
-    a_sym               *lhs, *sym, *precsym;
-    a_sym               **rhs;
-    unsigned            nrhs;
-    unsigned            maxrhs;
-    a_pro               *pro;
-    char                buffer[20];
-    unsigned            i;
-    int                 numacts;
-    bool                action_defined;
-    bool                unit_production;
-    bool                not_token;
-    a_SR_conflict_list  *list_of_ambiguities;
-    a_SR_conflict_list  *am;
-
-    ambiguousstates = NULL;
-    maxrhs = INIT_RHS_SIZE;
-    rhs = CALLOC( maxrhs, a_sym * );
-    while( token == T_CIDENTIFIER ) {
-        int sym_lineno = lineno;
-        lhs = addsym( buf );
-        if( lhs->token != 0 )
-            msg( "%s used on lhs.\n", lhs->name );
-        if( startsym == NULL )
-            startsym = lhs;
-        numacts = 0;
-        do {
-            action_defined = false;
-            precsym = NULL;
-            list_of_ambiguities = NULL;
-            nrhs = 0;
-            scanextra( 0, &precsym, &list_of_ambiguities );
-            for( ; token == '{' || token == T_IDENTIFIER; ) {
-                if( token == '{' ) {
-                    i = bufused;
-                    scanextra( bufused, &precsym, &list_of_ambiguities );
-                    numacts++;
-                    if( token == '{' || token == T_IDENTIFIER ) {
-                        sprintf( buffer, "$pro%d", npro );
-                        sym = addsym( buffer );
-                        copyact( npro, sym, rhs, nrhs, nrhs );
-                        addpro( sym, rhs, 0 );
-                    } else {
-                        copyact( npro, lhs, rhs, 0, nrhs );
-                        action_defined = true;
-                        break;
-                    }
-                    bufused -= i;
-                    memcpy( buf, &buf[i], bufused );
-                } else {
-                    sym = addsym( buf );
-                    if( value != 0 ) {
-                        sym->token = (token_n)value;
-                    }
-                    if( sym->token != 0 )
-                        precsym = sym;
-                    scanextra( 0, &precsym, &list_of_ambiguities );
-                }
-                if( nrhs + 1 > maxrhs ) {
-                    maxrhs *= 2;
-                    rhs = REALLOC( rhs, maxrhs, a_sym * );
-                }
-                rhs[nrhs++] = sym;
-            }
-            unit_production = false;
-            if( !action_defined ) {
-                if( nrhs > 0 ) {
-                    /* { $$ = $1; } is default action */
-                    if( defaultwarnflag ) {
-                        char *type_lhs = type_name( lhs->type );
-                        char *type_rhs = type_name( rhs[0]->type );
-                        if( strcmp( type_rhs, type_lhs ) != 0 ) {
-                            warn("default action would copy '%s <%s>' to '%s <%s>'\n",
-                                rhs[0]->name, type_rhs, lhs->name, type_lhs );
-                        }
-                    }
-                    if( nrhs == 1 ) {
-                        unit_production = true;
-                    }
-                } else {
-                    if( sym_lineno == lineno && token == '|' ) {
-                        warn( "unexpected epsilon reduction for '%s'?\n", lhs->name );
-                    }
-                }
-            }
-            pro = addpro( lhs, rhs, nrhs );
-            if( unit_production ) {
-                pro->unit = true;
-            }
-            if( precsym != NULL ) {
-                pro->prec = precsym->prec;
-            }
-            if( list_of_ambiguities ) {
-                for( am = list_of_ambiguities; am != NULL; am = am->next ) {
-                    am->pro = pro;
-                }
-                pro->SR_conflicts = list_of_ambiguities;
-            }
-            if( token == ';' ) {
-                do {
-                    scan( 0 );
-                } while( token == ';' );
-            } else if( token != '|' ) {
-                if( token == T_CIDENTIFIER ) {
-                    msg( "Missing ';'\n" );
-                } else {
-                    msg( "Incorrect syntax.\n" );
-                }
-            }
-        } while( token == '|' );
-    }
-    FREE( rhs );
-
-    not_token = false;
-    for( sym = symlist; sym != NULL; sym = sym->next ) {
-        /* check for special symbols */
-        if( sym == eofsym )
-            continue;
-        if( denseflag ) {
-            if( sym->token != 0 && sym->token < TOKEN_DENSE_BASE ) {
-                continue;
-            }
-        } else {
-            if( sym->token != 0 && sym->token < TOKEN_SPARSE_BASE ) {
-                continue;
-            }
+    while( *pat != '\0' ) {
+        if( nextc() != *(unsigned char *)pat++ ) {
+            msg( "Expected '%c'\n", pat[-1] );
         }
-        if( sym->pro != NULL && sym->token != 0 ) {
-            not_token = true;
-            warn( "%s not defined as '%%token'.\n", sym->name );
-        }
-    }
-    if( not_token ) {
-        msg( "cannot continue (because of %%token problems)\n" );
-    }
-    copyUniqueActions();
-}
-
-static void copyfile( void )
-{
-    do {
-        fputc( ch, actout );
-    } while( nextc() != EOF );
-}
-
-void tail( void )
-{
-    if( token == T_MARK ) {
-        copyfile();
-    } else if( token != T_EOF ) {
-        msg( "Expected end of file.\n" );
     }
 }
 
-static void copycurl( void )
+static int lastc( void )
 {
-    do {
-        while( ch != '%' && ch != EOF ) {
-            fputc( ch, actout );
-            nextc();
-        }
-    } while( nextc() != '}' && ch != EOF );
-    nextc();
-}
-
-static char *checkAttrib( char *s, char **ptype, char *buff, int *errs,
-                          a_sym *lhs, a_sym **rhs, unsigned base, unsigned n )
-{
-    char        save;
-    char        *type;
-    int         err_count;
-    long        il;
-
-    err_count = 0;
-    ++s;
-    if( *s == '<' ) {
-        ++s;
-        type = s;
-        s = get_typename( type );
-        if( type == s || *s != '>' )  {
-            ++err_count;
-            msg( "Bad type specifier.\n" );
-        }
-        save = *s;
-        *s = '\0';
-        type = strdup( type );
-        *s = save;
-        ++s;
-    } else {
-        type = NULL;
+    if( bufused > 1 ) {
+        return( (unsigned char)buf[bufused - 1] );
     }
-    if( *s == '$' ) {
-        strcpy( buff, "yyval" );
-        if( type == NULL && lhs->type != NULL ) {
-            type = strdup( lhs->type );
-        }
-        ++s;
-    } else {
-        il = n + 1;
-        if( *s == '-' || isdigit( *s ) ) {
-            il = strtol( s, &s, 10 );
-        }
-        if( il > (long)n ) {
-            ++err_count;
-            msg( "Invalid $ parameter (%ld).\n", il );
-        }
-        il -= base + 1;
-        sprintf( buff, "yyvp[%ld]", il );
-        if( type == NULL && il >= 0 && rhs[il]->type != NULL ) {
-            type = strdup( rhs[il]->type );
-        }
-    }
-    *ptype = type;
-    *errs = err_count;
-    return( s );
-}
-
-static a_pro *findPro( a_sym *lhs, rule_n pnum )
-{
-    a_pro       *pro;
-
-    for( pro = lhs->pro; pro != NULL; pro = pro->next ) {
-        if( pro->pidx == pnum ) {
-            return( pro );
-        }
-    }
-    return( NULL );
-}
-
-static void copyUniqueActions( void )
-{
-    a_pro       *pro;
-    char        *s;
-    uniq_case   *c;
-    uniq_case   *cnext;
-    rule_case   *r;
-    rule_case   *rnext;
-    an_item     *item;
-
-    for( c = caseActions; c != NULL; c = cnext ) {
-        cnext = c->next;
-        for( r = c->rules; r != NULL; r = rnext ) {
-            rnext = r->next;
-            fprintf( actout, "case %d:\n", r->pnum );
-            pro = findPro( r->lhs, r->pnum );
-            fprintf( actout, "/* %s <-", pro->sym->name );
-            for( item = pro->items; item->p.sym != NULL; ++item ) {
-                fprintf( actout, " %s", item->p.sym->name );
-            }
-            fprintf( actout, " */\n" );
-            FREE( r );
-        }
-        for( s = c->action; *s != '\0'; ++s ) {
-            fputc( *s, actout );
-        }
-        fprintf( actout, "\nbreak;\n" );
-        FREE( c->action );
-        FREE( c );
-    }
-}
-
-static void addRuleToUniqueCase( uniq_case *p, rule_n pnum, a_sym *lhs )
-{
-    rule_case   *r;
-
-    r = MALLOC( 1, rule_case );
-    r->lhs = lhs;
-    r->pnum = pnum;
-    r->next = p->rules;
-    p->rules = r;
-}
-
-static void insertUniqueAction( rule_n pnum, char *action, a_sym *lhs )
-{
-    uniq_case   **p;
-    uniq_case   *c;
-    uniq_case   *n;
-
-    p = &caseActions;
-    for( c = *p; c != NULL; c = c->next ) {
-        if( strcmp( c->action, action ) == 0 ) {
-            ++actionsCombined;
-            addRuleToUniqueCase( c, pnum, lhs );
-            /* promote to front */
-            *p = c->next;
-            c->next = caseActions;
-            caseActions = c;
-            FREE( action );
-            return;
-        }
-        p = &(c->next);
-    }
-    n = MALLOC( 1, uniq_case );
-    n->action = action;
-    n->rules = NULL;
-    n->next = *p;
-    *p = n;
-    addRuleToUniqueCase( n, pnum, lhs );
-}
-
-static char *strpcpy( char *d, char *s )
-{
-    while( (*d = *s++) != '\0' ) {
-        ++d;
-    }
-    return( d );
-}
-
-static void copyact( rule_n pnum, a_sym *lhs, a_sym **rhs, unsigned base, unsigned n )
-{
-    char        *action;
-    char        *p;
-    char        *s;
-    char        *type;
-    unsigned    i;
-    int         errs;
-    int         total_errs;
-    size_t      total_len;
-    char        buff[80];
-
-    if( ! lineflag ) {
-        /* we don't need line numbers to correspond to the grammar */
-        total_errs = 0;
-        total_len = strlen( buf ) + 1;
-        for( s = buf; *s != '\0'; ) {
-            if( *s == '$' ) {
-                s = checkAttrib( s, &type, buff, &errs, lhs, rhs, base, n );
-                total_len += strlen( buff );
-                if( type != NULL ) {
-                    total_len += strlen( type ) + 1;
-                }
-                FREE( type );
-                total_errs += errs;
-            } else {
-                ++s;
-            }
-        }
-        if( total_errs == 0 ) {
-            action = MALLOC( total_len, char );
-            p = action;
-            for( s = buf; *s != '\0'; ) {
-                if( *s == '$' ) {
-                    s = checkAttrib( s, &type, buff, &errs, lhs, rhs, base, n );
-                    p = strpcpy( p, buff );
-                    if( type != NULL ) {
-                        *p++ = '.';
-                        p = strpcpy( p, type );
-                        FREE( type );
-                    }
-                } else {
-                    *p++ = *s++;
-                }
-            }
-            *p = '\0';
-            insertUniqueAction( pnum, action, lhs );
-        }
-        return;
-    }
-    fprintf( actout, "case %d:\n", pnum );
-    fprintf( actout, "/* %s <-", lhs->name );
-    for( i = 0; i < n; ++i ) {
-        fprintf( actout, " %s", rhs[i]->name );
-    }
-    fprintf( actout, " */\n" );
-    lineinfo();
-    for( s = buf; *s != '\0'; ) {
-        if( *s == '$' ) {
-            s = checkAttrib( s, &type, buff, &errs, lhs, rhs, base, n );
-            fprintf( actout, "%s", buff );
-            if( type != NULL ) {
-                fprintf( actout, ".%s", type );
-                FREE( type );
-            }
-        } else {
-            fputc( *s++, actout );
-        }
-    }
-    fprintf( actout, "\nbreak;\n" );
+    return( '\0' );
 }
 
 static void copybal( void )
@@ -958,115 +366,6 @@ static void copybal( void )
         }
     } while( depth > 0 && ch != EOF );
     addbuf( ch );
-    addbuf( '\0' );
-    nextc();
-}
-
-static void lineinfo( void )
-{
-    if( lineflag ) {
-        fprintf( actout, "\n#line %d \"%s\"\n", lineno, srcname );
-    }
-}
-
-static void addstr( char *p )
-{
-    while( *p ) {
-        addbuf( *(unsigned char *)p );
-        ++p;
-    }
-}
-
-typedef struct xlat_entry {
-    int         c;
-    char        *x;
-} xlat_entry;
-
-static xlat_entry xlat[] = {
-    { '~',      "TILDE" },
-    { '`',      "BACKQUOTE" },
-    { '!',      "EXCLAMATION" },
-    { '@',      "AT" },
-    { '#',      "SHARP" },
-    { '$',      "DOLLAR" },
-    { '%',      "PERCENT" },
-    { '^',      "XOR" },
-    { '&',      "AND" },
-    { '*',      "TIMES" },
-    { '(',      "LPAREN" },
-    { ')',      "RPAREN" },
-    { '-',      "MINUS" },
-    { '+',      "PLUS" },
-    { '=',      "EQUAL" },
-    { '[',      "LSQUARE" },
-    { ']',      "RSQUARE" },
-    { '{',      "LBRACE" },
-    { '}',      "RBRACE" },
-    { '\\',     "BACKSLASH" },
-    { '|',      "OR" },
-    { ':',      "COLON" },
-    { ';',      "SEMICOLON" },
-    { '\'',     "QUOTE" },
-    { '"',      "DQUOTE" },
-    { '<',      "LT" },
-    { '>',      "GT" },
-    { '.',      "DOT" },
-    { ',',      "COMMA" },
-    { '/',      "DIVIDE" },
-    { '?',      "QUESTION" },
-    { '\0',     NULL }
-};
-
-static bool xlat_char( bool special, int c )
-{
-    xlat_entry  *t;
-    char        buff[16];
-
-    if( isalpha( c ) || isdigit( c ) || c == '_' ) {
-        if( special ) {
-            addbuf( '_' );
-        }
-        addbuf( c );
-        return( false );
-    }
-    /* NYI: add %translate 'c' XXXX in case user doesn't like our name */
-    addbuf( '_' );
-    for( t = xlat; t->x != NULL; ++t ) {
-        if( t->c == c ) {
-            addstr( t->x );
-            return( true );
-        }
-    }
-    warn( "'x' token contains unknown character '%c' (\\x%x)\n", c, c );
-    addbuf( 'X' );
-    sprintf( buff, "%x", c );
-    addstr( buff );
-    return( true );
-}
-
-static void xlat_token( void )
-{
-    bool special;
-
-    addbuf( 'Y' );
-    special = true;
-    for( ;; ) {
-        nextc();
-        if( ch == EOF || ch == '\n' ) {
-            msg( "invalid 'x' token" );
-            break;
-        }
-        if( ch == '\'' )
-            break;
-        if( ch == '\\' ) {
-            special = xlat_char( special, ch );
-            nextc();
-        }
-        special = xlat_char( special, ch );
-    }
-    addbuf( '\0' );
-    value = 0;
-    token = T_IDENTIFIER;
 }
 
 static a_token scan( unsigned used )
@@ -1096,21 +395,21 @@ static a_token scan( unsigned used )
         } else {
             token = T_IDENTIFIER;
         }
-        value = 0;
+        value.id = 0;
     } else if( isdigit( ch ) || ch == '-' ) {
         do {
             addbuf( ch );
         } while( isdigit( nextc() ) );
         addbuf( '\0' );
         token = T_NUMBER;
-        value = atoi( buf );
+        value.number = atoi( buf );
     } else {
         switch( ch ) {
         case '\'':
-            if( denseflag && ! translateflag ) {
+            if( denseflag && !translateflag ) {
                 msg( "cannot use '+' style of tokens with the dense option\n" );
             }
-            if( ! translateflag ) {
+            if( !translateflag ) {
                 addbuf( '\'' );
                 nextc();
                 addbuf( ch );
@@ -1128,7 +427,7 @@ static a_token scan( unsigned used )
                     }
                 }
                 addbuf( '\'' );
-                value = ch;
+                value.id = (unsigned char)ch;
                 token = T_IDENTIFIER;
                 need( "'" );
             } else {
@@ -1167,12 +466,12 @@ static a_token scan( unsigned used )
             case 'l':
                 need( "eft" );
                 token = T_LEFT;
-                value = L_ASSOC;
+                value.assoc = L_ASSOC;
                 break;
             case 'n':
                 need( "onassoc" );
                 token = T_NONASSOC;
-                value = NON_ASSOC;
+                value.assoc = NON_ASSOC;
                 break;
             case 'p':
                 need( "rec" );
@@ -1181,7 +480,7 @@ static a_token scan( unsigned used )
             case 'r':
                 need( "ight" );
                 token = T_RIGHT;
-                value = R_ASSOC;
+                value.assoc = R_ASSOC;
                 break;
             case 's':
                 need( "tart" );
@@ -1216,77 +515,420 @@ static a_token scan( unsigned used )
     return( token );
 }
 
-static void need( char *pat )
+static a_token scan_typename( unsigned used )
 {
-    while( *pat ) {
-        if( nextc() != *(unsigned char *)pat++ ) {
-            msg( "Expected '%c'\n", pat[-1] );
+    bufused = used;
+    if( TYPENAME_FIRST_CHAR( ch ) ) {
+        do {
+            addbuf( ch );
+            nextc();
+        } while( TYPENAME_NEXT_CHAR( ch ) );
+        token = T_TYPENAME;
+    }
+    addbuf( '\0' );
+    value.id = 0;
+    return( token );
+}
+
+static char *get_typename( char *src )
+{
+    int             c;
+
+    c = *(unsigned char *)src;
+    if( TYPENAME_FIRST_CHAR( c ) ) {
+        do {
+            c = *(unsigned char *)(++src);
+        } while( TYPENAME_NEXT_CHAR( c ) );
+    }
+    return( src );
+}
+
+static a_sym *make_sym( char *name, token_n tokval )
+{
+    a_sym *p;
+
+    p = addsym( name );
+    p->token = tokval;
+    return( p );
+}
+
+static a_SR_conflict *make_unique_ambiguity( a_sym *sym, conflict_id id )
+{
+    a_SR_conflict   *ambig;
+
+    for( ambig = ambiguousstates; ambig != NULL; ambig = ambig->next ) {
+        if( ambig->id == id ) {
+            if( ambig->sym != sym ) {
+                msg( "ambiguity %u deals with %s, not %s.\n", id, ambig->sym->name, sym->name );
+                break;
+            }
+            return( ambig );
+        }
+    }
+    ambig = MALLOC( 1, a_SR_conflict );
+    ambig->next = ambiguousstates;
+    ambig->sym = sym;
+    ambig->id = id;
+    ambig->state = NULL;
+    ambig->shift = NULL;
+    ambig->thread = NULL;
+    ambig->reduce = 0;
+    ambiguousstates = ambig;
+    return( ambig );
+}
+
+static void tlist_remove( char *name )
+{
+    y_token *curr;
+    y_token *last;
+
+    last = NULL;
+    for( curr = tokens_head; curr != NULL; curr = curr->next ) {
+        if( strcmp( name, curr->name ) == 0 ) {
+            if( last == NULL ) {
+                tokens_head = curr->next;
+            } else {
+                last->next = curr->next;
+            }
+            if( curr->next == NULL ) {
+                tokens_tail = last;
+            }
+            FREE( curr );
+            break;
+        }
+        last = curr;
+    }
+}
+
+static void tlist_add( char *name, token_n tokval )
+{
+    y_token *tmp;
+    y_token *curr;
+
+    for( curr = tokens_head; curr != NULL; curr = curr->next ) {
+        if( strcmp( name, curr->name ) == 0 ) {
+            curr->value = tokval;
+            return;
+        }
+    }
+    tmp = (y_token *)MALLOC( strlen( name ) + sizeof( y_token ), char );
+    strcpy( tmp->name, name );
+    tmp->value = tokval;
+    tmp->next = NULL;
+    if( tokens_head == NULL ) {
+        tokens_head = tmp;
+    }
+    if( tokens_tail != NULL ) {
+        tokens_tail->next = tmp;
+    }
+    tokens_tail = tmp;
+}
+
+static bool scanambig( unsigned used, a_SR_conflict_list **list )
+{
+    bool                    absorbed_something;
+    conflict_id             id;
+    a_sym                   *sym;
+    a_SR_conflict           *ambig;
+    a_SR_conflict_list      *en;
+
+    absorbed_something = false;
+    for( ; token == T_AMBIG; ) {
+        /* syntax is "%ambig <number> <token>" */
+        /* token has already been scanned by scanprec() */
+        if( scan( used ) != T_NUMBER || value.number < 0 ) {
+            msg( "Expecting a non-negative number after %ambig.\n" );
+            break;
+        }
+        id = value.number;
+        if( scan( used ) != T_IDENTIFIER ) {
+            msg( "Expecting a token name after %ambig <number>.\n" );
+            break;
+        }
+        sym = findsym( buf );
+        if( sym == NULL ) {
+            msg( "Unknown token specified in %ambig directive.\n" );
+            break;
+        }
+        if( sym->token == 0 ) {
+            msg( "Non-terminal specified in %ambig directive.\n" );
+            break;
+        }
+        scan( used );
+        absorbed_something = true;
+        ambig = make_unique_ambiguity( sym, id );
+        en = MALLOC( 1, a_SR_conflict_list );
+        en->next = *list;
+        en->thread = ambig->thread;
+        en->pro = NULL;
+        en->conflict = ambig;
+        ambig->thread = en;
+        *list = en;
+    }
+    return( absorbed_something );
+}
+
+static bool scanprec( unsigned used, a_sym **precsym )
+{
+    if( token != T_PREC )
+        return( false );
+    if( scan( used ) != T_IDENTIFIER || (*precsym = findsym( buf )) == NULL || (*precsym)->token == 0 ) {
+        msg( "Expecting a token after %prec.\n" );
+    }
+    scan( used );
+    return( true );
+}
+
+static void scanextra( unsigned used, a_sym **psym, a_SR_conflict_list **pSR )
+{
+    scan( used );
+    for( ;; ) {
+        if( !scanprec( used, psym ) && !scanambig( used, pSR ) ) {
+            break;
         }
     }
 }
 
-static int eatcrud( void )
+static char *type_name( char *type )
 {
-    int prev;
+    if( type == NULL ) {
+        return( "** no type **" );
+    }
+    return( type );
+}
 
-    for( ;; nextc() ) {
-        switch( ch ) {
-        case ' ':
-        case '\t':
-        case '\r':
-        case '\n':
-        case '\f':
-            break;
-        case '/':
-            if( nextc() != '*' ) {
-                if( ch == '\n' ) {
-                    --lineno;
-                }
-                ungetc( ch, yaccin );
-                return( '/' );
-            }
-            for( prev = '\0'; nextc() != '/' || prev != '*'; prev = ch ) {
-                if( ch == EOF ) {
-                    return( ch );
-                }
-            }
-            break;
-        default:
-            return( ch );
+static void copycurl( FILE *fp )
+{
+    do {
+        while( ch != '%' && ch != EOF ) {
+            fputc( ch, fp );
+            nextc();
+        }
+    } while( nextc() != '}' && ch != EOF );
+    nextc();
+}
+
+static char *checkAttrib( char *s, char **ptype, char *buff, int *errs,
+                          a_sym *lhs, a_sym **rhs, unsigned base, unsigned n )
+{
+    char        save;
+    char        *type;
+    char        *p;
+    int         err_count;
+    long        il;
+
+    err_count = 0;
+    ++s;
+    if( *s == '<' ) {
+        ++s;
+        p = s;
+        s = get_typename( p );
+        if( p == s || *s != '>' )  {
+            ++err_count;
+            msg( "Bad type specifier.\n" );
+        }
+        save = *s;
+        *s = '\0';
+        type = strdup( p );
+        *s = save;
+        ++s;
+    } else {
+        type = NULL;
+    }
+    if( *s == '$' ) {
+        strcpy( buff, "yyval" );
+        if( type == NULL && lhs->type != NULL ) {
+            type = strdup( lhs->type );
+        }
+        ++s;
+    } else {
+        il = n + 1;
+        if( *s == '-' || isdigit( *s ) ) {
+            il = strtol( s, &s, 10 );
+        }
+        if( il > (long)n ) {
+            ++err_count;
+            msg( "Invalid $ parameter (%ld).\n", il );
+        }
+        il -= base + 1;
+        sprintf( buff, "yyvp[%ld]", il );
+        if( type == NULL && il >= 0 && rhs[il]->type != NULL ) {
+            type = strdup( rhs[il]->type );
         }
     }
+    *ptype = type;
+    *errs = err_count;
+    return( s );
 }
 
-static int nextc( void )
+static a_pro *findPro( a_sym *lhs, rule_n pnum )
 {
-    if( (ch = fgetc( yaccin )) == '\r' ) {
-        ch = fgetc( yaccin );
+    a_pro       *pro;
+
+    for( pro = lhs->pro; pro != NULL; pro = pro->next ) {
+        if( pro->pidx == pnum ) {
+            return( pro );
+        }
     }
-    if( ch == '\n' ) {
-        ++lineno;
-    }
-    return( ch );
+    return( NULL );
 }
 
-static int lastc( void )
+static void copyUniqueActions( FILE *fp )
 {
-    if( bufused > 1 ) {
-        return( (unsigned char)buf[bufused - 1] );
+    a_pro       *pro;
+    char        *s;
+    uniq_case   *c;
+    uniq_case   *cnext;
+    rule_case   *r;
+    rule_case   *rnext;
+    an_item     *item;
+
+    for( c = caseActions; c != NULL; c = cnext ) {
+        cnext = c->next;
+        for( r = c->rules; r != NULL; r = rnext ) {
+            rnext = r->next;
+            fprintf( fp, "case %d:\n", r->pnum );
+            pro = findPro( r->lhs, r->pnum );
+            fprintf( fp, "/* %s <-", pro->sym->name );
+            for( item = pro->items; item->p.sym != NULL; ++item ) {
+                fprintf( fp, " %s", item->p.sym->name );
+            }
+            fprintf( fp, " */\n" );
+            FREE( r );
+        }
+        for( s = c->action; *s != '\0'; ++s ) {
+            fputc( *s, fp );
+        }
+        fprintf( fp, "\nbreak;\n" );
+        FREE( c->action );
+        FREE( c );
     }
-    return( '\0' );
 }
 
-static void addbuf( int c )
+static void addRuleToUniqueCase( uniq_case *p, rule_n pnum, a_sym *lhs )
 {
-    if( bufused == bufmax ) {
-        bufmax += BUF_INCR;
-        if( buf != NULL ) {
-            buf = REALLOC( buf, bufmax, char );
+    rule_case   *r;
+
+    r = MALLOC( 1, rule_case );
+    r->lhs = lhs;
+    r->pnum = pnum;
+    r->next = p->rules;
+    p->rules = r;
+}
+
+static void insertUniqueAction( rule_n pnum, char *action, a_sym *lhs )
+{
+    uniq_case   **p;
+    uniq_case   *c;
+    uniq_case   *n;
+
+    p = &caseActions;
+    for( c = *p; c != NULL; c = c->next ) {
+        if( strcmp( c->action, action ) == 0 ) {
+            ++actionsCombined;
+            addRuleToUniqueCase( c, pnum, lhs );
+            /* promote to front */
+            *p = c->next;
+            c->next = caseActions;
+            caseActions = c;
+            FREE( action );
+            return;
+        }
+        p = &(c->next);
+    }
+    n = MALLOC( 1, uniq_case );
+    n->action = action;
+    n->rules = NULL;
+    n->next = *p;
+    *p = n;
+    addRuleToUniqueCase( n, pnum, lhs );
+}
+
+static char *strpcpy( char *d, char *s )
+{
+    while( (*d = *s++) != '\0' ) {
+        ++d;
+    }
+    return( d );
+}
+
+static void lineinfo( FILE *fp )
+{
+    if( lineflag ) {
+        fprintf( fp, "\n#line %d \"%s\"\n", lineno, srcname );
+    }
+}
+
+static void copyact( FILE *fp, rule_n pnum, a_sym *lhs, a_sym **rhs, unsigned base, unsigned n )
+{
+    char        *action;
+    char        *p;
+    char        *s;
+    char        *type;
+    unsigned    i;
+    int         errs;
+    int         total_errs;
+    size_t      total_len;
+    char        buff[80];
+
+    if( ! lineflag ) {
+        /* we don't need line numbers to correspond to the grammar */
+        total_errs = 0;
+        total_len = strlen( buf ) + 1;
+        for( s = buf; *s != '\0'; ) {
+            if( *s == '$' ) {
+                s = checkAttrib( s, &type, buff, &errs, lhs, rhs, base, n );
+                total_len += strlen( buff );
+                if( type != NULL ) {
+                    total_len += strlen( type ) + 1;
+                }
+                FREE( type );
+                total_errs += errs;
+            } else {
+                ++s;
+            }
+        }
+        if( total_errs == 0 ) {
+            action = MALLOC( total_len, char );
+            p = action;
+            for( s = buf; *s != '\0'; ) {
+                if( *s == '$' ) {
+                    s = checkAttrib( s, &type, buff, &errs, lhs, rhs, base, n );
+                    p = strpcpy( p, buff );
+                    if( type != NULL ) {
+                        *p++ = '.';
+                        p = strpcpy( p, type );
+                        FREE( type );
+                    }
+                } else {
+                    *p++ = *s++;
+                }
+            }
+            *p = '\0';
+            insertUniqueAction( pnum, action, lhs );
+        }
+        return;
+    }
+    fprintf( fp, "case %d:\n", pnum );
+    fprintf( fp, "/* %s <-", lhs->name );
+    for( i = 0; i < n; ++i ) {
+        fprintf( fp, " %s", rhs[i]->name );
+    }
+    fprintf( fp, " */\n" );
+    lineinfo( fp );
+    for( s = buf; *s != '\0'; ) {
+        if( *s == '$' ) {
+            s = checkAttrib( s, &type, buff, &errs, lhs, rhs, base, n );
+            fprintf( fp, "%s", buff );
+            if( type != NULL ) {
+                fprintf( fp, ".%s", type );
+                FREE( type );
+            }
         } else {
-            buf = MALLOC( bufmax, char );
+            fputc( *s++, fp );
         }
     }
-    buf[bufused++] = (char)c;
+    fprintf( fp, "\nbreak;\n" );
 }
 
 static char *dupbuf( void )
@@ -1297,6 +939,359 @@ static char *dupbuf( void )
     memcpy( str, buf, bufused );
     bufused = 0;
     return( str );
+}
+
+void dump_header( FILE *fp )
+{
+    const char  *fmt;
+    const char  *ttype;
+    y_token     *t;
+    y_token     *tmp;
+
+    fprintf( fp, "#ifndef YYTOKENTYPE\n" );
+    fprintf( fp, "#define YYTOKENTYPE yytokentype\n" );
+    if( fastflag || bigflag || compactflag ) {
+        ttype = "unsigned short";
+    } else {
+        ttype = "unsigned char";
+    }
+    if( enumflag ) {
+        fprintf( fp, "typedef enum yytokentype {\n" );
+        fmt = "\t%-20s = 0x%02x,\n";
+    } else {
+        fmt = "#define %-20s 0x%02x\n";
+    }
+    t = tokens_head;
+    while( t != NULL ) {
+        fprintf( fp, fmt, t->name, t->value );
+        tmp = t;
+        t = t->next;
+        FREE( tmp );
+    }
+    if( enumflag ) {
+        fprintf( fp, "\tYTOKEN_ENUMSIZE_SETUP = (%s)-1\n", ttype );
+        fprintf( fp, "} yytokentype;\n" );
+    } else {
+        fprintf( fp, "typedef %s yytokentype;\n", ttype );
+    }
+    fprintf( fp, "#endif\n" );
+    fflush( fp );
+}
+
+void close_header( FILE *fp )
+{
+    if( union_name != NULL ) {
+        fprintf( fp, "typedef union %s YYSTYPE;\n", union_name );
+        fprintf( fp, "extern YYSTYPE yylval;\n" );
+        FREE( union_name );
+    }
+    fclose( fp );
+}
+
+void defs( FILE *fp )
+{
+    token_n     gentoken;
+    a_sym       *sym;
+    a_token     ctype;
+    char        *type;
+    a_prec      prec;
+
+    eofsym = make_sym( "$eof", TOKEN_EOF );
+    nosym = make_sym( "$impossible", TOKEN_IMPOSSIBLE );
+    errsym = make_sym( "error", TOKEN_ERROR );
+    if( denseflag ) {
+        gentoken = TOKEN_DENSE_BASE;
+    } else {
+        gentoken = TOKEN_SPARSE_BASE;
+    }
+    scan( 0 );
+    prec.prec = 0;
+    prec.assoc = NON_ASSOC;
+    for( ; token != T_MARK; ) {
+        switch( token ) {
+        case T_START:
+            if( scan( 0 ) != T_IDENTIFIER )
+                msg( "Identifier needed after %%start.\n" );
+            startsym = addsym( buf );
+            scan( 0 );
+            break;
+        case T_UNION:
+            if( scan( 0 ) != '{' ) {
+                msg( "Need '{' after %%union.\n" );
+            }
+            fprintf( fp, "typedef union " );
+            lineinfo( fp );
+            fprintf( fp, "%s YYSTYPE;\n", buf );
+            if( union_name == NULL ) {
+                union_name = MALLOC( strlen( buf ) + 1, char );
+                strcpy( union_name, buf );
+            } else {
+                msg( "%union already defined\n" );
+            }
+            scan( 0 );
+            break;
+        case T_LCURL:
+            lineinfo( fp );
+            copycurl( fp );
+            scan( 0 );
+            break;
+        case T_KEYWORD_ID:
+            switch( scan( 0 ) ) {
+            case T_IDENTIFIER:
+                sym = addsym( buf );
+                if( sym->token == 0 ) {
+                    msg( "Token must be assigned number before %keyword_id\n" );
+                }
+                value.id = sym->token;
+                break;
+            case T_NUMBER:
+                break;
+            default:
+                msg( "Expecting identifier or number.\n" );
+            }
+            keyword_id_low = value.id;
+            switch( scan( 0 ) ) {
+            case T_IDENTIFIER:
+                sym = addsym( buf );
+                if( sym->token == 0 ) {
+                    msg( "Token must be assigned number before %keyword_id\n" );
+                }
+                value.id = sym->token;
+                break;
+            case T_NUMBER:
+                break;
+            default:
+                msg( "Expecting identifier or number.\n" );
+            }
+            keyword_id_high = value.id;
+            scan( 0 );
+            break;
+        case T_LEFT:
+        case T_RIGHT:
+        case T_NONASSOC:
+            ++prec.prec;
+            prec.assoc = value.assoc;
+            /* fall through */
+        case T_TOKEN:
+        case T_TYPE:
+            ctype = token;
+            if( scan( 0 ) == '<' ) {
+                if( scan_typename( 0 ) != T_TYPENAME ) {
+                    msg( "Expecting type specifier.\n" );
+                }
+                type = dupbuf();
+                if( scan( 0 ) != '>' ) {
+                    msg( "Expecting '>'.\n" );
+                }
+                scan( 0 );
+            } else {
+                type = NULL;
+            }
+            while( token == T_IDENTIFIER ) {
+                sym = addsym( buf );
+                if( type != NULL ) {
+                    if( sym->type != NULL ) {
+                        if( strcmp( sym->type, type ) != 0 ) {
+                            msg( "'%s' type redeclared from '%s' to '%s'\n", buf, sym->type, type );
+                            FREE( sym->type );
+                            sym->type = strdup( type );
+                        }
+                    } else {
+                        sym->type = strdup( type );
+                    }
+                }
+                if( ctype == T_TYPE ) {
+                    scan( 0 );
+                } else {
+                    if( sym->token == 0 ) {
+                        sym->token = value.id;
+                    }
+                    if( ctype != T_TOKEN ) {
+                        sym->prec = prec;
+                    }
+                    if( scan( 0 ) == T_NUMBER ) {
+                        if( sym->token != 0 ) {
+                            if( sym->name[0] != '\'' ) {
+                                tlist_remove( sym->name );
+                            }
+                        }
+                        sym->token = value.number;
+                        scan( 0 );
+                    }
+                    if( sym->token == 0 ) {
+                        sym->token = gentoken++;
+                    }
+                    if( sym->name[0] != '\'' ) {
+                        tlist_add( sym->name, sym->token );
+                    }
+                }
+                if( token == ',' ) {
+                    scan( 0 );
+                }
+            }
+            if( type != NULL )
+                FREE( type );
+            break;
+        default:
+            msg( "Incorrect syntax.\n" );
+        }
+    }
+    scan( 0 );
+}
+
+void rules( FILE *fp )
+{
+    a_sym               *lhs, *sym, *precsym;
+    a_sym               **rhs;
+    unsigned            nrhs;
+    unsigned            maxrhs;
+    a_pro               *pro;
+    char                buffer[20];
+    unsigned            i;
+    int                 numacts;
+    bool                action_defined;
+    bool                unit_production;
+    bool                not_token;
+    a_SR_conflict_list  *list_of_ambiguities;
+    a_SR_conflict_list  *ambig;
+
+    ambiguousstates = NULL;
+    maxrhs = INIT_RHS_SIZE;
+    rhs = CALLOC( maxrhs, a_sym * );
+    while( token == T_CIDENTIFIER ) {
+        int sym_lineno = lineno;
+        lhs = addsym( buf );
+        if( lhs->token != 0 )
+            msg( "%s used on lhs.\n", lhs->name );
+        if( startsym == NULL )
+            startsym = lhs;
+        numacts = 0;
+        do {
+            action_defined = false;
+            precsym = NULL;
+            list_of_ambiguities = NULL;
+            nrhs = 0;
+            scanextra( 0, &precsym, &list_of_ambiguities );
+            for( ; token == '{' || token == T_IDENTIFIER; ) {
+                if( token == '{' ) {
+                    i = bufused;
+                    scanextra( bufused, &precsym, &list_of_ambiguities );
+                    numacts++;
+                    if( token == '{' || token == T_IDENTIFIER ) {
+                        sprintf( buffer, "$pro%d", npro );
+                        sym = addsym( buffer );
+                        copyact( fp, npro, sym, rhs, nrhs, nrhs );
+                        addpro( sym, rhs, 0 );
+                    } else {
+                        copyact( fp, npro, lhs, rhs, 0, nrhs );
+                        action_defined = true;
+                        break;
+                    }
+                    bufused -= i;
+                    memcpy( buf, &buf[i], bufused );
+                } else {
+                    sym = addsym( buf );
+                    if( value.id != 0 ) {
+                        sym->token = value.id;
+                    }
+                    if( sym->token != 0 )
+                        precsym = sym;
+                    scanextra( 0, &precsym, &list_of_ambiguities );
+                }
+                if( nrhs + 1 > maxrhs ) {
+                    maxrhs *= 2;
+                    rhs = REALLOC( rhs, maxrhs, a_sym * );
+                }
+                rhs[nrhs++] = sym;
+            }
+            unit_production = false;
+            if( !action_defined ) {
+                if( nrhs > 0 ) {
+                    /* { $$ = $1; } is default action */
+                    if( defaultwarnflag ) {
+                        char *type_lhs = type_name( lhs->type );
+                        char *type_rhs = type_name( rhs[0]->type );
+                        if( strcmp( type_rhs, type_lhs ) != 0 ) {
+                            warn("default action would copy '%s <%s>' to '%s <%s>'\n",
+                                rhs[0]->name, type_rhs, lhs->name, type_lhs );
+                        }
+                    }
+                    if( nrhs == 1 ) {
+                        unit_production = true;
+                    }
+                } else {
+                    if( sym_lineno == lineno && token == '|' ) {
+                        warn( "unexpected epsilon reduction for '%s'?\n", lhs->name );
+                    }
+                }
+            }
+            pro = addpro( lhs, rhs, nrhs );
+            if( unit_production ) {
+                pro->unit = true;
+            }
+            if( precsym != NULL ) {
+                pro->prec = precsym->prec;
+            }
+            if( list_of_ambiguities ) {
+                for( ambig = list_of_ambiguities; ambig != NULL; ambig = ambig->next ) {
+                    ambig->pro = pro;
+                }
+                pro->SR_conflicts = list_of_ambiguities;
+            }
+            if( token == ';' ) {
+                do {
+                    scan( 0 );
+                } while( token == ';' );
+            } else if( token != '|' ) {
+                if( token == T_CIDENTIFIER ) {
+                    msg( "Missing ';'\n" );
+                } else {
+                    msg( "Incorrect syntax.\n" );
+                }
+            }
+        } while( token == '|' );
+    }
+    FREE( rhs );
+
+    not_token = false;
+    for( sym = symlist; sym != NULL; sym = sym->next ) {
+        /* check for special symbols */
+        if( sym == eofsym )
+            continue;
+        if( denseflag ) {
+            if( sym->token != 0 && sym->token < TOKEN_DENSE_BASE ) {
+                continue;
+            }
+        } else {
+            if( sym->token != 0 && sym->token < TOKEN_SPARSE_BASE ) {
+                continue;
+            }
+        }
+        if( sym->pro != NULL && sym->token != 0 ) {
+            not_token = true;
+            warn( "%s not defined as '%%token'.\n", sym->name );
+        }
+    }
+    if( not_token ) {
+        msg( "cannot continue (because of %%token problems)\n" );
+    }
+    copyUniqueActions( fp );
+}
+
+static void copyfile( FILE *fp )
+{
+    do {
+        fputc( ch, fp );
+    } while( nextc() != EOF );
+}
+
+void tail( FILE *fp )
+{
+    if( token == T_MARK ) {
+        copyfile( fp );
+    } else if( token != T_EOF ) {
+        msg( "Expected end of file.\n" );
+    }
 }
 
 void parsestats( void )

@@ -82,7 +82,7 @@ trap_retval ReqGet_sys_config( void )
 
     ret = GetOutPtr( 0 );
 
-    ret->sys.os = MAD_OS_WINDOWS;
+    ret->sys.os = DIG_OS_WINDOWS;
     ret->sys.osmajor = _osmajor;
     ret->sys.osminor = _osminor;
 
@@ -106,7 +106,7 @@ trap_retval ReqGet_sys_config( void )
         FPUType = X86_NO;
     }
     ret->sys.fpu = FPUType;
-    ret->sys.mad = MAD_X86;
+    ret->sys.arch = DIG_ARCH_X86;
     ret->sys.huge_shift = 3;
     return( sizeof( *ret ) );
 }

@@ -73,21 +73,21 @@ typedef enum {
 } conv_class;
 
 
-static conv_class ConvIdx( dip_type_info *info )
+static conv_class ConvIdx( dig_type_info *ti )
 {
     unsigned    size;
 
-    if( info->kind == TK_STRING )
+    if( ti->kind == TK_STRING )
         return( STR );
-    if( info->size > sizeof( item_mach ) )
+    if( ti->size > sizeof( item_mach ) )
         return( ERR );
-    size = info->size;
-    switch( info->kind ) {
+    size = ti->size;
+    switch( ti->kind ) {
     case TK_BOOL:
     case TK_ENUM:
     case TK_CHAR:
     case TK_INTEGER:
-        if( (info->modifier & TM_MOD_MASK) == TM_SIGNED ) {
+        if( ti->modifier == TM_SIGNED ) {
             switch( size ) {
             case 1:
                 return( I1 );
@@ -133,7 +133,7 @@ static conv_class ConvIdx( dip_type_info *info )
         break;
     case TK_POINTER:
     case TK_ADDRESS:
-        switch( info->modifier & TM_MOD_MASK ) {
+        switch( ti->modifier ) {
         case TM_NEAR:
             switch( size ) {
             case 2:
@@ -166,19 +166,19 @@ void FromItem( item_mach *tmp, stack_entry *entry )
     unsigned            size;
     mad_type_info       src_mti;
     mad_type_info       dst_mti;
-    dip_type_info       ti;
+    dig_type_info       ti;
 
-    if( entry->info.size > sizeof( *tmp ) ) {
+    if( entry->ti.size > sizeof( *tmp ) ) {
         Error( ERR_NONE, LIT_ENG( ERR_TYPE_CONVERSION ) );
     }
-    size = entry->info.size;
-    switch( entry->info.kind ) {
+    size = entry->ti.size;
+    switch( entry->ti.kind ) {
     case TK_BOOL:
     case TK_ENUM:
     case TK_CHAR:
     case TK_INTEGER:
-        MADTypeInfo( MADTypeForDIPType( &entry->info ), &src_mti );
-        if( (entry->info.modifier & TM_MOD_MASK) == TM_SIGNED ) {
+        MADTypeInfo( MADTypeForDIPType( &entry->ti ), &src_mti );
+        if( entry->ti.modifier == TM_SIGNED ) {
             MADTypeInfoForHost( MTK_INTEGER, SIGNTYPE_SIZE( sizeof( entry->v.sint ) ), &dst_mti );
         } else {
             MADTypeInfoForHost( MTK_INTEGER, sizeof( entry->v.sint ), &dst_mti );
@@ -186,14 +186,14 @@ void FromItem( item_mach *tmp, stack_entry *entry )
         MADTypeConvert( &src_mti, tmp, &dst_mti, &entry->v.uint, 0 );
         return;
     case TK_REAL:
-        MADTypeInfo( MADTypeForDIPType( &entry->info ), &src_mti );
+        MADTypeInfo( MADTypeForDIPType( &entry->ti ), &src_mti );
         MADTypeInfoForHost( MTK_FLOAT, sizeof( entry->v.real ), &dst_mti );
         MADTypeConvert( &src_mti, tmp, &dst_mti, &entry->v.real, 0 );
         return;
     case TK_COMPLEX:
         ti.kind = TK_REAL;
-        ti.size = entry->info.size / 2;
-        ti.modifier = entry->info.modifier;
+        ti.size = entry->ti.size / 2;
+        ti.modifier = entry->ti.modifier;
         MADTypeInfo( MADTypeForDIPType( &ti ), &src_mti );
         MADTypeInfoForHost( MTK_FLOAT, sizeof( entry->v.cmplx.re ), &dst_mti );
         MADTypeConvert( &src_mti, tmp, &dst_mti, &entry->v.cmplx.re, 0 );
@@ -202,7 +202,7 @@ void FromItem( item_mach *tmp, stack_entry *entry )
     case TK_POINTER:
     case TK_ADDRESS:
         //NYI: use MAD conversion routines....
-        switch( entry->info.modifier & TM_MOD_MASK ) {
+        switch( entry->ti.modifier ) {
         case TM_NEAR:
             switch( size ) {
             case 2:
@@ -210,7 +210,7 @@ void FromItem( item_mach *tmp, stack_entry *entry )
                 return;
             case 8:
                 //NYI: 64 bit offsets
-                entry->info.size = 4;
+                entry->ti.size = 4;
                 /* fall through */
             case 4:
                 entry->v.addr.mach.offset = tmp->lo;
@@ -233,7 +233,7 @@ void FromItem( item_mach *tmp, stack_entry *entry )
             case sizeof( address ):
                 /* it's an internal address symbol */
                 entry->v.addr = tmp->xa;
-                entry->info.size = 6;
+                entry->ti.size = 6;
                 return;
             }
             break;
@@ -250,18 +250,18 @@ void ToItem( stack_entry *entry, item_mach *tmp )
     mad_type_info       src_mti;
     mad_type_info       dst_mti;
 
-    if( entry->info.size > sizeof( *tmp ) ) {
+    if( entry->ti.size > sizeof( *tmp ) ) {
         Error( ERR_NONE, LIT_ENG( ERR_TYPE_CONVERSION ) );
     }
     //NYI: use MAD routines for all conversions
-    size = entry->info.size;
-    switch( entry->info.kind ) {
+    size = entry->ti.size;
+    switch( entry->ti.kind ) {
     case TK_BOOL:
     case TK_ENUM:
     case TK_CHAR:
     case TK_INTEGER:
-        MADTypeInfo( MADTypeForDIPType( &entry->info ), &dst_mti );
-        if( (entry->info.modifier & TM_MOD_MASK) == TM_SIGNED ) {
+        MADTypeInfo( MADTypeForDIPType( &entry->ti ), &dst_mti );
+        if( entry->ti.modifier == TM_SIGNED ) {
             MADTypeInfoForHost( MTK_INTEGER, SIGNTYPE_SIZE( sizeof( entry->v.sint ) ), &src_mti );
         } else {
             MADTypeInfoForHost( MTK_INTEGER, sizeof( entry->v.sint ), &src_mti );
@@ -269,7 +269,7 @@ void ToItem( stack_entry *entry, item_mach *tmp )
         MADTypeConvert( &src_mti, &entry->v.uint, &dst_mti, tmp, 0 );
         return;
     case TK_REAL:
-        MADTypeInfo( MADTypeForDIPType( &entry->info ), &dst_mti );
+        MADTypeInfo( MADTypeForDIPType( &entry->ti ), &dst_mti );
         MADTypeInfoForHost( MTK_FLOAT, sizeof( entry->v.real ), &src_mti );
         MADTypeConvert( &src_mti, &entry->v.real, &dst_mti, tmp, 0 );
         return;
@@ -290,7 +290,7 @@ void ToItem( stack_entry *entry, item_mach *tmp )
         break;
     case TK_POINTER:
     case TK_ADDRESS:
-        switch( entry->info.modifier & TM_MOD_MASK ) {
+        switch( entry->ti.modifier ) {
         case TM_NEAR:
             switch( size ) {
             case 2:
@@ -668,7 +668,7 @@ static bool (* const ConvFunc[])( stack_entry *, conv_class ) = {
  * ConvertTo -- convert 'entry' to the given 'class'.
  *      'entry' should be an rvalue.
  */
-void ConvertTo( stack_entry *entry, type_kind k, type_modifier m, unsigned s )
+void ConvertTo( stack_entry *entry, type_kind k, type_modifier m, dig_type_size s )
 {
     conv_class  from;
     char        *dest;
@@ -676,9 +676,9 @@ void ConvertTo( stack_entry *entry, type_kind k, type_modifier m, unsigned s )
     if( s == 0 && k == TK_INTEGER ) {
         s = DefaultSize( DK_INT );
     }
-    if( entry->info.kind == k && entry->info.modifier == m && entry->info.size == s )
+    if( entry->ti.kind == k && entry->ti.modifier == m && entry->ti.size == s )
         return;
-    from = ConvIdx( &entry->info );
+    from = ConvIdx( &entry->ti );
     switch( from ) {
     case U1:
         U32ToU64( U8FetchTrunc( entry->v.uint ), &entry->v.uint );
@@ -720,11 +720,11 @@ void ConvertTo( stack_entry *entry, type_kind k, type_modifier m, unsigned s )
         if( k != TK_STRING ) {
             Error( ERR_NONE, LIT_ENG( ERR_TYPE_CONVERSION ) );
         }
-        if( s > entry->info.size ) {
+        if( s > entry->ti.size ) {
             /* have to expand string */
             _ChkAlloc( dest, s, LIT_ENG( ERR_NO_MEMORY_FOR_EXPR ) );
-            memcpy( dest, entry->v.string.loc.e[0].u.p, entry->info.size );
-            memset( &dest[entry->info.size], ' ', s - entry->info.size );
+            memcpy( dest, entry->v.string.loc.e[0].u.p, entry->ti.size );
+            memset( &dest[entry->ti.size], ' ', s - entry->ti.size );
             if( AllocatedString( entry ) ) {
                 _Free( entry->v.string.allocated );
             }
@@ -735,10 +735,10 @@ void ConvertTo( stack_entry *entry, type_kind k, type_modifier m, unsigned s )
     default:
         break;
     }
-    entry->info.kind = k;
-    entry->info.modifier = m;
-    entry->info.size = s;
-    if( !ConvFunc[ConvIdx( &entry->info )]( entry, from ) ) {
+    entry->ti.kind = k;
+    entry->ti.modifier = m;
+    entry->ti.size = s;
+    if( !ConvFunc[ConvIdx( &entry->ti )]( entry, from ) ) {
         Error( ERR_NONE, LIT_ENG( ERR_TYPE_CONVERSION ) );
     }
     entry->th = NULL;
@@ -769,27 +769,27 @@ static conv_class BinResult[NUM_CLASSES][NUM_CLASSES] = {
 /* HP4*/ { HP4,HP4,HP4,HP4,HP4,HP4,HP4,HP4,ERR,ERR,ERR,ERR,ERR,ERR,ERR,HP4,HP4,HP4,FP6,HP4}
 };
 
-static dip_type_info ResultInfo[] = {
-        {  1, TK_INTEGER,       TM_SIGNED },
-        {  1, TK_INTEGER,       TM_UNSIGNED },
-        {  2, TK_INTEGER,       TM_SIGNED },
-        {  2, TK_INTEGER,       TM_UNSIGNED },
-        {  4, TK_INTEGER,       TM_SIGNED },
-        {  4, TK_INTEGER,       TM_UNSIGNED },
-        {  8, TK_INTEGER,       TM_SIGNED },
-        {  8, TK_INTEGER,       TM_UNSIGNED },
-        {  4, TK_REAL,          TM_NONE },
-        {  8, TK_REAL,          TM_NONE },
-        { 10, TK_REAL,          TM_NONE },
-        {  8, TK_COMPLEX,       TM_NONE },
-        { 16, TK_COMPLEX,       TM_NONE },
-        { 20, TK_COMPLEX,       TM_NONE },
-        {  0, TK_STRING,        TM_NONE },
-        {  2, TK_POINTER,       TM_NEAR },
-        {  4, TK_POINTER,       TM_NEAR },
-        {  4, TK_POINTER,       TM_FAR },
-        {  6, TK_POINTER,       TM_FAR },
-        {  4, TK_POINTER,       TM_HUGE },
+static dig_type_info ResultInfo[] = {
+    {  1, TK_INTEGER,       TM_SIGNED },
+    {  1, TK_INTEGER,       TM_UNSIGNED },
+    {  2, TK_INTEGER,       TM_SIGNED },
+    {  2, TK_INTEGER,       TM_UNSIGNED },
+    {  4, TK_INTEGER,       TM_SIGNED },
+    {  4, TK_INTEGER,       TM_UNSIGNED },
+    {  8, TK_INTEGER,       TM_SIGNED },
+    {  8, TK_INTEGER,       TM_UNSIGNED },
+    {  4, TK_REAL,          TM_NONE },
+    {  8, TK_REAL,          TM_NONE },
+    { 10, TK_REAL,          TM_NONE },
+    {  8, TK_COMPLEX,       TM_NONE },
+    { 16, TK_COMPLEX,       TM_NONE },
+    { 20, TK_COMPLEX,       TM_NONE },
+    {  0, TK_STRING,        TM_NONE },
+    {  2, TK_POINTER,       TM_NEAR },
+    {  4, TK_POINTER,       TM_NEAR },
+    {  4, TK_POINTER,       TM_FAR },
+    {  6, TK_POINTER,       TM_FAR },
+    {  4, TK_POINTER,       TM_HUGE },
 };
 
 static void DoBinOp( stack_entry *left, stack_entry *right )
@@ -797,11 +797,11 @@ static void DoBinOp( stack_entry *left, stack_entry *right )
     conv_class      lclass;
     conv_class      rclass;
     conv_class      result_class;
-    dip_type_info   *result_info;
+    dig_type_info   *result_ti;
     bool            promote_left;
 
-    lclass = ConvIdx( &left->info );
-    rclass = ConvIdx( &right->info );
+    lclass = ConvIdx( &left->ti );
+    rclass = ConvIdx( &right->ti );
     if( lclass == ERR || rclass == ERR ) {
         Error( ERR_NONE, LIT_ENG( ERR_ILL_TYPE ) );
     }
@@ -809,20 +809,20 @@ static void DoBinOp( stack_entry *left, stack_entry *right )
     if( result_class == ERR ) {
         Error( ERR_NONE, LIT_ENG( ERR_TYPE_CONVERSION ) );
     }
-    if( left->info.kind == TK_ENUM ) {
-        result_info = &left->info;
-    } else if( right->info.kind == TK_ENUM ) {
-        result_info = &right->info;
+    if( left->ti.kind == TK_ENUM ) {
+        result_ti = &left->ti;
+    } else if( right->ti.kind == TK_ENUM ) {
+        result_ti = &right->ti;
     } else {
-        result_info = &ResultInfo[result_class];
+        result_ti = &ResultInfo[result_class];
     }
     promote_left = false;
     if( lclass != result_class ) {
         promote_left = true;
-        ConvertTo( left, result_info->kind, result_info->modifier, result_info->size );
+        ConvertTo( left, result_ti->kind, result_ti->modifier, result_ti->size );
     }
     if( rclass != result_class ) {
-        ConvertTo( right, result_info->kind, result_info->modifier, result_info->size );
+        ConvertTo( right, result_ti->kind, result_ti->modifier, result_ti->size );
     }
     /* set up result type in left operand */
     if( left->th != NULL && right->th != NULL ) {
@@ -845,7 +845,7 @@ void BinOp( stack_entry *left, stack_entry *right )
 
 void AddOp( stack_entry *left, stack_entry *right )
 {
-    switch( left->info.kind ) {
+    switch( left->ti.kind ) {
     case TK_POINTER:
     case TK_ADDRESS:
         break;
@@ -856,7 +856,7 @@ void AddOp( stack_entry *left, stack_entry *right )
 
 void ToItemMAD( stack_entry *entry, item_mach *tmp, mad_type_info *mti )
 {
-    unsigned            bytes;
+    dig_type_size       bytes;
     mad_type_info       src_mti;
 
     bytes = BITS2BYTES( mti->b.bits );

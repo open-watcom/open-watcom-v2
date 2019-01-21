@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
+* Copyright (c) 2009-2018 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -28,17 +28,20 @@
 *
 ****************************************************************************/
 
+
+#include "wipfc.hpp"
 #include "ctrlgrp.hpp"
 #include "errors.hpp"
+#include "outfile.hpp"
 
-STD1::uint32_t ControlGroup::write( std::FILE *out ) const
+
+dword ControlGroup::write( OutFile* out ) const
 {
-    STD1::uint32_t bytes( sizeof( STD1::uint16_t ) * ( buttonIndex.size() + 1 ) );
-    STD1::uint16_t items( static_cast< STD1::uint16_t >( buttonIndex.size() ) );
-    if( std::fwrite( &items, sizeof( STD1::uint16_t), 1, out) != 1 )
+    std::size_t size = static_cast< word >( _buttonIndex.size() );
+    // items count
+    if( out->put( static_cast< word >( size ) ) )
         throw FatalError( ERR_WRITE );
-    if( std::fwrite( &buttonIndex[0], sizeof( STD1::uint16_t), buttonIndex.size(), out) != buttonIndex.size() )
+    if( out->put( _buttonIndex ) )
         throw FatalError( ERR_WRITE );
-    return bytes;
+    return( static_cast< dword >( sizeof( word ) + size * sizeof( word ) ) );
 }
-

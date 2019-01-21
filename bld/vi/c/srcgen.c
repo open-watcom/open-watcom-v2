@@ -446,7 +446,7 @@ vi_rc PreProcess( const char *fn, sfile **sf, labels *lab )
             }
 #endif
             if( !AppendingFlag ) {
-                token = Tokenize( TokensCmdLine, tmp2, true );
+                token = Tokenize( CmdLineTokens, tmp2, true );
             } else {
                 token = TOK_INVALID;
             }
@@ -545,11 +545,11 @@ vi_rc PreProcess( const char *fn, sfile **sf, labels *lab )
                      * it isn't, then see if the next one is
                      * (i.e., look for <n> append)
                      */
-                    token = Tokenize( TokensEx, tmp2, false );
+                    token = Tokenize( ExCmdTokens, tmp2, false );
                     if( token == TOK_INVALID ) {
                         tmp = GetNextWord1( tmp, tmp2 );
                         if( *tmp2 != '\0' ) {
-                            token = Tokenize( TokensEx, tmp2, false );
+                            token = Tokenize( ExCmdTokens, tmp2, false );
                             if( token == EX_T_APPEND ) {
                                 AppendingFlag = true;
                             }

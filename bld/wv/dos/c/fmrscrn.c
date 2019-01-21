@@ -33,7 +33,6 @@
 #include <dos.h>
 #include <string.h>
 #include "dbgdefn.h"
-#include "kbio.h"
 #include "dbgmem.h"
 #include "stdui.h"
 #include "dosscrn.h"

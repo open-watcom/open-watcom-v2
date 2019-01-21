@@ -79,65 +79,56 @@ static bool copyResourcesFromRes( const char *full_filename )
     fp = RcIoOpenInput( full_filename, false );
     if( fp == NULL ) {
         RcError( ERR_CANT_OPEN_FILE, full_filename, strerror( errno ) );
-        goto HANDLE_ERROR;
-    }
-
-    error = WResReadDir( fp, dir, &dup_discarded );
-    if( error ) {
-        switch( LastWresStatus() ) {
-        case WRS_BAD_SIG:
-            RcError( ERR_INVALID_RES, full_filename );
-            break;
-        case WRS_BAD_VERSION:
-            RcError( ERR_BAD_RES_VER, full_filename );
-            break;
-        default:
-            RcError( ERR_READING_RES, full_filename, LastWresErrStr() );
-            break;
+        error = true;
+    } else {
+        error = WResReadDir( fp, dir, &dup_discarded );
+        if( error ) {
+            switch( LastWresStatus() ) {
+            case WRS_BAD_SIG:
+                RcError( ERR_INVALID_RES, full_filename );
+                break;
+            case WRS_BAD_VERSION:
+                RcError( ERR_BAD_RES_VER, full_filename );
+                break;
+            default:
+                RcError( ERR_READING_RES, full_filename, LastWresErrStr() );
+                break;
+            }
+        } else {
+            if( WResGetTargetOS( dir ) != WResGetTargetOS( CurrResFile.dir ) ) {
+                RcError( ERR_RES_OS_MISMATCH, full_filename );
+                error = true;
+            } else {
+                buffer = RESALLOC( BUFFER_SIZE );
+                wind = WResFirstResource( dir );
+                while( !WResIsEmptyWindow( wind ) ) {
+                    copyAResource( fp, &wind, buffer, full_filename );
+                    wind = WResNextResource( wind, dir );
+                }
+                RESFREE( buffer );
+            }
         }
-        goto HANDLE_ERROR;
-    }
-
-    if( WResGetTargetOS( dir ) != WResGetTargetOS( CurrResFile.dir ) ) {
-        RcError( ERR_RES_OS_MISMATCH, full_filename );
-        goto HANDLE_ERROR;
-    }
-    buffer = RESALLOC( BUFFER_SIZE );
-    wind = WResFirstResource( dir );
-    while( !WResIsEmptyWindow( wind ) ) {
-        copyAResource( fp, &wind, buffer, full_filename );
-        wind = WResNextResource( wind, dir );
-    }
-    RESFREE( buffer );
-    WResFreeDir( dir );
-    RESCLOSE( fp );
-    return( false );
-
-HANDLE_ERROR:
-    ErrorHasOccured = true;
-    WResFreeDir( dir );
-    if( fp != NULL )
         RESCLOSE( fp );
-    return( true );
+    }
+    WResFreeDir( dir );
+    if( error ) {
+        ErrorHasOccured = true;
+    }
+    return( error );
 }
 
 void SemWINAddResFile( char *filename )
 /*************************************/
 {
-    char                full_filename[_MAX_PATH];
+    char        full_filename[_MAX_PATH];
 
     if( RcFindSourceFile( filename, full_filename ) == -1 ) {
         RcError( ERR_CANT_FIND_FILE, filename );
-        goto HANDLE_ERROR;
+        ErrorHasOccured = true;
+    } else if( AddDependency( full_filename ) ) {
+        ErrorHasOccured = true;
+    } else if( copyResourcesFromRes( full_filename ) ) {
+        ErrorHasOccured = true;
     }
-    if( AddDependency( full_filename ) )
-        goto HANDLE_ERROR;
-    if( copyResourcesFromRes( full_filename ) )
-        goto HANDLE_ERROR;
-    RESFREE( filename );
-    return;
-
-HANDLE_ERROR:
-    ErrorHasOccured = true;
     RESFREE( filename );
 }

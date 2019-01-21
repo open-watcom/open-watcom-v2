@@ -29,9 +29,7 @@
 ****************************************************************************/
 
 
-#include "bool.h"
-#include "watcom.h"
-#include "cgstd.h"
+#include "_cgstd.h"
 #include "coderep.h"
 #include "regset.h"
 #include "generate.h"

@@ -1062,8 +1062,8 @@ static void handleHeader( int *start, SAREA *line )
 {
     int         cur;
 
-    cur = 0;
     if( strnicmp( helpInBuf, ":h", 2 ) == 0 ) {
+        cur = 0;
         for( ;; ) {
             if( !mygetline() )
                 break;
@@ -1073,7 +1073,7 @@ static void handleHeader( int *start, SAREA *line )
                 break;
             processLine( helpInBuf, helpOutBuf, cur, false );
             putline( helpOutBuf, cur );
-            cur ++;
+            cur++;
         }
         line->row = cur;
         uivfill( &helpScreen, *line, AT( ATTR_NORMAL ), UiGChar[UI_SBOX_HORIZ_LINE] );
@@ -1082,8 +1082,8 @@ static void handleHeader( int *start, SAREA *line )
         if( strnicmp( helpInBuf, ":eh", 3 ) == 0 ) {
             mygetline();
         }
+        *start = cur;
     }
-    *start = cur;
 }
 
 /*
@@ -1181,7 +1181,9 @@ static int dispHelp( char *str, VTAB *tab )
 
     line.height = 1;
     line.width = helpScreen.area.width;
+    line.row = 0;
     line.col = 0;
+    start = 0;
 
     topPos = HelpTell( helpFileHdl );
     mygetline();

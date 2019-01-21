@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2018 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -189,6 +189,7 @@ void CreateSpyBox( HWND parent )
             (HANDLE)SPY_LIST_BOX,               /* Window menu handle */
             Instance,                           /* Program instance handle */
             NULL );                             /* Create parameters */
+        SendMessage( SpyListBox, LVM_SETEXTENDEDLISTVIEWSTYLE, LVS_EX_FULLROWSELECT, LVS_EX_FULLROWSELECT );
         lvc.mask = LVCF_WIDTH | LVCF_TEXT | LVCF_SUBITEM;
         for( i = 0; i < NUM_COLUMNS; i++ ) {
             lvc.cx = columns[i].width;

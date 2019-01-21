@@ -366,17 +366,17 @@ static void WriteOS2Resources( FILE *res_fp, WResDir inRes, ResTable *outRes )
 }
 
 
-static unsigned long WriteTabList( name_list *val, unsigned long *pcount, bool upper )
-/************************************************************************************/
+static unsigned long WriteTabList( obj_name_list *val, unsigned long *pcount, bool upper )
+/****************************************************************************************/
 {
-    name_list           *node;
+    obj_name_list       *node;
     unsigned long       off;
     unsigned long       count;
 
     count = 0;
     off = 0;
     for( node = val; node != NULL; node = node->next ) {
-        off += WriteLoadU8Name( node->name, node->len, upper );
+        off += WriteLoadU8Name( node->name.u.ptr, node->len, upper );
         ++count;
     }
     *pcount = count;
@@ -412,8 +412,8 @@ static unsigned long ModRefTable( void )
 /**************************************/
 /* count total number of groups */
 {
-    name_list           *node;
-    name_list           *inode;
+    obj_name_list       *node;
+    obj_name_list       *inode;
     unsigned long       nodenum;
     unsigned long       off;
 
@@ -439,15 +439,15 @@ static size_t create_exp_extname( entry_export *exp, char *ext_name, bool ucase 
     size_t  len;
     size_t  i;
 
-    len = strlen( exp->name );
+    len = strlen( exp->name.u.ptr );
     if( len > 255 )
         len = 255;
     if( ucase ) {
         for( i = 0; i < len; ++i ) {
-            ext_name[i] = toupper( exp->name[i] );
+            ext_name[i] = toupper( exp->name.u.ptr[i] );
         }
     } else {
-        memcpy( ext_name, exp->name, len );
+        memcpy( ext_name, exp->name.u.ptr, len );
     }
     ext_name[len] = '\0';
     return( len );
@@ -512,7 +512,7 @@ unsigned long ResNonResNameTable( bool dores )
                 if( exp->impname != NULL ) {
                     AddImpLibEntry( exp->impname, ext_name, NOT_IMP_BY_ORDINAL );
                 } else {
-                    AddImpLibEntry( exp->sym->name, NULL, exp->ordinal );
+                    AddImpLibEntry( exp->sym->name.u.ptr, NULL, exp->ordinal );
                 }
             }
         }
@@ -692,15 +692,15 @@ void ChkOS2Exports( void )
         if( IS_SYM_ALIAS( symptr ) ) {
             symptr = UnaliasSym( ST_FIND, symptr );
             if( symptr == NULL || (symptr->info & SYM_DEFINED) == 0 ) {
-                LnkMsg( ERR+MSG_EXP_SYM_NOT_FOUND, "s", exp->sym->name );
+                LnkMsg( ERR+MSG_EXP_SYM_NOT_FOUND, "s", exp->sym->name.u.ptr );
                 continue;               // <----- DANGER weird control flow!
             } else if( exp->sym->info & SYM_WAS_LAZY ) {
-                LnkMsg( WRN+MSG_EXP_SYM_NOT_FOUND, "s", exp->sym->name );
+                LnkMsg( WRN+MSG_EXP_SYM_NOT_FOUND, "s", exp->sym->name.u.ptr );
             }
             // Keep the import name. If an alias is exported, we want the
             // alias name in the import lib, not the substitute name
             if( exp->impname == NULL ) {
-                exp->impname = ChkStrDup( exp->sym->name );
+                exp->impname = ChkStrDup( exp->sym->name.u.ptr );
             }
 
             exp->sym = symptr;

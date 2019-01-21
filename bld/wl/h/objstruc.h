@@ -32,6 +32,7 @@
 #include "orl.h"
 #include "hash.h"
 
+
 typedef struct file_list        FILE_LIST;
 typedef struct path_entry       PATH_ENTRY;
 typedef struct mod_entry        MOD_ENTRY;
@@ -121,7 +122,7 @@ typedef struct infilelist {
     unsigned long       currpos; // current position of the file.
     f_handle            handle;
     time_t              modtime;
-    char                *name;
+    name_strtab         name;
     enum infile_flags   flags;
 } infilelist;
 
@@ -233,12 +234,12 @@ typedef struct arcdata {
 
 #define DIST_ONLY_SIZE (2*sizeof(unsigned_16)+sizeof(dist_arc))
 
-typedef struct name_list {
-    struct name_list    *next;
-    size_t              len;
-    unsigned_32         num;
-    char                *name;          // NYI: make this vbl length again.
-} name_list;
+typedef struct obj_name_list {
+    struct obj_name_list    *next;
+    size_t                  len;
+    unsigned_32             num;
+    name_strtab             name;          // NYI: make this vbl length again.
+} obj_name_list;
 
 typedef struct odbimodinfo      ODBIMODINFO;    // defd in dbg information hdrs
 typedef struct dwarfmodinfo     DWARFMODINFO;
@@ -258,9 +259,9 @@ typedef struct mod_entry {
     } n;
     union {
         FILE_LIST       *source;
-        char            *fname;
+        name_strtab     fname;
     } f;
-    char                *name;
+    name_strtab         name;
     unsigned_32         location;
     symbol              *publist;
     SEGDATA             *segs;
@@ -299,10 +300,12 @@ typedef enum {
     CLASS_IS_FREE       = 0x80000000,   // not used, but guarantees 4 byte enum
 } class_status;
 
+#define EMIT_CLASS(c)   (((c)->flags & CLASS_NOEMIT) == 0)
+
 typedef struct class_entry {
     CLASS_ENTRY         *next_class;
     SEG_LEADER          *segs;
-    char                *name;
+    name_strtab         name;
     class_status        flags;
     section             *section;
     targ_addr           BaseAddr;   // Fixed location to of this class for loadfile
@@ -351,7 +354,7 @@ typedef struct group_entry {
 typedef struct seg_leader {
     SEG_LEADER          *next_seg;
     SEG_LEADER          *grp_next;
-    char                *segname;
+    name_strtab         segname;
     SEGDATA             *pieces;
     group_entry         *group;
     class_entry         *class;
@@ -411,6 +414,8 @@ enum {
     SEG_BOTH_MASK       = 0x8641    /* flags common to both structures */
 };
 
+#define EMIT_SEG(s)     (((s)->segflags & SEG_NOEMIT) == 0)
+
 enum {
     NOT_DEBUGGING_INFO  = 0x0000,
     MS_TYPE             = 0x0001,   /* microsoft type information         */
@@ -444,7 +449,7 @@ typedef struct segdata {
     virt_mem_ptr        u1;             // virtual memory pointer to data for this segment
     virt_mem            vm_data;        // virtual memory pointer to data for class copy data
     union {
-        const char      *name;          // name of the segment
+        name_strtab     name;           // name of the segment
         seg_leader      *leader;        // leader for the segment.
         SEGDATA         *sdata;         // for explicit comdats
     } u;
@@ -454,7 +459,7 @@ typedef struct segdata {
     } a;
     union {
         mod_entry       *mod;           // P2CV&DW: pointer to defining module.
-        char            *clname;        // INC: class name for segment
+        name_strtab     clname;         // INC: class name for segment
     } o;
     unsigned_32         addrinfo;       // P2VIDEO: offset into addrinfo of seg.
     unsigned_16         frame;          // the frame of an absolute segment.
@@ -492,12 +497,12 @@ typedef signed_32       ordinal_t;
 
 typedef struct dll_sym_info {
     union {
-        name_list       *modnum;        /* # of DLL in imported names table */
-        char            *modname;
+        obj_name_list   *modnum;        /* # of DLL in imported names table */
+        name_strtab     modname;
     } m;
     union {
-        name_list       *entry;         /* # of entry in DLL */
-        char            *entname;
+        obj_name_list   *entry;         /* # of entry in DLL */
+        name_strtab     entname;
         ordinal_t       ordinal;
     } u;
     bool                isordinal   : 1;

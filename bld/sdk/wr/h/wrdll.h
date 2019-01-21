@@ -70,7 +70,6 @@ typedef void (WINAPI *HELP_CALLBACK)(void);
 #include "wrrnames.h"
 #include "wrselft.h"
 #include "wrselimg.h"
-#include "wrwresid.h"
 #include "wrutil.h"
 #include "wrctl3d.h"
 

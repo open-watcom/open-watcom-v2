@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
+* Copyright (c) 2009-2018 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -42,7 +42,7 @@ class Controls;
 class PButton : public CtrlTag {
 public:
     PButton( Document* d, Element* p, const std::wstring* f, unsigned int r, unsigned int c ) :
-        CtrlTag( d, p, f, r, c ), res( 0 ) { };
+        CtrlTag( d, p, f, r, c ), _res( 0 ) { };
     ~PButton() { };
     Lexer::Token parse( Lexer* lexer );
     void buildText( Cell* cell ) { (void)cell; };
@@ -50,9 +50,10 @@ public:
 private:
     PButton( const PButton& rhs );              //no copy
     PButton& operator=( const PButton& rhs );   //no assignment
-    std::wstring id;
-    std::wstring text;      //button text
-    unsigned int res;
+
+    std::wstring        _id;
+    std::wstring        _text;      //button text
+    unsigned int        _res;
 };
 
 #endif //PBUTTON_INCLUDED

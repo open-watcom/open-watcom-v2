@@ -30,21 +30,21 @@
 ****************************************************************************/
 
 
-#include "cgstd.h"
+#include "_cgstd.h"
 #include "optwif.h"
 #include "model.h"
 #include "inslist.h"
 #include "encode.h"
 #include "optutil.h"
 #include "optmkins.h"
+#include "optins.h"
+#include "optpull.h"
+#include "optpush.h"
 
 
-extern ins_entry    *IsolatedCode( ins_entry * );
-extern ins_entry    *Untangle( ins_entry * );
-
-extern  void    RetAftrCall( ins_entry *ret_instr ) {
-/***************************************************/
-
+void    RetAftrCall( ins_entry *ret_instr )
+/*****************************************/
+{
     ins_entry   *call_instr;
     oc_class    call_attr;
     oc_class    ret_attr;
@@ -85,9 +85,9 @@ extern  void    RetAftrCall( ins_entry *ret_instr ) {
 }
 
 
-extern  void    JmpToRet( ins_entry *instr, ins_entry *ret ) {
-/************************************************************/
-
+void    JmpToRet( ins_entry *instr, ins_entry *ret )
+/**************************************************/
+{
   optbegin
     ret = NewInstr( &ret->oc );
     AddInstr( ret, instr );
@@ -98,9 +98,9 @@ extern  void    JmpToRet( ins_entry *instr, ins_entry *ret ) {
 }
 
 
-extern  bool    RetAftrLbl( ins_entry *ret ) {
-/********************************************/
-
+bool    RetAftrLbl( ins_entry *ret )
+/**********************************/
+{
     ins_entry       *ref;
     label_handle    lbl;
     ins_entry       *next;
@@ -128,9 +128,9 @@ extern  bool    RetAftrLbl( ins_entry *ret ) {
 }
 
 
-extern  void    MultiLineNums( ins_entry *ins ) {
-/***********************************************/
-
+void    MultiLineNums( ins_entry *ins )
+/*************************************/
+{
     ins_entry   *prev;
 
   optbegin

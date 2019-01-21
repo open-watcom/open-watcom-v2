@@ -286,7 +286,7 @@ void TestFileOperations( void )
     }
     _dos_findclose( &fileinfo );
     for( ctr = 0; ctr < MAX_OPEN; ++ctr ) {
-        if( ( flag >> ctr ) & 1 != 1 ) {
+        if( (( flag >> ctr ) & 1) != 1 ) {
             printf( "Couldn't find all the files created\n" );
             PROG_ABORT( __LINE__ );
         }

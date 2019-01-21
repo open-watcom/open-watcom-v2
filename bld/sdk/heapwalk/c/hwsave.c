@@ -30,11 +30,8 @@
 ****************************************************************************/
 
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <time.h>
 #include "heapwalk.h"
+#include <time.h>
 
 extern msglist Display_types[];
 extern msglist DPMI_Sort_types[];

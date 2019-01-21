@@ -75,10 +75,10 @@ void MemFree( void *ptr )
 /*
  * MemFreeList - free up memory
  */
-void MemFreeList( int count, char **ptr )
+void MemFreeList( list_linenum count, char **ptr )
 {
     if( ptr != NULL ) {
-        int i;
+        list_linenum i;
         for( i = 0; i < count; i++ ) {
             free( ptr[i] );
         }
@@ -135,7 +135,7 @@ void GetFromEnv( const char *what, char *path )
  */
 FILE *GetFromEnvAndOpen( const char *path )
 {
-    char        tmppath[FILENAME_MAX];
+    char        tmppath[_MAX_PATH];
 
     GetFromEnv( path, tmppath );
     if( tmppath[0] != '\0' ) {
@@ -247,8 +247,8 @@ bool SpecialOpen( const char *fn, GENERIC_FILE *gf )
      */
     gf->type = GF_FILE;
     gf->gf.a.currline = 0;
-    gf->data.f = GetFromEnvAndOpen( fn );
-    if( gf->data.f == NULL ) {
+    gf->data.fp = GetFromEnvAndOpen( fn );
+    if( gf->data.fp == NULL ) {
         return( false );
     }
     return( true );
@@ -260,7 +260,7 @@ bool SpecialOpen( const char *fn, GENERIC_FILE *gf )
  */
 void SpecialFclose( GENERIC_FILE *gf )
 {
-    fclose( gf->data.f );
+    fclose( gf->data.fp );
 
 } /* SpecialFclose */
 
@@ -271,7 +271,7 @@ bool SpecialFgets( char *buff, int max, GENERIC_FILE *gf )
 {
     size_t      i;
 
-    if( fgets( buff, max, gf->data.f ) == NULL ) {
+    if( fgets( buff, max, gf->data.fp ) == NULL ) {
         return( true );
     }
     gf->gf.a.currline++;

@@ -30,5 +30,9 @@
 ****************************************************************************/
 
 
-int     __umaskval = 0;         /* default file permission mask */
+#include "variety.h"
+#include <sys/types.h>
+#include "rtumask.h"
 
+
+mode_t  __umaskval = 0;         /* default file permission mask */

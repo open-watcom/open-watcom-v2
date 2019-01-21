@@ -25,7 +25,7 @@
 *
 *  ========================================================================
 *
-* Description:  Implementation of getsockopt() for Linux.
+* Description:  Implementation of getsockopt() for Linux and RDOS.
 *
 ****************************************************************************/
 
@@ -33,10 +33,14 @@
 #include "variety.h"
 #include <sys/types.h>
 #include <sys/socket.h>
+
+#if defined( __LINUX__ )
 #include "linuxsys.h"
+#endif
 
 _WCRTLINK int getsockopt( int s, int level, int optname, void *optval, socklen_t *optlen )
 {
+#if defined( __LINUX__ )
     u_long  args[5];
 
     args[0] = (u_long)s;
@@ -45,4 +49,9 @@ _WCRTLINK int getsockopt( int s, int level, int optname, void *optval, socklen_t
     args[3] = (u_long)optval;
     args[4] = (u_long)optlen;
     return( __socketcall( SYS_GETSOCKOPT, args ) );
+#elif defined( __RDOS__ )
+    return( -1 );
+#else
+    return( -1 );
+#endif
 }

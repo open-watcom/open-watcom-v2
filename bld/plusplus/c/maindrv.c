@@ -71,57 +71,57 @@ static IDEDRV info =
 };
 
 #ifndef USE_ARGV
-static char cmd_line[ 1024*8 ]; // - a buffer
+static char cmd_line[1024 * 8]; // - a buffer
 #endif
 
 int main(                       // MAIN-LINE FOR DLL DRIVER
-    #if !defined(RAW_CMDLINE)
+#if !defined(RAW_CMDLINE)
     int argc,                   // - arg count
     char **argv                 // - arg.s
-    #endif
+#endif
     )
 {
     int retcode;                // - return code
 
-    #if defined(USE_ARGV)
-        retcode = IdeDrvExecDLLArgv( &info, argc, argv );
-    #elif defined(wpp_drv)
-        argc = argc;
-        argv = argv;
-        getcmd( cmd_line );
-        retcode = IdeDrvExecDLL( &info, cmd_line );
-    #elif defined(RAW_CMDLINE)
-        size_t  len;
-        char    *lcl_argv[2];
+#if defined(USE_ARGV)
+    retcode = IdeDrvExecDLLArgv( &info, argc, argv );
+#elif defined(wpp_drv)
+    argc = argc;
+    argv = argv;
+    getcmd( cmd_line );
+    retcode = IdeDrvExecDLL( &info, cmd_line );
+#elif defined(RAW_CMDLINE)
+    size_t  len;
+    char    *lcl_argv[2];
 
-        len = _bgetcmd( NULL, INT_MAX );
-        lcl_argv[1] = NULL;
-        if( len >= sizeof( cmd_line ) ) {
-            lcl_argv[0] = CMemAlloc( len + 1 );
-        } else {
-            lcl_argv[0] = cmd_line;
-        }
-        _bgetcmd( lcl_argv[0], len + 1 );
-        retcode = IdeDrvExecDLL( &info, cmd_line );
-        if( len >= sizeof( cmd_line ) ) {
-            CMemFree( lcl_argv[0] );
-        }
-    #else
-        argc = argc;
-        cmd_line[0] = cmd_line[0];
-        retcode = IdeDrvExecDLL( &info, &argv[1] );
-    #endif
+    len = _bgetcmd( NULL, INT_MAX );
+    lcl_argv[1] = NULL;
+    if( len >= sizeof( cmd_line ) ) {
+        lcl_argv[0] = CMemAlloc( len + 1 );
+    } else {
+        lcl_argv[0] = cmd_line;
+    }
+    _bgetcmd( lcl_argv[0], len + 1 );
+    retcode = IdeDrvExecDLL( &info, cmd_line );
+    if( len >= sizeof( cmd_line ) ) {
+        CMemFree( lcl_argv[0] );
+    }
+#else
+    argc = argc;
+    cmd_line[0] = cmd_line[0];
+    retcode = IdeDrvExecDLL( &info, &argv[1] );
+#endif
     switch( retcode ) {
-      case IDEDRV_SUCCESS :
-      case IDEDRV_ERR_RUN :
-      case IDEDRV_ERR_RUN_EXEC :
-      case IDEDRV_ERR_RUN_FATAL :
+    case IDEDRV_SUCCESS :
+    case IDEDRV_ERR_RUN :
+    case IDEDRV_ERR_RUN_EXEC :
+    case IDEDRV_ERR_RUN_FATAL :
         break;
-      default :
+    default :
         retcode = IdeDrvPrintError( &info );
         break;
     }
-    return retcode;
+    return( retcode );
 }
 
 

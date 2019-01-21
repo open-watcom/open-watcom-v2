@@ -8,7 +8,7 @@
 #include "trpfile.h"
 
 
-dig_mad     read_mad_handle = MAD_NIL;
+dig_arch    read_mad_handle = DIG_ARCH_NIL;
 
 void    DumpPacket( unsigned char * pkt, unsigned short len, int tabit = 0 );
 
@@ -183,17 +183,17 @@ extern int SSD_Threads( int , unsigned char * , unsigned short );
 extern int SSD_Overlays( int, unsigned char * , unsigned short );
 extern int SSD_Capabilities( int, unsigned char * , unsigned short );
 
-static char *mad_desc[] = {
+static char *dig_arch_desc[] = {
     "Unknown",
-#define pick_mad(enum,file,desc) desc,
-#include "madarch.h"
-#undef pick_mad
+#define pick(enum,file,desc) desc,
+#include "digarch.h"
+#undef pick
 };
 
-static char *mad_os_desc[] = {
-#define pick_mad(enum,desc) desc,
-#include "mados.h"
-#undef pick_mad
+static char *dig_os_desc[] = {
+#define pick(enum,desc) desc,
+#include "digos.h"
+#undef pick
 };
 
 SVC_DECODE * get_supp_service_decoder( const char * service_name )
@@ -559,20 +559,20 @@ int handle_REQ_GET_SYS_CONFIG_REPLY( unsigned char * pkt, unsigned short )
     printf( "    FPU:        %u\n", pr->fpu );
     printf( "    OS Major:   %u\n", pr->osmajor );
     printf( "    OS Minor:   %u\n", pr->osminor );
-    if( pr->os < MAD_OS_MAX ) {
-        printf( "    OS:         %s\n", mad_os_desc[pr->os] );
+    if( pr->os < DIG_OS_MAX ) {
+        printf( "    OS:         %s\n", dig_os_desc[pr->os] );
     } else {
         printf( "    OS:         %u\n", pr->os );
     }
     printf( "    Huge Shift: %u\n", pr->huge_shift );
-    if( pr->mad < MAD_MAX ) {
-        printf( "    MAD:        %s\n", mad_desc[pr->mad] );
+    if( pr->arch < DIG_ARCH_MAX ) {
+        printf( "    MAD:        %s\n", dig_arch_desc[pr->arch] );
     } else {
-        printf( "    MAD:        0x%.04x\n", pr->mad );
+        printf( "    MAD:        0x%.04x\n", pr->arch );
     }
 
     /* Set so we can decode registers */
-    read_mad_handle = pr->mad;
+    read_mad_handle = pr->arch;
 
     return 1;
 }
@@ -1161,13 +1161,13 @@ void DumpRegistersMAX_X86( mad_registers * pregs )
 void DumpRegisters( mad_registers * pregs )
 {
     switch( read_mad_handle ) {
-    case MAD_X86:
+    case DIG_ARCH_X86:
         DumpRegistersMAX_X86( pregs );
         break;
-    case MAD_AXP:
-    case MAD_PPC:
-    case MAD_MIPS:
-    case MAD_MSJ:
+    case DIG_ARCH_AXP:
+    case DIG_ARCH_PPC:
+    case DIG_ARCH_MIPS:
+    case DIG_ARCH_MSJ:
     default:
         printf( "Cannot currently handle registers for MAD type %u\n", read_mad_handle );
         break;

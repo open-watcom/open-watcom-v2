@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
+* Copyright (c) 2009-2018 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -39,7 +39,6 @@
 #ifndef I1_INCLUDED
 #define I1_INCLUDED
 
-#include "config.hpp"
 #include <cstdio>
 #include <memory>
 #include "element.hpp"
@@ -54,30 +53,31 @@ public:
     Lexer::Token parse( Lexer* lexer );
     void buildIndex();
     void buildText( Cell* cell ) { (void)cell; };
-    void setRes( STD1::uint16_t r ) { parentRes = r; };
-    void setIdOrName( GlobalDictionaryWord* w ) { parentId = w; };
-    void addSecondary( IndexItem* i ) { secondary.push_back( i ); };
-    STD1::uint16_t secondaryCount() const
-        { return static_cast< STD1::uint16_t >( secondary.size() ); };
-    bool isGlobal() const { return primary->isGlobal(); };
-    std::size_t write( std::FILE* out );
-    bool operator==( const I1& rhs ) const{ return *primary == *rhs.primary; };
-    bool operator==( const std::wstring& rhs ) const { return *primary == rhs; };
-    bool operator<( const I1& rhs ) const { return *primary < *rhs.primary; };
+    void setRes( word r ) { _parentRes = r; };
+    void setIdOrName( GlobalDictionaryWord* w ) { _parentId = w; };
+    void addSecondary( IndexItem* i ) { _secondary.push_back( i ); };
+    word secondaryCount() const
+        { return static_cast< word >( _secondary.size() ); };
+    bool isGlobal() const { return _primary->isGlobal(); };
+    dword write( OutFile* out );
+    bool operator==( const I1& rhs ) const{ return *_primary == *rhs._primary; };
+    bool operator==( const std::wstring& rhs ) const { return *_primary == rhs; };
+    bool operator<( const I1& rhs ) const { return *_primary < *rhs._primary; };
 private:
     I1( const I1& rhs );                //no copy
     I1& operator=( const I1& rhs );     //no assignment
-    std::auto_ptr< IndexItem > primary;
-    std::vector< IndexItem* > secondary;
+    Lexer::Token parseAttributes( Lexer* lexer );
+
+    std::auto_ptr< IndexItem >  _primary;
+    std::vector< IndexItem* >   _secondary;
     typedef std::vector< IndexItem* >::iterator IndexIter;
     typedef std::vector< IndexItem* >::const_iterator ConstIndexIter;
-    std::vector< std::wstring > synRoots;
+    std::vector< std::wstring > _synRoots;
     typedef std::vector< std::wstring >::iterator SynIter;
     typedef std::vector< std::wstring >::const_iterator ConstSynIter;
-    std::wstring id;
-    GlobalDictionaryWord* parentId;
-    STD1::uint16_t parentRes;
-    Lexer::Token parseAttributes( Lexer* lexer );
+    std::wstring                _id;
+    GlobalDictionaryWord*       _parentId;
+    word                        _parentRes;
 };
 
 #endif //I1_INCLUDED

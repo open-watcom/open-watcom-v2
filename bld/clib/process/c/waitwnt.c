@@ -36,7 +36,7 @@
 #include "rterrno.h"
 #include "thread.h"
 
-_WCRTLINK int wait( int *status )
+_WCRTLINK pid_t wait( int *status )
 {
     _RWD_errno = ECHILD;
     return( -1 );

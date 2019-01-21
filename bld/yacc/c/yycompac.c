@@ -1,37 +1,4 @@
-/****************************************************************************
-*
-*                            Open Watcom Project
-*
-*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
-*
-*  ========================================================================
-*
-*    This file contains Original Code and/or Modifications of Original
-*    Code as defined in and that are subject to the Sybase Open Watcom
-*    Public License version 1.0 (the 'License'). You may not use this file
-*    except in compliance with the License. BY USING THIS FILE YOU AGREE TO
-*    ALL TERMS AND CONDITIONS OF THE LICENSE. A copy of the License is
-*    provided with the Original Code and Modifications, and is also
-*    available at www.sybase.com/developer/opensource.
-*
-*    The Original Code and all software distributed under the License are
-*    distributed on an 'AS IS' basis, WITHOUT WARRANTY OF ANY KIND, EITHER
-*    EXPRESS OR IMPLIED, AND SYBASE AND ALL CONTRIBUTORS HEREBY DISCLAIM
-*    ALL SUCH WARRANTIES, INCLUDING WITHOUT LIMITATION, ANY WARRANTIES OF
-*    MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, QUIET ENJOYMENT OR
-*    NON-INFRINGEMENT. Please see the License for the specific language
-*    governing rights and limitations under the License.
-*
-*  ========================================================================
-*
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
-*
-****************************************************************************/
 
-
-extern int              yylex();
-extern void             yyerror();
 
 // For now, omit error checking
 // define OMIT_ERROR_RECOVERY
@@ -61,7 +28,7 @@ extern void             yyerror();
 #endif
 
 typedef struct packed_action {
-    unsigned short      token : 12;
+    unsigned short      token       : 12;
     unsigned short      high_action : 4;
     unsigned char       low_action;
 } packed_action;
@@ -71,16 +38,10 @@ typedef struct packed_action {
 #define _check( packed )        (packed).token
 #define _action( packed)        ((packed).low_action + ((packed).high_action << 8))
 
-
+
 
 #ifndef YYSTYPE
 #define YYSTYPE         int
-#endif
-
-#ifndef __TURBOC__
-YYSTYPE yylval = {0};
-#else
-YYSTYPE yylval;
 #endif
 
 #define yyerrok         yyerrflag = 0
@@ -96,17 +57,22 @@ YYSTYPE yylval;
 #define YYERROR         goto yyerrlab
 #endif
 
-static void             actions( unsigned short production, YYSTYPE * yyvp );
+extern int              yylex( void );
+extern void             yyerror( void );
 
-static YYACTTYPE find_action( unsigned base, YYCHKTYPE lookup )
+YYSTYPE yylval = {0};
+
+static void             actions( YYPRODTYPE yyprod, YYSTYPE *yyvp );
+
+static YYACTTYPE find_action( YYACTTYPE base, YYTOKENTYPE yytoken )
 {
-    packed_action YYFAR *       pack;
-    packed_action YYFAR *       probe;
-    YYCHKTYPE                   check;
+    packed_action YYFAR *pack;
+    packed_action YYFAR *probe;
+    YYCHKTYPE           check;
 
     // yychktab[base] is parent + YYPARENT
     // yyacttab[base] is default reduction
-    for(;;) {   // Chase up through parent productions
+    for( ;; ) {     // Chase up through parent productions
         pack = yyacttab + base;
 #if !defined(OMIT_ERROR_RECOVER)
         if( _check( *pack ) < YYPARENT ) {
@@ -116,8 +82,9 @@ static YYACTTYPE find_action( unsigned base, YYCHKTYPE lookup )
 #endif
         for( probe = pack + 1; ; ++probe ) {
             check = _check( *probe );
-            if( check >= YYPARENT ) break;
-            if( check == lookup ) {
+            if( check >= YYPARENT )
+                break;
+            if( check == yytoken ) {
                 return( _action( *probe ) );
             }
         }
@@ -130,16 +97,18 @@ static YYACTTYPE find_action( unsigned base, YYCHKTYPE lookup )
     }
 }
 
-static YYACTTYPE find_default( unsigned base )
+static YYACTTYPE find_default( YYACTTYPE base )
 {
-    packed_action YYFAR *       pack;
-    YYACTTYPE                   action;
+    packed_action YYFAR *pack;
+    YYACTTYPE           yyaction;
 
-    for(;;) {
+    for( ;; ) {
         pack = yyacttab + base;
-        action = _action( *pack );
-        if( action >= YYUSED ) break;           // Found a reduction
-        if( action == YYNOACTION ) break;       // Default is error
+        yyaction = _action( *pack );
+        if( yyaction >= YYUSED )
+            break;                              // Found a reduction
+        if( yyaction == YYNOACTION )
+            break;                              // Default is error
         // Check parent production for default
         base = _check( *pack ) - YYPARENT;
         if( base == YYUSED ) {
@@ -147,52 +116,53 @@ static YYACTTYPE find_default( unsigned base )
             return( YYNOACTION );
         }
     }
-    return( action );
+    return( yyaction );
 }
 
-yyparse()
+int yyparse( void )
 {
     unsigned short production;
-    unsigned short action;
-    unsigned short token;
-    unsigned short yys[MAXDEPTH], *yysp;
+    YYACTTYPE yyaction;
+    YYTOKENTYPE yytoken;
+    YYACTTYPE yys[MAXDEPTH], *yysp;
     YYSTYPE yyv[MAXDEPTH], *yyvp;
     unsigned short plen, lhs;
 #if !defined(OMIT_ERROR_RECOVERY)
-    unsigned short yyerrflag;
+    unsigned short  yyerrflag;
 
     yyerrflag = 0;
 #endif
     yysp = yys;
     yyvp = yyv;
     *yysp = YYSTART;
-    token = yylex();
-    for(;;) {   /* parse loop */
-        if( yysp >= &yys[MAXDEPTH-1] ) {
+    yytoken = yylex();
+    for( ;; ) {     /* parse loop */
+        if( yysp >= &yys[MAXDEPTH - 1] ) {
             yyerror( "parse stack overflow" );
             YYABORT;
         }
-        action = find_action( *yysp, token );
-        if( action == YYNOACTION ) {
+        yyaction = find_action( *yysp, yytoken );
+        if( yyaction == YYNOACTION ) {
             // No action -- look for default action
-            action = find_default( *yysp );
-            if( action == YYNOACTION ) {
+            yyaction = find_default( *yysp );
+            if( yyaction == YYNOACTION ) {
 #if defined(OMIT_ERROR_RECOVERY)
                 yyerror( "syntax error" );
                 YYABORT;
 #else
                 // No default action either -- error!
                 switch( yyerrflag ) {
-                  case 0:
+                case 0:
                     yyerror( "syntax error" );
-                    yyerrlab:
+                    YYERROR;
+yyerrlab:
                 case 1:
                 case 2:
                     yyerrflag = 3;
-                    for(;;) {
+                    for( ;; ) {
                         // Look for a shift rule for YYERRTOKEN
-                        action = find_action( *yysp, YYERRTOKEN );
-                        if( action != YYNOACTION && action < YYUSED ) {
+                        yyaction = find_action( *yysp, YYERRTOKEN );
+                        if( yyaction != YYNOACTION && action < YYUSED ) {
                             break;      // found error rule
                         }
                         if( yysp == yys ) {
@@ -201,39 +171,38 @@ yyparse()
                         --yysp;
                         --yyvp;
                     }
-                    *++yysp = action;
+                    *++yysp = yyaction;
                     ++yyvp;
                     continue;           /* Through parse loop again */
                 case 3:
-                    if( token == 0 ) {  /* EOF token */
+                    if( yytoken == YYEOFTOKEN ) {
                         YYABORT;
                     }
-                    token = yylex();
+                    yytoken = yylex();
                     continue;           /* Through parse loop again */
                 }
 #endif
             }
         }
-        if( action < YYUSED ) {
+        if( yyaction < YYUSED ) {
             // Shift to new state 'action'
-            if( action == YYSTOP ) {
+            if( yyaction == YYSTOP ) {
                 YYACCEPT;
-            } else {
-                *++yysp = action;
-                *++yyvp = yylval;
-#if !defined(OMIT_ERROR_RECOVERY)
-                if( yyerrflag )
-                    --yyerrflag;
-#endif
-                token = yylex();
             }
+            *++yysp = yyaction;
+            *++yyvp = yylval;
+#if !defined(OMIT_ERROR_RECOVERY)
+            if( yyerrflag )
+                --yyerrflag;
+#endif
+            yytoken = yylex();
         } else {
             // Reduce to production indicated by action
             // Production is
             //  target : token_or_target1 ...
             //
             // yyvp[] are the lexical values ($1, $2, etc.)
-            production = action - YYUSED;
+            production = yyaction - YYUSED;
             lhs = yyprodtab[production];
             // Mask out length & lhs
             plen = lhs >> YYPRODSIZE;
@@ -246,14 +215,14 @@ yyparse()
                 YYABORT;
             }
 #endif
-            action = find_action( *yysp, lhs );
+            yyaction = find_action( *yysp, lhs );
 #if !defined(OMIT_ERROR_RECOVERY)
-            if( action == YYNOACTION ) {
+            if( yyaction == YYNOACTION ) {
                 YYPRINT( "missing nonterminal\n" );
                 YYABORT;
             }
 #endif
-            *++yysp = action;
+            *++yysp = yyaction;
             ++yyvp;
             actions( production, yyvp );
         }
@@ -262,10 +231,10 @@ yyparse()
 
 static void actions( unsigned short production, YYSTYPE * yyvp )
 {
-    YYSTYPE             yyval;
+    YYSTYPE         yyval;
 
     switch( production ) {
-
+
     default:
         // No action required
         return;

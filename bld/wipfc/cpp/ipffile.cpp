@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
+* Copyright (c) 2009-2018 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -27,85 +27,136 @@
 * Description:  IPF Input file reader
 *
 ****************************************************************************/
+
+#include "wipfc.hpp"
+#include <cstdlib>
+#include <cstring>
+#include <climits>
 #include "ipffile.hpp"
 #include "errors.hpp"
 #include "util.hpp"
-#include <cstdlib>
-#if !defined( __UNIX__ ) && !defined( __APPLE__ )
-    #include <mbctype.h>
-#endif
+#include "outfile.hpp"
+#include "nls.hpp"
+#include "iculoadr.hpp"
 
-IpfFile::IpfFile( const std::wstring*  fname ) : IpfData(), fileName ( fname ),
-    ungottenChar( WEOF ), ungotten( false )
+
+IpfFile::IpfFile( const std::wstring* wfname, Nls *nls ) : IpfData(),
+    _fileName( wfname ), _ungottenChar( WEOF ), _ungotten( false ), _pos( 0 )
 {
-    std::string buffer;
-    wtombstring( *fname, buffer );
-    if(( stream = std::fopen( buffer.c_str(), "rb" ) ) == 0)
-        throw FatalIOError( ERR_OPEN, *fileName );
+    UErrorCode err = U_ZERO_ERROR;
+
+    (void)nls;
+
+    std::string sfname( def_wtomb_string( *_fileName ) );
+    if( (_stream = std::fopen( sfname.c_str(), "rb" )) == 0 ) {
+        throw FatalIOError( ERR_OPEN, *_fileName );
+    }
+    _icu = nls->getICU();
+    _converter = _icu->clone( &err );
 }
+
+IpfFile::IpfFile( const std::string& sfname, const std::wstring* wfname, Nls *nls ) : IpfData(),
+    _fileName( wfname ), _ungottenChar( WEOF ), _ungotten( false ), _pos( 0 )
+{
+    UErrorCode err = U_ZERO_ERROR;
+
+    (void)nls;
+
+    if( (_stream = std::fopen( sfname.c_str(), "rb" )) == 0 ) {
+        throw FatalIOError( ERR_OPEN, *_fileName );
+    }
+    _icu = nls->getICU();
+    _converter = _icu->clone( &err );
+}
+
+IpfFile::~IpfFile()
+{
+    if( _stream ) {
+        std::fclose( _stream );
+    }
+    _wbuffer.erase();
+    _icu->close( _converter );
+}
+
 /*****************************************************************************/
 //Read a character
 //Returns EOB if end-of-file reached
 std::wint_t IpfFile::get()
 {
-#if defined( __UNIX__ ) || defined( __APPLE__ )
-    std::wint_t ch( 0 );
-    if( ungotten ) {
-        ch = ungottenChar;
-        ungotten = false;
+    std::wint_t     ch;
+
+    if( _ungotten ) {
+        ch = _ungottenChar;
+        _ungotten = false;
+    } else {
+        ch = getwc();
     }
-    else
-        ch = std::fgetwc( stream );
-    if( ch == L'\r' )
-        ch = std::fgetwc( stream );
-#else
-    //can't use OW's fgetwc because it always reads 2 bytes in binary mode
-    std::wint_t ch( readMBChar() );
-    if( ch == L'\r' )
-        ch = readMBChar();
-#endif
+    if( ch == L'\r' ) {
+        ch = getwc();
+    }
     incCol();
     if( ch == L'\n' ) {
         incLine();
         resetCol();
-    }
-    else if( ch == WEOF ) {
+    } else if( ch == WEOF ) {
         ch = EOB;
-        if( !std::feof( stream ) )
-            throw FatalIOError( ERR_READ, *fileName );
+        if( !std::feof( _stream ) ) {
+            throw FatalIOError( ERR_READ, *_fileName );
+        }
     }
-    return ch;
+    return( ch );
 }
 /*****************************************************************************/
 void IpfFile::unget( wchar_t ch )
 {
-    //std::ungetwc( ch, stream );
-    ungottenChar = ch;
-    ungotten = true;
+    //std::ungetwc( ch, _stream );
+    _ungottenChar = ch;
+    _ungotten = true;
     decCol();
-    if( ch == L'\n' )
+    if( ch == L'\n' ) {
         decLine();
+    }
 }
-/*****************************************************************************/
-#if !defined( __UNIX__ ) && !defined( __APPLE__ )
-std::wint_t IpfFile::readMBChar()
+
+std::wint_t IpfFile::getwc()
+/**************************/
 {
-    wchar_t ch = 0;
-    if( ungotten ) {
-        ch = ungottenChar;
-        ungotten = false;
-    }
-    else {
-        char    mbc[ MB_LEN_MAX ];
-        if( std::fread( &mbc[0], sizeof( char ), 1, stream ) != 1 )
-            return WEOF;
-        else if( _ismbblead( mbc[0] ) ) {
-            if( std::fread( &mbc[1], sizeof( char ), 1, stream ) != 1 )
-                return WEOF;
+    // read UNICODE character from internal buffer
+    if( _pos >= _wbuffer.size() ) {
+        _pos = 0;
+        if( gets( false ) == NULL ) {
+            return( WEOF );
         }
-        if( std::mbtowc( &ch, mbc, MB_CUR_MAX ) < 0 )
-            throw FatalError( ERR_T_CONV );
     }
-    return ch;
+    return _wbuffer[_pos++];
 }
-#endif
+
+const std::wstring * IpfFile::gets( bool removeEOL )
+/**************************************************/
+{
+    UErrorCode  err = U_ZERO_ERROR;
+    char        sbuffer[512];
+    bool        eol;
+    std::string buffer;
+
+    _wbuffer = L"";
+    eol = false;
+    // read MBCS/SBCS/UTF8 input line from file
+    while( !eol && std::fgets( sbuffer, sizeof( sbuffer ), _stream ) != NULL ) {
+        std::size_t len = std::strlen( sbuffer );
+        eol = killEOL( sbuffer + len - 1, removeEOL );
+        buffer += sbuffer;
+    }
+    if( buffer.size() > 0 || eol ) {
+        // input line conversion from MBCS/SBCS/UTF8 to UNICODE (by ICU converter)
+        const char *start = buffer.c_str();
+        const char *end = start + buffer.size();
+        while( start < end ) {
+            UChar32 uc;
+            uc = _icu->getNextUChar( _converter, &start, end, &err );
+            _wbuffer += static_cast< wchar_t >( uc );
+        }
+        return( &_wbuffer );
+    }
+    return( NULL );
+}

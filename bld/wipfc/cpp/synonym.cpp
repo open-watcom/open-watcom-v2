@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
+* Copyright (c) 2009-2018 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -28,23 +28,39 @@
 *
 ****************************************************************************/
 
+
+#include "wipfc.hpp"
 #include "synonym.hpp"
 #include "errors.hpp"
+#include "outfile.hpp"
 
-void Synonym::write( std::FILE* out )
+
+void Synonym::write( OutFile* out )
 {
-    offset = std::ftell( out );
-    unsigned short int size( 1 );
+    // convert wide vector _synonyms to mbcs vector synonyms
+    std::vector< std::string > synonyms;
+    for( SynonymWIter itr = _synonyms.begin(); itr != _synonyms.end(); ++itr ) {
+        std::string buffer( out->wtomb_string( *itr ) );
+        if( buffer.size() > 255 )
+            buffer.erase( 255 );
+        synonyms.push_back( buffer );
+    }
+    // process mbcs vector
+    _offset = out->tell();
+    std::size_t size = 1;
     for( SynonymIter itr = synonyms.begin(); itr != synonyms.end(); ++itr )
-        size += static_cast< unsigned short int >( itr->size() );
-    if( std::fwrite( &size, sizeof( unsigned short int ), 1, out ) != 1 )
+        size += itr->size();
+    if( out->put( static_cast< word >( size ) ) )
         throw FatalError( ERR_WRITE );
     for( SynonymIter itr = synonyms.begin(); itr != synonyms.end(); ++itr ) {
-        unsigned char length( static_cast< unsigned char >( itr->size() ) );
-        if( std::fputc( length, out ) == EOF ||
-            std::fwrite( itr->data(), sizeof( unsigned char ), length, out ) != length )
+        byte length( static_cast< byte >( itr->size() ) );
+        if( out->put( length ) )
             throw FatalError( ERR_WRITE );
+        if( out->put( *itr ) ) {
+            throw FatalError( ERR_WRITE );
+        }
     }
-    if( std::fputc( '\0', out ) == EOF )
+    if( out->put( static_cast< byte >( '\0' ) ) ) {
         throw FatalError( ERR_WRITE );
+    }
 }

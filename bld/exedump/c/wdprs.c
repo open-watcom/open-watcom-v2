@@ -113,7 +113,7 @@ void Putdecl( unsigned_32 num, unsigned_16 len )
 void Putdecl64( long long num, unsigned_16 len )
 /**********************************************/
 {
-    Putdecbz( num /10, len - 1 );
+    Putdecbz( (unsigned_32)( num / 10 ), len - 1 );
     Wdputc( num % 10 + '0' );
 }
 
@@ -148,9 +148,8 @@ void Putdecbz( unsigned_32 num, unsigned_16 len )
 /***********************************************/
 {
     if( num == 0 ) {
-        while( len > 1 ) {
+        while( len-- > 1 ) {
             Wdputc( ' ' );
-            len--;
         }
         Wdputc( ' ' );
     } else {
@@ -189,9 +188,8 @@ void Putdecbz64( long long num, unsigned_16 len )
 /***********************************************/
 {
     if( num == 0 ) {
-        while( len > 1 ) {
+        while( len-- > 1 ) {
             Wdputc( ' ' );
-            len--;
         }
         Wdputc( '0' );
     } else {
@@ -203,9 +201,8 @@ void Putdecsbz( signed_32 num, unsigned_16 len )
 /**********************************************/
 {
     if( num == 0 ) {
-        while( len > 1 ) {
+        while( len-- > 1 ) {
             Wdputc( ' ' );
-            len--;
         }
         Wdputc( '0' );
     } else if( num < 0 ) {
@@ -217,8 +214,8 @@ void Putdecsbz( signed_32 num, unsigned_16 len )
 
 /* 16/32-bit byte swapping routines */
 
-uint_32 get_u32( uint_32 *src )
-/*****************************/
+unsigned_32 get_u32( unsigned_32 *src )
+/*************************************/
 {
     if( Byte_swap ) {
         return( SWAPNC_32( *src ) );
@@ -227,8 +224,8 @@ uint_32 get_u32( uint_32 *src )
     }
 }
 
-int_32 get_s32( int_32 *src )
-/***************************/
+signed_32 get_s32( signed_32 *src )
+/*********************************/
 {
     if( Byte_swap ) {
         return( SWAPNC_32( *src ) );
@@ -237,8 +234,8 @@ int_32 get_s32( int_32 *src )
     }
 }
 
-uint_16 get_u16( uint_16 *src )
-/*****************************/
+unsigned_16 get_u16( unsigned_16 *src )
+/*************************************/
 {
     if( Byte_swap ) {
         return( SWAPNC_16( *src ) );
@@ -247,8 +244,8 @@ uint_16 get_u16( uint_16 *src )
     }
 }
 
-int_16 get_s16( int_16 *src )
-/***************************/
+signed_16 get_s16( signed_16 *src )
+/*********************************/
 {
     if( Byte_swap ) {
         return( SWAPNC_16( *src ) );

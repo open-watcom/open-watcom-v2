@@ -34,8 +34,6 @@
 
 #include "mtarget.h"
 
-#define BACKSLASH_S "\\"
-
 extern RET_T    ExecCList( CLIST *clist );
 extern INT32    ExecCommand( char *line );
 extern void     ExecInit( void );

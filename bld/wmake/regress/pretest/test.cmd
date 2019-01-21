@@ -1,106 +1,73 @@
 @echo off
-ECHO # ===================================
-ECHO # Start DOPRE
-ECHO # ===================================
 
+set ERRORS=0
+
+ECHO # ===================================
+ECHO # Preprocessor IF Tests
+ECHO # ===================================
 
 if .%2 == . goto usage
+set PRG=%1
+set ERRLOG=%2
 
-ECHO # -----------------------------
-ECHO #   Test 1
-ECHO # -----------------------------
-%1 -h -f pre01 pre01 -f pre02 pre02
-if errorlevel 1 goto err1
-    echo # Test1 successful
-    goto test2
-:err1
-    echo ## PRETEST ## >> %2
-    echo Error: Test1 unsuccessful!!! | tee -a %2
+set TEST=01
+call :header
+%1 -h -f pre%TEST%a pre%TEST%a -f pre%TEST%b pre%TEST%b
+call :result
 
+set TEST=02
+call :header
+%1 -h -f pre%TEST% pre%TEST% > test%TEST%.lst 2>&1
+diff -i pre%TEST%.chk test%TEST%.lst
+call :result
 
-:test2
-ECHO # -----------------------------
-ECHO #   Test 2
-ECHO # -----------------------------
-if exist tmp.out del tmp.out
-%1 -h -f pre03 pre03 > tmp.out 2>&1
-diff -i pre03.chk tmp.out
-if errorlevel 1 goto err2
-    echo # Test2 successful
-    goto test3
-:err2
-    echo ## PRETEST ## >> %2
-    echo Error: Test2 unsuccessful!!! | tee -a %2
+set TEST=03
+call :header
+%1 -h -f pre%TEST% pre%TEST%
+call :result
 
-:test3
-ECHO # -----------------------------
-ECHO #   Test 3
-ECHO # -----------------------------
-%1 -h -f pre04 pre04
-if errorlevel 1 goto err3
-    echo # Test3 successful
-    goto test4
-:err3
-    echo ## PRETEST ## >> %2
-    echo Error: Test3 unsuccessful!!! | tee -a %2
+set TEST=04
+call :header
+%1 -h -f pre%TEST% pre%TEST%
+call :result
 
-:test4
-ECHO # -----------------------------
-ECHO #   Test 4
-ECHO # -----------------------------
-%1 -h -f pre05 pre05
-if errorlevel 1 goto err4
-    echo # Test 4 successful
-    goto test5
-:err4
-    echo ## PRETEST ## >> %2
-    echo Error: Test 4 unsuccessful!!! | tee -a %2
+set TEST=05
+call :header
+%1 -h -f pre%TEST% pre%TEST%
+call :result
 
+set TEST=06
+call :header
+%1 -h -f pre%TEST% > test%TEST%.lst 2>&1
+diff -i pre%TEST%.chk test%TEST%.lst
+call :result
 
-:test5
-ECHO # -----------------------------
-ECHO #   Test 5
-ECHO # -----------------------------
-%1 -h -f pre06 pre06
-if errorlevel 1 goto err5
-    echo # Test 5 successful
-    goto test6
-:err5
-    echo ## PRETEST ## >> %2
-    echo Error: Test 5 unsuccessful!!! | tee -a %2
+set TEST=07
+call :header
+%1 -h -f pre%TEST% > test%TEST%.lst 2>&1
+call :result a
+diff pre%TEST%.chk test%TEST%.lst
+call :result b
 
+if %ERRORS% == 0 del *.lst
+goto end
 
-:test6
-ECHO # -----------------------------
-ECHO #   Test 6
-ECHO # -----------------------------
-del tmp.out
-%1 -h -f pre07 > tmp.out 2>&1
-diff -i pre07.chk tmp.out
-if errorlevel 1 goto err6
-    echo # Test 6 successful
-    goto test7
-:err6
-    echo ## PRETEST ## >> %2
-    echo Error: Test 6 unsuccessful!!! | tee -a %2
-
-:test7
-ECHO # -----------------------------
-ECHO #   Test 7
-ECHO # -----------------------------
-del tmp.out
-%1 -h -f pre08 > tmp.out 2>&1
-if errorlevel 1 goto err7
-diff pre08.chk tmp.out
-if errorlevel 1 goto err7
-    echo # Test 7 successful
-    goto test8
-:err7
-    echo ## PRETEST ## >> %2
-    echo Error: Test 7 unsuccessful!!! | tee -a %2
-:test8
-goto done
 :usage
-echo usage: %0 prgname errorfile
-:done
-del tmp.out
+    echo usage: %0 prgname errorfile
+goto end
+
+:header
+    echo # ---------------------------
+    echo #  For Loop Test %TEST%
+    echo # ---------------------------
+    goto end
+
+:result
+    if errorlevel 1 goto resulterr
+    @echo #        Test %1 successful
+goto end
+:resulterr
+    @echo ## FORTEST %TEST% ## >> %ERRLOG%
+    @echo # Error: Test %1 unsuccessful!!! | tee -a %ERRLOG%
+    set ERRORS=1
+:end

@@ -30,7 +30,6 @@
 ****************************************************************************/
 
 
-#include <stdlib.h>
 #include "heapwalk.h"
 
 const char      *HeapWalkName;

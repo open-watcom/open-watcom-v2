@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,8 +35,10 @@
 #include "widechar.h"
 #include <stdlib.h>
 #include <string.h>
-#if !defined( __WIDECHAR__ ) && !defined( __UNIX__ )
+#if !defined( __WIDECHAR__ )
+  #if !defined( __UNIX__ ) && !defined( __RDOS__ ) && !defined( __RDOSDEV__ )
     #include <mbstring.h>
+  #endif
 #endif
 #include "pathmac.h"
 
@@ -60,7 +63,7 @@ static CHAR_TYPE *pcopy( CHAR_TYPE **pdst, CHAR_TYPE *dst, const CHAR_TYPE *b_sr
     if( len >= _MAX_PATH2 ) {
         len = _MAX_PATH2 - 1;
     }
-#if defined( __WIDECHAR__ ) || defined( __UNIX__ )
+#if defined( __WIDECHAR__ ) || defined( __UNIX__ ) || defined( __RDOS__ ) || defined( __RDOSDEV__ )
     memcpy( dst, b_src, len * CHARSIZE );
     dst[len] = NULLCHAR;
     return( dst + len + 1 );
@@ -96,7 +99,7 @@ _WCRTLINK void  __F_NAME(_splitpath2,_wsplitpath2)( CHAR_TYPE const *inp, CHAR_T
                 break;
             if( *inp == STRING( '.' ) )
                 break;
-#if defined( __WIDECHAR__ ) || defined( __UNIX__ )
+#if defined( __WIDECHAR__ ) || defined( __UNIX__ ) || defined( __RDOS__ ) || defined( __RDOSDEV__ )
             ++inp;
 #else
             inp = (char *)_mbsinc( (unsigned char *)inp );
@@ -129,7 +132,7 @@ _WCRTLINK void  __F_NAME(_splitpath2,_wsplitpath2)( CHAR_TYPE const *inp, CHAR_T
     startp = inp;
 
     for( ;; ) {
-#if defined( __WIDECHAR__ ) || defined( __UNIX__ )
+#if defined( __WIDECHAR__ ) || defined( __UNIX__ ) || defined( __RDOS__ ) || defined( __RDOSDEV__ )
         ch = *inp;
 #else
         ch = _mbsnextc( (unsigned char *)inp );
@@ -141,7 +144,7 @@ _WCRTLINK void  __F_NAME(_splitpath2,_wsplitpath2)( CHAR_TYPE const *inp, CHAR_T
             ++inp;
             continue;
         }
-#if defined( __WIDECHAR__ ) || defined( __UNIX__ )
+#if defined( __WIDECHAR__ ) || defined( __UNIX__ ) || defined( __RDOS__ ) || defined( __RDOSDEV__ )
         inp++;
 #else
         inp = (char *)_mbsinc( (unsigned char *)inp );

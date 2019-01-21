@@ -34,7 +34,6 @@
 #ifdef __WATCOMC__
   #include <process.h>
 #endif
-#include "wio.h"
 #include "banner.h"
 
 #include "clibext.h"
@@ -56,11 +55,6 @@ static const char *txtmsgs[] = {
 #include "wressetr.h"
 #include "wresset2.h"
 #include "wreslang.h"
-
-#define STDOUT_HANDLE   ((int)1)
-
-#define NO_RES_MESSAGE  "Error: could not open message resource file.\r\n"
-#define NO_RES_SIZE     (sizeof( NO_RES_MESSAGE ) - 1)
 
 static  HANDLE_INFO     hInstance = { 0 };
 static  unsigned        MsgShift;
@@ -169,7 +163,7 @@ bool MsgInit( void )
         }
     }
     CloseResFile( &hInstance );
-    posix_write( STDOUT_FILENO, NO_RES_MESSAGE, NO_RES_SIZE );
+    printf( NO_RES_MESSAGE );
     return( false );
 #else
     return( true );

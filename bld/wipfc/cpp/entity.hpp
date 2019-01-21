@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
+* Copyright (c) 2009-2018 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -39,8 +39,8 @@ public:
         unsigned int c, Tag::WsHandling w = Tag::NONE ) :
         Text( d, p, f, r, c, w ) { };
     Entity( Document* d, Element* p, const std::wstring* f, unsigned int r,
-        unsigned int c, const std::wstring& txt, bool ts = false ) :
-        Text( d, p, f, r, c, txt, ts ) { };
+        unsigned int c, const std::wstring& text, bool ts = false ) :
+        Text( d, p, f, r, c, text, ts ) { };
     ~Entity() { };
     Lexer::Token parse( Lexer* lexer );
 private:

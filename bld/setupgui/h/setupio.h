@@ -32,14 +32,16 @@
 #ifndef SETUPIO_H
 #define SETUPIO_H
 
-extern int FileInit( const char *archive );
-extern int FileFini( void );
-extern int FileStat( const char *path, struct stat *buf );
-extern void *FileOpen( const char *path, int flags );
-extern size_t FileRead( void *handle, void *buffer, size_t length );
-extern int FileClose( void *handle );
-extern long FileSeek( void *handle, long offset, int origin );
-extern int FileIsPlainFS( void );
-extern int FileIsArchive( void );
+typedef struct file_handle_t    *file_handle;
+
+extern int          FileInit( const char *archive );
+extern int          FileFini( void );
+extern int          FileStat( const char *path, struct stat *buf );
+extern file_handle  FileOpen( const char *path, int flags );
+extern size_t       FileRead( file_handle fh, void *buffer, size_t length );
+extern int          FileClose( file_handle fh );
+extern long         FileSeek( file_handle fh, long offset, int origin );
+extern int          FileIsPlainFS( void );
+extern int          FileIsArchive( void );
 
 #endif

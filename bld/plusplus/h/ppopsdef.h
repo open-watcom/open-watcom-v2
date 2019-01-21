@@ -67,35 +67,42 @@
 
 #ifndef PPOPCD
     #define PPOPCD( a )
+    #define undefPPOPCD
 #endif
 
 #ifndef PPOPOP
     #define PPOPOP( a, sa )
+    #define undefPPOPOP
 #endif
 
 #ifndef PPOPCG
     #define PPOPCG( a, b, c )
+    #define undefPPOPCG
 #endif
 
 #ifndef PPOPIM
     #define PPOPIM
+    #define undefPPOPIM
 #endif
 
 #ifndef PPOPAN
-    // ptr op ptr, ptr op arith, arith op ptr, arith op arith, other
     #define PPOPAN( a, b, c, d, e )
+    #define undefPPOPAN
 #endif
 
 #ifndef PPOPNMS
     #define PPOPNMS
+    #define undefPPOPNMS
 #endif
 
 #ifndef PPOPNM
     #define PPOPNM( a )
+    #define undefPPOPNM
 #endif
 
 #ifndef PPOPEND
     #define PPOPEND
+    #define undefPPOPEND
 #endif
 
 
@@ -781,19 +788,19 @@ PPOPIM
 
 // define opcodes for PT_SYMBOL
 PPOPNMS
-PPOPNM(   NAME_DEFARG      )
-PPOPNM(   NAME_NORMAL      )
-PPOPNM(   NAME_DOT         )
-PPOPNM(   NAME_THIS        )
-PPOPNM(   NAME_DTOR        )
-PPOPNM(   NAME_OPERATOR    )
-PPOPNM(   NAME_CONVERT     )
-PPOPNM(   NAME_CDTOR_EXTRA )
-PPOPNM(   NAME_DTOR_SYM    )
-PPOPNM(   NAME_PARM_REF    )
-PPOPNM(   NOP              )
-PPOPNM(   USER_CAST        )
-PPOPNM(   IGNORE           )     // general ignore
+PPOPNM( NAME_DEFARG )
+PPOPNM( NAME_NORMAL )
+PPOPNM( NAME_DOT )
+PPOPNM( NAME_THIS )
+PPOPNM( NAME_DTOR )
+PPOPNM( NAME_OPERATOR )
+PPOPNM( NAME_CONVERT )
+PPOPNM( NAME_CDTOR_EXTRA )
+PPOPNM( NAME_DTOR_SYM )
+PPOPNM( NAME_PARM_REF )
+PPOPNM( NOP )
+PPOPNM( USER_CAST )
+PPOPNM( IGNORE )               // general ignore
 
 // define end of stuff
 PPOPEND
@@ -802,13 +809,44 @@ PPOPEND
 
 #endif
 
-// undefine any macros defined
+// undefine any null macros defined
 
-#undef PPOPCD
-#undef PPOPOP
-#undef PPOPCG
-#undef PPOPAN
-#undef PPOPIM
-#undef PPOPNMS
-#undef PPOPNM
-#undef PPOPEND
+#ifdef undefPPOPCD
+    #undef PPOPCD
+    #undef undefPPOPCD
+#endif
+
+#ifdef undefPPOPOP
+    #undef PPOPOP
+    #undef undefPPOPOP
+#endif
+
+#ifdef undefPPOPCG
+    #undef PPOPCG
+    #undef undefPPOPCG
+#endif
+
+#ifdef undefPPOPIM
+    #undef PPOPIM
+    #undef undefPPOPIM
+#endif
+
+#ifdef undefPPOPAN
+    #undef PPOPAN
+    #undef undefPPOPAN
+#endif
+
+#ifdef undefPPOPNMS
+    #undef PPOPNMS
+    #undef undefPPOPNMS
+#endif
+
+#ifdef undefPPOPNM
+    #undef PPOPNM
+    #undef undefPPOPNM
+#endif
+
+#ifdef undefPPOPEND
+    #undef PPOPEND
+    #undef undefPPOPEND
+#endif

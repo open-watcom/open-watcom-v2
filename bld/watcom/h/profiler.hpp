@@ -50,7 +50,7 @@ typedef struct new_P5_timing_info {
 extern "C" {
     extern void __PON( new_P5_timing_info * );
     extern void __POFF( new_P5_timing_info * );
-    #pragma aux timerclass "*" parm routine [] modify []
+    #pragma aux timerclass "*" __parm __routine [] __modify []
     #pragma aux (timerclass) __PON;
     #pragma aux (timerclass) __POFF;
 }

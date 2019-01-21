@@ -92,7 +92,7 @@ static void InitOS2DialogBoxHeader( DialogHeaderOS2 *header, uint_32 codepage )
     header->Codepage         = codepage;
     header->OffsetFirstTmpl  = 14;
     header->TemplateStatus   = 1;
-    header->ItemFocus        = -1;
+    header->ItemFocus        = (uint_16)-1;
     header->OffsetPresParams = 0;
 }
 
@@ -419,13 +419,13 @@ static size_t SemOS2DumpPresParams( char *ptr, PresParamListOS2 *list )
         if( !(presparams->Name->ord.fFlag == 0xFF) ) {       // Presparam has name
             len     = strlen( presparams->Name->name ) + 1;
             data    = (uint_32 *)ptr;
-            *data++ = 0;    // First ULONG is 0 to indicate this isn't numeric ID
-            *data   = len;  // Next is string len
+            *data++ = 0;            // First ULONG is 0 to indicate this isn't numeric ID
+            *data   = (uint_32)len; // Next is string len
             ptr    += 8;
             strcpy( ptr, presparams->Name->name );
             ptr    += len;
             data    = (uint_32 *)ptr;
-            *data   = -1;   // Not sure what this is
+            *data   = (uint_32)-1;           // Not sure what this is
             ptr    += 4;
             bytes  += len + 12;
         } else {

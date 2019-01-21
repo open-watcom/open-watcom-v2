@@ -51,18 +51,20 @@ enum {
 };
 
 
-#if !defined ( __386__ )
-extern short            GetVESAInfo( short, short, void __far * );
-#pragma aux             GetVESAInfo = \
-                        "push bp" \
-                        "int 10h"  \
-                        "pop bp"  \
-                        parm caller [ax] [cx] [es di] value [ax];
+#if defined( _M_I86 )
+extern short GetVESAInfo( short, short, void __far * );
+#pragma aux GetVESAInfo = \
+        "push bp" \
+        "int 10h"  \
+        "pop bp"  \
+    __parm __caller [__ax] [__cx] [__es __di] \
+    __value         [__ax]
 #elif defined( __QNX__ )
-extern short            GetVESAInfo( short, short, void __far * );
-#pragma aux             GetVESAInfo = \
-                        "push bp" \
-                        "int 10h"  \
-                        "pop bp"  \
-                        parm caller [ax] [cx] [es edi] value [ax];
+extern short GetVESAInfo( short, short, void __far * );
+#pragma aux GetVESAInfo = \
+        "push bp" \
+        "int 10h"  \
+        "pop bp"  \
+    __parm __caller [__ax] [__cx] [__es __edi] \
+    __value         [__ax]
 #endif

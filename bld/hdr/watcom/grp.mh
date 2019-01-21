@@ -10,11 +10,13 @@
 
 :include owrtlink.sp
 
-:include systypes.sp
-
 :include cpluspro.sp
 
 :include pshpackl.sp
+
+:include size_t.sp
+
+:include gid_t.sp
 
 struct group {
     char        *gr_name;       /* group's name      */
@@ -28,11 +30,11 @@ struct group {
 /*
  *  POSIX 1003.1 Prototypes.
  */
-_WCRTLINK extern struct group *getgrnam( const char *__name );
-_WCRTLINK extern struct group *getgrgid( gid_t __gid );
-_WCRTLINK extern struct group *getgrent( void );
-_WCRTLINK extern int          setgrent( void );
-_WCRTLINK extern int          endgrent( void );
+_WCRTLINK extern struct group   *getgrnam( const char *__name );
+_WCRTLINK extern struct group   *getgrgid( gid_t __gid );
+_WCRTLINK extern struct group   *getgrent( void );
+_WCRTLINK extern int            setgrent( void );
+_WCRTLINK extern int            endgrent( void );
 
 :include cplusepi.sp
 

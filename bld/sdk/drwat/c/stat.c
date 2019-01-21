@@ -31,12 +31,10 @@
 ****************************************************************************/
 
 
+#include "drwatcom.h"
 #include <ctype.h>
-#include <string.h>
-#include <stdio.h>
 #include <dos.h>
 #include "wdebug.h"
-#include "drwatcom.h"
 #include "segmap.h"
 #include "jdlg.h"
 

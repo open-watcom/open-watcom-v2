@@ -59,7 +59,7 @@ static SYMBOL defineRoutine     // DEFINE R/T ROUTINE
     flags = SF_REFERENCED | SF_NO_LONGJUMP;
     sym = SymCreateFileScope( sym_type, SC_EXTERN, flags, name );
     LinkageSet( sym, "C" );
-    return sym;
+    return( sym );
 }
 
 
@@ -106,7 +106,7 @@ static PTREE insert             // INSERT AT NODE
     left = PTreeCopySrcLocation( left, node );
     comma = PTreeBinary( CO_COMMA, left, node );
     comma = PTreeCopySrcLocation( comma, node );
-    return comma;
+    return( comma );
 }
 
 
@@ -119,40 +119,44 @@ static void insertOperand       // INSERT FOR OPERAND, IF POSSIBLE
 
     if( NULL != node ) {
         switch( node->op ) {
-          case PT_ID :
+        case PT_ID :
             if( NULL != sym_at ) {
                 if( node->op == PT_ID ) {
                     switch( node->cgop ) {
-                      case CO_NAME_CDTOR_EXTRA :
-                      case CO_NAME_DTOR :
+                    case CO_NAME_CDTOR_EXTRA :
+                    case CO_NAME_DTOR :
                         break;
-                      default :
+                    default :
                         result = ScopeFindNaked( GetCurrScope(), node->u.id.name );
-                        if( NULL == result ) break;
+                        if( NULL == result )
+                            break;
                         sym = result->sym_name->name_syms;
-                        if( NULL == sym ) break;
-                        if( SymIsAnError( sym ) ) break;
-                        if( SymIsConstantInt( sym ) ) break;
-                        // drops thru
-                      case CO_NAME_THIS :
-                      case CO_NAME_CONVERT :
+                        if( NULL == sym )
+                            break;
+                        if( SymIsAnError( sym ) )
+                            break;
+                        if( SymIsConstantInt( sym ) )
+                            break;
+                        /* fall through */
+                    case CO_NAME_THIS :
+                    case CO_NAME_CONVERT :
                         node = insert( node, name_at );
                         break;
                     }
                 }
             }
             break;
-          case PT_BINARY :
+        case PT_BINARY :
             switch( node->cgop ) {
-              case CO_ARROW :
-              case CO_DOT :
+            case CO_ARROW :
+            case CO_DOT :
                 node = insert( node, name_op );
                 break;
-              default :
+            default :
                 break;
             }
             break;
-          default :
+        default :
             break;
         }
         *a_node = node;
@@ -164,64 +168,64 @@ static PTREE insertNode         // INSERTION FOR A NODE
     ( PTREE node )              // - node
 {
     switch( node->op ) {
-      case PT_UNARY :
+    case PT_UNARY :
         if( NULL != sym_op ) {
             switch( node->cgop ) {
-              case CO_SEGNAME :
+            case CO_SEGNAME :
                 break;
-              case CO_THROW :
-              case CO_DELETE :
-              case CO_DELETE_G :
-              case CO_DELETE_ARRAY :
-              case CO_DELETE_G_ARRAY :
+            case CO_THROW :
+            case CO_DELETE :
+            case CO_DELETE_G :
+            case CO_DELETE_ARRAY :
+            case CO_DELETE_G_ARRAY :
                 insertOperand( &node->u.subtree[0] );
                 break;
-              case CO_SIZEOF_TYPE :
-              case CO_OFFSETOF :
-              case CO_TYPEID_TYPE :
+            case CO_SIZEOF_TYPE :
+            case CO_OFFSETOF :
+            case CO_TYPEID_TYPE :
                 node = insert( node, name_op );
                 break;
-              default :
+            default :
                 insertOperand( &node->u.subtree[0] );
                 node = insert( node, name_op );
                 break;
             }
         }
         break;
-      case PT_BINARY :
+    case PT_BINARY :
         if( NULL != sym_op ) {
             switch( node->cgop ) {
-              case CO_COMMA :
-              case CO_COLON :
+            case CO_COMMA :
+            case CO_COLON :
                 insertOperand( &node->u.subtree[0] );
                 insertOperand( &node->u.subtree[1] );
                 break;
-              case CO_LIST :
-              case CO_INIT :
-              case CO_RETURN :
-              case CO_CONVERT :
-              case CO_DYNAMIC_CAST :
-              case CO_STATIC_CAST :
-              case CO_REINTERPRET_CAST :
-              case CO_CONST_CAST :
+            case CO_LIST :
+            case CO_INIT :
+            case CO_RETURN :
+            case CO_CONVERT :
+            case CO_DYNAMIC_CAST :
+            case CO_STATIC_CAST :
+            case CO_REINTERPRET_CAST :
+            case CO_CONST_CAST :
                 insertOperand( &node->u.subtree[1] );
                 break;
-              case CO_ARROW :
-              case CO_DOT :
-              case CO_STORAGE :
-              case CO_OPERATOR :
-              case CO_COLON_COLON :
-              case CO_SEG_OP :
-              case CO_NEW_PARMS1 :
-              case CO_NEW_PARMS2 :
+            case CO_ARROW :
+            case CO_DOT :
+            case CO_STORAGE :
+            case CO_OPERATOR :
+            case CO_COLON_COLON :
+            case CO_SEG_OP :
+            case CO_NEW_PARMS1 :
+            case CO_NEW_PARMS2 :
                 break;
-              case CO_SIZEOF_TYPE :
-              case CO_NEW :
-              case CO_NEW_G :
-              case CO_NEW_ARRAY :
+            case CO_SIZEOF_TYPE :
+            case CO_NEW :
+            case CO_NEW_G :
+            case CO_NEW_ARRAY :
                 node = insert( node, name_op );
                 break;
-              default :
+            default :
                 insertOperand( &node->u.subtree[0] );
                 insertOperand( &node->u.subtree[1] );
                 node = insert( node, name_op );
@@ -229,14 +233,14 @@ static PTREE insertNode         // INSERTION FOR A NODE
             }
         }
         break;
-      case PT_IC :
-      case PT_SYMBOL :
-      case PT_DUP_EXPR :
+    case PT_IC :
+    case PT_SYMBOL :
+    case PT_DUP_EXPR :
         CFatal( "DbgComma -- bad parse tree" );
-      default :
+    default :
         break;
     }
-    return node;
+    return( node );
 }
 
 
@@ -246,5 +250,5 @@ PTREE DbgCommaInsertion         // COMMA INSERTION ROUTINE
     if( NULL != sym_op || NULL != sym_at ) {
         expr = PTreeTraversePostfix( expr, &insertNode );
     }
-    return expr;
+    return( expr );
 }

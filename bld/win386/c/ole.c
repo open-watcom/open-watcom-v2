@@ -40,11 +40,11 @@
 #include "winstubs.h"
 #include "_ole.h"
 
-#pragma aux Backpatch_olecli parm [ax];
 extern LPVOID FAR Backpatch_olecli( char *str );
+#pragma aux Backpatch_olecli __parm [__ax]
 
-#pragma aux Backpatch_olesvr parm [ax];
 extern LPVOID FAR Backpatch_olesvr( char *str );
+#pragma aux Backpatch_olesvr __parm [__ax]
 
 static OLESTATUS (FAR PASCAL *olecliOleActivate)(LPOLEOBJECT, UINT, BOOL, BOOL, HWND, const RECT FAR*);
 static OLESTATUS (FAR PASCAL *olecliOleClone)(LPOLEOBJECT, LPOLECLIENT, LHCLIENTDOC, LPCSTR, LPOLEOBJECT FAR*);

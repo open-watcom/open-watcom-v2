@@ -37,20 +37,9 @@
   #include <windows.h>
 #endif
 #include <malloc.h>
+#include "tinyio.h"
 #include "heap.h"
 
-extern long _dosalloc( unsigned );
-#pragma aux _dosalloc = \
-        "mov ah,48h"    \
-        "int 21h"       \
-        "sbb dx,dx"     \
-    parm caller [bx] value [dx ax] modify [dx ax]
-
-extern void _dosfree( void_hptr );
-#pragma aux _dosfree =  \
-        "mov ah,49h"    \
-        "int 21h"       \
-    parm caller [ax es] modify [es]
 
 static int only_one_bit( size_t x )
 {
@@ -75,7 +64,7 @@ _WCRTLINK void_hptr halloc( long numb, unsigned size )
     amount = (unsigned long)numb * size;
     if( amount == 0 )
         return( NULL );
-    if( amount > 65536 && ! only_one_bit( size ) )
+    if( OVERFLOW_64K( amount ) && !only_one_bit( size ) )
         return( NULL );
     hmem = GlobalAlloc( GMEM_MOVEABLE | GMEM_ZEROINIT, amount );
     if( hmem == NULL )
@@ -83,20 +72,20 @@ _WCRTLINK void_hptr halloc( long numb, unsigned size )
     cstg = GlobalLock( hmem );
     return( cstg );
 #else
-    long            rc;
+    tiny_ret_t      rc;
     unsigned int    num_of_paras;
-    char            _WCHUGE *hp;
+    void_hptr       hp;
 
     amount = (unsigned long)numb * size;
     if( amount == 0  || amount >= 0x100000 )
         return( NULL );
-    if( amount > 65536 && !only_one_bit( size ) )
+    if( OVERFLOW_64K( amount ) && !only_one_bit( size ) )
         return( NULL );
     num_of_paras = __ROUND_UP_SIZE_TO_PARA( amount );
-    rc = _dosalloc( num_of_paras );
-    if( rc < 0 )
+    rc = TinyAllocBlock( num_of_paras );
+    if( TINY_ERROR( rc ) )
         return( NULL );  /* allocation failed */
-    hp = (char _WCHUGE *)MK_FP( (unsigned short)rc, 0 );
+    hp = (void_hptr)MK_FP( TINY_INFO( rc ), 0 );
     for( ;; ) {
         size = 0x8000;
         if( num_of_paras < 0x0800 )
@@ -104,7 +93,7 @@ _WCRTLINK void_hptr halloc( long numb, unsigned size )
         _fmemset( hp, 0, size );
         if( num_of_paras < 0x0800 )
             break;
-        hp = hp + size;
+        hp = (char _WCHUGE *)hp + size;
         num_of_paras -= 0x0800;
     }
     return( (void_hptr)MK_FP( (unsigned short)rc, 0 ) );
@@ -116,6 +105,6 @@ _WCRTLINK void hfree( void_hptr cstg )
 #if defined(__WINDOWS__)
     __FreeSeg( FP_SEG( cstg ) );
 #else
-    _dosfree( cstg );
+    _TinyFreeBlock( FP_SEG( cstg ) );
 #endif
 }

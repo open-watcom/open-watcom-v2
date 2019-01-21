@@ -56,15 +56,15 @@ float_handle BFCnvU64F( unsigned_64 val )
     float_handle t0, t1, t2;
 
     t0 = TwoTo32();
-    t1 = BFCnvUF( val.u._32[ I64HI32 ] );
+    t1 = BFCnvUF( val.u._32[I64HI32] );
     t2 = BFMul( t0, t1 );
     BFFree( t0 );
     BFFree( t1 );
-    t0 = BFCnvUF( val.u._32[ I64LO32 ] );
+    t0 = BFCnvUF( val.u._32[I64LO32] );
     t1 = BFAdd( t0, t2 );
     BFFree( t0 );
     BFFree( t2 );
-    return t1;
+    return( t1 );
 }
 
 static
@@ -73,20 +73,20 @@ float_handle BFCnvI64F( signed_64 val )
     float_handle t0, t1, t2;
 
     t0 = TwoTo32();
-    t1 = BFCnvIF( val.u._32[ I64HI32 ] );
+    t1 = BFCnvIF( val.u._32[I64HI32] );
     t2 = BFMul( t0, t1 );
     BFFree( t0 );
     BFFree( t1 );
     if( val.u.sign.v ) {
-        t0 = BFCnvUF( ( val.u._32[ I64LO32 ] ^ ULONG_MAX ) + 1 );
+        t0 = BFCnvUF( ( val.u._32[I64LO32] ^ ULONG_MAX ) + 1 );
         BFNegate( t0 );
     } else {
-        t0 = BFCnvUF( val.u._32[ I64LO32 ] );
+        t0 = BFCnvUF( val.u._32[I64LO32] );
     }
     t1 = BFAdd( t0, t2 );
     BFFree( t0 );
     BFFree( t2 );
-    return t1;
+    return( t1 );
 }
 
 static
@@ -100,7 +100,7 @@ signed_64 BFCnvF64( float_handle flt )
     if( 0 == sign ) {
         result.u._32[0] = 0;
         result.u._32[1] = 0;
-        return result;
+        return( result );
     }
     positive = true;
     absol = flt;
@@ -113,9 +113,9 @@ signed_64 BFCnvF64( float_handle flt )
     t1 = BFDiv( flt, t0 );
     t3 = BFTrunc( t1 );
     BFFree( t1 );
-    result.u._32[ I64HI32 ] = BFCnvF32( t3 );
+    result.u._32[I64HI32] = BFCnvF32( t3 );
     BFFree( t3 );
-    t1 = BFCnvUF( result.u._32[ I64HI32 ] );
+    t1 = BFCnvUF( result.u._32[I64HI32] );
     t2 = BFMul( t0, t1 );
     BFFree( t0 );
     BFFree( t1 );
@@ -123,7 +123,7 @@ signed_64 BFCnvF64( float_handle flt )
     BFFree( t2 );
     t3 = BFTrunc( t0 );
     BFFree( t0 );
-    result.u._32[ I64LO32 ] = BFCnvF32( t3 );
+    result.u._32[I64LO32] = BFCnvF32( t3 );
     BFFree( t3 );
     if( ! positive ) {
         signed_64 neg;
@@ -131,7 +131,7 @@ signed_64 BFCnvF64( float_handle flt )
         neg = result;
         U64Neg( &neg, &result );
     }
-    return result;
+    return( result );
 }
 
 
@@ -142,28 +142,28 @@ target_long FoldSignedRShiftMax( target_long v )
 /**********************************************/
 {
     if( v < 0 ) {
-        return -1;
+        return( -1 );
     }
-    return 0;
+    return( 0 );
 }
 
 
 static bool isCondDecor(        // TEST IF CONDITIONALLY DECORATED
     PTREE node )                // - the expression
 {
-    bool retb;                  // - true ==> conditionally decorated
+    bool ok;                    // - true ==> conditionally decorated
 
-    retb = false;
+    ok = false;
     if( NodeIsBinaryOp( node, CO_COMMA ) ) {
         node = node->u.subtree[0];
         if( node->op == PT_IC ) {
             if( node->u.ic.opcode == IC_COND_TRUE
              || node->u.ic.opcode == IC_COND_FALSE ) {
-                retb = true;
+                ok = true;
             }
         }
     }
-    return( retb );
+    return( ok );
 }
 
 
@@ -173,7 +173,7 @@ static PTREE overCondDecor(     // BY-PASS CONDITIONAL DECORATION
     if( isCondDecor( expr ) ) {
         expr = expr->u.subtree[1];
     }
-    return expr;
+    return( expr );
 }
 
 
@@ -203,13 +203,14 @@ static bool zeroConstant( PTREE expr )
             return( Zero64( &expr->u.int64_constant ) );
         }
     case PT_FLOATING_CONSTANT:
-    {   target_ulong ul_val = BFCnvF32( expr->u.floating_constant );
-        return 0 == ul_val;
-    }
+      { target_ulong ul_val = BFCnvF32( expr->u.floating_constant );
+        return( 0 == ul_val );
+      }
     case PT_BINARY:
         orig = expr;
         expr = NodeRemoveCasts( expr );
-        if( expr == orig ) break;
+        if( expr == orig )
+            break;
         return( zeroConstant( expr ) );
     }
     return( false );
@@ -228,14 +229,15 @@ static bool nonZeroExpr( PTREE expr )
     case PT_PTR_CONSTANT:
     case PT_INT_CONSTANT:
     case PT_FLOATING_CONSTANT:
-        return ! zeroConstant( expr );
+        return( ! zeroConstant( expr ) );
     case PT_SYMBOL:
         /* a symbol r-value has a fetch by now so this PTREE means &name */
         return( true );
     case PT_BINARY:
         orig = expr;
         expr = NodeRemoveCasts( expr );
-        if( expr == orig ) break;
+        if( expr == orig )
+            break;
         return( nonZeroExpr( expr ) );
     }
     if( expr->flags & PTF_PTR_NONZERO ) {
@@ -252,7 +254,7 @@ static bool nonZeroExpr( PTREE expr )
  */
 static bool hasSideEffects( PTREE expr )
 {
-    return ( expr->flags & PTF_SIDE_EFF ) != 0 ;
+    return( ( expr->flags & PTF_SIDE_EFF ) != 0  );
 }
 
 /**
@@ -454,7 +456,7 @@ static PTREE castFloatingConstant( PTREE expr, TYPE type, bool *happened )
     case TYP_POINTER:
     case TYP_MEMBER_POINTER:
         id = TYP_ULONG;
-        // drops thru
+        /* fall through */
     case TYP_SCHAR:
     case TYP_SSHORT:
     case TYP_SINT:
@@ -468,24 +470,23 @@ static PTREE castFloatingConstant( PTREE expr, TYPE type, bool *happened )
         new_expr = PTreeIntConstant( (target_ulong) value, id );
         new_expr = CastIntConstant( new_expr, type, happened );
         break;
-    case TYP_FLOAT: {
-        float_handle flt_val;
+    case TYP_FLOAT:
+      { float_handle flt_val;
 
         flt_val = BFCopy( expr->u.floating_constant );
         new_expr = PTreeFloatingConstant( flt_val, id );
-    }
-        break;
+      } break;
     case TYP_LONG_DOUBLE:
     case TYP_DOUBLE:
-    {   float_handle flt_val;
+      { float_handle flt_val;
         flt_val = BFCopy( expr->u.floating_constant );
         new_expr = PTreeFloatingConstant( flt_val, id );
-    }   break;
+      } break;
     case TYP_SLONG64:
     case TYP_ULONG64:
-    {   signed_64 val = BFCnvF64( expr->u.floating_constant );
+      { signed_64 val = BFCnvF64( expr->u.floating_constant );
         new_expr = PTreeInt64Constant( val, id );
-    }   break;
+      } break;
     default:
         return( expr );
     }
@@ -518,7 +519,7 @@ static PTREE castConstant( PTREE expr, TYPE type, bool *happened )
     return( expr );
 }
 
-static bool soFarSoGood( PTREE expr, unsigned op, CGOP cgop )
+static bool soFarSoGood( PTREE expr, ptree_op_t op, CGOP cgop )
 {
     if( expr != NULL && expr->op == op && expr->cgop == cgop ) {
         return( true );
@@ -566,7 +567,7 @@ static bool anachronismFound( PTREE expr )
             /*
                 int foo( X &r )
                 {
-                    return &r != NULL;
+                    return( &r != NULL );
                 }
             */
             expr = expr->u.subtree[0];
@@ -578,7 +579,7 @@ static bool anachronismFound( PTREE expr )
                 int foo( X *p )
                 {
                     X &r = *p;
-                    return &r != NULL;
+                    return( &r != NULL );
                 }
             */
             expr = expr->u.subtree[0];
@@ -590,7 +591,7 @@ static bool anachronismFound( PTREE expr )
         /*
             int S::foo()
             {
-                return this ? 0 : field;
+                return( this ? 0 : field );
             }
         */
         expr = expr->u.subtree[0];
@@ -656,7 +657,7 @@ PTREE FoldUnary( PTREE expr )
 
     if( expr->cgop == CO_EXCLAMATION ) {
         // This is the simplest operation.
-        return makeTrueFalse( expr, op1, !nonZeroExpr( op1 ) );
+        return( makeTrueFalse( expr, op1, !nonZeroExpr( op1 ) ) );
     }
 
     if( op1->op == PT_FLOATING_CONSTANT ) {
@@ -966,10 +967,10 @@ static void idiv64              // DO 64-BIT SIGNED DIVISION
     if( v2->u._32[0] == 0
      && v2->u._32[1] == 0 ) {
         CErr1( ERR_DIVISION_BY_ZERO );
-        result->u._32[ I64HI32 ] = 0;
-        result->u._32[ I64LO32 ] = 1;
-        rem->u._32[ I64HI32 ] = 0;
-        rem->u._32[ I64LO32 ] = 0;
+        result->u._32[I64HI32] = 0;
+        result->u._32[I64LO32] = 1;
+        rem->u._32[I64HI32] = 0;
+        rem->u._32[I64LO32] = 0;
     } else {
         I64Div( v1, v2, result, rem );
     }
@@ -1003,13 +1004,13 @@ static PTREE foldInt64( CGOP op, PTREE left, signed_64 v2 )
         }
         break;
     case CO_DIVIDE:
-    {   signed_64 rem;
+      { signed_64 rem;
         idiv64( &v1, &v2, &left->u.int64_constant, &rem );
-    }   break;
+      } break;
     case CO_PERCENT:
-    {   signed_64 div;
+      { signed_64 div;
         idiv64( &v1, &v2, &div, &left->u.int64_constant );
-    }   break;
+      } break;
     case CO_AND:
         left->u.int64_constant.u._32[0] = v1.u._32[0] & v2.u._32[0];
         left->u.int64_constant.u._32[1] = v1.u._32[1] & v2.u._32[1];
@@ -1023,10 +1024,10 @@ static PTREE foldInt64( CGOP op, PTREE left, signed_64 v2 )
         left->u.int64_constant.u._32[1] = v1.u._32[1] ^ v2.u._32[1];
         break;
     case CO_RSHIFT:
-        I64ShiftR( &v1, v2.u._32[ I64LO32 ], &left->u.int64_constant );
+        I64ShiftR( &v1, v2.u._32[I64LO32], &left->u.int64_constant );
         break;
     case CO_LSHIFT:
-        U64ShiftL( &v1, v2.u._32[ I64LO32 ], &left->u.int64_constant );
+        U64ShiftL( &v1, v2.u._32[I64LO32], &left->u.int64_constant );
         break;
     case CO_EQ:
         left = makeBooleanConst( left, 0 == I64Cmp( &v1, &v2 ) );
@@ -1071,10 +1072,10 @@ static void udiv64              // DO 64-BIT UNSIGNED DIVISION
     if( v2->u._32[0] == 0
      && v2->u._32[1] == 0 ) {
         CErr1( ERR_DIVISION_BY_ZERO );
-        result->u._32[ I64HI32 ] = 0;
-        result->u._32[ I64LO32 ] = 1;
-        rem->u._32[ I64HI32 ] = 0;
-        rem->u._32[ I64LO32 ] = 0;
+        result->u._32[I64HI32] = 0;
+        result->u._32[I64LO32] = 1;
+        rem->u._32[I64HI32] = 0;
+        rem->u._32[I64LO32] = 0;
     } else {
         U64Div( v1, v2, result, rem );
     }
@@ -1108,13 +1109,13 @@ static PTREE foldUInt64( CGOP op, PTREE left, signed_64 v2 )
         }
         break;
     case CO_DIVIDE:
-    {   signed_64 rem;
+      { signed_64 rem;
         udiv64( &v1, &v2, &left->u.int64_constant, &rem );
-    }   break;
+      } break;
     case CO_PERCENT:
-    {   signed_64 div;
+      { signed_64 div;
         udiv64( &v1, &v2, &div, &left->u.int64_constant );
-    }   break;
+      } break;
     case CO_AND:
         left->u.int64_constant.u._32[0] = v1.u._32[0] & v2.u._32[0];
         left->u.int64_constant.u._32[1] = v1.u._32[1] & v2.u._32[1];
@@ -1128,10 +1129,10 @@ static PTREE foldUInt64( CGOP op, PTREE left, signed_64 v2 )
         left->u.int64_constant.u._32[1] = v1.u._32[1] ^ v2.u._32[1];
         break;
     case CO_RSHIFT:
-        U64ShiftR( &v1, v2.u._32[ I64LO32 ], &left->u.int64_constant );
+        U64ShiftR( &v1, v2.u._32[I64LO32], &left->u.int64_constant );
         break;
     case CO_LSHIFT:
-        U64ShiftL( &v1, v2.u._32[ I64LO32 ], &left->u.int64_constant );
+        U64ShiftL( &v1, v2.u._32[I64LO32], &left->u.int64_constant );
         break;
     case CO_EQ:
         left = makeBooleanConst( left, 0 == U64Cmp( &v1, &v2 ) );
@@ -1180,7 +1181,7 @@ static PTREE pruneExpr(         // PRUNE ONE SIDE FROM EXPRESSION
     }
     undec = PTreeCopySrcLocation( undec, orig );
     NodeFreeDupedExpr( orig );
-    return undec;
+    return( undec );
 }
 
 #define isIntFloatOp( op ) \
@@ -1261,7 +1262,7 @@ static PTREE FoldBinaryLeft( bool *has_folded,
         op2 = PTreeCopySrcLocation( op2, expr );
         NodeFreeDupedExpr( expr );
         *has_folded = true;
-        return( op2 ); 
+        return( op2 );
     case CO_QUESTION:
         DbgVerify( ! has_decoration, "FoldBinary -- bad ?" );
         op_t = op2->u.subtree[0];
@@ -1315,8 +1316,8 @@ PTREE FoldBinary( PTREE expr )
     PTREE op2;
     PTREE op_test;
     TYPE type;
-    unsigned typ1;
-    unsigned typ2;
+    ptree_op_t typ1;
+    ptree_op_t typ2;
     bool cast_happened;
     bool has_decoration_left;
     bool has_decoration_right;
@@ -1325,14 +1326,14 @@ PTREE FoldBinary( PTREE expr )
     type = expr->type;
     orig1 = expr->u.subtree[0];
     orig2 = expr->u.subtree[1];
-    type = expr->type;
     op1 = overCondDecor( orig1 );
     has_decoration_left = op1 != orig1;
     op2 = overCondDecor( orig2 );
     has_decoration_right = op2 != orig2;
     has_decoration = has_decoration_left | has_decoration_right;
-    
-    if( !foldable( op1 ) && !foldable( op2 ) ) return( expr );
+
+    if( !foldable( op1 ) && !foldable( op2 ) )
+        return( expr );
 
     // Try performing left-folding on the expression.
     /* Note that right-folding is only safe in certain situations. For example
@@ -1341,11 +1342,12 @@ PTREE FoldBinary( PTREE expr )
 
     cannot be directly folded into ( false ) by eliding the function call.
     */
-    if ( foldable( op1 ) ) {
+    if( foldable( op1 ) ) {
         bool has_lfolded = false;
         expr = FoldBinaryLeft( &has_lfolded, expr, op1, op2, has_decoration );
-        if( has_lfolded )
+        if( has_lfolded ) {
             return( expr );
+        }
     }
 
     if( !foldable( op2 ) )
@@ -1387,12 +1389,12 @@ PTREE FoldBinary( PTREE expr )
         return( expr );
 
     }
-    
+
     typ1 = op1->op;
     typ2 = op2->op;
     if( ! isIntFloatOp( typ1 ) || ! isIntFloatOp( typ2 ) ) {
         // (void)0 can make it here
-        return expr;
+        return( expr );
     }
     if( typ1 != typ2 ) {
         if( PT_FLOATING_CONSTANT == typ1 ) {
@@ -1465,7 +1467,7 @@ PTREE FoldBinary( PTREE expr )
         op1 = castConstant( op1, type, &cast_happened );
         op1 = PTreeCopySrcLocation( op1, expr );
         NodeFreeDupedExpr( expr );
-        return op1;
+        return( op1 );
     }
 
     return( expr );
@@ -1475,17 +1477,17 @@ PTREE Fold( PTREE expr )        // Fold expression
 /**********************/
 {
     switch( expr->op ) {
-      case PT_UNARY :
+    case PT_UNARY :
         if( expr->u.subtree[0] != NULL ) {
             expr = FoldUnary( expr );
         }
         break;
-      case PT_BINARY :
+    case PT_BINARY :
         if( expr->u.subtree[0] != NULL
          && expr->u.subtree[1] != NULL ) {
             expr = FoldBinary( expr );
         }
         break;
     }
-    return expr;
+    return( expr );
 }

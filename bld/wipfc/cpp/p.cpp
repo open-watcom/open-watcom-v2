@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
+* Copyright (c) 2009-2018 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -31,6 +31,8 @@
 *
 ****************************************************************************/
 
+
+#include "wipfc.hpp"
 #include "p.hpp"
 #include "cell.hpp"
 #include "document.hpp"
@@ -41,16 +43,18 @@ Lexer::Token P::parse( Lexer* lexer )
     Lexer::Token tok( parseAttributes( lexer ) );
     while( tok != Lexer::END && !( tok == Lexer::TAG && lexer->tagId() == Lexer::EUSERDOC ) ) {
         //may contain inline, not block
-        if( parseInline( lexer, tok ) )
+        if( parseInline( lexer, tok ) ) {
             break;
+        }
     }
     return tok;
 }
 /***************************************************************************/
 void P::buildText( Cell* cell )
 {
-    cell->addByte( 0xFA );
-    if( cell->textFull() )
+    cell->addByte( Cell::END_PARAGRAPH );
+    if( cell->textFull() ) {
         printError( ERR1_LARGEPAGE );
+    }
 }
 

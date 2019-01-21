@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
+* Copyright (c) 2009-2018 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -45,6 +45,7 @@
 #include "lexer.hpp"
 #include "ptrops.hpp"
 
+
 class Compiler {
 public:
     enum OutputType {
@@ -54,65 +55,68 @@ public:
     Compiler();
     ~Compiler();
     int compile();
-    //set the inital source file name
-    void setInputFile( std::string& name );
+    //set the input source file name
+    void setInputFile( const std::string& sfname );
     //add a file name to the set of file names
-    std::wstring* addFileName( std::wstring* name );
+    std::wstring* addFileName( std::wstring* wfname );
     //set the output file name
-    void setOutputFile( std::string& name ) { outFileName = name; };
+    void setOutputFile( const std::string& sfname );
     //set the warning level
-    void setWarningLevel( int wl ) { warningLevel = wl; };
+    void setWarningLevel( int wl ) { _warningLevel = wl; };
     //set the current locale
-    void setLocalization( const char *ln ) { loc = ln; };
+    void setLocalization( const char *loc ) { _loc = loc; };
     //set the output type (inf or hlp)
-    void setOutputType( OutputType t ) { outType = t; };
-    OutputType outputType( ) { return outType; };
+    void setOutputType( OutputType t ) { _outType = t; };
+    OutputType outputType( ) { return _outType; };
     //suppress banner
-    void noBanner() { printBanner = false; };
-    bool banner() { return printBanner; };
+    void noBanner() { _printBanner = false; };
+    bool banner() { return _printBanner; };
     //Output cross-reference (not implemented)
-    void noSearch() { search = false; };
-    bool searchable() { return search; };
-    void setXRef( bool yn ) { xref = yn; };
+    void noSearch() { _search = false; };
+    bool searchable() { return _search; };
+    void setXRef( bool yn ) { _xref = yn; };
     //push a block of data onto the stack to be parsed
-    void pushInput( IpfData *blk ) { inFiles.push_back( blk ); };
+    void pushInput( IpfData *blk ) { _inFiles.push_back( blk ); };
     void popInput();
     //print an error message
     void printError( ErrCode c ) const;
-    void printError( ErrCode c, const std::wstring& txt ) const;
+    void printError( ErrCode c, const std::wstring& text ) const;
     void printError( ErrCode c, const std::wstring* name, unsigned int row, unsigned int col ) const;
-    void printError( ErrCode c, const std::wstring* name, unsigned int row, unsigned int col, const std::wstring& txt ) const;
+    void printError( ErrCode c, const std::wstring* name, unsigned int row, unsigned int col, const std::wstring& text ) const;
     //get the name of the data block currently being parsed
-    const std::wstring* dataName() const { return inFiles[ inFiles.size() - 1 ]->name(); };
+    const std::wstring* dataName() const { return _inFiles[_inFiles.size() - 1]->name(); };
     //get the number of the line currently being parsed
-    unsigned int dataLine() const { return inFiles[ inFiles.size() - 1 ]->currentLine(); };
-    unsigned int lexerLine() const { return lexer->currentLine(); };
+    unsigned int dataLine() const { return _inFiles[_inFiles.size() - 1]->currentLine(); };
+    unsigned int lexerLine() const { return _lexer->currentLine(); };
     //get the column in the line currently being parsed
-    unsigned int dataCol() const { return inFiles[ inFiles.size() - 1 ]->currentCol(); };
-    unsigned int lexerCol() const{ return lexer->currentCol(); };
+    unsigned int dataCol() const { return _inFiles[_inFiles.size() - 1]->currentCol(); };
+    unsigned int lexerCol() const{ return _lexer->currentCol(); };
     //get the next token
     Lexer::Token getNextToken();
     //if end of block or file reached, don't go to the next block
-    void setBlockParsing( bool yn ) { parseContinuously = !yn; };
-    bool blockParsing() { return !parseContinuously; };
+    void setBlockParsing( bool yn ) { _parseContinuously = !yn; };
+    bool blockParsing() { return !_parseContinuously; };
 private:
     Compiler( const Compiler &rhs );            //no copy constructor
     Compiler& operator=( const Compiler &rhs ); //no assignment
-    std::string outFileName;
-    std::auto_ptr< Lexer > lexer;
-    std::vector< IpfData* > inFiles;            //a stack of files being parsed
+
+    std::auto_ptr< Lexer >  _lexer;
+    std::vector< IpfData* > _inFiles;            //a stack of files being parsed
     typedef std::vector< IpfData* >::iterator InFilesIter;
     typedef std::vector< IpfData* >::const_iterator ConstInFilesIter;
-    std::set< std::wstring*, ptrLess< std::wstring* > > fileNames;
+    std::set< std::wstring*, ptrLess< std::wstring* > > _fileNames;
     typedef std::set< std::wstring*, ptrLess< std::wstring* > >::iterator FileNameIter;
     typedef std::set< std::wstring*, ptrLess< std::wstring* > >::const_iterator ConstFileNameIter;
-    const char* loc;
-    unsigned int warningLevel;
-    OutputType outType;
-    bool parseContinuously;
-    bool printBanner;
-    bool search;    //construct search table
-    bool xref;
+    const char              *_loc;
+    unsigned int            _warningLevel;
+    OutputType              _outType;
+    bool                    _parseContinuously;
+    bool                    _printBanner;
+    bool                    _search;    //construct search table
+    bool                    _xref;
+    std::wstring            *_inFileNameW;
+    std::string             _inFileName;
+    std::string             _outFileName;
 };
 
 #endif //COMPILER_INCLUDED

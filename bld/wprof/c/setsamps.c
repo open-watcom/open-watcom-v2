@@ -179,14 +179,14 @@ STATIC void initModuleInfo( image_info *curr_image )
 STATIC walk_result loadRoutineInfo( sym_walk_info swi, sym_handle *sym, void *_new_mod )
 /**************************************************************************************/
 {
-    mod_info        *new_mod = _new_mod;
-    sym_info        sinfo;
-    file_info       *sym_file;
-    rtn_info        *new_rtn;
-    int             rtn_count;
-    size_t          name_len;
-    int             sym_size;
-    int             demangle_type;
+    mod_info            *new_mod = _new_mod;
+    sym_info            sinfo;
+    file_info           *sym_file;
+    rtn_info            *new_rtn;
+    int                 rtn_count;
+    size_t              name_len;
+    int                 sym_size;
+    symbol_name_type    demangle_name_type;
 
     if( swi != SWI_SYMBOL ) {
         return( WR_CONTINUE );
@@ -196,15 +196,15 @@ STATIC walk_result loadRoutineInfo( sym_walk_info swi, sym_handle *sym, void *_n
         return( WR_CONTINUE );
     }
     sym_file = loadFileInfo( new_mod, sym );
-    name_len = DIPSymName( sym, NULL, SN_DEMANGLED, NULL, 0 );
+    name_len = DIPSymName( sym, NULL, SNT_DEMANGLED, NULL, 0 );
     if( name_len == 0 ) {
-        name_len = DIPSymName( sym, NULL, SN_SOURCE, NULL, 0 );
-        demangle_type = SN_SOURCE;
+        name_len = DIPSymName( sym, NULL, SNT_SOURCE, NULL, 0 );
+        demangle_name_type = SNT_SOURCE;
     } else {
-        demangle_type = SN_DEMANGLED;
+        demangle_name_type = SNT_DEMANGLED;
     }
     new_rtn = ProfCAlloc( sizeof( rtn_info ) + name_len );
-    DIPSymName( sym, NULL, demangle_type, new_rtn->name, name_len + 1 );
+    DIPSymName( sym, NULL, demangle_name_type, new_rtn->name, name_len + 1 );
     sym_size = DIPHandleSize( HK_SYM );
     new_rtn->sh = ProfAlloc( sym_size );
     memcpy( new_rtn->sh, sym, sym_size );
@@ -584,69 +584,74 @@ STATIC void loadImageInfo( image_info * curr_image )
     sym_fp = NULL;
     obj_fp = NULL;
     curr_image->dip_handle = NO_MOD;
-    if( curr_image->sym_deleted ) {
-    } else if( curr_image->sym_name != NULL ) {
-        sym_fp = DIGCli( Open )( curr_image->sym_name, DIG_READ );
-        if( sym_fp != NULL ) {
-            curr_image->dip_handle = WPDipLoadInfo( sym_fp, curr_image->sym_name, curr_image,
-                                       sizeof( image_info ), DIP_PRIOR_MIN, DIP_PRIOR_MAX );
-            DIGCli( Close )( sym_fp );
-        }
+    if( curr_image->gather_image ) {
+        curr_image->exe_not_found = true;
+        initModuleInfo( curr_image );
     } else {
-        name_len = strlen( curr_image->name ) + 1;
-        memcpy( FNameBuff, curr_image->name, name_len );
-        ReplaceExt( FNameBuff, ".sym" );
-        name_len = strlen( FNameBuff ) + 1;
-        curr_image->sym_name = ProfAlloc( name_len );
-        memcpy( curr_image->sym_name, FNameBuff, name_len );
-        sym_fp = DIGCli( Open )( curr_image->sym_name, DIG_READ );
-        if( sym_fp != NULL ) {
-            curr_image->dip_handle = WPDipLoadInfo( sym_fp, curr_image->sym_name, curr_image,
-                                      sizeof( image_info ), DIP_PRIOR_MIN, DIP_PRIOR_MAX );
-            DIGCli( Close )( sym_fp );
+        if( curr_image->sym_deleted ) {
+        } else if( curr_image->sym_name != NULL ) {
+            sym_fp = DIGCli( Open )( curr_image->sym_name, DIG_READ );
+            if( sym_fp != NULL ) {
+                curr_image->dip_handle = WPDipLoadInfo( sym_fp, curr_image->sym_name, curr_image,
+                                           sizeof( image_info ), DIP_PRIOR_MIN, DIP_PRIOR_MAX );
+                DIGCli( Close )( sym_fp );
+            }
+        } else {
+            name_len = strlen( curr_image->name ) + 1;
+            memcpy( FNameBuff, curr_image->name, name_len );
+            ReplaceExt( FNameBuff, ".sym" );
+            name_len = strlen( FNameBuff ) + 1;
+            curr_image->sym_name = ProfAlloc( name_len );
+            memcpy( curr_image->sym_name, FNameBuff, name_len );
+            sym_fp = DIGCli( Open )( curr_image->sym_name, DIG_READ );
+            if( sym_fp != NULL ) {
+                curr_image->dip_handle = WPDipLoadInfo( sym_fp, curr_image->sym_name, curr_image,
+                                          sizeof( image_info ), DIP_PRIOR_MIN, DIP_PRIOR_MAX );
+                DIGCli( Close )( sym_fp );
+            }
+            if( curr_image->dip_handle == NO_MOD ) {
+                ProfFree( curr_image->sym_name );
+                curr_image->sym_name = NULL;
+            }
         }
-        if( curr_image->dip_handle == NO_MOD ) {
-            ProfFree( curr_image->sym_name );
-            curr_image->sym_name = NULL;
-        }
-    }
-    if( curr_image->time_stamp == 0 ) {
-        /*
-           If sample timestamp is 0, the sampler couldn't figure out
-           the right value. Assume it's OK.
-        */
-    } else {
-        if( stat( curr_image->name, &file_status ) == 0 ) {
-            /* QNX creation dates and time stamps tend to be 1 */
-            /* unit different, so do not test for equality */
-            if( file_status.st_mtime - curr_image->time_stamp > 1 ) {
-                curr_image->exe_changed = true;
-                if( curr_image->main_load ) {
-                    ErrorMsg( LIT( Exe_Has_Changed ), curr_image->name );
+        if( curr_image->time_stamp == 0 ) {
+            /*
+               If sample timestamp is 0, the sampler couldn't figure out
+               the right value. Assume it's OK.
+            */
+        } else {
+            if( stat( curr_image->name, &file_status ) == 0 ) {
+                /* QNX creation dates and time stamps tend to be 1 */
+                /* unit different, so do not test for equality */
+                if( file_status.st_mtime - curr_image->time_stamp > 1 ) {
+                    curr_image->exe_changed = true;
+                    if( curr_image->main_load ) {
+                        ErrorMsg( LIT( Exe_Has_Changed ), curr_image->name );
+                    }
                 }
             }
         }
-    }
-    obj_fp = DIGCli( Open )( curr_image->name, DIG_READ );
-    if( obj_fp != NULL ) {
-        if( !curr_image->sym_deleted ) {
-        } else if( curr_image->dip_handle == NO_MOD ) {
-            curr_image->dip_handle = WPDipLoadInfo( obj_fp, curr_image->name, curr_image,
-                                           sizeof( image_info ), DIP_PRIOR_MIN, DIP_PRIOR_MAX );
+        obj_fp = DIGCli( Open )( curr_image->name, DIG_READ );
+        if( obj_fp != NULL ) {
+            if( curr_image->sym_deleted ) {
+            } else if( curr_image->dip_handle == NO_MOD ) {
+                curr_image->dip_handle = WPDipLoadInfo( obj_fp, curr_image->name, curr_image,
+                                               sizeof( image_info ), DIP_PRIOR_MIN, DIP_PRIOR_MAX );
+            }
+            DIGCli( Close )( obj_fp );
+        } else {
+            curr_image->exe_not_found = true;
+            if( curr_image->main_load ) {
+                ErrorMsg( LIT( Exe_Not_Found ), curr_image->name );
+            }
         }
-        DIGCli( Close )( obj_fp );
-    } else {
-        curr_image->exe_not_found = true;
-        if( curr_image->main_load ) {
-            ErrorMsg( LIT( Exe_Not_Found ), curr_image->name );
+        if( curr_image->dip_handle != NO_MOD ) {
+            DIPMapInfo( curr_image->dip_handle, curr_image );
         }
-    }
-    if( curr_image->dip_handle != NO_MOD ) {
-        DIPMapInfo( curr_image->dip_handle, curr_image );
-    }
-    initModuleInfo( curr_image );
-    if( curr_image->dip_handle != NO_MOD ) {
-        DIPWalkModList( curr_image->dip_handle, &loadModuleInfo, curr_image );
+        initModuleInfo( curr_image );
+        if( curr_image->dip_handle != NO_MOD ) {
+            DIPWalkModList( curr_image->dip_handle, &loadModuleInfo, curr_image );
+        }
     }
 }
 
@@ -791,7 +796,7 @@ void SetSampleInfo( sio_data *curr_sio )
         curr_sio->dip_process = NULL;
     }
     CurrSIOData = curr_sio;
-    SetCurrentMAD( CurrSIOData->config.mad );
+    SetCurrentMAD( CurrSIOData->config.arch );
     if( CurrSIOData->samples != NULL ) {
         if( !CurrSIOData->massaged_mapped || CurrSIOData->massaged_sample == NULL ) {
             calcAggregates();

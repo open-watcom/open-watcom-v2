@@ -30,16 +30,15 @@
 ****************************************************************************/
 
 
-#include "cgstd.h"
+#include "_cgstd.h"
 #include "coderep.h"
 #include "makeins.h"
 #include "data.h"
 #include "namelist.h"
 #include "insutil.h"
 #include "generate.h"
+#include "varusage.h"
 
-
-extern  void            FindReferences(void);
 
 #if 0
 static bool WorthAConversion( name *temp )
@@ -52,7 +51,7 @@ static bool WorthAConversion( name *temp )
     return( true );
 }
 
-static instruction *AndResult( instruction *ins, type_class_def class )
+static instruction *AndResult( instruction *ins, type_class_def type_class )
 /**********************************************************************
 
     And the result of "ins" with 255 or 65535 to clear out the high
@@ -62,9 +61,9 @@ static instruction *AndResult( instruction *ins, type_class_def class )
     signed_32           constant;
     instruction         *new_ins;
 
-    if( class == U1 ) {
+    if( type_class == U1 ) {
         constant = 0xFF;
-    } else if( class == U2 ) {
+    } else if( type_class == U2 ) {
         constant = 0xFFFF;
     } else {
         return( ins );
@@ -91,14 +90,14 @@ static void ConvertOtherOperands( instruction *ins, name *temp )
         if( ins->operands[i] != temp &&
             ins->operands[i]->n.class != N_CONSTANT ) {
             new_ins = MakeConvert( ins->operands[i], AllocTemp( SW ),
-                                   SW, ins->operands[i]->n.name_class );
+                                   SW, ins->operands[i]->n.type_class );
             ins->operands[i] = new_ins->result;
             PrefixIns( ins, new_ins );
         }
     }
     if( ins->result != NULL && ins->result != temp ) {
         new_ins = MakeConvert( AllocTemp( SW ), ins->result,
-                               ins->result->n.name_class, SW );
+                               ins->result->n.type_class, SW );
         ins->result = new_ins->operands[0];
         SuffixIns( ins, new_ins );
     }
@@ -173,18 +172,18 @@ static bool ConvertToInt( name *temp )
 {
     block               *blk;
     instruction         *ins;
-    type_class_def      class;
+    type_class_def      type_class;
     bool                change;
 
     change = false;
-    temp->n.name_class = SW;
+    temp->n.type_class = SW;
     temp->n.size = 4;
     for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
         for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
-             class = ins->type_class;
+             type_class = ins->type_class;
              change |= ConvertInsToInt( ins, temp );
              if( ins->result == temp ) {
-                 ins = AndResult( ins, class );
+                 ins = AndResult( ins, type_class );
              }
         }
     }
@@ -197,14 +196,14 @@ static bool ConvertIfPossible( name *temp )
     Convert temp to an integer if we can.
 */
 {
-    if( ( temp->v.usage & USE_ADDRESS|USE_MEMORY|VAR_VOLATILE|NEEDS_MEMORY ) ) {
+    if( temp->v.usage & (USE_ADDRESS | USE_MEMORY | VAR_VOLATILE | NEEDS_MEMORY) ) {
         return( false );
     }
     if( temp->t.temp_flags & ALIAS )
         return( false );
     if( temp->t.alias != temp )
         return( false );
-    switch( temp->n.name_class ) {
+    switch( temp->n.type_class ) {
     case I1:
     case I2:
         return( ConvertToInt( temp ) );

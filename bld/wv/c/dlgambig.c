@@ -70,9 +70,9 @@ OVL_EXTERN const char *SymPickText( const void *data_handle, int item )
     while( item-- > 0 ) {
         sym = sym->next;
     }
-    len = DIPSymName( SL2SH( sym ), ambig->lc, SN_DEMANGLED, TxtBuff, TXT_LEN );
+    len = DIPSymName( SL2SH( sym ), ambig->lc, SNT_DEMANGLED, TxtBuff, TXT_LEN );
     if( len == 0 ) {
-        len = DIPSymName( SL2SH( sym ), ambig->lc, SN_SOURCE, TxtBuff, TXT_LEN );
+        len = DIPSymName( SL2SH( sym ), ambig->lc, SNT_SOURCE, TxtBuff, TXT_LEN );
     }
     image_name = ModImageName( DIPSymMod( SL2SH( sym ) ) );
     if( *image_name != NULLCHAR ) {

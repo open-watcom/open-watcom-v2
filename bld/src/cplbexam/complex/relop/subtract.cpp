@@ -1,6 +1,6 @@
 #include <complex.h>
 
-void main( void ) {
+int main( void ) {
 
     Complex    a (23.4, 26.9), b (34.6, 21.3);
     double     c = 14.7;

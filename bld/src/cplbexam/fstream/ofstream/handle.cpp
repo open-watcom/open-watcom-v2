@@ -3,7 +3,7 @@
 #include <sys/types.h>
 #include <fcntl.h>
 
-void main( void ) {
+int main( void ) {
 
     char    s[20];
     int     handle;

@@ -48,6 +48,8 @@
 #define _MarkBlkAllUnVisited()  ClearBlocksBitsMask( ~BLK_BLOCK_VISITED )
 #define _MarkBlkAllAttrNot( a ) ClearBlocksBitsMask( ~(a) )
 
+#define BLOCK_SIZE(n)           (sizeof( block ) + (n - 1) * sizeof( block_edge ))
+
 /* aligned */
 #define MAX_INTERVAL_DEPTH      255U
 

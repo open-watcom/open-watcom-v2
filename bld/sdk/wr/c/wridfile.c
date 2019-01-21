@@ -30,10 +30,6 @@
 ****************************************************************************/
 
 
-#include <wwindows.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
 #include "wrglbl.h"
 #include "wrrdres.h"
 #include "wrrdw16.h"

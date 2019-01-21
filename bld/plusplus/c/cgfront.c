@@ -111,7 +111,7 @@ SYMBOL CgFrontCurrentFunction(  // GET CURRENT FUNCTION BEING GENERATED
     } else {
         curr = codeCGFILE->symbol;
     }
-    return curr;
+    return( curr );
 }
 
 
@@ -319,7 +319,7 @@ void CgFrontDbgLine(            // SET LINE FOR DEBUGGING
 CGFILE_INS CgFrontLastIns(      // RETURN LOCATION OF LAST WRITTEN CODE IC
     void )
 {
-    return CgioLastWrite( codeCGFILE );
+    return( CgioLastWrite( codeCGFILE ) );
 }
 
 
@@ -473,7 +473,7 @@ void *CgFrontSwitchFile(        // SWITCH VIRTUAL FUNCTION FILES
     if( ( retn == NULL ) || ( retn->symbol != symbol ) ) {
         codeCGFILE = CgioLocateFile( symbol );
     }
-    return retn;
+    return( retn );
 }
 
 
@@ -578,10 +578,10 @@ CGFILE_INS CgFrontFuncOpen(     // OPEN A FUNCTION (AND ITS FILE)
     dtm = CompInfo.dt_method_speced;
     if( ! SymIsDtor( func ) ) {
         switch( dtm ) {
-          case DTM_DIRECT_SMALL :
+        case DTM_DIRECT_SMALL :
             dtm = DTM_DIRECT;
             break;
-          case DTM_TABLE_SMALL :
+        case DTM_TABLE_SMALL :
             dtm = DTM_TABLE;
             break;
         }
@@ -594,7 +594,7 @@ CGFILE_INS CgFrontFuncOpen(     // OPEN A FUNCTION (AND ITS FILE)
     if( posn != NULL ) {
         emitSourcePosn( gen, posn );
     }
-    return reg;
+    return( reg );
 }
 
 
@@ -607,11 +607,11 @@ void CgFrontFuncClose(          // CLOSE A FUNCTION (AND ITS FILE)
         if( opt_sym != NULL ) {
             codeCGFILE->opt_retn = opt_sym;
             switch( ObjModelFunctionReturn( func->sym_type ) ) {
-              case OMR_CLASS_REF :
+            case OMR_CLASS_REF :
                 codeCGFILE->u.s.opt_retn_ref = true;
                 break;
-              case OMR_CLASS_VAL :
-              case OMR_SCALAR :
+            case OMR_CLASS_VAL :
+            case OMR_SCALAR :
                 codeCGFILE->u.s.opt_retn_val = true;
                 break;
             }
@@ -755,18 +755,18 @@ void CgFrontScopeCall(          // GENERATE IC_SCOPE_CALL, IF REQ'D
     keep_scope = false;
     if( dtor != NULL ) {
         switch( kind ) {
-          case DTORING_SCOPE :
+        case DTORING_SCOPE :
             CgFrontCodePtr( IC_SCOPE_CALL_BDTOR, dtor );
             keep_scope = true;
             break;
-          case DTORING_TEMP :
+        case DTORING_TEMP :
             CgFrontCodePtr( IC_SCOPE_CALL_TDTOR, dtor );
             break;
-          case DTORING_COMPONENT :
+        case DTORING_COMPONENT :
             CgFrontCodePtr( IC_SCOPE_CALL_CDTOR, dtor );
             keep_scope = true;
             break;
-          DbgDefault( "CgFrontScopeCall -- bad DTORING_KIND" );
+        DbgDefault( "CgFrontScopeCall -- bad DTORING_KIND" );
         }
     }
     if( fun != NULL && ( fun->flag & SF_NO_LONGJUMP ) ) {
@@ -791,15 +791,15 @@ void CgFrontCtorTest(           // INDICATE FUNCTION MIGHT HAVE CTOR-TEST
 bool CgFrontRetnOptVar(         // START BRACKETTING FOR VAR. (RETURN OPT>)
     SYMBOL var )                // - the symbol
 {
-    bool retb;                  // - return: true ==> bracketting started
+    bool ok;                    // - return: true ==> bracketting started
 
     if( FnRetnOptimizable( var ) ) {
         CgFrontCodePtr( IC_RETNOPT_VAR, var );
-        retb = true;
+        ok = true;
     } else {
-        retb = false;
+        ok = false;
     }
-    return( retb );
+    return( ok );
 }
 
 

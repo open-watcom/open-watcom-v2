@@ -30,10 +30,19 @@
 
 
 #include <stddef.h>
-#if defined( __WINDOWS__ )
+#if defined( __DOS__ )
+    #include <dos.h>
+#elif defined( __WINDOWS__ )
     #include <windows.h>
+    #include <dos.h>
 #elif defined( __NT__ )
     #include <windows.h>
+  #ifdef INCLUDE_COMMDLG_H
+    #include <commdlg.h>
+  #endif
+  #ifdef INCLUDE_DDEML_H
+    #include <ddeml.h>
+  #endif
 #elif defined( __OS2__ )
     #define  INCL_DOSMISC
     // For WPI
@@ -55,6 +64,7 @@
     #define INCL_ERRORS
     #include <os2.h>
 #endif
+#include "bool.h"
 #include "vhandle.h"
 #include "guitypes.h"
 #if defined( __WINDOWS__ )
@@ -64,6 +74,9 @@
 #elif defined( __OS2__ )
     #include "setupdlg.h"
 #endif
+#include "gui.h"
+#include "strvbuf.h"
+
 
 #ifdef __OS2__
     #define     _ID(x) x
@@ -85,11 +98,6 @@ typedef enum {
     CFE_BAD_CRC,
     CFE_DSTREADONLY
 } COPYFILE_ERROR;
-
-enum {
-    MOD_IN_PLACE,
-    MOD_LATER
-};
 
 #if defined( __NT__ )
 enum {
@@ -125,25 +133,15 @@ enum {
 extern bool             ConfigModified;
 extern gui_window       *MainWnd;
 
-extern bool             SetupPreInit( void );
-extern bool             SetupInit( void );
-extern void             SetupFini( void );
-extern char             *ReplaceVars( char *, size_t, const char * );
-extern bool             StatusInit( void );
-extern void             StatusFini( void );
-extern void             StatusShow( bool );
-extern void             StatusLines( int, const char * );
-extern void             StatusAmount( long, long );
-extern bool             StatusCancelled( void );
-extern gui_message_return CheckInstallDLL( char*, vhandle );
-extern gui_message_return CheckInstallNLM( const char *, vhandle );
-extern bool             IsNLMNewerThanExistingNLM(char *name);
+extern void             ReplaceVars( VBUF *dst, const char *src );
+extern bool             CheckInstallDLL( const VBUF *, vhandle );
+extern bool             CheckInstallNLM( const VBUF *, vhandle );
 extern bool             CreatePMInfo( bool );
 extern bool             ModifyConfiguration( bool );
 extern bool             ModifyAutoExec( bool );
 extern bool             GenerateBatchFile( bool );
 #if defined( __NT__ )
-extern bool             GetRegString( HKEY, const char *, const char *, char *, DWORD );
+extern bool             GetRegString( HKEY, const char *, const char *, VBUF * );
 extern bool             ModifyRegAssoc( bool );
 extern bool             AddToUninstallList( bool );
 #endif
@@ -159,4 +157,4 @@ extern bool             CreateServices( void );
 extern bool             UpdateODBC( void );
 extern bool             RegUpdateODBC( void );
 extern bool             ApplyLicense( void );
-extern bool             DoDeleteFile( const char * );
+extern bool             DoDeleteFile( const VBUF * );

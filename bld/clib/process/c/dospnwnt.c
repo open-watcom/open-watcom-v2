@@ -38,7 +38,6 @@
 #include <dos.h>
 #include <string.h>
 #include <stddef.h>
-#include <malloc.h>
 #include <process.h>
 #include <windows.h>
 #include "rtdata.h"

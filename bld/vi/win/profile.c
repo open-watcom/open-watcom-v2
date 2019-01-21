@@ -32,12 +32,12 @@
 
 
 #include "vi.h"
-#include <dos.h>
 #ifdef __NT__
     #include <shlobj.h>
     typedef HRESULT (CALLBACK *GetFolderPath)( HWND, int, HANDLE, DWORD, LPTSTR );
 #endif
 #include "posix.h"
+
 
 #define CONFIG_INI "weditor.ini"
 #define CONFIG_DIR "Open Watcom"
@@ -52,7 +52,7 @@ static char     *keyInitialPositionState = "InitialPositionState";
 static char     *keySaveConfig = "SaveConfig";
 static char     *keyCfgTime = "CfgTime";
 static char     *keyChildrenMaximized = "ChildrenMaximized";
-static DWORD    cfgTime;
+static time_t   cfgTime;
 
 static bool     saveConfig;
 #if defined(__WINDOWS_386__)
@@ -167,7 +167,7 @@ static void readInitialPosition( void )
 
     getProfileRect( keyInitialPosition, "0 0 0 0", &r );
     SetInitialWindowRect( &r );
-    RootState = getProfileLong( keyInitialPositionState );
+    RootState = LOWORD( getProfileLong( keyInitialPositionState ) );
 
 } /* readInitialPosition */
 
@@ -198,8 +198,7 @@ static void getConfigFilePaths( void )
     HINSTANCE library = LoadLibrary( "shfolder.dll" );
     if( library ) {
         GetFolderPath getpath = (GetFolderPath)GetProcAddress( library, "SHGetFolderPathA" );
-        if( SUCCEEDED( getpath( NULL, CSIDL_APPDATA | CSIDL_FLAG_CREATE, NULL, 0,
-                                path ) ) ) {
+        if( SUCCEEDED( getpath( NULL, CSIDL_APPDATA | CSIDL_FLAG_CREATE, NULL, 0, path ) ) ) {
             if( strlen( path ) + strlen( "\\" CONFIG_DIR ) + 12 < FILENAME_MAX ) {
                 strcat( path, "\\" CONFIG_DIR );
                 if( access( path, F_OK ) ) {    /* make sure CONFIG_DIR diretory is present */
@@ -208,8 +207,7 @@ static void getConfigFilePaths( void )
             }
         }
         FreeLibrary( library );
-    }
-    else {                                          /* should only get here on old machines */
+    } else {                                        /* should only get here on old machines */
         GetWindowsDirectory( path, FILENAME_MAX );  /* that don't have shfolder.dll */
     }
 #else
@@ -230,14 +228,14 @@ static void getConfigFilePaths( void )
  */
 static void readConfigFile( void )
 {
-    char        cname[FILENAME_MAX];
+    char        cname[_MAX_PATH];
     //char      str[MAX_STR]; // not used if not prompting for new cfg files
     char        *cfgname;
     struct stat cfg;
     int         rc;
-    DWORD       new_cfgtime = 0;
+    time_t      new_cfgtime = 0;
 
-    cfgTime = getProfileLong( keyCfgTime );
+    cfgTime = (time_t)getProfileLong( keyCfgTime );
     cfgname = GetConfigFileName();
     GetFromEnv( cfgname, cname );
     if( cname[0] != '\0' ) {
@@ -268,7 +266,7 @@ static void readConfigFile( void )
     } else {
         cfgTime = new_cfgtime;
     }
-    saveConfig = getProfileLong( keySaveConfig );
+    saveConfig = ( getProfileLong( keySaveConfig ) != 0 );
 
 } /* readConfigFile */
 
@@ -281,13 +279,13 @@ static void writeConfigFile( void )
 
     writeProfileLong( keySaveConfig, EditFlags.SaveConfig );
     if( !EditFlags.SaveConfig ) {
-        writeProfileLong( keyCfgTime, cfgTime );
+        writeProfileLong( keyCfgTime, (long)cfgTime );
         return;
     }
     writeProfileLong( keyChildrenMaximized, 0 );
     GenerateConfiguration( cfgFile, false );    /* never write over %watcom%\eddat\weditor.ini */
     stat( cfgFile, &cfg );
-    writeProfileLong( keyCfgTime, cfg.st_mtime );
+    writeProfileLong( keyCfgTime, (long)cfg.st_mtime );
 
 } /* writeConfigFile */
 

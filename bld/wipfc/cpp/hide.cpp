@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
+* Copyright (c) 2009-2018 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -34,28 +34,34 @@
 *
 ****************************************************************************/
 
+
+#include "wipfc.hpp"
 #include <vector>
 #include "hide.hpp"
 #include "cell.hpp"
 #include "document.hpp"
 #include "errors.hpp"
 #include "util.hpp"
+#include "outfile.hpp"
 
-bool Hide::hide( false );
+
+bool Hide::_hide( false );
 
 Hide::Hide( Document* d, Element *p, const std::wstring* f, unsigned int r,
           unsigned int c ) : Element( d, p, f, r, c )
 {
-    if( hide )
+    if( _hide ) {
         d->printError( ERR2_NEST );
-    else
-        hide = true;
+    } else {
+        _hide = true;
+    }
 }
 /***************************************************************************/
 Lexer::Token Hide::parse( Lexer* lexer )
 {
-    Lexer::Token tok( document->getNextToken() );
-    while( tok != Lexer::TAGEND ) {
+    Lexer::Token tok;
+
+    while( (tok = _document->getNextToken()) != Lexer::TAGEND ) {
         //parse attributes
         if( tok == Lexer::ATTRIBUTE ) {
             std::wstring key;
@@ -68,82 +74,80 @@ Lexer::Token Hide::parse( Lexer* lexer )
                     value.erase( index, 1 );
                     index = value.find( L'\'', index );
                 }
-                keyPhrase = value;
+                _keyPhrase = value;
+            } else {
+                _document->printError( ERR1_ATTRNOTDEF );
             }
-            else
-                document->printError( ERR1_ATTRNOTDEF );
-        }
-        else if( tok == Lexer::FLAG )
-                document->printError( ERR1_ATTRNOTDEF );
-        else if( tok == Lexer::ERROR_TAG )
+        } else if( tok == Lexer::FLAG ) {
+                _document->printError( ERR1_ATTRNOTDEF );
+        } else if( tok == Lexer::ERROR_TAG ) {
             throw FatalError( ERR_SYNTAX );
-        else if( tok == Lexer::END )
+        } else if( tok == Lexer::END ) {
             throw FatalError( ERR_EOF );
-        else
-            document->printError( ERR1_TAGSYNTAX );
-        tok = document->getNextToken();
+        } else {
+            _document->printError( ERR1_TAGSYNTAX );
+        }
     }
-    return document->getNextToken(); //consume TAGEND
+    return _document->getNextToken(); //consume TAGEND
 }
 /***************************************************************************/
 //How are multiple pass-phrases encoded? Assuming + left in place...
 void Hide::buildText( Cell* cell )
 {
-    std::string tmp;
-    wtombstring( keyPhrase, tmp );
-    std::size_t size( tmp.size() );
-    if( size > 253 ) {
-        tmp.erase( 253 );
-        size = 253;
-    }
-    std::vector< STD1::uint8_t > esc;
-    esc.reserve( size + 3 );
-    esc.push_back( 0xFF );  //esc
-    esc.push_back( 0x02 );  //size
-    esc.push_back( 0x17 );  //begin hide
-    for( unsigned int count1 = 0; count1 < size; count1++ )
-        esc.push_back( static_cast< STD1::uint8_t >( tmp[ count1 ] ) );
-    esc[1] = static_cast< STD1::uint8_t >( esc.size() - 1 );
-    cell->addEsc( esc );
-    if( cell->textFull() )
+    std::string buffer( cell->out()->wtomb_string( _keyPhrase ) );
+    if( buffer.size() > ( 255 - 2 ) )
+        buffer.erase( 255 - 2 );
+    std::size_t start = cell->getPos();
+    cell->reserve( buffer.size() + 3 );
+    cell->addByte( Cell::ESCAPE );  //esc
+    cell->addByte( 0x02 );          //size
+    cell->addByte( 0x17 );          //begin hide
+    cell->add( buffer );
+    cell->updateByte( start + 1, static_cast< byte >( cell->getPos( start ) - 1 ) );
+    if( cell->textFull() ) {
         printError( ERR1_LARGEPAGE );
+    }
 }
 /***************************************************************************/
 EHide::EHide( Document* d, Element *p, const std::wstring* f, unsigned int r,
             unsigned int c ) : Element ( d, p, f, r, c )
 {
-    if( Hide::hiding() )
+    if( Hide::hiding() ) {
         Hide::clear();
-    else
+    } else {
         d->printError( ERR2_NEST );
+    }
 }
 /***************************************************************************/
 Lexer::Token EHide::parse( Lexer* lexer )
 {
-    Lexer::Token tok( document->getNextToken() );
+    Lexer::Token tok;
+
     (void)lexer;
-    while( tok != Lexer::TAGEND ) {
-        if( tok == Lexer::ATTRIBUTE )
-            document->printError( ERR1_ATTRNOTDEF );
-        else if( tok == Lexer::FLAG )
-            document->printError( ERR1_ATTRNOTDEF );
-        else if( tok == Lexer::ERROR_TAG )
+
+    while( (tok = _document->getNextToken()) != Lexer::TAGEND ) {
+        if( tok == Lexer::ATTRIBUTE ) {
+            _document->printError( ERR1_ATTRNOTDEF );
+        } else if( tok == Lexer::FLAG ) {
+            _document->printError( ERR1_ATTRNOTDEF );
+        } else if( tok == Lexer::ERROR_TAG ) {
             throw FatalError( ERR_SYNTAX );
-        else if( tok == Lexer::END )
+        } else if( tok == Lexer::END ) {
             throw FatalError( ERR_EOF );
-        else
-            document->printError( ERR1_TAGSYNTAX );
-        tok = document->getNextToken();
+        } else {
+            _document->printError( ERR1_TAGSYNTAX );
+        }
     }
-    return document->getNextToken();    //consume TAGEND
+    return _document->getNextToken();    //consume TAGEND
 }
 /***************************************************************************/
 void EHide::buildText( Cell* cell )
 {
-    cell->addByte( 0xFF );  //esc
-    cell->addByte( 0x02 );  //size
-    cell->addByte( 0x18 );  //end hide
-    if( cell->textFull() )
+    cell->addByte( Cell::ESCAPE );  //esc
+    cell->addByte( 0x02 );          //size
+    cell->addByte( 0x18 );          //end hide
+    if( cell->textFull() ) {
         printError( ERR1_LARGEPAGE );
+    }
 }
 

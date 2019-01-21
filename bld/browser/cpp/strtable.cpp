@@ -50,7 +50,7 @@ StringTable::StringTable( int numCols, ... )
     int i;
     va_list colParms;
 
-    _colWidths = new int[ numCols ];
+    _colWidths = new int [numCols];
 
     va_start( colParms, numCols );
 
@@ -59,11 +59,11 @@ StringTable::StringTable( int numCols, ... )
         _totalWidth += _colWidths[ i ];
     }
 
-    _buffer = new char[ _totalWidth + 1 ];
+    _buffer = new char [_totalWidth + 1];
 
     // position is an array of ptrs to keep track of where we are in each
     // string; it is only used in printRow
-    _position = new (const char *[ _columns ]);
+    _position = new (const char *[_columns]);
 
     va_end( colParms );
 }
@@ -74,14 +74,14 @@ StringTable::~StringTable()
     int i;
 
     for( i = 0; i < _table.count(); i += 1 ) {
-        delete [] _table[ i ];
+        delete[] _table[ i ];
     }
 
     _table.reset();
 
-    delete [] _colWidths;
-    delete [] _buffer;
-    delete [] _position;
+    delete[] _colWidths;
+    delete[] _buffer;
+    delete[] _position;
 }
 
 void StringTable::setOutputCallback( WObject * client, CBStringTable cb )
@@ -99,7 +99,7 @@ void StringTable::add( const char * firstString, ... )
     int i;
     char const ** row;
 
-    row = new (const char *[ _columns ]);
+    row = new (const char *[_columns]);
 
     row[ 0 ] = firstString;
 
@@ -145,7 +145,7 @@ void StringTable::outputRow( const char * firstString, ... )
     int i;
     char const ** row;
 
-    row = new (const char *[ _columns ]);
+    row = new (const char *[_columns]);
 
     row[ 0 ] = firstString;
 
@@ -158,7 +158,7 @@ void StringTable::outputRow( const char * firstString, ... )
     va_end( args );
     printRow( row );
 
-    delete [] row;
+    delete[] row;
 }
 
 void StringTable::output()

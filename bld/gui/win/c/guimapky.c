@@ -559,7 +559,7 @@ static bool convert_table( WORD vk, gui_key *key, ctrlkey *table, int size )
 {
     int         i;
 
-    for( i=0; i < size; i++ ) {
+    for( i = 0; i < size; i++ ) {
         if( vk == table[i].scan ) {
             *key = table[i].key;
             return( true );

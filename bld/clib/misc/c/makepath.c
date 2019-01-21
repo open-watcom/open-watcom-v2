@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,8 +34,10 @@
 #include "widechar.h"
 #include <stdlib.h>
 #include <string.h>
-#if !defined( __WIDECHAR__ ) && !defined( __UNIX__ )
+#if !defined( __WIDECHAR__ )
+  #if !defined( __UNIX__ ) && !defined( __RDOS__ )
     #include <mbstring.h>
+  #endif
 #endif
 #include "pathmac.h"
 
@@ -208,7 +211,7 @@ _WCRTLINK void __F_NAME(_makepath,_wmakepath)( CHAR_TYPE *path, const CHAR_TYPE 
                 const CHAR_TYPE *dir, const CHAR_TYPE *fname, const CHAR_TYPE *ext )
 {
     UINT_WC_TYPE        first_pc = NULLCHAR;
-  #ifndef __WIDECHAR__
+  #if !defined( __WIDECHAR__ ) && !defined( __RDOS__ )
     char                *pathstart = path;
     unsigned            ch;
   #endif
@@ -228,7 +231,7 @@ _WCRTLINK void __F_NAME(_makepath,_wmakepath)( CHAR_TYPE *path, const CHAR_TYPE 
     if( dir != NULL ) {
         if( *dir != NULLCHAR ) {
             do {
-  #ifdef __WIDECHAR__
+  #if defined( __WIDECHAR__ ) || defined( __RDOS__ )
                 *path++ = pickup( *dir++, &first_pc );
   #else
                 ch = pickup( _mbsnextc( (unsigned char *)dir ), &first_pc );
@@ -242,7 +245,7 @@ _WCRTLINK void __F_NAME(_makepath,_wmakepath)( CHAR_TYPE *path, const CHAR_TYPE 
             if( first_pc == NULLCHAR )
                 first_pc = DIR_SEP;
             /* if dir did not end in '/' then put in a provisional one */
-  #ifdef __WIDECHAR__
+  #if defined( __WIDECHAR__ ) || defined( __RDOS__ )
             if( path[-1] == first_pc ) {
                 path--;
             } else {
@@ -262,7 +265,7 @@ _WCRTLINK void __F_NAME(_makepath,_wmakepath)( CHAR_TYPE *path, const CHAR_TYPE 
     if( first_pc == NULLCHAR )
         first_pc = DIR_SEP;
     if( fname != NULL ) {
-  #ifdef __WIDECHAR__
+  #if defined( __WIDECHAR__ ) || defined( __RDOS__ )
         if( pickup( *fname, &first_pc ) != first_pc && *path == first_pc )
             path++;
   #else
@@ -273,7 +276,7 @@ _WCRTLINK void __F_NAME(_makepath,_wmakepath)( CHAR_TYPE *path, const CHAR_TYPE 
 
         while( *fname != NULLCHAR ) {
         //do {
-  #ifdef __WIDECHAR__
+  #if defined( __WIDECHAR__ ) || defined( __RDOS__ )
             *path++ = pickup( *fname++, &first_pc );
   #else
             ch = pickup( _mbsnextc( (unsigned char *)fname ), &first_pc );

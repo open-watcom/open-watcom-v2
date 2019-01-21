@@ -50,10 +50,11 @@
 #ifdef TRMEM
 static _trmem_hdl   TRMemHandle;
 
-static void     TRPrintLine( void *h, const char *buff, size_t len )
+static void     TRPrintLine( void *parm, const char *buff, size_t len )
 {
-    /* unused parameters */ (void)h; (void)len;
-    printf( "%s\n", buff );
+    /* unused parameters */ (void)parm; (void)len;
+
+    printf( buff );
 }
 #endif
 

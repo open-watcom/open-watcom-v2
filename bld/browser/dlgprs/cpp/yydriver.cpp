@@ -3,10 +3,10 @@
 
 #include "scanner.h"
 
-#define yychktab    YYPARSER::yychktab
-#define yyacttab    YYPARSER::yyactab
-#define yyplentab   YYPARSER::yyplentab
-#define yyplhstab   YYPARSER::yyplhstab
+#define YYCHKTYPE       int_16
+#define YYACTTYPE       int_16
+#define YYPLENTYPE      int_16
+#define YYPLHSTYPE      int_16
 
 
 
@@ -23,13 +23,15 @@
 
 #define YYABORT         return(1)
 #define YYACCEPT        return(0)
-//Never used
-//#define YYERROR         goto yyerrlab
+#define YYERROR         goto yyerrlab
+
+extern const TokenStruct  xtokens[];
+extern const int          xtokcnt;
 
 YYPARSER::YYPARSER( const char * fileName )
 //-----------------------------------------
 {
-    _scanner = new Scanner( fileName );
+    _scanner = new Scanner( fileName, T_String, T_Number, T_Ident, xtokens, xtokcnt );
 }
 
 YYPARSER::~YYPARSER()
@@ -56,116 +58,105 @@ int YYPARSER::yylex()
     return _scanner->getToken( yylval );
 }
 
+static YYACTTYPE xfind( YYACTTYPE yyk, YYTOKENTYPE yytoken )
+{
+    int     yyi;
+
+    while( (yyi = yyk + yytoken) < 0 || yyi >= YYUSED || yychktab[yyi] != yytoken ) {
+        if( (yyi = yyk + YYPARTOKEN) < 0 || yyi >= YYUSED || yychktab[yyi] != YYPARTOKEN ) {
+            return( YYNOACTION );
+        }
+        yyk = yyacttab[yyi];
+    }
+    return( yyacttab[yyi] );
+}
+
 int YYPARSER::yyparse()
 //---------------------
 {
-  int yypnum;
-  int yyi, yyk, yylhs, yyaction;
-  int yytoken;
-  YYSTYPE yys[MAXDEPTH];
-  YYSTYPE *yysp;
-  YYSTYPE yyv[MAXDEPTH];
-  YYSTYPE *yyvp;
-  int yyerrflag;
+    int yypnum;
+    int yyi, yylhs;
+    YYACTTYPE yyaction;
+    YYTOKENTYPE yytoken;
+    YYACTTYPE yys[MAXDEPTH];
+    YYACTTYPE *yysp;
+    YYSTYPE yyv[MAXDEPTH];
+    YYSTYPE *yyvp;
+    int yyerrflag;
 
-  yyval = 0;
-  yylval = 0;
-  yyerrflag = 0;
-  yyaction = 0;
-  yysp = yys;
-  yyvp = yyv;
-  *yysp = YYSTART;
-  yytoken = yylex();
-  for(;;){
+    yyval = 0;
+    yylval = 0;
+    yyerrflag = 0;
+    yyaction = 0;
+    yysp = yys;
+    yyvp = yyv;
+    *yysp = YYSTART;
+    yytoken = yylex();
+    for( ;; ) {
 yynewact:
-      yyk = *yysp;
-      while( (yyi = yyk + yytoken) < 0 || yyi >= YYUSED || yychktab[yyi] != yytoken )
-          if( (yyi = yyk + YYPTOKEN) < 0 || yyi >= YYUSED || yychktab[yyi] != YYPTOKEN )
-              goto yycheck1;
-          else
-              yyk = yyacttab[yyi];
-      yyaction = yyacttab[yyi];
-      if( yyaction == YYNOACTION ){
-yycheck1:
-          yyk = *yysp;
-          while( (yyi = yyk + YYDTOKEN) < 0 || yyi >= YYUSED || yychktab[yyi] != YYDTOKEN )
-              if( (yyi = yyk + YYPTOKEN) < 0 || yyi >= YYUSED || yychktab[yyi] != YYPTOKEN )
-                  goto yycheck2;
-              else
-                  yyk = yyacttab[yyi];
-          yyaction = yyacttab[yyi];
-          if( yyaction == YYNOACTION ){
-yycheck2:
-              switch( yyerrflag ){
+        yyaction = xfind( *yysp, yytoken );
+        if( yyaction == YYNOACTION ) {
+            yyaction = xfind( *yysp, YYDEFTOKEN );
+            if( yyaction == YYNOACTION ) {
+                switch( yyerrflag ) {
                 case 0:
-                  yyerror( "syntax error" );
-                  //Never used
-                  //yyerrlab:
+                    yyerror( "syntax error" );
+                    YYERROR;
+yyerrlab:
                 case 1:
                 case 2:
-                  yyerrflag = 3;
-                  while( yysp >= yys ){
-                      yyk = *yysp;
-                      while( (yyi = yyk + YYETOKEN) < 0 || yyi >= YYUSED || yychktab[yyi] != YYETOKEN )
-                          if( (yyi = yyk + YYPTOKEN) < 0 || yyi >= YYUSED || yychktab[yyi] != YYPTOKEN )
-                              goto continu;
-                          else
-                              yyk = yyacttab[yyi];
-                      yyaction = yyacttab[yyi];
-                      if( yyaction < YYUSED ){
-                          *++yysp = yyaction;
-                          ++yyvp;
-                          goto yynewact;
-                      };
-                      continu:;
-                      --yysp;
-                      --yyvp;
-                  };
-                  YYABORT;
+                    yyerrflag = 3;
+                    while( yysp >= yys ) {
+                        yyaction = xfind( *yysp, YYERRTOKEN );
+                        if( yyaction != YYNOACTION && yyaction < YYUSED ) {
+                            *++yysp = yyaction;
+                            ++yyvp;
+                            goto yynewact;
+                        }
+                        --yysp;
+                        --yyvp;
+                    }
+                    YYABORT;
                 case 3:
-                  if( yytoken == 0 ) /* EOF token */
-                      YYABORT;
-                  yytoken = yylex();
-                  goto yynewact;
-              };
-          };
-      };
-      if( yyaction < YYUSED ){
-          if( yyaction == YYSTOP ){
-              YYACCEPT;
-          } else {
-              *++yysp = yyaction;
-              *++yyvp = yylval;
-              if( yyerrflag )
-                  --yyerrflag;
-              yytoken = yylex();
-          };
-      } else {
-          yypnum = yyaction - YYUSED;
-          yyi = yyplentab[yypnum];
-          yysp -= yyi;
-          yyvp -= yyi;
-          yylhs = yyplhstab[yypnum];
-          if( yysp < yys ){
-              yyerror( "stack underflow\n" );
-              YYABORT;
-          };
-          yyk = *yysp;
-          while( (yyi = yyk + yylhs) < 0 || yyi >= YYUSED || yychktab[yyi] != yylhs ){
-              if( (yyi = yyk + YYPTOKEN) < 0 || yyi >= YYUSED || yychktab[yyi] != YYPTOKEN ){
-                  yyerror( "missing nonterminal\n" );
-                  YYABORT;
-              };
-              yyk = yyacttab[yyi];
-          };
-          *++yysp = yyacttab[yyi];
-          ++yyvp;
-          switch( yypnum ){
+                    if( yytoken == YYEOFTOKEN )
+                        YYABORT;
+                    yytoken = yylex();
+                    goto yynewact;
+                }
+            }
+        }
+        if( yyaction < YYUSED ) {
+            if( yyaction == YYSTOP ) {
+                YYACCEPT;
+            }
+            *++yysp = yyaction;
+            *++yyvp = yylval;
+            if( yyerrflag )
+                --yyerrflag;
+            yytoken = yylex();
+        } else {
+            yypnum = yyaction - YYUSED;
+            yyi = yyplentab[yypnum];
+            yysp -= yyi;
+            yyvp -= yyi;
+            yylhs = yyplhstab[yypnum];
+            if( yysp < yys ) {
+                yyerror( "stack underflow\n" );
+                YYABORT;
+            }
+            yyaction = xfind( *yysp, yylhs );
+            if( yyaction == YYNOACTION ) {
+                yyerror( "missing nonterminal\n" );
+                YYABORT;
+            }
+            *++yysp = yyaction;
+            ++yyvp;
+            switch( yypnum ) {
 
             default:
-              yyval = yyvp[0];
-          };
-          *yyvp = yyval;
-      };
-  };
+                yyval = yyvp[0];
+            }
+            *yyvp = yyval;
+        }
+    }
 }

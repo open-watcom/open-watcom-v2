@@ -385,11 +385,13 @@ static unsigned_32 WriteDataPages( exe_pe_header *h, pe_object *object, unsigned
     data_base = 0xFFFFFFFFUL;
     for( group = Groups; group != NULL; group = group->next_group) {
         if( group->totalsize == 0 ) continue;   // DANGER DANGER DANGER <--!!!
-        name = group->sym->name;
+        name = group->sym->name.u.ptr;
         if( name == NULL || name[0] == 0 ) {
             leader = Ring2First( group->leaders );
-            name = leader->segname;
-            if( name == NULL ) name = "";
+            name = leader->segname.u.ptr;
+            if( name == NULL ) {
+                name = "";
+            }
         }
         strncpy( object->name, name, PE_OBJ_NAME_LEN );
         size_ph = CalcGroupSize( group );
@@ -561,7 +563,7 @@ static void WriteImportInfo( void )
     pos = IData.mod_name_off;            /* write the module names */
     for( mod = PEImpList; mod != NULL; mod = mod->next ) {
         int name_size = mod->mod->len + 1;
-        PutInfo( buf + pos, mod->mod->name, name_size );
+        PutInfo( buf + pos, mod->mod->name.u.ptr, name_size );
         pos += name_size;
     }
     pos = IData.hint_off;        /* write out the import names */
@@ -574,7 +576,7 @@ static void WriteImportInfo( void )
                 PutInfo( buf + pos, &hint, sizeof( hint ) );
                 pos += sizeof( hint );
                 size = imp->imp->len;
-                PutInfo( buf + pos, imp->imp->name, size );
+                PutInfo( buf + pos, imp->imp->name.u.ptr, size );
                 pos += size;
                 PutInfoNulls( buf + pos, 1);
                 pos++;
@@ -587,7 +589,7 @@ static void WriteImportInfo( void )
 static int namecmp_exp( const void *pn1, const void *pn2 )
 /********************************************************/
 {
-    return( strcmp( (*(entry_export **)pn1)->name, (*(entry_export **)pn2)->name ) );
+    return( strcmp( (*(entry_export **)pn1)->name.u.ptr, (*(entry_export **)pn2)->name.u.ptr ) );
 }
 
 
@@ -631,9 +633,9 @@ static unsigned_32 WriteExportInfo( pe_object *object, unsigned_32 file_align, p
         ++num_entries;
         if( !exp->isprivate ) {
             if( exp->impname != NULL ) {
-                AddImpLibEntry( exp->impname, exp->name, NOT_IMP_BY_ORDINAL );
+                AddImpLibEntry( exp->impname, exp->name.u.ptr, NOT_IMP_BY_ORDINAL );
             } else {
-                AddImpLibEntry( exp->sym->name, exp->name, NOT_IMP_BY_ORDINAL );
+                AddImpLibEntry( exp->sym->name.u.ptr, exp->name.u.ptr, NOT_IMP_BY_ORDINAL );
             }
         }
     }
@@ -665,7 +667,7 @@ static unsigned_32 WriteExportInfo( pe_object *object, unsigned_32 file_align, p
     for( i = 0; i < num_entries; ++i ) {
         exp = sort[i];
         WriteLoadU32( eat );
-        eat += strlen( exp->name ) + 1;
+        eat += strlen( exp->name.u.ptr ) + 1;
     }
     /* write out the export ordinal table */
     for( i = 0; i < num_entries; ++i ) {
@@ -674,7 +676,7 @@ static unsigned_32 WriteExportInfo( pe_object *object, unsigned_32 file_align, p
     /* write out the export name table */
     for( i = 0; i < num_entries; ++i ) {
         exp = sort[i];
-        WriteLoad( exp->name, strlen( exp->name ) + 1 );
+        WriteLoad( exp->name.u.ptr, strlen( exp->name.u.ptr ) + 1 );
     }
     _LnkFree( sort );
     size = eat - object->rva;
@@ -1392,6 +1394,7 @@ void FiniPELoadFile( void )
             for( ; currpos < totalsize; currpos += buffsize ) {
                 memset( buffer, 0, CRC_BUFF_SIZE );
                 buffsize = QRead( outfile->handle, buffer, CRC_BUFF_SIZE, outfile->fname );
+                DbgAssert( buffsize == IOERROR );
                 DbgAssert( ( buffsize % 2 ) != 1 ); /* check for odd length */
 
                 crc = CalcPEChecksum( crc, (unsigned short *)buffer, buffsize / sizeof( unsigned short ) );
@@ -1556,7 +1559,7 @@ static void CreateIDataSection( void )
         }
         sdata->is32bit = true;
         sdata->length = IData.total_size;
-        sdata->u.name = CoffIDataSegName;
+        sdata->u.name.u.ptr = CoffIDataSegName;
         sdata->combine = COMBINE_ADD;
         sdata->isabs = false;
         AddSegment( sdata, class );
@@ -1573,7 +1576,7 @@ static void RegisterImport( dll_sym_info *sym )
     struct import_name          *imp;
     struct import_name          *chk;
     struct import_name          **owner;
-    name_list                   *os2_imp;
+    obj_name_list               *os2_imp;
     int                         cmp;
     unsigned                    len;
 
@@ -1609,7 +1612,7 @@ static void RegisterImport( dll_sym_info *sym )
             if( chk->imp != NULL ) {
                 len = chk->imp->len;
                 if( len > os2_imp->len ) len = os2_imp->len;
-                cmp = memcmp( chk->imp->name, os2_imp->name, len );
+                cmp = memcmp( chk->imp->name.u.ptr, os2_imp->name.u.ptr, len );
                 if( cmp > 0 ) break;
                 if( cmp == 0 && len > chk->imp->len ) break;
             }
@@ -1648,7 +1651,7 @@ static void CreateTransferSegment( class_entry *class )
         }
         sdata->is32bit = true;
         sdata->length = size;
-        sdata->u.name = TRANSFER_SEGNAME;
+        sdata->u.name.u.ptr = TRANSFER_SEGNAME;
         sdata->combine = COMBINE_ADD;
         sdata->isabs = false;
         AddSegment( sdata, class );
@@ -1755,7 +1758,7 @@ bool ImportPELocalSym( symbol *iatsym )
     const char      *name;
     symbol          *locsym;
 
-    name = iatsym->name;
+    name = iatsym->name.u.ptr;
     if( memcmp( name, ImportSymPrefix, PREFIX_LEN ) != 0 )
         return( false );
     locsym = FindISymbol( name + PREFIX_LEN );
@@ -1763,7 +1766,7 @@ bool ImportPELocalSym( symbol *iatsym )
         return( false );
     if( IS_SYM_IMPORTED( locsym ) )
         return( false );
-    LnkMsg( WRN+MSG_IMPORT_LOCAL, "s", locsym->name );
+    LnkMsg( WRN+MSG_IMPORT_LOCAL, "s", locsym->name.u.ptr );
     iatsym->info |= SYM_DEFINED | SYM_DCE_REF;
     if( LinkFlags & STRIP_CODE ) {
         DefStripImpSym( iatsym );

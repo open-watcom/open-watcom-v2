@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2016 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -74,7 +74,11 @@
 #if defined( _M_I86 )
   #define STR_BITNESS " (16-bit)"
 #elif defined( _M_IX86 )
+ #if defined( __WINDOWS__ )
+  #define STR_BITNESS " (32-bit Extender)"
+ #else
   #define STR_BITNESS " (32-bit)"
+ #endif
 #elif defined( _M_X64 )
   #define STR_BITNESS " (64-bit)"
 #elif defined( __i386__ ) || defined( __i386 )

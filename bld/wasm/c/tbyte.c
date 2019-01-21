@@ -381,8 +381,10 @@ TB_LD * strtotb(char *p, TB_LD * ld, bool negative)
     switch (*p) {
     case '-':
         sign = -1;
+        /* fall through */
     case '+':
         p++;
+        break;
     default :
         break;
     }

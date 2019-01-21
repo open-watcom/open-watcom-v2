@@ -37,9 +37,6 @@
 #include "heap.h"
 
 
-#define HEAP(s)     ((heapblkp __based(s) *)0)
-#define FRLPTR(s)   freelistp __based(s) *
-
 static int verifyHeapList( __segment start )
 {
     /* make sure list of heaps is a doubly-linked NULL terminated list */
@@ -49,25 +46,25 @@ static int verifyHeapList( __segment start )
 
     /* check previous heaps end in NULL */
     for( seg = start; ; seg = prev_seg ) {
-        prev_seg = HEAP( seg )->prevseg;
+        prev_seg = BHEAP( seg )->prev.segm;
         if( prev_seg == start ) {
             return( _HEAPBADBEGIN );
         }
         if( prev_seg == _NULLSEG )
             break;
-        if( HEAP( prev_seg )->nextseg != seg ) {
+        if( BHEAP( prev_seg )->next.segm != seg ) {
             return( _HEAPBADBEGIN );
         }
     }
     /* check next heaps end in NULL */
     for( ; ; seg = next_seg ) {
-        next_seg = HEAP( seg )->nextseg;
+        next_seg = BHEAP( seg )->next.segm;
         if( next_seg == start ) {
             return( _HEAPBADBEGIN );
         }
         if( next_seg == _NULLSEG )
             break;
-        if( HEAP( next_seg )->prevseg != seg ) {
+        if( BHEAP( next_seg )->prev.segm != seg ) {
             return( _HEAPBADBEGIN );
         }
     }
@@ -93,20 +90,20 @@ int __HeapWalk( struct _heapinfo *entry, __segment seg, __segment one_heap )
         }
     }
     for( ; ; seg = next_seg ) {
-        prev_seg = HEAP( seg )->prevseg;
-        next_seg = HEAP( seg )->nextseg;
+        prev_seg = BHEAP( seg )->prev.segm;
+        next_seg = BHEAP( seg )->next.segm;
         if( prev_seg != _NULLSEG ) {
-            if( HEAP( prev_seg )->nextseg != seg || prev_seg == next_seg ) {
+            if( BHEAP( prev_seg )->next.segm != seg || prev_seg == next_seg ) {
                 return( _HEAPBADBEGIN );
             }
         }
         if( next_seg != _NULLSEG ) {
-            if( HEAP( next_seg )->prevseg != seg ) {
+            if( BHEAP( next_seg )->prev.segm != seg ) {
                 return( _HEAPBADBEGIN );
             }
         }
         if( frl == NULL ) {
-            if( HEAP( seg )->freehead.len != 0 )
+            if( BHEAP( seg )->freehead.len != 0 )
                 return( _HEAPBADBEGIN );
             frl = (FRLPTR( seg ))sizeof( heapblk );
         } else {    /* advance to next entry */
@@ -114,7 +111,7 @@ int __HeapWalk( struct _heapinfo *entry, __segment seg, __segment one_heap )
             if( frl_next <= frl )
                 return( _HEAPBADNODE );
             frl = frl_next;
-            if( HEAP( seg )->heaplen != 0 && (tag)frl > HEAP( seg )->heaplen ) {
+            if( BHEAP( seg )->len != 0 && (tag)frl > BHEAP( seg )->len ) {
                 return( _HEAPBADNODE );
             }
         }

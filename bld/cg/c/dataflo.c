@@ -32,21 +32,21 @@
 
 
 #define GB_DEFINE_GBITNEXT
-#include "cgstd.h"
+#include "_cgstd.h"
 #include "coderep.h"
 #include "data.h"
 #include "cgsrtlst.h"
 #include "namelist.h"
 #include "conflict.h"
+#include "dataflo.h"
+#include "savings.h"
+#include "regsave.h"
+#include "varusage.h"
 #include "feprotos.h"
 
 
-extern  void            FindReferences( void );
-extern  save_def        Weight( save_def value, block *blk );
-
 static  void            PropagateConflicts( void );
 static  void            LiveAnalysis( block *tail, global_bit_set memory_bits );
-extern  void            SetInOut( block *blk );
 
 static  bool            MoreUseInOtherTemps;
 
@@ -110,7 +110,7 @@ static  void    RoughSortTemps( void )
     opcnt               i;
 
     for( opnd = Names[N_TEMP]; opnd != NULL; opnd = opnd->n.next_name ) {
-        if( ( opnd->v.usage & ( USE_MEMORY|USE_ADDRESS ) ) ) {
+        if( ( opnd->v.usage & (USE_MEMORY | USE_ADDRESS) ) ) {
             opnd->v.usage |= NEEDS_MEMORY | USE_MEMORY;
         } else if( opnd->v.usage & USE_IN_ANOTHER_BLOCK ) {
             actual_name = DeAlias( opnd );
@@ -133,7 +133,7 @@ static  void    RoughSortTemps( void )
 }
 
 
-static  global_bit_set AssignGlobalBits( name_class_def list,
+static  global_bit_set AssignGlobalBits( name_class_def class,
                              global_bit_set *bit, bool first_time )
 /*****************************************************************/
 {
@@ -142,22 +142,22 @@ static  global_bit_set AssignGlobalBits( name_class_def list,
     name                *actual_name;
     name                *opnd;
 
-    if( list == N_TEMP ) {
+    if( class == N_TEMP ) {
         _GBitInit( all_used, EMPTY );
         if( !MoreUseInOtherTemps )
             return( all_used );
         MoreUseInOtherTemps = false;
     }
     _GBitInit( all_used, EMPTY );
-    for( opnd = Names[list]; opnd != NULL; opnd = opnd->n.next_name ) {
-        if( ( opnd->v.usage & ( USE_MEMORY | USE_ADDRESS ) ) ) {
+    for( opnd = Names[class]; opnd != NULL; opnd = opnd->n.next_name ) {
+        if( ( opnd->v.usage & (USE_MEMORY | USE_ADDRESS) ) ) {
             opnd->v.usage |= NEEDS_MEMORY | USE_MEMORY;
         } else if( opnd->v.usage & USE_IN_ANOTHER_BLOCK ) {
             actual_name = opnd;
-            if( list == N_TEMP ) {
+            if( class == N_TEMP ) {
                 actual_name = DeAlias( actual_name );
             }
-            if( _GBitEmpty( *bit ) && ( list == N_MEMORY ) ) {
+            if( _GBitEmpty( *bit ) && ( class == N_MEMORY ) ) {
                 actual_name->v.usage |= NEEDS_MEMORY | USE_MEMORY;
             } else {
                 conf = actual_name->v.conflict;
@@ -200,8 +200,8 @@ static  void    CheckGlobals( void )
 }
 
 
-extern  void    MakeConflicts( void )
-/***********************************/
+void    MakeConflicts( void )
+/***************************/
 {
     global_bit_set     bit;
 
@@ -217,8 +217,8 @@ extern  void    MakeConflicts( void )
 }
 
 
-extern  bool    MoreConflicts( void )
-/***********************************/
+bool    MoreConflicts( void )
+/***************************/
 {
     global_bit_set     bit;
 
@@ -254,8 +254,8 @@ static  void    PropagateConflicts( void )
 }
 
 
-extern  void    SetInOut( block *blk )
-/************************************/
+void    SetInOut( block *blk )
+/****************************/
 {
     if( BlockByBlock ) {
         blk->dataflow->in  = blk->dataflow->use;

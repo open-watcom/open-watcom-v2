@@ -30,7 +30,7 @@
 ****************************************************************************/
 
 
-#include "cgstd.h"
+#include "_cgstd.h"
 #include <stdarg.h>
 #include <stdlib.h>
 #include <stdio.h>
@@ -46,12 +46,11 @@
 #include "dumpio.h"
 #include "addrname.h"
 #include "inline.h"
+#include "envvar.h"
 #include "feprotos.h"
 
 #include "clibext.h"
 
-
-extern  bool            GetEnvVar(const char *,char *,int);
 
 #define hdlSetUsed( handle, value ) ( ((use_info *)handle)->used = value )
 #define hdlSetup( hdltype, handle ) ( handleSetup( hdltype, (use_info *)handle) )

@@ -31,7 +31,6 @@
 
 
 #include "wdeglbl.h"
-#include <stdio.h>
 #include "wderes.h"
 #include "wdemain.h"
 #include "wdefmenu.h"

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -39,7 +39,6 @@
 #elif defined( __OS2__ )
 #include <os2.h>
 #endif
-#include "bool.h"
 #include "walloca.h"
 #include "dip.h"
 #include "dipimp.h"
@@ -66,7 +65,7 @@
 
 #define MK_MH( ii, sm ) ((unsigned_32)((ii)+1) << 16 | (sm))
 #define MH_IMAGE( mh )  ((unsigned)((mh)>>16)-1)
-#define II2IH( ii )     (((ActProc==NULL)||(ActProc->map_entries<=ii))?NULL:ActProc->ih_map[ii])
+#define II2IH( ii )     (((ActProc==NULL)||(ActProc->map_entries<=ii))?NULL:ActProc->map_ih[ii])
 #define MH2IH( mh )     (((mh&0xffff0000)==0)?NULL:II2IH(MH_IMAGE(mh)))
 
 #define NO_IMAGE_IDX    ((image_idx)-1)
@@ -113,9 +112,9 @@ struct sym_handle {
 struct process_info {
     image_idx           last_addr_mod_found;
     image_idx           map_entries;
-    image_handle        **ih_map;
-    image_handle        *ih_list;
-    image_handle        **ih_add;
+    image_handle        **map_ih;
+    image_handle        *list_ih;
+    image_handle        **add_ih;
 };
 
 static image_idx        LoadingImageIdx = NO_IMAGE_IDX;
@@ -155,13 +154,13 @@ char DIPDefaults[] = {
     "\0"
 };
 
-static const address    NilAddr = { 0 };
+const address    NilAddr = { 0 };
 
 /*
  * Client interface
  */
 
-dip_client_routines DIPClientInterface = {
+static dip_client_routines DIPClientInterface = {
     DIP_MAJOR,
     DIP_MINOR,
     sizeof( dip_client_routines ),
@@ -182,7 +181,7 @@ dip_client_routines DIPClientInterface = {
     DIGCli( Close ),
     DIGCli( Remove ),
     DIPCli( Status ),
-    DIPCli( CurrMAD ),
+    DIPCli( CurrArch ),
     DIGCli( MachineData )
 };
 
@@ -211,16 +210,16 @@ static void SetHdlSizes( dip_imp_routines *rtns )
 dip_status DIPLoad( const char *path )
 {
     int         i;
-    dip_status  status;
+    dip_status  ds;
 
     for( i = 0; LoadedDIPs[i].rtns != NULL; ++i ) {
         if( i >= MAX_LOAD_DIPS ) {
             return( DS_ERR | DS_TOO_MANY_DIPS );
         }
     }
-    status = DIPSysLoad( path, &DIPClientInterface, &LoadedDIPs[i].rtns, &LoadedDIPs[i].sys_hdl );
-    if( status != DS_OK )
-        return( status );
+    ds = DIPSysLoad( path, &DIPClientInterface, &LoadedDIPs[i].rtns, &LoadedDIPs[i].sys_hdl );
+    if( ds != DS_OK )
+        return( ds );
     if( DIPClientInterface.major != LoadedDIPs[i].rtns->major
       || DIPClientInterface.minor > LoadedDIPs[i].rtns->minor ) {
         DIPSysUnload( &LoadedDIPs[i].sys_hdl );
@@ -318,27 +317,27 @@ void DIPCancel( void )
 
 static image_idx FindImageMapSlot( process_info *p )
 {
-    image_handle        **new;
+    image_handle        **new_ih;
     image_idx           new_num;
     image_idx           ii;
     image_idx           j;
 
     for( ii = 0; ii < p->map_entries; ++ii ) {
-        if( p->ih_map[ii] == NULL ) {
+        if( p->map_ih[ii] == NULL ) {
             return( ii );
         }
     }
     new_num = p->map_entries + IMAGE_MAP_GROW;
-    new = DIGCli( Realloc )( p->ih_map, new_num * sizeof( p->ih_map[0] ) );
-    if( new == NULL ) {
+    new_ih = DIGCli( Realloc )( p->map_ih, new_num * sizeof( p->map_ih[0] ) );
+    if( new_ih == NULL ) {
         DIPCli( Status )( DS_ERR | DS_NO_MEM );
         return( NO_IMAGE_IDX );
     }
     ii = p->map_entries;
     p->map_entries = new_num;
-    p->ih_map = new;
+    p->map_ih = new_ih;
     for( j = ii; j < new_num; ++j )
-        new[j] = NULL;
+        new_ih[j] = NULL;
     return( ii );
 }
 
@@ -349,8 +348,8 @@ static void DIPCleanupInfo( process_info *p, image_handle *ih )
 
     DIPCli( ImageUnload )( MK_MH( ih->ii, 0 ) );
     ih->dip->UnloadInfo( IH2IIH( ih ) );
-    p->ih_map[ih->ii] = NULL;
-    owner = &p->ih_list;
+    p->map_ih[ih->ii] = NULL;
+    owner = &p->list_ih;
     for( ;; ) {
         curr = *owner;
         if( curr == ih )
@@ -358,8 +357,8 @@ static void DIPCleanupInfo( process_info *p, image_handle *ih )
         owner = &curr->next;
     }
     *owner = ih->next;
-    if( p->ih_add == &ih->next ) {
-        p->ih_add = owner;
+    if( p->add_ih == &ih->next ) {
+        p->add_ih = owner;
     }
     if( ih->ii == p->last_addr_mod_found ) {
         p->last_addr_mod_found = NO_IMAGE_IDX;
@@ -373,16 +372,16 @@ static void CleanupProcess( process_info *p, int unload )
     image_handle        *next;
 
     if( unload ) {
-        while( p->ih_list ) {
-            DIPCleanupInfo( p, p->ih_list );
+        while( p->list_ih ) {
+            DIPCleanupInfo( p, p->list_ih );
         }
     } else {
-        for( ih = p->ih_list; ih != NULL; ih = next ) {
+        for( ih = p->list_ih; ih != NULL; ih = next ) {
             next = ih->next;
             DIGCli( Free )( ih );
         }
     }
-    DIGCli( Free )( p->ih_map );
+    DIGCli( Free )( p->map_ih );
     DIGCli( Free )( p );
 }
 
@@ -399,17 +398,17 @@ process_info *DIPCreateProcess( void )
         return( NULL );
     }
     p->last_addr_mod_found = NO_IMAGE_IDX;
-    p->ih_map = DIGCli( Alloc )( IMAGE_MAP_INIT * sizeof( p->ih_map[0] ) );
-    if( p->ih_map == NULL ) {
+    p->map_ih = DIGCli( Alloc )( IMAGE_MAP_INIT * sizeof( p->map_ih[0] ) );
+    if( p->map_ih == NULL ) {
         DIGCli( Free )( p );
         DIPCli( Status )( DS_ERR | DS_NO_MEM );
         return( NULL );
     }
     p->map_entries = IMAGE_MAP_INIT;
     for( ii = 0; ii < IMAGE_MAP_INIT; ++ii )
-        p->ih_map[ii] = NULL;
-    p->ih_list = NULL;
-    p->ih_add = &p->ih_list;
+        p->map_ih[ii] = NULL;
+    p->list_ih = NULL;
+    p->add_ih = &p->list_ih;
     for( j = MAX_DIPS - 1; j >= MAX_LOAD_DIPS; --j ) {
         if( LoadedDIPs[j].rtns != NULL ) {
             ii = FindImageMapSlot( p );
@@ -424,16 +423,16 @@ process_info *DIPCreateProcess( void )
                 DIPCli( Status )( DS_ERR | DS_NO_MEM );
                 return( NULL );
             }
-            p->ih_map[ii] = ih;
-            ih->next = *p->ih_add;
-            *p->ih_add = ih;
-            p->ih_add = &ih->next;
+            p->map_ih[ii] = ih;
+            ih->next = *p->add_ih;
+            *p->add_ih = ih;
+            p->add_ih = &ih->next;
             ih->dip = LoadedDIPs[j].rtns;
             ih->extra = NULL;
             ih->ii = ii;
         }
     }
-    p->ih_add = &p->ih_list;
+    p->add_ih = &p->list_ih;
     if( ActProc == NULL )
         ActProc = p;
     return( p );
@@ -483,7 +482,7 @@ mod_handle DIPLoadInfo( FILE *fp, unsigned extra, dip_priority priority )
     image_idx           ii;
     int                 j;
     image_handle        *ih;
-    dip_status          ret;
+    dip_status          ds;
 
     if( ActProc == NULL ) {
         DIPCli( Status )( DS_ERR | DS_NO_PROCESS );
@@ -502,19 +501,19 @@ mod_handle DIPLoadInfo( FILE *fp, unsigned extra, dip_priority priority )
             continue;
         if( LoadedDIPs[j].rtns->priority != priority )
             continue;
-        ret = LoadedDIPs[j].rtns->LoadInfo( fp, IH2IIH( ih ) );
-        if( ret == DS_OK ) {
-            ActProc->ih_map[ii] = ih;
-            ih->next = *ActProc->ih_add;
-            *ActProc->ih_add = ih;
-            ActProc->ih_add = &ih->next;
+        ds = LoadedDIPs[j].rtns->LoadInfo( fp, IH2IIH( ih ) );
+        if( ds == DS_OK ) {
+            ActProc->map_ih[ii] = ih;
+            ih->next = *ActProc->add_ih;
+            *ActProc->add_ih = ih;
+            ActProc->add_ih = &ih->next;
             ih->dip = LoadedDIPs[j].rtns;
             ih->extra = (unsigned_8 *)ih + MaxHdlSize[HK_IMAGE];
             ih->ii = ii;
             LoadingImageIdx = ii;
             return( MK_MH( ii, 0 ) );
         }
-        if( ret & DS_ERR ) {
+        if( ds & DS_ERR ) {
             break;
         }
     }
@@ -566,7 +565,7 @@ walk_result DIPWalkImageList( DIP_IMAGE_WALKER *iw, void *d )
 
     wr = WR_CONTINUE;
     if( ActProc != NULL ) {
-        for( ih = ActProc->ih_list; ih != NULL; ih = ih->next ) {
+        for( ih = ActProc->list_ih; ih != NULL; ih = ih->next ) {
             wr = iw( MK_MH( ih->ii, 0 ), d );
             if( wr != WR_CONTINUE ) {
                 break;
@@ -587,8 +586,7 @@ typedef struct {
     location_context    *lc;
 } walk_glue;
 
-OVL_EXTERN walk_result DIGCLIENT ModGlue( imp_image_handle *iih, imp_mod_handle imh,
-                                        void *d )
+OVL_EXTERN walk_result DIGCLIENT ModGlue( imp_image_handle *iih, imp_mod_handle imh, void *d )
 {
     walk_glue           *wd = d;
     image_handle        *ih;
@@ -625,8 +623,7 @@ walk_result DIPWalkModList( mod_handle mh, DIP_MOD_WALKER *mw, void *d )
     }
 }
 
-OVL_EXTERN walk_result DIGCLIENT TypeGlue( imp_image_handle *iih,
-                                imp_type_handle *ith, void *d )
+OVL_EXTERN walk_result DIGCLIENT TypeGlue( imp_image_handle *iih, imp_type_handle *ith, void *d )
 {
     walk_glue   *wd = d;
 
@@ -650,14 +647,13 @@ walk_result DIPWalkTypeList( mod_handle mh, DIP_TYPE_WALKER *tw, void *d )
         glue.lc = NULL;
         th->ii = MH_IMAGE( mh );
         th->ap = 0;
-        wr = ih->dip->WalkTypeList( IH2IIH( ih ), MH2IMH( mh ),
-                                TypeGlue, TH2ITH( th ), &glue );
+        wr = ih->dip->WalkTypeList( IH2IIH( ih ), MH2IMH( mh ), TypeGlue, TH2ITH( th ), &glue );
     }
     return( wr );
 }
 
-OVL_EXTERN walk_result DIGCLIENT SymGlue( imp_image_handle *iih,
-                            sym_walk_info swi, imp_sym_handle *ish, void *d )
+OVL_EXTERN walk_result DIGCLIENT SymGlue( imp_image_handle *iih, sym_walk_info swi,
+                                                    imp_sym_handle *ish, void *d )
 {
     walk_glue   *wd = d;
     sym_handle  *sh;
@@ -683,7 +679,7 @@ static walk_result DoWalkSymList( symbol_source ss, void *start, walk_glue *wd )
     imp_mod_handle      imh;
     mod_handle          mh;
     type_handle         *th;
-    sym_handle          *is;
+    sym_handle          *scope_sh;
     walk_result         wr;
 
     switch( ss ) {
@@ -716,9 +712,9 @@ static walk_result DoWalkSymList( symbol_source ss, void *start, walk_glue *wd )
         ii = MH_IMAGE( mh );
         break;
     case SS_SCOPESYM:
-        is = start;
-        start = SH2ISH( is );
-        ii = is->ii;
+        scope_sh = (sym_handle *)start;
+        start = SH2ISH( scope_sh );
+        ii = scope_sh->ii;
         break;
     }
     wr = WR_CONTINUE;
@@ -726,18 +722,15 @@ static walk_result DoWalkSymList( symbol_source ss, void *start, walk_glue *wd )
     if( ih != NULL ) {
         sh->ii = ii;
         if( ih->dip->minor == DIP_MINOR ) {
-            wr = ih->dip->WalkSymListEx( IH2IIH( ih ), ss, start,
-                                    SymGlue, SH2ISH( sh ), wd->lc, wd );
+            wr = ih->dip->WalkSymListEx( IH2IIH( ih ), ss, start, SymGlue, SH2ISH( sh ), wd->lc, wd );
         } else {
-            wr = ih->dip->WalkSymList( IH2IIH( ih ), ss, start,
-                                    SymGlue, SH2ISH( sh ), wd );
+            wr = ih->dip->WalkSymList( IH2IIH( ih ), ss, start, SymGlue, SH2ISH( sh ), wd );
         }
     }
     return( wr );
 }
 
-walk_result DIPWalkSymListEx( symbol_source ss, void *start, DIP_SYM_WALKER *sw,
-                           location_context *lc, void *d )
+walk_result DIPWalkSymListEx( symbol_source ss, void *start, DIP_SYM_WALKER *sw, location_context *lc, void *d )
 {
     walk_glue   glue;
 
@@ -752,14 +745,13 @@ walk_result DIPWalkSymList( symbol_source ss, void *start, DIP_SYM_WALKER *sw, v
     return( DIPWalkSymListEx( ss, start, sw, NULL, d ) );
 }
 
-OVL_EXTERN walk_result DIGCLIENT CueGlue( imp_image_handle *iih,
-                                imp_cue_handle *imp_cueh, void *d )
+OVL_EXTERN walk_result DIGCLIENT CueGlue( imp_image_handle *iih, imp_cue_handle *icueh, void *d )
 {
     walk_glue   *wd = d;
 
     /* unused parameters */ (void)iih;
 
-    return( wd->walk.c( ICH2CH( imp_cueh ), wd->d ) );
+    return( wd->walk.c( ICH2CH( icueh ), wd->d ) );
 }
 
 walk_result DIPWalkFileList( mod_handle mh, DIP_CUE_WALKER *cw, void *d )
@@ -830,7 +822,7 @@ dip_status DIPModHasInfo( mod_handle mh, handle_kind hk )
     return( ih->dip->ModInfo( IH2IIH( ih ), MH2IMH( mh ), hk ) );
 }
 
-dip_status DIPModDefault( mod_handle mh, default_kind dk, dip_type_info *ti )
+dip_status DIPModDefault( mod_handle mh, default_kind dk, dig_type_info *ti )
 {
     image_handle        *ih;
 
@@ -861,7 +853,7 @@ mod_handle DIPTypeMod( type_handle *th )
     return( MK_MH( ih->ii, ih->dip->TypeMod( IH2IIH( ih ), TH2ITH( th ) ) ) );
 }
 
-dip_status DIPTypeInfo( type_handle *th, location_context *lc, dip_type_info *ti )
+dip_status DIPTypeInfo( type_handle *th, location_context *lc, dig_type_info *ti )
 {
     image_handle        *ih;
 
@@ -885,6 +877,7 @@ dip_status DIPTypeInfo( type_handle *th, location_context *lc, dip_type_info *ti
             ti->size = 6;
             break;
         }
+        ti->deref = false;
         return( DS_OK );
     }
     ih = II2IH( th->ii );
@@ -899,8 +892,7 @@ void DIPTypeInit( type_handle *th, mod_handle mh )
     th->ap = 0;
 }
 
-dip_status DIPTypePointer( type_handle *base_th, type_modifier tm, unsigned size,
-                        type_handle *ptr_th )
+dip_status DIPTypePointer( type_handle *base_th, type_modifier tm, unsigned size, type_handle *ptr_th )
 {
     if( base_th->ap & AP_FULL )
         return( DS_ERR | DS_TOO_MANY_POINTERS );
@@ -937,11 +929,9 @@ dip_status DIPTypeBase( type_handle *th, type_handle *base_th, location_context 
     base_th->ii = th->ii;
     base_th->ap = 0;
     if( ih->dip->minor == DIP_MINOR ) {
-        return( ih->dip->TypeBase( IH2IIH( ih ),
-                TH2ITH( th ), TH2ITH( base_th ), lc, ll ) );
+        return( ih->dip->TypeBase( IH2IIH( ih ), TH2ITH( th ), TH2ITH( base_th ), lc, ll ) );
     } else {
-        return( ih->dip->OldTypeBase( IH2IIH( ih ),
-                TH2ITH( th ), TH2ITH( base_th ) ) );
+        return( ih->dip->OldTypeBase( IH2IIH( ih ), TH2ITH( th ), TH2ITH( base_th ) ) );
     }
 }
 
@@ -976,13 +966,13 @@ dip_status DIPTypeRelease( type_handle *th )
 }
 
 dip_status DIPTypeFreeAll( void )
-/****************************/
+/*******************************/
 {
     image_handle        *ih;
 
     if( ActProc == NULL )
         return( DS_OK );
-    for( ih = ActProc->ih_list; ih != NULL; ih = ih->next ) {
+    for( ih = ActProc->list_ih; ih != NULL; ih = ih->next ) {
         if( ih->dip->minor == DIP_MINOR ) {
             ih->dip->TypeFreeAll( IH2IIH( ih ) );
         }
@@ -990,8 +980,7 @@ dip_status DIPTypeFreeAll( void )
     return( DS_OK );
 }
 
-dip_status DIPTypeArrayInfo( type_handle *th, location_context *lc,
-                        array_info *ai, type_handle *index_th )
+dip_status DIPTypeArrayInfo( type_handle *th, location_context *lc, array_info *ai, type_handle *index_th )
 {
     image_handle        *ih;
     imp_type_handle     *ith;
@@ -1038,8 +1027,7 @@ dip_status DIPTypePtrAddrSpace( type_handle *th, location_context *lc, address *
     return( ih->dip->TypePtrAddrSpace( IH2IIH( ih ), TH2ITH( th ), lc, a ) );
 }
 
-dip_status DIPTypeThunkAdjust( type_handle *th1, type_handle *th2,
-                        location_context *lc, address *a )
+dip_status DIPTypeThunkAdjust( type_handle *th1, type_handle *th2, location_context *lc, address *a )
 {
     image_handle        *ih;
 
@@ -1050,8 +1038,7 @@ dip_status DIPTypeThunkAdjust( type_handle *th1, type_handle *th2,
     ih = II2IH( th1->ii );
     if( ih == NULL )
         return( DS_ERR | DS_NO_PROCESS );
-    return( ih->dip->TypeThunkAdjust( IH2IIH( ih ),
-        TH2ITH( th1 ), TH2ITH( th2 ), lc, a ) );
+    return( ih->dip->TypeThunkAdjust( IH2IIH( ih ), TH2ITH( th1 ), TH2ITH( th2 ), lc, a ) );
 }
 
 int DIPTypeCmp( type_handle *th1, type_handle *th2 )
@@ -1090,14 +1077,14 @@ mod_handle DIPSymMod( sym_handle *sh )
 }
 
 //NYI: needs to do something for expression names
-size_t DIPSymName( sym_handle *sh, location_context *lc, symbol_name sn, char *buff, size_t buff_size )
+size_t DIPSymName( sym_handle *sh, location_context *lc, symbol_name_type snt, char *buff, size_t buff_size )
 {
     image_handle        *ih;
 
     ih = II2IH( sh->ii );
     if( ih == NULL )
         return( 0 );
-    return( ih->dip->SymName( IH2IIH( ih ), SH2ISH( sh ), lc, sn, buff, buff_size ) );
+    return( ih->dip->SymName( IH2IIH( ih ), SH2ISH( sh ), lc, snt, buff, buff_size ) );
 }
 
 dip_status DIPSymType( sym_handle *sh, type_handle *th )
@@ -1151,8 +1138,7 @@ void DIPSymInit( sym_handle *sh, image_handle *ih )
     }
 }
 
-dip_status DIPSymParmLocation( sym_handle *sh, location_context *lc,
-                        location_list *ll, unsigned parm )
+dip_status DIPSymParmLocation( sym_handle *sh, location_context *lc, location_list *ll, unsigned parm )
 {
     image_handle        *ih;
 
@@ -1162,7 +1148,7 @@ dip_status DIPSymParmLocation( sym_handle *sh, location_context *lc,
     return( ih->dip->SymParmLocation( IH2IIH( ih ), SH2ISH( sh ), lc, ll, parm ) );
 }
 
-dip_status DIPSymObjType( sym_handle *sh, type_handle *th, dip_type_info *ti )
+dip_status DIPSymObjType( sym_handle *sh, type_handle *th, dig_type_info *ti )
 {
     image_handle        *ih;
 
@@ -1174,8 +1160,7 @@ dip_status DIPSymObjType( sym_handle *sh, type_handle *th, dip_type_info *ti )
     return( ih->dip->SymObjType( IH2IIH( ih ), SH2ISH( sh ), TH2ITH( th ), ti ) );
 }
 
-dip_status DIPSymObjLocation( sym_handle *sh, location_context *lc,
-                        location_list *ll )
+dip_status DIPSymObjLocation( sym_handle *sh, location_context *lc, location_list *ll )
 {
     image_handle        *ih;
 
@@ -1200,7 +1185,7 @@ int DIPSymCmp( sym_handle *sh1, sym_handle *sh2 )
 }
 
 dip_status DIPSymAddRef( sym_handle *sh )
-/**************************************/
+/***************************************/
 {
     image_handle        *ih;
 
@@ -1215,7 +1200,7 @@ dip_status DIPSymAddRef( sym_handle *sh )
 }
 
 dip_status DIPSymRelease( sym_handle *sh )
-/**************************************/
+/****************************************/
 {
     image_handle        *ih;
 
@@ -1230,13 +1215,13 @@ dip_status DIPSymRelease( sym_handle *sh )
 }
 
 dip_status DIPSymFreeAll( void )
-/***************************/
+/******************************/
 {
     image_handle        *ih;
 
     if( ActProc == NULL )
         return( DS_OK );
-    for( ih = ActProc->ih_list; ih != NULL; ih = ih->next ) {
+    for( ih = ActProc->list_ih; ih != NULL; ih = ih->next ) {
         if( ih->dip->minor == DIP_MINOR ) {
             ih->dip->SymFreeAll( IH2IIH( ih ) );
         }
@@ -1314,8 +1299,7 @@ address DIPCueAddr( cue_handle *cueh )
     return( ih->dip->CueAddr( IH2IIH( ih ), CH2ICH( cueh ) ) );
 }
 
-search_result DIPLineCue( mod_handle mh, cue_fileid id, unsigned long line,
-                        unsigned column, cue_handle *cueh )
+search_result DIPLineCue( mod_handle mh, cue_fileid id, unsigned long line, unsigned column, cue_handle *cueh )
 {
     image_handle        *ih;
 
@@ -1374,7 +1358,7 @@ search_result DIPAddrMod( address a, mod_handle *mh )
         /* check the image where the last lookup succeeded first */
         last_found = ActProc->last_addr_mod_found;
         if( last_found != NO_IMAGE_IDX ) {
-            ih = ActProc->ih_map[last_found];
+            ih = ActProc->map_ih[last_found];
             if( ih != NULL ) {
                 sr = ih->dip->AddrMod( IH2IIH( ih ), a, &imh );
                 if( sr != SR_NONE ) {
@@ -1383,7 +1367,7 @@ search_result DIPAddrMod( address a, mod_handle *mh )
                 }
             }
         }
-        for( ih = ActProc->ih_list; ih != NULL; ih = ih->next ) {
+        for( ih = ActProc->list_ih; ih != NULL; ih = ih->next ) {
             if( ih->ii != last_found ) {
                 sr = ih->dip->AddrMod( IH2IIH( ih ), a, &imh );
                 if( sr != SR_NONE ) {
@@ -1415,11 +1399,10 @@ search_result DIPAddrSym( mod_handle mh, address a, sym_handle *sh )
 }
 
 //NYI: needs to do something for expression names
-search_result DIPLookupSymEx( symbol_source ss, void *source,
-                        lookup_item *li, location_context *lc, void *d )
+search_result DIPLookupSymEx( symbol_source ss, void *source, lookup_item *li, location_context *lc, void *d )
 {
     image_handle        *ih;
-    image_handle        *cih;
+    image_handle        *curr_ih;
     mod_handle          curr_mod;
     mod_handle          save_mod;
     search_result       sr;
@@ -1462,8 +1445,8 @@ search_result DIPLookupSymEx( symbol_source ss, void *source,
             li->mod = curr_mod;
         break;
     }
-    cih = (curr_mod == NO_MOD) ? NULL : MH2IH( curr_mod );
-    ih = (li->mod == NO_MOD) ? cih : MH2IH( li->mod );
+    curr_ih = (curr_mod == NO_MOD) ? NULL : MH2IH( curr_mod );
+    ih = (li->mod == NO_MOD) ? curr_ih : MH2IH( li->mod );
     li->mod = IMH2MH( MH2IMH( li->mod ) );
     if( ih != NULL ) {
         if( ih->dip->minor == DIP_MINOR ) {
@@ -1475,9 +1458,9 @@ search_result DIPLookupSymEx( symbol_source ss, void *source,
         sr = SR_NONE;
     }
     if( sr == SR_NONE && save_mod == NO_MOD && ss == SS_SCOPED ) {
-        cih = ih;
-        for( ih = ActProc->ih_list; ih != NULL; ih = ih->next ) {
-            if( ih != cih ) {
+        curr_ih = ih;
+        for( ih = ActProc->list_ih; ih != NULL; ih = ih->next ) {
+            if( ih != curr_ih ) {
                 if( ih->dip->minor == DIP_MINOR ) {
                     sr = ih->dip->LookupSymEx( IH2IIH( ih ), ss, source, li, lc, d );
                 } else {
@@ -1493,8 +1476,7 @@ search_result DIPLookupSymEx( symbol_source ss, void *source,
     return( sr );
 }
 
-search_result DIPLookupSym( symbol_source ss, void *source,
-                        lookup_item *li, void *d )
+search_result DIPLookupSym( symbol_source ss, void *source, lookup_item *li, void *d )
 {
     return( DIPLookupSymEx( ss, source, li, NULL, d ) );
 }

@@ -37,28 +37,31 @@
 
 #ifdef _M_I86
   #ifdef __BIG_DATA__
-    #define AUX_INFO    \
-        parm caller     [dx ax] [cx] \
-        modify exact    [ax dx];
+    #define AUX_INFO \
+        __parm __caller     [__dx __ax] [__cx] \
+        __value             [__ax] \
+        __modify __exact    [__ax __dx]
   #else
-    #define AUX_INFO    \
-        parm caller     [dx] [cx] \
-        modify exact    [ax];
+    #define AUX_INFO \
+        __parm __caller     [__dx] [__cx] \
+        __value             [__ax] \
+        __modify __exact    [__ax]
   #endif
 #else
-    #define AUX_INFO    \
-        parm caller     [edx] [ecx] \
-        modify exact    [eax];
+    #define AUX_INFO \
+        __parm __caller     [__edx] [__ecx] \
+        __value             [__eax] \
+        __modify __exact    [__eax]
 #endif
 
 extern unsigned __dos_setfileattr_sfn( const char *path, unsigned attrib );
 #pragma aux __dos_setfileattr_sfn = \
-        _SET_DSDX       \
+        _SET_DSDX           \
         _MOV_AX_W _SET_ DOS_CHMOD \
-        _INT_21         \
-        _RST_DS         \
-        "call __doserror_" \
-        AUX_INFO
+        _INT_21             \
+        _RST_DS             \
+        "call __doserror_"  \
+    AUX_INFO
 
 #ifdef __WATCOM_LFN__
 static tiny_ret_t _dos_setfileattr_lfn( const char *path, unsigned attrib )

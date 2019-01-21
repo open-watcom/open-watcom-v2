@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2016 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -30,17 +30,18 @@
 ****************************************************************************/
 
 
-#include "cgstd.h"
+#include "_cgstd.h"
 #include "coderep.h"
 #include "data.h"
 #include "makeins.h"
-#include "stack.h"
+#include "stackcg.h"
 #include "namelist.h"
 #include "edge.h"
 #include "insutil.h"
 #include "insdead.h"
 #include "blktrim.h"
 #include "dumpio.h"
+#include "trecurse.h"
 
 
 static  name            *ReturnValue;
@@ -141,15 +142,15 @@ static void DoOneParm( instruction *parm_ins, instruction *decl_ins, instruction
     instruction         *second;
     name                *tmp;
     name                *src;
-    type_class_def      src_class;
-    type_class_def      dst_class;
+    type_class_def      src_type_class;
+    type_class_def      dst_type_class;
 
     src = parm_ins->operands[0];
-    src_class = src->n.name_class;
-    dst_class = decl_ins->result->n.name_class;
-    tmp = AllocTemp( dst_class );
-    first = MakeConvert( src, tmp, dst_class, src_class );
-    second = MakeMove( tmp, decl_ins->result, dst_class );
+    src_type_class = src->n.type_class;
+    dst_type_class = decl_ins->result->n.type_class;
+    tmp = AllocTemp( dst_type_class );
+    first = MakeConvert( src, tmp, dst_type_class, src_type_class );
+    second = MakeMove( tmp, decl_ins->result, dst_type_class );
     ReplIns( parm_ins, first );
     PrefixIns( callins, second );
 }
@@ -358,7 +359,7 @@ static bool     OkayToTransCall( block *blk, instruction *call_ins )
     return( ok );
 }
 
-extern void     TRAddParm( instruction *call_ins, instruction *parm_ins )
+void     TRAddParm( instruction *call_ins, instruction *parm_ins )
 /************************************************************************
     Add another instruction to the list of parameters for the given call
     instruction.
@@ -371,7 +372,7 @@ extern void     TRAddParm( instruction *call_ins, instruction *parm_ins )
     _TR_LINK( call_ins ) = (void *)parm_ins;
 }
 
-extern void     TRDeclareParm( instruction *parm_ins )
+void     TRDeclareParm( instruction *parm_ins )
 /*****************************************************
     Declare another parm for the current procedure. This parm
     is added to a linked list hanging off of CurrProc.
@@ -383,7 +384,7 @@ extern void     TRDeclareParm( instruction *parm_ins )
     _PROC_LINK( CurrProc ) = (void *)parm_ins;
 }
 
-extern bool     TailRecursion( void )
+bool     TailRecursion( void )
 /************************************
     Eliminate any tail recursion. We assume that, for any call in
     the function, we have a linked list of the parameters to that

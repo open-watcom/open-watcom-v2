@@ -39,4 +39,4 @@ extern  tbl_control     *MakeScanTab(select_list *,signed_32,label_handle,cg_typ
 extern  tbl_control     *MakeJmpTab(select_list *,signed_32,signed_32,label_handle);
 extern  name            *SelIdx(tbl_control *,an);
 extern  type_def        *SelNodeType(an,bool);
-extern  void            MkSelOp( name *idx, type_class_def class );
+extern  void            MkSelOp( name *idx, type_class_def type_class );

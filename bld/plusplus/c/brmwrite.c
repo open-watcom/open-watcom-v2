@@ -61,7 +61,7 @@ static BRI_HANDLE      bri_handle;
 static BRI_StringID addString       // ADD A STRING
     ( char const * str )            // - the string
 {
-    return BRIAddString( bri_handle, (BRI_StringID)str, str );
+    return( BRIAddString( bri_handle, (BRI_StringID)str, str ) );
 }
 
 
@@ -69,16 +69,16 @@ static BRI_StringID addStringLower  // ADD A STRING, IN LOWER CASE
     ( BRI_StringID id               // - id to be used
     , char const * str )            // - the string
 {
-    char buffer[ 256 ];             // - buffer big enough for most file names
+    char buffer[256];               // - buffer big enough for most file names
     char * alloced = NULL;          // - allocated buffer
     char * lowername = buffer;      // - buffer used
     BRI_StringID string_id;         // - return: string id
     int buf_size;                   // - buffer size required
 
-    buf_size = strlen(str) + 1;
-    buf_size *= sizeof(char);
+    buf_size = strlen( str ) + 1;
+    buf_size *= sizeof( char );
     if( buf_size > sizeof( buffer ) ) {
-        alloced = (char*)CMemAlloc( buf_size );
+        alloced = (char *)CMemAlloc( buf_size );
         lowername = alloced;
     }
     lowername = memcpy( lowername, str, buf_size );
@@ -87,14 +87,14 @@ static BRI_StringID addStringLower  // ADD A STRING, IN LOWER CASE
     if( NULL != alloced ) {
         CMemFree( alloced );
     }
-    return string_id;
+    return( string_id );
 }
 
 
 static BRI_StringID addStringFile   // ADD A STRING, FOR A FILE
     ( SRCFILE file )                // - id of file
 {
-    return addStringLower( (BRI_StringID)file, SrcFileFullName( file ) );
+    return( addStringLower( (BRI_StringID)file, SrcFileFullName( file ) ) );
 }
 
 
@@ -106,13 +106,13 @@ static int trivialTypeDef
 
     if( sym->id == SC_TYPEDEF ) {
         if( sym->sym_type->of->id == TYP_CLASS ) {
-            if( sym->sym_type->of->u.c.info->name == sym->name->name ){
+            if( sym->sym_type->of->u.c.info->name == sym->name->name ) {
                 result = true;
             }
         }
     }
 
-    return result;
+    return( result );
 }
 #endif
 
@@ -125,20 +125,20 @@ static SYMBOL findClassSymbol
     SCOPE       clscope, parent;
     SYMBOL      sym, last;
 
-    if( cltype->id != TYP_CLASS ){
-        return NULL;
+    if( cltype->id != TYP_CLASS ) {
+        return( NULL );
     }
     clscope = cltype->u.c.scope;
-    if( clscope != NULL ){
+    if( clscope != NULL ) {
         parent = clscope->enclosing;
-        if( parent != NULL ){
+        if( parent != NULL ) {
             sym = ScopeOrderedFirst( parent );
-            if( sym != NULL ){
+            if( sym != NULL ) {
                 last = ScopeOrderedLast( parent );
                 for( ; sym != NULL ; sym = ScopeOrderedNext( last, sym ) ) {
                     if( sym->name->name == cltype->u.c.info->name &&
                         (sym->id == SC_CLASS_TEMPLATE ||
-                         sym->id == SC_TYPEDEF) ){
+                         sym->id == SC_TYPEDEF) ) {
                         result = sym;
                         break;
                     }
@@ -146,171 +146,160 @@ static SYMBOL findClassSymbol
             }
         }
     }
-    return result;
+    return( result );
 }
 #endif
 
 
 static BRI_SymbolID symbolIDForClass( CLASSINFO *c )
 {
-    return ~((BRI_SymbolID) ClassInfoGetIndex( c ));
+    return( ~((BRI_SymbolID)ClassInfoGetIndex( c )) );
 }
 
 
 // NOTE:  the following static data is initialized and de-initialized
 //        by brinfWriteFileContents().
-static uint_32 *        type_ops = NULL;
+static uint_32          *type_ops = NULL;
 static unsigned         num_type_ops = 0;
 
 static BRI_TypeID writeType     // DUMP A TYPE
     ( TYPE dtype )              // - type to dump
 {
-    BRI_TypeID  result = (BRI_TypeID) TypeGetIndex( dtype );
+    BRI_TypeID  result = (BRI_TypeID)TypeGetIndex( dtype );
     BRI_TypeID  sub_type;
     BRI_TypeID  host_type;
     unsigned    num_ops;
     unsigned    i;
 
     if( dtype == NULL ) {
-        return (BRI_TypeID) 0;
+        return( (BRI_TypeID)0 );
     }
-    if( ! BRITypeAlreadySeen( bri_handle, result ) ) {
+    if( !BRITypeAlreadySeen( bri_handle, result ) ) {
         switch( dtype->id ) {
-            case TYP_BOOL:
-            case TYP_CHAR:
-            case TYP_SCHAR:
-            case TYP_UCHAR:
-            case TYP_WCHAR:
-            case TYP_SSHORT:
-            case TYP_USHORT:
-            case TYP_SINT:
-            case TYP_UINT:
-            case TYP_SLONG:
-            case TYP_ULONG:
-            case TYP_SLONG64:
-            case TYP_ULONG64:
-            case TYP_FLOAT:
-            case TYP_DOUBLE:
-            case TYP_LONG_DOUBLE:
-            case TYP_VOID:
-            case TYP_DOT_DOT_DOT:
-            case TYP_GENERIC:
-                BRIAddType( bri_handle
-                          , result
-                          , BRI_TC_BaseType
-                          , 1
-                          , (uint_32) dtype->id );
+        case TYP_BOOL:
+        case TYP_CHAR:
+        case TYP_SCHAR:
+        case TYP_UCHAR:
+        case TYP_WCHAR:
+        case TYP_SSHORT:
+        case TYP_USHORT:
+        case TYP_SINT:
+        case TYP_UINT:
+        case TYP_SLONG:
+        case TYP_ULONG:
+        case TYP_SLONG64:
+        case TYP_ULONG64:
+        case TYP_FLOAT:
+        case TYP_DOUBLE:
+        case TYP_LONG_DOUBLE:
+        case TYP_VOID:
+        case TYP_DOT_DOT_DOT:
+        case TYP_GENERIC:
+            BRIAddType( bri_handle
+                      , result
+                      , BRI_TC_BaseType
+                      , 1
+                      , (uint_32)dtype->id );
             break;
-
-            case TYP_ENUM:
-                BRIAddType( bri_handle
-                          , result
-                          , BRI_TC_Enum
-                          , 2
-                          , (uint_32) dtype->u.t.sym->name->name
-                          , (uint_32) dtype->u.t.sym );
+        case TYP_ENUM:
+            BRIAddType( bri_handle
+                      , result
+                      , BRI_TC_Enum
+                      , 2
+                      , (uint_32)dtype->u.t.sym->name->name
+                      , (uint_32)dtype->u.t.sym );
             break;
-
-            case TYP_POINTER:
-                sub_type = writeType( dtype->of );
-                BRIAddType( bri_handle
-                          , result
-                          , (BRI_TypeCode) dtype->id
-                          , 1
-                          , sub_type );
+        case TYP_POINTER:
+            sub_type = writeType( dtype->of );
+            BRIAddType( bri_handle
+                      , result
+                      , (BRI_TypeCode)dtype->id
+                      , 1
+                      , sub_type );
             break;
-
-            case TYP_TYPEDEF:
-                sub_type = writeType( dtype->of );
-                BRIAddType( bri_handle
-                          , result
-                          , (BRI_TypeCode) dtype->id
-                          , 1
-                          , sub_type );
+        case TYP_TYPEDEF:
+            sub_type = writeType( dtype->of );
+            BRIAddType( bri_handle
+                      , result
+                      , (BRI_TypeCode)dtype->id
+                      , 1
+                      , sub_type );
             break;
+        case TYP_CLASS:
+          {
+            BRI_TypeCode    code = BRI_TC_Class;
 
-            case TYP_CLASS:
-            {
-                BRI_TypeCode    code = BRI_TC_Class;
-
-                if( dtype->flag & TF1_UNION ){
-                    code = BRI_TC_Union;
-                } else if( dtype->flag & TF1_STRUCT ){
-                    code = BRI_TC_Struct;
-                }
-                BRIAddType( bri_handle
-                          , result
-                          , code
-                          , 2
-                          , addString( NameStr( dtype->u.c.info->name ) )
-                          , symbolIDForClass( dtype->u.c.info ) );
+            if( dtype->flag & TF1_UNION ) {
+                code = BRI_TC_Union;
+            } else if( dtype->flag & TF1_STRUCT ) {
+                code = BRI_TC_Struct;
             }
+            BRIAddType( bri_handle
+                      , result
+                      , code
+                      , 2
+                      , addString( NameStr( dtype->u.c.info->name ) )
+                      , symbolIDForClass( dtype->u.c.info ) );
+          } break;
+        case TYP_BITFIELD:
+            BRIAddType( bri_handle
+                      , result
+                      , BRI_TC_BitField
+                      , 1
+                      , dtype->u.b.field_width );
             break;
-
-            case TYP_BITFIELD:
-                BRIAddType( bri_handle
-                          , result
-                          , BRI_TC_BitField
-                          , 1
-                          , dtype->u.b.field_width );
+        case TYP_FUNCTION:
+            num_ops = dtype->u.f.args->num_args + 1;
+            if( num_ops > num_type_ops ) {
+                CMemFree( type_ops );
+                num_type_ops = num_ops;
+                type_ops = CMemAlloc( num_type_ops * sizeof( *type_ops ) );
+            }
+            type_ops[0] = writeType( dtype->of );
+            for( i = 1; i < num_ops; i++ ) {
+                type_ops[i] = writeType( dtype->u.f.args->type_list[i - 1] );
+            }
+            BRIVAddType( bri_handle
+                       , result
+                       , BRI_TC_Function
+                       , num_ops
+                       , type_ops );
             break;
-
-            case TYP_FUNCTION:
-                num_ops = dtype->u.f.args->num_args + 1;
-                if( num_ops > num_type_ops ){
-                    CMemFree( type_ops );
-                    num_type_ops = num_ops;
-                    type_ops = CMemAlloc( num_type_ops * sizeof(uint_32) );
-                }
-                type_ops[0] = writeType( dtype->of );
-                for( i = 1; i < num_ops; i++ ) {
-                    type_ops[i] = writeType( dtype->u.f.args->type_list[i - 1] );
-                }
-                BRIVAddType( bri_handle
-                           , result
-                           , BRI_TC_Function
-                           , num_ops
-                           , type_ops );
+        case TYP_ARRAY:
+            sub_type = writeType( dtype->of );
+            BRIAddType( bri_handle
+                      , result
+                      , BRI_TC_Array
+                      , 2
+                      , dtype->u.a.array_size
+                      , sub_type );
             break;
-
-            case TYP_ARRAY:
-                sub_type = writeType( dtype->of );
-                BRIAddType( bri_handle
-                          , result
-                          , BRI_TC_Array
-                          , 2
-                          , dtype->u.a.array_size
-                          , sub_type );
+        case TYP_MODIFIER:
+            sub_type = writeType( dtype->of );
+            BRIAddType( bri_handle
+                      , result
+                      , BRI_TC_Modifier
+                      , 2
+                      , dtype->flag
+                      , sub_type );
             break;
-
-            case TYP_MODIFIER:
-                sub_type = writeType( dtype->of );
-                BRIAddType( bri_handle
-                          , result
-                          , BRI_TC_Modifier
-                          , 2
-                          , dtype->flag
-                          , sub_type );
+        case TYP_MEMBER_POINTER:
+            sub_type = writeType( dtype->of );
+            host_type = writeType( dtype->u.mp.host );
+            BRIAddType( bri_handle
+                      , result
+                      , BRI_TC_PtrToMember
+                      , 2
+                      , host_type
+                      , sub_type );
             break;
-
-            case TYP_MEMBER_POINTER:
-                sub_type = writeType( dtype->of );
-                host_type = writeType( dtype->u.mp.host );
-                BRIAddType( bri_handle
-                          , result
-                          , BRI_TC_PtrToMember
-                          , 2
-                          , host_type
-                          , sub_type );
-            break;
-
-            default:
-                // do nothing
+        default:
+            // do nothing
             break;
         }
     }
 
-    return result;
+    return( result );
 }
 
 
@@ -343,8 +332,8 @@ static void writeClassHdr       // WRITE BROWSE DEFN FOR CLASS HEADER
     if( bri_handle != NULL ) {
         type_id = writeType( cltype );
         sym_attribs = BRI_SA_Class;
-        if( cltype->flag & TF1_INSTANTIATION ){
-            sym_attribs = (BRI_SymbolAttributes)(sym_attribs|BRI_SA_TempInst);
+        if( cltype->flag & TF1_INSTANTIATION ) {
+            sym_attribs = (BRI_SymbolAttributes)( sym_attribs | BRI_SA_TempInst );
         }
         BRIAddSymbol( bri_handle
                       , symbolIDForClass( cltype->u.c.info )
@@ -406,7 +395,7 @@ static void writeClassFriends   // WRITE BROWSE DEFN FOR FRIENDS
                                  , BRI_NO_CHANGE
                                  , BRI_NO_CHANGE
                                  , BRI_NO_CHANGE
-                                 , (BRI_SymbolID) SymbolGetIndex( sym )
+                                 , (BRI_SymbolID)SymbolGetIndex( sym )
                                  , BRI_RT_Friend );
             }
         }
@@ -430,21 +419,21 @@ static void writeClassMembers   // WRITE BROWSE DEFN FOR MEMBERS
         last = ScopeOrderedLast( scope );
         for( ; sym != NULL ; sym = ScopeOrderedNext( last, sym ) ) {
             type_id = writeType( sym->sym_type );
-            if( sym->sym_type->id == TYP_FUNCTION ){
+            if( sym->sym_type->id == TYP_FUNCTION ) {
                 sym_type = BRI_SA_Function;
             } else if( sym->id == SC_TYPEDEF ) {
                 sym_type = BRI_SA_Typedef;
             } else {
                 sym_type = BRI_SA_Variable;
             }
-            sym_id = (BRI_SymbolID) SymbolGetIndex( sym );
+            sym_id = (BRI_SymbolID)SymbolGetIndex( sym );
             BRIAddSymbol( bri_handle
                           , sym_id
                           , addString( NameStr( sym->name->name ) )
                           , type_id
                           , sym_type
                           , BRI_SA_AccessNone );
-            if( sym->locn != NULL ){
+            if( sym->locn != NULL ) {
                 writeSymbolLocn( sym, sym_id );
             }
         }
@@ -514,338 +503,293 @@ static void brinfWriteFileContents  // WRITE OUT BROWSE INFORMATION CONTENTS
 
     // Initialize static data used by writeType
     num_type_ops = 4;
-    type_ops = (uint_32 *) CMemAlloc( num_type_ops * sizeof( uint_32 ) );
+    type_ops = CMemAlloc( num_type_ops * sizeof( *type_ops ) );
 
     for( ; ; ) {
-    // The following comment is a trigger for the ICMASK program to start
-    // scanning for case IC_* patterns.
-    // ICMASK BEGIN BRINFO (do not remove)
-        unsigned not_used;
+        unsigned dummy;
 
-        ins = CgioReadICMaskCount( virtual_file
-                                 , ICOPM_BRINFO
-                                 , 0
-                                 , &not_used );
+        ins = CgioReadICMaskCount( virtual_file, ICOPM_BRINFO, ICOPM_NULL, &dummy );
+        // The following comment is a trigger for the ICMASK program to start
+        // scanning for case IC_* patterns.
+        // ICMASK BEGIN BRINFO (do not remove)
         switch( ins->opcode ) {
-                                        // NO OPERATION
-            case IC_BR_NO_OP:           // - no parameter
-            continue;
-                                        // SET REFERENCE SOURCE FILE
-            case IC_BR_REFTO_FILE :     // - SRCFILE
-                locn_ref.src_file = ins->value.pvalue;
-            continue;
-                                        // SET REFERENCE LINE
-            case IC_BR_REFTO_LINE :     // - line #
-                locn_ref.line = ins->value.uvalue;
-            continue;
-                                        // SET REFERENCE COLUMN
-            case IC_BR_REFTO_COL :      // - column #
-                locn_ref.column = ins->value.uvalue;
-            continue;
-                                        // SET REFERENCE LINE, COLUMN
-            case IC_BR_REFTO_LINECOL :  // - line #
-                locn_ref.line = ins->value.uvalue >> 8;
-                locn_ref.column = ins->value.uvalue & 0xFF;
-            continue;
-                                        // SCOPE: OPEN
-            case IC_BR_SCOPE_OPN :      // - scope
-            {
-                SCOPE           scope = ins->value.pvalue;
-                uint_32         owner;
-                BRI_ScopeType   flags;
-                SYMBOL          template_sym;
-                BRI_StringID    string_id;
+        case IC_EOF :               // END OF FILE
+            break;
+        case IC_BR_NO_OP:           // NO OPERATION
+            continue;               // - no parameter
+        case IC_BR_REFTO_FILE :     // SET REFERENCE SOURCE FILE
+          {                         // - SRCFILE
+            locn_ref.src_file = ins->value.pvalue;
+          } continue;
+        case IC_BR_REFTO_LINE :     // SET REFERENCE LINE
+          {                         // - line #
+            locn_ref.line = ins->value.uvalue;
+          } continue;
+        case IC_BR_REFTO_COL :      // SET REFERENCE COLUMN
+          {                         // - column #
+            locn_ref.column = ins->value.uvalue;
+          } continue;
+        case IC_BR_REFTO_LINECOL :  // SET REFERENCE LINE, COLUMN
+          {                         // - line + col #
+            locn_ref.line = ins->value.uvalue >> 8;
+            locn_ref.column = ins->value.uvalue & 0xFF;
+          } continue;
+        case IC_BR_SCOPE_OPN :      // SCOPE: OPEN
+          {                         // - scope
+            SCOPE           scope = ins->value.pvalue;
+            uint_32         owner;
+            BRI_ScopeType   flags;
+            SYMBOL          template_sym;
+            BRI_StringID    string_id;
 
-                switch( scope->id ) {
-                    case SCOPE_FILE:
-                        flags = BRI_ST_File;
-                        owner = 0x0;
-                    break;
-
-                    case SCOPE_CLASS:
-                        flags = BRI_ST_Class;
-                        owner = writeType( scope->owner.type );
-                    break;
-
-                    case SCOPE_FUNCTION:
-                        flags = BRI_ST_Function;
-                        owner = (uint_32) scope->owner.sym;
-                        DbgAssert( owner != 0 );
-                    break;
-
-                    case SCOPE_BLOCK:
-                        flags = BRI_ST_Block;
-                        owner = 0x0;
-                    break;
-
-                    case SCOPE_TEMPLATE_DECL:
-                        flags = BRI_ST_TemplateDecl;
-                        owner = 0x0;
-                    break;
-
-                    case SCOPE_TEMPLATE_INST:
-                        flags = BRI_ST_TemplateInst;
-                        owner = 0x0;
-                    break;
-
-                    case SCOPE_TEMPLATE_PARM:
-                        flags = BRI_ST_TemplateParm;
-                        if( scope->s.fn_template ) {
-                            template_sym = scope->owner.defn->sym;
-                        } else {
-                            template_sym = scope->owner.tinfo->sym;
-                        }
-                        if( template_sym->locn != NULL ){
-                            TOKEN_LOCN  *decl_locn;
-                            decl_locn = &template_sym->locn->tl;
-                            string_id = addStringFile( decl_locn->src_file );
-                        } else {
-                            string_id = (BRI_StringID) 0;
-                        }
-                        BRIStartTemplate( bri_handle
-                                        , string_id );
-                        owner = (uint_32) SymbolGetIndex( template_sym );
-                    break;
-
-                    default:
-                        flags = BRI_ST_Block;
-                        owner = 0x0;
-                }
-                if( flags != BRI_ST_Function ){
-                    BRIStartScope( bri_handle
-                                 , (BRI_ScopeID) ScopeGetIndex( scope )
-                                 , flags
-                                 , owner );
+            switch( scope->id ) {
+            case SCOPE_FILE:
+                flags = BRI_ST_File;
+                owner = 0x0;
+                break;
+            case SCOPE_CLASS:
+                flags = BRI_ST_Class;
+                owner = writeType( scope->owner.type );
+                break;
+            case SCOPE_FUNCTION:
+                flags = BRI_ST_Function;
+                owner = (uint_32)scope->owner.sym;
+                DbgAssert( owner != 0 );
+                break;
+            case SCOPE_BLOCK:
+                flags = BRI_ST_Block;
+                owner = 0x0;
+                break;
+            case SCOPE_TEMPLATE_DECL:
+                flags = BRI_ST_TemplateDecl;
+                owner = 0x0;
+                break;
+            case SCOPE_TEMPLATE_INST:
+                flags = BRI_ST_TemplateInst;
+                owner = 0x0;
+                break;
+            case SCOPE_TEMPLATE_PARM:
+                flags = BRI_ST_TemplateParm;
+                if( scope->s.fn_template ) {
+                    template_sym = scope->owner.defn->sym;
                 } else {
-                    SYMBOL      fn_symbol = (SYMBOL) owner;
-                    BRIStartFnScope( bri_handle
-                                 , (BRI_ScopeID) ScopeGetIndex( scope )
-                                 , addString( NameStr( fn_symbol->name->name ) )
-                                 , writeType( fn_symbol->sym_type ) );
+                    template_sym = scope->owner.tinfo->sym;
                 }
+                if( template_sym->locn != NULL ) {
+                    TOKEN_LOCN  *decl_locn;
+                    decl_locn = &template_sym->locn->tl;
+                    string_id = addStringFile( decl_locn->src_file );
+                } else {
+                    string_id = (BRI_StringID)0;
+                }
+                BRIStartTemplate( bri_handle, string_id );
+                owner = (uint_32)SymbolGetIndex( template_sym );
+                break;
+            default:
+                flags = BRI_ST_Block;
+                owner = 0x0;
             }
-            continue;
-                                        // SCOPE: CLOSE
-            case IC_BR_SCOPE_CLS :      // - scope
-            {
-                SCOPE   scope = ins->value.pvalue;
+            if( flags != BRI_ST_Function ) {
+                BRIStartScope( bri_handle
+                             , (BRI_ScopeID)ScopeGetIndex( scope )
+                             , flags
+                             , owner );
+            } else {
+                SYMBOL      fn_symbol = (SYMBOL)owner;
+                BRIStartFnScope( bri_handle
+                             , (BRI_ScopeID)ScopeGetIndex( scope )
+                             , addString( NameStr( fn_symbol->name->name ) )
+                             , writeType( fn_symbol->sym_type ) );
+            }
+          } continue;
+        case IC_BR_SCOPE_CLS :      // SCOPE: CLOSE
+          {                         // - scope
+            SCOPE   scope = ins->value.pvalue;
 
-                BRIEndScope( bri_handle );
-                if( scope->id == SCOPE_TEMPLATE_PARM ){
-                    BRIEndTemplate( bri_handle );
-                }
+            BRIEndScope( bri_handle );
+            if( scope->id == SCOPE_TEMPLATE_PARM ) {
+                BRIEndTemplate( bri_handle );
             }
+          } continue;
+        case IC_BR_SRC_BEG :        // START OF SOURCE FILE INCLUSION
+          {                         // - full file name
+            SRCDEP* sd = ins->value.pvalue;
+            char const* name = BrinfDepSrcFname( sd );
+            /* To ensure that each file is identified correctly
+               across multiple #include's, convert to lower case */
+            BRIStartFile( bri_handle
+                        , addStringLower( (BRI_StringID)name, name ) );
+            BrinfDepWrite( sd );
+          } continue;
+        case IC_BR_SRC_END :        // END OF SOURCE FILE INCLUSION
+            BRIEndFile( bri_handle );
             continue;
-                                        // START OF SOURCE FILE INCLUSION
-            case IC_BR_SRC_BEG :        // - full file name
-            {
-                SRCDEP* sd = ins->value.pvalue;
-                char const* name = BrinfDepSrcFname( sd );
-                /* To ensure that each file is identified correctly
-                   across multiple #include's, convert to lower case */
-                BRIStartFile( bri_handle
-                            , addStringLower( (BRI_StringID)name, name ) );
-                BrinfDepWrite( sd );
-            }
-            continue;
-                                        // END OF SOURCE FILE INCLUSION
-            case IC_BR_SRC_END :
-                BRIEndFile( bri_handle );
-            continue;
-                                        // SOURCE-FILE INCLUSION
-            case IC_BR_INC_SRC :        // - name as coded
-            continue;
-                                        // REFERENCE LOCATION
+        case IC_BR_INC_SRC :        // SOURCE-FILE INCLUSION
+            continue;               // - name as coded
 #if 0
-            case IC_BR_REF_LOC :        // - token location of reference
-            {
+        case IC_BR_REF_LOC :        // REFERENCE LOCATION
+          {                         // - token location of reference
             locn_ref = ins->value.pvalue;
-            } continue;
+          } continue;
 #endif
-                                        // REFERENCE: Symbols, Type
-            case IC_BR_REF_FUN :        // - function symbol
-            case IC_BR_REF_CLM :        // - member symbol
-            case IC_BR_REF_VAR :        // - variable symbol
-            case IC_BR_REF_EVAL :       // - enumeration value
-            case IC_BR_REF_EVAR :       // - enumeration variable
-            case IC_BR_REF_TYPE :       // - type referenced
-            {
-                BRI_ReferenceType       ref_type;
-                uint_32                 target;
+                                    // REFERENCE: Symbols, Type
+        case IC_BR_REF_FUN :        // - function symbol
+        case IC_BR_REF_CLM :        // - member symbol
+        case IC_BR_REF_VAR :        // - variable symbol
+        case IC_BR_REF_EVAL :       // - enumeration value
+        case IC_BR_REF_EVAR :       // - enumeration variable
+        case IC_BR_REF_TYPE :       // - type referenced
+          {
+            BRI_ReferenceType       ref_type;
+            uint_32                 target;
 
-                switch( ins->opcode ){
-                    case IC_BR_REF_FUN:  ref_type = BRI_RT_Function; break;
-                    case IC_BR_REF_CLM:  ref_type = BRI_RT_ClsMember; break;
-                    case IC_BR_REF_VAR:  ref_type = BRI_RT_Var; break;
-                    case IC_BR_REF_EVAL: ref_type = BRI_RT_Enum; break;
-                    case IC_BR_REF_EVAR: ref_type = BRI_RT_Enum; break;
-                    case IC_BR_REF_TYPE: ref_type = BRI_RT_TypeOf; break;
-                    DbgDefault( "bad opcode" );
-                }
-
-                target = (uint_32) ins->value.pvalue;
-                if( ins->opcode == IC_BR_REF_TYPE ) {
-                    target = (uint_32) TypeGetIndex( (TYPE) target );
-                } else {
-                    target = (uint_32) SymbolGetIndex( (SYMBOL) target );
-                }
-
-                BRIAddReference( bri_handle
-                               , addStringFile( locn_ref.src_file )
-                               , locn_ref.line
-                               , locn_ref.column
-                               , target
-                               , ref_type );
-
+            switch( ins->opcode ) {
+            case IC_BR_REF_FUN:  ref_type = BRI_RT_Function; break;
+            case IC_BR_REF_CLM:  ref_type = BRI_RT_ClsMember; break;
+            case IC_BR_REF_VAR:  ref_type = BRI_RT_Var; break;
+            case IC_BR_REF_EVAL: ref_type = BRI_RT_Enum; break;
+            case IC_BR_REF_EVAR: ref_type = BRI_RT_Enum; break;
+            case IC_BR_REF_TYPE: ref_type = BRI_RT_TypeOf; break;
             }
-            continue;
-                                        // DECLARE: CLASS
-            case IC_BR_DCL_CLASS :      // - class type
-            {
-                TYPE    cltype = ins->value.pvalue;
-                TOKEN_LOCN* cllocn = LocnForClass( cltype );
 
-                if( NULL != cllocn ) {
+            target = (uint_32)ins->value.pvalue;
+            if( ins->opcode == IC_BR_REF_TYPE ) {
+                target = (uint_32)TypeGetIndex( (TYPE)target );
+            } else {
+                target = (uint_32)SymbolGetIndex( (SYMBOL)target );
+            }
+
+            BRIAddReference( bri_handle
+                           , addStringFile( locn_ref.src_file )
+                           , locn_ref.line
+                           , locn_ref.column
+                           , target
+                           , ref_type );
+
+          } continue;
+        case IC_BR_DCL_CLASS :      // DECLARE: CLASS
+          {                         // - class type
+            TYPE    cltype = ins->value.pvalue;
+            TOKEN_LOCN* cllocn = LocnForClass( cltype );
+
+            if( NULL != cllocn ) {
 // This disables browsing for anonymous structs
 // After we upgrade, the check should always succeed
-                    writeClassHdr( cltype );
-                    writeClassBases( cltype );
-                    writeClassFriends( cltype );
-                    writeClassMembers( cltype );
-                    writeClassEnd( cltype );
-                    writeDefinition( cllocn,
-                                     symbolIDForClass( cltype->u.c.info ) );
-                }
+                writeClassHdr( cltype );
+                writeClassBases( cltype );
+                writeClassFriends( cltype );
+                writeClassMembers( cltype );
+                writeClassEnd( cltype );
+                writeDefinition( cllocn, symbolIDForClass( cltype->u.c.info ) );
             }
-            continue;
-                                        // DECLARE: TYPEDEF
-            case IC_BR_DCL_TDEF :       // - class type
-            {
-                SYMBOL td = ins->value.pvalue;
-                BRI_SymbolID sym_id;
-                TYPE cltype = td->sym_type;
-                BRI_TypeID  type_id;
+          } continue;
+        case IC_BR_DCL_TDEF :       // DECLARE: TYPEDEF
+          {                         // - class type
+            SYMBOL td = ins->value.pvalue;
+            BRI_SymbolID sym_id;
+            TYPE cltype = td->sym_type;
+            BRI_TypeID  type_id;
 
-                type_id = writeType( cltype );
-                sym_id = (BRI_SymbolID) SymbolGetIndex( td );
-                BRIAddSymbol( bri_handle
-                              , sym_id
-                              , addString( NameStr( td->name->name ) )
-                              , type_id
-                              , BRI_SA_Typedef
-                              , BRI_SA_AccessNone );
-                if( td->locn != NULL ){
-                    writeSymbolLocn( td, sym_id );
-                }
+            type_id = writeType( cltype );
+            sym_id = (BRI_SymbolID)SymbolGetIndex( td );
+            BRIAddSymbol( bri_handle
+                          , sym_id
+                          , addString( NameStr( td->name->name ) )
+                          , type_id
+                          , BRI_SA_Typedef
+                          , BRI_SA_AccessNone );
+            if( td->locn != NULL ) {
+                writeSymbolLocn( td, sym_id );
             }
-            continue;
-                                        // DECLARE: VARIABLE
-            case IC_BR_DCL_VAR :        // - variable symbol
-            {
-                SYMBOL sym = ins->value.pvalue;
-                BRI_SymbolID sym_id;
-                BRI_TypeID  type_id;
-                BRI_SymbolAttributes sym_flag;
+          } continue;
+        case IC_BR_DCL_VAR :        // DECLARE: VARIABLE
+          {                         // - variable symbol
+            SYMBOL sym = ins->value.pvalue;
+            BRI_SymbolID sym_id;
+            BRI_TypeID  type_id;
+            BRI_SymbolAttributes sym_flag;
 
-                if( SymIsEnumeration( sym ) ){
-                    sym_flag = BRI_SA_Enum;
-                } else {
-                    sym_flag = BRI_SA_Variable;
-                }
-                type_id = writeType( sym->sym_type );
-                sym_id = (BRI_SymbolID) SymbolGetIndex( sym );
-                BRIAddSymbol( bri_handle
-                              , sym_id
-                              , addString( NameStr( sym->name->name ) )
-                              , type_id
-                              , sym_flag
-                              , BRI_SA_AccessNone );
-                if( sym->locn != NULL ){
-                    writeSymbolLocn( sym, sym_id );
-                }
+            if( SymIsEnumeration( sym ) ) {
+                sym_flag = BRI_SA_Enum;
+            } else {
+                sym_flag = BRI_SA_Variable;
             }
-            continue;
-
-            case IC_BR_DCL_FUN :
-            {
-                SYMBOL sym = ins->value.pvalue;
-                BRI_SymbolID sym_id;
-                BRI_TypeID  type_id;
-                BRI_SymbolAttributes    attribs;
-
-                type_id = writeType( sym->sym_type );
-                sym_id = (BRI_SymbolID) SymbolGetIndex( sym );
-                attribs = BRI_SA_Function;
-                BRIAddSymbol( bri_handle
-                              , sym_id
-                              , addString( NameStr( sym->name->name ) )
-                              , type_id
-                              , attribs
-                              , BRI_SA_AccessNone );
-                if( sym->locn != NULL ){
-                    writeSymbolLocn( sym, sym_id );
-                }
+            type_id = writeType( sym->sym_type );
+            sym_id = (BRI_SymbolID)SymbolGetIndex( sym );
+            BRIAddSymbol( bri_handle
+                          , sym_id
+                          , addString( NameStr( sym->name->name ) )
+                          , type_id
+                          , sym_flag
+                          , BRI_SA_AccessNone );
+            if( sym->locn != NULL ) {
+                writeSymbolLocn( sym, sym_id );
             }
-            continue;
+          } continue;
+        case IC_BR_DCL_FUN :
+          {
+            SYMBOL sym = ins->value.pvalue;
+            BRI_SymbolID sym_id;
+            BRI_TypeID  type_id;
+            BRI_SymbolAttributes    attribs;
 
-            case IC_BR_REF_UMACRO:      // REFERENCE: UNDEFINED MACRO
-                                        // - saved MACVALUE
-                processMacroDefness( ins->value.pvalue, BRI_GT_RefUndef );
-                continue;
-
-
-            case IC_BR_DCL_MACRO :      // DECLARE: MACRO
-                                        // - saved MACVALUE
-            {
-                const MACVALUE      *mptr = ins->value.pvalue;
-                const char          *string = BrinfMacValueName( mptr );
-                unsigned            num_parms = BrinfMacValueParmCount( mptr );
-                size_t              length;
-                const uint_8        *defn = BrinfMacValueDefn( mptr, &length );
-                const TOKEN_LOCN    *locn = BrinfMacValueLocn( mptr );
-                LINE_NO             line;
-                COLUMN_NO           column;
-
-                if( defn != NULL ){
-                    line = locn->line;
-                    column = locn->column;
-                } else {
-                    line = BRI_NO_CHANGE;
-                    column = BRI_NO_CHANGE;
-                }
-
-                BRISetPos( bri_handle, line, column );
-
-                BRIAddGuard( bri_handle
-                           , BRI_GT_Declaration
-                           , addString( string )
-                           , num_parms
-                           , length
-                           , defn );
+            type_id = writeType( sym->sym_type );
+            sym_id = (BRI_SymbolID)SymbolGetIndex( sym );
+            attribs = BRI_SA_Function;
+            BRIAddSymbol( bri_handle
+                          , sym_id
+                          , addString( NameStr( sym->name->name ) )
+                          , type_id
+                          , attribs
+                          , BRI_SA_AccessNone );
+            if( sym->locn != NULL ) {
+                writeSymbolLocn( sym, sym_id );
             }
-            continue;
+          } continue;
+        case IC_BR_REF_UMACRO:      // REFERENCE: UNDEFINED MACRO
+          {                         // - saved MACVALUE
+            processMacroDefness( ins->value.pvalue, BRI_GT_RefUndef );
+          } continue;
+        case IC_BR_DCL_MACRO :      // DECLARE: MACRO
+          {                         // - saved MACVALUE
+            const MACVALUE      *mptr = ins->value.pvalue;
+            const char          *string = BrinfMacValueName( mptr );
+            unsigned            num_parms = BrinfMacValueParmCount( mptr );
+            size_t              length;
+            const uint_8        *defn = BrinfMacValueDefn( mptr, &length );
+            const TOKEN_LOCN    *locn = BrinfMacValueLocn( mptr );
+            LINE_NO             line;
+            COLUMN_NO           column;
 
-            case IC_BR_REF_MACRO :      // REFERENCE: MACRO VALUE
-                                        // - saved MACVALUE
-                processMacroValue( ins->value.pvalue, BRI_GT_RefValue );
-            continue;
-
-            case IC_BR_PCH :            // PCH FILE REFERENCE
-                                        // - full file name
-            {
-                char    *fname = ins->value.pvalue;
-
-                BRIAddPCHInclude( bri_handle
-                                , addStringLower((BRI_StringID)fname,fname) );
+            if( defn != NULL ) {
+                line = locn->line;
+                column = locn->column;
+            } else {
+                line = BRI_NO_CHANGE;
+                column = BRI_NO_CHANGE;
             }
-            continue;
 
-                                        // END OF FILE
-            case IC_EOF :
-            break;
-                                        // DEFAULT -- AN ERROR
-            default:
-                DbgNever();
+            BRISetPos( bri_handle, line, column );
+
+            BRIAddGuard( bri_handle
+                       , BRI_GT_Declaration
+                       , addString( string )
+                       , num_parms
+                       , length
+                       , defn );
+          } continue;
+        case IC_BR_REF_MACRO :      // REFERENCE: MACRO VALUE
+          {                         // - saved MACVALUE
+            processMacroValue( ins->value.pvalue, BRI_GT_RefValue );
+          } continue;
+        case IC_BR_PCH :            // PCH FILE REFERENCE
+          {                         // - full file name
+            char    *fname = ins->value.pvalue;
+
+            BRIAddPCHInclude( bri_handle, addStringLower( (BRI_StringID)fname, fname ) );
+          } continue;
+        default:                    // DEFAULT -- AN ERROR
+            DbgNever();
         }
         break;
     // ICMASK END (do not remove)
@@ -879,7 +823,7 @@ void* BrinfCreateFile
 {
     DbgAssert( bri_handle == NULL );
     bri_handle = BRICreate( rtns );
-    return bri_handle;
+    return( bri_handle );
 }
 
 
@@ -892,7 +836,7 @@ void* BrinfWritePchFile             // WRITE OUT BROWSE INFORMATION TO PCH
     bri_handle = BRIBeginWrite( rtns, file_handle, start );
     brinfWriteFileContents( virtual_file );
     BRIClose( bri_handle );
-    return bri_handle;
+    return( bri_handle );
 }
 
 

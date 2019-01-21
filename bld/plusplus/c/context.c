@@ -106,7 +106,7 @@ void CtxSetSwitchAddr(          // SET ADDRESS OF CURRENT SWITCH
 char const *CtxGetSwitchAddr(   // GET CURRENT SWITCH CONTEXT
     void )
 {
-    return switch_addr;
+    return( switch_addr );
 }
 
 
@@ -151,7 +151,7 @@ bool CtxCurrent(                // GET CURRENT CONTEXT
     void const **a_data,              // - addr[ ptr to data for context ]
     char const **a_prefix )     // - addr[ prefix for header line in error ]
 {
-    bool retb;                  // - true ==> context changed from last time
+    bool ok;                    // - true ==> context changed from last time
     void const *data;           // - current data
 
     *a_context = context;
@@ -176,11 +176,11 @@ bool CtxCurrent(                // GET CURRENT CONTEXT
         data = func;
         break;
     }
-    retb = ( context != last_context ) || ( data != last_data );
+    ok = ( context != last_context ) || ( data != last_data );
     last_data = data;
     *a_data = data;
     last_context = context;
-    return( retb );
+    return( ok );
 }
 
 
@@ -230,7 +230,7 @@ void *CtxWhereAreYou(           // SET DEBUGGING BUFFER
         }
         break;
     }
-    return CompilerContext;
+    return( CompilerContext );
 }
 #endif
 

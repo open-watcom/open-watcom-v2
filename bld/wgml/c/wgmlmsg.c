@@ -31,12 +31,12 @@
 
 
 #include "wgml.h"
-#include "wio.h"
 #include "wressetr.h"
 #include "wresset2.h"
 #include "wreslang.h"
 
 #include "clibext.h"
+
 
 HANDLE_INFO hInstance;
 
@@ -59,7 +59,7 @@ bool init_msgs( void )
         }
     }
     CloseResFile( &hInstance );
-    out_msg( "Resources not found\n" );
+    out_msg( NO_RES_MESSAGE );
     g_suicide();
     return( false );
 }

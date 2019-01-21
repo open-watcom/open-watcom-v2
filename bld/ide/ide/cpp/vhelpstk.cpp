@@ -44,7 +44,8 @@ VHelpStack::VHelpStack() {
 }
 
 VHelpStack::~VHelpStack() {
-    if( _stack != NULL ) delete [] _stack;
+    if( _stack != NULL )
+        delete[] _stack;
     _allocated = 0;
     _used = 0;
 }
@@ -57,7 +58,7 @@ void VHelpStack::push( unsigned long item ) {
         _allocated += ALLOC_INCREMENT;
         tmp = new unsigned long [_allocated];
         memcpy( tmp, _stack, ( _used - 1 ) * sizeof( unsigned long ) );
-        delete [] _stack;
+        delete[] _stack;
         _stack = tmp;
     }
     _stack[_used - 1] = item;

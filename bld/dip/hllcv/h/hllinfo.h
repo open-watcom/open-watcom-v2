@@ -54,7 +54,7 @@ struct imp_sym_handle {
     virt_mem            handle;         /* The record position. */
     unsigned_16         len;            /* The record length. */
     unsigned_16         segment;        /* The current segment. */
-    imp_mod_handle      im;             /* The module handle. */
+    imp_mod_handle      imh;            /* The module handle. */
     unsigned short      mfunc_idx;
     virt_mem            containing_type;
     virt_mem            adjustor_type;
@@ -85,7 +85,7 @@ struct imp_cue_handle {
     unsigned_16         num_lines;      /* The number of lines. */
     unsigned_16         cur_line;       /* The current table index. */
     unsigned_16         segment;        /* The current segment. */
-    imp_mod_handle      im;             /* The module handle. */
+    imp_mod_handle      imh;            /* The module handle. */
     hll_line_style      style;          /* The line number style. */
     union {
         struct {
@@ -140,7 +140,7 @@ struct imp_image_handle {
     hll_dir_entry       **directory;    /* The subsection directory, 2 levels. */
     unsigned            dir_count;      /* Number of entries in the directory. */
     virt_mem            types_base;     /* HLLPack types, NULL if per-module. */
-    dig_mad             mad;            /* MAD_X86 */
+    dig_arch            arch;           /* DIG_ARCH_X86 */
     hllinfo_seg         *segments;      /* Segment mappings and attribs. */
     unsigned            seg_count;      /* Number of segments. */
     hllinfo_level       format_lvl;     /* The format level. */
@@ -221,7 +221,7 @@ extern walk_result          hllTypeSymWalkList( imp_image_handle *, imp_type_han
 extern dip_status           hllTypeIndexFillIn( imp_image_handle *, unsigned, imp_type_handle * );
 extern search_result        hllTypeSearchTagName( imp_image_handle *, lookup_item *, void * );
 extern search_result        hllTypeSearchNestedSym( imp_image_handle *, imp_type_handle *, lookup_item *, void * );
-extern dip_status           hllTypeInfo( imp_image_handle *, imp_type_handle *, location_context *, dip_type_info * );
+extern dip_status           hllTypeInfo( imp_image_handle *, imp_type_handle *, location_context *, dig_type_info * );
 extern dip_status           hllTypeBase( imp_image_handle *, imp_type_handle *, imp_type_handle * );
 extern dip_status           hllTypeMemberFuncInfo( imp_image_handle *, imp_type_handle *, imp_type_handle *, imp_type_handle *, unsigned long * );
 
@@ -232,7 +232,7 @@ extern dip_status           hllSymValue( imp_image_handle *, imp_sym_handle *, l
 extern dip_status           hllSymType( imp_image_handle *, imp_sym_handle *, imp_type_handle * );
 
 extern void                 hllConfused(void);
-extern dip_status           hllDoIndirection( imp_image_handle *, dip_type_info *, location_context *, location_list * );
+extern dip_status           hllDoIndirection( imp_image_handle *, dig_type_info *, location_context *, location_list * );
 extern hll_ssr_cuinfo      *hllGetCompInfo( imp_image_handle *, imp_mod_handle );
 extern hll_style            hllGetModStyle( imp_image_handle *, imp_mod_handle );
 

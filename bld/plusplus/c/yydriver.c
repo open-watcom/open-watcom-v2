@@ -55,8 +55,6 @@ typedef uint_8          YYBITTYPE;
 typedef uint_8          YYPLENTYPE;
 typedef uint_16         YYPLHSTYPE;
 
-typedef yytokentype     YYTOKENTYPE;
-
 typedef union {
     inherit_flag        flags_inh;
     type_flag           flags_mod;
@@ -753,9 +751,12 @@ static YYTOKENTYPE scopedChain( PARSE_STACK *state, PTREE start, PTREE id,
                 return( Y_SCOPED_TEMPLATE_NAME );
             case LK_NAMESPACE:
                 return( Y_SCOPED_NAMESPACE_NAME );
-            DbgDefault( "unknown lexical category" );
             }
+#ifndef NDEBUG
+            CFatal( "unknown lexical category" );
+#else
             return( Y_IMPOSSIBLE );
+#endif
         case T_TILDE:
         case T_ALT_TILDE:
             yylval.tree = makeUnary( CO_TILDE, curr );
@@ -768,9 +769,9 @@ static YYTOKENTYPE scopedChain( PARSE_STACK *state, PTREE start, PTREE id,
             yylval.tree = makeUnary( CO_INDIRECT, curr );
             return( Y_SCOPED_TIMES );
         default:
+            /* error! */
             PTreeFreeSubtrees( curr );
             CErr2p( ERR_COLON_COLON_SYNTAX, TokenString() );
-            /* error! */
             return( Y_IMPOSSIBLE );
         }
     }
@@ -938,19 +939,19 @@ static YYTOKENTYPE specialAngleBracket( PARSE_STACK *state, YYTOKENTYPE token )
         } else if( token == Y_LEFT_BRACE ) {
             angle_state->paren_depth++;
         } else if( token == Y_RIGHT_BRACE ) {
-            if( angle_state->paren_depth > 0) {
+            if( angle_state->paren_depth > 0 ) {
                 angle_state->paren_depth--;
             }
         } else if( token == Y_LEFT_BRACKET ) {
             angle_state->paren_depth++;
         } else if( token == Y_RIGHT_BRACKET ) {
-            if( angle_state->paren_depth > 0) {
+            if( angle_state->paren_depth > 0 ) {
                 angle_state->paren_depth--;
             }
         } else if( token == Y_LEFT_PAREN ) {
             angle_state->paren_depth++;
         } else if( token == Y_RIGHT_PAREN ) {
-            if( angle_state->paren_depth > 0) {
+            if( angle_state->paren_depth > 0 ) {
                 angle_state->paren_depth--;
             }
         }
@@ -972,9 +973,9 @@ static YYTOKENTYPE yylex( PARSE_STACK *state )
     PTREE           tree;
     look_ahead_storage *saved_token;
     struct {
-        unsigned no_super_token : 1;
-        unsigned special_colon_colon : 1;
-        unsigned special_typename : 1;
+        unsigned no_super_token         : 1;
+        unsigned special_colon_colon    : 1;
+        unsigned special_typename       : 1;
     } flags;
 
     state->favour_reduce = false;
@@ -1074,7 +1075,7 @@ static YYTOKENTYPE yylex( PARSE_STACK *state )
                 tree = PTreeIntConstant( I32FetchTrunc( Constant64 ), ConstType );
                 break;
             }
-            // drops thru
+            /* fall through */
         default:
             tree = PTreeIntConstant( U32Fetch( Constant64 ), ConstType );
             break;
@@ -1683,20 +1684,20 @@ void *ParseCurrQualification( void )
 
 static p_action normalYYAction( YYTOKENTYPE t, PARSE_STACK *state, YYACTIONTYPE *pa )
 {
-    YYACTIONTYPE *ssp;
-    YYTOKENTYPE lhs;
-    YYACTIONTYPE top_state;
-    unsigned bit_index;
-    YYACTIONTYPE raw_action;
-    YYACTIONTYPE rule;
-    unsigned mask;
+    YYACTIONTYPE    *ssp;
+    YYTOKENTYPE     lhs;
+    YYACTIONTYPE    top_state;
+    size_t          bit_offs;
+    YYACTIONTYPE    raw_action;
+    YYACTIONTYPE    rule;
+    unsigned char   bit_mask;
 
     ssp = state->ssp;
     top_state = ssp[0];
-    bit_index = ( t >> 3 );
-    mask = 1 << ( t & 0x07 );
+    bit_offs = BITARR_OFFS( t );
+    bit_mask = BITARR_MASK( t );
     for( ;; ) {
-        if( yybitcheck[bit_index + yybitbase[top_state]] & mask ) {
+        if( yybitcheck[bit_offs + yybitbase[top_state]] & bit_mask ) {
             raw_action = yyactiontab[t + yyactionbasetab[top_state]];
             if( (raw_action & RAW_REDUCTION) == 0 ) {
                 /* we have a shift */
@@ -1814,7 +1815,9 @@ static la_action lookAheadShiftReduce( YYTOKENTYPE t
             break;
         }
         what = lookAheadReduce( state, yyaction - YYUSED );
-        if( what == LA_UNDERFLOW ) break;
+        if( what == LA_UNDERFLOW ) {
+            break;
+        }
     }
     return( what );
 }
@@ -1950,8 +1953,11 @@ static YYACTIONTYPE lookAheadYYAction( YYTOKENTYPE t, PARSE_STACK *state, PARSE_
             }
 #endif
             decl_what = lookAheadShiftReduce( t, &look_ahead_decl_state, host );
-            if( expr_what != decl_what ) break;
-            if( expr_what != LA_NULL ) break;
+            if( expr_what != decl_what )
+                break;
+            if( expr_what != LA_NULL ) {
+                break;
+            }
         }
         /* something significant has happened... */
         what_to_do = response[expr_what][decl_what];
@@ -2030,8 +2036,9 @@ static p_action doAction( YYTOKENTYPE t, PARSE_STACK *state )
         unsigned stackDepth;
 #endif
         yyk = *(state->ssp);
-        DbgStmt( if( PragDbgToggle.parser_states ) printf( "parser top state: %u token: 0x%x (%s)\n", yyk, t , yytoknames[t] ); );
-        DbgStmt(stackDepth = (state->ssp - &(state->sstack[0])) + 1; );
+        DbgStmt( if( PragDbgToggle.parser_states ) \
+                     printf( "parser top state: %u token: 0x%x (%s)\n", yyk, t , yytoknames[t] ); );
+        DbgStmt( stackDepth = (state->ssp - &(state->sstack[0])) + 1; );
 
         /*
         //  DumpStack
@@ -2532,7 +2539,9 @@ void ParseDecls( void )
 #endif
                 }
             }
-            if( CurToken == T_EOF ) break;
+            if( CurToken == T_EOF ) {
+                break;
+            }
         } while( what == P_CLASS_TEMPLATE );
         deleteStack( &decl_state );
         LinkageReset();

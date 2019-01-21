@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
+* Copyright (c) 2009-2018 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -28,9 +28,8 @@
 *
 ****************************************************************************/
 
-#if defined(__unix__) && !defined(__UNIX__)
-    #define __UNIX__ __unix__
-#endif
+
+#include "wipfc.hpp"
 #include <cstdlib>
 #include <cstring>
 #include <iostream>
@@ -39,6 +38,7 @@
 #include "env.hpp"
 #include "errors.hpp"
 #include "util.hpp"
+
 
 static void processCommandLine(int argc, char **argv, Compiler& c);
 static void usage();
@@ -75,10 +75,10 @@ int main(int argc, char **argv)
         retval = c.compile();
     }
     catch( FatalError& e ) {
-        c.printError( e.code );
+        c.printError( e._code );
     }
     catch( FatalIOError& e ) {
-        c.printError( e.code, e.fname );
+        c.printError( e._code, e._fname );
     }
     return retval;
 }
@@ -106,7 +106,7 @@ We support the version 2 flags
 */
 static void processCommandLine(int argc, char **argv, Compiler& c)
 {
-    if (argc < 2)
+    if( argc < 2 )
         usage();
     int inIndex( 0 );
     int outIndex( 0 );
@@ -123,7 +123,7 @@ static void processCommandLine(int argc, char **argv, Compiler& c)
                 case 'd':
                     std::cout << "Country code and code page selection are not supported." << std::endl;
                     std::cout << "Use the 'l' option to select a localization file instead." << std::endl;
-                    if (argv[count][2] == '?')
+                    if( argv[count][2] == '?' )
                         info = true;
                     break;
                 case 'I':
@@ -132,13 +132,13 @@ static void processCommandLine(int argc, char **argv, Compiler& c)
                     break;
                 case 'L':
                 case 'l':
-                    if (argv[count][2] == '?') {
+                    if( argv[count][2] == '?' ) {
                         std::cout << "xx_YY is the root name of a localization file" << std::endl;
                         std::cout << "with the full name xx_YY.nls\nSee en_US.nls for an example." << std::endl;
                         info = true;
-                    }
-                    else
+                    } else {
                         c.setLocalization( argv[++count] );
+                    }
                     break;
                 case 'O':
                 case 'o':
@@ -154,12 +154,12 @@ static void processCommandLine(int argc, char **argv, Compiler& c)
                     break;
                 case 'w':
                 case 'W':
-                    if (argv[count][2] == '?') {
+                    if( argv[count][2] == '?' ) {
                         std::cout << "-wN where N is one of 1, 2, or 3" << std::endl;
                         info = true;
-                    }
-                    else
+                    } else {
                         c.setWarningLevel( std::atoi( argv[count] + 2 ));
+                    }
                     break;
                 case 'X':
                 case 'x':
@@ -169,11 +169,11 @@ static void processCommandLine(int argc, char **argv, Compiler& c)
                     usage();
                     break;
             }
-        }
-        else if( !inIndex )
+        } else if( !inIndex ) {
             inIndex = count;
-        else
+        } else {
             std::cout << "Warning: extra filename '" << argv[count] << "' will be ignored" << std::endl;
+        }
     }
     if( inIndex ) {
         std::string fullpath( canonicalPath( argv[ inIndex ] ) );
@@ -181,14 +181,14 @@ static void processCommandLine(int argc, char **argv, Compiler& c)
         if( !outIndex ) {
             std::string outFile( fullpath );
             outFile.erase( outFile.rfind( '.' ) );
-            if( c.outputType() == Compiler::INF )
+            if( c.outputType() == Compiler::INF ) {
                 outFile += ".inf";
-            else
+            } else {
                 outFile += ".hlp";
+            }
             c.setOutputFile( outFile );
         }
-    }
-    else {
+    } else {
         std::cout << "Fatal Error: You must specify an input file" << std::endl;
         std::exit( EXIT_FAILURE );
     }
@@ -196,8 +196,9 @@ static void processCommandLine(int argc, char **argv, Compiler& c)
         std::string fullpath( canonicalPath( argv[ outIndex ] ) );
         c.setOutputFile( fullpath );
     }
-    if( info )
+    if( info ) {
         std::exit( EXIT_SUCCESS );
+    }
 }
 /*****************************************************************************/
 static void usage()

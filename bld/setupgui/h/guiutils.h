@@ -29,7 +29,7 @@
 ****************************************************************************/
 
 
-extern bool SetupPreInit( void );
+extern bool SetupPreInit( int argc, char **argv );
 extern bool SetupInit( void );
 extern void SetupTitle( void );
 extern void SetupFini( void );

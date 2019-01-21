@@ -89,7 +89,7 @@ global  NAME        SavedId;            // saved id when doing look ahead
 global  TOKEN       LAToken;            // look ahead token
 global  macro_flags InitialMacroFlag;   // current value to init macro flags to
 global  char        *MacroOffset;       // first free byte in MacroSegment
-global  char        __Time[10];         // "HH:MM:SS" for __TIME__ macro
+global  char        __Time[9];          // "HH:MM:SS" for __TIME__ macro
 global  char        __Date[12];         // "MMM DD YYYY" for __DATE__ macro
 global  FILE        *CppFile;           /* output for preprocessor */
 global  char        *ForceInclude;
@@ -102,7 +102,7 @@ global  int         SwitchChar;         // DOS switch character
 // token buffer
 // extra 16 is for unrolled scanning loops
 // extra uint_32 is for buffer overrun checking in debugging compiler
-global  char        Buffer[BUF_SIZE+16+sizeof(uint_32)];
+global  char        Buffer[BUF_SIZE + 16 + sizeof( uint_32 )];
 
 extern  int         (*NextChar)( void );    // next-character routine (initialized in SRCFILE)
 
@@ -155,7 +155,7 @@ bool PCHVerifyMacroCheck(       // READ AND VERIFY MACRO CHECK INFO FROM PCHDR
     void )
 ;
 void MacroCanBeRedefined(       // SET MACRO SO THAT USE CAN REDEFINE IN SOURCE
-    MEPTR mptr )                // - the macro entry
+    MEPTR mentry )              // - the macro entry
 ;
 MEPTR MacroScan(                // SCAN AND DEFINE A MACRO (#define, -d)
     macro_scanning defn )       // - scanning definition
@@ -192,7 +192,7 @@ void FiniPPScan(                // INIT SCANNER FOR PPNUMBER TOKENS
     bool ppscan_mode )          // - mode returned by InitPPScan()
 ;
 TOKEN SpecialMacro(             // EXECUTE A SPECIAL MACRO
-    MEPTR fmentry )             // - macro entry
+    MEPTR mentry )              // - macro entry
 ;
 void DefineAlternativeTokens(   // DEFINE ALTERNATIVE TOKENS
     void )
@@ -223,7 +223,7 @@ void DirectiveInit(             // INITIALIZE FOR DIRECTIVE PROCESSING
     void )
 ;
 void DoMacroExpansion(          // EXPAND A MACRO
-    MEPTR fmentry )             // - macro to expand
+    MEPTR mentry )              // - macro to expand
 ;
 void EmitLine(                  // EMIT #LINE DIRECTIVE, IF REQ'D
     LINE_NO line_num,           // - line number

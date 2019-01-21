@@ -32,6 +32,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <ctype.h>
+#include "bool.h"
 
 #include "clibext.h"
 
@@ -52,12 +53,12 @@ char *my_strupr( char *string )
     char    *s;
 
     if( string != NULL ) {
-        for( s = string; *s; ++s ) {
+        for( s = string; *s != '\0'; ++s ) {
             *s = (char)toupper( *s );
         }
     }
     return( string );
-} 
+}
 
 char *my_strlwr( char *string )
 /*****************************/
@@ -65,28 +66,25 @@ char *my_strlwr( char *string )
     char    *s;
 
     if( string != NULL ) {
-        for( s = string; *s; ++s ) {
+        for( s = string; *s != '\0'; ++s ) {
             *s = (char)tolower( *s );
         }
     }
     return( string );
 }
 
-static char *get_line( char *buf, FILE *file ) 
+static char *get_line( char *buf, FILE *file )
 /********************************************/
 {
     char    *ret;
     size_t  i;
 
-    for( ; (ret = fgets( buf, MAX_LINE_LEN, file )) != NULL; ) {
-
-        for( i = strlen( buf ); i && isWSorCtrlZ( buf[i - 1] ); --i ) {
+    while( (ret = fgets( buf, MAX_LINE_LEN, file )) != NULL ) {
+        for( i = strlen( buf ); i > 0 && isWSorCtrlZ( buf[i - 1] ); --i ) {
             buf[i - 1] = '\0';
         }
         ++Line;
-
         ret += strspn( ret, White_space );
-
         if( ret[0] != '#' && ret[0] != '\0' ) {
             break;
         }
@@ -94,24 +92,26 @@ static char *get_line( char *buf, FILE *file )
     return( ret );
 }
 
-static int empty_data( char *ret ) 
-/********************************/
+static bool empty_data( char *str )
+/*********************************/
 {
-    char                *end;
+    char    c;
 
-    if( *ret == '*' ) {
-        for( end = ret + 1;; ++end ) {
-            if( *end == '\0' ) {
-                return( 1 );
-            } else if( *end != ' ' && *end != '\t' ) {
-                break;
-            }
+    if( str == NULL )
+        return( true );
+    c = *str++;
+    if( c == '*' )
+        c = *str++;
+    while( c != '\0' ) {
+        if( c != ' ' && c != '\t' ) {
+            return( false );
         }
+        c = *str++;
     }
-    return( 0 );
+    return( true );
 }
 
-int main( int argc, char *argv[] ) 
+int main( int argc, char *argv[] )
 /********************************/
 {
     FILE                *in;
@@ -128,7 +128,6 @@ int main( int argc, char *argv[] )
     }
 
     in = fopen( argv[1], "r" );
-
     if( in == NULL ) {
         printf( "Could not open input file: %s\n", argv[1] );
         return( -1 );
@@ -147,11 +146,8 @@ int main( int argc, char *argv[] )
     fputs( "struct {\n", out );
     fputs( "    int            num_ctls;\n", out );
 
-    for( elt = 0;; ++elt ) {
-        line = get_line( buf, in );
-        if( line == NULL ) {
-            break;
-        }
+    elt = 0;
+    while( (line = get_line( buf, in )) != NULL ) {
         end = strpbrk( line, White_space );
         if( end == NULL ) {
             printf( "No control on line %d\n", Line );
@@ -183,7 +179,7 @@ int main( int argc, char *argv[] )
         }
         fputs( "            ctl_info      d2;\n", out );
         fputs( "        } d3;\n", out );
-        fprintf( out,  "    } d%-d;\n", elt );
+        fprintf( out,  "    } d%-d;\n", elt++ );
     }
 
     fclose( in );
@@ -192,27 +188,23 @@ int main( int argc, char *argv[] )
     fprintf( out, "%d,\n", elt );
 
     in = fopen( argv[1], "r" );
-
-    for( ;; ) {
-        line = get_line( buf, in );
-        if( line == NULL ) {
-            break;
+    while( (line = get_line( buf, in )) != NULL ) {
+        end = strpbrk( line, White_space );
+        if( end != NULL ) {
+            *end++ = '\0';
+            fprintf( out, "{ %s, %s, false,", my_strupr( line ), end );
         }
 
-        end = strpbrk( line, White_space );
-        *end = '\0';
-        ++end;
-
-        fprintf( out, "{ %s, %s, false,", my_strupr( line ), end );
-
         line = get_line( buf, in );
+        if( line == NULL )
+            break;
         fprintf( out, " %s", line );
 
         line = get_line( buf, in );
-        if( !empty_data( line ) ) {
-            fprintf( out, ", %s },\n", line );
+        if( empty_data( line ) ) {
+            fputs( " },\n", out );
         } else {
-            fputs( "},\n", out );
+            fprintf( out, ", %s },\n", line );
         }
     }
     fputs( "};\n\n", out );

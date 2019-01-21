@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -29,13 +30,14 @@
 ****************************************************************************/
 
 
-#include "cgstd.h"
+#include "_cgstd.h"
 #include "coderep.h"
 #include "cgmem.h"
 #include "data.h"
 #include "makeblk.h"
 #include "nullprop.h"
 #include "blktrim.h"
+#include "breakrtn.h"
 
 
 typedef struct  edge_list {
@@ -51,8 +53,8 @@ static  edge_list       *BranchOuts;
 static  block           *Tail = { NULL };
 static  bool            HaveBreak = { false };
 
-static  void            FreeBranchOuts( void )
-/********************************************/
+static void     FreeBranchOuts( void )
+/************************************/
 {
     edge_list   *next;
     edge_list   *curr;
@@ -64,8 +66,8 @@ static  void            FreeBranchOuts( void )
 }
 
 
-extern  bool            CreateBreak( void )
-/*****************************************/
+bool    CreateBreak( void )
+/*************************/
 {
     block       *blk;
     block       *break_blk;
@@ -248,8 +250,8 @@ extern  bool            CreateBreak( void )
 }
 
 
-extern  void            RemoveBreak( void )
-/*****************************************/
+void    RemoveBreak( void )
+/*************************/
 {
     HeadBlock = Break;
     CurrBlock = Curr;
@@ -260,8 +262,8 @@ extern  void            RemoveBreak( void )
 }
 
 
-extern  void            FixBreak( void )
-/**************************************/
+void    FixBreak( void )
+/**********************/
 {
     block       *blk;
     edge_list   *exit_edge;
@@ -280,14 +282,14 @@ extern  void            FixBreak( void )
     FreeBranchOuts();
 }
 
-extern  block           *TailBlocks( void )
-/*****************************************/
+block   *TailBlocks( void )
+/*************************/
 {
     return( Tail );
 }
 
-extern  bool            BreakExists( void )
-/*****************************************/
+bool    BreakExists( void )
+/*************************/
 {
     return( HaveBreak );
 }

@@ -123,7 +123,7 @@ int main( int argc, char *argv[] )
         if(argv[i][1] == ':') {
             j = tolower(argv[i][0]) - 'a' + 1;
         }
-        clsize = GetClusterSize(j);
+        clsize = GetClusterSize( j );
         csum = 0;
         ssum = 0;
         DoDU( argv[i], &csum, &ssum );

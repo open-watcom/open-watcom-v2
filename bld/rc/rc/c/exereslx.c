@@ -164,11 +164,11 @@ RcStatus WriteLXResourceObjects( ExeFileInfo *exe, ResFileInfo *info )
     uint_32         padded_size;
     uint_32         padded_res_size;
     int             page_shift;
-    int             i;
+    unsigned        i;
 
     dir = &exe->u.LXInfo.Res;
 
-    obj_index  = -1;
+    obj_index  = (uint_32)-1;
     page_index = exe->u.LXInfo.FirstResPage;
     page_shift = exe->u.LXInfo.OS2Head.l.page_shift;
 
@@ -258,7 +258,7 @@ bool BuildLXResourceObjects( ExeFileInfo *exeinfo, ResFileInfo *resinfo,
 {
     LXResTable      *dir;
     WResMergeError  *errs;
-    int             i;
+    unsigned        i;
     LXResEntry      *entry;
     unsigned_32     total = 0;
     unsigned_32     curr_total;

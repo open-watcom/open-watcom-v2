@@ -83,21 +83,23 @@
 
     #define NetBIOS( x ) NetBIOSCall( x )
 
-    extern byte _FAR NetBIOSCall( NCB _FAR * );
-    #pragma aux NetBIOSCall "^" parm [es bx] value [al];
+    extern byte _FAR NetBIOSCall( NCB __far * );
+    #pragma aux NetBIOSCall "^" __parm [__es __bx] __value [__al]
 
 #else
     #include "wnetbios.h"
 
     #define NET_BIOS_INT    0x5c
-    extern byte NetBIOS( NCB _FAR * );
-    #pragma aux NetBIOS = 0xcd NET_BIOS_INT parm [es bx] value [al];
+    extern byte NetBIOS( NCB __far * );
+    #pragma aux NetBIOS = 0xcd NET_BIOS_INT __parm [__es __bx] __value [__al]
 
     extern tiny_dos_version GetTrueDOSVersion( void );
     #pragma aux GetTrueDOSVersion = \
-        "mov    ax,3306h"               \
-        "int    21h"                    \
-        value [bx] modify exact [ax bx dx];
+            "mov  ax,3306h"         \
+            "int  21h"              \
+        __parm              [] \
+        __value             [__bx] \
+        __modify __exact    [__ax __bx __dx]
 
 #endif
 
@@ -266,7 +268,7 @@ const char *RemoteLink( const char *parms, bool server )
     if( NetCtlBlk.ncb_retcode == NRC_DUPNAME || NetCtlBlk.ncb_retcode == NRC_INUSE ) {
         return( TRP_ERR_server_name_already_in_use );
     } else if( NetCtlBlk.ncb_retcode != NRC_GOODRET ) {
-        return( TRP_ERR_NetBIOS_name_add_failed ); 
+        return( TRP_ERR_NetBIOS_name_add_failed );
     }
     memcpy( NetCtlBlk.ncb_callname, NetCtlBlk.ncb_name, NCBNAMSZ );
     NetCtlBlk.ncb_callname[0] = ( !server ) ? 'S' : 'C';

@@ -42,7 +42,7 @@
 
 static bind_size    *dataOffsets = NULL;
 static bind_size    *entryCounts = NULL;
-static char         *dataFnames  = NULL;
+static char         *DataFnameTokens = NULL;
 static long         dataStart;
 
 /*
@@ -88,8 +88,8 @@ void BoundDataInit( void )
      * get number of files, and get space to store data
      */
     dataFcnt = *(bind_size *)BndMemory;
-    dataOffsets = MemAlloc( dataFcnt * sizeof( bind_size ) );
-    entryCounts = MemAlloc( dataFcnt * sizeof( bind_size ) );
+    dataOffsets = _MemAllocArray( bind_size, dataFcnt );
+    entryCounts = _MemAllocArray( bind_size, dataFcnt );
 
     /*
      * get file names
@@ -97,8 +97,8 @@ void BoundDataInit( void )
     tmp = BndMemory + sizeof( bind_size );
     size = *(bind_size *)tmp;
     tmp += sizeof( bind_size );
-    dataFnames = MemAlloc( size );
-    memcpy( dataFnames, tmp, size );
+    DataFnameTokens = MemAlloc( size );
+    memcpy( DataFnameTokens, tmp, size );
     tmp += size;
 
     /*
@@ -121,7 +121,7 @@ void BoundDataFini( void )
     MemFree( BndMemory );
     MemFree( dataOffsets );
     MemFree( entryCounts );
-    MemFree( dataFnames );
+    MemFree( DataFnameTokens );
 
 } /* BoundDataFini */
 
@@ -143,7 +143,7 @@ bool SpecialOpen( const char *fn, GENERIC_FILE *gf, bool bounddata )
         if( strcmp( fn, CONFIG_FILE ) == 0 ) {
             i = 0;
         } else {
-            i = Tokenize( dataFnames, fn, true );
+            i = Tokenize( DataFnameTokens, fn, true );
         }
         if( i != TOK_INVALID && bounddata ) {
 
@@ -189,8 +189,8 @@ bool SpecialOpen( const char *fn, GENERIC_FILE *gf, bool bounddata )
      * process regular file
      */
     gf->type = GF_FILE;
-    gf->data.f = GetFromEnvAndOpen( fn );
-    return( gf->data.f != NULL );
+    gf->data.fp = GetFromEnvAndOpen( fn );
+    return( gf->data.fp != NULL );
 
 } /* SpecialOpen */
 
@@ -201,7 +201,7 @@ void SpecialFclose( GENERIC_FILE *gf )
 {
     switch( gf->type ) {
     case GF_FILE:
-        fclose( gf->data.f );
+        fclose( gf->data.fp );
         break;
     case GF_BOUND:
         EditFlags.BndMemoryLocked = false;
@@ -223,7 +223,7 @@ bool SpecialFgets( char *buff, int max, GENERIC_FILE *gf )
 
     switch( gf->type ) {
     case GF_FILE:
-        if( fgets( buff, max, gf->data.f ) == NULL ) {
+        if( fgets( buff, max, gf->data.fp ) == NULL ) {
             return( true );
         }
         for( len = strlen( buff ); len > 0 && isWSorCtrlZ( buff[len - 1] ); --len ) {

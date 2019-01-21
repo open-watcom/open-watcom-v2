@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
+* Copyright (c) 2009-2018 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -34,23 +34,26 @@
 #ifndef STRINGS_INCLUDED
 #define STRINGS_INCLUDED
 
-#include "config.hpp"
 #include <cstdio>
 #include <string>
 #include <vector>
 
+
+class OutFile;      // forward reference
+
 class StringTable {
 public:
-    StringTable() : bytes( 0 ) { table.reserve( 3 ); };
-    void addString( std::wstring& str ) { table.push_back( str ); };
+    StringTable() : _bytes( 0 ) { _table.reserve( 3 ); };
+    void add( const std::wstring& str ) { _table.push_back( str ); };
     //the number of bytes written to disk
-    STD1::uint32_t length() const { return bytes; };
-    STD1::uint32_t write( std::FILE *out );
+    dword length() const { return( _bytes ); };
+    dword write( OutFile* out );
 private:
-    std::vector< std::wstring > table;
+    std::vector< std::wstring > _table;
     typedef std::vector< std::wstring >::iterator TableIter;
     typedef std::vector< std::wstring >::const_iterator ConstTableIter;
-    STD1::uint32_t bytes;
+
+    dword               _bytes;
 };
 
 #endif //STRINGS_INCLUDED

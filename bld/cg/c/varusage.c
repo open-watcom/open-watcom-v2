@@ -30,12 +30,13 @@
 ****************************************************************************/
 
 
-#include "cgstd.h"
+#include "_cgstd.h"
 #include "coderep.h"
 #include "cgmem.h"
 #include "hwreg.h"
 #include "data.h"
 #include "namelist.h"
+#include "varusage.h"
 
 
 static  void    Use( name *op, block *blk, var_usage usage )
@@ -177,7 +178,7 @@ static void TransferOneTempBlockUsage( name *op )
         if( HasTrueBase( op ) ) {
             TransferOneTempBlockUsage( op->i.base );
         }
-    } else if ( op->n.class == N_TEMP ) {
+    } else if( op->n.class == N_TEMP ) {
         alias = op->t.alias;
         for( ;; ) {
             TransferBlockUsage( alias );
@@ -236,7 +237,7 @@ static void TransferOneMemBlockUsage( name *op )
         if( HasTrueBase( op ) ) {
             TransferOneMemBlockUsage( op->i.base );
         }
-    } else if ( op->n.class == N_MEMORY ) {
+    } else if( op->n.class == N_MEMORY ) {
         TransferBlockUsage( op );
     }
 }
@@ -289,8 +290,8 @@ static void TransferOneTempFlag( name *t )
 }
 
 
-extern  void    TransferTempFlags( void )
-/****************************************
+void    TransferTempFlags( void )
+/********************************
     Run through the program and for each variable reference, transfer
     the usage flags from each variable to all of its aliases.  (if we
     use the address of T1, we're effectively using the address of T1+1
@@ -424,8 +425,8 @@ static  void    SearchDefUse( void )
 }
 
 
-extern  void    FindReferences( void )
-/*************************************
+void    FindReferences( void )
+/*****************************
     Traverse the blocks an allocate a data_flow_def for each one if it
     is needed.  Then calculate which variables are USE_WITHIN_BLOCK,
     USE_IN_OTHER_BLOCK, DEF_IN_BLOCK and turn on their bits in the

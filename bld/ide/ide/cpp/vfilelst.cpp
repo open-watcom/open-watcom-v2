@@ -277,18 +277,19 @@ static void addAllFiles( HWND hwnd )
         len = SendMessage( ctl, LB_GETTEXTLEN, i, 0 );
         len++;
         if( len > alloced ) {
-            delete buf;
+            delete[] buf;
             buf = new char [len];
             alloced = len;
         }
         SendMessage( ctl, LB_GETTEXT, i, (LPARAM)(LPSTR)buf );
         addFileToList( hwnd, buf );
     }
-    free( buf );
+    delete[] buf;
 }
 
 #ifdef __NT__
-static void addAllFiles95( HWND hwnd ) {
+static void addAllFiles95( HWND hwnd )
+{
     int             i;
     int             n;
     GetFilesInfo    *info;

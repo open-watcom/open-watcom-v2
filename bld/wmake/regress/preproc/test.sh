@@ -1,59 +1,63 @@
 #!/bin/sh
 
-function usage() {
+ERRORS=0
+
+usage() {
     echo usage: $0 prgname errorfile
     exit
 }
 
-function print_header() {
+print_header() {
     echo \# -----------------------------
-    echo \#   Test $TEST
+    echo \#   Preprocessor Test $TEST
     echo \# -----------------------------
 }
 
-function do_check() {
-    if [ "$?" == "0" ]; then
-        echo \# Test $TEST successful
+do_check() {
+    if [ "$?" -eq "0" ]; then
+        echo \#      Test $1 successful
     else
-        echo \#\# PREPROCESS \#\# >> $LOGFILE
-        echo Error: Test $TEST unsuccessful!!! | tee -a $LOGFILE
-        test
+        echo \#\# PREPROCESS $TEST \#\# >> $LOGFILE
+        echo Error: Test $1 unsuccessful!!! | tee -a $LOGFILE
+        ERRORS=1
     fi
 }
 
-if [ "$2" == "" ]; then 
+if [ -z "$2" ]; then 
     usage
 fi
 
 echo \# ===========================
-echo \# Start Preprocessor Test
+echo \# Preprocessor Tests
 echo \# ===========================
 
-TEST=1
+TEST=01
 print_header
-$1 -h -f prep01 > tmp.out 2>&1
-diff -b -i prep01.chk tmp.out
+$1 -h -f prep$TEST > test$TEST.lst 2>&1
+diff -b -i prep$TEST.chk test$TEST.lst
 do_check
 
-TEST=2
+TEST=02
 print_header
-$1 -h -f prep02 -m -ms > tmp.out 2>&1
-diff prep02.chk tmp.out
-do_check
-$1 -h -f prep02 -m     > tmp.out 2>&1
-diff prep02.chk tmp.out
+$1 -h -f prep$TEST -m -ms > test${TEST}a.lst 2>&1
+diff prep$TEST.chk test${TEST}a.lst
+do_check a
+$1 -h -f prep$TEST -m > test${TEST}b.lst 2>&1
+diff prep$TEST.chk test${TEST}b.lst
+do_check b
+
+TEST=03
+print_header
+$1 -h -f prep$TEST > test$TEST.lst 2>&1
+diff -b -i prep$TEST.chk test$TEST.lst
 do_check
 
-TEST=3
+TEST=04
 print_header
-$1 -h -f prep03 > tmp.out 2>&1
-diff -b -i prep03.chk tmp.out
+$1 -h -f prep$TEST > test$TEST.lst 2>&1
+diff -b prep$TEST.chk test$TEST.lst
 do_check
 
-TEST=4
-print_header
-$1 -h -f prep04 > tmp.out 2>&1
-diff -b prep04.chk tmp.out
-do_check
-
-rm -f tmp.out
+if [ "$ERRORS" -eq "0" ]; then
+    rm -f *.lst
+fi

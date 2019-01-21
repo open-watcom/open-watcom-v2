@@ -50,9 +50,6 @@
   #include <i86.h>
   #include "dosext.h"
 #else
-  #if defined(__DOS__)
-    #include <dos.h>
-  #endif  
   #include "dosext.h"
   #if defined(__OS2__)
     #define INCL_BASE

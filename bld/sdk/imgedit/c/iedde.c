@@ -402,8 +402,7 @@ HDDEDATA IECreateResData( img_node *node )
     }
 
     if( ok ) {
-        hdata = DdeCreateDataHandle( IdInst, (LPBYTE)data, size, 0, hDataItem,
-                                     IEClipFormats[EditFormat].format, 0 );
+        hdata = DdeCreateDataHandle( IdInst, (LPBYTE)data, (DWORD)size, 0, hDataItem, IEClipFormats[EditFormat].format, 0 );
     }
 
     if( data != NULL ) {
@@ -455,7 +454,7 @@ BOOL IEUpdateDDEEditSession( void )
     }
 
     if( ok ) {
-        ok = DdeClientTransaction( (LPBYTE)hdata, -1, IEClientConv, hDataItem,
+        ok = DdeClientTransaction( (LPBYTE)hdata, (DWORD)-1L, IEClientConv, hDataItem,
                                          IEClipFormats[EditFormat].format,
                                          XTYP_POKE, TIME_OUT, NULL ) != 0;
     }
@@ -652,8 +651,7 @@ HDDEDATA CALLBACK DdeCallBack( UINT wType, UINT wFmt, HCONV hConv, HSZ hsz1, HSZ
         hszpair[0].hszTopic = IEServices[i].htopic;
         hszpair[1].hszSvc = (HSZ)NULL;
         hszpair[1].hszTopic = (HSZ)NULL;
-        ret = DdeCreateDataHandle( IdInst, (LPBYTE)&hszpair[0],
-                                             sizeof( hszpair ), 0L, 0, CF_TEXT, 0 );
+        ret = DdeCreateDataHandle( IdInst, (LPBYTE)&hszpair[0], (DWORD)sizeof( hszpair ), 0L, 0, CF_TEXT, 0 );
         break;
 
     case XTYP_REQUEST:

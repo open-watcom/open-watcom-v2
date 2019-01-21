@@ -41,7 +41,7 @@
 #include "buffer.h"
 #include "print.h"
 #include "main.h"
-#include "init.h"
+
 
 static int      useComma;
 
@@ -53,9 +53,11 @@ return_val      DumpASMGroupName( const char *name, bool fasm )
 
     if( fasm ) {
         BufferQuoteName( name );
-        BufferStore( "\t\tGROUP\t", name );
+        BufferConcat( "\t\tGROUP\t" );
     } else {
-        BufferStore( "GROUP: '%s' ", name );
+        BufferConcat( "GROUP: " );
+        BufferQuoteText( name, '\'' );
+        BufferConcatChar( ' ' );
     }
     return( RC_OKAY );
 }
@@ -66,7 +68,7 @@ return_val      DumpASMGroupMember( const char *name )
     assert( name );
 
     if( useComma ) {
-        BufferConcat( "," );
+        BufferConcatChar( ',' );
     }
     BufferQuoteName( name );
     useComma = 1;

@@ -174,7 +174,7 @@ struct termio {
 /*
  * Control Character Defaults
  */
-#define CTRL(x) (x&037)
+#define CTRL(__x)       (__x & 037)
 #define CEOF            CTRL('d')
 #ifdef _POSIX_VDISABLE
 # define CEOL           _POSIX_VDISABLE

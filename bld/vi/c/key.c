@@ -42,6 +42,10 @@
     #define INCL_BASE
     #include <os2.h>
 #endif
+#if defined( __DOS__ )
+    #include "osidle.h"
+#endif
+
 
 static vi_key   overrideKeyBuff[MAX_OVERRIDE_KEY_BUFF];
 static int      overrideKeyPos, overrideKeyEnd;
@@ -349,7 +353,7 @@ vi_key GetKey( bool usemouse )
         }
 #endif
 #if defined( __DOS__ )
-        DosIdleCall();
+        ReleaseVMTimeSlice();
 #elif defined( __OS2__ )
         DosSleep( 1 );
 #endif

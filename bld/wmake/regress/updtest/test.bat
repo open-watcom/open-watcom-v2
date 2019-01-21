@@ -1,157 +1,102 @@
 @echo off
+
+set ERRORS=0
+
 echo # ===========================
-echo # Start UPDTEST
+echo # Update Tests
 echo # ===========================
 
 if .%2 == . goto usage
+set PRG=%1
+set ERRLOG=%2
 
-echo # ---------------------------
-echo #   Test 1
-echo # ---------------------------
+set TEST=01
+call :header
+%1 -h -f upd%TEST%
+call :result a
+%1 -h -f upd%TEST% -m -sn -y > test%TEST%.lst
+call :result b
+diff upd%TEST%.chk test%TEST%.lst
+call :result c
 
-%1 -h -f upd01
-if errorlevel 1 goto err1
-%1 -h -f upd01 -m -sn -y > tmp.out
-if errorlevel 1 goto err1
-diff upd01.chk tmp.out
-if errorlevel 1 goto err1
-    @echo # UPD01 successful
-    goto test2
-:err1
-    @echo ## UPDTEST ## >> %2
-    @echo Error: UPD01 unsuccessful!!! | tee -a %2
+set TEST=02
+call :header
+%1 -h -f upd%TEST% /c
+call :result
 
-:test2
-echo # ---------------------------
-echo #   Test 2
-echo # ---------------------------
-%1 -h -f upd02 /c
-if errorlevel 1 goto err2
-    echo # UPD02 successful
-    goto test3
-:err2
-    @echo ## UPDTEST ## >> %2
-    @echo # Error: UPD02 unsuccessful!!! | tee -a %2
+set TEST=03
+call :header
+%1 -h -f upd%TEST%
+call :result
 
-:test3
-echo # ---------------------------
-echo #   Test 3
-echo # ---------------------------
-%1 -h -f upd03
-if errorlevel 1 goto err3
-    echo # UPD03 successful
-    goto test4
-:err3
-    @echo ## UPDTEST ## >> %2
-    @echo # Error: UPD03 unsuccessful!!! | tee -a %2
+set TEST=04
+call :header
+%1 -h -f upd%TEST% > test%TEST%.lst 2>&1
+diff -b upd%TEST%.chk test%TEST%.lst
+call :result
 
-:test4
-echo # ---------------------------
-echo #   Test 4
-echo # ---------------------------
-%1 -h -f upd04 > tmp.out 2>&1
-diff -b upd04.chk tmp.out
-if errorlevel 1 goto err4
-    echo # UPD04 successful
-    goto test5
-:err4
-    @echo ## UPDTEST ## >> %2
-    @echo # Error: UPD04 unsuccessful!!! | tee -a %2
+set TEST=05
+call :header
+%1 -h -s -f upd%TEST% > test%TEST%.lst
+diff -b upd%TEST%.chk test%TEST%.lst
+call :result
 
-:test5
-echo # ---------------------------
-echo #   Test 5
-echo # ---------------------------
-%1 -h -s -f upd05 > tmp.out
-diff -b upd05.chk tmp.out
-if errorlevel 1 goto err5
-    echo # UPD05 successful
-    goto test6
-:err5
-    @echo ## UPDTEST ## >> %2
-    @echo # Error: UPD05 unsuccessful!!! | tee -a %2
+set TEST=06
+call :header
+%1 -h -f upd%TEST% > test%TEST%.lst
+diff upd%TEST%.chk test%TEST%.lst
+call :result
 
-:test6
-echo # ---------------------------
-echo #   Test 6
-echo # ---------------------------
-%1 -h -f upd06 > tmp.out
-diff upd06.chk tmp.out
-if errorlevel 1 goto err6
-    echo # UPD06 successful
-    goto test7
-:err6
-    @echo ## UPDTEST ## >> %2
-    @echo # Error: UPD06 unsuccessful!!! | tee -a %2
+set TEST=07
+call :header
+%1 -h -f upd%TEST% > test%TEST%.lst
+diff upd%TEST%.chk test%TEST%.lst
+call :result
 
-:test7
-echo # ---------------------------
-echo #   Test 7
-echo # ---------------------------
-%1 -h -f upd07 > tmp.out
-diff upd07.chk tmp.out
-if errorlevel 1 goto err7
-    echo # UPD07 successful
-    goto test8
-:err7
-    @echo ## UPDTEST ## >> %2
-    @echo # Error: UPD07 unsuccessful!!! | tee -a %2
-
-:test8
-echo # ---------------------------
-echo #   Test 8  --- ONLY FOR DOS
-echo # ---------------------------
-REM %1 -h -f upd08 >tmp.out
-REM if errorlevel 1 goto err
-REM     diff upd08.chk tmp.out
-REM     if errorlevel 1 goto err8
-REM     echo # UPD08 successful
-REM     goto test9
-REM :err8
-REM     @echo ## UPDTEST ## >> %2
-REM     @echo # Error: UPD08 unsuccessful!!! | tee -a %2
+REM set TEST=08
+REM call :header
+REM %1 -h -f upd%TEST% >test%TEST%.lst
+REM call :result a
+REM diff upd%TEST%.chk test%TEST%.lst
+REM call :result b
 
 :test9
-echo # ---------------------------
-echo #   Test 9
-echo # ---------------------------
-%1 -h -f upd09
-if errorlevel 1 goto err9
-    echo # UPD09 successful
-    goto test10
-:err9
-    @echo ## UPDTEST ## >> %2
-    @echo # Error: UPD09 unsuccessful!!! | tee -a %2
 
-:test10
-echo # ---------------------------
-echo #   Test 10
-echo # ---------------------------
-%1 -h -f upd10
-if errorlevel 1 goto err10
-    echo # UPD10 successful
-    goto test11
-:err10
-    @echo ## UPDTEST ## >> %2
-    @echo # Error: UPD10 unsuccessful!!! | tee -a %2
+set TEST=09
+call :header
+%1 -h -f upd%TEST%
+call :result
 
-:test11
-echo # ---------------------------
-echo #   Test 11
-echo # ---------------------------
-%1 -h -ms -f upd11 > tmp.out 2>&1
-diff -b upd11.chk tmp.out
-if errorlevel 1 goto err11
-    echo # UPD11 successful
-    goto test12
-:err11
-    @echo ## UPDTEST ## >> %2
-    @echo # Error: UPD11 unsuccessful!!! | tee -a %2
+set TEST=10
+call :header
+%1 -h -f upd%TEST%
+call :result
 
-:test12
+set TEST=11
+call :header
+%1 -h -ms -f upd%TEST% > test%TEST%.lst 2>&1
+diff -b upd%TEST%.chk test%TEST%.lst
+call :result
 
-goto done
+if %ERRORS% == 0 del *.lst
+goto end
+
 :usage
-echo usage: %0 prgname errorfile
-:done
-del tmp.out
+    echo usage: %0 prgname errorfile
+    goto end
+
+:header
+    echo # ---------------------------
+    echo #  Update Test %TEST%
+    echo # ---------------------------
+    goto end
+
+:result
+if errorlevel 1 goto resulterr
+    echo #        Test %1 successful
+    goto end
+:resulterr
+    echo ## UPDTEST %TEST% ## >> %ERRLOG%
+    echo # Error: Test %1 unsuccessful!!! | tee -a %ERRLOG%
+    set ERRORS=1
+:end

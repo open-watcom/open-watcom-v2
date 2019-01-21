@@ -69,11 +69,11 @@ typedef void (_WCI86NEAR * _WCI86NEAR npfn)(void);
 
 #if defined( _M_I86 )
     extern void save_dx( void );
-    #pragma aux save_dx = modify exact [dx];
+    #pragma aux save_dx = __modify __exact [__dx]
     extern void save_ds( void );
-    #pragma aux save_ds = "push ds" modify exact [sp];
+    #pragma aux save_ds = "push ds" __modify __exact [__sp]
     extern void restore_ds( void );
-    #pragma aux restore_ds = "pop ds" modify exact [sp];
+    #pragma aux restore_ds = "pop ds" __modify __exact [__sp]
     #define save_es()
     #define restore_es()
 #elif defined(__WINDOWS_386__)
@@ -93,14 +93,14 @@ typedef void (_WCI86NEAR * _WCI86NEAR npfn)(void);
     #define setup_es()
   #else
     extern void save_es( void );
-    #pragma aux save_es = modify exact [es];
+    #pragma aux save_es = __modify __exact [__es]
     extern void restore_es( void );
-    #pragma aux restore_es = modify exact [es];
+    #pragma aux restore_es = __modify __exact [__es]
     extern void setup_es( void );
     #pragma aux setup_es = \
-                "push ds" \
-                "pop es" \
-                modify exact [es];
+            "push ds" \
+            "pop es" \
+        __modify __exact [__es]
   #endif
 #elif defined(__AXP__) || defined(__PPC__) || defined(__MIPS__)
     #define __GETDS()
@@ -114,7 +114,8 @@ typedef void (_WCI86NEAR * _WCI86NEAR npfn)(void);
 #endif
 
 #if defined( _M_I86 )
-static void callit_near( npfn *f ) {
+static void callit_near( npfn *f )
+{
     // don't call a null pointer
     if( *f ) {
         save_dx();
@@ -125,7 +126,8 @@ static void callit_near( npfn *f ) {
     }
 }
 
-static void callit_far( fpfn _WCI86NEAR *f ) {
+static void callit_far( fpfn _WCI86NEAR *f )
+{
     // don't call a null pointer
     if( *f ) {
         save_ds();
@@ -135,7 +137,8 @@ static void callit_far( fpfn _WCI86NEAR *f ) {
     }
 }
 #else
-static void callit( pfn *f ) {
+static void callit( pfn *f )
+{
     // don't call a null pointer
     if( *f ) {
         // QNX needs es==ds
@@ -154,11 +157,13 @@ static void callit( pfn *f ) {
 ;
 */
 #if defined( _M_I86 )
-void _WCI86FAR __FInitRtns( unsigned limit ) {
+void _WCI86FAR __FInitRtns( unsigned limit )
+{
     __InitRtns( limit );
 }
 #endif
-void __InitRtns( unsigned limit ) {
+void __InitRtns( unsigned limit )
+{
     __type_rtp local_limit;
     struct rt_init _WCI86NEAR *pnext;
     save_ds();
@@ -166,15 +171,15 @@ void __InitRtns( unsigned limit ) {
     __GETDS();
 
     local_limit = (__type_rtp)limit;
-    for(;;) {
+    for( ;; ) {
         {
             __type_rtp working_limit;
             struct rt_init _WCI86NEAR *pcur;
 
             pcur = (struct rt_init _WCI86NEAR*)&_Start_XI;
-            #if defined(COMP_CFG_COFF)
-                pcur++;
-            #endif
+#if defined(COMP_CFG_COFF)
+            pcur++;
+#endif
             pnext = (struct rt_init _WCI86NEAR*)&_End_XI;
             working_limit = local_limit;
 
@@ -222,11 +227,13 @@ void __InitRtns( unsigned limit ) {
 ;       eax==16, edx=40  -> run fini routines in range 16..40
 */
 #if defined( _M_I86 )
-void _WCI86FAR __FFiniRtns( unsigned min_limit, unsigned max_limit ) {
+void _WCI86FAR __FFiniRtns( unsigned min_limit, unsigned max_limit )
+{
     __FiniRtns( min_limit, max_limit );
 }
 #endif
-void __FiniRtns( unsigned min_limit, unsigned max_limit ) {
+void __FiniRtns( unsigned min_limit, unsigned max_limit )
+{
     __type_rtp local_min_limit;
     __type_rtp local_max_limit;
     struct rt_init _WCI86NEAR *pnext;
@@ -236,15 +243,15 @@ void __FiniRtns( unsigned min_limit, unsigned max_limit ) {
 
     local_min_limit = (__type_rtp)min_limit;
     local_max_limit = (__type_rtp)max_limit;
-    for(;;) {
+    for( ;; ) {
         {
             __type_rtp working_limit;
             struct rt_init _WCI86NEAR *pcur;
 
             pcur = (struct rt_init _WCI86NEAR*)&_Start_YI;
-            #if defined(COMP_CFG_COFF)
-                pcur++;
-            #endif
+#if defined(COMP_CFG_COFF)
+            pcur++;
+#endif
             pnext = (struct rt_init _WCI86NEAR*)&_End_YI;
             working_limit = local_min_limit;
 

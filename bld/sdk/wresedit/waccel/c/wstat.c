@@ -30,12 +30,8 @@
 ****************************************************************************/
 
 
-#include "commonui.h"
-#include <string.h>
-#include <mbstring.h>
-#include <stdio.h>
-#include "watcom.h"
 #include "wglbl.h"
+#include <mbstring.h>
 #include "wmsg.h"
 #include "wmain.h"
 #include "wstat.h"

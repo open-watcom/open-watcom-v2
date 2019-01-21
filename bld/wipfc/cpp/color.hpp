@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
+* Copyright (c) 2009-2018 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -39,16 +39,6 @@
 #include "element.hpp"
 
 class Color : public Element {
-public:
-    Color( Document* d, Element *p, const std::wstring* f, unsigned int r, unsigned int c ) :
-        Element( d, p, f, r, c ), foreground( DEFAULT ), background( DEFAULT ), setForeground( false ),
-        setBackground( false ) { };
-    ~Color() { };
-    Lexer::Token parse( Lexer* lexer );
-    void buildText( Cell* cell );
-private:
-    Color( const Color& rhs );              //no copy
-    Color& operator=( const Color& rhs );   //no assignment
     enum ColorName {
         DEFAULT,
         BLUE,
@@ -68,11 +58,23 @@ private:
         BLACK,
         PALEGRAY
     };
-    ColorName foreground;
-    ColorName background;
-    bool setForeground;
-    bool setBackground;
+
+public:
+    Color( Document* d, Element *p, const std::wstring* f, unsigned int r, unsigned int c ) :
+        Element( d, p, f, r, c ), _foreground( DEFAULT ), _background( DEFAULT ), _setForeground( false ),
+        _setBackground( false ) { };
+    ~Color() { };
+    Lexer::Token parse( Lexer* lexer );
+    void buildText( Cell* cell );
+private:
+    Color( const Color& rhs );              //no copy
+    Color& operator=( const Color& rhs );   //no assignment
     ColorName parseColor( std::wstring& name );
+
+    ColorName   _foreground;
+    ColorName   _background;
+    bool        _setForeground;
+    bool        _setBackground;
 };
 
 #endif //COLOR_INCLUDED

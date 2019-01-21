@@ -6,7 +6,7 @@ os2_objs = &
     pmstubs.obj &
     doblips.obj &
     cgmemmgr.obj &
-    stack.obj
+    stackcg.obj
 
 osi_objs = &
     objio.obj &
@@ -14,7 +14,7 @@ osi_objs = &
     envvar.obj &
     cgosi.obj &
     cgmemmgr.obj &
-    stack.obj
+    stackcg.obj
 
 nt_objs = &
     objio.obj &
@@ -24,7 +24,7 @@ nt_objs = &
     pmstubs.obj &
     ntblips.obj &
     cgmemmgr.obj &
-    stack.obj
+    stackcg.obj
 
 dos_objs = &
     objio.obj &
@@ -35,7 +35,7 @@ dos_objs = &
     getenv.obj &
     onexit.obj &
     timer.obj &
-    stack.obj
+    stackcg.obj
 
 unix_objs = &
     objio.obj &
@@ -46,7 +46,7 @@ unix_objs = &
     qblip.obj &
     cgmemmgr.obj &
     doblips.obj &
-    stack.obj
+    stackcg.obj
 
 rdos_objs = &
     objio.obj &
@@ -57,7 +57,7 @@ rdos_objs = &
     qblip.obj &
     cgmemmgr.obj &
     doblips.obj &
-    stack.obj
+    stackcg.obj
 
 linux_objs = $(unix_objs)
 qnx_objs   = $(unix_objs)

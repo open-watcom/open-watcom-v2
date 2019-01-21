@@ -53,5 +53,5 @@ int __fastcall bar( char a, char b, char c, char d, S *p ) {
     x = *p;
     p = (S*) alloca( a );
     int q;
-    return ( q = foo(a) + foo(a,b) + foo(a,b,c) + foo( a,b,c,d), ack(), q );
+    return( q = foo(a) + foo(a,b) + foo(a,b,c) + foo( a,b,c,d), ack(), q );
 }

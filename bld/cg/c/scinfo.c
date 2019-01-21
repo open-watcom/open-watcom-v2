@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -29,7 +30,7 @@
 ****************************************************************************/
 
 
-#include "cgstd.h"
+#include "_cgstd.h"
 #include "coderep.h"
 #include "score.h"
 #include "zoiks.h"
@@ -50,13 +51,13 @@ static  bool    ScoreSame( score_info *x, score_info *y ) {
         return( false );
     if( x->index_reg != y->index_reg )
         return( false );
-    if( x->class == N_TEMP && x->symbol.t->v.id == y->symbol.t->v.id )
+    if( x->class == SC_N_TEMP && x->symbol.t->v.id == y->symbol.t->v.id )
         return( true );
-    if( x->class == N_VOLATILE )
+    if( x->class == SC_N_VOLATILE )
         return( false );
-    if( x->class == N_INITIAL )
+    if( x->class == SC_N_INITIAL )
         return( false );
-    if( x->class == N_INDEXED && x->scale != y->scale )
+    if( x->class == SC_N_INDEXED && x->scale != y->scale )
         return( false );
     if( x->symbol.p == y->symbol.p )
         return( true );
@@ -70,48 +71,48 @@ static  bool    ScoreStomp( score_info *x, score_info *y ) {
     score_info  *tmp;
 
     /* get the 'free' index into x if there is one*/
-    if( y->class == N_INDEXED && y->base == NULL ) {
+    if( y->class == SC_N_INDEXED && y->base == NULL ) {
         tmp = x;
         x = y;
         y = tmp;
     }
-    if( x->class == N_INDEXED && x->base == NULL ) {
+    if( x->class == SC_N_INDEXED && x->base == NULL ) {
         switch( y->class ) {
-        case N_MEMORY:
+        case SC_N_MEMORY:
             if( _IsModel( RELAX_ALIAS ) )
                 return( false );
             /* fall through */
-        case N_INDEXED:
+        case SC_N_INDEXED:
             return( true );
-        case N_TEMP:
+        case SC_N_TEMP:
             if( y->symbol.v->usage & USE_ADDRESS )
                 return( true );
             return( false );
         }
     }
     /* get the 'bound' index into x if there is one*/
-    if( y->class == N_INDEXED ) {
+    if( y->class == SC_N_INDEXED ) {
         tmp = x;
         x = y;
         y = tmp;
     }
-    if( x->class == N_INDEXED && x->base != NULL ) {
+    if( x->class == SC_N_INDEXED && x->base != NULL ) {
         switch( y->class ) {
-        case N_TEMP:
+        case SC_N_TEMP:
             if( x->base->n.class == N_TEMP ) {
                 if( y->symbol.t->v.id == x->base->t.v.id ) {
                     return( true );
                 }
             }
             break;
-        case N_MEMORY:
+        case SC_N_MEMORY:
             if( x->base->n.class == N_MEMORY ) {
                 if( y->symbol.p == x->base->v.symbol ) {
                     return( true );
                 }
             }
             break;
-        case N_INDEXED:
+        case SC_N_INDEXED:
             if( y->base == NULL )
                 return( true );
             if( y->base->n.class != x->base->n.class )
@@ -128,12 +129,12 @@ static  bool    ScoreStomp( score_info *x, score_info *y ) {
     return( false );
 }
 
-extern  bool    ScoreLookup( score *p, score_info *info ) {
-/*********************************************************/
-
+bool    ScoreLookup( score *p, score_info *info )
+/***********************************************/
+{
     score_list  *curr;
 
-    if( info->class == N_VOLATILE )
+    if( info->class == SC_N_VOLATILE )
         return( false );
     curr = *p->list;
     for(;;) {
@@ -147,9 +148,9 @@ extern  bool    ScoreLookup( score *p, score_info *info ) {
 }
 
 
-extern  bool    ScoreEqual( score *p, int index, score_info *info ) {
-/*******************************************************************/
-
+bool    ScoreEqual( score *p, int index, score_info *info )
+/*********************************************************/
+{
     if( ScoreLookup( &p[index], info ) )
         return( true );
     if( _IsModel( SUPER_OPTIMAL ) ) {
@@ -162,7 +163,7 @@ extern  bool    ScoreEqual( score *p, int index, score_info *info ) {
             return( false );
             /*  See if low parts & high parts of register pair contain*/
             /*  the right information*/
-        if( info->class == N_CONSTANT )
+        if( info->class == SC_N_CONSTANT )
             return( false );
         if( !ScoreLookup( &p[entry->low], info ) )
             return( false );
@@ -182,7 +183,7 @@ static  void    ScoreInsert(  score *p,  int i,  score_info  *info ) {
     score_list  *new;
     int         j;
 
-    if( info->class == N_VOLATILE )
+    if( info->class == SC_N_VOLATILE )
         return;
     if( HW_Ovlap( ScoreList[i]->reg, CurrProc->state.unalterable ) )
         return;
@@ -206,7 +207,7 @@ static  void    ScoreAdd( score *p, int i, score_info *info ) {
         score       *first;
         score       *curr;
 
-        if( (info->class == N_INDEXED) && (info->index_reg != NO_INDEX) ) {
+        if( (info->class == SC_N_INDEXED) && (info->index_reg != NO_INDEX) ) {
             first = &p[info->index_reg];
             curr = first;
             for(;;) {
@@ -232,10 +233,9 @@ static  void    ScoreAdd( score *p, int i, score_info *info ) {
 }
 
 
-extern  void    ScoreAssign( score *p, int index, score_info *info ) {
-/********************************************************************/
-
-
+void    ScoreAssign( score *p, int index, score_info *info )
+/**********************************************************/
+{
     ScoreAdd( p, index, info );
     if( _IsModel( SUPER_OPTIMAL ) ) {
         score_reg   *entry;
@@ -245,7 +245,7 @@ extern  void    ScoreAssign( score *p, int index, score_info *info ) {
 
         entry = ScoreList[index];
         if( entry->high != NO_INDEX && entry->low != NO_INDEX ) {
-            if( info->class != N_CONSTANT ) {
+            if( info->class != SC_N_CONSTANT ) {
                 hi_off = info->offset + entry->size / 2;
                 lo_off = info->offset;
             } else {
@@ -265,14 +265,14 @@ extern  void    ScoreAssign( score *p, int index, score_info *info ) {
 }
 
 
-extern  void    ScoreInfo( score_info *info, name *op ) {
-/*********************************************************/
-
+void    ScoreInfo( score_info *info, name *op )
+/*********************************************/
+{
     if( op->n.class == N_INDEXED
      && op->i.index_flags ==( X_FAKE_BASE | X_BASE_IS_INDEX) ) {
         op = op->i.base; /* track memory location */
     }
-    info->class = op->n.class;
+    info->class = (score_name_class_def)op->n.class;
     info->scale = 0;
     info->base  = NULL;
     info->index_reg = NO_INDEX;
@@ -309,21 +309,21 @@ extern  void    ScoreInfo( score_info *info, name *op ) {
         break;
     case N_TEMP:
         if( op->v.usage & VAR_VOLATILE ) {
-            info->class = N_VOLATILE;
+            info->class = SC_N_VOLATILE;
         }
         info->symbol.t = &(op->t);
         info->offset = op->v.offset;
         break;
     case N_MEMORY:
         if( op->v.usage & VAR_VOLATILE ) {
-            info->class = N_VOLATILE;
+            info->class = SC_N_VOLATILE;
         }
         info->symbol.p = op->v.symbol;
         info->offset = op->v.offset;
         break;
     case N_INDEXED:
         if( op->i.index_flags & X_VOLATILE ) {
-            info->class = N_VOLATILE;
+            info->class = SC_N_VOLATILE;
         }
         info->symbol.p = NULL;
         info->offset = op->i.constant;
@@ -335,13 +335,13 @@ extern  void    ScoreInfo( score_info *info, name *op ) {
 }
 
 
-extern  bool    ScoreLAInfo( score_info *info, name *op ) {
-/*********************************************************/
-
+bool    ScoreLAInfo( score_info *info, name *op )
+/***********************************************/
+{
     switch( op->n.class ) {
     case N_TEMP:
     case N_MEMORY:
-        info->class = N_ADDRESS;
+        info->class = SC_N_ADDRESS;
         info->symbol.p = op;
         info->offset = 0;
         info->index_reg = NO_INDEX;
@@ -353,10 +353,9 @@ extern  bool    ScoreLAInfo( score_info *info, name *op ) {
 }
 
 
-extern  void    ScoreKillInfo( score *scoreboard, name *op,
-                               score_info *info, hw_reg_set except ) {
-/********************************************************************/
-
+void    ScoreKillInfo( score *scoreboard, name *op, score_info *info, hw_reg_set except )
+/***************************************************************************************/
+{
     score_list  *curr;
     score_list  **owner;
     score_reg   *entry;

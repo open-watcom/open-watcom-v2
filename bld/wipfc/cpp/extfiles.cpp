@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
+* Copyright (c) 2009-2018 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -29,45 +29,47 @@
 *
 ****************************************************************************/
 
+
+#include "wipfc.hpp"
 #include <cstdlib>
 #include "extfiles.hpp"
 #include "errors.hpp"
-#include "util.hpp"
+#include "outfile.hpp"
+
 
 void ExternalFiles::addFile( std::wstring& str )
 {
-    if( table.find( str ) == table.end() ) {
-        table.insert( std::map< std::wstring, STD1::uint16_t >::value_type( str, 0 ) );
-        if( table.size() >= 256 )
+    if( _table.find( str ) == _table.end() ) {
+        _table.insert( std::map< std::wstring, byte >::value_type( str, 0 ) );
+        if( _table.size() > 255 ) {
             throw Class1Error( ERR1_EXTFILESLARGE );
+        }
     }
 }
 /***************************************************************************/
 void ExternalFiles::convert()
 {
-    STD1::uint16_t count1( 0 );
-    for( TableIter itr = table.begin(); itr != table.end(); ++itr, ++count1 )
+    byte count1( 0 );
+    for( TableIter itr = _table.begin(); itr != _table.end(); ++itr, ++count1 ) {
         itr->second = count1;
+    }
 }
 /***************************************************************************/
-STD1::uint32_t ExternalFiles::write( std::FILE *out )
+dword ExternalFiles::write( OutFile* out )
 {
-    if( table.empty() )
+    if( _table.empty() )
         return 0;
-    STD1::uint32_t start( std::ftell( out ) );
-    for( ConstTableIter itr = table.begin(); itr != table.end(); ++itr ) {
-        std::string buffer;
-        wtombstring( itr->first, buffer );
-        std::size_t length( buffer.size() );
-        if( length > 255 ) {
-            buffer.erase( 255 );
-            length = 255;
-        }
-        std::size_t written;
-        if( std::fputc( static_cast< STD1::uint8_t >( length + 1 ), out) == EOF ||
-            ( written = std::fwrite( buffer.data(), sizeof( char ), length, out ) ) != length )
+    dword start( out->tell() );
+    for( ConstTableIter itr = _table.begin(); itr != _table.end(); ++itr ) {
+        std::string buffer( out->wtomb_string( itr->first ) );
+        if( buffer.size() > ( 255 - 1 ) )
+            buffer.erase( 255 - 1 );
+        byte length( static_cast< byte >( buffer.size() + 1 ) );
+        if( out->put( length ) )
             throw FatalError( ERR_WRITE );
-        bytes += written + 1;
+        if( out->put( buffer ) )
+            throw FatalError( ERR_WRITE );
+        _bytes += length;
     }
     return start;
 }

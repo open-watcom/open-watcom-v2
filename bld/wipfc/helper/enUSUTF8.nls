@@ -1,7 +1,5 @@
-#U.S. English text
+#U.S. English text (UTF-8 encoding)
 
-Country=1
-CodePage=0
 Note="Note&colon."
 Caution="CAUTION&colon."
 Warning="Warning&colon."
@@ -19,6 +17,6 @@ cgraphicFontHeight=18
 # Words defines the characters that make words.  This is used for
 # searching and data compression.
 
-Grammer
+Grammar
 Words=0-9+A-Z+a-z
-eGrammer
+eGrammar

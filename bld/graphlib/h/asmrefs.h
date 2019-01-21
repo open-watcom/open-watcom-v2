@@ -236,7 +236,6 @@
 #pragma aux _Screen "_*";
 #pragma aux _IsDBCS "_*";
 #pragma aux _DBCSPairs "_*";
-#pragma aux _CurrState "_*";
 #pragma aux _ConfigBuffer "_*";
 
 #pragma aux _StackSeg "_*";
@@ -260,7 +259,7 @@
 #pragma aux _coltbl "_*";
 #endif
 
-#if defined( _SUPERVGA ) && defined( VERSION2 )
+#if defined( VERSION2 ) && defined( _SUPERVGA )
 #pragma aux _VGABytesPerPixel "_*";
 #endif
 

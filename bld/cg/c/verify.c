@@ -30,7 +30,7 @@
 ****************************************************************************/
 
 
-#include "cgstd.h"
+#include "_cgstd.h"
 #include "coderep.h"
 #include "cfloat.h"
 #include "zoiks.h"
@@ -39,9 +39,9 @@
 #include "namelist.h"
 #include "tree.h"
 #include "treefold.h"
+#include "opctable.h"
+#include "verify.h"
 
-
-extern  opcode_entry    DoNop[];
 
 static  bool    SameLocation( name *n1, name *n2 )
 /************************************************/
@@ -57,8 +57,8 @@ static  bool    SameLocation( name *n1, name *n2 )
     loc1 = base->t.location + n1->v.offset - base->v.offset;
     base = DeAlias( n2 );
     loc2 = base->t.location + n2->v.offset - base->v.offset;
-    if( _IsFloating( n1->n.name_class ) || _IsFloating( n2->n.name_class ) ) {
-        if( n1->n.name_class != n2->n.name_class ) {
+    if( _IsFloating( n1->n.type_class ) || _IsFloating( n2->n.type_class ) ) {
+        if( n1->n.type_class != n2->n.type_class ) {
             return( false );
         }
     }
@@ -74,7 +74,7 @@ static  bool    NextCmp( instruction *ins )
     next = ins->head.next;
     if( !_OpIsCondition( next->head.opcode ) )
         return( false );
-    if( next->table == DoNop )
+    if( IsNop( next->table ) )
         return( true );
     if( next->u.gen_table == NULL )
         return( false );
@@ -84,14 +84,14 @@ static  bool    NextCmp( instruction *ins )
 }
 
 
-static  bool    IsMin( name *op, type_class_def class ) {
+static  bool    IsMin( name *op, type_class_def type_class )
 /********************************************************
     Verify if "op" is a constant which is the smallest of possible
     values for type "class".
 */
-
+{
     if( op->c.const_type == CONS_ABSOLUTE ) {
-        switch( class ) {
+        switch( type_class ) {
         case U1:
         case U2:
         case U4:
@@ -115,14 +115,14 @@ static  bool    IsMin( name *op, type_class_def class ) {
     return( false );
 }
 
-static  bool    IsMax( name *op, type_class_def class ) {
+static  bool    IsMax( name *op, type_class_def type_class )
 /********************************************************
     Verify if "op" is a constant which is the largest of possible
     values for type "class".
 */
-
+{
     if( op->c.const_type == CONS_ABSOLUTE ) {
-        switch( class ) {
+        switch( type_class ) {
         case U1:
             if( CFIsU8( op->c.value ) && op->c.lo.int_value == 0xff )
                 return( true );
@@ -161,21 +161,21 @@ static  bool    Op2Pow2( instruction *ins ) {
     if( log == -1 )
         return( false );
     if( log == ( ( TypeClassSize[ins->type_class] * 8 ) - 1 ) ) {
-        if( Unsigned[ins->type_class] != ins->type_class ) {
+        if( _IsSigned( ins->type_class ) ) {
             return( false );
         }
     }
     return( true );
 }
 
-extern  bool    OtherVerify( vertype kind, instruction *ins,
-                             name *op1, name *op2, name *result ) {
-/******************************************************************
+bool    OtherVerify( vertype kind, instruction *ins,
+                        name *op1, name *op2, name *result )
+/***********************************************************
     verify a if "kind" is true about instruction "ins" whose operands
     are "op1", "op2", "result".  This the target independant code.  We
     want to know these things for the 8086, 386 and 370 compilers.
 */
-
+{
     switch( kind ) {
     case V_NO:
         /* This can get called if it's an optimization reduction that's
@@ -292,11 +292,11 @@ extern  bool    OtherVerify( vertype kind, instruction *ins,
     case V_SAME_TYPE:
         /* if we have a constant, the name_class of op1 is bogus */
         if( op1->n.class == N_CONSTANT ) {
-            if( ins->type_class == result->n.name_class ) {
+            if( ins->type_class == result->n.type_class ) {
                 return( true );
             }
         } else {
-            if( op1->n.name_class == result->n.name_class ) {
+            if( op1->n.type_class == result->n.type_class ) {
                 return( true );
             }
         }

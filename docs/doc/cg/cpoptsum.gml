@@ -471,7 +471,6 @@ set error file specification
 .*
 .note ft
 :CMT. .ix 'options' 'ft'
-(C++ only)
 try truncated (8.3) header file specification
 :optref refid='SWft'.
 .*
@@ -483,7 +482,6 @@ track include file opens
 .*
 .note fx
 :CMT. .ix 'options' 'fx'
-(C++ only)
 do not try truncated (8.3) header file specification
 :optref refid='SWfx'.
 .*

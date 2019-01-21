@@ -34,6 +34,7 @@
 #include <string.h>
 #include "banner.h"
 #include "dmpobj.h"
+#include "wnoret.h"
 
 #include "clibext.h"
 
@@ -47,7 +48,7 @@ void leave( int rc )
 {
     OutputSetFH( stdout );
     OutputFini();
-    exit( rc );
+    exit( rc ); // never return
 }
 
 static void ShowProductInfo( void )
@@ -76,18 +77,17 @@ static void usage( void )
     Output( "-r\t\tProvide raw dump of records as well" CRLF );
     Output( "-rec=xxx\tProvide dump of selected record type" CRLF );
     Output( "\t\t  (by number or by symbolic name)" CRLF );
-    leave( 1 );
 }
 
 int main( int argc, char **argv )
 /*******************************/
 {
     FILE        *fp;
-    char        drive[ _MAX_DRIVE ];
-    char        dir[ _MAX_DIR ];
-    char        fname[ _MAX_FNAME ];
-    char        ext[ _MAX_EXT ];
-    char        file[ _MAX_PATH ];
+    char        drive[_MAX_DRIVE];
+    char        dir[_MAX_DIR];
+    char        fname[_MAX_FNAME];
+    char        ext[_MAX_EXT];
+    char        file[_MAX_PATH];
     char        *fn;
     int         i;
     bool        list_file;
@@ -119,9 +119,9 @@ int main( int argc, char **argv )
                 if( strnicmp( argv[i] + 1, "rec=", 4 ) == 0 ) {
                     if( rec_count < 10 ) {
                         if( isdigit( argv[i][5] ) ) {
-                            rec_type[ rec_count++ ] = atoi( argv[i] + 5 );
+                            rec_type[rec_count++] = atoi( argv[i] + 5 );
                         } else {
-                            rec_type[ rec_count++ ] = RecNameToNumber( argv[i] + 5 );
+                            rec_type[rec_count++] = RecNameToNumber( argv[i] + 5 );
                         }
                     } else {
                         Output( "Maximum 10 record type allowed." CRLF );
@@ -142,6 +142,7 @@ int main( int argc, char **argv )
                 break;
             default:
                 usage();
+                leave( 1 ); // never return
             }
         } else {
             break;
@@ -149,6 +150,7 @@ int main( int argc, char **argv )
     }
     if( i == argc ) {
         usage();
+        leave( 1 ); // never return
     }
 
     ShowProductInfo();
@@ -163,14 +165,14 @@ int main( int argc, char **argv )
         fp = fopen( fn, "rb" );
         if( fp == NULL ) {
             Output( "Cannot open '%s' for reading" CRLF, fn );
-            leave( 20 );
+            leave( 20 );    // never return
         }
         if( list_file ) {
             _makepath( file, drive, dir, fname, LSTSUFFIX );
             fh = fopen( file, "w" );
             if( fh == NULL ) {
                 Output( "Cannot open '%s' for writing" CRLF, file );
-                leave( 20 );
+                leave( 20 );    // never return
             }
             OutputSetFH( fh );
         }
@@ -178,6 +180,7 @@ int main( int argc, char **argv )
         fclose( fp );
         OutputSetFH( stdout );  /* does fclose() if necessary */
     }
-    leave( 0 );
-    return( 0 );  // for the less intelligent compilers
+    leave( 0 ); // never return
+    // next is for compilers not supporting "no return" function modifier
+    NO_RETURN_FAKE( return( 0 ) );
 }

@@ -14,13 +14,23 @@
 :include lfndos.sp
 
 :endsegment
-:segment QNX | LINUX
+:segment QNX
 :include systypes.sp
 
 :endsegment
 :include cpluspro.sp
 
+/* 
+ *  ISO C types
+ */
 :include wchar_t.sp
+:segment DOS | LINUX | RDOS
+/*
+ *  POSIX 1003.1 types
+ */
+:include pid_t.sp
+
+:endsegment
 /*
  *  POSIX 1003.1 Prototypes
  */
@@ -31,7 +41,7 @@ _WCRTLINK extern int    execv( const char *__path, const char *const __argv[] );
 _WCRTLINK extern int    execve( const char *__path, const char *const __argv[], const char *const __envp[] );
 _WCRTLINK extern int    execvp( const char *__file, const char *const __argv[] );
 
-:segment QNX | LINUX
+:segment LINUX | QNX
 :include ext.sp
 ::
 :: Begin of extension section
@@ -76,21 +86,22 @@ extern pid_t tfork( char *__stk_addr, unsigned __stk_size, int (*__func)(void*),
 /* mode flags for spawnxxx routines */
 _WCRTDATA extern int __p_overlay;
 
-#define P_WAIT      0
 #define _P_WAIT     0
-#define P_NOWAIT    1
 #define _P_NOWAIT   1
-#define P_OVERLAY   __p_overlay
 #define _P_OVERLAY  __p_overlay
-#define P_NOWAITO   3
 #define _P_NOWAITO  3
-
+#define _OLD_P_OVERLAY  _P_OVERLAY
 #ifdef __NT__
-#define P_DETACH    4
 #define _P_DETACH   4
 #endif
 
-#define _OLD_P_OVERLAY  _P_OVERLAY
+#define P_WAIT      _P_WAIT
+#define P_NOWAIT    _P_NOWAIT
+#define P_OVERLAY   _P_OVERLAY
+#define P_NOWAITO   _P_NOWAITO
+#ifdef __NT__
+#define P_DETACH    _P_DETACH
+#endif
 
 /*
  *  Prototypes for non-POSIX functions
@@ -102,7 +113,16 @@ _WCRTLINK extern int    execvpe( const char *__file, const char *const __argv[],
 _WCRTLINK extern int    _execlpe( const char *__file, const char *__arg0, ... );
 _WCRTLINK extern int    _execvpe( const char *__file, const char *const __argv[], const char *const __envp[] );
 
-:segment QNX | LINUX
+:segment RDOS
+ _WCRTLINK extern int  _beginthread(
+                void (_WCCALLBACK *__start_address)(void *), int __prio,
+                const char *__thread_name,
+                unsigned __stack_size, void *__arglist );
+ #pragma intrinsic(_beginthread)
+ _WCRTLINK extern void  _endthread( void );
+:elsesegment
+
+:segment LINUX | QNX
 #ifdef __386__
  _WCRTLINK extern int   _beginthread( void (_WCCALLBACK *__start_address)(void *),
      void *__stack_bottom, unsigned __stack_size, void *__arglist );
@@ -117,8 +137,7 @@ _WCRTLINK extern int    _execvpe( const char *__file, const char *const __argv[]
  _WCRTLINK extern void _WCFAR _endthread( void );
  _WCRTLINK extern void _WCFAR *__chkstack( void _WCFAR * );
  #ifndef __SW_ZU
-  #define _beginthread( __sa, __sb, __ss, __al ) \
-          _beginthread( __sa, __chkstack(__sb), __ss, __al )
+  #define _beginthread( __sa, __sb, __ss, __al )    _beginthread( __sa, __chkstack(__sb), __ss, __al )
  #endif
 #else
  #ifdef __NT__
@@ -132,11 +151,6 @@ _WCRTLINK extern int    _execvpe( const char *__file, const char *const __argv[]
   #pragma intrinsic(_beginthread,_beginthreadex)
   _WCRTLINK extern void _endthreadex( unsigned __retval );
 :include thrdhndl.sp
- #elif defined(__RDOS__) || defined(__RDOSDEV__)
-  _WCRTLINK extern int  _beginthread(
-                void (_WCCALLBACK *__start_address)(void *), int prio,
-                const char *thread_name,
-                unsigned __stack_size, void *__arglist );
  #else
   _WCRTLINK extern int  _beginthread( void (_WCCALLBACK *__start_address)(void *),
       void *__stack_bottom, unsigned __stack_size, void *__arglist );
@@ -145,11 +159,12 @@ _WCRTLINK extern int    _execvpe( const char *__file, const char *const __argv[]
  _WCRTLINK extern void  _endthread( void );
 :endsegment
 #endif
+:endsegment
 
-:segment DOS
+:segment DOS | RDOS
 /* values for __action_code used with cwait() */
 
-#define WAIT_CHILD 0
+#define WAIT_CHILD      0
 #define WAIT_GRANDCHILD 1
 
 _WCRTLINK extern int    cwait( int *__status, int __process_id, int __action_code );
@@ -163,13 +178,13 @@ _WCRTLINK extern int    _cwait( int *__status, int __process_id, int __action_co
 
 :include _exit.sp
 
-:segment QNX | LINUX
+:segment LINUX | QNX
 #if !(defined(SYSV) || defined(BSD) || defined(XENIX) || defined(_UNIX_H_INCLUDED))
 :endsegment
 _WCRTLINK extern char   *getcmd( char *__buffer );
 _WCRTLINK extern int    _bgetcmd( char *__buffer, int __len );
 _WCRTLINK extern char   *_cmdname( char *__name );
-:segment QNX | LINUX
+:segment LINUX | QNX
 #endif
 :endsegment
 _WCRTLINK extern int    putenv( const char *__string );
@@ -213,7 +228,7 @@ _WCRTLINK extern int    _wspawnvp( int __mode, const wchar_t *__path, const wcha
 _WCRTLINK extern int    _wspawnvpe( int __mode, const wchar_t *__path, const wchar_t * const *__argv, const wchar_t * const *__envp );
 _WCRTLINK extern int    _wsystem( const wchar_t *__cmd );
 
-:segment DOS
+:segment DOS | RDOS
 #ifdef __NT__
  // For use when access to the DLL startup is required.
  // this function pointer will be called after the C library startup
@@ -224,23 +239,17 @@ _WCRTLINK extern int    _wsystem( const wchar_t *__cmd );
   extern int (__stdcall *_pRawDllMain)( void *, unsigned, void * );
  #endif
 #endif
-:endsegment
-:segment DOS
-_WCRTLINK extern int    getpid( void );
-_WCRTLINK extern int    _getpid( void );
-_WCRTLINK extern int    wait( int *__status );
 
-:elsesegment QNX | LINUX
+:endsegment
 _WCRTLINK extern pid_t  getpid( void );
 _WCRTLINK extern pid_t  _getpid( void );
 _WCRTLINK extern pid_t  wait( int *__status );
 
-:endsegment
 :segment LINUX
 _WCRTLINK extern pid_t  gettid( void );
 
 :endsegment
-:segment QNX | LINUX
+:segment LINUX | QNX
 ::
 :: End of extension section
 ::

@@ -62,7 +62,7 @@ void BrinfDepFini               // MODULE COMPLETION
     ( void )
 ;
 void BrinfDepMacAdd             // ADD A MACRO DEPENDENCY
-    ( MEPTR macro               // - the macro
+    ( MEPTR mentry              // - the macro
     , MACVALUE *value           // - value
     , MAC_VTYPE type )          // - dependency type
 ;
@@ -98,13 +98,13 @@ MACVALUE *BrinfMacAddUndef      // ADD A !defined(name) VALUE
     , unsigned nlen )           // - name length
 ;
 MACVALUE *BrinfMacAddValue      // ADD A VALUE
-    ( MEPTR mac )               // - the macro
+    ( MEPTR mentry )            // - the macro
 ;
 void BrinfMacRestart            // RESTART DURING PCH READ
     ( void )
 ;
 void BrinfMacUndef              // RECORD UNDEFINE OF MACRO
-    ( MEPTR macro               // - macro
+    ( MEPTR mentry              // - macro
     , SRCFILE src )             // - source file in which it occurred
 ;
 SRCFILE BrinfMacUndefSource     // GET SOURCE OF AN UNDEF

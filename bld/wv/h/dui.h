@@ -56,6 +56,7 @@ extern void     DUIRedrawSources( void );
 extern void     DUIErrorBox( const char *buff );
 extern void     DUIArrowCursor( void );
 extern char     *DUILoadString( dui_res_id id );
+extern void     DUIFreeString( void * );
 extern bool     DUIAskIfAsynchOk( void );
 extern void     DUIFlushKeys( void );
 extern void     DUIPlayDead( bool );

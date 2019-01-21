@@ -54,14 +54,6 @@
 #define STR(...)        #__VA_ARGS__
 #define INSTR(...)      STR(__VA_ARGS__)
 
-#ifdef _M_I86
-#define REG_xBP         bp
-#define REG_xSI         si
-#else
-#define REG_xBP         ebp
-#define REG_xSI         esi
-#endif
-
 #define BIOS_VIDEO      0x10
 #define BIOS_MOUSE      0x33
 
@@ -106,78 +98,109 @@ struct mouse_data {
 typedef struct mouse_data __based( __segname( "_STACK" ) ) *md_stk_ptr;
 
 
-extern void DOSIdleInterrupt( void );
-#pragma aux DOSIdleInterrupt = "int 28h";
-
 extern unsigned short MouseDrvReset( void );
 #pragma aux MouseDrvReset = \
         "xor  ax,ax"        \
         _INT_33             \
-    value [ax] modify [ax bx];
+    __parm      [] \
+    __value     [__ax] \
+    __modify    [__ax __bx]
 
 extern void MouseDrvCallRetState( unsigned short, md_stk_ptr );
+#ifdef _M_I86
 #pragma aux MouseDrvCallRetState = \
         _INT_33                         \
-        INSTR( mov ss:[REG_xSI+0],bx )  \
-        INSTR( mov ss:[REG_xSI+2],cx )  \
-        INSTR( mov ss:[REG_xSI+4],dx )  \
-    parm [ax] [REG_xSI] modify [bx cx dx];
-
+        INSTR( mov ss:[si+0],bx )  \
+        INSTR( mov ss:[si+2],cx )  \
+        INSTR( mov ss:[si+4],dx )  \
+    __parm      [__ax] [__si] \
+    __value     \
+    __modify    [__bx __cx __dx]
+#else
+#pragma aux MouseDrvCallRetState = \
+        _INT_33                         \
+        INSTR( mov ss:[esi+0],bx )  \
+        INSTR( mov ss:[esi+2],cx )  \
+        INSTR( mov ss:[esi+4],dx )  \
+    __parm      [__ax] [__esi] \
+    __value     \
+    __modify    [__bx __cx __dx]
+#endif
 extern unsigned short MouseDrvCall1( unsigned short );
 #pragma aux MouseDrvCall1 = \
         _INT_33             \
-    parm [ax] value [ax] modify [cx dx];
+    __parm      [__ax] \
+    __value     [__ax] \
+    __modify    [__cx __dx]
 
 extern unsigned short MouseDrvCall2( unsigned short, unsigned short, unsigned short, unsigned short );
 #pragma aux MouseDrvCall2 = \
         _INT_33             \
-    parm [ax] [bx] [cx] [dx] value [ax];
+    __parm      [__ax] [__bx] [__cx] [__dx] \
+    __value     [__ax] \
+    __modify    []
 
 extern void MouseDrvCall3( unsigned short, unsigned short, unsigned short, unsigned short, unsigned short );
 #pragma aux MouseDrvCall3 = \
         _INT_33             \
-    parm [ax] [cx] [dx] [si] [di];
+    __parm      [__ax] [__cx] [__dx] [__si] [__di] \
+    __value     \
+    __modify    []
 
 extern unsigned short MouseDrvCall4( unsigned short );
 #pragma aux MouseDrvCall4 = \
         _INT_33             \
-    parm [ax] modify [bx cx dx];
+    __parm      [__ax] \
+    __value     [__ax] \
+    __modify    [__bx __cx __dx]
 
 extern void BIOSSetMode( unsigned char );
 #pragma aux BIOSSetMode = \
         "xor    ah,ah"      \
         _INT_10             \
-    parm [al] modify [ah];
+    __parm      [__al] \
+    __value     \
+    __modify    [__ah]
 
 extern void BIOSSetCurTyp( unsigned char top_line, unsigned char bot_line );
 #pragma aux BIOSSetCurTyp = \
         "mov    ah,1"           \
         _INT_10                 \
-    parm [ch] [cl] modify [ah];
+    __parm      [__ch] [__cl] \
+    __value     \
+    __modify    [__ah]
 
 extern void BIOSSetCurPos( unsigned char row, unsigned char col, unsigned char page );
 #pragma aux BIOSSetCurPos = \
         "mov    ah,2"       \
         _INT_10             \
-    parm [dh] [dl] [bh] modify [ah];
+    __parm      [__dh] [__dl] [__bh] \
+    __value     \
+    __modify    [__ah]
 
 extern struct cursor_pos  BIOSGetCurPos( unsigned char page );
 #pragma aux BIOSGetCurPos = \
         "mov    ah,3"       \
         _INT_10             \
-    parm [bh] value [dx] modify [ax cx];
+    __parm      [__bh] \
+    __value     [__dx] \
+    __modify    [__ax __cx]
 
 extern unsigned short BIOSGetCurTyp( unsigned char page );
 #pragma aux BIOSGetCurTyp = \
         "mov    ah,3"       \
         _INT_10             \
-    parm [bh] value [cx] modify [ax dx];
+    __parm      [__bh] \
+    __value     [__cx] \
+    __modify    [__ax __dx]
 
 extern PIXEL BIOSGetCharPixel( unsigned char page );
 #pragma aux  BIOSGetCharPixel = \
         "mov    ah,8"           \
         _INT_10                 \
-    parm [bh] value [ax];
+    __parm      [__bh] \
+    __value     [__ax] \
+    __modify    []
 
 extern void BIOSSetCharPixel( PIXEL char_attr, unsigned char page );
 #pragma aux BIOSSetCharPixel = \
@@ -185,37 +208,62 @@ extern void BIOSSetCharPixel( PIXEL char_attr, unsigned char page );
         "mov    cx,1"           \
         "mov    ah,9"           \
         _INT_10                 \
-    parm [ax] [bh] modify [ah bl cx];
+    __parm      [__ax] [__bh] \
+    __value     \
+    __modify    [__ah __bl __cx]
 
 extern unsigned char BIOSGetPage( void );
 #pragma aux BIOSGetPage = \
         "mov    ah,0fh"     \
         _INT_10             \
-    value [bh] modify [ax];
+    __parm      [] \
+    __value     [__bh] \
+    __modify    [__ax]
 
 extern unsigned char BIOSGetMode( void );
 #pragma aux BIOSGetMode = \
         "mov    ah,0fh"     \
         _INT_10             \
-    value [al] modify [ah bh];
+    __parm      [] \
+    __value     [__al] \
+    __modify    [__ah __bh]
 
 extern unsigned char BIOSGetColumns( void );
 #pragma aux BIOSGetColumns = \
         "mov    ah,0fh"     \
         _INT_10             \
-    value [ah] modify [al bh];
+    __parm      [] \
+    __value     [__ah] \
+    __modify    [__al __bh]
 
 extern unsigned char BIOSGetRows( void );
+#ifdef _M_I86
 #pragma aux BIOSGetRows = \
-        INSTR( push REG_xBP )\
+        "push   bp"         \
         "push   es"         \
         "mov    ax,1130h"   \
         "xor    bh,bh"      \
         _INT_10             \
         "inc    dl"         \
         "pop    es"         \
-        INSTR( pop REG_xBP )\
-    value [dl] modify [ax bh cx];
+        "pop    bp"         \
+    __parm      [] \
+    __value     [__dl] \
+    __modify    [__ax __bh __cx]
+#else
+#pragma aux BIOSGetRows = \
+        "push   ebp"        \
+        "push   es"         \
+        "mov    ax,1130h"   \
+        "xor    bh,bh"      \
+        _INT_10             \
+        "inc    dl"         \
+        "pop    es"         \
+        "pop    ebp"        \
+    __parm      [] \
+    __value     [__dl] \
+    __modify    [__ax __bh __cx]
+#endif
 
 extern struct ega_info BIOSEGAInfo( void );
 #ifdef _M_I86
@@ -225,7 +273,9 @@ extern struct ega_info BIOSEGAInfo( void );
         _INT_10             \
         "mov    ax,bx"      \
         "mov    dx,cx"      \
-    value [dx ax] modify [bx cx];
+    __parm      [] \
+    __value     [__dx __ax] \
+    __modify    [__bx __cx]
 #else
 #pragma aux BIOSEGAInfo = \
         "mov    ah,12h"     \
@@ -234,13 +284,17 @@ extern struct ega_info BIOSEGAInfo( void );
         "mov    eax,ecx"    \
         "shl    eax,10h"    \
         "or     ax,bx"      \
-    value [eax] modify [bx cx];
+    __parm      [] \
+    __value     [__eax] \
+    __modify    [__bx __cx]
 #endif
 
 extern unsigned short BIOSGetKeyboard( char );
 #pragma aux  BIOSGetKeyboard = \
         _INT_16                 \
-    parm [ah] value [ax];
+    __parm      [__ah] \
+    __value     [__ax] \
+    __modify    []
 
 
 extern unsigned char BIOSKeyboardHit( char );
@@ -251,13 +305,17 @@ extern unsigned char BIOSKeyboardHit( char );
         "jmp short L2"          \
     "L1: xor    al,al"          \
     "L2:"                       \
-    parm [ah] value [al];
+    __parm      [__ah] \
+    __value     [__al] \
+    __modify    []
 
 extern unsigned short BIOSTestKeyboard( void );
 #pragma aux BIOSTestKeyboard =  \
         "mov    ax,12ffh"       \
         _INT_16                 \
-    value [ax];
+    __parm      [] \
+    __value     [__ax] \
+    __modify    []
 
 extern unsigned short   Points;     /* Number of lines per char */
 

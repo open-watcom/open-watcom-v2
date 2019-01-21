@@ -357,18 +357,18 @@ STATIC int prsFixup( obj_rec *objr, pobj_state *state ) {
     uint_32 le_offset;
 
 /**/myassert( objr != NULL );
-/**/myassert( objr->command == CMD_FIXUP );
+/**/myassert( objr->command == CMD_FIXUPP );
 /**/myassert( state != NULL );
 /**/myassert( state->pass == POBJ_READ_PASS );
     state = state;
-/**/myassert( objr->d.fixup.data_rec != NULL );
+/**/myassert( objr->d.fixupp.data_rec != NULL );
     ret = 0;
-    cmd = objr->d.fixup.data_rec->command;
+    cmd = objr->d.fixupp.data_rec->command;
     if( cmd == CMD_COMDAT ) {
         return( ret );
     }
 /**/myassert( cmd == CMD_LEDATA || cmd == CMD_LIDATA );
-    idx = objr->d.fixup.data_rec->d.ledata.idx;
+    idx = objr->d.fixupp.data_rec->d.ledata.idx;
     if( idx > 0 ) {
         hdr = NULL;
         if( idx == loc.ddtypes_seg_idx ) {
@@ -380,15 +380,15 @@ STATIC int prsFixup( obj_rec *objr, pobj_state *state ) {
             if( cmd == CMD_LIDATA ) {
                 Fatal( MSG_NO_LIDATA_WAT );
             }
-            le_offset = objr->d.fixup.data_rec->d.ledata.offset;
-            fix = objr->d.fixup.fixup;
+            le_offset = objr->d.fixupp.data_rec->d.ledata.offset;
+            fix = objr->d.fixupp.fixup;
             while( fix != NULL ) {
                 next = fix->next;
                 fix->loc_offset += le_offset;
                 SegAddFix( hdr, fix );
                 fix = next;
             }
-            objr->d.fixup.fixup = NULL;
+            objr->d.fixupp.fixup = NULL;
             ObjKillRec( objr );
             ret = -1;
         }
@@ -431,18 +431,18 @@ STATIC int writeTheadr( obj_rec *objr, pobj_state *state ) {
 }
 
 STATIC const pobj_list prsFuncs[] = {
-    { CMD_THEADR, POBJ_READ_PASS,  prsTheadr },
-    { CMD_MODEND, POBJ_READ_PASS,  prsModend },
-    { CMD_COMENT, POBJ_READ_PASS,  prsComent },
-    { CMD_LINNUM, POBJ_READ_PASS,  prsLinnum },
-    { CMD_LNAMES, POBJ_READ_PASS,  prsLnames },
-    { CMD_SEGDEF, POBJ_READ_PASS,  prsSegdef },
-    { CMD_LIDATA, POBJ_READ_PASS,  prsLidata },
-    { CMD_LEDATA, POBJ_READ_PASS,  prsLedata },
-    { CMD_FIXUP,  POBJ_READ_PASS,  prsFixup  },
-    { CMD_THEADR, POBJ_WRITE_PASS, writeTheadr },
-    { CMD_LINSYM, POBJ_READ_PASS,  prsLinnum },
-    { CMD_LLNAMES, POBJ_READ_PASS,  prsLnames }
+    { CMD_THEADR,   POBJ_READ_PASS,  prsTheadr },
+    { CMD_MODEND,   POBJ_READ_PASS,  prsModend },
+    { CMD_COMENT,   POBJ_READ_PASS,  prsComent },
+    { CMD_LINNUM,   POBJ_READ_PASS,  prsLinnum },
+    { CMD_LNAMES,   POBJ_READ_PASS,  prsLnames },
+    { CMD_SEGDEF,   POBJ_READ_PASS,  prsSegdef },
+    { CMD_LIDATA,   POBJ_READ_PASS,  prsLidata },
+    { CMD_LEDATA,   POBJ_READ_PASS,  prsLedata },
+    { CMD_FIXUPP,   POBJ_READ_PASS,  prsFixup  },
+    { CMD_THEADR,   POBJ_WRITE_PASS, writeTheadr },
+    { CMD_LINSYM,   POBJ_READ_PASS,  prsLinnum },
+    { CMD_LLNAMES,  POBJ_READ_PASS,  prsLnames }
 };
 #define NUM_FUNCS   ( sizeof( prsFuncs ) / sizeof( pobj_list ) )
 

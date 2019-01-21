@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
+* Copyright (c) 2009-2018 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -31,30 +31,34 @@
 #ifndef FNT_INCLUDED
 #define FNT_INCLUDED
 
-#include "config.hpp"
-#include <cstring>
 #include <cstdio>
+#include <string>
 
-#pragma pack(push, 1)
+
+#define MAX_FACENAME_SIZE   33
+#define DEFAULT_CODEPAGE    static_cast< word >( -1 )
+
+class OutFile;      // forward reference
 
 // Font Entry
 struct FontEntry {
-    char            faceName[ 33 ]; //null terminated
-    STD1::uint16_t  height;         //reversed from docs
-    STD1::uint16_t  width;
-    STD1::uint16_t  codePage;
-    FontEntry() { std::memset( this, 0, sizeof( FontEntry ) ); };
-    STD1::uint32_t write( std::FILE *out ) const;
-    bool operator==( const FontEntry &rhs ) const
-    {
-        return std::strncmp(faceName, rhs.faceName, 33) == 0 &&
-            height == rhs.height &&
-            width == rhs.width &&
-            codePage == rhs.codePage;
-    };
+private:
+public:
+    FontEntry() : _faceName(), _width( 0 ), _height( 0 ), _codePage( DEFAULT_CODEPAGE ) { };
+    FontEntry( const std::wstring& faceName, word width, word height, word codePage = DEFAULT_CODEPAGE )
+        : _faceName( faceName ), _width( width ), _height( height ), _codePage( codePage ) {}
+    void setFaceName( const std::wstring& faceName ) { _faceName = faceName; }
+    void setHeight( word height ) { _height = height; }
+    void setWidth( word width ) { _width = width; }
+    void setCodePage( word codePage ) { _codePage = codePage; }
+    dword write( OutFile* out ) const;
+    bool operator==( const FontEntry &rhs ) const;
+
+private:
+    std::wstring    _faceName;
+    word            _width;
+    word            _height;        //reversed from docs
+    word            _codePage;
 };
 
-#pragma pack(pop)
-
 #endif //FNT_INCLUDED
-

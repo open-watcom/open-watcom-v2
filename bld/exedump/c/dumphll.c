@@ -173,43 +173,6 @@ static  const_string_table hll_linnum_entry_msg[] = {
 static  int     hll_level;
 
 /*
- * read_name - read length-prefixed name into 'buffer'
- */
-static int read_name( char *buffer )
-/**********************************/
-{
-    unsigned_8      len;
-
-    Wread( &len, 1 );
-    Wread( buffer, len );
-    buffer[len] = '\0';
-    return( len );
-}
-
-
-/*
- * dump_name - dump length-prefixed name, align to n-byte boundary
- * return number of bytes read
- */
-static int dump_name( bool align )
-/********************************/
-{
-    char        name[256];
-    unsigned    len, pad = 0;
-
-    len = read_name( name ) + 1;
-    Wdputs( name );
-    if( align ) {
-        pad = align - (len & (align - 1));
-    }
-    if( pad ) {
-        lseek( Handle, pad, SEEK_CUR );
-    }
-    return( len + pad + 1 );
-}
-
-
-/*
  * dump_cv_sstPublics - dump CV sstPublic at 'offset'
  * from 'base 'containing 'size' bytes
  */
@@ -218,24 +181,17 @@ static void dump_cv_sstPublics( unsigned_32 base, unsigned_32 offset,
 /*******************************************************************/
 {
     cv3_public_16       pub16;
-    unsigned_32         read = 0;
-    unsigned_8          name_len;
-    char                name[256];
+    unsigned_32         read;
 
     Wlseek( base + offset );
     Wdputs( "==== sstPublics at offset " );
     Puthex( offset, 8 );
     Wdputslc( "\n" );
-    while( read < size ) {
+    for( read = 0; read < size; read += sizeof( pub16 ) + pub16.name_len ) {
         Wread( &pub16, sizeof( pub16 ) );
-        name_len = pub16.name_len;
         Dump_header( &pub16, cv_sstPublics_msg, 4 );
-        read += sizeof( pub16 );
-        Wread( name, name_len );
-        name[name_len] = '\0';
         Wdputs( "  symbol name: \"" );
-        Wdputs( name );
-        read += name_len;
+        Dump_namel( pub16.name_len );
         Wdputslc( "\"\n" );
     }
     Wdputslc( "\n" );
@@ -251,24 +207,17 @@ static void dump_hll_sstPublics( unsigned_32 base, unsigned_32 offset,
 /********************************************************************/
 {
     hll_public_32       pub32;
-    unsigned_32         read = 0;
-    unsigned_8          name_len;
-    char                name[256];
+    unsigned_32         read;
 
     Wlseek( base + offset );
     Wdputs( "==== sstPublics at offset " );
     Puthex( offset, 8 );
     Wdputslc( "\n" );
-    while( read < size ) {
+    for( read = 0; read < size; read += sizeof( pub32 ) + pub32.name_len ) {
         Wread( &pub32, sizeof( pub32 ) );
-        name_len = pub32.name_len;
         Dump_header( &pub32, hll_sstPublics_msg, 4 );
-        read += sizeof( pub32 );
-        Wread( name, name_len );
-        name[name_len] = '\0';
         Wdputs( "  symbol name: \"" );
-        Wdputs( name );
-        read += name_len;
+        Dump_namel( pub32.name_len );
         Wdputslc( "\"\n" );
     }
     Wdputslc( "\n" );
@@ -285,15 +234,16 @@ static void dump_cv_sstTypes( unsigned_32 base, unsigned_32 offset,
 {
     cv3_lf_common       typ;
     cv3_lf_all          type;
-    unsigned_32         read = 0;
-    unsigned            idx = 0;
+    unsigned_32         read;
+    unsigned            idx;
 
     Wlseek( base + offset );
     Wdputs( "==== sstTypes at offset " );
     Puthex( offset, 8 );
     Wdputslc( "\n" );
     Wdputslc( " index: len  id type\n" );
-    while( read < size ) {
+    idx = 0;
+    for( read = 0; read < size; ) {
         /* seek to start of next type record */
         Wlseek( base + offset + read );
         Wread( &typ, sizeof( cv3_lf_common ) );
@@ -331,8 +281,6 @@ static void dump_cv_sstTypes( unsigned_32 base, unsigned_32 offset,
     Wdputslc( "\n" );
 }
 
-#define GET_NAME_PTR(x) ((char *)&(x) + sizeof( x ))
-
 /*
  * dump_cv_sstSymbols - dump CV sstSymbols at 'offset'
  * from 'base 'containing 'size' bytes
@@ -341,131 +289,111 @@ static void dump_cv_sstSymbols( unsigned_32 base, unsigned_32 offset,
                                                   unsigned_32 size )
 /*******************************************************************/
 {
-    union ssr_data {
-        char            buf[300];
-        cv3_ssr_all     ssr;
-    } u;
-    unsigned_32         read = 0;
-    char                *name;
+    cv3_ssr_all         ssr;
+    unsigned_32         read;
 
     Wlseek( base + offset );
     Wdputs( "==== sstSymbols at offset " );
     Puthex( offset, 8 );
     Wdputslc( "\n" );
     Wdputslc( "len/code/desc\n" );
-    while( read < size ) {
-        Wread( &u.ssr, sizeof( cv3_ssr_common ) );
+    for( read = 0; read < size; ) {
+        Wread( &ssr, sizeof( cv3_ssr_common ) );
         Wdputs( "  " );
-        Puthex( u.ssr.common.length, 2 );
+        Puthex( ssr.common.length, 2 );
         Wdputs( "/" );
-        Puthex( u.ssr.common.code, 2 );
+        Puthex( ssr.common.code, 2 );
         Wdputs( "/" );
         /* back up so we can read the common part again */
         Wlseek( base + offset + read );
-        read += u.ssr.common.length + 1;
-        switch( u.ssr.common.code ) {
+        read += ssr.common.length + 1;
+        switch( ssr.common.code ) {
         case HLL_SSR_BEGIN:
-            Wread( &u.ssr, sizeof( cv3_ssr_begin ) );
+            Wread( &ssr, sizeof( cv3_ssr_begin ) );
             Wdputs( "BEGIN:    offset=" );
-            Puthex( u.ssr.begin.offset, 4 );
+            Puthex( ssr.begin.offset, 4 );
             Wdputs( " length=" );
-            Puthex( u.ssr.begin.len, 4 );
+            Puthex( ssr.begin.len, 4 );
             Wdputslc( "\n" );
             break;
         case HLL_SSR_PROC:
-            Wread( &u.ssr, sizeof( cv3_ssr_proc ) );
-            name = GET_NAME_PTR( u.ssr.proc );
-            Wread( name, u.ssr.proc.name_len );
-            name[u.ssr.proc.name_len] = '\0';
+            Wread( &ssr, sizeof( cv3_ssr_proc ) );
             Wdputs( "PROC:     ofs=" );
-            Puthex( u.ssr.proc.offset, 4 );
+            Puthex( ssr.proc.offset, 4 );
             Wdputs( " type=" );
-            Puthex( u.ssr.proc.type, 4 );
+            Puthex( ssr.proc.type, 4 );
             Wdputs( " len=" );
-            Puthex( u.ssr.proc.len, 4 );
+            Puthex( ssr.proc.len, 4 );
             Wdputs( " pro=" );
-            Puthex( u.ssr.proc.prologue_len, 4 );
+            Puthex( ssr.proc.prologue_len, 4 );
             Wdputs( " epi=" );
-            Puthex( u.ssr.proc.prologue_body_len, 4 );
+            Puthex( ssr.proc.prologue_body_len, 4 );
             Wdputs( " flg=" );
-            Puthex( u.ssr.proc.flags, 2 );
+            Puthex( ssr.proc.flags, 2 );
             Wdputslc( "\n" );
             Wdputs( "      name: \"" );
-            Wdputs( name );
+            Dump_namel( ssr.proc.name_len );
             Wdputslc( "\"\n" );
             break;
         case HLL_SSR_END:
-            Wread( &u.ssr, sizeof( cv3_ssr_end ) );
+            Wread( &ssr, sizeof( cv3_ssr_end ) );
             Wdputslc( "ENDBLK:\n" );
             break;
         case HLL_SSR_AUTO:
-            Wread( &u.ssr, sizeof( cv3_ssr_auto ) );
-            name = GET_NAME_PTR( u.ssr.auto_ );
-            Wread( name, u.ssr.auto_.name_len );
-            name[u.ssr.auto_.name_len] = '\0';
+            Wread( &ssr, sizeof( cv3_ssr_auto ) );
             Wdputs( "AUTO:     offset=" );
-            Puthex( u.ssr.auto_.offset, 4 );
+            Puthex( ssr.auto_.offset, 4 );
             Wdputs( " type=" );
-            Puthex( u.ssr.auto_.type, 4 );
+            Puthex( ssr.auto_.type, 4 );
             Wdputslc( "\n" );
             Wdputs( "      name: \"" );
-            Wdputs( name );
+            Dump_namel( ssr.auto_.name_len );
             Wdputslc( "\"\n" );
             break;
         case HLL_SSR_STATIC:
-            Wread( &u.ssr, sizeof( cv3_ssr_static ) );
-            name = GET_NAME_PTR( u.ssr.static_ );
-            Wread( name, u.ssr.static_.name_len );
-            name[u.ssr.static_.name_len] = '\0';
+            Wread( &ssr, sizeof( cv3_ssr_static ) );
             Wdputs( "STATIC:   offset=" );
-            Puthex( u.ssr.static_.offset, 4 );
+            Puthex( ssr.static_.offset, 4 );
             Wdputs( " segment=" );
-            Puthex( u.ssr.static_.seg, 4 );
+            Puthex( ssr.static_.seg, 4 );
             Wdputs( " type=" );
-            Puthex( u.ssr.static_.type, 4 );
+            Puthex( ssr.static_.type, 4 );
             Wdputslc( "\n" );
             Wdputs( "      name: \"" );
-            Wdputs( name );
+            Dump_namel( ssr.static_.name_len );
             Wdputslc( "\"\n" );
             break;
         case HLL_SSR_REG:
-            Wread( &u.ssr, sizeof( cv3_ssr_reg ) );
-            name = GET_NAME_PTR( u.ssr.reg );
-            Wread( name, u.ssr.reg.name_len );
-            name[u.ssr.reg.name_len] = '\0';
+            Wread( &ssr, sizeof( cv3_ssr_reg ) );
             Wdputs( "REGISTER: type=" );
-            Puthex( u.ssr.reg.type, 4 );
+            Puthex( ssr.reg.type, 4 );
             Wdputs( " no=" );
-            Puthex( u.ssr.reg.reg, 2 );
+            Puthex( ssr.reg.reg, 2 );
             Wdputslc( "\n" );
             Wdputs( "      name: \"" );
-            Wdputs( name );
+            Dump_namel( ssr.reg.name_len );
             Wdputslc( "\"\n" );
             break;
         case HLL_SSR_CHANGE_SEG:
-            Wread( &u.ssr, sizeof( cv3_ssr_change_seg ) );
+            Wread( &ssr, sizeof( cv3_ssr_change_seg ) );
             Wdputs( "CHG_SEG:  segment=" );
-            Puthex( u.ssr.change_seg.seg, 4 );
+            Puthex( ssr.change_seg.seg, 4 );
             Wdputs( " reserved=" );
-            Puthex( u.ssr.change_seg.reserved, 4 );
+            Puthex( ssr.change_seg.reserved, 4 );
             Wdputslc( "\n" );
             break;
         case HLL_SSR_TYPEDEF:
-            Wread( &u.ssr, sizeof( cv3_ssr_typedef ) );
-            name = GET_NAME_PTR( u.ssr.typedef_ );
-            Wread( name, u.ssr.typedef_.name_len );
-            name[u.ssr.typedef_.name_len] = '\0';
-            Wread( &u.ssr, sizeof( cv3_ssr_typedef ) );
+            Wread( &ssr, sizeof( cv3_ssr_typedef ) );
             Wdputs( "TYPEDEF:  type=" );
-            Puthex( u.ssr.typedef_.type, 4 );
+            Puthex( ssr.typedef_.type, 4 );
             Wdputslc( "\n" );
             Wdputs( "      name: \"" );
-            Wdputs( name );
+            Dump_namel( ssr.typedef_.name_len );
             Wdputslc( "\"\n" );
             break;
         default:
             Wdputs( " unknown symbol code " );
-            Puthex( u.ssr.common.code, 2 );
+            Puthex( ssr.common.code, 2 );
             Wdputslc( "!\n" );
             return;
         }
@@ -482,18 +410,19 @@ static void dump_cv_sstLibraries( unsigned_32 base, unsigned_32 offset,
                                                     unsigned_32 size )
 /*********************************************************************/
 {
-    unsigned        index = 0;
-    unsigned_32     read = 0;
+    unsigned        index;
+    unsigned_32     read;
 
     Wlseek( base + offset );
     Wdputs( "==== sstLibraries at offset " );
     Puthex( offset, 8 );
     Wdputslc( "\n" );
-    while( read < size ) {
+    index = 0;
+    for( read = 0; read < size; ) {
         Wdputs( "  index: " );
         Puthex( index, 4 );
         Wdputs( "H  name: \"" );
-        read += dump_name( 0 );
+        read += Dump_name() + 1;
         Wdputslc( "\"\n" );
         ++index;
     }
@@ -515,10 +444,10 @@ static void dump_cv_sstModules( unsigned_32 base, unsigned_32 offset )
     Wdputs( "==== sstModules at offset " );
     Puthex( offset, 8 );
     Wdputslc( "\n" );
-    Wread( &mod, offsetof( cv3_module_16, name_len ) );
+    Wread( &mod, sizeof( mod ) );
     Dump_header( &mod, cv_sstModules_msg, 4 );
     Wdputs( "  module name: \"" );
-    dump_name( 0 );
+    Dump_namel( mod.name_len );
     Wdputslc( "\"\n" );
     if( mod.cSeg ) {
         while( --mod.cSeg ) {
@@ -548,11 +477,11 @@ static void dump_hll_sstModules( unsigned_32 base, unsigned_32 offset )
     Wdputs( "==== sstModules at offset " );
     Puthex( offset, 8 );
     Wdputslc( "\n" );
-    Wread( &mod, offsetof( hll_module, name_len ) );
+    Wread( &mod, sizeof( mod ) );
     Dump_header( &mod, hll_sstModules_msg, 4 );
     hll_level = mod.Version >> 8;
     Wdputs( "  module name: \"" );
-    dump_name( 0 );
+    Dump_namel( mod.name_len );
     Wdputslc( "\"\n" );
     if( mod.cSeg ) {
         while( --mod.cSeg ) {
@@ -582,7 +511,7 @@ static void dump_cv_sstSrcLnSeg( unsigned_32 base, unsigned_32 offset )
     Puthex( offset, 8 );
     Wdputslc( "\n" );
     Wdputs( "  source file: \"" );
-    dump_name( 2 );
+    Align_name( Dump_name() + 1, 2 );
     Wdputslc( "\"\n" );
     Wread( &src_ln, sizeof( src_ln ) );
     Dump_header( &src_ln, cv_sstSrcLnSeg_msg, 4 );
@@ -628,7 +557,7 @@ static void dump_hll_sstHLLSrc( unsigned_32 base, unsigned_32 offset, unsigned_3
                     Wdputs( "  file index: " );
                     Puthex( index, 4 );
                     Wdputs( "H name: \"" );
-                    count += dump_name( 0 );
+                    count += Dump_name() + 1;
                     Wdputslc( "\"\n" );
                 }
                 Wdputslc( "\n" );
@@ -668,7 +597,7 @@ static void dump_hll_sstHLLSrc( unsigned_32 base, unsigned_32 offset, unsigned_3
                 Wdputs( "  file index: " );
                 Puthex( index, 4 );
                 Wdputs( "H name: \"" );
-                dump_name( 0 );
+                Dump_name();
                 Wdputslc( "\"\n" );
             }
             Wdputslc( "\n" );

@@ -32,7 +32,7 @@
 
 #include "vi.h"
 #include "color.h"
-#include "font.h"
+#include "vifont.h"
 #include "utils.h"
 #include "win.h"
 #include "wclbproc.h"
@@ -66,7 +66,7 @@ bool CommandWindowInit( void )
     wc.hInstance = InstanceHandle;
     wc.hIcon = LoadIcon( (HINSTANCE)NULLHANDLE, IDI_APPLICATION );
     wc.hCursor = LoadCursor( (HINSTANCE)NULLHANDLE, IDC_ARROW );
-    wc.hbrBackground = (HBRUSH) COLOR_APPWORKSPACE;
+    wc.hbrBackground = (HBRUSH)COLOR_APPWORKSPACE;
     wc.lpszMenuName = NULL;
     wc.lpszClassName = className;
     return( RegisterClass( &wc ) != 0 );
@@ -77,7 +77,7 @@ bool CommandWindowFini( void )
     return( true );
 }
 
-WINEXPORT LRESULT CALLBACK CommandWindowProc( HWND hwnd, UINT msg, WPARAM w, LPARAM l )
+WINEXPORT LRESULT CALLBACK CommandWindowProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
 {
     PAINTSTRUCT ps;
     HDC         hdc;
@@ -96,8 +96,8 @@ WINEXPORT LRESULT CALLBACK CommandWindowProc( HWND hwnd, UINT msg, WPARAM w, LPA
         /* turn off the caret */
         MyHideCaret( hwnd );
         DestroyCaret();
-        wid = (window_id)w;
-        if( !BAD_ID( wid ) && ( wid == root_window_id || GetWindow( wid, GW_OWNER ) == edit_container_id ) ) {
+        wid = (window_id)wparam;
+        if( !BAD_ID( wid ) && ( wid == root_window_id || GetWindow( wid, GW_OWNER ) == edit_container_window_id ) ) {
             /* hmmm... losing focus to one of our own windows - suicide */
             if( ReadingAString ) {
                 KeyAdd( VI_KEY( ESC ) );
@@ -105,7 +105,7 @@ WINEXPORT LRESULT CALLBACK CommandWindowProc( HWND hwnd, UINT msg, WPARAM w, LPA
         }
         break;
     case WM_KEYDOWN:
-        if( WindowsKeyPush( w, HIWORD( l ) ) ) {
+        if( WindowsKeyPush( LOWORD( wparam ), HIWORD( lparam ) ) ) {
             return( 0 );
         }
         break;
@@ -120,14 +120,14 @@ WINEXPORT LRESULT CALLBACK CommandWindowProc( HWND hwnd, UINT msg, WPARAM w, LPA
         command_window_id = NO_WINDOW;
         break;
     }
-    return( DefWindowProc( hwnd, msg, w, l ) );
+    return( DefWindowProc( hwnd, msg, wparam, lparam ) );
 }
 
 
 window_id NewCommandWindow( void )
 {
     RECT        *size;
-    HWND        cmd;
+    window_id   wid;
     POINT       p;
     int         bottom;
 
@@ -137,12 +137,12 @@ window_id NewCommandWindow( void )
     p.x = size->left;
     p.y = size->top;
     ClientToScreen( root_window_id, &p );
-    cmd = CreateWindow( className, "Prompt",
+    wid = CreateWindow( className, "Prompt",
         WS_POPUPWINDOW | WS_CLIPSIBLINGS,
         p.x, p.y,
         size->right - size->left, bottom - size->top, root_window_id,
         (HMENU)NULLHANDLE, InstanceHandle, NULL );
-    ShowWindow( cmd, SW_SHOWNORMAL );
-    UpdateWindow( cmd );
-    return( cmd );
+    ShowWindow( wid, SW_SHOWNORMAL );
+    UpdateWindow( wid );
+    return( wid );
 }

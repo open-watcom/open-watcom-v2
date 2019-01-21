@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2016 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -30,9 +30,8 @@
 ****************************************************************************/
 
 
-#include "cgstd.h"
+#include "_cgstd.h"
 #include "coderep.h"
-#include "tables.h"
 #include "zoiks.h"
 #include "data.h"
 #include "makeins.h"
@@ -42,14 +41,14 @@
 #include "rgtbl.h"
 #include "split.h"
 #include "insutil.h"
+#include "liveinfo.h"
+#include "rscsplit.h"
+#include "_rscsplit.h"
 
 
-extern  void            UpdateLive( instruction *, instruction * );
-extern  name            *OffsetMem( name *, type_length, type_class_def );
-
-extern  instruction     *rLOAD_1( instruction *ins ) {
-/****************************************************/
-
+instruction     *rLOAD_1( instruction *ins )
+/******************************************/
+{
     name                *temp_1;
     name                *temp_2;
     instruction         *new_ins;
@@ -78,9 +77,9 @@ extern  instruction     *rLOAD_1( instruction *ins ) {
     return( first_ins );
 }
 
-extern  instruction     *rSTORE_1( instruction *ins ) {
-/*****************************************************/
-
+instruction     *rSTORE_1( instruction *ins )
+/*******************************************/
+{
     name                *temp_1;
     name                *temp_2;
     name                *temp_3;
@@ -123,9 +122,9 @@ extern  instruction     *rSTORE_1( instruction *ins ) {
     return( first_ins );
 }
 
-extern  instruction     *rLOAD_2( instruction *ins ) {
-/****************************************************/
-
+instruction     *rLOAD_2( instruction *ins )
+/******************************************/
+{
     instruction         *first_ins;
     instruction         *new_ins;
     name                *temp;
@@ -156,9 +155,9 @@ extern  instruction     *rLOAD_2( instruction *ins ) {
     return( first_ins );
 }
 
-extern  instruction     *rLOAD_2U( instruction *ins ) {
-/*****************************************************/
-
+instruction     *rLOAD_2U( instruction *ins )
+/*******************************************/
+{
     name                *mem;
     name                *new_mem;
     name                *result;
@@ -190,9 +189,9 @@ extern  instruction     *rLOAD_2U( instruction *ins ) {
     return( first_ins );
 }
 
-extern  instruction     *rSTORE_2( instruction *ins ) {
-/*****************************************************/
-
+instruction     *rSTORE_2( instruction *ins )
+/*******************************************/
+{
     name                *temp_1;
     name                *temp_2;
     name                *addr;
@@ -235,9 +234,9 @@ extern  instruction     *rSTORE_2( instruction *ins ) {
     return( first_ins );
 }
 
-extern  instruction     *rSTORE_2U( instruction *ins ) {
-/******************************************************/
-
+instruction     *rSTORE_2U( instruction *ins )
+/********************************************/
+{
     name                *mem;
     name                *new_mem;
     name                *result;
@@ -286,9 +285,9 @@ extern  instruction     *rSTORE_2U( instruction *ins ) {
     return( first_ins );
 }
 
-extern  instruction     *rLOAD_4U( instruction *ins ) {
-/*****************************************************/
-
+instruction     *rLOAD_4U( instruction *ins )
+/*******************************************/
+{
     instruction         *first_ins;
     instruction         *new_ins;
     name                *mem_1;
@@ -320,9 +319,9 @@ extern  instruction     *rLOAD_4U( instruction *ins ) {
     return( first_ins );
 }
 
-extern  instruction     *rSTORE_4U( instruction *ins ) {
-/******************************************************/
-
+instruction     *rSTORE_4U( instruction *ins )
+/********************************************/
+{
     instruction         *first_ins;
     instruction         *new_ins;
     name                *high;
@@ -370,23 +369,23 @@ extern  instruction     *rSTORE_4U( instruction *ins ) {
     return( first_ins );
 }
 
-extern  instruction     *rLOAD_8U( instruction *ins ) {
-/*****************************************************/
-
+instruction     *rLOAD_8U( instruction *ins )
+/*******************************************/
+{
     _Zoiks( ZOIKS_091 );
     return( ins );
 }
 
-extern  instruction     *rSTORE_8U( instruction *ins ) {
-/******************************************************/
-
+instruction     *rSTORE_8U( instruction *ins )
+/********************************************/
+{
     _Zoiks( ZOIKS_091 );
     return( ins );
 }
 
-extern  instruction     *rMOVEXX_8( instruction *ins ) {
-/******************************************************/
-
+instruction     *rMOVEXX_8( instruction *ins )
+/********************************************/
+{
     name        *bit_mask;
     name        *temp;
     name        *temp_2;
@@ -414,7 +413,7 @@ extern  instruction     *rMOVEXX_8( instruction *ins ) {
     rem = size % 8;
     if( rem ) {
         if( ins->result->n.class == N_TEMP ) {
-            if( ( ins->result->t.temp_flags & ALIAS ) == EMPTY ) {
+            if( (ins->result->t.temp_flags & ALIAS) == 0 ) {
                 // we have a write to a struct on the stack which is a master
                 // since we don't 'pack' anything into the empty space after
                 // this struct, we can safely overwrite it and not bother
@@ -484,8 +483,9 @@ extern  instruction     *rMOVEXX_8( instruction *ins ) {
 }
 
 #if 0
-extern instruction      *rCONSTLOAD( instruction *ins ) {
-/*******************************************************/
+instruction      *rCONSTLOAD( instruction *ins )
+/**********************************************/
+{
     signed_16           high;
     signed_16           low;
     signed_16           extra;
@@ -499,9 +499,9 @@ extern instruction      *rCONSTLOAD( instruction *ins ) {
     // the ldah rn,extra(rn) instruction
 }
 #else
-extern instruction      *rCONSTLOAD( instruction *ins ) {
-/*******************************************************/
-
+instruction      *rCONSTLOAD( instruction *ins )
+/**********************************************/
+{
     instruction         *new_ins;
     instruction         *first_ins;
     name                *high_part;
@@ -512,7 +512,7 @@ extern instruction      *rCONSTLOAD( instruction *ins ) {
     unsigned_32         low;
     unsigned_32         k;
     unsigned_32         c;
-    type_class_def      index_class;
+    type_class_def      index_type_class;
     bool                cruft_in_high_dword;
 
     assert( ins->operands[0]->n.class == N_CONSTANT );
@@ -539,9 +539,9 @@ extern instruction      *rCONSTLOAD( instruction *ins ) {
             UpdateLive( first_ins, new_ins );
         }
     } else {
-        index_class = I4;
-        temp = AllocTemp( index_class );
-        first_ins = MakeMove( high_part, temp, index_class );
+        index_type_class = I4;
+        temp = AllocTemp( index_type_class );
+        first_ins = MakeMove( high_part, temp, index_type_class );
         PrefixIns( ins, first_ins );
         low_part = AllocIndex( temp, NULL, low, ins->type_class );
         new_ins = MakeUnary( OP_LA, low_part, ins->result, ins->type_class );
@@ -610,9 +610,9 @@ static void CopyStack( instruction *ins, name *alloc_size, type_length arg_size 
     CheapCall( ins, RT_STK_COPY, p1, p2 );
 }
 
-extern instruction *rALLOCA( instruction *ins ) {
-/***********************************************/
-
+instruction *rALLOCA( instruction *ins )
+/**************************************/
+{
     name                *sreg;
     name                *amount;
     name                *real_amount;
@@ -620,31 +620,31 @@ extern instruction *rALLOCA( instruction *ins ) {
     unsigned_32         value;
     instruction         *first;
     instruction         *last;
-    type_class_def      class;
+    type_class_def      type_class;
     bool                check;
 
     sreg = AllocRegName( StackReg() );
     amount = ins->operands[0];
     temp = AllocTemp( ins->type_class );
-    class = WD;
+    type_class = WD;
     check = true;
     CurrProc->targ.base_is_fp = true;
     if( amount->n.class == N_CONSTANT && amount->c.const_type == CONS_ABSOLUTE ) {
         value = amount->c.lo.uint_value;
         value = _RoundUp( value, STACK_ALIGNMENT );
         real_amount = AllocS32Const( value );
-        first = MakeBinary( OP_SUB, sreg, AllocS32Const( value ), temp, class );
+        first = MakeBinary( OP_SUB, sreg, AllocS32Const( value ), temp, type_class );
         PrefixIns( ins, first );
         if( value <= ( _TARGET_PAGE_SIZE - 7 ) ) {
             check = false;
         }
     } else {
         real_amount = AllocTemp( ins->type_class );
-        first = MakeBinary( OP_ADD, amount, AllocS32Const( STACK_ALIGNMENT - 1 ), temp, class );
+        first = MakeBinary( OP_ADD, amount, AllocS32Const( STACK_ALIGNMENT - 1 ), temp, type_class );
         PrefixIns( ins, first );
-        last = MakeBinary( OP_AND, temp, AllocU32Const( ~( STACK_ALIGNMENT - 1 ) ), real_amount, class );
+        last = MakeBinary( OP_AND, temp, AllocU32Const( ~( STACK_ALIGNMENT - 1 ) ), real_amount, type_class );
         PrefixIns( ins, last );
-        last = MakeBinary( OP_SUB, sreg, real_amount, temp, class );
+        last = MakeBinary( OP_SUB, sreg, real_amount, temp, type_class );
         PrefixIns( ins, last );
     }
     last = MakeMove( temp, sreg, WD );
@@ -659,9 +659,9 @@ extern instruction *rALLOCA( instruction *ins ) {
             CopyStack( ins, real_amount, MaxStack );
 
         }
-        last = MakeBinary( OP_ADD, temp, AllocS32Const( MaxStack ), ins->result, class );
+        last = MakeBinary( OP_ADD, temp, AllocS32Const( MaxStack ), ins->result, type_class );
     } else {
-        last = MakeMove( temp, ins->result, class );
+        last = MakeMove( temp, ins->result, type_class );
     }
     ReplIns( ins, last );
     UpdateLive( first, last );

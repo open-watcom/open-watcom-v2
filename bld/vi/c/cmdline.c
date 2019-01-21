@@ -242,9 +242,13 @@ vi_rc TryCompileableToken( int token, const char *data, bool iscmdline )
         break;
     case PCL_T_SET:
         if( iscmdline ) {
-            data = Expand( dataBuff, data, NULL );
+            char *p = StaticAlloc();
+            data = Expand( p, data, NULL );
+            rc = Set( data );
+            StaticFree( p );
+        } else {
+            rc = Set( data );
         }
-        rc = Set( data );
         break;
     case PCL_T_SETCOLOR:
         rc = SetAColor( data );
@@ -282,15 +286,17 @@ vi_rc RunCommandLine( const char *cmdl )
     jmp_buf     jmpaddr;
     vi_rc       rc;
     const char  *data;
+    char        buf[MAX_INPUT_LINE];
 
     /*
      * parse command string
      */
     tkn = TOK_INVALID;
-    rc = ParseCommandLine( cmdl, &n1, &n1f, &n2, &n2f, &tkn, &data );
+    rc = ParseCommandLine( cmdl, &n1, &n1f, &n2, &n2f, &tkn, buf );
     if( rc != ERR_NO_ERR ) {
         return( rc );
     }
+    data = buf;
     if( !n2f ) {
         if( !n1f ) {
             n1 = n2 = CurrentPos.line;
@@ -381,7 +387,7 @@ vi_rc RunCommandLine( const char *cmdl )
         rc = MapKey( flag, data );
         break;
     case PCL_T_EVAL:
-        data = Expand( dataBuff, data, NULL );
+        data = Expand( buf, data, NULL );
         i = setjmp( jmpaddr );
         if( i != 0 ) {
             rc = (vi_rc)i;

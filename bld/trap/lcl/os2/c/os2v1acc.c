@@ -50,13 +50,14 @@
 
 typedef void (*excfn)();
 
-extern  void    __far *Automagic( unsigned short );
-#pragma aux     Automagic = 0x29 0xc4 /* sub sp,ax */\
-                            0x89 0xe0 /* mov ax,sp */\
-                            0x8c 0xd2 /* mov dx,ss */\
-                            parm caller [ax] \
-                            value [ax dx] \
-                            modify [sp];
+extern void __far *Automagic( unsigned short );
+#pragma aux Automagic = \
+        "sub sp,ax"     \
+        "mov ax,sp"     \
+        "mov dx,ss"     \
+    __parm __caller [__ax] \
+    __value         [__dx __ax] \
+    __modify        [__sp]
 
 
 extern  void    LoadThisDLL( void );
@@ -244,21 +245,21 @@ static void ExecuteCode( TRACEBUF __far *buff )
 }
 
 
-#pragma aux DoOpen parm [ dx ax ] [ bx ] [ cx ];
+#pragma aux DoOpen __parm [__dx __ax] [__bx] [__cx]
 static void DoOpen( char FAR *name, int mode, int flags )
 {
     BreakPointParm( OpenFile( name, mode, flags ) );
 }
 
 
-#pragma aux DoClose parm [ ax ];
+#pragma aux DoClose __parm [__ax]
 static void DoClose( HFILE hdl )
 {
     BreakPointParm( DosClose( hdl ) );
 }
 
 
-#pragma aux DoDupFile parm [ ax ] [ dx ];
+#pragma aux DoDupFile __parm [__ax] [__dx]
 static void DoDupFile( HFILE old, HFILE new )
 {
     HFILE       new_t;
@@ -273,7 +274,7 @@ static void DoDupFile( HFILE old, HFILE new )
     }
 }
 
-#pragma aux DoWritePgmScrn parm [dx ax] [ bx ];
+#pragma aux DoWritePgmScrn __parm [__dx __ax] [__bx]
 static void DoWritePgmScrn( char __far *buff, USHORT len )
 {
     USHORT  written;
@@ -345,7 +346,7 @@ trap_retval ReqGet_sys_config( void )
     char        tmp[108];
 
     ret = GetOutPtr(0);
-    ret->sys.os = MAD_OS_OS2;
+    ret->sys.os = DIG_OS_OS2;
     DosGetVersion( &version );
     ret->sys.osmajor = version >> 8;
     ret->sys.osminor = version & 0xff;
@@ -376,7 +377,7 @@ trap_retval ReqGet_sys_config( void )
     }
     DosGetHugeShift( &shift );
     ret->sys.huge_shift = shift;
-    ret->sys.mad = MAD_X86;
+    ret->sys.arch = DIG_ARCH_X86;
     return( sizeof( *ret ) );
 }
 

@@ -14,7 +14,7 @@ axp_objs = &
         axpsplit.obj &
         axpstub.obj  &
         axptable.obj &
-        parmreg.obj  &
+        axpparm.obj  &
         rscconst.obj
 
 src_path        = $(cg_dir)/risc/axp/c

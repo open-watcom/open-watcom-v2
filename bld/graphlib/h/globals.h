@@ -96,7 +96,7 @@ extern vgapage_fn       _FARC *_SetVGAPage;         // function to set SVGA page
 extern short            _VGAStride;                 // SuperVGA mode stride
 #endif
 
-#if defined( _SUPERVGA ) && defined( VERSION2 )
+#if defined( VERSION2 ) && defined( _SUPERVGA )
 extern unsigned short   _VGABytesPerPixel;          // SuperVGA number of bytes per pixel
 #endif
 

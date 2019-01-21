@@ -70,8 +70,8 @@ dip_status VMInit( imp_image_handle *iih, unsigned long size )
     iih->vm_dir_num = BLOCK_FACTOR( size, DIR_SIZE * VM_PAGE_SIZE );
     iih->virt = DCAllocZ( iih->vm_dir_num * sizeof( iih->virt ) );
     if( iih->virt == NULL ) {
-        DCStatus( DS_ERR|DS_NO_MEM );
-        return( DS_ERR|DS_NO_MEM );
+        DCStatus( DS_ERR | DS_NO_MEM );
+        return( DS_ERR | DS_NO_MEM );
     }
     return( DS_OK );
 }
@@ -138,7 +138,7 @@ dip_status VMAddDtor( imp_image_handle *iih, virt_mem start,
 static void vmFreeBlock( imp_image_handle *iih, virt_page *pg )
 {
     /* check for destructors */
-    while ( pg->block->first_dtor ) {
+    while( pg->block->first_dtor ) {
         struct vm_dtor *cur = pg->block->first_dtor;
         pg->block->first_dtor = cur->next;
         cur->dtor( iih, cur->user );
@@ -225,7 +225,7 @@ void *VMBlock( imp_image_handle *iih, virt_mem start, size_t len )
         num_pages = BLOCK_FACTOR( len, VM_PAGE_SIZE );
         pg = DCAlloc( num_pages * (sizeof( *pg ) + VM_PAGE_SIZE) + sizeof( loaded_block ) - 1 );
         if( pg == NULL ) {
-            DCStatus( DS_ERR|DS_NO_MEM );
+            DCStatus( DS_ERR | DS_NO_MEM );
             return( NULL );
         }
         /* set up new page table entries */
@@ -300,7 +300,7 @@ void *VMBlock( imp_image_handle *iih, virt_mem start, size_t len )
         ++TimeStamp;
     }
     pg->block->time_stamp = TimeStamp;
-    return( &pg->block->data[ (start & (VM_PAGE_SIZE - 1)) + pg->offset ] );
+    return( &pg->block->data[(start & (VM_PAGE_SIZE - 1)) + pg->offset] );
 }
 
 /*
@@ -493,7 +493,8 @@ unsigned VMShrink()
             }
         }
     }
-    if( kill_time == UINT_MAX ) return( 0 );
+    if( kill_time == UINT_MAX )
+        return( 0 );
     return( KillPages( iih, kill_i, kill_j ) );
 }
 

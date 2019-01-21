@@ -30,18 +30,19 @@
 ****************************************************************************/
 
 
-#include "cgstd.h"
+#include "_cgstd.h"
 #include "coderep.h"
-#include "interrs.h"
+#include "zoiks.h"
+#include "blips.h"
 #include "feprotos.h"
 
-extern  bool            WantZoiks2( void );
 
-static  int             Zoiks40 = { 0 };
 #define MAX_ZOIKS_40    0x1000
 
-extern  void    Zoiks( int msg )
-/*******************************
+static  int             Zoiks40 = { 0 };
+
+void    Zoiks( int msg )
+/***********************
     put out an internal compiler error.  2 is chunks unfreed which we
     may want to hide.  1 is unfreed code labels which we always hide.
 */

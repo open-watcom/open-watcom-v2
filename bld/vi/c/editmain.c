@@ -39,6 +39,7 @@
 #endif
 #include <assert.h>
 
+
 static event *nextEvent( void )
 {
     LastEvent = GetNextEvent( true );
@@ -446,8 +447,6 @@ vi_rc NullResponse( void )
 
 } /* NullResponse */
 
-static window_id    repeat_window_id = NO_WINDOW;
-
 /*
  * KillRepeatWindow - just like it says
  */
@@ -500,12 +499,6 @@ long GetRepeatCount( void )
 
 } /* GetRepeatCount */
 
-#ifdef __WIN__
-extern void UpdateRepeatString( char *str );
-#else
-#define UpdateRepeatString( str ) DisplayLineInWindow( repeat_window_id, 1, str )
-#endif
-
 /*
  * DoDigit - process a digit typed in
  */
@@ -525,19 +518,25 @@ vi_rc DoDigit( void )
         return( ERR_REPEAT_STRING_TOO_LONG );
     }
 
-    if( BAD_ID( repeat_window_id ) && EditFlags.RepeatInfo ) {
-        rc = NewWindow2( &repeat_window_id, &repcntw_info );
-        if( rc != ERR_NO_ERR ) {
-            DoneRepeat();
-            return( rc );
+    if( EditFlags.RepeatInfo ) {
+        if( BAD_ID( repeat_window_id ) ) {
+            rc = NewWindow2( &repeat_window_id, &repcntw_info );
+            if( rc != ERR_NO_ERR ) {
+                DoneRepeat();
+                return( rc );
+            }
+            WindowTitle( repeat_window_id, "Repeat Count" );
         }
-        WindowTitle( repeat_window_id, "Repeat Count" );
     }
 
     RepeatString[RepeatDigits++] = LastEvent;
     RepeatString[RepeatDigits] = '\0';
-    if( BAD_ID( repeat_window_id ) ) {
+    if( !BAD_ID( repeat_window_id ) ) {
+#ifdef __WIN__
         UpdateRepeatString( RepeatString );
+#else
+        DisplayLineInWindow( repeat_window_id, 1, RepeatString );
+#endif
     }
     return( GOT_A_DIGIT );
 

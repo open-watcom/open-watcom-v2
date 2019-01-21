@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
+* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -33,110 +33,10 @@
 #include <stdlib.h>
 #include <string.h>
 #include <direct.h>
-#include "liballoc.h"
 #include <rdos.h>
+#include "liballoc.h"
 #include "pathmac.h"
 
-
-_WCRTLINK int chdir( const char *path )
-{
-    if( RdosSetCurDir( path ) ) {
-        return 0;
-    } else {
-        return 1;
-    }
-}
-
-_WCRTLINK char *getcwd( char *buf, size_t size )
-{
-    int drive;
-    char *p;
-    char cwd[256];
-
-    if( buf == NULL ) {
-        size = 256;
-        p = lib_malloc( size );
-    } else {
-        p = buf;
-    }
-
-    drive = RdosGetCurDrive();
-
-    cwd[0] = drive + 'A';
-    cwd[1] = DRV_SEP;
-    cwd[2] = DIR_SEP;
-
-    if( RdosGetCurDir( drive, &cwd[3] ) ) {
-        return( strncpy( p, cwd, size ) );
-    } else {
-        return( NULL );
-    }
-}
-
-_WCRTLINK int _chdrive( int drive )
-{
-    int    dnum;
-
-    RdosSetCurDrive( drive );
-    dnum = RdosGetCurDrive();
-    return( dnum == drive ? 0 : -1 );
-}
-
-_WCRTLINK unsigned _getdrive( void ) 
-{
-    int    dnum;
-
-    dnum = RdosGetCurDrive();
-    return( dnum );
-}
-
-_WCRTLINK unsigned _getdiskfree( unsigned dnum, struct diskfree_t *df )
-{
-    unsigned stat;
-    long free_units;
-    int bytes_per_unit;
-    long total_units;
-    int disc;
-    long start_sector;
-    long drive_total_sectors;
-    long long total_sectors;
-    int sector_size;
-    int bios_sectors_per_cyl;
-    int bios_heads;
-
-    stat = RdosGetDriveInfo( dnum, 
-                             &free_units, 
-                             &bytes_per_unit, 
-                             &total_units );
-
-    if( stat ) {
-        stat = RdosGetDriveDiscParam(  dnum,
-                                       &disc,
-                                       &start_sector,
-                                       &drive_total_sectors );
-    }
-
-    if( stat ) {
-        stat = RdosGetDiscInfo(  disc,
-                                 &sector_size,
-                                 &total_sectors,
-                                 &bios_sectors_per_cyl,
-                                 &bios_heads );
-    }
-
-    if( stat ) {
-        df->total_clusters = total_units;
-        df->avail_clusters = free_units;
-        df->sectors_per_cluster = bytes_per_unit;
-        df->bytes_per_sector = sector_size;                             
-    }
-
-    if( stat ) {
-        return( 0 );
-    } else {
-        return( -1 );
-    }
-}
 
 static int IsMatch( struct dirent *dir, const char *fname )
 {
@@ -228,11 +128,11 @@ static int IsMatch( struct dirent *dir, const char *fname )
 static int GetSingleFile( struct dirent *dir )
 {
     for( ;; ) {
-        if( RdosReadDir( dir->d_handle, 
-                     dir->d_entry_nr, 
-                     NAME_MAX, 
+        if( RdosReadDir( dir->d_handle,
+                     dir->d_entry_nr,
+                     NAME_MAX,
                      dir->d_name,
-                     &dir->d_size, 
+                     &dir->d_size,
                      &dir->d_attr,
                      &dir->d_msb_time,
                      &dir->d_lsb_time ) ) {
@@ -255,7 +155,7 @@ _WCRTLINK DIR *opendir( const char *name )
     char            *ptr;
     int             size;
     char            tmp[NAME_MAX + 1];
-        
+
     parent = lib_malloc( sizeof( DIR ) );
     if( parent == NULL )
         return( NULL );
@@ -272,6 +172,7 @@ _WCRTLINK DIR *opendir( const char *name )
                 if( IS_DIR_SEP( *ptr ) )
                     break;
                 ptr--;
+                size--;
             }
             ptr++;
             strupr( ptr );
@@ -279,13 +180,13 @@ _WCRTLINK DIR *opendir( const char *name )
             *ptr = 0;
             handle = RdosOpenDir( tmp );
         } else {
-            handle = RdosOpenDir( "." );       
+            handle = RdosOpenDir( "." );
             strcpy( tmp, name );
             strupr( tmp );
             strcpy( parent->d_match_mask, tmp );
         }
     } else {
-        strcpy( parent->d_match_mask, "*" );    
+        strcpy( parent->d_match_mask, "*" );
     }
 
     if( handle == 0 ) {
@@ -329,22 +230,4 @@ _WCRTLINK int closedir( DIR *dirp )
     RdosCloseDir( dirp->d_handle );
     lib_free( dirp );
     return( 0 );
-}
-
-_WCRTLINK int mkdir( const char *path )
-{
-    if( RdosMakeDir( path ) ) {
-        return 0;
-    } else {
-        return -1;
-    }
-}
-
-_WCRTLINK int rmdir( const char *path )
-{
-    if( RdosRemoveDir( path ) ) {
-        return 0;
-    } else {
-        return -1;
-    }
 }

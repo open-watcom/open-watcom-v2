@@ -49,7 +49,7 @@
 
 typedef void  *(* plat_init_fn)( int fd, Elf32_Ehdr *ehdr, Elf32_Phdr *phdr );
 typedef size_t (* plat_name_fn)( void *ctx, char *name, size_t len );
-typedef int    (* plat_qcfg_fn)( void *ctx, int *mad, int *os, int *cpu, int *fpu );
+typedef int    (* plat_qcfg_fn)( void *ctx, dig_arch *arch, int *os, int *cpu, int *fpu );
 typedef long   (* plat_qpid_fn)( void *ctx );
 typedef long   (* plat_qsig_fn)( void *ctx );
 typedef size_t (* plat_regs_fn)( void *ctx, mad_registers *r, int tid );

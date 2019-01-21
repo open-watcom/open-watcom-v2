@@ -34,52 +34,54 @@
 #include <stdio.h>
 #include <string.h>
 
-#if defined( _M_I86 ) && !defined(__WIDECHAR__)
 
-extern char *_fast_strncat( char _WCFAR *, const char *, size_t );
+#if defined( _M_I86 ) && !defined(__WIDECHAR__)
 
 #if defined(__SMALL_DATA__)
 
+extern char *_fast_strncat( char _WCFAR *, const char *, size_t );
 #pragma aux _fast_strncat = \
-        0x57            /* push di */\
-        0xb9 0xff 0xff  /* mov cx,ffffh */\
-        0x31 0xc0       /* xor ax,ax */\
-        0xf2 0xae       /* repne scasb */\
-        0x4f            /* dec di */\
-        0x89 0xd1       /* mov cx,dx */\
-        0xac            /* L1: lodsb */\
-        0xaa            /* stosb */\
-        0x84 0xc0       /* test al,al */\
-        0xe0 0xfa       /* loopne L1 */\
-        0x74 0x03       /* je L2 */\
-        0x26 0x88 0x25  /* mov es:[di],ah */\
-        0x58            /* L2: pop ax */\
-        parm caller     [es di] [si] [dx]\
-        value           [ax] \
-        modify exact    [ax cx si di];
+        "push di"           \
+        "mov  cx,-1"        \
+        "xor  ax,ax"        \
+        "repne scasb"       \
+        "dec  di"           \
+        "mov  cx,dx"        \
+    "L1: lodsb"             \
+        "stosb"             \
+        "test al,al"        \
+        "loopne short L1"   \
+        "je short L2"       \
+        "mov  es:[di],ah"   \
+    "L2: pop  ax"           \
+    __parm __caller     [__es __di] [__si] [__dx] \
+    __value             [__ax] \
+    __modify __exact    [__ax __cx __si __di]
 
 #else
 
+extern char *_fast_strncat( char _WCFAR *, const char *, size_t );
 #pragma aux _fast_strncat = \
-        0x1e            /* push ds */ \
-        0x8e 0xd9       /* mov ds,cx */ \
-        0x57            /* push di */\
-        0xb9 0xff 0xff  /* mov cx,ffffh */\
-        0x31 0xc0       /* xor ax,ax */\
-        0xf2 0xae       /* repne scasb */\
-        0x4f            /* dec di */\
-        0x89 0xd1       /* mov cx,dx */\
-        0xac            /* L1: lodsb */\
-        0xaa            /* stosb */\
-        0x84 0xc0       /* test al,al */\
-        0xe0 0xfa       /* loopne L1 */\
-        0x74 0x03       /* je L2 */\
-        0x26 0x88 0x25  /* mov es:[di],ah */\
-        0x58            /* L2: pop ax */\
-        0x1f            /* pop ds */ \
-        parm caller     [es di] [cx si] [dx]\
-        value           [es ax] \
-        modify exact    [ax cx si di];
+        "push ds"           \
+        "mov  ds,cx"        \
+        "push di"           \
+        "mov  cx,-1"        \
+        "xor  ax,ax"        \
+        "repne scasb"       \
+        "dec  di"           \
+        "mov  cx,dx"        \
+    "L1: lodsb"             \
+        "stosb"             \
+        "test al,al"        \
+        "loopne short L1"   \
+        "je short L2"       \
+        "mov  es:[di],ah"   \
+    "L2: pop  ax"           \
+        "pop  ds"           \
+    __parm __caller     [__es __di] [__cx __si] [__dx] \
+    __value             [__es __ax] \
+    __modify __exact    [__ax __cx __si __di]
+
 #endif
 
 #endif

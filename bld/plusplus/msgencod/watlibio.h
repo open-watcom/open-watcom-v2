@@ -51,7 +51,7 @@ typedef struct                      // FILE_DEFN (file control)
     unsigned buffer_read   :1;      // - buffer in memory read
     unsigned buffer_wrote  :1;      // - buffer in memory written
     unsigned recs_fixed    :1;      // - fixed records (set by application)
-    char file_name[ _MAX_PATH ];    // - file name
+    char file_name[_MAX_PATH];      // - file name
 } FILE_DEFN;
 
 typedef struct                      // IODA (direct-access control block)

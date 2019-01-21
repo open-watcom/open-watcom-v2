@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -30,7 +30,7 @@
 ****************************************************************************/
 
 
-#include "cgstd.h"
+#include "_cgstd.h"
 #include "coderep.h"
 #include "zoiks.h"
 #include "seldef.h"
@@ -46,11 +46,12 @@
 #include "rtcall.h"
 #include "inssegs.h"
 #include "conflict.h"
+#include "x86segs.h"
+#include "liveinfo.h"
+#include "x86rtrn.h"
+#include "bldselco.h"
+#include "_x86rtrn.h"
 
-
-extern  void            UpdateLive( instruction *, instruction * );
-extern  bool            SegIsSS( name * );
-extern  name            *AddrConst( name *, int, constant_class );
 
 /*
  * If you add a new routine, let John know as the debugger recognizes
@@ -153,7 +154,7 @@ bool    RTLeaveOp2( instruction *ins )
 }
 
 
-extern  name    *ScanCall( tbl_control *table, name *value, type_class_def class )
+name    *ScanCall( tbl_control *table, name *value, type_class_def type_class )
 /*********************************************************************************
     generates a fake call to a runtime routine that looks up "value" in a table
     and jumps to the appropriate case, using either a pointer or index
@@ -169,7 +170,7 @@ extern  name    *ScanCall( tbl_control *table, name *value, type_class_def class
     hw_reg_set  tmp;
     rt_class    rtindex;
 
-    switch( class ) {
+    switch( type_class ) {
     case U1:
         rtindex = RT_SCAN1;
         break;
@@ -185,7 +186,7 @@ extern  name    *ScanCall( tbl_control *table, name *value, type_class_def class
     }
 
     reg_name = AllocRegName( FirstReg( RTInfo[rtindex].left ) );
-    new_ins = MakeConvert( value, reg_name, class, value->n.name_class );
+    new_ins = MakeConvert( value, reg_name, type_class, value->n.type_class );
     AddIns( new_ins );
 
     reg_name = AllocRegName( HW_ECX );
@@ -213,7 +214,7 @@ extern  name    *ScanCall( tbl_control *table, name *value, type_class_def class
     AddIns( new_ins );
 
     result = AllocMemory( table, 0, CG_TBL, U4 ); /* so table gets freed!*/
-    if( class == U4 ) {
+    if( type_class == U4 ) {
         HW_CAsgn( tmp, HW_ECX );
         HW_CTurnOn( tmp, HW_EDI );
         new_ins->zap = &AllocRegName( tmp )->r;
@@ -239,19 +240,19 @@ extern  name    *ScanCall( tbl_control *table, name *value, type_class_def class
 }
 
 
-extern  name    *Addressable( name *cons, type_class_def class )
+name    *Addressable( name *cons, type_class_def type_class )
 /***************************************************************
     make sure a floating point constant is addressable (dropped
     it into memory if it isnt)
 */
 {
     if( cons->n.class == N_CONSTANT )
-        return( GenFloat( cons, class ) );
+        return( GenFloat( cons, type_class ) );
     return( cons );
 }
 
 
-extern  pointer BEAuxInfo( pointer hdl, aux_class request )
+pointer BEAuxInfo( pointer hdl, aux_class request )
 /**********************************************************
     see ScanCall for explanation
 */
@@ -296,8 +297,8 @@ extern  pointer BEAuxInfo( pointer hdl, aux_class request )
     }
 }
 
-extern  instruction     *rMAKEFNEG( instruction *ins )
-/*****************************************************
+instruction     *rMAKEFNEG( instruction *ins )
+/*********************************************
     this is intentionally a stub for the 386.
 */
 {

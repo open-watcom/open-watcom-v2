@@ -773,7 +773,7 @@ static int create_levels()      // CREATE LEVELS FILE
         write_h_line( "};" );
         retn = close_h_file();
     ENDGUESS
-    return retn;
+    return( retn );
 }
 
 
@@ -855,7 +855,7 @@ static int scan_level(          // SCAN LEVEL
     ADMIT :: OK
         retn = 0;
     ENDGUESS
-    return retn;
+    return( retn );
 }
 
 
@@ -986,7 +986,7 @@ static int process_state(       // PROCESS CURRENT STATE
             symbol = 0;
             retn = process_group( lineptr );
         CASE( SYM_GROUP )
-            retn = process_symbol( lineptr, grpnum, symbol  );
+            retn = process_symbol( lineptr, grpnum, symbol );
         CASE( TEXT_GROUP )
             retn = process_text( lineptr, &symbol );
         CASE( SYM_NO_GRP )
@@ -1042,7 +1042,7 @@ static int process_modifier(    // PROCESS A MODIFIER
 {
     RingMessages->type = type;
     RingMessages->level = level;
-    return 0;
+    return( 0 );
 }
 
 
@@ -1135,7 +1135,7 @@ static int process_input()      // PROCESS INPUT FILE
                 ENDIF
             ENDIF
             IF( record != REC_NONE )
-                state = state_table[ state ][ record ];
+                state = state_table[state][record];
                 QUITIF( state == FOUND_EOF ) :: PROCESS_LINE;
                 IF( ( state == MOD_GROUP ) || ( state == MOD_NO_GRP ) )
                     retn = process_modifier( type, level );

@@ -35,7 +35,7 @@
 
 #define WAT_IDE_DLL_CUR_VER     1
 #ifdef __NT__
-#pragma aux __fortran "*" parm [] modify [ eax ecx edx ];
+#pragma aux __fortran "*" __parm [] __modify [__eax __ecx __edx]
 #define IDE_EXPORT              __export __fortran
 #else
 #define IDE_EXPORT              __export __pascal

@@ -36,6 +36,7 @@
 #include <windows.h>
 #include <i86.h>
 #endif
+#include "bool.h"
 #include "diptypes.h"
 #include "dipimp.h"
 
@@ -137,11 +138,11 @@ static HANDLE       TaskId;
 const char __based( __segname( "_CODE" ) ) Signature[4] = "DIP";
 #endif
 
-DIG_DLLEXPORT dip_imp_routines * DIGENTRY DIPLOAD( dip_status *status, dip_client_routines *client )
+DIG_DLLEXPORT dip_imp_routines * DIGENTRY DIPLOAD( dip_status *ds, dip_client_routines *client )
 {
     DIPClient = client;
-    *status = DIPImp( Startup )();
-    if( *status & DS_ERR )
+    *ds = DIPImp( Startup )();
+    if( *ds & DS_ERR )
         return( NULL );
     return( &ImpInterface );
 }
@@ -246,17 +247,17 @@ void DCRemove( const char *path, dig_open flags )
     DIPClient->Remove( path, flags );
 }
 
-void DCStatus( dip_status status )
+void DCStatus( dip_status ds )
 {
-    DIPClient->Status( status );
+    DIPClient->Status( ds );
 }
 
-dig_mad DCCurrMAD( void )
+dig_arch DCCurrArch( void )
 {
     /* check for old client */
-    if( DIPClient->sizeof_struct < offsetof(dip_client_routines,CurrMAD) )
-        return( MAD_X86 );
-    return( DIPClient->CurrMAD() );
+    if( DIPClient->sizeof_struct < offsetof(dip_client_routines,CurrArch) )
+        return( DIG_ARCH_X86 );
+    return( DIPClient->CurrArch() );
 }
 
 unsigned DCMachineData( address a, dig_info_type info_type,

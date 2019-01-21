@@ -36,7 +36,6 @@
 #ifndef __UNIX__
     #include <process.h>
 #endif
-#include "wio.h"
 #include "global.h"
 #include "rcerrors.h"
 #include "preproc.h"
@@ -58,6 +57,375 @@
 
 
 #define BUFFER_SIZE     1024
+
+#define MAX_INCLUDE_DEPTH   16
+
+typedef struct FileStackEntry {
+    struct {
+        char                *Filename;
+        unsigned            LineNo;
+        bool                IsCOrHFile;
+    }                   loc;
+    char                *Filename;
+    bool                IsOpen;
+    FILE                *fp;
+    unsigned long       Offset;     /* offset in file to read from next time if this */
+                                    /* is not the current file */
+} FileStackEntry;
+
+typedef struct FileStack {
+    char                *Buffer;
+    size_t              BufferSize;
+    char                *NextChar;
+    char                *EofChar;       /* DON'T dereference, see below */
+    /* + 1 for the before first entry */
+    FileStackEntry      Stack[MAX_INCLUDE_DEPTH + 1];
+    FileStackEntry      *Current;
+} FileStack;
+
+/* EofChar points to the memory location after the last character currently */
+/* in the buffer. If the physical EOF has been reached it will point to */
+/* within Buffer, otherwise it will point AFTER Buffer. If NextChar == */
+/* EofChar then either EOF has been reached or it's time to read in more */
+/* of the file */
+/* NB: Characters in the buffer must be unsigned for proper MBCS support! */
+
+#define IsEmptyFileStack( stack ) ((stack).Current == (stack).Stack)
+
+static FileStack    InStack;
+
+/****** Text file input routines ******/
+/* These routines maintain a stack of input files. Pushing a file onto the */
+/* stack opens the file and sets up the buffer. Poping a file closes the file */
+/* All other routines (except TextInputInit and TextInputShutdown) operate */
+/* on the current file which is the one at the top of the stack */
+
+static void freeCurrentFileNames( void )
+/**************************************/
+{
+    RESFREE( InStack.Current->loc.Filename );
+    RESFREE( InStack.Current->Filename );
+    InStack.Current->loc.Filename = NULL;
+    InStack.Current->Filename = NULL;
+}
+
+static void saveCurrentFileOffset( void )
+/***************************************/
+{
+    size_t          charsinbuff;
+
+    if( !IsEmptyFileStack( InStack ) ) {
+        charsinbuff = InStack.BufferSize - ( InStack.NextChar - InStack.Buffer );
+        InStack.Current->Offset = (unsigned long)( ftell( InStack.Current->fp ) - charsinbuff );
+    }
+} /* saveCurrentFileOffset */
+
+static void closeFile( FileStackEntry *file )
+/*******************************************/
+{
+    if( file->IsOpen ) {
+        fclose( file->fp );
+        file->IsOpen = false;
+    }
+} /* closeFile */
+
+static bool openCurrentFile( void )
+/*********************************/
+{
+    if( !InStack.Current->IsOpen ) {
+        InStack.Current->fp = RcIoOpenInput( InStack.Current->Filename, true );
+        if( InStack.Current->fp == NULL ) {
+            RcError( ERR_CANT_OPEN_FILE, InStack.Current->Filename, strerror( errno ) );
+            return( true );
+        }
+        InStack.Current->IsOpen = true;
+        if( fseek( InStack.Current->fp, InStack.Current->Offset, SEEK_SET ) == -1 ) {
+            RcError( ERR_READING_FILE, InStack.Current->Filename, strerror( errno ) );
+            return( true );
+        }
+    }
+
+    return( false );
+} /* openCurrentFile */
+
+static bool openNewFile( const char *filename )
+/*********************************************/
+{
+    InStack.Current->Filename = RESALLOC( strlen( filename ) + 1 );
+    strcpy( InStack.Current->Filename, filename );
+    InStack.Current->IsOpen = false;
+    InStack.Current->Offset = 0;
+
+    /* set up the logical file info */
+    RcIoSetCurrentFileInfo( 1, filename );
+
+    return( openCurrentFile() );
+} /* openNewFile */
+
+static bool readCurrentFileBuffer( void )
+/***************************************/
+{
+    size_t          numread;
+    bool            error;
+    int             inchar;
+
+    if( !InStack.Current->IsOpen ) {
+        error = openCurrentFile();
+        if( error ) {
+            return( true );
+        }
+    }
+    if( CmdLineParms.NoPreprocess ) {
+        numread = fread( InStack.Buffer, 1, InStack.BufferSize, InStack.Current->fp );
+    } else {
+        for( numread = 0; numread < InStack.BufferSize; numread++ ) {
+            inchar = PP_Char();
+            if( inchar == EOF ) {
+                break;
+            }
+            *( InStack.Buffer + numread ) = (char)inchar;
+        }
+    }
+    InStack.NextChar = InStack.Buffer;
+    InStack.EofChar = InStack.Buffer + numread;   /* may be past end of buffer */
+
+    return( false );
+} /* readCurrentFileBuffer */
+
+static bool RcIoPopTextInputFile( void )
+/**************************************/
+{
+    closeFile( InStack.Current );
+    freeCurrentFileNames();
+    InStack.Current--;
+    if( IsEmptyFileStack( InStack ) ) {
+        return( true );
+    } else {
+        readCurrentFileBuffer();
+        return( false );
+    }
+} /* RcIoPopTextInputFile */
+
+static void RcIoTextInputInit( void )
+/***********************************/
+{
+    InStack.Buffer = RESALLOC( IO_BUFFER_SIZE );
+    InStack.BufferSize = IO_BUFFER_SIZE;
+    InStack.Current = InStack.Stack;
+} /* RcIoTextInputInit */
+
+static bool RcIoTextInputShutdown( void )
+/***************************************/
+{
+    if( InStack.Buffer != NULL ) {
+        RESFREE( InStack.Buffer );
+        InStack.Buffer = NULL;
+        InStack.BufferSize = 0;
+        if( IsEmptyFileStack( InStack ) ) {
+            return( false );
+        } else {
+            while( !IsEmptyFileStack( InStack ) ) {
+                RcIoPopTextInputFile();
+            }
+        }
+    }
+    return( true );
+} /* RcIoTextInputShutdown */
+
+static bool RcIoPushTextInputFile( const char *filename )
+/*******************************************************/
+{
+    bool                error;
+
+    if( InStack.Current == InStack.Stack + MAX_INCLUDE_DEPTH - 1 ) {
+        RcError( ERR_RCINCLUDE_TOO_DEEP, MAX_INCLUDE_DEPTH );
+        return( true );
+    }
+
+    saveCurrentFileOffset();
+
+    InStack.Current++;
+
+    /* open file and set up the file info */
+    error = openNewFile( filename );
+    if( error ) {
+        freeCurrentFileNames();
+        InStack.Current--;
+    } else {
+        error = readCurrentFileBuffer();
+    }
+
+    return( error );
+} /* RcIoPushTextInputFile */
+
+const char *RcIoGetCurrentFileName( void )
+/****************************************/
+{
+    if( IsEmptyFileStack( InStack ) ) {
+        return( NULL );
+    } else {
+        return( InStack.Current->loc.Filename );
+    }
+} /* RcIoGetCurrentFileName */
+
+unsigned RcIoGetCurrentFileLineNo( void )
+/***************************************/
+{
+    if( IsEmptyFileStack( InStack ) ) {
+        return( 0 );
+    } else {
+        return( InStack.Current->loc.LineNo );
+    }
+} /* RcIoGetCurrentFileLineNo */
+
+static bool checkCurrentFileType( void )
+/**************************************/
+{
+    char        ext[_MAX_EXT];
+    bool        isCOrH;
+
+    isCOrH = false;
+    _splitpath( InStack.Current->loc.Filename, NULL, NULL, NULL, ext );
+    /* if this is a c or h file ext will be '.', '[ch]', '\0' */
+    if( ext[0] == '.' && ext[1] != '\0' && ext[2] == '\0' ) {
+        switch( ext[1] ) {
+        case 'c':
+        case 'C':
+        case 'h':
+        case 'H':
+            isCOrH = true;
+            break;
+        }
+    }
+    return( isCOrH );
+
+} /* checkCurrentFileType */
+
+void RcIoSetCurrentFileInfo( unsigned lineno, const char *filename )
+/******************************************************************/
+{
+    if( !IsEmptyFileStack( InStack ) ) {
+        InStack.Current->loc.LineNo = lineno;
+        if( filename != NULL ) {
+            if( InStack.Current->loc.Filename == NULL ) {
+                InStack.Current->loc.Filename = RESALLOC( strlen( filename ) + 1 );
+                strcpy( InStack.Current->loc.Filename, filename );
+                InStack.Current->loc.IsCOrHFile = checkCurrentFileType();
+            } else if( strcmp( InStack.Current->loc.Filename, filename ) != 0 ) {
+                RESFREE( InStack.Current->loc.Filename );
+                InStack.Current->loc.Filename = RESALLOC( strlen( filename ) + 1 );
+                strcpy( InStack.Current->loc.Filename, filename );
+                InStack.Current->loc.IsCOrHFile = checkCurrentFileType();
+            }
+        }
+    }
+} /* RcIoSetCurrentFileInfo */
+
+bool RcIoIsCOrHFile( void )
+/*************************/
+/* returns true if the current file is a .c or .h file, false otherwise */
+{
+    if( IsEmptyFileStack( InStack ) ) {
+        return( false );
+    } else {
+        return( InStack.Current->loc.IsCOrHFile );
+    }
+} /* RcIoIsCOrHFile */
+
+static int GetLogChar( void )
+/***************************/
+{
+    int     newchar;
+
+    newchar = *(unsigned char *)InStack.NextChar;
+    assert( newchar > 0 );
+    if( newchar == '\n' ) {
+        InStack.Current->loc.LineNo++;
+    }
+
+    InStack.NextChar++;
+    return( newchar );
+} /* GetLogChar */
+
+int RcIoGetChar( void )
+/*********************/
+{
+    bool    isempty;
+    bool    error;
+
+    if( IsEmptyFileStack( InStack ) ) {
+        return( EOF );
+    }
+
+    if( InStack.NextChar >= InStack.EofChar ) {
+        /* we have reached the end of the buffer */
+        if( InStack.NextChar >= InStack.Buffer + InStack.BufferSize ) {
+            /* try to read next buffer */
+            error = readCurrentFileBuffer();
+            if( error ) {
+                /* this error is reported in readCurrentFileBuffer so just terminate */
+                RcFatalError( ERR_NO_MSG );
+            }
+        }
+        if( InStack.NextChar >= InStack.EofChar ) {
+            /* this is a real EOF */
+            /* unstack one file */
+            isempty = RcIoPopTextInputFile();
+            if( isempty )
+                return( EOF );
+            /* if we are still at the EOF char, there has been an error */
+            if( InStack.NextChar >= InStack.EofChar ) {
+                /* this error is reported in readCurrentFileBuffer so just terminate */
+                RcFatalError( ERR_NO_MSG );
+            } else {
+                /* return \n which will end the current token properly */
+                /* if it it is not a string and end it with a runaway */
+                /* string error for strings */
+                return( '\n' );
+            }
+        }
+    }
+    return( GetLogChar() );
+} /* RcIoGetChar */
+
+/*
+ * RcIoOpenInput
+ * NB when an error occurs this function MUST return without altering errno
+ */
+FILE *RcIoOpenInput( const char *filename, bool text_mode )
+/*********************************************************/
+{
+    FILE                *fp;
+    FileStackEntry      *currfile;
+    bool                no_handles_available;
+
+    if( text_mode ) {
+        fp = fopen( filename, "rt" );
+    } else {
+        fp = ResOpenFileRO( filename );
+    }
+    no_handles_available = ( fp == NULL && errno == EMFILE );
+    /* set currfile to be the first (not before first) entry */
+    /* close open files except the current input file until able to open */
+    /* don't close the current file because Offset isn't set */
+    for( currfile = InStack.Stack + 1; no_handles_available && currfile < InStack.Current; ++currfile ) {
+        if( currfile->IsOpen ) {
+            closeFile( currfile );
+            if( text_mode ) {
+                fp = fopen( filename, "rt" );
+            } else {
+                fp = ResOpenFileRO( filename );
+            }
+            no_handles_available = ( fp == NULL && errno == EMFILE );
+        }
+    }
+    return( fp );
+
+} /* RcIoOpenInput */
+
+/*
+ * Pass 1 related functions
+ */
 
 static bool Pass1InitRes( void )
 /******************************/
@@ -167,8 +535,8 @@ static bool PreprocessInputFile( void )
     return( false );                    // indicate no error
 }
 
-extern bool RcPass1IoInit( void )
-/*******************************/
+bool RcPass1IoInit( void )
+/************************/
 /* Open the two files for input and output. The input stream starts at the */
 /* top   infilename   and continues as the directives in the file indicate */
 /* Returns false if there is a problem opening one of the files. */
@@ -310,8 +678,8 @@ static void Pass1ResFileShutdown( void )
     }
 } /* Pass1ResFileShutdown */
 
-extern void RcPass1IoShutdown( void )
-/***********************************/
+void RcPass1IoShutdown( void )
+/****************************/
 {
     RcIoTextInputShutdown();
     if( !CmdLineParms.PreprocessOnly ) {
@@ -424,6 +792,10 @@ static bool openExeFileInfoRO( const char *filename, ExeFileInfo *info )
     return( !RESSEEK( info->fp, 0, SEEK_SET ) );
 } /* openExeFileInfoRO */
 
+/*
+ * Pass 2 related functions
+ */
+
 static void FreeNEFileInfoPtrs( NEExeInfo * info )
 /*************************************************/
 {
@@ -463,7 +835,7 @@ static void FreeLXFileInfoPtrs( LXExeInfo *info )
     }
 }
 
-extern void ClosePass2FilesAndFreeMem( void )
+static void ClosePass2FilesAndFreeMem( void )
 /*******************************************/
 {
     ExeFileInfo         *tmp;
@@ -509,8 +881,8 @@ extern void ClosePass2FilesAndFreeMem( void )
 
 } /* ClosePass2FilesAndFreeMem */
 
-extern bool RcPass2IoInit( void )
-/******************************/
+bool RcPass2IoInit( void )
+/************************/
 {
     bool    noerror;
     bool    tmpexe_exists;
@@ -558,8 +930,8 @@ extern bool RcPass2IoInit( void )
     return( noerror );
 } /* RcPass2IoInit */
 
-extern void RcPass2IoShutdown( bool noerror )
-/******************************************/
+void RcPass2IoShutdown( bool noerror )
+/************************************/
 {
     ClosePass2FilesAndFreeMem();
     if( Pass2Info.IoBuffer != NULL ) {
@@ -574,395 +946,8 @@ extern void RcPass2IoShutdown( bool noerror )
 
 } /* RcPass2IoShutdown */
 
-/****** Text file input routines ******/
-/* These routines maintain a stack of input files. Pushing a file onto the */
-/* stack opens the file and sets up the buffer. Poping a file closes the file */
-/* All other routines (except TextInputInit and TextInputShutdown) operate */
-/* on the current file which is the one at the top of the stack */
-
-#define MAX_INCLUDE_DEPTH   16
-
-typedef struct PhysFileInfo {
-    char            *Filename;
-    bool            IsOpen;
-    FILE            *fp;
-    unsigned long   Offset;     /* offset in file to read from next time if this */
-                                /* is not the current file */
-} PhysFileInfo;
-
-typedef struct FileStackEntry {
-    LogicalFileInfo     Logical;
-    PhysFileInfo        Physical;
-} FileStackEntry;
-
-typedef struct FileStack {
-    char                *Buffer;
-    size_t              BufferSize;
-    char                *NextChar;
-    char                *EofChar;       /* DON'T dereference, see below */
-    /* + 1 for the before first entry */
-    FileStackEntry      Stack[MAX_INCLUDE_DEPTH + 1];
-    FileStackEntry      *Current;
-} FileStack;
-
-/* EofChar points to the memory location after the last character currently */
-/* in the buffer. If the physical EOF has been reached it will point to */
-/* within Buffer, otherwise it will point AFTER Buffer. If NextChar == */
-/* EofChar then either EOF has been reached or it's time to read in more */
-/* of the file */
-/* NB: Characters in the buffer must be unsigned for proper MBCS support! */
-
-#define IsEmptyFileStack( stack ) ((stack).Current == (stack).Stack)
-
-FileStack InStack;
-
-extern void RcIoTextInputInit( void )
-/***********************************/
-{
-    InStack.Buffer = RESALLOC( IO_BUFFER_SIZE );
-    InStack.BufferSize = IO_BUFFER_SIZE;
-    InStack.Current = InStack.Stack;
-} /* RcIoTextInputInit */
-
-extern bool RcIoTextInputShutdown( void )
-/***************************************/
-{
-    if( InStack.Buffer != NULL ) {
-        RESFREE( InStack.Buffer );
-        InStack.Buffer = NULL;
-        InStack.BufferSize = 0;
-        if( IsEmptyFileStack( InStack ) ) {
-            return( false );
-        } else {
-            while( !IsEmptyFileStack( InStack ) ) {
-                RcIoPopTextInputFile();
-            }
-            // return( true );
-        }
-    }
-    return( true );
-} /* RcIoTextInputShutdown */
-
-static bool OpenPhysicalFile( PhysFileInfo *phys )
-/************************************************/
-{
-    if( !phys->IsOpen ) {
-        phys->fp = RcIoOpenInput( phys->Filename, true );
-        if( phys->fp == NULL ) {
-            RcError( ERR_CANT_OPEN_FILE, phys->Filename, strerror( errno ) );
-            return( true );
-        }
-        phys->IsOpen = true;
-        if( fseek( phys->fp, phys->Offset, SEEK_SET ) == -1 ) {
-            RcError( ERR_READING_FILE, phys->Filename, strerror( errno ) );
-            return( true );
-        }
-    }
-
-    return( false );
-} /* OpenPhysicalFile */
-
-static bool OpenNewPhysicalFile( PhysFileInfo *phys, const char *filename )
-/*************************************************************************/
-{
-    phys->Filename = RESALLOC( strlen( filename ) + 1 );
-    strcpy( phys->Filename, filename );
-    phys->IsOpen = false;
-    phys->Offset = 0;
-
-    return( OpenPhysicalFile( phys ) );
-} /* OpenNewPhysicalFile */
-
-static void SetPhysFileOffset( FileStack * stack )
-/************************************************/
-{
-    PhysFileInfo    *phys;
-    size_t          charsinbuff;
-
-    if( !IsEmptyFileStack( *stack ) ) {
-        phys = &(stack->Current->Physical);
-        charsinbuff = stack->BufferSize - ( stack->NextChar - stack->Buffer );
-        phys->Offset = ftell( phys->fp ) - charsinbuff;
-    }
-} /* SetPhysFileOffset */
-
-static bool ReadBuffer( FileStack * stack )
-/*****************************************/
-{
-    PhysFileInfo    *phys;
-    size_t          numread;
-    bool            error;
-    int             inchar;
-
-    phys = &(stack->Current->Physical);
-    if( !phys->IsOpen ) {
-        error = OpenPhysicalFile( phys );
-        if( error ) {
-            return( true );
-        }
-    }
-    if( CmdLineParms.NoPreprocess ) {
-        numread = fread( stack->Buffer, 1, stack->BufferSize, phys->fp );
-    } else {
-        for( numread = 0; numread < stack->BufferSize; numread++ ) {
-            inchar = PP_Char();
-            if( inchar == EOF ) {
-                break;
-            }
-            *( stack->Buffer + numread ) = (char)inchar;
-        }
-    }
-    stack->NextChar = stack->Buffer;
-    stack->EofChar = stack->Buffer + numread;   /* may be past end of buffer */
-
-    return( false );
-} /* ReadBuffer */
-
-static void FreeLogicalFilename( void )
-{
-    LogicalFileInfo     *log;
-
-    log = &(InStack.Current->Logical);
-    RESFREE( log->Filename );
-    log->Filename = NULL;
-}
-
-static void FreePhysicalFilename( void )
-{
-    PhysFileInfo    *phys;
-
-    phys = &(InStack.Current->Physical);
-    RESFREE( phys->Filename );
-    phys->Filename = NULL;
-}
-
-bool RcIoPushTextInputFile( const char * filename )
-/*************************************************/
-{
-    bool                error;
-
-    if( InStack.Current == InStack.Stack + MAX_INCLUDE_DEPTH - 1 ) {
-        RcError( ERR_RCINCLUDE_TOO_DEEP, MAX_INCLUDE_DEPTH );
-        return( true );
-    }
-
-    SetPhysFileOffset( &(InStack) );
-
-    InStack.Current++;
-
-    /* set up the logical file info */
-    RcIoSetLogicalFileInfo( 1, filename );
-
-    /* set up the physical file info */
-    error = OpenNewPhysicalFile( &(InStack.Current->Physical), filename );
-    if( error ) {
-        FreeLogicalFilename();
-        FreePhysicalFilename();
-        InStack.Current--;
-    } else {
-        error = ReadBuffer( &(InStack) );
-    }
-
-    return( error );
-} /* RcIoPushTextInputFile */
-
-static void ClosePhysicalFile( PhysFileInfo * phys )
-/**************************************************/
-{
-    if( phys->IsOpen ) {
-        fclose( phys->fp );
-        phys->IsOpen = false;
-    }
-} /* ClosePhysicalFile */
-
-bool RcIoPopTextInputFile( void )
-/*******************************/
-{
-    PhysFileInfo *  phys;
-
-    phys = &(InStack.Current->Physical);
-    ClosePhysicalFile( phys );
-    FreeLogicalFilename();
-    FreePhysicalFilename();
-    InStack.Current--;
-    if( IsEmptyFileStack( InStack ) ) {
-        return( true );
-    } else {
-        ReadBuffer( &(InStack) );
-        return( false );
-    }
-} /* RcIoPopTextInputFile */
-
-static int GetLogChar( FileStack * stack )
-/****************************************/
-{
-    int     newchar;
-
-    newchar = (unsigned char)*(stack->NextChar);
-    assert( newchar > 0 );
-    if( newchar == '\n' ) {
-        stack->Current->Logical.LineNum++;
-    }
-
-    stack->NextChar++;
-    return( newchar );
-} /* GetLogChar */
-
-int RcIoGetChar( void )
-/*********************/
-{
-    bool    isempty;
-    bool    error;
-
-    if( IsEmptyFileStack( InStack ) ) {
-        return( EOF );
-    }
-
-    if( InStack.NextChar >= InStack.EofChar ) {
-        /* we have reached the end of the buffer */
-        if( InStack.NextChar >= InStack.Buffer + InStack.BufferSize ) {
-            /* try to read next buffer */
-            error = ReadBuffer( &(InStack) );
-            if( error ) {
-                /* this error is reported in ReadBuffer so just terminate */
-                RcFatalError( ERR_NO_MSG );
-            }
-        }
-        if( InStack.NextChar >= InStack.EofChar ) {
-            /* this is a real EOF */
-            /* unstack one file */
-            isempty = RcIoPopTextInputFile();
-            if( isempty ) {
-                return( EOF );
-            } else {
-                /* if we are still at the EOF char, there has been an error */
-                if( InStack.NextChar >= InStack.EofChar ) {
-                    /* this error is reported in ReadBuffer so just terminate */
-                    RcFatalError( ERR_NO_MSG );
-                } else {
-                    /* return \n which will end the current token properly */
-                    /* if it it is not a string and end it with a runaway */
-                    /* string error for strings */
-                    return( '\n' );
-                }
-            }
-        }
-    }
-    return( GetLogChar( &InStack ) );
-} /* RcIoGetChar */
-
-extern const LogicalFileInfo * RcIoGetLogicalFileInfo( void )
-/***********************************************************/
-{
-    if( IsEmptyFileStack( InStack ) ) {
-        return( NULL );
-    } else {
-        return( &(InStack.Current->Logical) );
-    }
-} /* RcIoGetLogicalFileInfo */
-
-extern void RcIoOverrideIsCOrHFlag( void )
-/****************************************/
-{
-    LogicalFileInfo *   log;
-
-    if( !IsEmptyFileStack( InStack ) ) {
-        log = &(InStack.Current->Logical);
-        log->IsCOrHFile = false;
-    }
-} /* RcIoOverrideIsCOrHFlag */
-
-extern void RcIoSetIsCOrHFlag( void )
-/***********************************/
-{
-    LogicalFileInfo *   log;
-    char                ext[_MAX_EXT];
-
-    if( !IsEmptyFileStack( InStack ) ) {
-        log = &(InStack.Current->Logical);
-        _splitpath( log->Filename, NULL, NULL, NULL, ext );
-        /* if this is a c or h file ext will be '.', '[ch]', '\0' */
-        if( ( ext[1] == 'c' || ext[1] == 'h' || ext[1] == 'C' || ext[1] == 'H' ) && ext[2] == '\0' ) {
-            /* if the logical file is a c or h file */
-            log->IsCOrHFile = true;
-        } else {
-            log->IsCOrHFile = false;
-        }
-    }
-} /* RcIoSetIsCOrHFlag */
-
-extern void RcIoSetLogicalFileInfo( int linenum, const char * filename )
-/**********************************************************************/
-{
-    LogicalFileInfo *   log;
-
-    if( !IsEmptyFileStack( InStack ) ) {
-        log = &(InStack.Current->Logical);
-        log->LineNum = linenum;
-        if( filename != NULL ) {
-            if( log->Filename == NULL ) {
-                log->Filename = RESALLOC( strlen( filename ) + 1 );
-                strcpy( log->Filename, filename );
-            } else if( strcmp( log->Filename, filename ) != 0 ) {
-                RESFREE( log->Filename );
-                log->Filename = RESALLOC( strlen( filename ) + 1 );
-                strcpy( log->Filename, filename );
-            }
-            RcIoSetIsCOrHFlag();
-        }
-    }
-} /* RcIoSetLogicalFileInfo */
-
-extern bool RcIoIsCOrHFile( void )
-/********************************/
-/* returns true if the current file is a .c or .h file, false otherwise */
-{
-    if( IsEmptyFileStack( InStack ) ) {
-        return( false );
-    } else {
-        return( InStack.Current->Logical.IsCOrHFile );
-    }
-} /* RcIoIsCOrHFile */
-
-/*
- * RcIoOpenInput
- * NB when an error occurs this function MUST return without altering errno
- */
-FILE *RcIoOpenInput( const char *filename, bool text_mode )
-/*********************************************************/
-{
-    FILE                *fp;
-    FileStackEntry      *currfile;
-    bool                no_handles_available;
-
-    if( text_mode ) {
-        fp = fopen( filename, "rt" );
-    } else {
-        fp = ResOpenFileRO( filename );
-    }
-    no_handles_available = ( fp == NULL && errno == EMFILE );
-    if( no_handles_available ) {
-        /* set currfile to be the first (not before first) entry */
-        /* close open files except the current input file until able to open */
-        /* don't close the current file because Offset isn't set */
-        for( currfile = InStack.Stack + 1; currfile < InStack.Current && no_handles_available; ++currfile ) {
-            if( currfile->Physical.IsOpen ) {
-                ClosePhysicalFile( &(currfile->Physical) );
-                if( text_mode ) {
-                    fp = fopen( filename, "rt" );
-                } else {
-                    fp = ResOpenFileRO( filename );
-                }
-                no_handles_available = ( fp == NULL && errno == EMFILE );
-            }
-       }
-    }
-    return( fp );
-
-} /* RcIoOpenInput */
-
-extern void RcIoInitStatics( void )
-/*********************************/
+void RcIoInitStatics( void )
+/**************************/
 {
     memset( &InStack, 0, sizeof( FileStack ) );
 }

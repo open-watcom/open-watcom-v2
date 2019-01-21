@@ -1,5 +1,6 @@
-#
-#   err36: illegal attempt to update special target
+# ---------------------------------------------------
+# ERROR 36: Illegal attempt to update special target
+# ---------------------------------------------------
 #
 #   has a companion err36.bat that causes the actual error
 #

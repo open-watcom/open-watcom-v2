@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -29,13 +30,14 @@
 ****************************************************************************/
 
 
-#include "cgstd.h"
+#include "_cgstd.h"
 #include "coderep.h"
 #include "zoiks.h"
 #include "data.h"
 #include "redefby.h"
 #include "nullprop.h"
 #include "conflict.h"
+#include "loadstor.h"
 
 
 /* block flag usage                                                 */
@@ -162,7 +164,7 @@ static  void    PropagateLoadStoreBits( block *start, global_bit_set *id )
     block_edge          *edge;
     block               *blk;
 
-    for( ;; ) {
+    do {
         change = false;
         for( blk = start; blk != NULL; blk = blk->next_block ) {
             blk_dat = blk->dataflow;
@@ -186,10 +188,7 @@ static  void    PropagateLoadStoreBits( block *start, global_bit_set *id )
                 }
             }
         }
-        if( !change ) {
-            break;
-        }
-    }
+    } while( change );
 }
 
 
@@ -278,8 +277,8 @@ static  void    CalculateLoadStore( conflict_node *conf )
 }
 
 
-extern  void    CalcLoadStore( conflict_node *conf )
-/***************************************************
+void    CalcLoadStore( conflict_node *conf )
+/*******************************************
     see below
 */
 {

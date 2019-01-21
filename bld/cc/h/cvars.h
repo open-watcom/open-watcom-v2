@@ -180,7 +180,6 @@ global segment_id   FunctionProfileSegment; /* segment for profiling data block 
 
 global int          MacroDepth;
 global char         *MacroPtr;
-global MEPTR        NextMacro;
 global MEPTR        UndefMacroList;
 global MEPTR        *MacHash;           /* [MACRO_HASH_SIZE] */
 global ENUMPTR      EnumTable[ID_HASH_SIZE];
@@ -251,7 +250,7 @@ global dbug_type    B_UInt64;
 global dbug_type    B_Bool;
 
 global int          OptSize;            /* 100 => make pgm small as possible */
-global char         __Time[10];         /* "HH:MM:SS" for __TIME__ macro */
+global char         __Time[9];          /* "HH:MM:SS" for __TIME__ macro */
 global char         __Date[12];         /* "MMM DD YYYY" for __DATE__ macro */
 
 global unsigned char *MsgFlags;         /* Bit mask of disabled messages */
@@ -438,6 +437,7 @@ extern char         *ForceSlash(char *, char );
 extern char         *CreateFileName( const char *template, const char *extension, bool forceext );
 extern char         *GetSourceDepName( void );
 extern FNAMEPTR     NextDependency( FNAMEPTR );
+extern void         CppPrtfFilenameErr( const char *filename, src_file_type typ, bool print_error );
 
 extern FNAMEPTR     AddFlist(char const *);
 extern FNAMEPTR     FileIndexToFName(unsigned);
@@ -596,6 +596,7 @@ extern void         InitIncFile( void );
 
 /* cinfo.c */
 extern void         SegInit(void);
+extern void         SegFini(void);
 extern segment_id   AddSegName(const char *,const char *,int);
 extern segment_id   DefThreadSeg( void );
 extern void         EmitSegLabels(void);
@@ -631,8 +632,8 @@ extern void         MacroAddComp(void);
 extern void         MacroFini(void);
 extern void         MacroPurge(void);
 extern void         GetMacroToken(void);
-extern TOKEN        SpecialMacro( special_macros spc_macro );
-extern void         DoMacroExpansion(void);
+extern TOKEN        SpecialMacro( MEPTR );
+extern void         DoMacroExpansion( MEPTR );
 
 /* cmac2.c */
 extern TOKEN        ChkControl(void);
@@ -733,6 +734,7 @@ extern void         SetPackAmount( unsigned amount );
 extern bool         GetPragAuxAliasInfo( void );
 extern aux_info     *SearchPragAuxAlias( const char *name );
 extern bool         GetPragAuxAlias( void );
+extern const char   *SkipUnderscorePrefix( const char *str, size_t *len );
 
 /* cprag??? */
 extern void         AsmStmt(void);
@@ -757,7 +759,6 @@ extern void         ReScanInit( const char * );
 extern bool         ReScanToken( void );
 extern char         *ReScanPos( void );
 extern TOKEN        KwLookup( const char *, size_t );
-extern TOKEN        IdLookup( const char *, size_t );
 extern TOKEN        NextToken( void );
 extern TOKEN        PPNextToken( void );
 

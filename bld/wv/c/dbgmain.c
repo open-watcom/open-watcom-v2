@@ -34,7 +34,7 @@
 #include "dbgdata.h"
 #include "dbgerr.h"
 #include "dbglit.h"
-#include "spawn.h"
+#include "wspawn.h"
 #include "dui.h"
 #include "strutil.h"
 #include "dbgscan.h"
@@ -83,7 +83,6 @@ extern void             PredefFini( void );
 extern void             PredefInit( void );
 extern void             ProcAccel( void );
 extern void             RestoreHandlers( void );
-extern void             Suicide( void );
 
 extern int              ScanSavePtr;
 
@@ -126,7 +125,6 @@ void DebugInit( void )
     UpdateFlags = 0;
     _SwitchOn( SW_ERROR_STARTUP );
     _SwitchOn( SW_CHECK_SOURCE_EXISTS );
-    SET_NIL_ADDR( NilAddr );
     TxtBuff  = DbgBuffers;
     *TxtBuff = NULLCHAR;
     NameBuff = DbgBuffers + TXT_LEN + 1;

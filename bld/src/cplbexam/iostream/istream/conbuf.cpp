@@ -5,7 +5,7 @@ class mystream : public istream {
     mystream ( streambuf *str ) : ios ( str ), istream ( str ) {};
 };
 
-void main( void ) {
+int main( void ) {
 
     char    ch;
 

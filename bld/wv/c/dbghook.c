@@ -37,7 +37,7 @@
 #include "dbgerr.h"
 #include "dbglit.h"
 #include "dbghook.h"
-#include "spawn.h"
+#include "wspawn.h"
 #include "dui.h"
 #include "strutil.h"
 #include "dbgscan.h"

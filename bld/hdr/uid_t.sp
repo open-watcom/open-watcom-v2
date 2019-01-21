@@ -1,3 +1,6 @@
+::
+:: POSIX uid_t typedef declaration
+::
 #ifndef _UID_T_DEFINED_
  #define _UID_T_DEFINED_
 :segment LINUX
@@ -16,6 +19,6 @@
  typedef int            uid_t;  /* Used for user IDs                */
  typedef short          muid_t; /* used in messages                 */
 :elsesegment
- typedef unsigned long  uid_t;  /* user identifier */
+ typedef long           uid_t;  /* user identifier */
 :endsegment
 #endif

@@ -42,63 +42,65 @@ extern  char * _scan1();
 /* use scan1 to find the char we are looking for */
 
 #if defined(__SMALL_DATA__)
-#pragma aux    _scan1 = 0xad            /* L1:lodsw  */\
-                        0x38 0xd0       /* cmp al,dl */\
-                        0x74 0x20       /* je L3     */\
-                        0x84 0xc0       /* test al,al*/\
-                        0x74 0x19       /* je L2     */\
-                        0x38 0xd4       /* cmp ah,dl */\
-                        0x74 0x19       /* je L4     */\
-                        0x84 0xe4       /* test ah,ah*/\
-                        0x74 0x11       /* je L2     */\
-                        0xad            /* lodsw     */\
-                        0x38 0xd0       /* cmp al,dl */\
-                        0x74 0x0f       /* je L3     */\
-                        0x84 0xc0       /* test al,al*/\
-                        0x74 0x08       /* je L2     */\
-                        0x38 0xd4       /* cmp ah,dl */\
-                        0x74 0x08       /* je L4     */\
-                        0x84 0xe4       /* test ah,ah*/\
-                        0x75 0xde       /* jne L1    */\
-                        0x31 0xf6       /* L2:xor si,si */\
-                        0xa9            /* test ax,... */\
-                        0x4e            /* L3:dec si */\
-                        0x4e            /* L4:dec si */\
-                        parm caller [si] [dl]\
-                        value [si]\
-                        modify [ax si];
+#pragma aux _scan1 = \
+    "L1: lodsw"         \
+        "cmp  al,dl"    \
+        "je short L3"   \
+        "test al,al"    \
+        "je short L2"   \
+        "cmp  ah,dl"    \
+        "je short L4"   \
+        "test ah,ah"    \
+        "je short L2"   \
+        "lodsw"         \
+        "cmp  al,dl"    \
+        "je short L3"   \
+        "test al,al"    \
+        "je short L2"   \
+        "cmp  ah,dl"    \
+        "je short L4"   \
+        "test ah,ah"    \
+        "jne short L1"  \
+    "L2: xor  si,si"    \
+        "jmp short L5"  \
+    "L3: dec  si"       \
+    "L4: dec  si"       \
+    "L5:"               \
+    __parm __caller [__si] [__dl] \
+    __value         [__si] \
+    __modify        [__ax __si]
 #else
-#pragma aux    _scan1 = \
-                        0x1e            /* push ds */ \
-                        0x8e 0xd9       /* mov ds,cx */ \
-                        0x8c 0xda       /* mov dx,ds */\
-                        0xad            /* L1:lodsw  */\
-                        0x38 0xd8       /* cmp al,bl */\
-                        0x74 0x22       /* je L3     */\
-                        0x84 0xc0       /* test al,al*/\
-                        0x74 0x19       /* je L2     */\
-                        0x38 0xdc       /* cmp ah,bl */\
-                        0x74 0x1b       /* je L4     */\
-                        0x84 0xe4       /* test ah,ah*/\
-                        0x74 0x11       /* je L2     */\
-                        0xad            /* lodsw     */\
-                        0x38 0xd8       /* cmp al,bl */\
-                        0x74 0x11       /* je L3     */\
-                        0x84 0xc0       /* test al,al*/\
-                        0x74 0x08       /* je L2     */\
-                        0x38 0xdc       /* cmp ah,bl */\
-                        0x74 0x0a       /* je L4     */\
-                        0x84 0xe4       /* test ah,ah*/\
-                        0x75 0xde       /* jne L1    */\
-                        0x31 0xf6       /* L2:xor si,si*/\
-                        0x89 0xf2       /* mov dx,si */\
-                        0xa9            /* test ax,... */\
-                        0x4e            /* L3:dec si */\
-                        0x4e            /* L4:dec si */\
-                        0x1f            /* pop ds */ \
-                        parm caller [cx si] [bl]\
-                        value [dx si]\
-                        modify [ax dx si];
+#pragma aux _scan1 = \
+        "push ds"       \
+        "mov  ds,cx"    \
+        "mov  dx,ds"    \
+    "L1: lodsw"         \
+        "cmp  al,bl"    \
+        "je short L3"   \
+        "test al,al"    \
+        "je short L2"   \
+        "cmp  ah,bl"    \
+        "je short L4"   \
+        "test ah,ah"    \
+        "je short L2"   \
+        "lodsw"         \
+        "cmp  al,bl"    \
+        "je short L3"   \
+        "test al,al"    \
+        "je short L2"   \
+        "cmp  ah,bl"    \
+        "je short L4"   \
+        "test ah,ah"    \
+        "jne short L1"  \
+    "L2: xor  si,si"    \
+        "mov  dx,si"    \
+        "jmp short L5"  \
+    "L3: dec  si"       \
+    "L4: dec  si"       \
+    "L5: pop  ds"       \
+    __parm __caller [__cx __si] [__bl] \
+    __value         [__dx __si] \
+    __modify        [__ax __dx __si]
 #endif
 #endif
 

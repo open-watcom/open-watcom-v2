@@ -146,7 +146,7 @@ pch_status PCHReadPragmas( void )
         CMemFree( f );
     }
     max_index = PCHReadUInt();
-    size = max_index * sizeof( AUX_INFO * );
+    size = max_index * sizeof( *infoTranslate );
     infoTranslate = CMemAlloc( size );
     memset( infoTranslate, 0, size );
     // read all aux_info
@@ -154,7 +154,7 @@ pch_status PCHReadPragmas( void )
         if( index < PCH_FIRST_USER_INDEX ) {
             info = BuiltinAuxInfo + index - PCH_FIRST_INDEX;
         } else {
-            info = CMemAlloc( sizeof( AUX_INFO ) );
+            info = CMemAlloc( sizeof( *info ) );
         }
         infoTranslate[index] = info;
         readAuxInfo( info );

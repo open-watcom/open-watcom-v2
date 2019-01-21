@@ -128,14 +128,14 @@ static BRI_Handle* bri_handle;  // handle for browse-file writer
 
 
 static char* brinfPchGetBuffer  // GET BUFFER FOR READ
-    ( BRI_PCH_CTL* ctl        // - control
+    ( BRI_PCH_CTL* ctl          // - control
     , unsigned size )           // - size required
 {
     if( size > ctl->bsize ) {
         CMemFreePtr( &ctl->buffer );
-        ctl->buffer = CMemAlloc( ( size + 1024 - 1 ) &  -1024 );
+        ctl->buffer = CMemAlloc( _RoundUp( size, 1024 ) );
     }
-    return ctl->buffer;
+    return( ctl->buffer );
 }
 
 
@@ -145,7 +145,7 @@ static BRI_PCH_CTL* brinfPchInit // INITIALIZATION OF CONTROL INFO
     ctl->bsize = 0;
     ctl->buffer = 0;
     brinfPchGetBuffer( ctl, 8 * 1024 );
-    return ctl;
+    return( ctl );
 }
 
 
@@ -153,7 +153,7 @@ static BRI_PCH_CTL* brinfPchFini // COMPLETION OF CONTROL INFO
     ( BRI_PCH_CTL* ctl )         // - control
 {
     CMemFreePtr( &ctl->buffer );
-    return ctl;
+    return( ctl );
 }
 
 
@@ -161,7 +161,7 @@ static uint_8 brinfReadPch1     // READ ONE BYTE FROM PCH
     ( BRI_PCH_CTL * ctl )     // - control
 {
     PCHReadUnaligned( ctl->buffer, 1 );
-    return *ctl->buffer;
+    return( *ctl->buffer );
 }
 
 
@@ -170,7 +170,7 @@ static uint_32 brinfReadPch4    // READ FOUR BYTES FROM PCH
 {
     ctl = ctl;
 
-    return PCHReadUIntUnaligned();
+    return( PCHReadUIntUnaligned() );
 }
 
 
@@ -178,7 +178,7 @@ static void* brinfReadPch       // READ SUPPLIED # OF BYTES
     ( BRI_PCH_CTL * ctl       // - control
     , unsigned size )           // - size required
 {
-    return PCHReadUnaligned( brinfPchGetBuffer( ctl, size ), size );
+    return( PCHReadUnaligned( brinfPchGetBuffer( ctl, size ), size ) );
 }
 
 
@@ -247,7 +247,7 @@ static ACTBLK* findActiveScope  // FIND ACTIVE SCOPE ENTRY
             break;
         }
     } RingIterEnd( curr );
-    return retn;
+    return( retn );
 }
 
 
@@ -275,33 +275,33 @@ void _dbgScope
     IfDbgToggle( browse ) {
         VBUF vbuf;
         switch( scope->id ) {
-          case SCOPE_FILE :
+        case SCOPE_FILE :
             printf( "%s: File Scope %x\n", text, scope );
             break;
-          case SCOPE_CLASS :
+        case SCOPE_CLASS :
             printf( "%s: Class Scope: %x", text, scope );
             PrintFullType( scope->owner.type );
             break;
-          case SCOPE_FUNCTION :
+        case SCOPE_FUNCTION :
             printf( "%s: Function Scope: %x %s\n"
                   , text
                   , scope
                   , DbgSymNameFull( scope->owner.sym, &vbuf ) );
             VbufFree( &vbuf );
             break;
-          case SCOPE_BLOCK :
+        case SCOPE_BLOCK :
             printf( "%s: Block Scope: %x %u\n"
                   , text
                   , scope
                   , scope->owner.index );
             break;
-          case SCOPE_TEMPLATE_DECL :
+        case SCOPE_TEMPLATE_DECL :
             printf( "%s: Template Declaration Scope %x\n", text, scope );
             break;
-          case SCOPE_TEMPLATE_INST :
+        case SCOPE_TEMPLATE_INST :
             printf( "%s: Template Instantiation Scope %x\n", text, scope );
             break;
-          case SCOPE_TEMPLATE_PARM :
+        case SCOPE_TEMPLATE_PARM :
             printf( "%s: Template Parameters Scope %x\n", text, scope );
             break;
         }
@@ -354,7 +354,7 @@ static TOKEN_LOCN const* adjustLocn // ADJUST FOR UNSPECIFIED LOCATION
             locn = NULL;
         }
     }
-    return locn;
+    return( locn );
 }
 
 
@@ -383,7 +383,7 @@ static bool activeScopesReset   // RESET ACTIVE SCOPES
     PSTK_ITER sym_iter;         // - iterator: new active scopes
     SCOPE ascope;               // - scope: old active scopes
     SCOPE sscope;               // - scope: new active scopes
-    bool retb;                  // - return: true ==> scope was adjusted
+    bool ok;                    // - return: true ==> scope was adjusted
     bool short_circuit;         // - can short-circuit scope adjustment
     bool in_template;           // - active scope is in a TEMPLATE_PARM scope
 
@@ -398,15 +398,15 @@ static bool activeScopesReset   // RESET ACTIVE SCOPES
             scope = scope->enclosing;
         }
         switch( scope->id ) {
-          default :
+        default :
             if( scope == top ) {
                 short_circuit = true;
                 break;
             }
-            // drops thru
-          case SCOPE_TEMPLATE_DECL :
-          case SCOPE_TEMPLATE_PARM :
-          case SCOPE_TEMPLATE_INST :
+            /* fall through */
+        case SCOPE_TEMPLATE_DECL :
+        case SCOPE_TEMPLATE_PARM :
+        case SCOPE_TEMPLATE_INST :
             short_circuit = false;
             break;
         }
@@ -424,9 +424,11 @@ static bool activeScopesReset   // RESET ACTIVE SCOPES
             for( ; ; ) {
                 ascope = PstkIterUpNext( &act_iter );
                 sscope = PstkIterDnNext( &sym_iter );
-                if( ascope != sscope ) break;
-                if( ascope == NULL ) break;
-                if( ascope->id == SCOPE_TEMPLATE_PARM ){
+                if( ascope != sscope )
+                    break;
+                if( ascope == NULL )
+                    break;
+                if( ascope->id == SCOPE_TEMPLATE_PARM ) {
                     in_template = true;
                 }
             }
@@ -436,7 +438,9 @@ static bool activeScopesReset   // RESET ACTIVE SCOPES
                 for( ; ; ) {
                     SCOPE top = PstkPopElement( &active_scopes );
                     closeScopeIc( top );
-                    if( top == ascope ) break;
+                    if( top == ascope ) {
+                        break;
+                    }
                 }
             }
             if( !in_template && sscope != NULL ) {
@@ -445,7 +449,8 @@ static bool activeScopesReset   // RESET ACTIVE SCOPES
                         in_template = true;
                         break;
                     }
-                    if( scope == sscope ) break;
+                    if( scope == sscope )
+                        break;
                     scope = scope->enclosing;
                 }
             }
@@ -463,14 +468,16 @@ static bool activeScopesReset   // RESET ACTIVE SCOPES
             }
             for( ; ; ) {
                 SCOPE top = PstkPopElement( &sym_scopes );
-                if( NULL == top ) break;
+                if( NULL == top ) {
+                    break;
+                }
             }
         }
-        retb = true;
+        ok = true;
     } else {
-        retb = false;
+        ok = false;
     }
-    return( retb );
+    return( ok );
 }
 
 #undef ShcVerify
@@ -479,25 +486,25 @@ static bool activeScopesReset   // RESET ACTIVE SCOPES
 static bool activeScopesAdjust  // ADJUST ACTIVE SCOPES
     ( SYMBOL sym )
 {
-    bool retb;                  // - return: true ==> scope for symbol
+    bool ok;                    // - return: true ==> scope for symbol
     TOKEN_LOCN *locn;
 
     if( NULL == sym->name ) {
-        retb = false;
+        ok = false;
     } else {
         SCOPE scope = sym->name->containing;
         if( NULL == scope ) {
-            retb = false;
+            ok = false;
         } else {
-            if( sym->locn != NULL ){
+            if( sym->locn != NULL ) {
                 locn = &sym->locn->tl;
             } else {
                 locn = NULL;
             }
-            retb = activeScopesReset( scope, locn );
+            ok = activeScopesReset( scope, locn );
         }
     }
-    return( retb );
+    return( ok );
 }
 
 
@@ -517,7 +524,8 @@ static void activeScopesClose       // CLOSE ACTIVE SCOPES
     if( canWriteIc() ) {
         for( ; ; ) {
             SCOPE act = PstkPopElement( &active_scopes );
-            if( NULL == act ) break;
+            if( NULL == act )
+                break;
             closeScopeIc( act );
         }
     }
@@ -569,7 +577,8 @@ static void brinfIcReference    // WRITE OUT A REFERENCE, IF REQ'D
     TOKEN_LOCN curr_locn;
 
     locn = adjustLocn( locn, &curr_locn );
-    if( NULL == locn ) return;
+    if( NULL == locn )
+        return;
     if( canWriteIc()
      && activeScopesReset( GetCurrScope(), locn ) ) {
         BrinfIcReference( opcode, ptr, locn );
@@ -610,23 +619,22 @@ static void typeUsage           // TYPE USAGE
     if( CompFlags.optbr_t ) {
         for( ; type != NULL; type = type->of ) {
             switch( type->id ) {
-              case TYP_ENUM :
-              case TYP_CLASS :
+            case TYP_ENUM :
+            case TYP_CLASS :
                 brinfIcReference( IC_BR_REF_TYPE, type, locn );
                 break;
-              case TYP_MEMBER_POINTER :
+            case TYP_MEMBER_POINTER :
                 brinfIcReference( IC_BR_REF_TYPE, type->u.mp.host, locn );
                 continue;
-              case TYP_FUNCTION :
+            case TYP_FUNCTION :
               {
                 arg_list *args = type->u.f.args;
                 unsigned i = args->num_args;
                 while( i-- > 0 ) {
                     typeUsage( args->type_list[i], locn );
                 }
-              }
-              // drops thru
-              default :
+              } /* fall through */
+            default :
                 continue;
             }
             break;
@@ -669,7 +677,7 @@ static int brinfWrite           // WRITE CALLBACK FUNCTION
     int result;
 
     result = fwrite(buf, 1, len, (FILE *)cookie);
-    return result;
+    return( result );
 }
 
 
@@ -698,7 +706,7 @@ static int brinfWritePch        // PCH WRITE CALLBACK FUNCTION
 {
     DbgStmt( PCHVerifyFile( cookie ) );
     PCHWriteUnaligned( buf, len );
-    return len;
+    return( len );
 }
 
 
@@ -709,7 +717,7 @@ static long brinfLSeekPch       // PCH LSEEK CALLBACK FUNCTION
 {
     DbgStmt( PCHVerifyFile( cookie ) );
     PCHFlushBuffer();
-    return PCHSeek( offset, whence );
+    return( PCHSeek( offset, whence ) );
 }
 
 
@@ -930,46 +938,46 @@ void BrinfReferenceSymbol       // SYMBOL REFERENCE
 
 
 MEPTR BrinfDeclMacro            // DECLARE MACRO
-    ( MEPTR mac )               // - the macro
+    ( MEPTR mentry )            // - the macro
 {
-    if( NULL != mac
+    if( NULL != mentry
      && CompFlags.optbr_p ) {
         if( canWriteIc() ) {
-            MACVALUE* val = BrinfMacAddValue( mac );
+            MACVALUE* val = BrinfMacAddValue( mentry );
             ExtraRptIncrementCtr( ctr_defn_macro );
             BrinfSrcMacDecl( val );
         }
     }
-    return mac;
+    return( mentry );
 }
 
 
 void BrinfDependsMacroValue     // DEPENDENCY: MACRO VALUE
-    ( MEPTR mac )               // - the macro
+    ( MEPTR mentry )            // - the macro
 {
     MACVALUE* val;              // - value for macro
 
     if( BrinfActive() ) {
         ExtraRptIncrementCtr( ctr_dep_macro_value );
-        val = BrinfMacAddValue( mac );
-        BrinfDepMacAdd( mac, val, MVT_VALUE );
+        val = BrinfMacAddValue( mentry );
+        BrinfDepMacAdd( mentry, val, MVT_VALUE );
     }
 }
 
 
 MEPTR BrinfReferenceMacro       // REFERENCE A MACRO VALUE
-    ( MEPTR mac )               // - the macro
+    ( MEPTR mentry )            // - the macro
 {
     if( enableMacRefs
      && CompFlags.optbr_p ) {
-        MACVALUE* val = BrinfMacAddValue( mac );
+        MACVALUE* val = BrinfMacAddValue( mentry );
         ExtraRptIncrementCtr( ctr_ref_macro );
         // the following is over-conservative, since a reference is also
         // generated for #ifdef, #ifndef
-        BrinfDependsMacroValue( mac );
+        BrinfDependsMacroValue( mentry );
         BrinfSrcMacReference( val );
     }
-    return mac;
+    return( mentry );
 }
 
 
@@ -980,32 +988,32 @@ bool BrinfDependsMacroDefined   // DEPENDENCY: MACRO DEFINED OR NOT
 {
     MACVALUE* val;              // - value for macro
     MAC_VTYPE type;             // - type of dependency
-    MEPTR mac;                  // - NULL or entry def'ed or undef'ed
+    MEPTR mentry;               // - NULL or entry def'ed or undef'ed
 
     if( BrinfActive() ) {
         ExtraRptIncrementCtr( ctr_dep_macro_defined );
         if( defed ) {
             val = BrinfMacAddDefin( name, nlen );
             enableMacRefs = false;
-            mac = MacroLookup( name, nlen );
+            mentry = MacroLookup( name, nlen );
             enableMacRefs = true;
             type = MVT_DEFINED;
         } else {
             val = BrinfMacAddUndef( name, nlen );
-            mac = NULL;
+            mentry = NULL;
             type = MVT_UNDEFED;
         }
-        BrinfDepMacAdd( mac, val, type );
+        BrinfDepMacAdd( mentry, val, type );
     }
-    return defed;
+    return( defed );
 }
 
 
 void BrinfUndefMacro            // UNDEFINE A MACRO
-    ( MEPTR mac )               // - that macro
+    ( MEPTR mentry )            // - that macro
 {
     if( BrinfActive() ) {
-        BrinfMacUndef( mac, SrcFileCurrent() );
+        BrinfMacUndef( mentry, SrcFileCurrent() );
     }
 }
 
@@ -1114,7 +1122,7 @@ void BrinfWrite                 // WRITE OUT BROWSE INFORMATION
 static void startBrinfPCH       // START A BROWSE-FILE WHICH HAS PCH REFERENCE
     ( void )
 {
-    char full_name[ _MAX_PATH ];
+    char full_name[_MAX_PATH];
     char *fname;
     SRCFILE srcf;
     TOKEN_LOCN start = { 0, 0, 0 };
@@ -1149,7 +1157,7 @@ unsigned long BrinfPch          // WRITE OUT PCH IF REQ'D
     } else {
         retn = 0;
     }
-    return retn;
+    return( retn );
 }
 
 
@@ -1277,15 +1285,15 @@ static void brinfFini           // COMPLETION OF PROCESSING FOR BROWSE INFO
     if( brinfo_state != BRS_CMDLINE
      && brinfo_state != BRS_INACTIVE ) {
         switch( brinfo_state ) {
-          DbgDefault( "impossible brinfo state" );
-          case BRS_COLLECTING :
+        DbgDefault( "impossible brinfo state" );
+        case BRS_COLLECTING :
             completeInputPhase();
             BrinfDepFini();
             break;
-          case BRS_COLLECTED :
+        case BRS_COLLECTED :
             BrinfDepFini();
             break;
-          case BRS_WRITING :
+        case BRS_WRITING :
             brinfClose();
             BrinfDepFini();
             break;

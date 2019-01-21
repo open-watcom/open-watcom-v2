@@ -42,6 +42,7 @@
 #include "liballoc.h"
 #include "_direct.h"
 #include "_doslfn.h"
+#include "pathmac.h"
 
 
 _WCRTLINK CHAR_TYPE *__F_NAME(getcwd,_wgetcwd)( CHAR_TYPE *buf, size_t size )
@@ -62,8 +63,8 @@ _WCRTLINK CHAR_TYPE *__F_NAME(getcwd,_wgetcwd)( CHAR_TYPE *buf, size_t size )
 
     /* get current drive and insert into cwd[0] */
     cwd[0] = TinyGetCurrDrive() + 'A';
-    cwd[1] = ':';
-    cwd[2] = '\\';
+    cwd[1] = DRV_SEP;
+    cwd[2] = DIR_SEP;
 #ifdef __WIDECHAR__
     len = _mbslen( (unsigned char *)cwd ) + 1;
 #else

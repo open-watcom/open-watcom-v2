@@ -62,7 +62,7 @@ static  sym_id  LnkNewGlobal( sym_id local ) {
 // Allocate a global symbol and link it into the global list.
 
     sym_id      global;
-    int         len;
+    uint        len;
 
     len = sizeof( symbol ) + AllocName( local->u.ns.u2.name_len );
     global = FMemAlloc( len );
@@ -80,20 +80,22 @@ sym_id        SearchGList( sym_id local ) {
 
     sym_id      head;
     sym_id      tail;
-    int         name_len;
+    uint        name_len;
 
     name_len = local->u.ns.u2.name_len;
     HashValue = CalcHash( local->u.ns.name, name_len );
     head = GHashTable[ HashValue ].h_head;
-    if( head == NULL ) return( NULL );
+    if( head == NULL )
+        return( NULL );
     tail = GHashTable[ HashValue ].h_tail;
     for(;;) {
         if( ( head->u.ns.u2.name_len == name_len ) &&
             ( memcmp( &local->u.ns.name, &head->u.ns.name, name_len ) == 0 ) &&
             ( IsIntrinsic(head->u.ns.flags) == IsIntrinsic(local->u.ns.flags) ) ) {
-             return( head );
+            return( head );
         }
-        if( head == tail ) return( NULL );
+        if( head == tail )
+            return( NULL );
         head = head->u.ns.link;
     }
 }

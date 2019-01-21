@@ -31,7 +31,7 @@
 ****************************************************************************/
 
 
-#include "cgstd.h"
+#include "_cgstd.h"
 #include "coderep.h"
 #include "zoiks.h"
 #include "cgmem.h"
@@ -45,6 +45,14 @@
 #include "insutil.h"
 #include "utils.h"
 
+
+typedef struct {
+    hw_reg_set          reg;                    // actual register bit
+    dom_bit_set         dom_usage;              // dominator set for all uses/references
+    dom_bit_set         post_dom_usage;         // post-dominator "
+    block               *save;                  // block we have picked to save reg in
+    block               *restore;               // ditto for restore
+} reg_flow_info;
 
 extern  hw_reg_set      PushRegs[];
 
@@ -221,14 +229,6 @@ static int CountDomBits( dom_bit_set *dbits )
     return( bitCount );
 }
 
-typedef struct {
-    hw_reg_set          reg;                    // actual register bit
-    dom_bit_set         dom_usage;              // dominator set for all uses/references
-    dom_bit_set         post_dom_usage;         // post-dominator "
-    block               *save;                  // block we have picked to save reg in
-    block               *restore;               // ditto for restore
-} reg_flow_info;
-
 static void GetRegUsage( reg_flow_info *info )
 /********************************************/
 {
@@ -300,7 +300,7 @@ void FlowSave( hw_reg_set *preg )
     block               *save;
     block               *restore;
     instruction         *ins;
-    type_class_def      reg_type;
+    type_class_def      reg_type_class;
 
     HW_CAsgn( flowedRegs, HW_EMPTY );
     if( _IsntModel( FLOW_REG_SAVES ) )
@@ -322,14 +322,15 @@ void FlowSave( hw_reg_set *preg )
     InitBlockArray();
     curr_push = PushRegs;
     for( curr_reg = 0; curr_reg < num_regs; curr_reg++ ) {
-        while( !HW_Ovlap( *curr_push, *preg ) ) curr_push++;
+        while( !HW_Ovlap( *curr_push, *preg ) )
+            curr_push++;
         HW_Asgn( reg_info[curr_reg].reg, *curr_push );
         reg_info[curr_reg].save = NULL;
         reg_info[curr_reg].restore = NULL;
-    #if _TARGET & _TARG_INTEL
+#if _TARGET & _TARG_INTEL
         if( HW_COvlap( *curr_push, HW_BP ) )
             continue;  // don't mess with BP - it's magical
-    #endif
+#endif
         GetRegUsage( &reg_info[curr_reg] );
         best = 0;
         for( i = 0; i < num_blocks; i++ ) {
@@ -356,16 +357,16 @@ void FlowSave( hw_reg_set *preg )
         save = reg_info[curr_reg].save;
         restore = reg_info[curr_reg].restore;
         if( ( save != NULL && save != HeadBlock ) && ( restore != NULL && !_IsBlkAttr( restore, BLK_RETURN ) ) ) {
-            reg_type = WD;
-        #if _TARGET & _TARG_INTEL
+            reg_type_class = WD;
+#if _TARGET & _TARG_INTEL
             if( IsSegReg( reg_info[curr_reg].reg ) ) {
-                reg_type = U2;
+                reg_type_class = U2;
             }
-        #endif
-            ins = MakeUnary( OP_PUSH, AllocRegName( reg_info[curr_reg].reg ), NULL, reg_type );
+#endif
+            ins = MakeUnary( OP_PUSH, AllocRegName( reg_info[curr_reg].reg ), NULL, reg_type_class );
             ResetGenEntry( ins );
             PrefixIns( save->ins.hd.next, ins );
-            ins = MakeUnary( OP_POP, NULL, AllocRegName( reg_info[curr_reg].reg ), reg_type );
+            ins = MakeUnary( OP_POP, NULL, AllocRegName( reg_info[curr_reg].reg ), reg_type_class );
             ins->num_operands = 0;
             ResetGenEntry( ins );
             SuffixIns( restore->ins.hd.prev, ins );

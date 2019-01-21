@@ -172,7 +172,7 @@ static void displayDiagInfo(    // DISPLAY DIAG_INFO FOR ARGUMENT
     SYMBOL orig )               // - original function
 {
     ConversionTypesSet( diag->bad_src, diag->bad_tgt );
-    PTreeErrorExpr( expr, msg  );
+    PTreeErrorExpr( expr, msg );
     InfSymbolDeclaration( orig );
     if( diag->bad_parm == 0 ) {
         CErr1( INF_THIS_MISMATCH );
@@ -192,7 +192,7 @@ void CallDiagNoMatch(           // DIAGNOSE NO MATCHES FOR CALL
     PTREE expr,                 // - call expression
     MSG_NUM msg_one,            // - message: one function
     MSG_NUM msg_many,           // - message: many functions
-    PTREE this_node,            // - this node (or NULL)
+    PTREE node_this,            // - this node (or NULL)
     SYMBOL orig,                // - original symbol for overloading
     FNOV_DIAG *fnov_diag )      // - overload diagnosis information
 {
@@ -201,19 +201,19 @@ void CallDiagNoMatch(           // DIAGNOSE NO MATCHES FOR CALL
     unsigned bad_parm;          // - index of bad argument
 
     switch( fnov_diag->num_candidates ) {
-      case 0 :
+    case 0 :
         if( SymIsFunctionTemplateModel( orig ) ) {
             PTreeErrorExprSym( expr, ERR_TEMPLATE_FN_MISMATCH, orig );
         } else {
             PTreeErrorExprSym( expr, ERR_PARM_COUNT_MISMATCH, orig );
         }
         break;
-      case 1 :
+    case 1 :
         if( !SymIsFunctionTemplateModel( orig ) ) {
             if( FnovRejectParm( fnov_diag, &bad_parm ) < 0 ) {
                 diag.bad_parm = 0;
-                diag.bad_src = NodeType( this_node );
-                diag.bad_tgt = TypeThisForCall( this_node, orig );
+                diag.bad_src = NodeType( node_this );
+                diag.bad_tgt = TypeThisForCall( node_this, orig );
             } else {
                 arg = diagnoseArg( expr, bad_parm );
                 orig = pickCorrectFunction( orig, expr );
@@ -222,8 +222,8 @@ void CallDiagNoMatch(           // DIAGNOSE NO MATCHES FOR CALL
             displayDiagInfo( &diag, msg_one, expr, orig );
             break;
         }
-        // fall through
-      default :
+        /* fall through */
+    default :
         CallDiagnoseRejects( expr, msg_many, fnov_diag );
         break;
     }
@@ -241,10 +241,10 @@ void CtorDiagNoMatch(           // DIAGNOSE NO MATCHES FOR CTOR
     DIAG_INFO diag;
 
     switch( fnov_diag->num_candidates ) {
-      case 0 :
+    case 0 :
         PTreeErrorExpr( expr, msg_none );
         break;
-      case 1 :
+    case 1 :
         FnovRejectParm( fnov_diag, &bad_parm );    // must be before FnovNextRejectEntry
         orig = FnovNextRejectEntry( fnov_diag );
         if( orig == NULL ) {
@@ -256,7 +256,7 @@ void CtorDiagNoMatch(           // DIAGNOSE NO MATCHES FOR CTOR
             displayDiagInfo( &diag, msg_none, expr, orig );
         }
         break;
-      default :
+    default :
         CallDiagnoseRejects( expr, msg_none, fnov_diag );
         break;
     }
@@ -276,10 +276,10 @@ void UdcDiagNoMatch(            // DIAGNOSE NO MATCHES FOR UDC LOOKUP
     diag.bad_src = NodeType( src );
     diag.bad_tgt = tgt_type;
     switch( fnov_diag->num_candidates ) {
-      case 0 :
+    case 0 :
         PTreeErrorExpr( src, msg_none );
         break;
-      case 1 :
+    case 1 :
         orig = FnovNextRejectEntry( fnov_diag );
         if( orig == NULL ) {
             /* no fns matched at all but there happened to be one */
@@ -291,7 +291,7 @@ void UdcDiagNoMatch(            // DIAGNOSE NO MATCHES FOR UDC LOOKUP
             displayDiagInfo( &diag, msg_none, src, orig );
         }
         break;
-      default :
+    default :
         CallDiagnoseRejects( src, msg_many, fnov_diag );
         ConversionTypesSet( diag.bad_src, diag.bad_tgt );
         ConversionDiagnoseInf();
@@ -307,5 +307,5 @@ CALL_DIAG* CallDiagFromCnvDiag  // MAKE CALL_DIAG FROM CNV_DIAG
     call_diag->msg_ambiguous = cnv_diag->msg_ambiguous;
     call_diag->msg_no_match_one = cnv_diag->msg_impossible;
     call_diag->msg_no_match_many = cnv_diag->msg_impossible;
-    return call_diag;
+    return( call_diag );
 }

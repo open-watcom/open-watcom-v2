@@ -31,10 +31,8 @@
 ****************************************************************************/
 
 
-#include "cgstd.h"
-#include "targsys.h"
+#include "_cgstd.h"
 #include "opcodes.h"
-#include "dmpinc.h"
 #include "dumpio.h"
 #include "dumpref.h"
 

@@ -34,7 +34,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
-#include <malloc.h>
+#include <alloca.h>
 #include <windows.h>
 #include "ntext.h"
 #include "initfini.h"

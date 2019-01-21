@@ -163,106 +163,79 @@ typedef enum {
 // check PTypeCombine if any new fields are added
 struct decl_spec {
     DECL_SPEC           *prev;
-    SYMBOL              typedef_defined;    // typedef needs to be def'd
-    SYMBOL              prev_sym;           // 'p' in char *p, q;
-    SCOPE               scope;              // 'S::' part of the type
-    TYPE                partial;            // typedef part of decl-spec
-    TYPE                ms_declspec_fnmod;  // __declspec( <fn-modifier> )
-    LINKAGE             linkage;            // non-NULL if extern "?"
-    PTREE               id;                 // id from typedef references
-    NAME                name;              // name of typedef ('C' in class C)
-    stg_class_t         stg_class;          // storage class part of decl-spec
-    scalar_t            scalar;             // scalar tokens part of decl-spec
-    specifier_t         specifier;          // type qualifiers part of decl-spec
-    ms_declspec_t       ms_declspec;        // __declspec( <id> ) modifiers
+    SYMBOL              typedef_defined;            // typedef needs to be def'd
+    SYMBOL              prev_sym;                   // 'p' in char *p, q;
+    SCOPE               scope;                      // 'S::' part of the type
+    TYPE                partial;                    // typedef part of decl-spec
+    TYPE                ms_declspec_fnmod;          // __declspec( <fn-modifier> )
+    LINKAGE             linkage;                    // non-NULL if extern "?"
+    PTREE               id;                         // id from typedef references
+    NAME                name;                       // name of typedef ('C' in class C)
+    stg_class_t         stg_class;                  // storage class part of decl-spec
+    scalar_t            scalar;                     // scalar tokens part of decl-spec
+    specifier_t         specifier;                  // type qualifiers part of decl-spec
+    ms_declspec_t       ms_declspec;                // __declspec( <id> ) modifiers
 
-    int                 : 0;
-    unsigned            type_defined : 1;   // a type was defined
-    unsigned            type_declared : 1;  // a type was declared
-    unsigned            ctor_name : 1;      // decl-spec can be a ctor-name
-    unsigned            is_default : 1;     // no decl-spec has been specified
-    unsigned            diagnosed : 1;      // use of decl-spec diagnosed
-    unsigned            decl_checked : 1;   // type checked (& built) already
-    unsigned            type_elaborated : 1;// "class C" or "enum E"
-    unsigned            nameless_allowed :1;// nameless declaration is allowed
+    int                                     : 0;
+    bool                type_defined        : 1;    // a type was defined
+    bool                type_declared       : 1;    // a type was declared
+    bool                ctor_name           : 1;    // decl-spec can be a ctor-name
+    bool                is_default          : 1;    // no decl-spec has been specified
+    bool                diagnosed           : 1;    // use of decl-spec diagnosed
+    bool                decl_checked        : 1;    // type checked (& built) already
+    bool                type_elaborated     : 1;    // "class C" or "enum E"
+    bool                nameless_allowed    : 1;    // nameless declaration is allowed
 
-    unsigned            generic : 1;        // <class T, ... templare type arg
-    unsigned            class_instantiation:1;// C<X,x> instantiation
-    unsigned            no_more_linkage : 1;// no more extern "?" allowed
-    unsigned            arg_declspec : 1;   // decl-specs for an argument
-    unsigned            class_idiom : 1;    // "class C;" idiom used
+    bool                generic             : 1;    // <class T, ... templare type arg
+    bool                class_instantiation : 1;    // C<X,x> instantiation
+    bool                no_more_linkage     : 1;    // no more extern "?" allowed
+    bool                arg_declspec        : 1;    // decl-specs for an argument
+    bool                class_idiom         : 1;    // "class C;" idiom used
 
-    int : 0;
+    int                                     : 0;
 };
 
 typedef struct decl_info DECL_INFO;
 PCH_struct decl_info {
     DECL_INFO           *next;
-    DECL_INFO           *parms;         // function parms (NULLable)
-    PTREE               id;             // declarator id (NULLable)
-    SCOPE               scope;          // 'C' part of 'C::id' (NULLable)
-    SCOPE               friend_scope;   // SCOPE friend should be in
-    SYMBOL              sym;            // declared symbol (NULLable)
-    SYMBOL              generic_sym;    // symbol for template <class T>
-    SYMBOL              proto_sym;      // SC_DEFAULT sym for this parm
-    TYPE                list;           // list of declarator types
-    TYPE                type;           // final declared type
-    PTREE               defarg_expr;    // initial/default value (NULLable)
-    REWRITE             *body;          // storage for function body
-    REWRITE             *mem_init;      // storage for mem-initializer
-    REWRITE             *defarg_rewrite;// storage for default argument
-    NAME                name;           // name of symbol (NULLable)
-    TOKEN_LOCN          init_locn;      // location of '(' for inits
-    unsigned            sym_used : 1;   // don't free 'sym'
-    unsigned            friend_fn : 1;  // symbol is a friend function
-    unsigned            fn_defn : 1;    // function is being defined
-    unsigned            template_member:1;// declaring a template member
-    unsigned            has_dspec : 1;  // has decl-specifiers (set by DeclFunction)
-    unsigned            has_defarg : 1; // has default argument
-    unsigned            explicit_parms : 1;// explicit parms in declarator
-    unsigned            free : 1;       // used for precompiled headers
+    DECL_INFO           *parms;                     // function parms (NULLable)
+    PTREE               id;                         // declarator id (NULLable)
+    SCOPE               scope;                      // 'C' part of 'C::id' (NULLable)
+    SCOPE               friend_scope;               // SCOPE friend should be in
+    SYMBOL              sym;                        // declared symbol (NULLable)
+    SYMBOL              generic_sym;                // symbol for template <class T>
+    SYMBOL              proto_sym;                  // SC_DEFAULT sym for this parm
+    TYPE                list;                       // list of declarator types
+    TYPE                type;                       // final declared type
+    PTREE               defarg_expr;                // initial/default value (NULLable)
+    REWRITE             *body;                      // storage for function body
+    REWRITE             *mem_init;                  // storage for mem-initializer
+    REWRITE             *defarg_rewrite;            // storage for default argument
+    NAME                name;                       // name of symbol (NULLable)
+    TOKEN_LOCN          init_locn;                  // location of '(' for inits
+    bool                sym_used            : 1;    // don't free 'sym'
+    bool                friend_fn           : 1;    // symbol is a friend function
+    bool                fn_defn             : 1;    // function is being defined
+    bool                template_member     : 1;    // declaring a template member
+    bool                has_dspec           : 1;    // has decl-specifiers (set by DeclFunction)
+    bool                has_defarg          : 1;    // has default argument
+    bool                explicit_parms      : 1;    // explicit parms in declarator
+    bool                free                : 1;    // used for precompiled headers
 };
 
 // types dealing with representing types
 
 typedef enum {
-    TYP_ERROR,
-    TYP_BOOL,
-    TYP_CHAR,
-    TYP_SCHAR,
-    TYP_UCHAR,
-    TYP_WCHAR,
-    TYP_SSHORT,
-    TYP_USHORT,
-    TYP_SINT,
-    TYP_UINT,
-    TYP_SLONG,
-    TYP_ULONG,
-    TYP_SLONG64,
-    TYP_ULONG64,
-    TYP_FLOAT,
-    TYP_DOUBLE,
-    TYP_LONG_DOUBLE,
-    TYP_ENUM,
-    TYP_POINTER,
-    TYP_TYPEDEF,
-    TYP_CLASS,
-    TYP_BITFIELD,
-    TYP_FUNCTION,
-    TYP_ARRAY,
-    TYP_DOT_DOT_DOT,
-    TYP_VOID,
-    TYP_MODIFIER,
-    TYP_MEMBER_POINTER,
-    TYP_GENERIC,
-    TYP_TYPENAME,
-    TYP_FREE,
-    TYP_NULLPTR,
+    #define pick(id,promo,promo_asm,type_text)  __PASTE( TYP_, id ),
+    #include "_typdefs.h"
+    #undef pick
     TYP_MAX,
 } type_id;
 
-#define TYP_MIN         TYP_ERROR
-#define TYP_FIRST_VALID TYP_BOOL
+#define TYP_NONE                TYP_MAX
+
+#define TYP_FIRST_FUNDAMENTAL   TYP_BOOL
+#define TYP_LAST_FUNDAMENTAL    TYP_LONG_DOUBLE
 
 typedef enum {
     TF1_FIRST           = 0x00000001,               // TYP_ERROR
@@ -353,6 +326,7 @@ typedef enum {
                           | TF1_NAKED
                           | TF1_ABORTS
                           | TF1_NORETURN
+                          | TF1_FARSS
                           | TF1_PURE
                           | TF1_EXPLICIT
                           ),
@@ -450,22 +424,22 @@ typedef enum {                                  // for dbg field
     TF2_NULL            = 0x00
 } type_dbgflag;
 
-typedef PCH_struct {            /* used for keeping track of function arguments */
+typedef PCH_struct {                    /* used for keeping track of function arguments */
     unsigned    num_args;
     type_flag   qualifier;
-    int         : 0;
-    TYPE        *except_spec;   /* (NULL==...) array of types (NULL terminated) */
+    int                         : 0;
+    TYPE        *except_spec;           /* (NULL==...) array of types (NULL terminated) */
     TYPE        type_list[1];
 } arg_list;
 
 #define AUTO_ARG_MAX 16         // # arg.s in temporary structs
 
-typedef struct                  // TEMP_ARG_LIST
-{   arg_list base;              // - base
-    TYPE array[ AUTO_ARG_MAX-1];// - default # (1 in arg_list)
+typedef struct                              // TEMP_ARG_LIST
+{   arg_list    base;                       // - base
+    TYPE        array[AUTO_ARG_MAX - 1];    // - default # (1 in arg_list)
 } TEMP_ARG_LIST;
 
-typedef PTREE TEMP_PT_LIST[ AUTO_ARG_MAX ]; // TEMP_PT_LIST
+typedef PTREE TEMP_PT_LIST[AUTO_ARG_MAX];   // TEMP_PT_LIST
 
 //
 // list of comparisons to exclude in TypeCompareExclude
@@ -538,7 +512,7 @@ PCH_struct base_class {
     BASE_CLASS          *next;
     TYPE                type;           // base class type
     target_offset_t     delta;          // offset within this class
-    uint_16             vb_index;       // index into virtual base table
+    vindex              vb_index;       // index into virtual base table
     inherit_flag        flag;           // inheritance flags
 };
 
@@ -581,69 +555,69 @@ typedef PCH_struct {
     uint_16         index;          // class unique ordering index
     uint_8          max_align;      // maximum alignment of fields
 
-    int             : 0;
+    int                             : 0;
 
-    bool            defined : 1;    // class is defined fully
-    bool            opened : 1;     // class defn has been started
-    bool            unnamed : 1;    // cannot have ctors, dtors, etc.
-    bool            corrupted : 1;  // errors occurred during declaration!
-    bool            abstract : 1;   // contains pure virtual functions
-    bool            abstract_OK : 1;// abstract flag is set properly
-    bool            anonymous : 1;  // class is an anonymous union/struct
-    bool            has_def_opeq : 1; // has an explicit default operator=
+    bool    defined                 : 1;    // class is defined fully
+    bool    opened                  : 1;    // class defn has been started
+    bool    unnamed                 : 1;    // cannot have ctors, dtors, etc.
+    bool    corrupted               : 1;    // errors occurred during declaration!
+    bool    abstract                : 1;    // contains pure virtual functions
+    bool    abstract_OK             : 1;    // abstract flag is set properly
+    bool    anonymous               : 1;    // class is an anonymous union/struct
+    bool    has_def_opeq            : 1;    // has an explicit default operator=
 
-    bool            has_ctor : 1;   // has an explicit constructor
-    bool            has_dtor : 1;   // has an explicit dtor
-    bool            has_pure : 1;   // has an explicit pure fn
-    bool            has_vfptr : 1;  // has a vfptr field
-    bool            has_vbptr : 1;  // has a vbptr field
-    bool            has_data : 1;   // contains non-static data members
-    bool            has_vfn : 1;    // contains virtual functions
-    bool            has_vcdtor : 1; // contains an explicit ctor/dtor in
-                                    // the presence of virtual functions
+    bool    has_ctor                : 1;    // has an explicit constructor
+    bool    has_dtor                : 1;    // has an explicit dtor
+    bool    has_pure                : 1;    // has an explicit pure fn
+    bool    has_vfptr               : 1;    // has a vfptr field
+    bool    has_vbptr               : 1;    // has a vbptr field
+    bool    has_data                : 1;    // contains non-static data members
+    bool    has_vfn                 : 1;    // contains virtual functions
+    bool    has_vcdtor              : 1;    // contains an explicit ctor/dtor in
+                                            // the presence of virtual functions
 
-    bool            ctor_defined :1;// default ctor defined
-    bool            copy_defined :1;// default copy ctor defined
-    bool            dtor_defined :1;// default dtor defined
-    bool            assign_defined:1;// default assignment defined
-    bool            ctor_gen : 1;   // default ctor generated
-    bool            copy_gen : 1;   // default copy ctor generated
-    bool            dtor_gen : 1;   // default dtor generated
-    bool            assign_gen : 1; // default assign generated
+    bool    ctor_defined            : 1;    // default ctor defined
+    bool    copy_defined            : 1;    // default copy ctor defined
+    bool    dtor_defined            : 1;    // default dtor defined
+    bool    assign_defined          : 1;    // default assignment defined
+    bool    ctor_gen                : 1;    // default ctor generated
+    bool    copy_gen                : 1;    // default copy ctor generated
+    bool    dtor_gen                : 1;    // default dtor generated
+    bool    assign_gen              : 1;    // default assign generated
 
-    bool            ctor_user_code : 1;   // ctor has user code
-    bool            copy_user_code : 1;   // copy has user code
-    bool            dtor_user_code : 1;   // dtor has user code
-    bool            assign_user_code : 1; // assign has user code
-    bool            ctor_user_code_checked : 1; // ctor_user_code was checked
-    bool            copy_user_code_checked : 1; // copy_user_code was checked
-    bool            dtor_user_code_checked : 1; // dtor_user_code was checked
-    bool            assign_user_code_checked: 1;// assign_user_code was checked
+    bool    ctor_user_code          : 1;    // ctor has user code
+    bool    copy_user_code          : 1;    // copy has user code
+    bool    dtor_user_code          : 1;    // dtor has user code
+    bool    assign_user_code        : 1;    // assign has user code
+    bool    ctor_user_code_checked  : 1;    // ctor_user_code was checked
+    bool    copy_user_code_checked  : 1;    // copy_user_code was checked
+    bool    dtor_user_code_checked  : 1;    // dtor_user_code was checked
+    bool    assign_user_code_checked : 1;   // assign_user_code was checked
 
-    bool            needs_ctor : 1; // must be constructed
-    bool            needs_dtor : 1; // must be destructed
-    bool            needs_vdtor : 1;// must have a virtual destructor
-    bool            needs_assign : 1;// must be assigned with op=
-    bool            const_copy : 1; // copy ctor takes const C &
-    bool            const_assign :1;// assignment takes const C &
-    bool            const_ref : 1;  // contains a const or reference member
-    bool            zero_array : 1; // contains a zero sized array as last member
+    bool    needs_ctor              : 1;    // must be constructed
+    bool    needs_dtor              : 1;    // must be destructed
+    bool    needs_vdtor             : 1;    // must have a virtual destructor
+    bool    needs_assign            : 1;    // must be assigned with op=
+    bool    const_copy              : 1;    // copy ctor takes const C &
+    bool    const_assign            : 1;    // assignment takes const C &
+    bool    const_ref               : 1;    // contains a const or reference member
+    bool    zero_array              : 1;    // contains a zero sized array as last member
 
-    bool            free : 1;       // used for precompiled headers
-    bool            lattice : 1;    // more than one direct ref to a vbase
-    bool            passed_ref : 1; // class value is passed as a reference
-    bool            has_def_ctor :1;// has an explicit default constructor
-    bool            vftable_done :1;// vftable has been collected already
-    bool            vbtable_done :1;// vbtable has been collected already
-    bool            has_udc : 1;    // has a user-defined conversion declared
-    bool            common : 1;     // used when searching for common bases
+    bool    free                    : 1;    // used for precompiled headers
+    bool    lattice                 : 1;    // more than one direct ref to a vbase
+    bool    passed_ref              : 1;    // class value is passed as a reference
+    bool    has_def_ctor            : 1;    // has an explicit default constructor
+    bool    vftable_done            : 1;    // vftable has been collected already
+    bool    vbtable_done            : 1;    // vbtable has been collected already
+    bool    has_udc                 : 1;    // has a user-defined conversion declared
+    bool    common                  : 1;    // used when searching for common bases
 
-    bool            has_comp_info:1;// has compiler generated info inside
-    bool            has_mutable : 1;// has a mutable data member
-    bool            empty : 1;      // class has zero size
-    bool            has_fn : 1;     // has any member function
+    bool    has_comp_info           : 1;    // has compiler generated info inside
+    bool    has_mutable             : 1;    // has a mutable data member
+    bool    empty                   : 1;    // class has zero size
+    bool    has_fn                  : 1;    // has any member function
 
-    unsigned : 0;
+    int                             : 0;
 } CLASSINFO;
 
 // kludge alert:
@@ -691,7 +665,7 @@ PCH_struct type {
             unsigned    index;          // keeps template args distinct
         } g;
         struct {                        // TYP_TYPENAME
-            char       *name;           // typename string
+            char        *name;          // typename string
         } n;
     } u;
     dbg_info            dbg;            // FOR D2 AND DWARF
@@ -718,30 +692,30 @@ typedef enum {
 ,   SCOPE_MAX
 } scope_type_t;
 
-#define SC_DEFS                                                               \
- SC_DEF(SC_NULL                    )/* not defined                          */\
-,SC_DEF(SC_EXTERN                  )/* external reference                   */\
-,SC_DEF(SC_STATIC                  )/* static definition                    */\
-,SC_DEF(SC_AUTO                    )/* automatic storage                    */\
-,SC_DEF(SC_REGISTER                )/* register storage                     */\
-,SC_DEF(SC_TYPEDEF                 )/* typedef symbol                       */\
-,SC_DEF(SC_ACCESS                  )/* member access symbol (11.3)          */\
-,SC_DEF(SC_DEFAULT                 )/* represents a default argument value  */\
-,SC_DEF(SC_ENUM                    )/* enumerated constant                  */\
-,SC_DEF(SC_MEMBER                  )/* class member                         */\
-,SC_DEF(SC_PUBLIC                  )/* defined and symbol exported          */\
-,SC_DEF(SC_NAMESPACE               )/* symbol is a namespace id             */\
-,SC_DEF(SC_CLASS_TEMPLATE          )/* symbol is a class template           */\
-,SC_DEF(SC_FUNCTION_TEMPLATE       )/* symbol is a function template        */\
-,SC_DEF(SC_EXTERN_FUNCTION_TEMPLATE)/* symbol is an extern function template */\
-,SC_DEF(SC_STATIC_FUNCTION_TEMPLATE)/* symbol is a static function template */\
-                                    /* **** used only in Code Generation:   */\
-,SC_DEF(SC_VIRTUAL_FUNCTION        )/* indirect symbol for a virt. fn call  */\
-                                    /* **** only in template instantiation  */\
-,SC_DEF(SC_ADDRESS_ALIAS           )/* symbol use in template instantiations*/\
-                                    /* **** used only when writing pchdrs   */\
-,SC_DEF(SC_FREE                    )/* used for precompiled headers         */\
-,SC_DEF(SC_MAX                     )
+#define SC_DEFS \
+ SC_DEF( SC_NULL )                      /* not defined                           */\
+,SC_DEF( SC_EXTERN )                    /* external reference                    */\
+,SC_DEF( SC_STATIC )                    /* static definition                     */\
+,SC_DEF( SC_AUTO )                      /* automatic storage                     */\
+,SC_DEF( SC_REGISTER )                  /* register storage                      */\
+,SC_DEF( SC_TYPEDEF )                   /* typedef symbol                        */\
+,SC_DEF( SC_ACCESS )                    /* member access symbol (11.3)           */\
+,SC_DEF( SC_DEFAULT )                   /* represents a default argument value   */\
+,SC_DEF( SC_ENUM )                      /* enumerated constant                   */\
+,SC_DEF( SC_MEMBER )                    /* class member                          */\
+,SC_DEF( SC_PUBLIC )                    /* defined and symbol exported           */\
+,SC_DEF( SC_NAMESPACE )                 /* symbol is a namespace id              */\
+,SC_DEF( SC_CLASS_TEMPLATE )            /* symbol is a class template            */\
+,SC_DEF( SC_FUNCTION_TEMPLATE )         /* symbol is a function template         */\
+,SC_DEF( SC_EXTERN_FUNCTION_TEMPLATE )  /* symbol is an extern function template */\
+,SC_DEF( SC_STATIC_FUNCTION_TEMPLATE )  /* symbol is a static function template  */\
+                                        /* **** used only in Code Generation:    */\
+,SC_DEF( SC_VIRTUAL_FUNCTION )          /* indirect symbol for a virt. fn call   */\
+                                        /* **** only in template instantiation   */\
+,SC_DEF( SC_ADDRESS_ALIAS )             /* symbol use in template instantiations */\
+                                        /* **** used only when writing pchdrs    */\
+,SC_DEF( SC_FREE )                      /* used for precompiled headers          */\
+,SC_DEF( SC_MAX )
 
 
 typedef enum {
@@ -887,15 +861,15 @@ PCH_struct sym_region {                 // list of symbols from same SYMBOL_NAME
 };
 
 PCH_struct name_space {
-    SYMBOL              sym;            // - sym of namespace
-    SCOPE               scope;          // - scope of namespace
-    NAME_SPACE          *all;           // - link together all namespaces
+    SYMBOL              sym;                // - sym of namespace
+    SCOPE               scope;              // - scope of namespace
+    NAME_SPACE          *all;               // - link together all namespaces
     union {
         unsigned flags;
         struct {
-          unsigned      global_fs : 1;  // - global filescope
-          unsigned      free : 1;       // - used for PCH
-          unsigned      unnamed : 1;    // - unnamed namespace
+          bool          global_fs   : 1;    // - global filescope
+          bool          free        : 1;    // - used for PCH
+          bool          unnamed     : 1;    // - unnamed namespace
         } s;
     } u;
 };
@@ -929,35 +903,35 @@ PCH_struct using_ns {
 
 // all fields should be treated as read-only and private to SCOPE.C
 PCH_struct scope {
-    SCOPE               enclosing;      // - lexically enclosing scope
-    HASHTAB             names;          // - names in this scope
-    SYMBOL              ordered;        // - list of variables in order of decl
-    USING_NS            *using_list;    // - list of "using namespace X"'s
-    union {                             // - owner of scope
-        NAME_SPACE      *ns;            // -- name space for SCOPE_FILE
-        SYMBOL          sym;            // -- function owning SCOPE_FUNCTION
-        TYPE            type;           // -- class owning SCOPE_CLASS
-        unsigned        index;          // -- index for SCOPE_BLOCK
-        TEMPLATE_INFO   *tinfo;         // -- SCOPE_TEMPLATE_PARM (classes)
-        FN_TEMPLATE     *defn;          // -- SCOPE_TEMPLATE_PARM (functions)
-        CLASS_INST      *inst;          // -- SCOPE_TEMPLATE_INST
+    SCOPE               enclosing;          // - lexically enclosing scope
+    HASHTAB             names;              // - names in this scope
+    SYMBOL              ordered;            // - list of variables in order of decl
+    USING_NS            *using_list;        // - list of "using namespace X"'s
+    union {                                 // - owner of scope
+        NAME_SPACE      *ns;                // -- name space for SCOPE_FILE
+        SYMBOL          sym;                // -- function owning SCOPE_FUNCTION
+        TYPE            type;               // -- class owning SCOPE_CLASS
+        unsigned        index;              // -- index for SCOPE_BLOCK
+        TEMPLATE_INFO   *tinfo;             // -- SCOPE_TEMPLATE_PARM (classes)
+        FN_TEMPLATE     *defn;              // -- SCOPE_TEMPLATE_PARM (functions)
+        CLASS_INST      *inst;              // -- SCOPE_TEMPLATE_INST
     } owner;
     union {
         unsigned        flags;
         struct {
-          unsigned      keep : 1;       // - indicates scope contains info
-          unsigned      dtor_reqd : 1;  // - SCOPE_BLK -- need to dtor
-          unsigned      dtor_naked : 1; // - SCOPE_BLK -- has naked dtor syms
-          unsigned      try_catch : 1;  // - SCOPE_BLK -- try/catch block
-          unsigned      arg_check : 1;  // - check decls against arg scope
-          unsigned      cg_stab   : 1;  // - generate for scope
-          unsigned      in_unnamed : 1; // - enclosed in an unnamed namespace
-          unsigned      colour : 1;     // - using in common enclosing algorithm
-          unsigned      fn_template : 1;// - SCOPE_TEMPLATE_PARM -- function
-          unsigned      dirty : 1;      // - a symbol has been added
+            bool        keep        : 1;    // - indicates scope contains info
+            bool        dtor_reqd   : 1;    // - SCOPE_BLK -- need to dtor
+            bool        dtor_naked  : 1;    // - SCOPE_BLK -- has naked dtor syms
+            bool        try_catch   : 1;    // - SCOPE_BLK -- try/catch block
+            bool        arg_check   : 1;    // - check decls against arg scope
+            bool        cg_stab     : 1;    // - generate for scope
+            bool        in_unnamed  : 1;    // - enclosed in an unnamed namespace
+            bool        colour      : 1;    // - using in common enclosing algorithm
+            bool        fn_template : 1;    // - SCOPE_TEMPLATE_PARM -- function
+            bool        dirty       : 1;    // - a symbol has been added
         } s;
     } u;
-    scope_type_t        id;             // - type of scope
+    scope_type_t        id;                 // - type of scope
 };
 
 /*
@@ -993,37 +967,37 @@ PCH_struct scope {
         which gives the full list of symbols to consider
       endif
 */
-struct search_result {                  // * means private to SCOPE.C
-    SCOPE               scope;          // - scope containing sym_name/sym
-    SYMBOL_NAME         sym_name;       // - SYMBOL_NAME found
-    SYMBOL              sym;            // - set if user-defd conversion found
-    SCOPE               start;          // * scope that initiated the search
-    SCOPE               access_decl;    // - first access-decl encountered
-    SYM_REGION          *region;        // - list of symbols (if req'd)
-    MSG_NUM             error_msg;      // * error message
-    MSG_NUM             info_msg;       // * info message
-    SYMBOL              info1;          // * parm for info message #1
-    SYMBOL              info2;          // * parm for info message #2
-    target_offset_t     vb_offset;      // - offset of vbtable pointer
-    vindex              vb_index;       // - index of virtual base
-    target_offset_t     delta;          // - last base class offset
-    target_offset_t     exact_delta;    // - last base class direct offset
-    target_offset_t     offset;         // - member offset
-    target_offset_t     vf_offset;      // - offset of vftable pointer
-    TOKEN_LOCN          errlocn;        // * location for errors
-    inherit_flag        perm;           // * access permission
-    unsigned            simple : 1;     // - name is in a FILE or BLOCK scope
-    unsigned            non_virtual : 1;// - use delta offset to find scope
-                                        // - only valid for lexical lookup
-    unsigned            use_this : 1;   // - may use "this" to access
-    unsigned            no_this : 1;    // - cannot use "this" to access
-    unsigned            ambiguous : 1;  // * name was ambiguously found
-    unsigned            mixed_static :1;// * ovload; if non-static, it's ambig!
-    unsigned            cant_be_auto :1;// * nested function refs an auto
-    unsigned            protected_OK :1;// * protected SYMBOL access is OK
-    unsigned            ignore_access:1;// * don't report access errors
-    unsigned            lookup_error :1;// * general lookup error detected
-    int                 : 0;
+struct search_result {                          // * means private to SCOPE.C
+    SCOPE               scope;                  // - scope containing sym_name/sym
+    SYMBOL_NAME         sym_name;               // - SYMBOL_NAME found
+    SYMBOL              sym;                    // - set if user-defd conversion found
+    SCOPE               start;                  // * scope that initiated the search
+    SCOPE               access_decl;            // - first access-decl encountered
+    SYM_REGION          *region;                // - list of symbols (if req'd)
+    MSG_NUM             error_msg;              // * error message
+    MSG_NUM             info_msg;               // * info message
+    SYMBOL              info1;                  // * parm for info message #1
+    SYMBOL              info2;                  // * parm for info message #2
+    target_offset_t     vb_offset;              // - offset of vbtable pointer
+    vindex              vb_index;               // - index of virtual base
+    target_offset_t     delta;                  // - last base class offset
+    target_offset_t     exact_delta;            // - last base class direct offset
+    target_offset_t     offset;                 // - member offset
+    target_offset_t     vf_offset;              // - offset of vftable pointer
+    TOKEN_LOCN          errlocn;                // * location for errors
+    inherit_flag        perm;                   // * access permission
+    bool                simple          : 1;    // - name is in a FILE or BLOCK scope
+    bool                non_virtual     : 1;    // - use delta offset to find scope
+                                                // - only valid for lexical lookup
+    bool                use_this        : 1;    // - may use "this" to access
+    bool                no_this         : 1;    // - cannot use "this" to access
+    bool                ambiguous       : 1;    // * name was ambiguously found
+    bool                mixed_static    : 1;    // * ovload; if non-static, it's ambig!
+    bool                cant_be_auto    : 1;    // * nested function refs an auto
+    bool                protected_OK    : 1;    // * protected SYMBOL access is OK
+    bool                ignore_access   : 1;    // * don't report access errors
+    bool                lookup_error    : 1;    // * general lookup error detected
+    int                                 : 0;
 };
 
 typedef enum {
@@ -1036,13 +1010,13 @@ typedef enum {
 } derived_status;
 
 struct class_table {
-    CLASS_TABLE         *next;          /* must be RingFreed after use */
-    target_offset_t     vb_offset;      /* offset of vbptr */
-    vindex              vb_index;       /* index into vbtable */
-    target_offset_t     delta;          /* delta table ptr goes in */
-    target_offset_t     exact_delta;    /* exact delta table ptr goes in */
-    vindex              count;          /* number of things def'd */
-    unsigned            ctor_disp : 1;  /* apply ctor-disp adjustment */
+    CLASS_TABLE         *next;                  /* must be RingFreed after use */
+    target_offset_t     vb_offset;              /* offset of vbptr */
+    vindex              vb_index;               /* index into vbtable */
+    target_offset_t     delta;                  /* delta table ptr goes in */
+    target_offset_t     exact_delta;            /* exact delta table ptr goes in */
+    vindex              count;                  /* number of things def'd */
+    bool                ctor_disp       : 1;    /* apply ctor-disp adjustment */
 };
 
 struct class_vbtable {
@@ -1075,27 +1049,27 @@ struct thunk_cast {
 
 struct thunk_action {
     SYMBOL              sym;
-    SYMBOL              thunk;                  // symbol for thunk function
-    target_offset_t     delta;                  // step 1
-    THUNK_CAST          in;                     // step 3
-    SYMBOL              override;               // step 4
-    THUNK_CAST          out;                    // step 5
-    unsigned            ctor_disp : 1;          // control for step 2
-    unsigned            input_virtual : 1;      // control for step 3
-    unsigned            output_virtual : 1;     // control for step 5
-    unsigned            non_empty : 1;          // thunk is necessary
-    unsigned            last_entry : 1;         // last entry in vftable
-    unsigned            possible_ambiguity : 1; // vftable entry may be ambiguous
-    int                 : 0;
+    SYMBOL              thunk;                      // symbol for thunk function
+    target_offset_t     delta;                      // step 1
+    THUNK_CAST          in;                         // step 3
+    SYMBOL              override;                   // step 4
+    THUNK_CAST          out;                        // step 5
+    bool                ctor_disp           : 1;    // control for step 2
+    bool                input_virtual       : 1;    // control for step 3
+    bool                output_virtual      : 1;    // control for step 5
+    bool                non_empty           : 1;    // thunk is necessary
+    bool                last_entry          : 1;    // last entry in vftable
+    bool                possible_ambiguity  : 1;    // vftable entry may be ambiguous
+    int                                     : 0;
 };
 
 struct class_vftable {
-    CLASS_TABLE         h;              /* header */
-    unsigned            amt_left;       /* # of vfns left to go */
-    unsigned            ambiguities : 1;/* has potentially ambiguous entries */
-    unsigned            corrupted : 1;  /* definitely has bad entries */
-    int                 : 0;
-    THUNK_ACTION        data[1];        /* terminated if last_entry is true */
+    CLASS_TABLE         h;                      /* header */
+    unsigned            amt_left;               /* # of vfns left to go */
+    bool                ambiguities     : 1;    /* has potentially ambiguous entries */
+    bool                corrupted       : 1;    /* definitely has bad entries */
+    int                                 : 0;
+    THUNK_ACTION        data[1];                /* terminated if last_entry is true */
 };
 
 /*
@@ -1149,19 +1123,19 @@ struct class_vftable {
     - future: we could generate exceptions when we know the conversion will
       never work properly
 */
-struct member_ptr_cast {                /* I - input, O - output, * - private */
-    SCOPE               base;           /* I: base class cope */
-    SCOPE               derived;        /* I: derived from 'base' */
-    target_offset_t     delta;          /* O: amount to adjust delta by */
-    vindex              single_test;    /* O: single idx val that needs mapping */
-    vindex              vb_index;       /* O: new value for 'index' */
-    SYMBOL              mapping;        /* O: unsigned array to map indices */
-    unsigned            safe : 1;       /* I: casting from 'base' to 'derived' */
-    unsigned            init_conv : 1;  /* I: convert from found base to final base */
-    unsigned            delta_reqd : 1; /* O: true if delta adjustment is req'd */
-    unsigned            mapping_reqd : 1;/*O: true is index mapping req'd */
-    unsigned            test_reqd : 1;  /* O: true if index == 0 test is req'd */
-    unsigned            single_mapping:1;/*O: only one index value needs mapping */
+struct member_ptr_cast {                        /* I - input, O - output, * - private */
+    SCOPE               base;                   /* I: base class cope */
+    SCOPE               derived;                /* I: derived from 'base' */
+    target_offset_t     delta;                  /* O: amount to adjust delta by */
+    vindex              single_test;            /* O: single idx val that needs mapping */
+    vindex              vb_index;               /* O: new value for 'index' */
+    SYMBOL              mapping;                /* O: unsigned array to map indices */
+    bool                safe            : 1;    /* I: casting from 'base' to 'derived' */
+    bool                init_conv       : 1;    /* I: convert from found base to final base */
+    bool                delta_reqd      : 1;    /* O: true if delta adjustment is req'd */
+    bool                mapping_reqd    : 1;    /* O: true is index mapping req'd */
+    bool                test_reqd       : 1;    /* O: true if index == 0 test is req'd */
+    bool                single_mapping  : 1;    /* O: only one index value needs mapping */
 };
 
 /*
@@ -1169,7 +1143,7 @@ struct member_ptr_cast {                /* I - input, O - output, * - private */
 
         if( control & RL_VIRTUAL ) {
             this += RTTI.vbptr;
-            this += (*this)[ vb_index ];
+            this += (*this)[vb_index];
         }
         this += offset;
 */
@@ -1389,25 +1363,25 @@ extern SYMBOL ScopeFuncParm( unsigned );
 extern void ScopeResultErrLocn( SEARCH_RESULT*, TOKEN_LOCN* );
 extern bool ScopeSameVFuns( SYMBOL, SYMBOL );
 
-SYMBOL ScopeFindExactVfun(      // FIND EXACT VIRTUAL FUNCTION IN DERIVED CLASS
-    SYMBOL vfun,                // - virtual fun in a base class
-    SCOPE scope,                // - scope for derived class
-    target_offset_t* a_adj_this,// - adjustment for this
-    target_offset_t* a_adj_retn)// - adjustment for return
+SYMBOL ScopeFindExactVfun(          // FIND EXACT VIRTUAL FUNCTION IN DERIVED CLASS
+    SYMBOL vfun,                    // - virtual fun in a base class
+    SCOPE scope,                    // - scope for derived class
+    target_offset_t* a_adj_this,    // - adjustment for this
+    target_offset_t* a_adj_retn)    // - adjustment for return
 ;
 
-void ScopeWalkAncestry(         // VISIT ONCE ALL CLASSES IN ANCESTRY
-    SCOPE scope,                // - class scope
-    void (*rtn)(                // - walker routine
-        SCOPE,                  // -- base class scope
-        void * ),               // -- user data
-    void *data )                // - user supplied data
+void ScopeWalkAncestry(             // VISIT ONCE ALL CLASSES IN ANCESTRY
+    SCOPE scope,                    // - class scope
+    void (*rtn)(                    // - walker routine
+        SCOPE,                      // -- base class scope
+        void * ),                   // -- user data
+    void *data )                    // - user supplied data
 ;
 
 void ScopeWalkDirectBases(          // WALK DIRECT BASES
     SCOPE scope,                    // - scope
     void (*rtn)(BASE_CLASS*,void*), // - routine
-    void *data )                   // - data to be passed
+    void *data )                    // - data to be passed
 ;
 
 void ScopeWalkVirtualBases(         // WALK VIRTUAL BASES
@@ -1789,8 +1763,8 @@ typedef enum typc_index {
 } typc_index;
 
 extern TYPE TypeCache[];
-#define TypeGetCache( tci )     ( TypeCache[ (tci) ] )
-#define TypeSetCache( tci, ty ) ( TypeCache[ (tci) ] = ( ty ) )
+#define TypeGetCache( tci )     ( TypeCache[(tci)] )
+#define TypeSetCache( tci, ty ) ( TypeCache[(tci)] = ( ty ) )
 
 #define TypeSegmentShort()                  TypeGetCache( TYPC_SEGMENT_SHORT )
 #define TypePtrToVoid()                     TypeGetCache( TYPC_VOID_PTR )

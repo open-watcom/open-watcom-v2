@@ -31,6 +31,8 @@
 
 
 #include <string.h>
+#include "yacc.h"
+
 
 char *getname( char *qualname )
 /*

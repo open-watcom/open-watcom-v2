@@ -285,7 +285,7 @@ static bool parse_options( int argc, char * const *argv )
             switch( c ) {
             case 'A':
                 Options_dmp |= FIX_DMP | PAGE_DMP | RESRC_DMP | EXE_INFO | DOS_SEG_DMP | OS2_SEG_DMP;
-                Segspec = atoi( optarg );
+                Segspec = (unsigned_16)atoi( optarg );
                 if( Segspec == 0 ) {
                     Options_dmp &= ~OS2_SEG_DMP;
                 } else {
@@ -336,7 +336,7 @@ static bool parse_options( int argc, char * const *argv )
                 break;
             case 'S':
                 Options_dmp |= EXE_INFO | DOS_SEG_DMP | OS2_SEG_DMP;
-                Segspec = atoi( optarg );
+                Segspec = (unsigned_16)atoi( optarg );
                 if( Segspec == 0 ) {
                     Options_dmp &= ~OS2_SEG_DMP;
                 } else {

@@ -37,7 +37,7 @@
 
 #if defined(__WARP__)
 
-_WCRTLINK int   getpid( void )              /* get process id */
+_WCRTLINK pid_t getpid( void )              /* get process id */
 {
     PTIB        ptib;
     PPIB        ppib;
@@ -48,7 +48,7 @@ _WCRTLINK int   getpid( void )              /* get process id */
 
 #else
 
-_WCRTLINK int   getpid( void )              /* get process id */
+_WCRTLINK pid_t getpid( void )              /* get process id */
 {
     PIDINFO pinfo;
 

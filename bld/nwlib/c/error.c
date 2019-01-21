@@ -87,7 +87,7 @@ void InitMsg( void )
         return;
     }
     CloseResFile( &hInstance );
-    FatalResError();
+    FatalResError( NO_RES_MESSAGE );
 }
 
 void MsgGet( int resourceid, char *buffer )

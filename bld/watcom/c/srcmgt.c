@@ -72,7 +72,7 @@ static browser *FInitSource( sm_file_handle fp, sm_mod_handle mod, sm_cue_fileid
         return( NULL );
     hndl->next = FileList;
     FileList = hndl;
-    hndl->file_off = -SM_BUF_SIZE;
+    hndl->file_off = (unsigned long)(-(long)SM_BUF_SIZE);
     hndl->cur_line_ptr = hndl->line_ptr = hndl->line_end = hndl->line_buf;
     hndl->cur_line = 1;
     hndl->fp = fp;
@@ -140,7 +140,7 @@ unsigned long FSize( browser *hndl )
 
 unsigned long FLastOffset( browser *hndl )
 {
-    return( hndl->file_off + ( hndl->line_ptr - hndl->line_buf ) );
+    return( (unsigned long)( hndl->file_off + ( hndl->line_ptr - hndl->line_buf ) ) );
 }
 
 
@@ -350,7 +350,7 @@ size_t FReadLine( browser *hndl, int line, int off, char *buff, size_t buff_len 
             }
         } else {
             if( i >= off ) {
-                *ptr++ = ch;
+                *ptr++ = (char)ch;
                 --buff_len;
             }
             ++i;

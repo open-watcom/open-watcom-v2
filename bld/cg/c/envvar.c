@@ -31,15 +31,16 @@
 ****************************************************************************/
 
 
-#include "cgstd.h"
+#include "_cgstd.h"
 #include "coderep.h"
 #include "utils.h"
+#include "envvar.h"
 #include "feprotos.h"
 
 
-extern  bool    GetEnvVar( const char *what, char *buff, int len ) {
-/******************************************************************/
-
+bool    GetEnvVar( const char *what, char *buff, int len )
+/********************************************************/
+{
     const char      *envvar;
 
     /* unused parameters */ (void)len;

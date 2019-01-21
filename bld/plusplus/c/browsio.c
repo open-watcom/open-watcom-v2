@@ -396,6 +396,7 @@ dw_client DwarfInit( void )
     info.producer_name = DWARF_PRODUCER_ID " V1";
     memcpy( info.exception_handler, Environment, sizeof( jmp_buf ) );
     info.funcs = dw_cli_funcs;
+    info.abbrev_sym = NULL;
 
     client = DWInit( &info );
     if( client == NULL ) {

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
+* Copyright (c) 2009-2018 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -39,18 +39,19 @@
 class Li : public Tag {
 public:
     Li( Document* d, Element *p, const std::wstring* f, unsigned int r,
-        unsigned int c, unsigned int n, unsigned char l, unsigned char i, bool cmp ) :
-        Tag( d, p, f, r, c ), itemNumber( n ), nestLevel( l ), indent( i ),
-        compact( cmp ) { };
+        unsigned int c, unsigned int n, byte l, byte i, bool cmp ) :
+        Tag( d, p, f, r, c ), _itemNumber( n ), _nestLevel( l ), _indent( i ),
+        _compact( cmp ) { };
     ~Li() { };
-protected:
-    unsigned int itemNumber;    //counts from 0
-    unsigned char nestLevel;    //counts from 0
-    unsigned char indent;       //in character spaces
-    bool compact;               //the list is 'compact'
 private:
     Li( const Li& rhs );                //no copy
     Li& operator=( const Li& rhs );     //no assignment
+
+protected:
+    unsigned int        _itemNumber;    //counts from 0
+    byte                _nestLevel;     //counts from 0
+    byte                _indent;        //in character spaces
+    bool                _compact;       //the list is 'compact'
 };
 
 #endif //LI_INCLUDED

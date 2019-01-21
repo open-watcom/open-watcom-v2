@@ -354,7 +354,7 @@ static bool ctl_check_modified( ctl_elt *elt, WPI_PARAM1 wparam, WPI_PARAM2 lpar
     WORD        id;
 
 #ifdef __NT__
-    lparam = lparam;
+    (void)lparam;
 #endif
     id = LOWORD( wparam );
     cmd = GET_WM_COMMAND_CMD( wparam, lparam );
@@ -433,7 +433,7 @@ static bool ctl_combo_modified( ctl_elt *elt, WPI_PARAM1 wparam, WPI_PARAM2 lpar
     WORD        cmd;
 
 #ifdef __NT__
-    lparam = lparam;
+    (void)lparam;
 #endif
     id = LOWORD( wparam );
     cmd = GET_WM_COMMAND_CMD( wparam, lparam );
@@ -778,7 +778,7 @@ static bool ctl_radio_modified( ctl_elt *elt, WPI_PARAM1 wparam, WPI_PARAM2 lpar
     WORD        cmd;
 
 #ifdef __NT__
-    lparam = lparam;
+    (void)lparam;
 #endif
     id = LOWORD( wparam );
     cmd = GET_WM_COMMAND_CMD( wparam, lparam );
@@ -834,7 +834,7 @@ static bool ctl_text_modified( ctl_elt *elt, WPI_PARAM1 wparam , WPI_PARAM2 lpar
     WORD        cmd;
 
 #ifdef __NT__
-    lparam=lparam;
+    (void)lparam;
 #endif
     id = LOWORD( wparam );
     cmd = GET_WM_COMMAND_CMD( wparam, lparam );

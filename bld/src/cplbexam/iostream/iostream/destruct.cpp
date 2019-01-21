@@ -2,7 +2,7 @@
 
 void *operator new( size_t, iostream *p ) { return( p ); }
 
-void main( void ) {
+int main( void ) {
 
     char blob[512], buf[50];
 

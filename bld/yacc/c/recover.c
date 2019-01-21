@@ -154,7 +154,7 @@ static AddError()
             }
         }
         x->redun = CALLOC( i + 1, a_reduce_action );
-        if( i ) {
+        if( i > 0 ) {
             rset = AllocSet( i );
             rx = redun;
             while( i > 0 ) {
@@ -171,7 +171,7 @@ static AddError()
     }
     FREE( trans );
     FREE( redun );
-    FREE( conflict );
+    FreeSet( conflict );
     FREE( s );
     FREE( at );
 }

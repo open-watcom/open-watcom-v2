@@ -32,7 +32,7 @@
 extern void     DumpInsOffsets( void );
 extern void     DumpInOut( instruction *ins );
 extern void     DumpITab( instruction *ins );
-extern void     DumpClass( type_class_def tipe );
+extern void     DumpClass( type_class_def type_class );
 extern void     DumpOperand( name *operand );
 extern void     DoDumpIInfo( instruction *ins, bool fp );
 extern void     DumpFPInfo( instruction *ins );

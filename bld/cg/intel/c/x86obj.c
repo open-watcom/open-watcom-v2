@@ -30,13 +30,13 @@
 ****************************************************************************/
 
 
-#include "cgstd.h"
+#include "_cgstd.h"
 #include "coderep.h"
+#include "data.h"
 #include "cgauxinf.h"
 #include "system.h"
 #include "cgmem.h"
 #include "zoiks.h"
-#include "data.h"
 #include "rtrtn.h"
 #include "x86objd.h"
 #include "utils.h"
@@ -46,6 +46,7 @@
 #include "cvsyms.h"
 #include "dw.h"
 #include "dfsyms.h"
+#include "dfsupp.h"
 #include "wvsyms.h"
 #include "wvtypes.h"
 #include "objio.h"
@@ -362,7 +363,7 @@ static  byte    SegmentAttr( byte align, seg_attr tipe, bool use_16 )
     }
     if( tipe & COMMON ) {
         attr |= SEG_COMB_COMMON;
-    } else if( ( tipe & PRIVATE ) != 0 && ( tipe & GLOBAL ) == 0 ) {
+    } else if( (tipe & (PRIVATE | GLOBAL)) == PRIVATE ) {
         attr |= SEG_COMB_PRIVATE;
     } else { /* normal or a kludge for wsl front end ( PRIVATE | GLOBAL )*/
         attr |= SEG_COMB_NORMAL;
@@ -566,7 +567,7 @@ static  void    DoASegDef( index_rec *rec, bool use_16 )
 #ifdef _OMF_32
     cmd = PickOMF( CMD_SEGDEF );
 #else //SEG32DBG dwarf, codeview
-    if(( rec->attr & SEG_USE_32 ) && ( _IsntTargetModel( EZ_OMF ))) {
+    if( (rec->attr & SEG_USE_32) && _IsntTargetModel( EZ_OMF ) ) {
         cmd = CMD_SEGDEF32;
     } else {
         cmd = CMD_SEGDEF;
@@ -786,7 +787,7 @@ void DoEmptyQueue( void )
     TellUnreachLabels();
 }
 
-static  void    InitFPPatches( void )
+static  void    FPInitPatches( void )
 /***********************************/
 {
     int i;
@@ -1007,7 +1008,7 @@ void    ObjInit( void )
     array_control       *tgroup_def;
     void                *depend;
 
-    InitFPPatches();
+    FPInitPatches();
     CodeSize = 0;
     DataSize = 0;
     CurrFNo = 0;
@@ -1337,7 +1338,7 @@ static void     EjectLEData( void )
 #ifdef _OMF_32
             cmd = PickOMF( CMD_LEDATA );
 #else //SEG32DBG dwarf, codeview
-            if( (CurrSeg->attr & SEG_USE_32) && (_IsntTargetModel( EZ_OMF )) ) {
+            if( (CurrSeg->attr & SEG_USE_32) && _IsntTargetModel( EZ_OMF ) ) {
                 cmd = CMD_LEDATA32;
             } else {
                 cmd = PickOMF( CMD_LEDATA );
@@ -1450,7 +1451,7 @@ static  void    OutLEDataStart( bool iterated )
 #ifdef _OMF_32
             OutOffset( (offset)rec->location, &obj->data );
 #else  //SEG32DBG dwarf, codeview
-            if( (rec->attr & SEG_USE_32 ) ) {
+            if( rec->attr & SEG_USE_32 ) {
                 OutLongOffset( rec->location, &obj->data );
             } else {
                 OutOffset( (offset)rec->location, &obj->data );
@@ -2119,7 +2120,7 @@ static  omf_idx     GenImport( cg_sym_handle sym, bool alt_dllimp )
                 kind = DLLIMPORT;
             }
         } else if( _IsModel( POSITION_INDEPENDANT ) ) {
-            if( ( attr & FE_THREAD_DATA ) != 0 ) {
+            if( attr & FE_THREAD_DATA ) {
                 kind = PIC_RW;
             }
         }

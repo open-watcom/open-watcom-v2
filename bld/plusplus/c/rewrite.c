@@ -180,7 +180,7 @@ static void putByte( REWRITE *r, uint_8 v )
         r->curr = new_rt;
         rt = new_rt;
     }
-    rt->stream[ rt->count++ ] = v;
+    rt->stream[rt->count++] = v;
 }
 
 static void putString( REWRITE *r, const char *p )

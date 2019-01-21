@@ -31,11 +31,8 @@
 ****************************************************************************/
 
 
-#include "commonui.h"
-#include <string.h>
-#include <limits.h>
-#include "watcom.h"
 #include "wreglbl.h"
+#include <limits.h>
 #include "wrestat.h"
 #include "wremain.h"
 #include "wremsg.h"

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
+* Copyright (c) 2009-2018 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -35,18 +35,24 @@
 #include <string>
 #include <vector>
 
+
+class OutFile;
+
 class Synonym {
 public:
-    Synonym() : offset( 0 ) { };
+    Synonym() : _offset( 0 ) { };
     ~Synonym() { };
-    void add( std::string& txt ) { synonyms.push_back( txt ); };
-    void write( std::FILE* out );
-    unsigned long int location() const { return offset; };
+    void add( const std::wstring& text ) { _synonyms.push_back( text ); };
+    void write( OutFile* out );
+    dword location() const { return _offset; };
+
 private:
-    std::vector< std::string > synonyms;
+    std::vector< std::wstring > _synonyms;
+    typedef std::vector< std::wstring >::iterator SynonymWIter;
+    typedef std::vector< std::wstring >::const_iterator ConstSynonymWIter;
     typedef std::vector< std::string >::iterator SynonymIter;
     typedef std::vector< std::string >::const_iterator ConstSynonymIter;
-    unsigned long int offset;
+    dword                       _offset;
 };
 
 #endif //SYNONYM_INCLUDED

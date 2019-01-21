@@ -32,29 +32,30 @@
 #include "variety.h"
 #include <string.h>
 
+
 #ifdef _M_I86
 
 extern char _WCFAR *fast_strncpy( char _WCFAR *, const char _WCFAR *, size_t );
-
 #pragma aux fast_strncpy = \
-        0x1e            /* push ds    */\
-        0x96            /* xchg si,ax */\
-        0x8e 0xd8       /* mov ds,ax  */\
-        0x57            /* push di */\
-        0xac            /* L1: lodsb */\
-        0xaa            /* stosb */\
-        0x84 0xc0       /* test al,al */\
-        0xe0 0xfa       /* loopne L1 */\
-        0x31 0xc0       /* xor ax,ax */\
-        0xd1 0xe9       /* shr cx,1 */\
-        0xf3 0xab       /* rep stosw */\
-        0x11 0xc9       /* adc cx,cx */\
-        0xf3 0xaa       /* rep stosb */\
-        0x58            /* pop ax */\
-        0x1f            /* pop ds */\
-        parm caller     [es di] [si ax] [cx]\
-        value           [es ax] \
-        modify exact    [ax cx si di];
+        "push ds"           \
+        "xchg si,ax"        \
+        "mov  ds,ax"        \
+        "push di"           \
+    "L1: lodsb"             \
+        "stosb"             \
+        "test al,al"        \
+        "loopne short L1"   \
+        "xor  ax,ax"        \
+        "shr  cx,1"         \
+        "rep stosw"         \
+        "adc  cx,cx"        \
+        "rep stosb"         \
+        "pop  ax"           \
+        "pop  ds"           \
+    __parm __caller     [__es __di] [__si __ax] [__cx] \
+    __value             [__es __ax] \
+    __modify __exact    [__ax __cx __si __di]
+
 #endif
 
 _WCRTLINK char _WCFAR *_fstrncpy( char _WCFAR *dst, const char _WCFAR *src, size_t len )

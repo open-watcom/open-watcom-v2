@@ -41,4 +41,6 @@
 
 #include "ppopsdef.h"
 
+#undef PPOPCG
+
 #endif

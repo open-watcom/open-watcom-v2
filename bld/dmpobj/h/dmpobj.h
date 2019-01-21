@@ -34,6 +34,7 @@
 #include "watcom.h"
 #include "pcobj.h"
 #include "bool.h"
+#include "wnoret.h"
 
 typedef unsigned_8          byte;
 
@@ -167,7 +168,7 @@ extern  void            ProcVendExt( void );
 /*
     Misc routines (dmpobj.c)
 */
-extern  void            leave( int );
+NO_RETURN( extern void  leave( int ) );
 extern  bool            Descriptions;
 extern  bool            InterpretComent;
 extern  bool            TranslateIndex;

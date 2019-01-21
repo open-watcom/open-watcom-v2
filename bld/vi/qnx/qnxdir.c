@@ -35,31 +35,31 @@
 #include <dirent.h>
 #include <time.h>
 
+
+#define SET_ATTRIBS(m)  ((m & S_IFDIR) ? _A_SUBDIR : 0)
+
 /*
  * GetFileInfo - get info from a directory entry
  */
-void GetFileInfo( direct_ent *tmp, struct dirent *nd, const char *path )
+void GetFileInfo( direct_ent *tmp, struct dirent *dire, const char *path )
 {
     char        tmpname[_MAX_PATH];
     int         len;
 
-    if( (nd->d_stat.st_status & _FILE_USED) == 0 ) {
+    if( (dire->d_stat.st_status & _FILE_USED) == 0 ) {
         strcpy( tmpname, path );
         len = strlen( tmpname );
         if( tmpname[len - 1] != FILE_SEP ) {
             tmpname[len] = FILE_SEP;
             tmpname[len + 1] = '\0';
         }
-        strcat( tmpname, nd->d_name );
-        stat( tmpname, &nd->d_stat );
+        strcat( tmpname, dire->d_name );
+        stat( tmpname, &dire->d_stat );
     }
-    tmp->attr = 0;
-    if( nd->d_stat.st_mode & S_IFDIR ) {
-        SET_SUBDIR( tmp );
-    }
-    tmp->fsize = nd->d_stat.st_size;
-    tmp->time = nd->d_stat.st_mtime;
-    tmp->st_mode = nd->d_stat.st_mode;
+    tmp->attr = SET_ATTRIBS( dire->d_stat.st_mode );
+    tmp->fsize = dire->d_stat.st_size;
+    tmp->time = dire->d_stat.st_mtime;
+    tmp->st_mode = dire->d_stat.st_mode;
 
 } /* GetFileInfo */
 
@@ -100,29 +100,28 @@ bool IsDirectory( char *name )
  */
 void FormatFileEntry( direct_ent *file, char *res )
 {
-    char        buff[80];
+    char        buff[11];
     char        tmp[50];
     long        size;
     struct tm   *tm;
     time_t      tt;
 
-    strcpy(buff,"----------");
     size = file->fsize;
+    MySprintf( tmp, "  %S", file->name );
     if( IS_SUBDIR( file ) ) {
-        MySprintf(tmp," " FILE_SEP_STR "%S", file->name);
-        buff[0] = 'd';
+        tmp[1] = FILE_SEP;
         size = 0;
-    } else {
-        if( !IsTextFile( file->name ) ) {
-            MySprintf(tmp," *%S",file->name);
-        } else {
-            MySprintf(tmp,"  %S",file->name);
-        }
+    } else if( !IsTextFile( file->name ) ) {
+        tmp[1] = '*';
     }
 
     /*
      * build attributeibutes
      */
+    strcpy( buff, "----------" );
+    if( IS_SUBDIR( file ) ) {
+        buff[0] = 'd';
+    }
     if( file->st_mode & S_IWUSR ) {
         buff[1] = 'r';
     }
@@ -163,9 +162,9 @@ void FormatFileEntry( direct_ent *file, char *res )
             tmp,
             buff,
             size,
-            (int)tm->tm_mon+1,
+            (int)tm->tm_mon + 1,
             (int)tm->tm_mday,
-            (int)tm->tm_year+80,
+            (int)tm->tm_year + 80,
             (int)tm->tm_hour,
             (int)tm->tm_min);
 

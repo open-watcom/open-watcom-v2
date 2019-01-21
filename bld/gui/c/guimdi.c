@@ -56,15 +56,26 @@ typedef struct {
 
 bool GUIMDI = false;
 
-static gui_menu_struct MDISecondSepMenu[] = {
-    { NULL, GUI_MDI_SECOND_SEPARATOR, GUI_STYLE_MENU_SEPARATOR, NULL }
+static gui_menu_struct MDIFirstSepMenu = {
+    NULL, GUI_MDI_FIRST_SEPARATOR,  GUI_STYLE_MENU_SEPARATOR, NULL
+};
+
+static gui_menu_struct MDISecondSepMenu = {
+    NULL, GUI_MDI_SECOND_SEPARATOR, GUI_STYLE_MENU_SEPARATOR, NULL
+};
+
+static gui_menu_struct MDIMoreMenu = {
+    NULL, GUI_MDI_MORE_WINDOWS,     GUI_STYLE_MENU_ENABLED,   NULL
+};
+
+static gui_menu_struct MDIMenu[] = {
+    {  NULL,    GUI_MDI_CASCADE,        GUI_STYLE_MENU_GRAYED,     NULL    },
+    {  NULL,    GUI_MDI_TILE_HORZ,      GUI_STYLE_MENU_GRAYED,     NULL    },
+    {  NULL,    GUI_MDI_TILE_VERT,      GUI_STYLE_MENU_GRAYED,     NULL    },
+    {  NULL,    GUI_MDI_ARRANGE_ICONS,  GUI_STYLE_MENU_GRAYED,     NULL    },
 };
 
 static  char MenuHint[MAX_NUM_MDI_WINDOWS][MAX_LENGTH];
-
-static gui_menu_struct MDIMoreMenu[] = {
-    { NULL, GUI_MDI_MORE_WINDOWS, GUI_STYLE_MENU_ENABLED, NULL }
-};
 
 static  gui_ctl_id      GUIMDIMenuID    = 0;
 static  gui_window      *Root           = NULL;
@@ -74,17 +85,6 @@ static  gui_window      *MDIWindows[MAX_NUM_MDI_WINDOWS];
 
 static  int             TotalWindows    = 0;
 static  gui_window      **ChildWindows  = NULL;
-
-static gui_menu_struct MDIMenu[] = {
-    {  NULL,    GUI_MDI_CASCADE,        GUI_STYLE_MENU_GRAYED,     NULL    },
-    {  NULL,    GUI_MDI_TILE_HORZ,      GUI_STYLE_MENU_GRAYED,     NULL    },
-    {  NULL,    GUI_MDI_TILE_VERT,      GUI_STYLE_MENU_GRAYED,     NULL    },
-    {  NULL,    GUI_MDI_ARRANGE_ICONS,  GUI_STYLE_MENU_GRAYED,     NULL    },
-};
-
-static gui_menu_struct MDIFirstSepMenu[] = {
-    {  NULL,    GUI_MDI_FIRST_SEPARATOR,    GUI_STYLE_MENU_SEPARATOR,    NULL }
-};
 
 static bool MDIMenuStructInitialized = false;
 
@@ -111,7 +111,7 @@ static void EnableMDIMenus( gui_window *root, bool enable )
     if( enable ) {
         if( GUIMDIMenuID != 0 ) {
             if( GUIGetMenuPopupCount( root, GUIMDIMenuID ) > 0 ) {
-                GUIAppendMenuToPopup( root, GUIMDIMenuID, MDISecondSepMenu, false );
+                GUIAppendMenuToPopup( root, GUIMDIMenuID, &MDISecondSepMenu, false );
             }
         }
     } else {
@@ -133,7 +133,7 @@ static bool AddMenu( gui_window *wnd, gui_window *parent, int num_items, gui_men
             if( menu[item].style & GUI_STYLE_MENU_MDIWINDOW ) {
                 GUIMDIMenuID = menu[item].id;
                 found_flag = true;
-                has_items = ( menu[item].child_num_items > 0 );
+                has_items = ( menu[item].child.num_items > 0 );
                 break;
             }
         }
@@ -181,8 +181,8 @@ static void InsertMenuForWindow( gui_window *root, int index, int position )
     if( index == CurrMDIWindow ) {
         menu.style |= GUI_STYLE_MENU_CHECKED;
     }
-    menu.child_num_items = 0;
-    menu.child = NULL;
+    menu.child.num_items = 0;
+    menu.child.menu = NULL;
     MakeHintText( index, name );
     menu.hinttext = MenuHint[index];
     if( GUIMDIMenuID != 0 ) {
@@ -214,9 +214,9 @@ void MDIResetMenus( gui_window *wnd, gui_window *parent, int num_items, gui_menu
         InsertMenuForWindow( root, item, -1 );
     }
     if( NumMDIWindows > MAX_NUM_MDI_WINDOWS ) {
-        MDIMoreMenu[0].label = LIT( XMore_Windows );
-        MDIMoreMenu[0].hinttext = LIT( More_Windows_Hint );
-        GUIAppendMenuToPopup( root, GUIMDIMenuID, MDIMoreMenu, false );
+        MDIMoreMenu.label = LIT( XMore_Windows );
+        MDIMoreMenu.hinttext = LIT( More_Windows_Hint );
+        GUIAppendMenuToPopup( root, GUIMDIMenuID, &MDIMoreMenu, false );
     }
 }
 
@@ -248,7 +248,7 @@ void InitMDI( gui_window *wnd, gui_create_info *dlg_info )
     gui_window  *root;
 
     root = GUIGetRootWindow();
-    AddMenu( wnd, dlg_info->parent, dlg_info->num_items, dlg_info->menu );
+    AddMenu( wnd, dlg_info->parent, dlg_info->menu.num_items, dlg_info->menu.menu );
     if( GUIXInitMDI( wnd ) ) {
         if( dlg_info->parent && ( GUIGetParentWindow( dlg_info->parent ) != NULL ) ) {
             return;
@@ -264,9 +264,9 @@ void InitMDI( gui_window *wnd, gui_create_info *dlg_info )
         if( NumMDIWindows > MAX_NUM_MDI_WINDOWS ) {
             if( NumMDIWindows == MAX_NUM_MDI_WINDOWS + 1 ) {
                 if( GUIMDIMenuID != 0 ) {
-                    MDIMoreMenu[0].label = LIT( XMore_Windows );
-                    MDIMoreMenu[0].hinttext = LIT( More_Windows_Hint );
-                    GUIAppendMenuToPopup( root, GUIMDIMenuID, MDIMoreMenu, false );
+                    MDIMoreMenu.label = LIT( XMore_Windows );
+                    MDIMoreMenu.hinttext = LIT( More_Windows_Hint );
+                    GUIAppendMenuToPopup( root, GUIMDIMenuID, &MDIMoreMenu, false );
                 }
             }
         } else {
@@ -577,7 +577,7 @@ void AddMDIActions( bool has_items, gui_window *wnd )
     }
 
     if( has_items ) {
-        GUIAppendMenuToPopup( wnd, GUIMDIMenuID, MDIFirstSepMenu, false );
+        GUIAppendMenuToPopup( wnd, GUIMDIMenuID, &MDIFirstSepMenu, false );
     }
 
     for( i = 0; i < ARRAY_SIZE( MDIMenu ); i++ ) {

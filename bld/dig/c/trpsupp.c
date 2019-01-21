@@ -73,7 +73,7 @@ int OpenTrapTraceFile( void )
 
 int CloseTrapTraceFile( void )
 {
-    if( TrapTraceFileHandle != NULL ){
+    if( TrapTraceFileHandle != NULL ) {
         fclose( TrapTraceFileHandle );
         TrapTraceFileHandle = NULL;
     }

@@ -103,9 +103,9 @@ typedef struct ins_header {
 
 typedef struct instruction {
         struct ins_header       head;
-        opcode_entry            *table;
+        const opcode_entry      *table;
         union {
-            opcode_entry        *gen_table;     /*  do not merge this one! */
+            const opcode_entry  *gen_table;     /*  do not merge this one! */
         } u;
         union {
             struct instruction  *parm_list;
@@ -160,7 +160,7 @@ typedef struct instruction {
                                        ? (ins)->base_type_class \
                                        : (ins)->type_class )
 
-#define _INS_NOT_BLOCK( ins )        if ( (ins)->head.opcode == OP_BLOCK ) Zoiks( ZOIKS_142 )
+#define _INS_NOT_BLOCK( ins )        if( (ins)->head.opcode == OP_BLOCK ) Zoiks( ZOIKS_142 )
 
 typedef enum {
     MB_FALSE    = false,

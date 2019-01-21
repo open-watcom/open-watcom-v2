@@ -2,7 +2,7 @@ special = rcstr.gh
 
 objwiny = &
     main.obj mainwnd.obj editwnd.obj dosdir.obj time.obj &
-    stubs.obj color.obj wstatus.obj font.obj &
+    stubs.obj color.obj wstatus.obj vifont.obj &
     window.obj display.obj getkey.obj cursor.obj command.obj &
     utils.obj menu.obj filesel.obj flist.obj &
     message.obj windir.obj contain.obj &

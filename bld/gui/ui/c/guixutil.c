@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2018-2018 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -31,6 +32,7 @@
 
 
 #include "guiwind.h"
+#include <string.h>
 #include "guiscale.h"
 #include "guixutil.h"
 #include "guix.h"
@@ -38,12 +40,63 @@
 #include "guiutil.h"
 #include "guixdlg.h"
 #include "guisize.h"
-#include <string.h>
+#include "guimenu.h"
+#include "guixwind.h"
+#include "guiwnclr.h"
+#include "guicontr.h"
+#include "guihook.h"
+#include "guizlist.h"
+#include "guigadgt.h"
+#include "guixhook.h"
+#include "guistat.h"
+
 
 #define VALIDWINDOW( area, check_min )          \
         ( check_min ?                           \
         ( area->width >= MIN_WIDTH ) &&         \
         ( area->height >= MIN_HEIGHT ) : true )
+
+/*
+ * GUISetupStruct - sets up the gui_window structure
+ */
+
+bool GUISetupStruct( gui_window *wnd, gui_create_info *dlg_info, bool dialog )
+{
+    wnd->style = dlg_info->style;
+    if( !dialog ) {
+        if( !GUICreateMenus( wnd, dlg_info ) ) {
+            return( false );
+        }
+        if( wnd->vbarmenu != NULL ) {
+            uimenubar( wnd->vbarmenu );
+            GUISetScreen( XMIN, YMIN, XMAX - XMIN, YMAX - YMIN );
+        }
+    }
+    if( !GUIJustSetWindowText( wnd, dlg_info->title ) ) {
+        return( false );
+    }
+    if( !GUISetArea( &wnd->screen.area, &dlg_info->rect, dlg_info->parent, true, dialog ) ) {
+        return( false );
+    }
+    GUISetUseWnd( wnd );
+    if( dlg_info->scroll & GUI_VSCROLL ) {
+        if( !GUICreateGadget( wnd, VERTICAL, wnd->use.width, wnd->use.row,
+                           wnd->use.height, &wnd->vgadget, dlg_info->scroll ) ) {
+            return( false );
+        }
+    }
+    if( dlg_info->scroll & GUI_HSCROLL ) {
+        if( !GUICreateGadget( wnd, HORIZONTAL, wnd->use.height, wnd->use.col,
+                           wnd->use.width, &wnd->hgadget, dlg_info->scroll ) ) {
+            return( false );
+        }
+    }
+    if( wnd->style & GUI_CURSOR ) {
+        wnd->screen.cursor = C_NORMAL;
+        GUISetCursor( wnd );
+    }
+    return( GUISetColours( wnd, dlg_info->colours.num_items, dlg_info->colours.colours ) );
+}
 
 /*
  * GUISetRedraw -- set the redraw flag for a given window
@@ -381,12 +434,124 @@ bool GUISetCursor( gui_window *wnd )
     return( false );
 }
 
-/* Hooking the F1 key */
-void GUIHookF1( void )
+static void DeleteChild( gui_window *parent, gui_window *child )
 {
+    gui_window  *curr;
+    gui_window  *prev;
+
+    prev = NULL;
+    for( curr = parent->child; curr != NULL; curr=curr->sibling ) {
+        if( curr == child ) {
+            break;
+        }
+        prev = curr;
+    }
+    if( curr != NULL ) {
+        if( prev != NULL ) {
+            prev->sibling = curr->sibling;
+        } else {
+            parent->child = curr->sibling;
+        }
+    }
 }
 
-void GUIUnHookF1( void )
+void GUIWantPartialRows( gui_window *wnd, bool want )
 {
+    /* unused parameters */ (void)wnd; (void)want;
 }
 
+void GUIFreeWindowMemory( gui_window *wnd, bool from_parent, bool dialog )
+{
+    gui_window  *curr_child;
+    gui_window  *next_child;
+    gui_window  *front;
+
+    GUIDeleteFromList( wnd );
+    if( GUIHasToolBar( wnd ) ) {
+        GUICloseToolBar( wnd );
+    }
+    if( GUIHasStatus( wnd ) ) {
+        GUIFreeStatus( wnd );
+    }
+    if( ( wnd->parent != NULL ) && ( !from_parent ) ) {
+        DeleteChild( wnd->parent, wnd );
+    }
+    if( !dialog ) {
+        GUIMDIDelete( wnd );
+    }
+    front = GUIGetFront();
+    if( !dialog && !from_parent && ( front != NULL ) ) {
+        GUIBringToFront( front );
+    }
+    GUIFreeAllControls( wnd );
+    for( curr_child = wnd->child; curr_child != NULL; curr_child = next_child ) {
+        next_child = curr_child->sibling;
+        if( curr_child != NULL ) {
+            GUIEVENT( curr_child, GUI_DESTROY, NULL );
+            GUIFreeWindowMemory( curr_child, true, dialog );
+        }
+    }
+    if( wnd->hgadget != NULL ) {
+        uifinigadget( wnd->hgadget );
+        GUIMemFree( wnd->hgadget );
+    }
+    if( wnd->vgadget != NULL ) {
+        uifinigadget( wnd->vgadget );
+        GUIMemFree( wnd->vgadget );
+    }
+    GUIFreeMenus( wnd );
+    GUIFreeHint( wnd );
+    GUIMemFree( wnd->icon_name );
+    if( !dialog ) {
+        uivshow( &wnd->screen );
+        wnd->screen.open = true;
+        uivclose( &wnd->screen );
+    }
+    if( GUICurrWnd == wnd ) {
+        GUICurrWnd = NULL;
+    }
+    if( wnd->screen.dynamic_title ) {
+        GUIMemFree( (void *)wnd->screen.title );
+        wnd->screen.title = NULL;
+        wnd->screen.dynamic_title = false;
+    }
+    GUIFreeColours( wnd );
+    GUIMemFree( wnd );
+}
+
+static void DoDestroy( gui_window * wnd, bool dialog )
+{
+    if( wnd != NULL ) {
+        GUIEVENT( wnd, GUI_DESTROY, NULL );
+        GUIFreeWindowMemory( wnd, false, dialog );
+    } else {
+        while( (wnd = GUIGetFront()) != NULL ) {
+            DoDestroy( wnd, GUI_IS_DIALOG( wnd ) );
+        }
+    }
+}
+
+void GUIDestroyDialog( gui_window * wnd )
+{
+    DoDestroy( wnd, true );
+}
+
+bool GUICloseWnd( gui_window *wnd )
+{
+    if( wnd != NULL ) {
+        if( GUIEVENT( wnd, GUI_CLOSE, NULL ) ) {
+            GUIDestroyWnd( wnd );
+            return( true );
+        }
+    }
+    return( false );
+}
+
+/*
+ * GUIDestroyWnd
+ */
+
+void GUIDestroyWnd( gui_window * wnd )
+{
+    DoDestroy( wnd, false );
+}

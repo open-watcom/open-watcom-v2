@@ -43,23 +43,25 @@ struct rgb {
 };
 
 
-#if defined( __QNX__ ) || !defined( __386__ )
+#if defined( _M_I86 ) || defined( __QNX__ )
 
-
-#if defined( __386__ )
-extern void             VideoIntDAC( short, short, short, void __far * );
-#pragma aux             VideoIntDAC = \
-                        "push    bp   ", \
-                        "int     10h  ", \
-                        "pop     bp   ", \
-                        parm caller [ax] [bx] [cx] [es edx];
+extern void VideoIntDAC( short, short, short, void __far * );
+#if defined( _M_I86 )
+#pragma aux VideoIntDAC = \
+        "push bp"   \
+        "int 10h"   \
+        "pop  bp"   \
+    __parm __caller [__ax] [__bx] [__cx] [__es __dx] \
+    __value         \
+    __modify        []
 #else
-extern void             VideoIntDAC( short, short, short, void __far * );
-#pragma aux             VideoIntDAC = \
-                        "push    bp   ", \
-                        "int     10h  ", \
-                        "pop     bp   ", \
-                        parm caller [ax] [bx] [cx] [es dx];
+#pragma aux VideoIntDAC = \
+        "push bp"   \
+        "int 10h"   \
+        "pop  bp"   \
+    __parm __caller [__ax] [__bx] [__cx] [__es __edx] \
+    __value         \
+    __modify        []
 #endif
 
 
@@ -143,30 +145,35 @@ typedef struct {
     unsigned short      ss;
 } RMI;
 
-extern long             DPMIAllocDOSMemory( short para );
+extern long DPMIAllocDOSMemory( short para );
 #pragma aux DPMIAllocDOSMemory = \
-                        "mov  ax,0100h", \
-                        "int  31h     ", \
-                        "jnc  l1      ", \
-                        "sub  ax,ax   ", \
-                        "sub  dx,dx   ", \
-                        "l1:          ", \
-                        "shl  eax,16  ", \
-                        "mov  ax,dx   "  \
-                        parm [bx] modify [dx] value [eax];
+        "mov  ax,100h"  \
+        "int 31h"       \
+        "jnc short L1"  \
+        "sub  ax,ax"    \
+        "sub  dx,dx"    \
+    "L1: shl  eax,16"   \
+        "mov  ax,dx"    \
+    __parm      [__bx] \
+    __value     [__eax] \
+    __modify    [__dx]
 
-extern void             DPMIFreeDOSMemory( short sel );
+extern void DPMIFreeDOSMemory( short sel );
 #pragma aux DPMIFreeDOSMemory = \
-                        "mov  ax,0101h", \
-                        "int  31h     ", \
-                        parm [bx] modify [ax];
+        "mov  ax,101h"  \
+        "int 31h"       \
+    __parm      [__bx] \
+    __value     \
+    __modify    [__ax]
 
-extern void             DPMIRealModeInterrupt( char interrupt, char flags,
+extern void DPMIRealModeInterrupt( char interrupt, char flags,
                             short words_to_copy, RMI __far *call_st );
-#pragma aux             DPMIRealModeInterrupt = \
-                        "mov  ax,0300h", \
-                        "int  31h     "  \
-                        parm [bl] [bh] [cx] [es edi] modify [ax];
+#pragma aux DPMIRealModeInterrupt = \
+        "mov  ax,300h"  \
+        "int 31h"       \
+    __parm      [__bl] [__bh] [__cx] [__es __edi] \
+    __value     \
+    __modify    [__ax]
 
 typedef struct {
     short               intnum;
@@ -178,30 +185,36 @@ typedef struct {
     long                edx;
 } PARM_BLOCK;
 
-extern short            PharlapAlloc( short );
-#pragma aux             PharlapAlloc = \
-                        "mov  ax,25c0h", \
-                        "int  21h     ", \
-                        "jnc  l1      ", \
-                        "sub  ax,ax   ", \
-                        "l1:          ", \
-                        parm [bx] value [ax];
+extern short PharlapAlloc( short );
+#pragma aux PharlapAlloc = \
+        "mov  ax,25c0h" \
+        "int 21h"       \
+        "jnc short L1"  \
+        "sub  ax,ax"    \
+    "L1:"               \
+    __parm      [__bx] \
+    __value     [__ax] \
+    __modify    []
 
-extern void             PharlapFree( short );
-#pragma aux             PharlapFree = \
-                        "mov  ax,25c1h", \
-                        "int  21h     ", \
-                        parm [cx];
+extern void PharlapFree( short );
+#pragma aux PharlapFree = \
+        "mov  ax,25c1h" \
+        "int 21h"       \
+    __parm      [__cx] \
+    __value     \
+    __modify    [__ax]
 
-extern short            PharlapRMI( void __far *parms, short bx, short cx, short di );
-#pragma aux             PharlapRMI = \
-                        "push ds      ", \
-                        "push fs      ", \
-                        "pop  ds      ", \
-                        "mov  ax,2511h", \
-                        "int  021h    ", \
-                        "pop  ds      ", \
-                        parm caller [fs edx] [ebx] [ecx] [edi] value [ax];
+extern short PharlapRMI( void __far *parms, short bx, short cx, short di );
+#pragma aux PharlapRMI = \
+        "push ds"       \
+        "push fs"       \
+        "pop  ds"       \
+        "mov  ax,2511h" \
+        "int 21h"       \
+        "pop  ds"       \
+    __parm __caller     [__fs __edx] [__ebx] [__ecx] [__edi] \
+    __value             [__ax] \
+    __modify            []
 
 
 short _RMAlloc( int size, RM_ALLOC *stg )

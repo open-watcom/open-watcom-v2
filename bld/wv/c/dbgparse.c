@@ -167,13 +167,13 @@ void MakeMemoryAddr( bool pops, memory_expr def_seg, address *val )
     if( ExprSP->flags & SF_LOCATION ) {
         ExprSP->flags &= ~(SF_LOCATION|SF_IMP_ADDR);
         ExprSP->v.addr = ExprSP->v.loc.e[0].u.addr;
-        ExprSP->info.kind = TK_ADDRESS;
-        ExprSP->info.modifier = TM_FAR;
+        ExprSP->ti.kind = TK_ADDRESS;
+        ExprSP->ti.modifier = TM_FAR;
     }
-    switch( ExprSP->info.kind ) {
+    switch( ExprSP->ti.kind ) {
     case TK_ADDRESS:
     case TK_POINTER:
-        if( (ExprSP->info.modifier & TM_MOD_MASK) != TM_NEAR )
+        if( ExprSP->ti.modifier != TM_NEAR )
             break;
         /* fall through */
     default:

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
+* Copyright (c) 2009-2018 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -32,26 +32,26 @@
 #ifndef TOCREF_INCLUDED
 #define TOCREF_INCLUDED
 
-#include "config.hpp"
 #include <cstdio>
 #include <set>
 #include "xref.hpp"
 
 class TocRef {
 public:
-    TocRef( const std::wstring* f, unsigned int r, STD1::uint16_t i ) :
-        fileName( f ), lineNumber( r ), tocIndex( i ) { };
+    TocRef( const std::wstring* f, unsigned int r, word i ) :
+        _fileName( f ), _lineNumber( r ), _tocIndex( i ) { };
     ~TocRef() { };
-    STD1::uint16_t index() const { return tocIndex; };
-    void addXRef( XRef& ref ) { xref.insert( ref ); };
-    void write( std::FILE* out ) const;
+    word index() const { return _tocIndex; };
+    void addXRef( XRef& ref ) { _xref.insert( ref ); };
+    void write( std::FILE* logfp ) const;
+
 private:
-    const std::wstring* fileName;
-    std::set< XRef > xref;
+    const std::wstring*     _fileName;
+    std::set< XRef >        _xref;
     typedef std::set< XRef >::iterator XRefIter;
     typedef std::set< XRef >::const_iterator ConstXRefIter;
-    unsigned int lineNumber;
-    STD1::uint16_t tocIndex;
+    unsigned int            _lineNumber;
+    word                    _tocIndex;
 };
 
 #endif //TOCREF_INCLUDED

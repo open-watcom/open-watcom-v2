@@ -30,8 +30,8 @@
 ****************************************************************************/
 
 
-extern bool ClassifyType( location_context *lc, type_handle *th, dip_type_info *info );
-extern void ClassifyEntry( stack_entry *stk, dip_type_info *info );
+extern bool ClassifyType( location_context *lc, type_handle *th, dig_type_info * );
+extern void ClassifyEntry( stack_entry *stk, dig_type_info * );
 extern sym_list *ExprGetSymList( stack_entry *entry, bool source_only );
 extern void ExprSymbol( stack_entry *entry, sym_handle *sh );
 extern bool NameResolve( stack_entry *entry, bool source_only );

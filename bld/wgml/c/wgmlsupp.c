@@ -137,7 +137,7 @@ static void reopen_inc_fp( filecb *cb )
     int         rc;
     int         erc2;
 
-    if( ! cb->flags & FF_open ) {
+    if( (cb->flags & FF_open) == 0 ) {
         for( ;; ) {
             cb->fp = fopen( cb->filename, "rb" );
             if( cb->fp != NULL ) break;

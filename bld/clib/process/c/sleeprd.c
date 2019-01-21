@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
+* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -30,7 +30,7 @@
 
 
 #include "variety.h"
-#include <dos.h>
+#include <unistd.h>
 #include <rdos.h>
 
 _WCRTLINK unsigned sleep( unsigned seconds )

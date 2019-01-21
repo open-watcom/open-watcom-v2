@@ -755,6 +755,8 @@ void SetCommandFile( f_handle file, char *fname )
         _LnkAlloc( buff, size + 1 );
         if( buff != NULL ) {
             size = QRead( file, buff, size, fname );
+            if( size == IOERROR )
+                size = 0;
             buff[size] = '\0';
             NewCommandSource( fname, buff, BUFFERED );
         }
@@ -821,7 +823,7 @@ static int ParseNumber( char *str, int radix )
         ch = tolower( *str );
         isdig = ( isdigit( ch ) != 0 );
         if( radix == 8 ) {
-            isvalid = isdig && !(ch == '8' && ch == '9');
+            isvalid = isdig && !(ch == '8' || ch == '9');
         } else {
             isvalid = ( isxdigit( ch ) != 0 );
         }

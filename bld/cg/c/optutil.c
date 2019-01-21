@@ -30,16 +30,15 @@
 ****************************************************************************/
 
 
-#include "cgstd.h"
+#include "_cgstd.h"
 #include "optwif.h"
-#include "stack.h"
+#include "stackcg.h"
 #include "optutil.h"
 #include "optmkins.h"
+#include "optins.h"
+#include "optpull.h"
+#include "optpush.h"
 
-
-extern  void            MultiLineNums(ins_entry*);
-extern  ins_entry       *Untangle(ins_entry*);
-extern  ins_entry       *IsolatedCode(ins_entry*);
 
 ins_entry       *ValidIns( ins_entry *instr )
 /*******************************************/

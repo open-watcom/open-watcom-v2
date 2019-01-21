@@ -143,7 +143,7 @@ static void toolBarHelp( HWND hwnd, ctl_id id, bool isdown )
 } /* toolBarHelp */
 
 #if 0
-static bool myToolBarProc( HWND hwnd, UINT msg, WPARAM w, LPARAM l );
+static bool myToolBarProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
 
 static void newToolBarWindow( void )
 {
@@ -154,7 +154,7 @@ static void newToolBarWindow( void )
 
     userClose = false;
 
-    GetWindowRect( edit_container_id, &rect );
+    GetWindowRect( edit_container_window_id, &rect );
     width = rect.right - rect.left;
     height = rect.bottom - rect.top;
 
@@ -188,7 +188,7 @@ static void newToolBarWindow( void )
 
     ToolBarDisplay( toolBar, &dinfo );
 
-    MoveWindow( edit_container_id, tl.x, tl.y, width, height, TRUE );
+    MoveWindow( edit_container_window_id, tl.x, tl.y, width, height, TRUE );
     ShowWindow( ToolBarWindow( toolBar ), SW_SHOWNORMAL );
     UpdateWindow( ToolBarWindow( toolBar ) );
     fixedToolBar = !fixedToolBar;
@@ -201,7 +201,7 @@ static void newToolBarWindow( void )
 /*
  * myToolBarProc - called by toolbar window proc
  */
-static bool myToolBarProc( HWND hwnd, UINT msg, WPARAM w, LPARAM l )
+static bool myToolBarProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
 {
     switch( msg ) {
     case WM_KILLFOCUS:
@@ -217,7 +217,7 @@ static bool myToolBarProc( HWND hwnd, UINT msg, WPARAM w, LPARAM l )
         // Whenever we are moved or sized as a floating toolbar, we
         // remember our position so that we can restore it when dbl. clicked
         if( !fixedToolBar && userClose ) {
-            DefWindowProc( hwnd, msg, w, l );
+            DefWindowProc( hwnd, msg, wparam, lparam );
             GetWindowRect( hwnd, &ToolBarFloatRect );
         }
         return( false );
@@ -420,7 +420,7 @@ void DestroyToolBar( void )
 /*
  * GetToolbarWindow - return the current toolbar window
  */
-HWND GetToolbarWindow( void )
+window_id GetToolbarWindow( void )
 {
     return( ToolBarWindow( toolBar ) );
 
@@ -521,6 +521,6 @@ void NewToolBar( RECT *rect )
     covered = *rect;
     covered.bottom = rect->top;
     covered.top = 0;
-    InvalidateRect( edit_container_id, &covered, FALSE );
+    InvalidateRect( edit_container_window_id, &covered, FALSE );
 
 } /* NewToolBar */

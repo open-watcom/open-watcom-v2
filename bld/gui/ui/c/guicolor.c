@@ -89,34 +89,36 @@ static ATTR MakeAttr( gui_colour fore, gui_colour back )
  * GUIXSetColours -- record the colours wanted
  */
 
-bool GUIXSetColours( gui_window *wnd, gui_colour_set *colours )
+bool GUIXSetColours( gui_window *wnd, int num_attrs, gui_colour_set *colours )
 {
-    int size;
-    int i;
+    size_t  size;
+    int     i;
+    ATTR    *attrs;
 
-    size = sizeof( ATTR ) * wnd->num_attrs;
-    wnd->colours = (ATTR *)GUIMemAlloc( size );
-    if( wnd->colours == NULL ) {
-        wnd->num_attrs = 0;
-        return( false );
-    }
-    for( i = 0; i < wnd->num_attrs; i++ ) {
-        wnd->colours[i] = MakeAttr( colours[i].fore, colours[i].back );
-    }
-    if( wnd->vbarmenu != NULL ) {
+    size = sizeof( ATTR ) * num_attrs;
+    attrs = (ATTR *)GUIMemAlloc( size );
+    if( attrs != NULL ) {
+        wnd->colours = attrs;
+        wnd->num_attrs = num_attrs;
+        for( i = 0; i < num_attrs; i++ ) {
+            attrs[i] = MakeAttr( colours[i].fore, colours[i].back );
+        }
+        if( wnd->vbarmenu != NULL ) {
 #if !defined( ISQL_COLOURS )
-        UIData->attrs[ATTR_MENU]            = wnd->colours[GUI_MENU_FRAME];
-        UIData->attrs[ATTR_ACTIVE]          = wnd->colours[GUI_MENU_PLAIN];
-        UIData->attrs[ATTR_INACTIVE]        = wnd->colours[GUI_MENU_GRAYED];
-        UIData->attrs[ATTR_CURR_INACTIVE]   = wnd->colours[GUI_MENU_GRAYED_ACTIVE];
-        UIData->attrs[ATTR_HOT]             = wnd->colours[GUI_MENU_STANDOUT];
-        UIData->attrs[ATTR_HOT_QUIET]       = wnd->colours[GUI_MENU_STANDOUT];
-        UIData->attrs[ATTR_CURR_ACTIVE]     = wnd->colours[GUI_MENU_ACTIVE];
-        UIData->attrs[ATTR_HOT_CURR]        = wnd->colours[GUI_MENU_ACTIVE_STANDOUT];
+            UIData->attrs[ATTR_MENU]            = wnd->colours[GUI_MENU_FRAME];
+            UIData->attrs[ATTR_ACTIVE]          = wnd->colours[GUI_MENU_PLAIN];
+            UIData->attrs[ATTR_INACTIVE]        = wnd->colours[GUI_MENU_GRAYED];
+            UIData->attrs[ATTR_CURR_INACTIVE]   = wnd->colours[GUI_MENU_GRAYED_ACTIVE];
+            UIData->attrs[ATTR_HOT]             = wnd->colours[GUI_MENU_STANDOUT];
+            UIData->attrs[ATTR_HOT_QUIET]       = wnd->colours[GUI_MENU_STANDOUT];
+            UIData->attrs[ATTR_CURR_ACTIVE]     = wnd->colours[GUI_MENU_ACTIVE];
+            UIData->attrs[ATTR_HOT_CURR]        = wnd->colours[GUI_MENU_ACTIVE_STANDOUT];
 #endif
-        uimenutitlebar();
+            uimenutitlebar();
+        }
+        return( true );
     }
-    return( true );
+    return( false );
 }
 
 gui_colour GUIGetBack( ATTR attr )
@@ -134,8 +136,7 @@ ATTR GUIMakeColour( gui_colour fore, gui_colour back )
     return( MakeAttr( fore, back )  );
 }
 
-void GUISetWindowColours( gui_window *wnd, int num_attrs,
-                          gui_colour_set *colours )
+void GUISetWindowColours( gui_window *wnd, int num_attrs, gui_colour_set *colours )
 {
     gui_control *control;
 

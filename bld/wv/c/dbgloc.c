@@ -181,8 +181,10 @@ static dip_status DoLocAssign( location_list *dst, location_list *src,
     padding = false;
     sidx = 0;
     didx = 0;
+    sitem.bit_start = 0;
     sitem.bit_length = 0;
     sitem.type = 0;
+    ditem.bit_start = 0;
     ditem.bit_length = 0;
     ditem.type = 0;
     for( ; bits > 0; bits -= size ) {
@@ -353,7 +355,7 @@ static dip_status DoLocAssign( location_list *dst, location_list *src,
 dip_status LocationAssign( location_list *dst, location_list *src,
                         unsigned long len, bool sign_extend )
 {
-    dip_status  st;
+    dip_status  ds;
     unsigned    flags;
     unsigned    i;
 
@@ -366,7 +368,7 @@ dip_status LocationAssign( location_list *dst, location_list *src,
             }
         }
     }
-    st = DoLocAssign( dst, src, len, sign_extend );
+    ds = DoLocAssign( dst, src, len, sign_extend );
     if( flags != 0 ) {
         for( i = 0; i < dst->num; ++i ) {
             if( dst->e[i].type == LT_INTERNAL ) {
@@ -375,5 +377,5 @@ dip_status LocationAssign( location_list *dst, location_list *src,
             }
         }
     }
-    return( st );
+    return( ds );
 }

@@ -37,6 +37,8 @@
 
 #define MAX_OBJECT_REC_SIZE 4096
 
+#define IOERROR         ((size_t)-1)
+
 typedef unsigned char   byte;
 typedef unsigned short  ushort;
 

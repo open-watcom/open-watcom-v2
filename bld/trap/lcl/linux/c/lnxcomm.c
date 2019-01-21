@@ -36,9 +36,10 @@
 #include <termios.h>
 #include <sys/stat.h>
 #include <sys/time.h>
-#include "lnxcomm.h"
 #include "trpimp.h"
 #include "trpcomm.h"
+#include "lnxcomm.h"
+
 
 void print_msg( const char *format, ... )
 {

@@ -80,8 +80,10 @@ void hllLocationAdd( location_list *ll, long sbits )
     num = 0;
     le = &ll->e[0];
     for( ;; ) {
-        if( le->bit_length == 0 ) break;
-        if( le->bit_length > bits ) break;
+        if( le->bit_length == 0 )
+            break;
+        if( le->bit_length > bits )
+            break;
         bits -= le->bit_length;
         ++num;
     }
@@ -201,31 +203,31 @@ dip_status hllLocationManyReg( imp_image_handle *iih, unsigned count,
     j = 0;
     for( i = count; i-- > 0; ) {
         idx = reg_list[i];
-        switch( iih->mad ) {
-        case MAD_X86:
+        switch( iih->arch ) {
+        case DIG_ARCH_X86:
             if( idx >= CV_X86_AL && idx <= CV_X86_EFLAGS ) {
                 reg = &X86_CPURegTable[idx-CV_X86_AL];
             } else if( idx >= CV_X86_ST0 && idx <= CV_X86_STATUS ) {
                 reg = &X86_FPURegTable[idx-CV_X86_ST0];
             } else {
-                DCStatus( DS_ERR|DS_FAIL );
-                return( DS_ERR|DS_FAIL );
+                DCStatus( DS_ERR | DS_FAIL );
+                return( DS_ERR | DS_FAIL );
             }
             break;
-        case MAD_AXP:
+        case DIG_ARCH_AXP:
             if( !(idx >= CV_AXP_f0 && idx <= CV_AXP_fltfsr) ) {
-                DCStatus( DS_ERR|DS_FAIL );
-                return( DS_ERR|DS_FAIL );
+                DCStatus( DS_ERR | DS_FAIL );
+                return( DS_ERR | DS_FAIL );
             }
             reg = &AXP_RegTable[idx-CV_AXP_f0];
             if( reg->ci == CI_LAST ) {
-                DCStatus( DS_ERR|DS_FAIL );
-                return( DS_ERR|DS_FAIL );
+                DCStatus( DS_ERR | DS_FAIL );
+                return( DS_ERR | DS_FAIL );
             }
             break;
         default:
-            DCStatus( DS_ERR|DS_FAIL );
-            return( DS_ERR|DS_FAIL );
+            DCStatus( DS_ERR | DS_FAIL );
+            return( DS_ERR | DS_FAIL );
         }
         ds = DCItemLocation( lc, reg->ci, &reg_ll );
         if( ds != DS_OK ) {

@@ -144,8 +144,10 @@ void SymTransFuncEnd(           // COMPLETE FUNCTION TRANSLATION
     sym_trans_id = fctl->sym_trans_id;
     for( ; ; VstkPop( &stack_sym_trans ) ) {
         top = VstkTop( &stack_sym_trans );
-        if( top == NULL ) break;
-        if( top->id < sym_trans_id ) break;
+        if( top == NULL )
+            break;
+        if( top->id < sym_trans_id )
+            break;
         dump( "freed", top );
     }
 }

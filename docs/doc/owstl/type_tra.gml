@@ -1,19 +1,21 @@
-:H1.Introduction
-:P.
+.chap Type Traits
+.*
+.sect Introduction
+.*
 The header type_traits is based on the metaprogramming section of n1836 
 :Q.Draft Technical Report on C++ Library Extensions:eQ..
 It contains a set of templates that allow compile type testing and modification
 of types.
-
-:H2.Status
-:P.
+.*
+.section Status
+.np
 :AUTHOR date='18 Feb 2006'.D J F Cletheroe
-:P.
+.np
 Reviewer: Not reviewed
-:P.
+.np
 About half of the required functionality has been implemented so far.
 There are currently a few compiler bugs stopping some parts being implemented.
-:P.
+.np
 The missing templates are:
 :UL.
 :LI.is_member_object_pointer
@@ -51,11 +53,11 @@ The missing templates are:
 :LI.add_pointer
 :LI.aligned_storage
 :eUL.
-
-:H1.Design Details
-:P.
-:H2.Quierying types
-:P.
+.*
+.section Design Details
+.*
+.sect Quierying types
+.*
 This is implemented by specialising templates for the types that the test
 holds true.
 The class derives from a helper class that contains a static const value.
@@ -68,18 +70,18 @@ There is a default case which declares the main template and is usually false.
 There are then other macros that define the specialisations.
 There are also macros that define 4 specialisations for the const volatile
 qualified variations of the type.
-
-:H2.Modifiying types
-:P.
+.*
+.sect Modifiying types
+.*
 This works in a simular way.
 The template is specialised for the type with the modifier and the class
 contains a typedef :Q.type:eQ. that refers to the modified type.
 Macros aren't used for the modifiers as they tend to have subtle differences
 for each template and in many cases there isn't the need for 4 different CV
 variations.
-
-:H2.Use in main library
-:P.
+.*
+.sect Use in main library
+.*
 This header should be a help for writing the constructors and member
 functions of the standard containers that are required to have different
 behaviour for iterators and integral types.

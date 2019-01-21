@@ -151,7 +151,7 @@ namespace std {
         osfx();
     }
     if( len > sizeof( buf ) ) {
-        delete x;
+        delete[] x;
     }
     return( *this );
   }

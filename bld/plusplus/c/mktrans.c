@@ -131,7 +131,7 @@ static int mname_suffix( char *s )
     mlen = strlen( mname );
     slen = strlen( s );
     if( slen > mlen ) {
-        return 0;
+        return( 0 );
     }
     i = mlen - slen;
     return( strcmp( &mname[i], s ) == 0 );

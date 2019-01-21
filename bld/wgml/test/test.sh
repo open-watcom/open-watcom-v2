@@ -18,19 +18,19 @@ shift
    echo $OWDOSBOX
 if [ -n "$OWDOSBOX" ]; then 
 #   create DOSBOX batch script for run wgml on 64-bit Windows under DOSBOX
-   echo "d:" > wgml.bat
-   echo "set GMLINC=c:\doc\devguide;c:\doc\gml;c:\doc\whelp;c:\doc\hlp" >> wgml.bat
-   echo "set GMLLIB=c:\gml\syslib;c:\doc\whelp;c:\doc\hlp;.\testlib" >> wgml.bat
-   echo "c:\gml\dos\wgml.exe $fn ( file wgml.opt out $fb.ops %1 %2 %3 %4 %5 %6 %7 %8 %9 >$fb.old" >> wgml.bat
-   echo "exit" >> wgml.bat
-   $OWDOSBOX -noautoexec -c "mount c $OWROOT\docs" -c "mount d ." -c "mount e $OWROOT\bld" -c "d:wgml.bat" -noconsole
+   echo "d:" > wgmlb.bat
+   echo "set GMLINC=c:\doc\devguide;c:\doc\gml;c:\doc\whelp;c:\doc\hlp" >> wgmlb.bat
+   echo "set GMLLIB=c:\gml\syslib;c:\doc\whelp;c:\doc\hlp;.\testlib" >> wgmlb.bat
+   echo "c:\gml\dos\wgml.exe $fn ( file wgml.opt out $fb.ops %1 %2 %3 %4 %5 %6 %7 %8 %9 >$fb.old" >> wgmlb.bat
+   echo "exit" >> wgmlb.bat
+   $OWDOSBOX -noautoexec -c "mount c $OWROOT\docs" -c "mount d ." -c "mount e $OWROOT\bld" -c "d:wgmlb.bat" -noconsole
 else
-   echo "lredir w: linux\fs$OWDOCSDIR" > wgml.bat
-   echo "set GMLINC=w:\doc\devguide;w:\doc\gml;w:\doc\whelp;w:\doc\hlp" >> wgml.bat
-   echo "set GMLLIB=w:\gml\syslib;w:\doc\whelp;w:\doc\hlp;.\testlib" >> wgml.bat
-   echo "w:\gml\dos\wgml.exe $fn ( file wgml.opt out $fb.ops %1 %2 %3 %4 %5 %6 %7 %8 %9 >$fb.old" >> wgml.bat
-   echo "exitemu" >> wgml.bat
-   dosemu -dumb -quiet wgml.bat
+   echo "lredir w: linux\fs$OWDOCSDIR" > wgmlb.bat
+   echo "set GMLINC=w:\doc\devguide;w:\doc\gml;w:\doc\whelp;w:\doc\hlp" >> wgmlb.bat
+   echo "set GMLLIB=w:\gml\syslib;w:\doc\whelp;w:\doc\hlp;.\testlib" >> wgmlb.bat
+   echo "w:\gml\dos\wgml.exe $fn ( file wgml.opt out $fb.ops %1 %2 %3 %4 %5 %6 %7 %8 %9 >$fb.old" >> wgmlb.bat
+   echo "exitemu" >> wgmlb.bat
+   dosemu -dumb -quiet wgmlb.bat
 fi
    $OWROOT/bld/wgml/$WGML_DIR/wgml.exe $fn "(" file wgml.opt out $fb.nps $1 $2 $3 $4 $5 $6 $7 $8 $9 >$fb.ntr
    $OWROOT/bld/wgml/$WGML_DIR/wgml.exe $fn -r "(" file wgml.opt out $fb.nps $1 $2 $3 $4 $5 $6 $7 $8 $9 >$fb.new

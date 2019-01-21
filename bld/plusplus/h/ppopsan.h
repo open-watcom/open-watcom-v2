@@ -42,5 +42,8 @@
 
 #include "ppopsdef.h"
 
+#undef PPOPIM
+#undef PPOPAN
+
 #endif
 

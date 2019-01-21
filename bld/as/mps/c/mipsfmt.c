@@ -818,7 +818,7 @@ static void ITJump( ins_table *table, instruction *ins, uint_32 *buffer, asm_rel
         }
     } else {    // jalr rd,rs
         op1 = ins->operands[1];
-        if( op0->reg == op0->reg ) {
+        if( op0->reg == op1->reg ) {
             // TODO: warn - non-restartable instruction
         }
         doOpcodeRType( buffer, 0, FNCCODE_JALR, RegIndex( op1->reg ),
@@ -1512,12 +1512,10 @@ void MIPSEmit( instruction *ins )
 #else
         emitIns( (char *)&result[ctr], sizeof( uint_32 ) );
 #endif
-#ifdef AS_DEBUG_DUMP
-    #ifdef _STANDALONE_
+#if defined( _STANDALONE_ ) && defined( AS_DEBUG_DUMP )
         if( _IsOption( DUMP_INSTRUCTIONS ) ) {
             printf( " [%#010x]\n", result[ctr] );
         }
-    #endif
 #endif
     }
     assert( reloc.first == NULL ); // Should all be emitted already!

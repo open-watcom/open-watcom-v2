@@ -36,7 +36,6 @@
 #else
  #include <direct.h>
 #endif
-#include "wio.h"
 #include "preproc.h"
 #include "memmgr.h"
 #include "iosupp.h"
@@ -64,17 +63,12 @@ struct buf_alloc {              // BUF_ALLOC -- allocated buffer
 };
 
 
-static carve_t carve_buf;       // carver: BUF_ALLOC
-static BUF_ALLOC* buffers;      // allocated buffers
-static int  temphandle;         // handle for temp file
-static char *tempname;          // name of temp file
-static DISK_ADDR tempBlock;     // next available block in temp file
-static unsigned outFileChecked; // mask for checking output files
+static carve_t      carve_buf;      // carver: BUF_ALLOC
+static BUF_ALLOC    *buffers;       // allocated buffers
+static FILE         *tempfileFP;    // file ptr for temp file
+static DISK_ADDR    tempBlock;      // next available block in temp file
+static unsigned     outFileChecked; // mask for checking output files
 
-                                // template for work file name
-static char workFile[] = "__wrk0__.tmp";
-
-#define MAX_TMP_PATH (_MAX_PATH - sizeof( workFile ) - 1)
 
 #if defined(__OS2__) || defined(__DOS__) || defined(__NT__) || defined(__RDOS__)
 
@@ -236,7 +230,7 @@ char *IoSuppOutFileName(        // BUILD AN OUTPUT NAME FROM SOURCE NAME
             use_defaults = false;
             break;
         }
-        // fall down
+        /* fall through */
     case OFT_PPO:
     case OFT_OBJ:
     case OFT_MBR:
@@ -322,11 +316,11 @@ static void freeBuffer(         // FREE A BUFFER
 bool IoSuppCloseFile(           // CLOSE FILE IF OPENED
     FILE **file_ptr )           // - addr( file pointer )
 {
-    bool retb;                  // - return: true ==> was open
+    bool ok;                    // - return: true ==> was open
     BUF_ALLOC* ba;              // - current allocated buffer
 
     if( *file_ptr == NULL ) {
-        retb = false;
+        ok = false;
     } else {
         RingIterBegSafe( buffers, ba ) {
             if( *file_ptr == ba->buffer ) {
@@ -336,9 +330,9 @@ bool IoSuppCloseFile(           // CLOSE FILE IF OPENED
         } RingIterEndSafe( ba );
         SrcFileFClose( *file_ptr );
         *file_ptr = NULL;
-        retb = true;
+        ok = true;
     }
-    return( retb );
+    return( ok );
 }
 
 
@@ -492,16 +486,17 @@ static const char *openSrcExts( // ATTEMPT TO OPEN FILE (EXT.S TO BE APPENDED)
 
 static bool openSrcPath(        // ATTEMPT TO OPEN FILE (PATH TO BE PREPENDED)
     const char *path,           // - path
-    const char **exts,          // - file extensions
     struct path_descr *fd,      // - file descriptor
+    const char **exts,          // - file extensions
     src_file_type typ )         // - type of file being opened
 {
-    bool retb = false;          // - return: true ==> opened
+    bool ok;                    // - return: true ==> opened
     struct path_descr pd;       // - path descriptor
     char dir[_MAX_PATH * 2];    // - new path
     char *pp;                   // - pointer into path
     const char *ext;            // - extension opened
 
+    ok = false;
     dir[0] = '\0';
     splitFileName( path, &pd );
     if( fd->drv[0] == '\0' ) {
@@ -510,7 +505,7 @@ static bool openSrcPath(        // ATTEMPT TO OPEN FILE (PATH TO BE PREPENDED)
         pp = stxpcpy( dir, fd->drv );
         pp = stxpcpy( pp, path );
     } else {
-        return( retb );
+        return( ok );
     }
     if( pp > dir ) {
         if( !IS_PATH_SEP( pp[-1] ) ) {
@@ -521,24 +516,64 @@ static bool openSrcPath(        // ATTEMPT TO OPEN FILE (PATH TO BE PREPENDED)
     splitFileName( dir, &pd );
     ext = openSrcExts( exts, &pd, typ );
     if( ext != NULL ) {
-        retb = true;
+        ok = true;
         if( ( typ == FT_SRC ) && ( ext != fd->ext ) ) {
             _makepath( dir, fd->drv, fd->dir, fd->fnm, ext );
             WholeFName = FNameAdd( dir );
         }
     }
-    return( retb );
+    return( ok );
 }
 
+static bool try_open_file( const char *path, struct path_descr *fd, struct path_descr *fa, const char **exts, src_file_type typ )
+{
+    bool    ok;
+    bool    truncated;
+    char    save_chr_name;
+    char    save_chr_ext;
+
+    ok = openSrcPath( path, fd, exts, typ );
+    if( ok ) {
+        return( ok );
+    }
+    if( fa != NULL ) {
+        ok = openSrcPath( path, fa, exts, typ );
+        if( ok ) {
+            return( ok );
+        }
+    }
+    if( CompFlags.check_truncated_fnames ) {
+        save_chr_name = fd->fnm[8];
+        save_chr_ext = fd->ext[4];
+        truncated = false;
+        if( strlen( fd->fnm ) > 8 ) {
+            fd->fnm[8] = '\0';
+            truncated = true;
+        }
+        if( strlen( fd->ext ) > 4 ) {
+            fd->ext[4] = '\0';
+            truncated = true;
+        }
+        if( truncated ) {
+            ok = openSrcPath( path, fd, exts, typ );
+            if( ok ) {
+                return( ok );
+            }
+            fd->fnm[8] = save_chr_name;
+            fd->ext[4] = save_chr_ext;
+        }
+    }
+    return( ok );
+}
 
 static bool doIoSuppOpenSrc(    // OPEN A SOURCE FILE (PRIMARY,HEADER)
     struct path_descr *fd,      // - descriptor for file name
-    struct path_descr *fa,      // - descriptor for alias file name
+    struct path_descr *fai,     // - descriptor for alias file name
     src_file_type typ )         // - type of search path to use
 {
     const char  **paths;        // - optional paths to prepend
     const char  **exts;         // - optional extensions to append
-    bool retb;                  // - return: true ==> opened
+    bool ok;                    // - return: true ==> opened
     const char  *path;          // - next path
     char bufpth[_MAX_PATH];     // - buffer for next path
     SRCFILE curr;               // - current included file
@@ -548,11 +583,12 @@ static bool doIoSuppOpenSrc(    // OPEN A SOURCE FILE (PRIMARY,HEADER)
     char prevpth[_MAX_PATH];    // - buffer for previous path
     bool alias_abs;
     bool alias_check;
+    struct path_descr *fa;
 
     alias_abs = false;
     alias_check = false;
-    retb = false;
-    paths = NULL;
+    ok = false;
+    fa = NULL;
     switch( typ ) {
     case FT_SRC:
         exts = extsSrc;
@@ -565,14 +601,19 @@ static bool doIoSuppOpenSrc(    // OPEN A SOURCE FILE (PRIMARY,HEADER)
             WholeFName = FNameAdd( "stdin" );
             stdin_srcfile = SrcFileOpen( stdin, WholeFName, 0 );
             SrcFileNotAFile( stdin_srcfile );
-            retb = true;
+            ok = true;
             break;
         }
-        retb = openSrcPath( "", exts, fd, typ );
-        if( retb )
+        ok = openSrcPath( "", fd, exts, typ );
+        if( ok )
             break;
         if( !CompFlags.ignore_default_dirs && !IS_DIR_SEP( fd->dir[0] ) ) {
-            paths = pathSrc;
+            for( paths = pathSrc; (path = *paths) != NULL; ++paths ) {
+                ok = openSrcPath( path, fd, exts, typ );
+                if( ok ) {
+                    break;
+                }
+            }
         }
         break;
     case FT_HEADER:
@@ -580,18 +621,19 @@ static bool doIoSuppOpenSrc(    // OPEN A SOURCE FILE (PRIMARY,HEADER)
     case FT_HEADER_PRE:
     case FT_LIBRARY:
         exts = extsHdr;
-        alias_abs = fa != NULL && ( fa->drv[0] != '\0' || IS_DIR_SEP( fa->dir[0] ) );
+        alias_abs = ( fai != NULL && ( fai->drv[0] != '\0' || IS_DIR_SEP( fai->dir[0] ) ) );
         // have to look for absolute paths
         if( fd->drv[0] != '\0' || IS_DIR_SEP( fd->dir[0] ) ) {
-            retb = openSrcPath( "", exts, fd, typ );
-            if( !retb && alias_abs ) {
-                retb = openSrcPath( "", exts, fa, typ );
-            }
+            if( alias_abs )
+                fa = fai;
             alias_abs = false;
+            ok = try_open_file( "", fd, fa, exts, typ );
             break;
         }
         /* if alias contains abs path then check it after last check for regular name */
-        alias_check = fa != NULL && fa->drv[0] == '\0' && !IS_DIR_SEP( fa->dir[0] );
+        alias_check = ( fai != NULL && fai->drv[0] == '\0' && !IS_DIR_SEP( fai->dir[0] ) );
+        if( alias_check )
+            fa = fai;
         if( typ != FT_LIBRARY && !IS_DIR_SEP( fd->dir[0] ) ) {
             if( CompFlags.ignore_default_dirs ) {
                 bufpth[0] = '\0';
@@ -600,28 +642,16 @@ static bool doIoSuppOpenSrc(    // OPEN A SOURCE FILE (PRIMARY,HEADER)
                     splitFileName( SrcFileName( curr ), &idescr );
                     _makepath( bufpth, idescr.drv, idescr.dir, NULL, NULL );
                 }
-                retb = openSrcPath( bufpth, exts, fd, typ );
-                if( retb ) {
+                ok = try_open_file( bufpth, fd, fa, exts, typ );
+                if( ok ) {
                     break;
-                }
-                if( alias_check ) {
-                    retb = openSrcPath( bufpth, exts, fa, typ );
-                    if( retb ) {
-                        break;
-                    }
                 }
             } else {
                 if( !CompFlags.ignore_current_dir ) {
                     // check for current directory
-                    retb = openSrcPath( "", exts, fd, typ );
-                    if( retb ) {
+                    ok = try_open_file( "", fd, fa, exts, typ );
+                    if( ok ) {
                         break;
-                    }
-                    if( alias_check ) {
-                        retb = openSrcPath( "", exts, fa, typ );
-                        if( retb ) {
-                            break;
-                        }
                     }
                 }
                 /* check directories of currently included files */
@@ -633,21 +663,15 @@ static bool doIoSuppOpenSrc(    // OPEN A SOURCE FILE (PRIMARY,HEADER)
                     _makepath( bufpth, idescr.drv, idescr.dir, NULL, NULL );
                     /*optimization: don't try and open if in previously checked dir*/
                     if( strcmp( bufpth, prevpth ) != 0 ) {
-                        retb = openSrcPath( bufpth, exts, fd, typ );
-                        if( retb ) {
+                        ok = try_open_file( bufpth, fd, fa, exts, typ );
+                        if( ok ) {
                             break;
-                        }
-                        if( alias_check ) {
-                            retb = openSrcPath( bufpth, exts, fa, typ );
-                            if( retb ) {
-                                break;
-                            }
                         }
                     }
                     curr = SrcFileIncluded( curr, &dummy );
                     strcpy( prevpth, bufpth );
                 }
-                if( retb ) {
+                if( ok ) {
                     break;
                 }
             }
@@ -657,55 +681,45 @@ static bool doIoSuppOpenSrc(    // OPEN A SOURCE FILE (PRIMARY,HEADER)
             HFileListNext( bufpth );
             if( *bufpth == '\0' )
                 break;
-            retb = openSrcPath( bufpth, exts, fd, typ );
-            if( retb ) {
+            ok = try_open_file( bufpth, fd, fa, exts, typ );
+            if( ok ) {
                 break;
             }
-            if( alias_check ) {
-                retb = openSrcPath( bufpth, exts, fa, typ );
-                if( retb ) {
+        }
+        if( ok ) {
+            break;
+        }
+        if( typ != FT_LIBRARY && !CompFlags.ignore_default_dirs && !IS_DIR_SEP( fd->dir[0] ) ) {
+            for( paths = pathHdr; (path = *paths) != NULL; ++paths ) {
+                ok = try_open_file( path, fd, fa, exts, typ );
+                if( ok ) {
                     break;
                 }
             }
         }
-        if( retb ) {
-            break;
-        }
-        if( typ != FT_LIBRARY && !CompFlags.ignore_default_dirs && !IS_DIR_SEP( fd->dir[0] ) ) {
-            paths = pathHdr;
+        if( alias_abs ) {
+            ok = openSrcPath( "", fai, exts, typ );
         }
         break;
     case FT_CMD:
         exts = extsCmd;
-        retb = openSrcPath( "", exts, fd, typ );
-        if( retb )
+        ok = openSrcPath( "", fd, exts, typ );
+        if( ok )
             break;
         if( !IS_DIR_SEP( fd->dir[0] ) ) {
-            paths = pathCmd;
+            for( paths = pathCmd; (path = *paths) != NULL; ++paths ) {
+                ok = openSrcPath( path, fd, exts, typ );
+                if( ok ) {
+                    break;
+                }
+            }
         }
         break;
     default:
         exts = NULL;
         break;
     }
-    if( paths != NULL ) {
-        for( ; (path = *paths) != NULL; ++paths ) {
-            retb = openSrcPath( path, exts, fd, typ );
-            if( retb ) {
-                break;
-            }
-            if( alias_check ) {
-                retb = openSrcPath( path, exts, fa, typ );
-                if( retb ) {
-                    break;
-                }
-            }
-        }
-    }
-    if( !retb && alias_abs ) {
-        retb = openSrcPath( "", exts, fa, typ );
-    }
-    if( retb ) {
+    if( ok ) {
         switch( typ ) {
         case FT_CMD:
             SetSrcFileCommand();
@@ -715,9 +729,25 @@ static bool doIoSuppOpenSrc(    // OPEN A SOURCE FILE (PRIMARY,HEADER)
             break;
         }
     }
-    return( retb );
+    return( ok );
 }
 
+
+static void normalizeSep( char *dir )
+{
+    char    c;
+
+    while( (c = *dir) != '\0' ) {
+#if defined( __UNIX__ )
+        if( c == '\\' )
+            *dir = '/';
+#else
+        if( c == '/' )
+            *dir = '\\';
+#endif
+        dir++;
+    }
+}
 
 bool IoSuppOpenSrc(             // OPEN A SOURCE FILE (PRIMARY,HEADER)
     const char *file_name,      // - supplied file name
@@ -745,6 +775,7 @@ bool IoSuppOpenSrc(             // OPEN A SOURCE FILE (PRIMARY,HEADER)
     }
 #endif
     splitFileName( file_name, &fd );
+    normalizeSep( fd.dir );
     fap = NULL;
     switch( typ ) {
     case FT_HEADER:
@@ -755,53 +786,13 @@ bool IoSuppOpenSrc(             // OPEN A SOURCE FILE (PRIMARY,HEADER)
         alias_file_name = IAliasLookup( file_name, typ == FT_LIBRARY );
         if( alias_file_name != file_name ) {
             splitFileName( alias_file_name, &fa );
+            normalizeSep( fa.dir );
             fap = &fa;
         }
         break;
     }
-    if( doIoSuppOpenSrc( &fd, fap, typ ) ) {
-        return( true );
-    }
-    if( CompFlags.check_truncated_fnames && strlen( fd.fnm ) > 8 ) {
-        fd.fnm[8] = '\0';
-        if( doIoSuppOpenSrc( &fd, NULL, typ ) ) {
-            return( true );
-        }
-    }
-    return( false );
+    return( doIoSuppOpenSrc( &fd, fap, typ ) );
 }
-
-static void tempFname( char *fname )
-{
-    const char  *env;
-    size_t      len;
-
-#if defined(__UNIX__)
-    env = CppGetEnv( "TMPDIR" );
-    if( env == NULL )
-        env = CppGetEnv( "TMP" );
-#else
-    env = CppGetEnv( "TMP" );
-#endif
-    if( env == NULL )
-        env = "";
-
-    strncpy( fname, env, MAX_TMP_PATH );
-    fname[MAX_TMP_PATH] = '\0';
-    len = strlen( fname );
-    fname += len;
-    if( len > 0 && !IS_PATH_SEP( fname[-1] ) ) {
-        *fname++ = DIR_SEP;
-    }
-    strcpy( fname, workFile );
-}
-
-#if defined(__DOS__)
-
-#include "tinyio.h"
-extern void __SetIOMode( int, unsigned );
-
-#endif
 
 static void ioSuppError(        // SIGNAL I/O ERROR AND ABORT
     MSG_NUM error_code )            // - error code
@@ -824,64 +815,12 @@ static void ioSuppWriteError(     // SIGNAL ERROR ON WRITE
     ioSuppError( ERR_WORK_FILE_WRITE_ERROR );
 }
 
-#ifdef __QNX__
-#define AMODE   (O_RDWR | O_CREAT | O_EXCL | O_BINARY | O_TEMP)
-#else
-#define AMODE   (O_RDWR | O_CREAT | O_EXCL | O_BINARY)
-#endif
 
 static void ioSuppTempOpen(             // OPEN TEMPORARY FILE
     void )
 {
-    auto char   fname[_MAX_PATH];
-
-    for(;;) {
-        tempFname( fname );
-#if defined(__DOS__)
-        {
-            tiny_ret_t  rc;
-
-            rc = TinyCreateNew( fname, 0 );
-            if( TINY_ERROR( rc ) ) {
-                temphandle = -1;
-            } else {
-                temphandle = TINY_INFO( rc );
-                __SetIOMode( temphandle, _READ | _WRITE | _BINARY );
-            }
-        }
-#else
-        temphandle = open( fname, AMODE, PMODE_RW );
-#endif
-        if( temphandle != -1 ) break;
-        if( workFile[5] == 'Z' ) {
-            temphandle = -1;
-            break;
-        }
-        switch( workFile[5] ) {
-        case '9':
-            workFile[5] = 'A';
-            break;
-        case 'I':
-            workFile[5] = 'J';  /* file-system may be EBCDIC */
-            break;
-        case 'R':
-            workFile[5] = 'S';  /* file-system may be EBCDIC */
-            break;
-        default:
-            ++workFile[5];
-            break;
-        }
-    }
-#if defined(__UNIX__)
-    /* Under POSIX it's legal to remove a file that's open. The file
-       space will be reclaimed when the handle is closed. This makes
-       sure that the work file always gets removed. */
-    remove( fname );
-    tempname = NULL;
-#else
-    tempname = FNameAdd( fname );
-#endif
-    if( temphandle == -1 ) {
+    tempfileFP = tmpfile();
+    if( tempfileFP == NULL ) {
         ioSuppError( ERR_UNABLE_TO_OPEN_WORK_FILE );
     }
 }
@@ -900,7 +839,7 @@ char *IoSuppFullPath(           // GET FULL PATH OF FILE NAME (ALWAYS USE RET VA
     ++buff;
     --size;
 #endif
-    return _getFilenameFullPath( buff, name, size );
+    return( _getFilenameFullPath( buff, name, size ) );
 }
 
 
@@ -911,7 +850,7 @@ DISK_ADDR IoSuppTempNextBlock(  // GET NEXT BLOCK NUMBER
 
     retn = tempBlock + 1;
     tempBlock += num_blocks;
-    return retn;
+    return( retn );
 }
 
 
@@ -920,12 +859,13 @@ void IoSuppTempWrite(           // WRITE TO TEMPORARY FILE
     size_t      block_size,     // - size of blocks
     void        *data )         // - buffer to write
 {
-    if( temphandle == -1 ) ioSuppTempOpen();
+    if( tempfileFP == NULL )
+        ioSuppTempOpen();
     block_num--;
-    if( -1 == lseek( temphandle, block_size * block_num, SEEK_SET ) ) {
+    if( fseek( tempfileFP, block_size * block_num, SEEK_SET ) ) {
         ioSuppWriteError();
     }
-    if( block_size != write( temphandle, data, block_size ) ) {
+    if( block_size != fwrite( data, 1, block_size, tempfileFP ) ) {
         ioSuppWriteError();
     }
 }
@@ -936,12 +876,13 @@ void IoSuppTempRead(            // READ FROM TEMPORARY FILE
     size_t      block_size,     // - size of blocks
     void        *data )         // - buffer to read
 {
-    if( temphandle == -1 ) ioSuppTempOpen();
+    if( tempfileFP == NULL )
+        ioSuppTempOpen();
     block_num--;
-    if( -1 == lseek( temphandle, block_size * block_num, SEEK_SET ) ) {
+    if( fseek( tempfileFP, block_size * block_num, SEEK_SET ) ) {
         ioSuppReadError();
     }
-    if( block_size != read( temphandle, data, block_size ) ) {
+    if( block_size != fread( data, 1, block_size, tempfileFP ) ) {
         ioSuppReadError();
     }
 }
@@ -951,15 +892,15 @@ static bool pathExists(         // TEST IF A PATH EXISTS
     const char *path )          // - path to be tested
 {
     DIR *dir;                   // - control for directory
-    bool retb;                  // - return: true ==> directory exists
+    bool ok;                    // - return: true ==> directory exists
 
-    retb = false;
+    ok = false;
     dir = opendir( path );
     if( dir != NULL ) {
         closedir( dir );
-        retb = true;
+        ok = true;
     }
-    return( retb );
+    return( ok );
 }
 
 static void setPaths(           // SET PATHS (IF THEY EXIST)
@@ -991,9 +932,7 @@ static void ioSuppInit(         // INITIALIZE IO SUPPORT
 
     outFileChecked = 0;
     tempBlock = 0;
-    tempname = NULL;
-    temphandle = -1;
-    workFile[5] = '0';
+    tempfileFP = NULL;
     FNameBuf = CMemAlloc( _MAX_PATH );
     carve_buf = CarveCreate( sizeof( BUF_ALLOC ), 8 );
     setPaths( pathSrc );
@@ -1007,11 +946,8 @@ static void ioSuppFini(         // FINALIZE IO SUPPORT
 {
     /* unused parameters */ (void)defn;
 
-    if( temphandle != -1 ) {
-        close( temphandle );
-        if( tempname != NULL ) {
-            remove( tempname );
-        }
+    if( tempfileFP != NULL ) {
+        fclose( tempfileFP );
     }
     while( NULL != buffers ) {
         freeBuffer( buffers );

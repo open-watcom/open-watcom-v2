@@ -91,9 +91,7 @@ void GetProg( char *cmd, char *eoc )
     }
 
     if( ExeName[0] == '\0' ) {
-        Output( MsgArray[MSG_PROGRAM - ERR_FIRST_MESSAGE] );
-        Output( (char *)prog_name );
-        Output( "\r\n" );
+        OutputMsgParmNL( MSG_PROGRAM, prog_name );
         fatal();
     }
 

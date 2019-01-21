@@ -38,7 +38,7 @@
 #include "libwin32.h"
 #include "seterrno.h"
 
-_WCRTLINK int __F_NAME(chmod,_wchmod)( const CHAR_TYPE *pathname, int pmode )
+_WCRTLINK int __F_NAME(chmod,_wchmod)( const CHAR_TYPE *pathname, mode_t pmode )
 {
     BOOL        rc;
     DWORD       attr;

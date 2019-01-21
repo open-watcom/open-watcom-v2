@@ -327,7 +327,7 @@ HDDEDATA WdeCreateResNameData( WResID *name, bool is32bit )
     hdata = NULL;
 
     if( WRWResID2Mem( name, &data, &size, is32bit ) ) {
-        hdata = DdeCreateDataHandle( IdInst, (LPBYTE)data, size, 0, hNameItem, WdeDataClipbdFormat, 0 );
+        hdata = DdeCreateDataHandle( IdInst, (LPBYTE)data, (DWORD)size, 0, hNameItem, WdeDataClipbdFormat, 0 );
         WRMemFree( data );
     }
 
@@ -338,13 +338,12 @@ HDDEDATA WdeCreateResData( WdeResDlgItem *ditem )
 {
     HDDEDATA    hdata;
     void        *data;
-    uint_32     size;
+    size_t      size;
 
     hdata = NULL;
 
     if( WdeGetItemData( ditem, &data, &size ) ) {
-        hdata = DdeCreateDataHandle( IdInst, (LPBYTE)data, size, 0,
-                                     hDataItem, WdeDataClipbdFormat, 0 );
+        hdata = DdeCreateDataHandle( IdInst, (LPBYTE)data, (DWORD)size, 0, hDataItem, WdeDataClipbdFormat, 0 );
         WRMemFree( data );
     }
 
@@ -624,8 +623,7 @@ HDDEDATA CALLBACK DdeCallBack( UINT wType, UINT wFmt, HCONV hConv,
         hszpair[0].hszTopic = hDialogTopic;
         hszpair[1].hszSvc = (HSZ)NULL;
         hszpair[1].hszTopic = (HSZ)NULL;
-        ret = DdeCreateDataHandle( IdInst, (LPBYTE)&hszpair[0],
-                                             sizeof( hszpair ), 0L, 0, CF_TEXT, 0 );
+        ret = DdeCreateDataHandle( IdInst, (LPBYTE)&hszpair[0], (DWORD)sizeof( hszpair ), 0L, 0, CF_TEXT, 0 );
         break;
 
     case XTYP_REQUEST:

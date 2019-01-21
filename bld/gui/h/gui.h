@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2018-2018 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -407,6 +408,8 @@ typedef struct gui_point {
 
 typedef struct gui_window   gui_window;
 
+typedef struct gui_menu_struct  gui_menu_struct;
+
 typedef void                *gui_help_instance;
 
 typedef long                gui_bitmap;
@@ -419,19 +422,28 @@ typedef struct gui_toolbar_struct {
     const char              *tip;
 } gui_toolbar_struct;
 
+typedef struct gui_menu_root {
+    int                     num_items;
+    gui_menu_struct         *menu;
+} gui_menu_root;
+
 typedef struct gui_menu_struct {
     const char              *label;
     gui_ctl_id              id;
     gui_menu_styles         style;
     const char              *hinttext;
-    int                     child_num_items;
-    struct gui_menu_struct  *child;
+    gui_menu_root           child;
 } gui_menu_struct;
 
 typedef struct gui_colour_set {
     gui_colour              fore;
     gui_colour              back;
 } gui_colour_set;
+
+typedef struct gui_colour_root {
+    int                     num_items;
+    gui_colour_set          *colours;
+} gui_colour_root;
 
 typedef unsigned long       gui_rgb;
 
@@ -472,10 +484,8 @@ typedef struct gui_create_info {
     gui_scroll_styles   scroll;
     gui_create_styles   style;
     gui_window          *parent;
-    int                 num_items;
-    gui_menu_struct     *menu;
-    int                 num_attrs;
-    gui_colour_set      *colours;      /* array of num_attrs gui_attrs */
+    gui_menu_root       menu;
+    gui_colour_root     colours;
     GUICALLBACK         *gui_call_back;
     void                *extra;
     gui_resource        *icon;
@@ -968,10 +978,15 @@ extern bool GUIIsFirstInstance( void );
 
 extern void GUIHookFileDlg( bool hook );
 
-/* include from the app */
-extern void GUITimer( void );
+/* Application related functions */
+/* must be implemented by application */
 extern void GUImain( void );
+#if defined( __RDOS__ ) || defined( __NT__ )
+extern void GUITimer( void );
+#endif
+
+/* may be implemented by application, stub functions */
+extern bool GUIFirstCrack( void );
 extern bool GUIDead( void );
 extern bool GUIDeath( void );
-extern bool GUIFirstCrack( void );
 extern char *GUIGetWindowClassName( void );

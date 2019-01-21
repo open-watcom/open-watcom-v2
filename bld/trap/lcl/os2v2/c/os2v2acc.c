@@ -606,7 +606,7 @@ trap_retval ReqGet_sys_config( void )
     get_sys_config_ret  *ret;
 
     ret = GetOutPtr( 0 );
-    ret->sys.os = MAD_OS_OS2;
+    ret->sys.os = DIG_OS_OS2;
     DosQuerySysInfo( QSV_VERSION_MAJOR, QSV_VERSION_MINOR, &version, sizeof( version ) );
     ret->sys.osminor = version[1];
     ret->sys.osmajor = version[0];
@@ -626,7 +626,7 @@ trap_retval ReqGet_sys_config( void )
         ret->sys.fpu = X86_NO;
     }
     ret->sys.huge_shift = 3;
-    ret->sys.mad = MAD_X86;
+    ret->sys.arch = DIG_ARCH_X86;
     return( sizeof( *ret ) );
 }
 

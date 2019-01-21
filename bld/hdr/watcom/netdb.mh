@@ -1,0 +1,93 @@
+/*
+ *  netdb.h      Net database functions.
+ *
+:include crwat.sp
+ */
+#ifndef _NETDB_H_INCLUDED
+#define _NETDB_H_INCLUDED
+
+:include readonly.sp
+
+:include owrtlink.sp
+
+:include syssock.sp
+
+:include cpluspro.sp
+
+:segment LINUX
+:include lnxkpack.sp
+:endsegment
+
+struct netent {
+    char     *n_name;       /* official network name */
+    char     **n_aliases;   /* alias list */
+    int      n_addrtype;    /* address type */
+    uint32_t n_net;         /* network number */
+};
+
+struct protoent {
+    char    *p_name;        /* official protocol name */
+    char    **p_aliases;    /* alias list */
+    int     p_proto;        /* protocol number */
+};
+
+struct servent {
+    char    *s_name;        /* official service name */
+    char    **s_aliases;    /* alias list */
+    int     s_port;         /* port number */
+    char    *s_proto;       /* protocol to use */
+};
+
+struct hostent {
+    char    *h_name;        /* official name of host */
+    char    **h_aliases;    /* alias list */
+    int     h_addrtype;     /* host address type */
+    int     h_length;       /* length of address */
+    char    **h_addr_list;  /* list of addresses */
+};
+#define h_addr  h_addr_list[0]  /* for backward compatibility */
+
+_WCRTDATA extern int h_errno;
+
+#define HOST_NOT_FOUND 1
+#define TRY_AGAIN      2
+#define NO_RECOVERY    3
+#define NO_DATA        4
+
+/* GNU libc compatibility */
+#define NO_ADDRESS     NO_DATA
+
+_WCRTLINK extern struct netent   *getnetent( void );
+_WCRTLINK extern struct netent   *getnetbyaddr( uint32_t __naddr, int __type );
+_WCRTLINK extern struct netent   *getnetbyname( const char *__name );
+_WCRTLINK extern void            setnetent( int __stayopen );
+_WCRTLINK extern void            endnetent( void );
+
+_WCRTLINK extern struct protoent *getprotoent( void );
+_WCRTLINK extern struct protoent *getprotobyname( const char *__name );
+_WCRTLINK extern struct protoent *getprotobynumber( int __proto );
+_WCRTLINK extern void            setprotoent( int __stayopen );
+_WCRTLINK extern void            endprotoent( void );
+
+_WCRTLINK extern struct servent  *getservent( void );
+_WCRTLINK extern struct servent  *getservbyname( const char *__name, const char *__proto );
+_WCRTLINK extern struct servent  *getservbyport( int __port, const char *__proto );
+_WCRTLINK extern void            setservent( int __stayopen );
+_WCRTLINK extern void            endservent( void );
+
+_WCRTLINK extern struct hostent  *gethostbyname( const char *__name );
+_WCRTLINK extern struct hostent  *gethostbyaddr( const void *__addr, socklen_t __len, int __type );
+_WCRTLINK extern struct hostent  *gethostent(void);
+_WCRTLINK extern void            sethostent( int __stayopen );
+_WCRTLINK extern void            endhostent( void );
+
+_WCRTLINK extern void            herror( const char *__s );
+_WCRTLINK extern const char      *hstrerror( int __err );
+
+:segment LINUX
+:include poppack.sp
+:endsegment
+
+:include cplusepi.sp
+
+#endif /* !_NETDB_H_INCLUDED */

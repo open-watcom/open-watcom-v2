@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2016 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -30,23 +30,23 @@
 ****************************************************************************/
 
 
-#include "cgstd.h"
+#include "_cgstd.h"
 #include "coderep.h"
 #include "cfloat.h"
 #include "data.h"
 #include "rgtbl.h"
 #include "fixindex.h"
+#include "verify.h"
+#include "targetin.h"
 
-
-extern  bool            OtherVerify(vertype,instruction*,name*,name*,name*);
 
 //extern  hw_reg_set      Low16Reg( hw_reg_set );
 //extern  type_class_def  RegClass(hw_reg_set);
 
 
-extern  bool    DoVerify( vertype kind, instruction *ins ) {
-/**********************************************************/
-
+bool    DoVerify( vertype kind, instruction *ins )
+/************************************************/
+{
     name        *op1 = NULL;
     name        *op2 = NULL;
     name        *result;
@@ -68,7 +68,7 @@ extern  bool    DoVerify( vertype kind, instruction *ins ) {
             return( true );
          break;
     case V_DIFF_TYPES:
-        if( op1->n.name_class != result->n.name_class )
+        if( op1->n.type_class != result->n.type_class )
             return( true );
         break;
     case V_HIGHEQLOW:
@@ -156,7 +156,7 @@ extern  bool    DoVerify( vertype kind, instruction *ins ) {
             return( true );
         break;
     case V_OP2PTR:
-        if( op2->n.name_class == PT || op2->n.name_class == CP )
+        if( op2->n.type_class == PT || op2->n.type_class == CP )
             return( true );
         break;
     case V_LEA_GOOD:
@@ -222,7 +222,7 @@ extern  bool    DoVerify( vertype kind, instruction *ins ) {
         if( OptForSize > 50 )
             return( true );
         break;
-    case V_DIV_BUG: /* cant do idiv from mem on 80186 (or 8086 for compatibility)*/
+    case V_DIV_BUG: /* cant do idiv from mem on 80186 (or 8086 for compatibility) */
         if( !_CPULevel( CPU_286 ) && ins->type_class != U1 && ins->type_class != U2 )
             return( true );
         break;

@@ -222,6 +222,7 @@ unsigned WriteOmfDict( sym_file *first_sfile )
         num_blocks ++;
         num_blocks = NextPrime( num_blocks );
         if( num_blocks == 0 ) {
+            MemFree( lib_block );
             return( 0 );
         }
         dict_size = num_blocks * sizeof( OmfLibBlock );

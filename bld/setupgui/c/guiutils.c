@@ -30,17 +30,20 @@
 
 
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
-#include "gui.h"
+#include "wio.h"
+#include "setup.h"
 #include "guidlg.h"
 #include "guistr.h"
-#include "setup.h"
 #include "setupinf.h"
 #include "resource.h"
 #include "banner.h"
 #include "genvbl.h"
 #include "utils.h"
 #include "guiutils.h"
+
+#include "clibext.h"
 
 
 extern gui_colour_set   MainColours[];
@@ -83,6 +86,7 @@ gui_resource WndGadgetArray[] = {
 
 gui_ord     BitMapBottom;
 gui_coord   BitMapSize;
+
 
 static bool MainSetupWndGUIEventProc( gui_window *gui, gui_event gui_ev, void *parm )
 {
@@ -151,10 +155,114 @@ static bool MainSetupWndGUIEventProc( gui_window *gui, gui_event gui_ev, void *p
 
 gui_coord               GUIScale;
 
-bool SetupPreInit( void )
-/***********************/
+#if defined( __WINDOWS__ )
+static bool CheckForSetup32( int argc, char **argv )
+{
+    DWORD       version;
+    int         winver;
+    VBUF        buff;
+    int         i;
+    VBUF        drive;
+    VBUF        path;
+    VBUF        name;
+    VBUF        ext;
+    char        *os;
+    bool        ok;
+
+    ok = false;
+    version = GetVersion();
+    winver = LOBYTE( LOWORD( version ) ) * 100 + HIBYTE( LOWORD( version ) );
+    os = getenv( "OS" );
+    if( winver >= 390 || ( os != NULL && stricmp( os, "Windows_NT" ) == 0 ) ) {
+        VbufInit( &buff );
+        VbufInit( &drive );
+        VbufInit( &path );
+        VbufInit( &name );
+        VbufInit( &ext );
+
+        VbufConcStr( &buff, argv[0] );
+        VbufConcStr( &name, "SETUP32" );
+        VbufSplitpath( &buff, &drive, &path, NULL, &ext );
+        VbufMakepath( &buff, &drive, &path, &name, &ext );
+        if( access( VbufString( &buff ), F_OK ) == 0 ) {
+            for( i = 1; i < argc; i++ ) {
+                VbufConcChr( &buff, ' ' );
+                VbufConcStr( &buff, argv[i] );
+            }
+            WinExec( VbufString( &buff ), SW_SHOW );
+            ok = true;
+        }
+
+        VbufFree( &ext );
+        VbufFree( &name );
+        VbufFree( &path );
+        VbufFree( &drive );
+        VbufFree( &buff );
+    }
+    return( ok );
+}
+#elif defined( __NT__ ) && !defined( _M_X64 )
+static bool CheckWin95Uninstall( int argc, char **argv )
+{
+// The Windows 95 version of setup gets installed as the
+// uninstall utility. So that it can erase itself, the setup
+// program gets copied to the Windows directory, and run from
+// there. The version in the Windows directory gets erased by
+// the WININIT program.
+
+    VBUF        unsetup;
+    VBUF        argv0;
+    VBUF        ext;
+    bool        ok;
+
+    ok = false;
+    if( argc > 1 && stricmp( argv[1], "-u" ) == 0 ) {
+        VbufInit( &unsetup );
+        VbufInit( &argv0 );
+
+        // copy setup program to unsetup.exe in system directory
+        VbufSetStr( &argv0, argv[0] );
+        GetWindowsDirectoryVbuf( &unsetup );
+        VbufConcStr( &unsetup, "\\UnSetup.exe" );
+        if( DoCopyFile( &argv0, &unsetup, false ) == CFE_NOERROR ) {
+            VbufInit( &ext );
+
+            // add entry to wininit.ini to erase unsetup.exe
+            WritePrivateProfileString( "rename", "NUL", VbufString( &unsetup ), "wininit.ini" );
+            // setup.inf should be in same directory as setup.exe
+            VbufConcStr( &ext, "inf" );
+            VbufSetPathExt( &argv0, &ext );
+            VbufConcChr( &unsetup, ' ' );
+            VbufConcChr( &unsetup, '\"' );
+            VbufConcVbuf( &unsetup, &argv0 );
+            VbufConcChr( &unsetup, '\"' );
+            // execute unsetup
+            WinExec( VbufString( &unsetup ), SW_SHOW );
+            ok = true;
+
+            VbufFree( &ext );
+        }
+        VbufFree( &argv0 );
+        VbufFree( &unsetup );
+    }
+    return( ok );
+}
+#endif
+
+bool SetupPreInit( int argc, char **argv )
+/****************************************/
 {
     gui_rect            rect;
+
+#if defined( __WINDOWS__ )
+    if( CheckForSetup32( argc, argv ) )
+        return false;
+#elif defined( __NT__ ) && !defined( _M_X64 )
+    if( CheckWin95Uninstall( argc, argv ) )
+        return false;
+#else
+    /* unused parameters */ (void)argc; (void)argv;
+#endif
 
     /* Cancel button may be wider in other languages */
     NominalButtonWidth = strlen( LIT( Cancel ) ) + 5;
@@ -196,10 +304,10 @@ bool SetupInit( void )
     init.style |= GUI_NOFRAME;
 #endif
     init.parent = NULL;
-    init.num_items = 0;
-    init.menu = NULL;
-    init.num_attrs = WND_NUMBER_OF_COLORS;
-    init.colours = MainColours;
+    init.menu.num_items = 0;
+    init.menu.menu = NULL;
+    init.colours.num_items = WND_NUMBER_OF_COLORS;
+    init.colours.colours = MainColours;
     init.gui_call_back = MainSetupWndGUIEventProc;
     init.extra = NULL;
 
@@ -217,10 +325,12 @@ bool SetupInit( void )
 void SetupTitle( void )
 /*********************/
 {
-    char        buff[MAXBUF];
+    VBUF    buff;
 
-    ReplaceVars( buff, sizeof( buff ), GetVariableStrVal( "AppName" ) );
-    GUISetWindowText( MainWnd, buff );
+    VbufInit( &buff );
+    ReplaceVars( &buff, GetVariableStrVal( "AppName" ) );
+    GUISetWindowText( MainWnd, VbufString( &buff ) );
+    VbufFree( &buff );
 }
 
 

@@ -1,4 +1,4 @@
-#pmake: lcl os_nt cpu_386 trap axp
+#pmake: lcl os_nt cpu_axp trap axp
 #
 # Create the NT STD.DLL for Alpha
 #
@@ -35,7 +35,7 @@ extra_objs = &
 inc_dirs += -I"$(trap_dir)/lcl/dos/h" -I"$(lib_misc_dir)/h"
 extra_c_flags =
 
-extra_c_flags_accio = -I"$(lib_misc_dir)/h"
+extra_c_flags_accio = -I"$(clib_dir)/h"
 
 !include $(trap_dir)/lcl/lcl.mif
 !include $(trap_dir)/master.mif

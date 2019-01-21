@@ -32,5 +32,5 @@
 extern int      RTSpawn( void (*fn)( void ) );
 extern void     RTSuicide( void );
 #if defined( __WATCOMC__ )
-#pragma aux RTSuicide aborts;
+#pragma aux RTSuicide __aborts
 #endif

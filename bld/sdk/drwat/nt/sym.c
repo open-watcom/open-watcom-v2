@@ -30,10 +30,9 @@
 ****************************************************************************/
 
 
-#include <io.h>
-#include <malloc.h>
 #include "drwatcom.h"
-#include "walloca.h"
+#include <io.h>
+#include <alloca.h>
 #include "mem.h"
 #include "mad.h"
 
@@ -57,7 +56,7 @@ bool GetLineNum( address *addr, char *fname, DWORD bufsize, DWORD *line )
 {
     cue_handle  *cueh;
 
-    cueh = walloca( DIPHandleSize( HK_CUE ) );
+    cueh = alloca( DIPHandleSize( HK_CUE ) );
     if( DIPAddrCue( NO_MOD, *addr, cueh ) == SR_NONE ) {
         return( false );
     }
@@ -91,7 +90,7 @@ bool GetSymbolName( address *addr, char *name, DWORD *symoff )
         MemFree( symhdl );
         return( false );
     }
-    DIPSymName( symhdl, NULL, SN_OBJECT, name, MAX_SYM_NAME );
+    DIPSymName( symhdl, NULL, SNT_OBJECT, name, MAX_SYM_NAME );
     MemFree( symhdl );
     return( true );
 }

@@ -146,7 +146,7 @@ static DWORD at2mode( DWORD attr, CHAR_TYPE *fname, CHAR_TYPE const *orig_path )
  #ifdef __INT64__
   _WCRTLINK int __F_NAME(_stati64,_wstati64)( const CHAR_TYPE *path, struct _stati64 *buf )
  #else
-  _WCRTLINK int __F_NAME(stat,_wstat)( const CHAR_TYPE *path, struct __F_NAME(stat,_stat) *buf )
+  _WCRTLINK int __F_NAME(stat,_wstat)( const CHAR_TYPE *path, struct stat *buf )
  #endif
 {
     WIN32_FIND_DATA     ffb;

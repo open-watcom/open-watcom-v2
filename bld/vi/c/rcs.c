@@ -225,9 +225,11 @@ bool ViRCSFini( void )
 
 #elif defined( __OS2__ )
 
-APIRET APIENTRY  DosQueryProcAddr( HMODULE hmod, ULONG ordinal, PSZ pszName, PFN *ppfn );
-APIRET APIENTRY  DosLoadModule( PSZ pszName, ULONG cbName, PSZ pszModname, PHMODULE phmod );
-APIRET APIENTRY  DosFreeModule( HMODULE hmod );
+#ifdef _M_I86
+#define GET_PROC_ADDRESS(m,s,f) DosGetProcAddr( m, s, (PFN FAR *)&f )
+#else
+#define GET_PROC_ADDRESS(m,s,f) DosQueryProcAddr( m, 0, s, (PFN FAR *)&f )
+#endif
 
 static HMODULE LibHandle = (HMODULE)0;
 
@@ -241,18 +243,18 @@ bool ViRCSInit( void )
     if( rc != 0 || LibHandle == 0 ) {
         return( false );
     }
-    DosQueryProcAddr( LibHandle, 0, GETVER_FN_NAME,        (PFN *)( &RCSGetVersion ) );
-    DosQueryProcAddr( LibHandle, 0, INIT_FN_NAME,          (PFN *)( &RCSInit ) );
-    DosQueryProcAddr( LibHandle, 0, CHECKOUT_FN_NAME,      (PFN *)( &RCSCheckout ) );
-    DosQueryProcAddr( LibHandle, 0, CHECKIN_FN_NAME,       (PFN *)( &RCSCheckin ) );
-    DosQueryProcAddr( LibHandle, 0, HAS_SHELL_FN_NAME,     (PFN *)( &RCSHasShell ) );
-    DosQueryProcAddr( LibHandle, 0, RUNSHELL_FN_NAME,      (PFN *)( &RCSRunShell ) );
-    DosQueryProcAddr( LibHandle, 0, SETSYS_FN_NAME,        (PFN *)( &RCSSetSystem ) );
-    DosQueryProcAddr( LibHandle, 0, GETSYS_FN_NAME,        (PFN *)( &RCSQuerySystem ) );
-    DosQueryProcAddr( LibHandle, 0, REG_BAT_CB_FN_NAME,    (PFN *)( &RCSRegisterBatchCallback ) );
-    DosQueryProcAddr( LibHandle, 0, REG_MSGBOX_CB_FN_NAME, (PFN *)( &RCSRegisterMessageBoxCallback ) );
-    DosQueryProcAddr( LibHandle, 0, SET_PAUSE_FN_NAME,     (PFN *)( &RCSSetPause ) );
-    DosQueryProcAddr( LibHandle, 0, FINI_FN_NAME,          (PFN *)( &RCSFini ) );
+    GET_PROC_ADDRESS( LibHandle, GETVER_FN_NAME,        RCSGetVersion );
+    GET_PROC_ADDRESS( LibHandle, INIT_FN_NAME,          RCSInit );
+    GET_PROC_ADDRESS( LibHandle, CHECKOUT_FN_NAME,      RCSCheckout );
+    GET_PROC_ADDRESS( LibHandle, CHECKIN_FN_NAME,       RCSCheckin );
+    GET_PROC_ADDRESS( LibHandle, HAS_SHELL_FN_NAME,     RCSHasShell );
+    GET_PROC_ADDRESS( LibHandle, RUNSHELL_FN_NAME,      RCSRunShell );
+    GET_PROC_ADDRESS( LibHandle, SETSYS_FN_NAME,        RCSSetSystem );
+    GET_PROC_ADDRESS( LibHandle, GETSYS_FN_NAME,        RCSQuerySystem );
+    GET_PROC_ADDRESS( LibHandle, REG_BAT_CB_FN_NAME,    RCSRegisterBatchCallback );
+    GET_PROC_ADDRESS( LibHandle, REG_MSGBOX_CB_FN_NAME, RCSRegisterMessageBoxCallback );
+    GET_PROC_ADDRESS( LibHandle, SET_PAUSE_FN_NAME,     RCSSetPause );
+    GET_PROC_ADDRESS( LibHandle, FINI_FN_NAME,          RCSFini );
 
     RCSActive = !( RCSInit == NULL || RCSRegisterBatchCallback == NULL
                     || RCSSetPause == NULL || RCSCheckin == NULL || RCSFini == NULL );

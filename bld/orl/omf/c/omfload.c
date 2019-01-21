@@ -55,9 +55,7 @@ static void             setInitialData( omf_file_handle ofh )
      */
     ofh->machine_type = ORL_MACHINE_TYPE_I8086;
     ofh->type = ORL_FILE_TYPE_OBJECT;
-    ofh->flags = 0;
-    ofh->flags |= ORL_FILE_FLAG_LITTLE_ENDIAN;
-    ofh->flags |= ORL_FILE_FLAG_16BIT_MACHINE;
+    ofh->flags = ORL_FILE_FLAG_LITTLE_ENDIAN | ORL_FILE_FLAG_16BIT_MACHINE;
     ofh->debug_style = OMF_DBG_STYLE_CODEVIEW;
 }
 
@@ -482,11 +480,7 @@ static orl_return       doEXTDEF( omf_file_handle ofh, omf_rectyp typ )
         if( slen > len )
             return( ORL_ERROR );
         if( slen > 0 ) {
-            return_val = OmfAddExtName( ofh, (char *)buffer, slen, typ );
-            if( return_val != ORL_OKAY ) {
-                break;
-            }
-            return_val = OmfAddExtDef( ofh, OmfGetLastExtName( ofh ), typ );
+            return_val = OmfAddExtDef( ofh, (char *)buffer, slen, typ );
             if( return_val != ORL_OKAY ) {
                 break;
             }
@@ -524,7 +518,7 @@ static orl_return       doCEXTDEF( omf_file_handle ofh, omf_rectyp typ )
         extname = OmfGetLName( ofh->lnames, idx );
         if( extname == NULL )
             return( ORL_ERROR );
-        return_val = OmfAddExtDef( ofh, extname, typ );
+        return_val = OmfAddExtDef( ofh, extname->string, extname->len, typ );
         if( return_val != ORL_OKAY ) {
             break;
         }
@@ -555,11 +549,7 @@ static orl_return       doCOMDEF( omf_file_handle ofh, omf_rectyp typ )
         if( slen > len )
             return( ORL_ERROR );
         if( slen > 0 ) {
-            return_val = OmfAddExtName( ofh, (char *)buffer, slen, typ );
-            if( return_val != ORL_OKAY ) {
-                break;
-            }
-            return_val = OmfAddExtDef( ofh, OmfGetLastExtName( ofh ), typ );
+            return_val = OmfAddExtDef( ofh, (char *)buffer, slen, typ );
             if( return_val != ORL_OKAY ) {
                 break;
             }
@@ -749,6 +739,8 @@ static orl_return       doLNAMES( omf_file_handle ofh, omf_rectyp typ )
     omf_rec_size        len;
     omf_string_len      slen;
 
+    /* unused parameters */ (void)typ;
+
     assert( ofh );
 
     return_val = loadRecord( ofh );
@@ -756,13 +748,12 @@ static orl_return       doLNAMES( omf_file_handle ofh, omf_rectyp typ )
         return( return_val );
     len = ofh->parselen;
     buffer = ofh->parsebuf;
-
     while( len ) {
         slen = *buffer++;
         len--;
         if( slen > len )
             return( ORL_ERROR );
-        return_val = OmfAddLName( ofh, (char *)buffer, slen, typ );
+        return_val = OmfAddLName( ofh, (char *)buffer, slen );
         if( return_val != ORL_OKAY )
             break;
         len -= slen;
@@ -770,6 +761,8 @@ static orl_return       doLNAMES( omf_file_handle ofh, omf_rectyp typ )
     }
     return( return_val );
 }
+
+
 
 
 static orl_return       doSEGDEF( omf_file_handle ofh, omf_rectyp typ )
@@ -1169,7 +1162,7 @@ static orl_return   procRecord( omf_file_handle ofh, omf_rectyp typ )
     case( CMD_LEXTDEF32 ):      /* 32-bit local import names record     */
         return( doEXTDEF( ofh, typ ) );
 
-    case( CMD_CEXTDF ):         /* external reference to a COMDAT       */
+    case( CMD_CEXTDEF ):        /* external reference to a COMDAT       */
         return( doCEXTDEF( ofh, typ ) );
 
     case( CMD_PUBDEF ):         /* export names record                  */
@@ -1179,7 +1172,7 @@ static orl_return   procRecord( omf_file_handle ofh, omf_rectyp typ )
         return( doPUBDEF( ofh, typ ) );
 
     case( CMD_LNAMES ):         /* list of names record                 */
-    case( CMD_LLNAME ):         /* a "local" lnames                     */
+    case( CMD_LLNAMES ):        /* a "local" lnames                     */
         return( doLNAMES( ofh, typ ) );
 
     case( CMD_SEGDEF ):         /* segment definition record            */

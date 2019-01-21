@@ -30,9 +30,6 @@
 ****************************************************************************/
 
 
-#include "commonui.h"
-#include <stdlib.h>
-#include "watcom.h"
 #include "wreglbl.h"
 #include "wretoolb.h"
 #include "wreftype.h"

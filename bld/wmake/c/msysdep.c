@@ -30,6 +30,7 @@
 
 
 #include "make.h"
+#include "wio.h"
 #include "mcache.h"
 #include "mmemory.h"
 #include "mrcmsg.h"
@@ -38,8 +39,46 @@
 #if defined( __DOS__ )
     #include <dos.h>
     #include "tinyio.h"
+#else
+  #if defined(__UNIX__) || defined( __WATCOMC__ )
+    #include <utime.h>
+  #else
+    #include <sys/utime.h>
+  #endif
+  #if defined( __OS2__ )
+    #define INCL_DOSMISC
+    #include <os2.h>
+  #endif
 #endif
 #include "pcobj.h"
+
+
+#if defined( __DOS__ )
+
+//extern char             DOSSwitchChar(void);
+extern char DOSSwitchChar( void );
+#pragma aux DOSSwitchChar = \
+        "mov ax,3700h"  \
+        "int 21h"       \
+    __parm __caller [] \
+    __value         [__dl] \
+    __modify        [__ax __dx]
+
+#if defined ( _M_I86 )
+/* see page 90-91 of "Undocumented DOS" */
+
+//extern void __far *       _DOS_list_of_lists( void );
+void __far *_DOS_list_of_lists( void );
+#pragma aux _DOS_list_of_lists = \
+        "mov ax,5200h"  \
+        "int 21h"       \
+    __parm __caller [] \
+    __value         [__es __bx] \
+    __modify        [__ax __es __bx]
+#endif
+
+#endif
+
 
 #if defined( __DOS__ )
 
@@ -62,45 +101,22 @@ void InitHardErr( void )
 
 #endif
 
-#if defined( __DOS__ )
-//extern char             DOSSwitchChar(void);
-char             DOSSwitchChar(void);
-#pragma aux             DOSSwitchChar = \
-        "mov ax,3700h"  \
-        "int 21h"       \
-        parm caller     [] \
-        value           [dl] \
-        modify          [ax dx];
-#endif
-
 int SwitchChar( void )
 /***************************/
 {
 #if defined( __DOS__ )
     return( DOSSwitchChar() );
-#elif   defined( __OS2__ ) || defined( __NT__ )
+#elif   defined( __OS2__ ) || defined( __NT__ ) || defined( __RDOS__ )
     return( '/' );
 #elif   defined( __UNIX__ )
     return( '-' );
-
 #endif
 }
-
-#if defined( __DOS__ ) && defined ( _M_I86 )
-/* see page 90-91 of "Undocumented DOS" */
-
-//extern void __far *       _DOS_list_of_lists( void );
-void __far *       _DOS_list_of_lists( void );
-#pragma aux             _DOS_list_of_lists = \
-        "mov ax,5200h"  \
-        "int 21h"       \
-        parm caller     [] \
-        value           [es bx] \
-        modify          [ax es bx];
 
 int OSCorrupted( void )
 /*********************/
 {
+#if defined( __DOS__ ) && defined ( _M_I86 )
     _Packed struct mcb {
         UINT8   id;
         UINT16  owner;
@@ -130,20 +146,14 @@ int OSCorrupted( void )
         }
         chain_seg = new_chain_seg;
     }
-    return( 0 );
-}
-#else
-int OSCorrupted( void )
-/****************************/
-{
-    return( 0 );
-}
 #endif
+    return( 0 );
+}
 
-#if defined( __DOS__ )
 RET_T TouchFile( const char *name )
 /*********************************/
 {
+#if defined( __DOS__ )
     tiny_date_t     dt;
     tiny_time_t     tm;
     tiny_ftime_t    p_hms;
@@ -172,21 +182,7 @@ RET_T TouchFile( const char *name )
             return( RET_ERROR );
         }
     }
-    return( RET_SUCCESS );
-}
 #else
-
-#include <sys/stat.h>
-#include <sys/types.h>
-#if defined(__UNIX__)
-    #include <utime.h>
-#else
-    #include <sys/utime.h>
-#endif
-
-RET_T TouchFile( const char *name )
-/*********************************/
-{
     int     fh;
 
     if( utime( name, 0 ) < 0 ) {
@@ -196,9 +192,9 @@ RET_T TouchFile( const char *name )
         }
         close( fh );
     }
+#endif
     return( RET_SUCCESS );
 }
-#endif
 
 #define FUZZY_DELTA     60      /* max allowed variance from stored time-stamp */
 
@@ -405,4 +401,50 @@ void InitSignals( void )
     signal( SIGBREAK, breakHandler );
 #endif
     signal( SIGINT, breakHandler );
+}
+
+#if defined( __OS2__ ) && !defined( _M_I86 )
+#define BEGPATHNAME "BEGINLIBPATH"
+#define ENDPATHNAME "ENDLIBPATH"
+
+static char os2BegLibPath[1024] = "";
+static char os2EndLibPath[1024] = "";
+#endif
+
+char *GetEnvExt( const char *str )
+{
+#if defined( __OS2__ ) && !defined( _M_I86 )
+    if( strcmp( str, BEGPATHNAME ) == 0 ) {
+        if( os2BegLibPath[0] == '\0' ) {
+            if( DosQueryExtLIBPATH( os2BegLibPath, BEGIN_LIBPATH ) ) {
+                return( NULL );
+            }
+        }
+        return( os2BegLibPath );
+    }
+    if( strcmp( str, ENDPATHNAME ) == 0 ) {
+        if( os2EndLibPath[0] == '\0' ) {
+            if( DosQueryExtLIBPATH( os2EndLibPath, END_LIBPATH ) ) {
+                return( NULL );
+            }
+        }
+        return( os2EndLibPath );
+    }
+#endif
+    return( getenv( str ) );
+}
+
+int PutEnvExt( const char *str )
+{
+#if defined( __OS2__ ) && !defined( _M_I86 )
+    if( strncmp( str, BEGPATHNAME "=", sizeof( BEGPATHNAME "=" ) - 1 ) == 0 ) {
+        strcpy( os2BegLibPath, str + sizeof( BEGPATHNAME "=" ) - 1 );
+        return( DosSetExtLIBPATH( os2BegLibPath, BEGIN_LIBPATH ) );
+    }
+    if( strncmp( str, ENDPATHNAME "=", sizeof( ENDPATHNAME "=" ) - 1 ) == 0 ) {
+        strcpy( os2EndLibPath, str + sizeof( ENDPATHNAME "=" ) - 1 );
+        return( DosSetExtLIBPATH( os2EndLibPath, END_LIBPATH ) );
+    }
+#endif
+    return( putenv( str ) );
 }

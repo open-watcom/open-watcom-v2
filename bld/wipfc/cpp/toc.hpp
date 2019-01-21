@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
+* Copyright (c) 2009-2018 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -31,86 +31,124 @@
 #ifndef TOC_INCLUDED
 #define TOC_INCLUDED
 
-#include "config.hpp"
 #include <cstdio>
 #include <cstring>
 
-#pragma pack(push, 1)
+
+class Cell;
+class OutFile;
 
 // TocEntry: located at offset pointed to by tocOffsetOffset[i]
 // There is one entry per page, stored in the order in which
 // they occur in the document.
 struct TocEntry {
-    STD1::uint8_t size;             // size of the entry
-    STD1::uint8_t nestLevel  :4;    // nesting level
-    STD1::uint8_t unknown    :1;   
-    STD1::uint8_t extended   :1;    // extended entry format
-    STD1::uint8_t hidden     :1;    // don't show this toc entry
-    STD1::uint8_t hasChildren:1;    // following nodes are numerically higher
-    STD1::uint8_t cellCount;        // number of Cells occupied by the text for this toc entry
     TocEntry() { std::memset( this, 0, sizeof( TocEntry ) ); };
-    STD1::uint32_t write( std::FILE* out ) const;
+    dword write( OutFile* out ) const;
+    void buildText( Cell *cell ) const;
+    std::size_t size() const { return( 3 * sizeof( byte ) ); };
+
+    struct _TocFlags {
+        byte            nestLevel   :4;     // nesting level
+        byte            unknown     :1;
+        byte            extended    :1;     // extended entry format
+        byte            hidden      :1;     // don't show this toc entry
+        byte            hasChildren :1;     // following nodes are numerically higher
+    };
+
+    union TocFlags {
+        _TocFlags       s;
+        byte            data;
+    };
+
+    byte            hdrsize;            // size of the entry
+    TocFlags        flags;
+    byte            cellCount;          // number of Cells occupied by the text for this toc entry
     //variable length data follows:
     //if extended
     // ExtTocEntry + associated stuff
-    //STD1::uint16_t  cellIndex[cellCount];
+    //word            cellIndex[cellCount];
     //char            title[length - 3 - 2 * cellCount {- sizes of extended TOC components, if any}];
 };
 
 struct ExtTocEntry {
-    STD1::uint16_t setPos  :1;      //PanelOrigin is present
-    STD1::uint16_t setSize :1;      //PanelSize is present
-    STD1::uint16_t setView :1;      //force new window
-    STD1::uint16_t setStyle:1;      //PanelStyle is present
-    STD1::uint16_t noSearch:1;
-    STD1::uint16_t noPrint :1;
-    STD1::uint16_t setCtrl :1;      //PanelControls is present
-    STD1::uint16_t setTutor:1;
-    STD1::uint16_t clear   :1;      //erase window
-    STD1::uint16_t unknown1:1;
-    STD1::uint16_t setGroup:1;      //PanelGroup is present
-    STD1::uint16_t isParent:1;      //has child windows
-    STD1::uint16_t unknown2:4;
     ExtTocEntry() { std::memset( this, 0, sizeof( ExtTocEntry ) ); };
-    void write( std::FILE* out ) const;
+    void write( OutFile* out ) const;
+    void buildText( Cell *cell ) const;
+    std::size_t size() const { return( sizeof( word ) ); };
+
     enum Position {
         ABSOLUTE_CHAR = 0,
         RELATIVE_PERCENT,
         ABSOLUTE_PIXEL,
         ABSOLUTE_POINTS,
         DYNAMIC
-        };
+    };
     enum DynamicPosition {
         DYNAMIC_LEFT    = 1,
         DYNAMIC_RIGHT   = 2,
         DYNAMIC_TOP     = 4,
         DYNAMIC_BOTTOM  = 8,
         DYNAMIC_CENTER  = 16
-        };
+    };
+
+    struct _ExtTocFlags {
+        word            setPos      :1;     //PanelOrigin is present
+        word            setSize     :1;     //PanelSize is present
+        word            setView     :1;     //force new window
+        word            setStyle    :1;     //PanelStyle is present
+        word            noSearch    :1;
+        word            noPrint     :1;
+        word            setCtrl     :1;     //PanelControls is present
+        word            setTutor    :1;
+        word            clear       :1;     //erase window
+        word            unknown1    :1;
+        word            setGroup    :1;     //PanelGroup is present
+        word            isParent    :1;     //has child windows
+        word            unknown2    :4;
+    };
+
+    union ExtTocFlags {
+        _ExtTocFlags    s;
+        word            data;
+    };
+
+    ExtTocFlags     flags;
 };
 
 //on disk in this order
 struct PageOrigin {
-    STD1::uint8_t  yPosType:4;
-    STD1::uint8_t  xPosType:4;
-    STD1::uint16_t xpos;
-    STD1::uint16_t ypos;
     PageOrigin() { std::memset( this, 0, sizeof( PageOrigin ) ); };
-    void write( std::FILE* out ) const;
+    void write( OutFile* out ) const;
+    void buildText( Cell *cell ) const;
+    std::size_t size() const { return( sizeof( byte ) + 2 * sizeof( word ) ); };
+
+    ExtTocEntry::Position   yPosType;
+    ExtTocEntry::Position   xPosType;
+    word                    xpos;
+    word                    ypos;
 };
 
 struct PageSize {
-    STD1::uint8_t   widthType :4;
-    STD1::uint8_t   heightType:4;
-    STD1::uint16_t  width;
-    STD1::uint16_t  height;
     PageSize() { std::memset( this, 0, sizeof( PageSize ) ); };
-    void write( std::FILE* out ) const;
+    void write( OutFile* out ) const;
+    void buildText( Cell *cell ) const;
+    std::size_t size() const { return( sizeof( byte ) + 2 * sizeof( word ) ); };
+
+    ExtTocEntry::Position   widthType;
+    ExtTocEntry::Position   heightType;
+    word                    width;
+    word                    height;
 };
 
 //titlebar, scrollbars, and rules
 struct PageStyle {
+    PageStyle() : attrs( NONE ) { };
+    void write( OutFile* out ) const;
+    void buildText( Cell *cell ) const;
+    std::size_t size() const { return( sizeof( word ) ); };
+
     enum Style {
+        NONE        = 0,
         BORDER      = 0x0004,   //?
         SIZEBORDER  = 0x0008,
         HSCROLL     = 0x0010,
@@ -123,27 +161,29 @@ struct PageStyle {
         //0x4000 ?
         //0x8000 ?
     };
-    STD1::uint16_t word;
-    PageStyle() : word( 0 ) { };
-    void write( std::FILE* out ) const;
+    word            attrs;
 };
 
 struct PageGroup {
-    STD1::uint16_t id;               //a panel number
     PageGroup() : id( 0 ) { };
-    void write( std::FILE* out ) const;
+    void write( OutFile* out ) const;
+    void buildText( Cell *cell ) const;
+    std::size_t size() const { return( sizeof( word ) ); };
+
+    word            id;             //a panel number
 };
 
 //ctrlarea and ctrlrefid?
-struct PageControls {
-    STD1::uint16_t word;
-    PageControls() : word( 0 ) { };
-    void write( std::FILE* out ) const;
+struct PageControl {
+    PageControl() : refid( 0 ) { };
+    void write( OutFile* out ) const;
+    void buildText( Cell *cell ) const;
+    std::size_t size() const { return( sizeof( word ) ); };
+
+    word            refid;
 };
 
 // TOCOffset
 // unsigned long TOCOffset[IpfHeader.tocCount]
-
-#pragma pack(pop)
 
 #endif //TOC_INCLUDED

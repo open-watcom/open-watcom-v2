@@ -36,41 +36,44 @@
 
 
 const char _NEAR * _NEAR InternalCommands[] = {
-    "BREAK",
-    "CALL",
-    "CD",
-    "CHDIR",
-    "CLS",
-    "COMMAND",
-    "COPY",
-    "CTTY",
-    "DATE",
-    "DEL",
-    "DIR",
-    "ECHO",
-    "ERASE",
-    "FOR",
-    "IF",
-    "MD",
-    "MKDIR",
-    "PATH",
-    "PAUSE",
-    "PROMPT",
-    "RD",
-    "REM",
-    "REN",
-    "RENAME",
-    "RMDIR",
-    "SET",
-    "TIME",
-    "TYPE",
-    "VER",
-    "VERIFY",
-    "VOL"
+    (const char _NEAR *)"BREAK",
+    (const char _NEAR *)"CALL",
+    (const char _NEAR *)"CD",
+    (const char _NEAR *)"CHDIR",
+    (const char _NEAR *)"CLS",
+    (const char _NEAR *)"COMMAND",
+    (const char _NEAR *)"COPY",
+    (const char _NEAR *)"CTTY",
+    (const char _NEAR *)"DATE",
+    (const char _NEAR *)"DEL",
+    (const char _NEAR *)"DIR",
+    (const char _NEAR *)"ECHO",
+    (const char _NEAR *)"ERASE",
+    (const char _NEAR *)"FOR",
+    (const char _NEAR *)"IF",
+    (const char _NEAR *)"MD",
+    (const char _NEAR *)"MKDIR",
+    (const char _NEAR *)"PATH",
+    (const char _NEAR *)"PAUSE",
+    (const char _NEAR *)"PROMPT",
+    (const char _NEAR *)"RD",
+    (const char _NEAR *)"REM",
+    (const char _NEAR *)"REN",
+    (const char _NEAR *)"RENAME",
+    (const char _NEAR *)"RMDIR",
+    (const char _NEAR *)"SET",
+    (const char _NEAR *)"TIME",
+    (const char _NEAR *)"TYPE",
+    (const char _NEAR *)"VER",
+    (const char _NEAR *)"VERIFY",
+    (const char _NEAR *)"VOL"
 };
 
 int InternalCommandCount = sizeof( InternalCommands ) / sizeof( InternalCommands[0] );
 
-const char _NEAR * _NEAR ExeExtensions[] = { ".bat", ".exe" };
+const char _NEAR * _NEAR ExeExtensions[] = {
+    (const char _NEAR *)".bat",
+    (const char _NEAR *)".exe"
+};
 
 int ExeExtensionCount = sizeof( ExeExtensions ) / sizeof( ExeExtensions[0] );

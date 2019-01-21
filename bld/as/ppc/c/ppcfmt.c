@@ -1481,7 +1481,7 @@ void PPCEmit( instruction *ins ) {
             ObjEmitReloc( SymName( reloc.target.sym ), reloc.type, true, true );
         }
 #endif
-#ifdef MYDEBUG
+#ifdef AS_DEBUG_DUMP
         switch( reloc.type ) {
         case OWL_RELOC_WORD:
             printf( "word" ); break;
@@ -1512,11 +1512,9 @@ void PPCEmit( instruction *ins ) {
     ObjEmitData( (char *)&result, sizeof( result ), true );
 #endif
 
-#ifdef AS_DEBUG_DUMP
-  #ifdef _STANDALONE_
+#if defined( _STANDALONE_ ) && defined( AS_DEBUG_DUMP )
     if( _IsOption( DUMP_INSTRUCTIONS ) ) {
         printf( " [%#010x]\n", result );
     }
-  #endif
 #endif
 }

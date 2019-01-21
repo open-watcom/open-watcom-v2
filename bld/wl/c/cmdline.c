@@ -332,10 +332,12 @@ void Syntax( void )
     }
 }
 
+#define HELPLINE_SIZE   80
+
 static void Crash( bool check_file )
 /**********************************/
 {
-    char        buff[81];
+    char        buff[HELPLINE_SIZE + 1];
     size_t      len;
     f_handle    fp;
 
@@ -343,9 +345,11 @@ static void Crash( bool check_file )
         fp = FindPath( HELP_FILE_NAME, NULL );
         if( fp != NIL_FHANDLE ) {
             WLPrtBanner();
-            for( ; (len = QRead( fp, buff, 80, HELP_FILE_NAME )) != 0; ) {
+            len = QRead( fp, buff, HELPLINE_SIZE, HELP_FILE_NAME );
+            for( ; len != 0 && len != IOERROR; ) {
                 buff[len] = '\0';
                 WriteStdOut( buff );
+                len = QRead( fp, buff, HELPLINE_SIZE, HELP_FILE_NAME );
             }
             QClose( fp, HELP_FILE_NAME );
             Ignite();

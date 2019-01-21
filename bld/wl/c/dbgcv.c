@@ -253,7 +253,7 @@ void CVP1ModuleFinished( mod_entry *obj )
         DBILineWalk( obj->lines, CVAddLines );
     }
     Ring2Walk( obj->publist, DBIModGlobal );
-    namelen = strlen( obj->name );
+    namelen = strlen( obj->name.u.ptr );
     //  required alignment ???
     size = sizeof( cv_sst_module ) + namelen + 1 - sizeof( cv_seginfo );
     size = ROUND_UP( size, 4 );
@@ -289,7 +289,7 @@ void CVAddModule( mod_entry *obj, section *sect )
         GenSubSection( sstPublicSym, obj->d.cv->pubsize );
         DumpInfoU32( CVSECT_MISC, 1 );
     }
-    namelen = strlen( obj->name );
+    namelen = strlen( obj->name.u.ptr );
     size = sizeof( cv_sst_module ) + namelen + 1 + ( obj->d.cv->numsegs - 1 ) * sizeof( cv_seginfo );
     //  begin padding required ???
     size = ROUND_UP( size, 4 );
@@ -303,7 +303,7 @@ void CVAddModule( mod_entry *obj, section *sect )
     obj->d.cv->segloc = SectAddrs[CVSECT_MODULE].u.vm_ptr;
     SectAddrs[CVSECT_MODULE].u.vm_ptr += sizeof( cv_seginfo ) * obj->d.cv->numsegs;
     DumpInfoU8( CVSECT_MODULE, namelen );
-    DumpInfo( CVSECT_MODULE, obj->name, namelen );
+    DumpInfo( CVSECT_MODULE, obj->name.u.ptr, namelen );
 }
 
 static int RelocCompare( virt_mem a, virt_mem b )
@@ -371,11 +371,11 @@ static void GenSrcModHeader( void )
     file_tbl.cSeg = 1;
     file_tbl.pad = 0;
     file_tbl.range[0] = LineInfo.range;
-    file_tbl.name[0] = strlen( CurrMod->name );
+    file_tbl.name[0] = strlen( CurrMod->name.u.ptr );
     file_tbl.baseSrcLn[0] = sizeof( mod_hdr ) + ROUND_UP( sizeof( file_tbl ) + file_tbl.name[0], 4 );
     PutInfo( LineInfo.linestart, &file_tbl, sizeof( file_tbl ) );
     LineInfo.linestart += sizeof( file_tbl );
-    PutInfo( LineInfo.linestart, CurrMod->name, file_tbl.name[0] );
+    PutInfo( LineInfo.linestart, CurrMod->name.u.ptr, file_tbl.name[0] );
     LineInfo.linestart += file_tbl.name[0];
     adjust = file_tbl.baseSrcLn[0] - sizeof( mod_hdr ) - sizeof( file_tbl ) - file_tbl.name[0];
     if( adjust != 0 ) {
@@ -421,7 +421,7 @@ void CVAddGlobal( symbol *sym )
         } else {
             size = sizeof( s_pub16 );
         }
-        size = ROUND_UP( size + strlen( sym->name ) + 1, 4 );
+        size = ROUND_UP( size + strlen( sym->name.u.ptr ) + 1, 4 );
         CurrMod->d.cv->pubsize += size;
         SectAddrs[CVSECT_MISC].u.vm_offs += size;
     }
@@ -443,7 +443,7 @@ void CVGenGlobal( symbol *sym, section *sect )
 
     if( sym->info & SYM_STATIC )
         return;
-    namelen = strlen( sym->name );
+    namelen = strlen( sym->name.u.ptr );
     size = namelen + 1;
 
     if( ( sym->p.seg == NULL ) || IS_SYM_IMPORTED( sym ) || sym->p.seg->is32bit ) {
@@ -468,7 +468,7 @@ void CVGenGlobal( symbol *sym, section *sect )
         DumpInfo( CVSECT_MISC, &pub16, sizeof( s_pub16 ) );
     }
     DumpInfoU8( CVSECT_MISC, namelen );
-    DumpInfo( CVSECT_MISC, sym->name, namelen );
+    DumpInfo( CVSECT_MISC, sym->name.u.ptr, namelen );
     if( pad > 0 ) {
         buf = 0;
         DumpInfo( CVSECT_MISC, &buf, pad );
@@ -497,7 +497,7 @@ void CVGenLines( lineinfo *info )
         LineInfo.seg = GetCVSegment( seg->u.leader );
         LineInfo.linestart = SectAddrs[CVSECT_MISC].u.vm_ptr;
         cvsize = sizeof( cheesy_module_header ) + sizeof( cheesy_mapping_table )
-            + ROUND_UP( sizeof( cheesy_file_table ) + strlen( CurrMod->name ), 4 );
+            + ROUND_UP( sizeof( cheesy_file_table ) + strlen( CurrMod->name.u.ptr ), 4 );
         LineInfo.offbase = SectAddrs[CVSECT_MISC].u.vm_ptr + cvsize;
         LineInfo.numbase = LineInfo.offbase + CurrMod->d.cv->numlines * sizeof( unsigned_32 );
         cvsize += CurrMod->d.cv->numlines * sizeof( unsigned_32 );

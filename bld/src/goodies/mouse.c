@@ -44,7 +44,7 @@ unsigned short cursor[] = {
     0xfe1f,  /*1111111000011111*/
 
     /* 16 words of cursor mask */
-    0x0000,  /*0000000000000000*/ 
+    0x0000,  /*0000000000000000*/
     0x4000,  /*0100000000000000*/
     0x6000,  /*0110000000000000*/
     0x7000,  /*0111000000000000*/
@@ -76,14 +76,14 @@ int lock_region( void *address, unsigned length )
     /* DPMI Lock Linear Region */
     regs.w.ax = 0x600;
     /* Linear address in BX:CX */
-    regs.w.bx = (unsigned short)(linear >> 16); 
+    regs.w.bx = (unsigned short)(linear >> 16);
     regs.w.cx = (unsigned short)(linear & 0xFFFF);
     /* Length in SI:DI */
     regs.w.si = (unsigned short)(length >> 16);
     regs.w.di = (unsigned short)(length & 0xFFFF);
     int386( 0x31, &regs, &regs );
     /* Return 0 if lock failed */
-    return( !regs.w.cflag );
+    return( regs.w.cflag == 0 );
 }
 
 #pragma off( check_stack )
@@ -108,7 +108,7 @@ void _loadds far click_handler( int max, int mbx,
 /* Dummy function so we can calculate size of
   code to lock (cbc_end - click_handler).
 */
-void cbc_end( void )    
+void cbc_end( void )
 {
 }
 #pragma on( check_stack )

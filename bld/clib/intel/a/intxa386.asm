@@ -30,15 +30,6 @@
 ;*****************************************************************************
 
 
-;
-;<><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
-;<>
-;<>  int int386x( int intno, union REGS *inregs, union REGS *outregs,
-;<>         struct SREGS *segregs )
-;<>     parm caller     [esi] [edi] [edx] [ebx] \
-;<>
-;<>  =========    ===           =======
-;<><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
 include mdef.inc
 include struct.inc
 
@@ -47,51 +38,88 @@ include struct.inc
         xdefp   __int386x_
         xdefp   _DoINTR_
 
+;struct REGS {
+;        unsigned int    eax, ebx, ecx, edx, esi, edi;
+;        unsigned int    cflag;
+;};
+
+RS_EAX  equ     0
+RS_EBX  equ     4
+RS_ECX  equ     8
+RS_EDX  equ     12
+RS_ESI  equ     16
+RS_EDI  equ     20
+RS_F    equ     24
+
+;struct SREGS {
+;        unsigned short es, cs, ss, ds, fs, gs;
+;};
+
+SS_ES  equ     0
+SS_CS  equ     2
+SS_SS  equ     4
+SS_DS  equ     6
+SS_FS  equ     8
+SS_GS  equ     10
+
+;
+;<><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
+;<>
+;<>  int __int386x( unsigned char intno, union REGS *inregs, union REGS *outregs, struct SREGS *segregs )
+;<>     parm caller [eax] [edi] [edx] [ebx]
+;<>
+;<><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
         defp    __int386x_
 
-        push    ebp                     ; save EBP
-        push    es                      ; save ES
-        push    ebx                     ; save EBX  (segregs)
-        push    ds                      ; save DS
-        push    edx                     ; save EDX  (outregs)
-        call    dointerrupt             ; load registers and interrupt
+        pushfd                          ; save CPU flags
+        push    ebp                     ; save regs
+        push    es                      ; ...
+        push    ds                      ; ...
+        push    edx                     ; save EDX (outregs)
+        push    ebx                     ; save EBX (segregs)
+        xor     edx,edx                 ; set interrupt flags to 0
+        call    dointerrupt             ; load registers and invoke interrupt handler
         push    ds                      ; save new DS
-        push    edi                     ; save EDI
-        mov     ebp,esp                 ; get address of outregs struct
-        mov     edi,8[ebp]              ; ...
-        mov     ds,12[ebp]              ;
-        mov     [edi],eax               ; update registers
-        mov     4[edi],ebx              ; ...
-        mov     8[edi],ecx              ; ...
-        mov     12[edi],edx             ; ...
-        mov     16[edi],esi             ; ...
-        pop     20[edi]                 ; update edi
+        push    edx                     ; save new EDX
+        mov     ebp,esp                 ; get access to stack
+        mov     ds,word ptr (8+8)[ebp]  ; restore DS
+        mov     edx,(8+4)[ebp]          ; get address of outregs struct
+        mov     RS_EAX[edx],eax         ; update registers
+        mov     RS_EBX[edx],ebx         ; ...
+        mov     RS_ECX[edx],ecx         ; ...
+        pop     RS_EDX[edx]             ; ...
+        mov     RS_ESI[edx],esi         ; ...
+        mov     RS_EDI[edx],edi         ; ...
         sbb     eax,eax                 ; calc. value of carry flag
-        mov     24[edi],eax             ; save carry flag status
-        pop     eax                     ; (ds)
-        pop     ebx
-        pop     ebx
-        pop     ebx                     ; restore address of segregs
-        mov     6[ebx],ax               ; update DS
-        mov     [ebx],es                ; update ES
-        pop     es                      ; restore ES
-        pop     ebp                     ; restore EBP
+        and     eax,1                   ; ...
+        mov     RS_F[edx],eax           ; save carry flag status
+        pop     eax                     ; get DS for update
+        pop     ebx                     ; restore EBX address of segregs
+        mov     word ptr SS_ES[ebx],es  ; update regs
+        mov     word ptr SS_DS[ebx],ax  ; ...
+        pop     edx                     ; restore regs
+        pop     ds                      ; ...
+        pop     es                      ; ...
+        pop     ebp                     ; ...
+        popfd                           ; restore CPU flags
         ret                             ; return
         endproc __int386x_
 
         defp    dointerrupt
-        lea     esi,[esi+esi*2]         ; calc interrupt # times 3
-        lea     eax,inttable[esi]       ; calc address of "int nn" instruction
+        lea     eax,[eax+eax*2]         ; calc interrupt # times 3
+        lea     eax,inttable[eax]       ; calc address of "int nn" instruction
         push    eax                     ; push address of "int nn" instruction
-        mov     es,[ebx]                ; load ES
-        mov     bp,6[ebx]               ; get value for DS
-        mov     eax, [edi]              ; load registers
-        mov     ebx,4[edi]              ; ...
-        mov     ecx,8[edi]              ; ...
-        mov     edx,12[edi]             ; ...
-        mov     esi,16[edi]             ; ...
-        mov     edi,20[edi]             ; ...
-        mov     ds,bp                   ; load DS
+        mov     ah,dl                   ; load flags
+        sahf                            ; ...
+        mov     es,word ptr SS_ES[ebx]  ; load regs
+        mov     bp,word ptr SS_DS[ebx]  ; ...
+        mov     eax,RS_EAX[edi]         ; ...
+        mov     ebx,RS_EBX[edi]         ; ...
+        mov     ecx,RS_ECX[edi]         ; ...
+        mov     edx,RS_EDX[edi]         ; ...
+        mov     esi,RS_ESI[edi]         ; ...
+        mov     edi,RS_EDI[edi]         ; ...
+        mov     ds,bp                   ; ...
         ret                             ; return to "int nn" instruction
 
 ;struct REGPACKX {
@@ -113,66 +141,66 @@ RP_FS   equ     32
 RP_GS   equ     34
 RP_F    equ     36
 
-; void _DoINTR( intnum, struct REGPACK *regs )
-; /************* EAX ********* EDX **********/
+;void _DoINTR( unsigned char intnum, struct REGPACK *regs, unsigned char flags )
+;/************* EAX ***************** EBX ***************** EDX ***************/
 
         defp    _DoINTR_
-        pushad                  ; save regs
-        push    gs              ; ...
-        push    fs              ; ...
-        push    es              ; ...
-        push    ds              ; ...
-        push    edx             ; save pointer to REGPACK
-        call    dointr386
-
-        push    ebx             ; save ebx and ds
-        push    ds              ; ...
-        push    ebp             ; save ebp
-        mov     ebp,esp         ; get access to stack
-        mov     ebx,12[ebp]     ; restore address of REGPACK
-        mov     ds,16[ebp]      ; ...
-        mov     RP_EAX[ebx],eax ; update registers
-        pushfd
-        pop     eax
-        mov     RP_F[ebx],ax
-        mov     RP_ECX[ebx],ecx
-        mov     RP_EDX[ebx],edx
-        mov     RP_ESI[ebx],esi
-        mov     RP_EDI[ebx],edi
-        pop     RP_EBP[ebx]
-        pop     eax
-        mov     RP_DS[ebx],ax
-        pop     RP_EBX[ebx]
-        mov     RP_ES[ebx],es
-        mov     RP_FS[ebx],fs
-        mov     RP_GS[ebx],gs
-        add     esp,4*2
-        pop     es
-        pop     fs
-        pop     gs
-        popad                           ; restore registers
+        pushfd                          ; save CPU flags
+        pushad                          ; save regs
+        push    gs                      ; ...
+        push    fs                      ; ...
+        push    es                      ; ...
+        push    ds                      ; ...
+        push    ebx                     ; ... (pointer to REGPACK)
+        call    dointr386               ; load registers and invoke interrupt handler
+        push    ds                      ; save regs
+        push    ebp                     ; ...
+        push    ebx                     ; ...
+        mov     ebp,esp                 ; get access to stack
+        mov     ds,word ptr (12+4)[ebp] ; restore DS
+        mov     ebx,(12+0)[ebp]         ; restore EBX address of REGPACK
+        mov     RP_EAX[ebx],eax         ; update registers
+        pop     RP_EBX[ebx]             ; ...
+        mov     RP_ECX[ebx],ecx         ; ...
+        mov     RP_EDX[ebx],edx         ; ...
+        pop     RP_EBP[ebx]             ; ...
+        mov     RP_ESI[ebx],esi         ; ...
+        mov     RP_EDI[ebx],edi         ; ...
+        pop     eax                     ; ...
+        mov     word ptr RP_DS[ebx],ax  ; ...
+        mov     word ptr RP_ES[ebx],es  ; ...
+        mov     word ptr RP_FS[ebx],fs  ; ...
+        mov     word ptr RP_GS[ebx],gs  ; ...
+        pushfd                          ; ...
+        pop     RP_F[ebx]               ; ...
+        add     esp,4+4                 ; restore regs
+        pop     es                      ; ...
+        pop     fs                      ; ...
+        pop     gs                      ; ...
+        popad                           ; ...
+        popfd                           ; restore CPU flags
         ret
         endproc _DoINTR_
 
-
         defp    dointr386
-        and     eax,000000FFh           ; AL has interrupt #
         lea     eax,[eax+eax*2]         ; calc interrupt # times 3
         lea     eax,inttable[eax]       ; calc address of "int nn" instruction
         push    eax                     ; push address of "int nn" instruction
-        mov     ebx,edx                 ; get address of REGPACK
-        push    RP_DS[ebx]              ; save DS
-        mov     eax,RP_EAX[ebx]
-        mov     ecx,RP_ECX[ebx]
-        mov     edx,RP_EDX[ebx]
-        mov     esi,RP_ESI[ebx]
-        mov     edi,RP_EDI[ebx]
-        mov     ebp,RP_EBP[ebx]
-        mov     es,RP_ES[ebx]
-        mov     fs,RP_FS[ebx]
-        mov     gs,RP_GS[ebx]
-        mov     ebx,RP_EBX[ebx]
-        pop     ds                      ; load ds
+        mov     ah,dl                   ; load flags
+        sahf                            ; ...
+        mov     eax,RP_EAX[ebx]         ; load regs
+        mov     ecx,RP_ECX[ebx]         ; ...
+        mov     edx,RP_EDX[ebx]         ; ...
+        mov     ebp,RP_EBP[ebx]         ; ...
+        mov     esi,RP_ESI[ebx]         ; ...
+        mov     edi,RP_EDI[ebx]         ; ...
+        mov     es,word ptr RP_DS[ebx]  ; ...
+        push    es                      ; ...
+        mov     es,word ptr RP_ES[ebx]  ; ...
+        mov     fs,word ptr RP_FS[ebx]  ; ...
+        mov     gs,word ptr RP_GS[ebx]  ; ...
+        mov     ebx,RP_EBX[ebx]         ; ...
+        pop     ds                      ; ...
         ret                             ; return to "int nn" instruction
 dointr386       endp
 

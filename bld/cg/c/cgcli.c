@@ -34,7 +34,7 @@
 
 #undef BY_CG
 
-#include "cgstd.h"
+#include "_cgstd.h"
 #ifdef __OS2__
 #define INCL_DOS
 #include <os2.h>

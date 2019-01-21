@@ -32,6 +32,7 @@
 extern const dis_range          X64RangeTable[];
 extern const int                X64RangeTablePos[];
 extern const unsigned char      X64MaxInsName;
+extern const dis_cpu_data       X64Data;
 
 extern dis_handler_return X64PrefixOpnd( dis_handle *h, void *d, dis_dec_ins *ins );
 extern dis_handler_return X64PrefixRex( dis_handle *h, void *d, dis_dec_ins *ins );

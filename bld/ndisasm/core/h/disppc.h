@@ -32,6 +32,7 @@
 extern const dis_range          PPCRangeTable[];
 extern const int                PPCRangeTablePos[];
 extern const unsigned char      PPCMaxInsName;
+extern const dis_cpu_data       PPCData;
 
 extern dis_handler_return PPCMath( dis_handle *h, void *d, dis_dec_ins *ins );
 extern dis_handler_return PPCMathb( dis_handle *h, void *d, dis_dec_ins *ins );

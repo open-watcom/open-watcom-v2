@@ -29,8 +29,6 @@
 ****************************************************************************/
 
 
-#include <string.h>
-#include <stdlib.h>
 #include "heapwalk.h"
 #include "wclbproc.h"
 #include "jdlg.h"

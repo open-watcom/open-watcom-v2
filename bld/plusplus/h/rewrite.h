@@ -45,7 +45,7 @@ typedef struct srcfile_handle   SRCFILE_HANDLE;
 struct rewrite_tokens {
     REWRITE_TOKENS              *next;
     unsigned                    count;
-    unsigned                    free : 1;       // used for precompiled headers
+    unsigned                    free        : 1;    // used for precompiled headers
     uint_8                      stream[TOKEN_BLOCK_SIZE];
 };
 
@@ -60,9 +60,9 @@ struct rewrite_package {
     SRCFILE_HANDLE              *srcfiles_refd;
     uint_8                      *stream;
     TOKEN                       last_token;
-    unsigned                    busy : 1;       // being used by RewriteToken
-    unsigned                    alternate : 1;  // nested use of a REWRITE
-    unsigned                    free : 1;       // used for precompiled headers
+    unsigned                    busy        : 1;    // being used by RewriteToken
+    unsigned                    alternate   : 1;    // nested use of a REWRITE
+    unsigned                    free        : 1;    // used for precompiled headers
 };
 
 extern void RewriteFree( REWRITE * );

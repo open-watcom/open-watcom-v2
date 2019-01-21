@@ -44,53 +44,53 @@
 #define labelBlockPCHWrite(x,y) PCHWriteCVIndex( (cv_index)(pointer_int)labelBlockGetIndex(x,y) );
 
 typedef struct blk_init BLK_INIT;
-struct blk_init {               // BLK_INIT -- describes blocks for init. dcls
-    BLK_INIT    *next;          // - next at this level (in a ring)
-    BLK_INIT    *containing;    // - containing (enclosing) block
-    BLK_INIT    *contains;      // - ring of contained blocks
-    SCOPE       scope;          // - scope for block
-    SYMBOL      first_init;     // - first initialized symbol in block
-    SYMBOL      sym;            // - last symbol defined
-    SYMBOL      sym_containing; // - last symbol defined for containing block
-    SYMBOL      sym_dtored;     // - last symbol DTORed
-    SYMBOL      sym_dtored_containing;//- last symbol DTORed in containing block
-    SYMBOL      dcled_dtored;   // - last non-temporary DTORed
-    unsigned    var_no;         // - initialization no. for self
-    unsigned    var_no_containing; // - initialization no. for containing block
-    void        *try_id;        // - id of try, when catch block
-    CGFILE_INS  open_ins;       // - location of IC_BLOCK_OPEN, IC_BLOCK_DEAD
-    TOKEN_LOCN  locn;           // - location of definition
-    LAB_POSN    switch_posn;    // - position at switch/try statement
-    unsigned    open_zap : 1;   // - need to zap IC_BLOCK_OPEN
-    unsigned    dead_zap : 1;   // - need to zap IC_BLOCK_DEAD
-    unsigned    try_blk : 1;    // - is a try block
-    unsigned    catch_blk : 1;  // - is a catch block
-    unsigned    free : 1;       // used for precompiled headers
+struct blk_init {                       // BLK_INIT -- describes blocks for init. dcls
+    BLK_INIT    *next;                  // - next at this level (in a ring)
+    BLK_INIT    *containing;            // - containing (enclosing) block
+    BLK_INIT    *contains;              // - ring of contained blocks
+    SCOPE       scope;                  // - scope for block
+    SYMBOL      first_init;             // - first initialized symbol in block
+    SYMBOL      sym;                    // - last symbol defined
+    SYMBOL      sym_containing;         // - last symbol defined for containing block
+    SYMBOL      sym_dtored;             // - last symbol DTORed
+    SYMBOL      sym_dtored_containing;  //- last symbol DTORed in containing block
+    SYMBOL      dcled_dtored;           // - last non-temporary DTORed
+    unsigned    var_no;                 // - initialization no. for self
+    unsigned    var_no_containing;      // - initialization no. for containing block
+    void        *try_id;                // - id of try, when catch block
+    CGFILE_INS  open_ins;               // - location of IC_BLOCK_OPEN, IC_BLOCK_DEAD
+    TOKEN_LOCN  locn;                   // - location of definition
+    LAB_POSN    switch_posn;            // - position at switch/try statement
+    unsigned    open_zap        : 1;    // - need to zap IC_BLOCK_OPEN
+    unsigned    dead_zap        : 1;    // - need to zap IC_BLOCK_DEAD
+    unsigned    try_blk         : 1;    // - is a try block
+    unsigned    catch_blk       : 1;    // - is a catch block
+    unsigned    free            : 1;    // used for precompiled headers
 };
 
-static BLK_INIT *block_init_hdr;// - header for current block
-static BLK_INIT block_init_mod; // - block initialization for module
-static CGFILE_INS ins_temp;     // - zapped to IC_EXPR_TEMP
+static BLK_INIT *block_init_hdr;    // - header for current block
+static BLK_INIT block_init_mod;     // - block initialization for module
+static CGFILE_INS ins_temp;         // - zapped to IC_EXPR_TEMP
 
-                                // carving control
-static carve_t carveLAB_DEF;    // - LAB_DEF
-static carve_t carveLAB_REF;    // - LAB_REF
-static carve_t carveBLK_INIT;   // - BLK_INIT
+                                    // carving control
+static carve_t carveLAB_DEF;        // - LAB_DEF
+static carve_t carveLAB_REF;        // - LAB_REF
+static carve_t carveBLK_INIT;       // - BLK_INIT
 
-typedef struct                  // COND_BLK -- conditional block
-{   CGFILE_INS ins_true;        // - zapped to IC_SET_TRUE
-    CGFILE_INS ins_false;       // - zapped to IC_SET_FALSE
-    SYMBOL sym_dtored;          // - last DTOR'ed symbol at start of block
-    unsigned has_false :1;      // - true ==> has false part (?:)
+typedef struct                          // COND_BLK -- conditional block
+{   CGFILE_INS  ins_true;               // - zapped to IC_SET_TRUE
+    CGFILE_INS  ins_false;              // - zapped to IC_SET_FALSE
+    SYMBOL      sym_dtored;             // - last DTOR'ed symbol at start of block
+    unsigned    has_false       : 1;    // - true ==> has false part (?:)
 } COND_BLK;
 
-static VSTK_CTL stack_cond;     // stack of conditionals
-static SYMBOL expr_dtor_bound;  // last symbol requiring DTOR in block
-static unsigned expr_dtor_depth;// depth of conditional DTORing
+static VSTK_CTL stack_cond;         // stack of conditionals
+static SYMBOL expr_dtor_bound;      // last symbol requiring DTOR in block
+static unsigned expr_dtor_depth;    // depth of conditional DTORing
 
 static struct {
-    unsigned    has_setjmp : 1; // true ==> setjmp in expression
-    unsigned    has_newctor: 1; // true ==> has a new-ctor
+    unsigned    has_setjmp      : 1;    // true ==> setjmp in expression
+    unsigned    has_newctor     : 1;    // true ==> has a new-ctor
 } labelFlags;
 
 
@@ -103,7 +103,7 @@ static SYMBOL blkDtorSymbol(    // GET LAST DTORABLE SYMBOL FOR A BLOCK
     if( dtor_sym == NULL ) {
         dtor_sym = blk->sym_dtored_containing;
     }
-    return dtor_sym;
+    return( dtor_sym );
 }
 
 
@@ -116,7 +116,7 @@ static SYMBOL blkDcledSymbol(   // GET LAST DTORABLE DCL'ED SYMBOL FOR A BLOCK
     if( dtor_sym == NULL ) {
         dtor_sym = blk->sym_dtored_containing;
     }
-    return dtor_sym;
+    return( dtor_sym );
 }
 
 
@@ -200,28 +200,28 @@ static BLK_INIT *labelFindBlk(  // FIND INITIALIZATION BLOCK FOR SCOPE
 static SYMBOL scopeDtorSymbol(  // GET LAST DTORABLE SYMBOL FOR A SCOPE
     SCOPE scope )
 {
-    return blkDtorSymbol( labelFindBlk( scope ) );
+    return( blkDtorSymbol( labelFindBlk( scope ) ) );
 }
 
 
 static SYMBOL scopeDcledSymbol( // GET LAST DCL'ED DTORABLE SYMBOL FOR A SCOPE
     SCOPE scope )
 {
-    return blkDcledSymbol( labelFindBlk( scope ) );
+    return( blkDcledSymbol( labelFindBlk( scope ) ) );
 }
 
 
 static SYMBOL currDtorSymbol(   // GET LAST DTORABLE SYMBOL FOR CurrScope
     void )
 {
-    return scopeDtorSymbol( GetCurrScope() );
+    return( scopeDtorSymbol( GetCurrScope() ) );
 }
 
 
 static SYMBOL currDcledSymbol(  // GET LAST DTORABLE DCL'ED SYMBOL, CurrScope
     void )
 {
-    return scopeDcledSymbol( GetCurrScope() );
+    return( scopeDcledSymbol( GetCurrScope() ) );
 }
 
 
@@ -244,7 +244,7 @@ static SCOPE dtorScope(         // FIND SIGNIFICANT SCOPE FOR DTOR'ING
             break;
         }
     }
-    return scope;
+    return( scope );
 }
 
 
@@ -252,10 +252,10 @@ static bool labelMarkDtorSym(   // MARK A SYMBOL FOR DTORing
     BLK_INIT *blk,              // - current initialization block
     SYMBOL sym )                // - symbol
 {
-    bool retb;                  // - true ==> requires DTOR
+    bool ok;                    // - true ==> requires DTOR
     SYMBOL dtor;                // - DTOR for symbol
 
-    retb = false;
+    ok = false;
     if( SymRequiresDtoring( sym ) ) {
         if( TypeTruncByMemModel( sym->sym_type ) ) {
             CErr1( ERR_DTOR_OBJ_MEM_MODEL );
@@ -268,10 +268,10 @@ static bool labelMarkDtorSym(   // MARK A SYMBOL FOR DTORing
                 blk->scope->u.s.dtor_reqd = true;
                 ScopeKeep( blk->scope );
             }
-            retb = true;
+            ok = true;
         }
     }
-    return( retb );
+    return( ok );
 }
 
 
@@ -390,7 +390,7 @@ static bool popsTryCatch(       // CHECK IF JUMP POPS A TRY/CATCH BLOCK
             break;
         }
     }
-    return popped;
+    return( popped );
 }
 
 
@@ -407,7 +407,7 @@ static bool popsCatch(          // CHECK IF JUMP POPS A CATCH BLOCK
             break;
         }
     }
-    return popped;
+    return( popped );
 }
 
 
@@ -420,7 +420,7 @@ static bool labelCheckJump(     // CHECK JUMP DOES NOT BY-PASS INITIALIZATION
     BLK_INIT *blk;              // - BLK_INIT's for label definition
     BLK_INIT *blk_com;          // - BLK_INIT's for common scope
     BLK_INIT *blk_src;          // - BLK_INIT for source of jump
-    bool retb;                  // - true ==> success
+    bool ok;                    // - true ==> success
     unsigned src_var_no;        // - source: variable no.
     unsigned tgt_var_no;        // - target: variable no.
     SYMBOL tgt_sym;             // - target: init. symbol
@@ -436,11 +436,11 @@ static bool labelCheckJump(     // CHECK JUMP DOES NOT BY-PASS INITIALIZATION
                 if( blk == blk_com ) {
                     if( src_var_no < tgt_var_no ) {
                         bypassError( blk->sym );
-                        retb = false;
+                        ok = false;
                     } else {
                         *cblk = blk_com;
                         *cvar = tgt_sym;
-                        retb = true;
+                        ok = true;
                     }
                     break;
                 }
@@ -451,23 +451,23 @@ static bool labelCheckJump(     // CHECK JUMP DOES NOT BY-PASS INITIALIZATION
         if( blk->try_blk ) {
             CErr1( ERR_JUMP_INTO_TRY );
             InfMsgPtr( INF_PREVIOUS_TRY, &blk->locn );
-            retb = false;
+            ok = false;
             break;
         } else if( blk->catch_blk ) {
             CErr1( ERR_JUMP_INTO_CATCH );
             InfMsgPtr( INF_PREVIOUS_CATCH, &blk->locn );
-            retb = false;
+            ok = false;
             break;
         }
         if( tgt_var_no != 0 ) {
             bypassError( blk->first_init );
-            retb = false;
+            ok = false;
             break;
         }
         tgt_sym = blk->sym_containing;
         tgt_var_no = blk->var_no_containing;
     }
-    return( retb );
+    return( ok );
 }
 
 
@@ -945,14 +945,18 @@ void *LabelBlockOpenFindZap( LAB_MEM *lm, CGFILE_INS *p )
 
     RingIterBeg( lm->blk_hdr, h ) {
         if( h->open_zap || h->dead_zap ) {
-            if( p->block != h->open_ins.block ) continue;
-            if( p->offset != h->open_ins.offset ) continue;
+            if( p->block != h->open_ins.block )
+                continue;
+            if( p->offset != h->open_ins.offset )
+                continue;
             return( labelBlockGetIndex( lm->carve, h ) );
         }
         RingIterBeg( h->contains, b ) {
             if( b->open_zap || b->dead_zap ) {
-                if( p->block != b->open_ins.block ) continue;
-                if( p->offset != b->open_ins.offset ) continue;
+                if( p->block != b->open_ins.block )
+                    continue;
+                if( p->offset != b->open_ins.offset )
+                    continue;
                 return( labelBlockGetIndex( lm->carve, b ) );
             }
         } RingIterEnd( b );

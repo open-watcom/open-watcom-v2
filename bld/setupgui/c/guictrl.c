@@ -33,13 +33,12 @@
 #include <stdlib.h>
 #include <stdarg.h>
 #include "wio.h"
-#include "gui.h"
+#include "setup.h"
 #include "guistr.h"
 #include "guiutil.h"
 #include "guidlg.h"
 #include "dlgbutn.h"
 #include "dlggen.h"
-#include "setup.h"
 #include "setupinf.h"
 #include "genvbl.h"
 #include "dynarray.h"

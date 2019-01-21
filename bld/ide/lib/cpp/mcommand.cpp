@@ -108,16 +108,13 @@ int WEXPORT MCommand::expand( WString& command, WFileName* target, MTool* tool, 
     }
     WString com;
     size_t len = strlen( cmd );
-    for( ; i<len; ) {
+    for( ; i < len; ) {
         if( strncmp( &cmd[i], BMACRO, 2 ) == 0 ) {
-            size_t l = 2;
+            size_t j;
             WString m;
-            for(; i+l<len; l++ ) {
-                if( i+l >= len ) {
-                    m.concat( cmd[i++] );
-                    break;
-                } else if( cmd[i+l] == EMACRO ) {
-                    l += 1;
+            for( j = 2; i + j < len; j++ ) {
+                if( cmd[i + j] == EMACRO ) {
+                    j += 1;
                     WString v;
                     if( m.size() > 0 && *m == '%' ) {
                         m.deleteChar( 0 );
@@ -135,19 +132,19 @@ int WEXPORT MCommand::expand( WString& command, WFileName* target, MTool* tool, 
                         browse = browse | expandSwitches( v, list, stateList, browseSwitch, mode );
                     }
                     com.concat( v );
-                    i += l;
+                    i += j;
                     break;
-//              } else if( cmd[i+l] == '#' ) {
+//              } else if( cmd[i + j] == '#' ) {
 //                  m.concat( mask );
                 } else {
-                    m.concat( cmd[i+l] );
+                    m.concat( cmd[i + j] );
                 }
             }
         } else if( cmd[i] == '\r' ) {
             // skip \r
-                        i++;
+            i++;
         } else {
-            com.concat( cmd[i++ ] );
+            com.concat( cmd[i++] );
         }
     }
     if( !browse && browseSwitch ) {
@@ -228,14 +225,11 @@ int WEXPORT MCommand::expand( WString& command, WFileName* target, MTool* tool, 
                 i += 2;
                 command.concat( '$' );
             } else if( strncmp( &com[i], "$(", 2 ) == 0 ) {
-                size_t l = i+2;
+                size_t j;
                 WString m;
-                for(; l<icount; l++ ) {
-                    if( l >= icount ) {
-                        m.concat( com[l++] );
-                        break;
-                    } else if( com[l] == ')' ) {
-                        l += 1;
+                for( j = i + 2; j < icount; j++ ) {
+                    if( com[j] == ')' ) {
+                        j += 1;
                         WString v;
                         if( m.size() > 0 && *m == '%' ) {
                             m.deleteChar( 0 );
@@ -246,13 +240,13 @@ int WEXPORT MCommand::expand( WString& command, WFileName* target, MTool* tool, 
                         }
                         if( v.size() > 0 ) {
                             command.concat( v );
-                            i = l;
+                            i = j;
                         } else {
                             command.concat( com[i++] );
                         }
                         break;
                     } else {
-                        m.concat( com[l] );
+                        m.concat( com[j] );
                     }
                 }
             } else {

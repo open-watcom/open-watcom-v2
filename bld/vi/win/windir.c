@@ -32,7 +32,7 @@
 
 #include "vi.h"
 #include "color.h"
-#include "font.h"
+#include "vifont.h"
 #include "utils.h"
 #include "wclbproc.h"
 #include "winifini.h"
@@ -59,7 +59,7 @@ bool FileCompleteWindowInit( void )
     wc.hInstance = InstanceHandle;
     wc.hIcon = LoadIcon( (HINSTANCE)NULLHANDLE, IDI_APPLICATION );
     wc.hCursor = LoadCursor( (HINSTANCE)NULLHANDLE, IDC_ARROW );
-    wc.hbrBackground = (HBRUSH) COLOR_APPWORKSPACE;
+    wc.hbrBackground = (HBRUSH)COLOR_APPWORKSPACE;
     wc.lpszMenuName = NULL;
     wc.lpszClassName = ClassName;
     return( RegisterClass( &wc ) != 0 );
@@ -70,13 +70,13 @@ bool FileCompleteWindowFini( void )
     return( true );
 }
 
-WINEXPORT LRESULT CALLBACK FileCompleteWindowProc( HWND hwnd, UINT msg, WPARAM w, LPARAM l )
+WINEXPORT LRESULT CALLBACK FileCompleteWindowProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
 {
     switch( msg ) {
     case WM_KEYDOWN:
         if( !BAD_ID( command_window_id ) ) {
             SetFocus( command_window_id );
-            SendMessage( command_window_id, msg, w, l );
+            SendMessage( command_window_id, msg, wparam, lparam );
             return( 0 );
         }
         break;
@@ -88,15 +88,15 @@ WINEXPORT LRESULT CALLBACK FileCompleteWindowProc( HWND hwnd, UINT msg, WPARAM w
     case WM_LBUTTONDBLCLK:
     case WM_MBUTTONDBLCLK:
     case WM_RBUTTONDBLCLK:
-        FileCompleteMouseClick( hwnd, GET_X( l ), GET_Y( l ), true );
+        FileCompleteMouseClick( hwnd, GET_X( lparam ), GET_Y( lparam ), true );
         break;
     case WM_LBUTTONUP:
     case WM_MBUTTONUP:
     case WM_RBUTTONUP:
-        FileCompleteMouseClick( hwnd, GET_X( l ), GET_Y( l ), false );
+        FileCompleteMouseClick( hwnd, GET_X( lparam ), GET_Y( lparam ), false );
         break;
     }
-    return( DefWindowProc( hwnd, msg, w, l ) );
+    return( DefWindowProc( hwnd, msg, wparam, lparam ) );
 }
 
 window_id NewFileCompleteWindow( void )

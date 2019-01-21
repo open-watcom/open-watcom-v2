@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
+* Copyright (c) 2009-2018 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -29,6 +29,7 @@
 ****************************************************************************/
 
 
+#include "wipfc.hpp"
 #include <cstdio>
 #include <cstdlib>
 #include <iostream>
@@ -40,96 +41,111 @@
 #include "ipffile.hpp"
 #include "lexer.hpp"
 #include "util.hpp"
+#include "outfile.hpp"
+
 
 Compiler::Compiler():
-    lexer( new Lexer() ),
-    loc( "en_US" ),
-    warningLevel( 3 ),
-    outType( HLP ),
-    parseContinuously( true ),
-    printBanner( true ),
-    search( true ),
-    xref( false )
+    _lexer( new Lexer() ),
+    _loc( "en_US" ),
+    _warningLevel( 3 ),
+    _outType( HLP ),
+    _parseContinuously( true ),
+    _printBanner( true ),
+    _search( true ),
+    _xref( false ),
+    _inFileNameW( NULL )
 {
 }
 /*****************************************************************************/
 Compiler::~Compiler()
 {
-    while( inFiles.size() )
+    while( _inFiles.size() )
         popInput();
-    for( FileNameIter iter = fileNames.begin(); iter != fileNames.end(); ++iter)
+    for( FileNameIter iter = _fileNames.begin(); iter != _fileNames.end(); ++iter ) {
         delete *iter;
+    }
 }
 /*****************************************************************************/
-void Compiler::setInputFile( std::string& name )
+void Compiler::setInputFile( const std::string& sfname )
 {
-    std::wstring* wname( new std::wstring() );
-    mbtowstring( name, *wname );
-    wname = addFileName( wname );
-    inFiles.push_back( new IpfFile( wname ) );
+    _inFileNameW = new std::wstring();
+    _inFileName = sfname;
+    def_mbtow_string( _inFileName, *_inFileNameW );
 }
 /*****************************************************************************/
 std::wstring* Compiler::addFileName( std::wstring* name )
 {
-    std::pair< FileNameIter, bool > status( fileNames.insert( name ) );
+    std::pair< FileNameIter, bool > status( _fileNames.insert( name ) );
     if( !status.second )
         delete name;
     return *status.first;
+}
+void Compiler::setOutputFile( const std::string& sfname )
+{
+    _outFileName = sfname;
 }
 /*****************************************************************************/
 int Compiler::compile()
 {
     int retval( EXIT_SUCCESS );
-    std::auto_ptr< Document > doc( new Document( *this, loc ) );
-    doc->setOutputType( outType );
-    doc->parse( lexer.get() );
+    // init document and set locale for input/output data
+    std::auto_ptr< Document > doc( new Document( *this, _outType, _loc ) );
+    _inFileNameW = doc->pushFileInput( _inFileName, _inFileNameW );
+    doc->setOutFile( _outFileName );
+    doc->parse( _lexer.get() );
     doc->build();
-    std::FILE* out( std::fopen( outFileName.c_str() , "wb" ) );
-    if( !out )
-        throw FatalIOError( ERR_OPEN, L"for inf or hlp output" );
     try {
-        doc->write( out );
+        doc->write();
     }
     catch( FatalError& e ) {
         retval = EXIT_FAILURE;
-        printError( e.code );
+        printError( e._code );
     }
     catch( FatalIOError& e ) {
         retval = EXIT_FAILURE;
-        printError( e.code, e.fname );
+        printError( e._code, e._fname );
     }
-    std::fclose( out );
-    if( xref ) {
+    if( _xref ) {
         //TODO: convert to ostream when streams and strings mature
-        std::string fname( outFileName );
-        fname.erase( fname.rfind( '.' ) );
-        fname += ".log";
-        out = std::fopen( fname.c_str(), "w" );
-        if( !out )
+        std::string logfname( _outFileName );
+        logfname.erase( logfname.rfind( '.' ) );
+        logfname += ".log";
+        std::FILE *logfp = std::fopen( logfname.c_str(), "w" );
+        if( !logfp )
             throw FatalIOError( ERR_OPEN, L"for log output" );
         try {
-            std::fprintf( out, "Summary for %s\n\n", outFileName.c_str() );
-            doc->summary( out );
-        }
-        catch( FatalError& e ) {
+            std::fprintf( logfp, "Summary for %s\n\n", _outFileName.c_str() );
+            doc->summary( logfp );
+        } catch( FatalError& e ) {
             retval = EXIT_FAILURE;
-            printError( e.code );
-        }
-        catch( FatalIOError& e ) {
+            printError( e._code );
+        } catch( FatalIOError& e ) {
             retval = EXIT_FAILURE;
-            printError( e.code, e.fname );
+            printError( e._code, e._fname );
         }
-        std::fclose( out );
+        std::fclose( logfp );
     }
     return retval;
 }
+
 /*****************************************************************************/
+static unsigned levelCode( ErrCode c )
+{
+    if( c > ERR2_LAST )
+        return c - ERR2_LAST + 300;
+    if( c > ERR1_LAST )
+        return c - ERR1_LAST + 200;
+    if( c > ERR_LAST )
+        return c - ERR_LAST + 100;
+    return c;
+}
+
 //Error message format is <fullfilename:line:col> errnum: text [optional info]
 void Compiler::printError( ErrCode c ) const
 {
-    if( c <= ERR_LAST || warningLevel > 2 ||
-       ( c <= ERR1_LAST && warningLevel > 0 ) ||
-       ( c <= ERR2_LAST && warningLevel > 1 )) {
+    if( c <= ERR_LAST || _warningLevel > 2 ||
+       ( c <= ERR1_LAST && _warningLevel > 0 ) ||
+       ( c <= ERR2_LAST && _warningLevel > 1 )) {
 /*
            std::cout << '<';
            std::cout << dataName();
@@ -140,23 +156,23 @@ void Compiler::printError( ErrCode c ) const
            std::cout << "> " << ( c > ERR_LAST ? "Warning" : "Fatal Error" );
            std::cout << std::setw( 2 ) << std::setfill( '0' );
            std::cout << static_cast< unsigned int >( c );
-           std::cout << ': ' << ErrText[ c ] << std::endl;
+           std::cout << ': ' << ErrText[c] << std::endl;
 */
         std::fprintf( stdout, "<%ls:%u:%u> %s %02u: %s\n",
-            inFiles.size() ? dataName()->c_str() : L"(no current file)",
+            _inFiles.size() ? dataName()->c_str() : L"(no current file)",
             lexerLine(), lexerCol(),
             c > ERR_LAST ? "Warning" : "Fatal Error",
-            static_cast< unsigned int >( c ),
-            ErrText[ c ] );
+            levelCode( c ),
+            ErrText[c] );
     }
 }
 /*****************************************************************************/
 //Error message format is <fullfilename:line:col> errnum: text [optional info]
-void Compiler::printError( ErrCode c, const std::wstring& txt ) const
+void Compiler::printError( ErrCode c, const std::wstring& text ) const
 {
-    if( c <= ERR_LAST || warningLevel > 2 ||
-       ( c <= ERR1_LAST && warningLevel > 0 ) ||
-       ( c <= ERR2_LAST && warningLevel > 1 )) {
+    if( c <= ERR_LAST || _warningLevel > 2 ||
+       ( c <= ERR1_LAST && _warningLevel > 0 ) ||
+       ( c <= ERR2_LAST && _warningLevel > 1 )) {
 /*
            std::cout << '<';
            std::cout << dataName();
@@ -167,14 +183,14 @@ void Compiler::printError( ErrCode c, const std::wstring& txt ) const
            std::cout << "> " << ( c > ERR_LAST ? "Warning" : "Fatal Error" );
            std::cout << std::setw( 2 ) << std::setfill( '0' );
            std::cout << static_cast< unsigned int >( c );
-           std::cout << ': ' << ErrText[ c ] << txt << std::endl;
+           std::cout << ': ' << ErrText[c] << text << std::endl;
 */
         std::fprintf( stdout, "<%ls:%u:%u> %s %02u: %s %ls\n",
-            inFiles.size() ? dataName()->c_str() : L"(no current file)",
+            _inFiles.size() ? dataName()->c_str() : L"(no current file)",
             lexerLine(), lexerCol(),
             c > ERR_LAST ? "Warning" : "Fatal Error",
-            static_cast< unsigned int >( c ),
-            ErrText[ c ], txt.c_str() );
+            levelCode( c ),
+            ErrText[c], text.c_str() );
     }
 }
 /*****************************************************************************/
@@ -182,12 +198,12 @@ void Compiler::printError( ErrCode c, const std::wstring& txt ) const
 void Compiler::printError( ErrCode c, const std::wstring* name, unsigned int row,
     unsigned int col ) const
 {
-    if( c <= ERR_LAST || warningLevel > 2 ||
-       ( c <= ERR1_LAST && warningLevel > 0 ) ||
-       ( c <= ERR2_LAST && warningLevel > 1 )) {
+    if( c <= ERR_LAST || _warningLevel > 2 ||
+       ( c <= ERR1_LAST && _warningLevel > 0 ) ||
+       ( c <= ERR2_LAST && _warningLevel > 1 )) {
 /*
            std::cout << '<';
-           std::cout << inFiles[inFiles.size() - 1]->name();
+           std::cout << _inFiles[_inFiles.size() - 1]->name();
            std::cout << ':';
            std::cout << row;
            std::cout << ':';
@@ -195,26 +211,26 @@ void Compiler::printError( ErrCode c, const std::wstring* name, unsigned int row
            std::cout << "> " ( c > ERR_LAST ? "Warning" : "Fatal Error" );
            std::cout << std::setw( 2 ) << std::setfill( '0' );
            std::cout << static_cast< unsigned int >( c );
-           std::cout << ' ' << ErrText[ c ] << std::endl;
+           std::cout << ' ' << ErrText[c] << std::endl;
 */
         std::fprintf( stdout, "<%ls:%u:%u> %s %02u: %s\n",
             name->c_str(), row, col,
             c > ERR_LAST ? "Warning" : "Fatal Error",
-            static_cast< unsigned int >( c ),
-            ErrText[ c ] );
+            levelCode( c ),
+            ErrText[c] );
     }
 }
 /*****************************************************************************/
 //Error message format is <fullfilename:line:col> errnum: text [optional info]
 void Compiler::printError( ErrCode c, const std::wstring* name, unsigned int row,
-    unsigned int col, const std::wstring& txt ) const
+    unsigned int col, const std::wstring& text ) const
 {
-    if( c <= ERR_LAST || warningLevel > 2 ||
-       ( c <= ERR1_LAST && warningLevel > 0 ) ||
-       ( c <= ERR2_LAST && warningLevel > 1 )) {
+    if( c <= ERR_LAST || _warningLevel > 2 ||
+       ( c <= ERR1_LAST && _warningLevel > 0 ) ||
+       ( c <= ERR2_LAST && _warningLevel > 1 )) {
 /*
            std::cout << '<';
-           std::cout << inFiles[inFiles.size() - 1]->name();
+           std::cout << _inFiles[_inFiles.size() - 1]->name();
            std::cout << ':';
            std::cout << row;
            std::cout << ':';
@@ -222,25 +238,25 @@ void Compiler::printError( ErrCode c, const std::wstring* name, unsigned int row
            std::cout << "> " ( c > ERR_LAST ? "Warning" : "Fatal Error" );
            std::cout << std::setw( 2 ) << std::setfill( '0' );
            std::cout << static_cast< unsigned int >( c );
-           std::cout << ' ' << ErrText[ c ] << txt << std::endl;
+           std::cout << ' ' << ErrText[c] << text << std::endl;
 */
         std::fprintf( stdout, "<%ls:%u:%u> %s %02u: %s %ls\n",
             name->c_str(), row, col,
             c > ERR_LAST ? "Warning" : "Fatal Error",
-            static_cast< unsigned int >( c ),
-            ErrText[ c ], txt.c_str() );
+            levelCode( c ),
+            ErrText[c], text.c_str() );
     }
 }
 /*****************************************************************************/
 Lexer::Token Compiler::getNextToken()
 {
-    Lexer::Token tok( lexer->lex( inFiles[inFiles.size() - 1] ));
-    if( parseContinuously ) {
+    Lexer::Token tok( _lexer->lex( _inFiles[_inFiles.size() - 1] ));
+    if( _parseContinuously ) {
         while( tok == Lexer::END ) {
             popInput();
-            if( inFiles.empty() )
+            if( _inFiles.empty() )
                 break;
-            tok = lexer->lex( inFiles[inFiles.size() - 1] );
+            tok = _lexer->lex( _inFiles[_inFiles.size() - 1] );
         }
     }
     return tok;
@@ -248,7 +264,7 @@ Lexer::Token Compiler::getNextToken()
 /*****************************************************************************/
 void Compiler::popInput( )
 {
-    IpfData* f( inFiles[inFiles.size() - 1] );
-    inFiles.pop_back();
+    IpfData* f( _inFiles[_inFiles.size() - 1] );
+    _inFiles.pop_back();
     delete f;
 }

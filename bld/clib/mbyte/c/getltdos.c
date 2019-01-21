@@ -82,16 +82,17 @@ extern unsigned short __far *_dos_get_dbcs_lead_table( void );
         "mov ah,63h"    \
         "int 21h"       \
         "mov di,ds"     \
-        "jc L1"         \
+        "jc short L1"   \
         "test al,al"    \
-        "jnz L1"        \
+        "jnz short L1"  \
         "test di,di"    \
-        "jnz L2"        \
+        "jnz short L2"  \
     "L1: xor di,di"     \
         "xor si,si"     \
     "L2: pop ds"        \
         "pop bp"        \
-    value [di si] modify [ax bx cx dx];
+    __value     [__di __si] \
+    __modify    [__ax __bx __cx __dx]
 #endif
 
 unsigned short __far *dos_get_dbcs_lead_table( void )
@@ -114,7 +115,7 @@ unsigned short __far *dos_get_dbcs_lead_table( void )
         regs.x.edx = FP_OFF( &pblock );         /* DS:EDX -> parameter block */
         sregs.ds = FP_SEG( &pblock );
         intdosx( &regs, &regs, &sregs );
-        if( (regs.x.cflag & 1) == 0 && pblock.real_eax.b.l == 0 ) {
+        if( regs.x.cflag == 0 && pblock.real_eax.b.l == 0 ) {
             if( pblock.real_ds != 0xFFFF ) {    /* weird OS/2 value */
                 return( EXTENDER_RM2PM( pblock.real_ds, regs.w.si ) );
             }

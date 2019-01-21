@@ -31,7 +31,6 @@
 
 #include <stdio.h>
 #include <rdos.h>
-#include <dos.h>
 #include <string.h>
 #include <stdlib.h>
 #include "trptypes.h"

@@ -93,7 +93,7 @@ static AUTO_SYM* autoRelLookup( // FIND AUTO_SYM FOR A SYMBOL
             break;
         }
     } RingIterEnd( curr )
-    return retn;
+    return( retn );
 }
 
 

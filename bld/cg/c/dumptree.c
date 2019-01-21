@@ -30,14 +30,13 @@
 ****************************************************************************/
 
 
-#include "cgstd.h"
+#include "_cgstd.h"
 #include "coderep.h"
 #include "addrname.h"
 #include "model.h"
 #include "procdef.h"
 #include "tree.h"
 #include "typemap.h"
-#include "dmpinc.h"
 #include "dumpio.h"
 #include "dumpan.h"
 #include "dumpins.h"

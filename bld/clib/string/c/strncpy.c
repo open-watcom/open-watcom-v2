@@ -34,48 +34,49 @@
 #include <string.h>
 #include "riscstr.h"
 
-#if defined( _M_I86 ) & !defined(__WIDECHAR__)
 
-extern char *fast_strncpy( char _WCFAR *, const char *, size_t );
+#if defined( _M_I86 ) & !defined(__WIDECHAR__)
 
 #if defined(__SMALL_DATA__)
 
+extern char *fast_strncpy( char _WCFAR *, const char *, size_t );
 #pragma aux fast_strncpy = \
-        0x57            /* push di */\
-        0xac            /* L1: lodsb */\
-        0xaa            /* stosb */\
-        0x84 0xc0       /* test al,al */\
-        0xe0 0xfa       /* loopne L1 */\
-        0x31 0xc0       /* xor ax,ax */\
-        0xd1 0xe9       /* shr cx,1 */\
-        0xf3 0xab       /* rep stosw */\
-        0x11 0xc9       /* adc cx,cx */\
-        0xf3 0xaa       /* rep stosb */\
-        0x58            /* pop ax */\
-        parm caller     [es di] [si] [cx]\
-        value           [ax] \
-        modify exact    [ax cx si di];
+        "push di"           \
+    "L1: lodsb"             \
+        "stosb"             \
+        "test al,al"        \
+        "loopne short L1"   \
+        "xor  ax,ax"        \
+        "shr  cx,1"         \
+        "rep stosw"         \
+        "adc  cx,cx"        \
+        "rep stosb"         \
+        "pop  ax"           \
+    __parm __caller     [__es __di] [__si] [__cx] \
+    __value             [__ax] \
+    __modify __exact    [__ax __cx __si __di]
 
 #else
 
+extern char *fast_strncpy( char _WCFAR *, const char *, size_t );
 #pragma aux fast_strncpy = \
-        0x1e            /* push ds */ \
-        0x8e 0xda       /* mov ds,dx */ \
-        0x57            /* push di */\
-        0xac            /* L1: lodsb */\
-        0xaa            /* stosb */\
-        0x84 0xc0       /* test al,al */\
-        0xe0 0xfa       /* loopne L1 */\
-        0x31 0xc0       /* xor ax,ax */\
-        0xd1 0xe9       /* shr cx,1 */\
-        0xf3 0xab       /* rep stosw */\
-        0x11 0xc9       /* adc cx,cx */\
-        0xf3 0xaa       /* rep stosb */\
-        0x58            /* pop ax */\
-        0x1f            /* pop ds */ \
-        parm caller     [es di] [dx si] [cx]\
-        value           [es ax] \
-        modify exact    [ax cx si di];
+        "push ds"           \
+        "mov  ds,dx"        \
+        "push di"           \
+    "L1: lodsb"             \
+        "stosb"             \
+        "test al,al"        \
+        "loopne short L1"   \
+        "xor  ax,ax"        \
+        "shr  cx,1"         \
+        "rep stosw"         \
+        "adc  cx,cx"        \
+        "rep stosb"         \
+        "pop  ax"           \
+        "pop  ds"           \
+    __parm __caller     [__es __di] [__dx __si] [__cx] \
+    __value             [__es __ax] \
+    __modify __exact    [__ax __cx __si __di]
 
 #endif
 
@@ -98,7 +99,7 @@ extern char *fast_strncpy( char _WCFAR *, const char *, size_t );
 
     ret = dst;
     for( ;len; --len ) {
-        if( *src == NULLCHAR ) 
+        if( *src == NULLCHAR )
             break;
         *dst++ = *src++;
     }

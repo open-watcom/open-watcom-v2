@@ -46,12 +46,12 @@ int f2( INT, DOUBLE )
 int INT;
 int DOUBLE;
 {
-    return INT + DOUBLE;
+    return( INT + DOUBLE );
 }
 #else
 int f2( int INT, int DOUBLE )
 {
-    return INT + DOUBLE;
+    return( INT + DOUBLE );
 }
 #endif
 

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
+* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -173,7 +173,6 @@ char *ltoa( long value, char *buffer, int radix )
   #undef _MAX_DIR
   #undef _MAX_FNAME
   #undef _MAX_EXT
-  #undef _MAX_NAME
 
   #define _MAX_PATH    255 /* maximum length of full pathname */
   #define _MAX_SERVER  48  /* maximum length of server name */
@@ -182,7 +181,6 @@ char *ltoa( long value, char *buffer, int radix )
   #define _MAX_DIR     255 /* maximum length of path component */
   #define _MAX_FNAME   9   /* maximum length of file name component */
   #define _MAX_EXT     5   /* maximum length of extension component */
-  #define _MAX_NAME    13  /* maximum length of file name (with extension) */
 #endif
 
 
@@ -1064,7 +1062,7 @@ char *_fullpath( char *buff, const char *path, size_t size )
 
 /****************************************************************************
 *
-* Description:  Implementation of strlwr(). 
+* Description:  Implementation of strlwr().
 *
 ****************************************************************************/
 
@@ -1133,7 +1131,7 @@ int memicmp( const void *in_s1, const void *in_s2, size_t len )
 
 /****************************************************************************
 *
-* Description:  Implementation of tell(). 
+* Description:  Implementation of tell().
 *
 ****************************************************************************/
 
@@ -1242,7 +1240,7 @@ int eof( int handle )         /* determine if at EOF */
 
 #include <mach-o/dyld.h>
 
-/* No procfs on Darwin, have to use special API */ 
+/* No procfs on Darwin, have to use special API */
 
 char *_cmdname( char *name )
 {
@@ -1311,8 +1309,18 @@ char *_cmdname( char *name )
 char *_cmdname( char *name )
 {
     char    *pgm;
+    char    buff[_MAX_PATH];
+    DWORD   size;
 
-    _get_pgmptr( &pgm );
+    pgm = NULL;
+    if( _get_pgmptr( &pgm ) != 0 || pgm == NULL || *pgm == '\0' ) {
+        /* fix for buggy _get_pgmptr in some versions of Microsoft CRTL */
+        pgm = buff;
+        size = GetModuleFileName( NULL, buff, sizeof( buff ) );
+        if( size == sizeof( buff ) )
+            size--;
+        buff[size] = '\0';
+    }
     return( strcpy( name, pgm ) );
 }
 
@@ -1723,12 +1731,12 @@ static int icase( int ch, int flags )
     }
 }
 
-/* Maximum length of character class name. 
+/* Maximum length of character class name.
  * The longest is currently 'xdigit' (6 chars).
  */
 #define CCL_NAME_MAX    8
 
-/* Note: Using wctype()/iswctype() may seem odd, but that way we can avoid 
+/* Note: Using wctype()/iswctype() may seem odd, but that way we can avoid
  * hardcoded character class lists.
  */
 static int sub_bracket( const char *p, int c )
@@ -1812,12 +1820,12 @@ static const char *cclass_match( const char *patt, int c )
             }
             state = 0;
             break;
-        case 2: 
+        case 2:
             if( *patt == '\\' )
                 ++patt;
             if( lc <= c && c <= *patt )
                 ok = 1;
-            ++patt;     
+            ++patt;
             state = 0;
             break;
         default:
@@ -1950,27 +1958,6 @@ int unsetenv( const char *name )
     return( 0 );
 }
 
-void _dos_getdrive( unsigned *drive )
-{
-    char        buff[MAX_PATH];
-
-    GetCurrentDirectory( sizeof( buff ), buff );
-    *drive = tolower( buff[0] ) - 'a'+1;
-}
-
-void _dos_setdrive( unsigned drivenum, unsigned *drives )
-{
-    char        dir[4];
-
-    dir[0] = (char)drivenum + 'a' - 1;
-    dir[1] = ':';
-    dir[2] = '.';
-    dir[3] = 0;
-
-    SetCurrentDirectory( dir );
-    *drives = (unsigned)-1;
-}
-
 unsigned _dos_getfileattr( const char *path, unsigned *attribute )
 {
     HANDLE              h;
@@ -2022,8 +2009,8 @@ static time_t __NT_filetime_to_timet( const FILETIME *ft )
 {
     ULARGE_INTEGER  ulint;
 
-    ulint.u.LowPart   =   ft->dwLowDateTime; 
-    ulint.u.HighPart  =   ft->dwHighDateTime; 
+    ulint.u.LowPart   =   ft->dwLowDateTime;
+    ulint.u.HighPart  =   ft->dwHighDateTime;
     return( ulint.QuadPart / WINDOWS_TICK - SEC_TO_UNIX_EPOCH );
 }
 
@@ -2365,59 +2352,6 @@ static BOOL __NTFindNextFileWithAttr( HANDLE h, DWORD attr, LPWIN32_FIND_DATA ff
             return( FALSE );
         }
     }
-}
-
-unsigned _dos_findfirst( const char *path, unsigned attr, struct find_t *buf )
-{
-    HANDLE              h;
-    int                 error;
-    WIN32_FIND_DATA     ffd;
-
-    h = FindFirstFile( (LPTSTR)path, &ffd );
-    if( h == INVALID_HANDLE_VALUE ) {
-        DTAXXX_HANDLE_OF( buf->reserved ) = h;
-        __set_errno( ENOENT );
-        return( (unsigned)-1 );
-    }
-    if( !__NTFindNextFileWithAttr( h, attr, &ffd ) ) {
-        error = GetLastError();
-        DTAXXX_HANDLE_OF( buf->reserved ) = INVALID_HANDLE_VALUE;
-        FindClose( h );
-        __set_errno( ENOENT );
-        return( (unsigned)-1 );
-    }
-    DTAXXX_HANDLE_OF( buf->reserved ) = h;
-    DTAXXX_ATTR_OF( buf->reserved ) = attr;
-    __GetNTDirInfo( (struct dirent *)buf, &ffd );
-    return( 0 );
-}
-
-unsigned _dos_findnext( struct find_t *buf )
-{
-    WIN32_FIND_DATA     ffd;
-
-    if( !FindNextFile( DTAXXX_HANDLE_OF( buf->reserved ), &ffd ) ) {
-        __set_errno( ENOENT );
-        return( (unsigned)-1 );
-    }
-    if( !__NTFindNextFileWithAttr( DTAXXX_HANDLE_OF( buf->reserved ), DTAXXX_ATTR_OF( buf->reserved ), &ffd ) ) {
-        __set_errno( ENOENT );
-        return( (unsigned)-1 );
-    }
-    __GetNTDirInfo( (struct dirent *)buf, &ffd );
-
-    return( 0 );
-}
-
-unsigned _dos_findclose( struct find_t *buf )
-{
-    if( DTAXXX_HANDLE_OF( buf->reserved ) != INVALID_HANDLE_VALUE ) {
-        if( !FindClose( DTAXXX_HANDLE_OF( buf->reserved ) ) ) {
-            __set_errno( ENOENT );
-            return( (unsigned)-1 );
-        }
-    }
-    return( 0 );
 }
 
 char        *optarg;            // pointer to option argument

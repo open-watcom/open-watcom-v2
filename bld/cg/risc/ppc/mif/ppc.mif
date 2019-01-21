@@ -15,7 +15,7 @@ ppc_objs = &
         ppcsplit.obj &
         ppctable.obj &
         ppcstub.obj  &
-        rscptype.obj
+        ppcptype.obj
 
 src_path        = $(cg_dir)/risc/ppc/c
 inc_dirs_targ   = -I"$(cg_dir)/risc/ppc/h"

@@ -77,19 +77,23 @@ struct  pgmparms {
 extern  char    _end;
 #pragma aux _end "*"
 
-extern  int     __fInt21( void );
+extern int  __fInt21( void );
 #pragma aux __fInt21 "*"
 
-extern  int _InvokePgm( char os, uint_32 baseaddr, uint_32 eip, uint_32 stacklow,
+extern int _InvokePgm( char os, uint_32 baseaddr, uint_32 eip, uint_32 stacklow,
                         int (*int21)( void ), struct pgmparms *parms );
-#pragma aux _InvokePgm = "push  cs"     \
-                         "mov   bx,cs"  \
-                         "call  esi"    \
-                         parm [ah] [ebx] [esi] [ecx] [edx] [edi] value [eax];
+#pragma aux _InvokePgm = \
+        "push cs"       \
+        "mov  bx,cs"    \
+        "call esi"      \
+    __parm      [__ah] [__ebx] [__esi] [__ecx] [__edx] [__edi] \
+    __value     [__eax]
 
 extern  int _LaunchPgm( uint_32 baseaddr, uint_32 eip,
                         int (*int21)( void ),  struct pgmparms *parms );
-#pragma aux _LaunchPgm parm [ebx] [esi] [edx] [edi] value [eax];
+#pragma aux _LaunchPgm \
+    __parm      [__ebx] [__esi] [__edx] [__edi] \
+    __value     [__eax]
 
 static uint_32  BaseAddr;
 static uint_32  CodeLoadAddr;
@@ -417,7 +421,7 @@ static void DumpEnvironment( void )
 #if defined(__OS2)
 
 extern int __OS2Main( unsigned hmod, unsigned reserved, char *env, char *cmd );
-#pragma aux __OS2Main "*" parm caller []
+#pragma aux __OS2Main "*" __parm __caller []
 
 static char volatile NestedException = 0;
 
@@ -603,13 +607,14 @@ extern  void    __InitInt21( void );
 
 extern uint_32 GetFromFS( uint_32 off );
 #pragma aux GetFromFS = \
-        "mov    eax,fs:[eax]" \
-        parm[eax] value[eax];
+        "mov  eax,fs:[eax]" \
+    __parm      [__eax] \
+    __value     [__eax]
 
 extern void PutToFS( uint_32 value, uint_32 off );
 #pragma aux PutToFS = \
-        "mov    fs:[edx], eax" \
-        parm[eax] [edx];
+        "mov  fs:[edx],eax" \
+    __parm [__eax] [__edx]
 
 extern HANDLE   __FileHandleIDs[];
 
@@ -952,7 +957,9 @@ typedef struct {
 #endif
 
 extern unsigned short __get_ds( void );
-#pragma aux __get_ds = "mov ax,ds" value [ax];
+#pragma aux __get_ds = \
+        "mov ax,ds" \
+    __value [__ax]
 
 static int __checkIsDBCS( void )
 {
@@ -1005,21 +1012,22 @@ static int __checkIsDBCS( void )
         unsigned long       register_eax;
         unsigned long       register_edx;
     } parm_struct;
-    extern  short       __x386_zero_base_selector;
-    #pragma aux         __x386_zero_base_selector "*";
+    extern short __x386_zero_base_selector;
+    #pragma aux __x386_zero_base_selector "*";
     extern unsigned getLeadBytes( struct parms * );
     #pragma aux getLeadBytes = \
-                "push ebp" \
-                "push edi" \
-                "push ecx" \
-                "push ebx" \
-                "mov ax,2511h" \
-                "int 21h" \
-                "pop ebx" \
-                "pop ecx" \
-                "pop edi" \
-                "pop ebp" \
-                parm [edx] value [esi];
+            "push ebp"  \
+            "push edi"  \
+            "push ecx"  \
+            "push ebx"  \
+            "mov  ax,2511h" \
+            "int 21h"   \
+            "pop  ebx"  \
+            "pop  ecx"  \
+            "pop  edi"  \
+            "pop  ebp"  \
+        __parm      [__edx] \
+        __value     [__esi]
 
     parm_struct.interrupt_num = 0x21;
     parm_struct.selector_ds = 0;

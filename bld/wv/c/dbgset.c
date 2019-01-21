@@ -56,6 +56,7 @@
 #include "dbglkup.h"
 #include "dbgchopt.h"
 #include "dbgsetfn.h"
+#include "dbgsetfg.h"
 
 #include "clibext.h"
 
@@ -71,7 +72,7 @@ typedef struct pending_toggle_list      pending_toggle_list;
 
 struct pending_toggle_list {
     pending_toggle_list *next;
-    dig_mad             mad;
+    dig_arch            arch;
     char                toggle[1]; /* variable sized */
 };
 
@@ -120,75 +121,75 @@ static const char SetNameTab[] = {
 };
 
 static void (* const SetJmpTab[])( void ) = {
-    &AutoSet,
-    &AsmSet,
-    &VarSet,
-    &FuncSet,
-    &GlobSet,
-    &ModSet,
-    &RegSet,
-    &FPUSet,
-    &MMXSet,
-    &XMMSet,
-    &BellSet,
-    &CallSet,
-    &DClickSet,
-    &ImplicitSet,
-    &InputSet,
-    &RadixSet,
-    &RecursionSet,
-    &SearchSet,
-    &SourceSet,
-    &LookSet,
-    &TabSet,
-    &TypeSet,
-    &LevelSet,
-    &LangSet,
-    &MacroSet,
-    &SupportSet,
-    &BreakOnWriteSet,
-    &DontExpandHexStringSet,
+    AutoSet,
+    AsmSet,
+    VarSet,
+    FuncSet,
+    GlobSet,
+    ModSet,
+    RegSet,
+    FPUSet,
+    MMXSet,
+    XMMSet,
+    BellSet,
+    CallSet,
+    DClickSet,
+    ImplicitSet,
+    InputSet,
+    RadixSet,
+    RecursionSet,
+    SearchSet,
+    SourceSet,
+    LookSet,
+    TabSet,
+    TypeSet,
+    LevelSet,
+    LangSet,
+    MacroSet,
+    SupportSet,
+    BreakOnWriteSet,
+    DontExpandHexStringSet,
 };
 
 static void (* SetConfJmpTab[])( void ) = {
-    &AutoConf,
-    &AsmConf,
-    &VarConf,
-    &FuncConf,
-    &GlobConf,
-    &ModConf,
-    &RegConf,
-    &FPUConf,
-    &MMXConf,
-    &XMMConf,
-    &BellConf,
-    &CallConf,
-    &DClickConf,
-    &ImplicitConf,
-    &InputConf,
-    &RadixConf,
-    &RecursionConf,
-    &SearchConf,
-    &SourceConf,
-    &LookConf,
-    &TabConf,
-    &TypeConf,
-    &LevelConf,
-    &LangConf,
-    &MacroConf,
-    &SupportConf,
-    &BreakOnWriteConf,
-    &DontExpandHexStringConf,
+    AutoConf,
+    AsmConf,
+    VarConf,
+    FuncConf,
+    GlobConf,
+    ModConf,
+    RegConf,
+    FPUConf,
+    MMXConf,
+    XMMConf,
+    BellConf,
+    CallConf,
+    DClickConf,
+    ImplicitConf,
+    InputConf,
+    RadixConf,
+    RecursionConf,
+    SearchConf,
+    SourceConf,
+    LookConf,
+    TabConf,
+    TypeConf,
+    LevelConf,
+    LangConf,
+    MacroConf,
+    SupportConf,
+    BreakOnWriteConf,
+    DontExpandHexStringConf,
     NULL,
 };
 
 
 static void (* SetNotAllTab[])( void ) =
 {
-    &CallConf,
-    &LevelConf,
-    &LangConf,
-    &InputConf,
+    CallConf,
+    LevelConf,
+    LangConf,
+    InputConf,
     NULL,
 };
 
@@ -457,8 +458,7 @@ static unsigned DoMADToggle( const mad_reg_set_data *rsd, unsigned on, unsigned 
     return( MADRegSetDisplayToggle( rsd, on, off ) );
 }
 
-static void PendingAdd( mad_window_toggles wt, dig_mad mad,
-                        const char *name, size_t len )
+static void PendingAdd( mad_window_toggles wt, dig_arch arch, const char *name, size_t len )
 {
     pending_toggle_list **owner;
     pending_toggle_list *new;
@@ -468,7 +468,7 @@ static void PendingAdd( mad_window_toggles wt, dig_mad mad,
     new = DbgMustAlloc( sizeof( *new ) + len );
     *owner = new;
     new->next = NULL;
-    new->mad = mad;
+    new->arch = arch;
     memcpy( new->toggle, name, len );
     new->toggle[len] = NULLCHAR;
 }
@@ -485,36 +485,36 @@ static bool DoOneToggle( mad_window_toggles wt )
     if( !ScanItem( true, &start, &len ) )
         return( false );
     switch( wt ) {
-    case MWT_ASM:
-        rsd = NULL;
-        break;
     case MWT_FPU:
         RegFindData( MTK_FLOAT, &rsd );
         if( rsd == NULL ) {
-            PendingAdd( SysConfig.mad, wt, start, len );
+            PendingAdd( SysConfig.arch, wt, start, len );
             return( true );
         }
         break;
     case MWT_REG:
         RegFindData( MTK_INTEGER, &rsd );
         if( rsd == NULL ) {
-            PendingAdd( SysConfig.mad, wt, start, len );
+            PendingAdd( SysConfig.arch, wt, start, len );
             return( true );
         }
         break;
     case MWT_MMX:
         RegFindData( MTK_MMX, &rsd );
         if( rsd == NULL ) {
-            PendingAdd( SysConfig.mad, wt, start, len );
+            PendingAdd( SysConfig.arch, wt, start, len );
             return( true );
         }
         break;
     case MWT_XMM:
         RegFindData( MTK_XMM, &rsd );
         if( rsd == NULL ) {
-            PendingAdd( SysConfig.mad, wt, start, len );
+            PendingAdd( SysConfig.arch, wt, start, len );
             return( true );
         }
+        break;
+    default:
+        rsd = NULL;
         break;
     }
     bit = 1;
@@ -544,7 +544,7 @@ void PendingToggles( void )
     scan = ScanPos();
     for( wt = 0; wt < MWT_LAST; ++wt ) {
         for( owner = &PendToggleList[wt]; (curr = *owner) != NULL; ) {
-            if( curr->mad == SysConfig.mad ) {
+            if( curr->arch == SysConfig.arch ) {
                 ReScan( curr->toggle );
                 DoOneToggle( wt );
                 *owner = curr->next;
@@ -561,8 +561,8 @@ static bool OneToggle( mad_window_toggles wt )
 {
     const char          *name;
     size_t              len;
-    dig_mad             mad_old;
-    dig_mad             mad_new;
+    dig_arch            arch_old;
+    dig_arch            arch_new;
     const char          *scan;
     bool                res;
 
@@ -583,19 +583,19 @@ static bool OneToggle( mad_window_toggles wt )
     if( CurrToken != T_DIV )
         return( false );
     Scan();
-    mad_new = FindMAD( name, len );
-    if( mad_new == MAD_NIL )
+    arch_new = FindMAD( name, len );
+    if( arch_new == DIG_ARCH_NIL )
         return( false );
-    if( MADLoaded( mad_new ) != MS_OK ) {
+    if( MADLoaded( arch_new ) != MS_OK ) {
         /* put the toggle on the pending list */
         if( !ScanItem( true, &name, &len ) )
             return( false );
-        PendingAdd( wt, mad_new, name, len );
+        PendingAdd( wt, arch_new, name, len );
         return( true );
     }
-    mad_old = MADActiveSet( mad_new );
+    arch_old = MADActiveSet( arch_new );
     res = DoOneToggle( wt );
-    MADActiveSet( mad_old );
+    MADActiveSet( arch_old );
     return( res );
 }
 
@@ -627,10 +627,10 @@ static void ToggleWindowSwitches( window_toggle *toggle, size_t len,
     }
 }
 
-static char *DumpAToggle( char *p, dig_mad mad, char *toggle )
+static char *DumpAToggle( char *p, dig_arch arch, char *toggle )
 {
     if( toggle[0] != NULLCHAR ) {
-        MADNameDescription( mad, p, TXT_LEN - ( p - TxtBuff ) );
+        MADNameDescription( arch, p, TXT_LEN - ( p - TxtBuff ) );
         for( ; *p != NULLCHAR; ++p ) {
             if( *p == ' ' ) {
                 break;
@@ -648,7 +648,7 @@ struct dump_toggles {
     char                        *p;
 };
 
-OVL_EXTERN walk_result DumpToggles( dig_mad mad, void *d )
+OVL_EXTERN walk_result DumpToggles( dig_arch arch, void *d )
 {
     struct dump_toggles         *td = d;
     const mad_toggle_strings    *toggles;
@@ -656,7 +656,7 @@ OVL_EXTERN walk_result DumpToggles( dig_mad mad, void *d )
     char                        buff[80];
     const mad_reg_set_data      *rsd;
 
-    if( MADLoaded( mad ) != MS_OK )
+    if( MADLoaded( arch ) != MS_OK )
         return( WR_CONTINUE );
     switch( td->wt ) {
     case MWT_FPU:
@@ -691,7 +691,7 @@ OVL_EXTERN walk_result DumpToggles( dig_mad mad, void *d )
         } else {
             GetMADNormalizedString( toggles->off, buff, sizeof( buff ) );
         }
-        td->p = DumpAToggle( td->p, mad, buff );
+        td->p = DumpAToggle( td->p, arch, buff );
         bit >>= 1;
         ++toggles;
     }
@@ -716,7 +716,7 @@ static void ConfWindowSwitches( window_toggle *toggle, int len, const char *sett
         MADWalk( DumpToggles, &data );
         ptr = data.p;
         for( curr = PendToggleList[wt]; curr != NULL; curr = curr->next ) {
-            ptr = DumpAToggle( ptr, curr->mad, curr->toggle );
+            ptr = DumpAToggle( ptr, curr->arch, curr->toggle );
         }
     }
     *ptr = NULLCHAR;

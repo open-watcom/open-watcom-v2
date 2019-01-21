@@ -38,8 +38,6 @@
 extern void             PrintHeader( section_ptr );
 extern void             PrintTail( section_ptr );
 extern void             PrintAssumeHeader( section_ptr );
-extern void             PrintLinePrefixAddress( dis_sec_offset, bool );
-extern void             PrintLinePrefixData( unsigned_8 *, dis_sec_offset, dis_sec_offset, unsigned, unsigned );
 extern void             DumpDataFromSection( unsigned_8 *, dis_sec_offset, dis_sec_offset, label_entry *, ref_entry *, section_ptr );
 extern void             UseFlatModel( void );
 

@@ -39,28 +39,6 @@
 #include "clibext.h"
 
 
-#if DISCPU & DISCPU_axp
-extern const dis_cpu_data       AXPData;
-#endif
-#if DISCPU & DISCPU_ppc
-extern const dis_cpu_data       PPCData;
-#endif
-#if DISCPU & DISCPU_x86
-extern const dis_cpu_data       X86Data;
-#endif
-#if DISCPU & DISCPU_x64
-extern const dis_cpu_data       X64Data;
-#endif
-#if DISCPU & DISCPU_jvm
-extern const dis_cpu_data       JVMData;
-#endif
-#if DISCPU & DISCPU_sparc
-extern const dis_cpu_data       SPARCData;
-#endif
-#if DISCPU & DISCPU_mips
-extern const dis_cpu_data       MIPSData;
-#endif
-
 long DisSEX( unsigned long v, unsigned bit )
 {
     unsigned long chk;

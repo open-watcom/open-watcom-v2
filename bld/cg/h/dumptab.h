@@ -30,5 +30,5 @@
 ****************************************************************************/
 
 
-extern void     DumpGen( opcode_entry *try );
-extern void     DumpTab( opcode_entry *try );
+extern void     DumpGen( const opcode_entry *try );
+extern void     DumpTab( const opcode_entry *try );

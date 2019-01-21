@@ -33,14 +33,14 @@
 #pragma aux foo_asm             \
     = "add eax,edx"             \
       "add eax,ebx"             \
-    parm[ eax][ edx][ ebx ]     \
+    parm [eax] [edx] [ebx]      \
     value [eax]                 \
     ;
 
 #pragma aux bar_asm             \
     = "add eax,edx"             \
     parm [eax] [edx ]           \
-    value [ eax ]               \
+    value [eax]                 \
     ;
 
 
@@ -53,12 +53,12 @@ struct S {
 
 int S::goo( int a, int b )
 {
-    return (int)this + a + b;
+    return( (int)this + a + b );
 }
 
 int S::woo( char a, char b )
 {
-    return a + b;
+    return( a + b );
 }
 
 int value1;

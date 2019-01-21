@@ -279,6 +279,8 @@ These may be generated from a C or C++ program by calling the
 .ct,
 .kw intr
 .ct,
+.kw intrf
+.ct,
 .kw int386
 .ct,
 .kw int386x

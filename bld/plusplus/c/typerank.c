@@ -39,60 +39,59 @@ RKD RkdForTypeId(       // GET RKD FOR TYPE ID
     RKD retn = RKD_ERROR;   // - RKD for id
 
     switch( id ) {
-      case TYP_ERROR :
+    case TYP_ERROR :
         retn = RKD_ERROR;
         break;
-      case TYP_BOOL :
-      case TYP_CHAR :
-      case TYP_SCHAR :
-      case TYP_UCHAR :
-      case TYP_WCHAR :
-      case TYP_SSHORT :
-      case TYP_USHORT :
-      case TYP_SINT :
-      case TYP_UINT :
-      case TYP_SLONG :
-      case TYP_ULONG :
-      case TYP_SLONG64 :
-      case TYP_ULONG64 :
-      case TYP_FLOAT :
-      case TYP_DOUBLE :
-      case TYP_LONG_DOUBLE :
+    case TYP_BOOL :
+    case TYP_CHAR :
+    case TYP_SCHAR :
+    case TYP_UCHAR :
+    case TYP_WCHAR :
+    case TYP_SSHORT :
+    case TYP_USHORT :
+    case TYP_SINT :
+    case TYP_UINT :
+    case TYP_SLONG :
+    case TYP_ULONG :
+    case TYP_SLONG64 :
+    case TYP_ULONG64 :
+    case TYP_FLOAT :
+    case TYP_DOUBLE :
+    case TYP_LONG_DOUBLE :
         retn = RKD_ARITH;
         break;
-      case TYP_ENUM :
+    case TYP_ENUM :
         retn = RKD_ENUM;
         break;
-      case TYP_POINTER :
+    case TYP_POINTER :
         retn = RKD_POINTER;
         break;
-      case TYP_CLASS :
+    case TYP_CLASS :
         retn = RKD_CLASS;
         break;
-      case TYP_FUNCTION :
+    case TYP_FUNCTION :
         retn = RKD_FUNCTION;
         break;
-      case TYP_DOT_DOT_DOT :
+    case TYP_DOT_DOT_DOT :
         retn = RKD_ELLIPSIS;
         break;
-      case TYP_VOID :
+    case TYP_VOID :
         retn = RKD_VOID;
         break;
-      case TYP_MEMBER_POINTER :
+    case TYP_MEMBER_POINTER :
         retn = RKD_MEMBPTR;
         break;
-      case TYP_GENERIC :
-      case TYP_TYPENAME :
+    case TYP_GENERIC :
+    case TYP_TYPENAME :
         retn = RKD_GENERIC;
         break;
-        
-      /*
-       * N4296: [2.13.7.1] "std::nullptr_t is a distinct type that is neither a pointer type nor a pointer to member type".
-       */
-      case TYP_NULLPTR :
+    case TYP_NULLPTR :
+        /*
+         * N4296: [2.13.7.1] "std::nullptr_t is a distinct type that is neither a pointer type nor a pointer to member type".
+         */
         retn = RKD_NULLPTR;
         break;
-      DbgDefault( "invalid RKD detected" );
+    DbgDefault( "invalid RKD detected" );
     }
-    return retn;
+    return( retn );
 }

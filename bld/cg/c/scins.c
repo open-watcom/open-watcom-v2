@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2016 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -30,24 +30,25 @@
 ****************************************************************************/
 
 
-#include "cgstd.h"
+#include "_cgstd.h"
 #include "coderep.h"
 #include "score.h"
 #include "makeins.h"
 #include "data.h"
-#include "x87.h"
+#include "fpu.h"
 #include "rgtbl.h"
 #include "expand.h"
 #include "namelist.h"
 #include "split.h"
 #include "index.h"
 #include "fixindex.h"
+#include "_split.h"
 
 
-opcode_entry    *ResetGenEntry( instruction *ins )
-/************************************************/
+const opcode_entry  *ResetGenEntry( instruction *ins )
+/****************************************************/
 {
-    opcode_entry        *try;
+    const opcode_entry  *try;
     bool                dummy;
 
     try = FindGenEntry( ins, &dummy );
@@ -82,14 +83,14 @@ bool    ChangeIns( instruction *ins, name *to, name **op, change_type flags )
     second form did not.
 */
 {
-    opcode_entry        *try;
-    opcode_entry        *table;
-    opcode_entry        *gen_table;
+    const opcode_entry  *try;
+    const opcode_entry  *table;
+    const opcode_entry  *gen_table;
     name                *save_result;
     name                *old_op;
     opcnt               i;
     name                *save_ops[MAX_OPS_PER_INS];
-    type_class_def      class;
+    type_class_def      type_class;
     bool                ok;
 
     ok = true;
@@ -97,12 +98,12 @@ bool    ChangeIns( instruction *ins, name *to, name **op, change_type flags )
     gen_table = ins->u.gen_table;
     old_op = *op;
     if( ins->head.opcode == OP_CONVERT ) {
-        class = ins->base_type_class;
+        type_class = ins->base_type_class;
     } else {
-        class = ins->type_class;
+        type_class = ins->type_class;
     }
     if( to->n.class != N_CONSTANT ) {
-        if( TypeClassSize[class] != to->n.size ) {
+        if( TypeClassSize[type_class] != to->n.size ) {
             return( false );
         }
     }
@@ -179,7 +180,7 @@ static  bool    TryOldIndex( score *sc, instruction *ins, name **opp ) {
                 index = ScaleIndex( reg_name,
                                     op->i.base,
                                     op->i.constant,
-                                    op->n.name_class,
+                                    op->n.type_class,
                                     op->n.size, op->i.scale,
                                     op->i.index_flags );
                 if( IndexOkay( ins, index ) && ChangeIns( ins, index, opp, CHANGE_NORMAL ) ) {
@@ -215,23 +216,21 @@ static  bool    TryRegOp( score *sc, instruction *ins, name **opp ) {
             for( curr_reg = this_reg->next_reg; curr_reg != this_reg; curr_reg = curr_reg->next_reg ) {
                 if( HW_Ovlap( live, ScoreList[curr_reg->index]->reg )
                 && curr_reg->generation < this_reg->generation
-                && ChangeIns( ins, ScoreList[curr_reg->index]->reg_name,
-                              opp, CHANGE_GEN ) ) {
+                && ChangeIns( ins, ScoreList[curr_reg->index]->reg_name, opp, CHANGE_GEN ) ) {
                      return( true );
                 }
             }
         }
         for( curr_reg = this_reg->next_reg; curr_reg != this_reg; curr_reg = curr_reg->next_reg ) {
             if( curr_reg->generation < this_reg->generation
-             && ChangeIns( ins, ScoreList[curr_reg->index]->reg_name,
-                           opp, CHANGE_GEN ) ) {
+             && ChangeIns( ins, ScoreList[curr_reg->index]->reg_name, opp, CHANGE_GEN ) ) {
                 return( true );
             }
         }
         return( false );
     } else {
         ScoreInfo( &info, op );
-        if( info.class == N_CONSTANT ) {
+        if( info.class == SC_N_CONSTANT ) {
             if( _OpIsCondition( ins->head.opcode ) &&
                 info.symbol.p == NULL && info.offset == 0 ) {
                 /* don't change cmp x,0 */
@@ -360,8 +359,7 @@ bool    ScoreMove( score *sc, instruction *ins )
                 FreeIns( ins );
                 return( true );
             } else {
-                ScoreKillInfo( sc, dst, &info,
-                                  src->r.reg );
+                ScoreKillInfo( sc, dst, &info, src->r.reg );
                 if( !FPIsConvert( ins ) ) {
                     ScoreAssign( sc, src_index, &info );
                 }

@@ -31,7 +31,9 @@
 
 #include "plusplus.h"
 
-#ifndef __UNIX__
+#if defined( __RDOS__ )
+// !TODO fix MBCS stuff
+#elif !defined( __UNIX__ )
 #include <mbstring.h>
 #include <mbctype.h>
 #endif
@@ -67,7 +69,8 @@ void SetDBChar( int character_set )
         setRange( 0x81, 0xfd );
         break;
     case -1:
-#ifndef __UNIX__
+#if defined( __RDOS__ )
+#elif !defined( __UNIX__ )
         {
             unsigned i;
 

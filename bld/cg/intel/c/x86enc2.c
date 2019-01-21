@@ -31,7 +31,7 @@
 ****************************************************************************/
 
 
-#include "cgstd.h"
+#include "_cgstd.h"
 #include "coderep.h"
 #include "optmain.h"
 #include "cgmem.h"
@@ -54,26 +54,13 @@
 #include "i87data.h"
 #include "x86esc.h"
 #include "x86obj.h"
-#include "x86enc2.h"
 #include "rgtbl.h"
 #include "split.h"
 #include "namelist.h"
+#include "x86enc.h"
+#include "x86enc2.h"
 #include "feprotos.h"
 
-
-extern  void            EjectInst( void );
-extern  void            LayRegAC(hw_reg_set);
-extern  void            LayOpbyte(gen_opcode);
-extern  void            Format(oc_class);
-extern  void            LayRegRM(hw_reg_set);
-extern  void            LayRMRegOp(name*);
-extern  void            LayModRM(name*);
-extern  void            LayOpword(gen_opcode);
-extern  void            ReFormat(oc_class);
-extern  void            Finalize( void );
-extern  void            AddByte(byte);
-extern  void            AddToTemp(byte);
-extern  void            EmitOffset(offset);
 
 static  void            JumpReg( instruction *ins, name *reg_name );
 static  void            Pushf(void);
@@ -393,7 +380,7 @@ void    GenCall( instruction *ins ) {
         sym = op->v.symbol;
         if( op->m.memory_type == CG_FE ) {
             lbl = FEBack( sym )->lbl;
-            imp = (FEAttr( sym ) & (FE_COMMON | FE_IMPORT)) != 0;
+            imp = ( (FEAttr( sym ) & (FE_COMMON | FE_IMPORT)) != 0 );
         } else {
             // handles mismatch Fix it!
             lbl = (label_handle)sym;
@@ -424,8 +411,8 @@ void    GenICall( instruction *ins ) {
     } else {
         entry |= OC_CALLI;
     }
-    if( ins->operands[CALL_OP_ADDR]->n.name_class == PT
-     || ins->operands[CALL_OP_ADDR]->n.name_class == CP ) {
+    if( ins->operands[CALL_OP_ADDR]->n.type_class == PT
+     || ins->operands[CALL_OP_ADDR]->n.type_class == CP ) {
         entry |= ATTR_FAR;
         opcode = M_CJILONG;
     } else {
@@ -448,7 +435,7 @@ void    GenRCall( instruction *ins )
     if( ins->flags.call_flags & CALL_INTERRUPT ) {
         Pushf();
     }
-    ReFormat( (ins->flags.call_flags & CALL_POPS_PARMS) != 0 ? OC_CALLI | ATTR_POP : OC_CALLI );
+    ReFormat( ( (ins->flags.call_flags & CALL_POPS_PARMS) != 0 ) ? OC_CALLI | ATTR_POP : OC_CALLI );
     LayOpword( M_CJINEAR );
     op = ins->operands[CALL_OP_ADDR];
     LayRegRM( op->r.reg );

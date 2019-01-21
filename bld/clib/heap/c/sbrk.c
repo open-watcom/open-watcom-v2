@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -35,7 +36,7 @@
     #include "windpmi.h"
 #elif defined(__WINDOWS__)
     #include <windows.h>
-#else
+#elif defined(__DOS__)
     #include <dos.h>
     #include "tinyio.h"
 #endif
@@ -50,70 +51,50 @@
 #ifdef _M_I86
 
 extern  unsigned short SS_Reg( void );
-#pragma aux SS_Reg =    \
+#pragma aux SS_Reg = \
         "mov ax,ss"     \
-    parm caller value [ax]
-
-extern  int SetBlock( unsigned short, unsigned );
-#pragma aux SetBlock =      \
-        "mov    ah,04ah"    \
-        "int    021h"       \
-        "sbb    ax,ax"      \
-    parm caller [es] [bx] value [ax]
+    __parm __caller     [] \
+    __value             [__ax] \
+    __modify __exact    [__ax]
 
 #else
 
 extern  unsigned short  GetDS( void );
-#pragma aux GetDS =     \
+#pragma aux GetDS = \
         "mov    ax,ds"  \
-    value [ax]
-
-extern  int SetBlock( unsigned short selector, unsigned size );
-#pragma aux SetBlock =      \
-        "push   es"         \
-        "mov    es,ax"      \
-        "mov    ah,04ah"    \
-        "int    021h"       \
-        "rcl    eax,1"      \
-        "ror    eax,1"      \
-        "pop    es"         \
-    parm caller [ax] [ebx]  \
-    modify [ebx] value [eax]
+    __parm __caller     [] \
+    __value             [__ax] \
+    __modify __exact    [__ax]
 
 extern  int SegInfo( unsigned short selector );
-#pragma aux SegInfo =           \
-        "mov    ah,0edH"        \
-        "int    021h"           \
-        "shl    eax,31"         \
-        "and    edi,0000FFFFh"  \
-        "or     edi,eax"        \
-    parm caller [ebx] value [edi] \
-    modify exact [eax ecx edx esi ebx edi]
+#pragma aux SegInfo = \
+        "mov    ah,0edH"    \
+        "int 21h"           \
+        "shl    eax,31"     \
+        "mov    ax,di"      \
+    __parm __caller     [__ebx] \
+    __value             [__eax] \
+    __modify __exact    [__eax __ecx __edx __esi __ebx __edi]
 
 extern  int SegmentLimit( void );
-#pragma aux SegmentLimit =  \
+#pragma aux SegmentLimit = \
         "xor    eax,eax"    \
         "mov    ax,ds"      \
         "lsl    eax,ax"     \
         "inc    eax"        \
-    value [eax] modify exact [eax]
+    __parm __caller     [] \
+    __value             [__eax] \
+    __modify __exact    [__eax]
 
 #endif
 
 #endif
 
-#if defined(__WINDOWS_386__)
+#if defined( __WINDOWS__ )
 
 _WCRTLINK void_nptr sbrk( int increment )
 {
-    increment = __ROUND_UP_SIZE_4K( increment );
-    return( (void_nptr)DPMIAlloc( increment ) );
-}
-
-#elif defined(__WINDOWS__)
-
-_WCRTLINK void_nptr sbrk( int increment )
-{
+  #if defined( _M_I86 )
     HANDLE h;
 
     if( increment > 0 ) {
@@ -126,6 +107,10 @@ _WCRTLINK void_nptr sbrk( int increment )
         _RWD_errno = EINVAL;
     }
     return( (void_nptr)-1 );
+  #else
+    increment = __ROUND_UP_SIZE_4K( increment );
+    return( (void_nptr)DPMIAlloc( increment ) );
+  #endif
 }
 
 #elif defined(__OSI__)
@@ -136,54 +121,54 @@ _WCRTLINK void_nptr sbrk( int increment )
     return( (void_nptr)TinyMemAlloc( increment ) );
 }
 
-#else
+#else       /* __DOS__ */
 
 _WCRTLINK void_nptr __brk( unsigned brk_value )
 {
     unsigned        old_brk_value;
     unsigned short  segm;
-    unsigned        segm_size;
+    unsigned        num_of_paras;
 
     if( brk_value < _STACKTOP ) {
         _RWD_errno = ENOMEM;
         return( (void_nptr)-1 );
     }
     segm = _DGroup();
-#ifdef _M_I86
-    segm_size = __ROUND_UP_SIZE_TO_PARA( brk_value );
-    if( segm_size == 0 ) {
-        segm_size = PARAS_IN_64K;
+  #ifdef _M_I86
+    num_of_paras = __ROUND_UP_SIZE_TO_PARA( brk_value );
+    if( num_of_paras == 0 ) {
+        num_of_paras = PARAS_IN_64K;
     }
     /* try setting the block of memory */
     if( _RWD_osmode == DOS_MODE ) {
-        segm_size += SS_Reg() - _RWD_psp;    /* add in code size (in paragraphs) */
+        num_of_paras += SS_Reg() - _RWD_psp;    /* add in code size (in paragraphs) */
         segm = _RWD_psp;
     }
-#else
+  #else
     if( _IsOS386() ) {
         int parent;
 
-        segm_size = __ROUND_UP_SIZE_TO_PARA( brk_value );
-        if( segm_size == 0 )
-            segm_size = 0x0FFFFFFF;
+        num_of_paras = __ROUND_UP_SIZE_TO_PARA( brk_value );
+        if( num_of_paras == 0 )
+            num_of_paras = 0x0FFFFFFF;
         parent = SegInfo( segm );
         if( parent < 0 ) {
-            if( SetBlock( parent & 0xffff, segm_size ) < 0 ) {
+            if( TINY_ERROR( TinySetBlock( num_of_paras, parent & 0xffff ) ) ) {
                 _RWD_errno = ENOMEM;
                 return( (void_nptr)-1 );
             }
         }
     } else {        /* _IsPharLap() || IsRationalNonZeroBase() */
-        segm_size = __ROUND_UP_SIZE_TO_4K( brk_value );
-        if( segm_size == 0 )
-            segm_size = 0x000FFFFF;
+        num_of_paras = __ROUND_UP_SIZE_TO_4K( brk_value );
+        if( num_of_paras == 0 )
+            num_of_paras = 0x000FFFFF;
         if( _IsRationalNonZeroBase() ) {
             // convert from 4k pages to paragraphs
-            segm_size = segm_size * 256U;
+            num_of_paras *= 256U;
         }
     }
-#endif
-    if( SetBlock( segm, segm_size ) < 0 ) {
+  #endif
+    if( TINY_ERROR( TinySetBlock( num_of_paras, segm ) ) ) {
         _RWD_errno = ENOMEM;
         return( (void_nptr)-1 );
     }
@@ -195,7 +180,7 @@ _WCRTLINK void_nptr __brk( unsigned brk_value )
 
 _WCRTLINK void_nptr sbrk( int increment )
 {
-#ifdef __386__
+  #ifdef __386__
     if( _IsRationalZeroBase() || _IsCodeBuilder() ) {
         void_nptr   cstg;
 
@@ -218,8 +203,8 @@ _WCRTLINK void_nptr sbrk( int increment )
     } else if( _IsPharLap() ) {
         _curbrk = SegmentLimit();
     }
-#endif
+  #endif
     return( __brk( _curbrk + increment ) );
 }
 
-#endif
+#endif      /* __DOS__ */

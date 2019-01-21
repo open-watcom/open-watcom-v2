@@ -41,7 +41,6 @@ int SysDosChdir( char *dir )
 {
     char        *end;
     size_t      len;
-    unsigned    total;
 
     if( dir[0] == '\0' )
         return( 0 );
@@ -59,7 +58,7 @@ int SysDosChdir( char *dir )
         }
     }
     if( len > 1 && dir[1] == ':' ) {
-        _dos_setdrive( toupper( dir[0] ) - 'A' + 1, &total );
+        _chdrive( toupper( dir[0] ) - 'A' + 1 );
     }
     return( chdir( dir ) );
 }

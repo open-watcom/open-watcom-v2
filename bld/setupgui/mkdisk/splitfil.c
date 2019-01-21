@@ -51,7 +51,7 @@ int main( int argc, char *argv[] )
         printf( "Usage: SPLITFIL filename size max-size\n" );
         exit( 1 );
     }
-    SplitFile( atol( argv[ 2 ] ), atol( argv[ 3 ] ), argv[ 1 ] );
+    SplitFile( atol( argv[2] ), atol( argv[3] ), argv[1] );
     return( 0 );
 }
 #endif
@@ -59,8 +59,8 @@ int main( int argc, char *argv[] )
 void SplitFile( long size, long max_size, char * input_file )
 /***********************************************************/
 {
-    char                fullname[ _MAX_PATH ], drive[ _MAX_DRIVE ];
-    char                dir[ _MAX_DIR ], fname[ _MAX_FNAME ], ext[ _MAX_EXT ];
+    char                fullname[_MAX_PATH], drive[_MAX_DRIVE];
+    char                dir[_MAX_DIR], fname[_MAX_FNAME], ext[_MAX_EXT];
     FILE                *bigfile, *smallfile;
     char                *buffer;
     int                 len_read;
@@ -85,22 +85,27 @@ void SplitFile( long size, long max_size, char * input_file )
         _makepath( fullname, drive, dir, fname, ext );
         smallfile = fopen( fullname, "wb" );
         if( smallfile == NULL ) {
+            free( buffer );
             printf( "Unable to create '%s'\n", fullname );
             exit( 4 );
         }
         len_read = 0;
         while( size > 0 ) {
             len_read = read( fileno( bigfile ), buffer, BUFFER_SIZE );
-            if( len_read == 0 ) break;
+            if( len_read == 0 )
+                break;
             if( write( fileno( smallfile ), buffer, len_read ) != len_read ) {
+                free( buffer );
                 printf( "Error writing '%s'\n", fullname );
                 exit( 5 );
             }
             size -= len_read;
         }
         fclose( smallfile );
-        if( len_read == 0 ) break;
+        if( len_read == 0 )
+            break;
         size = max_size;
     }
+    free( buffer );
     fclose( bigfile );
 }

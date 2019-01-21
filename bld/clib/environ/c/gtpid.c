@@ -35,7 +35,7 @@
 #include "rtdata.h"
 
 
-_WCRTLINK int getpid( void )            /* get process id */
+_WCRTLINK pid_t getpid( void )          /* get process id */
 {
     return( _RWD_psp );
 }

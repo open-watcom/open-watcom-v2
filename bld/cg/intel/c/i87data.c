@@ -31,8 +31,7 @@
 ****************************************************************************/
 
 
-#include "cgstd.h"
-#include "typedef.h"
+#include "_cgstd.h"
 #include "_cg.h"
 #include "hwreg.h"
 #include "typclass.h"
@@ -41,6 +40,7 @@
 #include "blocknum.h"
 #include "name.h"
 #include "i87data.h"
+
 
 name            *FPStatWord;
 name            *Parm8087[MAX_8087_REG + 1];

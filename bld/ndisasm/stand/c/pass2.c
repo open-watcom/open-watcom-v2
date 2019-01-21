@@ -40,6 +40,7 @@
 #include "init.h"
 #include "main.h"
 #include "print.h"
+#include "labproc.h"
 
 #define COMMENT_TAB_POS 4
 #define OPS_REP_TAB_POS 10
@@ -51,17 +52,6 @@ struct pass2 {
     num_errors          disassembly_errors;
     ref_entry           r_entry;
 };
-
-extern wd_options               Options;
-extern char                     LabelChar;
-extern dis_handle               DHnd;
-extern bool                     Prettify;
-extern section_list_struct      Sections;
-extern hash_table               HandleToSectionTable;
-extern hash_table               SymbolToLabelTable;
-extern dis_format_flags         DFormat;
-extern bool                     source_mix;
-extern char *                   CommentString;
 
 static dis_sec_offset   routineBase = 0;
 static dis_sec_size     routineSize = 0;
@@ -114,33 +104,51 @@ static label_entry handleLabels( const char *sec_name, dis_sec_offset offset, di
                     routineSize = offset - routineBase;
                     BufferConcatNL();
                     BufferMsg( ROUTINE_SIZE );
-                    BufferStore(" %d ", routineSize );
+                    BufferConcatChar( ' ' );
+                    BufferDecimal( routineSize );
+                    BufferConcatChar( ' ' );
                     BufferMsg( BYTES );
-                    BufferConcat(",    ");
+                    BufferConcat( ",    " );
                     BufferMsg( ROUTINE_BASE );
-                    BufferStore(" %s + %04X\n\n", sec_name, routineBase );
+                    BufferConcatChar( ' ' );
+                    BufferConcat( sec_name );
+                    BufferConcat( " + " );
+                    BufferHex4( routineBase );
+                    BufferConcatNL();
+                    BufferConcatNL();
                     routineBase = offset;
                 }
             }
             /* fall through */
         case LTYP_SECTION:
-            if( (DFormat & DFF_ASM) == 0 ) {
-                PrintLinePrefixAddress( offset, is32bit );
-                BufferAlignToTab( PREFIX_SIZE_TABS );
-            }
-            BufferStore( "%s:\n", l_entry->label.name );
-            break;
         case LTYP_UNNAMED:
             if( (DFormat & DFF_ASM) == 0 ) {
-                PrintLinePrefixAddress( offset, is32bit );
+                BufferLinePrefixAddress( offset, is32bit );
                 BufferAlignToTab( PREFIX_SIZE_TABS );
             }
-            BufferStore( "%c$%d:\n", LabelChar, l_entry->label.number );
+            if( l_entry->type == LTYP_UNNAMED ) {
+                BufferLabelNum( l_entry->label.number );
+            } else {
+                BufferQuoteName( l_entry->label.name );
+            }
+            BufferConcatChar( ':' );
+            BufferConcatNL();
             break;
         }
         BufferPrint();
     }
     return( l_entry );
+}
+
+static void quoteName( const char *name, char *buff )
+{
+    if( NeedsQuoting( name ) ) {
+        strcat( buff, "`" );
+        strcat( buff, name );
+        strcat( buff, "`" );
+    } else {
+        strcat( buff, name );
+    }
 }
 
 static return_val referenceString( ref_entry r_entry, dis_sec_size size,
@@ -150,7 +158,7 @@ static return_val referenceString( ref_entry r_entry, dis_sec_size size,
     label_entry         l_entry;
     const char          *frame_sep;
     const char          *frame;
-    char                temp[15];
+    char                temp[20];
     dis_value           value;
 
     frame_sep = ":";
@@ -172,21 +180,26 @@ static return_val referenceString( ref_entry r_entry, dis_sec_size size,
             sprintf( buff, "%s%s[%s]", frame, frame_sep, temp);
             break;
         case LTYP_UNNAMED:
-            sprintf( buff, "%s%s%c$%ld%s", frame, frame_sep, LabelChar, (long)l_entry->label.number, post );
+            FmtLabelNum( temp, l_entry->label.number );
+            sprintf( buff, "%s%s%s%s", frame, frame_sep, temp, post );
             break;
         default:
-            sprintf( buff, "%s%s%s%s", frame, frame_sep, l_entry->label.name, post );
+            sprintf( buff, "%s%s", frame, frame_sep );
+            quoteName( l_entry->label.name, buff );
+            strcat( buff, post );
             break;
         }
     } else {
         switch( l_entry->type ) {
         case LTYP_EXTERNAL_NAMED:
-            sprintf( buff, "%s%s%s%s", ext_pref, frame, frame_sep, l_entry->label.name );
+            sprintf( buff, "%s%s%s", ext_pref, frame, frame_sep );
+            quoteName( l_entry->label.name, buff );
             break;
         case LTYP_NAMED:
         case LTYP_SECTION:
         case LTYP_GROUP:
-            sprintf( buff, "%s%s%s%s", int_pref, frame, frame_sep, l_entry->label.name );
+            sprintf( buff, "%s%s%s", int_pref, frame, frame_sep );
+            quoteName( l_entry->label.name, buff );
             break;
 
         case LTYP_ABSOLUTE:
@@ -198,7 +211,8 @@ static return_val referenceString( ref_entry r_entry, dis_sec_size size,
             break;
 
         default:
-            sprintf( buff, "%s%s%s%c$%ld", int_pref, frame, frame_sep, LabelChar, (long)l_entry->label.number );
+            FmtLabelNum( temp, l_entry->label.number );
+            sprintf( buff, "%s%s%s%s", int_pref, frame, frame_sep, temp );
             if( l_entry->offset > size ) {
                 return( RC_ERROR );
             }
@@ -236,11 +250,11 @@ size_t HandleAReference( dis_value value, int ins_size, ref_flags flags,
             error = referenceString( r_entry, sec_size, "j^", "", "", buff, flags );
             if( error != RC_OKAY ) {
                 // label is defined to be beyond the boundaries of the section!
+                BufferConcatChar( '\t' );
                 if( (DFormat & DFF_ASM) == 0 ) {
-                    BufferStore("\t     %04X", offset );
+                    BufferConcat( "     " );
+                    BufferHexU32( 4, offset );
                     BufferAlignToTab( COMMENT_TAB_POS );
-                } else {
-                    BufferConcat("\t" );
                 }
                 BufferConcat( CommentString );
                 BufferMsg( LABEL_BEYOND_SECTION );
@@ -612,6 +626,7 @@ num_errors DoPass2( section_ptr section, unsigned_8 *contents, dis_sec_size size
     bool                is32bit;
     orl_table_index     currline;
     orl_table_index     lineInFile;
+    state_lines         ls;
 
     routineBase = 0;
     st = section->scan;
@@ -630,9 +645,11 @@ num_errors DoPass2( section_ptr section, unsigned_8 *contents, dis_sec_size size
     data.disassembly_errors = 0;
     currline = 0;
     lineInFile = 0;
-
+    ls.lines = NULL;
+    ls.numlines = 0;
+    ls.currlinesize = 0;
     if( source_mix ) {
-        GetSourceFile( section );
+        GetSourceFile( &ls, section );
     }
 
     PrintHeader( section );
@@ -643,6 +660,8 @@ num_errors DoPass2( section_ptr section, unsigned_8 *contents, dis_sec_size size
         if( ( GetFormat() != ORL_OMF ) || (ORLSecGetFlags( section->shnd ) & ORL_SEC_FLAG_USE_32) ) {
             flags.u.x86 = DIF_X86_USE32_FLAGS;
         }
+        is_intel = true;
+    } else if( GetMachineType() == ORL_MACHINE_TYPE_AMD64 ) {
         is_intel = true;
     } else {
         is_intel = IsIntelx86();
@@ -680,7 +699,7 @@ num_errors DoPass2( section_ptr section, unsigned_8 *contents, dis_sec_size size
         }
 
         if( source_mix ) {
-            MixSource( data.loop, &currline, &lineInFile );
+            MixSource( &ls, data.loop, &currline, &lineInFile );
         }
         DisDecodeInit( &DHnd, &decoded );
         decoded.flags.u.all |= flags.u.all;
@@ -707,7 +726,11 @@ num_errors DoPass2( section_ptr section, unsigned_8 *contents, dis_sec_size size
             if( (DFormat & DFF_ASM) == 0 ) {
                 BufferAlignToTab( PREFIX_SIZE_TABS );
             }
-            BufferStore( "\t%sFPU fixup %s\n", CommentString, FPU_fixup );
+            BufferConcatChar( '\t' );
+            BufferConcat( CommentString );
+            BufferConcat( "FPU fixup " );
+            BufferConcat( FPU_fixup );
+            BufferConcatNL();
         }
         if( (DFormat & DFF_ASM) == 0 ) {
             unsigned_64     *tmp_64;
@@ -732,11 +755,12 @@ num_errors DoPass2( section_ptr section, unsigned_8 *contents, dis_sec_size size
                     break;
                 }
             }
-            PrintLinePrefixAddress( data.loop, is32bit );
-            PrintLinePrefixData( contents, data.loop, size, DisInsSizeInc( &DHnd ), decoded.size );
+            BufferLinePrefixAddress( data.loop, is32bit );
+            BufferLinePrefixData( contents, data.loop, size, DisInsSizeInc( &DHnd ), decoded.size );
             BufferAlignToTab( PREFIX_SIZE_TABS );
         }
-        BufferStore( "\t%s", name );
+        BufferConcatChar( '\t' );
+        BufferConcat( name );
         if( *ops != '\0' ) {
             pos_tabs = ( DisInsNameMax( &DHnd ) + TAB_WIDTH ) / TAB_WIDTH + 1;
             if( (DFormat & DFF_ASM) == 0 ) {
@@ -755,15 +779,22 @@ num_errors DoPass2( section_ptr section, unsigned_8 *contents, dis_sec_size size
         routineSize = data.loop - routineBase;
         BufferConcatNL();
         BufferMsg( ROUTINE_SIZE );
-        BufferStore(" %d ", routineSize );
+        BufferConcatChar( ' ' );
+        BufferDecimal( routineSize );
+        BufferConcatChar( ' ' );
         BufferMsg( BYTES );
-        BufferConcat(",    ");
+        BufferConcat( ",    " );
         BufferMsg( ROUTINE_BASE );
-        BufferStore(" %s + %04X\n\n", section->name, routineBase );
+        BufferConcatChar( ' ' );
+        BufferConcat( section->name );
+        BufferConcat( " + " );
+        BufferHex4( routineBase );
+        BufferConcatNL();
+        BufferConcatNL();
         BufferPrint();
     }
     if( source_mix ) {
-        EndSourceMix();
+        EndSourceMix( &ls );
     }
     PrintTail( section );
     return( data.disassembly_errors );

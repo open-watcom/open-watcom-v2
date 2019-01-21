@@ -45,18 +45,18 @@
 #endif
 
 struct MACDEP                   // MACDEP -- macro dependency
-{   MACDEP* next;               // - next in ring
-    MEPTR macro;                // - macro
-    MACVALUE* value;            // - value
-    MAC_VTYPE type;             // - type of dependency
-    uint_8 written          :1; // - true ==> written out
-    unsigned :0;                // - alignment
+{   MACDEP      *next;          // - next in ring
+    MEPTR       mentry;         // - macro
+    MACVALUE    *value;         // - value
+    MAC_VTYPE   type;           // - type of dependency
+    uint_8      written : 1;    // - true ==> written out
+    unsigned            : 0;    // - alignment
 };
 
 struct SRCDEP                   // SRCDEP -- macro dependency for source file
-{   SRCDEP* next;               // - next in ring
-    MACDEP* deps;               // - ring of dependencies
-    SRCFILE srcfile;            // - the source file
+{   SRCDEP      *next;          // - next in ring
+    MACDEP      *deps;          // - ring of dependencies
+    SRCFILE     srcfile;        // - the source file
 };
 
 static PSTK_CTL active_srcfiles;// active source files
@@ -95,7 +95,7 @@ void BrinfDepRestart            // MODULE RESTART DURING PCH READ
 SRCDEP* BrinfDepSrcBeg          // ALLOCATE A SRCDEP
     ( SRCFILE srcfile )         // - file name
 {
-    SRCDEP* sd = RingCarveAlloc( carve_src_dep, &ring_src_deps);
+    SRCDEP* sd = RingCarveAlloc( carve_src_dep, &ring_src_deps );
     sd->deps = NULL;
     sd->srcfile = srcfile;
     PstkPush( &active_srcfiles, sd );
@@ -106,7 +106,7 @@ SRCDEP* BrinfDepSrcBeg          // ALLOCATE A SRCDEP
                   , srcfile )
         );
     }
-    return sd;
+    return( sd );
 }
 
 
@@ -120,7 +120,7 @@ void BrinfDepSrcEnd             // END OF SOURCE-FILE DEPENDENCIES
 char const * BrinfDepSrcFname   // GET FILE NAME FOR SOURCE-DEPENDENCY
     ( SRCDEP const *sd )        // - dependency for source file
 {
-    return SrcFileFullName( sd->srcfile );
+    return( SrcFileFullName( sd->srcfile ) );
 }
 
 
@@ -133,16 +133,16 @@ void BrinfDepWrite              // WRITE DEPENDENCY INFORMATION
     RingIterBeg( sd->deps, cd ) {
         if( ! cd->written ) {
             switch( cd->type ) {
-              case MVT_VALUE :
+            case MVT_VALUE :
                 BrinfWriteDepMacVal( cd->value );
                 break;
-              case MVT_DEFINED :
+            case MVT_DEFINED :
                 BrinfWriteDepMacDefed( cd->value );
                 break;
-              case MVT_UNDEFED :
+            case MVT_UNDEFED :
                 BrinfWriteDepMacUndefed( cd->value );
                 break;
-              DbgDefault( "bad type of macro dependency" );
+            DbgDefault( "bad type of macro dependency" );
             }
             cd->written = true;
         }
@@ -161,7 +161,7 @@ static bool srcfilePrecedes     // SEE IF A SOURCE FILE PRECEDES ANOTHER
 
 
 void BrinfDepMacAdd             // ADD A MACRO DEPENDENCY
-    ( MEPTR macro               // - the macro
+    ( MEPTR mentry              // - the macro
     , MACVALUE* value           // - value
     , MAC_VTYPE type )          // - dependency type
 {
@@ -171,18 +171,18 @@ void BrinfDepMacAdd             // ADD A MACRO DEPENDENCY
     sd = PstkTopElement( &active_srcfiles );
     DbgVerify( NULL != sd, "No active srcfile" );
     switch( type ) {
-      case MVT_VALUE :
-        defn = macro->defn.src_file;
+    case MVT_VALUE :
+        defn = mentry->defn.src_file;
         break;
-      case MVT_DEFINED :
-        defn = macro->defn.src_file;
-        macro = NULL;
+    case MVT_DEFINED :
+        defn = mentry->defn.src_file;
+        mentry = NULL;
         break;
-      case MVT_UNDEFED :
+    case MVT_UNDEFED :
         defn = BrinfMacUndefSource( BrinfMacValueName( value ) );
-        macro = NULL;
+        mentry = NULL;
         break;
-      DbgDefault( "Impossible MAC_VTYPE" );
+    DbgDefault( "Impossible MAC_VTYPE" );
     }
     if( srcfilePrecedes( sd->srcfile, defn ) ) {
         // dependency only when macro set before the current source file
@@ -190,7 +190,7 @@ void BrinfDepMacAdd             // ADD A MACRO DEPENDENCY
         MACDEP* cd;
         RingIterBeg( sd->deps, cd ) {
             if( cd->value == value
-             && cd->macro == macro
+             && cd->mentry == mentry
              && cd->type == type ) {
                 md = cd;
                 IfDbgToggle( browse ) {
@@ -199,7 +199,7 @@ void BrinfDepMacAdd             // ADD A MACRO DEPENDENCY
                                 " VALUE %x TYPE %d\n"
                               , sd
                               , sd->srcfile
-                              , macro
+                              , mentry
                               , value
                               , type )
                     );
@@ -209,7 +209,7 @@ void BrinfDepMacAdd             // ADD A MACRO DEPENDENCY
         } RingIterEnd( cd );
         if( NULL == md ) {
             md = RingCarveAlloc( carve_mac_dep, &sd->deps );
-            md->macro = macro;
+            md->mentry = mentry;
             md->value = value;
             md->type = type;
             md->written = false;
@@ -219,7 +219,7 @@ void BrinfDepMacAdd             // ADD A MACRO DEPENDENCY
                             " VALUE %x TYPE %d\n"
                           , sd
                           , sd->srcfile
-                          , macro
+                          , mentry
                           , value
                           , type )
                 );
@@ -232,7 +232,7 @@ void BrinfDepMacAdd             // ADD A MACRO DEPENDENCY
 SRCFILE BrinfDepSrcfile         // GET SRCFILE FOR DEPENDENCY
     ( SRCDEP const * sd )       // - dependency
 {
-    return sd->srcfile;
+    return( sd->srcfile );
 }
 
 

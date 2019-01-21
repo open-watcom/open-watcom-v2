@@ -50,7 +50,7 @@ static void CallCleaners( void )
 /******************************/
 //Call all stacked resource cleanup
 {
-    while( Cleaners != NULL ){
+    while( Cleaners != NULL ) {
         Cleaners->rtn( Cleaners->d );
         Cleaners = Cleaners->prev;
     }
@@ -98,30 +98,30 @@ dip_status DIPIMPENTRY( MoreMem )( size_t size )
         Return DS_OK if you could release some memory, DS_FAIL if you
         couldn't.
 */
-    imp_image_handle *curr;
-    dip_status ret;
+    imp_image_handle    *curr;
+    dip_status          ds;
 
     /* unused parameters */ (void)size;
 
-    ret = DS_FAIL;
+    ds = DS_FAIL;
     for( curr = Images; curr != NULL; curr = curr->next ) {
-        if( ClearMods( curr ) ){
-            ret = DS_OK;
+        if( ClearMods( curr ) ) {
+            ds = DS_OK;
         }
-        if( DRDbgClear( curr->dwarf->handle ) ){
-            ret = DS_OK;
+        if( DRDbgClear( curr->dwarf->handle ) ) {
+            ds = DS_OK;
         }
-        if( FiniImpCueInfo( curr ) ){
-            ret = DS_OK;
+        if( FiniImpCueInfo( curr ) ) {
+            ds = DS_OK;
         }
     }
-    return( ret );
+    return( ds );
 }
 
 dip_status DIPImp( Startup )(void)
 {
 /*
-        Return DS_OK if startup initialization went OK, or a DS_ERR|DS_?
+        Return DS_OK if startup initialization went OK, or a DS_ERR | DS_?
         constant if something went wrong.
 */
     Cleaners = NULL;

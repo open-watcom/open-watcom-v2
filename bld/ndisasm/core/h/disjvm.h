@@ -32,6 +32,7 @@
 extern const dis_range          JVMRangeTable[];
 extern const int                JVMRangeTablePos[];
 extern const unsigned char      JVMMaxInsName;
+extern const dis_cpu_data       JVMData;
 
 extern dis_handler_return JVMSByte( dis_handle *h, void *d, dis_dec_ins *ins );
 extern dis_handler_return JVMSShort( dis_handle *h, void *d, dis_dec_ins *ins );

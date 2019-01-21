@@ -61,7 +61,7 @@ WEXPORT WVList::WVList( WVList& x )
 
 WEXPORT WVList::~WVList()
 {
-    delete [] _set;
+    delete[] _set;
 }
 
 #ifndef NOPERSIST
@@ -97,7 +97,7 @@ void WEXPORT WVList::deleteContents()
             }
         }
         _free = 0;
-        delete [] _set;
+        delete[] _set;
         _set = NULL;
     }
 }
@@ -105,7 +105,7 @@ void WEXPORT WVList::deleteContents()
 void WEXPORT WVList::reset()
 {
     _free = 0;
-    delete [] _set;
+    delete[] _set;
     _set = NULL;
 }
 
@@ -139,7 +139,7 @@ void WVList::growBlock()
                 for( int i=0; i<_count; i++ ) {
                     nset[i] = _set[i];
                 }
-                delete [] _set;
+                delete[] _set;
                 _set = nset;
                 _count += _countIncr;
             }
@@ -210,7 +210,7 @@ WObject* WEXPORT WVList::removeAt( int i )
                 _set[i] = _set[i + 1];
             }
         } else {
-            delete [] _set;
+            delete[] _set;
             _set = NULL;
         }
         return( obj );

@@ -62,7 +62,7 @@
 #include "dlgcmd.h"
 #include "dbgwintr.h"
 #include "dbgchopt.h"
-#include "dbgsetfn.h"
+#include "dbgsetfg.h"
 #include "dbginsp.h"
 #include "dbgwvar1.h"
 #include "dlgfile.h"
@@ -314,6 +314,11 @@ char *DUILoadString( dui_res_id id )
     ret = DbgAlloc( size );
     memcpy( ret, buff, size );
     return( ret );
+}
+
+void DUIFreeString( void *ptr )
+{
+    DbgFree( ptr );
 }
 
 void DUIMsgBox( const char *text )

@@ -36,17 +36,19 @@
 #include "basics.h"
 
 #define NCHARS  256
-typedef uchar 	Char;
+typedef uchar   Char;
 
-#define CHAR    0
-#define GOTO    1
-#define FORK    2
-#define TERM    3
-#define CTXT    4
+typedef enum {
+    CHAR,
+    GOTO,
+    FORK,
+    TERM,
+    CTXT
+} tags;
 
 typedef union Ins {
     struct {
-        byte    tag;
+        tags    tag;
         byte    marked;
         void    *link;
     } i;

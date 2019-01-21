@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
+* Copyright (c) 2009-2018 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -33,21 +33,28 @@
 #ifndef TITLE_INCLUDED
 #define TITLE_INCLUDED
 
+#include <string>
+#include "element.hpp"
 #include "lexer.hpp"
+#include "errors.hpp"
 
 class Document;
-struct IpfHeader;
+class Cell;
+class OutFile;
 
-class Title {
+class Title: public Element {
 public:
-    Title ( Document* d) : document( d ) { };
-    ~Title() { };
-    Lexer::Token parse( Lexer* lexer, IpfHeader* hdr );
+    Title( Document* d, const std::wstring* f, unsigned int r, unsigned int c ) :
+        Element( d, 0, f, r, c ) { };
+    Lexer::Token parse( Lexer* lexer );
+    void buildText( Cell* cell ) { (void)cell; };
+    void build( OutFile *out );
+
 private:
     Title( const Title& rhs );              //no copy
     Title& operator=( const Title& rhs );   //no assignment
-    Document* document;
+
+    std::wstring        _text;
 };
 
 #endif //TITLE_INCLUDED
-

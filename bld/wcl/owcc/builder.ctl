@@ -11,8 +11,8 @@ set PROJDIR=<CWD>
 
 [ INCLUDE <OWROOT>/build/defrule.ctl ]
 
-[ BLOCK <1> rel ]
-#================
+[ BLOCK <BLDRULE> rel ]
+#======================
     cdsay <PROJDIR>
 
 [ BLOCK <BINTOOL> build ]
@@ -28,8 +28,8 @@ set PROJDIR=<CWD>
     echo rm -f <OWBINDIR>/bspecs.owc
     rm -f <OWBINDIR>/bspecs.owc
 
-[ BLOCK <1> rel cprel ]
-#======================
+[ BLOCK <BLDRULE> rel cprel ]
+#============================
     <CCCMD> dosi86/specs.owc     <OWRELROOT>/binw/
     <CCCMD> dosi86/owcc.exe      <OWRELROOT>/binw/
     <CCCMD> dosi86/owcc.sym      <OWRELROOT>/binw/
@@ -49,6 +49,8 @@ set PROJDIR=<CWD>
     <CCCMD> linuxx64/owcc.exe    <OWRELROOT>/binl64/owcc
     <CCCMD> linuxarm/specs.owc   <OWRELROOT>/arml/
     <CCCMD> linuxarm/owcc.exe    <OWRELROOT>/arml/owcc
+    <CCCMD> osxx64/specs.owc     <OWRELROOT>/osx64/
+    <CCCMD> osxx64/owcc.exe      <OWRELROOT>/osx64/owcc
 
 [ BLOCK . . ]
 

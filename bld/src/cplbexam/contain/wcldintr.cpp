@@ -16,7 +16,7 @@ void data_isv_prt( int_ddata * data, void * str ) {
     cout << (char *)str << "[" << data->info << "]\n";
 }
 
-void main() {
+int main( void ) {
     try {
         test1();
     } catch( ... ) {

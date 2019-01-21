@@ -34,7 +34,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
-#include <malloc.h>
+#include <alloca.h>
 #include <process.h>
 #include <windows.h>
 #include "rtstack.h"

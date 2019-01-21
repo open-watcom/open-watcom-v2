@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
+* Copyright (c) 2009-2018 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -35,22 +35,22 @@
 #ifndef LM_INCLUDED
 #define LM_INCLUDED
 
-#include "config.hpp"
 #include "tag.hpp"
 
 class Lm : public Element {
 public:
     Lm( Document* d, Element *p, const std::wstring* f, unsigned int r, unsigned int c ) :
-        Element( d, p, f, r, c ), margin( 1 ) { };
-    Lm( Document* d, Element *p, const std::wstring* f, unsigned int r, unsigned int c,
-        unsigned char m ) : Element( d, p, f, r, c ), margin( m ) { };
+        Element( d, p, f, r, c ), _margin( 1 ) { };
+    Lm( Document* d, Element *p, const std::wstring* f, unsigned int r, unsigned int c, byte m ) :
+        Element( d, p, f, r, c ), _margin( m ) { };
     ~Lm() { };
     Lexer::Token parse( Lexer* lexer );
     void buildText( Cell* cell );
 private:
     Lm( const Lm& rhs );                //no copy
     Lm& operator=( const Lm& rhs );     //no assignment
-    STD1::uint8_t margin;
+
+    byte                _margin;
 };
 
 #endif //LM_INCLUDED

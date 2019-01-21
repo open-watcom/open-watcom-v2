@@ -171,7 +171,7 @@ static void dickWithAWindow( window_id wid, bool topcorner, bool move, bool *dor
     }
     *doresize = false;
     w = WINDOW_FROM_ID( wid );
-    tmpImage = MemAlloc( EditVars.WindMaxWidth * EditVars.WindMaxHeight * sizeof( char_info ) );
+    tmpImage = _MemAllocArray( char_info, EditVars.WindMaxWidth * EditVars.WindMaxHeight );
     x1 = w->area.x1;
     x2 = w->area.x2;
     y1 = w->area.y1;

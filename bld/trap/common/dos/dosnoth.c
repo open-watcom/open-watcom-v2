@@ -32,12 +32,11 @@
 #include <string.h>
 #include <i86.h>
 #include "nothing.h"
+#include "osidle.h"
+
 
 void NothingToDo( void )
 {
-    union REGS  regs;
-
     // Release Current Virtual Machine's Time Slice
-    regs.w.ax = 0x1680;
-    int86( 0x2f, &regs, &regs );
+    ReleaseVMTimeSlice();
 }

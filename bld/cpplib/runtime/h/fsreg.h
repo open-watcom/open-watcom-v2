@@ -288,30 +288,38 @@ FSREGAPI unsigned CPPLIB( fs_handler )   // HANDLER FOR FS REGISTRATIONS
 
 #if defined( FS_REGISTRATION )  // FS definitions
 
-    extern RW_DTREG* FsLink( RW_DTREG* blk );   // link into fs stack
+    extern RW_DTREG *FsLink( RW_DTREG* blk );   // link into fs stack
     extern void      FsPop();                   // pop fs stack
-    extern RW_DTREG* FsPush( RW_DTREG* blk );   // push on fs stack
-    extern RW_DTREG* FsTop();                   // top of fs stack
+    extern RW_DTREG *FsPush( RW_DTREG* blk );   // push on fs stack
+    extern RW_DTREG *FsTop();                   // top of fs stack
 
-    #pragma aux FsLink      \
-        = "mov  fs:0,eax"   \
-        , parm [eax]
+    #pragma aux FsLink = \
+            "mov  fs:0,eax" \
+        __parm      [__eax] \
+        __value     [__eax] \
+        __modify    []
 
-    #pragma aux FsPop       \
-        = "mov eax,fs:0"    \
-        , "mov eax,[eax]"   \
-        , "mov fs:0,eax"    \
-        , modify [eax]
+    #pragma aux FsPop = \
+            "mov eax,fs:0"  \
+            "mov eax,[eax]" \
+            "mov fs:0,eax"  \
+        __parm      [] \
+        __value     \
+        __modify    [__eax]
 
-    #pragma aux FsPush      \
-        = "push fs:0"       \
-        , "pop  [eax]"      \
-        , "mov  fs:0,eax"   \
-        , parm [eax]
+    #pragma aux FsPush = \
+            "push fs:0"     \
+            "pop  [eax]"    \
+            "mov  fs:0,eax" \
+        __parm      [__eax] \
+        __value     [__eax] \
+        __modify    []
 
-    #pragma aux FsTop       \
-        = "mov eax,fs:0"    \
-        , modify [eax]
+    #pragma aux FsTop = \
+            "mov eax,fs:0"  \
+        __parm      [] \
+        __value     [__eax] \
+        __modify    []
 
 #else
 

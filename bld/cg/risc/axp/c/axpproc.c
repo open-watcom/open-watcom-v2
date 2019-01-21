@@ -30,7 +30,7 @@
 ****************************************************************************/
 
 
-#include "cgstd.h"
+#include "_cgstd.h"
 #include "coderep.h"
 #include "cgmem.h"
 #include "zoiks.h"
@@ -51,8 +51,6 @@
 #include "axpenc.h"
 #include "feprotos.h"
 
-
-extern  void            EmitFuncStart( label_handle cg_linenum );
 
 static  void    calcUsedRegs( void )
 /**********************************/

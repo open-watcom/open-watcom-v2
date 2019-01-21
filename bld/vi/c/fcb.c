@@ -45,7 +45,9 @@ static void     *extraData = NULL;
  */
 vi_rc ReadFcbData( file *f, bool *crlf_reached )
 {
-    int         cnt, used, linecnt;
+    size_t      cnt;
+    size_t      used;
+    int         linecnt;
     bool        eofflag;
     fcb         *cfcb;
     vi_rc       rc;
@@ -204,21 +206,22 @@ vi_rc FindFcbWithLine( linenum lineno, file *cfile, fcb **fb )
 /*
  * CreateFcbData - create fcb with data from specified buffer
  */
-void CreateFcbData( file *f, int cnt )
+void CreateFcbData( file *f, size_t cnt )
 {
-    int used, linecnt;
+    size_t used;
+    int linecnt;
     fcb *cfcb;
 
     /*
      * get new fcb
      */
     cfcb = FcbAlloc( f );
-    AddLLItemAtEnd( (ss **)&(f->fcbs.head), (ss **)&(f->fcbs.tail), (ss *)cfcb );
+    AddLLItemAtEnd( (ss **)&f->fcbs.head, (ss **)&f->fcbs.tail, (ss *)cfcb );
 
     /*
      * create lines from buffer info
      */
-    CreateLinesFromBuffer( cnt, &cfcb->lines, &used, &linecnt, &(cfcb->byte_cnt) );
+    CreateLinesFromBuffer( cnt, &cfcb->lines, &used, &linecnt, &cfcb->byte_cnt );
 
     /*
      * update position and line numbers
@@ -266,13 +269,13 @@ vi_rc OpenFcbData( file *f )
     }
     return( rc );
 }
- 
+
 /*
  * FcbSize - get the size (in bytes) of an fcb
  */
-int FcbSize( fcb *cfcb )
+size_t FcbSize( fcb *cfcb )
 {
-    int i;
+    size_t  size;
 
     /*
      * multiply number of lines by 3 to get extra bytes.  Why?
@@ -281,7 +284,7 @@ int FcbSize( fcb *cfcb )
      * each line.  As well, each line has 2 bytes of information,
      * which are also swapped.
      */
-    i = cfcb->byte_cnt + 3 * ((int)(cfcb->end_line-cfcb->start_line + 1));
-    return( i );
+    size = cfcb->byte_cnt + 3 * ((size_t)( cfcb->end_line - cfcb->start_line + 1 ));
+    return( size );
 
 } /* FcbSize */

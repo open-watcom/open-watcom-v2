@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
+* Copyright (c) 2009-2018 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -29,24 +29,24 @@
 ****************************************************************************/
 
 
+#include "wipfc.hpp"
 #include <cwctype>
 #include "punct.hpp"
 #include "document.hpp"
 
 Lexer::Token Punctuation::parse( Lexer* lexer )
 {
-    std::wstring txt( lexer->text() );  //get text from lexer
-    GlobalDictionaryWord* word( new GlobalDictionaryWord( txt ) );
-    text = document->addWord( word );   //insert into global dictionary
-    Lexer::Token tok( document->getNextToken() );
-    if( whiteSpace != Tag::SPACES && document->autoSpacing() ) {
-        Lexer::Token t( document->lastToken() );
+    //get text from lexer and insert into global dictionary
+    _text = _document->addTextToGD( new GlobalDictionaryWord( lexer->text() ) );
+    Lexer::Token tok( _document->getNextToken() );
+    if( _whiteSpace != Tag::SPACES && _document->autoSpacing() ) {
+        Lexer::Token t( _document->lastToken() );
         if( t == Lexer::WORD || t == Lexer::ENTITY || t == Lexer::PUNCTUATION ) {
-            document->toggleAutoSpacing();
-            document->lastText()->setToggleSpacing();
+            _document->toggleAutoSpacing();
+            _document->lastText()->setToggleSpacing();
         }
     }
-    document->setLastPrintable( Lexer::PUNCTUATION, this );
+    _document->setLastPrintable( Lexer::PUNCTUATION, this );
     return tok;
 }
 

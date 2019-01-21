@@ -43,7 +43,7 @@
 
 void MADSysUnload( mad_sys_handle *sys_hdl )
 {
-    if( *sys_hdl == NULL_SYSHDL ) {
+    if( *sys_hdl != NULL_SYSHDL ) {
         dlclose( *sys_hdl );
         *sys_hdl = NULL_SYSHDL;
     }

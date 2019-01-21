@@ -132,14 +132,14 @@ static SCOPE symClassScope(     // GET SCOPE FOR CLASS CONTAINING SYMBOL
 bool SymIsData(                 // TEST IF SYMBOL IS DATA
     SYMBOL sym )                // - the symbol
 {
-    return symIsDataFunction( sym ) && symIsDataSym( sym );
+    return( symIsDataFunction( sym ) && symIsDataSym( sym ) );
 }
 
 
 bool SymIsFunction(             // TEST IF SYMBOL IS A FUNCTION
     SYMBOL sym )                // - the function
 {
-    return symIsDataFunction( sym ) && symIsFuncSym( sym );
+    return( symIsDataFunction( sym ) && symIsFuncSym( sym ) );
 }
 
 
@@ -169,7 +169,7 @@ bool SymIsInMem(                // TEST IF SYMBOL SHOULD STAY IN MEMORY
 bool SymIsClassMember(          // TEST IF SYMBOL IS MEMBER OF A CLASS
     SYMBOL sym )                // - the symbol
 {
-    return symIsDataFunction( sym ) && symClassScope( sym ) != NULL;
+    return( symIsDataFunction( sym ) && symClassScope( sym ) != NULL );
 }
 
 bool SymIsNameSpaceMember(      // TEST IF SYMBOL IS MEMBER OF NAMESPACE
@@ -184,7 +184,7 @@ bool SymIsNameSpaceMember(      // TEST IF SYMBOL IS MEMBER OF NAMESPACE
         NAME_SPACE *ns;
 
         ns = scope->owner.ns;
-        if( !ns->u.s.global_fs  ){
+        if( !ns->u.s.global_fs ) {
             ret = true;
         }
     }
@@ -287,7 +287,7 @@ SYMBOL SymDefaultBase(          // REMOVE DEFAULT ARGUMENTS TO GET BASE SYMBOL
     while( SymIsDefArg( sym ) ) {
         sym = sym->thread;
     }
-    return sym;
+    return( sym );
 }
 
 
@@ -297,7 +297,7 @@ bool SymIsStatic(               // DETERMINE IF SYMBOL IS STATIC
     symbol_class id;
 
     id = SymDefaultBase( sym )->id;
-    return ( SC_STATIC == id ) || ( SC_STATIC_FUNCTION_TEMPLATE == id );
+    return( ( SC_STATIC == id ) || ( SC_STATIC_FUNCTION_TEMPLATE == id ) );
 }
 
 
@@ -327,7 +327,7 @@ bool SymIsThisMember(           // TEST IF SYMBOL IS DATA/FUNCTION MEMBER
 bool SymIsThisDataMember(       // TEST IF SYMBOL IS THIS DATA MEMBER
     SYMBOL sym )                // - the symbol
 {
-    return SymIsThisMember( sym ) && symIsDataSym( sym );
+    return( SymIsThisMember( sym ) && symIsDataSym( sym ) );
 }
 
 
@@ -348,7 +348,7 @@ bool SymIsStaticFuncMember(     // TEST IF SYMBOL IS A STATIC MEMBER FUNC.
 bool SymIsThisFuncMember(       // TEST IF SYMBOL IS A THIS MEMBER FUNC.
     SYMBOL sym )                // - the symbol
 {
-    return SymIsThisMember( sym ) && symIsFuncSym( sym );
+    return( SymIsThisMember( sym ) && symIsFuncSym( sym ) );
 }
 
 
@@ -356,58 +356,58 @@ bool SymIsStaticData(           // TEST IF SYMBOL IS STATIC DATA ELEMENT
     SYMBOL sym )                // - the symbol
 {
     SCOPE scope;                // - scope for symbol
-    bool retb;                  // - true ==> symbol is static data element
+    bool ok;                    // - true ==> symbol is static data element
 
-    retb = false;
+    ok = false;
     if( SymIsData( sym ) ) {
         symGetScope( sym, scope );
         if( scope != NULL ) {
             switch( ScopeId( scope ) ) {
-              case SCOPE_BLOCK :
-              case SCOPE_FILE :
+            case SCOPE_BLOCK :
+            case SCOPE_FILE :
                 if( sym->id == SC_STATIC ) {
-                    retb = true;
+                    ok = true;
                 }
                 break;
             }
         }
     }
-    return( retb );
+    return( ok );
 }
 
 
 CLASSINFO *SymClassInfo(        // GET CLASSINFO FOR SYMBOL
     SYMBOL sym )                // - the symbol
 {
-    return TypeClassInfo( SymClass( sym ) );
+    return( TypeClassInfo( SymClass( sym ) ) );
 }
 
 
 bool SymRequiresDtoring(        // TEST IF SYMBOL REQUIRES DTOR-ING
     SYMBOL sym )                // - the symbol
 {
-    bool retb;                  // - true ==> DTOR required
+    bool ok;                    // - true ==> DTOR required
 
     if( SymIsData( sym ) ) {
-        retb = TypeRequiresDtoring( sym->sym_type );
+        ok = TypeRequiresDtoring( sym->sym_type );
     } else {
-        retb = false;
+        ok = false;
     }
-    return( retb );
+    return( ok );
 }
 
 
 bool SymRequiresCtoring(        // TEST IF SYMBOL REQUIRES DTOR-ING
     SYMBOL sym )                // - the symbol
 {
-    bool retb;                  // - true ==> DTOR required
+    bool ok;                    // - true ==> DTOR required
 
     if( SymIsData( sym ) ) {
-        retb = TypeRequiresCtoring( sym->sym_type );
+        ok = TypeRequiresCtoring( sym->sym_type );
     } else {
-        retb = false;
+        ok = false;
     }
-    return( retb );
+    return( ok );
 }
 
 
@@ -442,7 +442,7 @@ static SYMBOL symAllocate(      // ALOOCATE A NEW SYMBOL
     sym->id = id;
     sym->sym_type = type;
     sym->flag = flags;
-    return sym;
+    return( sym );
 }
 
 
@@ -451,39 +451,39 @@ SYMBOL SymMakeDummy(            // MAKE A DUMMY SYMBOL
     NAME *name )                // - gets filled in with the name
 {
     *name = NameDummy();
-    return symAllocate( type, 0, 0 );
+    return( symAllocate( type, 0, 0 ) );
 }
 
 
 bool SymIsTemporary(            // DETERMINE IF INTERNAL SYMBOL
     SYMBOL sym )                // - the symbol
 {
-    bool retb;                  // - true ==> symbol is internal symbol
+    bool ok;                    // - true ==> symbol is internal symbol
 
     if( ! SymIsData( sym ) ) {
-        retb = false;
+        ok = false;
     } else if( SymIsAnError( sym ) ) {
-        retb = true;
+        ok = true;
     } else {
-        retb = ( NameStr( sym->name->name )[0] == NAME_OPERATOR_OR_DUMMY_PREFIX1 );
+        ok = ( NameStr( sym->name->name )[0] == NAME_INTERNAL_PREFIX1 );
     }
-    return( retb );
+    return( ok );
 }
 
 
 bool SymIsGenedFunc(            // DETERMINE IF SYMBOL IS A GENERATED FUNC.
     SYMBOL sym )                // - the symbol
 {
-    bool retb;                  // - true ==> symbol is internal symbol
+    bool ok;                    // - true ==> symbol is internal symbol
 
     if( ! SymIsFunction( sym ) ) {
-        retb = false;
+        ok = false;
     } else if( SymIsAnError( sym ) ) {
-        retb = true;
+        ok = true;
     } else {
-        retb = ( NameStr( sym->name->name )[0] == NAME_OPERATOR_OR_DUMMY_PREFIX1 );
+        ok = ( NameStr( sym->name->name )[0] == NAME_INTERNAL_PREFIX1 );
     }
-    return( retb );
+    return( ok );
 }
 
 
@@ -499,20 +499,20 @@ bool SymIsClassArray(           // DETERMINE IF SYMBOL IS ARRAY OF CLASS ITEMS
 {
     TYPE array_type;            // - array type
     TYPE base_type;             // - base type, when array
-    bool retb;                  // - true ==> is array of class objects
+    bool ok;                    // - true ==> is array of class objects
 
     array_type = ArrayType( sym->sym_type );
     if( NULL == array_type ) {
-        retb = false;
+        ok = false;
     } else {
         base_type = ArrayBaseType( array_type );
         if( NULL == StructType( base_type ) ) {
-            retb = false;
+            ok = false;
         } else {
-            retb = true;
+            ok = true;
         }
     }
-    return( retb );
+    return( ok );
 }
 
 
@@ -582,17 +582,17 @@ bool SymIsArgument(             // TEST IF SYMBOL IS AN ARGUMENT
     SYMBOL sym )                // - symbol
 {
     SCOPE scope;                // - symbol scope
-    bool retb;                  // - return
+    bool ok;                    // - return
 
     symGetScope( sym, scope );
     if( scope == NULL ) {
-        retb = false;
+        ok = false;
     } else if( ScopeId( scope ) == SCOPE_FUNCTION ) {
-        retb = true;
+        ok = true;
     } else {
-        retb = false;
+        ok = false;
     }
-    return( retb );
+    return( ok );
 }
 
 
@@ -619,24 +619,24 @@ bool SymIsDllImport(            // TEST IF SYMBOL IS A __declspec(dllimport)
 bool SymIsConstant(             // TEST IF SYMBOL IS A CONSTANT
     SYMBOL sym )                // - symbol
 {
-    bool retb;                  // - return
+    bool ok;                    // - return
     TYPE type;                  // - unmodified type
     type_flag flags;            // - flags
 
     if( SymIsEnumeration( sym ) ) {
-        retb = true;
+        ok = true;
     } else if( SymIsData( sym ) ) {
         type = TypeModFlags( sym->sym_type, &flags );
         if( (flags & TF1_CONST) && stgClassInSet( sym, SCM_CONSTANT )
           && ( NULL != IntegralType( type ) ) ) {
-            retb = true;
+            ok = true;
         } else {
-            retb = false;
+            ok = false;
         }
     } else {
-        retb = false;
+        ok = false;
     }
-    return( retb );
+    return( ok );
 }
 
 
@@ -644,37 +644,37 @@ static bool funTypeFlagged(     // TEST IF ANY FLAGS ON IN FUNCTION TYPE
     SYMBOL fun,                 // - possible function symbol
     type_flag flags )           // - flags to be tested
 {
-    bool retb;                  // - false ==> not inlined
+    bool ok;                    // - false ==> not inlined
     TYPE type;                  // - unmodified type for function
 
     type = FunctionDeclarationType( fun->sym_type );
     if( type == NULL ) {
-        retb = false;
+        ok = false;
     } else {
-        retb = (type->flag & flags) != 0;
+        ok = (type->flag & flags) != 0;
     }
-    return( retb );
+    return( ok );
 }
 
 
 bool SymIsInline(               // TEST IF FUNCTION IS INLINE
     SYMBOL fun )                // - function symbol
 {
-    return funTypeFlagged( fun, TF1_INLINE );
+    return( funTypeFlagged( fun, TF1_INLINE ) );
 }
 
 
 bool SymIsVirtual(              // TEST IF FUNCTION IS VIRTUAL
     SYMBOL fun )                // - function symbol
 {
-    return funTypeFlagged( fun, TF1_VIRTUAL );
+    return( funTypeFlagged( fun, TF1_VIRTUAL ) );
 }
 
 
 bool SymIsPure(                 // TEST IF A PURE VIRTUAL FUNCTION
     SYMBOL fun )                // - a function
 {
-    return funTypeFlagged( fun, TF1_PURE );
+    return( funTypeFlagged( fun, TF1_PURE ) );
 }
 
 
@@ -765,16 +765,16 @@ bool SymIsComdatData(           // TEST IF DATA SYMBOL IS COMDAT
 bool SymCDtorExtraParm(         // does the CTOR/DTOR need the extra int arg?
     SYMBOL sym )                // - the symbol
 {
-    bool retb;                  // - return value
+    bool ok;                    // - return value
 
     if( SymIsCtor( sym ) ) {
-        retb = TypeRequiresCtorParm( SymClass( sym ) );
+        ok = TypeRequiresCtorParm( SymClass( sym ) );
     } else if( SymIsDtor( sym ) ) {
-        retb = true;
+        ok = true;
     } else {
-        retb = false;
+        ok = false;
     }
-    return( retb );
+    return( ok );
 }
 
 
@@ -782,7 +782,7 @@ bool SymIsModuleDtorable(       // TEST IF SYMBOL IS MODULE-DTORABLE
     SYMBOL sym )                // - a DTORable symbol
 {
     SCOPE scope;                // - symbol scope
-    bool retb;                  // - true ==> module dtorable
+    bool ok;                    // - true ==> module dtorable
 
     /*
         three cases:
@@ -792,12 +792,12 @@ bool SymIsModuleDtorable(       // TEST IF SYMBOL IS MODULE-DTORABLE
             (3) function static variables
     */
     symGetScope( sym, scope );
-    if( ( NameStr( sym->name->name )[0] != NAME_OPERATOR_OR_DUMMY_PREFIX1 ) && ( ScopeId( scope ) == SCOPE_FILE ) ) {
-        retb = true;
+    if( ( NameStr( sym->name->name )[0] != NAME_INTERNAL_PREFIX1 ) && ( ScopeId( scope ) == SCOPE_FILE ) ) {
+        ok = true;
     } else {
-        retb = ( sym->id == SC_STATIC );
+        ok = ( sym->id == SC_STATIC );
     }
-    return( retb );
+    return( ok );
 }
 
 
@@ -821,92 +821,92 @@ static bool symHasFuncName(     // DETERMINE IF NAMED FUNCTION
     SYMBOL func,                // - function symbol
     NAME name )                 // - name used
 {
-    bool retb;                  // - return: true ==> is named function
+    bool ok;                    // - return: true ==> is named function
 
     if( SymIsFunction( func ) ) {
-        retb = ( name == func->name->name );
+        ok = ( name == func->name->name );
     } else {
-        retb = false;
+        ok = false;
     }
-    return( retb );
+    return( ok );
 }
 
 
 bool SymIsCtor(                 // TEST IF SYMBOL IS A CTOR FUNCTION
     SYMBOL ctor )               // - potential CTOR function
 {
-    return symHasFuncName( ctor, CppConstructorName() );
+    return( symHasFuncName( ctor, CppConstructorName() ) );
 }
 
 
 bool SymIsDtor(                 // TEST IF SYMBOL IS A DTOR FUNCTION
     SYMBOL dtor )               // - potential DTOR function
 {
-    return symHasFuncName( dtor, CppDestructorName() );
+    return( symHasFuncName( dtor, CppDestructorName() ) );
 }
 
 
 bool SymIsCtorOrDtor(           // TEST IF SYMBOL IS CTOR OR DTOR
     SYMBOL func )               // - hopefully, one of them
 {
-    bool retb;                  // - return: true ==> is named function
+    bool ok;                    // - return: true ==> is named function
 
     if( SymIsFunction( func ) ) {
         NAME name = func->name->name;
-        retb = ( ( name == CppConstructorName() ) || ( name == CppDestructorName() ) );
+        ok = ( ( name == CppConstructorName() ) || ( name == CppDestructorName() ) );
     } else {
-        retb = false;
+        ok = false;
     }
-    return( retb );
+    return( ok );
 }
 
 
 bool SymIsAssign(               // TEST IF SYMBOL IS "operator ="
     SYMBOL op_eq )              // - potential op= function
 {
-    return symHasFuncName( op_eq, CppOperatorName( CO_EQUAL ) );
+    return( symHasFuncName( op_eq, CppOperatorName( CO_EQUAL ) ) );
 }
 
 
 bool SymIsOpDel(                // TEST IF SYMBOL IS "operator delete"
     SYMBOL op_del )             // - potential operator delete
 {
-    return symHasFuncName( op_del, CppOperatorName( CO_DELETE ) );
+    return( symHasFuncName( op_del, CppOperatorName( CO_DELETE ) ) );
 }
 
 
 bool SymIsOpDelar(              // TEST IF SYMBOL IS "operator delete[]"
     SYMBOL op_del )             // - potential operator delete[]
 {
-    return symHasFuncName( op_del, CppOperatorName( CO_DELETE_ARRAY ) );
+    return( symHasFuncName( op_del, CppOperatorName( CO_DELETE_ARRAY ) ) );
 }
 
 
 bool SymIsUDC(                  // TEST IF SYMBOL IS USER-DEFINED CONVERSION
     SYMBOL udc )                // - symbol in question
 {
-    return symHasFuncName( udc, CppConversionName() );
+    return( symHasFuncName( udc, CppConversionName() ) );
 }
 
 
 bool SymIsThunkDtor(            // TEST IF DTOR ADDRESSABILITY THUNK
     SYMBOL sym )                // - function symbol
 {
-    return symHasFuncName( sym, CppSpecialName( SPECIAL_NAME_DTOR_THUNK ) );
+    return( symHasFuncName( sym, CppSpecialName( SPECIAL_NAME_DTOR_THUNK ) ) );
 }
 
 
 bool SymIsThunkCtorDflt(        // TEST IF DEFAULT CTOR ADDRESSABILITY THUNK
     SYMBOL sym )                // - function symbol
 {
-    return symHasFuncName( sym, CppSpecialName( SPECIAL_NAME_CTOR_THUNK ) );
+    return( symHasFuncName( sym, CppSpecialName( SPECIAL_NAME_CTOR_THUNK ) ) );
 }
 
 
 bool SymIsThunkCtorCopy(        // TEST IF COPY CTOR ADDRESSABILITY THUNK
     SYMBOL sym )                // - function symbol
 {
-    return symHasFuncName( sym, CppSpecialName( SPECIAL_NAME_COPY_THUNK ) );
+    return( symHasFuncName( sym, CppSpecialName( SPECIAL_NAME_COPY_THUNK ) ) );
 }
 
 
@@ -972,26 +972,26 @@ void SymLocnCopy(               // COPY LOCATION TO SYMBOL FROM ANOTHER SYMBOL
 bool SymIsExtern(               // SYMBOL IS DEFINED OUTSIDE THIS MODULE
     SYMBOL sym )                // - the symbol
 {
-    bool retb;
+    bool ok;
 
-    retb = false;
+    ok = false;
     if( ! SymIsInitialized( sym ) ) {
         if( sym->id != SC_EXTERN ) {
             if( SymIsStaticDataMember( sym ) ) {
                 /* uninitialized static data members are external */
-                retb = true;
+                ok = true;
             }
         } else {
-            retb = true;
+            ok = true;
         }
     }
 #ifndef NDEBUG
-    if( retb && !CompFlags.parsing_finished ) {
+    if( ok && !CompFlags.parsing_finished ) {
         // symbol still has a chance of being initialized!
         CFatal( "SymIsExtern return value is not accurate" );
     }
 #endif
-    return( retb );
+    return( ok );
 }
 
 
@@ -1069,43 +1069,45 @@ bool SymIsNextInitializableMember(// SYMBOL CAN BE BRACE INITIALIZED
 bool SymIsThunk(                // DETERMINE IF FUNCTION IS THUNK
     SYMBOL func )               // - function which is possible thunk
 {
-    bool retb = false;          // - true ==> is thunk
+    bool ok;                    // - true ==> is thunk
     NAME name;                  // - function name
 
+    ok = false;
     if( func != NULL ) {
         if( ( func->name != NULL ) && ( func->name->name != NULL ) ) {
             name = func->name->name;
-            if( ( name == CppSpecialName( SPECIAL_NAME_DTOR_THUNK     ) )
-              ||( name == CppSpecialName( SPECIAL_NAME_CTOR_THUNK     ) )
-              ||( name == CppSpecialName( SPECIAL_NAME_OP_DEL_THUNK   ) )
+            if( ( name == CppSpecialName( SPECIAL_NAME_DTOR_THUNK ) )
+              ||( name == CppSpecialName( SPECIAL_NAME_CTOR_THUNK ) )
+              ||( name == CppSpecialName( SPECIAL_NAME_OP_DEL_THUNK ) )
               ||( name == CppSpecialName( SPECIAL_NAME_OP_DELAR_THUNK ) )
-              ||( name == CppSpecialName( SPECIAL_NAME_COPY_THUNK     ) )
+              ||( name == CppSpecialName( SPECIAL_NAME_COPY_THUNK ) )
               ) {
-                retb = true;
+                ok = true;
             }
         }
     }
     // we should be able to use SF_ADDR_THUNK; so we test this...
-    DbgAssert( func == NULL || ( (func->flag & SF_ADDR_THUNK) != 0 ) == retb );
-    return( retb );
+    DbgAssert( func == NULL || ( (func->flag & SF_ADDR_THUNK) != 0 ) == ok );
+    return( ok );
 }
 
 
 bool SymIsVft(                  // TEST IF SYMBOL IS VFT SYMBOL
     SYMBOL sym )                // - symbol
 {
-    bool retb = false;          // - true ==> is VFT symbol
+    bool ok;                    // - true ==> is VFT symbol
     SYMBOL_NAME sname;          // - symbol-name entry
     NAME name;                  // - name for symbol
 
+    ok = false;
     sname = sym->name;
     if( sname != NULL ) {
         name = sname->name;
         if( name != NULL ) {
-            retb = IsVftName( name );
+            ok = IsVftName( name );
         }
     }
-    return( retb );
+    return( ok );
 }
 
 
@@ -1147,7 +1149,7 @@ SYMBOL SymCreate(               // CREATE NEW SYMBOL
     if( check != sym ) {
         check = NULL;
     }
-    return check;
+    return( check );
 }
 
 
@@ -1178,7 +1180,7 @@ SYMBOL SymCreateCurrScope(      // CREATE NEW CURR-SCOPE SYMBOL
     symbol_flag flags,          // - symbol flags
     NAME name )                 // - symbol name
 {
-    return SymCreate( type, id, flags, name, GetCurrScope() );
+    return( SymCreate( type, id, flags, name, GetCurrScope() ) );
 }
 
 
@@ -1188,7 +1190,7 @@ SYMBOL SymCreateFileScope(      // CREATE NEW FILE-SCOPE SYMBOL
     symbol_flag flags,          // - symbol flags
     NAME name )                 // - symbol name
 {
-    return SymCreate( type, id, flags, name, GetFileScope() );
+    return( SymCreate( type, id, flags, name, GetFileScope() ) );
 }
 
 
@@ -1198,7 +1200,7 @@ SYMBOL SymCreateTempScope(      // CREATE NEW TEMP-SCOPE SYMBOL
     symbol_flag flags,          // - symbol flags
     NAME name )                 // - symbol name
 {
-    return SymCreate( type, id, flags, name, ScopeForTemps() );
+    return( SymCreate( type, id, flags, name, ScopeForTemps() ) );
 }
 
 
@@ -1220,7 +1222,7 @@ SYMBOL SymDeriveThrowBits(      // DERIVE SF_.._LONGJUMP BITS FROM SOURCE
 #endif
 
     tgt->flag |= src_flag;
-    return tgt;
+    return( tgt );
 }
 
 
@@ -1232,7 +1234,7 @@ symbol_flag SymThrowFlags(      // GET SYMBOL'S THROW BITS
     flags = ( sym->flag & SF_LONGJUMP ) | ( sym->flag & SF_NO_LONGJUMP );
     DbgVerify( flags != ( SF_LONGJUMP | SF_NO_LONGJUMP )
              , "SymThrowFlags -- both throw bits computed" );
-    return flags;
+    return( flags );
 }
 
 
@@ -1253,10 +1255,10 @@ SYMBOL SymReloc                 // RELOCATE SYMBOL
 
     RingIterBeg( reloc_list, curr ) {
         if( src == curr->orig ) {
-            return curr->dest;
+            return( curr->dest );
         }
     } RingIterEnd( curr )
-    return src;
+    return( src );
 }
 
 
@@ -1280,7 +1282,7 @@ SYMBOL SymForClass              // GET SYMBOL FOR CLASS IF IT EXISTS
             }
         }
     }
-    return retn;
+    return( retn );
 }
 
 
@@ -1296,7 +1298,7 @@ TOKEN_LOCN* LocnForClass        // GET DEFINITION LOCATION, IF POSSIBLE
     } else {
         retn = &sym->locn->tl;
     }
-    return retn;
+    return( retn );
 }
 
 SYMBOL SymMakeAlias(            // DECLARE AN ALIAS IN CURRSCOPE
@@ -1340,13 +1342,13 @@ SYMBOL SymBindConstant              // BIND A CONSTANT TO A SYMBOL
 {
     if( NULL != sym ) {
         if( NULL == Integral64Type( sym->sym_type ) ) {
-            sym->u.sval = con.u._32[ I64LO32 ];
+            sym->u.sval = con.u._32[I64LO32];
         } else {
             sym->u.pval = ConPoolInt64Add( con );
             sym->flag |= SF_CONSTANT_INT64;
         }
     }
-    return sym;
+    return( sym );
 }
 
 
@@ -1362,7 +1364,7 @@ SYMBOL SymConstantValue             // GET CONSTANT VALUE FOR SYMBOL
     } else {
         Int64From32( sym->sym_type, sym->u.sval, &pval->u.value );
     }
-    return sym;
+    return( sym );
 }
 
 SYMBOL SymDefArgBase(               // GET DEFARG BASE SYMBOL
@@ -1372,5 +1374,5 @@ SYMBOL SymDefArgBase(               // GET DEFARG BASE SYMBOL
         sym = sym->thread;
     }
 
-    return sym;
+    return( sym );
 }

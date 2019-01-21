@@ -1,5 +1,5 @@
 .387
-BDA		SEGMENT	 at 00000400 USE16 ''
+BDA		SEGMENT	 at 400H USE16 ''
     DB	0, 0, 0, 0, 0, 0, 0, 0
     DB	0, 0, 0, 0, 0, 0, 0, 0
     DB	0

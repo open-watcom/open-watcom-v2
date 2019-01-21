@@ -40,6 +40,7 @@
 #include "dpmi.h"
 #include "uigchar.h"
 #include "getltdos.h"
+#include "osidle.h"
 
 
 typedef struct {
@@ -69,12 +70,12 @@ static MONITOR ui_data = {
 void IdleInterrupt( void )
 {
 #ifdef _M_I86
-    DOSIdleInterrupt();
+    DOSIdle();
 #elif defined( __OSI__ )
     /* Can't do anything */
 #else
     if( _IsRational() ) {
-        DPMIIdle(); /* Assume DPMI if Rational; else dunno */
+        ReleaseVMTimeSlice(); /* Assume DPMI if Rational; else dunno */
     }
 #endif
 }
@@ -114,9 +115,11 @@ bool UIAPI uiset80col( void )
 #ifdef _M_I86
 extern LP_PIXEL desqview_shadow_buffer( LP_PIXEL );
 #pragma aux desqview_shadow_buffer = \
-        "mov ah,0feh"                   \
-        _INT_10                         \
-    parm [es di] value [es di] modify [ah];
+        "mov ah,0feh"   \
+        _INT_10         \
+    __parm      [__es __di] \
+    __value     [__es __di] \
+    __modify    [__ah]
 #endif
 
 LP_PIXEL UIAPI dos_uishadowbuffer( LP_PIXEL vbuff )
@@ -331,15 +334,17 @@ static bool initmonitor( void )
 
 extern bool desqview_present( void );
 #pragma aux desqview_present = \
-        "mov  ax,2b01h"         \
-        "mov  cx,4445h"         \
-        "mov  dx,5351h"         \
-        _INT_21                 \
-        "cmp  al,0ffh"          \
-        "jz L1"                 \
-        "xor  al,al"            \
-    "L1: inc  al"               \
-    value [al] modify [ah bx cx dx];
+        "mov  ax,2b01h"     \
+        "mov  cx,4445h"     \
+        "mov  dx,5351h"     \
+        _INT_21             \
+        "cmp  al,0ffh"      \
+        "jz L1"             \
+        "xor  al,al"        \
+    "L1: inc  al"           \
+    __parm      [] \
+    __value     [__al] \
+    __modify    [__ah __bx __cx __dx]
 
 bool intern initbios( void )
 /**************************/
@@ -394,9 +399,11 @@ void intern finibios( void )
 #ifdef _M_I86
 extern void _desqview_update( LP_PIXEL, unsigned );
 #pragma aux _desqview_update = \
-        "mov  ah,0ffh"          \
-        _INT_10                 \
-    parm [es di] [cx] modify [ah];
+        "mov  ah,0ffh"      \
+        _INT_10             \
+    __parm      [] \
+    __parm      [__es __di] [__cx] \
+    __modify    [__ah]
 #endif
 
 static void desqview_update( unsigned short offset, unsigned short count )

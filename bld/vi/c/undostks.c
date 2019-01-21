@@ -59,7 +59,7 @@ static void shrinkUndoStack( undo_stack *stack )
     if( stack->current < 0 ) {
         MemFreePtr( (void **)&stack->stack );
     } else {
-        stack->stack = MemReAlloc( stack->stack, (stack->current + 1) * sizeof( undo * ) );
+        stack->stack = _MemReAllocArray( stack->stack, undo *, stack->current + 1 );
     }
 
 } /* shrinkUndoStack */

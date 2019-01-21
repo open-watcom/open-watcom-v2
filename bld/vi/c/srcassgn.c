@@ -59,6 +59,7 @@ vi_rc SrcAssign( const char *data, vlist *vl )
     jmp_buf     jmpaddr;
     time_t      tod;
     bool        check_end;
+    char        tmpstr[MAX_STR];
 
     /*
      * get assign syntax :
@@ -214,7 +215,7 @@ vi_rc SrcAssign( const char *data, vlist *vl )
             v1 = "";
         }
     } else if( setflag ) {
-        v1 = GetASetVal( tmp1 );
+        v1 = GetASetVal( tmp1, tmpstr );
     } else if( timeflag ) {
         tod = time( NULL );
         strftime( tmp, sizeof( tmp ), tmp1, localtime( &tod ) );

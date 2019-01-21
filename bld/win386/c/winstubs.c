@@ -216,17 +216,21 @@ int FAR PASCAL __Escape(HDC a, int b, int c, LPSTR d, LPSTR e)
 
 extern void PutByte( char, WORD, DWORD );
 #pragma aux PutByte = \
-        0x66 0xC1 0xE2 0x10                    /* shl     edx,16 */ \
-        0x8B 0xD0                              /* mov     dx,ax */ \
-        0x26 0x67 0x88 0x1A                    /* mov     es:[edx],bl */ \
-        parm [bl] [es] [ dx ax];
+        "shl  edx,16"       \
+        "mov  dx,ax"        \
+        "mov  es:[edx],bl"  \
+    __parm      [__bl] [__es] [__dx __ax] \
+    __value     \
+    __modify    [__dx]
 
 extern char GetByte( WORD, DWORD );
 #pragma aux GetByte = \
-        0x66 0xC1 0xE2 0x10                    /* shl     edx,16 */ \
-        0x8B 0xD0                              /* mov     dx,ax */ \
-        0x26 0x67 0x8A 0x02                    /* mov     al,es:[edx] */ \
-        parm [es] [ dx ax] value [al];
+        "shl  edx,16"       \
+        "mov  dx,ax"        \
+        "mov  al,es:[edx]"  \
+    __parm      [__es] [__dx __ax] \
+    __value     [__al] \
+    __modify    [__dx]
 
 /*
  * __GetInstanceData - cover for get instance data.

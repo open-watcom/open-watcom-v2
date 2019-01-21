@@ -31,7 +31,7 @@
 ****************************************************************************/
 
 
-#include "cgstd.h"
+#include "_cgstd.h"
 #include <stdio.h>
 #include <stdarg.h>
 #include <stdlib.h>
@@ -47,10 +47,9 @@
 #include "rscobj.h"
 #include "dbsyms.h"
 #include "dfsyms.h"
+#include "dfsupp.h"
 #include "cgprotos.h"
 
-
-extern  void            OutBckExport( const char *name, bool is_export );
 
 struct dbg_seg_names {
     char        *seg_name;
@@ -69,8 +68,8 @@ static struct dbg_seg_names DwarfSegNames[DW_DEBUG_MAX] = {
 };
 
 
-extern  void    DFDefSegs( void )
-/*******************************/
+void    DFDefSegs( void )
+/***********************/
 {
     dw_sectnum  i;
 
@@ -83,9 +82,9 @@ extern  void    DFDefSegs( void )
     }
 }
 
-#define ABBREV_NAME  "___DFABBREV"
-extern void DFAbbrevRef( void ){
-/******************************/
+void DFAbbrevRef( void )
+/**********************/
+{
     back_handle bck;
 
     bck = BENewBack( NULL );
@@ -93,7 +92,8 @@ extern void DFAbbrevRef( void ){
     BEFreeBack( bck );
 }
 
-extern void DFAbbrevDef( void ){
-/******************************/
+void DFAbbrevDef( void )
+/**********************/
+{
 //  OutBckExport( ABBREV_NAME, true );
 }

@@ -71,7 +71,7 @@ static SYMBOL cgStateTableCmd(  // GENERATE A STATE-TABLE ENTRY FOR A CMD
     } else {
         DgPtrSymOff( sym, offset );
     }
-    return sym;
+    return( sym );
 }
 
 
@@ -83,7 +83,8 @@ bool StabGenerate(              // GENERATE A STATE TABLE
     SE* state_table;            // - the state table
     segment_id old_seg;         // - old segment
 
-    if( sctl->rw == NULL ) return false;
+    if( sctl->rw == NULL )
+        return( false );
     defn = sctl->defn;
     old_seg = DgSetSegSym( defn->ro );
     CgBackGenLabelInternal( defn->ro );
@@ -97,59 +98,59 @@ bool StabGenerate(              // GENERATE A STATE TABLE
     RingIterBeg( state_table, se ) {
         if( se->base.gen ) {
             switch( se->base.se_type ) {
-              case DTC_SYM_AUTO :
+            case DTC_SYM_AUTO :
                 DbgVerify( UNDEF_AREL != se->sym_auto.offset, "cgStateTable -- no offset for SYM_AUTO" );
                 DgPtrSymCode( se->sym_auto.dtor );
                 DgOffset( CgOffsetRw( se->sym_auto.offset ) );
                 padOffsetToPtrSize();
                 break;
-              case DTC_SYM_STATIC :
+            case DTC_SYM_STATIC :
                 DgPtrSymCode( se->sym_static.dtor );
                 DgPtrSymData( se->sym_static.sym );
                 break;
-              case DTC_TEST_FLAG :
+            case DTC_TEST_FLAG :
                 cgStateTableCmd( CgCmdTestFlag( se ), 0 );
                 break;
-              case DTC_TRY :
+            case DTC_TRY :
                 se->try_blk.sym = cgStateTableCmd( CgCmdTry( se ), 0 );
                 break;
-              case DTC_CATCH :
+            case DTC_CATCH :
                 cgStateTableCmd( se->catch_blk.try_blk->try_blk.sym, sizeof( DTOR_CMD_CODE ) );
                 break;
-              case DTC_FN_EXC :
+            case DTC_FN_EXC :
                 cgStateTableCmd( CgCmdFnExc( se ), 0 );
                 break;
-              case DTC_SET_SV :
+            case DTC_SET_SV :
                 if( se != state_table ) {
                     cgStateTableCmd( CgCmdSetSv( se ), 0 );
                 }
                 break;
-              case DTC_ACTUAL_DBASE :
-              case DTC_ACTUAL_VBASE :
-              case DTC_COMP_VBASE :
-              case DTC_COMP_DBASE :
-              case DTC_COMP_MEMB :
+            case DTC_ACTUAL_DBASE :
+            case DTC_ACTUAL_VBASE :
+            case DTC_COMP_VBASE :
+            case DTC_COMP_DBASE :
+            case DTC_COMP_MEMB :
                 cgStateTableCmd( CgCmdComponent( se ), 0 );
                 break;
-              case DTC_ARRAY_INIT :
+            case DTC_ARRAY_INIT :
                 cgStateTableCmd( CgCmdArrayInit( se ), 0 );
                 break;
-              case DTC_DLT_1 :
+            case DTC_DLT_1 :
                 cgStateTableCmd( CgCmdDlt1( se ), 0 );
                 break;
-              case DTC_DLT_2 :
+            case DTC_DLT_2 :
                 cgStateTableCmd( CgCmdDlt2( se ), 0 );
                 break;
-              case DTC_DLT_1_ARRAY :
+            case DTC_DLT_1_ARRAY :
                 cgStateTableCmd( CgCmdDlt1Array( se ), 0 );
                 break;
-              case DTC_DLT_2_ARRAY :
+            case DTC_DLT_2_ARRAY :
                 cgStateTableCmd( CgCmdDlt2Array( se ), 0 );
                 break;
-              case DTC_CTOR_TEST :
+            case DTC_CTOR_TEST :
                 cgStateTableCmd( CgCmdCtorTest( se ), 0 );
                 break;
-              DbgDefault( "cgStateTable -- impossible" );
+            DbgDefault( "cgStateTable -- impossible" );
             }
         }
     } RingIterEnd( se )
@@ -159,5 +160,5 @@ bool StabGenerate(              // GENERATE A STATE TABLE
 #endif
     BESetSeg( old_seg );
     StabDefnFreeStateTable( defn );
-    return true;
+    return( true );
 }

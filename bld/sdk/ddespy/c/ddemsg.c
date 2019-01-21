@@ -30,11 +30,9 @@
 ****************************************************************************/
 
 
-#include "commonui.h"
-#include <string.h>
-#include <stdio.h>
 #include "wddespy.h"
 #include "watcom.h"
+
 
 #define HWND_LEN        10
 #define CONV_LEN        10

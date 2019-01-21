@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
+* Copyright (c) 2009-2018 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -33,6 +33,8 @@
 *
 ****************************************************************************/
 
+
+#include "wipfc.hpp"
 #include <limits>
 #include "ol.hpp"
 #include "brcmd.hpp"
@@ -61,87 +63,88 @@ Lexer::Token Ol::parse( Lexer* lexer )
             switch( lexer->tagId() ) {
             case Lexer::DL:
                 {
-                    Element* elt( new Dl( document, this, document->dataName(),
-                        document->dataLine(), document->dataCol(), nestLevel + 1,
-                        indent == 1 ? 4 : indent + 3 ) );
-                    appendChild( elt );
-                    tok = elt->parse( lexer );
+                    Dl *dl = new Dl( _document, this, _document->dataName(),
+                        _document->dataLine(), _document->dataCol(), _nestLevel + 1,
+                        _indent == 1 ? 4 : _indent + 3 );
+                    appendChild( dl );
+                    tok = dl->parse( lexer );
                     needLine = true;
                 }
                 break;
             case Lexer::OL:
                 {
-                    Element* elt( new Ol( document, this, document->dataName(),
-                        document->dataLine(), document->dataCol(),
-                        nestLevel + 1, indent == 1 ? 4 : indent + 3 ) );
-                    appendChild( elt );
-                    tok = elt->parse( lexer );
+                    Ol *ol = new Ol( _document, this, _document->dataName(),
+                        _document->dataLine(), _document->dataCol(),
+                        _nestLevel + 1, _indent == 1 ? 4 : _indent + 3 );
+                    appendChild( ol );
+                    tok = ol->parse( lexer );
                     needLine = true;
                 }
                 break;
             case Lexer::LI:
                 {
-                    Element* elt( new OlLi( document, this, document->dataName(),
-                        document->dataLine(), document->dataCol(),
-                        itemCount++, nestLevel, indent, veryCompact ||
-                        ( compact && !needLine ) ) );
-                    appendChild( elt );
-                    tok = elt->parse( lexer );
+                    OlLi *olli = new OlLi( _document, this, _document->dataName(),
+                        _document->dataLine(), _document->dataCol(),
+                        itemCount++, _nestLevel, _indent, _veryCompact ||
+                        ( _compact && !needLine ) );
+                    appendChild( olli );
+                    tok = olli->parse( lexer );
                     needLine = false;
                 }
                 break;
             case Lexer::LP:
                 {
-                    Element* elt( new Lp( document, this, document->dataName(),
-                        document->dataLine(), document->dataCol(), indent + 3 ) );
-                    appendChild( elt );
-                    tok = elt->parse( lexer );
+                    Lp *lp = new Lp( _document, this, _document->dataName(),
+                        _document->dataLine(), _document->dataCol(), _indent + 3 );
+                    appendChild( lp );
+                    tok = lp->parse( lexer );
                     needLine = true;
                 }
                 break;
             case Lexer::EOL:
                 {
-                    Element* elt( new EOl( document, this, document->dataName(),
-                        document->dataLine(), document->dataCol() ) );
-                    appendChild( elt );
-                    tok = elt->parse( lexer );
-                    if( !nestLevel )
-                        appendChild( new BrCmd( document, this, document->dataName(),
-                            document->dataLine(), document->dataCol() ) );
+                    EOl *eol = new EOl( _document, this, _document->dataName(),
+                        _document->dataLine(), _document->dataCol() );
+                    appendChild( eol );
+                    tok = eol->parse( lexer );
+                    if( !_nestLevel ) {
+                        appendChild( new BrCmd( _document, this, _document->dataName(),
+                            _document->dataLine(), _document->dataCol() ) );
+                    }
                     return tok;
                 }
             case Lexer::PARML:
                 {
-                    Element* elt( new Parml( document, this, document->dataName(),
-                        document->dataLine(), document->dataCol(), nestLevel + 1,
-                        indent == 1 ? 4 : indent + 3 ) );
-                    appendChild( elt );
-                    tok = elt->parse( lexer );
+                    Parml *parml = new Parml( _document, this, _document->dataName(),
+                        _document->dataLine(), _document->dataCol(), _nestLevel + 1,
+                        _indent == 1 ? 4 : _indent + 3 );
+                    appendChild( parml );
+                    tok = parml->parse( lexer );
                     needLine = true;
                 }
                 break;
             case Lexer::SL:
                 {
-                    Element* elt( new Sl( document, this, document->dataName(),
-                        document->dataLine(), document->dataCol(),
-                        0, indent == 1 ? 4 : indent + 3 ) );
-                    appendChild( elt );
-                    tok = elt->parse( lexer );
+                    Sl *sl = new Sl( _document, this, _document->dataName(),
+                        _document->dataLine(), _document->dataCol(),
+                        0, _indent == 1 ? 4 : _indent + 3 );
+                    appendChild( sl );
+                    tok = sl->parse( lexer );
                     needLine = true;
                 }
                 break;
             case Lexer::UL:
                 {
-                    Element* elt( new Ul( document, this, document->dataName(),
-                        document->dataLine(), document->dataCol(),
-                        0, indent == 1 ? 4 : indent + 3 ) );
-                    appendChild( elt );
-                    tok = elt->parse( lexer );
+                    Ul *ul = new Ul( _document, this, _document->dataName(),
+                        _document->dataLine(), _document->dataCol(),
+                        0, _indent == 1 ? 4 : _indent + 3 );
+                    appendChild( ul );
+                    tok = ul->parse( lexer );
                     needLine = true;
                 }
                 break;
             default:
-                document->printError( ERR1_NOENDLIST );
+                _document->printError( ERR1_NOENDLIST );
                 return tok;
             }
         }
@@ -151,87 +154,90 @@ Lexer::Token Ol::parse( Lexer* lexer )
 /***************************************************************************/
 Lexer::Token Ol::parseAttributes( Lexer* lexer )
 {
-    Lexer::Token tok( document->getNextToken() );
+    Lexer::Token tok;
+
     (void)lexer;
-    while( tok != Lexer::TAGEND ) {
-        if( tok == Lexer::ATTRIBUTE )
-            document->printError( ERR1_ATTRNOTDEF );
-        else if( tok == Lexer::FLAG ) {
-            if( lexer->text() == L"compact" )
-                compact = true;
-            else if( lexer->text() == L"verycompact" )
-                veryCompact = true;
-            else
-                document->printError( ERR1_ATTRNOTDEF );
-        }
-        else if( tok == Lexer::ERROR_TAG )
+
+    while( (tok = _document->getNextToken()) != Lexer::TAGEND ) {
+        if( tok == Lexer::ATTRIBUTE ) {
+            _document->printError( ERR1_ATTRNOTDEF );
+        } else if( tok == Lexer::FLAG ) {
+            if( lexer->text() == L"compact" ) {
+                _compact = true;
+            } else if( lexer->text() == L"verycompact" ) {
+                _veryCompact = true;
+            } else {
+                _document->printError( ERR1_ATTRNOTDEF );
+            }
+        } else if( tok == Lexer::ERROR_TAG ) {
             throw FatalError( ERR_SYNTAX );
-        else if( tok == Lexer::END )
+        } else if( tok == Lexer::END ) {
             throw FatalError( ERR_EOF );
-        else
-            document->printError( ERR1_TAGSYNTAX );
-        tok = document->getNextToken();
+        } else {
+            _document->printError( ERR1_TAGSYNTAX );
+        }
     }
-    return document->getNextToken();    //consume TAGEND
+    return _document->getNextToken();    //consume TAGEND
 }
 /***************************************************************************/
 void EOl::buildText( Cell* cell )
 {
-    cell->addByte( 0xFF );  //esc
-    cell->addByte( 0x03 );  //size
-    cell->addByte( 0x02 );  //set left margin
+    cell->addByte( Cell::ESCAPE );  //esc
+    cell->addByte( 0x03 );          //size
+    cell->addByte( 0x02 );          //set left margin
     cell->addByte( 1 );
-    if( cell->textFull() )
+    if( cell->textFull() ) {
         printError( ERR1_LARGEPAGE );
+    }
 }
 /***************************************************************************/
 Lexer::Token OlLi::parse( Lexer* lexer )
 {
     Lexer::Token tok( parseAttributes( lexer ) );
-    appendChild( new Lm( document, this, document->dataName(), document->dataLine(),
-        document->dataCol(), indent ) );
-    if( compact )
-        appendChild( new BrCmd( document, this, document->dataName(), document->dataLine(),
-            document->dataCol() ) );
-    else
-        appendChild( new P( document, this, document->dataName(), document->dataLine(),
-            document->dataCol() ) );
-    if( nestLevel & 1 ) {
-        std::wstring txt;
-        txt.push_back( document->olChar( itemNumber ) );
-        appendChild( new LiteralWhiteSpace( document, this, document->dataName(),
-            document->dataLine(), document->dataCol(), true ) );
-        appendChild( new Word( document, this, document->dataName(),
-            document->dataLine(), document->dataCol(), txt, false ) );
-        appendChild( new Punctuation( document, this, document->dataName(),
-            document->dataLine(), document->dataCol(), document->olClose( nestLevel ), true ) );
+    appendChild( new Lm( _document, this, _document->dataName(), _document->dataLine(),
+        _document->dataCol(), _indent ) );
+    if( _compact ) {
+        appendChild( new BrCmd( _document, this, _document->dataName(), _document->dataLine(),
+            _document->dataCol() ) );
+    } else {
+        appendChild( new P( _document, this, _document->dataName(), _document->dataLine(),
+            _document->dataCol() ) );
     }
-    else {
+    if( _nestLevel & 1 ) {
+        std::wstring text;
+        text.push_back( _document->olChar( _itemNumber ) );
+        appendChild( new LiteralWhiteSpace( _document, this, _document->dataName(),
+            _document->dataLine(), _document->dataCol(), true ) );
+        appendChild( new TextWord( _document, this, _document->dataName(),
+            _document->dataLine(), _document->dataCol(), text, false ) );
+        appendChild( new Punctuation( _document, this, _document->dataName(),
+            _document->dataLine(), _document->dataCol(), _document->olClose( _nestLevel ), true ) );
+    } else {
         wchar_t tmp[ 4 ];
-        std::swprintf( tmp, 4, L"%u", itemNumber + 1 );
-        std::wstring txt( tmp );
-        if( itemNumber < 9 )
-            appendChild( new LiteralWhiteSpace( document, this, document->dataName(),
-                document->dataLine(), document->dataCol(), true ) );
-        appendChild( new Word( document, this, document->dataName(),
-            document->dataLine(), document->dataCol(), txt, itemNumber >= 9 ) );
-        appendChild( new Punctuation( document, this, document->dataName(),
-            document->dataLine(), document->dataCol(), document->olClose( nestLevel ), true ) );
+        std::swprintf( tmp, 4, L"%u", _itemNumber + 1 );
+        std::wstring text( tmp );
+        if( _itemNumber < 9 )
+            appendChild( new LiteralWhiteSpace( _document, this, _document->dataName(),
+                _document->dataLine(), _document->dataCol(), true ) );
+        appendChild( new TextWord( _document, this, _document->dataName(),
+            _document->dataLine(), _document->dataCol(), text, _itemNumber >= 9 ) );
+        appendChild( new Punctuation( _document, this, _document->dataName(),
+            _document->dataLine(), _document->dataCol(), _document->olClose( _nestLevel ), true ) );
     }
-    appendChild( new Lm( document, this, document->dataName(), document->dataLine(),
-        document->dataCol(), indent + 3 ) );
+    appendChild( new Lm( _document, this, _document->dataName(), _document->dataLine(),
+        _document->dataCol(), _indent + 3 ) );
     while( tok != Lexer::END && !( tok == Lexer::TAG && lexer->tagId() == Lexer::EUSERDOC ) ) {
         if( parseInline( lexer, tok ) ) {
-            if( lexer->tagId() == Lexer::LI )
+            if( lexer->tagId() == Lexer::LI ) {
                 break;
-            else if( lexer->tagId() == Lexer::LP ) {
-                Element* elt( new P( document, this, document->dataName(),
-                    document->dataLine(), document->dataCol() ) );
-                appendChild( elt );
-                tok = elt->parse( lexer );
+            } else if( lexer->tagId() == Lexer::LP ) {
+                P *p = new P( _document, this, _document->dataName(),
+                    _document->dataLine(), _document->dataCol() );
+                appendChild( p );
+                tok = p->parse( lexer );
+            } else if( parseBlock( lexer, tok ) ) {
+                break;
             }
-            else if( parseBlock( lexer, tok ) )
-                break;
         }
     }
     return tok;

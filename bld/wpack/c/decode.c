@@ -66,8 +66,8 @@ extern void             LogUnPacking( char * );
 extern int              UnPackHook( char * );
 
 #ifdef _M_IX86
-#pragma aux DecReadByte parm nomemory modify nomemory;
-#pragma aux DecWriteByte parm nomemory modify nomemory;
+#pragma aux DecReadByte __parm __nomemory __modify __nomemory;
+#pragma aux DecWriteByte __parm __nomemory __modify __nomemory;
 #endif
 
 extern int          infile, outfile;

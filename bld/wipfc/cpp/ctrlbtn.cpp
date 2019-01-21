@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
+* Copyright (c) 2009-2018 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -28,29 +28,27 @@
 *
 ****************************************************************************/
 
+
+#include "wipfc.hpp"
 #include "ctrlbtn.hpp"
 #include "errors.hpp"
-#include "util.hpp"
+#include "outfile.hpp"
 
-STD1::uint32_t ControlButton::write( std::FILE *out ) const
+
+dword ControlButton::write( OutFile* out ) const
 {
-    STD1::uint32_t bytes( sizeof( STD1::uint16_t ) * 2 );
-    STD1::uint16_t type( 1 );
-    if( std::fwrite( &type, sizeof( STD1::uint16_t), 1, out) != 1 )
+    // type = 1
+    if( out->put( static_cast< word >( 1 ) ) )
         throw FatalError( ERR_WRITE );
-    if( std::fwrite( &res, sizeof( STD1::uint16_t), 1, out) != 1 ) 
+    if( out->put( _res ) )
         throw FatalError( ERR_WRITE );
-    std::string buffer;
-    wtombstring( txt, buffer );
-    std::size_t length( buffer.size() );
-    if( length > 255 ) {
+    std::string buffer( out->wtomb_string( _text ) );
+    if( buffer.size() > 255 )
         buffer.erase( 255 );
-        length = 255;
-    }
-    if( std::fputc( static_cast< STD1::uint8_t >( length ), out) == EOF ||
-        std::fwrite( buffer.data(), sizeof( char ), length, out ) != length )
+    byte length( static_cast< byte >( buffer.size() ) );
+    if( out->put( length ) )
         throw FatalError( ERR_WRITE );
-    bytes += length + 1;
-    return bytes;
+    if( out->put( buffer ) )
+        throw FatalError( ERR_WRITE );
+    return( static_cast< dword >( sizeof( word ) + sizeof( _res ) + sizeof( byte ) + length * sizeof( char ) ) );
 }
-

@@ -176,407 +176,411 @@ extern  int     __FLDC( ld_arg, ld_arg );
 #endif
 
 #ifdef __WATCOMC__
+#if __WATCOMC__ < 1300
+// fix for OW 1.9
+#define float_fixup float
+#else
+#define float_fixup __float
+#endif
 #if defined(__386__)
- #pragma aux    __ZBuf2LD       "*"  parm caller [eax] [edx];
+ #pragma aux __ZBuf2LD "*"  __parm __caller [__eax] [__edx]
  #if defined(__FPI__)
   extern unsigned __Get87CW(void);
   extern void __Set87CW(unsigned short);
   #pragma aux   __Get87CW = \
-                "push 0"\
-        float   "fstcw [esp]"\
-        float   "fwait"\
-                "pop eax"\
-                value [eax];
+                    "push 0" \
+        float_fixup "fstcw [esp]" \
+        float_fixup "fwait" \
+                    "pop eax" \
+        __value [__eax]
   #pragma aux   __Set87CW = \
-                "push eax"\
-        float   "fldcw [esp]"\
-                "pop eax"\
-                parm caller [eax];
+                    "push eax" \
+        float_fixup "fldcw [esp]" \
+                    "pop eax" \
+        __parm __caller [__eax]
   #pragma aux   __FLDA = \
-        float   "fld tbyte ptr [eax]"\
-        float   "fld tbyte ptr [edx]"\
-        float   "fadd"\
-        float   "fstp tbyte ptr [ebx]"\
-                parm caller [eax] [edx] [ebx];
+        float_fixup "fld tbyte ptr [eax]" \
+        float_fixup "fld tbyte ptr [edx]" \
+        float_fixup "fadd" \
+        float_fixup "fstp tbyte ptr [ebx]" \
+        __parm __caller [__eax] [__edx] [__ebx]
   #pragma aux   __FLDS = \
-        float   "fld tbyte ptr [eax]"\
-        float   "fld tbyte ptr [edx]"\
-        float   "fsub"\
-        float   "fstp tbyte ptr [ebx]"\
-                parm caller [eax] [edx] [ebx];
+        float_fixup "fld tbyte ptr [eax]" \
+        float_fixup "fld tbyte ptr [edx]" \
+        float_fixup "fsub" \
+        float_fixup "fstp tbyte ptr [ebx]" \
+        __parm __caller [__eax] [__edx] [__ebx]
   #pragma aux   __FLDM = \
-        float   "fld tbyte ptr [eax]"\
-        float   "fld tbyte ptr [edx]"\
-        float   "fmul"\
-        float   "fstp tbyte ptr [ebx]"\
-                parm caller [eax] [edx] [ebx];
+        float_fixup "fld tbyte ptr [eax]" \
+        float_fixup "fld tbyte ptr [edx]" \
+        float_fixup "fmul" \
+        float_fixup "fstp tbyte ptr [ebx]" \
+        __parm __caller [__eax] [__edx] [__ebx]
   #pragma aux   __FLDD = \
-        float   "fld tbyte ptr [eax]"\
-        float   "fld tbyte ptr [edx]"\
-        float   "fdiv"\
-        float   "fstp tbyte ptr [ebx]"\
-                parm caller [eax] [edx] [ebx];
+        float_fixup "fld tbyte ptr [eax]" \
+        float_fixup "fld tbyte ptr [edx]" \
+        float_fixup "fdiv" \
+        float_fixup "fstp tbyte ptr [ebx]" \
+        __parm __caller [__eax] [__edx] [__ebx]
   #pragma aux   __FLDC = \
-                /* ST(1) */\
-        float   "fld tbyte ptr [edx]"\
-                /* ST(0) */\
-        float   "fld tbyte ptr [eax]"\
-                /* compare ST(0) with ST(1) */\
-        float   "fcompp"\
-        float   "fstsw  ax"\
-                "sahf"\
-                "sbb  edx,edx"\
-                "shl  edx,1"\
-                "shl  ah,2"\
-                "cmc"\
-                "adc  edx,0"\
-                /* edx will be -1,0,+1 if [eax] <, ==, > [edx] */\
-                parm caller [eax] [edx] value [edx];
+        float_fixup "fld tbyte ptr [edx]" /* ST(1) */ \
+        float_fixup "fld tbyte ptr [eax]" /* ST(0) */ \
+        float_fixup "fcompp" /* compare ST(0) with ST(1) */ \
+        float_fixup "fstsw  ax" \
+                    "sahf" \
+                    "sbb  edx,edx" \
+                    "shl  edx,1" \
+                    "shl  ah,2" \
+                    "cmc" \
+                    "adc  edx,0" \
+                    /* edx will be -1,0,+1 if [eax] <, ==, > [edx] */\
+        __parm __caller [__eax] [__edx] \
+        __value [__edx]
   #pragma aux   __LDI4 = \
-        float   "fld tbyte ptr [eax]"\
-                "push  eax"\
-                "push  eax"\
-        float   "fstcw [esp]"\
-        float   "fwait"\
-                "pop eax"\
-                "push eax"\
-                "or ah,0x0c"\
-                "push eax"\
-        float   "fldcw [esp]"\
-                "pop eax"\
-        float   "fistp dword ptr 4[esp]"\
-        float   "fldcw [esp]"\
-                "pop   eax"\
-                "pop   eax"\
-                parm caller [eax] value [eax];
+        float_fixup "fld tbyte ptr [eax]" \
+                    "push  eax" \
+                    "push  eax" \
+        float_fixup "fstcw [esp]" \
+        float_fixup "fwait" \
+                    "pop eax" \
+                    "push eax" \
+                    "or ah,0x0c" \
+                    "push eax" \
+        float_fixup "fldcw [esp]" \
+                    "pop eax" \
+        float_fixup "fistp dword ptr 4[esp]" \
+        float_fixup "fldcw [esp]" \
+                    "pop   eax" \
+                    "pop   eax" \
+        __parm __caller [__eax] \
+        __value [__eax]
   #pragma aux   __I4LD = \
-                "push  eax"\
-        float   "fild  dword ptr [esp]"\
-                "pop   eax"\
-        float   "fstp tbyte ptr [edx]"\
-                parm caller [eax] [edx];
+                    "push  eax" \
+        float_fixup "fild  dword ptr [esp]" \
+                    "pop   eax" \
+        float_fixup "fstp tbyte ptr [edx]" \
+        __parm __caller [__eax] [__edx]
   #pragma aux   __U4LD = \
-                "push  0"\
-                "push  eax"\
-        float   "fild  qword ptr [esp]"\
-                "pop   eax"\
-                "pop   eax"\
-        float   "fstp tbyte ptr [edx]"\
-                parm caller [eax] [edx];
+                    "push  0" \
+                    "push  eax" \
+        float_fixup "fild  qword ptr [esp]" \
+                    "pop   eax" \
+                    "pop   eax" \
+        float_fixup "fstp tbyte ptr [edx]" \
+        __parm __caller [__eax] [__edx]
   #pragma aux   __LDI8 = \
-        float   "fld tbyte ptr [eax]"\
-                "push  eax"\
-                "push  eax"\
-        float   "fstcw [esp]"\
-        float   "fwait"\
-                "pop eax"\
-                "push eax"\
-                "or ah,0x0c"\
-                "push eax"\
-        float   "fldcw [esp]"\
-                "pop eax"\
-        float   "fistp qword ptr [edx]"\
-        float   "fldcw [esp]"\
-                "pop   eax"\
-                "pop   eax"\
-                parm caller [eax] [edx];
+        float_fixup "fld tbyte ptr [eax]" \
+                    "push  eax" \
+                    "push  eax" \
+        float_fixup "fstcw [esp]" \
+        float_fixup "fwait" \
+                    "pop eax" \
+                    "push eax" \
+                    "or ah,0x0c" \
+                    "push eax" \
+        float_fixup "fldcw [esp]" \
+                    "pop eax" \
+        float_fixup "fistp qword ptr [edx]" \
+        float_fixup "fldcw [esp]" \
+                    "pop   eax" \
+                    "pop   eax" \
+        __parm __caller [__eax] [__edx]
   #pragma aux   __I8LD = \
-        float   "fild  qword ptr [eax]"\
-        float   "fstp  tbyte ptr [edx]"\
-                parm caller [eax] [edx];
+        float_fixup "fild  qword ptr [eax]" \
+        float_fixup "fstp  tbyte ptr [edx]" \
+        __parm __caller [__eax] [__edx]
   #pragma aux   __U8LD = \
-                "push  [eax+4]"\
-                "and   [esp],0x7fffffff"\
-                "push  [eax]"\
-        float   "fild  qword ptr [esp]"\
-                "push  [eax+4]"\
-                "and   [esp],0x80000000"\
-                "push  0"\
-        float   "fild  qword ptr [esp]"\
-        float   "fchs"\
-        float   "faddp st(1),st"\
-        float   "fstp  tbyte ptr [edx]"\
-                "lea   esp,[esp+16]"\
-                parm caller [eax] [edx];
+                    "push  [eax+4]" \
+                    "and   [esp],0x7fffffff" \
+                    "push  [eax]" \
+        float_fixup "fild  qword ptr [esp]" \
+                    "push  [eax+4]" \
+                    "and   [esp],0x80000000" \
+                    "push  0" \
+        float_fixup "fild  qword ptr [esp]" \
+        float_fixup "fchs" \
+        float_fixup "faddp st(1),st" \
+        float_fixup "fstp  tbyte ptr [edx]" \
+                    "lea   esp,[esp+16]" \
+        __parm __caller [__eax] [__edx]
   #pragma aux   __iFDLD = \
-        float   "fld  qword ptr [eax]"\
-        float   "fstp tbyte ptr [edx]"\
-                parm caller [eax] [edx];
+        float_fixup "fld  qword ptr [eax]" \
+        float_fixup "fstp tbyte ptr [edx]" \
+        __parm __caller [__eax] [__edx]
   #pragma aux   __iFSLD = \
-        float   "fld  dword ptr [eax]"\
-        float   "fstp tbyte ptr [edx]"\
-                parm caller [eax] [edx];
+        float_fixup "fld  dword ptr [eax]" \
+        float_fixup "fstp tbyte ptr [edx]" \
+        __parm __caller [__eax] [__edx]
   #pragma aux   __iLDFD = \
-        float   "fld  tbyte ptr [eax]"\
-        float   "fstp qword ptr [edx]"\
-                parm caller [eax] [edx];
+        float_fixup "fld  tbyte ptr [eax]" \
+        float_fixup "fstp qword ptr [edx]" \
+        __parm __caller [__eax] [__edx]
   #pragma aux   __iLDFS = \
-        float   "fld  tbyte ptr [eax]"\
-        float   "fstp dword ptr [edx]"\
-                parm caller [eax] [edx];
+        float_fixup "fld  tbyte ptr [eax]" \
+        float_fixup "fstp dword ptr [edx]" \
+        __parm __caller [__eax] [__edx]
  #else  // floating-point calls
-  #pragma aux   __FLDA  "*"  parm caller [eax] [edx] [ebx];
-  #pragma aux   __FLDS  "*"  parm caller [eax] [edx] [ebx];
-  #pragma aux   __FLDM  "*"  parm caller [eax] [edx] [ebx];
-  #pragma aux   __FLDD  "*"  parm caller [eax] [edx] [ebx];
-  #pragma aux   __LDI4  "*"  parm caller [eax] value [eax];
-  #pragma aux   __I4LD  "*"  parm caller [eax] [edx];
-  #pragma aux   __U4LD  "*"  parm caller [eax] [edx];
-  #pragma aux   __LDI8  "*"  parm caller [eax] [edx];
-  #pragma aux   __I8LD  "*"  parm caller [eax] [edx];
-  #pragma aux   __U8LD  "*"  parm caller [eax] [edx];
-  #pragma aux   __iFDLD "*"  parm caller [eax] [edx];
-  #pragma aux   __iFSLD "*"  parm caller [eax] [edx];
-  #pragma aux   __iLDFD "*"  parm caller [eax] [edx];
-  #pragma aux   __iLDFS "*"  parm caller [eax] [edx];
-  #pragma aux   __FLDC  "*"  parm caller [eax] [edx] value [eax];
+  #pragma aux   __FLDA  "*"  __parm __caller [__eax] [__edx] [__ebx]
+  #pragma aux   __FLDS  "*"  __parm __caller [__eax] [__edx] [__ebx]
+  #pragma aux   __FLDM  "*"  __parm __caller [__eax] [__edx] [__ebx]
+  #pragma aux   __FLDD  "*"  __parm __caller [__eax] [__edx] [__ebx]
+  #pragma aux   __LDI4  "*"  __parm __caller [__eax] __value [__eax]
+  #pragma aux   __I4LD  "*"  __parm __caller [__eax] [__edx]
+  #pragma aux   __U4LD  "*"  __parm __caller [__eax] [__edx]
+  #pragma aux   __LDI8  "*"  __parm __caller [__eax] [__edx]
+  #pragma aux   __I8LD  "*"  __parm __caller [__eax] [__edx]
+  #pragma aux   __U8LD  "*"  __parm __caller [__eax] [__edx]
+  #pragma aux   __iFDLD "*"  __parm __caller [__eax] [__edx]
+  #pragma aux   __iFSLD "*"  __parm __caller [__eax] [__edx]
+  #pragma aux   __iLDFD "*"  __parm __caller [__eax] [__edx]
+  #pragma aux   __iLDFS "*"  __parm __caller [__eax] [__edx]
+  #pragma aux   __FLDC  "*"  __parm __caller [__eax] [__edx] __value [__eax]
  #endif
 #elif defined( _M_I86 )            // 16-bit pragmas
- #pragma aux     __ZBuf2LD      "*"  parm caller [ax] [dx];
+ #pragma aux     __ZBuf2LD      "*"  __parm __caller [__ax] [__dx]
  #if defined(__FPI__)
   extern unsigned __Get87CW(void);
   extern void __Set87CW(unsigned short);
   #pragma aux   __Get87CW = \
-                "push ax"\
-                "push bp"\
-                "mov  bp,sp"\
-        float   "fstcw 2[bp]"\
-        float   "fwait"\
-                "pop bp"\
-                "pop ax"\
-                value [ax];
+                    "push ax" \
+                    "push bp" \
+                    "mov  bp,sp" \
+        float_fixup "fstcw 2[bp]" \
+        float_fixup "fwait" \
+                    "pop bp" \
+                    "pop ax" \
+        __value [__ax]
   #pragma aux   __Set87CW = \
-                "push ax"\
-                "push bp"\
-                "mov  bp,sp"\
-        float   "fldcw 2[bp]"\
-                "pop bp"\
-                "pop ax"\
-                parm caller [ax];
+                    "push ax" \
+                    "push bp" \
+                    "mov  bp,sp" \
+        float_fixup "fldcw 2[bp]" \
+                    "pop bp" \
+                    "pop ax" \
+        __parm __caller [__ax]
   #pragma aux   __FLDA = \
-                "push bp"\
-                "mov  bp,ax"\
-        float   "fld  tbyte ptr [bp]"\
-                "mov  bp,dx"\
-        float   "fld  tbyte ptr [bp]"\
-        float   "fadd"\
-                "mov  bp,bx"\
-        float   "fstp tbyte ptr [bp]"\
-                "pop  bp"\
-                parm caller [ax] [dx] [bx];
+                    "push bp" \
+                    "mov  bp,ax" \
+        float_fixup "fld  tbyte ptr [bp]" \
+                    "mov  bp,dx" \
+        float_fixup "fld  tbyte ptr [bp]" \
+        float_fixup "fadd" \
+                    "mov  bp,bx" \
+        float_fixup "fstp tbyte ptr [bp]" \
+                    "pop  bp" \
+        __parm __caller [__ax] [__dx] [__bx]
   #pragma aux   __FLDS = \
-                "push bp"\
-                "mov  bp,ax"\
-        float   "fld  tbyte ptr [bp]"\
-                "mov  bp,dx"\
-        float   "fld  tbyte ptr [bp]"\
-        float   "fsub"\
-                "mov  bp,bx"\
-        float   "fstp tbyte ptr [bp]"\
-                "pop  bp"\
-                parm caller [ax] [dx] [bx];
+                    "push bp" \
+                    "mov  bp,ax" \
+        float_fixup "fld  tbyte ptr [bp]" \
+                    "mov  bp,dx" \
+        float_fixup "fld  tbyte ptr [bp]" \
+        float_fixup "fsub" \
+                    "mov  bp,bx" \
+        float_fixup "fstp tbyte ptr [bp]" \
+                    "pop  bp" \
+        __parm __caller [__ax] [__dx] [__bx]
   #pragma aux   __FLDM = \
-                "push bp"\
-                "mov  bp,ax"\
-        float   "fld  tbyte ptr [bp]"\
-                "mov  bp,dx"\
-        float   "fld  tbyte ptr [bp]"\
-        float   "fmul"\
-                "mov  bp,bx"\
-        float   "fstp tbyte ptr [bp]"\
-                "pop  bp"\
-                parm caller [ax] [dx] [bx];
+                    "push bp" \
+                    "mov  bp,ax" \
+        float_fixup "fld  tbyte ptr [bp]" \
+                    "mov  bp,dx" \
+        float_fixup "fld  tbyte ptr [bp]" \
+        float_fixup "fmul" \
+                    "mov  bp,bx" \
+        float_fixup "fstp tbyte ptr [bp]" \
+                    "pop  bp" \
+        __parm __caller [__ax] [__dx] [__bx]
   #pragma aux   __FLDD = \
-                "push bp"\
-                "mov  bp,ax"\
-        float   "fld  tbyte ptr [bp]"\
-                "mov  bp,dx"\
-        float   "fld  tbyte ptr [bp]"\
-        float   "fdiv"\
-                "mov  bp,bx"\
-        float   "fstp tbyte ptr [bp]"\
-                "pop  bp"\
-                parm caller [ax] [dx] [bx];
+                    "push bp" \
+                    "mov  bp,ax" \
+        float_fixup "fld  tbyte ptr [bp]" \
+                    "mov  bp,dx" \
+        float_fixup "fld  tbyte ptr [bp]" \
+        float_fixup "fdiv" \
+                    "mov  bp,bx" \
+        float_fixup "fstp tbyte ptr [bp]" \
+                    "pop  bp" \
+        __parm __caller [__ax] [__dx] [__bx]
   #pragma aux   __FLDC = \
-                "push bp"\
-                "mov  bp,dx"\
-                /* ST(1) */\
-        float   "fld  tbyte ptr [bp]"\
-                "mov  bp,ax"\
-                /* ST(0) */\
-        float   "fld  tbyte ptr [bp]"\
-                /* compare ST(0) with ST(1) */\
-        float   "fcompp"\
-                "push ax"\
-                "mov  bp,sp"\
-        float   "fstsw 0[bp]"\
-        float   "fwait"\
-                "pop  ax"\
-                "sahf"\
-                "sbb  dx,dx"\
-                "shl  dx,1"\
-                "shl  ah,1"\
-                "shl  ah,1"\
-                "cmc"\
-                "adc  dx,0"\
-                "pop  bp"\
-                parm caller [ax] [dx] value [dx];
+                    "push bp" \
+                    "mov  bp,dx" \
+        float_fixup "fld  tbyte ptr [bp]" /* ST(1) */\
+                    "mov  bp,ax" \
+        float_fixup "fld  tbyte ptr [bp]" /* ST(0) */\
+        float_fixup "fcompp" /* compare ST(0) with ST(1) */\
+                    "push ax" \
+                    "mov  bp,sp" \
+        float_fixup "fstsw 0[bp]" \
+        float_fixup "fwait" \
+                    "pop  ax" \
+                    "sahf" \
+                    "sbb  dx,dx" \
+                    "shl  dx,1" \
+                    "shl  ah,1" \
+                    "shl  ah,1" \
+                    "cmc" \
+                    "adc  dx,0" \
+                    "pop  bp" \
+        __parm __caller [__ax] [__dx] \
+        __value [__dx]
   #pragma aux   __LDI4 = \
-                "push  bp"\
-                "mov   bp,ax"\
-        float   "fld   tbyte ptr [bp]"\
-                "push  dx"\
-                "push  ax"\
-                "push  ax"\
-                "mov   bp,sp"\
-        float   "fstcw [bp]"\
-        float   "fwait"\
-                "pop   ax"\
-                "push  ax"\
-                "or    ah,0x0c"\
-                "mov   2[bp],ax"\
-        float   "fldcw 2[bp]"\
-        float   "fistp dword ptr 2[bp]"\
-        float   "fldcw [bp]"\
-                "pop   ax"\
-                "pop   ax"\
-                "pop   dx"\
-                "pop   bp"\
-                parm caller [ax] value [dx ax];
+                    "push  bp" \
+                    "mov   bp,ax" \
+        float_fixup "fld   tbyte ptr [bp]" \
+                    "push  dx" \
+                    "push  ax" \
+                    "push  ax" \
+                    "mov   bp,sp" \
+        float_fixup "fstcw [bp]" \
+        float_fixup "fwait" \
+                    "pop   ax" \
+                    "push  ax" \
+                    "or    ah,0x0c" \
+                    "mov   2[bp],ax" \
+        float_fixup "fldcw 2[bp]" \
+        float_fixup "fistp dword ptr 2[bp]" \
+        float_fixup "fldcw [bp]" \
+                    "pop   ax" \
+                    "pop   ax" \
+                    "pop   dx" \
+                    "pop   bp" \
+        __parm __caller [__ax] \
+        __value [__dx __ax]
   #pragma aux   __I4LD = \
-                "push  bp"\
-                "push  dx"\
-                "push  ax"\
-                "mov   bp,sp"\
-        float   "fild  dword ptr [bp]"\
-                "pop   ax"\
-                "pop   dx"\
-                "mov   bp,bx"\
-        float   "fstp  tbyte ptr [bp]"\
-                "pop   bp"\
-                parm caller [dx ax] [bx];
+                    "push  bp" \
+                    "push  dx" \
+                    "push  ax" \
+                    "mov   bp,sp" \
+        float_fixup "fild  dword ptr [bp]" \
+                    "pop   ax" \
+                    "pop   dx" \
+                    "mov   bp,bx" \
+        float_fixup "fstp  tbyte ptr [bp]" \
+                    "pop   bp" \
+        __parm __caller [__dx __ax] [__bx]
   #pragma aux   __U4LD = \
-                "push  bp"\
-                "push  ax"\
-                "push  ax"\
-                "push  dx"\
-                "push  ax"\
-                "mov   bp,sp"\
-                "sub   ax,ax"\
-                "mov   4[bp],ax"\
-                "mov   6[bp],ax"\
-        float   "fild  qword ptr [bp]"\
-                "pop   ax"\
-                "pop   dx"\
-                "pop   bp"\
-                "pop   bp"\
-                "mov   bp,bx"\
-        float   "fstp  tbyte ptr [bp]"\
-                "pop   bp"\
-                parm caller [dx ax] [bx];
+                    "push  bp" \
+                    "push  ax" \
+                    "push  ax" \
+                    "push  dx" \
+                    "push  ax" \
+                    "mov   bp,sp" \
+                    "sub   ax,ax" \
+                    "mov   4[bp],ax" \
+                    "mov   6[bp],ax" \
+        float_fixup "fild  qword ptr [bp]" \
+                    "pop   ax" \
+                    "pop   dx" \
+                    "pop   bp" \
+                    "pop   bp" \
+                    "mov   bp,bx" \
+        float_fixup "fstp  tbyte ptr [bp]" \
+                    "pop   bp" \
+        __parm __caller [__dx __ax] [__bx]
   #pragma aux   __LDI8 = \
-                "push  bp"\
-                "mov   bp,ax"\
-        float   "fld   tbyte ptr [bp]"\
-                "push  ax"\
-                "push  ax"\
-                "mov   bp,sp"\
-        float   "fstcw [bp]"\
-        float   "fwait"\
-                "pop   ax"\
-                "push  ax"\
-                "or    ah,0x0c"\
-                "push  ax"\
-        float   "fldcw [bp-2]"\
-                "pop   ax"\
-                "mov   bp,dx"\
-        float   "fistp qword ptr [bp]"\
-                "mov   bp,sp"\
-        float   "fldcw [bp]"\
-                "pop   ax"\
-                "pop   ax"\
-                "pop   bp"\
-                parm caller [ax] [dx];
+                    "push  bp" \
+                    "mov   bp,ax" \
+        float_fixup "fld   tbyte ptr [bp]" \
+                    "push  ax" \
+                    "push  ax" \
+                    "mov   bp,sp" \
+        float_fixup "fstcw [bp]" \
+        float_fixup "fwait" \
+                    "pop   ax" \
+                    "push  ax" \
+                    "or    ah,0x0c" \
+                    "push  ax" \
+        float_fixup "fldcw [bp-2]" \
+                    "pop   ax" \
+                    "mov   bp,dx" \
+        float_fixup "fistp qword ptr [bp]" \
+                    "mov   bp,sp" \
+        float_fixup "fldcw [bp]" \
+                    "pop   ax" \
+                    "pop   ax" \
+                    "pop   bp" \
+        __parm __caller [__ax] [__dx]
   #pragma aux   __I8LD = \
-                "push  bp"\
-                "mov   bp,ax"\
-        float   "fild  qword ptr [bp]"\
-                "mov   bp,dx"\
-        float   "fstp  tbyte ptr [bp]"\
-                "pop   bp"\
-                parm caller [ax] [dx];
+                    "push  bp" \
+                    "mov   bp,ax" \
+        float_fixup "fild  qword ptr [bp]" \
+                    "mov   bp,dx" \
+        float_fixup "fstp  tbyte ptr [bp]" \
+                    "pop   bp" \
+        __parm __caller [__ax] [__dx]
   #pragma aux   __U8LD = \
-                "push  bp"\
-                "mov   bp,ax"\
-                "push  6[bp]"\
-                "push  4[bp]"\
-                "push  2[bp]"\
-                "push  [bp]"\
-                "push  6[bp]"\
-                "xor   bp,bp"\
-                "push  bp"\
-                "push  bp"\
-                "push  bp"\
-                "mov   bp,sp"\
-                "and   byte ptr [bp+8+7],0x7f"\
-        float   "fild  qword ptr [bp+8]"\
-                "and   word ptr [bp+6],0x8000"\
-        float   "fild  qword ptr [bp]"\
-        float   "fchs"\
-        float   "faddp st(1),st"\
-                "mov   bp,dx"\
-        float   "fstp  tbyte ptr [bp]"\
-                "add   sp,16"\
-                "pop   bp"\
-                parm caller [ax] [dx];
+                    "push  bp" \
+                    "mov   bp,ax" \
+                    "push  6[bp]" \
+                    "push  4[bp]" \
+                    "push  2[bp]" \
+                    "push  [bp]" \
+                    "push  6[bp]" \
+                    "xor   bp,bp" \
+                    "push  bp" \
+                    "push  bp" \
+                    "push  bp" \
+                    "mov   bp,sp" \
+                    "and   byte ptr [bp+8+7],0x7f" \
+        float_fixup "fild  qword ptr [bp+8]" \
+                    "and   word ptr [bp+6],0x8000" \
+        float_fixup "fild  qword ptr [bp]" \
+        float_fixup "fchs" \
+        float_fixup "faddp st(1),st" \
+                    "mov   bp,dx" \
+        float_fixup "fstp  tbyte ptr [bp]" \
+                    "add   sp,16" \
+                    "pop   bp" \
+        __parm __caller [__ax] [__dx]
   #pragma aux   __iFDLD = \
-                "push  bp"\
-                "mov   bp,ax"\
-        float   "fld   qword ptr [bp]"\
-                "mov   bp,dx"\
-        float   "fstp  tbyte ptr [bp]"\
-                "pop   bp"\
-                parm caller [ax] [dx];
+                    "push  bp" \
+                    "mov   bp,ax" \
+        float_fixup "fld   qword ptr [bp]" \
+                    "mov   bp,dx" \
+        float_fixup "fstp  tbyte ptr [bp]" \
+                    "pop   bp" \
+        __parm __caller [__ax] [__dx]
   #pragma aux   __iFSLD = \
-                "push  bp"\
-                "mov   bp,ax"\
-        float   "fld   dword ptr [bp]"\
-                "mov   bp,dx"\
-        float   "fstp  tbyte ptr [bp]"\
-                "pop   bp"\
-                parm caller [ax] [dx];
+                    "push  bp" \
+                    "mov   bp,ax" \
+        float_fixup "fld   dword ptr [bp]" \
+                    "mov   bp,dx" \
+        float_fixup "fstp  tbyte ptr [bp]" \
+                    "pop   bp" \
+        __parm __caller [__ax] [__dx]
   #pragma aux   __iLDFD = \
-                "push  bp"\
-                "mov   bp,ax"\
-        float   "fld   tbyte ptr [bp]"\
-                "mov   bp,dx"\
-        float   "fstp  qword ptr [bp]"\
-                "pop   bp"\
-                parm caller [ax] [dx];
+                    "push  bp" \
+                    "mov   bp,ax" \
+        float_fixup "fld   tbyte ptr [bp]" \
+                    "mov   bp,dx" \
+        float_fixup "fstp  qword ptr [bp]" \
+                    "pop   bp" \
+        __parm __caller [__ax] [__dx]
   #pragma aux   __iLDFS = \
-                "push  bp"\
-                "mov   bp,ax"\
-        float   "fld   tbyte ptr [bp]"\
-                "mov   bp,dx"\
-        float   "fstp  dword ptr [bp]"\
-                "pop   bp"\
-                parm caller [ax] [dx];
+                    "push  bp" \
+                    "mov   bp,ax" \
+        float_fixup "fld   tbyte ptr [bp]" \
+                    "mov   bp,dx" \
+        float_fixup "fstp  dword ptr [bp]" \
+                    "pop   bp" \
+        __parm __caller [__ax] [__dx]
  #else  // floating-point calls
-  #pragma aux   __FLDA  "*"  parm caller [ax] [dx] [bx];
-  #pragma aux   __FLDS  "*"  parm caller [ax] [dx] [bx];
-  #pragma aux   __FLDM  "*"  parm caller [ax] [dx] [bx];
-  #pragma aux   __FLDD  "*"  parm caller [ax] [dx] [bx];
-  #pragma aux   __LDI4  "*"  parm caller [ax] value [dx ax];
-  #pragma aux   __I4LD  "*"  parm caller [dx ax] [bx];
-  #pragma aux   __U4LD  "*"  parm caller [dx ax] [bx];
-  #pragma aux   __LDI8  "*"  parm caller [ax] [dx];
-  #pragma aux   __I8LD  "*"  parm caller [ax] [dx];
-  #pragma aux   __U8LD  "*"  parm caller [ax] [dx];
-  #pragma aux   __iFDLD "*"  parm caller [ax] [dx];
-  #pragma aux   __iFSLD "*"  parm caller [ax] [dx];
-  #pragma aux   __iLDFD "*"  parm caller [ax] [dx];
-  #pragma aux   __iLDFS "*"  parm caller [ax] [dx];
-  #pragma aux   __FLDC  "*"  parm caller [ax] [dx] value [ax];
+  #pragma aux   __FLDA  "*"  __parm __caller [__ax] [__dx] [__bx]
+  #pragma aux   __FLDS  "*"  __parm __caller [__ax] [__dx] [__bx]
+  #pragma aux   __FLDM  "*"  __parm __caller [__ax] [__dx] [__bx]
+  #pragma aux   __FLDD  "*"  __parm __caller [__ax] [__dx] [__bx]
+  #pragma aux   __LDI4  "*"  __parm __caller [__ax] __value [__dx __ax]
+  #pragma aux   __I4LD  "*"  __parm __caller [__dx __ax] [__bx]
+  #pragma aux   __U4LD  "*"  __parm __caller [__dx __ax] [__bx]
+  #pragma aux   __LDI8  "*"  __parm __caller [__ax] [__dx]
+  #pragma aux   __I8LD  "*"  __parm __caller [__ax] [__dx]
+  #pragma aux   __U8LD  "*"  __parm __caller [__ax] [__dx]
+  #pragma aux   __iFDLD "*"  __parm __caller [__ax] [__dx]
+  #pragma aux   __iFSLD "*"  __parm __caller [__ax] [__dx]
+  #pragma aux   __iLDFD "*"  __parm __caller [__ax] [__dx]
+  #pragma aux   __iLDFS "*"  __parm __caller [__ax] [__dx]
+  #pragma aux   __FLDC  "*"  __parm __caller [__ax] [__dx] __value [__ax]
  #endif
 #endif
 #endif

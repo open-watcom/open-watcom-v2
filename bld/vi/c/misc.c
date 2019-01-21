@@ -185,6 +185,7 @@ static int doRedirect( int original, const char *filename, int mode )
         if( dup2( fh, original ) == 0 ) {
             return( fh );
         }
+        close( fh );
     }
     return( -1 );
 }
@@ -275,8 +276,7 @@ static long doExec( const char *std_in, const char *std_out, const char *cmd )
     }
     if( std_out != NULL ) {
         save_out = dup( STDOUT_FILENO );
-        new_out = doRedirect( STDOUT_FILENO, std_out,
-                              O_WRONLY | O_BINARY | O_CREAT | O_TRUNC );
+        new_out = doRedirect( STDOUT_FILENO, std_out, O_WRONLY | O_BINARY | O_CREAT | O_TRUNC );
         if( new_out == -1 ) {
             close( save_out );
             if( std_in != NULL ) {
@@ -292,16 +292,13 @@ static long doExec( const char *std_in, const char *std_out, const char *cmd )
     strcpy( buffer, cmd );
     s = buffer;
     for( i = 0; i < MAX_ARGS; i++ ) {
-        while( isspace( *s ) )
-            s++;
+        SKIP_SPACES( s );
         if( *s == '\0' ) {
             argv[i] = NULL;
             break;
         }
         argv[i] = s;
-        while( *s != '\0' && !isspace( *s ) ) {
-            s++;
-        }
+        SKIP_TOSPACE( s );
         if( *s != '\0' ) {
             *s++ = '\0';
         } else {
@@ -365,11 +362,11 @@ long ExecCmd( const char *file_in, const char *file_out, const char *cmd )
 /*
  * GetResponse - get a response from the user
  */
-vi_rc GetResponse( char *str, char *res )
+vi_rc GetResponse( char *str, char *res, size_t maxlen )
 {
     vi_rc   rc;
 
-    rc = PromptForString( str, res, MAX_STR, NULL );
+    rc = PromptForString( str, res, maxlen, NULL );
     if( rc == ERR_NO_ERR ) {
         return( GOT_RESPONSE );
     }
@@ -429,9 +426,7 @@ bool PromptThisFileForSave( const char *filename )
     info        *cinfo;
     HWND        hwnd_old = NO_WINDOW;
 
-    while( isspace( *filename ) ) {
-        filename++;
-    }
+    SKIP_SPACES( filename );
     for( cinfo = InfoHead; cinfo != NULL; cinfo = cinfo->next ) {
         if( SameFile( cinfo->CurrentFile->name, filename ) ) {
             if( cinfo->CurrentFile != NULL && cinfo->CurrentFile->dup_count == 0 &&
@@ -466,9 +461,7 @@ bool QueryFile( const char *filename )
 {
     info        *cinfo;
 
-    while( isspace( *filename ) ) {
-        filename++;
-    }
+    SKIP_SPACES( filename );
     for( cinfo = InfoHead; cinfo != NULL; cinfo = cinfo->next ) {
         if( SameFile( cinfo->CurrentFile->name, filename ) ) {
             return( true );
@@ -527,7 +520,7 @@ bool ExitWithVerify( void )
     bool        modified;
     bool        resp_yes;
 #ifndef __WIN__
-    char        st[MAX_STR];
+    char        st[5];
 #endif
 
     if( entered ) {
@@ -545,7 +538,7 @@ bool ExitWithVerify( void )
         if( MessageBox( root_window_id, "Files are modified, really exit?",
                          EditorName, MB_YESNO | MB_TASKMODAL ) == IDYES ) {
 #else
-        if( GetResponse( "Files are modified, really exit?", st ) == GOT_RESPONSE && st[0] == 'y' ) {
+        if( GetResponse( "Files are modified, really exit?", st, sizeof( st ) ) == GOT_RESPONSE && st[0] == 'y' ) {
 #endif
             resp_yes = true;
         }
@@ -603,7 +596,7 @@ bool ExitWithVerify( void )
     bool        modified;
     bool        resp_yes;
 #ifndef __WIN__
-    char        st[MAX_STR];
+    char        st[5];
 #endif
 
     if( entered ) {
@@ -621,7 +614,7 @@ bool ExitWithVerify( void )
                         EditorName, MB_YESNO | MB_TASKMODAL );
         if( i == IDYES ) {
 #else
-        i = GetResponse( "Files are modified, really exit?", st );
+        i = GetResponse( "Files are modified, really exit?", st, sizeof( st ) );
         if( i == GOT_RESPONSE && st[0] == 'y' ) {
 #endif
             resp_yes = true;
@@ -676,7 +669,7 @@ vi_rc EnterHexKey( void )
         return( ERR_LINE_FULL );
     }
 
-    rc = PromptForString( "Enter the number of char to insert:", st, sizeof( st ) - 1, NULL );
+    rc = PromptForString( "Enter the number of char to insert:", st, sizeof( st ), NULL );
     if( rc != ERR_NO_ERR ) {
         if( rc == NO_VALUE_ENTERED ) {
             return( ERR_NO_ERR );
@@ -892,7 +885,7 @@ bool GenericQueryBool( char *str )
 #else
     #define BUFLEN 10
     char buffer[BUFLEN];
-    PromptForString( str, buffer, BUFLEN, NULL );
+    PromptForString( str, buffer, sizeof( buffer ), NULL );
     return( tolower( buffer[0] ) == 'y' );
 #endif
 }

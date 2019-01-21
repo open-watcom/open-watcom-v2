@@ -14,9 +14,15 @@
 
 :include pshpackl.sp
 
+/* 
+ *  ISO C types
+ */
 :include time_t.sp
-
 :include wchar_t.sp
+
+/* 
+ *  POSIX 1003.1 types
+ */
 :include utime.sp
 
 :include poppack.sp

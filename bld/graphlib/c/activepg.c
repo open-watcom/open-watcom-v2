@@ -64,14 +64,12 @@ _WCRTLINK short _WCI86FAR _CGRAPH _setactivepage( short pagenum )
         }
     }
     pagenum %= _CurrState->vc.numvideopages;
-//    #if defined( __386__ )
-        _CurrState->screen_seg = _CurrState->screen_seg_base;
-        _CurrState->screen_off = _CurrState->screen_off_base +
-                                 ( ( _CurrState->page_size * pagenum ) << 4 );
-//    #else
-//      _CurrState->screen_seg = _CurrState->screen_seg_base +
-//                                  _CurrState->page_size * pagenum;
+//    #if defined( _M_I86 )
+//      _CurrState->screen_seg = _CurrState->screen_seg_base + _CurrState->page_size * pagenum;
 //      _CurrState->screen_off = _CurrState->screen_off_base;
+//    #else
+        _CurrState->screen_seg = _CurrState->screen_seg_base;
+        _CurrState->screen_off = _CurrState->screen_off_base + ( ( _CurrState->page_size * pagenum ) << 4 );
 //    #endif
     pos = _BIOS_data( CURSOR_POSN + 2 * pagenum, short );
     _TextPos.row = pos >> 8;                        /* cursor position  */

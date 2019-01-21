@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
+* Copyright (c) 2009-2018 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -51,8 +51,8 @@ public:
         ALL
     };
     Parml( Document* d, Element *p, const std::wstring* f, unsigned int r,
-        unsigned int c, unsigned char n, unsigned char i ) : Tag( d, p, f, r, c ),
-        nestLevel( n ), indent( i ), tabSize( 10 ), breakage( ALL ), compact( false ) { };
+        unsigned int c, byte n, byte i ) : Tag( d, p, f, r, c ),
+        _nestLevel( n ), _indent( i ), _tabSize( 10 ), _breakage( ALL ), _compact( false ) { };
     ~Parml() { };
     Lexer::Token parse( Lexer* lexer );
     void linearize( Page* page ) { linearizeChildren( page ); };
@@ -62,11 +62,12 @@ protected:
 private:
     Parml( const Parml& rhs );              //no copy
     Parml& operator=( const Parml& rhs );   //no assignment
-    unsigned char nestLevel;    //counts from 0
-    unsigned char indent;       //in character spaces
-    unsigned char tabSize;      //in character spaces
-    Break breakage;
-    bool compact;
+
+    byte                _nestLevel;     //counts from 0
+    byte                _indent;        //in character spaces
+    byte                _tabSize;       //in character spaces
+    Break               _breakage;
+    bool                _compact;
 };
 
 class EParml : public Tag {
@@ -83,9 +84,9 @@ private:
 class Pt : public Tag {
 public:
     Pt( Document* d, Element *p, const std::wstring* f, unsigned int r,
-        unsigned int c, unsigned char i, unsigned char t, Parml::Break brk, bool cp ) :
-        Tag( d, p, f, r, c ), indent( i ), tabSize( t ), textLength( 0 ),
-        breakage( brk ), compact( cp ) { };
+        unsigned int c, byte i, byte t, Parml::Break brk, bool cp ) :
+        Tag( d, p, f, r, c ), _indent( i ), _tabSize( t ), _textLength( 0 ),
+        _breakage( brk ), _compact( cp ) { };
     ~Pt() { };
     Lexer::Token parse( Lexer* lexer );
     void linearize( Page* page ) { linearizeChildren( page ); };
@@ -93,18 +94,19 @@ public:
 private:
     Pt( const Pt& rhs );                //no copy
     Pt& operator=( const Pt& rhs );     //no assignment
-    unsigned char indent;
-    unsigned char tabSize;
-    unsigned char textLength;
-    Parml::Break breakage;
-    bool compact;
+
+    byte                _indent;
+    byte                _tabSize;
+    byte                _textLength;
+    Parml::Break        _breakage;
+    bool                _compact;
 };
 
 class Pd : public Tag {
 public:
     Pd( Document* d, Element *p, const std::wstring* f, unsigned int r,
-        unsigned int c, unsigned char i, unsigned char t, bool brk ) :
-        Tag( d, p, f, r, c ), indent( i ), tabSize( t ), doBreak( brk ) { };
+        unsigned int c, byte i, byte t, bool brk ) :
+        Tag( d, p, f, r, c ), _indent( i ), _tabSize( t ), _doBreak( brk ) { };
     ~Pd() { };
     Lexer::Token parse( Lexer* lexer );
     void linearize( Page* page ) { linearizeChildren( page ); };
@@ -112,9 +114,10 @@ public:
 private:
     Pd( const Pd& rhs );                //no copy
     Pd& operator=( const Pd& rhs );     //no assignment
-    unsigned char indent;
-    unsigned char tabSize;
-    bool doBreak;
+
+    byte                _indent;
+    byte                _tabSize;
+    bool                _doBreak;
 };
 
 #endif //PARML_INCLUDED

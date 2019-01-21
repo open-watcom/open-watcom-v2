@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
+* Copyright (c) 2009-2018 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -44,8 +44,8 @@ class GlobalDictionaryWord; //forward references
 
 class Fn : public Tag {
 public:
-    Fn( Document* d, Element *p, const std::wstring* f, unsigned int r, \
-        unsigned int c ) : Tag( d, p, f, r, c ), id( 0 ) { };
+    Fn( Document* d, Element *p, const std::wstring* f, unsigned int r,
+        unsigned int c ) : Tag( d, p, f, r, c ), _id( 0 ) { };
     ~Fn() { };
     Lexer::Token parse( Lexer* lexer );
     void buildTOC( Page* page );
@@ -56,8 +56,9 @@ protected:
 private:
     Fn( const Fn& rhs );                //no copy
     Fn& operator=( const Fn& rhs );     //no assignment
-    TocEntry toc;
-    GlobalDictionaryWord* id;
+
+    TocEntry                _toc;
+    GlobalDictionaryWord*   _id;
 };
 
 #endif //FN_INCLUDED

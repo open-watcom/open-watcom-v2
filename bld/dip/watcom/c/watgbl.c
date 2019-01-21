@@ -104,7 +104,7 @@ static unsigned GblNameHash( const char *name, size_t name_len )
 static void GblCreate( imp_image_handle *iih, imp_sym_handle *ish, gbl_info *gbl )
 {
     ish->type = SH_GBL;
-    ish->im = GBL_MOD( gbl );
+    ish->imh = GBL_MOD( gbl );
     ish->name_off = (byte)( GBL_NAME( iih, gbl ) - (char *)gbl - 1 );
     ish->u.gbl = gbl;
 }
@@ -140,8 +140,8 @@ static int source_name( const char *gstart, size_t glen, const char **rstart, si
 /*
  * SearchGbl -- look up a global symbol name
  */
-static search_result LkupGblName( imp_image_handle *iih, section_info *inf, imp_mod_handle cim,
-                        imp_mod_handle im, lookup_item *li, void *d )
+static search_result LkupGblName( imp_image_handle *iih, section_info *inf, imp_mod_handle curr_imh,
+                        imp_mod_handle imh, lookup_item *li, void *d )
 {
     gbl_link            *lnk;
     gbl_link            *lnk_array;
@@ -202,12 +202,12 @@ static search_result LkupGblName( imp_image_handle *iih, section_info *inf, imp_
                     continue;
                 }
             }
-            if( im == IMH_NOMOD ) {
-                if( (GBL_KIND( iih, gbl ) & GBL_KIND_STATIC) && cim != GBL_MOD( gbl ) ) {
+            if( imh == IMH_NOMOD ) {
+                if( (GBL_KIND( iih, gbl ) & GBL_KIND_STATIC) && curr_imh != GBL_MOD( gbl ) ) {
                     continue;
                 }
             } else {
-                if( im != GBL_MOD( gbl ) ) {
+                if( imh != GBL_MOD( gbl ) ) {
                     continue;
                 }
             }
@@ -233,11 +233,11 @@ static search_result LkupGblName( imp_image_handle *iih, section_info *inf, imp_
                 }
             }
             ish = DCSymCreate( iih, d );
-            ish->im = GBL_MOD( gbl );
+            ish->imh = GBL_MOD( gbl );
             MK_ADDR( addr, gbl->addr, inf->sect_id );
             /* need to see if there's a local symbol at the right
                     address and use that instead */
-            if( cim == ish->im ) {
+            if( curr_imh == ish->imh ) {
                 /* We've already checked the local symbols. It ain't there. */
                 GblCreate( iih, ish, gbl );
             } else if( LookupLclAddr( iih, addr, ish ) == SR_EXACT ) {
@@ -251,8 +251,8 @@ static search_result LkupGblName( imp_image_handle *iih, section_info *inf, imp_
     return( sr );
 }
 
-search_result SearchGbl( imp_image_handle *iih, imp_mod_handle cim,
-                        imp_mod_handle im, lookup_item *li, void *d )
+search_result SearchGbl( imp_image_handle *iih, imp_mod_handle curr_imh,
+                        imp_mod_handle imh, lookup_item *li, void *d )
 {
     section_info        *inf;
     section_info        *end;
@@ -261,27 +261,27 @@ search_result SearchGbl( imp_image_handle *iih, imp_mod_handle cim,
     sr = SR_NONE;
     end = iih->sect + iih->num_sects;
     for( inf = iih->sect; inf < end; ++inf ) {
-        if( LkupGblName( iih, inf, cim, im, li, d ) != SR_NONE ) {
+        if( LkupGblName( iih, inf, curr_imh, imh, li, d ) != SR_NONE ) {
             sr = SR_EXACT;
         }
     }
     return( sr );
 }
 
-static int MachAddrComp( addr_ptr a, imp_mod_handle ima,
-                         addr_ptr b, imp_mod_handle imb )
+static int MachAddrComp( addr_ptr a1, imp_mod_handle imh1,
+                         addr_ptr a2, imp_mod_handle imh2 )
 {
-    if( a.segment < b.segment )
+    if( a1.segment < a2.segment )
         return( -1 );
-    if( a.segment > b.segment )
+    if( a1.segment > a2.segment )
         return( 1 );
-    if( a.offset < b.offset )
+    if( a1.offset < a2.offset )
         return( -1 );
-    if( a.offset > b.offset )
+    if( a1.offset > a2.offset )
         return( 1 );
-    if( ima < imb )
+    if( imh1 < imh2 )
         return( -1 );
-    if( ima > imb )
+    if( imh1 > imh2 )
         return( 1 );
     return( 0 );
 }
@@ -307,11 +307,11 @@ static search_result LkupGblAddr( info_block *inf, imp_sym_handle *ish, addr_ptr
          */
         target = low + (unsigned)( (byte *)high - (byte *)low ) / ( 2 * sizeof( gbl_link ) );
         gbl = target->gbl;
-        comp_rtn = MachAddrComp( addr, ish->im, gbl->addr, GBL_MOD( gbl ) );
+        comp_rtn = MachAddrComp( addr, ish->imh, gbl->addr, GBL_MOD( gbl ) );
         if( comp_rtn < 0 ) {
             high = target - 1;
         } else if( comp_rtn > 0 ) {
-            if( GBL_MOD( gbl ) == ish->im && gbl->addr.segment == addr.segment ) {
+            if( GBL_MOD( gbl ) == ish->imh && gbl->addr.segment == addr.segment ) {
                 nearest = target;
             }
             low = target + 1;
@@ -338,7 +338,7 @@ search_result LookupGblAddr( imp_image_handle *iih, address addr, imp_sym_handle
     search_result       sr = SR_NONE;
 
     ish->u.gbl = NULL;
-    inf = FindInfo( iih, ish->im );
+    inf = FindInfo( iih, ish->imh );
     for( curr = inf->gbl; curr != NULL; curr = curr->next ) {
         if( addr.sect_id == 0 || addr.sect_id == inf->sect_id ) {
             sr = LkupGblAddr( curr, ish, addr.mach );
@@ -435,8 +435,8 @@ static dip_status DoMakeGblLst( imp_image_handle *iih, info_block *inf, unsigned
     }
     link_data = DCAlloc( sizeof( gbl_link_info ) + ( num_syms - 1 ) * sizeof( gbl_link ) );
     if( link_data == NULL ) {
-        DCStatus( DS_ERR|DS_NO_MEM );
-        return( DS_ERR|DS_NO_MEM );
+        DCStatus( DS_ERR | DS_NO_MEM );
+        return( DS_ERR | DS_NO_MEM );
     }
     inf->link = link_data;
     link_data->end = link_data->link + num_syms;
@@ -457,15 +457,16 @@ static dip_status DoMakeGblLst( imp_image_handle *iih, info_block *inf, unsigned
 dip_status MakeGblLst( imp_image_handle *iih, section_info *inf )
 {
     info_block          *gbl;
-    dip_status          status;
+    dip_status          ds;
 
+    ds = DS_OK;
     for( gbl = inf->gbl; gbl != NULL; gbl = gbl->next ) {
-        status = DoMakeGblLst( iih, gbl, gbl->size );
-        if( status != DS_OK ) {
-            return( status );
+        ds = DoMakeGblLst( iih, gbl, gbl->size );
+        if( ds != DS_OK ) {
+            break;
         }
     }
-    return( DS_OK );
+    return( ds );
 }
 
 
@@ -475,6 +476,8 @@ unsigned GblSymSplit( imp_image_handle *iih, info_block *gbl, section_info *inf 
     unsigned        size;
     unsigned        total;
     unsigned        next;
+
+    /* unused parameters */ (void)inf;
 
     ptr = gbl->info;
     /* check if there is enough there to pick up the name length field */
@@ -497,7 +500,7 @@ dip_status SymHdl2GblLoc( imp_image_handle *iih, imp_sym_handle *ish, location_l
     address             addr;
 
     gbl = ish->u.gbl;
-    MK_ADDR( addr, gbl->addr, FindInfo( iih, ish->im )->sect_id );
+    MK_ADDR( addr, gbl->addr, FindInfo( iih, ish->imh )->sect_id );
     LocationCreate( ll, LT_ADDR, &addr );
     return( DS_OK );
 }
@@ -564,7 +567,7 @@ unsigned SymHdl2ObjGblName( imp_image_handle *iih, imp_sym_handle *ish, char *bu
 
 dip_status SymHdl2GblType( imp_image_handle *iih, imp_sym_handle *ish, imp_type_handle *ith )
 {
-    ith->im = ish->im;
+    ith->imh = ish->imh;
     ith->f.all = 0;
     ith->f.s.gbl = 1;
     ith->t.offset = GBL_KIND( iih, ish->u.gbl );
@@ -581,7 +584,7 @@ type_kind GblTypeClassify( unsigned kind )
 }
 
 
-walk_result WalkGblModSymList( imp_image_handle *iih, imp_mod_handle im,
+walk_result WalkGblModSymList( imp_image_handle *iih, imp_mod_handle imh,
                         DIP_IMP_SYM_WALKER *wk, imp_sym_handle *ish, void *d )
 {
     section_info        *inf;
@@ -598,16 +601,16 @@ walk_result WalkGblModSymList( imp_image_handle *iih, imp_mod_handle im,
         for( blk = inf->gbl; blk != NULL; blk = blk->next ) {
             end = blk->info + blk->size;
             for( ptr = blk->info; ptr < end; ptr += GBL_SIZE( iih, (gbl_info *)ptr ) ) {
-                ish->im = GBL_MOD( (gbl_info *)ptr );
-                if( im == IMH_NOMOD ) {
-                    if( ImpInterface.ModInfo( iih, ish->im, HK_SYM ) != DS_OK ) {
+                ish->imh = GBL_MOD( (gbl_info *)ptr );
+                if( imh == IMH_NOMOD ) {
+                    if( ImpInterface.ModInfo( iih, ish->imh, HK_SYM ) != DS_OK ) {
                         GblCreate( iih, ish, (gbl_info *)ptr );
                         wr = wk( iih, SWI_SYMBOL, ish, d );
                         if( wr != WR_CONTINUE ) {
                             return( wr );
                         }
                     }
-                } else if( ish->im == im ) {
+                } else if( ish->imh == imh ) {
                     GblCreate( iih, ish, (gbl_info *)ptr );
                     wr = wk( iih, SWI_SYMBOL, ish, d );
                     if( wr != WR_CONTINUE )

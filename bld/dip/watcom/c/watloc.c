@@ -225,15 +225,15 @@ static const char *ParseLocEntry( imp_image_handle *iih, const char *ptr,
     switch( location->bp_offset.class & CLASS_MASK ) {
     case BP_OFFSET :
         switch( location->bp_offset.class ) {
-        case BP_OFFSET + BP_OFF_BYTE:
+        case BP_OFFSET | BP_OFF_BYTE:
             location->bp_offset.offset = GETS8( ptr );
             ptr += 1;
             break;
-        case BP_OFFSET + BP_OFF_WORD:
+        case BP_OFFSET | BP_OFF_WORD:
             location->bp_offset.offset = GETS16( ptr );
             ptr += 2;
             break;
-        case BP_OFFSET + BP_OFF_DWORD:
+        case BP_OFFSET | BP_OFF_DWORD:
             location->bp_offset.offset = GETS32( ptr );
             ptr += 4;
             break;
@@ -242,27 +242,27 @@ static const char *ParseLocEntry( imp_image_handle *iih, const char *ptr,
         break;
     case CONSTANT:
         switch( location->memory.class ) {
-        case CONSTANT + ADDR386:
+        case CONSTANT | ADDR386:
             ptr = GetAddress( iih, ptr, &location->memory.addr, 1 );
             break;
-        case CONSTANT + ADDR286:
+        case CONSTANT | ADDR286:
             ptr = GetAddress( iih, ptr, &location->memory.addr, 0 );
-            location->constant.class = CONSTANT + ADDR386;
+            location->constant.class = CONSTANT | ADDR386;
             break;
-        case CONSTANT + INT_1:
+        case CONSTANT | INT_1:
             location->constant.val = GETS8( ptr );
             ptr += 1;
-            location->constant.class = CONSTANT + INT_4;
+            location->constant.class = CONSTANT | INT_4;
             break;
-        case CONSTANT + INT_2:
+        case CONSTANT | INT_2:
             location->constant.val = GETS16( ptr );
             ptr += 2;
-            location->constant.class = CONSTANT + INT_4;
+            location->constant.class = CONSTANT | INT_4;
             break;
-        case CONSTANT + INT_4:
+        case CONSTANT | INT_4:
             location->constant.val = GETS32( ptr );
             ptr += 4;
-            location->constant.class = CONSTANT + INT_4;
+            location->constant.class = CONSTANT | INT_4;
             break;
         }
         break;
@@ -293,7 +293,7 @@ static const char *ParseLocEntry( imp_image_handle *iih, const char *ptr,
         break;
     case OPERATOR:
         switch( location->op.class ) {
-        case OPERATOR+LOP_XCHG:
+        case OPERATOR | LOP_XCHG:
             location->op.stk = GETU8( ptr++ );
             break;
         }
@@ -405,13 +405,13 @@ dip_status EvalLocation( imp_image_handle *iih, location_context *lc, const char
     unsigned                    item_size;
     reg_entry                   const *reg;
     int                         item_addr;
-    dip_status                  ok;
+    dip_status                  ds;
 
     end = SkipLocation( e );
     if( (unsigned char)*e & LOC_EXPR_IND ) {
         ++e;
     }
-    ok = DS_OK;
+    ds = DS_OK;
     sp = LocStack + LocStkPtr - 1;
     start = sp;
     while( e < end ) {
@@ -420,19 +420,19 @@ dip_status EvalLocation( imp_image_handle *iih, location_context *lc, const char
         case BP_OFFSET:
             ++sp;
             sp->type = LS_ADDR;
-            ok = DCItemLocation( lc, CI_FRAME, &sp->u.ll );
-            if( ok != DS_OK ) {
-                DCStatus( ok );
+            ds = DCItemLocation( lc, CI_FRAME, &sp->u.ll );
+            if( ds != DS_OK ) {
+                DCStatus( ds );
                 goto done;
             }
             LocationAdd( &sp->u.ll, loc.bp_offset.offset * 8 );
             break;
-        case CONSTANT + ADDR386:
+        case CONSTANT | ADDR386:
             ++sp;
             sp->type = LS_ADDR;
             LocationCreate( &sp->u.ll, LT_ADDR, &loc.memory.addr );
             break;
-        case CONSTANT + INT_4:
+        case CONSTANT | INT_4:
             ++sp;
             sp->type = LS_NUM;
             sp->u.num = loc.constant.val;
@@ -444,9 +444,9 @@ dip_status EvalLocation( imp_image_handle *iih, location_context *lc, const char
             j = 0;
             for( i = 0; i < loc.multi_reg.numregs; ++i ) {
                 reg = RegTable + loc.multi_reg.regs[i];
-                ok = DCItemLocation( lc, reg->ci, &tmp.ll );
-                if( ok != DS_OK ) {
-                    DCStatus( ok );
+                ds = DCItemLocation( lc, reg->ci, &tmp.ll );
+                if( ds != DS_OK ) {
+                    DCStatus( ds );
                     goto done;
                 }
                 memcpy( sp->u.ll.e + j, tmp.ll.e,
@@ -458,33 +458,33 @@ dip_status EvalLocation( imp_image_handle *iih, location_context *lc, const char
             }
             sp->u.ll.num = j;
             break;
-        case OPERATOR + LOP_IND_2:
+        case OPERATOR | LOP_IND_2:
             item_addr = 0;
             item_size = 2;
             goto do_ind;
-        case OPERATOR + LOP_IND_4:
+        case OPERATOR | LOP_IND_4:
             item_addr = 0;
             item_size = 4;
             goto do_ind;
-        case OPERATOR + LOP_IND_ADDR286:
+        case OPERATOR | LOP_IND_ADDR286:
             item_addr = 1;
             item_size = 4;
             goto do_ind;
-        case OPERATOR + LOP_IND_ADDR386:
+        case OPERATOR | LOP_IND_ADDR386:
             item_addr = 1;
             item_size = 6;
 do_ind:
             if( sp->type == LS_NUM ) {
                 tmp.num = sp->u.num;
-                ok = DCItemLocation( lc, CI_DEF_ADDR_SPACE, &sp->u.ll );
-                if( ok != DS_OK )
+                ds = DCItemLocation( lc, CI_DEF_ADDR_SPACE, &sp->u.ll );
+                if( ds != DS_OK )
                     goto done;
                 sp->u.ll.e[0].u.addr.mach.offset = tmp.num;
             }
             LocationCreate( &tmp.ll, LT_INTERNAL, &item );
-            ok = DCAssignLocation( &tmp.ll, &sp->u.ll, item_size );
-            if( ok != DS_OK ) {
-                DCStatus( ok );
+            ds = DCAssignLocation( &tmp.ll, &sp->u.ll, item_size );
+            if( ds != DS_OK ) {
+                DCStatus( ds );
                 goto done;
             }
             if( item_addr ) {
@@ -505,13 +505,13 @@ do_ind:
                 sp->type = LS_NUM;
             }
             break;
-        case OPERATOR + LOP_ZEB:
+        case OPERATOR | LOP_ZEB:
             sp->u.num &= (unsigned_32) 0xff;
             break;
-        case OPERATOR + LOP_ZEW:
+        case OPERATOR | LOP_ZEW:
             sp->u.num &= (unsigned_32) 0xffff;
             break;
-        case OPERATOR + LOP_MK_FP:
+        case OPERATOR | LOP_MK_FP:
             op1 = sp;
             --sp;
             if( sp->type == LS_NUM ) {
@@ -519,7 +519,7 @@ do_ind:
                 tmp.addr.mach.segment = sp->u.num;
             } else {
                 if( sp->u.ll.num != 1 || sp->u.ll.e[0].type != LT_ADDR ) {
-                    ok = DS_ERR|DS_BAD_PARM;
+                    ds = DS_ERR | DS_BAD_PARM;
                     goto done;
                 }
                 tmp.addr = sp->u.ll.e[0].u.addr;
@@ -528,7 +528,7 @@ do_ind:
                 tmp.addr.mach.offset = op1->u.num;
             } else {
                 if( op1->u.ll.num != 1 || op1->u.ll.e[0].type != LT_ADDR ) {
-                    ok = DS_ERR|DS_BAD_LOCATION;
+                    ds = DS_ERR | DS_BAD_LOCATION;
                     goto done;
                 }
                 tmp.addr.mach.offset = op1->u.ll.e[0].u.addr.mach.offset;
@@ -539,15 +539,15 @@ do_ind:
             LocationCreate( &sp->u.ll, LT_ADDR, &tmp.addr );
             sp->type = LS_ADDR;
             break;
-        case OPERATOR + LOP_POP:
+        case OPERATOR | LOP_POP:
             --sp;
             break;
-        case OPERATOR + LOP_XCHG:
+        case OPERATOR | LOP_XCHG:
             tmp.lse = sp[0];
             sp[0] = sp[-loc.op.stk];
             sp[-loc.op.stk] = tmp.lse;
             break;
-        case OPERATOR + LOP_ADD:
+        case OPERATOR | LOP_ADD:
             op1 = sp;
             --sp;
             if( op1->type == LS_ADDR ) {
@@ -569,18 +569,18 @@ do_ind:
                 sp->type = LS_NUM;
             }
             break;
-        case OPERATOR + LOP_DUP:
+        case OPERATOR | LOP_DUP:
             sp[1] = sp[0];
             ++sp;
             break;
-        case OPERATOR + LOP_NOP:
+        case OPERATOR | LOP_NOP:
             /* well, what did you expect? */
             break;
         }
     }
     if( LocStkPtr == 0 && sp == start ) {
         /* empty location */
-        ok = DS_ERR|DS_BAD_LOCATION;
+        ds = DS_ERR | DS_BAD_LOCATION;
         goto done;
     }
     if( sp->type == LS_ADDR ) {
@@ -591,5 +591,5 @@ do_ind:
     }
 done:
     LocStkPtr = 0;
-    return( ok );
+    return( ds );
 }

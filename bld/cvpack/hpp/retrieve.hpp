@@ -119,7 +119,7 @@ class Retriever {
         Retriever(ifstream&);
 
         ~Retriever() {
-            delete [] _heapBuffer;
+            delete[] _heapBuffer;
         }
 
         bool ReadSubsection( char*&       buffer,

@@ -168,7 +168,7 @@ trap_retval ReqGet_sys_config( void )
     SYSTEM_INFO         info;
 
     ret = GetOutPtr( 0 );
-    ret->sys.os = MAD_OS_NT;
+    ret->sys.os = DIG_OS_NT;
 #if defined( __WATCOMC__ )
     ret->sys.osmajor = _osmajor;
     ret->sys.osminor = _osminor;
@@ -181,19 +181,19 @@ trap_retval ReqGet_sys_config( void )
     ret->sys.cpu = X86CPUType();
     ret->sys.fpu = ret->sys.cpu & X86_CPU_MASK;
     if( IsWOW ) {
-        ret->sys.os = MAD_OS_WINDOWS;
+        ret->sys.os = DIG_OS_WINDOWS;
     }
-    ret->sys.mad = MAD_X86;
+    ret->sys.arch = DIG_ARCH_X86;
 #elif defined( MD_x64 )
     ret->sys.cpu = X86_P4 | X86_MMX | X86_XMM;
     ret->sys.fpu = ret->sys.cpu & X86_CPU_MASK;
 //    ret->sys.cpu = X64_CPU1;
 //    ret->sys.fpu = X64_FPU1;
     if( !IsWOW ) {
-//        ret->sys.os = MAD_OS_NT64;
+//        ret->sys.os = DIG_OS_NT64;
     }
-//    ret->sys.mad = MAD_X64;
-    ret->sys.mad = MAD_X86;
+//    ret->sys.arch = DIG_ARCH_X64;
+    ret->sys.arch = DIG_ARCH_X86;
 #elif defined( MD_axp )
     switch( info.dwProcessorType ) {
     case PROCESSOR_ALPHA_21064:
@@ -207,7 +207,7 @@ trap_retval ReqGet_sys_config( void )
         break;
     }
     ret->sys.fpu = 0;
-    ret->sys.mad = MAD_AXP;
+    ret->sys.arch = DIG_ARCH_AXP;
 #elif defined( MD_ppc )
     switch( info.dwProcessorType ) {
     case PROCESSOR_PPC_601:
@@ -227,7 +227,7 @@ trap_retval ReqGet_sys_config( void )
         break;
     }
     ret->sys.fpu = 0;
-    ret->sys.mad = MAD_PPC;
+    ret->sys.arch = DIG_ARCH_PPC;
 #else
     #error ReqGet_sys_config not configured
 #endif

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2018-2018 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -619,14 +620,14 @@ bool MainWndGUIEventProc( gui_window *gui, gui_event gui_ev, void *param )
                 gui_menu_struct *menu;
                 int             num_items;
 
-                GUICreateMenuStructFromRes( MAKEINTRESOURCE( 100 ), &menu, &num_items );
+                GUICreateMenuStructFromRes( MAKEINTRESOURCE( 100 ), &num_items, &menu );
                 if( menu != NULL && num_items > 0 ) {
                     int     item;
 
                     for( item = 0; item < num_items; item++ ) {
                         GUIAppendMenuToPopup( MainWnd, MENU_MODIFY_COLOUR, &menu[item], false );
                     }
-                    GUIFreeGUIMenuStruct( menu, num_items );
+                    GUIFreeGUIMenuStruct( num_items, menu );
                 }
             }
             break;
@@ -1051,19 +1052,17 @@ static void PaintWindow( gui_window *gui, gui_ord row, gui_ord num, int vscroll,
             GUIDrawTextPos( gui, out->display[row + i].data + string_indent,
                          length, &pos, GUI_MENU_PLAIN );
         }
-        for( currattr = out->display[row + i].attr_list; currattr != NULL;
-             currattr = currattr->next ) {
-            indent = GUIGetExtentX( gui, out->display[row+i].data,
-                                    currattr->start );
+        for( currattr = out->display[row + i].attr_list; currattr != NULL; currattr = currattr->next ) {
+            indent = GUIGetExtentX( gui, out->display[row + i].data, currattr->start );
             string_indent = GetStringIndent( &indent, hscroll, &metrics ) + currattr->start;
-            length = strlen( out->display[row+i].data );
+            length = strlen( out->display[row + i].data );
             if( string_indent < length ) {
                 length = currattr->end - currattr->start + 1;
                 if( currattr->start < string_indent ) {
                     length -= ( string_indent - currattr->start );
                 }
                 if( length > 0 ) {
-                    GUIDrawText( gui, out->display[row+i].data + string_indent,
+                    GUIDrawText( gui, out->display[row + i].data + string_indent,
                                  length, row + i - vscroll, indent,
                                  currattr->attr );
                 }
@@ -1079,7 +1078,7 @@ static void PaintWindow( gui_window *gui, gui_ord row, gui_ord num, int vscroll,
             data = NULL;
             length = 0;
         } else {
-            data = IndentData[row+i].data + string_indent;
+            data = IndentData[row + i].data + string_indent;
         }
         extent = client.width;
         if( hscroll == 0 ) {
@@ -1288,23 +1287,23 @@ static bool Enabled = true;
 
 static void CreatePopup( gui_window *gui, int num_items, gui_menu_struct *menu, gui_ctl_id popup_id, bool submenu )
 {
-    gui_menu_struct     *child;
+    gui_menu_struct     *child_menu;
     int                 child_num_items;
 
     while( num_items-- > 0 ) {
         if( submenu ) {
             GUIAppendMenuToPopup( gui, popup_id, menu, true );
         } else {
-            child = menu->child;
-            child_num_items = menu->child_num_items;
-            menu->child_num_items = 0;
-            menu->child = NULL;
+            child_menu = menu->child.menu;
+            child_num_items = menu->child.num_items;
+            menu->child.num_items = 0;
+            menu->child.menu = NULL;
             GUIAppendMenu( gui, menu, true );
-            menu->child_num_items = child_num_items;
-            menu->child = child;
+            menu->child.num_items = child_num_items;
+            menu->child.menu = child_menu;
         }
-        if( menu->child != NULL ) {
-            CreatePopup( gui, menu->child_num_items, menu->child, menu->id, true );
+        if( menu->child.menu != NULL ) {
+            CreatePopup( gui, menu->child.num_items, menu->child.menu, menu->id, true );
         }
         menu++;
     }
@@ -1377,8 +1376,7 @@ bool Child2WndGUIEventProc( gui_window *gui, gui_event gui_ev, void *param )
     case GUI_DESTROY :
         out = GUIGetExtra( gui );
         for( i = 0; i < out->numrows; i++ ) {
-            for( currattr = out->display[i].attr_list; currattr != NULL;
-                 currattr = nextattr ) {
+            for( currattr = out->display[i].attr_list; currattr != NULL; currattr = nextattr ) {
                  nextattr = currattr->next;
                  GUIMemFree( currattr );
             }
@@ -1612,8 +1610,6 @@ void GUImain( void )
 #ifdef HELL_FREEZES_OVER
     gui_colour_set      colour_set;
 #endif
-
-    //GUIMemOpen();
 
     GUIWndInit( 300, GUI_GMOUSE );
     GUI3DDialogInit();

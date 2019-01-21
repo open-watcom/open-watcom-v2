@@ -36,8 +36,6 @@
 #include "heap.h"
 
 
-#define HEAP(s)    ((heapblkp __based(s) *)0)
-
 __segment __bheapbeg = _NULLSEG;
 
 _WCRTLINK __segment _bheapseg( size_t size )
@@ -50,9 +48,9 @@ _WCRTLINK __segment _bheapseg( size_t size )
         return( _NULLSEG );
     prev_seg = __bheapbeg;
     __bheapbeg = seg;
-    HEAP( seg )->nextseg = prev_seg;
+    BHEAP( seg )->next.segm = prev_seg;
     if( prev_seg != _NULLSEG ) {
-        HEAP( prev_seg )->prevseg = seg;
+        BHEAP( prev_seg )->prev.segm = seg;
     }
     return( seg );
 }

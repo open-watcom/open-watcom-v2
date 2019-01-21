@@ -79,7 +79,6 @@ void bmeps_get_cfg(BmepsConfiguration *bcp);
 void bmeps_set_cfg(BmepsConfiguration *bcp);
 void bmeps_copy_cfg(BmepsConfiguration *d, BmepsConfiguration *s);
 
-char *bmeps_tmpname(void);
 void bmeps_delete(char *filename);
 
 /*

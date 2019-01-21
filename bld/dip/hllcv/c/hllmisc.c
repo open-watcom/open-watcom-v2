@@ -108,7 +108,7 @@ size_t hllNameCopy( char *buff, const char *src, size_t buff_size, size_t len )
 /*
  * Finds a subsection directory entry for a specific module.
  */
-hll_dir_entry *hllFindDirEntry( imp_image_handle *iih, imp_mod_handle im, hll_sst sst )
+hll_dir_entry *hllFindDirEntry( imp_image_handle *iih, imp_mod_handle imh, hll_sst sst )
 {
     unsigned            i;
     unsigned            block;
@@ -120,7 +120,7 @@ hll_dir_entry *hllFindDirEntry( imp_image_handle *iih, imp_mod_handle im, hll_ss
     for( block = 0; block < full_blocks; ++block ) {
         for( i = 0; i < DIRECTORY_BLOCK_ENTRIES; ++i ) {
             p = &iih->directory[block][i];
-            if( p->iMod == im && p->subsection == sst ) {
+            if( p->iMod == imh && p->subsection == sst ) {
                 return( p );
             }
         }
@@ -128,7 +128,7 @@ hll_dir_entry *hllFindDirEntry( imp_image_handle *iih, imp_mod_handle im, hll_ss
     remainder = iih->dir_count - (full_blocks * DIRECTORY_BLOCK_ENTRIES);
     for( i = 0; i < remainder; ++i ) {
         p = &iih->directory[block][i];
-        if( p->iMod == im && p->subsection == sst ) {
+        if( p->iMod == imh && p->subsection == sst ) {
             return( p );
         }
     }
@@ -210,8 +210,8 @@ const void *hllGetNumLeaf( const void *p, numeric_leaf *v )
         v->int_val = key;
     } else {
         v->valp = (const unsigned_8 *)p + sizeof( unsigned_16 );
-        v->size = LeafInfo[ key - LF_NUMERIC ].size;
-        v->k = LeafInfo[ key - LF_NUMERIC ].k;
+        v->size = LeafInfo[key - LF_NUMERIC].size;
+        v->k = LeafInfo[key - LF_NUMERIC].k;
         switch( key ) {
         case LF_CHAR:
             v->int_val = *(signed_8 *)v->valp;
@@ -236,7 +236,7 @@ const void *hllGetNumLeaf( const void *p, numeric_leaf *v )
 }
 
 
-dip_status hllDoIndirection( imp_image_handle *iih, dip_type_info *ti,
+dip_status hllDoIndirection( imp_image_handle *iih, dig_type_info *ti,
                              location_context *lc, location_list *ll )
 {
     union {
@@ -254,9 +254,11 @@ dip_status hllDoIndirection( imp_image_handle *iih, dip_type_info *ti,
     iih = iih;
     hllLocationCreate( &dst, LT_INTERNAL, &tmp );
     ds = DCAssignLocation( &dst, ll, ti->size );
-    if( ds != DS_OK ) return( ds );
+    if( ds != DS_OK )
+        return( ds );
     ds = DCItemLocation( lc, CI_DEF_ADDR_SPACE, ll );
-    if( ds != DS_OK ) return( ds );
+    if( ds != DS_OK )
+        return( ds );
     if( ti->modifier == TM_NEAR ) {
         if( ti->size == sizeof( addr32_off ) ) {
             ll->e[0].u.addr.mach.offset = tmp.ao32;

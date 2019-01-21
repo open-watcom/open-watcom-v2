@@ -70,7 +70,7 @@ check_result : .procedure
 test_set_result : .symbolic ./chk_exec.exe
     -$(noecho)%write error.out OK
     -$]@ exec.out >>error.out
-    $(noecho)%make common_set_result_check
+    -$(noecho)%make common_set_result_check
 
 start_test : .symbolic
     $(noecho)%make common_start_test

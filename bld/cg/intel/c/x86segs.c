@@ -31,7 +31,7 @@
 ****************************************************************************/
 
 
-#include "cgstd.h"
+#include "_cgstd.h"
 #include "coderep.h"
 #include "cgauxinf.h"
 #include "zoiks.h"
@@ -111,26 +111,26 @@ hw_reg_set      CalcSegment( cg_sym_handle sym, cg_class class ) {
 }
 
 
-name    *AddrConst( name *value, segment_id seg, constant_class class ) {
-/************************************************************************/
-
+name    *AddrConst( name *value, segment_id seg, constant_type_class const_type )
+/*******************************************************************************/
+{
     hw_reg_set  reg;
 
-    switch( class ) {
+    switch( const_type ) {
     case CONS_SEGMENT:
         HW_CAsgn( reg, HW_EMPTY );
         if( value != NULL ) {
             reg = CalcSegment( value->v.symbol, value->m.memory_type );
         }
         if( HW_CEqual( reg, HW_EMPTY ) ) {
-            return( AllocAddrConst( value, seg, class, U2 ) );
+            return( AllocAddrConst( value, seg, const_type, U2 ) );
         } else {
             return( AllocRegName( reg ) );
         }
     case CONS_OFFSET:
-        return( AllocAddrConst( value, seg, class, WD ) );
+        return( AllocAddrConst( value, seg, const_type, WD ) );
     case CONS_ADDRESS:
-        return( AllocAddrConst( value, seg, class, CP ) );
+        return( AllocAddrConst( value, seg, const_type, CP ) );
     default:
         _Zoiks( ZOIKS_115 );
         return( NULL );
@@ -206,7 +206,7 @@ name    *SegName( name *op ) {
         return( GetSegment( op ) );
     if( op->n.class == N_INDEXED ) {
         idx = op->i.index;
-        if( op->i.base != NULL && idx->n.name_class != PT ) {
+        if( op->i.base != NULL && idx->n.type_class != PT ) {
             // even though it's based - huge arrays cannot assume segment
             // of base is same as segment of the huge pointer - BBB Sept 14, 1995
             return( SegName( op->i.base ) );
@@ -219,7 +219,7 @@ name    *SegName( name *op ) {
                 _Zoiks( ZOIKS_022 );
                 return( op );
             }
-        } else if( idx->n.name_class == CP || idx->n.name_class == PT ) {
+        } else if( idx->n.type_class == CP || idx->n.type_class == PT ) {
             return( SegmentPart( idx ) );
         } else {
             return( NearSegment() );

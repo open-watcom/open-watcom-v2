@@ -33,16 +33,13 @@
 #include "mmemory.h"
 #include "mrcmsg.h"
 #include "msg.h"
-#if defined( __WATCOMC__ ) || !defined( __UNIX__ )
+#if defined( __WATCOMC__ )
     #include <malloc.h>
 #endif
 #ifdef TRMEM
 #include <sys/types.h>
-#include "wio.h"
 #include "trmem.h"
 #endif
-
-#include "clibext.h"
 
 
 #ifdef USE_FAR
@@ -80,22 +77,22 @@ enum {
 
 STATIC _trmem_hdl   Handle;
 STATIC int          trmemCode;
-STATIC int          trkfile = -1;     /* file handle we'll posix_write() to */
+STATIC FILE         *trkfile = NULL;
 
 STATIC void printLine( void *h, const char *buf, size_t size )
 /************************************************************/
 {
     h = h;
-    if( trkfile == -1 ) {
-        trkfile = open( "mem.trk", O_WRONLY | O_CREAT | O_TRUNC, PMODE_RW );
+    if( trkfile == NULL ) {
+        trkfile = fopen( "mem.trk", "w" );
     }
-    if( trkfile != -1 ) {
-        posix_write( trkfile, buf, size );
-        posix_write( trkfile, "\n", 1 );
+    if( trkfile != NULL ) {
+        fwrite( buf, 1, size, trkfile );
+        fwrite( "\n", 1, 1, trkfile );
     }
     if( (trmemCode & TRMEM_DO_NOT_PRINT) == 0 ) {
-        posix_write( STDOUT_FILENO, buf, size );
-        posix_write( STDOUT_FILENO, "\n", 1 );
+        fwrite( buf, 1, size, stdout );
+        fwrite( "\n", 1, 1, stdout );
     }
 }
 
@@ -241,9 +238,9 @@ void MemFini( void )
         _trmem_close( Handle ); /* Report any memory errors. */
     }
     MemCheck();
-    if( trkfile != -1 ) {
-        close( trkfile );
-        trkfile = -1;
+    if( trkfile != NULL ) {
+        fclose( trkfile );
+        trkfile = NULL;
     }
 #endif
 #endif
@@ -426,6 +423,34 @@ char *StrDupSafe( const char *str )
 #endif
 
     memcpy( p, str, len );
+    return( p );
+}
+
+
+char *CharToStrSafe( char c )
+/*****************************************
+ * returns: Pointer to a string with one character in a new block of memory.
+ * aborts:  If not enough memory to make a string.
+ */
+{
+    char    *p;
+
+#ifdef TRMEM
+    p = doAlloc( 2, _trmem_guess_who() );
+    if( p == NULL ) {
+        PrtMsg( FTL | OUT_OF_MEMORY );
+        ExitFatal();
+        // never return
+    }
+    p[0] = c;
+    p[1] = '\0';
+#else
+    p = MallocSafe( 2 );
+    if( p != NULL ) {
+        p[0] = c;
+        p[1] = '\0';
+    }
+#endif
     return( p );
 }
 

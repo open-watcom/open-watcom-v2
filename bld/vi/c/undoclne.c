@@ -125,24 +125,20 @@ void CurrentLineReplaceUndoEnd( bool endgrp )
                              * add to current fcb or add a new
                              * fcb
                              */
-                            if( (FcbSize( cfcb ) + lineSave->len + 4) <=
-                                MAX_IO_BUFFER ) {
+                            if( ( FcbSize( cfcb ) + lineSave->len + 4 ) <= MAX_IO_BUFFER ) {
                                 FetchFcb( cfcb );
-                                InsertLLItemAfter( (ss **)&cfcb->lines.tail,
-                                    (ss *)cfcb->lines.tail, (ss *)lineSave );
+                                InsertLLItemAfter( (ss **)&cfcb->lines.tail, (ss *)cfcb->lines.tail, (ss *)lineSave );
                                 cfcb->byte_cnt += lineSave->len + 1;
                                 cfcb->end_line++;
                             } else {
                                 nfcb = singleLineFcb();
                                 nfcb->start_line = nfcb->end_line = cfcb->end_line + 1;
-                                InsertLLItemAfter( (ss **)&(top->data.fcbs.tail),
-                                    (ss *)cfcb, (ss *)nfcb );
+                                InsertLLItemAfter( (ss **)&top->data.fcbs.tail, (ss *)cfcb, (ss *)nfcb );
                                 nfcb->non_swappable = false;
                             }
                             delrec->data.del_range.end++;
                             Modified( true );
                             return;
-
                         }
                     }
                 }

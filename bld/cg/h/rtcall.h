@@ -29,4 +29,4 @@
 ****************************************************************************/
 
 
-extern  instruction     *rMAKECALL( instruction *ins );
+extern instruction      *rMAKECALL( instruction *ins );

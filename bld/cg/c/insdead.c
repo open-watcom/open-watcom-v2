@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2016 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -30,19 +30,16 @@
 ****************************************************************************/
 
 
-#include "cgstd.h"
+#include "_cgstd.h"
 #include "coderep.h"
 #include "data.h"
-#include "x87.h"
+#include "fpu.h"
 #include "makeins.h"
 #include "redefby.h"
 #include "insdead.h"
 #include "namelist.h"
 #include "optab.h"
-
-
-extern  block           *TailBlocks(void);
-extern  bool            BreakExists(void);
+#include "breakrtn.h"
 
 
 static  void    InitVisitedTemps( void )
@@ -58,7 +55,7 @@ static  void    InitVisitedTemps( void )
         op->t.temp_flags &= ~VISITED;
     }
     for( op = Names[N_TEMP]; op != NULL; op = op->n.next_name ) {
-        if( op->v.usage & (USE_ADDRESS|VAR_VOLATILE) ) {
+        if( op->v.usage & (USE_ADDRESS | VAR_VOLATILE) ) {
             alias = op;
             do {
                 alias->t.temp_flags |= VISITED;
@@ -147,8 +144,8 @@ static  void            FreeUnVisitedTemps( void )
 }
 
 
-extern  bool            VolatileIns(instruction *ins)
-/****************************************************
+bool    VolatileIns( instruction *ins )
+/********************************************
     Does the instruction access/define a volatile variable?
     This is a utility routine for any module to use.
 */
@@ -169,7 +166,7 @@ extern  bool            VolatileIns(instruction *ins)
 }
 
 
-extern  bool            SideEffect(instruction* ins)
+bool    SideEffect( instruction *ins )
 /***************************************************
     Is an instruction a side effect instruction, such as one
     that changes the 8087 stack or a SUB with a following SBB.
@@ -180,7 +177,7 @@ extern  bool            SideEffect(instruction* ins)
         return( true );
     if( ins->head.opcode == OP_POP )
         return( true );
-    if( ins->ins_flags & INS_CC_USED
+    if( (ins->ins_flags & INS_CC_USED)
       && ins->head.opcode != OP_MOV )
         return( true );
     if( FPSideEffect( ins ) )
@@ -379,24 +376,24 @@ static bool DoInsDead( bool just_the_loop, bool in_regalloc )
 }
 
 
-extern  bool    InsDead( void )
-/******************************
+bool    InsDead( void )
+/**********************
     Remove any dead or useless instructions in the program we can find.
 */
 {
     return( DoInsDead( false, false ) );
 }
 
-extern  bool    RegInsDead( void )
-/*********************************
+bool    RegInsDead( void )
+/*************************
     Remove any dead or useless instructions in the program we can find.
 */
 {
     return( DoInsDead( false, true ) );
 }
 
-extern  bool    LoopInsDead( void )
-/*********************************/
+bool    LoopInsDead( void )
+/*************************/
 {
     return( DoInsDead( true, false ) );
 }

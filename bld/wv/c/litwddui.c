@@ -56,7 +56,7 @@ void DUIInitLiterals( void )
 
 void DUIFiniLiterals( void )
 {
-    #define LITSTR( x, y ) DbgFree( LIT_DUI( x ) );
+    #define LITSTR( x, y ) DUIFreeString( LIT_DUI( x ) );
     #include "wddui.str"
     #undef LITSTR
 }

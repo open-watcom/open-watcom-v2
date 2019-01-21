@@ -268,7 +268,7 @@ static void setGuardState(      // SET GUARD STATE FOR CURRENT FILE
         if( actual->guard_state != new_state ) {
             printf( "New Guard State[%s]: %s\n"
                   , actual->name
-                  , guardStateNames[ new_state ] );
+                  , guardStateNames[new_state] );
         }
     }
 #endif
@@ -282,9 +282,11 @@ static SRCFILE srcFileGetUnique(// FIND SOURCE FILE IN UNIQUE LIST
     SRCFILE srch;               // - searched source file
 
 /* Do a string sensitive compare -- it's safer. */
-    for( srch = srcFilesUnique
-       ; ( srch != NULL ) && ( 0 != strcmp( srch->name, name ) )
-       ; srch = srch->unique );
+    for( srch = srcFilesUnique; srch != NULL; srch = srch->unique ) {
+       if( strcmp( srch->name, name ) == 0 ) {
+           break;
+       }
+    }
     return( srch );
 }
 
@@ -494,7 +496,7 @@ bool SrcFileClose(              // CLOSE A SOURCE FILE
     SRCFILE old_src;            // - SRCFILE being closed
     OPEN_FILE *act;             // - open-file information
     LINE_NO lines_read;         // - number of lines read from file
-    bool retb;                  // - return: true ==> not EOF
+    bool ok;                    // - return: true ==> not EOF
     bool browsed;               // - true ==> file was browsed
 
     if( CompFlags.scanning_c_comment ) {
@@ -532,7 +534,7 @@ bool SrcFileClose(              // CLOSE A SOURCE FILE
     if( old_src->cmdline ) {
         popSrcFile( old_src, act );
         CurrChar = LCHR_EOF;
-        retb = false;
+        ok = false;
     } else {
         lines_read = act->line - 1;
         if( old_src->parent == NULL ) {
@@ -542,7 +544,7 @@ bool SrcFileClose(              // CLOSE A SOURCE FILE
             }
             SrcLineCount += lines_read;
             CurrChar = LCHR_EOF;
-            retb = false;
+            ok = false;
         } else {
             popSrcFile( old_src, act );
             act = activeSrc();
@@ -558,7 +560,7 @@ bool SrcFileClose(              // CLOSE A SOURCE FILE
                 }
                 EmitLineNL( old_src->parent_locn, srcFile->name );
             }
-            retb = true;
+            ok = true;
         }
     }
     if( browsed ) {
@@ -572,7 +574,7 @@ bool SrcFileClose(              // CLOSE A SOURCE FILE
         SrcFileCurrentLocation();
         PCHeaderCreate( tmp_src->name );
     }
-    return( retb );
+    return( ok );
 }
 
 
@@ -693,7 +695,7 @@ static bool srcReadBuffer(      // READ NEXT BUFFER
                         }
                     }
                     // mark end of buffer
-                    act->lastc = &act->buff[ amt_read ];
+                    act->lastc = &act->buff[amt_read];
                     *(act->lastc) = '\0';
                     /* CurrChar not set; must read buffer */
                     return( false );
@@ -1936,7 +1938,7 @@ FILE *SrcFileFOpen( const char *name, src_file_open kind )
     const char *mode;
     static const char *file_kind[] = { "rb", "r", "rb", "w", "wb" };
 
-    mode = file_kind[ kind ];
+    mode = file_kind[kind];
     for(;;) {
         fp = fopen( name, mode );
         if( fp != NULL ) {

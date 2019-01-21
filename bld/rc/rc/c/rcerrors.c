@@ -80,8 +80,7 @@ static int checkForTmpFiles( unsigned errornum, va_list arglist )
 static void RcMsgV( unsigned errornum, OutputSeverity sev, va_list arglist )
 /***************************************************************************/
 {
-    const LogicalFileInfo       *currfile;
-    OutPutInfo                   errinfo;
+    OutPutInfo          errinfo;
 
 
     InitOutPutInfo( &errinfo );
@@ -141,12 +140,12 @@ static void RcMsgV( unsigned errornum, OutputSeverity sev, va_list arglist )
     default:
         GetRcMsg( errornum, errBuffer, sizeof( errBuffer ) );
         vsprintf( rcStrBuf, errBuffer, arglist );
-        currfile = RcIoGetLogicalFileInfo();
-        if( currfile != NULL ) {
-            errinfo.flags |= OUTFLAG_FILE | OUTFLAG_LINE;
-            errinfo.file = currfile->Filename;
-            errinfo.lineno = currfile->LineNum;
-        }
+        errinfo.file = RcIoGetCurrentFileName();
+        if( errinfo.file != NULL )
+            errinfo.flags |= OUTFLAG_FILE;
+        errinfo.lineno = RcIoGetCurrentFileLineNo();
+        if( errinfo.lineno != 0 )
+            errinfo.flags |= OUTFLAG_LINE;
         sprintf( errBuffer, "%s", rcStrBuf );
         break;
     }

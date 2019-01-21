@@ -100,18 +100,18 @@ extern CGBK_INFO CgbkInfo;          // found in CGBKMAIN
 
 
 typedef struct throw_ro THROW_RO;
-struct throw_ro                     // THROW_RO -- R/O blocks for thrown types
-{   THROW_RO    *next;              // - next in ring( hdr. in ring_throw_ro )
+struct throw_ro {                   // THROW_RO -- R/O blocks for thrown types
+    THROW_RO    *next;              // - next in ring( hdr. in ring_throw_ro )
     SYMBOL      sym;                // - symbol for the block
     TYPE_SIG    *sig;               // - type signature for the type
-    unsigned        emitted :1;     // - true ==> has been emitted to codegen
+    unsigned    emitted     : 1;    // - true ==> has been emitted to codegen
     PAD_UNSIGNED
 };
 
 typedef target_offset_t STATE_VAR;
 
-typedef struct                      // RT_DEF -- definitions for a R/T call
-{   call_handle handle;             // - call handle
+typedef struct {                    // RT_DEF -- definitions for a R/T call
+    call_handle handle;             // - call handle
     cg_type     type;               // - type for R/T call
 } RT_DEF;
 
@@ -131,7 +131,7 @@ struct dtreg_obj                    // DTREG_OBJ -- registration variables
     SYMBOL          sym;            // - symbol for object (in use)
     SYMBOL          cg_sym;         // - symbol for object (defined)
     target_offset_t offset;         // - offset of symbol
-    unsigned        in_use :1;      // - true ==> in use
+    unsigned        in_use  : 1;    // - true ==> in use
     PAD_UNSIGNED
 };
 
@@ -142,11 +142,11 @@ struct type_sig_ent                 // TYPE_SIG_ENT -- entry in ring of type sig
 };
 
 typedef struct                      // SE_BASE -- base for state entries
-{   SE          *next;              // - next in ring
-    SE          *prev;              // - previous in ring
-    STATE_VAR   state_var;          // - state variable for entry
-    DTC_KIND    se_type;            // - type of entry
-    uint_8      gen :1;             // - true ==> entry is to be generated
+{   SE              *next;          // - next in ring
+    SE              *prev;          // - previous in ring
+    STATE_VAR       state_var;      // - state variable for entry
+    DTC_KIND        se_type;        // - type of entry
+    uint_8          gen     : 1;    // - true ==> entry is to be generated
     PAD_UNSIGNED
 } SE_BASE;
 
@@ -386,62 +386,62 @@ struct obj_init                     // OBJ_INIT - object being init'ed
 
 
 typedef struct call_stab CALL_STAB;
-struct call_stab                    // CALL_STAB - state-table info for call
-{   CALL_STAB       *next;          // - next in ring
-    call_handle     handle;         // - handle for a call
-    SE              *se;            // - current state-table position
-    unsigned        cd_arg;         // - integral CDTOR arg
-    unsigned        has_cd_arg :1;  // - "cd_arg" has been defined
+struct call_stab                        // CALL_STAB - state-table info for call
+{   CALL_STAB       *next;              // - next in ring
+    call_handle     handle;             // - handle for a call
+    SE              *se;                // - current state-table position
+    unsigned        cd_arg;             // - integral CDTOR arg
+    unsigned        has_cd_arg  : 1;    // - "cd_arg" has been defined
     PAD_UNSIGNED
 };
 
 
 typedef struct fn_ctl FN_CTL;
-struct fn_ctl                       // FN_CTL -- for each active file in process
+struct fn_ctl                               // FN_CTL -- for each active file in process
 {
-    unsigned        base_labs_cs;       // - stack base: labels (control)
-    unsigned        base_goto_near;     // - stack base: gotos (near)
-    unsigned        sym_trans_id;       // - symbol translation id at function start
-    unsigned        cond_flags;         // - # conditional flags
-    unsigned        cdtor_val;          // - CDTOR value, when has_cdtor_val is set
-    unsigned        cond_next;          // - next bit offset for conditional flags
-    unsigned        try_depth;          // - depth of nested try statements
-    SYMBOL          return_symbol;      // - return symbol
-    SYMBOL          this_sym;           // - this symbol
-    SYMBOL          cdtor_sym;          // - extra cdtor int parm symbol
-    SYMBOL          func;               // - function being generated
-    SYMBOL          new_ctor_ptr;       // - points at new'ed item being ctor'ed
-    label_handle    return_label;       // - return label
-    label_handle    cdarg_lab;          // - label for CDARG test
-    label_handle    try_label;          // - label at top of try statement
-    call_handle     handle;             // - handle for IBRP substitution
-    back_handle     prof_data;          // - profiling data handle
-    SE              *state_table_bound; // - bounding entry in function state table
-    SE              *pre_init;          // - pos'n before symbol initialization
-    SE              *fun_sv;            // - current state entry for function
-    SE              *ctor_components;   // - start of CTOR component SE.s
-    SE              *dtor_components;   // - end of dtor components
-    SE              *ctored_obj;        // - object ctored by current expression
-    SE              *marked_at_start;   // - marked position at function start
-    STAB_OBJ        *obj_registration;  // - registration for type
-    CALL_STAB       *expr_calls;        // - calls for current expression
-    CGFILE          *cgfile;            // - CGFILE for this function
+    unsigned        base_labs_cs;           // - stack base: labels (control)
+    unsigned        base_goto_near;         // - stack base: gotos (near)
+    unsigned        sym_trans_id;           // - symbol translation id at function start
+    unsigned        cond_flags;             // - # conditional flags
+    unsigned        cdtor_val;              // - CDTOR value, when has_cdtor_val is set
+    unsigned        cond_next;              // - next bit offset for conditional flags
+    unsigned        try_depth;              // - depth of nested try statements
+    SYMBOL          return_symbol;          // - return symbol
+    SYMBOL          this_sym;               // - this symbol
+    SYMBOL          cdtor_sym;              // - extra cdtor int parm symbol
+    SYMBOL          func;                   // - function being generated
+    SYMBOL          new_ctor_ptr;           // - points at new'ed item being ctor'ed
+    label_handle    return_label;           // - return label
+    label_handle    cdarg_lab;              // - label for CDARG test
+    label_handle    try_label;              // - label at top of try statement
+    call_handle     handle;                 // - handle for IBRP substitution
+    back_handle     prof_data;              // - profiling data handle
+    SE              *state_table_bound;     // - bounding entry in function state table
+    SE              *pre_init;              // - pos'n before symbol initialization
+    SE              *fun_sv;                // - current state entry for function
+    SE              *ctor_components;       // - start of CTOR component SE.s
+    SE              *dtor_components;       // - end of dtor components
+    SE              *ctored_obj;            // - object ctored by current expression
+    SE              *marked_at_start;       // - marked position at function start
+    STAB_OBJ        *obj_registration;      // - registration for type
+    CALL_STAB       *expr_calls;            // - calls for current expression
+    CGFILE          *cgfile;                // - CGFILE for this function
 
-    DT_METHOD       dtor_method;        // - current destruction method
-    DT_METHOD       func_dtor_method;   // - function destruction method
+    DT_METHOD       dtor_method;            // - current destruction method
+    DT_METHOD       func_dtor_method;       // - function destruction method
 
-    uint            deregistered   :1;  // - true ==> function has been de-registered
-    uint            has_fn_exc     :1;  // - true ==> has function exception spec.
-    uint            is_ctor        :1;  // - true ==> is a CTOR
-    uint            is_dtor        :1;  // - true ==> is a DTOR
-    uint            ctor_complete  :1;  // - true ==> has completed the CTOR'ing
-    uint            coded_return   :1;  // - true ==> return in user code
-    uint            has_ctor_test  :1;  // - true ==> function might use CTOR-TEST
-    uint            has_cdtor_val  :1;  // - true ==> has integral CDTOR argument
-    uint            temp_dtoring   :1;  // - true ==> temporary DTORING req'd in expr.
-    uint            ctor_test      :1;  // - true ==> expr. causes CTOR-TEST
-    uint            dtor_reg_reqd  :1;  // - true ==> dtor registration required
-    uint            debug_info     :1;  // - true ==> debug info for function
+    uint            deregistered    : 1;    // - true ==> function has been de-registered
+    uint            has_fn_exc      : 1;    // - true ==> has function exception spec.
+    uint            is_ctor         : 1;    // - true ==> is a CTOR
+    uint            is_dtor         : 1;    // - true ==> is a DTOR
+    uint            ctor_complete   : 1;    // - true ==> has completed the CTOR'ing
+    uint            coded_return    : 1;    // - true ==> return in user code
+    uint            has_ctor_test   : 1;    // - true ==> function might use CTOR-TEST
+    uint            has_cdtor_val   : 1;    // - true ==> has integral CDTOR argument
+    uint            temp_dtoring    : 1;    // - true ==> temporary DTORING req'd in expr.
+    uint            ctor_test       : 1;    // - true ==> expr. causes CTOR-TEST
+    uint            dtor_reg_reqd   : 1;    // - true ==> dtor registration required
+    uint            debug_info      : 1;    // - true ==> debug info for function
     PAD_UNSIGNED
 };
 

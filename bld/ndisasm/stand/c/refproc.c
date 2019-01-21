@@ -44,10 +44,6 @@
 #include "clibext.h"
 
 
-extern hash_table       HandleToRefListTable;
-extern hash_table       SymbolToLabelTable;
-extern dis_format_flags DFormat;
-
 static void addRef( ref_list sec_ref_list, ref_entry entry )
 {
     ref_entry                   walker;

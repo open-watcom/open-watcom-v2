@@ -66,7 +66,7 @@ void LexInit( void )
 /*************************/
 {
     PreProcInit();
-    LexParser( EOL );    /* sync parser to start of line */
+    LexParser( '\n' );  /* sync parser to start of line */
     targ_path = "";
     dep_path  = "";
 }
@@ -80,7 +80,7 @@ TOKEN_T LexToken( enum LexMode mode )
     STRM_T s;
     TOKEN_T t = TOK_NULL;
 
-    s = PreGetCH();
+    s = PreGetCHR();
 
     switch( mode ) {
     case LEX_MAC_DEF:   t = LexMacDef( s );     break;
@@ -100,7 +100,7 @@ void LexMaybeFree( TOKEN_T tok )
  *          FreeSafes the region if tok is one of these token types.
  */
 {
-    switch( tok ) {         /* fall through intentional */
+    switch( tok ) {
     case TOK_FILENAME:
     case TOK_CMD:
     case TOK_SUF:

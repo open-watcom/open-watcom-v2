@@ -108,7 +108,9 @@ walk_result DIPIMPENTRY( WalkSymList )( imp_image_handle *iih,
             } else {
                 *ish = fill in symbol handle information;
                 wr = wk( iih, SWI_SYMBOL, ish, d );
-                if( wr != WR_CONTINUE ) return( wr );
+                if( wr != WR_CONTINUE ) {
+                    return( wr );
+                }
             }
         }
     */
@@ -138,9 +140,8 @@ imp_mod_handle DIPIMPENTRY( SymMod )( imp_image_handle *iih, imp_sym_handle *ish
     return( IMH_NOMOD );
 }
 
-size_t DIPIMPENTRY( SymName )( imp_image_handle *iih,
-                        imp_sym_handle *ish, location_context *lc,
-                        symbol_name sn, char *buff, size_t buff_size )
+size_t DIPIMPENTRY( SymName )( imp_image_handle *iih, imp_sym_handle *ish,
+    location_context *lc, symbol_name_type snt, char *buff, size_t buff_size )
 {
     //TODO:
     /*
@@ -153,21 +154,21 @@ size_t DIPIMPENTRY( SymName )( imp_image_handle *iih,
         return zero. NOTE: the client might pass in zero for 'buff_size'. In that
         case, just return the length of the symbol name and do not attempt
         to put anything into the buffer.
-        The 'sn' parameter indicates what type of symbol name the client
+        The 'snt' parameter indicates what type of symbol name the client
         is interested in. It can have the following values:
 
-        SN_SOURCE:
+        SNT_SOURCE:
                 The name of the symbol as it appears in the source code.
 
-        SN_OBJECT:
+        SNT_OBJECT:
                 The name of the symbol as it appeared to the linker.
 
-        SN_DEMANGLED:
+        SNT_DEMANGLED:
                 C++ names, with full typing (essentially it looks like
                 a function prototype). If the symbol is not a C++ symbol
                 (not mangled), return zero for the length.
 
-        SN_EXPRESSION:
+        SNT_EXPRESSION:
                 Return whatever character string is necessary such that
                 when scanned in an expression, the symbol handle can
                 be reconstructed. Deprecated - never used.
@@ -234,13 +235,13 @@ dip_status DIPIMPENTRY( SymParmLocation )( imp_image_handle *iih,
 }
 
 dip_status DIPIMPENTRY( SymObjType )( imp_image_handle *iih,
-                    imp_sym_handle *ish, imp_type_handle *ith, dip_type_info *ti )
+                    imp_sym_handle *ish, imp_type_handle *ith, dig_type_info *ti )
 {
     //TODO:
     /*
         Fill in the imp_type_handle with the type of the 'this' object
         for a C++ member function.
-        If 'ti' is not NULL, fill in the dip_type_info with the kind of 'this'
+        If 'ti' is not NULL, fill in the dig_type_info with the kind of 'this'
         pointer that the routine is expecting (near/far, 16/32). If the
         routine is a static member, set ti->kind to TK_NONE.
     */
@@ -261,7 +262,7 @@ dip_status DIPIMPENTRY( SymObjLocation )( imp_image_handle *iih,
 }
 
 search_result DIPIMPENTRY( AddrSym )( imp_image_handle *iih,
-                            imp_mod_handle im, address a, imp_sym_handle *ish )
+                            imp_mod_handle imh, address a, imp_sym_handle *ish )
 {
     //TODO:
     /*
@@ -408,7 +409,7 @@ search_result DIPIMPENTRY( LookupSymEx )( imp_image_handle *iih,
 }
 
 search_result DIPIMPENTRY( AddrScope )( imp_image_handle *iih,
-                imp_mod_handle im, address addr, scope_block *scope )
+                imp_mod_handle imh, address addr, scope_block *scope )
 {
     //TODO:
     /*
@@ -430,7 +431,7 @@ search_result DIPIMPENTRY( AddrScope )( imp_image_handle *iih,
 }
 
 search_result DIPIMPENTRY( ScopeOuter )( imp_image_handle *iih,
-                imp_mod_handle im, scope_block *in, scope_block *out )
+                imp_mod_handle imh, scope_block *in, scope_block *out )
 {
     //TODO:
     /*
@@ -467,7 +468,7 @@ dip_status DIPIMPENTRY( SymAddRef )( imp_image_handle *iih, imp_sym_handle *ish 
     /*
     see DIPImpTypeAddRef
     */
-    return(DS_OK);
+    return( DS_OK );
 }
 
 dip_status DIPIMPENTRY( SymRelease )( imp_image_handle *iih, imp_sym_handle *ish )
@@ -475,7 +476,7 @@ dip_status DIPIMPENTRY( SymRelease )( imp_image_handle *iih, imp_sym_handle *ish
     /*
     see DIPImpTypeRelease
     */
-    return(DS_OK);
+    return( DS_OK );
 }
 
 dip_status DIPIMPENTRY( SymFreeAll )( imp_image_handle *iih )
@@ -483,6 +484,6 @@ dip_status DIPIMPENTRY( SymFreeAll )( imp_image_handle *iih )
     /*
     see DIPImpTypeFreeAll
     */
-    return(DS_OK);
+    return( DS_OK );
 }
 

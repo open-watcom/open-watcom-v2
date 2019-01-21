@@ -32,7 +32,6 @@
 #ifndef _TRPTYPES_H_INCLUDED
 #define _TRPTYPES_H_INCLUDED
 
-#include "bool.h"
 #include "digtypes.h"
 
 #if defined( __WINDOWS__ )

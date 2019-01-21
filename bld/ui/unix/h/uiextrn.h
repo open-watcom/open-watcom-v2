@@ -49,8 +49,8 @@ extern bool             UIWantShiftChanges;
 extern bool             UserForcedTermRefresh;
 extern bool             UIDisableShiftChanges;
 
-extern const char       *GetTermType( void );
-extern const char       *SetTermType( const char * );
+extern char             *GetTermType( void );
+extern void             SetTermType( const char * );
 
 #ifdef __QNX__
 extern int              UIConsole;

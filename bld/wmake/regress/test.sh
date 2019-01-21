@@ -1,11 +1,11 @@
 #!/bin/sh
 
-function usage() {
+usage() {
     echo "usage: $0 <progname>"
     exit
 }
 
-if [ "$1" == "" ]; then
+if [ -z "$1" ]; then
     usage
 fi
 

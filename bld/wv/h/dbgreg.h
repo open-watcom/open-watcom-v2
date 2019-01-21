@@ -68,6 +68,6 @@ extern char             *GetUndoString( void );
 extern char             *GetRedoString( void );
 extern void             ProcStackPos( void );
 extern void             GoHome( void );
-extern void             ParseRegSet( bool multiple, location_list *ll, dip_type_info *ti );
+extern void             ParseRegSet( bool multiple, location_list *ll, dig_type_info * );
 extern void             RegValue( item_mach *value, const mad_reg_info *reginfo, machine_state *mach );
 extern void             RegNewValue( const mad_reg_info *reginfo, const item_mach *new_val, mad_type_handle mth );

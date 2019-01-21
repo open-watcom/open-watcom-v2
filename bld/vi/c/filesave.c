@@ -132,7 +132,7 @@ static int readOnlyCheck( void )
 {
     char        tmp[MAX_STR];
 #ifndef __WIN__
-    char        st[MAX_STR];
+    char        st[5];
 #endif
 
     MySprintf( tmp, "\"%s\" is read-only, overwrite?", CurrentFile->name );
@@ -142,7 +142,7 @@ static int readOnlyCheck( void )
     }
     return( ERR_READ_ONLY_FILE );
 #else
-    if( GetResponse( tmp, st ) == GOT_RESPONSE && st[0] == 'y' ) {
+    if( GetResponse( tmp, st, sizeof( st ) ) == GOT_RESPONSE && st[0] == 'y' ) {
         return( ERR_NO_ERR );
     }
     return( ERR_READ_ONLY_FILE );
@@ -407,11 +407,11 @@ bool FilePromptForSaveChanges( file *f )
     SetWindowPos( root_window_id, HWND_NOTOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE );
     SetWindowPos( root_window_id, HWND_BOTTOM, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE );
 #else
-    char    response[MAX_SRC_LINE];
+    char    response[5];
 
 //  MySprintf( buffer, "\"%s\" has been modified - save changes (yes|no|cancel)?", f->name );
     MySprintf( buffer, "\"%s\" has been modified - save changes (yes|no)?", f->name );
-    if( GetResponse( buffer, response ) == GOT_RESPONSE ) {
+    if( GetResponse( buffer, response, sizeof( response ) ) == GOT_RESPONSE ) {
         switch( response[0] ) {
         case '\0':
             // if the user hit ENTER then the buffer will be
@@ -463,10 +463,10 @@ bool FileExitOptionSaveChanges( file *f )
         NextFileDammit();
     }
 #else
-    char response[MAX_SRC_LINE];
+    char response[8];
 
     MySprintf( buffer, "\"%s\" has been modified - save changes (yes|no|cancel)?", f->name );
-    if( GetResponse( buffer, response ) == GOT_RESPONSE ) {
+    if( GetResponse( buffer, response, sizeof( response ) ) == GOT_RESPONSE ) {
         switch( response[0] ) {
         case '\0':
             // if the user hit ENTER then the buffer will be

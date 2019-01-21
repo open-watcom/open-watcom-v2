@@ -46,7 +46,6 @@
 #define SetAction(c,i)  ((c)->action |= (ACTION_USED|(i)))
 #define IsBase(c)       ((c)->action & ACTION_BASE)
 #define SetBase(c)      ((c)->action |= ACTION_BASE)
-#define roundup(a,b)    ((((a)+(b)-1)/(b))*(b))
 
 #define BLOCK           512
 
@@ -62,7 +61,7 @@ static a_table      *table;
 static void expand_table( base_n new_size )
 {
     if( new_size > avail ) {
-        avail = roundup( new_size, BLOCK );
+        avail = _RoundUp( new_size, BLOCK );
         if( table != NULL ) {
             table = REALLOC( table, avail, a_table );
         } else {
@@ -165,7 +164,7 @@ static base_n addtotable( token_n *tokens, token_n *end_token, action_n *actions
     return( start );
 }
 
-void genobj( void )
+void genobj( FILE *fp )
 {
     value_size  token_size;
     action_n    *actions, *parent, *other;
@@ -182,13 +181,17 @@ void genobj( void )
     a_shift_action *tx;
     a_reduce_action *rx;
     index_n     i, j;
-    set_size    savings, min, *size;
+    set_size    max_savings;
+    set_size    savings;
+    set_size    min_len;
+    set_size    len;
+    set_size    *size;
     set_size    shift;
     token_n     parent_base;
     unsigned    num_default, num_parent;
 
     if( fastflag ) {
-        GenFastTables();
+        GenFastTables( fp );
         return;
     }
     if( bigflag || compactflag ) {
@@ -233,28 +236,28 @@ void genobj( void )
             *q++ = sym->token;
             actions[sym->token] = tx->state->sidx;
         }
-        savings = 0;
+        max_savings = 0;
         for( rx = x->redun; (pro = rx->pro) != NULL; ++rx ) {
+            if( (savings = (set_size)((mp = Members( rx->follow )) - setmembers)) == 0 )
+                continue;
             redun = pro->pidx + nstate;
-            mp = Members( rx->follow );
-            if( (set_size)( mp - setmembers ) > savings ) {
-                savings = (set_size)( mp - setmembers );
+            if( max_savings < savings ) {
+                max_savings = savings;
                 r = q;
             }
-            while( mp != setmembers ) {
-                --mp;
+            while( mp-- != setmembers ) {
                 tokval = symtab[*mp]->token;
                 *q++ = tokval;
                 actions[tokval] = redun;
             }
         }
-        if( savings ) {
+        if( max_savings ) {
             actval = actions[*r];
             other[i] = actval;
             *q++ = dtoken;
             actions[dtoken] = actval;
             p = r;
-            while( savings-- > 0 )
+            while( max_savings-- > 0 )
                 actions[*p++] = error;
             while( p < q )
                 *r++ = *p++;
@@ -264,11 +267,11 @@ void genobj( void )
             other[i] = error;
         }
         r = q;
-        min = (set_size)( q - tokens );
-        size[i] = min;
+        min_len = (set_size)( q - tokens );
+        size[i] = min_len;
         parent[i] = nstate;
         for( j = nstate; --j > i; ) {
-            if( abs( size[j] - size[i] ) < min ) {
+            if( abs( size[j] - size[i] ) < min_len ) {
                 x = statetab[j];
                 p = test;
                 q = test + ntoken;
@@ -283,8 +286,7 @@ void genobj( void )
                     redun = pro->pidx + nstate;
                     if( redun == other[j] )
                         redun = error;
-                    for( mp = Members( rx->follow ); mp != setmembers; ) {
-                        --mp;
+                    for( mp = Members( rx->follow ); mp-- != setmembers; ) {
                         tokval = symtab[*mp]->token;
                         if( actions[tokval] == redun ) {
                             *p++ = tokval;
@@ -300,9 +302,9 @@ void genobj( void )
                         *--q = dtoken;
                     }
                 }
-                savings = (set_size)( size[i] + size[j] - 2 * ( p - test ) );
-                if( savings < min ) {
-                    min = savings;
+                len = (set_size)( size[i] + size[j] - 2 * ( p - test ) );
+                if( min_len > len ) {
+                    min_len = len;
                     same = p;
                     diff = q;
                     s = test; test = best; best = s;
@@ -310,7 +312,7 @@ void genobj( void )
                 }
             }
         }
-        if( min >= size[i] ) {
+        if( min_len >= size[i] ) {
             s = r;
         } else {
             ++num_parent;
@@ -345,31 +347,30 @@ void genobj( void )
     FREE( other );
     FREE( size );
 
-    putambigs( base );
+    putambigs( fp, base );
 
-    putnum( "YYNOACTION", error - nstate + used );
-    putnum( "YYEOFTOKEN", eofsym->token );
-    putnum( "YYERRTOKEN", errsym->token );
-    putnum( "YYETOKEN", errsym->token );
+    putnum( fp, "YYNOACTION", error - nstate + used );
+    putnum( fp, "YYEOFTOKEN", eofsym->token );
+    putnum( fp, "YYERRTOKEN", errsym->token );
     if( compactflag ) {
         parent_base = used + npro;
-        putnum( "YYPARENT", parent_base );
+        putnum( fp, "YYPARENT", parent_base );
         shift = 8;
         for( i = 256; i < used; i <<= 1 ) {
             ++shift;
         }
-        putnum( "YYPRODSIZE", shift );
+        putnum( fp, "YYPRODSIZE", shift );
     } else {
-        putnum( "YYPTOKEN", ptoken );
-        putnum( "YYDTOKEN", dtoken );
+        putnum( fp, "YYPARTOKEN", ptoken );
+        putnum( fp, "YYDEFTOKEN", dtoken );
     }
-    putnum( "YYSTART", base[startstate->sidx] );
-    putnum( "YYSTOP", base[eofsym->enter->sidx] );
-    putnum( "YYERR", base[errstate->sidx] );
-    putnum( "YYUSED", used );
+    putnum( fp, "YYSTART", base[startstate->sidx] );
+    putnum( fp, "YYSTOP", base[eofsym->enter->sidx] );
+    putnum( fp, "YYERR", base[errstate->sidx] );
+    putnum( fp, "YYUSED", used );
 
     if( compactflag ) {
-        begtab( "YYPACKTYPE", "yyacttab" );
+        begtab( fp, "YYPACKTYPE", "yyacttab" );
         j = nstate;
         for( i = 0; i < used; ++i ) {
             new_action = table[i].action;
@@ -404,48 +405,48 @@ void genobj( void )
                     new_action += used;         // now convert to 'used' base
                 }
             }
-            putcompact( tokval, new_action );
+            putcompact( fp, tokval, new_action );
         }
-        endtab();
+        endtab( fp );
         // Combine lengths & lhs into a single table
-        begtab( "YYPRODTYPE", "yyprodtab" );
+        begtab( fp, "YYPRODTYPE", "yyprodtab" );
         for( i = 0; i < npro; ++i ) {
             j = 0;
             for( item = protab[i]->items; item->p.sym != NULL; ++item ) {
                 ++j;
             }
-            puttab( FITS_A_WORD, (j << shift) + protab[i]->sym->token );
+            puttab( fp, FITS_A_WORD, (j << shift) + protab[i]->sym->token );
         }
-        endtab();
+        endtab( fp );
     } else {
-        begtab( "YYCHKTYPE", "yychktab" );
+        begtab( fp, "YYCHKTYPE", "yychktab" );
         for( i = 0; i < used; ++i ) {
-            puttab( token_size, Token( table + i ) );
+            puttab( fp, token_size, Token( table + i ) );
         }
-        endtab();
-        begtab( "YYACTTYPE", "yyacttab" );
+        endtab( fp );
+        begtab( fp, "YYACTTYPE", "yyacttab" );
         for( i = 0; i < used; ++i ) {
             j = Action( table + i );
             if( j < nstate ) {
-                puttab( FITS_A_WORD, base[j] );
+                puttab( fp, FITS_A_WORD, base[j] );
             } else {
-                puttab( FITS_A_WORD, j - nstate + used );
+                puttab( fp, FITS_A_WORD, j - nstate + used );
             }
         }
-        endtab();
-        begtab( "YYPLENTYPE", "yyplentab" );
+        endtab( fp );
+        begtab( fp, "YYPLENTYPE", "yyplentab" );
         for( i = 0; i < npro; ++i ) {
             for( item = protab[i]->items; item->p.sym != NULL; ) {
                 ++item;
             }
-            puttab( FITS_A_BYTE, (unsigned)( item - protab[i]->items ) );
+            puttab( fp, FITS_A_BYTE, (unsigned)( item - protab[i]->items ) );
         }
-        endtab();
-        begtab( "YYPLHSTYPE", "yyplhstab" );
+        endtab( fp );
+        begtab( fp, "YYPLHSTYPE", "yyplhstab" );
         for( i = 0; i < npro; ++i ) {
-            puttab( token_size, protab[i]->sym->token );
+            puttab( fp, token_size, protab[i]->sym->token );
         }
-        endtab();
+        endtab( fp );
     }
     FREE( table );
     FREE( base );
@@ -455,7 +456,7 @@ void genobj( void )
     dumpstatistic( "states with defaults", num_default );
     dumpstatistic( "states with parents", num_parent );
 
-    puttokennames( dtoken, token_size );
+    puttokennames( fp, dtoken, token_size );
 
     FREE( protab );
     FREE( symtab );

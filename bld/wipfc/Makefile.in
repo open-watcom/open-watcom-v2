@@ -73,7 +73,10 @@ am_wipfc_OBJECTS = main.$(OBJEXT) compiler.$(OBJEXT) \
 	lp.$(OBJEXT) note.$(OBJEXT) nt.$(OBJEXT) ol.$(OBJEXT) \
 	p.$(OBJEXT) parml.$(OBJEXT) pbutton.$(OBJEXT) rm.$(OBJEXT) \
 	sl.$(OBJEXT) table.$(OBJEXT) title.$(OBJEXT) ul.$(OBJEXT) \
-	warning.$(OBJEXT) xmp.$(OBJEXT)
+	warning.$(OBJEXT) xmp.$(OBJEXT) cntrydef.$(OBJEXT) \
+	outfile.$(OBJEXT) iculoadr.$(OBJEXT) ucnv_u8.$(OBJEXT) \
+	ucnv_cnv.$(OBJEXT) ucnvmbcs.$(OBJEXT) ucnv_cb.$(OBJEXT) \
+	ucnv_ext.$(OBJEXT) ucnv.$(OBJEXT) ucnv_err.$(OBJEXT)
 wipfc_OBJECTS = $(am_wipfc_OBJECTS)
 wipfc_LDADD = $(LDADD)
 DEFAULT_INCLUDES = -I.@am__isrc@
@@ -208,10 +211,14 @@ wipfc_SOURCES = cpp/main.cpp cpp/compiler.cpp cpp/document.cpp cpp/env.cpp \
         cpp/hn.cpp cpp/hpn.cpp cpp/i1.cpp cpp/i2.cpp cpp/icmd.cpp cpp/isyn.cpp \
         cpp/lines.cpp cpp/link.cpp cpp/lm.cpp cpp/lp.cpp cpp/note.cpp cpp/nt.cpp \
         cpp/ol.cpp cpp/p.cpp cpp/parml.cpp cpp/pbutton.cpp cpp/rm.cpp cpp/sl.cpp \
-        cpp/table.cpp cpp/title.cpp cpp/ul.cpp cpp/warning.cpp cpp/xmp.cpp
+        cpp/table.cpp cpp/title.cpp cpp/ul.cpp cpp/warning.cpp cpp/xmp.cpp \
+        cpp/cntrydef.cpp cpp/outfile.cpp cpp/iculoadr.cpp \
+        icu/common/ucnv_u8.cpp icu/common/ucnv_cnv.cpp icu/common/ucnvmbcs.cpp \
+        icu/common/ucnv_cb.cpp icu/common/ucnv_ext.cpp icu/common/ucnv.cpp \
+        icu/common/ucnv_err.cpp
 
 noinst_HEADERS = cpp/compiler.hpp cpp/document.hpp cpp/env.hpp cpp/ipfbuff.hpp \
-        cpp/ipffile.hpp cpp/lexer.hpp \
+        cpp/ipffile.hpp cpp/ipfdata.hpp cpp/lexer.hpp \
         cpp/bitmap.hpp cpp/btmpblk.hpp cpp/cecmd.hpp cpp/cell.hpp cpp/ctrlbtn.hpp \
         cpp/ctrlgrp.hpp cpp/controls.hpp cpp/errors.hpp cpp/extfiles.hpp cpp/fnt.hpp \
         cpp/fntcol.hpp cpp/fts.hpp cpp/gdword.hpp cpp/gdict.hpp cpp/gnames.hpp \
@@ -222,15 +229,37 @@ noinst_HEADERS = cpp/compiler.hpp cpp/document.hpp cpp/env.hpp cpp/ipfbuff.hpp \
         cpp/brcmd.hpp cpp/caution.hpp cpp/cgraphic.hpp cpp/color.hpp cpp/ctrl.hpp \
         cpp/ctrldef.hpp cpp/ddf.hpp cpp/dl.hpp cpp/docprof.hpp cpp/fig.hpp \
         cpp/figcap.hpp cpp/fn.hpp cpp/font.hpp cpp/hdref.hpp cpp/hide.hpp cpp/hn.hpp \
-        cpp/hpn.hpp cpp/i1.hpp cpp/i2.hpp cpp/icmd.hpp cpp/isyn.hpp \
+        cpp/hpn.hpp cpp/i1.hpp cpp/i2.hpp cpp/icmd.hpp cpp/isyn.hpp cpp/nlsrecty.hpp \
         cpp/lines.hpp cpp/link.hpp cpp/lm.hpp cpp/lp.hpp cpp/note.hpp cpp/nt.hpp \
         cpp/ol.hpp cpp/p.hpp cpp/parml.hpp cpp/pbutton.hpp cpp/rm.hpp cpp/sl.hpp \
-        cpp/table.hpp cpp/title.hpp cpp/ul.hpp cpp/warning.hpp cpp/xmp.hpp
-
+        cpp/table.hpp cpp/title.hpp cpp/ul.hpp cpp/warning.hpp cpp/wipfc.hpp cpp/xmp.hpp \
+        cpp/cntrydef.hpp cpp/outfile.hpp cpp/dataenc.hpp cpp/iculoadr.hpp \
+        icu/common/cmemory.h icu/common/cstring.h icu/common/putilimp.h \
+        icu/common/uassert.h icu/common/ucmndata.h icu/common/ucnv_bld.h \
+        icu/common/ucnv_cb.h icu/common/ucnv_cnv.h icu/common/ucnv_ext.h \
+        icu/common/ucnv_imp.h icu/common/ucnvmbcs.h icu/common/udatamem.h \
+        icu/common/udataswp.h icu/common/umapfile.h icu/common/uset_imp.h \
+        icu/common/ustr_imp.h icu/common/ustrfmt.h icu/common/utracimp.h \
+        icu/common/unicode/localpointer.h icu/common/unicode/platform.h \
+        icu/common/unicode/ptypes.h icu/common/unicode/putil.h \
+        icu/common/unicode/stringoptions.h icu/common/unicode/uclean.h \
+        icu/common/unicode/ucnv.h icu/common/unicode/ucnv_cb.h \
+        icu/common/unicode/ucnv_err.h icu/common/unicode/uconfig.h \
+        icu/common/unicode/udata.h icu/common/unicode/uenum.h \
+        icu/common/unicode/uchar.h icu/common/unicode/uiter.h \
+        icu/common/unicode/uloc.h icu/common/unicode/umachine.h \
+        icu/common/unicode/urename.h icu/common/unicode/uset.h \
+        icu/common/unicode/ustring.h icu/common/unicode/utf.h \
+        icu/common/unicode/utf_old.h icu/common/unicode/utf16.h \
+        icu/common/unicode/utf8.h icu/common/unicode/utrace.h \
+        icu/common/unicode/utypes.h icu/common/unicode/uvernum.h \
+        icu/common/unicode/uversion.h
 wipfcdir = $datadir/wipfc
 dist_wipfc_DATA = helper/de_DE.nls helper/en_GB.nls helper/en_US.nls helper/fr_CA.nls \
         helper/fr_FR.nls helper/ja_JA.nls helper/xx_YY.nls helper/enti0932.txt \
-        helper/enti0934.txt helper/enti0938.txt helper/entity.txt
+        helper/enti0934.txt helper/enti0938.txt helper/entity.txt helper/nlsconf.txt \
+        helper/ibm-437_P100-1995.cnv helper/ibm-850_P100-1995.cnv helper/ibm-852_P100-1995.cnv \
+        helper/ibm-943_P15A-2003.cnv
 
 all: config.h
 	$(MAKE) $(AM_MAKEFLAGS) all-am
@@ -330,6 +359,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/cecmd.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/cell.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/cgraphic.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/cntrydef.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/color.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/compiler.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/controls.Po@am__quote@
@@ -364,6 +394,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/i1.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/i2.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/icmd.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/iculoadr.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/index.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ipfbuff.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ipffile.Po@am__quote@
@@ -378,6 +409,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/note.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/nt.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ol.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/outfile.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/p.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/page.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/parml.Po@am__quote@
@@ -393,6 +425,13 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/title.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/toc.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/tocref.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ucnv.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ucnv_cb.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ucnv_cnv.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ucnv_err.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ucnv_ext.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ucnv_u8.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ucnvmbcs.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ul.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/util.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/warning.Po@am__quote@
@@ -1534,6 +1573,147 @@ xmp.obj: cpp/xmp.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='cpp/xmp.cpp' object='xmp.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o xmp.obj `if test -f 'cpp/xmp.cpp'; then $(CYGPATH_W) 'cpp/xmp.cpp'; else $(CYGPATH_W) '$(srcdir)/cpp/xmp.cpp'; fi`
+
+cntrydef.o: cpp/cntrydef.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT cntrydef.o -MD -MP -MF $(DEPDIR)/cntrydef.Tpo -c -o cntrydef.o `test -f 'cpp/cntrydef.cpp' || echo '$(srcdir)/'`cpp/cntrydef.cpp
+@am__fastdepCXX_TRUE@	mv -f $(DEPDIR)/cntrydef.Tpo $(DEPDIR)/cntrydef.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='cpp/cntrydef.cpp' object='cntrydef.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o cntrydef.o `test -f 'cpp/cntrydef.cpp' || echo '$(srcdir)/'`cpp/cntrydef.cpp
+
+cntrydef.obj: cpp/cntrydef.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT cntrydef.obj -MD -MP -MF $(DEPDIR)/cntrydef.Tpo -c -o cntrydef.obj `if test -f 'cpp/cntrydef.cpp'; then $(CYGPATH_W) 'cpp/cntrydef.cpp'; else $(CYGPATH_W) '$(srcdir)/cpp/cntrydef.cpp'; fi`
+@am__fastdepCXX_TRUE@	mv -f $(DEPDIR)/cntrydef.Tpo $(DEPDIR)/cntrydef.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='cpp/cntrydef.cpp' object='cntrydef.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o cntrydef.obj `if test -f 'cpp/cntrydef.cpp'; then $(CYGPATH_W) 'cpp/cntrydef.cpp'; else $(CYGPATH_W) '$(srcdir)/cpp/cntrydef.cpp'; fi`
+
+outfile.o: cpp/outfile.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT outfile.o -MD -MP -MF $(DEPDIR)/outfile.Tpo -c -o outfile.o `test -f 'cpp/outfile.cpp' || echo '$(srcdir)/'`cpp/outfile.cpp
+@am__fastdepCXX_TRUE@	mv -f $(DEPDIR)/outfile.Tpo $(DEPDIR)/outfile.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='cpp/outfile.cpp' object='outfile.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o outfile.o `test -f 'cpp/outfile.cpp' || echo '$(srcdir)/'`cpp/outfile.cpp
+
+outfile.obj: cpp/outfile.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT outfile.obj -MD -MP -MF $(DEPDIR)/outfile.Tpo -c -o outfile.obj `if test -f 'cpp/outfile.cpp'; then $(CYGPATH_W) 'cpp/outfile.cpp'; else $(CYGPATH_W) '$(srcdir)/cpp/outfile.cpp'; fi`
+@am__fastdepCXX_TRUE@	mv -f $(DEPDIR)/outfile.Tpo $(DEPDIR)/outfile.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='cpp/outfile.cpp' object='outfile.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o outfile.obj `if test -f 'cpp/outfile.cpp'; then $(CYGPATH_W) 'cpp/outfile.cpp'; else $(CYGPATH_W) '$(srcdir)/cpp/outfile.cpp'; fi`
+
+iculoadr.o: cpp/iculoadr.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT iculoadr.o -MD -MP -MF $(DEPDIR)/iculoadr.Tpo -c -o iculoadr.o `test -f 'cpp/iculoadr.cpp' || echo '$(srcdir)/'`cpp/iculoadr.cpp
+@am__fastdepCXX_TRUE@	mv -f $(DEPDIR)/iculoadr.Tpo $(DEPDIR)/iculoadr.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='cpp/iculoadr.cpp' object='iculoadr.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o iculoadr.o `test -f 'cpp/iculoadr.cpp' || echo '$(srcdir)/'`cpp/iculoadr.cpp
+
+iculoadr.obj: cpp/iculoadr.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT iculoadr.obj -MD -MP -MF $(DEPDIR)/iculoadr.Tpo -c -o iculoadr.obj `if test -f 'cpp/iculoadr.cpp'; then $(CYGPATH_W) 'cpp/iculoadr.cpp'; else $(CYGPATH_W) '$(srcdir)/cpp/iculoadr.cpp'; fi`
+@am__fastdepCXX_TRUE@	mv -f $(DEPDIR)/iculoadr.Tpo $(DEPDIR)/iculoadr.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='cpp/iculoadr.cpp' object='iculoadr.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o iculoadr.obj `if test -f 'cpp/iculoadr.cpp'; then $(CYGPATH_W) 'cpp/iculoadr.cpp'; else $(CYGPATH_W) '$(srcdir)/cpp/iculoadr.cpp'; fi`
+
+ucnv_u8.o: icu/common/ucnv_u8.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT ucnv_u8.o -MD -MP -MF $(DEPDIR)/ucnv_u8.Tpo -c -o ucnv_u8.o `test -f 'icu/common/ucnv_u8.cpp' || echo '$(srcdir)/'`icu/common/ucnv_u8.cpp
+@am__fastdepCXX_TRUE@	mv -f $(DEPDIR)/ucnv_u8.Tpo $(DEPDIR)/ucnv_u8.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='icu/common/ucnv_u8.cpp' object='ucnv_u8.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o ucnv_u8.o `test -f 'icu/common/ucnv_u8.cpp' || echo '$(srcdir)/'`icu/common/ucnv_u8.cpp
+
+ucnv_u8.obj: icu/common/ucnv_u8.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT ucnv_u8.obj -MD -MP -MF $(DEPDIR)/ucnv_u8.Tpo -c -o ucnv_u8.obj `if test -f 'icu/common/ucnv_u8.cpp'; then $(CYGPATH_W) 'icu/common/ucnv_u8.cpp'; else $(CYGPATH_W) '$(srcdir)/icu/common/ucnv_u8.cpp'; fi`
+@am__fastdepCXX_TRUE@	mv -f $(DEPDIR)/ucnv_u8.Tpo $(DEPDIR)/ucnv_u8.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='icu/common/ucnv_u8.cpp' object='ucnv_u8.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o ucnv_u8.obj `if test -f 'icu/common/ucnv_u8.cpp'; then $(CYGPATH_W) 'icu/common/ucnv_u8.cpp'; else $(CYGPATH_W) '$(srcdir)/icu/common/ucnv_u8.cpp'; fi`
+
+ucnv_cnv.o: icu/common/ucnv_cnv.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT ucnv_cnv.o -MD -MP -MF $(DEPDIR)/ucnv_cnv.Tpo -c -o ucnv_cnv.o `test -f 'icu/common/ucnv_cnv.cpp' || echo '$(srcdir)/'`icu/common/ucnv_cnv.cpp
+@am__fastdepCXX_TRUE@	mv -f $(DEPDIR)/ucnv_cnv.Tpo $(DEPDIR)/ucnv_cnv.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='icu/common/ucnv_cnv.cpp' object='ucnv_cnv.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o ucnv_cnv.o `test -f 'icu/common/ucnv_cnv.cpp' || echo '$(srcdir)/'`icu/common/ucnv_cnv.cpp
+
+ucnv_cnv.obj: icu/common/ucnv_cnv.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT ucnv_cnv.obj -MD -MP -MF $(DEPDIR)/ucnv_cnv.Tpo -c -o ucnv_cnv.obj `if test -f 'icu/common/ucnv_cnv.cpp'; then $(CYGPATH_W) 'icu/common/ucnv_cnv.cpp'; else $(CYGPATH_W) '$(srcdir)/icu/common/ucnv_cnv.cpp'; fi`
+@am__fastdepCXX_TRUE@	mv -f $(DEPDIR)/ucnv_cnv.Tpo $(DEPDIR)/ucnv_cnv.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='icu/common/ucnv_cnv.cpp' object='ucnv_cnv.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o ucnv_cnv.obj `if test -f 'icu/common/ucnv_cnv.cpp'; then $(CYGPATH_W) 'icu/common/ucnv_cnv.cpp'; else $(CYGPATH_W) '$(srcdir)/icu/common/ucnv_cnv.cpp'; fi`
+
+ucnvmbcs.o: icu/common/ucnvmbcs.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT ucnvmbcs.o -MD -MP -MF $(DEPDIR)/ucnvmbcs.Tpo -c -o ucnvmbcs.o `test -f 'icu/common/ucnvmbcs.cpp' || echo '$(srcdir)/'`icu/common/ucnvmbcs.cpp
+@am__fastdepCXX_TRUE@	mv -f $(DEPDIR)/ucnvmbcs.Tpo $(DEPDIR)/ucnvmbcs.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='icu/common/ucnvmbcs.cpp' object='ucnvmbcs.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o ucnvmbcs.o `test -f 'icu/common/ucnvmbcs.cpp' || echo '$(srcdir)/'`icu/common/ucnvmbcs.cpp
+
+ucnvmbcs.obj: icu/common/ucnvmbcs.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT ucnvmbcs.obj -MD -MP -MF $(DEPDIR)/ucnvmbcs.Tpo -c -o ucnvmbcs.obj `if test -f 'icu/common/ucnvmbcs.cpp'; then $(CYGPATH_W) 'icu/common/ucnvmbcs.cpp'; else $(CYGPATH_W) '$(srcdir)/icu/common/ucnvmbcs.cpp'; fi`
+@am__fastdepCXX_TRUE@	mv -f $(DEPDIR)/ucnvmbcs.Tpo $(DEPDIR)/ucnvmbcs.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='icu/common/ucnvmbcs.cpp' object='ucnvmbcs.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o ucnvmbcs.obj `if test -f 'icu/common/ucnvmbcs.cpp'; then $(CYGPATH_W) 'icu/common/ucnvmbcs.cpp'; else $(CYGPATH_W) '$(srcdir)/icu/common/ucnvmbcs.cpp'; fi`
+
+ucnv_cb.o: icu/common/ucnv_cb.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT ucnv_cb.o -MD -MP -MF $(DEPDIR)/ucnv_cb.Tpo -c -o ucnv_cb.o `test -f 'icu/common/ucnv_cb.cpp' || echo '$(srcdir)/'`icu/common/ucnv_cb.cpp
+@am__fastdepCXX_TRUE@	mv -f $(DEPDIR)/ucnv_cb.Tpo $(DEPDIR)/ucnv_cb.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='icu/common/ucnv_cb.cpp' object='ucnv_cb.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o ucnv_cb.o `test -f 'icu/common/ucnv_cb.cpp' || echo '$(srcdir)/'`icu/common/ucnv_cb.cpp
+
+ucnv_cb.obj: icu/common/ucnv_cb.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT ucnv_cb.obj -MD -MP -MF $(DEPDIR)/ucnv_cb.Tpo -c -o ucnv_cb.obj `if test -f 'icu/common/ucnv_cb.cpp'; then $(CYGPATH_W) 'icu/common/ucnv_cb.cpp'; else $(CYGPATH_W) '$(srcdir)/icu/common/ucnv_cb.cpp'; fi`
+@am__fastdepCXX_TRUE@	mv -f $(DEPDIR)/ucnv_cb.Tpo $(DEPDIR)/ucnv_cb.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='icu/common/ucnv_cb.cpp' object='ucnv_cb.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o ucnv_cb.obj `if test -f 'icu/common/ucnv_cb.cpp'; then $(CYGPATH_W) 'icu/common/ucnv_cb.cpp'; else $(CYGPATH_W) '$(srcdir)/icu/common/ucnv_cb.cpp'; fi`
+
+ucnv_ext.o: icu/common/ucnv_ext.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT ucnv_ext.o -MD -MP -MF $(DEPDIR)/ucnv_ext.Tpo -c -o ucnv_ext.o `test -f 'icu/common/ucnv_ext.cpp' || echo '$(srcdir)/'`icu/common/ucnv_ext.cpp
+@am__fastdepCXX_TRUE@	mv -f $(DEPDIR)/ucnv_ext.Tpo $(DEPDIR)/ucnv_ext.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='icu/common/ucnv_ext.cpp' object='ucnv_ext.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o ucnv_ext.o `test -f 'icu/common/ucnv_ext.cpp' || echo '$(srcdir)/'`icu/common/ucnv_ext.cpp
+
+ucnv_ext.obj: icu/common/ucnv_ext.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT ucnv_ext.obj -MD -MP -MF $(DEPDIR)/ucnv_ext.Tpo -c -o ucnv_ext.obj `if test -f 'icu/common/ucnv_ext.cpp'; then $(CYGPATH_W) 'icu/common/ucnv_ext.cpp'; else $(CYGPATH_W) '$(srcdir)/icu/common/ucnv_ext.cpp'; fi`
+@am__fastdepCXX_TRUE@	mv -f $(DEPDIR)/ucnv_ext.Tpo $(DEPDIR)/ucnv_ext.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='icu/common/ucnv_ext.cpp' object='ucnv_ext.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o ucnv_ext.obj `if test -f 'icu/common/ucnv_ext.cpp'; then $(CYGPATH_W) 'icu/common/ucnv_ext.cpp'; else $(CYGPATH_W) '$(srcdir)/icu/common/ucnv_ext.cpp'; fi`
+
+ucnv.o: icu/common/ucnv.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT ucnv.o -MD -MP -MF $(DEPDIR)/ucnv.Tpo -c -o ucnv.o `test -f 'icu/common/ucnv.cpp' || echo '$(srcdir)/'`icu/common/ucnv.cpp
+@am__fastdepCXX_TRUE@	mv -f $(DEPDIR)/ucnv.Tpo $(DEPDIR)/ucnv.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='icu/common/ucnv.cpp' object='ucnv.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o ucnv.o `test -f 'icu/common/ucnv.cpp' || echo '$(srcdir)/'`icu/common/ucnv.cpp
+
+ucnv.obj: icu/common/ucnv.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT ucnv.obj -MD -MP -MF $(DEPDIR)/ucnv.Tpo -c -o ucnv.obj `if test -f 'icu/common/ucnv.cpp'; then $(CYGPATH_W) 'icu/common/ucnv.cpp'; else $(CYGPATH_W) '$(srcdir)/icu/common/ucnv.cpp'; fi`
+@am__fastdepCXX_TRUE@	mv -f $(DEPDIR)/ucnv.Tpo $(DEPDIR)/ucnv.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='icu/common/ucnv.cpp' object='ucnv.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o ucnv.obj `if test -f 'icu/common/ucnv.cpp'; then $(CYGPATH_W) 'icu/common/ucnv.cpp'; else $(CYGPATH_W) '$(srcdir)/icu/common/ucnv.cpp'; fi`
+
+ucnv_err.o: icu/common/ucnv_err.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT ucnv_err.o -MD -MP -MF $(DEPDIR)/ucnv_err.Tpo -c -o ucnv_err.o `test -f 'icu/common/ucnv_err.cpp' || echo '$(srcdir)/'`icu/common/ucnv_err.cpp
+@am__fastdepCXX_TRUE@	mv -f $(DEPDIR)/ucnv_err.Tpo $(DEPDIR)/ucnv_err.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='icu/common/ucnv_err.cpp' object='ucnv_err.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o ucnv_err.o `test -f 'icu/common/ucnv_err.cpp' || echo '$(srcdir)/'`icu/common/ucnv_err.cpp
+
+ucnv_err.obj: icu/common/ucnv_err.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT ucnv_err.obj -MD -MP -MF $(DEPDIR)/ucnv_err.Tpo -c -o ucnv_err.obj `if test -f 'icu/common/ucnv_err.cpp'; then $(CYGPATH_W) 'icu/common/ucnv_err.cpp'; else $(CYGPATH_W) '$(srcdir)/icu/common/ucnv_err.cpp'; fi`
+@am__fastdepCXX_TRUE@	mv -f $(DEPDIR)/ucnv_err.Tpo $(DEPDIR)/ucnv_err.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='icu/common/ucnv_err.cpp' object='ucnv_err.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o ucnv_err.obj `if test -f 'icu/common/ucnv_err.cpp'; then $(CYGPATH_W) 'icu/common/ucnv_err.cpp'; else $(CYGPATH_W) '$(srcdir)/icu/common/ucnv_err.cpp'; fi`
+
 install-dist_wipfcDATA: $(dist_wipfc_DATA)
 	@$(NORMAL_INSTALL)
 	test -z "$(wipfcdir)" || $(MKDIR_P) "$(DESTDIR)$(wipfcdir)"
@@ -1842,3 +2022,4 @@ uninstall-am: uninstall-binPROGRAMS uninstall-dist_wipfcDATA
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.
 .NOEXPORT:
+

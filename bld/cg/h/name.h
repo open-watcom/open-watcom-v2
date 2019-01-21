@@ -31,14 +31,10 @@
 
 /* aligned */
 typedef enum {
-        N_CONSTANT,
-        N_MEMORY,
-        N_TEMP,
-        N_REGISTER,
-        N_INDEXED,
-        N_INITIAL,      /*  the next 3 used only by the scoreboarder */
-        N_VOLATILE,
-        N_ADDRESS
+    #define pick(e,s)   e,
+    #include "nclass.h"
+    #undef pick
+    N_CLASS_MAX
 } name_class_def;
 
 #define N_VISITED       0x80
@@ -108,7 +104,7 @@ typedef enum {
         CONS_TEMP_ADDR, /*  address constant of temp */
         CONS_HIGH_ADDR, /*  high part of a 32-bit address */
         CONS_LOW_ADDR,  /*  low part of a 32-bit address */
-} constant_class;
+} constant_type_class;
 
 typedef enum {
         MF_EMPTY                = 0x0000,
@@ -121,7 +117,7 @@ typedef enum {
 typedef struct name_def {
         union name              *next_name;
         name_class_def          class;
-        type_class_def          name_class;
+        type_class_def          type_class;
         type_length             size;
 } name_def;
 
@@ -152,7 +148,7 @@ typedef struct const_name {
         value32                 lo;
         value32                 hi;             /* high part of 64-bit const */
         struct constant_defn    *static_defn;
-        constant_class          const_type;
+        constant_type_class     const_type;
 } const_name;
 
 typedef struct memory_name {                    /*  global name value or address */

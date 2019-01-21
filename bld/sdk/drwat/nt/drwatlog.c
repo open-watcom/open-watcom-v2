@@ -31,13 +31,12 @@
 ****************************************************************************/
 
 
+#include "drwatcom.h"
 #include <time.h>
-#include <stdarg.h>
-#include <string.h>
 #include <io.h>
 #include <ctype.h>
 #include <sys/stat.h>
-#include "drwatcom.h"
+#include <alloca.h>
 #include "srchmsg.h"
 #include "intdlg.h"
 #include "drwatlog.h"
@@ -45,7 +44,6 @@
 #include "mem.h"
 #include "jdlg.h"
 #include "regcrt.h"
-#include "malloc.h"
 #include "mad.h"
 #include "madcli.h"
 #include "madrtn.h"

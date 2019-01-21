@@ -30,7 +30,7 @@ void insert_in_order( WCValDList<int> &list, int elem ) {
 }
 
 
-void main() {
+int main( void ) {
     WCValDList<int> list;
 
     insert_in_order( list, 5 );

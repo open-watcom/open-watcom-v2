@@ -67,40 +67,41 @@
 
 char            ti_char_map[256][4];
 
-static tix_status init_tix_scanner( const char *name )
-/****************************************************/
+static tix_status init_tix_scanner( const char *termname )
+/********************************************************/
 {
-    char        tix_name[19];
+    char        *tix_name;
+    size_t      len;
+    tix_status  rc;
 
-
-    if( name != NULL ) {
-        if( *name != '\0' ) {
-            strcpy( tix_name, name );
-            strcat( tix_name, ".tix" );
-            in_file = ti_fopen( tix_name );
-            if( in_file != NULL ) {
-                return( TIX_OK );
-            }
-        }
-        if( strstr( name, "ansi" ) != 0 ) {
-            in_file = ti_fopen( "ansi.tix" );
-            if( in_file != NULL ) {
-                return( TIX_OK );
-            }
-        } else if( strstr( name, "xterm" ) != 0 ) {
-            in_file = ti_fopen( "xterm.tix" );
-            if( in_file != NULL )
-                return( TIX_OK );
-            in_file = ti_fopen( "ansi.tix" );
-            if( in_file != NULL ) {
-                return( TIX_OK );
+    in_file = NULL;
+    rc = TIX_OK;
+    if( *termname != '\0' ) {
+        len = strlen( termname ) + 5;
+        tix_name = uimalloc( len );
+        strcpy( tix_name, termname );
+        strcat( tix_name, ".tix" );
+        in_file = ti_fopen( tix_name );
+        uifree( tix_name );
+        if( in_file == NULL ) {
+            if( strstr( termname, "ansi" ) != 0 ) {
+                in_file = ti_fopen( "ansi.tix" );
+            } else if( strstr( termname, "xterm" ) != 0 ) {
+                in_file = ti_fopen( "xterm.tix" );
+                if( in_file == NULL ) {
+                    in_file = ti_fopen( "ansi.tix" );
+                }
             }
         }
     }
-    in_file = ti_fopen( "default.tix" );
-    if( in_file != NULL )
-        return( TIX_DEFAULT );
-    return( TIX_NOFILE );
+    if( in_file == NULL ) {
+        rc = TIX_NOFILE;
+        in_file = ti_fopen( "default.tix" );
+        if( in_file != NULL ) {
+            rc = TIX_DEFAULT;
+        }
+    }
+    return( rc );
 }
 
 static void close_tix_scanner( void )
@@ -229,6 +230,7 @@ tix_status ti_read_tix( const char *termname )
         ret = TIX_DEFAULT;
         break;
     case TIX_OK:
+    case TIX_DEFAULT:
         if( !do_parse() )
             ret = TIX_FAIL;
         close_tix_scanner();

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2016 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -30,7 +30,7 @@
 ****************************************************************************/
 
 
-#include "cgstd.h"
+#include "_cgstd.h"
 #include "coderep.h"
 #include "cgaux.h"
 #include "cgmem.h"
@@ -40,11 +40,8 @@
 #include "typemap.h"
 #include "makeblk.h"
 #include "bldcall.h"
+#include "ppcparm.h"
 #include "feprotos.h"
-
-
-extern  void            InitPPCParmState( call_state * );
-extern  void            UpdateReturn( call_state *, type_def *, type_class_def, aux_handle );
 
 
 hw_reg_set SavedRegs( void )
@@ -95,7 +92,7 @@ hw_reg_set SavedRegs( void )
 type_class_def  CallState( aux_handle aux, type_def *tipe, call_state *state )
 /****************************************************************************/
 {
-    type_class_def      class;
+    type_class_def      type_class;
     byte                i;
     hw_reg_set          parms[24];
     hw_reg_set          *parm_src;
@@ -129,21 +126,21 @@ type_class_def  CallState( aux_handle aux, type_def *tipe, call_state *state )
     state->parm.curr_entry = state->parm.table;
     state->parm.offset  = 0;
     InitPPCParmState( state );
-    class = ReturnClass( tipe, state->attr );
+    type_class = ReturnClass( tipe, state->attr );
     if( *(call_class *)FEAuxInfo( aux, CALL_CLASS ) & HAS_VARARGS ) {
         state->attr |= ROUTINE_HAS_VARARGS;
     }
-    UpdateReturn( state, tipe, class, aux );
-    return( class );
+    UpdateReturn( state, tipe, type_class, aux );
+    return( type_class );
 }
 
 
-void    UpdateReturn( call_state *state, type_def *tipe, type_class_def class, aux_handle aux )
-/*********************************************************************************************/
+void    UpdateReturn( call_state *state, type_def *tipe, type_class_def type_class, aux_handle aux )
+/**************************************************************************************************/
 {
     /* unused parameters */ (void)tipe; (void)aux;
 
-    state->return_reg = ReturnReg( class );
+    state->return_reg = ReturnReg( type_class );
 }
 
 #if 0
@@ -161,7 +158,7 @@ hw_reg_set      CallZap( call_state *state )
     hw_reg_set  tmp;
 
     zap = state->modify;
-    if( ( state->attr & ROUTINE_MODIFY_EXACT ) == EMPTY ) {
+    if( ( state->attr & ROUTINE_MODIFY_EXACT ) == 0 ) {
         HW_TurnOn( zap, state->parm.used );
         HW_TurnOn( zap, state->return_reg );
         HW_TurnOn( zap, ReturnAddrReg() );

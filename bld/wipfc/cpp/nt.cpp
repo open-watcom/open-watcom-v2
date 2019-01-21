@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
+* Copyright (c) 2009-2018 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -33,6 +33,8 @@
 *
 ****************************************************************************/
 
+
+#include "wipfc.hpp"
 #include "nt.hpp"
 #include "cell.hpp"
 #include "document.hpp"
@@ -46,10 +48,11 @@ Lexer::Token Nt::parse( Lexer* lexer )
 {
     std::wstring temp;
     std::wstring* fname( new std::wstring() );
-    prepBufferName( fname, *( document->dataName() ) );
-    fname = document->addFileName( fname );
-    Lexer::Token tok( document->getNextToken() );
-    while( tok != Lexer::TAGEND ) {
+    prepBufferName( fname, *( _document->dataName() ) );
+    fname = _document->addFileName( fname );
+    Lexer::Token tok;
+
+    while( (tok = _document->getNextToken()) != Lexer::TAGEND ) {
         if( tok == Lexer::ATTRIBUTE ) {
             std::wstring key;
             std::wstring value;
@@ -58,61 +61,62 @@ Lexer::Token Nt::parse( Lexer* lexer )
                 temp = L":hp2.";
                 temp += value;
                 temp += L":ehp2.";
+            } else {
+                _document->printError( ERR1_ATTRNOTDEF );
             }
-            else
-                document->printError( ERR1_ATTRNOTDEF );
-        }
-        else if( tok == Lexer::FLAG )
-            document->printError( ERR1_ATTRNOTDEF );
-        else if( tok == Lexer::ERROR_TAG )
+        } else if( tok == Lexer::FLAG ) {
+            _document->printError( ERR1_ATTRNOTDEF );
+        } else if( tok == Lexer::ERROR_TAG ) {
             throw FatalError( ERR_SYNTAX );
-        else if( tok == Lexer::END )
+        } else if( tok == Lexer::END ) {
             throw FatalError( ERR_EOF );
-        else
-            document->printError( ERR1_TAGSYNTAX );
-        tok = document->getNextToken();
+        } else {
+            _document->printError( ERR1_TAGSYNTAX );
+        }
     }
     if( temp.empty() ) {
         temp = L":hp2.";
-        temp += document->note();
+        temp += _document->note();
         temp += L":ehp2.";
     }
-    document->pushInput( new IpfBuffer( fname, document->dataLine(),
-        document->dataCol(), temp ) );
-    bool oldBlockParsing( document->blockParsing() );
-    document->setBlockParsing( true );
-    whiteSpace = Tag::LITERAL;
-    appendChild( new P( document, this, document->dataName(), document->dataLine(),
-        document->dataCol() ) );
-    tok = document->getNextToken(); //first token from buffer
+    _document->pushInput( new IpfBuffer( fname, _document->dataLine(),
+        _document->dataCol(), temp ) );
+    bool oldBlockParsing( _document->blockParsing() );
+    _document->setBlockParsing( true );
+    _whiteSpace = Tag::LITERAL;
+    appendChild( new P( _document, this, _document->dataName(), _document->dataLine(),
+        _document->dataCol() ) );
+    tok = _document->getNextToken(); //first token from buffer
     while( tok != Lexer::END ) {
-        if( parseInline( lexer, tok ) )
+        if( parseInline( lexer, tok ) ) {
             parseCleanup( lexer, tok );
+        }
     }
-    whiteSpace = Tag::NONE;
-    document->setBlockParsing( oldBlockParsing );
-    document->popInput();
-    appendChild( new WhiteSpace( document, this, document->dataName(), document->dataLine(),
-        document->dataCol(), L"  ", Tag::LITERAL, false ) );
-    appendChild( new NtLm( document, this, document->dataName(), document->dataLine(),
-        document->dataCol() ) );
-    tok = document->getNextToken(); //next token from main stream
+    _whiteSpace = Tag::NONE;
+    _document->setBlockParsing( oldBlockParsing );
+    _document->popInput();
+    appendChild( new WhiteSpace( _document, this, _document->dataName(), _document->dataLine(),
+        _document->dataCol(), L"  ", Tag::LITERAL, false ) );
+    appendChild( new NtLm( _document, this, _document->dataName(), _document->dataLine(),
+        _document->dataCol() ) );
+    tok = _document->getNextToken(); //next token from main stream
     while( tok != Lexer::END && !( tok == Lexer::TAG && lexer->tagId() == Lexer::EUSERDOC)) {
         if( parseInline( lexer, tok ) ) {
-            if( lexer->tagId() == Lexer::ENT )
-                    break;
-            else if( lexer->tagId() == Lexer::H1 ||
+            if( lexer->tagId() == Lexer::ENT ) {
+                break;
+            } else if( lexer->tagId() == Lexer::H1 ||
                 lexer->tagId() == Lexer::H2 ||
                 lexer->tagId() == Lexer::H3 ||
                 lexer->tagId() == Lexer::H4 ||
                 lexer->tagId() == Lexer::H5 ||
                 lexer->tagId() == Lexer::H6 ||
                 lexer->tagId() == Lexer::ACVIEWPORT ||
-                lexer->tagId() == Lexer::FN )
+                lexer->tagId() == Lexer::FN ) {
+                parseCleanup( lexer, tok );
+            } else if( parseBlock( lexer, tok ) ) {
+                if( parseListBlock( lexer, tok ) ) {
                     parseCleanup( lexer, tok );
-            else if( parseBlock( lexer, tok ) ) {
-                if( parseListBlock( lexer, tok ) )
-                    parseCleanup( lexer, tok );
+                }
             }
         }
     }
@@ -121,18 +125,18 @@ Lexer::Token Nt::parse( Lexer* lexer )
 /***************************************************************************/
 void ENt::buildText( Cell* cell )
 {
-    cell->addByte( 0xFF );  //esc
-    cell->addByte( 0x03 );  //size
-    cell->addByte( 0x02 );  //set left margin
-    cell->addByte( 0 );     //reset
-    cell->addByte( 0xFA );  //line break
+    cell->addByte( Cell::ESCAPE );          //esc
+    cell->addByte( 0x03 );                  //size
+    cell->addByte( 0x02 );                  //set left margin
+    cell->addByte( 0 );                     //reset
+    cell->addByte( Cell::END_PARAGRAPH );   //line break
 }
 /***************************************************************************/
 void NtLm::buildText( Cell* cell )
 {
-    cell->addByte( 0xFF );  //esc
-    cell->addByte( 0x02 );  //size
-    cell->addByte( 0x1C );  //set left margin to current position (reset at end of paragraph)
+    cell->addByte( Cell::ESCAPE );  //esc
+    cell->addByte( 0x02 );          //size
+    cell->addByte( 0x1C );          //set left margin to current position (reset at end of paragraph)
 }
 /*****************************************************************************/
 void Nt::prepBufferName( std::wstring* buffer, const std::wstring& fname )

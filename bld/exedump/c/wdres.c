@@ -91,28 +91,19 @@ static  const_string_table resource_type_os2[] = {
 /*
  * get a resource type name
  */
-static char *get_resrc_nam( unsigned_16 offset )
+static void dmp_resrc_name( unsigned_16 offset )
 /**********************************************/
 {
-    unsigned_8      num_chars;
-    char            *name;
-
     Wlseek( New_exe_off + Os2_head.resource_off + offset );
-    Wread( &num_chars, sizeof( unsigned_8 ) );
-    name = Wmalloc( num_chars + 1 );
-    Wread( name, num_chars );
-    name[ num_chars ] = '\0';
-    return( name );
+    Dump_name();
 }
 
 /*
  * printout a resource name
  */
-static void dmp_resrc_nam( unsigned_16 res_type )
+static void dmp_resrc_type( unsigned_16 res_type )
 /***********************************************/
 {
-    char    *name;
-
     Wdputc( ' ' );
     if( res_type & SEG_RESRC_HIGH ) {
         res_type &= ~SEG_RESRC_HIGH;
@@ -120,10 +111,8 @@ static void dmp_resrc_nam( unsigned_16 res_type )
         Putdec( res_type );
         Wdputslc( "\n" );
     } else {
-        name = get_resrc_nam( res_type );
-        Wdputs( name );
+        dmp_resrc_name( res_type );
         Wdputslc( "\n" );
-        free( name );
     }
 }
 
@@ -158,18 +147,16 @@ static void dmp_resrc_flag( unsigned_16 flag )
 static void dmp_resrc_desc( struct resource_record * res_ent )
 /************************************************************/
 {
-    unsigned_32                   res_off;
-    unsigned_32                   res_len;
-    unsigned_32                   res_end;
+    unsigned_32         res_off;
+    unsigned_32         res_len;
+    unsigned_32         res_end;
 
-    dmp_resrc_nam( res_ent->name );
+    dmp_resrc_type( res_ent->name );
     Wdputs( " file offset " );
-    res_off = (unsigned_32)res_ent->offset
-        << Resrc_shift_cnt;
+    res_off = (unsigned_32)res_ent->offset << Resrc_shift_cnt;
     Puthex( res_off, 8 );
     Wdputs( "H len " );
-    res_len = (unsigned_32)res_ent->length
-        << Resrc_shift_cnt;
+    res_len = (unsigned_32)res_ent->length << Resrc_shift_cnt;
     Puthex( res_len, 8 );
     Wdputs( " flag " );
     dmp_resrc_flag( res_ent->flags );
@@ -212,11 +199,9 @@ static void dmp_resrc_ent( unsigned_16 num_resources )
 /*
  * printout a resource type name
  */
-static void dmp_resrc_type_nam( unsigned_16 res_type )
-/****************************************************/
+static void dmp_resrc_type_name( unsigned_16 res_type )
+/*****************************************************/
 {
-    char    *name;
-
     Wdputc( ' ' );
     if( res_type & SEG_RESRC_HIGH ) {
         res_type &= ~SEG_RESRC_HIGH;
@@ -225,13 +210,11 @@ static void dmp_resrc_type_nam( unsigned_16 res_type )
             Putdec( res_type );
             Wdputslc( "\n" );
         } else {
-            Wdputslc( resource_type[ res_type ] );
+            Wdputslc( resource_type[res_type] );
         }
     } else {
-        name = get_resrc_nam( res_type );
-        Wdputs( name );
+        dmp_resrc_name( res_type );
         Wdputslc( "\n" );
-        free( name );
     }
 }
 
@@ -259,7 +242,7 @@ static void dmp_resrc_tab_win( void )
         if( res_type == 0 ) {
             return;
         }
-        dmp_resrc_type_nam( res_type );
+        dmp_resrc_type_name( res_type );
         Wlseek( offset );
         dmp_resrc_ent( res_group.num_resources );
         offset += res_group.num_resources * sizeof( resource_record );
@@ -291,7 +274,7 @@ static void dmp_resrc_tab_os2( void )
             }
         }
         Wdputs( "    " );
-        Puthex( i + Os2_head.segments - Os2_head.resource + 1, 4 );
+        Puthex( (unsigned_16)( i + Os2_head.segments - Os2_head.resource + 1 ), 4 );
         Wdputs( "   " );
         Puthex( res_tab.type_id, 4 );
         Wdputs( "      " );

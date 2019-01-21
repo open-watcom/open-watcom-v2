@@ -33,7 +33,7 @@
 #include <sys/wait.h>
 #include "linuxsys.h"
 
-_WCRTLINK pid_t wait( __WAIT_STATUS __stat_loc )
+_WCRTLINK pid_t wait( int *__stat_loc )
 {
     return( waitpid( -1, __stat_loc, 0 ) );
 }

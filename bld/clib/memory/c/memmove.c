@@ -33,133 +33,155 @@
 #include <stddef.h>
 #include <string.h>
 
-#if defined(__386__) && defined(__SMALL_DATA__)
-extern  void    movefwd( char _WCFAR *dst, const char _WCNEAR *src, unsigned len);
-#pragma aux     movefwd =  \
-        0x06            /* push es   */\
-        0x8e 0xc2       /* mov es,dx */\
-        0x51            /* push ecx  */\
-        0xc1 0xe9 0x02  /* shr ecx,2 */\
-        0xf3 0xa5       /* rep movsd */\
-        0x59            /* pop ecx   */\
-        0x83 0xe1 0x03  /* and ecx,3 */\
-        0xf3 0xa4       /* rep movsb */\
-        0x07            /* pop es    */\
-        parm [dx edi] [esi] [ecx] \
-        modify exact [edi esi ecx];
-extern  void    movebwd( char _WCFAR *dst, const char _WCNEAR *src, unsigned len);
-#pragma aux     movebwd =  \
-        0x06            /* push es */\
-        0x8e 0xc2       /* mov es,dx */\
-        0xfd            /* std */\
-        0x4e            /* dec esi */\
-        0x4f            /* dec edi */\
-        0xd1 0xe9       /* shr ecx,1 */\
-        0x66 0xf3 0xa5  /* rep movsw */\
-        0x11 0xc9       /* adc ecx,ecx */\
-        0x46            /* inc esi */\
-        0x47            /* inc edi */\
-        0x66 0xf3 0xa4  /* rep movsb */\
-        0x07            /* pop es */\
-        0xfc            /* cld */\
-        parm [dx edi] [esi] [ecx] \
-        modify exact [edi esi ecx];
-#define HAVE_MOVEFWBW
 
-#elif defined(__386__) && defined(__BIG_DATA__)
+#if defined( _M_I86 )
 
-extern  void    movefwd( char _WCFAR *dst, const char _WCFAR *src, unsigned len);
-#pragma aux     movefwd =  \
-        0x1e            /* push ds */ \
-        0x8e 0xda       /* mov ds,dx */ \
-        0x51            /* push ecx  */\
-        0xc1 0xe9 0x02  /* shr ecx,2 */\
-        0xf3 0xa5       /* rep movsd */\
-        0x59            /* pop ecx   */\
-        0x83 0xe1 0x03  /* and ecx,3 */\
-        0xf3 0xa4       /* rep movsb */\
-        0x1f            /* pop ds */ \
-        parm [es edi] [dx esi] [ecx] \
-        modify exact [edi esi ecx];
-extern  void    movebwd( char _WCFAR *dst, const char _WCFAR *src, unsigned len);
-#pragma aux     movebwd =  \
-        0x1e            /* push ds */ \
-        0x8e 0xda       /* mov ds,dx */ \
-        0xfd            /* std */\
-        0x4e            /* dec esi */\
-        0x4f            /* dec edi */\
-        0xd1 0xe9       /* shr ecx,1 */\
-        0x66 0xf3 0xa5  /* rep movsw */\
-        0x11 0xc9       /* adc ecx,ecx */\
-        0x46            /* inc esi */\
-        0x47            /* inc edi */\
-        0x66 0xf3 0xa4  /* rep movsb */\
-        0x1f            /* pop ds */ \
-        0xfc            /* cld */\
-        parm [es edi] [dx esi] [ecx] \
-        modify exact [edi esi ecx];
-#define HAVE_MOVEFWBW
+#if defined(__SMALL_DATA__)
 
-#elif defined( _M_I86 ) && defined(__SMALL_DATA__)
-extern  void    movebwd( char _WCFAR *dst, const char _WCNEAR *src, unsigned len);
-#pragma aux     movebwd =  \
-        0xfd            /* std */\
-        0x4e            /* dec si */\
-        0x4f            /* dec di */\
-        0xd1 0xe9       /* shr cx,1 */\
-        0xf3 0xa5       /* rep movsw */\
-        0x11 0xc9       /* adc cx,cx */\
-        0x46            /* inc si */\
-        0x47            /* inc di */\
-        0xf3 0xa4       /* rep movsb */\
-        0xfc            /* cld */\
-        parm [es di] [si] [cx] \
-        modify exact [di si cx];
+extern void     movebwd( char _WCFAR *dst, const char _WCNEAR *src, size_t len);
+#pragma aux movebwd = \
+        "std"           \
+        "dec  si"       \
+        "dec  di"       \
+        "shr  cx,1"     \
+        "rep  movsw"    \
+        "adc  cx,cx"    \
+        "inc  si"       \
+        "inc  di"       \
+        "rep  movsb"    \
+        "cld"           \
+    __parm              [__es __di] [__si] [__cx] \
+    __value             \
+    __modify __exact    [__di __si __cx]
 
-extern  void    movefwd( char _WCFAR *dst, const char _WCNEAR *src, unsigned len);
-#pragma aux     movefwd =  \
-        0xd1 0xe9       /* shr cx,1 */\
-        0xf3 0xa5       /* rep movsw */\
-        0x11 0xc9       /* adc cx,cx */\
-        0xf3 0xa4       /* rep movsb */\
-        parm [es di] [si] [cx] \
-        modify exact [di si cx];
-#define HAVE_MOVEFWBW
-
-#elif defined( _M_I86 ) && defined(__BIG_DATA__)
-extern  void    movebwd( char _WCFAR *dst, const char _WCFAR *src, unsigned len);
-#pragma aux     movebwd =  \
-        0x1e            /* push ds */ \
-        0x8e 0xda       /* mov ds,dx */ \
-        0xfd            /* std */\
-        0x4e            /* dec si */\
-        0x4f            /* dec di */\
-        0xd1 0xe9       /* shr cx,1 */\
-        0xf3 0xa5       /* rep movsw */\
-        0x11 0xc9       /* adc cx,cx */\
-        0x46            /* inc si */\
-        0x47            /* inc di */\
-        0xf3 0xa4       /* rep movsb */\
-        0xfc            /* cld */\
-        0x1f            /* pop ds */ \
-        parm [es di] [dx si] [cx] \
-        modify exact [di si cx];
-
-extern  void    movefwd( char _WCFAR *dst, const char _WCFAR *src, unsigned len);
-#pragma aux     movefwd =  \
-        0x1e            /* push ds */ \
-        0x8e 0xda       /* mov ds,dx */ \
-        0xd1 0xe9       /* shr cx,1 */\
-        0xf3 0xa5       /* rep movsw */\
-        0x11 0xc9       /* adc cx,cx */\
-        0xf3 0xa4       /* rep movsb */\
-        0x1f            /* pop ds */ \
-        parm [es di] [dx si] [cx] \
-        modify exact [di si cx];
+extern void     movefwd( char _WCFAR *dst, const char _WCNEAR *src, size_t len);
+#pragma aux movefwd = \
+        "shr  cx,1"     \
+        "rep  movsw"    \
+        "adc  cx,cx"    \
+        "rep  movsb"    \
+    __parm              [__es __di] [__si] [__cx] \
+    __value             \
+    __modify __exact    [__di __si __cx]
 #define HAVE_MOVEFWBW
 
 #else
+
+extern void     movebwd( char _WCFAR *dst, const char _WCFAR *src, size_t len);
+#pragma aux movebwd = \
+        "std"           \
+        "push ds"       \
+        "mov  ds,dx"    \
+        "dec  si"       \
+        "dec  di"       \
+        "shr  cx,1"     \
+        "rep  movsw"    \
+        "adc  cx,cx"    \
+        "inc  si"       \
+        "inc  di"       \
+        "rep  movsb"    \
+        "pop  ds"       \
+        "cld"           \
+    __parm              [__es __di] [__dx __si] [__cx] \
+    __value             \
+    __modify __exact    [__di __si __cx]
+
+extern void     movefwd( char _WCFAR *dst, const char _WCFAR *src, size_t len);
+#pragma aux movefwd = \
+        "push ds"       \
+        "mov  ds,dx"    \
+        "shr  cx,1"     \
+        "rep  movsw"    \
+        "adc  cx,cx"    \
+        "rep  movsb"    \
+        "pop  ds"       \
+    __parm              [__es __di] [__dx __si] [__cx] \
+    __value             \
+    __modify __exact    [__di __si __cx]
+#define HAVE_MOVEFWBW
+
+#endif
+
+#elif defined(__386__)
+
+#if defined(__SMALL_DATA__)
+
+extern void     movefwd( char _WCFAR *dst, const char _WCNEAR *src, size_t len);
+#pragma aux movefwd = \
+        "push es"       \
+        "mov  es,edx"   \
+        "push ecx"      \
+        "shr  ecx,2"    \
+        "rep  movsd"    \
+        "pop  ecx"      \
+        "and  ecx,3"    \
+        "rep  movsb"    \
+        "pop  es"       \
+    __parm              [__dx __edi] [__esi] [__ecx] \
+    __value             \
+    __modify __exact    [__edi __esi __ecx]
+extern void     movebwd( char _WCFAR *dst, const char _WCNEAR *src, size_t len);
+#pragma aux movebwd = \
+        "std"           \
+        "push es"       \
+        "mov  es,edx"   \
+        "dec  esi"      \
+        "dec  edi"      \
+        "shr  ecx,1"    \
+        "rep  movsw"    \
+        "adc  ecx,ecx"  \
+        "inc  esi"      \
+        "inc  edi"      \
+        "rep  movsb"    \
+        "pop  es"       \
+        "cld"           \
+    __parm              [__dx __edi] [__esi] [__ecx] \
+    __value             \
+    __modify __exact    [__edi __esi __ecx]
+#define HAVE_MOVEFWBW
+
+#else
+
+extern void     movefwd( char _WCFAR *dst, const char _WCFAR *src, size_t len);
+#pragma aux movefwd = \
+        "push ds"       \
+        "mov  ds,edx"   \
+        "push ecx"      \
+        "shr  ecx,2"    \
+        "rep  movsd"    \
+        "pop  ecx"      \
+        "and  ecx,3"    \
+        "rep  movsb"    \
+        "pop  ds"       \
+    __parm              [__es __edi] [__dx __esi] [__ecx] \
+    __value             \
+    __modify __exact    [__edi __esi __ecx]
+extern void     movebwd( char _WCFAR *dst, const char _WCFAR *src, size_t len);
+#pragma aux movebwd = \
+        "std"           \
+        "push ds"       \
+        "mov  ds,edx"   \
+        "dec  esi"      \
+        "dec  edi"      \
+        "shr  ecx,1"    \
+        "rep  movsw"    \
+        "adc  ecx,ecx"  \
+        "inc  esi"      \
+        "inc  edi"      \
+        "rep  movsb"    \
+        "pop  ds"       \
+        "cld"           \
+    __parm              [__es __edi] [__dx __esi] [__ecx] \
+    __value             \
+    __modify __exact    [__edi __esi __ecx]
+#define HAVE_MOVEFWBW
+
+#endif
+
+#else
+
 // no pragma for non-x86
+
 #endif
 
 
@@ -171,7 +193,7 @@ _WCRTLINK void *memmove( void *toStart, const void *fromStart, size_t len )
     if( from == to ) {
         return( to );
     }
-    if( from < to  &&  from + len > to ) {  /* if buffers are overlapped*/
+    if( from < to  &&  from + len > to ) {  /* if buffers are overlapped */
 #if defined( __HUGE__ ) || !defined( HAVE_MOVEFWBW )
         to += len;
         from += len;

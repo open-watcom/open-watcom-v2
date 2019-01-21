@@ -33,20 +33,29 @@
 #include "variety.h"
 #include <i86.h>
 
-extern  unsigned short  _CS( void );
-extern  unsigned short  _DS( void );
-extern  unsigned short  _ES( void );
-extern  unsigned short  _SS( void );
 
-#pragma aux     _CS = 0x8C 0xC8 /* mov ax,cs */ value [ax];
-#pragma aux     _DS = 0x8C 0xD8 /* mov ax,ds */ value [ax];
-#pragma aux     _ES = 0x8C 0xC0 /* mov ax,es */ value [ax];
-#pragma aux     _SS = 0x8C 0xD0 /* mov ax,ss */ value [ax];
-#if defined(__386__)
+#ifdef _M_I86
+extern  unsigned short  _CS( void );
+#pragma aux _CS = "mov ax,cs" __value [__ax]
+extern  unsigned short  _DS( void );
+#pragma aux _DS = "mov ax,ds" __value [__ax]
+extern  unsigned short  _ES( void );
+#pragma aux _ES = "mov ax,es" __value [__ax]
+extern  unsigned short  _SS( void );
+#pragma aux _SS = "mov ax,ss" __value [__ax]
+#elif defined( _M_IX86 )
+extern  unsigned short  _CS( void );
+#pragma aux _CS = "mov eax,cs" __value [__ax]
+extern  unsigned short  _DS( void );
+#pragma aux _DS = "mov eax,ds" __value [__ax]
+extern  unsigned short  _ES( void );
+#pragma aux _ES = "mov eax,es" __value [__ax]
+extern  unsigned short  _SS( void );
+#pragma aux _SS = "mov eax,ss" __value [__ax]
 extern  unsigned short  _FS( void );
+#pragma aux _FS = "mov eax,fs" __value [__ax]
 extern  unsigned short  _GS( void );
-#pragma aux     _FS = 0x8C 0xE0 /* mov ax,fs */ value [ax];
-#pragma aux     _GS = 0x8C 0xE8 /* mov ax,gs */ value [ax];
+#pragma aux _GS = "mov eax,gs" __value [__ax]
 #endif
 
 

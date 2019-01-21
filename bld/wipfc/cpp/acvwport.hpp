@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
+* Copyright (c) 2009-2018 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -41,29 +41,29 @@
 #ifndef ACVIEWPORT_INCLUDED
 #define ACVIEWPORT_INCLUDED
 
-#include "config.hpp"
 #include "element.hpp"
 #include "toc.hpp"
 
 class AcViewport : public Element {
 public:
     AcViewport( Document* d, Element *p, const std::wstring* f, unsigned int r, unsigned int c ) :
-        Element( d, p, f, r, c ), objectId( 0 ), doOrigin( false ), doSize( false ) { };
+        Element( d, p, f, r, c ), _objectId( 0 ), _doOrigin( false ), _doSize( false ) { };
     ~AcViewport() { };
     Lexer::Token parse( Lexer* lexer );
     void buildText( Cell* cell );
 private:
     AcViewport( const AcViewport& rhs );              //no copy
     AcViewport& operator=( const AcViewport& rhs );   //no assignment
-    std::wstring dll;
-    std::wstring objectName;
-    std::wstring objectInfo;
-    STD1::uint16_t objectId;
-    PageOrigin origin;
-    PageSize size;
-    bool doOrigin;
-    bool doSize;
     Lexer::Token parseAttributes( Lexer* lexer );
+
+    std::wstring    _dll;
+    std::wstring    _objectName;
+    std::wstring    _objectInfo;
+    word            _objectId;
+    PageOrigin      _origin;
+    PageSize        _size;
+    bool            _doOrigin;
+    bool            _doSize;
 };
 
 #endif //ACVIEWPORT_INCLUDED

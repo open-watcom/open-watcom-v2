@@ -37,33 +37,21 @@
 #include "ftnstd.h"
 #include "ifenv.h"
 
-#ifdef _M_I86
+#ifdef _M_IX86
 
-unsigned short           _srotl(unsigned short,char);
-#pragma aux _srotl =                                    \
-        0xD3 0xC0               /*      rol AX,CL    */ \
-        parm [ax] [cl]                                  \
-        value [ax];
+unsigned short  _srotl(unsigned short,char);
+#pragma aux _srotl = \
+        "rol  ax,cl"    \
+    __parm      [ax] [cl] \
+    __value     [ax] \
+    __modify    []
 
-unsigned short           _srotr(unsigned short,char);
-#pragma aux _srotr =                                    \
-        0xD3 0xC8               /*      ror AX,CL    */ \
-        parm [ax] [cl]                                  \
-        value [ax];
-
-#elif defined( __386__ )
-
-unsigned short           _srotl(unsigned short,char);
-#pragma aux _srotl =                                    \
-        0x66 0xD3 0xC0          /*      rol AX,CL    */ \
-        parm [ax] [cl]                                  \
-        value [ax];
-
-unsigned short           _srotr(unsigned short,char);
-#pragma aux _srotr =                                    \
-        0x66 0xD3 0xC8          /*      ror AX,CL    */ \
-        parm [ax] [cl]                                  \
-        value [ax];
+unsigned short  _srotr(unsigned short,char);
+#pragma aux _srotr = \
+        "ror  ax,cl"    \
+    __parm      [ax] [cl] \
+    __value     [ax] \
+    __modify    []
 
 #else
 

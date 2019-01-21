@@ -57,6 +57,6 @@ extern void     WRESetPendingService( WRESPT s );
 extern bool     WREHData2Mem( HDDEDATA, void **, uint_32 * );
 extern bool     WREDDEStart( HINSTANCE inst );
 extern void     WREDDEEnd( void );
-extern bool     WREPokeData( HCONV conv, void *data, int size, bool );
+extern bool     WREPokeData( HCONV conv, void *data, DWORD size, bool );
 
 #endif

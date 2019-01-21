@@ -36,6 +36,7 @@
 #include <sys/utime.h>
 #endif
 #include "make.h"
+#include "wio.h"
 #include "macros.h"
 #include "mcache.h"
 #include "mmemory.h"
@@ -158,7 +159,7 @@ STATIC bool targExists( TARGET *targ )
     }
 
     if( TrySufPath( buffer, targ->node.name, NULL, false ) == RET_SUCCESS ) {
-        RenameTarget( targ, buffer );
+        RenameTarget( targ->node.name, buffer );
         targ->executed = true;      /* force get date */
         getStats( targ );
         assert( targ->existing );
@@ -1063,7 +1064,7 @@ char *GetCurDeps( bool younger, bool isMacInf )
 
     if( (younger && cur.targ == NULL) ||
         cur.dep == NULL || cur.dep->targs == NULL ) {
-        return( StrDupSafe( "" ) );
+        return( CharToStrSafe( NULLCHAR ) );
     }
 
     vec = StartVec();

@@ -46,9 +46,9 @@
 
 extern void __GetFullPathName( char *buff, const char *path, size_t size );
 #pragma aux __GetFullPathName = \
-        "mov    AH,60h" \
+        _MOV_AH DOS_TRUENAME \
         _INT_21         \
-        parm [ebx] [edx] [ecx];
+    __parm [__ebx] [__edx] [__ecx]
 
 #define _WILL_FIT( c )  if(( (c) + 1 ) > size ) {       \
                             _RWD_errno = ERANGE;        \

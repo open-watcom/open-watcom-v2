@@ -95,7 +95,7 @@ bool ValidDimension( windim x1, windim y1, windim x2, windim y2, bool has_border
 /*
  * GimmeWindow - find next avaliable window
  */
-window_id GimmeWindow( void )
+static window_id GimmeWindow( void )
 {
     window_id   wid;
 
@@ -112,7 +112,7 @@ window_id GimmeWindow( void )
  * AllocWindow - allocate a new window
  */
 window *AllocWindow( window_id wid, windim x1, windim y1, windim x2, windim y2, bool has_border, bool has_gadgets,
-                        bool accessed, vi_color bc1, vi_color bc2, vi_color tc, vi_color bgc )
+                        vi_color bc1, vi_color bc2, vi_color tc, vi_color bgc )
 {
     window      *w;
     windim      width, height;
@@ -126,10 +126,11 @@ window *AllocWindow( window_id wid, windim x1, windim y1, windim x2, windim y2, 
     w = MemAlloc( offsetof( window, overcnt ) + height );
     w->id = wid;
     w->has_gadgets = has_gadgets;
-    w->accessed = ( accessed ) ? 1 : 0;
-    w->text = MemAlloc( size * sizeof( char_info ) );
-    w->overlap = MemAlloc( size * sizeof( window_id ) );
-    w->whooverlapping = MemAlloc( size * sizeof( window_id ) );
+    w->accessed = 0;
+    w->isswapped = false;
+    w->text = _MemAllocArray( char_info, size );
+    w->overlap = _MemAllocArray( window_id, size );
+    w->whooverlapping = _MemAllocArray( window_id, size );
     w->area.x1 = x1;
     w->area.x2 = x2;
     w->area.y1 = y1;
@@ -180,7 +181,7 @@ vi_rc NewWindow( window_id *wid, windim x1, windim y1, windim x2, windim y2, boo
 
     has_mouse = DisplayMouse( false );
 
-    AllocWindow( new_wid, x1, y1, x2, y2, has_border, false, false, bc1, bc2, s->foreground, s->background );
+    AllocWindow( new_wid, x1, y1, x2, y2, has_border, false, bc1, bc2, s->foreground, s->background );
 
     MarkOverlap( new_wid );
 
@@ -201,6 +202,17 @@ vi_rc NewFullWindow( window_id *wid, bool has_border, vi_color bc1, vi_color bc2
     return( NewWindow( wid, 0, 0, 79, 24, has_border, bc1, bc2, s ) );
 
 } /* NewFullWindow */
+
+/*
+ * NewWindow2 - build a new window, using window_info struct
+ */
+vi_rc NewWindow2( window_id *wid, window_info *wi )
+{
+    return( NewWindow( wid, wi->area.x1, wi->area.y1, wi->area.x2, wi->area.y2,
+                       wi->has_border, wi->border_color1,
+                       wi->border_color2, &wi->text_style ) );
+
+} /* NewWindow2 */
 
 /*
  * FreeWindow - free data associated with a window

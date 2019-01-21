@@ -64,7 +64,7 @@ void* _SetItemImpl::insertRing  // LINK IN ITEM AFTER ITEM
             hdr = this;
         }
     }
-    return _item;
+    return( _item );
 }
 
 
@@ -73,7 +73,7 @@ static _SetItemImpl* _SetItemImpl::newItem // ALLOCATE NEW SET ITEM
 {
     _SetItemImpl* nw = new _SetItemImpl();
     nw->_item = item;
-    return nw;
+    return( nw );
 }
 
 
@@ -104,7 +104,7 @@ int _SetImpl::empty             // TEST IF EMPTY SET
     ( void )
     const
 {
-    return _header == 0;
+    return( _header == 0 );
 }
 
 
@@ -129,7 +129,9 @@ void _SetImpl::erase            // ERASE (indexed)
                 delete item;
                 break;
             }
-            if( item == _header ) break;
+            if( item == _header ) {
+                break;
+            }
         }
     }
 }
@@ -156,7 +158,9 @@ void _SetImpl::erase            // ERASE (item)
                 delete item;
                 break;
             }
-            if( item == _header ) break;
+            if( item == _header ) {
+                break;
+            }
         }
     }
 }
@@ -173,7 +177,7 @@ void* _SetImpl::first           // GET FIRST ITEM
     } else {
         retn = item->_next->_item;
     }
-    return retn;
+    return( retn );
 }
 
 
@@ -181,7 +185,7 @@ void* _SetImpl::insert          // INSERT AN ITEM
     ( void* item )              // - item
 {
     _SetItemImpl* nw = _SetItemImpl::newItem( item );
-    return nw->insertRing( _header, 0 );
+    return( nw->insertRing( _header, 0 ) );
 }
 
 
@@ -194,7 +198,8 @@ void* _SetImpl::insert          // INSERT AN ITEM
         pred_item = 0;
     } else {
         for( pred_item = _header; ; pred_item = pred_item->_next ) {
-            if( pred_item->_item == item ) break;
+            if( pred_item->_item == item )
+                break;
             if( pred_item == _header ) {
                 pred_item = 0;
                 break;
@@ -202,7 +207,7 @@ void* _SetImpl::insert          // INSERT AN ITEM
         }
     }
     _SetItemImpl* nw = _SetItemImpl::newItem( item );
-    return nw->insertRing( _header, pred_item );
+    return( nw->insertRing( _header, pred_item ) );
 }
 
 
@@ -217,7 +222,7 @@ void* _SetImpl::last            // GET LAST ITEM
     } else {
         retn = item->_item;
     }
-    return retn;
+    return( retn );
 }
 
 
@@ -252,7 +257,7 @@ void* _SetIterImpl::operator *  // GET CURRENT ELEMENT
     } else {
         retn = _curr->_item;
     }
-    return retn;
+    return( retn );
 }
 
 
@@ -268,7 +273,7 @@ _SetIterImpl& _SetIterImpl::operator++ // MOVE AHEAD ONE ITEM
             _curr = _curr->_next;
         }
     }
-    return *this;
+    return( *this );
 }
 
 
@@ -290,5 +295,5 @@ int _SetIterImpl::index         // GET INDEX OF CURRENT ITEM
     ( void )
     const
 {
-    return _index;
+    return( _index );
 }

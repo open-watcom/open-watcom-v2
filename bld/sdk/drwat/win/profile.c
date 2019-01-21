@@ -30,10 +30,8 @@
 ****************************************************************************/
 
 
-#include <stdio.h>
-#include <string.h>
-#include <sys/stat.h>
 #include "drwatcom.h"
+#include <sys/stat.h>
 #include "watini.h"
 
 static char     profID[] = "Dr. WATCOM";

@@ -208,10 +208,10 @@ bool GetPragAuxAlias( void )
     isfar16 = PragRecog( "far16" );
     if( IS_ID_OR_KEYWORD( CurToken ) ) {
         CurrAlias = SearchPragAuxAlias( Buffer );
-        NextToken();
+        PPNextToken();
     }
     if( CurToken == T_RIGHT_PAREN )
-        NextToken();
+        PPNextToken();
     if( isfar16 )
         AuxInfo.flags |= AUX_FLAG_FAR16;
     CopyAuxInfo();
@@ -227,16 +227,22 @@ typedef enum {
 } fix_words;
 
 static fix_words FixupKeyword( void )
-/**********************************/
+/***********************************/
 {
-    if( CurToken == T_FLOAT ) {
-        NextToken();
-        return( FIXWORD_FLOAT );
+    fix_words retn;             // - return
+
+    if( PragRecog( "float" ) ) {
+        retn = FIXWORD_FLOAT;
+    } else if( PragRecog( "seg" ) ) {
+        retn = FIXWORD_SEGMENT;
+    } else if( PragRecog( "offset" ) ) {
+        retn = FIXWORD_OFFSET;
+    } else if( PragRecog( "reloff" ) ) {
+        retn = FIXWORD_RELOFF;
+    } else {
+        retn = FIXWORD_NONE;
     }
-    if( PragRecog( "seg" ) )    return( FIXWORD_SEGMENT );
-    if( PragRecog( "offset" ) ) return( FIXWORD_OFFSET );
-    if( PragRecog( "reloff" ) ) return( FIXWORD_RELOFF );
-    return( FIXWORD_NONE );
+    return( retn );
 }
 
 
@@ -591,8 +597,7 @@ static bool GetByteSeq( byte_seq **code )
 #endif
 
     AsmSysInit( buff );
-    PPCTL_ENABLE_MACROS();
-    NextToken();
+    PPNextToken();
     too_many_bytes = false;
     uses_auto = false;
     offset = 0;
@@ -605,9 +610,9 @@ static bool GetByteSeq( byte_seq **code )
 #else
             AsmLine( Buffer, false );
 #endif
-            NextToken();
+            PPNextToken();
             if( CurToken == T_COMMA ) {
-                NextToken();
+                PPNextToken();
             }
         } else if( CurToken == T_CONSTANT ) {
 #if _CPU == 8086
@@ -617,7 +622,7 @@ static bool GetByteSeq( byte_seq **code )
             }
 #endif
             AsmCodeBuffer[AsmCodeAddress++] = (unsigned char)Constant;
-            NextToken();
+            PPNextToken();
         } else {
 #if _CPU == 8086
             use_fpu_emu = false;
@@ -636,18 +641,18 @@ static bool GetByteSeq( byte_seq **code )
                     CErr1( ERR_EXPECTING_ID );
                 } else {
                     name = CStrSave( Buffer );
-                    NextToken();
+                    PPNextToken();
                     if( CurToken == T_PLUS ) {
-                        NextToken();
+                        PPNextToken();
                         if( CurToken == T_CONSTANT ) {
                             offset = Constant;
-                            NextToken();
+                            PPNextToken();
                         }
                     } else if( CurToken == T_MINUS ) {
-                        NextToken();
+                        PPNextToken();
                         if( CurToken == T_CONSTANT ) {
                             offset = -(int)Constant;
-                            NextToken();
+                            PPNextToken();
                         }
                     }
                 }
@@ -685,7 +690,6 @@ static bool GetByteSeq( byte_seq **code )
             AsmCodeAddress = 0;          // reset index to we don't overrun buffer
         }
     }
-    PPCTL_DISABLE_MACROS();
     if( too_many_bytes ) {
         uses_auto = false;
     } else {
@@ -704,14 +708,7 @@ hw_reg_set PragRegName( const char *str, size_t len )
     hw_reg_set      name;
 
     if( len != 0 ) {
-        if( *str == '_' ) {
-            ++str;
-            --len;
-            if( *str == '_' ) {
-                ++str;
-                --len;
-            }
-        }
+        str = SkipUnderscorePrefix( str, &len );
         // search register or alias name
         index = PragRegIndex( Registers, str, len, true );
         if( index != -1 ) {
@@ -891,9 +888,11 @@ void PragAux( void )
     } have;
 
     InitAuxInfo();
+    PPCTL_ENABLE_MACROS();
+    PPNextToken();
     if( GetPragAuxAliasInfo() ) {
         SetCurrInfo( Buffer );
-        NextToken();
+        PPNextToken();
         PragObjNameInfo( &AuxInfo.objname );
         have.f_call = false;
         have.f_loadds = false;
@@ -954,6 +953,7 @@ void PragAux( void )
         CopyAuxInfo();
         PragEnding();
     }
+    PPCTL_DISABLE_MACROS();
 }
 
 void AsmSysInit( unsigned char *buf )

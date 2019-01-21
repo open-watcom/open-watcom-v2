@@ -89,9 +89,11 @@ static long     FileSize;
 #if defined( __DOS__ ) || defined( __OS2__ ) && defined( _M_I86 )
 char GetRawChar( void );
 #pragma aux GetRawChar = \
-        "xor    ah,ah" \
-        "int    16h" \
-        value [al];
+        "xor  ah,ah"    \
+        "int 16h"       \
+    __parm      [] \
+    __value     [__al]
+    __modify    [__ah]
 #endif
 
 /*
@@ -122,7 +124,8 @@ static int ReadChar( FILE *f )
     if( f == stdin ) {
         return fgetc( f );
     }
-    if( BufferPos == FileSize ) return EOF;
+    if( BufferPos == FileSize )
+        return EOF;
     high = BUFF_HIGH( BufferPos );
     if( high != FilePos ) {
         if( high != FilePos + 1 ) {
@@ -144,7 +147,8 @@ static int backUpLines( FILE *f, int lines )
     int ch;
     int lines_backed=0;
 
-    if( BufferPos == 0 ) return lines_backed;
+    if( BufferPos == 0 )
+        return lines_backed;
     BufferPos--;
     for(;;) {
         ch = ReadChar( f );

@@ -35,11 +35,13 @@
 /*
  * tempFileSetup - set up a temp file with data in it
  */
-static void tempFileSetup( file **cfile, char *list[], int maxlist, int indent,
-                           bool makelower )
+static void tempFileSetup( file **cfile, char *list[], list_linenum maxlist, size_t indent, bool makelower )
 {
-    int         j, boff, i, k;
-    char        dd[FILENAME_MAX];
+    list_linenum    j;
+    size_t          i;
+    size_t          k;
+    size_t          boff;
+    char            dd[FILENAME_MAX];
 
     /*
      * allocate temporary file structures
@@ -82,7 +84,7 @@ static void tempFileSetup( file **cfile, char *list[], int maxlist, int indent,
  */
 vi_rc SelectItem( selectitem *si )
 {
-    int                 j;
+    list_linenum        j;
     file                *cfile;
     selflinedata        sfd;
     vi_rc               rc;
@@ -94,15 +96,15 @@ vi_rc SelectItem( selectitem *si )
      */
     memset( &sfd, 0, sizeof( sfd ) );
     sfd.f = cfile;
-    sfd.wi= si->wi;
+    sfd.wi = si->wi;
     sfd.title = si->title;
-    sfd.allow_rl = si->allowrl;
-    sfd.hilite = si->hilite;
+    sfd.allowrl = si->allowrl;
+    sfd.hi_list = si->hi_list;
     sfd.show_lineno = si->show_lineno;
     sfd.retevents = si->retevents;
     sfd.event = si->event;
     sfd.cln = si->cln;
-    sfd.eiw = si->eiw;
+    sfd.event_wid = si->event_wid;
     sfd.is_menu = si->is_menu;
     rc = SelectLineInFile( &sfd );
     si->event = sfd.event;
@@ -113,7 +115,7 @@ vi_rc SelectItem( selectitem *si )
             }
             si->num = -1;
         } else {
-            j = (int) sfd.sl - 1;
+            j = sfd.sl - 1;
             if( si->result != NULL ) {
                 strcpy( si->result, si->list[j] );
             }
@@ -136,10 +138,10 @@ vi_rc SelectItem( selectitem *si )
  * SelectItemAndValue - select item from list and give it a value
  */
 vi_rc SelectItemAndValue( window_info *wi, char *title, char **list,
-                        int maxlist, vi_rc (*updatertn)( const char *, char *, int * ),
-                        int indent, char **vals, int valoff )
+                        list_linenum maxlist, vi_rc (*updatertn)( const char *, char *, int * ),
+                        size_t indent, char **vals, int valoff )
 {
-//    int                 j;
+//    list_linenum        j;
     file                *cfile;
     selflinedata        sfd;
     vi_rc               rc;
@@ -147,7 +149,6 @@ vi_rc SelectItemAndValue( window_info *wi, char *title, char **list,
     tempFileSetup( &cfile, list, maxlist, indent, true );
 
     for( ;; ) {
-
         /*
          * go get selected line
          */
@@ -157,7 +158,7 @@ vi_rc SelectItemAndValue( window_info *wi, char *title, char **list,
         sfd.title = title;
         sfd.checkres = updatertn;
         sfd.cln = 1;
-        sfd.eiw = NO_WINDOW;
+        sfd.event_wid = NO_WINDOW;
         sfd.vals = vals;
         sfd.valoff = valoff;
         rc = SelectLineInFile( &sfd );
@@ -167,8 +168,7 @@ vi_rc SelectItemAndValue( window_info *wi, char *title, char **list,
         if( sfd.sl == -1 ) {
             break;
         }
-//        j = (int) sfd.sl - 1;
-
+//        j = sfd.sl - 1;
     }
 
     /*

@@ -176,8 +176,7 @@ void GetNextAddr( void )
 static void check( int x )
 {
     if( x != 0 ) {
-        Output( MsgArray[MSG_SAMPLE_1 - ERR_FIRST_MESSAGE] );
-        Output( "\r\n" );
+        OutputMsgNL( MSG_SAMPLE_1 );
         MsgFini();
         _exit( -1 );
     }
@@ -236,9 +235,7 @@ void StartProg( const char *cmd, const char *prog, char *full_args, char *dos_ar
     GrabVects();
     FixTime();
     if( dbg_load( prog, NULL, dos_args ) != 0 ) {
-        Output( MsgArray[MSG_SAMPLE_2 - ERR_FIRST_MESSAGE] );
-        Output( prog );
-        Output( "\r\n" );
+        OutputMsgParmNL( MSG_SAMPLE_2, prog );
         ReleVects();
         MsgFini();
         _exit( -1 );
@@ -298,14 +295,10 @@ void StartProg( const char *cmd, const char *prog, char *full_args, char *dos_ar
     outp( TIMER0, 0 );
     FixTime();
     if( Mach.msb_event <= 16 ) {
-        Output( MsgArray[MSG_SAMPLE_3 - ERR_FIRST_MESSAGE] );
-        Output( MsgArray[Exceptions[Mach.msb_event]+MSG_EXCEPT_0 - ERR_FIRST_MESSAGE] );
-        Output( "\r\n" );
+        OutputMsgParmNL( MSG_SAMPLE_3, GET_MESSAGE( MSG_EXCEPT_0 + Exceptions[Mach.msb_event] ) );
     } else if( Mach.msb_event != EV_TERM ) {
         char buff[10];
-        Output( MsgArray[MSG_SAMPLE_4 - ERR_FIRST_MESSAGE] );
-        Output( itoa( Mach.msb_event, buff, 10 ) );
-        Output( "\r\n" );
+        OutputMsgParmNL( MSG_SAMPLE_4, itoa( Mach.msb_event, buff, 10 ) );
     }
     ReleVects();
     dbg_exit();
@@ -319,19 +312,13 @@ void SysDefaultOptions( void )
 
 void SysParseOptions( char c, char **cmd )
 {
-    char buff[2];
-
     switch( c ) {
     case 'r':
         RateChanged = 1;
         SetTimerRate( cmd );
         break;
     default:
-        Output( MsgArray[MSG_INVALID_OPTION - ERR_FIRST_MESSAGE] );
-        buff[0] = c;
-        buff[1] = '\0';
-        Output( buff );
-        Output( "\r\n" );
+        OutputMsgCharNL( MSG_INVALID_OPTION, c );
         fatal();
         break;
     }

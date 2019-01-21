@@ -36,11 +36,11 @@
 void    Quit( const char *usage_msg[], const char *msg, ... );
 void    Die( const char *str, ... );
 #if defined( __WATCOMC__ ) && !defined( __AXP__ )
-#pragma aux Quit aborts;
-#pragma aux Die aborts;
+#pragma aux Quit __aborts
+#pragma aux Die __aborts
 #endif
 
-long    GetClusterSize( unsigned char drive );
+long    GetClusterSize( int drive );
 
 void    *MemAlloc( size_t size );
 void    *MemRealloc( void *orig, size_t size );

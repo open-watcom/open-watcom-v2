@@ -119,7 +119,7 @@ void CheckIfTocSym( symbol *sym )
 /**************************************/
 {
     if( TocName != NULL && TocSym == NULL ) {
-        if( strcmp( sym->name, TocName ) == 0 ) {
+        if( strcmp( sym->name.u.ptr, TocName ) == 0 ) {
             TocSym = sym;
         }
     }

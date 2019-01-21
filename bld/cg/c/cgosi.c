@@ -30,7 +30,7 @@
 ****************************************************************************/
 
 
-#include "cgstd.h"
+#include "_cgstd.h"
 #include <stdlib.h>
 #include "coderep.h"
 #include "objio.h"
@@ -39,10 +39,12 @@
 #include "blips.h"
 #include "feprotos.h"
 
+
 extern  bool            *_BreakFlagPtr;
-static  int             TicCount;
+
 bool                    BlipsOn;
 
+static  int             TicCount;
 
 bool TBreak( void )
 /*****************/

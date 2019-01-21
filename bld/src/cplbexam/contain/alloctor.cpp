@@ -64,7 +64,7 @@ void *BlockAlloc::allocator( size_t size ) {
     // need a new block to perform allocation
     if( num_free_in_block == 0 ) {
         // allocate memory for ElemsPerBlock elements
-        curr_block = new char[ size * ElemsPerBlock ];
+        curr_block = new char [size * ElemsPerBlock];
         if( curr_block == 0 ) {
             // allocation failed
             return( 0 );
@@ -72,7 +72,7 @@ void *BlockAlloc::allocator( size_t size ) {
         // add new block to beginning of list
         if( !block_list.insert( curr_block ) ) {
             // allocation of list element failed
-            delete( curr_block );
+            delete[] curr_block;
             return( 0 );
         }
         num_free_in_block = ElemsPerBlock;
@@ -120,7 +120,7 @@ void test_val_list();
 void test_val_skip_list();
 
 
-void main() {
+int main( void ) {
     fill_test_elems();
 
     test_isv_list();
@@ -212,7 +212,7 @@ static void *val_skip_list_alloc( size_t size ) {
         case two_ptr_size:
             return( two_ptr_manager.allocator( size ) );
         default:
-            return( new char[ size ] );
+            return( new char [size] );
     }
 }
 
@@ -225,7 +225,7 @@ static void val_skip_list_dealloc( void *old, size_t size ) {
             two_ptr_manager.deallocator( old, size );
             break;
         default:
-            delete old;
+            delete[] (char *)old;
             break;
     }
 }

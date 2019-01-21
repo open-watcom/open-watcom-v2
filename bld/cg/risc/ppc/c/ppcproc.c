@@ -30,11 +30,10 @@
 ****************************************************************************/
 
 
-#include "cgstd.h"
+#include "_cgstd.h"
 #include "coderep.h"
 #include "cgmem.h"
 #include "ppcenc.h"
-#include "ppcparm.h"
 #include "ppcgen.h"
 #include "data.h"
 #include "objout.h"
@@ -46,6 +45,7 @@
 #include "rgtbl.h"
 #include "rscobj.h"
 #include "utils.h"
+#include "ppcparm.h"
 #include "feprotos.h"
 
 

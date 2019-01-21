@@ -57,31 +57,43 @@
 ****************************************************************************
 ***************************************************************************/
 
+extern struct _console_ctrl *UIConCtrl;
+
 char            ti_char_map[256];
 
-static tix_status init_tix_scanner( const char *name, bool use_default )
+static tix_status init_tix_scanner( const char *termname )
 {
-    char        tix_name[19];
+    char        *tix_name;
+    size_t      len;
+    tix_status  rc;
 
-    strcpy( tix_name, name );
-    strcat( tix_name, ".tix" );
-    in_file = ti_fopen( tix_name );
-    if( in_file != NULL )
-        return( TIX_OK );
-    if( strstr( name, "qnx" ) != 0 ) {
-        in_file = ti_fopen( "qnx.tix" );
-    } else if( strstr( name, "ansi" ) != 0 || strcmp( name, "xterm" ) == 0 ) {
-        in_file = ti_fopen( "ansi.tix" );
-    }
-    if( in_file != NULL )
-        return( TIX_OK );
-    if( use_default ) {
-        in_file = ti_fopen( "default.tix" );
-        if( in_file != NULL ) {
-            return( TIX_DEFAULT );
+    in_file = NULL;
+    rc = TIX_OK;
+    if( *termname != '\0' ) {
+        len = strlen( termname ) + 5;
+        tix_name = uimalloc( len );
+        strcpy( tix_name, termname );
+        strcat( tix_name, ".tix" );
+        in_file = ti_fopen( tix_name );
+        uifree( tix_name );
+        if( in_file == NULL ) {
+            if( strstr( termname, "qnx" ) != 0 ) {
+                in_file = ti_fopen( "qnx.tix" );
+            } else if( strstr( termname, "ansi" ) != 0 || strcmp( termname, "xterm" ) == 0 ) {
+                in_file = ti_fopen( "ansi.tix" );
+            }
         }
     }
-    return( TIX_NOFILE );
+    if( in_file == NULL ) {
+        rc = TIX_NOFILE;
+        if( UIConCtrl == NULL ) {
+            in_file = ti_fopen( "default.tix" );
+            if( in_file != NULL ) {
+                rc = TIX_DEFAULT;
+            }
+        }
+    }
+    return( rc );
 }
 
 static void close_tix_scanner( void )
@@ -91,8 +103,8 @@ static void close_tix_scanner( void )
     }
 }
 
-tix_status ti_read_tix( bool use_default )
-/***************************************/
+tix_status ti_read_tix( const char *termname )
+/********************************************/
 {
     int         i;
     tix_status  ret;
@@ -102,14 +114,12 @@ tix_status ti_read_tix( bool use_default )
     for( i = 0; i < sizeof( ti_char_map ); i++ )
         ti_char_map[i] = i;
 
-    ret = init_tix_scanner( GetTermType(), use_default );
+    ret = init_tix_scanner( termname );
     switch( ret ) {
-    case TIX_FAIL:
-        return( ret );
     case TIX_NOFILE:
-        if( !use_default )
+        if( UIConCtrl != NULL )
             return( ret );
-        return( ui_tix_missing( GetTermType() ) ? TIX_OK : TIX_FAIL );
+        return( ui_tix_missing( termname ) ? TIX_OK : TIX_FAIL );
     }
     if( !do_parse() )
         ret = TIX_FAIL;

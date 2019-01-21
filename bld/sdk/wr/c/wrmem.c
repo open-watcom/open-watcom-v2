@@ -29,10 +29,6 @@
 ****************************************************************************/
 
 
-#include <wwindows.h>
-#include <stdlib.h>
-#include <stdio.h>
-#include <string.h>
 #include "wrglbl.h"
 #include "wrmemi.h"
 
@@ -42,10 +38,10 @@
 
 static _trmem_hdl   TRMemHandle;
 
-static void TRPrintLine( void *handle, const char *buff, size_t len )
-/*******************************************************************/
+static void TRPrintLine( void *parm, const char *buff, size_t len )
+/*****************************************************************/
 {
-    /* unused parameters */ (void)handle; (void)len;
+    /* unused parameters */ (void)parm; (void)len;
 
     fputs( buff, stderr );
 }

@@ -33,9 +33,10 @@
 #include "vi.h"
 
 #ifdef __IDE__
+
 #include "common.h"
 #include "link.h"
-#include "winprag.h"
+#include "osidle.h"
 
 /*
  * IDEInit - set up for communication with the IDE
@@ -50,7 +51,7 @@ void IDEInit( void )
             VxDConnect();
             break;
         }
-        TimeSlice();
+        ReleaseVMTimeSlice();
     }
 
 } /* IDEInit */

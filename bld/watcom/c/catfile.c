@@ -227,9 +227,12 @@ static int processSwitch        // PROCESS SWITCH
 
 #define IS_WILDCARD_CHAR( x ) ((*x == '*') || (*x == '?'))
 #if defined( __UNIX__ )
-#define FNAMECMPCHAR(a,b) (a-b)
+#define FNAMECMPCHAR(a,b)   (a-b)
+#define ISVALIDENTRY(e)     (1)
 #else
-#define FNAMECMPCHAR(a,b) (tolower(a)-tolower(b))
+#define FNAMECMPCHAR(a,b)   (tolower(a)-tolower(b))
+#define ISVALIDENTRY(e)     ((e->d_attr & _A_VOLID) == 0)
+
 #endif
 
 static int __fnmatch( char *pattern, char *string )
@@ -339,9 +342,7 @@ static int processFilePattern   // PROCESS FILE PATTERN
     } else {
         retn = 0;
         for( entry = readdir( dp ); entry != NULL; entry = readdir( dp ) ) {
-#if !defined( __UNIX__ )
-            if( ( entry->d_attr & _A_VOLID ) == 0 ) {
-#endif
+            if( ISVALIDENTRY( entry ) ) {
                 if( __fnmatch( pattern, entry->d_name ) ) {
                     _makepath( path, pg.drive, pg.dir, entry->d_name, NULL );
                     if( stat( path, &buf ) == 0 && S_ISREG( buf.st_mode ) ) {
@@ -353,9 +354,7 @@ static int processFilePattern   // PROCESS FILE PATTERN
                         files->time = buf.st_mtime;
                     }
                 }
-#if !defined( __UNIX__ )
             }
-#endif
         }
     }
     return retn;

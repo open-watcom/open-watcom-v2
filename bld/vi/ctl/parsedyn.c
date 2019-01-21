@@ -41,50 +41,43 @@ static char White_space[] = " \t";
 
 static int Line = 1;
 
-static char *get_line( char *buf, FILE *file ) 
+static char *get_line( char *buf, FILE *file )
 /********************************************/
 {
     char    *ret;
     size_t  i;
 
-    for( ; (ret = fgets( buf, MAX_LINE_LEN, file )) != NULL; ) {
-
+    while( (ret = fgets( buf, MAX_LINE_LEN, file )) != NULL ) {
         for( i = strlen( buf ); i && isWSorCtrlZ( buf[i - 1] ); --i ) {
             buf[i - 1] = '\0';
         }
         ++Line;
-
         ret += strspn( ret, White_space );
-
         if( ret[0] != '#' && ret[0] != '\0' ) {
             break;
         }
     }
-
     return( ret );
 }
 
 #if 0
-static int empty_data( char *ret ) 
-/********************************/
+static bool empty_data( char *ret )
+/*********************************/
 {
     char    *end;
 
-    if( *ret == '*' ) {
-        for( end = ret + 1;; ++end ) {
-            if( *end == '\0' ) {
-                return( 1 );
-            } else if( *end != ' ' && *end != '\t' ) {
-                break;
+    if( ret != NULL && *ret == '*' ) {
+        for( end = ret + 1; *end != '\0'; ++end ) {
+            if( *end != ' ' && *end != '\t' ) {
+                return( false );
             }
         }
     }
-
-    return( 0 );
+    return( true );
 }
 #endif
 
-int main( int argc, char *argv[] ) 
+int main( int argc, char *argv[] )
 /********************************/
 {
     FILE                *in;
@@ -122,11 +115,8 @@ int main( int argc, char *argv[] )
     fputs( "struct {\n", out );
     fputs( "    int                num_tpls;\n", out );
 
-    for( elt = 0;; ++elt ) {
-        line = get_line( buf, in );
-        if( line == NULL ) {
-            break;
-        }
+    elt = 1;
+    while( (line = get_line( buf, in )) != NULL ) {
         end = strpbrk( line, White_space );
         if( end == NULL ) {
             printf( "No template on line %d\n", Line );
@@ -136,16 +126,15 @@ int main( int argc, char *argv[] )
         strcpy( type, line );
 
         if( strcmp( type, "DYN_TPL_DIM" ) == 0 )
-            fprintf( out, "    dyn_dim_def        dyn_tpl%-d;\n", elt + 1 );
+            fprintf( out, "    dyn_dim_def        dyn_tpl%-d;\n", elt );
         else if( strcmp( type, "DYN_TPL_STATIC" ) == 0 )
-            fprintf( out, "    dyn_static_def        dyn_tpl%-d;\n", elt + 1 );
+            fprintf( out, "    dyn_static_def        dyn_tpl%-d;\n", elt );
         else {
             printf( "Invalid template type on line %d\n", Line );
             goto error;
         }
 
         line = get_line( buf, in );     // get data line and count entries
-
         if( line == NULL ) {
             printf( "No data at line %d\n", Line );
             goto error;
@@ -157,24 +146,21 @@ int main( int argc, char *argv[] )
             line++;
         }
 
-        fprintf( out, "    int                tpl_%-d[%d];\n", elt + 1, items );
+        fprintf( out, "    int                tpl_%-d[%d];\n", elt, items );
+        elt++;
     }
 
     fclose( in );
 
     fprintf( out, "} %s = {\n", argv[3] );
-    fprintf( out, "%d,\n", elt );
+    fprintf( out, "%d,\n", elt - 1 );
 
     in = fopen( argv[1], "r" );
 
-    for( ;; ) {
-        line = get_line( buf, in );
-        if( line == NULL ) {
-            break;
-        }
-
+    while( (line = get_line( buf, in )) != NULL ) {
         start = strpbrk( line, White_space );
-        *start++ = '\0';
+        if( start != NULL )
+            *start++ = '\0';
         strcpy( type, line );
 
         if( strcmp( type, "DYN_TPL_DIM" ) == 0 ) {
@@ -185,7 +171,7 @@ int main( int argc, char *argv[] )
 
         do {
             end = strpbrk( start, White_space );
-            if( end ) {
+            if( end != NULL ) {
                 *end++ = '\0';
             }
             fprintf( out, "%s, ", start );
@@ -193,6 +179,9 @@ int main( int argc, char *argv[] )
         } while( end );
 
         line = get_line( buf, in );
+        if( line == NULL ) {
+            break;
+        }
         fprintf( out, "\n    %s,\n    -1,\n", line );
     }
     fputs( "};\n\n", out );

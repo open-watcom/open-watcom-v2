@@ -9,12 +9,12 @@ set PROJDIR=<CWD>
 
 [ INCLUDE <OWROOT>/build/deflib.ctl ]
 
-[ BLOCK <1> rel ]
-#================
+[ BLOCK <BLDRULE> rel ]
+#======================
     cdsay <PROJDIR>
 
-[ BLOCK <1> rel cprel ]
-#======================
+[ BLOCK <BLDRULE> rel cprel ]
+#============================
 # NT, OS2 32-bit version
     <CCCMD> flat386/mf_r/wres.lib   <OWRELROOT>/lib386/wresf.lib
     <CCCMD> flat386/mf_s/wres.lib   <OWRELROOT>/lib386/wresfs.lib

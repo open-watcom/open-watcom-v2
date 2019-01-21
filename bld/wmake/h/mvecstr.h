@@ -42,7 +42,5 @@ extern char     *FinishVec( VECSTR vec );
 extern void     CatVec( VECSTR dest, VECSTR src ); /* pfms FreeVec( src ) */
 extern void     WriteVec( VECSTR vec, const char *str );
 extern void     WriteNVec( VECSTR vec, const char *str, size_t len );
-extern void     CatStrToVec ( VECSTR dest, const char *str );
-extern void     CatNStrToVec ( VECSTR dest, const char *str, size_t len );
 
 #endif /* !_MVECSTR_H */

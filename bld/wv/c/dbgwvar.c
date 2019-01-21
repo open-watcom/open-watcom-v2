@@ -40,7 +40,7 @@
 #include "dbgadget.h"
 #include "dbgitem.h"
 #include "dlgvarx.h"
-#include "spawn.h"
+#include "wspawn.h"
 #include "dbgscan.h"
 #include "dui.h"
 #include "strutil.h"
@@ -521,13 +521,13 @@ OVL_EXTERN void VarMenuItem( a_window wnd, gui_ctl_id id, wnd_row row, wnd_piece
         varx.start = 0;
         varx.end = 0;
         start = 0;
-        switch( ExprSP->info.kind ) {
+        switch( ExprSP->ti.kind ) {
         case TK_ARRAY:
             DIPTypeArrayInfo( ExprSP->th, ExprSP->lc, &ainfo, NULL );
             start = ainfo.low_bound;
             varx.start = start;
             varx.end = varx.start + ainfo.num_elts - 1;
-            /* fall thru */
+            /* fall through */
         case TK_POINTER:
             {
                 bool rc;

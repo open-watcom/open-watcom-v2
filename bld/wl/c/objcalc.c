@@ -423,7 +423,7 @@ static void AllocSeg( void *_seg )
         }
         CurrentSeg = seg;
         NewSegment( seg );
-        DEBUG(( DBG_OLD, "- segment %s allocated", seg->segname ));
+        DEBUG(( DBG_OLD, "- segment %s allocated", seg->segname.u.ptr ));
     }
 }
 
@@ -490,7 +490,7 @@ void AllocClasses( section *sect )
     class_entry     *class;
 
     for( class = sect->classlist; class != NULL; class = class->next_class ) {
-        DEBUG(( DBG_OLD, "Allocating class %s", class->name ));
+        DEBUG(( DBG_OLD, "Allocating class %s", class->name.u.ptr ));
         if( class->flags & CLASS_DEBUG_INFO ) {
             /* don't *really* allocate room for these guys */
             save = CurrLoc;
@@ -905,7 +905,7 @@ static void FillClassFlags( char *name, unsigned_16 flags )
     class_entry     *class;
 
     for( class = Root->classlist; class != NULL; class = class->next_class ) {
-        if( stricmp( class->name, name ) == 0 ) {
+        if( stricmp( class->name.u.ptr, name ) == 0 ) {
             RingLookup( class->segs, SetClassFlag, &flags );
             return;
         }
@@ -1038,7 +1038,7 @@ static void ReOrderClasses( section *sec )
             && (currcl->flags & CLASS_32BIT) == 0 ) {
             ord = ORD_REALMODE;
         } else {
-            name = currcl->name;
+            name = currcl->name.u.ptr;
             if( currcl->flags & CLASS_CODE ) {
                 if( stricmp( name, OvlMgrClass ) == 0 ) {
                     ord = ORD_OVLMGR;
@@ -1087,7 +1087,7 @@ static void ReOrderClasses( section *sec )
                 break;
             currseg = prevseg->next_seg;
             for( ;; ) {
-                if( stricmp( currseg->segname, BegTextSegName ) == 0 ) {
+                if( stricmp( currseg->segname.u.ptr, BegTextSegName ) == 0 ) {
                     RingPromote( &currcl->segs, currseg, prevseg );
                     break;
                 }
@@ -1137,7 +1137,7 @@ static void SortClasses( section *sec )
         CheckClassUninitialized( currcl );
         NewRing = &DefaultRing;  // In case no special class is found
         for( MatchClass = sec->orderlist; MatchClass != NULL; MatchClass = MatchClass->NextClass ) {
-            if( stricmp( currcl->name, MatchClass->Name ) == 0 ) { // search order list for name match
+            if( stricmp( currcl->name.u.ptr, MatchClass->Name ) == 0 ) { // search order list for name match
                 NewRing = &(MatchClass->Ring);   // if found save ptr to instance
                 if( MatchClass->FixedAddr ) {    // and copy any flags or address from it
                     currcl->flags |= CLASS_FIXED;
@@ -1170,7 +1170,7 @@ static void SortClasses( section *sec )
                 currseg = prevseg->next_seg;
 
                 for( ;; ) {
-                    if( stricmp( currseg->segname, MatchSeg->Name ) == 0 ) {
+                    if( stricmp( currseg->segname.u.ptr, MatchSeg->Name ) == 0 ) {
                         if( MatchSeg->FixedAddr ) {    // and copy any flags or address from it
                             currseg->segflags |= SEG_FIXED;
                             currseg->seg_addr = MatchSeg->Base;
@@ -1208,7 +1208,7 @@ static void SortClasses( section *sec )
     for( MatchClass = sec->orderlist; MatchClass != NULL; MatchClass = MatchClass->NextClass ) {
          if( MatchClass->Copy && MatchClass->Ring != NULL ) {   // If this is a duplicate destination, find the source
              for( currcl = sec->classlist; currcl != NULL; currcl = currcl->next_class ) {
-                if( stricmp( MatchClass->SrcName, currcl->name ) == 0 ) {
+                if( stricmp( MatchClass->SrcName, currcl->name.u.ptr ) == 0 ) {
                     MatchClass->Ring->DupClass = currcl;
                     MatchClass->Ring->flags |= CLASS_COPY;
                     break;
@@ -1240,24 +1240,24 @@ static void SortSegments( void )
         foundgroup = false;
         newlist = NULL;
         for( curr = RingPop( &currcl->segs ); curr != NULL; curr = RingPop( &currcl->segs ) ) {
-            dollarpos = strchr( curr->segname, '$' );
+            dollarpos = strchr( curr->segname.u.ptr, '$' );
             if( dollarpos != NULL ) {
-                currlen = dollarpos - curr->segname;
+                currlen = dollarpos - curr->segname.u.ptr;
                 foundgroup = true;
             } else {
-                currlen = strlen( curr->segname );
+                currlen = strlen( curr->segname.u.ptr );
             }
             added = false;
             if( foundgroup ) {
                 prev = NULL;
                 foundmatch = false;
                 for( comp = RingStep( newlist, NULL ); comp != NULL; comp = RingStep( newlist, comp ) ) {
-                    complen = strcspn( comp->segname, "$" );
+                    complen = strcspn( comp->segname.u.ptr, "$" );
                     if( ( complen == currlen )
-                        && ( memcmp( comp->segname, curr->segname, complen ) == 0 ) ) {
+                        && ( memcmp( comp->segname.u.ptr, curr->segname.u.ptr, complen ) == 0 ) ) {
                         foundmatch = true;
-                        if( strcmp( comp->segname + complen,
-                                    curr->segname + currlen ) > 0 ) {
+                        if( strcmp( comp->segname.u.ptr + complen,
+                                    curr->segname.u.ptr + currlen ) > 0 ) {
                             InsertPrevRing( &newlist, curr, prev );
                             added = true;
                             break;

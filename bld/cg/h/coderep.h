@@ -33,7 +33,6 @@
 
 /*       Internal code representation */
 
-#include "typedef.h"
 #include "hwreg.h"
 #include "_cg.h"
 #include "bckdef.h"

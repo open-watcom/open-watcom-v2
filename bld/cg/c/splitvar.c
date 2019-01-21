@@ -31,19 +31,18 @@
 ****************************************************************************/
 
 
-#include "cgstd.h"
+#include "_cgstd.h"
 #include "coderep.h"
-#include "stack.h"
+#include "stackcg.h"
 #include "data.h"
 #include "namelist.h"
 #include "regalloc.h"
 #include "insdead.h"
 #include "conflict.h"
+#include "dataflo.h"
+#include "varusage.h"
+#include "splitvar.h"
 
-
-extern  void            FindReferences( void );
-extern  void            MakeConflicts( void );
-extern  bool            MoreConflicts( void );
 
 static  block_num       Instance;
 static  global_bit_set  Id;
@@ -82,8 +81,8 @@ static  void    NotVisited( void )
 }
 
 
-extern  bool    RepOp( name **pop, name *of, name *with )
-/*******************************************************/
+bool    RepOp( name **pop, name *of, name *with )
+/***********************************************/
 {
     name        *op;
     name        *base;
@@ -108,7 +107,7 @@ extern  bool    RepOp( name **pop, name *of, name *with )
         }
         if( change ) {
             *pop = ScaleIndex( index, base, op->i.constant,
-                                op->n.name_class, op->n.size,
+                                op->n.type_class, op->n.size,
                                 op->i.scale, op->i.index_flags );
         }
     }
@@ -161,7 +160,7 @@ static  bool    Split1Var( conflict_node *conf )
     change = false;
     while( Instance > 1 ) {
         change = true;
-        ReplaceInstances( op, SAllocTemp( op->n.name_class, op->n.size ) );
+        ReplaceInstances( op, SAllocTemp( op->n.type_class, op->n.size ) );
         --Instance;
     }
     return( change );
@@ -217,8 +216,8 @@ static  void *MarkInstance( block *blk )
 }
 
 
-extern  void    SplitVars( void )
-/*******************************/
+ void    SplitVars( void )
+/************************/
 /* For each variable, find out if it can be split into two separate variables.*/
 /* This often happens when programmers re-use variables rather than defining*/
 /* a new one.*/

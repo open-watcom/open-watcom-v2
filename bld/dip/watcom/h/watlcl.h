@@ -105,8 +105,8 @@ typedef union {
 #define SET_BASE386     0x02
 
 
-extern unsigned         InfoSize( imp_image_handle *, imp_mod_handle im, demand_kind dk, word entry );
-extern void             *InfoLoad( imp_image_handle *, imp_mod_handle im, demand_kind dk, word entry, void (*clear)(void *, void *) );
+extern unsigned         InfoSize( imp_image_handle *, imp_mod_handle, demand_kind dk, word entry );
+extern void             *InfoLoad( imp_image_handle *, imp_mod_handle, demand_kind dk, word entry, void (*clear)(void *, void *) );
 extern void             InfoClear( imp_image_handle * );
 extern void             InfoUnlock( void );
 extern dip_status       InfoRelease( void );
@@ -117,8 +117,8 @@ extern void             FiniDemand( void );
 extern const char       *GetIndex( const char *ptr, unsigned *value );
 extern const char       *GetAddress( imp_image_handle *, const char *ptr, address *addr, int is32 );
 extern void             KillLclLoadStack( void );
-extern search_result    SearchLclMod( imp_image_handle *, imp_mod_handle im, lookup_item *li, void *d );
-extern search_result    SearchLclScope( imp_image_handle *, imp_mod_handle im, address *addr, lookup_item *li, void *d );
+extern search_result    SearchLclMod( imp_image_handle *, imp_mod_handle, lookup_item *li, void *d );
+extern search_result    SearchLclScope( imp_image_handle *, imp_mod_handle, address *addr, lookup_item *li, void *d );
 extern search_result    LookupLclAddr( imp_image_handle *, address addr, imp_sym_handle * );
 extern unsigned         SymHdl2LclName( imp_image_handle *, imp_sym_handle *, char *buff, unsigned buff_size );
 extern dip_status       SymHdl2LclLoc( imp_image_handle *, imp_sym_handle *, location_context *lc, location_list *ll );
@@ -129,4 +129,4 @@ extern dip_status       SymHdl2LclInfo( imp_image_handle *, imp_sym_handle *, sy
 extern dip_status       SymHdl2LclParmLoc( imp_image_handle *, imp_sym_handle *, location_context *lc, location_list *ll, unsigned parm );
 extern walk_result      WalkScopedSymList( imp_image_handle *, address *addr, DIP_IMP_SYM_WALKER *wk, imp_sym_handle *, void *d );
 extern walk_result      WalkBlockSymList( imp_image_handle *, scope_block *scope, DIP_IMP_SYM_WALKER *wk, imp_sym_handle *, void *d );
-extern dip_status       WalkLclModSymList( imp_image_handle *, imp_mod_handle im, DIP_IMP_SYM_WALKER *wk, imp_sym_handle *, void *d, walk_result *last );
+extern dip_status       WalkLclModSymList( imp_image_handle *, imp_mod_handle, DIP_IMP_SYM_WALKER *wk, imp_sym_handle *, void *d, walk_result *last );

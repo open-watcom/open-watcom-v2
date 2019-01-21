@@ -32,29 +32,29 @@
 #include "variety.h"
 #include <string.h>
 
+
 #ifdef  _M_I86
 
 extern int _fast_strncmp( const char _WCFAR *, const char _WCFAR *, size_t );
+#pragma aux _fast_strncmp = \
+        "push ds"       \
+        "xchg si,ax"    \
+        "mov  ds,ax"    \
+        "mov  dx,di"    \
+        "xor  al,al"    \
+        "repne scasb"   \
+        "mov  cx,di"    \
+        "mov  di,dx"    \
+        "sub  cx,di"    \
+        "repe cmpsb"    \
+        "je short L1"   \
+        "sbb  cx,cx"    \
+        "sbb  cx,-1"    \
+    "L1: pop  ds"       \
+    __parm __caller     [__si __ax] [__es __di] [__cx] \
+    __value             [__cx] \
+    __modify __exact    [__ax __cx __dx __di __si]
 
-#pragma aux    _fast_strncmp = \
-        0x1e            /* push ds   */ \
-        0x96            /* xchg si,ax */\
-        0x8e 0xd8       /* mov ds,ax  */\
-        0x89 0xfa       /* mov dx,di */ \
-        0x30 0xc0       /* xor al,al */ \
-        0xf2 0xae       /* repne scasb */ \
-        0x89 0xf9       /* mov cx,di */ \
-        0x89 0xd7       /* mov di,dx */ \
-        0x29 0xf9       /* sub cx,di */ \
-        0xf3 0xa6       /* repe cmpsb */ \
-        0x74 0x05       /* je L1 */ \
-        0x19 0xc9       /* sbb cx,cx */ \
-        0x83 0xd9 0xff  /* sbb cx,ffffh */ \
-                        /* L1: */ \
-        0x1f            /* pop ds */\
-        parm caller [si ax] [es di] [cx] \
-        value [cx] \
-        modify exact [dx ax di cx si];
 #endif
 
 /* return <0 if s<t, 0 if s==t, >0 if s>t */

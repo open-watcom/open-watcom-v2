@@ -179,7 +179,7 @@ static dip_status GetSectInfo( FILE *fp, unsigned long *sizes, unsigned long *ba
         DCRead( fp, &elf_sec, sizeof( Elf32_Shdr ) );
         ByteSwapShdr( &elf_sec, *byteswap );
         sect = Lookup_section_name( &string_table[elf_sec.sh_name] );
-        if ( sect < DR_DEBUG_NUM_SECTS ){
+        if( sect < DR_DEBUG_NUM_SECTS ) {
             bases[sect] = elf_sec.sh_offset + start;
             sizes[sect] = elf_sec.sh_size;
         }
@@ -252,10 +252,10 @@ static void DWRErr( dr_except code )
         DCStatus( DS_ERR | DS_NO_READ_MEM );
         break;
     case DREXCEP_BAD_DBG_VERSION:
-        DCStatus( DS_ERR |DS_INFO_BAD_VERSION );
+        DCStatus( DS_ERR | DS_INFO_BAD_VERSION );
         break;
     case DREXCEP_BAD_DBG_INFO:
-        DCStatus( DS_ERR |DS_INFO_INVALID );
+        DCStatus( DS_ERR | DS_INFO_INVALID );
         break;
     case DREXCEP_OUT_OF_MMEM:        // DWRMALLOC or DWRREALLOC failed
         DCStatus( DS_ERR | DS_NO_MEM );
@@ -273,28 +273,28 @@ static dip_status InitDwarf( imp_image_handle *iih )
 {
     unsigned long   sect_sizes[DR_DEBUG_NUM_SECTS];
     dwarf_info      *dwarf;
-    dip_status      ret;
+    dip_status      ds;
 
-    ret = DS_ERR | DS_NO_MEM;
+    ds = DS_ERR | DS_NO_MEM;
     dwarf = DCAlloc( sizeof( *dwarf ) );
     if( dwarf != NULL ) {
         iih->dwarf = dwarf;
-        ret = GetSectInfo( iih->sym_fp, sect_sizes, dwarf->sect_offsets, &iih->is_byteswapped );
-        if( ret == DS_OK ) {
+        ds = GetSectInfo( iih->sym_fp, sect_sizes, dwarf->sect_offsets, &iih->is_byteswapped );
+        if( ds == DS_OK ) {
             dwarf->handle = DRDbgInitNFT( iih, sect_sizes, iih->is_byteswapped );
             if( dwarf->handle != NULL ) {
                 iih->has_pubnames = ( sect_sizes[DR_DEBUG_PUBNAMES] > 0 );
-                return( ret );
+                return( ds );
             }
-            ret = DS_ERR | DS_NO_MEM;
+            ds = DS_ERR | DS_NO_MEM;
         }
     }
     if( dwarf != NULL ) {
         DCFree( dwarf );
     }
     iih->dwarf = NULL;
-    DCStatus( ret );
-    return( ret );
+    DCStatus( ds );
+    return( ds );
 }
 
 
@@ -348,13 +348,13 @@ static bool AModHash( drmem_hdl sym, void *_iih, dr_search_context *cont )
 }
 
 
-static walk_result ModGlbSymHash( imp_image_handle *iih, imp_mod_handle im, void *d )
-/***********************************************************************************/
+static walk_result ModGlbSymHash( imp_image_handle *iih, imp_mod_handle imh, void *d )
+/************************************************************************************/
 // Add module's global syms to the name hash
 {
     /* unused parameters */ (void)d;
 
-    DRWalkModFunc( IMH2MODI( iih, im )->cu_tag, false, AModHash, iih );   /* load hash */
+    DRWalkModFunc( IMH2MODI( iih, imh )->cu_tag, false, AModHash, iih );   /* load hash */
     return( WR_CONTINUE );
 }
 
@@ -376,24 +376,24 @@ static void LoadGlbHash( imp_image_handle *iih )
 dip_status DIPIMPENTRY( LoadInfo )( FILE *fp, imp_image_handle *iih )
 /*******************************************************************/
 {
-    dip_status          ret;
+    dip_status          ds;
 
     iih->sym_fp = fp;
-    ret = InitDwarf( iih );
-    if( ret == DS_OK ) {
-        ret = InitModMap( iih );
-        if( ret == DS_OK ) {
+    ds = InitDwarf( iih );
+    if( ds == DS_OK ) {
+        ds = InitModMap( iih );
+        if( ds == DS_OK ) {
             InitImpCueInfo( iih );
             iih->name_map = InitHashName();
             LoadGlbHash( iih );
             iih->dcmap = NULL;
             InitScope( &iih->scope );
             DFAddImage( iih );
-            return( ret );
+            return( ds );
         }
     }
     iih->sym_fp = NULL;
-    return( ret );
+    return( ds );
 }
 
 
@@ -401,7 +401,7 @@ typedef struct {
     imp_image_handle    *iih;
     addr_off            low_pc;
     addr_off            high_pc;
-    imp_mod_handle      im;
+    imp_mod_handle      imh;
 } a_walk_info;
 
 static bool ARangeItem( void *_info, dr_arange_data *arange )
@@ -415,12 +415,12 @@ static bool ARangeItem( void *_info, dr_arange_data *arange )
 
     iih = info->iih;
     if( arange->is_start ) {
-        info->im = Dwarf2Mod( iih, arange->dbg );
-        if( info->im == IMH_NOMOD ) {
+        info->imh = Dwarf2Mod( iih, arange->dbg );
+        if( info->imh == IMH_NOMOD ) {
             return( false );
         }
     }
-    modinfo = IMH2MODI( iih, info->im );
+    modinfo = IMH2MODI( iih, info->imh );
     if( arange->is_start ) {
         if( modinfo->is_segment ) {
             info->low_pc = 0;
@@ -438,7 +438,7 @@ static bool ARangeItem( void *_info, dr_arange_data *arange )
     } else {
         seg = SEG_FLAT;
     }
-    addr_info.im = info->im;
+    addr_info.imh = info->imh;
     addr_info.map_seg = seg;
     addr_info.map_offset = arange->addr;
     addr_info.len = arange->len;
@@ -463,7 +463,7 @@ void DIPIMPENTRY( MapInfo )( imp_image_handle *iih, void *d )
     SortMapAddr( iih->addr_map );
     DRDbgClear( iih->dwarf->handle );    /* clear some memory */
     iih->last.len = 0;
-    iih->last.im = IMH_NOMOD;
+    iih->last.imh = IMH_NOMOD;
     iih->last.mach.segment = 0;
     iih->last.mach.offset = 0;
 }

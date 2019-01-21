@@ -1,4 +1,3 @@
-
 /****************************************************************************
 *
 *                            Open Watcom Project
@@ -343,11 +342,11 @@ void WritePubModHead( void )
     char        full_name[PATH_MAX];
 
     if ( CurrMod->f.source == NULL ) {
-        strcpy( full_name, CurrMod->name );
+        strcpy( full_name, CurrMod->name.u.ptr );
     } else {
         MakeFileName( CurrMod->f.source->file, full_name );
     }
-    Msg_Write_Map( MSG_MAP_DEFINING_MODULE, full_name, CurrMod->name );
+    Msg_Write_Map( MSG_MAP_DEFINING_MODULE, full_name, CurrMod->name.u.ptr );
 }
 
 void WriteOvlHead( void )
@@ -436,8 +435,8 @@ static void WriteVerbMod( mod_entry *mod )
 /****************************************/
 {
     if( (mod->modinfo & MOD_NEED_PASS_2) && mod->segs != NULL ) {
-        WriteFormat( 0, "%s", mod->name );
-        if( strlen( mod->name ) > 15 )
+        WriteFormat( 0, "%s", mod->name.u.ptr );
+        if( strlen( mod->name.u.ptr ) > 15 )
             WriteMapNL( 1 );
         Ring2Walk( mod->segs, WriteVerbSeg );
     }

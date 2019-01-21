@@ -56,7 +56,7 @@ void InitEngineLiterals( void )
 
 void FiniEngineLiterals( void )
 {
-    #define LITSTR( x, y ) DbgFree( LIT_ENG( x ) );
+    #define LITSTR( x, y ) DUIFreeString( LIT_ENG( x ) );
     #include "wdeng.str"
     #undef LITSTR
 }

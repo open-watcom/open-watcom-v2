@@ -33,13 +33,13 @@
 #include "gdefn.h"
 #include "gbios.h"
 #include "svgadef.h"
-#if defined( __386__ )
+#if !defined( _M_I86 )
   #include "rmalloc.h"
 #endif
 
 
 extern unsigned short   cs( void );
-#pragma aux cs = "mov ax,cs" value [ax] modify []
+#pragma aux cs = "mov ax,cs" __value [__ax] __modify []
 
 static short            _SuperVGAModes[ _SV_MAX-2 ][ 6 ] = {
 //                      100h    101h    102h    103h    104h    105h
@@ -75,7 +75,8 @@ static vgapage_fn _WCI86FAR *_VGAPageFunc[ _SV_MAX-1 ] = {
     (vgapage_fn _WCI86FAR *)_PageViper,
 };
 
-#if defined( __386__ ) && !defined(__QNX__)
+#if defined( _M_I86 ) || defined(__QNX__)
+#else
 static void mymemcpy( char *d, char __far *s, int len )
 {
     while( len-- > 0 ) {
@@ -94,7 +95,8 @@ static short SuperVGASetMode( short adapter, short mode, short *stride )
 //#if !defined( __QNX__ )
     short               granule;
     char                buf[ 256 ];
-#if defined( __386__ ) && !defined(__QNX__)
+#if defined( _M_I86 ) || defined(__QNX__)
+#else
 //    short               i;
     char __far          *rbuf;
     RM_ALLOC            mem;
@@ -105,7 +107,14 @@ static short SuperVGASetMode( short adapter, short mode, short *stride )
     switch( adapter ) {
 //#if !defined( __QNX__ )
     case _SV_VESA:
-#if defined( __386__ ) && !defined(__QNX__)
+#if defined( _M_I86 ) || defined(__QNX__)
+        if( GetVESAInfo( 0x4f01, mode, &buf ) != 0x004f ) {
+            return( FALSE );
+        }
+    #if defined( VERSION2 )
+        memcpy( &(_CurrState->mi), buf, sizeof( struct VbeModeInfo ) );
+    #endif
+#else
 //            assert(256>=sizeof(struct VbeModeInfo));//large enough?
         if( !_RMAlloc( 256, &mem ) ) {
             return( FALSE );
@@ -128,13 +137,6 @@ static short SuperVGASetMode( short adapter, short mode, short *stride )
         if( val != 0x004f ) {
             return( FALSE );
         }
-#else
-        if( GetVESAInfo( 0x4f01, mode, &buf ) != 0x004f ) {
-            return( FALSE );
-        }
-    #if defined( VERSION2 )
-        memcpy( &(_CurrState->mi), buf, sizeof( struct VbeModeInfo ) );
-    #endif
 #endif
 #if !defined( __QNX__ )
         if( U16( buf, 3 ) != 64 || U16( buf, 4 ) != 0xa000 ) {    // need 64k pages
@@ -346,7 +348,7 @@ static void printModeCaps(struct VbeModeInfo * ModeInfo)
    if(ModeInfo->ModeAttributes&VBEMODE_CAPS_TRIPLEBUF)    printf("Triple Buffering supported\n");
    if(ModeInfo->ModeAttributes&VBEMODE_CAPS_STEREO)    printf("Stereoscopic display supported\n");
    if(ModeInfo->ModeAttributes&VBEMODE_CAPS_DUALDISP)    printf("dual display start address support\n");
-   
+
    i=ModeInfo->MemoryModel;
    if(i>(sizeof(model_strings)/sizeof(*model_strings)))
      p="invalid";
@@ -526,10 +528,10 @@ static short _SuperVGAInit( short mode )
 // For QNX 32-bit, we still want only near pointers in the table though,
 // to avoid segment relocations in the executable.
 // The assignment to _SetVGAPage provides the CS value at runtime.
-#if defined( __QNX__ ) && defined( __386__ )
-    _SetVGAPage = MK_FP( cs(), _VGAPageFunc[ adapter - 1 ] );
-#else
+#if defined( _M_I86 ) || !defined(__QNX__)
     _SetVGAPage = _VGAPageFunc[ adapter - 1 ];
+#else
+    _SetVGAPage = MK_FP( cs(), _VGAPageFunc[ adapter - 1 ] );
 #endif
 
     //              x,   y, strd, col, bpp, pag, seg,     off,    siz, mis
@@ -574,7 +576,7 @@ static short _SuperVGAInit( short mode )
 #endif
         break;
 #if 0
-// This mode is untested. 
+// This mode is untested.
     case 0x110:
         _GrInit( 640, 480, 1280, 32768, 16, 1, _EgaSeg, _EgaOff, 0, NO_BIOS );
         _CurrState->vc.numtextcols = 80;
@@ -609,7 +611,7 @@ static short _SuperVGAInit( short mode )
         }
 #endif
         break;
-    }       
+    }
     _CurrState->vc.mode = mode;         // _GrInit fills in bios_mode
     _CurrState->vc.adapter = _SVGA;
     if( stride )

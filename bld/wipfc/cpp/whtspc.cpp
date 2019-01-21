@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
+* Copyright (c) 2009-2018 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -29,90 +29,91 @@
 *
 ****************************************************************************/
 
+
+#include "wipfc.hpp"
 #include "whtspc.hpp"
 #include "cell.hpp"
 #include "document.hpp"
 
 WhiteSpace::WhiteSpace( Document* d, Element* p, const std::wstring* f, unsigned int r,
-    unsigned int c, const std::wstring& tx, Tag::WsHandling w, bool ts ) :
+    unsigned int c, const std::wstring& text, Tag::WsHandling w, bool ts ) :
     Text( d, p, f, r, c, w, ts )
 {
-    if( tx[0] != L'\n' )
-        spaces = static_cast< unsigned char >( tx.size() );
-    else
-        spaces = 0;
+    if( text[0] != L'\n' ) {
+        _spaces = static_cast< byte >( text.size() );
+    } else {
+        _spaces = 0;
+    }
     if( w == Tag::SPACES ) {
-        GlobalDictionaryWord* word( new GlobalDictionaryWord( tx ) );
-        text = document->addWord( word );   //insert into global dictionary
+        _text = _document->addTextToGD( new GlobalDictionaryWord( text ) );   //insert into global dictionary
     }
 }
 /***************************************************************************/
 Lexer::Token WhiteSpace::parse( Lexer* lexer )
 {
     if( lexer->text()[0] != L'\n' ) {
-        spaces = static_cast< unsigned char >( lexer->text().size() ); //number of spaces
-        if( whiteSpace == Tag::SPACES ) {
-            GlobalDictionaryWord* word( new GlobalDictionaryWord( lexer->text() ) );
-            text = document->addWord( word );   //insert into global dictionary
+        _spaces = static_cast< byte >( lexer->text().size() ); //number of spaces
+        if( _whiteSpace == Tag::SPACES ) {
+            _text = _document->addTextToGD( new GlobalDictionaryWord( lexer->text() ) );   //insert into global dictionary
         }
     }
-    if( whiteSpace != Tag::SPACES && !document->autoSpacing() ) {
-        document->toggleAutoSpacing();
-        Lexer::Token t( document->lastToken() );
-        if( t == Lexer::WORD || t == Lexer::ENTITY || t == Lexer::PUNCTUATION )
-            document->lastText()->setToggleSpacing();
+    if( _whiteSpace != Tag::SPACES && !_document->autoSpacing() ) {
+        _document->toggleAutoSpacing();
+        Lexer::Token t( _document->lastToken() );
+        if( t == Lexer::WORD || t == Lexer::ENTITY || t == Lexer::PUNCTUATION ) {
+            _document->lastText()->setToggleSpacing();
+        }
     }
-    document->setLastPrintable( Lexer::WHITESPACE, this );
-    return document->getNextToken();
+    _document->setLastPrintable( Lexer::WHITESPACE, this );
+    return _document->getNextToken();
 }
 /***************************************************************************/
 void WhiteSpace::buildText( Cell* cell )
 {
-    if( spaces ) {
-        if( whiteSpace == Tag::SPACES && text ) {
+    if( _spaces ) {
+        if( _whiteSpace == Tag::SPACES && _text ) {
             Text::buildText( cell );
-        }
-        else if( col == 1 ) {
-            for( unsigned char count = 0; count < spaces / 2; ++count )
-                cell->addByte( 0xFE );
-            if( spaces & 1 ) {
-                cell->addByte( 0xFC );
-                cell->addByte( 0xFE );
-                cell->addByte( 0xFC );
+        } else if( _col == 1 ) {
+            for( byte count = 0; count < _spaces / 2; ++count )
+                cell->addByte( Cell::SPACE );
+            if( _spaces & 1 ) {
+                cell->addByte( Cell::TOGGLE_SPACING );
+                cell->addByte( Cell::SPACE );
+                cell->addByte( Cell::TOGGLE_SPACING );
+            }
+        } else if( _spaces > 1 ) {
+            if( _spaces & 1 ) {
+                for( byte count = 0; count < _spaces / 2; ++count )
+                    cell->addByte( Cell::SPACE );
+            } else {
+                for( byte count = 0; count < _spaces / 2 - 1; ++count )
+                    cell->addByte( Cell::SPACE );
+                cell->addByte( Cell::TOGGLE_SPACING );
+                cell->addByte( Cell::SPACE );
+                cell->addByte( Cell::TOGGLE_SPACING );
             }
         }
-        else if( spaces > 1 ) {
-            if( spaces & 1 ) {
-                for( unsigned char count = 0; count < spaces / 2; ++count )
-                    cell->addByte( 0xFE );
-            }
-            else {
-                for( unsigned char count = 0; count < spaces / 2 - 1; ++count )
-                    cell->addByte( 0xFE );
-                cell->addByte( 0xFC );
-                cell->addByte( 0xFE );
-                cell->addByte( 0xFC );
-            }
-        }
+    } else if( _whiteSpace != Tag::NONE ) { //'\n'
+        cell->addByte( Cell::LINE_BREAK );
     }
-    else if( whiteSpace != Tag::NONE )  //'\n'
-        cell->addByte( 0xFD );
-    if( cell->textFull() )
+    if( cell->textFull() ) {
         printError( ERR1_LARGEPAGE );
+    }
 }
 /***************************************************************************/
 std::pair< bool, bool > LiteralWhiteSpace::buildLocalDict( Page* page )
 {
     (void)page;
-    std::pair< bool, bool > retval( false, toggleSpacing );
+    std::pair< bool, bool > retval( false, _toggleSpacing );
     return retval;
 }
 /***************************************************************************/
 void LiteralWhiteSpace::buildText( Cell* cell )
 {
-    if( toggleSpacing )
-        cell->addByte( 0xFC );
-    cell->addByte( 0xFE );
-    if( cell->textFull() )
+    if( _toggleSpacing )
+        cell->addByte( Cell::TOGGLE_SPACING );
+    cell->addByte( Cell::SPACE );
+    if( cell->textFull() ) {
         printError( ERR1_LARGEPAGE );
+    }
 }

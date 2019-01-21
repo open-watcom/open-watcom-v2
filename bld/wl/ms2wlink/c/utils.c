@@ -30,9 +30,9 @@
 
 #include <stdlib.h>
 #include <string.h>
-#include <malloc.h>
 #include <setjmp.h>
 #include "wio.h"
+#include "walloca.h"
 #include "ms2wlink.h"
 
 #include "clibext.h"

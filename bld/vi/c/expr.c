@@ -58,46 +58,38 @@ static const char   *exprData;
 static jmp_buf      abortAddr;
 static int          tokenBuffCnt;
 
-#define str( a ) #a
-
-static const char   colorTokens[] = {
-    #define vi_pick( a ) str( a\0 )
-    #include "colors.h"
-    #undef vi_pick
+static const char   ColourTokens[] = {
+    #define pick(a) #a "\0"
+    COLOURTOKENS()
+    #undef pick
 };
 
 #ifdef __WIN__
-static const char   ddeTokens[] = {
-    "DDE_FACK\0"
-    "DDE_FBUSY\0"
-    "DDE_FDEFERUPD\0"
-    "DDE_FACKREQ\0"
-    "DDE_FRELEASE\0"
-    "DDE_FREQUESTED\0"
-    "DDE_FAPPSTATUS\0"
-    "DDE_FNOTPROCESSED\0"
-    "XTYP_CONNECT\0"
-    "XTYP_CONNECT_CONFIRM\0"
-    "XTYP_DISCONNECT\0"
-    "XTYP_REQUEST\0"
-    "XTYP_POKE\0"
-    "\0"
+#define DDETOKENS() \
+    pick( DDE_FACK,             0x8000 ) \
+    pick( DDE_FBUSY,            0x4000 ) \
+    pick( DDE_FDEFERUPD,        0x4000 ) \
+    pick( DDE_FACKREQ,          0x8000 ) \
+    pick( DDE_FRELEASE,         0x2000 ) \
+    pick( DDE_FREQUESTED,       0x1000 ) \
+    pick( DDE_FAPPSTATUS,       0x00ff ) \
+    pick( DDE_FNOTPROCESSED,    0x0000 ) \
+    pick( XTYP_CONNECT,         0x1062 ) \
+    pick( XTYP_CONNECT_CONFIRM, 0x8072 ) \
+    pick( XTYP_DISCONNECT,      0x80c2 ) \
+    pick( XTYP_REQUEST,         0x20b0 ) \
+    pick( XTYP_POKE,            0x4090 )
+
+static const char DDETokens[] = {
+    #define pick(t,n)   #t "\0"
+    DDETOKENS()
+    #undef pick
 };
 
-static unsigned long ddeNums[] = {
-    0x8000,
-    0x4000,
-    0x4000,
-    0x8000,
-    0x2000,
-    0x1000,
-    0x00ff,
-    0x0000,
-    0x1062,
-    0x8072,
-    0x80c2,
-    0x20b0,
-    0x4090
+static const unsigned long ddeNums[] = {
+    #define pick(t,n)   n,
+    DDETOKENS()
+    #undef pick
 };
 #endif
 
@@ -324,6 +316,7 @@ static token nextToken( void )
 {
     int         j;
     char        *endptr;
+    char        tmpstr[MAX_STR];
 
     currToken = _nextToken();
     if( currToken == T_UNKNOWN ) {
@@ -338,7 +331,7 @@ static token nextToken( void )
             }
         } else {
             if( tokenBuff[0] == '.' ) {
-                strcpy( tokenBuff, GetASetVal( &tokenBuff[1] ) );
+                strcpy( tokenBuff, GetASetVal( &tokenBuff[1], tmpstr ) );
                 constantVal = strtol( tokenBuff, NULL, 0 );
                 for( j = tokenBuffCnt; j-- > 0; ) {
                     if( !isdigit( tokenBuff[j] ) ) {
@@ -376,10 +369,10 @@ static token nextToken( void )
             } else if( strncmp( tokenBuff, "emptybuf", 8 ) == 0 ) {
                 j = tokenBuff[8];
                 constantVal = IsEmptySavebuf( j );
-            } else if( (j = Tokenize( colorTokens, tokenBuff, true )) != TOK_INVALID ) {
+            } else if( (j = Tokenize( ColourTokens, tokenBuff, true )) != TOK_INVALID ) {
                 constantVal = j;
 #ifdef __WIN__
-            } else if( (j = Tokenize( ddeTokens, tokenBuff, true )) != TOK_INVALID ) {
+            } else if( (j = Tokenize( DDETokens, tokenBuff, true )) != TOK_INVALID ) {
                 constantVal = ddeNums[j];
 #endif
             } else {

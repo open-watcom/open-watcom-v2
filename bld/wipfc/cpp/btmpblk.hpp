@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
+* Copyright (c) 2009-2018 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -31,7 +31,6 @@
 #ifndef BITMAPBLOCK_INCLUDED
 #define BITMAPBLOCK_INCLUDED
 
-#include "config.hpp"
 #include <cstdio>
 #include <vector>
 
@@ -39,12 +38,31 @@
 class BitmapBlock {
 public:
     BitmapBlock() { };
-    BitmapBlock( STD1::uint16_t b, STD1::uint8_t t );
-    void write( std::FILE* out ) const;
-    STD1::uint32_t compress( std::FILE* in );
+    BitmapBlock( word b, byte t );
+    void write( std::FILE* bmfpo ) const;
+    dword compress( std::FILE* bmfpi );
     unsigned int totalSize() const
-    { return sizeof( STD1::uint16_t ) + ( data.size() + 1 ) * sizeof( STD1::uint8_t ); };
+    { return static_cast< unsigned int >( sizeof( word ) + ( _data.size() + 1 ) * sizeof( byte ) ); };
 private:
+    std::size_t maxVal( unsigned int n ) { return ( 1 << n ) - 1; };
+    //check for a matching code
+    sword findMatch( std::vector< word >& code,
+        std::vector< word >& prefix,
+        std::vector< byte >& append,
+        sword hashPrefix, word character ) const;
+    word outputCode( word );
+    word flushCode( void );
+//#define CHECKCOMP
+#ifdef CHECKCOMP
+    typedef std::vector< byte >::iterator DecodeIter;
+    typedef std::vector< byte >::iterator OutputIter;
+    typedef std::vector< byte >::iterator InputIter;
+    void expand( std::vector< byte >& output );
+    word getCode( InputIter& index );
+    DecodeIter decodeString( std::vector< word >& prefix,
+        std::vector< byte >& append, DecodeIter buffer, word code );
+#endif //CHECKCOMP
+
     enum lzwBits {
         INITBITS = 9,
         MAXBITS = 12
@@ -58,35 +76,16 @@ private:
         FIRST,
         UNDEFINED = 0xFFFF
     };
-    STD1::uint32_t  bitBuffer;      //buffer for variable length codes
-    std::size_t     bitCount;       //bits in the buffer
-    std::size_t     bitsPerCode;    //code size
-    std::size_t     hashingShift;
-    std::size_t     maxCode;
-    std::size_t     checkCount;     //when to check for degradation
-    STD1::uint16_t  blockSize;      //uncompressed data size
-    STD1::uint16_t  size;           //starting with next field
-    STD1::uint8_t   type;           //0 == uncompressed, 2 == LZW compressed
-    std::vector< STD1::uint8_t > data;
-
-    std::size_t maxVal( unsigned int n ) { return ( 1 << n ) - 1; };
-    //check for a matching code
-    STD1::int16_t findMatch( std::vector< STD1::uint16_t >& code,
-        std::vector< STD1::uint16_t >& prefix,
-        std::vector< STD1::uint8_t >& append,
-        STD1::int16_t hashPrefix, STD1::uint16_t character ) const;
-    STD1::uint16_t outputCode( STD1::uint16_t code );
-    STD1::uint16_t flushCode( void );
-//#define CHECKCOMP
-#ifdef CHECKCOMP
-    typedef std::vector< STD1::uint8_t >::iterator DecodeIter;
-    typedef std::vector< STD1::uint8_t >::iterator OutputIter;
-    typedef std::vector< STD1::uint8_t >::iterator InputIter;
-    void expand( std::vector< STD1::uint8_t >& output );
-    STD1::uint16_t getCode( InputIter& index );
-    DecodeIter decodeString( std::vector< STD1::uint16_t >& prefix,
-        std::vector< STD1::uint8_t >& append, DecodeIter buffer, STD1::uint16_t code );
-#endif //CHECKCOMP
+    dword               _bitBuffer;     //buffer for variable length codes
+    std::size_t         _bitCount;      //bits in the buffer
+    std::size_t         _bitsPerCode;   //code size
+    std::size_t         _hashingShift;
+    std::size_t         _maxCode;
+    std::size_t         _checkCount;    //when to check for degradation
+    word                _blockSize;     //uncompressed data size
+    word                _size;          //starting with next field
+    byte                _type;          //0 == uncompressed, 2 == LZW compressed
+    std::vector< byte > _data;
 };
 
 #endif //BITMAPBLOCK_INCLUDED

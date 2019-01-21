@@ -179,6 +179,13 @@ enum overlay_info {
 };
 
 typedef struct {
+    union {
+        char        *ptr;
+        size_t      offs;
+    } u;
+} name_strtab;
+
+typedef struct {
     unsigned_16 modnum;         // DOS: idx of module which defines this sym
     unsigned_16 ovlref   : 12;  // DOS: overlay vector #
     unsigned_16 ovlstate :  4;  // DOS: overlay vector state
@@ -195,7 +202,7 @@ typedef struct symbol {
     union {
         void            *edges;     // for dead code elim. when sym undefd
         struct segdata  *seg;       // seg symbol is in.
-        char            *alias;     // for aliased syms.
+        name_strtab     alias;      // for aliased syms.
         void            *import;    // NOVELL & OS/2 only: imported symbol data.
         offset          cdefsize;   // altdef comdefs: size of comdef
     } p;
@@ -211,7 +218,7 @@ typedef struct symbol {
         struct symbol   **vfdata;   // for virtual function lazy externs.
         void            *export;    // OS/2 & PE only: exported sym info.
     } e;
-    char                *name;
+    name_strtab         name;
     char                *prefix;    // primarily for netware, though could be
                                     // subverted for other use. gives symbol
                                     // namespace qualification

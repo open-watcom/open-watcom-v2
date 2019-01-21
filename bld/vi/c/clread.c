@@ -120,7 +120,7 @@ vi_rc ReadAFile( linenum afterwhich, const char *name )
     rc = InsertLines( afterwhich, &cfile->fcbs, UndoStack );
     if( rc == ERR_NO_ERR ) {
         DCDisplayAllLines();
-    
+
         if( fn[0] == '$' ) {
             Message1( "Directory %s read", &fn[1] );
         } else {

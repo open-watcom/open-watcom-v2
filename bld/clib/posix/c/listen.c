@@ -25,7 +25,7 @@
 *
 *  ========================================================================
 *
-* Description:  Implementation of listen() for Linux.
+* Description:  Implementation of listen() for Linux and RDOS.
 *
 ****************************************************************************/
 
@@ -33,12 +33,29 @@
 #include "variety.h"
 #include <sys/types.h>
 #include <sys/socket.h>
+
+#if defined( __LINUX__ )
 #include "linuxsys.h"
+#elif defined( __RDOS__ )
+#include "rtdata.h"
+#include "rterrno.h"
+#include "thread.h"
+#include "rdos.h"
+#endif
 
 _WCRTLINK int listen(int s, int backlog)
 {
+#if defined( __LINUX__ )
     unsigned long args[2];
     args[0] = (unsigned long)s;
     args[1] = (unsigned long)backlog;
     return( __socketcall( SYS_LISTEN, args ) );
+#elif defined( __RDOS__ )
+    if( RdosListenSocket( s, backlog ) )
+        return( 0 );
+    _RWD_errno = ENOTSOCK;
+    return( -1 );
+#else
+    return( -1 );
+#endif
 }

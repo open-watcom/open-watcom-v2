@@ -30,11 +30,10 @@
 ****************************************************************************/
 
 
-#include "cgstd.h"
+#include "_cgstd.h"
 #include <errno.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include "targsys.h"
 #include "_cg.h"
 #include "cgaux.h"
 #include "model.h"

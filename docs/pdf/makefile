@@ -1,7 +1,5 @@
 #pmake: build docs pdf docpdf
 
-!ifndef docset
-docset=pdf
-!endif
+dotarget=pdf
 
 !include ../mif/master.mif

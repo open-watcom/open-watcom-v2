@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
+* Copyright (c) 2009-2018 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -31,6 +31,8 @@
 *
 ****************************************************************************/
 
+
+#include "wipfc.hpp"
 #include "ctrldef.hpp"
 #include "ctrltag.hpp"
 #include "document.hpp"
@@ -39,100 +41,95 @@
 
 CtrlDef::~CtrlDef()
 {
-    for( ConstChildrenIter itr = children.begin(); itr != children.end(); ++itr ) {
+    for( ConstChildrenIter itr = _children.begin(); itr != _children.end(); ++itr ) {
         delete *itr;
     }
 }
 /***************************************************************************/
 Lexer::Token CtrlDef::parse( Lexer* lexer )
 {
-    Lexer::Token tok( document->getNextToken() );
-    while( tok != Lexer::TAGEND ) {
-        if( tok == Lexer::ATTRIBUTE )
-            document->printError( ERR1_ATTRNOTDEF );
-        else if( tok == Lexer::FLAG )
-            document->printError( ERR1_ATTRNOTDEF );
-        else if( tok == Lexer::ERROR_TAG )
+    Lexer::Token tok;
+
+    while( (tok = _document->getNextToken()) != Lexer::TAGEND ) {
+        if( tok == Lexer::ATTRIBUTE ) {
+            _document->printError( ERR1_ATTRNOTDEF );
+        } else if( tok == Lexer::FLAG ) {
+            _document->printError( ERR1_ATTRNOTDEF );
+        } else if( tok == Lexer::ERROR_TAG ) {
             throw FatalError( ERR_SYNTAX );
-        else if( tok == Lexer::END )
+        } else if( tok == Lexer::END ) {
             throw FatalError( ERR_EOF );
-        else
-            document->printError( ERR1_TAGSYNTAX );
-        tok = document->getNextToken();
+        } else {
+            _document->printError( ERR1_TAGSYNTAX );
+        }
     }
-    tok = document->getNextToken();
+    tok = _document->getNextToken();
     while( tok != Lexer::END && !( tok == Lexer::TAG && lexer->tagId() == Lexer::EUSERDOC)) {
         if( tok == Lexer::WORD ||
             tok == Lexer::ENTITY ||
-            tok == Lexer::PUNCTUATION )
-            document->printError( ERR1_HEADTEXT );
-        else if( tok == Lexer::WHITESPACE )
-            tok = document->getNextToken();
-        else if( tok == Lexer::COMMAND ) {
+            tok == Lexer::PUNCTUATION ) {
+            _document->printError( ERR1_HEADTEXT );
+        } else if( tok == Lexer::WHITESPACE ) {
+            tok = _document->getNextToken();
+        } else if( tok == Lexer::COMMAND ) {
             switch( lexer->cmdId() ) {
             case Lexer::COMMENT:
                 break;
             case Lexer::IMBED:
                 {
                 std::wstring* fname( new std::wstring( lexer->text() ) );
-                fname = document->addFileName( fname );
-                document->pushInput( new IpfFile( fname ) );
+                fname = _document->pushFileInput( fname );
                 break;
                 }
             default:
-                document->printError( ERR1_TAGCONTEXT );
+                _document->printError( ERR1_TAGCONTEXT );
                 break;
             }
-            tok = document->getNextToken();
-        }
-        else if( tok == Lexer::TAG ) {
+            tok = _document->getNextToken();
+        } else if( tok == Lexer::TAG ) {
             if( lexer->tagId() == Lexer::ECTRLDEF ) {
-                tok = document->getNextToken();
-                while( tok != Lexer::TAGEND ) {
-                    if( tok == Lexer::ATTRIBUTE )
-                        document->printError( ERR1_ATTRNOTDEF );
-                    else if( tok == Lexer::FLAG )
-                        document->printError( ERR1_ATTRNOTDEF );
-                    else if( tok == Lexer::ERROR_TAG )
+                while( (tok = _document->getNextToken()) != Lexer::TAGEND ) {
+                    if( tok == Lexer::ATTRIBUTE ) {
+                        _document->printError( ERR1_ATTRNOTDEF );
+                    } else if( tok == Lexer::FLAG ) {
+                        _document->printError( ERR1_ATTRNOTDEF );
+                    } else if( tok == Lexer::ERROR_TAG ) {
                         throw FatalError( ERR_SYNTAX );
-                    else if( tok == Lexer::END )
+                    } else if( tok == Lexer::END ) {
                         throw FatalError( ERR_EOF );
-                    else
-                        document->printError( ERR1_TAGSYNTAX );
-                    tok = document->getNextToken();
+                    } else {
+                        _document->printError( ERR1_TAGSYNTAX );
+                    }
                 }
                 break;
-            }
-            else if( lexer->tagId() == Lexer::PBUTTON ) {
-                PButton* pb( new PButton( document, 0, document->dataName(), \
-                    document->dataLine(), document->dataCol() ) );
-                appendChild( pb );
-                tok = pb->parse( lexer );
-            }
-            else if( lexer->tagId() == Lexer::CTRL ) {
-                Ctrl* ctrl( new Ctrl( document, 0, document->dataName(), \
-                    document->dataLine(), document->dataCol() ) );
+            } else if( lexer->tagId() == Lexer::PBUTTON ) {
+                PButton* pbutton( new PButton( _document, 0, _document->dataName(),
+                    _document->dataLine(), _document->dataCol() ) );
+                appendChild( pbutton );
+                tok = pbutton->parse( lexer );
+            } else if( lexer->tagId() == Lexer::CTRL ) {
+                Ctrl* ctrl( new Ctrl( _document, 0, _document->dataName(),
+                    _document->dataLine(), _document->dataCol() ) );
                 appendChild( ctrl );
                 tok = ctrl->parse( lexer );
+            } else {
+                _document->printError( ERR1_TAGCONTEXT );
             }
-            else
-                document->printError( ERR1_TAGCONTEXT );
-        }
-        else if( tok == Lexer::ERROR_TAG ) {
-            document->printError( ERR1_TAGNOTDEF );
-            tok = document->getNextToken();
-        }
-        else if( tok == Lexer::ERROR_ENTITY ) {
-            document->printError( ERR1_TAGNOTDEF );
-            tok = document->getNextToken();
+        } else if( tok == Lexer::ERROR_TAG ) {
+            _document->printError( ERR1_TAGNOTDEF );
+            tok = _document->getNextToken();
+        } else if( tok == Lexer::ERROR_ENTITY ) {
+            _document->printError( ERR1_TAGNOTDEF );
+            tok = _document->getNextToken();
         }
     }
-    return document->getNextToken();
+    return _document->getNextToken();
 }
 /***************************************************************************/
 void CtrlDef::build( Controls* ctrls )
 {
-    for( ConstChildrenIter itr = children.begin(); itr != children.end(); ++itr )
+    for( ConstChildrenIter itr = _children.begin(); itr != _children.end(); ++itr ) {
         (*itr)->build( ctrls );
+    }
 }
 

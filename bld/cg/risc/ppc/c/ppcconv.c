@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2016 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -30,7 +30,7 @@
 ****************************************************************************/
 
 
-#include "cgstd.h"
+#include "_cgstd.h"
 #include "coderep.h"
 #include "zoiks.h"
 #include "makeins.h"
@@ -38,12 +38,11 @@
 #include "data.h"
 #include "namelist.h"
 #include "insutil.h"
+#include "liveinfo.h"
+#include "_split.h"
 
 
-extern  void            UpdateLive(instruction*,instruction*);
-
-
-static  opcode_entry    ctable_FSTOD[] = {
+static const opcode_entry    ctable_FSTOD[] = {
 /****************************************/
 /*        from  to    eq       verify        reg           gen             fu  */
 _OE( _Un( R,    R,    NONE ),  V_NO,         RG_FLOAT,     G_MOVE_FP,      FU_NO ),
@@ -55,7 +54,7 @@ _OE( _Un( ANY,  ANY,  NONE ),  V_NO,         RG_,          G_UNKNOWN,      FU_NO
 };
 
 #if 0
-static  opcode_entry    ctable_FDToI4[] = {
+static const opcode_entry    ctable_FDToI4[] = {
 /*****************************************/
 /*        from  to    eq       verify        reg           gen             fu  */
 _OE( _Un( R,    M,    NONE ),  V_NO,         RG_FLOAT,     G_FREGTOMI4,    FU_NO ),
@@ -68,7 +67,7 @@ _OE( _Un( ANY,  ANY,  NONE ),  V_NO,         RG_,          G_UNKNOWN,      FU_NO
 #endif
 
 #define CONVERT_ROUTINE( x, gen, reg )                                               \
-static  opcode_entry    ctable_##x[] = {                                             \
+static const opcode_entry    ctable_##x[] = {                                             \
 /**************************************/                                             \
 /*        from  to    eq       verify        reg           gen             fu  */    \
 _OE( _Un( R,    R,    NONE ),  V_NO,         RG_##reg,     gen,            FU_ALU ), \
@@ -96,26 +95,26 @@ CONVERT_ROUTINE( C4TO2, G_MOVE, DW );
 CONVERT_ROUTINE( C4TO1, G_MOVE, DB );
 CONVERT_ROUTINE( C2TO1, G_MOVE, WB );
 
-static opcode_entry ctable_C8TO4[] = {
+static const opcode_entry ctable_C8TO4[] = {
 /************************************/
 /*        from  to    eq       verify        reg           gen             fu  */
 _OE( _Un( ANY,  ANY,  NONE ),  V_NO,         RG_,          R_MOVELOW,      FU_NO ),
 };
 
-static opcode_entry ctable_S4TO8[] = {
+static const opcode_entry ctable_S4TO8[] = {
 /************************************/
 /*        from  to    eq       verify        reg           gen             fu  */
 _OE( _Un( ANY,  ANY,  NONE ),  V_NO,         RG_,          R_SEX_4TO8,     FU_NO ),
 };
 
-static opcode_entry ctable_Z4TO8[] = {
+static const opcode_entry ctable_Z4TO8[] = {
 /************************************/
 /*        from  to    eq       verify        reg           gen             fu  */
 _OE( _Un( ANY,  ANY,  NONE ),  V_NO,         RG_,          R_CLRHI_4,      FU_NO ),
 };
 
 //FIXME: this is way too inefficient (and guaranteed to show up on a benchmark)
-static  opcode_entry    CRtn[] = {
+static const opcode_entry    CRtn[] = {
 /********************************/
 /*        from  to    eq       verify        reg           gen             fu  */
 _OE( _Un( ANY,  ANY,  NONE ),  V_NO,         RG_FLOAT,     R_MAKECALL,     FU_NO ),
@@ -163,7 +162,7 @@ typedef enum {
     #undef RT_MAP
 } conv_method;
 
-static opcode_entry     *CvtAddr[] = {
+static const opcode_entry     *CvtAddr[] = {
     #define CVT_MAP(a) ctable_##a,
     CVTFUNC_MAPS
     #undef CVT_MAP
@@ -208,11 +207,11 @@ static  conv_method      AskHow( type_class_def fr, type_class_def to ) {
     return( CvtTable[fr + to * XX] );
 }
 
-extern  bool    CvtOk( type_class_def fr, type_class_def to ) {
+bool    CvtOk( type_class_def fr, type_class_def to )
 /**************************************************************
     return true if a conversion from "fr" to "to" can be done
 */
-
+{
     if( fr == XX )
         return( false );
     if( to == XX )
@@ -222,25 +221,25 @@ extern  bool    CvtOk( type_class_def fr, type_class_def to ) {
     return( false );
 }
 
-static instruction *doConversion( instruction *ins, type_class_def class )
-/************************************************************************/
+static instruction *doConversion( instruction *ins, type_class_def type_class )
+/*****************************************************************************/
 {
     name            *temp;
     instruction     *new_ins;
 
-    temp = AllocTemp( class );
-    new_ins = MakeConvert( ins->operands[0], temp, class, ins->base_type_class );
+    temp = AllocTemp( type_class );
+    new_ins = MakeConvert( ins->operands[0], temp, type_class, ins->base_type_class );
     new_ins->table = NULL;
     ins->operands[0] = temp;
-    ins->base_type_class = class;
+    ins->base_type_class = type_class;
     PrefixIns( ins, new_ins );
     UpdateLive( new_ins, ins );
     return( new_ins );
 }
 
-extern  instruction     *rDOCVT( instruction *ins ) {
-/***************************************************/
-
+instruction     *rDOCVT( instruction *ins )
+/*****************************************/
+{
     name        *src;
     name        *dst;
     instruction *new_ins;
@@ -248,8 +247,8 @@ extern  instruction     *rDOCVT( instruction *ins ) {
 
     src = ins->operands[0];
     dst = ins->result;
-    if( src->n.name_class != XX && ins->base_type_class == XX ) {
-        ins->base_type_class = src->n.name_class;
+    if( src->n.type_class != XX && ins->base_type_class == XX ) {
+        ins->base_type_class = src->n.type_class;
     }
     ins->head.state = INS_NEEDS_WORK;
     if( src->n.class == N_CONSTANT && src->c.const_type == CONS_ABSOLUTE

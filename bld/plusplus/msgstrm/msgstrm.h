@@ -40,11 +40,11 @@ enum bool {
 
 #define OP_NEW void * operator new( size_t );
 
-extern char msg_file[ 256 ];
-extern char model_file[ 256 ];
-extern char dest_file[ 256 ];
+extern char msg_file[256];
+extern char model_file[256];
+extern char dest_file[256];
 
-extern char dest_dir[ 256 ];
+extern char dest_dir[256];
 
 extern unsigned msgs_start;
 extern unsigned msgs_end;

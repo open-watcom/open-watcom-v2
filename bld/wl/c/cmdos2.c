@@ -238,7 +238,7 @@ static bool getexport( void )
             exp->impname = tostring();
         }
     } else {
-        exp->sym = RefISymbol( exp->name );
+        exp->sym = RefISymbol( exp->name.u.ptr );
     }
     exp->sym->info |= SYM_DCE_REF;      //make sure it is not removed
     if( exp->ordinal == 0 ) {
@@ -1144,7 +1144,11 @@ static void ParseVersion( void )
 static bool AddResource( void )
 /*****************************/
 {
-    DoAddResource( tostring() );
+    char    *str;
+
+    str = tostring();
+    DoAddResource( str );
+    _LnkFree( str );
     return( true );
 }
 

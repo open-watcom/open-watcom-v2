@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2016 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -30,7 +30,7 @@
 ****************************************************************************/
 
 
-#include "cgstd.h"
+#include "_cgstd.h"
 #include "coderep.h"
 #include "data.h"
 #include "makeins.h"
@@ -41,14 +41,14 @@
 #include "generate.h"
 
 
-static opcode_entry LDSES[1] = {
+static const opcode_entry LDSES[1] = {
 /*           op1   op2   res   eq      verify          reg           gen             fu  */
 _OE(                           NO_CC,  V_NO,           RG_,          G_LDSES,        FU_NO )
 };
 
 
-static  bool    AdjacentMem( name *s, name *r, type_class_def tipe )
-/******************************************************************/
+static  bool    AdjacentMem( name *s, name *r, type_class_def type_class )
+/************************************************************************/
 {
     name        *base_s;
     name        *base_r;
@@ -56,7 +56,7 @@ static  bool    AdjacentMem( name *s, name *r, type_class_def tipe )
     int         locn_r;
     int         stride;
 
-    stride = TypeClassSize[tipe];
+    stride = TypeClassSize[type_class];
     if( s->n.class != r->n.class )
         return( false );
     if( s->n.class == N_MEMORY ) {
@@ -115,7 +115,7 @@ static bool     OptMemMove( instruction *ins, instruction *next )
     unsigned_32         shift;
     unsigned_32         lo;
     unsigned_32         hi;
-    type_class_def      result_type = 0;
+    type_class_def      result_type_class = 0;
     unsigned_32         result_const;
     name                *result;
 
@@ -128,7 +128,7 @@ static bool     OptMemMove( instruction *ins, instruction *next )
             switch( TypeClassSize[ins->type_class] ) {
             case 1:
                 shift = 8;
-                result_type = U2;
+                result_type_class = U2;
                 break;
             case 2:
 #if _TARGET & _TARG_IAPX86
@@ -138,11 +138,11 @@ static bool     OptMemMove( instruction *ins, instruction *next )
                 }
 #endif
                 shift = 16;
-                result_type = U4;
+                result_type_class = U4;
                 break;
             default:
                 shift = 0;
-                result_type = 0;
+                result_type_class = 0;
                 break;
             }
             if( shift ) {
@@ -162,7 +162,7 @@ static bool     OptMemMove( instruction *ins, instruction *next )
                 hi &= ( ( 1 << shift ) - 1 );
                 result_const = lo | ( hi << shift );
                 ins->operands[0] = AllocS32Const( result_const );
-                ins->type_class = result_type;
+                ins->type_class = result_type_class;
                 ins->result = result;
                 DoNothing( next );
                 return( true );
@@ -304,8 +304,8 @@ static  void    CheckLDSES( instruction *seg, instruction *reg,
 }
 
 
-extern  void    OptSegs( void )
-/*****************************/
+void    OptSegs( void )
+/*********************/
 {
     block       *blk;
     instruction *ins;
@@ -354,13 +354,13 @@ extern  void    OptSegs( void )
                       short a, b, c; a &= 0x01; b &= 0x0f; c = (a|b) & 0xff;)
                    but produces longer code if it is not. Remerge them here.
                 */
-                if( 
+                if(
                  /* is next of the form "and byte, imm" ? */
                     ( next->head.opcode == OP_AND )
                  && ( next->type_class == I1 || next->type_class == U1 )
                  && ( next->result->n.class == N_REGISTER )
                  && ( next->operands[0] == next->result )
-                 && ( next->operands[1]->n.class == N_CONSTANT ) 
+                 && ( next->operands[1]->n.class == N_CONSTANT )
 
                  /* is ins of the form "xor byte, byte" ? */
                  && ( ins->head.opcode == OP_XOR )
@@ -370,7 +370,7 @@ extern  void    OptSegs( void )
                  && ( ins->operands[1] == ins->result ) ) {
                     hw_reg_set full_reg = FullReg( next->result->r.reg );
                     /* check if instructions operate on correct halves */
-                    if ( HW_Equal( Low16Reg( full_reg ), next->result->r.reg )
+                    if( HW_Equal( Low16Reg( full_reg ), next->result->r.reg )
                       && HW_Equal( High16Reg( full_reg ), ins->result->r.reg )
                        ) {
                         /* convert to "and fullreg, imm" */

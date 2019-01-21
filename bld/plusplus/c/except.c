@@ -48,7 +48,7 @@ static TYPE throwCnvTypeRetn(   // RETURN NEXT THROW TYPE
 {
     ctl->cur = cnv;
     *offset = cnv->offset;
-    return cnv->sig->type;
+    return( cnv->sig->type );
 }
 
 
@@ -72,7 +72,7 @@ TYPE ThrowCnvType(              // THROW CONVERSIONS: GET NEXT TYPE
     } else {
         type = throwCnvTypeRetn( ctl, offset, cnv->next );
     }
-    return type;
+    return( type );
 }
 
 
@@ -111,7 +111,7 @@ THROBJ ThrowCategory(           // GET THROW-OBJECT CATEGORY FOR A TYPE
             }
         }
     }
-    return retn;
+    return( retn );
 }
 
 
@@ -165,7 +165,7 @@ target_offset_t ThrowBaseOffset(  // GET OFFSET OF BASE
     result = ScopeBaseResult( thr_scope, base_scope );
     offset = result->exact_delta;
     ScopeFreeResult( result );
-    return offset;
+    return( offset );
 }
 
 
@@ -173,24 +173,24 @@ static bool validateBase(       // VALIDATE BASE CLASS OK
     SCOPE base_scope,           // - scope for base class
     THROW_CNV_CTL *ctl )        // - control area
 {
-    bool retb;                  // - true ==> generate conversion
+    bool ok;                    // - true ==> generate conversion
     SCOPE thr_scope;            // - scope for throw
 
-    retb = false;
+    ok = false;
     thr_scope = TypeScope( ctl->src_type );
     switch( ScopeDerived( thr_scope, base_scope ) ) {
     DbgDefault( "validateBase -- impossible derived type" );
     case DERIVED_YES :
     case DERIVED_YES_BUT_VIRTUAL :
         ctl->offset = ThrowBaseOffset( thr_scope, base_scope );
-        retb = true;
+        ok = true;
         break;
     case DERIVED_YES_BUT_AMBIGUOUS :
     case DERIVED_YES_BUT_PRIVATE :
     case DERIVED_YES_BUT_PROTECTED :
         break;
     }
-    return( retb );
+    return( ok );
 }
 
 
@@ -269,14 +269,14 @@ unsigned ThrowCnvInit(          // THROW CONVERSIONS: INITIALIZE
         makeThrowCnv( ctl, type, 0 );
     }
     switch( thr_obj ) {
-      case THROBJ_VOID_STAR :
-      case THROBJ_ANYTHING :
-      case THROBJ_SCALAR :
+    case THROBJ_VOID_STAR :
+    case THROBJ_ANYTHING :
+    case THROBJ_SCALAR :
         break;
-      case THROBJ_PTR_SCALAR :
+    case THROBJ_PTR_SCALAR :
         makeCnvVoidStar( ctl );
         break;
-      case THROBJ_REFERENCE :
+    case THROBJ_REFERENCE :
         type = TypeReference( type );
         if( NULL != StructType( type ) ) {
             throwClassCnvs( type, ctl );
@@ -291,22 +291,22 @@ unsigned ThrowCnvInit(          // THROW CONVERSIONS: INITIALIZE
             }
         }
         break;
-      case THROBJ_CLASS :
-      case THROBJ_CLASS_VIRT :
+    case THROBJ_CLASS :
+    case THROBJ_CLASS_VIRT :
         throwClassCnvs( type, ctl );
         break;
-      case THROBJ_PTR_CLASS :
+    case THROBJ_PTR_CLASS :
         throwClassPtrCnvs( type, ctl );
         makeCnvVoidStar( ctl );
         break;
-      case THROBJ_PTR_FUN :
+    case THROBJ_PTR_FUN :
         if( CgCodePtrSize() <= CgDataPtrSize() ) {
             makeCnvVoidStar( ctl );
         }
         break;
-      DbgDefault( "EXCEPT -- illegal throw object" );
+    DbgDefault( "EXCEPT -- illegal throw object" );
     }
-    return RingCount( ctl->hdr );
+    return( RingCount( ctl->hdr ) );
 }
 
 
@@ -328,14 +328,14 @@ static bool throwCnvFront(      // GET FRONT-END INFO. FOR THROW TYPE
     ThrowCnvInit( &ctl, type );
     ret = ! ctl.error_occurred;
     ThrowCnvFini( &ctl );
-    return ret;
+    return( ret );
 }
 
 
 static TYPE canonicalBaseType(  // GET CANONICAL BASE TYPE
     TYPE type )                 // - type
 {
-    return TypedefModifierRemoveOnly( type );
+    return( TypedefModifierRemoveOnly( type ) );
 }
 
 
@@ -347,12 +347,12 @@ static TYPE canonicalPtrType(   // GET CANONICAL PTR TYPE
     test = PointerTypeEquivalent( type );
     if( test == NULL ) {
         type = canonicalBaseType( type );
-    } else if( FunctionDeclarationType( test ) ) {
+    } else if( NULL != FunctionDeclarationType( test ) ) {
         type = MakePointerTo( canonicalBaseType( test ) );
     } else {
         type = MakePointerTo( canonicalBaseType( test->of ) );
     }
-    return type;
+    return( type );
 }
 
 
@@ -369,7 +369,7 @@ TYPE TypeCanonicalThr(          // GET CANONICAL THROW TYPE
             type = MakeReferenceTo( canonicalPtrType( test ) );
         }
     }
-    return type;
+    return( type );
 }
 
 
@@ -388,7 +388,7 @@ PTREE ThrowTypeSig(             // GET THROW ARGUMENT FOR TYPE SIGNATURE
     } else {
         node = NULL;
     }
-    return node;
+    return( node );
 }
 
 

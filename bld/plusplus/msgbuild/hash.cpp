@@ -77,7 +77,7 @@ void HashTable::add             // ADD TO HASH TABLE
 {
     unsigned index = (*_hashfun)( comparand ) % HashModulus;
     HashEntry* entry = new( hashCarve.alloc() ) HashEntry( element );
-    _table[ index ].append( entry );
+    _table[index].append( entry );
 }
 
 
@@ -85,7 +85,7 @@ void const* HashTable::find     // FIND IN HASH TABLE
     ( void const * comparand )  // - comparand
 {
     unsigned index = (*_hashfun)( comparand ) % HashModulus;
-    RingIter iter( _table[ index ] );
+    RingIter iter( _table[index] );
     void const * retn;
     for( ; ; ) {
         HashEntry* entry = (HashEntry*)iter.next();
@@ -97,5 +97,5 @@ void const* HashTable::find     // FIND IN HASH TABLE
             break;
         }
     }
-    return retn;
+    return( retn );
 }

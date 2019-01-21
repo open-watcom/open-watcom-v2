@@ -37,6 +37,7 @@
 
 #include "clibext.h"
 
+
 typedef union {
     unsigned_8 full;
     struct {
@@ -1774,6 +1775,14 @@ dis_handler_return X86Imm_8( dis_handle *h, void *d, dis_dec_ins *ins )
             } else {
                 ins->type = DI_X86_pushw;
             }
+        }
+        break;
+    case DI_X86_aam:
+        ins->op[0].value.s._32[I64LO32] = GetUByte( d, ins->size );
+        ins->size += 1;
+        if( ins->op[0].value.s._32[I64LO32] != 10 ) {
+            ins->op[0].ref_type = DRT_X86_BYTE;
+            ins->num_ops++;
         }
         break;
     default:
@@ -4163,7 +4172,7 @@ static bool NeedSizing( dis_dec_ins *ins, dis_format_flags flags, unsigned op_nu
     for( i = 0; i < ins->num_ops; ++i ) {
         switch( ins->op[i].type & DO_MASK ) {
         case DO_REG:
-            if( ( ins->op[i].base >= DR_X86_es ) || ( ins->op[i].base <= DR_X86_gs ) ) {
+            if( ( ins->op[i].base >= DR_X86_es ) && ( ins->op[i].base <= DR_X86_gs ) ) {
                 return( true );
             } else {
                 /* if you've got a reg, you know the size */

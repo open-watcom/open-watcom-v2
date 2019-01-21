@@ -385,7 +385,7 @@ typedef struct {
 } dw_vardim_info;
 
 dw_handle DWENTRY DWSimpleArray( dw_client cli, dw_handle elt_type, int elt_count );
-dw_handle       DWENTRY DWBeginArray( dw_client, dw_handle __elt_type, uint __stride_size,
+dw_handle       DWENTRY DWBeginArray( dw_client, dw_handle __elt_type, uint_32 __stride_size,
                             char const *__name, dw_addr_offset __scope, uint __flags );
 void            DWENTRY DWArrayDimension( dw_client, const dw_dim_info *__info);
 void            DWENTRY DWArrayVarDim( dw_client, const dw_vardim_info * );

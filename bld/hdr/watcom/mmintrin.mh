@@ -25,7 +25,7 @@ typedef union {
 
 /* General support intrinsics */
 void  _m_empty(void);
-__m64 _m_from_int(int i);
+__m64 _m_from_int(int __i);
 int   _m_to_int(__m64 *__m);
 __m64 _m_packsswb(__m64 *__m1, __m64 *__m2);
 __m64 _m_packssdw(__m64 *__m1, __m64 *__m2);
@@ -143,386 +143,397 @@ __m64 _m_pcmpgtd(__m64 *__m1, __m64 *__m2);
 #define _m_pcmpgtw(__m1, __m2)          _m_pcmpgtw(&(__m1), &(__m2))
 #define _m_pcmpgtd(__m1, __m2)          _m_pcmpgtd(&(__m1), &(__m2))
 
-#pragma aux _m_empty =  \
-                ".586"  \
-                "emms"
+#pragma aux __m_unary = \
+    __parm [__eax] \
+    __value __struct __caller [__esi] \
+    __modify __exact []
 
-#pragma aux _m_from_int = \
-                ".586"                  \
-                "movd   mm0,eax"        \
-                "movq   [esi],mm0"      \
-                parm [eax]
+#pragma aux __m_binary = \
+    __parm [__eax] [__edx] \
+    __value __struct __caller [__esi] \
+    __modify __exact []
+
+#pragma aux _m_empty = \
+        ".586" \
+        "emms" \
+    __parm [] \
+    __value \
+    __modify __exact []
 
 #pragma aux _m_to_int = \
-                "mov    eax,[eax]"      \
-                parm [eax]
+        "mov    eax,[eax]" \
+    __parm [__eax] \
+    __value [__eax] \
+    __modify __exact [__eax]
 
-#pragma aux __m_binary = parm [eax] [edx] modify exact []
+#pragma aux (__m_unary) _m_from_int = \
+        ".586" \
+        "movd   mm0,eax" \
+        "movq   [esi],mm0"
 
-#pragma aux (__m_binary) _m_packsswb =  \
-                ".586"                  \
-                "movq   mm0,[eax]"      \
-                "movq   mm1,[edx]"      \
-                "packsswb mm0,mm1"      \
-                "movq   [esi],mm0"
+#pragma aux (__m_binary) _m_packsswb = \
+        ".586" \
+        "movq   mm0,[eax]" \
+        "movq   mm1,[edx]" \
+        "packsswb mm0,mm1" \
+        "movq   [esi],mm0"
 
-#pragma aux (__m_binary) _m_packssdw =  \
-                ".586"                  \
-                "movq   mm0,[eax]"      \
-                "movq   mm1,[edx]"      \
-                "packssdw mm0,mm1"      \
-                "movq   [esi],mm0"
+#pragma aux (__m_binary) _m_packssdw = \
+        ".586" \
+        "movq   mm0,[eax]" \
+        "movq   mm1,[edx]" \
+        "packssdw mm0,mm1" \
+        "movq   [esi],mm0"
 
-#pragma aux (__m_binary) _m_packuswb =  \
-                ".586"                  \
-                "movq   mm0,[eax]"      \
-                "movq   mm1,[edx]"      \
-                "packuswb mm0,mm1"      \
-                "movq   [esi],mm0"
+#pragma aux (__m_binary) _m_packuswb = \
+        ".586" \
+        "movq   mm0,[eax]" \
+        "movq   mm1,[edx]" \
+        "packuswb mm0,mm1" \
+        "movq   [esi],mm0"
 
 #pragma aux (__m_binary) _m_punpckhbw = \
-                ".586"                  \
-                "movq   mm0,[eax]"      \
-                "movq   mm1,[edx]"      \
-                "punpckhbw mm0,mm1"     \
-                "movq   [esi],mm0"
+        ".586" \
+        "movq   mm0,[eax]" \
+        "movq   mm1,[edx]" \
+        "punpckhbw mm0,mm1" \
+        "movq   [esi],mm0"
 
 #pragma aux (__m_binary) _m_punpckhwd = \
-                ".586"                  \
-                "movq   mm0,[eax]"      \
-                "movq   mm1,[edx]"      \
-                "punpckhwd mm0,mm1"     \
-                "movq   [esi],mm0"
-
+        ".586" \
+        "movq   mm0,[eax]" \
+        "movq   mm1,[edx]" \
+        "punpckhwd mm0,mm1" \
+        "movq   [esi],mm0"
 
 #pragma aux (__m_binary) _m_punpckhdq = \
-                ".586"                  \
-                "movq   mm0,[eax]"      \
-                "movq   mm1,[edx]"      \
-                "punpckhdq mm0,mm1"     \
-                "movq   [esi],mm0"
+        ".586" \
+        "movq   mm0,[eax]" \
+        "movq   mm1,[edx]" \
+        "punpckhdq mm0,mm1" \
+        "movq   [esi],mm0"
 
 #pragma aux (__m_binary) _m_punpcklbw = \
-                ".586"                  \
-                "movq   mm0,[eax]"      \
-                "movq   mm1,[edx]"      \
-                "punpcklbw mm0,mm1"     \
-                "movq   [esi],mm0"
+        ".586" \
+        "movq   mm0,[eax]" \
+        "movq   mm1,[edx]" \
+        "punpcklbw mm0,mm1" \
+        "movq   [esi],mm0"
 
 #pragma aux (__m_binary) _m_punpcklwd = \
-                ".586"                  \
-                "movq   mm0,[eax]"      \
-                "movq   mm1,[edx]"      \
-                "punpcklwd mm0,mm1"     \
-                "movq   [esi],mm0"
+        ".586" \
+        "movq   mm0,[eax]" \
+        "movq   mm1,[edx]" \
+        "punpcklwd mm0,mm1" \
+        "movq   [esi],mm0"
 
 #pragma aux (__m_binary) _m_punpckldq = \
-                ".586"                  \
-                "movq   mm0,[eax]"      \
-                "movq   mm1,[edx]"      \
-                "punpckldq mm0,mm1"     \
-                "movq   [esi],mm0"
+        ".586" \
+        "movq   mm0,[eax]" \
+        "movq   mm1,[edx]" \
+        "punpckldq mm0,mm1" \
+        "movq   [esi],mm0"
 
-#pragma aux (__m_binary) _m_paddb =     \
-                ".586"                  \
-                "movq   mm0,[eax]"      \
-                "movq   mm1,[edx]"      \
-                "paddb  mm0,mm1"        \
-                "movq   [esi],mm0"
+#pragma aux (__m_binary) _m_paddb = \
+        ".586" \
+        "movq   mm0,[eax]" \
+        "movq   mm1,[edx]" \
+        "paddb  mm0,mm1" \
+        "movq   [esi],mm0"
 
-#pragma aux (__m_binary) _m_paddw =     \
-                ".586"                  \
-                "movq   mm0,[eax]"      \
-                "movq   mm1,[edx]"      \
-                "paddw  mm0,mm1"        \
-                "movq   [esi],mm0"
+#pragma aux (__m_binary) _m_paddw = \
+        ".586" \
+        "movq   mm0,[eax]" \
+        "movq   mm1,[edx]" \
+        "paddw  mm0,mm1" \
+        "movq   [esi],mm0"
 
-#pragma aux (__m_binary) _m_paddd =     \
-                ".586"                  \
-                "movq   mm0,[eax]"      \
-                "movq   mm1,[edx]"      \
-                "paddd  mm0,mm1"        \
-                "movq   [esi],mm0"
+#pragma aux (__m_binary) _m_paddd = \
+        ".586" \
+        "movq   mm0,[eax]" \
+        "movq   mm1,[edx]" \
+        "paddd  mm0,mm1" \
+        "movq   [esi],mm0"
 
-#pragma aux (__m_binary) _m_paddsb =    \
-                ".586"                  \
-                "movq   mm0,[eax]"      \
-                "movq   mm1,[edx]"      \
-                "paddsb mm0,mm1"        \
-                "movq   [esi],mm0"
+#pragma aux (__m_binary) _m_paddsb = \
+        ".586" \
+        "movq   mm0,[eax]" \
+        "movq   mm1,[edx]" \
+        "paddsb mm0,mm1" \
+        "movq   [esi],mm0"
 
-#pragma aux (__m_binary) _m_paddsw =    \
-                ".586"                  \
-                "movq   mm0,[eax]"      \
-                "movq   mm1,[edx]"      \
-                "paddsw mm0,mm1"        \
-                "movq   [esi],mm0"
+#pragma aux (__m_binary) _m_paddsw = \
+        ".586" \
+        "movq   mm0,[eax]" \
+        "movq   mm1,[edx]" \
+        "paddsw mm0,mm1" \
+        "movq   [esi],mm0"
 
-#pragma aux (__m_binary) _m_paddusb =   \
-                ".586"                  \
-                "movq   mm0,[eax]"      \
-                "movq   mm1,[edx]"      \
-                "paddusb mm0,mm1"       \
-                "movq   [esi],mm0"
+#pragma aux (__m_binary) _m_paddusb = \
+        ".586" \
+        "movq   mm0,[eax]" \
+        "movq   mm1,[edx]" \
+        "paddusb mm0,mm1" \
+        "movq   [esi],mm0"
 
-#pragma aux (__m_binary) _m_paddusw =   \
-                ".586"                  \
-                "movq   mm0,[eax]"      \
-                "movq   mm1,[edx]"      \
-                "paddusw mm0,mm1"       \
-                "movq   [esi],mm0"
+#pragma aux (__m_binary) _m_paddusw = \
+        ".586" \
+        "movq   mm0,[eax]" \
+        "movq   mm1,[edx]" \
+        "paddusw mm0,mm1" \
+        "movq   [esi],mm0"
 
-#pragma aux (__m_binary) _m_psubb =     \
-                ".586"                  \
-                "movq   mm0,[eax]"      \
-                "movq   mm1,[edx]"      \
-                "psubb  mm0,mm1"        \
-                "movq   [esi],mm0"
+#pragma aux (__m_binary) _m_psubb = \
+        ".586" \
+        "movq   mm0,[eax]" \
+        "movq   mm1,[edx]" \
+        "psubb  mm0,mm1" \
+        "movq   [esi],mm0"
 
-#pragma aux (__m_binary) _m_psubw =     \
-                ".586"                  \
-                "movq   mm0,[eax]"      \
-                "movq   mm1,[edx]"      \
-                "psubw  mm0,mm1"        \
-                "movq   [esi],mm0"
+#pragma aux (__m_binary) _m_psubw = \
+        ".586" \
+        "movq   mm0,[eax]" \
+        "movq   mm1,[edx]" \
+        "psubw  mm0,mm1" \
+        "movq   [esi],mm0"
 
-#pragma aux (__m_binary) _m_psubd =     \
-                ".586"                  \
-                "movq   mm0,[eax]"      \
-                "movq   mm1,[edx]"      \
-                "psubd  mm0,mm1"        \
-                "movq   [esi],mm0"
+#pragma aux (__m_binary) _m_psubd = \
+        ".586" \
+        "movq   mm0,[eax]" \
+        "movq   mm1,[edx]" \
+        "psubd  mm0,mm1" \
+        "movq   [esi],mm0"
 
-#pragma aux (__m_binary) _m_psubsb =    \
-                ".586"                  \
-                "movq   mm0,[eax]"      \
-                "movq   mm1,[edx]"      \
-                "psubsb mm0,mm1"        \
-                "movq   [esi],mm0"
+#pragma aux (__m_binary) _m_psubsb = \
+        ".586" \
+        "movq   mm0,[eax]" \
+        "movq   mm1,[edx]" \
+        "psubsb mm0,mm1" \
+        "movq   [esi],mm0"
 
-#pragma aux (__m_binary) _m_psubsw =    \
-                ".586"                  \
-                "movq   mm0,[eax]"      \
-                "movq   mm1,[edx]"      \
-                "psubsw mm0,mm1"        \
-                "movq   [esi],mm0"
+#pragma aux (__m_binary) _m_psubsw = \
+        ".586" \
+        "movq   mm0,[eax]" \
+        "movq   mm1,[edx]" \
+        "psubsw mm0,mm1" \
+        "movq   [esi],mm0"
 
-#pragma aux (__m_binary) _m_psubusb =   \
-                ".586"                  \
-                "movq   mm0,[eax]"      \
-                "movq   mm1,[edx]"      \
-                "psubusb mm0,mm1"       \
-                "movq   [esi],mm0"
+#pragma aux (__m_binary) _m_psubusb = \
+        ".586" \
+        "movq   mm0,[eax]" \
+        "movq   mm1,[edx]" \
+        "psubusb mm0,mm1" \
+        "movq   [esi],mm0"
 
-#pragma aux (__m_binary) _m_psubusw =   \
-                ".586"                  \
-                "movq   mm0,[eax]"      \
-                "movq   mm1,[edx]"      \
-                "psubusw mm0,mm1"       \
-                "movq   [esi],mm0"
+#pragma aux (__m_binary) _m_psubusw = \
+        ".586" \
+        "movq   mm0,[eax]" \
+        "movq   mm1,[edx]" \
+        "psubusw mm0,mm1" \
+        "movq   [esi],mm0"
 
-#pragma aux (__m_binary) _m_pmaddwd =   \
-                ".586"                  \
-                "movq   mm0,[eax]"      \
-                "movq   mm1,[edx]"      \
-                "pmaddwd mm0,mm1"       \
-                "movq   [esi],mm0"
+#pragma aux (__m_binary) _m_pmaddwd = \
+        ".586" \
+        "movq   mm0,[eax]" \
+        "movq   mm1,[edx]" \
+        "pmaddwd mm0,mm1" \
+        "movq   [esi],mm0"
 
-#pragma aux (__m_binary) _m_pmulhw =    \
-                ".586"                  \
-                "movq   mm0,[eax]"      \
-                "movq   mm1,[edx]"      \
-                "pmulhw mm0,mm1"        \
-                "movq   [esi],mm0"
+#pragma aux (__m_binary) _m_pmulhw = \
+        ".586" \
+        "movq   mm0,[eax]" \
+        "movq   mm1,[edx]" \
+        "pmulhw mm0,mm1" \
+        "movq   [esi],mm0"
 
-#pragma aux (__m_binary) _m_pmullw =    \
-                ".586"                  \
-                "movq   mm0,[eax]"      \
-                "movq   mm1,[edx]"      \
-                "pmullw mm0,mm1"        \
-                "movq   [esi],mm0"
+#pragma aux (__m_binary) _m_pmullw = \
+        ".586" \
+        "movq   mm0,[eax]" \
+        "movq   mm1,[edx]" \
+        "pmullw mm0,mm1" \
+        "movq   [esi],mm0"
 
-#pragma aux (__m_binary) _m_psllw =     \
-                ".586"                  \
-                "movq   mm0,[eax]"      \
-                "movq   mm1,[edx]"      \
-                "psllw  mm0,mm1"        \
-                "movq   [esi],mm0"
+#pragma aux (__m_binary) _m_psllw = \
+        ".586" \
+        "movq   mm0,[eax]" \
+        "movq   mm1,[edx]" \
+        "psllw  mm0,mm1" \
+        "movq   [esi],mm0"
 
-#pragma aux (__m_binary) _m_psllwi =    \
-                ".586"                  \
-                "movq   mm0,[eax]"      \
-                "movd   mm1,edx"        \
-                "psllw  mm0,mm1"        \
-                "movq   [esi],mm0"
+#pragma aux (__m_binary) _m_psllwi = \
+        ".586" \
+        "movq   mm0,[eax]" \
+        "movd   mm1,edx" \
+        "psllw  mm0,mm1" \
+        "movq   [esi],mm0"
 
-#pragma aux (__m_binary) _m_pslld =     \
-                ".586"                  \
-                "movq   mm0,[eax]"      \
-                "movq   mm1,[edx]"      \
-                "pslld  mm0,mm1"        \
-                "movq   [esi],mm0"
+#pragma aux (__m_binary) _m_pslld = \
+        ".586" \
+        "movq   mm0,[eax]" \
+        "movq   mm1,[edx]" \
+        "pslld  mm0,mm1" \
+        "movq   [esi],mm0"
 
-#pragma aux (__m_binary) _m_pslldi =    \
-                ".586"                  \
-                "movq   mm0,[eax]"      \
-                "movd   mm1,edx"        \
-                "pslld  mm0,mm1"        \
-                "movq   [esi],mm0"
+#pragma aux (__m_binary) _m_pslldi = \
+        ".586" \
+        "movq   mm0,[eax]" \
+        "movd   mm1,edx" \
+        "pslld  mm0,mm1" \
+        "movq   [esi],mm0"
 
-#pragma aux (__m_binary) _m_psllq =     \
-                ".586"                  \
-                "movq   mm0,[eax]"      \
-                "movq   mm1,[edx]"      \
-                "psllq  mm0,mm1"        \
-                "movq   [esi],mm0"
+#pragma aux (__m_binary) _m_psllq = \
+        ".586" \
+        "movq   mm0,[eax]" \
+        "movq   mm1,[edx]" \
+        "psllq  mm0,mm1" \
+        "movq   [esi],mm0"
 
-#pragma aux (__m_binary) _m_psllqi =    \
-                ".586"                  \
-                "movq   mm0,[eax]"      \
-                "movd   mm1,edx"        \
-                "psllq  mm0,mm1"        \
-                "movq   [esi],mm0"
+#pragma aux (__m_binary) _m_psllqi = \
+        ".586" \
+        "movq   mm0,[eax]" \
+        "movd   mm1,edx" \
+        "psllq  mm0,mm1" \
+        "movq   [esi],mm0"
 
-#pragma aux (__m_binary) _m_psraw =     \
-                ".586"                  \
-                "movq   mm0,[eax]"      \
-                "movq   mm1,[edx]"      \
-                "psraw  mm0,mm1"        \
-                "movq   [esi],mm0"
+#pragma aux (__m_binary) _m_psraw = \
+        ".586" \
+        "movq   mm0,[eax]" \
+        "movq   mm1,[edx]" \
+        "psraw  mm0,mm1" \
+        "movq   [esi],mm0"
 
-#pragma aux (__m_binary) _m_psrawi =    \
-                ".586"                  \
-                "movq   mm0,[eax]"      \
-                "movd   mm1,edx"        \
-                "psraw  mm0,mm1"        \
-                "movq   [esi],mm0"
+#pragma aux (__m_binary) _m_psrawi = \
+        ".586" \
+        "movq   mm0,[eax]" \
+        "movd   mm1,edx" \
+        "psraw  mm0,mm1" \
+        "movq   [esi],mm0"
 
-#pragma aux (__m_binary) _m_psrad =     \
-                ".586"                  \
-                "movq   mm0,[eax]"      \
-                "movq   mm1,[edx]"      \
-                "psrad  mm0,mm1"        \
-                "movq   [esi],mm0"
+#pragma aux (__m_binary) _m_psrad = \
+        ".586" \
+        "movq   mm0,[eax]" \
+        "movq   mm1,[edx]" \
+        "psrad  mm0,mm1" \
+        "movq   [esi],mm0"
 
-#pragma aux (__m_binary) _m_psradi =    \
-                ".586"                  \
-                "movq   mm0,[eax]"      \
-                "movd   mm1,edx"        \
-                "psrad  mm0,mm1"        \
-                "movq   [esi],mm0"
+#pragma aux (__m_binary) _m_psradi = \
+        ".586" \
+        "movq   mm0,[eax]" \
+        "movd   mm1,edx" \
+        "psrad  mm0,mm1" \
+        "movq   [esi],mm0"
 
-#pragma aux (__m_binary) _m_psrlw =     \
-                ".586"                  \
-                "movq   mm0,[eax]"      \
-                "movq   mm1,[edx]"      \
-                "psrlw  mm0,mm1"        \
-                "movq   [esi],mm0"
+#pragma aux (__m_binary) _m_psrlw = \
+        ".586" \
+        "movq   mm0,[eax]" \
+        "movq   mm1,[edx]" \
+        "psrlw  mm0,mm1" \
+        "movq   [esi],mm0"
 
-#pragma aux (__m_binary) _m_psrlwi =    \
-                ".586"                  \
-                "movq   mm0,[eax]"      \
-                "movd   mm1,edx"        \
-                "psrlw  mm0,mm1"        \
-                "movq   [esi],mm0"
+#pragma aux (__m_binary) _m_psrlwi = \
+        ".586" \
+        "movq   mm0,[eax]" \
+        "movd   mm1,edx" \
+        "psrlw  mm0,mm1" \
+        "movq   [esi],mm0"
 
-#pragma aux (__m_binary) _m_psrld =     \
-                ".586"                  \
-                "movq   mm0,[eax]"      \
-                "movq   mm1,[edx]"      \
-                "psrld  mm0,mm1"        \
-                "movq   [esi],mm0"
+#pragma aux (__m_binary) _m_psrld = \
+        ".586" \
+        "movq   mm0,[eax]" \
+        "movq   mm1,[edx]" \
+        "psrld  mm0,mm1" \
+        "movq   [esi],mm0"
 
-#pragma aux (__m_binary) _m_psrldi =    \
-                ".586"                  \
-                "movq   mm0,[eax]"      \
-                "movd   mm1,edx"        \
-                "psrld  mm0,mm1"        \
-                "movq   [esi],mm0"
+#pragma aux (__m_binary) _m_psrldi = \
+        ".586" \
+        "movq   mm0,[eax]" \
+        "movd   mm1,edx" \
+        "psrld  mm0,mm1" \
+        "movq   [esi],mm0"
 
-#pragma aux (__m_binary) _m_psrlq =     \
-                ".586"                  \
-                "movq   mm0,[eax]"      \
-                "movq   mm1,[edx]"      \
-                "psrlq  mm0,mm1"        \
-                "movq   [esi],mm0"
+#pragma aux (__m_binary) _m_psrlq = \
+        ".586" \
+        "movq   mm0,[eax]" \
+        "movq   mm1,[edx]" \
+        "psrlq  mm0,mm1" \
+        "movq   [esi],mm0"
 
-#pragma aux (__m_binary) _m_psrlqi =    \
-                ".586"                  \
-                "movq   mm0,[eax]"      \
-                "movd   mm1,edx"        \
-                "psrlq  mm0,mm1"        \
-                "movq   [esi],mm0"
+#pragma aux (__m_binary) _m_psrlqi = \
+        ".586" \
+        "movq   mm0,[eax]" \
+        "movd   mm1,edx" \
+        "psrlq  mm0,mm1" \
+        "movq   [esi],mm0"
 
-#pragma aux (__m_binary) _m_pand =      \
-                ".586"                  \
-                "movq   mm0,[eax]"      \
-                "movq   mm1,[edx]"      \
-                "pand   mm0,mm1"        \
-                "movq   [esi],mm0"
+#pragma aux (__m_binary) _m_pand = \
+        ".586" \
+        "movq   mm0,[eax]" \
+        "movq   mm1,[edx]" \
+        "pand   mm0,mm1" \
+        "movq   [esi],mm0"
 
-#pragma aux (__m_binary) _m_pandn =     \
-                ".586"                  \
-                "movq   mm0,[eax]"      \
-                "movq   mm1,[edx]"      \
-                "pandn  mm0,mm1"        \
-                "movq   [esi],mm0"
+#pragma aux (__m_binary) _m_pandn = \
+        ".586" \
+        "movq   mm0,[eax]" \
+        "movq   mm1,[edx]" \
+        "pandn  mm0,mm1" \
+        "movq   [esi],mm0"
 
-#pragma aux (__m_binary) _m_por =       \
-                ".586"                  \
-                "movq   mm0,[eax]"      \
-                "movq   mm1,[edx]"      \
-                "por    mm0,mm1"        \
-                "movq   [esi],mm0"
+#pragma aux (__m_binary) _m_por = \
+        ".586" \
+        "movq   mm0,[eax]" \
+        "movq   mm1,[edx]" \
+        "por    mm0,mm1" \
+        "movq   [esi],mm0"
 
-#pragma aux (__m_binary) _m_pxor =      \
-                ".586"                  \
-                "movq   mm0,[eax]"      \
-                "movq   mm1,[edx]"      \
-                "pxor   mm0,mm1"        \
-                "movq   [esi],mm0"
+#pragma aux (__m_binary) _m_pxor = \
+        ".586" \
+        "movq   mm0,[eax]" \
+        "movq   mm1,[edx]" \
+        "pxor   mm0,mm1" \
+        "movq   [esi],mm0"
 
-#pragma aux (__m_binary) _m_pcmpeqb =   \
-                ".586"                  \
-                "movq   mm0,[eax]"      \
-                "movq   mm1,[edx]"      \
-                "pcmpeqb mm0,mm1"       \
-                "movq   [esi],mm0"
+#pragma aux (__m_binary) _m_pcmpeqb = \
+        ".586" \
+        "movq   mm0,[eax]" \
+        "movq   mm1,[edx]" \
+        "pcmpeqb mm0,mm1" \
+        "movq   [esi],mm0"
 
-#pragma aux (__m_binary) _m_pcmpeqw =   \
-                ".586"                  \
-                "movq   mm0,[eax]"      \
-                "movq   mm1,[edx]"      \
-                "pcmpeqw mm0,mm1"       \
-                "movq   [esi],mm0"
+#pragma aux (__m_binary) _m_pcmpeqw = \
+        ".586" \
+        "movq   mm0,[eax]" \
+        "movq   mm1,[edx]" \
+        "pcmpeqw mm0,mm1" \
+        "movq   [esi],mm0"
 
-#pragma aux (__m_binary) _m_pcmpeqd =   \
-                ".586"                  \
-                "movq   mm0,[eax]"      \
-                "movq   mm1,[edx]"      \
-                "pcmpeqd mm0,mm1"       \
-                "movq   [esi],mm0"
+#pragma aux (__m_binary) _m_pcmpeqd = \
+        ".586" \
+        "movq   mm0,[eax]" \
+        "movq   mm1,[edx]" \
+        "pcmpeqd mm0,mm1" \
+        "movq   [esi],mm0"
 
-#pragma aux (__m_binary) _m_pcmpgtb =   \
-                ".586"                  \
-                "movq   mm0,[eax]"      \
-                "movq   mm1,[edx]"      \
-                "pcmpgtb mm0,mm1"       \
-                "movq   [esi],mm0"
+#pragma aux (__m_binary) _m_pcmpgtb = \
+        ".586" \
+        "movq   mm0,[eax]" \
+        "movq   mm1,[edx]" \
+        "pcmpgtb mm0,mm1" \
+        "movq   [esi],mm0"
 
-#pragma aux (__m_binary) _m_pcmpgtw =   \
-                ".586"                  \
-                "movq   mm0,[eax]"      \
-                "movq   mm1,[edx]"      \
-                "pcmpgtw mm0,mm1"       \
-                "movq   [esi],mm0"
+#pragma aux (__m_binary) _m_pcmpgtw = \
+        ".586" \
+        "movq   mm0,[eax]" \
+        "movq   mm1,[edx]" \
+        "pcmpgtw mm0,mm1" \
+        "movq   [esi],mm0"
 
-#pragma aux (__m_binary) _m_pcmpgtd =   \
-                ".586"                  \
-                "movq   mm0,[eax]"      \
-                "movq   mm1,[edx]"      \
-                "pcmpgtd mm0,mm1"       \
-                "movq   [esi],mm0"
+#pragma aux (__m_binary) _m_pcmpgtd = \
+        ".586" \
+        "movq   mm0,[eax]" \
+        "movq   mm1,[edx]" \
+        "pcmpgtd mm0,mm1" \
+        "movq   [esi],mm0"
 
 :include cplusepi.sp
 

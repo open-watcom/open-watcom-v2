@@ -100,35 +100,35 @@ void *ExtrefImportType(         // GET NEXT IMPORT TYPE FOR A SYMBOL
     } else if( !CompFlags.virtual_stripping ) {
         retn = (void*)IMPORT_IS_LAZY;
         switch( rinfo->type ) {
-          case EXTRF_FN_LAZY :
+        case EXTRF_FN_LAZY :
             retn = (void*)IMPORT_IS_LAZY;
             break;
-          case EXTRF_FN_WEAK :
+        case EXTRF_FN_WEAK :
             retn = (void*)IMPORT_IS_WEAK;
             break;
-          case EXTRF_VFN_CONDITIONAL :
-          case EXTRF_PURE_VFN_CONDITIONAL :
+        case EXTRF_VFN_CONDITIONAL :
+        case EXTRF_PURE_VFN_CONDITIONAL :
             break;
-          DbgDefault( "IMPORT_TYPE: funny type" );
+        DbgDefault( "IMPORT_TYPE: funny type" );
         }
     } else {
         switch( rinfo->type ) {
-          case EXTRF_FN_LAZY :
+        case EXTRF_FN_LAZY :
             retn = (void*)IMPORT_IS_LAZY;
             break;
-          case EXTRF_FN_WEAK :
+        case EXTRF_FN_WEAK :
             retn = (void*)IMPORT_IS_WEAK;
             break;
-          case EXTRF_VFN_CONDITIONAL :
+        case EXTRF_VFN_CONDITIONAL :
             retn = (void*)IMPORT_IS_CONDITIONAL;
             break;
-          case EXTRF_PURE_VFN_CONDITIONAL :
+        case EXTRF_PURE_VFN_CONDITIONAL :
             retn = (void*)IMPORT_IS_CONDITIONAL_PURE;
             break;
-          DbgDefault( "IMPORT_TYPE: funny type" );
+        DbgDefault( "IMPORT_TYPE: funny type" );
         }
     }
-    return retn;
+    return( retn );
 }
 
 
@@ -178,7 +178,7 @@ static SYMBOL extrefPopVfun(    // POP A VIRTUAL FUNCTION
         retn = top->vfun;
         CarveFree( carveOVFN, top );
     }
-    return retn;
+    return( retn );
 }
 
 
@@ -191,7 +191,7 @@ void *ExtrefVirtualSymbol(      // GET NEXT DEPENDENCY SYMBOL
     if( retn == rinfo->sym ) {
         retn = extrefPopVfun( rinfo );
     }
-    return retn;
+    return( retn );
 }
 
 static bool pureSymCanBeUndefd( SYMBOL sym )
@@ -243,7 +243,7 @@ static void* resolveInitedSym(  // RESOLVE AN INITIALIZED SYMBOL
             }
         }
     }
-    return retn;
+    return( retn );
 }
 
 
@@ -322,7 +322,7 @@ void *ExtrefResolve(            // DETERMINE RESOLUTION FOR A SYMBOL
             retn = NULL;
         }
     }
-    return retn;
+    return( retn );
 }
 
 
@@ -366,7 +366,7 @@ void *ExtrefVfunInfo(           // GET INFORMATION FOR VIRTUAL FUN. REFERENCE
         }
     }
     CgBackFreeIndCall( sym );
-    return orig_funs;
+    return( orig_funs );
 }
 
 
@@ -386,7 +386,7 @@ void *ExtrefVfunSym(            // GET ORIGNATING FUN. FOR VIRTUAL CALL
         // ->vfun may be NULL
         retn = curr->vfun;
     }
-    return retn;
+    return( retn );
 }
 
 
@@ -409,7 +409,7 @@ void *ExtrefNextVfunSym(         // MOVE TO NEXT ORIGNATING FUN. FOR VIRTUAL CAL
     } else {
         retn = funs;
     }
-    return retn;
+    return( retn );
 }
 
 

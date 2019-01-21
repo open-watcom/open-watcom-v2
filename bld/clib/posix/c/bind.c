@@ -25,20 +25,41 @@
 *
 *  ========================================================================
 *
-* Description:  Implementation of bind() for Linux.
+* Description:  Implementation of bind() for Linux and RDOS.
 *
 ****************************************************************************/
 
 #include "variety.h"
 #include <sys/types.h>
 #include <sys/socket.h>
+
+#if defined( __LINUX__ )
 #include "linuxsys.h"
+#elif defined( __RDOS__ )
+#include <netinet/in.h>
+#include "rtdata.h"
+#include "rterrno.h"
+#include "thread.h"
+#include "rdos.h"
+#endif
 
 _WCRTLINK int bind( int sockfd, const struct sockaddr *my_addr, socklen_t addrlen )
 {
+#if defined( __LINUX__ )
     unsigned long args[3];
     args[0] = (unsigned long)sockfd;
     args[1] = (unsigned long)my_addr;
     args[2] = (unsigned long)addrlen;
     return( __socketcall( SYS_BIND, args ) );
+#elif defined( __RDOS__ )
+    struct sockaddr_in *in = (struct sockaddr_in *)my_addr;
+    if( RdosIsIpv4Socket( sockfd ) )
+        if( RdosBindIpv4Socket( sockfd, htons( in->sin_port ) ) )
+            return( 0 );
+        
+    _RWD_errno = ENOTSOCK;
+    return( -1 );
+#else
+    return( - 1 );
+#endif
 }

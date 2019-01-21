@@ -48,21 +48,21 @@
 _WCRTLINK void_nptr __brk( unsigned brk_value )
 {
     unsigned    old_brk_value;
-    unsigned    seg_size;
+    unsigned    num_of_paras;
     __segment   segment;
 
     if( brk_value < _STACKTOP ) {
         _RWD_errno = ENOMEM;
         return( (void_nptr)-1 );
     }
-    seg_size = __ROUND_UP_SIZE_TO_PARA( brk_value );
-    if( seg_size == 0 ) {
-        seg_size = PARAS_IN_64K;
+    num_of_paras = __ROUND_UP_SIZE_TO_PARA( brk_value );
+    if( num_of_paras == 0 ) {
+        num_of_paras = PARAS_IN_64K;
     }
     /* try setting the block of memory */
     _AccessNHeap();
     segment = _DGroup();
-    if( DosReallocSeg( seg_size << 4, segment ) != 0 ) {
+    if( DosReallocSeg( num_of_paras << 4, segment ) != 0 ) {
         _RWD_errno = ENOMEM;
         _ReleaseNHeap();
         return( (void_nptr)-1 );

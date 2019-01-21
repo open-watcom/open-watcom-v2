@@ -76,6 +76,10 @@
     #define FNAMECMPSTR      stricmp     /* for case insensitive file systems */
 #endif
 
+#define BITARR_OFFS(x)      ((x) / 8)
+#define BITARR_MASK(x)      (1 << ((x) & 7))
+#define NOT_BITARR_MASK(x)  (255 - (x))
+
 typedef struct idname {
     struct idname       *next;
     uint_16             xhash;
@@ -88,7 +92,7 @@ typedef const char          *NAME;      // name pointer
 #define NameStr(x)          (x)
 #else
 typedef const struct idname *NAME;      // name pointer
-#define NameStr(x)          (x)->name
+#define NameStr(x)          (((x) == NULL) ? NULL : (x)->name)
 #endif
 
 #define VAL64(x)            (x.u._64[0])

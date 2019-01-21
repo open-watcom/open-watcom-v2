@@ -162,8 +162,8 @@ Directory::~Directory()
 /*********************/
 {
     if (_cvDirEntry) {
-    delete [] _cvDirEntry;
-        _cvDirEntry=0;
+        delete[] _cvDirEntry;
+        _cvDirEntry=NULL;
     }
 }
 
@@ -322,12 +322,12 @@ char* Retriever::Read( const dir_info& di )
     // the subsequent page onto input buffer.
     if ( di.length > DEF_BUF_SIZE ) {
         if (_heapBuffer) {
-            delete [] _heapBuffer;
+            delete[] _heapBuffer;
             _heapBuffer=NULL;
         }
         _heapBuffer = new char [di.length];
         if ( SeekRead(_heapBuffer, _lfaBase+di.offset, di.length) != di.length ) {
-            delete [] _heapBuffer;
+            delete[] _heapBuffer;
             _heapBuffer=NULL;
             return NULL;
         }
@@ -347,7 +347,7 @@ bool Retriever::ReadSubsection( char*&       buffer,
 /******************************************************/
 {
     if (_heapBuffer) {
-    delete [] _heapBuffer;
+        delete[] _heapBuffer;
         _heapBuffer=NULL;
     }
     dir_info di;
@@ -371,7 +371,7 @@ bool Retriever::ReadSubsection( char*&       buffer,
         _heapBuffer = buffer = new char [di.length];
         if ( SeekRead( buffer, _lfaBase+di.offset, di.length ) != di.length ) {
             if (_heapBuffer) {
-            delete [] _heapBuffer;
+                delete[] _heapBuffer;
                 _heapBuffer=NULL;
             }
             return false;

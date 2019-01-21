@@ -46,7 +46,7 @@
 
 
 help_file HelpFiles[MAX_HELP_FILES + 1] = {
-    {NULL, 0 }
+    { NULL, 0 }
 };
 
 static HelpSrchPathItem         *srch_List;
@@ -85,7 +85,9 @@ static void freeHelpFiles( void )
 {
     int         count;
 
-    for( count = 0; HelpFiles[count].name != NULL && count < MAX_HELP_FILES; ++count ) {
+    for( count = 0; count < MAX_HELP_FILES; ++count ) {
+        if( HelpFiles[count].name == NULL )
+            break;
         HelpMemFree( HelpFiles[count].name );
         HelpFiles[count].name = NULL;
     }
@@ -170,13 +172,17 @@ static int do_init(                 /* INITIALIZATION FOR THE HELP PROCESS     *
     char        filename[_MAX_PATH];
 
     freeHelpFiles();
-    for( count = 0; *helpfilenames != NULL && count < MAX_HELP_FILES; ++helpfilenames ) {
+    count = 0;
+    for( ; *helpfilenames != NULL; ++helpfilenames ) {
         SetHelpFileDefExt( *helpfilenames, filename );
         if( search_for_file( fullpath, filename, srchlist ) ) {
             HelpFiles[count].name = HelpMemAlloc( strlen( fullpath ) + 1 );
             strcpy( HelpFiles[count].name, fullpath );
             HelpFiles[count].f = 0;
             ++count;
+            if( count >= MAX_HELP_FILES ) {
+                break;
+            }
         }
     }
     return( count );

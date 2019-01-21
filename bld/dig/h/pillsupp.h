@@ -50,11 +50,11 @@ extern link_atomic_t    LSuppAtomicSwap( link_atomic_t *la, link_atomic_t value 
 #if defined( _M_I86 )
     #define LSuppAtomicSet( la, v )     \
         (*(volatile link_atomic_t *)(la) = (v))
-    #pragma aux LSuppAtomicSwap = "xchg es:[bx],al" parm [es bx] [al] value [al]
+    #pragma aux LSuppAtomicSwap = "xchg es:[bx],al" __parm [__es __bx] [__al] __value [__al]
 #elif defined( _M_IX86 )
     #define LSuppAtomicSet( la, v )     \
         (*(volatile link_atomic_t *)(la) = (v))
-    #pragma aux LSuppAtomicSwap = "xchg [edx],al" parm [edx] [al] value [al]
+    #pragma aux LSuppAtomicSwap = "xchg [edx],al" __parm [__edx] [__al] __value [__al]
 #else
     #error Atomic routines not configured for processor
 #endif

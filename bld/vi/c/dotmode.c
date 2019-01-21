@@ -48,7 +48,7 @@ void SaveDotCmd( void )
 vi_rc DoDotMode( void )
 {
     vi_rc   rc = ERR_NO_ERR;
-    int     cnt;
+    long    repcnt;
 
     /*
      * check if memorizing; '.' causes memorizing to end
@@ -78,9 +78,9 @@ vi_rc DoDotMode( void )
     /*
      * yes, run until done
      */
-    cnt = GetRepeatCount();
+    repcnt = GetRepeatCount();
     StartUndoGroup( UndoStack );
-    for( ; cnt-- > 0; ) {
+    while( repcnt-- > 0 ) {
         EditFlags.DotMode = true;
         DotCount = 0;
         LastError = ERR_NO_ERR;
@@ -108,7 +108,7 @@ vi_rc DoDotMode( void )
 vi_rc DoAltDotMode( void )
 {
     vi_rc   rc = ERR_NO_ERR;
-    int     cnt;
+    long    repcnt;
 
     if( EditFlags.AltMemorizeMode ) {
         EditFlags.AltMemorizeMode = false;
@@ -134,9 +134,9 @@ vi_rc DoAltDotMode( void )
      * yes, run until done
      */
     DotDigits = 0;
-    cnt = GetRepeatCount();
+    repcnt = GetRepeatCount();
     StartUndoGroup( UndoStack );
-    for( ; cnt-- > 0; ) {
+    while( repcnt-- > 0 ) {
         EditFlags.AltDotMode = true;
         AltDotCount = 0;
         LastError = ERR_NO_ERR;

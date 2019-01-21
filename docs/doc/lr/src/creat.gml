@@ -13,13 +13,13 @@ int _wcreat( const wchar_t *path, mode_t mode );
 .do end
 .el .do begin
 #include <&iohdr>
-int creat( const char *path, int mode );
+int creat( const char *path, mode_t mode );
 .if &'length(&_func.) ne 0 .do begin
-int _creat( const char *path, int mode );
+int _creat( const char *path, mode_t mode );
 .ixfunc2 '&OsIo' &_func
 .do end
 .if &'length(&wfunc.) ne 0 .do begin
-int _wcreat( const wchar_t *path, int mode );
+int _wcreat( const wchar_t *path, mode_t mode );
 .ixfunc2 '&OsIo' &wfunc
 .ixfunc2 '&Wide' &wfunc
 .do end

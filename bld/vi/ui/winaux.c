@@ -59,7 +59,7 @@ int WindowAuxInfo( window_id wid, int type )
     case WIND_INFO_WIDTH: rc = w->width; break;
     case WIND_INFO_TEXT_COLOR: rc = w->text_color; break;
     case WIND_INFO_BACKGROUND_COLOR: rc = w->background_color; break;
-    case WIND_INFO_HAS_BORDER: rc = (int) w->has_border; break;
+    case WIND_INFO_HAS_BORDER: rc = w->has_border; break;
     case WIND_INFO_BORDER_COLOR1: rc = w->border_color1; break;
     case WIND_INFO_BORDER_COLOR2: rc = w->border_color2; break;
     case WIND_INFO_HAS_SCROLL_GADGETS: rc = w->has_scroll_gadgets; break;
@@ -82,7 +82,7 @@ void WindowAuxUpdate( window_id wid, int type, int data )
     w = WINDOW_FROM_ID( wid );
 
     switch( type ) {
-    case WIND_INFO_MIN_SLOT: w->min_slot = (char) data; break;
+    case WIND_INFO_MIN_SLOT: w->min_slot = (char)data; break;
     case WIND_INFO_TEXT_COLOR: w->text_color = data; break;
     case WIND_INFO_BACKGROUND_COLOR: w->background_color = data; break;
     case WIND_INFO_BORDER_COLOR1: w->border_color1 = data; break;

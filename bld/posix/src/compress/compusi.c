@@ -178,7 +178,7 @@ void copystat(ifname, ofname)
 char *ifname, *ofname;
 {
     struct stat statbuf;
-    int mode;
+    mode_t mode;
 #ifdef __WATCOMC__
     struct utimbuf timep;
 #else

@@ -34,7 +34,7 @@
 /* - collapse adjacent integral ADD,SUB operations */
 /* - collapse adjacent integral MUL operations */
 
-#include "cgstd.h"
+#include "_cgstd.h"
 #include "coderep.h"
 #include "indvars.h"
 #include "score.h"
@@ -46,9 +46,8 @@
 #include "redefby.h"
 #include "insdead.h"
 #include "optimize.h"
+#include "inssched.h"
 
-
-extern  bool                    InsOrderDependant(instruction*,instruction*);
 
 #define OP2VAL( ins ) ( (ins)->operands[1]->c.lo.int_value )
 
@@ -634,7 +633,7 @@ static bool DoMemWrites( instruction *ins, bool *change, instruction **n ) {
     if( ins->result != NULL ) {
         switch( ins->result->n.class ) {
         case N_TEMP:
-            if( ( ins->result->v.usage & USE_ADDRESS ) == EMPTY )
+            if( ( ins->result->v.usage & USE_ADDRESS ) == 0 )
                 break;
             /* fall down */
         case N_INDEXED:

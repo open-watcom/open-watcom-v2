@@ -110,7 +110,6 @@ static bool GetByteSeq( byte_seq **code )
     bool            too_many_bytes;
 
     AsmSysInit( buff );
-    PPCTL_ENABLE_MACROS();
     NextToken();
     too_many_bytes = false;
     uses_auto = false;
@@ -135,7 +134,6 @@ static bool GetByteSeq( byte_seq **code )
             AsmCodeAddress = 0; // reset index to we don't overrun buffer
         }
     }
-    PPCTL_DISABLE_MACROS();
     AsmFini();
     if( too_many_bytes ) {
         uses_auto = false;
@@ -276,6 +274,8 @@ void PragAux( void )
     } have;
 
     InitAuxInfo();
+    PPCTL_ENABLE_MACROS();
+    NextToken();
     if( GetPragAuxAliasInfo() ) {
         SetCurrInfo( Buffer );
         NextToken();
@@ -326,6 +326,7 @@ void PragAux( void )
         CopyAuxInfo();
         PragEnding();
     }
+    PPCTL_DISABLE_MACROS();
 }
 
 
@@ -338,14 +339,7 @@ hw_reg_set PragRegName( const char *strreg, size_t len )
     char            buffer[20];
 
     if( len != 0 ) {
-        if( *strreg == '_' ) {
-            ++strreg;
-            --len;
-            if( *strreg == '_' ) {
-                ++strreg;
-                --len;
-            }
-        }
+        strreg = SkipUnderscorePrefix( strreg, &len );
         if( len > ( sizeof( buffer ) - 1 ) )
             len = sizeof( buffer ) - 1;
         str = memcpy( buffer, strreg, len );

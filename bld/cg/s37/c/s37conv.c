@@ -30,7 +30,7 @@
 ****************************************************************************/
 
 
-#include "cgstd.h"
+#include "_cgstd.h"
 #include "pattern.h"
 #include "funits.h"
 #include "coderep.h"

@@ -24,7 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  Program to test stack unwinding at point of fault. 
+* Description:  Program to test stack unwinding at point of fault.
 *
 ****************************************************************************/
 
@@ -33,33 +33,33 @@
 
 int     Cnt;
 
-void crash( void ) {
+static void crash( void ) {
     char __far *a= (char __far *)0L;
 
     a[0] = 'a';
 }
 
-void test6( void ) {
+static void test6( void ) {
     crash();
 }
 
-void test5( void ) {
+static void test5( void ) {
     test6();
 }
 
-void test4( void ) {
+static void test4( void ) {
     test5();
 }
 
-void test3( void ) {
+static void test3( void ) {
     test4();
 }
 
-void test2( void ) {
+static void test2( void ) {
     test3();
 }
 
-void test1( void ) {
+static void test1( void ) {
     test2();
 }
 

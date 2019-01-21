@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
+* Copyright (c) 2009-2018 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -42,8 +42,8 @@
 class Ul : public Tag {
 public:
     Ul( Document* d, Element *p, const std::wstring* f, unsigned int r,
-        unsigned int c, unsigned char l, unsigned char i ) : Tag( d, p, f, r, c ),
-        nestLevel( l ), indent( i ), compact( false ), veryCompact( false ) { };
+        unsigned int c, byte l, byte i ) : Tag( d, p, f, r, c ),
+        _nestLevel( l ), _indent( i ), _compact( false ), _veryCompact( false ) { };
     ~Ul() { };
     Lexer::Token parse( Lexer* lexer );
     void linearize( Page* page ) { linearizeChildren( page ); };
@@ -53,10 +53,11 @@ protected:
 private:
     Ul( const Ul& rhs );            //no copy
     Ul& operator=( const Ul& rhs ); //no assignment
-    unsigned char nestLevel;    //counts from 0
-    unsigned char indent;       //in character spaces
-    bool compact;
-    bool veryCompact;
+
+    byte                _nestLevel;     //counts from 0
+    byte                _indent;        //in character spaces
+    bool                _compact;
+    bool                _veryCompact;
 };
 
 class EUl : public Tag {
@@ -73,7 +74,7 @@ private:
 class UlLi : public Li {
 public:
     UlLi( Document* d, Element *p, const std::wstring* f, unsigned int r,
-        unsigned int c, unsigned int n, unsigned char l, unsigned char i, bool cmp ) :
+        unsigned int c, unsigned int n, byte l, byte i, bool cmp ) :
         Li( d, p, f, r, c, n, l, i, cmp ) { };
     ~UlLi() { };
     Lexer::Token parse( Lexer* lexer );

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
+* Copyright (c) 2009-2018 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -28,12 +28,15 @@
 *
 ****************************************************************************/
 
+
+#include "wipfc.hpp"
 #include "brcmd.hpp"
 #include "cell.hpp"
 
 void BrCmd::buildText( Cell* cell )
 {
-    cell->addByte( 0xFD );
-    if( cell->textFull() )
+    cell->addByte( Cell::LINE_BREAK );
+    if( cell->textFull() ) {
         printError( ERR1_LARGEPAGE );
+    }
 }

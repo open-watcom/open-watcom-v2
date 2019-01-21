@@ -30,13 +30,13 @@
 ****************************************************************************/
 
 
-#include "cgstd.h"
+#include "_cgstd.h"
 #include "coderep.h"
 #include "memcheck.h"
 #include "data.h"
 #include "types.h"
 #include "addrcnst.h"
-#include "x87.h"
+#include "fpu.h"
 #include "makeins.h"
 #include "foldins.h"
 #include "rtrtn.h"
@@ -71,38 +71,20 @@
 #include "scmain.h"
 #include "generate.h"
 #include "inline.h"
+#include "cse.h"
+#include "dataflo.h"
+#include "flograph.h"
+#include "multiply.h"
+#include "splitvar.h"
+#include "temps.h"
+#include "varusage.h"
+#include "liveinfo.h"
+#include "regtree.h"
+#include "breakrtn.h"
+#include "condcode.h"
+#include "trecurse.h"
 #include "feprotos.h"
 
-
-extern  void            AssignTemps( void );
-extern  void            AssgnMoreTemps( block_num );
-extern  bool            CommonSex( bool );
-extern  void            MakeFlowGraph( void );
-extern  void            FindReferences( void );
-extern  bool            SplitConflicts( void );
-extern  void            RegTreeInit( void );
-extern  void            OptCloseMoves( void );
-extern  void            Conditions( void );
-extern  void            MakeConflicts( void );
-extern  void            MakeLiveInfo( void );
-extern  void            LiveInfoUpdate( void );
-extern  void            FixIndex( void );
-extern  void            FixSegments( void );
-extern  void            FixMemRefs( void );
-extern  void            MergeIndex( void );
-extern  void            AllocALocal( name * );
-extern  void            ParmPropagate( void );
-extern  void            InitStackMap( void );
-extern  void            FiniStackMap( void );
-extern  void            SplitVars( void );
-extern  void            AssignOtherLocals( void );
-extern  bool            CreateBreak( void );
-extern  void            FixBreak( void );
-extern  void            RemoveBreak( void );
-extern  instruction     *NeedIndex( instruction * );
-extern  void            SetInOut( block * );
-extern  void            MulToShiftAdd( void );
-extern  bool            TailRecursion( void );
 
 static  bool            abortCG;
 
@@ -117,7 +99,7 @@ void    InitCG( void )
     HeadBlock = NULL;
     BlockByBlock = false;
     abortCG = false;
-    InitFP();/* must be before InitRegTbl */
+    FPInit();/* must be before InitRegTbl */
     InitRegTbl();
     ScoreInit();
     InitQueue();
@@ -575,7 +557,7 @@ static  void    ForceConflictsMemory( void )
         if( !_GBitEmpty( conf->id.out_of_block )
          || ( conf->name->n.class == N_TEMP && _FrontEndTmp( conf->name ) )
          || ( conf->name->n.class == N_MEMORY && conf->name->v.symbol != NULL )
-         || ( conf->name->v.usage & USE_IN_ANOTHER_BLOCK ) != EMPTY ) {
+         || ( conf->name->v.usage & USE_IN_ANOTHER_BLOCK ) ) {
             next = InMemory( conf );
         }
     }

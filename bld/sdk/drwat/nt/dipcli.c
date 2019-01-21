@@ -30,11 +30,11 @@
 ****************************************************************************/
 
 
+#include "drwatcom.h"
 #include <io.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
-#include "drwatcom.h"
 #include "dip.h"
 #include "dipimp.h"
 #include "dipcli.h"
@@ -167,17 +167,17 @@ void DIPCLIENTRY( AddrSection )( address *addr )
 /*
  * DIPCliStatus
  */
-void DIPCLIENTRY( Status )( dip_status stat )
+void DIPCLIENTRY( Status )( dip_status ds )
 {
-    stat = stat;
+    /* unused parameters */ (void)ds;
 }
 
 /*
- * DIPCliCurrMAD
+ * DIPCliCurrArch
  */
-dig_mad DIPCLIENTRY( CurrMAD )( void )
-/************************************/
+dig_arch DIPCLIENTRY( CurrArch )( void )
+/**************************************/
 {
-    return( SysConfig.mad );
+    return( SysConfig.arch );
 }
 

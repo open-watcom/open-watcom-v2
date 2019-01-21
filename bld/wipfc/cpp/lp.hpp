@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
+* Copyright (c) 2009-2018 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -34,20 +34,20 @@
 #ifndef LP_INCLUDED
 #define LP_INCLUDED
 
-#include "config.hpp"
 #include "tag.hpp"
 
 class Lp : public Tag {
 public:
     Lp( Document* d, Element *p, const std::wstring* f, unsigned int r, unsigned int c,
-        unsigned char i ) : Tag( d, p, f, r, c ), indent( i ) { };
+        byte i ) : Tag( d, p, f, r, c ), _indent( i ) { };
     ~Lp() { };
     Lexer::Token parse( Lexer* lexer );
     void buildText( Cell* cell );
 private:
     Lp( const Lp& rhs );            //no copy
     Lp& operator=( const Lp& rhs ); //no assignment
-    STD1::uint8_t indent;
+
+    byte                _indent;
 };
 
 #endif //LP_INCLUDED

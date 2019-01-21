@@ -2,7 +2,6 @@ pfx__ =../../../
 __sfx =/library/$(system).$(processor)/$(libsubdir)/$(libname).lib
 
 libs = $+ &
-    $(pfx__)_dos$(__sfx) &
     $(pfx__)alias$(__sfx) &
     $(pfx__)char$(__sfx) &
     $(pfx__)conio$(__sfx) &

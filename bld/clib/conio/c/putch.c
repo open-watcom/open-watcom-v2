@@ -33,12 +33,17 @@
 #include "variety.h"
 #include <stddef.h>
 #include <conio.h>
+#include "dosfuncx.h"
 #include "defwin.h"
+
 
 #ifndef DEFAULT_WINDOWING
     #include "tinyio.h"
-    extern  unsigned _dos(char,int);
-    #pragma aux     _dos = _INT_21 parm caller [ah] [dx];
+    extern unsigned char    _dos( unsigned char, int );
+    #pragma aux _dos = \
+            _INT_21 \
+        __parm __caller [__ah] [__dx] \
+        __value         [__al]
 #endif
 
 _WCRTLINK int putch( int c )
@@ -50,7 +55,7 @@ _WCRTLINK int putch( int c )
         _WindowsPutch( res, c );
     }
 #else
-    _dos( 6, c );
+    _dos( DOS_OUTPUT_CHAR, c );
 #endif
     return( c );
 }

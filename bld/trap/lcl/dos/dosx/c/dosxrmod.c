@@ -47,17 +47,21 @@ extern int _CallRealMode( rm_call_struct __far *regs );
         "mov    ax,0ff02h" \
         "int    0x31" \
         "sbb    eax,eax" \
-        parm [ es edi ] value [ eax ];
+    __parm      [__es __edi] \
+    __value     [__eax] \
+    __modify    []
 
 #else
 
 extern int _CallRealMode( unsigned long dos_addr );
 #pragma aux _CallRealMode = \
-        "xor    ecx,ecx" \
-        "mov    ax,0250eh" \
-        "int    0x21" \
-        "sbb    eax,eax" \
-        parm [ ebx ] modify [ecx] value [ eax ];
+        "xor    ecx,ecx"    \
+        "mov    ax,0250eh"  \
+        "int    0x21"       \
+        "sbb    eax,eax"    \
+    __parm      [__ebx] \
+    __value     [__eax] \
+    __modify    [__ecx]
 
 #endif
 

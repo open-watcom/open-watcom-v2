@@ -94,24 +94,24 @@ typedef enum
 } FNOV_INTRNL_CONTROL; // for internal overloading use only
 
 typedef struct {
-    unsigned                udcnv;          // # udcnv
-    unsigned                standard;       // # standard conversions
-    unsigned                trivial : 1;    // trivial conversion
-    unsigned                promotion : 1;  // promotion
-    unsigned                not_exact : 1;  // not an exact match
+    unsigned                udcnv;              // # udcnv
+    unsigned                standard;           // # standard conversions
+    unsigned                trivial     : 1;    // trivial conversion
+    unsigned                promotion   : 1;    // promotion
+    unsigned                not_exact   : 1;    // not an exact match
 } FNOV_SCALAR;
 
 typedef struct {
     union {
-        FNOV_SCALAR         no_ud;          // no user-defined conversion
+        FNOV_SCALAR         no_ud;              // no user-defined conversion
         struct {
-            FNOV_SCALAR     in;             // on input to u-d conversion
-            FNOV_SCALAR     out;            // on output from u-d conversion
-        } ud;                               // user-defined conversion
+            FNOV_SCALAR     in;                 // on input to u-d conversion
+            FNOV_SCALAR     out;                // on output from u-d conversion
+        } ud;                                   // user-defined conversion
     } u;
-    FNOV_COARSE_RANK        rank;           // coarse rank
-    FNOV_CONTROL            control;        // how to perform ranking
-    unsigned                userdef : 1;    // use of user-defined conversion
+    FNOV_COARSE_RANK        rank;               // coarse rank
+    FNOV_CONTROL            control;            // how to perform ranking
+    unsigned                userdef     : 1;    // use of user-defined conversion
 } FNOV_RANK;
 
 #ifndef FNOV_LIST_DEFINED
@@ -119,22 +119,22 @@ typedef struct {
 typedef struct func_list FNOV_LIST;
 #endif
 struct func_list {
-    FNOV_LIST               *next;          // next entry
-    SYMBOL                  sym;            // associated symbol
-    FNOV_RANK               *rankvector;    // vector of ranks
-    arg_list                *alist;         // arguments
-    unsigned                num_args;       // number of arguments
-    type_flag               flags;          // flags for function
-    FNOV_RANK               thisrank;       // rank for this pointer
-    unsigned                free_args : 1;  // flag for mock arg list
-    unsigned                member : 1;     // flag for member function
-    unsigned                stdops : 1;     // flag for std operator
+    FNOV_LIST               *next;              // next entry
+    SYMBOL                  sym;                // associated symbol
+    FNOV_RANK               *rankvector;        // vector of ranks
+    arg_list                *alist;             // arguments
+    unsigned                num_args;           // number of arguments
+    type_flag               flags;              // flags for function
+    FNOV_RANK               thisrank;           // rank for this pointer
+    unsigned                free_args   : 1;    // flag for mock arg list
+    unsigned                member      : 1;    // flag for member function
+    unsigned                stdops      : 1;    // flag for std operator
 };
 
 typedef struct {
-    FNOV_LIST   *diag_ambig;    // list of ambiguous functions
-    FNOV_LIST   *diag_reject;   // list of rejected functions
-    int         num_candidates; // number of candidates found
+    FNOV_LIST               *diag_ambig;        // list of ambiguous functions
+    FNOV_LIST               *diag_reject;       // list of rejected functions
+    int                     num_candidates;     // number of candidates found
 } FNOV_DIAG;
 
 void FnovArgRank(               // RANK AN ARGUMENT LIST

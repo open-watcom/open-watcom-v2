@@ -35,14 +35,10 @@
 #include <stdlib.h>
 #include <stdarg.h>
 #include <stdio.h>
-#ifdef __NT__
-    #include <windows.h>
-#endif
 #include "wio.h"
-#include "gui.h"
+#include "setup.h"
 #include "guiutil.h"
 #include "setupinf.h"
-#include "setup.h"
 #include "utils.h"
 #include "dlggen.h"
 #include "dynarray.h"
@@ -184,6 +180,12 @@ const char *VarGetStrVal( vhandle var_handle )
     return( GlobalVarList[var_handle].strval );
 }
 
+bool VarGetBoolVal( vhandle var_handle )
+/**************************************/
+{
+    return( atoi( VarGetStrVal( var_handle ) ) != 0 );
+}
+
 int VarGetIntVal( vhandle var_handle )
 /************************************/
 {
@@ -204,6 +206,12 @@ void VarSetHook( vhandle var_handle, void (*hook)( vhandle ) )
     if( var_handle == NO_VAR )
         return;
     GlobalVarList[var_handle].hook = hook;
+}
+
+bool GetVariableBoolVal( const char *vbl_name )
+/*******************p*************************/
+{
+    return( VarGetBoolVal( GetVariableByName( vbl_name ) ) );
 }
 
 int GetVariableIntVal( const char *vbl_name )
@@ -281,6 +289,20 @@ static vhandle DoSetVariable( vhandle var_handle, const char *strval, const char
     return( var_handle );
 }
 
+vhandle SetBoolVariableByName( const char *vbl_name, bool bval )
+/**************************************************************/
+{
+    return( DoSetVariable( GetVariableByName( vbl_name ), bval ? "1" : "0", vbl_name ) );
+}
+
+vhandle SetBoolVariableByHandle( vhandle var_handle, bool bval )
+/**************************************************************/
+{
+    if( var_handle == NO_VAR )
+        return( NO_VAR );
+    return( DoSetVariable( var_handle, bval ? "1" : "0", NULL ) );
+}
+
 vhandle SetVariableByName( const char *vbl_name, const char *strval )
 /*******************************************************************/
 {
@@ -300,103 +322,104 @@ void SetDefaultGlobalVarList( void )
 {
     char    szBuf[_MAX_PATH];
 #if defined( __NT__ )
-    char *  last_slash;
+    char    *last_slash;
+  #if !defined( _M_X64 )
+    DWORD   version = GetVersion();
+  #endif
 #endif
 
+    // create global variables for true/false value
+    SetBoolVariableByName( "true",  true );
+    SetBoolVariableByName( "false", false );
+
     // create global variables for each default system
-    SetVariableByName( "true", "1" );
-    SetVariableByName( "false", "0" );
 #if defined( __DOS__ )
-    SetVariableByName( "IsDos", "1" );
-    SetVariableByName( "IsOS2DosBox", _osmajor >= 10 ? "1" : "0" );
+    // 16/32-bit DOS
+    SetBoolVariableByName(      "IsDos",        true );
+    SetBoolVariableByName(      "IsOS2DosBox",  _osmajor >= 10 );
 #else
-    SetVariableByName( "IsDos", "0" );
+    SetBoolVariableByName(      "IsDos",        false );
 #endif
 
 #if defined( __WINDOWS__ )
-    SetVariableByName( "IsWin", "1" );
-    SetVariableByName( "IsOS2DosBox", _osmajor >= 10 ? "1" : "0" );
+    // 16-bit Windows
+    SetBoolVariableByName(      "IsWin",        true );
+    SetBoolVariableByName(      "IsOS2DosBox",  _osmajor >= 10 );
 #else
-    SetVariableByName( "IsWin", "0" );
+    SetBoolVariableByName(      "IsWin",        false );
 #endif
 
 #if defined( __OS2__ )
-    SetVariableByName( "IsOS2", "1" );
+    // 16/32-bit OS/2
+    SetBoolVariableByName(      "IsOS2",        true );
 #else
-    SetVariableByName( "IsOS2", "0" );
+    SetBoolVariableByName(      "IsOS2",        false );
 #endif
 
-#if defined( __NT__ ) && defined( _M_X64 )
-    SetVariableByName( "IsWin64", "1" );
-    SetVariableByName( "IsWin32", "0" );
-    SetVariableByName( "IsWin32s", "0" );
-    SetVariableByName( "IsWinNT", "1" );
-    SetVariableByName( "IsWinNT40", "1" );
-    SetVariableByName( "IsWin2000", "1" );
-    SetVariableByName( "IsWin95", "0" );
-    SetVariableByName( "IsWin98", "0" );
-#elif defined( __NT__ )
-    {
-        DWORD   version = GetVersion();
-        if( version < 0x80000000 && LOBYTE( LOWORD( version ) ) >= 5 && IsWOW64() ) {
-            SetVariableByName( "IsWin64", "0" );
-            SetVariableByName( "IsWin32", "1" );
-            SetVariableByName( "IsWin32s", "0" );
-            SetVariableByName( "IsWinNT", "1" );
-            SetVariableByName( "IsWinNT40", "1" );
-            SetVariableByName( "IsWin2000", "1" );
-            SetVariableByName( "IsWin95", "0" );
-            SetVariableByName( "IsWin98", "0" );
-        } else {
-            SetVariableByName( "IsWin64", "0" );
-            if( version < 0x80000000 ) {
-                SetVariableByName( "IsWinNT", "1" );
-                SetVariableByName( "IsWin32", "1" );
-                SetVariableByName( "IsWin32s", "0" );
-                SetVariableByName( "IsWin95", "0" );
-                SetVariableByName( "IsWin98", "0" );
-                if( LOBYTE( LOWORD( version ) ) < 4 ) {
-                    SetVariableByName( "IsWinNT40", "0" );
-                } else {
-                    SetVariableByName( "IsWinNT40", "1" );
-                    if( LOBYTE( LOWORD( version ) ) < 5 ) {
-                        SetVariableByName( "IsWin2000", "0" );
-                    } else {
-                        SetVariableByName( "IsWin2000", "1" );
-                    }
-                }
-            } else {
-                SetVariableByName( "IsWinNT", "0" );
-                SetVariableByName( "IsWinNT40", "0" );
-                SetVariableByName( "IsWin2000", "0" );
-                if( LOBYTE( LOWORD( version ) ) < 4 ) {
-                    SetVariableByName( "IsWin32", "0" );
-                    SetVariableByName( "IsWin32s", "1" );
-                    SetVariableByName( "IsWin95", "0" );
-                    SetVariableByName( "IsWin98", "0" );
-                } else {
-                    SetVariableByName( "IsWin32", "1" );
-                    SetVariableByName( "IsWin32s", "0" );
-                    SetVariableByName( "IsWin95", "1" );
-                    if( LOBYTE( LOWORD( version ) ) < 5 ) {
-                        SetVariableByName( "IsWin98", "0" );
-                    } else {
-                        SetVariableByName( "IsWin98", "1" );
-                    }
-                }
-            }
-        }
+#if defined( __NT__ )
+  #if defined( _M_X64 )
+    // 64-bit Windows
+    SetBoolVariableByName(      "IsWin32s",     false );
+    SetBoolVariableByName(      "IsWin32",      false );
+    SetBoolVariableByName(      "IsWin95",      false );
+    SetBoolVariableByName(      "IsWin98",      false );
+    SetBoolVariableByName(      "IsWinNT",      true );
+    SetBoolVariableByName(      "IsWinNT40",    true );
+    SetBoolVariableByName(      "IsWin2000",    true );
+    SetBoolVariableByName(      "IsWin64",      true );
+  #else
+    // 32-bit Windows or WOW
+    if( version & 0x80000000 ) {
+        SetBoolVariableByName(  "IsWin32s",     LOBYTE( LOWORD( version ) ) < 4 );
+        SetBoolVariableByName(  "IsWin32",      LOBYTE( LOWORD( version ) ) >= 4 );
+        SetBoolVariableByName(  "IsWin95",      LOBYTE( LOWORD( version ) ) >= 4 );
+        SetBoolVariableByName(  "IsWin98",      LOBYTE( LOWORD( version ) ) >= 5 );
+        SetBoolVariableByName(  "IsWinNT",      false );
+        SetBoolVariableByName(  "IsWinNT40",    false );
+        SetBoolVariableByName(  "IsWin2000",    false );
+    } else {
+        SetBoolVariableByName(  "IsWin32s",     false );
+        SetBoolVariableByName(  "IsWin32",      true );
+        SetBoolVariableByName(  "IsWin95",      false );
+        SetBoolVariableByName(  "IsWin98",      false );
+        SetBoolVariableByName(  "IsWinNT",      true );
+        SetBoolVariableByName(  "IsWinNT40",    LOBYTE( LOWORD( version ) ) >= 4 );
+        SetBoolVariableByName(  "IsWin2000",    LOBYTE( LOWORD( version ) ) >= 5 );
     }
+    SetBoolVariableByName(      "IsWin64",      false );
+  #endif
 #else
-    SetVariableByName( "IsWin64", "0" );
-    SetVariableByName( "IsWin32", "0" );
-    SetVariableByName( "IsWin32s", "0" );
-    SetVariableByName( "IsWinNT", "0" );
-    SetVariableByName( "IsWinNT40", "0" );
-    SetVariableByName( "IsWin2000", "0" );
-    SetVariableByName( "IsWin95", "0" );
-    SetVariableByName( "IsWin98", "0" );
+    SetBoolVariableByName(      "IsWin32s",     false );
+    SetBoolVariableByName(      "IsWin32",      false );
+    SetBoolVariableByName(      "IsWin95",      false );
+    SetBoolVariableByName(      "IsWin98",      false );
+    SetBoolVariableByName(      "IsWinNT",      false );
+    SetBoolVariableByName(      "IsWinNT40",    false );
+    SetBoolVariableByName(      "IsWin2000",    false );
+    SetBoolVariableByName(      "IsWin64",      false );
 #endif
+
+#if defined( __LINUX__ )
+  #if defined( _M_X64 ) && 0
+    // 64-bit Linux
+    SetBoolVariableByName(      "IsLinux64",    true );
+    SetBoolVariableByName(      "IsLinux32",    false );
+  #else
+    // 32-bit Linux
+    SetBoolVariableByName(      "IsLinux64",    false );
+    SetBoolVariableByName(      "IsLinux32",    true );
+  #endif
+#else
+    SetBoolVariableByName(      "IsLinux64",    false );
+    SetBoolVariableByName(      "IsLinux32",    false );
+#endif
+
+#if defined( __AXP__ )
+    SetBoolVariableByName(      "IsAlpha",      true );
+#else
+    SetBoolVariableByName(      "IsAlpha",      false );
+#endif
+
 #if defined( __WINDOWS__ ) || defined( __NT__ )
     GetSystemDirectory( szBuf, sizeof( szBuf ) );
 #else
@@ -425,24 +448,6 @@ void SetDefaultGlobalVarList( void )
     }
 #endif
     SetVariableByName( "Command", szBuf );
-
-#if defined( __AXP__ )
-    SetVariableByName( "IsAlpha", "1" );
-#else
-    SetVariableByName( "IsAlpha", "0" );
-#endif
-
-#if defined( __LINUX__ ) && defined( _M_X64 ) && 0
-    SetVariableByName( "IsLinux64", "1" );
-    SetVariableByName( "IsLinux32", "0" );
-#else 
-    SetVariableByName( "IsLinux64", "0" );
-  #if defined( __LINUX__ )
-    SetVariableByName( "IsLinux32", "1" );
-  #else
-    SetVariableByName( "IsLinux32", "0" );
-  #endif
-#endif
 }
 
 

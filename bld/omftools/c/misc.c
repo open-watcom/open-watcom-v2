@@ -49,11 +49,11 @@
 
 
 #ifdef __UNIX__
-  #define ISVALIDENTRY(x)   ( 1 )
-  #define CMP_MODE          (FNM_PATHNAME | FNM_NOESCAPE)
+    #define ISVALIDENTRY(x) (1)
+    #define FNMATCH_FLAGS   (FNM_PATHNAME | FNM_NOESCAPE)
 #else
-  #define ISVALIDENTRY(x)   ( (x->d_attr & _A_VOLID) == 0 )
-  #define CMP_MODE          (FNM_PATHNAME | FNM_NOESCAPE | FNM_IGNORECASE)
+    #define ISVALIDENTRY(x) ( (x->d_attr & _A_VOLID) == 0 )
+    #define FNMATCH_FLAGS   (FNM_PATHNAME | FNM_NOESCAPE | FNM_IGNORECASE)
 #endif
 
 extern char *FixName( char *name )
@@ -170,7 +170,7 @@ extern char *DoWildCard( char *base )
     entry = readdir( parent );
     while( entry != NULL ) {
         if( ISVALIDENTRY( entry ) ) {
-            if( fnmatch( pattern, entry->d_name, CMP_MODE ) == 0 ) {
+            if( fnmatch( pattern, entry->d_name, FNMATCH_FLAGS ) == 0 ) {
                 break;
             }
         }

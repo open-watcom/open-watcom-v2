@@ -38,11 +38,9 @@
 #include "msg.h"
 #include "mstream.h"
 
-#include "clibext.h"
-
 
 STATIC const char   *logName;
-STATIC int          logFH;
+STATIC FILE         *logFP;
 
 typedef union msg_arg {
     UINT16      ui16;
@@ -329,11 +327,15 @@ STATIC size_t doFmtStr( char *buff, const char FAR *src, va_list args )
                 dest = strApp( dest, msgbuff );
                 break;
             case 'Z' :
+                if( errno == 0 ) {
+                    MsgGet( SYS_ERR_UNKNOWN, msgbuff );
+                } else {
 #if defined( __DOS__ )
-                MsgGet( SYS_ERR_0 + errno, msgbuff );
+                    MsgGet( SYS_ERR_0 + errno, msgbuff );
 #else
-                strcpy( msgbuff, strerror( errno ) );
+                    strcpy( msgbuff, strerror( errno ) );
 #endif
+                }
                 dest = strApp( dest, msgbuff );
                 break;
             case 'c' :
@@ -391,15 +393,15 @@ size_t FmtStr( char *buff, const char *fmt, ... )
     return( len );
 }
 
-static void writeOutput( unsigned class, int fh, const char *buff, size_t len )
-/*****************************************************************************/
+static void writeOutput( unsigned class, FILE *fp, const char *buff, size_t len )
+/*******************************************************************************/
 {
     if( class != INF ) {
-        if( logFH != -1 ) {
-            (void)posix_write( logFH, buff, len );
+        if( logFP != NULL ) {
+            fwrite( buff, 1, len, logFP );
         }
     }
-    (void)posix_write( fh, buff, len );
+    fwrite( buff, 1, len, fp );
 }
 
 #ifdef __WATCOMC__
@@ -417,7 +419,7 @@ void PrtMsg( enum MsgClass num, ... )
     unsigned        class;
     const char      *fname;
     UINT16          fline;
-    int             fh;
+    FILE            *fp;
     char            wefchar = 'F';    /* W, E, or F */
     char            *str;
     char            msgbuff[MAX_RESOURCE_SIZE];
@@ -443,9 +445,9 @@ void PrtMsg( enum MsgClass num, ... )
 
     class = num & CLASS_MSK;
     if( class == INF ) {
-        fh = STDOUT_FILENO;
+        fp = stdout;
     } else {
-        fh = STDERR_FILENO;
+        fp = stderr;
         switch( class ) {
         case WRN:
             wefchar = 'W';
@@ -475,13 +477,13 @@ void PrtMsg( enum MsgClass num, ... )
      * with the doFmtStr() substitution.
      */
     if( len > 0 ) {
-        writeOutput( class, fh, buff, len );
+        writeOutput( class, fp, buff, len );
     }
 
     va_start( args, num );
     if( num & PRNTSTR ) {       /* print a big string */
         str = va_arg( args, char * );
-        writeOutput( class, fh, str, strlen( str ) );
+        writeOutput( class, fp, str, strlen( str ) );
         len = 0;
     } else {                    /* print a formatted string */
         if( (num & NUM_MSK) >= MSG_SPECIAL_BASE ) {
@@ -497,16 +499,17 @@ void PrtMsg( enum MsgClass num, ... )
     }
     va_end( args );
     if( (num & NEOL) == 0 ) {
-        buff[len++] = EOL;
+        buff[len++] = '\n';
     }
-    writeOutput( class, fh, buff, len );
+    writeOutput( class, fp, buff, len );
+    fflush( fp );
 }
 #ifdef __WATCOMC__
 #pragma off(check_stack);
 #endif
 
 #if !defined( NDEBUG )
-NO_RETURN void massert( const char *expr, const char *file, int line )
+void massert( const char *expr, const char *file, int line )
 {
     PrtMsg( FTL | ASSERTION_FAILED, expr, file, line );
     ExitFatal();
@@ -514,8 +517,8 @@ NO_RETURN void massert( const char *expr, const char *file, int line )
 }
 #endif
 
-NO_RETURN void Usage( void )
-/**************************/
+void Usage( void )
+/****************/
 {
     char        msgbuff[MAX_RESOURCE_SIZE];
     int         i;
@@ -546,7 +549,7 @@ bool GetYes( enum MsgClass querymsg )
 
     PrtMsg( INF | NEOL | STRING_YES_NO, querymsg );
 
-    if( posix_read( STDIN_FILENO, buf, LINE_BUFF ) == 0 ) {
+    if( fread( buf, 1, LINE_BUFF, stdin ) == 0 ) {
         return( false );
     }
 
@@ -563,9 +566,9 @@ void LogInit( const char *name )
  */
 {
     logName = name;
-    logFH = -1;
+    logFP = NULL;
     if( name != NULL ) {
-        logFH = open( logName, O_WRONLY | O_APPEND | O_CREAT | O_TEXT, PMODE_RW );
+        logFP = fopen( logName, "a" );
     }
 }
 
@@ -573,7 +576,7 @@ void LogInit( const char *name )
 void LogFini( void )
 /*************************/
 {
-    if( logFH != -1 ) {
-        close( logFH );
+    if( logFP != NULL ) {
+        fclose( logFP );
     }
 }

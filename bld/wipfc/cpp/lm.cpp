@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
+* Copyright (c) 2009-2018 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -32,6 +32,8 @@
 *
 ****************************************************************************/
 
+
+#include "wipfc.hpp"
 #include <cstdlib>
 #include "lm.hpp"
 #include "cell.hpp"
@@ -43,8 +45,9 @@
 
 Lexer::Token Lm::parse( Lexer* lexer )
 {
-    Lexer::Token tok( document->getNextToken() );
-    while( tok != Lexer::TAGEND ) {
+    Lexer::Token tok;
+
+    while( (tok = _document->getNextToken()) != Lexer::TAGEND ) {
         //parse attributes
         if( tok == Lexer::ATTRIBUTE ) {
             std::wstring key;
@@ -56,32 +59,32 @@ Lexer::Token Lm::parse( Lexer* lexer )
                     tmp = 1;
                 if( tmp > 255 )
                     tmp = 255;
-                margin = static_cast< STD1::uint8_t >( tmp );
-                document->setLeftMargin( margin );
+                _margin = static_cast< byte >( tmp );
+                _document->setLeftMargin( _margin );
+            } else {
+                _document->printError( ERR1_ATTRNOTDEF );
             }
-            else
-                document->printError( ERR1_ATTRNOTDEF );
-        }
-        else if( tok == Lexer::FLAG )
-            document->printError( ERR1_ATTRNOTDEF );
-        else if( tok == Lexer::ERROR_TAG )
+        } else if( tok == Lexer::FLAG ) {
+            _document->printError( ERR1_ATTRNOTDEF );
+        } else if( tok == Lexer::ERROR_TAG ) {
             throw FatalError( ERR_SYNTAX );
-        else if( tok == Lexer::END )
+        } else if( tok == Lexer::END ) {
             throw FatalError( ERR_EOF );
-        else
-            document->printError( ERR1_TAGSYNTAX );
-        tok = document->getNextToken();
+        } else {
+            _document->printError( ERR1_TAGSYNTAX );
+        }
     }
-    return document->getNextToken();    //consume TAGEND
+    return _document->getNextToken();    //consume TAGEND
 }
 /***************************************************************************/
 void Lm::buildText( Cell* cell )
 {
-    cell->addByte( 0xFF );  //esc
-    cell->addByte( 0x03 );  //size
-    cell->addByte( 0x02 );  //set left margin
-    cell->addByte( margin );
-    if( cell->textFull() )
+    cell->addByte( Cell::ESCAPE );  //esc
+    cell->addByte( 0x03 );          //size
+    cell->addByte( 0x02 );          //set left margin
+    cell->add( _margin );
+    if( cell->textFull() ) {
         printError( ERR1_LARGEPAGE );
+    }
 }
 

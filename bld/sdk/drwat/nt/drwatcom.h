@@ -37,10 +37,11 @@
 #endif
 
 #include "commonui.h"
-#include <stdio.h>
 #include <stdlib.h>
+#include <stdio.h>
+#include <stdarg.h>
+#include <string.h>
 #include "bool.h"
-#include "listbox.h"
 #include "font.h"
 #include "procctl.h"
 #include "stat.h"
@@ -52,6 +53,8 @@
 #include "ldstr.h"
 #include "rvalue.h"
 #include "madregs.h"
+#include "listbox.h"
+
 
 #define MAX_CMDLINE             256
 

@@ -32,12 +32,14 @@
 
 
 #pragma off(unreferenced);
-#include "cgstd.h"
+#include "_cgstd.h"
 #include "coderep.h"
 #include "cgswitch.h"
 #include "cfloat.h"
 #include "dbbit.h"
 #include "symdbg.h"
+#include "bldins.h"
+
 
 typedef union hdl_type {
         bck_info        *b;

@@ -25,19 +25,24 @@
 *
 *  ========================================================================
 *
-* Description:  Implementation of htons() for Linux.
+* Description:  Implementation of htons() for Linux and RDOS.
 *
 ****************************************************************************/
 
 
 #include "variety.h"
 #include <sys/types.h>
-#include <sys/socket.h>
 #include <netinet/in.h>
+
+#ifdef __RDOS__
+#include <rdos.h>
+#endif
 
 _WCRTLINK unsigned short htons( unsigned short hostshort )
 {
-#if defined( __BIG_ENDIAN__ )
+#if defined( __RDOS__ )
+    return( (unsigned short)RdosSwapShort( hostshort ) );
+#elif defined( __BIG_ENDIAN__ )
     return( hostshort );
 #else
     return( ((hostshort >> 8) & 0xff) | ((hostshort & 0xff) << 8) );

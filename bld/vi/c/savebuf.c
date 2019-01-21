@@ -266,7 +266,8 @@ vi_rc GetSavebufString( char **data )
     fcb         *cfcb;
     line        *cline;
     vi_rc       rc;
-    long        len;
+    size_t      len;
+    char        *p;
 
     /*
      * fetch the savebuf
@@ -297,7 +298,7 @@ vi_rc GetSavebufString( char **data )
     /*
      * get length of stuff
      */
-    len = 0L;
+    len = 0;
     switch( tmp->type ) {
     case SAVEBUF_NOP:
         return( ERR_EMPTY_SAVEBUF );
@@ -314,20 +315,24 @@ vi_rc GetSavebufString( char **data )
     if( len > MAX_STR * 4 ) {
         rc = ERR_SAVEBUF_TOO_BIG;
     } else {
-        *data = MemAlloc( len );
+        p = *data = MemAlloc( len );
         switch( tmp->type ) {
         case SAVEBUF_LINE:
-            strcpy( *data, tmp->u.data );
+            strcpy( p, tmp->u.data );
             break;
         case SAVEBUF_FCBS:
-            **data = '\0';
             for( cfcb = tmp->u.fcbs.head; cfcb != NULL; cfcb = cfcb->next ) {
                 FetchFcb( cfcb );
                 for( cline = cfcb->lines.head; cline != NULL; cline = cline->next ) {
-                    strcat( *data, cline->data );
-                    strcat( *data, "\\n" );
+                    char *src = cline->data;
+                    while( *src != '\0' ) {
+                        *p++ = *src++;
+                    }
+                    *p++ = '\\';
+                    *p++ = 'n';
                 }
             }
+            *p = '\0';
             break;
         }
     }

@@ -291,14 +291,22 @@ static FILE *OpenFileTruncate(
         char    *dir;
         char    *fname;
         char    *ext;
+        bool    truncated;
 
+        truncated = false;
         _splitpath2( file_name, path_buffer, &drive, &dir, &fname, &ext );
-        if( fname != NULL && strlen( fname ) > 8 )
+        if( fname != NULL && strlen( fname ) > 8 ) {
             fname[8] = '\0';
-        if( ext != NULL && strlen( ext ) > 3 )
-            ext[3] = '\0';
-        _makepath( new_name, drive, dir, fname, ext );
-        new = fopen( new_name, mode );
+            truncated = true;
+        }
+        if( ext != NULL && strlen( ext ) > 4 ) {
+            ext[4] = '\0';
+            truncated = true;
+        }
+        if( truncated ) {
+            _makepath( new_name, drive, dir, fname, ext );
+            new = fopen( new_name, mode );
+        }
     }
     return( new );
 }
@@ -334,14 +342,24 @@ static void OpenFileNormal(
 {
     FILE        *new;           // - new file ptr.
     FILESTK     *stk;           // - new stack entry
+    char        *p;
+    char        c;
 
-    stk = ( FILESTK * )GetMem( sizeof( FILESTK ) + strlen( file_name ) );
+    stk = (FILESTK *)GetMem( sizeof( FILESTK ) + strlen( file_name ) );
     if( stk != NULL ) {
-        strcpy( stk->name, file_name );
+        p = stk->name;
+        while( (c = *file_name++) != '\0' ) {
+#ifndef __UNIX__
+            if( c == '/' )
+                c = '\\';
+#endif
+            *p++ = c;
+        }
+        *p = c;
         stk->rec_count = 0;
-        new = OpenFilePathList( file_name, mode );
+        new = OpenFilePathList( stk->name, mode );
         if( new == NULL ) {
-            Error( "Can not open '%s'", file_name );
+            Error( "Can not open '%s'", stk->name );
             free( stk );
         } else {
             stk->last = Files;

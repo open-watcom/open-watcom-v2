@@ -44,7 +44,7 @@ typedef struct typeinfo {
     const char          *start;
     const char          *end;
     word                entry;
-    imp_mod_handle      im;
+    imp_mod_handle      imh;
     struct typeinfo     *prev;
 } typeinfo;
 
@@ -76,16 +76,16 @@ void KillTypeLoadStack( void )
     Type = NULL;
 }
 
-static dip_status LoadType( imp_image_handle *iih, imp_mod_handle im, word entry )
+static dip_status LoadType( imp_image_handle *iih, imp_mod_handle imh, word entry )
 {
     FreeLoad();
-    Type->start = InfoLoad( iih, im, DMND_TYPES, entry, NULL );
+    Type->start = InfoLoad( iih, imh, DMND_TYPES, entry, NULL );
     if( Type->start == NULL ) {
         return( DS_FAIL );
     }
-    Type->end = Type->start + InfoSize( iih, im, DMND_TYPES, entry );
+    Type->end = Type->start + InfoSize( iih, imh, DMND_TYPES, entry );
     Type->entry = entry;
-    Type->im = im;
+    Type->imh = imh;
     return( DS_OK );
 }
 
@@ -94,54 +94,54 @@ static const char *NamePtr( const char *p )
     unsigned    index;
 
     switch( GETU8( p + 1 ) ) {
-    case NAME_TYPE+TYPE_SCALAR:
+    case NAME_TYPE | TYPE_SCALAR:
         p += 3;
         break;
-    case NAME_TYPE+TYPE_SCOPE:
+    case NAME_TYPE | TYPE_SCOPE:
         p += 2;
         break;
-    case NAME_TYPE+TYPE_NAME:
+    case NAME_TYPE | TYPE_NAME:
         p = GetIndex( p + 2, &index );
         p = GetIndex( p, &index );
         break;
-    case ENUM_TYPE+ENUM_CONST_BYTE:
+    case ENUM_TYPE | ENUM_CONST_BYTE:
         p += 3;
         break;
-    case ENUM_TYPE+ENUM_CONST_WORD:
+    case ENUM_TYPE | ENUM_CONST_WORD:
         p += 4;
         break;
-    case ENUM_TYPE+ENUM_CONST_LONG:
+    case ENUM_TYPE | ENUM_CONST_LONG:
         p += 6;
         break;
-    case ENUM_TYPE+ENUM_CONST_I64:
+    case ENUM_TYPE | ENUM_CONST_I64:
         p += 10;
         break;
-    case STRUCT_TYPE+ST_BIT_BYTE:
+    case STRUCT_TYPE | ST_BIT_BYTE:
         p += 2;
         /* fall through */
-    case STRUCT_TYPE+ST_FIELD_BYTE:
+    case STRUCT_TYPE | ST_FIELD_BYTE:
         p += 3;
         p = GetIndex( p, &index );
         break;
-    case STRUCT_TYPE+ST_BIT_WORD:
+    case STRUCT_TYPE | ST_BIT_WORD:
         p += 2;
         /* fall through */
-    case STRUCT_TYPE+ST_FIELD_WORD:
+    case STRUCT_TYPE | ST_FIELD_WORD:
         p += 4;
         p = GetIndex( p, &index );
         break;
-    case STRUCT_TYPE+ST_BIT_LONG:
+    case STRUCT_TYPE | ST_BIT_LONG:
         p += 2;
         /* fall through */
-    case STRUCT_TYPE+ST_FIELD_LONG:
+    case STRUCT_TYPE | ST_FIELD_LONG:
         p += 6;
         p = GetIndex( p, &index );
         break;
-    case STRUCT_TYPE+ST_FIELD_LOC:
+    case STRUCT_TYPE | ST_FIELD_LOC:
         p = SkipLocation( p + 3 );
         p = GetIndex( p, &index );
         break;
-    case STRUCT_TYPE+ST_BIT_LOC:
+    case STRUCT_TYPE | ST_BIT_LOC:
         p = SkipLocation( p + 3 ) + 2;
         p = GetIndex( p, &index );
         break;
@@ -243,17 +243,17 @@ static unsigned long GetScalar( address addr, unsigned scalar )
     LocationCreate( &dst_ll, LT_INTERNAL, &tmp );
     DCAssignLocation( &dst_ll, &src_ll, (scalar & SCLR_LEN_MASK) + 1 );
     switch( scalar ) {
-    case SCLR_UNSIGNED + 0:
+    case SCLR_UNSIGNED | 0:
         return( tmp.u8 );
-    case SCLR_UNSIGNED + 1:
+    case SCLR_UNSIGNED | 1:
         return( tmp.u16 );
-    case SCLR_UNSIGNED + 3:
+    case SCLR_UNSIGNED | 3:
         return( tmp.u32 );
-    case SCLR_INTEGER  + 0:
+    case SCLR_INTEGER  | 0:
         return( tmp.s8 );
-    case SCLR_INTEGER  + 1:
+    case SCLR_INTEGER  | 1:
         return( tmp.s16 );
-    case SCLR_INTEGER  + 3:
+    case SCLR_INTEGER  | 3:
         return( tmp.s32 );
     }
     return( 0 );
@@ -263,7 +263,7 @@ static unsigned long GetScalar( address addr, unsigned scalar )
 
 typedef struct {
     imp_image_handle    *iih;
-    imp_mod_handle      im;
+    imp_mod_handle      imh;
     unsigned            index;
     struct type_pos     t;
 } type_cache;
@@ -271,7 +271,7 @@ typedef struct {
 static type_cache       TypeCache[TYPE_CACHE_SIZE];
 static int              TypeCacheRover;
 
-static dip_status FindTypeCache( imp_image_handle *iih, imp_mod_handle im,
+static dip_status FindTypeCache( imp_image_handle *iih, imp_mod_handle imh,
                         unsigned index, imp_type_handle *ith )
 {
     int         i;
@@ -279,19 +279,19 @@ static dip_status FindTypeCache( imp_image_handle *iih, imp_mod_handle im,
 
     for( i = 0; i < TYPE_CACHE_SIZE; ++i ) {
         cache = TypeCache + i;
-        if( cache->iih == iih && cache->im == im && cache->index == index ) {
-            ith->im = im;
+        if( cache->iih == iih && cache->imh == imh && cache->index == index ) {
+            ith->imh = imh;
             ith->f.all = 0;
             ith->t.entry = cache->t.entry;
             ith->t.offset = cache->t.offset;
-            return( LoadType( iih, im, ith->t.entry ) );
+            return( LoadType( iih, imh, ith->t.entry ) );
         }
     }
     return( DS_FAIL );
 }
 
 
-static void SetTypeCache( imp_image_handle *iih, imp_mod_handle im,
+static void SetTypeCache( imp_image_handle *iih, imp_mod_handle imh,
                         unsigned index, imp_type_handle *ith )
 {
     type_cache  *cache;
@@ -299,7 +299,7 @@ static void SetTypeCache( imp_image_handle *iih, imp_mod_handle im,
     cache = TypeCache + TypeCacheRover++;
     TypeCacheRover &= TYPE_CACHE_SIZE - 1;
     cache->iih = iih;
-    cache->im = im;
+    cache->imh = imh;
     cache->index = index;
     cache->t.entry = ith->t.entry;
     cache->t.offset = ith->t.offset;
@@ -318,7 +318,7 @@ void ClearTypeCache( imp_image_handle *iih )
 }
 
 
-static dip_status FindRawTypeHandle( imp_image_handle *iih, imp_mod_handle im,
+static dip_status FindRawTypeHandle( imp_image_handle *iih, imp_mod_handle imh,
                 unsigned index, imp_type_handle *ith )
 {
     const char  *p;
@@ -328,52 +328,46 @@ static dip_status FindRawTypeHandle( imp_image_handle *iih, imp_mod_handle im,
 
     if( index == 0 )
         return( DS_FAIL );
-    if( FindTypeCache( iih, im, index, ith ) == DS_OK ) {
+    if( FindTypeCache( iih, imh, index, ith ) == DS_OK ) {
         return( DS_OK );
     }
-    entry = 0;
     count = index;
-    for( ;; ) {
-        if( LoadType( iih, im, entry ) != DS_OK )
-            break;
+    for( entry = 0; LoadType( iih, imh, entry ) == DS_OK; entry++ ) {
         for( p = Type->start; p < Type->end; p = NEXT_TYPE( p ) ) {
             kind = GETU8( p + 1 );
+            if( kind == (NAME_TYPE | TYPE_EOF) ) {
+                FreeLoad();
+                return( DS_FAIL );
+            }
             switch( kind & CLASS_MASK ) {
-            case ENUM_TYPE :
+            case ENUM_TYPE:
                 if( (kind & SUBCLASS_MASK) == ENUM_LIST ) {
                     --count;
                 }
                 break;
-            case STRUCT_TYPE :
+            case STRUCT_TYPE:
                 if( (kind & SUBCLASS_MASK) == STRUCT_LIST ) {
                     --count;
                 }
                 break;
             case NAME_TYPE:
-                switch( kind & SUBCLASS_MASK ) {
-                case TYPE_CUE_TABLE:
-                    break;
-                case TYPE_EOF:
-                    FreeLoad();
-                    return( DS_FAIL );
-                default:
+                if( (kind & SUBCLASS_MASK) != TYPE_CUE_TABLE ) {
                     --count;
-                    break;
                 }
                 break;
-            default :
+            default:
                 --count;
+                break;
             }
             if( count == 0 ) {
-                ith->im = im;
+                ith->imh = imh;
                 ith->f.all = 0;
                 ith->t.entry = entry;
                 ith->t.offset = p - Type->start;
-                SetTypeCache( iih, im, index, ith );
+                SetTypeCache( iih, imh, index, ith );
                 return( DS_OK );
             }
         }
-        ++entry;
     }
     return( DS_FAIL );
 }
@@ -399,19 +393,21 @@ static byte GetRealTypeHandle( imp_image_handle *iih, imp_type_handle *ith )
     unsigned    index;
     byte        is_char;
     unsigned    len;
+    byte        kind;
 
     ith->f.s.chr = 0;
     is_char = 1;
     for( ;; ) {
         p = Type->start + ith->t.offset;
-        if( GETU8( p + 1 ) != NAME_TYPE + TYPE_NAME ) {
+        kind = GETU8( p + 1 );
+        if( kind != (NAME_TYPE | TYPE_NAME) ) {
             if( is_char
               && GETU8( p ) >= 7
-              && GETU8( p + 1 ) == NAME_TYPE + TYPE_SCALAR
+              && kind == (NAME_TYPE | TYPE_SCALAR)
               && CharName( p + 3, GETU8( p ) - 3 ) ) {
                 ith->f.s.chr = 1;
             }
-            return( GETU8( p + 1 ) );
+            return( kind );
         }
         len = GETU8( p );
         start = p;
@@ -421,7 +417,7 @@ static byte GetRealTypeHandle( imp_image_handle *iih, imp_type_handle *ith )
         if( !(is_char && len >= 4 && CharName( p, len )) ) {
             is_char = 0;
         }
-        if( FindRawTypeHandle( iih, ith->im, index, ith ) != DS_OK )
+        if( FindRawTypeHandle( iih, ith->imh, index, ith ) != DS_OK )
             return( NO_TYPE );
         if( is_char )
             ith->f.s.chr = 1;
@@ -429,57 +425,77 @@ static byte GetRealTypeHandle( imp_image_handle *iih, imp_type_handle *ith )
     }
 }
 
-static dip_status DoFindTypeHandle( imp_image_handle *iih, imp_mod_handle im,
+static dip_status DoFindTypeHandle( imp_image_handle *iih, imp_mod_handle imh,
                 unsigned index, imp_type_handle *ith )
 {
     byte                type;
     const char          *p;
     imp_type_handle     base_ith;
-    dip_status          ret;
+    dip_status          ds;
 
-    ret = FindRawTypeHandle( iih, im, index, ith );
-    if( ret != DS_OK )
-        return( ret );
-    type = GetRealTypeHandle( iih, ith );
-    switch( type & CLASS_MASK ) {
-    case NO_TYPE:
-        return( DS_FAIL );
-    case ARRAY_TYPE:
-        if( stricmp( ImpInterface.ModSrcLang( iih, im ), "fortran" ) == 0 ) {
-            ith->f.s.col_major = 1;
-            ith->f.s.array_ss = 0;
-            base_ith = *ith;
-            for( ;; ) {
-                p = Type->start + base_ith.t.offset;
-                if( (GETU8( p + 1 ) & CLASS_MASK) != ARRAY_TYPE )
-                    break;
-                p = BaseTypePtr( p );
-                GetIndex( p, &index );
-                FindRawTypeHandle( iih, base_ith.im, index, &base_ith );
-                ith->f.s.array_ss++;
+    ds = FindRawTypeHandle( iih, imh, index, ith );
+    if( ds == DS_OK ) {
+        type = GetRealTypeHandle( iih, ith );
+        switch( type & CLASS_MASK ) {
+        case NO_TYPE:
+            ds = DS_FAIL;
+            break;
+        case ARRAY_TYPE:
+            if( stricmp( ImpInterface.ModSrcLang( iih, imh ), "fortran" ) == 0 ) {
+                ith->f.s.col_major = 1;
+                ith->f.s.array_ss = 0;
+                base_ith = *ith;
+                for( ;; ) {
+                    p = Type->start + base_ith.t.offset;
+                    if( (GETU8( p + 1 ) & CLASS_MASK) != ARRAY_TYPE )
+                        break;
+                    p = BaseTypePtr( p );
+                    GetIndex( p, &index );
+                    FindRawTypeHandle( iih, base_ith.imh, index, &base_ith );
+                    ith->f.s.array_ss++;
+                }
             }
+            break;
         }
-        break;
     }
-    return( DS_OK );
+    return( ds );
 }
 
-dip_status FindTypeHandle( imp_image_handle *iih, imp_mod_handle im,
+dip_status FindTypeHandle( imp_image_handle *iih, imp_mod_handle imh,
                 unsigned index, imp_type_handle *ith )
 {
     typeinfo            typeld;
-    dip_status          ret;
+    dip_status          ds;
 
     PushLoad( &typeld );
-    ret = DoFindTypeHandle( iih, im, index, ith );
+    ds = DoFindTypeHandle( iih, imh, index, ith );
     PopLoad();
-    return( ret );
+    return( ds );
 }
 
-typedef enum { ET_ENUM = 1, ET_TYPE = 2 } type_or_enum;
+typedef enum {
+    ET_ENUM = 1,
+    ET_TYPE = 2
+} type_or_enum;
 
-enum { STRUCT_IDX, CLASS_IDX, UNION_IDX, ENUM_IDX, NUM_IDX };
-static const char *Scopes[] = { "struct", "class", "union", "enum", NULL };
+#define SCOPESDEF() \
+    pick( STRUCT_IDX,   "struct" ) \
+    pick( CLASS_IDX,    "class" ) \
+    pick( UNION_IDX,    "union" ) \
+    pick( ENUM_IDX,     "enum" )
+
+enum {
+    #define pick(e,t)   e,
+    SCOPESDEF()
+    #undef pick
+    NUM_IDX
+};
+
+static const char *Scopes[] = {
+    #define pick(e,t)   t,
+    SCOPESDEF()
+    #undef pick
+};
 
 
 struct name_state {
@@ -502,7 +518,8 @@ static const char *FindAName( struct name_state *state, const char *p,
     int         (*comp)(void const*,void const*,size_t);
     unsigned    index;
     unsigned    i;
-    unsigned    type;
+    symbol_type type;
+    byte        kind;
 
     if( li->case_sensitive ) {
         comp = memcmp;
@@ -511,9 +528,14 @@ static const char *FindAName( struct name_state *state, const char *p,
     }
     for( ; p < Type->end; p = NEXT_TYPE( p ) ) {
         state->curr_idx++;
-        switch( GETU8( p + 1 ) & CLASS_MASK ) {
+        kind = GETU8( p + 1 );
+        if( kind == (NAME_TYPE | TYPE_EOF) ) {
+            state->hit_eof = 1;
+            break;
+        }
+        switch( kind & CLASS_MASK ) {
         case ENUM_TYPE:
-            if( GETU8( p + 1 ) == ENUM_TYPE + ENUM_LIST ) {
+            if( (kind & SUBCLASS_MASK) == ENUM_LIST ) {
                 state->header = p;
             } else {
                 state->curr_idx--;
@@ -522,13 +544,9 @@ static const char *FindAName( struct name_state *state, const char *p,
                 continue;
             break;
         case NAME_TYPE:
-            if( (GETU8( p + 1 ) & SUBCLASS_MASK) == TYPE_EOF ) {
-                state->hit_eof = 1;
-                return( NULL );
-            }
             if( (which & ET_TYPE) == 0 )
                 continue;
-            switch( GETU8( p + 1 ) & SUBCLASS_MASK ) {
+            switch( kind & SUBCLASS_MASK ) {
             case TYPE_SCALAR:
                 type = ST_TYPE;
                 break;
@@ -552,7 +570,7 @@ static const char *FindAName( struct name_state *state, const char *p,
                             break;
                         }
                     }
-                    type = ST_STRUCT_TAG+i;
+                    type = ST_STRUCT_TAG + i;
                 }
                 break;
             default:
@@ -564,7 +582,7 @@ static const char *FindAName( struct name_state *state, const char *p,
                 break;
             continue;
         case STRUCT_TYPE:
-            if( GETU8( p + 1 ) == STRUCT_TYPE + STRUCT_LIST ) {
+            if( (kind & SUBCLASS_MASK) == STRUCT_LIST ) {
                 state->header = p;
             } else {
                 state->curr_idx--;
@@ -575,16 +593,14 @@ static const char *FindAName( struct name_state *state, const char *p,
         }
         name = NamePtr( p );
         len = GETU8( p ) - ( name - p );
-        if( len != li->name.len )
-            continue;
-        if( comp( name, li->name.start, len ) != 0 )
-            continue;
-        return( p );
+        if( len == li->name.len && comp( name, li->name.start, len ) == 0 ) {
+            return( p );
+        }
     }
     return( NULL );
 }
 
-search_result LookupTypeName( imp_image_handle *iih, imp_mod_handle im,
+search_result LookupTypeName( imp_image_handle *iih, imp_mod_handle imh,
                 lookup_item *li, imp_type_handle *ith )
 {
     word                entry;
@@ -593,31 +609,28 @@ search_result LookupTypeName( imp_image_handle *iih, imp_mod_handle im,
     typeinfo            typeld;
     search_result       sr;
 
+    sr = SR_NONE;
     PushLoad( &typeld );
     InitNameState( &state );
-    sr = SR_NONE;
-    entry = 0;
-    for( ;; ) {
-        if( LoadType( iih, im, entry ) != DS_OK )
-            break;
+    for( entry = 0; LoadType( iih, imh, entry ) == DS_OK; entry++ ) {
         p = FindAName( &state, Type->start, ET_TYPE, li );
         if( p != NULL ) {
-            ith->im = im;
+            ith->imh = imh;
             ith->f.all = 0;
             ith->t.entry = entry;
             ith->t.offset = p - Type->start;
             sr = SR_EXACT;
             break;
         }
-        if( state.hit_eof )
+        if( state.hit_eof ) {
             break;
-        ++entry;
+        }
     }
     PopLoad();
     return( sr );
 }
 
-static search_result SearchEnumTypeName( imp_image_handle *iih, imp_mod_handle im,
+static search_result SearchEnumTypeName( imp_image_handle *iih, imp_mod_handle imh,
                          lookup_item *li, void *d, type_or_enum which )
 {
     word                entry;
@@ -627,20 +640,14 @@ static search_result SearchEnumTypeName( imp_image_handle *iih, imp_mod_handle i
     const char          *p;
     typeinfo            typeld;
 
-    PushLoad( &typeld );
     sr = SR_NONE;
+    PushLoad( &typeld );
     InitNameState( &state );
-    entry = 0;
-    for( ;; ) {
-        if( LoadType( iih, im, entry ) != DS_OK )
-            break;
-        p = Type->start;
-        for( ;; ) {
-            p = FindAName( &state, p, which, li );
-            if( p == NULL )
-                break;
+    for( entry = 0; LoadType( iih, imh, entry ) == DS_OK; entry++ ) {
+        p = FindAName( &state, Type->start, which, li );
+        if( p != NULL ) {
             ish = DCSymCreate( iih, d );
-            ish->im = im;
+            ish->imh = imh;
             ish->name_off = (byte)( NamePtr( p ) - p );
             ish->u.typ.t.entry = entry;
             ish->u.typ.t.offset = p - Type->start;
@@ -651,35 +658,34 @@ static search_result SearchEnumTypeName( imp_image_handle *iih, imp_mod_handle i
             } else {
                 ish->type = SH_TYP;
             }
-            sr = SR_EXACT;
             /* we really should continue searching for more names that
                match, but we're going to early out because I know that
                the symbolic info format is too weak to have more than
                one type name or enum const that will match */
-            PopLoad();
-            return( sr );
-        }
-        if( state.hit_eof )
+            sr = SR_EXACT;
             break;
-        ++entry;
+        }
+        if( state.hit_eof ) {
+            break;
+        }
     }
     PopLoad();
     return( sr );
 }
 
-search_result SearchEnumName( imp_image_handle *iih, imp_mod_handle im,
+search_result SearchEnumName( imp_image_handle *iih, imp_mod_handle imh,
                          lookup_item *li, void *d )
 {
-    return( SearchEnumTypeName( iih, im, li, d, ET_ENUM ) );
+    return( SearchEnumTypeName( iih, imh, li, d, ET_ENUM ) );
 }
 
-search_result SearchTypeName( imp_image_handle *iih, imp_mod_handle im,
+search_result SearchTypeName( imp_image_handle *iih, imp_mod_handle imh,
                          lookup_item *li, void *d )
 {
-    return( SearchEnumTypeName( iih, im, li, d, ET_TYPE ) );
+    return( SearchEnumTypeName( iih, imh, li, d, ET_TYPE ) );
 }
 
-walk_result DIPIMPENTRY( WalkTypeList )( imp_image_handle *iih, imp_mod_handle im,
+walk_result DIPIMPENTRY( WalkTypeList )( imp_image_handle *iih, imp_mod_handle imh,
                         DIP_IMP_TYPE_WALKER *wk, imp_type_handle *ith, void *d )
 {
     const char  *p;
@@ -687,31 +693,31 @@ walk_result DIPIMPENTRY( WalkTypeList )( imp_image_handle *iih, imp_mod_handle i
     typeinfo    typeld;
     walk_result wr;
 
+    wr = WR_CONTINUE;
     PushLoad( &typeld );
-    ith->im = im;
+    ith->imh = imh;
     ith->f.all = 0;
-    ith->t.entry = 0;
-    for( ;; ) {
-        if( LoadType( iih, im, ith->t.entry ) != DS_OK )
-            break;
+    for( ith->t.entry = 0; LoadType( iih, imh, ith->t.entry ) == DS_OK; ith->t.entry++ ) {
+        kind = 0;
         for( p = Type->start; p < Type->end; p = NEXT_TYPE( p ) ) {
             kind = GETU8( p + 1 );
+            if( kind == (NAME_TYPE | TYPE_EOF) ) {
+                break;
+            }
             switch( kind & CLASS_MASK ) {
             case NAME_TYPE:
                 switch( kind & SUBCLASS_MASK ) {
                 case TYPE_SCOPE:
                 case TYPE_CUE_TABLE:
                     continue;
-                case TYPE_EOF:
-                    goto done;
                 }
                 break;
-            case ENUM_TYPE :
+            case ENUM_TYPE:
                 if( (kind & SUBCLASS_MASK) != ENUM_LIST ) {
                     continue;
                 }
                 break;
-            case STRUCT_TYPE :
+            case STRUCT_TYPE:
                 if( (kind & SUBCLASS_MASK) != STRUCT_LIST ) {
                     continue;
                 }
@@ -725,18 +731,18 @@ walk_result DIPIMPENTRY( WalkTypeList )( imp_image_handle *iih, imp_mod_handle i
             ith->t.offset = p - Type->start;
             wr = wk( iih, ith, d );
             if( wr != WR_CONTINUE ) {
-                PopLoad();
-                return( wr );
+                break;
             }
         }
-        ith->t.entry++;
+        if( wr != WR_CONTINUE || kind == (NAME_TYPE | TYPE_EOF) ) {
+            break;
+        }
     }
-done:
     PopLoad();
-    return( WR_CONTINUE );
+    return( wr );
 }
 
-static void ScalarInfo( unsigned info, dip_type_info *ti )
+static void ScalarInfo( unsigned info, dig_type_info *ti )
 {
     ti->size = (info & SCLR_LEN_MASK) + 1;
     switch( info & SCLR_CLASS_MASK ) {
@@ -762,7 +768,7 @@ static void ScalarInfo( unsigned info, dip_type_info *ti )
 
 
 static dip_status GetTypeInfo(imp_image_handle *iih, imp_type_handle *ith,
-                    location_context *lc, dip_type_info *ti, unsigned *ndims )
+                    location_context *lc, dig_type_info *ti, unsigned *ndims )
 {
     const char          *p;
     byte                subkind;
@@ -771,7 +777,7 @@ static dip_status GetTypeInfo(imp_image_handle *iih, imp_type_handle *ith,
     array_info          info;
     byte                is_char;
     byte                save_major;
-    dip_status          ret;
+    dip_status          ds;
     unsigned            index;
     unsigned            count;
     unsigned long       max;
@@ -780,170 +786,198 @@ static dip_status GetTypeInfo(imp_image_handle *iih, imp_type_handle *ith,
     typeinfo            typeld;
     location_list       ll;
 
+    ds = DS_OK;
     PushLoad( &typeld );
     ti->kind = TK_NONE;
-    ti->modifier = TM_NONE;
     ti->size = 0;
+    ti->modifier = TM_NONE;
+    ti->deref = false;
     if( ith->f.s.gbl ) {
         ti->kind = GblTypeClassify( ith->t.offset );
     } else if( ith->f.s.sclr ) {
         ScalarInfo( ith->t.offset, ti );
     } else {
         is_char = ith->f.s.chr;
-        ret = LoadType( iih, ith->im, ith->t.entry );
-        if( ret != DS_OK ) {
-            PopLoad();
-            return( ret );
-        }
-        if( !GetRealTypeHandle( iih, ith ) ) {
-            PopLoad();
-            return( DS_FAIL );
-        }
-        p = ith->t.offset + Type->start;
-        subkind = GETU8( p + 1 ) & SUBCLASS_MASK;
-        switch( GETU8( p + 1 ) & CLASS_MASK ) {
-        case NAME_TYPE:
-            if( subkind == TYPE_SCALAR ) {
-                ScalarInfo( GETU8( p + 2 ), ti );
-                if( is_char && ti->kind == TK_INTEGER && ti->size == 1 ) {
-                    ti->kind = TK_CHAR;
-                }
-            }
-            break;
-        case ARRAY_TYPE:
-            FreeLoad();
-            save_major = ith->f.s.col_major;
-            ith->f.s.col_major = 0;
-            ImpInterface.TypeArrayInfo( iih, ith, lc, &info, NULL );
-            ImpInterface.TypeBase( iih, ith, &tmp_ith, NULL, NULL );
-            GetTypeInfo( iih, &tmp_ith, lc, ti, ndims );
-            ith->f.s.col_major = save_major;
-            if( ndims != NULL )
-                ++*ndims;
-            ti->size *= info.num_elts;
-            ti->modifier = TM_NONE;
-            ti->kind = TK_ARRAY;
-            Type->start = NULL;
-            break;
-        case SUBRANGE_TYPE:
-            ImpInterface.TypeBase( iih, ith, &tmp_ith, NULL, NULL );
-            ImpInterface.TypeInfo( iih, &tmp_ith, lc, ti );
-            break;
-        case POINTER_TYPE:
-            {
-                static const char PSize[] = {2,4,4,2,4,4,4,6,4,6};
-                #define N TM_NEAR
-                #define F TM_FAR
-                #define H TM_HUGE
-                #define D TM_FLAG_DEREF
-                static const char PMods[] = {N,F,H,N|D,F|D,H|D,N,F,N|D,F|D};
-
-                ti->size = PSize[subkind];
-                ti->modifier = PMods[subkind];
-                ti->kind = TK_POINTER;
-            }
-            break;
-        case ENUM_TYPE:
-            ScalarInfo( GETU8( p + 4 ), ti );
-            ti->kind = TK_ENUM;
-            break;
-        case STRUCT_TYPE:
-            if( GETU8( p ) > 4 ) {
-                ti->size = GETU32( p + 4 );
+        ds = LoadType( iih, ith->imh, ith->t.entry );
+        if( ds == DS_OK ) {
+            if( !GetRealTypeHandle( iih, ith ) ) {
+                ds = DS_FAIL;
             } else {
-                max = 0;
-                for( count = GETU16( p + 2 ); count > 0; --count ) {
-                    skip = 2;
-                    p = NEXT_TYPE( p );
-                    switch( GETU8( p + 1 ) ) {
-                    case STRUCT_TYPE+ST_BIT_BYTE:
-                        skip += 2;
-                        /* fall through */
-                    case STRUCT_TYPE+ST_FIELD_BYTE:
-                        skip += 1;
-                        offset = GETU8( p + 2 );
-                        break;
-                    case STRUCT_TYPE+ST_BIT_WORD:
-                        skip += 2;
-                        /* fall through */
-                    case STRUCT_TYPE+ST_FIELD_WORD:
-                        skip += 2;
-                        offset = GETU16( p + 2 );
-                        break;
-                    case STRUCT_TYPE+ST_BIT_LONG:
-                        skip += 2;
-                        /* fall through */
-                    case STRUCT_TYPE+ST_FIELD_LONG:
-                        skip += 4;
-                        offset = GETU32( p + 2 );
-                        break;
-                    case STRUCT_TYPE+ST_FIELD_LOC:
-                    case STRUCT_TYPE+ST_BIT_LOC:
-                    case STRUCT_TYPE+ST_INHERIT:
-                        skip = 0;
-                        break;
-                    }
-                    if( skip > 0 ) {
-                        GetIndex( p + skip, &index );
-                        /* Pulling a trick. We know that the size
-                           field will only be absent in older objects,
-                           and thus will only have one type section per
-                           module. */
-                        FindTypeHandle( iih, ith->im, index, &tmp_ith );
-                        GetTypeInfo( iih, &tmp_ith, lc, ti, NULL );
-                        offset += ti->size;
-                        if( offset > max ) {
-                            max = offset;
+                p = ith->t.offset + Type->start;
+                subkind = GETU8( p + 1 ) & SUBCLASS_MASK;
+                switch( GETU8( p + 1 ) & CLASS_MASK ) {
+                case NAME_TYPE:
+                    if( subkind == TYPE_SCALAR ) {
+                        ScalarInfo( GETU8( p + 2 ), ti );
+                        if( is_char && ti->kind == TK_INTEGER && ti->size == 1 ) {
+                            ti->kind = TK_CHAR;
                         }
                     }
-                }
-                ti->size = max;
-            }
-            ti->kind = TK_STRUCT;
-            break;
-        case PROC_TYPE:
-            {
-                static const char FMods[] = {
-                    TM_NEAR,TM_FAR,TM_NEAR,TM_FAR
-                };
+                    break;
+                case ARRAY_TYPE:
+                    FreeLoad();
+                    save_major = ith->f.s.col_major;
+                    ith->f.s.col_major = 0;
+                    ImpInterface.TypeArrayInfo( iih, ith, lc, &info, NULL );
+                    ImpInterface.TypeBase( iih, ith, &tmp_ith, NULL, NULL );
+                    GetTypeInfo( iih, &tmp_ith, lc, ti, ndims );
+                    ith->f.s.col_major = save_major;
+                    if( ndims != NULL )
+                        ++*ndims;
+                    ti->kind = TK_ARRAY;
+                    ti->size *= info.num_elts;
+                    ti->modifier = TM_NONE;
+                    ti->deref = false;
+                    Type->start = NULL;
+                    break;
+                case SUBRANGE_TYPE:
+                    ImpInterface.TypeBase( iih, ith, &tmp_ith, NULL, NULL );
+                    ImpInterface.TypeInfo( iih, &tmp_ith, lc, ti );
+                    break;
+                case POINTER_TYPE:
+                    {
+#define POINTER_INFO() \
+    pick( 2, TM_NEAR,   false ) \
+    pick( 4, TM_FAR,    false ) \
+    pick( 4, TM_HUGE,   false ) \
+    pick( 2, TM_NEAR,   true ) \
+    pick( 4, TM_FAR,    true ) \
+    pick( 4, TM_HUGE,   true ) \
+    pick( 4, TM_NEAR,   false ) \
+    pick( 6, TM_FAR,    false ) \
+    pick( 4, TM_NEAR,   true ) \
+    pick( 6, TM_FAR,    true )
 
-                ti->modifier = FMods[subkind];
-                ti->kind = TK_FUNCTION;
+                        static const unsigned char PSize[] = {
+                            #define pick(s,m,d)     s,
+                            POINTER_INFO()
+                            #undef pick
+                        };
+                        static const type_modifier PMods[] = {
+                            #define pick(s,m,d)     m,
+                            POINTER_INFO()
+                            #undef pick
+                        };
+                        static const bool PDeref[] = {
+                            #define pick(s,m,d)     d,
+                            POINTER_INFO()
+                            #undef pick
+                        };
+
+                        ti->kind = TK_POINTER;
+                        ti->size = PSize[subkind];
+                        ti->modifier = PMods[subkind];
+                        if( PDeref[subkind] ) {
+                            ti->deref = true;
+                        }
+                    }
+                    break;
+                case ENUM_TYPE:
+                    ScalarInfo( GETU8( p + 4 ), ti );
+                    ti->kind = TK_ENUM;
+                    break;
+                case STRUCT_TYPE:
+                    if( GETU8( p ) > 4 ) {
+                        ti->size = GETU32( p + 4 );
+                    } else {
+                        max = 0;
+                        for( count = GETU16( p + 2 ); count > 0; --count ) {
+                            skip = 2;
+                            p = NEXT_TYPE( p );
+                            switch( GETU8( p + 1 ) ) {
+                            case STRUCT_TYPE | ST_BIT_BYTE:
+                                skip += 2;
+                                /* fall through */
+                            case STRUCT_TYPE | ST_FIELD_BYTE:
+                                skip += 1;
+                                offset = GETU8( p + 2 );
+                                break;
+                            case STRUCT_TYPE | ST_BIT_WORD:
+                                skip += 2;
+                                /* fall through */
+                            case STRUCT_TYPE | ST_FIELD_WORD:
+                                skip += 2;
+                                offset = GETU16( p + 2 );
+                                break;
+                            case STRUCT_TYPE | ST_BIT_LONG:
+                                skip += 2;
+                                /* fall through */
+                            case STRUCT_TYPE | ST_FIELD_LONG:
+                                skip += 4;
+                                offset = GETU32( p + 2 );
+                                break;
+                            case STRUCT_TYPE | ST_FIELD_LOC:
+                            case STRUCT_TYPE | ST_BIT_LOC:
+                            case STRUCT_TYPE | ST_INHERIT:
+                                skip = 0;
+                                break;
+                            }
+                            if( skip > 0 ) {
+                                GetIndex( p + skip, &index );
+                                /* Pulling a trick. We know that the size
+                                   field will only be absent in older objects,
+                                   and thus will only have one type section per
+                                   module. */
+                                FindTypeHandle( iih, ith->imh, index, &tmp_ith );
+                                GetTypeInfo( iih, &tmp_ith, lc, ti, NULL );
+                                offset += ti->size;
+                                if( offset > max ) {
+                                    max = offset;
+                                }
+                            }
+                        }
+                        ti->size = max;
+                    }
+                    ti->kind = TK_STRUCT;
+                    break;
+                case PROC_TYPE:
+                    {
+                        static const char FMods[] = {
+                            TM_NEAR,
+                            TM_FAR,
+                            TM_NEAR,
+                            TM_FAR
+                        };
+
+                        ti->modifier = FMods[subkind];
+                        ti->kind = TK_FUNCTION;
+                    }
+                    break;
+                case CHAR_TYPE:
+                    switch( subkind ) {
+                    case CHAR_BYTE_LEN:
+                        ti->size = GETU8( p + 2 );
+                        break;
+                    case CHAR_WORD_LEN:
+                        ti->size = GETU16( p + 2 );
+                        break;
+                    case CHAR_LONG_LEN:
+                        ti->size = GETU32( p + 2);
+                        break;
+                    case CHAR_DESC_LEN:
+                        GetAddress( iih, p + 3, &addr, 0 );
+                        ti->size = GetScalar( addr, GETU8( p + 2 ) );
+                        break;
+                    case CHAR_DESC386_LEN:
+                        GetAddress( iih, p + 3, &addr, 1 );
+                        ti->size = GetScalar( addr, GETU8( p + 2 ) );
+                        break;
+                    case CHAR_DESC_LOC:
+                        EvalLocation( iih, lc, p + 3, &ll );
+                        ti->size = GetScalar( ll.e[0].u.addr, GETU8( p + 2 ) );
+                        break;
+                    }
+                    ti->kind = TK_STRING;
+                }
             }
-            break;
-        case CHAR_TYPE:
-            switch( subkind ) {
-            case CHAR_BYTE_LEN:
-                ti->size = GETU8( p + 2 );
-                break;
-            case CHAR_WORD_LEN:
-                ti->size = GETU16( p + 2 );
-                break;
-            case CHAR_LONG_LEN:
-                ti->size = GETU32( p + 2);
-                break;
-            case CHAR_DESC_LEN:
-                GetAddress( iih, p + 3, &addr, 0 );
-                ti->size = GetScalar( addr, GETU8( p + 2 ) );
-                break;
-            case CHAR_DESC386_LEN:
-                GetAddress( iih, p + 3, &addr, 1 );
-                ti->size = GetScalar( addr, GETU8( p + 2 ) );
-                break;
-            case CHAR_DESC_LOC:
-                EvalLocation( iih, lc, p + 3, &ll );
-                ti->size = GetScalar( ll.e[0].u.addr, GETU8( p + 2 ) );
-                break;
-            }
-            ti->kind = TK_STRING;
         }
     }
     PopLoad();
-    return( DS_OK );
+    return( ds );
 }
 
 dip_status DIPIMPENTRY( TypeInfo )(imp_image_handle *iih, imp_type_handle *ith,
-                        location_context *lc, dip_type_info *ti )
+                        location_context *lc, dig_type_info *ti )
 {
     return( GetTypeInfo( iih, ith, lc, ti, NULL ) );
 }
@@ -954,45 +988,45 @@ dip_status DIPIMPENTRY( TypeBase )(imp_image_handle *iih, imp_type_handle *ith,
 {
     unsigned    index;
     const char  *p;
-    dip_status  ret;
+    dip_status  ds;
     typeinfo    typeld;
 
     /* unused parameters */ (void)lc; (void)ll;
 
     PushLoad( &typeld );
     *base_ith = *ith;
-    ret = LoadType( iih, ith->im, ith->t.entry );
-    if( ret != DS_OK ) {
-        PopLoad();
-        return( ret );
-    }
-    p = ith->t.offset + Type->start;
-    if( base_ith->f.s.col_major ) {
-        if( base_ith->f.s.array_ss > 1 ) {
-            base_ith->f.s.array_ss--;
+    ds = LoadType( iih, ith->imh, ith->t.entry );
+    if( ds == DS_OK ) {
+        p = ith->t.offset + Type->start;
+        if( base_ith->f.s.col_major ) {
+            if( base_ith->f.s.array_ss > 1 ) {
+                base_ith->f.s.array_ss--;
+            } else {
+                base_ith->f.s.col_major = 0;
+                do {
+                    p = BaseTypePtr( p );
+                    GetIndex( p, &index );
+                    FindRawTypeHandle( iih, base_ith->imh, index, base_ith );
+                    p = base_ith->t.offset + Type->start;
+                } while( (GETU8( p + 1 ) & CLASS_MASK) == ARRAY_TYPE );
+            }
+        } else if( GETU8( p + 1 ) == (ENUM_TYPE | ENUM_LIST) ) {
+            base_ith->t.offset = GETU8( p + 4 );
+            base_ith->f.s.sclr = 1;
         } else {
-            base_ith->f.s.col_major = 0;
-            do {
-                p = BaseTypePtr( p );
+            p = BaseTypePtr( p );
+            if( p == NULL ) {
+                ds = DS_FAIL;
+            } else {
                 GetIndex( p, &index );
-                FindRawTypeHandle( iih, base_ith->im, index, base_ith );
-                p = base_ith->t.offset + Type->start;
-            } while( (GETU8( p + 1 ) & CLASS_MASK) == ARRAY_TYPE );
+                PopLoad();
+                FindTypeHandle( iih, ith->imh, index, base_ith );
+                return( ds );
+            }
         }
-        PopLoad();
-    } else if( GETU8( p + 1 ) == ENUM_TYPE+ENUM_LIST ) {
-        base_ith->t.offset = GETU8( p + 4 );
-        base_ith->f.s.sclr = 1;
-        PopLoad();
-    } else {
-        p = BaseTypePtr( p );
-        if( p == NULL )
-            return( DS_FAIL );
-        GetIndex( p, &index );
-        PopLoad();
-        FindTypeHandle( iih, ith->im, index, base_ith );
     }
-    return( DS_OK );
+    PopLoad();
+    return( ds );
 }
 
 dip_status DIPIMPENTRY( TypeArrayInfo )(imp_image_handle *iih, imp_type_handle *ith,
@@ -1005,9 +1039,9 @@ dip_status DIPIMPENTRY( TypeArrayInfo )(imp_image_handle *iih, imp_type_handle *
     address             addr;
     byte                is_32;
     long                hi = 0;
-    dip_type_info       info;
+    dig_type_info       ti;
     unsigned            count;
-    dip_status          ret;
+    dip_status          ds;
     typeinfo            typeld;
 
     if( ith->f.s.col_major ) {
@@ -1022,87 +1056,83 @@ dip_status DIPIMPENTRY( TypeArrayInfo )(imp_image_handle *iih, imp_type_handle *
         return( DS_OK );
     }
     PushLoad( &typeld );
-    ret = LoadType( iih, ith->im, ith->t.entry );
-    if( ret != DS_OK ) {
-        PopLoad();
-        return( ret );
-    }
-    is_32 = 1;
-    index_idx = 0;
-    scalar = SCLR_UNSIGNED | 3;
-    p = ith->t.offset + Type->start;
-    switch( GETU8( p + 1 ) ) {
-    case ARRAY_TYPE + ARRAY_BYTE_INDEX:
-        ai->num_elts = GETU8( p + 2 ) + 1;
-        ai->low_bound = 0;
-        break;
-    case ARRAY_TYPE+ARRAY_WORD_INDEX:
-        ai->num_elts = GETU16( p + 2 ) + 1;
-        ai->low_bound = 0;
-        break;
-    case ARRAY_TYPE+ARRAY_LONG_INDEX:
-        ai->num_elts = GETU32( p + 2 ) + 1;
-        ai->low_bound = 0;
-        break;
-    case ARRAY_TYPE+ARRAY_TYPE_INDEX:
-        GetIndex( p + 2, &index_idx );
-        ret = FindTypeHandle( iih, ith->im, index_idx, &tmp_ith );
-        if( ret != DS_OK ) {
-            PopLoad();
-            return( ret );
-        }
-        ret = LoadType( iih, tmp_ith.im, tmp_ith.t.entry );
-        if( ret != DS_OK ) {
-            PopLoad();
-            return( ret );
-        }
-        p = tmp_ith.t.offset + Type->start;
+    ds = LoadType( iih, ith->imh, ith->t.entry );
+    if( ds == DS_OK ) {
+        is_32 = 1;
+        index_idx = 0;
+        scalar = SCLR_UNSIGNED | 3;
+        p = ith->t.offset + Type->start;
         switch( GETU8( p + 1 ) ) {
-        case SUBRANGE_TYPE+SUBRANGE_BYTE:
-            ai->low_bound = GETS8( p + 2 );
-            hi = GETS8( p + 3 );
+        case ARRAY_TYPE | ARRAY_BYTE_INDEX:
+            ai->num_elts = GETU8( p + 2 ) + 1;
+            ai->low_bound = 0;
             break;
-        case SUBRANGE_TYPE+SUBRANGE_WORD:
-            ai->low_bound = GETS16( p + 2 );
-            hi = GETS16( p + 4 );
+        case ARRAY_TYPE | ARRAY_WORD_INDEX:
+            ai->num_elts = GETU16( p + 2 ) + 1;
+            ai->low_bound = 0;
             break;
-        case SUBRANGE_TYPE+SUBRANGE_LONG:
-            ai->low_bound = GETS32( p + 2 );
-            hi = GETS32( p + 6 );
+        case ARRAY_TYPE | ARRAY_LONG_INDEX:
+            ai->num_elts = GETU32( p + 2 ) + 1;
+            ai->low_bound = 0;
+            break;
+        case ARRAY_TYPE | ARRAY_TYPE_INDEX:
+            GetIndex( p + 2, &index_idx );
+            ds = FindTypeHandle( iih, ith->imh, index_idx, &tmp_ith );
+            if( ds == DS_OK ) {
+                ds = LoadType( iih, tmp_ith.imh, tmp_ith.t.entry );
+                if( ds == DS_OK ) {
+                    p = tmp_ith.t.offset + Type->start;
+                    switch( GETU8( p + 1 ) ) {
+                    case SUBRANGE_TYPE | SUBRANGE_BYTE:
+                        ai->low_bound = GETS8( p + 2 );
+                        hi = GETS8( p + 3 );
+                        break;
+                    case SUBRANGE_TYPE | SUBRANGE_WORD:
+                        ai->low_bound = GETS16( p + 2 );
+                        hi = GETS16( p + 4 );
+                        break;
+                    case SUBRANGE_TYPE | SUBRANGE_LONG:
+                        ai->low_bound = GETS32( p + 2 );
+                        hi = GETS32( p + 6 );
+                        break;
+                    }
+                    ai->num_elts = (hi - ai->low_bound) + 1;
+                }
+            }
+            break;
+        case ARRAY_TYPE | ARRAY_DESC_INDEX:
+            is_32 = 0;
+            /* fall through */
+        case ARRAY_TYPE | ARRAY_DESC386_INDEX:
+            GetAddress( iih, p + 4, &addr, is_32 );
+            scalar = GETU8( p + 2 );
+            ai->low_bound = GetScalar( addr, scalar );
+            addr.mach.offset += (scalar & SCLR_LEN_MASK) + 1;
+            ai->num_elts = GetScalar( addr, GETU8( p + 3 ) );
             break;
         }
-        ai->num_elts = (hi - ai->low_bound) + 1;
-        break;
-    case ARRAY_TYPE+ARRAY_DESC_INDEX:
-        is_32 = 0;
-        /* fall through */
-    case ARRAY_TYPE+ARRAY_DESC386_INDEX:
-        GetAddress( iih, p + 4, &addr, is_32 );
-        scalar = GETU8( p + 2 );
-        ai->low_bound = GetScalar( addr, scalar );
-        addr.mach.offset += (scalar & SCLR_LEN_MASK) + 1;
-        ai->num_elts = GetScalar( addr, GETU8( p + 3 ) );
-        break;
     }
     PopLoad();
-    ImpInterface.TypeBase( iih, ith, &tmp_ith, NULL, NULL );
-    ai->num_dims = 1;
-    ret = GetTypeInfo( iih, &tmp_ith, lc, &info, &ai->num_dims );
-    if( ret != DS_OK )
-        return( ret );
-    ai->stride = info.size;
-    ai->column_major = 0;
-    if( index_ith != NULL ) {
-        if( index_idx != 0 ) {
-            FindTypeHandle( iih, ith->im, index_idx, index_ith );
-        } else {
-            index_ith->im = ith->im;
-            index_ith->f.all = 0;
-            index_ith->f.s.sclr = 1;
-            index_ith->t.offset = scalar;
+    if( ds == DS_OK ) {
+        ImpInterface.TypeBase( iih, ith, &tmp_ith, NULL, NULL );
+        ai->num_dims = 1;
+        ds = GetTypeInfo( iih, &tmp_ith, lc, &ti, &ai->num_dims );
+        if( ds == DS_OK ) {
+            ai->stride = ti.size;
+            ai->column_major = 0;
+            if( index_ith != NULL ) {
+                if( index_idx != 0 ) {
+                    FindTypeHandle( iih, ith->imh, index_idx, index_ith );
+                } else {
+                    index_ith->imh = ith->imh;
+                    index_ith->f.all = 0;
+                    index_ith->f.s.sclr = 1;
+                    index_ith->t.offset = scalar;
+                }
+            }
         }
     }
-    return( DS_OK );
+    return( ds );
 }
 
 dip_status DIPIMPENTRY( TypeProcInfo )(imp_image_handle *iih, imp_type_handle *ith,
@@ -1111,40 +1141,39 @@ dip_status DIPIMPENTRY( TypeProcInfo )(imp_image_handle *iih, imp_type_handle *i
     const char  *p;
     const char  *end;
     unsigned    index;
-    dip_status  ret;
+    dip_status  ds;
     typeinfo    typeld;
 
     PushLoad( &typeld );
-    ret = LoadType( iih, ith->im, ith->t.entry );
-    if( ret != DS_OK ) {
-        PopLoad();
-        return( ret );
-    }
-    p = Type->start + ith->t.offset;
-    end = NEXT_TYPE( p );
-    p = GetIndex( p + 2, &index );
-    if( num == 0 ) {
-        /* nothing to do */
-    } else if( num <= GETU8( p ) ) {
-        ++p;
-        for( ;; ) {
-            if( p == end ) {
-                /* handle EXT_PARMS record */
-                p += 2;
-                end = NEXT_TYPE( p );
+    ds = LoadType( iih, ith->imh, ith->t.entry );
+    if( ds == DS_OK ) {
+        p = Type->start + ith->t.offset;
+        end = NEXT_TYPE( p );
+        p = GetIndex( p + 2, &index );
+        if( num == 0 ) {
+            /* nothing to do */
+        } else if( num <= GETU8( p ) ) {
+            ++p;
+            for( ;; ) {
+                if( p == end ) {
+                    /* handle EXT_PARMS record */
+                    p += 2;
+                    end = NEXT_TYPE( p );
+                }
+                p = GetIndex( p, &index );
+                --num;
+                if( num == 0 ) {
+                    break;
+                }
             }
-            p = GetIndex( p, &index );
-            --num;
-            if( num == 0 ) {
-                break;
-            }
+        } else {
+            ds = DS_NO_PARM;
         }
-    } else {
-        PopLoad();
-        return( DS_NO_PARM );
     }
     PopLoad();
-    return( FindTypeHandle( iih, ith->im, index, parm_ith ) );
+    if( ds == DS_OK )
+        return( FindTypeHandle( iih, ith->imh, index, parm_ith ) );
+    return( ds );
 }
 
 dip_status DIPIMPENTRY( TypePtrAddrSpace )( imp_image_handle *iih,
@@ -1152,35 +1181,34 @@ dip_status DIPIMPENTRY( TypePtrAddrSpace )( imp_image_handle *iih,
 {
     const char          *p;
     const char          *end;
-    dip_status          ret;
+    dip_status          ds;
     location_list       ll;
     unsigned            dummy;
     typeinfo            typeld;
 
     PushLoad( &typeld );
-    ret = LoadType( iih, ith->im, ith->t.entry );
-    if( ret != DS_OK ) {
-        PopLoad();
-        return( ret );
+    ds = LoadType( iih, ith->imh, ith->t.entry );
+    if( ds == DS_OK ) {
+        p = Type->start + ith->t.offset;
+        end = NEXT_TYPE( p );
+        p = GetIndex( p + 2, &dummy );
+        if( p >= end ) {
+            ds = DS_FAIL;
+        } else {
+            LocationCreate( &ll, LT_ADDR, addr );
+            PushBaseLocation( &ll );
+            ds = EvalLocation( iih, lc, p, &ll );
+        }
     }
-    p = Type->start + ith->t.offset;
-    end = NEXT_TYPE( p );
-    p = GetIndex( p + 2, &dummy );
-    if( p >= end ) {
-        PopLoad();
-        return( DS_FAIL );
-    }
-    LocationCreate( &ll, LT_ADDR, addr );
-    PushBaseLocation( &ll );
-    ret = EvalLocation( iih, lc, p, &ll );
     PopLoad();
-    if( ret != DS_OK )
-        return( ret );
-    if( ll.num != 1 || ll.e[0].type != LT_ADDR ) {
-        return( DS_ERR|DS_BAD_LOCATION );
+    if( ds == DS_OK ) {
+        if( ll.num != 1 || ll.e[0].type != LT_ADDR ) {
+            ds = DS_ERR | DS_BAD_LOCATION;
+        } else {
+            *addr = ll.e[0].u.addr;
+        }
     }
-    *addr = ll.e[0].u.addr;
-    return( DS_OK );
+    return( ds );
 }
 
 unsigned SymHdl2CstName( imp_image_handle *iih, imp_sym_handle *ish,
@@ -1190,19 +1218,18 @@ unsigned SymHdl2CstName( imp_image_handle *iih, imp_sym_handle *ish,
     unsigned    len;
     typeinfo    typeld;
 
+    len = 0;
     PushLoad( &typeld );
-    if( LoadType( iih, ish->im, ish->u.typ.t.entry ) != DS_OK ) {
-        PopLoad();
-        return( 0 );
-    }
-    p = Type->start + ish->u.typ.t.offset;
-    len = GETU8( p ) - ish->name_off;
-    if( buff_size > 0 ) {
-        --buff_size;
-        if( buff_size > len )
-            buff_size = len;
-        memcpy( buff, p + ish->name_off, buff_size );
-        buff[buff_size] = '\0';
+    if( LoadType( iih, ish->imh, ish->u.typ.t.entry ) == DS_OK ) {
+        p = Type->start + ish->u.typ.t.offset;
+        len = GETU8( p ) - ish->name_off;
+        if( buff_size > 0 ) {
+            --buff_size;
+            if( buff_size > len )
+                buff_size = len;
+            memcpy( buff, p + ish->name_off, buff_size );
+            buff[buff_size] = '\0';
+        }
     }
     PopLoad();
     return( len );
@@ -1225,35 +1252,33 @@ dip_status SymHdl2CstValue( imp_image_handle *iih, imp_sym_handle *ish, void *d 
     const char          *p;
     const char          *e;
     unsigned_64         val;
-    dip_status          ret;
+    dip_status          ds;
     typeinfo            typeld;
 
     PushLoad( &typeld );
-    ret = LoadType( iih, ish->im, ish->u.typ.t.entry );
-    if( ret != DS_OK ) {
-        PopLoad();
-        return( ret );
+    ds = LoadType( iih, ish->imh, ish->u.typ.t.entry );
+    if( ds == DS_OK ) {
+        memset( &val, 0, sizeof( val ) );
+        p = Type->start + ish->u.typ.t.offset;
+        switch( GETU8( p + 1 ) ) {
+        case ENUM_TYPE | ENUM_CONST_BYTE:
+            val.u._32[0] = GETS8( p + 2 );
+            break;
+        case ENUM_TYPE | ENUM_CONST_WORD:
+            val.u._32[0] = GETS16( p + 2 );
+            break;
+        case ENUM_TYPE | ENUM_CONST_LONG:
+            val.u._32[0] = GETS32( p + 2 );
+            break;
+        case ENUM_TYPE | ENUM_CONST_I64:
+            memcpy( &val, p + 2, sizeof( val ) );
+            break;
+        }
+        e = Type->start + ish->u.typ.h.offset;
+        memcpy( d, &val, (GETU8( e + 4 ) & SCLR_LEN_MASK) + 1 );
     }
-    memset( &val, 0, sizeof( val ) );
-    p = Type->start + ish->u.typ.t.offset;
-    switch( GETU8( p + 1 ) ) {
-    case ENUM_TYPE+ENUM_CONST_BYTE:
-        val.u._32[0] = GETS8( p + 2 );
-        break;
-    case ENUM_TYPE+ENUM_CONST_WORD:
-        val.u._32[0] = GETS16( p + 2 );
-        break;
-    case ENUM_TYPE+ENUM_CONST_LONG:
-        val.u._32[0] = GETS32( p + 2 );
-        break;
-    case ENUM_TYPE+ENUM_CONST_I64:
-        memcpy( &val, p + 2, sizeof( val ) );
-        break;
-    }
-    e = Type->start + ish->u.typ.h.offset;
-    memcpy( d, &val, (GETU8( e + 4 ) & SCLR_LEN_MASK) + 1 );
     PopLoad();
-    return( DS_OK );
+    return( ds );
 }
 
 dip_status SymHdl2CstType( imp_image_handle *iih, imp_sym_handle *ish,
@@ -1261,7 +1286,7 @@ dip_status SymHdl2CstType( imp_image_handle *iih, imp_sym_handle *ish,
 {
     /* unused parameters */ (void)iih;
 
-    ith->im = ish->im;
+    ith->imh = ish->imh;
     ith->t = ish->u.typ.h;
     ith->f.all = 0;
     return( DS_OK );
@@ -1272,7 +1297,7 @@ dip_status SymHdl2TypType( imp_image_handle *iih, imp_sym_handle *ish,
 {
     /* unused parameters */ (void)iih;
 
-    ith->im = ish->im;
+    ith->imh = ish->imh;
     ith->t = ish->u.typ.t;
     ith->f.all = 0;
     return( DS_OK );
@@ -1283,20 +1308,20 @@ dip_status SymHdl2MbrType( imp_image_handle *iih, imp_sym_handle *ish,
 {
     const char  *p;
     unsigned    index;
-    dip_status  ret;
+    dip_status  ds;
     typeinfo    typeld;
 
     PushLoad( &typeld );
-    ret = LoadType( iih, ish->im, ish->u.typ.t.entry );
-    if( ret != DS_OK ) {
-        PopLoad();
-        return( ret );
+    ds = LoadType( iih, ish->imh, ish->u.typ.t.entry );
+    if( ds == DS_OK ) {
+        p = Type->start + ish->u.typ.t.offset;
+        p = BaseTypePtr( p );
+        GetIndex( p, &index );
     }
-    p = Type->start + ish->u.typ.t.offset;
-    p = BaseTypePtr( p );
-    GetIndex( p, &index );
     PopLoad();
-    return( FindTypeHandle( iih, ish->im, index, ith ) );
+    if( ds == DS_OK )
+        return( FindTypeHandle( iih, ish->imh, index, ith ) );
+    return( ds );
 }
 
 
@@ -1325,7 +1350,7 @@ dip_status SymHdl2MbrLoc( imp_image_handle *iih, imp_sym_handle *ish,
     struct anc_graph    *pending, *new, *tmp;
     imp_type_handle     new_ith;
     unsigned            index;
-    dip_status          ok;
+    dip_status          ds;
     location_list       adj;
     addr_off            offset = 0;
     unsigned            bit_start;
@@ -1334,157 +1359,154 @@ dip_status SymHdl2MbrLoc( imp_image_handle *iih, imp_sym_handle *ish,
     typeinfo            typeld;
 
     PushLoad( &typeld );
-    ok = LoadType( iih, ish->im, ish->u.typ.t.entry );
-    if( ok != DS_OK ) {
-        PopLoad();
-        return( ok );
-    }
-    p = Type->start + ish->u.typ.t.offset;
-    switch( GETU8( p + 1 ) ) {
-    case STRUCT_TYPE+ST_FIELD_LOC:
-    case STRUCT_TYPE+ST_BIT_LOC:
-        info = InfoLocation( p + 3 );
-        break;
-    default:
-        info = NEED_BASE;
-        break;
-    }
-    if( info & (NEED_BASE|EMPTY_EXPR) ) {
-        ok = LoadType( iih, ish->im, ish->u.typ.h.entry );
-        if( ok != DS_OK ) {
-            PopLoad();
-            return( ok );
-        }
-        p = Type->start + ish->u.typ.h.offset;
-        pending = NULL;
-        count = GETU16( p + 2 );
-        for( ;; ) {
-            if( count == 0 ) {
-                if( pending == NULL )
-                    return( DS_FAIL );
-                ok = LoadType( iih, ish->im, pending->entry );
-                if( ok != DS_OK ) {
-                    PopLoad();
-                    return( ok );
-                }
-                count = pending->u.s.count;
-                p = Type->start + pending->u.s.off;
-                pending = pending->prev;
-            }
-            --count;
-            p = NEXT_TYPE( p );
-            if( GETU8( p + 1 ) == STRUCT_TYPE+ST_INHERIT ) {
-                new = walloca( sizeof( *new ) );
-                new->entry = Type->entry;
-                new->u.s.off = p - Type->start;
-                new->u.s.count = count;
-                new->prev = pending;
-                pending = new;
-                p = SkipLocation( p + 2 );
-                GetIndex( p, &index );
-                ok = DoFindTypeHandle( iih, ish->im, index, &new_ith );
-                if( ok != DS_OK ) {
-                    PopLoad();
-                    return( ok );
-                }
-                p = Type->start + new_ith.t.offset;
-                count = GETU16( p + 2 );
-            } else {
-                if( ish->u.typ.t.entry == Type->entry
-                  && ish->u.typ.t.offset == (p - Type->start) ) {
-                    break;
-                }
-            }
-        }
-        FreeLoad();
-        /* reverse the inheritance list */
-        new = NULL;
-        while( pending != NULL ) {
-            tmp = pending;
-            pending = tmp->prev;
-            tmp->prev = new;
-            new = tmp;
-        }
-        /* do the adjustors at each level */
-        ok = DCItemLocation( lc, CI_OBJECT, ll );
-        if( ok != DS_OK ) {
-            PopLoad();
-            DCStatus( ok );
-            return( ok );
-        }
-        while( new != NULL ) {
-            ok = LoadType( iih, ish->im, new->entry );
-            if( ok != DS_OK ) {
-                PopLoad();
-                return( ok );
-            }
-            PushBaseLocation( ll );
-            p = new->u.s.off + Type->start;
-            ok = EvalLocation( iih, lc, p + 2, &adj );
-            if( ok != DS_OK ) {
-                PopLoad();
-                return( ok );
-            }
-            if( adj.num != 1 || adj.e[0].type != LT_ADDR ) {
-                PopLoad();
-                DCStatus( DS_ERR|DS_BAD_LOCATION );
-                return( DS_ERR|DS_BAD_LOCATION );
-            }
-            LocationAdd( ll, adj.e[0].u.addr.mach.offset * 8 );
-            new = new->prev;
-        }
-        ok = LoadType( iih, ish->im, ish->u.typ.t.entry );
-        if( ok != DS_OK ) {
-            PopLoad();
-            return( ok );
-        }
+    ds = LoadType( iih, ish->imh, ish->u.typ.t.entry );
+    if( ds == DS_OK ) {
         p = Type->start + ish->u.typ.t.offset;
-    }
-    /* do field offset and bit field selection */
-    bit_start = 0;
-    bit_len = 0;
-    switch( GETU8( p + 1 ) ) {
-    case STRUCT_TYPE + ST_BIT_BYTE:
-        bit_start = GETU8( p + 3 );
-        bit_len   = GETU8( p + 4 );
-        /* fall through */
-    case STRUCT_TYPE + ST_FIELD_BYTE:
-        offset = GETU8( p + 2 );
-        break;
-    case STRUCT_TYPE + ST_BIT_WORD:
-        bit_start = GETU8( p + 4 );
-        bit_len   = GETU8( p + 5 );
-        /* fall through */
-    case STRUCT_TYPE + ST_FIELD_WORD:
-        offset = GETU16( p + 2 );
-        break;
-    case STRUCT_TYPE+ST_BIT_LONG:
-        bit_start = GETU8( p + 6 );
-        bit_len   = GETU8( p + 7 );
-        /* fall through */
-    case STRUCT_TYPE+ST_FIELD_LONG:
-        offset = GETU32( p + 2 );
-        break;
-    case STRUCT_TYPE+ST_FIELD_LOC:
-    case STRUCT_TYPE+ST_BIT_LOC:
-        if( info & (NEED_BASE|EMPTY_EXPR) )
-            PushBaseLocation( ll );
-        ok = EvalLocation( iih, lc, p + 3, ll );
-        if( ok != DS_OK ) {
-            PopLoad();
-            return( ok );
+        switch( GETU8( p + 1 ) ) {
+        case STRUCT_TYPE | ST_FIELD_LOC:
+        case STRUCT_TYPE | ST_BIT_LOC:
+            info = InfoLocation( p + 3 );
+            break;
+        default:
+            info = NEED_BASE;
+            break;
         }
-        if( GETU8( p + 1 ) == STRUCT_TYPE+ST_BIT_LOC ) {
-            p = SkipLocation( p + 3 );
-            bit_start = GETU8( p );
-            bit_len = GETU8( p + 1 );
+        if( info & (NEED_BASE | EMPTY_EXPR) ) {
+            ds = LoadType( iih, ish->imh, ish->u.typ.h.entry );
+            if( ds == DS_OK ) {
+                p = Type->start + ish->u.typ.h.offset;
+                pending = NULL;
+                count = GETU16( p + 2 );
+                for( ;; ) {
+                    if( count == 0 ) {
+                        if( pending == NULL ) {
+                            ds = DS_FAIL;
+                            break;
+                        }
+                        ds = LoadType( iih, ish->imh, pending->entry );
+                        if( ds != DS_OK ) {
+                            break;
+                        }
+                        count = pending->u.s.count;
+                        p = Type->start + pending->u.s.off;
+                        pending = pending->prev;
+                    }
+                    --count;
+                    p = NEXT_TYPE( p );
+                    if( GETU8( p + 1 ) == (STRUCT_TYPE | ST_INHERIT) ) {
+                        new = walloca( sizeof( *new ) );
+                        new->entry = Type->entry;
+                        new->u.s.off = p - Type->start;
+                        new->u.s.count = count;
+                        new->prev = pending;
+                        pending = new;
+                        p = SkipLocation( p + 2 );
+                        GetIndex( p, &index );
+                        ds = DoFindTypeHandle( iih, ish->imh, index, &new_ith );
+                        if( ds != DS_OK ) {
+                            break;
+                        }
+                        p = Type->start + new_ith.t.offset;
+                        count = GETU16( p + 2 );
+                    } else {
+                        if( ish->u.typ.t.entry == Type->entry
+                          && ish->u.typ.t.offset == (p - Type->start) ) {
+                            break;
+                        }
+                    }
+                }
+                if( ds == DS_OK ) {
+                    FreeLoad();
+                    /* reverse the inheritance list */
+                    new = NULL;
+                    while( pending != NULL ) {
+                        tmp = pending;
+                        pending = tmp->prev;
+                        tmp->prev = new;
+                        new = tmp;
+                    }
+                    /* do the adjustors at each level */
+                    ds = DCItemLocation( lc, CI_OBJECT, ll );
+                    if( ds != DS_OK ) {
+                        DCStatus( ds );
+                    } else {
+                        while( new != NULL ) {
+                            ds = LoadType( iih, ish->imh, new->entry );
+                            if( ds != DS_OK ) {
+                                break;
+                            }
+                            PushBaseLocation( ll );
+                            p = new->u.s.off + Type->start;
+                            ds = EvalLocation( iih, lc, p + 2, &adj );
+                            if( ds != DS_OK ) {
+                                break;
+                            }
+                            if( adj.num != 1 || adj.e[0].type != LT_ADDR ) {
+                                ds = DS_ERR | DS_BAD_LOCATION;
+                                DCStatus( ds );
+                                break;
+                            }
+                            LocationAdd( ll, adj.e[0].u.addr.mach.offset * 8 );
+                            new = new->prev;
+                        }
+                        if( ds == DS_OK ) {
+                            ds = LoadType( iih, ish->imh, ish->u.typ.t.entry );
+                            if( ds == DS_OK ) {
+                                p = Type->start + ish->u.typ.t.offset;
+                            }
+                        }
+                    }
+                }
+            }
         }
-        offset = 0;
+        if( ds == DS_OK ) {
+            /* do field offset and bit field selection */
+            bit_start = 0;
+            bit_len = 0;
+            switch( GETU8( p + 1 ) ) {
+            case STRUCT_TYPE | ST_BIT_BYTE:
+                bit_start = GETU8( p + 3 );
+                bit_len   = GETU8( p + 4 );
+                /* fall through */
+            case STRUCT_TYPE | ST_FIELD_BYTE:
+                offset = GETU8( p + 2 );
+                break;
+            case STRUCT_TYPE | ST_BIT_WORD:
+                bit_start = GETU8( p + 4 );
+                bit_len   = GETU8( p + 5 );
+                /* fall through */
+            case STRUCT_TYPE | ST_FIELD_WORD:
+                offset = GETU16( p + 2 );
+                break;
+            case STRUCT_TYPE | ST_BIT_LONG:
+                bit_start = GETU8( p + 6 );
+                bit_len   = GETU8( p + 7 );
+                /* fall through */
+            case STRUCT_TYPE | ST_FIELD_LONG:
+                offset = GETU32( p + 2 );
+                break;
+            case STRUCT_TYPE | ST_FIELD_LOC:
+            case STRUCT_TYPE | ST_BIT_LOC:
+                if( info & (NEED_BASE | EMPTY_EXPR) )
+                    PushBaseLocation( ll );
+                ds = EvalLocation( iih, lc, p + 3, ll );
+                if( ds == DS_OK ) {
+                    if( GETU8( p + 1 ) == (STRUCT_TYPE | ST_BIT_LOC) ) {
+                        p = SkipLocation( p + 3 );
+                        bit_start = GETU8( p );
+                        bit_len = GETU8( p + 1 );
+                    }
+                    offset = 0;
+                }
+            }
+        }
     }
     PopLoad();
-    LocationAdd( ll, offset * 8 + bit_start );
-    LocationTrunc( ll, bit_len );
-    return( DS_OK );
+    if( ds == DS_OK ) {
+        LocationAdd( ll, offset * 8 + bit_start );
+        LocationTrunc( ll, bit_len );
+    }
+    return( ds );
 }
 
 dip_status SymHdl2MbrInfo( imp_image_handle *iih, imp_sym_handle *ish,
@@ -1492,7 +1514,7 @@ dip_status SymHdl2MbrInfo( imp_image_handle *iih, imp_sym_handle *ish,
 {
     const char          *p;
     unsigned            index;
-    dip_status          ret;
+    dip_status          ds;
     unsigned            attrib;
     imp_type_handle     tmp_ith;
     imp_sym_handle      func_ish;
@@ -1501,53 +1523,54 @@ dip_status SymHdl2MbrInfo( imp_image_handle *iih, imp_sym_handle *ish,
     typeinfo            typeld;
 
     PushLoad( &typeld );
-    ret = LoadType( iih, ish->im, ish->u.typ.t.entry );
-    if( ret != DS_OK ) {
-        PopLoad();
-        return( ret );
-    }
-    p = Type->start + ish->u.typ.t.offset;
-    switch( GETU8( p + 1 ) ) {
-    case STRUCT_TYPE+ST_FIELD_LOC:
-    case STRUCT_TYPE+ST_BIT_LOC:
-        attrib = GETU8( p + 2 );
-        break;
-    default:
-        attrib = 0;
-        break;
-    }
-    p = BaseTypePtr( p );
-    GetIndex( p, &index );
-    ret = FindRawTypeHandle( iih, ish->im, index, &tmp_ith );
-    if( ret != DS_OK )
-        return( ret );
-    kind = GetRealTypeHandle( iih, &tmp_ith ) & CLASS_MASK;
-    PopLoad();
-    switch( kind ) {
-    case PROC_TYPE:
-        si->kind = SK_PROCEDURE;
-        ret = SymHdl2MbrLoc( iih, ish, lc, &ll );
-        if( ret == DS_OK ) {
-            func_ish.im = ish->im;
-            if( LookupLclAddr( iih, ll.e[0].u.addr, &func_ish ) == SR_EXACT ) {
-                ret = SymHdl2LclInfo( iih, &func_ish, si );
-            }
+    ds = LoadType( iih, ish->imh, ish->u.typ.t.entry );
+    if( ds == DS_OK ) {
+        p = Type->start + ish->u.typ.t.offset;
+        switch( GETU8( p + 1 ) ) {
+        case STRUCT_TYPE | ST_FIELD_LOC:
+        case STRUCT_TYPE | ST_BIT_LOC:
+            attrib = GETU8( p + 2 );
+            break;
+        default:
+            attrib = 0;
+            break;
         }
-        break;
-    default:
-        si->kind = SK_DATA;
-        break;
+        p = BaseTypePtr( p );
+        GetIndex( p, &index );
+        ds = FindRawTypeHandle( iih, ish->imh, index, &tmp_ith );
+        if( ds == DS_OK ) {
+            kind = GetRealTypeHandle( iih, &tmp_ith ) & CLASS_MASK;
+        }
     }
-    si->is_member = 1;
-    if( attrib & 0x01 )
-        si->compiler = 1;
-    if( attrib & 0x02 )
-        si->is_public = 1;
-    if( attrib & 0x04 )
-        si->is_protected = 1;
-    if( attrib & 0x08 )
-        si->is_private = 1;
-    return( ret );
+    PopLoad();
+    if( ds == DS_OK ) {
+        switch( kind ) {
+        case PROC_TYPE:
+            si->kind = SK_PROCEDURE;
+            ds = SymHdl2MbrLoc( iih, ish, lc, &ll );
+            if( ds == DS_OK ) {
+                func_ish.imh = ish->imh;
+                if( LookupLclAddr( iih, ll.e[0].u.addr, &func_ish ) == SR_EXACT ) {
+                    ds = SymHdl2LclInfo( iih, &func_ish, si );
+                }
+            }
+            break;
+        default:
+            si->kind = SK_DATA;
+            break;
+        }
+        si->is_member = 1;
+        if( attrib & 0x01 )
+            si->compiler = 1;
+        if( attrib & 0x02 )
+            si->is_public = 1;
+        if( attrib & 0x04 )
+            si->is_protected = 1;
+        if( attrib & 0x08 ) {
+            si->is_private = 1;
+        }
+    }
+    return( ds );
 }
 
 dip_status DIPIMPENTRY( TypeThunkAdjust )( imp_image_handle *iih,
@@ -1559,88 +1582,86 @@ dip_status DIPIMPENTRY( TypeThunkAdjust )( imp_image_handle *iih,
     struct anc_graph    *pending, *new, *tmp;
     imp_type_handle     new_ith;
     unsigned            index;
-    dip_status          ok;
+    dip_status          ds;
     location_list       adj;
     typeinfo            typeld;
 
-    if( oith->im != mith->im )
+    if( oith->imh != mith->imh )
         return( DS_FAIL );
     PushLoad( &typeld );
-    ok = LoadType( iih, oith->im, oith->t.entry );
-    if( ok != DS_OK ) {
-        PopLoad();
-        return( ok );
-    }
-    p = Type->start + oith->t.offset;
-    pending = NULL;
-    count = GETU16( p + 2 );
-    for( ;; ) {
-        if( count == 0 ) {
-            if( pending == NULL )
-                return( DS_FAIL );
-            ok = LoadType( iih, oith->im, pending->entry );
-            if( ok != DS_OK ) {
-                PopLoad();
-                return( ok );
+    ds = LoadType( iih, oith->imh, oith->t.entry );
+    if( ds == DS_OK ) {
+        p = Type->start + oith->t.offset;
+        pending = NULL;
+        count = GETU16( p + 2 );
+        for( ;; ) {
+            if( count == 0 ) {
+                if( pending == NULL ) {
+                    ds = DS_FAIL;
+                    break;
+                }
+                ds = LoadType( iih, oith->imh, pending->entry );
+                if( ds != DS_OK ) {
+                    break;
+                }
+                count = pending->u.s.count;
+                p = Type->start + pending->u.s.off;
+                pending = pending->prev;
             }
-            count = pending->u.s.count;
-            p = Type->start + pending->u.s.off;
-            pending = pending->prev;
-        }
-        --count;
-        p = NEXT_TYPE( p );
-        if( GETU8( p + 1 ) == STRUCT_TYPE+ST_INHERIT ) {
-            new = walloca( sizeof( *new ) );
-            new->entry = Type->entry;
-            new->u.s.off = p - Type->start;
-            new->u.s.count = count;
-            new->prev = pending;
-            pending = new;
-            p = SkipLocation( p + 2 );
-            GetIndex( p, &index );
-            ok = DoFindTypeHandle( iih, oith->im, index, &new_ith );
-            if( ok != DS_OK ) {
-                PopLoad();
-                return( ok );
+            --count;
+            p = NEXT_TYPE( p );
+            if( GETU8( p + 1 ) == (STRUCT_TYPE | ST_INHERIT) ) {
+                new = walloca( sizeof( *new ) );
+                new->entry = Type->entry;
+                new->u.s.off = p - Type->start;
+                new->u.s.count = count;
+                new->prev = pending;
+                pending = new;
+                p = SkipLocation( p + 2 );
+                GetIndex( p, &index );
+                ds = DoFindTypeHandle( iih, oith->imh, index, &new_ith );
+                if( ds != DS_OK ) {
+                    break;
+                }
+                if( new_ith.t.offset == mith->t.offset
+                  && new_ith.t.entry == mith->t.entry )
+                    break;
+                p = Type->start + new_ith.t.offset;
+                count = GETU16( p + 2 );
             }
-            if( new_ith.t.offset == mith->t.offset
-              && new_ith.t.entry == mith->t.entry )
-                break;
-            p = Type->start + new_ith.t.offset;
-            count = GETU16( p + 2 );
         }
-    }
-    /* reverse the inheritance list */
-    new = NULL;
-    while( pending != NULL ) {
-        tmp = pending;
-        pending = tmp->prev;
-        tmp->prev = new;
-        new = tmp;
-    }
-    /* do the adjustors at each level */
-    while( new != NULL ) {
-        ok = LoadType( iih, oith->im, new->entry );
-        if( ok != DS_OK ) {
-            PopLoad();
-            return( ok );
+        if( ds == DS_OK ) {
+            /* reverse the inheritance list */
+            new = NULL;
+            while( pending != NULL ) {
+                tmp = pending;
+                pending = tmp->prev;
+                tmp->prev = new;
+                new = tmp;
+            }
+            /* do the adjustors at each level */
+            while( new != NULL ) {
+                ds = LoadType( iih, oith->imh, new->entry );
+                if( ds != DS_OK ) {
+                    break;
+                }
+                p = new->u.s.off + Type->start;
+                ds = EvalLocation( iih, lc, p + 2, &adj );
+                if( ds == DS_OK ) {
+                    break;
+                }
+                if( adj.num != 1 || adj.e[0].type != LT_ADDR ) {
+                    ds = DS_ERR | DS_BAD_LOCATION;
+                    DCStatus( ds );
+                    break;
+                }
+                addr->mach.offset += adj.e[0].u.addr.mach.offset;
+                new = new->prev;
+            }
         }
-        p = new->u.s.off + Type->start;
-        ok = EvalLocation( iih, lc, p + 2, &adj );
-        if( !ok ) {
-            PopLoad();
-            return( ok );
-        }
-        if( adj.num != 1 || adj.e[0].type != LT_ADDR ) {
-            PopLoad();
-            DCStatus( DS_ERR|DS_BAD_LOCATION );
-            return( DS_ERR|DS_BAD_LOCATION );
-        }
-        addr->mach.offset += adj.e[0].u.addr.mach.offset;
-        new = new->prev;
     }
     PopLoad();
-    return( DS_OK );
+    return( ds );
 }
 
 search_result SearchMbr( imp_image_handle *iih, imp_type_handle *ith,
@@ -1658,65 +1679,61 @@ search_result SearchMbr( imp_image_handle *iih, imp_type_handle *ith,
     size_t              len;
     typeinfo            typeld;
 
-    PushLoad( &typeld );
-    if( LoadType( iih, ith->im, ith->t.entry ) != DS_OK ) {
-        PopLoad();
-        return( SR_NONE );
-    }
-    p = Type->start + ith->t.offset;
-    if( (GETU8( p + 1 ) & CLASS_MASK) != STRUCT_TYPE ) {
-        PopLoad();
-        return( SR_NONE );
-    }
-    if( li->case_sensitive ) {
-        comp = memcmp;
-    } else {
-        comp = memicmp;
-    }
     sr = SR_NONE;
-    pending = NULL;
-    count = GETU16( p + 2 );
-    for( ;; ) {
-        if( count == 0 ) {
-            if( pending == NULL )
-                break;
-            if( LoadType( iih, ith->im, pending->entry ) != DS_OK ) {
-                PopLoad();
-                return( WR_STOP );
+    PushLoad( &typeld );
+    if( LoadType( iih, ith->imh, ith->t.entry ) == DS_OK ) {
+        p = Type->start + ith->t.offset;
+        if( (GETU8( p + 1 ) & CLASS_MASK) == STRUCT_TYPE ) {
+            if( li->case_sensitive ) {
+                comp = memcmp;
+            } else {
+                comp = memicmp;
             }
-            count = pending->u.s.count;
-            p = Type->start + pending->u.s.off;
-            pending = pending->prev;
-        }
-        --count;
-        p = NEXT_TYPE( p );
-        if( GETU8( p + 1 ) == STRUCT_TYPE+ST_INHERIT ) {
-            new = walloca( sizeof( *new ) );
-            new->entry = Type->entry;
-            new->u.s.off = p - Type->start;
-            new->u.s.count = count;
-            new->prev = pending;
-            pending = new;
-            p = SkipLocation( p + 2 );
-            GetIndex( p, &index );
-            if( DoFindTypeHandle( iih, ith->im, index, &new_ith ) != DS_OK ) {
-                PopLoad();
-                return( WR_STOP );
-            }
-            p = Type->start + new_ith.t.offset;
+            pending = NULL;
             count = GETU16( p + 2 );
-        } else {
-            name = NamePtr( p );
-            len = GETU8( p ) - ( name - p );
-            if( len == li->name.len && comp( name, li->name.start, len ) == 0 ) {
-                ish = DCSymCreate( iih, d );
-                ish->u.typ.t.offset = p - Type->start;
-                ish->u.typ.t.entry = Type->entry;
-                ish->name_off = (byte)( name - p );
-                ish->im = ith->im;
-                ish->u.typ.h = ith->t;
-                ish->type = SH_MBR;
-                sr = SR_EXACT;
+            for( ;; ) {
+                if( count == 0 ) {
+                    if( pending == NULL )
+                        break;
+                    if( LoadType( iih, ith->imh, pending->entry ) != DS_OK ) {
+                        sr = SR_FAIL;
+                        break;
+                    }
+                    count = pending->u.s.count;
+                    p = Type->start + pending->u.s.off;
+                    pending = pending->prev;
+                }
+                --count;
+                p = NEXT_TYPE( p );
+                if( GETU8( p + 1 ) == (STRUCT_TYPE | ST_INHERIT) ) {
+                    new = walloca( sizeof( *new ) );
+                    new->entry = Type->entry;
+                    new->u.s.off = p - Type->start;
+                    new->u.s.count = count;
+                    new->prev = pending;
+                    pending = new;
+                    p = SkipLocation( p + 2 );
+                    GetIndex( p, &index );
+                    if( DoFindTypeHandle( iih, ith->imh, index, &new_ith ) != DS_OK ) {
+                        sr = SR_FAIL;
+                        break;
+                    }
+                    p = Type->start + new_ith.t.offset;
+                    count = GETU16( p + 2 );
+                } else {
+                    name = NamePtr( p );
+                    len = GETU8( p ) - ( name - p );
+                    if( len == li->name.len && comp( name, li->name.start, len ) == 0 ) {
+                        ish = DCSymCreate( iih, d );
+                        ish->u.typ.t.offset = p - Type->start;
+                        ish->u.typ.t.entry = Type->entry;
+                        ish->name_off = (byte)( name - p );
+                        ish->imh = ith->imh;
+                        ish->u.typ.h = ith->t;
+                        ish->type = SH_MBR;
+                        sr = SR_EXACT;
+                    }
+                }
             }
         }
     }
@@ -1735,93 +1752,85 @@ walk_result WalkTypeSymList( imp_image_handle *iih, imp_type_handle *ith,
     unsigned                    index;
     struct pending_entry        *list, *new_entry, *used;
     typeinfo                    typeld;
+    byte                        kind;
 
+    wr = WR_STOP;
     PushLoad( &typeld );
-    if( LoadType( iih, ith->im, ith->t.entry ) != DS_OK ) {
-        PopLoad();
-        return( WR_STOP );
-    }
-    ish->im = ith->im;
-    ish->u.typ.h = ith->t;
-    list = NULL;
-    used = NULL;
-    pending = NULL;
-    p = Type->start + ith->t.offset;
-    switch( GETU8( p + 1 ) & CLASS_MASK ) {
-    case STRUCT_TYPE:
-        ish->type = SH_MBR;
-        goto do_walk;
-    case ENUM_TYPE:
-        ish->type = SH_CST;
-do_walk:
-        count = GETU16( p + 2 );
-        wr = WR_CONTINUE;
-        for( ;; ) {
-            while( count != 0 ) {
-                /* structure list is backwards -- reverse it */
-                p = NEXT_TYPE( p );
-                if( used == NULL ) {
-                    new_entry = walloca( sizeof( *new_entry ) );
+    if( LoadType( iih, ith->imh, ith->t.entry ) == DS_OK ) {
+        ish->imh = ith->imh;
+        ish->u.typ.h = ith->t;
+        list = NULL;
+        used = NULL;
+        pending = NULL;
+        p = Type->start + ith->t.offset;
+        kind = GETU8( p + 1 ) & CLASS_MASK;
+        if( kind == STRUCT_TYPE || kind == ENUM_TYPE ) {
+            ish->type = ( kind == STRUCT_TYPE ) ? SH_MBR : SH_CST;
+            count = GETU16( p + 2 );
+            wr = WR_CONTINUE;
+            for( ;; ) {
+                while( count != 0 ) {
+                    /* structure list is backwards -- reverse it */
+                    p = NEXT_TYPE( p );
+                    if( used == NULL ) {
+                        new_entry = walloca( sizeof( *new_entry ) );
+                    } else {
+                        new_entry = used;
+                        used = used->prev;
+                    }
+                    new_entry->off = p - Type->start;
+                    new_entry->prev = list;
+                    list = new_entry;
+                    --count;
+                }
+                if( list == NULL ) {
+                    if( pending == NULL )
+                        break;
+                    wk( iih, SWI_INHERIT_END, NULL, d );
+                    if( LoadType( iih, ith->imh, pending->entry ) != DS_OK ) {
+                        wr = WR_STOP;
+                        break;
+                    }
+                    list = pending->u.todo;
+                    pending = pending->prev;
+                }
+                p = list->off + Type->start;
+                if( GETU8( p + 1 ) == (STRUCT_TYPE | ST_INHERIT) ) {
+                    if( wk( iih, SWI_INHERIT_START, NULL, d ) == WR_CONTINUE ) {
+                        if( list->prev != NULL ) {
+                            new = walloca( sizeof( *new ) );
+                            new->entry = Type->entry;
+                            new->u.todo = list->prev;
+                            new->prev = pending;
+                            pending = new;
+                        }
+                        p = SkipLocation( p + 2 );
+                        GetIndex( p, &index );
+                        if( DoFindTypeHandle( iih, ith->imh, index, &new_ith ) != DS_OK ) {
+                            wr = WR_STOP;
+                            break;
+                        }
+                        list = NULL;
+                        p = Type->start + new_ith.t.offset;
+                        count = GETU16( p + 2 );
+                        /* setting count will cause the list to be reversed */
+                        continue;
+                    }
                 } else {
-                    new_entry = used;
-                    used = used->prev;
+                    ish->u.typ.t.offset = p - Type->start;
+                    ish->u.typ.t.entry = Type->entry;
+                    ish->name_off = (byte)( NamePtr( p ) - p );
+                    wr = wk( iih, SWI_SYMBOL, ish, d );
+                    if( wr != WR_CONTINUE ) {
+                        break;
+                    }
                 }
-                new_entry->off = p - Type->start;
-                new_entry->prev = list;
+                new_entry = list->prev;
+                list->prev = used;
+                used = list;
                 list = new_entry;
-                --count;
             }
-            if( list == NULL ) {
-                if( pending == NULL )
-                    break;
-                wk( iih, SWI_INHERIT_END, NULL, d );
-                if( LoadType( iih, ith->im, pending->entry ) != DS_OK ) {
-                    PopLoad();
-                    return( WR_STOP );
-                }
-                list = pending->u.todo;
-                pending = pending->prev;
-            }
-            p = list->off + Type->start;
-            if( GETU8( p + 1 ) == STRUCT_TYPE+ST_INHERIT ) {
-                if( wk( iih, SWI_INHERIT_START, NULL, d ) == WR_CONTINUE ) {
-                    if( list->prev != NULL ) {
-                        new = walloca( sizeof( *new ) );
-                        new->entry = Type->entry;
-                        new->u.todo = list->prev;
-                        new->prev = pending;
-                        pending = new;
-                    }
-                    p = SkipLocation( p + 2 );
-                    GetIndex( p, &index );
-                    if( DoFindTypeHandle( iih, ith->im, index, &new_ith ) != DS_OK ) {
-                        PopLoad();
-                        return( WR_STOP );
-                    }
-                    list = NULL;
-                    p = Type->start + new_ith.t.offset;
-                    count = GETU16( p + 2 );
-                    /* setting count will cause the list to be reversed */
-                    continue;
-                }
-            } else {
-                ish->u.typ.t.offset = p - Type->start;
-                ish->u.typ.t.entry = Type->entry;
-                ish->name_off = (byte)( NamePtr( p ) - p );
-                wr = wk( iih, SWI_SYMBOL, ish, d );
-                if( wr != WR_CONTINUE ) {
-                    break;
-                }
-            }
-            new_entry = list->prev;
-            list->prev = used;
-            used = list;
-            list = new_entry;
         }
-        break;
-    default:
-        wr = WR_STOP;
-        break;
     }
     PopLoad();
     return( wr );
@@ -1831,55 +1840,53 @@ imp_mod_handle DIPIMPENTRY( TypeMod )( imp_image_handle *iih, imp_type_handle *i
 {
     /* unused parameters */ (void)iih;
 
-    return( ith->im );
+    return( ith->imh );
 }
 
-const char *FindSpecCueTable( imp_image_handle *iih, imp_mod_handle im, const char **base )
+const char *FindSpecCueTable( imp_image_handle *iih, imp_mod_handle imh, const char **base )
 {
     typeinfo            typeld;
     const char          *p;
+    const char          *ret;
     word                entry;
     unsigned long       offset;
     unsigned            size;
 
+    ret = NULL;
+    *base = NULL;
     PushLoad( &typeld );
-    if( LoadType( iih, im, 0 ) != DS_OK )
-        goto missing;
-    for( p = Type->start; p < Type->end; p = NEXT_TYPE( p ) ) {
-        if( GETU8( p + 1 ) == (NAME_TYPE+TYPE_CUE_TABLE) ) {
-            offset = GETU32( p + 2 );
-            entry = 0;
-            for( ;; ) {
-                size = InfoSize( iih, im, DMND_TYPES, entry );
-                if( size == 0 )
-                    goto missing;
-                if( size > offset )
-                    break;
-                offset -= size;
-                ++entry;
+    if( LoadType( iih, imh, 0 ) == DS_OK ) {
+        for( p = Type->start; p < Type->end; p = NEXT_TYPE( p ) ) {
+            if( GETU8( p + 1 ) == (NAME_TYPE | TYPE_CUE_TABLE) ) {
+                offset = GETU32( p + 2 );
+                for( entry = 0; (size = InfoSize( iih, imh, DMND_TYPES, entry )) != 0; entry++ ) {
+                    if( size > offset )
+                        break;
+                    offset -= size;
+                }
+                if( size != 0 ) {
+                    if( LoadType( iih, imh, entry ) == DS_OK ) {
+                        p = Type->start;
+                        *base = p;
+                        InfoSpecLock( p ); /* so that the PopLoad doesn't free it */
+                        ret = p + (unsigned)offset;
+                    }
+                }
+                break;
             }
-            if( LoadType( iih, im, entry ) != DS_OK )
-                goto missing;
-            p = Type->start;
-            *base = p;
-            InfoSpecLock( p ); /* so that the PopLoad doesn't free it */
-            PopLoad();
-            return( p + (unsigned)offset );
         }
     }
-missing:
-    *base = NULL;
     PopLoad();
-    return( NULL );
+    return( ret );
 }
 
 int DIPIMPENTRY( TypeCmp )( imp_image_handle *iih, imp_type_handle *ith1, imp_type_handle *ith2 )
 {
     /* unused parameters */ (void)iih;
 
-    if( ith1->im < ith2->im )
+    if( ith1->imh < ith2->imh )
         return( -1 );
-    if( ith1->im > ith2->im )
+    if( ith1->imh > ith2->imh )
         return( 1 );
     if( ith1->t.entry < ith2->t.entry )
         return( -1 );
@@ -1906,20 +1913,20 @@ dip_status DIPIMPENTRY( TypeAddRef )( imp_image_handle *iih, imp_type_handle *it
 {
     /* unused parameters */ (void)iih; (void)ith;
 
-    return(DS_OK);
+    return( DS_OK );
 }
 
 dip_status DIPIMPENTRY( TypeRelease )( imp_image_handle *iih, imp_type_handle *ith )
 {
     /* unused parameters */ (void)iih; (void)ith;
 
-    return(DS_OK);
+    return( DS_OK );
 }
 
 dip_status DIPIMPENTRY( TypeFreeAll )( imp_image_handle *iih )
 {
     /* unused parameters */ (void)iih;
 
-    return(DS_OK);
+    return( DS_OK );
 }
 

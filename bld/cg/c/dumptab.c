@@ -30,27 +30,26 @@
 ****************************************************************************/
 
 
-#include "cgstd.h"
+#include "_cgstd.h"
 #include "coderep.h"
-#include "dmpinc.h"
 #include "dumpio.h"
 #include "dumptab.h"
 
 
-static char *opRegTab[] = {
+static const char *opRegTab[] = {
     #define RG( a,b,c,d,e,f ) #f
     #include "rg.h"
     #undef RG
 };
 
-static char * VerTab[] = {
+static const char * VerTab[] = {
     #define _V_( x ) #x
     #include "v.h"
     #undef _V_
     ""
 };
 
-static char * GenTab[] = {
+static const char * GenTab[] = {
     #define _G_( x ) #x
     #include "g.h"
     #undef _G_
@@ -117,14 +116,14 @@ static  void    PrtOps( operand_types ops ) {
     DumpChar( ')' );
 }
 
-void    DumpGen( opcode_entry *try )
-/**********************************/
+void    DumpGen( const opcode_entry *try )
+/****************************************/
 {
     DumpPadString( GenTab[try->generate], 15 );
 }
 
-void    DumpTab( opcode_entry *try )
-/**********************************/
+void    DumpTab( const opcode_entry *try )
+/****************************************/
 {
     vertype     verify;
 

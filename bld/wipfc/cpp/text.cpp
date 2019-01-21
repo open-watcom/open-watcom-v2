@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
+* Copyright (c) 2009-2018 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -30,6 +30,7 @@
 ****************************************************************************/
 
 
+#include "wipfc.hpp"
 #include <cwctype>
 #include "text.hpp"
 #include "cell.hpp"
@@ -38,30 +39,30 @@
 #include "page.hpp"
 
 Text::Text( Document* d, Element* p, const std::wstring* f, unsigned int r,
-            unsigned int c, const std::wstring& txt, bool ts ) :
-            Element( d, p, f, r, c ), whiteSpace( Tag::NONE), toggleSpacing( ts )
+            unsigned int c, const std::wstring& text, bool ts ) :
+            Element( d, p, f, r, c ), _whiteSpace( Tag::NONE), _toggleSpacing( ts )
 {
-    GlobalDictionaryWord* word( new GlobalDictionaryWord( txt ) );
-    text = document->addWord( word );   //insert into global dictionary
+    _text = _document->addTextToGD( new GlobalDictionaryWord( text ) );   //insert into global dictionary
 }
 /***************************************************************************/
 std::pair< bool, bool > Text::buildLocalDict( Page* page )
 {
     std::pair< bool, bool > retval( false, false );
-    if( text ) {
-        retval.first = page->addWord( text );
-        retval.second = toggleSpacing;
+    if( _text ) {
+        retval.first = page->addTextToLD( _text );
+        retval.second = _toggleSpacing;
     }
     return retval;
 }
 /***************************************************************************/
 void Text::buildText( Cell* cell )
 {
-    if( text ) {
-        if( toggleSpacing )
-            cell->addByte( 0xFC );
-        cell->addText( text->index() );
-        if( cell->textFull() )
+    if( _text ) {
+        if( _toggleSpacing )
+            cell->addByte( Cell::TOGGLE_SPACING );
+        cell->add( cell->LDIndex( _text->index() ) );
+        if( cell->textFull() ) {
             printError( ERR1_LARGEPAGE );
+        }
     }
 }

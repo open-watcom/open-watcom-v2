@@ -1,8 +1,8 @@
 :segment QNX
 #ifdef __386__
 :endsegment
-:segment QNX | LINUX
-_WCRTLINK extern int          brk( void _WCNEAR *endds );
+:segment LINUX | QNX
+_WCRTLINK extern int          brk( void _WCNEAR *__endds );
 :endsegment
 :segment QNX
 #endif

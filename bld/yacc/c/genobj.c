@@ -50,7 +50,7 @@ static int label;
 extern void emitins( unsigned, unsigned );
 extern void writeobj( int );
 
-void genobj( void )
+void genobj( FILE *fp )
 {
     short int *symbol, *target;
     short int *p, *q, *r;
@@ -62,7 +62,9 @@ void genobj( void )
     a_state *x;
     a_shift_action *tx;
     a_reduce_action *rx;
-    int i, j, savings;
+    int i, j;
+    set_size max_savings;
+    set_size savings;
 
     for( i = nterm; i < nsym; ++i )
         symtab[i]->token = i - nterm;
@@ -89,24 +91,25 @@ void genobj( void )
             *q++ = sym->idx;
             target[sym->idx] = action;
         }
-        savings = 0;
+        max_savings = 0;
         for( rx = x->redun; (pro = rx->pro) != NULL; ++rx ) {
+            if( (savings = (mp = Members( rx->follow )) - setmembers) == 0 )
+                continue;
             action = PROENTRY( pro->pidx );
-            mp = Members( rx->follow );
-            if( mp - setmembers > savings ) {
-                savings = mp - setmembers;
+            if( max_savings < savings ) {
+                max_savings = savings;
                 r = q;
             }
-            while( --mp >= setmembers ) {
+            while( mp-- != setmembers ) {
                 *q++ = *mp;
                 target[*mp] = action;
             }
         }
         action = DEFAULT;
-        if( savings ) {
+        if( max_savings ) {
             action = target[*r];
             p = r;
-            while( --savings >= 0 ) {
+            while( max_savings-- > 0 ) {
                 target[*p++] = DEFAULT;
             }
         }

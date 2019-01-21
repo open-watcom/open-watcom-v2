@@ -9,12 +9,12 @@ set PROJDIR=<CWD>
 
 [ INCLUDE <OWROOT>/build/defrule.ctl ]
 
-[ BLOCK <1> rel ]
-#================
+[ BLOCK <BLDRULE> rel ]
+#======================
     cdsay <PROJDIR>
 
-[ BLOCK <1> rel cprel ]
-#======================
+[ BLOCK <BLDRULE> rel cprel ]
+#============================
     <CCCMD> epm/os2386/epmlink.dll     <OWRELROOT>/binp/dll/
     <CCCMD> epm/os2386/epmlink.sym     <OWRELROOT>/binp/dll/
     <CCCMD> epm/os2386/wedit.lib       <OWRELROOT>/src/editdll/os2/

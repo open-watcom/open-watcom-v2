@@ -32,7 +32,7 @@
 #if defined( __OS2__ )
 
 extern unsigned _LibMain( unsigned hmod, unsigned termination );
-#pragma aux _LibMain "_*" parm caller []
+#pragma aux _LibMain "_*" __parm __caller []
 extern unsigned APIENTRY LibMain( unsigned hmod, unsigned termination );
 
 #elif defined( __NT__ )
@@ -50,7 +50,7 @@ extern int wDllMainCRTStartup( HANDLE hdll, DWORD reason, LPVOID reserved );
 #elif defined( __RDOS__ ) || defined( __RDOSDEV__ )
 
 extern int _LibMain( int hdll, int reason, void *reserved );
-#pragma aux _LibMain "_*" value [eax] parm [ebx] [edx] [eax]
+#pragma aux _LibMain "_*" __parm [__ebx] [__edx] [__eax] __value [__eax]
 extern int __stdcall LibMain( int hdll, int reason, void *reserved );
 
 #elif defined( __WINDOWS__ )
@@ -65,6 +65,6 @@ extern int __stdcall LibMain( int hdll, int reason, void *reserved );
 
 extern unsigned _LibMain( int termination );
 /* So that assembly caller doesn't depend on stack/register convention. */
-#pragma aux _LibMain "_*" parm caller []
+#pragma aux _LibMain "_*" __parm __caller []
 
 #endif

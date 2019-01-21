@@ -42,7 +42,7 @@
 typedef struct menu_item {
     struct menu_item    *next, *prev;
     char                *cmd;
-    hilst               hi;
+    hichar              hi_char;
     unsigned char       slen;
     char                str[1];
 } menu_item;
@@ -53,8 +53,8 @@ typedef struct menu {
     int             itemcnt;
     int             orig_itemcnt;
     char            **list;
-    hilst           *hilist;
-    hilst           hi;
+    hichar          *hi_list;
+    hichar          hi_char;
     bool            has_file_list   : 1;
     bool            need_hook       : 1;
     bool            has_last_files  : 1;
@@ -64,9 +64,9 @@ typedef struct menu {
     char            str[1];
 } menu;
 
-int CurrentMenuNumber;
+ctl_id CurrentMenuId;
 
-static int      menuCnt;
+static ctl_id   maxMenuId;
 
 static menu     *menuHead, *menuTail, *currMenu;
 static menu     *windowGadgetMenu;
@@ -100,7 +100,7 @@ static void dumpMenu( FILE *f, menu *cmenu )
         if( citem->slen == 0 ) {
             MyFprintf( f, "    menuitem \"\"\n" );
         } else {
-            getMenuName( str, citem->str, citem->slen, citem->hi._offs );
+            getMenuName( str, citem->str, citem->slen, citem->hi_char._offs );
             MyFprintf( f, "    menuitem \"%s\" %s\n", str, citem->cmd );
         }
     }
@@ -124,7 +124,7 @@ void BarfMenuData( FILE *f )
         MyFprintf( f, "endmenu\n" );
     }
     for( cmenu = menuHead; cmenu != NULL; cmenu = cmenu->next ) {
-        getMenuName( str, cmenu->str, cmenu->slen, cmenu->hi._offs );
+        getMenuName( str, cmenu->str, cmenu->slen, cmenu->hi_char._offs );
         if( cmenu->need_hook ) {
             MyFprintf( f, "menu %s 1\n", str );
         } else {
@@ -172,7 +172,7 @@ static void freeMenuData( menu *cmenu )
         return;
     }
     MemFree( cmenu->list );
-    MemFree( cmenu->hilist );
+    MemFree( cmenu->hi_list );
     for( curr = cmenu->itemhead; curr != NULL; curr = next ) {
         next = curr->next;
         MemFree( curr );
@@ -200,17 +200,17 @@ static menu *findMenu( const char *str, menu ***predef_menu )
 {
 //    int         len;
     menu        *res;
-    int         num;
+    int         flt_id;
 
 //    len = strlen( str );
     *predef_menu = NULL;
     res = NULL;
     if( str[0] == 'f' || str[0] == 'w' ) {
         if( strnicmp( str, "float", 5 ) == 0 ) {
-            num = str[5] - '0';
-            if( num >= 0 && num < MAX_FLOAT_MENUS ) {
-                res = floatMenus[num];
-                *predef_menu = &floatMenus[num];
+            flt_id = str[5] - '0';
+            if( flt_id >= 0 && flt_id < MAX_FLOAT_MENUS ) {
+                res = floatMenus[flt_id];
+                *predef_menu = &floatMenus[flt_id];
             }
         } else if( stricmp( str, "windowgadget" ) == 0 ) {
             res = windowGadgetMenu;
@@ -277,8 +277,8 @@ vi_rc StartMenu( const char *data )
         *predef_menu = tmp;
     }
     strcpy( tmp->str, str );
-    tmp->hi._char = ch;
-    tmp->hi._offs = hioff;
+    tmp->hi_char._char = ch;
+    tmp->hi_char._offs = hioff;
     tmp->slen = (unsigned char)len;
     tmp->need_hook = need_hook;
     currMenu = tmp;
@@ -295,19 +295,19 @@ static void initMenuList( menu *cmenu )
     int         i;
 
     MemFree( cmenu->list );
-    MemFree( cmenu->hilist );
-    cmenu->list = MemAlloc( sizeof( char * ) * cmenu->itemcnt );
-    cmenu->hilist = MemAlloc( sizeof( hilst ) * (cmenu->itemcnt + 1) );
+    MemFree( cmenu->hi_list );
+    cmenu->list = _MemAllocList( cmenu->itemcnt );
+    cmenu->hi_list = _MemAllocArray( hichar, cmenu->itemcnt + 1 );
 
     cmi = cmenu->itemhead;
     for( i = 0; i < cmenu->itemcnt; i++ ) {
         cmenu->list[i] = cmi->str;
-        cmenu->hilist[i]._char = cmi->hi._char;
-        cmenu->hilist[i]._offs = cmi->hi._offs;
+        cmenu->hi_list[i]._char = cmi->hi_char._char;
+        cmenu->hi_list[i]._offs = cmi->hi_char._offs;
         cmi = cmi->next;
     }
-    cmenu->hilist[i]._char = 0;
-    cmenu->hilist[i]._offs = 0;
+    cmenu->hi_list[i]._char = '\0';
+    cmenu->hi_list[i]._offs = 0;
 
 } /* initMenuList */
 
@@ -323,9 +323,9 @@ vi_rc ViEndMenu( void )
         return( ERR_INVALID_MENU );
     }
     if( currMenu == menuTail ) {
-        menuCnt++;
+        maxMenuId++;
     }
-    ch = toupper( currMenu->hi._char );
+    ch = toupper( currMenu->hi_char._char );
     if( ch >= 'A' && ch <='Z' ) {
         key = ch - 'A' + VI_KEY( ALT_A );
         EventList[key].rtn.old = DoMenu;
@@ -364,8 +364,8 @@ vi_rc MenuItem( const char *data )
     size = sizeof( menu_item ) + len + strlen( data ) + 2;
     tmp = MemAlloc( size );
     tmp->slen = (unsigned char)len;
-    tmp->hi._char = ch;
-    tmp->hi._offs = hioff;
+    tmp->hi_char._char = ch;
+    tmp->hi_char._offs = hioff;
     strcpy( tmp->str, str );
     tmp->cmd = &(tmp->str[len + 1]);
     strcpy( tmp->cmd, data );
@@ -482,7 +482,7 @@ vi_rc DoMenuDelete( const char *data )
     }
     DeleteLLItem( (ss **)&menuHead, (ss **)&menuTail, (ss *)cmenu );
     freeMenu( cmenu );
-    menuCnt--;
+    maxMenuId--;
     InitMenu();
     return( ERR_NO_ERR );
 
@@ -590,7 +590,7 @@ vi_rc InitMenu( void )
 
     ws = 0;
     for( cmenu = menuHead; cmenu != NULL; cmenu = cmenu->next ) {
-        SetCharInWindowWithColor( menu_window_id, 1, ws + START_OFFSET + 1 + cmenu->hi._offs, cmenu->hi._char, &menubarw_info.hilight_style );
+        SetCharInWindowWithColor( menu_window_id, 1, ws + START_OFFSET + 1 + cmenu->hi_char._offs, cmenu->hi_char._char, &menubarw_info.hilight_style );
         ws += cmenu->slen + 2;
     }
 
@@ -601,15 +601,15 @@ vi_rc InitMenu( void )
 void FiniMenu( void )
 {
     menu        *menu;
-    int         i;
+    int         flt_id;
 
     while( (menu = menuHead) != NULL ) {
         menuHead = menuHead->next;
         freeMenu( menu );
     }
-    for( i = 0; i < MAX_FLOAT_MENUS; i++ ) {
-        if( floatMenus[i] != NULL ) {
-            freeMenu( floatMenus[i] );
+    for( flt_id = 0; flt_id < MAX_FLOAT_MENUS; flt_id++ ) {
+        if( floatMenus[flt_id] != NULL ) {
+            freeMenu( floatMenus[flt_id] );
         }
     }
     freeMenu( windowGadgetMenu );
@@ -618,27 +618,28 @@ void FiniMenu( void )
 /*
  * lightMenu - light up control name
  */
-static void lightMenu( int sel, int ws, bool on )
+static void lightMenu( ctl_id sel, int ws, bool on )
 {
     char        ch;
+    ctl_id      id;
     int         i;
     menu        *cmenu;
     type_style  style;
 
-    if( sel >= menuCnt ) {
+    if( sel >= maxMenuId ) {
         return;
     }
 
     ws++;
 
     cmenu = menuHead;
-    for( i = 0; i < sel; i++ ) {
+    for( id = 0; id < sel; id++ ) {
         cmenu = cmenu->next;
     }
 
     for( i = 0; i < cmenu->slen; i++ ) {
-        if( i == cmenu->hi._offs && !on ) {
-            ch = cmenu->hi._char;
+        if( i == cmenu->hi_char._offs && !on ) {
+            ch = cmenu->hi_char._char;
             style = menubarw_info.hilight_style;
         } else {
             ch = cmenu->str[i];
@@ -655,38 +656,41 @@ static void lightMenu( int sel, int ws, bool on )
 /*
  * getMenuPtrFromId - given an id, find the menu in the list
  */
-static menu *getMenuPtrFromId( int id )
+static menu *getMenuPtrFromId( ctl_id id )
 {
-    int         i = 0;
+    ctl_id      menuid;
     menu        *cmenu;
+
+    menuid = 0;
     for( cmenu = menuHead; cmenu != NULL; cmenu = cmenu->next ) {
-        if( id == i ) {
+        if( id == menuid ) {
             break;
         }
-        i++;
+        menuid++;
     }
     return( cmenu );
 
 } /* getMenuPtrFromId */
 
-static int currentID;
+static ctl_id currentID;
 
 /*
  * processMenu - process selected menu
  */
-static vi_rc processMenu( int sel, menu *cmenu, windim xpos, windim ypos, windim rmaxwidth )
+static vi_rc processMenu( ctl_id sel, menu *cmenu, windim xpos, windim ypos, windim rmaxwidth )
 {
-    int         i;
-    windim      ws;
-    char        result[80];
-    int         resint, allowrl, *arl;
-    selectitem  si;
-    menu        *tmenu;
-    menu_item   *cmi;
-    windim      x1, y1, x2, y2;
-    windim      diff;
-    windim      maxwidth;
-    vi_rc       rc;
+    list_linenum    i;
+    windim          ws;
+    char            result[80];
+    list_linenum    resint;
+    int             allowrl, *arl;
+    selectitem      si;
+    menu            *tmenu;
+    menu_item       *cmi;
+    windim          x1, y1, x2, y2;
+    windim          diff;
+    windim          maxwidth;
+    vi_rc           rc;
 
     maxwidth = rmaxwidth;
     if( maxwidth < 0 ) {
@@ -694,7 +698,6 @@ static vi_rc processMenu( int sel, menu *cmenu, windim xpos, windim ypos, windim
     }
 
     for( ;; ) {
-
         if( cmenu->has_file_list ) {
             addFileList( cmenu );
         }
@@ -716,13 +719,8 @@ static vi_rc processMenu( int sel, menu *cmenu, windim xpos, windim ypos, windim
             arl = NULL;
         }
         y1 = ypos;
-        if( menuw_info.has_border ) {
-            x2 = x1 + cmenu->maxwidth + 1;
-            y2 = y1 + (windim)cmenu->itemcnt + 1;
-        } else {
-            x2 = x1 + cmenu->maxwidth - 1;
-            y2 = y1 + (windim)cmenu->itemcnt - 1;
-        }
+        x2 = x1 + cmenu->maxwidth - BORDERDIFF( menuw_info );
+        y2 = y1 + (windim)cmenu->itemcnt - BORDERDIFF( menuw_info );
 
         /*
          * make sure menu will be valid!
@@ -760,22 +758,25 @@ static vi_rc processMenu( int sel, menu *cmenu, windim xpos, windim ypos, windim
         /*
          * go get a selected item from the menu
          */
-        memset( &si, 0, sizeof( si ) );
         allowrl = 0;
         si.is_menu = true;
+        si.show_lineno = false;
         si.wi = &menuw_info;
+        si.title = NULL;
         si.list = cmenu->list;
-        si.maxlist = (int) cmenu->itemcnt;
+        si.maxlist = (list_linenum)cmenu->itemcnt;
         si.result = result;
+        si.num = 0;
         si.allowrl = arl;
-        si.hilite = cmenu->hilist;
+        si.hi_list = cmenu->hi_list;
+        si.retevents = NULL;
+        si.event = VI_KEY( DUMMY );
         si.cln = 1;
-        si.eiw = NO_WINDOW;
-
+        si.event_wid = NO_WINDOW;
         if( xpos < 0 ) {
             lightMenu( sel, ws, true );
         }
-        CurrentMenuNumber = sel + 1;
+        CurrentMenuId = sel + 1;
         rc = SelectItem( &si );
         if( xpos < 0 ) {
             lightMenu( sel, ws, false );
@@ -786,15 +787,15 @@ static vi_rc processMenu( int sel, menu *cmenu, windim xpos, windim ypos, windim
             }
             return( rc );
         }
-        if( !allowrl ) {
+        if( allowrl == 0 ) {
             break;
         }
 
-        sel += allowrl;
-        if( sel < 0 ) {
-            sel = menuCnt - 1;
+        if( allowrl < 0 && sel < -allowrl ) {
+            sel = maxMenuId - 1;
         }
-        if( sel >= menuCnt ) {
+        sel += allowrl;
+        if( sel >= maxMenuId ) {
             sel = 0;
         }
         if( cmenu->has_file_list ) {
@@ -829,8 +830,8 @@ static vi_rc processMenu( int sel, menu *cmenu, windim xpos, windim ypos, windim
  */
 vi_rc DoMenu( void )
 {
-    int         i;
-    int         sel = -1;
+    ctl_id      id;
+    ctl_id      sel;
     char        ch;
     menu        *cmenu;
 
@@ -840,16 +841,17 @@ vi_rc DoMenu( void )
     if( !EditFlags.Menus ) {
         return( ERR_NO_ERR );
     }
+    sel = NO_ID;
     ch = LastEvent - VI_KEY( ALT_A ) + 'A';
-    i = 0;
+    id = 0;
     for( cmenu = menuHead; cmenu != NULL; cmenu = cmenu->next ) {
-        if( ch == cmenu->hi._char ) {
-            sel = i;
+        if( ch == cmenu->hi_char._char ) {
+            sel = id;
             break;
         }
-        i++;
+        id++;
     }
-    if( sel < 0 ) {
+    if( sel == NO_ID ) {
         return( ERR_NO_ERR );
     }
     return( processMenu( sel, cmenu, -1, 1, 0 ) );
@@ -866,7 +868,7 @@ vi_rc DoWindowGadgetMenu( void )
     if( windowGadgetMenu == NULL ) {
         return( ERR_NO_ERR );
     }
-    rc = processMenu( -1, windowGadgetMenu,
+    rc = processMenu( NO_ID, windowGadgetMenu,
                       WindowAuxInfo( current_window_id, WIND_INFO_X1 ),
                       WindowAuxInfo( current_window_id, WIND_INFO_Y1 ) + 1, -1 );
     return( rc );
@@ -876,17 +878,17 @@ vi_rc DoWindowGadgetMenu( void )
 /*
  * DoFloatMenu - handle floating menus
  */
-vi_rc DoFloatMenu( int id, int slen, windim x1, windim y1 )
+vi_rc DoFloatMenu( int flt_id, int slen, windim x1, windim y1 )
 {
     vi_rc       rc;
 
-    if( id < 0 || id >= MAX_FLOAT_MENUS ) {
+    if( flt_id < 0 || flt_id >= MAX_FLOAT_MENUS ) {
         return( ERR_INVALID_MENU );
     }
-    if( floatMenus[id] == NULL ) {
+    if( floatMenus[flt_id] == NULL ) {
         return( ERR_INVALID_MENU );
     }
-    rc = processMenu( -1, floatMenus[id], x1, y1, slen );
+    rc = processMenu( NO_ID, floatMenus[flt_id], x1, y1, slen );
     return( rc );
 
 } /* DoFloatMenu */
@@ -897,7 +899,7 @@ vi_rc DoFloatMenu( int id, int slen, windim x1, windim y1 )
 vi_rc ActivateFloatMenu( const char *data )
 {
     char        str[MAX_STR];
-    int         id, slen, x1, y1;
+    int         flt_id, slen, x1, y1;
 
     /*
      * get input syntax :
@@ -907,7 +909,7 @@ vi_rc ActivateFloatMenu( const char *data )
     if( *str == '\0' ) {
         return( ERR_INVALID_MENU );
     }
-    id = atoi( str );
+    flt_id = atoi( str );
     data = GetNextWord1( data, str );
     if( *str == '\0' ) {
         return( ERR_INVALID_MENU );
@@ -923,14 +925,14 @@ vi_rc ActivateFloatMenu( const char *data )
         return( ERR_INVALID_MENU );
     }
     y1 = atoi( str );
-    return( DoFloatMenu( id, slen, x1, y1 ) );
+    return( DoFloatMenu( flt_id, slen, x1, y1 ) );
 
 } /* ActivateFloatMenu */
 
 /*
  * GetCurrentMenuId - get id of currently displayed menu
  */
-int GetCurrentMenuId( void )
+ctl_id GetCurrentMenuId( void )
 {
     return( currentID );
 
@@ -939,7 +941,7 @@ int GetCurrentMenuId( void )
 /*
  * SetToMenuId - set to specified menu id (mouse did it)
  */
-vi_rc SetToMenuId( int id )
+vi_rc SetToMenuId( ctl_id id )
 {
     menu        *cmenu;
 
@@ -954,22 +956,22 @@ vi_rc SetToMenuId( int id )
 /*
  * GetMenuIdFromCoord - given x coordinate, determine menu item
  */
-int GetMenuIdFromCoord( int x )
+ctl_id GetMenuIdFromCoord( int x )
 {
-    int         i;
+    ctl_id      id;
     int         ws;
     menu        *cmenu;
 
     ws = START_OFFSET;
-    i = 0;
+    id = 0;
     for( cmenu = menuHead; cmenu != NULL; cmenu = cmenu->next ) {
         if( x >= ws && x < ws + cmenu->slen ) {
-            return( i );
+            return( id );
         }
         ws += cmenu->slen + 2;
-        i++;
+        id++;
     }
-    return( -1 );
+    return( NO_ID );
 
 } /* GetMenuIdFromCoord */
 
@@ -983,7 +985,7 @@ bool IsMenuHotKey( vi_key key )
 
     ch = key - VI_KEY(ALT_A ) + 'A';
     for( curr = menuHead; curr != NULL; curr = curr->next ) {
-        if( curr->hi._char == ch ) {
+        if( curr->hi_char._char == ch ) {
             return( true );
         }
     }

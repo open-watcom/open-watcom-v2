@@ -29,6 +29,7 @@
 ****************************************************************************/
 
 #include <stdlib.h>
+#include <stdio.h>
 #include "wio.h"
 #include "trmem.h"
 #include "memfuncs.h"
@@ -38,20 +39,23 @@
 
 #ifdef TRMEM
 static _trmem_hdl   TRMemHandle = NULL;
-static int          TRFileHandle;   /* stream to put output on */
-static void         MemPrintLine( void *, const char * buff, size_t len );
+static FILE         *TRFileFP = NULL;       /* stream to put output on */
+
+static void MemPrintLine( void *parm, const char *buff, size_t len )
+/******************************************************************/
+{
+    /* unused parameters */ (void)parm;
+
+    fwrite( buff, 1, len, TRFileFP );
+}
 #endif
 
 void MemOpen( void )
 {
 #ifdef TRMEM
-    #ifdef NLM
-        TRFileHandle = STDERR_HANDLE;
-    #else
-        TRFileHandle = STDERR_FILENO;
-    #endif
+    TRFileFP = stderr;
     TRMemHandle = _trmem_open( malloc, free, realloc, NULL,
-            &TRFileHandle, MemPrintLine,
+            NULL, MemPrintLine,
             _TRMEM_ALLOC_SIZE_0 | _TRMEM_REALLOC_SIZE_0 |
             _TRMEM_OUT_OF_MEMORY | _TRMEM_CLOSE_CHECK_FREE );
 #endif
@@ -101,12 +105,3 @@ void MemClose( void )
     }
 #endif
 }
-
-#ifdef TRMEM
-/* extern to avoid problems with taking address and overlays */
-extern void MemPrintLine( void *handle, const char * buff, size_t len )
-/*********************************************************************/
-{
-    posix_write( *(int *)handle, buff, len );
-}
-#endif

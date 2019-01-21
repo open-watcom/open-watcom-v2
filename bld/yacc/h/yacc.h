@@ -41,8 +41,6 @@ enum {
     TOKEN_SPARSE_BASE   = 0x007f, TOKEN_SPARSE_MAX      = 0x7fff,
 };
 
-#define MAX_AMBIGS      10
-
 #define WSIZE           (sizeof(a_word)*8)
 
 #define ACTION_NULL     0
@@ -51,6 +49,9 @@ enum {
 #define ClearBit(x,i)   ((x)[(i)/WSIZE] &= ~( 1UL << ((i) % WSIZE )))
 #define SetBit(x,i)     ((x)[(i)/WSIZE] |= ( 1UL << ((i) % WSIZE )))
 #define IsBitSet(x,i)   ((x)[(i)/WSIZE] &  ( 1UL << ((i) % WSIZE )))
+
+#define _RoundUp( size, word )          ( ((size)+((word)-1)) & ~((word)-1) )
+#define _RoundUpBitVector( size, word ) ( ((size)+((word)-1))/(word) )
 
 typedef enum flags {
     M_NULL              = 0x00,
@@ -76,15 +77,17 @@ typedef enum flags {
 #define IsOnlyReduce(c)         ((c)->flag &   M_ONLY_REDUCE)
 #define OnlyReduce(c)           ((c)->flag |=  M_ONLY_REDUCE)
 
-enum assoc_t {
+typedef enum {
     NON_ASSOC           = 0,
     L_ASSOC             = 1,
     R_ASSOC             = 2
-};
+} assoc_t;
+
+typedef unsigned char   prec_t;
 
 typedef struct a_prec {
-    enum assoc_t        assoc;
-    unsigned char       prec;
+    assoc_t             assoc;
+    prec_t              prec;
 } a_prec;
 
 typedef unsigned int    a_word;
@@ -105,6 +108,10 @@ typedef struct a_SR_conflict a_SR_conflict;
 typedef struct a_SR_conflict_list a_SR_conflict_list;
 typedef struct a_link   a_link;
 
+typedef unsigned        conflict_id;    /* numeric id assigned by user */
+#define CONFLICT_MAX_ID ((conflict_id)~0)
+#define CONFLICT_MIN_ID ((conflict_id)0)
+
 typedef struct an_item {
     union {
         a_sym           *sym;
@@ -119,7 +126,7 @@ struct a_SR_conflict {
     a_state             *state;         /* final state that contains ambigity */
     a_state             *shift;         /* state if we were to shift token */
     a_SR_conflict_list  *thread;        /* all registered productions */
-    unsigned            id;             /* numeric id assigned by user */
+    conflict_id         id;             /* numeric id assigned by user */
     index_n             reduce;         /* rule if we were to reduce on token */
 };
 
@@ -202,9 +209,16 @@ typedef enum value_size {
     FITS_A_WORD
 } value_size;
 
+typedef union {
+    int         number;
+    token_n     id;
+    assoc_t     assoc;
+} tok_value;
+
 extern void     InitSets(unsigned );
 extern a_word   *AllocSet( unsigned );
 extern unsigned GetSetSize( unsigned );
+#define FreeSet(x)  FREE(x)
 extern void     Union(a_word *,a_word *);
 extern void     Intersection( a_word *, a_word *);
 extern void     Assign(a_word *,a_word *);
@@ -246,12 +260,14 @@ extern char     *getname( char * );
 
 extern FILE     *fpopen( char *, char * );
 
-extern void     defs(void);
-extern void     rules(void);
+extern void     defs( FILE * );
+extern void     rules( FILE * );
 extern void     parsestats( void );
-extern void     tail(void);
+extern void     tail( FILE * );
+extern void     dump_header( FILE * );
+extern void     close_header( FILE * );
 
-extern void     genobj(void);
+extern void     genobj( FILE * );
 
 extern void     msg( char *, ... );
 extern void     warn( char *, ... );
@@ -259,17 +275,17 @@ extern void     dumpstatistic( char *name, unsigned stat );
 
 extern void     MarkNoUnitRuleOptimizationStates( void );
 
-extern void     GenFastTables( void );
+extern void     GenFastTables( FILE * );
 
 extern token_n  FirstNonTerminalTokenValue( void );
-extern void     endtab( void );
-extern void     putcompact( token_n token, action_n action );
-extern void     begtab( char *tipe, char *name );
-extern void     putnum( char *name, int i );
-extern void     putambigs( base_n *base );
-extern void     puttab( value_size fits, unsigned i );
-extern void     puttokennames( token_n dtoken, value_size token_size );
-extern void     putcomment( char *comment );
+extern void     endtab( FILE *fp );
+extern void     putcompact( FILE *fp, token_n token, action_n action );
+extern void     begtab( FILE *fp, char *tipe, char *name );
+extern void     putnum( FILE *fp, char *name, int i );
+extern void     putambigs( FILE *fp, base_n *base );
+extern void     puttab( FILE *fp, value_size fits, unsigned i );
+extern void     puttokennames( FILE *fp, token_n dtoken, value_size token_size );
+extern void     putcomment( FILE *fp, char *comment );
 
 extern rule_n   npro;    /* # of productions */
 extern index_n  nsym;    /* # of symbols */
@@ -319,8 +335,6 @@ extern set_size *setmembers;
 extern char     *srcname;
 
 extern FILE     *yaccin;
-extern FILE     *actout;
-extern FILE     *tokout;
 
 extern int      lineno;
 

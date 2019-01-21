@@ -154,70 +154,70 @@ cg_type CgTypeOutput(           // COMPUTE TYPE FOR CODE GENERATOR
 
     type = TypeModFlags( type, &mod_flags );
     switch( type->id ) {
-      case TYP_SCHAR :
+    case TYP_SCHAR :
         retn = TY_INT_1;
         break;
-      case TYP_BOOL :
+    case TYP_BOOL :
         retn = TY_BOOL;
         break;
-      case TYP_UCHAR :
+    case TYP_UCHAR :
         retn = TY_UINT_1;
         break;
-      case TYP_UINT :
+    case TYP_UINT :
         retn = TY_UNSIGNED;
         break;
-      case TYP_USHORT :
-      case TYP_WCHAR :
+    case TYP_USHORT :
+    case TYP_WCHAR :
         retn = TY_UINT_2;
         break;
-      case TYP_SINT :
+    case TYP_SINT :
         retn = TY_INTEGER;
         break;
-      case TYP_SSHORT :
+    case TYP_SSHORT :
         retn = TY_INT_2;
         break;
-      case TYP_ULONG :
+    case TYP_ULONG :
         retn = TY_UINT_4;
         break;
-      case TYP_SLONG :
+    case TYP_SLONG :
         retn = TY_INT_4;
         break;
-      case TYP_ULONG64 :
+    case TYP_ULONG64 :
         retn = TY_UINT_8;
         break;
-      case TYP_SLONG64 :
+    case TYP_SLONG64 :
         retn = TY_INT_8;
         break;
-      case TYP_FLOAT :
+    case TYP_FLOAT :
         retn = TY_SINGLE;
         break;
-      case TYP_LONG_DOUBLE :
+    case TYP_LONG_DOUBLE :
         retn = TY_DOUBLE;           // change later when long-double support
         break;
-      case TYP_DOUBLE :
+    case TYP_DOUBLE :
         retn = TY_DOUBLE;
         break;
-      case TYP_POINTER :
+    case TYP_POINTER :
         type = TypeModFlags( type->of, &mod_flags );
         if( type->id == TYP_FUNCTION ) {
-            retn = ptr_cg_type[ code_ptr_type( mod_flags ) ];
+            retn = ptr_cg_type[code_ptr_type( mod_flags )];
         } else {
-            retn = ptr_dg_type[ data_ptr_type( mod_flags ) ];
+            retn = ptr_dg_type[data_ptr_type( mod_flags )];
         }
         break;
-      case TYP_ARRAY :
+    case TYP_ARRAY :
         retn = cg_defined_type( type, &type->u.a.refno );
         break;
-      case TYP_CLASS :
+    case TYP_CLASS :
         retn = cg_defined_type( type, &type->u.c.info->refno );
         break;
-      case TYP_FUNCTION :
-        retn = ptr_cg_type[ code_ptr_type( mod_flags ) ];
+    case TYP_FUNCTION :
+        retn = ptr_cg_type[code_ptr_type( mod_flags )];
         break;
-      case TYP_MEMBER_POINTER :
+    case TYP_MEMBER_POINTER :
         retn = cg_defined_type( type, &cg_member_ptr );
         break;
-      default:
+    default:
         retn = TY_INTEGER;
         break;
     }
@@ -229,36 +229,45 @@ bool IsCgTypeAggregate(         // CAN TYPE CAN BE INITIALIZED AS AGGREGATE?
     TYPE type,                  // - C++ type
     bool string )               // - array of string not aggregate
 {
-    bool retb = false;          // - true if aggregate
+    bool ok;                    // - true if aggregate
     CLASSINFO *info;            // - info part of class type
 
+    ok = false;
     type = TypedefModifierRemove( type );
     switch( type->id ) {
-      case TYP_ARRAY :
-        if( string && TypeIsCharString( type ) ) break;
-        retb = true;
+    case TYP_ARRAY :
+        if( string && TypeIsCharString( type ) )
+            break;
+        ok = true;
         break;
-      case TYP_BITFIELD :
-        retb = true;
+    case TYP_BITFIELD :
+        ok = true;
         break;
-      case TYP_CLASS :
+    case TYP_CLASS :
         info = type->u.c.info;
-        if( info->corrupted ) break;
-        if( info->bases != NULL ) break;
-        if( info->size != type->u.c.info->vsize ) break;
-        if( info->last_vfn != 0 ) break;
-        if( info->last_vbase != 0 ) break;
-        if( info->has_data == 0 ) break;
-        if( info->has_ctor != 0 ) break;
-        retb = true;
+        if( info->corrupted )
+            break;
+        if( info->bases != NULL )
+            break;
+        if( info->size != type->u.c.info->vsize )
+            break;
+        if( info->last_vfn != 0 )
+            break;
+        if( info->last_vbase != 0 )
+            break;
+        if( info->has_data == 0 )
+            break;
+        if( info->has_ctor != 0 )
+            break;
+        ok = true;
         break;
     }
-    return( retb );
+    return( ok );
 }
 
 
-#define code_ptr_size( mf ) ( ptr_size[ code_ptr_type( (mf) ) ] )
-#define data_ptr_size( mf ) ( ptr_size[ data_ptr_type( (mf) ) ] )
+#define code_ptr_size( mf ) ( ptr_size[code_ptr_type( (mf) )] )
+#define data_ptr_size( mf ) ( ptr_size[data_ptr_type( (mf) )] )
 
 
 target_size_t CgDataPtrSize(    // SIZE OF DEFAULT DATA POINTER
@@ -284,52 +293,51 @@ static target_size_t cgSize(    // COMPUTE SIZE OF A TYPE
 
     type = TypeModFlags( type, &mod_flags );
     switch( type->id ) {
-      case TYP_BOOL :
+    case TYP_BOOL :
         size = TARGET_BOOL;
         break;
-      case TYP_ERROR :
-      case TYP_UCHAR :
-      case TYP_SCHAR :
+    case TYP_ERROR :
+    case TYP_UCHAR :
+    case TYP_SCHAR :
         size = TARGET_CHAR;
         break;
-      case TYP_WCHAR :
-      case TYP_USHORT :
-      case TYP_SSHORT :
+    case TYP_WCHAR :
+    case TYP_USHORT :
+    case TYP_SSHORT :
         size = TARGET_SHORT;
         break;
-      case TYP_SINT :
+    case TYP_SINT :
         size = TARGET_INT;
         break;
-      case TYP_UINT :
+    case TYP_UINT :
         size = TARGET_UINT;
         break;
-      case TYP_ULONG :
+    case TYP_ULONG :
         size = TARGET_ULONG;
         break;
-      case TYP_SLONG :
+    case TYP_SLONG :
         size = TARGET_LONG;
         break;
-      case TYP_ULONG64 :
+    case TYP_ULONG64 :
         size = TARGET_ULONG64;
         break;
-      case TYP_SLONG64 :
+    case TYP_SLONG64 :
         size = TARGET_LONG64;
         break;
-      case TYP_FLOAT :
+    case TYP_FLOAT :
         size = TARGET_FLOAT;
         break;
-      case TYP_DOUBLE :
+    case TYP_DOUBLE :
         size = TARGET_DOUBLE;
         break;
-      case TYP_LONG_DOUBLE :
+    case TYP_LONG_DOUBLE :
         size = TARGET_LONG_DOUBLE;
         break;
-
-      /* sizeof(nullptr) == sizeof(void *) */
-      case TYP_NULLPTR :
+    /* sizeof(nullptr) == sizeof(void *) */
+    case TYP_NULLPTR :
         size = CgDataPtrSize();
         break;
-      case TYP_POINTER :
+    case TYP_POINTER :
         if( ( ! ref_as_ptr ) && ( type->flag & TF1_REFERENCE ) ) {
             size = cgSize( type->of, false );
         } else {
@@ -341,10 +349,10 @@ static target_size_t cgSize(    // COMPUTE SIZE OF A TYPE
             }
         }
         break;
-      case TYP_BITFIELD :
+    case TYP_BITFIELD :
         size = cgSize( type->of, true );
         break;
-      case TYP_ARRAY :
+    case TYP_ARRAY :
         size = type->u.a.array_size;
         if( type->flag & TF1_ZERO_SIZE ) {
             DbgAssert( type->u.a.array_size == 1 );
@@ -353,20 +361,20 @@ static target_size_t cgSize(    // COMPUTE SIZE OF A TYPE
             size *= cgSize( type->of, false );
         }
         break;
-      case TYP_CLASS :
+    case TYP_CLASS :
         if( TypeDefined( type ) ) {
             size = type->u.c.info->size;
         } else {
             size = 0;
         }
         break;
-      case TYP_FUNCTION :
+    case TYP_FUNCTION :
         size = code_ptr_size( mod_flags );
         break;
-      case TYP_MEMBER_POINTER :
+    case TYP_MEMBER_POINTER :
         size = CgCodePtrSize() + 2 * TARGET_UINT;
         break;
-      default :
+    default :
         size = 0;
         break;
     }
@@ -377,14 +385,14 @@ static target_size_t cgSize(    // COMPUTE SIZE OF A TYPE
 target_size_t CgTypeSize(       // COMPUTE SIZE OF A TYPE IN USE
     TYPE type )                 // - type
 {
-    return cgSize( type, false );
+    return( cgSize( type, false ) );
 }
 
 
 target_size_t CgMemorySize(     // COMPUTE SIZE OF A TYPE IN MEMORY
     TYPE type )                 // - type
 {
-    return cgSize( type, true );
+    return( cgSize( type, true ) );
 }
 
 
@@ -397,7 +405,7 @@ cg_type CgTypeSym(             // COMPUTE OUTPUT TYPE FOR SYMBOL
      && OMR_CLASS_REF == ObjModelArgument( type ) ) {
         type = MakeReferenceTo( type );
     }
-    return CgTypeOutput( type );
+    return( CgTypeOutput( type ) );
 }
 
 
@@ -428,7 +436,7 @@ cg_type CgTypePtrSym(          // COMPUTE OUTPUT TYPE OF POINTER TO SYMBOL
             codegen_type = TY_POINTER;
         }
     }
-    return codegen_type;
+    return( codegen_type );
 }
 
 
@@ -441,15 +449,15 @@ target_size_t cgPtrSize(        // COMPUTE SIZE OF A POINTER
 
     type = TypeModFlags( type, &mod_flags );
     switch( type->id ) {
-      case TYP_ARRAY :
-      case TYP_POINTER :
+    case TYP_ARRAY :
+    case TYP_POINTER :
         TypeModFlags( type->of, &mod_flags );
         size = data_ptr_size( mod_flags );
         break;
-      case TYP_FUNCTION :
+    case TYP_FUNCTION :
         size = code_ptr_size( mod_flags );
         break;
-      default :
+    default :
         size = 0;
         break;
     }
@@ -464,15 +472,15 @@ TYPE TypePointerDiff(           // GET TYPE FOR DIFFERENCE OF POINTERS
 
     type = TypeModFlags( type, &flag );
     switch( type->id ) {
-      case TYP_ARRAY :
-      case TYP_POINTER :
+    case TYP_ARRAY :
+    case TYP_POINTER :
         TypeModFlags( type->of, &flag );
-        type = *ptr_diff_type[ data_ptr_type( flag ) ];
+        type = *ptr_diff_type[data_ptr_type( flag )];
         break;
-      case TYP_FUNCTION :
-        type = *ptr_diff_type[ code_ptr_type( flag ) ];
+    case TYP_FUNCTION :
+        type = *ptr_diff_type[code_ptr_type( flag )];
         break;
-      default :
+    default :
         type = NULL;
         break;
     }
@@ -487,16 +495,16 @@ static target_size_t cgTypeTruncSize( // GET SIZE FOR TRUNCATION
     type_flag flags;            // - flags for a type
 
     switch( TypedefModifierRemove( type )->id ) {
-      case TYP_ARRAY :
-      case TYP_FUNCTION :
-      case TYP_POINTER :
+    case TYP_ARRAY :
+    case TYP_FUNCTION :
+    case TYP_POINTER :
         TypePointedAt( type, &flags );
         if( flags & ( TF1_BASED | TF1_FAR16 ) ) {
             type = TypeConvertFromPcPtr( type );
         }
         size = cgPtrSize( type );
         break;
-      default :
+    default :
         size = CgTypeSize( type );
         break;
     }
@@ -548,9 +556,9 @@ cg_type CgTypeOffset(          // GET CODEGEN TYPE FOR AN OFFSET
     void )
 {
 #if _CPU == 8086
-    return TY_UINT_2;
+    return( TY_UINT_2 );
 #else
-    return TY_UINT_4;
+    return( TY_UINT_4 );
 #endif
 }
 

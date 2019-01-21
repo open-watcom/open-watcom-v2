@@ -104,7 +104,7 @@ struct base_path {
     SCOPE               scope;
     inherit_flag        flag;
     unsigned            checked_private : 1;
-    unsigned            failed_private : 1;
+    unsigned            failed_private  : 1;
 };
 
 typedef struct symbol_exclude SYMBOL_EXCLUDE;
@@ -123,7 +123,7 @@ struct path_cap {
     SYMBOL_NAME         sym_name;
     SYMBOL              sym;
     inherit_flag        flag;
-    unsigned            throw_away : 1;
+    unsigned            throw_away          : 1;
     unsigned            across_virtual_base : 1;
 };
 
@@ -136,7 +136,7 @@ struct base_stack {
     SYMBOL              access_changed;
     void                *hold;
     inherit_flag        access_perm;
-    unsigned            used : 1;
+    unsigned            used                : 1;
 };
 
 typedef enum {          /* return value for base class walking routines */
@@ -151,8 +151,8 @@ typedef struct {
     SCOPE               derived;
     SCOPE               base;
     unsigned            copies;
-    unsigned            virtual_base : 1;
-    unsigned            is_derived : 1;
+    unsigned            virtual_base        : 1;
+    unsigned            is_derived          : 1;
 } scope_derived_walk;
 
 typedef struct {
@@ -173,8 +173,8 @@ typedef struct {
 
 typedef struct {
     SCOPE               base;
-    unsigned            virtual_base : 1;
-    unsigned            is_derived : 1;
+    unsigned            virtual_base        : 1;
+    unsigned            is_derived          : 1;
 } derived_walk;
 
 typedef struct {
@@ -185,7 +185,7 @@ typedef struct {
 typedef struct {
     unsigned            depth;
     SCOPE               base;
-    unsigned            many_pathes : 1;
+    unsigned            many_pathes         : 1;
 } base_depth_walk;
 
 typedef struct {
@@ -206,7 +206,7 @@ typedef struct {
 typedef struct {
     CLASS_VBTABLE       *tables;
     SCOPE               start;
-    unsigned            already_done : 1;
+    unsigned            already_done        : 1;
 } vbtable_walk;
 
 typedef struct {
@@ -220,57 +220,57 @@ typedef struct {
     SCOPE               derived;
     THUNK_ACTION        *thunk;
     VSTK_CTL            disambig;
-    unsigned            OK_to_diagnose : 1;
-    unsigned            already_done : 1;
-    unsigned            thunk_code : 1;
+    unsigned            OK_to_diagnose      : 1;
+    unsigned            already_done        : 1;
+    unsigned            thunk_code          : 1;
 } vftable_walk;
 
-typedef struct {                                /* I - input, O - output */
-    SCOPE               start;                  /* I: type of (*p) in "p->C::a" */
-    SCOPE               disambiguate;           /* I: C in "p->C::a" */
-    SCOPE               ignore;                 /* I: don't search here */
-    NAME                name;                   /* I: a in "p->C::a" */
-    TYPE                type;                   /* I: T in "p->operator T()" */
-    TYPE                fn_type;                /* I: type of virtual fn */
-    SYMBOL              fn_sym;                 /* I: sym of virtual fn */
-    special_name_fn     is_special;             /* I: fn to check for special names */
-    unsigned            consider_mask;          /* I: mask to check curr scope */
-    BASE_STACK          *top;                   /* T: temp for storing 'top' */
-    MSG_NUM             error_msg;              /* O: error message to use */
-    MSG_NUM             info_msg;               /* O: info message for above msg */
-    SYMBOL              info1;                  /* O: parm for first info msg */
-    SYMBOL              info2;                  /* O: parm for second info msg */
-    SYMBOL_NAME         vfn_name;               /* O: vfn that shares table */
-    FNOV_LIST           *user_conv_list;        /* O: list of user convs in hierarchy */
-    PATH_CAP            *paths;                 /* O: paths to name */
-    unsigned            path_count;             /* O: # of paths to name */
-    inherit_flag        perm;                   /* O: permission of path to name */
-    type_flag           this_qualifier;         /* I: T cv-qual *this; cv-qual */
-    unsigned            virtual_override : 1;   /* I: find vfns with same name*/
-    unsigned            user_conversion : 1;    /* I: find conversion to 'type' */
-    unsigned            specific_user_conv : 1; /* I: must find specific conv */
-    unsigned            best_user_conv : 1;     /* I: must find best conv */
-    unsigned            check_special : 1;      /* I: use is_special() */
-    unsigned            no_inherit : 1;         /* I: no base classes searched */
-    unsigned            only_inherit : 1;       /* I: only base classes searched */
-    unsigned            only_bases : 1;         /* I: direct base classes searched */
-    unsigned            ok_to_diagnose : 1;     /* I: flag any errors found */
-    unsigned            find_all : 1;           /* I: find all pathes to base */
-    unsigned            ignore_access : 1;      /* I: access isn't important */
-    unsigned            saw_class : 1;          /* I: class scope was seen */
-    unsigned            ambiguous : 1;          /* O: ambiguity detected */
-    unsigned            overload_reqd : 1;      /* O: overload affects ambiguity */
-    unsigned            use_this : 1;           /* O: access could use "this" */
-    unsigned            no_this : 1;            /* O: access can't use "this" */
-    unsigned            saw_function : 1;       /* O: function scope was seen */
-    unsigned            use_index : 1;          /* O: use index of virtual fn */
-    unsigned            return_thunk : 1;       /* O: vfn needs return thunk */
-    unsigned            protected_OK : 1;       /* O: protected sym can be accessed */
-    unsigned            file_class_done : 1;    /* O: C::id search from file-scope done */
-    unsigned            file_ns_done : 1;       /* O: N::id search from file-scope done */
-    unsigned            same_table : 1;         /* O: vfn name is in same table */
-    unsigned            lookup_error : 1;       /* O: error to report from lookup */
-    unsigned            member_lookup : 1;
+typedef struct {                                    /* I - input, O - output */
+    SCOPE               start;                      /* I: type of (*p) in "p->C::a" */
+    SCOPE               disambiguate;               /* I: C in "p->C::a" */
+    SCOPE               ignore;                     /* I: don't search here */
+    NAME                name;                       /* I: a in "p->C::a" */
+    TYPE                type;                       /* I: T in "p->operator T()" */
+    TYPE                fn_type;                    /* I: type of virtual fn */
+    SYMBOL              fn_sym;                     /* I: sym of virtual fn */
+    special_name_fn     is_special;                 /* I: fn to check for special names */
+    unsigned            consider_mask;              /* I: mask to check curr scope */
+    BASE_STACK          *top;                       /* T: temp for storing 'top' */
+    MSG_NUM             error_msg;                  /* O: error message to use */
+    MSG_NUM             info_msg;                   /* O: info message for above msg */
+    SYMBOL              info1;                      /* O: parm for first info msg */
+    SYMBOL              info2;                      /* O: parm for second info msg */
+    SYMBOL_NAME         vfn_name;                   /* O: vfn that shares table */
+    FNOV_LIST           *user_conv_list;            /* O: list of user convs in hierarchy */
+    PATH_CAP            *paths;                     /* O: paths to name */
+    unsigned            path_count;                 /* O: # of paths to name */
+    inherit_flag        perm;                       /* O: permission of path to name */
+    type_flag           this_qualifier;             /* I: T cv-qual *this; cv-qual */
+    unsigned            virtual_override    : 1;    /* I: find vfns with same name */
+    unsigned            user_conversion     : 1;    /* I: find conversion to 'type' */
+    unsigned            specific_user_conv  : 1;    /* I: must find specific conv */
+    unsigned            best_user_conv      : 1;    /* I: must find best conv */
+    unsigned            check_special       : 1;    /* I: use is_special() */
+    unsigned            no_inherit          : 1;    /* I: no base classes searched */
+    unsigned            only_inherit        : 1;    /* I: only base classes searched */
+    unsigned            only_bases          : 1;    /* I: direct base classes searched */
+    unsigned            ok_to_diagnose      : 1;    /* I: flag any errors found */
+    unsigned            find_all            : 1;    /* I: find all pathes to base */
+    unsigned            ignore_access       : 1;    /* I: access isn't important */
+    unsigned            saw_class           : 1;    /* I: class scope was seen */
+    unsigned            ambiguous           : 1;    /* O: ambiguity detected */
+    unsigned            overload_reqd       : 1;    /* O: overload affects ambiguity */
+    unsigned            use_this            : 1;    /* O: access could use "this" */
+    unsigned            no_this             : 1;    /* O: access can't use "this" */
+    unsigned            saw_function        : 1;    /* O: function scope was seen */
+    unsigned            use_index           : 1;    /* O: use index of virtual fn */
+    unsigned            return_thunk        : 1;    /* O: vfn needs return thunk */
+    unsigned            protected_OK        : 1;    /* O: protected sym can be accessed */
+    unsigned            file_class_done     : 1;    /* O: C::id search from file-scope done */
+    unsigned            file_ns_done        : 1;    /* O: N::id search from file-scope done */
+    unsigned            same_table          : 1;    /* O: vfn name is in same table */
+    unsigned            lookup_error        : 1;    /* O: error to report from lookup */
+    unsigned            member_lookup       : 1;
 } lookup_walk;
 
 typedef struct access_data {
@@ -279,7 +279,7 @@ typedef struct access_data {
     SCOPE               member;
     SCOPE               located;
     inherit_flag        perm;
-    unsigned            protected_OK : 1;
+    unsigned            protected_OK        : 1;
 } access_data;
 
 typedef struct qualify_stack QUALIFICATION;
@@ -303,7 +303,7 @@ SYMBOL PCHDebugSym;
 
 extern SCOPE    GetCurrScope(void)
 {
-    return g_CurrScope;
+    return( g_CurrScope );
 }
 
 extern SCOPE    SetCurrScope(SCOPE newScope)
@@ -324,31 +324,31 @@ extern SCOPE    SetCurrScope(SCOPE newScope)
     }
 #endif
 
-    return oldScope;
+    return( oldScope );
 }
 
 extern SCOPE    GetFileScope(void)
 {
-    return g_FileScope;
+    return( g_FileScope );
 }
 
 extern SCOPE    SetFileScope(SCOPE newScope)
 {
     SCOPE oldScope = g_FileScope;
     g_FileScope = newScope;
-    return oldScope;
+    return( oldScope );
 }
 
 extern SCOPE    GetInternalScope(void)
 {
-    return g_InternalScope;
+    return( g_InternalScope );
 }
 
 extern SCOPE    SetInternalScope(SCOPE newScope)
 {
     SCOPE oldScope = g_InternalScope;
     g_InternalScope = newScope;
-    return oldScope;
+    return( oldScope );
 }
 
 
@@ -610,7 +610,8 @@ static SCOPE makeScope( scope_type_t scope_type )
     new_scope->owner.sym = NULL;
     new_scope->names = HashCreateByIndex( hashTableSizeIndex[scope_type] );
     new_scope->using_list = NULL;
-    DbgStmt( if( recordableScope( new_scope ) ) DbgRememberScope( new_scope ); );
+    DbgStmt( if( recordableScope( new_scope ) ) \
+                 DbgRememberScope( new_scope ); );
     return( new_scope );
 }
 
@@ -720,7 +721,7 @@ void ScopeCreatePCHDebugSym( void )
         type = GetBasicType( TYP_CHAR );
         sym = SymCreateFileScope( type, SC_PUBLIC, 0, name );
         PCHDebugSym = sym;
-    }else if( CompFlags.pch_debug_info_read ){
+    }else if( CompFlags.pch_debug_info_read ) {
         name = PCHDebugInfoName();
         type = GetBasicType( TYP_CHAR );
         sym = SymCreateFileScope( type, SC_EXTERN, 0, name );
@@ -1062,7 +1063,8 @@ void ScopeClear( SCOPE scope )
 void ScopeBurn( SCOPE scope )
 /***************************/
 {
-    DbgStmt( if( recordableScope( scope ) ) DbgForgetScope( scope ); );
+    DbgStmt( if( recordableScope( scope ) ) \
+                 DbgForgetScope( scope ); );
     ScopeWalkNames( scope, FreeSymbolName );
     HashDestroy( scope->names );
     CarveFree( carveSCOPE, scope );
@@ -1558,13 +1560,13 @@ void ScopeWalkDataMembers( SCOPE scope, void (*rtn)(SYMBOL, void *), void *data 
 /*********************************************************************************/
 {
     SYMBOL stop;                // - first symbol for scope
-    SYMBOL next;                // - next symbol in scope
+    SYMBOL curr;                // - next symbol in scope
 
     stop = ScopeOrderedStart( scope );
     if( stop != NULL ) {
-        for( next = NULL; (next = ScopeOrderedNext( stop, next )) != NULL; ) {
-            if( SymIsThisDataMember( next ) ) {
-                (*rtn)( next, data );
+        for( curr = NULL; (curr = ScopeOrderedNext( stop, curr )) != NULL; ) {
+            if( SymIsThisDataMember( curr ) ) {
+                (*rtn)( curr, data );
             }
         }
     }
@@ -1695,7 +1697,7 @@ SYMBOL AllocTypedSymbol( TYPE type )
 
     sym = AllocSymbol();
     sym->sym_type = type;
-    return sym;
+    return( sym );
 }
 
 
@@ -2921,7 +2923,9 @@ static SCOPE nextAccessScope( SCOPE scope )
         /* skip enclosing class scopes */
         do {
             scope = scope->enclosing;
-            if( scope == NULL ) break;
+            if( scope == NULL ) {
+                break;
+            }
         } while( _IsClassScope( scope ) );
     } else {
         scope = scope->enclosing;
@@ -3370,20 +3374,20 @@ bool ScopeSameVFuns( SYMBOL fun1, SYMBOL fun2 )
 {
     SYMBOL *a_fun1;             // - addr[ fun1 ]
     NAME name;                  // - name for checking
-    bool retb;                  // - true ==> is same virtual function
+    bool ok;                    // - true ==> is same virtual function
 
     a_fun1 = &fun1;
     name = fun1->name->name;
     switch( distinctVirtualFunction( a_fun1, fun2, name ) ) {
-      case FNOV_NOT_DISTINCT_RETURN:
-      case FNOV_EXACT_MATCH:
-        retb = true;
+    case FNOV_NOT_DISTINCT_RETURN:
+    case FNOV_EXACT_MATCH:
+        ok = true;
         break;
-      default :
-        retb = false;
+    default :
+        ok = false;
         break;
     }
-    return( retb );
+    return( ok );
 }
 
 static TYPE symReturnsClassRefPtr( SYMBOL sym, bool *is_reference )
@@ -3876,8 +3880,8 @@ static void differentCopiesAmbiguity( lookup_walk *data )
     SYMBOL_NAME sym_name;
     CLASSINFO *info;
     struct {
-        unsigned static_found : 1;
-        unsigned nonstatic_found : 1;
+        unsigned static_found       : 1;
+        unsigned nonstatic_found    : 1;
     } flag;
 
     cap = data->paths;
@@ -4545,7 +4549,7 @@ static bool tryDisambigLookup( lookup_walk *data, SCOPE scope,
 
 static bool disambigNSLookup( lookup_walk *data, SCOPE scope )
 {
-    bool retb;
+    bool ok;
     SYMBOL_NAME sym_name;
     PSTK_CTL *curr;
     PSTK_CTL *next;
@@ -4565,24 +4569,24 @@ static bool disambigNSLookup( lookup_walk *data, SCOPE scope )
     PstkPush( curr, scope );
     PstkPush( &cycle, scope );
     for(;;) {
-        retb = tryDisambigLookup( data, scope, curr, next, &cycle );
-        if( retb || PstkTopElement( next ) == NULL ) {
+        ok = tryDisambigLookup( data, scope, curr, next, &cycle );
+        if( ok || PstkTopElement( next ) == NULL ) {
             break;
         }
-        retb = tryDisambigLookup( data, scope, next, curr, &cycle );
-        if( retb || PstkTopElement( curr ) == NULL ) {
+        ok = tryDisambigLookup( data, scope, next, curr, &cycle );
+        if( ok || PstkTopElement( curr ) == NULL ) {
             break;
         }
     }
     PstkClose( &stack1 );
     PstkClose( &stack2 );
     PstkClose( &cycle );
-    return( retb );
+    return( ok );
 }
 
 static bool simpleNSLookup( lookup_walk *data, SCOPE scope )
 {
-    bool retb;
+    bool ok;
     SCOPE trigger_scope;
     SCOPE top_scope;
     SCOPE edge_scope;
@@ -4627,10 +4631,10 @@ static bool simpleNSLookup( lookup_walk *data, SCOPE scope )
             } RingIterEnd( curr )
         }
     }
-    retb = processNSLookup( data );
+    ok = processNSLookup( data );
     PstkClose( &cycle );
     PstkClose( &stack );
-    return( retb );
+    return( ok );
 }
 
 static bool searchScope( lookup_walk *data, SCOPE scope )
@@ -4922,11 +4926,11 @@ static walk_status collectVBTable( BASE_STACK *top, void *parm )
     table = RingAlloc( &(data->tables), amount );
     assignLocation( &(table->h), &location );
     table->h.count = max_vbase;
-    table->data[ max_vbase ] = NULL;
+    table->data[max_vbase] = NULL;
     if( ! data->already_done ) {
         RingIterBeg( ScopeInherits( scope ), base ) {
             if( _IsVirtualBase( base ) ) {
-                table->data[ base->vb_index - 1 ] = base->type;
+                table->data[base->vb_index - 1] = base->type;
             }
         } RingIterEnd( base )
     }
@@ -5335,12 +5339,14 @@ static void checkAmbiguousOverride( THUNK_ACTION *thunk, vftable_walk *data )
     }
 #endif
     for( top = data->top; top != NULL; top = top->parent ) {
-        DbgStmt( if( PragDbgToggle.dump_vftables ) printScopeName( top->scope, NULL ); );
+        DbgStmt( if( PragDbgToggle.dump_vftables ) \
+                     printScopeName( top->scope, NULL ); );
         if( top->scope == override_scope ) {
             break;
         }
     }
-    DbgStmt( if( PragDbgToggle.dump_vftables ) putchar( '\n' ); );
+    DbgStmt( if( PragDbgToggle.dump_vftables ) \
+                 putchar( '\n' ); );
     if( top != NULL ) {
         /* quick check to see if override is in this path succeeded! */
         return;
@@ -5349,7 +5355,8 @@ static void checkAmbiguousOverride( THUNK_ACTION *thunk, vftable_walk *data )
     virtual_base = NULL;
     first_top = data->top;
     for( top = first_top; top != NULL; top = top->parent ) {
-        DbgStmt( if( PragDbgToggle.dump_vftables ) printScopeName( top->scope, "\n" ); );
+        DbgStmt( if( PragDbgToggle.dump_vftables ) \
+                     printScopeName( top->scope, "\n" ); );
         if( virtual_base == NULL ) {
             base = top->base;
             if( base != NULL ) {
@@ -5406,7 +5413,7 @@ static void handleVFN( vftable_walk *data, SYMBOL sym )
     table = data->curr;
     thunk_table = table->data;
     vf_index = sym->u.member_vf_index - 1;
-    thunk = &thunk_table[ vf_index ];
+    thunk = &thunk_table[vf_index];
     introducing_sym = thunk->sym;
     if( introducing_sym == NULL ) {
         thunk->sym = sym;
@@ -5502,7 +5509,8 @@ static walk_status collectVFTable( BASE_STACK *top, void *parm )
 
     data->top = top;
     scope = top->scope;
-    DbgStmt( if( PragDbgToggle.dump_vftables ) printScopeName( scope, "collectVFTable()\n" ); );
+    DbgStmt( if( PragDbgToggle.dump_vftables ) \
+                 printScopeName( scope, "collectVFTable()\n" ); );
     class_type = ScopeClass( scope );
     info = class_type->u.c.info;
     if( ! info->has_vfn ) {
@@ -5584,7 +5592,8 @@ CLASS_VFTABLE *ScopeCollectVFTable( SCOPE scope, scv_control control )
         data.OK_to_diagnose = true;
     }
     VstkOpen( &data.disambig, sizeof( SCOPE ), 8 );
-    DbgStmt( if( PragDbgToggle.dump_vftables ) printScopeName( scope, "collecting virtual function table\n" ); );
+    DbgStmt( if( PragDbgToggle.dump_vftables ) \
+                 printScopeName( scope, "collecting virtual function table\n" ); );
     walkDirectBases( scope, collectVFTable, &data );
     VstkClose( &data.disambig );
     /* caller must do a RingFree */
@@ -6506,13 +6515,13 @@ static bool searchError( SEARCH_RESULT *result, SYMBOL sym, MSG_NUM msg )
 #else
     AccessErrMsg( msg, sym, &result->errlocn );
 #endif
-    return true;
+    return( true );
 }
 
 static bool diagnoseAmbiguity( SEARCH_RESULT *result, SYMBOL sym )
 {
     if( result->ambiguous ) {
-        return searchError( result, sym, ERR_AMBIGUOUS_MEMBER );
+        return( searchError( result, sym, ERR_AMBIGUOUS_MEMBER ) );
     }
     return( false );
 }
@@ -6594,7 +6603,7 @@ bool ScopeCheckSymbol( SEARCH_RESULT *result, SYMBOL sym )
                     err_msg = ERR_LOCAL_ACCESSING_AUTO;
                 }
             }
-            return searchError( result, sym, err_msg );
+            return( searchError( result, sym, err_msg ) );
         }
     }
     if( ! _IsClassScope( located ) ) {
@@ -6613,7 +6622,7 @@ bool ScopeCheckSymbol( SEARCH_RESULT *result, SYMBOL sym )
         if( perm == IN_PROTECTED ) {
             err_msg = ERR_ACCESS_THROUGH_PROTECTED;
         }
-        return searchError( result, sym, err_msg );
+        return( searchError( result, sym, err_msg ) );
     }
     /* report access permission error */
     perm = makePerm( sym->flag );
@@ -6627,7 +6636,7 @@ bool ScopeCheckSymbol( SEARCH_RESULT *result, SYMBOL sym )
         if( perm == IN_PROTECTED ) {
             err_msg = ERR_PROTECTED_MEMBER;
         }
-        return searchError( result, sym, err_msg );
+        return( searchError( result, sym, err_msg ) );
     }
     return( false );
 }
@@ -6824,23 +6833,21 @@ SYMBOL ScopeFunctionScope( SCOPE scope )
 SYMBOL ScopeFunctionInProgress( void )
 /************************************/
 {
-    return ScopeFunctionScope( GetCurrScope() );
+    return( ScopeFunctionScope( GetCurrScope() ) );
 }
 
 
 SYMBOL ScopeFuncParm( unsigned parm_no )
 /**************************************/
 {
-    SYMBOL stopper;
+    SYMBOL stop;
     SYMBOL sym;
 
-    stopper = ScopeOrderedStart( findFunctionScope( GetCurrScope() ) );
-    for( sym = NULL; ; --parm_no ) {
-        sym = ScopeOrderedNext( stopper, sym );
-        if( parm_no == 0 ) {
-            break;
-        }
-    }
+    stop = ScopeOrderedStart( findFunctionScope( GetCurrScope() ) );
+    sym = NULL;
+    do {
+        sym = ScopeOrderedNext( stop, sym );
+    } while( parm_no-- > 0 );
     return( sym );
 }
 
@@ -7038,21 +7045,21 @@ static bool changePragmaType(   // TEST IF NEW NEW PRAGMA TYPE REQUIRED
     SYMBOL sym,                 // - old symbol
     AUX_INFO *auxinfo )         // - new aux info
 {
-    bool        retb;           // - return: true ==> change required
+    bool        ok;             // - return: true ==> change required
     AUX_INFO    *old_pragma;    // - old aux info
 
     old_pragma = TypeHasPragma( sym->sym_type );
     if( old_pragma == NULL ) {
-        retb = true;
+        ok = true;
     } else if( old_pragma == auxinfo ) {
-        retb = false;
+        ok = false;
     } else if( PragmaChangeConsistent( old_pragma, auxinfo ) ) {
-        retb = true;
+        ok = true;
     } else {
         CErr2p( WARN_PRAGMA_MERGE, sym );
-        retb = false;
+        ok = false;
     }
-    return( retb );
+    return( ok );
 }
 
 static void changeNonFunction( SYMBOL sym, AUX_INFO *auxinfo )
@@ -7109,7 +7116,7 @@ void ScopeAuxName( const char *id, AUX_INFO *auxinfo )
          *  Check to see if we are defining code and we already have a symbol
          *  defined that has code attached ( a function body )
          */
-        if( auxinfo && auxinfo->code && SymIsInitialized( sym ) && SymIsFunction( sym ) ){
+        if( auxinfo && auxinfo->code && SymIsInitialized( sym ) && SymIsFunction( sym ) ) {
             CErr2p( ERR_FUNCTION_REDEFINITION, sym );   //ERR_SYM_ALREADY_DEFINED, sym );
         }
 
@@ -7205,18 +7212,18 @@ void ScopeWalkAncestry(         // VISIT ONCE ALL CLASSES IN ANCESTRY
 bool ScopeDebugable(            // DETERMINE IF SCOPE TO BE DEBUGGED
     SCOPE scope )               // - the scope
 {
-    bool retb;                  // - true ==> pass scope to debugger
+    bool ok;                    // - true ==> pass scope to debugger
 
     if( NULL == scope ) {
-        retb = false;
+        ok = false;
     } else if( ScopeFunction( scope->enclosing ) ) {
-        retb = false;
+        ok = false;
     } else if( HashEmpty( scope->names ) ) {
-        retb = false;
+        ok = false;
     } else {
-        retb = true;
+        ok = true;
     }
-    return( retb );
+    return( ok );
 }
 
 SYMBOL_NAME SymbolNameGetIndex( SYMBOL_NAME e )

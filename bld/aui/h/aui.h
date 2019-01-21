@@ -429,13 +429,6 @@ extern void                 WndZapped( a_window );
 extern a_window             WndFindClass( a_window, wnd_class );
 extern void                 WndForAllClass( wnd_class wndclass, void (*rtn)( a_window ) );
 
-typedef void    aui_spawn_funcP( void * );
-typedef void    aui_spawn_func( void );
-
-extern int                  SpawnP( aui_spawn_funcP *, void *parm );
-extern int                  Spawn( aui_spawn_func * );
-extern void                 Suicide( void );
-
 extern const char           *WndSetIDChars( a_window wnd, const char *id_chars );
 
 extern bool                 WndIDChar( a_window, int ch );
@@ -564,7 +557,6 @@ extern void                 WndSetGadgetLine( a_window wnd, wnd_line_piece *line
 extern void                 WndGetGadgetSize( wnd_gadget_type type, gui_coord * );
 
 extern wnd_attr             WndMapTabAttr( wnd_attr );
-extern gui_window_styles    WndStyle;
 extern char                 WndBackgroundChar;
 
 #define DefPopUp( x )       (sizeof( x ) / sizeof( (x)[0] )), x
@@ -593,6 +585,10 @@ extern wnd_gadget_type      WndGadgetSecondary;
 
 extern gui_menu_struct      WndMainMenu[];
 extern int                  WndNumMenus;
+
+/* following data may be defined in application otherwise default will be used */
+
+extern gui_window_styles    WndStyle;
 
 /* following block of data (colours/attributes) may be defined in application otherwise default will be used */
 

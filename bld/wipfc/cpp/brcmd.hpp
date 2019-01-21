@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
+* Copyright (c) 2009-2018 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -39,7 +39,7 @@ public:
     BrCmd( Document* d, Element* p, const std::wstring* f, unsigned int r, unsigned int c ) :
         Element( d, p, f, r, c ) {};
     ~BrCmd() { };
-    Lexer::Token parse( Lexer* lexer ) { (void)lexer; return document->getNextToken(); };
+    Lexer::Token parse( Lexer* lexer ) { (void)lexer; return _document->getNextToken(); };
     void buildText( Cell* cell );
 private:
     BrCmd( const BrCmd& rhs );              //no copy

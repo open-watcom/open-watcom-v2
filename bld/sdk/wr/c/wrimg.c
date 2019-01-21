@@ -29,15 +29,11 @@
 ****************************************************************************/
 
 
-#include "commonui.h"
+#include "wrglbl.h"
 #include <sys/types.h>
 #include <fcntl.h>
-#include <stdio.h>
 #include <sys/stat.h>
 #include <io.h>
-#include <stdlib.h>
-#include <string.h>
-#include "wrglbl.h"
 #include "wrimg.h"
 #include "wrmsg.h"
 #include "wrsvres.h"

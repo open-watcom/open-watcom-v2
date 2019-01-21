@@ -1,7 +1,6 @@
 #include "as.h"
 #include "lexyacc.h"
 #include "ytab.h"
-#include "tokens.h"
 #include "asparser.h"
 #ifdef _STANDALONE_
 #include "preproc.h"
@@ -234,12 +233,6 @@ static void fill( void ) {
     }
 #endif
 }
-
-#ifdef __WATCOMC__
-//#pragma warning 118 5         // This doesn't work!
-#pragma disable_message( 118 );
-#pragma off( unreferenced );    // To get rid of "yyaccept is unreferenced"
-#endif
 
 /*!re2c
 ws      = [ \t]+;
@@ -475,10 +468,6 @@ empstr                  {
                         }
 */
 }
-
-#ifdef __WATCOMC__
-#pragma on( unreferenced );
-#endif
 
 void yyerror( char *s ) {
 //*************************

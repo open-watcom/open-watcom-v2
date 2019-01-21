@@ -126,20 +126,26 @@ static int bmp_run( FILE *out, FILE *in, char *name, unsigned long *w, unsigned 
                         case 24:
                             // Just dump file data into memory
                             for( y = 0; y < height; y++ ) {
-                                fread( *rowp, rowbytes, 1, in );
+                                if( !fread( *rowp, rowbytes, 1, in ) ) {
+                                    success = 0;
+                                    break;
+                                }
                                 rowp--;
                             }
                             break;
                         case 8: {
                                 unsigned char   *frow;
                                 size_t          frowbytes;
-    
+
                                 frowbytes = width * sizeof( unsigned char );
                                 frowbytes = ( frowbytes + 3 ) & ~3;   // Dword aligned
                                 frow = (unsigned char *)malloc( frowbytes );
                                 // Expand 8bpp data using palette
                                 for( y = 0; y < height; y++ ) {
-                                    fread( frow, frowbytes, 1, in );
+                                    if( !fread( frow, frowbytes, 1, in ) ) {
+                                        success = 0;
+                                        break;
+                                    }
                                     row = *rowp;
                                     for( x = 0; x < width; x++ ) {
                                         row[x*3+0] = bmpal[frow[x]].blue;
@@ -154,13 +160,16 @@ static int bmp_run( FILE *out, FILE *in, char *name, unsigned long *w, unsigned 
                         case 4: {
                                 unsigned char   *frow, nibble;
                                 size_t          frowbytes;
-    
+
                                 frowbytes = ( width * sizeof( unsigned char ) + 1 ) / 2;
                                 frowbytes = ( frowbytes + 3 ) & ~3;   // Dword aligned
                                 frow = (unsigned char *)malloc( frowbytes );
                                 // Expand 4bpp data using palette
                                 for( y = 0; y < height; y++ ) {
-                                    fread( frow, frowbytes, 1, in );
+                                    if( !fread( frow, frowbytes, 1, in ) ) {
+                                        success = 0;
+                                        break;
+                                    }
                                     row = *rowp;
                                     for( x = 0; x < width; x++ ) {
                                         nibble = frow[x/2];
@@ -168,7 +177,7 @@ static int bmp_run( FILE *out, FILE *in, char *name, unsigned long *w, unsigned 
                                             nibble &= 0x0F;
                                         else
                                             nibble >>= 4;
-    
+
                                         row[x*3+0] = bmpal[nibble].blue;
                                         row[x*3+1] = bmpal[nibble].green;
                                         row[x*3+2] = bmpal[nibble].red;
@@ -225,7 +234,7 @@ static int bmp_run( FILE *out, FILE *in, char *name, unsigned long *w, unsigned 
     /* done with it */
     if( bmpal != NULL )
         free( bmpal );
-    return success;
+    return( success );
 }
 
 int bmeps_bmp( FILE *out, FILE *in, char *name )

@@ -305,7 +305,8 @@ static void MoveDirInfo( FILEFINDBUF *os2, trap_dta FAR *dos )
     dos->time = *(USHORT __far *)&os2->ftimeLastWrite;
     dos->date = *(USHORT __far *)&os2->fdateLastWrite;
     dos->size = os2->cbFile;
-    strcpy( dos->name, os2->achName );
+    strncpy( dos->name, os2->achName, TRAP_DTA_NAME_MAX - 1 );
+    dos->name[TRAP_DTA_NAME_MAX - 1] = '\0';
 }
 
 trap_retval ReqRfx_findfirst( void )

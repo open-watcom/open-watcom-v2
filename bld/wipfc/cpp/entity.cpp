@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
+* Copyright (c) 2009-2018 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -29,6 +29,7 @@
 ****************************************************************************/
 
 
+#include "wipfc.hpp"
 #include <cwctype>
 #include "entity.hpp"
 #include "document.hpp"
@@ -38,48 +39,46 @@
 Lexer::Token Entity::parse( Lexer* lexer )
 {
     Lexer::Token tok;
-    const std::wstring* nameitTxt( document->nameit( lexer->text() ) ); //lookup nameit
-    if( nameitTxt ) {
-        std::wstring* name( document->prepNameitName( lexer->text() ) );
-        IpfBuffer* buffer( new IpfBuffer( name, document->dataLine(), document->dataCol(), *nameitTxt ) );
-        document->pushInput( buffer );
-        return document->getNextToken();
+    const std::wstring* nameitText( _document->nameit( lexer->text() ) ); //lookup nameit
+    if( nameitText ) {
+        std::wstring* name( _document->prepNameitName( lexer->text() ) );
+        IpfBuffer* buffer( new IpfBuffer( name, _document->dataLine(), _document->dataCol(), *nameitText ) );
+        _document->pushInput( buffer );
+        return _document->getNextToken();
     }
     try {
-        wchar_t entity( document->entity( lexer->text() ) );    //lookup entity
-        std::wstring txt(1, entity );
-        tok = document->getNextToken();
-        if( !std::iswpunct( entity ) ) {
+        wchar_t entityChar( _document->entityChar( lexer->text() ) );    //lookup entity
+        std::wstring text( 1, entityChar );
+        tok = _document->getNextToken();
+        if( !std::iswpunct( entityChar ) ) {
             while( tok != Lexer::END && !( tok == Lexer::TAG && lexer->tagId() == Lexer::EUSERDOC) ) {
-                if( tok == Lexer::WORD )
-                    txt += lexer->text();       //part of a compound ...-word-entity-word-...
-                else if( tok == Lexer::ENTITY ) {
-                    entity = document->entity( lexer->text() );
-                    if ( std::iswpunct( entity ) )
+                if( tok == Lexer::WORD ) {
+                    text += lexer->text();       //part of a compound ...-word-entity-word-...
+                } else if( tok == Lexer::ENTITY ) {
+                    entityChar = _document->entityChar( lexer->text() );
+                    if( std::iswpunct( entityChar ) )
                         break;
-                    else
-                        txt+= entity;
-                }
-                else
+                    text += entityChar;
+                } else {
                     break;
-                tok = document->getNextToken();
+                }
+                tok = _document->getNextToken();
             }
         }
-        if( whiteSpace != Tag::SPACES && document->autoSpacing() ) {
-            Lexer::Token t( document->lastToken() );
+        if( _whiteSpace != Tag::SPACES && _document->autoSpacing() ) {
+            Lexer::Token t( _document->lastToken() );
             if( t == Lexer::WORD || t == Lexer::ENTITY || t == Lexer::PUNCTUATION ) {
-                document->toggleAutoSpacing();
-                document->lastText()->setToggleSpacing();
+                _document->toggleAutoSpacing();
+                _document->lastText()->setToggleSpacing();
             }
         }
-        GlobalDictionaryWord* word( new GlobalDictionaryWord( txt ) );
-        text = document->addWord( word );   //insert into global dictionary
+        _text = _document->addTextToGD( new GlobalDictionaryWord( text ) );   //insert into global dictionary
     }
     catch( Class2Error& e ) {
-        document->printError( e.code );
-        tok = document->getNextToken();
+        _document->printError( e._code );
+        tok = _document->getNextToken();
     }
-    document->setLastPrintable( Lexer::ENTITY, this );
+    _document->setLastPrintable( Lexer::ENTITY, this );
     return tok;
 }
 

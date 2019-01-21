@@ -31,12 +31,13 @@
 ****************************************************************************/
 
 
-#include "cgstd.h"
+#include "_cgstd.h"
 #include "coderep.h"
 #include "data.h"
 #include "cgsrtlst.h"
 #include "namelist.h"
 #include "x86base.h"
+#include "temps.h"
 
 
 #define MAX_SHORT_NEG   127
@@ -54,9 +55,6 @@
 
 static  int             CalcBaseSave( type_length bp, name *temp );
 static  void            SortTemps(void);
-
-extern  void            CountTempRefs(void);
-
 
 static  void    setTempLocations( void )
 /**************************************/
@@ -110,7 +108,7 @@ type_length     AdjustBase( void ) {
     for( temp = Names[N_TEMP]; temp != NULL; temp = temp->n.next_name ) {
         if( temp->t.v.alt_location != last_location &&
             temp->t.v.alt_location != NO_LOCATION ) {
-            bp = ( temp->t.v.alt_location-(MAX_SHORT_POS-1) ) & ~1;
+            bp = ( temp->t.v.alt_location - ( MAX_SHORT_POS - 1 ) ) & ~1;
             savings = CalcBaseSave( bp, temp );
             if( savings > best_savings ) {
                 best_bp = bp;

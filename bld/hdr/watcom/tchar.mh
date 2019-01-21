@@ -59,7 +59,7 @@ typedef wchar_t TCHAR;
 
 #define _TEOF           WEOF
 
-#define __T(x)          L ## x
+#define __T(__x)        L ## __x
 
 #define _TDIR           WDIR
 
@@ -274,10 +274,10 @@ inline void _tccpy( wchar_t *__p1, const wchar_t *__p2 ) {
     *__p1 = (wchar_t)*__p2;
 }
 inline int _tccmp( const wchar_t *__p1, const wchar_t *__p2 ) {
-    return( (int) ((*__p1)-(*__p2)) );
+    return( (int)((*__p1)-(*__p2)) );
 }
 #else
-#define _tclen(__p)     (1)
+#define _tclen(__p)       (1)
 #define _tccpy(__p1,__p2) ((*(__p1) = *(__p2)))
 #define _tccmp(__p1,__p2) ((*(__p1))-(*(__p2)))
 #endif
@@ -300,9 +300,9 @@ inline int _tccmp( const wchar_t *__p1, const wchar_t *__p2 ) {
 #define _totupper       towupper
 #define _totlower       towlower
 
-#define _istlegal(_c)   (1)
-#define _istlead(_c)    (0)
-#define _istleadbyte(_c)    (0)
+#define _istlegal(__c)      (1)
+#define _istlead(__c)       (0)
+#define _istleadbyte(__c)   (0)
 
 #if defined(__cplusplus) && defined(__INLINE_FUNCTIONS__)
 inline wchar_t *_wcsdec( const wchar_t *, const wchar_t *__p ) {
@@ -364,7 +364,7 @@ _WCRTLINK extern wchar_t *_wcsrev( wchar_t * );
 
 #define _TEOF           EOF
 
-#define __T(x)          x
+#define __T(__x)        __x
 
 #define _TDIR           DIR
 
@@ -934,7 +934,7 @@ inline int _tccmp( const char *__p1, const char *__p2 ) {
     return( (int) (((unsigned char)*__p1)-((unsigned char)*__p2)) );
 }
 #else
-#define _tclen(__p)     (1)
+#define _tclen(__p)       (1)
 #define _tccpy(__p1,__p2) ((*(__p1) = *(__p2)))
 #define _tccmp(__p1,__p2) (((unsigned char)*(__p1))-((unsigned char)*(__p2)))
 #endif
@@ -954,9 +954,9 @@ inline int _tccmp( const char *__p1, const char *__p2 ) {
 #define _totupper       toupper
 #define _totlower       tolower
 
-#define _istlegal(_c)   (1)
-#define _istlead(_c)    (0)
-#define _istleadbyte(_c)    (0)
+#define _istlegal(__c)      (1)
+#define _istlead(__c)       (0)
+#define _istleadbyte(__c)   (0)
 
 #if defined(__cplusplus) && defined(__INLINE_FUNCTIONS__)
 inline char *_strdec( const char *, const char *__p ) {
@@ -995,7 +995,7 @@ inline char *_strspnp( const char *__p1, const char *__p2 ) {
 
 :include cplusepi.sp
 
-#define _T(x)           __T(x)
-#define _TEXT(x)        __T(x)
+#define _T(__x)         __T(__x)
+#define _TEXT(__x)      __T(__x)
 
 #endif

@@ -30,8 +30,6 @@
 ****************************************************************************/
 
 
-#include <stdarg.h>
-#include <string.h>
 #include "drwatcom.h"
 #include "watcom.h"
 #include "memwnd.h"

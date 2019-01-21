@@ -39,24 +39,23 @@
 #include "heapacc.h"
 
 
-#define HEAP(s)     ((heapblkp __based(s) *)0)
-#define FRLPTR(s)   freelistp __based(s) *
-
-extern  void    _mymemset(void_fptr,unsigned,unsigned);
-#pragma aux     _mymemset = \
-        memset_i86          \
-    parm caller [es di] [ax] [cx] modify exact [ax di cx]
+extern void     _mymemset( void_fptr, unsigned, unsigned );
+#pragma aux _mymemset = \
+        memset_i86      \
+    __parm __caller     [__es __di] [__ax] [__cx] \
+    __value             \
+    __modify __exact    [__ax __di __cx]
 
 int __HeapSet( __segment seg, unsigned int fill )
 {
     FRLPTR( seg )   frl;
 
     _AccessFHeap();
-    for( ; seg != _NULLSEG; seg = HEAP( seg )->nextseg ) {
-        frl = HEAP( seg )->freehead.next;
+    for( ; seg != _NULLSEG; seg = BHEAP( seg )->next.segm ) {
+        frl = BHEAP( seg )->freehead.next.nptr;
         while( FP_OFF( frl ) != offsetof( heapblk, freehead ) ) {
-            _mymemset( frl + 1, fill, frl->len - sizeof( freelistp ) );
-            frl = frl->next;
+            _mymemset( frl + 1, fill, frl->len - sizeof( freelist ) );
+            frl = frl->next.nptr;
         }
     }
     _ReleaseFHeap();

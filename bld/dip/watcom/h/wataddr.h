@@ -32,7 +32,7 @@
 
 extern void                     AdjustAddrInit( void );
 extern void                     AdjustAddrs( imp_image_handle *, unsigned sectno );
-extern address                  FindModBase( imp_image_handle *, imp_mod_handle im );
-extern mem_block                FindSegBlock( imp_image_handle *, imp_mod_handle im, unsigned long offset );
+extern address                  FindModBase( imp_image_handle *, imp_mod_handle );
+extern mem_block                FindSegBlock( imp_image_handle *, imp_mod_handle, unsigned long offset );
 extern unsigned                 AddrInfoSplit( imp_image_handle *, info_block *curr, section_info *inf );
 extern void                     AddrInfoFini( section_info *inf );

@@ -38,12 +38,15 @@
 #include "extender.h"
 
 unsigned long   __ibm_biosint_get_ticks( void );
-#pragma aux __ibm_biosint_get_ticks =   \
-    "xor    ah,ah"                      \
-    "int    1ah"                        \
-    "shl    ecx,16"                     \
-    "mov    cx,dx"                      \
-    value [ecx] modify exact [eax ecx edx] nomemory;
+#pragma aux __ibm_biosint_get_ticks = \
+        "xor    ah,ah"              \
+        "int 1ah"                   \
+        "shl    ecx,16"             \
+        "mov    cx,dx"              \
+    __parm __caller             [] \
+    __value                     [__ecx] \
+    __modify __exact __nomemory [__eax __ecx __edx] \
+
 
 static unsigned long __ibm_bios_get_ticks( void )
 {

@@ -38,6 +38,7 @@
 #include <stdlib.h>
 #include <ctype.h>
 #include "make.h"
+#include "wio.h"
 #include "mstream.h"
 #include "mlex.h"
 #include "mhash.h"
@@ -118,10 +119,10 @@ static void massageDollarOctothorpe( char *p )
     for( ; *p != NULLCHAR; ++p ) {
         switch( *p ) {
         case '$':
-            *p = TMP_DOL_C;
+            *p = TMP_DOLLAR;
             break;
         case '#':
-            *p = TMP_COMMENT_C;
+            *p = TMP_COMMENT;
             break;
         }
     }
@@ -149,19 +150,15 @@ const char *procPath( const char *fullpath )
     case FORM_FULL:
         _makepath( dirBuf, pg.drive, pg.dir, pg.fname, pg.ext );
         break;
-
     case FORM_NOEXT:
         _makepath( dirBuf, pg.drive, pg.dir, pg.fname, NULL );
         break;
-
     case FORM_NOEXT_NOPATH:
         _makepath( dirBuf, NULL, NULL, pg.fname, NULL );
         break;
-
     case FORM_NOPATH:
         _makepath( dirBuf, NULL, NULL, pg.fname, pg.ext );
         break;
-
     case FORM_PATH:
         _makepath( dirBuf, pg.drive, pg.dir, NULL, NULL );
         if( Glob.compat_nmake ) {
@@ -179,7 +176,6 @@ const char *procPath( const char *fullpath )
             }
         }
         break;
-
     case FORM_EXT:
         _makepath( dirBuf, NULL, NULL, NULL, pg.ext );
         break;
@@ -238,7 +234,7 @@ STATIC MACRO *getMacroNode( const char *name )
 {
     bool    caseSensitive;
 
-    assert( name != NULL && *name != ENVVAR );
+    assert( name != NULL && *name != ENVVAR_C );
 
     if( Glob.compat_nmake || Glob.compat_posix ) {
         caseSensitive = true;
@@ -257,7 +253,7 @@ STATIC char *findEqual( char *inString )
 {
     char    *ret;
 
-    ret = strrchr( inString, EQUAL );
+    ret = strrchr( inString, '=' );
     if( ret == inString ) {
         ret = NULL;
     }
@@ -296,20 +292,19 @@ STATIC char *doStringSubstitute( const char *name, const char *oldString, const 
     size_t      old_len;
 
     output = StartVec();
-    WriteVec( output, "" );
 
     assert( name != NULL && oldString != NULL && newString != NULL );
 
     old_len = strlen( oldString );
     for( start = p = name; *p != NULLCHAR; p++ ) {
         if( strncmp( p, oldString, old_len ) == 0 ) {
-            CatNStrToVec( output, start, p - start );
-            CatStrToVec( output, newString );
+            WriteNVec( output, start, p - start );
+            WriteVec( output, newString );
             start   = p + old_len;
             p = start - 1;
         }
     }
-    CatStrToVec( output, start );
+    WriteVec( output, start );
 
     return( FinishVec( output ) );
 }
@@ -336,8 +331,8 @@ STATIC const char *GetMacroValueProcess( const char *name )
 
     makeMacroName( macro, name ); // Does assert( IsMacroName( name ) );
 
-    if( *macro == ENVVAR ) {
-        env = getenv( macro + 1 );
+    if( *macro == ENVVAR_C ) {
+        env = GetEnvExt( macro + 1 );
         if( env != NULL ) {
             return( env );
         }
@@ -396,7 +391,7 @@ STATIC const char *GetMacroValueProcess( const char *name )
                 }
             }
         }
-        env = getenv( macro );
+        env = GetEnvExt( macro );
         if( env != NULL ) {
             return( env );
         }
@@ -424,7 +419,7 @@ char *GetMacroValue( const char *name )
     char        *line;
 
     InName = StrDupSafe( name );
-    p = strchr( InName, COLON );
+    p = strchr( InName, ':' );
 
     if( p == NULL ) {
         beforeSub = GetMacroValueProcess( InName );
@@ -436,14 +431,13 @@ char *GetMacroValue( const char *name )
     } else {
         *p++ = NULLCHAR;
         beforeSub = GetMacroValueProcess( InName );
-
         if( beforeSub == NULL ) {
             afterSub = NULL;
         } else {
             line = NULL;
             // recursively expand so $(macro:sub) OK if macro contains another
-            if( strchr( beforeSub, DOLLAR ) != NULL ) {
-                UnGetCH( STRM_MAGIC );
+            if( strchr( beforeSub, '$' ) != NULL ) {
+                UnGetCHR( STRM_MAGIC );
                 InsString( beforeSub, false );
                 beforeSub = line = DeMacro( TOK_MAGIC );
                 GetCHR();   // eat STRM_MAGIC
@@ -506,7 +500,7 @@ STATIC bool addMacro( const char *name, char *value )
     MACRO   *new;
     bool    unused_value;
 
-    assert( *name != ENVVAR );
+    assert( *name != ENVVAR_C );
 
     value = trimMacroValue( value );
     makeMacroName( macro, name ); // Does assert( IsMacroName( name ) );
@@ -545,7 +539,7 @@ bool IsMacroName( const char *inName )
 
     assert( inName != NULL );
 
-    while( pos < MAX_MAC_NAME && *p != NULLCHAR && *p != COLON ) {
+    while( pos < MAX_MAC_NAME && *p != NULLCHAR && *p != ':' ) {
         if( !cismacc( *p ) ) {
             PrtMsg( ERR | LOC | INVALID_MACRO_NAME, inName );
             return( false );
@@ -579,7 +573,7 @@ void UnDefMacro( const char *name )
 
     makeMacroName( macro, name ); // Does assert( IsMacroName( name ) );
 
-    if( *macro == ENVVAR ) {
+    if( *macro == ENVVAR_C ) {
         ENV_TRACKER     *env;
 
         env = MallocSafe( sizeof( ENV_TRACKER ) + strlen( macro ) + 1 );
@@ -604,18 +598,18 @@ void UnDefMacro( const char *name )
 char *WrnGetMacroValue( const char *name )
 /***********************************************/
 {
-    const char  *p;
+    char    *p;
 
     p = GetMacroValue( name );
     if( p == NULL ) {
-        PrtMsg( DBG | WRN | LOC | MACRO_UNDEFINED, name );   /* 13-Dec-90 DJG */
+        PrtMsg( DBG | WRN | LOC | MACRO_UNDEFINED, name );
         // we did this to minimize the number of debugging messages but
         // it causes problems when it defines a macro for the user
-        //UnGetCH( EOL );
-        //DefMacro( name );                             /* 12-jul-93 AFS */
+        //UnGetCHR( '\n' );
+        //DefMacro( name );
     }
-    return( (char *)p );
     /* note we return NULL if it was undefined! */
+    return( p );
 }
 
 
@@ -638,10 +632,10 @@ char *DeMacroSpecial( const char *InString )
     outString = StartVec();
 
     for( p = InString; *p != NULLCHAR; ++p ) {
-        if( *p == SPECIAL_TMP_DOL_C ) {
-            CatNStrToVec( outString, old, p - old );
+        if( *p == SPECIAL_TMP_DOLLAR ) {
+            WriteNVec( outString, old, p - old );
             pos = 0;
-            UnGetCH( STRM_MAGIC );
+            UnGetCHR( STRM_MAGIC );
             buffer[pos++] = *(p++);
             if( cismsspecial( *p ) && !cismsmodifier( *(p + 1) ) ) {
                 buffer[pos++] = *(p++);
@@ -656,12 +650,12 @@ char *DeMacroSpecial( const char *InString )
             buffer[pos] = NULLCHAR;
             InsString( buffer, false );
             tempString = DeMacro( TOK_MAGIC );
-            PreGetCH();   // eat STRM_MAGIC
-            CatStrToVec( outString, tempString );
+            PreGetCHR();   // eat STRM_MAGIC
+            WriteVec( outString, tempString );
             FreeSafe( tempString);
         }
     }
-    CatNStrToVec( outString, old, p - old + 1 );
+    WriteNVec( outString, old, p - old + 1 );
     return( FinishVec( outString ) );
 }
 
@@ -677,10 +671,10 @@ char *DeMacroSpecial( const char *InString )
  * handle constructs such as $(text); thus allowing $(text$(subtext)).  All
  * other constructs are written with their current value.
  *
- * deMacroText scans the string that deMacroToEnd returned for DOLLARs.  If
- * it doesn't find one it returns the string.  If a DOLLAR is found, a
+ * deMacroText scans the string that deMacroToEnd returned for '$'s.  If
+ * it doesn't find one it returns the string.  If a '$' is found, a
  * STRM_MAGIC is pushed, the string is pushed, and deMacroToEnd is called
- * again (ending at STRM_MAGIC).  This process is repeated until no DOLLARs
+ * again (ending at STRM_MAGIC).  This process is repeated until no '$'s
  * remain.
  *
  * This pair always stops at EOL, STRM_MAGIC, or STRM_END.
@@ -698,7 +692,6 @@ STATIC char *ProcessToken( int depth, TOKEN_T end1, TOKEN_T end2, TOKEN_T t )
  */
 {
     STRM_T      s;
-    char        temp_str[2];
     char        macname[MAX_TOK_SIZE];
     int         pos;
     char        *p;
@@ -716,56 +709,46 @@ STATIC char *ProcessToken( int depth, TOKEN_T end1, TOKEN_T end2, TOKEN_T t )
         if( !Glob.compat_nmake && !Glob.compat_posix ) {
             p = deMacroText( depth + 1, end1, MAC_PUNC );
         } else {
-            s = PreGetCH ();
+            s = PreGetCHR();
             if( sismacc( s ) ) {
-                temp_str[1] = NULLCHAR;
-                temp_str[0] = s;
-                p = StrDupSafe( temp_str );
+                p = CharToStrSafe( s );
             } else {
-                p = StrDupSafe( "" );
+                p = CharToStrSafe( NULLCHAR );
             }
         }
 
         if( IsMacroName( p ) ) {
             p2 =  WrnGetMacroValue( p );
             FreeSafe( p );
-            if( p2 != NULL ) {
-                return( p2 );
-            }
-            return( NULL );
+            return( p2 );
         }
         FreeSafe( p );
         break;
-
     case MAC_DOLLAR:
-        return( StrDupSafe( TMP_DOL_S ) );      /* write a place holder */
-
+        return( CharToStrSafe( TMP_DOLLAR ) );      /* write a place holder */
     case MAC_COMMENT:
-        return( StrDupSafe( TMP_COMMENT_S ) );  /* write a place holder */
-
-    case MAC_OPEN:                      /* recurse, get macro name */
+        return( CharToStrSafe( TMP_COMMENT ) );     /* write a place holder */
+    case MAC_OPEN:
+        /* recurse, get macro name */
         if( !Glob.compat_nmake && !Glob.compat_posix ) {
             p = deMacroText( depth + 1, end1, MAC_CLOSE );
             if( IsMacroName( p ) ) {
                 p2 =  WrnGetMacroValue( p );
                 FreeSafe( p );
-                if( p2 != NULL ) {
-                    return( p2 );
-                }
-                return( NULL );
+                return( p2 );
             }
             FreeSafe( p );
         } else {
             pos = 0;
-            s = PreGetCH();
+            s = PreGetCHR();
             if( sismsspecial( s ) ) {
-                UnGetCH( s );
+                UnGetCHR( s );
                 // This is to invoke LexDollar
                 t = LexToken( LEX_MS_MAC );
                 // This is the only time to get the modifier
                 GetModifier();
                 p = ProcessToken( depth, end1, end2, t );
-                s = PreGetCH();
+                s = PreGetCHR();
                 if( s != ')' ) {
                     PrtMsg( ERR | LOC | ILLEGAL_CHARACTER_IN_MAC, s );
                     break;
@@ -777,33 +760,28 @@ STATIC char *ProcessToken( int depth, TOKEN_T end1, TOKEN_T end2, TOKEN_T t )
                         break;
                     } else if( s == STRM_MAGIC ||
                                s == STRM_END   ||
-                               s == EOL ) {
-                        UnGetCH( s );
+                               s == '\n' ) {
+                        UnGetCHR( s );
                         break;
                     }
                     if( pos < MAX_TOK_SIZE -1 ) {
                         macname[pos++] = s;
                     }
-                    s = PreGetCH();
+                    s = PreGetCHR();
                 }
                 macname[pos] = NULLCHAR;
                 if( IsMacroName( macname ) ) {
-                    p2 =  WrnGetMacroValue( macname );
-                    if( p2 != NULL ) {
-                        return( p2 );
-                    }
-                    return( NULL );
+                    p2 = WrnGetMacroValue( macname );
+                    return( p2 );
                 }
             }
         }
         break;
-
-    case MAC_EXPAND_ON:                 /* fall through */
+    case MAC_EXPAND_ON:
     case MAC_EXPAND_OFF:
         /* do nothing */
         break;
-
-    case MAC_CUR:                       /* fall through */
+    case MAC_CUR:
     case MAC_FIRST:
     case MAC_LAST:
         /* static pointer returned so we need to duplicate string */
@@ -812,29 +790,24 @@ STATIC char *ProcessToken( int depth, TOKEN_T end1, TOKEN_T end2, TOKEN_T t )
             return( StrDupSafe( cp2 ) );
         }
         return( NULL );
-
     case MAC_ALL_DEP:
         p = GetCurDeps( false, false );
         massageDollarOctothorpe( p );
         return( p );
-
     case MAC_INF_DEP:
         p = GetCurDeps( false, true );
         massageDollarOctothorpe( p );
         return( p );
-
     case MAC_YOUNG_DEP:
         p = GetCurDeps( true, false );
         massageDollarOctothorpe( p );
         return( p );
-
-    case MAC_NAME:                      /* fall through */
+    case MAC_NAME:
     case MAC_WS:
     case MAC_PUNC:
         p = CurAttr.u.ptr;
         CurAttr.u.ptr  = NULL;
         return( p );
-
     default:
 #ifdef DEVELOPMENT
         PrtMsg( FTL | LOC | INVALID_TOKEN_IN, t, "deMacroToEnd()" );
@@ -885,7 +858,7 @@ STATIC char *deMacroToEnd( int depth, TOKEN_T end1, TOKEN_T end2 )
 
         if( t == MAC_CLOSE && end2 != MAC_CLOSE ) {
             t = MAC_PUNC;
-            CurAttr.u.ptr = StrDupSafe( ")" );
+            CurAttr.u.ptr = CharToStrSafe( ')' );
         }
 
         if(     t == TOK_END               /* always stops at these */
@@ -900,7 +873,7 @@ STATIC char *deMacroToEnd( int depth, TOKEN_T end1, TOKEN_T end2 )
 
         p = ProcessToken( depth, end1, end2, t );
         if( p != NULL ) {
-            CatStrToVec( vec, p );
+            WriteVec( vec, p );
             FreeSafe( p );
         }
     }
@@ -911,14 +884,14 @@ STATIC char *deMacroToEnd( int depth, TOKEN_T end1, TOKEN_T end2 )
     case MAC_WS:
         InsString( CurAttr.u.ptr, true );
         break;
-    case TOK_EOL:       /* fall through */
-        UnGetCH( EOL );
+    case TOK_EOL:
+        UnGetCHR( '\n' );
         break;
     case TOK_END:
-        UnGetCH( STRM_END );
+        UnGetCHR( STRM_END );
         break;
     case TOK_MAGIC:
-        UnGetCH( STRM_MAGIC );
+        UnGetCHR( STRM_MAGIC );
         break;
     }
 
@@ -945,8 +918,8 @@ STATIC char *deMacroText( int depth, TOKEN_T end1, TOKEN_T end2 )
     }
 
     result = deMacroToEnd( depth, end1, end2 );
-    while( strchr( result, DOLLAR ) != NULL ) {
-        UnGetCH( STRM_MAGIC );
+    while( strchr( result, '$' ) != NULL ) {
+        UnGetCHR( STRM_MAGIC );
         InsString( result, true );
 
         ++depth;
@@ -976,23 +949,23 @@ STATIC char *deMacroText( int depth, TOKEN_T end1, TOKEN_T end2 )
     if( !IsPartDeMacro ) {
         for( p = result; *p != NULLCHAR; ++p ) {
             switch( *p ) {
-            case TMP_DOL_C:         *p = DOLLAR;    break;
-            case TMP_COMMENT_C:     *p = COMMENT;   break;
+            case TMP_DOLLAR:    *p = '$';       break;
+            case TMP_COMMENT:   *p = COMMENT_C; break;
 #if 0
-            case SPECIAL_TMP_DOL_C:
-                  if( Glob.compat_nmake ) {
-                       if( cismsspecial( *(p + 1) ) ) {
-                          *p = DOLLAR;
-                       }
-                  }
-                  break;
+            case SPECIAL_TMP_DOLLAR:
+                if( Glob.compat_nmake ) {
+                    if( cismsspecial( *(p + 1) ) ) {
+                        *p = '$';
+                    }
+                }
+                break;
 #endif
             }
         }
     } else {
         for( p = result; *p != NULLCHAR; ++p ) {
             switch( *p ) {
-            case SPECIAL_TMP_DOL_C: *p = DOLLAR;    break;
+            case SPECIAL_TMP_DOLLAR:    *p = '$';   break;
             }
         }
     }
@@ -1021,7 +994,7 @@ char *ignoreWSDeMacro( bool partDeMacro, bool forceDeMacro )
     // Set leadingSpace - leave t set to first non-whitespace byte
     p = leadingSpace;
     p_max = p + MAX_COMMANDLINE - 1;
-    for( ; sisws( s = PreGetCH() ) && p < p_max; ++p ) {
+    for( ; sisws( s = PreGetCHR() ) && p < p_max; ++p ) {
         *p = s;
     }
     *p = NULLCHAR;
@@ -1029,17 +1002,17 @@ char *ignoreWSDeMacro( bool partDeMacro, bool forceDeMacro )
     // set text to non-whitespace string and TrailSpace to next character.
     p_max = text + MAX_COMMANDLINE - 1;
     for( TrailSpace = p = text; p < p_max; ++p ) {
-        if( s == STRM_END || s == STRM_MAGIC || s == EOL ) {
+        if( s == STRM_END || s == STRM_MAGIC || s == '\n' ) {
             break;
         }
         if( !sisws( s ) ) {
             TrailSpace = p + 1;
         }
         *p = s;
-        s = PreGetCH();
+        s = PreGetCHR();
     }
     *p = NULLCHAR;
-    UnGetCH( s );                           // Put back last byte read
+    UnGetCHR( s );                           // Put back last byte read
 
     DeMacroText = StartVec();
     WriteNVec( DeMacroText, text, TrailSpace - text );
@@ -1094,7 +1067,8 @@ STATIC char *PartDeMacroProcess( void )
 
     while( ( t = LexToken( LEX_MAC_DEF ) ) != TOK_END && t != TOK_EOL ) {
         switch( t ) {
-        case TOK_MAGIC:        /* we ignore these */
+        case TOK_MAGIC:
+            /* do nothing */
             break;
         case MAC_EXPAND_ON:
             text = deMacroText( 0, TOK_EOL, MAC_EXPAND_OFF );
@@ -1169,11 +1143,11 @@ char *PartDeMacro( bool forceDeMacro )
     }
     if( forceDeMacro ) {
         //remove white spaces at the beginning
-        while( sisws( s = PreGetCH() ) ) {
+        while( sisws( s = PreGetCHR() ) ) {
         }
-        UnGetCH( s );
+        UnGetCHR( s );
         temp = DeMacro( TOK_EOL );
-        s = PreGetCH();
+        s = PreGetCHR();
         if( Glob.compat_nmake || Glob.compat_posix ) {
             IsPartDeMacro = false;
         }
@@ -1224,12 +1198,12 @@ STATIC char *DeMacroName( const char *text, const char *name )
     oldptr = p = text;
 
     outtext = StartVec();
-    while( (p = strchr( p, DOLLAR )) != NULL ) {
-        switch( *++p ) {  // Swallow that DOLLAR
-        case '$':               // Swallow literal DOLLAR.
+    while( (p = strchr( p, '$' )) != NULL ) {
+        switch( *++p ) {    // Swallow that '$'
+        case '$':           // Swallow literal '$'.
             p++;
             break;
-        case '(':               // Possible regular substitution
+        case '(':           // Possible regular substitution
             p++;
             // bracket or colon (for string substitution) after matching name?
             if( NMacroNameEq( p, name, len ) && (p[len] == ')' || p[len] == ':') ) {
@@ -1237,12 +1211,13 @@ STATIC char *DeMacroName( const char *text, const char *name )
                 while( p[lengthToClose] != ')' ) {
                     ++lengthToClose;
                 }
-                CatNStrToVec( outtext, oldptr, p - 2 - oldptr );
+                WriteNVec( outtext, oldptr, p - 2 - oldptr );
                 macroname = StartVec();
-                CatNStrToVec( macroname, p, lengthToClose );
+                WriteNVec( macroname, p, lengthToClose );
                 macronameStr = FinishVec( macroname );
-                if( (temp = GetMacroValue( macronameStr )) != NULL ) {
-                    CatStrToVec( outtext, temp );
+                temp = GetMacroValue( macronameStr );
+                if( temp != NULL ) {
+                    WriteVec( outtext, temp );
                     FreeSafe( temp );
                 }
                 FreeSafe( macronameStr );
@@ -1251,9 +1226,10 @@ STATIC char *DeMacroName( const char *text, const char *name )
             break;
         default:    // Possible Microsoft name without parenthesis
             if( len == 1 && NMacroNameEq( p, name, 1 ) ) {
-                CatNStrToVec( outtext, oldptr, p - 1 - oldptr );
-                if( (temp = GetMacroValue( name )) != NULL ) {
-                    CatStrToVec( outtext, temp );
+                WriteNVec( outtext, oldptr, p - 1 - oldptr );
+                temp = GetMacroValue( name );
+                if( temp != NULL ) {
+                    WriteVec( outtext, temp );
                     FreeSafe( temp );
                 }
                 p = oldptr = p + 1;
@@ -1261,7 +1237,7 @@ STATIC char *DeMacroName( const char *text, const char *name )
             break;
         }
     }
-    CatStrToVec( outtext, oldptr );
+    WriteVec( outtext, oldptr );
     return( FinishVec( outtext ) );
 }
 
@@ -1278,6 +1254,7 @@ void DefMacro( const char *name )
     bool        unused_value;
     char        *temp;
     char        *EnvVarValue;   /* used for env. variables (full demacro) */
+    char        *EnvOldValue;
     ENV_TRACKER *env;
 #ifdef CLEAN_ENVIRONMENT_VAR
     ELIST       *tempEList;
@@ -1291,49 +1268,38 @@ void DefMacro( const char *name )
 
     unused_value = true;
     EnvVarValue = NULL;
-
-    if( *name == ENVVAR || (Glob.compat_nmake && getenv( name ) != NULL ) ) {
-        if( *name != ENVVAR ) {
-            unused_value = addMacro( name, value );
+    EnvOldValue = NULL;
+    if( *name != ENVVAR_C ) {
+        unused_value = addMacro( name, value);
+        if( Glob.compat_nmake ) {
+            EnvOldValue = GetEnvExt( name );
         }
-        UnGetCH( EOL );
+    }
+    if( *name == ENVVAR_C || EnvOldValue != NULL ) {
+        UnGetCHR( '\n' );
         InsString( value, false );
         EnvVarValue = DeMacro( TOK_EOL );
-        PreGetCH();  // eat EOL token (used to avoid assertion failure)
-    }
-
-    if( *name == ENVVAR ) {
-        /* remember strlen( name ) is one byte larger than we want
-         * because *name == ENVVAR, and we'll ignore that byte
-         */
-        assert( EnvVarValue != NULL );
-        env = MallocSafe( sizeof( ENV_TRACKER )
-                + strlen( name ) + strlen( EnvVarValue ) + 1 );
-        FmtStr( env->value, "%s=%s", name + 1, EnvVarValue );
-        PutEnvSafe( env );
-    } else {
-        if( Glob.compat_nmake ) {
-            if( !DoingBuiltIn ) {
-                if( getenv( name ) != NULL ) {
-#ifdef CLEAN_ENVIRONMENT_VAR
-                    tempEList = NewEList();
-                    tempEList->next = OldEnvValues;
-                    tempEList->envVarName = StrDupSafe( name );
-                    tempEList->envOldVal  = getenv( name );
-                    OldEnvValues = tempEList;
-#endif
-                    setenv( name, EnvVarValue, true );
-                } else {
-                    unused_value = addMacro( name, value );
-                }
-            } else {
-                if( getenv( name ) == NULL) {
-                    unused_value = addMacro( name, value);
-                }
-            }
-
+        PreGetCHR();  // eat EOL token (used to avoid assertion failure)
+        if( *name == ENVVAR_C ) {
+            /* remember strlen( name ) is one byte larger than we want
+             * because *name == ENVVAR_C, and we'll ignore that byte
+             */
+            env = MallocSafe( sizeof( ENV_TRACKER ) + strlen( name ) + strlen( EnvVarValue ) + 1 );
+            FmtStr( env->value, "%s=%s", name + 1, EnvVarValue );
+            PutEnvSafe( env );
         } else {
-            unused_value = addMacro( name, value );
+            if( !DoingBuiltIn ) {
+#ifdef CLEAN_ENVIRONMENT_VAR
+                tempEList = NewEList();
+                tempEList->next = OldEnvValues;
+                tempEList->envVarName = StrDupSafe( name );
+                tempEList->envOldVal  = StrDupSafe( EnvOldValue );
+                OldEnvValues = tempEList;
+#endif
+                env = MallocSafe( sizeof( ENV_TRACKER ) + strlen( name ) + 1 + strlen( EnvVarValue ) + 1 );
+                FmtStr( env->value, "%s=%s", name, EnvVarValue );
+                PutEnvSafe( env );
+            }
         }
     }
     if( unused_value )
@@ -1349,7 +1315,8 @@ static bool printMac( const void *node, const void *ptr )
     char        buff1[MAX_RESOURCE_SIZE];
     char        buff2[MAX_RESOURCE_SIZE];
 
-    (void)ptr; // Unused
+    /* unused parameters */ (void)ptr;
+
     /* mac->node.name is used as a parameter twice in this module because
      * it may substitute before or after the long string depending on the
      * way the message is translated */
@@ -1377,12 +1344,16 @@ STATIC void restoreEnvironment( void )
     ELIST   *p;
     VECSTR  EnvString;
 
-    for( p = OldEnvValues; p != NULL; p = p->next ) {
+    while( (p = OldEnvValues) != NULL ) {
+        OldEnvValues = p->next;
         EnvString = StartVec();
         WriteVec( EnvString, p->envVarName );
         WriteVec( EnvString, "=" );
         WriteVec( EnvString, p->envOldVal );
-        putenv( FinishVec( EnvString ) );
+        PutEnvExt( FinishVec( EnvString ) );
+        FreeSafe( p->envVarName );
+        FreeSafe( p->envOldVal );
+        FreeSafe( p );
     }
 }
 #endif
@@ -1406,7 +1377,8 @@ void MacroInit( void )
 STATIC bool freeMacro( MACRO *mac, const void *ptr )
 /**************************************************/
 {
-    (void)ptr; // Unused
+    /* unused parameters */ (void)ptr;
+
     FreeSafe( mac->node.name );
     FreeSafe( (char *)(mac->value) );
     FreeSafe( mac );

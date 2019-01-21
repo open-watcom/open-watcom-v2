@@ -38,13 +38,16 @@
 #include "xmem.h"
 #include "fcbmem.h"
 
+
+#define XMS_IO_ERROR    ((size_t)-1)
+
 xms_struct              XMSCtrl;
 static unsigned long    *xmsPtrs;
 
-static int  xmsRead( long, void __far *, int );
-static int  xmsWrite( long, void __far *, int );
+static size_t   xmsRead( long, void __far *, size_t );
+static size_t   xmsWrite( long, void __far *, size_t );
 
-int XMSBlockTest( unsigned short blocks )
+vi_rc XMSBlockTest( unsigned short blocks )
 {
     if( !XMSCtrl.inuse ) {
         return( ERR_NO_XMS_MEMORY );
@@ -56,70 +59,69 @@ int XMSBlockTest( unsigned short blocks )
 
 } /* XMSBlockTest */
 
-void XMSBlockRead( long addr, void __far *buff, unsigned len )
+void XMSBlockRead( long addr, void __far *buff, size_t len )
 {
     xmsRead( addr, buff, len );
 
 } /* XMSBlockRead */
 
-void XMSBlockWrite( long addr, void __far *buff, unsigned len )
+void XMSBlockWrite( long addr, void __far *buff, size_t len )
 {
     xmsWrite( addr, buff, len );
 
 } /* XMSBlockWrite */
 
-int XMSGetBlock( long *addr )
+vi_rc XMSGetBlock( long *addr )
 {
-    int         i;
+    vi_rc       rc;
     long        found = 0;
 
-    i = XMSBlockTest( 1 );
-    if( i ) {
-        return( i );
-    }
-    XMSBlocksInUse++;
-    for( i = 0; i < TotalXMSBlocks; i++ ) {
-        if( xmsPtrs[i] != 0 ) {
-            found = xmsPtrs[i];
-            xmsPtrs[i] = 0;
-            break;
+    rc = XMSBlockTest( 1 );
+    if( rc == ERR_NO_ERR ) {
+        XMSBlocksInUse++;
+        for( i = 0; i < TotalXMSBlocks; i++ ) {
+            if( xmsPtrs[i] != 0 ) {
+                found = xmsPtrs[i];
+                xmsPtrs[i] = 0;
+                break;
+            }
         }
+        *addr = found;
     }
-    *addr = found;
-    return( ERR_NO_ERR );
+    return( rc );
 
 } /* XMSGetBlock */
 
 /*
  * SwapToXMSMemory - move an fcb to extended memory from memory
  */
-int SwapToXMSMemory( fcb *fb )
+vi_rc SwapToXMSMemory( fcb *fb )
 {
-    int         i, len;
+    vi_rc       rc;
+    size_t      len;
     long        found = 0;
 
-    i = XMSGetBlock( &found );
-    if( i ) {
-        return( i );
-    }
-    len = MakeWriteBlock( fb );
-    xmsWrite( found, WriteBuffer, len );
+    rc = XMSGetBlock( &found );
+    if( rc == ERR_NO_ERR ) {
+        len = MakeWriteBlock( fb );
+        xmsWrite( found, WriteBuffer, len );
 
-    /*
-     * finish up
-     */
-    fb->xmemaddr = found;
-    fb->in_xms_memory = true;
-    return( ERR_NO_ERR );
+        /*
+         * finish up
+         */
+        fb->xmemaddr = found;
+        fb->in_xms_memory = true;
+    }
+    return( rc );
 
 } /* SwapToXMSMemory */
 
 /*
  * SwapToMemoryFromXMSMemory - bring data back from extended memory
  */
-int SwapToMemoryFromXMSMemory( fcb *fb )
+vi_rc SwapToMemoryFromXMSMemory( fcb *fb )
 {
-    int len;
+    size_t  len;
 
     len = FcbSize( fb );
     xmsRead( fb->xmemaddr, ReadBuffer, len );
@@ -154,25 +156,20 @@ static unsigned long xmsAlloc( int size )
         if( offset < XMSCtrl.size ) {
             /* reallocate the block to eliminate internal fragmentation */
             new_size = offset / 0x0400;
-            _XMSReallocate( &xmsControl, XMSCtrl.handles[XMSCtrl.next_handle - 1],
-                            new_size );
+            _XMSReallocate( &xmsControl, XMSCtrl.handles[XMSCtrl.next_handle - 1], new_size );
         }
 
         page_request = XMS_MAX_BLOCK_SIZE_IN_K;
         for( ;; ) {
-
-            if( _XMSAllocate( &xmsControl, page_request,
-                (unsigned short *) &handle ) != 0 ) {
+            if( _XMSAllocate( &xmsControl, page_request, (unsigned short *)&handle ) != 0 ) {
                 break;
             }
-
             XMSCtrl.small_block = true;
             page_request -= XMS_BLOCK_ADJUST_SIZE_IN_K;
             if( page_request == 0 ) {
                 XMSCtrl.exhausted = true;
                 return( 0 );
             }
-
         }
 
         XMSCtrl.offset = 0;
@@ -181,7 +178,6 @@ static unsigned long xmsAlloc( int size )
         if( XMSCtrl.offset + size > XMSCtrl.size ) {
             return( 0 );
         }
-
     }
 
     h.internal.offset = XMSCtrl.offset >> 2;
@@ -236,7 +232,7 @@ void XMSInit( void )
         XMSCtrl.size = XMS_MAX_BLOCK_SIZE;
     }
 
-    xmsPtrs = MemAlloc( sizeof( long ) * MaxXMSBlocks );
+    xmsPtrs = _MemAllocArray( long, MaxXMSBlocks );
 
     for( i = 0; i < MaxXMSBlocks; i++ ) {
         xmsPtrs[i] = xmsAlloc( MAX_IO_BUFFER );
@@ -284,7 +280,7 @@ void XMSFini( void )
 /*
  * xmsRead - read from XMS memory
  */
-static int xmsRead( long addr, void __far *buff, int size )
+static size_t xmsRead( long addr, void __far *buff, size_t size )
 {
     xms_addr            h;
     U_INT               offset;
@@ -292,7 +288,7 @@ static int xmsRead( long addr, void __far *buff, int size )
     void                *dest;
 
     if( addr == NULL ) {
-        return( -1 );
+        return( XMS_IO_ERROR );
     }
     size = (size + 1) & ~1;
 
@@ -300,27 +296,23 @@ static int xmsRead( long addr, void __far *buff, int size )
     offset = h.internal.offset << 2;
 
     if( h.internal.handle == XMS_HMA_HANDLE ) {
-
         dest = MK_FP( XMS_HMA_SEGMENT, offset );
         if( _XMSEnableA20( &xmsControl ) == 0 ) {
-            return( -1 );
+            return( XMS_IO_ERROR );
         }
         _XMSCopyWords( dest, buff, size >> 1 );
         if( _XMSDisableA20( &xmsControl ) == 0 ) {
-            return( -1 );
+            return( XMS_IO_ERROR );
         }
-
     } else {
-
         control.size = size;
         control.dest_handle = XMS_REAL_HANDLE;
         control.dest_offset.real = buff;
         control.src_handle = h.internal.handle;
         control.src_offset.extended = offset;
         if( _XMSMove( &xmsControl, &control ) == 0 ) {
-            return( -1 );
+            return( XMS_IO_ERROR );
         }
-
     }
     return( size );
 
@@ -329,7 +321,7 @@ static int xmsRead( long addr, void __far *buff, int size )
 /*
  * xmsWrite - write some XMS memory
  */
-static int xmsWrite( long addr, void __far *buff, int size )
+static size_t xmsWrite( long addr, void __far *buff, size_t size )
 {
     xms_addr            h;
     xms_move_descriptor control;
@@ -337,7 +329,7 @@ static int xmsWrite( long addr, void __far *buff, int size )
     void                *dest;
 
     if( addr == NULL ) {
-        return( -1 );
+        return( XMS_IO_ERROR );
     }
     size = (size + 1) & ~1;
     h.external = addr;
@@ -346,11 +338,11 @@ static int xmsWrite( long addr, void __far *buff, int size )
 
         dest = MK_FP( XMS_HMA_SEGMENT, offset );
         if( _XMSEnableA20( &xmsControl ) == 0 ) {
-            return( -1 );
+            return( XMS_IO_ERROR );
         }
         _XMSCopyWords( buff, dest, size >> 1 );
         if( _XMSDisableA20( &xmsControl ) == 0 ) {
-            return( -1 );
+            return( XMS_IO_ERROR );
         }
 
     } else {
@@ -361,7 +353,7 @@ static int xmsWrite( long addr, void __far *buff, int size )
         control.dest_handle = h.internal.handle;
         control.dest_offset.extended = offset;
         if( _XMSMove( &xmsControl, &control ) == 0 ) {
-            return( -1 );
+            return( XMS_IO_ERROR );
         }
 
     }

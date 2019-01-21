@@ -119,7 +119,7 @@ void CVpack::DoExeCode()
             throw MiscError("error while reading executable code.");
         }
         _eMaker.DumpToExe(buffer,length);
-        delete [] buffer;
+        delete[] buffer;
     }
     _lfaBase = length;
     _ddeBase = _aRetriever.TellDDEBase();
@@ -345,8 +345,8 @@ void CVpack::CreatePackExe()
         if (gotsrcmod) {
             _newDir.Insert(sstSrcModule,module,OFBase(),length);
             _eMaker.DumpToExe(buffer2,length);
-            delete buffer2;
-            buffer2 = 0;
+            delete[] buffer2;
+            buffer2 = NULL;
         }
 
     }

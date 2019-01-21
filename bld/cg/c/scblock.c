@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2016 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -30,7 +30,7 @@
 ****************************************************************************/
 
 
-#include "cgstd.h"
+#include "_cgstd.h"
 #include "coderep.h"
 #include "score.h"
 #include "zerobits.h"
@@ -38,10 +38,10 @@
 #include "blips.h"
 #include "insdead.h"
 #include "optab.h"
+#include "confldef.h"
+#include "liveinfo.h"
+#include "split.h"
 
-
-extern  bool            UnChangeable(instruction*);
-extern  void            UpdateLive(instruction*,instruction*);
 
 void    FreeJunk( block *blk )
 /*************************************
@@ -257,7 +257,7 @@ byte    HasZero( score *sc, name *n )
     if( n->n.class == N_CONSTANT ) {
         if( n->c.const_type == CONS_ABSOLUTE ) {
             if( n->c.lo.int_value == 0 ) {
-                bits = LO_HALF | HI_HALF;
+                bits |= LO_HALF | HI_HALF;
             } else if( n->n.size == 2 ) {
                 if( ( n->c.lo.int_value & 0x00ff ) == 0 ) {
                     bits |= LO_HALF;

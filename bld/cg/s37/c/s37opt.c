@@ -30,15 +30,16 @@
 ****************************************************************************/
 
 
-#include "cgstd.h"
+#include "_cgstd.h"
 #include "coderep.h"
 #include "makeins.h"
+#include "varusage.h"
+
 
 extern  void            PrefixIns(instruction*,instruction*);
 extern  void            SuffixIns(instruction*,instruction*);
 extern  name            *AllocTemp(type_class_def);
 extern  name            *AllocIntConst(int);
-extern  void            FindReferences(void);
 
 extern  block           *HeadBlock;
 extern  name            *Names[];
@@ -213,18 +214,21 @@ static bool ConvertIfPossible( name *temp )
     Convert temp to an integer if we can.
 */
 {
-    if( ( temp->v.usage & USE_ADDRESS+USE_MEMORY+VAR_VOLATILE+NEEDS_MEMORY ) ) {
+    if( temp->v.usage & (USE_ADDRESS | USE_MEMORY | VAR_VOLATILE | NEEDS_MEMORY) ) {
         return( false );
     }
-    if( temp->t.temp_flags & ALIAS ) return( false );
-    if( temp->t.alias != temp ) return( false );
+    if( temp->t.temp_flags & ALIAS )
+        return( false );
+    if( temp->t.alias != temp )
+        return( false );
     switch( temp->n.name_class ) {
     case I1:
     case I2:
         return( ConvertToInt( temp ) );
     case U1:
     case U2:
-        if( !WorthAConversion( temp ) ) return( false );
+        if( !WorthAConversion( temp ) )
+            return( false );
         return( ConvertToInt( temp ) );
     }
     return( false );

@@ -30,11 +30,10 @@
 ****************************************************************************/
 
 
-#include "cgstd.h"
+#include "_cgstd.h"
 #include "coderep.h"
 #include "data.h"
 #include "rgtbl.h"
-#include "dmpinc.h"
 #include "dumpio.h"
 #include "dumpconf.h"
 #include "dumpins.h"

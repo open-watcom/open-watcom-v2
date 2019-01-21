@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
+* Copyright (c) 2009-2018 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -34,40 +34,43 @@
 *
 ****************************************************************************/
 
+
+#include "wipfc.hpp"
 #include <cwctype>
 #include <cstdlib>
 #include "gdword.hpp"
 #include "errors.hpp"
+#include "util.hpp"
+#include "outfile.hpp"
+
 
 void GlobalDictionaryWord::toUpper()
 {
     wchar_t ch;
-    for( std::size_t count = 0; count < text.size(); ++count ) {
-        ch = std::towupper( text[ count ] );
-        text[ count ] = ch;
+    for( std::size_t count = 0; count < _text.size(); ++count ) {
+        ch = std::towupper( _text[ count ] );
+        _text[ count ] = ch;
     }
 }
 /***************************************************************************/
-std::size_t GlobalDictionaryWord::writeWord( std::FILE* out ) const
+dword GlobalDictionaryWord::writeWord( OutFile* out ) const
 {
-    char buffer[ 256 ];
-    std::size_t written;
-    std::size_t length( std::wcstombs( buffer, text.c_str(), sizeof( buffer ) / sizeof( char ) ) );
-    if( length == static_cast< std::size_t >( -1 ) )
-        throw FatalError( ERR_T_CONV );
-    if( length > 254 )
-        length = 254;
-    if( std::fputc( static_cast< STD1::uint8_t >( length + 1 ), out) == EOF ||
-        ( written = std::fwrite( buffer, sizeof( char ), length, out ) ) != length )
+    std::string buffer( out->wtomb_string( _text ) );
+    if( buffer.size() > ( 255 - 1 ) )
+        buffer.erase( 255 - 1 );
+    byte length( static_cast< byte >( buffer.size() + 1 ) );
+    if( out->put( length ) )
         throw FatalError( ERR_WRITE );
-    return written + 1;
+    if( out->put( buffer ) )
+        throw FatalError( ERR_WRITE );
+    return( length );
 }
 /***************************************************************************/
 bool GlobalDictionaryWord::operator<( const GlobalDictionaryWord& rhs ) const
 {
-    int value( wstricmp( text.c_str(), rhs.text.c_str() ) );
+    int value( wstricmp( _text.c_str(), rhs._text.c_str() ) );
     if( value == 0 )
-        value = std::wcscmp(  text.c_str(), rhs.text.c_str() );
+        value = std::wcscmp( _text.c_str(), rhs._text.c_str() );
     return value < 0;
 }
 /***************************************************************************/

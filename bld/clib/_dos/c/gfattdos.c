@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -39,34 +40,37 @@
   #ifdef __BIG_DATA__
     #define INIT_VALUE
     #define SAVE_VALUE  "mov es:[bx],cx"
-    #define AUX_INFO    \
-        parm caller     [dx ax] [es bx] \
-        modify exact    [ax cx dx];
+    #define AUX_INFO \
+        __parm __caller     [__dx __ax] [__es __bx] \
+        __value             [__ax] \
+        __modify __exact    [__ax __cx __dx]
   #else
     #define INIT_VALUE
     #define SAVE_VALUE  "mov [bx],cx"
-    #define AUX_INFO    \
-        parm caller     [dx] [bx] \
-        modify exact    [ax cx];
+    #define AUX_INFO \
+        __parm __caller     [__dx] [__bx] \
+        __value             [__ax] \
+        __modify __exact    [__ax __cx]
   #endif
 #else
-    #define INIT_VALUE  "xor  ecx,ecx"
+    #define INIT_VALUE  "xor ecx,ecx"
     #define SAVE_VALUE  "mov [ebx],ecx"
-    #define AUX_INFO    \
-        parm caller     [edx] [ebx] \
-        modify exact    [eax ecx];
+    #define AUX_INFO \
+        __parm __caller     [__edx] [__ebx] \
+        __value             [__eax] \
+        __modify __exact    [__eax __ecx]
 #endif
 
 extern unsigned __dos_getfileattr_sfn( const char *path, unsigned *attrib );
 #pragma aux __dos_getfileattr_sfn = \
-        _SET_DSDX       \
-        INIT_VALUE      \
-        _MOV_AX_W _GET_ DOS_CHMOD \
-        _INT_21         \
-        _RST_DS         \
-        RETURN_VALUE    \
-        "call __doserror_" \
-        AUX_INFO
+        _SET_DSDX           \
+        INIT_VALUE          \
+        _MOV_AX_W   _GET_ DOS_CHMOD \
+        _INT_21             \
+        _RST_DS             \
+        RETURN_VALUE        \
+        "call __doserror_"  \
+    AUX_INFO
 
 #ifdef __WATCOM_LFN__
 static tiny_ret_t _dos_getfileattr_lfn( const char *path )

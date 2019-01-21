@@ -330,7 +330,7 @@ static void *AddObjFile( const char *name, char *member, file_list **filelist )
         new_member->next = NULL;
         _LnkFree( member );
         for( new_entry = CurrSect->files; new_entry != NULL; new_entry = new_entry->next_file ) {
-            if( FNAMECMPSTR( new_entry->file->name, name ) == 0 ) {
+            if( FNAMECMPSTR( new_entry->file->name.u.ptr, name ) == 0 ) {
                 CmdFlags |= CF_MEMBER_ADDED;
                 if( new_entry->u.member != NULL ) {
                     LinkList( &new_entry->u.member, new_member );
@@ -367,14 +367,14 @@ file_list *AddObjLib( const char *name, lib_priority priority )
         if( lib->priority < priority )
             break;
         /* end search if library already exists with same or a higher priority */
-        if( FNAMECMPSTR( lib->file->name, name ) == 0 ) {
+        if( FNAMECMPSTR( lib->file->name.u.ptr, name ) == 0 ) {
             return( lib );
         }
     }
     new_owner = owner;
     /* search for library definition with a lower priority */
     for( ; (lib = *owner) != NULL; owner = &lib->next_file ) {
-        if( FNAMECMPSTR( lib->file->name, name ) == 0 ) {
+        if( FNAMECMPSTR( lib->file->name.u.ptr, name ) == 0 ) {
             /* remove library entry from linked list */
             *owner = lib->next_file;
             break;
@@ -443,8 +443,11 @@ static bool AddModFile( void )
     char        *membname;
 
     ptr = GetFileName( &membname, false );
-    AddHTableElem(Root->modFilesHashed, ptr);
+    AddHTableElem( Root->modFilesHashed, ptr );
     LinkFlags |= GOT_CHGD_FILES;
+    if( membname != NULL ) {
+        _LnkFree( membname );
+    }
     return( true );
 }
 

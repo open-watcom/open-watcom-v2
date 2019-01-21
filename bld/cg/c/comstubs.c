@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -30,22 +31,26 @@
 ****************************************************************************/
 
 
-#include "cgstd.h"
+#include "_cgstd.h"
 
-extern  void    InitHdl() {
-/*****************************************/
+void    InitHdl( void )
+/*********************/
+{
 }
 
-extern  void    FiniHdl() {
-/*****************************************/
+void    FiniHdl( void )
+/*********************/
+{
 }
 
-extern  void    SaveComArea( char *buff ) {
-/*****************************************/
+void    SaveComArea( char *buff )
+/*******************************/
+{
     buff = buff;
 }
 
-extern  void    RestComArea( char *buff ) {
-/*****************************************/
+void    RestComArea( char *buff )
+/*******************************/
+{
     buff = buff;
 }

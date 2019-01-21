@@ -63,5 +63,5 @@ int ExcPgm::diagnose_error      // PRINT ERROR DIAGNOSTIC
     ( ExcMsg& msg )             // - message
 {
     diagnose_msg( msg, "ERROR" );
-    return retval;
+    return( retval );
 }

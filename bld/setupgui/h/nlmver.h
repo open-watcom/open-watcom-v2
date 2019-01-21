@@ -40,6 +40,4 @@
 #define EFAILURE    -1
 #define READ_SIZE   512
 
-extern int     ReturnNLMVersionInfoFromFile( const char *,long *,long *,long *,long *,long *,long *,char *,char *);
-
 #endif

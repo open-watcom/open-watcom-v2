@@ -46,7 +46,7 @@
 #include "dipimp.h"
 #include "dipinter.h"
 #include "dbglkup.h"
-#include "dbgsetfn.h"
+#include "dbgsetfg.h"
 
 #include "clibext.h"
 
@@ -465,11 +465,11 @@ void FreeSymHandle( sym_list *sl )
 
     for( owner = &SymListHead; (curr = *owner) != NULL; owner = &curr->next ) {
         if( curr == sl ) {
+            *owner = curr->next;
+            _Free( curr );
             break;
         }
     }
-    *owner = curr->next;
-    _Free( curr );
 }
 
 void PurgeSymHandles( void )
@@ -488,7 +488,7 @@ static bool GetSymAddr( char *name, mod_handle mh, address *addr )
 {
     lookup_item         li;
     location_list       ll;
-    dip_status          ret;
+    dip_status          ds;
 
     if( mh == NO_MOD )
         return( false );
@@ -505,9 +505,9 @@ static bool GetSymAddr( char *name, mod_handle mh, address *addr )
     case SR_FAIL:
         return( false );
     }
-    ret = DIPSymLocation( SL2SH( SymListHead ), NULL, &ll );
+    ds = DIPSymLocation( SL2SH( SymListHead ), NULL, &ll );
     PurgeSymHandles();
-    if( ret != DS_OK )
+    if( ds != DS_OK )
         return( false );
     if( ll.num != 1 || ll.e[0].type != LT_ADDR )
         return( false );

@@ -30,7 +30,6 @@
 
 
 #include "vi.h"
-#include "walloca.h"
 #include "rxsupp.h"
 #include "win.h"
 
@@ -39,7 +38,8 @@
  */
 vi_rc Global( linenum n1, linenum n2, const char *data, int dmt )
 {
-    char        *sstr, *linedata;
+    char        sstr[MAX_INPUT_LINE];
+    char        *linedata;
     bool        match;
     vi_rc       rc;
     vi_rc       rc1;
@@ -56,10 +56,6 @@ vi_rc Global( linenum n1, linenum n2, const char *data, int dmt )
     rc = ModificationTest();
     if( rc != ERR_NO_ERR ) {
         return( rc );
-    }
-    sstr = alloca( MAX_INPUT_LINE );
-    if( sstr == NULL ) {
-        return( ERR_NO_STACK );
     }
     data = SkipLeadingSpaces( data );
     data = GetNextWord( data, sstr, SingleSlash );
@@ -233,7 +229,7 @@ vi_rc Global( linenum n1, linenum n2, const char *data, int dmt )
             return( rc1 );
         }
     }
-    Message1( "%l matches found",changecnt );
+    Message1( "%l matches found", changecnt );
     DCDisplayAllLines();
     return( rc );
 
@@ -248,5 +244,5 @@ void ProcessingMessage( linenum cln )
         // WPrintfLine( message_window_id,1,"Processing line %l",cln );
         Message1( "Processing line %l", cln );
     }
-    
+
 } /* ProcessingMessage */

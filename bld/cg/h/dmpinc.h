@@ -30,7 +30,11 @@
 ****************************************************************************/
 
 
-/* include dump routines */
+/*
+ * include Dump... routines references to be included in executable
+ * they can be used during debugger run-time debugging to display
+ * internal structures in human readable form
+ */
 
 extern void DumpFPUIns();
 extern void Dumpan();
@@ -47,3 +51,25 @@ extern void DumpIVList();
 extern void DumpInvariants();
 extern void DumpOpt();
 extern void DumpDataDag();
+
+/* include Dump... routine references */
+
+void (*__DmpRef[])() = {
+        &DumpFPUIns,
+        &Dumpan,
+        &DumpBlk,
+        &DumpConflicts,
+        &DumpCurrLoop,
+        &DumpIns,
+        &DumpOpcodeName,
+        &DumpRegTree,
+        &DumpSc,
+        &DumpGen,
+        &DumpTree,
+        &DumpCurrLoop,
+        &DumpIVList,
+        &DumpInvariants,
+        &DumpOpt,
+        &DumpDataDag,
+        0
+};

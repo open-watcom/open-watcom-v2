@@ -31,7 +31,7 @@
 ****************************************************************************/
 
 
-#include "cgstd.h"
+#include "_cgstd.h"
 #include "coderep.h"
 #include "freelist.h"
 #include "zoiks.h"
@@ -54,7 +54,8 @@ conflict_node   *AddConflictNode( name *opnd )
     t_flags             flags;
     fe_attr             attr;
 
-    if( opnd->n.class == N_TEMP ) opnd = DeAlias( opnd );
+    if( opnd->n.class == N_TEMP )
+        opnd = DeAlias( opnd );
     new = AllocFrl( &ConfFrl, sizeof( conflict_node ) );
     new->name           = opnd;
     new->next_conflict  = ConfList;
@@ -88,7 +89,7 @@ conflict_node   *AddConflictNode( name *opnd )
     } else {
         if( opnd->m.memory_type == CG_FE ) {
             attr = FEAttr( opnd->v.symbol );
-            if( (attr & FE_CONSTANT) || ( ( (attr & (FE_GLOBAL|FE_VISIBLE)) == 0 ) && _IsModel( RELAX_ALIAS ) ) ) {
+            if( (attr & FE_CONSTANT) || ( ( (attr & (FE_GLOBAL | FE_VISIBLE)) == 0 ) && _IsModel( RELAX_ALIAS ) ) ) {
                 _SetTrue( new, CST_OK_ACROSS_CALLS );
             }
         }
@@ -315,19 +316,19 @@ reg_set_index   MarkIndex( instruction *ins, name *opnd, bool is_temp_index )
 {
     conflict_node       *conf;
     reg_set_index       possible;
-    type_class_def      class;
+    type_class_def      type_class;
     possible_for_alias  *aposs;
 
     conf = NameConflict( ins, opnd );
     if( conf == NULL )
         return( RL_ );
-    class = opnd->n.name_class;
+    type_class = opnd->n.type_class;
     if( opnd->n.class == N_TEMP && ( opnd->t.temp_flags & ALIAS ) ) {
         aposs = MakePossibleForAlias( conf, opnd );
-        possible = IndexIntersect( aposs->possible, class, is_temp_index );
+        possible = IndexIntersect( aposs->possible, type_class, is_temp_index );
         aposs->possible = possible;
     } else {
-        possible = IndexIntersect( conf->possible, class, is_temp_index );
+        possible = IndexIntersect( conf->possible, type_class, is_temp_index );
         conf->possible = possible;
     }
     return( possible );

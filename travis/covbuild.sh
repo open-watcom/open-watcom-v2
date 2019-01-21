@@ -3,11 +3,7 @@
 # Script to build the Open Watcom tools
 # using the host platform's native C/C++ compiler or OW tools.
 #
-# Expects POSIX or OW tools.
-
-if [ -z "$OWROOT" ]; then
-    . ./setvars.sh
-fi
+# Expects POSIX tools.
 
 if [ -z "$1" ]; then
     BUILDER_ARG=build
@@ -75,5 +71,5 @@ else
         fi
     fi
 fi
-cd $OWROOT
+cd $TRAVIS_BUILD_DIR
 exit $RC

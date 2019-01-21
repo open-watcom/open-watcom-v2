@@ -44,9 +44,8 @@ extern const char _NEAR   MEMORIZE_MODE[];
 extern const char _NEAR   SingleBlank[];
 extern const char _NEAR   SingleSlash[];
 extern const char _NEAR   SingleQuote[];
-extern const char _NEAR   * _NEAR EditOpts[];
 extern const char _NEAR   * _NEAR BoolStr[];
-extern int                NumEditOpts;
+extern const char _NEAR   SpinData[];
 
 /* mouse data */
 #if defined( __LINUX__ )        /* compatible with the ui lib */
@@ -65,7 +64,6 @@ extern long         NextAutoSave;
 extern int          HalfPageLines;
 extern vi_key       LastEvent;
 extern int          SpinCount;
-extern char _NEAR   SpinData[];
 extern char         VideoPage;
 extern char         *BndMemory, *EXEName;
 extern int          FcbBlocksInUse;
@@ -84,8 +82,9 @@ extern int          VirtualColumnDesired;
 extern window_id    current_window_id;
 extern window_id    message_window_id;
 extern window_id    status_window_id;
-extern window_id    curr_num_window_id;
+extern window_id    linenum_current_window_id;
 extern window_id    menu_window_id;
+extern window_id    repeat_window_id;
 extern char         *Comspec;
 extern select_rgn   SelRgn;
 
@@ -105,26 +104,27 @@ extern savebuf _NEAR    SpecialSavebufs[MAX_SPECIAL_SAVEBUFS + 1];
 extern savebuf          *WorkSavebuf;
 
 /* undo data */
-extern int          MaxUndoStack;
-extern undo_stack   *UndoStack, *UndoUndoStack;
+extern int              MaxUndoStack;
+extern undo_stack       *UndoStack;
+extern undo_stack       *UndoUndoStack;
 
 /* bound key data */
-extern event _NEAR  EventList[];
-extern int          MaxKeysBound;
-extern vi_key _NEAR SavebufBound[];
+extern event _NEAR      EventList[];
+extern int              MaxKeysBound;
+extern vi_key _NEAR     SavebufBound[];
 
 /* directory info */
 extern direct_ent * _NEAR   DirFiles[MAX_FILES];
-extern int                  DirFileCount;
+extern list_linenum     DirFileCount;
 
 /* window info */
-extern window_info  editw_info, messagew_info, statusw_info;
-extern window_info  cmdlinew_info, dirw_info;
-extern window_info  setw_info, filelistw_info, setvalw_info;
-extern window_info  linenumw_info, filecw_info;
-extern window_info  repcntw_info, menubarw_info, menuw_info;
-extern window_info  extraw_info, defaultw_info;
-extern window_info  activemenu_info, greyedmenu_info, activegreyedmenu_info;
+extern window_info      editw_info, messagew_info, statusw_info;
+extern window_info      cmdlinew_info, dirw_info;
+extern window_info      setw_info, filelistw_info, setvalw_info;
+extern window_info      linenumw_info, filecw_info;
+extern window_info      repcntw_info, menubarw_info, menuw_info;
+extern window_info      extraw_info, defaultw_info;
+extern window_info      activemenu_info, greyedmenu_info, activegreyedmenu_info;
 
 /* misc data */
 extern long             SystemRC;
@@ -165,10 +165,10 @@ extern int          ScrollBarCharColor;
 
 /* parse constants */
 extern int          MaxColorTokens, ColorTokensSize;
-extern const char _NEAR   TokensCmdLine[];
-extern const char _NEAR   TokensSetVar[];
-extern const char _NEAR   TokensSetFlag[];
-extern const char _NEAR   TokensSetFlagShort[];
+extern const char _NEAR   CmdLineTokens[];
+extern const char _NEAR   SetVarTokens[];
+extern const char _NEAR   SetFlagTokens[];
+extern const char _NEAR   SetFlagShortTokens[];
 
 /* Toolbar constants */
 

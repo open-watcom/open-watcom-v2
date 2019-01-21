@@ -40,46 +40,49 @@
     #define INIT_VALUE
     #define SAVE_VALUE  "mov es:[bx],ax"
     #define RETURN_CY   "sbb ax,ax"
-    #define AUX_INFO    \
-        parm caller     [dx ax] [cx] [es bx] \
-        modify exact    [ax dx];
+    #define AUX_INFO \
+        __parm __caller     [__dx __ax] [__cx] [__es __bx] \
+        __value             [__ax] \
+        __modify __exact    [__ax __dx]
   #else
     #define INIT_VALUE
     #define SAVE_VALUE  "mov [bx],ax"
     #define RETURN_CY   "sbb ax,ax"
-    #define AUX_INFO    \
-        parm caller     [dx] [cx] [bx] \
-        modify exact    [ax dx];
+    #define AUX_INFO \
+        __parm __caller     [__dx] [__cx] [__bx] \
+        __value             [__ax] \
+        __modify __exact    [__ax __dx]
   #endif
 #else
     #define INIT_VALUE  "xor eax,eax"
     #define SAVE_VALUE  "mov [ebx],eax"
     #define RETURN_CY   "sbb eax,eax"
-    #define AUX_INFO    \
-        parm caller     [edx] [ecx] [ebx] \
-        modify exact    [eax edx];
+    #define AUX_INFO \
+        __parm __caller     [__edx] [__ecx] [__ebx] \
+        __value             [__eax] \
+        __modify __exact    [__eax __edx]
 #endif
 
-#define __DOS_OPEN_SFN  \
-        _SET_DSDX       \
-        INIT_VALUE      \
-        "mov  al,cl"    \
-        _MOV_AH DOS_OPEN \
-        _INT_21         \
-        _RST_DS         \
+#define __DOS_OPEN_SFN      \
+        _SET_DSDX           \
+        INIT_VALUE          \
+        "mov    al,cl"      \
+        _MOV_AH DOS_OPEN    \
+        _INT_21             \
+        _RST_DS             \
         RETURN_VALUE
 
 extern unsigned __dos_open_sfn_chk( const char *name, unsigned mode, int *handle );
 #pragma aux __dos_open_sfn_chk = \
-        __DOS_OPEN_SFN  \
-        RETURN_CY       \
-        AUX_INFO
+        __DOS_OPEN_SFN      \
+        RETURN_CY           \
+    AUX_INFO
 
 extern unsigned __dos_open_sfn_err( const char *name, unsigned mode, int *handle );
 #pragma aux __dos_open_sfn_err = \
-        __DOS_OPEN_SFN  \
-        "call __doserror_" \
-        AUX_INFO
+        __DOS_OPEN_SFN      \
+        "call __doserror_"  \
+    AUX_INFO
 
 #ifdef __WATCOM_LFN__
 static tiny_ret_t _dos_open_ex_lfn( const char *name, unsigned mode )

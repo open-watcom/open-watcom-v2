@@ -84,7 +84,7 @@ class GlobalHashContainer : public GlobalTypeContainer {
 
         virtual ~GlobalHashContainer() {
             if (_buckets) {
-                delete [] _buckets;
+                delete[] _buckets;
                 _buckets=NULL;
             }
         }

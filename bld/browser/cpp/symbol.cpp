@@ -334,7 +334,7 @@ void Symbol::addDesc( char * name, int u_def,
 
     if( drhdl == _drhandle ) {    /* our symbol */
         desc = new Description( Symbol::defineSymbol( this ) );
-        delete [] name;
+        delete[] name;
     } else {
         if( u_def ) {
             sym = Symbol::defineSymbol(st, drhdl, DRMEM_HDL_NULL, _module, name );

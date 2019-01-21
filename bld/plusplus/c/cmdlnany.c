@@ -108,29 +108,29 @@ static void checkErrorLimit( unsigned *p )
 
 static bool scanDefine( OPT_STRING **p )
 {
-    MEPTR cmdln_mac;
+    MEPTR cmdln_mentry;
 
     /* unused parameters */ (void)p;
 
-    cmdln_mac = DefineCmdLineMacro( CompFlags.extended_defines );
-    if( cmdln_mac != NULL ) {
-        cmdln_mac->macro_flags |= MFLAG_USER_DEFINED;
+    cmdln_mentry = DefineCmdLineMacro( CompFlags.extended_defines );
+    if( cmdln_mentry != NULL ) {
+        cmdln_mentry->macro_flags |= MFLAG_USER_DEFINED;
     }
     return( true );
 }
 
 static bool scanDefinePlus( OPT_STRING **p )
 {
-    MEPTR cmdln_mac;
+    MEPTR cmdln_mentry;
 
     /* unused parameters */ (void)p;
 
     if( CmdScanSwEnd() ) {
         CompFlags.extended_defines = true;
     } else {
-        cmdln_mac = DefineCmdLineMacro( true );
-        if( cmdln_mac != NULL ) {
-            cmdln_mac->macro_flags |= MFLAG_USER_DEFINED;
+        cmdln_mentry = DefineCmdLineMacro( true );
+        if( cmdln_mentry != NULL ) {
+            cmdln_mentry->macro_flags |= MFLAG_USER_DEFINED;
         }
     }
     return( true );
@@ -162,10 +162,10 @@ static bool scanFBIopts         // SCAN FBI/FBX OPTIONS
     ( FBI_KIND* a_kind          // - addr[ option kinds ]
     , FBI_KIND def_kind )       // - default kind
 {
-    bool retb;                  // - return: 1 ==> ok, 0 ==> error
+    bool ok;                    // - return: true ==> ok
     FBI_KIND kind;              // - options scanned
 
-    retb = false;
+    ok = false;
     kind = 0;
     CmdRecogEquals();
     for( ; ; ) {
@@ -174,34 +174,34 @@ static bool scanFBIopts         // SCAN FBI/FBX OPTIONS
             if( 0 == kind ) {
                 kind = def_kind;
             }
-            retb = true;
+            ok = true;
             break;
         }
         switch( CmdScanChar() ) {
-          case 'v' :
+        case 'v' :
             kind |= FBI_VAR;
             continue;
-          case 't' :
+        case 't' :
             kind |= FBI_TYPE;
             continue;
-          case 'f' :
+        case 'f' :
             kind |= FBI_FUN;
             continue;
-          case 'm' :
+        case 'm' :
             kind |= FBI_MEMB_DATA;
             continue;
-          case 'p' :
+        case 'p' :
             kind |= FBI_MACRO;
             continue;
-          default :
+        default :
             BadCmdLine( ERR_INVALID_OPTION );
-            retb = false;
+            ok = false;
             break;
         }
         break;
     }
     *a_kind = kind;
-    return( retb );
+    return( ok );
 }
 
 #endif
@@ -209,7 +209,7 @@ static bool scanFBIopts         // SCAN FBI/FBX OPTIONS
 static bool scanFBX( OPT_STRING **p )
 {
 #ifdef OPT_BR
-    bool retb;                  // - return: 1 ==> ok, 0 ==> error
+    bool ok;                    // - return: true ==> ok
     FBI_KIND options;           // - options scanned
 
     /* unused parameters */ (void)p;
@@ -230,11 +230,11 @@ static bool scanFBX( OPT_STRING **p )
         if( options & FBI_FUN ) {
             CompFlags.optbr_f = false;
         }
-        retb = true;
+        ok = true;
     } else {
-        retb = false;
+        ok = false;
     }
-    return( retb );
+    return( ok );
 #else
     /* unused parameters */ (void)p;
 
@@ -246,7 +246,7 @@ static bool scanFBX( OPT_STRING **p )
 static bool scanFBI( OPT_STRING **p )
 {
 #ifdef OPT_BR
-    bool retb;                  // - return: 1 ==> ok, 0 ==> error
+    bool ok;                    // - return: true ==> ok
     FBI_KIND options;           // - options scanned
 
     /* unused parameters */ (void)p;
@@ -267,11 +267,11 @@ static bool scanFBI( OPT_STRING **p )
         if( options & FBI_FUN ) {
             CompFlags.optbr_f = true;
         }
-        retb = true;
+        ok = true;
     } else {
-        retb = false;
+        ok = false;
     }
-    return( retb );
+    return( ok );
 #else
     /* unused parameters */ (void)p;
 
@@ -451,11 +451,11 @@ static bool openCmdFile(        // OPEN A COMMAND FILE
     char const *filename,       // - file name
     size_t size )               // - size of name
 {
-    char fnm[ _MAX_PATH ];      // - buffer for name
+    char fnm[_MAX_PATH];        // - buffer for name
 
     stxvcpy( fnm, filename, size );
     StripQuotes( fnm );
-    return IoSuppOpenSrc( fnm, FT_CMD );
+    return( IoSuppOpenSrc( fnm, FT_CMD ) );
 }
 
 static const char *get_env(     // GET ENVIRONMENT VAR
@@ -477,7 +477,7 @@ static const char *get_env(     // GET ENVIRONMENT VAR
 static void scanInputFile(       // PROCESS NAME OF INPUT FILE
     void )
 {
-    char filename[ _MAX_PATH ]; // - scanned file name
+    char filename[_MAX_PATH];   // - scanned file name
     size_t len;                 // - length of file name
     char const *fnm;            // - file name in command line
 
@@ -505,14 +505,18 @@ static void processCmdFile(     // PROCESS A COMMAND FILE
     for(;;) {
         for(;;) {
             c = NextChar();
-            if( c == LCHR_EOF ) break;
-            if( c == '\n' ) break;
-            if( c == '\r' ) break;
+            if( c == LCHR_EOF )
+                break;
+            if( c == '\n' )
+                break;
+            if( c == '\r' )
+                break;
             VbufConcChr( &rec, (char)c );
         }
         procOptions( data, VbufString( &rec ) );
         for( ; ( c == '\n' ) || ( c == '\r' ); c = NextChar() );
-        if( c == LCHR_EOF ) break;
+        if( c == LCHR_EOF )
+            break;
         VbufRewind( &rec );
         VbufConcChr( &rec, (char)c );
     }
@@ -536,7 +540,8 @@ static void procOptions(        // PROCESS AN OPTIONS LINE
         CmdScanInit( str );
         for(;;) {
             c = CmdScanWhiteSpace();
-            if( c == '\0' ) break;
+            if( c == '\0' )
+                break;
             CmdScanSwitchBegin();
             CmdLnCtxSwitch( CmdScanAddr() - 1 );
             if( c == '-'  ||  c == SwitchChar ) {
@@ -575,14 +580,14 @@ static void procOptions(        // PROCESS AN OPTIONS LINE
 static FILE *openUnicodeFile( char *filename )
 {
     FILE *fp;
-    char fullpath[ _MAX_PATH ];
+    char fullpath[_MAX_PATH];
 
 #if defined(__QNX__)
     _searchenv( filename, "ETC_PATH", fullpath );
     if( fullpath[0] == '\0' ) {
         #define ETC "/usr/watcom"
         strcpy( fullpath, ETC );
-        strcpy( &fullpath[ sizeof( ETC ) - 1 ], filename );
+        strcpy( &fullpath[sizeof( ETC ) - 1], filename );
     }
 #else
     _searchenv( filename, "PATH", fullpath );
@@ -597,12 +602,12 @@ static FILE *openUnicodeFile( char *filename )
 static void loadUnicodeTable( unsigned code_page )
 {
     FILE *fp;
-    char filename[ 20 ];
+    char filename[20];
 
     sprintf( filename, "unicode.%3.3u", code_page );
-    if( filename[ 11 ] != '\0' ) {
-        filename[ 7 ] = filename[ 8 ];
-        filename[ 8 ] = '.';
+    if( filename[11] != '\0' ) {
+        filename[7] = filename[8];
+        filename[8] = '.';
     }
     fp = openUnicodeFile( filename );
     if( fp != NULL ) {
@@ -1147,7 +1152,8 @@ static void analyseAnyTargetOptions( OPT_STORAGE *data )
     if( data->tp ) {
         for(;;) {
             OPT_STRING* str = data->tp_value;
-            if( NULL == str ) break;
+            if( NULL == str )
+                break;
             data->tp_value = str->next;
             strcpy( Buffer, str->data );
             CMemFree( str );

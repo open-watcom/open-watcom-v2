@@ -30,37 +30,28 @@
 ****************************************************************************/
 
 
-#ifndef STANDARD_INCLUDED
-#define STANDARD_INCLUDED
+#ifndef CGSTD_H_INCLUDED
+#define CGSTD_H_INCLUDED
 
 #include <limits.h>
 #include <stddef.h>
 #include <string.h>
 #include <assert.h>
-#include "cgapi.h"
 #include "bool.h"
 
-#if !defined(BY_FORTRAN_FRONT_END)
+
+#define _RoundUp( size, word )        ( ((size)+((word)-1)) & ~((word)-1) )
+
+#if !defined( BY_FORTRAN_FRONT_END )
 
     #define NULLCHAR        '\0'
-
-    #include "watcom.h"
 
     typedef unsigned char   byte;
     typedef void            *pointer;
     typedef float           real;
     typedef double          reallong;
-    // typedef long double          realreallong;
+//    typedef long double     realreallong;
 
-#endif
-
-#define _RoundUp( size, word )        ( ((size)+((word)-1)) & ~((word)-1) )
-#define _IsPowerOfTwo( x )              ( ( (x) & ( 1 - (x) ) ) == (x) )
-
-#ifdef __AXP__
-#define _AlignmentCheck( ptr, size )  assert( (((unsigned)ptr) & ((size)-1)) == 0 )
-#else
-#define _AlignmentCheck( ptr, size )    {}
 #endif
 
 #endif

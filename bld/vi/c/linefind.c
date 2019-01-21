@@ -214,7 +214,6 @@ bool TestIfCharInRange( char c, char *clist )
 {
     char        *lst;
 
-    
     for( lst = clist; *lst != '\0'; lst += 2 ) {
         if( c >= *lst && c <= *(lst + 1)  ) {
             return( true );

@@ -7,8 +7,8 @@ set PROJDIR=<CWD>
 
 [ INCLUDE <OWROOT>/build/master.ctl ]
 
-[ BLOCK <1> test ]
-#=================
+[ BLOCK <BLDRULE> test ]
+#=======================
     cdsay .
     wmake -h
 [ IFDEF <EXTRA_ARCH> i86 386 axp ppc mps ]
@@ -16,8 +16,8 @@ set PROJDIR=<CWD>
     wmake -h arch=<EXTRA_ARCH>
 [ ENDIF ]
 
-[ BLOCK <1> testclean ]
-#======================
+[ BLOCK <BLDRULE> testclean ]
+#============================
     cdsay .
     wmake -h clean
 

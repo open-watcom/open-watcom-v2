@@ -30,11 +30,9 @@
 ****************************************************************************/
 
 
-#include <wwindows.h>
-#include <ctype.h>
-#include <string.h>
-#include <mbstring.h>
 #include "wrglbl.h"
+#include <ctype.h>
+#include <mbstring.h>
 #include "wrstrdup.h"
 
 /****************************************************************************/
@@ -124,8 +122,8 @@ void WRStripStr( char *_s )
             return;
         }
 
-        // string has is all spaces
-        if( last_space == NULL ) {
+        // string has all spaces
+        if( last_nonspace == NULL ) {
             s[0] = '\0';
             return;
         }

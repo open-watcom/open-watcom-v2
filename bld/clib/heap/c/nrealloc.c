@@ -45,7 +45,9 @@
 extern void _mymemcpy( void_fptr, void_nptr, size_t );
 #pragma aux _mymemcpy = \
         memcpy_i86      \
-    parm caller [es di] [si] [cx] modify exact [si di cx]
+    __parm __caller     [__es __di] [__si] [__cx] \
+    __value             \
+    __modify __exact    [__si __di __cx]
 #else
 // big data models
 extern void _mymemcpy( void_fptr, void_fptr, size_t );
@@ -54,7 +56,9 @@ extern void _mymemcpy( void_fptr, void_fptr, size_t );
         "mov ds,dx"     \
         memcpy_i86      \
         "pop ds"        \
-    parm caller [es di] [dx si] [cx] modify exact [si di cx]
+    __parm __caller     [__es __di] [__dx __si] [__cx] \
+    __value             \
+    __modify __exact    [__si __di __cx]
 #endif
 #elif defined( _M_IX86 )
 // 32-bit Intel
@@ -63,13 +67,17 @@ extern void _mymemcpy( void_fptr, void_fptr, size_t );
 extern void _mymemcpy( void_nptr, void_nptr, size_t );
 #pragma aux _mymemcpy = \
         memcpy_386      \
-    parm caller [edi] [esi] [ecx] modify exact [esi edi ecx]
+    __parm __caller     [__edi] [__esi] [__ecx] \
+    __value             \
+    __modify __exact    [__esi __edi __ecx]
 #elif defined(__SMALL_DATA__)
 // small data models
 extern void _mymemcpy( void_fptr, void_nptr, size_t );
 #pragma aux _mymemcpy = \
         memcpy_386      \
-    parm caller [es edi] [esi] [ecx] modify exact [esi edi ecx]
+    __parm __caller     [__es __edi] [__esi] [__ecx] \
+    __value             \
+    __modify __exact    [__esi __edi __ecx]
 #else
 // big data models
 extern void _mymemcpy( void_fptr, void_fptr, size_t );
@@ -78,7 +86,9 @@ extern void _mymemcpy( void_fptr, void_fptr, size_t );
         "mov ds,edx"    \
         memcpy_386      \
         "pop ds"        \
-    parm caller [es edi] [dx esi] [ecx] value [esi] modify exact [esi edi ecx]
+    __parm __caller     [__es __edi] [__dx __esi] [__ecx] \
+    __value             \
+    __modify __exact    [__esi __edi __ecx]
 #endif
 #else
 // non-Intel targets
@@ -111,9 +121,9 @@ _WCRTLINK void_nptr _nrealloc( void_nptr cstg_old, size_t req_size )
     if( cstg_new == NULL ) {                    /* if couldn't be expanded in place */
 #if defined(__DOS_EXT__)
         if( _IsRational() ) {
-            frlptr  flp, newflp;
+            freelist_nptr  flp, newflp;
 
-            flp = (frlptr)CPTR2BLK( cstg_old );
+            flp = (freelist_nptr)CPTR2BLK( cstg_old );
             newflp = __ReAllocDPMIBlock( flp, req_size + TAG_SIZE );
             if( newflp ) {
                 return( (void_nptr)BLK2CPTR( newflp ) );

@@ -33,7 +33,7 @@
 #include "vi.h"
 #include "utils.h"
 #include "ftbar.h"
-#include "font.h"
+#include "vifont.h"
 #include "sstyle.h"
 #include "wclbproc.h"
 
@@ -163,9 +163,7 @@ static LRESULT drawCurLogfont( window_id wid, UINT msg, WPARAM wparam, LPARAM lp
     int         trim;
     SIZE        size;
 
-    msg = msg;
-    wparam = wparam;
-    lparam = lparam;
+    (void)msg; (void)wparam; (void)lparam;
 
     hFont = CreateFontIndirect( &CurLogfont );
     GetClientRect( wid, &rect );

@@ -250,7 +250,11 @@ void throw_int()
 
 void test_passthru()
 {
-    unexpected_handler unex;
+#if __WATCOMC__ < 1300
+    PFV                 unex;
+#else
+    unexpected_handler  unex;
+#endif
 
     unex = set_unexpected( throw_int );
     try {

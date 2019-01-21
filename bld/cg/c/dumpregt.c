@@ -29,11 +29,10 @@
 ****************************************************************************/
 
 
-#include "cgstd.h"
+#include "_cgstd.h"
 #include "coderep.h"
 #include "confldef.h"
 #include "regset.h"
-#include "dmpinc.h"
 #include "dumpio.h"
 #include "dumpconf.h"
 #include "dumpins.h"

@@ -33,7 +33,6 @@
 
 #include <rdos.h>
 #include <malloc.h>
-#include <dos.h>
 #include "uidef.h"
 #include "uishift.h"
 #include "uimouse.h"

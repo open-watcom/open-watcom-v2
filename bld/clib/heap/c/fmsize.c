@@ -45,5 +45,5 @@ _WCRTLINK size_t _msize( void *cstg )
 
 _WCRTLINK size_t _fmsize( void_fptr cstg )
 {
-    return( GET_BLK_SIZE( (freelist _WCFAR *)( FP_SEG( cstg ) :> CPTR2BLK( cstg ) ) ) - TAG_SIZE );
+    return( GET_BLK_SIZE( (freelist_fptr)( FP_SEG( cstg ) :> CPTR2BLK( cstg ) ) ) - TAG_SIZE );
 }

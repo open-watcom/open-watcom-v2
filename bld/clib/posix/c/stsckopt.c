@@ -25,7 +25,7 @@
 *
 *  ========================================================================
 *
-* Description:  Implementation of setsockopt() for Linux.
+* Description:  Implementation of setsockopt() for Linux and RDOS.
 *
 ****************************************************************************/
 
@@ -33,10 +33,14 @@
 #include "variety.h"
 #include <sys/types.h>
 #include <sys/socket.h>
+
+#if defined( __LINUX__ )
 #include "linuxsys.h"
+#endif
 
 _WCRTLINK int setsockopt( int s, int level, int optname, const void *optval, socklen_t optlen )
 {
+#if defined( __LINUX__ )
     unsigned long args[5];
     args[0] = (unsigned long)s;
     args[1] = (unsigned long)level;
@@ -44,4 +48,9 @@ _WCRTLINK int setsockopt( int s, int level, int optname, const void *optval, soc
     args[3] = (unsigned long)optval;
     args[4] = (unsigned long)optlen;
     return( __socketcall( SYS_SETSOCKOPT, args ) );
+#elif defined( __RDOS__ )
+    return( -1 );
+#else
+    return( -1 );
+#endif
 }

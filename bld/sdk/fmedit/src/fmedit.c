@@ -31,7 +31,6 @@
 
 #define INCLUDE_COMMDLG_H
 #include <wwindows.h>
-#include <malloc.h>
 #include <string.h>
 #include <stdlib.h>
 #include "global.h"

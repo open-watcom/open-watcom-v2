@@ -32,36 +32,42 @@
 
 #include "variety.h"
 #include <dos.h>
+#include "dointr.h"
+
 
 _WCRTLINK int int86x( int intno, union REGS *inr, union REGS *outr, struct SREGS *sr )
-    {
-        union REGPACK r;
+{
+    union REGPACK r;
 
-        r.x.ax = inr->x.ax;
-        r.x.bx = inr->x.bx;
-        r.x.cx = inr->x.cx;
-        r.x.dx = inr->x.dx;
-        r.x.si = inr->x.si;
-        r.x.di = inr->x.di;
-        r.x.ds = sr->ds;
-        r.x.es = sr->es;
-        intr( intno, &r );
-        outr->x.ax = r.x.ax;
-        outr->x.bx = r.x.bx;
-        outr->x.cx = r.x.cx;
-        outr->x.dx = r.x.dx;
-        outr->x.si = r.x.si;
-        outr->x.di = r.x.di;
-        outr->x.cflag = r.x.flags & INTR_CF;
-        sr->ds = r.x.ds;
-        sr->es = r.x.es;
-        return( r.x.ax );
-    }
+    r.x.ax = inr->x.ax;
+    r.x.bx = inr->x.bx;
+    r.x.cx = inr->x.cx;
+    r.x.dx = inr->x.dx;
+    r.x.si = inr->x.si;
+    r.x.di = inr->x.di;
+    r.x.ds = sr->ds;
+    r.x.es = sr->es;
+//    r.x.bp = 0;             /* no bp in REGS union, set to 0 */
+//    r.x.flags = ( inr->w.cflag ) ? INTR_CF : 0;
+
+    _DoINTR( intno, &r, 0 );
+
+    outr->x.ax = r.x.ax;
+    outr->x.bx = r.x.bx;
+    outr->x.cx = r.x.cx;
+    outr->x.dx = r.x.dx;
+    outr->x.si = r.x.si;
+    outr->x.di = r.x.di;
+    outr->x.cflag = ( (r.x.flags & INTR_CF) != 0 );
+    sr->ds = r.x.ds;
+    sr->es = r.x.es;
+    return( r.x.ax );
+}
 
 _WCRTLINK int int86( int intno, union REGS *inr, union REGS *outr )
-    {
-        struct SREGS sr;
+{
+    struct SREGS sr;
 
-        segread( &sr );
-        return( int86x( intno, inr, outr, &sr ) );
-    }
+    segread( &sr );
+    return( int86x( intno, inr, outr, &sr ) );
+}

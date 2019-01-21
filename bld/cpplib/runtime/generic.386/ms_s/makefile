@@ -1,4 +1,4 @@
-#pmake: build flat cpu_386 os_osi os_dos os_linux
+#pmake: build flat cpu_386 os_osi os_dos
 #
 # plib3s -- 32-bit 3s PLIB
 #

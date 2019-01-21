@@ -17,26 +17,29 @@ set PMAKEKEY=txt
 [ BLOCK .<OWGUINOBUILD> .1 ]
     set PROJPMAKE=guitool .not .and
 
-[ BLOCK <1> docs build rel ]
-#===========================
+[ BLOCK <BLDRULE> docs build rel ]
+#=================================
     pmake -d <PMAKEKEY> <PROJPMAKE> <2> <3> <4> <5> <6> <7> <8> <9> -h
 
-[ BLOCK <1> docpdf ]
-#===================
+[ BLOCK <BLDRULE> doctrav ]
+#==========================
     cd pdf
-    pmake -d <PMAKEKEY> <PROJPMAKE> <2> <3> <4> <5> <6> <7> <8> <9> -h docset=docpdf
+    pmake -d all <2> <3> <4> <5> <6> <7> <8> <9> -h docset=doctrav
+    cd ..
+    cd html
+    pmake -d all <2> <3> <4> <5> <6> <7> <8> <9> -h docset=doctrav
     cd ..
 
-[ BLOCK <1> docsclean clean ]
-#============================
+[ BLOCK <BLDRULE> docsclean clean ]
+#==================================
     pmake -d <PMAKEKEY> <PROJPMAKE> <2> <3> <4> <5> <6> <7> <8> <9> -h clean
 
-[ BLOCK <1> docs rel docpdf ]
-#============================
+[ BLOCK <BLDRULE> docs rel doctrav ]
+#===================================
     cdsay <PROJDIR>
 
-[ BLOCK <1> docs rel cprel ]
-#===========================
+[ BLOCK <BLDRULE> docs rel cprel ]
+#=================================
     [ IFDEF <PMAKEKEY> build ]
         <CPCMD> dos/*.ihp       <OWRELROOT>/binw/
         <CPCMD> win/*.hlp       <OWRELROOT>/binw/
@@ -50,10 +53,35 @@ set PMAKEKEY=txt
     <CCCMD> txt/*.txt       <OWRELROOT>/
     <CPCMD> areadme.txt     <OWRELROOT>/areadme.txt
 
-[ BLOCK <1> cpdocpdf ]
-#=====================
+[ BLOCK <BLDRULE> cpdoctrav ]
+#============================
     [ IFDEF <PMAKEKEY> build ]
-        <CCCMD> pdf/*.pdf       <OWRELROOT>/docs/
+        <CCCMD> pdf/*.pdf           <OWRELROOT>/docs/
+        <CCCMD> html/*.bmp          <OWRELROOT>/docs/
+        <CCCMD> html/cgdoc.htm      <OWRELROOT>/docs/cgdoc.html
+        <CCCMD> html/cguide.htm     <OWRELROOT>/docs/cguide.html
+        <CCCMD> html/clib.htm       <OWRELROOT>/docs/clib.html
+        <CCCMD> html/clr.htm        <OWRELROOT>/docs/clr.html
+        <CCCMD> html/cpplib.htm     <OWRELROOT>/docs/cpplib.html
+        <CCCMD> html/cw.htm         <OWRELROOT>/docs/cw.html
+        <CCCMD> html/c_readme.htm   <OWRELROOT>/docs/c_readme.html
+        <CCCMD> html/devguide.htm   <OWRELROOT>/docs/devguide.html
+        <CCCMD> html/dwdoc.htm      <OWRELROOT>/docs/dwdoc.html
+        <CCCMD> html/f77graph.htm   <OWRELROOT>/docs/f77graph.html
+        <CCCMD> html/f77lr.htm      <OWRELROOT>/docs/f77lr.html
+        <CCCMD> html/fpguide.htm    <OWRELROOT>/docs/fpguide.html
+        <CCCMD> html/ftools.htm     <OWRELROOT>/docs/ftools.html
+        <CCCMD> html/fuguide.htm    <OWRELROOT>/docs/fuguide.html
+        <CCCMD> html/f_readme.htm   <OWRELROOT>/docs/f_readme.html
+        <CCCMD> html/guitool.htm    <OWRELROOT>/docs/guitool.html
+        <CCCMD> html/lguide.htm     <OWRELROOT>/docs/lguide.html
+        <CCCMD> html/owstl.htm      <OWRELROOT>/docs/owstl.html
+        <CCCMD> html/pguide.htm     <OWRELROOT>/docs/pguide.html
+        <CCCMD> html/tools.htm      <OWRELROOT>/docs/tools.html
+        <CCCMD> html/vi.htm         <OWRELROOT>/docs/vi.html
+        <CCCMD> html/wd.htm         <OWRELROOT>/docs/wd.html
+        <CCCMD> html/wddoc.htm      <OWRELROOT>/docs/wddoc.html
+        <CCCMD> html/wipfc.htm      <OWRELROOT>/docs/wipfc.html
     [ ENDIF ]
     <CCCMD> txt/*.txt       <OWRELROOT>/
     <CPCMD> areadme.txt     <OWRELROOT>/areadme.txt

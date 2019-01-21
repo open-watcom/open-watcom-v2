@@ -53,19 +53,19 @@ FileExcept::FileExcept( Action act, int error, const char * fn,
     const char * storeMsg = (msg) ? msg : strerror( error );
 
     len = strlen( fn );
-    _fileName = new char[ len + 1 ];
+    _fileName = new char [len + 1];
     memcpy( _fileName, fn, len + 1 );
 
     len = strlen( storeMsg );
-    _message = new char[ len + 1 ];
+    _message = new char [len + 1];
     memcpy( _message, storeMsg, len + 1 );
 }
 
 FileExcept::~FileExcept()
 //-----------------------
 {
-    delete [] _fileName;
-    delete [] _message;
+    delete[] _fileName;
+    delete[] _message;
 }
 
 // OpenFiles is a list of all of the opened CheckedFiles.  It is statically
@@ -88,7 +88,7 @@ CheckedFile::CheckedFile( const char * fileName )
     size_t len;
 
     len = strlen( fileName ) + 1;
-    _fileName = new char[ len ];
+    _fileName = new char [len];
 
     memcpy( _fileName, fileName, len );
 }
@@ -101,7 +101,7 @@ CheckedFile::~CheckedFile()
         close();
     }
 
-    delete [] _fileName;
+    delete[] _fileName;
 }
 
 void CheckedFile::setFileName( const char * fileName )
@@ -111,10 +111,10 @@ void CheckedFile::setFileName( const char * fileName )
 
     assert( !_isOpen && !_logOpen );
 
-    delete [] _fileName;
+    delete[] _fileName;
 
     len = strlen( fileName ) + 1;
-    _fileName = new char[ len ];
+    _fileName = new char [len];
 
     memcpy( _fileName, fileName, len );
 }

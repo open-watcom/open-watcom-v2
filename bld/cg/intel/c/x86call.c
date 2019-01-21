@@ -31,7 +31,7 @@
 ****************************************************************************/
 
 
-#include "cgstd.h"
+#include "_cgstd.h"
 #include "coderep.h"
 #include "cgmem.h"
 #include "cgaux.h"
@@ -50,14 +50,12 @@
 #include "insutil.h"
 #include "typemap.h"
 #include "bldcall.h"
+#include "bldins.h"
+#include "x86segs.h"
 #include "cgprotos.h"
+#include "parm.h"
+#include "bgcall.h"
 
-
-extern  name            *AddrConst(name*,segment_id,constant_class);
-extern  name            *NearSegment(void);
-extern  type_def        *QParmType(cg_sym_handle,cg_sym_handle,type_def*);
-extern  name            *BGNewTemp( type_def *tipe );
-extern  void            BGDone( an );
 
 static  void    AddCall( instruction *ins, cn call );
 
@@ -85,7 +83,7 @@ static  void    Far16Parms( cn call ) {
         parm_size += _RoundUp( parm->name->tipe->length, 2 );
     }
     parmlist = SAllocTemp( XX, parm_size );
-    parmlist->v.usage |= NEEDS_MEMORY|USE_IN_ANOTHER_BLOCK|USE_ADDRESS;
+    parmlist->v.usage |= NEEDS_MEMORY | USE_IN_ANOTHER_BLOCK | USE_ADDRESS;
     offset = 0;
     for( parm = call->parms; parm != NULL; parm = parm->next ) {
         parm->name->u.i.ins->result = STempOffset( parmlist, offset,
@@ -136,9 +134,9 @@ static  void    Far16Parms( cn call ) {
 #endif
 
 
-extern  an      BGCall( cn call, bool use_return, bool in_line ) {
-/****************************************************************/
-
+an      BGCall( cn call, bool use_return, bool in_line )
+/******************************************************/
+{
     instruction         *call_ins;
     call_state          *state;
     name                *ret_ptr = NULL;
@@ -220,8 +218,8 @@ extern  an      BGCall( cn call, bool use_return, bool in_line ) {
                 temp = AllocTemp( WD ); /* assume near pointer*/
                 AddIns( MakeMove( reg_name, temp, WD ) );
                 temp = SAllocIndex( temp, NULL, 0,
-                                    result->n.name_class, call->tipe->length );
-                AddIns( MakeMove( temp, result, result->n.name_class ) );
+                                    result->n.type_class, call->tipe->length );
+                AddIns( MakeMove( temp, result, result->n.type_class ) );
             }
         } else {
             call_ins->result = result;
@@ -246,7 +244,7 @@ extern  an      BGCall( cn call, bool use_return, bool in_line ) {
         reg_name = AllocRegName( state->return_reg );
         AddCall( call_ins, call );
         if( use_return ) {
-            ret_ins = MakeMove( reg_name, result, result->n.name_class );
+            ret_ins = MakeMove( reg_name, result, result->n.type_class );
             if( HW_COvlap( reg_name->r.reg, HW_FLTS ) ) {
                 ret_ins->stk_entry = 1;
                 ret_ins->stk_exit = 0;
@@ -263,19 +261,19 @@ extern  an      BGCall( cn call, bool use_return, bool in_line ) {
 }
 
 
-extern  void    BGProcDecl( cg_sym_handle sym, type_def *tipe ) {
-/************************************************************/
-
+void    BGProcDecl( cg_sym_handle sym, type_def *tipe )
+/*****************************************************/
+{
     hw_reg_set          reg;
     name                *temp;
-    type_class_def      class;
+    type_class_def      type_class;
     segment_id          old;
     label_handle        lbl;
 
     SaveTargetModel = TargetModel;
-    class = AddCallBlock( sym, tipe );
+    type_class = AddCallBlock( sym, tipe );
     if( tipe != TypeNone ) {
-        if( class == XX ) {
+        if( type_class == XX ) {
             if( CurrProc->state.attr & ROUTINE_ALLOCS_RETURN ) {
                 old = SetOP( AskBackSeg() );
                 lbl = AskForNewLabel();
@@ -303,9 +301,9 @@ extern  void    BGProcDecl( cg_sym_handle sym, type_def *tipe ) {
 }
 
 
-extern  name    *StReturn( an retval, type_def *tipe, instruction **pins ) {
-/**************************************************************************/
-
+name    *StReturn( an retval, type_def *tipe, instruction **pins )
+/****************************************************************/
+{
     name        *retp;
     name        *ptr;
     name        *off;
@@ -358,13 +356,12 @@ static  void    AddCall( instruction *ins, cn call ) {
 }
 
 
-extern  reg_set_index   CallIPossible( instruction *ins ) {
-/*********************************************************/
-
-
-     if( ins->operands[CALL_OP_ADDR]->n.name_class == CP )
+reg_set_index   CallIPossible( instruction *ins )
+/***********************************************/
+{
+     if( ins->operands[CALL_OP_ADDR]->n.type_class == CP )
         return( RL_ );
-     if( ins->operands[CALL_OP_ADDR]->n.name_class == PT )
+     if( ins->operands[CALL_OP_ADDR]->n.type_class == PT )
         return( RL_ );
 #if _TARGET & _TARG_IAPX86
      return( RL_WORD );
@@ -374,9 +371,9 @@ extern  reg_set_index   CallIPossible( instruction *ins ) {
 }
 
 
-extern  void    InitTargProc( void ) {
-/******************************/
-
+void    InitTargProc( void )
+/**************************/
+{
     CurrProc->targ.stack_check = NULL;
     CurrProc->targ.push_local_size = 0;
     CurrProc->targ.debug = NULL;
@@ -389,52 +386,49 @@ extern  void    InitTargProc( void ) {
 }
 
 
-extern  void    SaveToTargProc( void ) {
-/********************************/
-
+void    SaveToTargProc( void )
+/****************************/
+{
     CurrProc->targ.max_stack = MaxStack;
 }
 
 
-extern  void    RestoreFromTargProc( void ) {
-/*************************************/
-
+void    RestoreFromTargProc( void )
+/*********************************/
+{
     MaxStack = CurrProc->targ.max_stack;
 }
 
 
-extern  void    PushInSameBlock( instruction *ins ) {
-/***************************************************/
-
+void    PushInSameBlock( instruction *ins )
+/*****************************************/
+{
 #if ( _TARGET & _TARG_IAPX86 )
     /* unused parameters */ (void)ins;
 #else
-    while( ins->head.opcode != OP_BLOCK ) {
-        ins = ins->head.next;
-    }
-    if( _BLOCK( ins ) != CurrBlock ) {
+    if( InsBlock( ins ) != CurrBlock ) {
         CurrProc->targ.never_sp_frame = true;
     }
 #endif
 }
 
 
-extern  instruction *   PushOneParm( instruction *ins, name *curr,
-                                     type_class_def class,
-                                     type_length offset,
-                                     call_state *state ) {
-/**************************************************************/
-
+instruction *   PushOneParm( instruction *ins, name *curr,
+                                type_class_def type_class,
+                                type_length offset,
+                                call_state *state )
+/********************************************************/
+{
     instruction *new;
 //    int         size;
 
     /* unused parameters */ (void)state; (void)offset;
 
-    new = MakeUnary( OP_PUSH, curr, NULL, class );
+    new = MakeUnary( OP_PUSH, curr, NULL, type_class );
     SuffixIns( ins, new );
 #if 0
     if( curr->n.class == N_CONSTANT ) {
-        size = TypeClassSize[class];
+        size = TypeClassSize[type_class];
     } else {
         size = curr->n.size;
     }
@@ -443,23 +437,23 @@ extern  instruction *   PushOneParm( instruction *ins, name *curr,
 }
 
 
-extern  void    PreCall( cn call ) {
-/**********************************/
-
+void    PreCall( cn call )
+/************************/
+{
     /* unused parameters */ (void)call;
 }
 
 
-extern  void    PostCall( cn call ) {
-/***********************************/
-
+void    PostCall( cn call )
+/*************************/
+{
     /* unused parameters */ (void)call;
 }
 
-extern  type_def        *PassParmType( cg_sym_handle func, type_def* tipe, call_class class ) {
-/******************************************************************************************/
-
-    if( class & FAR16_CALL )
+type_def    *PassParmType( cg_sym_handle func, type_def* tipe, call_class cclass )
+/********************************************************************************/
+{
+    if( cclass & FAR16_CALL )
         return( tipe );
     return( QParmType( func, NULL, tipe ) );
 }

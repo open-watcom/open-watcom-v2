@@ -33,7 +33,6 @@
 #include "imgedit.h"
 #include <commdlg.h>
 #include <dos.h>
-#include <malloc.h>
 #include "iemem.h"
 
 /*

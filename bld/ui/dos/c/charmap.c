@@ -44,97 +44,105 @@
 
 extern void __SetWriteMap( void );
 #pragma aux __SetWriteMap = \
-        "MOV     DX,3C4h"   \
-        "MOV     AX,402h"   \
-        "OUT     DX,AX"     \
-    modify [ax dx];
+        "mov  dx,3C4h"  \
+        "mov  ax,402h"  \
+        "out  dx,ax"    \
+    __parm      [] \
+    __value     \
+    __modify [__ax __dx]
 
 extern void __SetSequencer( void );
 #pragma aux __SetSequencer = \
-        "PUSHF"                 /* Disable interrupts          */   \
-        "CLI"                                                       \
-        "MOV     DX,3C4h"       /* Sequencer port address      */   \
-        "MOV     AX,402h"       /* write to map 3              */   \
-        "OUT     DX,AX"                                             \
-        "PUSH    ES"                                                \
-        LOAD_ES_BIOS_SEGMENT                                        \
-        "MOV     AL,ES:[487h]"  /* check VC state              */   \
-        "POP     ES"                                                \
-        "AND     AL,60h"        /* if it's not 0,              */   \
-        "MOV     AH,07h"                                            \
-        "JNZ L1"                                                    \
-        "MOV     AH,05h"                                            \
-    "L1: MOV     AL,04h"        /* sequential addressing       */   \
-        "OUT     DX,AX"                                             \
-        "MOV     DX,3CEh"       /* Graphics Cntrl. port addr.  */   \
-        "MOV     AX,406h"       /* Map starts at A000:0000     */   \
-        "OUT     DX,AX"         /* (64K mode)                  */   \
-        "MOV     AX,204h"       /* Select map 2 for CPU reads  */   \
-        "OUT     DX,AX"                                             \
-        "MOV     AX,5h"         /* Disable odd-even addressing */   \
-        "OUT     DX,AX"                                             \
-        "STI"                                                       \
-        "POPF"                                                      \
-    modify [ax dx];
+        "pushf"                                                 \
+        "cli"               /* Disable interrupts          */   \
+        "mov  dx,3C4h"      /* Sequencer port address      */   \
+        "mov  ax,402h"      /* write to map 3              */   \
+        "out  dx,ax"                                            \
+        "push es"                                               \
+        LOAD_ES_BIOS_SEGMENT                                    \
+        "mov  al,es:[487h]" /* check VC state              */   \
+        "pop  es"                                               \
+        "and  al,60h"       /* if it's not 0,              */   \
+        "mov  ah,7"                                             \
+        "jnz short L1"                                          \
+        "mov  ah,5"                                             \
+    "L1: mov  al,4"         /* sequential addressing       */   \
+        "out  dx,ax"                                            \
+        "mov  dx,3ceh"      /* Graphics Cntrl. port addr.  */   \
+        "mov  ax,406h"      /* Map starts at A000:0000     */   \
+        "out  dx,ax"        /* (64K mode)                  */   \
+        "mov  ax,204h"      /* Select map 2 for CPU reads  */   \
+        "out  dx,ax"                                            \
+        "mov  ax,5"         /* Disable odd-even addressing */   \
+        "out  dx,ax"                                            \
+        "sti"                                                   \
+        "popf"                                                  \
+    __parm      [] \
+    __value     \
+    __modify    [__ax __dx]
 
 extern void __ResetSequencer( void );
 #pragma aux __ResetSequencer = \
-        "PUSHF"                 /* reset sequencer and cont. */ \
-        "CLI"                                                   \
-        "MOV     DX,3C4h"       /* sequencer port            */ \
-        "MOV     AX,302h"       /* write to maps 0 and 1     */ \
-        "OUT     DX,AX"                                         \
-        "PUSH    ES"                                            \
-        LOAD_ES_BIOS_SEGMENT                                    \
-        "MOV     AL,ES:[487h]"  /* check VC state            */ \
-        "AND     AL,60h"        /* if it's not 0,            */ \
-        "MOV     AH,03h"                                        \
-        "JNZ L1"                                                \
-        "MOV     AH,01h"                                        \
-    "L1: MOV     AL,04h"        /* use odd-even addressing   */ \
-        "OUT     DX,AX"                                         \
-        "MOV     AL,07h"                                        \
-        "CMP     ES:[449h],AL"  /* Get current video mode    */ \
-        "MOV     AH,0Eh"        /* Map starts at B800:0000   */ \
-        "JNE L2"                                                \
-        "MOV     AH,0Ah"        /* Map starts at B000:0000   */ \
-    "L2: MOV     AL,06h"                                        \
-        "MOV     DX,3CEh"       /* controller port           */ \
-        "OUT     DX,AX"                                         \
-        "MOV     AX,04h"        /* read map 0                */ \
-        "OUT     DX,AX"                                         \
-        "MOV     AX,1005h"      /* use odd-even addressing   */ \
-        "OUT     DX,AX"                                         \
-        "POP     ES"                                            \
-        "STI"                                                   \
-        "POPF"                                                  \
-    modify [ax dx];
+        "pushf"             /* reset sequencer and cont. */ \
+        "cli"                                               \
+        "mov  dx,3c4h"      /* sequencer port            */ \
+        "mov  ax,302h"      /* write to maps 0 and 1     */ \
+        "out  dx,ax"                                        \
+        "push es"                                           \
+        LOAD_ES_BIOS_SEGMENT                                \
+        "mov  al,es:[487h]" /* check VC state            */ \
+        "and  al,60h"       /* if it's not 0,            */ \
+        "mov  ah,3"                                         \
+        "jnz short L1"                                      \
+        "mov  ah,1"                                         \
+    "L1: mov  al,4"         /* use odd-even addressing   */ \
+        "out  dx,ax"                                        \
+        "mov  al,7"                                         \
+        "cmp  es:[449h],al" /* Get current video mode    */ \
+        "mov  ah,0eh"       /* Map starts at B800:0000   */ \
+        "jne short L2"                                      \
+        "mov  ah,0ah"       /* Map starts at B000:0000   */ \
+    "L2: mov  al,6"                                         \
+        "mov  dx,3ceh"      /* controller port           */ \
+        "out  dx,ax"                                        \
+        "mov  ax,4"         /* read map 0                */ \
+        "out  dx,ax"                                        \
+        "mov  ax,1005h"     /* use odd-even addressing   */ \
+        "out  dx,ax"                                        \
+        "pop  es"                                           \
+        "sti"                                               \
+        "popf"                                              \
+    __parm      [] \
+    __value     \
+    __modify    [__ax __dx]
 
 
 #if 0
 extern bool __IsEgaVga( void );
 #pragma aux __IsEgaVga = \
-        "MOV     AX,1A00h"  /* BIOS VIDEO FUNCTION 1Ah  */  \
-        "INT     10h"       /* (Read Display Code)      */  \
-        "CMP     AH,1Ah"    /* Supported?               */  \
-        "JE      IsEga"     /* No                       */  \
-        "XOR     AX,AX"                                     \
-        "CMP     BL,07h"    /* VGA w/mono display?      */  \
-        "JE      IsVga"     /* Yes                      */  \
-        "CMP     BL,08h"    /* VGA w/colour display?    */  \
-        "JNE     IsEga"     /* No                       */  \
+        "mov  ax,1A00h"     /* BIOS VIDEO FUNCTION 1Ah  */  \
+        "int 10h"           /* (Read Display Code)      */  \
+        "cmp  ah,1Ah"       /* Supported?               */  \
+        "je short IsEga"    /* No                       */  \
+        "xor  ax,ax"                                        \
+        "cmp  bl,7"         /* VGA w/mono display?      */  \
+        "je short IsVga"    /* Yes                      */  \
+        "cmp  bl,08h"       /* VGA w/colour display?    */  \
+        "jne short IsEga"   /* No                       */  \
     "IsVga:"                                                \
-        "MOV     AX,01h"                                    \
-        "JMP short Last"                                    \
+        "mov  ax,1"                                         \
+        "jmp short Last"                                    \
     "IsEga:"                                                \
-        "MOV     AH,12h"    /* EGA BIOS function        */  \
-        "MOV     BL,10h"                                    \
-        "INT     10h"                                       \
-        "CMP     BL,10h"    /* Is EGA BIOS present?     */  \
-        "JNE     IsVga"     /* EGA is on the system.    */  \
-        "XOR     AX,AX"                                     \
+        "mov  ah,12h"       /* EGA BIOS function        */  \
+        "mov  bl,10h"                                       \
+        "int 10h"                                           \
+        "cmp  bl,10h"       /* Is EGA BIOS present?     */  \
+        "jne short IsVga"   /* EGA is on the system.    */  \
+        "xor  ax,ax"                                        \
     "Last:"                                                 \
-    value [al] modify [ah bx];
+    __parm      [] \
+    __value     [__al] \
+    __modify    [__ah __bx]
 #endif
 
 void    SetSequencer( void )

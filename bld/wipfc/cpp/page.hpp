@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
+* Copyright (c) 2009-2018 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -31,7 +31,6 @@
 #ifndef PAGE_INCLUDED
 #define PAGE_INCLUDED
 
-#include "config.hpp"
 #include <cstdio>
 #include <string>
 #include <vector>
@@ -44,61 +43,66 @@ class Cell;
 
 class Page {
 public:
-    Page( Document* d, Element* head ) : document( d ), elements( 1, head ),
-        idx( 0 ), searchable( true ) { };
+    Page( Document* d, Element* head ) : _document( d ), _elements( 1, head ),
+        _index( 0 ), _searchable( true ) { };
     ~Page() { };
-    void addElement( Element* e ) { elements.push_back( e ); };
+    void addElement( Element* e ) { _elements.push_back( e ); };
     //add a word to the local dictionary
-    bool addWord( GlobalDictionaryWord* word );
+    bool addTextToLD( GlobalDictionaryWord* gdentry );
     //the page title
-    void setTitle( std::string& t ) { title = t; };
+    void setTitle( std::wstring& t ) { _title = t; };
     //copy data from the Hn or Fn tag
-    void setChildren( std::vector< STD1::uint16_t >& c ) { children = c; }
-    void setTOC( TocEntry& t ) { toc = t; }
-    void setETOC( ExtTocEntry& e ) { etoc = e; };
-    void setOrigin( PageOrigin& o ) { origin = o; };
-    void setSize( PageSize& s ) { size = s; };
-    void setStyle( PageStyle& s ) { style = s; };
-    void setGroup( PageGroup& g ) { group = g; };
-    void SetControls( PageControls& c ) { controls = c; };
-    void setIndex( STD1::uint16_t i ) { idx = i; };
-    void setSearchable( bool s ) { searchable = s; }
+    void setChildren( std::vector< word >& c ) { _children = c; }
+    void setTOC( TocEntry& t ) { _toc = t; }
+    void setETOC( ExtTocEntry& e ) { _etoc = e; };
+    void setOrigin( PageOrigin& o ) { _origin = o; };
+    void setSize( PageSize& s ) { _size = s; };
+    void setStyle( PageStyle& s ) { _style = s; };
+    void setGroup( PageGroup& g ) { _group = g; };
+    void SetControl( PageControl& c ) { _control = c; };
+    void setIndex( word i ) { _index = i; };
+    void setSearchable( bool s ) { _searchable = s; }
     //page appears in TOC
-    bool isVisible() const { return !toc.hidden; };
+    bool isVisible() const { return !_toc.flags.s.hidden; };
     //index of page in TOC collection
-    STD1::uint16_t index() const { return idx; };
+    word index() const { return _index; };
     void buildTOC();
-    void linearize() { ( *( elements.begin() ))->linearize( this ); };
-    void buildIndex() { ( *( elements.begin() ))->buildIndex(); };
-    void buildLocalDictionary();
+    void linearize() { ( *( _elements.begin() ))->linearize( this ); };
+    void buildIndex() { ( *( _elements.begin() ))->buildIndex(); };
+    void buildLocalDictionary( OutFile* out );
     //write a TOC entry
-    STD1::uint32_t write( std::FILE* out );
-    STD1::uint32_t tocSize() const { return toc.size; };
+    dword write( OutFile* out );
+    dword tocSize() const { return _toc.hdrsize; };
     //write child windows list
-    STD1::uint32_t writeChildren( std::FILE* out ) const;
+    dword writeChildren( OutFile* out ) const;
+
+    void setOutFile( OutFile* out ) { _out = out; };
+    OutFile* out() { return _out; };
 private:
     Page( const Page& rhs );            //no copy
     Page& operator=( const Page& rhs ); //no assignment
-    Document* document;
-    Cell* currentCell;                  //the cell currently in use
-    std::vector< Element* > elements;   //all elements on this page
+
+    Document*               _document;
+    Cell*                   _currentCell;   //the cell currently in use
+    std::vector< Element* > _elements;      //all elements on this page
     typedef std::vector< Element* >::iterator ElementIter;
     typedef std::vector< Element* >::const_iterator ConstElementIter;
-    std::vector< STD1::uint16_t > cells;
-    typedef std::vector< STD1::uint16_t >::iterator CellIter;
-    typedef std::vector< STD1::uint16_t >::const_iterator ConstCellIter;
-    std::string title;                  //page title
-    std::vector< STD1::uint16_t > children;
-    typedef std::vector< STD1::uint16_t >::iterator ChildIter;
-    typedef std::vector< STD1::uint16_t >::const_iterator ConstChildxIter;
-    TocEntry toc;
-    ExtTocEntry etoc;
-    PageOrigin origin;
-    PageSize size;
-    PageStyle style;
-    PageGroup group;
-    PageControls controls;
-    STD1::uint16_t idx;            //index in TOC
-    bool searchable;
+    std::vector< word >     _cells;
+    typedef std::vector< word >::iterator CellIter;
+    typedef std::vector< word >::const_iterator ConstCellIter;
+    std::wstring _title;                    //page title
+    std::vector< word >     _children;
+    typedef std::vector< word >::iterator ChildIter;
+    typedef std::vector< word >::const_iterator ConstChildxIter;
+    TocEntry                _toc;
+    ExtTocEntry             _etoc;
+    PageOrigin              _origin;
+    PageSize                _size;
+    PageStyle               _style;
+    PageGroup               _group;
+    PageControl             _control;
+    word                    _index;         // index in TOC
+    bool                    _searchable;
+    OutFile*                _out;
 };
 #endif

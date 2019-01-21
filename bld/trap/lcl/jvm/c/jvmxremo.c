@@ -91,13 +91,13 @@ trap_retval ReqGet_sys_config( void )
 
     if( !TaskLoaded ) {
         ret = GetOutPtr(0);
-        ret->sys.os = MAD_OS_IDUNNO;
+        ret->sys.os = DIG_OS_IDUNNO;
         ret->sys.osmajor = 0;
         ret->sys.osminor = 0;
         ret->sys.fpu = 0;
         ret->sys.huge_shift = 12;
         ret->sys.cpu = 0;
-        ret->sys.mad = MAD_JVM;
+        ret->sys.arch = DIG_ARCH_JVM;
         return( sizeof( *ret ) );
     }
     return( DoAccess() );

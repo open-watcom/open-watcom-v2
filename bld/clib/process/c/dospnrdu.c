@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
+* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -34,10 +34,8 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <conio.h>
-#include <dos.h>
 #include <string.h>
 #include <stddef.h>
-#include <malloc.h>
 #include <process.h>
 #include <rdos.h>
 #include "rtdata.h"
@@ -47,12 +45,11 @@
 
 
 int _dospawn( int mode, CHAR_TYPE *pgmname, CHAR_TYPE *cmdline,
-                                  CHAR_TYPE *envpar, 
+                                  CHAR_TYPE *envpar,
                                   const CHAR_TYPE * const argv[] )
 {
     int tid;
     int handle;
-    int wait;
     int rc = -1;
     int fh;
     int len;
@@ -65,6 +62,9 @@ int _dospawn( int mode, CHAR_TYPE *pgmname, CHAR_TYPE *cmdline,
     char *envp;
     char *ep;
     int ok;
+    char null_repl;
+    int pid;
+    int wait;
 
     __F_NAME(__ccmdline,__wccmdline)( pgmname, argv, cmdline, 0 );
 
@@ -86,44 +86,56 @@ int _dospawn( int mode, CHAR_TYPE *pgmname, CHAR_TYPE *cmdline,
                 while( envp && !ok) {
                     ep = strchr( envp, ';' );
                     if( ep ) {
+                        null_repl = *ep;
                         *ep = 0;
-                        ep++;
                     }
                     _makepath( p, "", envp, fname, ext );
-                    fh = RdosOpenFile( pgmname, 0 );
+                    fh = RdosOpenFile( p, 0 );
                     if( fh ) {
                         ok = 1;
                         RdosCloseFile( fh );
                     }
-                    envp = ep;
-                }                
+                    if( ep ) {
+                        *ep = null_repl;
+                        ep++;
+                        envp = ep;
+                    } else {
+                        envp = 0;
+                    }
+                }
             }
         }
     } else {
-        RdosCloseFile( fh );    
+        RdosCloseFile( fh );
         ok = 1;
     }
 
     if( ok ) {
-        handle = RdosSpawn( pgmname, cmdline, 0, envpar, &tid );
-
-        if( !handle )
-            ok = 0;
-    }
-
-    if( ok ) {
         if( mode == P_WAIT ) {
-            wait = RdosCreateWait();
-            RdosAddWaitForProcessEnd( wait, handle, 0 );
-            while (RdosIsProcessRunning( handle )) {
-                RdosWaitForever( wait );
+            pid = RdosFork();
+            if (pid == 0)
+            {
+                RdosExec( p, cmdline, 0, envpar );
+                exit(-1);
             }
-            rc = RdosGetProcessExitCode( handle );
+
+            wait = RdosCreateWait();
+            RdosAddWaitForProcessEnd( wait, pid, 0 );
+
+            while( RdosIsProcessRunning( pid ) ) {
+              RdosWaitForever( wait );
+            }
+
             RdosCloseWait( wait );
-        } 
-        else
-            rc = tid;
-            
+            rc = RdosGetProcessExitCode( pid );
+        } else {
+            handle = RdosSpawn( p, cmdline, 0, envpar, &tid );
+            if( handle ) {
+                rc = tid;
+            } else {
+                ok = 0;
+            }
+        }
     }
 
     lib_free( p );

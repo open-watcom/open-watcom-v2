@@ -30,12 +30,8 @@
 ****************************************************************************/
 
 
-#include "commonui.h"
-#include <limits.h>
-#include <stdlib.h>
-#include <string.h>
-#include "watcom.h"
 #include "wglbl.h"
+#include <limits.h>
 #include "wmsg.h"
 #include "winst.h"
 #include "wclip.h"

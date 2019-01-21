@@ -147,7 +147,7 @@ void CreateEntry( void )
 
 bool AllocatedString( stack_entry *stk )
 {
-    if( stk->info.kind != TK_STRING )
+    if( stk->ti.kind != TK_STRING )
         return( false );
     if( stk->flags & SF_LOCATION )
         return( false );
@@ -291,12 +291,12 @@ char *DupStringVal( stack_entry *stk )
 {
     char *dest;
 
-    if( stk->info.size == 0 )
+    if( stk->ti.size == 0 )
         return( NULL );
-    if( stk->info.size >= UINT_MAX )
+    if( stk->ti.size >= UINT_MAX )
         Error( ERR_NONE, LIT_ENG( ERR_NO_MEMORY_FOR_EXPR ) );
-    _ChkAlloc( dest, stk->info.size, LIT_ENG( ERR_NO_MEMORY_FOR_EXPR ) );
-    memcpy( dest, stk->v.string.loc.e[0].u.p, stk->info.size );
+    _ChkAlloc( dest, stk->ti.size, LIT_ENG( ERR_NO_MEMORY_FOR_EXPR ) );
+    memcpy( dest, stk->v.string.loc.e[0].u.p, stk->ti.size );
     return( dest );
 }
 
@@ -373,8 +373,8 @@ void PushRealNum( xreal val )
 {
     CreateEntry();
     ExprSP->v.real = val;
-    ExprSP->info.kind = TK_REAL;
-    ExprSP->info.size = sizeof( xreal );
+    ExprSP->ti.kind = TK_REAL;
+    ExprSP->ti.size = sizeof( xreal );
     ExprSP->flags = SF_CONST;
 }
 
@@ -394,10 +394,10 @@ void ExprSetAddrInfo( stack_entry *stk, bool trunc )
 {
     mad_type_info mti;
 
-    stk->info.kind = TK_ADDRESS;
-    stk->info.modifier = TM_FAR;
+    stk->ti.kind = TK_ADDRESS;
+    stk->ti.modifier = TM_FAR;
     GetMADTypeDefaultAt( stk->v.addr, MTK_ADDRESS, &mti );
-    stk->info.size = BITS2BYTES( mti.b.bits );
+    stk->ti.size = BITS2BYTES( mti.b.bits );
     if( trunc ) {
         stk->v.addr.mach.offset &= ~0UL >> ( sizeof( addr48_off ) * 8 - ( mti.b.bits - mti.a.seg.bits ) );
     }
@@ -415,11 +415,11 @@ void PushAddr( address addr )
     ExprSetAddrInfo( ExprSP, false );
 }
 
-void PushLocation( location_list *ll, dip_type_info *ti )
+void PushLocation( location_list *ll, dig_type_info *ti )
 {
     CreateEntry();
     if( ti != NULL )
-        ExprSP->info = *ti;
+        ExprSP->ti = *ti;
     ExprSP->v.loc = *ll;
     ExprSP->flags |= SF_LOCATION;
 }
@@ -477,7 +477,7 @@ void PushType( type_handle *th )
     ExprSP->flags = SF_LOCATION;
     SET_TH( ExprSP );
     HDLAssign( type, ExprSP->th, th );
-    ClassifyEntry( ExprSP, &ExprSP->info );
+    ClassifyEntry( ExprSP, &ExprSP->ti );
 }
 
 /*
@@ -488,9 +488,9 @@ void PushInt( int val )
 {
     CreateEntry();
     I32ToI64( val, &ExprSP->v.sint );
-    ExprSP->info.kind = TK_INTEGER;
-    ExprSP->info.modifier = TM_SIGNED;
-    ExprSP->info.size = sizeof( ExprSP->v.sint );
+    ExprSP->ti.kind = TK_INTEGER;
+    ExprSP->ti.modifier = TM_SIGNED;
+    ExprSP->ti.size = sizeof( ExprSP->v.sint );
 }
 
 
@@ -498,9 +498,9 @@ static void PushBool( int val )
 {
     CreateEntry();
     I32ToI64( val, &ExprSP->v.sint );
-    ExprSP->info.kind = TK_BOOL;
-    ExprSP->info.modifier = TM_NONE;
-    ExprSP->info.size = 1;
+    ExprSP->ti.kind = TK_BOOL;
+    ExprSP->ti.modifier = TM_NONE;
+    ExprSP->ti.size = 1;
 }
 
 
@@ -512,8 +512,8 @@ void PushString( void )
 {
     //NYI: This interface sucks. Hidden static variables. :-(
     CreateEntry();
-    ExprSP->info.kind = TK_STRING;
-    ExprSP->info.size = StringLength;
+    ExprSP->ti.kind = TK_STRING;
+    ExprSP->ti.size = StringLength;
     ExprSP->v.string.allocated = StringStart;
     LocationCreate( &ExprSP->v.string.loc, LT_INTERNAL, StringStart );
     StringStart = NULL;
@@ -565,7 +565,7 @@ int TstEQ( int true_value )
     left = StkEntry( 1 );
     rite = ExprSP;
     BinOp( left, rite );
-    switch( left->info.kind ) {
+    switch( left->ti.kind ) {
     case TK_BOOL:
     case TK_ENUM:
     case TK_CHAR:
@@ -584,8 +584,8 @@ int TstEQ( int true_value )
                (LDCmp( &left->v.cmplx.im, &rite->v.cmplx.im ) == 0);
         break;
     case TK_STRING:
-        temp = FStrCmp( left->v.string.loc.e[0].u.p, left->info.size,
-                        rite->v.string.loc.e[0].u.p, rite->info.size ) == 0;
+        temp = FStrCmp( left->v.string.loc.e[0].u.p, left->ti.size,
+                        rite->v.string.loc.e[0].u.p, rite->ti.size ) == 0;
         break;
     default:
         temp = 0;
@@ -609,12 +609,12 @@ int TstLT( int true_value )
     left = StkEntry( 1 );
     rite = ExprSP;
     BinOp( left, rite );
-    switch( left->info.kind ) {
+    switch( left->ti.kind ) {
     case TK_BOOL:
     case TK_ENUM:
     case TK_CHAR:
     case TK_INTEGER:
-        if( (left->info.modifier & TM_MOD_MASK) == TM_UNSIGNED ) {
+        if( left->ti.modifier == TM_UNSIGNED ) {
             temp = ( U64Cmp( &left->v.uint, &rite->v.uint ) < 0 );
         } else {
             temp = ( I64Cmp( &left->v.sint, &rite->v.sint ) < 0 );
@@ -628,8 +628,8 @@ int TstLT( int true_value )
         temp = (LDCmp( &left->v.real, &rite->v.real ) < 0);
         break;
     case TK_STRING:
-        temp = FStrCmp( left->v.string.loc.e[0].u.p, left->info.size,
-                        rite->v.string.loc.e[0].u.p, rite->info.size ) < 0;
+        temp = FStrCmp( left->v.string.loc.e[0].u.p, left->ti.size,
+                        rite->v.string.loc.e[0].u.p, rite->ti.size ) < 0;
         break;
     default:
         temp = 0;
@@ -766,13 +766,13 @@ void AddSubscript( void )
 {
     stack_entry     *array;
     array_info      ai;
-    dip_type_info   ti;
+    dig_type_info   ti;
     stack_flags     save_imp;
     DIPHDL( type, th );
 
     array = StkEntry( 1 );
     save_imp = array->flags & SF_IMP_ADDR;
-    switch( array->info.kind ) {
+    switch( array->ti.kind ) {
     case TK_ARRAY:
         DIPTypeArrayInfo( array->th, array->lc, &ai, th );
         PushType( th );

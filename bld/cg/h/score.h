@@ -47,6 +47,14 @@ typedef enum {
         DELETED
 } ins_mod;
 
+typedef enum {
+    #define SCOREBOARD
+    #define pick(e,s)   SC_ ## e,
+    #include "nclass.h"
+    #undef pick
+    #undef SCOREBOARD
+} score_name_class_def;
+
 typedef struct score_reg {
         union name              *reg_name;
         hw_reg_set              reg;
@@ -55,7 +63,7 @@ typedef struct score_reg {
         int                     high_of;
         int                     low_of;
         type_length             size;
-        type_class_def          class;
+        type_class_def          type_class;
 } score_reg;
 
 
@@ -69,7 +77,7 @@ typedef struct score_info {
         } symbol;
         int                     index_reg;      /*  indexed names only */
         scale_typ               scale;          /*  indexed names only */
-        name_class_def          class;
+        score_name_class_def    class;
 } score_info;
 
 
@@ -116,7 +124,7 @@ extern void    ScoreMakeEqual( score *sc, name *op1, name *op2 );
 extern bool    ScoreMove( score *sc, instruction *ins );
 extern bool    ScoreLA( score *sc, instruction *ins );
 extern void    ScZeroCheck( score *sc, instruction *ins );
-extern opcode_entry     *ResetGenEntry( instruction *ins );
+extern const opcode_entry   *ResetGenEntry( instruction *ins );
 
 // scregs.c
 extern void    RegInsert( score *sc, int dst_idx, int src_idx );

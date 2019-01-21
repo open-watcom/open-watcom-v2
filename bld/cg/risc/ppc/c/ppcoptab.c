@@ -29,13 +29,13 @@
 ****************************************************************************/
 
 
-#include "cgstd.h"
-#include "tables.h"
+#include "_cgstd.h"
+#include "optable.h"
+
 
 #define         _____   NO
 #define         __X__   BAD
 #define         _NYI_   NYI
-
 
 table_def OpTable[] = {
 /**********************

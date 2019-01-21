@@ -38,9 +38,17 @@
 extern unsigned int __rotl( unsigned int value, unsigned int shift );
 
 #if defined(__386__)
-#pragma aux __rotl = "rol eax,cl" parm [eax] [ecx] value [eax] modify [ecx];
+#pragma aux __rotl = \
+        "rol eax,cl" \
+    __parm      [__eax] [__ecx] \
+    __value     [__eax] \
+    __modify    [__ecx]
 #elif defined( _M_I86 )
-#pragma aux __rotl = "rol ax,cl" parm [ax] [cx] value [ax] modify [cx];
+#pragma aux __rotl = \
+        "rol ax,cl" \
+    __parm      [__ax] [__cx] \
+    __value     [__ax] \
+    __modify    [__cx]
 #endif
 #endif /* __WATCOMC__ */
 

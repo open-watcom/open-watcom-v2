@@ -11,22 +11,22 @@ cdsay <PROJDIR>
 [ BLOCK .<OWGUINOBUILD> .1 ]
     set PROJPMAKE=guitool .not .and
 
-[ BLOCK <1> build rel ]
-#======================
+[ BLOCK <BLDRULE> build rel ]
+#============================
     pmake -d build <PROJPMAKE> <2> <3> <4> <5> <6> <7> <8> <9> -h
 
-[ BLOCK <1> clean ]
-#==================
+[ BLOCK <BLDRULE> clean ]
+#========================
     pmake -d build <PROJPMAKE> <2> <3> <4> <5> <6> <7> <8> <9> -h clean
 
-[ BLOCK <1> boot ]
-#=================
+[ BLOCK <BLDRULE> boot ]
+#=======================
     mkdir <OWOBJDIR>
     cdsay <OWOBJDIR>
     wmake -h -f ../binmake bootstrap=1
 
-[ BLOCK <1> bootclean ]
-#======================
+[ BLOCK <BLDRULE> bootclean ]
+#============================
     echo rm -rf <OWOBJDIR>
     rm -rf <OWOBJDIR>
 

@@ -70,7 +70,7 @@ static int load_dll             // LOAD A DLL (SYSTEM-DEPENDENT)
               , err_bf );
         ret = FALSE;
     }
-    return ret;
+    return( ret );
 }
 
 
@@ -78,7 +78,7 @@ static int load_dlls            // LOAD DLL'S
     ( void )
 {
     char const * env;           // - position in WMAKE_DLL pointer
-    unsigned char dll_name[ _MAX_PATH ]; // - DLL name
+    unsigned char dll_name[_MAX_PATH]; // - DLL name
     char const * dp;            // - points at dll_name
     size_t size;                // - size of dll name
     int retn;                   // - return: TRUE ==> ok
@@ -89,20 +89,24 @@ static int load_dlls            // LOAD DLL'S
         for( ; ; ) {
             dp = env;
             for( ; ; ++env ) {
-                if( *env == ';' ) break;
-                if( *env == '\0' ) break;
+                if( *env == ';' )
+                    break;
+                if( *env == '\0' ) {
+                    break;
+                }
             }
             size = env - dp;
             if( size > 0 ) {
-                dll_name[ size ] = '\0';
+                dll_name[size] = '\0';
                 memcpy( dll_name, dp, size );
                 retn &= load_dll( dll_name );
             }
-            if( *env == '\0' ) break;
+            if( *env == '\0' )
+                break;
             ++ env;
         }
     }
-    return retn;
+    return( retn );
 }
 
 
@@ -117,14 +121,14 @@ int main                        // MAIN-LINE
     if( load_dlls() ) {
         pgm_args = (char const **)alloca( ( arg_count + 1 ) * sizeof( char* ) );
         for( index = 1; index < arg_count; ++ index ) {
-            pgm_args[ index ] = args[ index ];
+            pgm_args[index] = args[index];
         }
-        pgm_args[ index ] = 0;
+        pgm_args[index] = 0;
         pgm_args[0] = "WMAKE";
         retn = spawnv( P_WAIT, "wmake", pgm_args );
     } else {
         printf( "WMAKEPT terminated without running WMAKE\n" );
         retn = -1;
     }
-    return retn;
+    return( retn );
 }

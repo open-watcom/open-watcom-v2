@@ -136,9 +136,7 @@ void UpdateStatusWindow( void )
         if( c == '$' ) {
             str++;
             ptr = str;
-            while( isdigit( *str ) ) {
-                str++;
-            }
+            SKIP_DIGITS( str );
             if( ptr != str ) {
                 digits = strtoul( ptr, NULL, 10 );
             } else {

@@ -33,7 +33,7 @@
 #ifndef _GUIRMENU_H_
 #define _GUIRMENU_H_
 
-extern bool     GUICreateMenuStructFromRes( res_name_or_id menu_id, gui_menu_struct **menu, int *num_items );
-extern void     GUIFreeGUIMenuStruct( gui_menu_struct *menu, int num_items );
+extern bool     GUICreateMenuStructFromRes( res_name_or_id menu_id, int *num_items, gui_menu_struct **menu );
+extern void     GUIFreeGUIMenuStruct( int num_items, gui_menu_struct *menu );
 
 #endif

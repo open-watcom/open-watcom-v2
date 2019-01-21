@@ -174,7 +174,7 @@ static void Pass1Cmd( byte cmd )
     case CMD_COMENT:
         Comment();
         break;
-    case CMD_LLNAME:
+    case CMD_LLNAMES:
     case CMD_LNAMES:
         AddNames();
         break;
@@ -201,7 +201,7 @@ static void Pass1Cmd( byte cmd )
         CurrMod->modinfo |= MOD_NEED_PASS_2;
         UseSymbols( isstatic, false );
         break;
-    case CMD_CEXTDF:
+    case CMD_CEXTDEF:
         CurrMod->modinfo |= MOD_NEED_PASS_2;
         UseSymbols( false, true );
         break;
@@ -243,7 +243,7 @@ static void Pass1Cmd( byte cmd )
         break;
     case CMD_FIXU32:
         ObjFormat |= FMT_MS_386;
-    case CMD_FIXUP:         /* count the fixups for each seg_leader */
+    case CMD_FIXUPP:        /* count the fixups for each seg_leader */
         CurrMod->modinfo |= MOD_NEED_PASS_2;
         DoRelocs();
         ObjFormat &= ~FMT_UNSAFE_FIXUPP;
@@ -587,7 +587,7 @@ static void ProcModuleEnd( void )
             return;
         target = *ObjBuff++;
         frame = (target >> 4) & 0x7;
-        hasdisp = (target & 0x4) == 0;
+        hasdisp = ( (target & 0x4) == 0 );
         target &= 0x3;
         if( frame <= 2 ) {              /* frame requires an index */
             SkipIdx();
@@ -609,7 +609,7 @@ static void ProcModuleEnd( void )
             break;
         case TARGET_EXTWD:
             ext = (extnode *)FindNode( ExtNodes, targetidx );
-            SetStartSym( ext->entry->name );
+            SetStartSym( ext->entry->name.u.ptr );
             break;
         case TARGET_ABSWD:
         case TARGET_GRPWD:
@@ -699,7 +699,7 @@ static void ProcSegDef( void )
         ObjBuff += sizeof( unsigned_16 );
     }
     name = FindName( GetIdx() );
-    sdata->u.name = name->name;
+    sdata->u.name.u.ptr = name->name;
     clname = FindName( GetIdx() );
     if( ObjFormat & FMT_EASY_OMF ) {
         SkipIdx();                          // skip overlay name index
@@ -989,7 +989,7 @@ static void ProcLxdata( bool islidata )
         ObjBuff += sizeof( unsigned_16 );
     }
 #ifdef _DEVELOPMENT
-    if( stricmp( seg->entry->u.leader->segname, "_BSS" ) == 0 ) {
+    if( stricmp( seg->entry->u.leader->segname.u.ptr, "_BSS" ) == 0 ) {
         LnkMsg( LOC_REC+ERR+MSG_INTERNAL, "s", "Initialized BSS found" );
     }
 #endif
@@ -1007,7 +1007,7 @@ static void ProcLinnum( void )
     seg = (segnode *) FindNode( SegNodes, GetIdx() );
     if( seg->info & SEG_DEAD )                  /* ignore dead segments */
         return;
-    is32bit = (ObjFormat & FMT_32BIT_REC) != 0;
+    is32bit = ( (ObjFormat & FMT_32BIT_REC) != 0 );
     DBIAddLines( seg->entry, ObjBuff, EOObjRec - ObjBuff, is32bit );
 }
 

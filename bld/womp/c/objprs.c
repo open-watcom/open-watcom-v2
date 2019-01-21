@@ -256,22 +256,22 @@ STATIC int pass1Extdef( obj_rec *objr ) {
     return( 0 );
 }
 
-STATIC int pass1Cextdf( obj_rec *objr ) {
+STATIC int pass1Cextdef( obj_rec *objr ) {
 
     unsigned    count;
 
 /**/myassert( objr != NULL );
-/**/myassert( objr->command == CMD_CEXTDF );
+/**/myassert( objr->command == CMD_CEXTDEF );
 
     loc.last_defn = objr;
-    objr->d.cextdf.first_idx = loc.extdef_idx + 1;
+    objr->d.cextdef.first_idx = loc.extdef_idx + 1;
     count = 0;
     while( !ObjEOR( objr ) ) {
         ObjGetIndex( objr );    /* skip the logical name index */
         ObjGetIndex( objr );    /* skip the type index */
         ++count;
     }
-    objr->d.cextdf.num_names = count;
+    objr->d.cextdef.num_names = count;
     loc.extdef_idx += count;
     return( 0 );
 }
@@ -392,10 +392,10 @@ STATIC int pass1Fixup( obj_rec *objr ) {
     fixup   *fix;
 
 /**/myassert( objr != NULL );
-/**/myassert( objr->command == CMD_FIXUP );
-    objr->d.fixup.data_rec = loc.last_data_rec;
+/**/myassert( objr->command == CMD_FIXUPP );
+    objr->d.fixupp.data_rec = loc.last_data_rec;
     head = NULL;
-    objr->d.fixup.fixup = NULL;
+    objr->d.fixupp.fixup = NULL;
     while( !ObjEOR( objr ) ) {
         fix = FixGetFix( loc.fix_info, objr );
         if( fix != NULL ) { /* wasn't a thread fixup */
@@ -403,7 +403,7 @@ STATIC int pass1Fixup( obj_rec *objr ) {
             head = fix;
         }
     }
-    objr->d.fixup.fixup = head;
+    objr->d.fixupp.fixup = head;
     ObjDetachData( objr );  /* no more need for the data in this record */
     /* if the entire record was thread fixups, then we won't pass it on */
     if( head == NULL ) {
@@ -629,7 +629,7 @@ STATIC void doPass1( OBJ_RFILE *file_in, pobj_lib_info *pli ) {
         case CMD_LNAMES:    cont = pass1Lnames( objr );     break;
         case CMD_SEGDEF:    cont = pass1Segdef( objr );     break;
         case CMD_GRPDEF:    cont = pass1Grpdef( objr );     break;
-        case CMD_FIXUP:     cont = pass1Fixup( objr );      break;
+        case CMD_FIXUPP:    cont = pass1Fixup( objr );      break;
         case CMD_LEDATA:    /* fall through */
         case CMD_LIDATA:    cont = pass1Ledata( objr );     break;
         case CMD_STATIC_COMDEF: /* fall through */
@@ -637,7 +637,7 @@ STATIC void doPass1( OBJ_RFILE *file_in, pobj_lib_info *pli ) {
         case CMD_LINNUM:    cont = pass1Linnum( objr );     break;
         case CMD_STATIC_PUBDEF: /* fall through */
         case CMD_PUBDEF:    cont = pass1Pubdef( objr );     break;
-        case CMD_CEXTDF:    cont = pass1Cextdf( objr );     break;
+        case CMD_CEXTDEF:   cont = pass1Cextdef( objr );    break;
         case CMD_COMDAT:    cont = pass1Comdat( objr );     break;
         case CMD_LINSYM:    cont = pass1Linsym( objr );     break;
         }

@@ -117,7 +117,7 @@ static char *stxcpy(            // CONCATENATE HEXADECIMAL NUMBER
     char buffer[16];
 
     sprintf( buffer, "%x", value );
-    return stxpcpy( tgt, buffer );
+    return( stxpcpy( tgt, buffer ) );
 }
 
 
@@ -128,7 +128,7 @@ static DECOR addDecorated(      // ADD A DECORATED NODE
 
     dec = RingCarveAlloc( carveDecoration, &decoration );
     dec->node = node;
-    return ++ decor_numb;
+    return( ++ decor_numb );
 }
 
 
@@ -171,12 +171,15 @@ static void prlineEmit(         // EMIT A PRINT LINE
 {
     char *p;                    // - used to scan
 
-    for( p = &prl->buffer[ prl->width ]; ; ) {
-        -- p;
-        if( p == prl->buffer ) break;
-        if( *p != ' ' ) break;
+    for( p = &prl->buffer[prl->width]; ; ) {
+        --p;
+        if( p == prl->buffer )
+            break;
+        if( *p != ' ' ) {
+            break;
+        }
     }
-    *(p+1) = '\0';
+    *(p + 1) = '\0';
     puts( prl->buffer );
 }
 
@@ -214,7 +217,7 @@ static void centreText(         // ADD CENTRED TEXT TO NODE LINE
         posn -=  offset + 1;
     }
     prlineExtend( &node_line, posn + size );
-    memcpy( &node_line.buffer[ posn ], text, size );
+    memcpy( &node_line.buffer[posn], text, size );
 }
 
 
@@ -229,12 +232,12 @@ static void connect(            // ADD A CONNECTION
     prlineExtend( &conn_line, end );
     width = end - beg + 1;
     if( width == 1 ) {
-        conn_line.buffer[ beg - 1 ] = VERT_LINE;
+        conn_line.buffer[beg - 1] = VERT_LINE;
     } else {
-        conn_line.buffer[ beg - 1 ] = beg_sym;
-        conn_line.buffer[ end - 1 ] = end_sym;
+        conn_line.buffer[beg - 1] = beg_sym;
+        conn_line.buffer[end - 1] = end_sym;
         if( width > 2 ) {
-            memset( &conn_line.buffer[ beg - 1 + 1 ], HORI_LINE, width - 2 );
+            memset( &conn_line.buffer[beg - 1 + 1], HORI_LINE, width - 2 );
         }
     }
 }
@@ -270,17 +273,17 @@ static void connectBoth(        // ADD A TEE CONNECTOR(S)
     COL right )                 // - position of right
 {
     if( src == left ) {
-        conn_line.buffer[ src - 1 ] = BOTH_BR;          // L=S,R
+        conn_line.buffer[src] = BOTH_BR;          // L=S,R
     } else if( src == right ) {
-        conn_line.buffer[ src - 1 ] = BOTH_LB;          // L,S=R
+        conn_line.buffer[src - 1] = BOTH_LB;          // L,S=R
     } else if( left < src ) {
         if( src < right ) {
-            conn_line.buffer[ src - 1 ] = BOTH_LSR;     // L,S,R
+            conn_line.buffer[src - 1] = BOTH_LSR;     // L,S,R
         } else {
-            conn_line.buffer[ right - 1 ] = BOTH_LRS;   // L,R,S
+            conn_line.buffer[right - 1] = BOTH_LRS;   // L,R,S
         }
     } else {
-        conn_line.buffer[ left - 1 ] = BOTH_SLR;        // S,L,R
+        conn_line.buffer[left - 1] = BOTH_SLR;        // S,L,R
     }
 }
 
@@ -294,7 +297,7 @@ static LINE *addLine(           // ADD A LINE ENTRY TO SUBTREE
     line->nodes = NULL;
     line->width = 0;
     line->bound = 0;
-    return line;
+    return( line );
 }
 
 
@@ -325,25 +328,25 @@ static char *textPTREE(         // GET TEXT FOR A PARSE-TREE NODE
 
     pnode = node->pnode;
     switch( pnode->op ) {
-      case PT_ERROR :
+    case PT_ERROR :
         stxpcpy( buffer, PTREE_ERROR_NODE );
         type_add = false;
         break;
-      case PT_UNARY :
-      case PT_BINARY :
+    case PT_UNARY :
+    case PT_BINARY :
         stxpcpy( buffer, DbgOperator( pnode->cgop ) );
         type_add = printTypes;
         break;
-      case PT_INT_CONSTANT :
+    case PT_INT_CONSTANT :
         switch( TypedefModifierRemoveOnly( pnode->type )->id ) {
-          case TYP_SCHAR :
-          case TYP_SSHORT :
-          case TYP_SINT :
-          case TYP_SLONG :
+        case TYP_SCHAR :
+        case TYP_SSHORT :
+        case TYP_SINT :
+        case TYP_SLONG :
             stxicpy( buffer, pnode->u.int_constant );
             break;
-          case TYP_SLONG64 :
-          case TYP_ULONG64 :
+        case TYP_SLONG64 :
+        case TYP_ULONG64 :
             buffer[0] = '<';
             text = stxcpy( &buffer[1], pnode->u.int64_constant.u._32[0] );
             *text = '~';
@@ -351,29 +354,29 @@ static char *textPTREE(         // GET TEXT FOR A PARSE-TREE NODE
             text[0] = '>';
             text[1] = '\0';
             break;
-          default :
+        default :
             stxdcpy( buffer, pnode->u.uint_constant );
             break;
         }
         type_add = printTypes;
         break;
-      case PT_FLOATING_CONSTANT :
+    case PT_FLOATING_CONSTANT :
         BFCnvFS( pnode->u.floating_constant, buffer, 256 );
         type_add = printTypes;
         break;
-      case PT_STRING_CONSTANT :
+    case PT_STRING_CONSTANT :
         stxvcpy( buffer, pnode->u.string->string, pnode->u.string->len );
         type_add = printTypes;
         break;
-      case PT_TYPE :
+    case PT_TYPE :
         textType( buffer, pnode->type, "<> " );
         type_add = false;
         break;
-      case PT_ID :
+    case PT_ID :
         stxpcpy( buffer, NameStr( pnode->u.id.name ) );
         type_add = false;
         break;
-      case PT_SYMBOL :
+    case PT_SYMBOL :
         if( pnode->cgop == CO_NAME_THIS ) {
             stxpcpy( buffer, "this" );
         } else if( pnode->cgop == CO_NAME_CDTOR_EXTRA ) {
@@ -398,13 +401,13 @@ static char *textPTREE(         // GET TEXT FOR A PARSE-TREE NODE
         }
         type_add = printTypes;
         break;
-      case PT_DUP_EXPR :
+    case PT_DUP_EXPR :
         text = stxpcpy( buffer, "dup[" );
         text = stxcpy( text, (unsigned)(pointer_int)pnode->u.subtree[0] );
         stxpcpy( text, "]" );
         type_add = printTypes;
         break;
-      case PT_IC :
+    case PT_IC :
         text = stxpcpy( buffer, DbgIcOpcode( pnode->u.ic.opcode ) );
         text = stxpcpy( text, " " );
         text = stxcpy( text, pnode->u.ic.value.uvalue );
@@ -431,7 +434,9 @@ static void buildSubtree(       // BUILD A SUBTREE
     SUBTREE *subtree;           // - info for subtree
 
     RingIterBeg( subtrees, subtree ) {
-        if( subtree->root == root ) return;
+        if( subtree->root == root ) {
+            return;
+        }
     } RingIterEnd( subtree )
     subtree = RingCarveAlloc( carveSubtree, &subtrees );
     subtree->lines = NULL;
@@ -452,7 +457,8 @@ static COL buildNode(           // BUILD A NODE
     COL offset;                 // - centre between operands
     COL bound;                  // - bound for next centre on next line
 
-    if( expr == NULL ) return 0;
+    if( expr == NULL )
+        return( 0 );
     node = CarveAlloc( carveNode );
     node->pnode = expr;
     node->centre = 0;
@@ -471,14 +477,14 @@ static COL buildNode(           // BUILD A NODE
     RingAppend( &line->nodes, node );
     width = strlen( textPTREE( node ) );
     switch( expr->op ) {
-      case PT_UNARY :
+    case PT_UNARY :
         node->left = buildNode( expr->u.subtree[0], subtree, line );
         break;
-      case PT_BINARY :
+    case PT_BINARY :
         node->left = buildNode( expr->u.subtree[0], subtree, line );
         node->right = buildNode( expr->u.subtree[1], subtree, line );
         break;
-      case PT_DUP_EXPR :
+    case PT_DUP_EXPR :
         buildSubtree( expr->u.subtree[0] );
         break;
     }
@@ -512,7 +518,7 @@ static COL buildNode(           // BUILD A NODE
             line->bound = bound;
         }
     }
-    return centre;
+    return( centre );
 }
 
 
@@ -538,7 +544,7 @@ static void printNode(          // PRINT A NODE
 static void printSubtree(       // PRINT A SUBTREE
     void *_subtree )            // - subtree to be printed
 {
-    char buffer[ 256 ];         // - buffer
+    char buffer[256];           // - buffer
     char *bptr;                 // - buffer ptr
     LINE *line;                 // - current line
     NODE *node;                 // - current node

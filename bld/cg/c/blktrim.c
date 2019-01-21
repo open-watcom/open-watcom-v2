@@ -30,7 +30,7 @@
 ****************************************************************************/
 
 
-#include "cgstd.h"
+#include "_cgstd.h"
 #include "coderep.h"
 #include "cgmem.h"
 #include "data.h"
@@ -70,7 +70,7 @@ static  void    MarkReachableBlocks( void )
     bool        change;
     block_num   i;
 
-    for( change = true; change; ) {
+    do {
         change = false;
         for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
             if( _IsBlkVisited( blk ) || _IsBlkAttr( blk, BLK_BIG_LABEL | BLK_SELECT ) ) {
@@ -84,7 +84,7 @@ static  void    MarkReachableBlocks( void )
                 }
             }
         }
-    }
+    } while( change );
 }
 
 
@@ -134,7 +134,7 @@ void    RemoveBlock( block *blk )
     for( i = 0; i < blk->targets; ++i ) {
         /* block may have already been removed by dead code removal*/
         if( FindBlock( blk->edge[i].destination.u.blk ) ) {
-            RemoveInputEdge( & blk->edge[i] );
+            RemoveInputEdge( &blk->edge[i] );
         }
     }
     last_line = blk->ins.hd.line_num;
@@ -191,7 +191,7 @@ void    RemoveInputEdge( block_edge *edge )
     block       *dest;
     block_edge  *prev;
 
-    if( ( edge->flags & DEST_IS_BLOCK ) == EMPTY )
+    if( (edge->flags & DEST_IS_BLOCK) == 0 )
         return;
     dest = edge->destination.u.blk;
     dest->inputs --;
@@ -367,7 +367,9 @@ static  bool    DoBlockTrim( void )
     bool        any_change;
     block_num   blk_id;
 
-    for( any_change = false, change = true; change; ) {
+    _MarkBlkAllUnVisited();
+    any_change = false;
+    do {
         change = false;
         MarkReachableBlocks();
         for( blk = HeadBlock->next_block; blk != NULL; blk = next ) {
@@ -384,7 +386,7 @@ static  bool    DoBlockTrim( void )
                 target = blk->edge[0].destination.u.blk;
                 if( target != blk && !_IsBlkAttr( target, BLK_UNKNOWN_DESTINATION ) ) {
                     for( ins = blk->ins.hd.next; ins->head.opcode == OP_NOP; ins = ins->head.next ) {
-                        if( ins->flags.nop_flags & (NOP_DBGINFO|NOP_DBGINFO_START) ) {
+                        if( ins->flags.nop_flags & (NOP_DBGINFO | NOP_DBGINFO_START) ) {
                             break;
                         }
                     }
@@ -407,7 +409,7 @@ static  bool    DoBlockTrim( void )
             BlocksUnTrimmed = false;
             any_change = true;
         }
-    }
+    } while( change );
     blk_id = 1;
     for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
         blk->id = blk_id++;

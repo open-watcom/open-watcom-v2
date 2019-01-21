@@ -82,7 +82,7 @@ static off_info *AddMapOffset( seg_off *ctl, off_info *new )
 
     rem = ctl->entry.count % OFF_PER_BLK;
     blk = ctl->head;
-    if( rem == 0 ){
+    if( rem == 0 ) {
         blk = DCAlloc( sizeof( *blk ) );
         blk->next = ctl->head;
         ctl->head = blk;
@@ -276,28 +276,24 @@ static bool WalkOffsets( void *_wlk, void *_ctl )
     off_info            *next;
     addrsym_info        info;
 
-    blk = ctl->off.head;
-    blk_count = ctl->entry.count % OFF_PER_BLK;
     info.map_seg = ctl->entry.real;
+    blk_count = ctl->entry.count % OFF_PER_BLK;
     if( blk_count == 0 ) {
         blk_count = OFF_PER_BLK;
     }
-    while( blk != NULL ) {
+    for( blk = ctl->off.head; blk != NULL; blk = blk->next ) {
         next = blk->info;
         while( blk_count > 0 ) {
             info.map_offset = next->map_offset;
             info.sym = next->sym;
             if( !wlk->fn( wlk->d, &info ) )
-                goto done;
+                return( false );
             ++next;
             --blk_count;
         }
         blk_count = OFF_PER_BLK;
-        blk = blk->next;
     }
     return( true );
-done:
-    return( false );
 }
 
 

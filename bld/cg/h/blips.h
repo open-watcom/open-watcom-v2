@@ -29,21 +29,23 @@
 ****************************************************************************/
 
 
-extern  void    Blip( unsigned short loc, char ch );
-extern  void    BlipInit( void );
-extern  void    FiniBlip( void );
-extern  void    InitBlip( void );
-extern  bool    WantZoiks2( void );
-extern  void    LNBlip( source_line_number num );
-extern  void    TGBlip( void );
-extern  void    LPBlip( void );
-extern  void    URBlip( void );
-extern  void    SXBlip( void );
-extern  void    EXBlip( void );
-extern  void    GRBlip( void );
-extern  void    IMBlip( void );
-extern  void    SCBlip( void );
-extern  void    PSBlip( void );
-extern  void    PLBlip( void );
-extern  void    DGBlip( void );
-extern  void    PGBlip( const char *name );
+extern bool     BlipsOn;
+
+extern void     Blip( unsigned short loc, char ch );
+extern void     BlipInit( void );
+extern void     FiniBlip( void );
+extern void     InitBlip( void );
+extern bool     WantZoiks2( void );
+extern void     LNBlip( source_line_number num );
+extern void     TGBlip( void );
+extern void     LPBlip( void );
+extern void     URBlip( void );
+extern void     SXBlip( void );
+extern void     EXBlip( void );
+extern void     GRBlip( void );
+extern void     IMBlip( void );
+extern void     SCBlip( void );
+extern void     PSBlip( void );
+extern void     PLBlip( void );
+extern void     DGBlip( void );
+extern void     PGBlip( const char *name );

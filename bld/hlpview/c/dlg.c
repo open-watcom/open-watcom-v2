@@ -189,14 +189,14 @@ void HelpDialogCallBack( a_dialog *info )
         if( info->edit_data->edit_eline.dirty ) {
             curHelpDialog->edit_data->edit_eline.dirty = false;
             len = editCtl.length;
-            if( len > sizeof( buf ) )
-                len = sizeof( buf );
+            if( len > _MAX_PATH - 1 )
+                len = _MAX_PATH - 1;
             strncpy( buf, editCtl.buffer, len );
-            buf[ len ] = '\0';
-            len--;
-            while( len > 0 && isspace( buf[len] ) ) {
+            buf[len] = '\0';
+            while( len-- > 0 ) {
+                if( !isspace( buf[len] ) )
+                    break;
                 buf[len] = '\0';
-                len--;
             }
             fillListBox( buf );
         }

@@ -238,7 +238,7 @@ void BringUpFile( info *ci, bool runCmds )
     EditFlags.Dragging = false;
     MoveWindowToFrontDammit( current_window_id, false );
     if( EditFlags.LineNumbers ) {
-        MoveWindowToFrontDammit( curr_num_window_id, false );
+        MoveWindowToFrontDammit( linenum_current_window_id, false );
     }
     DisplayFileStatus();
     UpdateStatusWindow();

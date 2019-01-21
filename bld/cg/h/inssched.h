@@ -53,5 +53,10 @@ typedef struct dep_list_entry {
     data_dag                *dep;
 } dep_list_entry;
 
+
+extern data_dag         *DataDag;   /* global for dump routines */
+
 extern const FU_entry   *FUEntry( instruction *ins );
 extern void             Schedule( void );
+extern bool             SchedFrlFree( void );
+extern bool             InsOrderDependant( instruction *ins_i, instruction *ins_j );

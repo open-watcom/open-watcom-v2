@@ -41,7 +41,7 @@
 #include "dbgrep.h"
 #include "dbgio.h"
 #include "dui.h"
-#include "spawn.h"
+#include "wspawn.h"
 #include "enterdb.h"
 #include "strutil.h"
 #include "dbgmad.h"
@@ -540,12 +540,10 @@ static char *GetBPCmd( brkp *bp, brk_event event, char *buff, unsigned buff_len 
     char        *end = buff + buff_len ;
 
     cmds = cond = LIT_ENG( Empty );
-    if( bp != NULL ) {
-        if( bp->cmds != NULL )
-            cmds = bp->cmds->buff;
-        if( bp->condition != NULL ) {
-            cond = bp->condition;
-        }
+    if( bp->cmds != NULL )
+        cmds = bp->cmds->buff;
+    if( bp->condition != NULL ) {
+        cond = bp->condition;
     }
     p = Format( buff, "%s", GetCmdName( CMD_BREAK ) );
     switch( event ) {
@@ -621,12 +619,8 @@ static char *GetBPCmd( brkp *bp, brk_event event, char *buff, unsigned buff_len 
     case B_UNRESUME:
         *p++ = '/';
         p = GetCmdEntry( PointNameTab, event, p );
-        if( bp == NULL ) {
-            p = StrCopy( "*", p );
-        } else {
-            p = AddrToString( &bp->loc.addr, MAF_FULL, p, end - p );
-//          p = Format( p, " %A", bp->loc.addr );
-        }
+        p = AddrToString( &bp->loc.addr, MAF_FULL, p, end - p );
+//        p = Format( p, " %A", bp->loc.addr );
         return( p );
     }
     return( NULL );
@@ -1093,7 +1087,7 @@ void SetPointAddr( brkp *bp, address addr )
     DIPHDL( cue, cueh );
     image_entry *image;
     mod_handle  mod;
-    char  const *start;
+    const char  *start;
     bool        ok;
 
     if( bp->status.b.unmapped )
@@ -1215,7 +1209,7 @@ static brkp *AddPoint( address loc, mad_type_handle mth, bool unmapped )
     _Alloc( bp, sizeof( brkp ) );
     InitMappableAddr( &bp->loc );
     bp->mth = mth;
-    bp->mad = SysConfig.mad;
+    bp->arch = SysConfig.arch;
     NullStatus( bp );
     bp->status.b.active = true;
     bp->source_line = NULL;
@@ -1430,6 +1424,9 @@ OVL_EXTERN brkp *SetPoint( memory_expr def_seg, mad_type_handle mth )
     unmapped = false;
     mapaddress = false;
     symaddress = false;
+    image_name = NULL;
+    mod_name = NULL;
+    sym_name = NULL;
     while( CurrToken == T_DIV ) {
         Scan();
         cmd = ScanCmd( PointNameTab );
@@ -1455,6 +1452,7 @@ OVL_EXTERN brkp *SetPoint( memory_expr def_seg, mad_type_handle mth )
             mapaddress = true;
             ScanItem( true, &start, &len );
             image_name = DupStrLen( start, len );
+            loc = NilAddr;
             loc.mach.segment = ReqLongExpr();
             loc.mach.offset = ReqLongExpr();
             ReqComma();
@@ -1478,7 +1476,6 @@ OVL_EXTERN brkp *SetPoint( memory_expr def_seg, mad_type_handle mth )
             NewCurrRadix( old_radix );
             ReqComma();
             break;
-            /* fall thru */
         default:
             Error( ERR_LOC, LIT_ENG( ERR_BAD_OPTION ), GetCmdName( CMD_BREAK ) );
             break;
@@ -1517,6 +1514,7 @@ OVL_EXTERN brkp *SetPoint( memory_expr def_seg, mad_type_handle mth )
         case 8:
             if( Is8ByteBreakpointsSupported() )
                 break;
+            /* fall through */
         default:
             Error( ERR_NONE, LIT_ENG( ERR_NOT_WATCH_SIZE ) );
             break;
@@ -1570,7 +1568,7 @@ bool BreakWrite( address addr, mad_type_handle mth, const char *comment )
         if( !Is8ByteBreakpointsSupported() ) {
             ok_to_try = false;
         }
-        // fall down
+        /* fall through */
     case 1:
     case 2:
     case 4:
@@ -1585,7 +1583,7 @@ bool BreakWrite( address addr, mad_type_handle mth, const char *comment )
             RecordBreakEvent( bp, B_SET );
             return( true );
         }
-        // fall down
+        /* fall through */
     default:
         return( false );
     }
@@ -1593,9 +1591,9 @@ bool BreakWrite( address addr, mad_type_handle mth, const char *comment )
 
 typedef struct tmp_break_struct
 {
-    address     addr;
-    int         size;
-    const char  *comment;
+    address         addr;
+    dig_type_size   size;
+    const char      *comment;
 } tmp_break_struct;
 
 OVL_EXTERN void BreakOnAddress( void *_s )
@@ -1604,34 +1602,33 @@ OVL_EXTERN void BreakOnAddress( void *_s )
     tmp_break_struct *s = _s;
 
     if( IS_NIL_ADDR( s->addr )
-     || !BreakWrite( s->addr,
-                    FindMADTypeHandle( MAS_MEMORY|MTK_INTEGER, s->size ),
-                     s->comment ) ) {
+     || !BreakWrite( s->addr, FindMADTypeHandle( MAS_MEMORY|MTK_INTEGER, s->size ), s->comment ) ) {
         Error( ERR_NONE, LIT_ENG( ERR_NOT_WATCH_SIZE ) );
     }
 }
 
 
-bool BreakOnRawMemory( address addr, const char *comment, int size )
-/******************************************************************/
+bool BreakOnRawMemory( address addr, const char *comment, dig_type_size size )
+/****************************************************************************/
 {
     tmp_break_struct s;
+
     s.addr = addr;
     s.comment = comment;
     s.size = size;
     return( SpawnP( BreakOnAddress, &s ) == 0 );
 }
 
-void BreakOnExprSP( const char *comment )
+void BreakOnExprSP( void *_comment )
 {
     address             addr;
-    dip_type_info       tinfo;
+    dig_type_info       ti;
     tmp_break_struct    s;
 
     LValue( ExprSP );
-    tinfo.size = ExprSP->info.size;
-    if( !( ExprSP->flags & SF_LOCATION ) ) {
-        tinfo.size = DefaultSize( DK_INT );
+    ti.size = ExprSP->ti.size;
+    if( (ExprSP->flags & SF_LOCATION) == 0 ) {
+        ti.size = DefaultSize( DK_INT );
     }
     switch( WndGetExprSPInspectType( &addr ) ) {
     case INSP_CODE:
@@ -1640,8 +1637,8 @@ void BreakOnExprSP( const char *comment )
     case INSP_DATA:
     case INSP_RAW_DATA:
         s.addr = addr;
-        s.size = tinfo.size;
-        s.comment = comment;
+        s.size = ti.size;
+        s.comment = _comment;
         BreakOnAddress( &s );
         break;
     }
@@ -2021,7 +2018,7 @@ brkp *GetBPAtIndex( int index )
 
     for( bp = BrkList; bp != NULL; bp = bp->next ) {
         if ( bp->index == index ) {
-            return( bp );
+            break;
         }
     }
     return( bp );

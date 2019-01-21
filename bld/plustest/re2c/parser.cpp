@@ -653,7 +653,7 @@ void parse(istream &i, ostream &o){
                 DFA *dfa = new DFA(ins, sym->re->size, 0, 256, rep);
                 label = dfa->emit(sym->name, label, o);
                 delete dfa;
-                delete ins;
+                delete[] ins;
             } else
                 in.fatal("expecting '=' or ':'");
             if(in.peek() != tSemi)

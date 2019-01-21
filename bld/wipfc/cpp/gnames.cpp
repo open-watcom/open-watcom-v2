@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
+* Copyright (c) 2009-2018 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -27,38 +27,43 @@
 * Description:  Global Names data
 * Obtained from the "id" or "name" attribute of an :hn tag iff the "global"
 * attribute flag is set
-* STD1::uint16_t dictIndex[ IpfHeader.panelCount ]; //in ascending order
-* STD1::uint16_t TOCIndex[ IpfHeader.panelCount ];
+* word dictIndex[ IpfHeader.panelCount ]; //in ascending order
+* word TOCIndex[ IpfHeader.panelCount ];
 *
 ****************************************************************************/
 
+
+#include "wipfc.hpp"
 #include <cstdio>
 #include "gnames.hpp"
 #include "errors.hpp"
+#include "outfile.hpp"
 
-void GNames::insert( GlobalDictionaryWord* word, STD1::uint16_t toc )
+
+void GNames::insert( GlobalDictionaryWord* gdentry, word toc )
 {
-    NameIter itr( names.find( word ) );   //look up word in names
-    if( itr == names.end() )
-        names.insert( std::map< GlobalDictionaryWord*, STD1::uint16_t, ptrLess< GlobalDictionaryWord* > >::value_type( word, toc ) );
-    else
+    NameIter itr( _names.find( gdentry ) );   //look up word in names
+    if( itr != _names.end() )
         throw Class3Error( ERR3_DUPID );
+    _names.insert( std::map< GlobalDictionaryWord*, word, ptrLess< GlobalDictionaryWord* > >::value_type( gdentry, toc ) );
 }
 /***************************************************************************/
-STD1::uint32_t GNames::write( std::FILE *out ) const
+dword GNames::write( OutFile* out ) const
 {
-    STD1::uint32_t start( 0 );
-    if( names.size() ) {
-        start = std::ftell( out );
-        for( ConstNameIter itr = names.begin(); itr != names.end(); ++itr ) {
-            STD1::uint16_t index = (itr->first)->index();
-            if( std::fwrite( &index, sizeof( STD1::uint16_t ), 1, out ) != 1 )
+    dword start( 0 );
+    if( _names.size() ) {
+        start = out->tell();
+        for( ConstNameIter itr = _names.begin(); itr != _names.end(); ++itr ) {
+            // name index
+            if( out->put( itr->first->index() ) ) {
                 throw FatalError( ERR_WRITE );
+            }
         }
-        for( ConstNameIter itr = names.begin(); itr != names.end(); ++itr ) {
-            STD1::uint16_t toc = itr->second;
-            if( std::fwrite( &toc, sizeof( STD1::uint16_t ), 1, out ) != 1 )
+        for( ConstNameIter itr = _names.begin(); itr != _names.end(); ++itr ) {
+            // TOC index
+            if( out->put( itr->second ) ) {
                 throw FatalError( ERR_WRITE );
+            }
         }
     }
     return start;

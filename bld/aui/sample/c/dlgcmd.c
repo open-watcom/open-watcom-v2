@@ -32,34 +32,48 @@
 
 #include "app.h"
 
-extern char             NullStr[];
-
 typedef struct pmt_window {
     char        *str;
 } pmt_window;
 #define WndPmt( wnd ) ( (pmt_window*)WndExtra( wnd ) )
 
-enum {
-    CTL_CMD_OK = 100,
-    CTL_CMD_CANCEL,
-    CTL_CMD_EDIT,
-    CTL_CMD_HISTORY,
-    CTL_CMD_CHECK,
-};
-
 #define DLG_CMD_ROWS    12
 #define DLG_CMD_COLS    35
 
-static gui_control_info Controls[] = {
-    DLG_EDIT( "",             CTL_CMD_EDIT,     1,  0, 29 ),
-    DLG_LIST_BOX( NULL,       CTL_CMD_HISTORY,  1,  2, 29, 5 ),
+#define DLGNEW_CTLS() \
+    pick_p4id( EDIT,    DLG_EDIT,       "",             1,  0, 29 ) \
+    pick_p5id( HISTORY, DLG_LIST_BOX,   NULL,           1,  2, 29, 5 ) \
+    pick_p4id( OK,      DLG_BUTTON,     "&OK",          2,  7, 12 ) \
+    pick_p4id( CANCEL,  DLG_DEFBUTTON,  "&Cancel",      18, 7, 28 ) \
+    pick_p4id( CHECK,   DLG_CHECK,      "C&heck Me",    1,  9, 28 )
 
-    DLG_BUTTON( "&OK",        CTL_CMD_OK,       2,  7, 12 ),
-    DLG_DEFBUTTON( "&Cancel", CTL_CMD_CANCEL,   18, 7, 28 ),
-    DLG_CHECK( "C&heck Me",   CTL_CMD_CHECK,    1,  9, 28 ),
+enum {
+    #define pick_p4id(id,m,p1,p2,p3,p4)     CTL_ ## id,
+    #define pick_p5id(id,m,p1,p2,p3,p4,p5)  CTL_ ## id,
+    DLGNEW_CTLS()
+    #undef pick_p5id
+    #undef pick_p4id
+};
+
+enum {
+    #define pick_p4id(id,m,p1,p2,p3,p4)     id ## _IDX,
+    #define pick_p5id(id,m,p1,p2,p3,p4,p5)  id ## _IDX,
+    DLGNEW_CTLS()
+    #undef pick_p5id
+    #undef pick_p4id
+};
+
+static gui_control_info Controls[] = {
+    #define pick_p4id(id,m,p1,p2,p3,p4)     m(p1,CTL_ ## id,p2,p3,p4),
+    #define pick_p5id(id,m,p1,p2,p3,p4,p5)  m(p1,CTL_ ## id,p2,p3,p4,p5),
+    DLGNEW_CTLS()
+    #undef pick_p5id
+    #undef pick_p4id
 };
 
 #define NUM_CONTROLS ArraySize( Controls )
+
+extern char             NullStr[];
 
 static char *Stuff[] = { "stuff1", "stuff2", "stuff3" };
 
@@ -79,39 +93,39 @@ static bool CmdGUIEventProc( gui_window *gui, gui_event gui_ev, void *param )
     cmd = GUIGetExtra( gui );
     switch( gui_ev ) {
     case GUI_INIT_DIALOG:
-        GUISetText( gui, CTL_CMD_EDIT, "Hi Lisa!" );
-        GUISetFocus( gui, CTL_CMD_EDIT );
-        GUIClearList( gui, CTL_CMD_HISTORY );
+        GUISetText( gui, CTL_EDIT, "Hi Lisa!" );
+        GUISetFocus( gui, CTL_EDIT );
+        GUIClearList( gui, CTL_HISTORY );
         for( i = 0; i < ArraySize( Stuff ); ++i ) {
-            GUIAddText( gui, CTL_CMD_HISTORY, Stuff[i] );
+            GUIAddText( gui, CTL_HISTORY, Stuff[i] );
         }
-        GUISetCurrSelect( gui, CTL_CMD_HISTORY, 1 );
+        GUISetCurrSelect( gui, CTL_HISTORY, 1 );
         return( true );
     case GUI_KEY_CONTROL:
-        GUISetCurrSelect( gui, CTL_CMD_HISTORY, 2 );
-        cmd = GUIGetText( gui, CTL_CMD_HISTORY );
-        GUISetText( gui, CTL_CMD_EDIT, cmd );
-        GUISelectAll( gui, CTL_CMD_EDIT, true );
+        GUISetCurrSelect( gui, CTL_HISTORY, 2 );
+        cmd = GUIGetText( gui, CTL_HISTORY );
+        GUISetText( gui, CTL_EDIT, cmd );
+        GUISelectAll( gui, CTL_EDIT, true );
         GUIMemFree( cmd );
         return( true );
     case GUI_CONTROL_DCLICKED:
     case GUI_CONTROL_CLICKED:
         GUI_GETID( param, id );
         switch( id ) {
-        case CTL_CMD_HISTORY:
-            text = GUIGetText( gui, CTL_CMD_HISTORY );
-            GUISetText( gui, CTL_CMD_EDIT, text );
+        case CTL_HISTORY:
+            text = GUIGetText( gui, CTL_HISTORY );
+            GUISetText( gui, CTL_EDIT, text );
             GUIMemFree( text );
             if( gui_ev == GUI_CONTROL_CLICKED )
                 return( true );
             /* fall through */
-        case CTL_CMD_OK:
-            text = GUIGetText( gui, CTL_CMD_EDIT );
+        case CTL_OK:
+            text = GUIGetText( gui, CTL_EDIT );
             if( text != NULL )
                 DoCmd( text );
             GUIMemFree( text );
             /* fall through */
-        case CTL_CMD_CANCEL:
+        case CTL_CANCEL:
             GUICloseDialog( gui );
             return( true );
         }

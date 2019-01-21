@@ -107,7 +107,7 @@ static void HScrollRestore()
                             _GrSVGA_104, _GrSVGA_105;
   #endif
 
-  #if defined( _SUPERVGA ) && defined( VERSION2 )
+  #if defined( VERSION2 ) && defined( _SUPERVGA )
     extern gr_device _FARD  _GrVESA;
   #endif
 
@@ -143,7 +143,7 @@ static SUPP_MODE        VideoModes[] = {
     0x104,              &_GrSVGA_104,
     0x105,              &_GrSVGA_105,
   #endif
-  #if defined( _SUPERVGA ) && defined( VERSION2 )
+  #if defined( VERSION2 ) && defined( _SUPERVGA )
     -1,                 &_GrVESA
   #else
     -1,                 NULL

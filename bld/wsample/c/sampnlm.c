@@ -43,7 +43,6 @@
 #include "sample.h"
 #include "smpstuff.h"
 #include "wmsg.h"
-#include "os.h"
 
 #include <ownwthrd.h>
 
@@ -66,8 +65,12 @@ typedef struct code_load {
     samp_block_kinds    kind;
 } code_load;
 
-extern short            GetCS( void );
-#pragma aux GetCS = 0x8c 0xc8 value [ax];
+extern short GetCS( void );
+#pragma aux GetCS = \
+        "mov ax,cs" \
+    __parm      [] \
+    __value     [__ax] \
+    __modify    []
 
 #if 0
 void CodeLoad( struct LoadDefinitionStructure *loaded, samp_block_kinds kind );
@@ -220,7 +223,7 @@ void StartProg( const char *cmd, const char *prog, char *full_args, char *dos_ar
 
     if( LoadModule( systemConsoleScreen, (BYTE *)cmd, 0 ) != 0 ) {
         StopTimer();
-        cputs( MsgArray[MSG_SAMPLE_1 - ERR_FIRST_MESSAGE] );
+        cputs( GET_MESSAGE( MSG_SAMPLE_1 ) );
         cputs( cmd );
         cputs( "\r\n" );
         fatal();
@@ -413,8 +416,6 @@ static void EstimateRate( void )
 
 void SysParseOptions( char c, char **cmd )
 {
-    char        buff[2];
-
     switch( c ) {
     case 'r':
         SetTimerRate( cmd );
@@ -427,11 +428,12 @@ void SysParseOptions( char c, char **cmd )
         fatal();
         break;
     default:
-        Output( MsgArray[MSG_INVALID_OPTION - ERR_FIRST_MESSAGE] );
-        buff[0] = c;
-        buff[1] = '\0';
-        Output( buff );
-        Output( "\r\n" );
+        OutputMsgCharNL( MSG_INVALID_OPTION, c );
         fatal();
     }
+}
+
+void OutputNL( void )
+{
+    Output( "\r\n" );
 }

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2017-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -35,7 +35,9 @@
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
-#include <mbstring.h>
+#if !defined( __RDOS__ ) && !defined( __RDOSDEV__ )
+    #include <mbstring.h>
+#endif
 #ifdef __WIDECHAR__
     #include <wctype.h>
 #endif
@@ -78,6 +80,11 @@ _WCRTLINK int __F_NAME(setenv,_wsetenv)( const CHAR_TYPE *name, const CHAR_TYPE 
     size_t              otherNewvalLen;
 #endif
     int                 rc;
+
+    if( name == NULL || *name == NULLCHAR || __F_NAME(strchr,wcschr)( name, STRING( '=' ) ) != NULL ) {
+        _RWD_errno = EINVAL;
+        return( -1 );
+    }
 
     /*** Ensure variable is deleted if newvalue == "" ***/
 #ifndef __UNIX__

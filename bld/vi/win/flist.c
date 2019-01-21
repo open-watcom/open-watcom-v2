@@ -37,7 +37,7 @@
 
 
 /* Local Windows CALLBACK function prototypes */
-WINEXPORT INT_PTR CALLBACK FileListDlgProc( HWND dlg, UINT msg, WPARAM w, LPARAM l );
+WINEXPORT INT_PTR CALLBACK FileListDlgProc( HWND dlg, UINT msg, WPARAM wparam, LPARAM lparam );
 
 static info *findInfo( char *file_name )
 {
@@ -111,7 +111,7 @@ WINEXPORT INT_PTR CALLBACK FileListDlgProc( HWND dlg, UINT msg, WPARAM wparam, L
     bool    (*func)( info * );
 
 #ifdef __NT__
-    lparam = lparam;
+    (void)lparam;
 #endif
     switch( msg ) {
     case WM_INITDIALOG:

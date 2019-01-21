@@ -84,4 +84,4 @@ type="s" usr="wcc38601.int"
 # RDOS - 386
 #
 [ DEFAULT dir="rdos" cond="rdoshost" where="c jc" ]
-type="e" usr="wcc386"
+type="e" usr="wcc386.exe"

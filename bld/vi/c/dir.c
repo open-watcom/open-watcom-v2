@@ -37,14 +37,21 @@
 #include "clibext.h"
 
 
+static size_t   currOff;
+static size_t   totalBytes;
+static char     oldPath[_MAX_PATH];
+#if !defined( __UNIX__ )
+static char     oldDrive;
+#endif
+
 /*
  * GetCWD1 - get current working directory, then allocate space for it
  */
 void GetCWD1( char **str )
 {
-    char        bob[FILENAME_MAX];
+    char        bob[_MAX_PATH];
 
-    GetCWD2( bob, FILENAME_MAX );
+    GetCWD2( bob, sizeof( bob ) );
     *str = DupString( bob );
 
 } /* GetCWD1 */
@@ -52,9 +59,9 @@ void GetCWD1( char **str )
 /*
  * GetCWD2 - get current working directory
  */
-void GetCWD2( char *str, int maxlen )
+void GetCWD2( char *str, size_t maxlen )
 {
-    if( getcwd( str, maxlen - 1 ) == NULL ) {
+    if( getcwd( str, maxlen ) == NULL ) {
         str[0] = '\0';
     }
     // Don't lowercase the filename
@@ -67,31 +74,20 @@ void GetCWD2( char *str, int maxlen )
  */
 vi_rc ChangeDirectory( const char *dir )
 {
-#ifdef __UNIX__
+#if !defined( __UNIX__ )
+    if( dir[1] == DRV_SEP ) {
+        if( _chdrive( tolower( (unsigned char)dir[0] ) - 'a' + 1 ) ) {
+            return( ERR_NO_SUCH_DRIVE );
+        }
+        if( dir[2] == '\0' ) {
+            return( ERR_NO_ERR );
+        }
+        dir += 2;
+    }
+#endif
     if( chdir( dir ) )
         return( ERR_DIRECTORY_OP_FAILED );
     return( ERR_NO_ERR );
-#else
-    vi_rc       rc;
-    size_t      shift;
-    const char  *tmp;
-    int         i;
-
-    shift = 0;
-    if( dir[1] == DRV_SEP ) {
-        rc = ChangeDrive( dir[0] );
-        if( rc != ERR_NO_ERR || dir[2] == '\0' ) {
-            return( rc );
-        }
-        shift = 2;
-    }
-    tmp = dir + shift;
-    i = chdir( tmp );
-    if( i != 0 ) {
-        return( ERR_DIRECTORY_OP_FAILED );
-    }
-    return( ERR_NO_ERR );
-#endif
 } /* ChangeDirectory */
 
 /*
@@ -135,16 +131,12 @@ vi_rc SetCWD( const char *str )
 
 } /* SetCWD */
 
-
-static int  currOff;
-static int  totalBytes;
-
 /*
  * addDirData - add directory file data to current buffer
  */
 static void addDirData( file *cfile, const char *str )
 {
-    int k;
+    size_t  k;
 
     k = strlen( str );
     if( totalBytes + k + LINE_EXTRA > MAX_IO_BUFFER - 2 ) {
@@ -165,10 +157,14 @@ static void addDirData( file *cfile, const char *str )
   */
 void FormatDirToFile( file *cfile, bool add_drives )
 {
-    int         i, j;
-    int         lastdir = 0;
-    char        str[MAX_STR];
-    direct_ent  *de;
+    list_linenum    i;
+    list_linenum    j;
+    list_linenum    lastdir;
+    char            str[MAX_STR];
+    direct_ent      *de;
+#ifndef __UNIX__
+    int             c;
+#endif
 
     if( cfile->fcbs.head != NULL ) {
         if( cfile->fcbs.head->nullfcb ) {
@@ -176,9 +172,10 @@ void FormatDirToFile( file *cfile, bool add_drives )
             cfile->fcbs.head = cfile->fcbs.tail = NULL;
         }
     }
+
     currOff = 0;
     totalBytes = 0;
-
+    lastdir = 0;
     /*
      * add directory data
      */
@@ -212,15 +209,48 @@ void FormatDirToFile( file *cfile, bool add_drives )
     /*
      * add drives
      */
+#ifndef __UNIX__
     if( add_drives ) {
-        for( i = 'A'; i <= 'Z'; i++ ) {
-            if( DoGetDriveType( i ) != DRIVE_TYPE_NONE ) {
-                MySprintf( str, "  [%c:]", (char)i - 'A' + 'a' );
+        for( c = 'A'; c <= 'Z'; c++ ) {
+            if( DoGetDriveType( c ) != DRIVE_TYPE_NONE ) {
+                MySprintf( str, "  [%c:]", (char)c - 'A' + 'a' );
                 addDirData( cfile, str );
             }
         }
     }
-
+#endif
     CreateFcbData( cfile, currOff );
 
 } /* FormatDirToFile */
+
+/*
+ * PushDirectory
+ */
+void PushDirectory( const char *orig )
+{
+#if !defined( __UNIX__ )
+    oldDrive = _getdrive();
+    if( orig[1] == DRV_SEP ) {
+        _chdrive( tolower( (unsigned char)orig[0] ) - 'a' + 1 );
+    }
+#endif
+    oldPath[0] = '\0';
+    GetCWD2( oldPath, sizeof( oldPath ) );
+    ChangeDirectory( orig );
+
+} /* PushDirectory */
+
+/*
+ * PopDirectory
+ */
+void PopDirectory( void )
+{
+#if !defined( __UNIX__ )
+    _chdrive( oldDrive );
+#endif
+    if( oldPath[0] != '\0' ) {
+        ChangeDirectory( oldPath );
+    }
+    ChangeDirectory( CurrentDirectory );
+
+} /* PopDirectory */

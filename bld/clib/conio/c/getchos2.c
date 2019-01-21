@@ -37,17 +37,24 @@
 #define INCL_SUB
 #include <wos2.h>
 #include <conio.h>
+#include "dosfuncx.h"
 #include "rtdata.h"
 #include "defwin.h"
 
+
 #if defined(__OS2_286__)
-    extern  unsigned char _dos(char);
-    #pragma aux _dos = "int 21h" parm caller [ah] value [al];
+    extern unsigned char    _dos( char );
+    #pragma aux _dos = \
+            "int 21h" \
+        __parm __caller [__ah] \
+        __value         [__al]
 #endif
 
 _WCRTLINK int getch( void )
 {
     int         c;
+    APIRET      rc;
+    KBDKEYINFO  info;
 
     if( (c = _RWD_cbyte) != 0 ) {
         _RWD_cbyte = 0;
@@ -62,23 +69,18 @@ _WCRTLINK int getch( void )
 #endif
 #if defined(__OS2_286__)
     if( _RWD_osmode == DOS_MODE ) {
-        return( _dos( 8 ) );
+        return( _dos( DOS_GET_CHAR_NO_ECHO_CHECK ) );
     }
 #endif
     if( (c = _RWD_cbyte2) != 0 ) {
         _RWD_cbyte2 = 0;
         return( c );
     }
-    {
-        APIRET     rc;
-        KBDKEYINFO info;
-
-        rc = KbdCharIn( &info, 0, 0 );
-        if( rc == ERROR_KBD_DETACHED ) {
-            return( EOF );
-        } else if( info.chChar == 0 || info.chChar == 0xe0 ) {
-            _RWD_cbyte2 = info.chScan;
-        }
-        return( info.chChar );
+    rc = KbdCharIn( &info, 0, 0 );
+    if( rc == ERROR_KBD_DETACHED )
+        return( EOF );
+    if( info.chChar == 0 || info.chChar == 0xe0 ) {
+        _RWD_cbyte2 = info.chScan;
     }
+    return( info.chChar );
 }

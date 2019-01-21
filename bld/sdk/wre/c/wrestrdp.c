@@ -30,10 +30,8 @@
 ****************************************************************************/
 
 
-#include "commonui.h"
+#include "wreglbl.h"
 #include "wrestrdp.h"
-
-#include <string.h>
 #include "wrdll.h"
 
 char *WREStrDup( const char *src )

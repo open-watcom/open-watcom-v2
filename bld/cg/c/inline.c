@@ -31,7 +31,7 @@
 ****************************************************************************/
 
 
-#include "cgstd.h"
+#include "_cgstd.h"
 #include "coderep.h"
 #include "cgmem.h"
 #include "zoiks.h"
@@ -43,6 +43,7 @@
 #include "namelist.h"
 #include "typemap.h"
 #include "inline.h"
+#include "bldins.h"
 #include "feprotos.h"
 
 
@@ -58,11 +59,6 @@ typedef struct inline_stack {
         type_def                *tipe;
         an                      addr;
 } inline_stack;
-
-extern  name            *BGNewTemp(type_def*);
-extern  void            BGDone(an);
-extern  an              BGCopy(an);
-extern  an              BGAssign(an,an,type_def*);
 
 static inline_stack     *InlineStack = NULL; // fix this!
 
@@ -156,7 +152,7 @@ void    BGParmInline( cg_sym_handle sym, type_def *tipe )
     temp->v.usage |= USE_IN_ANOTHER_BLOCK;
     parm_value = GenIns( parm->addr );
     BGDone( parm->addr );
-    AddIns( MakeMove( parm_value, temp, temp->n.name_class ) );
+    AddIns( MakeMove( parm_value, temp, temp->n.type_class ) );
     CGFree( parm );
 }
 

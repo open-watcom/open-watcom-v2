@@ -220,7 +220,7 @@ void *MemAllocUnsafe( size_t size )
 {
 #ifdef TRMEM
 #ifndef __WATCOMC__
-    return( doMemAllocUnsafe( size, (WHO_PTR)2 ) );
+    return( doMemAllocUnsafe( size, (WHO_PTR)3 ) );
 #else
     return( doMemAllocUnsafe( size, _trmem_guess_who() ) );
 #endif
@@ -237,7 +237,7 @@ void MemFree( void *ptr )
 {
 #ifdef TRMEM
 #ifndef __WATCOMC__
-    _trmem_free( ptr, (WHO_PTR)3, trmemHandle );
+    _trmem_free( ptr, (WHO_PTR)4, trmemHandle );
 #else
     _trmem_free( ptr, _trmem_guess_who(), trmemHandle );
 #endif
@@ -254,7 +254,7 @@ void MemFreePtr( void **ptr )
 {
 #ifdef TRMEM
 #ifndef __WATCOMC__
-    _trmem_free( *ptr, (WHO_PTR)4, trmemHandle );
+    _trmem_free( *ptr, (WHO_PTR)5, trmemHandle );
 #else
     _trmem_free( *ptr, _trmem_guess_who(), trmemHandle );
 #endif
@@ -269,10 +269,10 @@ void MemFreePtr( void **ptr )
 /*
  * MemFreeList - free up memory
  */
-void MemFreeList( int count, char **ptr )
+void MemFreeList( list_linenum count, char **ptr )
 {
     if( ptr != NULL ) {
-        int i;
+        list_linenum    i;
         for( i = 0; i < count; i++ ) {
             MemFree( ptr[i] );
         }
@@ -344,7 +344,7 @@ void *MemReAllocUnsafe( void *ptr, size_t size )
 {
 #ifdef TRMEM
 #ifndef __WATCOMC__
-    return( doMemReAllocUnsafe( ptr, size, (WHO_PTR)5 ) );
+    return( doMemReAllocUnsafe( ptr, size, (WHO_PTR)6 ) );
 #else
     return( doMemReAllocUnsafe( ptr, size, _trmem_guess_who() ) );
 #endif
@@ -362,7 +362,7 @@ void *MemReAlloc( void *ptr, size_t size )
 
 #ifdef TRMEM
 #ifndef __WATCOMC__
-    tmp = doMemReAllocUnsafe( ptr, size, (WHO_PTR)6 );
+    tmp = doMemReAllocUnsafe( ptr, size, (WHO_PTR)7 );
 #else
     tmp = doMemReAllocUnsafe( ptr, size, _trmem_guess_who() );
 #endif
@@ -472,7 +472,7 @@ void *uimalloc( size_t size )
 
 #ifdef TRMEM
 #ifndef __WATCOMC__
-    tmp = doMemAllocUnsafe( size, (WHO_PTR)1 );
+    tmp = doMemAllocUnsafe( size, (WHO_PTR)9 );
 #else
     tmp = doMemAllocUnsafe( size, _trmem_guess_who() );
 #endif
@@ -491,7 +491,7 @@ void *uirealloc( void *ptr, size_t size )
 
 #ifdef TRMEM
 #ifndef __WATCOMC__
-    tmp = doMemReAllocUnsafe( ptr, size, (WHO_PTR)6 );
+    tmp = doMemReAllocUnsafe( ptr, size, (WHO_PTR)10 );
 #else
     tmp = doMemReAllocUnsafe( ptr, size, _trmem_guess_who() );
 #endif
@@ -508,7 +508,7 @@ void uifree( void *ptr )
 {
 #ifdef TRMEM
 #ifndef __WATCOMC__
-    _trmem_free( ptr, (WHO_PTR)3, trmemHandle );
+    _trmem_free( ptr, (WHO_PTR)11, trmemHandle );
 #else
     _trmem_free( ptr, _trmem_guess_who(), trmemHandle );
 #endif

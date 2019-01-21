@@ -35,7 +35,7 @@
 #define MX_FSTK         10
 #define default_file    "_CPPDBG_."
 
-static FILE* fstk[ MX_FSTK ];   // suspended files
+static FILE* fstk[MX_FSTK];     // suspended files
 static unsigned fstk_index;     // top of files stack
 static int logging;             // true ==> logging at level 0
 
@@ -47,7 +47,7 @@ static void reDirSwitch         // SWITCH TWO FILE AREAS
 
     fflush( stdout );
     temp = *stdout;
-    fp = fstk[ fstk_index ];
+    fp = fstk[fstk_index];
     *stdout = *fp;
     *fp = temp;
 }
@@ -62,14 +62,14 @@ static void reDirBeg            // START REDIRECTION FOR A FILE
         char fname[32];
         FILE* fp;
         strcpy( fname, default_file );
-        sprintf( &fname[ sizeof( default_file ) - 1 ], "%d", fstk_index );
+        sprintf( &fname[sizeof( default_file ) - 1], "%d", fstk_index );
         fp =  fopen( fname, "wt" );
         if( NULL == fp ) {
             puts( "DBGIO -- failure to open file" );
             puts( fname );
-            fstk[ fstk_index ] = 0;
+            fstk[fstk_index] = 0;
         } else {
-            fstk[ fstk_index ] = fp;
+            fstk[fstk_index] = fp;
             reDirSwitch();
         }
     }
@@ -84,10 +84,10 @@ static void reDirEnd            // COMPLETE REDIRECTION FOR A FILE
     } else {
         -- fstk_index;
         if( fstk_index < MX_FSTK ) {
-            FILE* fp = fstk[ fstk_index ];
+            FILE* fp = fstk[fstk_index];
             if( fp != 0 ) {
                 reDirSwitch();
-                fclose( fstk[ fstk_index ] );
+                fclose( fstk[fstk_index] );
             }
         }
     }
@@ -113,7 +113,7 @@ int DbgRedirectEnd              // COMPLETE REDIRECTION
     } else {
         reDirEnd();
     }
-    return retn;
+    return( retn );
 }
 
 void DbgLogBeg                  // START LOGGING
@@ -131,5 +131,5 @@ int DbgLogEnd                   // END LOGGING
     if( fstk_index > 0 ) {
         reDirEnd();
     }
-    return fstk_index;
+    return( fstk_index );
 }

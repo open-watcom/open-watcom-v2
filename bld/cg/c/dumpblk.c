@@ -29,11 +29,10 @@
 ****************************************************************************/
 
 
-#include "cgstd.h"
+#include "_cgstd.h"
 #include "coderep.h"
 #include "data.h"
 #include "intrface.h"
-#include "dmpinc.h"
 #include "dumpio.h"
 #include "dumpblk.h"
 #include "dumpins.h"
@@ -410,9 +409,9 @@ void    DumpFlowGraph( block *blk )
 void    DumpSymTab( void )
 /************************/
 {
-    int         class;
+    name_class_def  class;
 
-    for( class = N_CONSTANT; class <= N_INDEXED; ++class ) {
+    for( class = 0; class < N_CLASS_MAX; ++class ) {
         if( Names[class] != NULL ) {
             DumpNL();
             switch( class ) {

@@ -30,7 +30,7 @@
 ****************************************************************************/
 
 
-#include "cgstd.h"
+#include "_cgstd.h"
 #include "coderep.h"
 #include "cgauxinf.h"
 #include "zoiks.h"
@@ -53,8 +53,6 @@
 /* BLK_BLOCK_VISITED is used in the sense of placed                 */
 /*                                                                  */
 
-extern  void            Zoiks( int );
-
 static  source_line_number      DumpLineNum( source_line_number n,
                                              source_line_number last,
                                              bool label_line ) {
@@ -74,7 +72,7 @@ void    GenObject( void )
 /***********************/
 {
     block               *blk;
-    block               *next_blk;
+    block               *next_block;
     instruction         *ins;
     source_line_number  last_line;
     block_num           targets;
@@ -88,7 +86,8 @@ void    GenObject( void )
     InitZeroPage();
     last_line = 0;
     attr = FEAttr( AskForLblSym( CurrProc->label ) );
-    for( blk = HeadBlock; blk != NULL; blk = next_blk ) {
+    for( blk = HeadBlock; blk != NULL; blk = next_block ) {
+        next_block = blk->next_block;
         if( blk->label != CurrProc->label && blk->label != NULL ) {
             last_line = DumpLineNum( blk->ins.hd.line_num, last_line, true );
             if( _IsBlkAttr( blk, BLK_ITERATIONS_KNOWN ) && blk->iterations >= 10 ) {
@@ -103,7 +102,6 @@ void    GenObject( void )
         }
         StartBlockProfiling( blk );
         InitStackDepth( blk );
-        next_blk = blk->next_block;
         for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
             if( ins->head.opcode == OP_NOP
               && ( (ins->flags.nop_flags & NOP_SOURCE_QUEUE) || ins->flags.nop_flags == NOP_DBGINFO )) // an end block
@@ -127,8 +125,8 @@ void    GenObject( void )
         EndBlockProfiling();
         if( _IsBlkAttr( blk, BLK_JUMP | BLK_BIG_JUMP ) ) {
             if( BlockByBlock
-             || next_blk == NULL
-             || blk->edge[0].destination.u.lbl != next_blk->label ) {
+             || next_block == NULL
+             || blk->edge[0].destination.u.lbl != next_block->label ) {
                 // watch out for orphan blocks (no inputs/targets)
                 if( blk->targets > 0 ) {
                     GenJumpLabel( blk->edge[0].destination.u.lbl );
@@ -140,10 +138,10 @@ void    GenObject( void )
         } else if( _IsBlkAttr( blk, BLK_CALL_LABEL ) ) {
             GenCallLabel( blk->edge[0].destination.u.blk );
             if( BlockByBlock ) {
-                if( next_blk == NULL ) {
+                if( next_block == NULL ) {
                     GenJumpLabel( blk->v.next->label );
                 } else {
-                    GenJumpLabel( next_blk->label );
+                    GenJumpLabel( next_block->label );
                 }
             }
         } else if( _IsBlkAttr( blk, BLK_LABEL_RETURN ) ) {
@@ -436,11 +434,11 @@ typedef struct flood_info {
     block       *dominator;
 } flood_info;
 
-typedef flood_decision (*flood_func)( block *, flood_info * );
+typedef flood_decision (*flood_down_func)( block *, flood_info * );
 
-static  void    FloodDown( block *from, flood_func func, void *parm ) {
-/*********************************************************************/
-
+static  void    FloodDown( block *from, flood_down_func func, void *parm )
+/************************************************************************/
+{
     void                *stack;
     block               *dest;
     flood_decision      decision;

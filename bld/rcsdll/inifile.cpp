@@ -42,15 +42,16 @@
     #include <string.h>
     #include <stdlib.h>
     #include "watcom.h"
-    #include "clibext.h"
 #elif defined( __DOS__ )
     #include <stdio.h>
     #include <string.h>
     #include <stdlib.h>
-    #include "clibext.h"
 #else
     #error UNSUPPORTED OS
 #endif
+
+#include "clibext.h"
+
 
 #if defined( __OS2__ )
 
@@ -58,12 +59,20 @@
     int MyGetProfileString( const char *dir, const char *filename, const char *section,
                             const char *key, const char *def, char *buffer, int len ) {
         dir = dir; filename = filename;
+  #ifdef _M_I86
+        return( (unsigned)PrfQueryProfileString( HINI_USERPROFILE, (char *)section, (char *)key, (char *)def, (void *)buffer, (unsigned)len ) );
+  #else
         return( PrfQueryProfileString( HINI_USERPROFILE, section, key, def, (void *)buffer, len ) );
+  #endif
     }
     int MyWriteProfileString( const char *dir, const char *filename, const char *section,
                               const char *key, const char *string ) {
         dir = dir; filename = filename;
+  #ifdef _M_I86
+        return( PrfWriteProfileString( HINI_USERPROFILE, (char *)section, (char *)key, (char *)string ) );
+  #else
         return( PrfWriteProfileString( HINI_USERPROFILE, section, key, string ) );
+  #endif
     }
 
 #elif defined( __WINDOWS__ ) || defined( __NT__ )

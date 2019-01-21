@@ -35,19 +35,21 @@
 
 #if defined( USE_EMS )
 
+#include <i86.h>
 #include "dosx.h"
 #include "xmem.h"
 #include "fcbmem.h"
 #include "pragmas.h"
 
+#define EMS_IO_ERROR    ((size_t)-1)
 
 ems_struct              EMSCtrl;
 static unsigned long    *emsPtrs;
 
-static int  emsRead( long, void __far *, int );
-static int  emsWrite( long, void __far *, int );
+static size_t   emsRead( long, void __far *, size_t );
+static size_t   emsWrite( long, void __far *, size_t );
 
-int EMSBlockTest( unsigned short blocks )
+vi_rc EMSBlockTest( unsigned short blocks )
 {
     if( !EMSCtrl.inuse ) {
         return( ERR_NO_EMS_MEMORY );
@@ -59,70 +61,70 @@ int EMSBlockTest( unsigned short blocks )
 
 } /* EMSBlockTest */
 
-void EMSBlockRead( long addr, void __far *buff, unsigned len )
+void EMSBlockRead( long addr, void __far *buff, size_t len )
 {
     emsRead( addr, buff, len );
 
 } /* EMSBlockRead */
 
-void EMSBlockWrite( long addr, void __far *buff, unsigned len )
+void EMSBlockWrite( long addr, void __far *buff, size_t len )
 {
     emsWrite( addr, buff, len );
 
 } /* EMSBlockWrite */
 
-int EMSGetBlock( long *addr )
+vi_rc EMSGetBlock( long *addr )
 {
-    int         i;
+    vi_rc       rc;
     long        found = 0;
+    int         i;
 
-    i = EMSBlockTest( 1 );
-    if( i ) {
-        return( i );
-    }
-    EMSBlocksInUse++;
-    for( i = 0; i < TotalEMSBlocks; i++ ) {
-        if( emsPtrs[i] != 0 ) {
-            found = emsPtrs[i];
-            emsPtrs[i] = 0;
-            break;
+    rc = EMSBlockTest( 1 );
+    if( rc == ERR_NO_ERR ) {
+        EMSBlocksInUse++;
+        for( i = 0; i < TotalEMSBlocks; i++ ) {
+            if( emsPtrs[i] != 0 ) {
+                found = emsPtrs[i];
+                emsPtrs[i] = 0;
+                break;
+            }
         }
+        *addr = found;
     }
-    *addr = found;
-    return( ERR_NO_ERR );
+    return( rc );
 
 } /* EMSGetBlock */
 
 /*
  * SwapToEMSMemory - move an fcb to extended memory from memory
  */
-int SwapToEMSMemory( fcb *fb )
+vi_rc SwapToEMSMemory( fcb *fb )
 {
-    int         i, len;
+    vi_rc       rc;
+    size_t      len;
     long        found;
 
-    i = EMSGetBlock( &found );
-    if( i ) {
-        return( i );
-    }
-    len = MakeWriteBlock( fb );
-    emsWrite( found, WriteBuffer, len );
+    rc = EMSGetBlock( &found );
+    if( rc == ERR_NO_ERR ) {
+        len = MakeWriteBlock( fb );
+        emsWrite( found, WriteBuffer, len );
 
-    /*
-     * finish up
-     */
-    fb->xmemaddr = found;
-    fb->in_ems_memory = true;
-    return( ERR_NO_ERR );
+        /*
+         * finish up
+         */
+        fb->xmemaddr = found;
+        fb->in_ems_memory = true;
+    }
+    return( rc );
 
 } /* SwapToEMSMemory */
 
 /*
  * SwapToMemoryFromEMSMemory - bring data back from extended memory
  */
-int SwapToMemoryFromEMSMemory( fcb *fb )
+vi_rc SwapToMemoryFromEMSMemory( fcb *fb )
 {
-    int len;
+    size_t  len;
 
     len = FcbSize( fb );
     emsRead( fb->xmemaddr, ReadBuffer, len );
@@ -219,7 +221,7 @@ void EMSInit( void )
         EMSCtrl.physical[i].used = false;
     }
 
-    emsPtrs = MemAlloc( sizeof( long ) * EditVars.MaxEMSBlocks );
+    emsPtrs = _MemAllocArray( long, EditVars.MaxEMSBlocks );
 
     for( i = 0; i < EditVars.MaxEMSBlocks; i++ ) {
         emsPtrs[i] = eMSAlloc( MAX_IO_BUFFER );
@@ -229,7 +231,7 @@ void EMSInit( void )
         h.external = emsPtrs[i];
         TotalEMSBlocks++;
     }
-    emsPtrs = MemReAlloc( emsPtrs, TotalEMSBlocks * sizeof( long ) );
+    emsPtrs = _MemReAllocArray( emsPtrs, long, TotalEMSBlocks );
 
     EMSCtrl.inuse = true;
 
@@ -332,7 +334,7 @@ static void emsRelease( ems_addr x )
 /*
  * emsRead - read some expanded memory
  */
-static int emsRead( long addr, void __far *buff, int size )
+static size_t emsRead( long addr, void __far *buff, size_t size )
 {
     void        *ptr;
     ems_addr    h;
@@ -340,7 +342,7 @@ static int emsRead( long addr, void __far *buff, int size )
     h.external = addr;
     ptr = emsAccess( h );
     if( ptr == NULL ) {
-        return( -1 );
+        return( EMS_IO_ERROR );
     }
     _fmemcpy( buff, ptr, size );
     emsRelease( h );
@@ -351,7 +353,7 @@ static int emsRead( long addr, void __far *buff, int size )
 /*
  * emsWrite - write expanded memory
  */
-static int emsWrite( long addr, void __far *buff, int size )
+static size_t emsWrite( long addr, void __far *buff, size_t size )
 {
     void        *ptr;
     ems_addr    h;
@@ -359,7 +361,7 @@ static int emsWrite( long addr, void __far *buff, int size )
     h.external = addr;
     ptr = emsAccess( h );
     if( ptr == NULL ) {
-        return( -1 );
+        return( EMS_IO_ERROR );
     }
     _fmemcpy( ptr, buff, size );
     emsRelease( h );

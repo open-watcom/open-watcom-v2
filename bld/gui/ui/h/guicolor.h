@@ -30,7 +30,7 @@
 ****************************************************************************/
 
 
-extern bool GUIXSetColours( gui_window *, gui_colour_set * colours );
+extern bool GUIXSetColours( gui_window *, int num_attrs, gui_colour_set * colours );
 extern bool GUISetDialColours( void );
 extern void GUIResetDialColours( void );
 extern void GUISetColour( gui_colour_set * );

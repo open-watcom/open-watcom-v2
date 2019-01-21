@@ -30,8 +30,7 @@
 ****************************************************************************/
 
 
-#include "commonui.h"
-#include <string.h>
+#include "wglbl.h"
 #include "wcopystr.h"
 
 char *WCopyString( char *mem, char *str, int len )

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -40,7 +41,7 @@
 #elif defined(__OS2__)
     #define INCL_DOSMEMMGR
     #include <wos2.h>
-#elif defined(_M_IX86)
+#elif defined(__DOS__)
     #include "tinyio.h"
 #endif
 #include "heap.h"
@@ -76,9 +77,7 @@ _WCRTLINK void _heapgrow( void )
 
 _WCRTLINK void _nheapgrow( void )
 {
-#if defined( __WINDOWS_286__ ) || !defined( _M_I86 )
-    _nfree( _nmalloc( 1 ) );        /* get something into the heap */
-#else
+#if defined( _M_I86 ) && !defined( __WINDOWS__ )
     unsigned max_paras;
     unsigned curr_paras;
     unsigned diff_paras;
@@ -92,19 +91,19 @@ _WCRTLINK void _nheapgrow( void )
         _ReleaseNHeap();
         return;
     }
-#if defined(__QNX__)
-    if( qnx_segment_realloc( _DGroup(), 65536L ) == -1 ) {
+  #if defined(__QNX__)
+    if( qnx_segment_realloc( _DGroup(), (long)PARAS_IN_64K << 4 ) == -1 ) {
         _ReleaseNHeap();
         return;
     }
     max_paras = PARAS_IN_64K;
-#elif defined(__OS2__)
-    if( DosReallocSeg( 0, _DGroup() ) )  {
+  #elif defined(__OS2__)
+    if( DosReallocSeg( PARAS_IN_64K << 4, _DGroup() ) )  {
         _ReleaseNHeap();
         return;
     }
     max_paras = PARAS_IN_64K;
-#else
+  #else     /* __DOS__ */
     if( _RWD_osmode != DOS_MODE ) {
         max_paras = PARAS_IN_64K;
     } else {
@@ -115,7 +114,7 @@ _WCRTLINK void _nheapgrow( void )
             max_paras = PARAS_IN_64K;
         }
     }
-#endif
+  #endif
     if( max_paras <= curr_paras ) {
         /* '<' -> something is wrong, '==' -> can't change size */
         _ReleaseNHeap();
@@ -125,6 +124,8 @@ _WCRTLINK void _nheapgrow( void )
     expand = (( diff_paras + 1 ) << 4 ) - ( _curbrk & 0x0f );
     expand += __LastFree(); /* compensate for _expand's adjustment */
     _ReleaseNHeap();
-    _nfree( _nmalloc( expand - ( sizeof( size_t ) + sizeof( freelistp ) ) ) );
+    _nfree( _nmalloc( expand - ( sizeof( size_t ) + sizeof( freelist ) ) ) );
+#else
+    _nfree( _nmalloc( 1 ) );        /* get something into the heap */
 #endif
 }

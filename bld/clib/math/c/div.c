@@ -35,12 +35,13 @@
 
 
 #if defined( _M_I86 )
-extern  div_t   __div( int, int );
-#pragma aux     __div = "cwd"           \
-                        "idiv cx"       \
-                        parm [ax] [cx]  \
-                        value [ax dx]   \
-                        modify exact [ax dx];
+extern div_t   __div( int, int );
+#pragma aux __div = \
+        "cwd"       \
+        "idiv cx"   \
+    __parm              [__ax] [__cx] \
+    __value             [__dx __ax] \
+    __modify __exact    [__ax __dx]
 #endif
 
 

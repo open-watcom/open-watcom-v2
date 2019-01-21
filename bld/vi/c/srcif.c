@@ -85,7 +85,7 @@ vi_rc GetErrorTokenValue( int *value, const char *str )
 
 static bool err_alloc( int cnt )
 {
-    ErrorValues = MemAlloc( cnt * sizeof( int ) );
+    ErrorValues = _MemAllocArray( int, cnt );
     return( true );
 }
 

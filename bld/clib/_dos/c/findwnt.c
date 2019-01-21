@@ -48,8 +48,7 @@ _WCRTLINK unsigned _dos_findfirst( const char *path, unsigned attr, struct find_
     WIN32_FIND_DATA     ffb;
 
     h = FindFirstFile( (LPTSTR)path, &ffb );
-
-    if( h == (HANDLE)-1 ) {
+    if( h == INVALID_HANDLE_VALUE ) {
         DTAXXX_HANDLE_OF( buf->reserved ) = BAD_HANDLE;
         return( __set_errno_nt_reterr() );
     }

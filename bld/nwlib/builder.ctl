@@ -11,8 +11,8 @@ set PROJDIR=<CWD>
 
 [ INCLUDE <OWROOT>/build/defrule.ctl ]
 
-[ BLOCK <1> rel ]
-#================
+[ BLOCK <BLDRULE> rel ]
+#======================
     cdsay <PROJDIR>
 
 [ BLOCK <BINTOOL> build ]
@@ -27,8 +27,8 @@ set PROJDIR=<CWD>
     rm -f <OWBINDIR>/bwlib<CMDEXT>
     rm -f <OWBINDIR>/bwlibd<DYEXT>
 
-[ BLOCK <1> rel cprel ]
-#======================
+[ BLOCK <BLDRULE> rel cprel ]
+#============================
     <CCCMD> dos386/wlib.exe         <OWRELROOT>/binw/
     <CCCMD> dos386/wlib.sym         <OWRELROOT>/binw/
     <CCCMD> os2386.dll/wlib.exe     <OWRELROOT>/binp/
@@ -47,11 +47,14 @@ set PROJDIR=<CWD>
     <CCCMD> qnx386/wlib.sym         <OWRELROOT>/qnx/sym/
     <CCCMD> linux386/wlib.exe       <OWRELROOT>/binl/wlib
     <CCCMD> linux386/wlib.sym       <OWRELROOT>/binl/
+    <CCCMD> rdos386/wlib.exe        <OWRELROOT>/rdos/
+    <CCCMD> rdos386/wlib.sym        <OWRELROOT>/rdos/
 
     <CCCMD> ntx64.dll/wlib.exe      <OWRELROOT>/binnt64/
     <CCCMD> ntx64.dll/wlibd.dll     <OWRELROOT>/binnt64/
     <CCCMD> linuxx64/wlib.exe       <OWRELROOT>/binl64/wlib
     <CCCMD> linuxarm/wlib.exe       <OWRELROOT>/arml/wlib
+    <CCCMD> osxx64/wlib.exe         <OWRELROOT>/osx64/wlib
 
 [ BLOCK . . ]
 

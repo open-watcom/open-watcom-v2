@@ -150,11 +150,9 @@ extern void AlphaEmit( owl_section_handle, instruction * );
 extern void AlphaEmit( instruction * );
 #endif
 extern bool AlphaValidate( instruction * );
-#ifdef _STANDALONE_
-#ifdef AS_DEBUG_DUMP
+#if defined( _STANDALONE_ ) && defined( AS_DEBUG_DUMP )
 extern void             DumpOperand( ins_operand * );
 extern void             DumpIns( instruction * );
-#endif
 #endif
 
 #define InsInit                 AsInsInit

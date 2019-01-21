@@ -31,13 +31,10 @@
 ****************************************************************************/
 
 
-#include <string.h>
+#include "heapwalk.h"
 #include <stdarg.h>
-#include <stdio.h>
-#include <stdlib.h>
 #include <ctype.h>
 #include <dos.h>
-#include "heapwalk.h"
 
 typedef struct glb_state{
     heap_list           sel;

@@ -47,7 +47,8 @@ typedef struct {
 } equip_list;
 
 
-#pragma aux Equipment   = 0xcd 0x11 value [ax];
-
-
 extern equip_list       Equipment( void );
+#pragma aux Equipment = \
+        "int 11h"   \
+    __parm  [] \
+    __value [__ax]

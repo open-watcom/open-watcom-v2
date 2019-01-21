@@ -24,6 +24,7 @@ c$pragma aux fsystem parm (reference descriptor)
 c$pragma aux fgetcmd parm (reference descriptor)
 
         external fintr
+        external fintrf
 
         external getdat
 

@@ -1,27 +1,29 @@
 #!/bin/sh
 
-function usage() {
+ERRORS=0
+
+usage() {
     echo usage: $0 prgname errorfile
     exit
 }
 
-function print_header() {
+print_header() {
     echo \# -----------------------------
-    echo \#   Test $TEST
+    echo \#   Implicit Rule Test $TEST
     echo \# -----------------------------
 }
 
-function do_check() {
-    if [ "$?" == "0" ]; then
-        echo \# Test $TEST successful
+do_check() {
+    if [ "$?" -eq "0" ]; then
+        echo \#      Test successful
     else
-        echo \#\# IMPLICIT \#\# >> $LOGFILE
-        echo Error: Test $TEST unsuccessful!!! | tee -a $LOGFILE
-        exit
+        echo \#\# IMPLICIT $TEST \#\# >> $LOGFILE
+        echo Error: Test unsuccessful!!! | tee -a $LOGFILE
+        ERRORS=1
     fi
 }
 
-if [ "$2" == "" ]; then 
+if [ -z "$2" ]; then 
     usage
 fi
 
@@ -31,47 +33,50 @@ echo >hello.obj
 echo >hello.cpp
 
 echo \# ===========================
-echo \# Implicit Rules Test
+echo \# Implicit Rule Tests
 echo \# ===========================
 
-TEST=1
+TEST=01
 print_header
-rm -f err1.out
-$1 -h -l err1.out > tst1.out
+rm -f err$TEST.lst
+$1 -h -l err$TEST.lst > test$TEST.lst
 do_check
 
-TEST=2A
+TEST=02
 print_header
 sleep 1
 echo >hello.h
-$1 -h -c -f imp02a > tst1.out
-diff imp02.chk tst1.out
+$1 -h -c -f imp$TEST > test$TEST.lst
+diff imp$TEST.chk test$TEST.lst
 do_check
 
-TEST=2B
+TEST=03
 print_header
 sleep 1
 echo >hello.h
-$1 -c -h -f imp02b > tst1.out
-diff imp02.chk tst1.out
+$1 -c -h -f imp$TEST > test$TEST.lst
+diff imp$TEST.chk test$TEST.lst
 do_check
 
-TEST=2C
+TEST=04
 print_header
 sleep 1
 echo >hello.h
-$1 -h -c -f imp02c -ms > tst1.out
-diff imp02.chk tst1.out
+$1 -h -c -f imp$TEST -ms > test$TEST.lst
+diff imp$TEST.chk test$TEST.lst
 do_check
 
 # Won't work with non-OW compilers, which may not be available on UNIX
 #
-TEST=2D
+TEST=05
 print_header
 rm -f hello.obj
-$1 -f imp02d -h > tst1.out
-sed "s:of .*[\\/]:of :" tst1.out | diff imp02d.chk -
+$1 -f imp$TEST -h > test$TEST.lst
+sed "s:of .*[\\/]:of :" test$TEST.lst | diff imp$TEST.chk -
 do_check
 
-# hello.* hello?.* uses OW and Linux rm compatible wildcards. hello* no go
-rm -f *.obj err1.out tst1.out tst2.out app.lnk app.exe hello.* hello?.*
+#    hello.* hello?.* uses OW and Linux rm compatible wildcards. hello* no go
+rm -f *.obj app.lnk app.exe hello.* hello?.*
+if [ "$ERRORS" -eq "0" ]; then
+    rm -f *.lst
+fi

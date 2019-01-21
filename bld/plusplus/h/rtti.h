@@ -39,30 +39,30 @@ typedef struct _rtti_adjust_vfptr RTTI_VFPTR;
 
 struct _rtti_adjust_class {
     RTTI_CLASS          *next;
-    RTTI_VFPTR          *vfptrs;        // list of all vfptr adjustors
-    TYPE                class_type;     // host class type
-    SYMBOL              sym;            // symbol to reference from vftable
-    target_offset_t     offset;         // current offset from start of symbol
-    unsigned            done : 1;       // all vfptrs have been registered
-    unsigned            gen : 1;        // must be generated
-    unsigned            cg_gen : 1;     // has been generated
-    unsigned            free : 1;       // used for PCH
-    unsigned            too_big : 1;    // cannot fit in segment
+    RTTI_VFPTR          *vfptrs;            // list of all vfptr adjustors
+    TYPE                class_type;         // host class type
+    SYMBOL              sym;                // symbol to reference from vftable
+    target_offset_t     offset;             // current offset from start of symbol
+    unsigned            done        : 1;    // all vfptrs have been registered
+    unsigned            gen         : 1;    // must be generated
+    unsigned            cg_gen      : 1;    // has been generated
+    unsigned            free        : 1;    // used for PCH
+    unsigned            too_big     : 1;    // cannot fit in segment
 };
 
 struct _rtti_typeid {
     RTTI_TYPEID         *next;
-    TYPE                type;           // type for typeid
-    SYMBOL              sym;            // symbol to reference
-    unsigned            free : 1;       // used for PCH
+    TYPE                type;               // type for typeid
+    SYMBOL              sym;                // symbol to reference
+    unsigned            free        : 1;    // used for PCH
 };
 
 struct _rtti_adjust_vfptr {
     RTTI_VFPTR          *next;
-    unsigned            control;        // RA_* control mask
-    target_offset_t     delta;          // delta for adjustor
-    target_offset_t     offset;         // offset from start of symbol
-    unsigned            free : 1;       // used for PCH
+    unsigned            control;                                                                                                                                                                                                                                                                                                                                                                                                                                                                        // RA_* control mask
+    target_offset_t     delta;              // delta for adjustor
+    target_offset_t     offset;             // offset from start of symbol
+    unsigned            free        : 1;    // used for PCH
 };
 
 #define RttiAdjustSize()        ( 2 * TARGET_UINT )

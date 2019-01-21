@@ -34,7 +34,7 @@
 #include <limits.h>
 #include "winaux.h"
 #include "win.h"
-#include "font.h"
+#include "vifont.h"
 #include "color.h"
 #include "utils.h"
 #include "wclbproc.h"
@@ -44,7 +44,7 @@
 
 /* Local Windows CALLBACK function prototypes */
 WINEXPORT LRESULT CALLBACK EditWindowProc( HWND, UINT, WPARAM, LPARAM );
-WINEXPORT BOOL CALLBACK ResizeExtra( HWND hwnd, LPARAM l );
+WINEXPORT BOOL CALLBACK ResizeExtra( HWND hwnd, LPARAM lparam );
 
 extern HWND hColorbar, hFontbar, hSSbar;
 
@@ -115,7 +115,7 @@ void SetWindowTitle( window_id wid )
             if( cinfo->CurrentFile->dup_count > 0 ) {
                 MySprintf( buff, "%s [%d]", cinfo->CurrentFile->name,
                            cinfo->DuplicateID );
-                 SetWindowText( cinfo->current_window_id, buff );
+                SetWindowText( cinfo->current_window_id, buff );
             } else {
                 SetWindowText( cinfo->current_window_id, cinfo->CurrentFile->name );
             }
@@ -135,12 +135,12 @@ window_id NewEditWindow( void )
     window_data     *wd;
     MDICREATESTRUCT mdinew;
 
-    if( BAD_ID( edit_container_id ) ) {
+    if( BAD_ID( edit_container_window_id ) ) {
         return( NO_WINDOW );
     }
     style = GetEditStyle( false );
     ResizeRoot();
-    GetClientRect( edit_container_id, &rect );
+    GetClientRect( edit_container_window_id, &rect );
 
     mdinew.szClass = EditWindowClassName;
     mdinew.szTitle = "Edit Buffer";
@@ -152,7 +152,7 @@ window_id NewEditWindow( void )
     mdinew.style = style;
     mdinew.lParam = 0;
 
-    wid = (window_id)SendMessage( edit_container_id, WM_MDICREATE, 0, (LPARAM)(LPVOID)&mdinew );
+    wid = (window_id)SendMessage( edit_container_window_id, WM_MDICREATE, 0, (LPARAM)(LPVOID)&mdinew );
 
     wd = DATA_FROM_ID( wid );
 
@@ -184,7 +184,7 @@ static void doPaint( window *w, RECT *r, window_data *wd )
     start = r->top / height;
     stop = (r->bottom + height - 1) / height;
     max_lines = WindowAuxInfo( current_window_id, WIND_INFO_TEXT_LINES );
-    if( stop + 1 > max_lines ) {
+    if( stop > max_lines - 1 ) {
         stop = max_lines - 1;
     }
     DCInvalidateSomeLines( start, stop );
@@ -482,17 +482,17 @@ typedef void (*func)( HWND, int, int, bool );
 /*
  * mouseEvent - handle all mouse events in an edit window
  */
-static void mouseEvent( HWND hwnd, LPARAM l, bool flag, func f )
+static void mouseEvent( HWND hwnd, LPARAM lparam, bool flag, func f )
 {
     if( EditFlags.HoldEverything ) {
         return;
     }
     if( EditFlags.InsertModeActive ) {
         PushMode();
-        f( hwnd, GET_X( l ), GET_Y( l ), flag );
+        f( hwnd, GET_X( lparam ), GET_Y( lparam ), flag );
         PopMode();
     } else {
-        f( hwnd, GET_X( l ), GET_Y( l ), flag );
+        f( hwnd, GET_X( lparam ), GET_Y( lparam ), flag );
     }
     DCUpdate();
     SetWindowCursorForReal();
@@ -613,7 +613,7 @@ static void doVScroll( window_id wid, WPARAM wparam, LPARAM lparam )
     int         diff;
 
 #ifdef __NT__
-    lparam = lparam;
+    (void)lparam;
 #endif
     wd = DATA_FROM_ID( wid );
 
@@ -679,7 +679,7 @@ static void doHScroll( HWND hwnd, WPARAM wparam, LPARAM lparam )
     int newLeftColumn;
 
 #ifdef __NT__
-    lparam = lparam;
+    (void)lparam;
 #endif
     EditFlags.ScrollCommand = true;
     switch( GET_WM_HSCROLL_CODE( wparam, lparam ) ) {
@@ -729,13 +729,14 @@ WINEXPORT LRESULT CALLBACK EditWindowProc( window_id wid, UINT msg, WPARAM wpara
     HDC         hdc;
     RECT        rect;
     window_data *wd;
-    HWND        win;
-    HWND        tbwin;
+    window_id   parent_wid;
+    window_id   toolbar_wid;
     bool        killsel;
     info        *cinfo;
     info        *sinfo;
 
     w = WINDOW_FROM_ID( wid );
+
     switch( msg ) {
     case WM_CREATE:
         wd = MemAlloc( sizeof( window_data ) );
@@ -769,13 +770,13 @@ WINEXPORT LRESULT CALLBACK EditWindowProc( window_id wid, UINT msg, WPARAM wpara
             // losing focus
             cancelDrag();
             killsel = true;
-            win = (HWND)wparam;
-            if( win != NULL ) {
-                tbwin = GetToolbarWindow();
-                if( win == root_window_id || win == tbwin || win == command_window_id ||
-                    (!BAD_ID( hColorbar ) && IsChild( hColorbar, win )) ||
-                    (!BAD_ID( hFontbar ) && IsChild( hFontbar, win )) ||
-                    (!BAD_ID( hSSbar ) && IsChild( hSSbar, win )) ) {
+            parent_wid = (window_id)wparam;
+            if( parent_wid != NULL ) {
+                toolbar_wid = GetToolbarWindow();
+                if( parent_wid == root_window_id || parent_wid == toolbar_wid || parent_wid == command_window_id ||
+                    (!BAD_ID( hColorbar ) && IsChild( hColorbar, parent_wid )) ||
+                    (!BAD_ID( hFontbar ) && IsChild( hFontbar, parent_wid )) ||
+                    (!BAD_ID( hSSbar ) && IsChild( hSSbar, parent_wid )) ) {
                     killsel = false;
                 }
             }
@@ -826,12 +827,12 @@ WINEXPORT LRESULT CALLBACK EditWindowProc( window_id wid, UINT msg, WPARAM wpara
     case WM_SYSKEYUP:
         return( SendMessage( root_window_id, msg, wparam, lparam ) );
     case WM_SYSKEYDOWN:
-        if( WindowsKeyPush( wparam, HIWORD( lparam ) ) ) {
+        if( WindowsKeyPush( LOWORD( wparam ), HIWORD( lparam ) ) ) {
             return( 0 );
         }
         return( SendMessage( root_window_id, msg, wparam, lparam ) );
     case WM_KEYDOWN:
-        if( WindowsKeyPush( wparam, HIWORD( lparam ) ) ) {
+        if( WindowsKeyPush( LOWORD( wparam ), HIWORD( lparam ) ) ) {
             return( 0 );
         }
         break;
@@ -845,7 +846,7 @@ WINEXPORT LRESULT CALLBACK EditWindowProc( window_id wid, UINT msg, WPARAM wpara
         if( !EditFlags.HoldEverything ) {
             PushMode();
             wd = DATA_FROM_ID( wid );
-            SendMessage( edit_container_id, WM_MDIRESTORE, (WPARAM)wid, 0L );
+            SendMessage( edit_container_window_id, WM_MDIRESTORE, (WPARAM)wid, 0L );
             BringUpFile( wd->info, true );
             if( NextFile() > ERR_NO_ERR ) {
                 FileExitOptionSaveChanges( CurrentFile );
@@ -888,8 +889,7 @@ WINEXPORT LRESULT CALLBACK EditWindowProc( window_id wid, UINT msg, WPARAM wpara
         }
         /* either way we remember to reset extra */
         GetClientRect( wid, &wd->extra );
-        wd->extra.top = WindowAuxInfo( wid, WIND_INFO_TEXT_LINES ) *
-                                         FontHeight( WIN_TEXT_FONT( &EditWindow ) );
+        wd->extra.top = WindowAuxInfo( wid, WIND_INFO_TEXT_LINES ) * FontHeight( WIN_TEXT_FONT( &EditWindow ) );
         break;
     default:
         break;
@@ -901,13 +901,13 @@ WINEXPORT LRESULT CALLBACK EditWindowProc( window_id wid, UINT msg, WPARAM wpara
 /*
  * ResizeExtra - reset the left over rectange for an edit window
  */
-WINEXPORT BOOL CALLBACK ResizeExtra( window_id wid, LPARAM l )
+WINEXPORT BOOL CALLBACK ResizeExtra( window_id wid, LPARAM lparam )
 {
     window_data         *wd;
     char                class[MAX_STR];
     int                 len;
 
-    l = l;
+    (void)lparam;
     len = GetClassName( wid, class, sizeof( class ) );
     class[len] = '\0';
     if( stricmp( EditWindowClassName, class ) ) {
@@ -916,8 +916,7 @@ WINEXPORT BOOL CALLBACK ResizeExtra( window_id wid, LPARAM l )
 
     wd = DATA_FROM_ID( wid );
     GetClientRect( wid, &wd->extra );
-    wd->extra.top = WindowAuxInfo( wid, WIND_INFO_TEXT_LINES ) *
-                                     FontHeight( WIN_TEXT_FONT( &EditWindow ) );
+    wd->extra.top = WindowAuxInfo( wid, WIND_INFO_TEXT_LINES ) * FontHeight( WIN_TEXT_FONT( &EditWindow ) );
 
     return( TRUE );
 
@@ -931,9 +930,9 @@ void ResetExtraRects( void )
 {
     WNDENUMPROC     wndenumproc;
 
-    if( !BAD_ID( edit_container_id ) ) {
+    if( !BAD_ID( edit_container_window_id ) ) {
         wndenumproc = MakeProcInstance_WNDENUM( ResizeExtra, InstanceHandle );
-        EnumChildWindows( edit_container_id, wndenumproc, 0L );
+        EnumChildWindows( edit_container_window_id, wndenumproc, 0L );
         FreeProcInstance_WNDENUM( wndenumproc );
     }
 

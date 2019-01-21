@@ -48,7 +48,7 @@ extern unsigned         SymHdl2GblName( imp_image_handle *, imp_sym_handle *, ch
 extern unsigned         SymHdl2ObjGblName( imp_image_handle *, imp_sym_handle *, char *buff, unsigned buff_size );
 extern dip_status       SymHdl2GblType( imp_image_handle *, imp_sym_handle *, imp_type_handle *ith );
 extern type_kind        GblTypeClassify( unsigned kind );
-extern walk_result      WalkGblModSymList( imp_image_handle *, imp_mod_handle im, DIP_IMP_SYM_WALKER *wk, imp_sym_handle *, void *d );
+extern walk_result      WalkGblModSymList( imp_image_handle *, imp_mod_handle, DIP_IMP_SYM_WALKER *wk, imp_sym_handle *, void *d );
 extern dip_status       Link2GblHdl( imp_image_handle *, gbl_info *gbl, imp_sym_handle * );
-extern search_result    SearchGbl( imp_image_handle *, imp_mod_handle cim, imp_mod_handle im, lookup_item *li, void *d );
+extern search_result    SearchGbl( imp_image_handle *, imp_mod_handle, imp_mod_handle, lookup_item *li, void *d );
 extern search_result    LookupGblAddr( imp_image_handle *, address, imp_sym_handle * );

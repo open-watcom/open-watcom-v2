@@ -306,13 +306,13 @@ trap_retval ReqGet_sys_config( void )
 
                                                                           _DBG1(( "AccGetConfig" ));
     ret = GetOutPtr( 0 );
-    ret->sys.os = MAD_OS_AUTOCAD;
+    ret->sys.os = DIG_OS_AUTOCAD;
     ret->sys.osmajor = _osmajor;
     ret->sys.osminor = _osminor;
     ret->sys.cpu = X86CPUType();
     ret->sys.huge_shift = 12;
     ret->sys.fpu = RealNPXType;
-    ret->sys.mad = MAD_X86;
+    ret->sys.arch = DIG_ARCH_X86;
     return( sizeof( *ret ) );
 }
 
@@ -797,12 +797,13 @@ trap_retval ReqGet_next_alias( void )
 }
 
 #if 0
-extern int GtKey();
-
+extern int GtKey( void );
 #pragma aux GtKey = \
-    "xor    ah,ah"  \
-    "int    16"     \
-modify [ax];
+        "xor  ah,ah"    \
+        "int 16h"       \
+    __parm      [] \
+    __value     [__ax] \
+    __modify    [__ax]
 
 
 static unsigned_16 AccReadUserKey()

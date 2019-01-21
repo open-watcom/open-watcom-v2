@@ -9,12 +9,12 @@ set PROJDIR=<CWD>
 
 [ INCLUDE <OWROOT>/build/deftool.ctl ]
 
-[ BLOCK <1> rel ]
-#================
+[ BLOCK <BLDRULE> rel ]
+#======================
     cdsay <PROJDIR>
 
-[ BLOCK <1> rel cprel ]
-#======================
+[ BLOCK <BLDRULE> rel cprel ]
+#============================
     <CCCMD> dos386/whelp.exe    <OWRELROOT>/binw/whelp.exe
     <CCCMD> os2386/whelp.exe    <OWRELROOT>/binp/whelp.exe
     <CCCMD> linux386/whelp.exe  <OWRELROOT>/binl/whelp

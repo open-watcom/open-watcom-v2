@@ -31,7 +31,6 @@
 
 #include "guiwind.h"
 #include "guicontr.h"
-#include "guixmain.h"
 #include "guixwind.h"
 #include "guilistb.h"
 #include "guixdlg.h"

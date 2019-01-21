@@ -66,29 +66,33 @@ typedef struct char_info {
  * window structure
  */
 typedef struct window {
-    vi_color    border_color1, border_color2;
-    vi_color    text_color, background_color;
-    winarea     area;
-    windim      width, height;
-    char_info   *text;
-    window_id   *overlap;
-    window_id   *whooverlapping;
-    short       text_lines, text_cols;
-    char        *title;
-    char        *borderdata;
-    int         vert_scroll_pos;
-    short       bordercol;
-    window_id   id;
-    bool        isswapped           : 1;
-    bool        accessed            : 1;
-    bool        has_border          : 1;
-    bool        has_gadgets         : 1;
-    bool        min_slot            : 1;
-    bool        has_scroll_gadgets  : 1;
-    signed char overcnt[1];
+    vi_color        border_color1;
+    vi_color        border_color2;
+    vi_color        text_color;
+    vi_color        background_color;
+    winarea         area;
+    windim          width;
+    windim          height;
+    char_info       *text;
+    window_id       *overlap;
+    window_id       *whooverlapping;
+    short           text_lines;
+    short           text_cols;
+    char            *title;
+    char            *borderdata;
+    int             vert_scroll_pos;
+    short           bordercol;
+    window_id       id;
+    bool            isswapped           : 1;
+    bool            has_border          : 1;
+    bool            has_gadgets         : 1;
+    bool            min_slot            : 1;
+    bool            has_scroll_gadgets  : 1;
+    signed char     accessed;
+    signed char     overcnt[1];
 } window;
 
-extern window       *Windows[MAX_WINDS];
+extern window       *Windows[MAX_WINDS + 1];
 
 #define THUMB_START         2
 #define NORMAL_ATTR         7
@@ -147,7 +151,6 @@ extern void     WindowTitle( window_id wid, const char *title );
 extern void     ClearWindow( window_id wid );
 extern void     ShiftWindowUpDown( window_id wid, int lines );
 extern bool     SetDrawingObjects( HDC hdc, type_style *ts );
-extern void     MyTabbedTextOut( HDC, char **, int, bool, POINT *, type_style *, RECT *, window_id, char *, int );
 extern int      DisplayLineInWindowWithSyntaxStyle( window_id, int, line *, linenum, char *, int, HDC );
 
 /* win/stubs.c */
@@ -251,14 +254,14 @@ extern vi_rc    SetCharInWindowWithColor( window_id, windim, windim, char, type_
 extern void     StartWindows( void );
 extern void     FinishWindows( void );
 
-/* winnew.c */
+/* ui/winnew.c */
 extern vi_rc        ResetWindow( window_id * );
 extern bool         ValidDimension( windim, windim, windim, windim, bool );
-extern window_id    GimmeWindow( void );
-extern window       *AllocWindow( window_id, windim, windim, windim, windim, bool, bool, bool, vi_color, vi_color, vi_color, vi_color );
+extern window       *AllocWindow( window_id, windim, windim, windim, windim, bool, bool, vi_color, vi_color, vi_color, vi_color );
 extern void         FreeWindow( window * );
 extern vi_rc        NewWindow( window_id *, windim, windim, windim, windim, bool, vi_color, vi_color, type_style * );
 extern vi_rc        NewFullWindow( window_id *, bool, vi_color, vi_color, type_style * );
+extern vi_rc        NewWindow2( window_id *, window_info * );
 extern void         CloseAWindow( window_id );
 
 /* window.c */

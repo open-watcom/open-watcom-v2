@@ -33,9 +33,8 @@
 
 // (jww) 93/12/13 -- add initialization of type aliases
 
-#include "cgstd.h"
+#include "_cgstd.h"
 #include <stdarg.h>
-#include "typedef.h"
 #include "_cg.h"
 #include "bckdef.h"
 #include "typclass.h"
@@ -49,6 +48,7 @@
 #include "stubdata.h"
 #include "bckptr.h"
 #include "feprotos.h"
+
 
 extern  int             TempId;
 extern  unsigned_16     TypeIdx;
@@ -71,10 +71,6 @@ extern  void            exit(int);
 extern  void            VDefLabel(l *);
 extern  void            InitDbgInfo();
 extern  void            FiniDbgInfo();
-extern  void            TargTypeInit();
-
-
-
 
 
 extern  cg_init_info    BEInit( cg_switches cg_data, cg_target_switches tg_data,

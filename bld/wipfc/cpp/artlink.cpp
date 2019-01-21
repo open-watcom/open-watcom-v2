@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
+* Copyright (c) 2009-2018 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -32,6 +32,8 @@
 *
 ****************************************************************************/
 
+
+#include "wipfc.hpp"
 #include "artlink.hpp"
 #include "document.hpp"
 #include "lexer.hpp"
@@ -43,22 +45,21 @@ Lexer::Token Artlink::parse( Lexer* lexer )
     while( tok != Lexer::END ) {
         if( tok == Lexer::TAG ) {
             if( lexer->tagId() == Lexer::LINK ) {
-                Link* link( new Link( document, this, document->dataName(),
-                            document->lexerLine(), document->lexerCol() ) );
+                Link* link( new Link( _document, this, _document->dataName(),
+                            _document->lexerLine(), _document->lexerCol() ) );
                 appendChild( link );
                 link->setNoEndTag();
                 link->setHypergraphic();
                 tok = link->parse( lexer );
-            }
-            else if( lexer->tagId() == Lexer::EARTLINK || lexer->tagId() == Lexer::EUSERDOC )
+            } else if( lexer->tagId() == Lexer::EARTLINK || lexer->tagId() == Lexer::EUSERDOC ) {
                 break;
-            else
+            } else {
                 parseCleanup( lexer, tok );
-        }
-        else {
+            }
+        } else {
             if( tok != Lexer::WHITESPACE )
                 printError( ERR1_TAGCONTEXT );
-            tok = document->getNextToken();
+            tok = _document->getNextToken();
         }
     }
     return tok;

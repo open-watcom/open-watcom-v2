@@ -33,16 +33,20 @@
 #include "clibext.h"
 
 
-static int Curr_head_level = 0;
-static int Curr_head_skip = 0;
-
-#define BOX_LINE_SIZE   200
+#define BOX_LINE_SIZE           200
 
 #define FONT_STYLE_BOLD         1
 #define FONT_STYLE_ITALIC       2
 #define FONT_STYLE_UNDERLINE    4
 
-static char     *Font_match[]={
+#define IPF_TRANS_LEN           50
+
+#define MAX_TABS                100     // up to 100 tab stops
+
+static int          Curr_head_level = 0;
+static int          Curr_head_skip = 0;
+
+static char         *Font_match[] = {
     ":hp1.:ehp1",               // 0: PLAIN
     ":hp2.",                    // 1: BOLD
     ":hp1.",                    // 2: ITALIC
@@ -53,7 +57,7 @@ static char     *Font_match[]={
     ":hp7.",                    // 7: BOLD + ITALIC + UNDERLINE (can't do it)
 };
 
-static char     *Font_end[]={
+static char         *Font_end[] = {
     "",                         // 0: PLAIN
     ":ehp2.",                   // 1: BOLD
     ":ehp1.",                   // 2: ITALIC
@@ -64,75 +68,59 @@ static char     *Font_end[]={
     ":ehp7.",                   // 7: BOLD + ITALIC + UNDERLINE (can't do it)
 };
 
-static int Font_list[100];      // up to 100 nested fonts
-static int Font_list_curr= 0;
+static int          Font_list[100];      // up to 100 nested fonts
+static int          Font_list_curr = 0;
 
-static bool Blank_line_pfx = false;
-static bool Blank_line_sfx = true;
+static bool         Blank_line_pfx = false;
+static bool         Blank_line_sfx = true;
 
-#define IPF_TRANS_LEN           50
+static char         *Trans_str = NULL;
+static size_t       Trans_len = 0;
 
-static char	*Trans_str = NULL;
-static int 	Trans_len = 0;
+static unsigned     Tab_list[MAX_TABS];
+static int          tabs_num = 0;
 
-#define MAX_TABS                100     // up to 100 tab stops
-static int Tab_list[MAX_TABS];
-
-static void draw_line(
-/********************/
-
-    section_def         *section,
-    int                 *alloc_size
-) {
-    int                 i;
+static void draw_line( section_def *section, allocsize *alloc_size )
+/******************************************************************/
+{
+    int         i;
 
     trans_add_str( ":cgraphic.\n", section, alloc_size );
     for( i = BOX_LINE_SIZE; i > 0; --i ) {
-        trans_add_char( 196, section, alloc_size );
+        trans_add_char( CH_BOX_HBAR, section, alloc_size );
     }
     trans_add_str( "\n:ecgraphic.\n", section, alloc_size );
 }
 
-static int translate_char_ipf(
-/****************************/
-
-    int                 ch,
-    char                *buf
-) {
+static size_t translate_char_ipf( int ch, char *buf )
+/***************************************************/
+{
     switch( ch ) {
-
     case ':':
         strcpy( buf,  "&colon." );
         break;
-
     case '=':
         strcpy( buf, "&eq." );
         break;
-
     case '&':
         strcpy( buf, "&amp." );
         break;
-
     case '.':
         strcpy( buf, "&per." );
         break;
-
     default:
         buf[0] = ch;
         buf[1] = '\0';
         break;
     }
-
     return( strlen( buf ) );
 }
 
-static char *translate_str_ipf(
-/*****************************/
-
-    char                *str
-) {
+static char *translate_str_ipf( char *str )
+/*****************************************/
+{
     char                *t_str;
-    int                 len;
+    size_t              len;
     char                buf[IPF_TRANS_LEN];
     char                *ptr;
 
@@ -158,105 +146,78 @@ static char *translate_str_ipf(
     return( Trans_str );
 }
 
-static int trans_add_char_ipf(
-/****************************/
-
-    int                 ch,
-    section_def         *section,
-    int                 *alloc_size
-) {
-    char                buf[IPF_TRANS_LEN];
+static size_t trans_add_char_ipf( int ch, section_def *section, allocsize *alloc_size )
+/*************************************************************************************/
+{
+    char        buf[IPF_TRANS_LEN];
 
     translate_char_ipf( ch, buf );
     return( trans_add_str( buf, section, alloc_size ) );
 }
 
-static int trans_add_str_ipf(
-/***************************/
-
-    char                *str,
-    section_def         *section,
-    int                 *alloc_size
-) {
-    int                 len;
+static size_t trans_add_str_ipf( char *str, section_def *section, allocsize *alloc_size )
+/***************************************************************************************/
+{
+    size_t      len;
 
     len = 0;
     for( ; *str != '\0'; ++str ) {
         len += trans_add_char_ipf( *(unsigned char *)str, section, alloc_size );
     }
-
     return( len );
 }
 
-static int trans_add_list(
-/************************/
-
-    char                *list,
-    section_def         *section,
-    int                 *alloc_size,
-    char                *ptr
-) {
-    int                 len;
+static size_t trans_add_list( char *list, section_def *section, allocsize *alloc_size, char *ptr )
+/************************************************************************************************/
+{
+    size_t      len;
 
     len = trans_add_str( list, section, alloc_size );
     ++ptr;
     if( *ptr == 'c' ) {
         len += trans_add_str( " compact", section, alloc_size );
     }
-
     len += trans_add_str( ".\n", section, alloc_size );
-
     return( len );
 }
 
-static void read_tabs(
-/********************/
-
-    char                *tab_line
-) {
-    char                *ptr;
-    int                 i;
-    int                 tabcol;
+static void read_tabs( char *tab_line )
+/*************************************/
+{
+    char        *ptr;
+    unsigned    tabcol;
 
     Tab_xmp_char = *tab_line;
-
-    ptr = strtok( tab_line + 1, " " );
-    for( tabcol = 0, i = 0 ; ptr != NULL; ptr = strtok( NULL, " " ), ++i ) {
+    tabs_num = 0;
+    tabcol = 0;
+    for( ptr = strtok( tab_line + 1, " " ); ptr != NULL; ptr = strtok( NULL, " " ) ) {
         if( *ptr == '+' ) {
             tabcol += atoi( ptr + 1 );
         } else {
             tabcol = atoi( ptr );
         }
-        Tab_list[i] = tabcol;
+        Tab_list[tabs_num++] = tabcol;
     }
-    Tab_list[i] = -1;
 }
 
-static int tab_align(
-/*******************/
-
-    int                 ch_len,
-    section_def         *section,
-    int                 *alloc_size
-) {
-    int                 i;
-    int                 len;
+static size_t tab_align( size_t ch_len, section_def *section, allocsize *alloc_size )
+/***********************************************************************************/
+{
+    int         i;
+    size_t      len;
+    size_t      j;
 
     // find the tab we should use
-    i = 0;
-    while( ch_len >= Tab_list[i]) {
-        if( Tab_list[i] == -1 ) break;
-        ++i;
-    }
-
     len = 1;
-    if( Tab_list[i] != -1 ) {
-        len =  Tab_list[i] - ch_len;
+    for( i = 0; i < tabs_num; i++ ) {
+        if( Tab_list[i] > ch_len ) {
+            len = Tab_list[i] - ch_len;
+            break;
+        }
     }
-    for( i = len; i > 0; --i ) {
+    for( j = len; j > 0; j-- ) {
         trans_add_char_ipf( ' ', section, alloc_size );
     }
-
     return( len );
 }
 
@@ -265,12 +226,9 @@ void ipf_topic_init( void )
 {
 }
 
-int ipf_trans_line(
-/*****************/
-
-    section_def         *section,
-    int                 alloc_size
-) {
+allocsize ipf_trans_line( section_def *section, allocsize alloc_size )
+/********************************************************************/
+{
     char                *ptr;
     char                *end;
     int                 ch;
@@ -278,10 +236,10 @@ int ipf_trans_line(
     char                *ctx_text;
     char                buf[500];
     int                 font_idx;
-    int                 line_len;
+    size_t              line_len;
     bool                term_fix;
-    int                 ch_len;
-    int                 len;
+    size_t              ch_len;
+    size_t              len;
     char                *file_name;
 
     /* check for special column 0 stuff first */
@@ -303,7 +261,6 @@ int ipf_trans_line(
             Blank_line_pfx = false;     // remove preceding blanks
         }
         return( alloc_size );
-
     case CH_BOX_ON:
         /* Table support is the closest thing to boxing in IPF, but it
            doesn't work well with changing fonts on items in the tables
@@ -312,58 +269,47 @@ int ipf_trans_line(
         draw_line( section, &alloc_size );
         Blank_line_pfx = false;
         return( alloc_size );
-
     case CH_BOX_OFF:
         draw_line( section, &alloc_size );
         Blank_line_sfx = false;
         return( alloc_size );
-
     case CH_OLIST_START:
         trans_add_list( ":ol", section, &alloc_size, ptr );
         Blank_line_pfx = false;
         return( alloc_size );
-
     case CH_LIST_START:
         trans_add_list( ":ul", section, &alloc_size, ptr );
         Blank_line_pfx = false;
         return( alloc_size );
-
     case CH_DLIST_START:
         trans_add_str( ":dl break=all tsize=5.\n", section, &alloc_size );
         Blank_line_pfx = false;
         return( alloc_size );
-
     case CH_SLIST_START:
         trans_add_list( ":sl", section, &alloc_size, ptr );
         Blank_line_pfx = false;
         return( alloc_size );
-
     case CH_SLIST_END:
         trans_add_str( ":esl.\n", section, &alloc_size );
         Blank_line_sfx = false;
         return( alloc_size );
-
     case CH_OLIST_END:
         trans_add_str( ":eol.\n", section, &alloc_size );
         Blank_line_sfx = false;
         return( alloc_size );
-
     case CH_LIST_END:
         trans_add_str( ":eul.\n", section, &alloc_size );
         Blank_line_sfx = false;
         return( alloc_size );
-
     case CH_DLIST_END:
         trans_add_str( ":edl.\n", section, &alloc_size );
         Blank_line_sfx = false;
         return( alloc_size );
-
     case CH_LIST_ITEM:
     case CH_DLIST_TERM:
         /* eat blank lines before list items and terms */
         Blank_line_pfx = false;
         break;
-
     case CH_CTX_KW:
         ptr = whole_keyword_line( ptr );
         if( ptr == NULL ) {
@@ -517,17 +463,17 @@ int ipf_trans_line(
             case 'i':
                 sprintf( buf, ":artwork runin name='%s'.", ptr );
                 break;
-
             case 'l':
                 sprintf( buf, ":artwork align=left name='%s'.", ptr );
                 break;
-
             case 'r':
                 sprintf( buf, ":artwork align=right name='%s'.", ptr );
                 break;
-
             case 'c':
                 sprintf( buf, ":artwork align=center name='%s'.", ptr );
+                break;
+            default:
+                *buf = '\0';
                 break;
             }
             line_len += trans_add_str( buf, section, &alloc_size );
@@ -538,15 +484,12 @@ int ipf_trans_line(
             font_idx = 0;
             for( ; ptr != end; ++ptr ) {
                 switch( *ptr ) {
-
                 case 'b':
                     font_idx |= FONT_STYLE_BOLD;
                     break;
-
                 case 'i':
                     font_idx |= FONT_STYLE_ITALIC;
                     break;
-
                 case 'u':
                 case 's':
                     font_idx |= FONT_STYLE_UNDERLINE;
@@ -628,11 +571,9 @@ int ipf_trans_line(
     return( alloc_size );
 }
 
-static void output_hdr(
-/*********************/
-
-    void
-) {
+static void output_hdr( void )
+/****************************/
+{
     whp_fprintf( Out_file, ":userdoc.\n" );
     if( Ipf_title != NULL && Ipf_title[0] != '\0' ) {
         whp_fprintf( Out_file, ":title.%s\n", Ipf_title );
@@ -640,11 +581,9 @@ static void output_hdr(
     whp_fprintf( Out_file, ":docprof toc=123456.\n" );
 }
 
-static void output_ctx_hdr(
-/*************************/
-
-    ctx_def                     *ctx
-) {
+static void output_ctx_hdr( ctx_def *ctx )
+/****************************************/
+{
     int                         head_level;
     char                        *ptr;
     keyword_def                 *key;
@@ -682,8 +621,7 @@ static void output_ctx_hdr(
                                 translate_str_ipf( ctx->title ) );
 
     if( ctx->keylist != NULL ) {
-        for( keylist = ctx->keylist; keylist != NULL;
-                                            keylist = keylist->next ) {
+        for( keylist = ctx->keylist; keylist != NULL; keylist = keylist->next ) {
             key = keylist->key;
             ptr = key->keyword;
             if( !key->duplicate ) {
@@ -716,35 +654,27 @@ static void output_ctx_hdr(
     /* nor does 'Up' topicing have any relevance */
 }
 
-static void output_end(
-/*********************/
-
-    void
-) {
+static void output_end( void )
+/****************************/
+{
     whp_fprintf( Out_file, "\n:euserdoc.\n" );
 }
 
-static void output_ctx_sections(
-/******************************/
-
-    ctx_def                     *ctx
-) {
+static void output_ctx_sections( ctx_def *ctx )
+/*********************************************/
+{
     section_def                 *section;
 
-    for( section = ctx->section_list; section != NULL; ) {
+    for( section = ctx->section_list; section != NULL; section = section->next ) {
         if( section->section_size > 0 ) {
-            whp_fwrite( section->section_text, 1,
-                                        section->section_size, Out_file );
+            whp_fwrite( section->section_text, 1, section->section_size, Out_file );
         }
-        section = section->next;
     }
 }
 
-void ipf_output_file(
-/*******************/
-
-    void
-) {
+void ipf_output_file( void )
+/**************************/
+{
     ctx_def                     *ctx;
 
     output_hdr();
@@ -758,4 +688,3 @@ void ipf_output_file(
     }
     output_end();
 }
-

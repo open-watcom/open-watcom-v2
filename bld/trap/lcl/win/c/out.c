@@ -57,9 +57,15 @@ static int _line=0;
 static char *GetScreenPointer( void )
 {
 #if 0
-    static short sel;
+    static short    sel;
+    long            rc;
 
-    if( sel == 0 ) sel = _DPMISegmentToDescriptor( 0xB000 );
+    if( sel == 0 ) {
+        rc = _DPMISegmentToDescriptor( 0xB000 );
+        if( rc >= 0 ) {
+            sel = rc;
+        }
+    }
     return( MK_FP( sel, 0 ) );
 #else
     extern char _B000h[];

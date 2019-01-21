@@ -32,7 +32,7 @@
 #ifdef DEFINE_STRINGS
 #define LITSTR( sym, val ) const char _Literal_##sym[] = val;
 #else
-#if defined( __I86__ )
+#if defined( _M_I86 )
     #define MAKEFAR __far
 #else
     #define MAKEFAR
@@ -123,5 +123,5 @@ LITSTR( LMS_RECURSIVE_MAD_FAILURE,  "Can not recover from machine architecture f
 extern void ErrorMsg( char *msg, ... );
 extern void fatal( char *msg, ... );
 #ifdef __WATCOMC__
-#pragma aux fatal aborts;
+#pragma aux fatal __aborts
 #endif

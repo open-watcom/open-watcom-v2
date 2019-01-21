@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2016 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -30,7 +30,7 @@
 ****************************************************************************/
 
 
-#include "cgstd.h"
+#include "_cgstd.h"
 #include "coderep.h"
 #include "regset.h"
 #include "model.h"
@@ -41,13 +41,16 @@
 #include "namelist.h"
 #include "rgtbl.h"
 #include "split.h"
-#include "x86splt2.h"
 #include "insutil.h"
 #include "optab.h"
 #include "inssegs.h"
 #include "optimize.h"
 #include "overlap.h"
 #include "x86split.h"
+#include "x86segs.h"
+#include "confldef.h"
+#include "liveinfo.h"
+#include "_x86splt2.h"
 
 
 typedef struct eight_byte_name {
@@ -57,16 +60,8 @@ typedef struct eight_byte_name {
         union name     *high;
 } eight_byte_name;
 
-extern  name            *IntEquivalent( name * );
-extern  void            UpdateLive( instruction *, instruction * );
-extern  name            *AddrConst( name *, int, constant_class );
-extern  name            *SegName( name * );
-
-/*forward declaration*/
-static  void            Split8Name( instruction *ins, name *tosplit, eight_byte_name *out );
-
-extern  name    *LowPart( name *tosplit, type_class_def class )
-/*************************************************************/
+name    *LowPart( name *tosplit, type_class_def type_class )
+/***********************************************************/
 {
     name                *new = NULL;
     name                *new_cons;
@@ -79,19 +74,19 @@ extern  name    *LowPart( name *tosplit, type_class_def class )
     switch( tosplit->n.class ) {
     case N_CONSTANT:
         if( tosplit->c.const_type == CONS_ABSOLUTE ) {
-            if( class == U1 ) {
+            if( type_class == U1 ) {
                 u8 = tosplit->c.lo.int_value & 0xff;
                 new = AllocUIntConst( u8 );
-            } else if( class == I1 ) {
+            } else if( type_class == I1 ) {
                 s8 = tosplit->c.lo.int_value & 0xff;
                 new = AllocIntConst( s8 );
-            } else if( class == U2 ) {
+            } else if( type_class == U2 ) {
                 u16 = tosplit->c.lo.int_value & 0xffff;
                 new = AllocUIntConst( u16 );
-            } else if( class == I2 ) {
+            } else if( type_class == I2 ) {
                 s16 = tosplit->c.lo.int_value & 0xffff;
                 new = AllocIntConst( s16 );
-            } else if( class == FL ) {
+            } else if( type_class == FL ) {
                 _Zoiks( ZOIKS_125 );
             } else { /* FD */
                 floatval = GetFloat( tosplit, FD );
@@ -104,31 +99,31 @@ extern  name    *LowPart( name *tosplit, type_class_def class )
         }
         break;
     case N_REGISTER:
-        if( class == U1 || class == I1 ) {
+        if( type_class == U1 || type_class == I1 ) {
             new = AllocRegName( Low16Reg( tosplit->r.reg ) );
         } else {
             new = AllocRegName( Low32Reg( tosplit->r.reg ) );
         }
         break;
     case N_TEMP:
-        new = TempOffset( tosplit, 0, class );
+        new = TempOffset( tosplit, 0, type_class );
         if( new->t.temp_flags & CONST_TEMP ) {
-            if( tosplit->n.name_class == FS ) {
+            if( tosplit->n.type_class == FS ) {
                 new_cons = IntEquivalent( tosplit->v.symbol );
             } else {
                 new_cons = tosplit->v.symbol;
             }
-            new->v.symbol = LowPart( new_cons, class );
+            new->v.symbol = LowPart( new_cons, type_class );
         }
         break;
     case N_MEMORY:
         new = AllocMemory( tosplit->v.symbol, tosplit->v.offset,
-                                tosplit->m.memory_type, class );
+                                tosplit->m.memory_type, type_class );
         new->v.usage = tosplit->v.usage;
         break;
     case N_INDEXED:
         new = ScaleIndex( tosplit->i.index, tosplit->i.base,
-                                tosplit->i.constant, class, 0, tosplit->i.scale,
+                                tosplit->i.constant, type_class, 0, tosplit->i.scale,
                                 tosplit->i.index_flags );
         break;
     default:
@@ -138,8 +133,8 @@ extern  name    *LowPart( name *tosplit, type_class_def class )
 }
 
 
-extern  name    *HighPart( name *tosplit, type_class_def class )
-/**************************************************************/
+name    *HighPart( name *tosplit, type_class_def type_class )
+/***********************************************************/
 {
     name                *new = NULL;
     name                *new_cons;
@@ -153,19 +148,19 @@ extern  name    *HighPart( name *tosplit, type_class_def class )
     switch( tosplit->n.class ) {
     case N_CONSTANT:
         if( tosplit->c.const_type == CONS_ABSOLUTE ) {
-            if( class == U1 ) {
+            if( type_class == U1 ) {
                 u8 = ( tosplit->c.lo.int_value >> 8 ) & 0xff;
                 new = AllocUIntConst( u8 );
-            } else if( class == I1 ) {
+            } else if( type_class == I1 ) {
                 s8 = ( tosplit->c.lo.int_value >> 8 ) & 0xff;
                 new = AllocIntConst( s8 );
-            } else if( class == U2 ) {
+            } else if( type_class == U2 ) {
                 u16 = ( tosplit->c.lo.int_value >> 16 ) & 0xffff;
                 new = AllocUIntConst( u16 );
-            } else if( class == I2 ) {
+            } else if( type_class == I2 ) {
                 s16 = ( tosplit->c.lo.int_value >> 16 ) & 0xffff;
                 new = AllocIntConst( s16 );
-            } else if( class == FL ) {
+            } else if( type_class == FL ) {
                 _Zoiks( ZOIKS_125 );
             } else { /* FD */
                 floatval = GetFloat( tosplit, FD );
@@ -178,21 +173,21 @@ extern  name    *HighPart( name *tosplit, type_class_def class )
         }
         break;
     case N_REGISTER:
-        if( class == U1 || class == I1 ) {
+        if( type_class == U1 || type_class == I1 ) {
             new = AllocRegName( High16Reg( tosplit->r.reg ) );
         } else {
             new = AllocRegName( High32Reg( tosplit->r.reg ) );
         }
         break;
     case N_TEMP:
-        new = TempOffset( tosplit, tosplit->n.size/2, class );
+        new = TempOffset( tosplit, tosplit->n.size / 2, type_class );
         if( new->t.temp_flags & CONST_TEMP ) {
-            if( tosplit->n.name_class == FS ) {
+            if( tosplit->n.type_class == FS ) {
                 new_cons = IntEquivalent( tosplit->v.symbol );
             } else {
                 new_cons = tosplit->v.symbol;
             }
-            op = HighPart( new_cons, class );
+            op = HighPart( new_cons, type_class );
             if( op->n.class == N_REGISTER )
                 return( op );
             new->v.symbol = op;
@@ -200,13 +195,13 @@ extern  name    *HighPart( name *tosplit, type_class_def class )
         break;
     case N_MEMORY:
         new = AllocMemory( tosplit->v.symbol,
-                                tosplit->v.offset + tosplit->n.size/2,
-                                tosplit->m.memory_type, class );
+                                tosplit->v.offset + tosplit->n.size / 2,
+                                tosplit->m.memory_type, type_class );
         new->v.usage = tosplit->v.usage;
         break;
     case N_INDEXED:
         new = ScaleIndex( tosplit->i.index, tosplit->i.base,
-                tosplit->i.constant+ tosplit->n.size/2, class, 0,
+                tosplit->i.constant+ tosplit->n.size / 2, type_class, 0,
                 tosplit->i.scale, tosplit->i.index_flags );
         break;
     default:
@@ -216,22 +211,22 @@ extern  name    *HighPart( name *tosplit, type_class_def class )
 }
 
 
-extern  name    *OffsetPart( name *tosplit )
-/******************************************/
+name    *OffsetPart( name *tosplit )
+/**********************************/
 {
     return( LowPart( tosplit, U2 ) );
 }
 
 
-extern  name    *SegmentPart( name *tosplit )
-/*******************************************/
+name    *SegmentPart( name *tosplit )
+/***********************************/
 {
     return( HighPart( tosplit, U2 ) );
 }
 
 
-extern  instruction     *SplitUnary( instruction *ins )
-/*****************************************************/
+instruction     *SplitUnary( instruction *ins )
+/*********************************************/
 {
     instruction *new_ins;
     name        *high_res;
@@ -275,376 +270,6 @@ static  instruction     *SplitOverlapped( instruction *ins, opcnt op )
     PrefixIns( ins, move );
     UpdateLive( move, ins );
     return( move );
-}
-
-extern  instruction     *rMOVE8LOW( instruction *ins )
-/****************************************************/
-/*   Move low 4 bytes of 8 byte thingy */
-{
-    instruction         *lo_ins;
-    instruction         *mid_lo_ins;
-    eight_byte_name     left;
-
-    if( IndexOverlaps( ins, 0 ) ) {
-        return( SplitOverlapped( ins, 0 ) );
-    }
-    Split8Name( ins, ins->operands[0], &left );
-    lo_ins = MakeMove( left.low, LowPart( ins->result, U2 ), U2 );
-    mid_lo_ins = MakeMove( left.mid_low, HighPart( ins->result, U2 ), U2 );
-    DupSeg( ins, lo_ins );
-    DupSeg( ins, mid_lo_ins );
-    PrefixIns( ins, lo_ins );
-    ReplIns( ins, mid_lo_ins );
-    UpdateLive( lo_ins, mid_lo_ins );
-    return( lo_ins );
-}
-
-extern  instruction     *rSPLIT8( instruction *ins )
-/**************************************************/
-/*   Used to split 8 byte push, pop and move*/
-{
-    opcode_defs         op;
-    instruction         *lo_ins;
-    instruction         *mid_lo_ins;
-    instruction         *mid_hi_ins;
-    instruction         *hi_ins;
-    instruction         *first_ins;
-    instruction         *last_ins;
-    eight_byte_name     result;
-    eight_byte_name     left;
-
-    if( IndexOverlaps( ins, 0 ) ) {
-        return( SplitOverlapped( ins, 0 ) );
-    }
-    Split8Name( ins, ins->operands[0], &left );
-    Split8Name( ins, ins->result, &result );
-    op = ins->head.opcode;
-    lo_ins = MakeUnary( op, left.low, result.low, U2 );
-    mid_lo_ins = MakeUnary( op, left.mid_low, result.mid_low, U2 );
-    mid_hi_ins = MakeUnary( op, left.mid_high, result.mid_high, U2 );
-    hi_ins = MakeUnary( op, left.high, result.high, U2 );
-    DupSeg( ins, lo_ins );
-    DupSeg( ins, mid_lo_ins );
-    DupSeg( ins, mid_hi_ins );
-    DupSeg( ins, hi_ins );
-    if( op == OP_POP ) {       /* do low first*/
-        first_ins = lo_ins;
-        PrefixIns( ins, lo_ins );
-        PrefixIns( ins, mid_lo_ins );
-        PrefixIns( ins, mid_hi_ins );
-        ReplIns( ins, hi_ins );
-        last_ins = hi_ins;
-    } else {
-        first_ins = hi_ins;
-        PrefixIns( ins, hi_ins );
-        PrefixIns( ins, mid_hi_ins );
-        PrefixIns( ins, mid_lo_ins );
-        ReplIns( ins, lo_ins );
-        last_ins = lo_ins;
-    }
-    UpdateLive( first_ins, last_ins );
-    return( first_ins );
-}
-
-extern  instruction     *rSPLIT8BIN( instruction *ins )
-/*****************************************************/
-/*   Used to split 8 byte binary operations (ADD,SUB,Logicals) */
-{
-    opcode_defs         op;
-    instruction         *lo_ins;
-    instruction         *mid_lo_ins;
-    instruction         *mid_hi_ins;
-    instruction         *hi_ins;
-    eight_byte_name     result;
-    eight_byte_name     left;
-    eight_byte_name     rite;
-
-    if( IndexOverlaps( ins, 0 ) ) {
-        return( SplitOverlapped( ins, 0 ) );
-    }
-    if( IndexOverlaps( ins, 1 ) ) {
-        return( SplitOverlapped( ins, 1 ) );
-    }
-    Split8Name( ins, ins->operands[0], &left );
-    Split8Name( ins, ins->operands[1], &rite );
-    Split8Name( ins, ins->result, &result );
-    op = ins->head.opcode;
-    lo_ins = MakeBinary( op, left.low, rite.low, result.low, U2 );
-    switch( op ) {
-    case OP_ADD:
-        op = OP_EXT_ADD;
-        break;
-    case OP_SUB:
-        op = OP_EXT_SUB;
-        break;
-    default:
-        break;
-    }
-    mid_lo_ins = MakeBinary( op, left.mid_low, rite.mid_low, result.mid_low, U2 );
-    mid_hi_ins = MakeBinary( op, left.mid_high, rite.mid_high, result.mid_high, U2 );
-    hi_ins = MakeBinary( op, left.high, rite.high, result.high, U2 );
-    switch( op ) {
-    case OP_EXT_ADD:
-    case OP_EXT_SUB:
-        hi_ins->table = CodeTable( hi_ins );
-        mid_hi_ins->table = hi_ins->table;
-        mid_hi_ins->ins_flags |= INS_CC_USED;
-        mid_lo_ins->table = hi_ins->table;
-        mid_lo_ins->ins_flags |= INS_CC_USED;
-        lo_ins->table = hi_ins->table;
-        lo_ins->ins_flags |= INS_CC_USED;
-        break;
-    default:
-        break;
-    }
-    DupSeg( ins, lo_ins );
-    DupSeg( ins, mid_lo_ins );
-    DupSeg( ins, mid_hi_ins );
-    DupSeg( ins, hi_ins );
-    PrefixIns( ins, lo_ins );
-    PrefixIns( ins, mid_lo_ins );
-    PrefixIns( ins, mid_hi_ins );
-    ReplIns( ins, hi_ins );
-    UpdateLive( lo_ins, hi_ins );
-    return( lo_ins );
-}
-
-extern  instruction     *rSPLIT8NEG( instruction *ins )
-/*****************************************************/
-/*   Used to split 8 byte negate */
-{
-    instruction         *new;
-
-    /*  OK, so we're not really splitting the thing. But it works just
-     *  as well.
-     */
-    new = MakeBinary( OP_SUB, AllocIntConst( 0 ), ins->operands[0],
-                        ins->result, ins->type_class );
-    DupSeg( ins, new );
-    ReplIns( ins, new );
-    return( new );
-}
-
-extern  instruction     *rSPLIT8TST( instruction *ins )
-/*****************************************************/
-/*   Used to split 8 byte test */
-{
-    eight_byte_name     left;
-    eight_byte_name     rite;
-    byte                true_idx;
-    byte                false_idx;
-    opcode_defs         op;
-    instruction         *lo_ins;
-    instruction         *mid_lo_ins;
-    instruction         *mid_hi_ins;
-    instruction         *hi_ins;
-
-    Split8Name( ins, ins->operands[0], &left );
-    Split8Name( ins, ins->operands[1], &rite );
-    true_idx = _TrueIndex( ins );
-    false_idx = _FalseIndex( ins );
-    op = ins->head.opcode;
-    lo_ins = MakeCondition( op, left.low, rite.low, true_idx, false_idx, U2 );
-    switch( op ) {
-    case OP_BIT_TEST_FALSE:
-        op = OP_BIT_TEST_TRUE;
-        true_idx = false_idx;
-        break;
-    default:
-        break;
-    }
-    false_idx = NO_JUMP;
-    mid_lo_ins = MakeCondition( op, left.mid_low, rite.mid_low, true_idx, false_idx, U2 );
-    mid_hi_ins = MakeCondition( op, left.mid_high, rite.mid_high, true_idx, false_idx, U2 );
-    hi_ins = MakeCondition( op, left.high, rite.high, true_idx, false_idx, U2 );
-    DupSeg( ins, lo_ins );
-    DupSeg( ins, mid_lo_ins );
-    DupSeg( ins, mid_hi_ins );
-    DupSeg( ins, hi_ins );
-    PrefixIns( ins, hi_ins );
-    PrefixIns( ins, mid_hi_ins );
-    PrefixIns( ins, mid_lo_ins );
-    ReplIns( ins, lo_ins );
-    UpdateLive( hi_ins, lo_ins );
-    return( hi_ins );
-}
-
-extern  instruction     *rSPLIT8CMP( instruction *ins )
-/*****************************************************/
-/*   Used to split 8 byte compare */
-{
-    eight_byte_name     left;
-    eight_byte_name     rite;
-    byte                true_idx;
-    byte                false_idx;
-    instruction         *new[8];
-    type_class_def      high_class;
-    unsigned            i;
-    unsigned            j;
-
-/*
- * 2005-04-06 RomanT (bug #407)
- * I removed calls do DoNothing(), it seems ok, extra jumps are perfectly
- * optimized out in other places of compiler. Calling DoNothing() on chain
- * of conditions to reuse existing CC flags is ugly and causes unpredictable
- * logical faults in other places.
- */
-    Split8Name( ins, ins->operands[0], &left );
-    Split8Name( ins, ins->operands[1], &rite );
-    true_idx = _TrueIndex( ins );
-    false_idx = _FalseIndex( ins );
-    high_class = HalfClass[HalfClass[ins->type_class]];
-    i = 0;
-    switch( ins->head.opcode ) {
-    case OP_CMP_EQUAL:
-        new[i++] = MakeCondition( OP_CMP_NOT_EQUAL, left.high, rite.high,
-                                        false_idx, NO_JUMP, U2 );
-        new[i++] = MakeCondition( OP_CMP_NOT_EQUAL, left.mid_high, rite.mid_high,
-                                        false_idx, NO_JUMP, U2 );
-        new[i++] = MakeCondition( OP_CMP_NOT_EQUAL, left.mid_low, rite.mid_low,
-                                        false_idx, NO_JUMP, U2 );
-        new[i++] = MakeCondition( OP_CMP_EQUAL, left.low, rite.low,
-                                        true_idx, false_idx, U2 );
-        break;
-    case OP_CMP_NOT_EQUAL:
-        new[i++] = MakeCondition( OP_CMP_NOT_EQUAL, left.high, rite.high,
-                                        true_idx, NO_JUMP, U2 );
-        new[i++] = MakeCondition( OP_CMP_NOT_EQUAL, left.mid_high, rite.mid_high,
-                                        true_idx, NO_JUMP, U2 );
-        new[i++] = MakeCondition( OP_CMP_NOT_EQUAL, left.mid_low, rite.mid_low,
-                                        true_idx, NO_JUMP, U2 );
-        new[i++] = MakeCondition( OP_CMP_NOT_EQUAL, left.low, rite.low,
-                                        true_idx, false_idx, U2 );
-        break;
-    case OP_CMP_GREATER:
-    case OP_CMP_GREATER_EQUAL:
-        new[i++] = MakeCondition( OP_CMP_GREATER, left.high, rite.high,
-                                        true_idx, NO_JUMP, high_class );
-        new[i++] = MakeCondition( OP_CMP_NOT_EQUAL, left.high, rite.high,
-                                        false_idx, NO_JUMP, U2 );
-        new[i++] = MakeCondition( OP_CMP_GREATER, left.mid_high, rite.mid_high,
-                                        true_idx, NO_JUMP, U2 );
-        new[i++] = MakeCondition( OP_CMP_NOT_EQUAL, left.mid_high, rite.mid_high,
-                                        false_idx, NO_JUMP, U2 );
-        new[i++] = MakeCondition( OP_CMP_GREATER, left.mid_low, rite.mid_low,
-                                        true_idx, NO_JUMP, U2 );
-        new[i++] = MakeCondition( OP_CMP_NOT_EQUAL, left.mid_low, rite.mid_low,
-                                        false_idx, NO_JUMP, U2 );
-        new[i++] = MakeCondition( ins->head.opcode, left.low, rite.low,
-                                        true_idx, false_idx, U2 );
-        break;
-    case OP_CMP_LESS:
-    case OP_CMP_LESS_EQUAL:
-        new[i++] = MakeCondition( OP_CMP_LESS, left.high, rite.high,
-                                        true_idx, NO_JUMP, high_class );
-        new[i++] = MakeCondition( OP_CMP_NOT_EQUAL, left.high, rite.high,
-                                        false_idx, NO_JUMP, U2 );
-        new[i++] = MakeCondition( OP_CMP_LESS, left.mid_high, rite.mid_high,
-                                        true_idx, NO_JUMP, U2 );
-        new[i++] = MakeCondition( OP_CMP_NOT_EQUAL, left.mid_high, rite.mid_high,
-                                        false_idx, NO_JUMP, U2 );
-        new[i++] = MakeCondition( OP_CMP_LESS, left.mid_low, rite.mid_low,
-                                        true_idx, NO_JUMP, U2 );
-        new[i++] = MakeCondition( OP_CMP_NOT_EQUAL, left.mid_low, rite.mid_low,
-                                        false_idx, NO_JUMP, U2 );
-        new[i++] = MakeCondition( ins->head.opcode, left.low, rite.low,
-                                        true_idx, false_idx, U2 );
-        break;
-    default:
-        _Zoiks( ZOIKS_125 );
-    }
-    --i;
-    for( j = 0; j < i; ++j ) {
-        DupSeg( ins, new[j] );
-        PrefixIns( ins, new[j] );
-    }
-    DupSeg( ins, new[i] );
-    ReplIns( ins, new[i] );
-    UpdateLive( new[0], new[i] );
-    return( new[0] );
-}
-
-
-extern  instruction     *rCLRHI_D( instruction *ins )
-/***************************************************/
-/*   Clear the high dword of an 8 byte thingy (zero extend) */
-{
-    eight_byte_name     result;
-    instruction         *move1;
-    instruction         *move2;
-    instruction         *move3;
-    instruction         *move4;
-
-    if( IndexOverlaps( ins,  0 ) ) {
-        return( SplitOverlapped( ins, 0 ) );
-    }
-    Split8Name( ins, ins->result, &result );
-    move1 = MakeMove( LowPart( ins->operands[0], U2 ), result.low, U2 );
-    move2 = MakeMove( HighPart( ins->operands[0], U2 ), result.mid_low, U2 );
-    move3 = MakeMove( AllocIntConst( 0 ), result.mid_high, U2 );
-    move4 = MakeMove( AllocIntConst( 0 ), result.high, U2 );
-    DupSeg( ins, move1 );
-    DupSeg( ins, move2 );
-    DupSegRes( ins, move3 );
-    DupSegRes( ins, move4 );
-    PrefixIns( ins, move1 );
-    PrefixIns( ins, move2 );
-    PrefixIns( ins, move3 );
-    ReplIns( ins, move4 );
-    UpdateLive( move1, move4 );
-    return( move1 );
-}
-
-
-extern  instruction     *rCDQ( instruction *ins )
-/***********************************************/
-/*   Sign extend a 4 byte thingy to an 8 byte thingy */
-{
-    eight_byte_name     result;
-    instruction         *shift;
-    instruction         *move1, *move2;
-    instruction         *lo_ins;
-    instruction         *mid_lo_ins;
-    name                *temp;
-    name                *high;
-
-    if( IndexOverlaps( ins, 0 ) ) {
-        return( SplitOverlapped( ins, 0 ) );
-    }
-    Split8Name( ins, ins->result, &result );
-    /*
-     * 2005-09-26 RomanT
-     * Use temp name to avoid creation of instruction where both
-     * operand and result have segment prefix (cg cannot handle this)
-     */
-    temp = AllocTemp( I2 );
-    high = HighPart( ins->operands[0], U2 );
-    lo_ins = MakeMove( LowPart( ins->operands[0], U2 ), result.low, U2 );
-    mid_lo_ins = MakeMove( high, result.mid_low, U2 );
-    shift = MakeBinary( OP_RSHIFT, high, AllocIntConst( 15 ), temp, I2 );
-    move1 = MakeMove( temp, result.mid_high, U2 );
-    move2 = MakeMove( temp, result.high, U2 );
-    DupSeg( ins, lo_ins );
-    DupSeg( ins, mid_lo_ins );
-    DupSeg( ins, shift );
-    DupSegRes( ins, move1 );
-    DupSegRes( ins, move2 );
-    PrefixIns( ins, lo_ins );
-    PrefixIns( ins, mid_lo_ins );
-    PrefixIns( ins, shift );
-    PrefixIns( ins, move1 );
-    ReplIns( ins, move2 );
-    UpdateLive( lo_ins, move2 );
-    return( lo_ins );
-}
-
-static  name    *High8Part( instruction *ins, name *temp )
-/********************************************************/
-{
-    eight_byte_name     expand;
-
-    Split8Name( ins, temp, & expand );
-    return( expand.high );
 }
 
 
@@ -739,9 +364,379 @@ static  void    Split8Name( instruction *ins, name *tosplit, eight_byte_name *ou
     }
 }
 
+instruction     *rMOVE8LOW( instruction *ins )
+/********************************************/
+/*   Move low 4 bytes of 8 byte thingy */
+{
+    instruction         *lo_ins;
+    instruction         *mid_lo_ins;
+    eight_byte_name     left;
 
-extern  instruction     *rCYPSHIFT( instruction *ins )
-/****************************************************/
+    if( IndexOverlaps( ins, 0 ) ) {
+        return( SplitOverlapped( ins, 0 ) );
+    }
+    Split8Name( ins, ins->operands[0], &left );
+    lo_ins = MakeMove( left.low, LowPart( ins->result, U2 ), U2 );
+    mid_lo_ins = MakeMove( left.mid_low, HighPart( ins->result, U2 ), U2 );
+    DupSeg( ins, lo_ins );
+    DupSeg( ins, mid_lo_ins );
+    PrefixIns( ins, lo_ins );
+    ReplIns( ins, mid_lo_ins );
+    UpdateLive( lo_ins, mid_lo_ins );
+    return( lo_ins );
+}
+
+instruction     *rSPLIT8( instruction *ins )
+/*******************************************/
+/* Used to split 8 byte push, pop and move */
+{
+    opcode_defs         op;
+    instruction         *lo_ins;
+    instruction         *mid_lo_ins;
+    instruction         *mid_hi_ins;
+    instruction         *hi_ins;
+    instruction         *first_ins;
+    instruction         *last_ins;
+    eight_byte_name     result;
+    eight_byte_name     left;
+
+    if( IndexOverlaps( ins, 0 ) ) {
+        return( SplitOverlapped( ins, 0 ) );
+    }
+    Split8Name( ins, ins->operands[0], &left );
+    Split8Name( ins, ins->result, &result );
+    op = ins->head.opcode;
+    lo_ins = MakeUnary( op, left.low, result.low, U2 );
+    mid_lo_ins = MakeUnary( op, left.mid_low, result.mid_low, U2 );
+    mid_hi_ins = MakeUnary( op, left.mid_high, result.mid_high, U2 );
+    hi_ins = MakeUnary( op, left.high, result.high, U2 );
+    DupSeg( ins, lo_ins );
+    DupSeg( ins, mid_lo_ins );
+    DupSeg( ins, mid_hi_ins );
+    DupSeg( ins, hi_ins );
+    if( op == OP_POP ) {       /* do low first*/
+        first_ins = lo_ins;
+        PrefixIns( ins, lo_ins );
+        PrefixIns( ins, mid_lo_ins );
+        PrefixIns( ins, mid_hi_ins );
+        ReplIns( ins, hi_ins );
+        last_ins = hi_ins;
+    } else {
+        first_ins = hi_ins;
+        PrefixIns( ins, hi_ins );
+        PrefixIns( ins, mid_hi_ins );
+        PrefixIns( ins, mid_lo_ins );
+        ReplIns( ins, lo_ins );
+        last_ins = lo_ins;
+    }
+    UpdateLive( first_ins, last_ins );
+    return( first_ins );
+}
+
+instruction     *rSPLIT8BIN( instruction *ins )
+/*********************************************/
+/*   Used to split 8 byte binary operations (ADD,SUB,Logicals) */
+{
+    opcode_defs         op;
+    instruction         *lo_ins;
+    instruction         *mid_lo_ins;
+    instruction         *mid_hi_ins;
+    instruction         *hi_ins;
+    eight_byte_name     result;
+    eight_byte_name     left;
+    eight_byte_name     rite;
+
+    if( IndexOverlaps( ins, 0 ) ) {
+        return( SplitOverlapped( ins, 0 ) );
+    }
+    if( IndexOverlaps( ins, 1 ) ) {
+        return( SplitOverlapped( ins, 1 ) );
+    }
+    Split8Name( ins, ins->operands[0], &left );
+    Split8Name( ins, ins->operands[1], &rite );
+    Split8Name( ins, ins->result, &result );
+    op = ins->head.opcode;
+    lo_ins = MakeBinary( op, left.low, rite.low, result.low, U2 );
+    switch( op ) {
+    case OP_ADD:
+        op = OP_EXT_ADD;
+        break;
+    case OP_SUB:
+        op = OP_EXT_SUB;
+        break;
+    default:
+        break;
+    }
+    mid_lo_ins = MakeBinary( op, left.mid_low, rite.mid_low, result.mid_low, U2 );
+    mid_hi_ins = MakeBinary( op, left.mid_high, rite.mid_high, result.mid_high, U2 );
+    hi_ins = MakeBinary( op, left.high, rite.high, result.high, U2 );
+    switch( op ) {
+    case OP_EXT_ADD:
+    case OP_EXT_SUB:
+        hi_ins->table = CodeTable( hi_ins );
+        mid_hi_ins->table = hi_ins->table;
+        mid_hi_ins->ins_flags |= INS_CC_USED;
+        mid_lo_ins->table = hi_ins->table;
+        mid_lo_ins->ins_flags |= INS_CC_USED;
+        lo_ins->table = hi_ins->table;
+        lo_ins->ins_flags |= INS_CC_USED;
+        break;
+    default:
+        break;
+    }
+    DupSeg( ins, lo_ins );
+    DupSeg( ins, mid_lo_ins );
+    DupSeg( ins, mid_hi_ins );
+    DupSeg( ins, hi_ins );
+    PrefixIns( ins, lo_ins );
+    PrefixIns( ins, mid_lo_ins );
+    PrefixIns( ins, mid_hi_ins );
+    ReplIns( ins, hi_ins );
+    UpdateLive( lo_ins, hi_ins );
+    return( lo_ins );
+}
+
+instruction     *rSPLIT8NEG( instruction *ins )
+/*********************************************/
+/*   Used to split 8 byte negate */
+{
+    instruction         *new;
+
+    /*  OK, so we're not really splitting the thing. But it works just
+     *  as well.
+     */
+    new = MakeBinary( OP_SUB, AllocIntConst( 0 ), ins->operands[0],
+                        ins->result, ins->type_class );
+    DupSeg( ins, new );
+    ReplIns( ins, new );
+    return( new );
+}
+
+instruction     *rSPLIT8TST( instruction *ins )
+/*********************************************/
+/*   Used to split 8 byte test */
+{
+    eight_byte_name     left;
+    eight_byte_name     rite;
+    byte                true_idx;
+    byte                false_idx;
+    opcode_defs         op;
+    instruction         *lo_ins;
+    instruction         *mid_lo_ins;
+    instruction         *mid_hi_ins;
+    instruction         *hi_ins;
+
+    Split8Name( ins, ins->operands[0], &left );
+    Split8Name( ins, ins->operands[1], &rite );
+    true_idx = _TrueIndex( ins );
+    false_idx = _FalseIndex( ins );
+    op = ins->head.opcode;
+    lo_ins = MakeCondition( op, left.low, rite.low, true_idx, false_idx, U2 );
+    switch( op ) {
+    case OP_BIT_TEST_FALSE:
+        op = OP_BIT_TEST_TRUE;
+        true_idx = false_idx;
+        break;
+    default:
+        break;
+    }
+    false_idx = NO_JUMP;
+    mid_lo_ins = MakeCondition( op, left.mid_low, rite.mid_low, true_idx, false_idx, U2 );
+    mid_hi_ins = MakeCondition( op, left.mid_high, rite.mid_high, true_idx, false_idx, U2 );
+    hi_ins = MakeCondition( op, left.high, rite.high, true_idx, false_idx, U2 );
+    DupSeg( ins, lo_ins );
+    DupSeg( ins, mid_lo_ins );
+    DupSeg( ins, mid_hi_ins );
+    DupSeg( ins, hi_ins );
+    PrefixIns( ins, hi_ins );
+    PrefixIns( ins, mid_hi_ins );
+    PrefixIns( ins, mid_lo_ins );
+    ReplIns( ins, lo_ins );
+    UpdateLive( hi_ins, lo_ins );
+    return( hi_ins );
+}
+
+instruction     *rSPLIT8CMP( instruction *ins )
+/*********************************************/
+/*   Used to split 8 byte compare */
+{
+    eight_byte_name     left;
+    eight_byte_name     rite;
+    byte                true_idx;
+    byte                false_idx;
+    instruction         *new[8];
+    type_class_def      high_type_class;
+    unsigned            i;
+    unsigned            j;
+
+/*
+ * 2005-04-06 RomanT (bug #407)
+ * I removed calls do DoNothing(), it seems ok, extra jumps are perfectly
+ * optimized out in other places of compiler. Calling DoNothing() on chain
+ * of conditions to reuse existing CC flags is ugly and causes unpredictable
+ * logical faults in other places.
+ */
+    Split8Name( ins, ins->operands[0], &left );
+    Split8Name( ins, ins->operands[1], &rite );
+    true_idx = _TrueIndex( ins );
+    false_idx = _FalseIndex( ins );
+    high_type_class = HalfClass[HalfClass[ins->type_class]];
+    i = 0;
+    switch( ins->head.opcode ) {
+    case OP_CMP_EQUAL:
+        new[i++] = MakeCondition( OP_CMP_NOT_EQUAL, left.high, rite.high,
+                                        false_idx, NO_JUMP, U2 );
+        new[i++] = MakeCondition( OP_CMP_NOT_EQUAL, left.mid_high, rite.mid_high,
+                                        false_idx, NO_JUMP, U2 );
+        new[i++] = MakeCondition( OP_CMP_NOT_EQUAL, left.mid_low, rite.mid_low,
+                                        false_idx, NO_JUMP, U2 );
+        new[i++] = MakeCondition( OP_CMP_EQUAL, left.low, rite.low,
+                                        true_idx, false_idx, U2 );
+        break;
+    case OP_CMP_NOT_EQUAL:
+        new[i++] = MakeCondition( OP_CMP_NOT_EQUAL, left.high, rite.high,
+                                        true_idx, NO_JUMP, U2 );
+        new[i++] = MakeCondition( OP_CMP_NOT_EQUAL, left.mid_high, rite.mid_high,
+                                        true_idx, NO_JUMP, U2 );
+        new[i++] = MakeCondition( OP_CMP_NOT_EQUAL, left.mid_low, rite.mid_low,
+                                        true_idx, NO_JUMP, U2 );
+        new[i++] = MakeCondition( OP_CMP_NOT_EQUAL, left.low, rite.low,
+                                        true_idx, false_idx, U2 );
+        break;
+    case OP_CMP_GREATER:
+    case OP_CMP_GREATER_EQUAL:
+        new[i++] = MakeCondition( OP_CMP_GREATER, left.high, rite.high,
+                                        true_idx, NO_JUMP, high_type_class );
+        new[i++] = MakeCondition( OP_CMP_NOT_EQUAL, left.high, rite.high,
+                                        false_idx, NO_JUMP, U2 );
+        new[i++] = MakeCondition( OP_CMP_GREATER, left.mid_high, rite.mid_high,
+                                        true_idx, NO_JUMP, U2 );
+        new[i++] = MakeCondition( OP_CMP_NOT_EQUAL, left.mid_high, rite.mid_high,
+                                        false_idx, NO_JUMP, U2 );
+        new[i++] = MakeCondition( OP_CMP_GREATER, left.mid_low, rite.mid_low,
+                                        true_idx, NO_JUMP, U2 );
+        new[i++] = MakeCondition( OP_CMP_NOT_EQUAL, left.mid_low, rite.mid_low,
+                                        false_idx, NO_JUMP, U2 );
+        new[i++] = MakeCondition( ins->head.opcode, left.low, rite.low,
+                                        true_idx, false_idx, U2 );
+        break;
+    case OP_CMP_LESS:
+    case OP_CMP_LESS_EQUAL:
+        new[i++] = MakeCondition( OP_CMP_LESS, left.high, rite.high,
+                                        true_idx, NO_JUMP, high_type_class );
+        new[i++] = MakeCondition( OP_CMP_NOT_EQUAL, left.high, rite.high,
+                                        false_idx, NO_JUMP, U2 );
+        new[i++] = MakeCondition( OP_CMP_LESS, left.mid_high, rite.mid_high,
+                                        true_idx, NO_JUMP, U2 );
+        new[i++] = MakeCondition( OP_CMP_NOT_EQUAL, left.mid_high, rite.mid_high,
+                                        false_idx, NO_JUMP, U2 );
+        new[i++] = MakeCondition( OP_CMP_LESS, left.mid_low, rite.mid_low,
+                                        true_idx, NO_JUMP, U2 );
+        new[i++] = MakeCondition( OP_CMP_NOT_EQUAL, left.mid_low, rite.mid_low,
+                                        false_idx, NO_JUMP, U2 );
+        new[i++] = MakeCondition( ins->head.opcode, left.low, rite.low,
+                                        true_idx, false_idx, U2 );
+        break;
+    default:
+        _Zoiks( ZOIKS_125 );
+    }
+    --i;
+    for( j = 0; j < i; ++j ) {
+        DupSeg( ins, new[j] );
+        PrefixIns( ins, new[j] );
+    }
+    DupSeg( ins, new[i] );
+    ReplIns( ins, new[i] );
+    UpdateLive( new[0], new[i] );
+    return( new[0] );
+}
+
+
+instruction     *rCLRHI_D( instruction *ins )
+/*******************************************/
+/*   Clear the high dword of an 8 byte thingy (zero extend) */
+{
+    eight_byte_name     result;
+    instruction         *move1;
+    instruction         *move2;
+    instruction         *move3;
+    instruction         *move4;
+
+    if( IndexOverlaps( ins,  0 ) ) {
+        return( SplitOverlapped( ins, 0 ) );
+    }
+    Split8Name( ins, ins->result, &result );
+    move1 = MakeMove( LowPart( ins->operands[0], U2 ), result.low, U2 );
+    move2 = MakeMove( HighPart( ins->operands[0], U2 ), result.mid_low, U2 );
+    move3 = MakeMove( AllocIntConst( 0 ), result.mid_high, U2 );
+    move4 = MakeMove( AllocIntConst( 0 ), result.high, U2 );
+    DupSeg( ins, move1 );
+    DupSeg( ins, move2 );
+    DupSegRes( ins, move3 );
+    DupSegRes( ins, move4 );
+    PrefixIns( ins, move1 );
+    PrefixIns( ins, move2 );
+    PrefixIns( ins, move3 );
+    ReplIns( ins, move4 );
+    UpdateLive( move1, move4 );
+    return( move1 );
+}
+
+
+instruction     *rCDQ( instruction *ins )
+/***************************************/
+/*   Sign extend a 4 byte thingy to an 8 byte thingy */
+{
+    eight_byte_name     result;
+    instruction         *shift;
+    instruction         *move1, *move2;
+    instruction         *lo_ins;
+    instruction         *mid_lo_ins;
+    name                *temp;
+    name                *high;
+
+    if( IndexOverlaps( ins, 0 ) ) {
+        return( SplitOverlapped( ins, 0 ) );
+    }
+    Split8Name( ins, ins->result, &result );
+    /*
+     * 2005-09-26 RomanT
+     * Use temp name to avoid creation of instruction where both
+     * operand and result have segment prefix (cg cannot handle this)
+     */
+    temp = AllocTemp( I2 );
+    high = HighPart( ins->operands[0], U2 );
+    lo_ins = MakeMove( LowPart( ins->operands[0], U2 ), result.low, U2 );
+    mid_lo_ins = MakeMove( high, result.mid_low, U2 );
+    shift = MakeBinary( OP_RSHIFT, high, AllocIntConst( 15 ), temp, I2 );
+    move1 = MakeMove( temp, result.mid_high, U2 );
+    move2 = MakeMove( temp, result.high, U2 );
+    DupSeg( ins, lo_ins );
+    DupSeg( ins, mid_lo_ins );
+    DupSeg( ins, shift );
+    DupSegRes( ins, move1 );
+    DupSegRes( ins, move2 );
+    PrefixIns( ins, lo_ins );
+    PrefixIns( ins, mid_lo_ins );
+    PrefixIns( ins, shift );
+    PrefixIns( ins, move1 );
+    ReplIns( ins, move2 );
+    UpdateLive( lo_ins, move2 );
+    return( lo_ins );
+}
+
+static  name    *High8Part( instruction *ins, name *temp )
+/********************************************************/
+{
+    eight_byte_name     expand;
+
+    Split8Name( ins, temp, &expand );
+    return( expand.high );
+}
+
+
+instruction     *rCYPSHIFT( instruction *ins )
+/********************************************/
 {
     instruction *ins1;
     instruction *ins2;
@@ -768,7 +763,7 @@ extern  instruction     *rCYPSHIFT( instruction *ins )
                         AllocIntConst( half_count ),
                         temp, ins->type_class );
         ins2 = NULL;
-        ins3 = MakeConvert( temp, ins->result, ins->result->n.name_class,
+        ins3 = MakeConvert( temp, ins->result, ins->result->n.type_class,
                             ins->type_class );
     }
     DupSegOp( ins, ins1, 0 );
@@ -782,8 +777,8 @@ extern  instruction     *rCYPSHIFT( instruction *ins )
 }
 
 
-extern  instruction     *rBYTESHIFT( instruction *ins )
-/*****************************************************/
+instruction     *rBYTESHIFT( instruction *ins )
+/*********************************************/
 {
     instruction *ins1;
     instruction *ins2;
@@ -824,8 +819,8 @@ extern  instruction     *rBYTESHIFT( instruction *ins )
     return( ins1 );
 }
 
-extern instruction      *rLOADLONGADDR( instruction *ins )
-/********************************************************/
+instruction      *rLOADLONGADDR( instruction *ins )
+/*************************************************/
 {
     instruction         *new_ins;
     name                *name1;
@@ -841,7 +836,7 @@ extern instruction      *rLOADLONGADDR( instruction *ins )
                 LowPart(name1->i.index,U2),
                 name1->i.base,
                 name1->i.constant,
-                name1->n.name_class,
+                name1->n.type_class,
                 name1->n.size,
                 name1->i.scale,
                 name1->i.index_flags );
@@ -853,8 +848,8 @@ extern instruction      *rLOADLONGADDR( instruction *ins )
 }
 
 
-extern  instruction     *rHIGHCMP( instruction *ins )
-/***************************************************/
+instruction     *rHIGHCMP( instruction *ins )
+/*******************************************/
 {
     name                *name1;
 
@@ -876,8 +871,8 @@ extern  instruction     *rHIGHCMP( instruction *ins )
 }
 
 
-extern instruction      *rMAKEU4( instruction *ins )
-/**************************************************/
+instruction      *rMAKEU4( instruction *ins )
+/*******************************************/
 {
     instruction         *new_ins;
     instruction         *ins2;
@@ -896,16 +891,16 @@ extern instruction      *rMAKEU4( instruction *ins )
     return( new_ins );
 }
 
-extern  instruction     *rSPLITPUSH( instruction *ins )
-/*****************************************************/
+instruction     *rSPLITPUSH( instruction *ins )
+/*********************************************/
 /* NOT NEEDED */
 {
     return( ins );
 }
 
 
-extern  instruction     *rEXT_PUSH1( instruction *ins )
-/*****************************************************/
+instruction     *rEXT_PUSH1( instruction *ins )
+/*********************************************/
 {
     name        *temp;
     instruction *new_ins;
@@ -920,30 +915,30 @@ extern  instruction     *rEXT_PUSH1( instruction *ins )
 }
 
 
-extern  instruction     *rEXT_PUSH2( instruction *ins )
-/*****************************************************/
+instruction     *rEXT_PUSH2( instruction *ins )
+/*********************************************/
 /* NOT NEEDED */
 {
     return( ins );
 }
 
 
-extern  instruction     *rINTCOMP( instruction *ins )
-/***************************************************/
+instruction     *rINTCOMP( instruction *ins )
+/*******************************************/
 {
     name                *left;
     name                *rite;
     instruction         *low;
     instruction         *high;
-    type_class_def      half_class;
-    type_class_def      quarter_class;
+    type_class_def      half_type_class;
+    type_class_def      quarter_type_class;
     byte                true_idx;
     byte                false_idx;
     byte                first_idx;
     bool                rite_is_zero;
 
     rite_is_zero = CFTest( ins->operands[1]->c.value ) == 0;
-    half_class = HalfClass[ins->type_class];
+    half_type_class = HalfClass[ins->type_class];
     left = ins->operands[0];
     rite = ins->operands[1];
     true_idx = _TrueIndex( ins );
@@ -954,62 +949,106 @@ extern  instruction     *rINTCOMP( instruction *ins )
          first_idx = true_idx;
     }
     if( ins->type_class == FD ) {
-        quarter_class = HalfClass[half_class];
+        quarter_type_class = HalfClass[half_type_class];
 
         if( rite_is_zero ) {
             high = MakeCondition( OP_BIT_TEST_TRUE,
-                        HighPart( HighPart( left, half_class ), quarter_class ),
+                        HighPart( HighPart( left, half_type_class ), quarter_type_class ),
                         AllocIntConst( 0x7fff ),
-                        first_idx, NO_JUMP, quarter_class );
+                        first_idx, NO_JUMP, quarter_type_class );
         } else {
             high = MakeCondition( OP_CMP_NOT_EQUAL,
-                        HighPart( HighPart( left, half_class ), quarter_class ),
-                        HighPart( HighPart( rite, half_class ), quarter_class ),
-                        first_idx, NO_JUMP, quarter_class );
+                        HighPart( HighPart( left, half_type_class ), quarter_type_class ),
+                        HighPart( HighPart( rite, half_type_class ), quarter_type_class ),
+                        first_idx, NO_JUMP, quarter_type_class );
         }
         DupSeg( ins, high );
         PrefixIns( ins, high );
         low = MakeCondition( OP_CMP_NOT_EQUAL,
-                        LowPart( HighPart( left, half_class ), quarter_class ),
-                        LowPart( HighPart( rite, half_class ), quarter_class ),
-                        first_idx, NO_JUMP, quarter_class );
+                        LowPart( HighPart( left, half_type_class ), quarter_type_class ),
+                        LowPart( HighPart( rite, half_type_class ), quarter_type_class ),
+                        first_idx, NO_JUMP, quarter_type_class );
         DupSeg( ins, low );
         PrefixIns( ins, low );
         low = MakeCondition( OP_CMP_NOT_EQUAL,
-                        HighPart( LowPart( left, half_class ), quarter_class ),
-                        HighPart( LowPart( rite, half_class ), quarter_class ),
-                        first_idx, NO_JUMP, quarter_class );
+                        HighPart( LowPart( left, half_type_class ), quarter_type_class ),
+                        HighPart( LowPart( rite, half_type_class ), quarter_type_class ),
+                        first_idx, NO_JUMP, quarter_type_class );
         DupSeg( ins, low );
         PrefixIns( ins, low );
         low = MakeCondition( ins->head.opcode,
-                        LowPart( LowPart( left, half_class ), quarter_class ),
-                        LowPart( LowPart( rite, half_class ), quarter_class ),
-                        true_idx, false_idx, quarter_class );
+                        LowPart( LowPart( left, half_type_class ), quarter_type_class ),
+                        LowPart( LowPart( rite, half_type_class ), quarter_type_class ),
+                        true_idx, false_idx, quarter_type_class );
     } else {
         rite = IntEquivalent( rite );
         if( rite_is_zero ) {
             high = MakeCondition( OP_BIT_TEST_TRUE,
-                        HighPart( left, half_class ),
+                        HighPart( left, half_type_class ),
                         AllocIntConst( 0x7fff ),
-                        first_idx, NO_JUMP, half_class );
+                        first_idx, NO_JUMP, half_type_class );
         } else {
             high = MakeCondition( OP_CMP_NOT_EQUAL,
-                        HighPart( left, half_class ),
-                        HighPart( rite, half_class ),
-                        first_idx, NO_JUMP, half_class );
+                        HighPart( left, half_type_class ),
+                        HighPart( rite, half_type_class ),
+                        first_idx, NO_JUMP, half_type_class );
         }
         DupSeg( ins, high );
         PrefixIns( ins, high );
         low = MakeCondition( ins->head.opcode,
-                        LowPart( left, half_class ),
-                        LowPart( rite, half_class ),
+                        LowPart( left, half_type_class ),
+                        LowPart( rite, half_type_class ),
                         true_idx, false_idx,
-                        half_class );
+                        half_type_class );
     }
     DupSeg( ins, low );
     ReplIns( ins, low );
     return( high );
 }
 
-extern  instruction     *rCONVERT_UP( instruction *ins ) { return( ins ); }
-extern  instruction     *rCYP_SEX( instruction *ins ) { return( ins ); }
+instruction     *rCONVERT_UP( instruction *ins ) { return( ins ); }
+instruction     *rCYP_SEX( instruction *ins ) { return( ins ); }
+
+instruction     *rMAKEU2( instruction *ins )
+/******************************************/
+{
+    instruction *new_ins;
+    instruction *ins2;
+    name        *temp = NULL;
+
+    if( IndexOverlaps( ins, 0 ) || IndexOverlaps( ins, 1 ) ) {
+        ChangeType( ins, U2 );
+        if( ins->result != NULL ) {
+            new_ins = MakeMove( HighPart( ins->operands[0], U2 ), AllocTemp( U2 ), U2 );
+            temp = HighPart( ins->result, U2 );
+            ins->result = LowPart( ins->result, U2 );
+            DupSegOp( ins, new_ins, 0 );
+            PrefixIns( ins, new_ins );
+        } else {
+            new_ins = ins;
+        }
+        ins->operands[0] = LowPart( ins->operands[0], U2 );
+        if( ins->operands[1]->n.type_class == U4 || ins->operands[1]->n.type_class == I4 ) {
+            ins->operands[1] = LowPart( ins->operands[1], U2 );
+        }
+        if( ins->result != NULL ) {
+            ins2 = MakeMove( new_ins->result, temp, U2 );
+            DupSegRes( ins, ins2 );
+            SuffixIns( ins, ins2 );
+        }
+    } else {
+        ChangeType( ins, U2 );
+        if( ins->result != NULL ) {
+            new_ins = MakeMove( HighPart( ins->operands[0], U2 ), HighPart( ins->result, U2 ), U2 );
+            ins->result = LowPart( ins->result, U2 );
+            DupSegOp( ins, new_ins, 0 );
+            DupSegRes( ins, new_ins );
+            PrefixIns( ins, new_ins );
+        } else {
+            new_ins = ins;
+        }
+        ins->operands[0] = LowPart( ins->operands[0], U2 );
+        ins->operands[1] = LowPart( ins->operands[1], U2 );
+    }
+    return( new_ins );
+}

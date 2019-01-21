@@ -56,7 +56,7 @@
 //VBE3.0
 #define VBEMODE_CAPS_INTERLACED (1<<9)  // Interlaced Mode Available OR
                                         // (VBE/AF) must call enabledirectaccess before calling bank switching
-#define VBEMODE_CAPS_TRIPLEBUF   (1<<10) // Triple Buffering supported
+#define VBEMODE_CAPS_TRIPLEBUF  (1<<10) // Triple Buffering supported
 #define VBEMODE_CAPS_STEREO     (1<<11) // Stereoscopic display supported
 #define VBEMODE_CAPS_DUALDISP   (1<<12) // dual display start address support
 
@@ -80,16 +80,16 @@
 // to avoid segment relocations in the executable.
 // The assignment to _SetVGAPage provides the CS value at runtime.
 
-#if defined( __QNX__ ) || !defined( __386__ )
+#if defined( _M_I86 ) || defined( __QNX__ )
     #define _FARC       __far
 #else
     #define _FARC
 #endif
 
-#if defined ( __386__ )
-    #pragma aux VGAPAGE_FUNC "*" parm caller [eax];
+#if defined( _M_I86 )
+    #pragma aux VGAPAGE_FUNC "*" __parm __caller [__ax]
 #else
-    #pragma aux VGAPAGE_FUNC "*" parm caller [ax];
+    #pragma aux VGAPAGE_FUNC "*" __parm __caller [__eax]
 #endif
 
 typedef void __pascal vgapage_fn( short );

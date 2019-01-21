@@ -1,7 +1,7 @@
 #include <iostream.h>
 #include <fstream.h>
 
-void main( void ) {
+int main( void ) {
 
     char ch;
 

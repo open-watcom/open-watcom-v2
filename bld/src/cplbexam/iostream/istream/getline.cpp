@@ -1,6 +1,6 @@
 #include <iostream.h>
 
-void main( void ) {
+int main( void ) {
 
     char    *bp;
     int      len = 50;
@@ -12,6 +12,6 @@ void main( void ) {
         cout << "The sentence you have just written:" << endl;
         cout.write( bp, cin.gcount() );
         cout << endl;
-        delete bp;
+        delete[] bp;
     }
 }

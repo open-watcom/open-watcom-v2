@@ -36,11 +36,15 @@
 
 extern bool UserForcedTermRefresh;
 
-const char *InternalCommands[] = { "" };
+const char _NEAR * _NEAR InternalCommands[] = {
+    (const char _NEAR *)""
+};
 
 int InternalCommandCount = sizeof( InternalCommands ) / sizeof( char * );
 
-const char *ExeExtensions[] = { "" };
+const char _NEAR * _NEAR ExeExtensions[] = {
+    (const char _NEAR *)""
+};
 
 int ExeExtensionCount = sizeof( ExeExtensions ) / sizeof( char * );
 

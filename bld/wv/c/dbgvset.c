@@ -43,7 +43,7 @@
 #include "dbgscan.h"
 #include "dbgmain.h"
 #include "dbgshow.h"
-#include "dbgsetfn.h"
+#include "dbgsetfg.h"
 
 
 extern type_display     *TypeDisplay;

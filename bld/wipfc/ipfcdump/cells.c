@@ -21,10 +21,10 @@ void readCells(FILE *in, FILE *out)
             fseek( in, cellOffsets[ count ], SEEK_SET );
             fprintf( out, "  Cell #%u at offset %8.8x\n", count, cellOffsets[ count ] );
             readCell( in, out );
-            }
         }
-    free( cellOffsets );
     }
+    free( cellOffsets );
+}
 /*****************************************************************************/
 static void readCell( FILE *in, FILE *out )
 {
@@ -106,22 +106,23 @@ static unsigned int readEscape(FILE *out, uint8_t *text, uint8_t type, uint8_t s
     case 0x04:
         carg = text[ ++count ];
         fprintf( out, "04: set style to %2.2x ", carg );
-        if( carg == 0)
+        if( carg == 0 ) {
             fputs( "(plain text)>]", out );
-        else if( carg == 1 )
+        } else if( carg == 1 ) {
             fputs( "(italic)>]", out );
-        else if( carg == 2 )
+        } else if( carg == 2 ) {
             fputs( "(bold)>]", out );
-        else if( carg == 3 )
+        } else if( carg == 3 ) {
             fputs( "(bold italic)>]", out );
-        else if( carg == 4 )
+        } else if( carg == 4 ) {
             fputs( "(underscored)>]", out );
-        else if( carg == 5 )
+        } else if( carg == 5 ) {
             fputs( "(italic underscored)>]", out );
-        else if( carg == 6 )
+        } else if( carg == 6 ) {
             fputs( "(bold underscored)>]", out );
-        else if( carg == 7 )
+        } else if( carg == 7 ) {
             fputs( "(bold italic underscored)>]", out );
+        }
         break;
     case 0x05:
         sarg = (uint16_t)text[ ++count ];
@@ -140,28 +141,32 @@ static unsigned int readEscape(FILE *out, uint8_t *text, uint8_t type, uint8_t s
                 memcpy( &p, &text[ count + 1 ], sizeof( PanelOrigin ) );
                 count += sizeof( PanelOrigin );
                 fprintf( out, ", target position supplied (" );
-                if( p.xPosType == DYNAMIC)
+                if( p.xPosType == DYNAMIC ) {
                     fprintf( out, "%s %s, ", getDPosString( p.xpos ), getPosString( p.xPosType ) );
-                else
+                } else {
                     fprintf( out, "%hu %s,", p.xpos, getPosString(p.xPosType));
-                if( p.yPosType == DYNAMIC)
+                }
+                if( p.yPosType == DYNAMIC ) {
                     fprintf( out, "%s %s)", getDPosString( p.ypos ), getPosString( p.yPosType ) );
-                else
+                } else {
                     fprintf( out, "%hu %s)", p.ypos, getPosString( p.yPosType ) );
+                }
             }
             if( carg & 0x02 ) {
                 PanelSize p;
                 memcpy(&p, &text[ count + 1 ], sizeof( PanelSize ) );
                 count += sizeof( PanelSize );
                 fprintf( out, ", target size supplied (" );
-                if( p.widthType == DYNAMIC )
+                if( p.widthType == DYNAMIC ) {
                     fprintf( out, "%s %s, ", getDPosString( p.width ), getPosString( p.widthType ) );
-                else
+                } else {
                     fprintf( out, "%hu %s,", p.width, getPosString( p.widthType ) );
-                if( p.heightType == DYNAMIC )
+                }
+                if( p.heightType == DYNAMIC ) {
                     fprintf( out, "%s %s)", getDPosString( p.height ), getPosString( p.heightType ) );
-                else
+                } else {
                     fprintf( out, "%hu %s)", p.height, getPosString( p.heightType ) );
+                }
             }
             if( carg & 0x04 )
                 fprintf( out, ", viewport" );
@@ -171,13 +176,13 @@ static unsigned int readEscape(FILE *out, uint8_t *text, uint8_t type, uint8_t s
                 count += sizeof( PanelStyle );
                 fprintf( out, ", window style specified (%4.4x)", style.word );
             }
-            if( carg & 0x40)
+            if( carg & 0x40 )
                 fprintf( out, ", autolink" );
-            if( carg & 0x80)
+            if( carg & 0x80 )
                 fprintf( out, ", split window" );
-            if( carg2 & 0x02)
+            if( carg2 & 0x02 )
                 fprintf( out, ", dependent" );
-            if( carg2 & 0x04) {
+            if( carg2 & 0x04 ) {
                 Group grp;
                 memcpy( &grp, &text[ count + 1 ], sizeof( Group ) );
                 count += sizeof( Group );
@@ -495,28 +500,32 @@ static unsigned int readEscape(FILE *out, uint8_t *text, uint8_t type, uint8_t s
                     memcpy( &p, &text[ count + 1 ], sizeof( PanelOrigin ) );
                     count += sizeof( PanelOrigin );
                     fprintf( out, ", position (" );
-                    if( p.xPosType == DYNAMIC)
+                    if( p.xPosType == DYNAMIC ) {
                         fprintf( out, "%s %s, ", getDPosString( p.xpos ), getPosString( p.xPosType ) );
-                    else
+                    } else {
                         fprintf( out, "%hu %s,", p.xpos, getPosString(p.xPosType));
-                    if( p.yPosType == DYNAMIC)
+                    }
+                    if( p.yPosType == DYNAMIC ) {
                         fprintf( out, "%s %s)", getDPosString( p.ypos ), getPosString( p.yPosType ) );
-                    else
+                    } else {
                         fprintf( out, "%hu %s)", p.ypos, getPosString( p.yPosType ) );
+                    }
                 }
                 if( carg & 0x02 ) {
                     PanelSize p;
                     memcpy(&p, &text[ count + 1 ], sizeof( PanelSize ) );
                     count += sizeof( PanelSize );
                     fprintf( out, ", size (" );
-                    if( p.widthType == DYNAMIC )
+                    if( p.widthType == DYNAMIC ) {
                         fprintf( out, "%s %s, ", getDPosString( p.width ), getPosString( p.widthType ) );
-                    else
+                    } else {
                         fprintf( out, "%hu %s,", p.width, getPosString( p.widthType ) );
-                    if( p.heightType == DYNAMIC )
+                    }
+                    if( p.heightType == DYNAMIC ) {
                         fprintf( out, "%s %s)", getDPosString( p.height ), getPosString( p.heightType ) );
-                    else
+                    } else {
                         fprintf( out, "%hu %s)", p.height, getPosString( p.heightType ) );
+                    }
                 }
             }
         }
@@ -542,13 +551,14 @@ static void parseAlign( FILE *out, uint8_t carg )
         fprintf( out, ", center align" );
     if( carg & 0x08 )
         fprintf( out, ", scale to window" );
-    if( carg & 0x10 )
+    if( carg & 0x10 ) {
         fprintf( out, ", run-in" );
+    }
 }
 /*****************************************************************************/
 static char * parseColor( uint8_t carg )
 {
-static char *colors[] = {"default", "blue", "red", "pink", "green", "cyan", "yellow", "neutral",
-    "dark gray", "dark blue", "dark red", "dark pink", "dark green", "dark cyan", "black", "pale gray" };
-return( colors[ carg ] );
+    static char *colors[] = {"default", "blue", "red", "pink", "green", "cyan", "yellow", "neutral",
+        "dark gray", "dark blue", "dark red", "dark pink", "dark green", "dark cyan", "black", "pale gray" };
+    return( colors[ carg ] );
 }

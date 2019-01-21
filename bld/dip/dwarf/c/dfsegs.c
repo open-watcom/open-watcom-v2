@@ -69,15 +69,15 @@ seg_entry *AddMapSeg( seg_list *list, seg_ctl *ctl, addr_seg seg )
 
     item_size = list->item_size;
     rem = list->count % SEG_PER_BLK;
-    if( rem == 0 ){
+    if( rem == 0 ) {
         blk_count = SEG_PER_BLK;
     }else{
         blk_count = rem;
     }
     for( blk = list->head; blk != NULL; blk = blk->next ) {
         info = blk->info;
-        while( blk_count > 0 ){
-            if( info->real == seg ){
+        while( blk_count > 0 ) {
+            if( info->real == seg ) {
                 goto exit_rtn;
             }
             info = INFO_ITEM( info, 1 );
@@ -85,7 +85,7 @@ seg_entry *AddMapSeg( seg_list *list, seg_ctl *ctl, addr_seg seg )
         }
         blk_count = SEG_PER_BLK;
     }
-    if( rem == 0 ){ /* new block */
+    if( rem == 0 ) { /* new block */
         blk = ctl->alloc();
         blk->next = list->head;
         list->head = blk;
@@ -113,13 +113,13 @@ seg_entry *FindMapSeg( seg_list *list, addr_seg seg )
 
     item_size = list->item_size;
     blk_count = list->count % SEG_PER_BLK;
-    if( blk_count == 0 ){
+    if( blk_count == 0 ) {
         blk_count = SEG_PER_BLK;
     }
     for( blk  = list->head; blk != NULL; blk = blk->next ) {
         info = blk->info;
-        while( blk_count > 0 ){
-            if( info->real == seg ){
+        while( blk_count > 0 ) {
+            if( info->real == seg ) {
                 goto exit_rtn;
             }
             info = INFO_ITEM( info, 1 );
@@ -192,7 +192,7 @@ seg_entry *FindRealSeg( seg_list *ctl, addr_seg seg )
 
     cmp.item_size = ctl->item_size;
     blk_count = ctl->count % SEG_PER_BLK;
-    if( blk_count == 0 ){
+    if( blk_count == 0 ) {
         blk_count = SEG_PER_BLK;
     }
     cmp.hi = blk_count;  /* only first block not full */
@@ -200,7 +200,7 @@ seg_entry *FindRealSeg( seg_list *ctl, addr_seg seg )
     info = NULL;
     for( blk = ctl->head; blk != NULL; blk = blk->next ) {
         cmp.base = blk->info;
-        if( BlkSegSearch( &cmp ) == 0 ){
+        if( BlkSegSearch( &cmp ) == 0 ) {
             info = cmp.base;
             break;
         }
@@ -221,12 +221,12 @@ bool SegWalk( seg_list *ctl, SEGWLK wlk, void *d )
 
     item_size = ctl->item_size;
     blk_count = ctl->count % SEG_PER_BLK;
-    if( blk_count == 0 ){  /* first block may be short */
+    if( blk_count == 0 ) {  /* first block may be short */
         blk_count = SEG_PER_BLK;
     }
     for( blk = ctl->head; blk != NULL; blk = blk->next ) {
         info = blk->info;
-        while( blk_count > 0 ){
+        while( blk_count > 0 ) {
             if( !wlk( d, info  ) )
                 goto end_wlk;
             info = INFO_ITEM( info, 1 );
@@ -264,7 +264,7 @@ void    SortSegReal( seg_list *ctl )
     blk_count = ctl->count % SEG_PER_BLK;
     blk = ctl->head;
     item_size = ctl->item_size;
-    if( blk_count == 0 ){  /* first block may be short */
+    if( blk_count == 0 ) {  /* first block may be short */
         blk_count = SEG_PER_BLK;
     } else {
         seg_entry      *info;
@@ -273,7 +273,7 @@ void    SortSegReal( seg_list *ctl )
         blk = DCRealloc( blk, PTRDIFF( INFO_ITEM( info, blk_count ), blk ) );
         ctl->head = blk;
     }
-    while( blk != NULL ){
+    while( blk != NULL ) {
         qsort( blk->info, blk_count, item_size, SegCmp );
         blk_count = SEG_PER_BLK;
         blk = blk->next;

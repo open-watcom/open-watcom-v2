@@ -131,8 +131,6 @@ static void initRankVector( FNOV_CONTROL control, FNOV_RANK *rv, unsigned num_ar
     unsigned    i;
     FNOV_RANK   *rank;
 
-    if( num_args == 0 )
-        num_args = 1;
     rank = rv;
     memset( rank, 0, sizeof( *rank ) * num_args );
     for( i = num_args ; i > 0 ; i-- ) {
@@ -242,15 +240,15 @@ static FNOV_SCALAR rankCtorReturn(
     PTREE *src_ptree )
 {
     TYPE ret_type;
-    FNOV_RANK rank;
+    FNOV_RANK rank[1];
 
     ret_type = SymFuncReturnType( match->sym );
     // ctor type returned above is class &, but the type
     // of a ctor is defined to be just the class
     ret_type = ClassTypeForType( ret_type );
-    initRankVector( FNC_EXCLUDE_UDCONV, &rank, 0 );
-    FnovArgRank( ret_type, tgt, src_ptree, &rank );
-    return( rank.u.no_ud );
+    initRankVector( FNC_EXCLUDE_UDCONV, rank, 1 );
+    FnovArgRank( ret_type, tgt, src_ptree, rank );
+    return( rank->u.no_ud );
 }
 
 static void udcRankUDCF( FNOV_LIST *list, TYPE src, TYPE tgt,
@@ -412,7 +410,7 @@ static SYMBOL getNextDiagnosticEntry( FNOV_LIST **list )
 SYMBOL FnovNextAmbiguousEntry( FNOV_DIAG *fnov_diag )
 /**********************************************/
 {
-    return getNextDiagnosticEntry( &fnov_diag->diag_ambig );
+    return( getNextDiagnosticEntry( &fnov_diag->diag_ambig ) );
 }
 
 SYMBOL FnovGetAmbiguousEntry( FNOV_DIAG *fnov_diag, FNOV_LIST **ptr )
@@ -436,7 +434,7 @@ SYMBOL FnovGetAmbiguousEntry( FNOV_DIAG *fnov_diag, FNOV_LIST **ptr )
 SYMBOL FnovNextRejectEntry( FNOV_DIAG *fnov_diag )
 /*******************************************/
 {
-    return getNextDiagnosticEntry( &fnov_diag->diag_reject );
+    return( getNextDiagnosticEntry( &fnov_diag->diag_reject ) );
 }
 
 int FnovRejectParm( FNOV_DIAG *fnov_diag, unsigned *pidx )
@@ -622,16 +620,19 @@ static void processSym( FNOV_CONTROL control, FNOV_INFO* info, SYMBOL sym )
             sym_type = sym->sym_type;
         } else {
             // have to compare template parameters for function templates
-            SYMBOL old_curr = NULL, new_curr = NULL;
-            SYMBOL old_stop, new_stop;
+            SYMBOL old_curr;
+            SYMBOL new_curr;
+            SYMBOL old_stop;
+            SYMBOL new_stop;
 
             // check that template parameters match
             old_stop = ScopeOrderedStart( fntempl->decl_scope );
             new_stop = ScopeOrderedStart( GetCurrScope() );
-            for(;;) {
+            old_curr = NULL;
+            new_curr = NULL;
+            for( ;; ) {
                 old_curr = ScopeOrderedNext( old_stop, old_curr );
                 new_curr = ScopeOrderedNext( new_stop, new_curr );
-
                 if( ( old_curr == NULL ) || ( new_curr == NULL ) ) {
                     break;
                 }
@@ -787,20 +788,20 @@ static bool myTypesSame( TYPE first_type, TYPE second_type )
         first_type = TypeModExtract( first_type->of
                               , &flag
                               , &refbase
-                              , TC1_NOT_ENUM_CHAR| TC1_FUN_LINKAGE  );
+                              , TC1_NOT_ENUM_CHAR| TC1_FUN_LINKAGE );
         second_type = TypeModExtract( second_type->of
                               , &flag
                               , &refbase
-                              , TC1_NOT_ENUM_CHAR| TC1_FUN_LINKAGE  );
+                              , TC1_NOT_ENUM_CHAR| TC1_FUN_LINKAGE );
     }
     same = TypesSameExclude( first_type, second_type,
-                             TC1_NOT_ENUM_CHAR| TC1_FUN_LINKAGE  );
+                             TC1_NOT_ENUM_CHAR| TC1_FUN_LINKAGE );
     if( !same ) {
         if( (first_type->flag & TF1_STDOP) || (second_type->flag & TF1_STDOP) ) {
             same = true;
         }
     }
-    return same;
+    return( same );
 }
 
 // code for WP13332
@@ -926,7 +927,7 @@ static OV_RESULT compareDerived(TYPE first_type, TYPE second_type )
     if( first_scope == second_scope ) {
         return( OV_CMP_SAME );
     }
-    if( ScopeDerived( first_scope, second_scope ) != DERIVED_NO  ) {
+    if( ScopeDerived( first_scope, second_scope ) != DERIVED_NO ) {
         return( OV_CMP_BETTER_FIRST );
     } else if( ScopeDerived( second_scope, first_scope ) != DERIVED_NO ) {
         return( OV_CMP_BETTER_SECOND );
@@ -1056,46 +1057,48 @@ static OV_RESULT compareArgument(
                   retn = WP13332( first_type, second_type, retn );
             }
         }
-    } else switch( firstrank ) {
-    case OV_RANK_NO_MATCH:
-    case OV_RANK_ELLIPSIS:
-    case OV_RANK_UD_CONV_AMBIG:
-        retn = OV_CMP_SAME;
-        break;
-    case OV_RANK_UD_CONV:
-        retn = compareScalar( &first->u.ud.out
-                            , first_type
-                            , &second->u.ud.out
-                            , second_type
-                            , true
-                            , control );
-        break;
-    case OV_RANK_STD_CONV_DERIV:
-        if( ( first_type != NULL ) && ( second_type != NULL ) ) {
-            retn = compareDerived( *first_type, *second_type );
-            if( retn != OV_CMP_SAME ) {
-                break;
+    } else {
+        switch( firstrank ) {
+        case OV_RANK_NO_MATCH:
+        case OV_RANK_ELLIPSIS:
+        case OV_RANK_UD_CONV_AMBIG:
+            retn = OV_CMP_SAME;
+            break;
+        case OV_RANK_UD_CONV:
+            retn = compareScalar( &first->u.ud.out
+                                , first_type
+                                , &second->u.ud.out
+                                , second_type
+                                , true
+                                , control );
+            break;
+        case OV_RANK_STD_CONV_DERIV:
+            if( ( first_type != NULL ) && ( second_type != NULL ) ) {
+                retn = compareDerived( *first_type, *second_type );
+                if( retn != OV_CMP_SAME ) {
+                    break;
+                }
             }
+            // two target types are not releated
+            // otherwise, do the following comparison
+        case OV_RANK_STD_CONV_VOID:
+        case OV_RANK_STD_CONV:
+        case OV_RANK_STD_BOOL:
+        case OV_RANK_PROMOTION:
+        case OV_RANK_TRIVIAL:
+            retn = compareScalar( &first->u.no_ud
+                                 , first_type
+                                 , &second->u.no_ud
+                                 , second_type
+                                 , false
+                                 , control);
+            break;
+        case OV_RANK_SAME:
+        case OV_RANK_EXACT:
+            retn = OV_CMP_SAME;
+            break;
+        DbgDefault( "funny rank\n" );
         }
-        // two target types are not releated
-        // otherwise, do the following comparison
-    case OV_RANK_STD_CONV_VOID:
-    case OV_RANK_STD_CONV:
-    case OV_RANK_STD_BOOL:
-    case OV_RANK_PROMOTION:
-    case OV_RANK_TRIVIAL:
-        retn = compareScalar( &first->u.no_ud
-                             , first_type
-                             , &second->u.no_ud
-                             , second_type
-                             , false
-                             , control);
-        break;
-    case OV_RANK_SAME:
-    case OV_RANK_EXACT:
-        retn = OV_CMP_SAME;
-        break;
-    DbgDefault( "funny rank\n" );
     }
     return( retn );
 }
@@ -1197,33 +1200,33 @@ static bool isRank( FNOV_LIST *entry, FNOV_COARSE_RANK level )
 {
     unsigned        i;
     FNOV_RANK       *rank;
-    bool            retb;
+    bool            ok;
 
-    retb = true;
+    ok = true;
     rank = entry->rankvector;
     i = entry->num_args;
-    while( retb && ( i > 0 ) ) {
-        retb = ( rank->rank <= level );
+    while( ok && ( i > 0 ) ) {
+        ok = ( rank->rank <= level );
         i--;
         rank++;
     }
-    if( retb ) {
-        retb = ( entry->thisrank.rank <= level );
+    if( ok ) {
+        ok = ( entry->thisrank.rank <= level );
     }
-    return( retb );
+    return( ok );
 }
 
 static bool isReturnIdentical( TYPE sym1, TYPE sym2 )
 /***************************************************/
 // see if two functions have indentical return types
 {
-    bool retb;
+    bool ok;
 
-    retb = TypesSameExclude( FunctionDeclarationType( sym1 )->of
+    ok = TypesSameExclude( FunctionDeclarationType( sym1 )->of
                            , FunctionDeclarationType( sym2 )->of
                            , TC1_NOT_ENUM_CHAR );
 
-    return( retb );
+    return( ok );
 }
 
 static void doComputeArgRank( SYMBOL sym, TYPE src, TYPE tgt, PTREE *pt,
@@ -1412,7 +1415,7 @@ FNOV_COARSE_RANK RankandResolveUDCsDiag( FNOV_LIST **ctorList,
     setFnovDiagnosticRejectList( fnov_diag, &rejects );
     FnovListFree( ctorList ); // will contain those with other than one parm
     DbgAssert( *udcfList == NULL );
-    return result;
+    return( result );
 }
 
 static void computeFuncRankSym( SYMBOL fsym, SYMBOL curr, TYPE *tgt,
@@ -1488,10 +1491,10 @@ static void computeFuncRank( SYMBOL fsym, SYMBOL sym, TYPE *tgt,
     addr_func_t         retn;
     SYMBOL              curr;
     SYM_REGION          *region;
-    auto FNOV_RANK      curr_rank;
+    auto FNOV_RANK      curr_rank[1];
     SEARCH_RESULT       *result;
 
-    initRankVector( FNC_DEFAULT, &curr_rank, 0 );
+    initRankVector( FNC_DEFAULT, curr_rank, 1 );
     retn = NodeAddrOfFun( *ptlist, &fn );
     DbgAssert( retn != ADDR_FN_NONE );
     src_mptr = false;
@@ -1509,7 +1512,7 @@ static void computeFuncRank( SYMBOL fsym, SYMBOL sym, TYPE *tgt,
                               , curr
                               , tgt
                               , bestrank
-                              , &curr_rank
+                              , curr_rank
                               , src_mptr );
         } RingIterEnd( curr )
     } else {
@@ -1520,7 +1523,7 @@ static void computeFuncRank( SYMBOL fsym, SYMBOL sym, TYPE *tgt,
                                   , curr
                                   , tgt
                                   , bestrank
-                                  , &curr_rank
+                                  , curr_rank
                                   , src_mptr );
             } RingIterEndTo( curr, region->to )
         } RingIterEnd( region )
@@ -1621,11 +1624,9 @@ static bool getRank( FNOV_INFO* info )
         if( contender && SymIsThisFuncMember( candidate->sym ) ) {
             type_flag   srcflags = info->alist->qualifier;
             type_flag   tgtflags = candidate->alist->qualifier;
-            contender = !FnovCvFlagsRank( srcflags, tgtflags,
-                                          &candidate->thisrank );
+            contender = !FnovCvFlagsRank( srcflags, tgtflags, &candidate->thisrank );
             if( contender ) {
-                FnovMemFlagsRank( srcflags, tgtflags, NULL, NULL,
-                                  &candidate->thisrank );
+                FnovMemFlagsRank( srcflags, tgtflags, NULL, NULL, &candidate->thisrank );
             }
         }
     }
@@ -1705,7 +1706,7 @@ static FNOV_RESULT resolveOverload( FNOV_INFO* info )
             updateFnovList( info );
         }
     } RingIterEndSafe( info->candfunc )
-    return info->result;
+    return( info->result );
 }
 
 static FNOV_RESULT doOverload( FNOV_INFO* info )
@@ -1970,7 +1971,7 @@ static SYMBOL findNonDefargSym( FNOV_LIST *match)
             return( curr->sym );
         }
     } RingIterEnd( curr )
-    return match->sym;
+    return( match->sym );
 }
 
 static FNOV_RESULT doFunctionDistinctCheck( FNOV_CONTROL control, SYMBOL *pold_sym,
@@ -2057,7 +2058,7 @@ static FNOV_RESULT doFunctionDistinctCheck( FNOV_CONTROL control, SYMBOL *pold_s
 
     setFnovDiagnosticRejectList( info.fnov_diag, info.pcandidates );
     setFnovDiagnosticAmbigList( info.fnov_diag, info.pmatch );
-    return result;
+    return( result );
 }
 
 
@@ -2073,7 +2074,7 @@ FNOV_RESULT IsOverloadedFuncDistinct( SYMBOL *pold_sym, SYMBOL new_sym, NAME nam
 {
     DbgAssert( (control & ~(FNC_NO_DEALIAS)) == 0 );
     control |= FNC_EXCLUDE_ELLIPSIS | FNC_DISTINCT_CHECK;
-    return doFunctionDistinctCheck( control, pold_sym, new_sym, name );
+    return( doFunctionDistinctCheck( control, pold_sym, new_sym, name ) );
 }
 
 FNOV_RESULT AreFunctionsDistinct( SYMBOL *pold_sym, SYMBOL new_sym, NAME name )
@@ -2098,22 +2099,23 @@ bool IsOverloadedFunc( SYMBOL sym )
 /*********************************/
 // test if a function has been overloaded
 {
-    bool retb = false;
+    bool ok;
 
+    ok = false;
     if( sym != NULL ) {
         if( SymIsFunction( sym ) ) {
-            retb = ( sym->next != sym );
+            ok = ( sym->next != sym );
         }
     }
 
 #ifndef NDEBUG
     if( PragDbgToggle.dump_rank ) {
         VBUF name;
-        printf( "Function '%s' is%soverloaded\n", FormatSym( sym, &name ), retb ? " " : " not " );
+        printf( "Function '%s' is%soverloaded\n", FormatSym( sym, &name ), ok ? " " : " not " );
         VbufFree( &name );
     }
 #endif
-    return( retb );
+    return( ok );
 }
 
 static bool doneCheckIdentical( SYMBOL curr, bool isUDC, TYPE udc_retn, SYMBOL *retn )
@@ -2142,7 +2144,7 @@ static bool doneCheckIdentical( SYMBOL curr, bool isUDC, TYPE udc_retn, SYMBOL *
             done = true;
         }
     }
-    return done;
+    return( done );
 }
 
 SYMBOL ActualNonOverloadedFunc( // GET SYMBOL FOR ACTUAL NON-OVERLOADED FUNC.
@@ -2183,7 +2185,7 @@ SYMBOL ActualNonOverloadedFunc( // GET SYMBOL FOR ACTUAL NON-OVERLOADED FUNC.
             }
         } RingIterEnd( region )
     }
-    return retn;
+    return( retn );
 }
 
 
@@ -2193,16 +2195,18 @@ bool IsActualOverloadedFunc(            // TEST IF ACTUAL (IGNORE SC_DEFAULT) OV
 // test if a function has been really overloaded
 // ignore functions with SC_DEFAULT id's
 {
-    bool retb = ( NULL == ActualNonOverloadedFunc( sym, result ) );
+    bool ok;
+
+    ok = ( NULL == ActualNonOverloadedFunc( sym, result ) );
 #ifndef NDEBUG
     if( PragDbgToggle.dump_rank ) {
         VBUF name;
         printf( "Function '%s' is%soverloaded (ignoring default arguments)\n",
-            FormatSym( sym, &name ), retb ? " " : " not " );
+            FormatSym( sym, &name ), ok ? " " : " not " );
         VbufFree( &name );
     }
 #endif
-    return( retb );
+    return( ok );
 }
 
 static void fnovInit( INITFINI* defn )

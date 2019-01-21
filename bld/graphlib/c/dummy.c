@@ -50,38 +50,42 @@ short           _fltused_;
 #pragma aux     F8UnderFlow     "F8UnderFlow";
 #endif
 
-extern float    F4RetInf( float );
-#if defined( __386__ )
-#pragma aux     F4RetInf = \
-                0x25 0x00 0x00 0x00 0x80    /* and  eax,80000000H */ \
-                0x0d 0xff 0xff 0x7f 0x7f    /* or   eax,7f7fffffH */ \
-                parm caller [eax] value [eax];
+extern float F4RetInf( float );
+#if defined( _M_I86 )
+#pragma aux F4RetInf = \
+        "and  ax,8000H" \
+        "or   ax,7f7fH" \
+        "mov  dx,-1" \
+        "xchg ax,dx" \
+    __parm __caller [__ax __dx] \
+    __value         [__ax __dx]
 #else
-#pragma aux     F4RetInf = \
-                0x25 0x00 0x80              /* and  ax,8000H  */ \
-                0x0d 0x7f 0x7f              /* or   ax,7f7fH  */ \
-                0xba 0xff 0xff              /* mov  dx,0ffffH */ \
-                0x92                        /* xchg ax,dx     */ \
-                parm caller [ax dx] value [ax dx];
+#pragma aux F4RetInf = \
+        "and  eax,80000000H" \
+        "or   eax,7f7fffffH" \
+    __parm __caller [__eax] \
+    __value         [__eax]
 #endif
 
 #if 0
 extern double   F8RetInf( double );
-#if defined( __386__ )
-#pragma aux     F8RetInf = \
-                0x25 0x00 0x00 0x00 0x80    /* and  eax,80000000H  */ \
-                0x0d 0xff 0xff 0xef 0x7f    /* or   eax,7fefffffH  */ \
-                0xba 0xff 0xff 0xff 0xff    /* mov  edx,0ffffffffH */ \
-                0x92                        /* xchg eax,edx        */ \
-                parm caller [eax edx] value [eax edx];
+#if defined( _M_I86 )
+#pragma aux F8RetInf = \
+        "and  ax,8000H" \
+        "or   ax,7fefH" \
+        "mov  bx,-1"    \
+        "mov  cx,bx"    \
+        "mov  dx,bx"    \
+    __parm __caller [__ax __bx __cx __dx] \
+    __value         [__ax __bx __cx __dx]
 #else
-#pragma aux     F8RetInf = \
-                0x25 0x00 0x80              /* and  ax,8000H  */ \
-                0x0d 0xef 0x7f              /* or   ax,7fefH  */ \
-                0xbb 0xff 0xff              /* mov  bx,0ffffH */ \
-                0x8b 0xcb                   /* mov  cx,bx     */ \
-                0x8b 0xd3                   /* mov  dx,bx     */ \
-                parm caller [ax bx cx dx] value [ax bx cx dx];
+#pragma aux F8RetInf = \
+        "and  eax,80000000H"    \
+        "or   eax,7fefffffH"    \
+        "mov  edx,-1"           \
+        "xchg eax,edx"          \
+    __parm __caller [__eax __edx] \
+    __value         [__eax __edx]
 #endif
 #endif
 

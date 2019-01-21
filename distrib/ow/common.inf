@@ -1,6 +1,6 @@
 dialog=templat1.inf
-supplimental=winsys
-supplimental=windir
+supplemental=winsys
+supplemental=windir
 winsys=%winsystemdir%
 CDDir=%SrcDir2%
 OWDir=%MinimalInstall?CDDir:DstDir%

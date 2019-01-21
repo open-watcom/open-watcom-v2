@@ -30,15 +30,9 @@
 ****************************************************************************/
 
 
-#include "commonui.h"
-#include <string.h>
-#include <stdlib.h>
-
-#include "watcom.h"
+#include "wreglbl.h"
 #include "wrdll.h"
 #include "wstring.h"
-
-#include "wreglbl.h"
 #include "wregcres.h"
 #include "wrerenam.h"
 #include "wrenames.h"

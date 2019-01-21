@@ -124,7 +124,7 @@ void MemoryPool::ragnarok()
 
     for( count = 0; _currBlock != NULL; count += 1 ) {
         next = * (( void ** ) _currBlock );
-        delete [] _currBlock;
+        delete[] _currBlock;
         _currBlock = ( char * )next;
     }
 
@@ -197,7 +197,7 @@ void MemoryPool::grow()
 {
     char * newBlock;
 
-    newBlock = new char[ _blockSize ];
+    newBlock = new char [_blockSize];
     *(( void ** )newBlock ) = _currBlock;
     _currBlock = newBlock;
     _lastElement = _currBlock + sizeof( void * );

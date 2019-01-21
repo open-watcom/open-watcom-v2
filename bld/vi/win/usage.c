@@ -50,7 +50,7 @@ WINEXPORT INT_PTR CALLBACK UsageDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPA
     int         i;
     HFONT       font;
 
-    lparam = lparam;
+    (void)lparam;
 
     switch( msg ) {
     case WM_INITDIALOG:

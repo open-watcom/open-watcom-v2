@@ -31,11 +31,9 @@
 ****************************************************************************/
 
 
-#include <ctype.h>
-#include <string.h>
-#include <stdio.h>
-#include <dos.h>
 #include "drwatcom.h"
+#include <ctype.h>
+#include <dos.h>
 #include "wclbproc.h"
 #include "watcom.h"
 #include "wdebug.h"

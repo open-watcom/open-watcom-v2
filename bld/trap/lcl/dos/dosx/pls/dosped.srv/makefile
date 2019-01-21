@@ -1,6 +1,11 @@
 #pmake: serv lcl os_dos dsx cpu_386 x86 pls
 
+!ifdef %OWUSE_FILENAME_VERSION
+name = pedhel$(bld_ver)
+!else
 name = pedhelp
+!endif
+
 sys_x86_pls = sys tnt op st=8K
 
 objs_pls = plsord.obj   # must be first

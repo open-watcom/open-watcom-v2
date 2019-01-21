@@ -148,7 +148,7 @@ using std::wscanf;
 
 :include null.sp
 
-:segment QNX | LINUX
+:segment LINUX | QNX
 #define _NFILES         16          /*  minimum guaranteed open files       */
 #define BUFSIZ          4096        /*  Default buffer size                 */
 :elsesegment
@@ -164,13 +164,13 @@ using std::wscanf;
 :include maxpath.sp
 :remove FILENAME
 
-:segment DOS
+:segment DOS | RDOS
 :keep PATHMAX
 :include maxpath.sp
 :remove PATHMAX
 
 :endsegment
-:segment QNX | LINUX
+:segment LINUX | QNX
 #define FOPEN_MAX   _NFILES
 :elsesegment
 :include ext.sp
@@ -181,7 +181,7 @@ using std::wscanf;
 #endif /* extensions disabled */
 :endsegment
 
-:segment QNX | LINUX
+:segment LINUX | QNX
 /* values for _flag field in FILE struct */
 :elsesegment
 /* values for _flag field in FILE struct and _iomode array */
@@ -189,7 +189,7 @@ using std::wscanf;
 
 #define _READ   0x0001  /* file opened for reading */
 #define _WRITE  0x0002  /* file opened for writing */
-:segment QNX | LINUX
+:segment LINUX | QNX
 #define _UNGET  0x0100  /* ungetc has been done */
 :elsesegment
 #define _UNGET  0x0004  /* ungetc has been done */
@@ -198,7 +198,7 @@ using std::wscanf;
 #define _EOF    0x0010  /* EOF has occurred */
 #define _SFERR  0x0020  /* error has occurred on this file */
 #define _APPEND 0x0080  /* file opened for append */
-:segment QNX | LINUX
+:segment LINUX | QNX
 #define _BINARY 0x0000  /* not required for POSIX QNX       */
 #define _IOFBF  0x0000  /*  full buffering                  */
 #define _IOLBF  0x0040  /*  line buffering                  */
@@ -224,7 +224,7 @@ using std::wscanf;
 #define _BYTE_ORIENTED  1               /* byte-oriented stream */
 #define _WIDE_ORIENTED  2               /* wide-oriented stream */
 
-:segment QNX | LINUX
+:segment LINUX | QNX
 :include extunix.sp
 #define L_cuserid   14                  /*  Max length of login names       */
 #define L_ctermid   16                  /*  Max length of terminal names    */
@@ -271,7 +271,7 @@ _WCRTLINK extern __w_FILE   *__get_iob_ptr( void );
  #define __iob          __iob_br
 #endif
 
-_WCRTLINK extern __w_FILE   *__get_std_file(unsigned handle);
+_WCRTLINK extern __w_FILE   *__get_std_file(unsigned __handle);
 
 #ifndef __OBSCURE_STREAM_INTERNALS
 
@@ -284,7 +284,7 @@ _WCRTDATA extern __w_FILE  _WCDATA __iob[];
 #define stdin   ((__w_FILE *)&__iob[0])     /* standard input file  */
 #define stdout  ((__w_FILE *)&__iob[1])     /* standard output file */
 #define stderr  ((__w_FILE *)&__iob[2])     /* standard error file  */
-:segment DOS
+:segment DOS | RDOS
 :include ext.sp
 #if defined(__DOS__) || defined(__WINDOWS__) || defined(__OSI__)
 #define stdaux  ((__w_FILE *)&__iob[3])     /* standard auxiliary file  */
@@ -298,7 +298,7 @@ _WCRTDATA extern __w_FILE  _WCDATA __iob[];
 #define stdin   (__get_std_file(0))     /* standard input file  */
 #define stdout  (__get_std_file(1))     /* standard output file */
 #define stderr  (__get_std_file(2))     /* standard error file  */
-:segment DOS
+:segment DOS | RDOS
 :include ext.sp
 #if defined(__DOS__) || defined(__WINDOWS__)
 #define stdaux  (__get_std_file(3))     /* standard auxiliary file  */
@@ -416,7 +416,7 @@ _WCRTLINK extern off_t      ftello( __w_FILE *__fp );
 
 :endsegment
 _WCRTLINK extern int        flushall( void );
-:segment DOS
+:segment DOS | RDOS
 _WCRTLINK extern __w_FILE   *_fdopen( int __handle, const char *__mode );
 _WCRTLINK extern __w_FILE   *fdopen( int __handle, const char *__mode );
 :endsegment
@@ -472,7 +472,7 @@ _WCRTLINK extern char       *input_line( __w_FILE *, char *, int );
 :endsegment
 :include extepi.sp
 
-:segment QNX | LINUX
+:segment LINUX | QNX
 :include extunix.sp
 _WCRTLINK extern char       *ctermid( char * );
 _WCRTLINK extern char       *cuserid( char * );
@@ -491,38 +491,38 @@ _WCRTLINK extern int        pclose( __w_FILE *__stream );
 :: Eventually they can be re-introduced as proper in-line functions.
 :segment !CNAME
 #ifndef __OBSCURE_STREAM_INTERNALS
-#define clearerr(fp)    ((fp)->_flag &= ~(_SFERR|_EOF))
-#define feof(fp)        ((fp)->_flag & _EOF)
-#define ferror(fp)      ((fp)->_flag & _SFERR)
-#define fileno(fp)      ((fp)->_handle)
-#define _fileno(fp)     ((fp)->_handle)
+#define clearerr(__fp)  ((__fp)->_flag &= ~(_SFERR|_EOF))
+#define feof(__fp)      ((__fp)->_flag & _EOF)
+#define ferror(__fp)    ((__fp)->_flag & _SFERR)
+#define fileno(__fp)    ((__fp)->_handle)
+#define _fileno(__fp)   ((__fp)->_handle)
 #endif
 ::
 #if defined(__SW_BD) || defined(__SW_BM)
-#define getc(fp)        fgetc(fp)
-#define putc(c,fp)      fputc(c,fp)
+#define getc(__fp)      fgetc(__fp)
+#define putc(__c,__fp)  fputc(__c,__fp)
 #else
 #ifndef __OBSCURE_STREAM_INTERNALS
-#define getc(fp) \
-        ((fp)->_cnt<=0 \
-:segment DOS
-        || (unsigned)((*(fp)->_ptr)-'\x0d')<=('\x1a'-'\x0d') \
+#define getc(__fp) \
+        ((__fp)->_cnt<=0 \
+:segment DOS | RDOS
+        || (unsigned)((*(__fp)->_ptr)-'\x0d')<=('\x1a'-'\x0d') \
 :endsegment
-        ? fgetc(fp) \
-        : ((fp)->_cnt--,*(fp)->_ptr++))
+        ? fgetc(__fp) \
+        : ((__fp)->_cnt--,*(__fp)->_ptr++))
 ::
-#define putc(c,fp) \
-        ((fp)->_flag&_IONBF \
-        || (fp)->_bufsize-(fp)->_cnt<=1 \
-        ? fputc(c,fp) \
-        : ((*(fp)->_ptr=(unsigned char)(c))=='\n') \
-        ? fputc('\n',fp) \
-        : ((fp)->_flag|=_DIRTY,(fp)->_cnt++,*(fp)->_ptr++))
+#define putc(__c,__fp) \
+        ((__fp)->_flag&_IONBF \
+        || (__fp)->_bufsize-(__fp)->_cnt<=1 \
+        ? fputc(__c,__fp) \
+        : ((*(__fp)->_ptr=(unsigned char)(__c))=='\n') \
+        ? fputc('\n',__fp) \
+        : ((__fp)->_flag|=_DIRTY,(__fp)->_cnt++,*(__fp)->_ptr++))
 #endif
 #endif
 ::
 #define getchar()       getc(stdin)
-#define putchar(c)      putc(c,stdout)
+#define putchar(__c)    putc(__c,stdout)
 
 :endsegment
 ::::::::: Safer C :::::::::
@@ -531,7 +531,7 @@ _WCRTLINK extern int        pclose( __w_FILE *__stream );
 
 #define TMP_MAX_S   (26*26*26)      /* has to be same as TMP_MAX */
 
-:segment QNX | LINUX
+:segment LINUX | QNX
 #define L_tmpnam_s  255             /* has to be same as L_tmpnam */
 :elsesegment
 #define L_tmpnam_s  13              /* has to be same as L_tmpnam */

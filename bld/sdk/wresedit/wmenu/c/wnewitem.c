@@ -30,9 +30,6 @@
 ****************************************************************************/
 
 
-#include "commonui.h"
-#include <string.h>
-#include "watcom.h"
 #include "wglbl.h"
 #include "wmsg.h"
 #include "ldstr.h"

@@ -114,9 +114,9 @@ static bool sameSE(             // DETERMINE IF SAME STATE ENTRY
     SE* state_table )           // - state table
 {
     SE* last;                   // - last state entry in table
-    bool retb;                  // - true ==> same entry
+    bool ok;                    // - true ==> same entry
 
-    retb = false;
+    ok = false;
     last = state_table;
     if( last != NULL ) {
         if( last->base.se_type == DTC_CTOR_TEST ) {
@@ -133,13 +133,13 @@ static bool sameSE(             // DETERMINE IF SAME STATE ENTRY
                     DbgDumpStateEntry( last );
                 }
 #endif
-                retb = true;
+                ok = true;
                 break;
             case DTC_TEST_FLAG :
                 if(  last->test_flag.index    == se->test_flag.index
                   && last->test_flag.se_true  == se->test_flag.se_true
                   && last->test_flag.se_false == se->test_flag.se_false ) {
-                    retb = true;
+                    ok = true;
                 }
                 break;
             default :
@@ -147,7 +147,7 @@ static bool sameSE(             // DETERMINE IF SAME STATE ENTRY
             }
         }
     }
-    return( retb );
+    return( ok );
 }
 
 
@@ -191,7 +191,7 @@ static SE* stateTableAddSe(     // ADD TO STATE TABLE
         }
 #endif
     }
-    return se;
+    return( se );
 }
 
 
@@ -206,14 +206,14 @@ STAB_DEFN* StabDefnInit(        // INITIALIZE STAB_DEFN
     defn->kind = kind;
     defn->state_table = NULL;
     defn->ro = NULL;
-    return defn;
+    return( defn );
 }
 
 
 STAB_DEFN* StabDefnAllocate(    // ALLOCATE STAB_DEFN
     unsigned kind )             // - kind of table
 {
-    return StabDefnInit( CarveAlloc( carveSTAB_DEFN ), kind );
+    return( StabDefnInit( CarveAlloc( carveSTAB_DEFN ), kind ) );
 }
 
 
@@ -228,7 +228,7 @@ SE* StabDefnAddSe(              // ADD STATE ENTRY TO STATE TABLE
     SE* se,                     // - entry to be added
     STAB_DEFN* defn )           // - state table definition
 {
-    return stateTableAddSe( se, &defn->state_table );
+    return( stateTableAddSe( se, &defn->state_table ) );
 }
 
 
@@ -263,7 +263,7 @@ STAB_CTL* StabCtlInit(          // INITIALIZE STAB_CTL
 {
     stab->rw = NULL;
     stab->defn = defn;
-    return stab;
+    return( stab );
 }
 
 
@@ -277,14 +277,14 @@ SE* StateTableCurrPosn(         // GET STATE ENTRY FOR CURRENT POSITION
     } else {
         curr_posn = SeSetSvPosition( sctl->defn->state_table );
     }
-    return curr_posn;
+    return( curr_posn );
 }
 
 
 SE* StateTableActualPosn(       // GET (UN-OPTIMIZED) CURRENT STATE ENTRY
     STAB_CTL* sctl )            // - control info
 {
-    return sctl->defn->state_table;
+    return( sctl->defn->state_table );
 }
 
 
@@ -296,7 +296,7 @@ SE* StabCtlPrecedes(            // GET PRECEDING ENTRY OR NULL
     if( se == sctl->defn->state_table ) {
         se = NULL;
     }
-    return se;
+    return( se );
 }
 
 
@@ -304,7 +304,7 @@ SE* StabCtlPrevious(            // GET PREVIOUS ENTRY OR NULL
     STAB_CTL* sctl,             // - control info
     SE* se )                    // - state entry
 {
-    return SeSetSvPosition( StabCtlPrecedes( sctl, se ) );
+    return( SeSetSvPosition( StabCtlPrecedes( sctl, se ) ) );
 }
 
 
@@ -323,7 +323,9 @@ static void pruneFixUp(         // FIX-UP PTR. TO ENTRY, FOR PRUNING
             for( ; ; ) {
                 se = se->base.prev;
                 if( se->base.state_var == state_var ) {
-                    if( se->base.gen ) break;
+                    if( se->base.gen ) {
+                        break;
+                    }
                 }
             }
         }
@@ -349,31 +351,35 @@ void StabCtlPrune(              // PRUNE UN-GENNED ENTRIES UP TO AN ENTRY
         done = false;
         for( ; ; se = prev ) {
             prev = se->base.prev;
-            if( ending == 0  ) {
+            if( ending == 0 ) {
                 if( prev == *hdr ) {
                     done = true;
                 }
             } else {
-                if( se == ending ) break;
+                if( se == ending ) {
+                    break;
+                }
             }
             if( ! se->base.gen ) {
                 pruneSE( hdr, se );
             } else {
                 switch( se->base.se_type ) {
-                  case DTC_SET_SV :
+                case DTC_SET_SV :
                     if( *hdr != se ) {
                         pruneFixUp( &se->set_sv.se );
                     }
                     break;
-                  case DTC_TEST_FLAG :
+                case DTC_TEST_FLAG :
                     pruneFixUp( &se->test_flag.se_true );
                     pruneFixUp( &se->test_flag.se_false );
                     break;
-                  default :
+                default :
                     break;
                 }
             }
-            if( done ) break;
+            if( done ) {
+                break;
+            }
         }
     }
 }
@@ -399,11 +405,13 @@ SE* StabCtlPosnGened(           // GET GENERATED POSITION IF REQUIRED
             tgt = NULL;
         } else {
             for( ; ; tgt = tgt->base.prev ) {
-                if( tgt->base.gen && tgt->base.state_var == sv ) break;
+                if( tgt->base.gen && tgt->base.state_var == sv ) {
+                    break;
+                }
             }
         }
     }
-    return tgt;
+    return( tgt );
 }
 
 
@@ -438,9 +446,9 @@ char const * DbgSeName          // DUMP DTC_... name
     if( se_type >= MAX_DTC_DEF ) {
         sv_name = "*** UNKNOWN ***";
     } else {
-        sv_name = dtc_names[ se_type ];
+        sv_name = dtc_names[se_type];
     }
-    return sv_name;
+    return( sv_name );
 }
 
 
@@ -462,11 +470,11 @@ void DbgDumpStateEntry(         // DUMP STATE ENTRY
           , se->base.state_var
           , sv_name );
     switch( se->base.se_type ) {
-      case DTC_CTOR_TEST :
+    case DTC_CTOR_TEST :
         printf( "\n    flag(%d)\n"
               , se->ctor_test.flag_no );
         break;
-      case DTC_SYM_AUTO :
+    case DTC_SYM_AUTO :
         printf( "\n    sym(%s) dtor(%s) offset(%x)\n"
               , DbgSymNameFull( se->sym_auto.sym, &vbuf1 )
               , DbgSymNameFull( se->sym_auto.dtor, &vbuf2 )
@@ -474,30 +482,30 @@ void DbgDumpStateEntry(         // DUMP STATE ENTRY
         VbufFree( &vbuf1 );
         VbufFree( &vbuf2 );
         break;
-      case DTC_SYM_STATIC :
+    case DTC_SYM_STATIC :
         printf( "\n    sym(%s) dtor(%s)\n"
               , DbgSymNameFull( se->sym_static.sym, &vbuf1 )
               , DbgSymNameFull( se->sym_static.dtor, &vbuf2 ) );
         VbufFree( &vbuf1 );
         VbufFree( &vbuf2 );
         break;
-      case DTC_SET_SV :
+    case DTC_SET_SV :
         printf( "\n    se(%p = %d)\n"
               , se->set_sv.se
               , SeStateVar( se->set_sv.se ) );
         break;
-      case DTC_ACTUAL_VBASE :
-      case DTC_ACTUAL_DBASE :
-      case DTC_COMP_VBASE :
-      case DTC_COMP_DBASE :
-      case DTC_COMP_MEMB :
+    case DTC_ACTUAL_VBASE :
+    case DTC_ACTUAL_DBASE :
+    case DTC_COMP_VBASE :
+    case DTC_COMP_DBASE :
+    case DTC_COMP_MEMB :
         printf( "\n    reg(%p) offset(%x) dtor(%s)\n"
               , se->component.obj
               , se->component.offset
               , DbgSymNameFull( se->component.dtor, &vbuf1 ) );
         VbufFree( &vbuf1 );
         break;
-      case DTC_TEST_FLAG :
+    case DTC_TEST_FLAG :
         printf( "\n    index(%d) true(%p = %d) false(%p = %d)\n"
               , se->test_flag.index
               , se->test_flag.se_true
@@ -505,7 +513,7 @@ void DbgDumpStateEntry(         // DUMP STATE ENTRY
               , se->test_flag.se_false
               , SeStateVar( se->test_flag.se_false ) );
         break;
-      case DTC_TRY :
+    case DTC_TRY :
         printf( "\n    impl(%p) sigs(%p) sym(%s)\n"
               , se->try_blk.try_impl
               , se->try_blk.sigs
@@ -513,23 +521,23 @@ void DbgDumpStateEntry(         // DUMP STATE ENTRY
         DbgDumpTypeSigEnt( se->try_blk.sigs );
         VbufFree( &vbuf1 );
         break;
-      case DTC_CATCH :
+    case DTC_CATCH :
         printf( "\n    try(%p) sig(%p)\n"
               , se->catch_blk.try_blk
               , se->catch_blk.sig );
         break;
-      case DTC_FN_EXC :
+    case DTC_FN_EXC :
         printf( "\n    sigs(%p)\n"
               , se->fn_exc.sigs );
         DbgDumpTypeSigEnt( se->fn_exc.sigs );
         break;
-      case DTC_ARRAY :
+    case DTC_ARRAY :
         printf( "\n    offset(%x) sig(%p) count(%x)\n"
               , se->array.offset
               , se->array.sig
               , se->array.count );
         break;
-      case DTC_SUBOBJ :
+    case DTC_SUBOBJ :
         printf( "\n    offset(%x) original(%x) kind(%s) dtor(%s)\n"
               , se->subobj.offset
               , se->subobj.original
@@ -537,19 +545,19 @@ void DbgDumpStateEntry(         // DUMP STATE ENTRY
               , DbgSymNameFull( se->subobj.dtor, &vbuf1 ) );
         VbufFree( &vbuf1 );
         break;
-      case DTC_ARRAY_INIT :
+    case DTC_ARRAY_INIT :
         printf( "\n    reg(%p)\n"
               , se->array_init.reg );
         break;
-      case DTC_DLT_1 :
-      case DTC_DLT_1_ARRAY :
+    case DTC_DLT_1 :
+    case DTC_DLT_1_ARRAY :
         printf( "\n    op_del(%s) offset(%x)\n"
               , DbgSymNameFull( se->dlt_1.op_del, &vbuf1 )
               , se->dlt_1.offset );
         VbufFree( &vbuf1 );
         break;
-      case DTC_DLT_2 :
-      case DTC_DLT_2_ARRAY :
+    case DTC_DLT_2 :
+    case DTC_DLT_2_ARRAY :
         printf( "\n    op_del(%s) offset(%x) size(%x)\n"
               , DbgSymNameFull( se->dlt_2.op_del, &vbuf1 )
               , se->dlt_2.offset
@@ -575,7 +583,9 @@ void DbgDumpStateTableDefn(     // DUMP STATE TABLE DEFINITION
         if( defn->state_table != NULL ) {
             for( se = defn->state_table; ; se = se->base.prev ) {
                 DbgDumpStateEntry( se );
-                if( se == defn->state_table->base.next ) break;
+                if( se == defn->state_table->base.next ) {
+                    break;
+                }
             }
         }
         fflush( stdout );
@@ -616,7 +626,7 @@ SE* StateTableAdd(              // ADD TO STATE TABLE
     SE* se,                     // - state entry
     STAB_CTL* sctl )            // - state table information
 {
-    return stateTableAddSe( se, &sctl->defn->state_table );
+    return( stateTableAddSe( se, &sctl->defn->state_table ) );
 }
 
 
@@ -628,7 +638,7 @@ SE* SeAlloc(                    // ALLOCATE AN SE ENTRY
     se = CarveAlloc( seCarver( se_type ) );
     se->base.se_type = se_type;
     se->base.gen = BlkPosnUseStab();;
-    return se;
+    return( se );
 }
 
 
@@ -637,18 +647,18 @@ SE* SeSetSvPosition(            // LOCATE STATE ENTRY PAST OPTIONAL SET_SV'S
 {
     for( ; se != NULL; ) {
         switch( se->base.se_type ) {
-          case DTC_SET_SV :
+        case DTC_SET_SV :
             se = se->set_sv.se;
             continue;
-          case DTC_CTOR_TEST :
+        case DTC_CTOR_TEST :
             se = se->base.prev;
             continue;
-          default :
+        default :
             break;
         }
         break;
     }
-    return se;
+    return( se );
 }
 
 
@@ -662,14 +672,14 @@ STATE_VAR SeStateVar(           // GET STATE VARIABLE AT CURRENT POSITION
     } else {
         state_var = se->base.state_var;
     }
-    return state_var;
+    return( state_var );
 }
 
 
 STATE_VAR SeStateOptimal(       // GET STATE VALUE FOR POSITION (OPTIMAL)
     SE* se )                    // - state entry
 {
-    return SeStateVar( SeSetSvPosition( se ) );
+    return( SeStateVar( SeSetSvPosition( se ) ) );
 }
 
 
@@ -687,8 +697,8 @@ static void stabInit(           // INITIALIZATION
     #include "_dtccarv.h"
     #undef pick
 
-    carveSTAB_DEFN      = CarveCreate( sizeof( STAB_DEFN ),         8  );
-    carveSTAB_CTL       = CarveCreate( sizeof( STAB_CTL ),          8  );
+    carveSTAB_DEFN      = CarveCreate( sizeof( STAB_DEFN ), 8 );
+    carveSTAB_CTL       = CarveCreate( sizeof( STAB_CTL ), 8 );
 }
 
 

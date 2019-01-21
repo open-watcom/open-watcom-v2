@@ -185,11 +185,11 @@ size_t RemoteStringToFullName( bool executable, const char *name, char *res,
 #ifdef __NT__
     // check whether short filename is necessary
     switch( SysConfig.os ) {
-    case MAD_OS_AUTOCAD:
-    case MAD_OS_DOS:
-    case MAD_OS_RATIONAL:
-    case MAD_OS_PHARLAP:
-    case MAD_OS_WINDOWS:
+    case DIG_OS_AUTOCAD:
+    case DIG_OS_DOS:
+    case DIG_OS_RATIONAL:
+    case DIG_OS_PHARLAP:
+    case DIG_OS_WINDOWS:
         // convert long file name to short "DOS" compatible form
         {
             GetShortPathNameA( name, short_filename, MAX_PATH );

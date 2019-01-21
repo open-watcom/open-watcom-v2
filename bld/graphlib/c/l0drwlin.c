@@ -43,33 +43,33 @@
     #define FUNC_FAR    _WCI86FAR       // near for 32-bit/far for 16-bit
 #endif
 
-#if defined( __386__ )
-    #define MAXLEN      25
-    #if defined( __QNX__ )
-      #define LINERET     0xCB  // QNX uses a segmented 32 bit model
-    #else
-      #define LINERET     0xC3
-    #endif
-#else
+#if defined( _M_I86 )
   #if defined( VERSION2 )
     #define MAXLEN      34
   #else
     #define MAXLEN      20
   #endif
     #define LINERET     0xCB
+#else
+    #define MAXLEN      25
+  #if defined( __QNX__ )
+    #define LINERET     0xCB  // QNX uses a segmented 32 bit model
+  #else
+    #define LINERET     0xC3
+  #endif
 #endif
 
 /*  Specify calling convention for calling the 'compiled' line drawing routine.    */
 
-#if defined( __386__ )
-    #pragma aux LINE_FUNC "*" parm caller [es edi] [eax] [ebx] [ecx] [edx] [esi];
-#else
+#if defined( _M_I86 )
   #if defined( VERSION2 )
     //last parm on the stack...
-    #pragma aux LINE_FUNC "*" far parm caller [es di] [si ax] [bx] [cx] [dx];
+    #pragma aux LINE_FUNC "*" __far __parm __caller [__es __di] [__si __ax] [__bx] [__cx] [__dx]
   #else
-    #pragma aux LINE_FUNC "*" far parm caller [es di] [ax] [bx] [cx] [dx] [si];
+    #pragma aux LINE_FUNC "*" __far __parm __caller [__es __di] [__ax] [__bx] [__cx] [__dx] [__si]
   #endif
+#else
+    #pragma aux LINE_FUNC "*" __parm __caller [__es __edi] [__eax] [__ebx] [__ecx] [__edx] [__esi]
 #endif
 
 typedef void (FUNC_FAR line_fn)( char __far *, grcolor, int, int, int, int );
@@ -151,14 +151,14 @@ void _L0DrawLine( char __far *screen_ptr, grcolor color, unsigned short style,
         _ErrorStatus = _GRINSUFFICIENTMEMORY;
         return;         /* not enough memory to proceed */
     }
-  #if defined( __386__ )
-    line = (line_fn *)stack;
-  #else
+  #if defined( _M_I86 )
     line = MK_FP( _StackSeg, FP_OFF( stack ) );
+  #else
+    line = (line_fn *)stack;
   #endif
 #endif
 
-#if defined( VERSION2 ) && !defined( __386__ )
+#if defined( _M_I86 ) && defined( VERSION2 )
     OutByte( 0x55 );                    /* push        bp       */
     OutByte( 0x8B );                    /* mov         bp,sp    */
     OutByte( 0xEC );
@@ -169,19 +169,19 @@ void _L0DrawLine( char __far *screen_ptr, grcolor color, unsigned short style,
 #endif
     L1_label = stack;                   /* save L1 label address */
     if( style != SOLID_LINE ) {         /* add instructions for a style line    */
-#if defined( __386__ )
+#if !defined( _M_I86 )
         OutByte( 0x66 );                /* rotate only bx, not ebx  */
 #endif
         OutByte( 0xD1 );                /* rol         bx,1     */
         OutByte( 0xC3 );
         OutByte( 0x73 );                /* jnc         short L2 */
-#if defined( VERSION2 ) && !defined( __386__ )
+#if defined( _M_I86 ) && defined( VERSION2 )
         OutByte( plot_len + 5 );
 #else
         OutByte( plot_len );
 #endif
     }
-#if defined( VERSION2 ) && !defined( __386__ )
+#if defined( _M_I86 ) && defined( VERSION2 )
     OutByte( 0x52 );                    /* push        dx       */
     OutByte( 0x8B );                    /* mov         dx,word ptr -0x2[bp]  */
     OutByte( 0x56 );
@@ -190,7 +190,7 @@ void _L0DrawLine( char __far *screen_ptr, grcolor color, unsigned short style,
     movedata( FP_SEG( plot ), FP_OFF( plot ),       /* copy plot routine    */
               FP_SEG( stack ), FP_OFF( stack ), plot_len );
     stack += plot_len;
-#if defined( VERSION2 ) && !defined( __386__ )
+#if defined( _M_I86 ) && defined( VERSION2 )
     OutByte( 0x5A );                    /* pop         dx       */
 #endif
                                         /* L2:                  */
@@ -214,7 +214,7 @@ void _L0DrawLine( char __far *screen_ptr, grcolor color, unsigned short style,
     OutByte( 0xEB );                    /*  jmp        short L1 */
     OutByte( L1_label - stack - 1 );
                                         /* L3:                  */
-#if defined( VERSION2 ) && !defined( __386__ )
+#if defined( _M_I86 ) && defined( VERSION2 )
     OutByte( 0x5E );                    /* pop         si       */
     OutByte( 0x5D );                    /* pop         bp       */
 #endif

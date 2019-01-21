@@ -37,29 +37,28 @@
 #include "clibext.h"
 
 
+#define SET_ATTRIBS(m)  (( S_ISDIR( m ) ) ? _A_SUBDIR : 0)
+
 /*
  * GetFileInfo - get info from a directory entry
  */
-void GetFileInfo( direct_ent *tmp, struct dirent *nd, const char *path )
+void GetFileInfo( direct_ent *tmp, struct dirent *dire, const char *path )
 {
     char        *tmpname;
     size_t      len;
     struct stat st;
 
     len = strlen( path );
-    tmpname = malloc( len + strlen( nd->d_name ) + 3 );
+    tmpname = malloc( len + strlen( dire->d_name ) + 3 );
     strcpy( tmpname, path );
     if( tmpname[len - 1] != FILE_SEP ) {
         tmpname[len++] = FILE_SEP;
         tmpname[len] = '\0';
     }
-    strcpy( tmpname + len, nd->d_name );
+    strcpy( tmpname + len, dire->d_name );
     stat( tmpname, &st );
     free( tmpname );
-    tmp->attr = 0;
-    if( S_ISDIR( st.st_mode ) ) {
-        SET_SUBDIR( tmp );
-    }
+    tmp->attr = SET_ATTRIBS( st.st_mode );
     tmp->fsize = st.st_size;
     tmp->time = st.st_mtime;
     tmp->st_mode = st.st_mode;
@@ -115,23 +114,22 @@ void FormatFileEntry( direct_ent *file, char *res )
         size1 = NAMEWIDTH + 1;
     tmp = malloc( size1 );
 
-    strcpy( buff, "----------" );
     size = file->fsize;
+    MySprintf( tmp, "  %S", file->name );
     if( IS_SUBDIR( file ) ) {
-        MySprintf( tmp, " " FILE_SEP_STR "%S", file->name );
-        buff[0] = 'd';
+        tmp[1] = FILE_SEP;
         size = 0;
-    } else {
-        if( !IsTextFile( file->name ) ) {
-            MySprintf( tmp, " *%S", file->name );
-        } else {
-            MySprintf( tmp, "  %S", file->name );
-        }
+    } else if( !IsTextFile( file->name ) ) {
+        tmp[1] = '*';
     }
 
     /*
      * build attributeibutes
      */
+    strcpy( buff, "----------" );
+    if( IS_SUBDIR( file ) ) {
+        buff[0] = 'd';
+    }
     if( file->st_mode & S_IWUSR ) {
         buff[1] = 'r';
     }

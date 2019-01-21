@@ -67,8 +67,17 @@
 
 #define TYPE_HASH_MODULUS       (1<<5)  // modulus when type hashed
 #define TYPE_HASH_MASK          (TYPE_HASH_MODULUS-1)// mask for above modulus
+
 #define ARGS_HASH               8       // max arg.s for fn.s hashing
 #define ARGS_MAX                16      // max arg.s for fn.s lists
+
+#define RPT_ARGS_OVERFLOW       ARGS_MAX
+#define RPT_ARGS_TOTAL          ARGS_MAX+1
+#define RPT_ARGS_MAX            ARGS_MAX+1+1
+
+#define RPT_TYP_NONE            TYP_MAX
+#define RPT_TYP_TOTAL           TYP_MAX+1
+#define RPT_TYP_MAX             TYP_MAX+1+1
 
 #define zero_table( table ) memset( table, 0, sizeof( table ) )
 
@@ -78,7 +87,7 @@ enum {
 };
 
 TYPE TypeError;
-TYPE TypeCache[ TYPC_LAST ];
+TYPE TypeCache[TYPC_LAST];
 
 static TYPE basicTypes[TYP_MAX];
 static TYPE typeTable[TYP_MAX];
@@ -88,7 +97,7 @@ static TYPE pointerHashTable[TYPE_HASH_MODULUS];
 static TYPE bitfieldHashTable[TYPE_HASH_MODULUS];
 static TYPE arrayHashTable[TYPE_HASH_MODULUS];
 static TYPE modifierHashTable[TYPE_HASH_MODULUS];
-static TYPE* typeHashTables[TYP_MAX];
+static TYPE *typeHashTables[TYP_MAX];
 static TYPE uniqueTypes;
 static AUX_INFO *cdeclPragma;
 static type_flag defaultFunctionMemFlag;
@@ -106,7 +115,7 @@ static carve_t carveCLASSINFO;
 static carve_t carveDECL_INFO;
 
 /* special member function checking return status */
-enum {
+typedef enum {
     SM_RETURN_DECLARATOR        = 0x01, /* found return type declarators */
     SM_NOT_A_FUNCTION           = 0x02, /* found declarators before function */
     SM_CV_FUNCTION_ERROR        = 0x04, /* found () const/volatile use error */
@@ -115,43 +124,43 @@ enum {
     SM_SAW_FUNCTION             = 0x40, /* function declarator seen */
     SM_SAW_DECLARATOR           = 0x80, /* non-function declarator seen */
     SM_NULL                     = 0x00
-};
+} spec_status;
 
 /* special id checking information */
-enum {
+typedef enum {
     IDI_CLASS_TEMPLATE_MEMBER   = 0x01, /* id is a member of a class template */
     IDI_NULL                    = 0x00
-};
+} id_check_info;
 
-enum {
+typedef enum {
     PA_NULL                     = 0x00,
     PA_FUNCTION                 = 0x01
-};
+} pa_control;
 
-enum {
+typedef enum {
     TB_BINDS                    = 0x01,
     TB_NEEDS_TRIVIAL            = 0x02,
     TB_NEEDS_DERIVED            = 0x04,
     TB_NULL                     = 0x00
-};
+} tb_status;
 
-enum {
+typedef enum {
     MTT_INLINE                  = 0x01,
     MTT_COPY_PRAGMA             = 0x02,
     MTT_REUSE_ARGLIST           = 0x04,
     MTT_NULL                    = 0x00
-};
+} thunk_type_control;
 
-enum {
+typedef enum {
     DF_REUSE_ARGLIST            = 0x01,
     DF_NULL                     = 0x00
-};
+} dup_func_control;
 
-enum {
-    DA_DEFARGS_PRESENT          = 0x01,
-    DA_REWRITES                 = 0x02,
-    DA_NULL                     = 0x00
-};
+typedef enum {
+    DP_DEFARGS_PRESENT          = 0x01,
+    DP_REWRITES                 = 0x02,
+    DP_NULL                     = 0x00
+} def_prot_control;
 
 typedef struct {
     PSTK_CTL    with_generic;
@@ -199,8 +208,8 @@ ExtraRptCtr( ctr_dup_fns_big );
 ExtraRptCtr( ctr_lookup );
 ExtraRptCtr( ctr_cg_dups );
 ExtraRptCtr( ctr_cg_dups_fail );
-ExtraRptTable( ctr_type_ids, TYP_MAX, 1 );
-ExtraRptTable( ctr_fn_args, ARGS_MAX+1+1, 1 );
+ExtraRptTable( ctr_type_ids, RPT_TYP_MAX, 1 );
+ExtraRptTable( ctr_fn_args, RPT_ARGS_MAX, 1 );
 
 
 static DECL_INFO *makeDeclInfo( PTREE id )
@@ -240,8 +249,8 @@ TYPE GetBasicType( type_id id )
 /*****************************/
 /* return a pointer to one of the predefined "standard" types */
 {
-    DbgAssert( basicTypes[ id ] != NULL );
-    return( basicTypes[ id ] );
+    DbgAssert( basicTypes[id] != NULL );
+    return( basicTypes[id] );
 }
 
 static CLASSINFO *newINFO( void )
@@ -404,7 +413,7 @@ TYPE MakeExpandableType( type_id base_id )
 
     expands = MakeArrayType( 1 );
     expands->of = GetBasicType( base_id );
-    return expands;
+    return( expands );
 }
 
 TYPE MakeModifiedType( TYPE type, type_flag flag )
@@ -647,7 +656,7 @@ TYPE MakeBasedModifierOf(       // MAKE BASED MODIFIER FOR A TYPE
     if( flags == TF1_NULL ) {
         return( type );
     }
-    return MakeTypeOf( makeFullModifier( flags, baser, NULL ), type );
+    return( MakeTypeOf( makeFullModifier( flags, baser, NULL ), type ) );
 }
 
 static type_flag convertCVSpec( specifier_t spec )
@@ -758,7 +767,7 @@ TYPE MakeMemberPointerTo( TYPE class_type, TYPE base_type )
         flags &= ~TF1_MPTR_REMOVE;
         base_type = MakeBasedModifierOf( unmod_type, flags, base );
     }
-    return MakeTypeOf( mptr_type, base_type );
+    return( MakeTypeOf( mptr_type, base_type ) );
 }
 
 static bool newTypeIllegal( TYPE type )
@@ -900,10 +909,13 @@ static bool dupCompare( TYPE test1, TYPE test2 )
             }
             for(;;) {
                 tp1 = *p1;
-                if( tp1 == NULL ) return false;
+                if( tp1 == NULL )
+                    return( false );
                 tp2 = *p2;
-                if( tp2 == NULL ) return false;
-                if( tp1 != tp2 ) return false;
+                if( tp2 == NULL )
+                    return( false );
+                if( tp1 != tp2 )
+                    return( false );
                 ++p1;
                 ++p2;
             }
@@ -964,18 +976,19 @@ void TypedefReset( SYMBOL sym, TYPE type )
 void CheckUniqueType( TYPE newtype )
 /**********************************/
 {
-    #ifdef XTRA_RPT
-        ExtraRptTabIncr( ctr_type_ids, newtype->id, 0 );
-        ExtraRptTabIncr( ctr_type_ids, TYP_MAX-1, 0 );
-        if( newtype->id == TYP_FUNCTION ) {
-            unsigned num_args = newtype->u.f.args->num_args;
-            if( num_args > ARGS_MAX ) {
-                num_args = ARGS_MAX;
-            }
+#ifdef XTRA_RPT
+    ExtraRptTabIncr( ctr_type_ids, newtype->id, 0 );
+    ExtraRptTabIncr( ctr_type_ids, RPT_TYP_TOTAL, 0 );
+    if( newtype->id == TYP_FUNCTION ) {
+        unsigned num_args = newtype->u.f.args->num_args;
+        if( num_args < ARGS_MAX ) {
             ExtraRptTabIncr( ctr_fn_args, num_args, 0 );
-            ExtraRptTabIncr( ctr_fn_args, ARGS_MAX+1, 0 );
+        } else {
+            ExtraRptTabIncr( ctr_fn_args, RPT_ARGS_OVERFLOW, 0 );
         }
-    #endif
+        ExtraRptTabIncr( ctr_fn_args, RPT_ARGS_TOTAL, 0 );
+    }
+#endif
     RingPush( &uniqueTypes, newtype );
 }
 
@@ -1002,31 +1015,32 @@ static TYPE typeDuplicated(     // GET DUPLICATED TYPE
                     ExtraRptIncrementCtr( ctr_dup_succ );
                     typeFree( newtype );
                     newtype = RingPromote( head, check, prev );
-                    return newtype;
+                    return( newtype );
                 }
             }
         }
         prev = check;
     } RingIterEnd( check )
-    #ifdef XTRA_RPT
-        if( CompFlags.codegen_active ) {
-            ExtraRptIncrementCtr( ctr_cg_dups_fail );
-        }
-        ExtraRptTabIncr( ctr_type_ids, newtype->id, 0 );
-        ExtraRptTabIncr( ctr_type_ids, TYP_MAX-1, 0 );
-        if( newtype->id == TYP_FUNCTION ) {
-            unsigned num_args = newtype->u.f.args->num_args;
-            if( num_args > ARGS_MAX ) {
-                num_args = ARGS_MAX;
-            }
+#ifdef XTRA_RPT
+    if( CompFlags.codegen_active ) {
+        ExtraRptIncrementCtr( ctr_cg_dups_fail );
+    }
+    ExtraRptTabIncr( ctr_type_ids, newtype->id, 0 );
+    ExtraRptTabIncr( ctr_type_ids, RPT_TYP_TOTAL, 0 );
+    if( newtype->id == TYP_FUNCTION ) {
+        unsigned num_args = newtype->u.f.args->num_args;
+        if( num_args < ARGS_MAX ) {
             ExtraRptTabIncr( ctr_fn_args, num_args, 0 );
-            ExtraRptTabIncr( ctr_fn_args, ARGS_MAX+1, 0 );
+        } else {
+            ExtraRptTabIncr( ctr_fn_args, RPT_ARGS_OVERFLOW, 0 );
         }
-    #endif
+        ExtraRptTabIncr( ctr_fn_args, RPT_ARGS_TOTAL, 0 );
+    }
+#endif
     ExtraRptAddtoCtr( ctr_dup_fail_probes, ctr_lookup );
     ExtraRptIncrementCtr( ctr_dup_fail );
     newtype = RingPush( head, newtype );
-    return newtype;
+    return( newtype );
 }
 
 #define typeHashVal( t ) ((t)->of->dbg.handle & TYPE_HASH_MASK )
@@ -1041,11 +1055,11 @@ TYPE CheckDupType( TYPE newtype )
     DbgAssert( newtype->next == NULL );
     id = newtype->id;
     ExtraRptIncrementCtr( ctr_dups );
-    #ifdef XTRA_RPT
-        if( CompFlags.codegen_active ) {
-            ExtraRptIncrementCtr( ctr_cg_dups );
-        }
-    #endif
+#ifdef XTRA_RPT
+    if( CompFlags.codegen_active ) {
+        ExtraRptIncrementCtr( ctr_cg_dups );
+    }
+#endif
 #ifndef NDEBUG
     if( id == TYP_MODIFIER ) {
         if( newtype->flag == TF1_NULL ) {
@@ -1057,7 +1071,7 @@ TYPE CheckDupType( TYPE newtype )
         }
     }
 #endif
-    head = typeHashTables[ id ];
+    head = typeHashTables[id];
     if( head == NULL ) {
         switch( id ) {
         case TYP_FUNCTION:
@@ -1066,37 +1080,38 @@ TYPE CheckDupType( TYPE newtype )
             num_args = newtype->u.f.args->num_args;
             if( num_args < ARGS_HASH ) {
                 ExtraRptIncrementCtr( ctr_dup_fns );
-                head = &fnHashTable[ num_args ][ typeHashVal( newtype ) ];
+                head = &fnHashTable[num_args][typeHashVal( newtype )];
             } else if( num_args < ARGS_MAX ) {
                 ExtraRptIncrementCtr( ctr_dup_fns );
-                head = &fnTable[ num_args - ARGS_HASH ];
+                head = &fnTable[num_args - ARGS_HASH];
             } else {
                 ExtraRptIncrementCtr( ctr_dup_fns_big );
-                head = &typeTable[ id ];
+                head = &typeTable[id];
             }
             newtype = typeDuplicated( newtype, head );
             break;
         case TYP_MEMBER_POINTER:
         case TYP_GENERIC:
-            newtype = typeDuplicated( newtype, &typeTable[ id ] );
+            newtype = typeDuplicated( newtype, &typeTable[id] );
             break;
         default:
-            #ifdef XTRA_RPT
-                if( CompFlags.codegen_active ) {
-                    ExtraRptIncrementCtr( ctr_cg_dups_fail );
-                }
-                ExtraRptTabIncr( ctr_type_ids, id, 0 );
-                ExtraRptTabIncr( ctr_type_ids, TYP_MAX-1, 0 );
-                if( id == TYP_FUNCTION ) {
-                    unsigned num_args = newtype->u.f.args->num_args;
-                    if( num_args > ARGS_MAX ) {
-                        num_args = ARGS_MAX;
-                    }
+#ifdef XTRA_RPT
+            if( CompFlags.codegen_active ) {
+                ExtraRptIncrementCtr( ctr_cg_dups_fail );
+            }
+            ExtraRptTabIncr( ctr_type_ids, id, 0 );
+            ExtraRptTabIncr( ctr_type_ids, RPT_TYP_TOTAL, 0 );
+            if( id == TYP_FUNCTION ) {
+                unsigned num_args = newtype->u.f.args->num_args;
+                if( num_args < ARGS_MAX ) {
                     ExtraRptTabIncr( ctr_fn_args, num_args, 0 );
-                    ExtraRptTabIncr( ctr_fn_args, ARGS_MAX+1, 0 );
+                } else {
+                    ExtraRptTabIncr( ctr_fn_args, RPT_ARGS_OVERFLOW, 0 );
                 }
-            #endif
-            newtype = RingPush( &typeTable[ id ], newtype );
+                ExtraRptTabIncr( ctr_fn_args, RPT_ARGS_TOTAL, 0 );
+            }
+#endif
+            newtype = RingPush( &typeTable[id], newtype );
         }
     } else {
         if( head == arrayHashTable ) {
@@ -1107,10 +1122,9 @@ TYPE CheckDupType( TYPE newtype )
         }
         DbgVerify( newtype->of != NULL
                  , "type: attempt to set base type to NULL" );
-        newtype = typeDuplicated( newtype
-                                , &head[ typeHashVal( newtype ) ] );
+        newtype = typeDuplicated( newtype, &head[typeHashVal( newtype )] );
     }
-    return newtype;
+    return( newtype );
 }
 
 
@@ -1147,28 +1161,28 @@ void TypeTraverse( type_id id, void (*rtn)( TYPE, void *), void *data )
     unsigned num_args;
 
     switch( id ) {
-      case TYP_POINTER :
+    case TYP_POINTER :
         traverseTypeHashed( pointerHashTable, rtn, data );
         break;
-      case TYP_BITFIELD :
+    case TYP_BITFIELD :
         traverseTypeHashed( bitfieldHashTable, rtn, data );
         break;
-      case TYP_ARRAY :
+    case TYP_ARRAY :
         traverseTypeHashed( arrayHashTable, rtn, data );
         break;
-      case TYP_MODIFIER :
+    case TYP_MODIFIER :
         traverseTypeHashed( modifierHashTable, rtn, data );
         break;
-      case TYP_FUNCTION :
+    case TYP_FUNCTION :
         traverseTypeRing( typeTable[id], rtn, data );
         for( num_args = 0; num_args < ARGS_HASH; ++num_args ) {
-            traverseTypeHashed( fnHashTable[ num_args ], rtn, data );
+            traverseTypeHashed( fnHashTable[num_args], rtn, data );
         }
         for( ; num_args < ARGS_MAX; ++num_args ) {
-            traverseTypeRing( fnTable[ num_args - ARGS_HASH ], rtn, data );
+            traverseTypeRing( fnTable[num_args - ARGS_HASH], rtn, data );
         }
         break;
-      default :
+    default :
         traverseTypeRing( typeTable[id], rtn, data );
         break;
     }
@@ -1195,7 +1209,8 @@ static DECL_INFO *prependTypeToDeclarator( DECL_INFO *dinfo, TYPE type )
     if( type != NULL ) {
         end = type;
         for(;;) {
-            if( end->of == NULL ) break;
+            if( end->of == NULL )
+                break;
             end = end->of;
         }
         end->of = dinfo->list;
@@ -1326,7 +1341,7 @@ void ForceNoDefaultArgs( DECL_INFO *dinfo, int err_msg )
     DECL_INFO *parms;
 
     parms = dinfo->parms;
-    if( cantHaveDefaultArgs( err_msg, parms )){
+    if( cantHaveDefaultArgs( err_msg, parms )) {
         removeDefaultArgs( parms );
     }
 }
@@ -1446,7 +1461,8 @@ static TYPE buildFnType( TYPE ret_type, va_list count_args, va_list use_args )
     num_args = 0;
     for(;;) {
         arg_type = va_arg( count_args, TYPE );
-        if( arg_type == NULL ) break;
+        if( arg_type == NULL )
+            break;
         ++num_args;
     }
     va_end( count_args );
@@ -1454,7 +1470,8 @@ static TYPE buildFnType( TYPE ret_type, va_list count_args, va_list use_args )
     curr_arg = args->type_list;
     for(;;) {
         arg_type = va_arg( use_args, TYPE );
-        if( arg_type == NULL ) break;
+        if( arg_type == NULL )
+            break;
         *curr_arg = arg_type;
         ++curr_arg;
     }
@@ -1477,6 +1494,8 @@ TYPE MakeSimpleFunction( TYPE return_type, ... )
     va_start( args1, return_type );
     va_start( args2, return_type );
     fn_type = buildFnType( return_type, args1, args2 );
+    va_end( args2 );
+    va_end( args1 );
     return( CheckDupType( fn_type ) );
 }
 
@@ -1490,6 +1509,8 @@ TYPE MakeModifiableFunction( TYPE return_type, ... )
     va_start( args1, return_type );
     va_start( args2, return_type );
     fn_type = buildFnType( return_type, args1, args2 );
+    va_end( args2 );
+    va_end( args1 );
     return( fn_type );
 }
 
@@ -1544,7 +1565,7 @@ static TYPE* dumpTypeRing(      // DUMP A TYPE RING
         stats->max = length;
     }
     putchar( '\n' );
-    return ring + 1;
+    return( ring + 1 );
 }
 
 static TYPE* dumpTypeVector(    // DUMP VECTOR OF TYPE RINGS
@@ -1558,7 +1579,7 @@ static TYPE* dumpTypeVector(    // DUMP VECTOR OF TYPE RINGS
         vector = dumpTypeRing( vector, stats );
         putchar( '\n' );
     }
-    return vector;
+    return( vector );
 }
 
 void DumpTypeTables( void )
@@ -1571,27 +1592,27 @@ void DumpTypeTables( void )
     head = &typeTable[0];
     for( i = 0; i < TYP_MAX; ++i ) {
         switch( i ) {
-          case TYP_POINTER :
+        case TYP_POINTER :
             dumpTypeVector( pointerHashTable
                           , &stats
                           , "pointer types %3d\n" );
             break;
-          case TYP_BITFIELD :
+        case TYP_BITFIELD :
             dumpTypeVector( bitfieldHashTable
                           , &stats
                           , "bitfield types %3d\n" );
             break;
-          case TYP_ARRAY :
+        case TYP_ARRAY :
             dumpTypeVector( arrayHashTable
                           , &stats
                           , "array types %3d\n" );
             break;
-          case TYP_MODIFIER :
+        case TYP_MODIFIER :
             dumpTypeVector( modifierHashTable
                           , &stats
                           , "modifier types %3d\n" );
             break;
-          default :
+        default :
             printf( "type id %3d:\n", i );
             head = dumpTypeRing( head, &stats );
             break;
@@ -1624,7 +1645,7 @@ TYPE PTypeListOfTypes( type_id id )
 void PTypeSignedChar( void )
 /**************************/
 {
-    basicTypes[ TYP_CHAR ]->of = basicTypes[ TYP_SCHAR ];
+    basicTypes[TYP_CHAR]->of = basicTypes[TYP_SCHAR];
 }
 
 static void initCacheAfterOptions( void )
@@ -1646,10 +1667,10 @@ void PTypeCheckInit( void )
     unsigned index;
 
     // code that must execute after the command line options have been parsed
-    for( index = TYP_MIN; index < TYP_MAX; index++ ) {
-        basic_type = basicTypes[ index ];
+    for( index = 0; index < TYP_MAX; index++ ) {
+        basic_type = basicTypes[index];
         if( basic_type != NULL ) {
-            basicTypes[ index ] = CheckDupType( basic_type );
+            basicTypes[index] = CheckDupType( basic_type );
         }
     }
     initCacheAfterOptions();
@@ -1740,7 +1761,7 @@ static type_id findTypeId( scalar_t scalar )
     case STM_SEGMENT:
         return( TYP_USHORT );
     default:
-        return( TYP_MAX );
+        return( TYP_NONE );
     }
 }
 
@@ -1782,7 +1803,8 @@ static void figureOutDSpec( DECL_SPEC *dspec )
     specifier_t specs;
     type_flag cv_flags;
 
-    if( dspec->decl_checked ) return;
+    if( dspec->decl_checked )
+        return;
     figureOutStgClass( dspec );
     if( dspec->partial == NULL ) {
         dspec->partial = findScalarType( dspec );
@@ -1799,8 +1821,10 @@ TYPE TypedefRemove( TYPE typ )
 /****************************/
 {
     for(;;) {
-        if( typ == NULL ) break;
-        if( typ->id != TYP_TYPEDEF ) break;
+        if( typ == NULL )
+            break;
+        if( typ->id != TYP_TYPEDEF )
+            break;
         typ = typ->of;
     }
     return( typ );
@@ -1810,7 +1834,7 @@ TYPE TypedefModifierRemoveOnly( TYPE typ )
 /****************************************/
 {
     TypeStripTdMod( typ );
-    return typ;
+    return( typ );
 }
 
 TYPE TypedefModifierRemove( TYPE typ )
@@ -1876,11 +1900,11 @@ CLASS_INST *TypeClassInstantiation( TYPE type )
         if( type->id == TYP_CLASS ) {
             if( type->flag & TF1_INSTANTIATION ) {
                 SCOPE inst_scope = type->u.c.scope->enclosing;
-                return inst_scope->owner.inst;
+                return( inst_scope->owner.inst );
             }
         }
     }
-    return NULL;
+    return( NULL );
 }
 
 static NAME betterAnonEnumName( SYMBOL sym, TYPE typ )
@@ -1942,7 +1966,8 @@ bool TypeDefined( TYPE typ )
 /**************************/
 {
     for(;;) {
-        if( typ == NULL ) return( false );
+        if( typ == NULL )
+            return( false );
         TypeStripTdMod( typ );
         switch( typ->id ) {
         case TYP_CLASS:
@@ -1966,7 +1991,8 @@ bool TypePartiallyDefined( TYPE typ )
 /***********************************/
 {
     for(;;) {
-        if( typ == NULL ) return( false );
+        if( typ == NULL )
+            return( false );
         TypeStripTdMod( typ );
         switch( typ->id ) {
         case TYP_CLASS:
@@ -2013,7 +2039,8 @@ bool TypeAbstract( TYPE typ )
 /***************************/
 {
     for(;;) {
-        if( typ == NULL ) return( false );
+        if( typ == NULL )
+            return( false );
         TypeStripTdMod( typ );
         switch( typ->id ) {
         case TYP_CLASS:
@@ -2054,7 +2081,7 @@ TYPE TypeNeedsCtor( TYPE type )
 }
 
 #define MASK_TYPE_CHAR_STR  \
-    ( 1 << TYP_CHAR  )    | \
+    ( 1 << TYP_CHAR )     | \
     ( 1 << TYP_SCHAR )    | \
     ( 1 << TYP_UCHAR )    | \
     ( 1 << TYP_WCHAR )
@@ -2062,16 +2089,17 @@ TYPE TypeNeedsCtor( TYPE type )
 bool TypeIsCharString( TYPE type )
 /********************************/
 {
-    bool retb = false;       // - true ==> is a character string
+    bool ok;        // - true ==> is a character string
 
+    ok = false;
     // includes L"string" (wide chars)
     TypeStripTdMod( type );
     if( type->id == TYP_ARRAY ) {
         type = type->of;
         TypeStripTdMod( type );
-        retb = TypeIdMasked( type, MASK_TYPE_CHAR_STR );
+        ok = TypeIdMasked( type, MASK_TYPE_CHAR_STR );
     }
-    return( retb );
+    return( ok );
 }
 
 static DECL_SPEC *makeDeclSpec( void )
@@ -2183,9 +2211,10 @@ static void checkScalar( DECL_SPEC *d1, DECL_SPEC *d2 )
         /* warn about deprecated use of 'long char' */
         CErr1( WARN_LONG_CHAR_DEPRECATED );
     }
-    if( findTypeId( combo ) != TYP_MAX ) return;
-    d1->scalar = STM_NULL;
-    CErr1( ERR_ILLEGAL_TYPE_COMBO );
+    if( findTypeId( combo ) == TYP_NONE ) {
+        d1->scalar = STM_NULL;
+        CErr1( ERR_ILLEGAL_TYPE_COMBO );
+    }
 }
 
 static void checkSpecifier( DECL_SPEC *d1, DECL_SPEC *d2 )
@@ -2546,7 +2575,7 @@ DECL_SPEC *CheckNoDeclarator( DECL_SPEC *dspec )
 
     /* defining a new class or enum doesn't need a declarator */
     figureOutStgClass( dspec );
-    if( dspec->type_declared || dspec->type_defined || dspec->nameless_allowed){
+    if( dspec->type_declared || dspec->type_defined || dspec->nameless_allowed) {
         if( dspec->specifier != STY_NULL ) {
             dspec->specifier = STY_NULL;
             CErr1( ANSI_TYPE_SPECIFIER_QUALIFIER );
@@ -2601,7 +2630,7 @@ PTREE DoDeclSpec( DECL_SPEC *dspec )
     return( PTreeType( declSpecType( dspec ) ) );
 }
 
-static TYPE removeModifiers( TYPE start, TYPE end )
+static TYPE duplicateModifiers( TYPE start, TYPE end )
 {
     TYPE mod_list;
     TYPE mod_type;
@@ -2640,7 +2669,7 @@ static TYPE changeToPointer( TYPE type, TYPE array_type )
     // making 'near -> [] -> int' into '* -> near -> int' work properly
     // (the effect on 'const' and 'volatile' is still open so we may have
     // to split the modifiers into memory model and cv-qualifier types)
-    mod_list = removeModifiers( type, array_type );
+    mod_list = duplicateModifiers( type, array_type );
     base_type = array_type->of;
     base_type = replaceModifiers( mod_list, base_type );
     ptr_type = MakePointerType( TF1_NULL, STY_NULL );
@@ -2654,7 +2683,7 @@ static TYPE dupArray( TYPE type, TYPE ref_type, target_size_t size, type_flag fl
     TYPE array_type;
     TYPE mod_list;
 
-    mod_list = removeModifiers( type, ref_type );
+    mod_list = duplicateModifiers( type, ref_type );
     base_type = ref_type->of;
     array_type = MakeArrayType( size );
     array_type->flag |= flag;
@@ -2663,7 +2692,7 @@ static TYPE dupArray( TYPE type, TYPE ref_type, target_size_t size, type_flag fl
     return( base_type );
 }
 
-static TYPE dupFunction( TYPE fn_type, unsigned control )
+static TYPE dupFunction( TYPE fn_type, dup_func_control control )
 {
     unsigned i;
     arg_list *old_args;
@@ -2696,12 +2725,12 @@ TYPE AddNonFunctionPragma( TYPE mod_type, TYPE base_type )
 
     type = base_type;
     TypeStripTdMod( type );
-    mod_list = removeModifiers( base_type, type );
+    mod_list = duplicateModifiers( base_type, type );
     type = replaceModifiers( mod_list, type );
     return( MakeTypeOf( mod_type, type ) );
 }
 
-static TYPE makeThunkType( TYPE type, unsigned mtt_control )
+static TYPE makeThunkType( TYPE type, thunk_type_control mtt_control )
 {
     TYPE new_fn_type;       // - new function type
     TYPE old_fn_type;       // - old function type
@@ -2732,13 +2761,13 @@ static TYPE makeThunkType( TYPE type, unsigned mtt_control )
 TYPE MakeThunkFunction( TYPE type )
 /*********************************/
 {
-    return makeThunkType( type, MTT_INLINE );
+    return( makeThunkType( type, MTT_INLINE ) );
 }
 
 TYPE MakeThunkPragmaFunction( TYPE type )
 /***************************************/
 {
-    return makeThunkType( type, MTT_INLINE | MTT_COPY_PRAGMA );
+    return( makeThunkType( type, MTT_INLINE | MTT_COPY_PRAGMA ) );
 }
 
 TYPE RemoveFunctionPragma( TYPE type )
@@ -2749,7 +2778,7 @@ TYPE RemoveFunctionPragma( TYPE type )
     TYPE mod_list;
 
     fn_type = FunctionDeclarationType( type );
-    mod_list = removeModifiers( type, fn_type );
+    mod_list = duplicateModifiers( type, fn_type );
     new_fn_type = dupFunction( fn_type, DF_REUSE_ARGLIST );
     new_fn_type->u.f.pragma = NULL;
     new_fn_type = CheckDupType( new_fn_type );
@@ -2771,7 +2800,7 @@ static TYPE adjustFullFunctionType( TYPE type
 
     fn_type = FunctionDeclarationType( type );
     old_flags = fn_type->flag;
-    new_flags = ( old_flags | on_flags ) & ~off_flags;
+    new_flags = (old_flags | on_flags) & ~off_flags;
     if( new_flags == old_flags ) {
         /* no change in flags! */
         if( new_ret == NULL && new_pragma == NULL ) {
@@ -2779,7 +2808,7 @@ static TYPE adjustFullFunctionType( TYPE type
             return( type );
         }
     }
-    mod_list = removeModifiers( type, fn_type );
+    mod_list = duplicateModifiers( type, fn_type );
     new_fn_type = dupFunction( fn_type, DF_REUSE_ARGLIST );
     new_fn_type->flag = new_flags;
     if( new_ret != NULL ) {
@@ -2962,7 +2991,7 @@ static PTREE nameOfId( PTREE id )
 static int scanDeclarator( TYPE declarator_list, unsigned *num_args )
 {
     arg_list *args;
-    int status;
+    spec_status sm_status;
     bool cv_function_OK;
 
     /*
@@ -2971,30 +3000,30 @@ static int scanDeclarator( TYPE declarator_list, unsigned *num_args )
             TYP_FUNCTION
             TYP_POINTER
     */
-    status = SM_NULL;
+    sm_status = SM_NULL;
     while( declarator_list != NULL ) {
         cv_function_OK = false;
         switch( declarator_list->id ) {
         case TYP_FUNCTION:
-            if( status & SM_SAW_FUNCTION ) {
-                status |= SM_RETURN_DECLARATOR | SM_SAW_DECLARATOR;
-                status &= ~SM_NOT_A_FUNCTION;
-                if( status & SM_SAW_CV_FUNCTION ) {
-                    status |= SM_CV_FUNCTION_ERROR;
+            if( sm_status & SM_SAW_FUNCTION ) {
+                sm_status |= SM_RETURN_DECLARATOR | SM_SAW_DECLARATOR;
+                sm_status &= ~SM_NOT_A_FUNCTION;
+                if( sm_status & SM_SAW_CV_FUNCTION ) {
+                    sm_status |= SM_CV_FUNCTION_ERROR;
                 }
-            } else if( status & SM_SAW_DECLARATOR ) {
-                status |= SM_RETURN_DECLARATOR;
+            } else if( sm_status & SM_SAW_DECLARATOR ) {
+                sm_status |= SM_RETURN_DECLARATOR;
             }
-            status &= ~SM_SAW_CV_FUNCTION;
+            sm_status &= ~SM_SAW_CV_FUNCTION;
             args = declarator_list->u.f.args;
             if( num_args != NULL ) {
                 *num_args = args->num_args;
             }
             if( args->qualifier != TF1_NULL ) {
                 /* we have <declarator> ( <args> ) const/volatile */
-                status |= SM_SAW_CV_FUNCTION;
+                sm_status |= SM_SAW_CV_FUNCTION;
             }
-            status |= SM_SAW_FUNCTION;
+            sm_status |= SM_SAW_FUNCTION;
             break;
         case TYP_MODIFIER:
             break;
@@ -3002,25 +3031,25 @@ static int scanDeclarator( TYPE declarator_list, unsigned *num_args )
             cv_function_OK = true;
             /* fall through */
         default:
-            if( status & SM_SAW_CV_FUNCTION ) {
+            if( sm_status & SM_SAW_CV_FUNCTION ) {
                 if( ! cv_function_OK ) {
-                    status |= SM_CV_FUNCTION_ERROR;
+                    sm_status |= SM_CV_FUNCTION_ERROR;
                 }
             }
-            if( status & SM_SAW_FUNCTION ) {
-                status |= SM_NOT_A_FUNCTION;
+            if( sm_status & SM_SAW_FUNCTION ) {
+                sm_status |= SM_NOT_A_FUNCTION;
             }
-            status |= SM_SAW_DECLARATOR;
-            status &= ~SM_SAW_CV_FUNCTION;
+            sm_status |= SM_SAW_DECLARATOR;
+            sm_status &= ~SM_SAW_CV_FUNCTION;
         }
         declarator_list = declarator_list->of;
     }
-    if( (status & SM_SAW_FUNCTION) == 0 ) {
+    if( (sm_status & SM_SAW_FUNCTION) == 0 ) {
         /* function type was never found! */
-        status |= SM_NOT_A_FUNCTION;
+        sm_status |= SM_NOT_A_FUNCTION;
     }
-    status &= ~( SM_SAW_FUNCTION | SM_SAW_DECLARATOR | SM_SAW_CV_FUNCTION );
-    return( status );
+    sm_status &= ~( SM_SAW_FUNCTION | SM_SAW_DECLARATOR | SM_SAW_CV_FUNCTION );
+    return( sm_status );
 }
 
 static type_flag convertFnSpec( specifier_t spec )
@@ -3040,7 +3069,7 @@ static type_flag convertFnSpec( specifier_t spec )
     return( flag );
 }
 
-static bool applyFnSpec( TYPE declarator, DECL_SPEC *dspec, int status )
+static bool applyFnSpec( TYPE declarator, DECL_SPEC *dspec, spec_status sm_status )
 {
     specifier_t fn_spec;
     type_flag flags;
@@ -3063,7 +3092,7 @@ static bool applyFnSpec( TYPE declarator, DECL_SPEC *dspec, int status )
         CErr1( ERR_BAD_FN_MODIFIER );
     } else {
         fn_type->flag |= flags;
-        if( status & SM_NOT_A_FUNCTION ) {
+        if( sm_status & SM_NOT_A_FUNCTION ) {
             CErr1( ERR_BAD_FIV_MODIFIER );
         } else {
             if( fn_spec & STY_FRIEND ) {
@@ -3100,42 +3129,42 @@ static void applyFnClassMods( TYPE declarator, DECL_SPEC *dspec )
     }
 }
 
-static void checkUserConversion( TYPE return_type, int status, unsigned arg_cnt)
+static void checkUserConversion( TYPE return_type, spec_status sm_status, unsigned arg_cnt)
 {
-    if( status & SM_NOT_A_FUNCTION ) {
+    if( sm_status & SM_NOT_A_FUNCTION ) {
         CErr1( ERR_USER_CONV_BAD_DECL );
-    } else if( return_type != TypeGetCache( TYPC_DEFAULT_INT ) || (status & SM_RETURN_DECLARATOR) ) {
+    } else if( return_type != TypeGetCache( TYPC_DEFAULT_INT ) || (sm_status & SM_RETURN_DECLARATOR) ) {
         CErr1( ERR_USER_CONV_BAD_RETURN );
     }
-    if( status == SM_NULL && arg_cnt != 0 ) {
+    if( sm_status == SM_NULL && arg_cnt != 0 ) {
         CErr1( ERR_USER_CONV_BAD_FUNC );
     }
 }
 
-static void checkDestructor( TYPE return_type, int status, unsigned num_args )
+static void checkDestructor( TYPE return_type, spec_status sm_status, unsigned num_args )
 {
-    if( status & SM_NOT_A_FUNCTION ) {
+    if( sm_status & SM_NOT_A_FUNCTION ) {
         CErr1( ERR_DESTRUCTOR_BAD_DECL );
-    } else if( return_type != TypeGetCache( TYPC_DEFAULT_INT ) || (status & SM_RETURN_DECLARATOR) ) {
+    } else if( return_type != TypeGetCache( TYPC_DEFAULT_INT ) || (sm_status & SM_RETURN_DECLARATOR) ) {
         CErr1( ERR_DESTRUCTOR_BAD_RETURN );
     }
-    if( status == SM_NULL && num_args != 0 ) {
+    if( sm_status == SM_NULL && num_args != 0 ) {
         CErr1( ERR_DESTRUCTOR_BAD_FUNC );
     }
 }
 
-static void checkOperator( TYPE return_type, int status, NAME name )
+static void checkOperator( TYPE return_type, spec_status sm_status, NAME name )
 {
     /* unused parameters */ (void)return_type;
 
-    if( status & SM_NOT_A_FUNCTION ) {
+    if( sm_status & SM_NOT_A_FUNCTION ) {
         CErr2p( ERR_OPERATOR_BAD_DECL, name );
     }
 }
 
-static void checkUsefulParms( int status, DECL_INFO *dinfo )
+static void checkUsefulParms( spec_status sm_status, DECL_INFO *dinfo )
 {
-    if( status & SM_NOT_A_FUNCTION ) {
+    if( sm_status & SM_NOT_A_FUNCTION ) {
         /* this isn't a function so the saved parms are not useful */
         FreeArgs( dinfo->parms );
         dinfo->parms = NULL;
@@ -3316,7 +3345,7 @@ static TYPE extractFunctionMods( TYPE curr, TYPE *ptail, bool stop_at_nonmod )
             prev = curr;
             continue;
         }
-        if( curr->flag & (TF1_TYP_FUNCTION|TF1_HUG_FUNCTION) ) {
+        if( curr->flag & (TF1_TYP_FUNCTION | TF1_HUG_FUNCTION) ) {
             prev->of = next;
             if( tail == NULL ) {
                 tail = curr;
@@ -3446,7 +3475,7 @@ static TYPE adjustModifiers( DECL_SPEC *dspec, TYPE list )
     if( dspec->ms_declspec != MSDS_NULL ) {
         outermost_list = makeMSDeclSpecType( dspec );
         for( outer = outermost_list; outer != NULL; outer = outer->of ) {
-            if( outer->flag & (TF1_TYP_FUNCTION|TF1_HUG_FUNCTION) ) {
+            if( outer->flag & (TF1_TYP_FUNCTION | TF1_HUG_FUNCTION) ) {
                 any_fn_mod = outermost_list;
                 break;
             }
@@ -3465,7 +3494,7 @@ static TYPE adjustModifiers( DECL_SPEC *dspec, TYPE list )
                 /* leave prev_link as is */
                 continue;
             }
-            if( curr->flag & (TF1_TYP_FUNCTION|TF1_HUG_FUNCTION) ) {
+            if( curr->flag & (TF1_TYP_FUNCTION | TF1_HUG_FUNCTION) ) {
                 any_fn_mod = curr;
             }
             break;
@@ -3489,6 +3518,7 @@ static TYPE adjustModifiers( DECL_SPEC *dspec, TYPE list )
     /* function modifiers must be shuffled to come before the TYP_FUNCTION */
     last_fn_mod = NULL;
     last_fn_type = NULL;
+    last_prev = NULL;
     prev = NULL;
     for( curr = list; curr != NULL; curr = curr->of ) {
         if( curr->id == TYP_FUNCTION ) {
@@ -3501,7 +3531,7 @@ static TYPE adjustModifiers( DECL_SPEC *dspec, TYPE list )
             last_fn_type = curr;
             last_prev = prev;
         } else if( curr->id == TYP_MODIFIER ) {
-            if( curr->flag & (TF1_TYP_FUNCTION|TF1_HUG_FUNCTION) ) {
+            if( curr->flag & (TF1_TYP_FUNCTION | TF1_HUG_FUNCTION) ) {
                 last_fn_mod = curr;
             }
         }
@@ -3529,7 +3559,7 @@ static TYPE massageFunctionTypeInDSpec( TYPE *dspec_type, TYPE list )
     if( fn_type == NULL ) {
         return( list );
     }
-    mod_list = removeModifiers( base_type, fn_type );
+    mod_list = duplicateModifiers( base_type, fn_type );
     while( mod_list != NULL ) {
         mod_type = mod_list;
         mod_list = mod_list->of;
@@ -3560,7 +3590,7 @@ static TYPE make16BitEquivalent( TYPE type )
         type = GetBasicType( TYP_USHORT );
         break;
     case TYP_POINTER:
-        mod_list = removeModifiers( type, check );
+        mod_list = duplicateModifiers( type, check );
         type = MakeModifiedType( check->of, TF1_SET_FAR16 );
         type = MakePointerTo( type );
         type = replaceModifiers( mod_list, type );
@@ -3602,16 +3632,13 @@ static TYPE makeModifiedTypeOf( TYPE mod, TYPE of )
             if( of->flag & TF1_INTERRUPT ) {
                 /* interrupt implies default far */
                 mod->flag |= TF1_FAR;
-                if( !CompFlags.mfi_switch_used ) {
-                    mod->flag |= TF1_FARSS;
-                }
             }
         }
         mod->flag &= ~TF1_CV_MASK;
         if( ( mod->flag == TF1_NULL )
          && ( mod->u.m.base == NULL )
          && ( mod->u.m.pragma == NULL ) ) {
-            return of;
+            return( of );
         }
     }
     return( MakeTypeOf( mod, of ) );
@@ -3655,17 +3682,17 @@ DECL_INFO *FinishDeclarator( DECL_SPEC *dspec, DECL_INFO *dinfo )
     TYPE mod_type;
     TYPE leftover_type;
     unsigned num_args;
-    int status;
+    spec_status sm_status;
     MSG_NUM msg_num;
     type_flag mod_flags;
     type_flag fn_flag;
     type_flag ptr_flags;
     AUX_INFO *fn_pragma;
     struct {
-        unsigned memory_model_movement : 1;
-        unsigned add_type : 1;
-        unsigned diagnose_sym : 1;
-        unsigned OK_to_add_fnmod : 1;
+        unsigned memory_model_movement  : 1;
+        unsigned add_type               : 1;
+        unsigned diagnose_sym           : 1;
+        unsigned OK_to_add_fnmod        : 1;
     } flag;
 
     id_tree = nameOfId( dinfo->id );
@@ -3679,37 +3706,38 @@ DECL_INFO *FinishDeclarator( DECL_SPEC *dspec, DECL_INFO *dinfo )
     curr_type = adjustModifiers( dspec, curr_type );
     prev_type = dspec->partial;
     curr_type = massageFunctionTypeInDSpec( &prev_type, curr_type );
-    status = scanDeclarator( curr_type, &num_args );
-    if( status & SM_CV_FUNCTION_ERROR ) {
+    num_args = 0;
+    sm_status = scanDeclarator( curr_type, &num_args );
+    if( sm_status & SM_CV_FUNCTION_ERROR ) {
         CErr1( ERR_CONST_VOLATILE_IN_A_TYPE );
     }
-    if( applyFnSpec( curr_type, dspec, status ) ) {
+    if( applyFnSpec( curr_type, dspec, sm_status ) ) {
         dinfo->friend_fn = true;
         if( dspec->stg_class != STG_NULL ) {
             CErr1( ERR_FRIEND_BAD );
             dspec->stg_class = STG_NULL;
         }
     } else {
-        if(( status & SM_NOT_A_FUNCTION ) == 0 ) {
+        if( (sm_status & SM_NOT_A_FUNCTION) == 0 ) {
             /* these don't apply to friend functions */
             applyFnClassMods( curr_type, dspec );
         }
     }
     if( dinfo->parms != NULL ) {
         /* make sure the parms are useful */
-        checkUsefulParms( status, dinfo );
+        checkUsefulParms( sm_status, dinfo );
     }
     if( id_tree != NULL ) {
         switch( id_tree->cgop ) {
         case CO_NAME_CONVERT:
-            checkUserConversion( prev_type, status, num_args );
+            checkUserConversion( prev_type, sm_status, num_args );
             prev_type = id_tree->type;
             break;
         case CO_NAME_DTOR:
-            checkDestructor( prev_type, status, num_args );
+            checkDestructor( prev_type, sm_status, num_args );
             break;
         case CO_NAME_OPERATOR:
-            checkOperator( prev_type, status, id );
+            checkOperator( prev_type, sm_status, id );
             switch( id_tree->id_cgop ) {
             case CO_NEW:
             case CO_DELETE:
@@ -3892,9 +3920,6 @@ DECL_INFO *FinishDeclarator( DECL_SPEC *dspec, DECL_INFO *dinfo )
                     if( prev_type->flag & TF1_INTERRUPT ) {
                         /* interrupt implies default far */
                         prev_type = MakeModifiedType( prev_type, TF1_FAR );
-                        if( !CompFlags.mfi_switch_used ) {
-                            prev_type = MakeModifiedType( prev_type, TF1_FARSS );
-                        }
                     }
                 }
             }
@@ -3917,9 +3942,6 @@ DECL_INFO *FinishDeclarator( DECL_SPEC *dspec, DECL_INFO *dinfo )
                 if( prev_type->flag & TF1_INTERRUPT ) {
                     /* interrupt implies default far */
                     prev_type = MakeModifiedType( prev_type, TF1_FAR );
-                    if( !CompFlags.mfi_switch_used ) {
-                        prev_type = MakeModifiedType( prev_type, TF1_FARSS );
-                    }
                 }
             }
         }
@@ -3947,6 +3969,7 @@ DECL_INFO *FinishDeclarator( DECL_SPEC *dspec, DECL_INFO *dinfo )
         }
     }
     if( dinfo->id != NULL ) {
+        msg_num = 0;
         flag.diagnose_sym = false;
         if( dspec->stg_class & STG_TYPEDEF ) {
             if( DefaultIntType( prev_type ) != NULL ) {
@@ -4342,8 +4365,10 @@ DECL_SPEC *PTypeDecltypeExpr( PTREE expr, bool idexpr )
         SYMBOL sym;
         bool is_qualified = NodeIsBinaryOp( expr, CO_COLON_COLON );
         if ( is_qualified ) {
-            if( !AnalyseClQualRes( &expr, &result ) ) goto EXIT;
-            if( !AnalyseSymbolAccess( expr, expr, NULL, &diagMemb ) ) goto EXIT;
+            if( !AnalyseClQualRes( &expr, &result ) )
+                goto EXIT;
+            if( !AnalyseSymbolAccess( expr, expr, NULL, &diagMemb ) )
+                goto EXIT;
             sym = expr->u.symcg.symbol;
         } else {
 
@@ -4507,20 +4532,20 @@ TYPE SegmentShortType( TYPE type )
 
 #define MASK_TYPE_INTEGRAL  \
     ( 1 << TYP_ERROR )    | \
-    ( 1 << TYP_BOOL  )    | \
-    ( 1 << TYP_CHAR  )    | \
+    ( 1 << TYP_BOOL )     | \
+    ( 1 << TYP_CHAR )     | \
     ( 1 << TYP_SCHAR )    | \
     ( 1 << TYP_UCHAR )    | \
     ( 1 << TYP_WCHAR )    | \
     ( 1 << TYP_SSHORT )   | \
     ( 1 << TYP_USHORT )   | \
-    ( 1 << TYP_SINT  )    | \
-    ( 1 << TYP_UINT  )    | \
+    ( 1 << TYP_SINT )     | \
+    ( 1 << TYP_UINT )     | \
     ( 1 << TYP_SLONG )    | \
     ( 1 << TYP_ULONG )    | \
     ( 1 << TYP_SLONG64 )  | \
     ( 1 << TYP_ULONG64 )  | \
-    ( 1 << TYP_ENUM  )
+    ( 1 << TYP_ENUM )
 
 TYPE IntegralType( TYPE type )
 /****************************/
@@ -4529,13 +4554,13 @@ TYPE IntegralType( TYPE type )
     if( ! TypeIdMasked( type, MASK_TYPE_INTEGRAL ) ) {
         type = NULL;
     }
-    return type;
+    return( type );
 }
 
 #define MASK_TYPE_FLOATING  \
     ( 1 << TYP_ERROR )    | \
-    ( 1 << TYP_FLOAT  )   | \
-    ( 1 << TYP_DOUBLE  )  | \
+    ( 1 << TYP_FLOAT )    | \
+    ( 1 << TYP_DOUBLE )   | \
     ( 1 << TYP_LONG_DOUBLE )
 
 TYPE FloatingType( TYPE type )
@@ -4545,13 +4570,13 @@ TYPE FloatingType( TYPE type )
     if( ! TypeIdMasked( type, MASK_TYPE_FLOATING ) ) {
         type = NULL;
     }
-    return type;
+    return( type );
 }
 
 #define MASK_TYPE_SIGNED_INT \
     ( 1 << TYP_SCHAR )    | \
     ( 1 << TYP_SSHORT )   | \
-    ( 1 << TYP_SINT  )    | \
+    ( 1 << TYP_SINT )     | \
     ( 1 << TYP_SLONG )    | \
     ( 1 << TYP_SLONG64 )
 
@@ -4560,14 +4585,14 @@ bool SignedIntType( TYPE type )
 /*****************************/
 {
     TypeStripTdModEnumChar( type );
-    return TypeIdMasked( type, MASK_TYPE_SIGNED_INT );
+    return( TypeIdMasked( type, MASK_TYPE_SIGNED_INT ) );
 }
 
 #define MASK_TYPE_UNSIGNED_INT  \
     ( 1 << TYP_UCHAR )    | \
     ( 1 << TYP_WCHAR )    | \
     ( 1 << TYP_USHORT )   | \
-    ( 1 << TYP_UINT  )    | \
+    ( 1 << TYP_UINT )     | \
     ( 1 << TYP_ULONG )    | \
     ( 1 << TYP_ULONG64 )
 
@@ -4576,25 +4601,25 @@ bool UnsignedIntType( TYPE type )
 /*******************************/
 {
     TypeStripTdModEnumChar( type );
-    return TypeIdMasked( type, MASK_TYPE_UNSIGNED_INT );
+    return( TypeIdMasked( type, MASK_TYPE_UNSIGNED_INT ) );
 }
 
 #define MASK_TYPE_ARITH     \
     ( 1 << TYP_ERROR )    | \
-    ( 1 << TYP_BOOL  )    | \
-    ( 1 << TYP_CHAR  )    | \
+    ( 1 << TYP_BOOL )     | \
+    ( 1 << TYP_CHAR )     | \
     ( 1 << TYP_SCHAR )    | \
     ( 1 << TYP_UCHAR )    | \
     ( 1 << TYP_WCHAR )    | \
     ( 1 << TYP_SSHORT )   | \
     ( 1 << TYP_USHORT )   | \
-    ( 1 << TYP_SINT  )    | \
-    ( 1 << TYP_UINT  )    | \
+    ( 1 << TYP_SINT )     | \
+    ( 1 << TYP_UINT )     | \
     ( 1 << TYP_SLONG )    | \
     ( 1 << TYP_ULONG )    | \
     ( 1 << TYP_SLONG64 )  | \
     ( 1 << TYP_ULONG64 )  | \
-    ( 1 << TYP_ENUM  )    | \
+    ( 1 << TYP_ENUM )     | \
     ( 1 << TYP_FLOAT )    | \
     ( 1 << TYP_DOUBLE )   | \
     ( 1 << TYP_LONG_DOUBLE ) | \
@@ -4607,7 +4632,7 @@ TYPE ArithType( TYPE type )
     if( ! TypeIdMasked( type, MASK_TYPE_ARITH ) ) {
         type = NULL;
     }
-    return type;
+    return( type );
 }
 
 TYPE FunctionDeclarationType( TYPE type )
@@ -4622,15 +4647,17 @@ TYPE FunctionDeclarationType( TYPE type )
 
 #define MASK_TYPE_ENUM        \
     ( 1 << TYP_ENUM )       | \
-    ( 1 << TYP_MODIFIER  )  | \
-    ( 1 << TYP_TYPEDEF  )
+    ( 1 << TYP_MODIFIER )   | \
+    ( 1 << TYP_TYPEDEF )
 
 TYPE EnumType( TYPE type )
 /************************/
 {
     for( ; ; type = type->of ) {
         if( TypeIdMasked( type, MASK_TYPE_ENUM ) ) {
-            if( type->id == TYP_ENUM ) break;
+            if( type->id == TYP_ENUM ) {
+                break;
+            }
         } else {
             type = NULL;
             break;
@@ -4641,15 +4668,17 @@ TYPE EnumType( TYPE type )
 
 #define MASK_TYPE_BOOL        \
     ( 1 << TYP_BOOL )       | \
-    ( 1 << TYP_MODIFIER  )  | \
-    ( 1 << TYP_TYPEDEF  )
+    ( 1 << TYP_MODIFIER )   | \
+    ( 1 << TYP_TYPEDEF )
 
 TYPE BoolType( TYPE type )
 /************************/
 {
     for( ; ; type = type->of ) {
         if( TypeIdMasked( type, MASK_TYPE_BOOL ) ) {
-            if( type->id == TYP_BOOL ) break;
+            if( type->id == TYP_BOOL ) {
+                break;
+            }
         } else {
             type = NULL;
             break;
@@ -4660,15 +4689,17 @@ TYPE BoolType( TYPE type )
 
 #define MASK_TYPE_GENERIC     \
     ( 1 << TYP_GENERIC )    | \
-    ( 1 << TYP_MODIFIER  )  | \
-    ( 1 << TYP_TYPEDEF  )
+    ( 1 << TYP_MODIFIER )   | \
+    ( 1 << TYP_TYPEDEF )
 
 TYPE GenericType( TYPE type )
 /***************************/
 {
     for( ; ; type = type->of ) {
         if( TypeIdMasked( type, MASK_TYPE_GENERIC ) ) {
-            if( type->id == TYP_GENERIC ) break;
+            if( type->id == TYP_GENERIC ) {
+                break;
+            }
         } else {
             type = NULL;
             break;
@@ -4678,8 +4709,8 @@ TYPE GenericType( TYPE type )
 }
 
 #define MASK_TYPE_ELABOR      \
-    ( 1 << TYP_ENUM    )    | \
-    ( 1 << TYP_CLASS   )
+    ( 1 << TYP_ENUM )       | \
+    ( 1 << TYP_CLASS )
 
 TYPE ElaboratableType( TYPE type )
 /********************************/
@@ -4688,7 +4719,7 @@ TYPE ElaboratableType( TYPE type )
     if( ! TypeIdMasked( type, MASK_TYPE_ELABOR ) ) {
         type = NULL;
     }
-    return type;
+    return( type );
 }
 
 // 'ClassType' is used by code generator!
@@ -4812,7 +4843,8 @@ TYPE ArrayBaseType( TYPE type )
 {
     for(;;) {
         TypeStripTdMod( type );
-        if( type->id != TYP_ARRAY ) break;
+        if( type->id != TYP_ARRAY )
+            break;
         type = type->of;
     }
     return( type );
@@ -4827,7 +4859,8 @@ TYPE ArrayModifiedBaseType( TYPE type )
 {
     TypeStripTdMod( type );
     for(;;) {
-        if( ! TypeIdMasked( type, MASK_TYPE_TDEF_ARR ) ) break;
+        if( ! TypeIdMasked( type, MASK_TYPE_TDEF_ARR ) )
+            break;
         type = type->of;
     }
     return( type );
@@ -4838,20 +4871,20 @@ TYPE Integral64Type             // GET 64-BIT TYPE IF POSSIBLE
 {
     type = TypedefModifierRemoveOnly( type );
     switch( type->id ) {
-      case TYP_ENUM :
+    case TYP_ENUM :
         if( NULL == Integral64Type( type->of ) ) {
             type = NULL;
             break;
         }
-        // drops thru
-      case TYP_ULONG64 :
-      case TYP_SLONG64 :
+        /* fall through */
+    case TYP_ULONG64 :
+    case TYP_SLONG64 :
         break;
-      default :
+    default :
         type = NULL;
         break;
     }
-    return type;
+    return( type );
 }
 
 #define MASK_TYPE_INT64  \
@@ -4982,7 +5015,7 @@ TYPE MakeConstReferenceTo(      // MAKE A CONST REFERENCE TO A TYPE
 /*************************/
     TYPE type )                 // - the type
 {
-    return MakeReferenceTo( MakeModifiedType( type, TF1_CONST ) );
+    return( MakeReferenceTo( MakeModifiedType( type, TF1_CONST ) ) );
 }
 
 TYPE GetReferenceTo( TYPE base )
@@ -5076,7 +5109,7 @@ derived_status TypeDerived( TYPE type_derived, TYPE type_potential_base )
             retn = ScopeDerived( derived, potential_base );
         }
     }
-    return retn;
+    return( retn );
 }
 
 TYPE TypeCommonBase( TYPE class_1, TYPE class_2 )
@@ -5106,22 +5139,21 @@ AUX_INFO *TypeHasPragma( TYPE type )
 {
     AUX_INFO *pragma;
 
+    pragma = NULL;
     for( ; type != NULL; type = type->of ) {
-        if( type->id == TYP_MODIFIER ) {
-            pragma = type->u.m.pragma;
-            if( pragma != NULL ) {
-                return( pragma );
-            }
+        if( type->id == TYP_TYPEDEF ) {
             continue;
+        } else if( type->id == TYP_MODIFIER ) {
+            pragma = type->u.m.pragma;
+            if( pragma == NULL ) {
+                continue;
+            }
+        } else if( type->id == TYP_FUNCTION ) {
+            pragma = type->u.f.pragma;
         }
-        if( type->id != TYP_TYPEDEF ) {
-            break;
-        }
+        break;
     }
-    if( type->id == TYP_FUNCTION ) {
-        return( type->u.f.pragma );
-    }
-    return( NULL );
+    return( pragma );
 }
 
 #define defaultMemoryFlag( t ) ( (t)->id == TYP_FUNCTION    \
@@ -5131,7 +5163,7 @@ AUX_INFO *TypeHasPragma( TYPE type )
 type_flag DefaultMemoryFlag(    // GET DEFAULT MEMORY FLAG FOR A TYPE
     TYPE type )                 // - unmodified type
 {
-    return defaultMemoryFlag( type );
+    return( defaultMemoryFlag( type ) );
 }
 
 TYPE TypeModExtract(            // EXTRACT MODIFIER INFORMATION
@@ -5148,23 +5180,23 @@ TYPE TypeModExtract(            // EXTRACT MODIFIER INFORMATION
     flag = TF1_NULL;
     for( ; type != NULL; type = type->of ) {
         switch( type->id ) {
-          case TYP_MODIFIER :
+        case TYP_MODIFIER :
             mod_flag = type->flag;
             flag |= mod_flag;
             if( mod_flag & TF1_BASED ) {
                 *a_baser = type->u.m.base;
             }
             continue;
-          case TYP_TYPEDEF :
+        case TYP_TYPEDEF :
             continue;
-          case TYP_BOOL :
-          case TYP_CHAR :
-          case TYP_ENUM :
+        case TYP_BOOL :
+        case TYP_CHAR :
+        case TYP_ENUM :
             if( (mask & TC1_NOT_ENUM_CHAR) == 0 ) {
                 type = type->of;
             }
-            // drops thru
-          default :
+            /* fall through */
+        default :
             if( mask & TC1_NOT_MEM_MODEL ) {
                 if( (flag & TF1_MEM_MODEL) == 0 ) {
                     flag |= defaultMemoryFlag( type );
@@ -5187,12 +5219,12 @@ TYPE TypeGetActualFlags( TYPE type, type_flag *flags )
     flag = TF1_NULL;
     for( ; type != NULL; type = type->of ) {
         switch( type->id ) {
-          case TYP_MODIFIER :
+        case TYP_MODIFIER :
             flag |= type->flag;
             continue;
-          case TYP_TYPEDEF :
+        case TYP_TYPEDEF :
             continue;
-          default :
+        default :
             break;
         }
         break;
@@ -5222,12 +5254,12 @@ TYPE TypeModFlagsEC(            // GET MODIFIER FLAGS, UNMODIFIED TYPE
     flag = TF1_NULL;
     for( ; type != NULL; type = type->of ) {
         switch( type->id ) {
-          case TYP_MODIFIER :
+        case TYP_MODIFIER :
             flag |= type->flag;
             continue;
-          case TYP_TYPEDEF :
+        case TYP_TYPEDEF :
             continue;
-          default :
+        default :
             if( (flag & TF1_MEM_MODEL) == 0 ) {
                 flag |= defaultMemoryFlag( type );
             }
@@ -5253,16 +5285,16 @@ TYPE TypeModFlagsBaseEC(        // GET MODIFIER FLAGS & BASE, UNMODIFIED TYPE
     flag = TF1_NULL;
     for( ; type != NULL; type = type->of ) {
         switch( type->id ) {
-          case TYP_MODIFIER :
+        case TYP_MODIFIER :
             mod_flag = type->flag;
             flag |= mod_flag;
             if( mod_flag & TF1_BASED ) {
                 *a_baser = type->u.m.base;
             }
             continue;
-          case TYP_TYPEDEF :
+        case TYP_TYPEDEF :
             continue;
-          default :
+        default :
             if( (flag & TF1_MEM_MODEL) == 0 ) {
                 flag |= defaultMemoryFlag( type );
             }
@@ -5285,17 +5317,17 @@ TYPE TypeModFlags(              // GET MODIFIER FLAGS, UNMODIFIED TYPE
     flag = TF1_NULL;
     for( ; type != NULL; type = type->of ) {
         switch( type->id ) {
-          case TYP_MODIFIER :
+        case TYP_MODIFIER :
             flag |= type->flag;
             continue;
-          case TYP_TYPEDEF :
+        case TYP_TYPEDEF :
             continue;
-          case TYP_BOOL :
-          case TYP_CHAR :
-          case TYP_ENUM :
+        case TYP_BOOL :
+        case TYP_CHAR :
+        case TYP_ENUM :
             type = type->of;
-            // drops thru
-          default :
+            /* fall through */
+        default :
             if( (flag & TF1_MEM_MODEL) == 0 ) {
                 flag |= defaultMemoryFlag( type );
             }
@@ -5316,7 +5348,7 @@ type_flag TypeExplicitModFlags( TYPE type )
         flag |= type->flag;
     }
 
-    return flag;
+    return( flag );
 }
 
 
@@ -5414,7 +5446,7 @@ void FreeDeclInfo( DECL_INFO *dinfo )
     CarveFree( carveDECL_INFO, dinfo );
 }
 
-static PTREE verifyQualifiedId( DECL_SPEC *dspec, PTREE id, SCOPE *scope, unsigned *pinfo )
+static PTREE verifyQualifiedId( DECL_SPEC *dspec, PTREE id, SCOPE *scope, id_check_info *pinfo )
 {
     NAME name;
     TYPE class_type;
@@ -5424,8 +5456,8 @@ static PTREE verifyQualifiedId( DECL_SPEC *dspec, PTREE id, SCOPE *scope, unsign
     SCOPE check_scope;
     SCOPE qualifying_scope;
     struct {
-        unsigned not_OK : 1;
-        unsigned strip_qualification : 1;
+        unsigned not_OK                 : 1;
+        unsigned strip_qualification    : 1;
     } flag;
 
     *scope = NULL;
@@ -5521,7 +5553,7 @@ DECL_INFO *MakeDeclarator( DECL_SPEC *dspec, PTREE id )
 {
     DECL_INFO *dinfo;
     SCOPE scope;
-    unsigned id_info;
+    id_check_info id_info;
 
     id = verifyQualifiedId( dspec, id, &scope, &id_info );
     dinfo = makeDeclInfo( id );
@@ -5655,7 +5687,7 @@ static TYPE functionReduce( TYPE type, unsigned num_args )
     /* 'type' is {TYP_MODIFIER}*TYP_FUNCTION (checked by SymIsFunction) */
     fn_type = type;
     TypeStripTdMod( fn_type );
-    mod_list = removeModifiers( type, fn_type );
+    mod_list = duplicateModifiers( type, fn_type );
     old_args = fn_type->u.f.args;
     args = AllocArgListPerm( num_args );
     args->except_spec = old_args->except_spec;
@@ -5782,7 +5814,7 @@ static SYMBOL makeDefaultProto( DECL_INFO *dinfo, unsigned num_args, DECL_INFO *
 
 static unsigned declareDefaultProtos( SCOPE scope, DECL_INFO *dinfo )
 {
-    unsigned control;
+    def_prot_control dp_control;
     unsigned num_args;
     bool is_template;
     DECL_INFO *curr;
@@ -5790,13 +5822,14 @@ static unsigned declareDefaultProtos( SCOPE scope, DECL_INFO *dinfo )
     SYMBOL head;
     SYMBOL *prev_arg;
 
-    control = DA_NULL;
+    dp_control = DP_NULL;
     head = NULL;
     prev_arg = &head;
     num_args = 0;
     is_template = SymIsFunctionTemplateModel( dinfo->sym );
     RingIterBeg( dinfo->parms, curr ) {
-        if( curr->type->id == TYP_DOT_DOT_DOT ) break;
+        if( curr->type->id == TYP_DOT_DOT_DOT )
+            break;
         def_arg_sym = NULL;
         if( curr->has_defarg ) {
             def_arg_sym = makeDefaultProto( dinfo, num_args, curr );
@@ -5809,12 +5842,12 @@ static unsigned declareDefaultProtos( SCOPE scope, DECL_INFO *dinfo )
                         RewriteFree( curr->defarg_rewrite );
                         curr->defarg_rewrite = NULL;
                     }
-                    control |= DA_REWRITES;
+                    dp_control |= DP_REWRITES;
                 }
             }
-            control |= DA_DEFARGS_PRESENT;
+            dp_control |= DP_DEFARGS_PRESENT;
         } else {
-            if( control & DA_DEFARGS_PRESENT ) {
+            if( dp_control & DP_DEFARGS_PRESENT ) {
                 def_arg_sym = makeDefaultProto( dinfo, num_args, curr );
                 def_arg_sym = defaultArgMustExist( scope, dinfo, def_arg_sym );
             }
@@ -5827,7 +5860,7 @@ static unsigned declareDefaultProtos( SCOPE scope, DECL_INFO *dinfo )
     } RingIterEnd( curr )
     *prev_arg = dinfo->sym;
     dinfo->proto_sym = head;
-    return( is_template ? 0 : control );
+    return( is_template ? 0 : dp_control );
 }
 
 static void deferDefaultRewrites( DECL_INFO *dinfo )
@@ -5840,7 +5873,8 @@ static void deferDefaultRewrites( DECL_INFO *dinfo )
     fn_dinfo->sym = dinfo->sym;
     fn_dinfo->sym_used = true;
     RingIterBeg( dinfo->parms, curr ) {
-        if( curr->type->id == TYP_DOT_DOT_DOT ) break;
+        if( curr->type->id == TYP_DOT_DOT_DOT )
+            break;
         parm_dinfo = makeDeclInfo( NULL );
         parm_dinfo->type = curr->type;
         if( curr->has_defarg ) {
@@ -5861,12 +5895,12 @@ static void deferDefaultRewrites( DECL_INFO *dinfo )
 void DeclareDefaultArgs( SCOPE scope, DECL_INFO *dinfo )
 /******************************************************/
 {
-    unsigned dp_control;
+    def_prot_control dp_control;
 
     if( dinfo->parms != NULL ) {
         dp_control = declareDefaultProtos( scope, dinfo );
-        if( dp_control & DA_DEFARGS_PRESENT ) {
-            if( dp_control & DA_REWRITES ) {
+        if( dp_control & DP_DEFARGS_PRESENT ) {
+            if( dp_control & DP_REWRITES ) {
                 // pack things away to be evaluated
                 DbgAssert( scope == SymScope( dinfo->sym ) );
                 deferDefaultRewrites( dinfo );
@@ -6094,7 +6128,7 @@ static void verifyIncDecSecondArg( TYPE fn_type, bool non_static_member )
     if( ! non_static_member ) {
         ++arg_idx;
     }
-    arg = fn_type->u.f.args->type_list[ arg_idx ];
+    arg = fn_type->u.f.args->type_list[arg_idx];
     int_type = IntegralType( arg );
     if( int_type == NULL || int_type->id != TYP_SINT ) {
         CErr1( ERR_OPERATOR_INC_DEC_SECOND_ARG );
@@ -6138,8 +6172,8 @@ static bool checkOperatorArgs( TYPE fn_type )
     TYPE *stop;
 
     args = fn_type->u.f.args;
-    stop = &(args->type_list[ args->num_args ]);
-    for( curr = &(args->type_list[ 0 ]); curr != stop; ++curr ) {
+    stop = &(args->type_list[args->num_args]);
+    for( curr = &(args->type_list[0]); curr != stop; ++curr ) {
         if( classOrClassRef( *curr ) ) {
             return( true );
         }
@@ -6781,7 +6815,8 @@ void InsertArgs( DECL_INFO **args )
     NAME name;
 
     RingIterBeg( *args, curr ) {
-        if( curr->type->id == TYP_DOT_DOT_DOT ) break;
+        if( curr->type->id == TYP_DOT_DOT_DOT )
+            break;
         if( curr->sym == NULL ) {
             curr->sym = SymMakeDummy( curr->type, &name );
             curr->name = name;
@@ -6792,21 +6827,21 @@ void InsertArgs( DECL_INFO **args )
 }
 
 #define MASK_TYPE_POINTS      \
-    ( 1 << TYP_POINTER   )  | \
-    ( 1 << TYP_FUNCTION  )  | \
-    ( 1 << TYP_ARRAY     )
+    ( 1 << TYP_POINTER )    | \
+    ( 1 << TYP_FUNCTION )   | \
+    ( 1 << TYP_ARRAY )
 
 static bool typePoints(         // TEST IF POINTER, ARRAY, REFERENCE, FUNCTION
     TYPE type )                 // - type to be tested
 {
-    bool retb;                  // - true ==> type points at something
+    bool ok;                    // - true ==> type points at something
 
     if( type == NULL ) {
-        retb = false;
+        ok = false;
     } else {
-        retb = TypeIdMasked( type, MASK_TYPE_POINTS );
+        ok = TypeIdMasked( type, MASK_TYPE_POINTS );
     }
-    return( retb );
+    return( ok );
 }
 
 TYPE TypePointedAtModified(     // GET MODIFIED TYPE POINTED AT
@@ -6815,7 +6850,7 @@ TYPE TypePointedAtModified(     // GET MODIFIED TYPE POINTED AT
     TYPE original;              // - original type
 
     if( NULL == type ) {
-        return type;
+        return( type );
     }
     original = type;
     TypeStripTdMod( type );
@@ -6847,7 +6882,7 @@ TYPE TypePointedAtReplace( TYPE ptr_type, TYPE new_base )
     TypeStripTdMod( ptr_type );
     old_base = ptr_type->of;
     TypeStripTdMod( old_base );
-    mod_list = removeModifiers( ptr_type->of, old_base );
+    mod_list = duplicateModifiers( ptr_type->of, old_base );
     new_base = replaceModifiers( mod_list, new_base );
     return( MakePointerTo( new_base ) );
 }
@@ -6914,7 +6949,8 @@ uint_32 TypeHash( TYPE type )
 
     hash = 17;
     for(;;) {
-        if( type == NULL ) break;
+        if( type == NULL )
+            break;
         hash <<= 4;
         hash *= type->id;
         hash += type->id;
@@ -7155,15 +7191,15 @@ void TypedefUsingDecl( DECL_SPEC *dspec, SYMBOL typedef_sym, TOKEN_LOCN *locn )
 bool TypeHasVirtualBases( TYPE type )
 /***********************************/
 {
-    bool retb;
+    bool ok;
 
     type = StructType( type );
     if( type == NULL ) {
-        retb = false;
+        ok = false;
     } else {
-        retb = ScopeHasVirtualBases( TypeScope( type ) );
+        ok = ScopeHasVirtualBases( TypeScope( type ) );
     }
-    return( retb );
+    return( ok );
 }
 
 bool TypeIsClassInstantiation( TYPE type )
@@ -7201,7 +7237,7 @@ bool TypeHasEllipsisArg( TYPE type )
         args = type->u.f.args;
         num_args = args->num_args;
         if( num_args > 0 ) {
-            arg_type = args->type_list[ num_args - 1 ];
+            arg_type = args->type_list[num_args - 1];
             if( arg_type->id == TYP_DOT_DOT_DOT ) {
                 return( true );
             }
@@ -7235,7 +7271,7 @@ bool TypeVAStartWontWork( TYPE fn_type, MSG_NUM *msg )
         }
         /* move to index of arg before ... arg */
         --num_args;
-        arg_type = args->type_list[ num_args ];
+        arg_type = args->type_list[num_args];
         test_type = TypeReference( arg_type );
         if( test_type != NULL ) {
             /* arg before ... arg is a reference arg */
@@ -7262,7 +7298,7 @@ TYPE MemberPtrType( TYPE type )
             type = NULL;
         }
     }
-    return type;
+    return( type );
 }
 
 TYPE MemberPtrClass( TYPE type )
@@ -7348,7 +7384,7 @@ bool TypeIsAnonymousEnum( TYPE type )
 /***********************************/
 {
     TypeStripTdMod( type );
-    if( type->id == TYP_ENUM && ( type->flag & TF1_UNNAMED ) != 0 ) {
+    if( type->id == TYP_ENUM && (type->flag & TF1_UNNAMED) ) {
         return( true );
     }
     return( false );
@@ -7364,11 +7400,8 @@ static bool markAllUnused( SCOPE scope, void (*diag)( SYMBOL ) )
 
     DbgAssert( ScopeType( scope, SCOPE_TEMPLATE_DECL ) );
     all_flags = TF1_USED;
-    curr = NULL;
     stop = ScopeOrderedStart( scope );
-    for(;;) {
-        curr = ScopeOrderedNext( stop, curr );
-        if( curr == NULL ) break;
+    for( curr = NULL; (curr = ScopeOrderedNext( stop, curr )) != NULL; ) {
         generic_type = TypedefRemove( curr->sym_type );
         DbgAssert( curr->id == SC_TYPEDEF && generic_type->id == TYP_GENERIC );
         curr_flags = generic_type->flag;
@@ -7404,7 +7437,7 @@ static void pushArguments( PSTK_CTL *stk, arg_list *args )
 
 static void pushPrototypeAndArguments( type_bind_info *data,
                                        PTREE p_args, PTREE a_args,
-                                       unsigned control )
+                                       pa_control control )
 {
     unsigned i;
     PTREE p;
@@ -7531,11 +7564,8 @@ static void checkTemplateClass( PSTK_CTL *stk, TYPE class_type )
     if( parm_scope == NULL ) {
         return;
     }
-    curr = NULL;
     stop = ScopeOrderedStart( parm_scope );
-    for(;;) {
-        curr = ScopeOrderedNext( stop, curr );
-        if( curr == NULL ) break;
+    for( curr = NULL; (curr = ScopeOrderedNext( stop, curr )) != NULL; ) {
         if( curr->id == SC_TYPEDEF ) {
             PstkPush( stk, curr->sym_type );
         }
@@ -7592,7 +7622,8 @@ bool FunctionUsesAllTypes( SYMBOL sym, SCOPE scope, void (*diag)( SYMBOL ) )
     pushArguments( &type_stack, fn_type->u.f.args );
     for(;;) {
         top = (TYPE *)PstkPop( &type_stack );
-        if( top == NULL ) break;
+        if( top == NULL )
+            break;
         if( *top != NULL ) {
             scanForGenerics( &type_stack, *top );
         }
@@ -7611,8 +7642,10 @@ static void clearGenericBindings( PSTK_CTL *stk, SCOPE decl_scope )
 
     for(;;) {
         top = (TYPE *)PstkPop( stk );
-        if( top == NULL ) break;
-        if( *top == NULL ) continue;
+        if( top == NULL )
+            break;
+        if( *top == NULL )
+            continue;
         bound_type = *top;
         switch( bound_type->id ) {
         case TYP_GENERIC:
@@ -7632,11 +7665,7 @@ static void clearGenericBindings( PSTK_CTL *stk, SCOPE decl_scope )
 
     if( decl_scope != NULL ) {
         stop = ScopeOrderedStart( decl_scope );
-        curr = NULL;
-        for(;;) {
-            curr = ScopeOrderedNext( stop, curr );
-            if( curr == NULL ) break;
-
+        for( curr = NULL; (curr = ScopeOrderedNext( stop, curr )) != NULL; ) {
             if( curr->sym_type->id == TYP_TYPEDEF ) {
                 bound_type = curr->sym_type->of;
                 if( bound_type->id == TYP_GENERIC ) {
@@ -7700,15 +7729,15 @@ static bool compareClassTypes( TYPE b_type, TYPE u_type,
     if( b_parm_scope == NULL || u_parm_scope == NULL ) {
         return( true );
     }
-    b_curr = NULL;
-    u_curr = NULL;
     b_stop = ScopeOrderedStart( b_parm_scope );
     u_stop = ScopeOrderedStart( u_parm_scope );
-    for(;;) {
+    b_curr = NULL;
+    u_curr = NULL;
+    for( ;; ) {
         b_curr = ScopeOrderedNext( b_stop, b_curr );
         u_curr = ScopeOrderedNext( u_stop, u_curr );
-        if( b_curr == NULL ) break;
-        if( u_curr == NULL ) break;
+        if( b_curr == NULL || u_curr == NULL )
+            break;
         if( b_curr->id == SC_TYPEDEF ) {
             PstkPush( &(data->without_generic),
                       PTreeType( b_curr->sym_type ) );
@@ -7751,7 +7780,7 @@ static bool modifiersMatch( type_flag b_flags, type_flag u_flags,
     return( true );
 }
 
-static unsigned typesBind( type_bind_info *data, bool is_function )
+static tb_status typesBind( type_bind_info *data, bool is_function )
 {
     type_flag t_flags;
     type_flag b_flags;
@@ -7779,12 +7808,12 @@ static unsigned typesBind( type_bind_info *data, bool is_function )
     bool u_allow_base;
     TYPE match;
     unsigned i;
-    unsigned status;
+    tb_status bind_status;
     struct {
-        unsigned        arg_1st_level : 1;
+        unsigned        arg_1st_level   : 1;
     } flags;
 
-    status = TB_BINDS;
+    bind_status = TB_BINDS;
     for(;;) {
         flags.arg_1st_level = false;
 
@@ -7924,7 +7953,7 @@ static unsigned typesBind( type_bind_info *data, bool is_function )
                 if( d_flags & ~u_cv_mask ) {
                     return( TB_NULL );
                 }
-                status |= TB_NEEDS_TRIVIAL;
+                bind_status |= TB_NEEDS_TRIVIAL;
                 u_flags &= ~d_flags;
             }
             if( ! modifiersMatch( b_flags, u_flags, b_base, u_base ) ) {
@@ -7967,7 +7996,7 @@ static unsigned typesBind( type_bind_info *data, bool is_function )
                 if( d_flags & ~u_cv_mask ) {
                     return( TB_NULL );
                 }
-                status |= TB_NEEDS_TRIVIAL;
+                bind_status |= TB_NEEDS_TRIVIAL;
                 u_flags &= ~d_flags;
             }
             /* 'u_flags' is known to be a subset of 'b_flags' now */
@@ -8042,7 +8071,7 @@ static unsigned typesBind( type_bind_info *data, bool is_function )
         if( ( d_flags != TF1_NULL )
          && ( ( d_flags & ~u_cv_mask ) == TF1_NULL ) ) {
             /* only const/volatile don't match */
-            status |= TB_NEEDS_TRIVIAL;
+            bind_status |= TB_NEEDS_TRIVIAL;
             b_flags |= d_flags;
         }
         if( ! is_function
@@ -8063,7 +8092,7 @@ static unsigned typesBind( type_bind_info *data, bool is_function )
                             return( TB_NULL );
                         }
                         // OK, we bound to a base class of the bound type
-                        status |= TB_NEEDS_DERIVED;
+                        bind_status |= TB_NEEDS_DERIVED;
                     } else {
                         return( TB_NULL );
                     }
@@ -8138,7 +8167,7 @@ static unsigned typesBind( type_bind_info *data, bool is_function )
         }
     }
     DbgAssert( b_top == NULL && u_top == NULL );
-    return( status );
+    return( bind_status );
 }
 
 typedef enum {
@@ -8171,13 +8200,15 @@ static void binderFini( type_bind_info *data )
 
     for(;;) {
         top = (PTREE *)PstkPop( &(data->with_generic) );
-        if( top == NULL ) break;
+        if( top == NULL )
+            break;
         PTreeFree( *top );
     }
 
     for(;;) {
         top = (PTREE *)PstkPop( &(data->without_generic) );
-        if( top == NULL ) break;
+        if( top == NULL )
+            break;
         PTreeFree( *top );
     }
 
@@ -8202,7 +8233,7 @@ static SYMBOL templateArgTypedef( TYPE type )
     SYMBOL tsym;
 
     tsym = templateArgSym( SC_TYPEDEF, type );
-    return tsym;
+    return( tsym );
 }
 
 static void injectTemplateParm( SCOPE scope, PTREE parm, NAME name )
@@ -8256,18 +8287,12 @@ int BindExplicitTemplateArguments( SCOPE parm_scope, PTREE templ_args )
     something_went_wrong = false;
     decl_scope = parm_scope->enclosing;
     if( ( decl_scope == NULL ) && ( templ_args == NULL ) ) {
-        return num_explicit;
+        return( num_explicit );
     }
 
     node = templ_args;
     stop = ScopeOrderedStart( decl_scope );
-    curr = NULL;
-    for(;;) {
-        curr = ScopeOrderedNext( stop, curr );
-        if( curr == NULL ) {
-            break;
-        }
-
+    for( curr = NULL; (curr = ScopeOrderedNext( stop, curr )) != NULL; ) {
         name = curr->name->name;
         if( ( node != NULL ) && ( node->u.subtree[1] != NULL ) ) {
             // inject an explicitly specified parameter
@@ -8317,10 +8342,10 @@ int BindExplicitTemplateArguments( SCOPE parm_scope, PTREE templ_args )
     }
 
     if( something_went_wrong || ( node != NULL ) ) {
-        return -1;
+        return( -1 );
     }
 
-    return num_explicit;
+    return( num_explicit );
 }
 
 bool BindGenericTypes( SCOPE parm_scope, PTREE parms, PTREE args,
@@ -8328,7 +8353,7 @@ bool BindGenericTypes( SCOPE parm_scope, PTREE parms, PTREE args,
 /**********************************************************************/
 {
     SYMBOL curr, stop;
-    unsigned bind_status;
+    tb_status bind_status;
     bool result;
     auto type_bind_info data;
 
@@ -8337,19 +8362,14 @@ bool BindGenericTypes( SCOPE parm_scope, PTREE parms, PTREE args,
     binderInit( &data, explicit_args );
     data.parm_scope = parm_scope;
 
-    pushPrototypeAndArguments( &data, parms, args,
-                               is_function ? PA_FUNCTION : PA_NULL );
+    pushPrototypeAndArguments( &data, parms, args, is_function ? PA_FUNCTION : PA_NULL );
     result = false;
     bind_status = typesBind( &data, is_function );
     if( bind_status != TB_NULL ) {
         result = true;
 
         stop = ScopeOrderedStart( parm_scope );
-        curr = NULL;
-        for(;;) {
-            curr = ScopeOrderedNext( stop, curr );
-            if( curr == NULL ) break;
-
+        for( curr = NULL; (curr = ScopeOrderedNext( stop, curr )) != NULL; ) {
             if( ( curr->sym_type->id == TYP_TYPEDEF )
              && ( curr->sym_type->of->id == TYP_GENERIC ) ) {
                 if( curr->sym_type->of->of == NULL ) {
@@ -8371,40 +8391,26 @@ bool BindGenericTypes( SCOPE parm_scope, PTREE parms, PTREE args,
 
 static void initBasicTypes( void )
 {
-    type_id *p;
+    int     i;
+    type_id typ;
     static type_id basics_init_list[] = {
-        TYP_ERROR,
-        TYP_BOOL,
-        TYP_CHAR,
-        TYP_SCHAR,
-        TYP_UCHAR,
-        TYP_WCHAR,
-        TYP_SSHORT,
-        TYP_USHORT,
-        TYP_SINT,
-        TYP_UINT,
-        TYP_SLONG,
-        TYP_ULONG,
-        TYP_SLONG64,
-        TYP_ULONG64,
-        TYP_FLOAT,
-        TYP_DOUBLE,
-        TYP_LONG_DOUBLE,
-        TYP_VOID,
-        TYP_DOT_DOT_DOT,
-        TYP_NULLPTR,
-        TYP_MAX
+        #define BASETYPES
+        #define pick(id,promo,promo_asm,type_text)  __PASTE( TYP_, id ),
+        #include "_typdefs.h"
+        #undef pick
+        #undef BASETYPES
     };
 
-    for( p = basics_init_list; *p != TYP_MAX; ++p ) {
-        basicTypes[ *p ] = MakeType( *p );
+    for( i = 0; i < ARRAY_SIZE( basics_init_list ); i++ ) {
+        typ = basics_init_list[i];
+        basicTypes[typ] = MakeType( typ );
     }
     /*
       'char' must be distinct from 'signed char' and 'unsigned char'
       for overload resolution but it still has "signed-ness"
     */
-    basicTypes[ TYP_CHAR ]->of = basicTypes[ TYP_UCHAR ];
-    basicTypes[ TYP_BOOL ]->of = basicTypes[ TYP_UCHAR ];
+    basicTypes[TYP_CHAR]->of = basicTypes[TYP_UCHAR];
+    basicTypes[TYP_BOOL]->of = basicTypes[TYP_UCHAR];
 }
 
 static TYPE makeErrFormat( tfmt_index fi )
@@ -8553,21 +8559,21 @@ static void typesInit(          // TYPES INITIALIZATION
         zero_table( typeHashTables );
         zero_table( TypeCache );
     }
-    typeHashTables[ TYP_POINTER ] = pointerHashTable;
-    typeHashTables[ TYP_BITFIELD ] = bitfieldHashTable;
-    typeHashTables[ TYP_ARRAY ] = arrayHashTable;
-    typeHashTables[ TYP_MODIFIER ] = modifierHashTable;
+    typeHashTables[TYP_POINTER] = pointerHashTable;
+    typeHashTables[TYP_BITFIELD] = bitfieldHashTable;
+    typeHashTables[TYP_ARRAY] = arrayHashTable;
+    typeHashTables[TYP_MODIFIER] = modifierHashTable;
     carveDECL_SPEC = CarveCreate( sizeof( DECL_SPEC ), BLOCK_DECL_SPEC );
     carveTYPE = CarveCreate( sizeof( struct type ), BLOCK_TYPE );
     carveCLASSINFO = CarveCreate( sizeof( CLASSINFO ), BLOCK_CLASSINFO );
     carveDECL_INFO = CarveCreate( sizeof(struct decl_info), BLOCK_DECL_INFO );
     initBasicTypes();
     initCache();
-    TypeError = basicTypes[ TYP_ERROR ];
-    CompInfo.ptr_diff_near = basicTypes[ TYP_SINT ];
-    CompInfo.ptr_diff_far = basicTypes[ TYP_SINT ];
-    CompInfo.ptr_diff_far16 = basicTypes[ TYP_SSHORT ];
-    CompInfo.ptr_diff_huge = basicTypes[ TYP_SLONG ];
+    TypeError = basicTypes[TYP_ERROR];
+    CompInfo.ptr_diff_near = basicTypes[TYP_SINT];
+    CompInfo.ptr_diff_far = basicTypes[TYP_SINT];
+    CompInfo.ptr_diff_far16 = basicTypes[TYP_SSHORT];
+    CompInfo.ptr_diff_huge = basicTypes[TYP_SLONG];
     ClassInit();
     cdeclPragma = PragmaLookup( NULL, M_CDECL );
     ExtraRptRegisterCtr( &types_defined, "unique type entries defined" );
@@ -8578,55 +8584,23 @@ static void typesInit(          // TYPES INITIALIZATION
     ExtraRptRegisterCtr( &ctr_dup_fail_probes, NULL );
     ExtraRptRegisterCtr( &ctr_dup_succ, "dup. checks found" );
     ExtraRptRegisterCtr( &ctr_dup_fail, "dup. checks failed" );
-    ExtraRptRegisterAvg( &ctr_dup_succ_probes
-                       , &ctr_dup_succ
-                       , "average probes per check (found)" );
-    ExtraRptRegisterAvg( &ctr_dup_fail_probes
-                       , &ctr_dup_fail
-                       , "average probes per check (failure)" );
-    ExtraRptRegisterCtr( &ctr_dup_fns
-                       , "type duplication checks -- in fn table" );
-    ExtraRptRegisterCtr( &ctr_dup_fns_big
-                       , "type duplication checks -- not in fn table" );
+    ExtraRptRegisterAvg( &ctr_dup_succ_probes, &ctr_dup_succ, "average probes per check (found)" );
+    ExtraRptRegisterAvg( &ctr_dup_fail_probes, &ctr_dup_fail, "average probes per check (failure)" );
+    ExtraRptRegisterCtr( &ctr_dup_fns, "type duplication checks -- in fn table" );
+    ExtraRptRegisterCtr( &ctr_dup_fns_big, "type duplication checks -- not in fn table" );
     ExtraRptRegisterCtr( &ctr_cg_dups, "type duplication checks (back-end)" );
     ExtraRptRegisterCtr( &ctr_cg_dups_fail, "dup. checks failed (back-end)" );
 #ifdef XTRA_RPT
     {
-#define ENTRY_ERROR "TYP_ERROR",
-#define ENTRY_BOOL "TYP_BOOL",
-#define ENTRY_CHAR "TYP_CHAR",
-#define ENTRY_SCHAR "TYP_SCHAR",
-#define ENTRY_UCHAR "TYP_UCHAR",
-#define ENTRY_WCHAR "TYP_WCHAR",
-#define ENTRY_SSHORT "TYP_SSHORT",
-#define ENTRY_USHORT "TYP_USHORT",
-#define ENTRY_SINT "TYP_SINT",
-#define ENTRY_UINT "TYP_UINT",
-#define ENTRY_SLONG "TYP_SLONG",
-#define ENTRY_ULONG "TYP_ULONG",
-#define ENTRY_SLONG64 "TYP_SLONG64",
-#define ENTRY_ULONG64 "TYP_ULONG64",
-#define ENTRY_FLOAT "TYP_FLOAT",
-#define ENTRY_DOUBLE "TYP_DOUBLE",
-#define ENTRY_LONG_DOUBLE "TYP_LONG_DOUBLE",
-#define ENTRY_ENUM "TYP_ENUM",
-#define ENTRY_POINTER "TYP_POINTER",
-#define ENTRY_TYPEDEF "TYP_TYPEDEF",
-#define ENTRY_CLASS "TYP_CLASS",
-#define ENTRY_BITFIELD "TYP_BITFIELD",
-#define ENTRY_FUNCTION "TYP_FUNCTION",
-#define ENTRY_ARRAY "TYP_ARRAY",
-#define ENTRY_DOT_DOT_DOT "TYP_DOT_DOT_DOT",
-#define ENTRY_VOID "TYP_VOID",
-#define ENTRY_MODIFIER "TYP_MODIFIER",
-#define ENTRY_MEMBER_POINTER "TYP_MEMBER_POINTER",
-#define ENTRY_GENERIC "TYP_GENERIC",
         static char const * const typeIdNames[] = {
-            #include "type_arr.h"
+            #define pick(id,promo,promo_asm,type_text)  __STR( __PASTE( TYP_, id ) ),
+            #include "_typdefs.h"
+            #undef pick
+            "TYP_NONE",
             "Total"
         };
-        ExtraRptRegisterTab( "type id frequency table", typeIdNames, &ctr_type_ids[0][0], TYP_MAX, 1 );
-        ExtraRptRegisterTab( "number of fn arguments frequency table", NULL, &ctr_fn_args[0][0], ARGS_MAX + 1 + 1, 1 );
+        ExtraRptRegisterTab( "type id frequency table", typeIdNames, &ctr_type_ids[0][0], RPT_TYP_MAX, 1 );
+        ExtraRptRegisterTab( "number of fn arguments frequency table", NULL, &ctr_fn_args[0][0], RPT_ARGS_MAX, 1 );
     }
 #endif
 }
@@ -8635,7 +8609,7 @@ static void markFreeType( void *p )
 {
     TYPE s = p;
 
-    s->id = TYP_FREE;
+    s->id = TYP_NONE;
 }
 
 #ifndef NDEBUG
@@ -8645,7 +8619,7 @@ static void initXrefType( void *e, carve_walk_base *d )
 {
     TYPE s = e;
 
-    if( s->id == TYP_FREE ) {
+    if( s->id == TYP_NONE ) {
         return;
     }
     d = d;
@@ -8657,7 +8631,7 @@ static void xrefType( void *e, carve_walk_base *d )
     TYPE s = e;
     TYPE of;
 
-    if( s->id == TYP_FREE ) {
+    if( s->id == TYP_NONE ) {
         return;
     }
     d = d;
@@ -8677,7 +8651,7 @@ static void dumpXrefType( void *e, carve_walk_base *d )
     FILE *fp = d->extra;
     TYPE s = e;
 
-    if( s->id == TYP_FREE ) {
+    if( s->id == TYP_NONE ) {
         return;
     }
     fprintf( fp, "%u %u %u\n", s->id, s->u.b.field_start, s->u.b.field_width );
@@ -8821,7 +8795,7 @@ static unsigned pchCountHashes(
         count += RingCount( *vector );
         ++ vector;
     }
-    return count;
+    return( count );
 }
 
 static void pchWriteArgLists( type_pch_walk *data )
@@ -8840,7 +8814,7 @@ static void pchWriteArgLists( type_pch_walk *data )
     arg_list *args;
 
     // figure out max size of translation table
-    count = RingCount( typeTable[ TYP_FUNCTION ] );
+    count = RingCount( typeTable[TYP_FUNCTION] );
     for( i = 0; i < ARGS_HASH; ++i ) {
         count += pchCountHashes( fnHashTable[i] );
     }
@@ -8858,7 +8832,7 @@ static void pchWriteArgLists( type_pch_walk *data )
     // (protect against case where count == 0)
     table = CMemAlloc( ( count + 1 ) * sizeof( arg_list * ) );
     p = table;
-    RingIterBeg( typeTable[ TYP_FUNCTION ], curr ) {
+    RingIterBeg( typeTable[TYP_FUNCTION], curr ) {
         *p = curr->u.f.args;
         ++p;
     } RingIterEnd( curr )
@@ -8944,7 +8918,7 @@ static arg_list *argListMapIndex( type_pch_walk *d, arg_list *index )
         return( NULL );
     }
     DbgAssert( !( PCHGetUInt( index ) >= d->count + PCH_FIRST_INDEX ) );
-    return d->translate[PCHGetUInt( index ) - PCH_FIRST_INDEX];
+    return( d->translate[PCHGetUInt( index ) - PCH_FIRST_INDEX] );
 }
 
 static arg_list *argListGetIndex( type_pch_walk *d, arg_list *arg )
@@ -8977,9 +8951,17 @@ static void saveType( void *e, carve_walk_base *d )
     arg_list *save_args;
     char *save_string;
 
-    if( s->id == TYP_FREE ) {
+    if( s->id == TYP_NONE ) {
         return;
     }
+    save_string = NULL;
+    save_pragma = NULL;
+    save_args = NULL;
+    save_base = NULL;
+    save_type = NULL;
+    save_info = NULL;
+    save_scope = NULL;
+    save_sym = NULL;
     save_next = s->next;
     s->next = TypeGetIndex( save_next );
     save_of = s->of;
@@ -9500,7 +9482,7 @@ static void relocType( void *e, carve_walk_base *d )
 #define __type_reloc_size \
         ( _pch_align_size( sizeof( pch_type_index ) ) + \
           _pch_align_size( sizeof( *pch_type ) ) )
-    if( s->id == TYP_FREE ) {
+    if( s->id == TYP_NONE ) {
         return;
     }
     if( (s->dbgflag & TF2_DBG_IN_PCH) == 0 ) {
@@ -9512,7 +9494,7 @@ static void relocType( void *e, carve_walk_base *d )
     }
     DbgAssert( ed->amount >= __type_reloc_size );
     DbgAssert(( ed->amount % __type_reloc_size ) == 0 );
-    pch_type = (TYPE) &(ed->curr[ sizeof( pch_type_index ) ]);
+    pch_type = (TYPE) &(ed->curr[sizeof( pch_type_index )]);
     if( s->dbgflag & TF2_DWARF ) {
         if( s->dbgflag & TF2_SYMDBG ) {
             pch_type->dbgflag |= TF2_PCH_DBG_EXTERN;

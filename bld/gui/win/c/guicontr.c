@@ -87,8 +87,7 @@ gui_window *GUIGetCtrlWnd( HWND hwnd )
     dialog_wnd_node    **owner;
     dialog_wnd_node    *curr;
 
-    for( owner = &DialogHead; *owner != NULL; owner = &curr->next ) {
-        curr = *owner;
+    for( owner = &DialogHead; (curr = *owner) != NULL; owner = &curr->next ) {
         if( curr->wnd->hwnd == hwnd ) {
             return( curr->wnd );
         }
@@ -103,8 +102,7 @@ static void GUIDeleteCtrlWnd( gui_window *wnd )
     dialog_wnd_node    *curr;
 
     prev_owner = NULL;
-    for( owner = &DialogHead; *owner != NULL; owner = &curr->next ) {
-        curr = *owner;
+    for( owner = &DialogHead; (curr = *owner) != NULL; owner = &curr->next ) {
         if( curr->wnd == wnd ) {
             if( prev_owner == NULL ) {
                 DialogHead = curr->next;
@@ -699,7 +697,7 @@ bool GUICheckRadioButton( gui_window *wnd, gui_ctl_id id )
     in_group = false;
     found_id = false;
     done = false;
-    for( curr = wnd->controls; !done && ( curr != NULL ); curr = curr->next ) {
+    for( curr = wnd->controls; curr != NULL; curr = curr->next ) {
         if( curr->id == id ) {
             found_id = true;
         }
@@ -710,28 +708,25 @@ bool GUICheckRadioButton( gui_window *wnd, gui_ctl_id id )
             } else {
                 last = curr->id;
                 if( found_id ) {
-                    done = true;
+                    in_group = false;
+                    for( curr = wnd->controls; curr != NULL; curr = curr->next ) {
+                        if( curr->id == first ) {
+                            in_group = true;
+                        }
+                        if( in_group ) {
+                            if( curr->id == id ) {
+                                GUISendMessage( curr->hwnd, BM_SETCHECK, (WPI_PARAM1)true, (WPI_PARAM2)0 );
+                            } else {
+                                GUISendMessage( curr->hwnd, BM_SETCHECK, (WPI_PARAM1)false, (WPI_PARAM2)0 );
+                            }
+                        }
+                        if( curr->id == last ) {
+                            return( true );
+                        }
+                    }
+                    break;
                 }
             }
-        }
-    }
-    if( !done ) {
-        return( false );
-    }
-    in_group = false;
-    for( curr = wnd->controls; curr != NULL; curr = curr->next ) {
-        if( curr->id == first ) {
-            in_group = true;
-        }
-        if( in_group ) {
-            if( curr->id == id ) {
-                GUISendMessage( curr->hwnd, BM_SETCHECK, (WPI_PARAM1)true, (WPI_PARAM2)0 );
-            } else {
-                GUISendMessage( curr->hwnd, BM_SETCHECK, (WPI_PARAM1)false, (WPI_PARAM2)0 );
-            }
-        }
-        if( curr->id == last ) {
-            return( true );
         }
     }
     return( false );

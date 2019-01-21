@@ -59,34 +59,46 @@
 extern PossibleDisplay      DisplayList[];
 extern struct _console_ctrl *UIConCtrl;
 
-static const char           *UITermType = NULL; /* global so that the debugger can get at it */
+static char         *UITermType = NULL; /* global so that the debugger can get at it */
 
 bool UIAPI uiset80col( void )
 {
     return( true );
 }
 
-const char *GetTermType( void )
+char *GetTermType( void )
 {
+    const char  *p;
+    size_t      len;
+
     if( UITermType == NULL ) {
-        UITermType = getenv( "TERM" );
-        if( UITermType == NULL )
-            UITermType = "";
-        if( UIConCtrl != NULL && strstr( UITermType, "qnx" ) == 0 ) {
+        p = getenv( "TERM" );
+        if( p == NULL )
+            p = "";
+        if( UIConCtrl != NULL && strstr( p, "qnx" ) == 0 ) {
             /* We're always a QNX terminal if UIConCtrol != NULL */
-            UITermType = "qnx";
+            p = "qnx";
         }
+        len = strlen( p ) + 1;
+        UITermType = uimalloc( len );
+        memcpy( UITermType, p, len );
     }
     return( UITermType );
 }
 
-const char *SetTermType( const char *new_term )
+void SetTermType( const char *new_term )
 {
-    const char  *old_term;
+    size_t      len;
 
-    old_term = UITermType;
-    UITermType = new_term;
-    return( old_term );
+    if( UITermType != NULL ) {
+        uifree( UITermType );
+    }
+    if( new_term == NULL ) {
+        new_term = "";
+    }
+    len = strlen( new_term ) + 1;
+    UITermType = uimalloc( len );
+    memcpy( UITermType, new_term, len );
 }
 
 bool intern initbios( void )
@@ -116,16 +128,7 @@ bool intern initbios( void )
 
     /* It's OK if this call fails */
     UIConCtrl = console_open( UIConHandle, O_WRONLY );
-    {
-        const char  *p1;
-        char        *p2;
-
-        p1 = GetTermType();
-        p2 = uimalloc( strlen( p1 ) + 1 );
-        strcpy( p2, p1 );
-        setupterm( p2, UIConHandle, &error );
-        uifree( p2 );
-    }
+    setupterm( GetTermType(), UIConHandle, &error );
     if( error != 1 )
         return( false );
     // Check to make sure terminal is suitable
@@ -147,6 +150,10 @@ void intern finibios( void )
 {
     _uibiosfini();
     del_curterm( cur_term );
+    if( UITermType != NULL ) {
+        uifree( UITermType );
+        UITermType = NULL;
+    }
 }
 
 static unsigned RefreshForbid = 0;

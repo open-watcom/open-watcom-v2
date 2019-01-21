@@ -41,7 +41,7 @@ _WCRTLINK unsigned _dos_getfileattr( const char *path, unsigned *attribute )
     WIN32_FIND_DATA     ffb;
 
     h = FindFirstFile( (LPTSTR)path, &ffb );
-    if( h == (HANDLE)-1 ) {
+    if( h == INVALID_HANDLE_VALUE ) {
         return( __set_errno_nt_reterr() );
     }
     *attribute = ffb.dwFileAttributes;

@@ -11,8 +11,8 @@ set PROJDIR=<CWD>
 
 [ INCLUDE <OWROOT>/build/defrule.ctl ]
 
-[ BLOCK <1> rel ]
-#================
+[ BLOCK <BLDRULE> rel ]
+#======================
     cdsay <PROJDIR>
 
 [ BLOCK <BINTOOL> build ]
@@ -30,8 +30,8 @@ set PROJDIR=<CWD>
     echo rm -f <OWBINDIR>/kanji.uni
     rm -f <OWBINDIR>/kanji.uni
 
-[ BLOCK <1> rel cprel ]
-#======================
+[ BLOCK <BLDRULE> rel cprel ]
+#============================
 
 #    <CCCMD> osi386/wrc.exe          <OWRELROOT>/binw/
     <CCCMD> dos386/wrc.exe          <OWRELROOT>/binw/
@@ -55,6 +55,9 @@ set PROJDIR=<CWD>
     <CCCMD> linux386/wrc.exe        <OWRELROOT>/binl/wrc
     <CCCMD> linux386/wrc.sym        <OWRELROOT>/binl/
     <CCCMD> linux386/*.uni          <OWRELROOT>/binl/
+    <CCCMD> rdos386/wrc.exe         <OWRELROOT>/rdos/
+    <CCCMD> rdos386/wrc.sym         <OWRELROOT>/rdos/
+    <CCCMD> rdos386/*.uni           <OWRELROOT>/rdos/
 
     <CCCMD> linuxx64/wrc.exe        <OWRELROOT>/binl64/wrc
     <CCCMD> linuxx64/*.uni          <OWRELROOT>/binl64/
@@ -64,6 +67,8 @@ set PROJDIR=<CWD>
 
     <CCCMD> linuxarm/wrc.exe        <OWRELROOT>/arml/wrc
     <CCCMD> linuxarm/*.uni          <OWRELROOT>/arml/
+    <CCCMD> osxx64/wrc.exe          <OWRELROOT>/osx64/wrc
+    <CCCMD> osxx64/*.uni            <OWRELROOT>/osx64/
 
 [ BLOCK . . ]
 

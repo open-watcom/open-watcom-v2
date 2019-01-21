@@ -30,7 +30,7 @@
 ****************************************************************************/
 
 
-#include "cgstd.h"
+#include "_cgstd.h"
 #include "_cg.h"
 #include "bckdef.h"
 #include "cgmem.h"
@@ -38,9 +38,9 @@
 #include "onexit.h"
 #include "feprotos.h"
 
-extern  pointer CGAlloc( size_t size ) {
-/**************************************/
-
+pointer CGAlloc( size_t size )
+/****************************/
+{
     pointer     chunk;
 
     chunk = MemAlloc( size );
@@ -50,9 +50,9 @@ extern  pointer CGAlloc( size_t size ) {
     return( chunk );
 }
 
-extern  void    CGFree( pointer chunk ) {
-/***************************************/
-
+void    CGFree( pointer chunk )
+/*****************************/
+{
     MemFree( chunk );
 }
 

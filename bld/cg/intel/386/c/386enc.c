@@ -30,7 +30,7 @@
 ****************************************************************************/
 
 
-#include "cgstd.h"
+#include "_cgstd.h"
 #include "coderep.h"
 #include "pccode.h"
 #include "system.h"
@@ -58,36 +58,11 @@
 #include "tree.h"
 #include "treefold.h"
 #include "x86data.h"
+#include "envvar.h"
+#include "x86segs.h"
+#include "x86enc.h"
 #include "feprotos.h"
 
-
-extern  void            LayRegAC( hw_reg_set );
-extern  void            LayOpword( gen_opcode );
-extern  hw_reg_set      CalcSegment( cg_sym_handle, cg_class );
-extern  void            AddByte( byte );
-extern  void            LayRMRegOp( name * );
-extern  void            LayOpbyte( gen_opcode );
-extern  void            LayRegRM( hw_reg_set );
-extern  void            GenSeg( hw_reg_set );
-extern  void            LayW( type_class_def );
-extern  void            AddWCons( name *, type_class_def );
-extern  void            AddSData( signed_32, type_class_def );
-extern  void            AddToTemp( byte );
-extern  void            LayOpword( gen_opcode );
-extern  type_class_def  OpndSize( hw_reg_set );
-extern  void            LayReg( hw_reg_set );
-extern  void            GCondFwait( void );
-extern  bool            BaseIsSP( name * );
-extern  segment_id      AskCode16Seg( void );
-extern  bool            GetEnvVar( char *, char *, int );
-
-/* forward declarations */
-extern  void            DoRelocConst( name *op, type_class_def kind );
-extern  void            DoMAddr( name *op );
-static  void            Add32Displacement( signed_32 val );
-static  void            LayIdxModRM( name *op );
-
-        void            doProfilingCode( char *fe_name, label_handle *data, bool prolog );
 
 #define RMR_MOD_IND     0x80
 #define RMR_MOD_DIR     5
@@ -121,8 +96,8 @@ static void TakeUpSlack( type_length size )
 }
 
 
-extern  void    DoRepOp( instruction *ins )
-/*****************************************/
+void    DoRepOp( instruction *ins )
+/*********************************/
 {
     type_length size;
     bool        first;
@@ -176,6 +151,16 @@ static  hw_reg_set IndexTab[] = {
         HW_D( HW_EDI )
 };
 
+
+static  void    Add32Displacement( signed_32 val )
+/************************************************/
+{
+    AddByte( val );
+    AddByte( val >> 8 );
+    AddByte( val >> 16 );
+    AddByte( val >> 24 );
+}
+
 static  byte    Displacement( signed_32 val, hw_reg_set regs )
 /************************************************************/
 {
@@ -223,8 +208,8 @@ static  byte    DoScaleIndex( hw_reg_set base_reg,
 }
 
 
-extern type_length TmpLoc( name *base, name *op )
-/***********************************************/
+type_length TmpLoc( name *base, name *op )
+/****************************************/
 {
     return( NewBase( base ) + op->v.offset - base->v.offset );
 }
@@ -257,8 +242,8 @@ static  byte    DoDisp( type_length val, hw_reg_set base_reg, name *op )
     }
 }
 
-extern  byte    DoMDisp( name *op, bool alt_encoding )
-/****************************************************/
+byte    DoMDisp( name *op, bool alt_encoding )
+/********************************************/
 {
     hw_reg_set          regs;
 
@@ -378,8 +363,8 @@ static  signed_32  GetNextAddConstant( instruction *ins )
     return( disp );
 }
 
-extern  void    LayLeaRegOp( instruction *ins )
-/*********************************************/
+void    LayLeaRegOp( instruction *ins )
+/*************************************/
 {
     name        *left;
     name        *right;
@@ -443,38 +428,6 @@ static  void    CheckSize( void )
 }
 
 
-extern  void    LayModRM( name *op )
-/**********************************/
-{
-    name        *base;
-
-    switch( op->n.class ) {
-    case N_MEMORY:
-        CheckSize();
-        EA( HW_EMPTY, HW_EMPTY, 0, 0, op, false );
-        break;
-    case N_TEMP:
-        CheckSize();
-        base = DeAlias( op );
-        if( base->t.location == NO_LOCATION ) {
-            _Zoiks( ZOIKS_030 );
-        }
-        if( BaseIsSP( base ) ) {
-            EA( HW_SP, HW_EMPTY, 0, TmpLoc( base, op ), NULL, false );
-        } else {
-            EA( HW_BP, HW_EMPTY, 0, TmpLoc( base, op ), NULL, false );
-        }
-        break;
-    case N_INDEXED:
-        LayIdxModRM( op );
-        break;
-    case N_REGISTER:
-        LayRMRegOp( op );
-        break;
-    }
-}
-
-
 static  void    LayIdxModRM( name *op )
 /*************************************/
 {
@@ -521,18 +474,40 @@ static  void    LayIdxModRM( name *op )
 }
 
 
-static  void    Add32Displacement( signed_32 val )
-/************************************************/
+void    LayModRM( name *op )
+/**************************/
 {
-    AddByte( val );
-    AddByte( val >> 8 );
-    AddByte( val >> 16 );
-    AddByte( val >> 24 );
+    name        *base;
+
+    switch( op->n.class ) {
+    case N_MEMORY:
+        CheckSize();
+        EA( HW_EMPTY, HW_EMPTY, 0, 0, op, false );
+        break;
+    case N_TEMP:
+        CheckSize();
+        base = DeAlias( op );
+        if( base->t.location == NO_LOCATION ) {
+            _Zoiks( ZOIKS_030 );
+        }
+        if( BaseIsSP( base ) ) {
+            EA( HW_SP, HW_EMPTY, 0, TmpLoc( base, op ), NULL, false );
+        } else {
+            EA( HW_BP, HW_EMPTY, 0, TmpLoc( base, op ), NULL, false );
+        }
+        break;
+    case N_INDEXED:
+        LayIdxModRM( op );
+        break;
+    case N_REGISTER:
+        LayRMRegOp( op );
+        break;
+    }
 }
 
 
-extern  void    DoMAddr( name *op )
-/*********************************/
+void    DoMAddr( name *op )
+/*************************/
 {
     ILen += 4;
     if( op->n.class == N_CONSTANT ) {
@@ -543,8 +518,8 @@ extern  void    DoMAddr( name *op )
 }
 
 
-extern  void    DoRelocConst( name *op, type_class_def kind )
-/***********************************************************/
+void    DoRelocConst( name *op, type_class_def type_class )
+/*********************************************************/
 {
     if( op->c.const_type == CONS_OFFSET ) {
         ILen += 4;
@@ -556,7 +531,7 @@ extern  void    DoRelocConst( name *op, type_class_def kind )
         } else {
             DoSymRef( op->c.value, 0, true );
         }
-        if( kind == U4 || kind == I4 ) {        /* as in PUSH seg _x */
+        if( type_class == U4 || type_class == I4 ) {        /* as in PUSH seg _x */
             AddByte( 0 );
             AddByte( 0 );
         }
@@ -566,8 +541,8 @@ extern  void    DoRelocConst( name *op, type_class_def kind )
 }
 
 
-extern  void    GenUnkPush( pointer value )
-/*****************************************/
+void    GenUnkPush( pointer value )
+/*********************************/
 {
     _Code;
     LayOpbyte( M_PUSHI );
@@ -578,8 +553,8 @@ extern  void    GenUnkPush( pointer value )
 }
 
 
-extern  void    GenPushC( signed_32 value )
-/*****************************************/
+void    GenPushC( signed_32 value )
+/*********************************/
 {
     _Code;
     LayOpbyte( M_PUSHI );
@@ -589,8 +564,8 @@ extern  void    GenPushC( signed_32 value )
 }
 
 
-extern  void    GenUnkLea( pointer value )
-/****************************************/
+void    GenUnkLea( pointer value )
+/********************************/
 {
     LayOpword( M_LEA );
     OpndSize( HW_SP );
@@ -601,8 +576,8 @@ extern  void    GenUnkLea( pointer value )
     Inst[RMR] |= DoIndex( HW_BP );
 }
 
-extern  void    GenLeaSP( int offset )
-/**************************************
+void    GenLeaSP( int offset )
+/*****************************
     LEA         sp,offset[bp]
 */
 {
@@ -614,8 +589,8 @@ extern  void    GenLeaSP( int offset )
     _Emit;
 }
 
-extern  pointer GenFar16Thunk( pointer label, unsigned_16 parms_size, bool remove_parms )
-/***************************************************************************************/
+pointer GenFar16Thunk( pointer label, unsigned_16 parms_size, bool remove_parms )
+/*******************************************************************************/
 {
     segment_id  old;
     pointer     code_32;
@@ -649,60 +624,9 @@ extern  pointer GenFar16Thunk( pointer label, unsigned_16 parms_size, bool remov
     return( code_32 );
 }
 
-#if 0
-void    GenProfilingCode( char *fe_name, label_handle *data, bool prolog )
-/************************************************************************/
-{
-    if( _IsTargetModel( NEW_P5_PROFILING ) ) {
-        doProfilingCode( fe_name, data, prolog );
-    }
-}
-#endif
 
-segment_id GenProfileData( char *fe_name, label_handle *data, label_handle *stack )
-/*********************************************************************************/
-/* generate P5 profiler code                                                     */
-/*********************************************************************************/
-{
-    segment_id      old;
-    segment_id      data_seg = (segment_id)(pointer_int)FEAuxInfo( NULL, P5_PROF_SEG );
-
-    old = SetOP( data_seg );
-    TellOptimizerByPassed();
-    SetUpObj( true );
-    *data = AskForNewLabel();
-    OutLabel( *data );
-    OutDataByte( *fe_name );                    //flag
-    OutDataByte( 0 );
-    OutDataByte( 0 );
-    OutDataByte( 0 );
-    OutDataLong( 0 );                           //semaphore
-    if( stack == NULL ) {
-        OutDataLong( 0 );                       //stack
-    } else {
-        OutReloc( data_seg, F_OFFSET, false );  //caller
-        OutLblPatch( *stack, F_OFFSET, 0 );
-    }
-    OutDataLong( 0 );                           //esp
-    OutDataLong( 0 );                           //dynamic
-    OutDataLong( 0 );                           //lo_count
-    OutDataLong( 0 );                           //hi_count
-    OutDataLong( 0 );                           //lo_cycle
-    OutDataLong( 0 );                           //hi_cycle
-    OutDataLong( 0 );                           //lo_start_time
-    OutDataLong( 0 );                           //hi_start_time
-    OutReloc( AskCodeSeg(), F_OFFSET, false );  //caller
-    OutLblPatch( CurrProc->label, F_OFFSET, 0 );
-    OutDataLong( 0 );                           //call_ins
-    OutDataLong( 0 );                           //callee
-    TellByPassOver();
-    SetOP( old );
-    return( data_seg );
-}
-
-
-void    doProfilingCode( char *fe_name, label_handle *data, bool prolog )
-/***********************************************************************/
+static void    doProfilingCode( char *fe_name, label_handle *data, bool prolog )
+/******************************************************************************/
 {
     if( prolog )
         GenProfileData( fe_name, data, NULL );
@@ -786,23 +710,74 @@ static  void    doProfilingPrologEpilog( label_handle label, bool prolog )
     }
 }
 
+#if 0
+void    GenProfilingCode( char *fe_name, label_handle *data, bool prolog )
+/************************************************************************/
+{
+    if( _IsTargetModel( NEW_P5_PROFILING ) ) {
+        doProfilingCode( fe_name, data, prolog );
+    }
+}
+#endif
 
-extern  void    GenP5ProfilingProlog( label_handle label )
-/********************************************************/
+segment_id GenProfileData( char *fe_name, label_handle *data, label_handle *stack )
+/*********************************************************************************/
+/* generate P5 profiler code                                                     */
+/*********************************************************************************/
+{
+    segment_id      old;
+    segment_id      data_seg = (segment_id)(pointer_int)FEAuxInfo( NULL, P5_PROF_SEG );
+
+    old = SetOP( data_seg );
+    TellOptimizerByPassed();
+    SetUpObj( true );
+    *data = AskForNewLabel();
+    OutLabel( *data );
+    OutDataByte( *fe_name );                    //flag
+    OutDataByte( 0 );
+    OutDataByte( 0 );
+    OutDataByte( 0 );
+    OutDataLong( 0 );                           //semaphore
+    if( stack == NULL ) {
+        OutDataLong( 0 );                       //stack
+    } else {
+        OutReloc( data_seg, F_OFFSET, false );  //caller
+        OutLblPatch( *stack, F_OFFSET, 0 );
+    }
+    OutDataLong( 0 );                           //esp
+    OutDataLong( 0 );                           //dynamic
+    OutDataLong( 0 );                           //lo_count
+    OutDataLong( 0 );                           //hi_count
+    OutDataLong( 0 );                           //lo_cycle
+    OutDataLong( 0 );                           //hi_cycle
+    OutDataLong( 0 );                           //lo_start_time
+    OutDataLong( 0 );                           //hi_start_time
+    OutReloc( AskCodeSeg(), F_OFFSET, false );  //caller
+    OutLblPatch( CurrProc->label, F_OFFSET, 0 );
+    OutDataLong( 0 );                           //call_ins
+    OutDataLong( 0 );                           //callee
+    TellByPassOver();
+    SetOP( old );
+    return( data_seg );
+}
+
+
+void    GenP5ProfilingProlog( label_handle label )
+/************************************************/
 {
     doProfilingPrologEpilog( label, true );
 }
 
 
-extern  void    GenP5ProfilingEpilog( label_handle label )
-/********************************************************/
+void    GenP5ProfilingEpilog( label_handle label )
+/************************************************/
 {
     doProfilingPrologEpilog( label, false );
 }
 
 
-extern  void    GFstp10( type_length where )
-/******************************************/
+void    GFstp10( type_length where )
+/**********************************/
 {
     GCondFwait();
     CheckSize();
@@ -812,8 +787,8 @@ extern  void    GFstp10( type_length where )
 }
 
 
-extern  void    GFld10( type_length where )
-/*****************************************/
+void    GFld10( type_length where )
+/*********************************/
 {
     GCondFwait();
     CheckSize();
@@ -823,31 +798,31 @@ extern  void    GFld10( type_length where )
 }
 
 
-extern  void    Do4Shift( instruction *ins ) {
-/********************************************/
-
+void    Do4Shift( instruction *ins )
+/**********************************/
+{
     /* unused parameters */ (void)ins;
 }
 
 
-extern  void    Do4RShift( instruction *ins )
-/*******************************************/
+void    Do4RShift( instruction *ins )
+/***********************************/
 /* NOT NEEDED ON 386 */
 {
     /* unused parameters */ (void)ins;
 }
 
 
-extern  void    Gen4RNeg( instruction *ins )
-/******************************************/
+void    Gen4RNeg( instruction *ins )
+/**********************************/
 /* NOT NEEDED ON 386 */
 {
     /* unused parameters */ (void)ins;
 }
 
 
-extern  void    Pow2Div( instruction *ins )
-/*****************************************/
+void    Pow2Div( instruction *ins )
+/*********************************/
 {
     int         log2;
     bool        if_32;
@@ -885,8 +860,8 @@ extern  void    Pow2Div( instruction *ins )
     }
 }
 
-extern  void    By2Div( instruction *ins )
-/****************************************/
+void    By2Div( instruction *ins )
+/********************************/
 {
     bool        if_32;
 
@@ -914,16 +889,16 @@ extern  void    By2Div( instruction *ins )
 }
 
 
-extern  void    Gen4Neg( instruction *ins )
-/*****************************************/
+void    Gen4Neg( instruction *ins )
+/*********************************/
 /* NOT NEEDED ON 386 */
 {
     /* unused parameters */ (void)ins;
 }
 
 
-extern  void    Do4CXShift( instruction *ins, void (*rtn)(instruction *) )
-/************************************************************************/
+void    Do4CXShift( instruction *ins, void (*rtn)(instruction *) )
+/****************************************************************/
 /* NOT NEEDED ON 386 */
 {
     /* unused parameters */ (void)ins; (void)rtn;

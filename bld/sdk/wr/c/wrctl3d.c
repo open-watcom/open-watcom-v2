@@ -29,7 +29,6 @@
 ****************************************************************************/
 
 
-#include <wwindows.h>
 #include "wrglbl.h"
 #include "ctl3dcvr.h"
 #include "wrctl3d.h"

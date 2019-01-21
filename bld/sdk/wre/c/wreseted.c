@@ -31,10 +31,6 @@
 ****************************************************************************/
 
 
-#include "commonui.h"
-#include <stdlib.h>
-
-#include "watcom.h"
 #include "wreglbl.h"
 #include "wreseted.h"
 #include "wrdll.h"

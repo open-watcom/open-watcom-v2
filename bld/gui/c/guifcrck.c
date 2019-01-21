@@ -24,8 +24,8 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  GUI first crack application stub function
+*               Called before entry GUI main loop (default version)
 *
 ****************************************************************************/
 

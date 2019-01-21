@@ -33,6 +33,7 @@
 #define DIGTYPES_H_INCLUDED
 
 #include <stddef.h>
+#include "bool.h"
 #include "machtype.h"
 
 #if defined( __WINDOWS__ )
@@ -59,20 +60,20 @@
 #define DIG_SEEK_ERROR      ((unsigned long)-1L)
 #define DIG_RW_ERROR        ((size_t)-1)
 
-typedef unsigned_8 search_result; enum {
+typedef enum {
     SR_NONE,
     SR_EXACT,
     SR_CLOSEST,
     SR_FAIL,
     SR_LAST
-};
+} search_result;
 
-typedef unsigned_8 walk_result; enum {
+typedef enum {
     WR_CONTINUE,
     WR_STOP,
     WR_FAIL,
     WR_LAST
-};
+} walk_result;
 
 typedef unsigned context_item; enum {
     /* common */
@@ -343,7 +344,7 @@ typedef unsigned_8 type_kind; enum {
     TK_LAST
 };
 
-typedef unsigned_8 type_modifier; enum {
+typedef enum {
     TM_NONE = 0,
 
     /* for pointer/address types */
@@ -364,10 +365,7 @@ typedef unsigned_8 type_modifier; enum {
     TM_ASCII = 1,
     TM_EBCIDIC,
     TM_UNICODE,
-
-    TM_MOD_MASK         = 0x0f,
-    TM_FLAG_DEREF       = 0x10
-};
+} type_modifier;
 
 typedef unsigned_8  dig_seek; enum {
     DIG_ORG,
@@ -387,18 +385,18 @@ typedef unsigned_8  dig_open; enum {
 };
 
 enum archtypes {
-    MAD_NIL,
-    #define pick_mad(enum,file,desc) enum,
-    #include "madarch.h"
-    #undef pick_mad
-    MAD_MAX
+    DIG_ARCH_NIL,
+    #define pick(enum,file,desc) DIG_ ## enum,
+    #include "digarch.h"
+    #undef pick
+    DIG_ARCH_MAX
 };
 
 enum ostypes {                  //NYI: redo these for PIL
-    #define pick_mad(enum,desc) enum,
-    #include "mados.h"
-    #undef pick_mad
-    MAD_OS_MAX
+    #define pick(enum,desc) DIG_ ## enum,
+    #include "digos.h"
+    #undef pick
+    DIG_OS_MAX
 };
 
 enum {
@@ -411,15 +409,20 @@ typedef unsigned        dig_info_type;
 
 typedef unsigned_16     dig_size_bits;
 
-typedef unsigned_16     dig_mad;
+typedef unsigned_16     dig_arch;
+
+/* these must be unsigned/signed type pair */
+typedef unsigned_32     dig_type_size;
+typedef signed_32       dig_type_bound;
 
 #include "digpck.h"
 
-typedef struct dip_type_info {
-    unsigned long       size;
+typedef struct dig_type_info {
+    dig_type_size       size;
     type_kind           kind;
     type_modifier       modifier;
-} dip_type_info;
+    bool                deref;
+} dig_type_info;
 
 typedef struct {                //NYI: redo this for PIL
     unsigned_8          cpu;
@@ -428,7 +431,7 @@ typedef struct {                //NYI: redo this for PIL
     unsigned_8          osminor;
     unsigned_8          os;
     unsigned_8          huge_shift;
-    dig_mad             mad;
+    dig_arch            arch;
 } system_config;
 
 #include "digunpck.h"

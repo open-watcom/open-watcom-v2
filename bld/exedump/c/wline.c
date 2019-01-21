@@ -52,19 +52,19 @@ static readable_name readableStandardOps[] = {
     ( sizeof( readableStandardOps ) / sizeof( readableStandardOps[0] ) )
 
 typedef struct {
-    uint_32                     address;
-    uint                        file;
-    uint_32                     line;
-    uint_32                     column;
-    uint_16                     segment;
-    uint_8                      is_stmt : 1;
-    uint_8                      basic_block : 1;
-    uint_8                      end_sequence : 1;
+    unsigned_32         address;
+    unsigned            file;
+    unsigned_32         line;
+    unsigned_32         column;
+    unsigned_16         segment;
+    bool                is_stmt;
+    bool                basic_block;
+    bool                end_sequence;
 } state_info;
 
 
-static void init_state( state_info *state, int default_is_stmt )
-/**************************************************************/
+static void init_state( state_info *state, bool default_is_stmt )
+/***************************************************************/
 {
     state->address = 0;
     state->segment = 0;
@@ -72,8 +72,8 @@ static void init_state( state_info *state, int default_is_stmt )
     state->line = 1;
     state->column = 0;
     state->is_stmt = default_is_stmt;
-    state->basic_block = 0;
-    state->end_sequence = 0;
+    state->basic_block = false;
+    state->end_sequence = false;
 }
 
 
@@ -105,8 +105,8 @@ static void dump_state( state_info *state )
 }
 
 
-static void get_standard_op( uint_8 value )
-/*****************************************/
+static void get_standard_op( unsigned_8 value )
+/*********************************************/
 {
     const char      *result;
     size_t          i;
@@ -125,67 +125,66 @@ static void get_standard_op( uint_8 value )
 }
 
 
-void Dump_lines( const uint_8 *input, uint length )
-/*************************************************/
+void Dump_lines( const unsigned_8 *input, unsigned length )
+/*********************************************************/
 {
-    const uint_8                *p;
-    const uint_8                *stmt_start;
-    uint                        opcode_base;
-    uint                        *opcode_lengths;
-    uint                        u;
-    uint                        file_index;
-    const uint_8                *name;
-    uint_32                     mod_time;
-    uint_32                     file_length;
-    uint_32                     directory;
-    uint_8                      op_code;
-    uint_32                     op_len;
-    uint_32                     tmp;
-    uint                        line_range;
+    const unsigned_8            *p;
+    const unsigned_8            *stmt_start;
+    unsigned                    opcode_base;
+    unsigned                    *opcode_lengths;
+    unsigned                    u;
+    unsigned                    file_index;
+    const unsigned_8            *name;
+    unsigned_32                 mod_time;
+    unsigned_32                 file_length;
+    unsigned_32                 directory;
+    unsigned_8                  op_code;
+    unsigned_16                 op_len;
+    unsigned_32                 tmp32;
+    unsigned                    line_range;
     int                         line_base;
-    int_32                      itmp;
-    int                         default_is_stmt;
+    signed_32                   itmp32;
+    bool                        default_is_stmt;
     state_info                  state;
-    uint                        min_instr;
-    uint_32                     unit_length;
-    const uint_8                *unit_base;
+    unsigned                    min_instr;
+    unsigned_32                 unit_length;
+    const unsigned_8            *unit_base;
 
-    p = input;
-    while( p - input < length ) {
+    for( p = input; p - input < length; ) {
 
-        unit_length = get_u32( (uint_32 *)p );
-        p += sizeof( uint_32 );
+        unit_length = get_u32( (unsigned_32 *)p );
+        p += sizeof( unsigned_32 );
         unit_base = p;
 
         Wdputs( "total_length: " );
         Puthex( unit_length, 8 );
 
         Wdputslc( "\nversion: " );
-        Puthex( get_u16( (uint_16 *)p ), 4 );
-        p += sizeof( uint_16 );
+        Puthex( get_u16( (unsigned_16 *)p ), 4 );
+        p += sizeof( unsigned_16 );
 
         Wdputslc( "\nprologue_length: " );
-        Puthex( get_u32( (uint_32 *)p ), 8 );
+        Puthex( get_u32( (unsigned_32 *)p ), 8 );
         stmt_start = p;
-        stmt_start += get_u32( (uint_32 *)p );
-        p += sizeof( uint_32 );
-        stmt_start += sizeof( uint_32 );
+        stmt_start += get_u32( (unsigned_32 *)p );
+        p += sizeof( unsigned_32 );
+        stmt_start += sizeof( unsigned_32 );
         min_instr = *p;
         Wdputslc( "\nminimum_instruction_length: " );
         Puthex( min_instr, 2 );
         p += 1;
 
-        default_is_stmt = *p;
+        default_is_stmt = ( *p != 0 );
         Wdputslc( "\ndefault_is_stmt: " );
         Puthex( default_is_stmt, 2 );
         p += 1;
 
-        line_base = *(int_8 *)p;
+        line_base = *(signed_8 *)p;
         Wdputslc( "\nline_base: " );
         Puthex( line_base, 2 );
         p += 1;
 
-        line_range = *(uint_8 *)p;
+        line_range = *(unsigned_8 *)p;
         Wdputslc( "\nline_range: " );
         Puthex( line_range, 2 );
         p += 1;
@@ -195,7 +194,7 @@ void Dump_lines( const uint_8 *input, uint length )
         Puthex( opcode_base, 2 );
         Wdputslc( "\n" );
         p += 1;
-        opcode_lengths = malloc( sizeof( uint ) * opcode_base );
+        opcode_lengths = malloc( sizeof( unsigned ) * opcode_base );
         Wdputslc( "standard_opcode_lengths:\n" );
         for( u = 0; u < opcode_base - 1; ++u ) {
             opcode_lengths[ u ] = *p;
@@ -207,7 +206,7 @@ void Dump_lines( const uint_8 *input, uint length )
         }
 
         Wdputs( "-- current_offset = " );
-        Puthex( p - input, 8 );
+        Puthex( (unsigned_32)( p - input ), 8 );
         Wdputslc( "\n" );
 
         if( p - input >= length ) return;
@@ -251,7 +250,7 @@ void Dump_lines( const uint_8 *input, uint length )
         p++;
         init_state( &state, default_is_stmt );
         Wdputs( "-- current_offset = " );
-        Puthex( p - input, 8 );
+        Puthex( (unsigned_32)( p - input ), 8 );
         if( p != stmt_start ) {
             Wdputs( ":***Prologue length off***" );
         }
@@ -261,7 +260,8 @@ void Dump_lines( const uint_8 *input, uint length )
             ++p;
             if( op_code == 0 ) {
                 /* extended op_code */
-                p = DecodeULEB128( p, &op_len );
+                p = DecodeULEB128( p, &tmp32 );
+                op_len = (unsigned_16)tmp32;
                 Wdputs( "len: " );
                 Putdecl( op_len, 3 );
                 Wdputc( ' ' );
@@ -271,22 +271,22 @@ void Dump_lines( const uint_8 *input, uint length )
                 switch( op_code ) {
                 case DW_LNE_end_sequence:
                     Wdputslc( "END_SEQUENCE\n" );
-                    state.end_sequence = 1;
+                    state.end_sequence = true;
                     dump_state( &state );
                     init_state( &state, default_is_stmt );
-                    p+= op_len;
+                    p += op_len;
                     break;
                 case DW_LNE_set_address:
                     Wdputs( "SET_ADDRESS " );
                     if( op_len == 4 ) {
-                        tmp = get_u32( (uint_32 *)p );
+                        tmp32 = get_u32( (unsigned_32 *)p );
                     } else if( op_len == 2 ) {
-                        tmp = get_u16( (uint_16 *)p );
+                        tmp32 = get_u16( (unsigned_16 *)p );
                     } else {
-                        tmp = 0xffffffff;
+                        tmp32 = 0xffffffff;
                     }
-                    state.address = tmp;
-                    Puthex( tmp, op_len * 2 );
+                    state.address = tmp32;
+                    Puthex( tmp32, 2 * op_len );
                     Wdputslc( "\n" );
                     p += op_len;
                     break;
@@ -294,14 +294,14 @@ void Dump_lines( const uint_8 *input, uint length )
                 case DW_LNE_WATCOM_set_segment:
                     Wdputs( "SET_SEGMENT " );
                     if( op_len == 4 ) {
-                        tmp = get_u32( (uint_32 *)p );
+                        tmp32 = get_u32( (unsigned_32 *)p );
                     } else if( op_len == 2 ) {
-                        tmp = get_u16( (uint_16 *)p );
+                        tmp32 = get_u16( (unsigned_16 *)p );
                     } else {
-                        tmp = 0xffffffff;
+                        tmp32 = 0xffffffff;
                     }
-                    state.segment = tmp;
-                    Puthex( tmp, op_len*2 );
+                    state.segment = (unsigned_16)tmp32;
+                    Puthex( tmp32, 2 * op_len );
                     Wdputslc( "\n" );
                     p += op_len;
                     break;
@@ -336,68 +336,68 @@ void Dump_lines( const uint_8 *input, uint length )
                 case DW_LNS_copy:
                     Wdputslc( "\n" );
                     dump_state( &state );
-                    state.basic_block = 0;
+                    state.basic_block = false;
                     break;
                 case DW_LNS_advance_pc:
-                    p = DecodeULEB128( p, &tmp );
-                    Putdec( tmp );
-                    state.address += tmp * min_instr;
+                    p = DecodeULEB128( p, &tmp32 );
+                    Putdec( tmp32 );
+                    state.address += tmp32 * min_instr;
                     break;
                 case DW_LNS_advance_line:
-                    p = DecodeSLEB128( p, &itmp );
-                    Putdecs( itmp );
-                    state.line += itmp;
+                    p = DecodeSLEB128( p, &itmp32 );
+                    Putdecs( itmp32 );
+                    state.line += itmp32;
                     break;
                 case DW_LNS_set_file:
-                    p = DecodeULEB128( p, &tmp );
-                    Putdec( tmp );
-                    state.file = tmp;
+                    p = DecodeULEB128( p, &tmp32 );
+                    Putdec( tmp32 );
+                    state.file = tmp32;
                     break;
                 case DW_LNS_set_column:
-                    p = DecodeULEB128( p, &tmp );
-                    Putdec( tmp );
-                    state.column = tmp;
+                    p = DecodeULEB128( p, &tmp32 );
+                    Putdec( tmp32 );
+                    state.column = tmp32;
                     break;
                 case DW_LNS_negate_stmt:
                     state.is_stmt = !state.is_stmt;
                     break;
                 case DW_LNS_set_basic_block:
-                    state.basic_block = 1;
+                    state.basic_block = true;
                     break;
                 case DW_LNS_const_add_pc:
                     state.address += ( ( 255 - opcode_base ) / line_range ) * min_instr;
                     break;
                 case DW_LNS_fixed_advance_pc:
-                    tmp = get_u16( (uint_16 *)p );
-                    p += sizeof( uint_16 );
-                    Puthex( tmp, 4 );
-                    state.address += tmp;
+                    tmp32 = get_u16( (unsigned_16 *)p );
+                    p += sizeof( unsigned_16 );
+                    Puthex( tmp32, 4 );
+                    state.address += tmp32;
                     break;
                 default:
                     for( u = 0; u < opcode_lengths[ op_code - 1 ]; ++u ) {
-                        p = DecodeULEB128( p, &tmp );
-                        Puthex( tmp, 8 );
+                        p = DecodeULEB128( p, &tmp32 );
+                        Puthex( tmp32, 8 );
                     }
                 }
             } else {
                 Wdputs( "SPECIAL " );
                 Puthex( op_code, 2 );
-                itmp = op_code - opcode_base;
+                itmp32 = op_code - opcode_base;
                 Wdputs( ": addr incr: " );
-                Putdecbz( ( itmp / line_range ) * min_instr, 2 );
+                Putdecbz( ( itmp32 / line_range ) * min_instr, 2 );
                 Wdputs( "  line incr: " );
-                Putdecsbz( line_base + itmp % line_range, 2 );
-                state.line += line_base + itmp % line_range;
-                state.address += ( itmp / line_range ) * min_instr;
+                Putdecsbz( line_base + itmp32 % line_range, 2 );
+                state.line += line_base + itmp32 % line_range;
+                state.address += ( itmp32 / line_range ) * min_instr;
                 Wdputslc( "\n" );
                 dump_state( &state );
-                state.basic_block = 0;
+                state.basic_block = false;
             }
             Wdputslc( "\n" );
         }
         free( opcode_lengths  );
         Wdputs( "-- current_offset = " );
-        Puthex( p - input, 8 );
+        Puthex( (unsigned_32)( p - input ), 8 );
         Wdputslc( "\n" );
     }
 }

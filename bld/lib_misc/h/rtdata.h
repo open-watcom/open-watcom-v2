@@ -87,7 +87,6 @@ extern void                 (*__FPE_handler_exit)( void );
 _WCRTDATA extern  int       _cbyte;
 _WCRTDATA extern  int       _cbyte2;
           extern  int       _child;
-          extern  int       __umaskval;
 _WCRTDATA extern  unsigned  _curbrk;
           extern  int       _commode;
   #if defined( __WATCOMC__ ) && defined( _M_IX86 )
@@ -120,15 +119,15 @@ extern unsigned char            _real87;    /* 8087 coprocessor hardware present
     #pragma aux                 _real87 "_*";
 #endif
 extern unsigned char            __uselfn;   /* LFN support available flag */
+#if defined( __LINUX__ )
+extern unsigned char            _osrev;     /* revision number of the Linux kernel version */
+#endif
 
 #define _RWD_ostream            __OpenStreams
 #define _RWD_cstream            __ClosedStreams
 #define _RWD_iob                __iob
 #if !defined( __NETWARE__ )
     #define _RWD_threadid       _threadid
-#endif
-#if !defined( _M_I86 )
-    #define _RWD_Envptr         _Envptr
 #endif
 #define _RWD_environ            environ
 #define _RWD_wenviron           _wenviron
@@ -138,7 +137,6 @@ extern unsigned char            __uselfn;   /* LFN support available flag */
 #define _RWD_FPE_handler_exit   __FPE_handler_exit
 #define _RWD_fmode              _fmode
 #if !defined( __NETWARE__ )
-    #define _RWD_umaskval       __umaskval
     #define _RWD_cbyte          _cbyte
     #define _RWD_cbyte2         _cbyte2
     #define _RWD_child          _child
@@ -170,6 +168,9 @@ extern unsigned char            __uselfn;   /* LFN support available flag */
         #define _RWD_winmajor   _winmajor
         #define _RWD_winminor   _winminor
         #define _RWD_winver     _winver
+    #endif
+    #if defined( __LINUX__ )
+        #define _RWD_osrev      _osrev
     #endif
 #endif
 #define _RWD_tmpfnext           __tmpfnext

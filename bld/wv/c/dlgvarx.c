@@ -50,9 +50,7 @@ static bool GetDlgStatus( dlg_var_expand *varx, gui_window *gui )
         varx->end = end;
         return( true );
     }
-    _SwitchOn( SW_ERROR_RETURNS );
-    Error( ERR_NONE, LIT_DUI( ERR_BAD_ARRAY_INDEX ) );
-    _SwitchOff( SW_ERROR_RETURNS );
+    ErrorRet( ERR_NONE, LIT_DUI( ERR_BAD_ARRAY_INDEX ) );
     GUISetFocus( gui, CTL_VARX_START );
     return( false );
 }

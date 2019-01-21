@@ -44,8 +44,6 @@ void TimeInit( void )
 
     time_of_day = time( &time_of_day );
     tod = localtime( &time_of_day );
-    sprintf( __Time, "%.2d:%.2d:%.2d",
-        tod->tm_hour, tod->tm_min, tod->tm_sec );
-    sprintf( __Date, "%3s %2d %d",
-        Months[tod->tm_mon], tod->tm_mday, tod->tm_year + 1900 );
+    sprintf( __Time, "%.2d:%.2d:%.2d", tod->tm_hour, tod->tm_min, tod->tm_sec );
+    sprintf( __Date, "%3s %2d %d", Months[tod->tm_mon], tod->tm_mday, tod->tm_year + 1900 );
 }

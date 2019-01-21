@@ -505,7 +505,7 @@ void DumpRegs( msb *m, char *str )
 #endif
 
 static void BigKludge( msb *m );
-#pragma aux BigKludge parm [esi];
+#pragma aux BigKludge __parm [__esi]
 
 static LONG DebugEntry( StackFrame *frame )
 {
@@ -825,9 +825,9 @@ trap_retval ReqGet_sys_config( void )
     ret->sys.fpu = NPX();
     ret->sys.osmajor = FileServerMajorVersionNumber;
     ret->sys.osminor = FileServerMinorVersionNumber;
-    ret->sys.os = MAD_OS_NW386;
+    ret->sys.os = DIG_OS_NW386;
     ret->sys.huge_shift = 12;
-    ret->sys.mad = MAD_X86;
+    ret->sys.arch = DIG_ARCH_X86;
     return( sizeof( *ret ) );
 }
 

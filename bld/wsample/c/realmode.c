@@ -35,7 +35,6 @@
 #include <ctype.h>
 #include <string.h>
 #include <process.h>
-//#include <malloc.h>
 #include <conio.h>
 #include <i86.h>
 #include <sys/types.h>
@@ -43,7 +42,6 @@
 #include "sample.h"
 #include "smpstuff.h"
 #include "intrptr.h"
-#include "os.h"
 #include "timermod.h"
 #include "interc.h"
 #include "indos.h"
@@ -160,7 +158,11 @@ static void __interrupt __far timer_handler( union INTPACK r )
     our own timer interrupt handler.
 */
 extern short GetCS( void );
-#pragma aux GetCS = 0x8c 0xc8;
+#pragma aux GetCS = \
+        "mov ax,cs" \
+    __parm      [] \
+    __value     [__ax] \
+    __modify    []
 
 void StartTimer( void )
 {

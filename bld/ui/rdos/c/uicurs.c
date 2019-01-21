@@ -30,7 +30,6 @@
 
 
 #include <rdos.h>
-#include <dos.h>
 #include "uidef.h"
 #include "uiattrs.h"
 

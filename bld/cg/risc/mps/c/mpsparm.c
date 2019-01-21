@@ -25,12 +25,12 @@
 *
 *  ========================================================================
 *
-* Description:  MIPS parameter passing processing.
+* Description:  Select registers used for passing an arguments.
 *
 ****************************************************************************/
 
 
-#include "cgstd.h"
+#include "_cgstd.h"
 #include "coderep.h"
 #include "procdef.h"
 #include "types.h"
@@ -47,16 +47,16 @@
  * home locations on the stack for arguments passed in registers.
  */
 
-extern  type_length     ParmAlignment( type_def *tipe )
-/*****************************************************/
+type_length     ParmAlignment( type_def *tipe )
+/*********************************************/
 {
     /* unused parameters */ (void)tipe;
 
     return( 1 );
 }
 
-extern  hw_reg_set      ParmReg( type_class_def class, type_length len, type_length alignment, call_state *state )
-/****************************************************************************************************************/
+hw_reg_set      ParmReg( type_class_def type_class, type_length len, type_length alignment, call_state *state )
+/*************************************************************************************************************/
 {
     hw_reg_set  *possible;
     hw_reg_set  *reg_set;
@@ -64,7 +64,7 @@ extern  hw_reg_set      ParmReg( type_class_def class, type_length len, type_len
 
     /* unused parameters */ (void)len; (void)alignment;
 
-    possible = ParmChoices( class );
+    possible = ParmChoices( type_class );
     if( possible == NULL || HW_CEqual( *possible, HW_EMPTY ) ) {
         if( !HW_CEqual( *state->parm.curr_entry, HW_EMPTY ) ) {
             state->parm.curr_entry++;
@@ -81,7 +81,7 @@ extern  hw_reg_set      ParmReg( type_class_def class, type_length len, type_len
                 if( HW_Subset( *state->parm.curr_entry, regs ) ) {
                     HW_TurnOn( state->parm.used, regs );
                     HW_TurnOn( state->parm.used, ParmRegConflicts( regs ) );
-                    if( _IsFloating( class ) || _IsI64( class ) ) {
+                    if( _IsFloating( type_class ) || _IsI64( type_class ) ) {
                         state->parm.offset += _RoundUp( len, REG_SIZE );
                     } else {
                         // Note that structs (class XX) end up here - additional

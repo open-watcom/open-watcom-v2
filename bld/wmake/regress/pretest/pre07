@@ -1,12 +1,103 @@
 #
-#   test some more error messages
+#   test the interpreted if
 #
 
-!error errors will follow on lines 7 and 10
+!ifdef __UNIX__
+mkerr=../cmds/mkerr
+!else
+mkerr=..\cmds\mkerr
+!endif
 
-    abc         # should get error on this line
-    abc         # should not get error on this line
-.nocheck
-    abc         # should get error on this line
-    abc         # should not get error on this line
+.silent
 
+tests = pre07.001 pre07.002 pre07.003 pre07.004 pre07.005 &
+        pre07.006 pre07.007 pre07.008 pre07.009 pre07.010
+
+all: .symbolic $(tests)
+    rm pre07.005
+    rm pre07.007
+
+
+pre07.001: .symbolic
+    if a == b $(mkerr)
+    if a== b $(mkerr)
+    if a ==b $(mkerr)
+    if a==b $(mkerr)
+
+
+pre07.002: .symbolic
+    if not a == a $(mkerr)
+    if not a== a $(mkerr)
+    if not a ==a $(mkerr)
+    if not a==a $(mkerr)
+
+
+pre07.003: .symbolic
+    %create pre07.003
+    if not exist pre07.003 $(mkerr)
+    rm pre07.003
+    if exist pre07.003 $(mkerr)
+
+
+pre07.004: .symbolic
+    %create pre07.004
+    if not exist pre*.004 $(mkerr)
+    rm pre07.004
+
+
+pre07.005:
+    if a == a if a== a if a ==a if a==a %create pre07.005
+
+
+pre07.006: .symbolic
+    $(mkerr) 0
+    if errorlevel 1 $(mkerr)
+    -$(mkerr) 1
+    if not errorlevel 1 $(mkerr)
+    if errorlevel 2 $(mkerr)
+
+
+pre07.007:
+    if a        ==      a       %create pre07.007
+
+
+pre07.008: .symbolic
+    echo you should get 11 syntax errors now
+    -if
+    -if a
+    -if a ==
+    -if a==
+    -if a ==a
+    -if a== a
+    -if a == a
+    -if a =
+    -if a=
+    -if ==
+    -if =
+
+
+pre07.009: .symbolic
+    echo you should get 11 syntax errors now
+    -if not
+    -if not a
+    -if not a ==
+    -if not a==
+    -if not a ==a
+    -if not a== a
+    -if not a == a
+    -if not a =
+    -if not a=
+    -if not ==
+    -if not =
+
+
+pre07.010: .symbolic
+    echo you should get 8 syntax errors now
+    -if errorlevel
+    -if errorlevel 0
+    -if not errorlevel
+    -if not errorlevel 0
+    -if exist
+    -if exist a
+    -if not exist
+    -if not exist a

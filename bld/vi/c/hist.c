@@ -32,10 +32,10 @@
 
 #include "vi.h"
 
+
 #define isWSorCtrlZ(x)  (isspace( x ) || (x == 0x1A))
 
 static bool historyLoaded;
-
 
 /*
  * updateHist - add a string to a history list
@@ -54,22 +54,22 @@ static void updateHist( history_data *h, const char *str )
  */
 void LoadHistory( const char *cmd )
 {
-    FILE            *f;
+    FILE            *fp;
     char            str[MAX_INPUT_LINE];
     int             cnt;
-    int             i;
+    size_t          i;
+    int             j;
     history_data    *h;
 
     historyLoaded = true;
-
     while( EditVars.HistoryFile != NULL ) {
-        f = fopen( EditVars.HistoryFile, "rt" );
-        if( f == NULL ) {
+        fp = fopen( EditVars.HistoryFile, "rt" );
+        if( fp == NULL ) {
             break;
         }
         cnt = 0;
         h = EditVars.Hist - 1;
-        while( fgets( str, MAX_INPUT_LINE, f ) != NULL ) {
+        while( fgets( str, MAX_INPUT_LINE, fp ) != NULL ) {
             for( i = strlen( str ); i && isWSorCtrlZ( str[i - 1] ); --i ) {
                 str[i - 1] = '\0';
             }
@@ -78,8 +78,8 @@ void LoadHistory( const char *cmd )
                 if( h - EditVars.Hist >= MAX_HIST ) {
                     break;
                 }
-                for( i = 0; i < h->max; i++ ) {
-                    h->data[i] = NULL;
+                for( j = 0; j < h->max; j++ ) {
+                    h->data[j] = NULL;
                 }
                 cnt = atoi( str );
                 h->curr = 0;
@@ -88,7 +88,7 @@ void LoadHistory( const char *cmd )
             updateHist( h, str );
             cnt--;
         }
-        fclose( f );
+        fclose( fp );
         break;
     }
     if( cmd != NULL ) {
@@ -104,8 +104,9 @@ void LoadHistory( const char *cmd )
  */
 static int getHistCount( history_data *h )
 {
-    int i, j;
-    int cnt;
+    int     i;
+    int     j;
+    int     cnt;
 
     /*
      * get number of items in find history
@@ -125,15 +126,16 @@ static int getHistCount( history_data *h )
 /*
  * writeHistory - write out history to a file
  */
-static void writeHistory( FILE *f, history_data *h )
+static void writeHistory( FILE *fp, history_data *h )
 {
-    int i, j;
+    int     i;
+    int     j;
 
-    MyFprintf( f, "%d\n", getHistCount( h ) );
+    MyFprintf( fp, "%d\n", getHistCount( h ) );
     j = h->curr;
     for( i = 0; i < h->max; i++ ) {
         if( h->data[j % h->max] != NULL ) {
-            MyFprintf( f, "%s\n", h->data[j % h->max] );
+            MyFprintf( fp, "%s\n", h->data[j % h->max] );
             DeleteString( &h->data[j % h->max] );
         }
         j++;
@@ -146,17 +148,17 @@ static void writeHistory( FILE *f, history_data *h )
  */
 void SaveHistory( void )
 {
-    FILE            *f;
+    FILE            *fp;
     history_data    *h;
 
     if( historyLoaded ) {
         if( EditVars.HistoryFile != NULL ) {
-            f = fopen( EditVars.HistoryFile, "wt" );
-            if( f != NULL ) {
+            fp = fopen( EditVars.HistoryFile, "wt" );
+            if( fp != NULL ) {
                 for( h = EditVars.Hist; h - EditVars.Hist < MAX_HIST; h++ ) {
-                    writeHistory( f, h );
+                    writeHistory( fp, h );
                 }
-                fclose( f );
+                fclose( fp );
             }
         }
     }
@@ -170,7 +172,7 @@ void HistInit( history_data *h, int max )
 {
     h->max = max;
     h->curr = 0;
-    h->data = MemReAlloc( h->data, ( h->max + 1 ) * sizeof( char * ) );
+    h->data = _MemReAllocList( h->data, max + 1 );
 
 } /* HistInit */
 

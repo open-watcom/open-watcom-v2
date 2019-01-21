@@ -30,7 +30,6 @@
 ****************************************************************************/
 
 
-#include "commonui.h"
 #include "wreglbl.h"
 #include "wremain.h"
 #include "wrewait.h"

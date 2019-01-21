@@ -23,10 +23,11 @@
 #elif defined(__NETWARE__)
     extern char inp( int );
     #pragma aux inp = "in al,dx" \
-        parm routine [dx];
+        __parm __routine    [__dx] \
+        __value             [__al]
     extern void outp( int, int );
     #pragma aux outp = "out dx,al" \
-        parm routine [dx] [ax];
+        __parm __routine [__dx] [__ax]
 #else
     #include <conio.h>
 #endif

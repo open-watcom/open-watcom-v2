@@ -37,7 +37,7 @@
  * regular tokens
  */
 enum {
-    #define PICK( a,b ) b,
+    #define PICK( a,b ) PCL_T_ ## b,
     #include "cmds.h"
     #undef PICK
     PCL_T_
@@ -47,14 +47,14 @@ enum {
  * setting tokens
  */
 enum {
-    #define PICK( a,b,c,d,e,f ) f,
+    #define PICK( a,b,c,d,e,f ) SETVAR_T_ ## f,
     #include "setnb.h"
     #undef PICK
     SETVAR_T_
 };
 
 enum {
-    #define PICK( a,b,c,d,e ) e,
+    #define PICK( a,b,c,d,e ) SETFLAG_T_ ## e,
     #include "setb.h"
     #undef PICK
     SETFLAG_T_

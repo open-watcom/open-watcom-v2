@@ -30,7 +30,7 @@
 ****************************************************************************/
 
 
-#include "cgstd.h"
+#include "_cgstd.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include "coderep.h"
@@ -42,6 +42,7 @@
 #include "procdef.h"
 #include "zoiks.h"
 #include "cgaux.h"
+#include "targetin.h"
 
 #include "s37enc.def"
 #ifndef NXDEBUG

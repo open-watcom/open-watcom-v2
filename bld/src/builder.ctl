@@ -9,12 +9,12 @@ set PROJDIR=<CWD>
 
 [ INCLUDE <OWROOT>/build/defrule.ctl ]
 
-[ BLOCK <1> rel ]
-#================
+[ BLOCK <BLDRULE> rel ]
+#======================
     cdsay <PROJDIR>
 
-[ BLOCK <1> rel cprel ]
-#======================
+[ BLOCK <BLDRULE> rel cprel ]
+#============================
     <CPCMD> <OWSRCDIR>/clib/startup/a/cstrtwnt.asm      <OWRELROOT>/src/startup/386/cstrtwnt.asm
 #    <CPCMD> <OWSRCDIR>/clib/startup/a/cstrtwwt.asm      <OWRELROOT>/src/startup/386/cstrtwwt.asm
     <CPCMD> <OWSRCDIR>/clib/startup/c/cmain386.c        <OWRELROOT>/src/startup/386/cmain386.c
@@ -23,6 +23,7 @@ set PROJDIR=<CWD>
     <CPCMD> <OWSRCDIR>/clib/startup/c/cmain086.c        <OWRELROOT>/src/startup/dos/cmain086.c
     <CPCMD> <OWSRCDIR>/clib/startup/c/cmain086.c        <OWRELROOT>/src/startup/os2/cmain086.c
     <CPCMD> <OWSRCDIR>/clib/startup/c/libmno16.c        <OWRELROOT>/src/startup/os2/libmno16.c
+    <CPCMD> <OWSRCDIR>/clib/startup/c/dmaino16.c        <OWRELROOT>/src/startup/os2/dmaino16.c
     <CPCMD> <OWSRCDIR>/clib/startup/c/main2o32.c        <OWRELROOT>/src/startup/386/main2o32.c
     <CPCMD> <OWSRCDIR>/clib/startup/c/libmno32.c        <OWRELROOT>/src/startup/386/libmno32.c
     <CPCMD> <OWSRCDIR>/clib/startup/c/dmaino32.c        <OWRELROOT>/src/startup/386/dmaino32.c

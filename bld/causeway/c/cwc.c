@@ -424,9 +424,11 @@ static unsigned_32 EncodeFile( FILE *fo, unsigned_8 *data, unsigned_32 data_size
                 ++trail_len;
             } else {
                 code = CodeHeads + *(unsigned_16 *)( data - trail_len );
-                if( code->head == NULL )
+                if( code->head == NULL ) {
                     // Error
+                    free( CodeHeads );
                     return( 0 );
+                }
                 s = code->head;
                 if( code->head == code->tail )
                     code->tail = s->next;
@@ -488,10 +490,8 @@ static unsigned_32 EncodeFile( FILE *fo, unsigned_8 *data, unsigned_32 data_size
     fwrite( &cwc_dec, 1, sizeof( cwc_dec ), fo );
     fseek( fo, pos2, SEEK_SET );
     OutTotal += sizeof( cwc_dec );
-    if( CodeHeads != NULL ) {
-        free( CodeHeads );
-        CodeHeads = NULL;
-    }
+    free( CodeHeads );
+    CodeHeads = NULL;
     if( CodeFree.tail != NULL ) {
         free( CodeFree.tail );
         CodeFree.tail = NULL;
@@ -555,6 +555,7 @@ static int ProcessEXE( const char *fname, const char *oname )
     //
     fo = fopen( oname, "wb" );
     if( fo == NULL ) {
+        free( fimg );
         printf( "Output file %s can not be created.", oname );
         return( -1 );
     }

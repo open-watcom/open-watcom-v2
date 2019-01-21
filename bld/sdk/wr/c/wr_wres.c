@@ -30,9 +30,6 @@
 ****************************************************************************/
 
 
-#include <wwindows.h>
-#include <stdlib.h>
-#include <string.h>
 #include "wrglbl.h"
 #include "wr_wres.h"
 

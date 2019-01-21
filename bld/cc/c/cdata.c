@@ -133,7 +133,6 @@ void InitGlobalVars( void )
 #endif
 
     MacroDepth              = 0;
-    NextMacro               = NULL;
     HashTab                 = NULL;
 
     GenSwitches             = 0;    /* target independant switches for code generator */

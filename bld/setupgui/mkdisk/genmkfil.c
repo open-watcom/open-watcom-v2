@@ -61,29 +61,37 @@ VERSION_INFO            *VersionList = NULL;
 bool AddFile( const char *path, const char *file, const char *rel_file, const char *patch )
 //=========================================================================================
 {
-    FILE_INFO           *new, **owner;
+    FILE_INFO   *new;
+    FILE_INFO   **owner;
 
     new = malloc( sizeof( FILE_INFO ) );
-    if( new == NULL ) {
-        printf( "Out of memory\n" );
-        return( false );
-    } else {
+    if( new != NULL ) {
         new->path = strdup( path );
-        new->file = strdup( file );
-        new->rel_file = strdup( rel_file );
-        new->pack = strdup( patch );
-        if( new->path == NULL || new->file == NULL || new->pack == NULL ) {
-            printf( "Out of memory\n" );
-            return( false );
+        if( new->path != NULL ) {
+            new->file = strdup( file );
+            if( new->file != NULL ) {
+                new->rel_file = strdup( rel_file );
+                if( new->rel_file != NULL ) {
+                    new->pack = strdup( patch );
+                    if( new->pack != NULL ) {
+                        new->next = NULL;
+                        owner = &FileList;
+                        while( *owner != NULL ) {
+                            owner = &(*owner)->next;
+                        }
+                        *owner = new;
+                        return( true );
+                    }
+                    free( new->rel_file );
+                }
+                free( new->file );
+            }
+            free( new->path );
         }
-        new->next = NULL;
-        owner = &FileList;
-        while( *owner != NULL ) {
-            owner = &(*owner)->next;
-        }
-        *owner = new;
-        return( true );
+        free( new );
     }
+    printf( "Out of memory\n" );
+    return( false );
 }
 
 
@@ -115,14 +123,14 @@ bool ReadList( FILE *fp )
 //    char                *extra;
     char                *patch;
     char                *where;
-    char                buf[ 128 ];
+    char                buf[128];
 
     while( fgets( buf, 127, fp ) != NULL ) {
-        buf[ strlen( buf ) - 1 ] = '\0';
-        if( buf[ 0 ] == '\0' ) continue;
-        if( buf[ 0 ] == '#' ) {
-            if( buf[ 2 ] == '@' ) {     // database
-                buf[ 1 ] = '-';         // (so strtok works)
+        buf[strlen( buf ) - 1] = '\0';
+        if( buf[0] == '\0' ) continue;
+        if( buf[0] == '#' ) {
+            if( buf[2] == '@' ) {     // database
+                buf[1] = '-';         // (so strtok works)
             } else {
                 continue;
             }
@@ -230,13 +238,13 @@ int main( int argc, char *argv[] )
         printf( "Usage: GEMMKFIL <file_list> [versions]\n" );
         return( 1 );
     }
-    fp = fopen( argv[ 1 ], "r" );
+    fp = fopen( argv[1], "r" );
     if( fp == NULL ) {
-        printf( "Cannot open '%s'\n", argv[ 1 ] );
+        printf( "Cannot open '%s'\n", argv[1] );
         return( 1 );
     }
-    for( i = 2; argv[ i ] != NULL; ++i ) {
-        AddVersion( argv[ i ] );
+    for( i = 2; argv[i] != NULL; ++i ) {
+        AddVersion( argv[i] );
     }
     ok = ReadList( fp );
     fclose( fp );

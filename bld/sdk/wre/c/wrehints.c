@@ -30,10 +30,6 @@
 ****************************************************************************/
 
 
-#include "commonui.h"
-#include <stdio.h>
-#include <string.h>
-#include "watcom.h"
 #include "wreglbl.h"
 #include "wrestat.h"
 #include "wremain.h"

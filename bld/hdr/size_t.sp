@@ -1,3 +1,6 @@
+::
+:: POSIX, ISO C/C++ size_t typedef declaration
+::
 :: The C++ compiler has knowledge of this type so if it changes from
 :: 'unsigned' please inform the C++ developers and tell them to check
 :: their op new diagnostics. Also don't forget ssize_t.

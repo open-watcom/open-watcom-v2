@@ -30,10 +30,10 @@
 ****************************************************************************/
 
 
-#include "cgstd.h"
-#include "typedef.h"
+#include "_cgstd.h"
 #include "types.h"
 #include "model.h"
+
 
 // type_def THugeCP= {  TY_HUGE_CODE_PTR,6,      TYPE_POINTER + TYPE_CODE };
 type_def TLongCP= {  TY_LONG_CODE_PTR,6,      TYPE_POINTER + TYPE_CODE };
@@ -42,14 +42,8 @@ type_def THugeP = {  TY_HUGE_POINTER, 6,      TYPE_POINTER };
 type_def TLongP = {  TY_LONG_POINTER, 6,      TYPE_POINTER };
 type_def TNearP = {  TY_NEAR_POINTER, 4,      TYPE_POINTER };
 
-extern type_def *PTInteger;
-extern type_def *PTUnsigned;
-extern type_def *PTPointer;
-extern type_def *PTCodePointer;
-
-
-extern  void    TargTypeInit( void )
-/**********************************/
+void    TargTypeInit( void )
+/**************************/
 {
     TypeAlias( TY_UNSIGNED, TY_UINT_4 );
     TypeAlias( TY_INTEGER, TY_INT_4 );

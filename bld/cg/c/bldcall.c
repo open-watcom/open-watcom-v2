@@ -30,7 +30,7 @@
 ****************************************************************************/
 
 
-#include "cgstd.h"
+#include "_cgstd.h"
 #include "coderep.h"
 #include "cgmem.h"
 #include "cgauxinf.h"
@@ -42,7 +42,7 @@
 #include "bldins.h"
 #include "makeaddr.h"
 #include "bgcall.h"
-#include "x87.h"
+#include "fpu.h"
 #include "dbsyms.h"
 #include "blips.h"
 #include "redefby.h"
@@ -59,22 +59,13 @@
 #include "bldcall.h"
 #include "parmreg.h"
 #include "generate.h"
+#include "parm.h"
+#include "trecurse.h"
+#include "bldcall.h"
+#include "tree.h"
+#include "treeprot.h"
 #include "feprotos.h"
 
-
-extern  type_def        *QParmType(cg_sym_handle,cg_sym_handle,type_def*);
-extern  type_length     ParmMem(type_length,type_length,call_state*);
-extern  hw_reg_set      ParmInLineReg(parm_state*);
-extern  void            UpdateReturn(call_state*,type_def*,type_class_def,aux_handle);
-extern  name            *StReturn(an,type_def*,instruction**);
-extern  instruction     *PushOneParm(instruction*,name*,type_class_def,type_length,call_state*);
-extern  void            TNZapParms(void);
-extern  void            PushInSameBlock(instruction*);
-extern  void            TRAddParm(instruction*,instruction*);
-extern  void            TRDeclareParm(instruction*);
-extern  bool            SegIsCS( name * );
-
-extern  bool            BlipsOn;
 
 type_class_def  AddCallBlock( cg_sym_handle sym, type_def *tipe )
 /*********************************************************************
@@ -82,7 +73,7 @@ type_class_def  AddCallBlock( cg_sym_handle sym, type_def *tipe )
     other initialization routines.
 */
 {
-    type_class_def      class;
+    type_class_def      type_class;
 
     if( BlipsOn ) {
         PGBlip( FEName( sym ) );
@@ -91,9 +82,9 @@ type_class_def  AddCallBlock( cg_sym_handle sym, type_def *tipe )
     EnLink( AskForSymLabel( sym, CG_FE ), false );
     CurrProc->label = CurrBlock->label;
     _MarkBlkAttr( CurrBlock, BLK_BIG_LABEL );
-    class = InitCallState( tipe );
+    type_class = InitCallState( tipe );
     AddIns( MakeNop() );
-    return( class );
+    return( type_class );
 }
 
 
@@ -117,7 +108,7 @@ cn      BGInitCall(an node,type_def *tipe,aux_handle aux) {
 */
 
     cn                  new;
-    type_class_def      class;
+    type_class_def      type_class;
     name                *mem;
 #if _TARGET & ( _TARG_80386 | _TARG_IAPX86 )
     void                *cookie;
@@ -134,14 +125,14 @@ cn      BGInitCall(an node,type_def *tipe,aux_handle aux) {
     new->ins = NewIns( 3 );
     if( node->format == NF_ADDR && node->class == CL_ADDR_GLOBAL ) {
         new->ins->head.opcode = OP_CALL;
-        class = CallState( aux, tipe, new->state );
+        type_class = CallState( aux, tipe, new->state );
         mem = node->u.n.name;
         mem = (name *)SAllocMemory( mem->v.symbol, mem->v.offset, mem->m.memory_type,
-                            mem->n.name_class, mem->n.size );
+                            mem->n.type_class, mem->n.size );
         node->u.n.name = mem;
     } else {
         new->ins->head.opcode = OP_CALL_INDIRECT;
-        class = CallState( aux, tipe, new->state );
+        type_class = CallState( aux, tipe, new->state );
 #if _TARGET & ( _TARG_80386 | _TARG_IAPX86 )
         cookie = FEAuxInfo( aux, VIRT_FUNC_REFERENCE );
         if( cookie != NULL )
@@ -150,7 +141,7 @@ cn      BGInitCall(an node,type_def *tipe,aux_handle aux) {
         CurrProc->targ.toc_clobbered = true;
 #endif
     }
-    new->ins->type_class = class;
+    new->ins->type_class = type_class;
     return( new );
 }
 
@@ -188,14 +179,14 @@ static  void    LinkParmIns( instruction *parm_def, instruction *ins ) {
     parm_def->ins_flags |= INS_PARAMETER;
 }
 
-static  instruction *DoParmDef( name *result, type_class_def class ) {
-/********************************************************************/
-
+static  instruction *DoParmDef( name *result, type_class_def type_class )
+/***********************************************************************/
+{
     instruction *parm_def;
 
     parm_def = NewIns( 0 );
     parm_def->head.opcode = OP_PARM_DEF;
-    parm_def->type_class = class;
+    parm_def->type_class = type_class;
     parm_def->result = result;
     AddIns( parm_def );
     return( parm_def );
@@ -291,12 +282,12 @@ name    *DoParmDecl( cg_sym_handle sym, type_def *tipe, hw_reg_set reg ) {
     instruction         *parm_def;
     name                *temp;
     name                *parm_name;
-    type_class_def      class;
+    type_class_def      type_class;
     type_def            *ptipe;
     bool                no_temp;
 
     ptipe = QParmType( AskForLblSym( CurrProc->label ), sym, tipe );
-    class = TypeClass( ptipe );
+    type_class = TypeClass( ptipe );
     if( sym == NULL ) {
         temp = AllocTemp( TypeClass( tipe ) );
     } else {
@@ -305,7 +296,7 @@ name    *DoParmDecl( cg_sym_handle sym, type_def *tipe, hw_reg_set reg ) {
     }
     temp->v.usage |= USE_IN_ANOTHER_BLOCK;
 
-    no_temp = class == XX;
+    no_temp = ( type_class == XX );
 #if _TARGET & ( _TARG_80386 | _TARG_IAPX86 )
     // The arguments of an interrupt routine coming in on the stack are used
     // for input and output; routine epilog pops them into registers. Handle
@@ -317,7 +308,7 @@ name    *DoParmDecl( cg_sym_handle sym, type_def *tipe, hw_reg_set reg ) {
     }
 #endif
 #if _TARGET & _TARG_RISC
-    if( class == XX ) {
+    if( type_class == XX ) {
         return( DoAlphaParmDecl( reg, sym, tipe, temp ) );
     }
 #endif
@@ -326,7 +317,7 @@ name    *DoParmDecl( cg_sym_handle sym, type_def *tipe, hw_reg_set reg ) {
             parm_name = temp;
             parm_name->t.location = ParmMem( tipe->length, ParmAlignment( ptipe ), &CurrProc->state );
         } else {
-            parm_name = AllocTemp( class );
+            parm_name = AllocTemp( type_class );
             parm_name->t.location = ParmMem( ptipe->length, ParmAlignment( ptipe ), &CurrProc->state );
         }
         parm_name->t.temp_flags |= STACK_PARM;
@@ -347,9 +338,9 @@ name    *DoParmDecl( cg_sym_handle sym, type_def *tipe, hw_reg_set reg ) {
             DbgParmLoc( parm_name, sym );
         }
     }
-    parm_def = DoParmDef( parm_name, class );
-    if( class != XX ) {
-        ins = MakeConvert( parm_name, temp, TypeClass( tipe ), class );
+    parm_def = DoParmDef( parm_name, type_class );
+    if( type_class != XX ) {
+        ins = MakeConvert( parm_name, temp, TypeClass( tipe ), type_class );
         LinkParmIns( parm_def, ins );
         AddIns( ins );
         TRDeclareParm( ins );
@@ -410,7 +401,7 @@ void    AddCallIns( instruction *ins, cn call ) {
 
     name                *call_name;
     fe_attr             attr;
-    type_class_def      addr_type;
+    type_class_def      addr_type_class;
     name                *temp;
     instruction         *new_ins;
 
@@ -436,14 +427,14 @@ void    AddCallIns( instruction *ins, cn call ) {
 #endif
             // indirect since calling data labels directly
             // screws up the back end
-            addr_type = WD;
+            addr_type_class = WD;
 #if _TARGET & (_TARG_80386|_TARG_IAPX86)
             if( *(call_class *)FindAuxInfo( call_name, CALL_CLASS ) & FAR_CALL ) {
-                addr_type = CP;
+                addr_type_class = CP;
             }
 #endif
-            temp = AllocTemp( addr_type );
-            new_ins = MakeUnary( OP_LA, call_name, temp, addr_type );
+            temp = AllocTemp( addr_type_class );
+            new_ins = MakeUnary( OP_LA, call_name, temp, addr_type_class );
             AddIns( new_ins );
             call_name = temp;
             ins->head.opcode = OP_CALL_INDIRECT;
@@ -508,7 +499,7 @@ void            PushParms( pn parm, call_state *state ) {
                     if( addr->flags & FL_ADDR_CROSSED_BLOCKS ) {
                         ins->result->v.usage |= USE_IN_ANOTHER_BLOCK;
                     }
-                    push_ins = PushOneParm( ins, ins->result, ins->result->n.name_class, parm->offset, state );
+                    push_ins = PushOneParm( ins, ins->result, ins->result->n.type_class, parm->offset, state );
                 }
                 addr->format = NF_ADDR; /* so instruction doesn't get freed! */
                 BGDone( addr );
@@ -582,7 +573,7 @@ void    ParmIns( pn parm, call_state *state ) {
             if( addr->tipe->length == reg->n.size ) {
                 ins = MakeMove( curr, reg, TypeClass( addr->tipe ) );
                 AddIns( ins );
-            } else if( !CvtOk( TypeClass( addr->tipe ), reg->n.name_class ) ) {
+            } else if( !CvtOk( TypeClass( addr->tipe ), reg->n.type_class ) ) {
                 ins = NULL;
                 FEMessage( MSG_BAD_PARM_REGISTER, (pointer)(pointer_int)parm->num );
   #if _TARGET & ( _TARG_IAPX86 | _TARG_80386 )
@@ -591,7 +582,7 @@ void    ParmIns( pn parm, call_state *state ) {
                 FEMessage( MSG_BAD_PARM_REGISTER, (pointer)(pointer_int)parm->num );
   #endif
             } else {
-                ins = MakeConvert( curr, reg, reg->n.name_class, TypeClass( addr->tipe ) );
+                ins = MakeConvert( curr, reg, reg->n.type_class, TypeClass( addr->tipe ) );
                 AddIns( ins );
             }
 #endif
@@ -646,21 +637,21 @@ void    BGReturn( an retval, type_def *tipe ) {
     instruction         *last_ins;
     instruction         *ret_ins;
     name                *name;
-    type_class_def      class;
-    type_class_def      aclass;
+    type_class_def      tipe_type_class;
+    type_class_def      type_class;
 
     ins = MakeNop();
     last_ins = NULL;
     if( retval != NULL ) {
-        class = TypeClass( tipe );
-        aclass = ReturnClass( tipe, CurrProc->state.attr );
-        UpdateReturn( &CurrProc->state, tipe, aclass, FEAuxInfo( AskForLblSym(CurrProc->label), AUX_LOOKUP ) );
+        tipe_type_class = TypeClass( tipe );
+        type_class = ReturnClass( tipe, CurrProc->state.attr );
+        UpdateReturn( &CurrProc->state, tipe, type_class, FEAuxInfo( AskForLblSym(CurrProc->label), AUX_LOOKUP ) );
         if( _IsModel( DBG_LOCALS ) ){  // d1+ or d2
             DbgRetLoc();
         }
-        if( aclass == XX ) {
+        if( type_class == XX ) {
             name = StReturn( retval, tipe, &last_ins );
-            AddIns( MakeMove( GenIns( retval ), name, class ) );
+            AddIns( MakeMove( GenIns( retval ), name, tipe_type_class ) );
         } else {
             if( HW_CEqual( CurrProc->state.return_reg, HW_EMPTY ) ) {
                 name = StReturn( retval, tipe, &last_ins );
@@ -668,20 +659,19 @@ void    BGReturn( an retval, type_def *tipe ) {
                 name = AllocRegName( CurrProc->state.return_reg );
             }
 #if _TARGET & _TARG_AXP
-            if( class == U4 && aclass == I8 ) {
+            if( tipe_type_class == U4 && type_class == I8 ) {
                 ret_ins = MakeConvert( GenIns( retval ), name, I8, I4 );
             } else {
 #endif
                 if( tipe->length == name->n.size ) {
-                    ret_ins = MakeMove( GenIns( retval ), name, name->n.name_class );
+                    ret_ins = MakeMove( GenIns( retval ), name, name->n.type_class );
                 } else {
-                    ret_ins = MakeConvert( GenIns( retval ), name, name->n.name_class, class );
+                    ret_ins = MakeConvert( GenIns( retval ), name, name->n.type_class, tipe_type_class );
                 }
                 // BBB - we can get a situation where we are returning
                 // a float in eax (when compiling -3s) and we don't want
                 // to do a convert - ack.
-                // ret_ins = MakeConvert( GenIns( retval ), name,
-                //                     name->n.name_class, class );
+                // ret_ins = MakeConvert( GenIns( retval ), name, name->n.type_class, class );
 #if _TARGET & _TARG_AXP
             }
 #endif
@@ -705,8 +695,8 @@ void    BGReturn( an retval, type_def *tipe ) {
 
 #if _TARGET & _TARG_RISC
 
-static pn   BustUpStruct( pn parm, type_class_def from, type_class_def using_class )
-/**********************************************************************************/
+static pn   BustUpStruct( pn parm, type_class_def from, type_class_def using_type_class )
+/***************************************************************************************/
 {
     pn                  curr;
     pn                  last;
@@ -717,7 +707,7 @@ static pn   BustUpStruct( pn parm, type_class_def from, type_class_def using_cla
     instruction         *ins;
 
     curr = NULL;
-    size = TypeClassSize[using_class];
+    size = TypeClassSize[using_type_class];
     len = _RoundUp( parm->name->tipe->length, size );
     temp = AllocTemp( from );
     temp->n.size = len;
@@ -726,10 +716,10 @@ static pn   BustUpStruct( pn parm, type_class_def from, type_class_def using_cla
     for( offset = len - size; offset >= 0; offset -= size ) {
         // create a parm node for this part of the struct
         curr = CGAlloc( sizeof( parm_node ) );
-        ins = MakeMove( STempOffset( temp, offset, using_class, size ), NULL, using_class );
+        ins = MakeMove( STempOffset( temp, offset, using_type_class, size ), NULL, using_type_class );
         AddIns( ins );
         curr->next = last;
-        curr->name = InsName( ins, ClassType( using_class ) );
+        curr->name = InsName( ins, ClassType( using_type_class ) );
         curr->name->flags = parm->name->flags;
         curr->alignment = 4;
         last = curr;
@@ -748,21 +738,21 @@ static void SplitStructParms( pn *parm_list, call_state *state )
     pn                  parm;
     pn                  *last_parm;
     an                  name;
-    type_class_def      tipe;
-    type_class_def      class;
+    type_class_def      using_type_class;
+    type_class_def      type_class;
 
 #if _TARGET & _TARG_PPC
     if( _IsTargetModel( CG_OS2_CC ) )
         return;
-    tipe = U4;
+    using_type_class = U4;
 #elif _TARGET & _TARG_AXP
     /* unused parameters */ (void)state;
 
-    tipe = U8;
+    using_type_class = U8;
 #elif _TARGET & _TARG_MIPS
     /* unused parameters */ (void)state;
 
-    tipe = U4;
+    using_type_class = U4;
 #else
     #error Unknown RISC CPU
 #endif
@@ -770,16 +760,16 @@ static void SplitStructParms( pn *parm_list, call_state *state )
     for( parm = *last_parm; parm != NULL; parm = parm->next ) {
         name = parm->name;
         parm->alignment = ParmAlignment( name->tipe );
-        class = TypeClass( name->tipe );
+        type_class = TypeClass( name->tipe );
 #if _TARGET & _TARG_PPC
-        if( class == XX || ( class == FD ) && (state->attr & ROUTINE_HAS_VARARGS) ) {
+        if( type_class == XX || ( type_class == FD ) && (state->attr & ROUTINE_HAS_VARARGS) ) {
 #else
-        if( class == XX ) {
+        if( type_class == XX ) {
 #endif
-            if( ( class == FD ) || ( name->tipe->length > 7 ) ) {
+            if( ( type_class == FD ) || ( name->tipe->length > 7 ) ) {
                 parm->alignment = 8;
             }
-            *last_parm = BustUpStruct( parm, class, tipe );
+            *last_parm = BustUpStruct( parm, type_class, using_type_class );
             name->format = NF_ADDR; /* so instruction doesn't get freed! */
             BGDone( name );
             CGFree( parm );
@@ -805,8 +795,8 @@ bool        AssgnParms( cn call, bool in_line ) {
     bool                push_no_pop;
     int                 parms;
     instruction         *call_ins;
-    type_class_def      parm_tipe;
-    type_class_def      reg_tipe;
+    type_class_def      parm_type_class;
+    type_class_def      reg_type_class;
 
 
     push_no_pop = false;
@@ -829,10 +819,10 @@ bool        AssgnParms( cn call, bool in_line ) {
                     push_no_pop = true;
                 }
             } else {
-                parm_tipe = TypeClass( parm->name->tipe );
-                reg_tipe  = AllocRegName( parm->regs )->n.name_class;
-                if( parm_tipe != FD || reg_tipe != U8 ) {
-                    if( !CvtOk( parm_tipe, reg_tipe ) ) {
+                parm_type_class = TypeClass( parm->name->tipe );
+                reg_type_class  = AllocRegName( parm->regs )->n.type_class;
+                if( parm_type_class != FD || reg_type_class != U8 ) {
+                    if( !CvtOk( parm_type_class, reg_type_class ) ) {
                         FEMessage( MSG_BAD_PARM_REGISTER, (pointer)(pointer_int)( parms + 1 ) );
                     }
                 }

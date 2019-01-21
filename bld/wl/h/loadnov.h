@@ -82,16 +82,23 @@ typedef struct {
 
 // NOTE: This assumes sizeof( virt_mem ) == sizeof( unsigned_32 ) !!!!!!!
 
-#define MAX_IMP_INTERNAL  10  // maximum # of import relocs stored internally
-                              // before allocating virtual memory.
-#define MAX_IMP_VIRT 9       // maximum # of virt blocks before allocating more.
+#define MAX_IMP_INTERNAL    10      // maximum # of import relocs stored internally
+                                    // before allocating virtual memory.
+#define MAX_IMP_VIRT        9       // maximum # of virt blocks before allocating more.
 #define IMP_VIRT_ALLOC_SIZE 512     // size of virtual mem block to allocate
-#define IMP_NUM_VIRT (IMP_VIRT_ALLOC_SIZE / sizeof( unsigned_32 ) )
+#define IMP_NUM_VIRT        (IMP_VIRT_ALLOC_SIZE / sizeof( unsigned_32 ) )
 
 typedef struct nov_import {
-    byte        contents;       // # of relocs || # of virtmem blocks + 10
-    unsigned_32 num_relocs;     // number of relocs allocated.
-    virt_mem    vm_ptr[1];      // variable # of pointers virtual mem. hunks
+    byte        contents;           // # of relocs || # of virtmem blocks + 10
+    union {
+        struct {
+            unsigned_32 num_relocs;     // number of relocs allocated.
+            virt_mem    vm_ptr[1];      // variable # of pointers virtual mem. hunks
+        } v;
+        struct {
+            unsigned_32 relocs[2];      // relocs offset array
+        } r;
+    } u;
 } nov_import;
 
 // values for upper bits of the relocation offsets.

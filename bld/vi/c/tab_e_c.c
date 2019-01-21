@@ -39,7 +39,7 @@ extern long TabCnt;
  */
 static vi_rc doCompressExpand( bool compress )
 {
-    int         k;
+    size_t      k;
     long        bytes_saved = 0;
     long        bytes_added = 0;
     long        otabcnt;
@@ -68,14 +68,14 @@ static vi_rc doCompressExpand( bool compress )
 
         if( compress ) {
             otabcnt = TabCnt;
-            ExpandTabsInABuffer( CurrentLine->data, CurrentLine->len, tmp, EditVars.MaxLine );
+            ExpandTabsInABuffer( CurrentLine->data, CurrentLine->len, tmp, EditVars.MaxLine + 1 );
             TabCnt = otabcnt;
             k = strlen( tmp );
             ConvertSpacesToTabsUpToColumn( k, tmp, k, WorkLine->data, EditVars.MaxLine );
             WorkLine->len = strlen( WorkLine->data );
             bytes_saved += CurrentLine->len - WorkLine->len;
         } else {
-            ExpandTabsInABuffer( CurrentLine->data, CurrentLine->len, WorkLine->data, EditVars.MaxLine );
+            ExpandTabsInABuffer( CurrentLine->data, CurrentLine->len, WorkLine->data, EditVars.MaxLine + 1 );
             WorkLine->len = strlen( WorkLine->data );
             bytes_added += WorkLine->len - CurrentLine->len;
         }

@@ -71,7 +71,7 @@ TYPE_SIG *BeTypeSignature(      // GET TYPE_SIG FOR A TYPE
             base->cgref = true;
         }
     }
-    return sig;
+    return( sig );
 }
 
 
@@ -284,14 +284,14 @@ static TYPE_SIG_ENT* typeSigEnt(// ALLOCATE A TYPE_SIG_ENT, FOR TYPE_SIG
 
     ent = CarveAlloc( carveTYPE_SIG_ENT );
     ent->sig = sig;
-    return ent;
+    return( ent );
 }
 
 
 TYPE_SIG_ENT* BeTypeSigEnt(     // ALLOCATE A TYPE_SIG_ENT, FOR TYPE
     TYPE type )                 // - type for signature
 {
-    return typeSigEnt( BeTypeSignature( type ) );
+    return( typeSigEnt( BeTypeSignature( type ) ) );
 }
 
 
@@ -305,7 +305,7 @@ TYPE_SIG_ENT* BeTypeSigEntsCopy(// MAKE COPY OF TYPE-SIGNATURE entries
     RingIterBeg( orig, curr ) {
         RingAppend( &ring, typeSigEnt( curr->sig ) );
     } RingIterEnd( curr )
-    return ring;
+    return( ring );
 }
 
 

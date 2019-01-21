@@ -24,7 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  Convertor from binary format file to C source code, for 
+* Description:  Convertor from binary format file to C source code, for
 *                assembly code bursts.
 *
 ****************************************************************************/
@@ -42,7 +42,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <sys/types.h>
-#include "wio.h"
+#include <sys/stat.h>
 #include "watcom.h"
 
 #include "clibext.h"
@@ -60,8 +60,7 @@ static unsigned char *buff;
 
 int main(int argc, char *argv[])
 {
-    FILE                *fp = NULL;
-    int                 fi = -1;
+    FILE                *fp;
     int                 i;
     int                 len;
     unsigned char       *p;
@@ -72,31 +71,40 @@ int main(int argc, char *argv[])
         printf( "Usage: inp.file out.file\n" );
         return( 1 );
     }
-    fi = open( argv[1], O_BINARY );
-    fp = fopen( argv[2], "w" );
     stat( argv[1], &bufstat );
+    fp = fopen( argv[1], "rb" );
     buff = malloc( bufstat.st_size );
-    read( fi, buff, bufstat.st_size );
-    close( fi );
-    cb = (struct bursts *) Xptr( *(short*)buff );
+    fread( buff, bufstat.st_size, 1, fp );
+    fclose( fp );
+    cb = (struct bursts *)Xptr( *(short *)buff );
+    fp = fopen( argv[2], "wt" );
+    if( fp == NULL ) {
+        free( buff );
+        printf( "Error: can not open out.file\n" );
+        return( 1 );
+    }
     for( ;; ) {
-        p = Xptr(cb->defs);
-        if( p == buff ) break;
-        for(;;) {
+        p = Xptr( cb->defs );
+        if( p == buff )
+            break;
+        for( ;; ) {
             fprintf( fp, "%s\n", p );
-            while( *p != '\0' )  ++p;
+            while( *p != '\0' )
+                ++p;
             ++p;
-            if( *p == '\0' ) break;
+            if( *p == '\0' ) {
+                break;
+            }
         }
-        p = Xptr(cb->burst);
+        p = Xptr( cb->burst );
         len = *p++;
-        fprintf( fp, "static struct STRUCT_BYTE_SEQ( %d ) %s = { %d, false, {\n    ", 
-            len, Xptr(cb->name), len );
+        fprintf( fp, "static struct STRUCT_BYTE_SEQ( %d ) %s = { %d, false, {\n    ", len, Xptr( cb->name ), len );
         i = 0;
-        for(;;) {
+        for( ;; ) {
             fprintf( fp, "0x%2.2X", *p++ );
             --len;
-            if( len == 0 ) break;
+            if( len == 0 )
+                break;
             fprintf( fp, "," );
             i++;
             if( i == 10 ) {

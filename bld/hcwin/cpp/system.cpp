@@ -120,9 +120,9 @@ SystemWin::SystemWin( uint_16 wflgs,
     _position[1] = y;
     _position[2] = w;
     _position[3] = h;
-    strncpy( _type, type, HLP_SYS_TYPE );
-    strncpy( _name, name, HLP_SYS_NAME );
-    strncpy( _caption, cap, HLP_SYS_CAP  );
+    memcpy( _type, type, HLP_SYS_TYPE );
+    memcpy( _name, name, HLP_SYS_NAME );
+    memcpy( _caption, cap, HLP_SYS_CAP  );
 }
 
 

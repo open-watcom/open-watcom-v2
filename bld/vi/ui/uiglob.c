@@ -42,7 +42,7 @@ char_info   WindowNormalAttribute = { ' ', 0 };
 #else
 char_info   WindowNormalAttribute = { ' ', 7 };
 #endif
-window      *Windows[MAX_WINDS];
+window      *Windows[MAX_WINDS + 1];
 
 char_info   _FAR *Scrn = NULL;
 char_info   _FAR *ClockStart = NULL;

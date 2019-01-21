@@ -16,13 +16,12 @@
 SELECTOR rsi_sel_new_absolute( long base_addr, unsigned size )
 {
     if( USESDPMI() ) {
-        SELECTOR    sel;
         descriptor  g;
-        long        rc;
+        long        sel;
 
-        if( (rc = DPMIAllocateLDTDescriptors( 1 )) < 0 )
+        sel = DPMIAllocateLDTDescriptors( 1 );
+        if( sel < 0 )
             return( NULL_SEL );
-        sel = rc;
         DPMIGetDescriptor( sel, &g );
         --size;
         g.lim_0_15 = size;
@@ -30,7 +29,7 @@ SELECTOR rsi_sel_new_absolute( long base_addr, unsigned size )
         g.base_0_15 = base_addr;
         g.base_16_23 = base_addr >> 16;
         g.base_24_31 = base_addr >> 24;
-        if( DPMISetDescriptor( sel, &g ) != 0 ) {
+        if( DPMISetDescriptor( sel, &g ) ) {
             DPMIFreeLDTDescriptor( sel );
             return( NULL_SEL );
         }

@@ -32,6 +32,7 @@
 
 #include "_aui.h"
 #include <setjmp.h>
+#include "wspawn.h"
 
 static jmp_buf          *ExitSP;
 
@@ -39,7 +40,7 @@ static jmp_buf          *ExitSP;
  * Spawn - mark a level to pop back to on an error
  */
 
-int Spawn( aui_spawn_func *func )
+int Spawn( wspawn_func *func )
 {
     jmp_buf env;
     jmp_buf *old;
@@ -58,7 +59,7 @@ int Spawn( aui_spawn_func *func )
 }
 
 
-int SpawnP( aui_spawn_funcP *func, void *parm )
+int SpawnP( wspawn_funcP *func, void *parm )
 {
     jmp_buf env;
     jmp_buf *old;

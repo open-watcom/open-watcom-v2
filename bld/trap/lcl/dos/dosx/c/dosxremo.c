@@ -108,13 +108,13 @@ trap_retval ReqGet_sys_config( void )
 
     if( !TaskLoaded ) {
         ret = GetOutPtr(0);
-        ret->sys.os = MAD_OS_IDUNNO;
+        ret->sys.os = DIG_OS_IDUNNO;
         ret->sys.osmajor = 0;
         ret->sys.osminor = 0;
         ret->sys.fpu = X86_NO;
         ret->sys.huge_shift = 12;
         ret->sys.cpu = X86_386;
-        ret->sys.mad = MAD_X86;
+        ret->sys.arch = DIG_ARCH_X86;
         return( sizeof( *ret ) );
     }
     return( DoAccess() );

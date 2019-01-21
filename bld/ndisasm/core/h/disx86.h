@@ -32,6 +32,7 @@
 extern const dis_range          X86RangeTable[];
 extern const int                X86RangeTablePos[];
 extern const unsigned char      X86MaxInsName;
+extern const dis_cpu_data       X86Data;
 
 extern dis_handler_return X86PrefixFwait( dis_handle *h, void *d, dis_dec_ins *ins );
 extern dis_handler_return X86PrefixOpnd( dis_handle *h, void *d, dis_dec_ins *ins );

@@ -65,17 +65,17 @@
 #define _set_dbcs_table(low,high)   memset( __MBCSIsTable + low + 1, _MB_LEAD, high - low + 1 )
 
 #ifdef __NT__
-    unsigned int __MBCodePage = CP_OEMCP;       /* default code page */
-#elif defined( __LINUX__ )
-    unsigned int __MBCodePage = 0;              /* default code page */
-#elif !defined(__UNIX__)
-    unsigned int __MBCodePage = 0;              /* default code page */
+#define DEFAULT_CODEPAGE    CP_OEMCP
+#else
+#define DEFAULT_CODEPAGE    0
 #endif
+
+unsigned int __MBCodePage = DEFAULT_CODEPAGE;   /* default code page */
 
 static void clear_dbcs_table( void )
 {
-    __IsDBCS = 0;                           /* SBCS for now */
-    __MBCodePage = 0;
+    __IsDBCS = 0;                               /* SBCS for now */
+    __MBCodePage = DEFAULT_CODEPAGE;
     memset( __MBCSIsTable, 0, 257 );
 }
 
@@ -84,11 +84,22 @@ static void set_dbcs_table( unsigned short DOS_FAR *lead_bytes )
 {
     unsigned short range;
 
-    clear_dbcs_table();
     if( *lead_bytes ) {
         __IsDBCS = 1;       /* set __IsDBCS if needed */
         for( ; (range = *lead_bytes) != 0; lead_bytes++ ) {
             _set_dbcs_table( (unsigned char)range, (unsigned char)( range >> 8 ) );
+        }
+    }
+}
+#elif defined( __WINDOWS__ )
+static void set_dbcs_table( void )
+{
+    unsigned short value;
+
+    for( value = 0; value < 256; value++ ) {
+        if( IsDBCSLeadByte( (BYTE)value ) ) {
+            __MBCSIsTable[value + 1] = _MB_LEAD;
+            __IsDBCS = 1;   /* set __IsDBCS if needed */
         }
     }
 }
@@ -114,10 +125,11 @@ int __mbinit( int codepage )
     unsigned short          __far *leadBytes;
 #elif defined __WINDOWS__
     DWORD                   version;
-    int                     countVal;
 #elif defined __LINUX__
+#elif defined __RDOS__
 #endif
 
+    clear_dbcs_table();
     /*** Handle values from _setmbcp ***/
     if( codepage == _MBINIT_CP_ANSI ) {
 #ifdef __NT__
@@ -132,10 +144,8 @@ int __mbinit( int codepage )
         codepage = 0;
 #endif
     } else if( codepage == _MBINIT_CP_SBCS ) {
-        clear_dbcs_table();
         return( 0 );
     } else if( codepage == _MBINIT_CP_932 ) {
-        clear_dbcs_table();
         _set_dbcs_table( 0x81, 0x9F );
         _set_dbcs_table( 0xE0, 0xFC );
         __IsDBCS = 1;
@@ -201,16 +211,10 @@ int __mbinit( int codepage )
     version = GetVersion();
     if( LOWORD(version) < 0x0A03 )
         return( 1 );        /* 3.1+ needed */
-    clear_dbcs_table();
-    for( countVal = 0; countVal < 256; countVal++ ) {
-        if( IsDBCSLeadByte( (BYTE)countVal ) ) {
-            __MBCSIsTable[countVal + 1] = _MB_LEAD;
-            __IsDBCS = 1;   /* set __IsDBCS if needed */
-        }
-    }
+    set_dbcs_table();
     __MBCodePage = GetKBCodePage();
 #elif defined __LINUX__
+#elif defined __RDOS__
 #endif
-
     return( 0 );                                /* return success code */
 }

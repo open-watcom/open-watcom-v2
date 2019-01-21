@@ -1,7 +1,5 @@
-#User defined (currently US English)
+#User defined (currently US English CP850 encoding)
 
-Country=1
-CodePage=850
 Note="Note&colon. "
 Caution="CAUTION&colon. "
 Warning="Warning&colon. "
@@ -19,6 +17,6 @@ cgraphicFontHeight=18
 # Words defines the characters that make words.  This is used for
 # searching and data compression.  The following is for Code page 850.
 
-Grammer
+Grammar
 Words=0-9+A-Z+a-z
-eGrammer
+eGrammar

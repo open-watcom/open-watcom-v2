@@ -49,9 +49,9 @@ int HFileListSize(              // RETURN AN APPROXIMATE SIZE OF THE H-FILE LIST
     void )
 {
     if( hfile_ptr != NULL ) {
-        return strlen( hfile_ptr ) + 2;
+        return( strlen( hfile_ptr ) + 2 );
     }
-    return 0;
+    return( 0 );
 }
 
 

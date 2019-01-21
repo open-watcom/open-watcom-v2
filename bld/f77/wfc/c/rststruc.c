@@ -42,12 +42,11 @@
 #include <string.h>
 
 
-static  sym_id  AddStruct( char *name, int length ) {
-//===================================================
-
+static  sym_id  AddStruct( char *name, uint length )
+//==================================================
 // Add a symbol table entry to the symbol table. Return a pointer to the
 // new symbol table entry.
-
+{
     sym_id      sym;
 
     sym = FMemAlloc( sizeof( fstruct ) + AllocName( length ) );
@@ -58,29 +57,30 @@ static  sym_id  AddStruct( char *name, int length ) {
 }
 
 
-sym_id  FindStruct( char *name, int len ) {
-//=========================================
-
+sym_id  FindStruct( char *name, uint len )
+//========================================
 // Search symbol table for given name.
-
+{
     sym_id      head;
 
     head = RList;
     for(;;) {
-        if( head == NULL ) return( NULL );
+        if( head == NULL )
+            return( NULL );
         if( head->u.sd.name_len == len ) {
-            if( memcmp( name, &head->u.sd.name, len ) == 0 ) return( head );
+            if( memcmp( name, &head->u.sd.name, len ) == 0 ) {
+                return( head );
+            }
         }
         head = head->u.sd.link;
     }
 }
 
 
-sym_id  STStruct( char *name, int length ) {
-//==========================================
-
+sym_id  STStruct( char *name, uint length )
+//=========================================
 // Lookup the specified structure name in the symbol table.
-
+{
     sym_id      sym;
 
     if( length > MAX_SYMLEN ) {
@@ -117,11 +117,10 @@ sym_id  STStruct( char *name, int length ) {
 }
 
 
-char    *STStructName( sym_id sym, char *buff ) {
-//===============================================
-
+char    *STStructName( sym_id sym, char *buff )
+//=============================================
 // Get structure name.
-
+{
     memcpy( buff, &sym->u.sd.name, sym->u.sd.name_len );
     buff += sym->u.sd.name_len;
     *buff = NULLCHAR;
@@ -143,16 +142,17 @@ char    *STFieldName( sym_id sym, char *buff ) {
 }
 
 
-static  sym_id  *Strut( sym_id *p_field, char *name, uint len ) {
-//===============================================================
-
+static  sym_id  *Strut( sym_id *p_field, char *name, uint len )
+//=============================================================s
+{
     sym_id      map;
     sym_id      field;
     sym_id      *q_field;
 
     for(;;) {
         field = *p_field;
-        if( field == NULL ) return( p_field );
+        if( field == NULL )
+            return( p_field );
         if( field->u.fd.typ == FT_UNION ) {
             q_field = NULL;
             for( map = field->u.fd.xt.sym_record; map != NULL; map = map->u.sd.link ) {
@@ -176,12 +176,11 @@ static  sym_id  *Strut( sym_id *p_field, char *name, uint len ) {
 }
 
 
-static  sym_id  AddField( char *name, int length ) {
-//==================================================
-
+static  sym_id  AddField( char *name, uint length )
+//=================================================
 // Add a symbol table entry to the symbol table. Return a pointer to the
 // new symbol table entry.
-
+{
     sym_id      sym;
 
     sym = FMemAlloc( sizeof( field ) + AllocName( length ) );

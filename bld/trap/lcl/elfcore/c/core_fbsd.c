@@ -117,7 +117,7 @@ static size_t freebsd_name( void *_ctx, char *name, size_t len )
  *
  * Parameters:
  *  ctx     - driver context
- *  mad     - MAD architecture
+ *  arch    - MAD architecture
  *  os      - operating system
  *  cpu     - CPU model
  *  fpu     - FPU model
@@ -125,7 +125,7 @@ static size_t freebsd_name( void *_ctx, char *name, size_t len )
  * Returns:
  *  zero if configuration could not be determined, non-zero otherwise
  */
-static int freebsd_qcfg( void *_ctx, int *mad, int *os, int *cpu, int *fpu )
+static int freebsd_qcfg( void *_ctx, dig_arch *arch, int *os, int *cpu, int *fpu )
 {
     ctx_freebsd     *ctx = _ctx;
     long            rc = false;
@@ -135,10 +135,10 @@ static int freebsd_qcfg( void *_ctx, int *mad, int *os, int *cpu, int *fpu )
         /* There doesn't appear to be a way to determine CPU type etc.
          * from FreeBSD core files. Just say it's a 486 and be done with it.
          */
-        *os  = MAD_OS_FREEBSD;
-        *mad = MAD_X86;
-        *cpu = X86_486;
-        *fpu = X86_487;
+        *os   = DIG_OS_FREEBSD;
+        *arch = DIG_ARCH_X86;
+        *cpu  = X86_486;
+        *fpu  = X86_487;
         rc = true;
     }
     return( rc );

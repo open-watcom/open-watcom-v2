@@ -99,7 +99,7 @@ static CTX_CL* cmdLnCtxAlloc(   // ALLOCATE NEW CONTEXT
         entry->base.cmd_line = CmdScanAddr();
         entry->base.cmd_scan = CtxGetSwitchAddr();
     }
-    return entry;
+    return( entry );
 }
 
 
@@ -169,21 +169,21 @@ void CmdLnCtxInfo(              // PRINT CONTEXT INFO
     VstkIterBeg( &cmdLnContexts, entry ) {
         VbufRewind( &buf );
         switch( entry->base.ctx_type ) {
-          case CTX_CLTYPE_ENV :
+        case CTX_CLTYPE_ENV :
             VbufConcChr( &buf, '@' );
             VbufConcStr( &buf, entry->env.var );
             break;
-          case CTX_CLTYPE_FC :
+        case CTX_CLTYPE_FC :
             VbufConcStr( &buf, "batch file of commands, line " );
             VbufConcDecimal( &buf, CompInfo.fc_file_line );
             break;
-          case CTX_CLTYPE_PGM :
+        case CTX_CLTYPE_PGM :
             VbufConcStr( &buf, "command line" );
             break;
-          case CTX_CLTYPE_FILE :
+        case CTX_CLTYPE_FILE :
             VbufConcStr( &buf, SrcFileFullName( entry->file.source ) );
             break;
-          DbgDefault( "bad command-line context" );
+        DbgDefault( "bad command-line context" );
         }
         if( entry->base.sw_ptr != NULL ) {
             size_t size;

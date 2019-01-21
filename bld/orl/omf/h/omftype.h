@@ -313,7 +313,7 @@ ORL_STRUCT( omf_grp_handle ) {
     orl_file_format     file_format;
     omf_file_handle     omf_file_hnd;
     omf_idx             name;
-    omf_idx             id;
+    omf_idx             idx;
     orl_table_index     num_segs;
     omf_idx             *segs;
     omf_symbol_handle   sym;

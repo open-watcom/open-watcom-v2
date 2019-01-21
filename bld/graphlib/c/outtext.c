@@ -34,12 +34,11 @@
 #include <conio.h>
 
 
-#if defined( __386__ )
-    #define Length( text )  strlen( text )
-#else
+#if defined( _M_I86 )
     #define Length( text )  _fstrlen( text )
+#else
+    #define Length( text )  strlen( text )
 #endif
-
 
 short _CharLen( char c )
 //======================

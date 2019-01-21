@@ -40,30 +40,33 @@
 
 #ifdef _M_I86
   #ifdef __BIG_DATA__
-    #define AUX_INFO    \
-        parm caller     [dx ax] [es di] \
-        modify exact    [ax dx];
+    #define AUX_INFO \
+        __parm __caller     [__dx __ax] [__es __di] \
+        __value             [__ax] \
+        __modify __exact    [__ax __dx]
   #else
-    #define AUX_INFO    \
-        parm caller     [dx] [di] \
-        modify exact    [ax];
+    #define AUX_INFO \
+        __parm __caller     [__dx] [__di] \
+        __value             [__ax] \
+        __modify __exact    [__ax]
   #endif
 #else
-    #define AUX_INFO    \
-        parm caller     [edx] [edi] \
-        modify exact    [eax];
+    #define AUX_INFO \
+        __parm __caller     [__edx] [__edi] \
+        __value             [__eax] \
+        __modify __exact    [__eax]
 #endif
 
 extern unsigned __rename_sfn( const char *old, const char *new );
-#pragma aux __rename_sfn = \
-        _SET_ESDI       \
-        _SET_DSDX       \
-        _MOV_AH DOS_RENAME \
-        _INT_21         \
-        _RST_DS         \
-        _RST_ES         \
+#pragma aux __rename_sfn =  \
+        _SET_ES             \
+        _SET_DSDX           \
+        _MOV_AH DOS_RENAME  \
+        _INT_21             \
+        _RST_DS             \
+        _RST_ES             \
         "call __doserror1_" \
-        AUX_INFO
+    AUX_INFO
 
 #if !defined( __WIDECHAR__ ) && defined( __WATCOM_LFN__ )
 static tiny_ret_t _rename_lfn( const char *old, const char *new )
@@ -122,4 +125,3 @@ _WCRTLINK int __F_NAME(rename,_wrename)( const CHAR_TYPE *old, const CHAR_TYPE *
     return( __rename_sfn( old, new ) );
 #endif
 }
-

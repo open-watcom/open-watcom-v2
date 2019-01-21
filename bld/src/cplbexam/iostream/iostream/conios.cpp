@@ -5,7 +5,7 @@ class mystream : public iostream {
     mystream ( ios &os ) : iostream ( os ) {};
 };
 
-void main( void ) {
+int main( void ) {
 
     char    buf[50];
 

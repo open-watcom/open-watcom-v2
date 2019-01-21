@@ -62,7 +62,7 @@ typedef void (_WCINTERRUPT _WCFAR *pfun)( void );
             "mov  ax,2506h" \
             "int 21h"       \
             "pop  ds"       \
-        parm caller [al] [cx edx];
+        __parm __caller [__al] [__cx __edx]
 
   extern  pfun pharlap_rm_getvect( unsigned );
   #pragma aux  pharlap_rm_getvect = \
@@ -71,7 +71,9 @@ typedef void (_WCINTERRUPT _WCFAR *pfun)( void );
             "mov cx,bx"     \
             "shr ebx,16"    \
             "mov edx,ebx"   \
-        parm caller [cl] value [cx edx] modify [ax ebx];
+        __parm __caller [__cl] \
+        __value         [__cx __edx] \
+        __modify        [__ax __ebx]
 
   extern  void pharlap_rm_setvect( unsigned, pfun );
   #pragma aux  pharlap_rm_setvect = \
@@ -80,7 +82,8 @@ typedef void (_WCINTERRUPT _WCFAR *pfun)( void );
             "mov bx,dx"     \
             "mov ax,2505h"  \
             "int 21h"       \
-        parm caller [cl] [dx eax] modify [ebx];
+        __parm __caller [__cl] [__dx __eax] \
+        __modify        [__ebx]
 
   extern  pfun pharlap_pm_getvect( unsigned );
   #pragma aux  pharlap_pm_getvect = \
@@ -89,7 +92,9 @@ typedef void (_WCINTERRUPT _WCFAR *pfun)( void );
             "int 21h"       \
             "mov ecx,es"    \
             "pop es"        \
-        parm caller [cl] value [cx ebx] modify [ax];
+        __parm __caller [__cl] \
+        __value         [__cx __ebx] \
+        __modify        [__ax]
 
   extern  void pharlap_pm_setvect( unsigned, pfun );
   #pragma aux  pharlap_pm_setvect = \
@@ -99,7 +104,7 @@ typedef void (_WCINTERRUPT _WCFAR *pfun)( void );
             "mov ax,2504h"  \
             "int 21h"       \
             "pop ds"        \
-        parm caller [cl] [dx eax];
+        __parm __caller [__cl] [__dx __eax]
 
   extern void _WCFAR *set_stack( void _WCFAR * );
   #pragma aux set_stack =       \
@@ -109,7 +114,9 @@ typedef void (_WCINTERRUPT _WCFAR *pfun)( void );
             "mov esp,eax"   \
             "mov edx,ebx"   \
             "mov eax,ecx"   \
-        parm [dx eax] value [dx eax] modify [bx ecx];
+        __parm          [__dx __eax] \
+        __value         [__dx __eax] \
+        __modify        [__bx __ecx]
 
  #endif
 #endif

@@ -39,8 +39,6 @@
 #include "formasm.h"
 #include "hashtabl.h"
 
-extern dis_handle       DHnd;
-
 
 ref_entry DoPass1Relocs( unsigned_8 *contents, ref_entry r_entry, dis_sec_offset start, dis_sec_offset end )
 {
@@ -136,6 +134,8 @@ return_val DoPass1( orl_sec_handle shnd, unsigned_8 *contents, dis_sec_size size
         if( ( GetFormat() != ORL_OMF ) || (ORLSecGetFlags( shnd ) & ORL_SEC_FLAG_USE_32) ) {
             flags.u.x86 = DIF_X86_USE32_FLAGS;
         }
+        is_intel = true;
+    } else if( GetMachineType() == ORL_MACHINE_TYPE_AMD64 ) {
         is_intel = true;
     } else {
         is_intel = IsIntelx86();

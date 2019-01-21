@@ -61,7 +61,7 @@ Msg::Msg                        // CONSTRUCTOR
     , _type( MSG_TYPE_ERROR )
     , _words( 0 )
 {
-    _words = (Word const * const *)new Word const *[ count ];
+    _words = (Word const * const *)new Word const *[count];
     memcpy( (void*)_words, words, count * sizeof( Word* ) );
     messageRing.append( this );
 }
@@ -83,9 +83,9 @@ unsigned Msg::encodedSize       // GET ENCODED SIZE
     size = 1;
     for( index = _word_count ; index > 0; ) {
         --index;
-        size += _words[ index ]->encodedSize();
+        size += _words[index]->encodedSize();
     }
-    return size;
+    return( size );
 }
 
 
@@ -109,7 +109,8 @@ static void Msg::writeEncoded   // WRITE ENCODING FOR A MESSAGE
 
     for( ; ; ) {
         Msg* msg = iter.next();
-        if( 0 == msg ) break;
+        if( 0 == msg )
+            break;
         bptr = concatStr( buf, "/" "* MESSAGE " );
         bptr = concatDec( bptr, msg->_number );
         bptr = concatStr( bptr, " *" "/" );
@@ -133,7 +134,8 @@ static void Msg::writeGroupOffsets // WRITE OFFSETS
 
     for( ; ; ) {
         Msg* msg = iter.next();
-        if( 0 == msg ) break;
+        if( 0 == msg )
+            break;
         if( 0 == msg->_number ) {
             stats.writeSizeWritten( buf, 1 );
             out.write( buf );
@@ -153,7 +155,8 @@ static void Msg::writeLevels    // WRITE LEVELS INTO FILE
 
     for( ; ; ) {
         Msg* msg = iter.next();
-        if( 0 == msg ) break;
+        if( 0 == msg )
+            break;
         buf[0] = stats.delim;
         concatHex( &buf[1], ( msg->_type << 4 ) + msg->_level );
         out.write( buf );
@@ -172,7 +175,8 @@ static void Msg::writeOffsets   // WRITE OFFSETS
 
     for( ; ; ) {
         Msg* msg = iter.next();
-        if( 0 == msg ) break;
+        if( 0 == msg )
+            break;
         stats.writeSizeWritten( buf, msg->encodedSize() );
         out.write( buf );
     }

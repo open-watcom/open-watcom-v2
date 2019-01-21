@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2016 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -31,7 +31,7 @@
 ****************************************************************************/
 
 
-#include "cgstd.h"
+#include "_cgstd.h"
 #include "coderep.h"
 #include "addrname.h"
 #include "tree.h"
@@ -60,30 +60,32 @@ patch *BGNewPatch( void )
     return( p );
 }
 
-extern  an      TNPatch( tn node )
+an      TNPatch( tn node )
 {
     patch               *p;
     an                  addr;
-    type_class_def      tipe;
+    type_class_def      type_class;
 
     p = (patch *)node->u.handle;
     p->in_tree = false;
-    tipe = TypeClass( node->tipe );
-    addr = AddrName( AllocTemp( tipe ), node->tipe );
-    p->u.ins = MakeMove( NULL, addr->u.n.name, tipe );
+    type_class = TypeClass( node->tipe );
+    addr = AddrName( AllocTemp( type_class ), node->tipe );
+    p->u.ins = MakeMove( NULL, addr->u.n.name, type_class );
     p->u.ins->num_operands = 0;
     AddIns( p->u.ins );
     return( addr );
 }
 
-extern  cg_name BGPatchNode( patch *hdl, type_def *tipe ) {
+cg_name BGPatchNode( patch *hdl, type_def *tipe )
+{
     hdl->patched = true;
     hdl->in_tree = true;
     hdl->u.node = TGPatch( hdl, tipe );
     return( hdl->u.node );
 }
 
-extern  void    BGPatchInteger( patch *hdl, signed_32 value ) {
+void    BGPatchInteger( patch *hdl, signed_32 value )
+{
     tn                  node;
     name                *c;
 
@@ -100,6 +102,7 @@ extern  void    BGPatchInteger( patch *hdl, signed_32 value ) {
     }
 }
 
-extern  void    BGFiniPatch( patch *hdl ) {
+void    BGFiniPatch( patch *hdl )
+{
     CGFree( hdl );
 }

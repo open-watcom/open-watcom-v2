@@ -225,7 +225,7 @@ bool IbpReference(              // LOCATE A BOUND REFERENCE
     target_offset_t *offset )   // - addr[ offset from bound reference ]
 {
     IBRP *ibrp;                 // - current inline bound reference parm.
-    bool retb;                  // - true ==> bound was located
+    bool ok;                    // - true ==> bound was located
     FN_CTL* fctl;               // - current file control
 
     fctl = FnCtlTop();
@@ -237,7 +237,7 @@ bool IbpReference(              // LOCATE A BOUND REFERENCE
     *trans = sym;
     *bound = NULL;
     *offset = 0;
-    retb = false;
+    ok = false;
     RingIterBeg( ibrps, ibrp ) {
         if( ( sym == ibrp->u.parm )
           &&( fctl->handle == ibrp->handle ) ) {
@@ -254,11 +254,11 @@ bool IbpReference(              // LOCATE A BOUND REFERENCE
                 DumpSymbol( ibrp->u.parm );
             }
 #endif
-            retb = true;
+            ok = true;
             break;
         }
     } RingIterEnd( ibrp )
-    return( retb );
+    return( ok );
 }
 
 
@@ -278,7 +278,7 @@ static cg_name directRef(       // DO DIRECT REFERENCE IF POSSIBLE
     } else {
         op = NULL;
     }
-    return op;
+    return( op );
 }
 
 
@@ -292,7 +292,7 @@ cg_name IbpFetchRef(            // FETCH A REFERENCE PARAMETER
     if( NULL == op ) {
         op = CgFetchType( CgSymbol( sym ), CgGetCgType( sym->sym_type ) );
     }
-    return op;
+    return( op );
 }
 
 
@@ -314,7 +314,7 @@ static SCOPE scopeForSymType(   // GET SCOPE FOR TYPE OF SYMBOL
     if( ptype != NULL ) {
         type = ptype;
     }
-    return TypeScope( ClassTypeForType( type ) );
+    return( TypeScope( ClassTypeForType( type ) ) );
 }
 
 
@@ -385,7 +385,7 @@ static target_offset_t offsetOfBase( // GET OFFSET TO BASE
         DbgVerify( inf.vbase_bound != NULL, "offsetOfBase -- no bound base" );
         exact_orig -= inf.vbase_orig->delta - inf.vbase_bound->delta;
     }
-    return exact_orig;
+    return( exact_orig );
 }
 
 
@@ -411,7 +411,7 @@ void IbpDefineVbOffset(         // DEFINE OFFSET FOR BOUND VB-REF PARAMETER
 static cg_type typeVbVfPtr(     // MAKE CG TYPE FOR VB/VF PTR
     SYMBOL sym )                // - base symbol
 {
-    return CgExprType( MakePointerTo( sym->sym_type ) );
+    return( CgExprType( MakePointerTo( sym->sym_type ) ) );
 }
 
 
@@ -430,7 +430,7 @@ static cg_name fetchVbVfPtr(    // FETCH VB/VF PTR
     vfvbtbl_type = CgExprType( vfvbtbl_cpp );
     *a_type = vfvbtbl_type;
     op = CgFetchType( op, vfvbtbl_type );
-    return op;
+    return( op );
 }
 
 
@@ -470,7 +470,7 @@ cg_name IbpFetchVbRef(          // MAKE A REFERENCE FROM A BOUND PARAMETER
         op = CgOffsetExpr( op, delta, vbptr_type );
         op = CgComma( temp, op, vbptr_type );
     }
-    return op;
+    return( op );
 }
 
 
@@ -488,14 +488,14 @@ static bool locatedVFun(        // LOCATE VIRTUAL FUNCTION FOR BASE
     target_offset_t* a_adj_this,// - addr[ this adjustment ]
     target_offset_t* a_adj_retn)// - addr[ return adjustment ]
 {
-    bool retb;                  // - true ==> can directly call *a_vfun
+    bool ok;                    // - true ==> can directly call *a_vfun
     SYMBOL exact_vfun;          // - exact vfun called
 
     exact_vfun = ScopeFindExactVfun( vfun
                                    , scopeForSymType( sym )
                                    , a_adj_this
                                    , a_adj_retn );
-    retb = false;
+    ok = false;
     if( NULL == exact_vfun ) {
     } else if( 0 != *a_adj_retn ) {
     } else if( CgBackFuncInlined( exact_vfun ) ) {
@@ -509,14 +509,14 @@ static bool locatedVFun(        // LOCATE VIRTUAL FUNCTION FOR BASE
             if( cgfile->u.s.state_table && FstabHasStateTable() ) {
             } else {
                 *a_vfun = exact_vfun;
-                retb = true;
+                ok = true;
             }
         }
     } else {
         *a_vfun = exact_vfun;
-        retb = true;
+        ok = true;
     }
-    return( retb );
+    return( ok );
 }
 
 
@@ -560,7 +560,7 @@ cg_name IbpFetchVfRef(          // FETCH A VIRTUAL FUNCTION ADDRESS
                            , MakeVFTableFieldType( true )
                            , &vfptr_type );
     }
-    return expr;
+    return( expr );
 }
 
 

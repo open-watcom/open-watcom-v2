@@ -164,7 +164,7 @@ void State::genSwitch(ostream &o){
         genGoTo(o, def);
         o << "\t}\n";
 
-        delete sP;
+        delete[] sP;
     }
 }
 
@@ -439,7 +439,7 @@ uint DFA::emit(SubString &name, uint label, ostream &o){
                     to = to->go.span[0].to;
                     uint nSpans = merge(span, s, to);
                     if(nSpans < s->go.nSpans){
-                        delete s->go.span;
+                        delete[] s->go.span;
                         s->go.nSpans = nSpans;
                         s->go.span = new Span[nSpans];
                         memcpy(s->go.span, span, nSpans*sizeof(Span));
@@ -449,7 +449,7 @@ uint DFA::emit(SubString &name, uint label, ostream &o){
             }
         }
     }
-    delete span;
+    delete[] span;
 
     delete head->action;
     new Enter(head, name);
@@ -463,8 +463,8 @@ uint DFA::emit(SubString &name, uint label, ostream &o){
         s->genGoto(o);
     }
 
-    delete saves;
-    delete rules;
+    delete[] saves;
+    delete[] rules;
 
     return label;
 }

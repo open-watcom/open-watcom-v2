@@ -39,8 +39,8 @@
 
 void PushAll( void );
 void PopAll( void );
-#pragma aux PushAll = 0x60;
-#pragma aux PopAll = 0x61 modify[dx ax];
+#pragma aux PushAll = ".386" "pusha"
+#pragma aux PopAll = ".386" "popa" __modify [__ax __bx __cx __dx __sp __bp __di __si]
 
 extern DWORD _GetASelectorLimit( WORD );
 #pragma aux _GetASelectorLimit = \
@@ -50,7 +50,9 @@ extern DWORD _GetASelectorLimit( WORD );
         "inc   eax" \
         "mov   edx,eax" \
         "shr   edx,16" \
-        parm [ax] value [dx ax];
+    __parm      [__ax] \
+    __value     [__dx __ax] \
+    __modify    []
 
 extern bool _IsValidSelector( WORD );
 #pragma aux _IsValidSelector = \
@@ -60,7 +62,9 @@ extern bool _IsValidSelector( WORD );
         "jnz  L1" \
         "mov  al,1" \
     "L1:" \
-        parm [ax] value [al];
+    __parm      [__ax] \
+    __value     [__al] \
+    __modify    []
 
 /*
  * WDebug386 must be defined in a program using these procedures

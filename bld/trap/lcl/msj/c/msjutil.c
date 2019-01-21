@@ -56,13 +56,14 @@ void PopErrBox( void *buff )
 }
 
 static bool Closing = FALSE;
-static void TRPrintLine( void *handle, const char *buff, size_t len )
-/*******************************************************************/
+static void TRPrintLine( void *parm, const char *buff, size_t len )
+/*****************************************************************/
 {
-    handle = handle;
-    len=len;
-    if( !Closing ) PopErrBox( (void*)buff );
-    write( TrackFile, buff, len );
+    /* unused parameters */ (void)parm;
+
+    if( !Closing )
+        PopErrBox( (void *)buff );
+    fwrite( buff, 1, len, TrackFile );
 }
 
 static void TRMemOpen( void )

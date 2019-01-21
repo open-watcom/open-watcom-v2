@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
+* Copyright (c) 2009-2018 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -24,59 +24,57 @@
 *
 *  ========================================================================
 *
-* Description:  A WORD element
+* Description:  A TextWord element
 *
 ****************************************************************************/
 
 
+#include "wipfc.hpp"
 #include <cwctype>
 #include "word.hpp"
 #include "document.hpp"
 #include "gdword.hpp"
 #include "ipfbuff.hpp"
 
-Lexer::Token Word::parse( Lexer* lexer )
+Lexer::Token TextWord::parse( Lexer* lexer )
 {
-    std::wstring txt( lexer->text() );  //get text from lexer
-    Lexer::Token tok( document->getNextToken() );
+    std::wstring text( lexer->text() );  //get text from lexer
+    Lexer::Token tok( _document->getNextToken() );
     while( tok != Lexer::END && !( tok == Lexer::TAG && lexer->tagId() == Lexer::EUSERDOC) ) {
-        if( tok == Lexer::WORD )
-            txt += lexer->text();       //part of a compound ...-word-entity-word-...
-        else if( tok == Lexer::ENTITY ) {
-            const std::wstring* exp( document->nameit( lexer->text() ) );
+        if( tok == Lexer::WORD ) {
+            text += lexer->text();       //part of a compound ...-word-entity-word-...
+        } else if( tok == Lexer::ENTITY ) {
+            const std::wstring* exp( _document->nameit( lexer->text() ) );
             if( exp ) {
-                std::wstring* name( document->prepNameitName( lexer->text() ) );
-                IpfBuffer* buffer( new IpfBuffer( name, document->dataLine(), document->dataCol(), *exp ) );
-                document->pushInput( buffer );
-            }
-            else {
+                std::wstring* name( _document->prepNameitName( lexer->text() ) );
+                IpfBuffer* buffer( new IpfBuffer( name, _document->dataLine(), _document->dataCol(), *exp ) );
+                _document->pushInput( buffer );
+            } else {
                 try {
-                    wchar_t entity( document->entity( lexer->text() ) );
-                    if ( std::iswpunct( entity ) )
+                    wchar_t entityChar( _document->entityChar( lexer->text() ) );
+                    if( std::iswpunct( entityChar ) )
                         break;
-                    else
-                        txt += entity;
+                    text += entityChar;
                 }
                 catch( Class2Error& e ) {
-                    document->printError( e.code );
+                    _document->printError( e._code );
                     break;
                 }
             }
-        }
-        else
+        } else {
             break;
-        tok = document->getNextToken();
+        }
+        tok = _document->getNextToken();
     }
-    if( whiteSpace != Tag::SPACES && document->autoSpacing() ) {
-        Lexer::Token t( document->lastToken() );
+    if( _whiteSpace != Tag::SPACES && _document->autoSpacing() ) {
+        Lexer::Token t( _document->lastToken() );
         if( t == Lexer::WORD || t == Lexer::ENTITY || t == Lexer::PUNCTUATION ) {
-            document->toggleAutoSpacing();
-            document->lastText()->setToggleSpacing();
+            _document->toggleAutoSpacing();
+            _document->lastText()->setToggleSpacing();
         }
     }
-    GlobalDictionaryWord* word( new GlobalDictionaryWord( txt ) );
-    text = document->addWord( word );   //insert into global dictionary
-    document->setLastPrintable( Lexer::WORD, this );
+    _text = _document->addTextToGD( new GlobalDictionaryWord( text ) );   //insert into global dictionary
+    _document->setLastPrintable( Lexer::WORD, this );
     return tok;
 }
 

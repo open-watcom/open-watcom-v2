@@ -111,7 +111,7 @@ const char *RecNumberToName( byte code )
         return( "SEGDEF" );
     case CMD_GRPDEF:
         return( "GRPDEF" );
-    case CMD_FIXUP:
+    case CMD_FIXUPP:
          return( "FIXUPP" );
     case CMD_LEDATA:
         return( "LEDATA" );
@@ -135,7 +135,7 @@ const char *RecNumberToName( byte code )
         return( "static COMDEF" );
     case CMD_BAKPAT:
         return( "BAKPAT" );
-    case CMD_CEXTDF:
+    case CMD_CEXTDEF:
         return( "CEXTDF" );
     case CMD_COMDAT:
         return( "COMDAT" );
@@ -145,7 +145,7 @@ const char *RecNumberToName( byte code )
         return( "ALIAS" );
     case CMD_NBKPAT:
         return( "NBKPAT" );
-    case CMD_LLNAME:
+    case CMD_LLNAMES:
         return( "LLNAME" );
     case LIB_HEADER_REC:
         /* this is the oddball in the MS386 format */
@@ -210,7 +210,7 @@ byte RecNameToNumber( char *name )
     } else if( strnicmp( name, "GRPDEF", 6 ) == 0 ) {
         return( CMD_GRPDEF );
     } else if( strnicmp( name, "FIXUPP", 6 ) == 0 ) {
-        return( CMD_FIXUP );
+        return( CMD_FIXUPP );
     } else if( strnicmp( name, "LEDATA", 6 ) == 0 ) {
         return( CMD_LEDATA );
     } else if( strnicmp( name, "LIDATA", 6 ) == 0 ) {
@@ -227,8 +227,10 @@ byte RecNameToNumber( char *name )
         return( CMD_COMDEF );
     } else if( strnicmp( name, "BAKPAT", 6 ) == 0 ) {
         return( CMD_BAKPAT );
+    } else if( strnicmp( name, "CEXTDEF", 7 ) == 0 ) {
+        return( CMD_CEXTDEF );
     } else if( strnicmp( name, "CEXTDF", 6 ) == 0 ) {
-        return( CMD_CEXTDF );
+        return( CMD_CEXTDEF );
     } else if( strnicmp( name, "COMDAT", 6 ) == 0 ) {
         return( CMD_COMDAT );
     } else if( strnicmp( name, "LINSYM", 6 ) == 0 ) {
@@ -237,8 +239,10 @@ byte RecNameToNumber( char *name )
         return( CMD_ALIAS );
     } else if( strnicmp( name, "NBKPAT", 6 ) == 0 ) {
         return( CMD_NBKPAT );
+    } else if( strnicmp( name, "LLNAMES", 7 ) == 0 ) {
+        return( CMD_LLNAMES );
     } else if( strnicmp( name, "LLNAME", 6 ) == 0 ) {
-        return( CMD_LLNAME );
+        return( CMD_LLNAMES );
     } else if( strnicmp( name, "STATIC_EXTDEF", 13 ) == 0 ) {
         return( CMD_STATIC_EXTDEF );
     } else if( strnicmp( name, "STATIC_PUBDEF", 13 ) == 0 ) {
@@ -367,27 +371,27 @@ unsigned_32 GetVariable( void )
     #if defined( _M_I86SM ) || defined( _M_I86MM )
         extern byte docksum( byte *buf, unsigned_16 len );
         #pragma aux docksum = \
-            0x30 0xd2       /* xor dl,dl */ \
-            0xac            /* L1: lodsb */ \
-            0x00 0xc2       /* add dl,al */ \
-            0xe2 0xfb       /* loop L1 */ \
-            parm            [si] [cx] \
-            value           [dl] \
-            modify          [ax dl];
+                "xor  dl,dl"    \
+            "L1: lodsb"         \
+                "add  dl,al"    \
+                "loop short L1" \
+            __parm      [__si] [__cx] \
+            __value     [__dl] \
+            __modify    [__ax __dl]
         #define SPECIAL_CHKSUM
     #elif defined( _M_I86 )
         extern byte docksum( byte __far *buf, unsigned_16 len );
         #pragma aux docksum = \
-            0x1e            /* push ds */ \
-            0x8e 0xda       /* mov ds,dx */ \
-            0x30 0xd2       /* xor dl,dl */ \
-            0xac            /* L1: lodsb */ \
-            0x00 0xc2       /* add dl,al */ \
-            0xe2 0xfb       /* loop L1 */ \
-            0x1f            /* pop ds */ \
-            parm            [dx si] [cx] \
-            value           [dl] \
-            modify          [ax];
+                "push ds"       \
+                "mov  ds,dx"    \
+                "xor  dl,dl"    \
+            "L1: lodsb"         \
+                "add  dl,al"    \
+                "loop short L1" \
+                "pop  ds"       \
+            __parm      [__dx __si] [__cx] \
+            __value     [__dl] \
+            __modify    [__ax]
         #define SPECIAL_CHKSUM
     #endif
 #endif
@@ -421,7 +425,7 @@ void ResizeBuff( unsigned_16 reqd_len ) {
         if( RecBuff == NULL ) {
             OutputSetFH( stdout );
             Output( CRLF "**FATAL** Out of memory!" CRLF );
-            leave( 20 );
+            leave( 20 );    // never return
         }
     }
 }
@@ -434,7 +438,7 @@ void AddLname( void ) {
     if( entry == NULL ) {
         OutputSetFH( stdout );
         Output( CRLF "**FATAL** Out of memory!" CRLF );
-        leave( 21 );
+        leave( 21 );    // never return
     }
     if( Lnames == NULL ) {
         Lnames = entry;
@@ -536,7 +540,7 @@ void AddXname( void ) {
     if( entry == NULL ) {
         OutputSetFH( stdout );
         Output( CRLF "**FATAL** Out of memory!" CRLF );
-        leave( 21 );
+        leave( 21 );    // never return
     }
     if( Xnames == NULL ) {
         Xnames = entry;
@@ -596,7 +600,7 @@ void AddSegdef( unsigned_16 idx ) {
     if( entry == NULL ) {
         OutputSetFH( stdout );
         Output( CRLF "**FATAL** Out of memory!" CRLF );
-        leave( 21 );
+        leave( 21 );    // never return
     }
     if( Segdefs == NULL ) {
         Segdefs = entry;
@@ -660,7 +664,7 @@ void AddGrpdef( unsigned_16 grpidx, unsigned_16 segidx ) {
         if( entry == NULL ) {
             OutputSetFH( stdout );
             Output( CRLF "**FATAL** Out of memory!" CRLF );
-            leave( 21 );
+            leave( 21 );    // never return
         }
         entry->next = NULL;
         entry->grpind = grpidx;
@@ -683,7 +687,7 @@ void AddGrpdef( unsigned_16 grpidx, unsigned_16 segidx ) {
         if( Grpdefs == NULL ) {
             OutputSetFH( stdout );
             Output( CRLF "**FATAL** No grpdef entry!" CRLF );
-            leave( 21 );
+            leave( 21 );    // never return
         } else {
             wkentry = Grpdefs;
             for ( ;; ) {
@@ -858,7 +862,7 @@ void ProcFile( FILE *fp, bool is_intel )
             case CMD_LINNUM:
                 ProcLinNums();
                 break;
-            case CMD_LLNAME:
+            case CMD_LLNAMES:
                 /* fall through */
             case CMD_LNAMES:
                 ProcLNames( &Nameindex );
@@ -869,7 +873,7 @@ void ProcFile( FILE *fp, bool is_intel )
             case CMD_GRPDEF:
                 ProcGrpDef();
                 break;
-            case CMD_FIXUP:
+            case CMD_FIXUPP:
                 ProcFixup();
                 break;
             case CMD_LEDATA:
@@ -889,7 +893,7 @@ void ProcFile( FILE *fp, bool is_intel )
             case CMD_BAKPAT:
                 ProcBackPat();
                 break;
-            case CMD_CEXTDF:
+            case CMD_CEXTDEF:
                 ProcComExtDef();
                 break;
             case CMD_COMDAT:

@@ -45,12 +45,27 @@
 /* define Netware 386 OS routines */
 
 /****************************************************************************/
-#pragma aux ___GETDS =              \
-      0x8C 0xD0    /* mov ax, ss */ \
-      0x8E 0xD8    /* mov ds, ax */ \
-      0x8E 0xC0    /* mov es, ax */ \
-      modify [eax];
+#pragma aux ___GETDS = \
+        "mov  eax,ss"    \
+        "mov  ds,eax"    \
+        "mov  es,eax"    \
+    __modify [__eax __ds __es]
 /****************************************************************************/
+
+
+/****************************************************************************/
+BYTE inportb( WORD PortAddress );
+#pragma aux inportb = \
+        "in  al,dx"     \
+    __parm  [__dx] \
+    __value [__al]
+
+/****************************************************************************/
+void outportb( WORD PortAddress, WORD Value );
+#pragma aux outportb = \
+        "out dx,al"     \
+    __parm  [__dx] [__al]
+
 /****************************************************************************/
 
 
@@ -220,8 +235,6 @@ void StartTransmit(T_ComPortStruct *ComPortHandle);
 //void interrupt _IntServiceSer1(void);
 //void interrupt _IntServiceSer2(void);
 WORD Peek(WORD *Pointer);
-BYTE inportb(WORD PortAddress);
-void outportb(WORD PortAddress, WORD Value);
 
 extern WORD AvailableComPorts;
 
@@ -1099,17 +1112,5 @@ void TransmitChar(T_ComPortStruct *ComPortHandle)
 WORD Peek(pointer)
 WORD *pointer;
 {
-return(((WORD *)MapAbsoluteAddressToDataOffset((LONG) pointer))[0]);
+    return(((WORD *)MapAbsoluteAddressToDataOffset((LONG) pointer))[0]);
 }
-
-/****************************************************************************/
-#pragma aux inportb =                             \
-         0xEC                   /* in  al, dx */    \
-         parm  [dx]                                                       \
-         value [al];
-
-/****************************************************************************/
-#pragma aux outportb =                            \
-        0xEE               /* out dx, al */       \
-         parm  [dx]  [al];
-

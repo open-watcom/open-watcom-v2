@@ -29,10 +29,8 @@
 ****************************************************************************/
 
 
-#include <stdlib.h>
-#include <direct.h>
-#include <string.h>
 #include "heapwalk.h"
+#include <direct.h>
 #include "wclbproc.h"
 #include "watini.h"
 #include "jdlg.h"

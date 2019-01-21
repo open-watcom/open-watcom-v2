@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -29,7 +30,7 @@
 ****************************************************************************/
 
 
-#include "cgstd.h"
+#include "_cgstd.h"
 #include "coderep.h"
 #include "score.h"
 #include "freelist.h"
@@ -38,15 +39,12 @@
 #include "memout.h"
 #include "data.h"
 #include "utils.h"
-#include "stack.h"
+#include "stackcg.h"
 #include "nullprop.h"
 #include "generate.h"
 #include "scmain.h"
-
-
-extern  void            MakeLiveInfo(void);
-extern  mem_out_action  SetMemOut(mem_out_action);
-extern  void            UpdateLive(instruction*,instruction*);
+#include "liveinfo.h"
+#include "memmgt.h"
 
 
 void    ScoreInit( void )
@@ -193,7 +191,7 @@ static  void    InitZero( void )
 /* since it will just set offset to 0 */
 {
     ScZero = ScAlloc( sizeof( score_info ) );
-    ScZero->class     = N_CONSTANT;
+    ScZero->class     = SC_N_CONSTANT;
     ScZero->offset    = 0;
     ScZero->symbol.p  = NULL;
     ScZero->index_reg = NO_INDEX;
@@ -257,7 +255,7 @@ static  void    ConstSizes( void )
 
     for( cons = Names[N_CONSTANT]; cons != NULL; cons = cons->n.next_name ) {
         if( cons->c.const_type == CONS_ABSOLUTE ) {
-            if ( CFIsU16( cons->c.value ) ) {
+            if( CFIsU16( cons->c.value ) ) {
                 cons->n.size = 2;
             } else {
                 cons->n.size = 4;

@@ -44,6 +44,11 @@ elif [ "$OWTOOLS" = "CLANG" ]; then
 elif [ "$OWTOOLS" = "GCC" ]; then
     echo export OWTOOLSVER=__GNUC__>getversi.gc
     gcc -x c -E getversi.gc -o getversi.sh
+elif [ "$OWTOOLS" = "VISUALC" ]; then
+    CC=cl
+    CXX=cl
+    echo export OWTOOLSVER=_MSC_VER>getversi.gc
+    cl -nologo -EP getversi.gc>getversi.bat
 fi
 if [ -f ./getversi.sh ]; then
     . ./getversi.sh

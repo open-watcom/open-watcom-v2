@@ -46,8 +46,8 @@ WEXPORT WFileDialog::WFileDialog( WWindow* parent, const char *filter )
         : _parent( parent ) {
 /***************************/
 
-    _fileName = new char[WFileBufSize];
-    _dirName = new char[_MAX_PATH];
+    _fileName = new char [WFileBufSize];
+    _dirName = new char [_MAX_PATH];
     makeDialog( filter );
 }
 
@@ -72,8 +72,8 @@ WEXPORT WFileDialog::WFileDialog( WWindow* parent, WResourceId filter_id )
         }
     } while( filter[i++] );
 
-    _fileName = new char[WFileBufSize];
-    _dirName = new char[_MAX_PATH];
+    _fileName = new char [WFileBufSize];
+    _dirName = new char [_MAX_PATH];
     makeDialog( buffer );
 }
 
@@ -99,8 +99,8 @@ void WFileDialog::makeDialog( const char *filter ) {
 WEXPORT WFileDialog::~WFileDialog() {
 /***********************************/
 
-    delete [] _fileName;
-    delete [] _dirName;
+    delete[] _fileName;
+    delete[] _dirName;
 }
 
 

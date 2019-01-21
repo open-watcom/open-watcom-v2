@@ -30,7 +30,7 @@
 ****************************************************************************/
 
 
-#include "cgstd.h"
+#include "_cgstd.h"
 #include "coderep.h"
 #include "zoiks.h"
 #include "makeins.h"
@@ -38,20 +38,19 @@
 #include "insutil.h"
 #include "namelist.h"
 #include "blktrim.h"
+#include "liveinfo.h"
 
 
 typedef enum {
+        CB_NONE                 = 0x00,
         CB_FOR_INS1             = 0x01,
-        CB_FOR_INS2             = 0x02,
-        CB_NONE                 = 0x00
+        CB_FOR_INS2             = 0x02
 } conflict_bits;
 
 typedef struct  conflict_info {
         conflict_node   *conf;
         conflict_bits   flags;
 } conflict_info;
-
-extern  void            UpdateLive(instruction*,instruction*);
 
 #define MAX_CONF_INFO   ( 2 * ( MAX_OPS_PER_INS + 1 ) + 1 )
 static  int             CurrInfo;
@@ -84,6 +83,27 @@ static void RenumFrom( instruction *ins )
     }
 }
 
+static void     CleanConfInfo( void )
+/***********************************/
+{
+    int     i;
+
+    for( i = 0; i < MAX_CONF_INFO; ++i ) {
+        ConflictInfo[i].conf = NULL;
+        ConflictInfo[i].flags = CB_NONE;
+    }
+    CurrInfo = 0;
+}
+
+static void     ResetConfInfo( void )
+/***********************************/
+{
+    conflict_info       *info;
+
+    for( info = ConflictInfo; info->conf != NULL; ++info ) {
+        _SetFalse( info->conf, CST_CONF_VISITED );
+    }
+}
 
 static  conflict_info   *AddConfInfo( conflict_node *conf )
 /*********************************************************/
@@ -148,19 +168,10 @@ static  void    FindAllConflicts( instruction *ins, instruction *other, conflict
 static  void    MakeConflictInfo( instruction *ins1, instruction *ins2 )
 /**********************************************************************/
 {
-    int                 i;
-    conflict_info       *info;
-
-    for( i = 0; i < MAX_CONF_INFO; ++i ) {
-        ConflictInfo[i].conf = NULL;
-        ConflictInfo[i].flags = CB_NONE;
-    }
-    CurrInfo = 0;
+    CleanConfInfo();
     FindAllConflicts( ins1, ins2, CB_FOR_INS1 );
     FindAllConflicts( ins2, ins1, CB_FOR_INS2 );
-    for( info = ConflictInfo; info->conf != NULL; ++info ) {
-        _SetFalse( info->conf, CST_CONF_VISITED );
-    }
+    ResetConfInfo();
 }
 
 
@@ -172,10 +183,11 @@ void    PrefixInsRenum( instruction *ins, instruction *pref, bool renum )
     block               *blk;
     instruction         *next;
 
-/*   Link the new instruction into the instruction ring*/
-/*   If renum = true, assign id and renumber. renum can be false only */
-/*   if you're going to call Renumber() manually. */
-
+    /*
+     * Link the new instruction into the instruction ring
+     * If renum = true, assign id and renumber.
+     * renum can be false only if you're going to call Renumber() manually.
+     */
     _INS_NOT_BLOCK( pref );
     pref->head.prev = ins->head.prev;
     pref->head.prev->head.next = pref;
@@ -194,8 +206,8 @@ void    PrefixInsRenum( instruction *ins, instruction *pref, bool renum )
     } else {
         pref->head.line_num = 0;
 
-        if ( renum ) {
-             /*
+        if( renum ) {
+            /*
              * Oops. There is no id in OP_BLOCK and assigned id will be invalid.
              * This condition happens sometimes in loop optimizer.
              * NOTE: this case can be a bug. It means that we're trying to add
@@ -211,7 +223,7 @@ void    PrefixInsRenum( instruction *ins, instruction *pref, bool renum )
                     break;
                 }
                 next = blk->ins.hd.next;
-                if ( next->head.opcode != OP_BLOCK ) {
+                if( next->head.opcode != OP_BLOCK ) {
                     break;
                 }
             }
@@ -219,7 +231,7 @@ void    PrefixInsRenum( instruction *ins, instruction *pref, bool renum )
         }
     }
 
-    if ( renum ) {
+    if( renum ) {
         RenumFrom( pref );
     }
 
@@ -232,13 +244,13 @@ void    PrefixInsRenum( instruction *ins, instruction *pref, bool renum )
             for( info = ConflictInfo; info->conf != NULL; ++info ) {
                 if( info->flags & CB_FOR_INS1 ) {
                     conf = info->conf;
-                    if( (info->flags & CB_FOR_INS2) == 0 ) {
-                        if( conf->ins_range.last == ins ) {
-                            conf->ins_range.last = pref;
-                        }
-                    }
                     if( conf->ins_range.first == ins ) {
                         conf->ins_range.first = pref;
+                    }
+                    if( info->flags & CB_FOR_INS2 )
+                        continue;
+                    if( conf->ins_range.last == ins ) {
+                        conf->ins_range.last = pref;
                     }
                 }
             }
@@ -300,26 +312,26 @@ void    SuffixIns( instruction *ins, instruction *suff )
     RenumFrom( ins );
     if( HaveLiveInfo ) {
 
-/*      move the first/last pointers of any relevant conflict nodes */
+        /* move the first/last pointers of any relevant conflict nodes */
 
         if( ins->head.opcode != OP_BLOCK ) {
             MakeConflictInfo( ins, suff );
             for( info = ConflictInfo; info->conf != NULL; ++info ) {
                 if( info->flags & CB_FOR_INS2 ) {
                     conf = info->conf;
-                    if( (info->flags & CB_FOR_INS1) == 0 ) {
-                        if( conf->ins_range.first == ins ) {
-                            conf->ins_range.first = suff;
-                        }
-                    }
                     if( conf->ins_range.last == ins ) {
                         conf->ins_range.last = suff;
+                    }
+                    if( info->flags & CB_FOR_INS1 )
+                        continue;
+                    if( conf->ins_range.first == ins ) {
+                        conf->ins_range.first = suff;
                     }
                 }
             }
         }
 
-    /*   Set up the state for both instructions*/
+        /* Set up the state for both instructions */
 
         ins->head.state = INS_NEEDS_WORK;
         suff->head.state = INS_NEEDS_WORK;
@@ -327,18 +339,13 @@ void    SuffixIns( instruction *ins, instruction *suff )
     }
 }
 
-
-static  block   *GetBlockPointer( block *blk, instruction *ins )
-/**************************************************************/
+block *InsBlock( instruction *ins )
+/*********************************/
 {
-    if( blk != NULL )
-        return( blk );
-    while( ins->head.opcode != OP_BLOCK ) {
+    while( ins->head.opcode != OP_BLOCK )
         ins = ins->head.next;
-    }
     return( _BLOCK( ins ) );
 }
-
 
 void    ReplIns( instruction *ins, instruction *new )
 /***************************************************/
@@ -401,13 +408,16 @@ void    ReplIns( instruction *ins, instruction *new )
                 if( conf->ins_range.last == ins ) {
                     conf->ins_range.last = new;
                 }
-                if( info->flags & CB_FOR_INS2 ) continue;
+                if( info->flags & CB_FOR_INS2 )
+                    continue;
                 if( conf->ins_range.first == new ) {
-                    blk = GetBlockPointer( blk, ins );
+                    if( blk == NULL )
+                        blk = InsBlock( ins );
                     conf->ins_range.first = blk->ins.hd.prev;
                 }
                 if( conf->ins_range.last == new ) {
-                    blk = GetBlockPointer( blk, ins );
+                    if( blk == NULL )
+                        blk = InsBlock( ins );
                     conf->ins_range.last = blk->ins.hd.next; /* 89-08-16 */
                     if( blk->ins.hd.next == ins ) {
                         // oops - grasping for a straw and caught hold of

@@ -57,7 +57,7 @@ WINEXPORT INT_PTR CALLBACK FindDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPAR
     RECT                pos;
 
 #ifdef __NT__
-    lparam = lparam;
+    (void)lparam;
 #endif
     switch( msg ) {
     case WM_INITDIALOG:

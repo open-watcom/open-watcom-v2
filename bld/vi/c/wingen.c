@@ -55,20 +55,6 @@ vi_rc NewMessageWindow( void )
 
 #ifndef __WIN__
 /*
- * NewWindow2 - build a new window, using window_info struct
- */
-vi_rc NewWindow2( window_id *wid, window_info *wi )
-{
-    return( NewWindow( wid, wi->area.x1, wi->area.y1, wi->area.x2, wi->area.y2,
-                       wi->has_border, wi->border_color1,
-                       wi->border_color2, &wi->text_style ) );
-
-} /* NewWindow2 */
-#endif
-
-
-#ifndef __WIN__
-/*
  * Message1 - display message on line 1
  */
 void Message1( const char *str, ... )
@@ -206,7 +192,7 @@ void SetWindowCursorForReal( void )
 /*
  * DisplayExtraInfo - display info in extra window
  */
-vi_rc DisplayExtraInfo( window_info *wi, window_id *wid, const char _NEAR * _NEAR *data, int numopts )
+vi_rc DisplayExtraInfo( window_info *wi, window_id *wid, const char **data, int numopts )
 {
     int     j;
     vi_rc   rc;
@@ -318,7 +304,7 @@ vi_rc ResizeCurrentWindow( windim x1, windim y1, windim x2, windim y2 )
     DCDisplayAllLines();
     SetWindowCursor();
     if( EditFlags.LineNumbers ) {
-        CloseAWindow( curr_num_window_id );
+        CloseAWindow( linenum_current_window_id );
         rc = LineNumbersSetup();
         if( rc != ERR_NO_ERR ) {
             return( rc );

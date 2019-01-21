@@ -33,20 +33,14 @@
 #ifndef __ICOPMASK_H
 #define __ICOPMASK_H
 
-#if _INTEL_CPU
-typedef uint_8 icop_mask;
-#else
-typedef unsigned icop_mask;
-#endif
-
-enum {                          // opcodes that affect ...
+typedef enum {                  // opcodes that affect ...
+    ICOPM_NULL          = 0x00,
     ICOPM_DWARF         = 0x01, // Dwarf info generation
     ICOPM_VFT_SCAN      = 0x02, // virtual function table call graph scan
     ICOPM_OE_COUNT      = 0x04, // contributes to -oe count
     ICOPM_CALLGRAPH     = 0x08, // call graph analysis
     ICOPM_PCHREAD       = 0x10, // PCH read significant op codes
-    ICOPM_BRINFO        = 0x20, // Browse-info mask
-    ICOPM_NULL          = 0x00
-};
+    ICOPM_BRINFO        = 0x20  // Browse-info mask
+} icop_mask;
 
 #endif

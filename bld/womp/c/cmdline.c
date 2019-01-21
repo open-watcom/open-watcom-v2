@@ -162,7 +162,7 @@ static void waitForKey( void ) {
     c = getch();
 }
 
-#pragma aux usage aborts;
+#pragma aux usage __aborts
 STATIC void usage( void ) {
 
     char        msgbuff[MAX_RESOURCE_SIZE];
@@ -257,7 +257,7 @@ STATIC char *getFile( const char ** pstr ) {
     return( copy );
 }
 
-#pragma aux unrecognized aborts;
+#pragma aux unrecognized __aborts
 STATIC void unrecognized( char opt ) {
     char        msgbuff[MAX_RESOURCE_SIZE];
 

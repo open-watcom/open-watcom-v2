@@ -34,16 +34,22 @@
 #include "clibext.h"
 
 
-static int Curr_head_level = 0;
-static int Curr_head_skip = 0;
-
-#define BOX_LINE_SIZE   200
+#define BOX_LINE_SIZE           200
 
 #define FONT_STYLE_BOLD         1
 #define FONT_STYLE_ITALIC       2
 #define FONT_STYLE_UNDERLINE    4
 
-static char     *Font_match[] = {
+#define WIKI_SPACE              " " //"&nbsp;"
+
+#define WIKI_TRANS_LEN          50
+
+#define MAX_TABS                100     // up to 100 tab stops
+
+static int          Curr_head_level = 0;
+static int          Curr_head_skip = 0;
+
+static char         *Font_match[] = {
     "",                     // 0: PLAIN
     "<b>",                  // 1: BOLD
     "<i>",                  // 2: ITALIC
@@ -54,7 +60,7 @@ static char     *Font_match[] = {
     "<i><u><b>",            // 7: ITALIC + BOLD + UNDERLINE
 };
 
-static char     *Font_end[] = {
+static char         *Font_end[] = {
     "",                     // 0: PLAIN
     "</b>",                 // 1: BOLD
     "</i>",                 // 2: ITALIC
@@ -65,31 +71,26 @@ static char     *Font_end[] = {
     "</b></u></i>",         // 7: ITALIC + BOLD + UNDERLINE
 };
 
-#define WIKI_SPACE  " " //"&nbsp;"
+static int          Font_list[100];      // up to 100 nested fonts
+static int          Font_list_curr = 0;
 
-static int Font_list[100];      // up to 100 nested fonts
-static int Font_list_curr = 0;
+static bool         Blank_line_pfx = false;
+static bool         Blank_line_sfx = true;
 
-static bool Blank_line_pfx = false;
-static bool Blank_line_sfx = true;
+static char         *Trans_str = NULL;
+static size_t       Trans_len = 0;
 
-#define WIKI_TRANS_LEN  50
+static unsigned     Tab_list[MAX_TABS];
+static int          tabs_num = 0;
 
-static char *Trans_str = NULL;
-static int  Trans_len   = 0;
-
-#define MAX_TABS        100     // up to 100 tab stops
-static int Tab_list[MAX_TABS];
-
-
-static void draw_line( section_def *section, int *alloc_size )
-/************************************************************/
+static void draw_line( section_def *section, allocsize *alloc_size )
+/******************************************************************/
 {
     trans_add_str( "----\n", section, alloc_size );
 }
 
-static int translate_char_wiki( int ch, int next_ch, char *buf )
-/****************************************************************/
+static size_t translate_char_wiki( int ch, int next_ch, char *buf )
+/*****************************************************************/
 {
     switch( ch ) {
 #if 0
@@ -117,7 +118,6 @@ static int translate_char_wiki( int ch, int next_ch, char *buf )
         buf[1] = '\0';
         break;
     }
-
     return( strlen( buf ) );
 }
 
@@ -125,7 +125,7 @@ static char *translate_str_wiki( char *str )
 /******************************************/
 {
     unsigned char       *t_str;
-    int                 len;
+    size_t              len;
     char                buf[WIKI_TRANS_LEN];
     char                *ptr;
 
@@ -151,44 +151,39 @@ static char *translate_str_wiki( char *str )
     return( Trans_str );
 }
 
-static int trans_add_char_wiki( int ch, int next_ch,
-                                section_def *section, int *alloc_size )
-/*********************************************************************/
+static size_t trans_add_char_wiki( int ch, int next_ch, section_def *section, allocsize *alloc_size )
+/***************************************************************************************************/
 {
-    char                buf[WIKI_TRANS_LEN];
+    char            buf[WIKI_TRANS_LEN];
 
     translate_char_wiki( ch, next_ch, buf );
     return( trans_add_str( buf, section, alloc_size ) );
 }
 
-static int trans_add_str_wiki( char *str, section_def *section,
-                               int *alloc_size )
-/*************************************************************/
+static size_t trans_add_str_wiki( char *str, section_def *section, allocsize *alloc_size )
+/****************************************************************************************/
 {
-    int                 len;
-    unsigned char       *ptr;
+    size_t          len;
+    unsigned char   *ptr;
 
     len = 0;
     for( ptr = (unsigned char *)str; *ptr != '\0'; ++ptr ) {
         len += trans_add_char_wiki( *ptr, *(ptr+1), section, alloc_size );
     }
-
     return( len );
 }
 
-static int trans_add_list( char *list, section_def *section,
-                           int *alloc_size, char *ptr )
-/**********************************************************/
+static size_t trans_add_list( char *list, section_def *section, allocsize *alloc_size, char *ptr )
+/************************************************************************************************/
 {
-    int                 len;
+    size_t          len;
 
     len = trans_add_str( list, section, alloc_size );
     ++ptr;
 #if 0
-  if( *ptr == 'c' ) {
+    if( *ptr == 'c' ) {
         len += trans_add_str( " compact", section, alloc_size );
     }
-
     len += trans_add_str( ">\n", section, alloc_size );
 #endif
     return( len );
@@ -197,45 +192,40 @@ static int trans_add_list( char *list, section_def *section,
 static void read_tabs( char *tab_line )
 /*************************************/
 {
-    char                *ptr;
-    int                 i;
-    int                 tabcol;
+    char        *ptr;
+    unsigned    tabcol;
 
     Tab_xmp_char = *tab_line;
-
-    ptr = strtok( tab_line + 1, " " );
-    for( tabcol = 0, i = 0 ; ptr != NULL; ptr = strtok( NULL, " " ), ++i ) {
+    tabs_num = 0;
+    tabcol = 0;
+    for( ptr = strtok( tab_line + 1, " " ); ptr != NULL; ptr = strtok( NULL, " " ) ) {
         if( *ptr == '+' ) {
             tabcol += atoi( ptr + 1 );
         } else {
             tabcol = atoi( ptr );
         }
-        Tab_list[i] = tabcol;
+        Tab_list[tabs_num++] = tabcol;
     }
-    Tab_list[i] = -1;
 }
 
-static int tab_align( int ch_len, section_def *section, int *alloc_size )
-/***********************************************************************/
+static size_t tab_align( size_t ch_len, section_def *section, allocsize *alloc_size )
+/***********************************************************************************/
 {
-    int                 i;
-    int                 len;
+    int         i;
+    size_t      len;
+    size_t      j;
 
     // find the tab we should use
-    i = 0;
-    while( ch_len >= Tab_list[i]) {
-        if( Tab_list[i] == -1 ) break;
-        ++i;
-    }
-
     len = 1;
-    if( Tab_list[i] != -1 ) {
-        len =  Tab_list[i] - ch_len;
+    for( i = 0; i < tabs_num; i++ ) {
+        if( Tab_list[i] > ch_len ) {
+            len = Tab_list[i] - ch_len;
+            break;
+        }
     }
-    for( i = len; i > 0; --i ) {
+    for( j = len; j > 0; j-- ) {
         trans_add_str_wiki( WIKI_SPACE, section, alloc_size );
     }
-
     return( len );
 }
 
@@ -244,8 +234,8 @@ void wiki_topic_init( void )
 {
 }
 
-int wiki_trans_line( section_def *section, int alloc_size )
-/*********************************************************/
+allocsize wiki_trans_line( section_def *section, allocsize alloc_size )
+/*********************************************************************/
 {
     char                *ptr;
     char                *end;
@@ -254,10 +244,10 @@ int wiki_trans_line( section_def *section, int alloc_size )
     char                *ctx_text;
     char                buf[500];
     int                 font_idx;
-    int                 line_len;
+    size_t              line_len;
     bool                term_fix;
-    int                 ch_len;
-    int                 len;
+    size_t              ch_len;
+    size_t              len;
     char                *file_name;
 
     /* check for special column 0 stuff first */
@@ -267,7 +257,6 @@ int wiki_trans_line( section_def *section, int alloc_size )
     line_len = 0;
 
     switch( ch ) {
-
     case CH_TABXMP:
         if( *skip_blank( ptr + 1 ) == '\0' ) {
             Tab_xmp = false;
@@ -280,7 +269,6 @@ int wiki_trans_line( section_def *section, int alloc_size )
             Blank_line_pfx = false;     // remove preceding blanks
         }
         return( alloc_size );
-
     case CH_BOX_ON:
         /* Table support is the closest thing to boxing in IPF, but it
            doesn't work well with changing fonts on items in the tables
@@ -289,58 +277,47 @@ int wiki_trans_line( section_def *section, int alloc_size )
         draw_line( section, &alloc_size );
         Blank_line_pfx = false;
         return( alloc_size );
-
     case CH_BOX_OFF:
         draw_line( section, &alloc_size );
         Blank_line_sfx = false;
         return( alloc_size );
-
     case CH_OLIST_START:
         trans_add_list( "# ", section, &alloc_size, ptr );
         Blank_line_pfx = false;
         return( alloc_size );
-
     case CH_LIST_START:
         trans_add_list( "* ", section, &alloc_size, ptr );
         Blank_line_pfx = false;
         return( alloc_size );
-
     case CH_DLIST_START:
         trans_add_str( "; ", section, &alloc_size );
         Blank_line_pfx = false;
         return( alloc_size );
-
     case CH_SLIST_START:
         trans_add_list( "* ", section, &alloc_size, ptr );
         Blank_line_pfx = false;
         return( alloc_size );
-
     case CH_SLIST_END:
         trans_add_str( "\n", section, &alloc_size );
         Blank_line_sfx = false;
         return( alloc_size );
-
     case CH_OLIST_END:
         trans_add_str( "\n", section, &alloc_size );
         Blank_line_sfx = false;
         return( alloc_size );
-
     case CH_LIST_END:
         trans_add_str( "\n", section, &alloc_size );
         Blank_line_sfx = false;
         return( alloc_size );
-
     case CH_DLIST_END:
         trans_add_str( "\n", section, &alloc_size );
         Blank_line_sfx = false;
         return( alloc_size );
-
     case CH_LIST_ITEM:
     case CH_DLIST_TERM:
         /* eat blank lines before list items and terms */
         Blank_line_pfx = false;
         break;
-
     case CH_CTX_KW:
         ptr = whole_keyword_line( ptr );
         if( ptr == NULL ) {
@@ -382,12 +359,11 @@ int wiki_trans_line( section_def *section, int alloc_size )
        But, this rule only applies if a blank line immediately
        follows the tag, so its reset here regardless */
 #if 0
-
-   if( *ptr != CH_LIST_ITEM && *ptr != CH_DLIST_TERM &&
-                                    *ptr != CH_DLIST_DESC && !Tab_xmp ) {
+   if( *ptr != CH_LIST_ITEM && *ptr != CH_DLIST_TERM && *ptr != CH_DLIST_DESC && !Tab_xmp ) {
         /* a .br in front of li and dt would generate extra spaces */
-        if( ! done_blank )
+        if( !done_blank ) {
            line_len += trans_add_str( "<P>", section, &alloc_size );
+        }
     }
 #endif
 
@@ -484,23 +460,23 @@ int wiki_trans_line( section_def *section, int alloc_size )
             ptr += 2;
             end = strchr( ptr, CH_BMP );
             *end = '\0';
-           // convert filenames to lower case
-           strlwr( ptr );
-           switch( ch ) {
+            // convert filenames to lower case
+            strlwr( ptr );
+            switch( ch ) {
             case 'i':
                 sprintf( buf, "<IMG SRC=\"%s\">", ptr );
                 break;
-
             case 'l':
                 sprintf( buf, "<IMG SRC=\"%s\" ALIGN=TOP>", ptr );
                 break;
-
             case 'r':
                 sprintf( buf, "<IMG SRC=\"%s\" ALIGN=BOTTOM>", ptr );
                 break;
-
             case 'c':
                 sprintf( buf, "<IMG SRC=\"%s\" ALIGN=MIDDLE>", ptr );
+                break;
+            default:
+                *buf = '\0';
                 break;
             }
             line_len += trans_add_str( buf, section, &alloc_size );
@@ -511,28 +487,25 @@ int wiki_trans_line( section_def *section, int alloc_size )
             font_idx = 0;
             for( ; ptr != end; ++ptr ) {
                 switch( *ptr ) {
-
                 case 'b':
                     font_idx |= FONT_STYLE_BOLD;
                     break;
-
                 case 'i':
                     font_idx |= FONT_STYLE_ITALIC;
                     break;
-
                 case 'u':
                 case 's':
                     font_idx |= FONT_STYLE_UNDERLINE;
                     break;
                 }
             }
-            line_len += trans_add_str( Font_match[ font_idx ], section, &alloc_size );
-            Font_list[ Font_list_curr ] = font_idx;
+            line_len += trans_add_str( Font_match[font_idx], section, &alloc_size );
+            Font_list[Font_list_curr] = font_idx;
             ++Font_list_curr;
             ++ptr;
         } else if( ch == CH_FONTSTYLE_END ) {
             --Font_list_curr;
-            line_len += trans_add_str( Font_end[ Font_list[ Font_list_curr ] ], section, &alloc_size );
+            line_len += trans_add_str( Font_end[Font_list[Font_list_curr]], section, &alloc_size );
             ++ptr;
         } else if( ch == CH_FONTTYPE ) {
             ++ptr;
@@ -629,21 +602,19 @@ static void output_ctx_hdr( ctx_def *ctx )
 static void output_ctx_sections( ctx_def *ctx )
 /*********************************************/
 {
-    section_def                 *section;
+    section_def     *section;
 
-    for( section = ctx->section_list; section != NULL; ) {
+    for( section = ctx->section_list; section != NULL; section = section->next ) {
         if( section->section_size > 0 ) {
-            whp_fwrite( section->section_text, 1,
-                        section->section_size, Out_file );
+            whp_fwrite( section->section_text, 1, section->section_size, Out_file );
         }
-        section = section->next;
     }
 }
 
 void wiki_output_file( void )
 /***************************/
 {
-    ctx_def                     *ctx;
+    ctx_def         *ctx;
 
     for( ctx = Ctx_list; ctx != NULL; ctx = ctx->next ) {
         if( !Remove_empty || !ctx->empty || ctx->req_by_link ) {

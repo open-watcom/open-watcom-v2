@@ -50,34 +50,34 @@
 
 
 typedef struct pc_segment PC_SEGMENT;
-PCH_struct pc_segment {                 // PC_SEGMENT -- segment on PC
-    PC_SEGMENT      *next;              // - next in ring
-    PC_SEGMENT      *sibling;           // - related segment
-    char            *class_name;        // - class name
-    SYMBOL          label;              // - symbol for label in segment
-    unsigned        attrs;              // - attributes
-    fe_seg_id       seg_id;             // - id for segment
-    target_offset_t align;              // - alignment
-    target_size_t   offset;             // - offset within segment
+PCH_struct pc_segment {                     // PC_SEGMENT -- segment on PC
+    PC_SEGMENT      *next;                  // - next in ring
+    PC_SEGMENT      *sibling;               // - related segment
+    char            *class_name;            // - class name
+    SYMBOL          label;                  // - symbol for label in segment
+    unsigned        attrs;                  // - attributes
+    fe_seg_id       seg_id;                 // - id for segment
+    target_offset_t align;                  // - alignment
+    target_size_t   offset;                 // - offset within segment
 #if _INTEL_CPU
-    hw_reg_set      binding;            // - register bound to the segment
+    hw_reg_set      binding;                // - register bound to the segment
 #endif
-                                        // - segment:
-    unsigned        dgroup : 1;         // - is part of DGROUP
-    unsigned        lab_gened : 1;      // - label has been generated
-    unsigned        used : 1;           // - has been used
-    unsigned        fixed_alignment : 1;// - has a fixed alignment (no changes)
-    unsigned        cg_defed : 1;       // - defined to code generator
-    unsigned        module_prefix : 1;  // - name has ModuleName as a prefix
-    unsigned        has_data : 1;       // - has data gened in segment
-    unsigned        only_strings : 1;   // - only strings go in segment
-    char            name[1];            // - name
+                                            // - segment:
+    unsigned        dgroup          : 1;    // - is part of DGROUP
+    unsigned        lab_gened       : 1;    // - label has been generated
+    unsigned        used            : 1;    // - has been used
+    unsigned        fixed_alignment : 1;    // - has a fixed alignment (no changes)
+    unsigned        cg_defed        : 1;    // - defined to code generator
+    unsigned        module_prefix   : 1;    // - name has ModuleName as a prefix
+    unsigned        has_data        : 1;    // - has data gened in segment
+    unsigned        only_strings    : 1;    // - only strings go in segment
+    char            name[1];                // - name
 };
 
-typedef struct {                        // DEF_SEG -- code/data default segments
-    PC_SEGMENT      *pcseg;             // - default pc segment
-    unsigned        ctr;                // - # of segments allocated
-    unsigned        ds_used : 1;        // - true ==> has been used
+typedef struct {                            // DEF_SEG -- code/data default segments
+    PC_SEGMENT      *pcseg;                 // - default pc segment
+    unsigned        ctr;                    // - # of segments allocated
+    unsigned        ds_used         : 1;    // - true ==> has been used
 } DEF_SEG;
 
 static fe_seg_id seg_max;           // last segment # used
@@ -92,8 +92,8 @@ static DEF_SEG code_def_seg;        // code segment -- default info.
 static DEF_SEG data_def_seg;        // data segment -- default info.
 
 static struct {
-    unsigned in_back_end : 1;       // true ==> now in CGBKMAIN
-    unsigned use_def_seg : 1;       // true ==> #pragma def_seg active
+    unsigned in_back_end    : 1;    // true ==> now in CGBKMAIN
+    unsigned use_def_seg    : 1;    // true ==> #pragma def_seg active
 } flags;
 
 enum                                // SEGMENT-ATTRIBUTE COMBINATIONS USED:
@@ -180,7 +180,7 @@ static SYMBOL segEmitLabel(         // EMIT SEGMENT LABEL
         seg->lab_gened = true;
         _markUsed( seg, true );
     }
-    return label;
+    return( label );
 }
 
 
@@ -206,7 +206,7 @@ static PC_SEGMENT *segIdLookup( // LOOKUP SEGMENT FOR ID
             break;
         }
     } RingIterEnd( curr );
-    return retn;
+    return( retn );
 }
 
 
@@ -235,7 +235,7 @@ static PC_SEGMENT *segNameLookup( // LOOKUP SEGMENT FOR NAME
             break;
         }
     } RingIterEnd( curr );
-    return retn;
+    return( retn );
 }
 
 
@@ -482,20 +482,20 @@ target_offset_t SegmentAdjust(  // SEGMENT: ADJUST OFFSET TO ALIGN
 }
 
 
-struct seg_look {                           // used to lookup segments
-    const char      *seg_name;              // - segment name
-    const char      *class_name;            // - segment class name
-    unsigned        attrs;                  // - attributes
-    fe_seg_id       seg_id;                 // - id for segment
-    target_offset_t align;                  // - segment alignment
-    target_size_t   sym_size;               // - space needed for symbol
-    target_size_t   sym_align;              // - alignment needed for symbol
-    unsigned        use_seg_id : 1;         // - for lookup
-    unsigned        use_attrs : 1;          // - for lookup
-    unsigned        use_align : 1;          // - for lookup
-    unsigned        use_sym_size_align : 1; // - for lookup
-    unsigned        use_name : 1;           // - for lookup
-    unsigned        use_only_strings : 1;   // - for lookup
+struct seg_look {                               // used to lookup segments
+    const char      *seg_name;                  // - segment name
+    const char      *class_name;                // - segment class name
+    unsigned        attrs;                      // -                                                                                                                                                                                                                                                                                                                                                                                                                                                                     attributes
+    fe_seg_id       seg_id;                     // - id for segment
+    target_offset_t align;                      // - segment alignment
+    target_size_t   sym_size;                   // - space needed for symbol
+    target_size_t   sym_align;                  // - alignment needed for symbol
+    unsigned        use_seg_id          : 1;    // - for lookup
+    unsigned        use_attrs           : 1;    // - for lookup
+    unsigned        use_align           : 1;    // - for lookup
+    unsigned        use_sym_size_align  : 1;    // - for lookup
+    unsigned        use_name            : 1;    // - for lookup
+    unsigned        use_only_strings    : 1;    // - for lookup
 };
 
 
@@ -593,7 +593,7 @@ static PC_SEGMENT *segmentDefine(// SEGMENT: DEFINE IF REQUIRED
         }
 #endif
     }
-    return curr;
+    return( curr );
 }
 
 
@@ -809,7 +809,7 @@ fe_seg_id SegmentAddSym(        // SEGMENT: ADD SYMBOL TO SPECIFIED SEGMENT
             }
         }
     }
-    return id;
+    return( id );
 }
 
 
@@ -828,9 +828,9 @@ fe_seg_id SegmentAddComdatData( // ADD SEGMENT FOR A COMDAT DATA SYMBOL
         attrs = SGAT_DATA_COMMON_ZERO;
         name = TS_SEG_BSS;
     } else {
-        type_flag flags;
-        TypeModFlags( sym->sym_type, &flags );
-        if( flags & TF1_CONST ) {
+        type_flag modflags;
+        TypeModFlags( sym->sym_type, &modflags );
+        if( modflags & TF1_CONST ) {
             attrs = SGAT_DATA_COMMON_INIT_ROM;
             name = TS_SEG_DATA;
         } else {
@@ -839,7 +839,7 @@ fe_seg_id SegmentAddComdatData( // ADD SEGMENT FOR A COMDAT DATA SYMBOL
         }
     }
     seg = segmentAlloc( name, NULL, SEG_NULL, attrs, SA_IN_DGROUP );
-    return seg->seg_id;
+    return( seg->seg_id );
 }
 #endif
 
@@ -879,14 +879,14 @@ static SYMBOL segDefineLabel(   // DEFINE LABEL FOR SEGMENT, IF REQ'D
         seg->label = label;
         _markUsed( seg, true );
     }
-    return label;
+    return( label );
 }
 
 
 SYMBOL SegmentLabelSym(         // GET LABEL IN SEGMENT
     fe_seg_id seg_id )          // - segment id
 {
-    return segDefineLabel( segIdLookup( seg_id ) );
+    return( segDefineLabel( segIdLookup( seg_id ) ) );
 }
 
 
@@ -900,7 +900,7 @@ SYMBOL SegmentLabelGen(         // GENERATE SEGMENT LABEL IF REQ'D
     segmentCgDefine( seg );
     segDefineLabel( seg );
     label = segEmitLabel( seg );
-    return label;
+    return( label );
 }
 
 
@@ -914,7 +914,7 @@ SYMBOL SegmentLabelStackReset(  // RESET STACK-SEGMENT LABEL
     lab = stk->label;
     stk->label = NULL;
     stk->lab_gened = false;
-    return lab;
+    return( lab );
 }
 
 #if _INTEL_CPU
@@ -963,10 +963,10 @@ fe_seg_id SegmentFindNamed(     // FIND SEGMENT ENTRY FOR NAME
     PC_SEGMENT *segmt;          // - defined segment
 
     if( 0 == strcmp( segname, "_STACK" ) ) {
-        return SEG_STACK;
+        return( SEG_STACK );
     }
     if( 0 == strcmp( segname, "_CODE" ) ) {
-        return SEG_CODE;
+        return( SEG_CODE );
     }
     segmt = segNameLookup( segname );
     if( segmt == NULL ) {
@@ -985,7 +985,7 @@ fe_seg_id SegmentFindNamed(     // FIND SEGMENT ENTRY FOR NAME
         }
     }
     _markUsed( segmt, true );
-    return segmt->seg_id;
+    return( segmt->seg_id );
 }
 
 
@@ -999,7 +999,7 @@ fe_seg_id SegmentFindBased(     // FIND SEGMENT ID FOR TF1_BASED_STRING
     base_mod = BasedType( expr_type );
     string = base_mod->u.m.base;
     segname = string->string;
-    return SegmentFindNamed( segname );
+    return( SegmentFindNamed( segname ) );
 }
 
 
@@ -1007,14 +1007,14 @@ static PC_SEGMENT *segmentAllocRom(    // ALLOCATE R/O DATA SEGMENT
     char *name,                 // - name
     fe_seg_id segid )           // - segment id
 {
-    return segmentAlloc( name, NULL, segid, SGAT_DATA_CON2, SA_IN_DGROUP );
+    return( segmentAlloc( name, NULL, segid, SGAT_DATA_CON2, SA_IN_DGROUP ) );
 }
 
 static PC_SEGMENT *segmentAllocRW(    // ALLOCATE R/W DATA SEGMENT
     char *name,                 // - name
     fe_seg_id segid )           // - segment id
 {
-    return segmentAlloc( name, NULL, segid, SGAT_DATA_RW, SA_IN_DGROUP );
+    return( segmentAlloc( name, NULL, segid, SGAT_DATA_RW, SA_IN_DGROUP ) );
 }
 
 
@@ -1180,7 +1180,7 @@ static fe_seg_id nextZmSegment( // GET NEXT CODE SEGMENT FOR -zm
         segid = code_def_seg.pcseg->seg_id;
         SegmentMarkUsed( segid );
     }
-    return segid;
+    return( segid );
 }
 
 bool SegmentIfBasedOK( SYMBOL func )
@@ -1236,7 +1236,7 @@ fe_seg_id SegmentForDefinedFunc(// GET SEGMENT FOR A DEFINED FUNCTION
             code_def_seg.ds_used = true;
         }
     }
-    return segid;
+    return( segid );
 }
 
 
@@ -1312,21 +1312,22 @@ void SegmentCgInit(             // INITIALIZE SEGMENTS FOR CODE-GENERATION
 
     RingIterBeg( seg_list, segment ) {
         switch( segment->seg_id ) {
-          case SEG_STACK :
+        case SEG_STACK :
             // Cg already "knows" about this segment
             segment->cg_defed = true;
             break;
-          default :
+        default :
             if( segment->attrs & BACK ) {
                 segmentCgDefine( segment );
                 break;
             }
-            if( ! segment->used ) break;
-            // drops thru
-          case SEG_DATA :
-          case SEG_CONST :
-          case SEG_CONST2 :
-          case SEG_BSS :
+            if( ! segment->used )
+                break;
+            /* fall through */
+        case SEG_DATA :
+        case SEG_CONST :
+        case SEG_CONST2 :
+        case SEG_BSS :
             // These could be defined only if they are used but unfortunately
             // the CG doesn't like DGROUP segments being defined on the fly.
             // Based pointers would cause these segments to be defined on the
@@ -1371,7 +1372,7 @@ void* SegmentBoundReg(          // GET REGISTER BOUND TO SEGMENT
     } else {
         retn = &seg->binding;
     }
-    return retn;
+    return( retn );
 }
 #endif
 

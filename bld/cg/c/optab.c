@@ -31,36 +31,33 @@
 ****************************************************************************/
 
 
-#include "cgstd.h"
+#include "_cgstd.h"
 #include "coderep.h"
-#include "tables.h"
+#include "opctable.h"
 #include "zoiks.h"
 #include "optab.h"
 #include "feprotos.h"
 
-extern  opcode_entry*   OpcodeTable(table_def);
 
-
-extern table_def OpTable[];
-
-opcode_entry    *CodeTable( instruction *ins )
-/********************************************/
+const opcode_entry  *CodeTable( instruction *ins )
+/************************************************/
 {
     int         idx;
+    table_def   opcode_idx;
 
     idx = ins->head.opcode;
     idx *= ( XX + 1 );
     idx += ins->type_class;
-    idx = OpTable[idx];
-    if( idx == BAD ) {
+    opcode_idx = OpTable[idx];
+    if( opcode_idx == BAD ) {
         _Zoiks( ZOIKS_052 );
     }
 #if _TARGET & _TARG_RISC
-    if( idx == NYI ) {
+    if( opcode_idx == NYI ) {
         _Zoiks( ZOIKS_091 );
     }
 #endif
-    return( OpcodeTable( idx ) );
+    return( OpcodeTable( opcode_idx ) );
 }
 
 

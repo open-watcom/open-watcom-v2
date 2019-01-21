@@ -30,27 +30,26 @@
 ****************************************************************************/
 
 
-extern short        _wror( short, short );
-extern short        _wrol( short, short );
-extern char         _rotr_b( char, char );
-extern char         _rotl_b( char, char );
+extern short _wror( short, short );
+#pragma aux _wror = \
+        "ror  ax,cl" \
+    __parm __caller [__ax] [__cx] \
+    __value         [__ax]
 
-#if defined ( __386__ )
-    #pragma aux         _wror = 0x66 0xd3 0xc8  /* ror  ax,cl   */ \
-                                parm caller [ax] [cx] value [ax];
-    #pragma aux         _wrol = 0x66 0xd3 0xc0  /* rol  ax,cl   */ \
-                                parm caller [ax] [cx] value [ax];
-    #pragma aux         _rotr_b = 0x66 0xd2 0xc8 /* ror al,cl   */ \
-                                parm caller [al] [cl] value [al];
-    #pragma aux         _rotl_b = 0x66 0xd2 0xc0 /* rol al,cl   */ \
-                                parm caller [al] [cl] value [al];
-#else
-    #pragma aux         _wror = 0xd3 0xc8       /* ror  ax,cl   */ \
-                                parm caller [ax] [cx] value [ax];
-    #pragma aux         _wrol = 0xd3 0xc0       /* rol  ax,cl   */ \
-                                parm caller [ax] [cx] value [ax];
-    #pragma aux         _rotr_b = 0xd2 0xc8     /* ror  al,cl   */ \
-                                parm caller [al] [cl] value [al];
-    #pragma aux         _rotl_b = 0xd2 0xc0     /* rol  al,cl   */ \
-                                parm caller [al] [cl] value [al];
-#endif
+extern short _wrol( short, short );
+#pragma aux _wrol = \
+        "rol  ax,cl" \
+    __parm __caller [__ax] [__cx] \
+    __value         [__ax]
+
+extern char _rotr_b( char, char );
+#pragma aux _rotr_b = \
+        "ror  al,cl" \
+    __parm __caller [__al] [__cl] \
+    __value         [__al]
+
+extern char _rotl_b( char, char );
+#pragma aux _rotl_b = \
+        "rol  al,cl" \
+    __parm __caller [__al] [__cl] \
+    __value         [__al]

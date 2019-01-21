@@ -34,13 +34,12 @@
 #include "locales.h"
 
 char _LocaleSetting[] = {
-                        /*  QNX  */
-        C_LOCALE,       /* LC_TYPE */
-        C_LOCALE,       /* LC_NUMERIC */
-        C_LOCALE,       /* LC_TIME */
-        C_LOCALE,       /* LC_COLLATE */
-        C_LOCALE,       /* LC_MONETARY */
-        C_LOCALE,       /* LC_MESSAGES */
-        C_LOCALE        /* LC_ALL */
+    C_LOCALE,       /* LC_TYPE */
+    C_LOCALE,       /* LC_NUMERIC */
+    C_LOCALE,       /* LC_TIME */
+    C_LOCALE,       /* LC_COLLATE */
+    C_LOCALE,       /* LC_MONETARY */
+    C_LOCALE,       /* LC_MESSAGES */
+    C_LOCALE        /* LC_ALL */
 };
 

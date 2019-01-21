@@ -55,8 +55,8 @@ void ProcessModelFile(          // PROCESS MODEL FILE
     MsgDscr& file_er,           // - description of bad files
     GMLfilestat g )             // - statistics
 {
-    char filename[ _MAX_PATH ];         // - test file name
-    char            buffer[ 256 ];
+    char filename[_MAX_PATH];         // - test file name
+    char            buffer[256];
     char *          buf = buffer;
     int             counter = 0;
     bool            dotflag = FALSE;
@@ -84,7 +84,7 @@ void ProcessModelFile(          // PROCESS MODEL FILE
     for( ;; ) {
 
 //      for( idx = 0; idx < 20; idx ++ ) {
-//          sublocs[ idx ] = 0;
+//          sublocs[idx] = 0;
 //      };
 
         ModelFile.getline( buffer, 252 );
@@ -104,14 +104,14 @@ void ProcessModelFile(          // PROCESS MODEL FILE
         };
 
         if( ( sub = strchr( buffer, subchar ) ) != NULL ) {
-            if( sub[ 1 ] == subgoodchar ) {
+            if( sub[1] == subgoodchar ) {
                 if( g.last_good == 0 ) {
                     cout << "Warning: Model file, line " << counter << ":" << endl;
                     cout << "There are no GOOD.CPP files to process" << endl;
                     continue;
                 };
                 gb = GOOD;
-            } else if( sub[ 1 ] == subbadchar ) {
+            } else if( sub[1] == subbadchar ) {
                 if( g.last_bad == 0 ) {
                     cout << "Warning: Model file, line " << counter << ":" << endl;
                     cout << "There are no BAD.CPP files to process" << endl;
@@ -124,40 +124,41 @@ void ProcessModelFile(          // PROCESS MODEL FILE
             };
             kdx = strlen( buffer );
             for( idx = 0; idx <= kdx; idx++ ) {
-                if( buffer[ idx ] == subchar ) {
-                    if( ( ( buffer[ idx + 1 ] == subgoodchar )
+                if( buffer[idx] == subchar ) {
+                    if( ( ( buffer[idx + 1] == subgoodchar )
                         &&( gb == GOOD ) )
-                      ||( ( buffer[ idx + 1 ] == subbadchar )
+                      ||( ( buffer[idx + 1] == subbadchar )
                         &&( gb == BAD ) )
                       ) {
-                        buffer[ idx ] = 0;
-                    } else if( ( buffer[ idx + 1 ] == subgoodchar )
-                             ||( buffer[ idx + 1 ] == subbadchar  ) ) {
+                        buffer[idx] = 0;
+                    } else if( ( buffer[idx + 1] == subgoodchar )
+                             ||( buffer[idx + 1] == subbadchar ) ) {
                         TooManyTypeError( );
                     };
                 };
             }; // Substitution strings done.
-            buffer[ idx ] = 'E';
-            buffer[ idx + 1 ] = '\0';
+            buffer[idx] = 'E';
+            buffer[idx + 1] = '\0';
             {
                 MsgDscr& descr = (gb == GOOD ) ? file_ok : file_er;
                 tot = descr.GetMaxMsgNo();
                 for( jdx = 1; jdx < tot; jdx++ ) {
                     for( int fdx = 0; ; ) {
                         fdx = descr.GetNextFile( jdx, fdx );
-                        if( fdx == 0 ) break;
+                        if( fdx == 0 )
+                            break;
                         MakeTestFileName( filename, descr, jdx, fdx );
                         kdx = 0;
                         sub = buffer;
                         for( ;; ) {
                             out_text << sub;
                             kdx = strlen( sub );
-                            if( sub[ kdx + 1 ] == 'E' ) {
+                            if( sub[kdx + 1] == 'E' ) {
                                 break;
                             } else {
                                 out_text << filename;
                             };
-                            sub = &sub[ kdx + 2 ];
+                            sub = &sub[kdx + 2];
                         }
                     }
                     out_text << ends;

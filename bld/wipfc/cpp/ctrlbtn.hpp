@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
+* Copyright (c) 2009-2018 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -31,27 +31,28 @@
 #ifndef CONTROLBUTTON_INCLUDED
 #define CONTROLBUTTON_INCLUDED
 
-#include "config.hpp"
 #include <cstdio>
 #include <string>
 
+class OutFile;      // forward reference
+
 class ControlButton {
 public:
-    ControlButton() : res( 0 ), idx( 0 ) {};
-    ControlButton( const std::wstring& i, STD1::uint16_t r, const std::wstring& t ) :
-        res( r ), idnt( i ), txt( t ) { };
-    void setId( std::wstring& i ) { idnt = i; };
-    const std::wstring& id() const { return idnt; };
-    void setRes( STD1::uint16_t r ) { res = r; };
-    void setText( std::wstring& t ) { txt = t; };
-    void setIndex( STD1::uint16_t i ) { idx = i; };
-    STD1::uint16_t index() { return idx; };
-    STD1::uint32_t write( std::FILE* out ) const;
+    ControlButton() : _res( 0 ), _index( 0 ) {};
+    ControlButton( const std::wstring& i, word r, const std::wstring& t ) :
+        _res( r ), _idnt( i ), _text( t ) { };
+    void setId( std::wstring& i ) { _idnt = i; };
+    const std::wstring& id() const { return _idnt; };
+    void setRes( word r ) { _res = r; };
+    void setText( std::wstring& t ) { _text = t; };
+    void setIndex( word i ) { _index = i; };
+    word index() { return _index; };
+    dword write( OutFile* out ) const;
 private:
-    STD1::uint16_t res;     //message number
-    STD1::uint16_t idx;     //array index of this item
-    std::wstring idnt;      //identifier
-    std::wstring txt;       //button text
+    word            _res;       //message number
+    word            _index;     //array index of this item
+    std::wstring    _idnt;      //identifier
+    std::wstring    _text;      //button text
 };
 
 #endif //CTRLBUTTON_INCLUDED

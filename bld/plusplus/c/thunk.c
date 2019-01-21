@@ -80,7 +80,7 @@ static specname classifyThunk(  // GET CLASSIFICATION OF THUNK
         DbgAssert( SymIsCtor( sym ) );
         classification = SPECIAL_NAME_CTOR_THUNK;
     }
-    return classification;
+    return( classification );
 }
 
 
@@ -118,7 +118,7 @@ static SYMBOL addrThunkSymbol(  // GET THUNK SYMBOL FROM ORIGINAL
         new_sym = ScopeInsert( scope, new_sym, name );
         SymDeriveThrowBits( new_sym, sym );
     }
-    return new_sym;
+    return( new_sym );
 }
 
 
@@ -167,7 +167,7 @@ static SCOPE thunkPrologue(     // PROLOGUE FOR A SCOPE
     arg_scope = GetCurrScope();
     declareThunkArgs( orig, FunctionDeclarationType( orig->sym_type ) );
     FunctionBodyStartup( thunk_sym, data, FUNC_NULL );
-    return arg_scope;
+    return( arg_scope );
 }
 
 
@@ -186,22 +186,19 @@ static PTREE thunkArgList(      // BUILD THUNK ARGUMENT LIST
     NAME ret_name;              // - name of return value symbol
     PTREE expr;                 // - argument expression
     PTREE list;                 // - arg. list under construction
-    SYMBOL stopper;             // - stopping value
-    SYMBOL sym;                 // - current symbol
+    SYMBOL stop;                // - stopping value
+    SYMBOL curr;                // - current symbol
     unsigned count;             // - # in list
     OMR arg_model;              // - argument calling convention model
     TYPE arg_type;              // - unmodified argument type from symbol
 
     ret_name = CppSpecialName( SPECIAL_NAME_RETURN_VALUE );
-    stopper = ScopeOrderedStart( scope );
-    sym = NULL;
     list = NULL;
-    for(;;) {
-        sym = ScopeOrderedNext( stopper, sym );
-        if( sym == NULL ) break;
-        if( sym->name->name != ret_name ) {
-            arg_type = TypedefModifierRemoveOnly( sym->sym_type );
-            expr = MakeNodeSymbol( sym );
+    stop = ScopeOrderedStart( scope );
+    for( curr = NULL; (curr = ScopeOrderedNext( stop, curr )) != NULL; ) {
+        if( curr->name->name != ret_name ) {
+            arg_type = TypedefModifierRemoveOnly( curr->sym_type );
+            expr = MakeNodeSymbol( curr );
             expr = NodeFetchReference( expr );
             arg_model = ObjModelArgument( TypeReferenced( arg_type ) );
             if( TypeReference( arg_type ) == NULL && arg_model != OMR_CLASS_REF ) {
@@ -222,13 +219,13 @@ SYMBOL ClassFunMakeAddressable( // MAKE SURE THE FUNCTION CAN BE ADDRESSED
     specname classification;    // - classification of thunk
 
     if( orig_sym == NULL ) {
-        return orig_sym;
+        return( orig_sym );
     }
     if( ( orig_sym->id != SC_DEFAULT ) && !TypeHasPragma( orig_sym->sym_type ) ) {
         type_flag flags;
         TypeModFlags( orig_sym->sym_type, &flags );
         if( (flags & TF1_DLLIMPORT) == 0 ) {
-            return orig_sym;
+            return( orig_sym );
         }
     }
     classification = classifyThunk( orig_sym );
@@ -240,7 +237,7 @@ SYMBOL ClassFunMakeAddressable( // MAKE SURE THE FUNCTION CAN BE ADDRESSED
         thunk_sym->u.thunk_calls = orig_sym;
         RtnGenAddSymbol( RGSYMBOL_GenThunk, thunk_sym );
     }
-    return thunk_sym;
+    return( thunk_sym );
 }
 
 

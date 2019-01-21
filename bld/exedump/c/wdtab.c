@@ -42,46 +42,47 @@ struct  int_entry_pnt     *Entry_pnts = NULL;
 /*
  * Read a resident/nonresident name and ordinal
  */
-static unsigned_8 read_res_nonres_nam( char *name, unsigned_16 *ordinal )
-/***********************************************************************/
+static unsigned_8 read_res_nonres_name( char *name, unsigned_16 *ordinal )
+/************************************************************************/
 {
-    unsigned_8              string_len;
+    unsigned_8      len;
 
-    Wread( &string_len, sizeof( string_len ) );
-    if( string_len ) {
-        Wread( name, string_len );
-        Wread( ordinal, sizeof( unsigned_16 ) );
+    Wread( &len, sizeof( len ) );
+    if( len ) {
+        Wread( name, len );
+        Wread( ordinal, sizeof( *ordinal ) );
     }
-    name[ string_len ] = '\0';
-    return( string_len );
+    name[len] = '\0';
+    return( len );
 }
 
 /*
  * Dump a resident/nonresident name
  */
-static unsigned_16 dmp_res_nonres_nam( void )
-/******************************************/
+static unsigned_16 dmp_res_nonres_name( void )
+/********************************************/
 {
-    char                    resident[256];
+    char                    name[256];
     unsigned_16             entry_index;
     unsigned_8              len;
 
-    len = read_res_nonres_nam( resident, &entry_index );
+    len = read_res_nonres_name( name, &entry_index );
     if( len ) {
         if( Form == FORM_NE ) {
-            Wdputs( resident );
+            Wdputs( name );
             Dmp_ordinal( entry_index );
         } else {
             Wdputs( "ordinal " );
-            Puthex( entry_index, 4 );
+            Puthex( entry_index, 2 * sizeof( entry_index ) );
             Wdputs( ": " );
-            Wdputs( resident );
+            Wdputs( name );
         }
         Wdputslc( "\n" );
         /* Length byte + string + ordinal. */
-        return( sizeof( unsigned_8 ) + len + sizeof( unsigned_16 ) );
-    } else
+        return( sizeof( len ) + len + sizeof( entry_index ) );
+    } else {
         return( 0 );
+    }
 }
 
 /*
@@ -98,7 +99,7 @@ static void dmp_res_nonres_tab( unsigned_32 res_nam_tab , unsigned_32 tab_len )
     Wlseek( res_nam_tab );
     tab_off = 0;
     do {
-        entry_len = dmp_res_nonres_nam();
+        entry_len = dmp_res_nonres_name();
         tab_off += entry_len;
     } while( entry_len && (tab_off < tab_len) );
 }
@@ -109,17 +110,12 @@ static void dmp_res_nonres_tab( unsigned_32 res_nam_tab , unsigned_32 tab_len )
 static void dmp_imp_tab( unsigned_32 proc_off, unsigned_32 size_proc )
 /********************************************************************/
 {
-    unsigned_8              string_len;
-    unsigned_32             size;
-    char                    *imp_nam;
+    unsigned_8      len;
+    unsigned_32     size;
 
     Wlseek( proc_off );
-    for( size = 0; size < size_proc; size += string_len + 1 ) {
-        Wread( &string_len, sizeof( unsigned_8 ) );
-        imp_nam = Wmalloc( string_len + 1 );
-        Wread( imp_nam, string_len );
-        imp_nam[ string_len ] = '\0';
-        Wdputs( imp_nam );
+    for( size = 0; size < size_proc; size += len + 1 ) {
+        len = Dump_name();
         Wdputslc( "\n" );
     }
 }
@@ -133,9 +129,9 @@ static void dmp_mod_ref_tab( unsigned_32 mod_ref, unsigned_16 num_mod_ref )
     unsigned_16                     *mod_ref_tab;
     unsigned_16                     size_mod_ref;
     unsigned_16                     ref_num;
-    char                            *imp_nam;
+    char                            *name;
     unsigned_32                     imp_off;
-    unsigned_8                      string_len;
+    unsigned_8                      len;
 
     if( num_mod_ref == 0 ) {
         return;
@@ -146,19 +142,28 @@ static void dmp_mod_ref_tab( unsigned_32 mod_ref, unsigned_16 num_mod_ref )
     size_mod_ref = num_mod_ref * sizeof( unsigned_16 );
     mod_ref_tab = Wmalloc( size_mod_ref );
     Wread( mod_ref_tab, size_mod_ref );
-    Int_mod_ref_tab = Wmalloc( num_mod_ref * sizeof( unsigned_8 * ) );
-    for( ref_num = 0; ref_num != num_mod_ref; ++ref_num ) {
-        imp_off = New_exe_off + mod_ref_tab[ ref_num ] + Os2_head.import_off;
+    Int_mod_ref_tab = Wmalloc( num_mod_ref * sizeof( name ) );
+    for( ref_num = 0; ref_num < num_mod_ref; ++ref_num ) {
+        imp_off = New_exe_off + mod_ref_tab[ref_num] + Os2_head.import_off;
         Wlseek( imp_off );
-        Wread( &string_len, sizeof( unsigned_8 ) );
-        imp_nam = Wmalloc( string_len + 1 );
-        Wread( imp_nam, string_len );
-        imp_nam[ string_len ] = '\0';
-        Wdputs( imp_nam );
+        Wread( &len, sizeof( len ) );
+        name = Wmalloc( len + 1 );
+        Wread( name, len );
+        name[len] = '\0';
+        Wdputs( name );
         Wdputslc( "\n" );
-        Int_mod_ref_tab[ ref_num ] = imp_nam;
+        Int_mod_ref_tab[ref_num] = name;
     }
     free( mod_ref_tab );
+}
+
+static void free_mod_ref_tab( unsigned_16 num_mod_ref )
+{
+    unsigned_16                     ref_num;
+
+    for( ref_num = 0; ref_num != num_mod_ref; ++ref_num ) {
+        free( Int_mod_ref_tab[ref_num] );
+    }
 }
 
 /*
@@ -167,28 +172,20 @@ static void dmp_mod_ref_tab( unsigned_32 mod_ref, unsigned_16 num_mod_ref )
 static void dmp_import_tab( unsigned_32 imp_nam_tab )
 /***************************************************/
 {
-    unsigned_8                      string_len;
-    char                            *resident;
+    unsigned_8      len;
 
     Wlseek( imp_nam_tab );
-    Wread( &string_len, sizeof( unsigned_8 ) );
-    if( string_len == 0 ) {
+    Wread( &len, sizeof( len ) );
+    if( len == 0 ) {
         return;
     }
     Wdputslc( "\n" );
     Banner( "Imported Name Table" );
     for( ;; ) {
-        resident = alloca( string_len );
-        if( resident == NULL ) {
-            Wdputslc( "Error! Dynamic memory exhausted.\n" );
-            longjmp( Se_env, 1 );
-        }
-        Wread( resident, string_len );
-        resident[ string_len ] = '\0';
-        Wdputs( resident );
+        Dump_namel( len );
         Wdputslc( "\n" );
-        Wread( &string_len, sizeof( unsigned_8 ) );
-        if( string_len == 0 ) {
+        Wread( &len, sizeof( len ) );
+        if( len == 0 ) {
             return;
         }
     }
@@ -197,8 +194,8 @@ static void dmp_import_tab( unsigned_32 imp_nam_tab )
 /*
  * Dump the Entry Table
  */
-static void dmp_ent_type( unsigned_8 type, unsigned ordinal )
-/***********************************************************/
+static void dmp_ent_type( unsigned_8 type, unsigned_16 ordinal )
+/**************************************************************/
 {
     flat_bundle_entry32     ent_bund32;
     flat_bundle_entry16     ent_bund16;
@@ -211,7 +208,7 @@ static void dmp_ent_type( unsigned_8 type, unsigned ordinal )
     case FLT_BNDL_ENTRY16:
         Wread( &ent_bund16, sizeof( flat_bundle_entry16 ) );
         Wdputslc( "\nordinal = " );
-        Puthex( ordinal, 4 );
+        Puthex( ordinal, 2 * sizeof( ordinal ) );
         Wdputs( "   flags = " );
         Puthex( ent_bund16.e32_flags, 2 );
         Wdputs( "   offset = " );
@@ -226,7 +223,7 @@ static void dmp_ent_type( unsigned_8 type, unsigned ordinal )
     case FLT_BNDL_GATE16:
         Wread( &gate_bund, sizeof( flat_bundle_gate16 ) );
         Wdputslc( "\nordinal = " );
-        Puthex( ordinal, 4 );
+        Puthex( ordinal, 2 * sizeof( ordinal ) );
         Wdputs( "   flags = " );
         Puthex( gate_bund.e32_flags, 2 );
         Wdputs( "   offset = " );
@@ -243,7 +240,7 @@ static void dmp_ent_type( unsigned_8 type, unsigned ordinal )
     case FLT_BNDL_ENTRY32:
         Wread( &ent_bund32, sizeof( flat_bundle_entry32 ) );
         Wdputslc( "\nordinal = " );
-        Puthex( ordinal, 4 );
+        Puthex( ordinal, 2 * sizeof( ordinal ) );
         Wdputs( "   flags = " );
         Puthex( ent_bund32.e32_flags, 2 );
         Wdputs( "   offset = " );
@@ -258,7 +255,7 @@ static void dmp_ent_type( unsigned_8 type, unsigned ordinal )
     case FLT_BNDL_ENTRYFWD:
         Wread( &ent_bund_fwd, sizeof( flat_bundle_entryfwd ) );
         Wdputslc( "\nordinal = " );
-        Puthex( ordinal, 4 );
+        Puthex( ordinal, 2 * sizeof( ordinal ) );
         Wdputs( "   flags = " );
         Puthex( ent_bund_fwd.e32_flags, 2 );
         Wdputs( "   module ordinal = " );
@@ -282,7 +279,7 @@ static void dmp_ent_tab( unsigned_32 ent_tab )
 /********************************************/
 {
     flat_null_prefix        ent_bund_pfx;
-    unsigned                ordinal = 1;
+    unsigned_16             ordinal = 1;
     unsigned_16             object;
     unsigned                i;
 
@@ -429,19 +426,19 @@ static void dmp_an_ord( struct int_entry_pnt *find )
 /*
  * dump an ordinal entry point
  */
-void Dmp_ordinal( unsigned_16 ord )
-/*********************************/
+void Dmp_ordinal( unsigned_16 ordinal )
+/*************************************/
 {
     struct int_entry_pnt    *find;
 
     for( find = Entry_pnts; find != NULL; find = find->next ) {
-        if( find->ordinal == ord ) {
+        if( find->ordinal == ordinal ) {
             dmp_an_ord( find );
             return;
         }
     }
     Wdputs( " unknown ordinal " );
-    Puthex( ord, 4 );
+    Puthex( ordinal, 2 * sizeof( ordinal ) );
 }
 
 /*
@@ -481,6 +478,7 @@ void Dmp_ne_tbls( void )
     Banner( "Nonresident Names Table" );
     dmp_res_nonres_tab( Os2_head.nonres_off, Os2_head.nonres_size );
     Dmp_relocs();
+    free_mod_ref_tab( Os2_head.modrefs );
 }
 
 /*
@@ -519,14 +517,14 @@ void Dmp_le_lx_tbls( void )
 static void dump_exports( void )
 /******************************/
 {
-    unsigned_8      string_len;
+    unsigned_8      len;
     char            name[256];
     unsigned_16     ordinal;
 
-    while( (string_len = read_res_nonres_nam( name, &ordinal )) != 0 ) {
+    while( (len = read_res_nonres_name( name, &ordinal )) != 0 ) {
         Wdputs( "    " );
         Wdputs( name );
-        while( string_len++ < 43 ) {
+        while( len++ < 43 ) {
             Wdputc( ' ' );
         }
         Wdputs( " @" );
@@ -586,7 +584,7 @@ bool Dmp_os2_exports( void )
 
     /* Read and print module name */
     Wlseek( res_nam_tab );
-    if( read_res_nonres_nam( name, &ordinal ) == 0 ) {
+    if( read_res_nonres_name( name, &ordinal ) == 0 ) {
         return( false );
     }
     Wdputs( "LIBRARY " );
@@ -608,7 +606,7 @@ bool Dmp_os2_exports( void )
     Wlseek( res_nam_tab );
 
     /* See if there is comment */
-    if( read_res_nonres_nam( name, &ordinal ) == 0 ) {
+    if( read_res_nonres_name( name, &ordinal ) == 0 ) {
         return( true );
     }
     if( ordinal != 0 ) {

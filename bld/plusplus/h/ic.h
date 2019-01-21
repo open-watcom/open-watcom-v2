@@ -363,3 +363,6 @@
                                           // End of Codes
                                           // ------------------------------------------
 , IC( IC_END,                NUL, __x__ ) // - can be used as terminator
+
+#undef __x__
+#undef OECNT

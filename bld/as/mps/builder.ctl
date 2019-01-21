@@ -11,8 +11,8 @@ set PROJDIR=<CWD>
 
 [ INCLUDE <OWROOT>/build/defrule.ctl ]
 
-[ BLOCK <1> rel ]
-#================
+[ BLOCK <BLDRULE> rel ]
+#======================
     cdsay <PROJDIR>
 
 [ BLOCK <BINTOOL> build ]
@@ -25,8 +25,8 @@ set PROJDIR=<CWD>
     echo rm -f <OWBINDIR>/bwasmps<CMDEXT>
     rm -f <OWBINDIR>/bwasmps<CMDEXT>
 
-[ BLOCK <1> rel cprel ]
-#======================
+[ BLOCK <BLDRULE> rel cprel ]
+#============================
     <CCCMD> dos386/wasmps.exe     <OWRELROOT>/binw/
     <CCCMD> dos386/wasmps.sym     <OWRELROOT>/binw/
     <CCCMD> os2386/wasmps.exe     <OWRELROOT>/binp/
@@ -41,6 +41,7 @@ set PROJDIR=<CWD>
     <CCCMD> ntx64/wasmps.exe      <OWRELROOT>/binnt64/
     <CCCMD> linuxx64/wasmps.exe   <OWRELROOT>/binl64/wasmps
     <CCCMD> linuxarm/wasmps.exe   <OWRELROOT>/arml/wasmps
+    <CCCMD> osxx64/wasmps.exe     <OWRELROOT>/osx64/wasmps
 
 [ BLOCK . . ]
 

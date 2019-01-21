@@ -185,23 +185,23 @@ static void macroDefs( void )
         DefSwitchMacro( "EE" );
     }
     switch( CompInfo.dt_method_speced ) {
-      case DTM_DIRECT :
+    case DTM_DIRECT :
         DefSwitchMacro( "XDT" );
         DefSwitchMacro( "XD" );
         break;
-      case DTM_DIRECT_SMALL :
+    case DTM_DIRECT_SMALL :
         DefSwitchMacro( "XDS" );
         break;
-      case DTM_TABLE :
+    case DTM_TABLE :
         DefSwitchMacro( "XS" );
         break;
-      case DTM_DIRECT_TABLE :
+    case DTM_DIRECT_TABLE :
         DefSwitchMacro( "XST" );
         break;
-      case DTM_TABLE_SMALL :
+    case DTM_TABLE_SMALL :
         DefSwitchMacro( "XSS" );
         break;
-      DbgDefault( "macroDefs -- invalid exception switch" );
+    DbgDefault( "macroDefs -- invalid exception switch" );
     }
     if( CompFlags.op_switch_used ) {
         DefSwitchMacro( "OP" );

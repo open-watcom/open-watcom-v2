@@ -30,11 +30,8 @@
 ****************************************************************************/
 
 
-#include "commonui.h"
-#include <ctype.h>
-#include <string.h>
-#include "watcom.h"
 #include "wglbl.h"
+#include <ctype.h>
 #include "wedit.h"
 #include "wdel.h"
 #include "sys_rc.h"

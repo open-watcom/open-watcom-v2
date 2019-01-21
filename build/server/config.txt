@@ -39,5 +39,8 @@ BLDLASTD=bldlastd.txt
 # The location of release tree for build server.
 RELROOT=c:\ow\ow\pass
 
-# The command to initialize environment for build server.
+# The command to setup/restore environment for build server.
+# it is called with parameter "setup" on the begining
+# and with parameter "restore" on the end of each batch script
+# processing
 INITCMD=

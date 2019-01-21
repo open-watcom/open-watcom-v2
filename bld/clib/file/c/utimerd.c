@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
+* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -34,10 +34,9 @@
 #include <stddef.h>
 #include <sys/types.h>
 #include <time.h>
-#include <dos.h>
 #include <sys/stat.h>
 #include <direct.h>
-#include <sys/utime.h>
+#include <utime.h>
 #include <rdos.h>
 #include "rtdata.h"
 
@@ -69,7 +68,7 @@ _WCRTLINK int __F_NAME(utime,_wutime)( CHAR_TYPE const *fn, struct utimbuf const
     tmptime->tm_mon++;
 
     msb = RdosCodeMsbTics(
-                       tmptime->tm_year + 1900, 
+                       tmptime->tm_year + 1900,
                        tmptime->tm_mon + 1,
                        tmptime->tm_mday,
                        tmptime->tm_hour );
@@ -79,7 +78,7 @@ _WCRTLINK int __F_NAME(utime,_wutime)( CHAR_TYPE const *fn, struct utimbuf const
                        tmptime->tm_sec,
                        0,
                        0 );
-                           
+
     RdosSetFileTime( handle, msb, lsb );
     RdosCloseFile( handle );
     return( 0 );

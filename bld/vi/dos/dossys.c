@@ -30,57 +30,23 @@
 
 
 #include "vi.h"
-#include <dos.h>
+#include <i86.h>
 #include "win.h"
 #include "dosx.h"
 #include "vibios.h"
 #include "pragmas.h"
+#include "osidle.h"
+
 
 extern void UpdateDOSClock( void );
 
 #define PHAR_SCRN_SEL   0x34
 extern int PageCnt;
 
-static char oldPath[_MAX_PATH];
-static char oldDrive;
-
 int FileSysNeedsCR( int handle )
 {
     return( true );
 }
-
-/*
- * PushDirectory
- */
-void PushDirectory( const char *orig )
-{
-    unsigned    c;
-
-    oldPath[0] = '\0';
-    _dos_getdrive( &c );
-    oldDrive = (char)c;
-    if( orig[1] == DRV_SEP ) {
-        ChangeDrive( orig[0] );
-    }
-    GetCWD2( oldPath, _MAX_PATH );
-    ChangeDirectory( orig );
-
-} /* PushDirectory */
-
-/*
- * PopDirectory
- */
-void PopDirectory( void )
-{
-    unsigned    total;
-
-    if( oldPath[0] != '\0' ) {
-        ChangeDirectory( oldPath );
-    }
-    _dos_setdrive( oldDrive, &total );
-    ChangeDirectory( CurrentDirectory );
-
-} /* PopDirectory */
 
 /*
  * NewCursor - change cursor to insert mode type
@@ -341,26 +307,6 @@ void ScreenPage( int page )
 
 } /* ScreenPage */
 
-/*
- * ChangeDrive - change the working drive
- */
-vi_rc ChangeDrive( int drive )
-{
-    char        a;
-    unsigned    b;
-    unsigned    total, c;
-
-    a = (char)tolower( drive ) - 'a';
-    b = a + 1;
-    _dos_setdrive( b, &total );
-    _dos_getdrive( &c );
-    if( b != c ) {
-        return( ERR_NO_SUCH_DRIVE );
-    }
-    return( ERR_NO_ERR );
-
-}/* ChangeDrive */
-
 #if defined( _M_I86 )
     #define KEY_PTR (char _FAR *)0x00400017;
 #elif defined( __4G__ )
@@ -406,15 +352,17 @@ void TurnOffCapsLock( void )
 
 extern unsigned short CheckRemovable( unsigned char );
 #pragma aux CheckRemovable = \
-        "mov    ax,4408h" \
-        "int    21h"      \
-        "cmp    ax,0fh"   \
-        "jne short ok"    \
-        "xor    ax,ax"    \
-        "jmp short done"  \
-    "ok: inc    ax"       \
-    "done:"               \
-    parm [bl] value[ax];
+        "mov  ax,4408h"     \
+        "int 21h"           \
+        "cmp  ax,0fh"       \
+        "jne short ok"      \
+        "xor  ax,ax"        \
+        "jmp short done"    \
+    "ok: inc  ax"           \
+    "done:"                 \
+    __parm      [__bl] \
+    __value     [__ax] \
+    __modify    []
 
 /*
  * DoGetDriveType - get the type of drive A-Z
@@ -434,7 +382,7 @@ void MyDelay( int ms )
 
     final_ticks = ClockTicks + ((ms * 182L + 5000L) / 10000L);
     do {
-        DosIdleCall();
+        ReleaseVMTimeSlice();
     } while( ClockTicks < final_ticks );
 
 } /* MyDelay */
@@ -460,7 +408,7 @@ bool KeyboardHit( void )
 #if !( defined( _M_I86 ) || defined( __4G__ ) )
         UpdateDOSClock();
 #endif
-        JustAnInt28();
+        DOSIdle();
     }
     return( rc );
 

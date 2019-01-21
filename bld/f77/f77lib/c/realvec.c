@@ -40,29 +40,31 @@
 
 extern unsigned long _getrealvect(char);
 #pragma aux _getrealvect = \
-                "mov    ax,2503h" \
-                "int    21h" \
-                parm [cl] \
-                value [ebx] \
-                modify exact [ax ebx]
+        "mov    ax,2503h" \
+        "int    21h" \
+    __parm              [__cl] \
+    __value             [__ebx] \
+    __modify __exact    [__ax __ebx]
 
 extern void _setrealvect(char,unsigned long);
 #pragma aux _setrealvect = \
-                "mov    ax,2505h" \
-                "int    21h" \
-                parm [cl] [ebx] \
-                modify exact [ax]
+        "mov    ax,2505h" \
+        "int    21h" \
+    __parm              [__cl] [__ebx] \
+    __value             \
+    __modify __exact    [__ax]
 
 extern void _setvectp(unsigned short,void (__interrupt __far *)(void));
 #pragma aux _setvectp = \
-                "push   ds" \
-                "mov    ds,cx" \
-                "mov    cl,al" \
-                "mov    ax,2506h" \
-                "int    21h" \
-                "pop    ds" \
-                parm [al] [cx edx] \
-                modify exact [ax cl]
+        "push   ds" \
+        "mov    ds,cx" \
+        "mov    cl,al" \
+        "mov    ax,2506h" \
+        "int    21h" \
+        "pop    ds" \
+    __parm              [__al] [__cx __edx] \
+    __value             \
+    __modify __exact    [__ax __cl]
 
 
 unsigned long   _dos_getrealvect( int intnum ) {

@@ -38,29 +38,29 @@
 // 92/11/27 -- J.W.Welch        -- extracted from CGBACK.C
 
 typedef struct type_sig TYPE_SIG;
-PCH_struct type_sig {           // TYPE_SIG -- type signature
-    TYPE_SIG*   next;           // - next in ring (hdr: type_sigs)
-    TYPE_SIG*   base;           // - base entry (T*,T&)
-    TYPE        type;           // - type being signatured
-    SYMBOL      sym;            // - NULL or symbol for signature
-    SYMBOL      dtor;           // - destructor
-    SYMBOL      default_ctor;   // - null constructor
-    SYMBOL      copy_ctor;      // - copy constructor
-    unsigned    cgref : 1;      // - true ==> ref'ed during code generation
-    unsigned    cggen : 1;      // - true ==> gen'ed during code generation
-    unsigned    free : 1;       // used for precompiled headers
+PCH_struct type_sig {               // TYPE_SIG -- type signature
+    TYPE_SIG*   next;               // - next in ring (hdr: type_sigs)
+    TYPE_SIG*   base;               // - base entry (T*,T&)
+    TYPE        type;               // - type being signatured
+    SYMBOL      sym;                // - NULL or symbol for signature
+    SYMBOL      dtor;               // - destructor
+    SYMBOL      default_ctor;       // - null constructor
+    SYMBOL      copy_ctor;          // - copy constructor
+    unsigned    cgref       : 1;    // - true ==> ref'ed during code generation
+    unsigned    cggen       : 1;    // - true ==> gen'ed during code generation
+    unsigned    free        : 1;    // used for precompiled headers
 };
 
-typedef enum                    // TYPE_SIG_ACCESS
-{   TSA_GEN             = 0x01  // - signature must exist
-,   TSA_FILL_OUT        = 0x02  // - fill out, without checking access
-,   TSA_COPY_CTOR       = 0x04  // - copy constructor
-,   TSA_DEFAULT_CTOR    = 0x08  // - null constructor
-,   TSA_DTOR            = 0x10  // - destructor
-,   TSA_NO_REF          = 0x20  // - don't set referenced bit in symbol
-,   TSA_INDIRECT_ACCESS = 0x40  // - indirect access
-,   TSA_INDIRECT_GEN    = 0x80  // - indirect generation
-,   TSA_NO_ACCESS       = 0x100 // - no need to check access
+typedef enum                        // TYPE_SIG_ACCESS
+{   TSA_GEN                 = 0x01  // - signature must exist
+,   TSA_FILL_OUT            = 0x02  // - fill out, without checking access
+,   TSA_COPY_CTOR           = 0x04  // - copy constructor
+,   TSA_DEFAULT_CTOR        = 0x08  // - null constructor
+,   TSA_DTOR                = 0x10  // - destructor
+,   TSA_NO_REF              = 0x20  // - don't set referenced bit in symbol
+,   TSA_INDIRECT_ACCESS     = 0x40  // - indirect access
+,   TSA_INDIRECT_GEN        = 0x80  // - indirect generation
+,   TSA_NO_ACCESS           = 0x100 // - no need to check access
 ,   TSA_INDIRECT = TSA_INDIRECT_ACCESS + TSA_INDIRECT_GEN
 } TYPE_SIG_ACCESS;
 

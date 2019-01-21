@@ -262,12 +262,14 @@ void InitPaths( void )
 
 #if defined( __DOS__ )
 extern void DoRingBell( void );
-#pragma aux DoRingBell =                                \
-        " push   ebp            ",                      \
-        " mov    ax, 0e07h      ",                      \
-        " int    10h            ",                      \
-        " pop    ebp            "                       \
-        modify exact [ ax ];
+#pragma aux DoRingBell = \
+        "push ebp"      \
+        "mov  ax,0e07h" \
+        "int 10h"       \
+        "pop  ebp"      \
+    __parm              [] \
+    __value             \
+    __modify __exact    [__ax]
 #endif
 
 void Ring( void )

@@ -1,78 +1,111 @@
 #
-#   test that the preprocessor doesn't try to process preprocessor commands
-#   while it is skipping a section
+#   test some of the macro substitutions
 #
-true=
 
-!ifdef false
-!ifeq false dowah ditty!
-!endif
-!endif
 
-!ifdef false
-!   ifeq false dowah
-!   else ifeq false true
-!       error shouldn't get here
-!   else
-!       error shouldn't get here
-!   endif
-!endif
+#
+#   test a: $(prefix$(version)
+#
 
-!ifdef false
-!   undef true
-!endif
-!ifndef true
-!   error shouldn't get here
+a1 =abc
+a2 =1
+
+aguess= $+$(a$(a2))$-
+
+!ifneq aguess abc
+!   error failed test a
 !endif
 
-!ifdef false
-!   include an_impossibly_long_filename
+
+#
+#   test b: $(prefix$version)
+#
+
+b1 =abc
+b2 =1
+
+bguess= $+$(b$b2)$-
+
+!ifneq bguess abc
+!   error failed test b
 !endif
 
-!ifdef false
-!   define false
-!endif
-!ifdef false
-!   error shouldn't get here
+
+#
+#   test c: $prefix$(version)
+#
+
+c1 =abc
+c2 =1
+
+cguess= $+$c$(c2)$-
+
+!ifneq cguess abc
+!   error failed test c
 !endif
 
-foo = bar
 
-!ifeq foo bar
-!else
-!   error shouldn't get here
+#
+#   test d: $prefix$version
+#
+
+d1 =abc
+d2 =1
+
+dguess= $+$d$d2$-
+
+!ifneq dguess abc
+!   error failed test d
 !endif
 
-!ifeq foo bare
-!   error shouldn't get here
+
+#
+#   test e: multiple indirection
+#
+
+e1 =abc
+e2 =1
+e3 =2
+
+eguess= $+$(e$(e$(e3)))$-
+
+!ifneq eguess abc
+!   error failed test e
 !endif
 
-!ifneq foo bare
-!else
-!   error shouldn't get here
+
+#
+#   test f: $($(prefix)$(suffix))
+#
+
+f1 = abc
+f2 = f
+f3 = 1
+
+fguess = $+$($(f2)$(f3))$-
+
+!ifneq fguess abc
+!   error failed test f
 !endif
 
-!ifneq foo bar
-!   error shouldn't get here
+
+#
+#   test g: $prefix$suffix,moretext
+#
+
+g1 = abc
+g2 = 1
+
+gguess = $+$g$g2,moretext$-
+
+!ifneq gguess abc,moretext
+!   error failed test g
 !endif
 
-!ifeqi foo BaR
-!else
-!   error shouldn't get here
-!endif
 
-!ifeqi foo BaRe
-!   error shouldn't get here
-!endif
-
-!ifneqi foo bArE
-!else
-!   error shouldn't get here
-!endif
-
-!ifneqi foo bAr
-!   error shouldn't get here
-!endif
+#
+#
+#
 
 pre05 : .symbolic
     @%null

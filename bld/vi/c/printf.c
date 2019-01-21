@@ -40,7 +40,7 @@ void Lead( char c, int num, char *buff )
 {
     int len, diff, i;
 
-    len = strlen( buff );
+    len = (int)strlen( buff );
     diff = num - len;
     if( diff <= 0 ) {
         return;
@@ -160,7 +160,7 @@ copyloopa:
                 {
                     int k;
 
-                    l = strlen( buff );
+                    l = (long)strlen( buff );
                     k = j - l;
                     if( k > 0 ) {
                         tmp = &buff[l];

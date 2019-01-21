@@ -32,3 +32,15 @@
 
 #define vhandle int
 #define NO_VAR ((vhandle)-1)
+
+#define MAGICVARS( x, y ) \
+    x( FullInstall, y ) \
+    x( FullCDInstall, y ) \
+    x( UnInstall, y ) \
+    x( MinimalInstall, y ) \
+    x( SelectiveInstall, y ) \
+    x( PreviousInstall, y )
+
+#define defvar( x, y ) extern vhandle x;
+MAGICVARS( defvar, 0 )
+#undef defvar

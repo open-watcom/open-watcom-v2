@@ -52,18 +52,19 @@ static bool formatClassForSym( SYMBOL sym, VBUF *buf )
 /****************************************************/
 {
     CLASSINFO *info;            // - class information for symbol
-    bool retb = false;          // - return: true ==> is class member
+    bool ok;                    // - return: true ==> is class member
     NAME name;                  // - class name
 
+    ok = false;
     info = SymClassInfo( sym );
     if( info != NULL ) {
         name = info->name;
         if( name != NULL ) {
             VbufConcStr( buf, NameStr( name ) );
-            retb = true;
+            ok = true;
         }
     }
-    return( retb );
+    return( ok );
 }
 
 SYMBOL FormatMsg( VBUF *pbuf, char *fmt, va_list arg )
@@ -73,7 +74,7 @@ SYMBOL FormatMsg( VBUF *pbuf, char *fmt, va_list arg )
 {
     VBUF    prefix, suffix;
     char    cfmt;
-    char    local_buf[ 1 + sizeof( int ) * 2 + 1 ];
+    char    local_buf[1 + sizeof( int ) * 2 + 1];
     unsigned len;
     SYMBOL  retn_symbol;
 
@@ -259,5 +260,5 @@ SYMBOL FormatMsg( VBUF *pbuf, char *fmt, va_list arg )
         fmt++;
         cfmt = *fmt;
     }
-    return retn_symbol;
+    return( retn_symbol );
 }

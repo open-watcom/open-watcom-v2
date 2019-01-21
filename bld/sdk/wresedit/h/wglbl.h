@@ -33,7 +33,13 @@
 #ifndef WGLBL_INCLUDED
 #define WGLBL_INCLUDED
 
+#include "commonui.h"
+#include <stdlib.h>
+#include <stdio.h>
+#include <string.h>
+#include "watcom.h"
 #include "bool.h"
+#include "wresid.h"
 
 /****************************************************************************/
 /* macro definitions                                                        */

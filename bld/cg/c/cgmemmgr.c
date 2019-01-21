@@ -60,71 +60,37 @@ essentially no worst case performance scenario.
 ****************************************************************************/
 
 
-#include "cgstd.h"
+#include "_cgstd.h"
 #include <stdlib.h>
 #include <stdio.h>
-#if defined( _M_IX86 ) && defined( __WATCOMC__ )
-    #include <i86.h>
-#endif
 #if defined( __NT__ )
     #include <windows.h>
 #elif defined( __OSI__ )
     #define __CALL21__
     #include "tinyio.h"
 #elif defined( __DOS__ )
-    #include "tinyio.h"
+    #include <i86.h>
+    #include "extender.h"
+    #include "dpmi.h"
 #elif defined( __QNX__ )
     #include <sys/osinfo.h>
     #include <sys/seginfo.h>
 #endif
 #include "_cg.h"
-#include "cgdefs.h"
 #include "utils.h"
 #include "onexit.h"
+#include "memsydep.h"
+#include "envvar.h"
 #include "feprotos.h"
 
 #ifdef __DOS__
 
-#include "dosmem.h"
-
-typedef struct {
-    unsigned largest_free;
-    unsigned max_unlocked_page_alloc;
-    unsigned max_locked_page_alloc;
-    unsigned linear_addr_space_in_pages;
-    unsigned total_unlocked_pages;
-    unsigned free_pages;
-    unsigned physical_pages;
-    unsigned free_linear_addr_space_in_pages;
-    unsigned size_of_page_file_in_pages;
-    unsigned fill[4];
-} dpmi_mem;
-
-extern int _TinyDPMIGetFreeMemoryInformation( dpmi_mem * );
-#pragma aux _TinyDPMIGetFreeMemoryInformation = \
-        "push es"      \
-        "push ds"      \
-        "pop es"       \
-        "mov ax,0500h" \
-        "int 31h"      \
-        "pop es"       \
-        "sbb eax,eax"  \
-        parm[edi] value[eax];
-
-#include "extender.h"
-
-extern char int2f( short );
-#pragma aux int2f parm [ax] value [al] = "int 2fh";
-
-#pragma     aux     __psp "*";
-extern      short   __psp;
+extern short    __psp;
+#pragma aux __psp "*";
 
 #endif
 
 typedef pointer_int     tag;
-
-extern bool     GetEnvVar( char *, char *, int );
-
 
 #define _1K             1024L
 #define _4K             (4 * _1K)
@@ -135,7 +101,7 @@ extern bool     GetEnvVar( char *, char *, int );
 
 static  pointer     MemFromSys( size_t );
 
-static pointer_int  AllocSize = { 0 };
+static pointer_int  AllocSize = 0;
 static pointer_int  MemorySize;
 static int          Initialized = 0;
 #ifdef MEMORY_STATS
@@ -245,22 +211,21 @@ static  void    CalcMemSize( void )
     }
 #if defined( __DOS__ )
     {
-        char        *memstart;
-
         MemorySize = 0;
         if( _IsRational() ) {
 
             dpmi_mem            mem_info;
 
-            _TinyDPMIGetFreeMemoryInformation( &mem_info );
+            DPMIGetFreeMemoryInformation( &mem_info );
             memory_available = mem_info.largest_free - _1K;
 
         } else { // PharLap or win386
 
-            memstart = sbrk( 0 );
-            if( int2f( 0x1686 ) == 0 ) { // DPMI HOST
+            if( DPMIModeDetect() == 0 ) { // DPMI HOST
+
                 dpmi_mem    mem_info;
-                _TinyDPMIGetFreeMemoryInformation( &mem_info );
+
+                DPMIGetFreeMemoryInformation( &mem_info );
                 if( max_size_queried ) {
                     memory_available = mem_info.largest_free;
                 } else {
@@ -273,9 +238,11 @@ static  void    CalcMemSize( void )
                     }
                 }
             } else {
-                memory_available = *(char * __far *)MK_FP( __psp, 0x60 ) - memstart;
+                memory_available = *(char * __far *)MK_FP( __psp, 0x60 ) - sbrk( 0 );
             }
-            if( memory_available < _1M ) memory_available = _1M;
+            if( memory_available < _1M ) {
+                memory_available = _1M;
+            }
         }
         if( size_requested != 0 ) {
             if( memory_available < size_requested ) {
@@ -334,7 +301,7 @@ static  void    CalcMemSize( void )
     }
 }
 
-static  void    MemInit( void )
+static  void    memInit( void )
 /*****************************/
 {
     if( !Initialized ) {
@@ -426,14 +393,14 @@ static pointer  GetFromBlk( size_t amount )
 }
 
 
-extern pointer  MemAlloc( size_t amount )
-/***************************************/
+pointer  MemAlloc( size_t amount )
+/********************************/
 {
     char        *chunk;
     int         mem_class;
 
     if( !Initialized )
-        MemInit();
+        memInit();
     if( amount == 0 )
         return( NULL );
     amount = _RoundUp( amount + TAG_SIZE, MEM_WORD_SIZE );
@@ -453,14 +420,14 @@ extern pointer  MemAlloc( size_t amount )
 }
 
 
-extern void     MemFree( char *block )
-/************************************/
+void     MemFree( pointer p )
+/***************************/
 {
     frl     *free;
     int     mem_class;
     tag     length;
 
-    free   = (frl *)( block - TAG_SIZE );
+    free   = (frl *)( (char *)p - TAG_SIZE );
     assert( free->length & ALLOCATED );
     free->length &= ~ALLOCATED;
     length = free->length;
@@ -468,7 +435,7 @@ extern void     MemFree( char *block )
         blk_hdr     *header;
         mem_blk     *blk;
 
-        header = (blk_hdr *)( block - sizeof( blk_hdr ) );
+        header = (blk_hdr *)( (char *)p - sizeof( blk_hdr ) );
         blk    = header->block;
         blk->free += header->size + sizeof( blk_hdr );
         blk->size += header->size + sizeof( blk_hdr );
@@ -483,28 +450,28 @@ extern void     MemFree( char *block )
     }
 }
 
-extern void     MemCoalesce( void )
-/*********************************/
+void     MemCoalesce( void )
+/**************************/
 {
     return;
 }
 
 
-extern pointer_int      MemInUse( void )
-/**************************************/
+pointer_int      MemInUse( void )
+/*******************************/
 {
     if( !Initialized )
-        MemInit();
+        memInit();
     return( AllocSize );
 }
 
 
-extern pointer_int      MemSize( void )
-/*************************************/
+pointer_int      MemSize( void )
+/******************************/
 {
     switch( Initialized ) {
     case 0:
-        MemInit();
+        memInit();
 #if defined( __QNX__ )
         /* fall through */
     case 1:
@@ -569,8 +536,8 @@ static  void MemToSys( mem_blk *what )
 }
 
 
-extern void MemFini( void )
-/*************************/
+void MemFini( void )
+/******************/
 {
     mem_blk     *curr;
     mem_blk     *next;

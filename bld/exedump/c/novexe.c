@@ -30,6 +30,7 @@
 
 
 #include <stdio.h>
+#include <stdlib.h>
 #include <setjmp.h>
 #include <string.h>
 
@@ -115,8 +116,6 @@ static void dmp_module_dep( void )
 /********************************/
 {
     unsigned_32     i;
-    unsigned_8      len;
-    char            *name;
 
     if( Nlm_head.numberOfModuleDependencies == 0 ) {
         return;
@@ -125,12 +124,8 @@ static void dmp_module_dep( void )
     Wlseek( Nlm_head.moduleDependencyOffset );
     Banner( "Module Dependency Table" );
     for( i = 0; i < Nlm_head.numberOfModuleDependencies; i++ ) {
-        Wread( &len, sizeof( unsigned_8 ) );
-        name = Wmalloc( len );
-        Wread( name, len );
-        name[len] = '\0';
         Wdputs( "      " );
-        Wdputs( name );
+        Dump_name();
         Wdputslc( "\n" );
     }
 }
@@ -173,8 +168,6 @@ static void dmp_external_ref( void )
 /**********************************/
 {
     unsigned_32     i,j;
-    unsigned_8      len;
-    char            *name;
     unsigned_32     num;
     unsigned_32     reloc;
 
@@ -187,11 +180,7 @@ static void dmp_external_ref( void )
     Wdputslc( "80000000H = relocation not relative to current position\n" );
     Wdputslc( "40000000H = relocation to code segment\n" );
     for( i = 0; i < Nlm_head.numberOfExternalReferences; i++ ) {
-        Wread( &len, sizeof( unsigned_8 ) );
-        name = Wmalloc( len );
-        Wread( name, len );
-        name[len] = '\0';
-        Wdputs( name );
+        Dump_name();
         Wdputs( ",  relocations:" );
         Wdputslc( "\n" );
         Wread( &num, sizeof( unsigned_32 ) );
@@ -221,7 +210,7 @@ static void dmp_public_entry( void )
 {
     unsigned_32     i;
     unsigned_8      len;
-    char            *name;
+    char            name[256];
     unsigned_32     addr;
 
     if( Nlm_head.numberOfPublics == 0 ) {
@@ -234,13 +223,12 @@ static void dmp_public_entry( void )
     Wdputslc( "      Address         Name\n" );
     Wdputslc( "      =======         ====\n" );
     for( i = 0; i < Nlm_head.numberOfPublics; i++ ) {
-        Wread( &len, sizeof( unsigned_8 ) );
-        name = Wmalloc( len );
+        Wread( &len, sizeof( len ) );
         Wread( name, len );
         name[len] = '\0';
-        Wread( &addr, sizeof( unsigned_32 ) );
+        Wread( &addr, sizeof( addr ) );
         Wdputs( "      " );
-        Puthex( addr, 8 );
+        Puthex( addr, 2 * sizeof( addr ) );
         Wdputs( "        " );
         Wdputs( name );
         Wdputslc( "\n" );
@@ -317,7 +305,6 @@ bool Dmp_nlm_head( void )
     nlm_header_3    nlm_head3;
     nlm_header_4    nlm_head4;
     bool            extend;
-    char            nlm_name[256];
 
     Wlseek( 0 );
     Wread( &Nlm_head, sizeof( Nlm_head.signature ) );
@@ -331,9 +318,7 @@ bool Dmp_nlm_head( void )
     Puthex( Nlm_head.version, 8 );
     Wdputslc( "H\n" );
     Wdputs( "module name                               = " );
-    memcpy( nlm_name, &Nlm_head.moduleName[1], Nlm_head.moduleName[0] );
-    nlm_name[ (int)Nlm_head.moduleName[0] ] = '\0';
-    Wdputs( nlm_name );
+    Wdputname( Nlm_head.moduleName );
     Wdputslc( "\n" );
     Dump_header( (char *)&Nlm_head.codeImageOffset, nlm_exe_msg, 4 );
     offset = dmp_nlm_head2();

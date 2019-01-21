@@ -53,15 +53,15 @@
       #endif
     #else
         #define __SLIB_CALLBACK _WCFAR
-        #pragma aux slib_callback_t __far parm [eax] [edx] modify [eax edx];
+        #pragma aux slib_callback_t __far __parm [__eax] [__edx] __modify [__eax __edx]
     #endif
 #else
     #define __SLIB_CALLBACK
     #if defined( __WINDOWS_386__ )
         #ifdef __SW_3S
-            #pragma aux slib_callback_t modify [eax edx ecx fs gs];
+            #pragma aux slib_callback_t __modify [__eax __edx __ecx __fs __gs]
         #else
-            #pragma aux slib_callback_t modify [fs gs];
+            #pragma aux slib_callback_t __modify [__fs __gs]
         #endif
     #endif
 #endif

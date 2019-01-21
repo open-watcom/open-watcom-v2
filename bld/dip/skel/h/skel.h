@@ -49,19 +49,19 @@
 
 struct imp_sym_handle {
     /* any stuff for getting information on symbols */
-    imp_mod_handle      im;
+    imp_mod_handle      imh;
     void                *pointer;
 };
 
 struct imp_type_handle {
     /* any stuff for getting information on types */
-    imp_mod_handle      im;
+    imp_mod_handle      imh;
     void                *pointer;
 };
 
 struct imp_cue_handle {
     /* any stuff for getting information on source line cues */
-    imp_mod_handle      im;
+    imp_mod_handle      imh;
     void                *pointer;
 };
 

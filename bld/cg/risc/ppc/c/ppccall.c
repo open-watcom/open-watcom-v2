@@ -31,7 +31,7 @@
 ****************************************************************************/
 
 
-#include "cgstd.h"
+#include "_cgstd.h"
 #include "coderep.h"
 #include "cgaux.h"
 #include "zoiks.h"
@@ -47,13 +47,13 @@
 #include "typemap.h"
 #include "bldcall.h"
 #include "parmreg.h"
+#include "parm.h"
+#include "bgcall.h"
 
 
-extern  type_def        *QParmType( cg_sym_handle, cg_sym_handle, type_def * );
-
-extern  an      BGCall( cn call, bool use_return, bool in_line ) {
-/****************************************************************/
-
+an      BGCall( cn call, bool use_return, bool in_line )
+/******************************************************/
+{
     instruction         *call_ins;
     instruction         *conv_ins;
     call_state          *state;
@@ -89,8 +89,8 @@ extern  an      BGCall( cn call, bool use_return, bool in_line ) {
     if( use_return ) {
 #if 1
         if( call_ins->type_class != XX ){
-            conv_ins = MakeConvert( call_ins->result, result, result->n.name_class,
-                                    call_ins->result->n.name_class );
+            conv_ins = MakeConvert( call_ins->result, result, result->n.type_class,
+                                    call_ins->result->n.type_class );
             AddIns( conv_ins );
         } else {
             // conv_ins = MakeMove( call_result, result, XX );
@@ -101,17 +101,17 @@ extern  an      BGCall( cn call, bool use_return, bool in_line ) {
 }
 
 
-extern  void    BGProcDecl( cg_sym_handle sym, type_def *tipe ) {
-/************************************************************/
-
-    type_class_def      class;
+void    BGProcDecl( cg_sym_handle sym, type_def *tipe )
+/*****************************************************/
+{
+    type_class_def      type_class;
     name                *temp;
     hw_reg_set          reg;
 
-    class = AddCallBlock( sym, tipe );
+    type_class = AddCallBlock( sym, tipe );
     SaveTargetModel = TargetModel;
     if( tipe != TypeNone ) {
-        if( class == XX ) {
+        if( type_class == XX ) {
             reg = HW_D3;
             temp = AllocTemp( WD );
             temp->v.usage |= USE_IN_ANOTHER_BLOCK;
@@ -123,21 +123,21 @@ extern  void    BGProcDecl( cg_sym_handle sym, type_def *tipe ) {
 }
 
 
-extern  type_def    *PassParmType( cg_sym_handle func, type_def* tipe, call_class class )
-/***************************************************************************************/
+type_def    *PassParmType( cg_sym_handle func, type_def* tipe, call_class cclass )
+/********************************************************************************/
 {
-    /* unused parameters */ (void)class;
+    /* unused parameters */ (void)cclass;
 
     tipe = QParmType( func, NULL, tipe );
     return( tipe );
 }
 
-extern  instruction *   PushOneParm( instruction *ins, name *curr,
-                                     type_class_def class,
+instruction    *PushOneParm( instruction *ins, name *curr,
+                                     type_class_def type_class,
                                      type_length offset,
-                                     call_state *state ) {
-/**************************************************************/
-
+                                     call_state *state )
+/********************************************************/
+{
     instruction *new;
     name        *dst;
     name        *stack_reg;
@@ -145,15 +145,15 @@ extern  instruction *   PushOneParm( instruction *ins, name *curr,
     /* unused parameters */ (void)state;
 
     stack_reg = AllocRegName( StackReg() );
-    dst = AllocIndex( stack_reg, NULL, offset + STACK_HEADER_SIZE, class );
-    new = MakeMove( curr, dst, class );
+    dst = AllocIndex( stack_reg, NULL, offset + STACK_HEADER_SIZE, type_class );
+    new = MakeMove( curr, dst, type_class );
     SuffixIns( ins, new );
     return( new );
 }
 
-extern  name    *StReturn( an retval, type_def *tipe, instruction **pins ) {
-/**************************************************************************/
-
+name    *StReturn( an retval, type_def *tipe, instruction **pins )
+/****************************************************************/
+{
     name        *index;
 
     /* unused parameters */ (void)retval; (void)pins;
@@ -162,28 +162,29 @@ extern  name    *StReturn( an retval, type_def *tipe, instruction **pins ) {
     return( index );
 }
 
-extern  void    InitTargProc() {
-/******************************/
+void    InitTargProc( void )
+/**************************/
+{
     CurrProc->targ.debug = NULL;
     CurrProc->targ.base_is_fp = false;
 }
 
 
-extern  void    SaveToTargProc() {
-/********************************/
-
+void    SaveToTargProc( void )
+/****************************/
+{
     CurrProc->targ.max_stack = MaxStack;
 }
 
 
-extern  void    RestoreFromTargProc() {
+void    RestoreFromTargProc( void )
 /*************************************/
-
+{
     MaxStack = CurrProc->targ.max_stack;
 }
 
-extern  reg_set_index   CallIPossible( instruction *ins )
-/*********************************************************/
+reg_set_index   CallIPossible( instruction *ins )
+/***********************************************/
 {
     /* unused parameters */ (void)ins;
 

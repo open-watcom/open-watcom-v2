@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
+* Copyright (c) 2009-2018 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -38,12 +38,15 @@ class Env {
 public:
     Env() { };
     void add( const std::string& key );
-    std::string& value( const std::string& key ) { return data[ key ]; };
+    std::string& value( const std::string& key ) { return _data[key]; };
 private:
-    std::map< std::string, std::string > data;
+    void killQuotes( std::string& value );
+
+    std::map< std::string, std::string >    _data;
     typedef std::map< std::string, std::string >::iterator DataIter;
     typedef std::map< std::string, std::string >::const_iterator ConstDataIter;
-    void killQuotes( std::string& value );
 };
+
+extern class Env    Environment;
 
 #endif //ENV_INCLUDED

@@ -31,8 +31,7 @@
 
 #include "variety.h"
 #include <dos.h>
-
-#define DOS_EXT_ERR     0x59
+#include "dosfuncx.h"
 
 
 _WCRTLINK int dosexterr( struct _DOSERROR *doserr )

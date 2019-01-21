@@ -37,17 +37,23 @@
 extern  unsigned long __lrotl( unsigned long, unsigned );
 
 #if defined(__386__)
-#pragma aux __lrotl = "rol eax,cl" parm [eax] [ecx] value [eax] modify [ecx];
+#pragma aux __lrotl = \
+        "rol eax,cl" \
+    __parm      [__eax] [__ecx] \
+    __value     [__eax] \
+    __modify    [__ecx]
 #elif defined( _M_I86 )
-#pragma aux __lrotl =   "    and cx,31"\
-                        "    je  short L2"\
-                        "L1: adc ax,ax"\
-                        "    adc dx,dx"\
-                        "    adc ax,0"\
-                        "    dec cx"\
-                        "    jne L1"\
-                        "L2:" \
-                        parm [ax dx] [cx] value [ax dx];
+#pragma aux __lrotl = \
+        "and cx,31"     \
+        "je short L2"   \
+    "L1: adc ax,ax"     \
+        "adc dx,dx"     \
+        "adc ax,0"      \
+        "dec cx"        \
+        "jne short L1"  \
+    "L2:"               \
+    __parm      [__ax __dx] [__cx] \
+    __value     [__ax __dx]
 #endif
 
 

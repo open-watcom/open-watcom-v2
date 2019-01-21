@@ -506,6 +506,7 @@ xfns += &
 # ufns
 !inject fdefwin.obj                  nt nta ntp         o32         w16 w32
 !inject fintr.obj        d16 d32 dpm                                w16 w32
+!inject fintrf.obj       d16 d32 dpm                                w16 w32
 !inject fspawn.obj       d16 d32 dpm nt nta ntp nov o16 o32             w32 l32
 !inject fsystem.obj      d16 d32 dpm nt nta ntp nov o16 o32             w32 l32
 !inject winapi.obj                                                  w16 w32

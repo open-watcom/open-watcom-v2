@@ -31,7 +31,7 @@
 
 
 #define _LBit_DEFINE_BITNEXT
-#include "cgstd.h"
+#include "_cgstd.h"
 #include "coderep.h"
 #include "zoiks.h"
 #include "makeins.h"
@@ -40,6 +40,7 @@
 #include "insutil.h"
 #include "fixindex.h"
 #include "conflict.h"
+#include "liveinfo.h"
 
 
 static  void            GlobalConflictsFirst( void )
@@ -175,9 +176,8 @@ static  void    AssignBit( conflict_node *conf, block *blk )
 }
 
 
-extern  void    NowAlive( name *opnd, conflict_node *conf,
-                          name_set *alive, block *blk )
-/********************************************************/
+void    NowAlive( name *opnd, conflict_node *conf, name_set *alive, block *blk )
+/******************************************************************************/
 {
     if( opnd->n.class == N_REGISTER ) {
         HW_TurnOn( alive->regs, opnd->r.reg );
@@ -194,9 +194,8 @@ extern  void    NowAlive( name *opnd, conflict_node *conf,
 }
 
 
-extern  void    NowDead( name *opnd, conflict_node *conf,
-                         name_set *alive, block *blk )
-/*******************************************************/
+void    NowDead( name *opnd, conflict_node *conf, name_set *alive, block *blk )
+/*****************************************************************************/
 {
     if( opnd->n.class == N_REGISTER ) {
         HW_TurnOff( alive->regs, opnd->r.reg );
@@ -217,13 +216,13 @@ extern  void    NowDead( name *opnd, conflict_node *conf,
 }
 
 
-static  void    FlowConflicts( instruction *first,
-                               instruction *last, block *blk )
-/************************************************************/
-/* Scan through instructions backwards in the block*/
-/* Mark each instruction with the set of names live*/
-/* from the assignment of the previous instruction to the*/
-/* assignment of the current instruction*/
+static  void    FlowConflicts( instruction *first, instruction *last, block *blk )
+/********************************************************************************
+ * Scan through instructions backwards in the block
+ * Mark each instruction with the set of names live
+ * from the assignment of the previous instruction to the
+ * assignment of the current instruction
+ */
 {
     instruction         *ins;
     name                *opnd;
@@ -342,8 +341,8 @@ static  void    FlowConflicts( instruction *first,
 }
 
 
-extern  void    MakeLiveInfo( void )
-/**********************************/
+void    MakeLiveInfo( void )
+/**************************/
 {
     block               *blk;
     conflict_node       *first_global;
@@ -367,8 +366,8 @@ extern  void    MakeLiveInfo( void )
 }
 
 
-extern  void    LiveInfoUpdate( void )
-/************************************/
+void    LiveInfoUpdate( void )
+/****************************/
 {
     block       *blk;
 
@@ -380,9 +379,9 @@ extern  void    LiveInfoUpdate( void )
 }
 
 
-extern  void    UpdateLive( instruction *first, instruction *last )
-/*****************************************************************/
-/* update the live information from 'first'.prev to 'last'.next inclusive*/
+void    UpdateLive( instruction *first, instruction *last )
+/*********************************************************/
+/* update the live information from 'first'.prev to 'last'.next inclusive */
 {
     instruction *ins;
 
@@ -393,7 +392,8 @@ extern  void    UpdateLive( instruction *first, instruction *last )
     if( ins->head.next == ins->head.prev ) { /* 1 or 2 instructions*/
         FlowConflicts( ins, ins, _BLOCK( ins ) );
     } else {
-        if( first->head.opcode != OP_BLOCK ) first = first->head.prev;
+        if( first->head.opcode != OP_BLOCK )
+            first = first->head.prev;
         FlowConflicts( first, last, _BLOCK( ins ) );
     }
 }

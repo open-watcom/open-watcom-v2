@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
+* Copyright (c) 2009-2018 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -28,46 +28,50 @@
 *
 ****************************************************************************/
 
+
+#include "wipfc.hpp"
 #include "controls.hpp"
 #include "errors.hpp"
+#include "outfile.hpp"
 
-STD1::uint32_t Controls::write( std::FILE* out )
+
+dword Controls::write( OutFile* out )
 {
-    STD1::uint32_t start( std::ftell( out ) );
-    STD1::uint16_t value( static_cast< STD1::uint16_t >( controls.size() ) );
-    if( std::fwrite( &value, sizeof( STD1::uint16_t ), 1, out) != 1 )
+    dword start( out->tell() );
+    if( out->put( static_cast< word >( _controls.size() ) ) )
         throw FatalError( ERR_WRITE );
-    value = static_cast< STD1::uint16_t >( groups.size() );
-    if( std::fwrite( &value, sizeof( STD1::uint16_t ), 1, out ) != 1 )
+    if( out->put( static_cast< word >( _groups.size() ) ) )
         throw FatalError( ERR_WRITE );
-    if( std::fwrite( &coverGroup, sizeof( STD1::uint16_t ), 1, out) != 1 )
+    if( out->put( _coverGroup ) )
         throw FatalError( ERR_WRITE );
-    value = 0;                              //reserved word
-    if( std::fwrite( &value, sizeof( STD1::uint16_t ), 1, out) != 1 )
+    //reserved word 0
+    if( out->put( static_cast< word >( 0 ) ) )
         throw FatalError( ERR_WRITE );
-    for( ConstControlIter itr = controls.begin(); itr != controls.end(); ++itr ) {
-        bytes += itr->write( out );
+    for( ConstControlIter itr = _controls.begin(); itr != _controls.end(); ++itr ) {
+        _bytes += itr->write( out );
     }
-    for( ConstGroupIter itr = groups.begin(); itr != groups.end(); ++itr ) {
-        bytes += itr->write( out );
+    for( ConstGroupIter itr = _groups.begin(); itr != _groups.end(); ++itr ) {
+        _bytes += itr->write( out );
     }
     return start;
 }
 /***************************************************************************/
-ControlButton* Controls::getButtonById( const std::wstring& i )
+ControlButton* Controls::getButtonById( const std::wstring& id )
 {
-    for( ControlIter itr = controls.begin(); itr != controls.end(); ++itr ) {
-        if( itr->id() == i )
+    for( ControlIter itr = _controls.begin(); itr != _controls.end(); ++itr ) {
+        if( itr->id() == id ) {
             return &(*itr);
+        }
     }
     return 0;
 }
 /***************************************************************************/
-ControlGroup* Controls::getGroupById( const std::wstring& i )
+ControlGroup* Controls::getGroupById( const std::wstring& id )
 {
-    for( GroupIter itr = groups.begin(); itr != groups.end(); ++itr ) {
-        if( itr->id() == i )
+    for( GroupIter itr = _groups.begin(); itr != _groups.end(); ++itr ) {
+        if( itr->id() == id ) {
             return &(*itr);
+        }
     }
     return 0;
 }

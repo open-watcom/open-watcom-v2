@@ -89,9 +89,9 @@ static SYMBOL getSymInScope(    // GET A SYMBOL IN A SCOPE
                                       , sym
                                       , alist
                                       , NULL ) ) {
-                  case FNOV_NONAMBIGUOUS :
+                case FNOV_NONAMBIGUOUS :
                     break;
-                  default :
+                default :
                     sym = NULL;
                     break;
                 }
@@ -101,7 +101,7 @@ static SYMBOL getSymInScope(    // GET A SYMBOL IN A SCOPE
             ScopeFreeResult( result );
         }
     }
-    return sym;
+    return( sym );
 }
 
 
@@ -170,7 +170,7 @@ static PTREE genVfunCall(       // DIRECTLY GENERATE VFUN CALL
     node->flags |= PTF_LVALUE;
     node = NodeRvalue( node );
     node->type = sym->sym_type;
-    return node;
+    return( node );
 }
 
 
@@ -198,7 +198,7 @@ static PTREE genVfunIcs(        // GENERATE IC'S FOR CG-GENERATION OF VFUN CALL
     expr->flags = node->flags;
     expr = PtdVfunAccess( expr, vf_index, vf_offset, baser );
     node = NodeUnaryCopy( CO_VFUN_PTR, node );
-    return NodeComma( node, expr );
+    return( NodeComma( node, expr ) );
 }
 
 
@@ -228,7 +228,7 @@ PTREE AccessVirtualFnAddress(   // GET ADDRESS OF VIRTUAL FUNCTION
 PTREE VfunSetupCall(            // SETUP CODE FOR VIRTUAL FUNCTION CALL
     PTREE expr )                // - expression for setup
 {
-    return NodeUnaryCopy( CO_CALL_SETUP_IND, expr );
+    return( NodeUnaryCopy( CO_CALL_SETUP_IND, expr ) );
 }
 
 
@@ -244,7 +244,7 @@ PTREE VfnDecorateCall(          // DECORATE VIRTUAL CALL
     sym = NodeBinary( CO_VIRT_FUNC, expr, sym );
     sym->flags = expr->flags;
     sym->type = expr->type;
-    return sym;
+    return( sym );
 }
 
 

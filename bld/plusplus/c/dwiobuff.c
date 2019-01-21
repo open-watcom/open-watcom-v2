@@ -77,14 +77,14 @@ static DWIOBUFF *allocateBuffer(// ALLOCATE A NEW BUFFER
     ctl->written = false;
     ctl->writing = false;
     RingAppend( &activeBufs, ctl );
-    return ctl;
+    return( ctl );
 }
 
 
 static void *pointXfer(         // POINT AT TRANSFER POINT
     DWIOBUFF *ctl )             // - buffer control
 {
-    return (char*)ctl->data + ctl->current_offset;
+    return( (char*)ctl->data + ctl->current_offset );
 }
 
 
@@ -97,7 +97,7 @@ static DWIOBUFF *findWrBuffer(  // FIND A BUFFER FOR WRITING
     ctl->disk_addr = IoSuppTempNextBlock( DWBLOCK_FACTOR );
     ctl->writing = true;
     ctl->written = false;
-    return ctl;
+    return( ctl );
 }
 
 
@@ -115,7 +115,7 @@ static DWIOBUFF *locateRdBuffer(// LOCATE A READ BUFFER IN A RING
             break;
         }
     } RingIterEnd( ctl )
-    return found;
+    return( found );
 }
 
 
@@ -161,7 +161,7 @@ static DWIOBUFF *findBuffer(    // FIND A SPECIFIC BUFFER
             activateBuffer( ctl );
         }
     }
-    return ctl;
+    return( ctl );
 }
 
 
@@ -172,7 +172,7 @@ static DWIOBUFF *findRdBuffer(  // FIND A BUFFER FOR READING
     ctl = findBuffer( block );
     ++ctl->reading;
     ctl->current_offset = 0;
-    return ctl;
+    return( ctl );
 }
 
 
@@ -182,7 +182,7 @@ static DWIOBUFF *findReWrBuffer(// FIND BUFFER FOR RE-WRITE
     DWIOBUFF *ctl;
     ctl = findBuffer( block );
     ctl->writing = true;
-    return ctl;
+    return( ctl );
 }
 
 
@@ -207,7 +207,7 @@ static void finishRdBuffer(     // COMPLETE READ-USE OF A BUFFER
 DWIOBUFF *DwioBuffWrOpen(       // GET BUFFER FOR WRITING
     void )
 {
-    return findWrBuffer();
+    return( findWrBuffer() );
 }
 
 
@@ -243,7 +243,7 @@ DWIOBUFF *DwioBuffWrite(        // WRITE A RECORD
         finishWrBuffer( ctl );
         ctl = next;
     }
-    return ctl;
+    return( ctl );
 }
 
 
@@ -300,7 +300,7 @@ DWIOBUFF *DwioBuffRdOpen(       // GET BUFFER FOR READING
 
     ctl = findRdBuffer( block );
     ctl->current_offset = 0;
-    return ctl;
+    return( ctl );
 }
 
 
@@ -326,7 +326,7 @@ DWIOBUFF *DwioBuffRead(         // READ A RECORD
     }
     *size = new_size;
     *record = (void *)ptr;
-    return ctl;
+    return( ctl );
 }
 
 

@@ -30,7 +30,7 @@
 ****************************************************************************/
 
 
-#include "cgstd.h"
+#include "_cgstd.h"
 #include "coderep.h"
 #include "tree.h"
 #include "cfloat.h"
@@ -43,18 +43,16 @@
 #include "bldins.h"
 #include "utils.h"
 #include "namelist.h"
+#include "u32moddi.h"
 #include "feprotos.h"
+
+
+#define HasBigConst( t )       ( ( (t)->attr & TYPE_FLOAT ) || (t)->length == 8 )
 
 typedef union i32 {
     signed_32   s;
     unsigned_32 u;
 } i32;
-
-extern  an              TreeGen(tn);
-extern  unsigned_32     U32ModDiv(unsigned_32*,unsigned_32);
-extern  void            BurnTree(tn);
-
-#define HasBigConst( t )       ( ( (t)->attr & TYPE_FLOAT ) || (t)->length == 8 )
 
 static cg_op RevOpcode[] = {
     O_EQ,    /* O_EQ*/
@@ -312,7 +310,7 @@ static  tn      CFToType( float_handle cf, type_def *tipe )
 {
     tn          result;
 
-    if( ( tipe->attr & TYPE_FLOAT ) == EMPTY ) {
+    if( (tipe->attr & TYPE_FLOAT) == 0 ) {
         result = TGConst( IntToCF( CFGetInteger64Value( cf ), tipe ), tipe );
         CFFree( cf );
     } else {
@@ -1295,7 +1293,7 @@ tn      FoldBitCompare( cg_op op, tn left, tn rite )
 float_handle CnvCFToType( float_handle cf, type_def *tipe )
 /*****************************************************************/
 {
-    if( ( tipe->attr & TYPE_FLOAT ) == EMPTY ) {
+    if( (tipe->attr & TYPE_FLOAT) == 0 ) {
         cf = IntToCF( CFGetInteger64Value( cf ), tipe );
     } else {
         cf = CFCopy( cf );
@@ -1322,7 +1320,7 @@ static  tn      FindBase( tn tree, bool op_eq )
             // if we are doing a EQ/NE comparison we can ignore sign changes
             child_attr &= ~TYPE_SIGNED;
             this_attr  &= ~TYPE_SIGNED;
-        } else if( this_attr & TYPE_SIGNED && tree->u.left->tipe->length < tree->tipe->length ) {
+        } else if( (this_attr & TYPE_SIGNED) && tree->u.left->tipe->length < tree->tipe->length ) {
             // if we went from smaller unsigned to larger signed type,
             // sign change isn't a problem either
             child_attr |= TYPE_SIGNED;
@@ -1546,7 +1544,7 @@ tn      FoldPostGetsCompare( cg_op op, tn left, tn rite, type_def *tipe )
         op = RevOpcode[op - O_EQ];
     }
 
-    if( op == O_GT && ( ( tipe->attr & TYPE_SIGNED ) == EMPTY ) ) {
+    if( op == O_GT && (tipe->attr & TYPE_SIGNED) == 0 ) {
         if( rite->class == TN_CONS ) {
             if( CFTest( rite->u.name->c.value ) == 0 ) {
                 op = O_NE;
@@ -1667,14 +1665,12 @@ an FoldConsCompare( cg_op op, tn left, tn rite, type_def *tipe )
                 break;
             case OP_BIT_TEST_TRUE:
                 if( !HasBigConst( tipe ) ) {
-                    fold = Flip( fold, false,
-                            ( rite->u.name->c.lo.int_value & FETrue() ) != 0 );
+                    fold = Flip( fold, false, (rite->u.name->c.lo.int_value & FETrue()) != 0 );
                 }
                 break;
             case OP_BIT_TEST_FALSE:
                 if( !HasBigConst( tipe ) ) {
-                    fold = Flip( fold, true,
-                            ( rite->u.name->c.lo.int_value & FETrue() ) == 0 );
+                    fold = Flip( fold, true, (rite->u.name->c.lo.int_value & FETrue()) == 0 );
                 }
                 break;
             }

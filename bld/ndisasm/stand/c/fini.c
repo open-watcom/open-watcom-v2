@@ -43,26 +43,6 @@
 #include "main.h"
 #include "labproc.h"
 
-extern wd_options       Options;
-extern orl_handle       ORLHnd;
-extern dis_handle       DHnd;
-
-extern char             *ListFileName;
-extern char             *SourceFileName;
-extern char             *SourceFileInDwarf;
-
-extern int              OutputDest;
-extern orl_file_handle  ObjFileHnd;
-
-extern hash_table       HandleToSectionTable;
-extern hash_table       HandleToLabelListTable;
-extern hash_table       HandleToRefListTable;
-extern hash_table       SymbolToLabelTable;
-extern hash_table       NameRecognitionTable;
-extern hash_table       SkipRefTable;
-
-extern section_list_struct      Sections;
-extern publics_struct           Publics;
 
 static void freeScanTabList( scantab_ptr st )
 {
@@ -183,14 +163,14 @@ void FreeServicesUsed( void )
 void CloseFiles( void )
 {
     CloseObjFile();
-    if( ListFileName ) {
-        close( OutputDest );
+    if( ListFileName != NULL ) {
+        fclose( OutputDest );
         MemFree( ListFileName );
     }
-    if( SourceFileInDwarf ) {
+    if( SourceFileInDwarf != NULL ) {
         MemFree( SourceFileInDwarf );
     }
-    if( SourceFileName ) {
+    if( SourceFileName != NULL ) {
         MemFree( SourceFileName );
     }
 }

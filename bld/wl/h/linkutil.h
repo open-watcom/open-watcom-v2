@@ -52,7 +52,7 @@ extern void             FreeList( void * );
 extern int              Spawn( void (*)( void ) );
 extern void             Suicide( void );
 extern f_handle         FindPath( const char *, char *fullname );
-extern name_list        *AddNameTable( const char *, size_t, bool, name_list ** );
+extern obj_name_list    *AddNameTable( const char *, size_t, bool, obj_name_list ** );
 extern unsigned_16      blog_16( unsigned_16 );
 extern unsigned_16      blog_32( unsigned_32 );
 extern const char       *GetBaseName( const char *, size_t, size_t * );

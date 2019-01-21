@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
+* Copyright (c) 2009-2018 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -31,30 +31,34 @@
 #ifndef FNTCOL_INCLUDED
 #define FNTCOL_INCLUDED
 
-#include "config.hpp"
 #include <cstdio>
 #include <vector>
 #include "fnt.hpp"
 #include "errors.hpp"
 
+
+#define MAX_FONTS       14
+
 class FontCollection
 {
 public:
-    FontCollection( int cp );
+    FontCollection( word maxFontCount );
     //returns the index of the font in the list
-    std::size_t add( FontEntry& fnt );
+    std::size_t add( const FontEntry& fnt );
     //the number of bytes written by the collection
-    STD1::uint32_t length() { return bytes; };
+    dword length() { return _bytes; };
     //the number of fonts in the collection
-    std::size_t size() { return fonts.size(); };
-    STD1::uint32_t write( std::FILE * out );
+    std::size_t size() { return _fonts.size(); };
+    dword write( OutFile* out );
 private:
     FontCollection( const FontCollection& rhs );            //no copy
     FontCollection& operator=( const FontCollection& rhs ); //no assigment
-    std::vector< FontEntry > fonts;
+
+    std::vector< FontEntry >    _fonts;
     typedef std::vector< FontEntry >::iterator FontIter;
     typedef std::vector< FontEntry >::const_iterator ConstFontIter;
-    STD1::uint32_t bytes;
+    dword                       _bytes;
+    word                        _maxFontCount;
 };
 
 #endif

@@ -31,13 +31,10 @@
 ****************************************************************************/
 
 
-#include <stdio.h>
-#include <stdarg.h>
+#include "drwatcom.h"
 #include <time.h>
-#include <string.h>
 #include <dos.h>
 #include <sys/stat.h>
-#include "drwatcom.h"
 #include "wclbproc.h"
 #include "tinyio.h"
 #include "wdebug.h"

@@ -31,13 +31,9 @@
 ****************************************************************************/
 
 
-#include "commonui.h"
-#include <ctype.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <errno.h>
 #include "wrglbl.h"
+#include <ctype.h>
+#include <errno.h>
 #include "wrmaini.h"
 #include "wrstrdup.h"
 #include "wrmsg.h"

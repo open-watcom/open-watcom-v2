@@ -64,7 +64,7 @@
         #undef          WANT_RUN_THREAD
         #define         WANT_RFX
     #endif
-#elif defined(__OS2__) && defined(__I86__)
+#elif defined(__OS2__) && defined(_M_I86)
     #undef          WANT_FILE_INFO
     #undef          WANT_ENV
     #undef          WANT_ASYNC
@@ -73,7 +73,7 @@
     #define         WANT_THREAD
     #undef          WANT_RUN_THREAD
     #define         WANT_RFX
-#elif defined(__OS2V2__) || defined(__OS2__) && !defined(__I86__)
+#elif defined(__OS2V2__) || defined(__OS2__) && !defined(_M_I86)
     #if defined(ELFCORE)
         #undef      WANT_FILE_INFO
         #undef      WANT_ENV
@@ -130,7 +130,9 @@
         #define WANT_THREAD
         #undef  WANT_RUN_THREAD
         #undef  WANT_RFX
-        #define WANT_CAPABILITIES
+        #if defined( _M_IX86 ) || defined( _M_X64 )
+            #define WANT_CAPABILITIES
+        #endif
     #endif
 #elif defined(__WINDOWS__)
     #undef      WANT_FILE_INFO

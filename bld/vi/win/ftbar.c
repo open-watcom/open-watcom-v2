@@ -34,7 +34,7 @@
 #include "ftbar.h"
 #include "utils.h"
 #include "sstyle.h"
-#include "font.h"
+#include "vifont.h"
 #include "subclass.h"
 #include "hotkey.h"
 
@@ -102,15 +102,14 @@ WINEXPORT int CALLBACK EnumFamFaceNames( const LOGFONT FAR *lf, const TEXTMETRIC
 #ifdef __WINDOWS_386__
     char                faceName[LF_FACESIZE];
     const ENUMLOGFONT   __far *elf = MK_FP32( (void *)lf );
-    tm = tm;
+    (void)tm;
 #elif defined( __WINDOWS__ )
-    ntm = ntm;
+    (void)ntm;
 #else
     const ENUMLOGFONT   FAR *elf = (const ENUMLOGFONT FAR *)lf;
-    tm = tm;
+    (void)tm;
 #endif
-    lparam = lparam;
-    FontType = FontType;
+    (void)lparam; (void)FontType;
 
 #ifdef __WINDOWS_386__
     /* On Win386, we need to pass a near 32-bit pointer with LB_ADDSTRING,
@@ -180,16 +179,15 @@ WINEXPORT int CALLBACK SetupFontData( const LOGFONT FAR *lf, const TEXTMETRIC FA
 {
 #ifdef __WINDOWS_386__
     const ENUMLOGFONT       __far *elf = MK_FP32( (void *)lf );
-    tm = tm;
+    (void)tm;
 #elif defined( __WINDOWS__ )
-    ntm = ntm;
+    (void)ntm;
 #else
     const ENUMLOGFONT       FAR *elf = (const ENUMLOGFONT FAR *)lf;
-    tm = tm;
+    (void)tm;
 #endif
 
-    FontType = FontType;
-    lparam = lparam;
+    (void)FontType; (void)lparam;
 
     /* start setting up CurLogfont based on the font data */
     CurLogfont.lfCharSet = elf->elfLogFont.lfCharSet;
@@ -211,11 +209,11 @@ static void fillFaceNamesBox( HWND hwnd )
 
     /* put facenames in combo box
     */
-    hdc = GetDC( edit_container_id );
+    hdc = GetDC( edit_container_window_id );
     fontenumproc = MakeProcInstance_FONTENUM( EnumFamFaceNames, InstanceHandle );
     EnumFontFamilies( hdc, NULL, fontenumproc, 0L );
     FreeProcInstance_FONTENUM( fontenumproc );
-    ReleaseDC( edit_container_id, hdc );
+    ReleaseDC( edit_container_window_id, hdc );
 
     SendMessage( hwndFaceName, LB_SETCURSEL, 0, 0L );
 }
@@ -277,9 +275,9 @@ static void fillInfoBoxes( HWND hwnd )
 
     SendMessage( hwndFaceName, LB_GETTEXT, index, (LPARAM)(LPSTR)facename );
     fontenumproc = MakeProcInstance_FONTENUM( EnumFamInfo, InstanceHandle );
-    hdc = GetDC( edit_container_id );
+    hdc = GetDC( edit_container_window_id );
     EnumFontFamilies( hdc, facename, fontenumproc, (LPARAM)(&isTrueType) );
-    ReleaseDC( edit_container_id, hdc );
+    ReleaseDC( edit_container_window_id, hdc );
     FreeProcInstance_FONTENUM( fontenumproc );
 
     if( isTrueType ) {
@@ -418,11 +416,11 @@ static int setCurLogfont( int overrideSize )
     SendMessage( hwndFaceName, LB_GETTEXT, index, (LPARAM)(LPSTR)CurLogfont.lfFaceName );
 
     /* set up defaults for charset, etc. from info for 1st font of this type */
-    hdc = GetDC( edit_container_id );
+    hdc = GetDC( edit_container_window_id );
     fontenumproc = MakeProcInstance_FONTENUM( SetupFontData, InstanceHandle );
     EnumFontFamilies( hdc, CurLogfont.lfFaceName, fontenumproc, 0L );
     FreeProcInstance_FONTENUM( fontenumproc );
-    ReleaseDC( edit_container_id, hdc );
+    ReleaseDC( edit_container_window_id, hdc );
 
     return( 1 );
 }
@@ -440,7 +438,7 @@ WINEXPORT INT_PTR CALLBACK FtDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM
     WORD        cmd;
 
 #ifdef __NT__
-    lparam = lparam;
+    (void)lparam;
 #endif
 
     switch( msg ) {

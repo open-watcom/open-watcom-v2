@@ -95,7 +95,7 @@ static CNV_RETN conversionErr(  // ISSUE CONVERSION ERROR
 {
     PTreeErrorExpr( expr, msg_no );
     ConversionDiagnoseInf();
-    return CNV_ERR;
+    return( CNV_ERR );
 }
 
 
@@ -105,43 +105,43 @@ CNV_RETN ConversionDiagnose(    // DIAGNOSE RETURN FROM A CONVERSION
     CNV_DIAG *diagnosis )       // - diagnosis information
 {
     switch( retn ) {
-      case CNV_OK_TRUNC :
+    case CNV_OK_TRUNC :
         NodeWarnPtrTrunc( expr );
         retn = CNV_OK;
         break;
-      case CNV_OK_TRUNC_CAST :
+    case CNV_OK_TRUNC_CAST :
         NodeWarnPtrTruncCast( expr );
         retn = CNV_OK;
         break;
-      case CNV_ERR :
+    case CNV_ERR :
         PTreeErrorNode( expr );
         ConversionDiagnoseInf();
         retn = CNV_ERR;
         break;
-      case CNV_IMPOSSIBLE :
+    case CNV_IMPOSSIBLE :
         retn = conversionErr( expr, diagnosis->msg_impossible );
         break;
-      case CNV_AMBIGUOUS :
+    case CNV_AMBIGUOUS :
         retn = conversionErr( expr, diagnosis->msg_ambiguous );
         break;
-      case CNV_PRIVATE :
+    case CNV_PRIVATE :
         retn = conversionErr( expr, diagnosis->msg_private );
         break;
-      case CNV_PROTECTED :
+    case CNV_PROTECTED :
         retn = conversionErr( expr, diagnosis->msg_protected );
         break;
-      case CNV_VIRT_DER :
+    case CNV_VIRT_DER :
         retn = conversionErr( expr, diagnosis->msg_virt_der );
         break;
-      case CNV_TRUNC_THIS :
+    case CNV_TRUNC_THIS :
         ConversionInfDisable();
         retn = conversionErr( expr, ERR_THIS_OBJ_MEM_MODEL );
         break;
-      case CNV_OK :
+    case CNV_OK :
         break;
-      DbgDefault( "ConversionDiagnose: unexpected 'retn' value" );
+    DbgDefault( "ConversionDiagnose: unexpected 'retn' value" );
     }
-    return retn;
+    return( retn );
 }
 
 

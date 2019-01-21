@@ -48,18 +48,18 @@ void ReplaceString( char **where, const char *str )
  */
 char *DupString( const char *str )
 {
-    size_t  sl;
+    size_t  len;
     char    *ptr;
 
     if( str == NULL )  {
-        sl = 1;
+        len = 1;
         str = "";
     } else {
-        sl = strlen( str ) + 1;
+        len = strlen( str ) + 1;
     }
-    ptr = MemAlloc( sl );
+    ptr = MemAlloc( len );
     if( ptr != NULL ) {
-        memcpy( ptr, str, sl );
+        memcpy( ptr, str, len );
     }
     return( ptr );
 

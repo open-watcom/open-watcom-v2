@@ -35,15 +35,16 @@
 
 #include "wpmsg.h"
 
-#define WRN 0x8000
-#if defined( __WATCOMC__ ) && !defined( __AXP__ )
-#pragma aux Fatal aborts;
-#endif
-extern void Fatal( unsigned msg, ... );
-extern size_t PrtFmt( const char *fmt, ... );
-extern void PrtMsg( unsigned msg, ... );
-extern char *StrDec( char *buf, unsigned short num );
-
 #define GENUTIL_H   1
+#define WRN         0x8000
+
+extern void Fatal( unsigned msg, ... );
+#if defined( __WATCOMC__ ) && !defined( __AXP__ )
+#pragma aux Fatal __aborts
+#endif
+extern size_t   PrtFmt( const char *fmt, ... );
+extern void     PrtMsg( unsigned msg, ... );
+extern char     *StrDec( char *buf, unsigned short num );
+
 #endif
 

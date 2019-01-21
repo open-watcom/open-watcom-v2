@@ -31,12 +31,12 @@
 
 
 #include "vi.h"
+#ifndef __WIN__
+#include "viuihelp.h"
+#endif
 
 #include "clibext.h"
 
-
-extern char *helpFiles[1];
-extern int  nHelpFiles;
 
 /*
  * UpdateLastFilesList - update the list of the last files edited
@@ -45,7 +45,6 @@ void UpdateLastFilesList( char *fname )
 {
     history_data        *h;
     int                 i;
-    char                *root;
     char                buff[FILENAME_MAX];
 
     // don't add viw-generated filenames
@@ -53,8 +52,11 @@ void UpdateLastFilesList( char *fname )
         return;
     }
 
+#ifndef __WIN__
     // don't add help files
     for( i = 0; i < nHelpFiles; i++ ) {
+        const char  *root;
+
         root = fname + strlen( fname ) - 1;
         while( root != fname && *root != '\\' ) {
             root--;
@@ -66,6 +68,7 @@ void UpdateLastFilesList( char *fname )
             return;
         }
     }
+#endif
 
     _fullpath( buff, fname, FILENAME_MAX );
 

@@ -512,7 +512,6 @@ set error file name
 .do end
 .if &e'&$SWft eq 1 .do begin
 .note ft
-(C++ only)
 try truncated (8.3) header file specification
 :optref refid='SWft'.
 .do end
@@ -524,7 +523,6 @@ track include file opens
 .do end
 .if &e'&$SWfx eq 1 .do begin
 .note fx
-(C++ only)
 do not try truncated (8.3) header file specification
 :optref refid='SWfx'.
 .do end
@@ -3083,7 +3081,6 @@ A default filename extension must be preceded by a period (".").
 .if &e'&$SWft eq 1 .do begin
 :OPT refid='SWft' name='ft'.
 .ix 'options' 'ft'
-(C++ only)
 If the compiler cannot open a header file whose file name is longer
 than 8 letters or whose file extension is longer than 3 letters,
 it will truncate the name at 8 letters and the extension at 3 letters
@@ -3111,7 +3108,6 @@ directive was located.
 .if &e'&$SWfx eq 1 .do begin
 :OPT refid='SWfx' name='fx'.
 .ix 'options' 'fx'
-(C++ only)
 This option can be used to disable the truncated header filename
 processing that the compiler does by default (see "ft" above).
 .do end

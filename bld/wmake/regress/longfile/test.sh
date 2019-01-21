@@ -1,84 +1,82 @@
 #!/bin/sh
 
-function usage() {
+ERRORS=0
+
+usage() {
     echo usage: $0 prgname errorfile
     exit
 }
 
-function print_header() {
+print_header() {
     echo \# -----------------------------
-    echo \#   Test $TEST
+    echo \#   Long File Name $TEST
     echo \# -----------------------------
 }
 
-function do_check() {
-    if [ "$?" == "0" ]; then
-        echo \# Test $TEST successful
+do_check() {
+    if [ "$?" -eq "0" ]; then
+        echo \#      Test successful
     else
-        echo \#\# LONGNAME \#\# >> $LOGFILE
-        echo Error: Test $TEST unsuccessful!!! | tee -a $LOGFILE
-	exit
+        echo \#\# LONGNAME $TEST \#\# >> $LOGFILE
+        echo Error: Test unsuccessful!!! | tee -a $LOGFILE
+        ERRORS=1
     fi
 }
 
-if [ "$2" == "" ]; then 
+if [ -z "$2" ]; then 
     usage
 fi
 
 LOGFILE=$2
 
 echo \# ===========================
-echo \# Start Long File Name Test
+echo \# Long File Name Tests
 echo \# ===========================
 
-TEST=1
+TEST=01
 print_header
 echo LONGFILENAME OK > "hello tmp.tmp"
 echo >hello.h
-rm -f tmp.out
-$1 -h -a -f long01 > tmp.out 2>&1
-diff -b long01.chk tmp.out
+$1 -h -a -f long$TEST > test$TEST.lst 2>&1
+diff -b long$TEST.chk test$TEST.lst
 do_check
 
-TEST=2
+TEST=02
 rm "hello tmp.tmp"
 rm hello.h
 print_header
-rm tmp.out
-$1 -h -ms -a -f long02 > tmp.out 2>&1
-diff -b long02.chk tmp.out
+$1 -h -ms -a -f long$TEST > test$TEST.lst 2>&1
+diff -b long$TEST.chk test$TEST.lst
 do_check
 
-TEST=3
+TEST=03
 print_header
-rm tmp.out
 # This one MUST NOT use -a switch!
-$1 -h -ms -f long03 > tmp.out 2>&1
-diff -b long03.chk tmp.out
+$1 -h -ms -f long$TEST > test$TEST.lst 2>&1
+diff -b long$TEST.chk test$TEST.lst
 do_check
 
 # Unix version uses forward slashes
-TEST=4
+TEST=04
 print_header
-rm tmp.out
-$1 -h -m -f long04u > tmp.out 2>&1
-diff -b long04u.chk tmp.out
+$1 -h -m -f long${TEST}u > test$TEST.lst 2>&1
+diff -b long${TEST}u.chk test$TEST.lst
 do_check
 
-TEST=5
+TEST=05
 print_header
-rm tmp.out
-$1 -h -m -f long05 > tmp.out 2>&1
-diff -b long05.chk tmp.out
+$1 -h -m -f long$TEST > test$TEST.lst 2>&1
+diff -b long$TEST.chk test$TEST.lst
 do_check
 
 # Slightly different semantics on Unix
 # (case sensitive filesystem)
-TEST=6
+TEST=06
 print_header
-rm tmp.out
-$1 -h -m -f long06 > tmp.out 2>&1
-diff -b long06u.chk tmp.out
+$1 -h -m -f long$TEST > test$TEST.lst 2>&1
+diff -b long${TEST}u.chk test$TEST.lst
 do_check
 
-rm -f tmp.out
+if [ "$ERRORS" -eq "0" ]; then
+    rm -f *.lst
+fi

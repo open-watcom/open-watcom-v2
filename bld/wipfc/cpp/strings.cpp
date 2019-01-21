@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
+* Copyright (c) 2009-2018 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -28,25 +28,30 @@
 *
 ****************************************************************************/
 
+
+#include "wipfc.hpp"
 #include <cstdlib>
 #include "strings.hpp"
 #include "errors.hpp"
+#include "util.hpp"
+#include "outfile.hpp"
 
-STD1::uint32_t StringTable::write( std::FILE *out )
+
+dword StringTable::write( OutFile* out )
 {
-    if( table.empty() )
+    if( _table.empty() )
         return 0L;
-    STD1::uint32_t start( std::ftell( out ) );
-    for( ConstTableIter itr = table.begin(); itr != table.end(); ++itr ) {
-        char buffer[ 256 ];
-        std::size_t written;
-        std::size_t length( std::wcstombs( buffer, itr->c_str(), sizeof( buffer ) / sizeof( char ) ) );
-        if( length == static_cast< std::size_t >( -1 ) )
-            throw FatalError( ERR_T_CONV );
-        if( std::fputc( static_cast< STD1::uint8_t >( length + 1 ), out ) == EOF ||
-            ( written = std::fwrite( buffer, sizeof( char ), length, out ) ) != length)
+    dword start( out->tell() );
+    for( ConstTableIter itr = _table.begin(); itr != _table.end(); ++itr ) {
+        std::string buffer( out->wtomb_string( *itr ) );
+        if( buffer.size() > ( 255 - 1 ) )
+            buffer.erase( 255 - 1 );
+        byte length( static_cast< byte >( buffer.size() + 1 ) );
+        if( out->put( length ) )
             throw FatalError( ERR_WRITE );
-        bytes += written + 1;
+        if( out->put( buffer ) )
+            throw FatalError( ERR_WRITE );
+        _bytes += length;
     }
     return start;
 }

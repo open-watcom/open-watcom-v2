@@ -35,7 +35,7 @@
 #include "winaux.h"
 #include "win.h"
 #ifdef __WIN__
-    #include "font.h"
+    #include "vifont.h"
     #include "color.h"
 #endif
 #include <assert.h>
@@ -70,7 +70,7 @@ void DCCreate( void )
     nlines = WindowAuxInfo( CurrentInfo->current_window_id, WIND_INFO_TEXT_LINES );
     CurrentInfo->dclines = NULL;
     if( nlines > 0 ) {
-        dcline = MemAlloc( nlines * sizeof( dc_line ) );
+        dcline = _MemAllocArray( dc_line, nlines );
         CurrentInfo->dclines = dcline;
         for( i = 0; i < nlines; i++ ) {
             initDCLine( dcline );
@@ -104,7 +104,7 @@ void DCResize( info *info )
         }
         info->dclines = NULL;
     } else {
-        info->dclines = dcline = MemReAlloc( info->dclines, nlines * sizeof( dc_line ) );
+        info->dclines = dcline = _MemReAllocArray( info->dclines, dc_line, nlines );
         dcline += info->dc_size;
         for( ; extra-- > 0; ) {
             initDCLine( dcline );
@@ -131,7 +131,7 @@ void DCScroll( int nlines )
     dcline = CurrentInfo->dclines;
 
     // 'wrap' pointers so don't need to free/allocate ss blocks, etc.
-    dcline_temp = MemAlloc( CurrentInfo->dc_size * sizeof( dc_line ) );
+    dcline_temp = _MemAllocArray( dc_line, CurrentInfo->dc_size );
     bit = abs( nlines ) * sizeof( dc_line );
     rest = (CurrentInfo->dc_size - abs( nlines )) * sizeof( dc_line );
     if( nlines > 0 ) {
@@ -242,10 +242,10 @@ vi_rc DCUpdate( void )
 
                 displayText = line->data;
                 if( line->u.ld.nolinedata ) {
-                    if( WorkLine->len >= 0 ) {
-                        displayText = WorkLine->data;
-                    } else {
+                    if( WorkLine->len == -1 ) {
                         displayText = "*** ERR NULL DATA ***";
+                    } else {
+                        displayText = WorkLine->data;
                     }
                 }
                 displayOffset = VirtualLineLen( displayText );
@@ -435,14 +435,13 @@ dc_line *DCFindLine( int c_line_no, window_id wid )
 
     for( info = InfoHead; info != NULL; info = info->next ) {
         if( info->current_window_id == wid ) {
-            break;
+            assert( c_line_no >= 0 && c_line_no < info->dc_size );
+            dcline = info->dclines;
+            return( dcline + c_line_no );
         }
     }
     assert( info );
-    assert( c_line_no >= 0 && c_line_no < info->dc_size );
-
-    dcline = info->dclines;
-    return( dcline + c_line_no );
+    return( NULL );
 }
 
 void DCValidateLine( dc_line *dcline, int start_col, char *text )

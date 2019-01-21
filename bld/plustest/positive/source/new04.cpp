@@ -69,14 +69,14 @@ int main()
 {
 
                             // int
-    
+
     int* p0 = new int;      // - element
     delete p0;
     p0 = new int[9];        // - array
-    delete p0;
+    delete[] p0;
 
                             // STRUCT S
-    
+
     S* p1 = new S;          // - element
     delete p1;
 

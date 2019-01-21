@@ -24,7 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  Implementation of sendto() for Linux.
+* Description:  Implementation of sendto() for Linux and RDOS.
 *
 ****************************************************************************/
 
@@ -32,10 +32,16 @@
 #include "variety.h"
 #include <sys/types.h>
 #include <sys/socket.h>
+
+#if defined( __LINUX__ )
 #include "linuxsys.h"
+#elif defined( __RDOS__ )
+#include "rdos.h"
+#endif
 
 _WCRTLINK int sendto( int s, const void *msg, size_t len, int flags, const struct sockaddr *to, socklen_t tolen )
 {
+#if defined( __LINUX__ )
     unsigned long args[6];
     args[0] = (unsigned long)s;
     args[1] = (unsigned long)msg;
@@ -44,5 +50,10 @@ _WCRTLINK int sendto( int s, const void *msg, size_t len, int flags, const struc
     args[4] = (unsigned long)to;
     args[5] = (unsigned long)tolen;
     return( __socketcall( SYS_SENDTO, args ) );
+#elif defined( __RDOS__ )
+    return( -1 );
+#else
+    return( -1 );
+#endif
 }
 

@@ -36,7 +36,6 @@
 #include "hashtabl.h"
 #include "init.h"
 
-extern hash_table NameRecognitionTable;
 
 section_type IdentifySec( orl_sec_handle shnd )
 // function to identify a section

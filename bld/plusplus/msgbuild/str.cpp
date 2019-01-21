@@ -65,7 +65,7 @@ Str::StoreList::~StoreList      // DESTRUCTOR
 char* Str::StoreList::alloc     // ALLOCATOR( string )
     ( char const *input )       // - string to be allocated
 {
-    return input == 0 ? 0 : alloc( input, ::strlen( input ) );
+    return( input == 0 ? 0 : alloc( input, ::strlen( input ) ) );
 }
 
 
@@ -80,11 +80,11 @@ char* Str::StoreList::alloc     // ALLOCATOR( vector, size )
         _list = alloced;
         _left = _BlkSize;
     }
-    char* tgt = &_list->_data[ _BlkSize - _left ];
-    tgt[ size ] = '\0';
+    char* tgt = &_list->_data[_BlkSize - _left];
+    tgt[size] = '\0';
     memcpy( tgt, input, size );
     _left -= size + 1;
-    return tgt;
+    return( tgt );
 }
 
 
@@ -139,14 +139,14 @@ int Str::same                   // TEST IF SAME STRING
             break;
         }
     }
-    return retn;
+    return( retn );
 }
 
 
 unsigned Str::size              // GET SIZE
     ( void ) const
 {
-    return ::strlen( _str );
+    return( ::strlen( _str ) );
 }
 
 
@@ -154,5 +154,5 @@ Str& Str::operator =            // ASSIGN STRING
     ( char const * str )        // - string
 {
     _str = storageList.alloc( str );
-    return *this;
+    return( *this );
 }

@@ -1,7 +1,7 @@
 .func _findclose
 .synop begin
 #include <&iohdr>
-int _findclose( long handle );
+int _findclose( intptr_t handle );
 .ixfunc2 '&DosFunc' _findclose
 .synop end
 .desc begin
@@ -44,7 +44,7 @@ No matching files
 void main()
   {
     struct _finddata_t  fileinfo;
-    long                handle;
+    intptr_t            handle;
     int                 rc;
 .exmp break
     /* Display name and size of "*.c" files */

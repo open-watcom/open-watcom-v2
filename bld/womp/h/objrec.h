@@ -225,14 +225,14 @@ union objrec_info {
     struct lnames_info  llnames;
     struct lnames_info  extdef;
     struct lnames_info  comdef;
-    struct lnames_info  cextdf;
+    struct lnames_info  cextdef;
     struct grpdef_info  grpdef;
     struct segdef_info  segdef;
     struct ledata_info  ledata;
     struct ledata_info  lidata;
     struct base_info    base;
 #if ( _WOMP_OPT & _WOMP_WATFOR ) == 0
-    struct fixup_info   fixup;
+    struct fixup_info   fixupp;
     struct linnum_info  linnum;
     struct linnum_info  linsym;
     struct pubdef_info  pubdef;

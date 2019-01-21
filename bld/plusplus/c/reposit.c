@@ -72,7 +72,7 @@ REPO_REC_FUN* RepoFunAdd(       // ADD FUNCTION TO REPOSITORY
     frec = RingCarveAlloc( carveFunRepository, &funRepository );
     frec->name = name;
     frec->flags = flags;
-    return frec;
+    return( frec );
 }
 
 
@@ -89,7 +89,7 @@ REPO_REC_FUN* RepoFunRead(      // GET FUNCTION RECORD FROM REPOSITORY
             break;
         }
     } RingIterEnd( curr );
-    return retn;
+    return( retn );
 }
 
 

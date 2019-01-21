@@ -47,7 +47,7 @@ static int          currHist;
  */
 static void setEditText( HWND hwnd, const char *tmp )
 {
-    int     len;
+    size_t  len;
 
     if( tmp == NULL ) {
         return;
@@ -92,7 +92,7 @@ static bool handleKey( HWND hwnd, vi_key key, bool process )
     case VI_KEY( ALT_L ):
     case VI_KEY( CTRL_L ):
         if( process ) {
-            if( GetTextForSpecialKey( sizeof( tmp ), key, tmp ) ) {
+            if( GetTextForSpecialKey( key, tmp, sizeof( tmp ) ) ) {
                 insertEditText( hwnd, tmp );
             }
         }
@@ -144,7 +144,7 @@ WINEXPORT LRESULT CALLBACK EditSubClassProc( HWND hwnd, UINT msg, WPARAM wparam,
 
     switch( msg ) {
     case WM_KEYDOWN:
-        key = MapVirtualKeyToVIKey( wparam, HIWORD( lparam ) );
+        key = MapVirtualKeyToVIKey( LOWORD( wparam ), HIWORD( lparam ) );
         if( handleKey( hwnd, key, true ) ) {
             return( 0L );
         }

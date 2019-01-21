@@ -36,25 +36,25 @@
 #include "heap.h"
 #include "heapacc.h"
 
-frlptr __nheapchk_current;
+freelist_nptr __nheapchk_current;
 
 static int checkFreeList( size_t *free_size )
 {
-    frlptr      frl;
-    frlptr      end_frl;
-    size_t      new_size;
-    size_t      free_list_size;
-    mheapptr    heap;
+    freelist_nptr   frl;
+    freelist_nptr   end_frl;
+    size_t          new_size;
+    size_t          free_list_size;
+    heapblk_nptr    heap;
 
     free_list_size = 0;
-    for( heap = __nheapbeg; heap != NULL; heap = heap->next ) {
+    for( heap = __nheapbeg; heap != NULL; heap = heap->next.nptr ) {
         /* check that the free list is a doubly linked ring */
-        __nheapchk_current = frl = heap->freehead.next;
+        __nheapchk_current = frl = heap->freehead.next.nptr;
         /* make sure we start off on the right track */
-        if( frl->prev == NULL || frl->prev < &(heap->freehead) || (PTR)frl->prev > (PTR)NEXT_BLK( heap ) ) {
+        if( frl->prev.nptr == NULL || frl->prev.nptr < &(heap->freehead) || (PTR)frl->prev.nptr > (PTR)NEXT_BLK( heap ) ) {
             return( _HEAPBADNODE );
         }
-        if( frl->prev->next != frl ) {
+        if( frl->prev.nptr->next.nptr != frl ) {
             return( _HEAPBADNODE );
         }
         end_frl = frl;
@@ -62,10 +62,10 @@ static int checkFreeList( size_t *free_size )
             /* loop invariant: frl->prev->next == frl */
             /* are we still in a ring if we move to frl->next? */
             /* nb. this check is sufficient to ensure that we will never cycle */
-            if( frl->next == NULL || frl->next < &(heap->freehead) || (PTR)frl->next > (PTR)NEXT_BLK( heap ) ) {
+            if( frl->next.nptr == NULL || frl->next.nptr < &(heap->freehead) || (PTR)frl->next.nptr > (PTR)NEXT_BLK( heap ) ) {
                 return( _HEAPBADNODE );
             }
-            if( frl->next->prev != frl ) {
+            if( frl->next.nptr->prev.nptr != frl ) {
                 return( _HEAPBADNODE );
             }
             /* is entry allocated? */
@@ -78,34 +78,34 @@ static int checkFreeList( size_t *free_size )
                 return( _HEAPBADNODE );
             }
             free_list_size = new_size;
-            __nheapchk_current = frl = frl->next;
+            __nheapchk_current = frl = frl->next.nptr;
         } while( frl != end_frl );
     }
     *free_size = free_list_size;
     return( _HEAPOK );
 }
 
-static int checkFree( frlptr frl )
+static int checkFree( freelist_nptr frl )
 {
-    frlptr next;
-    frlptr prev;
+    freelist_nptr next;
+    freelist_nptr prev;
 
     __nheapchk_current = frl;
     if( IS_BLK_INUSE( frl ) ) {
         return( _HEAPBADNODE );
     }
-    next = frl->next;
-    prev = frl->prev;
+    next = frl->next.nptr;
+    prev = frl->prev.nptr;
     if( next == NULL || prev == NULL ) {
         return( _HEAPBADNODE );
     }
-    if( next->prev != frl || prev->next != frl ) {
+    if( next->prev.nptr != frl || prev->next.nptr != frl ) {
         return( _HEAPBADNODE );
     }
-    if( next->next == NULL || prev->prev == NULL ) {
+    if( next->next.nptr == NULL || prev->prev.nptr == NULL ) {
         return( _HEAPBADNODE );
     }
-    if( next->next->prev != next || prev->prev->next != prev ) {
+    if( next->next.nptr->prev.nptr != next || prev->prev.nptr->next.nptr != prev ) {
         return( _HEAPBADNODE );
     }
     return( _HEAPOK );
@@ -133,7 +133,7 @@ _WCRTLINK int _nheapchk( void )
     hi._pentry = NULL;
     while( (heap_status = __NHeapWalk( &hi, __nheapbeg )) == _HEAPOK ) {
         if( hi._useflag == _FREEENTRY ) {
-            heap_status = checkFree( (frlptr)hi._pentry );
+            heap_status = checkFree( (freelist_nptr)hi._pentry );
             if( heap_status != _HEAPOK )
                 break;
             free_size -= hi._size;

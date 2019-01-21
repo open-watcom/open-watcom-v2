@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
+* Copyright (c) 2009-2018 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -29,12 +29,15 @@
 *
 ****************************************************************************/
 
+
+#include "wipfc.hpp"
 #include "tocref.hpp"
 
-void TocRef::write( std::FILE* out ) const
+void TocRef::write( std::FILE* logfp ) const
 {
-    std::fprintf( out, " defined at %ls, line %u\n", fileName->c_str(), lineNumber );
-    for( ConstXRefIter itr( xref.begin() ); itr != xref.end(); ++itr )
-        itr->write( out );
+    std::fprintf( logfp, " defined at %ls, line %u\n", _fileName->c_str(), _lineNumber );
+    for( ConstXRefIter itr( _xref.begin() ); itr != _xref.end(); ++itr ) {
+        itr->write( logfp );
+    }
 }
 

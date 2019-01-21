@@ -45,7 +45,7 @@
 
 static PTREE sizeOfUInt( void )
 {
-    return NodeOffset( SizeTargetSizeT() );
+    return( NodeOffset( SizeTargetSizeT() ) );
 }
 
 static PTREE newCheckForNULL( PTREE value, PTREE t_expr )
@@ -143,7 +143,7 @@ static SYMBOL accessDelete(     // ACCESS DELETE OPERATOR SYMBOL
     }
     args = SymFuncArgList( del_sym );
     *num_args = args->num_args;
-    return del_sym;
+    return( del_sym );
 }
 
 
@@ -160,7 +160,7 @@ static SYMBOL checkDeleteResult( // CHECK ACCESS FOR DELETE SEARCH_RESULT
         }
         ScopeFreeResult( result );
     }
-    return sym;
+    return( sym );
 }
 
 
@@ -176,7 +176,7 @@ static SYMBOL checkDeleteAccess( // CHECK ACCESS OF DELETE OPERATOR
 
     sym = accessDelete( delete_op, scope, num_args, &result );
     sym = checkDeleteResult( sym, result, locn, compiling_dtor );
-    return sym;
+    return( sym );
 }
 
 
@@ -189,7 +189,7 @@ static PTREE setupArrayStorage( // STORE COUNT IN ARRAY_STORAGE,POINT TO ARRAY
     expr = NodeAssign( expr, array_number );
     expr = NodeConvert( new_expr_type, expr );
     expr = NodeAddToLeft( expr, sizeOfUInt(), new_expr_type );
-    return expr;
+    return( expr );
 }
 
 
@@ -210,13 +210,13 @@ static CNV_RETN checkNewCtor(   // CHECK CTOR'ING OK FOR NEW
                                    , &fnov_diag );
     initial = *a_initial;
     switch( retn ) {
-      case CNV_ERR :
-      case CNV_OK :
+    case CNV_ERR :
+    case CNV_OK :
         break;
-      case CNV_AMBIGUOUS :
+    case CNV_AMBIGUOUS :
         CallDiagAmbiguous( initial, ERR_CTOR_AMBIGUOUS, &fnov_diag );
         break;
-      case CNV_IMPOSSIBLE :
+    case CNV_IMPOSSIBLE :
         if( initial == NULL ) {
             if( class_type != NULL ) {
                 if( ! TypeNeedsCtor( class_type ) ) {
@@ -241,7 +241,7 @@ static CNV_RETN checkNewCtor(   // CHECK CTOR'ING OK FOR NEW
             ConversionDiagnoseInf();
         }
         break;
-      default :
+    default :
         if( initial == NULL ) {
             SetErrLoc( err_locn );
             CErr1( ERR_NO_CTOR_FOR_NEW );
@@ -252,7 +252,7 @@ static CNV_RETN checkNewCtor(   // CHECK CTOR'ING OK FOR NEW
         }
     }
     FnovFreeDiag( &fnov_diag );
-    return retn;
+    return( retn );
 }
 
 static SCOPE scopeLookup( TYPE type )
@@ -265,7 +265,7 @@ static SCOPE scopeLookup( TYPE type )
     } else {
         scope = type->u.c.scope;
     }
-    return scope;
+    return( scope );
 }
 
 static SCOPE opNewSearchScope( TYPE new_type, CGOP cgop )
@@ -330,10 +330,10 @@ static PTREE buildNewCall(      // BUILD CALL TO NEW OPERATOR
         sym = result_new->sym_name->name_syms;
         node = NodeMakeCall( sym, new_expr_type, node );
         switch( ovret ) {
-          case FNOV_AMBIGUOUS:
+        case FNOV_AMBIGUOUS:
             CallDiagAmbiguous( node, ERR_NEW_OVERLOAD_AMBIGUOUS, &fnov_diag );
             break;
-          case FNOV_NO_MATCH:
+        case FNOV_NO_MATCH:
             CallDiagNoMatch( node
                            , ERR_FUNCTION_NO_MATCH
                            , ERR_NEW_OVERLOAD_FAILURE
@@ -342,14 +342,14 @@ static PTREE buildNewCall(      // BUILD CALL TO NEW OPERATOR
                            , &fnov_diag
                            );
             break;
-          DbgDefault( "buildNewCall: unexpected return from FuncOverloaded" );
+        DbgDefault( "buildNewCall: unexpected return from FuncOverloaded" );
         }
     }
     FnovFreeDiag( &fnov_diag );
     ScopeFreeResult( result_new );
     ArgListTempFree( alist, count_placement );
     PtListFree( ptlist, count_placement );
-    return node;
+    return( node );
 }
 
 
@@ -379,10 +379,10 @@ PTREE AnalyseNew(               // ANALYSE A "NEW" OPERATOR (WITH OVERLOADING)
     CGOP cgop;                  // - type of new expression
     TOKEN_LOCN err_locn;        // - error location
     struct {
-      unsigned needs_dtor : 1;  // - class says DTOR is req'd (DTOR may be empty)
-      unsigned really_dtorable:1;//- class DTOR really req'd
-      unsigned needs_count:1;   // - array new needs count in allocation
-      unsigned free_array_no :1;// - "array_number" needs to be freed
+        unsigned needs_dtor         : 1;    // - class says DTOR is req'd (DTOR may be empty)
+        unsigned really_dtorable    : 1;    //- class DTOR really req'd
+        unsigned needs_count        : 1;    // - array new needs count in allocation
+        unsigned free_array_no      : 1;    // - "array_number" needs to be freed
     } flag;
 
 
@@ -689,12 +689,12 @@ PTREE AnalyseDelete(            // ANALYSE DELETE OPERATOR
     TOKEN_LOCN err_locn;        // - error location
     unsigned num_args;          // - # of args for "op delete"
     struct {
-      unsigned test_null:1;     // - true ==> test for 0 address
-      unsigned array_delete:1;  // - true ==> delete[]
-      unsigned inside_dtor:1;   // - true ==> delete gening in DTOR
-      unsigned num_in_alloc:1;  // - true ==> number elements is in allocation
-      unsigned really_dtorable:1;//- true ==> non-trivial destructor req'd
-      unsigned adjust_for_num:1;// - true ==> subtract sizeof(int) from ptr
+        unsigned test_null          : 1;    // - true ==> test for 0 address
+        unsigned array_delete       : 1;    // - true ==> delete[]
+        unsigned inside_dtor        : 1;    // - true ==> delete gening in DTOR
+        unsigned num_in_alloc       : 1;    // - true ==> number elements is in allocation
+        unsigned really_dtorable    : 1;    // - true ==> non-trivial destructor req'd
+        unsigned adjust_for_num     : 1;    // - true ==> subtract sizeof(int) from ptr
     } flag;
 
     info = NULL;
@@ -713,7 +713,7 @@ PTREE AnalyseDelete(            // ANALYSE DELETE OPERATOR
     }
     pted = ptr_type->of;
     if( TypeTruncByMemModel( pted ) ) {
-        PTreeErrorExpr( data, ERR_DLT_OBJ_MEM_MODEL  );
+        PTreeErrorExpr( data, ERR_DLT_OBJ_MEM_MODEL );
         return( data );
     }
     del_op = flag.array_delete ? CO_DELETE_ARRAY : CO_DELETE;
@@ -895,5 +895,5 @@ PTREE AnalyseDelete(            // ANALYSE DELETE OPERATOR
         // 'dup' must be setup with a duplicate of the ptr expr
         expr = deleteCheckForNULL( dup, expr );
     }
-    return setDeleteType( expr, &err_locn );
+    return( setDeleteType( expr, &err_locn ) );
 }

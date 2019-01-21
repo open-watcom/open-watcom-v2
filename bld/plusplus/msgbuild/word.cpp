@@ -81,7 +81,8 @@ static unsigned short Word::encode // MAKE ENCODING
 
     for( ; ; ) {
         Word* curr = iter.next();
-        if( 0 == curr ) break;
+        if( 0 == curr )
+            break;
         if( enc_words < 64 ) {
             if( ( curr->_count - 1 ) * ( curr->_word.size() ) > 3 ) {
                 curr->_code = enc_words | ENC_BIT;
@@ -99,7 +100,7 @@ static unsigned short Word::encode // MAKE ENCODING
             }
         }
     }
-    return enc_words;
+    return( enc_words );
 }
 
 
@@ -116,7 +117,7 @@ unsigned Word::encodedSize      // GET ENCODED SIZE
     } else {
         len = _word.size() + 1;
     }
-    return len;
+    return( len );
 }
 
 
@@ -127,9 +128,9 @@ static unsigned Word::hashFun   // HASH FUNCTION FOR CHARACTER VECTOR
     unsigned hash = 0;
     for( unsigned index = 0; index < v->_size; ++ index ) {
         hash = ( hash << 1 ) ^ hash ;
-        hash |= v->_vect[ index ];
+        hash |= v->_vect[index];
     }
-    return hash;
+    return( hash );
 }
 
 
@@ -146,12 +147,12 @@ static int Word::hashCompare    // COMPARISON FUNCTION
             retn = ( '\0' == *word );
             break;
         }
-        if( comp->_vect[ index ] != *word ) {
+        if( comp->_vect[index] != *word ) {
             retn = 0;
             break;
         }
     }
-    return retn;
+    return( retn );
 }
 
 
@@ -177,7 +178,7 @@ static Word* Word::newWord      // GET NEW WORD
     } else {
         ++ curr->_count;
     }
-    return curr;
+    return( curr );
 }
 
 
@@ -198,7 +199,7 @@ static int Word::word_compare   // COMPARE TWO WORDS
     } else {
         retn = -1;
     }
-    return retn;
+    return( retn );
 }
 
 
@@ -241,7 +242,8 @@ static void Word::writeEncoded  // WRITE OUT WORD ENCODING
 
     for( ; ; ) {
         Word* curr = iter.next();
-        if( 0 == curr ) break;
+        if( 0 == curr )
+            break;
         if( curr->_code & ENC_BIT ) {
             stats.writeName( buf, curr->_word );
             out.write( buf );
@@ -259,7 +261,8 @@ static void Word::writeOffsets  // WRITE OUT WORD OFFSETS
 
     for( ; ; ) {
         Word* curr = iter.next();
-        if( 0 == curr ) break;
+        if( 0 == curr )
+            break;
         if( curr->_code & ENC_BIT ) {
             stats.writeSizeWritten( buf, curr->_word.size() + 1 );
             out.write( buf );

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
+* Copyright (c) 2009-2018 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -45,9 +45,9 @@ public:
         unsigned int c );
     ~Hide() { };
     static
-    bool hiding() { return hide; };
+    bool hiding() { return _hide; };
     static
-    void clear() { hide = false; };
+    void clear() { _hide = false; };
     Lexer::Token parse( Lexer* lexer );
     void buildText( Cell* cell );
 protected:
@@ -55,8 +55,9 @@ protected:
 private:
     Hide( const Hide& rhs );            //no copy
     Hide& operator=( const Hide& rhs ); //no assignment
-    static bool hide;
-    std::wstring keyPhrase;
+
+    static bool         _hide;
+    std::wstring        _keyPhrase;
 };
 
 class EHide : public Element {

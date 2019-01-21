@@ -49,9 +49,9 @@
 WRDLLENTRY extern void     WRAPI WRForgetBitmapName( void );
 WRDLLENTRY extern void     WRAPI WRRememberBitmapName( WResID *name );
 WRDLLENTRY extern WResID * WRAPI WRRecallBitmapName( void );
-WRDLLENTRY extern int      WRAPI WRAddBitmapFileHeader( BYTE **data, size_t *size );
-WRDLLENTRY extern int      WRAPI WRStripBitmapFileHeader( BYTE **data, size_t *size );
+WRDLLENTRY extern bool     WRAPI WRAddBitmapFileHeader( BYTE **data, size_t *size );
+WRDLLENTRY extern bool     WRAPI WRStripBitmapFileHeader( BYTE **data, size_t *size );
 WRDLLENTRY extern HBITMAP  WRAPI WRBitmapFromData( BYTE *data, bitmap_info *info );
-WRDLLENTRY extern int      WRAPI WRWriteBitmapToData( HBITMAP hbitmap, BYTE **data, size_t *size );
+WRDLLENTRY extern bool     WRAPI WRWriteBitmapToData( HBITMAP hbitmap, BYTE **data, size_t *size );
 
 #endif

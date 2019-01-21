@@ -158,8 +158,7 @@ void StartProg( const char *cmd, const char *prog, char *full_args, char *dos_ar
         OvlSize = OvlHandler( OVLDBG_GET_STATE_SIZE, NULL );
         ovl_struct = alloca( ( sizeof( overlay_record_t ) - 1 ) + OvlSize );
         if( ovl_struct == NULL ) {
-            Output( MsgArray[MSG_SAMPLE_1 - ERR_FIRST_MESSAGE] );
-            Output( "\r\n" );
+            OutputMsgNL( MSG_SAMPLE_1 );
             fatal();
         }
         OvlStruct = ovl_struct;
@@ -260,14 +259,12 @@ static void SetInterruptWatch( char **cmd )
 
     intr_num = GetNumber( 0x20, 0xff, cmd, 16 );
     if( ( intr_num >= 0x34 ) && ( intr_num <= 0x3d ) ) {
-        Output( MsgArray[MSG_SAMPLE_2 - ERR_FIRST_MESSAGE] );
-        Output( "\r\n" );
+        OutputMsgNL( MSG_SAMPLE_2 );
         fatal();
     }
     if( intr_num != 0x21 ) {    /* the DOS interrupt is already monitored */
         if( AddInterrupt( intr_num ) ) {
-            Output( MsgArray[MSG_SAMPLE_3 - ERR_FIRST_MESSAGE] );
-            Output( "\r\n" );
+            OutputMsgNL( MSG_SAMPLE_3 );
             fatal();
         }
     }
@@ -276,8 +273,6 @@ static void SetInterruptWatch( char **cmd )
 
 void SysParseOptions( char c, char **cmd )
 {
-    char buff[2];
-
     switch( c ) {
     case 'r':
         SetTimerRate( cmd );
@@ -289,12 +284,14 @@ void SysParseOptions( char c, char **cmd )
         SysNoDOS = 1;
         break;
     default:
-        Output( MsgArray[MSG_INVALID_OPTION - ERR_FIRST_MESSAGE] );
-        buff[0] = c;
-        buff[1] = '\0';
-        Output( buff );
-        Output( "\r\n" );
+        OutputMsgCharNL( MSG_INVALID_OPTION, c );
         fatal();
         break;
     }
+}
+
+
+void OutputNL( void )
+{
+    Output( "\r\n" );
 }

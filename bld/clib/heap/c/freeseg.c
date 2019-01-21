@@ -42,7 +42,7 @@
 #elif defined(__WINDOWS__)
     #include <dos.h>
     #include <windows.h>
-#else
+#else   /* __DOS__ */
     #include <dos.h>
     #include "tinyio.h"
 #endif
@@ -76,36 +76,37 @@ static int DoFreeSeg( __segment seg )
 extern int tricky_free_seg( int, int );
 #if defined(__OS2__) && defined(__BIG_DATA__)
 #pragma aux tricky_free_seg = \
-        "mov    cx,es"          \
-        "cmp    cx,ax"          \
-        "jl     L1"             \
-        "cmp    cx,bx"          \
-        "jg     L1"             \
-        "xor    cx,cx"          \
-        "L1:"                   \
-        "mov    dx,ds"          \
-        "cmp    dx,ax"          \
-        "jl     L2"             \
-        "cmp    dx,bx"          \
-        "jg     L2"             \
-        "xor    dx,dx"          \
-        "L2:"                   \
-        "call   DoFreeSeg"      \
-        "mov    es,cx"          \
-        "mov    ds,dx"          \
-        parm [ax] [bx] value [ax] modify [cx dx ds es]
+        "mov    cx,es"      \
+        "cmp    cx,ax"      \
+        "jl short L1"       \
+        "cmp    cx,bx"      \
+        "jg short L1"       \
+        "xor    cx,cx"      \
+    "L1: mov    dx,ds"      \
+        "cmp    dx,ax"      \
+        "jl short L2"       \
+        "cmp    dx,bx"      \
+        "jg short L2"       \
+        "xor    dx,dx"      \
+    "L2: call DoFreeSeg"    \
+        "mov    es,cx"      \
+        "mov    ds,dx"      \
+    __parm      [__ax] [__bx] \
+    __value     [__ax] \
+    __modify    [__cx __dx __ds __es]
 #else
 #pragma aux tricky_free_seg = \
-        "mov    cx,es"          \
-        "cmp    cx,ax"          \
-        "jl     L1"             \
-        "cmp    cx,bx"          \
-        "jg     L1"             \
-        "xor    cx,cx"          \
-        "L1:"                   \
-        "call   DoFreeSeg"      \
-        "mov    es,cx"          \
-        parm [ax] [bx] value [ax] modify [cx es]
+        "mov    cx,es"      \
+        "cmp    cx,ax"      \
+        "jl short L1"       \
+        "cmp    cx,bx"      \
+        "jg short L1"       \
+        "xor    cx,cx"      \
+    "L1: call DoFreeSeg"    \
+        "mov    es,cx"      \
+    __parm      [__ax] [__bx] \
+    __value     [__ax] \
+    __modify    [__cx __es]
 #endif
 
 static int __DoFreeSeg( __segment first )
@@ -143,7 +144,7 @@ int __FreeSeg( __segment seg )
     if( rc ) {
         return( __set_errno_dos( rc ) );
     }
-#else
+#else   /* __DOS__ */
     tiny_ret_t rc;
 
     rc = TinyFreeBlock( seg );

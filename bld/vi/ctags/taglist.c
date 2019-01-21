@@ -34,13 +34,13 @@
 #include <string.h>
 #include <stdlib.h>
 #include <ctype.h>
-#include <malloc.h>
 #include "ctags.h"
 
 #define isWSorCtrlZ(x)  (isspace( x ) || (x == 0x1A))
 
-static char     **tagList;
-static long     total = 0;
+static char             **tagList = NULL;
+static unsigned         tagCount = 0;
+static unsigned long    total_size = 0;
 
 /*
  * addToTagList - add new string to tag list
@@ -50,17 +50,17 @@ static void addToTagList( char *res )
     size_t      len;
 
     len = strlen( res ) + 1;
-    tagList = realloc( tagList, ( TagCount + 1 ) * sizeof( char * ) );
+    tagList = realloc( tagList, ( tagCount + 1 ) * sizeof( char * ) );
     if( tagList == NULL ) {
         ErrorMsgExit( "Out of memory!\n" );
     }
-    tagList[TagCount] = malloc( len );
-    if( tagList[TagCount] == NULL ) {
+    tagList[tagCount] = malloc( len );
+    if( tagList[tagCount] == NULL ) {
         ErrorMsgExit( "Out of memory!\n" );
     }
-    memcpy( tagList[TagCount], res, len );
-    total += len;
-    TagCount++;
+    memcpy( tagList[tagCount], res, len );
+    total_size += (unsigned long)len;
+    tagCount++;
 
 } /* addToTagList */
 
@@ -84,11 +84,7 @@ void AddTag( const char *id )
         if( id != NULL ) {
             ++id;
             ptr = res;
-
-            while( *id != '\0' && isspace( *id ) ) {
-                ++id;
-            }
-
+            SKIP_SPACES( id );
             while( *id != '\0' && (*id != ',') ) {
                 *ptr++ = *id++;
             }
@@ -99,11 +95,7 @@ void AddTag( const char *id )
             if( *id == ',' ) {
                 ++id;
                 ptr = res;
-
-                while( *id != '\0' && isspace( *id ) ) {
-                    ++id;
-                }
-
+                SKIP_SPACES( id );
                 while( *id != '\0' && (*id != ')') ) {
                     *ptr++ = *id++;
                 }
@@ -136,24 +128,26 @@ static int compareStrings( const void *p1, const void *p2 )
  */
 void GenerateTagsFile( const char *fname )
 {
-    FILE        *f;
-    int         i;
+    FILE        *fp;
+    unsigned    i;
 
-    qsort( tagList, TagCount, sizeof( char * ), compareStrings );
-    f = fopen( fname, "w" );
-    if( f == NULL ) {
-        ErrorMsgExit( "Could not open tags file \"%s\"\n", fname );
-    }
     if( tagList != NULL ) {
-        total += TagCount * sizeof( char * );
+        qsort( tagList, tagCount, sizeof( char * ), compareStrings );
+        fp = fopen( fname, "w" );
+        if( fp == NULL ) {
+            ErrorMsgExit( "Could not open tags file \"%s\"\n", fname );
+        }
+        if( tagList != NULL ) {
+            total_size += (unsigned long)( tagCount * sizeof( char * ) );
+        }
+        for( i = 0; i < tagCount; i++ ) {
+            fprintf( fp, "%s\n", tagList[i] );
+        }
+        fclose( fp );
     }
-    for( i = 0; i < TagCount; i++ ) {
-        fprintf( f, "%s\n", tagList[i] );
-    }
-    fclose( f );
     if( VerboseFlag ) {
-        printf( "Wrote %u tags.\n", TagCount );
-        printf( "Used %ld bytes to store tags.\n", total );
+        printf( "Wrote %u tags.\n", tagCount );
+        printf( "Used %lu bytes to store tags.\n", total_size );
     }
 
 } /* GenerateTagsFile */
@@ -163,20 +157,24 @@ void GenerateTagsFile( const char *fname )
  */
 void ReadExtraTags( const char *fname )
 {
-    FILE        *f;
+    FILE        *fp;
     char        res[MAX_STR];
-    int         i;
+    size_t      i;
 
-    f = fopen( fname, "r" );
-    if( f == NULL ) {
-        return;
-    }
-    while( fgets( res, sizeof( res ), f ) != NULL ) {
-        for( i = strlen( res ); i && isWSorCtrlZ( res[i - 1] ); --i ) {
-            res[i - 1] = '\0';
+    fp = fopen( fname, "r" );
+    if( fp != NULL ) {
+        while( fgets( res, sizeof( res ), fp ) != NULL ) {
+            for( i = strlen( res ); i && isWSorCtrlZ( res[i - 1] ); --i ) {
+                res[i - 1] = '\0';
+            }
+            addToTagList( res );
         }
-        addToTagList( res );
+        fclose( fp );
     }
-    fclose( f );
 
 } /* ReadExtraTags */
+
+unsigned GetTagCount( void )
+{
+    return( tagCount );
+}

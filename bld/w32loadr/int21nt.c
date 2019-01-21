@@ -33,7 +33,7 @@
 #include <dos.h>
 #include <i86.h>
 #include <ctype.h>
-#include <dosfunc.h>
+#include "dosfuncx.h"
 #include <direct.h>
 #include <fcntl.h>
 #include <share.h>
@@ -335,9 +335,12 @@ static BOOL __chmod( union REGS *r )
 static int getCurrDrive( void )
 {
     char        buff[MAX_PATH];
+    DWORD       rc;
 
-    GetCurrentDirectory( sizeof( buff ), buff );
-    return( tolower( buff[0] ) - 'a' );
+    rc = GetCurrentDirectory( sizeof( buff ), buff );
+    if( rc && rc < sizeof( buff ) )
+        return( tolower( buff[0] ) - 'a' );
+    return( -1 );
 }
 
 unsigned __Int21C( union REGS *r )
@@ -349,11 +352,11 @@ unsigned __Int21C( union REGS *r )
 
     ErrorCode = 0;
     switch( r->h.ah ) {
-    case 6:
+    case DOS_OUTPUT_CHAR:
         h = __FileHandleIDs[ 1 ];
         rc = WriteFile( h, &r->h.dl, 1, (LPDWORD)&len, NULL );
         break;
-    case 8:
+    case DOS_GET_CHAR_NO_ECHO_CHECK:
         rc = __getch( r );
         break;
     case DOS_CUR_DISK:
@@ -375,9 +378,9 @@ unsigned __Int21C( union REGS *r )
         break;
     case DOS_GETCWD:
         rc = GetCurrentDirectory( 256, (void *)r->x.esi );
-        if( rc ) {
+        if( rc && rc < 256 ) {
             // DOS int 21h function doesn't return the X:\ part of the CWD
-            char *b = (char*) r->x.esi;
+            char *b = (char *)r->x.esi;
             size_t len = strlen( b + 3 );
             memmove( b, b + 3, len + 1 );
         }

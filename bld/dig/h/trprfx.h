@@ -181,6 +181,7 @@ typedef struct {
 } rfx_nametocannonical_ret;
 
 /*============================ RFX_FIND_FIRST ===============*/
+#define TRAP_DTA_NAME_MAX   13
 typedef struct {
     struct {
         unsigned_8      spare1[13];
@@ -192,7 +193,7 @@ typedef struct {
     unsigned_16 time;
     unsigned_16 date;
     unsigned_32 size;
-    char        name[14];
+    char        name[TRAP_DTA_NAME_MAX + 1];
 } _WCUNALIGNED trap_dta;
 
 typedef struct {

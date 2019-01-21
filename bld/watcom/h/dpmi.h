@@ -44,15 +44,6 @@
  #define _INT_31        _INT 0x31
 #endif
 
-#if defined(__386__)
-#define __DX    edx
-#else
-#define __DX    dx
-#endif
-
-#define DOS_SEG( a ) ((uint_16)(a & 0Xffff))
-#define DOS_SEL( a ) ((uint_16)(a >> 16L))
-
 /*
  * access right definitions
  */
@@ -169,6 +160,11 @@ typedef struct {
     uint_32     handle;
 } dpmi_mem_block;
 
+typedef struct {
+    uint_16     rm;
+    uint_16     pm;
+} dpmi_dos_block;
+
 #define DPMISetWatch                            _DPMISetWatch
 #define DPMIClearWatch                          _DPMIClearWatch
 #define DPMITestWatch                           _DPMITestWatch
@@ -238,29 +234,29 @@ extern void     _DPMIGetVersion( version_info __far * );
 extern void     _fDPMIGetVersion( version_info __far * );
 extern void     _nDPMIGetVersion( version_info * );
 extern int_32   _DPMIAllocateLDTDescriptors( uint_16 );
-extern uint_16  _DPMISegmentToDescriptor( uint_16 );
-extern void     _DPMIFreeLDTDescriptor( uint_16 );
+extern int_32   _DPMISegmentToDescriptor( uint_16 );
+extern int      _DPMIFreeLDTDescriptor( uint_16 );
 extern uint_16  _DPMIGetNextSelectorIncrementValue( void );
 extern uint_32  _DPMIGetSegmentBaseAddress( uint_16 );
-extern void     _DPMISetSegmentBaseAddress( uint_16, uint_32 );
-extern int_16   _DPMISetSegmentLimit( uint_16, uint_32 );
-extern void     _DPMISetDescriptorAccessRights( uint_16, uint_16 );
+extern int      _DPMISetSegmentBaseAddress( uint_16, uint_32 );
+extern int      _DPMISetSegmentLimit( uint_16, uint_32 );
+extern int      _DPMISetDescriptorAccessRights( uint_16, uint_16 );
 extern int_16   _fDPMIAllocateMemoryBlock( dpmi_mem_block __far *, uint_32 );
 extern int_16   _nDPMIAllocateMemoryBlock( dpmi_mem_block *, uint_32 );
 extern int_16   _fDPMIResizeMemoryBlock( dpmi_mem_block __far *, uint_32, uint_32 );
 extern int_16   _nDPMIResizeMemoryBlock( dpmi_mem_block *, uint_32, uint_32 );
-extern int_16   _DPMIFreeMemoryBlock( uint_32 );
-extern int_16   _DPMILockLinearRegion( uint_32, uint_32 );
-extern int_16   _DPMIUnlockLinearRegion( uint_32, uint_32 );
+extern int      _DPMIFreeMemoryBlock( uint_32 );
+extern int      _DPMILockLinearRegion( uint_32, uint_32 );
+extern int      _DPMIUnlockLinearRegion( uint_32, uint_32 );
 extern int      _DPMIGetDescriptor( uint_16, descriptor __far * );
 extern int      _DPMISetDescriptor( uint_16, descriptor __far * );
 extern int_32   _DPMICreateCodeSegmentAliasDescriptor( uint_16 );
-extern int_16   _nDPMIGetFreeMemoryInformation( dpmi_mem * );
-extern int_16   _fDPMIGetFreeMemoryInformation( dpmi_mem __far * );
+extern int      _nDPMIGetFreeMemoryInformation( dpmi_mem * );
+extern int      _fDPMIGetFreeMemoryInformation( dpmi_mem __far * );
 extern int      _DPMISimulateRealModeInterrupt( uint_8 interrupt, uint_8 flags,
                         uint_16 words_to_copy, rm_call_struct __far *call_st );
-extern int_32   _DPMIAllocateDOSMemoryBlock( uint_16 para );
-extern void     _DPMIFreeDOSMemoryBlock( uint_16 sel );
+extern dpmi_dos_block _DPMIAllocateDOSMemoryBlock( uint_16 para );
+extern int      _DPMIFreeDOSMemoryBlock( uint_16 sel );
 extern void     __far *_DPMIRawPMtoRMAddr( void );
 extern uint_32  _DPMIRawRMtoPMAddr( void );
 extern void     __far *_DPMISaveRMStateAddr( void );
@@ -268,548 +264,799 @@ extern uint_32  _DPMISavePMStateAddr( void );
 extern uint_16  _DPMISaveStateSize( void );
 extern void     __far *_DPMIGetVendorSpecificAPI( char __far * );
 
-extern int_32   _DPMISetWatch( uint_32 linear, uint_8 len, dpmi_watch_type type );
-extern void     _DPMIClearWatch( uint_16 handle );
-extern int_16   _DPMITestWatch( uint_16 handle );
-extern void     _DPMIResetWatch( uint_16 handle );
-
-#pragma aux _DPMIModeDetect = \
-        "mov    ax,1686h"   \
-        "int 2fh"           \
-        value[ax];
+extern int_32   _DPMISetWatch( uint_32 linear, uint_8 len, uint_8 type );
+extern int      _DPMIClearWatch( uint_16 handle );
+extern int      _DPMITestWatch( uint_16 handle );
+extern int      _DPMIResetWatch( uint_16 handle );
 
 #pragma aux _DPMIIdle = \
-        "mov    ax,1680h"   \
-        "int 2fh";
+        "mov  ax,1680h" \
+        "int 2fh"       \
+    __parm [] \
+    __value \
+    __modify __exact [__ax]
+
+#pragma aux _DPMIModeDetect = \
+        "mov  ax,1686h" \
+        "int 2fh"       \
+    __parm [] \
+    __value [__ax] \
+    __modify __exact [__ax]
 
 #if defined(__386__)
 #pragma aux _DPMISetWatch = \
-        "mov    ax,0b00h"   \
-        "mov    cx,bx"      \
-        "shr    ebx,16"     \
-        _INT_31             \
-        "sbb    eax,eax"    \
-        "mov    ax,bx"      \
-    parm [ebx] [dl] [dh] modify [ecx] value [eax];
+        "mov  ax,0b00h" \
+        "mov  cx,bx"    \
+        "shr  ebx,16"   \
+        _INT_31         \
+        "sbb  eax,eax"  \
+        "mov  ax,bx"    \
+    __parm [__ebx] [__dl] [__dh] \
+    __value [__eax] \
+    __modify __exact [__eax __ebx __ecx]
 #else
 #pragma aux _DPMISetWatch = \
-        "mov    ax,0b00h"   \
-        "xchg   bx,cx"      \
-        _INT_31             \
-        "sbb    cx,cx"      \
-    parm [bx cx] [dl] [dh] value [cx bx];
+        "mov  ax,0b00h" \
+        "xchg bx,cx"    \
+        _INT_31         \
+        "sbb  cx,cx"    \
+    __parm [__bx __cx] [__dl] [__dh] \
+    __value [__cx __bx] \
+    __modify __exact [__ax __bx __cx]
 #endif
 
-#pragma aux _DPMIResetWatch = \
-        "mov    ax,0b03h"   \
-        _INT_31             \
-    parm [bx];
-
+#if defined(__386__)
 #pragma aux _DPMIClearWatch = \
-        "mov    ax,0b01h"   \
-        _INT_31             \
-    parm [bx];
+        "mov  ax,0b01h" \
+        _INT_31         \
+        "sbb  eax,eax"  \
+    __parm [__bx] \
+    __value [__eax] \
+    __modify __exact [__eax]
+#else
+#pragma aux _DPMIClearWatch = \
+        "mov  ax,0b01h" \
+        _INT_31         \
+        "sbb  ax,ax"    \
+    __parm [__bx] \
+    __value [__ax] \
+    __modify __exact [__ax]
+#endif
 
+#if defined(__386__)
 #pragma aux _DPMITestWatch = \
-        "mov    ax,0b02h"   \
-        _INT_31             \
-        "and    ax,1"       \
-    parm [bx] value [ax];
+        "mov  ax,0b02h" \
+        _INT_31         \
+        "sbb  ebx,ebx"  \
+        "and  eax,1"    \
+        "or   ebx,eax"  \
+    __parm [__bx] \
+    __value [__ebx] \
+    __modify __exact [__eax __ebx]
+#else
+#pragma aux _DPMITestWatch = \
+        "mov  ax,0b02h" \
+        _INT_31         \
+        "sbb  bx,bx"    \
+        "and  ax,1"     \
+        "or   bx,ax"    \
+    __parm [__bx] \
+    __value [__bx] \
+    __modify __exact [__ax __bx]
+#endif
+
+#if defined(__386__)
+#pragma aux _DPMIResetWatch = \
+        "mov  ax,0b03h" \
+        _INT_31         \
+        "sbb  eax,eax"  \
+    __parm [__bx] \
+    __value [__eax] \
+    __modify __exact [__eax]
+#else
+#pragma aux _DPMIResetWatch = \
+        "mov  ax,0b03h" \
+        _INT_31         \
+        "sbb  ax,ax"    \
+    __parm [__bx] \
+    __value [__ax] \
+    __modify __exact [__ax]
+#endif
 
 #if defined(__386__)
 #pragma aux _DPMIGetVersion = \
-        "push   ds"         \
-        "mov    ds,edx"     \
-        "mov    ax,400h"    \
-        _INT_31             \
-        "mov    byte ptr [esi],ah"  \
-        "mov    byte ptr [esi+1],al"  \
-        "mov    word ptr [esi+2],bx"  \
-        "mov    byte ptr [esi+4],cl"  \
-        "mov    byte ptr [esi+5],dh"  \
-        "mov    byte ptr [esi+6],dl"  \
-        "pop    ds"         \
-    parm [dx esi] modify[ax bx cl dx];
+        "push ds"       \
+        "mov  ds,edx"   \
+        "mov  ax,400h"  \
+        _INT_31         \
+        "mov  byte ptr [esi],ah"    \
+        "mov  byte ptr [esi+1],al"  \
+        "mov  word ptr [esi+2],bx"  \
+        "mov  byte ptr [esi+4],cl"  \
+        "mov  byte ptr [esi+5],dh"  \
+        "mov  byte ptr [esi+6],dl"  \
+        "pop  ds"         \
+    __parm [__dx __esi] \
+    __value \
+    __modify[__ax __bx __cl __dx]
 #else
 #pragma aux _nDPMIGetVersion = \
-        "mov    ax,400h"    \
-        _INT_31             \
-        "mov    byte ptr [si],ah"  \
-        "mov    byte ptr [si+1],al"  \
-        "mov    word ptr [si+2],bx"  \
-        "mov    byte ptr [si+4],cl"  \
-        "mov    byte ptr [si+5],dh"  \
-        "mov    byte ptr [si+6],dl"  \
-    parm [si] modify[ax bx cl dx];
+        "mov  ax,400h"  \
+        _INT_31         \
+        "mov  byte ptr [si],ah"     \
+        "mov  byte ptr [si+1],al"   \
+        "mov  word ptr [si+2],bx"   \
+        "mov  byte ptr [si+4],cl"   \
+        "mov  byte ptr [si+5],dh"   \
+        "mov  byte ptr [si+6],dl"   \
+    __parm [__si] \
+    __value \
+    __modify[__ax __bx __cl __dx]
 
 #pragma aux _fDPMIGetVersion = \
-        "mov    ax,400h"    \
-        _INT_31             \
-        "mov    byte ptr es:[si],ah"  \
-        "mov    byte ptr es:[si+1],al"  \
-        "mov    word ptr es:[si+2],bx"  \
-        "mov    byte ptr es:[si+4],cl"  \
-        "mov    byte ptr es:[si+5],dh"  \
-        "mov    byte ptr es:[si+6],dl"  \
-    parm [es si] modify[ax bx cl dx];
+        "mov  ax,400h"  \
+        _INT_31         \
+        "mov  byte ptr es:[si],ah"      \
+        "mov  byte ptr es:[si+1],al"    \
+        "mov  word ptr es:[si+2],bx"    \
+        "mov  byte ptr es:[si+4],cl"    \
+        "mov  byte ptr es:[si+5],dh"    \
+        "mov  byte ptr es:[si+6],dl"    \
+    __parm [__es __si]  \
+    __value \
+    __modify[__ax __bx __cl __dx]
 #endif
 
 #if defined(__386__)
 #pragma aux _DPMIAllocateLDTDescriptors = \
-        "xor    eax,eax"    \
-        _INT_31             \
-        "mov    dx,ax"      \
-        "sbb    ax,ax"      \
-        "shl    eax,16"     \
-        "mov    ax,dx"      \
-    parm [cx] value[eax] modify[dx];
+        "xor  eax,eax"  \
+        _INT_31         \
+        "sbb  ecx,ecx"  \
+        "mov  cx,ax"    \
+    __parm [__cx] \
+    __value [__ecx] \
+    __modify __exact [__eax __ecx]
 #else
 #pragma aux _DPMIAllocateLDTDescriptors = \
-        "xor    ax,ax"      \
-        _INT_31             \
-        "sbb    dx,dx"      \
-    parm [cx] value[ax dx];
+        "xor  ax,ax"    \
+        _INT_31         \
+        "sbb  cx,cx"    \
+    __parm [__cx] \
+    __value [__cx __ax] \
+    __modify __exact [__ax __cx]
 #endif
 
+#if defined(__386__)
 #pragma aux _DPMIFreeLDTDescriptor = \
-        "mov    ax,1"       \
-        _INT_31             \
-    parm [bx];
+        "mov  ax,1"     \
+        _INT_31         \
+        "sbb  eax,eax"  \
+    __parm [__bx] \
+    __value [__eax] \
+    __modify __exact [__eax]
+#else
+#pragma aux _DPMIFreeLDTDescriptor = \
+        "mov  ax,1"     \
+        _INT_31         \
+        "sbb  ax,ax"    \
+    __parm [__bx] \
+    __value [__ax] \
+    __modify __exact [__ax]
+#endif
 
+#if defined(__386__)
 #pragma aux _DPMISegmentToDescriptor = \
-        "mov    ax,2"       \
-        _INT_31             \
-    parm [bx];
+        "mov  ax,2"     \
+        _INT_31         \
+        "sbb  ebx,ebx"  \
+        "mov  bx,ax"    \
+    __parm [__bx] \
+    __value [__ebx]\
+    __modify __exact [__ax __ebx]
+#else
+#pragma aux _DPMISegmentToDescriptor = \
+        "mov  ax,2"     \
+        _INT_31         \
+        "sbb  bx,bx"    \
+    __parm [__bx] \
+    __value [__bx __ax] \
+    __modify __exact [__ax __bx]
+#endif
 
 #pragma aux _DPMIGetNextSelectorIncrementValue = \
-        "mov    ax,3"       \
-        _INT_31             \
-    parm [bx];
+        "mov  ax,3"     \
+        _INT_31         \
+    __parm [__bx] \
+    __value [__ax] \
+    __modify __exact [__ax]
 
 #if defined(__386__)
-
 #pragma aux _DPMIGetSegmentBaseAddress = \
-        "xor    eax,eax"    \
-        "mov    al,6"       \
-        _INT_31             \
-        "mov    eax,ecx"    \
-        "shl    eax,16"     \
-        "mov    ax,dx"      \
-    parm caller [bx] value [eax] modify exact [eax ebx ecx edx];
+        "mov  ax,6"     \
+        _INT_31         \
+        "shl  ecx,16"   \
+        "mov  cx,dx"    \
+    __parm __caller [__bx] \
+    __value [__ecx] \
+    __modify __exact [__ax __ecx __edx]
 #else
-
 #pragma aux _DPMIGetSegmentBaseAddress = \
-        "mov    ax,6"       \
-        _INT_31             \
-    parm [bx] value[cx dx];
+        "mov  ax,6"     \
+        _INT_31         \
+    __parm [__bx] \
+    __value[__cx __dx] \
+    __modify __exact [__ax __cx __dx]
 #endif
 
+#if defined(__386__)
 #pragma aux _DPMISetSegmentBaseAddress = \
-        "mov    ax,7"       \
-        _INT_31             \
-    parm [bx] [cx dx];
+        "mov  ax,7"     \
+        "mov  dx,cx"    \
+        "shr  ecx,16"   \
+        _INT_31         \
+        "sbb  eax,eax"  \
+    __parm [__bx] [__ecx] \
+    __value [__eax] \
+    __modify __exact [__eax __ecx __dx]
+#else
+#pragma aux _DPMISetSegmentBaseAddress = \
+        "mov  ax,7"     \
+        _INT_31         \
+        "sbb  ax,ax"    \
+    __parm [__bx] [__cx __dx] \
+    __value [__ax] \
+    __modify __exact [__ax]
+#endif
 
 #if defined(__386__)
 #pragma aux _DPMISetSegmentLimit = \
-        "mov    ax,dx"      \
-        "shr    edx,16"     \
-        "mov    cx,dx"      \
-        "mov    dx,ax"      \
-        "mov    ax,8"       \
-        _INT_31             \
-        "xor    eax,eax"    \
-    parm [bx] [edx] value[ax];
+        "mov  dx,cx"    \
+        "shr  ecx,16"   \
+        "mov  ax,8"     \
+        _INT_31         \
+        "sbb  eax,eax"  \
+    __parm [__bx] [__ecx] \
+    __value [__eax] \
+    __modify __exact [__eax __ecx __dx]
 #else
 #pragma aux _DPMISetSegmentLimit = \
-        "mov    ax,8"       \
-        _INT_31             \
-        "sbb    ax,ax"      \
-    parm [bx] [cx dx] value[ax];
+        "mov  ax,8"     \
+        _INT_31         \
+        "sbb  ax,ax"    \
+    __parm [__bx] [__cx __dx] \
+    __value [__ax] \
+    __modify __exact [__ax]
 #endif
 
-#pragma aux _DPMIFreeMemoryBlock =  \
-        "xchg   si,di"      \
-        "mov    ax,502h"    \
-        _INT_31             \
-        "sbb    ax,ax"      \
-    parm [di si] value[ax];
-
+#if defined(__386__)
 #pragma aux _DPMISetDescriptorAccessRights = \
-        "mov    ax,9"       \
-        _INT_31             \
-    parm [bx] [cx];
+        "mov  ax,9"     \
+        _INT_31         \
+        "sbb  eax,eax"  \
+    __parm [__bx] [__cx] \
+    __value [__eax] \
+    __modify __exact [__eax]
+#else
+#pragma aux _DPMISetDescriptorAccessRights = \
+        "mov  ax,9"     \
+        _INT_31         \
+        "sbb  ax,ax"    \
+    __parm [__bx] [__cx] \
+    __value [__ax] \
+    __modify __exact [__ax]
+#endif
+
+#if defined(__386__)
+#pragma aux _DPMIFreeMemoryBlock =  \
+        "mov  di,si"    \
+        "shr  esi,16"   \
+        "mov  ax,502h"  \
+        _INT_31         \
+        "sbb  eax,eax"  \
+    __parm [__esi] \
+    __value [__eax] \
+    __modify __exact [__eax __di __esi]
+#else
+#pragma aux _DPMIFreeMemoryBlock =  \
+        "xchg si,di"    \
+        "mov  ax,502h"  \
+        _INT_31         \
+        "sbb  ax,ax"    \
+    __parm [__di __si] \
+    __value [__ax] \
+    __modify __exact [__ax __di __si]
+#endif
 
 #if defined(__386__)
 #pragma aux _DPMILockLinearRegion = \
-        "mov    di,dx"      \
-        "shr    edx,16"     \
-        "mov    si,dx"      \
-        "mov    bx,ax"      \
-        "shr    eax,16"     \
-        "mov    cx,ax"      \
-        "mov    ax,600h"    \
-        _INT_31             \
-        "sbb    eax,eax"    \
-    parm [eax] [edx] value[ax] modify [bx cx si di];
+        "mov  di,si"    \
+        "shr  esi,16"   \
+        "mov  cx,bx"    \
+        "shr  ebx,16"   \
+        "mov  ax,600h"  \
+        _INT_31         \
+        "sbb  eax,eax"  \
+    __parm [__ebx] [__esi] \
+    __value [__eax] \
+    __modify __exact [__eax __ebx __cx __esi __di]
 
 #pragma aux _DPMIUnlockLinearRegion = \
-        "mov    di,dx"      \
-        "shr    edx,16"     \
-        "mov    si,dx"      \
-        "mov    bx,ax"      \
-        "shr    eax,16"     \
-        "mov    cx,ax"      \
-        "mov    ax,601h"    \
-        _INT_31             \
-        "xor    eax,eax"    \
-    parm [eax] [edx] value[ax] modify [bx cx si di];
+        "mov  di,si"    \
+        "shr  esi,16"   \
+        "mov  cx,bx"    \
+        "shr  ebx,16"   \
+        "mov  ax,601h"  \
+        _INT_31         \
+        "sbb  eax,eax"  \
+    __parm [__ebx] [__esi] \
+    __value [__eax] \
+    __modify __exact [__eax __ebx __cx __esi __di]
 #else
 #pragma aux _DPMILockLinearRegion = \
-        "mov    ax,600h"    \
-        _INT_31             \
-        "sbb    ax,ax"      \
-    parm [cx bx] [si di] value[ax];
+        "mov  ax,600h"  \
+        _INT_31         \
+        "sbb  ax,ax"    \
+    __parm [__cx __bx] [__si __di] \
+    __value[__ax] \
+    __modify __exact [__ax]
 
 #pragma aux _DPMIUnlockLinearRegion = \
-        "mov    ax,601h"    \
-        _INT_31             \
-        "sbb    ax,ax"      \
-    parm [cx bx] [si di] value[ax];
+        "mov  ax,601h"  \
+        _INT_31         \
+        "sbb  ax,ax"    \
+    __parm [__cx __bx] [__si __di] \
+    __value [__ax] \
+    __modify __exact [__ax]
 #endif
 
 #if defined(__386__)
 
 #pragma aux _DPMIAllocateDOSMemoryBlock = \
-        "mov    ax,100h"    \
-        _INT_31             \
-        "jnc short L1"      \
-        "sbb    dx,dx"      \
-    "L1: xchg   ax,dx"      \
-        "shl    eax,16"     \
-        "mov    ax,dx"      \
-    parm [bx] value [eax] modify [dx];
+        "mov  ax,100h"  \
+        _INT_31         \
+        "jnc short L1"  \
+        "xor  ax,ax"    \
+        "xor  dx,dx"    \
+    "L1: shl  edx,16"   \
+        "mov  dx,ax"    \
+    __parm [__bx] \
+    __value [__edx] \
+    __modify [__ax __bx __edx]
 
 #pragma aux _DPMIFreeDOSMemoryBlock = \
-        "mov    ax,101h"    \
-        _INT_31             \
-        "sbb    eax,eax"    \
-    parm [dx] value [eax];
+        "mov  ax,101h"  \
+        _INT_31         \
+        "sbb  eax,eax"  \
+    __parm [__dx] \
+    __value [__eax] \
+    __modify __exact [__eax]
 
 #pragma aux _DPMISimulateRealModeInterrupt = \
-        "push   es"         \
-        "mov    es,edx"     \
-        "mov    ax,300h"    \
-        _INT_31             \
-        "pop    es"         \
-        "sbb    eax,eax"    \
-    parm [bl] [bh] [cx] [dx edi] value [eax];
+        "push es"       \
+        "mov  es,edx"   \
+        "mov  ax,300h"  \
+        _INT_31         \
+        "pop  es"       \
+        "sbb  eax,eax"  \
+    __parm [__bl] [__bh] [__cx] [__dx __edi] \
+    __value [__eax] \
+    __modify []
 
 #pragma aux _DPMICreateCodeSegmentAliasDescriptor = \
-        "mov    ax,0ah"     \
-        _INT_31             \
-        "rcl    eax,1"      \
-        "ror    eax,1"      \
-    parm [bx] value [eax] ;
+        "mov  ax,0ah"   \
+        _INT_31         \
+        "sbb  ebx,ebx"  \
+        "mov  bx,ax"    \
+    __parm [__bx] \
+    __value [__ebx] \
+    __modify __exact [__eax __ebx]
 
 #pragma aux _DPMIGetDescriptor = \
-        "push   es"         \
-        "mov    es,edx"     \
-        "mov    ax,0bh"     \
-        _INT_31             \
-        "pop    es"         \
-        "sbb    eax,eax"    \
-    parm [bx] [dx edi] value [eax] ;
+        "push es"       \
+        "mov  es,edx"   \
+        "mov  ax,0bh"   \
+        _INT_31         \
+        "pop  es"       \
+        "sbb  eax,eax"  \
+    __parm [__bx] [__dx __edi] \
+    __value [__eax] \
+    __modify []
 
 #pragma aux _DPMISetDescriptor = \
-        "push   es"         \
-        "mov    es,edx"     \
-        "mov    ax,0ch"     \
-        _INT_31             \
-        "pop    es"         \
-        "sbb    eax,eax"    \
-    parm [bx] [dx edi] value [eax] ;
+        "push es"       \
+        "mov  es,edx"   \
+        "mov  ax,0ch"   \
+        _INT_31         \
+        "pop  es"       \
+        "sbb  eax,eax"  \
+    __parm [__bx] [__dx __edi] \
+    __value [__eax] \
+    __modify []
 #else
 
 #pragma aux _DPMIAllocateDOSMemoryBlock = \
-        "mov ax,100h"       \
-        _INT_31             \
-        "jnc short L1"      \
-        "sbb dx,dx"         \
-    "L1: "                  \
-    parm [bx] value [dx ax];
+        "mov  ax,100h"  \
+        _INT_31         \
+        "jnc short L1"  \
+        "xor  ax,ax"    \
+        "xor  dx,dx"    \
+    "L1: "              \
+    __parm [__bx] \
+    __value [__dx __ax] \
+    __modify __exact [__ax __bx __dx]
 
 #pragma aux _DPMIFreeDOSMemoryBlock = \
-        "mov ax,101h"       \
-        _INT_31             \
-        "sbb ax,ax"         \
-    parm [dx] value [ax];
+        "mov ax,101h"   \
+        _INT_31         \
+        "sbb ax,ax"     \
+    __parm [__dx] \
+    __value [__ax] \
+    __modify __exact [__ax]
 
 #pragma aux _DPMISimulateRealModeInterrupt = \
-        "mov ax,300h"       \
-        _INT_31             \
-        "sbb ax,ax"         \
-    parm [bl] [bh] [cx] [es di] value [ax];
+        "mov ax,300h"   \
+        _INT_31         \
+        "sbb ax,ax"     \
+    __parm [__bl] [__bh] [__cx] [__es __di] \
+    __value [__ax] \
+    __modify []
 
 #pragma aux _DPMICreateCodeSegmentAliasDescriptor = \
-        "mov ax,0ah"        \
-        _INT_31             \
-        "sbb dx,dx"         \
-    parm [bx] value[dx ax];
+        "mov ax,0ah"    \
+        _INT_31         \
+        "sbb bx,bx"     \
+    __parm [__bx] \
+    __value [__bx __ax] \
+    __modify __exact[__ax __bx]
 
 #pragma aux _DPMIGetDescriptor = \
-        "mov    ax,0bh"     \
-        _INT_31             \
-        "sbb    ax,ax"      \
-    parm [bx] [es di] value [ax] ;
+        "mov  ax,0bh"   \
+        _INT_31         \
+        "sbb  ax,ax"    \
+    __parm [__bx] [__es __di] \
+    __value [__ax] \
+    __modify []
 
 #pragma aux _DPMISetDescriptor = \
-        "mov    ax,0ch"     \
-        _INT_31             \
-        "sbb    ax,ax"      \
-    parm [bx] [es di] value [ax] ;
+        "mov  ax,0ch"   \
+        _INT_31         \
+        "sbb  ax,ax"    \
+    __parm [__bx] [__es __di] \
+    __value [__ax] \
+    __modify []
 
 #endif
 
 #pragma aux _fDPMIAllocateMemoryBlock =  \
-        "push   es"         \
-        "push   ax"         \
-        "push   dx"         \
-        "xchg   bx,cx"      \
-        "mov    ax,501H"    \
-        _INT_31             \
-        "sbb    ax,ax"      \
-        "mov    dx,bx"      \
-        "pop    es"         \
-        "pop    bx"         \
-        "mov    es:[bx],cx" \
-        "mov    es:+2H[bx],dx"  \
-        "mov    es:+4H[bx],di"  \
-        "mov    es:+6H[bx],si"  \
-        "pop    es"         \
-    parm [ax dx] [bx cx] value[ax] modify[bx cx dx di si];
+        "push es"       \
+        "push ax"       \
+        "push dx"       \
+        "xchg bx,cx"    \
+        "mov  ax,501H"  \
+        _INT_31         \
+        "sbb  ax,ax"    \
+        "mov  dx,bx"    \
+        "pop  es"       \
+        "pop  bx"       \
+        "mov  es:[bx],cx"       \
+        "mov  es:+2H[bx],dx"    \
+        "mov  es:+4H[bx],di"    \
+        "mov  es:+6H[bx],si"    \
+        "pop  es"               \
+    __parm [__ax __dx] [__bx __cx] \
+    __value [__ax] \
+    __modify [__bx __cx __dx __di __si]
 
 #pragma aux _nDPMIAllocateMemoryBlock =  \
-        "push   ax"         \
-        "xchg   bx,cx"      \
-        "mov    ax,501H"    \
-        _INT_31             \
-        "sbb    ax,ax"      \
-        "mov    dx,bx"      \
-        "pop    bx"         \
-        "mov    ds:[bx],cx" \
-        "mov    ds:+2H[bx],dx"  \
-        "mov    ds:+4H[bx],di"  \
-        "mov    ds:+6H[bx],si"  \
-    parm [ax] [bx cx] value[ax] modify[bx cx dx di si];
+        "push ax"       \
+        "xchg bx,cx"    \
+        "mov  ax,501H"  \
+        _INT_31         \
+        "sbb  ax,ax"    \
+        "mov  dx,bx"    \
+        "pop  bx"       \
+        "mov  ds:[bx],cx"       \
+        "mov  ds:+2H[bx],dx"    \
+        "mov  ds:+4H[bx],di"    \
+        "mov  ds:+6H[bx],si"    \
+    __parm [__ax] [__bx __cx] \
+    __value [__ax] \
+    __modify [__bx __cx __dx __di __si]
 
 #pragma aux _fDPMIResizeMemoryBlock =  \
-        "push   es"         \
-        "push   ax"         \
-        "push   dx"         \
-        "xchg   si,di"      \
-        "xchg   bx,cx"      \
-        "mov    ax,503h"    \
-        _INT_31             \
-        "sbb    ax,ax"      \
-        "mov    dx,bx"      \
-        "pop    es"         \
-        "pop    bx"         \
-        "mov    es:[bx],cx" \
-        "mov    es:+2H[bx],dx"  \
-        "mov    es:+4H[bx],di"  \
-        "mov    es:+6H[bx],si"  \
-        "pop    es"         \
-    parm [dx ax] [bx cx] [di si] value[ax] modify[di si bx cx dx];
+        "push es"       \
+        "push ax"       \
+        "push dx"       \
+        "xchg si,di"    \
+        "xchg bx,cx"    \
+        "mov  ax,503h"  \
+        _INT_31         \
+        "sbb  ax,ax"    \
+        "mov  dx,bx"    \
+        "pop  es"       \
+        "pop  bx"       \
+        "mov  es:[bx],cx"       \
+        "mov  es:+2H[bx],dx"    \
+        "mov  es:+4H[bx],di"    \
+        "mov  es:+6H[bx],si"    \
+        "pop  es"               \
+    __parm [__dx __ax] [__bx __cx] [__di __si] \
+    __value [__ax] \
+    __modify [__di __si __bx __cx __dx]
 
 #pragma aux _nDPMIResizeMemoryBlock =  \
-        "push   ax"         \
-        "xchg   si,di"      \
-        "xchg   bx,cx"      \
-        "mov    ax,503h"    \
-        _INT_31             \
-        "sbb    ax,ax"      \
-        "mov    dx,bx"      \
-        "pop    bx"         \
-        "mov    ds:[bx],cx" \
-        "mov    ds:+2H[bx],dx"  \
-        "mov    ds:+4H[bx],di"  \
-        "mov    ds:+6H[bx],si"  \
-    parm [ax] [bx cx] [di si] value[ax] modify[di si bx cx dx];
+        "push ax"       \
+        "xchg si,di"    \
+        "xchg bx,cx"    \
+        "mov  ax,503h"  \
+        _INT_31         \
+        "sbb  ax,ax"    \
+        "mov  dx,bx"    \
+        "pop  bx"       \
+        "mov  ds:[bx],cx"       \
+        "mov  ds:+2H[bx],dx"    \
+        "mov  ds:+4H[bx],di"    \
+        "mov  ds:+6H[bx],si"    \
+    __parm [__ax] [__bx __cx] [__di __si] \
+    __value [__ax] \
+    __modify [__di __si __bx __cx __dx]
 
+#if defined(__386__)
+#pragma aux _nDPMIGetFreeMemoryInformation = \
+        "push es"       \
+        "push ds"       \
+        "pop  es"       \
+        "mov  ax,500h"  \
+        _INT_31         \
+        "pop  es"       \
+        "sbb  eax,eax"  \
+    __parm [__edi] \
+    __value [__eax] \
+    __modify __exact [__eax]
+#else
 #pragma aux _fDPMIGetFreeMemoryInformation = \
-        "mov    ax,500h"    \
-        _INT_31             \
-        "sbb    ax,ax"      \
-    parm [es di] value[ax];
+        "mov  ax,500h"  \
+        _INT_31         \
+        "sbb  ax,ax"    \
+    __parm [__es __di] \
+    __value [__ax] \
+    __modify __exact [__ax]
 
 #pragma aux _nDPMIGetFreeMemoryInformation = \
-        "push   es"         \
-        "push   ds"         \
-        "pop    es"         \
-        "mov    ax,500h"    \
-        _INT_31             \
-        "pop    es"         \
-        "sbb    ax,ax"      \
-    parm [di] value[ax];
-
-#pragma aux _DPMIGetRealModeInterruptVector = \
-        "mov    ax,200h"    \
-        _INT_31             \
-    parm [bl] value[cx __DX] modify[ax];
-
-#if defined(__386__)
-#pragma aux _DPMISetRealModeInterruptVector = \
-        "mov    ax,201h"    \
-        _INT_31             \
-        "sbb    eax,eax"    \
-    parm [bl] [cx edx] value [eax];
-#else
-#pragma aux _DPMISetRealModeInterruptVector = \
-        "mov    ax,201h"    \
-        _INT_31             \
-        "sbb    ax,ax"      \
-    parm [bl] [cx dx] value [ax];
+        "push es"       \
+        "push ds"       \
+        "pop  es"       \
+        "mov  ax,500h"  \
+        _INT_31         \
+        "pop  es"       \
+        "sbb  ax,ax"    \
+    __parm [__di] \
+    __value [__ax] \
+    __modify __exact [__ax]
 #endif
 
+#if defined(__386__)
+#pragma aux _DPMIGetRealModeInterruptVector = \
+        "mov  ax,200h"  \
+        _INT_31         \
+    __parm [__bl] \
+    __value [__cx __edx] \
+    __modify [__ax]
+
+#pragma aux _DPMISetRealModeInterruptVector = \
+        "mov  ax,201h"  \
+        _INT_31         \
+        "sbb  eax,eax"  \
+    __parm [__bl] [__cx __edx] \
+    __value [__eax] \
+    __modify []
+#else
+#pragma aux _DPMIGetRealModeInterruptVector = \
+        "mov  ax,200h"  \
+        _INT_31         \
+    __parm [__bl] \
+    __value [__cx __dx] \
+    __modify [__ax]
+
+#pragma aux _DPMISetRealModeInterruptVector = \
+        "mov  ax,201h"  \
+        _INT_31         \
+        "sbb  ax,ax"    \
+    __parm [__bl] [__cx __dx] \
+    __value [__ax] \
+    __modify []
+#endif
+
+#if defined(__386__)
 #pragma aux _DPMIGetPMExceptionVector = \
-        "mov    ax,202h"    \
-        _INT_31             \
-    parm [bl] value[cx __DX] modify[ax];
+        "mov  ax,202h"  \
+        _INT_31         \
+    __parm [__bl] \
+    __value [__cx __edx] \
+    __modify [__ax]
 
 #pragma aux _DPMISetPMExceptionVector = \
-        "mov    ax,203h"    \
-        _INT_31             \
-    parm [bl] [cx __DX] modify[ax];
+        "mov  ax,203h"  \
+        _INT_31         \
+    __parm [__bl] [__cx __edx] \
+    __value \
+    __modify [__ax]
 
 #pragma aux _DPMIGetPMInterruptVector = \
-        "mov    ax,204h"    \
-        _INT_31             \
-    parm [bl] value[cx __DX] modify[ax];
+        "mov  ax,204h"  \
+        _INT_31         \
+    __parm [__bl] \
+    __value [__cx __edx] \
+    __modify [__ax]
 
-#if defined(__386__)
 #pragma aux _DPMISetPMInterruptVector = \
-        "mov    ax,205h"    \
-        _INT_31             \
-        "sbb    eax,eax"    \
-    parm [bl] [cx edx] value [eax];
+        "mov  ax,205h"  \
+        _INT_31         \
+        "sbb  eax,eax"  \
+    __parm [__bl] [__cx __edx] \
+    __value [__eax] \
+    __modify []
 #else
+#pragma aux _DPMIGetPMExceptionVector = \
+        "mov  ax,202h"  \
+        _INT_31         \
+    __parm [__bl] \
+    __value [__cx __dx] \
+    __modify [__ax]
+
+#pragma aux _DPMISetPMExceptionVector = \
+        "mov  ax,203h"  \
+        _INT_31         \
+    __parm [__bl] [__cx __dx] \
+    __value \
+    __modify [__ax]
+
+#pragma aux _DPMIGetPMInterruptVector = \
+        "mov  ax,204h"  \
+        _INT_31         \
+    __parm [__bl] \
+    __value [__cx __dx] \
+    __modify [__ax]
+
 #pragma aux _DPMISetPMInterruptVector = \
-        "mov    ax,205h"    \
-        _INT_31             \
-        "sbb    ax,ax"      \
-    parm [bl] [cx dx] value [ax];
+        "mov  ax,205h"  \
+        _INT_31         \
+        "sbb  ax,ax"    \
+    __parm [__bl] [__cx __dx] \
+    __value [__ax] \
+    __modify []
 #endif
 
 #if defined(__386__)
 #pragma aux _DPMIAllocateRealModeCallBackAddress = \
-        "push   es"         \
-        "push   ds"         \
-        "mov    ds,edx"     \
-        "mov    esi,eax"    \
-        "mov    es,ecx"     \
-        "mov    edi,ebx"    \
-        "mov    ax,303h"    \
-        _INT_31             \
-        "pop    ds"         \
-        "pop    es"         \
-    parm [dx eax] [cx ebx] value [cx edx] modify [edi esi];
+        "push es"       \
+        "push ds"       \
+        "mov  ds,edx"   \
+        "mov  esi,eax"  \
+        "mov  es,ecx"   \
+        "mov  edi,ebx"  \
+        "mov  ax,303h"  \
+        _INT_31         \
+        "pop  ds"       \
+        "pop  es"       \
+    __parm [__dx __eax] [__cx __ebx] \
+    __value [__cx __edx] \
+    __modify [__edi __esi]
 
 #pragma aux _DPMIFreeRealModeCallBackAddress = \
-        "mov    ax,304h"    \
-        _INT_31             \
-    parm [cx edx];
+        "mov  ax,304h"  \
+        _INT_31         \
+    __parm [__cx __edx] \
+    __value \
+    __modify []
 #else
 #pragma aux _DPMIAllocateRealModeCallBackAddress = \
-        "push   ds"         \
-        "mov    ds,dx"      \
-        "mov    si,ax"      \
-        "mov    ax,303h"    \
-        _INT_31             \
-        "pop    ds"         \
-    parm [dx ax] [es di] value [cx dx] modify [si];
+        "push ds"       \
+        "mov  ds,dx"    \
+        "mov  si,ax"    \
+        "mov  ax,303h"  \
+        _INT_31         \
+        "pop  ds"       \
+    __parm [__dx __ax] [__es __di] \
+    __value [__cx __dx] \
+    __modify [__si]
 
 #pragma aux _DPMIFreeRealModeCallBackAddress = \
-        "mov    ax,304h"    \
-        _INT_31             \
-    parm [cx dx];
+        "mov  ax,304h"  \
+        _INT_31         \
+    __parm [__cx __dx] \
+    __value \
+    __modify []
 #endif
 
 #if defined(__386__)
-#pragma aux             _DPMIRawPMtoRMAddr = \
-        "mov    ax,306h"    \
-        "xor    edi,edi"    \
-        "stc"               \
-        _INT_31             \
-        "mov    cx,si"      \
-        "jnc short L1"      \
-        "xor    cx,cx"      \
-        "xor    edi,edi"    \
-    "L1: "                  \
-    value [cx edi] modify exact [eax cx si edi];
+#pragma aux _DPMIRawPMtoRMAddr = \
+        "mov  ax,306h"  \
+        "xor  edi,edi"  \
+        "stc"           \
+        _INT_31         \
+        "mov  cx,si"    \
+        "jnc short L1"  \
+        "xor  cx,cx"    \
+        "xor  edi,edi"  \
+    "L1: "              \
+    __parm [] \
+    __value [__cx __edi] \
+    __modify __exact [__eax __cx __si __edi]
 
-#pragma aux             _DPMIRawRMtoPMAddr = \
-        "mov    ax,306h"    \
-        "stc"               \
-        _INT_31             \
-        "jnc short L1"      \
-        "xor    ebx,ebx"    \
-        "jmp short L2"      \
-    "L1: shl    ebx,16"     \
-        "mov    bx,cx"      \
-    "L2: "                  \
-    value [ebx] modify exact [eax cx si edi];
+#pragma aux _DPMIRawRMtoPMAddr = \
+        "mov  ax,306h"  \
+        "stc"           \
+        _INT_31         \
+        "jnc short L1"  \
+        "xor  ebx,ebx"  \
+        "jmp short L2"  \
+    "L1: shl  ebx,16"   \
+        "mov  bx,cx"    \
+    "L2: "              \
+    __parm [] \
+    __value [__ebx] \
+    __modify __exact [__eax __cx __si __edi]
 
-#pragma aux             _DPMISaveRMStateAddr = \
-        "mov    ax,305h"    \
-        "stc"               \
-        _INT_31             \
-        "mov    cx,si"      \
-        "jnc short L1"      \
-        "xor    cx,cx"      \
-        "xor    edi,edi"    \
-    "L1: "                  \
-    value [cx edi] modify exact [ax bx cx si edi];
+#pragma aux _DPMISaveRMStateAddr = \
+        "mov  ax,305h"  \
+        "stc"           \
+        _INT_31         \
+        "mov  cx,si"    \
+        "jnc short L1"  \
+        "xor  cx,cx"    \
+        "xor  edi,edi"  \
+    "L1: "              \
+    __parm [] \
+    __value [__cx __edi] \
+    __modify __exact [__ax __bx __cx __si __edi]
 
-#pragma aux             _DPMISavePMStateAddr = \
-        "mov    ax,305h"    \
-        _INT_31             \
-        "jnc short L1"      \
-        "xor    cx,cx"      \
-        "xor    ebx,ebx"    \
-        "jmp short L2"      \
-    "L1: shl    ebx,16"     \
-        "mov    bx,cx"      \
-    "L2: "                  \
-    value [ebx] modify exact [ax bx cx si edi];
+#pragma aux _DPMISavePMStateAddr = \
+        "mov  ax,305h"  \
+        _INT_31         \
+        "jnc short L1"  \
+        "xor  cx,cx"    \
+        "xor  ebx,ebx"  \
+        "jmp short L2"  \
+    "L1: shl  ebx,16"   \
+        "mov  bx,cx"    \
+    "L2: "              \
+    __parm [] \
+    __value [__ebx] \
+    __modify __exact [__ax __bx __cx __si __edi]
 
-#pragma aux             _DPMISaveStateSize = \
-        "mov    ax,305h"    \
-        _INT_31             \
-        "jnc short L1"      \
-        "xor    eax,eax"    \
-    "L1:"                   \
-    value [ax] modify exact [eax bx cx si edi];
+#pragma aux _DPMISaveStateSize = \
+        "mov  ax,305h"  \
+        _INT_31         \
+        "jnc short L1"  \
+        "xor  eax,eax"  \
+    "L1:"               \
+    __parm [] \
+    __value [__ax] \
+    __modify __exact [__eax __bx __cx __si __edi]
 
-#pragma aux             _DPMIGetVendorSpecificAPI = \
-        "push   ds"         \
-        "push   es"         \
-        "push   fs"         \
-        "push   gs"         \
-        "push   ebp"        \
-        "mov    ds,ecx"     \
-        "xor    eax,eax"    \
-        "mov    ah,0ah"     \
-        _INT_31             \
-        "mov    ecx,es"     \
-        "jnc short L1"      \
-        "xor    ecx,ecx"    \
-        "xor    edi,edi"    \
-    "L1: pop    ebp"        \
-        "pop    gs"         \
-        "pop    fs"         \
-        "pop    es"         \
-        "pop    ds"         \
-    parm [cx esi] value [cx edi] modify [eax ebx ecx edx esi]
+#pragma aux _DPMIGetVendorSpecificAPI = \
+        "push ds"       \
+        "push es"       \
+        "push fs"       \
+        "push gs"       \
+        "push ebp"      \
+        "mov  ds,ecx"   \
+        "xor  eax,eax"  \
+        "mov  ah,0ah"   \
+        _INT_31         \
+        "mov  ecx,es"   \
+        "jnc short L1"  \
+        "xor  ecx,ecx"  \
+        "xor  edi,edi"  \
+    "L1: pop  ebp"      \
+        "pop  gs"       \
+        "pop  fs"       \
+        "pop  es"       \
+        "pop  ds"       \
+    __parm [__cx __esi] \
+    __value [__cx __edi] \
+    __modify [__eax __ebx __ecx __edx __esi]
 #endif
 
 #endif

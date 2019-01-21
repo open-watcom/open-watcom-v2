@@ -43,12 +43,22 @@ static void allocImage( void )
     size_t  size;
 
     size = EditVars.WindMaxWidth * EditVars.WindMaxHeight;
-    ScreenImage = MemAlloc( size * sizeof( window_id ) );
+    ScreenImage = _MemAllocArray( window_id, size );
     for( i = 0; i < size; i++ ) {
         ScreenImage[i] = NO_WINDOW;
     }
 
 } /* allocImage */
+
+static void initAllWindows( void )
+{
+    window_id   wid;
+
+    for( wid = 0; wid < MAX_WINDS; wid++ ) {
+        WINDOW_TO_ID( wid, NULL );
+    }
+    WINDOW_TO_ID( MAX_WINDS, NULL );
+}
 
 /*
  * StartWindows - begin windows session
@@ -56,6 +66,7 @@ static void allocImage( void )
 void StartWindows( void )
 {
     allocImage();
+    initAllWindows();
     ClearScreen();
     EditFlags.WindowsStarted = true;
 

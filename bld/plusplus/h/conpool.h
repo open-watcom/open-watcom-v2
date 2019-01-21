@@ -44,9 +44,9 @@ struct pool_con {                       // POOL_CON -- pool entry
         } s;
         signed_64       int64_constant; // - - int-64 constant
     } u;
-    unsigned    free : 1;               // - used for precompiled headers
-    unsigned    flt  : 1;               // - floating constant
-    unsigned    i64  : 1;               // - int-64 constant
+    unsigned    free            : 1;    // - used for precompiled headers
+    unsigned    flt             : 1;    // - floating constant
+    unsigned    i64             : 1;    // - int-64 constant
 };
 
 // PROTOTYPES

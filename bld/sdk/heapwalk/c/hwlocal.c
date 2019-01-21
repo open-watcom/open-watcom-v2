@@ -31,11 +31,8 @@
 ****************************************************************************/
 
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <time.h>
 #include "heapwalk.h"
+#include <time.h>
 #include "wclbproc.h"
 
 

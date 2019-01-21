@@ -1,33 +1,33 @@
 __cifx__ =$(system).axp/$(libsubdir)
 __mifx__ =$(system).axp/$(libsubdir).wdl
-__pifx__ =$(system).axp/mf_$(dllname_$(convention))mt$(dllname_debug)
+__pifx__ =$(system).axp/_smt
 
 !ifdef profile
 dll_libs = $+ &
     $(clib_dir)/library/$(system).$(processor)/$(model)_rp/clib$(dllname_$(convention)).lib &
-    $(mathlib_dir)/library/$(__mifx__)/math$(dllname_$(convention)).lib &
-    $(cpplib_dir)/library/$(__pifx__).wdl/plbxmt$(dllname_$(convention)).lib &
-    $(cpplib_dir)/library/$(__pifx__)/plbxmt$(dllname_$(convention)).lib &
+    $(mathlib_dir)/library/$(__mifx__)/math.lib &
+    $(cpplib_dir)/library/$(__pifx__).wdl/plbxmt.lib &
+    $(cpplib_dir)/library/$(__pifx__)/plbxmt.lib &
     $-
 !else
 dll_libs = $+ &
-    $(clib_dir)/library/$(__cifx__)/clib$(dllname_$(convention)).lib &
-    $(mathlib_dir)/library/$(__mifx__)/math$(dllname_$(convention)).lib &
-    $(cpplib_dir)/library/$(__pifx__).wdl/plbxmt$(dllname_$(convention)).lib &
-    $(cpplib_dir)/library/$(__pifx__)/plbxmt$(dllname_$(convention)).lib &
+    $(clib_dir)/library/$(__cifx__)/clib.lib &
+    $(mathlib_dir)/library/$(__mifx__)/math.lib &
+    $(cpplib_dir)/library/$(__pifx__).wdl/plbxmt.lib &
+    $(cpplib_dir)/library/$(__pifx__)/plbxmt.lib &
     $-
 !endif
 
 dll_def = $+ &
-    $(clib_dir)/library/$(__cifx__)/export.gdf &
-    $(clib_dir)/intel/export.def &
-    $(clib_dir)/startup/export.def &
-    $(clib_dir)/startup/$(convention).def &
-    $(clib_dir)/startup/library/$(system).axp/$(convention).def &
-    $(mathlib_dir)/library/$(__mifx__)/export.gdf &
-    $(mathlib_dir)/export.axp &
-    $(cpplib_dir)/runtime/ntaxp.def &
-    $(cpplib_dir)/library/$(__pifx__).wdl/exportx.gdf &
+#    $(clib_dir)/library/$(__cifx__)/export.gdf &
+#    $(clib_dir)/intel/export.def &
+#    $(clib_dir)/startup/export.def &
+#    $(clib_dir)/startup/$(convention).def &
+#    $(clib_dir)/startup/library/$(system).axp/$(convention).def &
+#    $(mathlib_dir)/library/$(__mifx__)/export.gdf &
+#    $(mathlib_dir)/export.axp &
+#    $(cpplib_dir)/runtime/ntaxp.def &
+#    $(cpplib_dir)/library/$(__pifx__).wdl/exportx.gdf &
     $-
 
 !ifdef profile

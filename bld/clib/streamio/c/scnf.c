@@ -75,11 +75,11 @@
 /* internal file/string get, unget routines */
 #ifdef __WINDOWS_386__
     #ifdef __SW_3S
-        #pragma aux cget modify [eax edx ecx fs gs]
-        #pragma aux uncget modify [eax edx ecx fs gs]
+        #pragma aux cget __modify [__eax __edx __ecx __fs __gs]
+        #pragma aux uncget __modify [__eax __edx __ecx __fs __gs]
     #else
-        #pragma aux cget modify [fs gs]
-        #pragma aux uncget modify [fs gs]
+        #pragma aux cget __modify [__fs __gs]
+        #pragma aux uncget __modify [__fs __gs]
     #endif
 #endif
 

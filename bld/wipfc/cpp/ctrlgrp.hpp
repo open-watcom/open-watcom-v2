@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
+* Copyright (c) 2009-2018 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -31,27 +31,29 @@
 #ifndef CONTROLGROUP_INCLUDED
 #define CONTROLGROUP_INCLUDED
 
-#include "config.hpp"
 #include <cstdio>
 #include <string>
 #include <vector>
 
+
+class OutFile;
+
 class ControlGroup {
 public:
-    ControlGroup() : idx( 0 ) {};
-    ControlGroup( const std::wstring& id ) : idnt( id ), idx( 0 ) { };
-    void addButtonIndex( STD1::uint16_t i ) { buttonIndex.push_back( i ); };
-    void setId( const std::wstring& i ) { idnt = i; };
-    const std::wstring& id() const { return idnt; };
-    void setIndex( STD1::uint16_t i ) { idx = i; };
-    STD1::uint16_t index() const { return idx; };
-    STD1::uint32_t write( std::FILE *out ) const;
+    ControlGroup() : _index( 0 ) {};
+    ControlGroup( const std::wstring& id ) : _idnt( id ), _index( 0 ) { };
+    void addButtonIndex( word i ) { _buttonIndex.push_back( i ); };
+    void setId( const std::wstring& i ) { _idnt = i; };
+    const std::wstring& id() const { return _idnt; };
+    void setIndex( word i ) { _index = i; };
+    word index() const { return _index; };
+    dword write( OutFile* out ) const;
 private:
-    std::vector< STD1::uint16_t > buttonIndex;
-    typedef std::vector< STD1::uint16_t >::iterator ButtonIter;
-    typedef std::vector< STD1::uint16_t >::const_iterator ConstButtonIter;
-    std::wstring idnt;  //identifier
-    STD1::uint16_t idx; //index of this item in group array
+    std::vector< word > _buttonIndex;
+    typedef std::vector< word >::iterator ButtonIter;
+    typedef std::vector< word >::const_iterator ConstButtonIter;
+    std::wstring        _idnt;      //identifier
+    word                _index;     //index of this item in group array
 };
 
 #endif //CONTROLGROUP_INCLUDED

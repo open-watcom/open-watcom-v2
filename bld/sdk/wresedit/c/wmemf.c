@@ -30,10 +30,8 @@
 ****************************************************************************/
 
 
-#include "commonui.h"
-#include "watcom.h"
-#include "wresall.h"
 #include "wglbl.h"
+#include "wresall.h"
 #include "wrdll.h"
 #include "wmemf.h"
 #include "wrmemf.h"

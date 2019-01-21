@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2016 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -30,7 +30,7 @@
 ****************************************************************************/
 
 
-#include "cgstd.h"
+#include "_cgstd.h"
 #include "coderep.h"
 #include "cgmem.h"
 #include "data.h"
@@ -39,6 +39,7 @@
 #include "insdead.h"
 #include "optab.h"
 #include "overlap.h"
+#include "condcode.h"
 
 
 typedef enum {          /* in order of increasing amount of information */
@@ -334,20 +335,17 @@ static  void    FlowConditions( void )
     bool        change;
 
     zero = AllocIntConst( 0 );
-    change = true;
-    for( ;; ) {
+    do {
+        change = false;
         for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
             GatherSources( blk );
             change |= Traverse( blk, zero );
         }
-        if( !change )
-            break;
-        change = false;
-    }
+    } while( change );
 }
 
 
-extern  void    Conditions( void )
+void    Conditions( void )
 /*********************************
     Traverse the basic blocks and determine if there are any compare
     instructions that we can eliminate, since the condition codes are

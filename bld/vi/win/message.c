@@ -32,7 +32,7 @@
 
 #include "vi.h"
 #include "color.h"
-#include "font.h"
+#include "vifont.h"
 #include "utils.h"
 #include "myprtf.h"
 #include "wclbproc.h"
@@ -66,7 +66,7 @@ bool MessageBarInit( void )
     wc.hInstance = InstanceHandle;
     wc.hIcon = LoadIcon( (HINSTANCE)NULLHANDLE, IDI_APPLICATION );
     wc.hCursor = LoadCursor( (HINSTANCE)NULLHANDLE, IDC_ARROW );
-    wc.hbrBackground = (HBRUSH) COLOR_APPWORKSPACE;
+    wc.hbrBackground = (HBRUSH)COLOR_APPWORKSPACE;
     wc.lpszMenuName = NULL;
     wc.lpszClassName = ClassName;
     return( RegisterClass( &wc ) != 0 );
@@ -77,7 +77,7 @@ bool MessageBarFini( void )
     return( true );
 }
 
-WINEXPORT LRESULT CALLBACK MessageWindowProc( HWND hwnd, UINT msg, WPARAM w, LPARAM l )
+WINEXPORT LRESULT CALLBACK MessageWindowProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
 {
     PAINTSTRUCT ps;
 
@@ -97,7 +97,7 @@ WINEXPORT LRESULT CALLBACK MessageWindowProc( HWND hwnd, UINT msg, WPARAM w, LPA
         SetFocus( root_window_id );
         return( 0 );
     }
-    return( DefWindowProc( hwnd, msg, w, l ) );
+    return( DefWindowProc( hwnd, msg, wparam, lparam ) );
 }
 
 

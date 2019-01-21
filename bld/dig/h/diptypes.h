@@ -76,30 +76,30 @@ typedef enum {
     MAX_HK
 } handle_kind;
 
-typedef unsigned_8 symbol_source; enum {
+typedef enum {
     SS_MODULE,
     SS_SCOPED,
     SS_TYPE,
     SS_BLOCK,
     SS_SCOPESYM,
     SS_LAST
-};
+} symbol_source;
 
-typedef unsigned_8 sym_walk_info; enum {
+typedef enum {
     SWI_SYMBOL,
     SWI_INHERIT_START,
     SWI_INHERIT_END,
     SWI_LAST
-};
+} sym_walk_info;
 
-typedef unsigned_8 symbol_name; enum {
-    SN_EXPRESSION,
-    SN_SOURCE,
-    SN_OBJECT,
-    SN_DEMANGLED,
-    SN_SCOPED,
-    SN_LAST
-};
+typedef enum {
+    SNT_EXPRESSION,
+    SNT_SOURCE,
+    SNT_OBJECT,
+    SNT_DEMANGLED,
+    SNT_SCOPED,
+    SNT_LAST
+} symbol_name_type;
 
 typedef enum {
     DK_INT,
@@ -108,7 +108,7 @@ typedef enum {
     DK_LAST
 } default_kind;
 
-typedef unsigned_16 dip_status; enum {
+typedef enum {
     DS_OK,
     DS_FAIL,
     DS_TOO_MANY_DIPS,
@@ -135,8 +135,8 @@ typedef unsigned_16 dip_status; enum {
     DS_NO_WRITE_MEM,
     DS_INVALID_OPERATOR,
     DS_LAST,
-    DS_ERR=0x4000
-};
+    DS_ERR = 0x4000
+} dip_status;
 
 
 typedef struct {
@@ -146,14 +146,14 @@ typedef struct {
 } scope_block;
 
 typedef struct {
-    long                low_bound;
-    unsigned long       num_elts;
-    unsigned long       stride;
+    dig_type_bound      low_bound;
+    dig_type_size       num_elts;
+    dig_type_size       stride;
     unsigned            num_dims;
     unsigned            column_major    : 1;
 } array_info;
 
-typedef unsigned_8 sym_kind; enum {
+typedef enum {
     SK_NONE,
     SK_CODE,
     SK_DATA,
@@ -162,7 +162,7 @@ typedef unsigned_8 sym_kind; enum {
     SK_PROCEDURE,
     SK_NAMESPACE,
     SK_LAST
-};
+} sym_kind;
 
 typedef struct {
     sym_kind            kind;
@@ -172,13 +172,13 @@ typedef struct {
     unsigned            is_private              : 1;
     unsigned            is_protected            : 1;
     unsigned            is_public               : 1;
+    /* is_static is valid for all symbols */
+    unsigned            is_static               : 1;
     /* only valid for SK_PROCEDURE */
     unsigned            rtn_far                 : 1;
     unsigned            rtn_calloc              : 1;
-    unsigned            ret_modifier            : 3;
-    unsigned            ret_size                : 4;
-    /* is_static is valid for all symbols */
-    unsigned            is_static               : 1;
+    type_modifier       ret_modifier;
+    dig_type_size       ret_size;
     unsigned short      num_parms;
     addr_off            ret_addr_offset;
     addr_off            prolog_size;
@@ -186,16 +186,19 @@ typedef struct {
     addr_off            rtn_size;
 } sym_info;
 
-typedef unsigned_8 location_type; enum { LT_ADDR, LT_INTERNAL };
+typedef enum {
+    LT_ADDR,
+    LT_INTERNAL
+} location_type;
 
 typedef struct {
-    unsigned    type            : 1;
-    unsigned    bit_start       : 15;
-    unsigned    bit_length      : 16;
+    dig_size_bits       bit_start;
+    dig_size_bits       bit_length;
     union {
-        address                 addr;
-        void                    *p;
-    }           u;
+        address     addr;
+        void        *p;
+    }                   u;
+    location_type       type;
 } location_entry;
 
 #define MAX_LOC_ENTRIES 16
@@ -211,7 +214,7 @@ typedef struct {
     size_t      len;
 } lookup_token;
 
-typedef unsigned_8 symbol_type; enum {
+typedef enum {
     ST_NONE,
     ST_OPERATOR,
     ST_DESTRUCTOR,
@@ -222,16 +225,16 @@ typedef unsigned_8 symbol_type; enum {
     ST_ENUM_TAG,
     ST_NAMESPACE,
     ST_LAST
-};
+} symbol_type;
 
 typedef struct {
     mod_handle          mod;
     lookup_token        name;
     lookup_token        scope;
     lookup_token        source;
-    unsigned            file_scope      : 1;
-    unsigned            case_sensitive  : 1;
-    unsigned            type            : 4; /* symbol_type values */
+    symbol_type         type;
+    bool                file_scope      : 1;
+    bool                case_sensitive  : 1;
 } lookup_item;
 
 #include "digunpck.h"

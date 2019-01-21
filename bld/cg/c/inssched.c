@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2016 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -30,7 +30,7 @@
 ****************************************************************************/
 
 
-#include "cgstd.h"
+#include "_cgstd.h"
 #include "coderep.h"
 #include "indvars.h"
 #include "cgmem.h"
@@ -40,8 +40,8 @@
 #include "inssched.h"
 #include "zoiks.h"
 #include "data.h"
-#include "x87.h"
-#include "stack.h"
+#include "fpu.h"
+#include "stackcg.h"
 #include "redefby.h"
 #include "rgtbl.h"
 #include "insutil.h"
@@ -49,9 +49,8 @@
 #include "optab.h"
 #include "blktrim.h"
 #include "generate.h"
+#include "memmgt.h"
 
-
-extern  mem_out_action  SetMemOut(mem_out_action);
 
 #define DEPS_IN_BLOCK    20
 
@@ -74,7 +73,7 @@ static dep_list_block   *CurrDepBlock;
 static block            *SBlock;
 
 
-extern  bool    SchedFrlFree( void )
+bool    SchedFrlFree( void )
 /***********************************
     Free the instruction schedulers dependancy link lists.
 */
@@ -427,8 +426,8 @@ static bool ImplicitDependancy( instruction *imp, instruction *ins )
 }
 
 
-extern bool InsOrderDependant( instruction *ins_i, instruction *ins_j )
-/*********************************************************************/
+bool InsOrderDependant( instruction *ins_i, instruction *ins_j )
+/**************************************************************/
 {
     if( ins_j->head.opcode == OP_NOP && ins_j->result == NULL && !DoesSomething( ins_j ) )
         return( true );
@@ -645,7 +644,7 @@ static void AnnointDag( void )
     }
 }
 
-extern int StallCost( instruction *ins, instruction *top )
+static int StallCost( instruction *ins, instruction *top )
 /*********************************************************
     If instruction 'ins' were placed before instruction 'top', how long
     would instructions following 'ins' have to wait before they could
@@ -797,7 +796,7 @@ static void FixIndexAdjust( instruction *adj, bool forward )
             if( ScaleAdjust( op, reg, &scale_adj ) ) {
                 chk->operands[i] = ScaleIndex( op->i.index, op->i.base,
                               op->i.constant + (bias << scale_adj),
-                              op->n.name_class, op->n.size,
+                              op->n.type_class, op->n.size,
                               op->i.scale, op->i.index_flags );
             }
         }
@@ -806,7 +805,7 @@ static void FixIndexAdjust( instruction *adj, bool forward )
             if( ScaleAdjust( op, reg, &scale_adj ) ) {
                 chk->result = ScaleIndex( op->i.index, op->i.base,
                               op->i.constant + (bias << scale_adj),
-                              op->n.name_class, op->n.size,
+                              op->n.type_class, op->n.size,
                               op->i.scale, op->i.index_flags );
             }
         }

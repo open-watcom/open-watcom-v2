@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,17 +37,17 @@
 #include <stdlib.h>
 #include <env.h>
 #include <string.h>
-#if !defined(__UNIX__)
-    #include <dos.h>
+#if defined( _M_IX86 )
+    #include <i86.h>
 #endif
 #if defined(__OS2__)
     #define INCL_DOSMISC
     #include <wos2.h>
-#elif defined(__NT__)
+#elif defined( __NT__ )
     #include <windows.h>
-#elif defined( __RDOS__)
+#elif defined( __RDOS__ )
     #include <rdos.h>
-#elif defined( __RDOSDEV__)
+#elif defined( __RDOSDEV__ )
     #include <rdos.h>
     #include <rdosdev.h>
 #endif
@@ -128,7 +129,7 @@ void __setenvp( void )
     /* if we are already initialized, then return */
     if( _RWD_environ != NULL ) return;           /* 10-jun-90 */
   #if defined(__WARP__)
-    startp = _RWD_Envptr;
+    startp = _Envptr;
   #elif defined(__OS2_286__)
     {
         unsigned short  seg;
@@ -170,7 +171,7 @@ void __setenvp( void )
             while( *src ) {
                 src++;
                 size++;
-            }        
+            }
             src++;
             size++;
 
@@ -178,20 +179,20 @@ void __setenvp( void )
                 break;
         }
         size++;
-        
+
         startp = lib_malloc( size );
         memcpy( startp, ptr, size );
         RdosUnlockSysEnv();
     }
   #elif defined( __NT__ )
-    startp = _RWD_Envptr;
+    startp = _Envptr;
     if( startp == NULL ) {
         startp = "";
     }
   #elif defined( _M_I86 )
     startp = MK_FP( *(unsigned short _WCI86FAR *)( MK_FP( _RWD_psp, 0x2c ) ), 0 );
   #else
-    startp = _RWD_Envptr;
+    startp = _Envptr;
   #endif
     count = 0;
     p = startp;

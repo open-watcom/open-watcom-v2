@@ -372,10 +372,10 @@ void WWindow::makeWindow( const char *title, WStyle style, WExStyle exstyle )
     create_info.scroll = _WStyleToScrollStyle( style );
     create_info.style = (gui_create_styles)( _WStyleToCreateStyle( style ) | exstyle | GUI_INIT_INVISIBLE | GUI_VISIBLE );
     create_info.parent = hparent;
-    create_info.num_items = 0;
-    create_info.menu = NULL;
-    create_info.num_attrs = 0;
-    create_info.colours = NULL;
+    create_info.menu.num_items = 0;
+    create_info.menu.menu = NULL;
+    create_info.colours.num_items = 0;
+    create_info.colours.colours = NULL;
     create_info.gui_call_back = WinGUIEventProc;
     create_info.extra = this;
     create_info.icon = NULL;
@@ -610,7 +610,7 @@ static key_map KeyMapping[] = {
 static WKeyCode MapAccelKey( int key )
 /************************************/
 {
-    for( unsigned i = 0; i < sizeof( KeyMapping ); ++i ) {
+    for( unsigned i = 0; i < sizeof( KeyMapping ) / sizeof( KeyMapping[0] ); ++i ) {
         if( KeyMapping[i].ascii == key ) {
             return( KeyMapping[i].alt_key );
         }
@@ -686,10 +686,10 @@ void WEXPORT WWindow::getText( WString& str )
 /*******************************************/
 {
     size_t len = getTextLength();
-    char* t = new char[len + 1];
+    char* t = new char [len + 1];
     getText( t, len + 1 );
     str = t;
-    delete [] t;
+    delete[] t;
 }
 
 

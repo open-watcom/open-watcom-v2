@@ -1871,11 +1871,11 @@ void scr_bx( void )
     ProcFlags.no_bx_hline = false;      // emit horizontal line by default
 
     p = scan_start;
-    while( *p && (*p == ' ') ) {
+    while( *p == ' ' ) {
         p++;
     }
     pa = p;
-    while( *p && (*p != ' ') ) {
+    while( *p != '\0' && (*p != ' ') ) {
         p++;
     }
     len = p - pa;
@@ -1904,7 +1904,7 @@ void scr_bx( void )
         p = pa;
     }
 
-    while( *p && (*p == ' ') ) {
+    while( *p == ' ' ) {
         p++;
     }
 
@@ -1936,7 +1936,7 @@ void scr_bx( void )
                 if( *p == '/' ) {
                     xx_line_err( err_spc_not_valid, p );
                     p++;
-                    while( *p && (*p == ' ') ) {
+                    while( *p == ' ' ) {
                         p++;
                     }
                     continue;
@@ -1945,7 +1945,7 @@ void scr_bx( void )
                 cur_temp->next = alloc_box_col_set();
                 cur_temp = cur_temp->next;
                 p++;
-                while( *p && (*p == ' ') ) {
+                while( *p == ' ' ) {
                     p++;
                 }
                 continue;
@@ -1973,7 +1973,7 @@ void scr_bx( void )
             } else {
                 xx_line_err( err_spc_not_valid, pa );
             }
-            while( *p && (*p == ' ') ) {
+            while( *p == ' ' ) {
                 p++;
             }
             cur_temp->current++;

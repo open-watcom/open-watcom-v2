@@ -29,7 +29,7 @@
 ****************************************************************************/
 
 
-#include "cgstd.h"
+#include "_cgstd.h"
 #include <stdio.h>
 #include "memsydep.h"
 #include "memcheck.h"
@@ -41,6 +41,8 @@
 #include "memlimit.h"
 #include "onexit.h"
 #include "dumpio.h"
+#include "envvar.h"
+#include "memmgt.h"
 
 
 /*  memory tracking levels */
@@ -53,9 +55,6 @@
 #else
     #define _MEMORY_TRACKING _CHUNK_TRACKING
 #endif
-
-extern  bool            GetEnvVar(char *,char *,int);
-
 
 static          mem_out_action  MemOut;
 
@@ -71,15 +70,17 @@ static void Prt( void *handle, const char *buff, size_t len )
     size_t i;
 
     handle=handle;
-    for( i = 0; i < len; ++i ) fputc( *buff++, stderr );
+    for( i = 0; i < len; ++i ) {
+        fputc( *buff++, stderr );
+    }
 }
 
 #elif _MEMORY_TRACKING & _CHUNK_TRACKING
 static          uint    Chunks;
 #endif
 
-extern  void    CGMemInit( void )
-/*******************************/
+void    CGMemInit( void )
+/***********************/
 {
     _SysReInit();
     MemOut = MO_FATAL;
@@ -94,8 +95,8 @@ extern  void    CGMemInit( void )
     CalcMemLimit();
 }
 
-extern  void    CGMemFini( void )
-/*******************************/
+void    CGMemFini( void )
+/***********************/
 {
 #if _MEMORY_TRACKING & _FULL_TRACKING
     char        buff[80];
@@ -113,8 +114,8 @@ extern  void    CGMemFini( void )
 }
 
 
-extern  mem_out_action    SetMemOut( mem_out_action what )
-/********************************************************/
+mem_out_action    SetMemOut( mem_out_action what )
+/************************************************/
 {
     mem_out_action      old;
 
@@ -123,8 +124,8 @@ extern  mem_out_action    SetMemOut( mem_out_action what )
     return( old );
 }
 
-extern  pointer CGAlloc( size_t size )
-/************************************/
+pointer CGAlloc( size_t size )
+/****************************/
 {
     pointer     chunk;
 
@@ -155,8 +156,8 @@ extern  pointer CGAlloc( size_t size )
 }
 
 
-extern  void    CGFree( pointer chunk )
-/*************************************/
+void    CGFree( pointer chunk )
+/*****************************/
 {
 #if _MEMORY_TRACKING & _CHUNK_TRACKING
     --Chunks;
@@ -170,8 +171,8 @@ extern  void    CGFree( pointer chunk )
 
 
 #if _MEMORY_TRACKING & _FULL_TRACKING
-extern  void    DumpMem( void )
-/*****************************/
+void    DumpMem( void )
+/*********************/
 {
     _trmem_prt_usage( Handle );
 }

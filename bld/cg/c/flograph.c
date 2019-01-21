@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2016 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -31,21 +31,21 @@
 ****************************************************************************/
 
 
-#include "cgstd.h"
+#include "_cgstd.h"
 #include "coderep.h"
 #include "cgmem.h"
 #include "zoiks.h"
-#include "stack.h"
+#include "stackcg.h"
 #include "data.h"
 #include "makeblk.h"
 #include "insutil.h"
+#include "flograph.h"
+#include "flood.h"
 
 
-extern  bool            FloodForward( block *, bool (*)( block *, void * ), void * );
+static void             NewInterval( block *blk, level_depth level );
 
-static  void            NewInterval( block *blk, level_depth level );
-
-static    interval_def  *Intervals;
+static interval_def     *Intervals;
 
 
 static  void    Irreducable( void )
@@ -430,12 +430,12 @@ static  void    NestingDepth( void )
                 }
             }
         }
-        for( ;; ) {
+        do {
             change = false;
             for( blk = BlockList; blk != NULL; blk = blk->prev_block ) {
                 if( blk->next_block == NULL ) {
                     for( i = blk->targets; i-- > 0; ) {
-                        edge = & blk->edge[i];
+                        edge = &blk->edge[i];
                         if( edge->join_level <= level ) {
                             target = edge->destination.u.blk->next_block;
                             if( target != NULL ) {
@@ -452,10 +452,7 @@ static  void    NestingDepth( void )
                     }
                 }
             }
-            if( !change ) {
-                break;
-            }
-        }
+        } while( change );
     }
 
 /*   Restore 'next_block' */
@@ -516,8 +513,8 @@ static  bool    Degenerate( void )
     return( false );
 }
 
-extern  void    MakeFlowGraph( void )
-/***********************************/
+void    MakeFlowGraph( void )
+/***************************/
 {
     Irreducable();
     if( CurrProc->state.attr & ROUTINE_WANTS_DEBUGGING ) {

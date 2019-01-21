@@ -1,4 +1,4 @@
-#pmake: build os_osi os_nt os_linux cpu_x64
+#pmake: build os_osi os_nt os_linux os_osx cpu_x64
 
 host_os  = osi
 host_cpu = x64

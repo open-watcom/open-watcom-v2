@@ -380,12 +380,13 @@ int main( int argc, char **argv )
         return( EXIT_FAILURE );
     }
     fi = fopen( argv[1], "r" );
-    if( !fi ) {
+    if( fi == NULL ) {
         printf( "cannot open '%s' for input\n", argv[1] );
         return( EXIT_FAILURE );
     }
     fo = fopen( argv[2], "w" );
-    if( !fo ) {
+    if( fo == NULL ) {
+        fclose( fi );
         printf( "cannot open '%s' for output\n", argv[2] );
         return( EXIT_FAILURE );
     }
@@ -410,15 +411,16 @@ int main( int argc, char **argv )
             ++errors;
         }
     }
-    if( errors ) {
-        return( EXIT_FAILURE );
+    if( errors == 0 ) {
+        fprintf( fo, "char const * const yytokenname[] = {\n" );
+        for( i = 0; i <= max; ++i ) {
+            fprintf( fo, "\"%s\",\n", prettyToken[ i ] );
+        }
+        fprintf( fo, "};\n" );
     }
-    fprintf( fo, "char const * const yytokenname[] = {\n" );
-    for( i = 0; i <= max; ++i ) {
-        fprintf( fo, "\"%s\",\n", prettyToken[ i ] );
-    }
-    fprintf( fo, "};\n" );
     fclose( fi );
     fclose( fo );
+    if( errors ) {
+        return( EXIT_FAILURE );
     return( EXIT_SUCCESS );
 }

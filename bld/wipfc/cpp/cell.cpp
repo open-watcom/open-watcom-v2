@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
+* Copyright (c) 2009-2018 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -31,77 +31,75 @@
 *
 ****************************************************************************/
 
+
+#include "wipfc.hpp"
 #include <functional>
 #include <algorithm>
 #include "cell.hpp"
 #include "errors.hpp"
+#include "outfile.hpp"
+
 
 //for each element, call buildText() to fill text buffer
-void Cell::build()
+void Cell::build( OutFile* out )
 {
-    for( ElementIter itr = elements.begin(); itr != elements.end(); ++itr )
+    _out = out;
+    for( ElementIter itr = _elements.begin(); itr != _elements.end(); ++itr )
         ( *itr )->buildText( this );
-    if( text.empty() )
-        text.push_back( 0xFE );
-}
-/***************************************************************************/
-void Cell::addWord( STD1::uint16_t word )
-{
-    if( !std::binary_search( localDictionary.begin(), localDictionary.end(), word ) ) {
-        LDIter itr( 
-            //std::lower_bound( localDictionary.begin(), localDictionary.end(), word );
-            std::find_if( localDictionary.begin(), localDictionary.end(),
-                std::bind2nd( std::greater< STD1::uint16_t >(), word ) ) );
-        localDictionary.insert( itr, word );
+    if( empty() ) {
+        addByte( Cell::SPACE );
     }
 }
 /***************************************************************************/
-void Cell::addText( STD1::uint16_t word )
+void Cell::addTextToLD( word index )
 {
-    LDIter itr( 
-        //std::lower_bound( localDictionary.begin(), localDictionary.end(), word );
-        std::find( localDictionary.begin(), localDictionary.end(), word ) );
-    std::size_t index = itr - localDictionary.begin();
-    text.push_back( static_cast< STD1::uint8_t >( index ) );
+    if( !std::binary_search( _localDictionary.begin(), _localDictionary.end(), index ) ) {
+        LDIter itr(
+            //std::lower_bound( _localDictionary.begin(), _localDictionary.end(), index );
+            std::find_if( _localDictionary.begin(), _localDictionary.end(),
+                std::bind2nd( std::greater< word >(), index ) ) );
+        _localDictionary.insert( itr, index );
+    }
 }
 /***************************************************************************/
-void Cell::addEsc( const std::vector< STD1::uint8_t >& esc )
+byte Cell::LDIndex( word index )
 {
-    for( ConstTextIter itr = esc.begin(); itr != esc.end(); ++itr )
-        text.push_back( *itr );
+    LDIter itr( std::find( _localDictionary.begin(), _localDictionary.end(), index ) );
+        //std::lower_bound( _localDictionary.begin(), _localDictionary.end(), index );
+    return( static_cast< byte >( itr - _localDictionary.begin() ) );
 }
 /***************************************************************************/
-#pragma pack(push, 1)
-    struct cellData {
-        STD1::uint8_t  zero;               //=0
-        STD1::uint32_t dictOffset;         //file offset to STD1::uint16_t array
-        STD1::uint8_t  dictCount;          // <=254 unique words
-        STD1::uint16_t textCount;
-        //variable length data follows:
-        //STD1::uint8_t  text[textCount];  //encoded text (indexes into dict)
-        //STD1::uint16_t  dict[dictCount];  //index to global dictionary
-    };
-#pragma pack(pop)
 
-STD1::uint32_t Cell::write( std::FILE* out ) const
+//struct cellData {
+//    byte           zero;               //=0
+//    dword          dictOffset;         //file offset to word dict[dictCount] array
+//    byte           dictCount;          // <=254 unique words
+//    word           textCount;
+//    //variable length data follows:
+//    //byte           text[textCount];  //encoded text (indexes into dict)
+//    //word           dict[dictCount];  //index to global dictionary
+//};
+
+dword Cell::write( OutFile* out ) const
 {
-    STD1::uint32_t offset( std::ftell( out ) );
-    cellData data;
-    data.zero = 0;
-    data.dictOffset = offset + sizeof( STD1::uint8_t ) + sizeof( STD1::uint32_t ) +
-        sizeof( STD1::uint8_t ) + sizeof( STD1::uint16_t ) + text.size();
-    data.dictCount = static_cast< STD1::uint8_t >( localDictionary.size() );
-    data.textCount = static_cast< STD1::uint16_t >( text.size() );
-    if( std::fwrite( &data, sizeof( cellData ), 1, out ) != 1 )
+    dword offset( out->tell() );
+    // zero
+    if( out->put( static_cast< byte >( 0 ) ) )
         throw FatalError( ERR_WRITE );
-    if( std::fwrite( &text[0], sizeof( STD1::uint8_t ), text.size(), out ) != text.size() )
+    // dictOffset
+    if( out->put( static_cast< dword >( offset + sizeof( byte ) + sizeof( dword ) + sizeof( byte )
+            + sizeof( word ) + _data.size() * sizeof( byte ) ) ) )
         throw FatalError( ERR_WRITE );
-    if( !localDictionary.empty() && \
-        std::fwrite( &localDictionary[0],
-                     sizeof( STD1::uint16_t ),
-                     localDictionary.size(),
-                     out ) != localDictionary.size() )
+    if( out->put( static_cast< byte >( _localDictionary.size() ) ) )
         throw FatalError( ERR_WRITE );
+    if( out->put( static_cast< word >( _data.size() ) ) )
+        throw FatalError( ERR_WRITE );
+    if( out->put( _data ) )
+        throw FatalError( ERR_WRITE );
+    if( !_localDictionary.empty() ) {
+        if( out->put( _localDictionary ) ) {
+            throw FatalError( ERR_WRITE );
+        }
+    }
     return offset;
 }
-

@@ -30,29 +30,29 @@
 
 
 #include <sys/types.h>
+#include <sys/stat.h>
 #ifdef __UNIX__
+    #include <sys/wait.h>
     #include <dirent.h>
-    #include <fnmatch.h>
 #else
     #include <direct.h>
-    #include <dos.h>
-  #if defined( __WATCOMC__ )
-    #include <fnmatch.h>
-  #endif
 #endif
-#include <sys/stat.h>
+#if defined( __UNIX__ ) || defined( __WATCOMC__ )
+    #include <fnmatch.h>
+#endif
 #if defined( __WATCOMC__ ) || !defined( __UNIX__ )
     #include <process.h>
 #endif
-#ifdef __UNIX__
-    #include <sys/wait.h>
-#endif
 #include <ctype.h>
 #include <time.h>
+#ifdef __RDOS__
+    #include "rdos.h"
+#endif
 #ifdef DLLS_IMPLEMENTED
     #include "idedrv.h"
 #endif
 #include "make.h"
+#include "wio.h"
 #include "mtarget.h"
 #include "macros.h"
 #include "mcache.h"
@@ -71,9 +71,15 @@
 
 
 #ifdef __UNIX__
-  #define MASK_ALL_ITEMS  "*"
+    #define MASK_ALL_ITEMS      "*"
+    #define ENTRY_INVALID(n,e)  (IsDotOrDotDot(e->d_name) || fnmatch(n, e->d_name, FNM_PATHNAME | FNM_NOESCAPE) == FNM_NOMATCH)
+    #define ENTRY_SUBDIR(n,e)   chk_is_dir(n)
+    #define ENTRY_RDONLY(n,e)   (access( n, W_OK ) == -1 && errno == EACCES)
 #else
-  #define MASK_ALL_ITEMS  "*.*"
+    #define MASK_ALL_ITEMS      "*.*"
+    #define ENTRY_INVALID(n,e)  (IsDotOrDotDot(e->d_name) || fnmatch(n, e->d_name, FNM_PATHNAME | FNM_NOESCAPE | FNM_IGNORECASE) == FNM_NOMATCH)
+    #define ENTRY_SUBDIR(n,e)   (e->d_attr & _A_SUBDIR)
+    #define ENTRY_RDONLY(n,e)   (e->d_attr & _A_RDONLY)
 #endif
 
 #define SkipUntilWSorEqual(p)   while( *p != NULLCHAR && !cisws( *p ) && *p != '=' ) ++p
@@ -103,7 +109,7 @@ typedef struct {
 STATIC  UINT8   lastErrorLevel;
 STATIC  UINT16  tmpFileNumber;          /* temp file number         */
 STATIC  char    tmpFileChar  ;          /* temp file number chari   */
-STATIC  int     currentFileHandle;      /* %write, %append, %create */
+STATIC  FILE    *currentFileHandle;     /* %write, %append, %create */
 STATIC  char    *currentFileName;
 
 static bool     RecursiveRM( const char *dir, const rm_flags *flags );
@@ -221,7 +227,7 @@ STATIC char *createTmpFileName( void )
             result = FinishVec( buf );
         } else {
             WriteVec( buf, tmpPath );
-            if( tmpPath[strlen( tmpPath ) - 1] != BACKSLASH ) {
+            if( tmpPath[strlen( tmpPath ) - 1] != '\\' ) {
                 buf2 = StartVec();
 #if defined( __UNIX__ )
                 WriteVec( buf2, "/" );
@@ -249,9 +255,8 @@ STATIC char *createTmpFileName( void )
 }
 
 
-STATIC RET_T processInlineFile( int handle, const char *body,
-    const char *fileName, bool writeToFile )
-/***********************************************************/
+STATIC RET_T processInlineFile( FILE *fp, const char *body, const char *fileName )
+/********************************************************************************/
 {
     int         index;
     RET_T       ret;
@@ -270,17 +275,17 @@ STATIC RET_T processInlineFile( int handle, const char *body,
     // we will push the whole body back into the stream to be fully
     // deMacroed
     for( index = 0; (c = body[index++]) != NULLCHAR; ) {
-        if( c == EOL ) {
+        if( c == '\n' ) {
             InsString( body + currentSent, false );
             DeMacroBody = ignoreWSDeMacro( false, ForceDeMacro() );
             currentSent = index;
-            if( writeToFile ) {
+            if( fp != NULL ) {
                 size_t bytes = strlen( DeMacroBody );
 
-                if( bytes != (size_t)posix_write( handle, DeMacroBody, bytes ) ) {
+                if( bytes != fwrite( DeMacroBody, 1, bytes, fp ) ) {
                     ret = RET_ERROR;
                 }
-                if( 1 != posix_write( handle, "\n", 1 ) ) {
+                if( 1 != fwrite( "\n", 1, 1, fp ) ) {
                     ret = RET_ERROR;
                 }
             } else {
@@ -311,10 +316,10 @@ STATIC RET_T processInlineFile( int handle, const char *body,
     return( ret );
 }
 
-STATIC RET_T writeLineByLine( int handle, const char *body )
-/**********************************************************/
+STATIC RET_T writeLineByLine( FILE *fp, const char *body )
+/********************************************************/
 {
-    return( processInlineFile( handle, body, NULL, true ) );
+    return( processInlineFile( fp, body, NULL ) );
 }
 
 
@@ -323,16 +328,19 @@ STATIC char *RemoveBackSlash( const char *inString )
  * remove backslash from \"
  */
 {
-    char    buffer[_MAX_PATH];
-    char    *p;
-    int     pos;
-    char    c;
+    char        buffer[_MAX_PATH];
+    const char  *p;
+    int         pos;
+    char        c;
 
     assert( inString != NULL );
 
-    for( pos = 0, p = (char *)inString; (c = *p++) != NULLCHAR && pos < _MAX_PATH - 1; ) {
-        if( c == BACKSLASH ) {
-            if( *p == DOUBLEQUOTE ) {
+    pos = 0;
+    for( p = inString; (c = *p++) != NULLCHAR; ) {
+        if( pos >= sizeof( buffer ) - 1 )
+            break;
+        if( c == '\\' ) {
+            if( *p == '\"' ) {
                 c = *p++;
             }
         }
@@ -352,7 +360,7 @@ STATIC RET_T VerbosePrintTempFile( const FLIST *head )
 
     for( current = head; current != NULL; current = current->next ) {
         assert( current->fileName != NULL );
-        ret = processInlineFile( 0, current->body, current->fileName, false );
+        ret = processInlineFile( NULL, current->body, current->fileName );
     }
     return( ret );
 }
@@ -363,7 +371,7 @@ STATIC RET_T createFile( const FLIST *head )
  */
 {
     NKLIST  *temp;
-    int     handle;
+    FILE    *fp;
     char    *fileName = NULL;
     char    *tmpFileName = NULL;
     RET_T   ret;
@@ -375,7 +383,7 @@ STATIC RET_T createFile( const FLIST *head )
         /* Push the filename back into the stream
          * and then get it back out using DeMacro to fully DeMacro
          */
-        UnGetCH( STRM_MAGIC );
+        UnGetCHR( STRM_MAGIC );
         InsString( head->fileName, false );
         fileName = DeMacro( TOK_MAGIC );
         GetCHR();           /* eat STRM_MAGIC */
@@ -385,13 +393,13 @@ STATIC RET_T createFile( const FLIST *head )
 
     if( ret != RET_ERROR ) {
         tmpFileName = RemoveBackSlash( fileName );
-        handle = open( tmpFileName, O_TEXT | O_WRONLY | O_CREAT | O_TRUNC, PMODE_RW );
-        if( handle != -1 ) {
-            if( writeLineByLine( handle, head->body ) == RET_ERROR ) {
+        fp = fopen( tmpFileName, "w" );
+        if( fp != NULL ) {
+            if( writeLineByLine( fp, head->body ) == RET_ERROR ) {
                 PrtMsg( ERR | ERROR_WRITING_FILE, tmpFileName );
                 ret = RET_ERROR;
             }
-            if( close( handle ) != -1 ) {
+            if( fclose( fp ) == 0 ) {
                 if( !head->keep ) {
                     temp = NewNKList();
                     temp->fileName = StrDupSafe( tmpFileName );
@@ -434,7 +442,6 @@ STATIC RET_T writeInlineFiles( FLIST *head, char **commandIn )
     cmdText    = *commandIn;
     ret        = RET_SUCCESS;
     newCommand = StartVec();
-    WriteVec( newCommand, "" );
     index      = 0;
     start      = index;
 
@@ -446,8 +453,8 @@ STATIC RET_T writeInlineFiles( FLIST *head, char **commandIn )
         // the filename into a temp filename
         if( strcmp( current->fileName, INLINE_SYMBOL ) == 0 ) {
             for( ;; ) {
-                if( cmdText[index] == LESSTHAN ) {
-                    if( cmdText[index + 1] == LESSTHAN ) {
+                if( cmdText[index] == '<' ) {
+                    if( cmdText[index + 1] == '<' ) {
                         index += 2;
                         break;
                     }
@@ -461,12 +468,12 @@ STATIC RET_T writeInlineFiles( FLIST *head, char **commandIn )
             if( ret == RET_ERROR ) {
                 break;
             }
-            CatNStrToVec( newCommand, cmdText+start, index-start-2 );
+            WriteNVec( newCommand, cmdText + start, index - start - 2 );
             start = index;
             FreeSafe( current->fileName );
             current->fileName = createTmpFileName();
 
-            CatStrToVec( newCommand, current->fileName );
+            WriteVec( newCommand, current->fileName );
         }
         if( !Glob.noexec ) {
             ret = createFile( current );
@@ -479,7 +486,7 @@ STATIC RET_T writeInlineFiles( FLIST *head, char **commandIn )
             }
         }
     }
-    CatNStrToVec( newCommand, cmdText+start, strlen( cmdText ) - start );
+    WriteNVec( newCommand, cmdText+start, strlen( cmdText ) - start );
     FreeSafe( cmdText );
     *commandIn = FinishVec( newCommand );
     return( ret );
@@ -580,9 +587,9 @@ STATIC RET_T percentMake( char *arg )
 STATIC void closeCurrentFile( void )
 /**********************************/
 {
-    if( currentFileHandle != -1 ) {
-        close( currentFileHandle );
-        currentFileHandle = -1;
+    if( currentFileHandle != NULL ) {
+        fclose( currentFileHandle );
+        currentFileHandle = NULL;
     }
     if( currentFileName != NULL ) {
         FreeSafe( currentFileName );
@@ -599,7 +606,7 @@ STATIC RET_T percentWrite( char *arg, enum write_type type )
     char const  *text;
     char        *fn;
     char const  *cmd_name;
-    int         open_flags;
+    char const  *open_flags;
     size_t      len;
 
     assert( arg != NULL );
@@ -609,14 +616,14 @@ STATIC RET_T percentWrite( char *arg, enum write_type type )
     }
 
     fn = p = SkipWS( arg );
-    if( *p != DOUBLEQUOTE ) {
+    if( *p != '\"' ) {
         while( cisfilec( *p ) ) {
             ++p;
         }
     } else {
         ++p;    // Skip the first quote
         ++fn;
-        while( *p != DOUBLEQUOTE && *p != NULLCHAR ) {
+        while( *p != '\"' && *p != NULLCHAR ) {
             ++p;
         }
         if( *p != NULLCHAR ) {
@@ -659,15 +666,14 @@ STATIC RET_T percentWrite( char *arg, enum write_type type )
     if( type == WR_CREATE || currentFileName == NULL || !FNameEq( currentFileName, fn ) ) {
         closeCurrentFile();
         currentFileName = StrDupSafe( fn );
-        open_flags = O_WRONLY | O_CREAT | O_TEXT;
         if( type == WR_APPEND ) {
-            open_flags |= O_APPEND;
+            open_flags = "a";
         } else {
-            open_flags |= O_TRUNC;
+            open_flags = "w";
         }
 
-        currentFileHandle = open( fn, open_flags, PMODE_RW );
-        if( currentFileHandle == -1 ) {
+        currentFileHandle = fopen( fn, open_flags );
+        if( currentFileHandle == NULL ) {
             PrtMsg( ERR | OPENING_FOR_WRITE, fn );
             closeCurrentFile();
             return( RET_ERROR );
@@ -677,7 +683,7 @@ STATIC RET_T percentWrite( char *arg, enum write_type type )
     if( type != WR_CREATE ) {
         *p = '\n';          /* replace null terminator with newline */
         len = ( p - text ) + 1;
-        if( (size_t)posix_write( currentFileHandle, text, len ) != len ) {
+        if( fwrite( text, 1, len, currentFileHandle ) != len ) {
             PrtMsg( ERR | DOING_THE_WRITE );
             closeCurrentFile();
             return( RET_ERROR );
@@ -713,14 +719,14 @@ STATIC RET_T percentRename( char *arg )
 
     /* Get first file name, must end in space but may be surrounded by double quotes */
     fn1 = p = SkipWS( arg );
-    if( *p != DOUBLEQUOTE ) {
+    if( *p != '\"' ) {
         while( cisfilec( *p ) ) {
             ++p;
         }
     } else {
         ++p;    // Skip the first quote
         ++fn1;
-        while( *p != DOUBLEQUOTE && *p != NULLCHAR ) {
+        while( *p != '\"' && *p != NULLCHAR ) {
             ++p;
         }
         if( *p != NULLCHAR ) {
@@ -738,14 +744,14 @@ STATIC RET_T percentRename( char *arg )
 
     /* Get second file name as well */
     fn2 = p = SkipWS( p );
-    if( *p != DOUBLEQUOTE ) {
+    if( *p != '\"' ) {
         while( cisfilec( *p ) ) {
             ++p;
         }
     } else {
         ++p;    // Skip the first quote
         ++fn2;
-        while( *p != DOUBLEQUOTE && *p != NULLCHAR ) {
+        while( *p != '\"' && *p != NULLCHAR ) {
             ++p;
         }
         if( *p != NULLCHAR ) {
@@ -878,11 +884,7 @@ STATIC RET_T mySystem( const char *cmdname, const char *cmd )
     closeCurrentFile();
 #ifdef __UNIX__
     retcode = intSystem( cmd );
-#else
-    retcode = system( cmd );
-#endif
     lastErrorLevel = (UINT8)retcode;
-#ifdef __UNIX__
     if( retcode != -1 && WIFEXITED( retcode ) ) {
         lastErrorLevel = WEXITSTATUS( retcode );
         if( lastErrorLevel == 0 ) {
@@ -893,6 +895,8 @@ STATIC RET_T mySystem( const char *cmdname, const char *cmd )
         }
     }
 #else
+    retcode = system( cmd );
+    lastErrorLevel = (UINT8)retcode;
     if( retcode < 0 ) {
         PrtMsg( ERR | UNABLE_TO_EXEC, cmdname );
     }
@@ -1301,12 +1305,11 @@ STATIC RET_T handleFor( char *line )
 #endif
 
 
-#if defined( __OS2__ ) || defined( __NT__ ) || defined( __UNIX__ )
+#if defined( __OS2__ ) || defined( __NT__ ) || defined( __UNIX__ ) || defined( __RDOS__ )
 STATIC RET_T handleCD( char *cmd )
 /********************************/
 {
     char        *p;     // pointer to walk with
-    char        *s;
 
 #ifdef DEVELOPMENT
     PrtMsg( DBG | INF | INTERPRETING, dosInternals[COM_CD] );
@@ -1324,8 +1327,7 @@ STATIC RET_T handleCD( char *cmd )
     }
 
     if( p[1] == ':' ) {             /* just a drive: arg, print the cd */
-        s = SkipWS( p + 2 );
-        if( *s == NULLCHAR ) {
+        if( *SkipWS( p + 2 ) == NULLCHAR ) {
             return( mySystem( cmd, cmd ) );
         }
     }
@@ -1341,25 +1343,21 @@ STATIC RET_T handleCD( char *cmd )
 }
 
 
-#if defined( __OS2__ ) || defined( __NT__ )
+#if defined( __OS2__ ) || defined( __NT__ ) || defined( __RDOS__ )
 STATIC RET_T handleChangeDrive( const char *cmd )
 /***********************************************/
 {
-    unsigned    drive_index;
-    unsigned    total;
-    unsigned    curr_drive;
+    int         drive_index;
 
 #ifdef DEVELOPMENT
     PrtMsg( DBG | INF | INTERPRETING, dosInternals[CNUM] );
 #endif
 
-    drive_index = (unsigned)(ctoupper( *cmd ) - 'A' + 1);
+    drive_index = (ctoupper( *cmd ) - 'A' + 1);
     if( drive_index == 0 || drive_index > 26 ) {
         return( RET_ERROR );
     }
-    _dos_setdrive( drive_index, &total );
-    _dos_getdrive( &curr_drive );
-    if( curr_drive != drive_index ) {
+    if( _chdrive( drive_index ) ) {
         return( RET_ERROR );
     }
     return( RET_SUCCESS );
@@ -1467,16 +1465,23 @@ static bool IsDotOrDotDot( const char *fname )
     return( fname[0] == '.' && ( fname[1] == NULLCHAR || ( fname[1] == '.' && fname[2] == NULLCHAR ) ) );
 }
 
+#ifdef __UNIX__
+static bool chk_is_dir( const char *name )
+{
+    struct stat     s;
+
+    return( stat( name, &s ) == 0 && S_ISDIR( s.st_mode ) );
+}
+#endif
+
 static bool doRM( const char *f, const rm_flags *flags )
 {
     iolist              *tmp;
     iolist              *dhead = NULL;
     iolist              *dtail = NULL;
-
     char                fpath[_MAX_PATH];
     char                fname[_MAX_PATH];
     char                *fpathend;
-
     size_t              i;
     size_t              j;
     size_t              len;
@@ -1519,31 +1524,17 @@ static bool doRM( const char *f, const rm_flags *flags )
     }
 
     while( ( nd = readdir( d ) ) != NULL ) {
-#ifdef __UNIX__
-        struct stat buf;
-
-        if( fnmatch( fname, nd->d_name, FNM_PATHNAME | FNM_NOESCAPE ) == FNM_NOMATCH )
-#else
-        if( fnmatch( fname, nd->d_name, FNM_PATHNAME | FNM_NOESCAPE | FNM_IGNORECASE ) == FNM_NOMATCH )
-#endif
+        if( ENTRY_INVALID( fname, nd ) )
             continue;
         /* set up file name, then try to delete it */
         len = strlen( nd->d_name );
         memcpy( fpathend, nd->d_name, len );
         fpathend[len] = NULLCHAR;
-        len += i + 1;
-#ifdef __UNIX__
-        stat( fpath, &buf );
-        if( S_ISDIR( buf.st_mode ) ) {
-#else
-        if( nd->d_attr & _A_SUBDIR ) {
-#endif
+        if( ENTRY_SUBDIR( fpath, nd ) ) {
             /* process a directory */
-            if( IsDotOrDotDot( nd->d_name ) )
-                continue;
-
             if( flags->bDirs ) {
                 /* build directory list */
+                len += i + 1;
                 tmp = MallocSafe( offsetof( iolist, name ) + len );
                 tmp->next = NULL;
                 if( dtail == NULL ) {
@@ -1558,11 +1549,7 @@ static bool doRM( const char *f, const rm_flags *flags )
 //                retval = EACCES;
                 rc = false;
             }
-#ifdef __UNIX__
-        } else if( access( fpath, W_OK ) == -1 && errno == EACCES && !flags->bDirs ) {
-#else
-        } else if( (nd->d_attr & _A_RDONLY) && !flags->bDirs ) {
-#endif
+        } else if( !flags->bDirs && ENTRY_RDONLY( fpath, nd ) ) {
 //            Log( false, "%s is read-only, use -f\n", fpath );
 //            retval = EACCES;
             rc = false;
@@ -1802,18 +1789,18 @@ STATIC RET_T shellSpawn( char *cmd, shell_flags flags )
     int         retcode;            // from spawnvp
     UINT16      tmp_env = 0;        // for * commands
     RET_T       my_ret;             // return code for this function
-    int         quote;              // true if inside quotes
+    bool        quote;              // true if inside quotes
 
     assert( cmd != NULL );
 
     percent_cmd = cmd[0] == '%';
     arg = cmd + (percent_cmd ? 1 : 0);      /* split cmd name from args */
 
-    quote = 0;                              /* no quotes yet */
+    quote = false;                          /* no quotes yet */
     while( !((cisws( *arg ) || *arg == Glob.swchar || *arg == '+' ||
         *arg == '=' ) && !quote) && *arg != NULLCHAR ) {
         if( *arg == '\"' ) {
-            quote = !quote;  /* found a quote */
+            quote = !quote;     /* found a quote */
         }
         ++arg;
     }
@@ -1890,11 +1877,11 @@ STATIC RET_T shellSpawn( char *cmd, shell_flags flags )
         case COM_FOR:   my_ret = handleFor( cmd );          break;
         case COM_IF:    my_ret = handleIf( cmd );           break;
         case COM_RM:    my_ret = handleRM( cmd );           break;
-#if defined( __OS2__ ) || defined( __NT__ ) || defined( __UNIX__ )
-        case COM_CD:    /* fall through */
+#if defined( __OS2__ ) || defined( __NT__ ) || defined( __UNIX__ ) || defined( __RDOS__ )
+        case COM_CD:
         case COM_CHDIR: my_ret = handleCD( cmd );           break;
 #endif
-#if defined( __OS2__ ) || defined( __NT__ )
+#if defined( __OS2__ ) || defined( __NT__ ) || defined( __RDOS__ )
         case CNUM:      my_ret = handleChangeDrive( cmd );  break;
 #endif
         default:        my_ret = mySystem( cmdname, cmd );  break;
@@ -2076,7 +2063,7 @@ RET_T ExecCList( CLIST *clist )
         ret = writeInlineFiles( clist->inlineHead, &(clist->text) );
         currentFlist = clist->inlineHead;
         if( ret == RET_SUCCESS ) {
-            UnGetCH( STRM_MAGIC );
+            UnGetCHR( STRM_MAGIC );
             InsString( clist->text, false );
             line = DeMacro( TOK_MAGIC );
             GetCHR();        /* eat STRM_MAGIC */
@@ -2130,7 +2117,7 @@ void ExecInit( void )
 {
     lastErrorLevel = 0;
     currentFileName = NULL;
-    currentFileHandle = -1;
+    currentFileHandle = NULL;
     /* Take any number first */
     tmpFileNumber = (UINT16)( time( NULL ) % 100000 );
 }

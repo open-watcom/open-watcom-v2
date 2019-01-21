@@ -35,8 +35,6 @@
 #include "winytab.h"
 #include "scan.h"
 
-typedef yytokentype YYTOKENTYPE;
-
 extern YYTOKENTYPE  LookupKeywordWIN( ScanString newstring );
 extern YYTOKENTYPE  ScanWIN( ScanValue * value );
 

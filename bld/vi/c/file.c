@@ -51,41 +51,41 @@ void SaveInfo( info *ci  )
     if( ci == NULL ) {
         return;
     }
-    ci->CurrentFile         = CurrentFile;
-    ci->CurrentPos          = CurrentPos;
-    ci->VirtualColumnDesired = VirtualColumnDesired;
-    ci->LeftTopPos          = LeftTopPos;
-    ci->current_window_id   = current_window_id;
-    ci->UndoStack           = UndoStack;
-    ci->UndoUndoStack       = UndoUndoStack;
-    ci->curr_num_window_id  = curr_num_window_id;
-    ci->linenumflag         = EditFlags.LineNumbers;
-    ci->MarkList            = MarkList;
-    ci->SelRgn              = SelRgn;
+    ci->CurrentFile                 = CurrentFile;
+    ci->CurrentPos                  = CurrentPos;
+    ci->VirtualColumnDesired        = VirtualColumnDesired;
+    ci->LeftTopPos                  = LeftTopPos;
+    ci->current_window_id           = current_window_id;
+    ci->UndoStack                   = UndoStack;
+    ci->UndoUndoStack               = UndoUndoStack;
+    ci->linenum_current_window_id   = linenum_current_window_id;
+    ci->linenumflag                 = EditFlags.LineNumbers;
+    ci->MarkList                    = MarkList;
+    ci->SelRgn                      = SelRgn;
 
-    ci->fsi.Language        = CurrentInfo->fsi.Language;
-    ci->fsi.PPKeywordOnly   = EditFlags.PPKeywordOnly;
-    ci->fsi.CMode           = EditFlags.CMode;
-    ci->fsi.ReadEntireFile  = EditFlags.ReadEntireFile;
-    ci->fsi.ReadOnlyCheck   = EditFlags.ReadOnlyCheck;
-    ci->fsi.IgnoreCtrlZ     = EditFlags.IgnoreCtrlZ;
-    ci->fsi.CRLFAutoDetect  = EditFlags.CRLFAutoDetect;
-    ci->fsi.WriteCRLF       = EditFlags.WriteCRLF;
-    ci->fsi.EightBits       = EditFlags.EightBits;
-    ci->fsi.TabAmount       = EditVars.TabAmount;
-    ci->fsi.RealTabs        = EditFlags.RealTabs;
-    ci->fsi.HardTab         = EditVars.HardTab;
-    ci->fsi.AutoIndent      = EditFlags.AutoIndent;
-    ci->fsi.ShiftWidth      = EditVars.ShiftWidth;
-    ci->fsi.IgnoreTagCase   = EditFlags.IgnoreTagCase;
-    ci->fsi.TagPrompt       = EditFlags.TagPrompt;
-    ci->fsi.ShowMatch       = EditFlags.ShowMatch;
-    ci->fsi.TagFileName     = EditVars.TagFileName;
-    ci->fsi.GrepDefault     = EditVars.GrepDefault;
+    ci->fsi.Language                = CurrentInfo->fsi.Language;
+    ci->fsi.PPKeywordOnly           = EditFlags.PPKeywordOnly;
+    ci->fsi.CMode                   = EditFlags.CMode;
+    ci->fsi.ReadEntireFile          = EditFlags.ReadEntireFile;
+    ci->fsi.ReadOnlyCheck           = EditFlags.ReadOnlyCheck;
+    ci->fsi.IgnoreCtrlZ             = EditFlags.IgnoreCtrlZ;
+    ci->fsi.CRLFAutoDetect          = EditFlags.CRLFAutoDetect;
+    ci->fsi.WriteCRLF               = EditFlags.WriteCRLF;
+    ci->fsi.EightBits               = EditFlags.EightBits;
+    ci->fsi.TabAmount               = EditVars.TabAmount;
+    ci->fsi.RealTabs                = EditFlags.RealTabs;
+    ci->fsi.HardTab                 = EditVars.HardTab;
+    ci->fsi.AutoIndent              = EditFlags.AutoIndent;
+    ci->fsi.ShiftWidth              = EditVars.ShiftWidth;
+    ci->fsi.IgnoreTagCase           = EditFlags.IgnoreTagCase;
+    ci->fsi.TagPrompt               = EditFlags.TagPrompt;
+    ci->fsi.ShowMatch               = EditFlags.ShowMatch;
+    ci->fsi.TagFileName             = EditVars.TagFileName;
+    ci->fsi.GrepDefault             = EditVars.GrepDefault;
     CTurnOffFileDisplayBits();
 #ifdef __WIN__
-    ci->VScrollBarScale     = VScrollBarScale;
-    ci->HScrollBarScale     = HScrollBarScale;
+    ci->VScrollBarScale             = VScrollBarScale;
+    ci->HScrollBarScale             = HScrollBarScale;
 #endif
 } /* SaveInfo */
 
@@ -127,93 +127,93 @@ bool RestoreInfo( info *ci  )
     if( ci == NULL ) {
         ci = &tmpinfo;
         memset( ci, 0, sizeof( tmpinfo ) );
-        ci->current_window_id   = NO_WINDOW;
-        ci->curr_num_window_id  = NO_WINDOW;
-        ci->CurrentPos.line     = 1;
-        ci->CurrentPos.column   = 1;
-        ci->VirtualColumnDesired = 1;
-        ci->LeftTopPos.line     = 1;
-        ci->LeftTopPos.column   = 0;
-        CurrentLine             = NULL;
-        CurrentFcb              = NULL;
+        ci->current_window_id           = NO_WINDOW;
+        ci->linenum_current_window_id   = NO_WINDOW;
+        ci->CurrentPos.line             = 1;
+        ci->CurrentPos.column           = 1;
+        ci->VirtualColumnDesired        = 1;
+        ci->LeftTopPos.line             = 1;
+        ci->LeftTopPos.column           = 0;
+        CurrentLine                     = NULL;
+        CurrentFcb                      = NULL;
 
-        ci->fsi.Language        = LANG_NONE;
-        ci->fsi.HardTab         = EditVars.HardTab;
-        ci->fsi.ShiftWidth      = EditVars.ShiftWidth;
-        ci->fsi.TabAmount       = EditVars.TabAmount;
-        ci->fsi.ReadEntireFile  = EditFlags.ReadEntireFile;
-        ci->fsi.ReadOnlyCheck   = EditFlags.ReadOnlyCheck;
-        ci->fsi.AutoIndent      = EditFlags.AutoIndent;
-        ci->fsi.EightBits       = EditFlags.EightBits;
-        ci->fsi.RealTabs        = EditFlags.RealTabs;
+        ci->fsi.Language                = LANG_NONE;
+        ci->fsi.HardTab                 = EditVars.HardTab;
+        ci->fsi.ShiftWidth              = EditVars.ShiftWidth;
+        ci->fsi.TabAmount               = EditVars.TabAmount;
+        ci->fsi.ReadEntireFile          = EditFlags.ReadEntireFile;
+        ci->fsi.ReadOnlyCheck           = EditFlags.ReadOnlyCheck;
+        ci->fsi.AutoIndent              = EditFlags.AutoIndent;
+        ci->fsi.EightBits               = EditFlags.EightBits;
+        ci->fsi.RealTabs                = EditFlags.RealTabs;
 #if 0
-        ci->fsi.Language        = CurrentInfo->fsi.Language;
-        ci->fsi.PPKeywordOnly   = EditFlags.PPKeywordOnly;
-        ci->fsi.CMode           = EditFlags.CMode;
-        ci->fsi.ReadEntireFile  = EditFlags.ReadEntireFile;
-        ci->fsi.ReadOnlyCheck   = EditFlags.ReadOnlyCheck;
-        ci->fsi.IgnoreCtrlZ     = EditFlags.IgnoreCtrlZ;
-        ci->fsi.CRLFAutoDetect  = EditFlags.CRLFAutoDetect;
-        ci->fsi.WriteCRLF       = EditFlags.WriteCRLF;
-        ci->fsi.EightBits       = EditFlags.EightBits;
-        ci->fsi.TabAmount       = EditVars.TabAmount;
-        ci->fsi.RealTabs        = EditFlags.RealTabs;
-        ci->fsi.HardTab         = EditVars.HardTab;
-        ci->fsi.AutoIndent      = EditFlags.AutoIndent;
-        ci->fsi.ShiftWidth      = EditVars.ShiftWidth;
-        ci->fsi.IgnoreTagCase   = EditFlags.IgnoreTagCase;
-        ci->fsi.TagPrompt       = EditFlags.TagPrompt;
-        ci->fsi.ShowMatch       = EditFlags.ShowMatch;
-        ci->fsi.TagFileName     = EditVars.TagFileName;
-        ci->fsi.GrepDefault     = EditVars.GrepDefault;
+        ci->fsi.Language                = CurrentInfo->fsi.Language;
+        ci->fsi.PPKeywordOnly           = EditFlags.PPKeywordOnly;
+        ci->fsi.CMode                   = EditFlags.CMode;
+        ci->fsi.ReadEntireFile          = EditFlags.ReadEntireFile;
+        ci->fsi.ReadOnlyCheck           = EditFlags.ReadOnlyCheck;
+        ci->fsi.IgnoreCtrlZ             = EditFlags.IgnoreCtrlZ;
+        ci->fsi.CRLFAutoDetect          = EditFlags.CRLFAutoDetect;
+        ci->fsi.WriteCRLF               = EditFlags.WriteCRLF;
+        ci->fsi.EightBits               = EditFlags.EightBits;
+        ci->fsi.TabAmount               = EditVars.TabAmount;
+        ci->fsi.RealTabs                = EditFlags.RealTabs;
+        ci->fsi.HardTab                 = EditVars.HardTab;
+        ci->fsi.AutoIndent              = EditFlags.AutoIndent;
+        ci->fsi.ShiftWidth              = EditVars.ShiftWidth;
+        ci->fsi.IgnoreTagCase           = EditFlags.IgnoreTagCase;
+        ci->fsi.TagPrompt               = EditFlags.TagPrompt;
+        ci->fsi.ShowMatch               = EditFlags.ShowMatch;
+        ci->fsi.TagFileName             = EditVars.TagFileName;
+        ci->fsi.GrepDefault             = EditVars.GrepDefault;
 #endif
     }
-    CurrentFile                 = ci->CurrentFile;
-    SelRgn                      = ci->SelRgn;
+    CurrentFile                         = ci->CurrentFile;
+    SelRgn                              = ci->SelRgn;
 #ifdef __WIN__
-    VScrollBarScale             = ci->VScrollBarScale;
-    HScrollBarScale             = ci->HScrollBarScale;
+    VScrollBarScale                     = ci->VScrollBarScale;
+    HScrollBarScale                     = ci->HScrollBarScale;
 #endif
-    CurrentPos                  = ci->CurrentPos;
-    VirtualColumnDesired        = ci->VirtualColumnDesired;
-    LeftTopPos                  = ci->LeftTopPos;
-    current_window_id           = ci->current_window_id;
-    curr_num_window_id          = ci->curr_num_window_id;
-    UndoStack                   = ci->UndoStack;
-    UndoUndoStack               = ci->UndoUndoStack;
-    MarkList                    = ci->MarkList;
+    CurrentPos                          = ci->CurrentPos;
+    VirtualColumnDesired                = ci->VirtualColumnDesired;
+    LeftTopPos                          = ci->LeftTopPos;
+    current_window_id                   = ci->current_window_id;
+    linenum_current_window_id           = ci->linenum_current_window_id;
+    UndoStack                           = ci->UndoStack;
+    UndoUndoStack                       = ci->UndoUndoStack;
+    MarkList                            = ci->MarkList;
     SetMarkContext();
-    EditFlags.CMode             = ci->fsi.CMode;
-    EditFlags.CRLFAutoDetect    = ci->fsi.CRLFAutoDetect;
-    EditFlags.WriteCRLF         = ci->fsi.WriteCRLF;
-    EditFlags.RealTabs          = ci->fsi.RealTabs;
-    EditFlags.ReadEntireFile    = ci->fsi.ReadEntireFile;
-    EditFlags.ReadOnlyCheck     = ci->fsi.ReadOnlyCheck;
-    EditFlags.AutoIndent        = ci->fsi.AutoIndent;
-    EditFlags.EightBits         = ci->fsi.EightBits;
-    EditVars.TabAmount          = ci->fsi.TabAmount;
-    EditVars.HardTab            = ci->fsi.HardTab;
-    EditVars.ShiftWidth         = ci->fsi.ShiftWidth;
+    EditFlags.CMode                     = ci->fsi.CMode;
+    EditFlags.CRLFAutoDetect            = ci->fsi.CRLFAutoDetect;
+    EditFlags.WriteCRLF                 = ci->fsi.WriteCRLF;
+    EditFlags.RealTabs                  = ci->fsi.RealTabs;
+    EditFlags.ReadEntireFile            = ci->fsi.ReadEntireFile;
+    EditFlags.ReadOnlyCheck             = ci->fsi.ReadOnlyCheck;
+    EditFlags.AutoIndent                = ci->fsi.AutoIndent;
+    EditFlags.EightBits                 = ci->fsi.EightBits;
+    EditVars.TabAmount                  = ci->fsi.TabAmount;
+    EditVars.HardTab                    = ci->fsi.HardTab;
+    EditVars.ShiftWidth                 = ci->fsi.ShiftWidth;
 #if 0
-    ci->fsi.Language        = CurrentInfo->fsi.Language;
-    ci->fsi.PPKeywordOnly   = EditFlags.PPKeywordOnly;
-    ci->fsi.CMode           = EditFlags.CMode;
-    ci->fsi.ReadEntireFile  = EditFlags.ReadEntireFile;
-    ci->fsi.ReadOnlyCheck   = EditFlags.ReadOnlyCheck;
-    ci->fsi.IgnoreCtrlZ     = EditFlags.IgnoreCtrlZ;
-    ci->fsi.CRLFAutoDetect  = EditFlags.CRLFAutoDetect;
-    ci->fsi.WriteCRLF       = EditFlags.WriteCRLF;
-    ci->fsi.EightBits       = EditFlags.EightBits;
-    ci->fsi.TabAmount       = EditVars.TabAmount;
-    ci->fsi.RealTabs        = EditFlags.RealTabs;
-    ci->fsi.HardTab         = EditVars.HardTab;
-    ci->fsi.AutoIndent      = EditFlags.AutoIndent;
-    ci->fsi.ShiftWidth      = EditVars.ShiftWidth;
-    ci->fsi.IgnoreTagCase   = EditFlags.IgnoreTagCase;
-    ci->fsi.TagPrompt       = EditFlags.TagPrompt;
-    ci->fsi.ShowMatch       = EditFlags.ShowMatch;
-    ci->fsi.TagFileName     = EditVars.TagFileName;
-    ci->fsi.GrepDefault     = EditVars.GrepDefault;
+    ci->fsi.Language                    = CurrentInfo->fsi.Language;
+    ci->fsi.PPKeywordOnly               = EditFlags.PPKeywordOnly;
+    ci->fsi.CMode                       = EditFlags.CMode;
+    ci->fsi.ReadEntireFile              = EditFlags.ReadEntireFile;
+    ci->fsi.ReadOnlyCheck               = EditFlags.ReadOnlyCheck;
+    ci->fsi.IgnoreCtrlZ                 = EditFlags.IgnoreCtrlZ;
+    ci->fsi.CRLFAutoDetect              = EditFlags.CRLFAutoDetect;
+    ci->fsi.WriteCRLF                   = EditFlags.WriteCRLF;
+    ci->fsi.EightBits                   = EditFlags.EightBits;
+    ci->fsi.TabAmount                   = EditVars.TabAmount;
+    ci->fsi.RealTabs                    = EditFlags.RealTabs;
+    ci->fsi.HardTab                     = EditVars.HardTab;
+    ci->fsi.AutoIndent                  = EditFlags.AutoIndent;
+    ci->fsi.ShiftWidth                  = EditVars.ShiftWidth;
+    ci->fsi.IgnoreTagCase               = EditFlags.IgnoreTagCase;
+    ci->fsi.TagPrompt                   = EditFlags.TagPrompt;
+    ci->fsi.ShowMatch                   = EditFlags.ShowMatch;
+    ci->fsi.TagFileName                 = EditVars.TagFileName;
+    ci->fsi.GrepDefault                 = EditVars.GrepDefault;
 #endif
     cRestoreFileDisplayBits();
 
@@ -235,7 +235,7 @@ bool RestoreInfo( info *ci  )
 
 } /* RestoreInfo */
 
-static int getFileInfoString( char *st, bool is_small )
+static size_t getFileInfoString( char *st, bool is_small )
 {
     long        pc;
     bool        write_crlf;
@@ -321,13 +321,14 @@ static void make_short_name( char *name, size_t len, char *buffer )
 {
     char    *start;
     char    *end;
-    int     newlen;
+    size_t  newlen;
 
     len -= 2; /* for 2 quotes */
     strcpy( buffer, SingleQuote );
     start = strchr( name, '\\' );
     if( start ) {
-        for( end = name + strlen( name ) - 1; *end != '\\'; end-- );
+        for( end = name + strlen( name ) - 1; *end != '\\'; end-- )
+            ;
         newlen = strlen( end ) + ( start - name );
         if( newlen <= len ) {
             strncat( buffer, name, start - name + 1 );
@@ -338,7 +339,7 @@ static void make_short_name( char *name, size_t len, char *buffer )
         }
     }
     strcat( buffer, "..." );
-    strncat( buffer, name + strlen(name) - len + 3, len - 3 );
+    strncat( buffer, name + strlen( name ) - len + 3, len - 3 );
     strcat( buffer, SingleQuote );
 }
 
@@ -360,7 +361,7 @@ vi_rc DisplayFileStatus( void )
         free_len = MAX_STR;
     }
 
-    free_len -= (getFileInfoString( st, false ) + 3); /* for 2 quotes + NULL */
+    free_len -= getFileInfoString( st, false ) + 3; /* for 2 quotes + NULL */
 
     /* file name */
     if( strlen( CurrentFile->name ) < free_len ) {
@@ -372,7 +373,7 @@ vi_rc DisplayFileStatus( void )
         if( free_len > MAX_STR ) {
             free_len = MAX_STR;
         }
-        free_len -= (getFileInfoString( st, true ) + 3); /* for 2 quotes + NULL */
+        free_len -= getFileInfoString( st, true ) + 3;  /* for 2 quotes + NULL */
         if( strlen( CurrentFile->name ) < free_len ) {
             MySprintf( data, "\"%s\"", CurrentFile->name );
             strcat( data, st );
@@ -454,12 +455,13 @@ void FileIOMessage( const char *name, linenum lnecnt, long bytecnt )
  */
 bool IsTextFile( const char *file )
 {
-    int         i, j;
+    size_t      len;
+    int         j;
     const char  *fign;
     const char  *fend;
 
-    i = strlen( file );
-    fend = file + i;
+    len = strlen( file );
+    fend = file + len;
     fign = EditVars.FIgnore;
     for( j = 0; j < EditVars.CurrFIgnore; j++ ) {
          if( strcmp( fend - strlen( fign ), fign ) == 0 ) {

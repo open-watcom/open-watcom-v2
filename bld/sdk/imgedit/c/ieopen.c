@@ -39,7 +39,6 @@
 #include "imgedit.h"
 #include <commdlg.h>
 #include <shellapi.h>
-#include <malloc.h>
 #include <dos.h>
 #include <cderr.h>
 #include "colors.h"

@@ -51,7 +51,7 @@ extern void     PushRealNum( xreal val );
 extern void     PushSymHandle( sym_handle *sh );
 extern void     ExprSetAddrInfo( stack_entry *stk, bool trunc );
 extern void     PushAddr( address addr );
-extern void     PushLocation( location_list *ll, dip_type_info *ti );
+extern void     PushLocation( location_list *ll, dig_type_info * );
 extern void     CombineEntries( stack_entry *dest, stack_entry *l, stack_entry *r );
 extern void     MoveTH( stack_entry *old, stack_entry *new );
 extern void     PushType( type_handle *th );

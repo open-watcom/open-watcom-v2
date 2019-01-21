@@ -39,5 +39,5 @@
 #if defined(_initialize_)
 char Token[MAX_LEVEL] = "$123456789$ For use by WATCOM Systems Inc. ****";
 #else
-global  char    Token[ MAX_LEVEL ];
+global  char    Token[MAX_LEVEL];
 #endif

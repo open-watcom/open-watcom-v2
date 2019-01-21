@@ -30,10 +30,8 @@
 ****************************************************************************/
 
 
-#include "commonui.h"
 #include "wddespy.h"
-#include <string.h>
-#include <stdio.h>
+
 
 #define MAX_TRK_STR     10
 

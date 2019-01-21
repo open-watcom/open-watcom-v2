@@ -35,28 +35,19 @@
 #include <stdio.h>
 #include <string.h>
 #include "watcom.h"
+#include "wnoret.h"
 #include "mtypes.h"
 #include "msysdep.h"
 #include "massert.h"
 
-#define DOLLAR          '$'     /* macro introducer                          */
-// #define DOLLAR_S        "$"
-#define LINECONT        '&'     /* line continuation                         */
-#define UNIX_LINECONT   '\\'    /* UNIX line continuation                    */
-#define MS_LINECONT     '\\'    /* MS line continuation                      */
-#define COMMENT         '#'     /* beginning of comment                      */
-#define COLON           ':'     /* target, dependants seperator              */
-#define DOT             '.'     /* beginning of a suffix/extension           */
-#define BANG            '!'     /* preprocessor introducer                   */
-#define ENVVAR          '%'     /* %environment-var                          */
-#define SEMI            ';'     /* dependent/cmd seperator                   */
-#define L_CURL_PAREN    '{'
-#define R_CURL_PAREN    '}'
+#define LINECONT_C      '&'     /* line continuation                         */
+#define UNIX_LINECONT_C '\\'    /* UNIX line continuation                    */
+#define MS_LINECONT_C   '\\'    /* MS line continuation                      */
+#define COMMENT_C       '#'     /* beginning of comment                      */
+#define BANG_C          '!'     /* preprocessor introducer                   */
+#define ENVVAR_C        '%'     /* %environment-var                          */
 
 #define NULLCHAR        '\0'
-#define TAB             '\t'
-#define EOL             '\n'
-#define SPACE           ' '
 
 /*
  * When we initialize ourselves, this is how many objects we will preallocate
@@ -116,12 +107,6 @@ struct Glob {
 #define STATIC static
 #endif
 
-#if defined( _WCNORETURN )
-#define NO_RETURN   _WCNORETURN
-#else
-#define NO_RETURN
-#endif
-
 extern struct Glob      Glob;
 extern const char FAR   BuiltIns[];
 extern const char FAR   MSBuiltIn[];
@@ -132,9 +117,9 @@ extern const char FAR   MSSuffixList[];
 extern const char FAR   UNIXSuffixList[];
 extern const char FAR   POSIXSuffixList[];
 
-NO_RETURN extern void ExitFatal( void );
-NO_RETURN extern void ExitError( void );
-NO_RETURN extern void ExitOK( void );
+NO_RETURN( extern void ExitFatal( void ) );
+NO_RETURN( extern void ExitError( void ) );
+NO_RETURN( extern void ExitOK( void ) );
 extern void Header( void );
 
 #endif

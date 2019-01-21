@@ -139,17 +139,17 @@ void DIPCLIENTRY( AddrSection )( address *addr )
 /*
  * DIPCliStatus
  */
-void DIPCLIENTRY( Status )( dip_status stat )
+void DIPCLIENTRY( Status )( dip_status ds )
 {
-    dprintf(( "DIPCliStatus: stat=%d\n", stat ));
-    stat = stat;
+    dprintf(( "DIPCliStatus: status=%d\n", ds ));
+    /* unused parameters */ (void)ds;
 }
 
 /*
- * DIPCliCurrMAD
+ * DIPCliCurrArch
  */
-dig_mad DIPCLIENTRY( CurrMAD )( void )
+dig_arch DIPCLIENTRY( CurrArch )( void )
 {
-    //dprintf(( "DIPCliCurrMAD\n" ));
-    return( MAD_X86 ); ///@todo option!
+    //dprintf(( "DIPCliCurrArch\n" ));
+    return( DIG_ARCH_X86 ); ///@todo option!
 }

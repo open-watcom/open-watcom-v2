@@ -1,6 +1,9 @@
-:H1.Introduction
-:H2.Overview
-:P.
+.chap Introduction 
+.*
+.sect Introduction
+.*
+.section Overview
+.np
 The Open Watcom Standard Template Library (OWSTL) is an implimentation of 
 the C++ standard library defined in ISO/IEC 14882.
 This document describes the design of the various parts of OWSTL.
@@ -10,15 +13,15 @@ problems encountered and explanations of the solution.
 It is hoped a peer review of the code and design documentation will be
 undertaken at some stage and questions raised, answers, or resulting changes
 made will be documented here.
-
-:H2.Philosophy
-:P.
+.*
+.section Philosophy
+.np
 OWSTL is written entirely from scratch.
 It does not, for example, assimilate an old HP/SGI code base.
 When a new element is added to the library the topic should be researched
 by the author before they commence coding so they can make use of any new
 research and theories.
-The commercial compiler &product is based on made its name for producing high
+The commercial compiler &company is based on made its name for producing high
 quality fast code.
 The intention is to produce a high performance library to complement that.
 This means choosing and experimenting with the best algorithms possible.
@@ -31,15 +34,14 @@ improvements and pitfalls discovered, the source files are the other half.
 If improvements can be made by crafting complicated, difficult to understand
 constructs in the source it probably suggests more effort should be spent
 on the compiler and codegenerator.
-
-:H2.Status
-:P.
+.*
+.section Status
+.np
 OWSTL is currently in very early stages of developement.
 No parts are completely implemented, and many elements of the library
 have not been started yet.
 Having said that what does exsist will tend to be the most useful key parts.
-The code is mainly templates and currently resides in under the 
-:PATH.hdr
+The code is mainly templates and currently resides in under the :PATH.hdr
 project.
 In the future non-template classes or functions may be factored out of the 
 templated code and be built into the static and dynamic libraries.
@@ -50,11 +52,10 @@ don't really need to know the contained type.
 Reasonably thorough regression tests can be found in :PATH.plustest/regress/owstl. 
 These should be updated in parallel with new fuctionallity or fixes made to the 
 library itself.
-Some Benchmarks can be found in 
-:PATH.bench/owstl.
-
-:H1.Implementors Notes
-:P.
+Some Benchmarks can be found in :PATH.bench/owstl.
+.*
+.section Implementors Notes
+.np
 When updating OWSTL remember to do all the following steps:
 :UL.
 :LI.check out latest source

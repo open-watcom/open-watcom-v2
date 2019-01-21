@@ -3,7 +3,7 @@
 #include <sys/stat.h>                      // C library
 #include <fcntl.h>                         //
 
-void main( void ) {
+int main( void ) {
 
     char    s[20], *bp;
     int     handle, len = 20;
@@ -17,6 +17,6 @@ void main( void ) {
     input >> s;
     cout << "The second string in the file \"temp.txt\" is \""
          << s << "\"" << endl;
-    delete bp;
+    delete[] bp;
 }
 

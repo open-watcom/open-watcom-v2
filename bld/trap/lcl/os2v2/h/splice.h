@@ -32,22 +32,22 @@ extern void __export DoReadWord( void );
 extern void __export DoWriteWord( void );
 
 extern void __export DoOpen( char *name, int mode, int flags );
-#pragma aux DoOpen parm [eax] [edx] [ecx];
+#pragma aux DoOpen __parm [__eax] [__edx] [__ecx]
 
 extern void __export DoClose( HFILE hdl );
-#pragma aux DoClose parm [eax];
+#pragma aux DoClose __parm [__eax]
 
 extern void __export DoDupFile( HFILE old, HFILE new );
-#pragma aux DoDupFile parm [eax] [edx];
+#pragma aux DoDupFile __parm [__eax] [__edx]
 
 extern void __export DoWritePgmScrn( char *buff, ULONG len );
-#pragma aux DoWritePgmScrn parm [eax] [edx];
+#pragma aux DoWritePgmScrn __parm [__eax] [__edx]
 
 extern void __export DoReadXMMRegs( struct x86_xmm *xmm_regs );
-#pragma aux DoReadXMMRegs parm [eax];
+#pragma aux DoReadXMMRegs __parm [__eax]
 
 extern void __export DoWriteXMMRegs( struct x86_xmm *xmm_regs );
-#pragma aux DoWriteXMMRegs parm [eax];
+#pragma aux DoWriteXMMRegs __parm [__eax]
 
 
 #define XFERBUFF_SIZE      1024

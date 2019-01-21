@@ -418,6 +418,10 @@ extern uint_32          GetCurrSegAlign( void );
 extern void             wipe_space( char *token );
 extern bool             SetUse32Def( bool );
 
+#if defined( DEBUG_OUT )
+extern void             heap( char *func ); // for debugging only
+#endif
+
 /*---------------------------------------------------------------------------
  *   included from write.c
  *---------------------------------------------------------------------------*/

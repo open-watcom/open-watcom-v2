@@ -1,4 +1,7 @@
-:H1.Introduction
+.chap Red Black Tree
+.*
+.sect Introduction
+.*
 Template class :CLASS.std::~_ow::~RedBlackTree<>
 is an implementation of a red-black tree data structure.
 It is used as a common base for :CLASS.std::~set
@@ -7,18 +10,17 @@ It can be found in :PATH.hdr/watcom/_rbtree.mh.
 The intention was to allow easy replacement and experementation with 
 other implementations such as an AVL tree or perhaps some sort of 
 relaxed chromatic tree suited to concurrent systems.
-
-
-:H2.Status
-:P.
+.*
+.section Status
+.np
 :AUTHOR date='16 Oct 2005'.D Cletheroe
-:P.
+.np
 Reviewer: Not reviewed
-:P.
+.np
 The majority of the required functionality has been written.
 Regression tests have been written in parallel, but little user testing and 
 feedback exists.
-:P.
+.np
 The missing members are:
 :CMT can list be modified so there isn't a skip or maby a half skip between 
 :CMT each item: variable under the UL tag?
@@ -38,7 +40,7 @@ The missing members are:
 :LI.equal_range( key_type ) and equal_range( key_type ) const
 :LI.non member operators and specialized swap algorithm
 :eUL.
-
+.*
 Completed member are:
 :UL.
 :LI.iterator
@@ -63,14 +65,12 @@ Completed member are:
 :LI._Sane()
 :LI.internal tree balancing functions
 :eUL.
-
-
-:H1.Design Details
-:P.
+.*
+.section Design Details
+.np
 :CLASS.template < class Key, class Compare, class Allocator, class ValueWrapper >
 :CLASS.class RedBlackTree
-
-:P.
+.np
 :CLASS.Key
 is the type that is used to index the tree;
 :CLASS.Compare 
@@ -83,18 +83,18 @@ an operator() that knows how to extract the key from that type.
 :CLASS.ValueWrapper
 allows the same tree code to apply to sets where the key is the only thing 
 stored and maps where the object stored has a key and a mapped value.
-
-:H2. Relation to map and set
-:P.
+.*
+.sect Relation to map and set
+.*
 :CLASS.std::~set 
 and :CLASS.std::~map
 take their base class as a template parameter.
 They select the appropriate value wrapper and inherit all the functionallity.
 The base currently defaults to RedBlackTree and is the only implementation 
 avaliable.
-
-:H2. Description of a Red Black Tree
-:P.
+.*
+.sect Description of a Red Black Tree
+.*
 A Red-Black tree is a ordered binary tree.
 An binary tree is made up of nodes, where each node can have up to two children.
 An ordered binary tree orders the nodes so that a left child is less than its 
@@ -109,8 +109,7 @@ If a node's child pointer is null then that non-existant child is a leaf, and we
 hold all the data in the real, exisiting nodes.
 Therefore there is no special leaf node type, just a null pointer if there is no
 child with data.
-
-:P.
+.np
 A Red-Black tree adds a colour to ever node, and defines some rules that
 mean the tree stays balanced.
 A tree is balanced if the difference between the largest and smallest depth of 
@@ -124,8 +123,7 @@ number of black nodes
 this implementation.)
 :LI.The root is black
 :eUL.
-
-:P.
+.np
 This data structure has been well covered in the literature, for a more detailed
 information see:
 :CMT do proper references with tags
@@ -133,11 +131,9 @@ information see:
 [McGill University, Notes for 308-251B, http://www.cs.mcgill.ca/~cs251/ !check link!, 1997]
 [err...]
 [google red black trees, binary trees etc]
-
-
-:CMT -------------------------------------------------------------------------
-:H2. Overview of the class
-:P.
+.*
+.sect Overview of the class
+.*
 The tree class defines an internal Node structure that is made up of the object
 stored in the tree, Node pointers for the parent and left and right children,
 and the Node colour.
@@ -156,9 +152,9 @@ error is detected when _Sane is run.
 :CMT to do: make a 'for review' tag?
 [for review] This should perhaps be renamed _Error or made private and 
 a _GetError() method provided.
-
-:H2.Inserting Elements and Reballancing
-:P.
+.*
+.sect Inserting Elements and Reballancing
+.*
 The :FUNC.insert
 method calls :FUNC.unbalancedInsert
 and :FUNC.insBalTransform.
@@ -176,8 +172,7 @@ to deallocate the node again if any exceptions are raised.
 This is needed to stop a memory leak that could occur beacuse the memory
 has been allocated but the exception has stopped the Node being linked in
 to the tree (so it would never get destroyed when the tree is destoyed).
-
-:P.
+.np
 At this point the tree is a valid binary tree but not necessaraly obeying
 the Red-Black balance criteria.
 The new Node is painted Red so as not to invalidate the black-height
@@ -191,7 +186,7 @@ Usually the balancing procedure is broken down into a series of
 if represented graphically.
 These rotations can be left or right and the procedure moves up to the
 parent sub-tree and is repeated until the violation is removed.
-Instead &product uses the concept of a :Q.transformation:eQ..
+Instead &company uses the concept of a :Q.transformation:eQ..
 :CMT figure out/make reference tag
 [Alternatives to Two Classic Data Structures, Chris Okaski, 2005?]
 A sub-branch of the tree is analysed to see which case it matches 
@@ -203,15 +198,12 @@ cases could be matched and manipulated in one go, and the code
 generator may be able to make a better job of optimising the code
 because a larger block of manipulating instructions would be together.
 Whether this was a good desision will be born out in time.
-
-:P.
+.np
 Explain why the insert methods are currently inline - compiler bug - 
 what exactly was the problem?
-
-
-:CMT ------------------------------------------------------------------------
-:H2.Deleting Elements
-:P.
+.*
+.sect Deleting Elements
+.*
 Deletion is a bit more complicated than insertion.
 The main method that gets called is 
 :FUNC.erase( iterator ).
@@ -250,4 +242,3 @@ the black hieght problem.
 This isn't valid so we call :FUNC.doubleBlackTransform() to run through
 a set of cases to rearrange subtrees and remove the need for double
 black.
-

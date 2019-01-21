@@ -31,7 +31,7 @@
 
 #include "variety.h"
 #include "widechar.h"
-#include <memory.h>
+#include <string.h>
 #include <process.h>
 #include "rdos.h"
 #include "printf.h"
@@ -60,8 +60,8 @@ typedef struct RdosParam
 int RdosCarryToBool();
 
 #pragma aux RdosCarryToBool = \
-    CarryToBool \
-    value [eax];
+        CarryToBool \
+    __value [__eax]
 
 void RdosBlitBase();
 

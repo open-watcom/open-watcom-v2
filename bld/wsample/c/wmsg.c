@@ -46,7 +46,6 @@
     #include "wressetr.h"
     #include "wresset2.h"
 #endif
-#include "wio.h"
 #include "sample.h"
 #include "smpstuff.h"
 #include "wreslang.h"
@@ -54,9 +53,6 @@
 
 #include "clibext.h"
 
-
-#define NO_RES_MESSAGE  "Error: could not open message resource file.\r\n"
-#define NO_RES_SIZE     (sizeof( NO_RES_MESSAGE ) - 1)
 
 char    FAR_PTR         *MsgArray[ERR_LAST_MESSAGE - ERR_FIRST_MESSAGE + 1];
 
@@ -85,10 +81,14 @@ static bool MsgReadErrArray( void )
                 return( false );
             buffer[0] = '\0';
         }
-        MsgArray[i - ERR_FIRST_MESSAGE] = my_alloc( strlen( buffer ) + 1 );
-        if( MsgArray[i - ERR_FIRST_MESSAGE] == NULL )
+        GET_MESSAGE( i ) = my_alloc( strlen( buffer ) + 1 );
+        if( GET_MESSAGE( i ) == NULL )
             return( false );
-        _fstrcpy( MsgArray[i - ERR_FIRST_MESSAGE], buffer );
+#ifdef FARDATA
+        _fstrcpy( GET_MESSAGE( i ), buffer );
+#else
+        strcpy( GET_MESSAGE( i ), buffer );
+#endif
     }
     return( true );
 }
@@ -123,7 +123,7 @@ bool MsgInit( void )
         }
     }
     CloseResFile( &hInstance );
-    posix_write( STDOUT_FILENO, NO_RES_MESSAGE, NO_RES_SIZE );
+    printf( NO_RES_MESSAGE );
     return( false );
 }
 #endif
@@ -133,14 +133,13 @@ void MsgFini( void )
     int          i;
 
     for( i = ERR_FIRST_MESSAGE; i <= ERR_LAST_MESSAGE; i++ ) {
-        my_free( MsgArray[i - ERR_FIRST_MESSAGE] );
+        my_free( GET_MESSAGE( i ) );
     }
 }
 
 void MsgPrintfUsage( int first_ln, int last_ln )
 {
     for( ; first_ln <= last_ln; first_ln++ ) {
-        Output( MsgArray[first_ln - ERR_FIRST_MESSAGE] );
-        Output( "\r" );
+        OutputMsgNL( first_ln );
     }
 }

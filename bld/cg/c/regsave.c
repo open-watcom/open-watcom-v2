@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2016 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -31,22 +31,22 @@
 ****************************************************************************/
 
 
-#include "cgstd.h"
+#include "_cgstd.h"
 #include "coderep.h"
 #include "confldef.h"
 #include "model.h"
 #include "savings.h"
 #include "namelist.h"
+#include "loadstor.h"
+#include "regsave.h"
 
-
-extern  void            CalcLoadStore(conflict_node*);
 
 savings         Save;
 
 
-extern  void    AdjTimeSize( uint *time, uint *size ) {
-/*****************************************************/
-
+void    AdjTimeSize( uint *time, uint *size )
+/*******************************************/
+{
     /*   Adjust size to be between 0 and TOTAL_WEIGHT*/
 
     if( *size > 100 ) {
@@ -58,9 +58,9 @@ extern  void    AdjTimeSize( uint *time, uint *size ) {
 }
 
 
-extern  void    SetLoopCost( uint time ) {
-/****************************************/
-
+void    SetLoopCost( uint time )
+/******************************/
+{
     save_def    loop_weight;
     int         i;
 
@@ -80,9 +80,9 @@ extern  void    SetLoopCost( uint time ) {
 }
 
 
-extern  void    SetCost( save_def *array, save_def cost ) {
-/*********************************************************/
-
+void    SetCost( save_def *array, save_def cost )
+/***********************************************/
+{
     save_def    cost2;
 
     cost2 = cost;
@@ -106,9 +106,9 @@ extern  void    SetCost( save_def *array, save_def cost ) {
 }
 
 
-extern  save_def        Weight( save_def value, block *blk ) {
-/************************************************************/
-
+save_def        Weight( save_def value, block *blk )
+/**************************************************/
+{
     if( blk->depth < MAX_LOOP ) {
         value *= Save.loop_weight[blk->depth];
     } else {
@@ -118,16 +118,14 @@ extern  save_def        Weight( save_def value, block *blk ) {
 }
 
 
-extern  void    CalcSavings( conflict_node *conf ) {
-/**************************************************/
-
+void    CalcSavings( conflict_node *conf )
+/****************************************/
 /* NB: <regsave> relies on the fact that "conf" is a parm to this routine*/
-
+{
     save_def            block_save;
     save_def            block_cost;
     save_def            cost;
     save_def            save;
-#undef   _InRegAssgn
 #include "savcache.h"
 
     if( ( conf->name->v.usage & USE_IN_ANOTHER_BLOCK )

@@ -32,10 +32,10 @@
 
 // routines called from PGCHART.LIB
 
-#if defined( __386__ )
-    #define _WCI86FAR
-#else
+#if defined( _M_I86 )
     #define _WCI86FAR    __far
+#else
+    #define _WCI86FAR
 #endif
 
 #include "grfuncs.h"

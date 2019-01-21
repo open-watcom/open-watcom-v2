@@ -222,8 +222,8 @@ for details.
 .*
 .np
 .ix 'interrupts' 'using DOS/4GW'
-The &cmpname library files contain the FINTR subroutine which allows
-the user to perform interrupt calls within a &lang program.
+The &cmpname library files contain the FINTR and the FINTRF subroutines 
+which allows the user to perform interrupt calls within a &lang program.
 This subroutine is described in the Subprogram Library section of the
 .book &product User's Guide.
 .np

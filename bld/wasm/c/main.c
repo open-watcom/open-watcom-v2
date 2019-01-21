@@ -34,7 +34,6 @@
 #ifdef __WATCOMC__
     #include <process.h>
 #endif
-#include "wio.h"
 #include "asmalloc.h"
 #include "fatal.h"
 #include "asmexpnd.h"
@@ -811,23 +810,25 @@ static char *CollectEnvOrFileName( char *str )
     return( str );
 }
 
-static char *ReadIndirectFile( void )
-/***********************************/
+static char *ReadIndirectFile( char *name )
+/*****************************************/
 {
     char        *env;
     char        *str;
-    int         handle;
+    FILE        *fp;
     int         len;
     char        ch;
 
     env = NULL;
-    handle = open( ParamBuf, O_RDONLY | O_BINARY );
-    if( handle != -1 ) {
-        len = filelength( handle );
+    fp = fopen( name, "rb" );
+    if( fp != NULL ) {
+        fseek( fp, 0, SEEK_END );
+        len = ftell( fp );
+        fseek( fp, 0, SEEK_SET );
         env = AsmAlloc( len + 1 );
-        read( handle, env, len );
+        fread( env, 1, len, fp );
         env[len] = '\0';
-        close( handle );
+        fclose( fp );
         // zip through characters changing \r, \n etc into ' '
         for( str = env; *str != '\0'; ++str ) {
             ch = *str;
@@ -963,25 +964,27 @@ static int ProcOptions( char *str, int *level )
         while( *str == ' ' || *str == '\t' )
             ++str;
         if( *str == '@' && *level < MAX_NESTING ) {
-            save[(*level)++] = CollectEnvOrFileName( str + 1 );
             buffers[*level] = NULL;
+            save[*level] = CollectEnvOrFileName( str + 1 );
             str = getenv( ParamBuf );
-            if( str == NULL ) {
-                str = ReadIndirectFile();
-                buffers[*level] = str;
+            if( str != NULL ) {
+                str = AsmStrDup( str );
+            } else {
+                str = ReadIndirectFile( ParamBuf );
             }
-            if( str != NULL )
+            if( str != NULL ) {
+                buffers[(*level)++] = str;
                 continue;
-            str = save[--(*level)];
+            }
+            str = save[*level];
         }
         if( *str == '\0' ) {
             if( *level == 0 )
                 break;
-            if( buffers[*level] != NULL ) {
-                AsmFree( buffers[*level] );
-                buffers[*level] = NULL;
-            }
-            str = save[--(*level)];
+            --(*level);
+            AsmFree( buffers[*level] );
+            buffers[*level] = NULL;
+            str = save[*level];
             continue;
         }
         if( *str == '-' || *str == SwitchChar ) {

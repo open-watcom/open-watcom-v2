@@ -63,7 +63,7 @@ static unsigned get_ptr_cv(     // GET CONST/VOLATILE POINTED AT
             flags = 0;
         }
     }
-    return flags;
+    return( flags );
 }
 
 
@@ -89,8 +89,8 @@ CNV_RETN AnalysePtrCV(          // CHECK PTR CONVERSION FOR CONST/VOLATILE
     cv_argument = get_ptr_cv( argument );
     if( TF1_CONST & cv_argument & ~ cv_proto ) {
         switch( reqd_cnv ) {
-          case CNV_INIT :
-          case CNV_INIT_COPY :
+        case CNV_INIT :
+        case CNV_INIT_COPY :
             if( NULL == TypeReference( proto ) ) {
                 PTreeErrorExpr( expr, ERR_CONST_PTR_INIT );
             } else {
@@ -98,20 +98,20 @@ CNV_RETN AnalysePtrCV(          // CHECK PTR CONVERSION FOR CONST/VOLATILE
             }
             retn = CNV_ERR;
             break;
-          case CNV_FUNC_DARG :
-          case CNV_FUNC_ARG :
+        case CNV_FUNC_DARG :
+        case CNV_FUNC_ARG :
             PTreeErrorExpr( expr, ERR_CONST_PTR_ARG );
             retn = CNV_ERR;
             break;
-          case CNV_FUNC_THIS :
+        case CNV_FUNC_THIS :
             PTreeErrorExpr( expr, ERR_CONST_PTR_THIS );
             retn = CNV_ERR;
             break;
-          case CNV_FUNC_RET :
+        case CNV_FUNC_RET :
             PTreeErrorExpr( expr, ERR_CONST_PTR_RETURN );
             retn = CNV_ERR;
             break;
-          default :
+        default :
             retn = CNV_OK;
             break;
         }
@@ -120,25 +120,25 @@ CNV_RETN AnalysePtrCV(          // CHECK PTR CONVERSION FOR CONST/VOLATILE
     }
     if( ( retn == CNV_OK ) && ( TF1_VOLATILE & cv_argument & ~ cv_proto ) ) {
         switch( reqd_cnv ) {
-          case CNV_INIT :
-          case CNV_INIT_COPY :
+        case CNV_INIT :
+        case CNV_INIT_COPY :
             PTreeErrorExpr( expr, ERR_VOLATILE_PTR_INIT );
             retn = CNV_ERR;
             break;
-          case CNV_FUNC_DARG :
-          case CNV_FUNC_ARG :
+        case CNV_FUNC_DARG :
+        case CNV_FUNC_ARG :
             PTreeErrorExpr( expr, ERR_VOLATILE_PTR_ARG );
             retn = CNV_ERR;
             break;
-          case CNV_FUNC_THIS :
+        case CNV_FUNC_THIS :
             PTreeErrorExpr( expr, ERR_VOLATILE_PTR_THIS );
             retn = CNV_ERR;
             break;
-          case CNV_FUNC_RET :
+        case CNV_FUNC_RET :
             PTreeErrorExpr( expr, ERR_VOLATILE_PTR_RETURN );
             retn = CNV_ERR;
             break;
-          default :
+        default :
             retn = CNV_OK;
             break;
         }
@@ -207,10 +207,10 @@ CNV_RETN ConvertOvFunNode(      // CONVERT FUN (FUN IS OVERLOADED), NO FREE
                                                  , NULL );
             }
             switch( ov_retn ) {
-              case FNOV_AMBIGUOUS :
-              case FNOV_NO_MATCH :
+            case FNOV_AMBIGUOUS :
+            case FNOV_NO_MATCH :
                 break;
-              case FNOV_NONAMBIGUOUS :
+            case FNOV_NONAMBIGUOUS :
                 result = func->u.symcg.result;
                 if( ScopeCheckSymbol( result, sym ) ) {
                     retn = CNV_ERR;
@@ -223,7 +223,7 @@ CNV_RETN ConvertOvFunNode(      // CONVERT FUN (FUN IS OVERLOADED), NO FREE
                     }
                 }
                 break;
-              DbgDefault( "ConvertOvFunNode: unexpected return" );
+            DbgDefault( "ConvertOvFunNode: unexpected return" );
             }
         }
     }
@@ -242,22 +242,22 @@ static CNV_RETN diagnoseCommon( // DIAGNOSE A COMMON CONVERSION
 
     retn = CNV_IMPOSSIBLE;
     switch( ctd ) {
-      case CTD_RIGHT :
-      case CTD_RIGHT_VIRTUAL :
-      case CTD_NO :
-      case CTD_LEFT :
-      case CTD_LEFT_VIRTUAL :
+    case CTD_RIGHT :
+    case CTD_RIGHT_VIRTUAL :
+    case CTD_NO :
+    case CTD_LEFT :
+    case CTD_LEFT_VIRTUAL :
         break;
-      case CTD_LEFT_AMBIGUOUS :
-      case CTD_RIGHT_AMBIGUOUS :
+    case CTD_LEFT_AMBIGUOUS :
+    case CTD_RIGHT_AMBIGUOUS :
         retn = CNV_AMBIGUOUS;
         break;
-      case CTD_LEFT_PRIVATE :
-      case CTD_RIGHT_PRIVATE :
+    case CTD_LEFT_PRIVATE :
+    case CTD_RIGHT_PRIVATE :
         retn = CNV_PRIVATE;
         break;
-      case CTD_LEFT_PROTECTED :
-      case CTD_RIGHT_PROTECTED :
+    case CTD_LEFT_PROTECTED :
+    case CTD_RIGHT_PROTECTED :
         retn = CNV_PROTECTED;
         break;
     }
@@ -266,14 +266,14 @@ static CNV_RETN diagnoseCommon( // DIAGNOSE A COMMON CONVERSION
     ConversionInfDisable();
     ConversionDiagnose( retn, expr, diagnosis );
     ConversionDiagLR( left, right );
-    return CNV_ERR;
+    return( CNV_ERR );
 }
 
 static bool convertCommonClass( // CONVERT TO COMMON TYPE, FROM CLASS
     PTREE *a_expr,              // - binary expression
     CNV_DIAG *diagnosis )       // - used to diagnose errors
 {
-    bool retb;                  // - true ==> conversion handled
+    bool ok;                    // - true ==> conversion handled
     PTREE expr;                 // - expression
     PTREE *a_cnv = NULL;        // - converted subtree
     PTREE cnv;                  // - converted subtree
@@ -283,52 +283,52 @@ static bool convertCommonClass( // CONVERT TO COMMON TYPE, FROM CLASS
     expr = *a_expr;
     ctd = TypeCommonDerivation( expr->u.subtree[0]->type, expr->u.subtree[1]->type );
     switch( ctd ) {
-      case CTD_NO :
+    case CTD_NO :
         if( CastCommonClass( a_expr, diagnosis ) ) {
-            return true;
+            return( true );
         }
-        // drops thru
-      case CTD_LEFT_AMBIGUOUS :
-      case CTD_LEFT_PRIVATE :
-      case CTD_LEFT_PROTECTED :
-      case CTD_RIGHT_AMBIGUOUS :
-      case CTD_RIGHT_PRIVATE :
-      case CTD_RIGHT_PROTECTED :
+        /* fall through */
+    case CTD_LEFT_AMBIGUOUS :
+    case CTD_LEFT_PRIVATE :
+    case CTD_LEFT_PROTECTED :
+    case CTD_RIGHT_AMBIGUOUS :
+    case CTD_RIGHT_PRIVATE :
+    case CTD_RIGHT_PROTECTED :
         diagnoseCommon( ctd, diagnosis, expr );
         break;
-      case CTD_LEFT :
-      case CTD_LEFT_VIRTUAL :
+    case CTD_LEFT :
+    case CTD_LEFT_VIRTUAL :
         a_cnv = &expr->u.subtree[0];
         tgt_type = expr->u.subtree[1]->type;
         break;
-      case CTD_RIGHT :
-      case CTD_RIGHT_VIRTUAL :
+    case CTD_RIGHT :
+    case CTD_RIGHT_VIRTUAL :
         a_cnv = &expr->u.subtree[1];
         tgt_type = expr->u.subtree[0]->type;
         break;
     }
     if( PT_ERROR == expr->op ) {
-        retb = false;
+        ok = false;
     } else {
         cnv = CastImplicit( *a_cnv, tgt_type, CNV_EXPR, diagnosis );
         *a_cnv = cnv;
         if( PT_ERROR == cnv->op ) {
             PTreeErrorNode( expr );
-            retb = false;
+            ok = false;
         } else {
             expr = NodeSetType( expr, cnv->type, PTF_LV_CHECKED );
-            retb = true;
+            ok = true;
         }
     }
     *a_expr = expr;
-    return( retb );
+    return( ok );
 }
 
 
 static bool nodeMemberPtr(      // TEST IF NODE IS MEMB-PTR
     PTREE node )                // - NODE
 {
-    return NULL != MemberPtrType( TypeReferenced( node->type ) );
+    return( NULL != MemberPtrType( TypeReferenced( node->type ) ) );
 }
 
 
@@ -337,7 +337,7 @@ bool ConvertCommonType(         // CONVERT TO COMMON TYPE (:, ==, !=)
     CNV_DIAG *diag_class,       // - diagnosis: class
     CNV_DIAG *diag_mem_ptr )    // - diagnosis: member ptr.
 {
-    bool retb;                  // - false ==> diagnose bad operands
+    bool ok;                    // - false ==> diagnose bad operands
     PTREE expr;                 // - expression
 
     expr = *a_expr;
@@ -347,7 +347,7 @@ bool ConvertCommonType(         // CONVERT TO COMMON TYPE (:, ==, !=)
         BindTemplateClass( expr->u.subtree[1]->type, &expr->locn, true );
     if( NULL != StructType( expr->u.subtree[0]->type )
      || NULL != StructType( expr->u.subtree[1]->type ) ) {
-        retb = convertCommonClass( a_expr, diag_class );
+        ok = convertCommonClass( a_expr, diag_class );
     } else
     if( nodeMemberPtr( expr->u.subtree[0] )
      || nodeMemberPtr( expr->u.subtree[1] ) ) {
@@ -358,9 +358,9 @@ bool ConvertCommonType(         // CONVERT TO COMMON TYPE (:, ==, !=)
         if( PT_ERROR == expr->op ) {
             ConversionDiagnose( CNV_ERR, expr, diag_mem_ptr );
         }
-        retb = true;
+        ok = true;
     } else {
-        retb = false;
+        ok = false;
     }
-    return( retb );
+    return( ok );
 }

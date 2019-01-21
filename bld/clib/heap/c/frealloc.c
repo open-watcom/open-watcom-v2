@@ -45,11 +45,15 @@ extern void _mymemcpy( void_fptr, void_fptr, size_t );
         "mov ds,dx"     \
         memcpy_i86      \
         "pop ds"        \
-    parm caller [es di] [dx si] [cx] modify exact [si di cx]
+    __parm __caller     [__es __di] [__dx __si] [__cx] \
+    __value             \
+    __modify __exact    [__si __di __cx]
 #else
 #pragma aux _mymemcpy = \
         memcpy_i86      \
-    parm caller [es di] [ds si] [cx] modify exact [si di cx]
+    __parm __caller     [__es __di] [__ds __si] [__cx] \
+    __value             \
+    __modify __exact    [__si __di __cx]
 #endif
 
 #if defined(__BIG_DATA__)
