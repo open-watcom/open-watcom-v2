@@ -1202,7 +1202,7 @@ bool CheckDrive( bool issue_message )
 /***********************************/
 //check if there is enough disk space
 {
-    bool                ret;
+    bool                ok;
     disk_size           free_disk_space;
     disk_ssize          disk_space_needed;
     disk_size           max_tmp_file;
@@ -1225,171 +1225,194 @@ bool CheckDrive( bool issue_message )
         int         num_files;
     }                   space[MAX_DRIVES];
 #ifdef UNC_SUPPORT
-    VBUF                root[2];
-    VBUF                UNC_root;
+    VBUF                UNC_root1;
+    VBUF                UNC_root2;
 #endif
 
-    ret = true;
     if( !SimCalcTargetSpaceNeeded() )
         return( false );
     max_targs = SimNumTargets();
     if( max_targs > MAX_DRIVES )
         max_targs = MAX_DRIVES;
+    ok = true;
     VbufInit( &tmp_dir );
     for( i = 0; i < max_targs; i++ ) {
         // get drive letter for each target (actually the path including the drive letter)
         if( SimGetTargetDriveLetter( i, &tmp_dir ) == NULL ) {
-            free_disks( disks, i );
-            VbufFree( &tmp_dir );
-            return( false );
+            ok = false;
+            max_targs = i;
+            break;
         }
         VbufAddDirSep( &tmp_dir );
         disks[i] = GUIStrDup( VbufString( &tmp_dir ), NULL );
         disk_counted[i] = false;
     }
     VbufFree( &tmp_dir );
-    // check for enough disk space, combine drives that are the same
-    for( i = 0; i < max_targs; i++ ) {
-        if( !disk_counted[i] ) {
-            targ_num = i;
-            disk_space_needed = SimTargetSpaceNeeded( i );
-            max_tmp_file = SimMaxTmpFile( i );
-            for( j = i + 1; j < max_targs; ++j ) {
+    if( ok ) {
 #ifdef UNC_SUPPORT
-                GetRootFromPath( root + 0, disks[i] );
-                GetRootFromPath( root + 1, disks[j] );
-                // identical drives are combined, and so are UNC paths pointing to the same share
-                // BUT:  drives and UNC paths that happen to be the same are NOT combined. (I am lazy)
+        VbufInit( &UNC_root1 );
+        VbufInit( &UNC_root2 );
+#endif
+        // check for enough disk space, combine drives that are the same
+        for( i = 0; i < max_targs; i++ ) {
+            if( !disk_counted[i] ) {
+                targ_num = i;
+                disk_space_needed = SimTargetSpaceNeeded( i );
+                max_tmp_file = SimMaxTmpFile( i );
+                for( j = i + 1; j < max_targs; ++j ) {
+#ifdef UNC_SUPPORT
+                    GetRootFromPath( &UNC_root1, disks[i] );
+                    GetRootFromPath( &UNC_root2, disks[j] );
+                    // identical drives are combined, and so are UNC paths pointing to the same share
+                    // BUT:  drives and UNC paths that happen to be the same are NOT combined. (I am lazy)
 
-                if( ( tolower( *disks[j] ) == tolower( *disks[i] ) &&
-                    isalpha( *disks[i] ) ) || VbufCompVbuf( root + 0, root + 1, true ) == 0 ) {
+                    if( ( tolower( *disks[j] ) == tolower( *disks[i] ) &&
+                        isalpha( *disks[i] ) ) || VbufCompVbuf( &UNC_root1, &UNC_root2, true ) == 0 ) {
 #else
-                if( tolower( *disks[j] ) == tolower( *disks[i] ) &&
-                    isalpha( *disks[i] ) ) {
+                    if( tolower( *disks[j] ) == tolower( *disks[i] ) &&
+                        isalpha( *disks[i] ) ) {
 #endif
-                    targ_num = j;
-                    disk_space_needed += SimTargetSpaceNeeded( j );
-                    if( SimMaxTmpFile( j ) > max_tmp_file ) {
-                        max_tmp_file = SimMaxTmpFile( j );
+                        targ_num = j;
+                        disk_space_needed += SimTargetSpaceNeeded( j );
+                        if( SimMaxTmpFile( j ) > max_tmp_file ) {
+                            max_tmp_file = SimMaxTmpFile( j );
+                        }
+                        disk_counted[j] = true;
                     }
-                    disk_counted[j] = true;
                 }
-            }
 #ifdef UNC_SUPPORT
-            if( TEST_UNC( disks[i] ) ) {
-                if( !IsDriveWritable( disks[i] ) ) {
-                    if( issue_message ) {
-                        GetRootFromPath( &UNC_root, disks[i] );
-                        if( access( VbufString( &UNC_root ), F_OK ) == 0 ) {
-                            MsgBoxVbuf( NULL, "IDS_UNCPATH_NOTWRITABLE", GUI_OK, &UNC_root );
-                        } else {
-                            MsgBox( NULL, "IDS_UNCPATH_NOTEXIST", GUI_OK, &UNC_root );
-                        }
-                        free_disks( disks, max_targs );
-                        return( false );
-                    }
-                }
-                free_disk_space = FreeSpace( disks[i] );
-            } else
-#endif
-            {
-                free_disk_space = GetFreeDiskSpace( *disks[i], false );
-            }
-            if( free_disk_space == (unsigned long long)-1 )
-                free_disk_space = 0;
-            space[i].drive = disks[i];
-            space[i].free = free_disk_space;
-            space[i].needed = disk_space_needed;
-            space[i].max_tmp = max_tmp_file;
-            space[i].num_files = SimGetTargNumFiles( targ_num );
-#if !defined( __UNIX__ )
-            if( disk_space_needed > 0 && free_disk_space < (disk_size)disk_space_needed + max_tmp_file ) {
-                for( drive = 'c'; drive <= 'z'; ++drive ) {
-                    if( drive == tolower( *disks[i] ) )
-                        continue;
-                    if( !IsFixedDisk( drive ) )
-                        continue;
-                    if( GetFreeDiskSpace( drive, false ) > max_tmp_file ) {
-                        SimSetTargTempDisk( i, drive );
-                        for( j = i + 1; j < max_targs; ++j ) {
-                            if( tolower( *disks[j] ) == tolower( *disks[i] ) ) {
-                                SimSetTargTempDisk( j, drive );
+                if( TEST_UNC( disks[i] ) ) {
+                    if( !IsDriveWritable( disks[i] ) ) {
+                        if( issue_message ) {
+                            GetRootFromPath( &UNC_root1, disks[i] );
+                            if( access( VbufString( &UNC_root1 ), F_OK ) == 0 ) {
+                                MsgBoxVbuf( NULL, "IDS_UNCPATH_NOTWRITABLE", GUI_OK, &UNC_root1 );
+                            } else {
+                                MsgBox( NULL, "IDS_UNCPATH_NOTEXIST", GUI_OK, &UNC_root1 );
                             }
+                            ok = false;
+                            break;
                         }
+                    }
+                    free_disk_space = FreeSpace( disks[i] );
+                } else {
+#endif
+                    free_disk_space = GetFreeDiskSpace( *disks[i], false );
+#ifdef UNC_SUPPORT
+                }
+#endif
+                if( free_disk_space == (unsigned long long)-1 )
+                    free_disk_space = 0;
+                space[i].drive = disks[i];
+                space[i].free = free_disk_space;
+                space[i].needed = disk_space_needed;
+                space[i].max_tmp = max_tmp_file;
+                space[i].num_files = SimGetTargNumFiles( targ_num );
+#if !defined( __UNIX__ )
+                if( disk_space_needed > 0 && free_disk_space < (disk_size)disk_space_needed + max_tmp_file ) {
+                    for( drive = 'c'; drive <= 'z'; ++drive ) {
+                        if( drive == tolower( *disks[i] ) )
+                            continue;
+                        if( !IsFixedDisk( drive ) )
+                            continue;
+                        if( GetFreeDiskSpace( drive, false ) > max_tmp_file ) {
+                            SimSetTargTempDisk( i, drive );
+                            for( j = i + 1; j < max_targs; ++j ) {
+                                if( tolower( *disks[j] ) == tolower( *disks[i] ) ) {
+                                    SimSetTargTempDisk( j, drive );
+                                }
+                            }
+                            break;
+                        }
+                        if( drive == 'z' && issue_message ) {
+                            MsgBox( NULL, "IDS_NOTEMPSPACE", GUI_OK, max_tmp_file / 1000 );
+                            ok = false;
+                            break;
+                        }
+                    }
+                    if( !ok ) {
                         break;
                     }
-                    if( drive == 'z' && issue_message ) {
-                        MsgBox( NULL, "IDS_NOTEMPSPACE", GUI_OK, max_tmp_file / 1000 );
-                        free_disks( disks, max_targs );
-                        return( false );
-                    }
                 }
-            }
-            if( issue_message ) {
-                if( disk_space_needed > 0 && free_disk_space < (disk_size)disk_space_needed ) {
+                if( issue_message ) {
+                    if( disk_space_needed > 0 && free_disk_space < (disk_size)disk_space_needed ) {
     #ifdef UNC_SUPPORT
-                    if( TEST_UNC( disks[i] ) ) {
-                        if( DriveInfoIsAvailable( disks[i] ) ) {
-                            reply = MsgBox( NULL, "IDS_NODISKSPACE_UNC", GUI_YES_NO,
-                                            disks[i], free_disk_space / 1000,
-                                            disk_space_needed / 1000 );
+                        if( TEST_UNC( disks[i] ) ) {
+                            if( DriveInfoIsAvailable( disks[i] ) ) {
+                                reply = MsgBox( NULL, "IDS_NODISKSPACE_UNC", GUI_YES_NO,
+                                                disks[i], free_disk_space / 1000,
+                                                disk_space_needed / 1000 );
+                            } else {
+                                GetRootFromPath( &UNC_root1, disks[i] );
+                                reply = MsgBoxVbuf( NULL, "IDS_ASSUME_ENOUGHSPACE", GUI_YES_NO, &UNC_root1 );
+                            }
                         } else {
-                            GetRootFromPath( &UNC_root, disks[i] );
-                            reply = MsgBoxVbuf( NULL, "IDS_ASSUME_ENOUGHSPACE", GUI_YES_NO, &UNC_root );
-                        }
-                    } else {
     #endif
-                        reply = MsgBox( NULL, "IDS_NODISKSPACE", GUI_YES_NO, *disks[i],
-                                        free_disk_space / 1000,
-                                        disk_space_needed / 1000 );
+                            reply = MsgBox( NULL, "IDS_NODISKSPACE", GUI_YES_NO, *disks[i],
+                                            free_disk_space / 1000,
+                                            disk_space_needed / 1000 );
     #ifdef UNC_SUPPORT
-                    }
+                        }
     #endif
-                    if( reply == GUI_RET_NO ) {
-                        free_disks( disks, max_targs );
-                        return( false );
+                        if( reply == GUI_RET_NO ) {
+                            ok = false;
+                            break;
+                        }
                     }
                 }
-            }
 #endif
+            }
         }
+#ifdef UNC_SUPPORT
+        VbufFree( &UNC_root2 );
+        VbufFree( &UNC_root1 );
+#endif
     }
-    for( i = 0; i < max_targs; ++i ) {
-        strcpy( drive_freesp, "DriveFreeN" );
-        if( *space[i].drive != '\0' && SimTargetNeedsUpdate( i ) ) {
+    if( ok ) {
 #ifdef UNC_SUPPORT
-            if( TEST_UNC( space[i].drive ) ) {
-                GetRootFromPath( &UNC_root, space[i].drive );
-                sprintf( buff, GetVariableStrVal( "IDS_DRIVE_SPEC_UNC" ), &UNC_root );
-            } else
+        VbufInit( &UNC_root1 );
 #endif
-            {
-                sprintf( buff, GetVariableStrVal( "IDS_DRIVE_SPEC" ),
-                         toupper( *space[i].drive ) );
-            }
-            if( space[i].needed < 0 ) {
-                catnum( buff, -space[i].needed );
-                strcat( buff, GetVariableStrVal( "IDS_DRIVE_FREED" ) );
+        for( i = 0; i < max_targs; ++i ) {
+            strcpy( drive_freesp, "DriveFreeN" );
+            if( *space[i].drive != '\0' && SimTargetNeedsUpdate( i ) ) {
+#ifdef UNC_SUPPORT
+                if( TEST_UNC( space[i].drive ) ) {
+                    GetRootFromPath( &UNC_root1, space[i].drive );
+                    sprintf( buff, GetVariableStrVal( "IDS_DRIVE_SPEC_UNC" ), &UNC_root1 );
+                } else {
+#endif
+                    sprintf( buff, GetVariableStrVal( "IDS_DRIVE_SPEC" ),
+                             toupper( *space[i].drive ) );
+#ifdef UNC_SUPPORT
+                }
+#endif
+                if( space[i].needed < 0 ) {
+                    catnum( buff, -space[i].needed );
+                    strcat( buff, GetVariableStrVal( "IDS_DRIVE_FREED" ) );
+                } else {
+                    catnum( buff, space[i].needed );
+                    strcat( buff, GetVariableStrVal( "IDS_DRIVE_REQUIRED" ) );
+                    ucatnum( buff, space[i].free );
+                    strcat( buff, GetVariableStrVal( "IDS_DRIVE_AVAILABLE" ) );
+                }
             } else {
-                catnum( buff, space[i].needed );
-                strcat( buff, GetVariableStrVal( "IDS_DRIVE_REQUIRED" ) );
-                ucatnum( buff, space[i].free );
-                strcat( buff, GetVariableStrVal( "IDS_DRIVE_AVAILABLE" ) );
+                buff[0] = '\0';
             }
-        } else {
-            buff[0] = '\0';
-        }
-        drive_freesp[strlen( drive_freesp ) - 1] = i + 1 + '0';
+            drive_freesp[strlen( drive_freesp ) - 1] = i + 1 + '0';
 #ifdef UNC_SUPPORT
-        if( TEST_UNC( space[i].drive ) && (!DriveInfoIsAvailable( space[i].drive ) ||
-                                           !IsDriveWritable( space[i].drive )) ) {
-            strcpy( buff, "" );
-        }
+            if( TEST_UNC( space[i].drive ) && (!DriveInfoIsAvailable( space[i].drive ) ||
+                                               !IsDriveWritable( space[i].drive )) ) {
+                strcpy( buff, "" );
+            }
 #endif
-        SetVariableByName( drive_freesp, buff );
+            SetVariableByName( drive_freesp, buff );
+        }
+#ifdef UNC_SUPPORT
+        VbufFree( &UNC_root1 );
+#endif
     }
     free_disks( disks, max_targs );
-    return( ret );
+    return( ok );
 }
 
 static void SetFileDate( const VBUF *dst_path, time_t date )

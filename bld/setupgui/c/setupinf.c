@@ -3556,6 +3556,7 @@ bool SimCalcTargetSpaceNeeded( void )
     gui_mcursor_handle  old_cursor;
     const char          *temp;
     VBUF                temp_path;
+    bool                ok;
 
     /* assume power of 2 */
 
@@ -3565,12 +3566,16 @@ bool SimCalcTargetSpaceNeeded( void )
         NeedGetDiskSizes = false;
     }
     old_cursor = GUISetMouseCursor( GUI_HOURGLASS_CURSOR );
+    /*
+     * Reset Targets info
+     */
+    ok = true;
     VbufInit( &temp_path );
     for( i = 0; i < SetupInfo.target.num; ++i ) {
         temp = SimGetTargetDriveLetter( i, &temp_path );
         if( temp == NULL ) {
-            VbufFree( &temp_path );
-            return( false );
+            ok = false;
+            break;
         }
         strcpy( TargetInfo[i].temp_disk, temp );
         TargetInfo[i].space_needed = 0;
@@ -3579,14 +3584,24 @@ bool SimCalcTargetSpaceNeeded( void )
         TargetInfo[i].needs_update = false;
     }
     VbufFree( &temp_path );
-    for( i = 0; i < SetupInfo.dirs.num; ++i ) {
-        DirInfo[i].used = false;
-        DirInfo[i].num_existing = 0;
-        DirInfo[i].num_files = 0;
+    /*
+     * Reset Dirs info
+     */
+    if( ok ) {
+        for( i = 0; i < SetupInfo.dirs.num; ++i ) {
+            DirInfo[i].used = false;
+            DirInfo[i].num_existing = 0;
+            DirInfo[i].num_files = 0;
+        }
     }
-    SimCalcAddRemove();
+    /*
+     * setup Targets and Dirs info
+     */
+    if( ok ) {
+        SimCalcAddRemove();
+    }
     GUIResetMouseCursor( old_cursor );
-    return( true );
+    return( ok );
 }
 
 
