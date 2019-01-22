@@ -194,6 +194,10 @@ void VbufSetPathExt(            // SET A FILE EXTENSION FOR FILE PATH IN VBUF
     VBUF *vbuf,                 // - full file path
     const VBUF *new_ext )       // - file extension
 ;
+void VbufPathToFwdSlash(        // SET A FILE PATH TO USE FWD SLASHES
+    VBUF *vbuf1,                // - input full file path
+    VBUF *vbuf2 )               // - output full file path
+;
 #define VbufLen(v)              ((v)->used)                         // RETURN LENGTH OF BUFFER
 ;
 #define VbufRewind(v)           VbufSetLen(v,0)                     // CLEAN BUFFER
@@ -206,3 +210,35 @@ void VbufSetPathExt(            // SET A FILE EXTENSION FOR FILE PATH IN VBUF
 ;
 #define VbufSize(v)             ((v)->len)                          // RETURN SIZE OF BUFFER
 ;
+
+// macros (.._vbuf extension for dynamic strings) for function which use const string pointers
+//
+// CRTL functions
+//
+#define open_vbuf(n, ...)           open(VbufString(n), __VA_ARGS__)
+#define fopen_vbuf(n,m)             fopen(VbufString(n), m)
+#define rename_vbuf(f,t)            rename(VbufString(f), VbufString(t))
+#define remove_vbuf(n)              remove(VbufString(n))
+#define access_vbuf(n,m)            access(VbufString(n), m)
+#define chmod_vbuf(n,m)             chmod(VbufString(n), m)
+#define fputs_vbuf(s,f)             fputs(VbufString(s), f)
+#define rmdir_vbuf(n)               rmdir(VbufString(n))
+#define opendir_vbuf(n)             opendir(VbufString(n))
+#define utime_vbuf(n,s)             utime(VbufString(n), s)
+#define stat_vbuf(n,s)              stat(VbufString(n), s)
+#ifdef __UNIX__
+#define mkdir_vbuf(n,m)             mkdir(VbufString(n), m)
+#else
+#define mkdir_vbuf(n)               mkdir(VbufString(n))
+#endif
+
+// libzip functions (setupio.c)
+#define zip_open_vbuf(n,f,e)        zip_open(VbufString(n), f, e)
+
+// status window functions (guistat.c)
+#define StatusLinesVbuf(m,p)        StatusLines(m, VbufString(p))
+
+// message box functions (utils.c)
+#define MsgBoxVbuf(w,m,t,p)         MsgBox(w, m, t, VbufString( p ))
+#define MsgBoxVbuf2(w,m,t,p1,p2)    MsgBox(w, m, t, VbufString( p1 ), VbufString( p2 ))
+
