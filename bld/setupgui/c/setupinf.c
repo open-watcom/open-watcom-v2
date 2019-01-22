@@ -588,7 +588,7 @@ static bool EvalExprTree( tree_node *tree, bool is_minimal )
     case OP_EXIST:
         VbufInit( &tmp );
         ReplaceVars( &tmp, (char *)tree->u.left );
-        value = ( access( VbufString( &tmp ), F_OK ) == 0 );
+        value = ( access_vbuf( &tmp, F_OK ) == 0 );
         VbufFree( &tmp );
         break;
     case OP_VAR:
@@ -715,12 +715,12 @@ bool SecondaryPatchSearch( const char *filename, char *buff )
 
     GetDestDir( patchDirIndex, &path );
     VbufConcStr( &path, filename );
-    ok = ( access( VbufString( &path ), F_OK ) == 0 );
+    ok = ( access_vbuf( &path, F_OK ) == 0 );
     if( !ok ) {
         ReplaceVars( &path, GetVariableStrVal( "DstDir" ) );
         VbufAddDirSep( &path );
         VbufConcStr( &path, filename );
-        ok = ( access( VbufString( &path ), F_OK ) == 0 );
+        ok = ( access_vbuf( &path, F_OK ) == 0 );
     }
     if( ok ) {
         strcpy( buff, VbufString( &path ) );
@@ -969,17 +969,17 @@ static bool dialog_static( char *next, DIALOG_INFO *dlg )
         dlg->curr_dialog->controls_ext[dlg->curr_dialog->num_controls].pVisibilityConds = GUIStrDup( line, NULL );
         // dummy_var allows control to have an id - used by dynamic visibility feature
         var_handle = MakeDummyVar();
-        if( VbufLen( &text ) > 0 ) {
+        len = VbufLen( &text );
+        if( len > 0 ) {
             AddInstallName( &text );
             len = VbufLen( &text );
-            set_dlg_dynamstring( dlg->curr_dialog->controls, dlg->controls.num - 1,
-                VbufString( &text ), VarGetId( var_handle ), dlg->col_num, dlg->row_num, dlg->col_num + len );
+        }
+        set_dlg_dynamstring( dlg->curr_dialog->controls, dlg->controls.num - 1,
+            VbufString( &text ), VarGetId( var_handle ), dlg->col_num, dlg->row_num, dlg->col_num + len );
+        if( len > 0 ) {
             if( dlg->max_width < dlg->col_num + len ) {
                 dlg->max_width = dlg->col_num + len;
             }
-        } else {
-            set_dlg_dynamstring( dlg->curr_dialog->controls, dlg->controls.num - 1,
-                "", VarGetId( var_handle ), dlg->col_num, dlg->row_num, dlg->col_num + 0 );
         }
     } else {
         rc = false;
@@ -2245,7 +2245,7 @@ static bool GetFileInfo( int dir_index, int i, bool in_old_dir, bool *pzeroed )
         return( false );
     VbufInit( &buff );
     SimDirNoSlash( dir_index, &buff );
-    if( access( VbufString( &buff ), F_OK ) != 0 ) {
+    if( access_vbuf( &buff, F_OK ) != 0 ) {
         VbufFree( &buff );
         return( false );
     }
@@ -2265,7 +2265,7 @@ static bool GetFileInfo( int dir_index, int i, bool in_old_dir, bool *pzeroed )
             continue;
         VbufSetLen( &buff, dir_end );
         VbufConcVbuf( &buff, &file->name );
-        if( access( VbufString( &buff ), F_OK ) == 0 ) {
+        if( access_vbuf( &buff, F_OK ) == 0 ) {
             stat( VbufString( &buff ), &buf );
             found = true;
             file->disk_size = buf.st_size;
@@ -2524,9 +2524,12 @@ long SimInit( const VBUF *inf_name )
     memset( &SetupInfo, 0, sizeof( struct setup_info ) );
     FileStat( inf_name, &stat_buf );
     SetupInfo.stamp = (unsigned long)stat_buf.st_mtime;
+
 #define setvar( x, y ) x = AddVariable( #x );
     MAGICVARS( setvar, 0 )
     NONMAGICVARS( setvar, 0 )
+#undef setvar
+
     SetDefaultGlobalVarList();
     ReadBufSize = BUF_SIZE;
     ReadBuf = GUIMemAlloc( BUF_SIZE );
@@ -3796,30 +3799,29 @@ typedef struct {
 static FILE *LogFileOpen( void )
 /******************************/
 {
-    gui_message_return guiret;
-    FILE               *logfp;
-    const char         *patchlog;
+    FILE        *logfp;
+    VBUF        patchlog;
 
-    patchlog = GetVariableStrVal( "PatchLog" );
-    if( patchlog == NULL || patchlog[0] == '\0' ) {
-        return( NULL );
-    }
+    VbufInit( &patchlog );
 
-    if( access( patchlog, F_OK | W_OK | R_OK ) == 0 ) {
-        guiret = MsgBox( NULL, "IDS_LOGFILE_EXISTS", GUI_YES_NO, patchlog );
-        if( guiret == GUI_RET_NO ) {
-            return( NULL );
+    logfp = NULL;
+    VbufConcStr( &patchlog, GetVariableStrVal( "PatchLog" ) );
+    if( VbufLen( &patchlog ) > 0 ) {
+        if( access_vbuf( &patchlog, F_OK | W_OK | R_OK ) == 0
+          && MsgBoxVbuf( NULL, "IDS_LOGFILE_EXISTS", GUI_YES_NO, &patchlog ) == GUI_RET_NO ) {
+            // cancel
+        } else if( access_vbuf( &patchlog, F_OK ) == 0 ) {
+            MsgBoxVbuf( NULL, "IDS_CANT_OPEN_LOGFILE", GUI_OK, &patchlog );
+        } else {
+            remove_vbuf( &patchlog );
+            logfp = fopen_vbuf( &patchlog, "wt+" );
+            if( logfp == NULL ) {
+                MsgBoxVbuf( NULL, "IDS_CANT_OPEN_LOGFILE", GUI_OK, &patchlog );
+            }
         }
-    } else if( access( patchlog, F_OK ) == 0 ) {
-        MsgBox( NULL, "IDS_CANT_OPEN_LOGFILE", GUI_OK, patchlog );
-        return( NULL );
-    }
-    remove( patchlog );
-    logfp = fopen( patchlog, "wt+" );
-    if( logfp == NULL ) {
-        MsgBox( NULL, "IDS_CANT_OPEN_LOGFILE", GUI_OK, patchlog );
     }
 
+    VbufFree( &patchlog );
     return( logfp );
 }
 
@@ -3922,7 +3924,7 @@ bool PatchFiles( void )
         switch( PatchInfo[i].command ) {
         case PATCH_FILE:
             GetSourcePath( i, &srcfullpath );
-            if( access( VbufString( &srcfullpath ), R_OK ) == 0 ) {
+            if( access_vbuf( &srcfullpath, R_OK ) == 0 ) {
                 PATCH_RET_CODE  ret;
                 char            temp[_MAX_PATH];
 
@@ -3958,11 +3960,11 @@ bool PatchFiles( void )
             GetDestDir( i, &destfullpath );
             // get rid of trailing slash: OS/2 needs this for access(...) to work
             VbufRemDirSep( &destfullpath );
-            if( access( VbufString( &destfullpath ), F_OK ) == 0 ) {
+            if( access_vbuf( &destfullpath, F_OK ) == 0 ) {
                 AddFileName( i, &destfullpath, false );
                 StatusLinesVbuf( STAT_CREATEFILE, &destfullpath );
                 StatusShow( true );
-                if( access( VbufString( &srcfullpath ), R_OK ) == 0 ) {
+                if( access_vbuf( &srcfullpath, R_OK ) == 0 ) {
                     LogWriteMsgStr( log, "IDS_UNPACKING", VbufString( &destfullpath ) );
                     if( DoCopyFile( &srcfullpath, &destfullpath, false ) == CFE_NOERROR ) {
                         ++count;
@@ -3982,7 +3984,7 @@ bool PatchFiles( void )
             AddFileName( i, &destfullpath, false );
             StatusLinesVbuf( STAT_DELETEFILE, &destfullpath );
             StatusShow( true );
-            if( access( VbufString( &destfullpath ), F_OK | W_OK ) == 0 ) {
+            if( access_vbuf( &destfullpath, F_OK | W_OK ) == 0 ) {
                 LogWriteMsgStr( log, "IDS_DELETING", VbufString( &destfullpath ) );
                 if( DoDeleteFile( &destfullpath ) ) {
                     ++count;
@@ -4002,7 +4004,7 @@ bool PatchFiles( void )
 
             StatusLinesVbuf( STAT_CREATEDIRECTORY, &destfullpath );
             StatusShow( true );
-            if( access( VbufString( &destfullpath ), F_OK ) != 0 ) {
+            if( access_vbuf( &destfullpath, F_OK ) != 0 ) {
                 LogWriteMsgStr( log, "IDS_CREATINGDIR", VbufString( &destfullpath ) );
 #ifdef __UNIX__
                 if( mkdir( VbufString( &destfullpath ), PMODE_RWX ) == 0 ) {

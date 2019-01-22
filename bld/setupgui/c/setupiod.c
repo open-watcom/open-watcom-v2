@@ -67,7 +67,7 @@ int FileIsArchive( void )
 
 int FileStat( const VBUF *path, struct stat *buf )
 {
-    return( stat( VbufString( path ), buf ) );
+    return( stat_vbuf( path, buf ) );
 }
 
 
