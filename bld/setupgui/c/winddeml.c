@@ -332,7 +332,7 @@ static bool UseDDE( bool uninstall )
                         VbufRewind( &working_dir );
                         ReplaceVars( &prog_name, NULL );
                     } else {
-                        SimDirNoSlash( dir_index, &working_dir );
+                        SimDirNoEndSlash( dir_index, &working_dir );
                     }
                     /*
                      * Get parameters
@@ -629,7 +629,7 @@ static bool UseIShellLink( bool uninstall )
                     VbufRewind( &working_dir );
                     ReplaceVars( &prog_name, NULL );
                 } else {
-                    SimDirNoSlash( dir_index, &working_dir );
+                    SimDirNoEndSlash( dir_index, &working_dir );
                 }
                 /*
                  * Get parameters

@@ -959,7 +959,7 @@ static void RemoveDstDir( int dir_index, VBUF *buff )
     int         child;
     int         max_dirs = SimNumDirs();
 
-    SimDirNoSlash( dir_index, buff );
+    SimDirNoEndSlash( dir_index, buff );
     if( access_vbuf( buff, F_OK ) != 0 )
         return;
     for( child = 0; child < max_dirs; ++child ) {
@@ -970,7 +970,7 @@ static void RemoveDstDir( int dir_index, VBUF *buff )
     if( SimDirParent( dir_index ) == -1 ) {
 //        return; // leave root dir (for config.new, etc)
     }
-    SimDirNoSlash( dir_index, buff );
+    SimDirNoEndSlash( dir_index, buff );
     rmdir_vbuf( buff );
 }
 
@@ -1021,7 +1021,7 @@ static bool CreateDstDir( int i, VBUF *buff )
             return( false );
         }
     }
-    SimDirNoSlash( i, buff );
+    SimDirNoEndSlash( i, buff );
     if( access_vbuf( buff, F_OK ) == 0 )          // check for existance
         return( true );
     MakeParentDir( buff, drive, path );

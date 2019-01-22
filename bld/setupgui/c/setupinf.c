@@ -2244,7 +2244,7 @@ static bool GetFileInfo( int dir_index, int i, bool in_old_dir, bool *pzeroed )
     if( dir_index == -1 )
         return( false );
     VbufInit( &buff );
-    SimDirNoSlash( dir_index, &buff );
+    SimDirNoEndSlash( dir_index, &buff );
     if( access_vbuf( &buff, F_OK ) != 0 ) {
         VbufFree( &buff );
         return( false );
@@ -2730,8 +2730,8 @@ int SimNumDirs( void )
     return( SetupInfo.dirs.num );
 }
 
-void SimDirNoSlash( int i, VBUF *buff )
-/*************************************/
+void SimDirNoEndSlash( int i, VBUF *buff )
+/****************************************/
 {
     SimTargetDir( DirInfo[i].target, buff );
     if( !IS_EMPTY( DirInfo[i].desc ) ) {
@@ -2749,7 +2749,7 @@ bool SimDirUsed( int i )
 void SimGetDir( int i, VBUF *buff )
 /*********************************/
 {
-    SimDirNoSlash( i, buff );
+    SimDirNoEndSlash( i, buff );
     VbufAddDirSep( buff );
 }
 
