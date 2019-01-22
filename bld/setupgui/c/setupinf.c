@@ -3847,11 +3847,11 @@ static void LogWriteMsg( log_state *ls, const char *msg_id )
 }
 
 
-static void LogWriteMsgStr( log_state *ls, const char *msg_id, const char *str )
+static void LogWriteMsgStr( log_state *ls, const char *msg_id, const VBUF *str )
 /******************************************************************************/
 {
     if( ls->do_log ) {
-        fprintf( ls->log_file, GetVariableMsgVal( msg_id ), str );
+        fprintf( ls->log_file, GetVariableMsgVal( msg_id ), VbufString( str ) );
     }
 }
 
@@ -3938,7 +3938,7 @@ bool PatchFiles( void )
                     }
                     StatusLinesVbuf( STAT_PATCHFILE, &destfullpath );
                     StatusShow( true );
-                    LogWriteMsgStr( log, "IDS_UNPACKING", VbufString( &destfullpath ) );
+                    LogWriteMsgStr( log, "IDS_UNPACKING", &destfullpath );
                     ret = DoPatchFile( &srcfullpath, &destfullpath, 0 );
                     if( ret == PATCH_RET_OKAY ) {
                         ++count;
@@ -3965,7 +3965,7 @@ bool PatchFiles( void )
                 StatusLinesVbuf( STAT_CREATEFILE, &destfullpath );
                 StatusShow( true );
                 if( access_vbuf( &srcfullpath, R_OK ) == 0 ) {
-                    LogWriteMsgStr( log, "IDS_UNPACKING", VbufString( &destfullpath ) );
+                    LogWriteMsgStr( log, "IDS_UNPACKING", &destfullpath );
                     if( DoCopyFile( &srcfullpath, &destfullpath, false ) == CFE_NOERROR ) {
                         ++count;
                         LogWriteMsg( log, "IDS_SUCCESS" );
@@ -3985,7 +3985,7 @@ bool PatchFiles( void )
             StatusLinesVbuf( STAT_DELETEFILE, &destfullpath );
             StatusShow( true );
             if( access_vbuf( &destfullpath, F_OK | W_OK ) == 0 ) {
-                LogWriteMsgStr( log, "IDS_DELETING", VbufString( &destfullpath ) );
+                LogWriteMsgStr( log, "IDS_DELETING", &destfullpath );
                 if( DoDeleteFile( &destfullpath ) ) {
                     ++count;
                     LogWriteMsg( log, "IDS_SUCCESS" );
@@ -4005,7 +4005,7 @@ bool PatchFiles( void )
             StatusLinesVbuf( STAT_CREATEDIRECTORY, &destfullpath );
             StatusShow( true );
             if( access_vbuf( &destfullpath, F_OK ) != 0 ) {
-                LogWriteMsgStr( log, "IDS_CREATINGDIR", VbufString( &destfullpath ) );
+                LogWriteMsgStr( log, "IDS_CREATINGDIR", &destfullpath );
 #ifdef __UNIX__
                 if( mkdir_vbuf( &destfullpath, PMODE_RWX ) == 0 ) {
 #else
