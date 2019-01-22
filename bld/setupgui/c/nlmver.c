@@ -202,7 +202,7 @@ bool CheckInstallNLM( const VBUF *name, vhandle var_handle )
 
     cancel = false;
     VbufSplitpath( name, &drive, &dir, &fname, &ext );
-    VbufSetStr( &temp, "._N_" );
+    VbufConcStr( &temp, "._N_" );
     VbufMakepath( &unpacked_as, &drive, &dir, &fname, &temp );
     if( CheckNewer( &unpacked_as, name ) ) {
         VbufSetStr( &dir, sysPath );

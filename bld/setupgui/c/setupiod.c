@@ -43,6 +43,7 @@ typedef struct file_handle_t {
 
 int FileInit( const VBUF *archive )
 {
+    /* unused parameters */ (void)archive;
     return( 0 );
 }
 

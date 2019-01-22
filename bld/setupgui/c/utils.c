@@ -1612,6 +1612,8 @@ static bool RelocateFiles( void )
     }
     VbufInit( &dir );
     VbufInit( &file_desc );
+    VbufInit( &dst_path );
+    VbufInit( &src_path );
     num_installed = 0;
     ok = true;
     for( filenum = 0; ok && filenum < max_files; filenum++ ) {
@@ -1642,6 +1644,8 @@ static bool RelocateFiles( void )
             }
         }
     }
+    VbufFree( &src_path );
+    VbufFree( &dst_path );
     VbufFree( &file_desc );
     VbufFree( &dir );
     if( num_total_install != 0 ) {
@@ -1826,6 +1830,10 @@ static bool DoCopyFiles( void )
     VbufInit( &tmp_path );
     VbufInit( &src_path );
 
+    /*
+     * Check files for processing
+     * Calculate "num_total_install" overall value for progress status
+     */
     num_total_install = 0;
     ok = true;
     for( filenum = 0; ok && filenum < max_files; filenum++ ) {
@@ -1887,9 +1895,9 @@ static bool DoCopyFiles( void )
         num_installed = 0;
         StatusLines( STAT_COPYINGFILE, "" );
         StatusAmount( 0, num_total_install );
-
-        /* remove files first so we don't go over disk space estimate */
-
+        /*
+         * remove files first so we don't go over disk space estimate
+         */
         for( filenum = 0; ok && filenum < max_files; filenum++ ) {
             if( SimFileRemove( filenum ) ) {
                 SimFileDir( filenum, &dir );
@@ -1917,8 +1925,9 @@ static bool DoCopyFiles( void )
             }
         }
         if( ok ) {
-            /* now go ahead and add files */
-
+            /*
+             * now go ahead and add files
+             */
             if( FileIsPlainFS() ) {
                 VbufSetStr( &src_path, GetVariableStrVal( "SrcDir" ) );
                 VbufAddDirSep( &src_path );
@@ -1979,7 +1988,7 @@ static bool DoCopyFiles( void )
                         VbufMakepath( &tmp_path, NULL, &dir, &file_desc, NULL );
 
                         VbufSetLen( &src_path, src_path_pos2 );     // nuke name from end of src_path
-                        VbufConcStr( &src_path, VbufString( &file_desc ) );
+                        VbufConcVbuf( &src_path, &file_desc );
                         StatusLinesVbuf( STAT_COPYINGFILE, &tmp_path );
                         UnPackHook( filenum, subfilenum, &tmp_path );
                         copy_error = DoCopyFile( &src_path, &tmp_path, false );
@@ -1990,7 +1999,7 @@ static bool DoCopyFiles( void )
                             ret = GUI_RET_CANCEL;
                             break;
                         case CFE_BAD_CRC:
-                            MsgBox( NULL, "IDS_BADCRC", GUI_OK, src_path );
+                            MsgBoxVbuf( NULL, "IDS_BADCRC", GUI_OK, &src_path );
                             ret = GUI_RET_CANCEL;
                             break;
                         case CFE_NOERROR:
@@ -2001,7 +2010,7 @@ static bool DoCopyFiles( void )
                             ret = MsgBox( NULL, "IDS_NOMEMORYCOPY", GUI_RETRY_CANCEL );
                             break;
                         case CFE_CANTOPENSRC:
-                            ret = MsgBox( NULL, "IDS_CANTOPENSRC", GUI_RETRY_CANCEL, src_path  );
+                            ret = MsgBoxVbuf( NULL, "IDS_CANTOPENSRC", GUI_RETRY_CANCEL, &src_path );
                             break;
                         case CFE_CANTOPENDST:
                             ret = MsgBoxVbuf( NULL, "IDS_CANTOPENDST", GUI_RETRY_CANCEL, &tmp_path );
@@ -2054,9 +2063,10 @@ static void RemoveUnusedDirs( void )
 {
     VBUF        dst_path;
     int         i;
-    int         max_dirs = SimNumDirs();
+    int         max_dirs;
 
     VbufInit( &dst_path );
+    max_dirs = SimNumDirs();
     for( i = 0; i < max_dirs; i++ ) {
         if( !SimDirUsed( i ) ) {
             RemoveDstDir( i, &dst_path );
@@ -2294,11 +2304,11 @@ void AddInstallName( VBUF *str )
 /******************************/
 {
     const char          *p;
-    VBUF                tmp;
+    VBUF                temp;
     VBUF                inst_name;
     size_t              len;
 
-    VbufInit( &tmp );
+    VbufInit( &temp );
     VbufInit( &inst_name );
 
     // DBCS should be handled on more places
@@ -2309,10 +2319,10 @@ void AddInstallName( VBUF *str )
     while( *p != '\0' ) {
         if( *p == '@' ) {
             len = p - VbufString( str );
-            VbufSetStr( &tmp, p + 1 );
+            VbufSetStr( &temp, p + 1 );
             VbufSetLen( str, len );
             VbufConcVbuf( str, &inst_name );
-            VbufConcVbuf( str, &tmp );
+            VbufConcVbuf( str, &temp );
             p = VbufString( str ) + len;
             continue;
         }
@@ -2320,7 +2330,7 @@ void AddInstallName( VBUF *str )
     }
 
     VbufFree( &inst_name );
-    VbufFree( &tmp );
+    VbufFree( &temp );
 }
 
 static void remove_ampersand( VBUF *str )
@@ -2490,8 +2500,8 @@ static void FreeDefinedVars( void )
     }
 }
 
-static void GetSelfWithPath( VBUF *vbuf, char **argv )
-/****************************************************/
+static void GetSelfWithPath( VBUF *vbuf, const VBUF *argv0 )
+/**********************************************************/
 {
 #if defined( __UNIX__ )
     int     result;
@@ -2512,7 +2522,7 @@ static void GetSelfWithPath( VBUF *vbuf, char **argv )
     }
     // fall back to argv[0] if readlink doesn't work
 #endif
-    VbufSetStr( vbuf, argv[0] );
+    VbufSetVbuf( vbuf, argv0 );
 }
 
 #if defined( __NT__ ) && !defined( _M_X64 )
@@ -2538,14 +2548,20 @@ static bool CheckWow64( void )
 
 static void dispUsage( void )
 {
-    char * msg = "Usage: @ [-options]\n\n" \
+    char * msg = "Usage: @ [-options] [<arc_name> [<inf_name> [<src_path>]]]\n\n" \
         "Supported options (case insensitive):\n\n" \
         "-f=script\t\tspecify script file to override setup.inf\n" \
         "-d<name=val>\tdefine a variable for the installer\n" \
         "-i\t\tinvisible: shows no dialogs; infers -s\n" \
         "-s\t\tskips dialogs but shows install progress\n" \
         "-np\t\tdoes not create Program Manager entries\n" \
-        "-ns\t\tdoes not register startup information (paths, environment)\n" ;
+        "-ns\t\tdoes not register startup information (paths, environment)\n" \
+        "\n" \
+        "Optional parameters:\n\n" \
+        "<arc_name>\tarchive file name" \
+        "<inf_name>\tscript file name" \
+        "<src_path>\tpath for " \
+        ;
 
     SetVariableByName( "IDS_USAGE", "%s");
     MsgBox( NULL, "IDS_USAGE", GUI_OK, msg );
@@ -2557,6 +2573,7 @@ bool GetDirParams( int argc, char **argv, VBUF *inf_name, VBUF *src_path, VBUF *
     VBUF                dir;
     VBUF                drive;
     int                 i;
+    VBUF                argv0;
 
 #if defined( __NT__ ) && !defined( _M_X64 )
     if( CheckWow64() ) {
@@ -2618,19 +2635,18 @@ bool GetDirParams( int argc, char **argv, VBUF *inf_name, VBUF *src_path, VBUF *
             break;
         }
     }
-
+    VbufInit( &argv0 );
+    VbufConcStr( &argv0, argv[0] );
     if( i < argc ) {
-        VbufSetStr( arc_name, argv[i] );
-        i++;
+        VbufSetStr( arc_name, argv[i++] );
     } else {
-        GetSelfWithPath( arc_name, argv );
+        GetSelfWithPath( arc_name, &argv0 );
     }
 
     VbufInit( &drive );
     VbufInit( &dir );
     if( i < argc ) {
-        VbufSetStr( inf_name, argv[i] );
-        i++;
+        VbufSetStr( inf_name, argv[i++] );
     } else {
         // If archive exists, expect setup.inf inside. Otherwise assume
         // it's right next to the setup executable.
@@ -2640,11 +2656,13 @@ bool GetDirParams( int argc, char **argv, VBUF *inf_name, VBUF *src_path, VBUF *
             VBUF    temp;
 
             VbufInit( &temp );
-            GetSelfWithPath( inf_name, argv );
+
+            GetSelfWithPath( inf_name, &argv0 );
             VbufSplitpath( inf_name, &drive, &dir, NULL, NULL );
             VbufSetStr( inf_name, "setup.inf" );
             VbufMakepath( &temp, &drive, &dir, inf_name, NULL );
             VbufFullpath( inf_name, &temp );
+
             VbufFree( &temp );
         }
     }

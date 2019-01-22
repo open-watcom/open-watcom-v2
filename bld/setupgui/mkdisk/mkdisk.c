@@ -101,7 +101,7 @@ static FILE_INFO               *FileList = NULL;
 static PATH_INFO               *PathList = NULL;
 static LIST                    *AppSection = NULL;
 static LIST                    *IconList = NULL;
-static LIST                    *SupplimentList = NULL;
+static LIST                    *SupplementList = NULL;
 static LIST                    *IniList = NULL;
 static LIST                    *AutoList = NULL;
 static LIST                    *CfgList = NULL;
@@ -932,7 +932,7 @@ static bool processLine( const char *line, LIST **list )
     if( STRING_IS( line, new, STRING_icon ) ) {
         AddToList( new, &IconList );
     } else if( STRING_IS( line, new, STRING_supplemental ) ) {
-        AddToList( new, &SupplimentList );
+        AddToList( new, &SupplementList );
     } else if( STRING_IS( line, new, STRING_ini ) ) {
         AddToList( new, &IniList );
     } else if( STRING_IS( line, new, STRING_auto ) ) {
@@ -1196,7 +1196,7 @@ int CreateScript( long init_size, unsigned padding )
     fprintf( fp, "\n[Targets]\n" );
     for( list = TargetList; list != NULL; list = list->next ) {
         fprintf( fp, "%s", list->item );
-        for( list2 = SupplimentList; list2 != NULL; list2 = list2->next ) {
+        for( list2 = SupplementList; list2 != NULL; list2 = list2->next ) {
             if( stricmp( list->item, list2->item ) == 0 ) {
                 fprintf( fp, ",supplemental" );
             }
