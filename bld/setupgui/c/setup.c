@@ -252,7 +252,7 @@ static bool DoMainLoop( dlg_state *state )
         } else if( *state == DLG_NEXT && stricmp( diag_list[i], "DstDir" ) == 0 ) {
             VbufSetStr( &temp, GetVariableStrVal( "DstDir" ) );
             VbufRemDirSep( &temp );
-            SetVariableByNameVbuf( "DstDir", &temp );
+            SetVariableByName_vbuf( "DstDir", &temp );
         }
         if( got_disk_sizes ) {
             if( !CheckDrive( false ) ) {
