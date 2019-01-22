@@ -283,7 +283,9 @@ jobs:
         - rm -rf bld/watcom/$OWOBJDIR/*
         - rm -rf test/*
         - rm -rf build-1/*
+        # update SF mirror
         - git config remote.origin.pushurl https://${SF_TOKEN}@git.code.sf.net/p/openwatcom/open-watcom-v2
+        - git config --global http.postBuffer 524288000
         - git checkout master
         - git push
     - # ...
