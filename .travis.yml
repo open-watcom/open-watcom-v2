@@ -18,10 +18,6 @@ env:
     - OWTRAVIS_REPO_SLUG=open-watcom/travis-ci-ow-builds
     - OWTRAVIS_BUILD_DIR=${HOME}/build/$OWTRAVIS_REPO_SLUG
 
-git:
-  if: branch = env(OWBRANCH_SF)
-  depth: false
-
 cache:
   directories:
     - build/$OWOBJDIR
@@ -287,6 +283,9 @@ jobs:
         - rm -rf bld/watcom/$OWOBJDIR/*
         - rm -rf test/*
         - rm -rf build-1/*
+        - git config remote.origin.pushurl https://${SF_TOKEN}@git.code.sf.net/p/openwatcom/open-watcom-v2
+        - git checkout master
+        - git push
     - # ...
       name: "Clean build cache OSX"
       if: branch = env(OWBRANCH) AND (type = cron OR (type = push AND env(OWTRAVIS_ALL) = 1))
@@ -359,22 +358,6 @@ jobs:
         - . ./cmnvars.sh
       script: 
         - travis/covscan.sh
-    #################################
-    - stage: InitSF
-      name: "Initiate SF Synchronisation by Cron"
-      if: branch = env(OWBRANCH_SF) AND type = cron
-      cache: false
-      script: 
-        - travis/gitusf.sh
-    #################################
-    - stage: SyncSF
-      name: "SF synchronization"
-      if: branch = env(OWBRANCH_SF) AND type = push
-      cache: false
-      script: 
-        - git config remote.origin.pushurl https://${SF_TOKEN}@git.code.sf.net/p/openwatcom/open-watcom-v2
-        - git checkout master
-        - git push
 
 #  coverity_scan:
 #    project:
