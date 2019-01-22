@@ -194,10 +194,6 @@ void VbufSetPathExt(            // SET A FILE EXTENSION FOR FILE PATH IN VBUF
     VBUF *vbuf,                 // - full file path
     const VBUF *new_ext )       // - file extension
 ;
-void VbufPathToFwdSlash(        // SET A FILE PATH TO USE FWD SLASHES
-    VBUF *vbuf1,                // - input full file path
-    VBUF *vbuf2 )               // - output full file path
-;
 #define VbufLen(v)              ((v)->used)                         // RETURN LENGTH OF BUFFER
 ;
 #define VbufRewind(v)           VbufSetLen(v,0)                     // CLEAN BUFFER
