@@ -1006,7 +1006,7 @@ static void MakeParentDir( const VBUF *dir, char *drive, char *path )
 
 static bool CreateDstDir( int i, VBUF *buff )
 /*******************************************/
-// check for directory exitstance.  If dir exists return true.
+// check for directory existance.  If dir exists return true.
 // Else try and create directory.
 {
     bool                ok;

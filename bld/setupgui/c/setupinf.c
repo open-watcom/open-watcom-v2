@@ -2266,7 +2266,7 @@ static bool GetFileInfo( int dir_index, int i, bool in_old_dir, bool *pzeroed )
         VbufSetLen( &buff, dir_end );
         VbufConcVbuf( &buff, &file->name );
         if( access_vbuf( &buff, F_OK ) == 0 ) {
-            stat( VbufString( &buff ), &buf );
+            stat_vbuf( &buff, &buf );
             found = true;
             file->disk_size = buf.st_size;
             file->disk_date = (unsigned long)buf.st_mtime;
@@ -4007,9 +4007,9 @@ bool PatchFiles( void )
             if( access_vbuf( &destfullpath, F_OK ) != 0 ) {
                 LogWriteMsgStr( log, "IDS_CREATINGDIR", VbufString( &destfullpath ) );
 #ifdef __UNIX__
-                if( mkdir( VbufString( &destfullpath ), PMODE_RWX ) == 0 ) {
+                if( mkdir_vbuf( &destfullpath, PMODE_RWX ) == 0 ) {
 #else
-                if( mkdir( VbufString( &destfullpath ) ) == 0 ) {
+                if( mkdir_vbuf( &destfullpath ) == 0 ) {
 #endif
                     LogWriteMsg( log, "IDS_SUCCESS" );
                 } else {
