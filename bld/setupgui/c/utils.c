@@ -1958,7 +1958,7 @@ static bool DoCopyFiles( void )
                 } else {
                     // use the macro as the directory name   eg: cd_drive:\winsys\filename
                     SimTargetDirName( SimDirTargNum( SimFileDirNum( filenum ) ), &tmp );
-                    len = strlen( GetVariableStrVal( VbufString( &tmp ) ) );
+                    len = strlen( GetVariableStrVal_vbuf( &tmp ) );
                     VbufConcVbuf( &src_path, &tmp );
                 }
                 VbufConcVbufPos( &src_path, &dir, len );  // get rid of the dest directory, just keep the subdir
@@ -2016,7 +2016,7 @@ static bool DoCopyFiles( void )
                         if( SimSubFileExecutable( filenum, subfilenum ) ) {
                             chmod_vbuf( &tmp_path, DEF_EXEC );
                         }
-                        SetVariableByHandle( var_handle, VbufString( &tmp_path ) );
+                        SetVariableByHandle_vbuf( var_handle, &tmp_path );
                         UpdateCheckList( &tmp_path, var_handle );
                     }
                 }
@@ -2427,7 +2427,7 @@ bool PromptUser( const VBUF *name, const char *dlg, const char *skip, const char
 {
     dlg_state       return_state;
 
-    SetVariableByName( "FileDesc", VbufString( name ) );
+    SetVariableByName_vbuf( "FileDesc", name );
 
     // don't display the dialog if the user selected the "Skip dialog" option
     if( !GetVariableBoolVal( skip ) ) {
@@ -2730,10 +2730,10 @@ bool InitInfo( const VBUF *inf_name, const VBUF *src_path )
 //    char                drive[_MAX_DRIVE];
     int                 ret;
 
-    SetVariableByName( "SrcDir", VbufString( src_path ) );
+    SetVariableByName_vbuf( "SrcDir", src_path );
     DetermineSrcState( src_path );
-    SetVariableByName( "SrcDir2", VbufString( src_path ) );
-//    VbufSplitpath( VbufString( inf_name ), drive, dir, NULL, NULL );
+    SetVariableByName_vbuf( "SrcDir2", src_path );
+//    VbufSplitpath( inf_name, drive, dir, NULL, NULL );
 
     ret = SimInit( inf_name );
     if( ret == SIM_INIT_NOERROR ) {

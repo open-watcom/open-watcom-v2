@@ -1010,7 +1010,7 @@ bool ModifyAutoExec( bool uninstall )
 
         SetVariableByName( "FileToFind", "CONFIG.SYS" );
         while( access_vbuf( &OrigConfig, F_OK ) != 0 ) {
-            SetVariableByName( "CfgDir", VbufString( &OrigConfig ) );
+            SetVariableByName_vbuf( "CfgDir", &OrigConfig );
             if( DoDialog( "LocCfg" ) == DLG_CAN ) {
                 MsgBox( NULL, "IDS_CANTFINDCONFIGSYS", GUI_OK );
                 ok = false;
@@ -1034,7 +1034,7 @@ bool ModifyAutoExec( bool uninstall )
     if( ok ) {
         SetVariableByName( "FileToFind", "AUTOEXEC.BAT" );
         while( access_vbuf( &OrigAutoExec, F_OK ) != 0 ) {
-            SetVariableByName( "CfgDir", VbufString( &OrigAutoExec ) );
+            SetVariableByName_vbuf( "CfgDir", &OrigAutoExec );
             if( DoDialog( "LocCfg" ) == DLG_CAN ) {
                 MsgBox( NULL, "IDS_CANTFINDAUTOEXEC", GUI_OK );
                 ok = false;
@@ -1463,9 +1463,9 @@ bool CheckInstallDLL( const VBUF *name, vhandle var_handle )
         VbufSetVbuf( &path2, &prev_path );
         CheckVersion( &path1, &drive, &dir );
         CheckVersion( &path2, &drive, &dir );
-        SetVariableByName( "FileDesc", VbufString( &dll_name ) );
-        SetVariableByName( "DLLDir", VbufString( &path1 ) );
-        SetVariableByName( "OtherDLLDir", VbufString( &path2 ) );
+        SetVariableByName_vbuf( "FileDesc", &dll_name );
+        SetVariableByName_vbuf( "DLLDir", &path1 );
+        SetVariableByName_vbuf( "OtherDLLDir", &path2 );
 
         // don't display the dialog if the user selected the "Skip dialog" option
         if( !GetVariableBoolVal( "DLL_Skip_Dialog" ) ) {
@@ -1488,13 +1488,13 @@ bool CheckInstallDLL( const VBUF *name, vhandle var_handle )
 #endif
         } else if( GetVariableBoolVal( "DLL_Replace_Old" ) ) {
             DoCopyFile( &unpacked_as, &prev_path, false );
-            SetVariableByHandle( var_handle, VbufString( &prev_path ) );
+            SetVariableByHandle_vbuf( var_handle, &prev_path );
             remove_vbuf( &unpacked_as );
         } else if( GetVariableBoolVal( "DLL_Dont_Install" ) ) {
-            SetVariableByHandle( var_handle, VbufString( &prev_path ) );
+            SetVariableByHandle_vbuf( var_handle, &prev_path );
             remove_vbuf( &unpacked_as );
         } else if( GetVariableBoolVal( "DLL_Abort_Install" ) ) {
-            SetVariableByHandle( var_handle, VbufString( &prev_path ) );
+            SetVariableByHandle_vbuf( var_handle, &prev_path );
             remove_vbuf( &unpacked_as );
             cancel = true;
         }

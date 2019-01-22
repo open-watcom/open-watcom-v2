@@ -238,3 +238,9 @@ void VbufSetPathExt(            // SET A FILE EXTENSION FOR FILE PATH IN VBUF
 #define MsgBoxVbuf(w,m,t,p)         MsgBox(w, m, t, VbufString( p ))
 #define MsgBoxVbuf2(w,m,t,p1,p2)    MsgBox(w, m, t, VbufString( p1 ), VbufString( p2 ))
 
+// variables get/set functions (genvbl.c)
+#define SetVariableByHandle_vbuf(v,s)   SetVariableByHandle(v, VbufString( s ))
+#define SetVariableByName_vbuf(v,s)     SetVariableByName(v, VbufString( s ))
+#define SetBoolVariableByName_vbuf(v,b) SetBoolVariableByName(VbufString( v ), b)
+#define GetVariableStrVal_vbuf(v)       GetVariableStrVal(VbufString( v ))
+

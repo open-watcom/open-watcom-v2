@@ -2548,7 +2548,7 @@ long SimInit( const VBUF *inf_name )
         GUIMemFree( RawReadBuf );
         return( SIM_INIT_NOFILE );
     }
-    SetVariableByName( "SetupInfFile", VbufString( inf_name ) );
+    SetVariableByName_vbuf( "SetupInfFile", inf_name );
     result = PrepareSetupInfo( fh, PRESCAN_FILE );
 #if 0
     // Currently doesn't work for archives

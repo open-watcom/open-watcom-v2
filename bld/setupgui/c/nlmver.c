@@ -212,8 +212,8 @@ bool CheckInstallNLM( const VBUF *name, vhandle var_handle )
             DoCopyFile( &unpacked_as, name, false );
             VbufSetVbuf( &temp, &fname );
             VbufConcStr( &temp, "_NLM_installed" );
-            SetBoolVariableByName( VbufString( &temp ), true );
-            SetVariableByHandle( var_handle, VbufString( &temp ) );
+            SetBoolVariableByName_vbuf( &temp, true );
+            SetVariableByHandle_vbuf( var_handle, &temp );
         }
     }
     remove_vbuf( &unpacked_as );
