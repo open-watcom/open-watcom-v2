@@ -277,7 +277,7 @@ static bool ZapKey( const VBUF *app_name, const char *old, const char *new,
     app_len = VbufLen( app_name );
     old_len = strlen( old );
     WritePrivateProfileString( NULL, NULL, NULL, VbufString( file ) );
-    io = fopen( VbufString( hive ), "r+t" );
+    io = fopen_vbuf( hive, "r+t" );
     if( io == NULL )
         return( false );
     while( fgets( buff, sizeof( buff ), io ) ) {
@@ -411,7 +411,7 @@ static void WindowsWriteProfile( const VBUF *app_name, const VBUF *key_name,
             WritePrivateProfileString( VbufString( app_name ), VbufString( key_name ), VbufString( value ), VbufString( file_name ) );
         } else {
             // if file doesn't exist, Windows creates 0-length file
-            if( access( VbufString( file_name ), F_OK ) == 0 ) {
+            if( access_vbuf( file_name, F_OK ) == 0 ) {
                 WritePrivateProfileString( VbufString( app_name ), VbufString( key_name ), NULL, VbufString( file_name ) );
             }
         }

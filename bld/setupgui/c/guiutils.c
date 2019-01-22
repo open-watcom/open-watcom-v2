@@ -184,7 +184,7 @@ static bool CheckForSetup32( int argc, char **argv )
         VbufConcStr( &name, "SETUP32" );
         VbufSplitpath( &buff, &drive, &path, NULL, &ext );
         VbufMakepath( &buff, &drive, &path, &name, &ext );
-        if( access( VbufString( &buff ), F_OK ) == 0 ) {
+        if( access_vbuf( &buff, F_OK ) == 0 ) {
             for( i = 1; i < argc; i++ ) {
                 VbufConcChr( &buff, ' ' );
                 VbufConcStr( &buff, argv[i] );

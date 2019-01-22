@@ -450,7 +450,7 @@ static bool linkCreateGroup( const VBUF *group )
 
     VbufInit( &dir_name );
     get_group_name( &dir_name, group );
-    rc = mkdir( VbufString( &dir_name ) );
+    rc = mkdir_vbuf( &dir_name );
     VbufFree( &dir_name );
     if( rc == -1 && errno != EEXIST ) {
         return( false );
@@ -473,7 +473,7 @@ static void delete_dir( const VBUF *dir )
     VbufConcChr( &file, '\\' );
     dir_len = VbufLen( &file );
     VbufConcStr( &file, "*.*" );
-    dirp = opendir( VbufString( &file ) );
+    dirp = opendir_vbuf( &file );
     if( dirp != NULL ) {
         for( ;; ) {
             direntp = readdir( dirp );
@@ -485,11 +485,11 @@ static void delete_dir( const VBUF *dir )
             }
             VbufSetLen( &file, dir_len );
             VbufConcStr( &file, direntp->d_name );
-            remove( VbufString( &file ) );
+            remove_vbuf( &file );
         }
         closedir( dirp );
     }
-    rmdir( VbufString( dir ) );
+    rmdir_vbuf( dir );
     VbufFree( &file );
 }
 

@@ -707,17 +707,17 @@ static int GetDriveInfo( char drive, bool removable )
 
             VbufInit( &path );
             GetTmpFileNameInTarget( drive, &path );
-            io = open( VbufString( &path ), O_RDWR | O_CREAT | O_TRUNC, PMODE_RW );
+            io = open_vbuf( &path, O_RDWR | O_CREAT | O_TRUNC, PMODE_RW );
             if( io == -1 ) {
                 GetTmpFileName( drive, &path );
-                io = open( VbufString( &path ), O_RDWR | O_CREAT | O_TRUNC, PMODE_RW );
+                io = open_vbuf( &path, O_RDWR | O_CREAT | O_TRUNC, PMODE_RW );
                 info->use_target_for_tmp_file = false;
             } else {
                 info->use_target_for_tmp_file = true;
             }
             if( io != -1 ) {
                 close( io );
-                remove( VbufString( &path ) );
+                remove_vbuf( &path );
 #if 0  // FIXME it doesn't work correctly if target directory doesn't exist
        // (new installation) and you have insufficient rights to drive root
             } else {
@@ -901,11 +901,11 @@ static bool IsDriveWritable( const char *path )
     ok = GetRootFromPath( &root, path ) != 0;
     if( ok ) {
         GetTmpFileNameUNC( &root, &tempfile );
-        io = open( VbufString( &tempfile ), O_RDWR | O_CREAT | O_TRUNC, PMODE_RW );
+        io = open_vbuf( &tempfile, O_RDWR | O_CREAT | O_TRUNC, PMODE_RW );
         ok = io != -1;
         if( ok ) {
             close( io );
-            remove( VbufString( &tempfile ) );
+            remove_vbuf( &tempfile );
         }
     }
 
@@ -960,7 +960,7 @@ static void RemoveDstDir( int dir_index, VBUF *buff )
     int         max_dirs = SimNumDirs();
 
     SimDirNoSlash( dir_index, buff );
-    if( access( VbufString( buff ), F_OK ) != 0 )
+    if( access_vbuf( buff, F_OK ) != 0 )
         return;
     for( child = 0; child < max_dirs; ++child ) {
         if( SimDirParent( child ) == dir_index ) {
@@ -971,7 +971,7 @@ static void RemoveDstDir( int dir_index, VBUF *buff )
 //        return; // leave root dir (for config.new, etc)
     }
     SimDirNoSlash( dir_index, buff );
-    rmdir( VbufString( buff ) );
+    rmdir_vbuf( buff );
 }
 
 
@@ -996,9 +996,9 @@ static void MakeParentDir( const VBUF *dir, char *drive, char *path )
     VbufConcStr( &parent, path );
     MakeParentDir( &parent, drive, path );
 #if defined( __UNIX__ )
-    mkdir( VbufString( &parent ), PMODE_RWX );
+    mkdir_vbuf( &parent, PMODE_RWX );
 #else
-    mkdir( VbufString( &parent ) );
+    mkdir_vbuf( &parent );
 #endif
     VbufFree( &parent );
 }
@@ -1022,13 +1022,13 @@ static bool CreateDstDir( int i, VBUF *buff )
         }
     }
     SimDirNoSlash( i, buff );
-    if( access( VbufString( buff ), F_OK ) == 0 )          // check for existance
+    if( access_vbuf( buff, F_OK ) == 0 )          // check for existance
         return( true );
     MakeParentDir( buff, drive, path );
 #if defined( __UNIX__ )
-    if( mkdir( VbufString( buff ), PMODE_RWX ) == 0 )
+    if( mkdir_vbuf( buff, PMODE_RWX ) == 0 )
 #else
-    if( mkdir( VbufString( buff ) ) == 0 )
+    if( mkdir_vbuf( buff ) == 0 )
 #endif
         return( true );
     MsgBoxVbuf( NULL, "IDS_CANTMAKEDIR", GUI_OK, buff );
@@ -1285,7 +1285,7 @@ bool CheckDrive( bool issue_message )
                     if( !IsDriveWritable( disks[i] ) ) {
                         if( issue_message ) {
                             GetRootFromPath( &UNC_root1, disks[i] );
-                            if( access( VbufString( &UNC_root1 ), F_OK ) == 0 ) {
+                            if( access_vbuf( &UNC_root1, F_OK ) == 0 ) {
                                 MsgBoxVbuf( NULL, "IDS_UNCPATH_NOTWRITABLE", GUI_OK, &UNC_root1 );
                             } else {
                                 MsgBox( NULL, "IDS_UNCPATH_NOTEXIST", GUI_OK, &UNC_root1 );
@@ -1422,7 +1422,7 @@ static void SetFileDate( const VBUF *dst_path, time_t date )
 
     timebuf.modtime = date;
     timebuf.actime = date;
-    utime( VbufString( dst_path ), &timebuf );
+    utime_vbuf( dst_path, &timebuf );
 }
 
 static void SameFileDate( const VBUF *src_path, const VBUF *dst_path )
@@ -1439,7 +1439,7 @@ static void SameFileDate( const VBUF *src_path, const VBUF *dst_path )
 bool DoDeleteFile( const VBUF *path )
 /***********************************/
 {
-    return( remove( VbufString( path ) ) == 0 );
+    return( remove_vbuf( path ) == 0 );
 }
 
 // ******************* Functions for Copying Files ***************************
@@ -1476,12 +1476,12 @@ COPYFILE_ERROR DoCopyFile( const VBUF *src_path, const VBUF *dst_path, bool appe
     } else {
         style = O_CREAT | O_TRUNC | O_WRONLY | O_BINARY;
     }
-    dst_files = open( VbufString( dst_path ), style, DEF_ACCESS );
+    dst_files = open_vbuf( dst_path, style, DEF_ACCESS );
     if( dst_files == -1 ) {
         FileClose( src_files );
         if( pbuff != lastchance )
             GUIMemFree( pbuff );
-        dst_files = open( VbufString( dst_path ), O_RDONLY );
+        dst_files = open_vbuf( dst_path, O_RDONLY );
         if( dst_files != -1 ) {
             // read only file
             close( dst_files );
@@ -1627,16 +1627,16 @@ static bool RelocateFiles( void )
                 VbufMakepath( &dst_path, NULL, &dir, &file_desc, NULL );
                 StatusLinesVbuf( STAT_SAME, &src_path );
                 if( SimSubFileInNewDir( filenum, subfilenum ) ) {
-                    remove( VbufString( &dst_path ) );
+                    remove_vbuf( &dst_path );
                 }
                 if( DoCopyFile( &src_path, &dst_path, false ) != CFE_NOERROR ) {
                     ok = false;
                     break;
                 }
                 if( SimSubFileExecutable( filenum, subfilenum ) ) {
-                    chmod( VbufString( &dst_path ), DEF_EXEC );
+                    chmod_vbuf( &dst_path, DEF_EXEC );
                 }
-                remove( VbufString( &src_path ) );
+                remove_vbuf( &src_path );
                 num_installed += SimSubFileSize( filenum, subfilenum );
                 StatusAmount( num_installed, num_total_install );
             }
@@ -1746,7 +1746,7 @@ static void CopySetupInfFile( void )
         VbufSetStr( &fname, "setup.inf" );
         VbufMakepath( &dst_path, NULL, &tmp_path, &fname, NULL );
         if( VarGetBoolVal( UnInstall ) ) {
-            remove( VbufString( &dst_path ) );
+            remove_vbuf( &dst_path );
         } else {
             VbufSetStr( &tmp_path, GetVariableStrVal( "SetupInfFile" ) );
             DoCopyFile( &tmp_path, &dst_path, false );
@@ -1845,7 +1845,7 @@ static bool DoCopyFiles( void )
                         break;
                     }
                     if( resp_replace ) {
-                        chmod( VbufString( &tmp_path ), PMODE_W_USR );
+                        chmod_vbuf( &tmp_path, PMODE_W_USR );
                     }
                 }
                 if( SimSubFileNewer( filenum, subfilenum ) ) {
@@ -1874,7 +1874,7 @@ static bool DoCopyFiles( void )
                         break;
                     }
                     if( resp_replace ) {
-                        chmod( VbufString( &tmp_path ), PMODE_W_USR );
+                        chmod_vbuf( &tmp_path, PMODE_W_USR );
                         num_total_install += OVERHEAD_SIZE;
                     }
                 } else {
@@ -1901,12 +1901,12 @@ static bool DoCopyFiles( void )
                     SimSubFileName( filenum, subfilenum, &file_desc );
                     VbufMakepath( &tmp_path, NULL, &dir, &file_desc, NULL );
                     StatusLinesVbuf( STAT_REMOVING, &tmp_path );
-                    remove( VbufString( &tmp_path ) );
+                    remove_vbuf( &tmp_path );
                     if( SimSubFileInOldDir( filenum, subfilenum ) ) {
                         SimFileOldDir( filenum, &old_dir );
                         VbufMakepath( &tmp_path, NULL, &old_dir, &file_desc, NULL );
                         StatusLinesVbuf( STAT_REMOVING, &tmp_path );
-                        remove( VbufString( &tmp_path ) );
+                        remove_vbuf( &tmp_path );
                     }
                     StatusAmount( num_installed, num_total_install );
                     if( StatusCancelled() ) {
@@ -2014,7 +2014,7 @@ static bool DoCopyFiles( void )
                     } while( copy_error != CFE_NOERROR );
                     if( ok ) {
                         if( SimSubFileExecutable( filenum, subfilenum ) ) {
-                            chmod( VbufString( &tmp_path ), DEF_EXEC );
+                            chmod_vbuf( &tmp_path, DEF_EXEC );
                         }
                         SetVariableByHandle( var_handle, VbufString( &tmp_path ) );
                         UpdateCheckList( &tmp_path, var_handle );
@@ -2121,7 +2121,7 @@ static void DetermineSrcState( const VBUF *src_dir )
 #else
     VbufConcStr( &dir, "\\cd_source" );
 #endif
-    if( access( VbufString( &dir ), F_OK ) == 0 ) {
+    if( access_vbuf( &dir, F_OK ) == 0 ) {
         SetBoolVariableByName( "SrcIsCD", true );
         SrcInstState = SRC_CD;
     } else {
@@ -2165,7 +2165,7 @@ static bool NukePath( VBUF *path, int status )
     struct stat         statbuf;
 #endif
 
-    d = opendir( VbufString( path ) );
+    d = opendir_vbuf( path );
     VbufAddDirSep( path );
     path_len = VbufLen( path );
     ok = true;
@@ -2173,7 +2173,7 @@ static bool NukePath( VBUF *path, int status )
         VbufSetLen( path, path_len );
         VbufConcStr( path, info->d_name );
 #if defined( __UNIX__ )
-        stat( VbufString( path ), &statbuf );
+        stat_vbuf( path, &statbuf );
         if( S_ISDIR( statbuf.st_mode ) ) {
 #else
         if( info->d_attr & _A_SUBDIR ) {
@@ -2183,7 +2183,7 @@ static bool NukePath( VBUF *path, int status )
                     ok = false;
                     break;
                 }
-                rmdir( VbufString( path ) );
+                rmdir_vbuf( path );
             }
         } else {
 #if defined( __UNIX__ )
@@ -2191,9 +2191,9 @@ static bool NukePath( VBUF *path, int status )
 #else
             if( info->d_attr & (_A_RDONLY | _A_SYSTEM | _A_HIDDEN) ) {
 #endif
-                chmod( VbufString( path ), PMODE_W_USR );
+                chmod_vbuf( path, PMODE_W_USR );
             }
-            if( remove( VbufString( path ) ) != 0 ) {
+            if( remove_vbuf( path ) != 0 ) {
                 ok = false;
                 break;
             }
@@ -2235,7 +2235,7 @@ void DeleteObsoleteFiles( void )
             ++group;
         } else {
             ReplaceVars( &tmp, SimDeleteName( i ) );
-            if( access( VbufString( &tmp ), F_OK ) == 0 ) {
+            if( access_vbuf( &tmp, F_OK ) == 0 ) {
                 found[group] = true;
                 found_any = true;
             }
@@ -2256,10 +2256,10 @@ void DeleteObsoleteFiles( void )
                 } else if( state == DLG_NEXT ) {
                     if( SimDeleteIsDir( i ) ) {
                         NukePath( &tmp, STAT_REMOVING );
-                        rmdir( VbufString( &tmp ) );
+                        rmdir_vbuf( &tmp );
                     } else {
                         StatusLinesVbuf( STAT_REMOVING, &tmp );
-                        remove( VbufString( &tmp ) );
+                        remove_vbuf( &tmp );
                     }
                 }
             }
@@ -2634,7 +2634,7 @@ bool GetDirParams( int argc, char **argv, VBUF *inf_name, VBUF *src_path, VBUF *
     } else {
         // If archive exists, expect setup.inf inside. Otherwise assume
         // it's right next to the setup executable.
-        if( access( VbufString( arc_name ), R_OK ) == 0 ) {
+        if( access_vbuf( arc_name, R_OK ) == 0 ) {
             VbufSetStr( inf_name, "setup.inf" );
         } else {
             VBUF    temp;

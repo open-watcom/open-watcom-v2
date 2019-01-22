@@ -481,24 +481,24 @@ static void FinishEnvironmentLines( FILE *fp, int num_env, bool *found_env, bool
             if( VbufLen( &val_before ) > 0 ) {
                 VbufSetStr( &tmp, "BEGINLIBPATH" );
                 if( output_line( &vbuf, VAR_SETENV_ASSIGN, &tmp, &val_before ) ) {
-                    fputs( VbufString( &vbuf ), fp );
+                    fputs_vbuf( &vbuf, fp );
                     fputc( '\n', fp );
                 }
             }
             if( VbufLen( &val_after ) > 0 ) {
                 VbufSetStr( &tmp, "ENDLIBPATH" );
                 if( output_line( &vbuf, VAR_SETENV_ASSIGN, &tmp, &val_before ) ) {
-                    fputs( VbufString( &vbuf ), fp );
+                    fputs_vbuf( &vbuf, fp );
                     fputc( '\n', fp );
                 }
             }
             if( output_line( &vbuf, VAR_SETENV_ASSIGN, &cur_var, &cur_val ) ) {
-                fputs( VbufString( &vbuf ), fp );
+                fputs_vbuf( &vbuf, fp );
                 fputc( '\n', fp );
             }
         } else {
             if( output_line( &vbuf, getEnvironVarType( &cur_var ), &cur_var, &cur_val ) ) {
-                fputs( VbufString( &vbuf ), fp );
+                fputs_vbuf( &vbuf, fp );
                 fputc( '\n', fp );
             }
         }
@@ -528,12 +528,12 @@ static bool ModFile( const VBUF *orig, const VBUF *new,
     bool                *found_env = NULL;
     char                envbuf[MAXENVVAR + 1];
 
-    fp1 = fopen( VbufString( orig ), "rt" );
+    fp1 = fopen_vbuf( orig, "rt" );
     if( fp1 == NULL ) {
         MsgBoxVbuf( NULL, "IDS_ERROR_OPENING", GUI_OK, orig );
         return( false );
     }
-    fp2 = fopen( VbufString( new ), "wt" );
+    fp2 = fopen_vbuf( new, "wt" );
     if( fp2 == NULL ) {
         MsgBoxVbuf( NULL, "IDS_ERROR_OPENING", GUI_OK, new );
         fclose( fp1 );
@@ -714,7 +714,7 @@ static void FinishAutoLines( FILE *fp, int num_auto, bool *found_auto, bool batc
             }
         }
         if( output_line( &vbuf, getAutoVarType( &cur_var ), &cur_var, &cur_val ) ) {
-            fputs( VbufString( &vbuf ), fp );
+            fputs_vbuf( &vbuf, fp );
             fputc( '\n', fp );
         }
     }
@@ -886,7 +886,7 @@ static void FinishConfigLines( FILE *fp, int num_cfg, bool *found_cfg, bool batc
             }
         }
         if( output_line( &vbuf, getConfigVarType( &cur_var ), &cur_var, &cur_val ) ) {
-            fputs( VbufString( &vbuf ), fp );
+            fputs_vbuf( &vbuf, fp );
             fputc( '\n', fp );
         }
     }
@@ -931,7 +931,7 @@ static void BackupName( VBUF *backupname, const VBUF *filename )
     for( num = 0; num < 999; num++ ) {
         VbufSetInteger( &temp, num, 3 );
         VbufSetPathExt( backupname, &temp );
-        if( access( VbufString( backupname ), F_OK ) != 0 ) {
+        if( access_vbuf( backupname, F_OK ) != 0 ) {
             break;
         }
     }
@@ -1009,7 +1009,7 @@ bool ModifyAutoExec( bool uninstall )
         VbufSetPathDrive( &OrigConfig, boot_drive );
 
         SetVariableByName( "FileToFind", "CONFIG.SYS" );
-        while( access( VbufString( &OrigConfig ), F_OK ) != 0 ) {
+        while( access_vbuf( &OrigConfig, F_OK ) != 0 ) {
             SetVariableByName( "CfgDir", VbufString( &OrigConfig ) );
             if( DoDialog( "LocCfg" ) == DLG_CAN ) {
                 MsgBox( NULL, "IDS_CANTFINDCONFIGSYS", GUI_OK );
@@ -1021,7 +1021,7 @@ bool ModifyAutoExec( bool uninstall )
             VbufSetPathDrive( &OrigConfig, boot_drive );
             VbufSetPathDrive( &OrigAutoExec, boot_drive );
             if( GetVariableBoolVal( "CfgFileCreate" ) ) {
-                fp = fopen( VbufString( &OrigConfig ), "wt" );
+                fp = fopen_vbuf( &OrigConfig, "wt" );
                 if( fp == NULL ) {
                     MsgBoxVbuf( NULL, "IDS_CANTCREATEFILE", GUI_OK, &OrigConfig );
                 } else {
@@ -1033,7 +1033,7 @@ bool ModifyAutoExec( bool uninstall )
 #ifndef __OS2__
     if( ok ) {
         SetVariableByName( "FileToFind", "AUTOEXEC.BAT" );
-        while( access( VbufString( &OrigAutoExec ), F_OK ) != 0 ) {
+        while( access_vbuf( &OrigAutoExec, F_OK ) != 0 ) {
             SetVariableByName( "CfgDir", VbufString( &OrigAutoExec ) );
             if( DoDialog( "LocCfg" ) == DLG_CAN ) {
                 MsgBox( NULL, "IDS_CANTFINDAUTOEXEC", GUI_OK );
@@ -1044,7 +1044,7 @@ bool ModifyAutoExec( bool uninstall )
             boot_drive = VbufString( &newcfg )[0];
             VbufSetPathDrive( &OrigAutoExec, boot_drive );
             if( GetVariableBoolVal( "CfgFileCreate" ) ) {
-                fp = fopen( VbufString( &OrigAutoExec ), "wt" );
+                fp = fopen_vbuf( &OrigAutoExec, "wt" );
                 if( fp == NULL ) {
                     MsgBoxVbuf( NULL, "IDS_CANTCREATEFILE", GUI_OK, &OrigAutoExec );
                 } else {
@@ -1239,7 +1239,7 @@ static void secondarysearch( const VBUF *filename, VBUF *buffer )
         VbufSetStr( &path, AdditionalPaths[counter] );
         VbufSplitpath( &path, &drive, &dir, NULL, NULL );
         VbufMakepath( &path, &drive, &dir, &name, &ext );
-        if( access( VbufString( &path ), F_OK ) == 0 ) {
+        if( access_vbuf( &path, F_OK ) == 0 ) {
             VbufSetVbuf( buffer, &path );
             break;
         }
@@ -1296,7 +1296,7 @@ static void CheckVersion( VBUF *path, VBUF *drive, VBUF *dir )
     struct stat         statbuf;
     struct tm           *timeptr;
 
-    fp = open( VbufString( path ), O_RDONLY | O_BINARY );
+    fp = open_vbuf( path, O_RDONLY | O_BINARY );
     if( fp == -1 ) {
         return;     // shouldn't happen
     }
@@ -1347,10 +1347,10 @@ static void CheckVersion( VBUF *path, VBUF *drive, VBUF *dir )
 #ifdef EXTRA_CAUTIOUS_FOR_DLLS
 static bool replace_file( const VBUF *name, const VBUF *unpacked_as )
 {
-    if( access( VbufString( name ), F_OK ) != 0 || remove( VbufString( name ) ) == 0 ) {
-        rename( VbufString( unpacked_as ), VbufString( name ) );
+    if( access_vbuf( name, F_OK ) != 0 || remove_vbuf( name ) == 0 ) {
+        rename_vbuf( unpacked_as, name );
     } else {
-        remove( VbufString( unpacked_as ) );
+        remove_vbuf( unpacked_as );
         if( MsgBoxVbuf( NULL, "IDS_CANTREPLACE", GUI_YES_NO, name ) == GUI_RET_NO ) {
             return( true );
         }
@@ -1440,10 +1440,10 @@ bool CheckInstallDLL( const VBUF *name, vhandle var_handle )
         /* both files are going into the same directory */
         struct stat         new, old;
 
-        stat( VbufString( &prev_path ), &old );
-        stat( VbufString( &unpacked_as ), &new );
+        stat_vbuf( &prev_path, &old );
+        stat_vbuf( &unpacked_as, &new );
         if( new.st_mtime < old.st_mtime ) {
-            remove( VbufString( &unpacked_as ) );
+            remove_vbuf( &unpacked_as );
         } else {
             cancel = replace_file( name, &unpacked_as );
         }
@@ -1470,7 +1470,7 @@ bool CheckInstallDLL( const VBUF *name, vhandle var_handle )
         // don't display the dialog if the user selected the "Skip dialog" option
         if( !GetVariableBoolVal( "DLL_Skip_Dialog" ) ) {
             if( DoDialog( "DLLInstall" ) == DLG_CAN ) {
-                remove( VbufString( &unpacked_as ) );
+                remove_vbuf( &unpacked_as );
                 cancel = true;
                 ok = false;
             }
@@ -1478,7 +1478,7 @@ bool CheckInstallDLL( const VBUF *name, vhandle var_handle )
     }
     if( ok ) {
         if( GetVariableBoolVal( "DLL_Delete_Old" ) ) {
-            remove( VbufString( &prev_path ) );
+            remove_vbuf( &prev_path );
 #ifdef EXTRA_CAUTIOUS_FOR_DLLS
             cancel = replace_file( name, &unpacked_as );
 #endif
@@ -1489,13 +1489,13 @@ bool CheckInstallDLL( const VBUF *name, vhandle var_handle )
         } else if( GetVariableBoolVal( "DLL_Replace_Old" ) ) {
             DoCopyFile( &unpacked_as, &prev_path, false );
             SetVariableByHandle( var_handle, VbufString( &prev_path ) );
-            remove( VbufString( &unpacked_as ) );
+            remove_vbuf( &unpacked_as );
         } else if( GetVariableBoolVal( "DLL_Dont_Install" ) ) {
             SetVariableByHandle( var_handle, VbufString( &prev_path ) );
-            remove( VbufString( &unpacked_as ) );
+            remove_vbuf( &unpacked_as );
         } else if( GetVariableBoolVal( "DLL_Abort_Install" ) ) {
             SetVariableByHandle( var_handle, VbufString( &prev_path ) );
-            remove( VbufString( &unpacked_as ) );
+            remove_vbuf( &unpacked_as );
             cancel = true;
         }
     }
@@ -1666,7 +1666,7 @@ bool ModifyConfiguration( bool uninstall )
         GetOldConfigFileDir( &changes, &temp, uninstall );
         VbufConcStr( &changes, "\\CHANGES.ENV" );
         MsgBoxVbuf( NULL, "IDS_CHANGES", GUI_OK, &changes );
-        fp = fopen( VbufString( &changes ), "wt" );
+        fp = fopen_vbuf( &changes, "wt" );
         if( fp != NULL ) {
             VbufInit( &cur_var );
             VbufInit( &cur_val );
@@ -1857,9 +1857,9 @@ bool GenerateBatchFile( bool uninstall )
     }
     VbufMakepath( &batch_file, &drive, &dir, &fname, &ext );
     if( uninstall ) {
-        remove( VbufString( &batch_file ) );
+        remove_vbuf( &batch_file );
     } else {
-        fp = fopen( VbufString( &batch_file ), "wt" );
+        fp = fopen_vbuf( &batch_file, "wt" );
         if( fp != NULL ) {
 #ifdef __UNIX__
             fprintf( fp, "#!/bin/sh\n" );
