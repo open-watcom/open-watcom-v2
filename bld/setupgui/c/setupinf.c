@@ -1097,7 +1097,7 @@ static bool dialog_textwindow( char *next, DIALOG_INFO *dlg, bool license_file )
 {
     char                *line;
     char                *text;
-    char                *file_name;
+    VBUF                file_name;
     unsigned int        rows;
     bool                rc = true;
     file_handle         fh;
@@ -1116,10 +1116,11 @@ static bool dialog_textwindow( char *next, DIALOG_INFO *dlg, bool license_file )
         rc = false;
     } else {
         if( *line == '@' ) {
-            file_name = GUIStrDup( line + 1, NULL );
-            fh = FileOpen( file_name, O_RDONLY + O_BINARY );
+            VbufInit( &file_name );
+            VbufConcStr( &file_name, line + 1 );
+            fh = FileOpen( &file_name, "rb" );
             if( fh != NULL ) {
-                FileStat( file_name, &buf );
+                FileStat( &file_name, &buf );
                 text = GUIMemAlloc( buf.st_size + 1 );  // 1 for terminating null
                 if( text != NULL ) {
                     FileRead( fh, text, buf.st_size );
@@ -1127,7 +1128,7 @@ static bool dialog_textwindow( char *next, DIALOG_INFO *dlg, bool license_file )
                 }
                 FileClose( fh );
             }
-            GUIMemFree( file_name );
+            VbufFree( &file_name );
             //VERY VERY SLOW!!!!  Don't use large files!!!
             // bottleneck is the find_break function
             text = textwindow_wrap( text, dlg, false, license_file );
@@ -2511,7 +2512,7 @@ bool CheckForceDLLInstall( const VBUF *name )
     return( false );
 }
 
-long SimInit( const char *inf_name )
+long SimInit( const VBUF *inf_name )
 /**********************************/
 {
     long                result;
@@ -2538,20 +2539,20 @@ long SimInit( const char *inf_name )
     }
     RawBufPos = NULL;       // reset buffer position
 
-    fh = FileOpen( inf_name, O_RDONLY + O_BINARY );
+    fh = FileOpen( inf_name, "rb" );
     if( fh == NULL ) {
         GUIMemFree( ReadBuf );
         GUIMemFree( RawReadBuf );
         return( SIM_INIT_NOFILE );
     }
-    SetVariableByName( "SetupInfFile", inf_name );
+    SetVariableByName( "SetupInfFile", VbufString( inf_name ) );
     result = PrepareSetupInfo( fh, PRESCAN_FILE );
 #if 0
     // Currently doesn't work for archives
     FileSeek( fh, 0, SEEK_SET );
 #else
     FileClose( fh );
-    fh = FileOpen( inf_name, O_RDONLY + O_BINARY );
+    fh = FileOpen( inf_name, "rb" );
     if( fh == NULL ) {
         GUIMemFree( ReadBuf );
         GUIMemFree( RawReadBuf );

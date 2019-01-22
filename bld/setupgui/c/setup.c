@@ -312,7 +312,7 @@ void GUImain( void )
         if( GetDirParams( argc, argv, &inf_name, &src_path, &arc_name ) ) {
             StatusInit();
             GUIDrainEvents();   // push things along
-            FileInit( VbufString( &arc_name ) );
+            FileInit( &arc_name );
             VbufInit( &new_inf );
             VbufInit( &current_dir );
             VbufInit( &drive );

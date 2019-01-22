@@ -138,7 +138,7 @@ extern long             SimSubFileSize( int parm, int subfile );
 extern bool             SimFileSplit( int parm );
 extern bool             SimFileLastSplit( int parm );
 extern void             SaveState( void );
-extern long             SimInit( const char *buff );
+extern long             SimInit( const VBUF *inf_name );
 extern void             SimSetTargTempDisk( int parm, char disk );
 extern const char       *SimGetTargTempDisk( int parm );
 extern int              SimGetTargNumFiles( int parm );

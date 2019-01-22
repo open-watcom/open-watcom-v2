@@ -1430,7 +1430,7 @@ static void SameFileDate( const VBUF *src_path, const VBUF *dst_path )
 {
     struct stat         statblk;
 
-    FileStat( VbufString( src_path ), &statblk );
+    FileStat( src_path, &statblk );
     SetFileDate( dst_path, statblk.st_mtime );
 }
 
@@ -1454,7 +1454,7 @@ COPYFILE_ERROR DoCopyFile( const VBUF *src_path, const VBUF *dst_path, bool appe
     int                 bytes_read, bytes_written, style;
     char                *pbuff;
 
-    src_files = FileOpen( VbufString( src_path ), O_RDONLY | O_BINARY );
+    src_files = FileOpen( src_path, "rb" );
     if( src_files == NULL ) {
         return( CFE_CANTOPENSRC );
     }
@@ -2735,7 +2735,7 @@ bool InitInfo( const VBUF *inf_name, const VBUF *src_path )
     SetVariableByName( "SrcDir2", VbufString( src_path ) );
 //    VbufSplitpath( VbufString( inf_name ), drive, dir, NULL, NULL );
 
-    ret = SimInit( VbufString( inf_name ) );
+    ret = SimInit( inf_name );
     if( ret == SIM_INIT_NOERROR ) {
         DefineVars();
         if( VariablesFile != NULL ) {
