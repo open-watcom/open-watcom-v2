@@ -329,8 +329,8 @@ jobs:
       cache: false
       script: 
 #        - git fetch origin
-        - git pull origin master:documentation
-        - git push
+        - git pull origin ${OWBRANCH}:${OWBRANCH_DOCS}
+        - git push origin ${OWBRANCH_DOCS}
 #        - travis/gitudocs.sh
     #################################
     - stage: Documentation
@@ -360,8 +360,8 @@ jobs:
       cache: false
       script: 
 #        - git fetch origin
-        - git pull origin master:coverity_scan
-        - git push
+        - git pull origin ${OWBRANCH}:${OWBRANCH_COVERITY}
+        - git push origin ${OWBRANCH_COVERITY}
 #        - travis/gitucov.sh
     #################################
     - stage: Coverity
