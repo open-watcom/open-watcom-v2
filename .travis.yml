@@ -49,8 +49,23 @@ jobs:
     - stage: Initialize
       name: "Initialize Travis GitHub repository"
       if: branch = env(OWBRANCH) AND type IN (push, cron)
+      git:
+        depth: false
       cache: false
+      before_install:
+        # git ssh setup
+        - ssh-keyscan git.code.sf.net >> ~/.ssh/known_hosts
+        - export DISPLAY=:0
+        - export SSH_PASSWORD=${SF_TOKEN2}
+        - export SSH_ASKPASS=$TRAVIS_BUILD_DIR/travis/askpass.sh
+        - export GIT_ASKPASS=$TRAVIS_BUILD_DIR/travis/askpass.sh
+        - export GIT_SSH_COMMAND="setsid ssh"
       script: 
+        # update SF mirror
+        - git config remote.origin.pushurl ssh://${SF_TOKEN1}@git.code.sf.net/p/openwatcom/open-watcom-v2
+        - git checkout master
+        - git push
+        # update GitHub repository if necessary
         - travis/tinit.sh
     #################################
     - stage: Bootstrap
@@ -277,31 +292,12 @@ jobs:
     - stage: Finalize
       name: "Clean build cache Linux"
       if: branch = env(OWBRANCH)
-      git:
-        depth: false
-      before_install:
-        # git ssh setup
-        - ssh-keyscan git.code.sf.net >> ~/.ssh/known_hosts
-        - export DISPLAY=:0
-        - export SSH_PASSWORD=${SF_TOKEN2}
-        - export SSH_ASKPASS=$TRAVIS_BUILD_DIR/travis/askpass.sh
-        - export GIT_ASKPASS=$TRAVIS_BUILD_DIR/travis/askpass.sh
-        - export GIT_TRACE=2
-        - export GIT_TRACE_PERFORMANCE=1
-        - export GIT_CURL_VERBOSE=1
-        - export GIT_SSH_COMMAND="setsid ssh"
-      install:
-        - sudo apt-get install -y sshpass
       script: 
         # clear cache
         - rm -rf build/$OWOBJDIR/*
         - rm -rf bld/watcom/$OWOBJDIR/*
         - rm -rf test/*
         - rm -rf build-1/*
-        # update SF mirror
-        - git config remote.origin.pushurl ssh://${SF_TOKEN1}@git.code.sf.net/p/openwatcom/open-watcom-v2
-        - git checkout master
-        - git push
     - # ...
       name: "Clean build cache OSX"
       if: branch = env(OWBRANCH) AND (type = cron OR (type = push AND env(OWTRAVIS_ALL) = 1))
