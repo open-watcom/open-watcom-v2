@@ -679,8 +679,6 @@ extern void             uidirty( SAREA );
 extern void             uidrawbox( VSCREEN _FARD *, SAREA *area, ATTR attr, const char * );
 extern ui_event         uieventsource( bool );
 extern ui_event         uieventsourcehook( ui_event );
-extern LP_VOID          uifaralloc( size_t );
-extern void             uifarfree( LP_VOID );
 extern void             uifini( void );
 extern void             uifinicursor( void );
 extern void             uifinigmouse( void );
@@ -781,6 +779,10 @@ extern int              uimousealign( void );
  * Application related functions
  * may be implemented by application, stub functions
  */
+
+extern LP_VOID          uifaralloc( size_t );
+extern void             uifarfree( LP_VOID );
+
 extern void             uistartevent( void );
 extern void             uidoneevent( void );
 
