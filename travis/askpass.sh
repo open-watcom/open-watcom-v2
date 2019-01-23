@@ -1,2 +1,2 @@
 #!/bin/sh
-exec echo "$SSH_PASSWORD"
+echo "$SSH_PASSWORD"
