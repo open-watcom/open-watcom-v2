@@ -317,6 +317,8 @@ static struct pm_info {
     char                *icoioname;
     int                 icon_pos;
     char                *condition;
+    bool                group           : 1;
+    bool                shadow          : 1;
 } *PMInfo = NULL;
 
 static struct profile_info {
@@ -725,8 +727,8 @@ bool SecondaryPatchSearch( const char *filename, char *buff )
     if( ok ) {
         strcpy( buff, VbufString( &path ) );
     } else {
-        VbufInit( &ext );
         buff[0] = '\0';
+        VbufInit( &ext );
         VbufSetStr( &path, filename );
         VbufSplitpath( &path, NULL, NULL, NULL, &ext );
         if( VbufCompStr( &ext, ".dll", true ) == 0 ) {
@@ -2077,13 +2079,18 @@ static bool ProcLine( char *line, pass_type pass )
         if( !BumpArray( &SetupInfo.pm_files ) )
             return( false );
         next = NextToken( line, ',' );
-        PMInfo[num].filename = GUIStrDup( line, NULL );
-        tmp = ( strcmp( line, "GROUP" ) == 0 );
+        PMInfo[num].group = ( strcmp( line, "GROUP" ) == 0 );
+        PMInfo[num].shadow = ( line[0] == '+' );
+        if( PMInfo[num].shadow ) {
+            PMInfo[num].filename = GUIStrDup( line + 1, NULL );
+        } else {
+            PMInfo[num].filename = GUIStrDup( line, NULL );
+        }
         line = next; next = NextToken( line, ',' );
         PMInfo[num].parameters = GUIStrDup( line, NULL );
         line = next; next = NextToken( line, ',' );
         PMInfo[num].desc = GUIStrDup( line, NULL );
-        if( tmp ) {
+        if( PMInfo[num].group ) {
             AllPMGroups[SetupInfo.all_pm_groups.num].group = GUIStrDup( line, NULL );
             AllPMGroups[SetupInfo.all_pm_groups.num].group_file_name = GUIStrDup( PMInfo[num].parameters, NULL );
             if( !BumpArray( &SetupInfo.all_pm_groups ) ) {
@@ -3026,12 +3033,19 @@ int SimGetPMProgName( int parm, VBUF *buff )
 /******************************************/
 {
     VbufSetStr( buff, PMInfo[parm].filename );
-    // Return directory index.
-    if( VbufString( buff )[0] == '+' ) {    // OS/2 shadow
-        return( SimFindDirForFile( VbufString( buff ) + 1 ) );
-    } else {
-        return( SimFindDirForFile( VbufString( buff ) ) );
-    }
+    return( SimFindDirForFile( VbufString( buff ) ) );
+}
+
+bool SimPMProgIsShadow( int parm )
+/********************************/
+{
+    return( PMInfo[parm].shadow );
+}
+
+bool SimPMProgIsGroup( int parm )
+/*******************************/
+{
+    return( PMInfo[parm].group );
 }
 
 void SimGetPMParms( int parm, VBUF *buff )

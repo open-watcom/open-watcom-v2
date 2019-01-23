@@ -313,8 +313,7 @@ static bool UseDDE( bool uninstall )
                     continue;
                 }
                 SimGetPMDesc( i, &prog_desc );
-                dir_index = SimGetPMProgName( i, &prog_name );
-                if( VbufCompStr( &prog_name, "GROUP", false ) == 0 ) {
+                if( SimPMProgIsGroup( i ) ) {
                     /*
                      * Delete the PM Group box to get rid of stale icons
                      */
@@ -328,6 +327,7 @@ static bool UseDDE( bool uninstall )
                     /*
                      * Adding item to group
                      */
+                    dir_index = SimGetPMProgName( i, &prog_name );
                     if( dir_index == -1 ) {
                         VbufRewind( &working_dir );
                         ReplaceVars( &prog_name, NULL );
@@ -617,14 +617,14 @@ static bool UseIShellLink( bool uninstall )
                 continue;
             }
             SimGetPMDesc( i, &prog_desc );
-            dir_index = SimGetPMProgName( i, &prog_name );
-            if( VbufCompStr( &prog_name, "GROUP", false ) == 0 ) {
+            if( SimPMProgIsGroup( i ) ) {
                 /* creating a new group */
                 ok = linkCreateGroup( &prog_desc );
             } else {
                 /*
                  * Adding item to group
                  */
+                dir_index = SimGetPMProgName( i, &prog_name );
                 if( dir_index == -1 ) {
                     VbufRewind( &working_dir );
                     ReplaceVars( &prog_name, NULL );

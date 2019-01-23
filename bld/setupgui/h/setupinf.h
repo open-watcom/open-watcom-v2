@@ -169,6 +169,8 @@ extern void             SimGetPMGroupIcon( VBUF *buff );
 extern void             SimGetPMGroup( VBUF *buff );
 extern int              SimGetPMProgsNum( void );
 extern int              SimGetPMProgName( int parm, VBUF *buff );
+extern bool             SimPMProgIsShadow( int parm );
+extern bool             SimPMProgIsGroup( int parm );
 extern void             SimGetPMParms( int parm, VBUF *buff );
 extern void             SimGetPMDesc( int parm, VBUF *buff );
 extern int              SimGetPMIconInfo( int parm, VBUF *buff, int *icon_pos );

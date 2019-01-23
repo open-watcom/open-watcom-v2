@@ -176,8 +176,7 @@ bool CreatePMInfo( bool uninstall )
             }
         }
 
-        nDirIndex = SimGetPMProgName( i, &PMProgName );
-        if( VbufCompStr( &PMProgName, "GROUP", false ) == 0 ) {
+        if( SimPMProgIsGroup( i ) ) {
             /*
              * Process a group (ie. folder)
              */
@@ -196,6 +195,7 @@ bool CreatePMInfo( bool uninstall )
             /*
              * Process a regular object
              */
+            nDirIndex = SimGetPMProgName( i, &PMProgName );
             if( nDirIndex == -1 ) {
                 VbufRewind( &WorkingDir );
                 ReplaceVars( &PMProgName, NULL );
@@ -239,10 +239,10 @@ bool CreatePMInfo( bool uninstall )
                 SimGetDir( nDirIndex, &tmp );
                 VbufPrepVbuf( &PMIconFileName, &tmp );
             }
-            if( VbufString( &PMProgName )[0] == '+' ) {
+            if( SimPMProgIsShadow( i ) ) {
                 VbufSetStr( &Cmd, "SHADOWID=" );
                 VbufConcVbuf( &Cmd, &WorkingDir );
-                VbufConcVbufPos( &Cmd, &PMProgName, 1 );
+                VbufConcVbuf( &Cmd, &PMProgName );
                 obj = WinCreateObject( "WPShadow", VbufString( &PMProgDesc ), VbufString( &Cmd ), VbufString( &Folder ), CO_REPLACEIFEXISTS );
             } else {
                 /*
