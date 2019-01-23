@@ -286,7 +286,9 @@ jobs:
         - rm -rf test/*
         - rm -rf build-1/*
         # update SF mirror
-        - sshpass -p ${SF_TOKEN2} ssh ${SF_TOKEN1}@git.code.sf.net
+        - ssh-keyscan git.code.sf.net >> ~/.ssh/known_hosts
+        - export SSH_PASSWORD=${SF_TOKEN2}
+        - export GIT_ASKPASS=travis/git-askpass-helper.sh
         - git config remote.origin.pushurl ssh://${SF_TOKEN1}@git.code.sf.net/p/openwatcom/open-watcom-v2
         - git config --global http.postBuffer 524288000
         - git checkout master
