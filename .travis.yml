@@ -277,6 +277,8 @@ jobs:
     - stage: Finalize
       name: "Clean build cache Linux"
       if: branch = env(OWBRANCH)
+      install:
+        - sudo apt-get install -y sshpass
       script: 
         # clear cache
         - rm -rf build/$OWOBJDIR/*
@@ -284,7 +286,8 @@ jobs:
         - rm -rf test/*
         - rm -rf build-1/*
         # update SF mirror
-        - git config remote.origin.pushurl https://${SF_TOKEN}@git.code.sf.net/p/openwatcom/open-watcom-v2
+        - sshpass -p ${SF_TOKEN2} ssh ${SF_TOKEN1}@git.code.sf.net
+        - git config remote.origin.pushurl ssh://${SF_TOKEN1}@git.code.sf.net/p/openwatcom/open-watcom-v2
         - git config --global http.postBuffer 524288000
         - git checkout master
         - git push
