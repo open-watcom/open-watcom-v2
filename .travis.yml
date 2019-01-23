@@ -324,9 +324,14 @@ jobs:
     - stage: InitDocumentation
       name: "Initiate Documentation build by Cron"
       if: branch = env(OWBRANCH_DOCS) AND type = cron
+      git:
+        depth: false
       cache: false
       script: 
-        - travis/gitudocs.sh
+#        - git fetch origin
+        - git pull origin master:documentation
+        - git push
+#        - travis/gitudocs.sh
     #################################
     - stage: Documentation
       name: "OW Documentation build Linux"
@@ -350,9 +355,14 @@ jobs:
     - stage: InitCoverity
       name: "Initiate Coverity Scan by Cron Linux"
       if: branch = env(OWBRANCH_COVERITY) AND type = cron
+      git:
+        depth: false
       cache: false
       script: 
-        - travis/gitucov.sh
+#        - git fetch origin
+        - git pull origin master:coverity_scan
+        - git push
+#        - travis/gitucov.sh
     #################################
     - stage: Coverity
       name: "Initiate Coverity Scan Linux"
