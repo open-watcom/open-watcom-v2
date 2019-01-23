@@ -277,6 +277,8 @@ jobs:
     - stage: Finalize
       name: "Clean build cache Linux"
       if: branch = env(OWBRANCH)
+      git:
+        depth: false
       before_install:
         # git ssh setup
         - ssh-keyscan git.code.sf.net >> ~/.ssh/known_hosts
