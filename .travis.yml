@@ -277,6 +277,17 @@ jobs:
     - stage: Finalize
       name: "Clean build cache Linux"
       if: branch = env(OWBRANCH)
+      before_install:
+        # git ssh setup
+        - ssh-keyscan git.code.sf.net >> ~/.ssh/known_hosts
+        - export DISPLAY=:0
+        - export SSH_PASSWORD=${SF_TOKEN2}
+        - export SSH_ASKPASS=$TRAVIS_BUILD_DIR/travis/askpass.sh
+        - export GIT_ASKPASS=$TRAVIS_BUILD_DIR/travis/askpass.sh
+        - export GIT_TRACE=2
+        - export GIT_TRACE_PERFORMANCE=1
+        - export GIT_CURL_VERBOSE=1
+        - export GIT_SSH_COMMAND="setsid ssh"
       install:
         - sudo apt-get install -y sshpass
       script: 
@@ -286,17 +297,7 @@ jobs:
         - rm -rf test/*
         - rm -rf build-1/*
         # update SF mirror
-        - ssh-keyscan git.code.sf.net >> ~/.ssh/known_hosts
-        - export DISPLAY=:0
-        - export SSH_PASSWORD=${SF_TOKEN2}
-        - export SSH_ASKPASS=./travis/askpass.sh
-        - export GIT_ASKPASS=./travis/askpass.sh
-        - export GIT_TRACE=1
-        - export GIT_TRACE_PERFORMANCE=1
-        - export GIT_CURL_VERBOSE=1
-        - export GIT_SSH_COMMAND="ssh -vvv"
         - git config remote.origin.pushurl ssh://${SF_TOKEN1}@git.code.sf.net/p/openwatcom/open-watcom-v2
-        - git config --global http.postBuffer 524288000
         - git checkout master
         - git push
     - # ...
