@@ -292,6 +292,9 @@ jobs:
         - export SSH_ASKPASS=./travis/askpass.sh
         - export GIT_ASKPASS=./travis/askpass.sh
         - export GIT_TRACE=1
+        - export GIT_TRACE_PERFORMANCE=1
+        - export GIT_CURL_VERBOSE=1
+        - export GIT_SSH_COMMAND="ssh -vvv"
         - git config remote.origin.pushurl ssh://${SF_TOKEN1}@git.code.sf.net/p/openwatcom/open-watcom-v2
         - git config --global http.postBuffer 524288000
         - git checkout master
