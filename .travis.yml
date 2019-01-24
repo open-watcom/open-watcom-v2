@@ -328,11 +328,9 @@ jobs:
         depth: false
       cache: false
       script: 
-#        - git fetch origin
-        - git checkout ${OWBRANCH_DOCS}
-        - git pull origin ${OWBRANCH}
-        - git branch
-        - git push
+        - git fetch origin ${OWBRANCH}
+        - git checkout ${OWBRANCH}
+        - git push origin ${OWBRANCH_DOCS}
 #        - travis/gitudocs.sh
     #################################
     - stage: Documentation
@@ -361,11 +359,9 @@ jobs:
         depth: false
       cache: false
       script: 
-#        - git fetch origin
-        - git checkout ${OWBRANCH_COVERITY}
-        - git pull origin ${OWBRANCH}
-        - git branch
-        - git push
+        - git fetch origin ${OWBRANCH}
+        - git checkout ${OWBRANCH}
+        - git push origin ${OWBRANCH_COVERITY}
 #        - travis/gitucov.sh
     #################################
     - stage: Coverity
