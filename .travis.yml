@@ -63,7 +63,7 @@ jobs:
       script: 
         # update SF mirror
         - git config remote.origin.pushurl ssh://${SF_TOKEN1}@git.code.sf.net/p/openwatcom/open-watcom-v2
-        - git checkout master
+        - git checkout ${OWBRANCH}
         - git push
         # update GitHub repository if necessary
         - travis/tinit.sh
@@ -329,8 +329,8 @@ jobs:
       cache: false
       script: 
 #        - git fetch origin
-        - git checkout -b ${OWBRANCH_DOCS}
-        - git pull origin ${OWBRANCH}:${OWBRANCH_DOCS}
+        - git checkout ${OWBRANCH_DOCS}
+        - git pull origin ${OWBRANCH}
         - git branch
         - git push
 #        - travis/gitudocs.sh
@@ -362,8 +362,8 @@ jobs:
       cache: false
       script: 
 #        - git fetch origin
-        - git checkout -b ${OWBRANCH_COVERITY}
-        - git pull origin ${OWBRANCH}:${OWBRANCH_COVERITY}
+        - git checkout ${OWBRANCH_COVERITY}
+        - git pull origin ${OWBRANCH}
         - git branch
         - git push
 #        - travis/gitucov.sh
