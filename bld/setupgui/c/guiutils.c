@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -300,7 +301,7 @@ bool SetupInit( void )
     } else {
         init.style |= GUI_VISIBLE | GUI_MAXIMIZE | GUI_MINIMIZE;
     }
-#ifdef _UI
+#if !defined( GUI_IS_GUI )
     init.style |= GUI_NOFRAME;
 #endif
     init.parent = NULL;

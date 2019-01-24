@@ -30,26 +30,7 @@
 *
 ****************************************************************************/
 
-#include <stddef.h>
-#ifdef PLAT_OS2
-#define INCL_PM
-#include <os2.h>
-#else
-#include <windows.h>
-#endif
-#include "wpimem.h"
 
-void _wpi_free( void * ptr )
-{
-    free( ptr );
-}
-
-void * _wpi_malloc( size_t size )
-{
-    return( malloc( size ) );
-}
-
-void * _wpi_realloc( void *ptr, size_t size )
-{
-    return( realloc( ptr, size ) );
-}
+extern void             PMfree( void *ptr );
+extern void             *PMmalloc( size_t size );
+extern void             *PMrealloc( void *ptr, size_t size );

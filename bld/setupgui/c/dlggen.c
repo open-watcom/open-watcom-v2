@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -545,7 +546,7 @@ static void UpdateControlVisibility( gui_window *gui, a_dialog_header *curr_dial
 static bool GenericGUIEventProc( gui_window *gui, gui_event gui_ev, void *param )
 /*******************************************************************************/
 {
-#if !defined( _UI )
+#if defined( GUI_IS_GUI )
     static bool         first_time = true;
 #endif
     gui_ctl_id          id;
@@ -582,7 +583,7 @@ static bool GenericGUIEventProc( gui_window *gui, gui_event gui_ev, void *param 
             }
         }
 #endif
-#if defined( _UI )
+#if !defined( GUI_IS_GUI )
         if( stricmp( curr_dialog->name, "Welcome" ) == 0 ) {
             if( GetVariableBoolVal( "AutoOptionsDialog" ) ) {
                 // call Options dialog
@@ -590,12 +591,12 @@ static bool GenericGUIEventProc( gui_window *gui, gui_event gui_ev, void *param 
             }
         }
 #endif
-#if !defined( _UI )
+#if defined( GUI_IS_GUI )
         first_time = true;
 #endif
         initializing = false;
         return( true );
-#if !defined( _UI )
+#if defined( GUI_IS_GUI )
     case GUI_PAINT:
         if( first_time ) {
             first_time = false;
@@ -708,7 +709,7 @@ static void AdjustDialogControls( a_dialog_header *curr_dialog )
         control = &curr_dialog->controls[i];
         switch( control->control_class ) {
         case GUI_RADIO_BUTTON:
-#if !defined( _UI )
+#if defined( GUI_IS_GUI )
             /* Align left edge of control with left of leftmost Button */
             but_pos = WIN_BUTTON_POS( 1, MAX_CTRL_PER_LINE, width, WIN_BW );
             control->rect.x = DLG_COL( but_pos );
@@ -717,7 +718,7 @@ static void AdjustDialogControls( a_dialog_header *curr_dialog )
             break;
 
         case GUI_CHECK_BOX:
-#if !defined( _UI )
+#if defined( GUI_IS_GUI )
             /* Align left edge of control with left of leftmost Button */
             but_pos = WIN_BUTTON_POS( 1, MAX_CTRL_PER_LINE, width, WIN_BW );
             control->rect.x = DLG_COL( but_pos );
@@ -745,7 +746,7 @@ static void AdjustDialogControls( a_dialog_header *curr_dialog )
             curr_button = 0;
             while( i < j ) {
                 control->rect.width = DLG_COL( (width / num_push_buttons) - C0 - 1 );
-#if defined( __NT__ ) && !defined( _UI )
+#if defined( __NT__ ) && defined( GUI_IS_GUI )
                 but_pos = WIN_BUTTON_POS( curr_button + 1, NORMAL_CHECKMARKS, width, WIN_BW );
                 control->rect.x = DLG_COL( but_pos );
 #else
@@ -774,7 +775,7 @@ static void AdjustDialogControls( a_dialog_header *curr_dialog )
             if( j == curr_dialog->num_controls ) {
                 for( curr_button = 1; curr_button <= num_push_buttons; ++curr_button ) {
                     max_width = strlen( control->text ) + BUTTON_EXTRA;
-#if !defined( _UI )
+#if defined( GUI_IS_GUI )
                     if( max_width < WIN_BW ) {
                         max_width = WIN_BW;
                     }
@@ -793,7 +794,7 @@ static void AdjustDialogControls( a_dialog_header *curr_dialog )
                 }
             } else {
                 max_width = strlen( control->text ) + BUTTON_EXTRA;
-#if !defined( _UI )
+#if defined( GUI_IS_GUI )
                 if( max_width < WIN_BW ) {
                     max_width = WIN_BW;
                 }
@@ -846,7 +847,7 @@ static void AdjustDialogControls( a_dialog_header *curr_dialog )
                     control->rect.width = DLG_COL( width );
                 }
             } else {
-#if !defined( _UI )
+#if defined( GUI_IS_GUI )
                 /* Align left edge of control with left of leftmost Button */
                 but_pos = WIN_BUTTON_POS( 1, MAX_CTRL_PER_LINE, width, WIN_BW );
                 control->rect.x = DLG_COL( but_pos );
@@ -884,7 +885,7 @@ dlg_state GenericDialog( gui_window *parent, a_dialog_header *curr_dialog )
     }
     width = curr_dialog->cols;
     height = curr_dialog->rows;
-#if defined( __OS2__ ) && !defined( _UI )
+#if defined( __OS2__ ) && defined( GUI_IS_GUI )
     height -= 1;
 #endif
     if( width < VbufLen( &title ) + WIDTH_BORDER + 2 ) {

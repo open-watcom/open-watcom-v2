@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -2590,7 +2591,7 @@ long SimInit( const VBUF *inf_name )
     InitArray( (void **)&ForceDLLInstall, sizeof( struct force_DLL_install ), &SetupInfo.force_DLL_install );
     InitArray( (void **)&AllPMGroups, sizeof( struct all_pm_groups ), &SetupInfo.all_pm_groups );
     InitArray( (void **)&AssociationInfo, sizeof( struct association_info ), &SetupInfo.associations );
-#ifndef _UI
+#if defined( GUI_IS_GUI )
     SetDialogFont();
 #endif
     GUIGetTextMetrics( MainWnd, &metrics );

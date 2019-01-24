@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -39,7 +40,7 @@
 #include "wio.h"
 #include "watcom.h"
 #include "setup.h"
-#if !defined( _UI ) && ( defined( __NT__ ) || defined( __WINDOWS__ ) )
+#if defined( GUI_IS_GUI ) && ( defined( __NT__ ) || defined( __WINDOWS__ ) )
     #include "fontstr.h"
 #endif
 #include "setupinf.h"
@@ -535,7 +536,7 @@ void WriteProfileStrings( bool uninstall )
 
 void SetDialogFont()
 {
-#if (defined( __NT__ ) || defined( __WINDOWS__ )) && !defined( _UI )
+#if (defined( __NT__ ) || defined( __WINDOWS__ )) && defined( GUI_IS_GUI )
 
     char            *fontstr;
     LOGFONT         lf;

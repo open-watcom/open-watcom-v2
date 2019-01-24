@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2016-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -30,26 +30,12 @@
 *
 ****************************************************************************/
 
-#include <stddef.h>
-#ifdef PLAT_OS2
-#define INCL_PM
-#include <os2.h>
-#else
-#include <windows.h>
+
+#ifndef WPIMEM_H
+#define WPIMEM_H
+
+extern void _wpi_free( void * ptr );
+extern void * _wpi_malloc( size_t size );
+extern void * _wpi_realloc( void *ptr, size_t size );
+
 #endif
-#include "wpimem.h"
-
-void _wpi_free( void * ptr )
-{
-    free( ptr );
-}
-
-void * _wpi_malloc( size_t size )
-{
-    return( malloc( size ) );
-}
-
-void * _wpi_realloc( void *ptr, size_t size )
-{
-    return( realloc( ptr, size ) );
-}

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -51,10 +52,6 @@
  * I am not about to change this in ALL the code, and since I am not including
  * windows.h, I have defined it as such
  */
-
-extern void             PMfree( void *ptr );
-extern void             *PMmalloc( size_t size );
-extern void             *PMrealloc( void *ptr, size_t size );
 
 extern TEMPLATE_HANDLE  DialogTemplate( DWORD dtStyle, int x, int y, int cx, int cy,
                                 const char *menuname, const char *classname, const char *captiontext,

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -164,7 +165,7 @@ bool ModifyEnvironment( bool uninstall )
     bool        ret = true;
 
     if( ProgramGroups ) {
-#if defined( _UI ) || defined( __UNIX__ )
+#if !defined( GUI_IS_GUI ) || defined( __UNIX__ )
         /* unused parameters */ (void)uninstall;
 #else
         ret = CreatePMInfo( uninstall );
@@ -191,7 +192,7 @@ bool ModifyStartup( bool uninstall )
     bool        ret = true;
 
     if( StartupChange ) {
-#if !defined( _UI )
+#if defined( GUI_IS_GUI )
         WriteProfileStrings( uninstall );  // will write to the win.ini file.
 #endif
 
@@ -2151,7 +2152,7 @@ bool CopyAllFiles( void )
         return( false );
     if( !RelocateFiles() )
         return( false );
-#if defined( __OS2__ ) && !defined( _UI )
+#if defined( __OS2__ ) && defined( GUI_IS_GUI )
     LabelDirs();    // add labels (long names) to directories
 #endif
     if( !DoCopyFiles() )
