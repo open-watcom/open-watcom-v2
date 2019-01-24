@@ -127,7 +127,7 @@ vi_rc ReadAFile( linenum afterwhich, const char *name )
             FileIOMessage( fn, lnecnt, bytecnt );
         }
     }
-    FreeEntireFile( cfile );
+    FileFree( cfile );
     MemFree( fn );
     return( ERR_NO_ERR );
 
