@@ -330,6 +330,7 @@ jobs:
       script: 
 #        - git fetch origin
         - git pull origin ${OWBRANCH}:${OWBRANCH_DOCS}
+        - git branch
         - git push
 #        - travis/gitudocs.sh
     #################################
@@ -361,6 +362,7 @@ jobs:
       script: 
 #        - git fetch origin
         - git pull origin ${OWBRANCH}:${OWBRANCH_COVERITY}
+        - git branch
         - git push
 #        - travis/gitucov.sh
     #################################
