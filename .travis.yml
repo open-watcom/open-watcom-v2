@@ -328,6 +328,7 @@ jobs:
         depth: false
       cache: false
       script: 
+        - git config remote.origin.pushurl https://${GITHUB_TOKEN}@github.com/${TRAVIS_REPO_SLUG}.git
         - git fetch origin ${OWBRANCH}
         - git checkout ${OWBRANCH}
         - git push origin ${OWBRANCH}:${OWBRANCH_DOCS}
@@ -358,6 +359,7 @@ jobs:
         depth: false
       cache: false
       script: 
+        - git config remote.origin.pushurl https://${GITHUB_TOKEN}@github.com/${TRAVIS_REPO_SLUG}.git
         - git fetch origin ${OWBRANCH}
         - git checkout ${OWBRANCH}
         - git push origin ${OWBRANCH}:${OWBRANCH_COVERITY}
