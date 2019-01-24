@@ -24,12 +24,6 @@ gitupdf_proc()
             case "$OWTRAVISJOB" in
                 "BOOTSTRAP" | "BUILD" | "BUILD-1" | "BUILD-2" | "DOCTRAVIS")
                     #
-                    # setup client info
-                    #
-                    git config --global user.email "travis@travis-ci.org"
-                    git config --global user.name "Travis CI"
-                    git config --global push.default simple
-                    #
                     # clone GitHub repository
                     #
                     git clone $GITVERBOSE1 --branch=$OWBRANCH https://${GITHUB_TOKEN}@github.com/${OWTRAVIS_REPO_SLUG}.git $OWTRAVIS_BUILD_DIR
@@ -63,12 +57,6 @@ gitupdf_proc()
                     echo_msg="gitupdf.sh - done"
                     ;;
                 "TEST")
-                    #
-                    # setup client info
-                    #
-                    git config --global user.email "travis@travis-ci.org"
-                    git config --global user.name "Travis CI"
-                    git config --global push.default simple
                     #
                     # clone GitHub repository
                     #

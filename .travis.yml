@@ -25,7 +25,15 @@ cache:
     - test
     - build-1
 
+before_install:
+ # stop unwanted services
+ - travis/services.sh
+
 before_script:
+ # configure Git client
+ - git config --global user.email "travis@travis-ci.org"
+ - git config --global user.name "Travis CI"
+ - git config --global push.default simple
  # get environment/cache info if debug is active
  - travis/envinfo.sh
  - travis/cacheinf.sh
@@ -47,24 +55,14 @@ jobs:
   include:
     #################################
     - stage: Initialize
-      name: "Initialize Travis GitHub repository"
+      name: "Initialize Travis GitHub repository and mirror master branch commits to SF"
       if: branch = env(OWBRANCH) AND type IN (push, cron)
       git:
         depth: false
       cache: false
-      before_install:
-        # git ssh setup
-        - ssh-keyscan git.code.sf.net >> ~/.ssh/known_hosts
-        - export DISPLAY=:0
-        - export SSH_PASSWORD=${SF_TOKEN2}
-        - export SSH_ASKPASS=$TRAVIS_BUILD_DIR/travis/askpass.sh
-        - export GIT_ASKPASS=$TRAVIS_BUILD_DIR/travis/askpass.sh
-        - export GIT_SSH_COMMAND="setsid ssh"
       script: 
         # update SF mirror
-        - git config remote.origin.pushurl ssh://${SF_TOKEN1}@git.code.sf.net/p/openwatcom/open-watcom-v2
-        - git checkout ${OWBRANCH}
-        - git push
+        - travis/gitusf.sh
         # update GitHub repository if necessary
         - travis/tinit.sh
     #################################
@@ -72,8 +70,6 @@ jobs:
       name: "Build minimal set of build tools Linux"
       if: branch = env(OWBRANCH)
       before_install:
-        # stop unwanted services
-        - travis/services.sh
         # set environmet variable
         - export OWTOOLS=GCC
         - export OWTRAVISJOB=BOOTSTRAP
@@ -93,8 +89,6 @@ jobs:
       os: osx
       compiler: clang
       before_install:
-        # stop unwanted services
-        - travis/services.sh
         # set environmet variable
         - export OWTOOLS=CLANG
         - export OWTRAVISJOB=BOOTSTRAP
@@ -114,8 +108,6 @@ jobs:
       os: windows
       before_install:
         - test -n $CC && unset CC
-        # stop unwanted services
-#        - travis/services.sh
         # set environmet variable
         - export OWTOOLS=VISUALC
         - export OWTRAVISJOB=BOOTSTRAP
@@ -133,8 +125,6 @@ jobs:
       name: "OW tools build Linux"
       if: branch = env(OWBRANCH)
       before_install:
-        # stop unwanted services
-        - travis/services.sh
         # set environmet variable
         - export OWTOOLS=GCC
         - export OWTRAVISJOB=BUILD
@@ -150,8 +140,6 @@ jobs:
       os: osx
       compiler: clang
       before_install:
-        # stop unwanted services
-        - travis/services.sh
         # set environmet variable
         - export OWTOOLS=CLANG
         - export OWTRAVISJOB=BUILD-1
@@ -167,8 +155,6 @@ jobs:
       os: windows
       before_install:
         - test -n $CC && unset CC
-        # stop unwanted services
-#        - travis/services.sh
         # set environmet variable
         - export OWTOOLS=VISUALC
         - export OWTRAVISJOB=BUILD
@@ -183,8 +169,6 @@ jobs:
       os: osx
       compiler: clang
       before_install:
-        # stop unwanted services
-        - travis/services.sh
         # set environmet variable
         - export OWTOOLS=CLANG
         - export OWTRAVISJOB=BUILD2
@@ -202,8 +186,6 @@ jobs:
       name: "Test wasm assembler"
       if: branch = env(OWBRANCH) AND (type = cron OR (type = push AND env(OWTRAVIS_ALL) = 1))
       before_install:
-        # stop unwanted services
-        - travis/services.sh
         # set environmet variable
         - export OWTOOLS=WATCOM
         - export OWTRAVISJOB=TEST
@@ -220,8 +202,6 @@ jobs:
       name: "Test C compiler"
       if: branch = env(OWBRANCH) AND (type = cron OR (type = push AND env(OWTRAVIS_ALL) = 1))
       before_install:
-        # stop unwanted services
-        - travis/services.sh
         # set environmet variable
         - export OWTOOLS=WATCOM
         - export OWTRAVISJOB=TEST
@@ -238,8 +218,6 @@ jobs:
       name: "Test FORTRAN 77 compiler"
       if: branch = env(OWBRANCH) AND (type = cron OR (type = push AND env(OWTRAVIS_ALL) = 1))
       before_install:
-        # stop unwanted services
-        - travis/services.sh
         # set environmet variable
         - export OWTOOLS=WATCOM
         - export OWTRAVISJOB=TEST
@@ -256,8 +234,6 @@ jobs:
       name: "Test C++ compiler"
       if: branch = env(OWBRANCH) AND (type = cron OR (type = push AND env(OWTRAVIS_ALL) = 1))
       before_install:
-        # stop unwanted services
-        - travis/services.sh
         # set environmet variable
         - export OWTOOLS=WATCOM
         - export OWTRAVISJOB=TEST
@@ -274,8 +250,6 @@ jobs:
       name: "Test C run-time library"
       if: branch = env(OWBRANCH) AND (type = cron OR (type = push AND env(OWTRAVIS_ALL) = 1))
       before_install:
-        # stop unwanted services
-        - travis/services.sh
         # set environmet variable
         - export OWTOOLS=WATCOM
         - export OWTRAVISJOB=TEST
@@ -324,8 +298,6 @@ jobs:
     - stage: InitDocumentation
       name: "Initiate Documentation build by Cron"
       if: branch = env(OWBRANCH_DOCS) AND type = cron
-      git:
-        depth: false
       cache: false
       script: 
         - git config remote.origin.pushurl https://${GITHUB_TOKEN}@github.com/${TRAVIS_REPO_SLUG}.git
@@ -338,8 +310,6 @@ jobs:
       if: branch = env(OWBRANCH_DOCS) AND type = push
       cache: false
       before_install:
-        # stop unwanted services
-        - travis/services.sh
         # set environmet variable
         - export OWTOOLS=GCC
         - export OWTRAVISJOB=DOCTRAVIS
@@ -355,8 +325,6 @@ jobs:
     - stage: InitCoverity
       name: "Initiate Coverity Scan by Cron Linux"
       if: branch = env(OWBRANCH_COVERITY) AND type = cron
-      git:
-        depth: false
       cache: false
       script: 
         - git config remote.origin.pushurl https://${GITHUB_TOKEN}@github.com/${TRAVIS_REPO_SLUG}.git
@@ -369,8 +337,6 @@ jobs:
       if: branch = env(OWBRANCH_COVERITY) AND type = push
       cache: false
       before_install:
-        # stop unwanted services
-        - travis/services.sh
         # set environmet variable
         - export OWTOOLS=GCC
         - export OWTRAVISJOB=BUILD

@@ -18,12 +18,6 @@ gitudocs_proc1()
     fi
 
     #
-    # configure Git client
-    #
-    git config --global user.email "travis@travis-ci.org"
-    git config --global user.name "Travis CI"
-    git config --global push.default simple
-    #
     cd ..
     rm -rf $TRAVIS_BUILD_DIR
     git clone $GITVERBOSE1 https://${GITHUB_TOKEN}@github.com/${TRAVIS_REPO_SLUG}.git $TRAVIS_BUILD_DIR
