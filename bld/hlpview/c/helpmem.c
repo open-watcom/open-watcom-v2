@@ -48,7 +48,7 @@ static FILE         *memFP = NULL;
 
 #endif
 
-void HelpMemInit( void )
+void HelpMemOpen( void )
 {
 #ifdef TRMEM
     TRMemOpen();
@@ -57,7 +57,7 @@ void HelpMemInit( void )
 #endif
 }
 
-void HelpMemFini( void )
+void HelpMemClose( void )
 {
 #ifdef TRMEM
 //    TRMemPrtList();

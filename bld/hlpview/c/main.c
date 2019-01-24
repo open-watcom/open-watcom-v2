@@ -116,7 +116,7 @@ int main( int argc, char *argv[] )
     int                 rc;
     bool                err;
 
-    HelpMemInit();
+    HelpMemOpen();
     err = false;
     if( argc < 2 || strcmp( argv[1], "?" ) == 0 || strcmp( argv[1], "-?" ) == 0
         || strcmp( argv[1], "/?" ) == 0 ) {
@@ -170,6 +170,6 @@ int main( int argc, char *argv[] )
         }
         uifini();
     }
-    HelpMemFini();
+    HelpMemClose();
     return( EXIT_SUCCESS );
 }
