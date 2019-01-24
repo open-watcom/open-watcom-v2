@@ -330,7 +330,7 @@ jobs:
       script: 
         - git fetch origin ${OWBRANCH}
         - git checkout ${OWBRANCH}
-        - git push origin ${OWBRANCH_DOCS}
+        - git push origin ${OWBRANCH}:${OWBRANCH_DOCS}
     #################################
     - stage: Documentation
       name: "OW Documentation build Linux"
@@ -360,7 +360,7 @@ jobs:
       script: 
         - git fetch origin ${OWBRANCH}
         - git checkout ${OWBRANCH}
-        - git push origin ${OWBRANCH_COVERITY}
+        - git push origin ${OWBRANCH}:${OWBRANCH_COVERITY}
     #################################
     - stage: Coverity
       name: "Initiate Coverity Scan Linux"
