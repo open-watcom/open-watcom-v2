@@ -331,7 +331,6 @@ jobs:
         - git fetch origin ${OWBRANCH}
         - git checkout ${OWBRANCH}
         - git push origin ${OWBRANCH_DOCS}
-#        - travis/gitudocs.sh
     #################################
     - stage: Documentation
       name: "OW Documentation build Linux"
@@ -362,7 +361,6 @@ jobs:
         - git fetch origin ${OWBRANCH}
         - git checkout ${OWBRANCH}
         - git push origin ${OWBRANCH_COVERITY}
-#        - travis/gitucov.sh
     #################################
     - stage: Coverity
       name: "Initiate Coverity Scan Linux"
