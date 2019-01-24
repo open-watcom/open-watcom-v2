@@ -329,6 +329,7 @@ jobs:
       cache: false
       script: 
 #        - git fetch origin
+        - git checkout -b ${OWBRANCH_DOCS}
         - git pull origin ${OWBRANCH}:${OWBRANCH_DOCS}
         - git branch
         - git push
@@ -361,6 +362,7 @@ jobs:
       cache: false
       script: 
 #        - git fetch origin
+        - git checkout -b ${OWBRANCH_COVERITY}
         - git pull origin ${OWBRANCH}:${OWBRANCH_COVERITY}
         - git branch
         - git push
