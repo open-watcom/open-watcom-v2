@@ -75,6 +75,8 @@ vi_rc SelectFileOpen( const char *dir, char **result_ptr, const char *mask, bool
     vi_rc               rc;
     char                *p;
 
+    cfile = NULL;
+
     /*
      * get current directory
      */
@@ -94,14 +96,13 @@ vi_rc SelectFileOpen( const char *dir, char **result_ptr, const char *mask, bool
         strcpy( p, mask );
         rc = GetSortDir( dd, want_all_dirs );
         if( rc != ERR_NO_ERR ) {
-            return( rc );
+            break;
         }
 
         /*
          * allocate temporary file structure
          */
         cfile = FileAlloc( NULL );
-
         FormatDirToFile( cfile, true );
 
         /*
@@ -157,6 +158,7 @@ vi_rc SelectFileOpen( const char *dir, char **result_ptr, const char *mask, bool
             break;
         }
         FreeEntireFile( cfile );
+        cfile = NULL;
         need_entire_path = true;
         strcpy( cdir, CurrentDirectory );
         strcpy( dd, CurrentDirectory );
@@ -165,7 +167,9 @@ vi_rc SelectFileOpen( const char *dir, char **result_ptr, const char *mask, bool
     /*
      * done, free memory
      */
-    FreeEntireFile( cfile );
+    if( cfile != NULL ) {
+        FreeEntireFile( cfile );
+    }
     DCDisplayAllLines();
     return( rc );
 
