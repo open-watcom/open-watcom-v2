@@ -15,10 +15,11 @@ additional_cleanup = *.i *.rex setup.inf
 !include deftarg.mif
 !include win386.mif
 
-!include $(commonui_dir)/client.mif
-!include $(wpi_dir)/client.mif
 !include $(gui_dir)/client.mif
 !include $(ui_dir)/client.mif
+!include $(hlpview_dir)/client.mif
+!include $(wpi_dir)/client.mif
+!include $(commonui_dir)/client.mif
 
 !include wres.mif
 !include trmem.mif
@@ -189,9 +190,8 @@ dep_res1 = ../h/setup.h setup.ico disk.ico gui.rc
 
 res_inc_dirs = -I"$(res_dir)" -I"../res" $(gui_inc_dirs) $(inc_dirs_sys)
 
-inc_dirs  = -I"../h" $(ui_inc_dirs) $(wpi_inc_dirs) $(gui_inc_dirs) $(commonui_inc_dirs)
+inc_dirs  = -I"../h" $(ui_inc_dirs) $(wpi_inc_dirs) $(gui_inc_dirs) $(commonui_inc_dirs) $(wpi_inc_dirs) $(hlpview_inc_dirs)
 inc_dirs += -I"$(trmem_dir)" -I"$(libzip_dir)/lib"
-inc_dirs += -I"$(hlpview_dir)/h"
 !ifdef patch
 inc_dirs += -I"$(bdiff_dir)/h" -I"$(wpack_dir)/h"
 !endif

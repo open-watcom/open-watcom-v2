@@ -14,8 +14,8 @@ whelp_trmem = 1
 !include trmem.mif
 
 objs =  main.obj filelist.obj
-objs += $(help_objs)
-objs += $(trmem_objs) $(trmemcvr_objs)
+objs += $(hlpview_objs)
+objs += helpmem.obj $(trmem_objs) $(trmemcvr_objs)
 
 inc_dirs = -I"../h" $(ui_inc_dirs) -I"$(trmem_dir)"
 
