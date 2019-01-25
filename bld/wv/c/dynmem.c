@@ -256,6 +256,67 @@ void *ChkAlloc( size_t size, char *error )
 
 #define Heap_Corupt     "ERROR - Heap is corrupted - %s"
 
+#ifndef _OVERLAYED_
+
+#if defined( _M_I86 )
+#define MAX_BLOCK (60U * 1024)
+#elif defined( __DOS__ )
+#define MAX_BLOCK (4U*1024*1024)
+#else
+#define MAX_BLOCK (1U*1024*1024)
+#endif
+
+#if defined( __DOS__ ) && defined( __386__ ) || defined( __NOUI__ )
+static void MemExpand( void )
+{
+    unsigned long   size;
+    void            **link;
+    void            **p;
+    size_t          alloced;
+
+    if( MemSize == ~0 )
+        return;
+    link = NULL;
+    alloced = MAX_BLOCK;
+    for( size = MemSize; size > 0; size -= alloced ) {
+        if( size < MAX_BLOCK )
+            alloced = size;
+        p = TRMemAlloc( alloced );
+        if( p != NULL ) {
+            *p = link;
+            link = p;
+        }
+    }
+    while( link != NULL ) {
+        p = *link;
+        TRMemFree( link );
+        link = p;
+    }
+}
+#endif
+
+void SysSetMemLimit( void )
+{
+#if defined( __DOS__ ) && defined( __386__ )
+#if !defined(__OSI__)
+    _d16ReserveExt( MemSize + 1*1024UL*1024UL );
+#endif
+    MemExpand();
+    if( _IsOff( SW_REMOTE_LINK ) && _IsOff( SW_KEEP_HEAP_ENABLED ) ) {
+        _heapenable( 0 );
+    }
+#endif
+}
+
+#if defined( __NOUI__ )
+void MemInit( void )
+{
+#ifdef TRMEM
+    MemTrackInit();
+#endif
+    MemExpand();
+}
+
 void MemFini( void )
 {
 #ifdef TRMEM
@@ -297,65 +358,7 @@ void MemFini( void )
     }
 #endif
 }
-
-#ifndef _OVERLAYED_
-
-#if defined( _M_I86 )
-#define MAX_BLOCK (60U * 1024)
-#elif defined( __DOS__ )
-#define MAX_BLOCK (4U*1024*1024)
-#else
-#define MAX_BLOCK (1U*1024*1024)
 #endif
-
-
-static void MemExpand( void )
-{
-    unsigned long   size;
-    void            **link;
-    void            **p;
-    size_t          alloced;
-
-    if( MemSize == ~0 )
-        return;
-    link = NULL;
-    alloced = MAX_BLOCK;
-    for( size = MemSize; size > 0; size -= alloced ) {
-        if( size < MAX_BLOCK )
-            alloced = size;
-        p = TRMemAlloc( alloced );
-        if( p != NULL ) {
-            *p = link;
-            link = p;
-        }
-    }
-    while( link != NULL ) {
-        p = *link;
-        TRMemFree( link );
-        link = p;
-    }
-}
-
-void SysSetMemLimit( void )
-{
-#if defined( __DOS__ ) && defined( __386__ )
-#if !defined(__OSI__)
-    _d16ReserveExt( MemSize + 1*1024UL*1024UL );
-#endif
-    MemExpand();
-    if( _IsOff( SW_REMOTE_LINK ) && _IsOff( SW_KEEP_HEAP_ENABLED ) ) {
-        _heapenable( 0 );
-    }
-#endif
-}
-
-void MemInit( void )
-{
-#ifdef TRMEM
-    MemTrackInit();
-#endif
-    MemExpand();
-}
 
 #if defined( __CHAR__ ) && !defined( __NOUI__ )
 
