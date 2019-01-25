@@ -147,11 +147,11 @@ static bool MainSetupWndGUIEventProc( gui_window *gui, gui_event gui_ev, void *p
                 GUIDrawTextExtent( gui, Bolt[i], strlen( Bolt[i] ), i, 0, GUI_BACKGROUND, WND_APPROX_SIZE );
             }
         }
-        return( true );
+        break;
     default:
         break;
     }
-    return( false );
+    return( true );
 }
 
 gui_coord               GUIScale;
