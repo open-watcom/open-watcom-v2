@@ -30,6 +30,8 @@ os2pm = 1
 !include $(aui_dir)/client.mif
 !include $(gui_dir)/client.mif
 !include $(ui_dir)/client.mif
+!include $(wpi_dir)/client.mif
+!include $(commonui_dir)/client.mif
 
 !include wres.mif
 
@@ -96,7 +98,7 @@ extra_c_flags_srcmgt = $(incl_file_opts)__srcmgt.h
 ###########
 inc_dirs = -I. -I"$(wv_dir)/h" -I"$(dig_dir)/h" -I"$(syshdir)" -I"$(hdir)" -Ih -I"$(rdir)/strings"
 !ifndef dll
-inc_dirs += $(aui_inc_dirs) $(gui_inc_dirs) $(ui_inc_dirs)
+inc_dirs += $(aui_inc_dirs) $(gui_inc_dirs) $(ui_inc_dirs) $(wpi_inc_dirs) $(commonui_inc_dirs)
 !ifeq sys_windowed 1
 inc_dirs += -I"$(gui_dir)/win/h"
 !else
