@@ -32,7 +32,6 @@
 
 #include <stdlib.h>
 #include <string.h>
-#include "wio.h"
 #include "stdui.h"
 #ifdef TRMEM
 #include "trmem.h"
