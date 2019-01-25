@@ -68,7 +68,7 @@ extra_cpp_flags = -D__GUI__
 !else
 extra_cpp_flags = -D__CHAR__
 !endif
-!ifdef dll
+!ifeq sys_rtdll 1
 extra_cpp_flags += -D__NOUI__
 !endif
 !ifeq release 0
@@ -97,7 +97,8 @@ extra_c_flags_srcmgt = $(incl_file_opts)__srcmgt.h
 # inc_dirs
 ###########
 inc_dirs = -I. -I"$(wv_dir)/h" -I"$(dig_dir)/h" -I"$(syshdir)" -I"$(hdir)" -Ih -I"$(rdir)/strings"
-!ifndef dll
+!ifeq sys_rtdll 1
+!else
 inc_dirs += $(aui_inc_dirs) $(gui_inc_dirs) $(ui_inc_dirs) $(wpi_inc_dirs) $(commonui_inc_dirs)
 !ifeq sys_windowed 1
 inc_dirs += -I"$(gui_dir)/win/h"

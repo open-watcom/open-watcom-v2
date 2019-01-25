@@ -6,8 +6,7 @@
 host_os=nt
 host_cpu=386
 
-dll = 1
-extra_c_flags= -br
+wv_rtdll = 1
 
 all : dve.exe .SYMBOLIC
 
