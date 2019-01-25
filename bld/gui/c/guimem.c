@@ -60,7 +60,6 @@ static void GUIMemPrintLine( void *parm, const char *buff, size_t len )
 
     fwrite( buff, 1, len, GUIMemFP );
 }
-
 #endif
 
 void GUIMemPrtUsage( void )
@@ -102,6 +101,11 @@ void GUIMemOpen( void )
     }
 #endif
 }
+#if !defined( GUI_IS_GUI )
+void UIMemOpen( void )
+{
+}
+#endif
 
 void GUIMemClose( void )
 /**********************/
@@ -114,6 +118,11 @@ void GUIMemClose( void )
     }
 #endif
 }
+#if !defined( GUI_IS_GUI )
+void UIMemClose( void )
+{
+}
+#endif
 
 void *GUIMemAlloc( size_t size )
 /******************************/
