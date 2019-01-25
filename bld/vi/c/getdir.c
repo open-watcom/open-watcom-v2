@@ -59,6 +59,8 @@ static bool skipEntry( struct dirent *dire )
 static bool isDirectory( struct dirent *dire )
 {
 #if defined( __QNX__ )
+    if( (dire->d_stat.st_status & _FILE_USED) == 0 )
+        stat( dire->d_name, &dire->d_stat );
     return( S_ISDIR( dire->d_stat.st_mode ) );
 #elif defined( __UNIX__ )
     struct stat st;
@@ -102,13 +104,13 @@ static vi_rc getDir( const char *dname, bool want_all_dirs )
     for( j = 0; j < i; j++ ) {
         path[j] = dname[j];
     }
-    path[i] = '\0';
+    path[j] = '\0';
     if( i > 0 ) {
         ch = path[i - 1];
     } else {
         ch = '\0';
     }
-    for( j = i; j < len; j++ ) {
+    for( ; j < len; j++ ) {
         wild[j - i] = dname[j];
     }
     wild[j - i] = '\0';
