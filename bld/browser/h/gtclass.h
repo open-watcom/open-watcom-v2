@@ -33,7 +33,7 @@
 #ifndef __GTCLASS_H__
 #define __GTCLASS_H__
 
-#include "mem.h"
+#include "brmem.h"
 #include "classlat.h"
 #include "gtwin.h"
 #include "mempool.h"

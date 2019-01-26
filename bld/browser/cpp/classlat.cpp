@@ -35,7 +35,7 @@
 #include "classlat.h"
 #include "classtyp.h"
 #include "util.h"
-#include "mem.h"
+#include "brmem.h"
 
 inline int myabs( int a ) { return (a < 0) ? -1 * a : a; }
 

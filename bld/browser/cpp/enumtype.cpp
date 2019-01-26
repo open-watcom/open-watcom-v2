@@ -32,7 +32,7 @@
 
 #include <drenum.h>
 #include "enumtype.h"
-#include "mem.h"
+#include "brmem.h"
 #include "optmgr.h"
 #include "util.h"
 

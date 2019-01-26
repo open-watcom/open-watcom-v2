@@ -38,7 +38,7 @@
 
 #include <wmsgdlg.hpp>
 
-#include "mem.h"
+#include "brmem.h"
 #include "util.h"
 #include "browse.h"
 #include "opterms.h"

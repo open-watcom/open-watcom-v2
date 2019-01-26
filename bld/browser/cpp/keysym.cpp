@@ -37,7 +37,7 @@
 #include "chfile.h"
 #include "filefilt.h"
 #include "keysym.h"
-#include "mem.h"
+#include "brmem.h"
 #include "symbol.h"
 #include "util.h"
 

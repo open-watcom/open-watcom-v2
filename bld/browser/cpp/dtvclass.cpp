@@ -39,7 +39,7 @@
 #include "assure.h"
 #include "dtvclass.h"
 #include "classtyp.h"
-#include "mem.h"
+#include "brmem.h"
 #include "util.h"
 #include "menuids.h"
 #include "viewmgr.h"

@@ -37,7 +37,7 @@
 #include "death.h"
 #include "util.h"
 #include "elffile.h"
-#include "mem.h"
+#include "brmem.h"
 #include "chbffile.h"
 #include "fileinfo.h"
 

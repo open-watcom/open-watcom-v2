@@ -33,7 +33,7 @@
 #include <wtptlist.hpp>
 #include "assure.h"
 #include "classtyp.h"
-#include "mem.h"
+#include "brmem.h"
 #include "optmgr.h"
 #include "util.h"
 

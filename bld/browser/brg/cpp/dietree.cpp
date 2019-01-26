@@ -36,7 +36,7 @@
 #include "assure.h"
 #include "brmerge.h"
 #include "dietree.h"
-#include "mem.h"
+#include "brmem.h"
 #include "mrdie.h"          // comment this out for DEBUG_DIETREE
 
 const int   SearchPoolSize = 16;   // 16 elements per hunk
