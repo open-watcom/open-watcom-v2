@@ -37,7 +37,6 @@
 #include "wio.h"
 #include "watcom.h"
 #include "uidef.h"
-#include "stdui.h"
 #include "help.h"
 #include "helpmem.h"
 #include "iopath.h"
