@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -35,11 +36,11 @@
 
 #include "global.h"
 
-extern  int     yylex();
-extern  char    *GetParsedLine(void);
-extern  BOOL    LineFinished(void);
-extern void     FinishLine(void);
-extern void     GetToEOS(void);
+extern int      yylex( void );
+extern char     *GetParsedLine( void );
+extern BOOL     LineFinished( void );
+extern void     FinishLine( void );
+extern void     GetToEOS( void );
 extern BOOL     InitLex( char *fname );
 extern void     FiniLex( void );
 

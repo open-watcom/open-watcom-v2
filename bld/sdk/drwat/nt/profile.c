@@ -34,7 +34,6 @@
 #include "intdlg.h"
 #include "inipath.h"
 #include "watini.h"
-#include "mem.h"
 
 
 #define PROFILE_SECT            "Dr_WATCOM_NT"

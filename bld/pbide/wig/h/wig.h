@@ -31,28 +31,5 @@
 ****************************************************************************/
 
 
-#ifndef KEYWORD_DATA_STRUCTURE_DEFINE
-#define KEYWORD_DATA_STRUCTURE_DEFINE
-
-#include "types.h"
-
-typedef struct keyword {
-        struct keyword  *next;
-        char            *key;
-        id_type         id;
-        id_type         thunk;
-} keyword;
-
-
-extern const keyword __near Statements[];
-extern const keyword __near DataTypes[];
-
-extern int          IsPtrType( id_type );
-extern const char   *FindType( id_type );
-extern const char   *FindStmt( id_type );
-extern unsigned     GetStmntCnt( void );
-extern char         *ConvertRetType( id_type id );
-extern void         ConvertVarType( char *typebuf, char *arraybuf, id_type id, ArrayInfo *array );
-extern void         ConvertParmType( char *buf, char *name, id_type id, ArrayInfo *array );
-
-#endif
+extern int wig_parse( void );
+extern int Wigmain( int argc, char **argv );

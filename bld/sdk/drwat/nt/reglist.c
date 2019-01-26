@@ -33,7 +33,6 @@
 #include "drwatcom.h"
 #include "regstr.h"
 #include "reglist.h"
-#include "mem.h"
 #include "bitman.h"
 #include "madcli.h"
 #include "regcrt.h"

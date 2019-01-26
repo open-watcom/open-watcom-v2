@@ -44,7 +44,7 @@
 
 #include "jdlg.h"
 #include "font.h"
-#include "mem.h"
+#include "cguimem.h"
 #include "savelbox.h"
 #include "ctl3dcvr.h"
 #ifdef __NT__

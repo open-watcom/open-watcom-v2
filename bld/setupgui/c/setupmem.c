@@ -25,7 +25,7 @@
 *
 *  ========================================================================
 *
-* Description:  Cover routines to access the trmem memory tracker
+* Description:  Memory Management functions with included trmem memory tracker
 *
 ****************************************************************************/
 
@@ -34,14 +34,14 @@
 #include <string.h>
 #include "guimem.h"
 #if defined( GUI_IS_GUI )
-#include "mem.h"
-#include "wpimem.h"
-#ifdef __OS2_PM__
-#include "os2mem.h"
-#endif
+    #include "cguimem.h"
+    #include "wpimem.h"
+    #ifdef __OS2_PM__
+        #include "os2mem.h"
+    #endif
 #else
-#include "stdui.h"
-#include "helpmem.h"
+    #include "stdui.h"
+    #include "helpmem.h"
 #endif
 #ifdef TRMEM
     #include "trmem.h"
@@ -118,12 +118,8 @@ void GUIMemOpen( void )
 #endif
 }
 #if !defined( GUI_IS_GUI )
-void UIMemOpen( void )
-{
-}
-void HelpMemOpen( void )
-{
-}
+void UIMemOpen( void ) {}
+void HelpMemOpen( void ) {}
 #endif
 
 void GUIMemClose( void )
@@ -138,13 +134,14 @@ void GUIMemClose( void )
 #endif
 }
 #if !defined( GUI_IS_GUI )
-void UIMemClose( void )
-{
-}
-void HelpMemClose( void )
-{
-}
+void UIMemClose( void ) {}
+void HelpMemClose( void ) {}
 #endif
+
+
+/*
+ * Alloc functions
+ */
 
 void *GUIMemAlloc( size_t size )
 /******************************/
@@ -206,6 +203,10 @@ void *HelpMemAlloc( size_t size )
 #endif
 
 
+/*
+ * Free functions
+ */
+
 void GUIMemFree( void *ptr )
 /**************************/
 {
@@ -261,6 +262,10 @@ void HelpMemFree( void *ptr )
 }
 #endif
 
+
+/*
+ * Realloc functions
+ */
 
 void *GUIMemRealloc( void *ptr, size_t size )
 /*******************************************/

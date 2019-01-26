@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -39,7 +40,7 @@
 #include "ytab.h"
 #include "keywords.h"
 
-const keyword __based(__segname("_CONST")) Statements[] = {
+const keyword __near Statements[] = {
         NULL, "end",            ST_END,         FALSE,
         NULL, "forward",        ST_FORWARD,     FALSE,
         NULL, "from",           ST_FROM,        FALSE,
@@ -75,7 +76,7 @@ enum {
     TC_DOUBLE
 };
 
-const keyword __based(__segname("_CONST")) DataTypes[] = {
+const keyword __near DataTypes[] = {
         NULL, "BOOLean",                TY_BOOLEAN,             TC_INT,
         NULL, "char",                   TY_CHAR,                TC_CHAR,
         NULL, "character",              TY_CHAR,                TC_CHAR,
@@ -208,9 +209,9 @@ static char *convTable[] = {    "void", "char", "char *", "short", "unsigned sho
 //                              "unsigned int *", "long *", "unsigned long *",
 //                              "float *", "double *" };
 
-static keyword *findTypeFromId( id_type id ) {
-/********************************************/
-
+static const keyword *findTypeFromId( id_type id )
+/************************************************/
+{
     int         x;
 
     id = _BaseType( id );
@@ -239,7 +240,7 @@ unsigned GetStmntCnt( void ) {
 static id_type getThunk( id_type id ) {
 /**************************************/
 
-    keyword     *rk;
+    const keyword     *rk;
 
     assert( _BaseType( id ) <= TY_LAST_TYPE );
 
@@ -347,10 +348,10 @@ char *TypeConvert( id_type id ) {
 }
 
 
-char *FindType( id_type id ) {
-/*******************************/
-
-    keyword     *rk;
+const char *FindType( id_type id )
+/********************************/
+{
+    const keyword   *rk;
 
     id = _BaseType( id );
     assert( _IsIdType( id ) );
@@ -363,9 +364,9 @@ char *FindType( id_type id ) {
 #endif
 
 
-char    *FindStmt( id_type id ) {
-/********************************/
-
+const char  *FindStmt( id_type id )
+/*********************************/
+{
     long        x;
 
     x = 0;

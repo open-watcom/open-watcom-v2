@@ -18,7 +18,7 @@ suppress_zc = 1
 
 objs += keywords.obj &
         scanner.obj &
-        mem.obj &
+        pbmem.obj &
         hashtab.obj &
         srusuprt.obj &
         gen_cpp.obj &

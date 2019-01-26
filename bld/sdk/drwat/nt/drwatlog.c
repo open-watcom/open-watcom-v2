@@ -41,7 +41,6 @@
 #include "intdlg.h"
 #include "drwatlog.h"
 #include "memdmp.h"
-#include "mem.h"
 #include "jdlg.h"
 #include "regcrt.h"
 #include "mad.h"

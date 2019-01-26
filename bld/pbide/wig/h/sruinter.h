@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -85,7 +86,7 @@ typedef struct sp_header {
     id_type             typ_id;         /* typw id of type              */
     char                *name;          /* subprogram name              */
     id_type             typ;            /* subprogram type              */
-    BOOL                user_code;      /* does it contain user code    */
+    unsigned            user_code;      /* does it contain user code    */
     BOOL                fake;           /* do not dump this out         */
     BOOL                subroutine;     /* TRUE if this is a subroutine */
     var_rec             *parm_list;     /* its parameter list           */

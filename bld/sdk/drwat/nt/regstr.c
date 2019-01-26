@@ -37,7 +37,6 @@
 #include "wclbproc.h"
 #include "regstr.h"
 #include "mad.h"
-#include "mem.h"
 #include "regcmbo.h"
 #include "jdlg.h"
 #include "bitman.h"

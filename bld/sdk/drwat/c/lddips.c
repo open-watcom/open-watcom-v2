@@ -38,7 +38,6 @@
 #include "diplasth.h"
 #include "ldstr.h"
 #include "rcstr.gh"
-#include "mem.h"
 #include "jdlg.h"
 
 

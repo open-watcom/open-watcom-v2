@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -35,11 +36,11 @@
 
 typedef void    *hash_tab;
 
-extern hash_tab         NewHashTable(int);
-extern void             DestroyHashTable(hash_tab);
-extern void             InsertHashValue(hash_tab, const char *, int, void*);
-extern long             HashByte(long, char);
-extern long             HashString(char *, long);
-extern void             *FindHashEntry(hash_tab, long, const char *, int);
+extern hash_tab     NewHashTable( int );
+extern void         DestroyHashTable( hash_tab );
+extern void         InsertHashValue( hash_tab, const char *, int, void * );
+extern long         HashByte( long, char );
+extern long         HashString( char *, long );
+extern void         *FindHashEntry( hash_tab, long, const char *, int );
 
 #endif

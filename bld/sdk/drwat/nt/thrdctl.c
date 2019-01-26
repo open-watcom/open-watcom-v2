@@ -33,7 +33,6 @@
 
 #include "drwatcom.h"
 #include <ctype.h>
-#include "mem.h"
 #include "thrdctl.h"
 #include "srchmsg.h"
 #include "priority.h"

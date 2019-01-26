@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,7 +37,7 @@
 #include <ctype.h>
 #include <assert.h>
 #include "global.h"
-#include "mem.h"
+#include "pbmem.h"
 #include "error.h"
 #include "keywords.h"
 #include "hashtab.h"
@@ -103,9 +104,9 @@ static char     *add2IdBuffer( char *src );
 /*
  * main lexxer routine
  */
-int yylex() {
-/***********/
-
+int yylex( void )
+/***************/
+{
     int         c;
     int         state = 0;
     int         class = CH_RET;
@@ -319,7 +320,7 @@ static void initLex( void ) {
     x = 0;
     while( Statements[x].key != NULL ) {
         InsertHashValue( keyTable, Statements[x].key, strlen(Statements[x].key),
-                         &Statements[x] );
+                         (void *)&Statements[x] );
         x++;
     }
 
@@ -373,7 +374,7 @@ static int      checkKeyWord( long hash, const char *id, int id_len,
                               int *kval ) {
 /*****************************************/
 
-    keyword             *tmp;
+    const keyword   *tmp;
 
     /* check if identifier is a keyword */
 

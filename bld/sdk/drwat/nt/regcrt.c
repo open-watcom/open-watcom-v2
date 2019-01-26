@@ -35,7 +35,6 @@
 #include <ctype.h>
 #include "mad.h"
 #include "regcrt.h"
-#include "mem.h"
 #include "bitman.h"
 
 

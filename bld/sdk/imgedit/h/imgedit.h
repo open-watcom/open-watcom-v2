@@ -65,7 +65,6 @@ typedef enum {
 #include "dialogs.h"
 #include "icon.h"
 #include "menuids.h"
-#include "mem.h"
 #include "statwnd.h"
 #include "toolbr.h"
 #include "errors.h"

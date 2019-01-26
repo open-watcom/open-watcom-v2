@@ -36,7 +36,7 @@
 #include <ddeml.h>
 #include <dde.h>
 #include "bool.h"
-#include "mem.h"
+#include "cguimem.h"
 #include "font.h"
 #include "srchmsg.h"
 #include "log.h"
