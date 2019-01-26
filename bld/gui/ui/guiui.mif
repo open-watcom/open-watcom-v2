@@ -93,7 +93,7 @@ sys_hooks = &
 
 !include $(hlpview_dir)/client.mif
 
-sysobjs = $(ui_sysobjs) $(sys_hooks) $(help_objs)
+sysobjs = $(ui_sysobjs) $(sys_hooks) $(hlpview_objs)
 
 !ifndef bootstrap
 # memory tracker cover routines
