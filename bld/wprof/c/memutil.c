@@ -40,7 +40,7 @@
     #include "os2mem.h"
 #endif
 #if defined( GUI_IS_GUI )
-    #include "mem.h"
+    #include "cguimem.h"
     #include "wpimem.h"
 #else
     #include "uimem.h"
