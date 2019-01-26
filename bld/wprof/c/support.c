@@ -748,7 +748,7 @@ image_info *AddrImage( address *addr )
     image_info      *curr_image;
     map_to_actual   *map;
     ovl_entry       *overlay;
-    int             count;
+    unsigned        count;
     int             count2;
 
     closest.segment = 0;
@@ -876,7 +876,7 @@ void MapAddressIntoSection( address *addr )
 {
     image_info          *curr_image;
     ovl_entry           *overlay;
-    int                 count;
+    unsigned            count;
 
     if( addr == 0 ) {
         return;
@@ -934,7 +934,7 @@ STATIC void ResolveOverlays( image_info *image )
     for( index = 0; index < count; ++index ) {
         samp_data = thd->raw_bucket[index];
         count2 = MAX_RAW_BUCKET_INDEX;
-        if( (thd->end_time - curr_tick) < count2 ) {
+        if( (int)(thd->end_time - curr_tick) < count2 ) {
             count2 = thd->end_time - curr_tick;
         }
         for( index2 = 0; index2 < count2; ++index2 ) {
@@ -1090,7 +1090,7 @@ bool LoadImageOverlays( void )
 /****************************/
 {
     image_info      *curr_image;
-    int             image_index;
+    unsigned        image_index;
 
     /* assume 32-bit addresses until proven otherwise */
     exeFlags.is_32_bit = true;
@@ -1289,14 +1289,14 @@ bool IsX86RealAddr( address a )
 }
 
 
-int_16 GetDataByte( void )
-/************************/
+int_8 GetDataByte( void )
+/***********************/
 {
-    int_16 value;
+    int_8   value;
 
     value = exeGetChar();
     AdvanceCurrentOffset( sizeof( int_8 ) );
-    return( (int_8)value );
+    return( value );
 }
 
 

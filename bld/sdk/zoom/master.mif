@@ -13,7 +13,7 @@ sys_windowed = 1
 
 !include $(commonui_dir)/client.mif
 
-objs =  zoom.obj zmglob.obj zmproc.obj zmscreen.obj zmconfig.obj
+objs =  zoom.obj zmglob.obj zmproc.obj zmscreen.obj zmconfig.obj mem.obj
 
 extra_cpp_flags_nt = -DNOUSE3D
 
@@ -25,7 +25,7 @@ inc_dirs = -I. -I"../h" $(commonui_inc_dirs)
 
 rc_inc_dirs = -I"../res" $(commonui_inc_dirs)
 
-.c: ../c
+.c: ../c;$(commonui_dir)/c
 
 # systems where version resource must be added to .EXE
 version_res_exe_nt_386 = exever.res

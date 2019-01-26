@@ -15,7 +15,7 @@ sys_windowed = 1
 !include $(wpi_dir)/client.mif
 
 objs =  dde.obj ddeproc.obj ddeglob.obj ddemsg.obj ddebox.obj ddetrack.obj &
-        ddeflter.obj ddecfg.obj ddemisc.obj ddetool.obj
+        ddeflter.obj ddecfg.obj ddemisc.obj ddetool.obj mem.obj
 
 extra_cpp_flags_nt = -DNOUSE3D
 
@@ -26,7 +26,7 @@ extra_l_flags_win = option stack=7k option heapsize=2k lib ddeml.lib, commdlg.li
 #extra_l_flags_nt_axp = lib ctl3d32.lib
 #extra_l_flags_nt = $(extra_l_flags_nt_$(host_cpu))
 
-.c: ../c
+.c: ../c;$(commonui_dir)/c
 
 inc_dirs  = -I. -I"../h" $(commonui_inc_dirs) $(wpi_inc_dirs)
 

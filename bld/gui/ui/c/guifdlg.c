@@ -83,13 +83,13 @@
 
 
 #if defined( __UNIX__ ) || defined( __NETWARE__ )
-    #define FILE_SEP    "/"
-    #define FILE_SEP_CHAR       '/'
-    #define FILES_ALL   "*"
+    #define FILE_SEP        "/"
+    #define FILE_SEP_CHAR   '/'
+    #define FILES_ALL       "*"
 #else
-    #define FILE_SEP    "\\"
-    #define FILE_SEP_CHAR       '\\'
-    #define FILES_ALL   "*.*"
+    #define FILE_SEP        "\\"
+    #define FILE_SEP_CHAR   '\\'
+    #define FILES_ALL       "*.*"
 #endif
 
 #define INDENT_STR          " "

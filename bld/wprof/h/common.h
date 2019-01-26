@@ -50,17 +50,6 @@
 #define ALLFILES        "All Files\0*.*\0"
 #endif
 
-#if defined(__LARGE__)
-#include <malloc.h>
-#define _MALLOC     _fmalloc
-#define _REALLOC    _frealloc
-#define _FREE       _ffree
-#else
-#define _MALLOC     malloc
-#define _REALLOC    realloc
-#define _FREE       free
-#endif
-
 typedef void *          pointer;
 
 #endif

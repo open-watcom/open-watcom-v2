@@ -34,14 +34,14 @@
 #include <stdlib.h>
 #include "guimem.h"
 #if defined( GUI_IS_GUI )
-#include "cguimem.h"
-#include "wpimem.h"
-#ifdef __OS2_PM__
-#include "os2mem.h"
-#endif
+    #include "cguimem.h"
+    #include "wpimem.h"
+    #if defined( __OS2_PM__ )
+        #include "os2mem.h"
+    #endif
 #else
-#include "stdui.h"
-#include "helpmem.h"
+    #include "stdui.h"
+    #include "helpmem.h"
 #endif
 #ifdef TRMEM
     #include "trmem.h"

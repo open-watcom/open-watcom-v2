@@ -130,13 +130,11 @@ extra_deps += $(manifest_$(host_os)_$(host_cpu)) wresui.res
 
 # cflags
 #########
-!ifeq sys_windowed 1
-extra_cpp_flags += -DGUI_IS_GUI
-!endif
 !ifdef patch
 extra_cpp_flags += -DPATCH -DINSTALL_PROGRAM
 !endif
 !ifeq sys_windowed 1
+extra_cpp_flags += -DGUI_IS_GUI
 extra_cpp_flags_os2 = -D__OS2_PM__
 !endif
 

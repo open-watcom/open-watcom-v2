@@ -40,7 +40,7 @@
         #include "os2mem.h"
     #endif
 #else
-    #include "stdui.h"
+    #include "uimem.h"
     #include "helpmem.h"
 #endif
 #ifdef TRMEM
@@ -63,7 +63,7 @@ static void GUIMemPrintLine( void *parm, const char *buff, size_t len )
 }
 static void UIMemPrintLine( void *parm, const char *buff, size_t len )
 {
-//    fwrite( buff, 1, len, GUIMemFP );
+    /* unused parameters */ (void)parm; (void)buff; (void)len;
 }
 #endif
 

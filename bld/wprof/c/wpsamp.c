@@ -966,7 +966,7 @@ STATIC bool ssrcGetLine( a_window wnd, wnd_row row )
     wp_srcfile      *wp_src;
     wp_srcline      *lines;
     int             index;
-    int             adjusted_row;
+    unsigned        adjusted_row;
 
     curr_sio = WndExtra( wnd );
     if( curr_sio->src_file == NULL ) {

@@ -59,8 +59,6 @@
 #include "guihint.h"
 
 
-#define GUI_IS_GUI
-
 typedef enum flags {
     NONE_SET            = 0x0000,
     HRANGE_SET          = 0x0001,

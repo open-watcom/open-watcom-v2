@@ -56,7 +56,7 @@ STATIC void dumpSampleImages( bool all_info, sio_data * curr_sio )
     mod_info        *curr_mod;
     file_info       *curr_file;
     rtn_info        *curr_rtn;
-    int             image_index;
+    unsigned        image_index;
     int             mod_count;
     int             file_count;
     int             rtn_count;
@@ -129,9 +129,9 @@ STATIC void dumpSampleInfo( void )
     image_info          *image;
     remap_data          *remap;
     ovl_entry           *ovl_entry;
-    int                 image_index;
-    long int            count;
-    int                 index;
+    unsigned            image_index;
+    unsigned long int   count;
+    unsigned long int   index;
     thread_data         *thd;
     address             *samp;
     massgd_sample_addr  *massgd;
@@ -161,39 +161,39 @@ STATIC void dumpSampleInfo( void )
             fprintf( df, "    time stamp = %lx\n", image->time_stamp );
             FormatAddr( image->overlay_table, buff1, sizeof( buff1 ) );
             fprintf( df, "    overlay table = %s\n", buff1 );
+            index = 0;
             count = image->ovl_count;
-            if( count != 0 ) {
+            if( count > 0 ) {
                 fprintf( df, "\n    Overlay table\n" );
                 ovl_entry = image->ovl_data;
-            }
-            index = 0;
-            while( count-- > 0 ) {
-                fprintf( df, "      section #%d\n", index+1 );
-                fprintf( df, "        file containing overlay = '%s'\n",
-                        ovl_entry->fname );
-                fprintf( df, "        separate overlay = " );
-                if( ovl_entry->separate_overlay ) {
-                    fprintf( df, "TRUE\n" );
-                } else {
-                    fprintf( df, "FALSE\n" );
+                while( count-- > 0 ) {
+                    fprintf( df, "      section #%lu\n", index+1 );
+                    fprintf( df, "        file containing overlay = '%s'\n",
+                            ovl_entry->fname );
+                    fprintf( df, "        separate overlay = " );
+                    if( ovl_entry->separate_overlay ) {
+                        fprintf( df, "TRUE\n" );
+                    } else {
+                        fprintf( df, "FALSE\n" );
+                    }
+                    fprintf( df, "        disk address %.8lx\n", ovl_entry->disk_addr );
+                    fprintf( df, "        overlay segment = %.4x, mapped value = %.4x\n",
+                            ovl_entry->start_para, ovl_entry->base_para );
+                    ovl_entry++;
+                    index++;
                 }
-                fprintf( df, "        disk address %.8lx\n", ovl_entry->disk_addr );
-                fprintf( df, "        overlay segment = %.4x, mapped value = %.4x\n",
-                        ovl_entry->start_para, ovl_entry->base_para );
-                ovl_entry++;
-                index++;
             }
             fprintf( df, "\n" );
-            count = image->map_count;
-            if( count != 0 ) {
-                fprintf( df, "    Address mappings\n" );
-            }
             index = 0;
-            while( count-- > 0 ) {
-                FormatAddr( image->map_data[index].map,    buff1, sizeof( buff1 ) );
-                FormatAddr( image->map_data[index].actual, buff2, sizeof( buff2 ) );
-                fprintf( df, "      %s -> %s (length 0x%8.8lx)\n", buff1, buff2, (unsigned long)image->map_data[index].length );
-                index++;
+            count = image->map_count;
+            if( count > 0 ) {
+                fprintf( df, "    Address mappings\n" );
+                while( count-- > 0 ) {
+                    FormatAddr( image->map_data[index].map,    buff1, sizeof( buff1 ) );
+                    FormatAddr( image->map_data[index].actual, buff2, sizeof( buff2 ) );
+                    fprintf( df, "      %s -> %s (length 0x%8.8lx)\n", buff1, buff2, (unsigned long)image->map_data[index].length );
+                    index++;
+                }
             }
             fprintf( df, "\n" );
         }
@@ -258,7 +258,7 @@ STATIC void dumpSampleInfo( void )
             count = thd->end_time - thd->start_time;
             for( index = 0; index < count; ++index ) {
                 if( (index % 4) == 0 ) {
-                    fprintf( df, "\n%.10lu ", (long int)index );
+                    fprintf( df, "\n%.10lu ", index );
                 }
                 samp = &thd->raw_bucket[index / MAX_RAW_BUCKET_INDEX][index % MAX_RAW_BUCKET_INDEX];
                 FormatAddr( *samp, buff1, sizeof( buff1 ) );

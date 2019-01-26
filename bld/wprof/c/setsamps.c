@@ -128,7 +128,7 @@ STATIC void initFileInfo( mod_info *curr_mod )
 /********************************************/
 {
     file_info       *new_file;
-    int             file_len;
+    size_t          file_len;
 
     ClearFileInfo( curr_mod );
     file_len = strlen( LIT( Unknown_File ) ) + 1;
@@ -185,7 +185,7 @@ STATIC walk_result loadRoutineInfo( sym_walk_info swi, sym_handle *sym, void *_n
     rtn_info            *new_rtn;
     int                 rtn_count;
     size_t              name_len;
-    int                 sym_size;
+    size_t              sym_size;
     symbol_name_type    demangle_name_type;
 
     if( swi != SWI_SYMBOL ) {
@@ -247,7 +247,7 @@ STATIC file_info  *loadFileInfo( mod_info *curr_mod, sym_handle *sym )
     cue_handle      *cueh;
     cue_fileid      fid;
     int             file_count;
-    int             count;
+    size_t          count;
     location_list   ll;
 
     if( DIPSymLocation( sym, NULL, &ll ) != DS_OK ) {
@@ -292,16 +292,14 @@ int AddrCmp( address *addr1, address *addr2 )
 
 
 
-STATIC int rawSampCmp( const void *_d1, const void *_d2 )
+STATIC int rawSampCmp( const void *d1, const void *d2 )
 /*******************************************************/
 {
-    const pointer   *d1 = _d1;
-    const pointer   *d2 = _d2;
     address         *data1;
     address         *data2;
 
-    data1 = *d1;
-    data2 = *d2;
+    data1 = *(const pointer *)d1;
+    data2 = *(const pointer *)d2;
     return( AddrCmp( data1, data2 ) );
 }
 
@@ -312,7 +310,7 @@ void GatherSetAll( sio_data * curr_sio, bool gather_active )
 {
     image_info          *curr_image;
     mod_info            *curr_mod;
-    long int            count;
+    unsigned long int   count;
     int                 count2;
     int                 count3;
 
@@ -338,7 +336,7 @@ void AbsSetAll( sio_data *curr_sio, bool abs_bar )
     image_info          *curr_image;
     mod_info            *curr_mod;
     file_info           *curr_file;
-    long int            count;
+    unsigned long int   count;
     int                 count2;
     int                 count3;
     int                 count4;
@@ -370,7 +368,7 @@ void RelSetAll( sio_data *curr_sio, bool rel_bar )
     image_info          *curr_image;
     mod_info            *curr_mod;
     file_info           *curr_file;
-    long int            count;
+    unsigned long int   count;
     int                 count2;
     int                 count3;
     int                 count4;
@@ -402,7 +400,7 @@ void StretchSetAll( sio_data *curr_sio, bool bar_max )
     image_info          *curr_image;
     mod_info            *curr_mod;
     file_info           *curr_file;
-    long int            count;
+    unsigned long int   count;
     int                 count2;
     int                 count3;
     int                 count4;
@@ -434,7 +432,7 @@ void SortSetAll( sio_data *curr_sio, int sort_type )
     image_info          *curr_image;
     mod_info            *curr_mod;
     file_info           *curr_file;
-    long int            count;
+    unsigned long int   count;
     int                 count2;
     int                 count3;
 
@@ -471,7 +469,7 @@ STATIC void resolveImageSamples( void )
     sample_index_t      tick_index;
     mod_handle          mh;
     sym_handle          *sh;
-    long int            count;
+    unsigned long int   count;
     int                 count2;
     int                 count3;
     int                 count4;
@@ -661,7 +659,7 @@ STATIC void loadSampleImages( void )
 /**********************************/
 {
     image_info          *curr_image;
-    int                 image_count;
+    unsigned            image_count;
 
     CurrSIOData->dip_process = WPDipProc();
     WPDipSetProc( CurrSIOData->dip_process );
@@ -738,7 +736,7 @@ STATIC void calcAggregates( void )
     }
     curr = NULL;
     curr_mbucket = 0;
-    curr_midx = -1;
+    curr_midx = (unsigned)-1;
 //    mbuckets = 1;
     massgd_data = ProfAlloc( sizeof( *massgd_data ) );
     massgd_data[0] = ProfCAlloc( MAX_MASSGD_BUCKET_SIZE );

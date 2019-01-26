@@ -48,6 +48,7 @@
 #include "support.h"
 #include "utils.h"
 #include "wpdata.h"
+#include "memutil.h"
 
 #define MD_x86
 #define MD_axp
@@ -61,19 +62,19 @@
 void *DIGCLIENTRY( Alloc )( size_t amount )
 /*****************************************/
 {
-    return( _MALLOC( amount ) );
+    return( ProfAlloc( amount ) );
 }
 
 void *DIGCLIENTRY( Realloc )( void *p, size_t amount )
 /****************************************************/
 {
-    return( _REALLOC( p, amount ) );
+    return( ProfRealloc( p, amount ) );
 }
 
 void DIGCLIENTRY( Free )( void *p )
 /*********************************/
 {
-    _FREE( p );
+    ProfFree( p );
 }
 
 FILE * DIGCLIENTRY( Open )( const char *name, dig_open mode )

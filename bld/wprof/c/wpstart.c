@@ -207,6 +207,7 @@ STATIC bool procCmd( char * cmd )
             do_option = true;
             cmd_type = HELP_OPT;
         } else {
+            cmd_type = 0;
             do_option = false;
             rover = cmd;
             cmd = eatAllChars( cmd );
