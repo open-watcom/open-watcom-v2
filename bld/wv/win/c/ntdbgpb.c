@@ -32,7 +32,7 @@
 #include "wwindows.h"
 #include "dbgdefn.h"
 #include "dbgdata.h"
-#ifdef __GUI__
+#ifdef GUI_IS_GUI
 #include "dbgwind.h"
 #endif
 #include "dbglit.h"
@@ -81,7 +81,7 @@ const char *CheckForPowerBuilder( const char *name )
     } else {
         pid[0] = '#';
         itoa( PidPB, pid + 1, 16 );
-#ifdef __GUI__
+#ifdef GUI_IS_GUI
         WndSetTitle( WndMain, LIT_DUI( The_WATCOM_Debugger_for_PowerBuilder ) );
 #else
         SetConsoleTitle( LIT_DUI( The_WATCOM_Debugger_for_PowerBuilder ) );

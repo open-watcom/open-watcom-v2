@@ -62,7 +62,7 @@
 #include "dbginit.h"
 
 #include "guimem.h"
-#if defined( __GUI__ )
+#if defined( GUI_IS_GUI )
     #include "cguimem.h"
     #include "wpimem.h"
     #ifdef __OS2__
@@ -435,7 +435,7 @@ void GUIMemOpen( void )
     }
 #endif
 }
-#if !defined( __GUI__ )
+#if !defined( GUI_IS_GUI )
 void UIMemOpen( void ) {}
 #endif
 
@@ -450,7 +450,7 @@ void GUIMemClose( void )
     }
 #endif
 }
-#if !defined( __GUI__ )
+#if !defined( GUI_IS_GUI )
 void UIMemClose( void ) {}
 #endif
 
@@ -468,7 +468,7 @@ void *GUIMemAlloc( size_t size )
     return( malloc( size ) );
 #endif
 }
-#if defined( __GUI__ )
+#if defined( GUI_IS_GUI )
 void *MemAlloc( size_t size )
 {
     void        *ptr;
@@ -540,7 +540,7 @@ void GUIMemFree( void *ptr )
     free( ptr );
 #endif
 }
-#if defined( __GUI__ )
+#if defined( GUI_IS_GUI )
 void MemFree( void *ptr )
 {
 #ifdef TRMEM
@@ -616,7 +616,7 @@ void *GUIMemRealloc( void *ptr, size_t size )
     return( realloc( ptr, size ) );
 #endif
 }
-#if defined( __GUI__ )
+#if defined( GUI_IS_GUI )
 void * _wpi_realloc( void *ptr, size_t size )
 {
 #ifdef TRMEM

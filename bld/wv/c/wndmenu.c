@@ -41,7 +41,7 @@
 #include "dbgexec.h"
 #include "dbgmain.h"
 #include "dbgbrk.h"
-#if !defined(__GUI__) && !defined(__WINDOWS__) && !defined(__NT__)
+#if !defined( GUI_IS_GUI ) && !defined( __WINDOWS__ ) && !defined( __NT__ )
 #include "dbgsys.h"
 #endif
 #include "wndsys.h"
@@ -139,7 +139,7 @@ const char MainTab[] = { "MAin\0" };
 void PlayDead( bool dead )
 {
     WndIgnoreAllEvents = dead;
-#if defined(__GUI__) && (defined(__WINDOWS__) || defined(__NT__))
+#if defined( GUI_IS_GUI ) && (defined( __WINDOWS__ ) || defined( __NT__ ))
     if( dead ) {
         UnknownScreen(); // the trap file might steal focus!
     } else {
@@ -417,7 +417,7 @@ void SetMADMenuItems( void )
 void SetTargMenuItems( void )
 {
     WndEnableMainMenu( MENU_MAIN_BREAK_ON_DLL, _IsOn( SW_HAVE_RUNTIME_DLLS ) );
-#if defined(__GUI__) && defined(__OS2__)
+#if defined( GUI_IS_GUI ) && defined( __OS2__ )
     WndEnableMainMenu( MENU_MAIN_FILE_FONT, false );
 #endif
     SetMADMenuItems();
@@ -546,7 +546,7 @@ bool WndMainMenuProc( a_window wnd, gui_ctl_id id )
     /* unused parameters */ (void)wnd;
 
     switch( id ) {
-#if defined(__GUI__)
+#if defined( GUI_IS_GUI )
     case MENU_MAIN_FILE_FONT:
         FontChange();
         break;
@@ -554,7 +554,7 @@ bool WndMainMenuProc( a_window wnd, gui_ctl_id id )
     case MENU_MAIN_FILE_VIEW:
         FileBrowse();
         break;
-#if !defined(__GUI__) && !defined(__WINDOWS__) && !defined(__NT__)
+#if !defined( GUI_IS_GUI ) && !defined( __WINDOWS__ ) && !defined( __NT__ )
     case MENU_MAIN_FILE_SYSTEM:
         DoSystem( NULL, 0, LOC_DEFAULT );
         break;
@@ -726,7 +726,7 @@ bool WndMainMenuProc( a_window wnd, gui_ctl_id id )
     case MENU_MAIN_WINDOW_SETTINGS:
         DlgWndSet();
         break;
-#if 0 // defined(__GUI__) && (defined(__WINDOWS__) || defined(__OS2__)
+#if 0 // defined( GUI_IS_GUI ) && (defined( __WINDOWS__ ) || defined( __OS2__ )
     case MENU_MAIN_WINDOW_HARD_MODE:
         ToggleHardMode();
         break;
@@ -811,7 +811,7 @@ bool WndMainMenuProc( a_window wnd, gui_ctl_id id )
     case MENU_MAIN_HELP_CONTENTS:
         DoProcHelp( GUI_HELP_CONTENTS );
         break;
-#if defined(__GUI__)
+#if defined( GUI_IS_GUI )
     case MENU_MAIN_HELP_ON_HELP:
         DoProcHelp( GUI_HELP_ON_HELP );
         break;

@@ -68,7 +68,7 @@ static BOOL     PASCAL GetCommandData( HWND );
 
 static char     *CmdData;
 
-#if defined( __GUI__ )
+#if defined( GUI_IS_GUI )
 void TellWinHandle( void )
 {
     if( !ToldWinHandle && TrapTellHWND( GUIGetSysHandle( WndGui( WndMain ) ) ) ) {

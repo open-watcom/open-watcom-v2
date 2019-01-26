@@ -72,7 +72,7 @@ static const char ScreenOptNameTab[] = {
 void ToggleHardMode( void )
 {
     TrapForceHardMode = !TrapForceHardMode;
-#ifdef __GUI__
+#ifdef GUI_IS_GUI
     TrapSetHardMode( TrapForceHardMode );
     GUICheckMenuItem( WndGui( WndMain ), MENU_MAIN_WINDOW_HARD_MODE, TrapForceHardMode );
 #endif

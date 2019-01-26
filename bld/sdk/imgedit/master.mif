@@ -38,7 +38,7 @@ objs_common = &
 
 extras_win = wincreat.obj title.obj winutils.obj
 
-objs_os2 = pmcreate.obj pmutils.obj pmicon.obj mem.obj wbitmap.obj
+objs_os2 = pmcreate.obj pmutils.obj pmicon.obj cguimem.obj wbitmap.obj
 objs_win = icon.obj snap.obj modclrs.obj pickbmp.obj iebmpdat.obj iedde.obj iemem.obj iectl3d.obj $(extras_win)
 
 !ifeq host_os os2

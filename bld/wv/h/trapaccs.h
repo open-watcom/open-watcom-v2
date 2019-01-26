@@ -30,7 +30,7 @@
 ****************************************************************************/
 
 
-#if defined(__GUI__) && defined(__OS2__)
+#if defined( GUI_IS_GUI ) && defined( __OS2__ )
 extern unsigned OnAnotherThreadAccess( trap_elen, in_mx_entry_p, trap_elen, mx_entry_p );
 extern unsigned OnAnotherThreadSimpAccess( trap_elen, in_data_p, trap_elen, out_data_p );
 #else

@@ -35,7 +35,7 @@ rc_inc_dirs = -I"../res" $(commonui_inc_dirs) $(dis_includes)
 objs_win = heapwalk.obj hwlist.obj hwproc.obj hwglob.obj hwsort.obj &
         hwbox.obj hwdisp.obj hwsave.obj hwobjec.obj hwlocal.obj &
         hwlsort.obj hwconfig.obj  hwinfo.obj hwalloc.obj hwutil.obj &
-        hwbiglb.obj hwmonit.obj hwtable.obj hwldstr.obj mem.obj
+        hwbiglb.obj hwmonit.obj hwtable.obj hwldstr.obj cguimem.obj
 
 objs = $(objs_$(host_os))
 

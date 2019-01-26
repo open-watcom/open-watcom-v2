@@ -39,7 +39,7 @@
 #include "wwindows.h"
 #include "dbgdefn.h"
 #include "dbgdata.h"
-#ifdef __GUI__
+#ifdef GUI_IS_GUI
 #include "dbgwind.h"
 #endif
 #include "dbgmem.h"

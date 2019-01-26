@@ -194,7 +194,7 @@ static bool RegResize( a_window wnd )
         reg->indents[i].descript = indent;
         reg->indents[i].value = indent + descript;
         indent += value + descript;
-#if ( defined( __GUI__ ) && defined( __OS2__ ) )
+#if ( defined( GUI_IS_GUI ) && defined( __OS2__ ) )
         // OS/2 PM GUI needs more space between columns
         indent += space;
 #endif

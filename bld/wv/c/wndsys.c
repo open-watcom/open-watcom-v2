@@ -31,7 +31,7 @@
 
 
 #include <ctype.h>
-#if defined( __NT__ ) && defined( __GUI__ )
+#if defined( __NT__ ) && defined( GUI_IS_GUI )
     #define WIN32_LEAN_AND_MEAN
     #include <windows.h>
 #endif
@@ -283,7 +283,7 @@ void WndSysEnd( bool pause )
 
 static bool DoScreenSwap( void )
 {
-#if defined(__GUI__) && defined(__WINDOWS__)
+#if defined( GUI_IS_GUI ) && defined( __WINDOWS__ )
     return( false );
 #else
     return( _IsOff( SW_REMOTE_LINK ) );
@@ -599,7 +599,7 @@ a_window DbgTitleWndCreate( const char *title, wnd_info *wndinfo,
     info.colour = GetWndColours( wndclass );
     info.title_size = title_size;
     info.style |= GUI_INIT_INVISIBLE;
-#if defined(__GUI__) && defined(__OS2__)
+#if defined( GUI_IS_GUI ) && defined( __OS2__ )
     info.style &= ~GUI_CHANGEABLE_FONT;
 #endif
     if( _IsOn( SW_DETACHABLE_WINDOWS ) )
@@ -655,7 +655,7 @@ void WndRXError( int num )
     Error( ERR_NONE, *RXErrTxt[num - 1] );
 }
 
-#if defined(__GUI__)
+#if defined( GUI_IS_GUI )
 static bool GetInitName( char *name, char *buff, size_t buff_len )
 {
     buff_len = GetSystemDir( buff, buff_len );

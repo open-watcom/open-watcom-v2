@@ -346,7 +346,7 @@ void DebugExit( void )
 void DebugFini( void )
 {
     PointFini();
-#if !( defined( __GUI__ ) && defined( __OS2__ ) )
+#if !( defined( GUI_IS_GUI ) && defined( __OS2__ ) )
     ReleaseProgOvlay( true ); // see dlgfile.c
 #endif
     VarDisplayFini();

@@ -80,7 +80,7 @@ extern unsigned         ConfigScreen( void );
 
 #define TIMER_MS        250
 
-#if defined( __NT__ ) && defined( __GUI__ )
+#if defined( __NT__ ) && defined( GUI_IS_GUI )
 
 #include <windows.h>
 #include "guitimer.h"
@@ -189,7 +189,7 @@ void DUIInit( void )
     InitMenus();
     WndInit( LIT_DUI( The_WATCOM_Debugger ) );
     _SwitchOff( SW_ERROR_STARTUP );
-#if defined(__GUI__)
+#if defined( GUI_IS_GUI )
     TellWinHandle();
 #endif
     if( WndMain != NULL )

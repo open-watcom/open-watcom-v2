@@ -1000,7 +1000,7 @@ bool DUIScreenOption( const char *start, unsigned len, int pass )
     return( true );
 }
 
-#if defined( __GUI__ )
+#if defined( GUI_IS_GUI )
 unsigned OnAnotherThreadAccess( trap_elen in_num, in_mx_entry_p in_mx, trap_elen out_num, mx_entry_p out_mx )
 {
     return( TrapAccess( in_num, in_mx, out_num, out_mx ) );

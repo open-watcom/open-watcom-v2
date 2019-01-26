@@ -337,7 +337,7 @@ static void GetInitCmd( int pass )
     }
 }
 
-#ifndef __GUI__
+#ifndef GUI_IS_GUI
 static void PrintUsage( dui_res_id first_ln )
 {
     char        *msg_buff;
@@ -372,7 +372,7 @@ static void ProcOptList( int pass )
             break;
         NextChar();
         curr = buff;
-#ifndef __GUI__
+#ifndef GUI_IS_GUI
         if( CurrChar == '?' ) {
             PrintUsage( MSG_USAGE_BASE );
             StartupErr( "" );
@@ -496,7 +496,7 @@ static void ProcOptList( int pass )
             _SwitchOn( SW_POWERBUILDER );
             break;
         case OPT_HELP:
-#ifndef __GUI__
+#ifndef GUI_IS_GUI
             PrintUsage( MSG_USAGE_BASE );
             StartupErr( "" );
 #endif
