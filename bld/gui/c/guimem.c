@@ -34,12 +34,13 @@
 #include <stdlib.h>
 #include "guimem.h"
 #if defined( GUI_IS_GUI )
-#include "mem.h"
+#include "cguimem.h"
 #include "wpimem.h"
 #ifdef __OS2_PM__
 #include "os2mem.h"
 #endif
 #else
+#include "stdui.h"
 #include "helpmem.h"
 #endif
 #ifdef TRMEM
@@ -102,9 +103,7 @@ void GUIMemOpen( void )
 #endif
 }
 #if !defined( GUI_IS_GUI )
-void UIMemOpen( void )
-{
-}
+void UIMemOpen( void ) {}
 #endif
 
 void GUIMemClose( void )
@@ -119,10 +118,13 @@ void GUIMemClose( void )
 #endif
 }
 #if !defined( GUI_IS_GUI )
-void UIMemClose( void )
-{
-}
+void UIMemClose( void ) {}
 #endif
+
+
+/*
+ * Alloc functions
+ */
 
 void *GUIMemAlloc( size_t size )
 /******************************/
@@ -165,6 +167,14 @@ void *PMmalloc( size_t size )
 }
 #endif
 #else
+void *uimalloc( size_t size )
+{
+#ifdef TRMEM
+    return( _trmem_alloc( size, _trmem_guess_who(), GUIMemHandle ) );
+#else
+    return( malloc( size ) );
+#endif
+}
 void *HelpMemAlloc( size_t size )
 {
 #ifdef TRMEM
@@ -174,6 +184,11 @@ void *HelpMemAlloc( size_t size )
 #endif
 }
 #endif
+
+
+/*
+ * Free functions
+ */
 
 void GUIMemFree( void *ptr )
 /**************************/
@@ -212,6 +227,14 @@ void PMfree( void *ptr )
 }
 #endif
 #else
+void uifree( void *ptr )
+{
+#ifdef TRMEM
+    _trmem_free( ptr, _trmem_guess_who(), GUIMemHandle );
+#else
+    free( ptr );
+#endif
+}
 void HelpMemFree( void *ptr )
 {
 #ifdef TRMEM
@@ -221,6 +244,11 @@ void HelpMemFree( void *ptr )
 #endif
 }
 #endif
+
+
+/*
+ * Realloc functions
+ */
 
 void *GUIMemRealloc( void *ptr, size_t size )
 /*******************************************/
@@ -259,6 +287,14 @@ void *PMrealloc( void *ptr, size_t size )
 }
 #endif
 #else
+void *uirealloc( void *ptr, size_t size )
+{
+#ifdef TRMEM
+    return( _trmem_realloc( ptr, size, _trmem_guess_who(), GUIMemHandle ) );
+#else
+    return( realloc( ptr, size ) );
+#endif
+}
 void *HelpMemRealloc( void *ptr, size_t size )
 {
 #ifdef TRMEM
