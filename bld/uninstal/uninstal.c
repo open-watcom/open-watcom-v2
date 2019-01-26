@@ -36,9 +36,29 @@
 #include "ldstr.h"
 #include "rcstr.gh"
 #include "progress.h"
+#include "cguimem.h"
+
 
 #define CHECK_FILE_NAME "owsetenv.bat"
 #define UNINSTALL_NAME  "Open Watcom"
+
+/*
+ * MemAlloc - allocate some memory
+ */
+void *MemAlloc( size_t size )
+{
+    return( calloc( 1, size ) );
+
+} /* MemAlloc */
+
+/*
+ * MemFree - free some memory
+ */
+void MemFree( void *ptr )
+{
+    free( ptr );
+
+} /* MemFree */
 
 /*
  * DeleteFolder - delete all files in a folder
