@@ -32,7 +32,7 @@
 #include "commonui.h"
 #include <string.h>
 #include "bool.h"
-#include "mem.h"
+#include "cguimem.h"
 #include "srchmsg.h"
 #include "ldstr.h"
 #include "watcom.h"

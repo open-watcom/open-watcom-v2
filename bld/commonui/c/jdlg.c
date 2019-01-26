@@ -34,7 +34,7 @@
 #include <stdlib.h>
 #include "bool.h"
 #include "wpi.h"
-#include "mem.h"
+#include "cguimem.h"
 #include "_windlg.h"
 #include "jdlg.h"
 

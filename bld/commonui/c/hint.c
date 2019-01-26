@@ -34,7 +34,7 @@
 #include "bool.h"
 #include "hint.h"
 #include "uistr.gh"
-#include "mem.h"
+#include "cguimem.h"
 #include "font.h"
 
 typedef struct {

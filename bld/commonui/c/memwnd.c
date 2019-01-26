@@ -45,7 +45,7 @@
 #include "wpi.h"
 #include "font.h"
 #include "segmem.h"
-#include "mem.h"
+#include "cguimem.h"
 #include "dlgmod.h"
 #include "descript.h"
 #include "standard.h"

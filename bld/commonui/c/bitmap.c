@@ -37,7 +37,7 @@
 #include "bool.h"
 #include "palette.h"
 #include "bitmap.h"
-#include "mem.h"
+#include "cguimem.h"
 
 #ifndef _WCI86HUGE
     #if defined( _M_I86 )

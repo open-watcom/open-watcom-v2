@@ -38,7 +38,7 @@
 #include <string.h>
 #include <dos.h>
 #include <malloc.h>
-#include "mem.h"
+#include "cguimem.h"
 
 /*
  * MemStart - set up required stuff for memory manager

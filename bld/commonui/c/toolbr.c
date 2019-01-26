@@ -35,7 +35,7 @@
 #include <assert.h>
 #include "bool.h"
 #include "watcom.h"
-#include "mem.h"
+#include "cguimem.h"
 #include "toolbr.h"
 #include "loadcc.h"
 #include "wclbproc.h"
