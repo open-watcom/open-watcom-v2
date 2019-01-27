@@ -8,12 +8,18 @@ linux_options = -kLINUX -u
 qnx_options   = -kQNX -t8 -u
 rdos_options  = -kRDOS
 
-wsplice_opts = -i.. $($(system)_options) ../common.sp $[@ $^@
-wsplice_opts_p = -i.. $($(system)_options) -kCNAME $(options_$^&) ../common.sp $[@ $^@
-wsplice_opts_c = -i.. $($(system)_options) $(options_h_$^&) ../common.sp $[@ $^@
+!ifeq release 1
+wsplice_extra_opts =
+!else
+wsplice_extra_opts = -d"depends.dep"
+!endif
 
-wsplice_opts_i386 = -i.. -kARCHI386 $($(system)_options) ../common.sp $[@ $^@
-wsplice_opts_mips = -i.. -kARCHMIPS $($(system)_options) ../common.sp $[@ $^@
+wsplice_opts = $(wsplice_extra_opts) -i.. $($(system)_options) ../common.sp $[@ $^@
+wsplice_opts_p = $(wsplice_extra_opts) -i.. $($(system)_options) -kCNAME $(options_$^&) ../common.sp $[@ $^@
+wsplice_opts_c = $(wsplice_extra_opts) -i.. $($(system)_options) $(options_h_$^&) ../common.sp $[@ $^@
+
+wsplice_opts_i386 = $(wsplice_extra_opts) -i.. -kARCHI386 $($(system)_options) ../common.sp $[@ $^@
+wsplice_opts_mips = $(wsplice_extra_opts) -i.. -kARCHMIPS $($(system)_options) ../common.sp $[@ $^@
 
 # order of directories is important for DOS
 # multi level tree must be created from top to bottom
@@ -28,6 +34,14 @@ dos_path   = ../watcom
 linux_path = ../watcom
 qnx_path   = ../quantum;../watcom
 rdos_path  = ../watcom
+
+crwat_sp    = crwat.sp
+crwatcnt_sp = crwatcnt.sp
+
+additional_cleanup = $(crwat_sp) $(crwatcnt_sp) $(noext) *.h *.hpp common.cnv
+additional_cleanup_subdir = $($(system)_dirs)
+
+!include deftarg.mif
 
 .EXTENSIONS
 .EXTENSIONS : . .h .hpp .cnv .sp .mh .mhp .sp1
@@ -102,8 +116,8 @@ all : $($(system)_dirs) $($(system)_files) .symbolic
     @%make echo_wsplice
     $(wsplice) $(wsplice_opts)
 
-{..}.sp1.sp:
-    $(awk) -f ../cpyyear.awk -v CPYYEAR=$(curr_year) -v OUTFILE=$@ $[@
+{$(hdr_dir)}.sp1.sp:
+    $(awk) -f $(hdr_dir)/cpyyear.awk -v CPYYEAR=$(curr_year) -v OUTFILE=$@ $[@
 
 #
 # Handle C++ and cname style headers (files without extension)
@@ -162,8 +176,3 @@ $($(system)_dirs):
 
 !include ../deps.mif
 
-clean: .SYMBOLIC
-    rm -f *.h *.hpp common.cnv
-    rm -f *.sp
-    rm -f $(noext)
-    rm -rf $($(system)_dirs)
