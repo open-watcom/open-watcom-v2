@@ -127,6 +127,8 @@
 /bld/f77test/nist/__wfc__.vm*
 #
 /bld/graphlib/*/*/*.ref
+/bld/graphlib/pgchart/*/*.sp
+/bld/graphlib/*/*.sp
 #
 /bld/hdr/dos/*
 /bld/hdr/linux/*
