@@ -120,15 +120,14 @@ _WCRTLINK extern int    _execvpe( const char *__file, const char *const __argv[]
                 unsigned __stack_size, void *__arglist );
  #pragma intrinsic(_beginthread)
  _WCRTLINK extern void  _endthread( void );
-:elsesegment
-
-:segment LINUX | QNX
+:elsesegment LINUX | QNX
 #ifdef __386__
  _WCRTLINK extern int   _beginthread( void (_WCCALLBACK *__start_address)(void *),
      void *__stack_bottom, unsigned __stack_size, void *__arglist );
  #pragma intrinsic(_beginthread)
  _WCRTLINK extern void  _endthread( void );
-:elsesegment
+#endif
+:elsesegment DOS
 #ifdef _M_I86
  _WCRTLINK extern int _WCFAR  _beginthread(
     void (_WCCALLBACK _WCFAR *__start_address)(void _WCFAR *),
@@ -157,7 +156,6 @@ _WCRTLINK extern int    _execvpe( const char *__file, const char *const __argv[]
   #pragma intrinsic(_beginthread)
  #endif
  _WCRTLINK extern void  _endthread( void );
-:endsegment
 #endif
 :endsegment
 
