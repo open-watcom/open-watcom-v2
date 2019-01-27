@@ -29,7 +29,9 @@
 :include wchar_t.sp
 :include intptr_t.sp
 
+:keep MAXPATH
 :include maxpath.sp
+:remove MAXPATH
 
 :include access.sp
 

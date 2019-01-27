@@ -102,7 +102,9 @@ using std::wcstoull;
 
 :include mbcurmax.sp
 
+:keep MAXPATH
 :include maxpath.sp
+:remove MAXPATH
 
 #define RAND_MAX        32767U
 #define EXIT_SUCCESS    0
@@ -373,30 +375,9 @@ _WCRTLINK extern unsigned __int64 _strtoui64( const char *__nptr, char **__endpt
 #endif
 :endsegment
 
-/*
- * The following sizes are the maximum sizes of buffers used by the _fullpath()
- * _makepath() and _splitpath() functions.  They include space for the '\0'
- * terminator.
- */
-:segment LINUX | QNX
-#define _MAX_DRIVE      48      /*  maximum length of node name w/ '\0' */
-#define _MAX_NODE    _MAX_DRIVE /*  maximum length of node name w/ '\0' */
-#define _MAX_DIR        256     /*  maximum length of subdirectory      */
-#define _MAX_FNAME      48      /*  maximum length of a file name       */
-#define _MAX_EXT        48      /*  maximum length of a file extension  */
-:elsesegment DOS | RDOS
-#if defined(__NT__) || defined(__OS2__) || defined(__WATCOM_LFN__) && defined(__DOS__) || defined(__OSI__)
-#define _MAX_DRIVE   3  /* maximum length of drive component */
-#define _MAX_DIR    256 /* maximum length of path component */
-#define _MAX_FNAME  256 /* maximum length of file name component */
-#define _MAX_EXT    256 /* maximum length of extension component */
-#else
-#define _MAX_DRIVE   3  /* maximum length of drive component */
-#define _MAX_DIR    130 /* maximum length of path component */
-#define _MAX_FNAME   9  /* maximum length of file name component */
-#define _MAX_EXT     5  /* maximum length of extension component */
-#endif
-:endsegment
+:keep MAXELEM
+:include maxpath.sp
+:remove MAXELEM
 
 #define _MAX_PATH2 (_MAX_PATH+3) /* maximum size of output buffer for _splitpath2() */
 

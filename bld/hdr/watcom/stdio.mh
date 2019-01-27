@@ -160,9 +160,9 @@ using std::wscanf;
 #endif
 :endsegment
 
-:keep FILENAME
+:keep FILENAMEMAX
 :include maxpath.sp
-:remove FILENAME
+:remove FILENAMEMAX
 
 :segment DOS | RDOS
 :keep PATHMAX
