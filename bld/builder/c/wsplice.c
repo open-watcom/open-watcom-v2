@@ -204,6 +204,8 @@ static bool         RestoreTime = false;    // - set tgt-file timestamp to src-f
 static char         OutBuffer[1024];        // - output buffer
 static unsigned     OutBufferLen;           // - output buffer current len
 
+static FILE         *fp_depdump = NULL;
+
 // LOCAL ROUTINES
 
 static bool     Expr( void );
@@ -276,6 +278,45 @@ static void PopSegStack( void ) // POP SEGMENTS STACK
     }
 }
 
+static void AddDepTarg( const char *name )
+{
+    if( name != NULL && fp_depdump != NULL ) {
+        fprintf( fp_depdump, "%s :", name );
+    }
+}
+
+static void AddDepDep( const char *name )
+{
+    if( name != NULL && fp_depdump != NULL ) {
+        fprintf( fp_depdump, " %s", name );
+    }
+}
+
+static void AddDepClose( void )
+{
+    if( fp_depdump != NULL ) {
+        fprintf( fp_depdump, "\n" );
+        fclose( fp_depdump );
+        fp_depdump = NULL;
+    }
+}
+
+static void OpenDepFile( const char *arg )
+{
+    char    fname[FILENAME_MAX];
+    size_t  size;
+
+    size = strlen( arg );
+    if( size > 0 && arg[0] == '"' && arg[size - 1] == '"' ) {
+        size -= 2;
+        arg++;
+    }
+    memcpy( fname, arg, size );
+    fname[size] = '\0';
+    fp_depdump = fopen( fname, "at" );
+
+}
+
 //OPEN FILE, TRUNCATE NAME IF NECESSARY
 static FILE *OpenFileTruncate(
     const char *file_name,    // - file to be opened
@@ -284,6 +325,8 @@ static FILE *OpenFileTruncate(
     FILE        *new = NULL;
 
     new = fopen( file_name, mode );
+    if( new != NULL )
+        AddDepDep( file_name );
     if( new == NULL ) {
         char    path_buffer[FILENAME_MAX + 3];
         char    new_name[FILENAME_MAX];
@@ -306,6 +349,9 @@ static FILE *OpenFileTruncate(
         if( truncated ) {
             _makepath( new_name, drive, dir, fname, ext );
             new = fopen( new_name, mode );
+            if( new != NULL ) {
+                AddDepDep( new_name );
+            }
         }
     }
     return( new );
@@ -327,8 +373,9 @@ static FILE *OpenFilePathList(  //OPEN FILE, TRY EACH LOCATION IN PATH LIST
             strcpy( buff, list->path );
             strcat( buff, file_name );
             new = OpenFileTruncate( buff, mode );
-            if( new != NULL )
+            if( new != NULL ) {
                 break;
+            }
             list = list->next;
         }
     }
@@ -923,10 +970,10 @@ int main(               // MAIN-LINE
 #define tgt_file param[arg_count - 1]   // - name of modifications file
 #define get_value() ( (arg[2]=='\0') ? (param[++count]) : arg + 2)
 
-        if( 0 == stricmp( tgt_file, "-" ) ) {
+        tgt = tgt_file;
+        if( 0 == stricmp( tgt, "-" ) ) {
             OutputFile = stdout;
         } else {
-            tgt = tgt_file;
             OutputFile = fopen( tgt, "wb" );
         }
         if( OutputFile == NULL ) {
@@ -974,6 +1021,10 @@ int main(               // MAIN-LINE
                     case 'p':
                         RestoreTime = true;
                         break;
+                    case 'd':
+                        OpenDepFile( get_value() );
+                        AddDepTarg( tgt );
+                        break;
                     default:
                         Error( "Unknown option '%c'", arg[1] );
                         break;
@@ -991,7 +1042,8 @@ int main(               // MAIN-LINE
 #undef tgt_file
 #undef get_value
     }
-    if( RestoreTime ) {
+    AddDepClose();
+    if( RestoreTime && stricmp( tgt, "-" ) != 0 ) {
         if( stat( src, &src_time ) == 0 ) {
             dest_time.actime = src_time.st_atime;
             dest_time.modtime = src_time.st_mtime;
