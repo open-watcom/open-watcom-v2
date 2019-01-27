@@ -4,6 +4,8 @@
 :include crwatcnt.sp
  */
 
+:include readonly.sp
+
 :include cpluspro.sp
 
 /* Ctl3dSubclassDlg() flags */

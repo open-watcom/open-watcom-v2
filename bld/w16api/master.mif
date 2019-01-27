@@ -6,9 +6,18 @@ w16api_distrib_lib = 1
 !include cproj.mif
 !include defrule.mif
 
-wsplice_opts = -i".." -i"$(hdr_dir)" -i"../include" $[@ $^@
+crwatcnt_sp = crwatcnt.sp
 
-.EXTENSIONS : .lbc .def .mh
+incl_dir = ../include
+
+!ifeq release 1
+wsplice_extra_opts =
+!else
+wsplice_extra_opts = -d"depends.dep"
+!endif
+wsplice_opts = $(wsplice_extra_opts) -i".." -i"$(hdr_dir)" -i"$(incl_dir)" $[@ $^@
+
+.EXTENSIONS : .lbc .sp .def .mh .sp1
 
 headers =        &
     _win386.h    &
@@ -80,7 +89,7 @@ all : $(headers) $(libs) .SYMBOLIC
 
 .def: ../lib
 .asm: ../asm
-.mh: ../include
+.mh: $(incl_dir)
 
 .def.lbc:
     $(awk) -f ../def16lbc.awk -v OUTFILE=$^. $[@
@@ -93,6 +102,9 @@ all : $(headers) $(libs) .SYMBOLIC
     @%make echo_wsplice
     $(wsplice) $(wsplice_opts)
 
+{$(hdr_dir)}.sp1.sp:
+    $(awk) -f $(hdr_dir)/cpyyear.awk -v CPYYEAR=$(curr_year) -v OUTFILE=$@ $[@
+
 $(libs):
 
 windows.lbc : $(winlibs)
@@ -102,10 +114,11 @@ windows.lib: windows.lbc profc.obj $(__MAKEFILES__)
     @%make echo_lib
     $(librarian) $(libflags) @$[@ profc.obj
 
-!include ../deps.mif
+!include $(incl_dir)/deps.mif
 
 clean : .SYMBOLIC
     rm -f *.h
     rm -f *.lbc
     rm -f *.lib
     rm -f *.obj
+    rm -f *.sp depends.dep
