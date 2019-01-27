@@ -30,7 +30,7 @@ qnx_path   = ../quantum;../watcom
 rdos_path  = ../watcom
 
 .EXTENSIONS
-.EXTENSIONS : . .h .hpp .cnv .mh .mhp
+.EXTENSIONS : . .h .hpp .cnv .sp .mh .mhp .sp1
 
 all : $($(system)_dirs) $($(system)_files) .symbolic
     @%null
@@ -102,6 +102,9 @@ all : $($(system)_dirs) $($(system)_files) .symbolic
     @%make echo_wsplice
     $(wsplice) $(wsplice_opts)
 
+{..}.sp1.sp:
+    $(awk) -f ../cpyyear.awk -v CPYYEAR=$(curr_year) -v OUTFILE=$@ $[@
+
 #
 # Handle C++ and cname style headers (files without extension)
 #
@@ -161,5 +164,6 @@ $($(system)_dirs):
 
 clean: .SYMBOLIC
     rm -f *.h *.hpp common.cnv
+    rm -f *.sp
     rm -f $(noext)
     rm -rf $($(system)_dirs)
