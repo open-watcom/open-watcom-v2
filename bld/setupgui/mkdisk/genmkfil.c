@@ -127,7 +127,8 @@ bool ReadList( FILE *fp )
 
     while( fgets( buf, 127, fp ) != NULL ) {
         buf[strlen( buf ) - 1] = '\0';
-        if( buf[0] == '\0' ) continue;
+        if( buf[0] == '\0' )
+            continue;
         if( buf[0] == '#' ) {
             if( buf[2] == '@' ) {     // database
                 buf[1] = '-';         // (so strtok works)
@@ -145,7 +146,8 @@ bool ReadList( FILE *fp )
         patch = strtok( NULL, " \t" );
         for( ;; ) {
             where = strtok( NULL, " \t" );
-            if( where == NULL ) break;
+            if( where == NULL )
+                break;
             if( InVersionList( where ) ) {
                 if( !AddFile( path, file, rel_file, patch ) ) {
                     return( false );
@@ -174,7 +176,8 @@ void CreateMakeFile( void )
     for( curr = FileList; ; ) {
         fprintf( fp, "    $(%%packdir)\\%s", curr->pack );
         curr = curr->next;
-        if( curr == NULL ) break;
+        if( curr == NULL )
+            break;
         fprintf( fp, " &\n" );
     }
     fprintf( fp, "\n\n" );

@@ -1,4 +1,4 @@
-proj_name =  os2api
+proj_name = os2api
 
 os2api_autodepends = .AUTODEPEND
 
@@ -13,146 +13,153 @@ hdr_cpu = $(host_cpu)
 !include cproj.mif
 !include defrule.mif
 
-wsplice_opts = -i"$(hdr_dir)" $[@ $^@
+crwatcnt_sp = crwatcnt.sp
 
-.EXTENSIONS : .mh
+incl_dir_286 = ../../incl16
+incl_dir_386 = ../../incl32
 
-headers286 =         &
-        bse.h        &
-        bsedev.h     &
-        bsedos.h     &
-        bseerr.h     &
-        bsesub.h     &
-        os2.h        &
-        os2def.h     &
-        pm.h         &
-        pmbitmap.h   &
-        pmdev.h      &
-        pmerr.h      &
-        pmgpi.h      &
-        pmhelp.h     &
-        pmmle.h      &
-        pmshl.h      &
-        pmwin.h
+!ifeq release 1
+wsplice_extra_opts =
+!else
+wsplice_extra_opts = -d"depends.dep"
+!endif
+wsplice_opts = $(wsplice_extra_opts) -i"$(hdr_dir)" $[@ $^@
 
-headers386 =                 &
-        acb.h                &
-        basemid.h            &
-        bdcalls.h            &
-        bse.h                &
-        bsedev.h             &
-        bsedos.h             &
-        bseerr.h             &
-        bsememf.h            &
-        bseord.h             &
-        bsesub.h             &
-        bsexcpt.h            &
-        callconv.h           &
-        codec.h              &
-        dive.h               &
-        driver.h             &
-        evcb.h               &
-        exe.h                &
-        exe386.h             &
-        fourcc.h             &
-        ftpapi.h             &
-        genio.h              &
-        mciapi.h             &
-        mcios2.h             &
-        meerror.h            &
-        mididll.h            &
-        midios2.h            &
-        mmdrvos2.h           &
-        mmioos2.h            &
-        nerrno.h             &
-        netdb.h              &
-        newexe.h             &
-        os2.h                &
-        os2def.h             &
-        os2me.h              &
-        os2medef.h           &
-        pm.h                 &
-        pmavio.h             &
-        pmdev.h              &
-        pmerr.h              &
-        pmgpi.h              &
-        pmhelp.h             &
-        pmsei.h              &
-        pmspl.h              &
-        pmstddlg.h           &
-        pmtypes.h            &
-        pmwin.h              &
-        pmwp.h               &
-        rexxsaa.h            &
-        ssm.h                &
-        sw.h                 &
-        tcpustd.h            &
-        types.h              &
-        uconv.h              &
-        ulserrno.h           &
-        ulsitem.h            &
-        unidef.h             &
-        upm.h                &
-        utils.h              &
-        arpa/inet.h          &
-        GL/gl.h              &
-        GL/glaux.h           &
-        GL/glu.h             &
-        GL/glut.h            &
-        GL/pgl.h             &
-        GL/tk.h              &
-        machine/ansi.h       &
-        machine/endian.h     &
-        machine/types.h      &
-        net/if.h             &
-        net/if_arp.h         &
-        net/if_dl.h          &
-        net/route.h          &
-        netinet/icmp_var.h   &
-        netinet/if_ether.h   &
-        netinet/in.h         &
-        netinet/in_systm.h   &
-        netinet/ip.h         &
-        netinet/ip_icmp.h    &
-        netinet/ip_var.h     &
-        netinet/tcp.h        &
-        netinet/tcp_var.h    &
-        netinet/udp.h        &
-        netinet/udp_var.h    &
-        protocol/routed.h    &
-        protocol/rwhod.h     &
-        protocol/talkd.h     &
-        protocol/timed.h     &
-        sys/cdefs.h          &
-        sys/filio.h          &
-        sys/ioccom.h         &
-        sys/ioctl.h          &
-        sys/ioctlos2.h       &
-        sys/lipcpar.h        &
-        sys/param.h          &
-        sys/select.h         &
-        sys/socket.h         &
-        sys/sockio.h         &
-        sys/sysctl.h         &
-        sys/time.h           &
-        sys/uio.h            &
-        sys/un.h
+.EXTENSIONS : .sp .mh .sp1
 
-incl286 = incl16
-incl386 = incl32
+headers286 = &
+    bse.h        &
+    bsedev.h     &
+    bsedos.h     &
+    bseerr.h     &
+    bsesub.h     &
+    os2.h        &
+    os2def.h     &
+    pm.h         &
+    pmbitmap.h   &
+    pmdev.h      &
+    pmerr.h      &
+    pmgpi.h      &
+    pmhelp.h     &
+    pmmle.h      &
+    pmshl.h      &
+    pmwin.h
 
-dirs386 =            &
-        arpa         &
-        GL           &
-        machine      &
-        net          &
-        netinet      &
-        protocol     &
-        sys
+headers386 = &
+    acb.h               &
+    basemid.h           &
+    bdcalls.h           &
+    bse.h               &
+    bsedev.h            &
+    bsedos.h            &
+    bseerr.h            &
+    bsememf.h           &
+    bseord.h            &
+    bsesub.h            &
+    bsexcpt.h           &
+    callconv.h          &
+    codec.h             &
+    dive.h              &
+    driver.h            &
+    evcb.h              &
+    exe.h               &
+    exe386.h            &
+    fourcc.h            &
+    ftpapi.h            &
+    genio.h             &
+    mciapi.h            &
+    mcios2.h            &
+    meerror.h           &
+    mididll.h           &
+    midios2.h           &
+    mmdrvos2.h          &
+    mmioos2.h           &
+    nerrno.h            &
+    netdb.h             &
+    newexe.h            &
+    os2.h               &
+    os2def.h            &
+    os2me.h             &
+    os2medef.h          &
+    pm.h                &
+    pmavio.h            &
+    pmdev.h             &
+    pmerr.h             &
+    pmgpi.h             &
+    pmhelp.h            &
+    pmsei.h             &
+    pmspl.h             &
+    pmstddlg.h          &
+    pmtypes.h           &
+    pmwin.h             &
+    pmwp.h              &
+    rexxsaa.h           &
+    ssm.h               &
+    sw.h                &
+    tcpustd.h           &
+    types.h             &
+    uconv.h             &
+    ulserrno.h          &
+    ulsitem.h           &
+    unidef.h            &
+    upm.h               &
+    utils.h             &
+    arpa/inet.h         &
+    GL/gl.h             &
+    GL/glaux.h          &
+    GL/glu.h            &
+    GL/glut.h           &
+    GL/pgl.h            &
+    GL/tk.h             &
+    machine/ansi.h      &
+    machine/endian.h    &
+    machine/types.h     &
+    net/if.h            &
+    net/if_arp.h        &
+    net/if_dl.h         &
+    net/route.h         &
+    netinet/icmp_var.h  &
+    netinet/if_ether.h  &
+    netinet/in.h        &
+    netinet/in_systm.h  &
+    netinet/ip.h        &
+    netinet/ip_icmp.h   &
+    netinet/ip_var.h    &
+    netinet/tcp.h       &
+    netinet/tcp_var.h   &
+    netinet/udp.h       &
+    netinet/udp_var.h   &
+    protocol/routed.h   &
+    protocol/rwhod.h    &
+    protocol/talkd.h    &
+    protocol/timed.h    &
+    sys/cdefs.h         &
+    sys/filio.h         &
+    sys/ioccom.h        &
+    sys/ioctl.h         &
+    sys/ioctlos2.h      &
+    sys/lipcpar.h       &
+    sys/param.h         &
+    sys/select.h        &
+    sys/socket.h        &
+    sys/sockio.h        &
+    sys/sysctl.h        &
+    sys/time.h          &
+    sys/uio.h           &
+    sys/un.h
+
+dirs386 = &
+    arpa        &
+    GL          &
+    machine     &
+    net         &
+    netinet     &
+    protocol    &
+    sys
 
 all : $(dirs$(hdr_cpu)) $(headers$(hdr_cpu)) .SYMBOLIC
 
-.mh: ../../$(incl$(hdr_cpu))
+.mh: $(incl_dir_$(hdr_cpu))
 
 .mh.h:
     @%make echo_wsplice
@@ -186,11 +193,17 @@ all : $(dirs$(hdr_cpu)) $(headers$(hdr_cpu)) .SYMBOLIC
     @%make echo_wsplice
     $(wsplice) $(wsplice_opts)
 
+{$(hdr_dir)}.sp1.sp:
+    $(awk) -f $(hdr_dir)/cpyyear.awk -v CPYYEAR=$(curr_year) -v OUTFILE=$@ $[@
+
 !ifdef dirs$(hdr_cpu)
 $(dirs$(hdr_cpu)):
     @if not exist $@ mkdir $@
 !endif
 
+!include $(incl_dir_$(hdr_cpu))/deps.mif
+
 clean : .SYMBOLIC
     rm -f *.h
+    rm -f *.sp depends.dep
     rm -rf $(dirs$(hdr_cpu))

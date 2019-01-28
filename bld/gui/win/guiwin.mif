@@ -2,8 +2,6 @@ type=win
 
 sys_windowed = 1
 
-wpi_sysobjs = wpimem.obj
-
 win_sysobjs = &
     guixscal.obj &
     guidrect.obj &
@@ -15,7 +13,6 @@ win_sysobjs = &
     guigetpt.obj &
     guistext.obj &
     guidoscr.obj &
-    mem.obj      &
     guisstyl.obj &
     guirange.obj &
     guithumb.obj &
@@ -88,19 +85,11 @@ win_sysobjs = &
     guif1hk.obj	 &
     guigetrc.obj
 
-!ifeq host_os os2
-win_sysobjs +=	&
-    os2mem.obj
-!else ifeq host_os nt
+!ifeq host_os nt
 win_sysobjs +=	&
     guisystr.obj
 !endif
 
 sysobjs = $(win_sysobjs) $(wpi_sysobjs)
-
-# memory tracker cover routines
-extra_c_flags_mem    = $(trmem_cover_cflags)
-extra_c_flags_os2mem = $(trmem_cover_cflags)
-extra_c_flags_wpimem = $(trmem_cover_cflags)
 
 !include ../../master.mif

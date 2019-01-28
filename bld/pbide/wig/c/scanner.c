@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -39,11 +40,12 @@
 #include "types.h"
 #include "list.h"
 #include "sruinter.h"
-#include "ytab.h"
 #include "error.h"
-#include "mem.h"
+#include "pbmem.h"
 #include "filelist.h"
 #include "keywords.h"
+#include "wig.h"
+
 
 #define ID_BUFLEN               (8*1024)
 #define BUF_SIZE_INCREMENT      1024
@@ -172,14 +174,14 @@ void FiniLex( void )
     yyLine = NULL;
 }
 
-int compKeywords( const void *p1, const void *p2 )
-/************************************************/
+static int compKeywords( const void *p1, const void *p2 )
+/*******************************************************/
 {
     return( stricmp( p1, ((const keyword *)p2)->key ) );
 }
 
-id_type checkKeyWord( const char *text )
-/**************************************/
+static id_type checkKeyWord( const char *text )
+/*********************************************/
 {
     keyword             *item;
 

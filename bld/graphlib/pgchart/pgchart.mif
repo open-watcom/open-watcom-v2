@@ -7,6 +7,8 @@ v2subdir = v2objs
 
 additional_cleanup_subdir = $(v2subdir)
 
+additional_cleanup = crwat.sp
+
 pgchart_autodepends = .AUTODEPEND
 pgchart_distrib_lib = 1
 

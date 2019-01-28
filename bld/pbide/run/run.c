@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -38,6 +39,10 @@
 #include <stdlib.h>
 #include <ctype.h>
 #include <string.h>
+#include "winexprt.h"
+
+
+WINEXPORT BOOL CALLBACK EnumProc( HWND hwnd, LPARAM lparam );
 
 char ClassName[256];
 char Caption[256];
@@ -58,17 +63,18 @@ static void FreeProcInstance_WNDENUM( WNDENUMPROC fn )
 
 #else
 
-#define MakeProcInstance_WNDENUM(f,i)
+#define MakeProcInstance_WNDENUM(f,i)   ((void)i,f)
 #define FreeProcInstance_WNDENUM(f)
 
 #endif
 
-BOOL CALLBACK EnumProc( HWND hwnd, LPARAM lparam )
+WINEXPORT BOOL CALLBACK EnumProc( HWND hwnd, LPARAM lparam )
 {
     char        buf[256];
     int         len;
 
-    lparam = lparam;
+    /* unused parameters */ (void)lparam;
+
     len = GetClassName( hwnd, buf, sizeof( buf ) );
     buf[len] = '\0';
     if( strcmp( buf, ClassName ) == 0 ) {
@@ -87,9 +93,7 @@ int PASCAL WinMain( HINSTANCE currinst, HINSTANCE previnst, LPSTR cmdline, int c
     char        *dst;
     WNDENUMPROC wndenumproc;
 
-    currinst = currinst;
-    previnst = previnst;
-    cmdshow = cmdshow;
+    /* unused parameters */ (void)previnst; (void)cmdshow;
 
     ptr = cmdline;
 

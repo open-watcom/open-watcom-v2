@@ -31,7 +31,7 @@
 
 
 #include <stdlib.h>
-#include "mem.h"
+#include "iemem.h"
 
 #ifdef __OS2_PM__
 #define INCL_GPI

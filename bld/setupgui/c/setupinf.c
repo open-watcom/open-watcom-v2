@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -317,6 +318,8 @@ static struct pm_info {
     char                *icoioname;
     int                 icon_pos;
     char                *condition;
+    bool                group           : 1;
+    bool                shadow          : 1;
 } *PMInfo = NULL;
 
 static struct profile_info {
@@ -588,7 +591,7 @@ static bool EvalExprTree( tree_node *tree, bool is_minimal )
     case OP_EXIST:
         VbufInit( &tmp );
         ReplaceVars( &tmp, (char *)tree->u.left );
-        value = ( access( VbufString( &tmp ), F_OK ) == 0 );
+        value = ( access_vbuf( &tmp, F_OK ) == 0 );
         VbufFree( &tmp );
         break;
     case OP_VAR:
@@ -715,18 +718,18 @@ bool SecondaryPatchSearch( const char *filename, char *buff )
 
     GetDestDir( patchDirIndex, &path );
     VbufConcStr( &path, filename );
-    ok = ( access( VbufString( &path ), F_OK ) == 0 );
+    ok = ( access_vbuf( &path, F_OK ) == 0 );
     if( !ok ) {
         ReplaceVars( &path, GetVariableStrVal( "DstDir" ) );
         VbufAddDirSep( &path );
         VbufConcStr( &path, filename );
-        ok = ( access( VbufString( &path ), F_OK ) == 0 );
+        ok = ( access_vbuf( &path, F_OK ) == 0 );
     }
     if( ok ) {
         strcpy( buff, VbufString( &path ) );
     } else {
-        VbufInit( &ext );
         buff[0] = '\0';
+        VbufInit( &ext );
         VbufSetStr( &path, filename );
         VbufSplitpath( &path, NULL, NULL, NULL, &ext );
         if( VbufCompStr( &ext, ".dll", true ) == 0 ) {
@@ -969,17 +972,17 @@ static bool dialog_static( char *next, DIALOG_INFO *dlg )
         dlg->curr_dialog->controls_ext[dlg->curr_dialog->num_controls].pVisibilityConds = GUIStrDup( line, NULL );
         // dummy_var allows control to have an id - used by dynamic visibility feature
         var_handle = MakeDummyVar();
-        if( VbufLen( &text ) > 0 ) {
+        len = VbufLen( &text );
+        if( len > 0 ) {
             AddInstallName( &text );
             len = VbufLen( &text );
-            set_dlg_dynamstring( dlg->curr_dialog->controls, dlg->controls.num - 1,
-                VbufString( &text ), VarGetId( var_handle ), dlg->col_num, dlg->row_num, dlg->col_num + len );
+        }
+        set_dlg_dynamstring( dlg->curr_dialog->controls, dlg->controls.num - 1,
+            VbufString( &text ), VarGetId( var_handle ), dlg->col_num, dlg->row_num, dlg->col_num + len );
+        if( len > 0 ) {
             if( dlg->max_width < dlg->col_num + len ) {
                 dlg->max_width = dlg->col_num + len;
             }
-        } else {
-            set_dlg_dynamstring( dlg->curr_dialog->controls, dlg->controls.num - 1,
-                "", VarGetId( var_handle ), dlg->col_num, dlg->row_num, dlg->col_num + 0 );
         }
     } else {
         rc = false;
@@ -1097,7 +1100,7 @@ static bool dialog_textwindow( char *next, DIALOG_INFO *dlg, bool license_file )
 {
     char                *line;
     char                *text;
-    char                *file_name;
+    VBUF                file_name;
     unsigned int        rows;
     bool                rc = true;
     file_handle         fh;
@@ -1116,10 +1119,11 @@ static bool dialog_textwindow( char *next, DIALOG_INFO *dlg, bool license_file )
         rc = false;
     } else {
         if( *line == '@' ) {
-            file_name = GUIStrDup( line + 1, NULL );
-            fh = FileOpen( file_name, O_RDONLY + O_BINARY );
+            VbufInit( &file_name );
+            VbufConcStr( &file_name, line + 1 );
+            fh = FileOpen( &file_name, "rb" );
             if( fh != NULL ) {
-                FileStat( file_name, &buf );
+                FileStat( &file_name, &buf );
                 text = GUIMemAlloc( buf.st_size + 1 );  // 1 for terminating null
                 if( text != NULL ) {
                     FileRead( fh, text, buf.st_size );
@@ -1127,7 +1131,7 @@ static bool dialog_textwindow( char *next, DIALOG_INFO *dlg, bool license_file )
                 }
                 FileClose( fh );
             }
-            GUIMemFree( file_name );
+            VbufFree( &file_name );
             //VERY VERY SLOW!!!!  Don't use large files!!!
             // bottleneck is the find_break function
             text = textwindow_wrap( text, dlg, false, license_file );
@@ -2076,13 +2080,18 @@ static bool ProcLine( char *line, pass_type pass )
         if( !BumpArray( &SetupInfo.pm_files ) )
             return( false );
         next = NextToken( line, ',' );
-        PMInfo[num].filename = GUIStrDup( line, NULL );
-        tmp = ( strcmp( line, "GROUP" ) == 0 );
+        PMInfo[num].group = ( strcmp( line, "GROUP" ) == 0 );
+        PMInfo[num].shadow = ( line[0] == '+' );
+        if( PMInfo[num].shadow ) {
+            PMInfo[num].filename = GUIStrDup( line + 1, NULL );
+        } else {
+            PMInfo[num].filename = GUIStrDup( line, NULL );
+        }
         line = next; next = NextToken( line, ',' );
         PMInfo[num].parameters = GUIStrDup( line, NULL );
         line = next; next = NextToken( line, ',' );
         PMInfo[num].desc = GUIStrDup( line, NULL );
-        if( tmp ) {
+        if( PMInfo[num].group ) {
             AllPMGroups[SetupInfo.all_pm_groups.num].group = GUIStrDup( line, NULL );
             AllPMGroups[SetupInfo.all_pm_groups.num].group_file_name = GUIStrDup( PMInfo[num].parameters, NULL );
             if( !BumpArray( &SetupInfo.all_pm_groups ) ) {
@@ -2243,8 +2252,8 @@ static bool GetFileInfo( int dir_index, int i, bool in_old_dir, bool *pzeroed )
     if( dir_index == -1 )
         return( false );
     VbufInit( &buff );
-    SimDirNoSlash( dir_index, &buff );
-    if( access( VbufString( &buff ), F_OK ) != 0 ) {
+    SimDirNoEndSlash( dir_index, &buff );
+    if( access_vbuf( &buff, F_OK ) != 0 ) {
         VbufFree( &buff );
         return( false );
     }
@@ -2264,8 +2273,8 @@ static bool GetFileInfo( int dir_index, int i, bool in_old_dir, bool *pzeroed )
             continue;
         VbufSetLen( &buff, dir_end );
         VbufConcVbuf( &buff, &file->name );
-        if( access( VbufString( &buff ), F_OK ) == 0 ) {
-            stat( VbufString( &buff ), &buf );
+        if( access_vbuf( &buff, F_OK ) == 0 ) {
+            stat_vbuf( &buff, &buf );
             found = true;
             file->disk_size = buf.st_size;
             file->disk_date = (unsigned long)buf.st_mtime;
@@ -2511,7 +2520,7 @@ bool CheckForceDLLInstall( const VBUF *name )
     return( false );
 }
 
-long SimInit( const char *inf_name )
+long SimInit( const VBUF *inf_name )
 /**********************************/
 {
     long                result;
@@ -2523,9 +2532,12 @@ long SimInit( const char *inf_name )
     memset( &SetupInfo, 0, sizeof( struct setup_info ) );
     FileStat( inf_name, &stat_buf );
     SetupInfo.stamp = (unsigned long)stat_buf.st_mtime;
+
 #define setvar( x, y ) x = AddVariable( #x );
     MAGICVARS( setvar, 0 )
     NONMAGICVARS( setvar, 0 )
+#undef setvar
+
     SetDefaultGlobalVarList();
     ReadBufSize = BUF_SIZE;
     ReadBuf = GUIMemAlloc( BUF_SIZE );
@@ -2538,20 +2550,20 @@ long SimInit( const char *inf_name )
     }
     RawBufPos = NULL;       // reset buffer position
 
-    fh = FileOpen( inf_name, O_RDONLY + O_BINARY );
+    fh = FileOpen( inf_name, "rb" );
     if( fh == NULL ) {
         GUIMemFree( ReadBuf );
         GUIMemFree( RawReadBuf );
         return( SIM_INIT_NOFILE );
     }
-    SetVariableByName( "SetupInfFile", inf_name );
+    SetVariableByName_vbuf( "SetupInfFile", inf_name );
     result = PrepareSetupInfo( fh, PRESCAN_FILE );
 #if 0
     // Currently doesn't work for archives
     FileSeek( fh, 0, SEEK_SET );
 #else
     FileClose( fh );
-    fh = FileOpen( inf_name, O_RDONLY + O_BINARY );
+    fh = FileOpen( inf_name, "rb" );
     if( fh == NULL ) {
         GUIMemFree( ReadBuf );
         GUIMemFree( RawReadBuf );
@@ -2579,7 +2591,7 @@ long SimInit( const char *inf_name )
     InitArray( (void **)&ForceDLLInstall, sizeof( struct force_DLL_install ), &SetupInfo.force_DLL_install );
     InitArray( (void **)&AllPMGroups, sizeof( struct all_pm_groups ), &SetupInfo.all_pm_groups );
     InitArray( (void **)&AssociationInfo, sizeof( struct association_info ), &SetupInfo.associations );
-#ifndef _UI
+#if defined( GUI_IS_GUI )
     SetDialogFont();
 #endif
     GUIGetTextMetrics( MainWnd, &metrics );
@@ -2726,8 +2738,8 @@ int SimNumDirs( void )
     return( SetupInfo.dirs.num );
 }
 
-void SimDirNoSlash( int i, VBUF *buff )
-/*************************************/
+void SimDirNoEndSlash( int i, VBUF *buff )
+/****************************************/
 {
     SimTargetDir( DirInfo[i].target, buff );
     if( !IS_EMPTY( DirInfo[i].desc ) ) {
@@ -2745,7 +2757,7 @@ bool SimDirUsed( int i )
 void SimGetDir( int i, VBUF *buff )
 /*********************************/
 {
-    SimDirNoSlash( i, buff );
+    SimDirNoEndSlash( i, buff );
     VbufAddDirSep( buff );
 }
 
@@ -3022,12 +3034,19 @@ int SimGetPMProgName( int parm, VBUF *buff )
 /******************************************/
 {
     VbufSetStr( buff, PMInfo[parm].filename );
-    // Return directory index.
-    if( VbufString( buff )[0] == '+' ) {    // OS/2 shadow
-        return( SimFindDirForFile( VbufString( buff ) + 1 ) );
-    } else {
-        return( SimFindDirForFile( VbufString( buff ) ) );
-    }
+    return( SimFindDirForFile( VbufString( buff ) ) );
+}
+
+bool SimPMProgIsShadow( int parm )
+/********************************/
+{
+    return( PMInfo[parm].shadow );
+}
+
+bool SimPMProgIsGroup( int parm )
+/*******************************/
+{
+    return( PMInfo[parm].group );
 }
 
 void SimGetPMParms( int parm, VBUF *buff )
@@ -3556,6 +3575,7 @@ bool SimCalcTargetSpaceNeeded( void )
     gui_mcursor_handle  old_cursor;
     const char          *temp;
     VBUF                temp_path;
+    bool                ok;
 
     /* assume power of 2 */
 
@@ -3565,12 +3585,16 @@ bool SimCalcTargetSpaceNeeded( void )
         NeedGetDiskSizes = false;
     }
     old_cursor = GUISetMouseCursor( GUI_HOURGLASS_CURSOR );
+    /*
+     * Reset Targets info
+     */
+    ok = true;
     VbufInit( &temp_path );
     for( i = 0; i < SetupInfo.target.num; ++i ) {
         temp = SimGetTargetDriveLetter( i, &temp_path );
         if( temp == NULL ) {
-            VbufFree( &temp_path );
-            return( false );
+            ok = false;
+            break;
         }
         strcpy( TargetInfo[i].temp_disk, temp );
         TargetInfo[i].space_needed = 0;
@@ -3579,14 +3603,24 @@ bool SimCalcTargetSpaceNeeded( void )
         TargetInfo[i].needs_update = false;
     }
     VbufFree( &temp_path );
-    for( i = 0; i < SetupInfo.dirs.num; ++i ) {
-        DirInfo[i].used = false;
-        DirInfo[i].num_existing = 0;
-        DirInfo[i].num_files = 0;
+    /*
+     * Reset Dirs info
+     */
+    if( ok ) {
+        for( i = 0; i < SetupInfo.dirs.num; ++i ) {
+            DirInfo[i].used = false;
+            DirInfo[i].num_existing = 0;
+            DirInfo[i].num_files = 0;
+        }
     }
-    SimCalcAddRemove();
+    /*
+     * setup Targets and Dirs info
+     */
+    if( ok ) {
+        SimCalcAddRemove();
+    }
     GUIResetMouseCursor( old_cursor );
-    return( true );
+    return( ok );
 }
 
 
@@ -3780,30 +3814,29 @@ typedef struct {
 static FILE *LogFileOpen( void )
 /******************************/
 {
-    gui_message_return guiret;
-    FILE               *logfp;
-    const char         *patchlog;
+    FILE        *logfp;
+    VBUF        patchlog;
 
-    patchlog = GetVariableStrVal( "PatchLog" );
-    if( patchlog == NULL || patchlog[0] == '\0' ) {
-        return( NULL );
-    }
+    VbufInit( &patchlog );
 
-    if( access( patchlog, F_OK | W_OK | R_OK ) == 0 ) {
-        guiret = MsgBox( NULL, "IDS_LOGFILE_EXISTS", GUI_YES_NO, patchlog );
-        if( guiret == GUI_RET_NO ) {
-            return( NULL );
+    logfp = NULL;
+    VbufConcStr( &patchlog, GetVariableStrVal( "PatchLog" ) );
+    if( VbufLen( &patchlog ) > 0 ) {
+        if( access_vbuf( &patchlog, F_OK | W_OK | R_OK ) == 0
+          && MsgBoxVbuf( NULL, "IDS_LOGFILE_EXISTS", GUI_YES_NO, &patchlog ) == GUI_RET_NO ) {
+            // cancel
+        } else if( access_vbuf( &patchlog, F_OK ) == 0 ) {
+            MsgBoxVbuf( NULL, "IDS_CANT_OPEN_LOGFILE", GUI_OK, &patchlog );
+        } else {
+            remove_vbuf( &patchlog );
+            logfp = fopen_vbuf( &patchlog, "wt+" );
+            if( logfp == NULL ) {
+                MsgBoxVbuf( NULL, "IDS_CANT_OPEN_LOGFILE", GUI_OK, &patchlog );
+            }
         }
-    } else if( access( patchlog, F_OK ) == 0 ) {
-        MsgBox( NULL, "IDS_CANT_OPEN_LOGFILE", GUI_OK, patchlog );
-        return( NULL );
-    }
-    remove( patchlog );
-    logfp = fopen( patchlog, "wt+" );
-    if( logfp == NULL ) {
-        MsgBox( NULL, "IDS_CANT_OPEN_LOGFILE", GUI_OK, patchlog );
     }
 
+    VbufFree( &patchlog );
     return( logfp );
 }
 
@@ -3829,11 +3862,11 @@ static void LogWriteMsg( log_state *ls, const char *msg_id )
 }
 
 
-static void LogWriteMsgStr( log_state *ls, const char *msg_id, const char *str )
+static void LogWriteMsgStr( log_state *ls, const char *msg_id, const VBUF *str )
 /******************************************************************************/
 {
     if( ls->do_log ) {
-        fprintf( ls->log_file, GetVariableMsgVal( msg_id ), str );
+        fprintf( ls->log_file, GetVariableMsgVal( msg_id ), VbufString( str ) );
     }
 }
 
@@ -3906,7 +3939,7 @@ bool PatchFiles( void )
         switch( PatchInfo[i].command ) {
         case PATCH_FILE:
             GetSourcePath( i, &srcfullpath );
-            if( access( VbufString( &srcfullpath ), R_OK ) == 0 ) {
+            if( access_vbuf( &srcfullpath, R_OK ) == 0 ) {
                 PATCH_RET_CODE  ret;
                 char            temp[_MAX_PATH];
 
@@ -3920,7 +3953,7 @@ bool PatchFiles( void )
                     }
                     StatusLinesVbuf( STAT_PATCHFILE, &destfullpath );
                     StatusShow( true );
-                    LogWriteMsgStr( log, "IDS_UNPACKING", VbufString( &destfullpath ) );
+                    LogWriteMsgStr( log, "IDS_UNPACKING", &destfullpath );
                     ret = DoPatchFile( &srcfullpath, &destfullpath, 0 );
                     if( ret == PATCH_RET_OKAY ) {
                         ++count;
@@ -3942,12 +3975,12 @@ bool PatchFiles( void )
             GetDestDir( i, &destfullpath );
             // get rid of trailing slash: OS/2 needs this for access(...) to work
             VbufRemDirSep( &destfullpath );
-            if( access( VbufString( &destfullpath ), F_OK ) == 0 ) {
+            if( access_vbuf( &destfullpath, F_OK ) == 0 ) {
                 AddFileName( i, &destfullpath, false );
                 StatusLinesVbuf( STAT_CREATEFILE, &destfullpath );
                 StatusShow( true );
-                if( access( VbufString( &srcfullpath ), R_OK ) == 0 ) {
-                    LogWriteMsgStr( log, "IDS_UNPACKING", VbufString( &destfullpath ) );
+                if( access_vbuf( &srcfullpath, R_OK ) == 0 ) {
+                    LogWriteMsgStr( log, "IDS_UNPACKING", &destfullpath );
                     if( DoCopyFile( &srcfullpath, &destfullpath, false ) == CFE_NOERROR ) {
                         ++count;
                         LogWriteMsg( log, "IDS_SUCCESS" );
@@ -3966,8 +3999,8 @@ bool PatchFiles( void )
             AddFileName( i, &destfullpath, false );
             StatusLinesVbuf( STAT_DELETEFILE, &destfullpath );
             StatusShow( true );
-            if( access( VbufString( &destfullpath ), F_OK | W_OK ) == 0 ) {
-                LogWriteMsgStr( log, "IDS_DELETING", VbufString( &destfullpath ) );
+            if( access_vbuf( &destfullpath, F_OK | W_OK ) == 0 ) {
+                LogWriteMsgStr( log, "IDS_DELETING", &destfullpath );
                 if( DoDeleteFile( &destfullpath ) ) {
                     ++count;
                     LogWriteMsg( log, "IDS_SUCCESS" );
@@ -3986,12 +4019,12 @@ bool PatchFiles( void )
 
             StatusLinesVbuf( STAT_CREATEDIRECTORY, &destfullpath );
             StatusShow( true );
-            if( access( VbufString( &destfullpath ), F_OK ) != 0 ) {
-                LogWriteMsgStr( log, "IDS_CREATINGDIR", VbufString( &destfullpath ) );
+            if( access_vbuf( &destfullpath, F_OK ) != 0 ) {
+                LogWriteMsgStr( log, "IDS_CREATINGDIR", &destfullpath );
 #ifdef __UNIX__
-                if( mkdir( VbufString( &destfullpath ), PMODE_RWX ) == 0 ) {
+                if( mkdir_vbuf( &destfullpath, PMODE_RWX ) == 0 ) {
 #else
-                if( mkdir( VbufString( &destfullpath ) ) == 0 ) {
+                if( mkdir_vbuf( &destfullpath ) == 0 ) {
 #endif
                     LogWriteMsg( log, "IDS_SUCCESS" );
                 } else {

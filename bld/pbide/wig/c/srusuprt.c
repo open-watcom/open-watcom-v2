@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -42,7 +43,7 @@
 #include "srusuprt.h"
 #include "sruinter.h"
 #include "ytab.h"
-#include "mem.h"
+#include "pbmem.h"
 #include "keywords.h"
 #include "lexxer.h"
 #include "gen_cpp.h"
@@ -107,16 +108,15 @@ static id_type isTypeKnown( TypeInfo *typ ) {
 /* checks hash table to determine if a type is known and if it is, returns it id
 */
 
-    long        len;
-    id_type     rc;
-    keyword     *tmp;
+    long            len;
+    id_type         rc;
+    const keyword   *tmp;
 
     assert( typ );
 
     len = strlen( typ->name );
-    tmp = FindHashEntry( SRU.typ_tab, HashString( typ->name, len ),
-                         typ->name, len );
-    if( tmp ) {
+    tmp = FindHashEntry( SRU.typ_tab, HashString( typ->name, len ), typ->name, len );
+    if( tmp != NULL ) {
         rc = tmp->id;
         if( typ->isref ) {
             rc |= TY_REF_INDICATOR;
@@ -219,7 +219,7 @@ void InitSru( void ) {
     x = 0;
     while( DataTypes[x].key != NULL ) {
         InsertHashValue( SRU.typ_tab, DataTypes[x].key,
-                        strlen( DataTypes[x].key ), &DataTypes[x] );
+                        strlen( DataTypes[x].key ), (void *)&DataTypes[x] );
         x++;
     }
 }
@@ -752,7 +752,7 @@ static void resolveTypePrototypes( void ) {
         len = strlen( name );
 
         /* check in hash table for function name */
-        if( !FindHashEntry(SRU.type_prots, HashString(name, len), name, len) ) {
+        if( FindHashEntry( SRU.type_prots, HashString( name, len ), name, len ) == NULL ) {
 
             /* add to prototype section */
             rc = insertTypePrototype( finger, SRU.type_sec );

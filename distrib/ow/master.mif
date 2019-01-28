@@ -60,6 +60,10 @@ nulldevice = /dev/null
 nulldevice = nul
 !endif
 
+!ifdef %OWDEBUGBUILD
+debug = $(%OWDEBUGBUILD)
+!endif
+
 bin_dir = ../bin
 
 !ifeq host_cpu x64
@@ -84,43 +88,60 @@ all: .SYMBOLIC
 all : $(bin_dir)/$(installer_c) $(bin_dir)/$(installer_f77) .SYMBOLIC
 
 $(bin_dir)/$(installer_c) : ../files.dat $(bin_dir) $(setup_c) .ALWAYS
+    @rm -f *.c
+    @%make clean_inf
     langdat -l filelist $(langdat_keys) -r $(bld_ver) -c $[@ c
     @cp $]@ setup.exe >$(nulldevice)
     mkinf -i.. -i../../include -dDstDir=$(dstdir) c filelist $(%OWRELROOT)
-    @rm filelist
     @cp setup.inf $(%OWRELROOT)/setup.inf >$(nulldevice)
     uzip setup.zip instarch.lst $(%OWRELROOT)
-    @rm instarch.lst
     @rm $(%OWRELROOT)/setup.inf
     @rm setup.exe
-    @rm setup.inf
+!ifdef debug
+    @%ren filelist      filelist.c
+    @%ren instarch.lst  instarch.c
+    @%ren setup.inf     setup.c
+!else
+    @%make clean_inf
+!endif
     mkexezip $@ setup.zip $]@
     @rm setup.zip
 
 $(bin_dir)/$(installer_f77) : ../files.dat $(bin_dir) $(setup_f77) .ALWAYS
+    @rm -f *.f77
+    @%make clean_inf
     langdat -l filelist $(langdat_keys) -r $(bld_ver) -c $[@ f77
     @cp $]@ setup.exe >$(nulldevice)
     mkinf -i.. -i../../include -dDstDir=$(dstdir) f77 filelist $(%OWRELROOT)
-    @rm filelist
     @cp setup.inf $(%OWRELROOT)/setup.inf >$(nulldevice)
     uzip setup.zip instarch.lst $(%OWRELROOT)
-    @rm instarch.lst
     @rm $(%OWRELROOT)/setup.inf
     @rm setup.exe
-    @rm setup.inf
+!ifdef debug
+    @%ren filelist      filelist.f77
+    @%ren instarch.lst  instarch.f77
+    @%ren setup.inf     setup.f77
+!else
+    @%make clean_inf
+!endif
     mkexezip $@ setup.zip $]@
     @rm setup.zip
 
 $(bin_dir) :
     mkdir $@
 
+clean_inf : .PROCEDURE .EXPLICIT
+    @if exist filelist @rm filelist
+    @if exist instarch.lst @rm instarch.lst
+    @if exist setup.inf @rm setup.inf
+
 clean : .symbolic
     @if exist $(bin_dir)/$(installer_c) rm $(bin_dir)/$(installer_c)
     @if exist $(bin_dir)/$(installer_f77) rm $(bin_dir)/$(installer_f77)
     @if exist setup.zip rm setup.zip
-    @if exist filelist rm filelist
-    @if exist instarch.lst rm instarch.lst
     @if exist setup.exe rm setup.exe
-    @if exist setup.inf rm setup.inf
+    @%make clean_inf
+    @rm -f *.c
+    @rm -f *.f77
 
 !endif

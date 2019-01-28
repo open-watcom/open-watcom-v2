@@ -38,7 +38,6 @@
 #include "watcom.h"
 #include "bool.h"
 #include "uidef.h"
-#include "stdui.h"
 #include "help.h"
 #include "cmdswtch.h"
 #include "sorthelp.h"

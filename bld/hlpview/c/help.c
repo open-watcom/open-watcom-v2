@@ -37,7 +37,6 @@
 #include "watcom.h"
 #include "uidef.h"
 #include "helpmem.h"
-#include "stdui.h"
 #include "uibox.h"
 #include "help.h"
 #include "hlpuicvr.h"

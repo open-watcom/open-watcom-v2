@@ -38,7 +38,6 @@
 #include "dip.h"
 #include "dipimp.h"
 #include "dipcli.h"
-#include "mem.h"
 
 
 /*

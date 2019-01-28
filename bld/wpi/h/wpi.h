@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2016-2016 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2016-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -48,14 +48,11 @@
 #include <string.h>
 #include <stdlib.h>
 #include "wpitypes.h"
+#include "wpimem.h"
 
-
-extern void _wpi_free( void * ptr );
-extern void * _wpi_malloc( size_t size );
-extern void * _wpi_realloc( void *ptr, size_t size );
 
 #ifndef _wpi_malloc2
-#define _wpi_malloc2(ptr,x) ptr = (void *) _wpi_malloc( sizeof( *ptr ) * x )
+#define _wpi_malloc2(ptr,x) ptr = (void *)_wpi_malloc( sizeof( *ptr ) * x )
 #endif
 
 #ifndef _wpi_gfree

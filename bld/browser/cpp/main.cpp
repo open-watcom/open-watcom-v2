@@ -45,7 +45,7 @@
 #include "util.h"
 #include "browse.h"
 #include "util.h"
-#include "mem.h"
+#include "brmem.h"
 #include "hotspots.h"
 
 static WHotSpots hs( NumHotSpots );

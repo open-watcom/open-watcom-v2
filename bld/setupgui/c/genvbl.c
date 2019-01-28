@@ -209,7 +209,7 @@ void VarSetHook( vhandle var_handle, void (*hook)( vhandle ) )
 }
 
 bool GetVariableBoolVal( const char *vbl_name )
-/*******************p*************************/
+/*********************************************/
 {
     return( VarGetBoolVal( GetVariableByName( vbl_name ) ) );
 }

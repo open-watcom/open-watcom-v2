@@ -38,11 +38,12 @@
 
 
 typedef struct file_handle_t {
-    int         fhandle;
+    FILE        *fp;
 } *file_handle;
 
-int FileInit( const char *archive )
+int FileInit( const VBUF *archive )
 {
+    /* unused parameters */ (void)archive;
     return( 0 );
 }
 
@@ -65,13 +66,13 @@ int FileIsArchive( void )
 }
 
 
-int FileStat( const char *path, struct stat *buf )
+int FileStat( const VBUF *path, struct stat *buf )
 {
-    return( stat( path, buf ) );
+    return( stat_vbuf( path, buf ) );
 }
 
 
-file_handle FileOpen( const char *path, int flags )
+file_handle FileOpen( const VBUF *path, const char *flags )
 {
     file_handle fh;
 
@@ -79,8 +80,8 @@ file_handle FileOpen( const char *path, int flags )
     if( fh == NULL )
         return( NULL );
 
-    fh->fhandle = open( path, flags );
-    if( fh->fhandle == -1 ) {
+    fh->fp = fopen_vbuf( path, flags );
+    if( fh->fp == NULL ) {
         free( fh );
         fh = NULL;
     }
@@ -92,7 +93,7 @@ int FileClose( file_handle fh )
 {
     int             rc;
 
-    rc = close( fh->fhandle );
+    rc = fclose( fh->fp );
     free( fh );
 
     return( rc );
@@ -101,11 +102,15 @@ int FileClose( file_handle fh )
 
 long FileSeek( file_handle fh, long offset, int origin )
 {
-    return( lseek( fh->fhandle, offset, origin ) );
+    if( fseek( fh->fp, offset, origin ) ) {
+        return( -1 );
+    } else {
+        return( ftell( fh->fp ) );
+    }
 }
 
 
 size_t FileRead( file_handle fh, void *buffer, size_t length )
 {
-    return( read( fh->fhandle, buffer, length ) );
+    return( fread( buffer, 1, length, fh->fp ) );
 }

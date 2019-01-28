@@ -43,7 +43,7 @@
 #include <ctype.h>
 
 #include "util.h"
-#include "mem.h"
+#include "brmem.h"
 
 #ifndef STANDALONE_MERGER
 #  include "wbrwin.h"

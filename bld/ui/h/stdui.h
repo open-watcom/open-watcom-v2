@@ -37,6 +37,7 @@
 #include <stdio.h>
 #include "bool.h"
 #include "initmode.h"
+#include "uimem.h"
 
 
 #ifndef _FAR
@@ -441,7 +442,7 @@ typedef enum {
 
 #define NO_SELECT       -1
 
-#ifdef __GUI__
+#ifdef UI_GUI
 /*
     ORD needs to be an unsigned for the WINDOWS scaling system
     in WVIDEO since values in the range 0-10000 are used.
@@ -455,7 +456,7 @@ typedef unsigned        ORD;
 
 /*
     This needs to be fixed so scaling for a mouse also need a larger range!!
-    An improper reference to __GUI__ is used. Fixed for now so it works for RDOS.
+    An improper reference to UI_GUI is used. Fixed for now so it works for RDOS.
 */
 
 typedef int             ORD;
@@ -679,8 +680,6 @@ extern void             uidirty( SAREA );
 extern void             uidrawbox( VSCREEN _FARD *, SAREA *area, ATTR attr, const char * );
 extern ui_event         uieventsource( bool );
 extern ui_event         uieventsourcehook( ui_event );
-extern LP_VOID          uifaralloc( size_t );
-extern void             uifarfree( LP_VOID );
 extern void             uifini( void );
 extern void             uifinicursor( void );
 extern void             uifinigmouse( void );
@@ -772,8 +771,6 @@ extern bool             uiforceevadd( ui_event );
 extern void             uiforceevflush( void );
 extern bool             uiisdbcs( void );
 extern int              uicharlen( int ch );        // returns 2 if dbcs lead byte
-extern void             UIMemOpen( void );
-extern void             UIMemClose( void );
 
 extern int              uimousealign( void );
 
@@ -781,6 +778,10 @@ extern int              uimousealign( void );
  * Application related functions
  * may be implemented by application, stub functions
  */
+
+extern LP_VOID          uifaralloc( size_t );
+extern void             uifarfree( LP_VOID );
+
 extern void             uistartevent( void );
 extern void             uidoneevent( void );
 

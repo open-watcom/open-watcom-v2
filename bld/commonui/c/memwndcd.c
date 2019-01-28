@@ -40,7 +40,7 @@
 #include "segmem.h"
 #include "sdkasm.h"
 #include "font.h"
-#include "mem.h"
+#include "cguimem.h"
 #include "memwndcd.h"
 
 

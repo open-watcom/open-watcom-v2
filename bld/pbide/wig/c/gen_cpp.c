@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -41,12 +42,14 @@
 #include "types.h"
 #include "sruinter.h"
 #include "keywords.h"
-#include "mem.h"
+#include "pbmem.h"
 #include "error.h"
 #include "options.h"
 #include "ytab.h"
 #include "list.h"
 #include "filelist.h"
+#include "gen_cpp.h"
+
 
 static BOOL generateHeaderFile( sru_file *sru );
 static void generateCoverFile( sru_file *sru );
@@ -302,12 +305,10 @@ void GenerateCoverFnName( char *uoname, char *fnname, char *buf ) {
     }
 }
 
-static void outPutFunc( sp_header *sp, FileInfo *fp, char *class, int typ,
-                        char *line ) {
-/************************************/
-
+static void outPutFunc( const sp_header *sp, FileInfo *fp, char *class, int typ, char *line )
+/*******************************************************************************************/
 /* Construct and spit out an appropriate function header */
-
+{
     var_rec     *parm;
     int         len;
     char        buffer[100];    /* function proto buffer */
@@ -921,9 +922,9 @@ static void addAdditionalMethods( statement *curr, FileInfo *fpo ) {
 }
 
 
-static void removeFromMethodChain( statement **curr, statement *func ) {
-/*********************************************************************/
-
+static void removeFromMethodChain( statement **curr, statement *func )
+/********************************************************************/
+{
     statement   **finger;
     assert( curr );
     assert( func );
@@ -1004,7 +1005,7 @@ static void traverseCodeFile( statement **curr, sru_file *sru, FileInfo *fpi,
 
         /* determine whether we must ifdef it out and do so */
         func = FindHashEntry( sru->type_prots, HashString(ptr, len), ptr, len );
-        if( func && !func->data.sp.fake ) {
+        if( func != NULL && !func->data.sp.fake ) {
             if( fprintf( fpo->fp, IF_TRUE ) < 0 ) {
                 Error( FILE_WRITE_ERR, fpo->name );
             }

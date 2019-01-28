@@ -49,6 +49,8 @@ dosbox_options = -noautoexec -noconsole &
 dosbox_wgml_options = -c "mount e $(src_dir)" -c "d:$(dos_wgml_tmp_batch)"
 dosbox_gendev_options = -c "mount e .." -c "d:$(dos_gendev_tmp_batch)"
 
+dosemu_options = -dump -quiet -I 'keyboard {layout us}'
+
 !ifeq bld_os dos
 
 WGMLCMD = $(docs_dir)\gml\dos\wgml $(wgml_cmdl_params)
@@ -74,8 +76,8 @@ GENDEVCMD = $(docs_dir)\gml\dos\gendev $(gendev_cmdl_params)
 
 !else ifeq bld_os linux
 
-WGMLCMD = dosemu -dumb -quiet $(dos_wgml_tmp_batch)
-GENDEVCMD = dosemu -dumb -quiet $(dos_gendev_tmp_batch)
+WGMLCMD = dosemu $(dosemu_options) $(dos_wgml_tmp_batch)
+GENDEVCMD = dosemu $(dosemu_options) $(dos_gendev_tmp_batch)
 use_dosemu = dosemu
 
 !else

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -24,47 +25,13 @@
 *
 *  ========================================================================
 *
-* Description:  Cover routines to access the trmem memory tracker
+* Description:  User Interface (UI) memory management interface.
 *
 ****************************************************************************/
 
 
-#include "guiwind.h"
-#include <string.h>
-#include "mem.h"
-#include "trmem.h"
-
-#ifdef TRMEM
-extern _trmem_hdl  GUIMemHandle;
-#endif
-
-void MemFree( void *ptr )
-{
-#ifdef TRMEM
-    _trmem_free( ptr, _trmem_guess_who(), GUIMemHandle );
-#else
-    free( ptr );
-#endif
-}
-
-void *MemAlloc( size_t size )
-{
-    void        *ptr;
-
-#ifdef TRMEM
-    ptr = _trmem_alloc( size, _trmem_guess_who(), GUIMemHandle );
-#else
-    ptr = malloc( size );
-#endif
-    memset( ptr, 0, size );
-    return( ptr );
-}
-
-void *MemReAlloc( void *ptr, size_t size )
-{
-#ifdef TRMEM
-    return( _trmem_realloc( ptr, size, _trmem_guess_who(), GUIMemHandle ) );
-#else
-    return( realloc( ptr, size ) );
-#endif
-}
+extern void     *uimalloc( size_t );
+extern void     uifree( void * );
+extern void     *uirealloc( void *old, size_t size );
+extern void     UIMemOpen( void );
+extern void     UIMemClose( void );

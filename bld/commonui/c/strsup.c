@@ -33,7 +33,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdarg.h>
-#include "mem.h"
+#include "cguimem.h"
 #include "ldstr.h"
 
 /* No string to be loaded can be more than LDSTR_MAX_STR_LEN bytes long. */

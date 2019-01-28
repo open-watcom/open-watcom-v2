@@ -17,28 +17,19 @@ gitusf_proc1()
         GITVERBOSE2=
     fi
 
+    # git ssh setup
+    ssh-keyscan git.code.sf.net >> ~/.ssh/known_hosts
+    export DISPLAY=:0
+    export SSH_PASSWORD=${SF_TOKEN2}
+    export SSH_ASKPASS=$TRAVIS_BUILD_DIR/travis/askpass.sh
+    export GIT_ASKPASS=$TRAVIS_BUILD_DIR/travis/askpass.sh
+    export GIT_SSH_COMMAND="setsid ssh"
     #
-    # configure Git client
-    #
-    git config --global user.email "travis@travis-ci.org"
-    git config --global user.name "Travis CI"
-    git config --global push.default simple
-    #
-    cd ..
-    rm -rf $TRAVIS_BUILD_DIR
-    git clone $GITVERBOSE1 https://${GITHUB_TOKEN}@github.com/${TRAVIS_REPO_SLUG}.git $TRAVIS_BUILD_DIR
-    cd $TRAVIS_BUILD_DIR
-    #
+    git config remote.origin.pushurl ssh://${SF_TOKEN1}@git.code.sf.net/p/openwatcom/open-watcom-v2
     if [ "$OWTRAVIS_DEBUG" = "1" ]; then echo "** git checkout"; fi
-    git checkout $OWBRANCH_SF
-    if [ "$OWTRAVIS_DEBUG" = "1" ]; then echo "** git merge"; fi
-    git merge $GITVERBOSE1 $OWBRANCH
-    if [ "$OWTRAVIS_DEBUG" = "1" ]; then echo "** git add"; fi
-    git add $GITVERBOSE2 -A
-    if [ "$OWTRAVIS_DEBUG" = "1" ]; then echo "** git commit"; fi
-    git commit $GITVERBOSE1 -am "Travis CI update from $OWBRANCH branch"
+    git checkout ${OWBRANCH}
     if [ "$OWTRAVIS_DEBUG" = "1" ]; then echo "** git push"; fi
-    git push $GITVERBOSE1 -f origin $OWBRANCH_SF
+    git push $GITVERBOSE1
     #
     
     echo "gitusf.sh - done"

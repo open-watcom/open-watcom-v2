@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,7 +35,7 @@
 #include <stdarg.h>
 #include <string.h>
 #include "global.h"
-#include "mem.h"
+#include "pbmem.h"
 #include "pbide.h"
 #include "error.h"
 
@@ -83,8 +84,9 @@ void FiniError( void ) {
     errBufSize = 0;
 }
 
-void fmtErr( char *prefix, int errco, va_list args ) {
-/****************************************************/
+static void fmtErr( char *prefix, int errco, va_list args )
+/*********************************************************/
+{
     char                fmtbuf[256];
     int                 len;
 

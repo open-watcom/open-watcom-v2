@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -186,8 +187,9 @@ void GetHash( const char *uoname, char *hash, unsigned len ) {
 #undef _MAX_FNAME
 #define _MAX_FNAME 9    // for consistent naming across platforms
 
-void getFname( const char *uoname, char prefix, char *fname ) {
-/********************************************************/
+static void getFname( const char *uoname, char prefix, char *fname )
+/******************************************************************/
+{
     char        hash[HASHLEN + 1];
     unsigned    len;
     unsigned    prefix_len;

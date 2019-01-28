@@ -36,7 +36,7 @@
 #include <string.h>
 #include "bool.h"
 #include "statwnd.h"
-#include "mem.h"
+#include "cguimem.h"
 #include "loadcc.h"
 #include "wclbproc.h"
 

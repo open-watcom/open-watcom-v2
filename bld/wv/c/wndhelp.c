@@ -56,7 +56,7 @@ void FiniHelp( void )
     }
 }
 
-#if !defined(__GUI__)
+#if !defined( GUI_IS_GUI )
 static void LocateHelpFile( void )
 {
     file_handle     fh;
@@ -87,7 +87,7 @@ static void LocateHelpFile( void )
 
 void DoProcHelp( gui_help_actions action )
 {
-#if defined(__GUI__)
+#if defined( GUI_IS_GUI )
     StrCopy( HELPNAME ".hlp", TxtBuff );
 #else
     LocateHelpFile();

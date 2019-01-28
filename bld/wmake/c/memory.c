@@ -230,7 +230,7 @@ void MemFini( void )
         if( TRMEM_IGNORE_ERROR & trmemCode ) {
             _trmem_prt_list( Handle );
         } else {
-            if( _trmem_prt_list ( Handle ) != 0 ) {
+            if( _trmem_prt_list( Handle ) > 0 ) {
                 PrtMsg( ERR | ERROR_TRMEM );
             }
         }

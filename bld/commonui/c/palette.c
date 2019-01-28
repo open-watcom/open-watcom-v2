@@ -31,7 +31,7 @@
 
 #include "commonui.h"
 #include <stdlib.h>
-#include "mem.h"
+#include "cguimem.h"
 #include "palette.h"
 
 /*

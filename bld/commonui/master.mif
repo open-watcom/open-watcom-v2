@@ -50,7 +50,7 @@ msgfiles = &
 !inject loadcc.obj    nt win os2         # shared with gui project
 !inject log.obj       nt win
 !inject mark.obj      nt win
-!inject mem.obj       nt win os2
+#!inject cguimem.obj   nt win os2
 !inject memwnd.obj    nt win
 !inject memwndcd.obj  nt win
 !inject mythelp.obj              windbg

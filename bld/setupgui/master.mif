@@ -2,6 +2,8 @@ proj_name = setupgui
 
 setupgui_autodepends = .AUTODEPEND
 
+setupgui_trmem = 1
+
 .EXTENSIONS: .rc .ico .res
 
 .ERROR:
@@ -13,12 +15,14 @@ additional_cleanup = *.i *.rex setup.inf
 !include deftarg.mif
 !include win386.mif
 
-!include $(commonui_dir)/client.mif
-!include $(wpi_dir)/client.mif
 !include $(gui_dir)/client.mif
 !include $(ui_dir)/client.mif
+!include $(hlpview_dir)/client.mif
+!include $(wpi_dir)/client.mif
+!include $(commonui_dir)/client.mif
 
 !include wres.mif
+!include trmem.mif
 
 # systems where manifest file resource must be added to .EXE
 manifest_nt_386 = ntmanif.res
@@ -55,6 +59,10 @@ objs +=             &
     dopatch.obj
 !endif
 
+mem_objs = &
+    setupmem.obj     &
+    $(trmem_objs)
+
 #                     i_dos i_linux i_nt i_os2 i_win i_wini86 i_win386 i_osx
 #===========================================================================
 !inject setupio.obj   i_dos i_linux i_nt i_os2                i_win386 i_osx
@@ -63,7 +71,7 @@ objs +=             &
 !inject winutil.obj                 i_nt i_os2 i_win
 !inject winddeml.obj                i_nt       i_win
 
-objs += $(i_$(host_os)) $(i_$(host_os)$(host_cpu))
+objs += $(i_$(host_os)) $(i_$(host_os)$(host_cpu)) $(mem_objs)
 
 !ifeq sys_windowed 1
 
@@ -122,19 +130,23 @@ extra_deps += $(manifest_$(host_os)_$(host_cpu)) wresui.res
 
 # cflags
 #########
-!ifneq sys_windowed 1
-extra_cpp_flags += -D_UI
-!endif
 !ifdef patch
 extra_cpp_flags += -DPATCH -DINSTALL_PROGRAM
+!endif
+!ifeq sys_windowed 1
+extra_cpp_flags += -DGUI_IS_GUI
+extra_cpp_flags_os2 = -D__OS2_PM__
 !endif
 
 extra_c_flags = -s
 
 extra_c_flags_i86 = -zc
 
-#extra_c_flags_common = -fi=setupmem.h
-#extra_c_flags_io = -fi=setupmem.h
+# memory tracker routines
+extra_c_flags_trmem = $(trmem_cflags)
+
+# memory tracker cover routines
+extra_c_flags_setupmem = $(trmem_cover_cflags)
 
 # lflags
 #########
@@ -176,7 +188,7 @@ dep_res1 = ../h/setup.h setup.ico disk.ico gui.rc
 
 res_inc_dirs = -I"$(res_dir)" -I"../res" $(gui_inc_dirs) $(inc_dirs_sys)
 
-inc_dirs  = -I"../h" $(ui_inc_dirs) $(wpi_inc_dirs) $(gui_inc_dirs) $(commonui_inc_dirs)
+inc_dirs  = -I"../h" $(ui_inc_dirs) $(wpi_inc_dirs) $(gui_inc_dirs) $(commonui_inc_dirs) $(wpi_inc_dirs) $(hlpview_inc_dirs)
 inc_dirs += -I"$(trmem_dir)" -I"$(libzip_dir)/lib"
 !ifdef patch
 inc_dirs += -I"$(bdiff_dir)/h" -I"$(wpack_dir)/h"

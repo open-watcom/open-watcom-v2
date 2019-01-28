@@ -34,7 +34,7 @@
 #include <wstring.hpp>
 #include <wpshbttn.hpp>
 #include <drsrchdf.h>
-#include "mem.h"
+#include "brmem.h"
 #include "verblist.h"
 #include "strcview.h"
 #include "assure.h"

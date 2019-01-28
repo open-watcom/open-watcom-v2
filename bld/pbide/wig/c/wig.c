@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -37,12 +38,13 @@
 #include "srusuprt.h"
 #include "options.h"
 #include "error.h"
-#include "mem.h"
+#include "pbmem.h"
 #include "filelist.h"
 #include "error.h"
+#include "wig.h"
+
 
 extern FILE *yyin;
-extern int wig_parse( void );
 
 static void finiProgram( void )
 /*****************************/

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -24,39 +25,21 @@
 *
 *  ========================================================================
 *
-* Description:  Cover routines to access the trmem memory tracker
+* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
+*               DESCRIBE IT HERE!
 *
 ****************************************************************************/
 
-#include "guiwind.h"
-#include "os2dlg.h"
-#include "trmem.h"
 
-extern _trmem_hdl   GUIMemHandle;
+#ifndef MEMORY_MANAGER_INCLUDED
+#define MEMORY_MANAGER_INCLUDED
 
-void PMfree( void *ptr )
-{
-#ifdef TRMEM
-    _trmem_free( ptr, _trmem_guess_who(), GUIMemHandle );
-#else
-    free( ptr );
+extern char     *MemStrDup(const char *);
+extern void     *MemMalloc(int);
+extern void     *MemRealloc(void*,int);
+extern void     MemFree(void *);
+extern void     InitMem( void );
+extern void     FiniMem( void );
+
 #endif
-}
 
-void *PMmalloc( size_t size )
-{
-#ifdef TRMEM
-    return( _trmem_alloc( size, _trmem_guess_who(), GUIMemHandle ) );
-#else
-    return( malloc( size ) );
-#endif
-}
-
-void *PMrealloc( void *ptr, size_t size )
-{
-#ifdef TRMEM
-    return( _trmem_realloc( ptr, size, _trmem_guess_who(), GUIMemHandle ) );
-#else
-    return( realloc( ptr, size ) );
-#endif
-}

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2018-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -24,80 +25,299 @@
 *
 *  ========================================================================
 *
-* Description:  Setup memory management functions.
+* Description:  Memory Management functions with included trmem memory tracker
 *
 ****************************************************************************/
 
 
 #include <stdlib.h>
-#include <stdio.h>
 #include <string.h>
-#include "gui.h"
-#include "standard.h"
-#include "utmem.h"
-#include "utmemdbg.h"
-
-#if DMEM_OVERRUNS
-    extern unsigned     MaxAllocSize;
-#endif
-
-void ut_fatal( char *s )
-{
-    GUIDisplayMessage( NULL, s, " Memory ERROR ", GUI_OK ); // nyi - kanji
-    exit( 1 );
-}
-
-void ut_out_of_memory( char *s )
-{
-    s = s;
-}
-
-void *GUIAlloc( unsigned size )
-{
-    return( ut_alloc( size ) );
-}
-
-void GUIFree( void *chunk )
-{
-    ut_free( chunk );
-}
-
-void *GUIRealloc( void * chunk, unsigned size )
-{
-    return( ut_realloc( chunk, size ) );
-}
-
-void *bdiff_malloc( size_t size )
-{
-    return( ut_alloc( size ) );
-}
-
-void bdiff_free( void *chunk )
-{
-    ut_free( chunk );
-}
-
-void *bdiff_realloc( void * chunk, size_t size )
-{
-    return( ut_realloc( chunk, size ) );
-}
-
-void GUIMemOpen( void )
-{
-#if DMEM_OVERRUNS
-#ifdef _M_I86
-    MaxAllocSize = 0xfff8;
+#include "guimem.h"
+#if defined( GUI_IS_GUI )
+    #include "cguimem.h"
+    #include "wpimem.h"
+    #ifdef __OS2_PM__
+        #include "os2mem.h"
+    #endif
 #else
-    MaxAllocSize = 0xfffffff8;
+    #include "uimem.h"
+    #include "helpmem.h"
 #endif
+#ifdef TRMEM
+    #include "trmem.h"
 #endif
-}
 
-void GUIMemClose( void )
+
+#ifdef TRMEM
+static _trmem_hdl  GUIMemHandle;
+
+static FILE *GUIMemFP = NULL;           /* stream to put output on */
+static int  GUIMemOpened = 0;
+
+static void GUIMemPrintLine( void *parm, const char *buff, size_t len )
+/*********************************************************************/
 {
+    /* unused parameters */ (void)parm;
+
+    fwrite( buff, 1, len, GUIMemFP );
 }
+static void UIMemPrintLine( void *parm, const char *buff, size_t len )
+{
+    /* unused parameters */ (void)parm; (void)buff; (void)len;
+}
+#endif
 
 void GUIMemPrtUsage( void )
+/*************************/
 {
+#ifdef TRMEM
+    _trmem_prt_usage( GUIMemHandle );
+#endif
 }
 
+void GUIMemRedirect( FILE *fp )
+/*****************************/
+{
+#ifdef TRMEM
+    GUIMemFP = fp;
+#else
+    /* unused parameters */ (void)fp;
+#endif
+}
+#if 0
+void UIMemRedirect( FILE *fp )
+{
+#ifdef TRMEM
+    GUIMemFP = fp;
+#else
+    /* unused parameters */ (void)fp;
+#endif
+}
+#endif
+
+
+void GUIMemOpen( void )
+/*********************/
+{
+#ifdef TRMEM
+    char * tmpdir;
+
+    if( !GUIMemOpened ) {
+        GUIMemFP = stderr;
+        GUIMemHandle = _trmem_open( malloc, free, realloc, NULL,
+            NULL, GUIMemPrintLine,
+            _TRMEM_ALLOC_SIZE_0 | _TRMEM_REALLOC_SIZE_0 |
+            _TRMEM_OUT_OF_MEMORY | _TRMEM_CLOSE_CHECK_FREE );
+
+        tmpdir = getenv( "TRMEMFILE" );
+        if( tmpdir != NULL ) {
+            GUIMemFP = fopen( tmpdir, "w" );
+        }
+        GUIMemOpened = 1;
+    }
+#endif
+}
+#if !defined( GUI_IS_GUI )
+void UIMemOpen( void ) {}
+void HelpMemOpen( void ) {}
+#endif
+
+void GUIMemClose( void )
+/**********************/
+{
+#ifdef TRMEM
+    _trmem_prt_list( GUIMemHandle );
+    _trmem_close( GUIMemHandle );
+    if( GUIMemFP != stderr ) {
+        fclose( GUIMemFP );
+    }
+#endif
+}
+#if !defined( GUI_IS_GUI )
+void UIMemClose( void ) {}
+void HelpMemClose( void ) {}
+#endif
+
+
+/*
+ * Alloc functions
+ */
+
+void *GUIMemAlloc( size_t size )
+/******************************/
+{
+#ifdef TRMEM
+    return( _trmem_alloc( size, _trmem_guess_who(), GUIMemHandle ) );
+#else
+    return( malloc( size ) );
+#endif
+}
+#if defined( GUI_IS_GUI )
+void *MemAlloc( size_t size )
+{
+    void        *ptr;
+
+#ifdef TRMEM
+    ptr = _trmem_alloc( size, _trmem_guess_who(), GUIMemHandle );
+#else
+    ptr = malloc( size );
+#endif
+    memset( ptr, 0, size );
+    return( ptr );
+}
+void * _wpi_malloc( size_t size )
+{
+#ifdef TRMEM
+    return( _trmem_alloc( size, _trmem_guess_who(), GUIMemHandle ) );
+#else
+    return( malloc( size ) );
+#endif
+}
+#ifdef __OS2_PM__
+void *PMmalloc( size_t size )
+{
+#ifdef TRMEM
+    return( _trmem_alloc( size, _trmem_guess_who(), GUIMemHandle ) );
+#else
+    return( malloc( size ) );
+#endif
+}
+#endif
+#else
+void *uimalloc( size_t size )
+{
+#ifdef TRMEM
+    return( _trmem_alloc( size, _trmem_guess_who(), GUIMemHandle ) );
+#else
+    return( malloc( size ) );
+#endif
+}
+void *HelpMemAlloc( size_t size )
+{
+#ifdef TRMEM
+    return( _trmem_alloc( size, _trmem_guess_who(), GUIMemHandle ) );
+#else
+    return( malloc( size ) );
+#endif
+}
+#endif
+
+
+/*
+ * Free functions
+ */
+
+void GUIMemFree( void *ptr )
+/**************************/
+{
+#ifdef TRMEM
+    _trmem_free( ptr, _trmem_guess_who(), GUIMemHandle );
+#else
+    free( ptr );
+#endif
+}
+#if defined( GUI_IS_GUI )
+void MemFree( void *ptr )
+{
+#ifdef TRMEM
+    _trmem_free( ptr, _trmem_guess_who(), GUIMemHandle );
+#else
+    free( ptr );
+#endif
+}
+void _wpi_free( void *ptr )
+{
+#ifdef TRMEM
+    _trmem_free( ptr, _trmem_guess_who(), GUIMemHandle );
+#else
+    free( ptr );
+#endif
+}
+#ifdef __OS2_PM__
+void PMfree( void *ptr )
+{
+#ifdef TRMEM
+    _trmem_free( ptr, _trmem_guess_who(), GUIMemHandle );
+#else
+    free( ptr );
+#endif
+}
+#endif
+#else
+void uifree( void *ptr )
+{
+#ifdef TRMEM
+    _trmem_free( ptr, _trmem_guess_who(), GUIMemHandle );
+#else
+    free( ptr );
+#endif
+}
+void HelpMemFree( void *ptr )
+{
+#ifdef TRMEM
+    _trmem_free( ptr, _trmem_guess_who(), GUIMemHandle );
+#else
+    free( ptr );
+#endif
+}
+#endif
+
+
+/*
+ * Realloc functions
+ */
+
+void *GUIMemRealloc( void *ptr, size_t size )
+/*******************************************/
+{
+#ifdef TRMEM
+    return( _trmem_realloc( ptr, size, _trmem_guess_who(), GUIMemHandle ) );
+#else
+    return( realloc( ptr, size ) );
+#endif
+}
+#if defined( GUI_IS_GUI )
+void * _wpi_realloc( void *ptr, size_t size )
+{
+#ifdef TRMEM
+    return( _trmem_realloc( ptr, size, _trmem_guess_who(), GUIMemHandle ) );
+#else
+    return( realloc( ptr, size ) );
+#endif
+}
+void *MemReAlloc( void *ptr, size_t size )
+{
+#ifdef TRMEM
+    return( _trmem_realloc( ptr, size, _trmem_guess_who(), GUIMemHandle ) );
+#else
+    return( realloc( ptr, size ) );
+#endif
+}
+#ifdef __OS2_PM__
+void *PMrealloc( void *ptr, size_t size )
+{
+#ifdef TRMEM
+    return( _trmem_realloc( ptr, size, _trmem_guess_who(), GUIMemHandle ) );
+#else
+    return( realloc( ptr, size ) );
+#endif
+}
+#endif
+#else
+void *uirealloc( void *old, size_t size )
+{
+#ifdef TRMEM
+    return( _trmem_realloc( old, size, _trmem_guess_who(), GUIMemHandle ) );
+#else
+    return( realloc( old, size ) );
+#endif
+}
+void *HelpMemRealloc( void *ptr, size_t size )
+{
+#ifdef TRMEM
+    return( _trmem_realloc( ptr, size, _trmem_guess_who(), GUIMemHandle ) );
+#else
+    return( realloc( ptr, size ) );
+#endif
+}
+#endif

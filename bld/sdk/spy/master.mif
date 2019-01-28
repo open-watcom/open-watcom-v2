@@ -23,15 +23,12 @@ dllname = ntspyhk
 dllname = wspyhk
 !endif
 
-objs_win = spy.obj spyglob.obj spybox.obj spyproc.obj spymsgs.obj &
-           spyfilt.obj spypick.obj spymdlgs.obj spyarray.obj &
-           spymisc.obj spycfg.obj spylog.obj spytool.obj spysel.obj
+objs_nt = spyzord.obj
 
-objs_nt =  spy.obj spyglob.obj spybox.obj spyproc.obj spymsgs.obj &
-           spyfilt.obj spypick.obj spymdlgs.obj spyarray.obj spyzord.obj &
-           spymisc.obj spycfg.obj spylog.obj spytool.obj spysel.obj
-
-objs = $(objs_$(host_os))
+objs = spy.obj spyglob.obj spybox.obj spyproc.obj spymsgs.obj &
+    spyfilt.obj spypick.obj spymdlgs.obj spyarray.obj &
+    spymisc.obj spycfg.obj spylog.obj spytool.obj spysel.obj &
+    cguimem.obj $(objs_$(host_os))
 
 dll_objs = $(dll_subdir)/spydll.obj
 
@@ -55,7 +52,7 @@ extra_l_flags_dll = option implib
 extra_l_flags_dll_win = font mem option rwr export WEP RESIDENT segment CLASS 'CODE' PRELOAD FIXED
 extra_l_flags_dll_nt  = initglobal
 
-.c: ../c
+.c: ../c;$(commonui_dir)/c
 
 inc_dirs = -I. -I"../h" $(commonui_inc_dirs) $(wpi_inc_dirs)
 

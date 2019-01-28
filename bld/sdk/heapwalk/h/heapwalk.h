@@ -40,7 +40,7 @@
 #include "segmem.h"
 #include "mythelp.h"
 #include "descript.h"
-#include "mem.h"
+#include "cguimem.h"
 #include "font.h"
 #include "savelbox.h"
 #include "memwnd.h"

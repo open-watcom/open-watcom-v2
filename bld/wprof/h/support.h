@@ -48,5 +48,5 @@ extern void         GetFullInstruct( address a, char * buffer, size_t max );
 extern bool         CnvAddr( address addr, char *buff, size_t buff_len );
 extern bool         IsX86BigAddr( address a );
 extern bool         IsX86RealAddr( address a );
-extern int_16       GetDataByte( void );
+extern int_8        GetDataByte( void );
 extern bool         EndOfSegment( void );

@@ -95,7 +95,11 @@ static bool skipEntry( struct dirent *dire )
 
 static bool isDirectory( struct dirent *dire )
 {
-#ifdef __UNIX__
+#if defined( __QNX__ )
+    if( (dire->d_stat.st_status & _FILE_USED) == 0 )
+        stat( dire->d_name, &dire->d_stat );
+    return( S_ISDIR( dire->d_stat.st_mode ) );
+#elif defined( __UNIX__ )
     struct stat buf;
     stat( dire->d_name, &buf );
     return( S_ISDIR( buf.st_mode ) );

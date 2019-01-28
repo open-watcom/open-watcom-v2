@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -39,7 +40,7 @@
 #include "wio.h"
 #include "watcom.h"
 #include "setup.h"
-#if !defined( _UI ) && ( defined( __NT__ ) || defined( __WINDOWS__ ) )
+#if defined( GUI_IS_GUI ) && ( defined( __NT__ ) || defined( __WINDOWS__ ) )
     #include "fontstr.h"
 #endif
 #include "setupinf.h"
@@ -277,7 +278,7 @@ static bool ZapKey( const VBUF *app_name, const char *old, const char *new,
     app_len = VbufLen( app_name );
     old_len = strlen( old );
     WritePrivateProfileString( NULL, NULL, NULL, VbufString( file ) );
-    io = fopen( VbufString( hive ), "r+t" );
+    io = fopen_vbuf( hive, "r+t" );
     if( io == NULL )
         return( false );
     while( fgets( buff, sizeof( buff ), io ) ) {
@@ -411,7 +412,7 @@ static void WindowsWriteProfile( const VBUF *app_name, const VBUF *key_name,
             WritePrivateProfileString( VbufString( app_name ), VbufString( key_name ), VbufString( value ), VbufString( file_name ) );
         } else {
             // if file doesn't exist, Windows creates 0-length file
-            if( access( VbufString( file_name ), F_OK ) == 0 ) {
+            if( access_vbuf( file_name, F_OK ) == 0 ) {
                 WritePrivateProfileString( VbufString( app_name ), VbufString( key_name ), NULL, VbufString( file_name ) );
             }
         }
@@ -535,7 +536,7 @@ void WriteProfileStrings( bool uninstall )
 
 void SetDialogFont()
 {
-#if (defined( __NT__ ) || defined( __WINDOWS__ )) && !defined( _UI )
+#if (defined( __NT__ ) || defined( __WINDOWS__ )) && defined( GUI_IS_GUI )
 
     char            *fontstr;
     LOGFONT         lf;

@@ -32,11 +32,10 @@
 
 #include "drwatcom.h"
 #include "srchmsg.h"
-#include "mem.h"
-
 #ifdef __AXP__
 #include <i64.h>
 #endif
+
 
 #ifndef STATUS_SEGMENT_NOTIFICATION
 #define STATUS_SEGMENT_NOTIFICATION 0x40000005

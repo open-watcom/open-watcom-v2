@@ -34,7 +34,7 @@
 #include <process.h>
 #include <ctype.h>
 #include <tlhelp32.h>
-#include "mem.h"
+
 
 #define INIT_ALLOCSIZE  20
 #define RE_ALLOCSIZE    10

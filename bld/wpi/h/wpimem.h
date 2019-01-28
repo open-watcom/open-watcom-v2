@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2016-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -30,15 +31,11 @@
 ****************************************************************************/
 
 
-#ifndef MEMORY_MANAGER_INCLUDED
-#define MEMORY_MANAGER_INCLUDED
+#ifndef WPIMEM_H
+#define WPIMEM_H
 
-extern char     *MemStrDup(const char *);
-extern void     *MemMalloc(int);
-extern void     *MemRealloc(void*,int);
-extern void     MemFree(void *);
-extern void     InitMem( void );
-extern void     FiniMem( void );
+extern void _wpi_free( void * ptr );
+extern void * _wpi_malloc( size_t size );
+extern void * _wpi_realloc( void *ptr, size_t size );
 
 #endif
-

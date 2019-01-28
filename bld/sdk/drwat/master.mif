@@ -74,12 +74,12 @@ extra_proj_obj_win = globals.obj notify.obj winproc.obj debug.obj dump.obj &
 
 proj_obj =  listbox.obj drwatlog.obj stat.obj lognote.obj &
         drwatcom.obj sym.obj profile.obj fault.obj &
-        disasm.obj &
+        disasm.obj cguimem.obj &
         $(extra_proj_obj_$(host_os)) &
         dipcli.obj digcli.obj $(dip_objs)
 
 .asm : .
-.c : ../$(host_os);../c;$(dig_srcs);$(mad_srcs);$(dis_srcs)
+.c : ../$(host_os);../c;$(dig_srcs);$(mad_srcs);$(dis_srcs);$(commonui_dir)/c
 
 inc_dirs = -I. -I"../$(host_os)" -I"../h" -I"$(dig_dir)/h" $(dis_includes) $(commonui_inc_dirs)
 

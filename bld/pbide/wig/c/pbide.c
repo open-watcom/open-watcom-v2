@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -47,9 +48,13 @@
 #include "pbide.h"
 #include "global.h"
 #include "error.h"
-#include "mem.h"
+#include "pbmem.h"
 #include "srusuprt.h"
 #include "gen_cpp.h"
+#include "dllmain.h"
+#include "winexprt.h"
+#include "wig.h"
+
 
 #ifdef __NT__
     #define PBCMD "pbnt"
@@ -58,7 +63,11 @@
 #endif
 #define PBDDECMD "pb"
 
-extern int Wigmain( int argc, char **argv );
+
+WINEXPORT BOOL CALLBACK FindWatIDEHwnd( HWND hwnd, LPARAM lparam );
+WINEXPORT HDDEDATA CALLBACK DdeProc( UINT type, UINT fmt, HCONV conv,
+                                    HSZ hsz1, HSZ hsz2, HDDEDATA hdata,
+                                    DWORD data1, DWORD data2 );
 
 #if 0
 #define say( x, y ) { char utilbuff[256]; \
@@ -70,7 +79,7 @@ extern int Wigmain( int argc, char **argv );
 
 #ifdef __NT__
 
-int __stdcall DLLMain( long hdll, long reason, long reserved )
+int __stdcall DllMain( HINSTANCE hdll, DWORD reason, LPVOID reserved )
 {
     say( "DLLMain", NULL );
 #if 0
@@ -201,7 +210,7 @@ void IDE_EXPORT WatIDE_FiniErrInfo( WatIDEErrInfo *info )
 
 static HWND     ideHwnd;
 
-BOOL __export CALLBACK FindWatIDEHwnd( HWND hwnd, LPARAM lparam )
+WINEXPORT BOOL CALLBACK FindWatIDEHwnd( HWND hwnd, LPARAM lparam )
 {
     char        buf[256];
     int         len;
@@ -256,7 +265,7 @@ static BOOL runIDE( char *dllname )
 }
 
 
-HDDEDATA __export CALLBACK DdeProc( UINT type, UINT fmt, HCONV conv,
+WINEXPORT HDDEDATA CALLBACK DdeProc( UINT type, UINT fmt, HCONV conv,
                                     HSZ hsz1, HSZ hsz2, HDDEDATA hdata,
                                     DWORD data1, DWORD data2 )
 {

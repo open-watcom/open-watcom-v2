@@ -41,7 +41,7 @@
 #include "varsym.h"
 #include "macrosym.h"
 #include "hotspots.h"
-#include "mem.h"
+#include "brmem.h"
 #include "util.h"
 #include "module.h"
 #include "referenc.h"

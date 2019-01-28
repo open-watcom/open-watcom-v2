@@ -39,8 +39,7 @@
 :endsegment
 :segment EXTWCHART
 :include extepi.sp
-:elsesegment
-
 :endsegment
+
 :endsegment
 :endsegment

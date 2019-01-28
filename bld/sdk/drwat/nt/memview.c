@@ -34,7 +34,6 @@
 #include "drwatcom.h"
 #include "watcom.h"
 #include "memwnd.h"
-#include "mem.h"
 
 
 /* Local Window callback functions prototypes */

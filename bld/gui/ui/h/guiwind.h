@@ -44,7 +44,6 @@
 #include "guimin.h"
 #include "guihint.h"
 
-#undef GUI_IS_GUI
 
 #define BORDER_AMOUNT           2
 #define HALF_BORDER_AMOUNT      1

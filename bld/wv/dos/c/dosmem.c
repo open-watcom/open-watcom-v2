@@ -41,6 +41,12 @@
 #include "stdui.h"
 
 
+#define ROUND_DOWN_SIZE_TO_PARA( __x )  ((__x)>>4)
+#define ROUND_UP_SIZE_TO_PARA( __x )    (((__x)+15)>>4)
+
+#define HUGE_PTR_CVT(x)     MK_FP( FP_SEG( x ) + ( FP_OFF( x ) >> 4 ), FP_OFF( x ) & 0x000f );
+#define HUGE_PTR_ADD(x,o)   MK_FP( FP_SEG( x ) + ( o >> 4 ), FP_OFF( x ) + ( o & 0x000f ) );
+
 extern void         __far _ovl_addarea( unsigned, unsigned );
 extern void         MemTrackInit( void );
 
@@ -48,10 +54,9 @@ extern unsigned     _STACKTOP;
 
 unsigned            OvlAreaSize;
 
+__segment           LastSeg;
 void                *SyMemBeg;
 void                *SyMemEnd;
-
-struct heapstart     *LastSeg;
 
 /*
  * MemInit -- initialize dynamic and symbol memory
@@ -63,28 +68,25 @@ void MemInit( void )
 
     /* find the address of the first available segment */
     SyMemBeg = (void *)_STACKTOP;
-    SyMemBeg = MK_FP( FP_SEG( SyMemBeg ) + ( FP_OFF( SyMemBeg ) >> 4 ),
-        FP_OFF( SyMemBeg ) & 0x000f );
+    SyMemBeg = HUGE_PTR_CVT( SyMemBeg );
     /* find the segment address of the last available segment */
     last = TinyGetPSP();
     last = *(addr_seg*)((char *)MK_FP( last, 0 ) + 2 );
 
-    SyMemEnd = MK_FP( FP_SEG( SyMemBeg ) + ( MemSize >> 4 ),
-        FP_OFF( SyMemBeg ) + ( MemSize & 0x000f ) );
-
+    SyMemEnd = HUGE_PTR_ADD( SyMemBeg, MemSize );
     /* check for overflows */
     if( FP_OFF( SyMemEnd ) < FP_OFF( SyMemBeg ) ) {
-        SyMemEnd = MK_FP( FP_SEG( SyMemEnd ) + 1, FP_OFF( SyMemEnd ) + 1 );
+        SyMemEnd = HUGE_PTR_ADD( SyMemEnd, 0x11 );
     }
-    SyMemEnd = MK_FP( FP_SEG( SyMemEnd ) + ( FP_OFF( SyMemEnd ) >> 4 ),
-        FP_OFF( SyMemEnd ) & 0x000f );
+    SyMemEnd = HUGE_PTR_CVT( SyMemEnd );
+
     if( FP_SEG( SyMemEnd ) < FP_SEG( SyMemBeg ) ) {
         StartupErr( "no memory to initialize - reduce dynamic memory" );
     }
 
     {
     addr_seg        first_free;
-    first_free = 1 + FP_SEG( SyMemEnd ) + ( FP_OFF( SyMemEnd ) >> 4 );
+    first_free = 1 + FP_SEG( SyMemEnd ) + ROUND_DOWN_SIZE_TO_PARA( FP_OFF( SyMemEnd ) );
     if( first_free + OvlAreaSize >= last
         || first_free + OvlAreaSize < FP_SEG( &SyMemBeg ) ) {
         StartupErr( "no memory to initialize - reduce overlay size" );
@@ -94,7 +96,7 @@ void MemInit( void )
     _ovl_addarea( first_free, OvlAreaSize );
 #endif
     }
-    LastSeg = 0;
+    LastSeg = _NULLSEG;
     {
         MemTrackInit();
     }
@@ -105,7 +107,7 @@ LP_VOID ExtraAlloc( size_t size )
     tiny_ret_t ret;
     unsigned   num_para;
 
-    num_para = (size + 0xf) >> 4;
+    num_para = ROUND_UP_SIZE_TO_PARA( size );
     if( num_para == 0 )
         num_para = 0x1000;
     ret = TinyAllocBlock( num_para );

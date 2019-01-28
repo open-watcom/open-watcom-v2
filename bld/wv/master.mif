@@ -30,6 +30,9 @@ os2pm = 1
 !include $(aui_dir)/client.mif
 !include $(gui_dir)/client.mif
 !include $(ui_dir)/client.mif
+!include $(hlpview_dir)/client.mif
+!include $(wpi_dir)/client.mif
+!include $(commonui_dir)/client.mif
 
 !include wres.mif
 
@@ -61,12 +64,7 @@ sysadir = ../asm
 
 # cflags
 #########
-!ifeq sys_windowed 1
-extra_cpp_flags = -D__GUI__
-!else
-extra_cpp_flags = -D__CHAR__
-!endif
-!ifdef dll
+!ifeq sys_rtdll 1
 extra_cpp_flags += -D__NOUI__
 !endif
 !ifeq release 0
@@ -75,7 +73,11 @@ extra_cpp_flags += -DAUI_DBG
 !ifdef %OWUSE_FILENAME_VERSION
 extra_cpp_flags += -DUSE_FILENAME_VERSION=$(bld_ver)
 !endif
-extra_cpp_flags_nt = -DENABLE_TRAP_LOGGING
+!ifeq sys_windowed 1
+extra_cpp_flags += -DGUI_IS_GUI -DUI_GUI
+extra_cpp_flags_os2 += -D__OS2_PM__
+!endif
+extra_cpp_flags_nt += -DENABLE_TRAP_LOGGING
 
 extra_c_flags = -s
 
@@ -95,14 +97,14 @@ extra_c_flags_srcmgt = $(incl_file_opts)__srcmgt.h
 # inc_dirs
 ###########
 inc_dirs = -I. -I"$(wv_dir)/h" -I"$(dig_dir)/h" -I"$(syshdir)" -I"$(hdir)" -Ih -I"$(rdir)/strings"
-!ifndef dll
-inc_dirs += $(aui_inc_dirs) $(gui_inc_dirs) $(ui_inc_dirs)
+inc_dirs += $(aui_inc_dirs) $(gui_inc_dirs) $(ui_inc_dirs) $(ui_extra_inc_dirs) $(hlpview_inc_dirs) $(wpi_inc_dirs) $(commonui_inc_dirs)
+!ifeq sys_rtdll 1
+!else
 !ifeq sys_windowed 1
 inc_dirs += -I"$(gui_dir)/win/h"
 !else
 inc_dirs += -I"$(gui_dir)/ui/h"
 !endif
-inc_dirs += -I"$(hlpview_dir)/h"
 !endif
 !if "$(host_os)" == "linux" || "$(host_os)" == "bsd" || "$(host_os)" == "osx" || "$(host_os)" == "haiku"
 inc_dirs += -I"$(ncurses_dir)/h"

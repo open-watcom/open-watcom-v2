@@ -1,4 +1,8 @@
+#!/bin/sh
+#
 # Disable services enabled by default
+#
+
 if [ "$TRAVIS_OS_NAME" = "linux" ]; then
     sudo service postgresql stop
     sudo service mysql stop

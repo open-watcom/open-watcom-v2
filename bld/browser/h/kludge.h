@@ -33,5 +33,5 @@
 // needed since the compiler can't deal with more than 1 /fi switch, and
 // since it can't /undefine something it /defines.
 
-#include "mem.h"
+#include "brmem.h"
 #include "bool.h"

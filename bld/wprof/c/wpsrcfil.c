@@ -188,35 +188,34 @@ STATIC void setSrcLineData( wp_srcfile *wpsrc_file, sio_data *curr_sio,
     wpsrc_file->max_time = 0;
     for( count = 0; count < curr_file->rtn_count; ++count ) {
         rtn_rover = curr_file->routine[count];
-        if( rtn_rover->tick_count == 0 ) {
-            count2 = 0;
-        } else {
+        count2 = 0;
+        if( rtn_rover->tick_count != 0 ) {
             click_index = rtn_rover->first_tick_index - 1;
             count2 = rtn_rover->last_tick_index - click_index;
             line_count += count2;
             lines = ProfRealloc( lines, sizeof( wp_srcline ) * line_count );
-        }
-        while( count2-- > 0 ) {
-            samp_data = WPGetMassgdSampData( curr_sio, click_index );
-            if( DIPAddrCue( curr_mod->mh, *samp_data->raw, cueh ) != SR_NONE ) {
-                if( DIPCueFileId( cueh ) == curr_file->fid ) {
-                    new_line = DIPCueLine( cueh );
+            while( count2-- > 0 ) {
+                samp_data = WPGetMassgdSampData( curr_sio, click_index );
+                if( DIPAddrCue( curr_mod->mh, *samp_data->raw, cueh ) != SR_NONE ) {
+                    if( DIPCueFileId( cueh ) == curr_file->fid ) {
+                        new_line = DIPCueLine( cueh );
+                    }
                 }
-            }
-            if( last_srcline != new_line || line_index == -1 ) {
-                line_index++;
-                lines[line_index].line = new_line;
-                lines[line_index].tick_count = 0;
-                last_srcline = new_line;
-                if( line_index == 0 && curr_rtn == rtn_rover ) {
-                    wpsrc_file->samp_line = new_line;
+                if( last_srcline != new_line || line_index == -1 ) {
+                    line_index++;
+                    lines[line_index].line = new_line;
+                    lines[line_index].tick_count = 0;
+                    last_srcline = new_line;
+                    if( line_index == 0 && curr_rtn == rtn_rover ) {
+                        wpsrc_file->samp_line = new_line;
+                    }
                 }
+                lines[line_index].tick_count += samp_data->hits;
+                if( lines[line_index].tick_count > wpsrc_file->max_time ) {
+                    wpsrc_file->max_time = lines[line_index].tick_count;
+                }
+                click_index++;
             }
-            lines[line_index].tick_count += samp_data->hits;
-            if( lines[line_index].tick_count > wpsrc_file->max_time ) {
-                wpsrc_file->max_time = lines[line_index].tick_count;
-            }
-            click_index++;
         }
         line_count = line_index + 1;
     }

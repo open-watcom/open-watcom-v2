@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -43,15 +44,15 @@ typedef struct keyword {
 } keyword;
 
 
-extern const keyword __based(__segname("_CONST")) Statements[];
-extern const keyword __based(__segname("_CONST")) DataTypes[];
+extern const keyword __near Statements[];
+extern const keyword __near DataTypes[];
 
-extern int      IsPtrType( id_type );
-extern char     *FindType( id_type );
-extern char     *FindStmt( id_type );
-extern unsigned GetStmntCnt( void );
-extern char     *ConvertRetType( id_type id );
-extern void     ConvertVarType( char *typebuf, char *arraybuf, id_type id, ArrayInfo *array );
-extern void     ConvertParmType( char *buf, char *name, id_type id, ArrayInfo *array );
+extern int          IsPtrType( id_type );
+extern const char   *FindType( id_type );
+extern const char   *FindStmt( id_type );
+extern unsigned     GetStmntCnt( void );
+extern char         *ConvertRetType( id_type id );
+extern void         ConvertVarType( char *typebuf, char *arraybuf, id_type id, ArrayInfo *array );
+extern void         ConvertParmType( char *buf, char *name, id_type id, ArrayInfo *array );
 
 #endif

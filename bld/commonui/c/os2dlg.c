@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -35,8 +36,9 @@
 #include <stdlib.h>
 #include <ctype.h>
 #include <wpi.h>
-
+#include "os2mem.h"
 #include "os2dlg.h"
+
 
 static TEMPLATE_HANDLE  PMDialogTemplate( USHORT temptype, USHORT codepage, USHORT focus );
 static TEMPLATE_HANDLE  PMDoneAddingControls( TEMPLATE_HANDLE dlgtemplate );

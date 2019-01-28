@@ -1,4 +1,4 @@
-.EXTENSIONS : .rh .mh
+.EXTENSIONS : .rh .sp .mh .sp1
 
 proj_name = w32api
 
@@ -8,9 +8,19 @@ w32api_distrib_lib  = 1
 !include cproj.mif
 !include defrule.mif
 
-wsplice_opts     = -i"$(hdr_dir)" -i"$(w32api_dir)/include" $[@ $@
-wsplice_opts_r   = -kRESOURCE -i"$(hdr_dir)" -i"$(w32api_dir)/include" $[@ $@
-wsplice_opts_ws2 = -kWINSOCK2 -i"$(hdr_dir)" -i"$(w32api_dir)/include" $[@ $@
+crwatcnt_sp = crwatcnt.sp
+
+incl_dir = $(w32api_dir)/include
+
+!ifeq release 1
+wsplice_extra_opts =
+!else
+wsplice_extra_opts = -d"depends.dep"
+!endif
+
+wsplice_opts     = $(wsplice_extra_opts) -i"$(hdr_dir)" -i"$(incl_dir)" $[@ $@
+wsplice_opts_r   = $(wsplice_extra_opts) -kRESOURCE -i"$(hdr_dir)" -i"$(incl_dir)" $[@ $@
+wsplice_opts_ws2 = $(wsplice_extra_opts) -kWINSOCK2 -i"$(hdr_dir)" -i"$(incl_dir)" $[@ $@
 
 dirs = ddk directx GL
 
@@ -435,7 +445,7 @@ headers = &
 all : $(dirs) $(headers) .SYMBOLIC
     @%null
 
-.mh: $(w32api_dir)/include
+.mh: $(incl_dir)
 
 .mh.h:
     @%make echo_wsplice
@@ -465,11 +475,15 @@ winresrc.h: winresrc.mh
     @%make echo_wsplice
     $(wsplice) $(wsplice_opts_r)
 
+{$(hdr_dir)}.sp1.sp:
+    $(awk) -f $(hdr_dir)/cpyyear.awk -v CPYYEAR=$(curr_year) -v OUTFILE=$@ $[@
+
 $(dirs):
     @if not exist $@ mkdir $@
 
-!include ../deps.mif
+!include $(incl_dir)/deps.mif
 
 clean: .SYMBOLIC
     rm -f *.h *.rh *.tmp *.lst *.err
+    rm -f *.sp depends.dep
     rm -rf $(dirs)

@@ -24,7 +24,6 @@
 :keep NAMEMAX
 :include maxpath.sp
 :remove NAMEMAX
-
 :segment RDOS
 
 struct dirent {
@@ -38,7 +37,6 @@ struct dirent {
     char               d_name[NAME_MAX+1];        /* file's name */
 };
 typedef struct dirent   DIR;
-
 :elsesegment DOS
 
 struct _wdirent {
@@ -66,7 +64,6 @@ struct dirent {
     char                *d_openpath;        /* path specified to opendir */
 };
 typedef struct dirent   DIR;
-
 :endsegment
 
 /* File attribute constants for d_attr field */

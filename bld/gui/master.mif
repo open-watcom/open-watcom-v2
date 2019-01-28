@@ -70,6 +70,7 @@ objs = $(common_objs) $(mem_objs) $(extra_objs) $(sysobjs)
 libs = $(wpi_lib) $(commonui_lib)
 
 !ifeq sys_windowed 1
+extra_cpp_flags = -DGUI_IS_GUI
 extra_cpp_flags_os2 = -D__OS2_PM__
 !endif
 

@@ -33,7 +33,6 @@
 #include "drwatcom.h"
 #include <alloca.h>
 #include "srchmsg.h"
-#include "mem.h"
 #include "intdlg.h"
 #include "jdlg.h"
 #include "madrtn.h"

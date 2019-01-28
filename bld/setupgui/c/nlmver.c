@@ -63,7 +63,7 @@ static int ReturnNLMVersionInfoFromFile( const VBUF *__pathName, long *majorVers
     nlm_header_3    *verPtr;
     unsigned char   buffer[READ_SIZE];
 
-    handle = open( VbufString( __pathName ), O_BINARY | O_RDONLY );
+    handle = open_vbuf( __pathName, O_BINARY | O_RDONLY );
     if( handle != EFAILURE ) {
         bytes = read( handle, buffer, READ_SIZE );
         close( handle );
@@ -202,21 +202,21 @@ bool CheckInstallNLM( const VBUF *name, vhandle var_handle )
 
     cancel = false;
     VbufSplitpath( name, &drive, &dir, &fname, &ext );
-    VbufSetStr( &temp, "._N_" );
+    VbufConcStr( &temp, "._N_" );
     VbufMakepath( &unpacked_as, &drive, &dir, &fname, &temp );
     if( CheckNewer( &unpacked_as, name ) ) {
         VbufSetStr( &dir, sysPath );
         VbufMakepath( &temp, NULL, &dir, &fname, &ext );
         if( CheckNewer( &unpacked_as, &temp ) ) {
-            chmod( VbufString( name ), PMODE_RWX );
+            chmod_vbuf( name, PMODE_RWX );
             DoCopyFile( &unpacked_as, name, false );
             VbufSetVbuf( &temp, &fname );
             VbufConcStr( &temp, "_NLM_installed" );
-            SetBoolVariableByName( VbufString( &temp ), true );
-            SetVariableByHandle( var_handle, VbufString( &temp ) );
+            SetBoolVariableByName_vbuf( &temp, true );
+            SetVariableByHandle_vbuf( var_handle, &temp );
         }
     }
-    remove( VbufString( &unpacked_as ) );
+    remove_vbuf( &unpacked_as );
 
     VbufFree( &ext );
     VbufFree( &fname );

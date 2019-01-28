@@ -36,14 +36,14 @@ MENU_ITEM( MENU_MAIN_FILE_COMMAND,      XCommand_  )
 MENU_BAR
 MENU_ITEM( MENU_MAIN_FILE_OPTIONS,      OpXtions_  )
 MENU_ITEM( MENU_MAIN_WINDOW_SETTINGS,   XWindow_Options_ )
-#if defined(__GUI__)
+#if defined( GUI_IS_GUI )
 MENU_ITEM( MENU_MAIN_FILE_FONT,         XFont_  )
 #endif
 MENU_ITEM( MENU_MAIN_FILE_SAVE_CONFIGURATION,   XSave_Setup_  )
 MENU_ITEM( MENU_MAIN_FILE_LOAD_CONFIGURATION,   XLoad_Setup_  )
 MENU_ITEM( MENU_MAIN_FILE_SOURCE_PATH,          Source_XPath_  )
 MENU_BAR
-#if !defined(__GUI__) && !defined(__WINDOWS__) && !defined(__NT__)
+#if !defined( GUI_IS_GUI ) && !defined( __WINDOWS__ ) && !defined( __NT__ )
 MENU_ITEM( MENU_MAIN_FILE_SYSTEM,       SXystem  )
 MENU_BAR
 #endif

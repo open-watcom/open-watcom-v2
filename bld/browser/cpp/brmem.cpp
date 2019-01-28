@@ -37,7 +37,7 @@
 #endif
 
 #include "death.h"
-#include "mem.h"
+#include "brmem.h"
 #include "debuglog.h"
 
 #ifdef TRACKER

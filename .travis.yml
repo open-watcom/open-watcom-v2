@@ -18,10 +18,6 @@ env:
     - OWTRAVIS_REPO_SLUG=open-watcom/travis-ci-ow-builds
     - OWTRAVIS_BUILD_DIR=${HOME}/build/$OWTRAVIS_REPO_SLUG
 
-git:
-  if: branch = env(OWBRANCH_SF)
-  depth: false
-
 cache:
   directories:
     - build/$OWOBJDIR
@@ -30,6 +26,10 @@ cache:
     - build-1
 
 before_script:
+ # configure Git client
+ - git config --global user.email "travis@travis-ci.org"
+ - git config --global user.name "Travis CI"
+ - git config --global push.default simple
  # get environment/cache info if debug is active
  - travis/envinfo.sh
  - travis/cacheinf.sh
@@ -51,10 +51,18 @@ jobs:
   include:
     #################################
     - stage: Initialize
-      name: "Initialize Travis GitHub repository"
+      name: "Initialize Travis GitHub repository and mirror master branch commits to SF"
       if: branch = env(OWBRANCH) AND type IN (push, cron)
+      git:
+        depth: false
       cache: false
+      before_install:
+        # stop unwanted services
+        - travis/services.sh
       script: 
+        # update SF mirror
+        - travis/gitusf.sh
+        # update GitHub repository if necessary
         - travis/tinit.sh
     #################################
     - stage: Bootstrap
@@ -104,7 +112,7 @@ jobs:
       before_install:
         - test -n $CC && unset CC
         # stop unwanted services
-#        - travis/services.sh
+        - travis/services.sh
         # set environmet variable
         - export OWTOOLS=VISUALC
         - export OWTRAVISJOB=BOOTSTRAP
@@ -157,7 +165,7 @@ jobs:
       before_install:
         - test -n $CC && unset CC
         # stop unwanted services
-#        - travis/services.sh
+        - travis/services.sh
         # set environmet variable
         - export OWTOOLS=VISUALC
         - export OWTRAVISJOB=BUILD
@@ -263,8 +271,6 @@ jobs:
       name: "Test C run-time library"
       if: branch = env(OWBRANCH) AND (type = cron OR (type = push AND env(OWTRAVIS_ALL) = 1))
       before_install:
-        # stop unwanted services
-        - travis/services.sh
         # set environmet variable
         - export OWTOOLS=WATCOM
         - export OWTRAVISJOB=TEST
@@ -315,7 +321,10 @@ jobs:
       if: branch = env(OWBRANCH_DOCS) AND type = cron
       cache: false
       script: 
-        - travis/gitudocs.sh
+        - git config remote.origin.pushurl https://${GITHUB_TOKEN}@github.com/${TRAVIS_REPO_SLUG}.git
+        - git remote add ${OWBRANCH}
+        - git checkout ${OWBRANCH}
+        - git push origin ${OWBRANCH}:${OWBRANCH_DOCS}
     #################################
     - stage: Documentation
       name: "OW Documentation build Linux"
@@ -341,7 +350,10 @@ jobs:
       if: branch = env(OWBRANCH_COVERITY) AND type = cron
       cache: false
       script: 
-        - travis/gitucov.sh
+        - git config remote.origin.pushurl https://${GITHUB_TOKEN}@github.com/${TRAVIS_REPO_SLUG}.git
+        - git remote add ${OWBRANCH}
+        - git checkout ${OWBRANCH}
+        - git push origin ${OWBRANCH}:${OWBRANCH_COVERITY}
     #################################
     - stage: Coverity
       name: "Initiate Coverity Scan Linux"
@@ -359,22 +371,6 @@ jobs:
         - . ./cmnvars.sh
       script: 
         - travis/covscan.sh
-    #################################
-    - stage: InitSF
-      name: "Initiate SF Synchronisation by Cron"
-      if: branch = env(OWBRANCH_SF) AND type = cron
-      cache: false
-      script: 
-        - travis/gitusf.sh
-    #################################
-    - stage: SyncSF
-      name: "SF synchronization"
-      if: branch = env(OWBRANCH_SF) AND type = push
-      cache: false
-      script: 
-        - git config remote.origin.pushurl https://${SF_TOKEN}@git.code.sf.net/p/openwatcom/open-watcom-v2
-        - git checkout master
-        - git push
 
 #  coverity_scan:
 #    project:

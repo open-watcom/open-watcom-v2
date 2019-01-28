@@ -44,7 +44,7 @@
 #include "drwatlog.h"
 #include "dmptask.h"
 #include "taskctl.h"
-#include "mem.h"
+#include "cguimem.h"
 #include "mythelp.h"
 #include "types.h"
 #include "dlgmod.h"

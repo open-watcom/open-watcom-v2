@@ -43,7 +43,7 @@
 #include "gtfunc.h"
 #include "gtfnopt.h"
 #include "keysym.h"
-#include "mem.h"
+#include "brmem.h"
 #include "module.h"
 #include "brwhelp.h"
 
@@ -450,7 +450,7 @@ void TreeFuncWindow::fillRoots( void )
 }
 
 // Complain about defining trivial destructor inside class
-// definition only for warning levels above 8 
+// definition only for warning levels above 8
 #pragma warning 656 9
 
 TreeFuncWindow::~TreeFuncWindow()

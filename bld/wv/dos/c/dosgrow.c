@@ -42,76 +42,78 @@
 #include "dbgdata.h"
 
 
-extern struct heapstart         *LastSeg;
-extern void                     *SyMemBeg;
-extern void                     *SyMemEnd;
+#define ROUND_DOWN_SIZE_TO_PARA( __x )  ((__x)>>4)
+#define ROUND_UP_SIZE_TO_PARA( __x )    (((__x)+15)>>4)
+
+extern __segment        LastSeg;
+extern void             *SyMemBeg;
+extern void             *SyMemEnd;
 
 #pragma aux __GrowSeg __modify[];
-int __GrowSeg( unsigned short seg, unsigned int amount )
-    {
-        unsigned n;             /* number of paragraphs desired   */
-        unsigned int old_heaplen;
-        unsigned int old_heap_paras;
-        struct heapblk __far *p;
-        struct freelist __far *pfree;
-        struct freelist __far *pnew;
-        tag __far *last_tag;
+int __GrowSeg( __segment seg, unsigned int amount )
+{
+    unsigned        num_of_paras;   /* number of paragraphs desired   */
+    unsigned        new_heaplen;
+    unsigned int    old_heaplen;
+    unsigned int    old_num_of_paras;
+    FRLPTR( seg )   pfree;
+    FRLPTR( seg )   pnew;
 
-        p = (struct heapblk __far *)MK_FP( seg, 0 );
-        old_heaplen = p->heaplen;
-        if( old_heaplen != 0 ) {                /* if not already 64K */
-            amount += sizeof(tag);                      /* 25-feb-91 */
-            if( amount < sizeof(tag) )
-                amount = ~0;
-            if( amount < _amblksiz )
-                amount = _amblksiz;
-            n = ( amount + 0x0f ) >> 4;
-            if( n == 0 )
-                n = PARAS_IN_64K;     /* 23-may-89 */
-            old_heap_paras = old_heaplen >> 4;
-            n += old_heap_paras;
-            /*
-                We shouldn't extend segments to 64k if we are not going to
-                use the space for this allocation.  In protected-mode
-                environments, it should be possible to extend segments
-                later on when we know we can use the space.
-            */
-            if( n > PARAS_IN_64K )
-                n = PARAS_IN_64K;
+    old_heaplen = BHEAP( seg )->len;
+    if( old_heaplen == 0 )
+        return( 0 );    /* indicate failed to grow the segment */
+    /* if not already 64K */
+    amount += TAG_SIZE;
+    if( amount < TAG_SIZE )
+        amount = /*0x....ffff*/ ~0U;
+    if( amount < _amblksiz )
+        amount = _amblksiz;
+    num_of_paras = ROUND_UP_SIZE_TO_PARA( amount );
+    if( num_of_paras == 0 )
+        num_of_paras = PARAS_IN_64K;
+    old_num_of_paras = ROUND_DOWN_SIZE_TO_PARA( old_heaplen );
+    num_of_paras += old_num_of_paras;
+    /*
+        We shouldn't extend segments to 64k if we are not going to
+        use the space for this allocation.  In protected-mode
+        environments, it should be possible to extend segments
+        later on when we know we can use the space.
+    */
+    if( num_of_paras > PARAS_IN_64K )
+        num_of_paras = PARAS_IN_64K;
 
-            if( LastSeg != MK_FP( seg, 0 ) ) {
-                if( seg <= FP_SEG( SyMemEnd ) && seg >= FP_SEG( SyMemBeg ) ) {
-                    return( 0 );
-                } else if ( _IsOn( SW_REMOTE_LINK ) ) {
-                    if( TINY_ERROR( TinySetBlock( n, seg ) ) ) {
-                        return( 0 );
-                    }
-                }
-            } else if( FP_SEG( LastSeg ) + n < FP_SEG( LastSeg )
-                        || FP_SEG( LastSeg ) + n > FP_SEG( SyMemEnd ) ) {
+/* modification start */
+    if( LastSeg != seg ) {
+        if( seg <= FP_SEG( SyMemEnd ) && seg >= FP_SEG( SyMemBeg ) ) {
+            return( 0 );
+        } else if ( _IsOn( SW_REMOTE_LINK ) ) {
+            if( TINY_ERROR( TinySetBlock( num_of_paras, seg ) ) ) {
                 return( 0 );
             }
-
-            p->heaplen = n << 4;        /* put in new heap length */
-            pfree = MK_FP( seg, p->freehead.prev );
-            if( FP_OFF(pfree) + pfree->len != old_heaplen - sizeof(tag)*2 ) {
-                /* last free entry not at end of the heap */
-                /* add a new free entry to end of list */
-                pnew = MK_FP( seg, old_heaplen - sizeof(tag)*2 );
-                pnew->prev = FP_OFF(pfree);
-                pnew->next = pfree->next;
-                pfree->next = FP_OFF(pnew);
-                p->freehead.prev = FP_OFF(pnew);
-                p->numfree++;
-                pfree = pnew;
-            }
-            pfree->len = p->heaplen - FP_OFF(pfree) - sizeof(tag)*2;
-            if( pfree->len > p->largest_blk )
-                p->largest_blk = pfree->len;
-            last_tag = MK_FP( seg, p->heaplen - sizeof(tag)*2 );
-            *last_tag = END_TAG;
-            last_tag[1] = 0;            /* link to next piece of near heap */
-            return( 1 );                /* indicate segment was grown */
         }
-        return( 0 );    /* indicate failed to grow the segment */
+    } else if( LastSeg + num_of_paras < LastSeg
+                || LastSeg + num_of_paras > FP_SEG( SyMemEnd ) ) {
+        return( 0 );
     }
+/* modification end */
+
+    new_heaplen = num_of_paras << 4;
+    BHEAP( seg )->len = new_heaplen;        /* put in new heap length */
+    pfree = BHEAP( seg )->freehead.prev.nptr;
+    if( NEXT_BLK( pfree ) != old_heaplen - TAG_SIZE * 2 ) {
+        /* last free entry not at end of the heap */
+        /* add a new free entry to end of list */
+        pnew = (FRLPTR( seg ))( old_heaplen - TAG_SIZE * 2 );
+        pnew->prev.nptr = pfree;
+        pnew->next.nptr = pfree->next.nptr;
+        pfree->next.nptr = pnew;
+        BHEAP( seg )->freehead.prev.nptr = pnew;
+        BHEAP( seg )->numfree++;
+        pfree = pnew;
+    }
+    pfree->len = new_heaplen - FP_OFF( pfree ) - TAG_SIZE * 2;
+    if( BHEAP( seg )->largest_blk < pfree->len )
+        BHEAP( seg )->largest_blk = pfree->len;
+    SET_HEAP_END( seg, new_heaplen - 2 * TAG_SIZE );
+    return( 1 );                /* indicate segment was grown */
+}

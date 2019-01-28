@@ -93,11 +93,6 @@ sys_hooks = &
 
 !include $(hlpview_dir)/client.mif
 
-sysobjs = $(ui_sysobjs) $(sys_hooks) $(help_objs)
-
-!ifndef bootstrap
-# memory tracker cover routines
-extra_c_flags_helpmem = $(trmem_cover_cflags)
-!endif
+sysobjs = $(ui_sysobjs) $(sys_hooks) $(hlpview_objs)
 
 !include ../../master.mif

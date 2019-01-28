@@ -50,7 +50,7 @@ static YYACTTYPE find_action( YYACTTYPE yyk, YYTOKENTYPE yytoken )
     return( yyacttab[yyi] );
 }
 
-int yyparse( void )
+static int yyparse( void )
 {
     short yypnum;
     short yyi, yylhs;

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -43,7 +44,7 @@
 #include "dlgbutn.h"
 #include "genvbl.h"
 #include "utils.h"
-#if defined( _UI )
+#if !defined( GUI_IS_GUI )
   #include "stdui.h"
   #include "uigchar.h"
 #endif
@@ -123,7 +124,7 @@ static bool StatusGUIEventProc( gui_window *gui, gui_event gui_ev, void *parm )
                                LINE0_COL * CharSize.x, WND_STATUS_TEXT, GUI_NO_COLUMN );
             GUIDrawTextExtent( gui, StatusLine1, strlen( StatusLine1 ), LINE1_ROW,
                                LINE1_COL * CharSize.x, WND_STATUS_TEXT, GUI_NO_COLUMN );
-#ifdef _UI
+#if !defined( GUI_IS_GUI )
             {
                 int         len1, len2;
                 char        num[20];
@@ -347,7 +348,7 @@ static bool OpenStatusWindow( const char *title )
     StatusBarRect.width = StatusRect.width - 2 * BAR_INDENT * CharSize.x;
     StatusBarRect.y = STATUS_ROW * CharSize.y;
     StatusBarRect.height = CharSize.y;
-#ifndef _UI
+#if defined( GUI_IS_GUI )
     StatusBarRect.y -= CharSize.y / 2;
     StatusBarRect.height += CharSize.y;
 #endif
@@ -437,7 +438,7 @@ void StatusAmount( long parts_complete, long parts_injob )
         return;
     }
     if( StatusWnd == NULL ) return;
-#ifdef _UI
+#if !defined( GUI_IS_GUI )
     GUIWndDirty( StatusWnd );
 #else
     {

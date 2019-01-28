@@ -39,7 +39,7 @@
 
 #include "bool.h"
 #include "wmdisim.h"
-#include "mem.h"
+#include "cguimem.h"
 
 
 #define MAX_STR         256

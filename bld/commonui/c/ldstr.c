@@ -33,7 +33,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdarg.h>
-#include "mem.h"
+#include "cguimem.h"
 #include "ldstr.h"
 
 #define ALLOC_STRING( x )       AllocRCString( x )

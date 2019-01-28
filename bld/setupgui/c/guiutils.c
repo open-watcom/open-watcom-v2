@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -146,11 +147,11 @@ static bool MainSetupWndGUIEventProc( gui_window *gui, gui_event gui_ev, void *p
                 GUIDrawTextExtent( gui, Bolt[i], strlen( Bolt[i] ), i, 0, GUI_BACKGROUND, WND_APPROX_SIZE );
             }
         }
-        return( true );
+        break;
     default:
         break;
     }
-    return( false );
+    return( true );
 }
 
 gui_coord               GUIScale;
@@ -184,7 +185,7 @@ static bool CheckForSetup32( int argc, char **argv )
         VbufConcStr( &name, "SETUP32" );
         VbufSplitpath( &buff, &drive, &path, NULL, &ext );
         VbufMakepath( &buff, &drive, &path, &name, &ext );
-        if( access( VbufString( &buff ), F_OK ) == 0 ) {
+        if( access_vbuf( &buff, F_OK ) == 0 ) {
             for( i = 1; i < argc; i++ ) {
                 VbufConcChr( &buff, ' ' );
                 VbufConcStr( &buff, argv[i] );
@@ -300,7 +301,7 @@ bool SetupInit( void )
     } else {
         init.style |= GUI_VISIBLE | GUI_MAXIMIZE | GUI_MINIMIZE;
     }
-#ifdef _UI
+#if !defined( GUI_IS_GUI )
     init.style |= GUI_NOFRAME;
 #endif
     init.parent = NULL;

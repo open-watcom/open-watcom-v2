@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -32,15 +33,19 @@
 
 #include <stdio.h>
 #include <windows.h>
+#include "winexprt.h"
+
 
 #define PB_DLLDBG_CLASS         "PB_DLLDBG_CLASS"
 #define APPNAME                 "DLL Debugger"
 
-#ifdef __NT__    
+#ifdef __NT__
     #define hinstance_error(x) ( (x) == NULL )
-#else        
+#else
     #define hinstance_error(x) ( (x) <= HINSTANCE_ERROR )
 #endif
+
+WINEXPORT BOOL FAR WINAPI MainWndProc( HWND hwnd, UINT msg, UINT wparam, LONG lparam );
 
 int     PB_DEBUGGER_STUB_OK_TO_END;
 int     PB_DEBUGGER_GOT_DLL_LOADED;
@@ -50,7 +55,7 @@ static HINSTANCE        dllinst;
 
 #define TIMER_ID 123
 
-void PB_DLL_DEBUGGING_MAIN_LINE( HWND hwnd ) {
+static void PB_DLL_DEBUGGING_MAIN_LINE( HWND hwnd ) {
 
     MSG         msg;
 
@@ -65,8 +70,7 @@ void PB_DLL_DEBUGGING_MAIN_LINE( HWND hwnd ) {
     KillTimer( hwnd, TIMER_ID );
 }
 
-BOOL __export FAR WINAPI MainWndProc( HWND hwnd, UINT msg, UINT wparam,
-                                    LONG lparam )
+WINEXPORT BOOL FAR WINAPI MainWndProc( HWND hwnd, UINT msg, UINT wparam, LONG lparam )
 {
     int         rc;
 
@@ -89,7 +93,7 @@ BOOL __export FAR WINAPI MainWndProc( HWND hwnd, UINT msg, UINT wparam,
     return( FALSE );
 }
 
-BOOL InitFirstInst( HANDLE hinst ) {
+static BOOL InitFirstInst( HANDLE hinst ) {
     WNDCLASS    wc;
 
     wc.style = 0L;

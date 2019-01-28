@@ -32,7 +32,7 @@
 
 #include <drgetref.h>
 #include "module.h"
-#include "mem.h"
+#include "brmem.h"
 #include "funcsym.h"
 
 const int POOLSIZE = 32;

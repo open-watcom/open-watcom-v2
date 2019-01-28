@@ -48,7 +48,7 @@ extern void     ScreenOptInit( void );
 extern void     ScrnSpawnStart( void );
 extern void     ScrnSpawnEnd( void );
 #endif
-#ifdef __GUI__
+#ifdef GUI_IS_GUI
 extern void     ToggleHardMode( void );
 //extern void     ScrnSpawnEnd( void );
 #endif

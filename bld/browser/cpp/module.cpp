@@ -47,7 +47,7 @@
 #include "module.h"
 #include "util.h"
 #include "death.h"
-#include "mem.h"
+#include "brmem.h"
 #include "symbol.h"
 #include "referenc.h"
 #include "fileinfo.h"

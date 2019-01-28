@@ -39,7 +39,6 @@
 #endif
 #include "watcom.h"
 #include "uidef.h"
-#include "stdui.h"
 #include "help.h"
 #include "helpmem.h"
 #include "filelist.h"
@@ -116,7 +115,7 @@ int main( int argc, char *argv[] )
     int                 rc;
     bool                err;
 
-    HelpMemInit();
+    HelpMemOpen();
     err = false;
     if( argc < 2 || strcmp( argv[1], "?" ) == 0 || strcmp( argv[1], "-?" ) == 0
         || strcmp( argv[1], "/?" ) == 0 ) {
@@ -170,6 +169,6 @@ int main( int argc, char *argv[] )
         }
         uifini();
     }
-    HelpMemFini();
+    HelpMemClose();
     return( EXIT_SUCCESS );
 }

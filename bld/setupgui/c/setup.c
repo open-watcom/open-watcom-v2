@@ -183,7 +183,7 @@ static bool DoMainLoop( dlg_state *state )
     const char          *diags;
     bool                got_disk_sizes = false;
     int                 i;
-    char                newdst[_MAX_PATH];
+    VBUF                temp;
     char                *next;
     bool                ret = false;
 
@@ -206,6 +206,7 @@ static bool DoMainLoop( dlg_state *state )
     diag_list[i + 1] = NULL;
     /* process installation dialogs */
 
+    VbufInit( &temp );
     *state = DLG_NEXT;
     i = 0;
     for( ;; ) {
@@ -249,9 +250,9 @@ static bool DoMainLoop( dlg_state *state )
             CancelSetup = true;
             break;
         } else if( *state == DLG_NEXT && stricmp( diag_list[i], "DstDir" ) == 0 ) {
-            strcpy( newdst, GetVariableStrVal( "DstDir" ) );
-            RemoveDirSep( newdst );
-            SetVariableByName( "DstDir", newdst );
+            VbufSetStr( &temp, GetVariableStrVal( "DstDir" ) );
+            VbufRemDirSep( &temp );
+            SetVariableByName_vbuf( "DstDir", &temp );
         }
         if( got_disk_sizes ) {
             if( !CheckDrive( false ) ) {
@@ -266,20 +267,27 @@ static bool DoMainLoop( dlg_state *state )
             } else {
                 for( ;; ) {
                     ++i;
-                    if( diag_list[i] == NULL ) break;
-                    if( CheckDialog( diag_list[i] ) ) break;
+                    if( diag_list[i] == NULL )
+                        break;
+                    if( CheckDialog( diag_list[i] ) ) {
+                        break;
+                    }
                 }
             }
         } else if( *state == DLG_PREV ) {
             for( ;; ) {
                 --i;
-                if( i < 0 ) break;
-                if( CheckDialog( diag_list[i] ) ) break;
+                if( i < 0 )
+                    break;
+                if( CheckDialog( diag_list[i] ) ) {
+                    break;
+                }
             }
         } else if( *state == DLG_START ) {
             i = 0;
         }
     } /* for */
+    VbufFree( &temp );
 
     return( ret );
 }
@@ -299,7 +307,6 @@ void GUImain( void )
     bool                ok;
     dlg_state           state;
 
-    GUIMemOpen();
     GUIGetArgs( &argv, &argc );
 
     // initialize paths and env. vbls.
@@ -313,7 +320,7 @@ void GUImain( void )
         if( GetDirParams( argc, argv, &inf_name, &src_path, &arc_name ) ) {
             StatusInit();
             GUIDrainEvents();   // push things along
-            FileInit( VbufString( &arc_name ) );
+            FileInit( &arc_name );
             VbufInit( &new_inf );
             VbufInit( &current_dir );
             VbufInit( &drive );
@@ -377,5 +384,4 @@ void GUImain( void )
         FreeGlobalVarList( true );
         SetupFini();
     }
-    GUIMemClose();
 }

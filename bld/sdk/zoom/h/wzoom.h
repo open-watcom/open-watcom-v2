@@ -35,7 +35,7 @@
 #include <stdio.h>
 #include <string.h>
 #include "watcom.h"
-#include "mem.h"
+#include "cguimem.h"
 #include "config.h"
 #include "rcstr.gh"
 #include "uistr.gh"
