@@ -322,7 +322,7 @@ jobs:
       cache: false
       script: 
         - git fetch origin $OWBRANCH
-        - git checkout $OWBRANCH
+        - git checkout -t origin/$OWBRANCH
         - git push origin $OWBRANCH:$OWBRANCH_DOCS
     #################################
     - stage: Documentation
@@ -350,7 +350,7 @@ jobs:
       cache: false
       script: 
         - git fetch origin $OWBRANCH
-        - git checkout $OWBRANCH
+        - git checkout -t origin/$OWBRANCH
         - git push origin $OWBRANCH:$OWBRANCH_COVERITY
     #################################
     - stage: Coverity
