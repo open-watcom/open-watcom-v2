@@ -1,6 +1,8 @@
 :: push packing used by C library
 :segment LINUX
 #pragma pack( __push, 8 )
+:elsesegment RDOS
+#pragma pack( __push, 1 )
 :elsesegment
 #ifdef _M_IX86
  #pragma pack( __push, 1 )
