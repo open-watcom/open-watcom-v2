@@ -321,8 +321,9 @@ jobs:
       if: branch = env(OWBRANCH_DOCS) AND type = cron
       cache: false
       script: 
-        - git clone --branch=$OWBRANCH https://${GITHUB_TOKEN}@github.com/${TRAVIS_REPO_SLUG}.git $TRAVIS_BUILD_DIR
-        - git fetch origin $OWBRANCH_DOCS
+        - git config remote.origin.pushurl https://${GITHUB_TOKEN}@github.com/${TRAVIS_REPO_SLUG}.git
+        - git pull origin $OWBRANCH
+        - git checkout -B $OWBRANCH
         - git push origin $OWBRANCH:$OWBRANCH_DOCS
     #################################
     - stage: Documentation
@@ -349,8 +350,9 @@ jobs:
       if: branch = env(OWBRANCH_COVERITY) AND type = cron
       cache: false
       script: 
-        - git fetch origin $OWBRANCH
-        - git checkout -t origin/$OWBRANCH
+        - git config remote.origin.pushurl https://${GITHUB_TOKEN}@github.com/${TRAVIS_REPO_SLUG}.git
+        - git pull origin $OWBRANCH
+        - git checkout -B $OWBRANCH
         - git push origin $OWBRANCH:$OWBRANCH_COVERITY
     #################################
     - stage: Coverity
