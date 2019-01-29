@@ -321,8 +321,8 @@ jobs:
       if: branch = env(OWBRANCH_DOCS) AND type = cron
       cache: false
       script: 
-        - git fetch origin $OWBRANCH
-        - git checkout -t origin/$OWBRANCH
+        - git clone --branch=$OWBRANCH https://${GITHUB_TOKEN}@github.com/${TRAVIS_REPO_SLUG}.git $TRAVIS_BUILD_DIR
+        - git fetch origin $OWBRANCH_DOCS
         - git push origin $OWBRANCH:$OWBRANCH_DOCS
     #################################
     - stage: Documentation
