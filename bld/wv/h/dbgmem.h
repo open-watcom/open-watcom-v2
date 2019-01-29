@@ -34,7 +34,7 @@
 #define __DBGMEM_INCLUDED
 
 #include "walloca.h"
-#if defined( __CHAR__ ) && !defined( __NOUI__ ) && defined( __DOS__ ) && defined( _M_I86 )
+#if !defined( GUI_IS_GUI ) && !defined( __NOUI__ ) && defined( __DOS__ ) && defined( _M_I86 )
 #include "stdui.h"
 #endif
 
@@ -53,7 +53,7 @@ extern void     MemFini( void );
 #define _Free( ptr )                    DbgFree( ptr )
 
 extern void SysSetMemLimit( void );
-#if defined( __CHAR__ ) && !defined( __NOUI__ ) && defined( __DOS__ ) && defined( _M_I86 )
+#if !defined( GUI_IS_GUI ) && !defined( __NOUI__ ) && defined( __DOS__ ) && defined( _M_I86 )
 extern LP_VOID  ExtraAlloc( size_t size );
 extern void     ExtraFree( LP_VOID ptr );
 #endif
