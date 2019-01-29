@@ -13,7 +13,9 @@ hdr_cpu = $(host_cpu)
 !include cproj.mif
 !include defrule.mif
 
-crwatcnt_sp = crwatcnt.sp
+crwatpro_sp = crwatpro.sp
+
+additional_cleanup = $(crwatpro_sp) depends.dep
 
 incl_dir_286 = ../../incl16
 incl_dir_386 = ../../incl32
@@ -205,5 +207,5 @@ $(dirs$(hdr_cpu)):
 
 clean : .SYMBOLIC
     rm -f *.h
-    rm -f *.sp depends.dep
+    rm -f $(additional_cleanup)
     rm -rf $(dirs$(hdr_cpu))

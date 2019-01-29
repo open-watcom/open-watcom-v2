@@ -35,13 +35,10 @@ linux_path = ../watcom
 qnx_path   = ../quantum;../watcom
 rdos_path  = ../watcom
 
-crwat_sp    = crwat.sp
-crwatcnt_sp = crwatcnt.sp
+crwatpro_sp = crwatpro.sp
 
-additional_cleanup = $(crwat_sp) $(crwatcnt_sp) $(noext) *.h *.hpp common.cnv
+additional_cleanup = $(crwatpro_sp) $(noext) *.h *.hpp common.cnv
 additional_cleanup_subdir = $($(system)_dirs)
-
-!include deftarg.mif
 
 .EXTENSIONS
 .EXTENSIONS : . .h .hpp .cnv .sp .mh .mhp .sp1
@@ -176,3 +173,10 @@ $($(system)_dirs):
 
 !include ../deps.mif
 
+clean: .SYMBOLIC
+    rm -f *.h *.hpp common.cnv
+    rm -f *.sp
+    rm -f $(noext)
+    rm -rf $($(system)_dirs)
+    rm -f $(additional_cleanup)
+    rm -rf $(dll_subdir) $(additional_cleanup_subdir)

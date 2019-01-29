@@ -1,6 +1,7 @@
-mh_dir = $(incl_dir)
-owhdr = $(crwatcnt_sp) $(hdr_dir)/readonly.sp
-cplus = $(hdr_dir)/cpluspro.sp $(hdr_dir)/cplusepi.sp
+mh_dir 		= $(incl_dir)
+crwatcnt_sp     = $(hdr_dir)/crwatcnt.sp $(crwatpro_sp) $(hdr_dir)/crwatepi.sp
+owhdr           = $(crwatcnt_sp) $(readonly_sp) #$(hdr_dir)/owrtlink.sp
+cplus 		= $(hdr_dir)/cpluspro.sp $(hdr_dir)/cplusepi.sp
 
 _win386.h :     $(mh_dir)/_win386.mh $(owhdr) $(cplus)
 cderr.h :       $(mh_dir)/cderr.mh $(owhdr) $(cplus)
