@@ -42,7 +42,7 @@
 :segment LINUX | QNX
 #define FILENAME_MAX    255
 :elsesegment RDOS
- #define FILENAME_MAX   260
+#define FILENAME_MAX    260
 :elsesegment DOS
 #if defined(__OS2__) || defined(__NT__) || defined(__WATCOM_LFN__) && defined(__DOS__) || defined(__OSI__)
  #define FILENAME_MAX   260
@@ -66,7 +66,7 @@
  #elif defined(__NT__) || defined(__WATCOM_LFN__) && defined(__DOS__) || defined(__OSI__)
   #define NAME_MAX      259     /* maximum filename for NTFS, FAT LFN, DOS LFN and OSI */
  #else
-#define NAME_MAX        12     	/* 8 chars + '.' +  3 chars */
+#define NAME_MAX        12      /* 8 chars + '.' +  3 chars */
  #endif
 :endsegment
 #endif
@@ -80,13 +80,13 @@
 :include ext.sp
 ::#ifndef PATH_MAX
 :segment RDOS
-  #define PATH_MAX      259     /* maximum length of full pathname excl. '\0' */
+#define PATH_MAX        259     /* maximum length of full pathname excl. '\0' */
 :elsesegment DOS
- #if defined(__OS2__) || defined(__NT__) || defined(__WATCOM_LFN__) && defined(__DOS__) || defined(__OSI__)
-  #define PATH_MAX      259     /* maximum length of full pathname excl. '\0' */
- #else
-  #define PATH_MAX      143     /* maximum length of full pathname excl. '\0' */
- #endif
+#if defined(__OS2__) || defined(__NT__) || defined(__WATCOM_LFN__) && defined(__DOS__) || defined(__OSI__)
+ #define PATH_MAX       259     /* maximum length of full pathname excl. '\0' */
+#else
+ #define PATH_MAX       143     /* maximum length of full pathname excl. '\0' */
+#endif
 :endsegment
 ::#endif
 :include extepi.sp
@@ -98,14 +98,14 @@
 ::
 #ifndef _MAX_PATH
 :segment LINUX | QNX
- #define _MAX_PATH    	256     /* maximum length of full pathname */
+ #define _MAX_PATH      256     /* maximum length of full pathname */
 :elsesegment RDOS
- #define _MAX_PATH    	260     /* maximum length of full pathname */
+ #define _MAX_PATH      260     /* maximum length of full pathname */
 :elsesegment DOS
  #if defined(__OS2__) || defined(__NT__) || defined(__WATCOM_LFN__) && defined(__DOS__) || defined(__OSI__)
-  #define _MAX_PATH   	260     /* maximum length of full pathname */
+  #define _MAX_PATH     260     /* maximum length of full pathname */
  #else
-  #define _MAX_PATH   	144     /* maximum length of full pathname */
+  #define _MAX_PATH     144     /* maximum length of full pathname */
  #endif
 :endsegment
 #endif
