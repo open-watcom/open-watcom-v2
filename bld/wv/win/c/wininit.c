@@ -68,6 +68,8 @@ static BOOL     PASCAL GetCommandData( HWND );
 
 static char     *CmdData;
 
+#ifndef __NOUI__
+
 #if defined( GUI_IS_GUI )
 void TellWinHandle( void )
 {
@@ -94,10 +96,11 @@ void GUImain( void )
 }
 
 
-int GUISysInit( int param )
+bool GUISysInit( init_mode install )
 {
-    param=param;
-    return( 1 );
+    /* unused parameters */ (void)install;
+
+    return( true );
 }
 
 void GUISysFini( void  )
@@ -110,6 +113,8 @@ void WndCleanUp( void )
     TrapTellHWND( (HWND)0 );
     FiniHookFunc();
 }
+
+#endif
 
 char *GetCmdArg( int num )
 {

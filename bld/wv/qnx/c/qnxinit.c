@@ -68,6 +68,8 @@ static unsigned         NumArgs;
 void (*__abort)();
 void __sigabort() {}
 
+#ifndef __NOUI__
+
 static void BrkHandler( int signo )
 {
     signo = signo;
@@ -90,10 +92,11 @@ void GUImain( void )
 }
 
 
-int GUISysInit( int param )
+bool GUISysInit( init_mode install )
 {
-    param=param;
-    return( 1 );
+    /* unused parameters */ (void)install;
+
+    return( true );
 }
 
 void GUISysFini( void  )
@@ -104,6 +107,8 @@ void GUISysFini( void  )
 void WndCleanUp( void )
 {
 }
+
+#endif
 
 char *GetCmdArg( int num )
 {
@@ -187,9 +192,4 @@ long _fork( const char *cmd, size_t len )
     do {
     } while( waitpid( pid, NULL, 0 ) == -1 && errno == EINTR );
     return( 0 );
-}
-
-bool SysGUI( void )
-{
-    return( false );
 }

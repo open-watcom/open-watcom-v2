@@ -76,14 +76,14 @@ void    FiniToolBar( void )
 
 void    WndToolOpen( gui_ord height, bool fixed )
 {
-    if( SysGUI() ) {
+    if( GUIIsGUI() ) {
         WndCreateToolBarWithTips( height, fixed, ArraySize(ToolBar), ToolBar );
     }
 }
 
 void    WndToolClose( void )
 {
-    if( SysGUI() ) {
+    if( GUIIsGUI() ) {
         WndCloseToolBar();
     }
 }

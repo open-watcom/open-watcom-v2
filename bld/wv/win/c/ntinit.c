@@ -39,7 +39,7 @@
 #include "wwindows.h"
 #include "dbgdefn.h"
 #include "dbgdata.h"
-#ifdef GUI_IS_GUI
+#ifndef __NOUI__
 #include "dbgwind.h"
 #endif
 #include "dbgmem.h"
@@ -69,6 +69,8 @@ static char             *CmdData;
     #define ERR_MODE SEM_FAILCRITICALERRORS
 #endif
 
+#ifndef __NOUI__
+
 void GUImain( void )
 {
     char        *buff;
@@ -90,10 +92,11 @@ void GUImain( void )
 }
 
 
-int GUISysInit( int param )
+bool GUISysInit( init_mode install )
 {
-    param=param;
-    return( 1 );
+    /* unused parameters */ (void)install;
+
+    return( true );
 }
 
 void GUISysFini( void  )
@@ -104,6 +107,8 @@ void GUISysFini( void  )
 void WndCleanUp( void )
 {
 }
+
+#endif
 
 char *GetCmdArg( int num )
 {

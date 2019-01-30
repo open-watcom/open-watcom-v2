@@ -168,11 +168,6 @@ void FiniScreen( void )
     }
 }
 
-bool SysGUI( void )
-{
-    return( true );
-}
-
 void SetNumLines( int num )
 {
     num = num;

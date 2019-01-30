@@ -31,11 +31,6 @@
 
 
 extern bool             TBreak( void );
-extern void             GUImain( void );
-extern int              GUISysInit( int param );
-extern void             GUISysFini( void );
-extern bool             SysGUI( void );
-extern void             WndCleanUp( void );
 #ifdef __WATCOMC__
 #pragma aux KillDebugger __aborts
 #endif

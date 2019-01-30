@@ -148,10 +148,6 @@ void FiniScreen( void )
  *                                                                           *
 \*****************************************************************************/
 
-bool SysGUI( void )
-{
-    return( false );
-}
 void PopErrBox( const char *buff )
 {
     WriteText( STD_ERR, buff, strlen( buff ) );

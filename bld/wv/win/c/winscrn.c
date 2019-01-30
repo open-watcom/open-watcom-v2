@@ -290,11 +290,6 @@ void uirefresh( void )
     }
 }
 
-bool SysGUI( void )
-{
-    return( false );
-}
-
 int SwapScrnLines( void )
 {
     return( ScrnLines );

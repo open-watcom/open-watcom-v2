@@ -121,10 +121,6 @@ void FiniScreen( void )
     uistop();
 }
 
-bool SysGUI( void )
-{
-    return( false );
-}
 #if 0
 int mygetlasterr( void )
 {

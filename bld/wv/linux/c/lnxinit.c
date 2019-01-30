@@ -43,6 +43,9 @@
 #include "dbgmain.h"
 #include "dbginit.h"
 #include "dbgcmdln.h"
+#ifndef __NOUI__
+#include "aui.h"
+#endif
 
 #ifdef __WATCOMC__
 #include "clibint.h"
@@ -73,6 +76,8 @@ extern  void    __sigabort( void );
 void (*__abort)(void);
 void __sigabort( void ) {}
 
+#ifndef __NOUI__
+
 static void BrkHandler( int signo )
 {
     /* unused parameters */ (void)signo;
@@ -101,11 +106,11 @@ void GUImain( void )
 }
 
 
-int GUISysInit( int param )
+bool GUISysInit( init_mode install )
 {
-    /* unused parameters */ (void)param;
+    /* unused parameters */ (void)install;
 
-    return( 1 );
+    return( true );
 }
 
 void GUISysFini( void  )
@@ -116,6 +121,8 @@ void GUISysFini( void  )
 void WndCleanUp( void )
 {
 }
+
+#endif
 
 char *GetCmdArg( int num )
 {
@@ -202,9 +209,4 @@ long _fork( const char *cmd, size_t len )
         } while( waitpid( pid, NULL, 0 ) == -1 && errno == EINTR );
     }
     return 0;
-}
-
-bool SysGUI( void )
-{
-    return( false );
 }

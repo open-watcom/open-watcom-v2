@@ -111,6 +111,8 @@ void KillDebugger( int rc )
     TinyTerminateProcess( 0 );
 }
 
+#ifndef __NOUI__
+
 void GUImain( void )
 {
     if( _osmajor == 2 ) {
@@ -123,10 +125,11 @@ void GUImain( void )
 }
 
 
-int GUISysInit( int param )
+bool GUISysInit( init_mode install )
 {
-    param=param;
-    return( 1 );
+    /* unused parameters */ (void)install;
+
+    return( true );
 }
 
 void GUISysFini( void  )
@@ -139,6 +142,7 @@ void WndCleanUp( void )
 {
 }
 
+#endif
 
 /*
    We're stubbing out tzset() because the debugger doesn't care about
@@ -172,11 +176,6 @@ void SysMemInit( void )
 {
 }
 #endif
-
-bool SysGUI( void )
-{
-    return( false );
-}
 
 void PopErrBox( const char *buff )
 {

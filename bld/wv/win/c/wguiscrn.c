@@ -168,11 +168,6 @@ void SaveMainWindowPos( void )
     SaveMainScreen( "WDWIN" );
 }
 
-bool SysGUI( void )
-{
-    return( true );
-}
-
 char *GUIGetWindowClassName( void )
 {
     return( "WatcomDebugger" );

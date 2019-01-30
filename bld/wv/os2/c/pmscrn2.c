@@ -250,11 +250,6 @@ void FiniScreen( void )
  *                                                                           *
 \*****************************************************************************/
 
-bool SysGUI( void )
-{
-    return( true );
-}
-
 void PopErrBox( const char *buff )
 {
     WinMessageBox( HWND_DESKTOP, HWND_DESKTOP, buff,
