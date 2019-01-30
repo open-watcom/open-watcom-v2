@@ -29,8 +29,13 @@
 ****************************************************************************/
 
 
+#ifndef INITMODE_H_INCLUDED
+#define INITMODE_H_INCLUDED
+
 typedef enum {
     INIT_MOUSELESS         = 0,
     INIT_MOUSE             = 1,
     INIT_MOUSE_INITIALIZED = 2
 } init_mode;
+
+#endif
