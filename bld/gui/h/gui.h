@@ -32,6 +32,7 @@
 
 #include "bool.h"
 #include "guimem.h"
+#include "initmode.h"
 
 
 #define GUI_LAST_INTERNAL_MSG 255
@@ -990,3 +991,6 @@ extern bool GUIFirstCrack( void );
 extern bool GUIDead( void );
 extern bool GUIDeath( void );
 extern char *GUIGetWindowClassName( void );
+
+extern bool GUISysInit( init_mode install );
+extern void GUISysFini( void  );

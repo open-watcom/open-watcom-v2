@@ -42,7 +42,6 @@
 #include "guixutil.h"
 #include "guicolor.h"
 #include "guixmain.h"
-#include "guisysfi.h"
 #include "guimenu.h"
 #include "guiwhole.h"
 #include "guiwnclr.h"
@@ -128,7 +127,7 @@ void GUICleanup( void )
     uiswap();
     uirestorebackground();      /* must be after uiswap */
     GUICleanupHotSpots();
-    GUISysFini();
+    GUISysFini();               /* user replaceable stub function */
 }
 
 static bool LoadStrings( void )
@@ -165,7 +164,7 @@ static void MainLoop( void )
                 uidirty( area );
                 uirefresh();
     #endif
-    
+
                 MessageLoop();
                 GUICleanup();
             }

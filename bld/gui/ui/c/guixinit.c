@@ -35,7 +35,6 @@
 #include "uiattrs.h"
 #include "guiscale.h"
 #include "guiclock.h"
-#include "guisysin.h"
 #include "guigmous.h"
 #include "uigchar.h"
 #include "guixinit.h"
@@ -59,7 +58,7 @@ bool GUIWndInit( unsigned DClickInterval, gui_window_styles style )
 
     GUIStyle = style;
     GUIInitGraphicsMouse( style );
-    if( !GUISysInit( INIT_MOUSE_INITIALIZED ) ) {
+    if( !GUISysInit( INIT_MOUSE_INITIALIZED ) ) {   /* user replaceable stub function */
         return( false );
     }
     uiattrs();

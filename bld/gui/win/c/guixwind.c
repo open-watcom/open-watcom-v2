@@ -40,9 +40,6 @@
 #include "guipaint.h"
 #include "guixwind.h"
 #include "guimapky.h"
-#include "initmode.h"
-#include "guisysin.h"
-#include "guisysfi.h"
 #include "guitool.h"
 #include "guiscrol.h"
 #include "guiwinlp.h"
@@ -228,7 +225,7 @@ void GUICleanup( void )
     GUIFreeStatus();
     GUI3DDialogFini();
     GUIFiniDialog();
-    GUISysFini();
+    GUISysFini();               /* user replaceable stub function */
     GUIFiniInternalStringTable();
     GUILoadStrFini();
 }
@@ -375,7 +372,7 @@ void GUIShowWindowNA( gui_window *wnd )
 bool GUIWndInit( unsigned DClickInterval, gui_window_styles style )
 {
     Style = style;
-    GUISysInit( INIT_MOUSE_INITIALIZED );
+    GUISysInit( INIT_MOUSE_INITIALIZED );       /* user replaceable stub function */
     _wpi_setdoubleclicktime( DClickInterval );
     GUISetScreen( 0, 0, _wpi_getsystemmetrics( SM_CXSCREEN ), _wpi_getsystemmetrics( SM_CYSCREEN ) );
     GUIInitDialog();
