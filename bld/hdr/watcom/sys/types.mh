@@ -1,11 +1,7 @@
 /*
  *  sys/types.h Defined system types
  *
-:segment QNX
-:include crqnx.sp
-:elsesegment
-:include crwat.sp
-:endsegment
+:include crwatqnx.sp
  */
 #ifndef _SYS_TYPES_H_INCLUDED
 #define _SYS_TYPES_H_INCLUDED
