@@ -33,7 +33,6 @@
 #include <stdio.h>
 #include "bool.h"
 #include "machtype.h"
-#include "ovldefn.h"
 
 
 #define NULLCHAR        '\0'
