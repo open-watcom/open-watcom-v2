@@ -193,7 +193,7 @@ void FindLocalDebugInfo( const char *name )
     InsertRing( RingEnd( &LocalDebugInfo ), buff, strlen( buff ), false );
 }
 
-OVL_EXTERN void DoDownLoadCode( void )
+static void DoDownLoadCode( void )
 /************************************/
 {
     file_handle     fh;
@@ -270,7 +270,7 @@ address DefAddrSpaceForAddr( address addr )
     return( DefAddrSpaceForMod( mod ) );
 }
 
-OVL_EXTERN void MapAddrSystem( image_entry *image, addr_ptr *addr,
+static void MapAddrSystem( image_entry *image, addr_ptr *addr,
                         addr_off *lo_bound, addr_off *hi_bound )
 {
     RemoteMapAddr( addr, lo_bound, hi_bound, image->system_handle );
@@ -962,7 +962,7 @@ void ReleaseProgOvlay( bool free_sym )
 
 
 
-OVL_EXTERN void BadNew( void )
+static void BadNew( void )
 {
     Error( ERR_LOC, LIT_ENG( ERR_BAD_OPTION ), "new" );
 }
@@ -1212,7 +1212,7 @@ static void DoReStart( bool have_parms, size_t clen, const char *start, size_t l
 }
 
 
-OVL_EXTERN void ResNew( void )
+static void ResNew( void )
 {
     const char          *start;
     size_t              len;
@@ -1263,7 +1263,7 @@ static const char NogoTab[] = {
 
 
 
-OVL_EXTERN void ProgNew( void )
+static void ProgNew( void )
 {
     const char  *start;
     char        *cmd;
@@ -1357,7 +1357,7 @@ static void EvalMapExpr( address *addr )
  * MapAddrUser - have the user supply address mapping information
  */
 
-OVL_EXTERN void MapAddrUser( image_entry *image, addr_ptr *addr,
+static void MapAddrUser( image_entry *image, addr_ptr *addr,
                         addr_off *lo_bound, addr_off *hi_bound )
 {
     address     mapped;
@@ -1398,7 +1398,7 @@ OVL_EXTERN void MapAddrUser( image_entry *image, addr_ptr *addr,
  * SymFileNew - process a new symbolic file request
  */
 
-OVL_EXTERN void SymFileNew( void )
+static void SymFileNew( void )
 {
     const char  *fname;
     size_t      fname_len;
@@ -1474,7 +1474,7 @@ OVL_EXTERN void SymFileNew( void )
  * MapAddrUsrMod - simple address mapping for user loaded modules
  */
 
-OVL_EXTERN void MapAddrUsrMod( image_entry *image, addr_ptr *addr,
+static void MapAddrUsrMod( image_entry *image, addr_ptr *addr,
                         addr_off *lo_bound, addr_off *hi_bound )
 {
     address     mapped;

@@ -134,7 +134,7 @@ static bool EarlyOut( cached_traceback *tb, address execution, address frame )
 }
 
 
-OVL_EXTERN bool RecordTraceBackInfo( call_chain_entry *entry, void *_tb )
+static bool RecordTraceBackInfo( call_chain_entry *entry, void *_tb )
 {
     address     prev_ins;
     address     execution;

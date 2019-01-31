@@ -133,7 +133,7 @@ typedef struct {
     bool        first;
 } return_info;
 
-OVL_EXTERN bool RecordOneLevel( call_chain_entry *entry, void *_info )
+static bool RecordOneLevel( call_chain_entry *entry, void *_info )
 {
     return_info *info = _info;
 

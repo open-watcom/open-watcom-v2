@@ -95,13 +95,13 @@ static gui_menu_struct SrchMenu[] = {
     #include "menusrch.h"
 };
 
-OVL_EXTERN wnd_row SrchNumRows( a_window wnd )
+static wnd_row SrchNumRows( a_window wnd )
 {
     return( WndSrch( wnd )->num_rows );
 }
 
 
-OVL_EXTERN walk_result AddSrcFile( cue_handle *cueh, void *d )
+static walk_result AddSrcFile( cue_handle *cueh, void *d )
 {
     a_cue       *file;
     srch_window *srch = d;
@@ -117,7 +117,7 @@ OVL_EXTERN walk_result AddSrcFile( cue_handle *cueh, void *d )
     return( WR_CONTINUE );
 }
 
-OVL_EXTERN walk_result SearchSrcFile( srch_window *srch, cue_handle *cueh )
+static walk_result SearchSrcFile( srch_window *srch, cue_handle *cueh )
 {
     void        *viewhndl;
     const char  *pos,*endpos;
@@ -156,7 +156,7 @@ OVL_EXTERN walk_result SearchSrcFile( srch_window *srch, cue_handle *cueh )
     return( WR_CONTINUE );
 }
 
-OVL_EXTERN walk_result BuildFileList( mod_handle mh, void *d )
+static walk_result BuildFileList( mod_handle mh, void *d )
 {
     if( DIPModHasInfo( mh, HK_CUE ) == DS_OK ) {
         DIPWalkFileList( mh, AddSrcFile, d );
@@ -165,12 +165,12 @@ OVL_EXTERN walk_result BuildFileList( mod_handle mh, void *d )
 }
 
 
-OVL_EXTERN int CueCompare( void *pa, void *pb )
+static int CueCompare( void *pa, void *pb )
 {
     return( strcmp( (*(a_cue **)pa)->name, (*(a_cue **)pb)->name ) );
 }
 
-OVL_EXTERN void GlobalModWalker( srch_window *srch )
+static void GlobalModWalker( srch_window *srch )
 {
     a_cue       *file,*next;
 
@@ -190,13 +190,13 @@ OVL_EXTERN void GlobalModWalker( srch_window *srch )
 }
 
 
-OVL_EXTERN void NoModWalker( srch_window *srch )
+static void NoModWalker( srch_window *srch )
 {
     /* unused parameters */ (void)srch;
 }
 
 
-OVL_EXTERN int FoundCompare( const void *a, const void *b )
+static int FoundCompare( const void *a, const void *b )
 {
     return( ModCompare( &((found_item const *)a)->mod, &((found_item const *)b)->mod ) );
 }
@@ -230,7 +230,7 @@ static void     SrchInit( a_window wnd )
 }
 
 
-OVL_EXTERN void SrchMenuItem( a_window wnd, gui_ctl_id id, wnd_row row, wnd_piece piece )
+static void SrchMenuItem( a_window wnd, gui_ctl_id id, wnd_row row, wnd_piece piece )
 {
     srch_window *srch = WndSrch( wnd );
     a_window    new;
@@ -254,7 +254,7 @@ OVL_EXTERN void SrchMenuItem( a_window wnd, gui_ctl_id id, wnd_row row, wnd_piec
 }
 
 
-OVL_EXTERN  bool    SrchGetLine( a_window wnd, wnd_row row, wnd_piece piece, wnd_line_piece *line )
+static  bool    SrchGetLine( a_window wnd, wnd_row row, wnd_piece piece, wnd_line_piece *line )
 {
     srch_window *srch = WndSrch( wnd );
     found_item  *found;
@@ -290,7 +290,7 @@ OVL_EXTERN  bool    SrchGetLine( a_window wnd, wnd_row row, wnd_piece piece, wnd
 
 
 
-OVL_EXTERN void     SrchRefresh( a_window wnd )
+static void     SrchRefresh( a_window wnd )
 {
     srch_window *srch = WndSrch( wnd );
     found_item  *found;
@@ -310,7 +310,7 @@ OVL_EXTERN void     SrchRefresh( a_window wnd )
 }
 
 
-OVL_EXTERN bool SrchWndEventProc( a_window wnd, gui_event gui_ev, void *parm )
+static bool SrchWndEventProc( a_window wnd, gui_event gui_ev, void *parm )
 {
     srch_window *srch = WndSrch( wnd );
 

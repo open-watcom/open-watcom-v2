@@ -167,7 +167,7 @@ void RecordStart( void )
     RecordPointStart();
 }
 
-OVL_EXTERN bool DoneRadix( inp_data_handle parm, inp_rtn_action action )
+static bool DoneRadix( inp_data_handle parm, inp_rtn_action action )
 {
     switch( action ) {
     case INP_RTN_INIT:

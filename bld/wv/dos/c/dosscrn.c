@@ -1026,9 +1026,9 @@ static bool MouseOn;
 static ATTR OldAttr;
 
 
-void uimouse( int func )
+void uimouse( mouse_func func )
 {
-    if( func == 1 ) {
+    if( func == MOUSE_ON ) {
         MouseOn = true;
     } else {
         uisetmouse( 0, OFF_SCREEN );

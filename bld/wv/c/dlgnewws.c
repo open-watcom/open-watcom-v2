@@ -78,7 +78,7 @@ static gui_control_info Controls[] = {
 
 static void     (*CompRtn)( gui_window *gui, gui_ctl_id id );
 
-OVL_EXTERN bool newSymGUIEventProc( gui_window *gui, gui_event gui_ev, void *param )
+static bool newSymGUIEventProc( gui_window *gui, gui_event gui_ev, void *param )
 {
     gui_ctl_id  id;
     dlgnew_ctl  *dlgnew;

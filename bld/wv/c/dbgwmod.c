@@ -76,7 +76,7 @@ static gui_menu_struct ModMenu[] = {
     #include "menumod.h"
 };
 
-OVL_EXTERN wnd_row ModNumRows( a_window wnd )
+static wnd_row ModNumRows( a_window wnd )
 {
     return( ModListNumRows( ModList( WndMod( wnd ) ) ) );
 }
@@ -118,7 +118,7 @@ static void     ModInit( a_window wnd )
     ModCalcIndent( wnd );
 }
 
-OVL_EXTERN void     ModMenuItem( a_window wnd, gui_ctl_id id, wnd_row row, wnd_piece piece )
+static void     ModMenuItem( a_window wnd, gui_ctl_id id, wnd_row row, wnd_piece piece )
 {
     address     addr;
     mod_handle  handle;
@@ -177,7 +177,7 @@ OVL_EXTERN void     ModMenuItem( a_window wnd, gui_ctl_id id, wnd_row row, wnd_p
 }
 
 
-OVL_EXTERN void     ModModify( a_window wnd, wnd_row row, wnd_piece piece )
+static void     ModModify( a_window wnd, wnd_row row, wnd_piece piece )
 {
     if( piece == PIECE_SOURCE ) {
         if( ModHasSourceInfo( ModListMod( ModList( WndMod( wnd ) ), row ) ) ) {
@@ -193,7 +193,7 @@ OVL_EXTERN void     ModModify( a_window wnd, wnd_row row, wnd_piece piece )
 }
 
 
-OVL_EXTERN  bool    ModGetLine( a_window wnd, wnd_row row, wnd_piece piece, wnd_line_piece *line )
+static  bool    ModGetLine( a_window wnd, wnd_row row, wnd_piece piece, wnd_line_piece *line )
 {
     mod_handle  handle;
     mod_window  *mod = WndMod( wnd );
@@ -253,7 +253,7 @@ void ModNewHandle( a_window wnd, mod_handle handle )
     ModSetCurrent( wnd );
 }
 
-OVL_EXTERN void     ModRefresh( a_window wnd )
+static void     ModRefresh( a_window wnd )
 {
     int         i;
     mod_window  *mod = WndMod( wnd );
@@ -275,13 +275,13 @@ OVL_EXTERN void     ModRefresh( a_window wnd )
     }
 }
 
-OVL_EXTERN void ModSetOptions( a_window wnd )
+static void ModSetOptions( a_window wnd )
 {
     WndMod( wnd )->all_modules = _IsOn( SW_MOD_ALL_MODULES );
     ModInit( wnd );
 }
 
-OVL_EXTERN bool ModWndEventProc( a_window wnd, gui_event gui_ev, void *parm )
+static bool ModWndEventProc( a_window wnd, gui_event gui_ev, void *parm )
 {
     mod_window  *mod = WndMod( wnd );
 

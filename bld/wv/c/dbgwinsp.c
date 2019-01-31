@@ -93,7 +93,7 @@ typedef struct cue_mod {
     bool        found;
 } cue_mod;
 
-OVL_EXTERN walk_result CheckFirstFile( cue_handle *cueh, void *_d )
+static walk_result CheckFirstFile( cue_handle *cueh, void *_d )
 {
     cue_mod     *d = _d;
     char        *buff;
@@ -108,7 +108,7 @@ OVL_EXTERN walk_result CheckFirstFile( cue_handle *cueh, void *_d )
     return( WR_STOP );
 }
 
-OVL_EXTERN walk_result CheckOneMod( mod_handle mh, void *_d )
+static walk_result CheckOneMod( mod_handle mh, void *_d )
 {
     cue_mod     *d = _d;
     d->mod = mh;

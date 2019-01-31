@@ -172,7 +172,7 @@ static unsigned MemCurrOffset( a_window wnd )
     return( ( curr_row * mem->items_per_line + curr_piece ) * mem->item_size );
 }
 
-OVL_EXTERN gui_ord MemHeader( a_window wnd, wnd_piece piece )
+static gui_ord MemHeader( a_window wnd, wnd_piece piece )
 {
     address     addr;
     mem_window  *mem;
@@ -207,7 +207,7 @@ OVL_EXTERN gui_ord MemHeader( a_window wnd, wnd_piece piece )
 }
 
 
-OVL_EXTERN gui_ord BinHeader( a_window wnd, wnd_piece piece )
+static gui_ord BinHeader( a_window wnd, wnd_piece piece )
 {
     mem_window  *mem;
 
@@ -269,7 +269,7 @@ static void MemSetStartAddr( a_window wnd, address addr, bool new_home )
     MemGetContents( wnd, false );
 }
 
-OVL_EXTERN  void MemRefresh( a_window wnd )
+static  void MemRefresh( a_window wnd )
 {
     mem_window  *mem;
 
@@ -408,7 +408,7 @@ static  void    MemUpdateCursor( a_window wnd )
 }
 
 
-OVL_EXTERN  void    MemModify( a_window wnd, wnd_row row, wnd_piece piece )
+static  void    MemModify( a_window wnd, wnd_row row, wnd_piece piece )
 {
     address     addr;
     union {
@@ -634,7 +634,7 @@ static bool GetBuff( mem_window *mem, unsigned long offset, char *buff, size_t s
     }
 }
 
-OVL_EXTERN  bool    MemGetLine( a_window wnd, wnd_row row, wnd_piece piece, wnd_line_piece *line )
+static  bool    MemGetLine( a_window wnd, wnd_row row, wnd_piece piece, wnd_line_piece *line )
 {
     char            buff[16];
     unsigned long   offset;
@@ -778,7 +778,7 @@ static void MemResize( a_window wnd )
     MemRefresh( wnd );
 }
 
-OVL_EXTERN void     MemMenuItem( a_window wnd, gui_ctl_id id, wnd_row row, wnd_piece piece )
+static void     MemMenuItem( a_window wnd, gui_ctl_id id, wnd_row row, wnd_piece piece )
 {
     mem_window  *mem;
 
@@ -866,14 +866,14 @@ OVL_EXTERN void     MemMenuItem( a_window wnd, gui_ctl_id id, wnd_row row, wnd_p
     }
 }
 
-OVL_EXTERN  void StkRefresh( a_window wnd )
+static  void StkRefresh( a_window wnd )
 {
     MemSetStartAddr( wnd, Context.stack, true );
     WndZapped( wnd );
 }
 
 
-OVL_EXTERN  int     MemScroll( a_window wnd, int lines )
+static  int     MemScroll( a_window wnd, int lines )
 {
     int             tomove;
     unsigned long   offset;
@@ -948,7 +948,7 @@ void FiniMemWindow( void )
     MemFiniTypes( &MemData );
 }
 
-OVL_EXTERN bool MemWndEventProc( a_window wnd, gui_event gui_ev, void *parm )
+static bool MemWndEventProc( a_window wnd, gui_event gui_ev, void *parm )
 {
     mem_window      *mem;
     int             i;

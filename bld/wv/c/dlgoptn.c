@@ -95,7 +95,7 @@ static void SetDlgStatus( gui_window *gui )
 }
 
 
-OVL_EXTERN bool OptSetGUIEventProc( gui_window *gui, gui_event gui_ev, void *param )
+static bool OptSetGUIEventProc( gui_window *gui, gui_event gui_ev, void *param )
 {
     gui_ctl_id      id;
     dlg_window_set  *optset;

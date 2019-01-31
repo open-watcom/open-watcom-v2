@@ -196,7 +196,7 @@ static memory_delta *NewMemDelta( address addr, mem_delta_size bytes )
     return( new );
 }
 
-OVL_EXTERN walk_result FindMemRefs( address a, mad_type_handle mth,
+static walk_result FindMemRefs( address a, mad_type_handle mth,
                         mad_memref_kind mk, void *d )
 {
     mad_type_info       mti;
@@ -704,7 +704,7 @@ typedef struct {
     bool                success;
 } move_info;
 
-OVL_EXTERN bool CheckOneLevel( call_chain_entry *entry, void *_info )
+static bool CheckOneLevel( call_chain_entry *entry, void *_info )
 {
     move_info  *info = _info;
 

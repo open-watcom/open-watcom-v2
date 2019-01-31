@@ -127,7 +127,7 @@ static const char WindowNameTab[] =
     "PRevious\0"
 };
 
-OVL_EXTERN void ToWndChooseNew( a_window wnd )
+static void ToWndChooseNew( a_window wnd )
 {
     /* unused parameters */ (void)wnd;
 

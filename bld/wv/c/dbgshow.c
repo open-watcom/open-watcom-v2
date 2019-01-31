@@ -182,7 +182,7 @@ void DoConfig( const char *cmd, const char *name_tab, void(**jmp_tab)( void ), v
 }
 
 
-OVL_EXTERN void BadShow( void )
+static void BadShow( void )
 {
     Error( ERR_LOC, LIT_ENG( ERR_BAD_SUBCOMMAND ), GetCmdName( CMD_SHOW ) );
 }
@@ -205,7 +205,7 @@ typedef struct {
     bool        config; /* should info be dumped for save config call */
 } show_rtn;
 
-OVL_EXTERN void ConfigTypes( void )
+static void ConfigTypes( void )
 {
 }
 
@@ -234,7 +234,7 @@ void ProcShow( void )
 }
 
 
-OVL_EXTERN void ShowAll( void )
+static void ShowAll( void )
 {
     unsigned    i;
 

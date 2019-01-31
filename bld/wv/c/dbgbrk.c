@@ -74,22 +74,23 @@
 #include "dbgupdt.h"
 
 
-OVL_EXTERN brkp         *TypePoint( memory_expr );
-OVL_EXTERN brkp         *BadPoint( memory_expr );
-OVL_EXTERN brkp         *ImageBreak( memory_expr );
-OVL_EXTERN brkp         *ActivatePoint( memory_expr );
-OVL_EXTERN brkp         *ClearPoint( memory_expr );
-OVL_EXTERN brkp         *TogglePoint( memory_expr );
-OVL_EXTERN brkp         *ResumePoint( memory_expr );
-OVL_EXTERN brkp         *UnResumePoint( memory_expr );
-OVL_EXTERN brkp         *DeactivatePoint( memory_expr );
-OVL_EXTERN brkp         *SetBreak( memory_expr );
-OVL_EXTERN brkp         *SetWatch( memory_expr );
-OVL_EXTERN brkp         *SetPoint( memory_expr def_seg, mad_type_handle );
-extern void             ErrorBox( char * );
-extern bool             DlgBreak( address );
-extern bool             CheckBPIns( void );
-extern bool             DlgAreYouNuts( unsigned long );
+extern void         ErrorBox( char * );
+extern bool         DlgBreak( address );
+extern bool         CheckBPIns( void );
+extern bool         DlgAreYouNuts( unsigned long );
+
+static brkp         *TypePoint( memory_expr );
+static brkp         *BadPoint( memory_expr );
+static brkp         *ImageBreak( memory_expr );
+static brkp         *ActivatePoint( memory_expr );
+static brkp         *ClearPoint( memory_expr );
+static brkp         *TogglePoint( memory_expr );
+static brkp         *ResumePoint( memory_expr );
+static brkp         *UnResumePoint( memory_expr );
+static brkp         *DeactivatePoint( memory_expr );
+static brkp         *SetBreak( memory_expr );
+static brkp         *SetWatch( memory_expr );
+static brkp         *SetPoint( memory_expr def_seg, mad_type_handle );
 
 static const char PointNameTab[] = {
     "Activate\0"
@@ -848,12 +849,12 @@ void ProcBreak( void )
  * SetBreak -- set a break point
  */
 
-OVL_EXTERN brkp *SetBreak( memory_expr def_seg )
+static brkp *SetBreak( memory_expr def_seg )
 {
     return( SetPoint( def_seg, BP_EXECUTE ) );
 }
 
-OVL_EXTERN brkp *TypePoint( memory_expr def_seg )
+static brkp *TypePoint( memory_expr def_seg )
 {
     mad_type_handle     mth;
 
@@ -865,7 +866,7 @@ OVL_EXTERN brkp *TypePoint( memory_expr def_seg )
 }
 
 
-OVL_EXTERN brkp *SetWatch( memory_expr def_seg )
+static brkp *SetWatch( memory_expr def_seg )
 {
     return( SetPoint( def_seg, MADTypeDefault( MTK_INTEGER, 0, &DbgRegs->mr, NULL ) ) );
 }
@@ -875,7 +876,7 @@ OVL_EXTERN brkp *SetWatch( memory_expr def_seg )
  * BadPoint -- handle bad break point command
  */
 
-OVL_EXTERN brkp *BadPoint( memory_expr def_seg )
+static brkp *BadPoint( memory_expr def_seg )
 {
     /* unused parameters */ (void)def_seg;
 
@@ -888,7 +889,7 @@ OVL_EXTERN brkp *BadPoint( memory_expr def_seg )
  * ImageBreak -- break on image loaded
  */
 
-OVL_EXTERN brkp *ImageBreak( memory_expr def_seg )
+static brkp *ImageBreak( memory_expr def_seg )
 {
     const char  *start;
     size_t      len;
@@ -968,7 +969,7 @@ static brkp *BPNotNull( brkp *bp )
     return( bp );
 }
 
-OVL_EXTERN void ResPoint( brkp *bp, bool res )
+static void ResPoint( brkp *bp, bool res )
 {
     bp->status.b.resume = res;
     RecordBreakEvent( bp, res ? B_RESUME : B_UNRESUME );
@@ -1003,7 +1004,7 @@ static brkp *Ac_DeacPoint( memory_expr def_seg,
  * ActivatePoint -- activate specified break point
  */
 
-OVL_EXTERN brkp *ActivatePoint( memory_expr def_seg )
+static brkp *ActivatePoint( memory_expr def_seg )
 {
     return( Ac_DeacPoint( def_seg, true, ActPoint ) );
 }
@@ -1013,17 +1014,17 @@ OVL_EXTERN brkp *ActivatePoint( memory_expr def_seg )
  * DeactivatePoint -- deactivate specified break point
  */
 
-OVL_EXTERN brkp *DeactivatePoint( memory_expr def_seg )
+static brkp *DeactivatePoint( memory_expr def_seg )
 {
     return( Ac_DeacPoint( def_seg, false, ActPoint ) );
 }
 
-OVL_EXTERN brkp *ResumePoint( memory_expr def_seg )
+static brkp *ResumePoint( memory_expr def_seg )
 {
     return( Ac_DeacPoint( def_seg, true, ResPoint ) );
 }
 
-OVL_EXTERN brkp *UnResumePoint( memory_expr def_seg )
+static brkp *UnResumePoint( memory_expr def_seg )
 {
     return( Ac_DeacPoint( def_seg, false, ResPoint ) );
 }
@@ -1033,7 +1034,7 @@ OVL_EXTERN brkp *UnResumePoint( memory_expr def_seg )
  * ClearPoint -- clear specified break point
  */
 
-OVL_EXTERN brkp *ClearPoint( memory_expr def_seg )
+static brkp *ClearPoint( memory_expr def_seg )
 {
     address addr;
     if( CurrToken == T_MUL ) {
@@ -1281,7 +1282,7 @@ void ToggleBreak( address addr )
  * TogglePoint -- toggle specified break point
  */
 
-OVL_EXTERN brkp *TogglePoint( memory_expr def_seg )
+static brkp *TogglePoint( memory_expr def_seg )
 {
     brkp        *bp;
     address     addr;
@@ -1394,7 +1395,7 @@ int GetBPResume( brkp *bp )
     return( bp->status.b.resume );
 }
 
-OVL_EXTERN brkp *SetPoint( memory_expr def_seg, mad_type_handle mth )
+static brkp *SetPoint( memory_expr def_seg, mad_type_handle mth )
 {
     brkp            *bp;
     const char      *start;
@@ -1596,7 +1597,7 @@ typedef struct tmp_break_struct
     const char      *comment;
 } tmp_break_struct;
 
-OVL_EXTERN void BreakOnAddress( void *_s )
+static void BreakOnAddress( void *_s )
 /****************************************/
 {
     tmp_break_struct *s = _s;
@@ -1679,7 +1680,7 @@ static  bool    HaveHitTmpBP( brkp *bp )
 
 
 
-OVL_EXTERN      void    TestExpression( void *_bp )
+static      void    TestExpression( void *_bp )
 {
     brkp        *bp = _bp;
     const char  *old;
@@ -1928,7 +1929,7 @@ typedef struct cue_first {
     bool        found;
 } cue_first;
 
-OVL_EXTERN walk_result brk_FindCue( cue_handle *cueh, void *_d )
+static walk_result brk_FindCue( cue_handle *cueh, void *_d )
 {
     cue_first          *d = _d;
     HDLAssign( cue, d->cueh, cueh );

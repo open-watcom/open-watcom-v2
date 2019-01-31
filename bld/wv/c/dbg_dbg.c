@@ -117,7 +117,7 @@ struct lookup_reg {
     const mad_reg_info  *ri;
 };
 
-OVL_EXTERN walk_result FindReg( const mad_reg_info *ri, int has_sublist, void *d )
+static walk_result FindReg( const mad_reg_info *ri, int has_sublist, void *d )
 {
     struct lookup_reg   *ld = d;
 

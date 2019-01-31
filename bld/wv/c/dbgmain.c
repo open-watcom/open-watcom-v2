@@ -86,12 +86,11 @@ extern void             RestoreHandlers( void );
 
 extern int              ScanSavePtr;
 
-OVL_EXTERN void         ProcNil( void );
-
-
 #define pick( a, b, c ) extern void b( void );
 #include "_dbgcmd.h"
 #undef pick
+
+static void         ProcNil( void );
 
 static const char CmdNameTab[] = {
     #define pick( a, b, c ) c
@@ -166,7 +165,7 @@ void DebugInit( void )
  * ProcNil -- process NIL command
  */
 
-OVL_EXTERN void ProcNil( void )
+static void ProcNil( void )
 {
     if( ScanLen() == 0 )
         Scan();
@@ -274,7 +273,7 @@ void ProcACmd( void )
 }
 
 
-OVL_EXTERN void Profile( void )
+static void Profile( void )
 {
     if( InvokeFile != NULL ) {
         ProfileInvoke( InvokeFile );

@@ -50,7 +50,7 @@ static void (__interrupt *_old24)();
 static void (__interrupt *_old28)();
 static void (__interrupt *orig28)();
 
-OVL_EXTERN void __interrupt Interrupt10( union REGS r )
+static void __interrupt Interrupt10( union REGS r )
 {
     if( r.w.ax == 0x1103 ) {
         ActFontTbls = r.h.bl;
@@ -60,7 +60,7 @@ OVL_EXTERN void __interrupt Interrupt10( union REGS r )
 
 static volatile bool Pending;
 
-OVL_EXTERN void __interrupt Interrupt1b_23( void )
+static void __interrupt Interrupt1b_23( void )
 {
     Pending = true;
 }
@@ -77,7 +77,7 @@ bool TBreak( void ) {
 
 static char Fail;
 
-OVL_EXTERN void __interrupt Interrupt24( union REGS r )
+static void __interrupt Interrupt24( union REGS r )
 {
     r.h.al = Fail;
 }

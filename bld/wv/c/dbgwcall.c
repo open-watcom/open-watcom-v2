@@ -71,12 +71,12 @@ static gui_menu_struct CallMenu[] = {
     #include "menucall.h"
 };
 
-OVL_EXTERN wnd_row CallNumRows( a_window wnd )
+static wnd_row CallNumRows( a_window wnd )
 {
     return( WndCall( wnd )->tb.curr->total_depth );
 }
 
-OVL_EXTERN void     CallMenuItem( a_window wnd, gui_ctl_id id, wnd_row row, wnd_piece piece )
+static void     CallMenuItem( a_window wnd, gui_ctl_id id, wnd_row row, wnd_piece piece )
 {
     call_chain  *chain;
     call_window *call = WndCall( wnd );
@@ -112,7 +112,7 @@ OVL_EXTERN void     CallMenuItem( a_window wnd, gui_ctl_id id, wnd_row row, wnd_
     }
 }
 
-OVL_EXTERN  bool    CallGetLine( a_window wnd, wnd_row row, wnd_piece piece, wnd_line_piece *line )
+static  bool    CallGetLine( a_window wnd, wnd_row row, wnd_piece piece, wnd_line_piece *line )
 {
     call_chain  *chain;
     call_window *call = WndCall( wnd );
@@ -185,7 +185,7 @@ static void CallScrollPos( a_window wnd )
 }
 
 
-OVL_EXTERN void     CallRefresh( a_window wnd )
+static void     CallRefresh( a_window wnd )
 {
 
     if( ( UpdateFlags & ~UP_STACKPOS_CHANGE ) & CallInfo.flags ) {
@@ -204,7 +204,7 @@ static void CallClose( a_window wnd )
 }
 
 
-OVL_EXTERN bool CallWndEventProc( a_window wnd, gui_event gui_ev, void *parm )
+static bool CallWndEventProc( a_window wnd, gui_event gui_ev, void *parm )
 {
     call_window *call = WndCall( wnd );
 

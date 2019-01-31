@@ -62,7 +62,7 @@ void FingClose( void )
 }
 
 
-OVL_EXTERN wnd_row FingNumRows( a_window wnd )
+static wnd_row FingNumRows( a_window wnd )
 {
     /* unused parameters */ (void)wnd;
 
@@ -70,7 +70,7 @@ OVL_EXTERN wnd_row FingNumRows( a_window wnd )
 }
 
 
-OVL_EXTERN  bool    FingGetLine( a_window wnd, wnd_row row, wnd_piece piece, wnd_line_piece *line )
+static  bool    FingGetLine( a_window wnd, wnd_row row, wnd_piece piece, wnd_line_piece *line )
 {
     if( piece != 0 )
         return( false );
@@ -99,7 +99,7 @@ OVL_EXTERN  bool    FingGetLine( a_window wnd, wnd_row row, wnd_piece piece, wnd
     return( true );
 }
 
-OVL_EXTERN bool FingWndEventProc( a_window wnd, gui_event gui_ev, void *parm )
+static bool FingWndEventProc( a_window wnd, gui_event gui_ev, void *parm )
 {
     gui_colour_set      *colours;
 

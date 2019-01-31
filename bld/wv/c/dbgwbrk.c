@@ -84,7 +84,7 @@ static brkp     *BrkGetBP( int row )
     return( bp );
 }
 
-OVL_EXTERN void     BrkMenuItem( a_window wnd, gui_ctl_id id, wnd_row row, wnd_piece piece )
+static void     BrkMenuItem( a_window wnd, gui_ctl_id id, wnd_row row, wnd_piece piece )
 {
     brkp        *bp;
 
@@ -137,7 +137,7 @@ OVL_EXTERN void     BrkMenuItem( a_window wnd, gui_ctl_id id, wnd_row row, wnd_p
     }
 }
 
-OVL_EXTERN void     BrkModify( a_window wnd, wnd_row row, wnd_piece piece )
+static void     BrkModify( a_window wnd, wnd_row row, wnd_piece piece )
 {
     brkp        *bp;
 
@@ -167,7 +167,7 @@ OVL_EXTERN void     BrkModify( a_window wnd, wnd_row row, wnd_piece piece )
     }
 }
 
-OVL_EXTERN wnd_row BrkNumRows( a_window wnd )
+static wnd_row BrkNumRows( a_window wnd )
 {
     brkp        *bp;
     wnd_row     count;
@@ -181,7 +181,7 @@ OVL_EXTERN wnd_row BrkNumRows( a_window wnd )
     return( count );
 }
 
-OVL_EXTERN  bool    BrkGetLine( a_window wnd, wnd_row row, wnd_piece piece, wnd_line_piece *line )
+static  bool    BrkGetLine( a_window wnd, wnd_row row, wnd_piece piece, wnd_line_piece *line )
 {
     brkp                *bp;
     break_window        *wndbreak;
@@ -267,7 +267,7 @@ static void     BrkInit( a_window wnd )
 }
 
 
-OVL_EXTERN void     BrkRefresh( a_window wnd )
+static void     BrkRefresh( a_window wnd )
 {
     brkp        *bp;
     int         row;
@@ -302,7 +302,7 @@ OVL_EXTERN void     BrkRefresh( a_window wnd )
 }
 
 
-OVL_EXTERN bool BrkWndEventProc( a_window wnd, gui_event gui_ev, void *parm )
+static bool BrkWndEventProc( a_window wnd, gui_event gui_ev, void *parm )
 {
     break_window        *wndbreak = WndBreak( wnd );
 

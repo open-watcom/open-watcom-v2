@@ -226,7 +226,7 @@ static bool RegResize( a_window wnd )
 }
 
 
-OVL_EXTERN wnd_row RegNumRows( a_window wnd )
+static wnd_row RegNumRows( a_window wnd )
 {
     return( WndReg( wnd )->rows );
 }
@@ -245,7 +245,7 @@ static int GetRegIdx( reg_window *reg, wnd_row row, wnd_piece piece )
 }
 
 
-OVL_EXTERN const char *RegValueName( const void *data_handle, int item )
+static const char *RegValueName( const void *data_handle, int item )
 {
     mad_modify_list const *possible = (mad_modify_list const *)data_handle + item;
     size_t          buff_len;
@@ -260,7 +260,7 @@ OVL_EXTERN const char *RegValueName( const void *data_handle, int item )
     return( TxtBuff );
 }
 
-OVL_EXTERN  void    RegModify( a_window wnd, wnd_row row, wnd_piece piece )
+static  void    RegModify( a_window wnd, wnd_row row, wnd_piece piece )
 {
     int                     i;
     item_mach               value;
@@ -315,7 +315,7 @@ OVL_EXTERN  void    RegModify( a_window wnd, wnd_row row, wnd_piece piece )
     NewCurrRadix( old_radix );
 }
 
-OVL_EXTERN void     RegMenuItem( a_window wnd, gui_ctl_id id, wnd_row row, wnd_piece piece )
+static void     RegMenuItem( a_window wnd, gui_ctl_id id, wnd_row row, wnd_piece piece )
 {
     reg_window              *reg = WndReg( wnd );
     int                     i;
@@ -357,7 +357,7 @@ OVL_EXTERN void     RegMenuItem( a_window wnd, gui_ctl_id id, wnd_row row, wnd_p
 }
 
 
-OVL_EXTERN  bool    RegGetLine( a_window wnd, wnd_row row, wnd_piece piece, wnd_line_piece *line )
+static  bool    RegGetLine( a_window wnd, wnd_row row, wnd_piece piece, wnd_line_piece *line )
 {
     int                 column;
     int                 i;
@@ -407,7 +407,7 @@ OVL_EXTERN  bool    RegGetLine( a_window wnd, wnd_row row, wnd_piece piece, wnd_
 }
 
 
-OVL_EXTERN void     RegRefresh( a_window wnd )
+static void     RegRefresh( a_window wnd )
 {
     int                 row,rows;
     int                 reg_num;
@@ -441,7 +441,7 @@ OVL_EXTERN void     RegRefresh( a_window wnd )
     }
 }
 
-OVL_EXTERN bool RegWndEventProc( a_window wnd, gui_event gui_ev, void *parm )
+static bool RegWndEventProc( a_window wnd, gui_event gui_ev, void *parm )
 {
     reg_window          *reg = WndReg( wnd );
 

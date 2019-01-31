@@ -322,7 +322,7 @@ void ToItem( stack_entry *entry, item_mach *tmp )
 }
 
 
-OVL_EXTERN bool ConvU8( stack_entry *entry, conv_class from )
+static bool ConvU8( stack_entry *entry, conv_class from )
 {
     unsigned_64  tmp;
 
@@ -370,7 +370,7 @@ OVL_EXTERN bool ConvU8( stack_entry *entry, conv_class from )
     return( true );
 }
 
-OVL_EXTERN bool ConvU1( stack_entry *entry, conv_class from )
+static bool ConvU1( stack_entry *entry, conv_class from )
 {
     if( !ConvU8( entry, from ) )
         return( false );
@@ -378,7 +378,7 @@ OVL_EXTERN bool ConvU1( stack_entry *entry, conv_class from )
     return( true );
 }
 
-OVL_EXTERN bool ConvU2( stack_entry *entry, conv_class from )
+static bool ConvU2( stack_entry *entry, conv_class from )
 {
     if( !ConvU8( entry, from ) )
         return( false );
@@ -386,7 +386,7 @@ OVL_EXTERN bool ConvU2( stack_entry *entry, conv_class from )
     return( true );
 }
 
-OVL_EXTERN bool ConvU4( stack_entry *entry, conv_class from )
+static bool ConvU4( stack_entry *entry, conv_class from )
 {
     if( !ConvU8( entry, from ) )
         return( false );
@@ -394,7 +394,7 @@ OVL_EXTERN bool ConvU4( stack_entry *entry, conv_class from )
     return( true );
 }
 
-OVL_EXTERN bool ConvI1( stack_entry *entry, conv_class from )
+static bool ConvI1( stack_entry *entry, conv_class from )
 {
     if( !ConvU8( entry, from ) )
         return( false );
@@ -402,7 +402,7 @@ OVL_EXTERN bool ConvI1( stack_entry *entry, conv_class from )
     return( true );
 }
 
-OVL_EXTERN bool ConvI2( stack_entry *entry, conv_class from )
+static bool ConvI2( stack_entry *entry, conv_class from )
 {
     if( !ConvU8( entry, from ) )
         return( false );
@@ -410,7 +410,7 @@ OVL_EXTERN bool ConvI2( stack_entry *entry, conv_class from )
     return( true );
 }
 
-OVL_EXTERN bool ConvI4( stack_entry *entry, conv_class from )
+static bool ConvI4( stack_entry *entry, conv_class from )
 {
     if( !ConvU8( entry, from ) )
         return( false );
@@ -418,12 +418,12 @@ OVL_EXTERN bool ConvI4( stack_entry *entry, conv_class from )
     return( true );
 }
 
-OVL_EXTERN bool ConvI8( stack_entry *entry, conv_class from )
+static bool ConvI8( stack_entry *entry, conv_class from )
 {
     return( ConvU8( entry, from ) );
 }
 
-OVL_EXTERN bool ConvR10( stack_entry *entry, conv_class from )
+static bool ConvR10( stack_entry *entry, conv_class from )
 {
     xreal       tmp;
 
@@ -459,7 +459,7 @@ OVL_EXTERN bool ConvR10( stack_entry *entry, conv_class from )
     return( true );
 }
 
-OVL_EXTERN bool ConvR4( stack_entry *entry, conv_class from )
+static bool ConvR4( stack_entry *entry, conv_class from )
 {
     if( !ConvR10( entry, from ) )
         return( false );
@@ -467,7 +467,7 @@ OVL_EXTERN bool ConvR4( stack_entry *entry, conv_class from )
     return( true );
 }
 
-OVL_EXTERN bool ConvR8( stack_entry *entry, conv_class from )
+static bool ConvR8( stack_entry *entry, conv_class from )
 {
     if( !ConvR10( entry, from ) )
         return( false );
@@ -475,7 +475,7 @@ OVL_EXTERN bool ConvR8( stack_entry *entry, conv_class from )
     return( true );
 }
 
-OVL_EXTERN bool ConvC20( stack_entry *entry, conv_class from )
+static bool ConvC20( stack_entry *entry, conv_class from )
 {
     xcomplex tmp;
 
@@ -512,7 +512,7 @@ OVL_EXTERN bool ConvC20( stack_entry *entry, conv_class from )
     return( true );
 }
 
-OVL_EXTERN bool ConvC8( stack_entry *entry, conv_class from )
+static bool ConvC8( stack_entry *entry, conv_class from )
 {
     if( !ConvC20( entry, from ) )
         return( false );
@@ -521,7 +521,7 @@ OVL_EXTERN bool ConvC8( stack_entry *entry, conv_class from )
     return( true );
 }
 
-OVL_EXTERN bool ConvC16( stack_entry *entry, conv_class from )
+static bool ConvC16( stack_entry *entry, conv_class from )
 {
     if( !ConvC20( entry, from ) )
         return( false );
@@ -530,7 +530,7 @@ OVL_EXTERN bool ConvC16( stack_entry *entry, conv_class from )
     return( true );
 }
 
-OVL_EXTERN bool ConvNP4( stack_entry *entry, conv_class from )
+static bool ConvNP4( stack_entry *entry, conv_class from )
 {
     addr48_off  tmp;
 
@@ -567,7 +567,7 @@ OVL_EXTERN bool ConvNP4( stack_entry *entry, conv_class from )
     return( true );
 }
 
-OVL_EXTERN bool ConvNP2( stack_entry *entry, conv_class from )
+static bool ConvNP2( stack_entry *entry, conv_class from )
 {
     if( !ConvNP4( entry, from ) )
         return( false );
@@ -575,7 +575,7 @@ OVL_EXTERN bool ConvNP2( stack_entry *entry, conv_class from )
     return( true );
 }
 
-OVL_EXTERN bool ConvFP6( stack_entry *entry, conv_class from )
+static bool ConvFP6( stack_entry *entry, conv_class from )
 {
     address     tmp;
 
@@ -616,7 +616,7 @@ OVL_EXTERN bool ConvFP6( stack_entry *entry, conv_class from )
     return( true );
 }
 
-OVL_EXTERN bool ConvFP4( stack_entry *entry, conv_class from )
+static bool ConvFP4( stack_entry *entry, conv_class from )
 {
     if( !ConvFP6( entry, from ) )
         return( false );
@@ -624,7 +624,7 @@ OVL_EXTERN bool ConvFP4( stack_entry *entry, conv_class from )
     return( true );
 }
 
-OVL_EXTERN bool ConvSTR( stack_entry *entry, conv_class from )
+static bool ConvSTR( stack_entry *entry, conv_class from )
 {
     /* unused parameters */ (void)entry; (void)from;
 
@@ -632,7 +632,7 @@ OVL_EXTERN bool ConvSTR( stack_entry *entry, conv_class from )
     return( true );
 }
 
-OVL_EXTERN bool ConvERR( stack_entry *entry, conv_class from )
+static bool ConvERR( stack_entry *entry, conv_class from )
 {
     /* unused parameters */ (void)entry; (void)from;
 

@@ -106,7 +106,7 @@ static gui_menu_struct MacMenu[] = {
     #include "menumac.h"
 };
 
-OVL_EXTERN const char *WndGetName( const void *data_handle, int item )
+static const char *WndGetName( const void *data_handle, int item )
 {
     return( *((const char ***)data_handle)[item] );
 }
@@ -169,7 +169,7 @@ static void MacChangeMac( a_window wnd, wnd_macro *mac, gui_key key, wnd_class_w
     WndNewCurrent( wnd, i, PIECE_KEY );
 }
 
-OVL_EXTERN void     MacModify( a_window wnd, wnd_row row, wnd_piece piece );
+static void     MacModify( a_window wnd, wnd_row row, wnd_piece piece );
 
 static bool MacModWhat( a_window wnd, wnd_row row )
 {
@@ -244,7 +244,7 @@ bool MacKeyHit( a_window wnd, gui_key key )
     }
 }
 
-OVL_EXTERN bool MacPopupClicked( a_window wnd, gui_ctl_id id )
+static bool MacPopupClicked( a_window wnd, gui_ctl_id id )
 {
     char                *p;
     gui_ctl_id          main_id;
@@ -357,7 +357,7 @@ static void MacModCmd( a_window wnd, wnd_row row )
 }
 
 
-OVL_EXTERN void     MacModify( a_window wnd, wnd_row row, wnd_piece piece )
+static void     MacModify( a_window wnd, wnd_row row, wnd_piece piece )
 {
     wnd_macro   *mac;
 
@@ -387,7 +387,7 @@ OVL_EXTERN void     MacModify( a_window wnd, wnd_row row, wnd_piece piece )
 #define TDDBG "tdkeys.dbg"
 #define WDDBG "wdkeys.dbg"
 
-OVL_EXTERN void     MacMenuItem( a_window wnd, gui_ctl_id id, wnd_row row, wnd_piece piece )
+static void     MacMenuItem( a_window wnd, gui_ctl_id id, wnd_row row, wnd_piece piece )
 {
     wnd_macro           *mac;
     mac_window          *wndmac;
@@ -442,7 +442,7 @@ OVL_EXTERN void     MacMenuItem( a_window wnd, gui_ctl_id id, wnd_row row, wnd_p
     }
 }
 
-OVL_EXTERN wnd_row MacNumRows( a_window wnd )
+static wnd_row MacNumRows( a_window wnd )
 {
     wnd_macro   *mac;
     wnd_row     count;
@@ -456,7 +456,7 @@ OVL_EXTERN wnd_row MacNumRows( a_window wnd )
     return( count );
 }
 
-OVL_EXTERN  bool MacGetLine( a_window wnd, wnd_row row, wnd_piece piece, wnd_line_piece *line )
+static  bool MacGetLine( a_window wnd, wnd_row row, wnd_piece piece, wnd_line_piece *line )
 {
     wnd_macro           *mac;
     cmd_list            *cmds;
@@ -551,7 +551,7 @@ OVL_EXTERN  bool MacGetLine( a_window wnd, wnd_row row, wnd_piece piece, wnd_lin
 }
 
 
-OVL_EXTERN int MacCompare( void *pa, void *pb )
+static int MacCompare( void *pa, void *pb )
 {
     if( (*(wnd_macro **)pa)->key < (*(wnd_macro **)pb)->key )
         return( -1 );
@@ -598,14 +598,14 @@ static void MacReSize( a_window wnd )
     Indents[PIECE_TEXT] = Indents[PIECE_WHAT] + max_size[PIECE_WHAT] + 2 * WndAvgCharX( wnd );
 }
 
-OVL_EXTERN void     MacRefresh( a_window wnd )
+static void     MacRefresh( a_window wnd )
 {
     MacReSize( wnd );
     WndNoSelect( wnd );
     WndSetRepaint( wnd );
 }
 
-OVL_EXTERN bool MacWndEventProc( a_window wnd, gui_event gui_ev, void *parm )
+static bool MacWndEventProc( a_window wnd, gui_event gui_ev, void *parm )
 {
     mac_window  *wndmac = WndMac( wnd );
 

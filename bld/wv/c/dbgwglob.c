@@ -153,13 +153,13 @@ void    GlobRefresh( a_window wnd )
 }
 
 
-OVL_EXTERN void GlobSetOptions( a_window wnd )
+static void GlobSetOptions( a_window wnd )
 {
     WndGlob( wnd )->d2_only = _IsOn( SW_GLOB_D2_ONLY );
     GlobInit( wnd );
 }
 
-OVL_EXTERN bool GlobWndEventProc( a_window wnd, gui_event gui_ev, void *parm )
+static bool GlobWndEventProc( a_window wnd, gui_event gui_ev, void *parm )
 {
     glob_window *glob = WndGlob( wnd );
 

@@ -139,7 +139,7 @@ static void OpenLog( obj_attrs oattrs )
  * LogAppend -- start logging to file
  */
 
-OVL_EXTERN void LogAppend( void )
+static void LogAppend( void )
 {
     OpenLog( OP_WRITE | OP_CREATE | OP_APPEND );
 }
@@ -174,7 +174,7 @@ void LogEnd( void )
  * BadLog -- handle bad log command
  */
 
-OVL_EXTERN void BadLog( void )
+static void BadLog( void )
 {
     Error( ERR_LOC, LIT_ENG( ERR_BAD_OPTION ), GetCmdName( CMD_LOG ) );
 }

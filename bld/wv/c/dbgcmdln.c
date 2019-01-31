@@ -511,7 +511,7 @@ static void ProcOptList( int pass )
     }
 }
 
-OVL_EXTERN char *GetEnvArg( int i )
+static char *GetEnvArg( int i )
 {
     /* unused parameters */ (void)i;
 

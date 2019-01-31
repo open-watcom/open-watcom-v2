@@ -43,7 +43,7 @@
 #include "dbgass.h"
 
 
-OVL_EXTERN walk_result MemRefDisp( address a, mad_type_handle mth,
+static walk_result MemRefDisp( address a, mad_type_handle mth,
                         mad_memref_kind mk, void *d )
 {
     char                *p;
