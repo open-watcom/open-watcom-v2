@@ -48,6 +48,7 @@ long TotalBytes=0;
 unsigned DumpCnt = 0;
 unsigned FileCnt = 0,TotalFiles=0;
 unsigned DirCnt = 0, TotalDirs = 0;
-unsigned long StartTime, TotalTime;
+unsigned long TotalTime;
+clock_t StartTime;
 timedate after_t_d = { 0,0,0,0,0,0 };
 timedate before_t_d = { 1000,1000,1000,1000,1000,1000 };

@@ -33,6 +33,7 @@
 #define _CP_INCLUDED
 
 #include <sys/stat.h>
+#include <time.h>
 
 #ifdef _M_I86
 #define __FAR   __far
@@ -95,7 +96,8 @@ typedef struct file_list {
 } file_list;
 
 /* global data */
-extern unsigned long StartTime, TotalTime;
+extern unsigned long TotalTime;
+extern clock_t   StartTime;
 extern int ErrorNumber;
 extern unsigned DumpCnt,FileCnt,TotalFiles,DirCnt,TotalDirs;
 extern long TotalBytes;

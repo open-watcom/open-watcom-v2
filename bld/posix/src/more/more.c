@@ -92,7 +92,7 @@ char GetRawChar( void );
         "xor  ah,ah"    \
         "int 16h"       \
     __parm      [] \
-    __value     [__al]
+    __value     [__al] \
     __modify    [__ah]
 #endif
 
