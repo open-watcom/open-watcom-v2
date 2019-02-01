@@ -423,17 +423,22 @@ typedef struct gui_toolbar_struct {
     const char              *tip;
 } gui_toolbar_struct;
 
-typedef struct gui_menu_root {
+typedef struct gui_toolbar_items {
+    int                     num_items;
+    gui_toolbar_struct      *toolbar;
+} gui_toolbar_items;
+
+typedef struct gui_menu_items {
     int                     num_items;
     gui_menu_struct         *menu;
-} gui_menu_root;
+} gui_menu_items;
 
 typedef struct gui_menu_struct {
     const char              *label;
     gui_ctl_id              id;
     gui_menu_styles         style;
     const char              *hinttext;
-    gui_menu_root           child;
+    gui_menu_items          child;
 } gui_menu_struct;
 
 typedef struct gui_colour_set {
@@ -441,10 +446,10 @@ typedef struct gui_colour_set {
     gui_colour              back;
 } gui_colour_set;
 
-typedef struct gui_colour_root {
+typedef struct gui_colour_items {
     int                     num_items;
-    gui_colour_set          *colours;
-} gui_colour_root;
+    gui_colour_set          *colour;
+} gui_colour_items;
 
 typedef unsigned long       gui_rgb;
 
@@ -485,8 +490,8 @@ typedef struct gui_create_info {
     gui_scroll_styles   scroll;
     gui_create_styles   style;
     gui_window          *parent;
-    gui_menu_root       menu;
-    gui_colour_root     colours;
+    gui_menu_items      menus;
+    gui_colour_items    colours;
     GUICALLBACK         *gui_call_back;
     void                *extra;
     gui_resource        *icon;

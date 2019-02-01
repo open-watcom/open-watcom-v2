@@ -372,10 +372,10 @@ void WWindow::makeWindow( const char *title, WStyle style, WExStyle exstyle )
     create_info.scroll = _WStyleToScrollStyle( style );
     create_info.style = (gui_create_styles)( _WStyleToCreateStyle( style ) | exstyle | GUI_INIT_INVISIBLE | GUI_VISIBLE );
     create_info.parent = hparent;
-    create_info.menu.num_items = 0;
-    create_info.menu.menu = NULL;
+    create_info.menus.num_items = 0;
+    create_info.menus.menu = NULL;
     create_info.colours.num_items = 0;
-    create_info.colours.colours = NULL;
+    create_info.colours.colour = NULL;
     create_info.gui_call_back = WinGUIEventProc;
     create_info.extra = this;
     create_info.icon = NULL;

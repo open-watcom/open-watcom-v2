@@ -47,6 +47,11 @@ typedef struct gui_hint_struct {
     const char  *hinttext;
 } gui_hint_struct;
 
+typedef struct gui_hint_items {
+    int                 num_items;
+    gui_hint_struct     *hint;
+} gui_hint_items;
+
 typedef struct hintinfo {
     int                 menu_num_items;
     gui_hint_struct     *menu;

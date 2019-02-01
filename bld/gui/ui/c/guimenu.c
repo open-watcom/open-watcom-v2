@@ -558,7 +558,7 @@ bool GUICreateMenus( gui_window *wnd,  gui_create_info *dlg_info )
         GUIFreeGUIMenuStruct( num_items, menu );
         return( ret );
     } else {
-        return( CreateMenus( wnd, dlg_info->menu.num_items, dlg_info->menu.menu, dlg_info->parent, dlg_info->style ) );
+        return( CreateMenus( wnd, dlg_info->menus.num_items, dlg_info->menus.menu, dlg_info->parent, dlg_info->style ) );
     }
 }
 

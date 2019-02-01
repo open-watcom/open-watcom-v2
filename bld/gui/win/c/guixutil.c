@@ -155,7 +155,7 @@ bool GUISetupStruct( gui_window *wnd, gui_create_info *dlg_info,
             wnd->style = dlg_info->style;
             wnd->scroll = dlg_info->scroll;
         }
-        if( !GUISetColours( wnd, dlg_info->colours.num_items, dlg_info->colours.colours ) ) {
+        if( !GUISetColours( wnd, dlg_info->colours.num_items, dlg_info->colours.colour ) ) {
             return( false );
         }
     }
@@ -164,7 +164,7 @@ bool GUISetupStruct( gui_window *wnd, gui_create_info *dlg_info,
         if( dlg_info->resource_menu != NULL ) {
             *menu =  _wpi_loadmenu( GUIResHInst, dlg_info->resource_menu );
         } else {
-            return( GUICreateMenus( wnd, dlg_info->menu.num_items, dlg_info->menu.menu, menu ) );
+            return( GUICreateMenus( wnd, dlg_info->menus.num_items, dlg_info->menus.menu, menu ) );
         }
     }
 

@@ -248,7 +248,7 @@ void InitMDI( gui_window *wnd, gui_create_info *dlg_info )
     gui_window  *root;
 
     root = GUIGetRootWindow();
-    AddMenu( wnd, dlg_info->parent, dlg_info->menu.num_items, dlg_info->menu.menu );
+    AddMenu( wnd, dlg_info->parent, dlg_info->menus.num_items, dlg_info->menus.menu );
     if( GUIXInitMDI( wnd ) ) {
         if( dlg_info->parent && ( GUIGetParentWindow( dlg_info->parent ) != NULL ) ) {
             return;
