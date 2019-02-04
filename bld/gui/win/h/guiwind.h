@@ -156,7 +156,7 @@ struct gui_window {
     HWND                status;
     int                 num_items;
     gui_menu_struct     *menu;
-    hintinfo            hint;
+    hints_info          hintsinfo;
     int                 hrange;
     int                 vrange;
     int                 hpos;

@@ -34,63 +34,63 @@
 #include <string.h>
 #include "guistr.h"
 
-static bool SetStructNum( hintinfo *hint, hint_type type,
+static bool SetStructNum( hints_info *hintsinfo, hint_type type,
                           gui_hint_struct *hint_struct, int hint_num_items )
 {
     switch( type ) {
     case MENU_HINT :
-        hint->menu = hint_struct;
-        hint->menu_num_items = hint_num_items;
+        hintsinfo->menu = hint_struct;
+        hintsinfo->menu_num_items = hint_num_items;
         return( true );
     case TOOL_HINT :
-        hint->tool = hint_struct;
-        hint->tool_num_items = hint_num_items;
+        hintsinfo->tool = hint_struct;
+        hintsinfo->tool_num_items = hint_num_items;
         return( true );
     case FLOAT_HINT :
-        hint->floating = hint_struct;
-        hint->floating_num_items = hint_num_items;
+        hintsinfo->floating = hint_struct;
+        hintsinfo->floating_num_items = hint_num_items;
         return( true );
     case GUI_HINT :
-        hint->gui = hint_struct;
-        hint->gui_num_items = hint_num_items;
+        hintsinfo->gui = hint_struct;
+        hintsinfo->gui_num_items = hint_num_items;
         return( true );
     default :
         return( false );
     }
 }
 
-static bool GetStructNum( hintinfo *hint, hint_type type,
+static bool GetStructNum( hints_info *hintsinfo, hint_type type,
                           gui_hint_struct **hint_struct, int *hint_num_items )
 {
     switch( type ) {
     case MENU_HINT :
-        *hint_struct = hint->menu;
-        *hint_num_items = hint->menu_num_items;
+        *hint_struct = hintsinfo->menu;
+        *hint_num_items = hintsinfo->menu_num_items;
         return( true );
     case TOOL_HINT :
-        *hint_struct = hint->tool;
-        *hint_num_items = hint->tool_num_items;
+        *hint_struct = hintsinfo->tool;
+        *hint_num_items = hintsinfo->tool_num_items;
         return( true );
     case FLOAT_HINT :
-        *hint_struct = hint->floating;
-        *hint_num_items = hint->floating_num_items;
+        *hint_struct = hintsinfo->floating;
+        *hint_num_items = hintsinfo->floating_num_items;
         return( true );
     case GUI_HINT :
-        *hint_struct = hint->gui;
-        *hint_num_items = hint->gui_num_items;
+        *hint_struct = hintsinfo->gui;
+        *hint_num_items = hintsinfo->gui_num_items;
         return( true );
     default :
         return( false );
     }
 }
 
-static bool HintTextSet( hintinfo *hint, gui_ctl_id id, hint_type type, const char *text )
+static bool HintTextSet( hints_info *hintsinfo, gui_ctl_id id, hint_type type, const char *text )
 {
     int                 item;
     gui_hint_struct     *hint_struct;
     int                 hint_num_items;
 
-    if( GetStructNum( hint, type, &hint_struct, &hint_num_items ) ) {
+    if( GetStructNum( hintsinfo, type, &hint_struct, &hint_num_items ) ) {
         for( item = 0; item < hint_num_items; item++ ) {
             if( hint_struct[item].id == id ) {
                 hint_struct[item].hinttext = text;
@@ -101,13 +101,13 @@ static bool HintTextSet( hintinfo *hint, gui_ctl_id id, hint_type type, const ch
     return( false );
 }
 
-static const char *HintTextGet( hintinfo *hint, gui_ctl_id id, hint_type type )
+static const char *HintTextGet( hints_info *hintsinfo, gui_ctl_id id, hint_type type )
 {
     int                 item;
     gui_hint_struct     *hint_struct;
     int                 hint_num_items;
 
-    if( GetStructNum( hint, type, &hint_struct, &hint_num_items ) ) {
+    if( GetStructNum( hintsinfo, type, &hint_struct, &hint_num_items ) ) {
         for( item = 0; item < hint_num_items; item++ ) {
             if( hint_struct[item].id == id ) {
                 return( hint_struct[item].hinttext );
@@ -122,7 +122,7 @@ bool GUIHasHintType( gui_window *wnd, hint_type type )
     gui_hint_struct     *hint_struct;
     int                 hint_num_items;
 
-    if( GetStructNum( &wnd->hint, type, &hint_struct, &hint_num_items ) ) {
+    if( GetStructNum( &wnd->hintsinfo, type, &hint_struct, &hint_num_items ) ) {
         return( hint_num_items > 0 );
     }
     return( false );
@@ -137,7 +137,7 @@ bool GUIDisplayHintText( gui_window *wnd_with_status, gui_window *wnd,
         if( (style & GUI_STYLE_MENU_IGNORE) || (style & GUI_STYLE_MENU_SEPARATOR) ) {
             GUIClearStatusText( wnd_with_status );
         } else {
-            text = HintTextGet( &wnd->hint, id, type );
+            text = HintTextGet( &wnd->hintsinfo, id, type );
             if( text != NULL ) {
                 GUIDrawStatusText( wnd_with_status, text );
                 return( true );
@@ -152,12 +152,12 @@ bool GUIDisplayHintText( gui_window *wnd_with_status, gui_window *wnd,
 
 bool GUISetHintText( gui_window *wnd, gui_ctl_id id, const char *text )
 {
-    return( HintTextSet( &wnd->hint, id, MENU_HINT, text ) );
+    return( HintTextSet( &wnd->hintsinfo, id, MENU_HINT, text ) );
 }
 
 bool GUIHasHintText( gui_window *wnd, gui_ctl_id id, hint_type type )
 {
-    return( HintTextGet( &wnd->hint, id, type ) != NULL );
+    return( HintTextGet( &wnd->hintsinfo, id, type ) != NULL );
 }
 
 bool GUIDeleteHintText( gui_window *wnd, gui_ctl_id id )
@@ -166,14 +166,14 @@ bool GUIDeleteHintText( gui_window *wnd, gui_ctl_id id )
     gui_hint_struct     *new_menu;
 
     if( GUIHasHintType( wnd, MENU_HINT ) ) {
-        for( item = 0; item < wnd->hint.menu_num_items; item++ ) {
-            if( wnd->hint.menu[item].id == id ) {
-                new_menu = (gui_hint_struct *)GUIMemAlloc( sizeof( gui_hint_struct ) * ( wnd->hint.menu_num_items - 1 ) );
-                memcpy( new_menu, wnd->hint.menu, sizeof( gui_hint_struct ) * item );
-                memcpy( &new_menu[item], &wnd->hint.menu[item + 1], sizeof( gui_hint_struct ) * ( wnd->hint.menu_num_items - item - 1 ) );
-                GUIMemFree( wnd->hint.menu );
-                wnd->hint.menu = new_menu;
-                wnd->hint.menu_num_items--;
+        for( item = 0; item < wnd->hintsinfo.menu_num_items; item++ ) {
+            if( wnd->hintsinfo.menu[item].id == id ) {
+                new_menu = (gui_hint_struct *)GUIMemAlloc( sizeof( gui_hint_struct ) * ( wnd->hintsinfo.menu_num_items - 1 ) );
+                memcpy( new_menu, wnd->hintsinfo.menu, sizeof( gui_hint_struct ) * item );
+                memcpy( &new_menu[item], &wnd->hintsinfo.menu[item + 1], sizeof( gui_hint_struct ) * ( wnd->hintsinfo.menu_num_items - item - 1 ) );
+                GUIMemFree( wnd->hintsinfo.menu );
+                wnd->hintsinfo.menu = new_menu;
+                wnd->hintsinfo.menu_num_items--;
                 return( true );
             }
         }
@@ -215,14 +215,14 @@ bool GUIAppendHintText( gui_window *wnd, gui_menu_struct *menu, hint_type type )
     gui_hint_struct     *new_hint;
     int                 hint_num_items;
 
-    if( GetStructNum( &wnd->hint, type, &hint, &hint_num_items ) ) {
+    if( GetStructNum( &wnd->hintsinfo, type, &hint, &hint_num_items ) ) {
         new_num = CountMenus( menu );
         new_hint = (gui_hint_struct *)GUIMemRealloc( hint, ( hint_num_items + new_num ) * sizeof( gui_hint_struct ) );
         if( new_hint == NULL ) {
             return( false );
         }
         InsertHint( menu, new_hint, &hint_num_items );
-        SetStructNum( &wnd->hint, type, new_hint, hint_num_items );
+        SetStructNum( &wnd->hintsinfo, type, new_hint, hint_num_items );
         return( true );
     }
     return( false );
@@ -238,7 +238,7 @@ void GUIInitHint( gui_window *wnd, int num_items, gui_menu_struct *menu, hint_ty
     if( type == TOOL_HINT ) {
         return;
     }
-    if( GetStructNum( &wnd->hint, type, &hint_struct, &hint_num_items ) ) {
+    if( GetStructNum( &wnd->hintsinfo, type, &hint_struct, &hint_num_items ) ) {
         if( hint_struct != NULL ) {
             GUIMemFree( hint_struct );
         }
@@ -255,7 +255,7 @@ void GUIInitHint( gui_window *wnd, int num_items, gui_menu_struct *menu, hint_ty
                 InsertHint( &menu[item], hint_struct, &index );
             }
         }
-        SetStructNum( &wnd->hint, type, hint_struct, hint_num_items );
+        SetStructNum( &wnd->hintsinfo, type, hint_struct, hint_num_items );
     }
 }
 
@@ -267,11 +267,11 @@ void GUIFiniHint( gui_window *wnd, hint_type type )
     if( type == TOOL_HINT ) {
         return;
     }
-    if( GetStructNum( &wnd->hint, type, &hint_struct, &hint_num_items ) ) {
+    if( GetStructNum( &wnd->hintsinfo, type, &hint_struct, &hint_num_items ) ) {
         if( hint_struct != NULL ) {
             GUIMemFree( hint_struct );
         }
-        SetStructNum( &wnd->hint, type, NULL, 0 );
+        SetStructNum( &wnd->hintsinfo, type, NULL, 0 );
     }
 }
 
@@ -281,7 +281,7 @@ void GUIInitToolbarHint( gui_window *wnd, int num_items, gui_toolbar_struct *too
     int                 hint_num_items;
     gui_hint_struct     *hint_struct;
 
-    if( GetStructNum( &wnd->hint, TOOL_HINT, &hint_struct, &hint_num_items ) ) {
+    if( GetStructNum( &wnd->hintsinfo, TOOL_HINT, &hint_struct, &hint_num_items ) ) {
         if( hint_struct != NULL ) {
             GUIMemFree( hint_struct );
         }
@@ -296,7 +296,7 @@ void GUIInitToolbarHint( gui_window *wnd, int num_items, gui_toolbar_struct *too
                 toolinfo++;
             }
         }
-        SetStructNum( &wnd->hint, TOOL_HINT, hint_struct, hint_num_items );
+        SetStructNum( &wnd->hintsinfo, TOOL_HINT, hint_struct, hint_num_items );
     }
 }
 

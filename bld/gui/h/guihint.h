@@ -52,7 +52,7 @@ typedef struct gui_hint_items {
     gui_hint_struct     *hint;
 } gui_hint_items;
 
-typedef struct hintinfo {
+typedef struct hints_info {
     int                 menu_num_items;
     gui_hint_struct     *menu;
     int                 floating_num_items;
@@ -61,7 +61,7 @@ typedef struct hintinfo {
     gui_hint_struct     *tool;
     int                 gui_num_items;
     gui_hint_struct     *gui;
-} hintinfo;
+} hints_info;
 
 extern bool GUIDisplayHintText( gui_window *wnd_with_status, gui_window *wnd,
                                 gui_ctl_id id, hint_type type, gui_menu_styles style );

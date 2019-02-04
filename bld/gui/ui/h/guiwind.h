@@ -139,7 +139,7 @@ struct gui_window {
     int                 min_pos;        // unused
     toolbarinfo         *tbinfo;        // pointer to toolbar, if exists
     statusinfo          *status;        // pointer to status window, if exists
-    hintinfo            hint;           // hint text
+    hints_info          hintsinfo;      // hint text
     char                background;     // character to use to draw background
     char                *icon_name;     // string to draw on icon
 };
