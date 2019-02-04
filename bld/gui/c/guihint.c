@@ -259,22 +259,6 @@ void GUIInitHint( gui_window *wnd, int num_items, gui_menu_struct *menu, hint_ty
     }
 }
 
-void GUIFiniHint( gui_window *wnd, hint_type type )
-{
-    gui_hint_struct     *hint_struct;
-    int                 hint_num_items;
-
-    if( type == TOOL_HINT ) {
-        return;
-    }
-    if( GetStructNum( &wnd->hintsinfo, type, &hint_struct, &hint_num_items ) ) {
-        if( hint_struct != NULL ) {
-            GUIMemFree( hint_struct );
-        }
-        SetStructNum( &wnd->hintsinfo, type, NULL, 0 );
-    }
-}
-
 void GUIInitToolbarHint( gui_window *wnd, int num_items, gui_toolbar_struct *toolinfo )
 {
     int                 item;
@@ -297,6 +281,22 @@ void GUIInitToolbarHint( gui_window *wnd, int num_items, gui_toolbar_struct *too
             }
         }
         SetStructNum( &wnd->hintsinfo, TOOL_HINT, hint_struct, hint_num_items );
+    }
+}
+
+void GUIFiniHint( gui_window *wnd, hint_type type )
+{
+    gui_hint_struct     *hint_struct;
+    int                 hint_num_items;
+
+    if( type == TOOL_HINT ) {
+        return;
+    }
+    if( GetStructNum( &wnd->hintsinfo, type, &hint_struct, &hint_num_items ) ) {
+        if( hint_struct != NULL ) {
+            GUIMemFree( hint_struct );
+        }
+        SetStructNum( &wnd->hintsinfo, type, NULL, 0 );
     }
 }
 
