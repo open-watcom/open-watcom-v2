@@ -65,6 +65,7 @@ typedef struct hints_info {
 
 extern bool GUIDisplayHintText( gui_window *wnd_with_status, gui_window *wnd,
                                 gui_ctl_id id, hint_type type, gui_menu_styles style );
+extern bool GUISetHintText( gui_window *wnd, gui_ctl_id id, hint_type type, const char *text );
 extern bool GUIHasHintText( gui_window *wnd, gui_ctl_id id, hint_type type );
 extern bool GUIHasHintType( gui_window *wnd, hint_type type );
 extern void GUIInitHint( gui_window *wnd, int num_items, gui_menu_struct *menu, hint_type type );

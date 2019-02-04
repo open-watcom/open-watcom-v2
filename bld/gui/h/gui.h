@@ -772,7 +772,7 @@ extern bool GUITrackFloatingPopup( gui_window *wnd, gui_point *location,
 extern bool GUIEnableMenuItem( gui_window *wnd, gui_ctl_id id, bool enabled, bool floating );
 extern bool GUICheckMenuItem( gui_window *wnd, gui_ctl_id id, bool check, bool floating );
 extern bool GUISetMenuText( gui_window *wnd, gui_ctl_id id, const char *text, bool floating );
-extern bool GUISetHintText( gui_window *wnd, gui_ctl_id id, const char *hinttext );
+extern bool GUISetMenuHintText( gui_window *wnd, gui_ctl_id id, const char *hinttext );
 
 extern bool GUIEnableMDIMenus( bool enable );
 extern bool GUIEnableMenus( gui_window *wnd, bool enable ); // NYI

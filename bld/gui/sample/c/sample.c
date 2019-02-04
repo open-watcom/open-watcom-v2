@@ -310,10 +310,10 @@ static void SetFixedFloat( gui_window *gui )
     if( GUIHasToolBar( gui ) ) {
         if( GUIToolBarFixed( gui ) ) {
             GUISetMenuText( gui, MENU_CHANGE_TOOLBAR, "&Float Toolbar", false );
-            GUISetHintText( gui, MENU_CHANGE_TOOLBAR, FloatHelp );
+            GUISetMenuHintText( gui, MENU_CHANGE_TOOLBAR, FloatHelp );
         } else {
             GUISetMenuText( gui, MENU_CHANGE_TOOLBAR, "&Fix Toolbar", false );
-            GUISetHintText( gui, MENU_CHANGE_TOOLBAR, FixHelp );
+            GUISetMenuHintText( gui, MENU_CHANGE_TOOLBAR, FixHelp );
         }
     } else {
         GUIEnableMenuItem( gui, MENU_CHANGE_TOOLBAR, false, false );

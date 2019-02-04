@@ -117,6 +117,29 @@ static const char *HintTextGet( hints_info *hintsinfo, gui_ctl_id id, hint_type 
     return( NULL );
 }
 
+static bool HintTextDelete( hints_info *hintsinfo, gui_ctl_id id, hint_type type )
+{
+    int                 item;
+    gui_hint_struct     *hint_struct;
+    int                 hint_num_items;
+    gui_hint_struct     *new_hint_struct;
+
+    if( GetStructNum( hintsinfo, type, &hint_struct, &hint_num_items ) ) {
+        for( item = 0; item < hint_num_items; item++ ) {
+            if( hint_struct[item].id == id ) {
+                hint_num_items--;
+                new_hint_struct = (gui_hint_struct *)GUIMemAlloc( sizeof( gui_hint_struct ) * hint_num_items );
+                memcpy( new_hint_struct, hint_struct, sizeof( gui_hint_struct ) * item );
+                memcpy( &new_hint_struct[item], &hint_struct[item + 1], sizeof( gui_hint_struct ) * ( hint_num_items - item ) );
+                GUIMemFree( hint_struct );
+                SetStructNum( hintsinfo, type, new_hint_struct, hint_num_items );
+                return( true );
+            }
+        }
+    }
+    return( false );
+}
+
 bool GUIHasHintType( gui_window *wnd, hint_type type )
 {
     gui_hint_struct     *hint_struct;
@@ -150,9 +173,14 @@ bool GUIDisplayHintText( gui_window *wnd_with_status, gui_window *wnd,
     return( false );
 }
 
-bool GUISetHintText( gui_window *wnd, gui_ctl_id id, const char *text )
+bool GUISetMenuHintText( gui_window *wnd, gui_ctl_id id, const char *text )
 {
     return( HintTextSet( &wnd->hintsinfo, id, MENU_HINT, text ) );
+}
+
+bool GUISetHintText( gui_window *wnd, gui_ctl_id id, hint_type type, const char *text )
+{
+    return( HintTextSet( &wnd->hintsinfo, id, type, text ) );
 }
 
 bool GUIHasHintText( gui_window *wnd, gui_ctl_id id, hint_type type )
@@ -162,23 +190,7 @@ bool GUIHasHintText( gui_window *wnd, gui_ctl_id id, hint_type type )
 
 bool GUIDeleteHintText( gui_window *wnd, gui_ctl_id id )
 {
-    int                 item;
-    gui_hint_struct     *new_menu;
-
-    if( GUIHasHintType( wnd, MENU_HINT ) ) {
-        for( item = 0; item < wnd->hintsinfo.menu_num_items; item++ ) {
-            if( wnd->hintsinfo.menu[item].id == id ) {
-                new_menu = (gui_hint_struct *)GUIMemAlloc( sizeof( gui_hint_struct ) * ( wnd->hintsinfo.menu_num_items - 1 ) );
-                memcpy( new_menu, wnd->hintsinfo.menu, sizeof( gui_hint_struct ) * item );
-                memcpy( &new_menu[item], &wnd->hintsinfo.menu[item + 1], sizeof( gui_hint_struct ) * ( wnd->hintsinfo.menu_num_items - item - 1 ) );
-                GUIMemFree( wnd->hintsinfo.menu );
-                wnd->hintsinfo.menu = new_menu;
-                wnd->hintsinfo.menu_num_items--;
-                return( true );
-            }
-        }
-    }
-    return( false );
+    return( HintTextDelete( &wnd->hintsinfo, id, MENU_HINT ) );
 }
 
 static int CountMenus( gui_menu_struct *menu )
