@@ -38,9 +38,10 @@ typedef enum hint_type {
     FLOAT_HINT,
     TOOL_HINT,
     GUI_HINT,
-    FIRST_HINT  = MENU_HINT,
-    LAST_HINT   = GUI_HINT
 } hint_type;
+
+#define FIRST_HINT  MENU_HINT
+#define LAST_HINT   GUI_HINT
 
 typedef struct gui_hint_struct {
     gui_ctl_id  id;
@@ -68,7 +69,7 @@ extern void GUIInitHint( gui_window *wnd, int num_items, gui_menu_struct *menu, 
 extern void GUIFiniHint( gui_window *wnd, hint_type type );
 extern void GUIInitToolbarHint( gui_window *wnd, int num_items, gui_toolbar_struct *toolinfo );
 extern bool GUIAppendHintText( gui_window *wnd, gui_menu_struct *menu, hint_type type );
-extern bool GUIDeleteHintText( gui_window *wnd, gui_ctl_id id );
+extern bool GUIDeleteHintText( gui_window *wnd, gui_ctl_id id, hint_type type );
 extern void GUIFreeHint( gui_window *wnd );
 
 #endif

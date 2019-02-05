@@ -623,7 +623,7 @@ static bool DeleteMenu( gui_window *wnd, gui_ctl_id id, UIMENUITEM **pmenuitems,
     *pmenuitems = newmenuitems;
     GUIMemFree( menuitems[position].name );
     GUIMemFree( menuitems );
-    GUIDeleteHintText( wnd, id );
+    GUIDeleteHintText( wnd, id, MENU_HINT );
     GUIMDIDeleteMenuItem( id );
     return( true );
 }

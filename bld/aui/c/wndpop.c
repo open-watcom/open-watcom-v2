@@ -516,6 +516,6 @@ void WndCheckMainMenu( gui_ctl_id id, bool check )
 // keep commented out until GUI supports this properly
 void WndSetHintText( a_window wnd, gui_ctl_id id, char *text )
 {
-    GUISetHintText( wnd->gui, id, text );
+    GUISetMenuHintText( wnd->gui, id, text );
 }
 #endif

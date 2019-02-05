@@ -406,7 +406,7 @@ bool GUIDeleteMenuItem( gui_window *wnd, gui_ctl_id id, bool floating )
         _wpi_deletemenu( hmenu, id, FALSE );
     }
 
-    GUIDeleteHintText( wnd, id );
+    GUIDeleteHintText( wnd, id, MENU_HINT );
     DeletePopup( wnd, id );
     GUIMDIDeleteMenuItem( id );
 

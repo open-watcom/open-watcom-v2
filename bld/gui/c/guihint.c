@@ -34,7 +34,7 @@
 #include <string.h>
 #include "guistr.h"
 
-static bool SetStructNum( hints_info *hintsinfo, hint_type type, gui_hint_items *hints )
+static bool SetStructNum( hints_info *hintsinfo, hint_type type, const gui_hint_items *hints )
 {
     switch( type ) {
     case MENU_HINT :
@@ -175,9 +175,9 @@ bool GUIHasHintText( gui_window *wnd, gui_ctl_id id, hint_type type )
     return( HintTextGet( &wnd->hintsinfo, id, type ) != NULL );
 }
 
-bool GUIDeleteHintText( gui_window *wnd, gui_ctl_id id )
+bool GUIDeleteHintText( gui_window *wnd, gui_ctl_id id, hint_type type )
 {
-    return( HintTextDelete( &wnd->hintsinfo, id, MENU_HINT ) );
+    return( HintTextDelete( &wnd->hintsinfo, id, type ) );
 }
 
 static int CountMenus( gui_menu_struct *menu )
