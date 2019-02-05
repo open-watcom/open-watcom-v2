@@ -53,14 +53,10 @@ typedef struct gui_hint_items {
 } gui_hint_items;
 
 typedef struct hints_info {
-    int                 menu_num_items;
-    gui_hint_struct     *menu;
-    int                 floating_num_items;
-    gui_hint_struct     *floating;
-    int                 tool_num_items;
-    gui_hint_struct     *tool;
-    int                 gui_num_items;
-    gui_hint_struct     *gui;
+    gui_hint_items      menu;
+    gui_hint_items      floating;
+    gui_hint_items      tool;
+    gui_hint_items      gui;
 } hints_info;
 
 extern bool GUIDisplayHintText( gui_window *wnd_with_status, gui_window *wnd,
