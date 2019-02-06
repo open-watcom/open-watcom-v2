@@ -672,7 +672,7 @@ void MDITile( bool is_horz )
 #if defined( __WINDOWS_386__ )
     hindir = GetIndirectFunctionHandle( TileChildWindows, INDIR_WORD, INDIR_WORD, INDIR_ENDLIST );
     InvokeIndirectFunction( hindir, mdiInfo.container, tile_how );
-    free( hindir );
+    FreeIndirectFunctionHandle( hindir );
 #else
     TileChildWindows( mdiInfo.container, tile_how );
 #endif
@@ -716,7 +716,7 @@ void MDICascade( void )
 #if defined( __WINDOWS_386__ )
     hindir = GetIndirectFunctionHandle( CascadeChildWindows, INDIR_WORD, INDIR_WORD, INDIR_ENDLIST );
     InvokeIndirectFunction( hindir, mdiInfo.container, 0 );
-    free( hindir );
+    FreeIndirectFunctionHandle( hindir );
 #else
     CascadeChildWindows( mdiInfo.container, 0 );
 #endif

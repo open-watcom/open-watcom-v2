@@ -260,6 +260,7 @@ bool GUIGetRGBFromUser( gui_rgb init_rgb, gui_rgb *new_rgb )
     if( guiColoursAlias != 0 ) {
         FreeAlias16( guiColoursAlias );
     }
+    FreeIndirectFunctionHandle( hIndir );
   #else
     ret = ((BOOL(WINAPI *)(LPCHOOSECOLOR))func)( &choose ) != 0;
   #endif

@@ -108,6 +108,7 @@ static bool GUIChooseFont( HFONT font, LOGFONT *lf, HWND hwnd )
     if( lfAlias != 0 ) {
         FreeAlias16( lfAlias );
     }
+    FreeIndirectFunctionHandle( hIndir );
   #else
     ret = ((BOOL(WINAPI *)(LPCHOOSEFONT))func)( &cf ) != 0;
   #endif
