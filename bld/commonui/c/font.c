@@ -120,7 +120,6 @@ static void getCourierFont( HANDLE inst )
     FONTENUMPROC    fontenumproc;
     HDC             hdc;
 
-    inst = inst;        /* shut up the compiler for NT */
     hdc = GetDC( HWND_DESKTOP );
     fontenumproc = MakeProcInstance_FONTENUM( EnumFontsEnumFunc, inst );
     EnumFontFamilies( hdc, NULL, fontenumproc, 0 );

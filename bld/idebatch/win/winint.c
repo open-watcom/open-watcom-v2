@@ -96,8 +96,6 @@ static void getMonoFont( HDC hdc, HANDLE inst )
     LOGFONT         logfont;
     OLDFONTENUMPROC oldfontenumproc;
 
-    inst = inst;
-
     oldfontenumproc = MakeProcInstance_OLDFONTENUM( EnumFunc, inst );
     EnumFonts( hdc, NULL, oldfontenumproc, NULL);
     FreeProcInstance_OLDFONTENUM( oldfontenumproc );
