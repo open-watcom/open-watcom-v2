@@ -253,7 +253,7 @@ void WDestroyRibbon( WMenuEditInfo *einfo )
 
 static void wRibbonHelpHook( HWND hwnd, ctl_id id, bool pressed )
 {
-    _wtouch( hwnd );
+    /* unused parameters */ (void)hwnd;
     if( !pressed ) {
         WSetStatusText( NULL, NULL, "" );
     } else {
@@ -266,9 +266,7 @@ static bool wRibbonHook( HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam )
     bool            ret;
     WMenuEditInfo   *einfo;
 
-    _wtouch( hwnd );
-    _wtouch( wParam );
-    _wtouch( lParam );
+    /* unused parameters */ (void)hwnd; (void)wParam; (void)lParam;
 
     einfo = WGetCurrentEditInfo();
 

@@ -1019,7 +1019,7 @@ static bool WRShowSelectedSymbol( HWND hDlg, WRHashTable *table )
     bool        standard_entry;
     bool        ok;
 
-    _wtouch( table );
+    /* unused parameters */ (void)table;
 
     standard_entry = FALSE;
     lbox = GetDlgItem( hDlg, IDB_SYM_LISTBOX );

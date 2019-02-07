@@ -50,6 +50,4 @@
 #define UINT16STRLEN 5
 #define UINT8STRLEN  3
 
-#define _wtouch( unused_var )   (unused_var = unused_var)
-
 #endif

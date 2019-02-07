@@ -97,7 +97,8 @@ int WRAPI WRMemValidate( void *ptr )
 #ifdef TRMEM
     return( _trmem_validate( ptr, _trmem_guess_who(), TRMemHandle ) );
 #else
-    _wtouch( ptr );
+    /* unused parameters */ (void)ptr;
+
     return( TRUE );
 #endif
 }
@@ -107,8 +108,8 @@ int WRAPI WRMemChkRange( void *start, size_t len )
 #ifdef TRMEM
     return( _trmem_chk_range( start, len, _trmem_guess_who(), TRMemHandle ) );
 #else
-    _wtouch( start );
-    _wtouch( len );
+    /* unused parameters */ (void)start; (void)len;
+
     return( TRUE );
 #endif
 }
@@ -130,16 +131,6 @@ unsigned WRAPI WRMemPrtList( void )
 }
 
 /* functions to replace those in mem.c in commonui */
-#if 0
-void MemStart( void )
-{
-#ifdef _M_I86
-    __win_alloc_flags = GMEM_MOVEABLE | GMEM_SHARE;
-    __win_realloc_flags = GMEM_MOVEABLE | GMEM_SHARE;
-#endif
-}
-#endif
-
 void *MemAlloc( size_t size )
 {
     void *p;

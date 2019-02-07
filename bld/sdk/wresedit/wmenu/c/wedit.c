@@ -85,8 +85,6 @@ int appHeight = -1;
 
 void WInitEditWindows( HINSTANCE inst )
 {
-    _wtouch( inst );
-
     WEditWinColor = GetSysColor( COLOR_BTNFACE );
     WEditWinBrush = CreateSolidBrush( WEditWinColor );
     WMenuEditWinProc = MakeProcInstance_DLG( WMenuEditDlgProc, inst );
@@ -1097,8 +1095,7 @@ WINEXPORT INT_PTR CALLBACK WTestDlgProc( HWND hDlg, UINT message, WPARAM wParam,
 {
     RECT        r;
 
-    _wtouch( wParam );
-    _wtouch( lParam );
+    /* unused parameters */ (void)wParam; (void)lParam;
 
     if( message == WM_INITDIALOG ) {
         GetWindowRect( hDlg, &r );

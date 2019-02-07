@@ -187,7 +187,7 @@ bool WEditSymbols( HWND parent, WRHashTable **symbol_table,
     HELP_CALLBACK       hcb;
     bool                ret;
 
-    _wtouch( inst );
+    /* unused parameters */ (void)inst;
 
     if( symbol_table == NULL || *symbol_table == NULL ) {
         return( FALSE );

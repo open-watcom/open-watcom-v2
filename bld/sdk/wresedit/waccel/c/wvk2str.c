@@ -250,7 +250,7 @@ char *WGetVKText( uint_16 key, uint_16 flags )
 {
     char *text;
 
-    _wtouch( flags );
+    /* unused parameters */ (void)flags;
 
     text = WGetVKeyFromID( key );
     if( text == NULL ) {

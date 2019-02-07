@@ -58,7 +58,8 @@
 bool WCtl3DInit( HINSTANCE inst )
 {
 #if !defined( W_USE_3D )
-    _wtouch( inst );
+    /* unused parameters */ (void)inst;
+
     return( TRUE );
 #else
     bool ok;
@@ -75,7 +76,7 @@ bool WCtl3DInit( HINSTANCE inst )
 void WCtl3DFini( HINSTANCE inst )
 {
 #if !defined( W_USE_3D )
-    _wtouch( inst );
+    /* unused parameters */ (void)inst;
 #else
     WRCtl3dUnregister( inst );
 #endif
@@ -91,8 +92,7 @@ void WCtl3dColorChange( void )
 void WCtl3dSubclassDlg( HWND win, WORD w )
 {
 #if !defined( W_USE_3D )
-    _wtouch( win );
-    _wtouch( w );
+    /* unused parameters */ (void)win; (void)w;
 #else
     WRCtl3dSubclassDlg( win, w );
 #endif
@@ -101,7 +101,7 @@ void WCtl3dSubclassDlg( HWND win, WORD w )
 void WCtl3dSubclassDlgAll( HWND win )
 {
 #if !defined( W_USE_3D )
-    _wtouch( win );
+    /* unused parameters */ (void)win;
 #else
     WRCtl3dSubclassDlgAll( win );
 #endif
@@ -110,9 +110,7 @@ void WCtl3dSubclassDlgAll( HWND win )
 HBRUSH WCtl3dCtlColorEx( UINT msg, WPARAM wp, LPARAM lp )
 {
 #if !defined( W_USE_3D )
-    _wtouch( msg );
-    _wtouch( wp );
-    _wtouch( lp );
+    /* unused parameters */ (void)msg; (void)wp; (void)lp;
 
     return( (HBRUSH)NULL );
 #else

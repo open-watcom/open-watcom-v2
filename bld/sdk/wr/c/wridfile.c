@@ -314,6 +314,7 @@ WRFileType IDIconOrCursor( FILE *fp )
 
 WRFileType WRIdentifyWinRCFile( const char *file_name )
 {
-    _wtouch( file_name );
+    /* unused parameters */ (void)file_name;
+
     return( WR_WIN_RC );
 }
