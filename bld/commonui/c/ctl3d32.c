@@ -116,20 +116,34 @@ BOOL Init32Ctl3d( void )
 void Fini32Ctl3d( void )
 {
     if( dllCtl3d >= (HANDLE)32 ) {
-        if( DLL32Ctl3dSubclassDlg != NULL )
+        if( DLL32Ctl3dSubclassDlg != NULL ) {
             FreeIndirectFunctionHandle( DLL32Ctl3dSubclassDlg );
-        if( DLL32Ctl3dAutoSubclass != NULL )
+            DLL32Ctl3dSubclassDlg = NULL;
+        }
+        if( DLL32Ctl3dAutoSubclass != NULL ) {
             FreeIndirectFunctionHandle( DLL32Ctl3dAutoSubclass );
-        if( DLL32Ctl3dRegister != NULL )
+            DLL32Ctl3dAutoSubclass = NULL;
+        }
+        if( DLL32Ctl3dRegister != NULL ) {
             FreeIndirectFunctionHandle( DLL32Ctl3dRegister );
-        if( DLL32Ctl3dUnregister != NULL )
+            DLL32Ctl3dRegister = NULL;
+        }
+        if( DLL32Ctl3dUnregister != NULL ) {
             FreeIndirectFunctionHandle( DLL32Ctl3dUnregister );
-        if( DLL32Ctl3dColorChange != NULL )
+            DLL32Ctl3dUnregister = NULL;
+        }
+        if( DLL32Ctl3dColorChange != NULL ) {
             FreeIndirectFunctionHandle( DLL32Ctl3dColorChange );
-        if( DLL32Ctl3dSubclassCtl != NULL )
+            DLL32Ctl3dColorChange = NULL;
+        }
+        if( DLL32Ctl3dSubclassCtl != NULL ) {
             FreeIndirectFunctionHandle( DLL32Ctl3dSubclassCtl );
-        if( DLL32Ctl3dCtlColorEx != NULL )
+            DLL32Ctl3dSubclassCtl = NULL;
+        }
+        if( DLL32Ctl3dCtlColorEx != NULL ) {
             FreeIndirectFunctionHandle( DLL32Ctl3dCtlColorEx );
+            DLL32Ctl3dCtlColorEx = NULL;
+        }
 
         FreeLibrary( dllCtl3d );
         dllCtl3d = (HANDLE)0;
