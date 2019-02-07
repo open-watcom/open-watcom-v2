@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -32,6 +33,7 @@
 #include <string.h>
 #include "bool.h"
 #include "wzoom.h"
+#include "zmmem.h"
 #ifndef NOUSE3D
 #include "ctl3dcvr.h"
 #endif
@@ -75,7 +77,6 @@ static BOOL EveryInstInit( int cmdshow )
     CvrCtl3dRegister( Instance );
     CvrCtl3dAutoSubclass( Instance );
 #endif
-    MemStart();
     LoadConfig();
 
     AppName = AllocRCString( STR_APP_NAME );
@@ -103,22 +104,32 @@ static BOOL EveryInstInit( int cmdshow )
 int PASCAL WinMain( HINSTANCE currinst, HINSTANCE previnst, LPSTR cmdline, int cmdshow)
 {
     MSG         msg;
+    int         rc;
 
-    cmdline = cmdline;
+    /* unused parameters */ (void)cmdline;
+
+    rc = 1;
+    MemOpen();
     Instance = currinst;
     SetInstance( Instance );
     if( previnst == NULL ) {
-        if( !FirstInstInit() ) return( 0 );
+        if( !FirstInstInit() ) {
+            rc = 0;
+        }
     }
-    if( !EveryInstInit( cmdshow ) ) return( 0 );
-
-    while( GetMessage( &msg, NULL, 0, 0 ) ) {
-        TranslateMessage(&msg);
-        DispatchMessage(&msg);
+    if( rc && !EveryInstInit( cmdshow ) ) {
+        rc = 0;
     }
+    if( rc ) {
+        while( GetMessage( &msg, NULL, 0, 0 ) ) {
+            TranslateMessage(&msg);
+            DispatchMessage(&msg);
+        }
 #ifndef NOUSE3D
-    CvrCtl3dUnregister( Instance );
-    CvrCtl3DFini( Instance );
+        CvrCtl3dUnregister( Instance );
+        CvrCtl3DFini( Instance );
 #endif
-    return( 1 );
+    }
+    MemClose();
+    return( rc );
 }

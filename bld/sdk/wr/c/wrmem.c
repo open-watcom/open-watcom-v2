@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -24,7 +25,7 @@
 *
 *  ========================================================================
 *
-* Description:  WR memory manipulation routines
+* Description:  WR memory manipulation routines with optional tracking.
 *
 ****************************************************************************/
 
@@ -37,13 +38,14 @@
 #include "trmem.h"
 
 static _trmem_hdl   TRMemHandle;
+static FILE         *TRMemFile = NULL;
 
 static void TRPrintLine( void *parm, const char *buff, size_t len )
 /*****************************************************************/
 {
     /* unused parameters */ (void)parm; (void)len;
 
-    fputs( buff, stderr );
+    fputs( buff, TRMemFile );
 }
 
 #endif
@@ -51,17 +53,28 @@ static void TRPrintLine( void *parm, const char *buff, size_t len )
 void WRMemOpen( void )
 {
 #ifdef TRMEM
+    char    *tmpdir;
+
     TRMemHandle = _trmem_open( malloc, free, realloc, NULL,
                                NULL, TRPrintLine,
                                _TRMEM_ALLOC_SIZE_0 | _TRMEM_REALLOC_SIZE_0 |
                                _TRMEM_OUT_OF_MEMORY | _TRMEM_CLOSE_CHECK_FREE );
+    tmpdir = getenv( "TRMEMFILE" );
+    if( tmpdir != NULL ) {
+        TRMemFile = fopen( tmpdir, "w" );
+    }
 #endif
 }
 
 void WRMemClose( void )
 {
 #ifdef TRMEM
+    _trmem_prt_list( TRMemHandle );
     _trmem_close( TRMemHandle );
+    if( TRMemFile != NULL ) {
+        fclose( TRMemFile );
+        TRMemFile = NULL;
+    }
 #endif
 }
 

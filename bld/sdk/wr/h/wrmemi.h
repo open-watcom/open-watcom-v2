@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -40,7 +41,6 @@ extern void WRMemOpen( void );
 extern void WRMemClose( void );
 
 /* functions to replace those in mem.c in commonui */
-extern void MemStart( void );
 extern void MemFree( void *ptr );
 extern void *MemAlloc( size_t size );
 extern void *MemRealloc( void *ptr, size_t size );

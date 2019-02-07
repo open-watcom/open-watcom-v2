@@ -30,10 +30,9 @@
 ****************************************************************************/
 
 
-#include <stdlib.h>
-#include <stdio.h>
-#include <string.h>
-#include "iemem.h"
+#include "wzoom.h"
+#include "cguimem.h"
+#include "zmmem.h"
 #ifdef TRMEM
     #include "trmem.h"
 #endif
@@ -60,7 +59,13 @@ void MemOpen( void )
 {
 #ifdef TRMEM
     char    *tmpdir;
+#endif
 
+#ifdef _M_I86
+    __win_alloc_flags = GMEM_MOVEABLE | GMEM_SHARE;
+    __win_realloc_flags = GMEM_MOVEABLE | GMEM_SHARE;
+#endif
+#ifdef TRMEM
     MemHandle = _trmem_open( malloc, free, realloc, NULL,
         NULL, MemPrintLine,
         _TRMEM_ALLOC_SIZE_0 | _TRMEM_REALLOC_SIZE_0 |
@@ -98,21 +103,6 @@ void *MemAlloc( size_t size )
 #endif
     return( ptr );
 }
-#if 0
-void * _wpi_malloc( size_t size )
-/*******************************/
-{
-    void        *ptr;
-
-#ifdef TRMEM
-    ptr = _trmem_alloc( size, _trmem_guess_who(), MemHandle );
-#else
-    ptr = malloc( size );
-    memset( ptr, 0, size );
-#endif
-    return( ptr );
-}
-#endif
 
 void *MemReAlloc( void *ptr, size_t size )
 /****************************************/
@@ -133,14 +123,3 @@ void MemFree( void *ptr )
     free( ptr );
 #endif
 }
-#if 0
-void _wpi_free( void *ptr )
-/*************************/
-{
-#ifdef TRMEM
-    _trmem_free( ptr, _trmem_guess_who(), MemHandle );
-#else
-    free( ptr );
-#endif
-}
-#endif

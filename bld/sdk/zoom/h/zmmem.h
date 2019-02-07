@@ -2,8 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
-*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
+* Copyright (c) 2019-2019 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -25,59 +24,10 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Memory allocator with optional tracking.
 *
 ****************************************************************************/
 
 
-#ifndef WRDLL_INCLUDED
-#define WRDLL_INCLUDED
-
-#ifdef WRDLL
-    #define WRDLLENTRY    __declspec(dllexport)
-#elif defined( __NT__ )
-    #define WRDLLENTRY    __declspec(dllimport)
-#else
-    #define WRDLLENTRY
-#endif
-
-#if defined( __OS2__ )
-    #define WRAPI   APIENTRY
-    #define WORD    USHORT
-    #define DWORD   ULONG
-#else
-    #define WRAPI   WINAPI
-#endif
-
-#if defined( __OS2__ )
-typedef void (APIENTRY *HELP_CALLBACK)(void);
-#else
-typedef void (WINAPI *HELP_CALLBACK)(void);
-#endif
-
-#include "wrinfo.h"
-#include "wrmain.h"
-#include "wridfile.h"
-#include "wrtmpfil.h"
-#include "wrmem.h"
-#include "wrdel.h"
-#include "wrstr.h"
-#include "wrclipbd.h"
-#include "wrclean.h"
-#include "wrdata.h"
-#include "wrfindt.h"
-#include "wrnamoor.h"
-#include "wrwresid.h"
-#include "wrhash.h"
-#include "wrbitmap.h"
-#include "wrdmsg.h"
-#include "wricon.h"
-#include "wrmemf.h"
-#include "wrrnames.h"
-#include "wrselft.h"
-#include "wrselimg.h"
-#include "wrutil.h"
-#include "wrctl3d.h"
-
-#endif
+extern void     MemOpen( void );
+extern void     MemClose( void );

@@ -74,7 +74,7 @@ extra_proj_obj_win = globals.obj notify.obj winproc.obj debug.obj dump.obj &
 
 proj_obj =  listbox.obj drwatlog.obj stat.obj lognote.obj &
         drwatcom.obj sym.obj profile.obj fault.obj &
-        disasm.obj cguimem.obj &
+        disasm.obj drwatmem.obj &
         $(extra_proj_obj_$(host_os)) &
         dipcli.obj digcli.obj $(dip_objs)
 

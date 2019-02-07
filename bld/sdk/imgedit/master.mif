@@ -33,13 +33,13 @@ objs_common = &
         freehand.obj clip.obj drawproc.obj undo.obj colors.obj &
         iconinfo.obj fill.obj clrcntls.obj curclr.obj funcbar.obj &
         bkcolor.obj imgdata.obj getdata.obj chgsize.obj settings.obj &
-        trnsform.obj hinttext.obj wpi_mem.obj closeall.obj bits.obj &
+        trnsform.obj hinttext.obj iemem.obj closeall.obj bits.obj &
         errors.obj
 
 extras_win = wincreat.obj title.obj winutils.obj
 
-objs_os2 = pmcreate.obj pmutils.obj pmicon.obj cguimem.obj wbitmap.obj
-objs_win = icon.obj snap.obj modclrs.obj pickbmp.obj iebmpdat.obj iedde.obj iemem.obj iectl3d.obj $(extras_win)
+objs_os2 = pmcreate.obj pmutils.obj pmicon.obj wbitmap.obj
+objs_win = icon.obj snap.obj modclrs.obj pickbmp.obj iebmpdat.obj iedde.obj iectl3d.obj $(extras_win)
 
 !ifeq host_os os2
 objs = $(objs_common) $(objs_os2)

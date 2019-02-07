@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -31,6 +32,8 @@
 
 #include "wddespy.h"
 #include "jdlg.h"
+#include "ddemem.h"
+
 
 #define MAIN_CLASS      "WDDE_MAIN_CLASS"
 
@@ -81,7 +84,6 @@ static bool firstInstInit( void )
  */
 static bool everyInstInit( int cmdshow )
 {
-    MemStart();
     JDialogInit();
     ReadConfig();
 #ifndef NOUSE3D
@@ -124,34 +126,40 @@ static bool everyInstInit( int cmdshow )
 int PASCAL WinMain( HINSTANCE currinst, HINSTANCE previnst, LPSTR cmdline, int cmdshow )
 {
     MSG         msg;
+    int         rc;
 
-    cmdline = cmdline;
+    /* unused parameters */ (void)cmdline;
     Instance = currinst;
     SetInstance( Instance );
 
-    if( !InitGblStrings() ) {
+    rc = 1;
+    MemOpen();
+    if( rc && !InitGblStrings() ) {
         MessageBox( NULL, "Unable to find string resources", AppName, MB_OK );
-        return( 0 );
+        rc = 0;
     }
-    if( previnst == NULL ) {
+    if( rc && previnst == NULL ) {
         if( !firstInstInit() ) {
-            return( 0 );
+            rc = 0;
         }
     }
-    if( !everyInstInit( cmdshow ) ) {
-        return( 0 );
+    if( rc && !everyInstInit( cmdshow ) ) {
+        rc = 0;
     }
 
-    while( GetMessage( &msg, NULL, 0, 0 ) ) {
-        TranslateMessage( &msg );
-        DispatchMessage( &msg );
-    }
-    DdeUninitialize( DDEInstId );
-    JDialogFini();
+    if( rc ) {
+        while( GetMessage( &msg, NULL, 0, 0 ) ) {
+            TranslateMessage( &msg );
+            DispatchMessage( &msg );
+        }
+        DdeUninitialize( DDEInstId );
+        JDialogFini();
 #ifndef NOUSE3D
-    CvrCtl3dUnregister( Instance );
-    CvrCtl3DFini( Instance );
+        CvrCtl3dUnregister( Instance );
+        CvrCtl3DFini( Instance );
 #endif
-    return( 1 );
+    }
+    MemClose();
+    return( rc );
 
 } /* WinMain */

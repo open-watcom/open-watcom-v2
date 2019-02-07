@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -37,6 +38,8 @@
 #include "jdlg.h"
 #include "madrtn.h"
 #include "reglist.h"
+#include "drwatmem.h"
+
 
 static char     className[] = "drwatcom_nt";
 
@@ -89,6 +92,7 @@ int PASCAL WinMain( HINSTANCE currinst, HINSTANCE previnst, LPSTR cmdline, int c
     HANDLE              thisprocess;
     MemWndConfig        memwndcfg;
     COPYDATASTRUCT      data;
+    int                 rc;
 #ifndef CHICAGO
     STARTUPINFO         startup;
     PROCESS_INFORMATION procinfo;
@@ -131,9 +135,8 @@ int PASCAL WinMain( HINSTANCE currinst, HINSTANCE previnst, LPSTR cmdline, int c
     }
 #endif
 
-    cmdline = cmdline;
-    cmdshow = cmdshow;
-    previnst = previnst;
+    /* unused parameters */ (void)cmdline; (void)cmdshow; (void)previnst;
+
     Instance = currinst;
     thisprocess = GetCurrentProcess();
     SetPriorityClass( thisprocess, HIGH_PRIORITY_CLASS );
@@ -161,89 +164,95 @@ int PASCAL WinMain( HINSTANCE currinst, HINSTANCE previnst, LPSTR cmdline, int c
 
     thisthread = GetCurrentThread();
     SetThreadPriority( thisthread, THREAD_PRIORITY_HIGHEST );
-    MemStart();
+    rc = 1;
+    MemOpen();
     GetProfileInfo();
     InitRegList();
     if( !JDialogInit() ) {
-        return ( 0 );
+        rc = 0;
     }
-    if( !InitMADInfo() ) {
+    if( rc && !InitMADInfo() ) {
         JDialogFini();
-        return ( 0 );
+        rc = 0;
     }
 
-    if( !InitDip() ) {
+    if( rc && !InitDip() ) {
         FiniMADInfo();
         JDialogFini();
-        return ( 0 );
+        rc = 0;
     }
-    InitReg();
+    if( rc ) {
+        InitReg();
+    }
 
     /*
      * initialize
      */
 
-    if( !initClass() ) {
+    if( rc && !initClass() ) {
         FiniMADInfo();
         JDialogFini();
-        return ( 0 );
+        rc = 0;
     }
 
-    if( !RegisterMemWalker() ) {
+    if( rc && !RegisterMemWalker() ) {
         FiniMADInfo();
         JDialogFini();
-        return( 0 );
+        rc = 0;
     }
 
     /*
      * set up the memory window
      */
-    if( !RegMemWndClass( Instance ) ) {
+    if( rc && !RegMemWndClass( Instance ) ) {
         FiniMADInfo();
         JDialogFini();
-        return( 0 );
+        rc = 0;
     }
-    SetDefMemConfig();
-    GetMemWndConfig( &memwndcfg );
-    memwndcfg.allowmult = WND_SINGLE;
-    memwndcfg.forget_pos = TRUE;
-    memwndcfg.disp_info = FALSE;
-    SetMemWndConfig( &memwndcfg );
+    if( rc ) {
+        SetDefMemConfig();
+        GetMemWndConfig( &memwndcfg );
+        memwndcfg.allowmult = WND_SINGLE;
+        memwndcfg.forget_pos = TRUE;
+        memwndcfg.disp_info = FALSE;
+        SetMemWndConfig( &memwndcfg );
 
-    CheckLogSize();
-    InitAutoAttatch();
+        CheckLogSize();
+        InitAutoAttatch();
 
-    /*
-     * now make the main window
-     */
-    MainHwnd = CreateWindow(
-        className,          /* Window class name */
-        AppName,            /* Window caption */
-        WS_OVERLAPPEDWINDOW,/* Window style */
-        CW_USEDEFAULT,      /* Initial X position */
-        0,                  /* Initial Y position */
-        CW_USEDEFAULT,      /* Initial X size */
-        0,                  /* Initial Y size */
-        NULL,               /* Parent window handle */
-        NULL,               /* Window menu handle */
-        Instance,           /* Program instance handle */
-        NULL);              /* Create parameters */
+        /*
+         * now make the main window
+         */
+        MainHwnd = CreateWindow(
+            className,          /* Window class name */
+            AppName,            /* Window caption */
+            WS_OVERLAPPEDWINDOW,/* Window style */
+            CW_USEDEFAULT,      /* Initial X position */
+            0,                  /* Initial Y position */
+            CW_USEDEFAULT,      /* Initial X size */
+            0,                  /* Initial Y size */
+            NULL,               /* Parent window handle */
+            NULL,               /* Window menu handle */
+            Instance,           /* Program instance handle */
+            NULL);              /* Create parameters */
 
-    ShowWindow( MainHwnd, cmdshow );
-    UpdateWindow( MainHwnd );
+        ShowWindow( MainHwnd, cmdshow );
+        UpdateWindow( MainHwnd );
 
-    /* this thread no longer needs high priority since it now has a window
-     * and NT assigns higher priority to threads processing user input */
+        /* this thread no longer needs high priority since it now has a window
+         * and NT assigns higher priority to threads processing user input */
 
-    SetThreadPriority( thisthread, THREAD_PRIORITY_NORMAL );
-    ProcessCommandLine( cmdline );
-    while( GetMessage( &msg, NULL, 0, 0 ) ) {
-        TranslateMessage(&msg);
-        DispatchMessage(&msg);
+        SetThreadPriority( thisthread, THREAD_PRIORITY_NORMAL );
+        ProcessCommandLine( cmdline );
+        while( GetMessage( &msg, NULL, 0, 0 ) ) {
+            TranslateMessage(&msg);
+            DispatchMessage(&msg);
+        }
+        JDialogFini();
+        FiniMADInfo();
     }
-    JDialogFini();
-    FiniMADInfo();
-    return( 0 );
+    MemClose();
+    return( rc );
 
 }  /* WinMain */
 

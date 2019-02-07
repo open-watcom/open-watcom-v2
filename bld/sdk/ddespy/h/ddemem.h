@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
+* Copyright (c) 2019-2019 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -24,29 +24,10 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Memory allocator with optional tracking.
 *
 ****************************************************************************/
 
 
-#include "imgedit.h"                    // prototypes are found in wpi.h
-#include "iemem.h"
-
-/*
- * _wpi_malloc - malloc routine used for wpi
- */
-void * _wpi_malloc( size_t size )
-{
-    return( MemAlloc( size ) );
-
-} /* _wpi_malloc */
-
-/*
- * _wpi_free - free routine used for wpi
- */
-void _wpi_free( void * ptr )
-{
-    MemFree( ptr );
-
-} /* _wpi_free */
+extern void     MemOpen( void );
+extern void     MemClose( void );

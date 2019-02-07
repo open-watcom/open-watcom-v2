@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -30,97 +30,96 @@
 ****************************************************************************/
 
 
-//#define DEBUGMEM
-
-#include "commonui.h"
-#include <stdlib.h>
-#include <stdio.h>
-#include <string.h>
-#include <dos.h>
-#include <malloc.h>
+#include "wddespy.h"
 #include "cguimem.h"
+#include "ddemem.h"
+#ifdef TRMEM
+    #include "trmem.h"
+#endif
 
-/*
- * MemStart - set up required stuff for memory manager
- */
-void MemStart( void )
+
+#ifdef TRMEM
+static _trmem_hdl  MemHandle;
+
+static FILE *MemFP = NULL;   /* stream to put output on */
+
+static void MemPrintLine( void *parm, const char *buff, size_t len )
+/******************************************************************/
 {
+    /* unused parameters */ (void)parm;
+
+    if( MemFP != NULL ) {
+        fwrite( buff, 1, len, MemFP );
+    }
+}
+#endif
+
+void MemOpen( void )
+/******************/
+{
+#ifdef TRMEM
+    char    *tmpdir;
+#endif
+
 #ifdef _M_I86
-#ifndef __OS2_PM__
     __win_alloc_flags = GMEM_MOVEABLE | GMEM_SHARE;
     __win_realloc_flags = GMEM_MOVEABLE | GMEM_SHARE;
 #endif
+#ifdef TRMEM
+    MemHandle = _trmem_open( malloc, free, realloc, NULL,
+        NULL, MemPrintLine,
+        _TRMEM_ALLOC_SIZE_0 | _TRMEM_REALLOC_SIZE_0 |
+        _TRMEM_OUT_OF_MEMORY | _TRMEM_CLOSE_CHECK_FREE );
+
+    tmpdir = getenv( "TRMEMFILE" );
+    if( tmpdir != NULL ) {
+        MemFP = fopen( tmpdir, "w" );
+    }
 #endif
+}
 
-} /* MemStart */
+void MemClose( void )
+/*******************/
+{
+#ifdef TRMEM
+    _trmem_prt_list( MemHandle );
+    _trmem_close( MemHandle );
+    if( MemFP != NULL ) {
+        fclose( MemFP );
+    }
+#endif
+}
 
-/*
- * MemAlloc - allocate some memory
- */
 void *MemAlloc( size_t size )
+/***************************/
 {
-    void *x;
-#if defined( DEBUGMEM )
-    x = GlobalLock( GlobalAlloc( GMEM_ZEROINIT | GMEM_MOVEABLE, size ) );
+    void        *ptr;
+
+#ifdef TRMEM
+    ptr = _trmem_alloc( size, _trmem_guess_who(), MemHandle );
 #else
-    x = calloc( 1, size );
+    ptr = malloc( size );
+    memset( ptr, 0, size );
 #endif
-#if defined( WANT_MSGS )
-    if( x == NULL ) {
-        MessageBox( HWND_DESKTOP, "AUUGH, Null Pointer", "Memory Allocation",
-                    MB_OK | MB_ICONHAND | MB_SYSTEMMODAL );
-    }
-#endif
-    return( x );
+    return( ptr );
+}
 
-} /* MemAlloc */
-
-/*
- * MemReAlloc - allocate some memory
- */
 void *MemReAlloc( void *ptr, size_t size )
+/****************************************/
 {
-    void *x;
-#ifndef __OS2_PM__
-#if defined( DEBUGMEM )
-    GLOBALHANDLE        h;
-
-    h = GlobalHandle( FP_SEG( ptr ) );
-    GlobalUnlock( h );
-    x = GlobalLock( GlobalReAlloc( h, size, GMEM_ZEROINIT | GMEM_MOVEABLE ) );
+#ifdef TRMEM
+    return( _trmem_realloc( ptr, size, _trmem_guess_who(), MemHandle ) );
 #else
-    x = realloc( ptr, size );
+    return( realloc( ptr, size ) );
 #endif
-#else
-    x = realloc( ptr, size );
-#endif
-#if defined( WANT_MSGS )
-    if( x == NULL ) {
-        MessageBox( HWND_DESKTOP, "AUUGH, Null Pointer", "Memory Allocation",
-                    MB_OK | MB_ICONHAND | MB_SYSTEMMODAL );
-    }
-#endif
-    return( x );
+}
 
-} /* MemReAlloc */
-
-/*
- * MemFree - free some memory
- */
 void MemFree( void *ptr )
+/***********************/
 {
-#ifndef __OS2_PM__
-#if defined( DEBUGMEM )
-    GLOBALHANDLE        h;
-
-    h = GlobalHandle( FP_SEG( ptr ) );
-    GlobalUnlock( h );
-    GlobalFree( h );
+#ifdef TRMEM
+    _trmem_free( ptr, _trmem_guess_who(), MemHandle );
 #else
     free( ptr );
 #endif
-#else
-    free( ptr );
-#endif
-
-} /* MemFree */
+}

@@ -28,7 +28,7 @@ objs_nt = spyzord.obj
 objs = spy.obj spyglob.obj spybox.obj spyproc.obj spymsgs.obj &
     spyfilt.obj spypick.obj spymdlgs.obj spyarray.obj &
     spymisc.obj spycfg.obj spylog.obj spytool.obj spysel.obj &
-    cguimem.obj $(objs_$(host_os))
+    spymem.obj $(objs_$(host_os))
 
 dll_objs = $(dll_subdir)/spydll.obj
 
