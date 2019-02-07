@@ -150,7 +150,7 @@ WResSetRtns(res_open,res_close,res_read,res_write,res_seek,res_tell,res_ioerr,RE
 
 BOOL WINAPI DllMain( HINSTANCE inst, DWORD dwReason, LPVOID lpReserved )
 {
-    _wtouch( lpReserved );
+    /* unused parameters */ (void)lpReserved;
 
     switch( dwReason ) {
     case DLL_PROCESS_ATTACH:
@@ -173,12 +173,7 @@ BOOL WINAPI DllMain( HINSTANCE inst, DWORD dwReason, LPVOID lpReserved )
 
 int WINAPI LibMain( HINSTANCE inst, WORD dataseg, WORD heapsize, LPSTR cmdline )
 {
-    _wtouch( dataseg );
-    _wtouch( heapsize );
-    _wtouch( cmdline );
-
-    __win_alloc_flags = GMEM_MOVEABLE | GMEM_SHARE;
-    __win_realloc_flags = GMEM_MOVEABLE | GMEM_SHARE;
+    /* unused parameters */ (void)dataseg; (void)heapsize; (void)cmdline;
 
     WRInstance = inst;
     WRInitRcGlobal( inst );
@@ -190,7 +185,7 @@ int WINAPI LibMain( HINSTANCE inst, WORD dataseg, WORD heapsize, LPSTR cmdline )
 
 int WINAPI WEP( int parm )
 {
-    _wtouch( parm );
+    /* unused parameters */ (void)parm;
 
     return( TRUE );
 }

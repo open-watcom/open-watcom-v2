@@ -132,7 +132,7 @@ BOOL WINAPI DllMain( HINSTANCE inst, DWORD dwReason, LPVOID lpReserved )
 {
     int ret;
 
-    _wtouch( lpReserved );
+    /* unused parameters */ (void)lpReserved;
 
     ret = TRUE;
 
@@ -156,12 +156,8 @@ BOOL WINAPI DllMain( HINSTANCE inst, DWORD dwReason, LPVOID lpReserved )
 
 int WINAPI LibMain( HINSTANCE inst, WORD dataseg, WORD heapsize, LPSTR cmdline )
 {
-    _wtouch( dataseg );
-    _wtouch( heapsize );
-    _wtouch( cmdline );
+    /* unused parameters */ (void)dataseg; (void)heapsize; (void)cmdline;
 
-    __win_alloc_flags = GMEM_MOVEABLE | GMEM_SHARE;
-    __win_realloc_flags = GMEM_MOVEABLE | GMEM_SHARE;
     ref_count = 0;
     WSetEditInstance( inst );
 
@@ -170,7 +166,7 @@ int WINAPI LibMain( HINSTANCE inst, WORD dataseg, WORD heapsize, LPSTR cmdline )
 
 int WINAPI WEP( int parm )
 {
-    _wtouch( parm );
+    /* unused parameters */ (void)parm;
 
     return( TRUE );
 }
