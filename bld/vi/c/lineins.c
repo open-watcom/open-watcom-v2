@@ -66,7 +66,7 @@ vi_rc InsertLinesAtCursor( fcb_list *fcblist, undo_stack *us )
     fcblist->tail->byte_cnt += CurrentLine->len - CurrentPos.column + 1;
 
     tLine = fcblist->tail->lines.tail->prev;
-    fcblist->tail->lines.tail = MemReAlloc( fcblist->tail->lines.tail,
+    fcblist->tail->lines.tail = MemRealloc( fcblist->tail->lines.tail,
                     sizeof( line ) + fcblist->tail->lines.tail->len + 1 );
     if( tLine ) {
         tLine->next = fcblist->tail->lines.tail;

@@ -172,7 +172,7 @@ extern void * MSJAlloc( unsigned size )
     return TRMemAlloc( size );
 }
 
-extern void * MSJReAlloc( void *ptr, unsigned size )
+extern void * MSJRealloc( void *ptr, unsigned size )
 /**************************************************/
 {
     return TRMemRealloc( ptr, size );
@@ -200,7 +200,7 @@ extern void * MSJAlloc( unsigned size )
     return malloc( size );
 }
 
-extern void * MSJReAlloc( void *ptr, unsigned size )
+extern void * MSJRealloc( void *ptr, unsigned size )
 /**************************************************/
 {
     return realloc( ptr, size );

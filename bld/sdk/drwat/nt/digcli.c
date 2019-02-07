@@ -53,7 +53,7 @@ void *DIGCLIENTRY( Alloc )( size_t size )
  */
 void *DIGCLIENTRY( Realloc )( void *ptr, size_t size )
 {
-    return( MemReAlloc( ptr, size ) );
+    return( MemRealloc( ptr, size ) );
 }
 
 /*

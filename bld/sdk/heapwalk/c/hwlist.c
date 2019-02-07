@@ -385,7 +385,7 @@ void FreeHeapList( void )
 static BOOL AddToHeapList( heap_list *hl )
 {
     void        *ptr;
-    ptr = MemReAlloc( HeapList,
+    ptr = MemRealloc( HeapList,
                     sizeof( heap_list * ) * (HeapListSize + 1) );
     if( ptr == NULL ) {
         return( FALSE );

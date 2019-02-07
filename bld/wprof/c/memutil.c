@@ -491,7 +491,7 @@ void * _wpi_realloc( void *ptr, size_t new_size )
     }
     return( new );
 }
-void *MemReAlloc( void *ptr, size_t new_size )
+void *MemRealloc( void *ptr, size_t new_size )
 {
     void    *new;
 

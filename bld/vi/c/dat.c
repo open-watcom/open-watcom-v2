@@ -99,7 +99,7 @@ vi_rc ReadDataFile( const char *file, char **buffer, bool (*fn_alloc)(int), bool
         // add space for token terminator
         len = strlen( token ) + 1;
         // add space for list terminator
-        buffdata = MemReAlloc( buffdata, size + len + 1 );
+        buffdata = MemRealloc( buffdata, size + len + 1 );
         // copy token with terminator
         memcpy( buffdata + size, token, len );
         size += len;

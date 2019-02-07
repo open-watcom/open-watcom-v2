@@ -867,7 +867,7 @@ void ReadPermData( void )
         return;
     }
     if( hdr->hdrsize > SECTOR_SIZE ) {
-        _LnkReAlloc( info.buffer, info.buffer, hdr->hdrsize );
+        _LnkRealloc( info.buffer, info.buffer, hdr->hdrsize );
         hdr = (inc_file_header *)info.buffer;   /* in case realloc moved it*/
         QRead( info.incfhdl, info.buffer + SECTOR_SIZE, hdr->hdrsize - SECTOR_SIZE, IncFileName );
     }

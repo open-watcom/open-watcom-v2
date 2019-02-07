@@ -166,7 +166,7 @@ void *CachePermRead( file_list *list, unsigned long pos, size_t len )
     if( list->file->flags & INSTAT_FULL_CACHE )
         return( buf );
     if( Multipage ) {
-        _LnkReAlloc( result, buf, len );
+        _LnkRealloc( result, buf, len );
         _ChkAlloc( TokBuff, TokSize );
         Multipage = false;              // indicate that last read is permanent.
     } else {
@@ -222,7 +222,7 @@ void *CacheRead( file_list *list, unsigned long pos, size_t len )
     } else {
         if( len > TokSize ) {
             TokSize = ROUND_UP( len, SECTOR_SIZE );
-            _LnkReAlloc( TokBuff, TokBuff, TokSize );
+            _LnkRealloc( TokBuff, TokBuff, TokSize );
         }
         amtread = CACHE_PAGE_SIZE - offset;
         memcpy( TokBuff, cache[startnum] + offset, amtread );

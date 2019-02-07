@@ -268,7 +268,7 @@ void * _wpi_realloc( void *ptr, size_t size )
     return( realloc( ptr, size ) );
 #endif
 }
-void *MemReAlloc( void *ptr, size_t size )
+void *MemRealloc( void *ptr, size_t size )
 {
 #ifdef TRMEM
     return( _trmem_realloc( ptr, size, _trmem_guess_who(), GUIMemHandle ) );

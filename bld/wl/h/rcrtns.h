@@ -46,7 +46,7 @@
 #define RESALLOC        ChkLAlloc
 #define RESFREE         LFree
 
-#define RCREALLOC       LnkReAlloc
+#define RCREALLOC       LnkRealloc
 
 extern FILE             *res_open( const char *name, wres_open_mode omode );
 extern bool             res_close( FILE *fp );

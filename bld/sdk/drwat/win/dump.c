@@ -130,7 +130,7 @@ static void NewDirEntry( dir_ent *de )
     if( dirCnt == 0 ) {
         dirList = MemAlloc( sizeof( dir_ent ) );
     } else {
-        dirList = MemReAlloc( dirList, (dirCnt+1)*sizeof( dir_ent ) );
+        dirList = MemRealloc( dirList, (dirCnt+1)*sizeof( dir_ent ) );
     }
     memcpy( &dirList[dirCnt], de, sizeof( dir_ent ) );
     dirCnt++;
@@ -158,7 +158,7 @@ static int NewModuleEntry( HANDLE hmod )
     if( modCnt == 0 ) {
         modList = MemAlloc( sizeof( mod_ent ) );
     } else {
-        modList = MemReAlloc( modList, (modCnt+1)*sizeof( mod_ent ) );
+        modList = MemRealloc( modList, (modCnt+1)*sizeof( mod_ent ) );
     }
     memcpy( &modList[modCnt], &mme, sizeof( mod_ent ) );
     modCnt++;

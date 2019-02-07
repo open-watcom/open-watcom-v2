@@ -74,7 +74,7 @@ static BITMAPINFO *readDIBInfo( FILE *fp )
         /* Bitmap has palette, read it */
         fseek( fp, START_OF_HEADER, SEEK_SET );
         bitmap_size = DIB_INFO_SIZE( header->biBitCount );
-        bm = MemReAlloc( header, bitmap_size );
+        bm = MemRealloc( header, bitmap_size );
         if( bm == NULL ) {
             return( NULL );
         }
@@ -105,7 +105,7 @@ static BITMAPCOREINFO *readCoreInfo( FILE *fp )
     fread( header, sizeof( BITMAPCOREHEADER ), 1, fp );
     fseek( fp, START_OF_HEADER, SEEK_SET );
     bitmap_size = CORE_INFO_SIZE( header->bcBitCount );
-    bm_core = MemReAlloc( header, bitmap_size );
+    bm_core = MemRealloc( header, bitmap_size );
     if( bm_core == NULL ) {
         return( NULL );
     }

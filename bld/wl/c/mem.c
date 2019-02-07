@@ -198,7 +198,7 @@ void *LnkExpand( void *src, size_t size )
 #endif
 }
 
-void *LnkReAlloc( void *src, size_t size )
+void *LnkRealloc( void *src, size_t size )
 /****************************************/
 // reallocate a block of memory.
 {
@@ -221,7 +221,7 @@ void *LnkReAlloc( void *src, size_t size )
     }
     return( dest );
 }
-/* Notes for LnkReAlloc
+/* Notes for LnkRealloc
  * NOTE 1: we don't want to call FreeUpMemory, since that does a permshrink
  * and this function is called from permshrink
 */
@@ -270,7 +270,7 @@ static bool CacheRelease( void )
 
 bool FreeUpMemory( void )
 /***********************/
-// make sure LnkReAlloc is kept up to date with what is put in here.
+// make sure LnkRealloc is kept up to date with what is put in here.
 {
 #if defined( __QNX__ )
     if( LastChanceSeg != (unsigned)-1 ) {

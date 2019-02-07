@@ -114,7 +114,7 @@ void * _wpi_malloc( size_t size )
 }
 #endif
 
-void *MemReAlloc( void *ptr, size_t size )
+void *MemRealloc( void *ptr, size_t size )
 /****************************************/
 {
 #ifdef TRMEM

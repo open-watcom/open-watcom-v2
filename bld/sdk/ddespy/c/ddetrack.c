@@ -199,7 +199,7 @@ static void *getNextPos( DDETrackInfo *listinfo )
         }
     }
     listinfo->cnt++;
-    listinfo->data = MemReAlloc( listinfo->data,
+    listinfo->data = MemRealloc( listinfo->data,
                                  listinfo->cnt * sizeof( void * ) );
     return( (void **)listinfo->data + listinfo->cnt - 1 );
 

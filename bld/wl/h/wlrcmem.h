@@ -29,10 +29,10 @@
 ****************************************************************************/
 
 
-extern void     *LnkReAlloc( void *, size_t );
+extern void     *LnkRealloc( void *, size_t );
 extern void     *ChkLAlloc( size_t );
 extern void     LFree( void * );
 
 #define RcMemMalloc(x)    ChkLAlloc(x)
-#define RcMemRealloc(x,y) LnkReAlloc(x,y)
+#define RcMemRealloc(x,y) LnkRealloc(x,y)
 #define RcMemFree(x)      LFree(x)

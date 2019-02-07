@@ -104,7 +104,7 @@ void DCResize( info *info )
         }
         info->dclines = NULL;
     } else {
-        info->dclines = dcline = _MemReAllocArray( info->dclines, dc_line, nlines );
+        info->dclines = dcline = _MemReallocArray( info->dclines, dc_line, nlines );
         dcline += info->dc_size;
         for( ; extra-- > 0; ) {
             initDCLine( dcline );

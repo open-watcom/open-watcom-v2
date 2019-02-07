@@ -231,7 +231,7 @@ void EMSInit( void )
         h.external = emsPtrs[i];
         TotalEMSBlocks++;
     }
-    emsPtrs = _MemReAllocArray( emsPtrs, long, TotalEMSBlocks );
+    emsPtrs = _MemReallocArray( emsPtrs, long, TotalEMSBlocks );
 
     EMSCtrl.inuse = true;
 

@@ -678,7 +678,7 @@ static vi_rc processSetToken( int j, char *new, const char **pvalue, int *winfla
                 if( k <= 0 ) {
                     break;
                 }
-                EditVars.StatusSections = _MemReAllocArray( EditVars.StatusSections, unsigned short, EditVars.NumStatusSections + 1 );
+                EditVars.StatusSections = _MemReallocArray( EditVars.StatusSections, unsigned short, EditVars.NumStatusSections + 1 );
                 EditVars.StatusSections[EditVars.NumStatusSections] = (unsigned short)k;
                 EditVars.NumStatusSections++;
                 value = GetNextWord2( value, fn, ',' );
@@ -759,7 +759,7 @@ static vi_rc processSetToken( int j, char *new, const char **pvalue, int *winfla
                     MySprintf( fn, "fignore reset" );
                 }
             } else {
-                EditVars.FIgnore = MemReAlloc( EditVars.FIgnore, EXTENSION_LENGTH * (EditVars.CurrFIgnore + 1) );
+                EditVars.FIgnore = MemRealloc( EditVars.FIgnore, EXTENSION_LENGTH * (EditVars.CurrFIgnore + 1) );
                 str[0] = '.';
                 str[1] = '\0';
                 strcat( str, fn );
@@ -989,7 +989,7 @@ static vi_rc processSetToken( int j, char *new, const char **pvalue, int *winfla
             case SETVAR_T_MAXTILECOLORS:
                 k = (EditVars.TileColors == NULL) ? 0 : EditVars.MaxTileColors + 1;
                 EditVars.MaxTileColors = lval;
-                EditVars.TileColors = _MemReAllocArray( EditVars.TileColors, type_style, EditVars.MaxTileColors + 1 );
+                EditVars.TileColors = _MemReallocArray( EditVars.TileColors, type_style, EditVars.MaxTileColors + 1 );
                 for( ; k <= EditVars.MaxTileColors; ++k ) {
                     EditVars.TileColors[k].foreground = -1;
                     EditVars.TileColors[k].background = -1;
@@ -1018,7 +1018,7 @@ static vi_rc processSetToken( int j, char *new, const char **pvalue, int *winfla
                     lval = MAX_IO_BUFFER;
                 EditVars.MaxLine = lval;
                 StaticStart();
-                WorkLine = MemReAlloc( WorkLine, sizeof( line ) + EditVars.MaxLine + 2 );
+                WorkLine = MemRealloc( WorkLine, sizeof( line ) + EditVars.MaxLine + 2 );
                 break;
             case SETVAR_T_TOOLBARBUTTONHEIGHT:
                 EditVars.ToolBarButtonHeight = lval;

@@ -35,6 +35,6 @@
 
 void    MemFree( void *ptr );
 void    *MemAlloc( size_t size );
-void    *MemReAlloc( void *ptr, size_t size );
+void    *MemRealloc( void *ptr, size_t size );
 
 #endif /* _CGUIMEM_H_INCLUDED */

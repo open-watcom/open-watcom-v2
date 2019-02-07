@@ -417,7 +417,7 @@ int GrowImageMap()
     int i = ImageMapTop;
     if( ++ImageMapTop >= ImageMapSize ) {
         ImageMapSize += 10;
-        ImageMap = (ImageEntry*)MSJReAlloc( ImageMap, ImageMapSize * sizeof( ImageEntry ) );
+        ImageMap = (ImageEntry*)MSJRealloc( ImageMap, ImageMapSize * sizeof( ImageEntry ) );
     }
     return( i );
 }

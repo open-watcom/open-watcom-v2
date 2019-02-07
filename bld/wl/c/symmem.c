@@ -87,7 +87,7 @@ static bool ShrinkBlock( block_data *block )
         return( false );
     if( block->currbrk >= block->list->size )
         return( false );
-    _LnkReAlloc( new, block->list, block->currbrk + ALLOC_SIZE );
+    _LnkRealloc( new, block->list, block->currbrk + ALLOC_SIZE );
     new->size = block->currbrk;
     /* assuming that a shrinkage will not move the block */
 #ifdef _DEVELOPMENT

@@ -97,7 +97,7 @@ void *DIGCLIENTRY( Realloc )( void *ptr, size_t size )
     void        *ret;
 
     DEBUGOUT( "realloc BEGIN" );
-    ret = MemReAlloc( ptr, size );
+    ret = MemRealloc( ptr, size );
     DEBUGOUT( "realloc END" );
     return( ret );
 }

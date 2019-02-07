@@ -88,13 +88,13 @@ void MemFreeList( list_linenum count, char **ptr )
 } /* MemFreeList */
 
 /*
- * MemReAlloc - reallocate a block, and it will succeed.
+ * MemRealloc - reallocate a block, and it will succeed.
  */
-void *MemReAlloc( void *ptr, size_t size )
+void *MemRealloc( void *ptr, size_t size )
 {
     return( realloc( ptr, size ) );
 
-} /* MemReAlloc */
+} /* MemRealloc */
 
 /*
  * StrMerge - merge a number of strings together

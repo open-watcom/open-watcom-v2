@@ -104,7 +104,7 @@ void *MemAlloc( size_t size )
     return( ptr );
 }
 
-void *MemReAlloc( void *ptr, size_t size )
+void *MemRealloc( void *ptr, size_t size )
 /****************************************/
 {
 #ifdef TRMEM

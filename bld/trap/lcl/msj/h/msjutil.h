@@ -38,7 +38,7 @@ extern void     MSJMemInit();
 extern void     MSJMemFini();
 extern void *   MSJAlloc( unsigned );
 extern void     MSJFree( void * );
-extern void *   MSJReAlloc( void *, unsigned );
+extern void *   MSJRealloc( void *, unsigned );
 extern char *   UnicodeToASCII( wchar_t * );
 
 #ifdef __cplusplus

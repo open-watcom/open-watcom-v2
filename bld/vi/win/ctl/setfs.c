@@ -578,7 +578,7 @@ static long insertFT( HWND hwndDlg )
     // make memory space for new FT entry if necessary
     if( dlgDataArray_count + 1 > dlgDataArray_size ) {
         dlgDataArray_size++;
-        dlgDataArray = _MemReAllocArray( dlgDataArray, dlg_data, dlgDataArray_size );
+        dlgDataArray = _MemReallocArray( dlgDataArray, dlg_data, dlgDataArray_size );
     }
     // for now, always insert at top of list
     index = 0;
