@@ -66,13 +66,13 @@ extern WNDENUMPROC          MakeProcInstance_WNDENUM( WNDENUMPROCx fn, HINSTANCE
 extern WNDPROC              MakeProcInstance_WND( WNDPROCx fn, HINSTANCE instance );
 #else
 #define GetWndProc(p)                       p
-#define MakeProcInstance_DLG(f,i)           f
-#define MakeProcInstance_FONTENUM(f,i)      f
-#define MakeProcInstance_OLDFONTENUM(f,i)   f
-#define MakeProcInstance_HOOK(f,i)          f
-#define MakeProcInstance_OFNHOOK(f,i)       f
-#define MakeProcInstance_WNDENUM(f,i)       f
-#define MakeProcInstance_WND(f,i)           f
+#define MakeProcInstance_DLG(f,i)           ((void)i,f)
+#define MakeProcInstance_FONTENUM(f,i)      ((void)i,f)
+#define MakeProcInstance_OLDFONTENUM(f,i)   ((void)i,f)
+#define MakeProcInstance_HOOK(f,i)          ((void)i,f)
+#define MakeProcInstance_OFNHOOK(f,i)       ((void)i,f)
+#define MakeProcInstance_WNDENUM(f,i)       ((void)i,f)
+#define MakeProcInstance_WND(f,i)           ((void)i,f)
 #endif
 
 #if defined( __WINDOWS__ ) && defined( _M_I86 )
@@ -84,13 +84,13 @@ void FreeProcInstance_OFNHOOK( LPOFNHOOKPROC f );
 void FreeProcInstance_WNDENUM( WNDENUMPROC f );
 void FreeProcInstance_WND( WNDPROC f );
 #else
-#define FreeProcInstance_DLG(f)
-#define FreeProcInstance_FONTENUM(f)
-#define FreeProcInstance_OLDFONTENUM(f)
-#define FreeProcInstance_HOOK(f)
-#define FreeProcInstance_OFNHOOK(f)
-#define FreeProcInstance_WNDENUM(f)
-#define FreeProcInstance_WND(f)
+#define FreeProcInstance_DLG(f)             ((void)f)
+#define FreeProcInstance_FONTENUM(f)        ((void)f)
+#define FreeProcInstance_OLDFONTENUM(f)     ((void)f)
+#define FreeProcInstance_HOOK(f)            ((void)f)
+#define FreeProcInstance_OFNHOOK(f)         ((void)f)
+#define FreeProcInstance_WNDENUM(f)         ((void)f)
+#define FreeProcInstance_WND(f)             ((void)f)
 #endif
 
 #ifdef __cplusplus
