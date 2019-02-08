@@ -134,15 +134,6 @@ void WRAPI WRMemPrtUsage( void )
 #endif
 }
 
-unsigned WRAPI WRMemPrtList( void )
-{
-#ifdef TRMEM
-    return( _trmem_prt_list( TRMemHandle ) );
-#else
-    return( 0 );
-#endif
-}
-
 /* functions to replace those in mem.c in commonui */
 void *MemAlloc( size_t size )
 {

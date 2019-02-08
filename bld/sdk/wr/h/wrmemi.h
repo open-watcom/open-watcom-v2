@@ -34,15 +34,12 @@
 #ifndef WRMEMI_INCLUDED
 #define WRMEMI_INCLUDED
 
+#include "rcrtns.h"
+
 /****************************************************************************/
 /* function prototypes                                                      */
 /****************************************************************************/
 extern void WRMemOpen( void );
 extern void WRMemClose( void );
-
-/* functions to replace those in mem.c in commonui */
-extern void MemFree( void *ptr );
-extern void *MemAlloc( size_t size );
-extern void *MemRealloc( void *ptr, size_t size );
 
 #endif

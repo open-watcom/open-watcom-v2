@@ -216,7 +216,6 @@ void WRAPI WRFini( void )
         WRDialogMsgFini();
         WRCtl3DFini( WRInstance );
         JDialogFini();
-        WRMemPrtList();
         WRMemClose();
     }
 }
