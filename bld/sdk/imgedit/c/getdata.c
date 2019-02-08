@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,7 +34,7 @@
 #include "imgedit.h"
 #include <commdlg.h>
 #include <dos.h>
-#include "iemem.h"
+
 
 /*
  * getXorBits - retrieve the bits for the XOR bitmap (only for icons and cursors)
