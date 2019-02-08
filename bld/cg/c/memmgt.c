@@ -62,7 +62,7 @@ static          mem_out_action  MemOut;
 
 #include "trmem.h"
 
-_trmem_hdl              Handle;
+static _trmem_hdl       Handle;
 
 static void Prt( void *handle, const char *buff, size_t len )
 /***********************************************************/

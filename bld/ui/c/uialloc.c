@@ -41,7 +41,7 @@
 
 
 #ifdef TRMEM
-_trmem_hdl  UIMemHandle;
+static _trmem_hdl  UIMemHandle;
 
 static FILE *UIMemFileHandle = NULL;    /* stream to put output on */
 static int  UIMemOpened = 0;
