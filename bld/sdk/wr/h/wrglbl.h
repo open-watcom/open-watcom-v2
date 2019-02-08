@@ -40,14 +40,16 @@
 #include "watcom.h"
 #include "wresid.h"
 #include "wrdll.h"
+#include "wrmemi.h"
+
 
 /****************************************************************************/
 /* macro definitions                                                        */
 /****************************************************************************/
-#define WRD_VERSION  0x0100
+#define WRD_VERSION     0x0100
 
-#define UINT32STRLEN 10
-#define UINT16STRLEN 5
-#define UINT8STRLEN  3
+#define UINT32STRLEN    10
+#define UINT16STRLEN    5
+#define UINT8STRLEN     3
 
 #endif
