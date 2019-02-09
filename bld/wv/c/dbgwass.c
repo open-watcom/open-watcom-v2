@@ -1017,7 +1017,7 @@ static bool AsmWndEventProc( a_window wnd, gui_event gui_ev, void *parm )
         AsmNewIP( wnd );
         DbgUpdate( UP_OPEN_CHANGE );
         asw->popup = WndAppendToggles( MADDisasmToggleList(), &asw->num_toggles, AsmMenu, ArraySize( AsmMenu ), MENU_ASM_TOGGLES );
-        WndSetPopUpMenu( wnd, asw->popup, ArraySize( AsmMenu ) + asw->num_toggles );
+        WndSetPopUpMenu( wnd, ArraySize( AsmMenu ) + asw->num_toggles, asw->popup );
         return( true );
     case GUI_DESTROY :
         SrcFreeAsm( asw->src );

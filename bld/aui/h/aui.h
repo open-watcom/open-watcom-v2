@@ -120,7 +120,7 @@
 #define WndSwitchOff( w, x )        (((w)->switches & (x)) == 0)
 #define WndNumPopups( w )           (w)->popup_num_items
 #define WndPopupMenu( w )           (w)->popupmenu
-#define WndSetPopUpMenu( w, x, n )  {(w)->popup_num_items = (n); (w)->popupmenu = (x);}
+#define WndSetPopUpMenu( w, n, x )  {(w)->popup_num_items = (n); (w)->popupmenu = (x);}
 
 typedef struct {
     unsigned char       area[SAVE_SIZE];
