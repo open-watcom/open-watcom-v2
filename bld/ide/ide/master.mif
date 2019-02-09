@@ -32,7 +32,6 @@ to_os_path=/=\
 !include $(wclass_dir)/client.mif
 !include $(gui_dir)/client.mif
 
-WINDOWS = 1
 !include wres.mif
 
 !include ../objects.mif

@@ -45,8 +45,9 @@
 
 WResDir    MainDir;
 
-static int GetString( WResLangInfo *res, PHANDLE_INFO hinfo, UINT idResource, lpstr lpszBuffer, int nBufferMax )
-/**************************************************************************************************************/
+static int GetString( WResLangInfo *res, PHANDLE_INFO hinfo, unsigned int idResource,
+                                                    lpstr lpszBuffer, int nBufferMax )
+/************************************************************************************/
 {
     size_t              length;
     int                 stringnum;
@@ -105,9 +106,9 @@ static int GetString( WResLangInfo *res, PHANDLE_INFO hinfo, UINT idResource, lp
     return( ix2 );
 }
 
-int WResLoadString2( WResDir dir, PHANDLE_INFO hinfo, UINT idResource,
-                             lpstr lpszBuffer, int nBufferMax )
-/********************************************************************/
+int WResLoadString2( WResDir dir, PHANDLE_INFO hinfo, unsigned int idResource,
+                                            lpstr lpszBuffer, int nBufferMax )
+/****************************************************************************/
 {
     int                 retcode;
     unsigned            block_num;
@@ -137,8 +138,8 @@ int WResLoadString2( WResDir dir, PHANDLE_INFO hinfo, UINT idResource,
     return( retcode );
 }
 
-int WResLoadString( PHANDLE_INFO hinfo, UINT idResource, lpstr lpszBuffer, int nBufferMax )
-/*****************************************************************************************/
+int WResLoadString( PHANDLE_INFO hinfo, unsigned int idResource, lpstr lpszBuffer, int nBufferMax )
+/*************************************************************************************************/
 {
     return( WResLoadString2( MainDir, hinfo, idResource, lpszBuffer, nBufferMax ) );
 }

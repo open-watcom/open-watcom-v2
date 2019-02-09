@@ -18,11 +18,7 @@ name_model_conv = m$(memory_model_386)_r/wres.lib
 !ifeq host_os qnx
 wres_i86_dir = qnxi86
 !else ifeq host_os win
-!ifdef WINDOWS
-wres_i86_dir = wini86.gui
-!else
 wres_i86_dir = wini86
-!endif
 !else ifeq host_os os2
 wres_i86_dir = os2i86
 !else ifdef pegged

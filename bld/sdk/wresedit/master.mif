@@ -22,8 +22,8 @@ memory_model_i86 = l
 !include $(wr_dir)/client.mif
 !include $(cpp_dir)/client.mif
 
-WINDOWS = 1
 !include wres.mif
+!include trmem.mif
 
 objs = $(sys_object)
 objs +=   wmem.obj wctl3d.obj wgetfn.obj wlist.obj &
@@ -32,7 +32,7 @@ objs +=   wmem.obj wctl3d.obj wgetfn.obj wlist.obj &
             widn2str.obj wclip.obj wisedit.obj weditsym.obj &
             preproc.obj ppexpr.obj ppmacro.obj ppenv.obj pathlist.obj
 
-extra_cpp_flags     = -DWIN_GUI -DWRESEDLL
+extra_cpp_flags     = -DWRESEDLL
 
 extra_cpp_flags_nt  = -DNOUSE3D
 

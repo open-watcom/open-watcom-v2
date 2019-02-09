@@ -13,6 +13,8 @@ sys_windowed = 1
 
 !include $(commonui_dir)/client.mif
 
+!include trmem.mif
+
 objs =  zoom.obj zmglob.obj zmproc.obj zmscreen.obj zmconfig.obj zmmem.obj
 
 extra_cpp_flags_nt = -DNOUSE3D

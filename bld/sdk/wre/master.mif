@@ -20,8 +20,8 @@ memory_model_i86 = l
 !include $(wr_dir)/client.mif
 !include $(cpp_dir)/client.mif
 
-WINDOWS = 1
 !include wres.mif
+!include trmem.mif
 
 !ifeq wre_trmem 1
 TRMEM           = -DTRMEM
@@ -30,7 +30,7 @@ TRMEM           += -of+
 !endif
 !endif
 
-extra_cpp_flags     = -DWIN_GUI -DWREDLL
+extra_cpp_flags     = -DWREDLL
 
 extra_cpp_flags_nt  = -DNOUSE3D
 

@@ -25,9 +25,7 @@ win_yacc_file   = $(win_yacc_prefix)tab
 !include $(commonui_dir)/client.mif
 !include $(cpp_dir)/client.mif
 
-WINDOWS = 1
 !include wres.mif
-
 !include trmem.mif
 
 cpp_objs = preproc.obj ppexpr.obj ppmacro.obj ppenv.obj pathlist.obj
@@ -52,7 +50,7 @@ objs = wrmain.obj wrmem.obj wrmsg.obj wrfindt.obj wrtmpfil.obj &
 
 msgfiles = $(wrc_dir)/h/rc.msg ../res/wr.msg
 
-extra_cpp_flags   = -DWIN_GUI -DWRDLL
+extra_cpp_flags   = -DWRDLL
 
 extra_c_flags     = -s
 

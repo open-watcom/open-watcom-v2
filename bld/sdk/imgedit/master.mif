@@ -17,8 +17,8 @@ memory_model_i86 = l
 !include $(wpi_dir)/client.mif
 !include $(wr_dir)/client.mif
 
-WINDOWS=1
 !include wres.mif
+!include trmem.mif
 
 .JUST_ENOUGH
 
@@ -48,12 +48,11 @@ objs = $(objs_common) $(objs_win)
 !endif
 
 
-extra_cpp_flags = -DWIN_GUI
 !ifdef wpitest
-extra_cpp_flags += -D_WPI_TEST_
+extra_cpp_flags = -D_WPI_TEST_
 !endif
 !ifeq host_os os2
-extra_cpp_flags += -D__OS2_PM__
+extra_cpp_flags_os2 = -D__OS2_PM__
 !endif
 
 extra_c_flags = -s -fh

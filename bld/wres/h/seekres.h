@@ -24,11 +24,11 @@
 *
 *  ========================================================================
 *
-* Description:  Find resource and seek to begining. 
+* Description:  Find resource and seek to begining.
 *
 ****************************************************************************/
 
 
 extern WResID   *WResIDFromStrF( lpcstr );
-extern bool     WResSeekResource( PHANDLE_INFO hinfo, UINT idType, UINT idResource );
+extern bool     WResSeekResource( PHANDLE_INFO hinfo, unsigned int idType, unsigned int idResource );
 extern bool     WResSeekResourceX( PHANDLE_INFO hinfo, lpcstr idType, lpcstr idResource );
