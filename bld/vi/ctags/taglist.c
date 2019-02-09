@@ -36,6 +36,9 @@
 #include <ctype.h>
 #include "ctags.h"
 
+#include "clibext.h"
+
+
 #define isWSorCtrlZ(x)  (isspace( x ) || (x == 0x1A))
 
 static char             **tagList = NULL;
