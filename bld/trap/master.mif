@@ -107,44 +107,56 @@ xname=$(name)
 
 # cflags stuff
 ###############
-extra_cpp_flags += -D$(which) -DMD_$(target_cpu) $(extra_cppflags)
+extra_cpp_flags = -D$(which) -DMD_$(target_cpu) $(extra_cppflags)
 !ifdef %OWUSE_FILENAME_VERSION
 extra_cpp_flags += -DUSE_FILENAME_VERSION=$(bld_ver)
 !endif
-
 !ifndef test
 !ifdef builtin_trap
 extra_cpp_flags += -DBUILTIN_TRAP_FILE
 !endif
 !endif
+!ifeq target_os ads
+extra_cpp_flags += -DACAD
+!endif
 !ifdef japanese
 extra_cpp_flags += -DJAPANESE
+!endif
+
+extra_cppflags_nlm5 = -D__NW50__ -D_USE_NEW_KERNEL
+extra_cppflags_nlm4 = -D__NW40__
+extra_cppflags_nlm3 = -D__NW30__
+extra_cpp_flags_nov = $(extra_cppflags_nlm$(nlm_ver))
+!ifeq release 0
+extra_cpp_flags_nov += -DDEBUG_ME
+!endif
+!ifeq nwlib libc
+extra_cpp_flags_nov += -D__NETWARE_LIBC__
 !endif
 
 extra_c_flags += -s $(extra_cflags)
 !ifeq which TRAP
 extra_c_flags += -zlf
 !endif
-
-!ifeq host_os nov
-extra_c_flags_386 += -3s
-!else ifeq target_os ads
-extra_c_flags_386 += -3s
+!ifeq target_os ads
+extra_c_flags += -3s
 !endif
+
+extra_c_flags_nov = -3s
 
 !ifeq which TRAP
-extra_c_flags_i86 += -zu
-!ifeq host_cpu i86
+extra_c_flags_i86 = -zu
 !ifndef test
-extra_c_flags_win += -bd
-!endif
+extra_c_flags_win_i86 = -bd
 !endif
 !endif
 
 # aflags stuff
 ###############
-
 extra_a_flags += $(model_switch_$(host_cpu))
+!ifeq target_os ads
+extra_a_flags += -3s -DACAD
+!endif
 
 extra_a_flags_misc7086 = -fpi87
 extra_a_flags_misc7386 = -fpi87

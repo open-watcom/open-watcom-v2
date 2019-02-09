@@ -13,11 +13,10 @@ sys_x86_win     = sys windows op st=20k, modname=$^&, desc $(description)
 sys_x86_dos     = sys dos op st=4k lib doslfn$(memory_model_i86).lib
 sys_x86_rsi     = sys dos16m lib doslfn$(memory_model_i86).lib
 sys_x86_cw      = sys causeway_dll lib doslfn3r.lib
-sys_x86_ads     = sys ads op st=8k lib $(adsdir)/wcads.lib
+sys_x86_ads     = sys ads op nocaseexact, st=8k lib $(adsdir)/wcads.lib
 sys_x86_rdos    = sys rdos
-!ifndef sys_x86_pls
 sys_x86_pls     = sys pharlap op st=8k
-!endif
+sys_x86_tnt     = sys tnt op st=8K
 !ifeq srv jvm
 sys_x86_nt      = sys nt dll op modname=$^&, desc $(description)
 !else ifeq srv msj
