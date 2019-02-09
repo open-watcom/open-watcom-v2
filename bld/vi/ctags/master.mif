@@ -14,6 +14,8 @@ clibtags_autodepends = .AUTODEPEND
 
 inc_dirs = -I..
 
+extra_cpp_flags = -D__ENABLE_FNAME_PROCESSING__ $(extra_cppflags)
+
 extra_c_flags = -s
 
 lflags_dos_386 = system dos4g

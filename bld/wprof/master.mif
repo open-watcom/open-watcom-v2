@@ -37,7 +37,10 @@ extra_cpp_flags =
 extra_cpp_flags += -DUSE_FILENAME_VERSION=$(bld_ver)
 !endif
 !ifeq sys_windowed 1
-extra_cpp_flags = -DGUI_IS_GUI
+extra_cpp_flags += -DGUI_IS_GUI
+!endif
+
+!ifeq sys_windowed 1
 extra_cpp_flags_os2 = -D__OS2_PM__
 !endif
 

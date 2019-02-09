@@ -61,7 +61,10 @@ objs = $(objs_$(target)_$(host_cpu)) sample.obj sampdata.obj wmsg.obj output.obj
 fardata_dos_dos =-DFARDATA
 fardata_dos_rsi =-DFARDATA
 fardata_win_win =-DFARDATA
-extra_cpp_flags += $(fardata_$(host_os)_$(target))
+!endif
+
+!ifndef bootstrap
+extra_cpp_flags = $(fardata_$(host_os)_$(target))
 !endif
 
 !ifeq target pls

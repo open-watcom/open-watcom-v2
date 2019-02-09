@@ -1,6 +1,6 @@
 name = fgrep
 objs =  $(name).obj
 
-extra_cpp_flags = -DFGREP
+extra_cppflags = -DFGREP
 
 !include $(posix_dir)/makeone.mif

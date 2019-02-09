@@ -38,6 +38,7 @@ extra_cpp_flags += -DCHICAGO
 !ifdef %OWUSE_FILENAME_VERSION
 extra_cpp_flags += -DUSE_FILENAME_VERSION=$(bld_ver)
 !endif
+
 extra_cpp_flags_nt = -DNOUSE3D
 
 extra_c_flags_i86 = -zW -zu -3
