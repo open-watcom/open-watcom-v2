@@ -102,12 +102,12 @@ name = $(srv)$(bld_ver)
 !endif
 
 !ifdef test
-xname=z$(name)
+xname = z$(name)
 !else
-xname=$(name)
+xname = $(name)
 !endif
 
-!ifeq nwlib libc
+!ifeq target_sys nlm_libc
 os_prefix = libc
 !else ifeq target_os linux
 os_prefix = lnx
@@ -117,7 +117,7 @@ os_prefix = os22
 os_prefix = $(target_os)
 !endif
 
-!ifeq srv nlm_libc
+!ifeq target_sys nlm_libc
 srv_prefix = nlm
 !else ifeq srv ped
 srv_prefix = pls
@@ -160,7 +160,7 @@ extra_cpp_flags_nov = $(extra_cppflags_nlm$(nlm_ver))
 !ifeq release 0
 extra_cpp_flags_nov += -DDEBUG_ME
 !endif
-!ifeq nwlib libc
+!ifeq target_sys nlm_libc
 extra_cpp_flags_nov += -D__NETWARE_LIBC__
 !endif
 
