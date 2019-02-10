@@ -63,6 +63,10 @@ os_prefix = os22
 os_prefix = $(target_os)
 !endif
 
+!ifndef target_sys
+target_sys = $(target_os)
+!endif
+
 fpu_flags_dos_i86   = -fpc
 fpu_flags_dos_386   = -fpc
 fpu_flags_linux_386 = -fpc
@@ -163,6 +167,10 @@ extra_a_flags_misc7386 = -fpi87
 
 # lflags stuff
 ###############
+extra_lflags_nlm5 = module libc
+extra_lflags_nlm4 = module clib
+extra_lflags_nlm3 =
+extra_l_flags_nov = debug all debug Novell $(extra_lflags_nlm$(nlm_ver))
 
 trperr_h = _err.gh
 jtrperr_h = _jerr.gh
@@ -218,7 +226,7 @@ $(target) : $(extra_link_res_$(host_os)) $(objs) $(libs) $(resource_file) $(extr
     @%append $^&.lnk $(mode_lflags)
     @%append $^&.lnk op map, elim
     @%append $^&.lnk name $^@
-    @%append $^&.lnk $(sys_$(target_cpu)_$(target_os))
+    @%append $^&.lnk $(sys_$(target_cpu)_$(target_sys))
 !ifeq which TRAP
     @%append $^&.lnk op dosseg
 !endif

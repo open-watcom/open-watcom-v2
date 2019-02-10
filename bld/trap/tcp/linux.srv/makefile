@@ -10,5 +10,5 @@ srv   = tcp
 which = SERVER
 remote_link = 1
 
-!include $(trap_dir)/lcl/linux/trap.mif
+!include $(trap_dir)/lcl/linux/linux.mif
 !include $(trap_dir)/master.mif

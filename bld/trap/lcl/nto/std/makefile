@@ -11,5 +11,5 @@ target_os  = nto
 srv   = lcl
 which = TRAP
 
-!include $(trap_dir)/lcl/nto/trap.mif
+!include $(trap_dir)/lcl/nto/nto.mif
 !include $(trap_dir)/master.mif

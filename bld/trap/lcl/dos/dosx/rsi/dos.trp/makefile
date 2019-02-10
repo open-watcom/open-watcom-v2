@@ -9,7 +9,7 @@ target_os  = dos
 srv = rsi
 which = TRAP
 
-extra_cpp_flags = -DDOS4G
+extra_cppflags = -DDOS4G
 
 !include $(trap_dir)/lcl/dos/dosx/dosx.mif
 !include $(trap_dir)/master.mif

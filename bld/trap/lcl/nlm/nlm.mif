@@ -20,24 +20,8 @@ extra_objs += $(nlm_trap_objs)
 extra_srcs = ;$(trap_dir)/lcl/nlm/c;$(trap_dir)/lcl/nlm/asm
 inc_dirs   = -I"$(trap_dir)/lcl/nlm/h"
 
-extra_comp5 = -D__NW50__ -D_USE_NEW_KERNEL
-extra_comp4 = -D__NW40__
-extra_comp3 = -D__NW30__
-
-extra_cpp_flags = $(extra_comp$(nlm_ver))
-!ifeq release 0
-extra_cpp_flags += -DDEBUG_ME
-!endif
-!ifeq nwlib libc
-extra_cpp_flags += -D__NETWARE_LIBC__
-!endif
-
 extra_a_flags = -3s
 
-extra_linker5 = module libc
-extra_linker4 = module clib
-extra_linker3 =
-extra_linker = $(extra_linker$(nlm_ver)) debug all debug Novell
 !ifneq release 0
 name= $(srv)serv$(nlm_ver)
 !else

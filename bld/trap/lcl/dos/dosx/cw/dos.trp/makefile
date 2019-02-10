@@ -9,7 +9,7 @@ target_os  = dos
 srv = cw
 which = TRAP
 
-extra_cpp_flags = -DCAUSEWAY
+extra_cppflags = -DCAUSEWAY
 
 !include $(trap_dir)/lcl/dos/dosx/dosx.mif
 !include $(trap_dir)/master.mif

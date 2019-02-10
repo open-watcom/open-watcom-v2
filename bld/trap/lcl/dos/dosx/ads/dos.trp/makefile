@@ -8,7 +8,7 @@ target_os  = dos
 srv = ads
 which = TRAP
 
-extra_cpp_flags = -DACAD
+extra_cppflags = -DACAD
 
 !include $(trap_dir)/lcl/dos/dosx/dosx.mif
 !include $(trap_dir)/master.mif

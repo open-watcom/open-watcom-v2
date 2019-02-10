@@ -16,10 +16,7 @@ which = SERVER
 
 extra_objs = autolock.obj cwacc.obj cwintr.obj
 
-extra_cpp_flags = -DCAUSEWAY
-!ifdef %OWUSE_FILENAME_VERSION
-extra_cpp_flags += -DUSE_FILENAME_VERSION=$(bld_ver)
-!endif
+extra_cppflags = -DCAUSEWAY
 extra_a_flags = -DCAUSEWAY
 
 inc_dirs = -I"$(causeway_dir)/inc" -I"$(comp_cfg_dir)/h"

@@ -1,4 +1,6 @@
 #pmake: serv lcl os_dos dsx cpu_386 x86 pls
+host_cpu = 386
+host_os  = dos
 
 !ifdef %OWUSE_FILENAME_VERSION
 name = pedhel$(bld_ver)
@@ -6,9 +8,9 @@ name = pedhel$(bld_ver)
 name = pedhelp
 !endif
 
-sys_x86_pls = sys tnt op st=8K
+target_sys = tnt
 
-objs_pls = plsord.obj   # must be first
+extra_objs = plsord.obj   # must be first
 
 extra_linker = &
         op offset=0, objalign=4k &
@@ -16,7 +18,4 @@ extra_linker = &
         lib $(plsdir)/wdos32.lib, $(plsdir)/wdosx32.lib &
         file $(plsdir)/dilseg.obj
 
-!include ../dos.srv/makefile
-
-plsord.obj : plsord.asm
-        $(as) $[@ -fo=.obj
+!include $(trap_dir)/lcl/dos/dosx/pls/pls.mif

@@ -51,7 +51,7 @@ imports = EE $(ji_dll) &
         ,monitorEnter $(ji_dll) &
         ,monitorExit $(ji_dll) &
 
-extra_cpp_flags = -DJVM -DJVMXHELP
+extra_cppflags = -DJVM -DJVMXHELP
 extra_c_flags = -bd -I"$(javasdk)/include" -I"$(javasdk)/include/win32" -I"$(java_src_dir)/src/win32/java/include" -fh
 extra_linker = op map,verbose import $(imports)
 
