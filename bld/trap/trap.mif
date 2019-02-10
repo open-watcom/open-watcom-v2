@@ -134,11 +134,7 @@ trap_ext_os2_os2v2   = .d32
 trap_ext_rdos        = .dll
 trap_ext_win         = .dll
 
-!ifdef %OWUSE_FILENAME_VERSION
-trap_basename = $(xname)$(bld_ver)
-!else
 trap_basename = $(xname)
-!endif
 
 !ifdef trap_ext_$(host_os)_$(target_os)
 target = $(trap_basename)$(trap_ext_$(host_os)_$(target_os))

@@ -13,23 +13,23 @@ inc_dirs += -I"$(trap_dir)/lcl/dos/dosx/h"
 dosx_serv_objs_i86 = misc7086.obj
 dosx_serv_objs_386 = misc7386.obj
 
+dosx_link_objs = dosxlink.obj packet.obj
+
 dosx_trap_objs = &
         $(dos_objs) &
-        dosxlink.obj &
+        $(dosx_link_objs) &
         dosxremo.obj &
         dosxfork.obj &
         dosxjump.obj &
-        packet.obj
 
 dosx_serv_objs = &
-        dosxlink.obj &
+        $(dosx_link_objs) &
         dosxserv.obj &
         dosxtrio.obj &
         dosxstub.obj &
         dosxrmod.obj &
         core.obj &
         supp.obj &
-        packet.obj &
         dosredir.obj &
         x86cpu.obj &
         $(dosx_serv_objs_$(host_cpu))

@@ -11,7 +11,6 @@ target_os  = os2v2
 #
 
 srv   = lcl
-name  = std
 which = TRAP
 
 extra_objs =          &

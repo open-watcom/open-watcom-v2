@@ -2,11 +2,8 @@
 host_cpu = 386
 host_os  = dos
 
-!ifdef %OWUSE_FILENAME_VERSION
-name = plshel$(bld_ver)
-!else
-name = plshelp
-!endif
+srv = pls
+which = SERVER
 
 extra_objs =
 

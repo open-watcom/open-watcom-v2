@@ -115,7 +115,7 @@
     #elif defined(DOS4G)
       #define HELPNAME      "RSIHEL" STRX( USE_FILENAME_VERSION ) ".EXP"
     #elif defined(CAUSEWAY)
-      #define HELPNAME      "CWHELP" STRX( USE_FILENAME_VERSION ) ".EXE"
+      #define HELPNAME      "CWHEL" STRX( USE_FILENAME_VERSION ) ".EXE"
     #endif
   #else
     #if defined(ACAD)

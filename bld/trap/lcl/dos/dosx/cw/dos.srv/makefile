@@ -7,11 +7,6 @@ target_cpu = x86
 target_os  = cw
 
 srv = cw
-!ifdef %OWUSE_FILENAME_VERSION
-name = cwhelp$(bld_ver)
-!else
-name = cwhelp
-!endif
 which = SERVER
 
 extra_objs = autolock.obj cwacc.obj cwintr.obj

@@ -2,11 +2,8 @@
 host_cpu = 386
 host_os  = dos
 
-!ifdef %OWUSE_FILENAME_VERSION
-name = pedhel$(bld_ver)
-!else
-name = pedhelp
-!endif
+srv = ped
+which = SERVER
 
 target_sys = tnt
 

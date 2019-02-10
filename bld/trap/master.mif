@@ -53,16 +53,6 @@ memory_model_i86 = c
 !endif
 !endif
 
-!ifeq nwlib libc
-os_prefix = libc
-!else ifeq target_os linux
-os_prefix = lnx
-!else ifeq target_os os2v2
-os_prefix = os22
-!else
-os_prefix = $(target_os)
-!endif
-
 !ifndef target_sys
 target_sys = $(target_os)
 !endif
@@ -80,28 +70,64 @@ fpu_flags_win_i86   = -fpc
 
 additional_cleanup = *.d32 *.trp
 
-!ifndef name
 !ifeq srv lcl
 name = std
+! ifndef test
+!  ifdef %OWUSE_FILENAME_VERSION
+name = std$(bld_ver)
+!  endif
+! endif
 !else ifeq which SERVER
-name = $(srv)serv
-!ifeq target_os win
-name+=w
-!endif
+! ifdef remote_link
+!  ifeq target_os win
+name = $(srv)servw$(nlm_ver)
+!  else
+name = $(srv)serv$(nlm_ver)
+!  endif
+! else
+name = $(srv)help
+!  ifndef test
+!   ifdef %OWUSE_FILENAME_VERSION
+name = $(srv)hel$(bld_ver)
+!   endif
+!  endif
+! endif
 !else
 name = $(srv)
+! ifndef test
+!  ifdef %OWUSE_FILENAME_VERSION
+name = $(srv)$(bld_ver)
+!  endif
+! endif
 !endif
-!endif
-
-!include cproj.mif
-!include defrule.mif
-!include deftarg.mif
 
 !ifdef test
 xname=z$(name)
 !else
 xname=$(name)
 !endif
+
+!ifeq nwlib libc
+os_prefix = libc
+!else ifeq target_os linux
+os_prefix = lnx
+!else ifeq target_os os2v2
+os_prefix = os22
+!else
+os_prefix = $(target_os)
+!endif
+
+!ifeq srv nlm_libc
+srv_prefix = nlm
+!else ifeq srv ped
+srv_prefix = pls
+!else
+srv_prefix = $(srv)
+!endif
+
+!include cproj.mif
+!include defrule.mif
+!include deftarg.mif
 
 !ifeq which SERVER
 !include $(trap_dir)/serv.mif
@@ -206,7 +232,7 @@ dbg_libs_dos = dbgstr.lib
 remote_objs = &
     $($(which)_remote_objs) &
     packet.obj &
-    $(srv)link.obj &
+    $(srv_prefix)link.obj &
 !endif
 
 !ifeq release 1
@@ -273,6 +299,6 @@ rc_inc_dirs = -I"$(trap_dir)/common"
     @%make echo_rc
     $(rc) $(rc_flags) $(rc_inc_path) $[@ -fo=$^@
 
-usage.u : ../$(srv).sp $(__MAKEFILES__)
+usage.u : ../$(srv_prefix).sp $(__MAKEFILES__)
     @%make echo_wsplice
     $(wsplice) -u $< $@

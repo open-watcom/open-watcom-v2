@@ -6,7 +6,6 @@ target_cpu = jvm
 target_os  = nt
 
 srv = jvm
-name = jvmhelp
 which = SERVER
 
 dall : .symbolic d wdebug.zip

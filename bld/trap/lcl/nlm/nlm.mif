@@ -22,10 +22,4 @@ inc_dirs   = -I"$(trap_dir)/lcl/nlm/h"
 
 extra_a_flags = -3s
 
-!ifneq release 0
-name= $(srv)serv$(nlm_ver)
-!else
-name= $(srv)srv$(nlm_ver)
-!endif
-
 !include $(trap_dir)/lcl/lcl.mif

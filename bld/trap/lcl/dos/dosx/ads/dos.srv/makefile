@@ -6,7 +6,6 @@ target_cpu = x86
 target_os  = ads
 
 srv = ads
-name = adshelp
 which = SERVER
 
 extra_objs = adsacc.obj adsintr.obj

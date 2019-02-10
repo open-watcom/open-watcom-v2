@@ -7,11 +7,6 @@ target_cpu = x86
 target_os  = rsi
 
 srv  = rsi
-!ifdef %OWUSE_FILENAME_VERSION
-name = rsihel$(bld_ver)
-!else
-name = rsihelp
-!endif
 which = SERVER
 
 !include $(rsilib_dir)/client.mif
