@@ -81,7 +81,7 @@ _nc_flush(void)
     (void) fflush(NC_OUTPUT);
 }
 
-#if 0
+#ifdef TRACE
 NCURSES_EXPORT(int)
 _nc_outch(int ch)
 {
