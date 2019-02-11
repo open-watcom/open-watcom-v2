@@ -69,6 +69,9 @@ void MyBeep( void )
  */
 void ScreenInit( void )
 {
+#ifdef TRACE
+    trace( TRACE_DATABASE | TRACE_CALLS );
+#endif
     if( !uistart() )
         StartupError( ERR_WIND_NO_MORE_WINDOWS );
 

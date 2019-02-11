@@ -21,9 +21,14 @@ c_dirs = $(vi_dir)/c;$(c_dirs_root);$(vi_dir)/ui;$(watcom_dir)/c
 .c : $(trmem_dir)
 .asm : $(c_dirs)
 
-extra_cpp_flags = -DNOUSE3D
 !ifeq sys_windowed 1
-extra_cpp_flags = -D__WIN__
+extra_cpp_flags = -DNOUSE3D -D__WIN__
+!else
+!ifeq ui_os unix
+!ifeq release 0
+extra_cpp_flags = -DTRACE
+!endif
+!endif
 !endif
 
 !ifdef curses
