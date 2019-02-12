@@ -170,16 +170,7 @@ struct tinfo_fkeys {
     chtype code;
 };
 
-#if BROKEN_LINKER
-
-#define _nc_tinfo_fkeys _nc_tinfo_fkeysf()
-extern NCURSES_EXPORT(struct tinfo_fkeys *) _nc_tinfo_fkeysf (void);
-
-#else
-
 extern NCURSES_EXPORT_VAR(struct tinfo_fkeys) _nc_tinfo_fkeys[];
-
-#endif
 
 /*
  * The file comp_captab.c contains an array of these structures, one

@@ -46,46 +46,16 @@ MODULE_ID("$Id: lib_data.c,v 1.16 2000/12/10 02:55:07 tom Exp $")
  * OS/2's native linker complains if we don't initialize public data when
  * constructing a dll (reported by J.J.G.Ripoll).
  */
-NCURSES_EXPORT_VAR(WINDOW *)
-stdscr = 0;
-NCURSES_EXPORT_VAR(WINDOW *)
-curscr = 0;
-NCURSES_EXPORT_VAR(WINDOW *)
-newscr = 0;
-
-NCURSES_EXPORT_VAR(SCREEN *) _nc_screen_chain = 0;
+NCURSES_EXPORT_VAR(WINDOW *)    stdscr = 0;
+NCURSES_EXPORT_VAR(WINDOW *)    curscr = 0;
+NCURSES_EXPORT_VAR(WINDOW *)    newscr = 0;
+NCURSES_EXPORT_VAR(SCREEN *)    _nc_screen_chain = 0;
 
 /*
- * The variable 'SP' will be defined as a function on systems that cannot link
- * data-only modules, since it is used in a lot of places within ncurses and we
- * cannot guarantee that any application will use any particular function.  We
- * put the WINDOW variables in this module, because it appears that any
+ * We put the WINDOW variables in this module, because it appears that any
  * application that uses them will also use 'SP'.
  *
  * This module intentionally does not reference other ncurses modules, to avoid
  * module coupling that increases the size of the executable.
  */
-#if BROKEN_LINKER
-     static SCREEN *my_screen;
-
-NCURSES_EXPORT(SCREEN *)
-_nc_screen(void)
-{
-    return my_screen;
-}
-
-NCURSES_EXPORT(int)
-_nc_alloc_screen(void)
-{
-    return ((my_screen = typeCalloc(SCREEN, 1)) != 0);
-}
-
-NCURSES_EXPORT(void)
-_nc_set_screen(SCREEN * sp)
-{
-    my_screen = sp;
-}
-
-#else
-NCURSES_EXPORT_VAR(SCREEN *) SP = NULL;         /* Some linkers require initialized data... */
-#endif
+NCURSES_EXPORT_VAR(SCREEN *)    SP = NULL;      /* Some linkers require initialized data... */

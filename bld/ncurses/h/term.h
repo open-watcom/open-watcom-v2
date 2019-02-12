@@ -34,7 +34,7 @@
 /* $Id: MKterm.h.awk.in,v 1.41 2001/12/23 01:04:38 tom Exp $ */
 
 /*
-**	term.h -- Definition of struct term
+**      term.h -- Definition of struct term
 */
 
 #ifndef NCURSES_TERM_H_incl
@@ -113,13 +113,13 @@ extern "C" {
 #ifndef cfgetospeed
 #define cfgetospeed(t) ((t)->c_cflag & CBAUD)
 #endif
-#ifndef TCIFLUSH 
+#ifndef TCIFLUSH
 #define TCIFLUSH 0
 #endif
-#ifndef TCOFLUSH 
+#ifndef TCOFLUSH
 #define TCOFLUSH 1
 #endif
-#ifndef TCIOFLUSH 
+#ifndef TCIOFLUSH
 #define TCIOFLUSH 2
 #endif
 #ifndef tcflush
@@ -619,8 +619,8 @@ extern "C" {
 #define STRWRITE  394
 
 /* older synonyms for some capabilities */
-#define beehive_glitch	no_esc_ctlc
-#define teleray_glitch	dest_tabs_magic_smso
+#define beehive_glitch  no_esc_ctlc
+#define teleray_glitch  dest_tabs_magic_smso
 #define micro_char_size micro_col_size
 
 #ifdef __INTERNAL_CAPS_VISIBLE
@@ -668,62 +668,39 @@ extern "C" {
 #define STRCOUNT  414
 
 /* used by code for comparing entries */
-#define acs_chars_index	 146
+#define acs_chars_index  146
 
-typedef struct termtype {	/* in-core form of terminfo data */
-    char  *term_names;		/* str_table offset of term names */
-    char  *str_table;		/* pointer to string table */
-    char  *Booleans;		/* array of boolean values */
-    short *Numbers;		/* array of integer values */
-    char  **Strings;		/* array of string offsets */
+typedef struct termtype {       /* in-core form of terminfo data */
+    char  *term_names;          /* str_table offset of term names */
+    char  *str_table;           /* pointer to string table */
+    char  *Booleans;            /* array of boolean values */
+    short *Numbers;             /* array of integer values */
+    char  **Strings;            /* array of string offsets */
 
 #if NCURSES_XNAMES
-    char  *ext_str_table;	/* pointer to extended string table */
-    char  **ext_Names;		/* corresponding names */
+    char  *ext_str_table;       /* pointer to extended string table */
+    char  **ext_Names;          /* corresponding names */
 
     unsigned short num_Booleans;/* count total Booleans */
-    unsigned short num_Numbers;	/* count total Numbers */
-    unsigned short num_Strings;	/* count total Strings */
+    unsigned short num_Numbers; /* count total Numbers */
+    unsigned short num_Strings; /* count total Strings */
 
     unsigned short ext_Booleans;/* count extensions to Booleans */
-    unsigned short ext_Numbers;	/* count extensions to Numbers */
-    unsigned short ext_Strings;	/* count extensions to Strings */
+    unsigned short ext_Numbers; /* count extensions to Numbers */
+    unsigned short ext_Strings; /* count extensions to Strings */
 #endif /* NCURSES_XNAMES */
 
 } TERMTYPE;
 
-typedef struct term {		/* describe an actual terminal */
-    TERMTYPE	type;		/* terminal type description */
-    short	Filedes;	/* file description being written to */
-    TTY		Ottyb,		/* original state of the terminal */
-		Nttyb;		/* current state of the terminal */
-    int		_baudrate;	/* used to compute padding */
+typedef struct term {           /* describe an actual terminal */
+    TERMTYPE    type;           /* terminal type description */
+    short       Filedes;        /* file description being written to */
+    TTY         Ottyb,          /* original state of the terminal */
+                Nttyb;          /* current state of the terminal */
+    int         _baudrate;      /* used to compute padding */
 } TERMINAL;
 
 extern NCURSES_EXPORT_VAR(TERMINAL *) cur_term;
-
-#if 0 /* BROKEN_LINKER */
-#define boolnames  _nc_boolnames()
-#define boolcodes  _nc_boolcodes()
-#define boolfnames _nc_boolfnames()
-#define numnames   _nc_numnames()
-#define numcodes   _nc_numcodes()
-#define numfnames  _nc_numfnames()
-#define strnames   _nc_strnames()
-#define strcodes   _nc_strcodes()
-#define strfnames  _nc_strfnames()
-
-extern NCURSES_EXPORT(NCURSES_CONST char * const *) _nc_boolnames (void);
-extern NCURSES_EXPORT(NCURSES_CONST char * const *) _nc_boolcodes (void);
-extern NCURSES_EXPORT(NCURSES_CONST char * const *) _nc_boolfnames (void);
-extern NCURSES_EXPORT(NCURSES_CONST char * const *) _nc_numnames (void);
-extern NCURSES_EXPORT(NCURSES_CONST char * const *) _nc_numcodes (void);
-extern NCURSES_EXPORT(NCURSES_CONST char * const *) _nc_numfnames (void);
-extern NCURSES_EXPORT(NCURSES_CONST char * const *) _nc_strnames (void);
-extern NCURSES_EXPORT(NCURSES_CONST char * const *) _nc_strcodes (void);
-extern NCURSES_EXPORT(NCURSES_CONST char * const *) _nc_strfnames (void);
-
-#else
 
 extern NCURSES_EXPORT_VAR(NCURSES_CONST char * const ) boolnames[];
 extern NCURSES_EXPORT_VAR(NCURSES_CONST char * const ) boolcodes[];
@@ -734,8 +711,6 @@ extern NCURSES_EXPORT_VAR(NCURSES_CONST char * const ) numfnames[];
 extern NCURSES_EXPORT_VAR(NCURSES_CONST char * const ) strnames[];
 extern NCURSES_EXPORT_VAR(NCURSES_CONST char * const ) strcodes[];
 extern NCURSES_EXPORT_VAR(NCURSES_CONST char * const ) strfnames[];
-
-#endif
 
 /* internals */
 extern NCURSES_EXPORT(int) _nc_set_tty_mode (TTY *buf);
