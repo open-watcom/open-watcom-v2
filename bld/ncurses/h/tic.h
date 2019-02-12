@@ -74,13 +74,15 @@ extern "C" {
 */
 
 #define MAGIC           0432    /* first two bytes of a compiled entry */
+#define MAGIC2          01036   /* first two bytes of a compiled 32-bit entry */
 
 /*
  * The "maximum" here is misleading; XSI guarantees minimum values, which a
  * given implementation may exceed.
  */
 #define MAX_NAME_SIZE   512     /* maximum legal name field size (XSI:127) */
-#define MAX_ENTRY_SIZE  4096    /* maximum legal entry size */
+#define MAX_ENTRY_SIZE1 4096    /* maximum legal entry size (SVr2) */
+#define MAX_ENTRY_SIZE2 32768   /* maximum legal entry size (ncurses6.1) */
 
 /* The maximum size of individual name or alias is guaranteed in XSI to
  * be 14, since that corresponds to the older filename lengths.  Newer
@@ -207,12 +209,12 @@ extern NCURSES_EXPORT(const struct name_table_entry * const *) _nc_get_hash_tabl
 #define NOTFOUND                ((struct name_table_entry *)0)
 
 /* out-of-band values for representing absent capabilities */
-#define ABSENT_BOOLEAN          (-1)   /* 255 */
+#define ABSENT_BOOLEAN          ((signed char)-1)   /* 255 */
 #define ABSENT_NUMERIC          (-1)
 #define ABSENT_STRING           (char *)0
 
 /* out-of-band values for representing cancels */
-#define CANCELLED_BOOLEAN       (char)(-2)  /* 254 */
+#define CANCELLED_BOOLEAN       ((signed char)-2)  /* 254 */
 #define CANCELLED_NUMERIC       (-2)
 #define CANCELLED_STRING        (char *)(-1)
 

@@ -687,7 +687,7 @@ extern NCURSES_EXPORT_VAR(SCREEN *) _nc_screen_chain;
 #define returnVoid       T((T_RETURN(""))); return
 #define returnWin(code)  TRACE_RETURN(code,win)
 
-extern NCURSES_EXPORT(bool)             _nc_retrace_bool (bool);
+extern NCURSES_EXPORT(bool)             _nc_retrace_bool (int);
 extern NCURSES_EXPORT(SCREEN *)         _nc_retrace_sp (SCREEN *);
 extern NCURSES_EXPORT(WINDOW *)         _nc_retrace_win (WINDOW *);
 extern NCURSES_EXPORT(attr_t)           _nc_retrace_attr_t (attr_t);

@@ -132,7 +132,7 @@ _tracef(const char *fmt,...)
 
 /* Trace 'bool' return-values */
 NCURSES_EXPORT(bool)
-_nc_retrace_bool(bool code)
+_nc_retrace_bool(int code)
 {
     T((T_RETURN("%s"), code ? "true" : "false"));
     return code;

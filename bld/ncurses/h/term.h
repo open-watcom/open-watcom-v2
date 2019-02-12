@@ -34,8 +34,8 @@
 /* $Id: MKterm.h.awk.in,v 1.41 2001/12/23 01:04:38 tom Exp $ */
 
 /*
-**      term.h -- Definition of struct term
-*/
+ *  term.h -- Definition of struct term
+ */
 
 #ifndef NCURSES_TERM_H_incl
 #define NCURSES_TERM_H_incl 1
@@ -61,6 +61,9 @@ extern "C" {
 
 #undef  NCURSES_CONST
 #define NCURSES_CONST /*nothing*/
+
+#undef  NCURSES_SBOOL
+#define NCURSES_SBOOL signed char
 
 #undef  NCURSES_XNAMES
 #define NCURSES_XNAMES 1
@@ -670,24 +673,24 @@ extern "C" {
 /* used by code for comparing entries */
 #define acs_chars_index  146
 
-typedef struct termtype {       /* in-core form of terminfo data */
-    char  *term_names;          /* str_table offset of term names */
-    char  *str_table;           /* pointer to string table */
-    char  *Booleans;            /* array of boolean values */
-    short *Numbers;             /* array of integer values */
-    char  **Strings;            /* array of string offsets */
+typedef struct termtype {               /* in-core form of terminfo data */
+    char            *term_names;        /* str_table offset of term names */
+    char            *str_table;         /* pointer to string table */
+    NCURSES_SBOOL   *Booleans;          /* array of boolean values */
+    short           *Numbers;           /* array of integer values */
+    char            **Strings;          /* array of string offsets */
 
 #if NCURSES_XNAMES
-    char  *ext_str_table;       /* pointer to extended string table */
-    char  **ext_Names;          /* corresponding names */
+    char            *ext_str_table;     /* pointer to extended string table */
+    char            **ext_Names;        /* corresponding names */
 
-    unsigned short num_Booleans;/* count total Booleans */
-    unsigned short num_Numbers; /* count total Numbers */
-    unsigned short num_Strings; /* count total Strings */
+    unsigned short  num_Booleans;       /* count total Booleans */
+    unsigned short  num_Numbers;        /* count total Numbers */
+    unsigned short  num_Strings;        /* count total Strings */
 
-    unsigned short ext_Booleans;/* count extensions to Booleans */
-    unsigned short ext_Numbers; /* count extensions to Numbers */
-    unsigned short ext_Strings; /* count extensions to Strings */
+    unsigned short  ext_Booleans;       /* count extensions to Booleans */
+    unsigned short  ext_Numbers;        /* count extensions to Numbers */
+    unsigned short  ext_Strings;        /* count extensions to Strings */
 #endif /* NCURSES_XNAMES */
 
 } TERMTYPE;
