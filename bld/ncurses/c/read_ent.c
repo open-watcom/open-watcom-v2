@@ -113,7 +113,7 @@ convert_16bits(char *buf, short *Numbers, int count)
 
     for (i = 0; i < count; i++) {
         Numbers[i] = (short) LOW_MSB(buf + 2 * i);
-        TR(TRACE_DATABASE, ("get Numbers[%d]=%d", i, Numbers[i]));
+        TR(TRACE_DATABASE, ("Numbers[%d]=%d", i, Numbers[i]));
     }
 }
 
@@ -143,7 +143,7 @@ convert_32bits(char *buf, short *Numbers, int count)
         } else {
             Numbers[i] = value;
         }
-        TR(TRACE_DATABASE, ("get Numbers[%d]=%d", i, Numbers[i]));
+        TR(TRACE_DATABASE, ("Numbers[%d]=%d", i, Numbers[i]));
     }
 }
 
@@ -252,6 +252,7 @@ read_termtype(int fd, TERMTYPE * ptr)
         read_size = MAX_NAME_SIZE;
     read(fd, buf, read_size);
     buf[MAX_NAME_SIZE] = '\0';
+    TR(TRACE_DATABASE, ("TERMTYPE Name = %s", buf));
     ptr->term_names = typeCalloc(char, strlen(buf) + 1);
     if (ptr->term_names == NULL) {
         return (0);
