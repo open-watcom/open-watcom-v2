@@ -987,8 +987,8 @@ void ReadSection( FILE *fp, const char *section, LIST **list )
     found = false;
     for( ;; ) {
         if( mygets( SectionBuf, SECTION_BUF_SIZE, fp ) == NULL ) {
+            fclose( fp );
             if( file_curr-- > 0 ) {
-                fclose( fp );
                 fp = file_stack[file_curr];
                 continue;
             }
@@ -1039,7 +1039,6 @@ void ReadInfFile( void )
     }
     sprintf( ver_buf, "[%s]", Product );
     ReadSection( fp, ver_buf, &AppSection );
-    fclose( fp );
 }
 
 
