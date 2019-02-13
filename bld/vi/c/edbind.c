@@ -101,6 +101,41 @@ static void MyPrintf( char *str, ... )
 
 } /* MyPrintf */
 
+static int copy_file( FILE *src, FILE *dst, unsigned long tocopy )
+{
+    char            *copy;
+    unsigned        size;
+    int             rc;
+
+    rc = 0;
+    copy = malloc( COPY_SIZE );
+    if( copy == NULL ) {
+        printf( "Out of Memory\n" );
+        rc = 1;
+    } else {
+        size = COPY_SIZE;
+        while( tocopy > 0 ) {
+            if( size > tocopy )
+                size = (unsigned)tocopy;
+            if( fread( copy, 1, size, src ) != size ) {
+                free( copy );
+                printf( "Read error" );
+                rc = 1;
+                break;
+            }
+            if( fwrite( copy, 1, size, dst ) != size ) {
+                free( copy );
+                printf( "Write error" );
+                rc = 1;
+                break;
+            }
+            tocopy -= size;
+        }
+        free( copy );
+    }
+    return( rc );
+}
+
 /*
  * AddDataToEXE - tack data to end of an EXE
  */
@@ -109,10 +144,7 @@ static void AddDataToEXE( char *exe, char *data, bind_size data_len, unsigned lo
     FILE            *fp;
     FILE            *newfp;
     char            buff[sizeof( MAGIC_COOKIE ) + sizeof( bind_size )];
-    unsigned        size;
-    char            *copy;
-    char            foo[128];
-    char            drive[_MAX_DRIVE], dir[_MAX_DIR];
+    int             rc;
 
     /*
      * get files
@@ -121,20 +153,21 @@ static void AddDataToEXE( char *exe, char *data, bind_size data_len, unsigned lo
     if( fp == NULL ) {
         Abort( "Fatal error opening \"%s\"", exe );
     }
-    _splitpath( exe, drive, dir, NULL, NULL );
-    _makepath( foo, drive, dir, "__cge__", ".exe" );
-    newfp = fopen( foo, "wb" );
+    newfp = tmpfile();
     if( newfp == NULL ) {
-        Abort( "Fatal error opening \"%s\"", foo );
+        fclose( fp );
+        Abort( "Fatal error opening temporary file" );
     }
 
     /*
      * get trailer
      */
     if( fseek( fp, - (long)sizeof( buff ), SEEK_END ) ) {
+        fclose( fp );
         Abort( "Initial seek error on \"%s\"", exe );
     }
     if( fread( buff, 1, sizeof( buff ), fp ) != sizeof( buff ) ) {
+        fclose( fp );
         Abort( "Read error on \"%s\"", exe );
     }
 
@@ -144,38 +177,28 @@ static void AddDataToEXE( char *exe, char *data, bind_size data_len, unsigned lo
      */
     if( memcmp( buff, MAGIC_COOKIE, sizeof( MAGIC_COOKIE ) ) ) {
         if( sflag ) {
+            fclose( fp );
             Abort( "\"%s\" does not contain configuration data!", exe );
         }
     } else {
         tocopy -= sizeof( buff ) + *((bind_size *)( buff + sizeof( MAGIC_COOKIE ) ));
     }
     if( fseek( fp, 0, SEEK_SET ) ) {
+        fclose( fp );
         Abort( "Seek error on \"%s\"", exe );
     }
 
     /*
      * copy crap
      */
-    copy = malloc( COPY_SIZE );
-    if( copy == NULL ) {
-        Abort( "Out of Memory" );
-    }
-    size = COPY_SIZE;
-    while( tocopy > 0 ) {
-        if( size > tocopy )
-            size = (unsigned)tocopy;
-        if( fread( copy, 1, size, fp ) != size ) {
-            free( copy );
-            Abort( "Read error on \"%s\"", exe );
-        }
-        if( fwrite( copy, 1, size, newfp ) != size ) {
-            free( copy );
-            Abort( "Write error on \"%s\"", foo );
-        }
-        tocopy -= size;
-    }
-    free( copy );
+    rc = copy_file( fp, newfp, tocopy );
+
     fclose( fp );
+
+    if( rc ) {
+        fclose( newfp );
+        exit( 1 );
+    }
 
     /*
      * write out data and new trailer
@@ -190,9 +213,15 @@ static void AddDataToEXE( char *exe, char *data, bind_size data_len, unsigned lo
             Abort( "write 2 error on \"%s\"", exe );
         }
     }
+    fp = fopen( exe, "wb" );
+    if( fp == NULL ) {
+        Abort( "Fatal error opening \"%s\"", exe );
+    }
+    tocopy = ftell( newfp );
+    rewind( newfp );
+    copy_file( newfp, fp, tocopy );
+    fclose( fp );
     fclose( newfp );
-    remove( exe );
-    rename( foo, exe );
 
 } /* AddDataToEXE */
 
