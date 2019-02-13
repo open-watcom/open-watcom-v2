@@ -487,7 +487,7 @@ static void FinishEnvironmentLines( FILE *fp, int num_env, bool *found_env, bool
             }
             if( VbufLen( &val_after ) > 0 ) {
                 VbufSetStr( &tmp, "ENDLIBPATH" );
-                if( output_line( &vbuf, VAR_SETENV_ASSIGN, &tmp, &val_before ) ) {
+                if( output_line( &vbuf, VAR_SETENV_ASSIGN, &tmp, &val_after ) ) {
                     fputs_vbuf( &vbuf, fp );
                     fputc( '\n', fp );
                 }
