@@ -77,14 +77,6 @@
 
 #define TEST_UNC(x) (x[0] == '\\' && x[1] == '\\')
 
-#ifdef __UNIX__
-    #define PMODE_W_USR (S_IWUSR)
-#else
-    #define PMODE_W_USR (S_IWRITE)
-#endif
-#define DEF_ACCESS      (PMODE_R | PMODE_W_USR)
-#define DEF_EXEC        (DEF_ACCESS | PMODE_X)
-
 typedef struct def_var {
     char                *variable;
     char                *value;
@@ -1477,7 +1469,7 @@ COPYFILE_ERROR DoCopyFile( const VBUF *src_path, const VBUF *dst_path, bool appe
     } else {
         style = O_CREAT | O_TRUNC | O_WRONLY | O_BINARY;
     }
-    dst_files = open_vbuf( dst_path, style, DEF_ACCESS );
+    dst_files = open_vbuf( dst_path, style, PMODE_R_USR_W );
     if( dst_files == -1 ) {
         FileClose( src_files );
         if( pbuff != lastchance )
@@ -1637,7 +1629,7 @@ static bool RelocateFiles( void )
                     break;
                 }
                 if( SimSubFileExecutable( filenum, subfilenum ) ) {
-                    chmod_vbuf( &dst_path, DEF_EXEC );
+                    chmod_vbuf( &dst_path, PMODE_RX_USR_W );
                 }
                 remove_vbuf( &src_path );
                 num_installed += SimSubFileSize( filenum, subfilenum );
@@ -1854,7 +1846,7 @@ static bool DoCopyFiles( void )
                         break;
                     }
                     if( resp_replace ) {
-                        chmod_vbuf( &tmp_path, PMODE_W_USR );
+                        chmod_vbuf( &tmp_path, PMODE_USR_W );
                     }
                 }
                 if( SimSubFileNewer( filenum, subfilenum ) ) {
@@ -1883,7 +1875,7 @@ static bool DoCopyFiles( void )
                         break;
                     }
                     if( resp_replace ) {
-                        chmod_vbuf( &tmp_path, PMODE_W_USR );
+                        chmod_vbuf( &tmp_path, PMODE_USR_W );
                         num_total_install += OVERHEAD_SIZE;
                     }
                 } else {
@@ -2024,7 +2016,7 @@ static bool DoCopyFiles( void )
                     } while( copy_error != CFE_NOERROR );
                     if( ok ) {
                         if( SimSubFileExecutable( filenum, subfilenum ) ) {
-                            chmod_vbuf( &tmp_path, DEF_EXEC );
+                            chmod_vbuf( &tmp_path, PMODE_RX_USR_W );
                         }
                         SetVariableByHandle_vbuf( var_handle, &tmp_path );
                         UpdateCheckList( &tmp_path, var_handle );
@@ -2202,7 +2194,7 @@ static bool NukePath( VBUF *path, int status )
 #else
             if( info->d_attr & (_A_RDONLY | _A_SYSTEM | _A_HIDDEN) ) {
 #endif
-                chmod_vbuf( path, PMODE_W_USR );
+                chmod_vbuf( path, PMODE_USR_W );
             }
             if( remove_vbuf( path ) != 0 ) {
                 ok = false;

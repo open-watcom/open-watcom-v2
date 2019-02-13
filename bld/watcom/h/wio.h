@@ -78,12 +78,16 @@
     #define PMODE_R         (S_IRUSR | S_IRGRP | S_IROTH)
     #define PMODE_W         (S_IWUSR | S_IWGRP | S_IWOTH)
     #define PMODE_X         (S_IXUSR | S_IXGRP | S_IXOTH)
+    #define PMODE_USR_W     S_IWUSR
 #else
     #define PMODE_R         (S_IREAD)
     #define PMODE_W         (S_IWRITE)
     #define PMODE_X         (S_IEXEC)
+    #define PMODE_USR_W     S_IWRITE
 #endif
 #define PMODE_RW            (PMODE_R | PMODE_W)
 #define PMODE_RWX           (PMODE_R | PMODE_W | PMODE_X)
+#define PMODE_R_USR_W       (PMODE_R | PMODE_USR_W)
+#define PMODE_RX_USR_W      (PMODE_R | PMODE_X | PMODE_USR_W)
 
 #endif
