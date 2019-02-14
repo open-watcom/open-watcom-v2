@@ -2331,14 +2331,17 @@ static void remove_ampersand( VBUF *str )
 {
     const char      *s;
     VBUF            tmp;
+    size_t          len;
 
     VbufInit( &tmp );
     s = VbufString( str );
     while( *s != '\0' ) {
         if( *s == '&' ) {
+            len = s - VbufString( str );
             VbufSetStr( &tmp, s + 1 );
-            VbufSetLen( str, s - VbufString( str ) );
+            VbufSetLen( str, len );
             VbufConcVbuf( str, &tmp );
+            s = VbufString( str ) + len;
             continue;
         }
         s++;
