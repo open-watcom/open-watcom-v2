@@ -2,8 +2,13 @@
 host_cpu = 386
 host_os  = dos
 
+target_cpu = x86
+target_os  = pls
+
 srv = pls
 which = SERVER
+
+trap_nodoslfn = 1
 
 extra_objs =
 

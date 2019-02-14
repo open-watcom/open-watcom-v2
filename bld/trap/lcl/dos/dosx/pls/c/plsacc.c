@@ -54,17 +54,8 @@
 #include "clibint.h"
 #include "trperr.h"
 #include "doserr.h"
+#include "plsintr.h"
 
-
-extern bool     GrabVects( void );
-extern void     ReleVects( void );
-
-extern void     GrabPrtScrn( void );
-extern void     RelePrtScrn( void );
-
-extern bool     SetPSP( USHORT );
-
-extern void     SetMSW(unsigned);
 
 #ifdef DEBUG_TRAP
 #define _DBG( x )  cputs x

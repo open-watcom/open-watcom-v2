@@ -2,10 +2,15 @@
 host_cpu = 386
 host_os  = dos
 
+target_cpu = x86
+target_os  = pls
+
+target_sys = tnt
+
 srv = ped
 which = SERVER
 
-target_sys = tnt
+trap_nodoslfn = 1
 
 extra_objs = plsord.obj   # must be first
 

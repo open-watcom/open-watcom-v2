@@ -54,28 +54,24 @@
 #include "doserr.h"
 #include "doscomm.h"
 #include "cpuglob.h"
+#include "adsintr.h"
+#include "adsacc.h"
 
+
+typedef struct watch_point {
+    addr48_ptr  addr;
+    dword       value;
+    dword       linear;
+    word        dregs;
+    word        len;
+} watch_point;
 
 extern void StackCheck();
 #pragma aux StackCheck "__STK";
 
-trap_cpu_regs   Regs;
-int             IntNum;
-char            Break;
-
-extern void DumpDbgRegs(void);
-
-
-extern  void            GrabVects(void);
-extern  void            ReleVects(void);
-extern  dword           GetFL(void);
-extern  void            DoRunProg(void);
-extern  word            DoMapSeg(word);
-extern  int             DoReadMem(word,dword,char*);
-extern  int             DoWriteMem(word,dword,char*);
-extern  dword           GetLinear(word,dword);
-extern  dword           SegLimit(word);
-extern  bool            WriteOk(word);
+trap_cpu_regs           Regs;
+int                     IntNum;
+char                    Break;
 
 bool                    FakeBreak;
 bool                    AtEnd;
@@ -86,14 +82,6 @@ static unsigned_8       RealNPXType;
 char                    UtilBuff[BUFF_SIZE];
 #define ADSSTACK_SIZE      4096
 char                    ADSStack[ADSSTACK_SIZE];
-
-typedef struct watch_point {
-    addr48_ptr  addr;
-    dword       value;
-    dword       linear;
-    word        dregs;
-    word        len;
-} watch_point;
 
 #define MAX_WP  8
 
@@ -120,9 +108,6 @@ struct {
     dword   res4;
     dword   res5;
 } SysRegs;
-
-extern void GetSysRegs( void * );
-extern void SetSysRegs( void * );
 
 #if 0
 /*
