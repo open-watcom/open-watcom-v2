@@ -51,7 +51,7 @@ dosbox_options = -noautoexec -noconsole &
 dosbox_wgml_options = -c "mount e $(src_dir)" -c "d:$(dos_wgml_tmp_batch)"
 dosbox_gendev_options = -c "mount e .." -c "d:$(dos_gendev_tmp_batch)"
 
-dosemu_options = -dumb -quiet -X -I 'keyboard {layout us}'
+dosemu_options = -dumb -quiet -I 'keyboard {layout us}'
 
 !ifeq bld_os dos
 
