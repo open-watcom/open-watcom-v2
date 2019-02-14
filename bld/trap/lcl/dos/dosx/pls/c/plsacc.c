@@ -686,7 +686,7 @@ extern void finit( void );
         ".387"  \
         "finit" \
         "wait"  \
-    __param     [] \
+    __parm      [] \
     __value     \
     __modify    []
 
