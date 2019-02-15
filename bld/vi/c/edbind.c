@@ -118,13 +118,11 @@ static int copy_file( FILE *src, FILE *dst, unsigned long tocopy )
             if( size > tocopy )
                 size = (unsigned)tocopy;
             if( fread( copy, 1, size, src ) != size ) {
-                free( copy );
                 printf( "Read error" );
                 rc = 1;
                 break;
             }
             if( fwrite( copy, 1, size, dst ) != size ) {
-                free( copy );
                 printf( "Write error" );
                 rc = 1;
                 break;
