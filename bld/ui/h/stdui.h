@@ -193,7 +193,6 @@ typedef enum ui_event {
     EV_ALT_INSERT,              // 0x01a2
     EV_ALT_DELETE,              // 0x01a3
     EV_ALT_TAB                   = 0x01a5,
-#endif
 #if !defined( NO_SHIFT_MOVEMENT )
     EV_SHIFT_HOME                = 0x01c0,  // only some hosts
     EV_SHIFT_END,               // 0x01c1   // only some hosts
@@ -204,10 +203,9 @@ typedef enum ui_event {
     EV_SHIFT_PAGE_UP,           // 0x01C6   // only some hosts
     EV_SHIFT_PAGE_DOWN,         // 0x01C7   // only some hosts
 #endif
-#if !defined( FD6 )
     EV_LAST_KEYBOARD             = 0x01ff,
 #endif
-    EV_SHOW_FIELD,
+    EV_SHOW_FIELD                = 0x0200,
     EV_MODIFIED_FIELD,
     EV_LINE_CHANGE,
     EV_MOUSE_HOLD,
