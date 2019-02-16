@@ -60,6 +60,7 @@ typedef enum ui_event {
     EV_RUB_OUT                   = 0x0108,
     EV_TAB                       = 0x0109,
     EV_ENTER                     = 0x010D,
+    EV_ESCAPE                    = 0x010E,
     EV_SHIFT_TAB                 = 0x010F,  // only some hosts
     EV_ALT_Q                     = 0x0110,
     EV_ALT_W,                   // 0x0111
@@ -283,6 +284,12 @@ typedef enum ui_event {
     EV_CHECK_BOX_CLICK,
     EV_REDRAW_SCREEN,
 
+    EV_STICKY_FUNC               = 0x03F0,
+    EV_STICKY_SHIFT,            // 0x03F1
+    EV_STICKY_CTRL,             // 0x03F2
+    EV_STICKY_ALT,              // 0x03F3
+    EV_STICKY_INTRO              = 0x03FE,
+
     /*
      * This next one isn't all that useful on AT-class machines, I grant you.
      * But - it could be useful on the NEC, to provide a nice interface for
@@ -300,8 +307,6 @@ typedef enum ui_event {
 #define __end__                 EV_NO_EVENT         /* readable group separator in event list */
 
 #define EV_FIRST_EVENT          EV_FIRST_EDIT_CHAR
-
-#define EV_ESCAPE               EV_ALT_RIGHT_BRACKET
 
 #define EV_TAB_FORWARD          EV_TAB
 #define EV_TAB_BACKWARD         EV_SHIFT_TAB
