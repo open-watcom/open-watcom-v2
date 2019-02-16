@@ -62,6 +62,8 @@
 
 #define ANSI_HDR        _ESC "["
 
+#define XT_MOUSE        _ESC "[M"
+
 #define XT_INIT         _ESC "[?1000h"
 #define XT_FINI         _ESC "[?1000l"
 
@@ -303,18 +305,15 @@ static bool gpm_tm_init( void )
 static bool tm_init( init_mode install )
 /**************************************/
 {
-    bool        kmous;                          // Does key_mouse exist?
-
     MouseInstalled  = false;
     MouseType       = M_NONE;
-    kmous           = ( key_mouse != NULL );
 
     if( install == INIT_MOUSELESS )
         return( false );
 
     if( strstr( GetTermType(), "xterm" ) != NULL ) {
-        if( kmous ) {
-            TryOne( M_XT, NULL, XT_INIT, key_mouse );
+        if( key_mouse != NULL ) {
+            TryOne( M_XT, NULL, XT_INIT, XT_MOUSE );
         } else {
             TryOne( M_XT, NULL, XT_INIT, ANSI_HDR "M" );
         }
