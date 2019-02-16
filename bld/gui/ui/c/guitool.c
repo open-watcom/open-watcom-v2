@@ -42,11 +42,9 @@
 
 #define FIX_TOOLBAR     1
 
-static gui_menu_struct Menu = {
+static gui_menu_struct Menu[] = {
     NULL, FIX_TOOLBAR, GUI_STYLE_MENU_ENABLED, NULL
 };
-
-#define NUM_MENU_ITEMS ( sizeof( Menu ) / sizeof( gui_menu_struct ) )
 
 static gui_control_info Button = {
     GUI_PUSH_BUTTON,
@@ -218,7 +216,7 @@ static gui_create_info FloatingToolbar = {
     GUI_NOSCROLL,
     GUI_SYSTEM_MENU | GUI_VISIBLE | GUI_RESIZEABLE | GUI_CLOSEABLE | GUI_INIT_INVISIBLE,
     NULL,
-    { NUM_MENU_ITEMS, &Menu },          // Menu array
+    { ARRAY_SIZE( Menu ), Menu },       // Menu array
     { 0, NULL },                        // Colour attribute array
     ToolbarGUIEventProc,                // GUI Event Callback function
     NULL,

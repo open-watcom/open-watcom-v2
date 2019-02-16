@@ -308,7 +308,7 @@ gui_create_info Parent = {
 #if default_colours
     { 0, NULL },                        // Colour attribute array
 #else
-    { GUI_NUM_ATTRS, &ParentColours },  // Colour attribute array
+    { GUI_NUM_ATTRS, ParentColours },   // Colour attribute array
 #endif
     &MainWndGUIEventProc,               // GUI Event Callback function
     NULL,
@@ -326,7 +326,7 @@ gui_create_info Child1 = {
 #if default_colours
     { 0, NULL },                            // Colour attribute array
 #else
-    { GUI_NUM_ATTRS + 1, &ChildColours },   // Colour attribute array
+    { GUI_NUM_ATTRS + 1, ChildColours },    // Colour attribute array
 #endif
     &Child1WndGUIEventProc,                 // GUI Event Callback function
     &Child1_Out,
@@ -350,7 +350,7 @@ gui_create_info Child2 = {
 #if default_colours
     { 0, NULL },                            // Colour attribute array
 #else
-    { GUI_NUM_ATTRS + 1, &ChildColours },   // Colour attribute array
+    { GUI_NUM_ATTRS + 1, ChildColours },    // Colour attribute array
 #endif
     &Child2WndGUIEventProc,                 // GUI Event Callback function
     &Child2_Out,
@@ -368,7 +368,7 @@ gui_create_info Child3 = {
 #if default_colours
     { 0, NULL },                            // Colour attribute array
 #else
-    { GUI_NUM_ATTRS + 1, &ChildColours },   // Colour attribute array
+    { GUI_NUM_ATTRS + 1, ChildColours },    // Colour attribute array
 #endif
     Child3WndGUIEventProc,                  // GUI Event Callback function
     NULL,
@@ -451,7 +451,7 @@ gui_create_info DialogWndControl = {
 #if default_colours
     { 0, NULL },                        // Colour attribute array
 #else
-    { GUI_NUM_ATTRS, &DialogColours },  // Colour attribute array
+    { GUI_NUM_ATTRS, DialogColours },   // Colour attribute array
 #endif
     &ControlWndGUIEventProc,            // GUI Event Callback function
     NULL,

@@ -110,7 +110,7 @@ static gui_create_info StatusWnd = {
     GUI_VISIBLE | GUI_DIALOG_LOOK,
     NULL,
     { 0, NULL },                            // Menu array
-    { GUI_NUM_ATTRS + 1, &StatusColours },  // Colour attribute array
+    { GUI_NUM_ATTRS + 1, StatusColours },   // Colour attribute array
     &StatusGUIEventProc,                    // GUI Event Callback function
     NULL,
     NULL,
