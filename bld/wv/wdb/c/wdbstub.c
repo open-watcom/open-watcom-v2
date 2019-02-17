@@ -111,6 +111,7 @@ Done:
 #include "dlgfile.h"
 #include "wndmenu1.h"
 #include "dbgwset1.h"
+#include "dlgbreak.h"
 
 
 /**************************************************/
@@ -194,7 +195,6 @@ bool DlgUpTheStack( void );
 bool DlgAreYouNuts( unsigned long mult );
 bool DlgBackInTime( bool warn );
 bool DlgIncompleteUndo( void );
-bool DlgBreak( address addr );
 void ProcAccel( void );
 void ProcDisplay( void );
 void ProcFont( void );

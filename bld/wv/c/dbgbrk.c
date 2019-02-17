@@ -72,10 +72,10 @@
 #include "dbgevent.h"
 #include "dlgscan.h"
 #include "dbgupdt.h"
+#include "dlgbreak.h"
 
 
 extern void         ErrorBox( char * );
-extern bool         DlgBreak( address );
 extern bool         CheckBPIns( void );
 extern bool         DlgAreYouNuts( unsigned long );
 

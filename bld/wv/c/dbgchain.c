@@ -46,10 +46,10 @@
 #include "dipinter.h"
 #include "dbgreg.h"
 #include "addarith.h"
+#include "dlgbreak.h"
 
 
 extern address          FindLclBlock( address addr );
-extern bool             DlgBreak(address);
 extern unsigned         LineNumLkup(address);
 
 #define MODEST_CALL_LEVEL       20
