@@ -69,7 +69,8 @@ void SetMouseSpeed( int speed )
     struct _mouse_param     mparam;
 
     if( EditFlags.UseMouse && !EditFlags.IsWindowedConsole ) {
-        if( mouseCtrl == NULL ) return;
+        if( mouseCtrl == NULL )
+            return;
         if( mouse_param( mouseCtrl, 0, &mparam ) == 0 ) {
             SaveParms = mparam;
             speed /= 2;
@@ -112,7 +113,8 @@ void PollMouse( int *status, windim *row, windim *col )
     rc = false;
     if( EditFlags.IsWindowedConsole ) {
     } else {
-        if( mouseCtrl == NULL ) return;
+        if( mouseCtrl == NULL )
+            return;
         if( mouse_read( mouseCtrl, &event, 1, Proxy, 0 ) > 0 ) {
             rc = true;
             lastRow -= event.dy;
@@ -208,9 +210,10 @@ void FiniMouse( void )
 {
     if( EditFlags.UseMouse ) {
         if( EditFlags.IsWindowedConsole ) {
-//          write( UIConHandle, QW_FINI, sizeof( QW_FINI ) - 1 );
+//          write( QNXConHandle, QW_FINI, sizeof( QW_FINI ) - 1 );
         } else {
-            if( mouseCtrl == NULL ) return;
+            if( mouseCtrl == NULL )
+                return;
             mouse_param( mouseCtrl, 1, &SaveParms );
             mouse_close( mouseCtrl );
             rmtimer( mouseTimer );
@@ -229,7 +232,8 @@ void StopMouse( void )
         timer.it_value.tv_sec = 0;
         timer.it_value.tv_nsec = 0;
 
-        if( mouseCtrl == NULL ) return;
+        if( mouseCtrl == NULL )
+            return;
         reltimer( mouseTimer, &timer, NULL );
         mouse_read( mouseCtrl, NULL, 0, -1, 0 );
         while( Creceive( Proxy, 0, 0 ) > 0 );

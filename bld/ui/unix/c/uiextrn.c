@@ -35,31 +35,20 @@
 #include "uivirts.h"
 
 
-        /* filedescriptor */
-int             UIConHandle = -1;
-        /* proxy for all events */
-pid_t           UIProxy;
-        /* remote proxy if nec.. */
-pid_t           UIRemProxy;
-        /* process group */
-pid_t           UIPGroup;
-        /* tell keyboard app wants to see shift, alt, ... keys... */
-bool            UIWantShiftChanges = true;
-        /* Disable checking on non console devices */
-bool            UIDisableShiftChanges = false;
-        /* Active virtual console functions */
-VirtDisplay     UIVirt;
+int         UIConHandle = -1;               /* filedescriptor */
+pid_t       UIProxy;                        /* proxy for all events */
+pid_t       UIRemProxy;                     /* remote proxy if nec.. */
+pid_t       UIPGroup;                       /* process group */
+bool        UIWantShiftChanges = true;      /* tell keyboard app wants to see shift, alt, ... keys... */
+bool        UIDisableShiftChanges = false;  /* Disable checking on non console devices */
+VirtDisplay UIVirt;                         /* Active virtual console functions */
 
 #ifdef __QNX__
-        /* console number */
-int             UIConsole = 0;
-        /* proxy's incoming value (usually same as UIProxy */
-pid_t           UILocalProxy;
-        /* Node of console mgr */
-nid_t           UIConNid;
+int         UIConsole = 0;                  /* console number */
+pid_t       UILocalProxy;                   /* proxy's incoming value (usually same as UIProxy */
+nid_t       UIConNid;                       /* Node of console mgr */
 #else
-        /* filedescriptor */
-FILE            *UIConFile = NULL;
+FILE        *UIConFile = NULL;              /* filedescriptor */
 
 #if defined( SUN )
 int     uicon_putchar( char ch )
