@@ -113,7 +113,7 @@ bool intern initbios( void )
     if( qnx_psinfo( PROC_PID, my_pid, &psinfo, 0, 0 ) != my_pid )
         return( false );
     UIPGroup = psinfo.pid_group;
-    if( UIConHandle == 0 ) {
+    if( UIConHandle == -1 ) {
         UIConHandle = open( "/dev/tty", O_RDWR );
         if( UIConHandle == -1 )
             return( false );

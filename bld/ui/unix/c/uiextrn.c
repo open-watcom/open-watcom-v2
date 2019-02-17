@@ -36,28 +36,28 @@
 
 
         /* filedescriptor */
-int              UIConHandle = 0;
+int             UIConHandle = -1;
         /* proxy for all events */
-pid_t            UIProxy;
+pid_t           UIProxy;
         /* remote proxy if nec.. */
-pid_t            UIRemProxy;
+pid_t           UIRemProxy;
         /* process group */
-pid_t            UIPGroup;
+pid_t           UIPGroup;
         /* tell keyboard app wants to see shift, alt, ... keys... */
-bool             UIWantShiftChanges = true;
+bool            UIWantShiftChanges = true;
         /* Disable checking on non console devices */
-bool             UIDisableShiftChanges = false;
+bool            UIDisableShiftChanges = false;
         /* Active virtual console functions */
-VirtDisplay      UIVirt;
+VirtDisplay     UIVirt;
 
 #ifdef __QNX__
         /* console number */
-int              UIConsole = 0;
+int             UIConsole = 0;
         /* proxy's incoming value (usually same as UIProxy */
-pid_t            UILocalProxy;
+pid_t           UILocalProxy;
         /* Node of console mgr */
-nid_t            UIConNid;
+nid_t           UIConNid;
 #else
         /* filedescriptor */
-FILE *           UIConFile;
+FILE            *UIConFile = NULL;
 #endif
