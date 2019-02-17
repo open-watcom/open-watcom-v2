@@ -34,7 +34,7 @@
 #include <stddef.h>
 #include "bool.h"
 
-#define MAX_LINE    4096
+#define MAX_LINE    (4096 + 1)
 
 #define IS_BLANK(c) ((c)==' ' || (c)=='\t')
 

@@ -348,10 +348,10 @@ static bool PopInclude( void )
     return( true );
 }
 
-static bool GetALine( char *line )
+static bool GetALine( char *line, size_t max_len )
 {
     for( ;; ) {
-        (void)fgets( line, MAX_LINE, IncludeStk->fp );
+        (void)fgets( line, max_len, IncludeStk->fp );
         if( ferror( IncludeStk->fp ) ) {
             Fatal( "Error reading '%s' line %d: %s\n", IncludeStk->name, IncludeStk->lineno + 1, strerror( errno ) );
         }
@@ -563,7 +563,7 @@ static int ProcessCtlFile( const char *name )
 
     rc = 0;
     PushInclude( name );
-    while( GetALine( Line ) ) {
+    while( GetALine( Line, sizeof( Line ) ) ) {
         SubstLine( Line, ProcLine );
         p = ProcLine;
         switch( *p ) {
@@ -646,7 +646,7 @@ static int ProcessCtlFile( const char *name )
     return( rc );
 }
 
-static bool SearchUpDirs( const char *name, char *result )
+static bool SearchUpDirs( const char *name, char *result, size_t max_len )
 {
     char        path_buffer[_MAX_PATH2];
     char        *drive;
@@ -656,7 +656,7 @@ static bool SearchUpDirs( const char *name, char *result )
     char        *end;
     FILE        *fp;
 
-    _fullpath( result, name, _MAX_PATH );
+    _fullpath( result, name, max_len );
     for( ;; ) {
         fp = fopen( result, "r" );
         if( fp != NULL ) {
@@ -706,7 +706,7 @@ int main( int argc, char *argv[] )
         p = getenv( DEFCTLENV );
         if( p == NULL )
             p = DEFCTLNAME;
-        if( !SearchUpDirs( p, Line ) ) {
+        if( !SearchUpDirs( p, Line, sizeof( Line ) ) ) {
             Fatal( "Can not find '%s'\n", p );
         }
         AddCtlFile( Line );
