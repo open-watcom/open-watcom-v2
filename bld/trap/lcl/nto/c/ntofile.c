@@ -79,7 +79,7 @@ trap_retval ReqFile_open( void )
     dbg_print(( "open: name '%s', mode %d/%d\n", name, acc->mode, mode ));
     handle = open( name, mode, access );
     if( handle != -1 ) {
-        fcntl( handle, F_SETFD, (int)FD_CLOEXEC );
+        fcntl( handle, F_SETFD, FD_CLOEXEC );
         errno = 0;
         ret->err = 0;
         ret->handle = handle;

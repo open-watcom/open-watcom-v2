@@ -202,7 +202,7 @@ long _fork( const char *cmd, size_t len )
 #endif
         exit( 1 );
     } else {
-        fcntl( DbgConHandle, F_SETFD, (int)FD_CLOEXEC );
+        fcntl( DbgConHandle, F_SETFD, FD_CLOEXEC );
         if( pid == -1 )
             return( 0xffff0000 | errno );
         do {

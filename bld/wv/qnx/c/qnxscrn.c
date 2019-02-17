@@ -123,7 +123,7 @@ static bool TryXWindows( void )
     if( pipe( pip ) != 0 ) {
         StartupErr( "unable to create console control channel" );
     }
-    fcntl( pip[0], F_SETFD, (int)FD_CLOEXEC );
+    fcntl( pip[0], F_SETFD, FD_CLOEXEC );
     searchenv( "qnxterm", "PATH", xqsh_name );
     if( xqsh_name[0] == NULLCHAR ) {
         StartupErr( "qnxterm executable not in PATH" );
@@ -288,7 +288,7 @@ void InitScreen( void )
     }
     _Free( DbgTerminal );
     DbgTerminal = NULL;
-    fcntl( DbgConHandle, F_SETFD, (int)FD_CLOEXEC );
+    fcntl( DbgConHandle, F_SETFD, FD_CLOEXEC );
     UIConHandle = DbgConHandle;
     if( !uistart() ) {
         StartupErr( "unable to initialize user interface" );

@@ -101,7 +101,7 @@ bool intern initbios( void )
         if( UIConFile == NULL )
             return( false );
         UIConHandle = fileno( UIConFile );
-        fcntl( UIConHandle, F_SETFD, 1 );
+        fcntl( UIConHandle, F_SETFD, FD_CLOEXEC );
     }
     setupterm( GetTermType(), UIConHandle, NULL );
 

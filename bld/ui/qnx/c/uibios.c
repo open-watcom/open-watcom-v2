@@ -117,7 +117,7 @@ bool intern initbios( void )
         UIConHandle = open( "/dev/tty", O_RDWR );
         if( UIConHandle == -1 )
             return( false );
-        fcntl( UIConHandle, F_SETFD, (int)FD_CLOEXEC );
+        fcntl( UIConHandle, F_SETFD, FD_CLOEXEC );
     }
     if( dev_info( UIConHandle, &dev ) == -1 )
         return( false );

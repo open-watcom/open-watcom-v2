@@ -391,7 +391,7 @@ int BIOSKeyboardInit( void )
         QNXConsole = dev.unit;
     }
 
-    fcntl( QNXConHandle, F_SETFD, (int) FD_CLOEXEC );
+    fcntl( QNXConHandle, F_SETFD, FD_CLOEXEC );
     if( tcsetpgrp( QNXConHandle, psinfo.pid_group ) != 0 ) {
         return( ERR_WIND_NO_MORE_WINDOWS );
     }

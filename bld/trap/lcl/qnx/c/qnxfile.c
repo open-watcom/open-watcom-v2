@@ -128,7 +128,7 @@ trap_retval ReqFile_open( void )
     handle = open( (char *)GetInPtr( sizeof( *acc ) ), mode,
                     S_IRUSR|S_IWUSR | S_IRGRP|S_IWGRP | S_IROTH|S_IWOTH );
     if( handle != -1 ) {
-        fcntl( handle, F_SETFD, (int)FD_CLOEXEC );
+        fcntl( handle, F_SETFD, FD_CLOEXEC );
         errno = 0;
         ret->err = 0;
         LH2TRPH( ret, handle );

@@ -182,11 +182,11 @@ long _fork( const char *cmd, size_t len )
     iov[2] = DbgConHandle;
     for( i = 3; i < 10; ++i )
         iov[i] = '\xFF';
-    fcntl( DbgConHandle, F_SETFD, (int)0 );
+    fcntl( DbgConHandle, F_SETFD, 0 );
     pid = qnx_spawn( 0, 0, 0, -1, -1,
                 _SPAWN_NEWPGRP | _SPAWN_TCSETPGRP | _SPAWN_SETSID,
                 shell, argv, environ, iov, DbgConHandle );
-    fcntl( DbgConHandle, F_SETFD, (int)FD_CLOEXEC );
+    fcntl( DbgConHandle, F_SETFD, FD_CLOEXEC );
     if( pid == -1 )
         return( 0xffff0000 | errno );
     do {

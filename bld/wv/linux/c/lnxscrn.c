@@ -336,7 +336,7 @@ void InitScreen( void )
     _Free( DbgTerminal );
     DbgTerminal = NULL;
     if( DbgConHandle != -1 ) {
-        fcntl( DbgConHandle, F_SETFD, (int)FD_CLOEXEC );
+        fcntl( DbgConHandle, F_SETFD, FD_CLOEXEC );
         UIConFile = fdopen( DbgConHandle, "w+" );
         UIConHandle = DbgConHandle;
     }
