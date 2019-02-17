@@ -43,6 +43,7 @@
 #include "dbgmain.h"
 #include "dbginit.h"
 #include "dbgcmdln.h"
+#include "dbgscrn.h"
 #ifndef __NOUI__
 #include "aui.h"
 #endif
@@ -51,13 +52,12 @@
 #include "clibint.h"
 #endif
 
+
 #ifdef __WATCOMC__
 unsigned char   _8087 = 0;
 unsigned char   _real87 = 0;
 #endif
 
-
-extern int      DbgConHandle; /* Debugger console file handle */
 extern char     **_argv;
 extern int      _argc;
 
@@ -194,6 +194,7 @@ long _fork( const char *cmd, size_t len )
         dup2( DbgConHandle, 1 );
         dup2( DbgConHandle, 2 );
         close( DbgConHandle );
+        DbgConHandle = -1;
         setsid();
 #if defined( __UNIX__ ) && !defined( __WATCOMC__ )
         execve( shell, (char * const *)argv, (char * const *)environ );

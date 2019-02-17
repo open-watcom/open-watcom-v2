@@ -68,7 +68,7 @@ char                *DbgTerminal;
 int                 DbgConsole;
 int                 PrevConsole;
 int                 InitConsole;
-int                 DbgConHandle;
+int                 DbgConHandle = -1;
 int                 DbgLines;
 int                 DbgColumns;
 int                 PrevLines;
@@ -234,6 +234,7 @@ static bool TryQConsole( void )
     ConCtrl = console_open( DbgConHandle, O_WRONLY );
     if( ConCtrl == NULL ) {
         close( DbgConHandle );
+        DbgConHandle = -1;
         return( false );
     }
     if( dev_info( DbgConHandle, &dev ) == -1 ) {

@@ -48,11 +48,11 @@
 #include "dbginit.h"
 #include "dbgcmdln.h"
 #include "owqnx.h"
+#include "dbgscrn.h"
 
 #include "clibint.h"
 
 
-extern int      DbgConHandle; /* Debugger console file handle */
 extern char     **_argv;
 extern int      _argc;
 extern void     __sigabort();

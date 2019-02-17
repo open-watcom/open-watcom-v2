@@ -74,7 +74,7 @@ char            *DbgTerminal;
 unsigned        DbgConsole;
 unsigned        PrevConsole;
 unsigned        InitConsole = -1;
-int             DbgConHandle;
+int             DbgConHandle = -1;
 int             DbgLines;
 int             DbgColumns;
 int             PrevLines;
@@ -251,6 +251,7 @@ static bool TryVC( void )
     struct vt_sizes vt_sizes;
     char            tty_name[20];
     int             len;
+    int             rc;
 
     len = readlink( "/proc/self/fd/0", tty_name, sizeof( tty_name ) - 1 );
     if( len < 0 )
@@ -260,11 +261,12 @@ static bool TryVC( void )
         DbgConHandle = open( tty_name, O_RDWR );
         if( DbgConHandle == -1 )
             return( false );
-        if( ioctl( DbgConHandle, VT_OPENQRY, &DbgConsole ) ) {
-            close( DbgConHandle );
+        rc = ioctl( DbgConHandle, VT_OPENQRY, &DbgConsole );
+        close( DbgConHandle );
+        DbgConHandle = -1;
+        if( rc ) {
             return( false );
         }
-        close( DbgConHandle );
     }
     ptr = &tty_name[len];
     for( ;; ) {
@@ -279,6 +281,7 @@ static bool TryVC( void )
         return( false );
     if( ioctl( DbgConHandle, VT_GETSTATE, &vt_state ) ) {
         close( DbgConHandle );
+        DbgConHandle = -1;
         return( false );
     }
     InitConsole = vt_state.v_active;
