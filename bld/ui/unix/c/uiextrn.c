@@ -60,4 +60,24 @@ nid_t           UIConNid;
 #else
         /* filedescriptor */
 FILE            *UIConFile = NULL;
+
+#if defined( SUN )
+int     uicon_putchar( char ch )
+{
+    fputc( (unsigned char)ch, UIConFile );
+    return( 0 );
+}
+#elif defined( HP ) && ( ( OSVER < 1100 ) || defined( __GNUC__ ) )
+void    uicon_putchar( int ch )
+{
+    fputc( ch, UIConFile );
+}
+#else
+int     uicon_putchar( int ch )
+{
+    fputc( ch, UIConFile );
+    return( 0 );
+}
+#endif
+
 #endif
