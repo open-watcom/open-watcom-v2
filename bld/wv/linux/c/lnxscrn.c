@@ -64,6 +64,8 @@
 #include "dbglkup.h"
 #include "dbgerr.h"
 
+#include "clibext.h"
+
 
 extern bool     UserForcedTermRefresh;
 
@@ -145,10 +147,15 @@ static bool TryXWindows( void )
     char        buf;
     int         res;
     struct termios termio;
+    char        xsh_name[CMD_LEN];
 
     /* we're in the X (or helper)environment */
     if( getenv( "DISPLAY" ) == NULL )
         return( false );
+    _searchenv( "xterm", "PATH", xsh_name );
+    if( xsh_name[0] == NULLCHAR ) {
+        StartupErr( "xterm executable not in PATH" );
+    }
     masterfd = open( "/dev/ptmx", O_RDWR );
     if( masterfd < 0 )
         return( false );
