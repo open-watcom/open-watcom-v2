@@ -433,6 +433,7 @@ extern void FiniRawLoadFile( void )
     unsigned long   file_loc;
     section         *sect;
     outfilelist     *finfo;
+    signed_32       diff;
 
     DEBUG(( DBG_BASE, "Writing data" ));
     OrderGroups( CompareOffsets );
@@ -456,6 +457,12 @@ extern void FiniRawLoadFile( void )
             if( FmtData.raw_hex_output ) {
                 file_loc += WriteGroupLoadHex( group );
             } else {
+                diff = file_loc - PosLoad();
+                if( diff < 0 ) {
+                    LnkMsg( ERR + MSG_FIXED_LOC_BEFORE_CUR_LOC, "a", &(group->grp_addr));
+                } else if( diff > 0 ) {
+                    PadLoad( (size_t)diff );
+                }
                 file_loc += WriteGroupLoad( group );
             }
             if( file_loc > finfo->file_loc ) {
