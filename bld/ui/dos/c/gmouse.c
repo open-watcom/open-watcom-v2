@@ -319,8 +319,8 @@ static bool CheckEgaVga( void )
 bool UIAPI uiinitgmouse( init_mode install )
 {
     MouseInstalled = false;
-    if( install > INIT_MOUSELESS && mouse_installed() ) {
-        if( install > INIT_MOUSE ) {
+    if( install != INIT_MOUSELESS && mouse_installed() ) {
+        if( install == INIT_MOUSE_INITIALIZED ) {
             if( CheckEgaVga() ) {
                 if( MouInit() ) {
                     UIData->mouse_yscale = BIOSData( BIOS_POINT_HEIGHT, unsigned char );
@@ -332,7 +332,7 @@ bool UIAPI uiinitgmouse( init_mode install )
                 install = INIT_MOUSELESS;
             }
         }
-        if( install > INIT_MOUSELESS ) {
+        if( install != INIT_MOUSELESS ) {
             setupmouse();
         }
     }
