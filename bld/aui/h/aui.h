@@ -118,9 +118,9 @@
 #define WndClrSwitches( w, x )      (w)->switches &= ~(x)
 #define WndSwitchOn( w, x )         (((w)->switches & (x)) != 0)
 #define WndSwitchOff( w, x )        (((w)->switches & (x)) == 0)
-#define WndNumPopups( w )           (w)->popup_num_items
-#define WndPopupMenu( w )           (w)->popupmenu
-#define WndSetPopUpMenu( w, n, x )  {(w)->popup_num_items = (n); (w)->popupmenu = (x);}
+#define WndNumPopups( w )           (w)->popup.num_items
+#define WndPopupMenu( w )           (w)->popup.menu
+#define WndSetPopUpMenu( w, n, x )  {(w)->popup.num_items = (n); (w)->popup.menu = (x);}
 
 typedef struct {
     unsigned char       area[SAVE_SIZE];
@@ -251,8 +251,7 @@ typedef struct _a_window {
     gui_ord                 mid_char_x;
     gui_ctl_id              last_popup;
     wnd_colidx              current_colidx;
-    int                     popup_num_items;
-    gui_menu_struct         *popupmenu;
+    gui_menu_items          popup;
     int                     dirtyrects;
     wnd_rect                dirty[1];
 } *a_window;
@@ -289,8 +288,7 @@ typedef struct wnd_info {
     WNDNOTIFY               *notify;
     WNDCHKFLAGS             *chkflags;
     wnd_update_list         flags;
-    int                     popup_num_items;
-    gui_menu_struct         *popupmenu;
+    gui_menu_items          popup;
 } wnd_info;
 
 typedef struct {
@@ -559,10 +557,10 @@ extern void                 WndGetGadgetSize( wnd_gadget_type type, gui_coord * 
 extern wnd_attr             WndMapTabAttr( wnd_attr );
 extern char                 WndBackgroundChar;
 
-#define DefPopUp( x )       (sizeof( x ) / sizeof( (x)[0] )), x
+#define DefPopUp( x )       (sizeof( x ) / sizeof( *(x) )), x
 #define NoPopUp             0, NULL
 
-#define WndMenuFields( x )  (sizeof( x ) / sizeof( (x)[0] )), x
+#define WndMenuFields( x )  (sizeof( x ) / sizeof( *(x) )), x
 extern void                 WndSetMainMenu( gui_menu_struct *menu, int num_items );
 
 /* following function may be defined in application otherwise default will be used */

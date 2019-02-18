@@ -57,7 +57,7 @@ static void FreeSystemMenu( gui_window *wnd )
     }
 }
 
-bool GUIResetMenus( gui_window *wnd, int num_items, gui_menu_struct *menu )
+bool GUIResetMenus( gui_window *wnd, int num_items, const gui_menu_struct *menu )
 {
     HMENU       hmenu;
     bool        success;

@@ -308,7 +308,7 @@ bool WndGetLineAbs( a_window wnd, wnd_row row, wnd_piece piece, wnd_line_piece *
 
 void WndFirstMenuItem( a_window wnd, wnd_row row, wnd_piece piece )
 {
-    WndRowPopUp( wnd, &wnd->popupmenu[0], row, piece );
+    WndRowPopUp( wnd, &WndPopupMenu( wnd )[0], row, piece );
 }
 
 #if 0

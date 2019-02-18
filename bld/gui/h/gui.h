@@ -765,7 +765,7 @@ extern void GUIGetPoint( gui_window *wnd, gui_ord extent, gui_ord row,
 /* Menu Functions */
 
 extern bool GUICreateFloatingPopup( gui_window *wnd, gui_point *location,
-                                    int num_items, gui_menu_struct *menu,
+                                    int num_items, const gui_menu_struct *menu,
                                     gui_mouse_track track, gui_ctl_id *curr_id );
 extern bool GUITrackFloatingPopup( gui_window *wnd, gui_point *location,
                                gui_mouse_track track, gui_ctl_id *curr_id );
@@ -778,16 +778,16 @@ extern bool GUIEnableMDIMenus( bool enable );
 extern bool GUIEnableMenus( gui_window *wnd, bool enable ); // NYI
 extern bool GUIDeleteMenuItem( gui_window *wnd, gui_ctl_id id, bool floating );
 
-extern bool GUIResetMenus( gui_window *wnd, int num_items, gui_menu_struct *menu );
+extern bool GUIResetMenus( gui_window *wnd, int num_items, const gui_menu_struct *menu );
 
 extern int GUIGetMenuPopupCount( gui_window *wnd, gui_ctl_id id );
 
-extern bool GUIInsertMenuByIdx( gui_window *wnd, int position, gui_menu_struct *menu, bool floating );
-extern bool GUIInsertMenuByID( gui_window *wnd, gui_ctl_id id, gui_menu_struct *menu );
-extern bool GUIAppendMenu( gui_window *wnd, gui_menu_struct *menu, bool floating );
-extern bool GUIAppendMenuByIdx( gui_window *wnd, int position, gui_menu_struct *menu );
-extern bool GUIAppendMenuToPopup( gui_window *wnd, gui_ctl_id id, gui_menu_struct *menu, bool floating );
-extern bool GUIInsertMenuToPopup( gui_window *wnd, gui_ctl_id id, int position, gui_menu_struct *menu, bool floating );
+extern bool GUIInsertMenuByIdx( gui_window *wnd, int position, const gui_menu_struct *menu, bool floating );
+extern bool GUIInsertMenuByID( gui_window *wnd, gui_ctl_id id, const gui_menu_struct *menu );
+extern bool GUIAppendMenu( gui_window *wnd, const gui_menu_struct *menu, bool floating );
+extern bool GUIAppendMenuByIdx( gui_window *wnd, int position, const gui_menu_struct *menu );
+extern bool GUIAppendMenuToPopup( gui_window *wnd, gui_ctl_id id, const gui_menu_struct *menu, bool floating );
+extern bool GUIInsertMenuToPopup( gui_window *wnd, gui_ctl_id id, int position, const gui_menu_struct *menu, bool floating );
 
 /* Toolbar Functions */
 

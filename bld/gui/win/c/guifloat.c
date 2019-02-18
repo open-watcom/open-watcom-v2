@@ -109,7 +109,7 @@ bool GUITrackFloatingPopup( gui_window *wnd, gui_point *location,
  */
 
 bool GUIXCreateFloatingPopup( gui_window *wnd, gui_point *location,
-                             int num_items, gui_menu_struct *menu,
+                             int num_items, const gui_menu_struct *menu,
                              gui_mouse_track track, gui_ctl_id *curr_id )
 {
     if( GUIHFloatingPopup != NULLHANDLE ) {

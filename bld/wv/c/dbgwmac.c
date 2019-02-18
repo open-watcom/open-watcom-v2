@@ -304,10 +304,10 @@ static void MacModMenu( a_window wnd, wnd_row row )
         WndCreateFloatingPopup( wnd, &point, wndmac->num_items, wndmac->menu, &dummy );
     } else {
         wndmac->last_id = 0;
-        wndmac->menu = info->popupmenu;
-        wndmac->num_items = info->popup_num_items;
+        wndmac->menu = WndPopupMenu( info );
+        wndmac->num_items = WndNumPopups( info );
         wndmac->mac = mac;
-        WndChangeMenuAll( info->popupmenu, info->popup_num_items, false, GUI_STYLE_MENU_GRAYED );
+        WndChangeMenuAll( WndPopupMenu( info ), WndNumPopups( info ), false, GUI_STYLE_MENU_GRAYED );
         WndCreateFloatingPopup( wnd, &point, wndmac->num_items, wndmac->menu, &dummy );
     }
 }

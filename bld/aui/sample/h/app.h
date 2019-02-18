@@ -41,7 +41,7 @@
 #include "dlgbutn.h"
 
 
-#define ArraySize( x )          (sizeof( x ) / sizeof( (x)[0] ))
+#define ArraySize( x )          (sizeof( x ) / sizeof( *(x) ))
 
 enum {
     MENU_FIRST          = 2400,

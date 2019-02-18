@@ -180,7 +180,7 @@ bool GUIDeleteHintText( gui_window *wnd, gui_ctl_id id, hint_type type )
     return( HintTextDelete( &wnd->hintsinfo, id, type ) );
 }
 
-static int CountMenus( gui_menu_struct *menu )
+static int CountMenus( const gui_menu_struct *menu )
 {
     int         i;
     int         num_items;
@@ -195,7 +195,7 @@ static int CountMenus( gui_menu_struct *menu )
     return( num_items );
 }
 
-static void InsertHint( gui_menu_struct *menu, gui_hint_items *hints )
+static void InsertHint( const gui_menu_struct *menu, gui_hint_items *hints )
 {
     int     i;
 
@@ -207,7 +207,7 @@ static void InsertHint( gui_menu_struct *menu, gui_hint_items *hints )
     }
 }
 
-bool GUIAppendHintText( gui_window *wnd, gui_menu_struct *menu, hint_type type )
+bool GUIAppendHintText( gui_window *wnd, const gui_menu_struct *menu, hint_type type )
 {
     gui_hint_items      hints;
     int                 new_num;
@@ -227,7 +227,7 @@ bool GUIAppendHintText( gui_window *wnd, gui_menu_struct *menu, hint_type type )
     return( false );
 }
 
-void GUIInitHint( gui_window *wnd, int num_items, gui_menu_struct *menu, hint_type type )
+void GUIInitHint( gui_window *wnd, int num_items, const gui_menu_struct *menu, hint_type type )
 {
     int                 i;
     gui_hint_items      hints;

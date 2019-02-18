@@ -96,12 +96,12 @@ void    WndAddPopupMenu( a_window wnd )
                     GUIDeleteMenuItem( WndMain->gui, child->id, false );
                     child++;
                 }
-                if( wnd->popupmenu == NULL ) {
+                if( WndPopupMenu( wnd ) == NULL ) {
                     menu->child.num_items = 0;
                 } else {
-                    menu->child.num_items = wnd->popup_num_items;
+                    menu->child.num_items = WndNumPopups( wnd );
                 }
-                menu->child.menu = wnd->popupmenu;
+                menu->child.menu = WndPopupMenu( wnd );
                 WndPopupMenuPtr = menu;
                 child = menu->child.menu;
                 for( item = 0; item < menu->child.num_items; item++ ) {
@@ -293,7 +293,7 @@ void WndChangeMenuAll( gui_menu_struct *menu, int num_items, bool on, int bit )
 
 static void MenuAll( a_window wnd, bool on, int bit )
 {
-    WndChangeMenuAll( wnd->popupmenu, wnd->popup_num_items, on, bit );
+    WndChangeMenuAll( WndPopupMenu( wnd ), WndNumPopups( wnd ), on, bit );
 }
 
 void    WndMenuEnableAll( a_window wnd )
@@ -340,7 +340,7 @@ static void DoMenuBitOn( gui_menu_struct *menu, int num_items, gui_ctl_id id, bo
 
 static void MenuBitOn( a_window wnd, gui_ctl_id id, bool on, int bit )
 {
-    DoMenuBitOn( wnd->popupmenu, wnd->popup_num_items, id, on, bit );
+    DoMenuBitOn( WndPopupMenu( wnd ), WndNumPopups( wnd ), id, on, bit );
 }
 
 void    WndMenuCheck( a_window wnd, gui_ctl_id id, bool check )
@@ -385,15 +385,15 @@ void    WndInvokePopUp( a_window wnd, gui_point *point, gui_menu_struct *menu )
     if( WndSwitchOff( wnd, WSW_ALLOW_POPUP ) )
         return;
     WndMenuItem( wnd, MENU_INITIALIZE, WndMenuRow, WndMenuPiece );
-    if( menu != NULL && wnd->popup_num_items == 1 ) {
+    if( menu != NULL && WndNumPopups( wnd ) == 1 ) {
         if( menu->style & GUI_STYLE_MENU_GRAYED ) {
             Ring();
         } else {
-            WndMenuItem( wnd, wnd->popupmenu[0].id, WndMenuRow, WndMenuPiece );
+            WndMenuItem( wnd, WndPopupMenu( wnd )[0].id, WndMenuRow, WndMenuPiece );
         }
-    } else if( wnd->popup_num_items > 0 ) {
+    } else if( WndNumPopups( wnd ) > 0 ) {
         if( menu == NULL ) {
-            WndCreateFloatingPopup( wnd, point, wnd->popup_num_items, wnd->popupmenu, &wnd->last_popup );
+            WndCreateFloatingPopup( wnd, point, WndNumPopups( wnd ), WndPopupMenu( wnd ), &wnd->last_popup );
         } else if( menu->style & GUI_STYLE_MENU_GRAYED ) {
             Ring();
         } else if( menu->child.menu == NULL ) {

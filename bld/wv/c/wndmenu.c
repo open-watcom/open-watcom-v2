@@ -326,7 +326,7 @@ static bool DoProcAccel( bool add_to_menu, gui_menu_struct **menu,
     } else {
         info = WndInfoTab[wndclass];
         if( ScanItem( true, &start, &len ) ) {
-            child = FindSubMenu( start, len, info->popupmenu, info->popup_num_items );
+            child = FindSubMenu( start, len, WndPopupMenu( info ), WndNumPopups( info ) );
         }
         if( child == NULL ) {
             if( add_to_menu )
@@ -334,8 +334,8 @@ static bool DoProcAccel( bool add_to_menu, gui_menu_struct **menu,
             Error( ERR_NONE, LIT_DUI( ERR_WANT_MENU_ITEM ) );
         }
         *menu = child;
-        *parent = info->popupmenu;
-        *num_siblings = info->popup_num_items;
+        *parent = WndPopupMenu( info );
+        *num_siblings = WndNumPopups( info );
         if( add_to_menu )
             return( false );
         wnd = WndFindActive();
@@ -429,7 +429,7 @@ static void ForAllMenus( void (*rtn)( gui_menu_struct *menu, int num_items ) )
 
     rtn( WndMainMenu, ArraySize( WndMainMenu ) );
     for( wndclass = 0; wndclass < NUM_WNDCLS_ALL; ++wndclass ) {
-        rtn( WndInfoTab[wndclass]->popupmenu, WndInfoTab[wndclass]->popup_num_items );
+        rtn( WndPopupMenu( WndInfoTab[wndclass] ), WndNumPopups( WndInfoTab[wndclass] ) );
     }
 }
 

@@ -119,7 +119,7 @@ static void EnableMDIMenus( gui_window *root, bool enable )
     }
 }
 
-static bool AddMenu( gui_window *wnd, gui_window *parent, int num_items, gui_menu_struct *menu )
+static bool AddMenu( gui_window *wnd, gui_window *parent, int num_items, const gui_menu_struct *menu )
 {
     int         item;
     bool        has_items;
@@ -197,7 +197,7 @@ void MDIDeleteMenu( gui_ctl_id id )
     }
 }
 
-void MDIResetMenus( gui_window *wnd, gui_window *parent, int num_items, gui_menu_struct *menu )
+void MDIResetMenus( gui_window *wnd, gui_window *parent, int num_items, const gui_menu_struct *menu )
 {
     gui_window  *root;
     int         item;

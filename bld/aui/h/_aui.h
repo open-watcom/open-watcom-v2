@@ -37,7 +37,7 @@
 
 #define WNDEVENT( w, e, p )     (w)->info->event( w, e, p )
 
-#define ArraySize( x )          (sizeof( x ) / sizeof( (x)[0] ))
+#define ArraySize( x )          (sizeof( x ) / sizeof( *(x) ))
 
 #define UCHAR_VALUE( c )        (unsigned char)(c)
 

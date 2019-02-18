@@ -1285,7 +1285,7 @@ bool Child3WndGUIEventProc( gui_window *gui, gui_event gui_ev, void *param )
 static bool Enabled = true;
 #endif
 
-static void CreatePopup( gui_window *gui, int num_items, gui_menu_struct *menu, gui_ctl_id popup_id, bool submenu )
+static void CreatePopup( gui_window *gui, int num_items, const gui_menu_struct *menu, gui_ctl_id popup_id, bool submenu )
 {
     gui_menu_struct     *child_menu;
     int                 child_num_items;

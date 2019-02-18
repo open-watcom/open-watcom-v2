@@ -147,11 +147,9 @@ static void     W2MenuItem( a_window wnd, gui_ctl_id id, wnd_row row, wnd_piece 
         if( row < 0 )
             break;
         if( row & 1 ) {
-            WndSetPopUpMenu( wnd, sizeof( W2PopUp ) / sizeof( W2PopUp[0] ), W2PopUp );
-//            WndSetPopUp( wnd, W2PopUp );
+            WndSetPopUpMenu( wnd, ArraySize( W2PopUp ), W2PopUp );
         } else {
-            WndSetPopUpMenu( wnd, sizeof( W2AltPopUp ) / sizeof( W2AltPopUp[0] ), W2AltPopUp );
-//            WndSetPopUp( wnd, W2AltPopUp );
+            WndSetPopUpMenu( wnd, ArraySize( W2AltPopUp ), W2AltPopUp );
         }
         break;
     case MENU_W2_SAY:

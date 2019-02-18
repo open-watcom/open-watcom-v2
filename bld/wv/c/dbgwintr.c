@@ -137,7 +137,7 @@ static void XDumpMenus( void )
         p = GetCmdEntry( WndNameTab, wndclass, p );
         p = StrCopy( " Window", p );
         WndDlgTxt( TxtBuff );
-        MenuDump( 4, WndInfoTab[wndclass]->popup_num_items, WndInfoTab[wndclass]->popupmenu );
+        MenuDump( 4, WndNumPopups( WndInfoTab[wndclass] ), WndPopupMenu( WndInfoTab[wndclass] ) );
     }
     WndDlgTxt( "The main menu" );
     MenuDump( 4, WndNumMenus, WndMainMenu );

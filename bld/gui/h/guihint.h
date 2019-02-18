@@ -65,10 +65,10 @@ extern bool GUIDisplayHintText( gui_window *wnd_with_status, gui_window *wnd,
 extern bool GUISetHintText( gui_window *wnd, gui_ctl_id id, hint_type type, const char *text );
 extern bool GUIHasHintText( gui_window *wnd, gui_ctl_id id, hint_type type );
 extern bool GUIHasHintType( gui_window *wnd, hint_type type );
-extern void GUIInitHint( gui_window *wnd, int num_items, gui_menu_struct *menu, hint_type type );
+extern void GUIInitHint( gui_window *wnd, int num_items, const gui_menu_struct *menu, hint_type type );
 extern void GUIFiniHint( gui_window *wnd, hint_type type );
 extern void GUIInitToolbarHint( gui_window *wnd, int num_items, gui_toolbar_struct *toolinfo );
-extern bool GUIAppendHintText( gui_window *wnd, gui_menu_struct *menu, hint_type type );
+extern bool GUIAppendHintText( gui_window *wnd, const gui_menu_struct *menu, hint_type type );
 extern bool GUIDeleteHintText( gui_window *wnd, gui_ctl_id id, hint_type type );
 extern void GUIFreeHint( gui_window *wnd );
 
