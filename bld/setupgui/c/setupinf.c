@@ -1965,7 +1965,7 @@ static bool ProcLine( char *line, pass_type pass )
                 }
             }
         }
-        VbufFini( &fext );
+        VbufFree( &fext );
         line = next; next = NextToken( line, ',' );
         FileInfo[num].dir_index = get36( line ) - 1;
         line = next; next = NextToken( line, ',' );
