@@ -52,3 +52,5 @@
 #include "sections.h"
 #include "asnumlab.h"
 #include "asmsg.h"
+
+#define ArraySize( x )  (sizeof( x ) / sizeof( *(x) ))

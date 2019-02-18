@@ -59,7 +59,7 @@ static char *asMessages[] = {
 #endif
 };
 
-#define TXT_MSG_SIZE    (sizeof( asMessages ) / sizeof( asMessages[0] ))
+#define TXT_MSG_SIZE    ArraySize( asMessages )
 
 #endif
 
