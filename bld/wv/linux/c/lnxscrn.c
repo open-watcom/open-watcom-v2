@@ -152,6 +152,7 @@ static bool TryXWindows( void )
     /* we're in the X (or helper)environment */
     if( getenv( "DISPLAY" ) == NULL )
         return( false );
+    xsh_name[0] = NULLCHAR;
     _searchenv( "xterm", "PATH", xsh_name );
     if( xsh_name[0] == NULLCHAR ) {
         StartupErr( "xterm executable not in PATH" );
@@ -188,7 +189,7 @@ static bool TryXWindows( void )
     end = p;
     _AllocA( argv, ( argc + 16 ) * sizeof( *argv ) );
 
-    argv[0] = "xterm";
+    argv[0] = xsh_name;
     argv[1] = "-title";
     argv[2] = "Open Watcom Debugger";
     argv[3] = "-ut";
