@@ -666,8 +666,8 @@ static void PropagateValue( tree_node *tree, bool value )
 }
 
 #ifdef PATCH
-static void GetDestDir( int i, VBUF *vbuf )
-/*****************************************/
+static void GetDestDir( int i, VBUF *dstdir )
+/*******************************************/
 {
     VBUF                temp;
     VBUF                drive;
@@ -676,21 +676,21 @@ static void GetDestDir( int i, VBUF *vbuf )
     VbufInit( &temp );
     VbufInit( &drive );
 
-    ReplaceVars( vbuf, GetVariableStrVal( "DstDir" ) );
-    VbufAddDirSep( vbuf );
+    ReplaceVars( dstdir, GetVariableStrVal( "DstDir" ) );
+    VbufAddDirSep( dstdir );
     intvalue = atoi( PatchInfo[i].destdir );
     if( intvalue != 0 ) {
-        VbufConcStr( vbuf, strchr( DirInfo[intvalue - 1].desc, '=' ) + 1 );
+        VbufConcStr( dstdir, strchr( DirInfo[intvalue - 1].desc, '=' ) + 1 );
     } else {
         // if destination dir specifies the drive, just use it
         ReplaceVars( &temp, PatchInfo[i].destdir );
         VbufSplitpath( &temp, &drive, NULL, NULL, NULL );
         if( VbufLen( &drive ) > 0 ) {   // drive specified
-            VbufRewind( vbuf );
+            VbufRewind( dstdir );
         }
-        VbufConcVbuf( vbuf, &temp );
+        VbufConcVbuf( dstdir, &temp );
     }
-    VbufAddDirSep( vbuf );
+    VbufAddDirSep( dstdir );
 
     VbufFree( &drive );
     VbufFree( &temp );
@@ -1922,10 +1922,10 @@ static bool ProcLine( char *line, pass_type pass )
                 return( false );
             }
         }
-        VbufInit( &fext );
         FileInfo[num].supplemental = false;
         FileInfo[num].core_component = false;
         FileInfo[num].num_files = tmp;
+        VbufInit( &fext );
         while( --tmp >= 0 ) {
             a_file_info *file = &FileInfo[num].files[tmp];
 
@@ -1965,6 +1965,7 @@ static bool ProcLine( char *line, pass_type pass )
                 }
             }
         }
+        VbufFini( &fext );
         line = next; next = NextToken( line, ',' );
         FileInfo[num].dir_index = get36( line ) - 1;
         line = next; next = NextToken( line, ',' );
@@ -2508,12 +2509,12 @@ bool CheckForceDLLInstall( const VBUF *name )
 {
     int         i;
     size_t      len;
-    const char  *fname;
+    const char  *dllname;
 
     len = VbufLen( name );
-    fname = VbufString( name );
+    dllname = VbufString( name );
     for( i = 0; i < SetupInfo.force_DLL_install.num; i++ ) {
-        if( stristr( ForceDLLInstall[i].name, fname, len ) != NULL ) {
+        if( stristr( ForceDLLInstall[i].name, dllname, len ) != NULL ) {
             return( true );
         }
     }
@@ -3013,15 +3014,15 @@ int SimGetPMProgsNum( void )
     return( SetupInfo.pm_files.num );
 }
 
-static int SimFindDirForFile( const char *buff )
-/**********************************************/
+static int SimFindDirForFile( VBUF *buff )
+/****************************************/
 {
     int         i;
     int         j;
 
     for( i = 0; i < SetupInfo.files.num; i++ ) {
         for( j = 0; j < FileInfo[i].num_files; ++j ) {
-            if( VbufCompStr( &FileInfo[i].files[j].name, buff, true ) == 0 ) {
+            if( VbufCompVbuf( &FileInfo[i].files[j].name, buff, true ) == 0 ) {
                 return( FileInfo[i].dir_index );
             }
         }
@@ -3034,7 +3035,7 @@ int SimGetPMProgName( int parm, VBUF *buff )
 /******************************************/
 {
     VbufSetStr( buff, PMInfo[parm].filename );
-    return( SimFindDirForFile( VbufString( buff ) ) );
+    return( SimFindDirForFile( buff ) );
 }
 
 bool SimPMProgIsShadow( int parm )
@@ -3070,7 +3071,7 @@ int SimGetPMIconInfo( int parm, VBUF *buff, int *icon_pos )
         VbufSetStr( buff, PMInfo[parm].icoioname );
     }
     *icon_pos = PMInfo[parm].icon_pos;
-    return( SimFindDirForFile( VbufString( buff ) ) );
+    return( SimFindDirForFile( buff ) );
 }
 
 bool SimCheckPMCondition( int parm )
@@ -3373,8 +3374,7 @@ void CheckDLLCount( const char *install_name )
         if( VarGetBoolVal( UnInstall ) || FileInfo[DLLsToCheck[i].index].remove
           || ( !FileInfo[DLLsToCheck[i].index].add && GetVariableBoolVal( "ReInstall" ) ) ) {
             if( DecrementDLLUsageCount( &DLLsToCheck[i].full_path ) == 0 ) {
-                if( MsgBox( MainWnd, "IDS_REMOVE_DLL", GUI_YES_NO,
-                            &DLLsToCheck[i].full_path ) == GUI_RET_YES ) {
+                if( MsgBoxVbuf( MainWnd, "IDS_REMOVE_DLL", GUI_YES_NO, &DLLsToCheck[i].full_path ) == GUI_RET_YES ) {
                     FileInfo[DLLsToCheck[i].index].add = false;
                     FileInfo[DLLsToCheck[i].index].remove = true;
                 }
@@ -3457,6 +3457,7 @@ void SimCalcAddRemove( void )
     long                diskette;
     disk_size           tmp_size = 0;
     vhandle             reinstall;
+    bool                ok;
 
     // for each file that will be installed, total the size
     diskette = strtol( GetVariableStrVal( "DisketteSize" ), NULL, 10 );
@@ -3473,8 +3474,8 @@ void SimCalcAddRemove( void )
         // it is defined, treat same as PreviousInstall
         previous = VarGetBoolVal( reinstall );
     }
-
-    for( i = 0; i < SetupInfo.files.num; ++i ) {
+    ok = true;
+    for( i = 0; ok && i < SetupInfo.files.num; ++i ) {
         dir_index = FileInfo[i].dir_index;
         targ_index = DirInfo[dir_index].target;
         add = EvalExprTree( FileInfo[i].condition.p->cond, VarGetBoolVal( MinimalInstall ) );
@@ -3529,8 +3530,9 @@ void SimCalcAddRemove( void )
 #if defined( __NT__ )
             // if ( supplemental is_dll & ) then we want to
             // keep a usage count of this dll.  Store its full path for later.
-            if( !CheckDLLSupplemental( i, &file->name ) ) {
-                return;
+            ok = CheckDLLSupplemental( i, &file->name );
+            if( !ok ) {
+                break;
             }
 #endif
 
@@ -3550,18 +3552,20 @@ void SimCalcAddRemove( void )
             }
         }
     }
-    /* Estimate space used for directories. Be generous. */
-    if( !uninstall ) {
-        for( i = 0; i < SetupInfo.target.num; ++i ) {
-            cs = GetClusterSize( *TargetInfo[targ_index].temp_disk );
-            for( j = 0; j < SetupInfo.dirs.num; ++j ) {
-                if( DirInfo[j].target != i )
-                    continue;
-                if( !DirInfo[j].used )
-                    continue;
-                if( DirInfo[j].num_files <= DirInfo[j].num_existing )
-                    continue;
-                TargetInfo[i].space_needed += RoundUp( ((( DirInfo[j].num_files - DirInfo[j].num_existing ) / 10) + 1) * 1024UL, cs);
+    if( ok ) {
+        /* Estimate space used for directories. Be generous. */
+        if( !uninstall ) {
+            for( i = 0; i < SetupInfo.target.num; ++i ) {
+                cs = GetClusterSize( *TargetInfo[targ_index].temp_disk );
+                for( j = 0; j < SetupInfo.dirs.num; ++j ) {
+                    if( DirInfo[j].target != i )
+                        continue;
+                    if( !DirInfo[j].used )
+                        continue;
+                    if( DirInfo[j].num_files <= DirInfo[j].num_existing )
+                        continue;
+                    TargetInfo[i].space_needed += RoundUp( ((( DirInfo[j].num_files - DirInfo[j].num_existing ) / 10) + 1) * 1024UL, cs);
+                }
             }
         }
     }
@@ -3653,15 +3657,11 @@ static void GetSourcePath( int i, VBUF *buff )
 static bool CopyErrorDialog( int ret, int i, const VBUF *file )
 /*************************************************************/
 {
-    gui_message_return      guiret;
+    /* unused parameters */ (void)i;
 
-    i = i;
     if( ret != CFE_NOERROR ) {
         if( ret != CFE_ABORT ) {
-            guiret = MsgBoxVbuf( NULL, "IDS_COPYFILEERROR", GUI_YES_NO, file );
-            if( guiret == GUI_RET_NO ) {
-                return( false );
-            }
+            return( MsgBoxVbuf( NULL, "IDS_COPYFILEERROR", GUI_YES_NO, file ) == GUI_RET_YES );
         } else {
             return( false );
         }
@@ -3673,15 +3673,10 @@ static bool CopyErrorDialog( int ret, int i, const VBUF *file )
 static bool PatchErrorDialog( PATCH_RET_CODE ret, int i )
 /*******************************************************/
 {
-    gui_message_return      guiret;
-
     if( ret != PATCH_RET_OKAY && ret != PATCH_CANT_FIND_PATCH ) {
         if( ret != PATCH_RET_CANCEL ) {
             // error, attempt to continue patch process
-            guiret = MsgBox ( NULL, "IDS_PATCHFILEERROR", GUI_YES_NO, PatchInfo[i].srcfile );
-            if( guiret == GUI_RET_NO ) {
-                return( false );
-            }
+            return( MsgBox ( NULL, "IDS_PATCHFILEERROR", GUI_YES_NO, PatchInfo[i].srcfile ) == GUI_RET_YES );
         } else {
             return( false );
         }
@@ -3845,10 +3840,8 @@ static void LogFileClose( log_state *ls )
 /***************************************/
 {
     if( ls->do_log && (fclose( ls->log_file ) != 0) ) {
-        MsgBox( NULL, "IDS_CANT_WRITE_LOGFILE", GUI_OK,
-                GetVariableStrVal( "PatchLog" ) );
+        MsgBox( NULL, "IDS_CANT_WRITE_LOGFILE", GUI_OK, GetVariableStrVal( "PatchLog" ) );
     }
-    return;
 }
 
 #define GetVariableMsgVal GetVariableStrVal
