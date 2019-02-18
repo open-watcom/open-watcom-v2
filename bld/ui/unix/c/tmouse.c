@@ -338,7 +338,7 @@ static bool tm_fini( void )
 {
     switch( MouseType ) {
     case M_XT:
-        if( key_mouse ) {
+        if( key_mouse != NULL ) {
             /* disable mouse tracking */
             uicon_putp( _ESC "[?1003l" );
             uiwritec( XT_FINI );

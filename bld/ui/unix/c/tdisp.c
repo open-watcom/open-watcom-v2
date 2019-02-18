@@ -141,16 +141,12 @@ bool TInfCheck( void )
     return( false );
 }
 
-/*-
- * set initial mode of term
- */
-
-
 // Whether to use code-changing optimizations in ti
 static bool OptimizeTerminfo = true;
 
-/* TermInfo terminal codes
-*/
+/*
+ * TermInfo terminal codes
+ */
 
 static void TI_SETATTR( void );
 
