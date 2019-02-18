@@ -710,7 +710,7 @@ void    FiniSavebufs( void );
 
 /* select.c */
 vi_rc   SelectItem( selectitem *si );
-vi_rc   SelectItemAndValue( window_info *, char *, char **, list_linenum, vi_rc (*)(const char *, char *, int * ), size_t, char **, int );
+vi_rc   SelectItemAndValue( window_info *, char *, char **, list_linenum, checkres_fn *, size_t, char **, int );
 
 /* selrgn.c */
 void    UpdateDrag( window_id, int, int );

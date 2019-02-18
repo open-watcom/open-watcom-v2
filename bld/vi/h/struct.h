@@ -618,6 +618,8 @@ typedef struct {
     bool                is_menu     : 1;    // is a menu we are showing
 } selectitem;
 
+typedef vi_rc checkres_fn( const char *, char *, int * );
+
 /*
  * SelectLineInFile data structure
  */
@@ -628,7 +630,7 @@ typedef struct {
     window_info         *wi;                    // info describing window to create
     list_linenum        sl;                     // selected line
     char                *title;                 // title of window
-    vi_rc (*checkres)(const char *, char *, int * ); // check if selected change is valid
+    checkres_fn         *checkres;              // check if selected change is valid
     int                 *allowrl;               // allow cursor right/left (for menu bar)
     hichar              *hi_list;               // chars to highlight
     const vi_key        *retevents;             // events that simulate pressing enter
