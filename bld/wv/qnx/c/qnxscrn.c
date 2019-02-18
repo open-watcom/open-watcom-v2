@@ -110,7 +110,7 @@ static void HupHandler( int signo )
 
 static bool TryXWindows( void )
 {
-    char        xqsh_name[CMD_LEN];
+    char        xqsh_name[_MAX_PATH];
     int         pip[2];
     char        buff[64];
     char        **argv;

@@ -147,7 +147,7 @@ static bool TryXWindows( void )
     char        buf;
     int         res;
     struct termios termio;
-    char        xsh_name[CMD_LEN];
+    char        xsh_name[_MAX_PATH];
 
     /* we're in the X (or helper)environment */
     if( getenv( "DISPLAY" ) == NULL )
