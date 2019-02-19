@@ -496,11 +496,13 @@ static bool CheckLoadDebugInfo( image_entry *image, file_handle fh, dip_priority
     image->dip_handle = NO_MOD;
     for( priority = start - 1; (priority = DIPPriority( priority )) != 0; ) {
         if( priority > end )
-            return( false );
+            break;
         DIPStatus = DS_OK;
         image->dip_handle = DIPLoadInfo( FH2FP( fh ), sizeof( image_entry * ), priority );
-        if( image->dip_handle != NO_MOD )
-            break;
+        if( image->dip_handle != NO_MOD ) {
+            *(image_entry **)DIPImageExtra( image->dip_handle ) = image;
+            return( true );
+        }
         if( DIPStatus & DS_ERR ) {
             symfile = image->symfile_name;
             if( symfile == NULL )
@@ -509,11 +511,10 @@ static bool CheckLoadDebugInfo( image_entry *image, file_handle fh, dip_priority
             *endstr++ = ' ';
             StrCopy( DIPMsgText( DIPStatus ), endstr );
             Warn( buff );
-            return( false );
+            break;
         }
     }
-    *(image_entry **)DIPImageExtra( image->dip_handle ) = image;
-    return( true );
+    return( false );
 }
 
 
