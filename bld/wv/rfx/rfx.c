@@ -417,7 +417,7 @@ static void DItoD( long s, char *d ) {
         *d = '0';
     } else {
         do {
-            *d-- = s % 10 + '0';
+            *d-- = ( s % 10 ) + '0';
             s /= 10;
         } while( s != 0 );
     }
@@ -425,9 +425,9 @@ static void DItoD( long s, char *d ) {
 
 static void ItoD( unsigned int i, char *b ) {
 
-    b[1] = i % 10 + '0';
+    b[1] = ( i % 10 ) + '0';
     i /= 10;
-    b[0] = i % 10 + '0';
+    b[0] = ( i % 10 ) + '0';
 }
 
 

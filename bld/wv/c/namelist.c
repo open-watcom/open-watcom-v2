@@ -214,7 +214,7 @@ void NameListAddModules( name_list *name, mod_handle mod, bool d2_only, bool dup
     if( name->skip ) {
         i = 0;
         for( curr = name->list; curr != NULL; curr = curr->next ) {
-            if( i % SKIP_ENTRIES == 0 ) {
+            if( ( i % SKIP_ENTRIES ) == 0 ) {
                 name->skip[i / SKIP_ENTRIES] = curr;
             }
             ++i;
