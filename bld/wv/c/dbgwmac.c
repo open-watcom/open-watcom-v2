@@ -262,7 +262,7 @@ static bool MacPopupClicked( a_window wnd, gui_ctl_id id )
     if( wndmac->mac->type == MACRO_MAIN_MENU ) {
         p = GetCmdEntry( MainTab, 0, p );
         *p++ = ' ';
-        main_id = id - ( id % MAIN_MENU_MULT );
+        main_id = MAIN_MENU_ID( id );
         *p++ = '{';
         p = GetMenuLabel( wndmac->num_items, wndmac->menu, main_id, p, false );
         *p++ = '}';
@@ -531,7 +531,7 @@ static  bool MacGetLine( a_window wnd, wnd_row row, wnd_piece piece, wnd_line_pi
                 break;
             case MACRO_MAIN_MENU:
                 if( mac->menu != NULL ) {
-                    main_id = mac->menu->id - ( mac->menu->id % MAIN_MENU_MULT );
+                    main_id = MAIN_MENU_ID( mac->menu->id );
                     p = GetMenuLabel( WndNumMenus, WndMainMenu, main_id, TxtBuff, true );
                     *p++ = '/';
                 }
