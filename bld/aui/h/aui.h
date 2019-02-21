@@ -561,7 +561,7 @@ extern char                 WndBackgroundChar;
 #define NoPopUp             0, NULL
 
 #define WndMenuFields( x )  (sizeof( x ) / sizeof( *(x) )), x
-extern void                 WndSetMainMenu( gui_menu_struct *menu, int num_items );
+extern void                 WndSetMainMenu( gui_menu_items *menus );
 
 /* following function may be defined in application otherwise default will be used */
 
@@ -581,8 +581,7 @@ extern wnd_gadget_type      WndGadgetSecondary;
 
 /* following data must be defined in application */
 
-extern gui_menu_struct      WndMainMenu[];
-extern int                  WndNumMenus;
+extern gui_menu_items       WndMainMenu;
 
 /* following data may be defined in application otherwise default will be used */
 

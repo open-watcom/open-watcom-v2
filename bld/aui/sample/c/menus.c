@@ -85,15 +85,14 @@ static gui_menu_struct ForthMenu[] = {
     { "Open &1",    MENU_OPEN1,     GUI_STYLE_MENU_ENABLED },
 };
 
-gui_menu_struct WndMainMenu[] = {
+static gui_menu_struct SampleMainMenu[] = {
     { "&First",     MENU_FIRST,     GUI_STYLE_MENU_ENABLED,                             "This is help for First",   WndMenuFields( FirstMenu ) },
     { "&Second",    MENU_SECOND,    GUI_STYLE_MENU_ENABLED,                             "This is help for Second",  WndMenuFields( SecondMenu ) },
     { "&Windows",   MENU_THIRD,     GUI_STYLE_MENU_ENABLED | GUI_STYLE_MENU_MDIWINDOW,  "This is help for Windows", WndMenuFields( ThirdMenu ) },
     { "&Popup",     MENU_POPUP,     GUI_STYLE_MENU_ENABLED | WND_MENU_POPUP,            "This is help for Popup",   WndMenuFields( ForthMenu ) },
 };
 
-int     WndNumMenus = ArraySize( WndMainMenu );
-
+gui_menu_items WndMainMenu = { ArraySize( SampleMainMenu ), SampleMainMenu };
 
 static char *FilterList = {
     "C Files (*.c;*.h)\0*.c;*.h\0"
@@ -258,9 +257,9 @@ bool     WndMainMenuProc( a_window wnd, gui_ctl_id id )
     case MENU_SCRAMBLE_MENUS:
         {
             gui_menu_struct tmp;
-            tmp = WndMainMenu[0];
-            WndMainMenu[0] = WndMainMenu[1];
-            WndMainMenu[1] = tmp;
+            tmp = SampleMainMenu[0];
+            SampleMainMenu[0] = SampleMainMenu[1];
+            SampleMainMenu[1] = tmp;
         }
         {
             gui_menu_struct tmp;
@@ -269,7 +268,7 @@ bool     WndMainMenuProc( a_window wnd, gui_ctl_id id )
             SecondMenu[0] = ThirdMenu[0];
             ThirdMenu[0] = tmp;
         }
-        WndSetMainMenu( WndMainMenu, ArraySize( WndMainMenu ) );
+        WndSetMainMenu( &WndMainMenu );
         break;
     case MENU_STATUS:
         if( WndHaveStatusWindow() ) {

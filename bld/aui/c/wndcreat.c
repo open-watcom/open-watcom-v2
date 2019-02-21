@@ -34,12 +34,12 @@
 #include <string.h>
 
 
-extern char         *StrCopy(char *,char *);
+extern char             *StrCopy(char *,char *);
 
-gui_menu_struct     *WndMainMenuPtr = WndMainMenu;
-gui_menu_struct     *WndPopupMenuPtr;
+gui_menu_items          *WndMainMenuPtr = &WndMainMenu;
+gui_menu_struct         *WndPopupMenuPtr;
 
-static int          NumWindows;
+static int              NumWindows;
 
 void    WndSetTitleSize( a_window wnd, int size )
 {
@@ -123,8 +123,7 @@ static a_window WndCreateWithStructBody( wnd_create_struct *info, gui_create_inf
     } else {
         init->style &= ~GUI_VISIBLE;
         init->scroll = GUI_NOSCROLL;
-        init->menus.num_items = WndNumMenus;
-        init->menus.menu = WndMainMenuPtr;
+        init->menus = *WndMainMenuPtr;
         init->parent = NULL;
     }
     if( init->style & GUI_POPUP ) {

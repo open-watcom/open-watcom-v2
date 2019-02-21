@@ -298,8 +298,8 @@ static void MacModMenu( a_window wnd, wnd_row row )
     WndInstallClickHook( MacPopupClicked );
     if( mac->type == MACRO_MAIN_MENU ) {
         wndmac->last_id = 0;
-        wndmac->menu = WndMainMenu;
-        wndmac->num_items = WndNumMenus - 2;
+        wndmac->menu = WndMainMenuShort.menu;
+        wndmac->num_items = WndMainMenuShort.num_items;
         wndmac->mac = mac;
         WndCreateFloatingPopup( wnd, &point, wndmac->num_items, wndmac->menu, &dummy );
     } else {
@@ -532,7 +532,7 @@ static  bool MacGetLine( a_window wnd, wnd_row row, wnd_piece piece, wnd_line_pi
             case MACRO_MAIN_MENU:
                 if( mac->menu != NULL ) {
                     main_id = MAIN_MENU_ID( mac->menu->id );
-                    p = GetMenuLabel( WndNumMenus, WndMainMenu, main_id, TxtBuff, true );
+                    p = GetMenuLabel( WndMainMenu.num_items, WndMainMenu.menu, main_id, TxtBuff, true );
                     *p++ = '/';
                 }
                 /* fall through */

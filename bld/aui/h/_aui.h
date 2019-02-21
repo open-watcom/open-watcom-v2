@@ -123,7 +123,7 @@ extern wnd_colidx       WndLastCharColIdx( wnd_line_piece *line );
 extern wnd_colidx       WndCharColIdx( const char *buff, wnd_colidx colidx );
 
 extern bool             WndDoingRefresh;
-extern gui_menu_struct  *WndMainMenuPtr;
+extern gui_menu_items   *WndMainMenuPtr;
 extern gui_menu_struct  *WndPopupMenuPtr;
 
 extern bool             WndHaveUserStatusText;

@@ -140,7 +140,7 @@ static void XDumpMenus( void )
         MenuDump( 4, WndNumPopups( WndInfoTab[wndclass] ), WndPopupMenu( WndInfoTab[wndclass] ) );
     }
     WndDlgTxt( "The main menu" );
-    MenuDump( 4, WndNumMenus, WndMainMenu );
+    MenuDump( 4, WndMainMenu.num_items, WndMainMenu.menu );
 }
 
 static void XTimeSymComp( void )

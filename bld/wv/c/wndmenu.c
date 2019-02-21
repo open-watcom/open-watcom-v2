@@ -113,7 +113,7 @@ static gui_menu_struct HelpMenu[] = {
 static gui_menu_struct DummyMenu[1];
 
 
-gui_menu_struct WndMainMenu[] = {
+static gui_menu_struct DbgMainMenu[] = {
     MENU_CASCADE( MENU_MAIN_FILE, MainMenuFile, FileMenu )
     MENU_CASCADE( MENU_MAIN_RUN, MainMenuRun, RunMenu )
     MENU_CASCADE( MENU_MAIN_BREAK, MainMenuBreak, BreakMenu )
@@ -126,7 +126,8 @@ gui_menu_struct WndMainMenu[] = {
     MENU_CASCADE( MENU_MAIN_HELP, MainMenuHelp, HelpMenu )
 };
 
-int     WndNumMenus = ArraySize( WndMainMenu );
+gui_menu_items  WndMainMenu = { ArraySize( DbgMainMenu ), DbgMainMenu };
+gui_menu_items  WndMainMenuShort = { ArraySize( DbgMainMenu ) - 2, DbgMainMenu };
 
 wnd_info *WndInfoTab[] = {
     #define pick( a,b,c,d,e,f ) &d,
@@ -302,7 +303,7 @@ static bool DoProcAccel( bool add_to_menu, gui_menu_struct **menu,
     *menu = *parent = NULL;
     child = NULL;
     if( ScanCmd( MainTab ) == 0 ) {
-        main_menu = FindMainMenu( WndMainMenu, ArraySize( WndMainMenu ) );
+        main_menu = FindMainMenu( DbgMainMenu, ArraySize( DbgMainMenu ) );
         if( main_menu == NULL ) {
             if( add_to_menu )
                 return( true );
@@ -427,7 +428,7 @@ static void ForAllMenus( void (*rtn)( gui_menu_struct *menu, int num_items ) )
 {
     wnd_class_wv    wndclass;
 
-    rtn( WndMainMenu, ArraySize( WndMainMenu ) );
+    rtn( DbgMainMenu, ArraySize( DbgMainMenu ) );
     for( wndclass = 0; wndclass < NUM_WNDCLS_ALL; ++wndclass ) {
         rtn( WndPopupMenu( WndInfoTab[wndclass] ), WndNumPopups( WndInfoTab[wndclass] ) );
     }
@@ -437,12 +438,12 @@ void InitMenus( void )
 {
     int         i;
 
-    for( i = 0; i < ArraySize( WndMainMenu ); ++i ) {
-        if( WndMainMenu[i].id == MENU_MAIN_ACTION ) {
-            WndMainMenu[i].style |= WND_MENU_POPUP;
+    for( i = 0; i < ArraySize( DbgMainMenu ); ++i ) {
+        if( DbgMainMenu[i].id == MENU_MAIN_ACTION ) {
+            DbgMainMenu[i].style |= WND_MENU_POPUP;
         }
-        if( WndMainMenu[i].id == MENU_MAIN_WINDOW ) {
-            WndMainMenu[i].style |= GUI_STYLE_MENU_MDIWINDOW;
+        if( DbgMainMenu[i].id == MENU_MAIN_WINDOW ) {
+            DbgMainMenu[i].style |= GUI_STYLE_MENU_MDIWINDOW;
         }
     }
     ForAllMenus( LoadLabels );
