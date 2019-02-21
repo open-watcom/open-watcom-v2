@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -210,14 +210,15 @@ static gui_menu_struct *FindMainMenu( gui_menu_struct *menu, int size )
 }
 
 
-char *GetMenuLabel( int num_items, gui_menu_struct *menu, gui_ctl_id id, char *buff, bool strip_amp )
+char *GetMenuLabel( const gui_menu_items *menus, gui_ctl_id id, char *buff, bool strip_amp )
 {
     char        *p;
     const char  *cp;
+    int         i;
 
-    while( num_items > 0 ) {
-        if( menu->id == id ) {
-            for( cp = menu->label; *cp != NULLCHAR; ++cp ) {
+    for( i = 0; i < menus->num_items; i++ ) {
+        if( menus->menu[i].id == id ) {
+            for( cp = menus->menu[i].label; *cp != NULLCHAR; ++cp ) {
                 if( *cp == '&' && strip_amp )
                     continue;
                 if( *cp == '\t' )
@@ -227,33 +228,27 @@ char *GetMenuLabel( int num_items, gui_menu_struct *menu, gui_ctl_id id, char *b
             *buff = NULLCHAR;
             return( buff );
         }
-        if( menu->child.num_items > 0 ) {
-            p = GetMenuLabel( menu->child.num_items, menu->child.menu, id, buff, strip_amp );
-            if( p != NULL ) {
-                return( p );
-            }
+        p = GetMenuLabel( &menus->menu[i].child, id, buff, strip_amp );
+        if( p != NULL ) {
+            return( p );
         }
-        num_items--;
-        menu++;
     }
     return( NULL );
 }
 
-static gui_menu_struct *FindSubMenu( const char *start, unsigned len, gui_menu_struct *child, int size )
+static gui_menu_struct *FindSubMenu( const char *start, unsigned len, const gui_menu_items *menus )
 {
     gui_menu_struct     *sub;
+    int                 i;
 
-    while( --size >= 0 ) {
-        if( StrAmpEqual( start, child->label, len ) ) {
-            return( child );
+    for( i = 0; i < menus->num_items; i++ ) {
+        if( StrAmpEqual( start, menus->menu[i].label, len ) ) {
+            return( &menus->menu[i] );
         }
-        if( child->child.num_items > 0 ) {
-            sub = FindSubMenu( start, len, child->child.menu, child->child.num_items );
-            if( sub != NULL ) {
-                return( sub );
-            }
+        sub = FindSubMenu( start, len, &menus->menu[i].child );
+        if( sub != NULL ) {
+            return( sub );
         }
-        ++child;
     }
     return( NULL );
 }
@@ -310,7 +305,7 @@ static bool DoProcAccel( bool add_to_menu, gui_menu_struct **menu,
             Error( ERR_NONE, LIT_DUI( ERR_WANT_MENU_ITEM ) );
         }
         if( ScanItem( true, &start, &len ) ) {
-            child = FindSubMenu( start, len, main_menu->child.menu, main_menu->child.num_items );
+            child = FindSubMenu( start, len, &main_menu->child );
         }
         if( child == NULL ) {
             if( add_to_menu )
@@ -327,7 +322,7 @@ static bool DoProcAccel( bool add_to_menu, gui_menu_struct **menu,
     } else {
         info = WndInfoTab[wndclass];
         if( ScanItem( true, &start, &len ) ) {
-            child = FindSubMenu( start, len, WndPopupMenu( info ), WndNumPopups( info ) );
+            child = FindSubMenu( start, len, &info->popup );
         }
         if( child == NULL ) {
             if( add_to_menu )

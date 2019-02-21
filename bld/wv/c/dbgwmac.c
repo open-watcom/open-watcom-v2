@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -71,8 +71,7 @@ enum {
 typedef struct {
     unsigned            last_id;
     wnd_row             change_row;
-    int                 num_items;
-    gui_menu_struct     *menu;
+    gui_menu_items      menus;
     wnd_macro           *mac;
     bool                press_key : 1;
     bool                creating  : 1;
@@ -264,14 +263,14 @@ static bool MacPopupClicked( a_window wnd, gui_ctl_id id )
         *p++ = ' ';
         main_id = MAIN_MENU_ID( id );
         *p++ = '{';
-        p = GetMenuLabel( wndmac->num_items, wndmac->menu, main_id, p, false );
+        p = GetMenuLabel( &wndmac->menus, main_id, p, false );
         *p++ = '}';
         *p++ = ' ';
         *p++ = '{';
-        p = GetMenuLabel( wndmac->num_items, wndmac->menu, id, p, false );
+        p = GetMenuLabel( &wndmac->menus, id, p, false );
     } else {
         *p++ = '{';
-        p = GetMenuLabel( wndmac->num_items, wndmac->menu, id, p, false );
+        p = GetMenuLabel( &wndmac->menus, id, p, false );
     }
     if( p != NULL ) {
         *p++ = '}';
@@ -296,20 +295,15 @@ static void MacModMenu( a_window wnd, wnd_row row )
     info = WndInfoTab[mac->wndclass];
     WndCurrToGUIPoint( wnd, &point );
     WndInstallClickHook( MacPopupClicked );
+    wndmac->last_id = 0;
+    wndmac->mac = mac;
     if( mac->type == MACRO_MAIN_MENU ) {
-        wndmac->last_id = 0;
-        wndmac->menu = WndMainMenuShort.menu;
-        wndmac->num_items = WndMainMenuShort.num_items;
-        wndmac->mac = mac;
-        WndCreateFloatingPopup( wnd, &point, wndmac->num_items, wndmac->menu, &dummy );
+        wndmac->menus = WndMainMenuShort;
     } else {
-        wndmac->last_id = 0;
-        wndmac->menu = WndPopupMenu( info );
-        wndmac->num_items = WndNumPopups( info );
-        wndmac->mac = mac;
+        wndmac->menus = info->popup;
         WndChangeMenuAll( WndPopupMenu( info ), WndNumPopups( info ), false, GUI_STYLE_MENU_GRAYED );
-        WndCreateFloatingPopup( wnd, &point, wndmac->num_items, wndmac->menu, &dummy );
     }
+    WndCreateFloatingPopup( wnd, &point, wndmac->menus.num_items, wndmac->menus.menu, &dummy );
 }
 
 static void MacModWhere( a_window wnd, wnd_row row )
@@ -532,7 +526,7 @@ static  bool MacGetLine( a_window wnd, wnd_row row, wnd_piece piece, wnd_line_pi
             case MACRO_MAIN_MENU:
                 if( mac->menu != NULL ) {
                     main_id = MAIN_MENU_ID( mac->menu->id );
-                    p = GetMenuLabel( WndMainMenu.num_items, WndMainMenu.menu, main_id, TxtBuff, true );
+                    p = GetMenuLabel( &WndMainMenu, main_id, TxtBuff, true );
                     *p++ = '/';
                 }
                 /* fall through */
@@ -540,8 +534,12 @@ static  bool MacGetLine( a_window wnd, wnd_row row, wnd_piece piece, wnd_line_pi
                 if( mac->menu == NULL ) {
                     line->text = LIT_ENG( Quest_Marks );
                 } else {
+                    gui_menu_items  menus;
+
+                    menus.num_items = 1;
+                    menus.menu = mac->menu;
                     line->text = TxtBuff;
-                    p = GetMenuLabel( 1, mac->menu, mac->menu->id, p, true );
+                    p = GetMenuLabel( &menus, mac->menu->id, p, true );
                 }
             }
             return( true );
