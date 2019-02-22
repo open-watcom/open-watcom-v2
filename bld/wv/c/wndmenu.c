@@ -189,21 +189,20 @@ static bool StrAmpEqual( const char *str, const char *menu, int len )
     return( true );
 }
 
-static gui_menu_struct *FindMainMenu( gui_menu_struct *menu, int size )
+static gui_menu_struct *FindMainMenu( void )
 {
     const char          *start;
     size_t              len;
+    int                 i;
 
-    if( !ScanItem( true, &start, &len ) )
-        return( NULL );
-    while( --size >= 0 ) {
-        if( StrAmpEqual( start, menu->label, len ) )
-            break;
-        ++menu;
+    if( ScanItem( true, &start, &len ) ) {
+        for( i = 0; i < WndMainMenu.num_items; i++ ) {
+            if( StrAmpEqual( start, WndMainMenu.menu[i].label, len ) ) {
+                return( &WndMainMenu.menu[i] );
+            }
+        }
     }
-    if( size < 0 )
-        return( NULL );
-    return( menu );
+    return( NULL );
 }
 
 
@@ -282,8 +281,7 @@ void AccelMenuItem( gui_menu_struct *menu, bool is_main )
     }
 }
 
-static bool DoProcAccel( bool add_to_menu, gui_menu_struct **menu,
-                  gui_menu_struct **parent, int *num_siblings, wnd_class_wv wndclass )
+static bool DoProcAccel( bool add_to_menu, gui_menu_struct **menu, gui_menu_items *parent, wnd_class_wv wndclass )
 {
     gui_menu_struct     *main_menu;
     gui_menu_struct     *child;
@@ -292,10 +290,12 @@ static bool DoProcAccel( bool add_to_menu, gui_menu_struct **menu,
     const char          *start;
     size_t              len;
 
-    *menu = *parent = NULL;
+    *menu = NULL;
+    parent->num_items = 0;
+    parent->menu = NULL;
     child = NULL;
     if( ScanCmd( MainTab ) == 0 ) {
-        main_menu = FindMainMenu( DbgMainMenu, ArraySize( DbgMainMenu ) );
+        main_menu = FindMainMenu();
         if( main_menu == NULL ) {
             if( add_to_menu )
                 return( true );
@@ -310,8 +310,7 @@ static bool DoProcAccel( bool add_to_menu, gui_menu_struct **menu,
             Error( ERR_NONE, LIT_DUI( ERR_WANT_MENU_ITEM ) );
         }
         *menu = child;
-        *parent = main_menu->child.menu;
-        *num_siblings = main_menu->child.num_items;
+        *parent = main_menu->child;
         if( add_to_menu )
             return( true );
         ReqEOC();
@@ -327,8 +326,7 @@ static bool DoProcAccel( bool add_to_menu, gui_menu_struct **menu,
             Error( ERR_NONE, LIT_DUI( ERR_WANT_MENU_ITEM ) );
         }
         *menu = child;
-        *parent = WndPopupMenu( info );
-        *num_siblings = WndNumPopups( info );
+        *parent = info->popup;
         if( add_to_menu )
             return( false );
         wnd = WndFindActive();
@@ -342,10 +340,10 @@ static bool DoProcAccel( bool add_to_menu, gui_menu_struct **menu,
 
 void ProcAccel( void )
 {
-    gui_menu_struct     *menu,*parent;
-    int                 num_sibs;
+    gui_menu_struct     *menu;
+    gui_menu_items      parent;
 
-    DoProcAccel( false, &menu, &parent, &num_sibs, WndClass( WndFindActive() ));
+    DoProcAccel( false, &menu, &parent, WndClass( WndFindActive() ));
 }
 
 static void FreeLabels( gui_menu_struct *menu, int num_items )
@@ -478,13 +476,13 @@ void WndMenuSetHotKey( gui_menu_struct *menu, bool is_main, const char *key )
 gui_menu_struct *AddMenuAccel( const char *key, const char *cmd, wnd_class_wv wndclass, bool *is_main )
 {
     const char          *old;
-    gui_menu_struct     *menu,*parent;
-    int                 num_sibs;
+    gui_menu_struct     *menu;
+    gui_menu_items      parent;
 
     old = ReScan( cmd );
     menu = NULL;
     if( ScanCmd( GetCmdName( CMD_ACCEL ) ) == 0 ) {
-        *is_main = DoProcAccel( true, &menu, &parent, &num_sibs, wndclass );
+        *is_main = DoProcAccel( true, &menu, &parent, wndclass );
     }
     ReScan( old );
     if( menu == NULL || !ScanEOC() )
