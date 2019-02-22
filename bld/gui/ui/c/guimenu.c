@@ -546,16 +546,15 @@ static bool CreateMenus( gui_window *wnd, int num_items, const gui_menu_struct *
 
 bool GUICreateMenus( gui_window *wnd,  gui_create_info *dlg_info )
 {
-    int                 num_items;
-    gui_menu_struct     *menu;
+    gui_menu_items      menus;
     bool                ret;
 
     if( dlg_info->resource_menu != NULL ) {
-        num_items = 0;
-        menu = NULL;
-        GUICreateMenuStructFromRes( dlg_info->resource_menu, &num_items, &menu );
-        ret = CreateMenus( wnd, num_items, menu, dlg_info->parent, dlg_info->style );
-        GUIFreeGUIMenuStruct( num_items, menu );
+        menus.num_items = 0;
+        menus.menu = NULL;
+        GUICreateMenuStructFromRes( dlg_info->resource_menu, &menus );
+        ret = CreateMenus( wnd, menus.num_items, menus.menu, dlg_info->parent, dlg_info->style );
+        GUIFreeGUIMenuStruct( &menus );
         return( ret );
     } else {
         return( CreateMenus( wnd, dlg_info->menus.num_items, dlg_info->menus.menu, dlg_info->parent, dlg_info->style ) );

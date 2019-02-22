@@ -617,17 +617,18 @@ bool MainWndGUIEventProc( gui_window *gui, gui_event gui_ev, void *param )
         case MENU_RES_DIALOG :
             ResDialogCreate( MainWnd );
             {
-                gui_menu_struct *menu;
-                int             num_items;
+                gui_menu_items  menus;
 
-                GUICreateMenuStructFromRes( MAKEINTRESOURCE( 100 ), &num_items, &menu );
-                if( menu != NULL && num_items > 0 ) {
-                    int     item;
+                menus.num_items = 0;
+                menus.menu = NULL;
+                GUICreateMenuStructFromRes( MAKEINTRESOURCE( 100 ), &menus );
+                if( menus.num_items > 0 ) {
+                    int     i;
 
-                    for( item = 0; item < num_items; item++ ) {
-                        GUIAppendMenuToPopup( MainWnd, MENU_MODIFY_COLOUR, &menu[item], false );
+                    for( i = 0; i < menus.num_items; i++ ) {
+                        GUIAppendMenuToPopup( MainWnd, MENU_MODIFY_COLOUR, &menus.menu[i], false );
                     }
-                    GUIFreeGUIMenuStruct( num_items, menu );
+                    GUIFreeGUIMenuStruct( &menus );
                 }
             }
             break;

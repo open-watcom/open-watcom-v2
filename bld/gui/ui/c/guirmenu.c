@@ -192,20 +192,18 @@ static int WCountMenuChildren( GUIRMenuEntry *entry )
     return( num_items );
 }
 
-void GUIFreeGUIMenuStruct( int num_items, gui_menu_struct *menu )
+void GUIFreeGUIMenuStruct( gui_menu_items *menus )
 {
-    int         item;
+    int         i;
 
-    if( menu != NULL ) {
-        for( item = 0; item < num_items; item++ ) {
-            if( menu[item].child.num_items > 0 ) {
-                GUIFreeGUIMenuStruct( menu[item].child.num_items, menu[item].child.menu );
-            }
-            if( menu[item].label != NULL ) {
-                GUIMemFree( (void *)menu[item].label );
+    if( menus->num_items > 0 ) {
+        for( i = 0; i < menus->num_items; i++ ) {
+            GUIFreeGUIMenuStruct( &menus->menu[i].child );
+            if( menus->menu[i].label != NULL ) {
+                GUIMemFree( (void *)menus->menu[i].label );
             }
         }
-        GUIMemFree( menu );
+        GUIMemFree( menus->menu );
     }
 }
 
@@ -228,13 +226,12 @@ static gui_menu_styles GetGUIMenuStyles( MenuFlags flags )
     return( styles );
 }
 
-static gui_menu_struct *MakeGUIMenuStruct( GUIRMenuEntry *rmenu )
+static bool MakeGUIMenuStruct( GUIRMenuEntry *rmenu, gui_menu_items *menus )
 {
     gui_menu_struct     *menu;
     gui_menu_struct     *menuitem;
     int                 num_items;
     bool                ok;
-    int                 child_num_items;
 
     menu = NULL;
 
@@ -250,18 +247,16 @@ static gui_menu_struct *MakeGUIMenuStruct( GUIRMenuEntry *rmenu )
         memset( menu, 0, num_items * sizeof( gui_menu_struct ) );
         menuitem = menu;
         for( ; rmenu != NULL; rmenu = rmenu->next ) {
+            menuitem->child.num_items = 0;
+            menuitem->child.menu = NULL;
             if( rmenu->item->IsPopup ) {
                 menuitem->label = GUIStrDup( rmenu->item->Item.Popup.ItemText, NULL );
+                menuitem->id = 0;
                 menuitem->style = GetGUIMenuStyles( rmenu->item->Item.Popup.ItemFlags );
-                child_num_items = WCountMenuChildren( rmenu->child );
-                if( child_num_items > 0 ) {
-                    menuitem->child.num_items = child_num_items;
-                    menuitem->child.menu = MakeGUIMenuStruct( rmenu->child );
-                    if( menuitem->child.menu == NULL ) {
-                        GUIMemFree( menu );
-                        menu = NULL;
-                        break;
-                    }
+                ok = MakeGUIMenuStruct( rmenu->child, &menuitem->child );
+                if( !ok ) {
+                    GUIMemFree( menu );
+                    return( ok );
                 }
             } else {
                 menuitem->label = GUIStrDup( rmenu->item->Item.Normal.ItemText, NULL );
@@ -270,19 +265,21 @@ static gui_menu_struct *MakeGUIMenuStruct( GUIRMenuEntry *rmenu )
             }
             menuitem++;
         }
+        menus->menu = menu;
+        menus->num_items = num_items;
     }
 
-    return( menu );
+    return( ok );
 }
 
-bool GUICreateMenuStructFromRes( res_name_or_id menu_id, int *num_items, gui_menu_struct **menu )
+bool GUICreateMenuStructFromRes( res_name_or_id menu_id, gui_menu_items *menus )
 {
     GUIRMenuEntry       *rmenu;
     bool                ok;
 
     rmenu = NULL;
 
-    ok = ( menu != NULL && num_items != NULL );
+    ok = ( menus != NULL );
 
     if( ok ) {
         ok = GUISeekMenuTemplate( menu_id );
@@ -293,16 +290,11 @@ bool GUICreateMenuStructFromRes( res_name_or_id menu_id, int *num_items, gui_men
     }
 
     if( ok ) {
-        *menu = MakeGUIMenuStruct( rmenu );
-        *num_items = WCountMenuChildren( rmenu );
-        ok = ( *menu != NULL );
+        ok = MakeGUIMenuStruct( rmenu, menus );
     }
 
     if( !ok ) {
-        if( *menu != NULL ) {
-            GUIFreeGUIMenuStruct( *num_items, *menu );
-            *menu = NULL;
-        }
+        GUIFreeGUIMenuStruct( menus );
     }
 
     if( rmenu != NULL ) {
