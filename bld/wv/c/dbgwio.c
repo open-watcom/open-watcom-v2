@@ -78,8 +78,6 @@ static mem_type_walk_data   IOData;
 
 static gui_menu_struct      *IOTypeMenu = NULL;
 
-static gui_menu_struct      DummyMenu[1];
-
 static gui_menu_struct IOMenu[] = {
     #include "menuio.h"
 };

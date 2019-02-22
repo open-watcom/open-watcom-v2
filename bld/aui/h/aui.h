@@ -537,7 +537,7 @@ extern int                  WndGetDClick( void );
 extern char                 *WndLoadString( gui_res_id id );
 extern void                 NullPopupMenu( gui_menu_struct *menu );
 
-extern void                 WndChangeMenuAll( gui_menu_struct *menu, int num_items, bool on, int bit );
+extern void                 WndChangeMenuAll( gui_menu_items *menus, bool on, int bit );
 extern gui_message_return   WndDisplayMessage( const char *msg, const char *cap, gui_message_type type );
 
 extern void                 WndRectToPos( gui_rect *rect, wnd_posn *posn, gui_coord *scale );

@@ -110,9 +110,6 @@ static gui_menu_struct HelpMenu[] = {
     #include "mmhelp.h"
 };
 
-static gui_menu_struct DummyMenu[1];
-
-
 static gui_menu_struct DbgMainMenu[] = {
     MENU_CASCADE( MENU_MAIN_FILE, MainMenuFile, FileMenu )
     MENU_CASCADE( MENU_MAIN_RUN, MainMenuRun, RunMenu )
@@ -122,7 +119,7 @@ static gui_menu_struct DbgMainMenu[] = {
     MENU_CASCADE( MENU_MAIN_UNDO, MainMenuUndo, UndoMenu )
     MENU_CASCADE( MENU_MAIN_SEARCH, MainMenuSearch, SearchMenu )
     MENU_CASCADE( MENU_MAIN_WINDOW, MainMenuWindow, WindowMenu )
-    MENU_CASCADE( MENU_MAIN_ACTION, MainMenuAction, DummyMenu )
+    MENU_CASCADE_DUMMY( MENU_MAIN_ACTION, MainMenuAction )
     MENU_CASCADE( MENU_MAIN_HELP, MainMenuHelp, HelpMenu )
 };
 
@@ -353,32 +350,30 @@ void ProcAccel( void )
 
 static void FreeLabels( gui_menu_struct *menu, int num_items )
 {
-    while( num_items-- > 0 ) {
-        if( menu->id != MENU_MAIN_ACTION && menu->child.menu != NULL ) {
-            FreeLabels( menu->child.menu, menu->child.num_items );
+    int     i;
+
+    for( i = 0; i < num_items; i++ ) {
+        FreeLabels( menu[i].child.menu, menu[i].child.num_items );
+        if( menu[i].style & WND_MENU_ALLOCATED ) {
+            menu[i].style &= ~WND_MENU_ALLOCATED;
+            WndFree( (void *)menu[i].label );
+            WndFree( (void *)menu[i].hinttext );
         }
-        if( menu->style & WND_MENU_ALLOCATED ) {
-            menu->style &= ~WND_MENU_ALLOCATED;
-            WndFree( (void *)menu->label );
-            WndFree( (void *)menu->hinttext );
-        }
-        ++menu;
     }
 }
 
 
 static void LoadLabels( gui_menu_struct *menu, int num_items )
 {
-    while( num_items-- > 0 ) {
-        if( menu->child.menu != NULL ) {
-            LoadLabels( menu->child.menu, menu->child.num_items );
+    int     i;
+
+    for( i = 0; i < num_items; i++ ) {
+        LoadLabels( menu[i].child.menu, menu[i].child.num_items );
+        if( (menu[i].style & (GUI_STYLE_MENU_SEPARATOR | WND_MENU_ALLOCATED)) == 0 ) {
+            menu[i].label = WndLoadString( (gui_res_id)(pointer_int)menu[i].label );
+            menu[i].hinttext = WndLoadString( (gui_res_id)(pointer_int)menu[i].hinttext );
+            menu[i].style |= WND_MENU_ALLOCATED;
         }
-        if( (menu->style & (GUI_STYLE_MENU_SEPARATOR | WND_MENU_ALLOCATED)) == 0 ) {
-            menu->label = WndLoadString( (gui_res_id)(pointer_int)menu->label );
-            menu->hinttext = WndLoadString( (gui_res_id)(pointer_int)menu->hinttext );
-            menu->style |= WND_MENU_ALLOCATED;
-        }
-        ++menu;
     }
 }
 

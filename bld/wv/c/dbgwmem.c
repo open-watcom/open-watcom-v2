@@ -128,8 +128,6 @@ static MEMHEADER    *HeadTab[] = {
 
 static gui_menu_struct *MemTypeMenu = NULL;
 
-static gui_menu_struct DummyMenu[1];
-
 static gui_menu_struct MemMenu[] = {
     #include "menumem.h"
 };

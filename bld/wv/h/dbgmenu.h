@@ -31,8 +31,9 @@
 
 
 #define MENU_LIT( a )
-#define MENU_ITEM( a, b )       a,
-#define MENU_CASCADE( a, b, c ) a,
+#define MENU_ITEM( a, b )           a,
+#define MENU_CASCADE( a, b, c )     a,
+#define MENU_CASCADE_DUMMY( a, b )  a,
 #define MENU_BAR
 
 // level 0 main menu items must be multiples of MAIN_MENU_MULT
@@ -144,4 +145,5 @@ enum {
 #undef MENU_LIT
 #undef MENU_ITEM
 #undef MENU_CASCADE
+#undef MENU_CASCADE_DUMMY
 #undef MENU_BAR

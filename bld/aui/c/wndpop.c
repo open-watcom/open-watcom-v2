@@ -267,27 +267,26 @@ void    WndPopUp( a_window wnd, gui_menu_struct *menu )
 }
 
 
-void WndChangeMenuAll( gui_menu_struct *menu, int num_items, bool on, int bit )
+void WndChangeMenuAll( gui_menu_items *menus, bool on, int bit )
 {
-    while( num_items-- > 0 ) {
-        if( (menu->style & GUI_STYLE_MENU_SEPARATOR) == 0 ) {
-            if( menu->child.num_items > 0 ) {
-                WndChangeMenuAll( menu->child.menu, menu->child.num_items, on, bit );
-            }
+    int     i;
+
+    for( i = 0; i < menus->num_items; i++ ) {
+        if( (menus->menu[i].style & GUI_STYLE_MENU_SEPARATOR) == 0 ) {
+            WndChangeMenuAll( &menus->menu[i].child, on, bit );
             if( on ) {
-                menu->style |= bit;
+                menus->menu[i].style |= bit;
             } else {
-                menu->style &= ~bit;
+                menus->menu[i].style &= ~bit;
             }
         }
-        menu++;
     }
 }
 
 
 static void MenuAll( a_window wnd, bool on, int bit )
 {
-    WndChangeMenuAll( WndPopupMenu( wnd ), WndNumPopups( wnd ), on, bit );
+    WndChangeMenuAll( &wnd->popup, on, bit );
 }
 
 void    WndMenuEnableAll( a_window wnd )
