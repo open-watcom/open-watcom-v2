@@ -620,16 +620,16 @@ HMENU GUICreateSubMenu( gui_window *wnd, int num_items, const gui_menu_struct *m
  * AppendMenus -- menu items to a HMENU
  */
 
-static bool AppendMenus( gui_window *wnd, HMENU main, int num_items, const gui_menu_struct *menu )
+static bool AppendMenus( gui_window *wnd, HMENU hmenu, int num_items, const gui_menu_struct *menu )
 {
     int                 i;
-    HMENU               hmenu;
+    HMENU               hchildmenu;
 
     for( i = 0; i < num_items; i++ ) {
-        hmenu = GUICreateSubMenu( wnd, menu[i].child.num_items, menu[i].child.menu, MENU_HINT );
-        if( hmenu != NULLHANDLE ) {
-            _wpi_appendmenu( main, MF_STRING | MF_POPUP, MF_ENABLED, menu[i].id, hmenu, menu[i].label );
-            InsertPopup( wnd, menu[i].id, hmenu, MENU_HINT );
+        hchildmenu = GUICreateSubMenu( wnd, menu[i].child.num_items, menu[i].child.menu, MENU_HINT );
+        if( hchildmenu != NULLHANDLE ) {
+            _wpi_appendmenu( hmenu, MF_STRING | MF_POPUP, MF_ENABLED, menu[i].id, hchildmenu, menu[i].label );
+            InsertPopup( wnd, menu[i].id, hchildmenu, MENU_HINT );
         }
     }
     return( true );
