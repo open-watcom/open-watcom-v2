@@ -123,7 +123,7 @@ static bool guiToolBarProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, WPI_PARAM
 {
     gui_window              *wnd;
     toolbarinfo             *tbar;
-    HMENU                   hmenu;
+    HMENU                   hsysmenu;
     gui_ctl_id              id;
 
     wnd = GetToolWnd( hwnd );
@@ -137,8 +137,8 @@ static bool guiToolBarProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, WPI_PARAM
     switch( msg ) {
     case WM_CREATE :
         hwnd = _wpi_getframe( hwnd );
-        hmenu = _wpi_getsystemmenu( hwnd );
-        GUIAppendSystemMenu( hsysmenu, GUI_MENU_IDX( GUI_FIX_TOOLBAR ) );
+        hsysmenu = _wpi_getsystemmenu( hwnd );
+        GUIAppendSystemMenuItem( hsysmenu, GUI_MENU_IDX( GUI_FIX_TOOLBAR ) );
         break;
 #ifdef __OS2_PM__
     case WM_CHAR :

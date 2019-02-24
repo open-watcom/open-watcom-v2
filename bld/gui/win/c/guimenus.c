@@ -59,7 +59,7 @@ void GUIInitGUIMenuHint( void )
     GUIHint[GUI_MENU_IDX( GUI_FIX_TOOLBAR )].hinttext = LIT( Make_Tool_Bar_Fixed );
 }
 
-void GUIAppendSystemMenu( HMENU hsysmenu, int menu_idx )
+void GUIAppendSystemMenuItem( HMENU hsysmenu, int menu_idx )
 {
     if( hsysmenu != NULLHANDLE ) {
         if( _wpi_appendmenu( hsysmenu, MF_SEPARATOR, 0, 0, NULLHANDLE, NULL ) ) {
@@ -686,7 +686,7 @@ bool GUIAddToSystemMenu( gui_window *wnd, HWND hwnd, int num_to_add,
         _wpi_enablemenuitem( hsysmenu, SC_CLOSE, FALSE, FALSE );
     }
     if( style & GUI_CHANGEABLE_FONT ) {
-        GUIAppendSystemMenu( hsysmenu, GUI_MENU_IDX( GUI_CHANGE_FONT ) );
+        GUIAppendSystemMenuItem( hsysmenu, GUI_MENU_IDX( GUI_CHANGE_FONT ) );
     }
     if( num_to_add > 0 ) {
         if( _wpi_appendmenu( hsysmenu, MF_SEPARATOR, 0, 0, NULLHANDLE, NULL ) ) {
