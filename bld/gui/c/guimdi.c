@@ -181,8 +181,7 @@ static void InsertMenuForWindow( gui_window *root, int index, int position )
     if( index == CurrMDIWindow ) {
         menu.style |= GUI_STYLE_MENU_CHECKED;
     }
-    menu.child.num_items = 0;
-    menu.child.menu = NULL;
+    menu.child = NoMenu;
     MakeHintText( index, name );
     menu.hinttext = MenuHint[index];
     if( GUIMDIMenuID != 0 ) {

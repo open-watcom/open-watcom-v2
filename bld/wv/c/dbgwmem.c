@@ -920,8 +920,7 @@ void InitMemWindow( void )
         MemTypeMenu[i].style = GUI_STYLE_MENU_ENABLED | WND_MENU_ALLOCATED;
         MemTypeMenu[i].label = DupStr( MemData.labels[i] );
         MemTypeMenu[i].hinttext = DupStr( LIT_ENG( Empty ) );
-        MemTypeMenu[i].child.num_items = 0;
-        MemTypeMenu[i].child.menu = NULL;
+        MemTypeMenu[i].child = NoMenu;
     }
     for( i = 0; i < ArraySize( MemMenu ); ++i ) {
         if( MemMenu[i].id == MENU_MEMORY_TYPE ) {

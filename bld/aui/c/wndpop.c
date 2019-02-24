@@ -65,8 +65,7 @@ void NullPopupMenu( gui_menu_struct *menu )
                 for( i = 0; i < child->num_items; i++ ) {
                     GUIDeleteMenuItem( WndMain->gui, child->menu[i].id, false );
                 }
-                child->menu = NULL;
-                child->num_items = 0;
+                *child = NoMenu;
                 break;
             }
         }
@@ -90,12 +89,7 @@ void    WndAddPopupMenu( a_window wnd )
                     GUIDeleteMenuItem( WndMain->gui, child->id, false );
                     child++;
                 }
-                if( WndPopupMenu( wnd ) == NULL ) {
-                    menu->child.num_items = 0;
-                } else {
-                    menu->child.num_items = WndNumPopups( wnd );
-                }
-                menu->child.menu = WndPopupMenu( wnd );
+                menu->child = wnd->popup;
                 WndPopupMenuPtr = menu;
                 child = menu->child.menu;
                 for( i = 0; i < menu->child.num_items; i++ ) {

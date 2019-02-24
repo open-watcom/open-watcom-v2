@@ -550,8 +550,7 @@ bool GUICreateMenus( gui_window *wnd,  gui_create_info *dlg_info )
     bool                ret;
 
     if( dlg_info->resource_menu != NULL ) {
-        menus.num_items = 0;
-        menus.menu = NULL;
+        menus = NoMenu;
         GUICreateMenuStructFromRes( dlg_info->resource_menu, &menus );
         ret = CreateMenus( wnd, menus.num_items, menus.menu, dlg_info->parent, dlg_info->style );
         GUIFreeGUIMenuStruct( &menus );

@@ -291,8 +291,7 @@ static bool DoProcAccel( bool add_to_menu, gui_menu_struct **menu, gui_menu_item
     size_t              len;
 
     *menu = NULL;
-    parent->num_items = 0;
-    parent->menu = NULL;
+    *parent = NoMenu;
     child = NULL;
     if( ScanCmd( MainTab ) == 0 ) {
         main_menu = FindMainMenu();

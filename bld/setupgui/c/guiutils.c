@@ -305,8 +305,7 @@ bool SetupInit( void )
     init.style |= GUI_NOFRAME;
 #endif
     init.parent = NULL;
-    init.menus.num_items = 0;
-    init.menus.menu = NULL;
+    init.menus = NoMenu;
     init.colours.num_items = WND_NUMBER_OF_COLORS;
     init.colours.colour = MainColours;
     init.gui_call_back = MainSetupWndGUIEventProc;

@@ -618,13 +618,11 @@ bool MainWndGUIEventProc( gui_window *gui, gui_event gui_ev, void *param )
             ResDialogCreate( MainWnd );
             {
                 gui_menu_items  menus;
+                int             i;
 
-                menus.num_items = 0;
-                menus.menu = NULL;
+                menus = NoMenu;
                 GUICreateMenuStructFromRes( MAKEINTRESOURCE( 100 ), &menus );
                 if( menus.num_items > 0 ) {
-                    int     i;
-
                     for( i = 0; i < menus.num_items; i++ ) {
                         GUIAppendMenuToPopup( MainWnd, MENU_MODIFY_COLOUR, &menus.menu[i], false );
                     }
@@ -1288,20 +1286,16 @@ static bool Enabled = true;
 
 static void CreatePopup( gui_window *gui, int num_items, const gui_menu_struct *menu, gui_ctl_id popup_id, bool submenu )
 {
-    gui_menu_struct     *child_menu;
-    int                 child_num_items;
+    gui_menu_items      save_child;
 
     while( num_items-- > 0 ) {
         if( submenu ) {
             GUIAppendMenuToPopup( gui, popup_id, menu, true );
         } else {
-            child_menu = menu->child.menu;
-            child_num_items = menu->child.num_items;
-            menu->child.num_items = 0;
-            menu->child.menu = NULL;
+            save_child = menu->child;
+            menu->child = NoMenu;
             GUIAppendMenu( gui, menu, true );
-            menu->child.num_items = child_num_items;
-            menu->child.menu = child_menu;
+            menu->child = save_child;
         }
         if( menu->child.menu != NULL ) {
             CreatePopup( gui, menu->child.num_items, menu->child.menu, menu->id, true );

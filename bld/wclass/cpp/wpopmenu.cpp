@@ -166,8 +166,7 @@ void WPopupMenu::attachItem( WWindow *win, int position )
     }
     menu_item.style = menu_style;
     menu_item.hinttext = NULL;
-    menu_item.child.num_items = 0;
-    menu_item.child.menu = NULL;
+    menu_item.child = NoMenu;
     if( (parent()->menuId() == WMAIN_MENU_ID) ||
         parent()->isFloatingMain() ) {
         // appending popup menu to menu bar

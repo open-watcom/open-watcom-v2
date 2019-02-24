@@ -277,8 +277,7 @@ void InitIOWindow( void )
         IOTypeMenu[i].style = GUI_STYLE_MENU_ENABLED | WND_MENU_ALLOCATED;
         IOTypeMenu[i].label = DupStr( IOData.labels[i] );
         IOTypeMenu[i].hinttext = DupStr( LIT_ENG( Empty ) );
-        IOTypeMenu[i].child.num_items = 0;
-        IOTypeMenu[i].child.menu = NULL;
+        IOTypeMenu[i].child = NoMenu;
     }
     for( i = 0; i < ArraySize( IOMenu ); ++i ) {
         if( IOMenu[i].id == MENU_IO_TYPE ) {

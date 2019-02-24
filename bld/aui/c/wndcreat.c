@@ -118,8 +118,7 @@ static a_window WndCreateWithStructBody( wnd_create_struct *info, gui_create_inf
     if( WndMain != NULL ) {
         init->style |= GUI_VISIBLE;
         init->parent = WndMain->gui;
-        init->menus.num_items = 0;
-        init->menus.menu = NULL;
+        init->menus = NoMenu;
     } else {
         init->style &= ~GUI_VISIBLE;
         init->scroll = GUI_NOSCROLL;

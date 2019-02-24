@@ -179,8 +179,7 @@ void WDialog::doDialog( WWindow *parent ) {
     create_info.scroll = GUI_NOSCROLL;
     create_info.style = GUI_NONE;
     create_info.parent = hparent;
-    create_info.menus.num_items = 0;
-    create_info.menus.menu = NULL;
+    create_info.menus = NoMenu;
     create_info.colours.num_items = 0;
     create_info.colours.colour = NULL;
     create_info.gui_call_back = DlgGUIEventProc;
