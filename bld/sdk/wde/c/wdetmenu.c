@@ -89,16 +89,16 @@ static WdeToolBitMapType WdeMenuBitmaps[] = {
     { NULL,             NULL, -1,                "" }
 };
 
-void WdeInitToolMenu( HINSTANCE inst, HMENU menu )
+void WdeInitToolMenu( HINSTANCE inst, HMENU hmenu )
 {
     int i;
 
     for( i = 0; WdeMenuBitmaps[i].bmp != NULL; i++ ) {
         WdeMenuBitmaps[i].hbmp = LoadBitmap( inst, WdeMenuBitmaps[i].bmp );
-        GetMenuString( menu, WdeMenuBitmaps[i].id, WdeMenuBitmaps[i].string, 255,
+        GetMenuString( hmenu, WdeMenuBitmaps[i].id, WdeMenuBitmaps[i].string, 255,
                        MF_BYCOMMAND );
         if( WdeMenuBitmaps[i].hbmp != NULL ) {
-            ModifyMenu( menu, WdeMenuBitmaps[i].id, MF_BYCOMMAND | MF_OWNERDRAW,
+            ModifyMenu( hmenu, WdeMenuBitmaps[i].id, MF_BYCOMMAND | MF_OWNERDRAW,
                         WdeMenuBitmaps[i].id, (LPCSTR)&WdeMenuBitmaps[i] );
         }
     }

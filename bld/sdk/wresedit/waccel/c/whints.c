@@ -47,13 +47,13 @@
 /* type definitions                                                         */
 /****************************************************************************/
 typedef struct {
-    int         id;
+    ctl_id      id;
     msg_id      hint;
 } WHintItem;
 
 typedef struct {
     int         loc[MAX_NESTED_POPUPS];
-    HMENU       popup;
+    HMENU       hpopup;
     msg_id      hint;
 } WPopupHintItem;
 
@@ -104,12 +104,12 @@ static WPopupHintItem WPopupHints[] = {
 
 #define NUM_POPUPS (sizeof( WPopupHints ) / sizeof( WPopupHintItem ))
 
-void WHandleMenuSelect( WStatBar *wsb, HMENU menu, WPARAM wParam, LPARAM lParam )
+void WHandleMenuSelect( WStatBar *wsb, HMENU hmenu, WPARAM wParam, LPARAM lParam )
 {
-    HMENU   popup;
+    HMENU   hpopup;
     WORD    flags;
 
-    if( wsb == NULL || menu == NULL ) {
+    if( wsb == NULL || hmenu == NULL ) {
         return;
     }
 
@@ -121,11 +121,11 @@ void WHandleMenuSelect( WStatBar *wsb, HMENU menu, WPARAM wParam, LPARAM lParam 
             WSetStatusText( wsb, NULL, "" );
         } else if( flags & MF_POPUP ) {
 #ifdef __NT__
-            popup = GetSubMenu( (HMENU)lParam, GET_WM_MENUSELECT_ITEM( wParam, lParam ) );
+            hpopup = GetSubMenu( (HMENU)lParam, GET_WM_MENUSELECT_ITEM( wParam, lParam ) );
 #else
-            popup = (HMENU)(pointer_int)GET_WM_MENUSELECT_ITEM( wParam, lParam );
+            hpopup = (HMENU)(pointer_int)GET_WM_MENUSELECT_ITEM( wParam, lParam );
 #endif
-            WHandlePopupHint( wsb, menu, popup );
+            WHandlePopupHint( wsb, hmenu, hpopup );
         } else {
             WDisplayHint( wsb, GET_WM_MENUSELECT_ITEM( wParam, lParam ) );
         }
@@ -155,12 +155,12 @@ void WDisplayHint( WStatBar *wsb, ctl_id id )
     }
 }
 
-msg_id WGetPopupHint( WPopupHintItem *items, int num, HMENU popup )
+msg_id WGetPopupHint( WPopupHintItem *items, int num, HMENU hpopup )
 {
     int i;
 
     for( i = 0; i < num; i++ ) {
-        if( items[i].popup == popup ) {
+        if( items[i].hpopup == hpopup ) {
             return( items[i].hint );
         }
     }
@@ -168,16 +168,16 @@ msg_id WGetPopupHint( WPopupHintItem *items, int num, HMENU popup )
     return( 0 );
 }
 
-void WHandlePopupHint( WStatBar *wsb, HMENU menu, HMENU popup )
+void WHandlePopupHint( WStatBar *wsb, HMENU hmenu, HMENU hpopup )
 {
     msg_id      hint;
 
-    if( menu != WLastMenu ) {
-        WInitHintItems( NUM_POPUPS, menu, WPopupHints );
-        WLastMenu = menu;
+    if( hmenu != WLastMenu ) {
+        WInitHintItems( NUM_POPUPS, hmenu, WPopupHints );
+        WLastMenu = hmenu;
     }
 
-    hint = WGetPopupHint( WPopupHints, NUM_POPUPS, popup );
+    hint = WGetPopupHint( WPopupHints, NUM_POPUPS, hpopup );
     if( hint > 0 ) {
         WSetStatusByID( wsb, 0, hint );
     } else {
@@ -185,18 +185,18 @@ void WHandlePopupHint( WStatBar *wsb, HMENU menu, HMENU popup )
     }
 }
 
-bool WInitHintItems( int num, HMENU menu, WPopupHintItem *hint_items )
+bool WInitHintItems( int num, HMENU hmenu, WPopupHintItem *hint_items )
 {
     int     i;
     int     j;
-    HMENU   popup;
+    HMENU   hpopup;
 
     for( i = 0; i < num; i++ ) {
-        popup = menu;
+        hpopup = hmenu;
         for( j = 0; j < MAX_NESTED_POPUPS && hint_items[i].loc[j] != -1; j++ ) {
-            popup = GetSubMenu( popup, hint_items[i].loc[j] );
+            hpopup = GetSubMenu( hpopup, hint_items[i].loc[j] );
         }
-        hint_items[i].popup = popup;
+        hint_items[i].hpopup = hpopup;
     }
 
     return( TRUE );

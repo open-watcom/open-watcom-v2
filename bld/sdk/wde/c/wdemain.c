@@ -477,7 +477,7 @@ bool WdeWasAcceleratorHandled( MSG *msg )
 
 void WdeSetAppMenuToRes( bool set_to_res_menu )
 {
-    HMENU       menu;
+    HMENU       hmenu;
     HMENU       new_menu;
 
     WdeShowInfoWindow( set_to_res_menu );
@@ -497,15 +497,15 @@ void WdeSetAppMenuToRes( bool set_to_res_menu )
     }
 
     if( set_to_res_menu ) {
-        menu = GetSubMenu( new_menu, WINDOW_MENU );
+        hmenu = GetSubMenu( new_menu, WINDOW_MENU );
     } else {
-        menu = GetSubMenu( new_menu, 0 );
+        hmenu = GetSubMenu( new_menu, 0 );
     }
 
 #ifdef __NT__
-    SendMessage( hWinWdeMDIClient, WM_MDISETMENU, (WPARAM)new_menu, (LPARAM)menu );
+    SendMessage( hWinWdeMDIClient, WM_MDISETMENU, (WPARAM)new_menu, (LPARAM)hmenu );
 #else
-    SendMessage( hWinWdeMDIClient, WM_MDISETMENU, FALSE, MAKELPARAM( new_menu, menu ) );
+    SendMessage( hWinWdeMDIClient, WM_MDISETMENU, FALSE, MAKELPARAM( new_menu, hmenu ) );
 #endif
 
     WdeCurrentMenu = new_menu;
@@ -605,19 +605,19 @@ bool WdeInCleanup( void )
     return( WdeCleanupStarted );
 }
 
-static void handleInitMenu( HMENU menu )
+static void handleInitMenu( HMENU hmenu )
 {
-    WdeEnableCommonControlsMenu( menu );
-    WdeEnableSelectCustCntl( menu );
-    WdeEnableCustCntlTools( menu );
+    WdeEnableCommonControlsMenu( hmenu );
+    WdeEnableSelectCustCntl( hmenu );
+    WdeEnableCustCntlTools( hmenu );
     if( WdeGetNumRes() ) {
-        WdeEnablePasteItem( menu );
+        WdeEnablePasteItem( hmenu );
     }
 }
 
 LRESULT CALLBACK WdeMainWndProc( HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam )
 {
-    HMENU       menu;
+    HMENU       hmenu;
     LRESULT     ret;
     bool        pass_to_def;
     WdeResInfo  *res_info;
@@ -634,11 +634,11 @@ LRESULT CALLBACK WdeMainWndProc( HWND hWnd, UINT message, WPARAM wParam, LPARAM 
     pass_to_def = true;
     ret = FALSE;
     res_info = WdeGetCurrentRes();
-    menu = WdeGetMenuHandle();
+    hmenu = WdeGetMenuHandle();
 
     switch( message ) {
     case WM_INITMENU:
-        handleInitMenu( menu );
+        handleInitMenu( hmenu );
         break;
 
     case WM_USER:
@@ -687,7 +687,7 @@ LRESULT CALLBACK WdeMainWndProc( HWND hWnd, UINT message, WPARAM wParam, LPARAM 
 
     case WM_COMMAND:
         wp = LOWORD( wParam );
-        if( !WdeIsMenuIDValid( menu, wp ) ) {
+        if( !WdeIsMenuIDValid( hmenu, wp ) ) {
             break;
         }
         switch( wp ) {
@@ -1025,7 +1025,7 @@ LRESULT CALLBACK WdeMainWndProc( HWND hWnd, UINT message, WPARAM wParam, LPARAM 
     return( ret );
 }
 
-bool WdeIsMenuIDValid( HMENU menu, unsigned id )
+bool WdeIsMenuIDValid( HMENU hmenu, unsigned id )
 {
     UINT        st;
 
@@ -1047,13 +1047,13 @@ bool WdeIsMenuIDValid( HMENU menu, unsigned id )
         return( TRUE );
     }
 
-    if( menu == (HMENU)NULL ) {
-        menu = WdeGetMenuHandle();
+    if( hmenu == (HMENU)NULL ) {
+        hmenu = WdeGetMenuHandle();
     }
 
-    handleInitMenu( menu );
+    handleInitMenu( hmenu );
 
-    st = GetMenuState( menu, id, MF_BYCOMMAND );
+    st = GetMenuState( hmenu, id, MF_BYCOMMAND );
 
     if( st == -1 || (st & MF_GRAYED) == MF_GRAYED ) {
         return( FALSE );

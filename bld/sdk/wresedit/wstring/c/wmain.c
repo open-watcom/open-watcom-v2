@@ -490,8 +490,8 @@ bool WCreateEditWindow( HINSTANCE inst, WStringEditInfo *einfo )
 {
     int         x, y, width, height;
     char        *title;
-    HMENU       hmenu;
-    HMENU       menu;
+    HMENU       hmenu1;
+    HMENU       hmenu2;
     bool        is_rc;
     RECT        rect;
 
@@ -526,14 +526,14 @@ bool WCreateEditWindow( HINSTANCE inst, WStringEditInfo *einfo )
         is_rc = TRUE;
     }
 
-    menu = (HMENU)NULL;
+    hmenu1 = (HMENU)NULL;
     if( einfo->info->stand_alone ) {
-        menu = LoadMenu( inst, WMainSOMenuName );
+        hmenu1 = LoadMenu( inst, WMainSOMenuName );
     }
 
     einfo->win = CreateWindow( WMainClass, title, WS_OVERLAPPEDWINDOW,
                                x, y, width, height, einfo->info->parent,
-                               menu, inst, einfo );
+                               hmenu1, inst, einfo );
 
     if( title != NULL ) {
         if( is_rc ) {
@@ -560,10 +560,10 @@ bool WCreateEditWindow( HINSTANCE inst, WStringEditInfo *einfo )
         return( FALSE );
     }
 
-    hmenu = GetMenu( einfo->win );
-    if( hmenu != (HMENU)NULL ) {
-        EnableMenuItem( hmenu, IDM_STR_CUT, MF_GRAYED );
-        EnableMenuItem( hmenu, IDM_STR_COPY, MF_GRAYED );
+    hmenu2 = GetMenu( einfo->win );
+    if( hmenu2 != (HMENU)NULL ) {
+        EnableMenuItem( hmenu2, IDM_STR_CUT, MF_GRAYED );
+        EnableMenuItem( hmenu2, IDM_STR_COPY, MF_GRAYED );
     }
 
     if( WGetOption( WOptScreenMax ) ) {
@@ -656,7 +656,7 @@ static void handleLoadSymbols( WStringEditInfo *einfo )
 
 WINEXPORT LRESULT CALLBACK WMainWndProc( HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam )
 {
-    HMENU           menu;
+    HMENU           hmenu;
 #if 0
     HWND            win;
 #endif
@@ -714,8 +714,8 @@ WINEXPORT LRESULT CALLBACK WMainWndProc( HWND hWnd, UINT message, WPARAM wParam,
 
     case WM_MENUSELECT:
         if( einfo != NULL ) {
-            menu = WGetMenuHandle( einfo );
-            WHandleMenuSelect( einfo->wsb, menu, wParam, lParam );
+            hmenu = WGetMenuHandle( einfo );
+            WHandleMenuSelect( einfo->wsb, hmenu, wParam, lParam );
         }
         break;
 
@@ -827,8 +827,8 @@ WINEXPORT LRESULT CALLBACK WMainWndProc( HWND hWnd, UINT message, WPARAM wParam,
             break;
 
         case IDM_STR_SHOWRIBBON:
-            menu = WGetMenuHandle( einfo );
-            WShowRibbon( einfo, menu );
+            hmenu = WGetMenuHandle( einfo );
+            WShowRibbon( einfo, hmenu );
             pass_to_def = FALSE;
             break;
 

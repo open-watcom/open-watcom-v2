@@ -315,7 +315,7 @@ static BOOL imgEditInit( HANDLE currinst, HANDLE previnst, int cmdshow )
         ImgedConfigInfo.width,                  /* Initial X size */
         ImgedConfigInfo.height,                 /* Initial Y size */
         (HWND)NULL,                             /* Parent window handle */
-        (HMENU)hmenu,                           /* Window menu handle */
+        hmenu,                                  /* Window menu handle */
         Instance,                               /* Program instance handle */
         NULL );                                 /* Create parameters */
 

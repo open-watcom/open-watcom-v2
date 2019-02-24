@@ -60,69 +60,69 @@ static bool              WdeLastDlgIsParent   = 0;
 static WdeLastObjectType WdeLastObject        = 0;
 static WdeOrderMode      WdeLastOrderMode     = WdeSelect;
 
-static void WdeEnableAllMenuItems( HMENU menu, bool enable )
+static void WdeEnableAllMenuItems( HMENU hmenu, bool enable )
 {
     int count;
 
-    count = GetMenuItemCount( menu );
+    count = GetMenuItemCount( hmenu );
     for( count--; count >= 0; count-- ) {
         if( enable ) {
-            EnableMenuItem( menu, count, MF_ENABLED | MF_BYPOSITION );
+            EnableMenuItem( hmenu, count, MF_ENABLED | MF_BYPOSITION );
         } else {
-            EnableMenuItem( menu, count, MF_GRAYED | MF_BYPOSITION );
+            EnableMenuItem( hmenu, count, MF_GRAYED | MF_BYPOSITION );
         }
     }
 }
 
 #if 0
-static void WdeEnableTest( HMENU menu, bool enable )
+static void WdeEnableTest( HMENU hmenu, bool enable )
 {
     if( enable ) {
-        EnableMenuItem( menu, IDM_TEST_MODE, MF_ENABLED | MF_BYCOMMAND );
+        EnableMenuItem( hmenu, IDM_TEST_MODE, MF_ENABLED | MF_BYCOMMAND );
     } else {
-        EnableMenuItem( menu, IDM_TEST_MODE, MF_GRAYED | MF_BYCOMMAND );
+        EnableMenuItem( hmenu, IDM_TEST_MODE, MF_GRAYED | MF_BYCOMMAND );
     }
 }
 #endif
 
-void WdeEnableSelectCustCntl( HMENU menu )
+void WdeEnableSelectCustCntl( HMENU hmenu )
 {
     if( WdeCustControlsLoaded() ) {
-        EnableMenuItem( menu, IDM_SELCUST1, MF_ENABLED | MF_BYCOMMAND );
-        EnableMenuItem( menu, IDM_SELCUST2, MF_ENABLED | MF_BYCOMMAND );
+        EnableMenuItem( hmenu, IDM_SELCUST1, MF_ENABLED | MF_BYCOMMAND );
+        EnableMenuItem( hmenu, IDM_SELCUST2, MF_ENABLED | MF_BYCOMMAND );
     } else {
-        EnableMenuItem( menu, IDM_SELCUST1, MF_GRAYED | MF_BYCOMMAND );
-        EnableMenuItem( menu, IDM_SELCUST2, MF_GRAYED | MF_BYCOMMAND );
+        EnableMenuItem( hmenu, IDM_SELCUST1, MF_GRAYED | MF_BYCOMMAND );
+        EnableMenuItem( hmenu, IDM_SELCUST2, MF_GRAYED | MF_BYCOMMAND );
     }
 }
 
-void WdeEnableCommonControlsMenu( HMENU menu )
+void WdeEnableCommonControlsMenu( HMENU hmenu )
 {
     int i;
 
     i = WdeIsCurrentMDIWindowZoomed() ? 1 : 0;
-    menu = GetSubMenu( menu, TOOLS_MENU + i );
-    menu = GetSubMenu( menu, COMM_CTRL_MENU );
+    hmenu = GetSubMenu( hmenu, TOOLS_MENU + i );
+    hmenu = GetSubMenu( hmenu, COMM_CTRL_MENU );
 
-    WdeEnableAllMenuItems( menu, IsCommCtrlLoaded() );
+    WdeEnableAllMenuItems( hmenu, IsCommCtrlLoaded() );
 }
 
-void WdeEnableCustCntlTools( HMENU menu )
+void WdeEnableCustCntlTools( HMENU hmenu )
 {
     if( WdeIsCurrentCustControlSet( 0 ) ) {
-        EnableMenuItem( menu, IDM_CUSTOM1_TOOL, MF_ENABLED | MF_BYCOMMAND );
+        EnableMenuItem( hmenu, IDM_CUSTOM1_TOOL, MF_ENABLED | MF_BYCOMMAND );
     } else {
-        EnableMenuItem( menu, IDM_CUSTOM1_TOOL, MF_GRAYED | MF_BYCOMMAND );
+        EnableMenuItem( hmenu, IDM_CUSTOM1_TOOL, MF_GRAYED | MF_BYCOMMAND );
     }
 
     if( WdeIsCurrentCustControlSet( 1 ) ) {
-        EnableMenuItem( menu, IDM_CUSTOM2_TOOL, MF_ENABLED | MF_BYCOMMAND );
+        EnableMenuItem( hmenu, IDM_CUSTOM2_TOOL, MF_ENABLED | MF_BYCOMMAND );
     } else {
-        EnableMenuItem( menu, IDM_CUSTOM2_TOOL, MF_GRAYED | MF_BYCOMMAND );
+        EnableMenuItem( hmenu, IDM_CUSTOM2_TOOL, MF_GRAYED | MF_BYCOMMAND );
     }
 }
 
-static void WdeCheckModeMenu( HMENU menu, WdeOrderMode mode, UINT flags )
+static void WdeCheckModeMenu( HMENU hmenu, WdeOrderMode mode, UINT flags )
 {
     UINT    menu_id;
 
@@ -141,12 +141,12 @@ static void WdeCheckModeMenu( HMENU menu, WdeOrderMode mode, UINT flags )
     }
 
     if( menu_id ) {
-        CheckMenuItem( menu, menu_id, flags );
+        CheckMenuItem( hmenu, menu_id, flags );
         WdeSetRibbonItemState( menu_id, ( flags == MF_CHECKED ) );
     }
 }
 
-static void WdeEnableSelectDialogItem( HMENU menu )
+static void WdeEnableSelectDialogItem( HMENU hmenu )
 {
     WdeResInfo  *info;
     UINT        cmd;
@@ -159,11 +159,11 @@ static void WdeEnableSelectDialogItem( HMENU menu )
         cmd = MF_GRAYED;
     }
 
-    EnableMenuItem( menu, IDM_SELECT_DIALOG, cmd | MF_BYCOMMAND );
-    EnableMenuItem( menu, IDM_REMOVE_DIALOG, cmd | MF_BYCOMMAND );
+    EnableMenuItem( hmenu, IDM_SELECT_DIALOG, cmd | MF_BYCOMMAND );
+    EnableMenuItem( hmenu, IDM_REMOVE_DIALOG, cmd | MF_BYCOMMAND );
 }
 
-static void WdeEnableAlignTools( HMENU menu, int offset )
+static void WdeEnableAlignTools( HMENU hmenu, int offset )
 {
     LIST    *list;
     UINT    cmd;
@@ -193,40 +193,40 @@ static void WdeEnableAlignTools( HMENU menu, int offset )
 
     ListFree( list );
 
-    menu = GetSubMenu( menu, EDIT_MENU + offset );
+    hmenu = GetSubMenu( hmenu, EDIT_MENU + offset );
 
-    EnableMenuItem( menu, ALIGN_SUBMENU, cmd | MF_BYPOSITION );
-    EnableMenuItem( menu, SAMESIZE_SUBMENU, cmd | MF_BYPOSITION );
-    EnableMenuItem( menu, SPACE_SUBMENU, cmd | MF_BYPOSITION );
+    EnableMenuItem( hmenu, ALIGN_SUBMENU, cmd | MF_BYPOSITION );
+    EnableMenuItem( hmenu, SAMESIZE_SUBMENU, cmd | MF_BYPOSITION );
+    EnableMenuItem( hmenu, SPACE_SUBMENU, cmd | MF_BYPOSITION );
 }
 
-static void WdeSetDialogObjectDialogMenu( HMENU menu, int offset,
+static void WdeSetDialogObjectDialogMenu( HMENU hmenu, int offset,
                                           bool restorable, bool res_has_hash,
                                           WdeOrderMode mode )
 {
-    WdeEnableAllMenuItems( GetSubMenu( menu, DIALOG_MENU + offset ), TRUE );
+    WdeEnableAllMenuItems( GetSubMenu( hmenu, DIALOG_MENU + offset ), TRUE );
 
     if( restorable ) {
-        EnableMenuItem( menu, IDM_DIALOG_RESTORE, MF_ENABLED | MF_BYCOMMAND );
+        EnableMenuItem( hmenu, IDM_DIALOG_RESTORE, MF_ENABLED | MF_BYCOMMAND );
     } else {
-        EnableMenuItem( menu, IDM_DIALOG_RESTORE, MF_GRAYED | MF_BYCOMMAND );
+        EnableMenuItem( hmenu, IDM_DIALOG_RESTORE, MF_GRAYED | MF_BYCOMMAND );
     }
 
     if( res_has_hash ) {
-        EnableMenuItem( menu, IDM_WRITE_SYMBOLS, MF_ENABLED | MF_BYCOMMAND );
+        EnableMenuItem( hmenu, IDM_WRITE_SYMBOLS, MF_ENABLED | MF_BYCOMMAND );
     } else {
-        EnableMenuItem( menu, IDM_WRITE_SYMBOLS, MF_GRAYED | MF_BYCOMMAND );
+        EnableMenuItem( hmenu, IDM_WRITE_SYMBOLS, MF_GRAYED | MF_BYCOMMAND );
     }
 
     if( mode != WdeLastOrderMode ) {
-        WdeCheckModeMenu( menu, WdeLastOrderMode, MF_UNCHECKED );
-        WdeCheckModeMenu( menu, mode, MF_CHECKED );
+        WdeCheckModeMenu( hmenu, WdeLastOrderMode, MF_UNCHECKED );
+        WdeCheckModeMenu( hmenu, mode, MF_CHECKED );
         WdeLastOrderMode = mode;
     }
 }
 
 #if 0
-static void WdeEnableGotoMenu( HMENU menu )
+static void WdeEnableGotoMenu( HMENU hmenu )
 {
     bool        visible;
     UINT        cmd;
@@ -236,27 +236,27 @@ static void WdeEnableGotoMenu( HMENU menu )
     if( !visible ) {
         cmd = MF_ENABLED;
     }
-    EnableMenuItem( menu, IDM_GOTO_OBJECT, cmd | MF_BYCOMMAND );
+    EnableMenuItem( hmenu, IDM_GOTO_OBJECT, cmd | MF_BYCOMMAND );
 }
 #endif
 
 void WdeSetTestModeMenu( bool testing )
 {
-    HMENU   menu;
+    HMENU   hmenu;
     int     i;
 
     i = WdeIsCurrentMDIWindowZoomed() ? 1 : 0;
 
-    menu = WdeGetMenuHandle();
-    WdeEnableAllMenuItems( menu, !testing );
-    WdeEnableAllMenuItems( GetSubMenu( menu, DIALOG_MENU + i ), !testing );
+    hmenu = WdeGetMenuHandle();
+    WdeEnableAllMenuItems( hmenu, !testing );
+    WdeEnableAllMenuItems( GetSubMenu( hmenu, DIALOG_MENU + i ), !testing );
 
     if( testing ) {
-        EnableMenuItem( menu, DIALOG_MENU + i, MF_ENABLED | MF_BYPOSITION );
-        EnableMenuItem( menu, IDM_TEST_MODE, MF_ENABLED );
-        CheckMenuItem( menu, IDM_TEST_MODE, MF_CHECKED );
+        EnableMenuItem( hmenu, DIALOG_MENU + i, MF_ENABLED | MF_BYPOSITION );
+        EnableMenuItem( hmenu, IDM_TEST_MODE, MF_ENABLED );
+        CheckMenuItem( hmenu, IDM_TEST_MODE, MF_CHECKED );
     } else {
-        CheckMenuItem( menu, IDM_TEST_MODE, MF_UNCHECKED );
+        CheckMenuItem( hmenu, IDM_TEST_MODE, MF_UNCHECKED );
     }
 
     WdeSetRibbonItemState( IDM_TEST_MODE, testing );
@@ -267,37 +267,37 @@ void WdeSetTestModeMenu( bool testing )
 void WdeSetControlObjectMenu ( bool dlg_is_parent, bool dlg_restorable,
                                bool res_has_hash, WdeOrderMode mode )
 {
-    HMENU   menu;
+    HMENU   hmenu;
     int     i;
 
     i = WdeIsCurrentMDIWindowZoomed() ? 1 : 0;
 
-    menu = WdeGetMenuHandle();
+    hmenu = WdeGetMenuHandle();
 
     if ( WdeLastObject != CONTROL || mode != WdeLastOrderMode ||
          WdeLastDlgIsParent != dlg_is_parent ) {
         if( dlg_is_parent ) {
-            WdeSetDialogObjectDialogMenu( menu, i, dlg_restorable, res_has_hash, mode );
+            WdeSetDialogObjectDialogMenu( hmenu, i, dlg_restorable, res_has_hash, mode );
         } else {
             if( mode != WdeLastOrderMode ) {
-                WdeCheckModeMenu( menu, WdeLastOrderMode, MF_UNCHECKED );
-                WdeCheckModeMenu( menu, mode, MF_CHECKED );
+                WdeCheckModeMenu( hmenu, WdeLastOrderMode, MF_UNCHECKED );
+                WdeCheckModeMenu( hmenu, mode, MF_CHECKED );
                 WdeLastOrderMode = mode;
             }
-            WdeEnableAllMenuItems( GetSubMenu( menu, DIALOG_MENU + i ), FALSE );
-            EnableMenuItem( menu, IDM_DIALOG_NEW, MF_ENABLED );
+            WdeEnableAllMenuItems( GetSubMenu( hmenu, DIALOG_MENU + i ), FALSE );
+            EnableMenuItem( hmenu, IDM_DIALOG_NEW, MF_ENABLED );
         }
 
-        WdeEnableAllMenuItems( GetSubMenu( menu, EDIT_MENU + i ), TRUE );
+        WdeEnableAllMenuItems( GetSubMenu( hmenu, EDIT_MENU + i ), TRUE );
 
         WdeLastObject = CONTROL;
         WdeLastDlgIsParent = dlg_is_parent;
     }
 
-    WdeEnableSelectDialogItem( menu );
-    WdeEnableAlignTools( menu, i );
-    //WdeEnableTest( menu, mode == WdeSelect );
-    //WdeEnableGotoMenu( menu );
+    WdeEnableSelectDialogItem( hmenu );
+    WdeEnableAlignTools( hmenu, i );
+    //WdeEnableTest( hmenu, mode == WdeSelect );
+    //WdeEnableGotoMenu( hmenu );
 
 #if 0
     DrawMenuBar( WdeGetMainWindowHandle() );
@@ -306,26 +306,26 @@ void WdeSetControlObjectMenu ( bool dlg_is_parent, bool dlg_restorable,
 
 void WdeSetDialogObjectMenu ( bool restorable, bool res_has_hash, WdeOrderMode mode )
 {
-    HMENU   menu;
+    HMENU   hmenu;
     int     i;
 
     i = WdeIsCurrentMDIWindowZoomed() ? 1 : 0;
 
-    menu = WdeGetMenuHandle();
+    hmenu = WdeGetMenuHandle();
 
     if( WdeLastObject != DIALOG || WdeLastDlgRestorable != restorable ||
         mode != WdeLastOrderMode ) {
 
-        WdeSetDialogObjectDialogMenu( menu, i, restorable, res_has_hash, mode );
-        WdeEnableAllMenuItems( GetSubMenu( menu, EDIT_MENU + i ), TRUE );
+        WdeSetDialogObjectDialogMenu( hmenu, i, restorable, res_has_hash, mode );
+        WdeEnableAllMenuItems( GetSubMenu( hmenu, EDIT_MENU + i ), TRUE );
         WdeLastObject = DIALOG;
         WdeLastDlgRestorable = restorable;
     }
 
-    WdeEnableSelectDialogItem( menu );
-    WdeEnableAlignTools( menu, i );
-    //WdeEnableTest( menu, mode == WdeSelect );
-    //WdeEnableGotoMenu( menu );
+    WdeEnableSelectDialogItem( hmenu );
+    WdeEnableAlignTools( hmenu, i );
+    //WdeEnableTest( hmenu, mode == WdeSelect );
+    //WdeEnableGotoMenu( hmenu );
 
 #if 0
     DrawMenuBar( WdeGetMainWindowHandle() );
@@ -334,41 +334,41 @@ void WdeSetDialogObjectMenu ( bool restorable, bool res_has_hash, WdeOrderMode m
 
 void WdeSetBaseObjectMenu( bool has_hash )
 {
-    HMENU   menu;
+    HMENU   hmenu;
     int     i;
 
     i = WdeIsCurrentMDIWindowZoomed() ? 1 : 0;
 
-    menu = WdeGetMenuHandle();
+    hmenu = WdeGetMenuHandle();
 
     if( WdeLastObject != BASE ) {
-        WdeEnableAllMenuItems( GetSubMenu( menu, EDIT_MENU + i ), FALSE );
-        EnableMenuItem( menu, IDM_OPTIONS, MF_ENABLED | MF_BYCOMMAND );
+        WdeEnableAllMenuItems( GetSubMenu( hmenu, EDIT_MENU + i ), FALSE );
+        EnableMenuItem( hmenu, IDM_OPTIONS, MF_ENABLED | MF_BYCOMMAND );
 
-        WdeEnableAllMenuItems( GetSubMenu( menu, DIALOG_MENU + i ), FALSE );
-        EnableMenuItem( menu, IDM_DIALOG_NEW, MF_ENABLED | MF_BYCOMMAND );
+        WdeEnableAllMenuItems( GetSubMenu( hmenu, DIALOG_MENU + i ), FALSE );
+        EnableMenuItem( hmenu, IDM_DIALOG_NEW, MF_ENABLED | MF_BYCOMMAND );
 
         if( has_hash ) {
-            EnableMenuItem( menu, IDM_WRITE_SYMBOLS, MF_ENABLED | MF_BYCOMMAND );
+            EnableMenuItem( hmenu, IDM_WRITE_SYMBOLS, MF_ENABLED | MF_BYCOMMAND );
         } else {
-            EnableMenuItem( menu, IDM_WRITE_SYMBOLS, MF_GRAYED | MF_BYCOMMAND );
+            EnableMenuItem( hmenu, IDM_WRITE_SYMBOLS, MF_GRAYED | MF_BYCOMMAND );
         }
 
         WdeLastObject = BASE;
     }
 
-    WdeEnableSelectDialogItem( menu );
-    //WdeEnableGotoMenu( menu );
+    WdeEnableSelectDialogItem( hmenu );
+    //WdeEnableGotoMenu( hmenu );
 
-    menu = GetSubMenu( menu, EDIT_MENU + i );
-    EnableMenuItem( menu, SYMBOLS_SUBMENU, MF_ENABLED | MF_BYPOSITION );
+    hmenu = GetSubMenu( hmenu, EDIT_MENU + i );
+    EnableMenuItem( hmenu, SYMBOLS_SUBMENU, MF_ENABLED | MF_BYPOSITION );
 
 #if 0
     DrawMenuBar( WdeGetMainWindowHandle() );
 #endif
 }
 
-void WdeEnablePasteItem( HMENU menu )
+void WdeEnablePasteItem( HMENU hmenu )
 {
     UINT        cmd;
     WdeResInfo  *rinfo;
@@ -382,7 +382,7 @@ void WdeEnablePasteItem( HMENU menu )
         }
     }
 
-    EnableMenuItem( menu, IDM_PASTEOBJECT, cmd | MF_BYCOMMAND );
+    EnableMenuItem( hmenu, IDM_PASTEOBJECT, cmd | MF_BYCOMMAND );
 }
 
 bool WdeIsCurrentMDIWindowZoomed( void )

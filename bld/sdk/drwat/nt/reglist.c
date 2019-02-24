@@ -235,20 +235,20 @@ static void CreateRegListMenu( RegListData *data )
     char                        buff[BUFF_SIZE];
     unsigned                    init_value;
 
-    data->menu = CreatePopupMenu();
+    data->hmenu = CreatePopupMenu();
 
     mts = MADRegSetDisplayToggleList( data->reg_set );
     init_value = MADRegSetDisplayToggle( data->reg_set, 0, 0 );
 
-    AppendMenu( data->menu, MF_STRING, 1, "Modify..." );
-    AppendMenu( data->menu, MF_SEPARATOR, 2, "" );
+    AppendMenu( data->hmenu, MF_STRING, 1, "Modify..." );
+    AppendMenu( data->hmenu, MF_SEPARATOR, 2, "" );
 
     for( i = 0 ; mts[ i ].menu != MAD_MSTR_NIL; i++ ) {
         MADCli( String )( mts[ i ].menu, buff, sizeof( buff ) );
         if( init_value & ( 1 << i ) ) {
-            AppendMenu( data->menu, MF_STRING | MF_CHECKED, i + MAD_MENU_FIRST_ITEM, buff );
+            AppendMenu( data->hmenu, MF_STRING | MF_CHECKED, i + MAD_MENU_FIRST_ITEM, buff );
         } else {
-            AppendMenu( data->menu, MF_STRING,  i + MAD_MENU_FIRST_ITEM, buff );
+            AppendMenu( data->hmenu, MF_STRING,  i + MAD_MENU_FIRST_ITEM, buff );
         }
     }
 
@@ -432,7 +432,7 @@ static void UpdateRegList(HWND list, RegListData *list_data)
 
 static void ShowRegListMenu(HWND list, int x, int y, RegListData *data )
 {
-    TrackPopupMenu( data->menu,
+    TrackPopupMenu( data->hmenu,
         TPM_LEFTBUTTON,// | TPM_RIGHTBUTTON ,
         x,
         y,
@@ -514,12 +514,12 @@ LRESULT CALLBACK RegListProc(HWND hwnd, UINT msg,WPARAM wparam, LPARAM lparam)
     case CHILD_R_CLICK:
         SetFocus( hwnd );
         MakeStringCurrent( hwnd, (HWND)wparam, data );
-        EnableMenuItem( data->menu, 1, MF_BYCOMMAND | MF_ENABLED );
+        EnableMenuItem( data->hmenu, 1, MF_BYCOMMAND | MF_ENABLED );
         GetWindowRect( data->curr_reg, &rect );
         ShowRegListMenu( hwnd, rect.left + LOWORD( lparam ), rect.top + HIWORD( lparam ), data );
         break;
     case WM_RBUTTONDOWN:
-        EnableMenuItem( data->menu, 1, MF_BYCOMMAND | MF_GRAYED );
+        EnableMenuItem( data->hmenu, 1, MF_BYCOMMAND | MF_GRAYED );
         GetWindowRect( hwnd, &rect );
         ShowRegListMenu( hwnd, rect.left + LOWORD( lparam ), rect.top + HIWORD( lparam ), data );
         break;
@@ -552,7 +552,7 @@ LRESULT CALLBACK RegListProc(HWND hwnd, UINT msg,WPARAM wparam, LPARAM lparam)
         ScrollRegList( hwnd, msg, wparam );
         break;
     case WM_DESTROY:
-        DestroyMenu( data->menu );
+        DestroyMenu( data->hmenu );
         MemFree( data );
         break;
     case WM_COMMAND:
@@ -563,10 +563,10 @@ LRESULT CALLBACK RegListProc(HWND hwnd, UINT msg,WPARAM wparam, LPARAM lparam)
                 SendMessage( data->curr_reg, WM_LBUTTONDBLCLK, 0, 0 );
                 break;
             default:
-                if( CheckMenuItem( data->menu, item, MF_BYCOMMAND ) == MF_CHECKED ){
-                    CheckMenuItem( data->menu, item, MF_UNCHECKED | MF_BYCOMMAND );
+                if( CheckMenuItem( data->hmenu, item, MF_BYCOMMAND ) == MF_CHECKED ){
+                    CheckMenuItem( data->hmenu, item, MF_UNCHECKED | MF_BYCOMMAND );
                 } else {
-                    CheckMenuItem( data->menu, item, MF_CHECKED | MF_BYCOMMAND );
+                    CheckMenuItem( data->hmenu, item, MF_CHECKED | MF_BYCOMMAND );
                 }
                 item -= MAD_MENU_FIRST_ITEM;
                 item = 1 << item;

@@ -265,7 +265,7 @@ HWND WinNewDrawPad( img_node *node )
     POINT               origin;
     char                filename[_MAX_PATH];
     HWND                drawarea;
-    HMENU               sys_menu;
+    HMENU               hsysmenu;
 
     node->viewhwnd = CreateViewWin( node->width, node->height );
     pad_x = 0;
@@ -327,9 +327,9 @@ HWND WinNewDrawPad( img_node *node )
     }
 
     if( ImgedIsDDE ) {
-        sys_menu = GetSystemMenu( drawarea, FALSE );
-        if( sys_menu != (HMENU)NULL ) {
-            EnableMenuItem( sys_menu, SC_CLOSE, MF_GRAYED );
+        hsysmenu = GetSystemMenu( drawarea, FALSE );
+        if( hsysmenu != (HMENU)NULL ) {
+            EnableMenuItem( hsysmenu, SC_CLOSE, MF_GRAYED );
         }
     }
 

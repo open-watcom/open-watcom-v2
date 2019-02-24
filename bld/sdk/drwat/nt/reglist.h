@@ -42,7 +42,7 @@ typedef struct {
 typedef struct {
     HWND                curr_reg;
     mad_reg_set_data    *reg_set;
-    HMENU               menu;
+    HMENU               hmenu;
 } RegListData;
 
 void InitRegList(void);

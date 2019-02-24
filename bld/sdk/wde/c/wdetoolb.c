@@ -76,7 +76,7 @@ WdeToolBar *WdeCreateToolBar( WdeToolBarInfo *info, HWND parent )
     int         i;
     int         width;
     int         height;
-    HMENU       sys_menu;
+    HMENU       hsysmenu;
     char        *text;
 
     if( info == NULL ) {
@@ -104,23 +104,23 @@ WdeToolBar *WdeCreateToolBar( WdeToolBarInfo *info, HWND parent )
     tbar->win = ToolBarWindow( tbar->tbar );
 
     if( (info->dinfo.style & TOOLBAR_FLOAT_STYLE) == TOOLBAR_FLOAT_STYLE ) {
-        sys_menu = GetSystemMenu( tbar->win, FALSE );
-        i = GetMenuItemCount( sys_menu );
+        hsysmenu = GetSystemMenu( tbar->win, FALSE );
+        i = GetMenuItemCount( hsysmenu );
         for( ; i > 0; i-- ) {
-            DeleteMenu( sys_menu, 0, MF_BYPOSITION );
+            DeleteMenu( hsysmenu, 0, MF_BYPOSITION );
         }
         text = WdeAllocRCString( WDE_SYSMENUMOVE );
-        AppendMenu( sys_menu, MF_STRING, SC_MOVE, text != NULL ? text : "Move" );
+        AppendMenu( hsysmenu, MF_STRING, SC_MOVE, text != NULL ? text : "Move" );
         if( text != NULL ) {
             WdeFreeRCString( text );
         }
         text = WdeAllocRCString( WDE_SYSMENUSIZE );
-        AppendMenu( sys_menu, MF_STRING, SC_SIZE, text != NULL ? text : "Size" );
+        AppendMenu( hsysmenu, MF_STRING, SC_SIZE, text != NULL ? text : "Size" );
         if( text != NULL ) {
             WdeFreeRCString( text );
         }
         text = WdeAllocRCString( WDE_SYSMENUHIDE );
-        AppendMenu( sys_menu, MF_STRING, SC_CLOSE, text != NULL ? text : "Hide" );
+        AppendMenu( hsysmenu, MF_STRING, SC_CLOSE, text != NULL ? text : "Hide" );
         if( text != NULL ) {
             WdeFreeRCString( text );
         }
