@@ -138,13 +138,7 @@ static bool guiToolBarProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, WPI_PARAM
     case WM_CREATE :
         hwnd = _wpi_getframe( hwnd );
         hmenu = _wpi_getsystemmenu( hwnd );
-        if( hmenu != NULLHANDLE ) {
-            if( _wpi_appendmenu( hmenu, MF_SEPARATOR, 0, 0, NULLHANDLE, NULL ) ) {
-                _wpi_appendmenu( hmenu, MF_SYSMENU, MF_ENABLED,
-                                 GUIHint[GUI_MENU_IDX( GUI_FIX_TOOLBAR )].id, NULLHANDLE,
-                                 GUIHint[GUI_MENU_IDX( GUI_FIX_TOOLBAR )].label );
-            }
-        }
+        GUIAppendSystemMenu( hsysmenu, GUI_MENU_IDX( GUI_FIX_TOOLBAR ) );
         break;
 #ifdef __OS2_PM__
     case WM_CHAR :

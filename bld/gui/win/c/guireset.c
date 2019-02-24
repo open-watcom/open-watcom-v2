@@ -42,16 +42,16 @@ static void FreeSystemMenu( gui_window *wnd )
 {
     int             num_items;
     int             item;
-    HMENU           system;
+    HMENU           hsysmenu;
     HWND            frame;
 
     frame = GUIGetParentFrameHWND( wnd );
     if( ( _wpi_getparent( frame ) != HWND_DESKTOP ) && (wnd->style & GUI_SYSTEM_MENU) ) {
-        system = _wpi_getsystemmenu( frame );
-        if( system != NULLHANDLE ) {
-            num_items = _wpi_getmenuitemcount( system );
+        hsysmenu = _wpi_getsystemmenu( frame );
+        if( hsysmenu != NULLHANDLE ) {
+            num_items = _wpi_getmenuitemcount( hsysmenu );
             for( item = num_items; item >= NUM_SYSTEM_MENUS; item-- ) {
-                _wpi_deletemenu( system, item, TRUE );
+                _wpi_deletemenu( hsysmenu, item, TRUE );
             }
         }
     }

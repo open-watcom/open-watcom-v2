@@ -59,6 +59,15 @@ void GUIInitGUIMenuHint( void )
     GUIHint[GUI_MENU_IDX( GUI_FIX_TOOLBAR )].hinttext = LIT( Make_Tool_Bar_Fixed );
 }
 
+void GUIAppendSystemMenu( HMENU hsysmenu, int menu_idx )
+{
+    if( hsysmenu != NULLHANDLE ) {
+        if( _wpi_appendmenu( hsysmenu, MF_SEPARATOR, 0, 0, NULLHANDLE, NULL ) ) {
+            _wpi_appendmenu( hsysmenu, MF_STRING, MF_ENABLED, GUIHint[menu_idx].id, NULLHANDLE, GUIHint[menu_idx].label );
+        }
+    }
+}
+
 static bool GetMenuFlags( HMENU hmenu, gui_ctl_id id_position, bool by_position,
                           unsigned *menu_flags, unsigned *attr_flags )
 {
@@ -479,11 +488,11 @@ static void EnablePopup( HMENU hmenu, int position, bool enable )
 
 bool GUIEnableSystemMenuItem( gui_window *wnd, gui_ctl_id id, bool enable )
 {
-    HMENU       hmenu;
+    HMENU       hsysmenu;
 
-    hmenu = _wpi_getsystemmenu( GUIGetParentFrameHWND( wnd ) );
-    if( hmenu != NULLHANDLE ) {
-        EnableItem( hmenu, id, enable );
+    hsysmenu = _wpi_getsystemmenu( GUIGetParentFrameHWND( wnd ) );
+    if( hsysmenu != NULLHANDLE ) {
+        EnableItem( hsysmenu, id, enable );
     }
     return( true );
 }
@@ -654,38 +663,34 @@ bool GUICreateMenus( gui_window *wnd, int num_items, const gui_menu_struct *menu
 bool GUIAddToSystemMenu( gui_window *wnd, HWND hwnd, int num_to_add,
                          const gui_menu_struct *menu, gui_create_styles style )
 {
-    HMENU           system;
+    HMENU           hsysmenu;
     int             num_items;
 
     if( (style & GUI_SYSTEM_MENU) == 0 ) {
         return( true );
     }
-    system = _wpi_getsystemmenu( hwnd );
-    if( system == NULLHANDLE ) {
+    hsysmenu = _wpi_getsystemmenu( hwnd );
+    if( hsysmenu == NULLHANDLE ) {
         return( false );
     }
     if( GUIMDI && ( _wpi_getparent( hwnd ) != NULLHANDLE ) ) {
-        num_items = _wpi_getmenuitemcount( system );
+        num_items = _wpi_getmenuitemcount( hsysmenu );
 #ifndef __OS2_PM__
-        ModifyMenu( system, num_items - 1, MF_STRING | MF_BYPOSITION | MF_GRAYED,
+        ModifyMenu( hsysmenu, num_items - 1, MF_STRING | MF_BYPOSITION | MF_GRAYED,
                     SC_NEXTWINDOW, LIT( NexXt ) ); // add \tCtrl+F6" );
-        ModifyMenu( system, num_items - 3, MF_STRING | MF_BYPOSITION | MF_ENABLED,
+        ModifyMenu( hsysmenu, num_items - 3, MF_STRING | MF_BYPOSITION | MF_ENABLED,
                     SC_CLOSE, LIT( XClose ) ); // add \tctrl+f4" );
 #endif
     }
     if( (style & GUI_CLOSEABLE) == 0 ) {
-        _wpi_enablemenuitem( system, SC_CLOSE, FALSE, FALSE );
+        _wpi_enablemenuitem( hsysmenu, SC_CLOSE, FALSE, FALSE );
     }
     if( style & GUI_CHANGEABLE_FONT ) {
-        if( _wpi_appendmenu( system, MF_SEPARATOR, 0, 0, NULLHANDLE, NULL ) ) {
-            _wpi_appendmenu( system, MF_STRING, MF_ENABLED,
-                             GUIHint[GUI_MENU_IDX( GUI_CHANGE_FONT )].id, NULLHANDLE,
-                             GUIHint[GUI_MENU_IDX( GUI_CHANGE_FONT )].label );
-        }
+        GUIAppendSystemMenu( hsysmenu, GUI_MENU_IDX( GUI_CHANGE_FONT ) );
     }
     if( num_to_add > 0 ) {
-        if( _wpi_appendmenu( system, MF_SEPARATOR, 0, 0, NULLHANDLE, NULL ) ) {
-            return( AppendMenus( wnd, system, num_to_add, menu ) );
+        if( _wpi_appendmenu( hsysmenu, MF_SEPARATOR, 0, 0, NULLHANDLE, NULL ) ) {
+            return( AppendMenus( wnd, hsysmenu, num_to_add, menu ) );
         }
     }
     return( true );
