@@ -171,7 +171,7 @@ static bool GetMenu( int *depth, int num_items, UIMENUITEM *menuitems, gui_ctl_i
         if( depth != NULL ) {
             (*depth)++;
         }
-        if( menuitems[item].popup != NULL ) {
+        if( menuitems[i].popup != NULL ) {
             num_popup_menus = uimenuitemscount( menuitems[i].popup );
             if( GetMenu( depth, num_popup_menus, menuitems[i].popup, id, pmenuitem, position, to_replace ) ) {
                 if( ( to_replace != NULL ) && ( *to_replace == NULL ) ) {
