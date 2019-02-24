@@ -48,7 +48,7 @@ static char AmtTable[] = { 1, 2, 5, 10, 25, 50, 0 };
 
 static void UpdateAllocMenu( void )
 {
-    HMENU       mh;
+    HMENU       hmenu;
     WORD        i;
     WORD        cmd;
 
@@ -56,36 +56,36 @@ static void UpdateAllocMenu( void )
      * been created so in that case don't do anything */
 
     if( !IsWindow( HeapWalkMainWindow ) ) return;
-    mh = GetMenu( HeapWalkMainWindow );
+    hmenu = GetMenu( HeapWalkMainWindow );
     if( AllocAmt == 0 ) {
         cmd = MF_BYCOMMAND | MF_GRAYED;
         i = HEAPMENU_ALLOC_FIRST;
         while( i <= HEAPMENU_ALLOC_LAST ) {
-            EnableMenuItem( mh, i, cmd );
+            EnableMenuItem( hmenu, i, cmd );
             i++;
         }
     } else {
         i = 0;
         while( AmtTable[i] != 0 ) {
             if( FreeAmt >= AmtTable[i] * 1024L ) {
-                EnableMenuItem( mh, HEAPMENU_ALLOC_FIRST + i,
+                EnableMenuItem( hmenu, HEAPMENU_ALLOC_FIRST + i,
                                 MF_BYCOMMAND | MF_ENABLED );
             } else {
-                EnableMenuItem( mh, HEAPMENU_ALLOC_FIRST + i,
+                EnableMenuItem( hmenu, HEAPMENU_ALLOC_FIRST + i,
                                 MF_BYCOMMAND | MF_GRAYED );
             }
             i++;
         }
         if( FreeAmt > 0 ) {
-            EnableMenuItem( mh, HEAPMENU_ALLOC_NK, MF_BYCOMMAND | MF_ENABLED );
+            EnableMenuItem( hmenu, HEAPMENU_ALLOC_NK, MF_BYCOMMAND | MF_ENABLED );
         } else {
-            EnableMenuItem( mh, HEAPMENU_ALLOC_NK, MF_BYCOMMAND | MF_GRAYED );
+            EnableMenuItem( hmenu, HEAPMENU_ALLOC_NK, MF_BYCOMMAND | MF_GRAYED );
         }
         cmd = MF_BYCOMMAND | MF_ENABLED;
     }
     i = HEAPMENU_FREE_FIRST;
     while( i <= HEAPMENU_FREE_LAST ) {
-        EnableMenuItem( mh, i, cmd );
+        EnableMenuItem( hmenu, i, cmd );
         i++;
     }
 } /* UpdateAllocMenu */

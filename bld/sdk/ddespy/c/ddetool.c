@@ -106,13 +106,13 @@ static bool myToolBarProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
 {
     MINMAXINFO  *minmax;
 //  HWND        toolhwnd;
-    HMENU       mh;
+    HMENU       hmenu;
 
     wparam = wparam;
     switch( msg ) {
     case WM_CREATE:
-        mh = GetMenu( DDEMainWnd );
-        CheckMenuItem( mh, DDEMENU_TOOLBAR, MF_BYCOMMAND | MF_CHECKED );
+        hmenu = GetMenu( DDEMainWnd );
+        CheckMenuItem( hmenu, DDEMENU_TOOLBAR, MF_BYCOMMAND | MF_CHECKED );
         ConfigInfo.show_tb = true;
         break;
 #if 0
@@ -160,8 +160,8 @@ static bool myToolBarProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
         if( IsWindowVisible( DDEMainWnd ) ) {
             resizeForTB( NULL, DDEMainWnd );
         }
-        mh = GetMenu( DDEMainWnd );
-        CheckMenuItem( mh, DDEMENU_TOOLBAR, MF_BYCOMMAND | MF_UNCHECKED );
+        hmenu = GetMenu( DDEMainWnd );
+        CheckMenuItem( hmenu, DDEMENU_TOOLBAR, MF_BYCOMMAND | MF_UNCHECKED );
         ConfigInfo.show_tb = false;
         break;
     }

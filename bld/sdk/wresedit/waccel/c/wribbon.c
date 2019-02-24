@@ -200,11 +200,11 @@ bool WResizeRibbon( WAccelEditInfo *einfo, RECT *prect )
     return( TRUE );
 }
 
-void WShowRibbon( WAccelEditInfo *einfo, HMENU menu )
+void WShowRibbon( WAccelEditInfo *einfo, HMENU hmenu )
 {
     char        *mtext;
 
-    if( einfo == NULL && menu == NULL ) {
+    if( einfo == NULL && hmenu == NULL ) {
         return;
     }
 
@@ -222,7 +222,7 @@ void WShowRibbon( WAccelEditInfo *einfo, HMENU menu )
 
     einfo->show_ribbon = !einfo->show_ribbon;
     WResizeWindows( einfo );
-    ModifyMenu( menu, IDM_ACC_SHOWRIBBON, MF_BYCOMMAND | MF_STRING,
+    ModifyMenu( hmenu, IDM_ACC_SHOWRIBBON, MF_BYCOMMAND | MF_STRING,
                 IDM_ACC_SHOWRIBBON, mtext );
 
     if( mtext != NULL ) {

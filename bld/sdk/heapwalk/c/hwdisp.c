@@ -175,7 +175,7 @@ static HWND ShowCursorHeapItem( heap_list *hl, HWND parent )
 static HWND ShowMenuHeapItem( heap_list *hl, HWND parent )
 {
     HWND        hdl;
-    HMENU       menu;
+    HMENU       hmenu;
     void __far  *ptr;
     ResInfo     *info;
 
@@ -187,10 +187,10 @@ static HWND ShowMenuHeapItem( heap_list *hl, HWND parent )
     info->hdl = hl->info.ge.hBlock;
     info->res = ptr;
     info->menu_const = NULL;
-    menu = LoadMenuIndirect( ptr );
+    hmenu = LoadMenuIndirect( ptr );
     hdl = MkDisplayWin( STR_MENU, parent );
     SetWindowLong( hdl, 0, (DWORD)info );
-    SetMenu( hdl, menu );
+    SetMenu( hdl, hmenu );
     ShowWindow( hdl, SW_SHOWNORMAL );
     return( hdl );
 }
@@ -472,7 +472,7 @@ BOOL FAR PASCAL ItemDisplayProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpar
     ResInfo             *info;
     HDC                 dc;
     PAINTSTRUCT         paint;
-    HMENU               menu;
+    HMENU               hmenu;
     char                buf[40];
     RECT                area;
 
@@ -514,8 +514,8 @@ BOOL FAR PASCAL ItemDisplayProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpar
                 DialogDisp = MakeProcInstance_DLG( DialogDispDlgProc, Instance );
             }
             info->menu_const = JCreateDialog( Instance, "MENU_CONST", hwnd, DialogDisp );
-            menu = GetMenu( hwnd );
-            GetMenuString( menu, wparam, buf, 40, MF_BYCOMMAND );
+            hmenu = GetMenu( hwnd );
+            GetMenuString( hmenu, wparam, buf, 40, MF_BYCOMMAND );
             SetStaticText( info->menu_const, MENU_ITEM, buf );
             sprintf( buf, "0x%04X", wparam );
             SetStaticText( info->menu_const, MENU_CONSTANT, buf );

@@ -433,7 +433,7 @@ LRESULT CALLBACK ZOOMMainWndProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpa
     int                 ysize;
     PAINTSTRUCT         paintinfo;
     MINMAXINFO          *mminfo;
-//    HMENU               mh;
+//    HMENU               hmenu;
     WORD                item;
 //    WORD                flags;
 
@@ -446,7 +446,7 @@ LRESULT CALLBACK ZOOMMainWndProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpa
         info->magnif = 5 * ZOOM_FACTOR;
         info->magnifpen = CreatePen( PS_INSIDEFRAME, 1, RGB( 0, 0, 0) );
         info->zoomincrement = 0;
-//        mh = GetMenu( hwnd );
+//        hmenu = GetMenu( hwnd );
         GetMenu( hwnd );
         if( ConfigInfo.topmost ) {
             SetWindowPos( hwnd, HWND_TOPMOST, 0, 0, 0, 0,

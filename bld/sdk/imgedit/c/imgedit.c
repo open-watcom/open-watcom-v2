@@ -80,7 +80,7 @@ BOOL NoTitleScreen = FALSE;
 static BOOL imgEditInit( HANDLE currinst, HANDLE previnst, int cmdshow )
 {
     WNDCLASS    wc;
-    HMENU       menu;
+    HMENU       hmenu;
     HDC         hdc;
     BOOL        maximized;
     int         show_state;
@@ -95,9 +95,9 @@ static BOOL imgEditInit( HANDLE currinst, HANDLE previnst, int cmdshow )
     IEInitGlobalStrings();
 
     if( ImgedIsDDE ) {
-        menu = LoadMenu( Instance, "IMGEDDDEMENU" );
+        hmenu = LoadMenu( Instance, "IMGEDDDEMENU" );
     } else {
-        menu = LoadMenu( Instance, "IMGEDMENU" );
+        hmenu = LoadMenu( Instance, "IMGEDMENU" );
     }
 
     hBitmapIcon = LoadIcon( Instance, "BitmapIcon" );
@@ -315,7 +315,7 @@ static BOOL imgEditInit( HANDLE currinst, HANDLE previnst, int cmdshow )
         ImgedConfigInfo.width,                  /* Initial X size */
         ImgedConfigInfo.height,                 /* Initial Y size */
         (HWND)NULL,                             /* Parent window handle */
-        (HMENU)menu,                            /* Window menu handle */
+        (HMENU)hmenu,                           /* Window menu handle */
         Instance,                               /* Program instance handle */
         NULL );                                 /* Create parameters */
 

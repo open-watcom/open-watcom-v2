@@ -100,13 +100,13 @@ void SetMainWndDefault( void )
  */
 static void initMonitoring( HWND hwnd )
 {
-    HMENU       mh;
+    HMENU       hmenu;
     unsigned    i;
 
-    mh = GetMenu( hwnd );
+    hmenu = GetMenu( hwnd );
     for( i = 0; i < MAX_DDE_MON; i++ ) {
         if( Monitoring[i] ) {
-            CheckMenuItem( mh, DDE_MON_FIRST + i, MF_BYCOMMAND | MF_CHECKED );
+            CheckMenuItem( hmenu, DDE_MON_FIRST + i, MF_BYCOMMAND | MF_CHECKED );
         }
     }
 
@@ -119,13 +119,13 @@ static void initMonitoring( HWND hwnd )
 static void monitorChange( HWND hwnd, unsigned i )
 {
     UINT        action;
-    HMENU       mh;
+    HMENU       hmenu;
 
     action = MF_BYCOMMAND;
-    mh = GetMenu( hwnd );
+    hmenu = GetMenu( hwnd );
     Monitoring[i] = !Monitoring[i];
     action |= ( Monitoring[i] ) ? MF_CHECKED : MF_UNCHECKED;
-    CheckMenuItem( mh, DDE_MON_FIRST + i, action );
+    CheckMenuItem( hmenu, DDE_MON_FIRST + i, action );
 
 } /* monitorChange */
 
@@ -162,19 +162,19 @@ static void resetFonts( DDEWndInfo *info )
  */
 static void hideHintBar( HWND hwnd, DDEWndInfo *info, bool hide )
 {
-    HMENU               mh;
+    HMENU               hmenu;
     RECT                area;
     HWND                hinthwnd;
     WORD                height;
 
-    mh = GetMenu( hwnd );
+    hmenu = GetMenu( hwnd );
     hinthwnd = GetHintHwnd( info->hintbar );
     GetClientRect( hwnd, &area );
     height = area.bottom - area.top;
     if( hide ) {
         info->list.hinthite = 0;
         ShowWindow( hinthwnd, SW_HIDE );
-        CheckMenuItem( mh, DDEMENU_HINTBAR, MF_BYCOMMAND | MF_UNCHECKED );
+        CheckMenuItem( hmenu, DDEMENU_HINTBAR, MF_BYCOMMAND | MF_UNCHECKED );
     } else {
         info->list.hinthite = SizeHintBar( info->hintbar );
         if( height < info->list.ypos + info->list.hinthite ) {
@@ -182,7 +182,7 @@ static void hideHintBar( HWND hwnd, DDEWndInfo *info, bool hide )
         } else {
             ShowWindow( hinthwnd, SW_SHOW );
         }
-        CheckMenuItem( mh, DDEMENU_HINTBAR, MF_BYCOMMAND | MF_CHECKED );
+        CheckMenuItem( hmenu, DDEMENU_HINTBAR, MF_BYCOMMAND | MF_CHECKED );
     }
     ResizeListBox( (WORD)( area.right - area.left ), height, &info->list );
 
@@ -197,7 +197,7 @@ LRESULT CALLBACK DDEMainWndProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpar
     char                *alias_title;
     DLGPROC             dlgproc;
     RECT                area;
-    HMENU               mh;
+    HMENU               hmenu;
     UINT                flag;
     HDC                 dc;
     HFONT               font;
@@ -238,19 +238,19 @@ LRESULT CALLBACK DDEMainWndProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpar
         InitAliases();
         LogInit( hwnd, Instance, LogHeader );
         MakeDDEToolBar( hwnd );
-        mh = GetMenu( hwnd );
+        hmenu = GetMenu( hwnd );
         if( ConfigInfo.scroll ) {
-            CheckMenuItem( mh, DDEMENU_SCROLL, MF_BYCOMMAND | MF_CHECKED );
+            CheckMenuItem( hmenu, DDEMENU_SCROLL, MF_BYCOMMAND | MF_CHECKED );
         }
         if( !ConfigInfo.alias ) {
-            CheckMenuItem( mh, DDEMENU_NO_ALIAS, MF_BYCOMMAND | MF_CHECKED );
+            CheckMenuItem( hmenu, DDEMENU_NO_ALIAS, MF_BYCOMMAND | MF_CHECKED );
         }
         if( ConfigInfo.screen_out ) {
-            CheckMenuItem( mh, DDEMENU_SCREEN_OUT, MF_BYCOMMAND | MF_CHECKED );
+            CheckMenuItem( hmenu, DDEMENU_SCREEN_OUT, MF_BYCOMMAND | MF_CHECKED );
         }
         hideHintBar( hwnd, info, !ConfigInfo.show_hints );
         if( ConfigInfo.on_top ) {
-            CheckMenuItem( mh, DDEMENU_TOP, MF_CHECKED | MF_BYCOMMAND );
+            CheckMenuItem( hmenu, DDEMENU_TOP, MF_CHECKED | MF_BYCOMMAND );
             SetWindowPos( hwnd, HWND_TOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE );
         }
         break;
@@ -305,11 +305,11 @@ LRESULT CALLBACK DDEMainWndProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpar
             break;
         case DDEMENU_SCREEN_OUT:
             ConfigInfo.screen_out = !ConfigInfo.screen_out;
-            mh = GetMenu( hwnd );
+            hmenu = GetMenu( hwnd );
             if( ConfigInfo.screen_out ) {
-                CheckMenuItem( mh, DDEMENU_SCREEN_OUT, MF_BYCOMMAND | MF_CHECKED );
+                CheckMenuItem( hmenu, DDEMENU_SCREEN_OUT, MF_BYCOMMAND | MF_CHECKED );
             } else {
-                CheckMenuItem( mh, DDEMENU_SCREEN_OUT, MF_BYCOMMAND | MF_UNCHECKED );
+                CheckMenuItem( hmenu, DDEMENU_SCREEN_OUT, MF_BYCOMMAND | MF_UNCHECKED );
             }
             break;
         case DDEMENU_EXIT:
@@ -339,35 +339,35 @@ LRESULT CALLBACK DDEMainWndProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpar
             break;
         case DDEMENU_TOP:
             ConfigInfo.on_top = !ConfigInfo.on_top;
-            mh = GetMenu( hwnd );
+            hmenu = GetMenu( hwnd );
             if( ConfigInfo.on_top ) {
-                CheckMenuItem( mh, DDEMENU_TOP, MF_CHECKED | MF_BYCOMMAND );
+                CheckMenuItem( hmenu, DDEMENU_TOP, MF_CHECKED | MF_BYCOMMAND );
                 SetWindowPos( hwnd, HWND_TOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE );
             } else {
-                CheckMenuItem( mh, DDEMENU_TOP, MF_UNCHECKED | MF_BYCOMMAND );
+                CheckMenuItem( hmenu, DDEMENU_TOP, MF_UNCHECKED | MF_BYCOMMAND );
                 SetWindowPos( hwnd, HWND_NOTOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE );
             }
             break;
         case DDEMENU_LOG_FILE:
-            mh = GetMenu( hwnd );
+            hmenu = GetMenu( hwnd );
             flag = MF_BYCOMMAND;
             if( LogToggle() ) {
                 flag |= MF_CHECKED;
             } else {
                 flag |= MF_UNCHECKED;
-                CheckMenuItem( mh, DDEMENU_LOG_PAUSE, flag );
+                CheckMenuItem( hmenu, DDEMENU_LOG_PAUSE, flag );
             }
-            CheckMenuItem( mh, DDEMENU_LOG_FILE, flag );
+            CheckMenuItem( hmenu, DDEMENU_LOG_FILE, flag );
             break;
         case DDEMENU_LOG_PAUSE:
-            mh = GetMenu( hwnd );
+            hmenu = GetMenu( hwnd );
             flag = MF_BYCOMMAND;
             if( LogPauseToggle() ) {
                 flag |= MF_CHECKED;
             } else {
                 flag |= MF_UNCHECKED;
             }
-            CheckMenuItem( mh, DDEMENU_LOG_PAUSE, flag );
+            CheckMenuItem( hmenu, DDEMENU_LOG_PAUSE, flag );
             break;
         case DDEMENU_FONT:
             if( ChooseMonoFont( hwnd ) ) {
@@ -420,14 +420,14 @@ LRESULT CALLBACK DDEMainWndProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpar
             break;
         case DDEMENU_SCROLL:
             ConfigInfo.scroll = !ConfigInfo.scroll;
-            mh = GetMenu( hwnd );
+            hmenu = GetMenu( hwnd );
             flag = MF_BYCOMMAND;
             if( ConfigInfo.scroll ) {
                 flag |= MF_CHECKED;
             } else {
                 flag |= MF_UNCHECKED;
             }
-            CheckMenuItem( mh, DDEMENU_SCROLL, flag );
+            CheckMenuItem( hmenu, DDEMENU_SCROLL, flag );
             break;
         case DDEMENU_HWND_ALIAS:
             alias_title = AllocRCString( STR_ADD_HWND_ALIAS );
@@ -456,11 +456,11 @@ LRESULT CALLBACK DDEMainWndProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpar
             break;
         case DDEMENU_NO_ALIAS:
             ConfigInfo.alias = !ConfigInfo.alias;
-            mh = GetMenu( hwnd );
+            hmenu = GetMenu( hwnd );
             if( !ConfigInfo.alias ) {
-                CheckMenuItem( mh, DDEMENU_NO_ALIAS, MF_BYCOMMAND | MF_CHECKED );
+                CheckMenuItem( hmenu, DDEMENU_NO_ALIAS, MF_BYCOMMAND | MF_CHECKED );
             } else {
-                CheckMenuItem( mh, DDEMENU_NO_ALIAS, MF_BYCOMMAND | MF_UNCHECKED );
+                CheckMenuItem( hmenu, DDEMENU_NO_ALIAS, MF_BYCOMMAND | MF_UNCHECKED );
             }
             RefreshAliases();
             break;

@@ -65,7 +65,7 @@ int PASCAL WinMain( HINSTANCE currinst, HINSTANCE previnst, LPSTR cmdline, int c
 {
     WNDCLASS    wc;
     MSG         msg;
-    HMENU       smh;
+    HMENU       hsysmenu;
     const char  *menuname;
     int         rc;
 
@@ -137,17 +137,17 @@ int PASCAL WinMain( HINSTANCE currinst, HINSTANCE previnst, LPSTR cmdline, int c
 
         ShowWindow( MainWindow, SW_SHOWMINIMIZED );
         UpdateWindow( MainWindow );
-        smh = GetSystemMenu( MainWindow, FALSE );
-    //    EnableMenuItem( smh, SC_CLOSE, MF_GRAYED );
-        AppendMenu( smh, MF_SEPARATOR, 0,NULL );
+        hsysmenu = GetSystemMenu( MainWindow, FALSE );
+    //    EnableMenuItem( hsysmenu, SC_CLOSE, MF_GRAYED );
+        AppendMenu( hsysmenu, MF_SEPARATOR, 0,NULL );
         menuname = GetRCString( STR_CLEAR_ALERT );
-        AppendMenu( smh, MF_ENABLED, MENU_CLEAR_ALERT, menuname );
+        AppendMenu( hsysmenu, MF_ENABLED, MENU_CLEAR_ALERT, menuname );
         menuname = GetRCString( STR_LOG_CUR_STATE );
-        AppendMenu( smh, MF_ENABLED, MENU_LOG_CURRENT_STATE, menuname );
+        AppendMenu( hsysmenu, MF_ENABLED, MENU_LOG_CURRENT_STATE, menuname );
         menuname = GetRCString( STR_LOG_OPTIONS );
-        AppendMenu( smh, MF_ENABLED, MENU_LOG_OPTIONS, menuname );
+        AppendMenu( hsysmenu, MF_ENABLED, MENU_LOG_OPTIONS, menuname );
         menuname = GetRCString( STR_TASK_CONTROL );
-        AppendMenu( smh, MF_ENABLED, MENU_DUMP_A_TASK, menuname );
+        AppendMenu( hsysmenu, MF_ENABLED, MENU_DUMP_A_TASK, menuname );
 
         /*
          * set up handlers

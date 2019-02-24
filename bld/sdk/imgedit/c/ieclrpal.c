@@ -106,31 +106,31 @@ static void paintPalette( HWND hwnd )
  */
 WPI_MRESULT CALLBACK ColorPalWinProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 mp1, WPI_PARAM2 mp2 )
 {
-    HMENU               sysmenu;
+    HMENU               hsysmenu;
     WPI_RECT            rcpal;
     WPI_RECTDIM         left;
     WPI_RECTDIM         right;
     WPI_RECTDIM         top;
     WPI_RECTDIM         bottom;
-    static HMENU        menu;
+    static HMENU        hmenu;
     static HWND         hframe;
 
     switch( msg ) {
     case WM_CREATE:
         hframe = _wpi_getframe( hwnd );
-        sysmenu = _wpi_getcurrentsysmenu( hframe );
-        _wpi_deletemenu( sysmenu, SC_RESTORE, FALSE );
-        _wpi_deletemenu( sysmenu, SC_SIZE, FALSE );
-        _wpi_deletemenu( sysmenu, SC_MINIMIZE, FALSE );
-        _wpi_deletemenu( sysmenu, SC_MAXIMIZE, FALSE );
-        _wpi_deletemenu( sysmenu, SC_TASKLIST, FALSE );
+        hsysmenu = _wpi_getcurrentsysmenu( hframe );
+        _wpi_deletemenu( hsysmenu, SC_RESTORE, FALSE );
+        _wpi_deletemenu( hsysmenu, SC_SIZE, FALSE );
+        _wpi_deletemenu( hsysmenu, SC_MINIMIZE, FALSE );
+        _wpi_deletemenu( hsysmenu, SC_MAXIMIZE, FALSE );
+        _wpi_deletemenu( hsysmenu, SC_TASKLIST, FALSE );
 #ifdef __OS2_PM__
-        _wpi_deletemenu( sysmenu, SC_HIDE, FALSE );
+        _wpi_deletemenu( hsysmenu, SC_HIDE, FALSE );
 #endif
-        _wpi_deletesysmenupos( sysmenu, 1 );
-        _wpi_deletesysmenupos( sysmenu, 2 );
+        _wpi_deletesysmenupos( hsysmenu, 1 );
+        _wpi_deletesysmenupos( hsysmenu, 2 );
         hbrush = _wpi_createsolidbrush( LTGRAY );
-        menu = GetMenu( _wpi_getframe( HMainWindow ) );
+        hmenu = GetMenu( _wpi_getframe( HMainWindow ) );
         break;
 
     case WM_PAINT:
@@ -170,7 +170,7 @@ WPI_MRESULT CALLBACK ColorPalWinProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 mp1, WP
         break;
 
     case WM_CLOSE:
-        CheckPaletteItem( menu );
+        CheckPaletteItem( hmenu );
         break;
 
     case WM_DESTROY:

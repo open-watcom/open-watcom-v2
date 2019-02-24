@@ -489,7 +489,7 @@ HWND WRECreateMDIClientWindow( HWND win, HINSTANCE app_inst )
 
 void WREEnableMenus( bool enable )
 {
-    HMENU       submenu;
+    HMENU       hsubmenu;
     int         flag;
 
     if( WREMenu != (HMENU)NULL ) {
@@ -504,9 +504,9 @@ void WREEnableMenus( bool enable )
         EnableMenuItem( WREMenu, IDM_RES_SAVE_INTO, flag );
         EnableMenuItem( WREMenu, IDM_RES_RENAME, flag );
         EnableMenuItem( WREMenu, IDM_RES_MEM_FLAGS, flag );
-        submenu = GetSubMenu( WREMenu, 2 );
-        if( submenu != (HMENU)NULL ) {
-            EnableMenuItem( submenu, 2, MF_BYPOSITION | flag );
+        hsubmenu = GetSubMenu( WREMenu, 2 );
+        if( hsubmenu != (HMENU)NULL ) {
+            EnableMenuItem( hsubmenu, 2, MF_BYPOSITION | flag );
         }
     }
 }
@@ -533,7 +533,7 @@ HINSTANCE WREGetAppInstance( void )
 
 LRESULT CALLBACK WREMainWndProc( HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam )
 {
-    HMENU       menu;
+    HMENU       hmenu;
     LRESULT     ret;
     bool        pass_to_def;
     WREResInfo  *res_info;
@@ -550,7 +550,7 @@ LRESULT CALLBACK WREMainWndProc( HWND hWnd, UINT message, WPARAM wParam, LPARAM 
     pass_to_def = TRUE;
     ret = FALSE;
     res_info = WREGetCurrentRes();
-    menu = WREGetMenuHandle();
+    hmenu = WREGetMenuHandle();
 
     switch( message ) {
     case WM_DESTROYCLIPBOARD:
@@ -781,7 +781,7 @@ LRESULT CALLBACK WREMainWndProc( HWND hWnd, UINT message, WPARAM wParam, LPARAM 
             break;
 
         case IDM_SHOW_RIBBON:
-            WREShowRibbon( menu );
+            WREShowRibbon( hmenu );
             pass_to_def = FALSE;
             break;
 

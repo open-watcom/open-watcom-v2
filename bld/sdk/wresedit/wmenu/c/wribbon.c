@@ -211,11 +211,11 @@ bool WResizeRibbon( WMenuEditInfo *einfo, RECT *prect )
     return( true );
 }
 
-void WShowRibbon( WMenuEditInfo *einfo, HMENU menu )
+void WShowRibbon( WMenuEditInfo *einfo, HMENU hmenu )
 {
     char        *mtext;
 
-    if( einfo == NULL && menu == NULL ) {
+    if( einfo == NULL && hmenu == NULL ) {
         return;
     }
 
@@ -234,7 +234,7 @@ void WShowRibbon( WMenuEditInfo *einfo, HMENU menu )
     einfo->show_ribbon = !einfo->show_ribbon;
     WResizeWindows( einfo );
     WMovePrevWindow( einfo );
-    ModifyMenu( menu, IDM_MENU_SHOWRIBBON, MF_BYCOMMAND | MF_STRING,
+    ModifyMenu( hmenu, IDM_MENU_SHOWRIBBON, MF_BYCOMMAND | MF_STRING,
                 IDM_MENU_SHOWRIBBON, mtext );
 
     if( mtext != NULL ) {

@@ -316,7 +316,7 @@ HWND CreateViewWin( int width, int height )
 WPI_MRESULT CALLBACK ViewWindowProc( HWND hwnd, WPI_MSG msg,
                                  WPI_PARAM1 wparam, WPI_PARAM2 lparam )
 {
-    static HMENU                sysmenu;
+    static HMENU                hsysmenu;
     static HWND                 hframe;
     HMENU                       hmenu;
     WPI_RECT                    rcview;
@@ -328,17 +328,17 @@ WPI_MRESULT CALLBACK ViewWindowProc( HWND hwnd, WPI_MSG msg,
     switch ( msg ) {
     case WM_CREATE:
         hframe = _wpi_getframe( hwnd );
-        sysmenu = _wpi_getcurrentsysmenu( hframe );
-        _wpi_deletemenu( sysmenu, SC_RESTORE, FALSE );
-        _wpi_deletemenu( sysmenu, SC_SIZE, FALSE );
-        _wpi_deletemenu( sysmenu, SC_MINIMIZE, FALSE );
-        _wpi_deletemenu( sysmenu, SC_MAXIMIZE, FALSE );
-        _wpi_deletemenu( sysmenu, SC_TASKLIST, FALSE );
+        hsysmenu = _wpi_getcurrentsysmenu( hframe );
+        _wpi_deletemenu( hsysmenu, SC_RESTORE, FALSE );
+        _wpi_deletemenu( hsysmenu, SC_SIZE, FALSE );
+        _wpi_deletemenu( hsysmenu, SC_MINIMIZE, FALSE );
+        _wpi_deletemenu( hsysmenu, SC_MAXIMIZE, FALSE );
+        _wpi_deletemenu( hsysmenu, SC_TASKLIST, FALSE );
 #ifdef __OS2_PM__
-        _wpi_deletemenu( sysmenu, SC_HIDE, FALSE );
+        _wpi_deletemenu( hsysmenu, SC_HIDE, FALSE );
 #endif
-        _wpi_deletesysmenupos( sysmenu, 1 );
-        _wpi_deletesysmenupos( sysmenu, 2 );
+        _wpi_deletesysmenupos( hsysmenu, 1 );
+        _wpi_deletesysmenupos( hsysmenu, 2 );
         break;
 
     case WM_PAINT:
@@ -541,7 +541,7 @@ void RePositionViewWnd( img_node *node )
     WPI_RECTDIM right;
     WPI_RECTDIM bottom;
     HWND        frame;
-    
+
     frame = _wpi_getframe( node->viewhwnd );
     _wpi_getwindowrect( frame, &location );
 

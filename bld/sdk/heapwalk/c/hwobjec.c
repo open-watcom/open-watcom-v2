@@ -200,7 +200,7 @@ INT_PTR CALLBACK AddDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
 
 void SetMenusForAdd( HWND hwnd, BOOL start ) {
 
-    HMENU       mh;
+    HMENU       hmenu;
     WORD        flags;
 
     if( start ) {
@@ -208,30 +208,30 @@ void SetMenusForAdd( HWND hwnd, BOOL start ) {
     } else {
         flags = MF_BYCOMMAND | MF_ENABLED;
     }
-    mh = GetMenu( hwnd );
-    EnableMenuItem( mh, HEAPMENU_DISPLAY_ENTIRE, flags );
-    EnableMenuItem( mh, HEAPMENU_DISPLAY_LRU, flags );
-    EnableMenuItem( mh, HEAPMENU_DISPLAY_FREE, flags );
-    EnableMenuItem( mh, HEAPMENU_DISPLAY_DPMI, flags );
+    hmenu = GetMenu( hwnd );
+    EnableMenuItem( hmenu, HEAPMENU_DISPLAY_ENTIRE, flags );
+    EnableMenuItem( hmenu, HEAPMENU_DISPLAY_LRU, flags );
+    EnableMenuItem( hmenu, HEAPMENU_DISPLAY_FREE, flags );
+    EnableMenuItem( hmenu, HEAPMENU_DISPLAY_DPMI, flags );
 
-    EnableMenuItem( mh, HEAPMENU_SORT_ADDR, flags );
-    EnableMenuItem( mh, HEAPMENU_SORT_HANDLE, flags );
-    EnableMenuItem( mh, HEAPMENU_SORT_MODULE, flags );
-    EnableMenuItem( mh, HEAPMENU_SORT_SIZE, flags );
-    EnableMenuItem( mh, HEAPMENU_SORT_TYPE, flags );
-    EnableMenuItem( mh, HEAPMENU_SORT_EXTEND, flags );
+    EnableMenuItem( hmenu, HEAPMENU_SORT_ADDR, flags );
+    EnableMenuItem( hmenu, HEAPMENU_SORT_HANDLE, flags );
+    EnableMenuItem( hmenu, HEAPMENU_SORT_MODULE, flags );
+    EnableMenuItem( hmenu, HEAPMENU_SORT_SIZE, flags );
+    EnableMenuItem( hmenu, HEAPMENU_SORT_TYPE, flags );
+    EnableMenuItem( hmenu, HEAPMENU_SORT_EXTEND, flags );
 
-    EnableMenuItem( mh, HEAPMENU_FILE_SAVE, flags );
-    EnableMenuItem( mh, HEAPMENU_FILE_SAVE_TO, flags );
+    EnableMenuItem( hmenu, HEAPMENU_FILE_SAVE, flags );
+    EnableMenuItem( hmenu, HEAPMENU_FILE_SAVE_TO, flags );
 
-    EnableMenuItem( mh, HEAPMENU_OBJECT_DISCARD, flags );
-    EnableMenuItem( mh, HEAPMENU_OBJECT_OLDEST, flags );
-    EnableMenuItem( mh, HEAPMENU_OBJECT_NEWEST, flags );
-    EnableMenuItem( mh, HEAPMENU_ADD, flags );
+    EnableMenuItem( hmenu, HEAPMENU_OBJECT_DISCARD, flags );
+    EnableMenuItem( hmenu, HEAPMENU_OBJECT_OLDEST, flags );
+    EnableMenuItem( hmenu, HEAPMENU_OBJECT_NEWEST, flags );
+    EnableMenuItem( hmenu, HEAPMENU_ADD, flags );
 
-    EnableMenuItem( mh, HEAPMENU_GLOBAL_COMPACT, flags );
-    EnableMenuItem( mh, HEAPMENU_GLOBAL_COMP_DISC, flags );
-    EnableMenuItem( mh, HEAPMENU_GLOBAL_REFRESH, flags );
+    EnableMenuItem( hmenu, HEAPMENU_GLOBAL_COMPACT, flags );
+    EnableMenuItem( hmenu, HEAPMENU_GLOBAL_COMP_DISC, flags );
+    EnableMenuItem( hmenu, HEAPMENU_GLOBAL_REFRESH, flags );
 } /* SetMenusForAdd */
 
 HWND StartAdd( HWND parent, ListBoxInfo *info ) {

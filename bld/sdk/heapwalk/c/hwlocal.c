@@ -209,20 +209,20 @@ BOOL FormatLocalHeapListItem( char *line, unsigned index ) {
 static void EnableLocalMenu( BOOL enable )
 {
     WORD                action;
-    HMENU               mh;
+    HMENU               hmenu;
 
     if( enable ) {
         action = MF_ENABLED;
     } else {
         action = MF_GRAYED;
     }
-    mh = GetMenu( HeapWalkMainWindow );
+    hmenu = GetMenu( HeapWalkMainWindow );
     if( HeapType != HEAPMENU_DISPLAY_DPMI ) {
-        EnableMenuItem( mh, HEAPMENU_LOCAL_LOCALWALK,  action);
-        EnableMenuItem( mh, HEAPMENU_COMPACT_AND_LOCALWALK, action);
+        EnableMenuItem( hmenu, HEAPMENU_LOCAL_LOCALWALK,  action);
+        EnableMenuItem( hmenu, HEAPMENU_COMPACT_AND_LOCALWALK, action);
     }
-    EnableMenuItem( mh, HEAPMENU_GDI_LOCALWALK,  action);
-    EnableMenuItem( mh, HEAPMENU_USER_LOCALWALK, action);
+    EnableMenuItem( hmenu, HEAPMENU_GDI_LOCALWALK,  action);
+    EnableMenuItem( hmenu, HEAPMENU_USER_LOCALWALK, action);
 } /* EnableLocalMenu */
 
 /*
