@@ -42,7 +42,7 @@ extern void         GUICreateMenuFlags( gui_menu_styles style, unsigned *, unsig
 extern WPI_MRESULT  GUIProcessMenuSelect( gui_window *wnd, HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, WPI_PARAM2 lparam );
 extern WPI_MRESULT  GUIProcessInitMenuPopup( gui_window *wnd, HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, WPI_PARAM2 lparam );
 extern void         GUISetGUIHint( gui_window *wnd );
-extern bool         GUIEnableSysMenuItem( gui_window *wnd, gui_ctl_id id, bool enable );
+extern bool         GUIEnableSystemMenuItem( gui_window *wnd, gui_ctl_id id, bool enable );
 extern HMENU        GUIGetHMENU( gui_window *wnd );
 extern void         GUIFreePopupList( gui_window *wnd );
 extern HMENU        GUICreateSubMenu( gui_window *wnd, int num, const gui_menu_struct *menu, hint_type type );

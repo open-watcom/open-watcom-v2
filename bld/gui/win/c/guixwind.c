@@ -738,7 +738,7 @@ void GUIDoResize( gui_window *wnd, HWND hwnd, gui_coord *size )
 {
     hwnd = hwnd;
     if( wnd->style & GUI_CHANGEABLE_FONT ) {
-        GUIEnableSysMenuItem( wnd, GUI_CHANGE_FONT, true );
+        GUIEnableSystemMenuItem( wnd, GUI_CHANGE_FONT, true );
     }
     if( wnd->hwnd != NULLHANDLE ) {
         GUIResizeStatus( wnd );
@@ -1125,7 +1125,7 @@ WPI_MRESULT CALLBACK GUIWindowProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, W
             if( _wpi_isiconic( _wpi_getframe( hwnd ) ) ) {
                 wnd->flags |= IS_MINIMIZED;
                 if( wnd->style & GUI_CHANGEABLE_FONT ) {
-                    GUIEnableSysMenuItem( wnd, GUI_CHANGE_FONT, false );
+                    GUIEnableSystemMenuItem( wnd, GUI_CHANGE_FONT, false );
                 }
                 GUIEVENT( wnd, GUI_ICONIFIED, NULL );
                 if( GUIMDI ) {

@@ -473,11 +473,11 @@ static void EnablePopup( HMENU hmenu, int position, bool enable )
 }
 
 /*
- * GUIEnableSysMenuItem -- enable or disable a system menu item.  Used
+ * GUIEnableSystemMenuItem -- enable or disable a system menu item.  Used
  *                         by GUI library only
  */
 
-bool GUIEnableSysMenuItem( gui_window *wnd, gui_ctl_id id, bool enable )
+bool GUIEnableSystemMenuItem( gui_window *wnd, gui_ctl_id id, bool enable )
 {
     HMENU       hmenu;
 

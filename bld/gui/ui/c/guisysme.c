@@ -167,7 +167,7 @@ bool GUISetSystemMenu( UIMENUITEM *menuitems, gui_create_styles style )
     return( true );
 }
 
-void GUIProcessSysMenuEvent( ui_event ui_ev, gui_window *wnd )
+void GUIProcessSystemMenuEvent( ui_event ui_ev, gui_window *wnd )
 {
     switch( ui_ev ) {
     case EV_SYS_MENU_RESTORE :

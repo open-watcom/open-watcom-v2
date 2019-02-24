@@ -207,7 +207,7 @@ ui_event GUICreateMenuPopup( gui_window *wnd, gui_point *location, UIMENUITEM *m
                 *curr_id = id;
             }
         } else {
-            GUIProcessSysMenuEvent( ui_ev, wnd );
+            GUIProcessSystemMenuEvent( ui_ev, wnd );
         }
     }
     if( MenuState == MENU_SYS ) {
