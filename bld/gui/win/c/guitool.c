@@ -140,7 +140,7 @@ static bool guiToolBarProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, WPI_PARAM
         hmenu = _wpi_getsystemmenu( hwnd );
         if( hmenu != NULLHANDLE ) {
             if( _wpi_appendmenu( hmenu, MF_SEPARATOR, 0, 0, NULLHANDLE, NULL ) ) {
-                _wpi_appendmenu( hmenu, MF_ENABLED|MF_SYSMENU, 0,
+                _wpi_appendmenu( hmenu, MF_SYSMENU, MF_ENABLED,
                                  GUIHint[GUI_MENU_IDX( GUI_FIX_TOOLBAR )].id, NULLHANDLE,
                                  GUIHint[GUI_MENU_IDX( GUI_FIX_TOOLBAR )].label );
             }
