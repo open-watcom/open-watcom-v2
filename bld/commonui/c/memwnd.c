@@ -895,7 +895,7 @@ LRESULT CALLBACK MemDisplayProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpar
     PAINTSTRUCT         paint;
     RECT                area;
     HANDLE              inst;
-    HMENU               menu;
+    HMENU               hmenu;
     DWORD               state;
     DWORD               size;
     HBRUSH              wbrush;
@@ -908,10 +908,10 @@ LRESULT CALLBACK MemDisplayProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpar
         RegDisasmRtns();
         info = (MemWndInfo *)((CREATESTRUCT *)lparam)->lpCreateParams;
         WPI_SET_WNDINFO( hwnd, (LONG_PTR)info );
-        menu = GetMenu( hwnd );
-        CheckMenuItem( menu, info->disp_type, MF_CHECKED );
+        hmenu = GetMenu( hwnd );
+        CheckMenuItem( hmenu, info->disp_type, MF_CHECKED );
         if( info->autopos ) {
-            CheckMenuItem( menu, MEMINFO_AUTO_POS, MF_CHECKED | MF_BYCOMMAND );
+            CheckMenuItem( hmenu, MEMINFO_AUTO_POS, MF_CHECKED | MF_BYCOMMAND );
         }
         inst = GET_HINSTANCE( hwnd );
         info->scrlbar = CreateWindow(
@@ -1011,10 +1011,10 @@ LRESULT CALLBACK MemDisplayProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpar
             displaySegInfo( hwnd, inst, info );
             break;
         case MEMINFO_AUTO_POS:
-            menu = GetMenu( hwnd );
-            state = CheckMenuItem( menu, MEMINFO_AUTO_POS, MF_CHECKED );
+            hmenu = GetMenu( hwnd );
+            state = CheckMenuItem( hmenu, MEMINFO_AUTO_POS, MF_CHECKED );
             if( state == MF_CHECKED ) {
-                CheckMenuItem( menu, MEMINFO_AUTO_POS, MF_UNCHECKED );
+                CheckMenuItem( hmenu, MEMINFO_AUTO_POS, MF_UNCHECKED );
                 info->autopos = false;
             } else {
                 info->autopos = true;
@@ -1035,9 +1035,9 @@ LRESULT CALLBACK MemDisplayProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpar
             if( ISCODE( info ) ) {
                 info->offset -= (info->offset - info->base) % info->bytesdisp;
             }
-            menu = GetMenu( hwnd );
-            CheckMenuItem( menu, info->disp_type, MF_UNCHECKED );
-            CheckMenuItem( menu, cmd, MF_CHECKED );
+            hmenu = GetMenu( hwnd );
+            CheckMenuItem( hmenu, info->disp_type, MF_UNCHECKED );
+            CheckMenuItem( hmenu, cmd, MF_CHECKED );
             info->disp_type = cmd;
             GetClientRect( hwnd, &area );
             size = MAKELONG( area.right - area.left, area.bottom - area.top );
@@ -1148,7 +1148,7 @@ static void positionSegInfo( HWND hwnd )
 INT_PTR CALLBACK SegInfoDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
 {
     HWND        parent;
-    HMENU       mh;
+    HMENU       hmenu;
 
     wparam = wparam;
     lparam = lparam;
@@ -1166,8 +1166,8 @@ INT_PTR CALLBACK SegInfoDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpar
         break;
     case WM_DESTROY:
         parent = GetParent( hwnd );
-        mh = GetMenu( parent );
-        EnableMenuItem( mh, MEMINFO_SHOW, MF_ENABLED );
+        hmenu = GetMenu( parent );
+        EnableMenuItem( hmenu, MEMINFO_SHOW, MF_ENABLED );
         break;
     case WM_NCDESTROY:
 #ifndef __NT__
@@ -1201,10 +1201,10 @@ static void displaySegInfo( HWND parent, HANDLE instance, MemWndInfo *info )
     char                buf[10];
     char                *ptr;
     char                *rcstr;
-    HMENU               mh;
+    HMENU               hmenu;
 
-    mh = GetMenu( parent );
-    EnableMenuItem( mh, MEMINFO_SHOW, MF_GRAYED );
+    hmenu = GetMenu( parent );
+    EnableMenuItem( hmenu, MEMINFO_SHOW, MF_GRAYED );
     if( DialCount == 0 ) {
         DialProc = MakeProcInstance_DLG( SegInfoDlgProc, instance );
     }

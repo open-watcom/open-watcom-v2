@@ -372,11 +372,11 @@ static HMENU duplicateMenu( HMENU orig )
  */
 static HMENU generateSystemMenu( HWND hwnd )
 {
-    HMENU       sys_menu;
+    HMENU       hsysmenu;
 
-    sys_menu = _wpi_getsystemmenu( hwnd );
-    if( sys_menu != NULLHANDLE ) {
-        return( duplicateMenu( sys_menu ) );
+    hsysmenu = _wpi_getsystemmenu( hwnd );
+    if( hsysmenu != NULLHANDLE ) {
+        return( duplicateMenu( hsysmenu ) );
     } else {
         return( NULLHANDLE );
     }
@@ -386,22 +386,22 @@ static HMENU generateSystemMenu( HWND hwnd )
 /*
  * modifyChildSystemMenu - adjust system menu to make it a child system menu
  */
-static HMENU modifyChildSystemMenu( HMENU sys_menu )
+static HMENU modifyChildSystemMenu( HMENU hsysmenu )
 {
-    if( sys_menu == NULLHANDLE ) {
+    if( hsysmenu == NULLHANDLE ) {
         return( NULLHANDLE );
     }
 
     /* fix hotkey designation for close */
-    _wpi_setmenutext( sys_menu, SC_CLOSE, "&Close\tCtrl+F4", FALSE );
+    _wpi_setmenutext( hsysmenu, SC_CLOSE, "&Close\tCtrl+F4", FALSE );
 
     /* remove task switch option */
-    _wpi_deletemenu( sys_menu, SC_TASKLIST, FALSE );
+    _wpi_deletemenu( hsysmenu, SC_TASKLIST, FALSE );
 
     /* add next window option */
-    _wpi_appendmenu( sys_menu, MF_STRING, 0, SC_NEXTWINDOW, NULLHANDLE, "Nex&t\tCtrl+F6" );
+    _wpi_appendmenu( hsysmenu, MF_STRING, 0, SC_NEXTWINDOW, NULLHANDLE, "Nex&t\tCtrl+F6" );
 
-    return( sys_menu );
+    return( hsysmenu );
 
 } /* modifyChildSystemMenu */
 
@@ -410,26 +410,26 @@ static HMENU modifyChildSystemMenu( HMENU sys_menu )
  */
 void SetSystemMenu( HWND hwnd )
 {
-    HMENU       sys_menu;
-    HMENU       menu;
+    HMENU       hsysmenu;
+    HMENU       hmenu;
 
-    sys_menu = NULLHANDLE;
+    hsysmenu = NULLHANDLE;
     if( hwnd != NULLHANDLE ) {
-        sys_menu = generateSystemMenu( hwnd );
+        hsysmenu = generateSystemMenu( hwnd );
     }
-    menu = _wpi_getmenu( mdiInfo.root );
+    hmenu = _wpi_getmenu( mdiInfo.root );
     getMenuBitmaps();
 #ifndef __OS2_PM__
-    if( sys_menu != NULL ) {
-        ModifyMenu( menu, 0, MF_POPUP | MF_BYPOSITION | MF_BITMAP, (UINT_PTR)sys_menu, (LPVOID)closeBitmap );
+    if( hsysmenu != NULL ) {
+        ModifyMenu( hmenu, 0, MF_POPUP | MF_BYPOSITION | MF_BITMAP, (UINT_PTR)hsysmenu, (LPVOID)closeBitmap );
     } else {
-        ModifyMenu( menu, 0, MF_BYPOSITION | MF_BITMAP, (UINT_PTR)-1, (LPVOID)closeBitmap );
+        ModifyMenu( hmenu, 0, MF_BYPOSITION | MF_BITMAP, (UINT_PTR)-1, (LPVOID)closeBitmap );
     }
 #else
-    if( sys_menu != NULLHANDLE ) {
-        _wpi_modifymenu( menu, 0, MF_POPUP | MF_STRING, 0, 0, sys_menu, "SYSMENU", TRUE );
+    if( hsysmenu != NULLHANDLE ) {
+        _wpi_modifymenu( hmenu, 0, MF_POPUP | MF_STRING, 0, 0, hsysmenu, "SYSMENU", TRUE );
     } else {
-        _wpi_modifymenu( menu, 0, MF_STRING, 0, 0, NULLHANDLE, "SYSMENU", TRUE );
+        _wpi_modifymenu( hmenu, 0, MF_STRING, 0, 0, NULLHANDLE, "SYSMENU", TRUE );
     }
 #endif
     _wpi_drawmenubar( mdiInfo.root );
@@ -497,13 +497,13 @@ bool HitRestoreButton( HWND hwnd, WPI_PARAM2 lparam )
  */
 void SetRestoreBitmap( bool pressed )
 {
-    HMENU       menu;
+    HMENU       hmenu;
 
-    menu = _wpi_getmenu( mdiInfo.root );
+    hmenu = _wpi_getmenu( mdiInfo.root );
     if( pressed ) {
-        ModifyMenu( menu, 7, MF_BYPOSITION | MF_BITMAP | MF_HELP, SC_RESTORE, (LPVOID)restoredBitmap );
+        ModifyMenu( hmenu, 7, MF_BYPOSITION | MF_BITMAP | MF_HELP, SC_RESTORE, (LPVOID)restoredBitmap );
     } else {
-        ModifyMenu( menu, 7, MF_BYPOSITION | MF_BITMAP | MF_HELP, SC_RESTORE, (LPVOID)restoreBitmap );
+        ModifyMenu( hmenu, 7, MF_BYPOSITION | MF_BITMAP | MF_HELP, SC_RESTORE, (LPVOID)restoreBitmap );
     }
     _wpi_drawmenubar( mdiInfo.root );
 
@@ -517,22 +517,22 @@ void SetRestoreBitmap( bool pressed )
 static void setMaximizedMenuConfig( HWND hwnd )
 {
 #ifndef __OS2_PM__
-    HMENU       menu;
-    HMENU       sys_menu;
+    HMENU       hmenu;
+    HMENU       hsysmenu;
 
     if( insertedItems ) {
         SetSystemMenu( hwnd );
     } else {
         getMenuBitmaps();
-        menu = _wpi_getmenu( mdiInfo.root );
+        hmenu = _wpi_getmenu( mdiInfo.root );
         insertedItems = true;
-        sys_menu = generateSystemMenu( hwnd );
-        if( sys_menu != NULL ) {
-            InsertMenu( menu, 0, MF_POPUP | MF_BYPOSITION | MF_BITMAP, (UINT_PTR)sys_menu, (LPVOID)closeBitmap );
+        hsysmenu = generateSystemMenu( hwnd );
+        if( hsysmenu != NULL ) {
+            InsertMenu( hmenu, 0, MF_POPUP | MF_BYPOSITION | MF_BITMAP, (UINT_PTR)hsysmenu, (LPVOID)closeBitmap );
         } else {
-            InsertMenu( menu, 0, MF_BYPOSITION | MF_BITMAP, (UINT_PTR)-1, (LPVOID)closeBitmap );
+            InsertMenu( hmenu, 0, MF_BYPOSITION | MF_BITMAP, (UINT_PTR)-1, (LPVOID)closeBitmap );
         }
-        InsertMenu( menu, (UINT)-1, MF_HELP | MF_BYPOSITION | MF_BITMAP, SC_RESTORE, (LPVOID)restoreBitmap );
+        InsertMenu( hmenu, (UINT)-1, MF_HELP | MF_BYPOSITION | MF_BITMAP, SC_RESTORE, (LPVOID)restoreBitmap );
         _wpi_drawmenubar( mdiInfo.root );
     }
 #else
@@ -567,17 +567,17 @@ void MDIClearMaximizedMenuConfig( void )
  */
 static void deleteMaximizedMenuConfig( void )
 {
-    HMENU       root_menu;
+    HMENU       hrootmenu;
     int         count;
 
     if( !insertedItems ) {
         return;
     }
     insertedItems = false;
-    root_menu = _wpi_getmenu( mdiInfo.root );
-    _wpi_deletemenu( root_menu, 0, TRUE );
-    count = _wpi_getmenuitemcount( root_menu );
-    _wpi_deletemenu( root_menu, count - 1, TRUE );
+    hrootmenu = _wpi_getmenu( mdiInfo.root );
+    _wpi_deletemenu( hrootmenu, 0, TRUE );
+    count = _wpi_getmenuitemcount( hrootmenu );
+    _wpi_deletemenu( hrootmenu, count - 1, TRUE );
     _wpi_drawmenubar( mdiInfo.root );
 
 } /* deleteMaximizedMenuConfig */
@@ -931,22 +931,22 @@ bool MDIHitClose( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, WPI_PARAM2 lparam )
  * CheckForMessage - check for a WM_COMMAND message that needs to be
  *                   sent to the maximized window
  */
-static bool CheckForMessage( HMENU menu, HWND hwnd, WPI_PARAM1 wparam, WPI_PARAM2 lparam )
+static bool CheckForMessage( HMENU hmenu, HWND hwnd, WPI_PARAM1 wparam, WPI_PARAM2 lparam )
 {
     int         num;
     int         pos;
     UINT        flags;
 
-    if( menu != NULL ) {
-        num = _wpi_getmenuitemcount( menu );
+    if( hmenu != NULL ) {
+        num = _wpi_getmenuitemcount( hmenu );
         for( pos = 0; pos < num; pos++ ) {
-            flags = GetMenuState( menu, pos, MF_BYPOSITION );
+            flags = GetMenuState( hmenu, pos, MF_BYPOSITION );
             if( flags & MF_POPUP ) {
-                if( CheckForMessage( GetSubMenu( menu, pos ), hwnd, wparam, lparam ) ) {
+                if( CheckForMessage( GetSubMenu( hmenu, pos ), hwnd, wparam, lparam ) ) {
                     return( true );
                 }
             } else {
-                if( GetMenuItemID( menu, pos ) == (UINT)wparam ) {
+                if( GetMenuItemID( hmenu, pos ) == (UINT)wparam ) {
                     _wpi_sendmessage( hwnd, WM_COMMAND, wparam, lparam );
                     return( true );
                 }
@@ -965,7 +965,7 @@ static bool CheckForMessage( HMENU menu, HWND hwnd, WPI_PARAM1 wparam, WPI_PARAM
 bool MDIIsSysCommand( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, WPI_PARAM2 lparam )
 {
 #ifndef __OS2_PM__
-    HMENU       sys_menu;
+    HMENU       hsysmenu;
 
     hwnd = hwnd;
     msg = msg;
@@ -974,8 +974,8 @@ bool MDIIsSysCommand( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, WPI_PARAM2 lpar
             _wpi_sendmessage( currentWindow, WM_SYSCOMMAND, wparam, lparam );
             return( true );
         } else {
-            sys_menu = GetSystemMenu( currentWindow, FALSE );
-            CheckForMessage( sys_menu, currentWindow, wparam, lparam );
+            hsysmenu = GetSystemMenu( currentWindow, FALSE );
+            CheckForMessage( hsysmenu, currentWindow, wparam, lparam );
         }
     }
 #else

@@ -156,14 +156,14 @@ WORD SizeHintBar( statwnd *wnd )
  */
 void HintMenuSelect( statwnd *wnd, HWND hwnd, WPARAM wparam, LPARAM lparam )
 {
-    HMENU       menu;
+    HMENU       hmenu;
     WORD        flags;
     msg_id      msgid;
 
     if( MENU_CLOSED( wparam, lparam ) ) {
         updateHintText( wnd, HINT_EMPTY );
     } else {
-        menu = GetMenu( hwnd );
+        hmenu = GetMenu( hwnd );
         flags = GET_WM_MENUSELECT_FLAGS( wparam, lparam );
         if( flags & (MF_SYSMENU | MF_SEPARATOR) ) {
             updateHintText( wnd, HINT_EMPTY );
