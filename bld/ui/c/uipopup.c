@@ -232,7 +232,7 @@ static bool SendMenuEvent( int num_items, UIMENUITEM *menuitems, int item, UI_WI
 static bool KeyboardSelect( ui_event ui_ev, int num_items, UIMENUITEM *menuitems, DESCMENU *desc )
 
 {
-    int         item;
+    int         i;
     char        up;
     char        alt_char;
     int         offset;
@@ -245,12 +245,12 @@ static bool KeyboardSelect( ui_event ui_ev, int num_items, UIMENUITEM *menuitems
     } else {
         up = toupper( ui_ev );
     }
-    for( item = 0; item < num_items; item++ ) {
-       if( !MENUSEPARATOR( menuitems[item] ) && !MENUGRAYED( menuitems[item] ) ) {
-           offset = CHAROFFSET( menuitems[item] );
-           if( ( offset < strlen( menuitems[item].name ) ) &&
-               ( toupper( menuitems[item].name[offset] ) == up ) ) {
-               ChangePos( item, menuitems, desc );
+    for( i = 0; i < num_items; i++ ) {
+       if( !MENUSEPARATOR( menuitems[i] ) && !MENUGRAYED( menuitems[i] ) ) {
+           offset = CHAROFFSET( menuitems[i] );
+           if( ( offset < strlen( menuitems[i].name ) ) &&
+               ( toupper( menuitems[i].name[offset] ) == up ) ) {
+               ChangePos( i, menuitems, desc );
                return( true );
            }
        }
@@ -381,7 +381,7 @@ static ui_event createpopupinarea( UIMENUITEM *menuitems, DESCMENU *desc,
     int         new;
     UI_WINDOW   window;
     int         num_items;
-    int         item;
+    int         i;
     ORD         row;
     ORD         col;
     bool        disabled;
@@ -393,9 +393,9 @@ static ui_event createpopupinarea( UIMENUITEM *menuitems, DESCMENU *desc,
     uiopenpopup( desc, &window );
     ScrollPos = NO_SELECT;
     if( curritem_event != EV_NO_EVENT ) {
-        for( item = 0; item < num_items; item++ ) {
-            if( !MENUSEPARATOR( menuitems[item] ) && !MENUGRAYED( menuitems[item] ) && ( menuitems[item].event == curritem_event ) ) {
-                ScrollPos = item;
+        for( i = 0; i < num_items; i++ ) {
+            if( !MENUSEPARATOR( menuitems[i] ) && !MENUGRAYED( menuitems[i] ) && ( menuitems[i].event == curritem_event ) ) {
+                ScrollPos = i;
                 break;
             }
         }

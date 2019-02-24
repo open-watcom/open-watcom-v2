@@ -58,7 +58,7 @@ static gui_control_info Button = {
 
 bool GUIXCreateFixedToolbar( gui_window *wnd )
 {
-    int                 item;
+    int                 i;
     gui_menu_struct     menu;
     char                *with_excl;
     toolbarinfo         *tbar;
@@ -70,7 +70,7 @@ bool GUIXCreateFixedToolbar( gui_window *wnd )
     menu.style = GUI_STYLE_MENU_ENABLED;
 
     toolinfo = tbar->toolinfo;
-    for( item = 0; item < tbar->num_items; item++ ) {
+    for( i = 0; i < tbar->num_items; i++ ) {
         with_excl = NULL;
         menu.label = toolinfo->label;
         if( menu.label != NULL ) {
@@ -83,9 +83,9 @@ bool GUIXCreateFixedToolbar( gui_window *wnd )
         }
         menu.id = toolinfo->id;
         menu.hinttext = toolinfo->hinttext;
-        if( !GUIAppendToolbarMenu( wnd, &menu, ( item == ( tbar->num_items - 1 ) ) ) ) {
+        if( !GUIAppendToolbarMenu( wnd, &menu, ( i == ( tbar->num_items - 1 ) ) ) ) {
             GUIMemFree( with_excl );
-            while( item-- > 0 ) {
+            while( i-- > 0 ) {
                 toolinfo--;
                 GUIDeleteToolbarMenuItem( wnd, toolinfo->id );
             }
@@ -164,7 +164,7 @@ bool GUIXCreateToolBarWithTips( gui_window *wnd, bool fixed, gui_ord height,
 
 bool GUIXCloseToolBar( gui_window *wnd )
 {
-    int         item;
+    int         i;
     bool        switching;
     toolbarinfo *tbar;
 
@@ -174,8 +174,8 @@ bool GUIXCloseToolBar( gui_window *wnd )
     tbar = wnd->tbinfo;
     switching = tbar->switching;
     if( tbar->fixed ) {
-        for( item = 0; item < tbar->num_items; item++ ) {
-            GUIDeleteToolbarMenuItem( wnd, tbar->toolinfo[item].id );
+        for( i = 0; i < tbar->num_items; i++ ) {
+            GUIDeleteToolbarMenuItem( wnd, tbar->toolinfo[i].id );
         }
     } else {
         if( tbar->floattoolbar != NULL ) {
@@ -183,8 +183,8 @@ bool GUIXCloseToolBar( gui_window *wnd )
         }
     }
     if( ( tbar->toolinfo != NULL ) && !switching ) {
-        for( item = 0; item < tbar->num_items; item++ ) {
-            GUIMemFree( (void *)tbar->toolinfo[item].label );
+        for( i = 0; i < tbar->num_items; i++ ) {
+            GUIMemFree( (void *)tbar->toolinfo[i].label );
         }
         GUIMemFree( tbar->toolinfo );
         GUIMemFree( tbar );
@@ -227,7 +227,7 @@ static gui_create_info FloatingToolbar = {
 static bool CreateFloatingToolbar( gui_window *wnd, gui_ord height )
 {
     gui_text_metrics    metrics;
-    int                 item;
+    int                 i;
     int                 loc;
     gui_rect            client;
     gui_rect            size;
@@ -266,7 +266,7 @@ static bool CreateFloatingToolbar( gui_window *wnd, gui_ord height )
         standout = NULL;
     }
     toolinfo = tbar->toolinfo;
-    for( item = 0; item < tbar->num_items; item++ ) {
+    for( i = 0; i < tbar->num_items; i++ ) {
         Button.text = toolinfo->label;
         Button.id = toolinfo->id;
         Button.rect.x = loc;
@@ -293,7 +293,7 @@ bool GUIXCreateToolBar( gui_window *wnd, bool fixed, gui_ord height,
                        gui_rect *float_pos )
 {
     int                 size;
-    int                 item;
+    int                 i;
     toolbarinfo         *tbar;
     gui_toolbar_struct  *new_toolinfo;
 
@@ -323,12 +323,12 @@ bool GUIXCreateToolBar( gui_window *wnd, bool fixed, gui_ord height,
         tbar->standout.fore = standout->fore;
         tbar->standout.back = standout->back;
     }
-    for( item = 0; item < num_items; item++ ) {
+    for( i = 0; i < num_items; i++ ) {
         bool    ok;
 
         new_toolinfo->label = GUIStrDup( toolinfo->label, &ok );
         if( !ok ) {
-            while( item-- > 0  ) {
+            while( i-- > 0  ) {
                 new_toolinfo--;
                 GUIMemFree( (void *)new_toolinfo->label );
             }

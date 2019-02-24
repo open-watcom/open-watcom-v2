@@ -129,13 +129,13 @@ static bool MenuConvert( const char *text, unsigned short *flags, char **new, bo
 
 void GUIFreeMenuItems( UIMENUITEM *menuitems )
 {
-    int item;
+    int i;
 
     if( menuitems != NULL ) {
-        for( item = 0; !MENUENDMARKER( menuitems[item] ); item++ ) {
-            GUIMemFree( menuitems[item].name );
-            if( menuitems[item].popup != NULL ) {
-                GUIFreeMenuItems( menuitems[item].popup );
+        for( i = 0; !MENUENDMARKER( menuitems[i] ); i++ ) {
+            GUIMemFree( menuitems[i].name );
+            if( menuitems[i].popup != NULL ) {
+                GUIFreeMenuItems( menuitems[i].popup );
             }
         }
         GUIMemFree( menuitems );
@@ -156,15 +156,15 @@ UIMENUITEM *GUIAllocMenuItems( int num_items )
 static bool GetMenu( int *depth, int num_items, UIMENUITEM *menuitems, gui_ctl_id id,
                      UIMENUITEM **pmenuitem, int *position, UIMENUITEM ***to_replace )
 {
-    int             item;
+    int             i;
     int             num_popup_menus;
 
-    for( item = 0; item < num_items; item++ ) {
+    for( i = 0; i < num_items; i++ ) {
         uiyield();
-        if( menuitems[item].event == ID2EV( id ) ) {
-            *pmenuitem = &menuitems[item];
+        if( menuitems[i].event == ID2EV( id ) ) {
+            *pmenuitem = &menuitems[i];
             if( position != NULL ) {
-                *position = item;
+                *position = i;
             }
             return( true );
         }
@@ -172,10 +172,10 @@ static bool GetMenu( int *depth, int num_items, UIMENUITEM *menuitems, gui_ctl_i
             (*depth)++;
         }
         if( menuitems[item].popup != NULL ) {
-            num_popup_menus = uimenuitemscount( menuitems[item].popup );
-            if( GetMenu( depth, num_popup_menus, menuitems[item].popup, id, pmenuitem, position, to_replace ) ) {
+            num_popup_menus = uimenuitemscount( menuitems[i].popup );
+            if( GetMenu( depth, num_popup_menus, menuitems[i].popup, id, pmenuitem, position, to_replace ) ) {
                 if( ( to_replace != NULL ) && ( *to_replace == NULL ) ) {
-                    *to_replace = &menuitems[item].popup;
+                    *to_replace = &menuitems[i].popup;
                 }
                 return( true );
             }
@@ -654,7 +654,7 @@ bool GUIDeleteMenuItem( gui_window *wnd, gui_ctl_id id, bool floating )
 
 bool GUIDeleteToolbarMenuItem( gui_window *wnd, gui_ctl_id id )
 {
-    int         item;
+    int         i;
     int         num_items;
     UIMENUITEM  *menuitems;
     ui_event    ui_ev;
@@ -663,9 +663,9 @@ bool GUIDeleteToolbarMenuItem( gui_window *wnd, gui_ctl_id id )
         ui_ev = ID2EV( id );
         menuitems = wnd->vbarmenu->titles;
         num_items = uimenuitemscount( menuitems );
-        for( item = 0; item < num_items; item++ ) {
-            if( wnd->vbarmenu->titles[item].event == ui_ev ) {
-                if( !DeleteMenu( wnd, id, &wnd->vbarmenu->titles, item ) ) {
+        for( i = 0; i < num_items; i++ ) {
+            if( wnd->vbarmenu->titles[i].event == ui_ev ) {
+                if( !DeleteMenu( wnd, id, &wnd->vbarmenu->titles, i ) ) {
                     break;
                 }
                 uimenubar( wnd->vbarmenu );
@@ -706,7 +706,7 @@ bool GUIResetMenus( gui_window *wnd, int num_items, const gui_menu_struct *menu 
 
 bool GUIEnableMenus( gui_window *wnd, bool enable )
 {
-    int                 item;
+    int                 i;
     gui_menu_styles     style;
     SAREA               screen;
 
@@ -718,8 +718,8 @@ bool GUIEnableMenus( gui_window *wnd, bool enable )
     } else {
         style = GUI_STYLE_MENU_GRAYED;
     }
-    for( item = 0; !MENUENDMARKER( wnd->vbarmenu->titles[item] ); item++ ) {
-        GUIChangeMenu( &wnd->vbarmenu->titles[item], style );
+    for( i = 0; !MENUENDMARKER( wnd->vbarmenu->titles[i] ); i++ ) {
+        GUIChangeMenu( &wnd->vbarmenu->titles[i], style );
     }
     screen.row = 0; /* leave this 0! */
     screen.col = 0;

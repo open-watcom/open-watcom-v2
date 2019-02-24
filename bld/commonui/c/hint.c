@@ -51,7 +51,7 @@ typedef struct {
  */
 static msg_id getItemMsg( statwnd *wnd, ctl_id menuid )
 {
-    int                 item;
+    int                 i;
     HWND                hint;
     HLOCAL              hinfo;
     HintWndInfo         *info;
@@ -64,9 +64,9 @@ static msg_id getItemMsg( statwnd *wnd, ctl_id menuid )
     hinttable = info->hints;
     msgid = HINT_EMPTY;
     if( hinttable != NULL ) {
-        for( item = 0; item < info->hint_num_items; item++ ) {
-            if( hinttable[item].menuid == menuid ) {
-                msgid = hinttable[item].msgid;
+        for( i = 0; i < info->hint_num_items; i++ ) {
+            if( hinttable[i].menuid == menuid ) {
+                msgid = hinttable[i].msgid;
                 break;
             }
         }

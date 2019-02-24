@@ -41,7 +41,7 @@
 static void FreeSystemMenu( gui_window *wnd )
 {
     int             num_items;
-    int             item;
+    int             i;
     HMENU           hsysmenu;
     HWND            frame;
 
@@ -50,8 +50,8 @@ static void FreeSystemMenu( gui_window *wnd )
         hsysmenu = _wpi_getsystemmenu( frame );
         if( hsysmenu != NULLHANDLE ) {
             num_items = _wpi_getmenuitemcount( hsysmenu );
-            for( item = num_items; item >= NUM_SYSTEM_MENUS; item-- ) {
-                _wpi_deletemenu( hsysmenu, item, TRUE );
+            for( i = num_items; i >= NUM_SYSTEM_MENUS; i-- ) {
+                _wpi_deletemenu( hsysmenu, i, TRUE );
             }
         }
     }

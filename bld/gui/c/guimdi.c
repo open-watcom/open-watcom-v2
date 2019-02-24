@@ -95,11 +95,11 @@ gui_window *GUIGetRoot( void )
 
 static int MDIGetWndIndex( gui_window *wnd )
 {
-    int     item;
+    int     i;
 
-    for( item = 0; item < MAX_NUM_MDI_WINDOWS; item++ ) {
-        if( MDIWindows[item] == wnd ) {
-            return( item );
+    for( i = 0; i < MAX_NUM_MDI_WINDOWS; i++ ) {
+        if( MDIWindows[i] == wnd ) {
+            return( i );
         }
     }
     return( -1 );
@@ -121,7 +121,7 @@ static void EnableMDIMenus( gui_window *root, bool enable )
 
 static bool AddMenu( gui_window *wnd, gui_window *parent, int num_items, const gui_menu_struct *menu )
 {
-    int         item;
+    int         i;
     bool        has_items;
     bool        found_flag;
     gui_window  *root;
@@ -129,11 +129,11 @@ static bool AddMenu( gui_window *wnd, gui_window *parent, int num_items, const g
     if( GUIMDI && ( parent == NULL ) ) {
         found_flag = false;
         has_items = false;
-        for( item = 0; item < num_items; item++ ) {
-            if( menu[item].style & GUI_STYLE_MENU_MDIWINDOW ) {
-                GUIMDIMenuID = menu[item].id;
+        for( i = 0; i < num_items; i++ ) {
+            if( menu[i].style & GUI_STYLE_MENU_MDIWINDOW ) {
+                GUIMDIMenuID = menu[i].id;
                 found_flag = true;
-                has_items = ( menu[item].child.num_items > 0 );
+                has_items = ( menu[i].child.num_items > 0 );
                 break;
             }
         }
@@ -199,7 +199,7 @@ void MDIDeleteMenu( gui_ctl_id id )
 void MDIResetMenus( gui_window *wnd, gui_window *parent, int num_items, const gui_menu_struct *menu )
 {
     gui_window  *root;
-    int         item;
+    int         i;
     int         num_mdi_items;
 
     if( !AddMenu( wnd, parent, num_items, menu ) ) {
@@ -209,8 +209,8 @@ void MDIResetMenus( gui_window *wnd, gui_window *parent, int num_items, const gu
     num_mdi_items = NumMDIWindows;
     if( num_mdi_items > MAX_NUM_MDI_WINDOWS )
         num_mdi_items = MAX_NUM_MDI_WINDOWS;
-    for( item = 0; item < num_mdi_items; item++ ) {
-        InsertMenuForWindow( root, item, -1 );
+    for( i = 0; i < num_mdi_items; i++ ) {
+        InsertMenuForWindow( root, i, -1 );
     }
     if( NumMDIWindows > MAX_NUM_MDI_WINDOWS ) {
         MDIMoreMenu.label = LIT( XMore_Windows );
@@ -221,7 +221,7 @@ void MDIResetMenus( gui_window *wnd, gui_window *parent, int num_items, const gu
 
 bool GUIEnableMDIMenus( bool enable )
 {
-    int         item;
+    int         i;
     gui_window  *root;
     int         num_mdi_items;
 
@@ -234,8 +234,8 @@ bool GUIEnableMDIMenus( bool enable )
         if( NumMDIWindows > MAX_NUM_MDI_WINDOWS ) {
             GUIEnableMenuItem( root, GUI_MDI_MORE_WINDOWS, enable, false );
         }
-        for( item = 0; item < num_mdi_items; item++ ) {
-            GUIEnableMenuItem( root, MDIWIN2ID( item ), enable, false );
+        for( i = 0; i < num_mdi_items; i++ ) {
+            GUIEnableMenuItem( root, MDIWIN2ID( i ), enable, false );
         }
         return( true );
     }
@@ -356,7 +356,7 @@ void MDIDelete( gui_window *wnd )
     gui_window  *root;
     int         deleted_item;
     int         position;
-    int         item;
+    int         i;
     int         num_mdi_items;
 
     if( wnd == Root ) {
@@ -388,9 +388,9 @@ void MDIDelete( gui_window *wnd )
             num_mdi_items = NumMDIWindows;
             if( num_mdi_items > MAX_NUM_MDI_WINDOWS - 1 )
                 num_mdi_items = MAX_NUM_MDI_WINDOWS - 1;
-            for( item = deleted_item; item < num_mdi_items; item++ ) {
-                GUIDeleteMenuItem( root, MDIWIN2ID( item ), false );
-                MDIWindows[item] = MDIWindows[item + 1];
+            for( i = deleted_item; i < num_mdi_items; i++ ) {
+                GUIDeleteMenuItem( root, MDIWIN2ID( i ), false );
+                MDIWindows[i] = MDIWindows[i + 1];
             }
             GUIDeleteMenuItem( root, MDIWIN2ID( num_mdi_items ), false );
             MDIWindows[num_mdi_items] = NULL;
@@ -400,9 +400,9 @@ void MDIDelete( gui_window *wnd )
             if( NumMDIWindows > MAX_NUM_MDI_WINDOWS ) {
                 position--;
             }
-            for( item = deleted_item; item < num_mdi_items; item++ ) {
-                InsertMenuForWindow( root, item, position + ( item - deleted_item ) );
-                if( CurrMDIWindow == item ) {
+            for( i = deleted_item; i < num_mdi_items; i++ ) {
+                InsertMenuForWindow( root, i, position + ( i - deleted_item ) );
+                if( CurrMDIWindow == i ) {
                     CurrMDIWindow--;
                     if( CurrMDIWindow < 0 ) {
                         CurrMDIWindow = -1;
