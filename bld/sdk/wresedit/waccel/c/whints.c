@@ -123,7 +123,7 @@ void WHandleMenuSelect( WStatBar *wsb, HMENU hmenu, WPARAM wParam, LPARAM lParam
 #ifdef __NT__
             hpopup = GetSubMenu( (HMENU)lParam, GET_WM_MENUSELECT_ITEM( wParam, lParam ) );
 #else
-            hpopup = (HMENU)(pointer_int)GET_WM_MENUSELECT_ITEM( wParam, lParam );
+            hpopup = (HMENU)GET_WM_MENUSELECT_ITEM( wParam, lParam );
 #endif
             WHandlePopupHint( wsb, hmenu, hpopup );
         } else {

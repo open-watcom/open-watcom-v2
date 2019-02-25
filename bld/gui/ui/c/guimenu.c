@@ -461,9 +461,9 @@ static bool CreateVBarMenu( gui_window *wnd, const gui_menu_items *menus, VBARME
 static bool InsertMenu( gui_window *wnd, const gui_menu_struct *menu, int position,
                         UIMENUITEM **pmenuitems, bool append_hint, hint_type type )
 {
-    int         num_items;
-    UIMENUITEM  *newmenuitems;
-    UIMENUITEM  *menuitems;
+    int             num_items;
+    UIMENUITEM      *newmenuitems;
+    UIMENUITEM      *menuitems;
     gui_menu_items  menus;
 
     menuitems = *pmenuitems;

@@ -46,7 +46,7 @@
 
 #define MAX_STR 256
 
-gui_menu_struct GUIHint[] = {
+static gui_menu_struct GUIHint[] = {
     { NULL, GUI_CHANGE_FONT, GUI_STYLE_MENU_ENABLED, NULL },
     { NULL, GUI_FIX_TOOLBAR, GUI_STYLE_MENU_ENABLED, NULL }
 };
