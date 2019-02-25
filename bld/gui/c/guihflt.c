@@ -44,7 +44,7 @@ bool GUICreateFloatingPopup( gui_window *wnd, gui_point *location,
         return( false );
     }
     menus.num_items = num_items;
-    menus.menu = menu;
+    menus.menu = (gui_menu_struct *)menu;
     GUIInitHint( wnd, &menus, FLOAT_HINT );
     ret = GUIXCreateFloatingPopup( wnd, location, num_items, menu, track, curr_id );
     GUIFiniHint( wnd, FLOAT_HINT );

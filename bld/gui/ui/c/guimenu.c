@@ -453,7 +453,7 @@ static bool CreateVBarMenu( gui_window *wnd, int num_items, const gui_menu_struc
             return( false );
         }
         menus.num_items = num_items;
-        menus.menu = menu;
+        menus.menu = (gui_menu_struct *)menu;
         GUIInitHint( wnd, &menus, MENU_HINT );
         *pvbarmenu = vbarmenu;
     }

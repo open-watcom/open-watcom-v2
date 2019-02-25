@@ -86,7 +86,7 @@ bool GUIResetMenus( gui_window *wnd, int num_items, const gui_menu_struct *menu 
     }
     if( success ) {
         menus.num_items = num_items;
-        menus.menu = menu;
+        menus.menu = (gui_menu_struct *)menu;
         GUIMDIResetMenus( wnd, wnd->parent, num_items, menu );
         GUIInitHint( wnd, &menus, MENU_HINT );
     }
