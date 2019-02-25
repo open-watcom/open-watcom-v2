@@ -508,7 +508,7 @@ bool GUIXCreateWindow( gui_window *wnd, gui_create_info *dlg_info, gui_window *p
     }
 
     wnd->font = GUIGetSystemFont();
-    GUIInitHint( wnd, dlg_info->menus.num_items, dlg_info->menus.menu, MENU_HINT );
+    GUIInitHint( wnd, &dlg_info->menus, MENU_HINT );
     GUISetGUIHint( wnd );
     wmcreateinfo.size = sizeof(wmcreate_info);
     wmcreateinfo.wnd  = wnd;

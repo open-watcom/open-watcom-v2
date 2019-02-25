@@ -47,9 +47,11 @@
 #define MAX_STR 256
 
 gui_menu_struct GUIHint[] = {
- { NULL, GUI_CHANGE_FONT, GUI_STYLE_MENU_ENABLED, NULL },
- { NULL, GUI_FIX_TOOLBAR, GUI_STYLE_MENU_ENABLED, NULL }
+    { NULL, GUI_CHANGE_FONT, GUI_STYLE_MENU_ENABLED, NULL },
+    { NULL, GUI_FIX_TOOLBAR, GUI_STYLE_MENU_ENABLED, NULL }
 };
+
+gui_menu_items menu_GUIHint = { ARRAY_SIZE( GUIHint ), GUIHint };
 
 void GUIInitGUIMenuHint( void )
 {
@@ -298,7 +300,7 @@ void GUIFreePopupList( gui_window *wnd )
 
 void GUISetGUIHint( gui_window *wnd )
 {
-    GUIInitHint( wnd, ARRAY_SIZE( GUIHint ), GUIHint, GUI_HINT );
+    GUIInitHint( wnd, &menu_GUIHint, GUI_HINT );
 }
 
 HMENU   GUIHFloatingPopup       = NULLHANDLE;

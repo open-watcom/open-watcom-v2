@@ -63,6 +63,7 @@ bool GUIResetMenus( gui_window *wnd, int num_items, const gui_menu_struct *menu 
     bool        success;
     HWND        parent;
     HWND        frame;
+    gui_menu_items menus;
 
     GUIFiniHint( wnd, MENU_HINT );
     success = false;
@@ -84,8 +85,10 @@ bool GUIResetMenus( gui_window *wnd, int num_items, const gui_menu_struct *menu 
         success = GUIAddToSystemMenu( wnd, frame, num_items, menu, wnd->style );
     }
     if( success ) {
+        menus.num_items = num_items;
+        menus.menu = menu;
         GUIMDIResetMenus( wnd, wnd->parent, num_items, menu );
-        GUIInitHint( wnd, num_items, menu, MENU_HINT );
+        GUIInitHint( wnd, &menus, MENU_HINT );
     }
     return( success );
 }

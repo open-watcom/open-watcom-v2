@@ -50,8 +50,6 @@
 #endif
 #define BORDER_AMOUNT   1 /* space outside row of buttons */
 
-extern  gui_menu_struct GUIHint[];
-
 /*
  * GUIXCloseToolBar -- close the tool bar and free memory.  Can be called by
  *                    app.  Gets called when parent window closed or floating

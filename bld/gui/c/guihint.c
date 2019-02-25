@@ -227,7 +227,7 @@ bool GUIAppendHintText( gui_window *wnd, const gui_menu_struct *menu, hint_type 
     return( false );
 }
 
-void GUIInitHint( gui_window *wnd, int num_items, const gui_menu_struct *menu, hint_type type )
+void GUIInitHint( gui_window *wnd, const gui_menu_items *menus, hint_type type )
 {
     int                 i;
     gui_hint_items      hints;

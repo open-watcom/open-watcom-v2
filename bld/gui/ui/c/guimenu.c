@@ -440,6 +440,7 @@ static void GUIFreeVBarMenu( VBARMENU *vbarmenu )
 static bool CreateVBarMenu( gui_window *wnd, int num_items, const gui_menu_struct *menu, VBARMENU **pvbarmenu )
 {
     VBARMENU    *vbarmenu;
+    gui_menu_items  menus;
 
     *pvbarmenu = NULL;
     if( num_items > 0 ) {
@@ -451,7 +452,9 @@ static bool CreateVBarMenu( gui_window *wnd, int num_items, const gui_menu_struc
             GUIFreeVBarMenu( vbarmenu );
             return( false );
         }
-        GUIInitHint( wnd, num_items, menu, MENU_HINT );
+        menus.num_items = num_items;
+        menus.menu = menu;
+        GUIInitHint( wnd, &menus, MENU_HINT );
         *pvbarmenu = vbarmenu;
     }
     return( true );
