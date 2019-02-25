@@ -246,8 +246,8 @@ static bool CreateFloatingToolbar( gui_window *wnd, gui_ord height )
     GUIGetClientRect( wnd, &size );
     FloatingToolbar.parent = wnd;
     FloatingToolbar.title = LIT( Floating_Toolbar );
-    FloatingToolbar.menus.menu->label = LIT( XFix_Toolbar );
-    FloatingToolbar.menus.menu->hinttext = LIT( Fix_Toolbar_Hint );
+    FloatingToolbar.menus.menu[0].label = LIT( XFix_Toolbar );
+    FloatingToolbar.menus.menu[0].hinttext = LIT( Fix_Toolbar_Hint );
     FloatingToolbar.rect.height = height;
     FloatingToolbar.rect.width = size.width;
     FloatingToolbar.colours.num_items = GUIGetNumWindowColours( wnd );
