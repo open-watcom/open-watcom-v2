@@ -72,15 +72,15 @@ bool GUIResetMenus( gui_window *wnd, int num_items, const gui_menu_struct *menu 
     frame = GUIGetParentFrameHWND( wnd );
     parent = _wpi_getparent( frame );
     if( ( parent == HWND_DESKTOP ) || (wnd->style & GUI_POPUP) ) {
-        if( num_items == 0 ) {
-            GUISetMenu( wnd, NULLHANDLE );
-            GUIFreePopupList( wnd );
-        } else {
+        if( num_items > 0 ) {
             if( GUICreateMenus( wnd, &menus, &hmenu ) ) {
                 GUISetMenu( wnd, hmenu );
                 _wpi_drawmenubar( frame );
                 success = true;
             }
+        } else {
+            GUISetMenu( wnd, NULLHANDLE );
+            GUIFreePopupList( wnd );
         }
     } else {
         FreeSystemMenu( wnd );

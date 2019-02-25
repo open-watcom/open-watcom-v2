@@ -1284,23 +1284,23 @@ bool Child3WndGUIEventProc( gui_window *gui, gui_event gui_ev, void *param )
 static bool Enabled = true;
 #endif
 
-static void CreatePopup( gui_window *gui, int num_items, const gui_menu_struct *menu, gui_ctl_id popup_id, bool submenu )
+static void CreatePopup( gui_window *gui, const gui_menu_items *menus, gui_ctl_id popup_id, bool submenu )
 {
     gui_menu_items      save_child;
+    int                 i;
 
-    while( num_items-- > 0 ) {
+    for( i = 0; i < menus->num_items; i++ ) {
         if( submenu ) {
-            GUIAppendMenuToPopup( gui, popup_id, menu, true );
+            GUIAppendMenuToPopup( gui, popup_id, &menus->menu[i], true );
         } else {
-            save_child = menu->child;
-            menu->child = NoMenu;
-            GUIAppendMenu( gui, menu, true );
-            menu->child = save_child;
+            save_child = menus->menu[i].child;
+            menus->menu[i].child = NoMenu;
+            GUIAppendMenu( gui, &menus->menu[i], true );
+            menus->menu[i].child = save_child;
         }
-        if( menu->child.menu != NULL ) {
-            CreatePopup( gui, menu->child.num_items, menu->child.menu, menu->id, true );
+        if( menus->menu[i].child.num_items > 0 ) {
+            CreatePopup( gui, &menus->menu[i].child, menu[i].id, true );
         }
-        menu++;
     }
 }
 
@@ -1422,7 +1422,7 @@ bool Child2WndGUIEventProc( gui_window *gui, gui_event gui_ev, void *param )
         GUI_GET_POINT( param, point );
         GUIGetMousePosn( gui, &point );
 #if dynamic_menus
-        CreatePopup( gui, NUM_POPUP_MENUS, PopupMenu, 0, false );
+        CreatePopup( gui, &menu_PopupMenu, 0, false );
 //      CreatePopup( gui, 1, &PopupMenu[NUM_POPUP_MENUS-1], 0, false );
         GUITrackFloatingPopup( gui, &point, GUI_TRACK_RIGHT, NULL); //&CurrPopupItem );
 #else
