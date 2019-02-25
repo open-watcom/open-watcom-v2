@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2018-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -545,8 +545,7 @@ bool MainWndGUIEventProc( gui_window *gui, gui_event gui_ev, void *param )
         if( gui != MainWnd ) {
             GUI_GET_POINT( param, point );
 #if 0
-            GUICreateFloatingPopup( gui, &point, NUM_POPUP_MENUS, &PopupMenu,
-                                    GUI_TRACK_RIGHT, &CurrPopupItem );
+            GUICreateFloatingPopup( gui, &point, &menu_PopupMenu, GUI_TRACK_RIGHT, &CurrPopupItem );
 #endif
         }
         return( true );
@@ -1426,7 +1425,7 @@ bool Child2WndGUIEventProc( gui_window *gui, gui_event gui_ev, void *param )
 //      CreatePopup( gui, 1, &PopupMenu[NUM_POPUP_MENUS-1], 0, false );
         GUITrackFloatingPopup( gui, &point, GUI_TRACK_RIGHT, NULL); //&CurrPopupItem );
 #else
-        GUICreateFloatingPopup( gui, &point, NUM_POPUP_MENUS, &PopupMenu, true, &CurrPopupItem );
+        GUICreateFloatingPopup( gui, &point, &menu_PopupMenu, true, &CurrPopupItem );
 #endif
         return( true );
     case GUI_RBUTTONDOWN :
@@ -1546,7 +1545,7 @@ bool Child2WndGUIEventProc( gui_window *gui, gui_event gui_ev, void *param )
         }
         if( KeyDownKey == GUI_KEY_s  ) {
             GUIGetMousePosn( gui, &point );
-            GUICreateFloatingPopup( gui, &point, NUM_POPUP_MENUS, PopupMenu, true, &CurrPopupItem );
+            GUICreateFloatingPopup( gui, &point, &menu_PopupMenu, true, &CurrPopupItem );
         }
 #endif
         return( true );

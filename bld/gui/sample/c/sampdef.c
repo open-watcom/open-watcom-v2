@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -59,6 +60,26 @@ gui_colour_set DialFrameColours = {
 };
 #endif
 
+static gui_menu_struct MainSubMenu4[] = {
+    { "Create Fi&xed ToolBar",          MENU_FIXED_TOOLBAR,     GUI_STYLE_MENU_ENABLED,     "Create Fixed Toolbar"   },
+    { "Create &Floating ToolBar",       MENU_FLOATING_TOOLBAR,  GUI_STYLE_MENU_ENABLED,     "Create Floating Toolbar"},
+    { NULL,                             0,                      GUI_STYLE_MENU_SEPARATOR,   NULL },
+    { "Fix/Float &ToolBar",             MENU_CHANGE_TOOLBAR,    GUI_STYLE_MENU_GRAYED,      "Fix/Float Toolbar" },
+    { "&Close ToolBar",                 MENU_CLOSE_TOOLBAR,     GUI_STYLE_MENU_GRAYED,      "Close Toolbar"    }
+};
+
+gui_menu_struct PopupMenu[] = {
+    { "&Minize" ,          MENU_MINIMIZE,       GUI_STYLE_MENU_ENABLED,                         "Minimize"  },
+    { "Ma&ximize",         MENU_MAXIMIZE,       GUI_STYLE_MENU_ENABLED,                         "Maximize"  },
+    { NULL,                0,                   GUI_STYLE_MENU_SEPARATOR,                       NULL },
+    { "&Restore",          MENU_RESTORE,        GUI_STYLE_MENU_ENABLED,                         "Restore"  },
+    { "&Can't get me",     MENU_CANT_GET_ME,    GUI_STYLE_MENU_GRAYED,                          "Can't get me" },
+    { "Me &either",        MENU_ME_EITHER,      GUI_STYLE_MENU_GRAYED | GUI_STYLE_MENU_IGNORE,  "Me either"   },
+    { "Re&size",           MENU_RESIZE,         GUI_STYLE_MENU_ENABLED,                         "Resize" },
+    { "Change Menu",       MENU_CHANGE,         GUI_STYLE_MENU_ENABLED,                         "Change Menu" },
+    { "Cascading Popup",   MENU_CASCADE,        GUI_STYLE_MENU_ENABLED,                         "Cascading Popup", NUM_MAIN_SUB_MENUS4, MainSubMenu4  },
+};
+
 static gui_menu_struct MainSubMenu1[] = {
     { "&Static Dialog",         MENU_STATIC_DIALOG,  GUI_STYLE_MENU_CHECKED,    "Create Static Dialog" },
     { "&Dynamic Dialog",        MENU_DYNAMIC_DIALOG, GUI_STYLE_MENU_ENABLED,    "Create Dynamic Dialog" },
@@ -71,7 +92,6 @@ static gui_menu_struct MainSubMenu1[] = {
     { "E&xit Sample",           MENU_EXIT,           GUI_STYLE_MENU_ENABLED,    "Exit Sample Program" },
     { "Spawn &VI",              MENU_SPAWN,          GUI_STYLE_MENU_ENABLED,    "Spawn WATCOM editor" }
 };
-#define NUM_MAIN_SUB_MENUS1 ( sizeof( MainSubMenu1 ) / sizeof( gui_menu_struct ) )
 
 static gui_menu_struct MainSubMenu2[] = {
     { "Redra&w Menu\tlright",   MENU_REDRAW,            GUI_STYLE_MENU_ENABLED,     "Redraw Menu" },
@@ -80,7 +100,6 @@ static gui_menu_struct MainSubMenu2[] = {
     { NULL,                     0,                      GUI_STYLE_MENU_SEPARATOR,   NULL    },
     { "Re&place Colours",       MENU_REPLACE_COLOURS,   GUI_STYLE_MENU_ENABLED,     "Replace Colours"       }
 };
-#define NUM_MAIN_SUB_MENUS2 ( sizeof( MainSubMenu2 ) / sizeof( gui_menu_struct ) )
 
 static gui_menu_struct MainSubMenu3[] = {
     { "&Minimize",              MENU_MINIMIZE,  GUI_STYLE_MENU_ENABLED,                         "Minimize" },
@@ -88,7 +107,6 @@ static gui_menu_struct MainSubMenu3[] = {
     { NULL,                     0,              GUI_STYLE_MENU_SEPARATOR,                       NULL },
     { "&Restore",               MENU_RESTORE,   GUI_STYLE_MENU_ENABLED,                         "Restore"   }
 };
-#define NUM_MAIN_SUB_MENUS3 ( sizeof( MainSubMenu3 ) / sizeof( gui_menu_struct ) )
 
 static gui_menu_struct HelpSubMenu[] = {
     { "Help &Contents", MENU_HELP_CONTENTS,     GUI_STYLE_MENU_ENABLED,     "Help Contents" },
@@ -97,16 +115,6 @@ static gui_menu_struct HelpSubMenu[] = {
     { "Help Conte&xt",  MENU_HELP_CONTEXT,      GUI_STYLE_MENU_ENABLED,     "Help Context"   },
     { "Help &Key",      MENU_HELP_KEY,          GUI_STYLE_MENU_ENABLED,     "Help Key"   }
 };
-#define NUM_HELP_SUB_MENUS ( sizeof( HelpSubMenu ) / sizeof( gui_menu_struct ) )
-
-static gui_menu_struct MainSubMenu4[] = {
-    { "Create Fi&xed ToolBar",          MENU_FIXED_TOOLBAR,     GUI_STYLE_MENU_ENABLED,     "Create Fixed Toolbar"   },
-    { "Create &Floating ToolBar",       MENU_FLOATING_TOOLBAR,  GUI_STYLE_MENU_ENABLED,     "Create Floating Toolbar"},
-    { NULL,                             0,                      GUI_STYLE_MENU_SEPARATOR,   NULL },
-    { "Fix/Float &ToolBar",             MENU_CHANGE_TOOLBAR,    GUI_STYLE_MENU_GRAYED,      "Fix/Float Toolbar" },
-    { "&Close ToolBar",                 MENU_CLOSE_TOOLBAR,     GUI_STYLE_MENU_GRAYED,      "Close Toolbar"    }
-};
-#define NUM_MAIN_SUB_MENUS4 ( sizeof( MainSubMenu4 ) / sizeof( gui_menu_struct ) )
 
 static gui_menu_struct MainSubMenu5[] = {
     { "&Status Window", MENU_STATUS_WND,        GUI_STYLE_MENU_ENABLED, "Status Window"   },
@@ -119,19 +127,6 @@ static gui_menu_struct MainSubMenu5[] = {
     { "Set Menu",       MENU_SET_MENU,          GUI_STYLE_MENU_ENABLED, "Change Menus"     },
     { "Test Resize",    MENU_TEST_RESIZE,       GUI_STYLE_MENU_ENABLED, "Test GUISetRestoredSize" },
 };
-#define NUM_MAIN_SUB_MENUS5 ( sizeof( MainSubMenu5 ) / sizeof( gui_menu_struct ) )
-
-gui_menu_struct PopupMenu[NUM_POPUP_MENUS] = {
-    { "&Minize" ,          MENU_MINIMIZE,       GUI_STYLE_MENU_ENABLED,                         "Minimize"  },
-    { "Ma&ximize",         MENU_MAXIMIZE,       GUI_STYLE_MENU_ENABLED,                         "Maximize"  },
-    { NULL,                0,                   GUI_STYLE_MENU_SEPARATOR,                       NULL },
-    { "&Restore",          MENU_RESTORE,        GUI_STYLE_MENU_ENABLED,                         "Restore"  },
-    { "&Can't get me",     MENU_CANT_GET_ME,    GUI_STYLE_MENU_GRAYED,                          "Can't get me" },
-    { "Me &either",        MENU_ME_EITHER,      GUI_STYLE_MENU_GRAYED | GUI_STYLE_MENU_IGNORE,  "Me either"   },
-    { "Re&size",           MENU_RESIZE,         GUI_STYLE_MENU_ENABLED,                         "Resize" },
-    { "Change Menu",       MENU_CHANGE,         GUI_STYLE_MENU_ENABLED,                         "Change Menu" },
-    { "Cascading Popup",   MENU_CASCADE,        GUI_STYLE_MENU_ENABLED,                         "Cascading Popup", NUM_MAIN_SUB_MENUS4, MainSubMenu4  },
-};
 
 gui_menu_struct ModifyColour = {
     "&Modify Colour",      MENU_MODIFY_COLOUR,  GUI_STYLE_MENU_ENABLED, "Modify Basic Colours"
@@ -140,7 +135,6 @@ gui_menu_struct ModifyColour = {
 gui_menu_struct ResetMenu = {
     "Reset Menu",          MENU_RESET_MENU,     GUI_STYLE_MENU_ENABLED, "Change Menus Back"
 };
-#define NUM_RESET_MENUS ( sizeof( ResetMenu ) / sizeof( gui_menu_struct ) )
 
 gui_menu_struct NewMainMenu = {
     "&New Menu",           MENU_NEW,            GUI_STYLE_MENU_ENABLED, "New Menu Items" , NUM_RESET_MENUS, &ResetMenu
@@ -157,7 +151,6 @@ static gui_menu_struct ChildSubMenu[] = {
     { "Get &Absolute Rect",   MENU_GET_ABS_RECT,        GUI_STYLE_MENU_ENABLED, "Call GUIGetAbsRect" },
     { "More",                 MENU_MORE,                GUI_STYLE_MENU_ENABLED, "Cascading Menu" },
 };
-#define NUM_CHILD_SUB_MENUS ( sizeof( ChildSubMenu ) / sizeof( gui_menu_struct ) )
 
 gui_menu_struct MainMenu[] = {
     { "&Dialogs",       MENU_DIALOGS,       GUI_STYLE_MENU_ENABLED,                             "Dialogs",          NUM_MAIN_SUB_MENUS1,    MainSubMenu1 },
@@ -469,10 +462,8 @@ gui_control_info okbutton = {
     OKBUTTON_CONTROL
 };
 
-#define NUM_COMBOBOX_STRINGS 5
-
 #if combo
-static char * ComboBoxStrings[NUM_COMBOBOX_STRINGS] = {
+static char * ComboBoxStrings[] = {
     { "string1" },
     { "string2" },
     { "string3" },
@@ -481,7 +472,7 @@ static char * ComboBoxStrings[NUM_COMBOBOX_STRINGS] = {
 };
 #endif
 
-gui_toolbar_struct ToolBar[NUM_TOOLBAR_BUTTONS] = {
+gui_toolbar_struct ToolBar[] = {
     { "&Min",           MINIMIZE,       MENU_MINIMIZE, "Minimize"       },
     { "Ma&x",           MAXIMIZE,       MENU_MAXIMIZE, "Maximize"       },
     { "&Restore",       RESTORE,        MENU_RESTORE,  "Restore"        },

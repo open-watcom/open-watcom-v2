@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -43,7 +44,7 @@ extern gui_window   *GUIGetRoot( void );
 extern void         EnableMDIActions( bool enable );
 extern void         AddMDIActions( bool has_items, gui_window *wnd );
 extern void         MDIDeleteMenu( gui_ctl_id id );
-extern void         MDIResetMenus( gui_window *wnd, gui_window *parent, int num_items, const gui_menu_struct *menu );
+extern void         MDIResetMenus( gui_window *wnd, gui_window *parent, const gui_menu_items *menus );
 extern void         InitMDI( gui_window *wnd, gui_create_info *dlg_info );
 extern void         ChangeTitle( gui_window *wnd );
 extern void         BroughtToFront( gui_window *wnd );

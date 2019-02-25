@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,19 +35,16 @@
 
 
 bool GUICreateFloatingPopup( gui_window *wnd, gui_point *location,
-                             int num_items, const gui_menu_struct *menu,
+                             const gui_menu_items *menus,
                              gui_mouse_track track, gui_ctl_id *curr_id )
 {
-    bool            ret;
-    gui_menu_items  menus;
+    bool        ret;
 
-    if( ( num_items == 0 ) || ( menu == NULL ) ) {
-        return( false );
+    ret = false;
+    if( menus->num_items > 0 ) {
+        GUIInitHint( wnd, menus, FLOAT_HINT );
+        ret = GUIXCreateFloatingPopup( wnd, location, menus, track, curr_id );
+        GUIFiniHint( wnd, FLOAT_HINT );
     }
-    menus.num_items = num_items;
-    menus.menu = (gui_menu_struct *)menu;
-    GUIInitHint( wnd, &menus, FLOAT_HINT );
-    ret = GUIXCreateFloatingPopup( wnd, location, &menus, track, curr_id );
-    GUIFiniHint( wnd, FLOAT_HINT );
     return( ret );
 }

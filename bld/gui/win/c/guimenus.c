@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -829,10 +829,11 @@ static bool AddMenu( HMENU hmenu, gui_window *wnd, const gui_menu_struct *menu,
                      bool insert, gui_ctl_id id_position, bool by_position,
                      hint_type type )
 {
-    unsigned    menu_flags;
-    unsigned    attr_flags;
-    gui_ctl_id  newitem;
-    HMENU       hsubmenu;
+    unsigned        menu_flags;
+    unsigned        attr_flags;
+    gui_ctl_id      newitem;
+    HMENU           hsubmenu;
+    gui_menu_items  menus;
 
     hsubmenu = NULLHANDLE;
     newitem = menu->id;
@@ -864,7 +865,9 @@ static bool AddMenu( HMENU hmenu, gui_window *wnd, const gui_menu_struct *menu,
                          newitem, hsubmenu, menu->label );
     }
     GUIAppendHintText( wnd, menu, type );
-    GUIMDIResetMenus( wnd, wnd->parent, 1, menu );
+    menus.num_items = 1;
+    menus.menu = (gui_menu_struct *)menu;
+    GUIMDIResetMenus( wnd, wnd->parent, &menus );
     if( ( type != FLOAT_HINT ) && ( hmenu == GUIGetHMENU( wnd ) ) ) {
         GUIDrawMenuBar( wnd );
     }

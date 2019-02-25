@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -57,23 +57,20 @@ static void FreeSystemMenu( gui_window *wnd )
     }
 }
 
-bool GUIResetMenus( gui_window *wnd, int num_items, const gui_menu_struct *menu )
+bool GUIResetMenus( gui_window *wnd, const gui_menu_items *menus )
 {
     HMENU       hmenu;
     bool        success;
     HWND        parent;
     HWND        frame;
-    gui_menu_items menus;
 
-    menus.num_items = num_items;
-    menus.menu = (gui_menu_struct *)menu;
     GUIFiniHint( wnd, MENU_HINT );
     success = false;
     frame = GUIGetParentFrameHWND( wnd );
     parent = _wpi_getparent( frame );
     if( ( parent == HWND_DESKTOP ) || (wnd->style & GUI_POPUP) ) {
-        if( num_items > 0 ) {
-            if( GUICreateMenus( wnd, &menus, &hmenu ) ) {
+        if( menus->num_items > 0 ) {
+            if( GUICreateMenus( wnd, menus, &hmenu ) ) {
                 GUISetMenu( wnd, hmenu );
                 _wpi_drawmenubar( frame );
                 success = true;
@@ -84,11 +81,11 @@ bool GUIResetMenus( gui_window *wnd, int num_items, const gui_menu_struct *menu 
         }
     } else {
         FreeSystemMenu( wnd );
-        success = GUIAddToSystemMenu( wnd, frame, &menus, wnd->style );
+        success = GUIAddToSystemMenu( wnd, frame, menus, wnd->style );
     }
     if( success ) {
-        GUIMDIResetMenus( wnd, wnd->parent, num_items, menu );
-        GUIInitHint( wnd, &menus, MENU_HINT );
+        GUIMDIResetMenus( wnd, wnd->parent, menus );
+        GUIInitHint( wnd, menus, MENU_HINT );
     }
     return( success );
 }

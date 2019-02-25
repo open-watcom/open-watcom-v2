@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -346,7 +347,7 @@ void    WndMenuIgnore( a_window wnd, gui_ctl_id id, bool ignore )
 }
 
 
-void WndCreateFloatingPopup( a_window wnd, gui_point *point, int num_items, gui_menu_struct *menu, gui_ctl_id *last_popup )
+void WndCreateFloatingPopup( a_window wnd, gui_point *point, gui_menu_items *menus, gui_ctl_id *last_popup )
 {
     gui_point   mouse;
 
@@ -360,7 +361,7 @@ void WndCreateFloatingPopup( a_window wnd, gui_point *point, int num_items, gui_
         }
         point = &mouse;
     }
-    GUICreateFloatingPopup( wnd->gui, point, num_items, menu, GUI_TRACK_BOTH, last_popup );
+    GUICreateFloatingPopup( wnd->gui, point, menus, GUI_TRACK_BOTH, last_popup );
 }
 
 
@@ -379,13 +380,13 @@ void    WndInvokePopUp( a_window wnd, gui_point *point, gui_menu_struct *menu )
         }
     } else if( WndNumPopups( wnd ) > 0 ) {
         if( menu == NULL ) {
-            WndCreateFloatingPopup( wnd, point, WndNumPopups( wnd ), WndPopupMenu( wnd ), &wnd->last_popup );
+            WndCreateFloatingPopup( wnd, point, &wnd->popup, &wnd->last_popup );
         } else if( menu->style & GUI_STYLE_MENU_GRAYED ) {
             Ring();
         } else if( menu->child.menu == NULL ) {
             WndMenuItem( wnd, menu->id, WndMenuRow, WndMenuPiece );
         } else {
-            WndCreateFloatingPopup( wnd, point, menu->child.num_items, menu->child.menu, &dummy );
+            WndCreateFloatingPopup( wnd, point, &menu->child, &dummy );
         }
     }
 }
@@ -426,7 +427,7 @@ void    WndSetMainMenu( gui_menu_items *menus )
 {
     if( WndMain != NULL ) {
         WndMainMenuPtr = menus;
-        GUIResetMenus( WndMain->gui, menus->num_items, menus->menu );
+        GUIResetMenus( WndMain->gui, menus );
     }
 }
 

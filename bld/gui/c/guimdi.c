@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -196,16 +196,13 @@ void MDIDeleteMenu( gui_ctl_id id )
     }
 }
 
-void MDIResetMenus( gui_window *wnd, gui_window *parent, int num_items, const gui_menu_struct *menu )
+void MDIResetMenus( gui_window *wnd, gui_window *parent, const gui_menu_items *menus )
 {
     gui_window  *root;
     int         i;
     int         num_mdi_items;
-    gui_menu_items  menus;
 
-    menus.num_items = num_items;
-    menus.menu = (gui_menu_struct *)menu;
-    if( !MDIAddMenu( wnd, parent, &menus ) ) {
+    if( !MDIAddMenu( wnd, parent, menus ) ) {
         return;
     }
     root = GUIGetRootWindow();

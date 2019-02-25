@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -494,7 +494,7 @@ static bool InsertMenu( gui_window *wnd, const gui_menu_struct *menu, int positi
     }
     *pmenuitems = newmenuitems;
     GUIMemFree( menuitems );
-    GUIMDIResetMenus( wnd, wnd->parent, 1, menu );
+    GUIMDIResetMenus( wnd, wnd->parent, &menus );
     if( append_hint ) {
         GUIAppendHintText( wnd, menu, type );
     }
@@ -682,10 +682,9 @@ bool GUIDeleteToolbarMenuItem( gui_window *wnd, gui_ctl_id id )
     return( false );
 }
 
-bool GUIResetMenus( gui_window *wnd, int num_items, const gui_menu_struct *menu )
+bool GUIResetMenus( gui_window *wnd, const gui_menu_items *menus )
 {
     toolbarinfo *tbar;
-    gui_menu_items  menus;
 
     tbar = wnd->tbinfo;
     if( tbar != NULL ) {
@@ -696,11 +695,9 @@ bool GUIResetMenus( gui_window *wnd, int num_items, const gui_menu_struct *menu 
         }
     }
     GUIFreeMenus( wnd );
-    menus.num_items = num_items;
-    menus.menu = (gui_menu_struct *)menu;
-    if( CreateMenus( wnd, &menus, wnd->parent, wnd->style ) ) {
+    if( CreateMenus( wnd, menus, wnd->parent, wnd->style ) ) {
         GUISetSystemMenuFlags( wnd );
-        GUIMDIResetMenus( wnd, wnd->parent, num_items, menu );
+        GUIMDIResetMenus( wnd, wnd->parent, menus );
         if( wnd->vbarmenu != NULL ) {
             uimenubar( wnd->vbarmenu );
         }

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -328,7 +329,7 @@ extern void                 *WndRealloc( void *, size_t );
 extern void                 WndFree( void * );
 extern void                 *WndMustAlloc( size_t );
 extern void                 *WndMustRealloc( void *, size_t );
-extern void                 WndCreateFloatingPopup( a_window, gui_point *, int, gui_menu_struct *, gui_ctl_id *id );
+extern void                 WndCreateFloatingPopup( a_window, gui_point *, gui_menu_items *, gui_ctl_id *id );
 
 extern void                 WndFixedThumb( a_window );
 extern void                 WndSetThumbPos( a_window, int );

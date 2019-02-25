@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -47,8 +48,8 @@ extern void GUISetMDIBroughtToFront( void (*func)(gui_window *) );
 extern void GUIMDIBroughtToFront( gui_window *wnd );
 extern void GUISetMDIDelete( void (*func)(gui_window *) );
 extern void GUIMDIDelete( gui_window *wnd );
-extern void GUISetMDIResetMenus( void (*func)( gui_window *, gui_window *, int, const gui_menu_struct * ) );
-extern void GUIMDIResetMenus( gui_window *wnd, gui_window *, int num_items, const gui_menu_struct *menu );
+extern void GUISetMDIResetMenus( void (*func)( gui_window *, gui_window *, const gui_menu_items * ) );
+extern void GUIMDIResetMenus( gui_window *wnd, gui_window *, const gui_menu_items *menus );
 extern void GUISetMDIDeleteMenuItem( void (*func)(gui_ctl_id id) );
 extern void GUIMDIDeleteMenuItem( gui_ctl_id id );
 extern void GUISetEnableMDIActions( void (*func)(bool enable) );

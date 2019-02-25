@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -83,6 +84,8 @@ static gui_menu_struct PopTart[] = {
     { "Open &3", MENU_OPEN3, GUI_STYLE_MENU_ENABLED },
 };
 
+gui_menu_items menu_PopTart = { ArraySize( PopTart ), PopTart };
+
 bool    WndProcMacro( a_window wnd, gui_key key )
 {
     gui_ctl_id  menu;
@@ -120,7 +123,7 @@ bool    WndProcMacro( a_window wnd, gui_key key )
     case GUI_KEY_CTRL_X:
     {
         static gui_ctl_id last_menu_pos = 0;
-        WndCreateFloatingPopup( wnd, NULL, ArraySize( PopTart ), PopTart, &last_menu_pos );
+        WndCreateFloatingPopup( wnd, NULL, &menu_PopTart, &last_menu_pos );
     }
 
     default:
