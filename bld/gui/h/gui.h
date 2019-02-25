@@ -433,6 +433,9 @@ typedef struct gui_menu_items {
     gui_menu_struct         *menu;
 } gui_menu_items;
 
+#define GUI_NO_MENU         {0, NULL}
+#define GUI_MENU_ARRAY(x)   {sizeof( x ) / sizeof( *x ), x}
+
 typedef struct gui_menu_struct {
     const char              *label;
     gui_ctl_id              id;
@@ -450,6 +453,9 @@ typedef struct gui_colour_items {
     int                     num_items;
     gui_colour_set          *colour;
 } gui_colour_items;
+
+#define GUI_NO_COLOUR       {0, NULL}
+#define GUI_COLOUR_ARRAY(x) {sizeof( x ) / sizeof( *x ), x}
 
 typedef unsigned long       gui_rgb;
 

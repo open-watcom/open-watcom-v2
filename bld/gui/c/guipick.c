@@ -118,7 +118,7 @@ bool GUIDlgPickWithRtn( const char *title, GUIPICKCALLBACK *pickinit, PICKDLGOPE
     Controls[CANCEL_IDX].text = LIT( Cancel );
     dlg.func = pickinit;
     dlg.choice = -1;
-    openrtn( title, DLG_PICK_ROWS, len, Controls, ARRAY_SIZE( Controls ), &GUIPickGUIEventProc, &dlg );
+    openrtn( title, DLG_PICK_ROWS, len, Controls, GUI_ARRAY_SIZE( Controls ), &GUIPickGUIEventProc, &dlg );
     if( dlg.choice == -1 )
         return( false );
     *choice = dlg.choice;

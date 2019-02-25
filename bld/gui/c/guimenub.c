@@ -33,4 +33,4 @@
 #include "guiwind.h"
 
 
-const gui_menu_items NoMenu = { 0, NULL };
+const gui_menu_items NoMenu = GUI_NO_MENU;

@@ -35,6 +35,8 @@
 #include "samprc.h"
 
 
+#define GUI_NO_ID   ((gui_ctl_id)-1)
+
 extern out_info Child1_Out;
 
 bool            DialogScaled    = false;
@@ -53,8 +55,8 @@ gui_create_info DlgWin = {
     GUI_SCROLL_BOTH,
     GUI_SCROLL_EVENTS | GUI_ALL,
     NULL,
-    { 0, NULL },                        // Menu array
-    { 0, NULL },                        // Colour attribute array
+    GUI_NO_MENU,                     // Menu array
+    GUI_NO_COLOUR,                   // Colour attribute array
     &Child1WndGUIEventProc,             // GUI Event Callback function
     &Child1_Out,
     &DlgWinIcon,
@@ -82,7 +84,7 @@ gui_control_info Controls[] = {
     NULL,
     GUI_NOSCROLL,
     GUI_STYLE_CONTROL_AUTOMATIC,
-    -1},
+    GUI_NO_ID},
   { GUI_RADIO_BUTTON,
     "RA&DIO 1",
     { 25, 45, BUTTON_WIDTH, BUTTON_HEIGHT },
@@ -103,7 +105,7 @@ gui_control_info Controls[] = {
     NULL,
     GUI_NOSCROLL,
     GUI_STYLE_CONTROL_AUTOMATIC,
-    -1},
+    GUI_NO_ID},
   { GUI_CHECK_BOX,
     "&CHECK 1",
     { 25, 315, BUTTON_WIDTH + 20, BUTTON_HEIGHT },
@@ -161,8 +163,8 @@ static gui_create_info DialogControl = {
     GUI_NOSCROLL,                       // Scroll Styles
     GUI_VISIBLE | GUI_CLOSEABLE,        // Window Styles
     NULL,                               // Parent
-    { 0, NULL },                        // Menu array
-    { 0, NULL },                        // Colour attribute array
+    GUI_NO_MENU,                     // Menu array
+    GUI_NO_COLOUR,                   // Colour attribute array
     &StaticDialogWndGUIEventProc,       // GUI Event Callback function
     NULL,                               // Extra
     NULL,                               // Icon
@@ -227,7 +229,7 @@ bool StaticDialogWndGUIEventProc( gui_window *gui, gui_event gui_ev, void *param
 {
     gui_ctl_id  id;
     char        *new;
-    unsigned    i;
+    int         i;
     char        *text;
     int         sel;
     int         size;

@@ -215,8 +215,8 @@ static gui_create_info FloatingToolbar = {
     GUI_NOSCROLL,
     GUI_SYSTEM_MENU | GUI_VISIBLE | GUI_RESIZEABLE | GUI_CLOSEABLE | GUI_INIT_INVISIBLE,
     NULL,
-    { ARRAY_SIZE( Menu ), Menu },       // Menu array
-    { 0, NULL },                        // Colour attribute array
+    GUI_MENU_ARRAY( Menu ),             // Menu array
+    GUI_NO_COLOUR,                      // Colour attribute array
     ToolbarGUIEventProc,                // GUI Event Callback function
     NULL,
     NULL,

@@ -101,7 +101,7 @@ gui_control_class GUIGetControlClassFromHWND( HWND cntl )
     style = _wpi_getwindowlong( cntl, GWL_STYLE );
     control_class = GUI_BAD_CLASS;
 
-    for( index = 0; ( index < ARRAY_SIZE( Map ) ) && ( control_class == GUI_BAD_CLASS ); index++ ) {
+    for( index = 0; ( index < GUI_ARRAY_SIZE( Map ) ) && ( control_class == GUI_BAD_CLASS ); index++ ) {
         if( ( Map[index].classname != NULL ) && stricmp( Map[index].classname, classname ) == 0 ) {
             if( Map[index].mask == 0xffff ) {
                 control_class = Map[index].control_class;

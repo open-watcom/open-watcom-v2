@@ -35,6 +35,7 @@
 #include "dlgstat.h"
 #include "samprc.h"
 
+
 #if hot_spots
 gui_resource HotSpots[NUM_HOT_SPOTS] = {
     { HOT1, "\x2\x3"      },
@@ -61,113 +62,113 @@ gui_colour_set DialFrameColours = {
 #endif
 
 static gui_menu_struct MainSubMenu4[] = {
-    { "Create Fi&xed ToolBar",          MENU_FIXED_TOOLBAR,     GUI_STYLE_MENU_ENABLED,     "Create Fixed Toolbar"   },
-    { "Create &Floating ToolBar",       MENU_FLOATING_TOOLBAR,  GUI_STYLE_MENU_ENABLED,     "Create Floating Toolbar"},
-    { NULL,                             0,                      GUI_STYLE_MENU_SEPARATOR,   NULL },
-    { "Fix/Float &ToolBar",             MENU_CHANGE_TOOLBAR,    GUI_STYLE_MENU_GRAYED,      "Fix/Float Toolbar" },
-    { "&Close ToolBar",                 MENU_CLOSE_TOOLBAR,     GUI_STYLE_MENU_GRAYED,      "Close Toolbar"    }
+    { "Create Fi&xed ToolBar",          MENU_FIXED_TOOLBAR,     GUI_STYLE_MENU_ENABLED,     "Create Fixed Toolbar",     GUI_NO_MENU },
+    { "Create &Floating ToolBar",       MENU_FLOATING_TOOLBAR,  GUI_STYLE_MENU_ENABLED,     "Create Floating Toolbar",  GUI_NO_MENU },
+    { NULL,                             0,                      GUI_STYLE_MENU_SEPARATOR,   NULL,                       GUI_NO_MENU },
+    { "Fix/Float &ToolBar",             MENU_CHANGE_TOOLBAR,    GUI_STYLE_MENU_GRAYED,      "Fix/Float Toolbar",        GUI_NO_MENU },
+    { "&Close ToolBar",                 MENU_CLOSE_TOOLBAR,     GUI_STYLE_MENU_GRAYED,      "Close Toolbar",            GUI_NO_MENU }
 };
 
 gui_menu_struct PopupMenu[] = {
-    { "&Minize" ,          MENU_MINIMIZE,       GUI_STYLE_MENU_ENABLED,                         "Minimize"  },
-    { "Ma&ximize",         MENU_MAXIMIZE,       GUI_STYLE_MENU_ENABLED,                         "Maximize"  },
-    { NULL,                0,                   GUI_STYLE_MENU_SEPARATOR,                       NULL },
-    { "&Restore",          MENU_RESTORE,        GUI_STYLE_MENU_ENABLED,                         "Restore"  },
-    { "&Can't get me",     MENU_CANT_GET_ME,    GUI_STYLE_MENU_GRAYED,                          "Can't get me" },
-    { "Me &either",        MENU_ME_EITHER,      GUI_STYLE_MENU_GRAYED | GUI_STYLE_MENU_IGNORE,  "Me either"   },
-    { "Re&size",           MENU_RESIZE,         GUI_STYLE_MENU_ENABLED,                         "Resize" },
-    { "Change Menu",       MENU_CHANGE,         GUI_STYLE_MENU_ENABLED,                         "Change Menu" },
-    { "Cascading Popup",   MENU_CASCADE,        GUI_STYLE_MENU_ENABLED,                         "Cascading Popup", NUM_MAIN_SUB_MENUS4, MainSubMenu4  },
+    { "&Minize" ,          MENU_MINIMIZE,       GUI_STYLE_MENU_ENABLED,                         "Minimize",             GUI_NO_MENU },
+    { "Ma&ximize",         MENU_MAXIMIZE,       GUI_STYLE_MENU_ENABLED,                         "Maximize",             GUI_NO_MENU },
+    { NULL,                0,                   GUI_STYLE_MENU_SEPARATOR,                       NULL,                   GUI_NO_MENU },
+    { "&Restore",          MENU_RESTORE,        GUI_STYLE_MENU_ENABLED,                         "Restore",              GUI_NO_MENU },
+    { "&Can't get me",     MENU_CANT_GET_ME,    GUI_STYLE_MENU_GRAYED,                          "Can't get me",         GUI_NO_MENU },
+    { "Me &either",        MENU_ME_EITHER,      GUI_STYLE_MENU_GRAYED | GUI_STYLE_MENU_IGNORE,  "Me either",            GUI_NO_MENU },
+    { "Re&size",           MENU_RESIZE,         GUI_STYLE_MENU_ENABLED,                         "Resize",               GUI_NO_MENU },
+    { "Change Menu",       MENU_CHANGE,         GUI_STYLE_MENU_ENABLED,                         "Change Menu",          GUI_NO_MENU },
+    { "Cascading Popup",   MENU_CASCADE,        GUI_STYLE_MENU_ENABLED,                         "Cascading Popup",      GUI_MENU_ARRAY( MainSubMenu4 ) },
 };
 
 static gui_menu_struct MainSubMenu1[] = {
-    { "&Static Dialog",         MENU_STATIC_DIALOG,  GUI_STYLE_MENU_CHECKED,    "Create Static Dialog" },
-    { "&Dynamic Dialog",        MENU_DYNAMIC_DIALOG, GUI_STYLE_MENU_ENABLED,    "Create Dynamic Dialog" },
-    { "&Test Dialog",           MENU_TEST_DIALOG,    GUI_STYLE_MENU_ENABLED,    "Create Test Dialog" },
-    { "&Resource Dialog",       MENU_RES_DIALOG,     GUI_STYLE_MENU_ENABLED,    "Create Resource Dialog" },
-    { "&GetNewVal\tdialog",     MENU_GETNEWVAL,      GUI_STYLE_MENU_ENABLED,    NULL },
-    { NULL,                     MENU_SEP_QUIT,       GUI_STYLE_MENU_SEPARATOR,  NULL },
-    { "&Quit",                  MENU_QUIT,           GUI_STYLE_MENU_ENABLED,    "Quit", NUM_POPUP_MENUS, PopupMenu },
-    { "&Quit",                  MENU_QUIT2,          GUI_STYLE_MENU_ENABLED,    "Quit", NUM_POPUP_MENUS, PopupMenu },
-    { "E&xit Sample",           MENU_EXIT,           GUI_STYLE_MENU_ENABLED,    "Exit Sample Program" },
-    { "Spawn &VI",              MENU_SPAWN,          GUI_STYLE_MENU_ENABLED,    "Spawn WATCOM editor" }
+    { "&Static Dialog",         MENU_STATIC_DIALOG,  GUI_STYLE_MENU_CHECKED,    "Create Static Dialog",                 GUI_NO_MENU },
+    { "&Dynamic Dialog",        MENU_DYNAMIC_DIALOG, GUI_STYLE_MENU_ENABLED,    "Create Dynamic Dialog",                GUI_NO_MENU },
+    { "&Test Dialog",           MENU_TEST_DIALOG,    GUI_STYLE_MENU_ENABLED,    "Create Test Dialog",                   GUI_NO_MENU },
+    { "&Resource Dialog",       MENU_RES_DIALOG,     GUI_STYLE_MENU_ENABLED,    "Create Resource Dialog",               GUI_NO_MENU },
+    { "&GetNewVal\tdialog",     MENU_GETNEWVAL,      GUI_STYLE_MENU_ENABLED,    NULL,                                   GUI_NO_MENU },
+    { NULL,                     MENU_SEP_QUIT,       GUI_STYLE_MENU_SEPARATOR,  NULL,                                   GUI_NO_MENU },
+    { "&Quit",                  MENU_QUIT,           GUI_STYLE_MENU_ENABLED,    "Quit",                                 GUI_MENU_ARRAY( PopupMenu ) },
+    { "&Quit",                  MENU_QUIT2,          GUI_STYLE_MENU_ENABLED,    "Quit",                                 GUI_MENU_ARRAY( PopupMenu ) },
+    { "E&xit Sample",           MENU_EXIT,           GUI_STYLE_MENU_ENABLED,    "Exit Sample Program",                  GUI_NO_MENU },
+    { "Spawn &VI",              MENU_SPAWN,          GUI_STYLE_MENU_ENABLED,    "Spawn WATCOM editor",                  GUI_NO_MENU }
 };
 
 static gui_menu_struct MainSubMenu2[] = {
-    { "Redra&w Menu\tlright",   MENU_REDRAW,            GUI_STYLE_MENU_ENABLED,     "Redraw Menu" },
-    { "&Resize Window\tright",  MENU_RESIZE,            GUI_STYLE_MENU_GRAYED,      "Resize Window"         },
-    { "&Show Window",           MENU_SHOW_WINDOW,       GUI_STYLE_MENU_ENABLED,     "Show WIndow"   },
-    { NULL,                     0,                      GUI_STYLE_MENU_SEPARATOR,   NULL    },
-    { "Re&place Colours",       MENU_REPLACE_COLOURS,   GUI_STYLE_MENU_ENABLED,     "Replace Colours"       }
+    { "Redra&w Menu\tlright",   MENU_REDRAW,            GUI_STYLE_MENU_ENABLED,     "Redraw Menu",                      GUI_NO_MENU },
+    { "&Resize Window\tright",  MENU_RESIZE,            GUI_STYLE_MENU_GRAYED,      "Resize Window",                    GUI_NO_MENU },
+    { "&Show Window",           MENU_SHOW_WINDOW,       GUI_STYLE_MENU_ENABLED,     "Show WIndow",                      GUI_NO_MENU },
+    { NULL,                     0,                      GUI_STYLE_MENU_SEPARATOR,   NULL,                               GUI_NO_MENU },
+    { "Re&place Colours",       MENU_REPLACE_COLOURS,   GUI_STYLE_MENU_ENABLED,     "Replace Colours",                  GUI_NO_MENU }
 };
 
 static gui_menu_struct MainSubMenu3[] = {
-    { "&Minimize",              MENU_MINIMIZE,  GUI_STYLE_MENU_ENABLED,                         "Minimize" },
-    { "&Maximize",              MENU_MAXIMIZE,  GUI_STYLE_MENU_ENABLED | GUI_STYLE_MENU_IGNORE, "Maximize" },
-    { NULL,                     0,              GUI_STYLE_MENU_SEPARATOR,                       NULL },
-    { "&Restore",               MENU_RESTORE,   GUI_STYLE_MENU_ENABLED,                         "Restore"   }
+    { "&Minimize",              MENU_MINIMIZE,  GUI_STYLE_MENU_ENABLED,                         "Minimize",             GUI_NO_MENU },
+    { "&Maximize",              MENU_MAXIMIZE,  GUI_STYLE_MENU_ENABLED | GUI_STYLE_MENU_IGNORE, "Maximize",             GUI_NO_MENU },
+    { NULL,                     0,              GUI_STYLE_MENU_SEPARATOR,                       NULL,                   GUI_NO_MENU },
+    { "&Restore",               MENU_RESTORE,   GUI_STYLE_MENU_ENABLED,                         "Restore",              GUI_NO_MENU }
 };
 
 static gui_menu_struct HelpSubMenu[] = {
-    { "Help &Contents", MENU_HELP_CONTENTS,     GUI_STYLE_MENU_ENABLED,     "Help Contents" },
-    { "Help &On Help",  MENU_HELP_ON_HELP,      GUI_STYLE_MENU_ENABLED,     "Help On Help" },
-    { "Help &Search",   MENU_HELP_SEARCH,       GUI_STYLE_MENU_ENABLED,     "Help Search"   },
-    { "Help Conte&xt",  MENU_HELP_CONTEXT,      GUI_STYLE_MENU_ENABLED,     "Help Context"   },
-    { "Help &Key",      MENU_HELP_KEY,          GUI_STYLE_MENU_ENABLED,     "Help Key"   }
+    { "Help &Contents", MENU_HELP_CONTENTS,     GUI_STYLE_MENU_ENABLED,     "Help Contents",                            GUI_NO_MENU },
+    { "Help &On Help",  MENU_HELP_ON_HELP,      GUI_STYLE_MENU_ENABLED,     "Help On Help",                             GUI_NO_MENU },
+    { "Help &Search",   MENU_HELP_SEARCH,       GUI_STYLE_MENU_ENABLED,     "Help Search",                              GUI_NO_MENU },
+    { "Help Conte&xt",  MENU_HELP_CONTEXT,      GUI_STYLE_MENU_ENABLED,     "Help Context",                             GUI_NO_MENU },
+    { "Help &Key",      MENU_HELP_KEY,          GUI_STYLE_MENU_ENABLED,     "Help Key",                                 GUI_NO_MENU }
 };
 
 static gui_menu_struct MainSubMenu5[] = {
-    { "&Status Window", MENU_STATUS_WND,        GUI_STYLE_MENU_ENABLED, "Status Window"   },
-    { "&Cascade",       MENU_CASCADE1,          GUI_STYLE_MENU_ENABLED, "Cascade"   },
-    { "&Help",          MENU_HELP,              GUI_STYLE_MENU_ENABLED, "Help"   },
-    { "&Switch Font",   MENU_SWITCH_FONT,       GUI_STYLE_MENU_ENABLED, "Set Window 2 font same as Window 1 font" },
-    { "&Resize Status", MENU_RESIZE_STATUS,     GUI_STYLE_MENU_GRAYED,  "Set Status Window 2 lines high" },
-    { "Flip Mouse On",  MENU_FLIP_MOUSE_ON,     GUI_STYLE_MENU_ENABLED, "Flip Mouse On"    },
-    { "Flip Mouse Off", MENU_FLIP_MOUSE_OFF,    GUI_STYLE_MENU_ENABLED, "Flip Mouse Off"   },
-    { "Set Menu",       MENU_SET_MENU,          GUI_STYLE_MENU_ENABLED, "Change Menus"     },
-    { "Test Resize",    MENU_TEST_RESIZE,       GUI_STYLE_MENU_ENABLED, "Test GUISetRestoredSize" },
+    { "&Status Window", MENU_STATUS_WND,        GUI_STYLE_MENU_ENABLED, "Status Window",                                GUI_NO_MENU },
+    { "&Cascade",       MENU_CASCADE1,          GUI_STYLE_MENU_ENABLED, "Cascade",                                      GUI_NO_MENU },
+    { "&Help",          MENU_HELP,              GUI_STYLE_MENU_ENABLED, "Help",                                         GUI_NO_MENU },
+    { "&Switch Font",   MENU_SWITCH_FONT,       GUI_STYLE_MENU_ENABLED, "Set Window 2 font same as Window 1 font",      GUI_NO_MENU },
+    { "&Resize Status", MENU_RESIZE_STATUS,     GUI_STYLE_MENU_GRAYED,  "Set Status Window 2 lines high",               GUI_NO_MENU },
+    { "Flip Mouse On",  MENU_FLIP_MOUSE_ON,     GUI_STYLE_MENU_ENABLED, "Flip Mouse On",                                GUI_NO_MENU },
+    { "Flip Mouse Off", MENU_FLIP_MOUSE_OFF,    GUI_STYLE_MENU_ENABLED, "Flip Mouse Off",                               GUI_NO_MENU },
+    { "Set Menu",       MENU_SET_MENU,          GUI_STYLE_MENU_ENABLED, "Change Menus",                                 GUI_NO_MENU },
+    { "Test Resize",    MENU_TEST_RESIZE,       GUI_STYLE_MENU_ENABLED, "Test GUISetRestoredSize",                      GUI_NO_MENU },
 };
 
-gui_menu_struct ModifyColour = {
-    "&Modify Colour",      MENU_MODIFY_COLOUR,  GUI_STYLE_MENU_ENABLED, "Modify Basic Colours"
+gui_menu_struct ModifyColour[] = {
+    "&Modify Colour",      MENU_MODIFY_COLOUR,  GUI_STYLE_MENU_ENABLED, "Modify Basic Colours",                         GUI_NO_MENU
 };
 
-gui_menu_struct ResetMenu = {
-    "Reset Menu",          MENU_RESET_MENU,     GUI_STYLE_MENU_ENABLED, "Change Menus Back"
+gui_menu_struct ResetMenu[] = {
+    "Reset Menu",          MENU_RESET_MENU,     GUI_STYLE_MENU_ENABLED, "Change Menus Back",                            GUI_NO_MENU
 };
 
-gui_menu_struct NewMainMenu = {
-    "&New Menu",           MENU_NEW,            GUI_STYLE_MENU_ENABLED, "New Menu Items" , NUM_RESET_MENUS, &ResetMenu
+gui_menu_struct NewMainMenu[] = {
+    "&New Menu",           MENU_NEW,            GUI_STYLE_MENU_ENABLED, "New Menu Items",                               GUI_MENU_ARRAY( ResetMenu )
 };
 
-gui_menu_struct MenuMore = {
-    "&This Is More",       MENU_THIS_IS_MORE,   GUI_STYLE_MENU_ENABLED, "More Menu Items"
+gui_menu_struct MenuMore[] = {
+    "&This Is More",       MENU_THIS_IS_MORE,   GUI_STYLE_MENU_ENABLED, "More Menu Items",                              GUI_NO_MENU
 };
 
 static gui_menu_struct ChildSubMenu[] = {
-    { "&Bring Main To Front", MENU_BRING_MAIN_TO_FRONT, GUI_STYLE_MENU_ENABLED, "Bring Main To Front" },
-    { "Get &Client ",         MENU_GET_CLIENT,          GUI_STYLE_MENU_ENABLED, "Call GUIGetClientRect" },
-    { "Get &Rect",            MENU_GET_RECT,            GUI_STYLE_MENU_ENABLED, "Call GUIGetRect" },
-    { "Get &Absolute Rect",   MENU_GET_ABS_RECT,        GUI_STYLE_MENU_ENABLED, "Call GUIGetAbsRect" },
-    { "More",                 MENU_MORE,                GUI_STYLE_MENU_ENABLED, "Cascading Menu" },
+    { "&Bring Main To Front", MENU_BRING_MAIN_TO_FRONT, GUI_STYLE_MENU_ENABLED, "Bring Main To Front",                  GUI_NO_MENU },
+    { "Get &Client ",         MENU_GET_CLIENT,          GUI_STYLE_MENU_ENABLED, "Call GUIGetClientRect",                GUI_NO_MENU },
+    { "Get &Rect",            MENU_GET_RECT,            GUI_STYLE_MENU_ENABLED, "Call GUIGetRect",                      GUI_NO_MENU },
+    { "Get &Absolute Rect",   MENU_GET_ABS_RECT,        GUI_STYLE_MENU_ENABLED, "Call GUIGetAbsRect",                   GUI_NO_MENU },
+    { "More",                 MENU_MORE,                GUI_STYLE_MENU_ENABLED, "Cascading Menu",                       GUI_NO_MENU },
 };
 
 gui_menu_struct MainMenu[] = {
-    { "&Dialogs",       MENU_DIALOGS,       GUI_STYLE_MENU_ENABLED,                             "Dialogs",          NUM_MAIN_SUB_MENUS1,    MainSubMenu1 },
-    { "&Redraw",        MENU_DO_REDRAW,     GUI_STYLE_MENU_ENABLED,                             "Redraw",           NUM_MAIN_SUB_MENUS2,    MainSubMenu2 },
-    { "&Size",          MENU_SIZE,          GUI_STYLE_MENU_ENABLED,                             "Size",             NUM_MAIN_SUB_MENUS3,    MainSubMenu3 },
-    { "&Toolbar",       MENU_TOOLBAR,       GUI_STYLE_MENU_ENABLED,                             "Toolbar",          NUM_MAIN_SUB_MENUS4,    MainSubMenu4 },
+    { "&Dialogs",       MENU_DIALOGS,       GUI_STYLE_MENU_ENABLED,                             "Dialogs",              GUI_MENU_ARRAY( MainSubMenu1 ) },
+    { "&Redraw",        MENU_DO_REDRAW,     GUI_STYLE_MENU_ENABLED,                             "Redraw",               GUI_MENU_ARRAY( MainSubMenu2 ) },
+    { "&Size",          MENU_SIZE,          GUI_STYLE_MENU_ENABLED,                             "Size",                 GUI_MENU_ARRAY( MainSubMenu3 ) },
+    { "&Toolbar",       MENU_TOOLBAR,       GUI_STYLE_MENU_ENABLED,                             "Toolbar",              GUI_MENU_ARRAY( MainSubMenu4 ) },
 #if mdi
-    { "&Window",        MENU_WINDOW,        GUI_STYLE_MENU_ENABLED | GUI_STYLE_MENU_MDIWINDOW,  "Window Actions",   0,                      NULL },
+    { "&Window",        MENU_WINDOW,        GUI_STYLE_MENU_ENABLED | GUI_STYLE_MENU_MDIWINDOW,  "Window Actions",       GUI_NO_MENU },
 #else
-    { "&Window",        MENU_WINDOW,        GUI_STYLE_MENU_ENABLED,                             "Window Actions",   0,                      NULL },
+    { "&Window",        MENU_WINDOW,        GUI_STYLE_MENU_ENABLED,                             "Window Actions",       GUI_NO_MENU },
 #endif
-    { "&Other",         MENU_OTHER,         GUI_STYLE_MENU_ENABLED,                             "Other",            NUM_MAIN_SUB_MENUS5,    MainSubMenu5 },
-    { "&Help",          MENU_HELP_PULLDOWN, GUI_STYLE_MENU_ENABLED,                             "Help",             NUM_HELP_SUB_MENUS,     HelpSubMenu }
+    { "&Other",         MENU_OTHER,         GUI_STYLE_MENU_ENABLED,                             "Other",                GUI_MENU_ARRAY( MainSubMenu5 ) },
+    { "&Help",          MENU_HELP_PULLDOWN, GUI_STYLE_MENU_ENABLED,                             "Help",                 GUI_MENU_ARRAY( HelpSubMenu ) }
 };
 
 gui_menu_struct ChildMenu[] = {
-    { "label &3",       MENU_LABEL3,        GUI_STYLE_MENU_ENABLED,                             "label 3",          NUM_CHILD_SUB_MENUS,    ChildSubMenu }
+    { "label &3",       MENU_LABEL3,        GUI_STYLE_MENU_ENABLED,                             "label 3",              GUI_MENU_ARRAY( ChildSubMenu ) }
 };
 
 #if !default_colours
@@ -294,19 +295,19 @@ gui_create_info Parent = {
     GUI_GADGETS | GUI_SYSTEM_MENU | GUI_CHANGEABLE_FONT,
     NULL,
 #if dynamic_menus
-    { 0, NULL },                        // Menu array
+    GUI_NO_MENU,                         // Menu array
 #else
-    { NUM_MAIN_MENUS, MainMenu },       // Menu array
+    GUI_MENU_ARRAY( MainMenu ),          // Menu array
 #endif
 #if default_colours
-    { 0, NULL },                        // Colour attribute array
+    GUI_NO_COLOUR,                       // Colour attribute array
 #else
-    { GUI_NUM_ATTRS, ParentColours },   // Colour attribute array
+    GUI_COLOUR_ARRAY( ParentColours ),   // Colour attribute array
 #endif
-    &MainWndGUIEventProc,               // GUI Event Callback function
+    &MainWndGUIEventProc,                   // GUI Event Callback function
     NULL,
     &MainIcon,
-    NULL                                // Menu Resource
+    NULL                                    // Menu Resource
 };
 
 gui_create_info Child1 = {
@@ -315,11 +316,11 @@ gui_create_info Child1 = {
     GUI_SCROLL_BOTH,
     GUI_SCROLL_EVENTS | GUI_ALL,
     NULL,
-    { NUM_CHILD_MENUS, ChildMenu },         // Menu array
+    GUI_MENU_ARRAY( ChildMenu ),         // Menu array
 #if default_colours
-    { 0, NULL },                            // Colour attribute array
+    GUI_NO_COLOUR,                       // Colour attribute array
 #else
-    { GUI_NUM_ATTRS + 1, ChildColours },    // Colour attribute array
+    GUI_COLOUR_ARRAY( ChildColours ),    // Colour attribute array
 #endif
     &Child1WndGUIEventProc,                 // GUI Event Callback function
     &Child1_Out,
@@ -330,20 +331,20 @@ gui_create_info Child1 = {
 gui_create_info Child2 = {
     "Window 2",
     { 0, 500, 1000, 300 },
-    NULL, //GUI_SCROLL_BOTH,
+    GUI_NOSCROLL, //GUI_SCROLL_BOTH,
     //GUI_POPUP | GUI_MINIMIZE | GUI_MAXIMIZE | GUI_NOFRAME | GUI_VISIBLE | GUI_SYSTEM_MENU | GUI_CHANGEABLE_FONT,
     GUI_POPUP | GUI_CLOSEABLE | GUI_MINIMIZE | GUI_MAXIMIZE | GUI_RESIZEABLE | GUI_VISIBLE | GUI_SYSTEM_MENU | GUI_CHANGEABLE_FONT,
     //GUI_MINIMIZE | GUI_MAXIMIZE | GUI_RESIZEABLE | GUI_VISIBLE | GUI_SYSTEM_MENU | GUI_CHANGEABLE_FONT,
     NULL,
 #if 0
-    { 0, NULL },                            // Menu array
+    GUI_NO_MENU,                         // Menu array
 #else
-    { NUM_CHILD_MENUS, ChildMenu },         // Menu array
+    GUI_MENU_ARRAY( ChildMenu ),         // Menu array
 #endif
 #if default_colours
-    { 0, NULL },                            // Colour attribute array
+    GUI_NO_COLOUR,                       // Colour attribute array
 #else
-    { GUI_NUM_ATTRS + 1, ChildColours },    // Colour attribute array
+    GUI_COLOUR_ARRAY( ChildColours ),    // Colour attribute array
 #endif
     &Child2WndGUIEventProc,                 // GUI Event Callback function
     &Child2_Out,
@@ -357,11 +358,11 @@ gui_create_info Child3 = {
     GUI_SCROLL_BOTH,
     GUI_VISIBLE+GUI_SYSTEM_MENU+GUI_CLOSEABLE+GUI_MAXIMIZE+GUI_RESIZEABLE+GUI_MINIMIZE,
     NULL,
-    { 0, NULL },                            // Menu array
+    GUI_NO_MENU,                         // Menu array
 #if default_colours
-    { 0, NULL },                            // Colour attribute array
+    GUI_NO_COLOUR,                       // Colour attribute array
 #else
-    { GUI_NUM_ATTRS + 1, ChildColours },    // Colour attribute array
+    GUI_COLOUR_ARRAY( ChildColours ),    // Colour attribute array
 #endif
     Child3WndGUIEventProc,                  // GUI Event Callback function
     NULL,
@@ -375,12 +376,12 @@ gui_create_info Child4 = {
     GUI_SCROLL_BOTH,
     GUI_SCROLL_EVENTS | GUI_ALL,
     NULL,
-    { 0, NULL },                        // Menu array
-    { 0, NULL },                        // Colour attribute array
-    &Child1WndGUIEventProc,             // GUI Event Callback function
+    GUI_NO_MENU,                         // Menu array
+    GUI_NO_COLOUR,                       // Colour attribute array
+    &Child1WndGUIEventProc,                 // GUI Event Callback function
     &Child1_Out,
     &Win1Icon,
-    NULL                                // Menu Resource
+    NULL                                    // Menu Resource
 };
 
 gui_control_info ComboBoxControl = {
@@ -440,16 +441,16 @@ gui_create_info DialogWndControl = {
     GUI_NOSCROLL,
     GUI_CLOSEABLE | GUI_VISIBLE | GUI_DIALOG_LOOK | GUI_SYSTEM_MENU,
     NULL,
-    { 0, NULL },                        // Menu array
+    GUI_NO_MENU,                         // Menu array
 #if default_colours
-    { 0, NULL },                        // Colour attribute array
+    GUI_NO_COLOUR,                       // Colour attribute array
 #else
-    { GUI_NUM_ATTRS, DialogColours },   // Colour attribute array
+    GUI_COLOUR_ARRAY( DialogColours ),   // Colour attribute array
 #endif
-    &ControlWndGUIEventProc,            // GUI Event Callback function
+    &ControlWndGUIEventProc,                // GUI Event Callback function
     NULL,
     &DlgIcon,
-    NULL                                // Menu Resource
+    NULL                                    // Menu Resource
 };
 
 gui_control_info okbutton = {
@@ -480,3 +481,7 @@ gui_toolbar_struct ToolBar[] = {
     { "&Change Menu",   CHANGEMENU,     MENU_CHANGE,   "Change Menu"    }
 };
 
+gui_menu_items      menu_PopupMenu      = GUI_MENU_ARRAY( PopupMenu );
+gui_menu_items      menu_NewMainMenu    = GUI_MENU_ARRAY( NewMainMenu );
+gui_menu_items      menu_MainMenu       = GUI_MENU_ARRAY( MainMenu );
+gui_menu_items      menu_ChildMenu      = GUI_MENU_ARRAY( ChildMenu );

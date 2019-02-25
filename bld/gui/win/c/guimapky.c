@@ -246,7 +246,7 @@ static bool convert_keytable( WORD vk, gui_key *key )
 {
     int         i;
 
-    for( i = 0; i < ARRAY_SIZE( vk_table ); i++ ) {
+    for( i = 0; i < GUI_ARRAY_SIZE( vk_table ); i++ ) {
         if( vk == vk_table[i].value ) {
             if( CHK_KS_SHIFT ) {
                 *key = vk_table[i].shifted;
@@ -592,14 +592,14 @@ bool GUIWindowsMapKey( WPI_PARAM1 p1, WPI_PARAM2 p2, gui_key *key )
         return( convert_ascii( ch, key ) );
     } else if( flags & KC_SCANCODE ) {
         if( CHK_KS_CTRL ) {
-            if( convert_table( pm_scan, key, ctrl_table, ARRAY_SIZE( ctrl_table ) ) ) {
+            if( convert_table( pm_scan, key, ctrl_table, GUI_ARRAY_SIZE( ctrl_table ) ) ) {
                 return( true );
             }
             if( convert_alpha( ch, key ) )
                 return( true );
             return( false );
         } else {
-            if( convert_table( ch, key, alt_table, ARRAY_SIZE( alt_table ) ) ) {
+            if( convert_table( ch, key, alt_table, GUI_ARRAY_SIZE( alt_table ) ) ) {
                 return( true );
             }
             *key = (gui_key)( pm_scan + GUI_SCAN_OFFSET ) ;

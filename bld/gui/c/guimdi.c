@@ -579,7 +579,7 @@ void AddMDIActions( bool has_items, gui_window *wnd )
         GUIAppendMenuToPopup( wnd, GUIMDIMenuID, &MDIFirstSepMenu, false );
     }
 
-    for( i = 0; i < ARRAY_SIZE( MDIMenu ); i++ ) {
+    for( i = 0; i < GUI_ARRAY_SIZE( MDIMenu ); i++ ) {
         GUIAppendMenuToPopup( wnd, GUIMDIMenuID, &MDIMenu[i], false );
     }
 }
