@@ -622,16 +622,16 @@ HMENU GUICreateSubMenu( gui_window *wnd, const gui_menu_items *menus, hint_type 
  * AppendMenus -- menu items to a HMENU
  */
 
-static bool AppendMenus( gui_window *wnd, HMENU hmenu, int num_items, const gui_menu_struct *menu )
+static bool AppendMenus( gui_window *wnd, HMENU hmenu, const gui_menu_items *menus )
 {
     int                 i;
     HMENU               hchildmenu;
 
-    for( i = 0; i < num_items; i++ ) {
-        hchildmenu = GUICreateSubMenu( wnd, &menu[i].child, MENU_HINT );
+    for( i = 0; i < menus->num_items; i++ ) {
+        hchildmenu = GUICreateSubMenu( wnd, &menus->menu[i].child, MENU_HINT );
         if( hchildmenu != NULLHANDLE ) {
-            _wpi_appendmenu( hmenu, MF_STRING | MF_POPUP, MF_ENABLED, menu[i].id, hchildmenu, menu[i].label );
-            InsertPopup( wnd, menu[i].id, hchildmenu, MENU_HINT );
+            _wpi_appendmenu( hmenu, MF_STRING | MF_POPUP, MF_ENABLED, menus->menu[i].id, hchildmenu, menus->menu[i].label );
+            InsertPopup( wnd, menus->menu[i].id, hchildmenu, MENU_HINT );
         }
     }
     return( true );
@@ -641,20 +641,20 @@ static bool AppendMenus( gui_window *wnd, HMENU hmenu, int num_items, const gui_
  * GUICreateMenus -- create a menu resourse
  */
 
-bool GUICreateMenus( gui_window *wnd, int num_items, const gui_menu_struct *menu, HMENU *hmenu )
+bool GUICreateMenus( gui_window *wnd, const gui_menu_items *menus, HMENU *hmenu )
 {
     if( hmenu == NULL ) {
         return( false );
     }
     *hmenu = NULLHANDLE;
-    if( num_items == 0 ) {
+    if( menus->num_items == 0 ) {
         return( true );
     }
     *hmenu = _wpi_createmenu();
     if( *hmenu == NULLHANDLE ) {
         return( false );
     }
-    return( AppendMenus( wnd, *hmenu, num_items, menu ) );
+    return( AppendMenus( wnd, *hmenu, menus ) );
 }
 
 /*
@@ -662,8 +662,7 @@ bool GUICreateMenus( gui_window *wnd, int num_items, const gui_menu_struct *menu
  *                       menu items to child windows
  */
 
-bool GUIAddToSystemMenu( gui_window *wnd, HWND hwnd, int num_to_add,
-                         const gui_menu_struct *menu, gui_create_styles style )
+bool GUIAddToSystemMenu( gui_window *wnd, HWND hwnd, const gui_menu_items *menus, gui_create_styles style )
 {
     HMENU           hsysmenu;
     int             num_items;
@@ -690,9 +689,9 @@ bool GUIAddToSystemMenu( gui_window *wnd, HWND hwnd, int num_to_add,
     if( style & GUI_CHANGEABLE_FONT ) {
         GUIAppendSystemMenuItem( hsysmenu, GUI_MENU_IDX( GUI_CHANGE_FONT ) );
     }
-    if( num_to_add > 0 ) {
+    if( menus->num_items > 0 ) {
         if( _wpi_appendmenu( hsysmenu, MF_SEPARATOR, 0, 0, NULLHANDLE, NULL ) ) {
-            return( AppendMenus( wnd, hsysmenu, num_to_add, menu ) );
+            return( AppendMenus( wnd, hsysmenu, menus ) );
         }
     }
     return( true );

@@ -547,7 +547,7 @@ static bool CreateMenus( gui_window *wnd, const gui_menu_items *menus,
     return( true );
 }
 
-bool GUICreateMenus( gui_window *wnd,  gui_create_info *dlg_info )
+bool GUICreateMenus( gui_window *wnd, gui_create_info *dlg_info )
 {
     gui_menu_items      menus;
     bool                ret;

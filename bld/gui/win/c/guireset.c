@@ -65,16 +65,18 @@ bool GUIResetMenus( gui_window *wnd, int num_items, const gui_menu_struct *menu 
     HWND        frame;
     gui_menu_items menus;
 
+    menus.num_items = num_items;
+    menus.menu = (gui_menu_struct *)menu;
     GUIFiniHint( wnd, MENU_HINT );
     success = false;
     frame = GUIGetParentFrameHWND( wnd );
     parent = _wpi_getparent( frame );
     if( ( parent == HWND_DESKTOP ) || (wnd->style & GUI_POPUP) ) {
-        if( menu == NULL ) {
+        if( num_items == 0 ) {
             GUISetMenu( wnd, NULLHANDLE );
             GUIFreePopupList( wnd );
         } else {
-            if( GUICreateMenus( wnd, num_items, menu, &hmenu ) ) {
+            if( GUICreateMenus( wnd, &menus, &hmenu ) ) {
                 GUISetMenu( wnd, hmenu );
                 _wpi_drawmenubar( frame );
                 success = true;
@@ -82,11 +84,9 @@ bool GUIResetMenus( gui_window *wnd, int num_items, const gui_menu_struct *menu 
         }
     } else {
         FreeSystemMenu( wnd );
-        success = GUIAddToSystemMenu( wnd, frame, num_items, menu, wnd->style );
+        success = GUIAddToSystemMenu( wnd, frame, &menus, wnd->style );
     }
     if( success ) {
-        menus.num_items = num_items;
-        menus.menu = (gui_menu_struct *)menu;
         GUIMDIResetMenus( wnd, wnd->parent, num_items, menu );
         GUIInitHint( wnd, &menus, MENU_HINT );
     }

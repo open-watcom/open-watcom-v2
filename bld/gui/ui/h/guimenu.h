@@ -33,7 +33,7 @@
 #ifndef _GUIMENU_H_
 #define _GUIMENU_H_
 
-extern bool         GUICreateMenus( gui_window *wnd,  gui_create_info *dlg_info );
+extern bool         GUICreateMenus( gui_window *wnd, gui_create_info *dlg_info );
 extern void         GUIFreeMenus( gui_window *wnd );
 extern void         GUIFreeMenuItems( UIMENUITEM *menuitems );
 extern bool         GUICreateMenuItems( const gui_menu_items *menus, UIMENUITEM **pmenuitems );
