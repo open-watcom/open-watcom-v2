@@ -96,15 +96,15 @@ BOOL CALLBACK GetMenuNameDlgProc( HWND hwnd, UINT msg, UINT wparam, DWORD lparam
 void DisplayMenu( void )
 {
     FARPROC     fp;
-    HMENU       menu;
+    HMENU       hmenu;
     char        buf[256];
     HWND        hwnd;
 
     fp = MakeProcInstance( (FARPROC)GetMenuNameDlgProc, Instance );
     DialogBox( Instance, "GET_RES_NAME_DLG" , NULL, (DLGPROC)fp );
     FreeProcInstance( fp );
-    menu = LoadMenu( Instance, menuName );
-    if( menu == NULL ) {
+    hmenu = LoadMenu( Instance, menuName );
+    if( hmenu == NULL ) {
         sprintf( buf, "Can't Load Menu %s", menuName );
         Error( "menu", buf );
         return;
@@ -118,7 +118,7 @@ void DisplayMenu( void )
         500,                    /* Initial X size */
         200,                    /* Initial Y size */
         NULL,                   /* Parent window handle */
-        menu,                   /* Window menu handle */
+        hmenu,                  /* Window menu handle */
         Instance,               /* Program instance handle */
         NULL );                 /* Create parameters */
     if( hwnd == NULL ) return;

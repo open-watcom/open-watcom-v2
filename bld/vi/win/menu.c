@@ -58,7 +58,7 @@ typedef struct menu {
     void            *item_head, *item_tail;
     int             num_items;
     int             orig_num_items;
-    HMENU           menu_handle;
+    HMENU           hmenu;
     char            *help;
     bool            has_file_list   : 1;
     bool            need_hook       : 1;
@@ -247,16 +247,16 @@ static menu *addMenuToMenu( menu *m, const char *name, const char *help )
     menu        *new;
     int         name_len;
 
-    // assert( IsMenu( m->menu_handle ) );
+    // assert( IsMenu( m->hmenu ) );
     name_len = strlen( name );
     new = MemAlloc( sizeof( menu ) + name_len + strlen( help ) + 1 );
     new->num_items = 0;
     strcpy( &new->name[0], name );
     new->help = &new->name[name_len + 1];
     strcpy( new->help, help );
-    // new->menu_handle = CreatePopupMenu();
-    // AppendMenu( m->menu_handle, MF_ENABLED | MF_POPUP, new->menu_handle, name );
-    new->menu_handle = (HMENU)NULLHANDLE;
+    // new->hmenu = CreatePopupMenu();
+    // AppendMenu( m->hmenu, MF_ENABLED | MF_POPUP, new->hmenu, name );
+    new->hmenu = (HMENU)NULLHANDLE;
     new->item_head = NULL;
     new->item_tail = NULL;
     m->num_items += 1;
@@ -274,7 +274,7 @@ static item *addItemToMenu( menu *m, const char *name, const char *help, const c
     int         cmd_len;
     int         name_len;
 
-    // assert( IsMenu( m->menu_handle ) );
+    // assert( IsMenu( m->hmenu ) );
     cmd_len = strlen( cmd );
     name_len = strlen( name );
     new = MemAlloc( sizeof( item ) + cmd_len + name_len + strlen( help ) + 2 );
@@ -282,7 +282,7 @@ static item *addItemToMenu( menu *m, const char *name, const char *help, const c
         new->menuid = 0;
         new->name = NULL;
         if( append ) {
-            AppendMenu( m->menu_handle, MF_SEPARATOR, 0, NULL );
+            AppendMenu( m->hmenu, MF_SEPARATOR, 0, NULL );
         }
     } else {
         strcpy( &new->cmd[0], cmd );
@@ -292,7 +292,7 @@ static item *addItemToMenu( menu *m, const char *name, const char *help, const c
         strcpy( new->help, help );
         new->menuid = NextMenuId();
         if( append ) {
-            AppendMenu( m->menu_handle, MF_ENABLED | MF_STRING, new->menuid, name );
+            AppendMenu( m->hmenu, MF_ENABLED | MF_STRING, new->menuid, name );
         }
     }
     new->in_menu = false;
@@ -360,8 +360,8 @@ static bool freeItem( menu *m, int pos )
     citem = findItem( m, pos );
     if( citem != NULL ) {
         if( citem->in_menu ) {
-            assert( m->menu_handle != NULL );
-            DeleteMenu( m->menu_handle, pos, MF_BYPOSITION );
+            assert( m->hmenu != NULL );
+            DeleteMenu( m->hmenu, pos, MF_BYPOSITION );
         }
         m->num_items -= 1;
         DeleteLLItem( (ss **)&m->item_head, (ss **)&m->item_tail, (ss *)citem );
@@ -397,8 +397,8 @@ static void burnItem( menu *parent, int pos )
     }
     citem = findItem( parent, pos );
     if( citem != NULL ) {
-        assert( parent->menu_handle != NULL );
-        DeleteMenu( parent->menu_handle, pos, MF_BYPOSITION );
+        assert( parent->hmenu != NULL );
+        DeleteMenu( parent->hmenu, pos, MF_BYPOSITION );
         citem->in_menu = false;
     }
 
@@ -411,18 +411,18 @@ static void burnMenu( menu *parent, menu *m )
 {
     int     pos;
 
-    if( m->menu_handle ) {
+    if( m->hmenu ) {
         for( pos = 0; pos < m->num_items; pos++ ) {
             burnItem( m, pos );
         }
-        assert( parent->menu_handle != NULL );
+        assert( parent->hmenu != NULL );
         for( pos = 0; pos < parent->num_items; pos++ ) {
-            if( GetSubMenu( parent->menu_handle, pos ) == m->menu_handle ) {
-                DeleteMenu( parent->menu_handle, pos, MF_BYPOSITION );
+            if( GetSubMenu( parent->hmenu, pos ) == m->hmenu ) {
+                DeleteMenu( parent->hmenu, pos, MF_BYPOSITION );
                 break;
             }
         }
-        m->menu_handle = (HMENU)NULLHANDLE;
+        m->hmenu = (HMENU)NULLHANDLE;
     }
 
 } /* burnMenu */
@@ -437,13 +437,13 @@ static void freeMenu( menu *parent, menu *m )
     assert( m != NULL && parent != NULL && parent->num_items > 0 );
     clearMenu( m );
     for( pos = 0; pos < parent->num_items; pos++ ) {
-        if( GetSubMenu( parent->menu_handle, pos ) == m->menu_handle ) {
-            DeleteMenu( parent->menu_handle, pos, MF_BYPOSITION );
+        if( GetSubMenu( parent->hmenu, pos ) == m->hmenu ) {
+            DeleteMenu( parent->hmenu, pos, MF_BYPOSITION );
             break;
         }
     }
-    if( m->menu_handle ) {
-        DestroyMenu( m->menu_handle );
+    if( m->hmenu ) {
+        DestroyMenu( m->hmenu );
     }
     parent->num_items -= 1;
     DeleteLLItem( (ss **)&parent->item_head, (ss **)&parent->item_tail, (ss *)m );
@@ -457,11 +457,11 @@ static void freeMenu( menu *parent, menu *m )
 static void makeItem( menu *m, item *citem )
 {
     if( !citem->in_menu ) {
-        assert( m->menu_handle != NULL );
+        assert( m->hmenu != NULL );
         if( citem->menuid != 0 ) {
-            AppendMenu( m->menu_handle, MF_ENABLED | MF_STRING, citem->menuid, &citem->name[0] );
+            AppendMenu( m->hmenu, MF_ENABLED | MF_STRING, citem->menuid, &citem->name[0] );
         } else {
-            AppendMenu( m->menu_handle, MF_SEPARATOR, 0, NULL );
+            AppendMenu( m->hmenu, MF_SEPARATOR, 0, NULL );
         }
         citem->in_menu = true;
     }
@@ -475,10 +475,10 @@ static void makeMenu( menu *parent, menu *m )
 {
     item    *i;
 
-    assert( parent->menu_handle != NULL && m->menu_handle == NULL );
-    m->menu_handle = CreatePopupMenu();
-    AppendMenu( parent->menu_handle, MF_ENABLED | MF_POPUP,
-                (UINT) m->menu_handle, &m->name[0] );
+    assert( parent->hmenu != NULL && m->hmenu == NULL );
+    m->hmenu = CreatePopupMenu();
+    AppendMenu( parent->hmenu, MF_ENABLED | MF_POPUP,
+                (UINT)m->hmenu, &m->name[0] );
     for( i = m->item_head; i != NULL; i = i->next ) {
         i->in_menu = false;
         makeItem( m, i );
@@ -674,21 +674,21 @@ vi_rc InitMenu( void )
     menu    *m;
 
     if( !BAD_ID( root_window_id ) ) {
-        if( rootMenu->menu_handle != NULL ) {
+        if( rootMenu->hmenu != NULL ) {
             /* pitch all Windows objects */
             for( m = (menu *)rootMenu->item_head; m != NULL; m = m->next ) {
                 burnMenu( rootMenu, m );
             }
-            DestroyMenu( rootMenu->menu_handle );
+            DestroyMenu( rootMenu->hmenu );
         }
-        rootMenu->menu_handle = CreateMenu();
+        rootMenu->hmenu = CreateMenu();
         if( EditFlags.Menus ) {
             for( m = (menu *)rootMenu->item_head; m != NULL; m = m->next ) {
-                m->menu_handle = (HMENU)NULLHANDLE;
+                m->hmenu = (HMENU)NULLHANDLE;
                 makeMenu( rootMenu, m );
             }
         }
-        SetMenu( root_window_id, rootMenu->menu_handle );
+        SetMenu( root_window_id, rootMenu->hmenu );
     }
     return( ERR_NO_ERR );
 
@@ -699,17 +699,17 @@ void FiniMenu( void )
     menu    *m, *next;
 
     if( !BAD_ID( root_window_id ) ) {
-        if( rootMenu->menu_handle != NULL ) {
+        if( rootMenu->hmenu != NULL ) {
             for( m = (menu *)rootMenu->item_head; m != NULL; m = next ) {
                 next = m->next;
-                if( m->menu_handle ) {
+                if( m->hmenu ) {
                     clearMenu( m );
-                    // DestroyMenu( m->menu_handle );
+                    // DestroyMenu( m->hmenu );
                 }
                 DeleteLLItem( (ss **)&rootMenu->item_head, (ss **)&rootMenu->item_tail, (ss *)m );
                 MemFree( m );
             }
-            // DestroyMenu( rootMenu->menu_handle );
+            // DestroyMenu( rootMenu->hmenu );
         }
     }
 }
@@ -737,25 +737,25 @@ bool IsMenuHotKey( vi_key key )
 static vi_rc doFloatMenu( int flt_id, int x, int y )
 {
     menu        *m;
-    HMENU       f;
+    HMENU       hmenu;
     item        *citem;
     POINT       p;
 
     assert( flt_id >= 0 && flt_id < MAX_FLOAT_MENUS );
     m = &floatMenus[flt_id];
-    f = CreatePopupMenu();
+    hmenu = CreatePopupMenu();
     for( citem = m->item_head; citem != NULL; citem = citem->next ) {
         if( citem->name == NULL ) {
-            AppendMenu( f, MF_SEPARATOR, 0, NULL );
+            AppendMenu( hmenu, MF_SEPARATOR, 0, NULL );
         } else {
-            AppendMenu( f, MF_ENABLED | MF_STRING, citem->menuid, citem->name );
+            AppendMenu( hmenu, MF_ENABLED | MF_STRING, citem->menuid, citem->name );
         }
     }
     p.x = x;
     p.y = y;
     ClientToScreen( current_window_id, &p );
-    TrackPopupMenu( f, 0, p.x, p.y, 0, root_window_id, NULL );
-    DestroyMenu( f );
+    TrackPopupMenu( hmenu, 0, p.x, p.y, 0, root_window_id, NULL );
+    DestroyMenu( hmenu );
     return( ERR_NO_ERR );
 
 } /* doFloatMenu */
@@ -890,7 +890,7 @@ void BarfMenuData( FILE *f )
     menu        *cmenu;
 
     for( cmenu = rootMenu->item_head; cmenu != NULL; cmenu = cmenu->next ) {
-        if( cmenu->menu_handle != NULL ) {
+        if( cmenu->hmenu != NULL ) {
             if( cmenu->need_hook ) {
                 MyFprintf( f, "menu %s \"%s\" 1\n", cmenu->name, cmenu->help );
             } else {
@@ -922,7 +922,7 @@ static void purgeOldMenuBottom( menu *cmenu )
         }
         for( ; cnt < cmenu->num_items; cnt++ ) {
             next = citem->next;
-            DeleteMenu( cmenu->menu_handle, cmenu->orig_num_items, MF_BYPOSITION );
+            DeleteMenu( cmenu->hmenu, cmenu->orig_num_items, MF_BYPOSITION );
             DeleteLLItem( (ss **)&cmenu->item_head, (ss **)&cmenu->item_tail, (ss *)citem );
             MemFree( citem );
             citem = next;
@@ -971,7 +971,7 @@ static bool addToMenuBottom( const char *fname, bool checkit )
     MySprintf( help, "Switches to the window containing %s", fname );
     citem = addItemToMenu( thisMenu, name, help, data, true );
     if( checkit ) {
-        CheckMenuItem( thisMenu->menu_handle, citem->menuid, MF_BYCOMMAND | MF_CHECKED );
+        CheckMenuItem( thisMenu->hmenu, citem->menuid, MF_BYCOMMAND | MF_CHECKED );
     }
     thisCount++;
     if( thisCount > 9 ) {
@@ -1054,7 +1054,7 @@ void HandleInitMenu( HMENU hmenu )
 
     i = 1;
     for( cmenu = rootMenu->item_head; cmenu != NULL; cmenu = cmenu->next ) {
-        if( cmenu->need_hook && cmenu->menu_handle != NULL ) {
+        if( cmenu->need_hook && cmenu->hmenu != NULL ) {
             j = 1;
             for( citem = cmenu->item_head; citem != NULL; citem = citem->next ) {
                 result = InvokeMenuHook( i, j );
@@ -1100,7 +1100,7 @@ void ResetMenuBits( void )
     item        *citem;
 
     for( cmenu = rootMenu->item_head; cmenu != NULL; cmenu = cmenu->next ) {
-        if( cmenu->menu_handle != NULL ) {
+        if( cmenu->hmenu != NULL ) {
             for( citem = cmenu->item_head; citem != NULL; citem = citem->next ) {
                 citem->is_active = true;
                 citem->is_checked = false;
@@ -1157,7 +1157,7 @@ void HandleMenuSelect( WPARAM wparam, LPARAM lparam )
         found = false;
         for( cmenu = rootMenu->item_head; cmenu != NULL; cmenu = cmenu->next ) {
             if( (flags & MF_POPUP) ) {
-                if( cmenu->menu_handle == (HMENU)menuid ) {
+                if( cmenu->hmenu == (HMENU)menuid ) {
                     currMenuHelpString = cmenu->help;
                     found = true;
                 }

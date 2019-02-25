@@ -122,7 +122,7 @@ typedef struct control_item {
 } control_item;
 
 typedef struct popup_info {
-    HMENU               popup;
+    HMENU               hpopup;
     gui_ctl_id          id;
     bool                floating;
     hint_type           type;

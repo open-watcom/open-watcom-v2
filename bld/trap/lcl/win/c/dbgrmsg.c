@@ -96,17 +96,17 @@ BOOL ToDebugger( private_msg pmsg )
 
 static void EnableMainMenu( UINT bit )
 {
-    HMENU       menu;
+    HMENU       hmenu;
     int         i;
 
-    menu = NULL;
+    hmenu = NULL;
     if( DebuggerWindow != NULL ) {
-        menu = GetMenu( DebuggerWindow );
+        hmenu = GetMenu( DebuggerWindow );
     }
-    Out((OUT_SOFT,"Enable menu item, DebuggerWindow=%04x, menu=%04x", DebuggerWindow, menu));
-    if( menu == NULL ) return;
+    Out((OUT_SOFT,"Enable menu item, DebuggerWindow=%04x, menu=%04x", DebuggerWindow, hmenu));
+    if( hmenu == NULL ) return;
     for( i = 0; ; ++i ) {
-        if( EnableMenuItem( menu, i, MF_BYPOSITION | bit ) == -1 ) break;
+        if( EnableMenuItem( hmenu, i, MF_BYPOSITION | bit ) == -1 ) break;
     }
 }
 /*
