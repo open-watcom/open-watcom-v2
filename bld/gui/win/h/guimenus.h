@@ -46,7 +46,7 @@ extern void         GUISetGUIHint( gui_window *wnd );
 extern bool         GUIEnableSystemMenuItem( gui_window *wnd, gui_ctl_id id, bool enable );
 extern HMENU        GUIGetHMENU( gui_window *wnd );
 extern void         GUIFreePopupList( gui_window *wnd );
-extern HMENU        GUICreateSubMenu( gui_window *wnd, int num, const gui_menu_struct *menu, hint_type type );
+extern HMENU        GUICreateSubMenu( gui_window *wnd, const gui_menu_items *menus, hint_type type );
 extern void         GUIDeleteFloatingPopups( gui_window *wnd );
 
 #endif // _GUIMENUS_H_

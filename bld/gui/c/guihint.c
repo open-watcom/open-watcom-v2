@@ -241,14 +241,14 @@ void GUIInitHint( gui_window *wnd, const gui_menu_items *menus, hint_type type )
             hints.hint = NULL;
         }
         hints.num_items = 0;
-        for( i = 0; i < num_items; i++ ) {
-            hints.num_items += CountMenus( &menu[i] );
+        for( i = 0; i < menus->num_items; i++ ) {
+            hints.num_items += CountMenus( &menus->menu[i] );
         }
         if( hints.num_items > 0 ) {
             hints.hint = (gui_hint_struct *)GUIMemAlloc( sizeof( gui_hint_struct ) * hints.num_items );
             hints.num_items = 0;
-            for( i = 0; i < num_items; i++ ) {
-                InsertHint( &menu[i], &hints );
+            for( i = 0; i < menus->num_items; i++ ) {
+                InsertHint( &menus->menu[i], &hints );
             }
         }
         SetStructNum( &wnd->hintsinfo, type, &hints );

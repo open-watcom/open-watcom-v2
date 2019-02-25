@@ -237,12 +237,12 @@ static void TrackPopup( gui_window *wnd, gui_point *location,
  */
 
 bool GUIXCreateFloatingPopup( gui_window *wnd, gui_point *location,
-                             int num_items, const gui_menu_struct *menu,
+                             const gui_menu_items *menus,
                              gui_mouse_track track, gui_ctl_id *curr_id )
 {
     UIMENUITEM  *menuitems;
 
-    if( !GUICreateMenuItems( num_items, menu, &menuitems ) ) {
+    if( !GUICreateMenuItems( menus, &menuitems ) ) {
         return( false );
     }
     TrackPopup( wnd, location, menuitems, track, curr_id );

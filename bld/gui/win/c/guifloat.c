@@ -50,9 +50,9 @@ bool GUITrackFloatingPopup( gui_window *wnd, gui_point *location,
     WPI_POINT   pt;
     ULONG       flags;
     GUI_RECTDIM left, top, right, bottom;
-    HMENU       popup;
+    HMENU       hpopup;
 
-    if( ( popup = GUIHFloatingPopup ) == NULLHANDLE ) {
+    if( ( hpopup = GUIHFloatingPopup ) == NULLHANDLE ) {
         return( false );
     }
 
@@ -90,9 +90,9 @@ bool GUITrackFloatingPopup( gui_window *wnd, gui_point *location,
 
     GUIFlushKeys();
 
-    _wpi_trackpopupmenu( popup, flags, pt.x, pt.y, wnd->hwnd_frame );
+    _wpi_trackpopupmenu( hpopup, flags, pt.x, pt.y, wnd->hwnd_frame );
 
-    _wpi_destroymenu( popup );
+    _wpi_destroymenu( hpopup );
 
     GUIHFloatingPopup = NULLHANDLE;
 
@@ -109,7 +109,7 @@ bool GUITrackFloatingPopup( gui_window *wnd, gui_point *location,
  */
 
 bool GUIXCreateFloatingPopup( gui_window *wnd, gui_point *location,
-                             int num_items, const gui_menu_struct *menu,
+                             const gui_menu_items *menus,
                              gui_mouse_track track, gui_ctl_id *curr_id )
 {
     if( GUIHFloatingPopup != NULLHANDLE ) {
@@ -117,7 +117,7 @@ bool GUIXCreateFloatingPopup( gui_window *wnd, gui_point *location,
         GUIHFloatingPopup = NULLHANDLE;
     }
 
-    GUIHFloatingPopup = GUICreateSubMenu( wnd, num_items, menu, FLOAT_HINT );
+    GUIHFloatingPopup = GUICreateSubMenu( wnd, menus, FLOAT_HINT );
     if( GUIHFloatingPopup == NULLHANDLE ) {
         GUIError( LIT( Open_Failed ) );
         return( false );

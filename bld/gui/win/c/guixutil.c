@@ -147,7 +147,7 @@ void GUICalcLocation( gui_rect *rect, gui_coord *pos, gui_coord *size,
 
 bool GUISetupStruct( gui_window *wnd, gui_create_info *dlg_info,
                       gui_coord *pos, gui_coord *size, HWND parent,
-                      HMENU *menu )
+                      HMENU *hmenu )
 {
     GUICalcLocation( &dlg_info->rect, pos, size, parent );
     if( wnd != NULL ) {
@@ -160,11 +160,11 @@ bool GUISetupStruct( gui_window *wnd, gui_create_info *dlg_info,
         }
     }
 
-    if( ( ( parent == HWND_DESKTOP ) || (dlg_info->style & GUI_POPUP) ) && ( menu != NULL ) ) {
+    if( ( ( parent == HWND_DESKTOP ) || (dlg_info->style & GUI_POPUP) ) && ( hmenu != NULL ) ) {
         if( dlg_info->resource_menu != NULL ) {
-            *menu =  _wpi_loadmenu( GUIResHInst, dlg_info->resource_menu );
+            *hmenu = _wpi_loadmenu( GUIResHInst, dlg_info->resource_menu );
         } else {
-            return( GUICreateMenus( wnd, dlg_info->menus.num_items, dlg_info->menus.menu, menu ) );
+            return( GUICreateMenus( wnd, dlg_info->menus.num_items, dlg_info->menus.menu, hmenu ) );
         }
     }
 
