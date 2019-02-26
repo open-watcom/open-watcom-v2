@@ -84,7 +84,7 @@ static gui_menu_struct PopTart[] = {
     { "Open &3", MENU_OPEN3, GUI_STYLE_MENU_ENABLED },
 };
 
-gui_menu_items menu_PopTart = { ArraySize( PopTart ), PopTart };
+static gui_menu_items   menu_PopTart = GUI_MENU_ARRAY( PopTart );
 
 bool    WndProcMacro( a_window wnd, gui_key key )
 {

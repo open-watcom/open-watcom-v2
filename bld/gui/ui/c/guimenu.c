@@ -387,11 +387,11 @@ bool GUICreateMenuItems( const gui_menu_items *menus, UIMENUITEM **pmenuitems )
         num_ignore = GUIGetNumIgnore( menus );
         if( menus->num_items > num_ignore ) {
             menuitems = GUIAllocMenuItems( menus->num_items - num_ignore );
-            *pmenuitems = menuitems;
-            ok = false;
-            if( menuitems != NULL ) {
+            if( menuitems == NULL ) {
+                ok = false;
+            } else {
+                *pmenuitems = menuitems;
                 if( GUISetMenuItems( menus, menuitems ) ) {
-                    ok = true;
                     for( i = 0; i < menus->num_items; i++ ) {
                         uiyield();
                         if( menus->menu[i].style & GUI_STYLE_MENU_IGNORE )
@@ -560,10 +560,10 @@ bool GUICreateMenus( gui_window *wnd, gui_create_info *dlg_info )
             ret = CreateMenus( wnd, &menus, dlg_info->parent, dlg_info->style );
             GUIFreeGUIMenuStruct( &menus );
         }
-        return( ret );
     } else {
-        return( CreateMenus( wnd, &dlg_info->menus, dlg_info->parent, dlg_info->style ) );
+        ret = CreateMenus( wnd, &dlg_info->menus, dlg_info->parent, dlg_info->style );
     }
+    return( ret );
 }
 
 /*
