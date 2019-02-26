@@ -212,7 +212,7 @@ static bool guiToolBarProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, WPI_PARAM
  */
 
 bool GUIXCreateToolBarWithTips( gui_window *wnd, bool fixed, gui_ord height,
-                                int num_toolbar_items, gui_toolbar_struct *toolinfo,
+                                const gui_toolbar_items *toolinfo,
                                 bool excl, gui_colour_set *plain,
                                 gui_colour_set *standout, gui_rect *float_pos,
                                 bool use_tips )
@@ -239,7 +239,7 @@ bool GUIXCreateToolBarWithTips( gui_window *wnd, bool fixed, gui_ord height,
     standout = standout;
     fixed_height = 0;
     fixed_width = 0;
-    if( ( wnd == NULL ) || ( num_toolbar_items < 1 ) || ( toolinfo == NULL ) ||
+    if( ( wnd == NULL ) || ( toolinfo->num_items < 1 ) ||
         ( wnd->hwnd == NULLHANDLE ) || ( wnd->root == NULLHANDLE ) ) {
         return( false );
     }
@@ -253,14 +253,14 @@ bool GUIXCreateToolBarWithTips( gui_window *wnd, bool fixed, gui_ord height,
     memset( tbar, 0, sizeof( toolbarinfo ) );
     parent = wnd->root;
     tbar->fixedrect = wnd->hwnd_client_rect;
-    tbar->bitmaps = (HBITMAP *)GUIMemAlloc( num_toolbar_items * sizeof( HBITMAP ) );
+    tbar->bitmaps = (HBITMAP *)GUIMemAlloc( toolinfo->num_items * sizeof( HBITMAP ) );
     if( tbar->bitmaps == NULL ) {
         GUIMemFree( tbar );
         wnd->tbinfo = NULL;
         return( false );
     }
-    for( i = 0; i < num_toolbar_items; i++ ) {
-        tbar->bitmaps[i] = _wpi_loadbitmap( GUIResHInst, MAKEINTRESOURCE( toolinfo[i].bitmap ) );
+    for( i = 0; i < toolinfo->num_items; i++ ) {
+        tbar->bitmaps[i] = _wpi_loadbitmap( GUIResHInst, MAKEINTRESOURCE( toolinfo->toolbar[i].bitmap ) );
         if( height == 0 ) {
             _wpi_getbitmapdim( tbar->bitmaps[i], &bm_w, &bm_h );
             if( bm_h > fixed_height ) {
@@ -303,8 +303,8 @@ bool GUIXCreateToolBarWithTips( gui_window *wnd, bool fixed, gui_ord height,
 #ifdef __OS2_PM__
     bottom -= 2;
 #endif
-    new_right = width * num_toolbar_items -
-                (num_toolbar_items - 1) * tbar->info.border_size.x +
+    new_right = width * toolinfo->num_items -
+                (toolinfo->num_items - 1) * tbar->info.border_size.x +
                 left + 2 * _wpi_getsystemmetrics( SM_CXFRAME ) +
                 BORDER_AMOUNT * 2;
     if( new_right < right ) {
@@ -332,7 +332,7 @@ bool GUIXCreateToolBarWithTips( gui_window *wnd, bool fixed, gui_ord height,
     tbar->info.helphook = guiToolBarHelp;
     tbar->info.background = 0;
     tbar->info.foreground = 0;
-    tbar->num = num_toolbar_items;
+    tbar->num = toolinfo->num_items;
     tbar->info.is_fixed = fixed;
     tbar->info.use_tips = use_tips;
 
@@ -342,17 +342,16 @@ bool GUIXCreateToolBarWithTips( gui_window *wnd, bool fixed, gui_ord height,
 
     GUIResizeBackground( wnd, true );
 
-    for( i = 0; i < num_toolbar_items; i++ ) {
+    for( i = 0; i < toolinfo->num_items; i++ ) {
         info.u.bmp = tbar->bitmaps[i];
-        info.id = toolinfo->id;
+        info.id = toolinfo->toolbar[i].id;
         info.flags = 0;
-        if( use_tips && toolinfo->tip != NULL ) {
-            strncpy( info.tip, toolinfo->tip, MAX_TIP );
+        if( use_tips && toolinfo->toolbar[i].tip != NULL ) {
+            strncpy( info.tip, toolinfo->toolbar[i].tip, MAX_TIP );
         } else {
             info.tip[0] = '\0';
         }
         ToolBarAddItem( tbar->hdl, &info );
-        toolinfo++;
     }
     toolhwnd = ToolBarWindow( tbar->hdl );
     _wpi_showwindow( toolhwnd, SW_SHOWNORMAL );
@@ -365,11 +364,11 @@ bool GUIXCreateToolBarWithTips( gui_window *wnd, bool fixed, gui_ord height,
  */
 
 bool GUIXCreateToolBar( gui_window *wnd, bool fixed, gui_ord height,
-                        int num_toolbar_items, gui_toolbar_struct *toolinfo,
+                        const gui_toolbar_items *toolinfo,
                         bool excl, gui_colour_set *plain,
                         gui_colour_set *standout, gui_rect *float_pos )
 {
-    return( GUIXCreateToolBarWithTips( wnd, fixed, height, num_toolbar_items, toolinfo,
+    return( GUIXCreateToolBarWithTips( wnd, fixed, height, toolinfo,
                                        excl, plain, standout, float_pos, false ) );
 }
 

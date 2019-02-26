@@ -33,51 +33,44 @@
 #include "guiwind.h"
 
 
-bool GUICreateFloatToolBar( gui_window *wnd, bool fixed,
-                                   gui_ord height, int num_items,
-                                   gui_toolbar_struct *toolinfo, bool excl,
-                                   gui_colour_set *plain,
-                                   gui_colour_set *standout, gui_rect *rect )
+bool GUICreateFloatToolBar( gui_window *wnd, bool fixed, gui_ord height,
+                            const gui_toolbar_items *toolinfo,
+                            bool excl, gui_colour_set *plain,
+                            gui_colour_set *standout, gui_rect *rect )
 {
-    if( ( num_items == 0 ) || ( toolinfo == NULL ) ) {
-        return( false );
-    }
-    if( GUIXCreateToolBar( wnd, fixed, height, num_items, toolinfo, excl,
-                           plain, standout, rect ) ) {
-        GUIInitToolbarHint( wnd, num_items, toolinfo );
-        return( true );
+    if( toolinfo->num_items > 0 ) {
+        if( GUIXCreateToolBar( wnd, fixed, height, toolinfo, excl, plain, standout, rect ) ) {
+            GUIInitToolbarHint( wnd, toolinfo );
+            return( true );
+        }
     }
     return( false );
 }
 
 bool GUICreateToolBar( gui_window *wnd, bool fixed, gui_ord height,
-                              int num_items, gui_toolbar_struct *toolinfo,
+                              const gui_toolbar_items *toolinfo,
                               bool excl, gui_colour_set *plain,
                               gui_colour_set *standout )
 {
-    if( ( num_items == 0 ) || ( toolinfo == NULL ) ) {
-        return( false );
-    }
-    if( GUIXCreateToolBar( wnd, fixed, height, num_items, toolinfo, excl,
-                           plain, standout, NULL ) ) {
-        GUIInitToolbarHint( wnd, num_items, toolinfo );
-        return( true );
+    if( toolinfo->num_items > 0 ) {
+        if( GUIXCreateToolBar( wnd, fixed, height, toolinfo, excl, plain, standout, NULL ) ) {
+            GUIInitToolbarHint( wnd, toolinfo );
+            return( true );
+        }
     }
     return( false );
 }
 
 bool GUICreateToolBarWithTips( gui_window *wnd, bool fixed, gui_ord height,
-                                      int num_items, gui_toolbar_struct *toolinfo,
+                                      const gui_toolbar_items *toolinfo,
                                       bool excl, gui_colour_set *plain,
                                       gui_colour_set *standout )
 {
-    if( ( num_items == 0 ) || ( toolinfo == NULL ) ) {
-        return( false );
-    }
-    if( GUIXCreateToolBarWithTips( wnd, fixed, height, num_items, toolinfo, excl,
-                                   plain, standout, NULL, true ) ) {
-        GUIInitToolbarHint( wnd, num_items, toolinfo );
-        return( true );
+    if( toolinfo->num_items > 0 ) {
+        if( GUIXCreateToolBarWithTips( wnd, fixed, height, toolinfo, excl, plain, standout, NULL, true ) ) {
+            GUIInitToolbarHint( wnd, toolinfo );
+            return( true );
+        }
     }
     return( false );
 }
@@ -85,7 +78,11 @@ bool GUICreateToolBarWithTips( gui_window *wnd, bool fixed, gui_ord height,
 bool GUICloseToolBar( gui_window *wnd )
 {
     if( GUIXCloseToolBar( wnd ) ) {
-        GUIInitToolbarHint( wnd, 0, NULL );
+        gui_toolbar_items   toolinfo;
+
+        toolinfo.num_items = 0;
+        toolinfo.toolbar = NULL;
+        GUIInitToolbarHint( wnd, &toolinfo );
         return( true );
     }
     return( false );

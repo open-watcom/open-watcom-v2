@@ -799,17 +799,16 @@ extern bool GUIInsertMenuToPopup( gui_window *wnd, gui_ctl_id id, int position, 
 
 /* Toolbar Functions */
 
-extern bool GUICreateFloatToolBar( gui_window *wnd, bool fixed,
-                                   gui_ord height, int num_items,
-                                   gui_toolbar_struct *toolinfo, bool excl,
-                                   gui_colour_set *plain,
-                                   gui_colour_set *standout, gui_rect *rect );
+extern bool GUICreateFloatToolBar( gui_window *wnd, bool fixed, gui_ord height,
+                                    const gui_toolbar_items *toolinfo,
+                                    bool excl, gui_colour_set *plain,
+                                    gui_colour_set *standout, gui_rect *rect );
 extern bool GUICreateToolBar( gui_window *wnd, bool fixed, gui_ord height,
-                              int num_items, gui_toolbar_struct *toolinfo,
+                              const gui_toolbar_items *toolinfo,
                               bool excl, gui_colour_set *plain,
                               gui_colour_set *standout );
 extern bool GUICreateToolBarWithTips( gui_window *wnd, bool fixed, gui_ord height,
-                                      int num_items, gui_toolbar_struct *toolinfo,
+                                      const gui_toolbar_items *toolinfo,
                                       bool excl, gui_colour_set *plain,
                                       gui_colour_set *standout );
 extern bool GUICloseToolBar( gui_window *wnd );

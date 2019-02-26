@@ -67,7 +67,7 @@ extern bool GUIHasHintText( gui_window *wnd, gui_ctl_id id, hint_type type );
 extern bool GUIHasHintType( gui_window *wnd, hint_type type );
 extern void GUIInitHint( gui_window *wnd, const gui_menu_items *menus, hint_type type );
 extern void GUIFiniHint( gui_window *wnd, hint_type type );
-extern void GUIInitToolbarHint( gui_window *wnd, int num_items, gui_toolbar_struct *toolinfo );
+extern void GUIInitToolbarHint( gui_window *wnd, const gui_toolbar_items *toolinfo );
 extern bool GUIAppendHintText( gui_window *wnd, const gui_menu_struct *menu, hint_type type );
 extern bool GUIDeleteHintText( gui_window *wnd, gui_ctl_id id, hint_type type );
 extern void GUIFreeHint( gui_window *wnd );

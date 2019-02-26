@@ -492,8 +492,8 @@ extern void                 WndGetRect( a_window wnd, gui_rect *rect );
 
 extern void                 WndStartChoose( a_window wnd );
 
-extern void                 WndCreateToolBar( gui_ord, bool, int, gui_toolbar_struct * );
-extern void                 WndCreateToolBarWithTips( gui_ord, bool, int, gui_toolbar_struct * );
+extern void                 WndCreateToolBar( gui_ord, bool, const gui_toolbar_items * );
+extern void                 WndCreateToolBarWithTips( gui_ord, bool, const gui_toolbar_items * );
 extern bool                 WndHaveToolBar( void );
 extern void                 WndCloseToolBar( void );
 extern gui_ord              WndToolHeight( void );

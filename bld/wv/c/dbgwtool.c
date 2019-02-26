@@ -54,6 +54,8 @@ static gui_toolbar_struct ToolBar[] = {
     { "",  BITMAP_HOME, MENU_TOOL_HOME, MENU_LIT( HELP_XHome ), MENU_LIT( TIP_XHome ) }
 };
 
+static gui_toolbar_items tb_ToolBar = { ArraySize(ToolBar), ToolBar };
+
 void    InitToolBar( void )
 {
     int         i;
@@ -77,7 +79,7 @@ void    FiniToolBar( void )
 void    WndToolOpen( gui_ord height, bool fixed )
 {
     if( GUIIsGUI() ) {
-        WndCreateToolBarWithTips( height, fixed, ArraySize(ToolBar), ToolBar );
+        WndCreateToolBarWithTips( height, fixed, &tb_ToolBar );
     }
 }
 

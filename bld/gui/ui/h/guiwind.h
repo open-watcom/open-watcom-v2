@@ -100,9 +100,8 @@ typedef struct gui_control gui_control;
 
 typedef struct toolbarinfo {
     bool                fixed;          // true if toolbar is fixed, false if floating)
-    int                 num_items;      // number of items in toolb bar
     gui_window          *floattoolbar;  // NULL if fixed
-    gui_toolbar_struct  *toolinfo;      // initialization information
+    gui_toolbar_items   toolinfo;       // initialization information
     bool                switching;      // set if between fixed and floating
     bool                excl;           // true if exclamation marks used for fixed
     bool                has_colours;    // true if plain and standout colour

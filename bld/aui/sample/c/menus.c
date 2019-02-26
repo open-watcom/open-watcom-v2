@@ -157,9 +157,11 @@ static gui_toolbar_struct ToolBar[] = {
 {"5", BITMAP_FIVE,      MENU_OPEN5, "Open window number 5" },
 };
 
+static gui_toolbar_items tb_ToolBar = { ArraySize( ToolBar ), ToolBar };
+
 static void OpenTools( void )
 {
-    WndCreateToolBar( 867, true, ArraySize( ToolBar ), ToolBar );
+    WndCreateToolBar( 867, true, &tb_ToolBar );
 }
 
 bool     WndMainMenuProc( a_window wnd, gui_ctl_id id )
