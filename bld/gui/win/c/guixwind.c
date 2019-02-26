@@ -167,7 +167,7 @@ void GUIDestroyWnd( gui_window *wnd )
             }
         }
     } else {
-        if ( GUIIsOpen( wnd ) ) {
+        if( GUIIsOpen( wnd ) ) {
             /* this will make a new window be chosen as current if this
              * window was current */
             hwnd = GUIGetParentFrameHWND( wnd );

@@ -114,7 +114,7 @@ bool GUIGetTheDC( gui_window *wnd )
 {
     if( wnd->hdc == NULLHANDLE ) {
         wnd->hdc = _wpi_getpres( wnd->hwnd );
-        if ( wnd->font != NULL ) {
+        if( wnd->font != NULL ) {
             wnd->prev_font = _wpi_selectfont( wnd->hdc, wnd->font );
         } else {
             wnd->prev_font = NULLHANDLE;

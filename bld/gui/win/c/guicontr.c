@@ -602,7 +602,7 @@ static HWND CreateControl( gui_control_info *ctl_info, gui_window *parent, gui_c
 
     /* From here to #else, new by RR 2003.12.05 */
 
-    if ( hwnd != NULL ) {
+    if( hwnd != NULL ) {
         /* Set the standard font for the new control                */
         /* Use system supplied font, so we do not need to worry     */
         /* about cleaning it up later (no DeleteObject() necessary) */

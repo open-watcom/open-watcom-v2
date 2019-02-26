@@ -215,7 +215,7 @@ static bool convert_alpha( WORD ch, gui_key *key )
             *key = AltFunc[t];
         } else if( CHK_KS_CTRL ) {
             *key = t + 1;
-        } else if ( CHK_KS_SHIFT ) {
+        } else if( CHK_KS_SHIFT ) {
             *key = 'A'+ t;
         } else {
             *key = 'a' + t;

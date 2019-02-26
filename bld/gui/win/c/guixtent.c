@@ -81,9 +81,9 @@ gui_ord GUIGetExtentY( gui_window *wnd, const char *text )
 
 static bool GetControlInfo( gui_window *wnd, gui_ctl_id id, HWND *hwnd, WPI_PRES *dc )
 {
-    if ( wnd && wnd->hwnd ) {
+    if( wnd && wnd->hwnd ) {
         *hwnd = _wpi_getdlgitem( wnd->hwnd, id );
-        if ( *hwnd != NULLHANDLE ) {
+        if( *hwnd != NULLHANDLE ) {
             *dc = _wpi_getpres( *hwnd );
             return( *dc != NULLHANDLE );
         }
