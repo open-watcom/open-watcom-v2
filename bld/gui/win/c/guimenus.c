@@ -51,7 +51,7 @@ static gui_menu_struct GUIHint[] = {
     { NULL, GUI_FIX_TOOLBAR, GUI_STYLE_MENU_ENABLED, NULL }
 };
 
-gui_menu_items menu_GUIHint = GUI_MENU_ARRAY( GUIHint );
+static gui_menu_items menu_GUIHint = GUI_MENU_ARRAY( GUIHint );
 
 void GUIInitGUIMenuHint( void )
 {

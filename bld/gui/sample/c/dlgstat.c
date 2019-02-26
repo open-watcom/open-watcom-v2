@@ -55,12 +55,12 @@ gui_create_info DlgWin = {
     GUI_SCROLL_BOTH,
     GUI_SCROLL_EVENTS | GUI_ALL,
     NULL,
-    GUI_NO_MENU,                     // Menu array
-    GUI_NO_COLOUR,                   // Colour attribute array
-    &Child1WndGUIEventProc,             // GUI Event Callback function
+    GUI_NO_MENU,                    // Menu array
+    GUI_NO_COLOUR,                  // Colour attribute array
+    &Child1WndGUIEventProc,         // GUI Event Callback function
     &Child1_Out,
     &DlgWinIcon,
-    NULL                                // Menu Resource
+    NULL                            // Menu Resource
 };
 
 gui_control_info Controls[] = {
@@ -158,17 +158,17 @@ gui_control_info Controls[] = {
 };
 
 static gui_create_info DialogControl = {
-    "Static Dialog Box",                // Title
-    { 100, 100, 700, 700 },             // Position
-    GUI_NOSCROLL,                       // Scroll Styles
-    GUI_VISIBLE | GUI_CLOSEABLE,        // Window Styles
-    NULL,                               // Parent
-    GUI_NO_MENU,                     // Menu array
-    GUI_NO_COLOUR,                   // Colour attribute array
-    &StaticDialogWndGUIEventProc,       // GUI Event Callback function
-    NULL,                               // Extra
-    NULL,                               // Icon
-    NULL                                // Menu Resource
+    "Static Dialog Box",            // Title
+    { 100, 100, 700, 700 },         // Position
+    GUI_NOSCROLL,                   // Scroll Styles
+    GUI_VISIBLE | GUI_CLOSEABLE,    // Window Styles
+    NULL,                           // Parent
+    GUI_NO_MENU,                    // Menu array
+    GUI_NO_COLOUR,                  // Colour attribute array
+    &StaticDialogWndGUIEventProc,   // GUI Event Callback function
+    NULL,                           // Extra
+    NULL,                           // Icon
+    NULL                            // Menu Resource
 };
 
 static const char *ListBoxFunc( const void *data_handle, int item )

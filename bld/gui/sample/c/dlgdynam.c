@@ -39,17 +39,17 @@ static GUICALLBACK DynamicDialogWndGUIEventProc;
 static  const char  *LongText = "inserted_really_long_piece_of_text";
 
 static gui_create_info DialogControl = {
-    "Dynamic Dialog Box",               // Title
-    { 150, 250, 700, 700 },             // Position
-    GUI_NOSCROLL,                       // Scroll Styles
-    GUI_VISIBLE | GUI_CLOSEABLE,        // Window Styles
-    NULL,                               // Parent
-    GUI_NO_MENU,                         // Menu array
-    GUI_NO_COLOUR,                   // Colour attribute array
-    &DynamicDialogWndGUIEventProc,      // GUI Event Callback function
-    NULL,                               // Extra
-    NULL,                               // Icon
-    NULL                                // Menu Resource
+    "Dynamic Dialog Box",           // Title
+    { 150, 250, 700, 700 },         // Position
+    GUI_NOSCROLL,                   // Scroll Styles
+    GUI_VISIBLE | GUI_CLOSEABLE,    // Window Styles
+    NULL,                           // Parent
+    GUI_NO_MENU,                    // Menu array
+    GUI_NO_COLOUR,                  // Colour attribute array
+    &DynamicDialogWndGUIEventProc,  // GUI Event Callback function
+    NULL,                           // Extra
+    NULL,                           // Icon
+    NULL                            // Menu Resource
 };
 
 static const char *ListBoxFunc( const void *data_handle, int item )

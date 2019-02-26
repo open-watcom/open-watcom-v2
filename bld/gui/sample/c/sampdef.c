@@ -295,19 +295,19 @@ gui_create_info Parent = {
     GUI_GADGETS | GUI_SYSTEM_MENU | GUI_CHANGEABLE_FONT,
     NULL,
 #if dynamic_menus
-    GUI_NO_MENU,                         // Menu array
+    GUI_NO_MENU,                        // Menu array
 #else
-    GUI_MENU_ARRAY( MainMenu ),          // Menu array
+    GUI_MENU_ARRAY( MainMenu ),         // Menu array
 #endif
 #if default_colours
-    GUI_NO_COLOUR,                       // Colour attribute array
+    GUI_NO_COLOUR,                      // Colour attribute array
 #else
-    GUI_COLOUR_ARRAY( ParentColours ),   // Colour attribute array
+    GUI_COLOUR_ARRAY( ParentColours ),  // Colour attribute array
 #endif
-    &MainWndGUIEventProc,                   // GUI Event Callback function
+    &MainWndGUIEventProc,               // GUI Event Callback function
     NULL,
     &MainIcon,
-    NULL                                    // Menu Resource
+    NULL                                // Menu Resource
 };
 
 gui_create_info Child1 = {
@@ -316,16 +316,16 @@ gui_create_info Child1 = {
     GUI_SCROLL_BOTH,
     GUI_SCROLL_EVENTS | GUI_ALL,
     NULL,
-    GUI_MENU_ARRAY( ChildMenu ),         // Menu array
+    GUI_MENU_ARRAY( ChildMenu ),        // Menu array
 #if default_colours
-    GUI_NO_COLOUR,                       // Colour attribute array
+    GUI_NO_COLOUR,                      // Colour attribute array
 #else
-    GUI_COLOUR_ARRAY( ChildColours ),    // Colour attribute array
+    GUI_COLOUR_ARRAY( ChildColours ),   // Colour attribute array
 #endif
-    &Child1WndGUIEventProc,                 // GUI Event Callback function
+    &Child1WndGUIEventProc,             // GUI Event Callback function
     &Child1_Out,
     &Win1Icon,
-    NULL                                    // Menu Resource
+    NULL                                // Menu Resource
 };
 
 gui_create_info Child2 = {
@@ -337,19 +337,19 @@ gui_create_info Child2 = {
     //GUI_MINIMIZE | GUI_MAXIMIZE | GUI_RESIZEABLE | GUI_VISIBLE | GUI_SYSTEM_MENU | GUI_CHANGEABLE_FONT,
     NULL,
 #if 0
-    GUI_NO_MENU,                         // Menu array
+    GUI_NO_MENU,                        // Menu array
 #else
-    GUI_MENU_ARRAY( ChildMenu ),         // Menu array
+    GUI_MENU_ARRAY( ChildMenu ),        // Menu array
 #endif
 #if default_colours
-    GUI_NO_COLOUR,                       // Colour attribute array
+    GUI_NO_COLOUR,                      // Colour attribute array
 #else
-    GUI_COLOUR_ARRAY( ChildColours ),    // Colour attribute array
+    GUI_COLOUR_ARRAY( ChildColours ),   // Colour attribute array
 #endif
-    &Child2WndGUIEventProc,                 // GUI Event Callback function
+    &Child2WndGUIEventProc,             // GUI Event Callback function
     &Child2_Out,
     &Win2Icon,
-    NULL                                    // Menu Resource
+    NULL                                // Menu Resource
 };
 
 gui_create_info Child3 = {
@@ -358,16 +358,16 @@ gui_create_info Child3 = {
     GUI_SCROLL_BOTH,
     GUI_VISIBLE+GUI_SYSTEM_MENU+GUI_CLOSEABLE+GUI_MAXIMIZE+GUI_RESIZEABLE+GUI_MINIMIZE,
     NULL,
-    GUI_NO_MENU,                         // Menu array
+    GUI_NO_MENU,                        // Menu array
 #if default_colours
-    GUI_NO_COLOUR,                       // Colour attribute array
+    GUI_NO_COLOUR,                      // Colour attribute array
 #else
-    GUI_COLOUR_ARRAY( ChildColours ),    // Colour attribute array
+    GUI_COLOUR_ARRAY( ChildColours ),   // Colour attribute array
 #endif
-    Child3WndGUIEventProc,                  // GUI Event Callback function
+    Child3WndGUIEventProc,              // GUI Event Callback function
     NULL,
     &Win3Icon,
-    NULL                                    // Menu Resource
+    NULL                                // Menu Resource
 };
 
 gui_create_info Child4 = {
@@ -376,12 +376,12 @@ gui_create_info Child4 = {
     GUI_SCROLL_BOTH,
     GUI_SCROLL_EVENTS | GUI_ALL,
     NULL,
-    GUI_NO_MENU,                         // Menu array
-    GUI_NO_COLOUR,                       // Colour attribute array
-    &Child1WndGUIEventProc,                 // GUI Event Callback function
+    GUI_NO_MENU,                        // Menu array
+    GUI_NO_COLOUR,                      // Colour attribute array
+    &Child1WndGUIEventProc,             // GUI Event Callback function
     &Child1_Out,
     &Win1Icon,
-    NULL                                    // Menu Resource
+    NULL                                // Menu Resource
 };
 
 gui_control_info ComboBoxControl = {
@@ -441,16 +441,16 @@ gui_create_info DialogWndControl = {
     GUI_NOSCROLL,
     GUI_CLOSEABLE | GUI_VISIBLE | GUI_DIALOG_LOOK | GUI_SYSTEM_MENU,
     NULL,
-    GUI_NO_MENU,                         // Menu array
+    GUI_NO_MENU,                        // Menu array
 #if default_colours
-    GUI_NO_COLOUR,                       // Colour attribute array
+    GUI_NO_COLOUR,                      // Colour attribute array
 #else
-    GUI_COLOUR_ARRAY( DialogColours ),   // Colour attribute array
+    GUI_COLOUR_ARRAY( DialogColours ),  // Colour attribute array
 #endif
-    &ControlWndGUIEventProc,                // GUI Event Callback function
+    &ControlWndGUIEventProc,            // GUI Event Callback function
     NULL,
     &DlgIcon,
-    NULL                                    // Menu Resource
+    NULL                                // Menu Resource
 };
 
 gui_control_info okbutton = {
