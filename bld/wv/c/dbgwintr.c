@@ -31,7 +31,6 @@
 ****************************************************************************/
 
 
-#ifndef NDEBUG
 #include <ctype.h>
 #include "dbgdefn.h"
 #include "dbgdata.h"
@@ -51,14 +50,16 @@
 #include "dbgwintr.h"
 
 
+#ifndef NDEBUG
 extern void         WndUserAdd(char *,unsigned int );
+#endif
 
 static void BadCmd( void )
 {
     Error( ERR_LOC, LIT_ENG( ERR_BAD_SUBCOMMAND ), GetCmdName( CMD_WINDOW ) );
 }
 
-
+#ifndef NDEBUG
 static void MenuCopy( char *dst, const char *from, char *to )
 {
     char        ampchar;
@@ -166,9 +167,11 @@ static void (*InternalJmpTab[])() =
     &XDumpMenus,
     &XTimeSymComp,
 };
+#endif
 
 void ProcInternal( void )
 {
+#ifndef NDEBUG
     int     cmd;
 
     cmd = ScanCmd( InternalNameTab );
@@ -177,6 +180,8 @@ void ProcInternal( void )
     } else {
         InternalJmpTab[cmd]();
     }
+#else
+    BadCmd();
+#endif
 }
 
-#endif

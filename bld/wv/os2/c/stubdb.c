@@ -89,9 +89,7 @@ void ProcAccel( void );
 void ProcDisplay( void );
 void ProcFont( void );
 void ProcHelp( void );
-#ifndef NDEBUG
 void ProcInternal( void );
-#endif
 void ProcPaint( void );
 void ProcView( void );
 void ProcConfigFile( void );
@@ -611,13 +609,11 @@ void ProcHelp( void )
     FlushEOC();
 }
 
-#ifndef NDEBUG
 void ProcInternal( void )
 {
     // stub for old UI
     FlushEOC();
 }
-#endif
 
 void ProcPaint( void )
 {
