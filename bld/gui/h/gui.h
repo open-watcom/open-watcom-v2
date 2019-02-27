@@ -428,6 +428,9 @@ typedef struct gui_toolbar_items {
     gui_toolbar_struct      *toolbar;
 } gui_toolbar_items;
 
+#define GUI_NO_TOOLBAR          {0, NULL}
+#define GUI_TOOLBAR_ARRAY(x)    {sizeof( x ) / sizeof( *x ), x}
+
 typedef struct gui_menu_items {
     int                     num_items;
     gui_menu_struct         *menu;
@@ -798,6 +801,8 @@ extern bool GUIAppendMenuToPopup( gui_window *wnd, gui_ctl_id id, const gui_menu
 extern bool GUIInsertMenuToPopup( gui_window *wnd, gui_ctl_id id, int position, const gui_menu_struct *menu, bool floating );
 
 /* Toolbar Functions */
+
+extern const gui_toolbar_items  NoToolbar;
 
 extern bool GUICreateFloatToolBar( gui_window *wnd, bool fixed, gui_ord height,
                                     const gui_toolbar_items *toolinfo,
