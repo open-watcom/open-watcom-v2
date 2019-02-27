@@ -59,7 +59,8 @@ common_objs = &
     guifcrck.obj   &
     guitext.obj    &
     guiclass.obj   &
-    guimenub.obj
+    guimenub.obj   &
+    guitoolb.obj
 
 mem_objs = &
     guimem.obj     &
