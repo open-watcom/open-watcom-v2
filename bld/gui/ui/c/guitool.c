@@ -150,16 +150,6 @@ static bool ToolbarGUIEventProc( gui_window *wnd, gui_event gui_ev, void *param 
     return( false );
 }
 
-bool GUIXCreateToolBarWithTips( gui_window *wnd, bool fixed, gui_ord height,
-                                const gui_toolbar_items *toolinfo, bool excl,
-                                gui_colour_set *plain, gui_colour_set *standout,
-                                gui_rect *float_pos, bool use_tips )
-{
-    /* unused parameters */ (void)use_tips;
-
-    return( GUIXCreateToolBar( wnd, fixed, height, toolinfo, excl, plain, standout, float_pos ) );
-}
-
 bool GUIXCloseToolBar( gui_window *wnd )
 {
     int         i;
@@ -282,10 +272,10 @@ static bool CreateFloatingToolbar( gui_window *wnd, gui_ord height )
     return( true );
 }
 
-bool GUIXCreateToolBar( gui_window *wnd, bool fixed, gui_ord height,
+bool GUIXCreateToolBarWithTips( gui_window *wnd, bool fixed, gui_ord height,
                        const gui_toolbar_items *toolinfo, bool excl,
                        gui_colour_set *plain, gui_colour_set *standout,
-                       gui_rect *float_pos )
+                       gui_rect *float_pos, bool use_tips )
 {
     int                 size;
     int                 i;
@@ -293,7 +283,7 @@ bool GUIXCreateToolBar( gui_window *wnd, bool fixed, gui_ord height,
     gui_toolbar_struct  *new_toolinfo;
     bool                ok;
 
-    /* unused parameters */ (void)float_pos;
+    /* unused parameters */ (void)float_pos; (void)use_tips;
 
     if( ( wnd->parent != NULL ) || ( plain == NULL ) || ( standout == NULL ) ) {
         return( false );
@@ -344,6 +334,14 @@ bool GUIXCreateToolBar( gui_window *wnd, bool fixed, gui_ord height,
     } else {
         return( CreateFloatingToolbar( wnd, height ) );
     }
+}
+
+bool GUIXCreateToolBar( gui_window *wnd, bool fixed, gui_ord height,
+                                const gui_toolbar_items *toolinfo, bool excl,
+                                gui_colour_set *plain, gui_colour_set *standout,
+                                gui_rect *float_pos )
+{
+    return( GUIXCreateToolBarWithTips( wnd, fixed, height, toolinfo, excl, plain, standout, float_pos, false ) );
 }
 
 static bool FloatToolbar( gui_window *wnd )
