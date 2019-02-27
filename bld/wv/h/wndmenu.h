@@ -33,7 +33,7 @@
 #include "wndmenu1.h"
 
 
-extern gui_menu_items   WndMainMenuShort;
+extern gui_menu_items   WndMainMenuMacro;
 extern wnd_info         *WndInfoTab[];
 extern const char       MainTab[];
 

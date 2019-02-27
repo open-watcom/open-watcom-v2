@@ -123,8 +123,8 @@ static gui_menu_struct DbgMainMenu[] = {
     MENU_CASCADE( MENU_MAIN_HELP, MainMenuHelp, HelpMenu )
 };
 
-gui_menu_items  WndMainMenu = { ArraySize( DbgMainMenu ), DbgMainMenu };
-gui_menu_items  WndMainMenuShort = { ArraySize( DbgMainMenu ) - 2, DbgMainMenu };
+gui_menu_items  WndMainMenu = GUI_MENU_ARRAY( DbgMainMenu );
+gui_menu_items  WndMainMenuMacro = { ArraySize( DbgMainMenu ) - 2, DbgMainMenu };
 
 wnd_info *WndInfoTab[] = {
     #define pick( a,b,c,d,e,f ) &d,

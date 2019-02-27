@@ -54,7 +54,7 @@ static gui_toolbar_struct ToolBar[] = {
     { "",  BITMAP_HOME, MENU_TOOL_HOME, MENU_LIT( HELP_XHome ), MENU_LIT( TIP_XHome ) }
 };
 
-static gui_toolbar_items tb_ToolBar = { ArraySize(ToolBar), ToolBar };
+static gui_toolbar_items tb_ToolBar = GUI_TOOLBAR_ARRAY( ToolBar );
 
 void    InitToolBar( void )
 {

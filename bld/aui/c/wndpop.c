@@ -347,7 +347,7 @@ void    WndMenuIgnore( a_window wnd, gui_ctl_id id, bool ignore )
 }
 
 
-void WndCreateFloatingPopup( a_window wnd, gui_point *point, gui_menu_items *menus, gui_ctl_id *last_popup )
+void WndCreateFloatingPopup( a_window wnd, gui_point *point, const gui_menu_items *menus, gui_ctl_id *last_popup )
 {
     gui_point   mouse;
 

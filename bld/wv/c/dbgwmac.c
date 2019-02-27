@@ -298,7 +298,7 @@ static void MacModMenu( a_window wnd, wnd_row row )
     wndmac->last_id = 0;
     wndmac->mac = mac;
     if( mac->type == MACRO_MAIN_MENU ) {
-        wndmac->menus = WndMainMenuShort;
+        wndmac->menus = WndMainMenuMacro;
     } else {
         wndmac->menus = info->popup;
         WndChangeMenuAll( &info->popup, false, GUI_STYLE_MENU_GRAYED );
