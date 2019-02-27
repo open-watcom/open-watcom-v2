@@ -66,7 +66,7 @@ bool GUIXCloseToolBar( gui_window *wnd )
         wnd->tbar = NULL;
         if( tbar->hdl != NULL ) {
             ToolBarFini( tbar->hdl );
-            for( i = 0; i < tbar->num; i++ ) {
+            for( i = 0; i < tbar->num_items; i++ ) {
                 _wpi_deletebitmap( tbar->bitmaps[i] );
             }
             GUIMemFree( tbar->bitmaps );
@@ -239,8 +239,7 @@ bool GUIXCreateToolBarWithTips( gui_window *wnd, bool fixed, gui_ord height,
     standout = standout;
     fixed_height = 0;
     fixed_width = 0;
-    if( ( wnd == NULL ) || ( toolinfo->num_items < 1 ) ||
-        ( wnd->hwnd == NULLHANDLE ) || ( wnd->root == NULLHANDLE ) ) {
+    if( ( wnd == NULL ) || ( wnd->hwnd == NULLHANDLE ) || ( wnd->root == NULLHANDLE ) ) {
         return( false );
     }
     if( wnd->tbar != NULL ) {
@@ -332,7 +331,7 @@ bool GUIXCreateToolBarWithTips( gui_window *wnd, bool fixed, gui_ord height,
     tbar->info.helphook = guiToolBarHelp;
     tbar->info.background = 0;
     tbar->info.foreground = 0;
-    tbar->num = toolinfo->num_items;
+    tbar->num_items = toolinfo->num_items;
     tbar->info.is_fixed = fixed;
     tbar->info.use_tips = use_tips;
 

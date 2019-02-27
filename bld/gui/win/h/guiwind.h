@@ -94,7 +94,7 @@ typedef struct toolbarinfo {
     TOOLDISPLAYINFO     info;
     WPI_RECT            floatrect;
     WPI_RECT            fixedrect;
-    int                 num;
+    int                 num_items;
     HBITMAP             *bitmaps;
 } toolbarinfo;
 
