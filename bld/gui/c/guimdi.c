@@ -175,13 +175,13 @@ static void InsertMenuForWindow( gui_window *root, int index, int position )
     gui_menu_struct     menu;
 
     MakeLabel( index, name, label );
+    menu.child = NoMenu;
     menu.label = label;
     menu.id = MDIWIN2ID( index );
     menu.style = GUI_STYLE_MENU_ENABLED;
     if( index == CurrMDIWindow ) {
         menu.style |= GUI_STYLE_MENU_CHECKED;
     }
-    menu.child = NoMenu;
     MakeHintText( index, name );
     menu.hinttext = MenuHint[index];
     if( GUIMDIMenuID != 0 ) {

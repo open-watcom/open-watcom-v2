@@ -1001,13 +1001,13 @@ static bool AddPopup( gui_window *wnd, gui_ctl_id id, const gui_menu_struct *men
 }
 
 bool GUIInsertMenuToPopup( gui_window *wnd, gui_ctl_id id, int position,
-                           const gui_menu_struct *menu, bool floating )
+                                const gui_menu_struct *menu, bool floating )
 {
     return( AddPopup( wnd, id, menu, true, position, floating ) );
 }
 
-bool GUIAppendMenuToPopup( gui_window *wnd, gui_ctl_id id, const gui_menu_struct *menu,
-                           bool floating )
+bool GUIAppendMenuToPopup( gui_window *wnd, gui_ctl_id id,
+                                const gui_menu_struct *menu, bool floating )
 {
     return( AddPopup( wnd, id, menu, false, 0, floating ) );
 }

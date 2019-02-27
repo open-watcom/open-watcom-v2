@@ -300,8 +300,7 @@ bool GUIXCreateToolBarWithTips( gui_window *wnd, bool fixed, gui_ord height,
         return( false );
     }
     memset( new_toolinfo, 0, size );
-    tbar->toolinfo.toolbar = NULL;
-    tbar->toolinfo.num_items = 0;
+    tbar->toolinfo = NoToolbar;
     tbar->excl = excl;
     tbar->has_colours = ( plain != NULL ) && ( standout != NULL );
     if( tbar->has_colours ) {

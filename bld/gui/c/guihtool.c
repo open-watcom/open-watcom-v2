@@ -78,11 +78,7 @@ bool GUICreateToolBarWithTips( gui_window *wnd, bool fixed, gui_ord height,
 bool GUICloseToolBar( gui_window *wnd )
 {
     if( GUIXCloseToolBar( wnd ) ) {
-        gui_toolbar_items   toolinfo;
-
-        toolinfo.num_items = 0;
-        toolinfo.toolbar = NULL;
-        GUIInitToolbarHint( wnd, &toolinfo );
+        GUIInitToolbarHint( wnd, &NoToolbar );
         return( true );
     }
     return( false );
