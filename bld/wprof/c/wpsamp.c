@@ -383,9 +383,9 @@ static wnd_info     WPSampleInfo = {
     SampleNumRows,
     NoNextRow,
     NoNotify,
-    NULL,
-    0,
-    DefPopUp( sampleMenu )
+    NoChkFlags,
+    NoUpdateFlags,
+    PopUp( sampleMenu )
 };
 
 
