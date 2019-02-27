@@ -835,7 +835,7 @@ wnd_info FileInfo = {
     FileNotify,
     ChkFlags,
     UP_NEW_SRC | UP_SYM_CHANGE | UP_CSIP_CHANGE | UP_STACKPOS_CHANGE | UP_BREAK_CHANGE,
-    DefPopUp( FileMenu )
+    PopUp( FileMenu )
 };
 
 a_window    DoWndFileOpen( const char *name, void *viewhndl,

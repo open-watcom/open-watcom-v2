@@ -197,7 +197,7 @@ wnd_info GlobInfo = {
     NoNotify,
     ChkFlags,
     UP_SYM_CHANGE,
-    DefPopUp( GlobMenu )
+    PopUp( GlobMenu )
 };
 
 a_window DoWndGlobOpen( mod_handle mod )

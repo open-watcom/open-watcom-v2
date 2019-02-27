@@ -337,7 +337,7 @@ wnd_info BrkInfo = {
     NoNotify,
     ChkFlags,
     UP_MEM_CHANGE | UP_RADIX_CHANGE | UP_SYM_CHANGE | UP_BREAK_CHANGE | UP_OPEN_CHANGE,
-    DefPopUp( BrkMenu )
+    PopUp( BrkMenu )
 };
 
 a_window WndBrkOpen( void )

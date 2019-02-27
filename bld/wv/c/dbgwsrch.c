@@ -345,7 +345,7 @@ wnd_info SrchInfo = {
     NoNotify,
     ChkFlags,
     UP_SYMBOLS_LOST | UP_OPEN_CHANGE,
-    DefPopUp( SrchMenu ),
+    PopUp( SrchMenu ),
 };
 
 static a_window DoWndSrchOpen( const char *expr, SRCH_WALKER *walk, void *cookie )

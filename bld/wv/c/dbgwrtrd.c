@@ -291,7 +291,7 @@ wnd_info RunTrdInfo = {
     NoNotify,
     ChkFlags,
     UP_THREAD_STATE,
-    DefPopUp( RunTrdMenu ),
+    PopUp( RunTrdMenu ),
 };
 
 

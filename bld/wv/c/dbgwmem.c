@@ -1022,7 +1022,7 @@ wnd_info BinInfo = {
     NoNotify,
     ChkFlags,
     UP_RADIX_CHANGE,
-    DefPopUp( MemMenu )
+    PopUp( MemMenu )
 };
 
 wnd_info MemInfo = {
@@ -1039,7 +1039,7 @@ wnd_info MemInfo = {
     NoNotify,
     ChkFlags,
     UP_RADIX_CHANGE | UP_MEM_CHANGE | UP_SYM_CHANGE | UP_NEW_PROGRAM,
-    DefPopUp( MemMenu )
+    PopUp( MemMenu )
 };
 
 wnd_info StkInfo = {
@@ -1056,7 +1056,7 @@ wnd_info StkInfo = {
     NoNotify,
     ChkFlags,
     UP_RADIX_CHANGE | UP_MEM_CHANGE | UP_STACKPOS_CHANGE | UP_REG_CHANGE | UP_SYM_CHANGE | UP_NEW_PROGRAM,
-    DefPopUp( MemMenu )
+    PopUp( MemMenu )
 };
 
 a_window        DoWndMemOpen( address addr, mad_type_handle mth )

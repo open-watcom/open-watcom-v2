@@ -308,7 +308,7 @@ wnd_info FuncInfo = {
     NoNotify,
     ChkFlags,
     UP_SYM_CHANGE | UP_BREAK_CHANGE | UP_CODE_ADDR_CHANGE,
-    DefPopUp( FuncMenu )
+    PopUp( FuncMenu )
 };
 
 a_window DoWndFuncOpen( bool is_global, mod_handle mod )

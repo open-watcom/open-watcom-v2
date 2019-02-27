@@ -484,7 +484,7 @@ wnd_info MadRegInfo = {
     NoNotify,
     ChkFlags,
     UP_MAD_CHANGE | UP_REG_CHANGE | UP_REG_RESIZE,
-    DefPopUp( RegMenu )
+    PopUp( RegMenu )
 };
 
 void MadRegChangeOptions( a_window wnd )

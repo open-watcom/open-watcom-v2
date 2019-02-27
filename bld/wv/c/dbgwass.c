@@ -1060,7 +1060,7 @@ wnd_info AsmInfo = {
     ChkFlags,
     UP_MAD_CHANGE | UP_SYM_CHANGE | UP_NEW_PROGRAM | UP_NEW_SRC | UP_STACKPOS_CHANGE
      | UP_CSIP_CHANGE | UP_BREAK_CHANGE | UP_RADIX_CHANGE | UP_ASM_RESIZE,
-    DefPopUp( AsmMenu )
+    PopUp( AsmMenu )
 };
 
 

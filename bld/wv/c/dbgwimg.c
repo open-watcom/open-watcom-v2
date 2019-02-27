@@ -276,7 +276,7 @@ wnd_info ImgInfo = {
     NoNotify,
     ChkFlags,
     UP_SYM_CHANGE,
-    DefPopUp( ImgMenu )
+    PopUp( ImgMenu )
 };
 
 a_window WndImgOpen( void )

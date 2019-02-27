@@ -1059,7 +1059,7 @@ wnd_info VarInfo = {
     NoNotify,
     ChkFlags,
     UP_VAR_DISPLAY | UP_MEM_CHANGE | UP_STACKPOS_CHANGE | UP_CSIP_CHANGE | UP_REG_CHANGE | UP_RADIX_CHANGE | UP_SYM_CHANGE,
-    DefPopUp( VarMenu )
+    PopUp( VarMenu )
 };
 
 static  a_window        DoWndVarOpen( var_type vtype )

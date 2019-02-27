@@ -245,7 +245,7 @@ wnd_info RepInfo = {
     NoNotify,
     ChkFlags,
     UP_EVENT_CHANGE,
-    DefPopUp( RepMenu )
+    PopUp( RepMenu )
 };
 
 

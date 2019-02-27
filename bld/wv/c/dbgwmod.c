@@ -326,7 +326,7 @@ wnd_info ModInfo = {
     NoNotify,
     ChkFlags,
     UP_SYM_CHANGE | UP_OPEN_CHANGE | UP_CSIP_CHANGE | UP_STACKPOS_CHANGE,
-    DefPopUp( ModMenu )
+    PopUp( ModMenu )
 };
 
 a_window DoWndModOpen( mod_handle handle )

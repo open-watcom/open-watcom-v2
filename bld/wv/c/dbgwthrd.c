@@ -260,7 +260,7 @@ wnd_info TrdInfo = {
     NoNotify,
     ChkFlags,
     UP_THREAD_STATE,
-    DefPopUp( TrdMenu ),
+    PopUp( TrdMenu ),
 };
 
 a_window WndTrdOpen( void )

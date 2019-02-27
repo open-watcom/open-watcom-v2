@@ -642,7 +642,7 @@ wnd_info MacInfo = {
     NoNotify,
     ChkFlags,
     UP_MACRO_CHANGE,
-    DefPopUp( MacMenu )
+    PopUp( MacMenu )
 };
 
 a_window WndMacOpen( void )

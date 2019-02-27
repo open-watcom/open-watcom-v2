@@ -240,7 +240,7 @@ wnd_info CallInfo = {
     NoNotify,
     ChkFlags,
     UP_RADIX_CHANGE | UP_SYM_CHANGE | UP_CSIP_CHANGE | UP_STACKPOS_CHANGE,
-    DefPopUp( CallMenu )
+    PopUp( CallMenu )
 };
 
 a_window WndCallOpen( void )
