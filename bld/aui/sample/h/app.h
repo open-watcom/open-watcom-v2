@@ -105,6 +105,7 @@ enum {
 };
 
 enum {
+    EV_UPDATE_NONE      = 0x0000,
     EV_UPDATE_1         = 0x0001,
     EV_UPDATE_2         = 0x0002,
     EV_UPDATE_ALL       = 0xFFFF,

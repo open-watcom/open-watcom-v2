@@ -78,8 +78,8 @@ static wnd_info W6Info = {
     W6NumRows,
     NoNextRow,
     NoNotify,
-    NULL,
-    0,
+    NoChkFlags,
+    NoUpdateFlags,
     NoPopUp
 };
 

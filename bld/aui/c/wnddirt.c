@@ -293,7 +293,7 @@ void    WndFreshAll( void )
         return;
     WndDoingRefresh = true;
     for( wnd = WndNext( NULL ); wnd != NULL; wnd = WndNext( wnd ) ) {
-        if( wnd->info->chkflags != NULL && wnd->info->chkflags( wnd->info->flags ) ) {
+        if( wnd->info->chkflags != NoChkFlags && wnd->info->chkflags( wnd->info->flags ) ) {
             WndRefresh( wnd );
         }
     }

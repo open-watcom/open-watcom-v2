@@ -209,9 +209,9 @@ static wnd_info W4Info = {
     W4NumRows,
     NoNextRow,
     NoNotify,
-    NULL,
-    0,
-    DefPopUp( W4PopUp )
+    NoChkFlags,
+    NoUpdateFlags,
+    PopUp( W4PopUp )
 };
 
 a_window W4Open( void )

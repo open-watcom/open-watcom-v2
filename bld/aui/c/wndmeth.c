@@ -45,10 +45,9 @@ wnd_info NoInfo = {
     NoNumRows,
     NoNextRow,
     NoNotify,
-    NULL,
-    0,
-    0,
-    NULL
+    NoChkFlags,
+    NoUpdateFlags,
+    NoPopUp
 };
 
 a_window WndNoOpen( void )

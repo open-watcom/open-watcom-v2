@@ -391,6 +391,9 @@ extern WNDNOTIFY            NoNotify;
 extern WNDNUMROWS           NoNumRows;
 extern WNDNEXTROW           NoNextRow;
 
+#define NoChkFlags          NULL
+#define NoUpdateFlags       0
+
 extern WNDREFRESH           WndRefresh;
 extern WNDGETLINE           WndGetLine;
 extern WNDGETLINE           WndGetLineAbs;
@@ -558,7 +561,7 @@ extern void                 WndGetGadgetSize( wnd_gadget_type type, gui_coord * 
 extern wnd_attr             WndMapTabAttr( wnd_attr );
 extern char                 WndBackgroundChar;
 
-#define DefPopUp( x )       (sizeof( x ) / sizeof( *(x) )), x
+#define PopUp( x )          (sizeof( x ) / sizeof( *(x) )), x
 #define NoPopUp             0, NULL
 
 #define WndMenuFields( x )  (sizeof( x ) / sizeof( *(x) )), x

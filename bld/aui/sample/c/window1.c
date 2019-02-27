@@ -236,8 +236,8 @@ static wnd_info W1Info = {
     NoNextRow,
     NoNotify,
     ChkFlags,
-    (wnd_update_list)EV_UPDATE_1,
-    (char)DefPopUp( W1PopUp )
+    EV_UPDATE_1,
+    PopUp( W1PopUp )
 };
 
 static gui_resource W1Icon = { ICON_WORDS, "W1" };

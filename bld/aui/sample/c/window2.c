@@ -259,7 +259,7 @@ static wnd_info W2Info = {
     NoNotify,
     ChkFlags,
     EV_UPDATE_2,
-    DefPopUp( W2PopUp )
+    PopUp( W2PopUp )
 };
 
 a_window W2Open( void )
