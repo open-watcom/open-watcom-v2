@@ -61,9 +61,9 @@ bool GUIXCloseToolBar( gui_window *wnd )
     toolbarinfo     *tbar;
     int             i;
 
-    tbar = wnd->tbinfo;
+    tbar = wnd->tbar;
     if( tbar != NULL ) {
-        wnd->tbinfo = NULL;
+        wnd->tbar = NULL;
         if( tbar->hdl != NULL ) {
             ToolBarFini( tbar->hdl );
             for( i = 0; i < tbar->num; i++ ) {
@@ -128,7 +128,7 @@ static bool guiToolBarProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, WPI_PARAM
     if( wnd == NULL ) {
         return( false );
     }
-    tbar = wnd->tbinfo;
+    tbar = wnd->tbar;
     if( tbar == NULL ) {
         return( false );
     }
@@ -243,10 +243,10 @@ bool GUIXCreateToolBarWithTips( gui_window *wnd, bool fixed, gui_ord height,
         ( wnd->hwnd == NULLHANDLE ) || ( wnd->root == NULLHANDLE ) ) {
         return( false );
     }
-    if( wnd->tbinfo != NULL ) {
+    if( wnd->tbar != NULL ) {
         GUICloseToolBar( wnd );
     }
-    tbar = wnd->tbinfo = (toolbarinfo *)GUIMemAlloc( sizeof( toolbarinfo ) );
+    tbar = wnd->tbar = (toolbarinfo *)GUIMemAlloc( sizeof( toolbarinfo ) );
     if( tbar == NULL ) {
         return( false );
     }
@@ -256,7 +256,7 @@ bool GUIXCreateToolBarWithTips( gui_window *wnd, bool fixed, gui_ord height,
     tbar->bitmaps = (HBITMAP *)GUIMemAlloc( toolinfo->num_items * sizeof( HBITMAP ) );
     if( tbar->bitmaps == NULL ) {
         GUIMemFree( tbar );
-        wnd->tbinfo = NULL;
+        wnd->tbar = NULL;
         return( false );
     }
     for( i = 0; i < toolinfo->num_items; i++ ) {
@@ -385,7 +385,7 @@ void GUIResizeToolBar( gui_window *wnd )
     GUI_RECTDIM t, h;
     toolbarinfo *tbar;
 
-    tbar = wnd->tbinfo;
+    tbar = wnd->tbar;
     if( tbar != NULL ) {
         rect = wnd->root_client_rect;
         if( wnd->root == NULLHANDLE ) {
@@ -407,7 +407,7 @@ void GUIResizeToolBar( gui_window *wnd )
 
 bool GUIHasToolBar( gui_window *wnd )
 {
-    return( wnd->tbinfo != NULL );
+    return( wnd->tbar != NULL );
 }
 
 bool GUIChangeToolBar( gui_window *wnd )
@@ -418,7 +418,7 @@ bool GUIChangeToolBar( gui_window *wnd )
     int         t;
     GUI_RECTDIM left, top, right, bottom;
 
-    tbar = wnd->tbinfo;
+    tbar = wnd->tbar;
     if( !tbar->info.is_fixed ) {
         tbar->info.is_fixed = true;
         tbar->info.style = TOOLBAR_FIXED_STYLE;
@@ -453,7 +453,7 @@ bool GUIChangeToolBar( gui_window *wnd )
 bool GUIToolBarFixed( gui_window *wnd )
 {
     if( GUIHasToolBar( wnd ) ) {
-        return( wnd->tbinfo->info.is_fixed );
+        return( wnd->tbar->info.is_fixed );
     }
     return( false );
 }

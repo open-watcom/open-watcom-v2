@@ -686,10 +686,10 @@ bool GUIResetMenus( gui_window *wnd, const gui_menu_items *menus )
 {
     toolbarinfo *tbar;
 
-    tbar = wnd->tbinfo;
+    tbar = wnd->tbar;
     if( tbar != NULL ) {
         if( tbar->fixed ) {
-            wnd->tbinfo = NULL;
+            wnd->tbar = NULL;
         } else {
             tbar = NULL;
         }
@@ -702,7 +702,7 @@ bool GUIResetMenus( gui_window *wnd, const gui_menu_items *menus )
             uimenubar( wnd->vbarmenu );
         }
         if( tbar != NULL ) {
-            wnd->tbinfo = tbar;
+            wnd->tbar = tbar;
             GUIXCreateFixedToolbar( wnd );
         }
         return( true );

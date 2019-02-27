@@ -140,7 +140,7 @@ struct gui_window {
     HBRUSH              bk_brush;
     WPI_PRES            hdc;
     PAINTSTRUCT         *ps;
-    toolbarinfo         *tbinfo;
+    toolbarinfo         *tbar;
     gui_create_styles   style;
     gui_scroll_styles   scroll;
     gui_flags           flags;
