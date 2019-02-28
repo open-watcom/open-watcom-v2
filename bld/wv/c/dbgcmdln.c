@@ -52,7 +52,7 @@ static int              CurrArgc;
 static char             *CurrArgp;
 static char             CurrChar;
 
-bool                    DownLoadTask;
+bool                    DownLoadTask = false;
 
 #define MIN_MEM_SIZE    (500UL*1024)
 
