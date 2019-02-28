@@ -43,7 +43,7 @@ bool            DialogScaled    = false;
 bool            ButtonsScaled   = false;
 bool            ControlsScaled  = false;
 char * ListBoxData[] = { "one", "two", "three" };
-int    NUM_LIST_BOX_DATA = ( sizeof( ListBoxData ) / sizeof( char * ) );
+int    NUM_LIST_BOX_DATA = GUI_ARRAY_SIZE( ListBoxData );
 
 static  const char  *LongText = "inserted_really_long_piece_of_text";
 

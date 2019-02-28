@@ -502,17 +502,17 @@ bool MainWndGUIEventProc( gui_window *gui, gui_event gui_ev, void *param )
                 GUIAppendMenu( gui, &MainMenu[i], false );
             }
 #endif
-//          GUIEnableMenuItem( gui, MENU_REDRAW, false, false );
+//            GUIEnableMenuItem( gui, MENU_REDRAW, false, false );
             GUIEnableMenuItem( gui, MENU_RESIZE, true, false );
             GUICheckMenuItem( gui, MENU_RESIZE, true, false );
             GUICheckMenuItem( gui, MENU_STATIC_DIALOG, false, false );
             back = '\xb0';
             GUISetBackgroundChar( gui, back );
 #if dynamic_menus
-            GUIAppendMenuByIdx( gui, 5, ModifyColour + 0 );
+            GUIAppendMenuByIdx( gui, 5, &ModifyColour[0] );
             GUIAppendMenuToPopup( gui, MENU_MODIFY_COLOUR, &PopupMenu[0], false );
-            //GUIAppendMenu( gui, &ChildMenu, false );
-            GUIInsertMenuByIdx( gui, 0, ChildMenu, false );
+//            GUIAppendMenu( gui, &ChildMenu[0], false );
+            GUIInsertMenuByIdx( gui, 0, &ChildMenu[0], false );
             GUIInsertMenuByID( gui, MENU_SEP_QUIT, &ModifyColour[0] );
 #endif
         }
@@ -533,8 +533,8 @@ bool MainWndGUIEventProc( gui_window *gui, gui_event gui_ev, void *param )
         return( true );
     case GUI_CONTROL_RCLICKED :
 #ifndef __OS2_PM__
-        //WinExec( "g:\\lang\\binw\\viw.exe foobar", 1 );
-        //WinExec( "f:\\src\\win\\wre.exe", 1 );
+//        WinExec( "g:\\lang\\binw\\viw.exe foobar", 1 );
+//        WinExec( "f:\\src\\win\\wre.exe", 1 );
 #endif
         GUI_GETID( param, id );
         text = GUIGetText( gui, id );
@@ -557,7 +557,7 @@ bool MainWndGUIEventProc( gui_window *gui, gui_event gui_ev, void *param )
             sprintf( buffer, "GUI_INITMENUPOPUP: id = %d", id );
             GUIDrawStatusText( MainWnd, buffer );
         }
-        //GUISetFocus( Child3Wnd, COMBOBOX_CONTROL );
+//        GUISetFocus( Child3Wnd, COMBOBOX_CONTROL );
         return( true );
     case GUI_SCROLL_UP :
         Percent--;
@@ -646,7 +646,7 @@ bool MainWndGUIEventProc( gui_window *gui, gui_event gui_ev, void *param )
             break;
         case MENU_SPAWN :
 #ifndef __OS2_PM__
-            //WinExec( "g:\\lang\\binw\\viw.exe foobar", 1 );
+//            WinExec( "g:\\lang\\binw\\viw.exe foobar", 1 );
 #endif
             break;
         case MENU_REPLACE_COLOURS :
@@ -1297,9 +1297,7 @@ static void CreatePopup( gui_window *gui, const gui_menu_items *menus, gui_ctl_i
             GUIAppendMenu( gui, &menus->menu[i], true );
             menus->menu[i].child = save_child;
         }
-        if( menus->menu[i].child.num_items > 0 ) {
-            CreatePopup( gui, &menus->menu[i].child, menus->menu[i].id, true );
-        }
+        CreatePopup( gui, &menus->menu[i].child, menus->menu[i].id, true );
     }
 }
 
@@ -1607,10 +1605,10 @@ void GUImain( void )
     GUI3DDialogInit();
 #if mdi
     GUIMDIInitMenuOnly();
-    //GUIMDIInit();
+//    GUIMDIInit();
 #endif
 #if !default_colours
-//  GUISetBackgroundColour( &BackgroundColours );
+//    GUISetBackgroundColour( &BackgroundColours );
 //    GUISetDialogColours( &DialColours, &DialFrameColours );
 #endif
     GUIGetRoundScale( &Scale );
@@ -1642,12 +1640,12 @@ void GUImain( void )
     }
 
 #ifdef __OS2_PM__
-    //help_file = "d:\\toolkt21\\os2help\\dlgedit.hlp";
+//    help_file = "d:\\toolkt21\\os2help\\dlgedit.hlp";
     help_file = "r:\\dlang\\binp\\help\\wfcopts.hlp";
 #elif defined( __UNIX__ )
     help_file = "/usr/watcom/hlp/sample.hlp";
 #else
-    //help_file = "d:\\windev\\bin\\win31wh.hlp";
+//    help_file = "d:\\windev\\bin\\win31wh.hlp";
     help_file = "f:\\src\\win\\browser.hlp";
 #endif
     if( !GUIIsGUI() ) {
@@ -1746,11 +1744,11 @@ void GUImain( void )
         i = GUIGetExtentY( Child3Wnd, "default" );
         i = GUIGetControlExtentX( Child3Wnd, COMBOBOX_CONTROL, "default", 7 );
         i = GUIGetControlExtentY( Child3Wnd, COMBOBOX_CONTROL, "default" );
-        //GUISetFocus( Child3Wnd, COMBOBOX_CONTROL );
-        //GUISelectAll( Child3Wnd, COMBOBOX_CONTROL, true );
-        //for( i = 0; i < NUM_LIST_BOX_DATA; i++ ) {
-            //GUIAddText( Child3Wnd, COMBOBOX_CONTROL, ListBoxData[i] );
-        //}
+//        GUISetFocus( Child3Wnd, COMBOBOX_CONTROL );
+//        GUISelectAll( Child3Wnd, COMBOBOX_CONTROL, true );
+//        for( i = 0; i < NUM_LIST_BOX_DATA; i++ ) {
+//            GUIAddText( Child3Wnd, COMBOBOX_CONTROL, ListBoxData[i] );
+//        }
 #if combo
         for( i = 0; i< NUM_COMBOBOX_STRINGS; i++ ) {
              GUIAddText( Child1Wnd, COMBOBOX_CONTROL, ComboBoxStrings[i] );
@@ -1772,7 +1770,7 @@ void GUImain( void )
     GUICheckMenuItem( MainWnd, MENU_CASCADE, true, false );
     GUISetMenuText( MainWnd, MENU_CASCADE, "Wes' Cascade", false );
     GUIDeleteMenuItem( MainWnd, MENU_CASCADE, false );
-    //GUIInsertMenuToPopup( MainWnd, MENU_MODIFY_COLOUR, 0, &ChildMenu, false );
+//    GUIInsertMenuToPopup( MainWnd, MENU_MODIFY_COLOUR, 0, &ChildMenu, false );
 }
 
 bool GUIDeath ( void )

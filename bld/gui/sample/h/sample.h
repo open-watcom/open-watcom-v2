@@ -43,10 +43,6 @@
 #define controls_on_child3      1
 #define dynamic_menus           1
 
-#ifndef NULL
-#define NULL            0
-#endif
-
 #include "gui.h"
 #include "guikey.h"
 
@@ -78,11 +74,11 @@ typedef struct {
     disp_entry * display;
 } out_info;
 
-extern  GUICALLBACK     MainWndGUIEventProc;
-extern  GUICALLBACK     ControlWndGUIEventProc;
-extern  GUICALLBACK     Child1WndGUIEventProc;
-extern  GUICALLBACK     Child2WndGUIEventProc;
-extern  GUICALLBACK     Child3WndGUIEventProc;
+extern GUICALLBACK     MainWndGUIEventProc;
+extern GUICALLBACK     ControlWndGUIEventProc;
+extern GUICALLBACK     Child1WndGUIEventProc;
+extern GUICALLBACK     Child2WndGUIEventProc;
+extern GUICALLBACK     Child3WndGUIEventProc;
 
 enum {
     MENU_STATIC_DIALOG,
@@ -179,7 +175,6 @@ extern gui_create_info          Child2;
 extern gui_create_info          Child3;
 extern gui_create_info          Child4;
 extern gui_create_info          DialogWndControl;
-extern gui_toolbar_struct       ToolBar[];
 extern gui_resource             HotSpots[];
 extern disp_entry               IndentData[];
 extern disp_entry               Child2Data[];
@@ -192,9 +187,10 @@ extern gui_colour_set           DialColours;
 extern gui_colour_set           DialFrameColours;
 #endif
 
+extern gui_toolbar_struct       ToolBar[];
 extern gui_menu_struct          PopupMenu[];
 extern gui_menu_struct          ModifyColour[];
-extern gui_menu_struct          NewMainMenu[];
+//extern gui_menu_struct          NewMainMenu[];
 extern gui_menu_struct          MenuMore[];
 extern gui_menu_struct          MainMenu[];
 extern gui_menu_struct          ChildMenu[];
@@ -204,10 +200,10 @@ extern gui_menu_items           menu_NewMainMenu;
 extern gui_menu_items           menu_ChildMenu;
 extern gui_menu_items           menu_PopupMenu;
 
-extern void SetWidthHeight( gui_rect *rect, bool has_parent );
+extern void             SetWidthHeight( gui_rect *rect, bool has_parent );
 
-extern char            *OldValue;
-extern gui_window      *DialogWindow;
+extern char             *OldValue;
+extern gui_window       *DialogWindow;
 
-extern void * GUIAlloc( unsigned size );
-extern void GUIFree( void *chunk );
+extern void             *GUIAlloc( unsigned size );
+extern void             GUIFree( void *chunk );
