@@ -139,7 +139,7 @@ void MsgFini( void )
 
 void MsgPrintfUsage( int first_ln, int last_ln )
 {
-    char    *str;
+    char    FAR_PTR *str;
 
     for( ; first_ln <= last_ln; first_ln++ ) {
         str = GET_MESSAGE( first_ln );
