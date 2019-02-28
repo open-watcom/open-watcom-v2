@@ -82,7 +82,6 @@ extern HANDLE               WaitForInt1;
 extern int                  sample_main( char __far * );
 extern int                  MessageLoop( void );
 
-extern void                 Usage( void );
 extern void FAR_PTR         *alloc( int );
 
 /* getidata.c */

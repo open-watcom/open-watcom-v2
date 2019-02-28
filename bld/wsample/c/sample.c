@@ -345,9 +345,6 @@ void Usage( void )
 //  MSG_USAGE_4 is the option for call graph support
 //  (undocumented for now)
     MsgPrintfUsage( MSG_USAGE_LN_5, MSG_USAGE_LN_9 );
-#ifndef __WINDOWS__
-    fatal();
-#endif
 }
 
 
@@ -475,9 +472,7 @@ static char *Parse( char *line, char arg[], char **eoc )
     }
     if( *cmd == '\0' || *cmd == '?' ) {
         Usage();
-#ifdef __WINDOWS__
         fatal();
-#endif
     }
 
     Margin = SafeMargin();
