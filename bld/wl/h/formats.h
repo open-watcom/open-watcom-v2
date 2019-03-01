@@ -158,6 +158,7 @@ struct fmt_d16m_data {
     unsigned_16     selstart;
     unsigned_16     extended;
     unsigned_16     datasize;
+    char            *exp_name;          // original EXP file name.
     char            *stub;              // name of stub file.
 };
 

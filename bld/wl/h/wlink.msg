@@ -513,8 +513,8 @@ pick(    MSG_DOS16_HELP_7,  "option    ::= \"BUFfer=\"n | \"GDTsize=\"n | (\"REL
                 "option    ::= \"BUFfer=\"n | \"GDTsize=\"n | (\"RELocs\" | \"NORelocs\") | \"SELstart=\"n" )
 pick(    MSG_DOS16_HELP_8,  "            | \"DATASize=\"n | \"EXTended=\"n" ,
                 "            | \"DATASize=\"n | \"EXTended=\"n" )
-pick(    MSG_DOS16_HELP_9,   "            | \"STUB=\"stub_name" ,
-                                "            | \"STUB=\"スタブ名")
+pick(    MSG_DOS16_HELP_9,   "            | \"EXPName=\"exp_name | \"STUB=\"stub_name" ,
+                                "            | \"EXPName=\"exp_name | \"STUB=\"スタブ名")
 pick(    MSG_DOS16_HELP_10, "runoption ::= \"KEYboard\" | \"OVERload\" | \"INIT00\" | \"INITFF\" | \"ROTate\" | \"AUTO\"" ,
                 "runoption ::=  \"KEYbord\" | \"OVERload\" | \"INIT00\" | \"INITFF\" | \"ROTate\" | \"AUTO\"" )
 pick(    MSG_DOS16_HELP_11, "            | \"SELectors\" | \"INT10\"" ,

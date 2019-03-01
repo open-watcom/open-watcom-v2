@@ -269,12 +269,15 @@ void DoCmdFile( char *fname )
 #ifdef _NOVELL
     if( FmtData.type & MK_NOVELL ) {
         CmdNovFini();
-    } else
+    } else {
 #endif
-    if( FmtData.type & MK_OVERLAYS ) {
-        CmdOvlFini();
-        AddObjLib( "wovl.lib", LIB_PRIORITY_MIN );     // add a reference to wovl.lib
+        if( FmtData.type & MK_OVERLAYS ) {
+            CmdOvlFini();
+            AddObjLib( "wovl.lib", LIB_PRIORITY_MIN );     // add a reference to wovl.lib
+        }
+#ifdef _NOVELL
     }
+#endif
     if( Name == NULL || (CmdFlags & CF_HAVE_FILES) == 0 ) {
         Ignite();
         LnkMsg( FTL+MSG_NO_FILES_FOUND, NULL );

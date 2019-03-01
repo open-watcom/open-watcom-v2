@@ -49,6 +49,7 @@
 #include "objcalc.h"
 #include "dbgall.h"
 #include "ring.h"
+#include "command.h"
 
 #include "clibext.h"
 
@@ -293,6 +294,8 @@ extern void Fini16MLoadFile( void )
     unsigned_32         stub_size;
     unsigned_32         reloc_size;
     reloc_addr          *reloc_data;
+    const char          *base_name;
+    size_t              base_name_len;
 
     // TODO: add some parameter for reloc format switching
     // for now it is setup to RSI-2 reloc format
@@ -355,6 +358,17 @@ extern void Fini16MLoadFile( void )
         }
     }
     _HostU16toTarg( LastSel, exe_head.last_sel_used );
+    /*
+     * add original EXP name
+     */
+    if( FmtData.u.d16m.exp_name == NULL ) {
+        base_name = GetBaseName( Root->outfile->fname, strlen( Root->outfile->fname ), &base_name_len );
+        FmtData.u.d16m.exp_name = FileName( base_name, base_name_len, E_PROTECT, true );
+    }
+    strncpy( exe_head.EXP_path, FmtData.u.d16m.exp_name, sizeof( exe_head.EXP_path ) - 1 );
+    exe_head.EXP_path[sizeof( exe_head.EXP_path ) - 1] = '\0';
+    strupr( exe_head.EXP_path );
+
     WriteLoad( &exe_head, sizeof( exe_head ) );
     WriteGDT( reloc_size );
 }
