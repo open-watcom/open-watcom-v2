@@ -173,7 +173,7 @@ name    *GetSegment( name *op ) {
     if( !HW_CEqual( reg, HW_EMPTY ) )
         return( AllocRegName( reg ) );
     seg = AskSegID( op->v.symbol, op->m.memory_type );
-    if( AskSegNear( seg ) )
+    if( AskSegIsNear( seg ) )
         return( AddrConst( NULL, AskBackSeg(), CONS_SEGMENT ) );
     return( AddrConst( op, seg, CONS_SEGMENT ) );
 }
@@ -237,7 +237,7 @@ cg_type NamePtrType( name *op ) {
     if( op->n.class == N_MEMORY ) {
         if( op->m.memory_type == CG_FE || op->m.memory_type == CG_BACK ) {
             sym = op->v.symbol;
-            if( AskNameCode( sym, op->m.memory_type ) ) {
+            if( AskNameIsCode( sym, op->m.memory_type ) ) {
                 if( op->m.memory_type == CG_FE ) {
                     if( FEAttr( sym ) & FE_PROC ) {
                         if( *(call_class *)FindAuxInfoSym( sym, CALL_CLASS ) & FAR_CALL )
@@ -334,7 +334,7 @@ bool    LoadAToMove( instruction *ins ) {
         return( false );
     ins->head.opcode = OP_MOV;
     seg = AskSegID( op->v.symbol, op->m.memory_type );
-    if( AskSegNear( seg ) ) {
+    if( AskSegIsNear( seg ) ) {
         seg = AskBackSeg();
     }
     if( ins->type_class == WD || ins->type_class == SW ) {

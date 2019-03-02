@@ -35,7 +35,7 @@
 
 extern bool         UseImportForm( fe_attr attr );
 extern bool         AskSegPrivate( segment_id id );
-extern bool         AskSegROM( segment_id id );
+extern bool         AskSegIsROM( segment_id id );
 extern segment_id   AskCode16Seg( void );
 extern void         OutSelect( bool starts );
 extern void         SetUpObj( bool is_data );
@@ -58,7 +58,7 @@ extern unsigned     SavePendingLine( unsigned new );
 extern void         OutDBytes( unsigned len, const byte *src );
 extern void         OutIBytes( byte pat, offset len );
 extern void         TellObjVirtFuncRef( void *cookie );
-extern bool         AskNameCode( pointer hdl, cg_class class );
+extern bool         AskNameIsCode( pointer hdl, cg_class class );
 extern segment_id   DbgSegDef( const char *seg_name, const char *seg_class, int seg_modifier );
 
 extern bool         UseRepForm( unsigned size );

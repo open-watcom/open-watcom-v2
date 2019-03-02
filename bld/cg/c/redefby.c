@@ -251,7 +251,7 @@ bool    NameIsConstant( name *op ) {
         return( true );
     if( op->m.memory_type == CG_FE && ( FEAttr( op->v.symbol ) & FE_CONSTANT) )
         return( true );
-    return( AskNameROM( op->v.symbol, op->m.memory_type ) );
+    return( AskNameIsROM( op->v.symbol, op->m.memory_type ) );
 }
 
 bool_maybe  VisibleToCall( instruction *ins, name *op, bool modifies )

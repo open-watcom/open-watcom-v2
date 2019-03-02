@@ -347,8 +347,8 @@ bool FPDivIsADog( type_class_def type_class )
     return( _IsFloating( type_class ) );
 }
 
-bool AskSegNear( segment_id id )
-/******************************/
+bool AskSegIsNear( segment_id id )
+/********************************/
 {
     /* unused parameters */ (void)id;
 

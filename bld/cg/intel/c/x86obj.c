@@ -1171,8 +1171,8 @@ bool    UseImportForm( fe_attr attr )
 
 
 
-bool    AskSegNear( segment_id id )
-/*********************************/
+bool    AskSegIsNear( segment_id id )
+/***********************************/
 {
     index_rec   *rec;
 
@@ -1187,8 +1187,8 @@ bool    AskSegNear( segment_id id )
 }
 
 
-bool    AskSegBlank( segment_id id )
-/**********************************/
+bool    AskSegIsBlank( segment_id id )
+/************************************/
 {
     index_rec *rec;
 
@@ -1211,8 +1211,8 @@ bool    AskSegPrivate( segment_id id )
 }
 
 
-bool    AskSegROM( segment_id id )
-/********************************/
+bool    AskSegIsROM( segment_id id )
+/**********************************/
 {
     index_rec   *rec;
 
@@ -3273,8 +3273,8 @@ segment_id      AskSegID( pointer hdl, cg_class class )
     }
 }
 
-bool            AskNameCode( pointer hdl, cg_class class )
-/********************************************************/
+bool        AskNameIsCode( pointer hdl, cg_class class )
+/******************************************************/
 {
     switch( class ) {
     case CG_FE:
@@ -3289,8 +3289,8 @@ bool            AskNameCode( pointer hdl, cg_class class )
     return( false );
 }
 
-bool    AskNameROM( pointer hdl, cg_class class )
-/***********************************************/
+bool    AskNameIsROM( pointer hdl, cg_class class )
+/*************************************************/
 {
-    return( AskSegROM( AskSegID( hdl, class ) ) );
+    return( AskSegIsROM( AskSegID( hdl, class ) ) );
 }

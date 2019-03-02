@@ -704,8 +704,8 @@ void    ObjBytes( const void *buffer, unsigned size )
     OWLEmitData( currSection->owl_handle, buffer, size );
 }
 
-bool    AskSegBlank( segment_id id )
-/**********************************/
+bool    AskSegIsBlank( segment_id id )
+/************************************/
 {
     section_def         *sect;
     owl_section_type    tipe;
@@ -734,7 +734,7 @@ void    AlignObject( unsigned align )
     mod = off & ( align - 1 );
     if( mod ) {
         add = align - mod;
-        if( AskSegBlank( currSection->id ) ) {
+        if( AskSegIsBlank( currSection->id ) ) {
             OWLEmitData( currSection->owl_handle, NULL, add );
         } else {
             memset( buffer, 0, add );
@@ -1099,8 +1099,8 @@ void    IncLocation( offset by )
     OWLEmitData( currSection->owl_handle, NULL, by );
 }
 
-bool    AskNameROM( pointer hdl, cg_class class )
-/***********************************************/
+bool    AskNameIsROM( pointer hdl, cg_class class )
+/*************************************************/
 {
     /* unused parameters */ (void)hdl; (void)class;
 

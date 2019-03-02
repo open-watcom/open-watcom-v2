@@ -52,7 +52,7 @@ void    DataAlign( unsigned_32 align )
     curr_loc = AskLocation();
     modulus = curr_loc % align;
     if( modulus != 0 ) {
-        if( !AskSegBlank( AskOP() ) ) {
+        if( !AskSegIsBlank( AskOP() ) ) {
             IterBytes( (offset)( align - modulus ), 0 );
         } else {
             IncLocation( align - modulus );
