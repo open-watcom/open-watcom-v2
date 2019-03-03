@@ -63,7 +63,7 @@ enum segments {
 // PROTOTYPES:
 
 char *SegmentClassName(         // GET CLASS NAME OF SEGMENT (IF ANY)
-    fe_seg_id id )              // - id of segment
+    fe_seg_id segid )           // - id of segment
 ;
 #if _CPU == _AXP || COMP_CFG_COFF == 1
 fe_seg_id SegmentAddComdatData  // ADD SEGMENT FOR A COMDAT DATA SYMBOL
@@ -95,7 +95,7 @@ fe_seg_id SegmentAddStringConstFar(// SEGMENT: ADD CONST STRING TO FAR SEGMENT
 ;
 fe_seg_id SegmentAddSym(        // SEGMENT: ADD SYMBOL TO SPECIFIED SEGMENT
     SYMBOL sym,                 // - sym to add
-    fe_seg_id id,               // - id of segment to use
+    fe_seg_id segid,            // - id of segment to use
     target_size_t size,         // - size of sym
     target_offset_t align )     // - alignment for sym
 ;
@@ -109,7 +109,7 @@ target_offset_t SegmentAlignment(   // SEGMENT: ALIGNMENT FOR TYPE
 ;
 #if _INTEL_CPU
 void* SegmentBoundReg(          // GET REGISTER BOUND TO SEGMENT
-    fe_seg_id seg_id )          // - segment id
+    fe_seg_id segid )           // - segment id
 ;
 #endif
 void SegmentCgDefineCode(       // DEFINE CODE SEGMENT IF REQ'D
@@ -154,13 +154,13 @@ void SegmentInit(               // SEGMENT: INITIALIZATION
     char *code_seg_name )       // - name of data segment
 ;
 SYMBOL SegmentLabelGen(         // GENERATE SEGMENT LABEL IF REQ'D
-    fe_seg_id seg_id )          // - segment id
+    fe_seg_id segid )           // - segment id
 ;
 SYMBOL SegmentLabelStackReset(  // RESET STACK-SEGMENT LABEL
     void )
 ;
 SYMBOL SegmentLabelSym(         // GET LABEL IN SEGMENT
-    fe_seg_id seg_id )          // - segment id
+    fe_seg_id segid )           // - segment id
 ;
 void SegmentMarkRoBlock(        // INDICATE R/O BLOCK TO BE GENERATED
     void )

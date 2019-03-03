@@ -1779,9 +1779,9 @@ static FN_CTL* emit_virtual_file(   // EMIT A VIRTUAL FILE
           { cg_name ref;                    // - reference operand
             cg_type far_type;               // - type of pointer
             TYPE type;                      // - type of ref. variable
-            fe_seg_id seg_id;               // - PC Segment ID
-            seg_id = ((SYMBOL)ins_value.pvalue)->segid;
-            SegmentLabelGen( seg_id );
+            fe_seg_id segid;               // - PC Segment ID
+            segid = ((SYMBOL)ins_value.pvalue)->segid;
+            SegmentLabelGen( segid );
             type = ((SYMBOL)ins_value.pvalue)->sym_type;
             if( FunctionDeclarationType( type ) == NULL ) {
                 far_type = TY_LONG_POINTER;
