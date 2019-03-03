@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -57,6 +57,7 @@
 #include "x86obj.h"
 #include "i87data.h"
 #include "dostimet.h"
+#include "cgsegids.h"
 #include "feprotos.h"
 
 
@@ -1110,6 +1111,20 @@ void    ObjInit( void )
     } else {
         WVObjInitDbgInfo();
     }
+}
+
+
+segment_id  AskOP( void )
+/***********************/
+{
+    segment_id  segid;
+
+    if( CurrSeg == NULL ) {
+        segid = UNDEFSEG;
+    } else {
+        segid = CurrSeg->seg;
+    }
+    return( segid );
 }
 
 
@@ -3109,12 +3124,6 @@ void    OutIBytes( byte pat, offset len )
     }
 }
 
-
-segment_id  AskOP( void )
-/***********************/
-{
-    return( CurrSeg->seg );
-}
 
 bool    NeedBaseSet( void )
 /*************************/

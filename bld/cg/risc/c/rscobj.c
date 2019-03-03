@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -59,6 +59,7 @@
 #include "cgsrtlst.h"
 #include "optmain.h"
 #include "dfsupp.h"
+#include "cgsegids.h"
 #if _TARGET & _TARG_PPC
 #include "ppclbl.h"
 #endif
@@ -659,13 +660,6 @@ segment_id  AskBackSeg( void )
 }
 
 
-segment_id  AskOP( void )
-/***********************/
-{
-    assert( currSection != NULL );
-    return( currSection->id );
-}
-
 static  bool            InlineFunction( cg_sym_handle sym )
 /******************************************************/
 {
@@ -742,6 +736,20 @@ void    AlignObject( unsigned align )
         }
     }
 
+}
+
+
+segment_id  AskOP( void )
+/***********************/
+{
+    segment_id  segid;
+
+    if( currSection == NULL ) {
+        segid = UNDEFSEG;
+    } else {
+        segid = currSection->id;
+    }
+    return( segid );
 }
 
 

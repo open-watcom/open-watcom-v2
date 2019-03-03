@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -218,15 +219,6 @@ void CgBackGenLabelInternal(    // GENERATE A LABEL FOR INTERNAL STRUCTURE
     DGLabel( FEBack( sym ) );
 }
 
-segment_id DgCurrSeg( void )
-{
-    segment_id curr_seg;
-
-    curr_seg = BESetSeg( UNDEFSEG );
-    BESetSeg( curr_seg );
-    return( curr_seg );
-}
-
 segment_id DgSetSegSym( SYMBOL sym )
 {
     return( BESetSeg( FESegID( sym ) ) );
@@ -293,7 +285,7 @@ back_handle DgStringConst(          // STORE STRING CONSTANT WITH NULL
         }
     } else {
         // char a[] = "asdf"; initialization (use current segment)
-        str_seg = DgCurrSeg();
+        str_seg = BEGetSeg();
         str->segid = str_seg;
         DGString( str->string, str->len );
         DgByte( 0 );

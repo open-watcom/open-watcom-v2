@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -1063,9 +1064,6 @@ void DgSymbolDefInit(           // DATA GENERATE SYMBOL (DEFAULT DATA)
 ;
 void DgUninitBytes(             // DATA GENERATE UNINIT BYTES
     target_size_t   size )      // - number of bytes
-;
-segment_id DgCurrSeg(
-    void )
 ;
 segment_id DgSetSegSym(
     SYMBOL sym )

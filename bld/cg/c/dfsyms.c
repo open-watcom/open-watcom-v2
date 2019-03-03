@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -343,14 +343,15 @@ static  void    InitSegBck( void )
     segment_id  old;
     back_handle bck;
 
+    old = AskOP();
     for( i = DW_DEBUG_INFO; i < DW_DEBUG_MAX; ++i ) {
-        old = SetOP( DwarfSegs[i].seg );
+        SetOP( DwarfSegs[i].seg );
         bck = MakeLabel();
         bck->seg = DwarfSegs[i].seg;
         DwarfSegs[i].bck = bck;
         DataLabel( bck->lbl );
-        SetOP( old );
     }
+    SetOP( old );
 }
 
 static  void    InitLineSegBck( void )

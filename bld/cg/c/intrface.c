@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -261,6 +261,20 @@ bool _CGAPI     BEMoreMem( void )
 /*******************************/
 {
     return( _MemCheck( 1 ) );
+}
+
+segment_id _CGAPI       BEGetSeg( void )
+/**************************************/
+{
+#ifndef NDEBUG
+    segment_id  segid;
+
+    EchoAPI( "BESetSeg()" );
+    segid = AskOP();
+    return EchoAPIHexReturn( segid );
+#else
+    return( AskOP() );
+#endif
 }
 
 segment_id _CGAPI       BESetSeg( segment_id seg )
