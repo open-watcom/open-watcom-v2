@@ -42,13 +42,13 @@ typedef struct bck_info {
         import_handle   imp;
         import_handle   imp_alt;
         label_handle    lbl;
-        segment_id      seg;
+        segment_id      segid;
 } bck_info;
 
 typedef struct segdef {
         struct segdef   *next;
         char            *str;
-        segment_id      id;
+        segment_id      segid;
         byte            align;
         seg_attr        attr;
 } segdef;

@@ -52,7 +52,7 @@
 #include "feprotos.h"
 
 
-static  void            DoLblPtr( label_handle lbl, segment_id seg, fix_class class, offset plus );
+static void DoLblPtr( label_handle lbl, segment_id segid, fix_class class, offset plus );
 
 
 void    DataAlign( unsigned_32 align )
@@ -118,16 +118,16 @@ void    DoBigBckPtr( back_handle bck, offset off )
 /* Careful! Make sure a DGLabel has been done first! */
 {
     TellOptimizerByPassed();
-    DoLblPtr( bck->lbl, bck->seg, F_PTR, off );
+    DoLblPtr( bck->lbl, bck->segid, F_PTR, off );
     TellByPassOver();
 }
 
-static  void    DoLblPtr( label_handle lbl, segment_id seg, fix_class class, offset plus )
-/****************************************************************************************/
+static void     DoLblPtr( label_handle lbl, segment_id segid, fix_class class, offset plus )
+/******************************************************************************************/
 {
     SetUpObj( true );
     TellKeepLabel( lbl );
-    OutReloc( seg, class, false );
+    OutReloc( segid, class, false );
     OutLblPatch( lbl, class, plus );
 }
 
@@ -258,31 +258,31 @@ void    FEPtrBase( cg_sym_handle sym )
 }
 
 
-void    BackPtr( back_handle bck, segment_id seg, offset plus, type_def *tipe )
-/*****************************************************************************/
+void    BackPtr( back_handle bck, segment_id segid, offset plus, type_def *tipe )
+/*******************************************************************************/
 {
     TellOptimizerByPassed();
     if( tipe->length != WORD_SIZE ) {
-        DoLblPtr( bck->lbl, seg, F_PTR, plus );
+        DoLblPtr( bck->lbl, segid, F_PTR, plus );
     } else {
-        DoLblPtr( bck->lbl, seg, F_OFFSET, plus );
+        DoLblPtr( bck->lbl, segid, F_OFFSET, plus );
     }
     TellByPassOver();
 }
 
-void    BackPtrBigOffset( back_handle bck, segment_id seg, offset plus )
-/**********************************************************************/
+void    BackPtrBigOffset( back_handle bck, segment_id segid, offset plus )
+/************************************************************************/
 {
     TellOptimizerByPassed();
-    DoLblPtr( bck->lbl, seg, F_BIG_OFFSET, plus );
+    DoLblPtr( bck->lbl, segid, F_BIG_OFFSET, plus );
     TellByPassOver();
 }
 
-void    BackPtrBase( back_handle bck, segment_id seg )
-/****************************************************/
+void    BackPtrBase( back_handle bck, segment_id segid )
+/******************************************************/
 {
     TellOptimizerByPassed();
-    DoLblPtr( bck->lbl, seg, F_BASE, 0 );
+    DoLblPtr( bck->lbl, segid, F_BASE, 0 );
     TellByPassOver();
 }
 
@@ -305,7 +305,7 @@ static  cg_class ConstDataClass( void )
 name    *GenConstData( const void *buffer, type_class_def type_class )
 /********************************************************************/
 {
-    segment_id          old;
+    segment_id          old_segid;
     cg_class            cgclass;
     name                *result;
     label_handle        label;
@@ -316,20 +316,20 @@ name    *GenConstData( const void *buffer, type_class_def type_class )
     size = TypeClassSize[type_class];
     label = AskForLabel( NULL );
     if( cgclass == CG_CLB ) {
-        old = SetOP( AskCodeSeg() );
+        old_segid = SetOP( AskCodeSeg() );
         SetUpObj( true );
         GenSelEntry( true );
         CodeLabel( label, size );
         CodeBytes( buffer, size );
         GenSelEntry( false );
     } else {
-        old = SetOP( AskBackSeg() );
+        old_segid = SetOP( AskBackSeg() );
         SetUpObj( true );
         DataAlign( size );
         OutLabel( label );
         DataBytes( size, buffer );
     }
-    SetOP( old );
+    SetOP( old_segid );
     TellByPassOver();
     result = AllocMemory( label, 0, cgclass, type_class );
     result->v.usage |= USE_IN_ANOTHER_BLOCK;

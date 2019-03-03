@@ -285,7 +285,7 @@ tbl_control     *MakeScanTab( select_list *list, signed_32 hi,
     unsigned_32         cases;
     signed_32           lo;
     signed_32           to_sub;
-    segment_id          old;
+    segment_id          old_segid;
     select_list         *scan;
     signed_32           curr;
 
@@ -293,7 +293,7 @@ tbl_control     *MakeScanTab( select_list *list, signed_32 hi,
     lo = list->low;
     table = CGAlloc( sizeof( tbl_control ) + (cases-1) * sizeof( label_handle ) );
     table->size = cases;
-    old = SetOP( AskCodeSeg() );
+    old_segid = SetOP( AskCodeSeg() );
     table->value_lbl = AskForNewLabel();
     CodeLabel( table->value_lbl, TypeAddress( TY_NEAR_CODE_PTR )->length );
     GenSelEntry( true );
@@ -319,7 +319,7 @@ tbl_control     *MakeScanTab( select_list *list, signed_32 hi,
     if( tipe != TY_WORD ) {
         GenCodePtr( other );
     }
-    for(;;) {
+    for( ;; ) {
         *tab_ptr = scan->label;
         GenCodePtr( *tab_ptr );
         ++tab_ptr;
@@ -335,7 +335,7 @@ tbl_control     *MakeScanTab( select_list *list, signed_32 hi,
     if( tipe == TY_WORD ) {
         GenCodePtr( other );
     }
-    SetOP( old );
+    SetOP( old_segid );
     return( table );
 }
 
@@ -346,11 +346,11 @@ tbl_control     *MakeJmpTab( select_list *list, signed_32 lo,
     tbl_control         *table;
     label_handle        *tab_ptr;
     unsigned_32         cases;
-    segment_id          old;
+    segment_id          old_segid;
 
     cases = hi - lo + 1;
     table = CGAlloc( sizeof( tbl_control ) + (cases-1) * sizeof( label_handle ) );
-    old = SetOP( AskCodeSeg() );
+    old_segid = SetOP( AskCodeSeg() );
     table->lbl = AskForNewLabel();
     table->value_lbl = NULL;
     CodeLabel( table->lbl, TypeAddress( TY_NEAR_CODE_PTR )->length );
@@ -371,7 +371,7 @@ tbl_control     *MakeJmpTab( select_list *list, signed_32 lo,
         }
         ++lo;
     }
-    SetOP( old );
+    SetOP( old_segid );
     return( table );
 }
 

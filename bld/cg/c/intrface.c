@@ -277,34 +277,34 @@ segment_id _CGAPI       BEGetSeg( void )
 #endif
 }
 
-segment_id _CGAPI       BESetSeg( segment_id seg )
-/************************************************/
+segment_id _CGAPI       BESetSeg( segment_id segid )
+/**************************************************/
 {
 #ifndef NDEBUG
-    EchoAPI( "BESetSeg( %x )", seg );
-    seg = SetOP(seg);
-    return EchoAPIHexReturn( seg );
+    EchoAPI( "BESetSeg( %x )", segid );
+    segid = SetOP( segid );
+    return EchoAPIHexReturn( segid );
 #else
-    return( SetOP( seg ) );
+    return( SetOP( segid ) );
 #endif
 }
 
-void _CGAPI BEDefSeg( segment_id id, seg_attr attr, cchar_ptr str, uint algn )
-/****************************************************************************/
+void _CGAPI BEDefSeg( segment_id segid, seg_attr attr, cchar_ptr str, uint algn )
+/*******************************************************************************/
 {
 #ifndef NDEBUG
-    EchoAPI( "BEDefSeg( %x, %x, %c, %i )\n", id, attr, str, algn );
+    EchoAPI( "BEDefSeg( %x, %x, %c, %i )\n", segid, attr, str, algn );
 #endif
-    DefSegment( id, attr, str, algn, false );
+    DefSegment( segid, attr, str, algn, false );
 }
 
-void _CGAPI     BEFlushSeg( segment_id seg )
-/******************************************/
+void _CGAPI     BEFlushSeg( segment_id segid )
+/********************************************/
 {
 #ifndef NDEBUG
-    EchoAPI( "BEFlushSeg( %x )\n", seg );
+    EchoAPI( "BEFlushSeg( %x )\n", segid );
 #endif
-    FlushOP( seg );
+    FlushOP( segid );
 }
 
 /*%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%*/
@@ -501,9 +501,9 @@ back_handle _CGAPI      BENewBack( cg_sym_handle sym )
     bck->imp = NOT_IMPORTED;
     bck->imp_alt = NOT_IMPORTED;
     if( sym == 0 ) {
-        bck->seg = AskBackSeg();
+        bck->segid = AskBackSeg();
     } else {
-        bck->seg = FESegID( sym );
+        bck->segid = FESegID( sym );
     }
     if( !IS_REAL_BACK( bck ) )
         _Zoiks( ZOIKS_067 );
@@ -1424,20 +1424,20 @@ void _CGAPI     DGLabel( back_handle bck )
         _Zoiks( ZOIKS_068 );
     DGBlip();
     DataLabel( bck->lbl );
-    bck->seg = AskOP();
+    bck->segid = AskOP();
 }
 
-void _CGAPI     DGBackPtr( back_handle bck, segment_id seg,
+void _CGAPI     DGBackPtr( back_handle bck, segment_id segid,
                             signed_32 offset, cg_type tipe )
-/**********************************************************/
+/***********************************************************/
 {
 #ifndef NDEBUG
-    EchoAPI( "DGBackPtr( %B, %S, %i, %t )\n", bck, seg, offset, tipe );
+    EchoAPI( "DGBackPtr( %B, %S, %i, %t )\n", bck, segid, offset, tipe );
 #endif
     if( !IS_REAL_BACK( bck ) )
         _Zoiks( ZOIKS_068 );
     DGBlip();
-    BackPtr( bck, seg, offset, TypeAddress( tipe ) );
+    BackPtr( bck, segid, offset, TypeAddress( tipe ) );
 }
 
 void _CGAPI DGFEPtr( cg_sym_handle sym, cg_type tipe, signed_32 offset )

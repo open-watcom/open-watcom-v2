@@ -290,7 +290,7 @@ typedef struct dbg_local {
 } dbg_local;
 
 typedef struct {
-    segment_id  segment;
+    segment_id  segid;
     unsigned    offset;
 } dbg_patch;
 

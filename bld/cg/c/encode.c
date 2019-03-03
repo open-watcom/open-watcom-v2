@@ -252,9 +252,9 @@ void    GenKillLabel( label_handle label )
     out of the queue.
 */
 {
-    segment_id      old;
+    segment_id      old_segid;
 
-    old = SetOP( AskCodeSeg() );
+    old_segid = SetOP( AskCodeSeg() );
     CodeHandle( OC_LDONE, 0, label );
-    SetOP( old );
+    SetOP( old_segid );
 }

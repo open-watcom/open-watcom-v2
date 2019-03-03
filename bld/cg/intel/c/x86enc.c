@@ -201,12 +201,12 @@ void    EmitPtr( pointer p )
     ICur += sizeof( pointer );
 }
 
-void    EmitSegId( segment_id seg )
-/**********************************
+void    EmitSegId( segment_id segid )
+/************************************
     Plop a segment_id into Inst[]
 */
 {
-    *(segment_id *)(Inst + ICur) = seg;
+    *(segment_id *)(Inst + ICur) = segid;
     ICur += sizeof( segment_id );
 }
 
@@ -2104,13 +2104,13 @@ void    GenObjCode( instruction *ins ) {
             AdjustStackDepth( ins );
             if( _IsTargetModel( NEW_P5_PROFILING ) ) {
                 label_handle    lbl;
-                segment_id      seg;
+                segment_id      segid;
 
-                seg = GenProfileData( "", &lbl, &CurrProc->targ.routine_profile_data );
+                segid = GenProfileData( "", &lbl, &CurrProc->targ.routine_profile_data );
                 _Code;
                 LayOpword( 0xc4f7 ); // test esp, offset L1
                 ILen += WORD_SIZE;
-                DoLblRef( lbl, seg, 0, OFST );
+                DoLblRef( lbl, segid, 0, OFST );
                 _Emit;
             }
             return;
@@ -2124,10 +2124,10 @@ void    GenObjCode( instruction *ins ) {
             if( _IsTargetModel( NEW_P5_PROFILING ) ) {
                 label_handle    lbl;
                 label_handle    junk;
-                segment_id      seg;
+                segment_id      segid;
                 char            c[2];
 
-                seg = GenProfileData( "", &lbl, &CurrProc->targ.routine_profile_data );
+                segid = GenProfileData( "", &lbl, &CurrProc->targ.routine_profile_data );
                 GenProfileData( "", &junk, &CurrProc->targ.routine_profile_data );
                 c[0] = PROFILE_FLAG_END_GROUP;
                 c[1] = 0;
@@ -2135,7 +2135,7 @@ void    GenObjCode( instruction *ins ) {
                 _Code;
                 LayOpword( 0xc5f7 ); // test ebp, offset L1
                 ILen += WORD_SIZE;
-                DoLblRef( lbl, seg, 0, OFST );
+                DoLblRef( lbl, segid, 0, OFST );
                 _Emit;
             }
             return;

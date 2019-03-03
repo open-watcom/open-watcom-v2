@@ -123,34 +123,34 @@ enum {
 };
 
 typedef struct index_rec {
-        struct object           *obj;
-        long_offset             location;
-        long_offset             max_written;
-        long_offset             max_size;
-        omf_idx                 base;   /*  base for relocs */
-        omf_idx                 sidx;   /*  index for segment */
-        omf_idx                 nidx;   /*  name index for segment */
-        omf_idx                 cidx;   /*  class name index */
-        unsigned                big                     : 1;
-        unsigned                need_base_set           : 1;
-        unsigned                rom                     : 1;
-        unsigned                data_in_code            : 1;
-        unsigned                data_ptr_in_code        : 1;
-        unsigned                private                 : 1;
-        unsigned                exec                    : 1;
-        unsigned                start_data_in_code      : 1;
-        unsigned                prefix_comdat_state     : 2;
-        segment_id              seg;    /*  front-end i.d. */
-        base_type               btype;
-        byte                    attr;
-        byte                    data_prefix_size;
-        unsigned_32             comdat_size;
-        unsigned_32             total_comdat_size;
-        cg_sym_handle           comdat_symbol;
-        label_handle            comdat_label;
-        omf_idx                 comdat_nidx;
-        void                    *virt_func_refs;
-        omf_idx                 comdat_prefix_import;
+    struct object           *obj;
+    long_offset             location;
+    long_offset             max_written;
+    long_offset             max_size;
+    omf_idx                 base;   /*  base for relocs */
+    omf_idx                 sidx;   /*  index for segment */
+    omf_idx                 nidx;   /*  name index for segment */
+    omf_idx                 cidx;   /*  class name index */
+    unsigned                big                     : 1;
+    unsigned                need_base_set           : 1;
+    unsigned                rom                     : 1;
+    unsigned                data_in_code            : 1;
+    unsigned                data_ptr_in_code        : 1;
+    unsigned                private                 : 1;
+    unsigned                exec                    : 1;
+    unsigned                start_data_in_code      : 1;
+    unsigned                prefix_comdat_state     : 2;
+    segment_id              segid;  /*  front-end i.d. */
+    base_type               btype;
+    byte                    attr;
+    byte                    data_prefix_size;
+    unsigned_32             comdat_size;
+    unsigned_32             total_comdat_size;
+    cg_sym_handle           comdat_symbol;
+    label_handle            comdat_label;
+    omf_idx                 comdat_nidx;
+    void                    *virt_func_refs;
+    omf_idx                 comdat_prefix_import;
 } index_rec;
 
 typedef enum {

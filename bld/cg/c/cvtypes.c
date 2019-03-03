@@ -60,13 +60,13 @@ static  void    BuffWrite( cv_out *out, void *to )
 /************************************************/
 {
     unsigned    len;
-    segment_id  old;
+    segment_id  old_segid;
 
     len = (byte *)to - out->beg;
-    old = SetOP( out->seg );
+    old_segid = SetOP( out->segid );
     DataBytes( len, out->beg );
     out->beg = to;
-    SetOP( old );
+    SetOP( old_segid );
 }
 
 static  void   BuffSkip( cv_out *out, void *to )
@@ -79,12 +79,12 @@ static  void    buffEnd( cv_out *out )
 /************************************/
 {
     unsigned    len;
-    segment_id  old;
+    segment_id  old_segid;
 
     len = out->ptr - out->beg;
-    old = SetOP( out->seg );
+    old_segid = SetOP( out->segid );
     DataBytes( len, out->beg );
-    SetOP( old );
+    SetOP( old_segid );
 }
 
 static  void    *BuffInc( cv_out *out, int size )
@@ -117,14 +117,14 @@ static  void  *AlignBuff( cv_out *out )
 }
 
 
-static  void    SegReloc( segment_id seg, cg_sym_handle sym )
-/***********************************************************/
+static  void    SegReloc( segment_id segid, cg_sym_handle sym )
+/*************************************************************/
 {
-    segment_id  old;
+    segment_id  old_segid;
 
-    old = SetOP( seg );
+    old_segid = SetOP( segid );
     FEPtrBase( sym );
-    SetOP( old );
+    SetOP( old_segid );
 }
 
 static  void    *StartType( cv_out *out, lfg_index what )
@@ -142,7 +142,7 @@ static  void    *StartType( cv_out *out, lfg_index what )
 static  void    NewTypeString( cv_out *out )
 /******************************************/
 {
-    out->seg = CVTypes;
+    out->segid = CVTypes;
     out->ptr = &out->buff[sizeof( u2 )];  /*skip length*/
     out->beg = out->buff;
 }
@@ -160,16 +160,16 @@ static  int  EndSub( cv_out *out )
 /* reset buff to start **/
 {
     unsigned        len;
-    segment_id      old;
+    segment_id      old_segid;
 //    long_offset     here;
 
     AlignBuff( out );
     len = out->ptr - out->buff;
     if( _IsModel( DBG_TYPES ) ) {
-        old = SetOP( CVTypes );
+        old_segid = SetOP( CVTypes );
 //        here = AskBigLocation();
         DataBytes( len, out->buff );
-        SetOP( old );
+        SetOP( old_segid );
     }
     out->ptr = out->buff;
     return( len );
@@ -178,7 +178,7 @@ static  int  EndSub( cv_out *out )
 static  long_offset   EndTypeString( cv_out *out )
 /************************************************/
 {
-    segment_id      old;
+    segment_id      old_segid;
     unsigned        len;
     long_offset     here = 0;
 
@@ -186,10 +186,10 @@ static  long_offset   EndTypeString( cv_out *out )
         AlignBuff( out );
         len = out->ptr - out->buff;
         *((u2 *)&out->buff[0]) = len - sizeof( u2 );  /* set type rec len*/
-        old = SetOP( CVTypes );
+        old_segid = SetOP( CVTypes );
         here = AskBigLocation();
         DataBytes( len, out->buff );
-        SetOP( old );
+        SetOP( old_segid );
     }
     return( here );
 }
@@ -208,14 +208,14 @@ static  void    PatchLen( long_offset where, u2 what )
 /********** back patch field list length ************/
 {
     long_offset         here;
-    segment_id          old;
+    segment_id          old_segid;
 
-    old = SetOP( CVTypes );
+    old_segid = SetOP( CVTypes );
     here = AskBigLocation();
     SetBigLocation( where );
     DataShort( what );
     SetBigLocation( here );
-    SetOP( old );
+    SetOP( old_segid );
 }
 
 static  void PutFld2( cv_out *out, short num )
@@ -539,7 +539,7 @@ void    CVDumpName( dbg_name name, dbg_type tipe )
             mod->attr.s = 0;
             mod->index = tipe;
             here = EndTypeString( out );
-            name->patch.segment = CVTypes;
+            name->patch.segid = CVTypes;
             name->patch.offset = 2 + here + offsetof(lf_modifier, f.index ) ;
         }
     }
@@ -550,14 +550,14 @@ void CVBackRefType( dbg_name name, dbg_type tipe )
 /************************************************/
 {
     long_offset     here;
-    segment_id      old;
+    segment_id      old_segid;
 
-    old = SetOP( name->patch.segment );
+    old_segid = SetOP( name->patch.segid );
     here = AskBigLocation();
     SetBigLocation( name->patch.offset );
     DataShort( tipe );
     SetBigLocation( here );
-    SetOP( old );
+    SetOP( old_segid );
     name->refno = tipe;
 }
 

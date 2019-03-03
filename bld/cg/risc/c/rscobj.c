@@ -69,14 +69,16 @@
 #define FILE2OWLF(x)    ((owl_file_handle)(x))
 #define OWLF2FILE(x)    ((FILE *)(x))
 
+#define altCodeSectionId        codeSectionId
+
 static  owl_section_handle      owlTocSect; // contributions to TOC for PPC
 static  owl_section_handle      globalPdata;
 static  owl_handle              owlHandle;
 static  owl_file_handle         owlFile;
 
-static  segment_id              codeSection;
-static  segment_id              dataSection;
-static  segment_id              backSectIdx;
+static  segment_id              codeSectionId;
+static  segment_id              dataSectionId;
+static  segment_id              backSectionId;
 
 static  section_def             *currSection;
 
@@ -86,29 +88,29 @@ static  section_def             *sectionDefs[N_SECTIONS];
 
 static  short                   CurrFNo;
 
-section_def *FindSection( segment_id id )
-/***************************************/
+section_def *FindSection( segment_id segid )
+/******************************************/
 {
     section_def         *curr;
 
-    curr = sectionDefs[id % N_SECTIONS];
+    curr = sectionDefs[segid % N_SECTIONS];
     while( curr != NULL ) {
-        if( curr->id == id )
+        if( curr->segid == segid )
             break;
         curr = curr->next;
     }
     return( curr );
 }
 
-section_def *AddSection( segment_id id )
-/**************************************/
+section_def *AddSection( segment_id segid )
+/*****************************************/
 {
     section_def         *new;
     unsigned            bucket;
 
     new = CGAlloc( sizeof( section_def ) );
-    bucket = id % N_SECTIONS;
-    new->id = id;
+    bucket = segid % N_SECTIONS;
+    new->segid = segid;
     new->next = sectionDefs[bucket];
     sectionDefs[bucket] = new;
     new->func  = NULL;
@@ -337,7 +339,7 @@ void    ObjFini( void )
     offset          code_size;
     section_def     *curr;
 
-    curr = FindSection( codeSection );
+    curr = FindSection( codeSectionId );
     code_size = OWLTellSize( curr->owl_handle  );
 
     if( _IsModel( DBG_DF ) ) {
@@ -475,33 +477,33 @@ void    InitSegDefs( void )
         OWLLogEnable( owlFile, FILE2OWLF( stdout ) );
     }
 
-    codeSection = BACKSEGS;
-    dataSection = BACKSEGS;
-    backSectIdx = BACKSEGS;
+    codeSectionId = BACKSEGS;
+    dataSectionId = BACKSEGS;
+    backSectionId = BACKSEGS;
     currSection = NULL;
     owlTocSect = NULL;
     globalPdata = NULL;
 }
 
 
-void    DefSegment( segment_id id, seg_attr attr, const char *str, uint align, bool use_16 )
-/******************************************************************************************/
+void    DefSegment( segment_id segid, seg_attr attr, const char *str, uint align, bool use_16 )
+/*********************************************************************************************/
 {
     section_def         *new;
     owl_section_type    type;
 
     /* unused parameters */ (void)align; (void)use_16;
 
-    new = AddSection( id );
+    new = AddSection( segid );
     if( attr & EXEC ) {
         type = OWL_SECTION_CODE;
         if( attr & COMDAT ) {
             type = OWL_SECTION_COMDAT_CODE;
         }
-        if( codeSection == BACKSEGS ) {
-            codeSection = id;
+        if( codeSectionId == BACKSEGS ) {
+            codeSectionId = segid;
             if( _IsModel( DBG_DF ) ) {
-                DFBegCCU( id, NULL );
+                DFBegCCU( segid, NULL );
             }
         }
     } else if( attr & INIT ) {
@@ -510,7 +512,7 @@ void    DefSegment( segment_id id, seg_attr attr, const char *str, uint align, b
             type = OWL_SECTION_COMDAT_DATA;
         }
         if( attr & BACK ) {
-            dataSection = id;
+            dataSectionId = segid;
         }
     } else {
         type = OWL_SECTION_BSS;
@@ -627,36 +629,36 @@ segment_id DbgSegDef( const char *sect_name )
 /*******************************************/
 {
     section_def         *new;
-    segment_id          id;
+    segment_id          segid;
 
-    id = --backSectIdx;
-    new = AddSection( id );
+    segid = --backSectionId;
+    new = AddSection( segid );
     new->owl_handle = OWLSectionInit( owlFile, sect_name, OWL_SECTION_DEBUG, 1 );
-    return( id );
+    return( segid );
 }
 
 bool    HaveCodeSeg( void )
 /*************************/
 {
-    return( codeSection != BACKSEGS );
+    return( codeSectionId != BACKSEGS );
 }
 
 segment_id  AskCodeSeg( void )
 /****************************/
 {
-     return( codeSection );
+     return( codeSectionId );
 }
 
 segment_id  AskAltCodeSeg( void )
 /*******************************/
 {
-    return( codeSection );
+    return( altCodeSectionId );
 }
 
 segment_id  AskBackSeg( void )
 /****************************/
 {
-     return( dataSection );
+     return( dataSectionId );
 }
 
 
@@ -676,18 +678,18 @@ segment_id  AskSegID( pointer hdl, cg_class class )
     switch( class ) {
     case CG_FE:
         if( InlineFunction( (cg_sym_handle)hdl ) ) {
-            return( AskCodeSeg() );
+            return( codeSectionId );  // AskCodeSeg()
         }
         return( FESegID( (cg_sym_handle)hdl ) );
     case CG_BACK:
-        return( ((back_handle)hdl)->seg );
+        return( ((back_handle)hdl)->segid );
     case CG_TBL:
     case CG_VTB:
-        return( AskCodeSeg() );
+        return( codeSectionId );      // AskCodeSeg()
     case CG_CLB:
-        return( AskAltCodeSeg() );
+        return( altCodeSectionId );   // AskAltCodeSeg()
     default:
-        return( AskBackSeg() );
+        return( dataSectionId );      // AskBackSeg()
     }
 }
 
@@ -698,13 +700,13 @@ void    ObjBytes( const void *buffer, unsigned size )
     OWLEmitData( currSection->owl_handle, buffer, size );
 }
 
-bool    AskSegIsBlank( segment_id id )
-/************************************/
+bool    AskSegIsBlank( segment_id segid )
+/***************************************/
 {
     section_def         *sect;
     owl_section_type    tipe;
 
-    sect = FindSection( id );
+    sect = FindSection( segid );
     tipe = OWLTellSectionType( sect->owl_handle );
     return( tipe == OWL_SECTION_BSS || tipe == OWL_SECTION_COMDAT_BSS );
 }
@@ -728,7 +730,7 @@ void    AlignObject( unsigned align )
     mod = off & ( align - 1 );
     if( mod ) {
         add = align - mod;
-        if( AskSegIsBlank( currSection->id ) ) {
+        if( AskSegIsBlank( currSection->segid ) ) {
             OWLEmitData( currSection->owl_handle, NULL, add );
         } else {
             memset( buffer, 0, add );
@@ -747,42 +749,42 @@ segment_id  AskOP( void )
     if( currSection == NULL ) {
         segid = UNDEFSEG;
     } else {
-        segid = currSection->id;
+        segid = currSection->segid;
     }
     return( segid );
 }
 
 
-segment_id  SetOP( segment_id seg )
-/*********************************/
+segment_id  SetOP( segment_id segid )
+/***********************************/
 {
-    segment_id  old;
+    segment_id  old_segid;
     section_def *new;
 
 
     if( currSection == NULL ) {
-        old = UNDEFSEG;
+        old_segid = UNDEFSEG;
     } else {
-        old = currSection->id;
+        old_segid = currSection->segid;
     }
-    if( seg == UNDEFSEG ) {
+    if( segid == UNDEFSEG ) {
         currSection = NULL;
     } else {
-        new = FindSection( seg );
+        new = FindSection( segid );
         currSection = new;
     }
-    return( old );
+    return( old_segid );
 }
 
 
-void    FlushOP( segment_id id )
-/******************************/
+void    FlushOP( segment_id segid )
+/*********************************/
 {
     section_def         *sect;
-    segment_id          old;
+    segment_id          old_segid;
     owl_section_type    tipe;
 
-    sect = FindSection( id );
+    sect = FindSection( segid );
     if( _IsModel( DBG_DF ) ) {
         tipe = OWLTellSectionType( sect->owl_handle );
         switch( tipe ) {
@@ -798,9 +800,9 @@ void    FlushOP( segment_id id )
         case OWL_SECTION_COMDAT_CODE:
         case OWL_SECTION_COMDAT_DATA:
         case OWL_SECTION_COMDAT_BSS:
-            old = SetOP( id );
+            old_segid = SetOP( segid );
             DFSegRange();
-            SetOP( old );
+            SetOP( old_segid );
             break;
         }
     }
@@ -912,14 +914,14 @@ void    OutReloc( label_handle label, owl_reloc_type tipe, unsigned offset )
         labelOwlSym( label ), tipe );
 }
 
-void    OutSegReloc( label_handle label, segment_id seg )
-/*******************************************************/
+void    OutSegReloc( label_handle label, segment_id segid )
+/*********************************************************/
 {
     section_def             *sect;
 
     /* unused parameters */ (void)label;
 
-    sect = FindSection( seg );
+    sect = FindSection( segid );
     OWLEmitMetaReloc( currSection->owl_handle,
         OWLTellOffset( currSection->owl_handle ),
         sect->owl_handle, OWL_RELOC_SECTION_INDEX );
@@ -1077,15 +1079,15 @@ void    DoEmptyQueue( void )
 void    TellObjNewProc( cg_sym_handle proc )
 /******************************************/
 {
-    segment_id  proc_id;
-    segment_id  old;
+    segment_id  proc_segid;
+    segment_id  old_segid;
 
-    old = SetOP( codeSection );
-    proc_id = FESegID( proc );
-    if( codeSection != proc_id ) {
+    old_segid = SetOP( codeSectionId );
+    proc_segid = FESegID( proc );
+    if( codeSectionId != proc_segid ) {
         DoEmptyQueue();
-        codeSection = proc_id;
-        SetOP( codeSection );
+        codeSectionId = proc_segid;
+        SetOP( codeSectionId );
         currSection->is_start = true;
     }
     if( FEAttr( proc ) & FE_COMMON ) {
@@ -1097,7 +1099,7 @@ void    TellObjNewProc( cg_sym_handle proc )
             CVDefSymNormal();  // reset to normal $debug section
         }
     }
-    SetOP( old );
+    SetOP( old_segid );
 }
 
 void    IncLocation( offset by )
@@ -1133,7 +1135,7 @@ bool    CodeHasAbsPatch( oc_entry *code )
 }
 
 static bool    relocBefore( void *_p1, void *_p2 )
-/*****************************************/
+/************************************************/
 {
     byte_seq_reloc *p1 = _p1;
     byte_seq_reloc *p2 = _p2;

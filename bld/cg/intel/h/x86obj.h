@@ -34,8 +34,8 @@
 
 
 extern bool         UseImportForm( fe_attr attr );
-extern bool         AskSegPrivate( segment_id id );
-extern bool         AskSegIsROM( segment_id id );
+extern bool         AskSegIsPrivate( segment_id segid );
+extern bool         AskSegIsROM( segment_id segid );
 extern segment_id   AskCode16Seg( void );
 extern void         OutSelect( bool starts );
 extern void         SetUpObj( bool is_data );
@@ -47,7 +47,7 @@ extern void         OutDataByte( byte value );
 extern void         OutDataShort( unsigned_16 value );
 extern void         OutDataLong( unsigned_32 value );
 extern void         OutAbsPatch( abspatch *patch, patch_attr attr );
-extern void         OutReloc( segment_id seg, fix_class class, bool rel );
+extern void         OutReloc( segment_id segid, fix_class class, bool rel );
 extern void         OutSpecialCommon( import_handle imphdl, fix_class class, bool rel );
 extern void         OutImport( cg_sym_handle sym, fix_class class, bool rel );
 extern void         OutRTImportRel( rt_class rtindex, fix_class class, bool rel );

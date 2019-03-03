@@ -361,58 +361,58 @@ extern  void    BEAbort() {
     BEFini();
     exit( 2010 );
 }
-extern  segment_id      BESetSeg( segment_id seg ) {
+extern  segment_id      BESetSeg( segment_id segid ) {
 //==================================================
 
-    segment_id  old;
+    segment_id  old_segid;
 
-    Action( "BESetSeg( %d )", seg );
-    old = SetFile( seg );
-    Action( " -> %d%n", old );
-    return( old );
+    Action( "BESetSeg( %d )", segid );
+    old_segid = SetFile( segid );
+    Action( " -> %d%n", old_segid );
+    return( old_segid );
 }
-extern  void    BEFlushSeg( segment_id seg ) {
+extern  void    BEFlushSeg( segment_id segid ) {
 //============================================
 
-    Action( "BEFlushSeg( %d )%n", seg );
-    if( seg == CodeSeg ) {
+    Action( "BEFlushSeg( %d )%n", segid );
+    if( segid == CodeSeg ) {
         CodeSeg = -1;
     }
-    if( Files[seg].hdl != 0 ) {
-        FShut( Files[seg].hdl );
+    if( Files[segid].hdl != 0 ) {
+        FShut( Files[segid].hdl );
     }
-    Files[seg].hdl = 0;
-    Files[seg].exists = false;
-    SegOk[seg] = false;
+    Files[segid].hdl = 0;
+    Files[segid].exists = false;
+    SegOk[segid] = false;
     StaticList = NULL;
 }
 
-extern  void    BEDefSeg( segment_id id, seg_attr attr, const char *str, uint algn ) {
+extern  void    BEDefSeg( segment_id segid, seg_attr attr, const char *str, uint algn ) {
 //====================================================================================
 
     segdef      *new;
 
-    Action( "BEDefSeg( %d, %h, %s, %d )%n", id, attr, str, algn );
+    Action( "BEDefSeg( %d, %h, %s, %d )%n", segid, attr, str, algn );
     new = CGAlloc( sizeof( segdef ) );
     new->next = SegDefs;
     SegDefs = new;
-    new->id = id;
+    new->id = segid;
     new->attr = attr;
     new->str = ACopyOf( str );
     if( attr & EXEC ) {
-        CodeSeg = id;
-        CurSeg = id;
+        CodeSeg = segid;
+        CurSeg = segid;
     }
-    if( SegOk[id] ) {
-        if( Files[id].hdl != 0 ) {
-            FShut( Files[id].hdl );
+    if( SegOk[segid] ) {
+        if( Files[segid].hdl != 0 ) {
+            FShut( Files[segid].hdl );
         }
-        CGError( "BEDefSeg called twice (id %d) with no intervening BEFlushSeg%n", id );
+        CGError( "BEDefSeg called twice (id %d) with no intervening BEFlushSeg%n", segid );
     }
-    Files[id].name = new->str;
-    Files[id].hdl = 0;
-    SegOk[id] = true;
-    Locs[id] = 0;
+    Files[segid].name = new->str;
+    Files[segid].hdl = 0;
+    SegOk[segid] = true;
+    Locs[segid] = 0;
 }
 extern  bool    BEMoreMem( void ) {
 //=================================

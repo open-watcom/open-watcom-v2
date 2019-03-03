@@ -859,7 +859,7 @@ void DoRTCall( rt_class rtindex, bool pop )
 void    GenProlog( void )
 /***********************/
 {
-    segment_id  old;
+    segment_id  old_segid;
     hw_reg_set  to_push;
     unsigned    ret_size;
     pointer     label;
@@ -868,7 +868,7 @@ void    GenProlog( void )
 
     ScanInstructions();       /* Do These 2 calls before using DO_WINDOWS_CRAP! */
     FindIfExported();
-    old = SetOP( AskCodeSeg() );
+    old_segid = SetOP( AskCodeSeg() );
 
     if( CurrProc->prolog_state & GENERATE_FUNCTION_NAME ) {
         EmitNameInCode();
@@ -1011,7 +1011,7 @@ void    GenProlog( void )
         DbgRetOffset( CurrProc->parms.base - CurrProc->targ.base_adjust - ret_size );
         EmitProEnd();
     }
-    SetOP( old );
+    SetOP( old_segid );
 
     if( CurrProc->prolog_state & GENERATE_EXPORT ) {
         OutDLLExport( ( CurrProc->parms.size + WORD_SIZE - 1 ) / WORD_SIZE, AskForLblSym( CurrProc->label ) );

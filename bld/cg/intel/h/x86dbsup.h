@@ -32,7 +32,7 @@
 
 
 extern  void    BuffStart( temp_buff *temp, uint def );
-extern  void    BuffEnd( segment_id seg );
+extern  void    BuffEnd( segment_id segid );
 extern  uint    BuffLoc( void );
 extern  void    BuffPatch( byte val, uint loc );
 extern  void    BuffByte( byte b );
