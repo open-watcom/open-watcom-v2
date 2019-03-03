@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -43,6 +43,7 @@
 #include "rststruc.h"
 #include "errutil.h"
 #include "kwlist.h"
+#include "prmcodes.h"
 
 
 typedef struct class_entry {
@@ -51,40 +52,18 @@ typedef struct class_entry {
 } class_entry;
 
 static  class_entry     ClassMsg[] = {
-    "PARAMETER",        0,
-    NULL,               MS_STMT_FUNC,   // statement function
-    "SUBROUTINE",       0,
-    "REMOTE BLOCK",     0,
-    "FUNCTION",         0,
-    "BLOCK DATA",       0,
-    "PROGRAM",          0,
-    NULL,               MS_SIMP_VAR,    // simple variable
-    NULL,               MS_SP_ARG,      // subprogram argument
-    NULL,               MS_SF_ARG,      // statement function argument
-    NULL,               MS_ARRAY,       // array
-    NULL,               MS_COM_VAR,     // variable in COMMON
-    NULL,               MS_VAR_ARR,     // variable or array
-    NULL,               MS_EXT_PROC,    // external subprogram
-    NULL,               MS_INTR_FUNC,   // intrinsic function
-    "COMMON BLOCK",     0,
-    NULL,               MS_EQUIV_VAR,   // equivalenced variable
-    NULL,               MS_STRUCT_DEFN, // structure definition
-    NULL,               MS_GROUP_NAME,  // group name
-    NULL,               MS_ALLOC_ARRAY, // allocated array
+    #define pick(en,class,msgid)  class, msgid,
+    #include "_namecod.h"
+    #undef pick
 };
 
 #define MAX_MSGLEN      64      // maximum length of MS_xxx in error.msg
 
 
 char    *PrmCodTab[] = {
-    "expression",
-    "simple variable",
-    "array element",
-    "substrung array element",
-    "array name",
-    "subprogram name",
-    "subprogram name",
-    "alternate return specifier"
+    #define pick(en,text)  text,
+    #include "_prmcode.h"
+    #undef pick
 };
 
 static  uint    SymClass( sym_id sym ) {
@@ -219,7 +198,7 @@ void    NameStmtErr( int errcod, sym_id sym, STMT stmt ) {
 void    PrmCodeErr( int errcode, int code ) {
 //===========================================
 
-    Error( errcode, PrmCodTab[ code ] );
+    Error( errcode, PrmCodTab[code & ~PC_PROC_FAR16] );
 }
 
 

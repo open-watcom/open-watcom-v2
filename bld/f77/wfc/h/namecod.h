@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,24 +34,7 @@
 // constants used for parameter to ReqName
 
 enum {
-    NAME_PARAMETER,
-    NAME_STMT_FUNC,
-    NAME_SUBROUTINE,
-    NAME_REM_BLOCK,
-    NAME_FUNCTION,
-    NAME_BLOCK_DATA,
-    NAME_PROGRAM,
-    NAME_VARIABLE,
-    NAME_ARGUMENT,
-    NAME_SF_DUMMY,
-    NAME_ARRAY,
-    NAME_COMMON_VAR,
-    NAME_VAR_OR_ARR,
-    NAME_EXT_PROC,
-    NAME_INTRINSIC,
-    NAME_COMMON,
-    NAME_EQUIV_VAR,
-    NAME_STRUCTURE,
-    NAME_GROUP,
-    NAME_ALLOCATED_ARRAY
+    #define pick(en,class,msgid)  en,
+    #include "_namecod.h"
+    #undef pick
 };

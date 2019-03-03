@@ -34,10 +34,13 @@
 // NOTE: These constants should stay in the following order.
 //       ( routines rely on them being sequential )
 //
-
-typedef enum {
-    #define pick(en,text)  en,
-    #include "_prmcode.h"
-    #undef pick
-    PC_PROC_FAR16 = 0x80
-} PCODE;
+/*    enum              text                            */
+pick( PC_CONST,         "expression"                    )   // Non-modifiable argument. Passed by value.
+pick( PC_VARIABLE,      "simple variable"               )   // Simple variable name.
+pick( PC_ARRAY_ELT,     "array element"                 )   // Array element.
+pick( PC_SS_ARRAY,      "substrung array element"       )   // Substrung array element.
+pick( PC_ARRAY_NAME,    "array name"                    )   // Array name.
+pick( PC_PROCEDURE,     "subprogram name"               )   // Subprogram name. function/subroutine established
+pick( PC_FN_OR_SUB,     "subprogram name"               )   // Subprogram name. could be function or subroutine
+pick( PC_STATEMENT,     "alternate return specifier"    )   // Alternate return specifier.
+pick( PC_RESULT,        ""                              )   // Expected result type of subprogram.
