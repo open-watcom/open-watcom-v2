@@ -286,7 +286,7 @@ void    CVObjFiniDbgInfo( void )
 
 
 
-static  void    SymReloc( segment_id segid, cg_sym_handle sym, offset lc )
+static void     SymReloc( segment_id segid, cg_sym_handle sym, offset lc )
 /************************************************************************/
 {
     segment_id  old_segid;

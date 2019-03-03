@@ -97,7 +97,7 @@ hw_reg_set      CalcSegment( cg_sym_handle sym, cg_class class ) {
             /* COMDAT's might be allocated by some other module */
             if( attr & FE_COMMON )
                 return( HW_EMPTY );
-            return( HW_CS ); /* 89-09-01 */
+            return( HW_CS );
         }
         if( AskSegIsPrivate( segid ) )
             return( HW_EMPTY );

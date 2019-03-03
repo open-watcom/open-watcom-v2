@@ -158,7 +158,7 @@ void    FEPtrBaseOffset( cg_sym_handle sym,  offset plus )
 
     TellOptimizerByPassed();
     bck = FEBack( sym );
-//    seg = FESegID( sym );
+//    segid = FESegID( sym );
     OutReloc( bck->lbl, OWL_RELOC_SECTION_INDEX, 0 );
     ObjBytes( &plus, 4 );
 //    OutSegReloc( bck->lbl, segid );

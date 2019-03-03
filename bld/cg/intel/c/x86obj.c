@@ -185,15 +185,15 @@ static  lname_cache     *NameCache;
 static  lname_cache     *NameCacheDumped;
 
 static char *FPPatchName[] = {
-#define pick_fp(enum,name,alt_name) name,
-#include "fppatche.h"
-#undef pick_fp
+    #define pick_fp(enum,name,alt_name) name,
+    #include "fppatche.h"
+    #undef pick_fp
 };
 
 static char *FPPatchAltName[] = {
-#define pick_fp(enum,name,alt_name) alt_name,
-#include "fppatche.h"
-#undef pick_fp
+    #define pick_fp(enum,name,alt_name) alt_name,
+    #include "fppatche.h"
+    #undef pick_fp
 };
 
 static struct dbg_seg_info DbgSegs[] = {
@@ -3008,11 +3008,10 @@ void    OutLineNum( cg_linenum  line, bool label_line )
 
 unsigned        SavePendingLine( unsigned new )
 /**********************************************
-
-        We're about to dump some alignment bytes. Save and restore
-        the pending_line_number field so the that line number info
-        offset is after the alignment.
-*/
+ * We're about to dump some alignment bytes. Save and restore
+ * the pending_line_number field so the that line number info
+ * offset is after the alignment.
+ */
 {
     unsigned    old;
 
@@ -3249,8 +3248,8 @@ void     TellObjVirtFuncRef( void *cookie )
     SetOP( old_segid );
 }
 
-static  bool            InlineFunction( cg_sym_handle sym )
-/******************************************************/
+static bool     InlineFunction( cg_sym_handle sym )
+/*************************************************/
 {
     if( FEAttr( sym ) & FE_PROC ) {
         if( FindAuxInfoSym( sym, CALL_BYTES ) != NULL )

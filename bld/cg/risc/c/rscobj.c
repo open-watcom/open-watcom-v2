@@ -662,8 +662,8 @@ segment_id  AskBackSeg( void )
 }
 
 
-static  bool            InlineFunction( cg_sym_handle sym )
-/******************************************************/
+static bool     InlineFunction( cg_sym_handle sym )
+/*************************************************/
 {
     if( (FEAttr( sym ) & FE_PROC) == 0 )
         return( false );
@@ -759,7 +759,7 @@ segment_id  SetOP( segment_id segid )
 /***********************************/
 {
     segment_id  old_segid;
-    section_def *new;
+    section_def *newdef;
 
 
     if( currSection == NULL ) {
@@ -770,8 +770,8 @@ segment_id  SetOP( segment_id segid )
     if( segid == UNDEFSEG ) {
         currSection = NULL;
     } else {
-        new = FindSection( segid );
-        currSection = new;
+        newdef = FindSection( segid );
+        currSection = newdef;
     }
     return( old_segid );
 }

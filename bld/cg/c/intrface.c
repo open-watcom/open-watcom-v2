@@ -263,13 +263,13 @@ bool _CGAPI     BEMoreMem( void )
     return( _MemCheck( 1 ) );
 }
 
-segment_id _CGAPI       BEGetSeg( void )
-/**************************************/
+segment_id _CGAPI   BEGetSeg( void )
+/**********************************/
 {
 #ifndef NDEBUG
     segment_id  segid;
 
-    EchoAPI( "BESetSeg()" );
+    EchoAPI( "BEGetSeg()" );
     segid = AskOP();
     return EchoAPIHexReturn( segid );
 #else
@@ -277,8 +277,8 @@ segment_id _CGAPI       BEGetSeg( void )
 #endif
 }
 
-segment_id _CGAPI       BESetSeg( segment_id segid )
-/**************************************************/
+segment_id _CGAPI   BESetSeg( segment_id segid )
+/**********************************************/
 {
 #ifndef NDEBUG
     EchoAPI( "BESetSeg( %x )", segid );
