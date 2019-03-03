@@ -485,8 +485,7 @@ target_offset_t SegmentAdjust(  // SEGMENT: ADJUST OFFSET TO ALIGN
 struct seg_look {                               // used to lookup segments
     const char      *seg_name;                  // - segment name
     const char      *class_name;                // - segment class name
-    unsigned        attrs;                      // -                                                                                                                                                                                                                                                                                                                                                                                                                                                                     attrib
-utes
+    unsigned        attrs;                      // - attributes
     fe_seg_id       segid;                      // - id for segment
     target_offset_t align;                      // - segment alignment
     target_size_t   sym_size;                   // - space needed for symbol
