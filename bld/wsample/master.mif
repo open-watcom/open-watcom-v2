@@ -12,21 +12,15 @@ target = $(host_os)
 memory_model_i86 = c
 !endif
 
-xname_dos_i86   = wsample
-xname_nov_386   = wsample
-xname_nt_axp    = wsmpaxp
-xname_nt_386    = wsmpnt
-xname_nt_x64    = wsmpnt
-xname_os2_386   = wsmpos22
 xname_os2_i86   = wsampos2
 xname_pls_386   = wsamppls
 xname_rsi_i86   = wsamprsi
 xname_win_i86   = wsamplew
-xname_linux_386 = wsample
-xname_linux_ppc = wsample
-xname_linux_x64 = wsample
-
+!ifdef xname_$(target)_$(host_cpu)
 xname = $(xname_$(target)_$(host_cpu))
+!else
+xname = wsample
+!endif
 
 !include cproj.mif
 !include defrule.mif
