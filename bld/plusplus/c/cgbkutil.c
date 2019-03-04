@@ -126,13 +126,13 @@ void DgByte(                    // DATA GENERATE A BYTE
 void DgSymbolDefInit(           // DATA GENERATE SYMBOL (DEFAULT DATA)
     SYMBOL sym )                // - the symbol
 {
-    segment_id      old_seg;    // - old segment
-    segment_id      seg_id;     // - symbol segment
+    segment_id      old_segid;  // - old segment
+    segment_id      segid;      // - symbol segment
     target_size_t   size;       // - size of symbol
 
-    seg_id = FESegID( sym );
-    old_seg = BESetSeg( seg_id );
-    DgAlignSegment( seg_id, SegmentAlignment( sym->sym_type ) );
+    segid = FESegID( sym );
+    old_segid = BESetSeg( segid );
+    DgAlignSegment( segid, SegmentAlignment( sym->sym_type ) );
     CgBackGenLabel( sym );
     size = CgMemorySize( sym->sym_type );
     if( sym->segid == SEG_BSS ) {
@@ -140,7 +140,7 @@ void DgSymbolDefInit(           // DATA GENERATE SYMBOL (DEFAULT DATA)
     } else {
         DgInitBytes( size, 0 );
     }
-    BESetSeg( old_seg );
+    BESetSeg( old_segid );
 }
 
 
@@ -232,10 +232,10 @@ back_handle DgStringConst(          // STORE STRING CONSTANT WITH NULL
     back_handle     handle;         // - back handle for literal
     target_offset_t str_align;      // - string's alignment
     target_size_t   str_len;        // - string's length (in bytes)
-    segment_id      str_seg;        // - string's segment
-    segment_id      old_seg;        // - old segment
+    segment_id      str_segid;      // - string's segment
+    segment_id      old_segid;      // - old segment
 
-    str_seg = str->segid;
+    str_segid = str->segid;
     handle = str->cg_handle;
     if( control & DSC_CONST ) {
         if( handle == 0 ) {
@@ -248,28 +248,28 @@ back_handle DgStringConst(          // STORE STRING CONSTANT WITH NULL
                 str_align = TARGET_CHAR;
             }
 #if _CPU == _AXP
-            str_seg = SEG_CONST;
+            str_segid = SEG_CONST;
 #else
             if( CompFlags.strings_in_code_segment && ( control & DSC_CODE_OK ) != 0 ) {
                 if( IsBigData() ) {
-                    str_seg = SegmentAddStringCodeFar( str_len, str_align );
+                    str_segid = SegmentAddStringCodeFar( str_len, str_align );
                 } else {
                     if( IsFlat() ) {
-                        str_seg = SegmentAddStringCodeFar( str_len, str_align );
+                        str_segid = SegmentAddStringCodeFar( str_len, str_align );
                     } else {
-                        str_seg = SEG_CONST;
+                        str_segid = SEG_CONST;
                     }
                 }
             } else {
                 if( IsBigData() ) {
-                    str_seg = SegmentAddStringConstFar( str_len, str_align );
+                    str_segid = SegmentAddStringConstFar( str_len, str_align );
                 } else {
-                    str_seg = SEG_CONST;
+                    str_segid = SEG_CONST;
                 }
             }
 #endif
-            str->segid = str_seg;
-            old_seg = BESetSeg( str_seg );
+            str->segid = str_segid;
+            old_segid = BESetSeg( str_segid );
 #if _CPU == _AXP
             DGAlign( TARGET_INT );
 #else
@@ -281,17 +281,17 @@ back_handle DgStringConst(          // STORE STRING CONSTANT WITH NULL
 #if _CPU == _AXP
             DGAlign( TARGET_INT );
 #endif
-            BESetSeg( old_seg );
+            BESetSeg( old_segid );
         }
     } else {
         // char a[] = "asdf"; initialization (use current segment)
-        str_seg = BEGetSeg();
-        str->segid = str_seg;
+        str_segid = BEGetSeg();
+        str->segid = str_segid;
         DGString( str->string, str->len );
         DgByte( 0 );
     }
     if( psegid != NULL ) {
-        *psegid = str_seg;
+        *psegid = str_segid;
     }
     return( handle );
 }
@@ -908,7 +908,7 @@ cg_name CgDtorStatic(           // DTOR STATIC OBJECT
     STAB_DEFN dctl;             // - state-table definition
     RT_DEF def;                 // - control for run-time call
     SE* se;                     // - state entry
-    segment_id old_seg;         // - old segment
+    segment_id old_segid;       // - old segment
 
     StabCtlInit( &sctl, &dctl );
     StabDefnInit( &dctl, DTRG_STATIC_INITLS );
@@ -925,13 +925,13 @@ cg_name CgDtorStatic(           // DTOR STATIC OBJECT
     se->sym_static.dtor = RoDtorFind( sym );
     se = StateTableAdd( se, &sctl );
     StabGenerate( &sctl );
-    old_seg = DgSetSegSym( sctl.rw );
+    old_segid = DgSetSegSym( sctl.rw );
     CgBackGenLabelInternal( sctl.rw );
     DgInitBytes( CgbkInfo.size_data_ptr, 0 );
     DgPtrSymData( dctl.ro );
     DgOffset( 1 );
     DgPtrSymData( sym );
-    BESetSeg( old_seg );
+    BESetSeg( old_segid );
     CgRtCallInit( &def, RTF_REG_LCL );
     CgRtParamAddrSym( &def, sctl.rw );
     return( CgRtCallExec( &def ) );

@@ -81,12 +81,12 @@ bool StabGenerate(              // GENERATE A STATE TABLE
     STAB_DEFN* defn;            // - state-table definition
     SE* se;                     // - current state entry
     SE* state_table;            // - the state table
-    segment_id old_seg;         // - old segment
+    segment_id old_segid;       // - old segment
 
     if( sctl->rw == NULL )
         return( false );
     defn = sctl->defn;
-    old_seg = DgSetSegSym( defn->ro );
+    old_segid = DgSetSegSym( defn->ro );
     CgBackGenLabelInternal( defn->ro );
     DgOffset( defn->kind );
 #if _CPU == _AXP
@@ -158,7 +158,7 @@ bool StabGenerate(              // GENERATE A STATE TABLE
     DgPtrSymCode( NULL );
     DgPtrSymData( NULL );
 #endif
-    BESetSeg( old_seg );
+    BESetSeg( old_segid );
     StabDefnFreeStateTable( defn );
     return( true );
 }

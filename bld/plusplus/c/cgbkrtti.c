@@ -55,7 +55,7 @@ static void doRttiGen( RTTI_CLASS *r )
     SYMBOL sym;
     RTTI_VFPTR *vfptr;
     TYPE class_type;
-    segment_id old_seg;
+    segment_id old_segid;
     target_offset_t delta_to_descriptor;
     unsigned leap_control;
     unsigned nleaps;
@@ -69,16 +69,16 @@ static void doRttiGen( RTTI_CLASS *r )
     }
     sym = r->sym;
     if( r->too_big ) {
-        old_seg = BESetSeg( sym->segid );
+        old_segid = BESetSeg( sym->segid );
         CgBackGenLabel( sym );
         DgByte( 0 );
-        BESetSeg( old_seg );
+        BESetSeg( old_segid );
         return;
     }
     class_type = r->class_type;
     nleaps = ScopeRttiLeaps( class_type, &leaps );
     DbgAssert( nleaps >= 1 );
-    old_seg = BESetSeg( sym->segid );
+    old_segid = BESetSeg( sym->segid );
     CgBackGenLabel( sym );
     DbgStmt( offset = 0 );
     RingIterBeg( r->vfptrs, vfptr ) {
@@ -124,7 +124,7 @@ static void doRttiGen( RTTI_CLASS *r )
             leap_control = RL_NULL;
         }
     } RingIterEnd( leap )
-    BESetSeg( old_seg );
+    BESetSeg( old_segid );
     ScopeRttiFreeLeaps( leaps );
     r->cg_gen = true;
 }
@@ -189,7 +189,7 @@ static void doTypeidGen( RTTI_TYPEID *r )
 {
     char *raw_name;
     unsigned raw_len;
-    segment_id old_seg;
+    segment_id old_segid;
     SYMBOL sym;
 
     sym = r->sym;
@@ -197,7 +197,7 @@ static void doTypeidGen( RTTI_TYPEID *r )
         return;
     }
     sym->flag |= SF_INITIALIZED;
-    old_seg = BESetSeg( sym->segid );
+    old_segid = BESetSeg( sym->segid );
     CgBackGenLabel( sym );
     DgInitBytes( CgDataPtrSize(), 0 );
     raw_name = CppGetTypeidContents( r->type, &raw_len );
@@ -206,7 +206,7 @@ static void doTypeidGen( RTTI_TYPEID *r )
     }
     DGString( raw_name, raw_len );
     DgByte( 0 );
-    BESetSeg( old_seg );
+    BESetSeg( old_segid );
 }
 
 void BeGenRttiInfo( void )

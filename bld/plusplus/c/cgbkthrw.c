@@ -125,7 +125,7 @@ void ThrowRoGen(                // GENERATE A THROW R/O BLOCK
     void )
 {
     THROW_RO *ro;               // - R/O block for symbol
-    segment_id old_seg;         // - old segment
+    segment_id old_segid;       // - old segment
     TYPE type;                  // - type being converted
     THROW_CNV_CTL ctl;          // - control for conversions
     target_offset_t offset;     // - offset within class
@@ -133,7 +133,7 @@ void ThrowRoGen(                // GENERATE A THROW R/O BLOCK
     RingIterBeg( ring_throw_ro, ro ) {
         if( ! ro->emitted ) {
             ro->emitted = true;
-            old_seg = DgSetSegSym( ro->sym );
+            old_segid = DgSetSegSym( ro->sym );
             CgBackGenLabelInternal( ro->sym );
             offset = ThrowCnvInit( &ctl, ro->sig->type );
             DbgVerify( ! ctl.error_occurred
@@ -154,7 +154,7 @@ void ThrowRoGen(                // GENERATE A THROW R/O BLOCK
                 cgGenThrowCnv( type, offset );
             }
             ThrowCnvFini( &ctl );
-            BESetSeg( old_seg );
+            BESetSeg( old_segid );
         }
     } RingIterEnd( ro );
 }

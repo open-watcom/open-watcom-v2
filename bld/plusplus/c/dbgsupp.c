@@ -61,7 +61,7 @@ void DbgSuppInit( dsi_control control )
     SYMBOL data_sym;
     NAME code_name;
     NAME data_name;
-    segment_id old_seg;
+    segment_id old_segid;
 
     code_sym = DefaultCodeSymbol;
     if( code_sym == NULL ) {
@@ -84,11 +84,11 @@ void DbgSuppInit( dsi_control control )
         DefaultDataSymbol = data_sym;
     }
     if(( control & DSI_ONLY_SYMS ) == 0 ) {
-        old_seg = BESetSeg( code_sym->segid );
+        old_segid = BESetSeg( code_sym->segid );
         CgBackGenLabel( code_sym );
         BESetSeg( data_sym->segid );
         CgBackGenLabel( data_sym );
-        BESetSeg( old_seg );
+        BESetSeg( old_segid );
     }
 }
 

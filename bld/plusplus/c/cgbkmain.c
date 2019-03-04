@@ -1348,7 +1348,7 @@ static FN_CTL* emit_virtual_file(   // EMIT A VIRTUAL FILE
     cg_type         indexing_type;  // - type of array being indexed
     unsigned        ptr_offset;     // - offset set by IC_DATA_PTR_OFFSET
     unsigned        data_size;      // - size set by IC_DATA_SIZE
-    segment_id      curr_seg;       // - current segment
+    segment_id      curr_segid;     // - current segment
     cg_op           cg_opcode;      // - opcode for code generator
     SRCFILE         current_src;    // - current source file
     SYMBOL          vf_exact_ind;   // - exact function for indirect virt. call
@@ -1400,7 +1400,7 @@ static FN_CTL* emit_virtual_file(   // EMIT A VIRTUAL FILE
     dtor_kind = 0;
     dtor_last_reqd = NULL;
 
-    curr_seg = (segment_id)-1;
+    curr_segid = (segment_id)-1;
     lbl = NULL;
     exprn_type = TY_UNKNOWN;
     lvalue_type = TY_UNKNOWN;
@@ -1438,8 +1438,8 @@ static FN_CTL* emit_virtual_file(   // EMIT A VIRTUAL FILE
 //          CONTROL OPCODES
 //
         case IC_DEF_SEG :                   // SET THE CURRENT SEGMENT
-            curr_seg = (segment_id)ins_value.uvalue;
-            BESetSeg( curr_seg );
+            curr_segid = (segment_id)ins_value.uvalue;
+            BESetSeg( curr_segid );
             break;
 //
 //          LABELS
@@ -1990,43 +1990,43 @@ static FN_CTL* emit_virtual_file(   // EMIT A VIRTUAL FILE
           } break;
         case IC_DATA_LABEL :                // PLANT A DATA LABEL
           { SYMBOL sym;
-            segment_id sym_seg;
+            segment_id sym_segid;
             sym = ins_value.pvalue;
-            sym_seg = FESegID( sym );
-            if( sym_seg > 0 ) {
-                curr_seg = sym_seg;
-                BESetSeg( curr_seg );
-                DgAlignSegment( curr_seg, SegmentAlignment( sym->sym_type ) );
+            sym_segid = FESegID( sym );
+            if( sym_segid > 0 ) {
+                curr_segid = sym_segid;
+                BESetSeg( curr_segid );
+                DgAlignSegment( curr_segid, SegmentAlignment( sym->sym_type ) );
                 CgBackGenLabel( sym );
-                if( curr_seg == SEG_BSS ) {
+                if( curr_segid == SEG_BSS ) {
                     DgUninitBytes( CgMemorySize( sym->sym_type ) );
                 }
             }
           } break;
         case IC_DATA_SEG :                  // INCREMENT THE CURRENT SEGMENT
-            if( curr_seg != SEG_BSS ) {
-                BESetSeg( ++curr_seg );     // new segment
+            if( curr_segid != SEG_BSS ) {
+                BESetSeg( ++curr_segid );     // new segment
             }
             break;
         case IC_DATA_PTR_OFFSET :           // SET OFFSET OF POINTER
             ptr_offset = ins_value.uvalue;
             break;
         case IC_DATA_PTR_SYM :              // GENERATE POINTER FOR SYMBOL
-            if( curr_seg != SEG_BSS ) {
+            if( curr_segid != SEG_BSS ) {
                 DGFEPtr( (cg_sym_handle)ins_value.pvalue, exprn_type, ptr_offset );
             }
             break;
         case IC_DATA_PTR_STR :              // DATA: STRING CONSTANT
-            if( curr_seg != SEG_BSS ) {
+            if( curr_segid != SEG_BSS ) {
                 back_handle handle1;        // - back handle for literal
                 uint_16 str_seg;            // - string segment
                 handle1 = DgStringConst( ins_value.pvalue, &str_seg, DSC_CONST );
-                BESetSeg( curr_seg );
+                BESetSeg( curr_segid );
                 DGBackPtr( handle1, str_seg, ptr_offset, exprn_type );
             }
             break;
         case IC_DATA_INT :                  // GENERATE INTEGER (1-32 BITS)
-            if( curr_seg != SEG_BSS ) {
+            if( curr_segid != SEG_BSS ) {
                 DGInteger( ins_value.uvalue, exprn_type );
             } else {
                 DbgVerify( ins_value.uvalue == 0
@@ -2037,7 +2037,7 @@ static FN_CTL* emit_virtual_file(   // EMIT A VIRTUAL FILE
           { POOL_CON *con;                  // - constant in pool
             con = ins_value.pvalue;
             DbgVerify( con->i64, "NON INT-64 CONSTANT" );
-            if( curr_seg != SEG_BSS ) {
+            if( curr_segid != SEG_BSS ) {
                 DGInteger64( con->u.int64_constant, exprn_type );
             } else {
                 DbgVerify( Zero64( &con->u.int64_constant ), "CGBACK - IC_DATA_INT64 non-zero in SEG_BSS" );
@@ -2047,7 +2047,7 @@ static FN_CTL* emit_virtual_file(   // EMIT A VIRTUAL FILE
           { POOL_CON *con;                  // - constant in pool
             con = ins_value.pvalue;
             DbgVerify( con->flt, "NON FLOAT CONSTANT" );
-            if( curr_seg != SEG_BSS ) {
+            if( curr_segid != SEG_BSS ) {
                 DGFloat( con->u.s.fp_constant, exprn_type );
             }
           } break;
@@ -2055,12 +2055,12 @@ static FN_CTL* emit_virtual_file(   // EMIT A VIRTUAL FILE
             data_size = ins_value.uvalue;
             break;
         case IC_DATA_TEXT :                 // GENERATE TRANSLATABLE TEXT
-            if( curr_seg != SEG_BSS ) {
+            if( curr_segid != SEG_BSS ) {
                 DgStringConst( ins_value.pvalue, NULL, DSC_NULL );
             }
             break;
         case IC_DATA_REPLICATE :            // REPLICATE BYTES
-            if( curr_seg != SEG_BSS ) {
+            if( curr_segid != SEG_BSS ) {
                 DgInitBytes( data_size, ins_value.uvalue );
             } else {
                 DbgVerify( ins_value.uvalue == 0
@@ -2068,7 +2068,7 @@ static FN_CTL* emit_virtual_file(   // EMIT A VIRTUAL FILE
             }
             break;
         case IC_DATA_UNDEF :                // GENERATE UNDEFINED BYTES
-            if( curr_seg != SEG_BSS ) {
+            if( curr_segid != SEG_BSS ) {
                 DgInitBytes( ins_value.uvalue, 0 );
             }
             break;

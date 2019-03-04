@@ -166,16 +166,16 @@ static SYMBOL segEmitLabel(         // EMIT SEGMENT LABEL
     PC_SEGMENT* seg )               // - current segment
 {
     SYMBOL label;                   // - label in segment
-    segment_id old_seg;             // - old segment
+    segment_id old_segid;           // - old segment
 
     label = seg->label;
     if( label != NULL && ! seg->lab_gened ) {
         if( seg->segid == SEG_STACK ) {
             CGAutoDecl( (cg_sym_handle)label, TY_UINT_1 );
         } else {
-            old_seg = DgSetSegSym( label );
+            old_segid = DgSetSegSym( label );
             CgBackGenLabel( label );
-            BESetSeg( old_seg );
+            BESetSeg( old_segid );
         }
         seg->lab_gened = true;
         _markUsed( seg, true );
