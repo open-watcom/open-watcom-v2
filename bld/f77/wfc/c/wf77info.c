@@ -201,11 +201,11 @@ static uint     MangleCommonBlockName( sym_id sym, char *buffer,
 static  segment_id      AllocSegId( void ) {
 //====================================
 
-    segment_id  seg;
+    segment_id  segid;
 
-    seg = CurrSegId;
+    segid = CurrSegId;
     ++CurrSegId;
-    return( seg );
+    return( segid );
 }
 
 
@@ -219,11 +219,11 @@ void    InitSubSegs( void ) {
 segment_id      AllocImpSegId( void ) {
 //===============================
 
-    segment_id  seg;
+    segment_id  segid;
 
-    seg = CurrImpSegId;
+    segid = CurrImpSegId;
     --CurrImpSegId;
-    return( seg );
+    return( segid );
 }
 
 
@@ -363,11 +363,11 @@ static  void    DefineCommonSegs( void ) {
 #endif
         cb_len = MangleCommonBlockName( sym, cb_name, false );
 
-        sym->u.ns.si.cb.seg_id = AllocSegId();
+        sym->u.ns.si.cb.segid = AllocSegId();
         if( CGOpts & CGOPT_ALIGN ) {
-            BEDefSeg( sym->u.ns.si.cb.seg_id, COMMON | private, cb_name, ALIGN_SEGMENT );
+            BEDefSeg( sym->u.ns.si.cb.segid, COMMON | private, cb_name, ALIGN_SEGMENT );
         } else {
-            BEDefSeg( sym->u.ns.si.cb.seg_id, COMMON | private, cb_name, ALIGN_BYTE );
+            BEDefSeg( sym->u.ns.si.cb.segid, COMMON | private, cb_name, ALIGN_BYTE );
         }
         cb_name[cb_len] = '@';
         seg_count = 0;
@@ -404,21 +404,21 @@ static  void    AllocComBlk( sym_id cb ) {
 
 // Allocate a common block.
 
-    segment_id  segment;
+    segment_id  segid;
     uint_32     size;
 
-    segment = cb->u.ns.si.cb.seg_id;
-    BESetSeg( segment );
+    segid = cb->u.ns.si.cb.segid;
+    BESetSeg( segid );
     cb->u.ns.u3.address = BENewBack( cb );
     DGLabel( cb->u.ns.u3.address );
     size = GetComBlkSize( cb );
     while( size > MaxSegSize ) {
-        BESetSeg( segment );
+        BESetSeg( segid );
         SegBytes( MaxSegSize );
         size -= MaxSegSize;
-        segment++;
+        segid++;
     }
-    BESetSeg( segment );
+    BESetSeg( segid );
     SegBytes( size );
 }
 
@@ -447,9 +447,9 @@ static  void   DefineGlobalSeg( global_seg *seg ) {
     int         private;
     char        g_name[G_DATA_LEN+3];
 
-    seg->segment = AllocSegId();
+    seg->segid = AllocSegId();
     memcpy( g_name, GData, G_DATA_LEN );
-    itoa( seg->segment - GlobalSeg->segment, &g_name[ G_DATA_LEN ], 10 );
+    itoa( seg->segid - GlobalSeg->segid, &g_name[ G_DATA_LEN ], 10 );
 
 #if _CPU == 386 || _CPU == 8086
     if( _SmallDataModel( CGOpts ) ) {
@@ -469,7 +469,7 @@ static  void   DefineGlobalSeg( global_seg *seg ) {
     }
 #endif
 
-    BEDefSeg( seg->segment, private, g_name, ALIGN_SEGMENT );
+    BEDefSeg( seg->segid, private, g_name, ALIGN_SEGMENT );
 }
 
 
@@ -497,7 +497,7 @@ static  void    AllocGlobalSegs( void ) {
 
     g_seg = GlobalSeg;
     while( g_seg != NULL ) {
-        BESetSeg( g_seg->segment );
+        BESetSeg( g_seg->segid );
         SegBytes( g_seg->size );
         g_seg = g_seg->link;
     }
@@ -520,27 +520,27 @@ static  global_seg      *GSegDesc( uint_32 g_offset ) {
 }
 
 
-void    DtInit( segment_id seg, seg_offset offset ) {
+void    DtInit( segment_id segid, seg_offset offset ) {
 //===================================================
 
 // Set to do DATA initialization.
 
     if( offset + DtOffset >= MaxSegSize ) {
-        seg++;
+        segid++;
         DtSegOffset = DtOffset - (MaxSegSize - offset);
         while( DtSegOffset >= MaxSegSize ) {
-            seg++;
+            segid++;
             DtSegOffset -= MaxSegSize;
         }
     } else {
         DtSegOffset = offset + DtOffset;
     }
-    DtSegment = seg;
+    DtSegId = segid;
 }
 
 
 struct {
-    segment_id  seg;
+    segment_id  segid;
     seg_offset  offset;
     uint        size;
     char        byte_value;
@@ -584,8 +584,8 @@ static  void    UndefBytes( unsigned long size, byte *data ) {
 static  void    FlushCurrDt( void ) {
 //=============================
 
-    if( CurrDt.seg != SEG_NULL ) {
-        BESetSeg( CurrDt.seg );
+    if( CurrDt.segid != SEG_NULL ) {
+        BESetSeg( CurrDt.segid );
         DGSeek( CurrDt.offset );
         InitBytes( CurrDt.size, CurrDt.byte_value );
     }
@@ -595,7 +595,7 @@ static  void    FlushCurrDt( void ) {
 static  void    InitCurrDt( void ) {
 //============================
 
-    CurrDt.seg = SEG_NULL;
+    CurrDt.segid = SEG_NULL;
     CurrDt.offset = 0;
     CurrDt.byte_value = 0;
     CurrDt.size = 0;
@@ -607,7 +607,7 @@ void    DtIBytes( byte data, int size ) {
 
 // Initialize with specified data.
 
-    if( (DtSegment == CurrDt.seg) &&
+    if( ( DtSegId == CurrDt.segid ) &&
         (DtSegOffset == CurrDt.offset + CurrDt.size) &&
         (data == CurrDt.byte_value) &&
         (MaxSegSize >= (CurrDt.offset + CurrDt.size + size)) ) {
@@ -617,19 +617,19 @@ void    DtIBytes( byte data, int size ) {
     } else {
         FlushCurrDt();
         if( MaxSegSize > DtSegOffset + size ) {
-            CurrDt.seg = DtSegment;
+            CurrDt.segid = DtSegId;
             CurrDt.offset = DtSegOffset;
             CurrDt.byte_value = data;
             CurrDt.size = size;
             DtSegOffset += size;
         } else {
-            BESetSeg( DtSegment );
+            BESetSeg( DtSegId );
             DGSeek( DtSegOffset );
             DGIBytes( MaxSegSize - DtSegOffset, data );
             size -= MaxSegSize - DtSegOffset;
-            DtSegment++;
+            DtSegId++;
             DtSegOffset = size;
-            CurrDt.seg = DtSegment;
+            CurrDt.segid = DtSegId;
             CurrDt.offset = DtSegOffset;
             CurrDt.byte_value = data;
             CurrDt.size = size;
@@ -645,7 +645,7 @@ void    DtStreamBytes( byte *data, int size ) {
 
     FlushCurrDt();
     InitCurrDt();
-    BESetSeg( DtSegment );
+    BESetSeg( DtSegId );
     DGSeek( DtSegOffset );
     if( MaxSegSize > DtSegOffset + size ) {
         UndefBytes( size, data );
@@ -653,9 +653,9 @@ void    DtStreamBytes( byte *data, int size ) {
     } else {
         UndefBytes( MaxSegSize - DtSegOffset, data );
         size -= MaxSegSize - DtSegOffset;
-        DtSegment++;
+        DtSegId++;
         if( size != 0 ) {
-            BESetSeg( DtSegment );
+            BESetSeg( DtSegId );
             DGSeek( 0 );
             UndefBytes( size, data + MaxSegSize - DtSegOffset );
             DtSegOffset = size;
@@ -699,20 +699,20 @@ void    DtFiniSequence( void ) {
 }
 
 
-segment_id      GetComSeg( sym_id sym, uint_32 offset ) {
+segment_id      GetComSegId( sym_id sym, uint_32 offset ) {
 //===========================================================
 
 // Get segment id of common block for variable in common.
 
-    segment_id  segment;
+    segment_id  segid;
 
     offset += sym->u.ns.si.va.vi.ec_ext->offset;
-    segment = sym->u.ns.si.va.vi.ec_ext->com_blk->u.ns.si.cb.seg_id;
+    segid = sym->u.ns.si.va.vi.ec_ext->com_blk->u.ns.si.cb.segid;
     while( offset > MaxSegSize ) {
-        segment++;
+        segid++;
         offset -= MaxSegSize;
     }
-    return( segment );
+    return( segid );
 }
 
 
@@ -721,7 +721,7 @@ segment_id      GetDataSegId( sym_id sym ) {
 
 // Get segment containing data for given variable.
 
-    segment_id  id;
+    segment_id  segid;
     uint_32     offset;
     com_eq      *ce_ext;
 
@@ -735,24 +735,24 @@ segment_id      GetDataSegId( sym_id sym ) {
             sym = ce_ext->link_eqv;
         }
         if( ce_ext->ec_flags & MEMBER_IN_COMMON ) {
-            id = GetComSeg( sym, offset );
+            segid = GetComSegId( sym, offset );
         } else {
-            id = GetGlobalSeg( ce_ext->offset + offset );
+            segid = GetGlobalSegId( ce_ext->offset + offset );
         }
     } else if( sym->u.ns.flags & SY_IN_COMMON ) {
-        id = GetComSeg( sym, 0 );
+        segid = GetComSegId( sym, 0 );
     } else if( sym->u.ns.flags & SY_SUBSCRIPTED ) {
-        id = sym->u.ns.si.va.vi.seg_id;
+        segid = sym->u.ns.si.va.vi.segid;
     } else if( sym->u.ns.u1.s.typ == FT_CHAR ) {
-        id = sym->u.ns.si.va.vi.seg_id;
+        segid = sym->u.ns.si.va.vi.segid;
     } else if( sym->u.ns.u1.s.typ == FT_STRUCTURE ) {
-        id = sym->u.ns.si.va.vi.seg_id;
+        segid = sym->u.ns.si.va.vi.segid;
     } else if( sym->u.ns.flags & SY_DATA_INIT ) {
-        id = SEG_LDATA;
+        segid = SEG_LDATA;
     } else {
-        id = SEG_UDATA;
+        segid = SEG_UDATA;
     }
-    return( id );
+    return( segid );
 }
 
 
@@ -836,12 +836,12 @@ seg_offset      GetDataOffset( sym_id sym ) {
 }
 
 
-segment_id  GetGlobalSeg( uint_32 g_offset ) {
+segment_id  GetGlobalSegId( uint_32 g_offset ) {
 //================================================
 
 // Find global segment containing data at given offset.
 
-    return( GSegDesc( g_offset )->segment );
+    return( GSegDesc( g_offset )->segid );
 }
 
 
@@ -1103,22 +1103,22 @@ segment_id      FESegID( cg_sym_handle _sym ) {
 
 // Return identifier of the segment that the given symbol is defined in.
 
-    segment_id  id;
+    segment_id  segid;
     uint_16     flags;
     uint_16     sp_type;
     sym_id      sym = _sym;
 
     _UnShadow( sym );
-    id = SEG_LDATA;
+    segid = SEG_LDATA;
     flags = sym->u.ns.flags;
     if( ( flags & SY_CLASS ) == SY_VARIABLE ) {
         if( ( flags & SY_SUB_PARM ) == 0 ) {
             if( flags & SY_SUBSCRIPTED ) {
                 if( !_Allocatable( sym ) ) {
-                    id = GetDataSegId( sym );
+                    segid = GetDataSegId( sym );
                 }
             } else if( sym->u.ns.u1.s.typ != FT_CHAR ) {
-                id = GetDataSegId( sym );
+                segid = GetDataSegId( sym );
             }
         }
     } else if( ( flags & SY_CLASS ) == SY_SUBPROGRAM ) {
@@ -1130,20 +1130,20 @@ segment_id      FESegID( cg_sym_handle _sym ) {
                         (sp_type == SY_SUBROUTINE) ||
                         (sp_type == SY_FN_OR_SUB) ) {
                         if( flags & SY_INTRINSIC ) {
-                            id = sym->u.ns.si.fi.u.imp_segid;
+                            segid = sym->u.ns.si.fi.u.segid;
                         } else {
-                            id = sym->u.ns.si.sp.u.imp_segid;
+                            segid = sym->u.ns.si.sp.u.segid;
                         }
                     }
                 } else {
-                    id = CurrCodeSegId;
+                    segid = CurrCodeSegId;
                 }
             }
         }
     } else if( ( flags & SY_CLASS ) == SY_COMMON ) {
-        id = sym->u.ns.si.cb.seg_id;
+        segid = sym->u.ns.si.cb.segid;
     }
-    return( id );
+    return( segid );
 }
 
 
@@ -2072,8 +2072,8 @@ pointer FEAuxInfo( pointer req_handle, int request )
             for( com_size = GetComBlkSize( sym ); com_size > MaxSegSize; com_size -= MaxSegSize ) {
                 idx++;
             }
-            if(( (segment_id)(pointer_int)req_handle >= sym->u.ns.si.cb.seg_id )
-              && ( (segment_id)(pointer_int)req_handle <= sym->u.ns.si.cb.seg_id + idx )) {
+            if(( (segment_id)(pointer_int)req_handle >= sym->u.ns.si.cb.segid )
+              && ( (segment_id)(pointer_int)req_handle <= sym->u.ns.si.cb.segid + idx )) {
                 MangleCommonBlockName( sym, MangleSymBuff, true );
                 return( &MangleSymBuff );
             }

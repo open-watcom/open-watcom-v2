@@ -102,7 +102,7 @@ call_handle     InitCall( RTCODE rtn_id ) {
         }
         sym->u.ns.xt.size = TypeSize( sym->u.ns.u1.s.typ );
         sym->u.ns.u3.address = NULL;
-        sym->u.ns.si.sp.u.imp_segid = AllocImpSegId();
+        sym->u.ns.si.sp.u.segid = AllocImpSegId();
         rt_entry->sym_ptr = sym;
     }
     typ = F77ToCGType( sym );

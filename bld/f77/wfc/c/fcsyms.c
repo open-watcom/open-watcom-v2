@@ -187,20 +187,20 @@ uint    SymAlign( sym_id sym ) {
 static  segment_id      LocalData( sym_id sym, unsigned_32 size ) {
 //=================================================================
 
-    segment_id  seg;
-    segment_id  old_seg;
+    segment_id  segid;
+    segment_id  old_segid;
 
     if( sym->u.ns.flags & SY_DATA_INIT ) {
-        seg = SEG_LDATA;
+        segid = SEG_LDATA;
     } else {
-        seg = SEG_UDATA;
+        segid = SEG_UDATA;
     }
-    old_seg = BESetSeg( seg );
+    old_segid = BESetSeg( segid );
     DGAlign( SymAlign( sym ) );
     DGLabel( FEBack( sym ) );
     DGUBytes( size );
-    BESetSeg( old_seg );
-    return( seg );
+    BESetSeg( old_segid );
+    return( segid );
 }
 
 
@@ -208,21 +208,21 @@ static  unsigned_32     CheckThreshold( sym_id sym, unsigned_32 g_offset ) {
 //==========================================================================
 
     unsigned_32 item_size;
-    segment_id  old_seg;
+    segment_id  old_segid;
 
     item_size = _SymSize( sym );
     if( sym->u.ns.flags & SY_SUBSCRIPTED ) {
         item_size *= sym->u.ns.si.va.u.dim_ext->num_elts;
     }
     if( item_size > DataThreshold ) {
-        sym->u.ns.si.va.vi.seg_id = GetGlobalSeg( g_offset );
-        old_seg = BESetSeg( sym->u.ns.si.va.vi.seg_id );
+        sym->u.ns.si.va.vi.segid = GetGlobalSegId( g_offset );
+        old_segid = BESetSeg( sym->u.ns.si.va.vi.segid );
         DGSeek( GetGlobalOffset( g_offset ) );
         DGLabel( FEBack( sym ) );
-        BESetSeg( old_seg );
+        BESetSeg( old_segid );
         return( item_size );
     } else {
-        sym->u.ns.si.va.vi.seg_id = LocalData( sym, item_size );
+        sym->u.ns.si.va.vi.segid = LocalData( sym, item_size );
         return( 0 );
     }
 }
@@ -234,21 +234,21 @@ static  void    DumpSCB( back_handle scb, back_handle data, uint len,
 
 // Dump an SCB.
 
-    segment_id  old_seg;
+    segment_id  old_segid;
 
-    old_seg = BESetSeg( SEG_LDATA );
+    old_segid = BESetSeg( SEG_LDATA );
     DGAlign( ALIGN_DWORD );
     DGLabel( scb );
     if( data == NULL ) {
         DGIBytes( BETypeLength( TY_POINTER ), 0 );
     } else {
-        DGBackPtr( data, old_seg, offset, TY_POINTER );
+        DGBackPtr( data, old_segid, offset, TY_POINTER );
     }
     DGInteger( len, TY_INTEGER );
     if( allocatable ) {
         DGInteger( ALLOC_STRING, TY_UINT_2 );
     }
-    BESetSeg( old_seg );
+    BESetSeg( old_segid );
 }
 
 
@@ -269,16 +269,16 @@ static  back_handle     DumpCharVar( sym_id sym ) {
 
 
 static  void     DumpCharVarInCommon( sym_id sym, com_eq *ce_ext,
-                                      segment_id seg, signed_32 offset ) {
+                                      segment_id segid, signed_32 offset ) {
 //========================================================================
 
 // Dump a character variable into the common block.
 
     if( (SubProgId->u.ns.flags & SY_SUBPROG_TYPE) != SY_BLOCK_DATA ) {
-        seg = BESetSeg( seg );
+        segid = BESetSeg( segid );
         DumpSCB( FEBack( sym ), FEBack( ce_ext->com_blk ), sym->u.ns.xt.size,
                 _Allocatable( sym ), GetComOffset( ce_ext->offset + offset ) );
-        BESetSeg( seg );
+        BESetSeg( segid );
     }
 }
 
@@ -312,19 +312,19 @@ static  void    DumpAutoSCB( sym_id sym, cg_type typ ) {
 static  void    DumpGlobalSCB( sym_id sym, unsigned_32 g_offset ) {
 //=================================================================
 
-    segment_id  old_seg;
+    segment_id  old_segid;
 
     if( _Allocatable( sym ) ) {
         DumpSCB( FEBack( sym ), NULL, 0, true, 0 );
     } else {
-        sym->u.ns.si.va.vi.seg_id = GetGlobalSeg( g_offset );
-        old_seg = BESetSeg( sym->u.ns.si.va.vi.seg_id );
+        sym->u.ns.si.va.vi.segid = GetGlobalSegId( g_offset );
+        old_segid = BESetSeg( sym->u.ns.si.va.vi.segid );
         DGSeek( GetGlobalOffset( g_offset ) );
         sym->u.ns.si.va.u.bck_hdl = DumpCharVar( sym );
         if( (sym->u.ns.flags & SY_DATA_INIT) == 0 ) {
             BEFreeBack( sym->u.ns.si.va.u.bck_hdl );
         }
-        BESetSeg( old_seg );
+        BESetSeg( old_segid );
     }
 }
 
@@ -346,7 +346,7 @@ static  unsigned_32     DumpVariable( sym_id sym, unsigned_32 g_offset ) {
 
     unsigned_16 flags;
     uint        size;
-    segment_id  old_seg;
+    segment_id  old_segid;
     TYPE        typ;
     sym_id      leader;
     signed_32   offset;
@@ -367,7 +367,7 @@ static  unsigned_32     DumpVariable( sym_id sym, unsigned_32 g_offset ) {
         }
         if( ce_ext->ec_flags & MEMBER_IN_COMMON ) {
             if( (typ == FT_CHAR) && (flags & SY_SUBSCRIPTED) == 0 ) {
-                DumpCharVarInCommon( sym, ce_ext, GetComSeg( leader, offset ),
+                DumpCharVarInCommon( sym, ce_ext, GetComSegId( leader, offset ),
                                      offset );
             }
         } else if( (SubProgId->u.ns.flags & SY_SUBPROG_TYPE) != SY_BLOCK_DATA ) {
@@ -393,7 +393,7 @@ static  unsigned_32     DumpVariable( sym_id sym, unsigned_32 g_offset ) {
                     g_offset += ce_ext->high - ce_ext->low;
                 }
                 offset += ce_ext->offset;
-                old_seg = BESetSeg( GetGlobalSeg( offset ) );
+                old_segid = BESetSeg( GetGlobalSegId( offset ) );
                 DGSeek( GetGlobalOffset( offset ) );
                 if( (typ == FT_CHAR) && (flags & SY_SUBSCRIPTED) == 0 ) {
                     sym->u.ns.si.va.u.bck_hdl = DumpCharVar( sym );
@@ -403,7 +403,7 @@ static  unsigned_32     DumpVariable( sym_id sym, unsigned_32 g_offset ) {
                 } else if( (sym == leader) || (CGOpts & CGOPT_DB_LOCALS) ) {
                     DGLabel( FEBack( sym ) );
                 }
-                BESetSeg( old_seg );
+                BESetSeg( old_segid );
             }
         }
         if( (SubProgId->u.ns.flags & SY_SUBPROG_TYPE) != SY_BLOCK_DATA ) {
@@ -415,7 +415,7 @@ static  unsigned_32     DumpVariable( sym_id sym, unsigned_32 g_offset ) {
     } else if( flags & SY_IN_COMMON ) {
         if( (typ == FT_CHAR) && (flags & SY_SUBSCRIPTED) == 0 ) {
             ce_ext = sym->u.ns.si.va.vi.ec_ext;
-            DumpCharVarInCommon( sym, ce_ext, GetComSeg( sym, 0 ), 0 );
+            DumpCharVarInCommon( sym, ce_ext, GetComSegId( sym, 0 ), 0 );
         }
         if( (SubProgId->u.ns.flags & SY_SUBPROG_TYPE) != SY_BLOCK_DATA ) {
             if( (flags & SY_SUBSCRIPTED) && (Options & OPT_BOUNDS) ) {
@@ -596,9 +596,9 @@ void    GenLocalSyms( void ) {
                     (sp_type == SY_SUBROUTINE) ||
                     (sp_type == SY_FN_OR_SUB) ) {
                     if( flags & SY_INTRINSIC ) {
-                        sym->u.ns.si.fi.u.imp_segid = AllocImpSegId();
+                        sym->u.ns.si.fi.u.segid = AllocImpSegId();
                     } else {
-                        sym->u.ns.si.sp.u.imp_segid = AllocImpSegId();
+                        sym->u.ns.si.sp.u.segid = AllocImpSegId();
                     }
                 }
             }
@@ -786,7 +786,7 @@ static  void    MergeCommonInfo( void ) {
                 }
             }
         }
-        sym->u.ns.si.cb.seg_id = g_sym->u.ns.si.cb.seg_id;
+        sym->u.ns.si.cb.segid = g_sym->u.ns.si.cb.segid;
         sym->u.ns.u3.address = g_sym->u.ns.u3.address;
         if( g_sym->u.ns.flags & SY_EQUIVED_NAME ) {
             sym->u.ns.flags |= SY_EQUIVED_NAME;

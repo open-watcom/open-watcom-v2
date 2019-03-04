@@ -801,7 +801,7 @@ static  void    DoDataInit( PTYPE var_type ) {
     uint        var_size;
     uint        size;
     byte        *const_ptr;
-    segment_id  seg;
+    segment_id  segid;
     seg_offset  offset;
     byte        const_buff[sizeof(ftn_type)];
 
@@ -813,9 +813,9 @@ static  void    DoDataInit( PTYPE var_type ) {
         const_ptr = (byte *)(&DtConst->u.cn.value);
     }
     var_size = DtItemSize;
-    seg = GetDataSegId( InitVar );
+    segid = GetDataSegId( InitVar );
     offset = GetDataOffset( InitVar );
-    DtInit( seg, offset );
+    DtInit( segid, offset );
     if( DtConstType == PT_CHAR ) {
         if( const_size >= var_size ) {
             DtBytes( const_ptr, var_size );

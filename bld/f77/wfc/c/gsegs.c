@@ -82,7 +82,7 @@ static  void    NewGlobalSeg( void )
     global_seg  *new_seg;
 
     new_seg = FMemAlloc( sizeof( global_seg ) );
-    new_seg->segment = SEG_NULL;
+    new_seg->segid = SEG_NULL;
     new_seg->link = NULL;
     if( CurrGSeg == NULL ) {
         GlobalSeg = new_seg;
@@ -96,7 +96,7 @@ segment_id      AllocGlobal( unsigned_32 g_size, bool init )
 //==========================================================
 // Allocate space in global data area and return the global segment.
 {
-    segment_id  seg_id;
+    segment_id  segid;
 
     if( ProgSw & PS_ERROR )
         return( SEG_FREE );
@@ -105,17 +105,17 @@ segment_id      AllocGlobal( unsigned_32 g_size, bool init )
 #if _CPU == 8086  || _CPU == 386
         if( ( init == CurrGSeg->initialized ) || !_SmallDataModel( CGOpts ) ) {
             CurrGSeg->size += g_size;
-            return( CurrGSeg->segment );
+            return( CurrGSeg->segid );
         }
 #else
         if( init == CurrGSeg->initialized ) {
             CurrGSeg->size += g_size;
-            return( CurrGSeg->segment );
+            return( CurrGSeg->segid );
         }
 #endif
     }
     NewGlobalSeg();
-    seg_id = CurrGSeg->segment;
+    segid = CurrGSeg->segid;
     CurrGSeg->initialized = init;
     if( g_size < MaxSegSize ) {
         // object smaller than a segment chunk
@@ -135,5 +135,5 @@ segment_id      AllocGlobal( unsigned_32 g_size, bool init )
         CurrGSeg->size = g_size;
         CurrGSeg->initialized = init;
     }
-    return( seg_id );
+    return( segid );
 }
