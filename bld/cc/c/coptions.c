@@ -1188,7 +1188,7 @@ static void SetDataSegName( void )
 {
     SwData.nd_used = true;
     DataSegName = CopyOfParm();
-    SegData = SEG_UNKNOWN - 1;
+    SegData = -1;
     if( *DataSegName == '\0' ) {
         CMemFree( DataSegName );
         DataSegName = NULL;

@@ -68,13 +68,12 @@ static seg_name Predefined_Segs[] = {
     { "_CONST",     SEG_CONST,      SYM_NULL },
     { "_DATA",      SEG_DATA,       SYM_NULL },
     { "_STACK",     SEG_STACK,      SYM_NULL },
-    { NULL,         SEG_UNKNOWN,    SYM_NULL }
 };
 
 #define FIRST_USER_SEGMENT      10000
 
 static  user_seg    *userSegments;
-static  segment_id  userSegment;
+static  segment_id  userSegId;
 
 
 void AssignSeg( SYMPTR sym )
@@ -347,11 +346,9 @@ static user_seg *AllocUserSeg( const char *segname, const char *class_name, seg_
     if( class_name != NULL ) {
         useg->class_name = CStrSave( class_name );
     }
-    useg->segid = userSegment++;
+    useg->segid = userSegId++;
     return( useg );
 }
-
-#define INITFINI_SIZE 12
 
 struct spc_info {
     char        *name;
@@ -359,7 +356,7 @@ struct spc_info {
     seg_type    segtype;
 };
 
-static struct spc_info InitFiniSegs[INITFINI_SIZE] = {
+static struct spc_info InitFiniSegs[] = {
     { TS_SEG_TIB, "DATA",           SEGTYPE_INITFINI },
     { TS_SEG_TI,  "DATA",           SEGTYPE_INITFINI },
     { TS_SEG_TIE, "DATA",           SEGTYPE_INITFINI },
@@ -374,6 +371,7 @@ static struct spc_info InitFiniSegs[INITFINI_SIZE] = {
     { TS_SEG_TLSE, TS_SEG_TLS_CLASS,SEGTYPE_INITFINITR },
 };
 
+#define INITFINI_SIZE   CArraySize( Predefined_Segs )
 
 static struct spc_info *InitFiniLookup( const char *name )
 {
@@ -393,7 +391,7 @@ static struct spc_info *InitFiniLookup( const char *name )
 
 static segment_id AddSeg( const char *segname, const char *class_name, int segtype )
 {
-    seg_name        *seg;
+    int             i;
     user_seg        *useg, **lnk;
 #if _INTEL_CPU
     hw_reg_set      reg;
@@ -402,9 +400,9 @@ static segment_id AddSeg( const char *segname, const char *class_name, int segty
     size_t          len;
 
     len = strlen( segname ) + 1;
-    for( seg = &Predefined_Segs[0]; seg->name != NULL; seg++ ) {
-        if( memcmp( segname, seg->name, len ) == 0 ) {
-            return( seg->segid );
+    for( i = 0; i < INITFINI_SIZE; i++ ) {
+        if( memcmp( segname, Predefined_Segs[i].name, len ) == 0 ) {
+            return( Predefined_Segs[i].segid );
         }
     }
 #if _INTEL_CPU
@@ -520,11 +518,11 @@ char *SegClassName( segment_id segid )
 
 void SetSegSymHandle( SYM_HANDLE sym_handle, segment_id segid )
 {
-    seg_name    *seg;
+    int     i;
 
-    for( seg = &Predefined_Segs[0]; seg->name != NULL; seg++ ) {
-        if( seg->segid == segid ) {
-            seg->sym_handle = sym_handle;
+    for( i = 0; i < INITFINI_SIZE; i++ ) {
+        if( Predefined_Segs[i].segid == segid ) {
+            Predefined_Segs[i].sym_handle = sym_handle;
             break;
         }
     }
@@ -533,12 +531,12 @@ void SetSegSymHandle( SYM_HANDLE sym_handle, segment_id segid )
 
 SYM_HANDLE SegSymHandle( segment_id segid )
 {
-    seg_name        *seg;
+    int             i;
     user_seg        *useg;
 
-    for( seg = &Predefined_Segs[0]; seg->name != NULL; seg++ ) {
-        if( seg->segid == segid ) {
-            return( seg->sym_handle );
+    for( i = 0; i < INITFINI_SIZE; i++ ) {
+        if( Predefined_Segs[i].segid == segid ) {
+            return( Predefined_Segs[i].sym_handle );
         }
     }
     for( useg = userSegments; useg != NULL; useg = useg->next ) {
@@ -966,7 +964,7 @@ void SegInit( void )
     segment_id  segid;
 
     userSegments = NULL;
-    userSegment = FIRST_USER_SEGMENT;
+    userSegId = FIRST_USER_SEGMENT;
     for( segid = 0; segid < FIRST_PRIVATE_SEGMENT; segid++ ) {
         SegAlignment[segid] = TARGET_INT;
     }

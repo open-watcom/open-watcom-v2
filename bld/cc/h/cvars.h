@@ -72,6 +72,8 @@ typedef char        *SEGADDR_T; /* contains actual pointer to block of memory */
 #include "cmsg.h"
 #include "pragdefn.h"
 
+#define CArraySize(x)   (sizeof( x ) / sizeof( *x ))
+
 global char         *PCH_Start;         // start of precompiled memory block
 global char         *PCH_End;           // end of precompiled memory block
 global char         *PCH_Macros;        // macros loaded from pre-compiled header

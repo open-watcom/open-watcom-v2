@@ -177,7 +177,8 @@ static void mywrite( FILE *fp, const void *data, size_t len )
  * .debug_macinfo
  */
 static const dw_sectnum inSect[] = { DW_DEBUG_ABBREV, DW_DEBUG_INFO, DW_DEBUG_REF, DW_DEBUG_LINE, DW_DEBUG_MACINFO };
-#define SECTION_COUNT   (sizeof( inSect ) / sizeof( inSect[0] ))
+
+#define SECTION_COUNT   CArraySize( inSect )
 
 static int createBrowseFile( FILE *browseFile )
 {

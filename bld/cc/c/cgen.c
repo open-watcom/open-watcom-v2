@@ -1131,7 +1131,11 @@ static TREEPTR LinearizeTree( TREEPTR tree )
 void EmitInit( void )
 {
     SegListHead = NULL;
-    SegImport = SegData - 1;
+    if( SegData != SEG_UNKNOWN ) {
+        SegImport = SegData - 1;
+    } else {
+        SegImport = -1;
+    }
     Refno = TY_FIRST_FREE;
 }
 
@@ -2003,10 +2007,10 @@ static void GenerateTryBlock( TREEPTR tree )
         }
     }
     if( max_try_index != TRYSCOPE_NONE ) {
-        segment_id      old_segid;
-        BACK_HANDLE     except_label;
-        BACK_HANDLE     except_table;
-        try_table_back_handles *try_backinfo;
+        segment_id              old_segid;
+        BACK_HANDLE             except_label;
+        BACK_HANDLE             except_table;
+        try_table_back_handles  *try_backinfo;
 
         old_segid = BESetSeg( SEG_DATA );
         except_table = BENewBack( NULL );
