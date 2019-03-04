@@ -150,9 +150,13 @@ set PROJDIR=<CWD>
     <CCCMD> ser/rdos.srv/serserv.sym                <OWRELROOT>/rdos/
 
     <CCCMD> net/ntx64.trp/net*.dll                  <OWRELROOT>/binnt64/
+    <CCCMD> net/ntx64.trp/net*.sym                  <OWRELROOT>/binnt64/
     <CCCMD> nov/ntx64.trp/nov*.dll                  <OWRELROOT>/binnt64/
+    <CCCMD> nov/ntx64.trp/nov*.sym                  <OWRELROOT>/binnt64/
     <CCCMD> ser/ntx64.trp/ser*.dll                  <OWRELROOT>/binnt64/
+    <CCCMD> ser/ntx64.trp/ser*.sym                  <OWRELROOT>/binnt64/
     <CCCMD> tcp/ntx64.trp/tcp*.dll                  <OWRELROOT>/binnt64/
+    <CCCMD> tcp/ntx64.trp/tcp*.sym                  <OWRELROOT>/binnt64/
 # NT parallel port device driver and installer
     <CCCMD> par/ntsupp.x64/dbgport.sys              <OWRELROOT>/binnt64/
     <CCCMD> par/ntsupp.x64/dbginst.exe              <OWRELROOT>/binnt64/
