@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -47,16 +48,16 @@ static unsigned long lastLsb;
 void ZeroWaitCount( void )
 {
     unsigned long msb;
-    
-    RdosGetSysTime( &msb, &lastLsb ); 
+
+    RdosGetSysTime( &msb, &lastLsb );
 }
 
 unsigned WaitCount( void )
 {
     unsigned long msb;
     unsigned long lsb;
-    
-    RdosGetSysTime( &msb, &lsb ); 
+
+    RdosGetSysTime( &msb, &lsb );
 
     return( (lsb - lastLsb) >> 16 );
 }
@@ -114,10 +115,9 @@ int WaitByte( unsigned ticks )
         RdosAddWaitForCom( hWait, hSerial, (int)(&hSerial));
     }
 
-    if ( RdosWaitTimeout( hWait, 500 + 55 * ticks ) != 0 ) 
+    if ( RdosWaitTimeout( hWait, 500 + 55 * ticks ) != 0 )
         return (int)RdosReadCom( hSerial );
-    else
-        return -1;
+    return SDATA_NO_DATA;
 }
 
 int GetByte( void )
@@ -127,10 +127,9 @@ int GetByte( void )
         RdosAddWaitForCom( hWait, hSerial, (int)(&hSerial));
     }
 
-    if ( RdosWaitTimeout( hWait, 50 ) != 0 ) 
+    if ( RdosWaitTimeout( hWait, 50 ) != 0 )
         return (int)RdosReadCom( hSerial );
-    else
-        return -1;
+    return SDATA_NO_DATA;
 }
 
 
@@ -180,10 +179,11 @@ char *ParsePortSpec( const char **spec )
 
         if( ch >= '1' && ch <= '9' ) {
             comPortNumber = ch - '0';
-            if( comPortNumber <= RdosGetMaxComPort() )
+            if( comPortNumber <= RdosGetMaxComPort() ) {
                 return( NULL );
-            else
+            } else {
                 return( TRP_ERR_invalid_serial_port_number );
+            }
         }
     }
     return( NULL );

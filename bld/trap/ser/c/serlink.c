@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -52,15 +53,15 @@ int MaxBaud;
 #define BAUD_ENTRY( x ) #x, sizeof( #x ) - 1, TEST_TIME( x )
 
 baud_entry BaudTable[] = {
-        BAUD_ENTRY( 115200 ),
-        BAUD_ENTRY( 57600 ),
-        BAUD_ENTRY( 38400 ),
-        BAUD_ENTRY( 19200 ),
-        BAUD_ENTRY( 9600 ),
-        BAUD_ENTRY( 4800 ),
-        BAUD_ENTRY( 2400 ),
-        BAUD_ENTRY( 1200 ),
-        "0", 1, 0,
+    BAUD_ENTRY( 115200 ),
+    BAUD_ENTRY( 57600 ),
+    BAUD_ENTRY( 38400 ),
+    BAUD_ENTRY( 19200 ),
+    BAUD_ENTRY( 9600 ),
+    BAUD_ENTRY( 4800 ),
+    BAUD_ENTRY( 2400 ),
+    BAUD_ENTRY( 1200 ),
+    "0", 1, 0,
 };
 
 static void SyncPoint( unsigned tick )
@@ -75,11 +76,13 @@ static int SenderHandshake( void )
     int      reply;         /* storing data received from other machine */
 
     wait_time = WaitCount() + SYNC_TIME_OUT;   /* limit for time out */
-    if( MaxBaud == MIN_BAUD ) wait_time += SEC(1);
+    if( MaxBaud == MIN_BAUD )
+        wait_time += SEC( 1 );
     SendByte( SYNC_BYTE );      /* send SYNC_BYTE */
     for( ;; ) {                 /* loop until ACK received or time out */
         reply = WaitByte( 1 );  /* get reply */
-        if( reply == SDATA_ACK ) break;       /* ACK received; go to next operation */
+        if( reply == SDATA_ACK )
+            break;       /* ACK received; go to next operation */
         if( reply == SDATA_HI ) {             /* return HI received */
             SendByte( SDATA_HI );
         } else if( WaitCount() > wait_time ) {    /* time out */
@@ -96,11 +99,12 @@ static int SenderHandshake( void )
 
 static int SetBaudSender( void )
 {
-    int     data;           /* storing sync string data to other machine */
-    int     i;              /* loop index */
-    int     wait_time;
+    int         data;           /* storing sync string data to other machine */
+    int         i;              /* loop index */
+    unsigned    wait_time;
 
-    if( !SenderHandshake() ) return( FAIL );
+    if( !SenderHandshake() )
+        return( FAIL );
     /* sync byte received ... send string */
     StartBlockTrans();
     for( i = data = 0; i < SYNC_LEN; i++, data = (data + SYNC_INC) & 0xff ) {
@@ -110,11 +114,12 @@ static int SetBaudSender( void )
     wait_time = WaitCount() + SYNC_TIME_OUT;    /* limit for time out */
     /* If MaxBaud == MIN_BAUD, we're talking over a modem and it might
        have buffered characters that haven't been transmitted yet. */
-    if( MaxBaud == MIN_BAUD ) wait_time += SEC(2);
+    if( MaxBaud == MIN_BAUD )
+        wait_time += SEC( 2 );
     for( ;; ) {
         if( WaitByte( 1 ) == SDATA_TAK ) {
             SendByte( SDATA_ACK );
-            if( WaitByte( SEC(1)/2 ) == SDATA_TAK ) {
+            if( WaitByte( SEC( 1 ) / 2 ) == SDATA_TAK ) {
                 return( SUCCESS );
             } else {
                 return( FAIL );
@@ -141,13 +146,14 @@ static int CheckSyncString( void )
     int i;             /* loop index */
     unsigned    wait;
 
-    if( CheckPendingError() ) return( FAIL );
-    wait = (MaxBaud == MIN_BAUD) ? SEC(2) : (SEC(1)/4);
+    if( CheckPendingError() )
+        return( FAIL );
+    wait = (MaxBaud == MIN_BAUD) ? SEC( 2 ) : ( SEC( 1 ) / 4 );
     for( syn_c = i = 0; i < SYNC_LEN; ++i, syn_c = (syn_c + SYNC_INC) & 0xff ) {
         if( WaitByte( wait ) != syn_c ) {  /* error -- timeout or incorrect data */
             return( FAIL );
         }
-        wait = SEC(1)/4;
+        wait = SEC( 1 ) / 4;
     }
     return( SUCCESS );
 }
@@ -158,17 +164,19 @@ static int CheckSyncString( void )
 
 static int ReceiverHandshake( void )
 {
-    int reply;         /* storing data received from other machine */
-    int wait_time;
+    int         reply;         /* storing data received from other machine */
+    unsigned    wait_time;
 
     wait_time = WaitCount() + SYNC_TIME_OUT;
-    if( MaxBaud == MIN_BAUD ) wait_time += SEC(1);
-    for( ;; ) {             /* loop until SYNC_END received or time out */
-        reply = WaitByte( 1 );             /* get character */
-        if( reply == SYNC_END ) break;     /* SYNC_END received; continue */
-        if( reply == SYNC_BYTE ) {         /* SYNC_BYTE received; send ACK */
+    if( MaxBaud == MIN_BAUD )
+        wait_time += SEC( 1 );
+    for( ;; ) {                         /* loop until SYNC_END received or time out */
+        reply = WaitByte( 1 );              /* get character */
+        if( reply == SYNC_END )
+            break;                          /* SYNC_END received; continue */
+        if( reply == SYNC_BYTE ) {          /* SYNC_BYTE received; send ACK */
             SendByte( SDATA_ACK );
-        } else if( reply == SDATA_HI ) {        /* return HI received */
+        } else if( reply == SDATA_HI ) {    /* return HI received */
             SendByte( SDATA_HI );
         } else if( WaitCount() >= wait_time ) { /* 2 sec time out */
             return( FAIL );
@@ -184,12 +192,13 @@ static int SetBaudReceiver( void )
 {
     unsigned    wait;
 
-    if( !ReceiverHandshake() ) return( FAIL );
+    if( !ReceiverHandshake() )
+        return( FAIL );
     /* sync string should have been received; and in receive buffer now
        CheckSyncString() checks if sync string is received successfully */
     if( CheckSyncString() ) {
         SendByte( SDATA_TAK );
-        wait = (MaxBaud == MIN_BAUD) ? SEC(2) : SEC(1)/2;
+        wait = (MaxBaud == MIN_BAUD) ? SEC( 2 ) : SEC( 1 ) / 2;
         if( WaitByte( wait ) == SDATA_ACK ) {
             SendByte( SDATA_TAK );
             return( SUCCESS );
@@ -217,7 +226,8 @@ static int SetBaud( int baud_index, int *sync_point_p )
 
     sync_point = *sync_point_p;
     *sync_point_p += MAX_BAUD_SET_TICKS + 3*SYNC_SLOP;
-    if( !Baud( baud_index ) ) return( FAIL );       /* sets up baud rate */
+    if( !Baud( baud_index ) )
+        return( FAIL );       /* sets up baud rate */
     SyncPoint( sync_point );
     ClearCom();
     Wait( SYNC_SLOP );
@@ -229,11 +239,15 @@ static int SetBaud( int baud_index, int *sync_point_p )
     /* now go the other way */
     *sync_point_p += BaudTable[ baud_index ].full_test_ticks;
 #ifdef SERVER
-    if( !SetBaudReceiver() ) return( FAIL );
-    if( !SetBaudSender() ) return( FAIL );
+    if( !SetBaudReceiver() )
+        return( FAIL );
+    if( !SetBaudSender() )
+        return( FAIL );
 #else
-    if( !SetBaudSender() ) return( FAIL );
-    if( !SetBaudReceiver() ) return( FAIL );
+    if( !SetBaudSender() )
+        return( FAIL );
+    if( !SetBaudReceiver() )
+        return( FAIL );
 #endif
     return( SUCCESS );
 }
@@ -257,7 +271,7 @@ static bool MarchToTheSameDrummer( void )
 #ifndef SERVER
     SendByte( SDATA_ACK );
 #else
-    if( ( got = WaitByte( SEC(1)/2 ) ) != SDATA_ACK ) {
+    if( ( got = WaitByte( SEC( 1 ) / 2 ) ) != SDATA_ACK ) {
         return( FAIL );
     }
 #endif
@@ -270,10 +284,12 @@ static bool MarchToTheSameDrummer( void )
 static bool SetSyncTime( void )
 {
     if( MaxBaud != MIN_BAUD ) {
-        if( !Baud( LOW_BAUD ) ) return( FAIL );
+        if( !Baud( LOW_BAUD ) ) {
+            return( FAIL );
+        }
     }
 #ifdef SERVER
-    if( WaitByte( SEC(1)/10 ) != SDATA_HI ) {
+    if( WaitByte( SEC( 1 ) / 10 ) != SDATA_HI ) {
         return( FAIL );
     }
 #else
@@ -294,10 +310,12 @@ static int Speed( void )
 {
     int  sync_point;
 
-    if( !MarchToTheSameDrummer() ) return( FAIL );
+    if( !MarchToTheSameDrummer() )
+        return( FAIL );
     sync_point = MAX_BAUD_SET_TICKS;
     for( ;; ) {
-        if( SetBaud( BaudCounter, &sync_point ) ) break;
+        if( SetBaud( BaudCounter, &sync_point ) )
+            break;
         ++BaudCounter;                /*  ... try next slower speed */
         if( BaudCounter >= MIN_BAUD ) {
             BaudCounter = MIN_BAUD;
@@ -413,7 +431,7 @@ static int BlockSend( trap_elen len, const void *data, unsigned timeout )
     crc_low = crc_value & 0xff;        /* low 8 bits of crc_value */
     crc_hi  = crc_value >> 8;          /* high 8 bits of crc_value */
 
-    wait = (MaxBaud == MIN_BAUD) ? SEC(2) : SEC(1);
+    wait = ( MaxBaud == MIN_BAUD ) ? SEC( 2 ) : SEC( 1 );
     for( ;; ) {                 /* send block loop */
         /* send the block */
         StartBlockTrans();
@@ -453,7 +471,7 @@ static int BlockSend( trap_elen len, const void *data, unsigned timeout )
                     SendByte( LastResponse );
                     break;     /* break out ackno loop; re-send block */
                 } else {       /* things are totally messed up */
-                    while( WaitByte( SEC(3)/4 ) != SDATA_NO_DATA )
+                    while( WaitByte( SEC( 3 ) / 4 ) != SDATA_NO_DATA )
                         ;             /* discard all characters sent */
                     SendByte( SDATA_RLR );     /* request last response */
                     ++Errors;
@@ -489,7 +507,7 @@ static int BlockReceive( byte *err, trap_elen max_len, void *p )
 
     ZeroWaitCount();
     BytesReceived = 0;
-    wait = (MaxBaud == MIN_BAUD) ? SEC(1)/2 : SEC(1)/4;
+    wait = (MaxBaud == MIN_BAUD) ? SEC( 1 ) / 2 : SEC( 1 ) / 4;
     /* Receiving bytes before actual data (up to err byte) */
     for( i = 1; i <= 7; ++i ) {
         c = WaitByte( wait );
@@ -575,7 +593,9 @@ static int WaitReceive( byte *err, trap_elen max_len, void *p, unsigned timeout 
         data = WaitByte( 1 );
         if( data == SDATA_STX ) {           /* STX received, get block */
             result = BlockReceive( err, max_len, p );
-            if( result ) return( result );
+            if( result ) {
+                return( result );
+            }
         } else if( data == SDATA_RLR ) {    /* RLR received */
             SendByte( SDATA_NAK );          /* tell the other end to resend block */
         } else if( (timeout != FOREVER) && (WaitCount() >= wait_time) ) {
@@ -595,8 +615,10 @@ static int ReSync( void )
     int result;            /* result of ReSyncing */
 
     ++BaudCounter;              /* next slower speed */
-    if( BaudCounter > MIN_BAUD ) BaudCounter = MIN_BAUD;
-    while( SetSyncTime() == FAIL ) ;
+    if( BaudCounter > MIN_BAUD )
+        BaudCounter = MIN_BAUD;
+    while( SetSyncTime() == FAIL )
+        ;
     result = Speed();           /* sync */
     return( result );
 }
@@ -655,7 +677,8 @@ static const char *CollectParm( const char *parm, char *arg, int *len )
 
     i = 0;
     while( *parm >= '0' && *parm <= '9' ) {
-        if( i < 7 ) arg[i] = *parm;
+        if( i < 7 )
+            arg[i] = *parm;
         ++parm;
         ++i;
     }
@@ -679,22 +702,27 @@ static char *SetLinkParms( const char **pparm )
         ++parm;
 
     result = ParsePortSpec( &parm );
-    if( result != NULL ) return( result );
+    if( result != NULL )
+        return( result );
 
     arg1_len = 0;
     if( *parm == '.' ) {
         ++parm;
         parm = CollectParm( parm, arg1, &arg1_len );
-        if( arg1_len >= 7 ) return( TRP_ERR_invalid_baud_rate );
+        if( arg1_len >= 7 ) {
+            return( TRP_ERR_invalid_baud_rate );
+        }
     }
     *pparm = parm;
-    if( arg1_len == 0 ) return( NULL );
+    if( arg1_len == 0 )
+        return( NULL );
     arg1[ arg1_len ] = '\0';
     if( StrEq( arg1, "0" ) ) {
         MaxBaud = MIN_BAUD;
         return( NULL );
     }
-    if( arg1_len < 2 ) return( TRP_ERR_ambiguous_baud_rate );
+    if( arg1_len < 2 )
+        return( TRP_ERR_ambiguous_baud_rate );
     return( SetMaxBaud( arg1 ) );
 }
 
@@ -714,11 +742,11 @@ static char *SetupModem( const char *parm )
 {
     const char  *start;
     unsigned    wait;
-    unsigned    ch;
+    int         ch;
     int         data;
 
     Baud( MaxBaud );
-    wait = SEC(3);
+    wait = SEC( 3 );
     while( *parm == ' ' || *parm == '\t' )
         ++parm;
     if( *parm == '\0' )
@@ -727,12 +755,14 @@ static char *SetupModem( const char *parm )
         if( *parm == '(' ) {
             start = ++parm;
             for( ;; ) {
-                ch = *parm;
-                if( ch == '\0' ) goto done;
+                ch = *(unsigned char *)parm;
+                if( ch == '\0' )
+                    goto done;
                 ++parm;
-                if( ch == ')' ) break;
+                if( ch == ')' )
+                    break;
                 if( ch == '\\' ) {
-                    ch = *parm++;
+                    ch = (unsigned char)*parm++;
                     switch( ch ) {
                     case '\0':
                         return( TRP_ERR_invalid_modem_string );
@@ -746,26 +776,30 @@ static char *SetupModem( const char *parm )
                 }
                 data = WaitByte( wait );
                 if( data == SDATA_NO_DATA ) {
-                    if( wait != SEC(60) ) {
-                        wait = SEC(60);
+                    if( wait != SEC( 60 ) ) {
+                        wait = SEC( 60 );
                     } else {
                         return( TRP_ERR_timeout_on_modem_string );
                     }
                     --parm;
                 } else {
-                    wait = SEC(3);
-                    if( data != ch ) parm = start;
+                    wait = SEC( 3 );
+                    if( data != ch ) {
+                        parm = start;
+                    }
                 }
             }
         } else {
-            Wait( SEC(1)/5 );
+            Wait( SEC( 1 ) / 5 );
             for( ;; ) {
-                ch = *parm;
-                if( ch == '\0' ) goto done;
-                if( ch == '(' ) break;
+                ch = *(unsigned char *)parm;
+                if( ch == '\0' )
+                    goto done;
+                if( ch == '(' )
+                    break;
                 ++parm;
                 if( ch == '\\' ) {
-                    ch = *parm++;
+                    ch = (unsigned char)*parm++;
                     switch( ch ) {
                     case '\0':
                         return( TRP_ERR_invalid_modem_string );
@@ -773,11 +807,11 @@ static char *SetupModem( const char *parm )
                         Wait( 1 );
                         break;
                     case '~':
-                        Wait( SEC(1) );
+                        Wait( SEC( 1 ) );
                         break;
                     case 'r':
                         SlowSend( '\r' );
-                        Wait( SEC(1)/2 );
+                        Wait( SEC( 1 ) / 2 );
                         break;
                     case 'n':
                         SlowSend( '\n' );
@@ -803,17 +837,18 @@ done:
     wait = 1;
     for( ;; ) {
         data = WaitByte( wait );
-        if( data == EXPECT_CHAR ) break;
+        if( data == EXPECT_CHAR )
+            break;
         if( data == SDATA_NO_DATA ) {
-            if( wait != SEC(10) ) {
-                wait = SEC(10);
+            if( wait != SEC( 10 ) ) {
+                wait = SEC( 10 );
                 SendByte( SEND_CHAR );
             } else {
                 return( TRP_ERR_modem_failed_connection );
             }
         }
     }
-    if( wait != SEC(10) )
+    if( wait != SEC( 10 ) )
         SendByte( SEND_CHAR );
     return( NULL );
 }

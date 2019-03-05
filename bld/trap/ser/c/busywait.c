@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,8 +35,6 @@
 #include "serlink.h"
 #include "nothing.h"
 
-extern  int             GetByte( void );
-extern  unsigned        WaitCount( void );
 
 int WaitByte( unsigned timer_ticks )
 {
@@ -45,8 +44,10 @@ int WaitByte( unsigned timer_ticks )
     wait_time = WaitCount() + timer_ticks;
     for( ;; ) {
         data = GetByte();
-        if( data != SDATA_NO_DATA ) break;    /* character received */
-        if( WaitCount() >= wait_time ) break;
+        if( data != SDATA_NO_DATA )
+            break;    /* character received */
+        if( WaitCount() >= wait_time )
+            break;
         NothingToDo();
     }
     return( data );
