@@ -151,9 +151,9 @@ bld_cxx_flags = -EHsc
 bld_ldflags1 = $(common_ldflags) -Fm
 
 bld_ldflags  =  -link -nologo &
-    -INCREMENTAL:NO -DEFAULTLIB:user32.lib -DEFAULTLIB:ole32.lib -DEFAULTLIB:advapi32.lib &
-    -DEFAULTLIB:shell32.lib -DEFAULTLIB:gdi32.lib -DEFAULTLIB:comdlg32.lib $(bld_extra_ldflags) &
-    $(bld_ldflags_$(proj_type))
+    -MAPINFO:EXPORTS -INCREMENTAL:NO -DEFAULTLIB:user32.lib -DEFAULTLIB:ole32.lib &
+    -DEFAULTLIB:advapi32.lib -DEFAULTLIB:shell32.lib -DEFAULTLIB:gdi32.lib -DEFAULTLIB:comdlg32.lib &
+    $(bld_extra_ldflags) $(bld_ldflags_$(proj_type))
 
 # options for linking via cl
 bld_clflags  = $(bld_cppflags) $(common_cflags) $(common_flags) -Fe$@ $(cl_extra_libs_gen) $(bld_ldflags1)
