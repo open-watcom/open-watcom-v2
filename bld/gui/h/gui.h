@@ -608,7 +608,7 @@ typedef struct gui_timer_event {
 
 /* Initialization Functions */
 
-extern bool GUIWndInit( unsigned rate, gui_window_styles style );
+extern bool GUIWndInit( unsigned dclick_ms, gui_window_styles style );
 extern void GUIGMouseOn( void );
 extern void GUIGMouseOff( void );
 extern void GUIMDIInit( void );
