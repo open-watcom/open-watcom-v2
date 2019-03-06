@@ -46,8 +46,8 @@ void    InitGUI( coordinate_system coord_system, gui_ord w, gui_ord h,
 
     gui_coord   scale;
 
-    // 300 uS mouse double click rate, graphics mouse
-    GUIWndInit( 300, GUI_GMOUSE );
+    // 300 ms mouse double click rate, graphics mouse
+    GUIWndInit( 300 /* ms */, GUI_GMOUSE );
     GUI3DDialogInit();
 
     if( coord_system == COORD_SCREEN ) {

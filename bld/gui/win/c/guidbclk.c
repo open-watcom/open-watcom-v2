@@ -32,7 +32,7 @@
 
 #include "guiwind.h"
 
-void GUISetDClickRate( unsigned rate )
+void GUISetDClickRate( unsigned dclick_ms )
 {
-    _wpi_setdoubleclicktime( rate );
+    _wpi_setdoubleclicktime( dclick_ms );
 }

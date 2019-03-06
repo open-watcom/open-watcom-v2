@@ -103,7 +103,7 @@ extern void _wpi_getpaintrect( PAINTSTRUCT *ps, WPI_RECT *rect );
     #define _wpi_setmintracksize(info,width,height) \
         info->ptMinTrackSize.x = width; info->ptMinTrackSize.y = height
 
-    #define _wpi_setdoubleclicktime( rate ) SetDoubleClickTime( rate )
+    #define _wpi_setdoubleclicktime( dclick_ms ) SetDoubleClickTime( dclick_ms )
 
     #define _wpi_iswindowenabled( hwnd ) IsWindowEnabled( hwnd )
 

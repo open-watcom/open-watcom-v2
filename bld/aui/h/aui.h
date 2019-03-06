@@ -47,8 +47,8 @@
 #define Say(x)              WndDisplayMessage( x, "Information", GUI_INFORMATION );
 #define Say2(y,x)           WndDisplayMessage( x, y, GUI_INFORMATION );
 
-#define MIN_DCLICK          100
-#define MAX_DCLICK          1500
+#define MIN_DCLICK          100 /* ms */
+#define MAX_DCLICK          1500 /* ms */
 #define MAX_MAGIC_STR       20
 #define WND_MAX_PIECE       UCHAR_MAX
 #define WND_NO_PIECE        UCHAR_MAX
@@ -535,8 +535,8 @@ extern bool                 WndNextFromHistory( save_area *save, char *cmd );
 extern bool                 WndPrevFromHistory( save_area *save, char *cmd );
 extern void                 WndSaveToHistory( save_area *save, char *cmd );
 
-extern void                 WndSetDClick( int );
-extern int                  WndGetDClick( void );
+extern void                 WndSetDClick( unsigned dclick_ms );
+extern unsigned             WndGetDClick( void );
 
 extern char                 *WndLoadString( gui_res_id id );
 extern void                 NullPopupMenu( gui_menu_struct *menu );

@@ -226,7 +226,7 @@ static bool StatusGUIEventProc( gui_window * gui, gui_event gui_ev, void * param
 
 void GUImain( void )
 {
-    GUIWndInit( 250, GUI_GMOUSE );
+    GUIWndInit( 250 /* ms */, GUI_GMOUSE );
     GUISetScale( &Scale );
     GUISetColour( &Colours );
     GUICreateDialog( &DialogWnd, NUM_CONTROLS, &GetNew );

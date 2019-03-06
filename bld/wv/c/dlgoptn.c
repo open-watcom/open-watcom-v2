@@ -47,7 +47,7 @@ typedef struct dlg_window_set {
 
 static void GetDlgStatus( gui_window *gui )
 {
-    long        tmp;
+    long        value;
     mad_radix   old_radix;
 
     old_radix = NewCurrRadix( 10 );
@@ -58,12 +58,12 @@ static void GetDlgStatus( gui_window *gui )
     _SwitchSet( SW_FLIP, GUIIsChecked( gui, CTL_OPT_FLIP ) );
     _SwitchSet( SW_DONT_EXPAND_HEX, GUIIsChecked( gui, CTL_OPT_NOHEX ) );
     LookCaseSet( !GUIIsChecked( gui, CTL_OPT_CASE ) );
-    if( DlgGetLong( gui, CTL_OPT_RADIX, &tmp ) ) {
-        DefaultRadixSet( tmp );
+    if( DlgGetLong( gui, CTL_OPT_RADIX, &value ) ) {
+        DefaultRadixSet( value );
         old_radix = NewCurrRadix( 10 );
     }
-    if( DlgGetLong( gui, CTL_OPT_DCLICK, &tmp ) ) {
-        WndSetDClick( tmp );
+    if( DlgGetLong( gui, CTL_OPT_DCLICK, &value ) ) {
+        WndSetDClick( (unsigned)value );
     }
     NewCurrRadix( old_radix );
 

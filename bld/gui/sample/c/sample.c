@@ -1601,7 +1601,7 @@ void GUImain( void )
     gui_colour_set      colour_set;
 #endif
 
-    GUIWndInit( 300, GUI_GMOUSE );
+    GUIWndInit( 300 /* ms */, GUI_GMOUSE );
     GUI3DDialogInit();
 #if mdi
     GUIMDIInitMenuOnly();

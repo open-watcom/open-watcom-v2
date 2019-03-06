@@ -620,7 +620,7 @@ extern void GUIGetRoundScale( gui_coord *scale );
 extern void GUISetScale( gui_rect *screen );
 extern void GUIGetScale( gui_rect *screen );
 extern void GUIGetScreen( gui_rect *rect );
-extern void GUISetDClickRate( unsigned rate );
+extern void GUISetDClickRate( unsigned dclick_ms );
 extern void GUISetCharacter( gui_draw_char draw_char, int new_char );
 extern int  GUIGetCharacter( gui_draw_char draw_char );
 extern bool GUIIsInit( void );

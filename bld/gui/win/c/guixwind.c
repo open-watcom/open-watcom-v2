@@ -369,11 +369,11 @@ void GUIShowWindowNA( gui_window *wnd )
  * GUIWndInit -- initialize display windows
  */
 
-bool GUIWndInit( unsigned DClickInterval, gui_window_styles style )
+bool GUIWndInit( unsigned dclick_ms, gui_window_styles style )
 {
     Style = style;
     GUISysInit( INIT_MOUSE_INITIALIZED );       /* user replaceable stub function */
-    _wpi_setdoubleclicktime( DClickInterval );
+    _wpi_setdoubleclicktime( dclick_ms );
     GUISetScreen( 0, 0, _wpi_getsystemmetrics( SM_CXSCREEN ), _wpi_getsystemmetrics( SM_CYSCREEN ) );
     GUIInitDialog();
     return( true );

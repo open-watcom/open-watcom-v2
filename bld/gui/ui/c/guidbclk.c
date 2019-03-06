@@ -32,7 +32,7 @@
 
 #include "guiwind.h"
 
-void GUISetDClickRate( unsigned rate )
+void GUISetDClickRate( unsigned dclick_ms )
 {
-    UIData->mouse_clk_delay = uiclockdelay( rate );
+    UIData->mouse_clk_delay = uiclockdelay( dclick_ms );
 }

@@ -48,24 +48,24 @@ gui_coord               WndScale;
 a_window                WndMain;
 wnd_switches            WndSwitches;
 int                     WndMaxDirtyRects = 6;
-int                     WndDClick = 300;
 bool                    WndIgnoreAllEvents = false;
 WNDCLICKHOOK            *WndClickHook;
 
+static unsigned         wndDClick_ms = 300 /* ms */;
 static int              wndProcNesting = 0;
 static gui_colour_set   Colours = { GUI_BLACK, GUI_BLACK };
 static gui_mcursor_type wndCursorType = GUI_ARROW_CURSOR;
 static char             *BusyString = NULL;
 
-int WndGetDClick( void )
+unsigned WndGetDClick( void )
 {
-    return( WndDClick );
+    return( wndDClick_ms );
 }
 
-void WndSetDClick( int new )
+void WndSetDClick( unsigned dclick_ms )
 {
-    WndDClick = new;
-    GUISetDClickRate( new );
+    wndDClick_ms = dclick_ms;
+    GUISetDClickRate( dclick_ms );
 }
 
 static void Rescale( void )
@@ -90,7 +90,7 @@ static bool WndInitBody( char *title, res_name_or_id resource_menu )
 {
     wnd_create_struct   info;
 
-    if( !GUIWndInit( WndDClick, WndStyle ) )
+    if( !GUIWndInit( wndDClick_ms, WndStyle ) )
         return( false );
     GUIMDIInitMenuOnly();
     GUI3DDialogInit();

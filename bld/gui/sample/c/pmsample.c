@@ -73,7 +73,7 @@ static gui_create_info Child = {
 
 void GUImain( void )
 {
-    GUIWndInit( 300, GUI_GMOUSE );
+    GUIWndInit( 300 /* ms */, GUI_GMOUSE );
     GUISetScale( &Scale );
     Child.parent = GUICreateWindow( &Parent );
     GUICreateWindow( &Child );

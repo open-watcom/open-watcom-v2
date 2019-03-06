@@ -339,8 +339,8 @@ extern void _wpi_getpaintrect( PAINTSTRUCT *ps, WPI_RECT *rect );
     #define _wpi_setmintracksize(info,width,height) \
         info->ptlMinTrackSize.x = width; info->ptlMinTrackSize.y = height
 
-    #define _wpi_setdoubleclicktime( rate ) \
-                            WinSetSysValue( HWND_DESKTOP, SV_DBLCLKTIME, rate )
+    #define _wpi_setdoubleclicktime( dclick_ms ) \
+                            WinSetSysValue( HWND_DESKTOP, SV_DBLCLKTIME, dclick_ms )
 
     #define _wpi_iswindowenabled( hwnd ) WinIsWindowEnabled( hwnd )
 

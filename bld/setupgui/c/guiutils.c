@@ -269,7 +269,7 @@ bool SetupPreInit( int argc, char **argv )
     NominalButtonWidth = strlen( LIT( Cancel ) ) + 5;
 
     /* Initialize enough of the GUI lib to let us show message boxes etc. */
-    GUIWndInit( 300, GUI_PLAIN ); // 300 uS mouse dbl click rate, no char remapping
+    GUIWndInit( 300 /* ms */, GUI_PLAIN ); // 300 uS mouse dbl click rate, no char remapping
     GUISetCharacter( GUI_SCROLL_SLIDER, 177 );
     GUISetBetweenTitles( 2 );
     GUIScale.x = WND_APPROX_SIZE;
