@@ -37,6 +37,7 @@ wsplice_opts_os2   = -k FOR_OS2
 wsplice_opts_win   = -k FOR_WIN
 
 wsplice_opts_axp   = -k FOR_AXP
+wsplice_opts_x64   = -k FOR_X64
 
 .sp.cfg:
     @%make echo_wsplice
