@@ -45,7 +45,7 @@ void GUIDrawIcon( gui_window * wnd )
     COPYAREA( wnd->screen.area, area );
     area.row = 0;
     area.col = 0;
-    attr = wnd->colours[GUI_ICON];
+    attr = WNDATTR( wnd, GUI_ICON );
     uivfill( &wnd->screen, area, attr, ' ' );
     uidrawbox( &wnd->screen, &area, attr, NULL );
     if( wnd->icon_name != NULL ) {

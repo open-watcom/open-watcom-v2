@@ -84,6 +84,9 @@ typedef enum flags {
 
 #define GUI_IS_DIALOG( wnd )    ( (wnd->flags & IS_DIALOG) != 0 )
 
+#define WNDATTRFG( wnd, attr )  (wnd)->attrs[attr].fore
+#define WNDATTRBG( wnd, attr )  (wnd)->attrs[attr].back
+
 typedef struct wnd_colour {
     WPI_COLOUR fore;
     WPI_COLOUR back;
@@ -145,7 +148,7 @@ struct gui_window {
     gui_scroll_styles   scroll;
     gui_flags           flags;
     int                 num_attrs;
-    gui_colour_set      *colours;
+    gui_colour_set      *attrs;
     gui_ord             num_rows;
     gui_ord             old_rows;
     gui_ord             num_cols;

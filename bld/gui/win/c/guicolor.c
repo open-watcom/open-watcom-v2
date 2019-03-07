@@ -140,8 +140,8 @@ bool GUIGetWndColour( gui_window *wnd, gui_attr attr, gui_colour_set *colour_set
         return( false );
     }
     if( attr < wnd->num_attrs ) {
-        colour_set->fore = wnd->colours[attr].fore;
-        colour_set->back = wnd->colours[attr].back;
+        colour_set->fore = WNDATTRFG( wnd, attr );
+        colour_set->back = WNDATTRBG( wnd, attr );
         return( true );
     }
     return( false );
@@ -154,7 +154,7 @@ static void SetBKBrush( gui_window *wnd )
         init_rgb = 1;
     }
 
-    GUIGetRGB( wnd->colours[GUI_BACKGROUND].back, &wnd->bk_rgb );
+    GUIGetRGB( WNDATTRBG( wnd, GUI_BACKGROUND ), &wnd->bk_rgb );
     wnd->bk_brush = _wpi_createsolidbrush(GUIGetBack( wnd, GUI_BACKGROUND ));
 }
 
@@ -196,8 +196,8 @@ bool GUISetWndColour( gui_window *wnd, gui_attr attr, gui_colour_set *colour_set
         return( false );
     }
     if( attr < wnd->num_attrs ) {
-        wnd->colours[attr].fore = colour_set->fore;
-        wnd->colours[attr].back = colour_set->back;
+        WNDATTRFG( wnd, attr ) = colour_set->fore;
+        WNDATTRBG( wnd, attr ) = colour_set->back;
         if( attr == GUI_BACKGROUND ) {
             ChangeBKBrush( wnd );
         }
@@ -286,7 +286,7 @@ bool GUIXSetColours( gui_window *wnd, int num_attrs, gui_colour_set *colours )
         size = sizeof( gui_colour_set ) * num_attrs;
         attrs = (gui_colour_set *)GUIMemAlloc( size );
         if( attrs != NULL ) {
-            wnd->colours = attrs;
+            wnd->attrs = attrs;
             wnd->num_attrs = num_attrs;
             memcpy( attrs, colours, size );
             SetBKBrush( wnd );
@@ -298,7 +298,7 @@ bool GUIXSetColours( gui_window *wnd, int num_attrs, gui_colour_set *colours )
 
 void GUIXGetWindowColours( gui_window *wnd, gui_colour_set *colours )
 {
-    memcpy( colours, wnd->colours, sizeof( gui_colour_set ) * wnd->num_attrs );
+    memcpy( colours, wnd->attrs, sizeof( gui_colour_set ) * wnd->num_attrs );
 }
 
 HBRUSH GUIFreeBKBrush( gui_window * wnd )
@@ -330,10 +330,10 @@ void GUISetWindowColours( gui_window *wnd, int num_colours,
 
 WPI_COLOUR GUIGetFore( gui_window *wnd, gui_attr attr )
 {
-    return( GUIColours[wnd->colours[attr].fore] );
+    return( GUIColours[WNDATTRFG( wnd, attr )] );
 }
 
 WPI_COLOUR GUIGetBack( gui_window *wnd, gui_attr attr )
 {
-    return( GUIColours[wnd->colours[attr].back] );
+    return( GUIColours[WNDATTRBG( wnd, attr )] );
 }

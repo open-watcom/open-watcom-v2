@@ -78,14 +78,14 @@ static void SetScrollAttrs( gui_window *wnd, ATTR *scroll_bar,
     active = ( wnd == GUICurrWnd ) || ( wnd->parent == NULL );
     offset = 0;
     if( active ) {
-        UIData->attrs[ATTR_SCROLL_BAR] = wnd->colours[GUI_FRAME_ACTIVE];
-        UIData->attrs[ATTR_SCROLL_ICON] = wnd->colours[GUI_FRAME_ACTIVE];
+        UIData->attrs[ATTR_SCROLL_BAR]  = WNDATTR( wnd, GUI_FRAME_ACTIVE );
+        UIData->attrs[ATTR_SCROLL_ICON] = WNDATTR( wnd, GUI_FRAME_ACTIVE );
     } else {
         if( (GUIGetWindowStyles() & GUI_INACT_SAME) == 0 ) {
             offset = GUI_INACTIVE_OFFSET;
         }
-        UIData->attrs[ATTR_SCROLL_BAR] = wnd->colours[GUI_FRAME_INACTIVE];
-        UIData->attrs[ATTR_SCROLL_ICON] = wnd->colours[GUI_FRAME_INACTIVE];
+        UIData->attrs[ATTR_SCROLL_BAR]  = WNDATTR( wnd, GUI_FRAME_INACTIVE );
+        UIData->attrs[ATTR_SCROLL_ICON] = WNDATTR( wnd, GUI_FRAME_INACTIVE );
     }
     VertScrollFrame[0] = GUIGetCharacter( GUI_VERT_SCROLL + offset );
     HorzScrollFrame[0] = GUIGetCharacter( GUI_HOR_SCROLL + offset);

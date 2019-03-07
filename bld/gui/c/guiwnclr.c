@@ -84,9 +84,9 @@ bool GUISetColours( gui_window *wnd, int num_attrs, gui_colour_set *colours )
 
 void GUIFreeColours( gui_window *wnd )
 {
-    GUIMemFree( wnd->colours );
+    GUIMemFree( wnd->attrs );
     wnd->num_attrs = 0;
-    wnd->colours = NULL;
+    wnd->attrs = NULL;
 }
 
 int GUIGetNumWindowColours( gui_window *wnd )

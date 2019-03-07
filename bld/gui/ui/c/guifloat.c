@@ -160,13 +160,13 @@ ui_event GUICreateMenuPopup( gui_window *wnd, gui_point *location, UIMENUITEM *m
     attr_curr_inactive  = UIData->attrs[ATTR_CURR_INACTIVE];
     attr_menu           = UIData->attrs[ATTR_MENU];
 
-    UIData->attrs[ATTR_ACTIVE]          = wnd->colours[GUI_MENU_PLAIN];
-    UIData->attrs[ATTR_HOT]             = wnd->colours[GUI_MENU_STANDOUT];
-    UIData->attrs[ATTR_CURR_ACTIVE]     = wnd->colours[GUI_MENU_ACTIVE];
-    UIData->attrs[ATTR_HOT_CURR]        = wnd->colours[GUI_MENU_ACTIVE_STANDOUT];
-    UIData->attrs[ATTR_INACTIVE]        = wnd->colours[GUI_MENU_GRAYED];
-    UIData->attrs[ATTR_CURR_INACTIVE]   = wnd->colours[GUI_MENU_GRAYED_ACTIVE];
-    UIData->attrs[ATTR_MENU]            = wnd->colours[GUI_MENU_FRAME];
+    UIData->attrs[ATTR_ACTIVE]          = WNDATTR( wnd, GUI_MENU_PLAIN );
+    UIData->attrs[ATTR_HOT]             = WNDATTR( wnd, GUI_MENU_STANDOUT );
+    UIData->attrs[ATTR_CURR_ACTIVE]     = WNDATTR( wnd, GUI_MENU_ACTIVE );
+    UIData->attrs[ATTR_HOT_CURR]        = WNDATTR( wnd, GUI_MENU_ACTIVE_STANDOUT );
+    UIData->attrs[ATTR_INACTIVE]        = WNDATTR( wnd, GUI_MENU_GRAYED );
+    UIData->attrs[ATTR_CURR_INACTIVE]   = WNDATTR( wnd, GUI_MENU_GRAYED_ACTIVE );
+    UIData->attrs[ATTR_MENU]            = WNDATTR( wnd, GUI_MENU_FRAME );
 
     ui_ev = EV_NO_EVENT;
     if( ( curr_id != NULL ) && ( *curr_id != 0 ) ) {

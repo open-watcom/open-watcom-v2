@@ -58,6 +58,8 @@
 
 #define MIN_GADGET_SIZE         2
 
+#define WNDATTR( wnd, attr )    (wnd)->attrs[attr]
+
 typedef enum {
     NONE                        = 0x0000,
     TITLE_INVALID               = 0x0001,
@@ -119,7 +121,7 @@ struct gui_window {
     VSCREEN             screen;         /* must be first field - see call to uivopen */
     gui_create_styles   style;          // style window was created with
     int                 num_attrs;      // number of colours
-    ATTR                *colours;       // colours for window
+    ATTR                *attrs;         // colours for window
     SAREA               use;            // area inside the frame
     SAREA               prev_area;      // location for restore after max/min
     SAREA               dirty;          // area that is dirty

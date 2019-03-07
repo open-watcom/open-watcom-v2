@@ -54,7 +54,7 @@ static void StartMoveResize( gui_window *wnd, resize_dir dir )
     area.width--;
     area.height--;
     uimenudisable( true );
-    uibandinit( area, wnd->colours[GUI_FRAME_RESIZE] );
+    uibandinit( area, WNDATTR( wnd, GUI_FRAME_RESIZE ) );
     Direction = dir;
 }
 
