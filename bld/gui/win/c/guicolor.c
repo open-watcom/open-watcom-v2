@@ -40,8 +40,6 @@
 #include "guixwind.h"
 
 
-static int init_rgb = 0;
-
 WPI_COLOUR GUIColours[] = {
 #ifdef __OS2_PM__
 //      R G B
@@ -149,9 +147,11 @@ bool GUIGetWndColour( gui_window *wnd, gui_attr attr, gui_colour_set *colour_set
 
 static void SetBKBrush( gui_window *wnd )
 {
-    if( !init_rgb ) {
+    static bool sys_rgb_initialized = false;
+
+    if( !sys_rgb_initialized ) {
         InitSystemRGB();
-        init_rgb = 1;
+        sys_rgb_initialized = true;
     }
 
     GUIGetRGB( WNDATTRBG( wnd, GUI_BACKGROUND ), &wnd->bk_rgb );
@@ -209,8 +209,8 @@ bool GUISetWndColour( gui_window *wnd, gui_attr attr, gui_colour_set *colour_set
 bool GUIGetRGBFromUser( gui_rgb init_rgb, gui_rgb *new_rgb )
 {
 #ifdef __OS2_PM__
-    init_rgb = init_rgb;
-    new_rgb = new_rgb;
+    /* unused parameters */ (void)init_rgb; (void)new_rgb;
+
     return( false );
 #else
     CHOOSECOLOR     choose;
