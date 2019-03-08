@@ -456,8 +456,8 @@ extern void                 WndCursorUp( a_window wnd );
 extern void                 WndScrollUp( a_window wnd );
 extern void                 WndSetVScrollRange( a_window wnd, wnd_row rows );
 extern void                 WndChooseNew( void );
-extern void                 WndKeyPopUp( a_window, gui_menu_struct * );
-extern void                 WndPopUp( a_window, gui_menu_struct * );
+extern void                 WndKeyPopUp( a_window, const gui_menu_struct * );
+extern void                 WndPopUp( a_window, const gui_menu_struct * );
 extern void                 WndMenuIgnoreAll( a_window wnd );
 extern void                 WndMenuRespectAll( a_window wnd );
 extern void                 WndMenuEnableAll( a_window wnd );
@@ -539,7 +539,7 @@ extern void                 WndSetDClick( unsigned dclick_ms );
 extern unsigned             WndGetDClick( void );
 
 extern char                 *WndLoadString( gui_res_id id );
-extern void                 NullPopupMenu( gui_menu_struct *menu );
+extern void                 NullPopupMenu( const gui_menu_struct *menu );
 
 extern void                 WndChangeMenuAll( gui_menu_items *menus, bool on, int bit );
 extern gui_message_return   WndDisplayMessage( const char *msg, const char *cap, gui_message_type type );

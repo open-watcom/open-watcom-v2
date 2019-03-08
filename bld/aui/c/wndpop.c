@@ -54,7 +54,7 @@ static gui_ctl_id CalcMenuMaxId( const gui_menu_items *menus )
     return( maxid );
 }
 
-void NullPopupMenu( gui_menu_struct *menu )
+void NullPopupMenu( const gui_menu_struct *menu )
 {
     int             i;
     gui_menu_items  *child;
@@ -239,7 +239,7 @@ void    WndKeyPopItem( a_window wnd, bool paint_immed )
 }
 
 
-void    WndPopUp( a_window wnd, gui_menu_struct *menu )
+void    WndPopUp( a_window wnd, const gui_menu_struct *menu )
 {
     gui_point           point;
 
@@ -365,7 +365,7 @@ void WndCreateFloatingPopup( a_window wnd, gui_point *point, const gui_menu_item
 }
 
 
-void    WndInvokePopUp( a_window wnd, gui_point *point, gui_menu_struct *menu )
+void    WndInvokePopUp( a_window wnd, gui_point *point, const gui_menu_struct *menu )
 {
     gui_ctl_id  dummy;
 
@@ -402,7 +402,7 @@ static void WndGetPopPoint( a_window wnd, gui_point *point )
     }
 }
 
-void    WndKeyPopUp( a_window wnd, gui_menu_struct *menu )
+void    WndKeyPopUp( a_window wnd, const gui_menu_struct *menu )
 {
     gui_point           point;
 
@@ -412,7 +412,7 @@ void    WndKeyPopUp( a_window wnd, gui_menu_struct *menu )
 }
 
 
-void    WndRowPopUp( a_window wnd, gui_menu_struct *menu, wnd_row row, wnd_piece piece )
+void    WndRowPopUp( a_window wnd, const gui_menu_struct *menu, wnd_row row, wnd_piece piece )
 {
     gui_point           point;
 
@@ -441,7 +441,7 @@ void WndClick( a_window wnd, gui_ctl_id id )
     }
 }
 
-static void WndSetPopupBits( a_window wnd, gui_menu_struct *menu )
+static void WndSetPopupBits( a_window wnd, const gui_menu_struct *menu )
 {
     int                 i;
     gui_menu_struct     *child;
@@ -451,9 +451,7 @@ static void WndSetPopupBits( a_window wnd, gui_menu_struct *menu )
         if( (child->style & GUI_STYLE_MENU_SEPARATOR) == 0 ) {
             GUIEnableMenuItem( WndMain->gui, child->id, wnd && (child->style & GUI_STYLE_MENU_GRAYED) == 0, false );
             GUICheckMenuItem( WndMain->gui, child->id, wnd && (child->style & GUI_STYLE_MENU_CHECKED) != 0, false );
-            if( child->child.menu != NULL ) {
-                WndSetPopupBits( wnd, child );
-            }
+            WndSetPopupBits( wnd, child );
         }
         child++;
     }
