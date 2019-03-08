@@ -62,17 +62,15 @@ bool GUIXCreateFixedToolbar( gui_window *wnd )
     gui_menu_struct         menu;
     char                    *with_excl;
     toolbarinfo             *tbar;
-    gui_toolbar_items       toolinfo;
 
     tbar = wnd->tbar;
     tbar->fixed = true;
     menu.child = NoMenu;
     menu.style = GUI_STYLE_MENU_ENABLED;
 
-    toolinfo = tbar->toolinfo;
-    for( i = 0; i < toolinfo.num_items; i++ ) {
+    for( i = 0; i < tbar->toolinfo.num_items; i++ ) {
         with_excl = NULL;
-        menu.label = toolinfo.toolbar[i].label;
+        menu.label = tbar->toolinfo.toolbar[i].label;
         if( menu.label != NULL ) {
             with_excl = (char *)GUIMemAlloc( strlen( menu.label ) + 2 );
             if( with_excl != NULL ) {
@@ -81,12 +79,12 @@ bool GUIXCreateFixedToolbar( gui_window *wnd )
             }
             menu.label = with_excl;
         }
-        menu.id = toolinfo.toolbar[i].id;
-        menu.hinttext = toolinfo.toolbar[i].hinttext;
-        if( !GUIAppendToolbarMenu( wnd, &menu, ( i == ( toolinfo.num_items - 1 ) ) ) ) {
+        menu.id = tbar->toolinfo.toolbar[i].id;
+        menu.hinttext = tbar->toolinfo.toolbar[i].hinttext;
+        if( !GUIAppendToolbarMenu( wnd, &menu, ( i == ( tbar->toolinfo.num_items - 1 ) ) ) ) {
             GUIMemFree( with_excl );
             while( i-- > 0 ) {
-                GUIDeleteToolbarMenuItem( wnd, toolinfo.toolbar[i].id );
+                GUIDeleteToolbarMenuItem( wnd, tbar->toolinfo.toolbar[i].id );
             }
             return( false );
         }
