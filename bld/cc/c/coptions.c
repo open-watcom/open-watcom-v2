@@ -1188,7 +1188,7 @@ static void SetDataSegName( void )
 {
     SwData.nd_used = true;
     DataSegName = CopyOfParm();
-    SegImportNearInit();
+    ImportNearSegIdInit();
     if( *DataSegName == '\0' ) {
         CMemFree( DataSegName );
         DataSegName = NULL;

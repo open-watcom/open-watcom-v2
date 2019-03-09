@@ -177,7 +177,7 @@ global FIELDPTR     ErrSym;
 
 #if _CPU == 386
 global BACK_HANDLE  FunctionProfileBlock;   /* handle for profiling data block */
-global segment_id   FunctionProfileSegment; /* segment for profiling data block */
+global segment_id   FunctionProfileSegId;   /* segment for profiling data block */
 #endif
 
 global int          MacroDepth;
@@ -217,7 +217,7 @@ global ppctl_t      Pre_processing;
 global comp_flags   CompFlags;
 global global_comp_flags GlobalCompFlags;
 global segment_id   SegmentNum;         /* next PRIVATE segment number to use */
-global segment_id   FarStringSegment;
+global segment_id   FarStringSegId;
 
 global jmp_buf      *Environment;       /* var for Suicide() */
 
@@ -230,8 +230,6 @@ global token_class  Class[MAX_LEVEL];
 global expr_level_type ExprLevel;
 
 global segment_list *SegListHead;
-global segment_id   SegImport;          /* next segment # for import sym */
-global segment_id   SegData;            /* data segment # for -nd option */
 
 global TREEPTR      FirstStmt;          /* root of expression tree */
 
@@ -613,8 +611,8 @@ extern void         SetSegAlign(SYMPTR);
 extern void         AssignSeg(SYMPTR);
 extern segment_id   SymSegId( SYMPTR sym );
 extern void         SetSegSymHandle( SYM_HANDLE sym_handle, segment_id segid );
-extern void         SegImportNearInit( void );
-extern void         SegImportInit( void );
+extern void         ImportNearSegIdInit( void );
+extern void         ImportSegIdInit( void );
 
 /* cintmain.c */
 extern void         ConsErrMsg( cmsg_info  *info );

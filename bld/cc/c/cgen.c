@@ -1131,7 +1131,7 @@ static TREEPTR LinearizeTree( TREEPTR tree )
 void EmitInit( void )
 {
     SegListHead = NULL;
-    SegImportInit();
+    ImportSegIdInit();
     Refno = TY_FIRST_FREE;
 }
 
@@ -1384,7 +1384,7 @@ void DoCompile( void )
             if( cgi_info.success ) {
 #if _CPU == 386
                 if( TargetSwitches & (P5_PROFILING | NEW_P5_PROFILING) ) {
-                    FunctionProfileSegment = AddSegName( "TI", "DATA", SEGTYPE_INITFINI );
+                    FunctionProfileSegId = AddSegName( "TI", "DATA", SEGTYPE_INITFINI );
                 }
 #endif
                 SetSegs();
@@ -1533,7 +1533,7 @@ static bool DoFuncDefn( SYM_HANDLE funcsym_handle )
 
         fn_name = FEName( (CGSYM_HANDLE)funcsym_handle );
         len = strlen( fn_name ) + 1;
-        old_segid = BESetSeg( FunctionProfileSegment );
+        old_segid = BESetSeg( FunctionProfileSegId );
         FunctionProfileBlock = BENewBack( NULL );
         DGLabel( FunctionProfileBlock );
         DGInteger( 0,   TY_INTEGER );
@@ -1885,7 +1885,7 @@ static segment_id StringSegment( STR_HANDLE strlit )
 {
 #if ( _CPU == 8086 ) || ( _CPU == 386 )
     if( strlit->flags & STRLIT_FAR )
-        return( FarStringSegment );
+        return( FarStringSegId );
 #endif
     if( strlit->flags & STRLIT_CONST )
         return( SEG_CODE );

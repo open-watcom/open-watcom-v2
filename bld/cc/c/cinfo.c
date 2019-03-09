@@ -75,8 +75,8 @@ static seg_name Predefined_Segs[] = {
 static user_seg     *userSegments;
 static segment_id   userSegId;
 
-static segment_id   import_segid               = SEG_UNKNOWN; /* next segment # for import sym */
-static segment_id   import_near_segid                 = SEG_UNKNOWN; /* data seg # for -nd option */
+static segment_id   import_segid      = SEG_UNKNOWN;    /* next segment # for import sym */
+static segment_id   import_near_segid = SEG_UNKNOWN;    /* data seg # for -nd option */
 
 void AssignSeg( SYMPTR sym )
 {
@@ -607,7 +607,7 @@ void    SetSegs( void )
         BEDefSeg( SEG_BSS, GLOBAL, TS_SEG_BSS, SegAlign( SegAlignment[SEG_BSS] ) );
     }
     if( CompFlags.far_strings ) {
-        FarStringSegment = SegmentNum++;
+        FarStringSegId = SegmentNum++;
     }
     name = CMemAlloc( strlen( ModuleName ) + 10 + sizeof( "_DATA" ) );
     for( segid = FIRST_PRIVATE_SEGMENT; segid < SegmentNum; ++segid ) {
@@ -992,12 +992,12 @@ void SetSegAlign( SYMPTR sym )
     }
 }
 
-void SegImportNearInit( void )
+void ImportNearSegIdInit( void )
 {
     import_near_segid = -1;
 }
 
-void SegImportInit( void )
+void ImportSegIdInit( void )
 {
     if( import_near_segid != SEG_UNKNOWN ) {
         import_segid = import_near_segid - 1;

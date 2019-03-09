@@ -129,7 +129,7 @@ void InitGlobalVars( void )
 
 #if _CPU == 386
     FunctionProfileBlock    = NULL; /* handle for profiling data block */
-    FunctionProfileSegment  = SEG_UNKNOWN; /* segment for profiling data block */
+    FunctionProfileSegId    = SEG_UNKNOWN; /* segment for profiling data block */
 #endif
 
     MacroDepth              = 0;
@@ -155,7 +155,7 @@ void InitGlobalVars( void )
     LitPoolSize             = 0;
     MacroSize               = 0;
     SegmentNum              = 0;    /* next PRIVATE segment number to use */
-    FarStringSegment        = SEG_UNKNOWN;
+    FarStringSegId          = SEG_UNKNOWN;
 
     Environment             = NULL; /* var for Suicide() */
 
