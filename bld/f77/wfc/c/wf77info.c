@@ -119,7 +119,7 @@ static  unsigned char   DefCodeAlignSeq[] = { 2, 1, 1 };
 #endif
 static  sym_id          ImpSym;
 static  segment_id      CurrSegId;
-static  segment_id      CurrImpSegId;
+static  segment_id      import_segid;
 static  cg_type         UserType;
 
 static  dbg_type        DBGTypes[] = {
@@ -212,7 +212,7 @@ static  segment_id      AllocSegId( void ) {
 void    InitSubSegs( void ) {
 //=====================
 
-    CurrImpSegId = -1;
+    import_segid = -1;
 }
 
 
@@ -221,8 +221,7 @@ segment_id      AllocImpSegId( void ) {
 
     segment_id  segid;
 
-    segid = CurrImpSegId;
-    --CurrImpSegId;
+    segid = import_segid--;
     return( segid );
 }
 

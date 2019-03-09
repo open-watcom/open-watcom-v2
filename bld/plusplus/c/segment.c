@@ -81,7 +81,7 @@ typedef struct {                            // DEF_SEG -- code/data default segm
 } DEF_SEG;
 
 static fe_seg_id    segid_max;              // last segment # used
-static fe_seg_id    segid_import;           // next import segment #
+static fe_seg_id    import_segid;           // next import segment #
 #if _INTEL_CPU
 static fe_seg_id    segid_code_comdat;      // segment # for code comdat
 #endif
@@ -187,7 +187,7 @@ static SYMBOL segEmitLabel(         // EMIT SEGMENT LABEL
 static void checkSegmentOverflow(   // CHECK FOR SEGMENTS OVERFLOW
     void )
 {
-    if( segid_max < 0 || segid_import >= 0 ) {
+    if( segid_max < 0 || import_segid >= 0 ) {
         CFatal( "Too many segments -- sub-divide source module" );
     }
 }
@@ -847,9 +847,9 @@ fe_seg_id SegmentAddComdatData( // ADD SEGMENT FOR A COMDAT DATA SYMBOL
 fe_seg_id SegmentImport(        // GET NEXT IMPORT SEGMENT #
     void )
 {
-    --segid_import;
+    --import_segid;
     checkSegmentOverflow();
-    return( segid_import );
+    return( import_segid );
 }
 
 
@@ -1118,7 +1118,7 @@ void SegmentInit(               // SEGMENT: INITIALIZATION
         segid_code_comdat = SEG_NULL;
 #endif
     }
-    segid_import = -1;
+    import_segid = -1;
     // code seg
     initDefaultCodeSeg( code_seg_name );
     // string literal data seg
