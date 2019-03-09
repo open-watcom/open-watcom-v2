@@ -582,21 +582,17 @@ void    SetSegs( void )
     segment_id      segid;
     user_seg        *useg;
     textsegment     *tseg;
-    int             flags;
     char            *name;
     align_type      optsize_segalign;
 
     CompFlags.low_on_memory_printed = false;
-    flags = GLOBAL | INIT | EXEC;
-    if( *TextSegName == '\0' ) {
-        name = TS_SEG_CODE;
-    } else {
-        name = TextSegName;
-        flags |= GIVEN_NAME;
-    }
     optsize_segalign = ( OptSize == 0 ) ? (align_type)BETypeLength( TY_INTEGER ) : 1;
 
-    BEDefSeg( SEG_CODE, flags, name, SegAlign( optsize_segalign ) );
+    if( *TextSegName == '\0' ) {
+        BEDefSeg( SEG_CODE, GLOBAL | INIT | EXEC, TS_SEG_CODE, SegAlign( optsize_segalign ) );
+    } else {
+        BEDefSeg( SEG_CODE, GLOBAL | INIT | EXEC | GIVEN_NAME, TextSegName, SegAlign( optsize_segalign ) );
+    }
     BEDefSeg( SEG_CONST, BACK|INIT|ROM, TS_SEG_CONST, SegAlign( SegAlignment[SEG_CONST] ) );
     BEDefSeg( SEG_CONST2, INIT | ROM, TS_SEG_CONST2, SegAlign( SegAlignment[SEG_CONST2] ) );
     BEDefSeg( SEG_DATA,  GLOBAL | INIT, TS_SEG_DATA, SegAlign( SegAlignment[SEG_DATA] ) );
