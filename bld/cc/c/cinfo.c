@@ -72,9 +72,11 @@ static seg_name Predefined_Segs[] = {
 
 #define FIRST_USER_SEGMENT      10000
 
-static  user_seg    *userSegments;
-static  segment_id  userSegId;
+static user_seg     *userSegments;
+static segment_id   userSegId;
 
+static segment_id   import_segid               = SEG_UNKNOWN; /* next segment # for import sym */
+static segment_id   import_near_segid                 = SEG_UNKNOWN; /* data seg # for -nd option */
 
 void AssignSeg( SYMPTR sym )
 {
@@ -95,9 +97,9 @@ void AssignSeg( SYMPTR sym )
             SetSegAlign( sym );
         }
     } else if( sym->mods & (FLAG_FAR | FLAG_HUGE) ) {
-        sym->u.var.segid = SegImport--;
-    } else if( (SegData != SEG_UNKNOWN) && (sym->mods & FLAG_NEAR) ) {  // imported and near
-        sym->u.var.segid = SegData;
+        sym->u.var.segid = import_segid--;
+    } else if( (import_near_segid != SEG_UNKNOWN) && (sym->mods & FLAG_NEAR) ) {  // imported and near
+        sym->u.var.segid = import_near_segid;
     }
 }
 
@@ -836,7 +838,7 @@ segment_id FESegID( CGSYM_HANDLE cgsym_handle )
             } else if( attr & FE_IMPORT ) {
                 if( (sym->mods & FLAG_FAR) || (TargetSwitches & BIG_CODE) ) {
                     if( sym->flags & SYM_ADDR_TAKEN ) {
-                        segid = SegImport--;
+                        segid = import_segid--;
                     }
                 }
             }
@@ -987,5 +989,19 @@ void SetSegAlign( SYMPTR sym )
         if( SegAlignment[segid] < align ) {
             SegAlignment[segid] = align;
         }
+    }
+}
+
+void SegImportNearInit( void )
+{
+    import_near_segid = -1;
+}
+
+void SegImportInit( void )
+{
+    if( import_near_segid != SEG_UNKNOWN ) {
+        import_segid = import_near_segid - 1;
+    } else {
+        import_segid = -1;
     }
 }

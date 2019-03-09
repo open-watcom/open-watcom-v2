@@ -482,10 +482,6 @@ extern TYPEPTR      *MakeParmList( parm_list *, bool );
 extern FIELDPTR     FieldCreate( const char *name );
 extern bool         LoopDecl( SYM_HANDLE *sym_head );
 
-/* cinfo.c */
-extern segment_id   SymSegId( SYMPTR sym );
-extern void         SetSegSymHandle( SYM_HANDLE sym_handle, segment_id segid );
-
 /* cdinit */
 extern void         InitDataQuads(void);
 extern void         FreeDataQuads(void);
@@ -615,6 +611,10 @@ extern hw_reg_set   *SegPeggedReg(segment_id);
 extern void         SetSegment(SYMPTR);
 extern void         SetSegAlign(SYMPTR);
 extern void         AssignSeg(SYMPTR);
+extern segment_id   SymSegId( SYMPTR sym );
+extern void         SetSegSymHandle( SYM_HANDLE sym_handle, segment_id segid );
+extern void         SegImportNearInit( void );
+extern void         SegImportInit( void );
 
 /* cintmain.c */
 extern void         ConsErrMsg( cmsg_info  *info );

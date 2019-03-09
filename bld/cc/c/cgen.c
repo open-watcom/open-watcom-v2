@@ -1131,11 +1131,7 @@ static TREEPTR LinearizeTree( TREEPTR tree )
 void EmitInit( void )
 {
     SegListHead = NULL;
-    if( SegData != SEG_UNKNOWN ) {
-        SegImport = SegData - 1;
-    } else {
-        SegImport = -1;
-    }
+    SegImportInit();
     Refno = TY_FIRST_FREE;
 }
 

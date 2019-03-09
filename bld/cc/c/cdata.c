@@ -164,8 +164,6 @@ void InitGlobalVars( void )
     ExprLevel               = 0;
 
     SegListHead             = NULL;
-    SegImport               = SEG_UNKNOWN; /* next segment # for import sym */
-    SegData                 = SEG_UNKNOWN; /* data seg # for -nd option */
 
     ScopeStruct             = 0;
     ScopeUnion              = 0;
