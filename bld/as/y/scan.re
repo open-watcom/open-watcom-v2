@@ -252,9 +252,9 @@ ppchar  = "#";          /* preprocessor character */
 empstr  = "";           /* empty string */
 */
 
-int yylex( void ) {
-//*****************
-
+unsigned short yylex( void ) 
+//**************************
+{
         if( DirGetNextScanState() ) goto getdirop;
 std:    tok = cursor;
 /*!re2c
@@ -424,7 +424,7 @@ nl                      { ++yylineno; return( T_NEWLINE ); }
 :endsegment
 any                     {
                             if( eofPtr && ( cursor == eofPtr ) ) {
-                                return( 0 ); // end of input
+                                return( T_EOF ); // end of input
                             }
                             return( T_ERROR );
                         }

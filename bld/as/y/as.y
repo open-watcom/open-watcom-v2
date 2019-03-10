@@ -33,7 +33,6 @@ static directive_t      *AsCurrDir;
 :endsegment
 }
 
-%token  <null>  T_ERROR
 :segment _STANDALONE_
 %token  <file>  T_FILE_SWITCH   /* indicating a #line; info in <file> */
 :endsegment
