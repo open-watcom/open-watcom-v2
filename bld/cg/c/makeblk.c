@@ -74,7 +74,7 @@ block   *MakeBlock( label_handle label, block_num edges )
     blk->input_edges = NULL;
     blk->targets = 0;
     blk->dataflow = NULL;
-    blk->cc = NULL;
+    blk->u1.cc = NULL;
     blk->loop_head = NULL;
     blk->unroll_count = 0;
     blk->stack_depth = 0;

@@ -117,7 +117,7 @@ static void DoMarkUsedCC( block *blk )
     instruction *ins;
     block_edge  *edge;
 
-    ins = ((cc_control *)blk->cc)->ins;
+    ins = blk->u1.cc->ins;
     if( ins != NULL ) {
         ins->ins_flags |= INS_CC_USED;
     } else {
@@ -133,7 +133,7 @@ static void DoMarkUsedCC( block *blk )
 static void MarkUsedCC( block *blk )
 /***********************************
     We have to mark the instructions that set the condition codes
-    as INS_CC_USED. If the blk->cc->ins field is non-NULL, that means that
+    as INS_CC_USED. If the blk->u1.cc->ins field is non-NULL, that means that
     the instruction pointed at is the one that set the flags, otherwise
     the condition codes were flowed in from other blocks, so we have to
     mark the instructions that set the flags in those blocks.
@@ -145,7 +145,7 @@ static void MarkUsedCC( block *blk )
 
 static  bool    Traverse( block *blk, name *zero )
 /*************************************************
-    Given a starting condition code setting for "blk" (blk->cc),
+    Given a starting condition code setting for "blk" (blk->u1.cc),
     traverse the block, modifying the condition codes accordingly, and
     see if the will suffice for a conditional instruction that we
     encounter, thus eliminating the compare.
@@ -158,7 +158,7 @@ static  bool    Traverse( block *blk, name *zero )
     int                 jumps;
 
     change = false;
-    cc = blk->cc;
+    cc = blk->u1.cc;
     cc->ins = NULL;
     jumps = 0;
     for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
@@ -276,11 +276,11 @@ static  void    GatherSources( block *blk )
     cc_control  *cc;
 
     edge = blk->input_edges;
-    cc = blk->cc;
+    cc = blk->u1.cc;
     if( edge == NULL ) {
         cc->state = UNKNOWN_STATE;
     } else {
-        source_cc = edge->source->cc;
+        source_cc = edge->source->u1.cc;
         cc->state = source_cc->state;
         cc->left_op = source_cc->left_op;
         cc->right_op = source_cc->right_op;
@@ -292,7 +292,7 @@ static  void    GatherSources( block *blk )
             edge = edge->next_source;
             if( edge == NULL )
                 break;
-            source_cc = edge->source->cc;
+            source_cc = edge->source->u1.cc;
             if( source_cc->state == UNKNOWN_STATE ) {
                 cc->state = UNKNOWN_STATE;
             } else {
@@ -376,11 +376,11 @@ void    Conditions( void )
         cc->result_op = NULL;
         cc->ins = NULL;
         cc->op_type = XX;
-        blk->cc = cc;
+        blk->u1.cc = cc;
         _MarkBlkUnVisited( blk );
     }
     FlowConditions();
     for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
-        CGFree( blk->cc );
+        CGFree( blk->u1.cc );
     }
 }

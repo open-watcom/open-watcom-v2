@@ -154,7 +154,7 @@ bool    DoScore( block *blk )
             break;
         change = true;
     }
-    scoreboard = blk->cc;
+    scoreboard = blk->u1.scoreboard;
     had_condition = false;
     for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = next ) {
         ScoreSegments( scoreboard );

@@ -136,6 +136,9 @@ typedef struct block_ins {
 
 #define _BLOCK( ins ) ( ( (block_ins *)ins)->blk )
 
+typedef struct cc_control       cc_control;
+typedef struct score            score;
+
 typedef struct block {
         struct block_ins        ins;
         struct block            *next_block;    /* used for DFS */
@@ -148,7 +151,10 @@ typedef struct block {
         struct block            *loop_head;
         struct data_flow_def    *dataflow;
         struct block_edge       *input_edges;
-        pointer                 cc;             /* AKA cc_control */
+        union {
+            cc_control          *cc;            /* used by condition control */
+            score               *scoreboard;    /* used by score */
+        } u1;
         dominator_info          dom;            /* least node in dominator set */
         type_length             stack_depth;    /* set by FlowSave stuff */
         union {
