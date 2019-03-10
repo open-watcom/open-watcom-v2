@@ -150,12 +150,12 @@ bool    ChangeIns( instruction *ins, name *to, name **op, change_type flags )
 }
 
 
-static  bool    TryOldIndex( score *sc, instruction *ins, name **opp ) {
-/***********************************************************************
+static  bool    TryOldIndex( score *scoreboard, instruction *ins, name **opp )
+/*****************************************************************************
     Try to find an 'older' index register to replace the index of
     "*opp", in instruction "ins", given register scoreboard "sc".
 */
-
+{
     name        *op;
     score       *this_reg;
     score       *curr_reg;
@@ -169,7 +169,7 @@ static  bool    TryOldIndex( score *sc, instruction *ins, name **opp ) {
         return( false );
     if( op->i.index->r.reg_index == NO_INDEX )
         return( false );
-    this_reg = &sc[op->i.index->r.reg_index];
+    this_reg = &scoreboard[op->i.index->r.reg_index];
     for( curr_reg = this_reg->next_reg; curr_reg != this_reg; curr_reg = curr_reg->next_reg ) {
         if( curr_reg->generation < this_reg->generation ) {
             reg_name = ScoreList[curr_reg->index]->reg_name;
@@ -192,13 +192,13 @@ static  bool    TryOldIndex( score *sc, instruction *ins, name **opp ) {
     return( false );
 }
 
-static  bool    TryRegOp( score *sc, instruction *ins, name **opp ) {
-/********************************************************************
+static  bool    TryRegOp( score *scoreboard, instruction *ins, name **opp )
+/**************************************************************************
     See if we can find an equivalent register operand for the operand
     "*opp" in instruction "ins", given that the current state of
     registers is reflected by scoreboard "sc".
 */
-
+{
     name        *op;
     int         i;
     hw_reg_set  live;
@@ -211,7 +211,7 @@ static  bool    TryRegOp( score *sc, instruction *ins, name **opp ) {
     op = *opp;
     if( op->n.class == N_REGISTER ) {
         live = ins->head.next->head.live.regs;
-        this_reg = &sc[op->r.reg_index];
+        this_reg = &scoreboard[op->r.reg_index];
         if( !HW_Ovlap( live, op->r.reg ) ) {
             for( curr_reg = this_reg->next_reg; curr_reg != this_reg; curr_reg = curr_reg->next_reg ) {
                 if( HW_Ovlap( live, ScoreList[curr_reg->index]->reg )
@@ -242,19 +242,19 @@ static  bool    TryRegOp( score *sc, instruction *ins, name **opp ) {
             }
         }
         for( i = ScoreCount; i-- > 0; ) {
-            if( ScoreEqual( sc, i, &info ) && ChangeIns( ins, ScoreList[i]->reg_name, opp, CHANGE_GEN ) ) {
+            if( ScoreEqual( scoreboard, i, &info ) && ChangeIns( ins, ScoreList[i]->reg_name, opp, CHANGE_GEN ) ) {
                 return( true );
             }
         }
 
         /*% couldn't find a register operand, try for an older index*/
-        return( TryOldIndex( sc, ins, opp ) );
+        return( TryOldIndex( scoreboard, ins, opp ) );
     }
 }
 
 
-bool    FindRegOpnd( score *sc, instruction *ins )
-/*************************************************
+bool    FindRegOpnd( score *scoreboard, instruction *ins )
+/*********************************************************
     See if we can find an operand of "ins" that could be replaces by a
     register or an 'older' register (one that was defined first).
 */
@@ -266,20 +266,20 @@ bool    FindRegOpnd( score *sc, instruction *ins )
         return( false );
     change = false;
     for( i = OpcodeNumOperands( ins ); i-- > 0; ) {
-        if( TryRegOp( sc, ins, &ins->operands[i] ) ) {
+        if( TryRegOp( scoreboard, ins, &ins->operands[i] ) ) {
             change = true;
         }
     }
     if( ins->result != NULL ) {
-        if( TryOldIndex( sc, ins, &ins->result ) ) {
+        if( TryOldIndex( scoreboard, ins, &ins->result ) ) {
             change = true;
         }
     }
     return( change );
 }
 
-void    ScoreMakeEqual( score *sc, name *op1, name *op2 )
-/********************************************************
+void    ScoreMakeEqual( score *scoreboard, name *op1, name *op2 )
+/**************************************************************
     Make 'op1' and 'op2' equivalent in scoreboarder information
         - one of them must be a register
 */
@@ -296,20 +296,20 @@ void    ScoreMakeEqual( score *sc, name *op1, name *op2 )
     if( op2->n.class == N_REGISTER ) {
         op2_index = op2->r.reg_index;
         if( op1->n.class == N_REGISTER ) {
-            RegAdd( sc, op2_index, op1->r.reg_index );
+            RegAdd( scoreboard, op2_index, op1->r.reg_index );
         } else {
             ScoreInfo( &info, op1 );
             /* NB: reg can never have the value x[reg]*/
             if( info.index_reg == NO_INDEX
                 || !HW_Ovlap( op2->r.reg, ScoreList[info.index_reg]->reg ) ) {
-                ScoreAssign( sc, op2_index, &info );
+                ScoreAssign( scoreboard, op2_index, &info );
             }
         }
     }
 }
 
-bool    ScoreMove( score *sc, instruction *ins )
-/***********************************************
+bool    ScoreMove( score *scoreboard, instruction *ins )
+/*******************************************************
     Update "sc" to reflect the affect of an OP_MOV instruction "ins" on
     the registers and memory locations.
 */
@@ -329,25 +329,25 @@ bool    ScoreMove( score *sc, instruction *ins )
     if( dst->n.class == N_REGISTER ) {
         dst_index = dst->r.reg_index;
         if( src->n.class == N_REGISTER ) {
-            if( RegsEqual( sc,  dst_index, src_index ) ) {
+            if( RegsEqual( scoreboard,  dst_index, src_index ) ) {
                 FreeIns( ins );
                 return( true );
             } else {
-                RegKill( sc, dst->r.reg );
-                RegAdd( sc, dst_index, src_index );
+                RegKill( scoreboard, dst->r.reg );
+                RegAdd( scoreboard, dst_index, src_index );
             }
         } else {
             ScoreInfo( &info, src );
-            if( ScoreEqual( sc, dst->r.reg_index, &info ) ) {
+            if( ScoreEqual( scoreboard, dst->r.reg_index, &info ) ) {
                 FreeIns( ins );
                 return( true );
             } else {
-                RegKill( sc, dst->r.reg );
+                RegKill( scoreboard, dst->r.reg );
                 /* NB: reg can never have the value x[reg]*/
                if( info.index_reg == NO_INDEX
                 || !HW_Ovlap( dst->r.reg, ScoreList[info.index_reg]->reg ) ) {
                     if( !FPIsConvert( ins ) ) {
-                        ScoreAssign( sc, dst_index, &info );
+                        ScoreAssign( scoreboard, dst_index, &info );
                     }
                 }
             }
@@ -355,25 +355,25 @@ bool    ScoreMove( score *sc, instruction *ins )
     } else {
         ScoreInfo( &info, dst );
         if( src->n.class == N_REGISTER ) {       /* and dst is not a register*/
-            if( ScoreEqual( sc, src->r.reg_index, &info ) ) {
+            if( ScoreEqual( scoreboard, src->r.reg_index, &info ) ) {
                 FreeIns( ins );
                 return( true );
             } else {
-                ScoreKillInfo( sc, dst, &info, src->r.reg );
+                ScoreKillInfo( scoreboard, dst, &info, src->r.reg );
                 if( !FPIsConvert( ins ) ) {
-                    ScoreAssign( sc, src_index, &info );
+                    ScoreAssign( scoreboard, src_index, &info );
                 }
             }
         } else {
-            ScoreKillInfo( sc, dst, &info, HW_EMPTY );
+            ScoreKillInfo( scoreboard, dst, &info, HW_EMPTY );
         }
     }
     return( false );
 }
 
 
-bool    ScoreLA( score *sc, instruction *ins )
-/*********************************************
+bool    ScoreLA( score *scoreboard, instruction *ins )
+/*****************************************************
     Update "sc" to reflect the affect of an OP_MOV instruction "ins" on
     the registers and memory locations.
 */
@@ -388,24 +388,24 @@ bool    ScoreLA( score *sc, instruction *ins )
     if( dst->n.class == N_REGISTER ) {
         dst_index = dst->r.reg_index;
         if( !ScoreLAInfo( &info, src ) ) {
-            RegKill( sc, dst->r.reg );
-        } else if( ScoreEqual( sc, dst->r.reg_index, &info ) ) {
+            RegKill( scoreboard, dst->r.reg );
+        } else if( ScoreEqual( scoreboard, dst->r.reg_index, &info ) ) {
             FreeIns( ins );
             return( true );
         } else {
-            RegKill( sc, dst->r.reg );
-            ScoreAssign( sc, dst_index, &info );
+            RegKill( scoreboard, dst->r.reg );
+            ScoreAssign( scoreboard, dst_index, &info );
         }
     } else {
         ScoreInfo( &info, dst );
-        ScoreKillInfo( sc, dst, &info, HW_EMPTY );
+        ScoreKillInfo( scoreboard, dst, &info, HW_EMPTY );
     }
     return( false );
 }
 
 
-void    ScZeroCheck( score *sc, instruction *ins )
-/*************************************************
+void    ScZeroCheck( score *scoreboard, instruction *ins )
+/*********************************************************
     Check if instruction "ins" ends up with the result being Zero.  For
     example SUB R1,R1 => R1, results in R1 becoming 0.
 */
@@ -423,5 +423,5 @@ void    ScZeroCheck( score *sc, instruction *ins )
     if( ins->operands[0]->n.class != N_REGISTER )
         return;
     i = ins->result->r.reg_index;
-    ScoreAssign( sc, i, ScZero );
+    ScoreAssign( scoreboard, i, ScZero );
 }

@@ -43,10 +43,6 @@
 #include "feprotos.h"
 
 
-extern  int             ScoreCount;
-extern  score_reg       **ScoreList;
-
-
 static  void    DumpScList( score_list *curr )
 /********************************************/
 {
@@ -101,8 +97,8 @@ static  void    DumpScList( score_list *curr )
 }
 
 
-void    DumpSc( score *sc )
-/*************************/
+void    DumpSc( score *scoreboard )
+/*********************************/
 {
     score_reg   *entry;
     score_list  *curr;
@@ -118,16 +114,16 @@ void    DumpSc( score *sc )
         DumpInt( entry->low );
         DumpLiteral( " high " );
         DumpInt( entry->high );
-        for( reg = sc->next_reg; reg != sc; reg = reg->next_reg ) {
+        for( reg = scoreboard->next_reg; reg != scoreboard; reg = reg->next_reg ) {
             DumpLiteral( "==" );
             DumpRegName( ScoreList[reg->index]->reg );
         }
         DumpLiteral( " generation " );
-        DumpInt( sc->generation );
+        DumpInt( scoreboard->generation );
         DumpNL();
-        for( curr = *sc->list; curr != NULL; curr = curr->next ) {
+        for( curr = *scoreboard->list; curr != NULL; curr = curr->next ) {
             DumpScList( curr );
         }
-        ++sc;
+        ++scoreboard;
     }
 }

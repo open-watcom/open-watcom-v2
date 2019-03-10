@@ -120,26 +120,26 @@ static  void    CopyList( score *frm, score *to,
 }
 
 
-static  void    ScoreCopy( score *other_sc, score *sc )
-/*****************************************************/
+static  void    ScoreCopy( score *other_scoreboard, score *scoreboard )
+/*********************************************************************/
 {
     list_head   **sc_heads;
     int         i;
 
-    FreeScoreBoard( sc );
-    sc_heads = (list_head **)&sc[ScoreCount];
+    FreeScoreBoard( scoreboard );
+    sc_heads = (list_head **)&scoreboard[ScoreCount];
     for( i = ScoreCount; i-- > 0; ) {
-        sc[i].next_reg = &sc[other_sc[i].next_reg->index];
-        sc[i].prev_reg = &sc[other_sc[i].prev_reg->index];
-        sc[i].generation = other_sc[i].generation;
-        sc[i].list = NULL;
+        scoreboard[i].next_reg = &scoreboard[other_scoreboard[i].next_reg->index];
+        scoreboard[i].prev_reg = &scoreboard[other_scoreboard[i].prev_reg->index];
+        scoreboard[i].generation = other_scoreboard[i].generation;
+        scoreboard[i].list = NULL;
         *sc_heads = (list_head *)sc_heads + 1;
         ++sc_heads;
     }
     *sc_heads = NULL;
-    sc_heads = (list_head **)&sc[ScoreCount];
+    sc_heads = (list_head **)&scoreboard[ScoreCount];
     for( i = ScoreCount; i-- > 0; ) {
-        CopyList( other_sc, sc, sc_heads, i );
+        CopyList( other_scoreboard, scoreboard, sc_heads, i );
     }
 }
 
@@ -154,7 +154,7 @@ static  void *ScoreDescendants( block *blk )
     for( i = blk->targets; i-- > 0; ) {
         son = blk->edge[i].destination.u.blk;
         if( ( son->inputs == 1 ) && !_IsBlkVisited( son ) ) {
-            son->u1.scoreboard = ScAlloc( ScoreCount * ( sizeof( score ) + sizeof( list_head ) ) + sizeof( list_head ) );
+            son->u1.scoreboard = ScAlloc( ScoreCount * sizeof( score ) + ( ScoreCount + 1 ) * sizeof( list_head ) );
             ScoreClear( son->u1.scoreboard );
             for( ;; ) {
                 ScoreCopy( blk->u1.scoreboard, son->u1.scoreboard );
@@ -213,7 +213,7 @@ static  void    ScoreRoutine( void )
 //        change = false;
         for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
             if( !_IsBlkVisited( blk ) ) {
-                blk->u1.scoreboard = ScAlloc( ScoreCount * ( sizeof( score ) + sizeof( list_head ) ) + sizeof( list_head ) );
+                blk->u1.scoreboard = ScAlloc( ScoreCount * sizeof( score ) + ( ScoreCount + 1 ) * sizeof( list_head ) );
                 ScoreClear( blk->u1.scoreboard );
                 for( ;; ) {
                     FreeScoreBoard( blk->u1.scoreboard );

@@ -36,38 +36,38 @@
 #include "score.h"
 
 #if 0
-static  void    RegDelete( score *sc, int index ) {
-/*************************************************/
-
-    score       *scoreboard;
+static  void    RegDelete( score *scoreboard, int index )
+/*******************************************************/
+{
+    score       *scoreitem;
     int         half;
     list_head   **free_heads;
 
-    scoreboard = &sc[index];
-    if( scoreboard->next_reg != scoreboard ) {
-        free_heads = (list_head **)&sc[ScoreCount];
-        scoreboard->list = *free_heads;
+    scoreitem = &scoreboard[index];
+    if( scoreitem->next_reg != scoreitem ) {
+        free_heads = (list_head **)&scoreboard[ScoreCount];
+        scoreitem->list = *free_heads;
         *free_heads = (list_head *)**free_heads;
-        *scoreboard->list = NULL;
+        *scoreitem->list = NULL;
     }
-    scoreboard->prev_reg->next_reg = scoreboard->next_reg;
-    scoreboard->next_reg->prev_reg = scoreboard->prev_reg;
-    scoreboard->next_reg = scoreboard;
-    scoreboard->prev_reg = scoreboard;
-    scoreboard->generation = 0;
+    scoreitem->prev_reg->next_reg = scoreitem->next_reg;
+    scoreitem->next_reg->prev_reg = scoreitem->prev_reg;
+    scoreitem->next_reg = scoreitem;
+    scoreitem->prev_reg = scoreitem;
+    scoreitem->generation = 0;
     half = ScoreList[index]->low;
     if( half != NO_INDEX ) {
-        RegDelete( sc, half );
+        RegDelete( scoreboard, half );
     }
     half = ScoreList[index]->high;
     if( half != NO_INDEX ) {
-        RegDelete( sc, half );
+        RegDelete( scoreboard, half );
     }
 }
 #endif
 
-void    RegInsert( score *sc, int dst_idx, int src_idx )
-/******************************************************/
+void    RegInsert( score *scoreboard, int dst_idx, int src_idx )
+/**************************************************************/
 {
     score       *dst;
     score       *src;
@@ -75,29 +75,23 @@ void    RegInsert( score *sc, int dst_idx, int src_idx )
     byte        gen_num;
     list_head   **free_heads;
 
-    src = &sc[src_idx];
-    dst = &sc[dst_idx];
+    src = &scoreboard[src_idx];
+    dst = &scoreboard[dst_idx];
     ScoreFreeList( dst );
-    free_heads = (list_head **)&sc[ScoreCount];
+    free_heads = (list_head **)&scoreboard[ScoreCount];
     *dst->list = (list_head)*free_heads;
     *free_heads = dst->list;
     next = dst;
-    for(;;) {
+    do {
         next->list = src->list;
         next = next->next_reg;
-        if( next == dst ) {
-            break;
-        }
-    }
-    next = src;
+    } while( next != dst );
     gen_num = 0;
-    for(;;) {
-        next = next->next_reg;
+    next = src;
+    do {
         ++gen_num;
-        if( next == src ) {
-            break;
-        }
-    }
+        next = next->next_reg;
+    } while( next != src );
     dst->generation = gen_num;
     src->prev_reg->next_reg = dst;
     dst->prev_reg->next_reg = src;
@@ -107,16 +101,16 @@ void    RegInsert( score *sc, int dst_idx, int src_idx )
 }
 
 
-bool    RegsEqual( score *sc, int i1, int i2 )
-/********************************************/
+bool    RegsEqual( score *scoreboard, int i1, int i2 )
+/****************************************************/
 {
-    return( sc[i1].list == sc[i2].list );
+    return( scoreboard[i1].list == scoreboard[i2].list );
 }
 
 
-static  void    MergeDown( score *sc, int dst_idx, int src_idx ) {
-/****************************************************************/
-
+static void     MergeDown( score *scoreboard, int dst_idx, int src_idx )
+/**********************************************************************/
+{
     int dst_hi;
     int src_hi;
     int dst_lo;
@@ -125,25 +119,25 @@ static  void    MergeDown( score *sc, int dst_idx, int src_idx ) {
     dst_hi = ScoreList[dst_idx]->high;
     src_hi = ScoreList[src_idx]->high;
     if( dst_hi != NO_INDEX && src_hi != NO_INDEX ) {
-        if( !RegsEqual( sc, src_hi, dst_hi ) ) {
-            RegInsert( sc, dst_hi, src_hi );
-            MergeDown( sc, dst_hi, src_hi );
+        if( !RegsEqual( scoreboard, src_hi, dst_hi ) ) {
+            RegInsert( scoreboard, dst_hi, src_hi );
+            MergeDown( scoreboard, dst_hi, src_hi );
         }
     }
     src_lo = ScoreList[src_idx]->low;
     dst_lo = ScoreList[dst_idx]->low;
     if( dst_lo != NO_INDEX && src_lo != NO_INDEX ) {
-        if( !RegsEqual( sc, src_lo, dst_lo ) ) {
-            RegInsert( sc, dst_lo, src_lo );
-            MergeDown( sc, dst_lo, src_lo );
+        if( !RegsEqual( scoreboard, src_lo, dst_lo ) ) {
+            RegInsert( scoreboard, dst_lo, src_lo );
+            MergeDown( scoreboard, dst_lo, src_lo );
         }
     }
 }
 
 
-static  void    MergeUp( score *sc, int dst_idx, int src_idx ) {
-/**************************************************************/
-
+static  void    MergeUp( score *scoreboard, int dst_idx, int src_idx )
+/********************************************************************/
+{
     int dst_hi;
     int src_hi;
     int dst_lo;
@@ -157,19 +151,19 @@ static  void    MergeUp( score *sc, int dst_idx, int src_idx ) {
         dst_lo = ScoreList[dst_hi]->low;
         src_lo = ScoreList[src_hi]->low;
         if( dst_lo != NO_INDEX && src_lo != NO_INDEX
-         && RegsEqual( sc, dst_lo, src_lo )
-         && !RegsEqual( sc, dst_hi, src_hi ) ) {
-            RegInsert( sc, dst_hi, src_hi );
-            MergeUp( sc, dst_hi, src_hi );
+         && RegsEqual( scoreboard, dst_lo, src_lo )
+         && !RegsEqual( scoreboard, dst_hi, src_hi ) ) {
+            RegInsert( scoreboard, dst_hi, src_hi );
+            MergeUp( scoreboard, dst_hi, src_hi );
         }
     } else if( dst_lo != NO_INDEX && src_lo != NO_INDEX ) {
         dst_hi = ScoreList[dst_lo]->high;
         src_hi = ScoreList[src_lo]->high;
         if( dst_hi != NO_INDEX && src_hi != NO_INDEX
-         && RegsEqual( sc, dst_hi, src_hi )
-         && !RegsEqual( sc, dst_lo, src_lo ) ) {
-            RegInsert( sc, dst_lo, src_lo );
-            MergeUp( sc, dst_lo, src_lo );
+         && RegsEqual( scoreboard, dst_hi, src_hi )
+         && !RegsEqual( scoreboard, dst_lo, src_lo ) ) {
+            RegInsert( scoreboard, dst_lo, src_lo );
+            MergeUp( scoreboard, dst_lo, src_lo );
         }
     }
 }
@@ -221,8 +215,8 @@ void    RegKill( score *scoreboard, hw_reg_set regs )
 }
 
 
-void    RegAdd( score *sc, int dst_idx, int src_idx )
-/***************************************************/
+void    RegAdd( score *scoreboard, int dst_idx, int src_idx )
+/***********************************************************/
 /* NB: it is important that dst_idx has just become equal to src_idx*/
 /*     NOT vice-versa. Ie: we just did a  MOV R(src_idx) ==> R(dst_idx)*/
 /*     or equivalent*/
@@ -231,9 +225,9 @@ void    RegAdd( score *sc, int dst_idx, int src_idx )
         return;
     if( !ScAddOk( ScoreList[dst_idx]->reg, ScoreList[src_idx]->reg ) )
         return;
-    if( RegsEqual( sc, dst_idx, src_idx ) )
+    if( RegsEqual( scoreboard, dst_idx, src_idx ) )
         return;
-    MergeDown( sc, dst_idx, src_idx );
-    MergeUp( sc, dst_idx, src_idx );
-    RegInsert( sc, dst_idx, src_idx );
+    MergeDown( scoreboard, dst_idx, src_idx );
+    MergeUp( scoreboard, dst_idx, src_idx );
+    RegInsert( scoreboard, dst_idx, src_idx );
 }

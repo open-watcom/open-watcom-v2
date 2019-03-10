@@ -129,29 +129,26 @@ static  bool    ScoreStomp( score_info *x, score_info *y ) {
     return( false );
 }
 
-bool    ScoreLookup( score *p, score_info *info )
-/***********************************************/
+bool    ScoreLookup( score *scoreitem, score_info *info )
+/*******************************************************/
 {
     score_list  *curr;
 
     if( info->class == SC_N_VOLATILE )
         return( false );
-    curr = *p->list;
-    for(;;) {
-        if( curr == NULL )
-            break;
-        if( ScoreSame( &curr->info, info ) && curr->info.offset == info->offset )
+    for( curr = *scoreitem->list; curr != NULL; curr = curr->next ) {
+        if( ScoreSame( &curr->info, info ) && curr->info.offset == info->offset ) {
             return( true );
-        curr = curr->next;
+        }
     }
     return( false );
 }
 
 
-bool    ScoreEqual( score *p, int index, score_info *info )
-/*********************************************************/
+bool    ScoreEqual( score *scoreboard, int index, score_info *info )
+/******************************************************************/
 {
-    if( ScoreLookup( &p[index], info ) )
+    if( ScoreLookup( &scoreboard[index], info ) )
         return( true );
     if( _IsModel( SUPER_OPTIMAL ) ) {
         score_reg   *entry;
@@ -165,11 +162,11 @@ bool    ScoreEqual( score *p, int index, score_info *info )
             /*  the right information*/
         if( info->class == SC_N_CONSTANT )
             return( false );
-        if( !ScoreLookup( &p[entry->low], info ) )
+        if( !ScoreLookup( &scoreboard[entry->low], info ) )
             return( false );
         half_size = entry->size / 2;
         info->offset += half_size;
-        is_equal = ScoreLookup( &p[entry->high], info );
+        is_equal = ScoreLookup( &scoreboard[entry->high], info );
         info->offset -= half_size;
         return( is_equal );
     }
@@ -177,9 +174,9 @@ bool    ScoreEqual( score *p, int index, score_info *info )
 }
 
 
-static  void    ScoreInsert(  score *p,  int i,  score_info  *info ) {
-/********************************************************************/
-
+static  void    ScoreInsert(  score *scoreboard,  int i,  score_info  *info )
+/***************************************************************************/
+{
     score_list  *new;
     int         j;
 
@@ -189,31 +186,31 @@ static  void    ScoreInsert(  score *p,  int i,  score_info  *info ) {
         return;
     new = NewScListEntry();
     Copy( info, &new->info, sizeof( score_info ) );
-    new->next = *p[i].list;
-    *p[i].list = new;
+    new->next = *scoreboard[i].list;
+    *scoreboard[i].list = new;
     for( j = ScoreCount; j-- > 0; ) {
-        if( ( j != i ) && ScoreEqual( p, j, info ) ) {
-            RegAdd( p, i, j );
+        if( ( j != i ) && ScoreEqual( scoreboard, j, info ) ) {
+            RegAdd( scoreboard, i, j );
             break;
         }
     }
 }
 
 
-static  void    ScoreAdd( score *p, int i, score_info *info ) {
-/*************************************************************/
-
+static  void    ScoreAdd( score *scoreboard, int i, score_info *info )
+/********************************************************************/
+{
     if( _IsModel( SUPER_OPTIMAL ) ) {
         score       *first;
         score       *curr;
 
         if( (info->class == SC_N_INDEXED) && (info->index_reg != NO_INDEX) ) {
-            first = &p[info->index_reg];
+            first = &scoreboard[info->index_reg];
             curr = first;
             for(;;) {
                 info->index_reg = ScoreList[curr->index]->reg_name->r.reg_index;
-                if( !ScoreLookup( &p[i], info ) ) {
-                    ScoreInsert( p, i, info );
+                if( !ScoreLookup( &scoreboard[i], info ) ) {
+                    ScoreInsert( scoreboard, i, info );
                 }
                 curr = curr->next_reg;
                 if( curr == first ) {
@@ -221,22 +218,22 @@ static  void    ScoreAdd( score *p, int i, score_info *info ) {
                 }
             }
         } else {
-            if( !ScoreLookup( &p[i], info ) ) {
-                ScoreInsert( p, i, info );
+            if( !ScoreLookup( &scoreboard[i], info ) ) {
+                ScoreInsert( scoreboard, i, info );
             }
         }
     } else {
-        if( !ScoreLookup( &p[i], info ) ) {
-            ScoreInsert( p, i, info );
+        if( !ScoreLookup( &scoreboard[i], info ) ) {
+            ScoreInsert( scoreboard, i, info );
         }
     }
 }
 
 
-void    ScoreAssign( score *p, int index, score_info *info )
-/**********************************************************/
+void    ScoreAssign( score *scoreboard, int index, score_info *info )
+/*******************************************************************/
 {
-    ScoreAdd( p, index, info );
+    ScoreAdd( scoreboard, index, info );
     if( _IsModel( SUPER_OPTIMAL ) ) {
         score_reg   *entry;
         uint        hi_off;
@@ -256,9 +253,9 @@ void    ScoreAssign( score *p, int index, score_info *info )
             }
             offset = info->offset;
             info->offset = hi_off;
-            ScoreAdd( p, entry->high, info );
+            ScoreAdd( scoreboard, entry->high, info );
             info->offset = lo_off;
-            ScoreAdd( p, entry->low, info );
+            ScoreAdd( scoreboard, entry->low, info );
             info->offset = offset;
         }
     }

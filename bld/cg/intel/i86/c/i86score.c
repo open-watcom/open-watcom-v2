@@ -40,8 +40,6 @@
 #include "x86segs.h"
 
 
-extern  score_reg       **ScoreList;
-
 #define S_MAX   3
 #define S_DS    0
 #define S_SS    1
@@ -59,7 +57,7 @@ static  name    *ES;
 
 
 
-void    ScInitRegs( score *sc )
+void    ScInitRegs( score *scoreboard )
 /**************************************
     Add some register equality "truths" to the scoreboard "sc"
 */
@@ -70,8 +68,8 @@ void    ScInitRegs( score *sc )
     if( _IsntTargetModel( FLOATING_DS | FLOATING_SS ) ) {
         ss = AllocRegName(HW_SS)->r.reg_index;
         ds = AllocRegName(HW_DS)->r.reg_index;
-        if( !RegsEqual( sc, ss, ds ) ) {
-            RegInsert( sc, ss, ds );
+        if( !RegsEqual( scoreboard, ss, ds ) ) {
+            RegInsert( scoreboard, ss, ds );
         }
     }
 }
@@ -136,7 +134,7 @@ void    AddRegs( void )
 }
 
 
-void    ScoreSegments( score *sc )
+void    ScoreSegments( score *scoreboard )
 /*****************************************
     Do special scoreboarding on segment registers.  Given that BX = DI,
     for example, we know that SS:BX = SS:DI, and DS:BX = DS:DI.
@@ -148,15 +146,15 @@ void    ScoreSegments( score *sc )
     name        *dst;
     name        *src;
 
-    ds = &sc[DS->r.reg_index];
+    ds = &scoreboard[DS->r.reg_index];
     for( xs = ds->next_reg; xs != ds; xs = xs->next_reg ) {
         if( xs->index == SS->r.reg_index ) {
             for( i = I_MAX; i-- > 0; ) {
                 dst = PtrRegs[S_SS][i];
                 src = PtrRegs[S_DS][i];
                 if( dst != NULL && src != NULL ) {
-                    if( !RegsEqual( sc, dst->r.reg_index, src->r.reg_index ) ) {
-                        RegInsert( sc, dst->r.reg_index, src->r.reg_index );
+                    if( !RegsEqual( scoreboard, dst->r.reg_index, src->r.reg_index ) ) {
+                        RegInsert( scoreboard, dst->r.reg_index, src->r.reg_index );
                     }
                 }
             }
@@ -165,8 +163,8 @@ void    ScoreSegments( score *sc )
                 dst = PtrRegs[S_ES][i];
                 src = PtrRegs[S_DS][i];
                 if( dst != NULL && src != NULL ) {
-                    if( !RegsEqual( sc, dst->r.reg_index, src->r.reg_index ) ) {
-                        RegInsert( sc, dst->r.reg_index, src->r.reg_index );
+                    if( !RegsEqual( scoreboard, dst->r.reg_index, src->r.reg_index ) ) {
+                        RegInsert( scoreboard, dst->r.reg_index, src->r.reg_index );
                     }
                 }
             }

@@ -133,8 +133,8 @@ static  instruction     *MakeClear( name *res, type_class_def type_class )
 }
 
 
-bool    ScoreZero( score *sc, instruction **pins )
-/************************************************/
+bool    ScoreZero( score *scoreboard, instruction **pins )
+/********************************************************/
 {
     instruction         *ins;
     bool                change;
@@ -180,8 +180,8 @@ bool    ScoreZero( score *sc, instruction **pins )
     if( res->n.size != op2->n.size )
         return( false );
     type_class = ins->type_class;
-    op1zpart = HasZero( sc, op1 );
-    op2zpart = HasZero( sc, op2 );
+    op1zpart = HasZero( scoreboard, op1 );
+    op2zpart = HasZero( scoreboard, op2 );
     half_type_class = HalfClass[type_class];
     ins1 = NULL;
     ins2 = NULL;
