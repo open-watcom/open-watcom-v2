@@ -137,7 +137,7 @@ instruction     *rMAKECALL( instruction *ins )
         regs = _ParmReg( info->result );
         tmp = regs;
         HW_TurnOn( tmp, new_ins->zap->reg );
-        new_ins->zap = (register_name *) AllocRegName( tmp );
+        new_ins->zap = (register_name *)AllocRegName( tmp );
         reg_name = AllocRegName( regs );
         new_ins->result = reg_name;
         last_ins = MakeMove( reg_name, ins->result, ins->type_class );
