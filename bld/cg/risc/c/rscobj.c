@@ -93,11 +93,10 @@ section_def *FindSection( segment_id segid )
 {
     section_def         *curr;
 
-    curr = sectionDefs[segid % N_SECTIONS];
-    while( curr != NULL ) {
-        if( curr->segid == segid )
+    for( curr = sectionDefs[segid % N_SECTIONS]; curr != NULL; curr = curr->next ) {
+        if( curr->segid == segid ) {
             break;
-        curr = curr->next;
+        }
     }
     return( curr );
 }
@@ -304,29 +303,26 @@ static void DoDFSegRange( void )
 
     old = currSection;
     for( bucket = 0; bucket < N_SECTIONS; bucket++ ) {
-        if( sectionDefs[bucket] != NULL ) {
-            for( ptr = sectionDefs[bucket]; ptr != NULL; ptr = ptr->next ) {
-
-                tipe = OWLTellSectionType( ptr->owl_handle );
-                switch( tipe ){
-                case OWL_SECTION_INFO:
-                case OWL_SECTION_DEBUG:
-                case OWL_SECTION_PDATA:
-                case OWL_SECTION_COMDAT_DEBUG:
-                    break;
-                case OWL_SECTION_COMDAT_PDATA:
-                case OWL_SECTION_CODE:
-                case OWL_SECTION_DATA:
-                case OWL_SECTION_BSS:
-                case OWL_SECTION_COMDAT_CODE:
-                case OWL_SECTION_COMDAT_DATA:
+        for( ptr = sectionDefs[bucket]; ptr != NULL; ptr = ptr->next ) {
+            tipe = OWLTellSectionType( ptr->owl_handle );
+            switch( tipe ){
+            case OWL_SECTION_INFO:
+            case OWL_SECTION_DEBUG:
+            case OWL_SECTION_PDATA:
+            case OWL_SECTION_COMDAT_DEBUG:
+                break;
+            case OWL_SECTION_COMDAT_PDATA:
+            case OWL_SECTION_CODE:
+            case OWL_SECTION_DATA:
+            case OWL_SECTION_BSS:
+            case OWL_SECTION_COMDAT_CODE:
+            case OWL_SECTION_COMDAT_DATA:
                 // took this out - can't drop a 2nd static label in a comdat bss
                 // section - there can be only one!
                 // case OWL_SECTION_COMDAT_BSS:
-                    currSection = ptr;
-                    DFSegRange();
-                    break;
-                }
+                currSection = ptr;
+                DFSegRange();
+                break;
             }
         }
     }
@@ -558,7 +554,6 @@ void    OutFuncStart( label_handle label, offset start, cg_linenum line )
                    labelOwlSym( label ), line, start );
     currSection->line = line;
     currSection->start = line;
-
 }
 
 void    OutFuncEnd( offset end )
@@ -646,7 +641,7 @@ bool    HaveCodeSeg( void )
 segment_id  AskCodeSeg( void )
 /****************************/
 {
-     return( codeSectionId );
+    return( codeSectionId );
 }
 
 segment_id  AskAltCodeSeg( void )
@@ -658,7 +653,7 @@ segment_id  AskAltCodeSeg( void )
 segment_id  AskBackSeg( void )
 /****************************/
 {
-     return( dataSectionId );
+    return( dataSectionId );
 }
 
 
@@ -678,18 +673,18 @@ segment_id  AskSegID( pointer hdl, cg_class class )
     switch( class ) {
     case CG_FE:
         if( InlineFunction( (cg_sym_handle)hdl ) ) {
-            return( codeSectionId );  // AskCodeSeg()
+            return( codeSectionId );    // AskCodeSeg()
         }
         return( FESegID( (cg_sym_handle)hdl ) );
     case CG_BACK:
         return( ((back_handle)hdl)->segid );
     case CG_TBL:
     case CG_VTB:
-        return( codeSectionId );      // AskCodeSeg()
+        return( codeSectionId );        // AskCodeSeg()
     case CG_CLB:
-        return( altCodeSectionId );   // AskAltCodeSeg()
+        return( altCodeSectionId );     // AskAltCodeSeg()
     default:
-        return( dataSectionId );      // AskBackSeg()
+        return( dataSectionId );        // AskBackSeg()
     }
 }
 
