@@ -831,7 +831,7 @@ void DFA_emit( DFA *d, FILE *o )
     fputs( "{\n\tYYCTYPE yych;\n", o );
     oline += 2;
     if( bUsedYYAccept ) {
-        fputs( "\tunsigned int yyaccept;\n", o );
+        fputs( "\tunsigned int yyaccept = 0;\n", o );
         oline += 1;
     }
     if( bFlag ) {
