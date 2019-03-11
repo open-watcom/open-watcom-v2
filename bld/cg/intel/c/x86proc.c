@@ -482,11 +482,7 @@ static  void    AllocStack( void )
         }
     } else if( size <= 2 * WORD_SIZE && OptForSize > 50 ) {
         while( size > 0 ) {
-#if _TARGET & _TARG_IAPX86
-            QuickSave( HW_AX, OP_PUSH );
-#else
-            QuickSave( HW_EAX, OP_PUSH );
-#endif
+            QuickSave( HW_xAX, OP_PUSH );
             size -= WORD_SIZE;
         }
     } else if( size != 0 ) {
