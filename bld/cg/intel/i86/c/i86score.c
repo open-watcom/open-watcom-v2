@@ -66,8 +66,8 @@ void    ScInitRegs( score *scoreboard )
     int     ds;
 
     if( _IsntTargetModel( FLOATING_DS | FLOATING_SS ) ) {
-        ss = AllocRegName(HW_SS)->r.reg_index;
-        ds = AllocRegName(HW_DS)->r.reg_index;
+        ss = AllocRegName( HW_SS )->r.reg_index;
+        ds = AllocRegName( HW_DS )->r.reg_index;
         if( !RegsEqual( scoreboard, ss, ds ) ) {
             RegInsert( scoreboard, ss, ds );
         }

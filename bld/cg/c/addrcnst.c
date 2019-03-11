@@ -53,7 +53,7 @@ void    MakeMovAddrConsts( void )
                 op = ins->operands[0];
                 if( op->n.class == N_TEMP ) {
                     op->v.usage |= USE_IN_ANOTHER_BLOCK;
-                    op = AllocAddrConst(op,0, CONS_TEMP_ADDR, ins->type_class);
+                    op = AllocAddrConst( op, 0, CONS_TEMP_ADDR, ins->type_class );
                     ins->head.opcode = OP_MOV;
                     ins->operands[0] = op;
                 }
