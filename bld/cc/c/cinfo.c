@@ -373,15 +373,13 @@ static struct spc_info InitFiniSegs[] = {
     { TS_SEG_TLSE, TS_SEG_TLS_CLASS,SEGTYPE_INITFINITR },
 };
 
-#define INITFINI_SIZE   CArraySize( Predefined_Segs )
-
 static struct spc_info *InitFiniLookup( const char *name )
 {
     int     i;
     size_t  len;
 
     len = strlen( name ) + 1;
-    for( i = 0; i < INITFINI_SIZE; ++i ) {
+    for( i = 0; i < CArraySize( InitFiniSegs ); ++i ) {
         if( memcmp( InitFiniSegs[i].name, name, len ) == 0 ) {
             i = (i / 3) * 3;
             return( &InitFiniSegs[i] );
@@ -402,7 +400,7 @@ static segment_id AddSeg( const char *segname, const char *class_name, int segty
     size_t          len;
 
     len = strlen( segname ) + 1;
-    for( i = 0; i < INITFINI_SIZE; i++ ) {
+    for( i = 0; i < CArraySize( Predefined_Segs ); i++ ) {
         if( memcmp( segname, Predefined_Segs[i].name, len ) == 0 ) {
             return( Predefined_Segs[i].segid );
         }
@@ -522,7 +520,7 @@ void SetSegSymHandle( SYM_HANDLE sym_handle, segment_id segid )
 {
     int     i;
 
-    for( i = 0; i < INITFINI_SIZE; i++ ) {
+    for( i = 0; i < CArraySize( Predefined_Segs ); i++ ) {
         if( Predefined_Segs[i].segid == segid ) {
             Predefined_Segs[i].sym_handle = sym_handle;
             break;
@@ -536,7 +534,7 @@ SYM_HANDLE SegSymHandle( segment_id segid )
     int             i;
     user_seg        *useg;
 
-    for( i = 0; i < INITFINI_SIZE; i++ ) {
+    for( i = 0; i < CArraySize( Predefined_Segs ); i++ ) {
         if( Predefined_Segs[i].segid == segid ) {
             return( Predefined_Segs[i].sym_handle );
         }
