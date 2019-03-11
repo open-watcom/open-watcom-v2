@@ -199,8 +199,3 @@ HW_DEFINE_GLOBAL_CONST( HW_ST7 );
 #define MAX_POSSIBLE_REG        8
 
 #endif
-
-#define _AL     HW_AL
-#define _BL     HW_BL
-#define _CL     HW_CL
-#define _DL     HW_DL
