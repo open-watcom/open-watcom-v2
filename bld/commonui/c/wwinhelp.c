@@ -68,16 +68,17 @@ bool WWinHelp( HWND hwnd, LPCSTR helpFile, UINT fuCommand, HELP_DATA data )
             char        fname[_MAX_FNAME];
             char        ext[_MAX_EXT];
             char        new_filename[_MAX_PATH];
+            size_t      len;
 
             _splitpath( helpFile, drive, dir, fname, ext );
-            if( strlen( fname ) < 8 ) {
-                strcat( fname, "j" );
-            } else {
-                fname[7] = 'j';
-            }
-            _makepath( new_filename, drive, dir, fname, ext );
+            len = strlen( fname );
+            if( len > 0 ) {
+                if( len > 7 )
+                    len = 7;
+                fname[len++] = 'j';
+                fname[len] = '\0';
+                _makepath( new_filename, drive, dir, fname, ext );
 
-            if( new_filename != NULL ) {
                 _searchenv( new_filename, "WWINHELP", buff );
                 if( buff[0] != '\0' ) {
                     helpFile = buff;
@@ -139,10 +140,9 @@ bool WHtmlHelp( HWND hwnd, LPCSTR helpFile, UINT fuCommand, HELP_DATA data )
     }
     return( pfnHtmlHelp( hwnd, helpFile, fuCommand, data ) != NULL );
 #else
-    hwnd = hwnd;
-    helpFile = helpFile;
-    fuCommand = fuCommand;
-    data = data;
+
+    /* unused parameters */ (void)hwnd; (void)helpFile; (void)fuCommand; (void)data;
+
     return( false );
 #endif
 

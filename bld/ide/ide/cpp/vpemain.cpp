@@ -160,15 +160,45 @@ WEXPORT VpeMain::VpeMain()
     , _refuseFileLists( false )
     , _autoRefresh( true )
 {
+    char *watcom;
+
     /* check and fix env vars if needed; this should perhaps be done in
      * the GUI library and not here.
      */
     watcom_setup_env();
-    if( getenv( "WATCOM" ) == NULL ) {
+    watcom = getenv( "WATCOM" );
+    if( watcom == NULL ) {
         WMessageDialog::messagef( this, MsgError, MsgOk, _viperError,
         "WATCOM environment variable not set.\n"
         "IDE will not function correctly" );
     }
+    /*
+     * check and fix WWINHELP environment variable if needed
+     */
+#if defined( __WINDOWS__ ) || defined( __NT__ )
+    if( getenv( "WWINHELP" ) == NULL && watcom != NULL ) {
+        char helppath[FILENAME_MAX];
+
+#if defined( __WINDOWS__ )
+        sprintf( helppath, "%s%s", watcom, "\\binw" );
+#else
+        sprintf( helppath, "%s%s", watcom, "\\binnt" );
+#endif
+        setenv( "WWINHELP", helppath, 0 );
+    }
+#endif
+
+    /*
+     * check and fix WHTMLHELP environment variable if needed
+     */
+#if defined( __NT__ )
+    if( getenv( "WHTMLHELP" ) == NULL && watcom != NULL ) {
+        char helppath[FILENAME_MAX];
+
+        sprintf( helppath, "%s%s", watcom, "\\binnt\\help" );
+        setenv( "WHTMLHELP", helppath, 0 );
+    }
+#endif
 
     hookF1Key( true );
 #if defined( __OS2__ )
