@@ -29,8 +29,8 @@
 ****************************************************************************/
 
 
-#define T_EOF       0
-#define T_ERROR     2
+#define T_EOF       0   /* value used by OW yacc YYEOFTOKEN */
+#define T_ERROR     2   /* value used by OW yacc YYERRTOKEN */
 
 #ifdef _STANDALONE_
 typedef struct {
