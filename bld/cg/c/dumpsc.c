@@ -114,16 +114,15 @@ void    DumpSc( score *scoreboard )
         DumpInt( entry->low );
         DumpLiteral( " high " );
         DumpInt( entry->high );
-        for( reg = scoreboard->next_reg; reg != scoreboard; reg = reg->next_reg ) {
+        for( reg = scoreboard[i].next_reg; reg != &scoreboard[i]; reg = reg->next_reg ) {
             DumpLiteral( "==" );
             DumpRegName( ScoreList[reg->index]->reg );
         }
         DumpLiteral( " generation " );
-        DumpInt( scoreboard->generation );
+        DumpInt( scoreboard[i].generation );
         DumpNL();
-        for( curr = *scoreboard->list; curr != NULL; curr = curr->next ) {
+        for( curr = *scoreboard[i].list; curr != NULL; curr = curr->next ) {
             DumpScList( curr );
         }
-        ++scoreboard;
     }
 }
