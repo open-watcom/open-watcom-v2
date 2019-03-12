@@ -560,7 +560,9 @@ const char *RemoteLink( const char *parms, bool server )
         return( TRP_ERR_cant_start_extender );
     }
 #endif
-    server = server;
+
+    /* unused parameters */ (void)server;
+
     _DBG_ExitFunc( "RemoteLink()" );
     return( NULL );
 }
