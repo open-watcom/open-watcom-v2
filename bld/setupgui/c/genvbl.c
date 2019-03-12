@@ -343,10 +343,10 @@ void SetDefaultGlobalVarList( void )
 
 #if defined( __WINDOWS__ )
     // 16-bit Windows
-    SetBoolVariableByName(      "IsWin",        true );
+    SetBoolVariableByName(      "IsWin16",      true );
     SetBoolVariableByName(      "IsOS2DosBox",  _osmajor >= 10 );
 #else
-    SetBoolVariableByName(      "IsWin",        false );
+    SetBoolVariableByName(      "IsWin16",      false );
 #endif
 
 #if defined( __OS2__ )

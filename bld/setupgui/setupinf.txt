@@ -37,7 +37,7 @@ Variables
    IsDos
    IsOS2
    IsOS2DosBox
-   IsWin
+   IsWin16
    IsWin32
    IsWin64
    IsWin32s
@@ -118,7 +118,7 @@ Sections
    Defines conditional variables, with a variable name and a condition.
    Example:
 
-   tools16=IsDos IsOS2 IsWin | |
+   tools16=IsDos IsOS2 IsWin16 | |
 
 
 [Config]
@@ -136,7 +136,7 @@ Sections
    
    Example:
 
-   FILES=20,IsDOS IsWin |
+   FILES=20,IsDOS IsWin16 |
 
    The Config section is very similar to the Autoexec section.
 
@@ -448,8 +448,8 @@ Sections
 [Profile]
    Defines profile information. 3 examples are given.
 
-  386Enh, *device, %DstDir%\binw\wdebug.386, system.ini, , IsWin IsWin95 | ?%DstDir%\binw\wdebug.386
-  boot, +drivers, winmm16.dll, system.ini, , IsWin UnInstall ! win32s
+  386Enh, *device, %DstDir%\binw\wdebug.386, system.ini, , IsWin16 IsWin95 | ?%DstDir%\binw\wdebug.386
+  boot, +drivers, winmm16.dll, system.ini, , IsWin16 UnInstall ! win32s
   Help,LocalHelp1,%HDir%\binnt,Software\Microsoft\MFC 3.0 Help,current_user,IsWin32 UnInstall !
 
      The first parameter is the application name.

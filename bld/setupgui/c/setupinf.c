@@ -81,7 +81,7 @@
     x( IsDos, y ) \
     x( IsOS2, y ) \
     x( IsOS2DosBox, y ) \
-    x( IsWin, y ) \
+    x( IsWin16, y ) \
     x( IsWin32, y ) \
     x( IsWin64, y ) \
     x( IsWin32s, y ) \
