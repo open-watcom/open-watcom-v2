@@ -26,7 +26,7 @@
 .ixbook &product Programmer's Guide
 .ixhelp pguide
 .ixbook &product Tools User's Guide
-.ixhelp tools
+.ixhelp ctools
 .if '&dotarget' ne 'os2' .do begin
 . .ixbook &company Graphical Tools User's Guide
 . .if '&dotarget' ne 'dos' .do begin

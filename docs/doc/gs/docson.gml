@@ -215,7 +215,7 @@ Documentation for the &wrcname
 .book &company Graphical Tools User's Guide
 .ct )
 .if '&lang' eq 'C/C++' .do begin
-.note TOOLS
+.note CTOOLS
 .book &product Tools User's Guide
 .do end
 .note WD

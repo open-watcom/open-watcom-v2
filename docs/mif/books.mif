@@ -15,6 +15,7 @@
 !inject clr             dos  html  htmlhelp  nt  os2  pdf  ps  win doctrav
 !inject clslib
 !inject cpplib          dos  html  htmlhelp  nt  os2  pdf  ps  win doctrav
+!inject ctools          dos  html  htmlhelp  nt  os2  pdf  ps  win doctrav
 !inject cw              dos  html  htmlhelp  nt  os2  pdf  ps      doctrav
 !inject ddespy               html  htmlhelp  nt                win
 !inject devguide                                                   doctrav
@@ -46,7 +47,6 @@
 !inject resmnu               html  htmlhelp  nt                win
 !inject resstr               html  htmlhelp  nt                win
 !inject spy                  html  htmlhelp  nt                win
-!inject tools           dos  html  htmlhelp  nt  os2  pdf  ps  win doctrav
 !inject trap                                          pdf  ps      doctrav
 !inject vi              dos  html  htmlhelp  nt  os2  pdf  ps  win doctrav
 !inject wasaxp
@@ -228,6 +228,15 @@ book_title=$(company) $(bld_ver_str) C++ Class Library Reference
 book_objs=$(objs_cpplib)
 book_incs=$(incs_cpplib)
 book_src=cpplib
+book_multi_chapter=1
+
+!else ifeq hbook ctools
+# ctools
+book_title=$(company) $(bld_ver_str) C/C++ Tools User's Guide
+book_objs=$(objs_cmn) $(objs_lg) $(objs_cg)
+book_incs=$(incs_cmn);$(incs_lg);$(incs_cg)
+book_bmroot=$(bmroot_cg)
+book_src=ctools
 book_multi_chapter=1
 
 !else ifeq hbook cw
@@ -468,15 +477,6 @@ book_objs=$(objs_gui) $(objs_cg)
 book_incs=$(incs_gui);$(incs_cg)
 book_bmroot=$(bmroot_gui)
 book_src=guitool
-
-!else ifeq hbook tools
-# tools
-book_title=$(company) $(bld_ver_str) C/C++ Tools User's Guide
-book_objs=$(objs_cmn) $(objs_lg) $(objs_cg)
-book_incs=$(incs_cmn);$(incs_lg);$(incs_cg)
-book_bmroot=$(bmroot_cg)
-book_src=ctools
-book_multi_chapter=1
 
 !else ifeq hbook wasaxp
 # wasaxp
