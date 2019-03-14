@@ -45,7 +45,11 @@
 #include <string.h>
 #include <direct.h>
 #include <process.h>
-#include <sys/utime.h>
+#if defined( __UNIX__ ) || defined( __WATCOMC__ )
+  #include <utime.h>
+#else
+  #include <sys/utime.h>
+#endif
 #include <time.h>
 #include "wio.h"
 

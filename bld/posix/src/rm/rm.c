@@ -115,10 +115,11 @@ int main( int argc, char *argv[] )
                 if( d != NULL ) {
                     if( !( d->d_attr & _A_SUBDIR ) ) {
                         closedir( d );
-                        if( fflag )
+                        if( fflag ) {
                             DoRM( argv[i] );
-                        else
+                        } else {
                             PrintALineThenDrop( "%s is not a directory.", argv[i] );
+                        }
                     } else {
                         closedir( d );
                         RecursiveRM( argv[i] );
@@ -131,10 +132,14 @@ int main( int argc, char *argv[] )
         }
     } else {
         /* run through all specified files */
-        for( i = 1; i < argc; i++ )
+        for( i = 1; i < argc; i++ ) {
             DoRM( argv[i] );
+        }
     }
     DropALine();
+
+    EndPrint();
+
     return( error_occured );
 }
 

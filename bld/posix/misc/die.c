@@ -34,15 +34,30 @@
 #include "wio.h"
 #include "misc.h"
 
+static void error_printf( const char *str, va_list args )
+{
+    char        msgbuf[1024]; /* FIXME: a better way to do this?? */
+    int         len;
+
+    len = vsprintf( msgbuf, str, args );
+    write( STDERR_FILENO, msgbuf, len );
+}
+
+void Error( const char *str, ... )
+{
+    va_list     al;
+
+    va_start( al, str );
+    error_printf( str, al );
+    va_end( al );
+}
+
 void Die( const char *str, ... )
 {
     va_list     al;
-    char        buffer[1024]; /* FIXME: a better way to do this?? */
-    int         len;
 
     va_start( al, str );
-    len = vsprintf( buffer, str, al );
+    error_printf( str, al );
     va_end( al );
-    write( STDERR_FILENO, buffer, len );
     exit( 1 );
 }

@@ -272,6 +272,7 @@ static void doneCP( void )
         hunds = TotalTime - secs * CLOCKS_PER_SEC;
         PrintALineThenDrop( "Total time taken:          %lu.%02lu seconds", secs, hunds );
     }
+    EndPrint();
     MemFini();
 
 } /* doneCP */

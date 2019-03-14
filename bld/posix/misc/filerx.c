@@ -33,11 +33,10 @@
 #include <ctype.h>
 #include <stdlib.h>
 #if defined( __QNX__ )
-#include <dir.h>
+#include <sys/dir.h>
 #else
 #include <direct.h>
 #endif
-#include <malloc.h>
 
 #include "watcom.h"
 #define STANDALONE
@@ -121,17 +120,13 @@ char *FileMatchInit( void **crx, const char *wild )
     for( i = 0; i < len; i++ ) { /* this loop is closely related to the next */
         if( wild[i] == '?' ) {
             j += 2;     /* for "\." */
-        } 
-        else if( wild[i] == '*' ) {
+        } else if( wild[i] == '*' ) {
             j += 3;     /* for "\.*" */
         } else {
             ++j;
         }
     }
-    tomatch = alloca( j + 3 );  /* for "^" "$" and null char */
-    if( tomatch == NULL ) {
-        Die( "Out of memory!\n" );
-    }
+    tomatch = MemAlloc( j + 3 );  /* for "^" "$" and null char */
     tomatch[0] = '^';
     j = 1;
     for( i = 0; i < len; i++ ) {
@@ -158,6 +153,7 @@ char *FileMatchInit( void **crx, const char *wild )
     } else {
         *crx = rx;
     }
+    MemFree( tomatch );
     return( rxErrorStrings[RegExpError] );
 }
 

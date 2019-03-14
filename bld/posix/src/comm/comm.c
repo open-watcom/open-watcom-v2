@@ -100,7 +100,7 @@ static int getNextLine( FILE *fp, line *l )
 static void compareFiles( FILE *fp1, FILE *fp2, char mask )
 {
     line        l1 = { NULL, 0 }, l2 = { NULL, 0 };
-    int         cmp = 0, i1, i2;
+    int         cmp = 0, i1 = 0, i2 = 0;
     char        tab1 = '\t', tab2 = '\t';
 
     if( mask & S_FIRST ) {

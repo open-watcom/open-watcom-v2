@@ -33,16 +33,19 @@
 #include <errno.h>
 #include <stdlib.h>
 #include <string.h>
-#if defined(__QNX__)
- #include <utime.h>
+#if defined( __UNIX__ ) || defined( __WATCOMC__ )
+  #include <utime.h>
 #else
- #include <sys/utime.h>
+  #include <sys/utime.h>
 #endif
 #include "wio.h"
 #include "argvenv.h"
 #include "getopt.h"
 #include "argvrx.h"
 #include "misc.h"
+
+#include "clibext.h"
+
 
 char *OptEnvVar = "trunc";
 
@@ -56,17 +59,8 @@ static const char *usageMsg[] = {
     NULL
 };
 
-static void errstr( char *str ) {
-
-    size_t      len;
-
-    len = strlen( str );
-    write( 2, str, len );
-}
-
-
-void main( int argc, char **argv ) {
-
+int main( int argc, char **argv )
+{
     int             i,rxflag,quietflag,ch;
     int             fh;
     struct stat     statbuf;
@@ -97,58 +91,32 @@ void main( int argc, char **argv ) {
         Quit( usageMsg, NULL );
     } else {
         for( i = 1; i < argc; ++i ) {
-            if( stat( argv[ i ], &statbuf ) != 0 ) {
-                if( quietflag ) continue;
-                errstr( "error accessing " );
-                errstr( argv[ i ] );
-                errstr( " for time stamp: " );
-                errstr( strerror( errno ) );
-                errstr( "\r\n" );
-                exit( 1 );
+            if( stat( argv[i], &statbuf ) != 0 ) {
+                if( quietflag )
+                    continue;
+                Die( "error accessing %s for time stamp: %s\r\n", argv[i], strerror( errno ) );
             }
             utb.actime = statbuf.st_atime;
             utb.modtime = statbuf.st_mtime;
             st_mode = statbuf.st_mode;
-            fh = open( argv[ i ], O_RDWR | O_TRUNC );
+            fh = open( argv[i], O_RDWR | O_TRUNC );
             if( fh == -1 ) {
-                errstr( "error opening " );
-                errstr( argv[ i ] );
-                errstr( " for truncation: " );
-                errstr( strerror( errno ) );
-                errstr( "\r\n" );
-                exit( 1 );
+                Die( "error opening %s for truncation: %s\r\n", argv[i], strerror( errno ) );
             }
             close( fh );
-            if( stat( argv[ i ], &statbuf ) != 0 ) {
-                errstr( "error accessing " );
-                errstr( argv[ i ] );
-                errstr( " for file attribute verification: " );
-                errstr( strerror( errno ) );
-                errstr( "\r\n" );
-                exit( 1 );
+            if( stat( argv[i], &statbuf ) != 0 ) {
+                Die( "error accessing %s for file attribute verification: %s\r\n", argv[i], strerror( errno ) );
             }
             if( st_mode != statbuf.st_mode ) {
-                errstr( "warning: attribute fixup for " );
-                errstr( argv[ i ] );
-                errstr( "\r\n" );
-                if( chmod( argv[ i ], st_mode ) != 0 ) {
-                    errstr( "error on attribute fixup for " );
-                    errstr( argv[ i ] );
-                    errstr( " : " );
-                    errstr( strerror( errno ) );
-                    errstr( "\r\n" );
-                    exit( 1 );
+                Error( "warning: attribute fixup for %s\r\n", argv[i] );
+                if( chmod( argv[i], st_mode ) != 0 ) {
+                    Die( "error on attribute fixup for %s : %s\r\n", argv[i], strerror( errno ) );
                 }
             }
-            if( utime( argv[ i ], &utb ) != 0 ) {
-                errstr( "error modifying " );
-                errstr( argv[ i ] );
-                errstr( " for time stamp: " );
-                errstr( strerror( errno ) );
-                errstr( "\r\n" );
-                exit( 1 );
+            if( utime( argv[i], &utb ) != 0 ) {
+                Die( "error modifying %s for time stamp: %s\r\n", argv[i], strerror( errno ) );
             }
         }
     }
-    exit( 0 );
+    return( 0 );
 }

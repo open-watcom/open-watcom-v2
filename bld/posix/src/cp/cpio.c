@@ -31,13 +31,16 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <malloc.h>
 #include <string.h>
 #include <ctype.h>
 #include <fcntl.h>
 #include <io.h>
 #include <sys/stat.h>
-#include <sys/utime.h>
+#if defined( __UNIX__ ) || defined( __WATCOMC__ )
+  #include <utime.h>
+#else
+  #include <sys/utime.h>
+#endif
 #include <dos.h>
 #if defined( __OS2__ ) && defined( __386__ )
 #define  INCL_DOSFILEMGR

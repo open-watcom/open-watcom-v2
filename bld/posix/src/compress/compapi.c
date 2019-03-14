@@ -95,9 +95,6 @@ static long int bytes_out;         /* length of compressed output */
 
 static CODE prefxcode, nextfree;
 static CODE highcode;
-static CODE maxcode;
-static HASH hashsize;
-static int  bits;
 
 
 /*
@@ -178,9 +175,7 @@ static char FAR *sfx = NULLPTR(char) ;
 #endif
 
 
-int alloc_tables(maxcode, hashsize)
-  CODE maxcode;
-  HASH hashsize;
+int alloc_tables(CODE maxcode, HASH hashsize)
 {
   static CODE oldmaxcode = 0;
   static HASH oldhashsize = 0;
@@ -204,7 +199,7 @@ int alloc_tables(maxcode, hashsize)
 #endif
         free_array(char,sfx, 256);
 
-        if (   alloc_array(char, sfx, maxcode + 1, 256)
+        if (alloc_array(char, sfx, maxcode + 1, 256)
 #if (SPLIT_PFX)
             || alloc_array(CODE, pfx[0], (maxcode + 1) / 2, 128)
             || alloc_array(CODE, pfx[1], (maxcode + 1) / 2, 128)
@@ -296,7 +291,7 @@ int alloc_tables(maxcode, hashsize)
 /* table clear for block compress */
 /* this is for adaptive reset present in version 4.0 joe release */
 /* DjG, sets it up and returns true to compress and false to not compress */
-int cl_block ()
+int cl_block( void )
 {
     register long int rat;
 
@@ -339,12 +334,15 @@ int cl_block ()
  * compress stdin to stdout
  *
  */
-void compress()
+void compress( void )
 {
     int c,adjbits;
     register HASH hash;
     register CODE code;
     HASH hashf[256];
+    CODE maxcode;
+    HASH hashsize;
+    int  bits;
 
     maxcode = Maxcode(maxbits);
     hashsize = Hashsize(maxbits);
@@ -388,7 +386,7 @@ void compress()
    */
     if (!nomagic) {
         putchar(magic_header[0]); putchar(magic_header[1]);
-        putchar((char)(maxbits | block_compress));
+        putchar(maxbits | block_compress);
         if(ferror(stdout)){  /* check it on entry */
             exit_stat = WRITEERR;
             return;
@@ -479,7 +477,7 @@ void compress()
     /*
      * Print out stats on stderr
      */
-    if(zcat_flg == 0 && !quiet) {
+    if(!zcat_flg && !quiet) {
 #ifndef NDEBUG
         fprintf( stderr,
             "%ld chars in, (%ld bytes) out, compression factor: ",
@@ -503,9 +501,7 @@ void compress()
 
 CONST UCHAR rmask[9] = {0x00, 0x01, 0x03, 0x07, 0x0f, 0x1f, 0x3f, 0x7f, 0xff};
 
-void putcode(code,bits)
-CODE code;
-register int bits;
+void putcode(CODE code, int bits)
 {
   static int oldbits = 0;
   static UCHAR outbuf[MAXBITS];
@@ -543,18 +539,19 @@ register int bits;
   }
   /*  Get to the first byte. */
   buf = outbuf + ((shift = offset) >> 3);
-  if ((shift &= 7) != 0) {
+  shift &= 7;
+  if (shift != 0) {
     *(buf) |= (*buf & rmask[shift]) | (UCHAR)(code << shift);
     *(++buf) = (UCHAR)(code >> (8 - shift));
     if (bits + shift > 16)
         *(++buf) = (UCHAR)(code >> (16 - shift));
-  }
-  else {
+  } else {
     /* Special case for fast execution */
     *(buf) = (UCHAR)code;
     *(++buf) = (UCHAR)(code >> 8);
   }
-  if ((offset += bits) == (bits << 3)) {
+  offset += bits;
+  if (offset == (bits << 3)) {
     bytes_out += bits;
     fwrite(outbuf,1,bits,stdout);
     offset = 0;
@@ -562,8 +559,7 @@ register int bits;
   return;
 }
 
-int nextcode(codeptr)
-CODE *codeptr;
+int nextcode(CODE *codeptr, int bits)
 /* Get the next code from input and put it in *codeptr.
  * Return (true) on success, or return (false) on end-of-file.
  * Adapted from COMPRESS V4.0.
@@ -571,7 +567,7 @@ CODE *codeptr;
 {
   static int prevbits = 0;
   register CODE code;
-  static int size;
+  static int size = 0;
   static UCHAR inbuf[MAXBITS];
   register int shift;
   UCHAR *bp;
@@ -585,67 +581,82 @@ CODE *codeptr;
   }
   /* If we can't read another code from the buffer, then refill it.
    */
-  if (size - (shift = offset) < bits) {
+  shift = offset;
+  if (size - shift < bits) {
     /* Read more input and convert size from # of bytes to # of bits */
-    if ((size = fread(inbuf, 1, bits, stdin) << 3) <= 0 || ferror(stdin))
+    size = fread(inbuf, 1, bits, stdin) << 3;
+    if (size <= 0 || ferror(stdin))
       return(NO);
     offset = shift = 0;
   }
   /* Get to the first byte. */
   bp = inbuf + (shift >> 3);
   /* Get first part (low order bits) */
-  code = (*bp++ >> (shift &= 7));
+  shift &= 7;
+  code = (*bp++ >> shift);
   /* high order bits. */
-  code |= *bp++ << (shift = 8 - shift);
-  if ((shift += 8) < bits) code |= *bp << shift;
+  shift = 8 - shift;
+  code |= *bp++ << shift;
+  shift += 8;
+  if (shift < bits)
+    code |= *bp << shift;
   *codeptr = code & highcode;
   offset += bits;
   return( true );
 }
 
-void decompress()
+void decompress( void )
 {
   register int i;
   register CODE code;
   char sufxchar;
   CODE savecode;
-  FLAG fulltable, cleartable;
+  bool fulltable;
+  bool cleartable;
   static char token[MAXTOKLEN];         /* String buffer to build token */
+  CODE maxcode;
+  int bits;
 
   exit_stat = OK;
 
-  if (alloc_tables(maxcode = ~(~(CODE)0 << maxbits),0)) /* exit_stat already set */
+  maxcode = ~(~(CODE)0 << maxbits);
+  if (alloc_tables(maxcode,0)) /* exit_stat already set */
      return;
 
-    /* if not zcat or filter */
-    if(is_list && !zcat_flg) {  /* Open output file */
-        if (freopen(ofname, WRITE_FILE_TYPE, stdout) == NULL) {
-            exit_stat = NOTOPENED;
-            return;
-        }
-        if (!quiet)
-            fprintf(stderr, "%s: ",ifname);
-        setvbuf(stdout,xbuf,_IOFBF,XBUFSIZE);
-    }
+  /* if not zcat or filter */
+  if(is_list && !zcat_flg) {  /* Open output file */
+      if (freopen(ofname, WRITE_FILE_TYPE, stdout) == NULL) {
+          exit_stat = NOTOPENED;
+          return;
+      }
+      if (!quiet)
+          fprintf(stderr, "%s: ",ifname);
+      setvbuf(stdout,xbuf,_IOFBF,XBUFSIZE);
+  }
   cleartable = true;
   savecode = CLEAR;
+  fulltable = false;
+  bits = 0;
+  sufxchar = '\0';
   offset = 0;
   do {
-    if ((code = savecode) == CLEAR && cleartable) {
+    code = savecode;
+    if (code == CLEAR && cleartable) {
       highcode = ~(~(CODE)0 << (bits = INITBITS));
       fulltable = false;
-      nextfree = (cleartable = block_compress) == false ? 256 : FIRSTFREE;
-      if (!nextcode(&prefxcode))
+      cleartable = ( block_compress != 0 );
+      nextfree = ( !cleartable ) ? 256 : FIRSTFREE;
+      if (!nextcode(&prefxcode,bits))
         break;
       putc((sufxchar = (char)prefxcode), stdout);
       continue;
     }
     i = 0;
     if( code >= nextfree && !fulltable ) {
-      if (code != nextfree){
+      if (code != nextfree) {
         exit_stat = CODEBAD;
         return ;     /* Non-existant code */
-    }
+      }
       /* Special case for sequence KwKwK (see text of article)         */
       code = prefxcode;
       token[i++] = sufxchar;
@@ -663,7 +674,7 @@ void decompress()
             exit_stat= TABLEBAD;
             return;
         }
-        if (i >= MAXTOKLEN){
+        if (i >= MAXTOKLEN) {
             exit_stat = TOKTOOBIG;
             return;
         }
@@ -691,16 +702,14 @@ void decompress()
         if (highcode >= maxcode) {
           fulltable = true;
           --code;
-        }
-        else {
+        } else {
           ++bits;
           highcode += code;           /* nextfree == highcode + 1 */
         }
       }
       nextfree = code;
     }
-  } while (nextcode(&savecode));
+  } while (nextcode(&savecode,bits));
   exit_stat = (ferror(stdin))? READERR : OK;
-  return ;
 }
 

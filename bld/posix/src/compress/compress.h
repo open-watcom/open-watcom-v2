@@ -154,7 +154,7 @@ char *malloc();
 #define strrchr rindex
 #define DFLTBITS 13     /* compatible with original MINIX compress, max=16 */
 #ifndef KEEPFLAG
-#define KEEPFLAG 1      /* compatible with original MINIX compress */
+#define KEEPFLAG true   /* compatible with original MINIX compress */
                         /* may be redefined from the Makefile if desired */
 #endif
 #ifndef VERBOSE
@@ -166,8 +166,8 @@ char *malloc();
                         /* for the return from a signal         */
 #endif
 
-                          /* Microsoft C compiler  v 4.0-5.1 */
-                          /* MSC is defined in makefile.msc        */
+                        /* Microsoft C compiler  v 4.0-5.1      */
+                        /* MSC is defined in makefile.msc       */
 #ifdef MSC
 #define FAR far
 #define MAXSEG_64K
@@ -177,6 +177,15 @@ char *malloc();
 #ifdef _M_I86SM
 #define SMALLMODEL        /* compiled in small model */
 #endif
+#define setbinary(fp)    setmode(fileno((fp)), O_BINARY)
+#endif
+
+#if defined( _MSC_VER )
+#define FAR
+#define MAXSEG_64K
+#define NO_REVSEARCH
+#define CONST const
+#define ALLOCTYPE void
 #define setbinary(fp)    setmode(fileno((fp)), O_BINARY)
 #endif
 
@@ -264,11 +273,7 @@ char *malloc();
 #define CONST const
 #include <unistd.h>
 #include <stdlib.h>
-#if defined( __QNX__ )
- #include <utime.h>
-#else
- #include <sys/utime.h>
-#endif
+#include <utime.h>
 #endif
 
 /* FILTER  if you want the program to operate as a unix type filter */
@@ -339,8 +344,7 @@ extern char *index(), *rindex(), *strcat(), *strcpy(), *strncat(), *strncpy();
 #include <fcntl.h>
 #endif
 
-
-#ifdef MSC
+#if defined( MSC ) || defined( _MSC_VER )
 #include <stdlib.h>
 #include <io.h>
 #include <sys/utime.h>
@@ -449,7 +453,6 @@ extern char *index(), *rindex(), *strcat(), *strcpy(), *strncat(), *strncpy();
 typedef unsigned short CODE;
 typedef unsigned char UCHAR;
 typedef unsigned int HASH;
-typedef int FLAG;
 
   /*
    * You can define the value of MAXBITS to be anything betweeen MINBITS
@@ -573,7 +576,7 @@ typedef int FLAG;
 
 # ifdef MAXSEG_64K
 #   if  MAXBITS > 14
-#       define SPLIT_HT   true
+#       define SPLIT_HT   1
 #   else
 #       define SPLIT_HT   0
 #   endif
@@ -583,7 +586,7 @@ typedef int FLAG;
 
 # ifdef MAXSEG_64K
 #   if  MAXBITS > 15
-#       define SPLIT_PFX   true
+#       define SPLIT_PFX   1
 #   else
 #       define SPLIT_PFX   0
 #   endif
@@ -698,10 +701,10 @@ UCHAR magic_header[] = { 0x1F,0x9D };  /* 1F 9D */
 char rcs_ident[] = "@(#) compress,v 4.3 88/12/26 08:00:00 don Release $";
 
 #ifdef MWC
-long _stksize = 20000L;     /* set MWC's stack to 20,000 */
-#ifdef MWC_NAME           /* if defined in makefile set _cmdname for */
-char _cmdname[]=MWC_NAME;   /* compress,zcat,uncomp check for desktop and */
-#endif                      /* dumb shells */
+long _stksize = 20000L;         /* set MWC's stack to 20,000 */
+#ifdef MWC_NAME                 /* if defined in makefile set _cmdname for */
+char _cmdname[]=MWC_NAME;       /* compress,zcat,uncomp check for desktop and */
+#endif                          /* dumb shells */
 #endif
 #ifdef SOZOBON
 long _STKSIZ = 20000L;          /* set runtime stack to 20,000 bytes */
@@ -711,18 +714,18 @@ long _STKSIZ = 20000L;          /* set runtime stack to 20,000 bytes */
 char _cmdname[]=CMDNAME;        /* force command name */
 #endif
 
-int overwrite = 0;          /* Do not overwrite unless given -f flag */
-int maxbits = DFLTBITS;     /* user settable max # bits/code */
+bool overwrite = false;         /* Do not overwrite unless given -f flag */
+int maxbits = DFLTBITS;         /* user settable max # bits/code */
 
 int exit_stat = 0;
-int keep = KEEPFLAG;            /* True = don't kill file */
-int keep_error = false;     /* True = keep output file even if error exist */
+bool keep = KEEPFLAG;           /* true = don't kill file */
+bool keep_error = false;        /* true = keep output file even if error exist */
 char *prog_name;
 char ifname[_MAX_DIR];
 char inpath[_MAX_DIR];
 char ofname [_MAX_DIR];
 char outpath[_MAX_DIR];
-int is_list = false;            /* flag for file parameters */
+bool is_list = false;           /* flag for file parameters */
 char endchar[1];
 char xbuf[XBUFSIZE];
 char zbuf[ZBUFSIZE];
@@ -731,9 +734,9 @@ char separator[] = "\\";
 #else
 char separator[] = "/";
 #endif
-int nomagic = false;  /* Use a 3-byte magic number header, unless old file */
-int zcat_flg = false; /* Write output on stdout, suppress messages */
-int quiet = !VERBOSE; /* don't tell me about compression */
+bool nomagic = false;   /* Use a 3-byte magic number header, unless old file */
+bool zcat_flg = false;  /* Write output on stdout, suppress messages */
+bool quiet = !VERBOSE;  /* don't tell me about compression */
 /*
  * block compression parameters -- after all codes are used up,
  * and compression rate changes, start over.
@@ -745,18 +748,18 @@ long checkpoint = CHECK_GAP;
 #endif
 
 /* force the overwrite */
-int force = 0;
+bool force = false;
 
 #ifndef NDEBUG
-int verbose = VERBOSE;
-int debug = false;
+bool verbose = VERBOSE;
+bool debug = false;
 #endif /* !NDEBUG */
 
 #ifndef NOSIGNAL
 SIGTYPE (*bgnd_flag)();
 #endif
 
-int do_decomp = false;
+bool do_decomp = false;
 
 #else               /* not defining instance */
 
@@ -765,40 +768,40 @@ extern char rcs_ident[];
 #ifdef MWC
 extern long _stksize;
 #endif
-extern int overwrite;
+extern bool overwrite;
 extern int maxbits;
 
 
 extern int exit_stat;
-extern int keep;
-extern int keep_error;
+extern bool keep;
+extern bool keep_error;
 extern char *prog_name;
 extern char inpath[];
 extern char outpath[];
-extern int is_list;
+extern bool is_list;
 extern char endchar[];
 extern char xbuf[];
 extern char zbuf[];
 extern char ifname[];
 extern char ofname[];
 extern char separator[];
-extern int nomagic;
-extern int zcat_flg;
-extern int quiet;
+extern bool nomagic;
+extern bool zcat_flg;
+extern bool quiet;
 extern int block_compress;
 #ifdef COMP40
 extern long int ratio;
 extern long checkpoint;
 #endif
-extern int force;
+extern bool force;
 
 #ifndef NDEBUG
-extern int verbose;
-extern int debug;
+extern bool verbose;
+extern bool debug;
 #endif /* !NDEBUG */
 
 #ifndef NOSIGNAL
 extern SIGTYPE (*bgnd_flag)();
 #endif
-extern int do_decomp;
+extern bool do_decomp;
 #endif

@@ -39,8 +39,8 @@ void main( void ) { printf( "Not implemented for QNX\n" ); }
 #else
 #include <stdlib.h>
 #include <dos.h>
-#include <malloc.h>
 #include <process.h>
+
 
 typedef unsigned short segment_t;
 typedef unsigned short segsize_t;

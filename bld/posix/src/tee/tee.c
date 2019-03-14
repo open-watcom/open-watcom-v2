@@ -34,7 +34,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <malloc.h>
+#include <stdarg.h>
 #if defined( __NT__ )
 #include <windows.h>
 #endif
@@ -58,18 +58,20 @@ NULL
 #define BUFFER_SIZE     16384
 char buffer[ BUFFER_SIZE ];
 
-void main( int argc, char *argv[] ) {
-
+int main( int argc, char *argv[] )
+{
     int         ch;
     int         *out_fh;
     int         i;
     int         bytes_read;
     int         append_flag;
+    int         ret;
 
     append_flag = 0;
     for(;;) {
         ch = GetOpt( &argc, argv, "a", usageTxt );
-        if( ch == -1 ) break;
+        if( ch == -1 )
+            break;
         if( ch == 'a' ) {
             append_flag = 1;
         }
@@ -81,11 +83,11 @@ void main( int argc, char *argv[] ) {
     ++argv;
     setmode( STDIN_FILENO, O_BINARY );
     setmode( STDOUT_FILENO, O_BINARY );
-    out_fh = alloca( sizeof( int ) * argc );
+    out_fh = malloc( sizeof( int ) * argc );
     if( out_fh == NULL ) {
         Die( "not enough memory for file handles\n" );
     }
-
+    ret = EXIT_SUCCESS;
     /* open output files */
     for( i = 0; i < argc; ++i ) {
         out_fh[i] = open( argv[i], append_flag ?
@@ -93,36 +95,46 @@ void main( int argc, char *argv[] ) {
                 ( O_WRONLY | O_TRUNC | O_CREAT | O_BINARY ),
                 S_IREAD | S_IWRITE );
         if( out_fh[i] == -1 ) {
-            Die( "unable to open %s for writing: %s\n", argv[i], strerror( errno ) );
+            ret = EXIT_FAILURE;
+            Error( "unable to open %s for writing: %s\n", argv[i], strerror( errno ) );
+            break;
         }
     }
 
     /* do the tee-ing */
-    for(;;) {
+    for( ; ret == EXIT_SUCCESS; ) {
         bytes_read = read( STDIN_FILENO, buffer, BUFFER_SIZE );
         if( bytes_read < 0 ) {
+            ret = EXIT_FAILURE;
 #ifdef __NT__
-            {
-                if( GetLastError() == 109 ) {   // BROKEN_PIPE
-                    break;
-                }
+            if( GetLastError() == 109 ) {   // BROKEN_PIPE
+                break;
             }
 #endif
-            Die( "error reading (stdin): %s\n", strerror( errno ) );
+            Error( "error reading (stdin): %s\n", strerror( errno ) );
+            break;
         }
-        if( bytes_read == 0 ) break;
+        if( bytes_read == 0 )
+            break;
         if( write( STDOUT_FILENO, buffer, bytes_read ) != bytes_read ) {
-            Die( "error writing (stdout): %s\n", strerror( errno ) );
+            ret = EXIT_FAILURE;
+            Error( "error writing (stdout): %s\n", strerror( errno ) );
+            break;
         }
         for( i = 0; i < argc; ++i ) {
             if( write( out_fh[i], buffer, bytes_read ) != bytes_read ) {
-                Die( "error writing %s: %s\n", strerror( errno ) );
+                ret = EXIT_FAILURE;
+                Error( "error writing %s: %s\n", strerror( errno ) );
+                break;
             }
         }
     }
 
     for( i = 0; i < argc; ++i ) {
-        close( out_fh[ i ] );
+        if( out_fh[i] == -1 )
+            break;
+        close( out_fh[i] );
     }
-    exit( 0 );
+    free( out_fh );
+    return( ret );
 }

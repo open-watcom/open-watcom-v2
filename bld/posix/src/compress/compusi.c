@@ -68,16 +68,18 @@
 *************************************************************************@H*/
 
 #include <stdio.h>
+#include <stdlib.h>
 #include "bool.h"
+#include "wio.h"
 
 #include "compress.h" /* contains the rest of the include file declarations */
+
+#include "clibext.h"
 
 /* For those who don't have it in libc.a */
 
 #ifdef NO_STRRCHR
-char  *strrchr(s,c)
-char *s;
-int c;
+char  *strrchr(char *s,int c)
 {
     register int count;
 
@@ -95,8 +97,7 @@ int c;
 }
 #endif
 
-char *get_program_name(ptr)
-char *ptr;
+char *get_program_name(char *ptr)
 {
     char *cp;
     if ((cp = strrchr(ptr, '/')) != NULL)
@@ -105,19 +106,19 @@ char *ptr;
         cp = ptr;
 
     if(strcmp(cp,"UNCOMPRE.EXP") == 0) {
-        do_decomp = 1;
+        do_decomp = true;
     }
     else
     if(strcmp(cp, "zcat") == 0) {
         keep = true;
-        zcat_flg = do_decomp = 1;
+        zcat_flg = true;
+        do_decomp = true;
     }
     return (cp);
 }
 
 
-char *name_index(ptr)
-char *ptr;
+char *name_index(char *ptr)
 {
     char *p;
 
@@ -125,15 +126,13 @@ char *ptr;
     return ((p)? ++p: ptr);
 }
 
-int is_z_name(ptr)       /* checks if it is already a z name */
-char *ptr;
+bool is_z_name(char *ptr)   /* checks if it is already a z name */
 {
 //dsmk  return (!(strcmp(ptr + strlen(ptr) -2,".Z")));
     return( strchr(ptr,'.') != NULL );
 }
 
-int make_z_name(ptr)
-char *ptr;
+bool make_z_name(char *ptr)
 {
 #ifndef BSD4_2
     if (strlen(name_index(ptr)) > 12 ) {
@@ -144,8 +143,7 @@ char *ptr;
     strcat(ptr,".Z");
     return( true );
 }
-void unmake_z_name(ptr)
-char *ptr;
+void unmake_z_name(char *ptr)
 {
     register int len = strlen(ptr)-2;
 
@@ -153,8 +151,10 @@ char *ptr;
 }
 
 #ifndef NOSIGNAL
-SIGTYPE onintr ( )
+SIGTYPE onintr( int signum )
 {
+    /* unused parameters */ (void)signum;
+
     if (!zcat_flg && !keep_error){
         fclose(stdout);
         unlink ( ofname );
@@ -162,9 +162,11 @@ SIGTYPE onintr ( )
     exit ( ERROR );
 }
 
-SIGTYPE oops ( )    /* wild pointer -- assume bad input */
+SIGTYPE oops( int signum )    /* wild pointer -- assume bad input */
 {
-    if ( do_decomp == 1 )
+    /* unused parameters */ (void)signum;
+
+    if ( do_decomp )
         fprintf ( stderr, "%s: corrupt input: %s\n",prog_name,ifname);
     if (!zcat_flg && !keep_error){
         fclose(stdout);
@@ -174,16 +176,11 @@ SIGTYPE oops ( )    /* wild pointer -- assume bad input */
 }
 #endif
 
-void copystat(ifname, ofname)
-char *ifname, *ofname;
+void copystat( void )
 {
     struct stat statbuf;
     mode_t mode;
-#ifdef __WATCOMC__
     struct utimbuf timep;
-#else
-    time_t timep[2];
-#endif
 
     fclose(stdout);
     if (stat(ifname, &statbuf)) {       /* Get stat on input file */
@@ -195,42 +192,32 @@ char *ifname, *ofname;
             fprintf(stderr, "%s: ", ifname);
         fprintf(stderr, " -- not a regular file: unchanged");
         exit_stat = 1;
-    }
-    else if (statbuf.st_nlink > 1) {
+    } else if (statbuf.st_nlink > 1) {
         if(quiet)
             fprintf(stderr, "%s: ", ifname);
         fprintf(stderr, " -- has %d other links: unchanged",
             statbuf.st_nlink - 1);
         exit_stat = ERROR;
-    }
-    else if (exit_stat == NOSAVING && (!force)) { /* No compression: remove file.Z */
-    if(!quiet)
-        fprintf(stderr, " -- no savings -- file unchanged");
-    }
-    else if (exit_stat == NOMEM){
+    } else if (exit_stat == NOSAVING && (!force)) { /* No compression: remove file.Z */
+        if(!quiet)
+            fprintf(stderr, " -- no savings -- file unchanged");
+    } else if (exit_stat == NOMEM){
         if (!quiet)
             fprintf(stderr, " -- file unchanged");
         if (!do_decomp)
             exit(ERROR);
         else
             return;     /* otherwise will unlink outfile */
-    }
-    else if (exit_stat == OK) {  /* ***** Successful Compression ***** */
+    } else if (exit_stat == OK) {  /* ***** Successful Compression ***** */
         mode = statbuf.st_mode & 07777;
         if (chmod(ofname, mode))        /* Copy modes */
                 perror(ofname);
 #if 0 /* AFS */
         chown(ofname,statbuf.st_uid,statbuf.st_gid); /* Copy Ownership */
 #endif
-#ifdef __WATCOMC__
         timep.actime = statbuf.st_atime;
         timep.modtime = statbuf.st_mtime;
         utime(ofname,&timep);   /* Update last accessed and modified times */
-#else
-        timep[0] = statbuf.st_atime;
-        timep[1] = statbuf.st_mtime;
-        utime(ofname,timep);   /* Update last accessed and modified times */
-#endif
         if (!keep){
             fclose(stdin);
             if (unlink(ifname)) /* Remove input file */
@@ -250,7 +237,7 @@ char *ifname, *ofname;
     if (unlink(ofname))
         perror(ofname);
 }
-void version()
+void version( void )
 {
 #ifdef XENIX
 #ifndef NDEBUG
@@ -269,17 +256,14 @@ void version()
 #endif
 }
 
-ALLOCTYPE FAR *emalloc(x,y)
-unsigned int x;
-int y;
+ALLOCTYPE FAR *emalloc(unsigned int x,int y)
 {
     ALLOCTYPE FAR *p;
     p = (ALLOCTYPE FAR *)ALLOCATE(x,y);
     return(p);
 }
 
-void efree(ptr)
-ALLOCTYPE FAR *ptr;
+void efree(ALLOCTYPE FAR *ptr)
 {
     FREEIT(ptr);
 }

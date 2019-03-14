@@ -30,12 +30,18 @@
 
 
 #include <stdio.h>
+#include <stdlib.h>
 #include <stddef.h>
-#include <malloc.h>
+#ifdef _M_I86
+  #include <malloc.h>
+#endif
 #include <dos.h>
 #include "cp.h"
 
-long near_allocs,far_allocs;
+
+long near_allocs;
+long far_allocs;
+
 /*
  * MemInit - initialize memory
  */
