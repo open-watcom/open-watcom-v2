@@ -363,13 +363,13 @@ void PrintFile( struct dirent *file )
         printf( "\n" );
         linecnt = 0;
     }
-    printf("%-*s", COLUMN_WIDTH * num_columns - GUTTER_WIDTH, file->d_name );
+    printf("%-*s", (int)( COLUMN_WIDTH * num_columns - GUTTER_WIDTH ), file->d_name );
     linecnt += num_columns;
     if( linecnt >= maxwidth ) {
         printf("\n");
         linecnt = 0;
     } else {
-        printf( "%*s", GUTTER_WIDTH, "" );
+        printf( "%*s", (int)GUTTER_WIDTH, "" );
     }
 
 } /* PrintFile */

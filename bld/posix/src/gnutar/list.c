@@ -248,7 +248,7 @@ void print_header( char * xname )
     char    uform[11], gform[11];           /* These hold formatted ints */
     char    *user, *group;
     char    size[24];       /* Holds a formatted long or maj, min */
-    long    longie;         /* To make ctime() call portable */
+    time_t  longie;         /* To make ctime() call portable */
     int     pad;
     int     header_std;     /* Is header standard or not? */
     int     i;
@@ -304,9 +304,12 @@ void print_header( char * xname )
             memset( blanks, ' ', sizeof( blanks ) - 1 );
             blanks[sizeof( blanks ) - 1] = '\0';
             timestamp = blanks;
-        } else
+        } else {
 #endif
-            timestamp = ctime( (unsigned long *)( &longie ) );
+            timestamp = ctime( &longie );
+#ifdef MSDOS
+        }
+#endif
         timestamp[16] = '\0';
         timestamp[24] = '\0';
 
@@ -330,13 +333,15 @@ void print_header( char * xname )
         case LF_BLK:
 #ifdef V7
             (void)sprintf( size, "(%d, %d) %D",
+                major( phstat->st_dev ),
+                minor( phstat->st_dev ),
+                /* size has meaning for Minix - JER */
+                (long)phstat->st_size );
 #else
             (void)sprintf( size, "%d, %d",
+                major( phstat->st_dev ),
+                minor( phstat->st_dev ) );
 #endif
-                    major( phstat->st_dev ),
-                    minor( phstat->st_dev ),
-                    /* size has meaning for Minix - JER */
-                    (long)phstat->st_size );
             break;
         default:
 #ifdef V7

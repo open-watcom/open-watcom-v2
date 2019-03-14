@@ -152,8 +152,8 @@ int main( int argc, char **argv ) {
     char *  file_name;
     char    fname[_MAX_FNAME];
     char    full_name[_MAX_PATH];
-#endif
     struct stat sbuf;
+#endif
 
 #ifdef __WATCOMC__
     argc--;
