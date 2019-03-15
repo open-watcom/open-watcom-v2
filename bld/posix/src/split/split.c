@@ -63,7 +63,7 @@ static int splitFile( FILE *fp, int lines, char *prefix )
     FILE           *out  = NULL;
     char           *file = NULL;
     char            more = 1;
-    unsigned        cnt  = 0;
+    int             cnt  = 0;
     unsigned char   e1   = 'a';
     unsigned char   e2   = 'a';
 

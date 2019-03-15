@@ -191,20 +191,21 @@ static void doMore( char *name, FILE *f )
     int         ch;
     long        file_size;
     int         done;
-    long        curr_line=0;
+    long        curr_line;
     long        tline;
     int         char_cnt;
     int         percent;
     char        buff[_MAX_PATH*2];
 
+    file_size = 0;
     if( f != stdin ) {
         fseek( f, 0, SEEK_END );
         file_size = ftell( f );
         fseek( f, 0, SEEK_SET );
         InitFileBuffer( file_size );
     }
+    curr_line = 0;
     char_cnt = 0;
-
     for( ;; ) {
         ch = ReadChar( f );
         if( ch == EOF ) {
@@ -236,7 +237,7 @@ static void doMore( char *name, FILE *f )
             if( lineCount == 0 ) {
                 lineCount = screenHeight-1;
                 if( f != stdin ) {
-                    percent = (100L*BufferPos)/file_size;
+                    percent = ( 100L * BufferPos ) / file_size;
                 } else {
                     percent = 0;
                 }
@@ -342,6 +343,7 @@ int main( int argc, char *argv[] )
     int         rxflag;
     int         buff_stdin;
     int         ch;
+    size_t      read_bytes;
 
     screenHeight = GetConsoleHeight();
     screenWidth = GetConsoleWidth();
@@ -392,8 +394,8 @@ int main( int argc, char *argv[] )
             }
             setmode( fileno( f ), O_BINARY );
             for( ;; ) {
-                i = fread( workBuff, 1, BUFF_SIZE, stdin );
-                if( fwrite( workBuff, 1, i, f ) != i ) {
+                read_bytes = fread( workBuff, 1, BUFF_SIZE, stdin );
+                if( fwrite( workBuff, 1, read_bytes, f ) != read_bytes ) {
                     exit( 1 );
                 }
                 if( feof( stdin ) ) {
@@ -406,7 +408,7 @@ int main( int argc, char *argv[] )
             doMore( "*stdin*", stdin );
         }
     } else {
-        for( i=1;i<argc;i++ ) {
+        for( i = 1; i < argc; i++ ) {
             f = fopen( argv[i],"rb" );
             if( f == NULL ) {
                 printf( "Error opening \"%s\"\n", argv[i] );

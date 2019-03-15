@@ -178,7 +178,7 @@ void DoDU( char *dir, unsigned long * tcsum, unsigned long * tssum )
     char                fname[_MAX_PATH];
     DIR                 *d;
     struct dirent       *nd;
-    int                 len;
+    size_t              len;
     struct stat         sb;
     char                drive[_MAX_DRIVE],directory[_MAX_DIR];
     char                extin[_MAX_EXT],name[_MAX_FNAME];
@@ -236,17 +236,21 @@ void DoDU( char *dir, unsigned long * tcsum, unsigned long * tssum )
     temp = head;
     while( temp != NULL ) {
         if( temp->df.d_attr & _A_SUBDIR ) {
-            strcpy( filename,directory );
-            if( directory[ strlen( directory ) -1 ] != '\\' ) {
-                strcat( filename,"\\" );
+            strcpy( filename, directory );
+            len = strlen( filename );
+            if( filename[len - 1] != '\\' ) {
+                filename[len++] = '\\';
+                filename[len] = '\0';
             }
-            strcat( filename,temp->df.d_name );
-            if( !strcmp( name,"*" ) && !strcmp( extin,".*" ) ) {
-                _makepath( fname,drive, filename, NULL, NULL );
+            strcpy( filename + len, temp->df.d_name );
+            if( strcmp( name, "*" ) == 0 && strcmp( extin, ".*" ) == 0 ) {
+                _makepath( fname, drive, filename, NULL, NULL );
                 len = strlen( fname ) - 1;
-                if( fname[ len ] == '\\' ) fname[ len ] = 0;
+                if( fname[len] == '\\' ) {
+                    fname[len] = 0;
+                }
             } else {
-                _makepath( fname,drive, filename, name, extin );
+                _makepath( fname, drive, filename, name, extin );
             }
             csum = 0;
             ssum = 0;

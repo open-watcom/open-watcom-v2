@@ -108,7 +108,7 @@ static int make_dirs( char *pathname )
             mychown( pathname );
 #endif
             /* FIXME, show mode as modified by current umask */
-            pr_mkdir( pathname, p - pathname, 0777 );
+            pr_mkdir( pathname, (int)( p - pathname ), 0777 );
             madeone++;              /* Remember if we made one */
             continue;
         }
@@ -137,7 +137,8 @@ static int make_dirs( char *pathname )
 void extract_archive( char *xname )
 {
     char    *data;
-    int     fd, check, namelen, written;
+    int     fd, check, written;
+    size_t  namelen;
     long    size;
     int     standard;               /* Is header standard? */
     struct  utimbuf  acc_upd_times;
@@ -195,7 +196,7 @@ again_file:
              * that we have used the data, then check if the write worked.
              */
             data = findrec()->charptr;
-            written = endofrecs()->charptr - data;
+            written = (int)( endofrecs()->charptr - data );
             if( written > size )
                 written = size;
             errno = 0;

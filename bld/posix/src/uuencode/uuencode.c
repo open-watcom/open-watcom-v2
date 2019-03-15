@@ -140,18 +140,18 @@ static const char * usage_data[] = {
 void encode( FILE *in, FILE *out );
 void outdec( char *p, FILE *f );
 
-
-int main( int argc, char **argv ) {
+int main( int argc, char **argv )
+{
 #if defined( VMS ) || defined( __WATCOMC__ )
     FILE        *out;
 #endif
     FILE        *in;
 #ifdef __WATCOMC__
-    mode_t  mode;
-    int     cnt;
-    char *  file_name;
-    char    fname[_MAX_FNAME];
-    char    full_name[_MAX_PATH];
+    mode_t      mode;
+    int         cnt;
+    char        *file_name;
+    char        fname[_MAX_FNAME];
+    char        full_name[_MAX_PATH];
     struct stat sbuf;
 #endif
 
@@ -256,37 +256,41 @@ int main( int argc, char **argv ) {
 /*
  * copy from in to out, encoding as you go along.
  */
-void encode( FILE *in, FILE *out ) {
+void encode( FILE *in, FILE *out )
+{
     char buf[80];
-    int i, n;
+    int i;
+    unsigned char n;
 
-    for(;;) {
+    for( ;; ) {
         /* 1 (up to) 45 character line */
-        n = fread(buf, 1, 45, in);
-        putc(ENC(n), out);
+        n = (unsigned char)fread( buf, 1, 45, in );
+        putc( ENC( n ), out );
 
-        for(i=0; i<n; i += 3) {
-            outdec(&buf[i], out);
+        for( i = 0; i < n; i += 3 ) {
+            outdec( &buf[i], out );
         }
 
-        putc('\n', out);
-        if (n <= 0)
+        putc( '\n', out );
+        if( n == 0 ) {
             break;
+        }
     }
 }
 
 /*
  * output one group of 3 bytes, pointed at by p, on file f.
  */
-void outdec( char *p, FILE *f ) {
+void outdec( char *p, FILE *f )
+{
     int c1, c2, c3, c4;
 
     c1 = *p >> 2;
     c2 = (*p << 4) & 060 | (p[1] >> 4) & 017;
     c3 = (p[1] << 2) & 074 | (p[2] >> 6) & 03;
     c4 = p[2] & 077;
-    putc(ENC(c1), f);
-    putc(ENC(c2), f);
-    putc(ENC(c3), f);
-    putc(ENC(c4), f);
+    putc( ENC( c1 ), f );
+    putc( ENC( c2 ), f );
+    putc( ENC( c3 ), f );
+    putc( ENC( c4 ), f );
 }

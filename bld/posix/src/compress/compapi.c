@@ -584,7 +584,7 @@ int nextcode(CODE *codeptr, int bits)
   shift = offset;
   if (size - shift < bits) {
     /* Read more input and convert size from # of bytes to # of bits */
-    size = fread(inbuf, 1, bits, stdin) << 3;
+    size = (int)( fread(inbuf, 1, bits, stdin) << 3 );
     if (size <= 0 || ferror(stdin))
       return(NO);
     offset = shift = 0;

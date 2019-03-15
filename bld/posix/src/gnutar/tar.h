@@ -39,6 +39,8 @@
  * Minix  port 3/88 by Eric Roskos.
  */
 
+#include "bool.h"
+
 
 #define __NO_PHYS__ 1   /* define no physical IO is to take place */
 #ifdef __MSDOS__        /* For Turbo C */
@@ -134,7 +136,7 @@ union record {
 TAR_EXTERN union record *ar_block;      /* Start of block of archive */
 TAR_EXTERN union record *ar_record;     /* Current record of archive */
 TAR_EXTERN union record *ar_last;       /* Last+1 record of archive block */
-TAR_EXTERN char         ar_reading;     /* 0 writing, !0 reading archive */
+TAR_EXTERN bool         ar_reading;     /* 0 writing, !0 reading archive */
 TAR_EXTERN int          blocking;       /* Size of each block, in records */
 TAR_EXTERN int          blocksize;      /* Size of each block, in bytes */
 TAR_EXTERN char         *ar_file;       /* File containing archive */
@@ -149,25 +151,25 @@ TAR_EXTERN int          devsize;        /* # blocks on physical drive */
 /*
  * Flags from the command line
  */
-TAR_EXTERN char f_reblock;              /* -B */
-TAR_EXTERN char f_create;               /* -c */
-TAR_EXTERN char f_debug;                /* -d */
-TAR_EXTERN char f_sayblock;             /* -D */
-TAR_EXTERN char f_follow_links;         /* -h */
-TAR_EXTERN char f_ignorez;              /* -i */
-TAR_EXTERN char f_keep;                 /* -k */
-TAR_EXTERN char f_modified;             /* -m */
-TAR_EXTERN char f_oldarch;              /* -o */
-TAR_EXTERN char f_use_protection;       /* -p */
-TAR_EXTERN char f_sorted_names;         /* -s */
-TAR_EXTERN char f_list;                 /* -t */
-TAR_EXTERN char f_namefile;             /* -T */
-TAR_EXTERN char f_verbose;              /* -v */
+TAR_EXTERN bool f_reblock;              /* -B */
+TAR_EXTERN bool f_create;               /* -c */
+TAR_EXTERN bool f_debug;                /* -d */
+TAR_EXTERN bool f_sayblock;             /* -D */
+TAR_EXTERN bool f_follow_links;         /* -h */
+TAR_EXTERN bool f_ignorez;              /* -i */
+TAR_EXTERN bool f_keep;                 /* -k */
+TAR_EXTERN bool f_modified;             /* -m */
+TAR_EXTERN bool f_oldarch;              /* -o */
+TAR_EXTERN bool f_use_protection;       /* -p */
+TAR_EXTERN bool f_sorted_names;         /* -s */
+TAR_EXTERN bool f_list;                 /* -t */
+TAR_EXTERN bool f_namefile;             /* -T */
+TAR_EXTERN bool f_verbose;              /* -v */
 #ifdef MSDOS
-TAR_EXTERN char f_phys;                 /* -V */
+TAR_EXTERN bool f_phys;                 /* -V */
 #endif
-TAR_EXTERN char f_extract;              /* -x */
-TAR_EXTERN char f_compress;             /* -z */
+TAR_EXTERN bool f_extract;              /* -x */
+TAR_EXTERN bool f_compress;             /* -z */
 
 /*
  * We now default to Unix Standard format rather than 4.2BSD tar format.
@@ -185,10 +187,10 @@ TAR_EXTERN char f_compress;             /* -z */
  * Structure for keeping track of filenames and lists thereof.
  */
 struct name {
-        struct name     *next;
-        short           length;
-        char            found;
-        char            name[NAMSIZ+1];
+    struct name     *next;
+    size_t          length;
+    bool            found;
+    char            name[NAMSIZ + 1];
 };
 
 TAR_EXTERN struct name  *namelist;      /* Points to first name in list */
@@ -208,11 +210,11 @@ TAR_EXTERN int          errors;         /* # of files in error */
  * Thanks, typedef.  Thanks, USG.
  */
 struct link {
-        struct link     *next;
-        dev_t           dev;
-        ino_t           ino;
-        short           linkcount;
-        char            name[NAMSIZ+1];
+    struct link     *next;
+    dev_t           dev;
+    ino_t           ino;
+    short           linkcount;
+    char            name[NAMSIZ+1];
 };
 
 TAR_EXTERN struct link  *linklist;      /* Points to first link in list */
@@ -221,14 +223,14 @@ TAR_EXTERN struct link  *linklist;      /* Points to first link in list */
 /*
  * Error recovery stuff
  */
-TAR_EXTERN char         read_error_flag;
+TAR_EXTERN bool     read_error_flag;
 
 
 /*
  * Declarations of functions available to the world.
  */
 
-#define  annorec(stream, msg)   anno(stream, msg, 0)    /* Cur rec */
+#define annorec(stream, msg)    anno(stream, msg, 0)    /* Cur rec */
 #define annofile(stream, msg)   anno(stream, msg, 1)    /* Saved rec */
 
 /*

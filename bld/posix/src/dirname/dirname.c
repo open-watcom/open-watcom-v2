@@ -52,7 +52,7 @@ static const char *usageMsg[] = {
 void main( int argc, char **argv )
 {
     char        *dir, *drive;
-    unsigned     len;
+    size_t      len;
 
     argv = ExpandEnv( &argc, argv );
     GetOpt( &argc, argv, "", usageMsg );
@@ -62,8 +62,8 @@ void main( int argc, char **argv )
     } else {
         len    = strlen( argv[1] );
 
-        dir    = (char *) malloc( len * sizeof( char ) );
-        drive  = (char *) malloc( len * sizeof( char ) );
+        dir    = (char *)malloc( len * sizeof( char ) );
+        drive  = (char *)malloc( len * sizeof( char ) );
 
         _splitpath( argv[1], drive, dir, NULL, NULL );
 

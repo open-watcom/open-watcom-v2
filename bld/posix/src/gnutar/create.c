@@ -119,7 +119,7 @@ void create_archive( void )
 {
     char  *p;
 
-    open_archive(0);                        /* Open for writing */
+    open_archive( false );                      /* Open for writing */
 
     while( (p = name_next()) != NULL ) {
         dump_file(p);
@@ -286,7 +286,7 @@ badfile:
         finish_header(header);
         while (sizeleft > 0) {
             start = findrec();
-            bufsize = endofrecs()->charptr - start->charptr;
+            bufsize = (int)( endofrecs()->charptr - start->charptr );
             if (sizeleft < bufsize)
                 bufsize = sizeleft;
 
@@ -390,7 +390,7 @@ padit:
         DIR     *dirp;
         struct dirent *d;
         char    namebuf[NAMSIZ + 2];
-        int     len;
+        size_t  len;
 
         /* Build new prototype name */
         strncpy(namebuf, fname, sizeof(namebuf));

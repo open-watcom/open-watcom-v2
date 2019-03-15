@@ -145,7 +145,7 @@ bool make_z_name(char *ptr)
 }
 void unmake_z_name(char *ptr)
 {
-    register int len = strlen(ptr)-2;
+    size_t len = strlen( ptr ) - 2;
 
     ptr[len] = '\0';
 }

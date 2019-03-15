@@ -67,7 +67,7 @@ static void fold( FILE *fh ) {
             offs = 0;
         }
         if( ch != '\n' ) {
-            lineBuffer[ offs++ ] = ch;
+            lineBuffer[ offs++ ] = (char)ch;
         }
     }
     if( offs > 0 ) {

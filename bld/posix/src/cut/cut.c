@@ -265,9 +265,9 @@ static void getChars( line *ln, node *list )
 {
     unsigned    low = 0, high, len;
 
-    len = strlen( ln->buff );
+    len = (unsigned)strlen( ln->buff );
 
-    for( ; list->right != NULL  &&  low < len; list = list->right ) {
+    for( ; list->right != NULL && low < len; list = list->right ) {
         low  = list->left->v - 1;
         high = list->right->v - 1;
 

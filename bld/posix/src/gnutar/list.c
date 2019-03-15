@@ -165,7 +165,7 @@ static int read_header( void )
  */
 void decode_header( union record *header, struct stat *st, int *stdp, int wantug )
 {
-    st->st_mode = from_oct( 8, header->header.mode );
+    st->st_mode = (unsigned short)from_oct( 8, header->header.mode );
     st->st_mtime = from_oct( 1 + 12, header->header.mtime );
 
     if( 0 == strcmp( header->header.magic, TMAGIC ) ) {
@@ -199,8 +199,8 @@ void decode_header( union record *header, struct stat *st, int *stdp, int wantug
     } else {
         /* Old fashioned tar archive */
         *stdp = 0;
-        st->st_uid = from_oct( 8, header->header.uid );
-        st->st_gid = from_oct( 8, header->header.gid );
+        st->st_uid = (short)from_oct( 8, header->header.uid );
+        st->st_gid = (short)from_oct( 8, header->header.gid );
         st->st_dev = 0;
     }
 }
@@ -352,7 +352,7 @@ void print_header( char * xname )
         }
 
         /* Figure out padding and print the whole line. */
-        pad = strlen( user ) + strlen( group ) + strlen( size ) + 1;
+        pad = (int)( strlen( user ) + strlen( group ) + strlen( size ) + 1 );
         if( pad > ugswidth )
             ugswidth = pad;
 
@@ -489,7 +489,7 @@ void read_and( void (*do_something)( char *dummy ) )
     char           *xname;
 
     name_gather();                          /* Gather all the names */
-    open_archive( 1 );                      /* Open for reading */
+    open_archive( true );                   /* Open for reading */
 
     for( ;; ) {
         prev_status = status;
