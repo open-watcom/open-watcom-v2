@@ -38,7 +38,7 @@
 #include <time.h>
 #include <dosfunc.h>
 #include <sys/stat.h>
-#include <sys/utime.h>
+#include <utime.h>
 #ifdef __WINDOWS_386__
     #include <windows.h>
 #endif
@@ -146,7 +146,7 @@ static unsigned _utime_sfn( const char *fname, _dos_tms *dostms )
         struct SREGS    sregs;
   #if defined(__386__)
         unsigned long   alias;
-    
+
         alias = AllocAlias16( (void *)fname );
         reg_set.x.dx = alias & 0xffff;
         sregs.ds = alias >> 16;
@@ -204,7 +204,7 @@ static unsigned _utime_sfn( const char *fname, _dos_tms *dostms )
 }
 #endif
 
-_WCRTLINK int __F_NAME(utime,_wutime)( CHAR_TYPE const *fname, 
+_WCRTLINK int __F_NAME(utime,_wutime)( CHAR_TYPE const *fname,
                                                        struct utimbuf const *times )
 /**********************************************************************************/
 {
