@@ -44,8 +44,8 @@ typedef struct state {
     POINT           prevmouse;      /* mouse posn at last significant operation */
     OBJPTR          mainobject;     /* the main object                          */
     OBJ_ID          objtype;        /* type of object to create                 */
-    unsigned        gridvinc;       /* grid vertical increment value            */
-    unsigned        gridhinc;       /* grid horizontal increment value          */
+    int             gridvinc;       /* grid vertical increment value            */
+    int             gridhinc;       /* grid horizontal increment value          */
     void            *objects;       /* pointer to object creation table         */
     POINT           offset;         /* Scrolling offset from (0,0)              */
     HANDLE          hEscAccel;      /* Handle to escape accelerator table       */
@@ -56,8 +56,8 @@ typedef struct state {
     bool            showerror;      /* Show error message when we get it?       */
     char            *error;         /* Pending error string                     */
     MOUSEACTION     *mouseaction;   /* Rtn to call on significant mouse actions */
-    unsigned        vresizegrid;    /* vertical resize grid increment           */
-    unsigned        hresizegrid;    /* horizontal resize grid increment         */
+    int             vresizegrid;    /* vertical resize grid increment           */
+    int             hresizegrid;    /* horizontal resize grid increment         */
     bool            show_eatoms;    /* new eatoms will show their movement rect */
     STATE_HDL       id;             /* state id                                 */
 } state;

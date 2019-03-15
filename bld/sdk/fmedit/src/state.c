@@ -263,7 +263,7 @@ OBJ_ID FMEDITAPI GetBaseObjType( void )
     return( State->objtype );
 }
 
-unsigned FMEDITAPI GetVerticalInc( void )
+int FMEDITAPI GetVerticalInc( void )
 {
     /* return the vertical grid increment value */
     return( State->gridvinc );
@@ -275,7 +275,7 @@ void FMEDITAPI SetVerticalInc( unsigned inc )
     State->gridvinc = inc;
 }
 
-unsigned FMEDITAPI GetHorizontalInc( void )
+int FMEDITAPI GetHorizontalInc( void )
 {
     /* return the vertical grid increment value */
     return( State->gridhinc );
@@ -503,19 +503,19 @@ void MouseAction( RECT *r )
 }
 
 
-void SetResizeGrid( unsigned horz, unsigned vert )
+void SetResizeGrid( int horz, int vert )
 {
     State->hresizegrid = horz;
     State->vresizegrid = vert;
 }
 
-unsigned GetResizeHInc( void )
+int GetResizeHInc( void )
 {
     return( State->hresizegrid );
 }
 
 
-unsigned GetResizeVInc( void )
+int GetResizeVInc( void )
 {
     return( State->vresizegrid );
 }

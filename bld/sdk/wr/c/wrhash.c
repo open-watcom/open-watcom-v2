@@ -519,7 +519,7 @@ bool WRAPI WRWriteSymbolsToFile( WRHashTable *table, const char *filename )
     qsort( tbl, count, sizeof( WRHashEntry * ), WRCompareHashEntry );
 
     for( i = 0; i < count; i++ ) {
-        fprintf( handle, "#define %-*s %ld\n", max_len + 2, tbl[i]->name, tbl[i]->value );
+        fprintf( handle, "#define %-*s %ld\n", (int)( max_len + 2 ), tbl[i]->name, tbl[i]->value );
     }
 
     if( fclose( handle ) != 0 ) {
