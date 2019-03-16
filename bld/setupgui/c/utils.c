@@ -38,14 +38,17 @@
 #include <setjmp.h>
 #include <limits.h>
 #ifdef __WATCOMC__
-#include <process.h>
+    #include <process.h>
+#endif
+#if defined( __UNIX__ ) || defined( __WATCOMC__ )
+    #include <utime.h>
+#else
+    #include <sys/utime.h>
 #endif
 #ifdef __UNIX__
-  #include <utime.h>
-  #include <dirent.h>
+    #include <dirent.h>
 #else
-  #include <sys/utime.h>
-  #include <direct.h>
+    #include <direct.h>
 #endif
 #include "wio.h"
 #include "watcom.h"
@@ -60,8 +63,8 @@
 #include "setupio.h"
 #include "iopath.h"
 #ifdef PATCH
-#include "bdiff.h"
-#include "wpack.h"
+    #include "bdiff.h"
+    #include "wpack.h"
 #endif
 #include "errno.h"
 #include "guistat.h"

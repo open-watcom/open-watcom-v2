@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,18 +36,18 @@
 #include <stdlib.h>
 #include <stddef.h>
 #include <sys/stat.h>
-#ifdef __UNIX__
+#if defined( __UNIX__ ) || defined( __WATCOMC__ )
     #include <utime.h>
-    #include <unistd.h>
-    #include <dirent.h>
     #include <fnmatch.h>
 #else
     #include <sys/utime.h>
+#endif
+#ifdef __UNIX__
+    #include <unistd.h>
+    #include <dirent.h>
+#else
     #include <direct.h>
     #include <dos.h>
-  #ifdef __WATCOMC__
-    #include <fnmatch.h>
-  #endif
 #endif
 #include "watcom.h"
 #include "builder.h"

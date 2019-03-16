@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,15 +37,15 @@
 #include "mrcmsg.h"
 #include "msg.h"
 #include "mupdate.h"
+#if defined(__UNIX__) || defined( __WATCOMC__ )
+    #include <utime.h>
+#else
+    #include <sys/utime.h>
+#endif
 #if defined( __DOS__ )
     #include <dos.h>
     #include "tinyio.h"
 #else
-  #if defined(__UNIX__) || defined( __WATCOMC__ )
-    #include <utime.h>
-  #else
-    #include <sys/utime.h>
-  #endif
   #if defined( __OS2__ )
     #define INCL_DOSMISC
     #include <os2.h>

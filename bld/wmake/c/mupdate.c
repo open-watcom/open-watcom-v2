@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -30,10 +31,10 @@
 
 
 #include <time.h>
-#if defined( __WATCOMC__ ) || defined( __UNIX__ )
-#include <utime.h>
+#if defined(__UNIX__) || defined( __WATCOMC__ )
+    #include <utime.h>
 #else
-#include <sys/utime.h>
+    #include <sys/utime.h>
 #endif
 #include "make.h"
 #include "wio.h"

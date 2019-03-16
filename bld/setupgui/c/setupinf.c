@@ -36,10 +36,12 @@
 #include <stdlib.h>
 #include <stdarg.h>
 #include <ctype.h>
-#ifdef __UNIX__
+#if defined( __UNIX__ ) || defined( __WATCOMC__ )
     #include <utime.h>
 #else
     #include <sys/utime.h>
+#endif
+#ifndef __UNIX__
     #include <direct.h>
 #endif
 #include "wio.h"

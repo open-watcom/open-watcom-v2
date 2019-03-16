@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,10 +37,10 @@
 #include <stdlib.h>
 #include <time.h>
 #include <sys/types.h>
-#if defined( __UNIX__ )
-#include <utime.h>
+#if defined(__UNIX__) || defined( __WATCOMC__ )
+    #include <utime.h>
 #else
-#include <sys/utime.h>
+    #include <sys/utime.h>
 #endif
 #include "wio.h"
 #include "sopen.h"
@@ -308,7 +309,7 @@ static void AddInfo( void )
     /* add header (trailer), if required */
     if( res ) {
         if( fseek( finfo.fp, SEEK_POSBACK( sizeof( header ) ), SEEK_END ) )
-        	Fatal( MSG_SEEK_ERROR, finfo.name );
+                Fatal( MSG_SEEK_ERROR, finfo.name );
         info.len = ftell( finfo.fp ) + sizeof( header );
         fread( (void *)&header, 1, sizeof( header ), finfo.fp );
         if( header.signature != WAT_RES_SIG || header.debug_size != info.len ) {

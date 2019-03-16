@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -37,12 +38,13 @@ extern "C" {
     #include <stdio.h>
     #include <stdint.h>
     #include <stdlib.h>
-#ifndef __UNIX__
+#ifdef __UNIX__
+    #include <sys/types.h>
+#else
     #include <direct.h>
 #endif
     #include <time.h>
-#ifdef __UNIX__
-    #include <sys/types.h>
+#if defined( __UNIX__ ) || defined( __WATCOMC__ )
     #include <utime.h>
 #else
     #include <sys/utime.h>
