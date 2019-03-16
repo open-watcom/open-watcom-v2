@@ -32,8 +32,6 @@
 
 #include "ftnstd.h"
 #include <process.h>
-#include <stdlib.h>
-#include <stddef.h>
 #if defined( __NT__ )
     #include <windows.h>
 #elif defined( __OS2__ )

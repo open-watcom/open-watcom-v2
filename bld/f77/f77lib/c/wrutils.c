@@ -30,10 +30,8 @@
 ****************************************************************************/
 
 
-#include <string.h>
-#include <stdlib.h>
-
 #include "ftnstd.h"
+#include <string.h>
 #include "rundat.h"
 #include "errcod.h"
 #include "csetinfo.h"

@@ -36,6 +36,7 @@
 //
 
 #include "ftnstd.h"
+#include <ctype.h>
 #include "opr.h"
 #include "opn.h"
 #include "errcod.h"
@@ -57,7 +58,6 @@
 #include "fcodes.h"
 #include "gflow.h"
 #include "brseinfo.h"
-#include <ctype.h>
 
 
 static void UnCondGoto( void )

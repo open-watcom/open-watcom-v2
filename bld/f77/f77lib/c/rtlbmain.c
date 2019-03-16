@@ -30,7 +30,6 @@
 
 
 #include "ftnstd.h"
-#include <stdlib.h>
 #include "fdll.h"
 
 

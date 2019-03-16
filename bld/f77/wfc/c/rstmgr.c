@@ -30,6 +30,7 @@
 
 
 #include "ftnstd.h"
+#include <string.h>
 #include "progsw.h"
 #include "errcod.h"
 #include "global.h"
@@ -40,8 +41,6 @@
 #include "rstsrch.h"
 #include "cgmagic.h"
 #include "rstmgr.h"
-
-#include <string.h>
 
 
 static  void    InitHashTable( hash_entry *hash_table, int size ) {

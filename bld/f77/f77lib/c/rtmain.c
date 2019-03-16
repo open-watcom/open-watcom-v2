@@ -28,8 +28,8 @@
 *
 ****************************************************************************/
 
+
 #include "ftnstd.h"
-#include <stdlib.h>
 #include "xfflags.h"
 #include "rtenv.h"
 #include "rundat.h"

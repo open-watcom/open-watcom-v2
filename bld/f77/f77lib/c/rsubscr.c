@@ -30,13 +30,11 @@
 
 
 #include "ftnstd.h"
+#include <string.h>
 #include "rterr.h"
 #include "rtenv.h"
 #include "errcod.h"
 #include "symdefs.h"
-
-#include <stdlib.h>
-#include <string.h>
 
 
 /* Forward declarations */

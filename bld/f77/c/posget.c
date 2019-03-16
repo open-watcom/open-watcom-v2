@@ -31,6 +31,10 @@
 
 
 #include "ftnstd.h"
+#include <string.h>
+#if defined( __WINDOWS__ )
+    #include <conio.h>
+#endif
 #include "fio.h"
 #include "posio.h"
 #include "sysbuff.h"
@@ -38,11 +42,6 @@
 #include "posseek.h"
 #include "poserr.h"
 #include "posflush.h"
-#include <stdlib.h>
-#include <string.h>
-#if defined( __WINDOWS__ )
-#include <conio.h>
-#endif
 
 #include "clibext.h"
 

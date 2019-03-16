@@ -38,8 +38,6 @@
 #include "ftnstd.h"
 #include <string.h>
 #include <stdio.h>
-#include <stdlib.h>
-#include <malloc.h>
 #include "global.h"
 #include "omodes.h"
 #include "inout.h"

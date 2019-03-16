@@ -31,9 +31,9 @@
 
 
 #include "ftnstd.h"
+#include <string.h>
 #include "target.h"
 #include "xfloat.h"
-#include <string.h>
 #include "fmtrtns.h"
 
 

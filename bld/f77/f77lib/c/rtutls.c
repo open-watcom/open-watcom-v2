@@ -31,6 +31,7 @@
 
 
 #include "ftnstd.h"
+#include <string.h>
 #include "units.h"
 #include "rundat.h"
 #include "errcod.h"
@@ -44,8 +45,6 @@
 #include "fdutil.h"
 #include "fstdio.h"
 #include "stracc.h"
-
-#include <string.h>
 
 
 static ftnfile *SearchFtnFile( int unit ) {

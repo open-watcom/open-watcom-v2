@@ -30,12 +30,12 @@
 ****************************************************************************/
 
 
+#include "ftnstd.h"
 #include <string.h>
 #if defined( __WATCOMC__ ) || !defined( __UNIX__ )
 #include <process.h>
 #endif
 #include "wio.h"
-#include "ftnstd.h"
 #include "progsw.h"
 #include "global.h"
 #include "fcgbls.h"

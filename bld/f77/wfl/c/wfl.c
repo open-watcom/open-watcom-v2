@@ -29,8 +29,8 @@
 ****************************************************************************/
 
 
+#include "ftnstd.h"
 #include <sys/types.h>
-#include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
 #include <ctype.h>
@@ -42,13 +42,11 @@
 #if defined( __WATCOMC__ ) || !defined( __UNIX__ )
 #include <process.h>
 #endif
-#include <malloc.h>
 #if defined( __WATCOMC__ ) || defined( __UNIX__ )
 #include <fnmatch.h>
 #endif
 #include "wio.h"
 #include "watcom.h"
-#include "ftnstd.h"
 #include "errcod.h"
 #include "optflags.h"
 #include "cioconst.h"

@@ -30,7 +30,9 @@
 ****************************************************************************/
 
 
+#include <time.h>
 #include "cgaux.h"
+
 
 // The following describes argument information:
 
@@ -92,8 +94,6 @@ typedef struct arr_info {
     struct arr_info     *link;
     char                arr[1];
 } arr_info;
-
-#include <time.h>
 
 typedef struct dep_info {
     struct dep_info     *link;

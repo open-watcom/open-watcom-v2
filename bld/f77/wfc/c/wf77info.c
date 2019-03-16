@@ -30,10 +30,9 @@
 ****************************************************************************/
 
 
-#include <string.h>
-#include <stdlib.h>
-#include <stdio.h>
 #include "ftnstd.h"
+#include <string.h>
+#include <stdio.h>
 #include "global.h"
 #include "wf77defs.h"
 #include "wf77auxd.h"

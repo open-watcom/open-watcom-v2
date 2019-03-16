@@ -30,7 +30,6 @@
 
 
 #include "ftnstd.h"
-#include <stdlib.h>
 #if defined( __WATCOMC__ ) || !defined( __UNIX__ )
 #include <process.h>
 #endif

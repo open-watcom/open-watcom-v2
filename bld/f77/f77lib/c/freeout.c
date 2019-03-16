@@ -31,6 +31,7 @@
 
 
 #include "ftnstd.h"
+#include <string.h>
 #include "rundat.h"
 #include "iotype.h"
 #include "undefcg.h"
@@ -38,7 +39,6 @@
 #include "wrutils.h"
 #include "freeout.h"
 #include "unfmtutl.h"
-#include <string.h>
 
 
 static  void    OutReal( void )

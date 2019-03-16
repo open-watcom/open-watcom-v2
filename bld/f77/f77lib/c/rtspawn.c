@@ -31,7 +31,6 @@
 
 
 #include "ftnstd.h"
-#include <stdlib.h>
 #if defined( __WINDOWS__ ) && defined( _M_I86 )
   #include <windows.h>
 #else

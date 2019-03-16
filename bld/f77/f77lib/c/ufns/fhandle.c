@@ -36,6 +36,8 @@
 //
 
 #include "ftnstd.h"
+#include <sys/types.h>
+#include <sys/stat.h>
 #include "rundat.h"
 #include "posio.h"
 #include "units.h"
@@ -44,10 +46,6 @@
 #include "poserr.h"
 #include "rtsysutl.h"
 #include "rdwr.h"
-
-#include <stddef.h>
-#include <sys/types.h>
-#include <sys/stat.h>
 
 
 intstar2        __fortran SYSHANDLE( intstar4 *unit ) {

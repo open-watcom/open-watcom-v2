@@ -31,6 +31,7 @@
 
 
 #include "ftnstd.h"
+#include <ctype.h>
 #include "format.h"
 #include "errcod.h"
 #include "fmtdef.h"
@@ -38,7 +39,6 @@
 #include "fmtscan.h"
 #include "fmtboth.h"
 
-#include <ctype.h>
 
 /* Forward declarations */
 static  void    FSkipSpaces( void );

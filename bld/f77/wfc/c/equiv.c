@@ -30,6 +30,7 @@
 
 
 #include "ftnstd.h"
+#include <string.h>
 #include "global.h"
 #include "opr.h"
 #include "errcod.h"
@@ -45,8 +46,6 @@
 #include "equiv.h"
 #include "rstalloc.h"
 #include "symtab.h"
-
-#include <string.h>
 
 
 static  bool    SubStr2( intstar4 *subscripts ) {

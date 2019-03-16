@@ -31,6 +31,7 @@
 
 
 #include "ftnstd.h"
+#include <string.h>
 #include "omodes.h"
 #include "cpopt.h"
 #include "global.h"
@@ -45,8 +46,6 @@
 #include "sdcio.h"
 #include "posdel.h"
 #include "posdat.h"
-
-#include <string.h>
 
 
 static  f_attrs         Modes[] = { RDONLY,

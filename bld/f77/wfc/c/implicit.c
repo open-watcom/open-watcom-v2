@@ -35,6 +35,8 @@
 //
 
 #include "ftnstd.h"
+#include <string.h>
+#include <limits.h>
 #include "opr.h"
 #include "errcod.h"
 #include "global.h"
@@ -51,9 +53,6 @@
 #include "proctbl.h"
 #include "implicit.h"
 #include "fmtcnvt.h"
-
-#include <string.h>
-#include <limits.h>
 
 
 static  bool    ReqChar( void ) {

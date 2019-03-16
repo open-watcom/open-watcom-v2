@@ -31,11 +31,10 @@
 
 
 #include "ftnstd.h"
+#include <stdio.h>
 #include "global.h"
 #include "opr.h"
 #include "dumpnode.h"
-
-#include <stdio.h>
 
 
 static  char    *Opn[] = {

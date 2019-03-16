@@ -31,6 +31,7 @@
 
 
 #include "ftnstd.h"
+#include <string.h>
 #include "global.h"
 #include "fcgbls.h"
 #include "wf77defs.h"
@@ -52,6 +53,7 @@
 #include "substr.h"
 #include "subscr.h"
 #include "kwlist.h"
+#include "fltcnv.h"
 #include "cgswitch.h"
 #include "cgprotos.h"
 
@@ -64,9 +66,6 @@
 //      PRINT *, X - Y
 //      END
 // The result should be 0.
-
-#include "fltcnv.h"
-#include <string.h>
 
 
 /* Forward declarations */

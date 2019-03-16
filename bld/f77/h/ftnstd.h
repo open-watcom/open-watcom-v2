@@ -31,6 +31,7 @@
 
 
 #include <stdarg.h>
+#include <stdlib.h>
 #include "macro.h"
 #include "standard.h"
 #include "prmtypes.h"

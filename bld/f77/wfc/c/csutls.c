@@ -31,6 +31,7 @@
 
 
 #include "ftnstd.h"
+#include <string.h>
 #include "global.h"
 #include "errcod.h"
 #include "opr.h"
@@ -45,7 +46,6 @@
 #include "fcodes.h"
 #include "gflow.h"
 #include "kwlist.h"
-#include <string.h>
 
 
 static  const STMT __FAR    CSWords[] = {

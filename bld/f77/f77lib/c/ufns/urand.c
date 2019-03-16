@@ -38,7 +38,6 @@
 #include "fmath.h"
 #include "ftnapi.h"
 
-#include <stddef.h>
 
 static  intstar4        a = { 2147437301 };
 static  intstar4        m = { -2147483648 };

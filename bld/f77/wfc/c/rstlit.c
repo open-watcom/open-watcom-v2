@@ -30,12 +30,11 @@
 
 
 #include "ftnstd.h"
+#include <string.h>
 #include "global.h"
 #include "stmtsw.h"
 #include "fmemmgr.h"
 #include "rstlit.h"
-
-#include <string.h>
 
 
 sym_id  STLit( byte *string, uint len ) {

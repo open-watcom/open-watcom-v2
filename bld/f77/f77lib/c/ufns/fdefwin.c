@@ -35,13 +35,11 @@
 //
 
 #include "ftnstd.h"
-#include "pgmacc.h"
-#include "ftnapi.h"
-
-#include <malloc.h>
-#include <stddef.h>
 #include <string.h>
 #include <process.h>
+#include "walloca.h"
+#include "pgmacc.h"
+#include "ftnapi.h"
 #ifdef __SW_BW
   #include <wdefwin.h>
 #else

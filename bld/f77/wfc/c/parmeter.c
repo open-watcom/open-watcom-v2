@@ -30,6 +30,7 @@
 
 
 #include "ftnstd.h"
+#include <string.h>
 #include "errcod.h"
 #include "opn.h"
 #include "namecod.h"
@@ -46,8 +47,6 @@
 #include "rstconst.h"
 #include "rstlit.h"
 #include "symtab.h"
-
-#include <string.h>
 
 
 void    CpParameter( void ) {

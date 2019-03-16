@@ -40,8 +40,8 @@
 
 #ifdef _M_I86
 
-unsigned long   _lrotl(unsigned long,short);
-#pragma aux _lrotl = \
+unsigned long   f_lrotl(unsigned long,short);
+#pragma aux f_lrotl = \
         "and  cx,1fh"   \
         "jcxz short L2" \
     "L1: shl  ax,1"     \
@@ -53,8 +53,8 @@ unsigned long   _lrotl(unsigned long,short);
     __value     [__dx __ax] \
     __modify    []
 
-unsigned long   _lrotr( unsigned long, short );
-#pragma aux _lrotr = \
+unsigned long   f_lrotr( unsigned long, short );
+#pragma aux f_lrotr = \
         "and  cx,1fh"   \
         "jcxz short L2" \
     "L1: ror  dx,1"     \
@@ -69,15 +69,15 @@ unsigned long   _lrotr( unsigned long, short );
 
 #elif defined( _M_IX86 )
 
-unsigned long   _lrotl(unsigned long,char);
-#pragma aux _lrotl = \
+unsigned long   f_lrotl(unsigned long,char);
+#pragma aux f_lrotl = \
         "rol  eax,cl"   \
     __parm      [__eax] [__cl] \
     __value     [__eax] \
     __modify    []
 
-unsigned long   _lrotr(unsigned long,char);
-#pragma aux _lrotr = \
+unsigned long   f_lrotr(unsigned long,char);
+#pragma aux f_lrotr = \
         "ror  eax,cl"   \
     __parm      [__eax] [__cl] \
     __value     [__eax] \
@@ -119,9 +119,9 @@ static unsigned long maskTable[32] = {
         0xfffffffe      // 1111 1111 1111 1111 1111 1111 1111 1110
 };
 
-static unsigned_32 _lrotl( unsigned_32 arg, unsigned_32 cnt ) {
-//=============================================================
-
+static unsigned_32 f_lrotl( unsigned_32 arg, unsigned_32 cnt )
+//============================================================
+{
     unsigned_32 mask;
 
     cnt &= 0x1f;                        // take count modula 32
@@ -131,11 +131,11 @@ static unsigned_32 _lrotl( unsigned_32 arg, unsigned_32 cnt ) {
 }
 
 
-static unsigned_32 _lrotr( unsigned_32 arg, unsigned_32 cnt ) {
-//=============================================================
-
+static unsigned_32 f_lrotr( unsigned_32 arg, unsigned_32 cnt )
+//============================================================
+{
     cnt &= 0x1f;                        // take count modula 32
-    return( _lrotl( arg, 32 - cnt ) );  // simply do the other rotation
+    return( f_lrotl( arg, 32 - cnt ) );  // simply do the other rotation
 }
 
 #endif
@@ -145,9 +145,9 @@ intstar4        ISHC( unsigned_32 arg1, intstar4 arg2 ) {
 //=======================================================
 
     if( arg2 > 0 ) {
-        return( _lrotl( arg1, arg2 ) );
+        return( f_lrotl( arg1, arg2 ) );
     } else {
-        return( _lrotr( arg1, -arg2 ) );
+        return( f_lrotr( arg1, -arg2 ) );
     }
 }
 

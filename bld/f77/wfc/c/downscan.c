@@ -30,6 +30,7 @@
 
 
 #include "ftnstd.h"
+#include <string.h>
 #include "opr.h"
 #include "opn.h"
 #include "errcod.h"
@@ -49,9 +50,6 @@
 #include "downscan.h"
 #include "dsname.h"
 #include "fmtcnvt.h"
-
-#include <stdlib.h>
-#include <string.h>
 
 
 /* Forward declarations */
@@ -95,7 +93,7 @@ static  void    IntC( void ) {
                 Warning( KO_IOVERFLOW );
             }
         }
-        
+
         CITNode->typ = FT_INTEGER;
         CITNode->size = TypeSize( FT_INTEGER );
         CITNode->opn.us = USOPN_CON;

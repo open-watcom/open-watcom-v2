@@ -30,13 +30,12 @@
 
 
 #include "ftnstd.h"
+#include <string.h>
 #include "global.h"
 #include "fmemmgr.h"
 #include "rstutils.h"
 #include "rstnlist.h"
 #include "cgmagic.h"
-
-#include <string.h>
 
 
 static  sym_id  AddNameList( char *name, uint length ) {

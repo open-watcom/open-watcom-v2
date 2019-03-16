@@ -30,6 +30,8 @@
 
 
 #include "ftnstd.h"
+#include <ctype.h>
+#include <string.h>
 #include "errcod.h"
 #include "opr.h"
 #include "opn.h"
@@ -56,9 +58,6 @@
 #include "upscan.h"
 #include "gdata.h"
 #include "gio.h"
-
-#include <ctype.h>
-#include <string.h>
 
 
 /* Forward declarations */

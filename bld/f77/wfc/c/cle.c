@@ -35,6 +35,7 @@
 //
 
 #include "ftnstd.h"
+#include <time.h>
 #include "global.h"
 #include "progsw.h"
 #include "cpopt.h"
@@ -55,8 +56,6 @@
 #include "rstmgr.h"
 #include "wf77auxd.h"
 #include "wf77aux.h"
-
-#include <time.h>
 
 
 unsigned_32     CompTime;

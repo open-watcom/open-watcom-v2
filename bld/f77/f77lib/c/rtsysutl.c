@@ -31,6 +31,9 @@
 
 
 #include "ftnstd.h"
+#include <string.h>
+#include <ctype.h>
+#include <errno.h>
 #include "rundat.h"
 #include "errcod.h"
 #include "units.h"
@@ -52,10 +55,6 @@
 #include "postrunc.h"
 #include "posback.h"
 #include "posdat.h"
-
-#include <string.h>
-#include <ctype.h>
-#include <errno.h>
 #if defined( __IS_WINDOWED__ )
   #ifndef __SW_BW
     #define  __SW_BW

@@ -29,10 +29,9 @@
 ****************************************************************************/
 
 #include "ftnstd.h"
-#include "hexcnv.h"
-
 #include <string.h>
 #include <ctype.h>
+#include "hexcnv.h"
 
 
 static const char __FAR HexDigits[ 16 ] = {

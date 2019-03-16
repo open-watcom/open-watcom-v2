@@ -36,7 +36,6 @@
 //
 
 #include "ftnstd.h"
-#include <stdlib.h>
 #if defined( __NT__ )
     #include <windows.h>
 #elif defined( __OS2__ )

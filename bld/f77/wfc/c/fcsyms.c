@@ -30,6 +30,7 @@
 
 
 #include "ftnstd.h"
+#include <string.h>
 #include "global.h"
 #include "wf77defs.h"
 #include "wf77auxd.h"
@@ -64,8 +65,6 @@
 #include "cgswitch.h"
 #include "cgprotos.h"
 #include "feprotos.h"
-
-#include <string.h>
 
 
 extern  cg_name         SubAltSCB( sym_id );

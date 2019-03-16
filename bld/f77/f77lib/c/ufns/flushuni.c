@@ -40,8 +40,6 @@
 #include "ftnapi.h"
 #include "posflush.h"
 
-#include <stddef.h>
-
 
 intstar4        __fortran FLUSHUNIT( intstar4 *unit ) {
 //===================================================

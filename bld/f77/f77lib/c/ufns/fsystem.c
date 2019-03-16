@@ -35,12 +35,10 @@
 // FSYSTEM      : execute a DOS command
 //
 
-#include <malloc.h>
-#include <string.h>
-#include <stdlib.h>
-
 #include "ftnstd.h"
-#include <pgmacc.h>
+#include <string.h>
+#include "walloca.h"
+#include "pgmacc.h"
 #include "ftnapi.h"
 
 

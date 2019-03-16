@@ -36,12 +36,12 @@
 //
 
 #include "ftnstd.h"
+#include <string.h>
 #include "fcgbls.h"
 #include "cgflags.h"
 #include "posio.h"
 #include "blips.h"
 #include "fcgmain.h"
-#include <string.h>
 
 
 void    SendBlip(void) {
