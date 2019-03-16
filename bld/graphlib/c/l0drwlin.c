@@ -29,8 +29,8 @@
 ****************************************************************************/
 
 
-#include <malloc.h>
 #include "gdefn.h"
+#include "walloca.h"
 #include "stkavail.h"
 #include "gbios.h"
 

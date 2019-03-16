@@ -29,8 +29,8 @@
 ****************************************************************************/
 
 
-#include <malloc.h>
 #include "gdefn.h"
+#include "walloca.h"
 #include "picdef.h"
 #include "stkavail.h"
 
