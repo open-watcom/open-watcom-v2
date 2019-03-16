@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -66,8 +67,8 @@ void main( int argc, char *argv[] ) {
     file = OWLFileInit( owl, "test", stdout, OWL_FORMAT_ELF, OWL_FILE_OBJECT );
     buffer = OWLBufferInit( file );
     while( 1 ) {
-        memset( data, 0, BUFFER_SIZE );
-        if( fgets( data, BUFFER_SIZE, stdin ) == NULL )
+        memset( data, 0, sizeof( data ) );
+        if( fgets( data, sizeof( data ), stdin ) == NULL )
             break;
         OWLBufferWrite( buffer, data, strlen( data ) );
     }

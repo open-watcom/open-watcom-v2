@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -126,7 +127,7 @@ main(
     *dst = '\0';
     fprintf( out_file, "#line 1 \"%s\"\n", buf );
 
-    while( NULL != fgets( buf, 500, in_file ) ) {
+    while( NULL != fgets( buf, sizeof( buf ), in_file ) ) {
         match = NULL;
         for( token = 0; token < 4; ++token ) {
             match = strstr( buf, Token_strs[token] );

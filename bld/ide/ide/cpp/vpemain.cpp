@@ -71,6 +71,9 @@
 #include "ide.h"
 #include "autoenv.h"
 
+#include "clibext.h"
+
+
 /*
  * increment LATEST_SUPPORTED_VERSION macro
  * when some change in file formats is done

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -267,11 +267,11 @@ void SpecialFclose( GENERIC_FILE *gf )
 /*
  * SpecialFgets - get from either file or exe
  */
-bool SpecialFgets( char *buff, int max, GENERIC_FILE *gf )
+bool SpecialFgets( char *buff, int max_len, GENERIC_FILE *gf )
 {
     size_t      i;
 
-    if( fgets( buff, max, gf->data.fp ) == NULL ) {
+    if( fgets( buff, max_len, gf->data.fp ) == NULL ) {
         return( true );
     }
     gf->gf.a.currline++;

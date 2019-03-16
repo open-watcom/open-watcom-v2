@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -281,13 +282,13 @@ static  char    UseMessage( char cmp, char target, char used_at ) {
     return( 0 );
 }
 
-static  int     ReadInFile( char *buff )
-//======================================
+static  int     ReadInFile( char *buff, int max_len )
+//===================================================
 {
     size_t      len;
 
     for( ;; ) {
-        if( fgets( buff, BUFF_LEN, MsgFile ) == NULL ) {
+        if( fgets( buff, max_len, MsgFile ) == NULL ) {
             return( 1 );
         }
         len = strlen( buff );
@@ -817,7 +818,7 @@ static  void    BuildLists( void )
     fprintf( RCFile, "STRINGTABLE\nBEGIN\n\n" );
     group = 0;
     curr_group = NULL;
-    ReadInFile( rec );
+    ReadInFile( rec, sizeof( rec ) );
     prev_msg = NULL;
     last_non_null_msg = NULL;
     for( ;; ) {
@@ -835,7 +836,7 @@ static  void    BuildLists( void )
         curr_group->name[1] = rec[1];
         curr_group->name[2] = NULLCHAR;
         for( ;; ) {
-            if( ReadInFile( rec ) != 0 ) {
+            if( ReadInFile( rec, sizeof( rec ) ) != 0 ) {
                 fprintf( RCFile, "\nEND\n" );
                 return;
             }

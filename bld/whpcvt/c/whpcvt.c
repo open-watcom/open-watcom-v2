@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -677,7 +678,7 @@ static int valid_args( int argc, char *argv[] )
                 return( -1 );
             }
             for( argc = 0 ;; ++argc ) {
-                if( fgets( line, 200, opt_file ) == NULL ) {
+                if( fgets( line, sizeof( line ), opt_file ) == NULL ) {
                     break;
                 }
             }
@@ -689,11 +690,11 @@ static int valid_args( int argc, char *argv[] )
 
             _new( argv, argc );
             for( argc = 0;; ++argc ) {
-                if( fgets( line, 200, opt_file ) == NULL ) {
+                if( fgets( line, sizeof( line ), opt_file ) == NULL ) {
                     break;
                 }
-                line[199] = 0;
-                for( x = line, i = 0; i < 200 && *x != 0; i++, x++) {
+                line[sizeof( line ) - 1] = 0;
+                for( x = line, i = 0; i < sizeof( line ) && *x != 0; i++, x++) {
                     if( *x != ' ' && *x != 9 ) {
                         strcpy( line, x );
                         break;

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -125,7 +126,7 @@ bool ReadList( FILE *fp )
     char                *where;
     char                buf[128];
 
-    while( fgets( buf, 127, fp ) != NULL ) {
+    while( fgets( buf, sizeof( buf ), fp ) != NULL ) {
         buf[strlen( buf ) - 1] = '\0';
         if( buf[0] == '\0' )
             continue;

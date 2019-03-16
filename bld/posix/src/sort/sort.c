@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -130,9 +131,9 @@ void main( int argc, char **argv )
     if( !own_outfile ) {
         outfile = stdout;
     }
-    
+
     for( ;; ) {
-        fgets( buffer, MAXLEN, infile );
+        fgets( buffer, sizeof( buffer ), infile );
         if( feof( infile ) ) {
             break;
         }
@@ -140,7 +141,7 @@ void main( int argc, char **argv )
         strcpy( lines[line_count], buffer );
         line_count++;
     }
-    
+
     if( rflag ) {
         if( fflag ) {
             qsort( lines, line_count, sizeof( char * ), compareRevI );
@@ -154,7 +155,7 @@ void main( int argc, char **argv )
             qsort( lines, line_count, sizeof( char * ), compare );
         }
     }
-    
+
     for( i = 0; i < line_count; i++ ) {
         fputs( lines[i], outfile );
         free( lines[i] );

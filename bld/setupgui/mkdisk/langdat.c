@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -239,10 +240,10 @@ static bool PopInclude( void )
     return( true );
 }
 
-static bool GetALine( char *line )
+static bool GetALine( char *line, int max_len )
 {
     for( ;; ) {
-        fgets( line, MAX_LINE, IncludeStk->fp );
+        fgets( line, max_len, IncludeStk->fp );
         if( ferror( IncludeStk->fp ) ) {
             Fatal( "Error reading '%s' line %d: %s\n", IncludeStk->name, IncludeStk->lineno, strerror( errno ) );
         }
@@ -731,7 +732,7 @@ static void ProcessCtlFile( const char *name )
     bool        logit;
 
     PushInclude( name );
-    while( GetALine( Line ) ) {
+    while( GetALine( Line, sizeof( Line ) ) ) {
         SubstLine( Line, ProcLine );
         p = ProcLine;
         switch( *p ) {

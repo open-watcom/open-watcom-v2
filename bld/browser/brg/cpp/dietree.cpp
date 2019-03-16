@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -400,7 +401,7 @@ void main() {
 
     printf( "Ready\n" );
 
-    while( fgets( buf, 512, stdin ) ) {
+    while( fgets( buf, sizeof( buf ), stdin ) ) {
         buf[ strlen( buf ) - 1 ] = '\0';
         die = tree.find( buf );
         printf( "%s -- %s:%s\n", buf, (die) ? "found" : "not found",

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -345,7 +346,7 @@ void AutoSaveInit( void )
                 continue;
             fp = fdopen( handle, "r" );
             if( fp != NULL ) {
-                while( (p = fgets( path2, FILENAME_MAX, fp )) != NULL ) {
+                while( (p = fgets( path2, sizeof( path2 ), fp )) != NULL ) {
                     for( i = strlen( p ); i && isWSorCtrlZ( p[i - 1] ); --i ) {
                         p[i - 1] = '\0';
                     }
@@ -476,7 +477,7 @@ void RemoveFromAutoSaveList( void )
         fclose( fpi );
         return;
     }
-    while( (p = fgets( path2, FILENAME_MAX, fpi )) != NULL ) {
+    while( (p = fgets( path2, sizeof( path2 ), fpi )) != NULL ) {
         for( i = strlen( p ); i && isWSorCtrlZ( p[i - 1] ); --i ) {
             p[i - 1] = '\0';
         }
@@ -487,7 +488,7 @@ void RemoveFromAutoSaveList( void )
             if( strcmp( data, p ) == 0 ) {
 //                found = true;
                 remove( p );
-                while( fgets( data, FILENAME_MAX, fpi ) != NULL ) {
+                while( fgets( data, sizeof( data ), fpi ) != NULL ) {
                     for( i = strlen( data ); i && isWSorCtrlZ( data[i - 1] ); --i ) {
                         data[i - 1] = '\0';
                     }

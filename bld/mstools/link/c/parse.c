@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -213,6 +214,8 @@ void OPT_CLEAN_STRING( OPT_STRING **p )
  */
 static int parse_base_from_file(OPT_STRING **p, char *str)
 {
+    #define MAX_LEN     255
+
     FILE    *stream;
     char    *buffer;
     char    *keyword;
@@ -220,7 +223,7 @@ static int parse_base_from_file(OPT_STRING **p, char *str)
     char    *b;
     size_t  keylen;
 
-    buffer = AllocMem(255);
+    buffer = AllocMem( MAX_LEN );
 
     for( s = str + 1, b = buffer; *s && (*s != ',') && !isspace(*s); )
         *b++ = *s++;
@@ -247,7 +250,7 @@ static int parse_base_from_file(OPT_STRING **p, char *str)
         return 0;
     }
 
-    while( fgets(buffer, 255, stream) )
+    while( fgets(buffer, MAX_LEN, stream) )
     {
         s = buffer;
         skip_white(s);

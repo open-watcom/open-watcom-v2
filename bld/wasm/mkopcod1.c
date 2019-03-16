@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -60,7 +61,7 @@ int main( int argc, char *argv[] )
             printf( "Unable to open '%s'\n", argv[ idx ] );
             exit( 1 );
         }
-        for( ; fgets( buf, KEY_MAX_LEN, in ) != NULL; ) {
+        for( ; fgets( buf, sizeof( buf ), in ) != NULL; ) {
             count++;
         }
         fclose( in );
@@ -78,7 +79,7 @@ int main( int argc, char *argv[] )
             printf( "Unable to open '%s'\n", argv[ idx ] );
             exit( 1 );
         }
-        for( ; fgets( buf, KEY_MAX_LEN, in ) != NULL; ) {
+        for( ; fgets( buf, sizeof( buf ), in ) != NULL; ) {
             for( i = 0; buf[ i ] && !isspace( buf[ i ] ); i++ )
                 ;
             buf[ i ] = '\0';

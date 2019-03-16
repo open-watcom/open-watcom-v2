@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -216,7 +217,7 @@ static wpackfile *ProcFileName( char **argv )
     for( ; *argv != NULL ; ++argv ) {
         if( **argv == '@' ) {
             io = fopen( ++(*argv), "r" );
-            fgets( buff, 256, io );
+            fgets( buff, sizeof( buff ), io );
             while( !feof( io ) ) {
                 curr = strrchr( buff, '\n' );
                 if( curr ) {
@@ -227,7 +228,7 @@ static wpackfile *ProcFileName( char **argv )
                 } else {
                     Error( -1, "invalid line in directive file\n" );
                 }
-                fgets( buff, 256, io );
+                fgets( buff, sizeof( buff ), io );
             }
             fclose( io );
         } else {

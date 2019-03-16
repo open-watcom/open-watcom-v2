@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -60,7 +61,7 @@ static bool     GenStrings = true;
 
 static bool     pass1( FILE *fin, char **helpstr );
 static bool     pass2( FILE *fin, int fout, char **helpstr );
-static void     fgetstring( char *buffer, int max, FILE *f );
+static void     fgetstring( char *buffer, int max_len, FILE *f );
 static ScanCBfunc lineLenCB;
 static ScanCBfunc checkBufCB;
 
@@ -365,7 +366,7 @@ static bool pass1( FILE *fin, char **helpstr )
     fpos = 0;
     while( !feof( fin ) ) {
         fpos = ftell( fin );
-        fgetstring( buffer, BUFFER_SIZE, fin );
+        fgetstring( buffer, sizeof( buffer ), fin );
         if( memcmp( buffer, DEFTOPIC, topic_len ) == 0 ) {
             if( helpstr[0] != NULL ) {
                 PrintError( "more than one DEFTOPIC found\n" );
@@ -480,7 +481,7 @@ static bool pass1( FILE *fin, char **helpstr )
         h->lines = 0;
         while( !feof( fin ) ) {
             fpos = ftell( fin );
-            fgetstring( buffer, BUFFER_SIZE, fin );
+            fgetstring( buffer, sizeof( buffer ), fin );
             if( memcmp( buffer, "::::", 4 ) == 0 )
                 break;
             if( strnicmp( buffer, ":eh", 3 ) == 0
@@ -517,13 +518,13 @@ static void lookup_name( a_helpnode *h, char *name )
     PrintError( "Unknown help topic '%s' found in '%s'\n", name, h->name );
 }
 
-static void fgetstring( char *buffer, int max, FILE *f )
+static void fgetstring( char *buffer, int max_len, FILE *f )
 {
     int         curr;
     int         offset;
     int         ch;
 
-    -- max;
+    max_len--;
     curr = 0;
     offset = 0;
     for( ;; ) {
@@ -546,9 +547,9 @@ static void fgetstring( char *buffer, int max, FILE *f )
                 *buffer++ = ' ';
             }
             *buffer++ = ch;
-            ++ offset;
+            ++offset;
         }
-        if( offset >= max ) {
+        if( offset >= max_len ) {
             *buffer = '\0';
             for( ;; ) {
                 ch = fgetc( f );
@@ -612,7 +613,7 @@ static bool pass2( FILE *fin, int fout, char **helpstr )
             printf( "\n" );
         }
         fseek( fin, h->fpos, SEEK_SET );
-        fgetstring( buffer, BUFFER_SIZE, fin );
+        fgetstring( buffer, sizeof( buffer ), fin );
         h->maxcol += 1;
         h->maxcol = (h->maxcol / 2) * 2;
         if( h->maxcol > MaxCol ) {
@@ -642,7 +643,7 @@ static bool pass2( FILE *fin, int fout, char **helpstr )
         write( fout, buffer, strlen( buffer ) );
 
         while( !feof( fin ) ) {
-            fgetstring( buffer, BUFFER_SIZE, fin );
+            fgetstring( buffer, sizeof( buffer ), fin );
             if( memcmp( buffer, "::::", 4 ) == 0 )
                 break;
             check_buffer( h, buffer );

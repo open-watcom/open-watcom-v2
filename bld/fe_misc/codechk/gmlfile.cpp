@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -49,10 +50,12 @@ GMLFile::GMLFile() {
 }
 
 
-void GMLFile::_loadNext() {
+void GMLFile::_loadNext()
+{
     char        buffer[ MAX_LINE_LEN ];
+
     while(1) {
-        if( 0 == fgets(buffer, MAX_LINE_LEN, _inFile) ) {
+        if( 0 == fgets(buffer, sizeof( buffer ), _inFile) ) {
             // no more output.
             _nextFrag[0] = NULL;
             _nextErrCode[0] = NULL;
@@ -79,12 +82,12 @@ error or warning. \n", &buffer[9] );
                 }
             } else if(! strncmp(buffer, ":errbad.", 8) ) {
                 _nextFrag[0] = NULL;
-                fgets(buffer, MAX_LINE_LEN, _inFile);
+                fgets(buffer, sizeof( buffer ), _inFile);
                 while( strncmp(buffer, ":eerrbad.", 9) ) {
                     strncat( _nextFrag,
                              buffer,
                              MAX_CODE_FRAG_SIZE-strlen(_nextFrag));
-                    fgets(buffer, MAX_LINE_LEN, _inFile);
+                    fgets(buffer, sizeof( buffer ), _inFile);
                 };
                 break; // out of endless while loop
             }
@@ -142,10 +145,12 @@ JavaGMLFile::JavaGMLFile() : GMLFile() {
 }
 
 
-void JavaGMLFile::_loadNext() {
+void JavaGMLFile::_loadNext()
+{
     char        buffer[ MAX_LINE_LEN ];
+
     while(1) {
-        if( 0 == fgets(buffer, MAX_LINE_LEN, _inFile) ) {
+        if( 0 == fgets(buffer, sizeof( buffer ), _inFile) ) {
             // no more output.
             _nextFrag[0] = NULL;
             _nextErrCode[0] = NULL;
@@ -164,12 +169,12 @@ void JavaGMLFile::_loadNext() {
 
             } else if(! strncmp(buffer, ":errbad.", 8) ) {
                 _nextFrag[0] = NULL;
-                fgets(buffer, MAX_LINE_LEN, _inFile);
+                fgets(buffer, sizeof( buffer ), _inFile);
                 while( strncmp(buffer, ":eerrbad.", 9) ) {
                     strncat( _nextFrag,
                              buffer,
                              MAX_CODE_FRAG_SIZE-strlen(_nextFrag));
-                    fgets(buffer, MAX_LINE_LEN, _inFile);
+                    fgets(buffer, sizeof( buffer ), _inFile);
                 };
                 break; // out of endless while loop
             }

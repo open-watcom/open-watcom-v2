@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -147,8 +148,8 @@ static void ConcatDirElem( char *dir, const char *elem )
 }
 
 
-static char *mygets( char *buf, size_t len, FILE *fp )
-/****************************************************/
+static char *mygets( char *buf, int max_len, FILE *fp )
+/*****************************************************/
 {
     char        *p,*q,*start;
     int         lang;
@@ -158,7 +159,7 @@ static char *mygets( char *buf, size_t len, FILE *fp )
 
     p = buf;
     for( ;; ) {
-        if( fgets( p, (int)len, fp ) == NULL )
+        if( fgets( p, max_len, fp ) == NULL )
             return( NULL );
         q = p;
         while( *q == ' ' || *q == '\t' )
@@ -181,7 +182,7 @@ static char *mygets( char *buf, size_t len, FILE *fp )
         got--;
         /* continuation, append next line to the buffer */
         p += got;
-        len -= got;
+        max_len -= got;
     }
     p = buf;
     while( *p != '\0' ) {
@@ -986,7 +987,7 @@ void ReadSection( FILE *fp, const char *section, LIST **list )
 
     found = false;
     for( ;; ) {
-        if( mygets( SectionBuf, SECTION_BUF_SIZE, fp ) == NULL ) {
+        if( mygets( SectionBuf, sizeof( SectionBuf ), fp ) == NULL ) {
             fclose( fp );
             if( file_curr-- > 0 ) {
                 fp = file_stack[file_curr];

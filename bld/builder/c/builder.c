@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -348,7 +348,7 @@ static bool PopInclude( void )
     return( true );
 }
 
-static bool GetALine( char *line, size_t max_len )
+static bool GetALine( char *line, int max_len )
 {
     for( ;; ) {
         (void)fgets( line, max_len, IncludeStk->fp );

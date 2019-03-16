@@ -572,7 +572,7 @@ static void transferUserData( FileInfo *fpi, FileInfo *fpo, BOOL look,
 
     for( ;; ) {
         errno = 0;
-        if( !fgets( lineBuffer, LINE_SIZE, fpi->fp ) ) {
+        if( !fgets( lineBuffer, sizeof( lineBuffer ), fpi->fp ) ) {
             if( errno ) {
                 Error( FILE_READ_ERR, fpi->name );
             }
@@ -724,7 +724,7 @@ static void skipToEndToken( FileInfo *fpi, char *name ) {
 
     for( ;; ) {
         errno = 0;
-        if( !fgets( lineBuffer, LINE_SIZE, fpi->fp ) ) {
+        if( !fgets( lineBuffer, sizeof( lineBuffer ), fpi->fp ) ) {
             if( errno ) {
                 Error( FILE_READ_ERR, fpi->name );
             }
@@ -739,7 +739,7 @@ static void skipToEndToken( FileInfo *fpi, char *name ) {
 static BOOL isInclude( FileInfo *fpi ) {
 /***************************************/
 
-    if( !fgets( lineBuffer, LINE_SIZE, fpi->fp ) ) {
+    if( !fgets( lineBuffer, sizeof( lineBuffer ), fpi->fp ) ) {
         Error( FILE_READ_ERR, fpi->name );
     }
     return( !strncmp( lineBuffer, "#include", 8 ) );
@@ -985,8 +985,8 @@ static void traverseCodeFile( statement **curr, sru_file *sru, FileInfo *fpi,
         if( fprintf( fpo->fp, WIG_BEG_HEADER, classname ) < 0 ) {
             Error( FILE_WRITE_ERR, fpo->name );
         }
-        if( !fgets( lineBuffer, LINE_SIZE, fpi->fp )
-            || !fgets( lineBuffer, LINE_SIZE, fpi->fp ) ) {
+        if( !fgets( lineBuffer, sizeof( lineBuffer ), fpi->fp )
+            || !fgets( lineBuffer, sizeof( lineBuffer ), fpi->fp ) ) {
             Error( FILE_READ_ERR, fpi->name );
         }
 

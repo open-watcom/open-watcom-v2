@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -157,7 +158,7 @@ vi_rc SrcRead( sfile *curr, files *fi, const char *data, vlist *vl )
         return( ERR_SRC_FILE_NOT_OPEN );
     }
     if( fi->ft[i] == SRCFILE_FILE ) {
-        if( fgets( id, MAX_SRC_LINE, fi->u.f[i] ) != NULL ) {
+        if( fgets( id, sizeof( id ), fi->u.f[i] ) != NULL ) {
             for( j = strlen( id ); j && isEOL( id[j - 1] ); --j ) {
                 id[j - 1] = '\0';
             }

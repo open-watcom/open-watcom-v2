@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -601,27 +602,25 @@ static void addbinext( char *s )
  */
 char *name_next( void )
 {
-        static char     buffer[NAMSIZ + 2];     /* Holding pattern */
-        char  *p;
-        char  *q;
+    static char     buffer[NAMSIZ + 2];     /* Holding pattern */
+    char            *p;
+    char            *q;
 
-        if (namef == NULL)
-        {
-                /* Names come from argv, after options */
-                if (optind < n_argc)
-                {
-                        return fixname(n_argv[optind++]);
-                }
-                return (char *) NULL;
+    if( namef == NULL ) {
+        /* Names come from argv, after options */
+        if( optind < n_argc ) {
+            return( fixname( n_argv[optind++] ) );
         }
-        p = fgets(buffer, NAMSIZ + 1 /* nl */ , namef);
-        if (p == NULL)
-                return p;                               /* End of file */
-        q = p + strlen(p) - 1;          /* Find the newline */
-        *q-- = '\0';                            /* Zap the newline */
-        while (*q == '/')
-                *q-- = '\0';                    /* Zap trailing slashes too */
-        return fixname(p);
+        return( NULL );
+    }
+    p = fgets( buffer, sizeof( buffer ) - 1 /* nl */, namef );
+    if( p == NULL )
+        return( p );                        /* End of file */
+    q = p + strlen( p ) - 1;                /* Find the newline */
+    *q-- = '\0';                            /* Zap the newline */
+    while( *q == '/' )
+        *q-- = '\0';                        /* Zap trailing slashes too */
+    return( fixname( p ) );
 }
 
 
@@ -631,9 +630,9 @@ char *name_next( void )
  */
 void name_close( void )
 {
-
-        if (namef != NULL && namef != stdin)
-                fclose(namef);
+    if( namef != NULL && namef != stdin ) {
+        fclose( namef );
+    }
 }
 
 
@@ -663,17 +662,16 @@ void name_gather( void )
                 namebuf->length = NAMSIZ - 1;
             }
             strncpy( namebuf->name, p, namebuf->length );
-            namebuf->next = (struct name *)NULL;
+            namebuf->next = NULL;
             namebuf->found = 0;
             namelist = namebuf;
             namelast = namelist;
         }
-        return;
-    }
-
-    /* Non sorted names -- read them all in */
-    while( NULL != (p = name_next()) ) {
-        addname(p);
+    } else {
+        /* Non sorted names -- read them all in */
+        while( NULL != (p = name_next()) ) {
+            addname(p);
+        }
     }
 }
 

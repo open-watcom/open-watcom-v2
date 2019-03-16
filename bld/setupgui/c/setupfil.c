@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -555,7 +556,7 @@ static bool ModFile( const VBUF *orig, const VBUF *new,
         }
         memset( found_env, false, num_env * sizeof( bool ) );
     }
-    while( fgets( envbuf, MAXENVVAR, fp1 ) != NULL ) {
+    while( fgets( envbuf, sizeof( envbuf ) - 1, fp1 ) != NULL ) {
         line = strchr( envbuf, '\n' );
         if( line != NULL ) {
             *line = '\0';
