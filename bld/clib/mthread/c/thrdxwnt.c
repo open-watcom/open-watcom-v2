@@ -35,7 +35,6 @@
 #include <process.h>
 #include <string.h>
 #include <dos.h>
-#include <alloca.h>
 #include <windows.h>
 #include "rterrno.h"
 #include "stacklow.h"

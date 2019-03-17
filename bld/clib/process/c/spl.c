@@ -36,9 +36,6 @@
 #include <string.h>
 #include <stdarg.h>
 #include <process.h>
-#if defined(__AXP__) || defined(__PPC__) || defined(__MIPS__)
-    #include <alloca.h>
-#endif
 #if defined( __NT__ )
     #include <windows.h>
 #elif defined( __OS2__ )

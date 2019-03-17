@@ -33,7 +33,7 @@
 #include <process.h>
 #include <stddef.h>
 #include <string.h>
-#include <malloc.h>
+#include <stdlib.h>
 #include <i86.h>
 #include "nw_lib.h"
 #include "rtstack.h"
