@@ -70,7 +70,7 @@ unsigned BatchChdir( const char *new_dir )
 
     batch_buff[0] = LNK_CWD;
     strcpy( &batch_buff[1], new_dir );
-    BatservWrite( batch_buff, strlen( batch_buff ) + 1 );
+    BatservWrite( batch_buff, (unsigned long)( strlen( batch_buff ) + 1 ) );
     BatservRead( batch_buff, sizeof( batch_buff ) );
     return( *(unsigned long *)&batch_buff[1] );
 }
@@ -79,7 +79,7 @@ unsigned BatchSpawn( const char *cmd )
 {
     batch_buff[0] = LNK_RUN;
     strcpy( &batch_buff[1], cmd );
-    BatservWrite( batch_buff, strlen( batch_buff ) );
+    BatservWrite( batch_buff, (unsigned long)strlen( batch_buff ) );
     return( 0 );
 }
 
@@ -101,7 +101,7 @@ unsigned BatchCollect( void *ptr, unsigned max, unsigned long *status )
     return( len );
 }
 
-unsigned BatchCancel()
+unsigned BatchCancel( void )
 {
     char        cmd;
 
@@ -110,7 +110,7 @@ unsigned BatchCancel()
     return( 0 );
 }
 
-unsigned BatchAbort()
+unsigned BatchAbort( void )
 {
     char        cmd;
 

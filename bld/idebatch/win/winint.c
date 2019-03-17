@@ -31,7 +31,8 @@
 ****************************************************************************/
 
 
-#include <windows.h>
+#define INCLUDE_COMMDLG_H
+#include <wwindows.h>
 #include <stdio.h>
 #include <stdarg.h>
 #include <string.h>
@@ -39,16 +40,16 @@
 #include "winint.h"
 #include "link.h"
 #include "common.h"
-
+#include "winexprt.h"
 
 static void listBoxOut( char *str, ... );
 
-#ifndef __EDITOR__
-static char             demoCaption[] = "Batcher Proxy";
-static char             demoClass[] = "WININTCLASS";
-#else
+#ifdef __EDITOR__
 static char             demoCaption[] = "Editor Proxy";
 static char             demoClass[] = "WININTECLASS";
+#else
+static char             demoCaption[] = "Batcher Proxy";
+static char             demoClass[] = "WININTCLASS";
 #endif
 static HANDLE           ourInstance;
 static HWND             ourWindow;
@@ -57,14 +58,40 @@ static HWND             editControl;
 static HFONT            fixedFont;
 static BOOL             hasConnect;
 
+static WNDPROC          oldEditClassProc;
+
+/* Local Windows CALLBACK function prototypes */
+WINEXPORT int CALLBACK EnumFunc( const LOGFONT FAR *, const TEXTMETRIC FAR *, int, LPARAM );
+WINEXPORT INT_PTR CALLBACK AboutDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
+WINEXPORT LRESULT CALLBACK EditSubClassProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
+WINEXPORT LRESULT CALLBACK MainWindowProc( HWND, UINT, WPARAM, LPARAM );
+
+static OLDFONTENUMPROC MakeProcInstance_OLDFONTENUM( OLDFONTENUMPROC fn, HINSTANCE instance )
+{
+    return( (OLDFONTENUMPROC)MakeProcInstance( (FARPROC)fn, instance ) );
+}
+
+static void FreeProcInstance_OLDFONTENUM( OLDFONTENUMPROC fn )
+{
+    FreeProcInstance( (FARPROC)fn );
+}
+
+static DLGPROC MakeProcInstance_DLG( DLGPROC fn, HINSTANCE instance )
+{
+    return( (DLGPROC)MakeProcInstance( (FARPROC)fn, instance ) );
+}
+
+static void FreeProcInstance_DLG( DLGPROC fn )
+{
+    FreeProcInstance( (FARPROC)fn );
+}
+
 /*
  * EnumFunc - enumerate fonts
  */
-int CALLBACK EnumFunc( LPLOGFONT lf, LPTEXTMETRIC tm, UINT ftype, LPSTR data )
+int CALLBACK EnumFunc( const LOGFONT FAR *lf, const TEXTMETRIC FAR *tm, int ftype, LPARAM data )
 {
-    tm = tm;
-    ftype = ftype;
-    data = data;
+    /* unused parameters */ (void)tm; (void)ftype; (void)data;
 
     if( !_fstricmp( lf->lfFaceName, "courier" ) ) {
         fixedFont = CreateFont(
@@ -97,7 +124,7 @@ static void getMonoFont( HDC hdc, HANDLE inst )
     OLDFONTENUMPROC oldfontenumproc;
 
     oldfontenumproc = MakeProcInstance_OLDFONTENUM( EnumFunc, inst );
-    EnumFonts( hdc, NULL, oldfontenumproc, NULL);
+    EnumFonts( hdc, NULL, oldfontenumproc, 0 );
     FreeProcInstance_OLDFONTENUM( oldfontenumproc );
 
     if( fixedFont == NULL ) {
@@ -141,20 +168,19 @@ static void listBoxOut( char *str, ... )
 
 } /* listBoxOut */
 
-static LPVOID oldEditClassProc;
-long CALLBACK EditSubClassProc( HWND hwnd, UINT msg, UINT wparam, LONG lparam )
+LRESULT CALLBACK EditSubClassProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
 {
 
     switch( msg ) {
     case WM_KEYDOWN:
         if( wparam == VK_RETURN ) {
             PostMessage( GetParent( hwnd ), WM_COMMAND, PRESSED_ENTER, 0 );
-            return( NULL );
+            return( 0 );
         }
         break;
     case WM_CHAR:
         if( wparam == '\r'|| wparam == '\t' ) {
-            return( NULL ); // Ignore return and tab
+            return( 0 ); // Ignore return and tab
         }
         break;
     }
@@ -197,8 +223,8 @@ static void createChildWindows( HWND parent )
 
     ShowWindow( editControl, SW_NORMAL );
     UpdateWindow( editControl );
-    oldEditClassProc = (FARPROC) GetWindowLong( editControl, GWL_WNDPROC );
-    SetWindowLong( editControl, GWL_WNDPROC, (LONG) EditSubClassProc );
+    oldEditClassProc = (WNDPROC)GetWindowLong( editControl, GWL_WNDPROC );
+    SetWindowLong( editControl, GWL_WNDPROC, (LONG)EditSubClassProc );
 
 } /* createChildWindows */
 
@@ -206,7 +232,7 @@ static void createChildWindows( HWND parent )
  * resizeChildWindows - make list box new size, based on height/width of parent
  *                client area.
  */
-void resizeChildWindows( WORD width, WORD height )
+static void resizeChildWindows( WORD width, WORD height )
 {
 
     height = height-LISTBOX_Y-5;
@@ -218,7 +244,7 @@ void resizeChildWindows( WORD width, WORD height )
 
 } /* resizeChildWindows */
 
-INT_PTR __export FAR PASCAL AboutDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
+INT_PTR CALLBACK AboutDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
 {
     lparam = lparam;
 
@@ -255,10 +281,9 @@ static void paintWindow( HWND  hwnd )
 static int hasOL;
 #endif
 
-LONG __export FAR PASCAL WindowProc( HWND hwnd, UINT msg,
-                                     UINT wparam, LONG lparam )
+LONG WINAPI MainWindowProc( HWND hwnd, UINT msg, UINT wparam, LONG lparam )
 {
-    FARPROC     fp;
+    DLGPROC     fp;
     char        buff[ MAX_BUFF + 1 ];
     int         len;
     HDC         hdc;
@@ -328,9 +353,9 @@ LONG __export FAR PASCAL WindowProc( HWND hwnd, UINT msg,
             break;
 
         case MENU_ABOUT:
-            fp = MakeProcInstance( (FARPROC)AboutDlgProc, ourInstance );
-            DialogBox( ourInstance,"AboutBox", hwnd, (LPVOID) fp );
-            FreeProcInstance( fp );
+            fp = MakeProcInstance_DLG( AboutDlgProc, ourInstance );
+            DialogBox( ourInstance,"AboutBox", hwnd, fp );
+            FreeProcInstance_DLG( fp );
             break;
 
         case MENU_EXIT:
@@ -365,7 +390,7 @@ LONG __export FAR PASCAL WindowProc( HWND hwnd, UINT msg,
     }
     return( 0L );
 
-} /* WindowProc */
+} /* MainWindowProc */
 
 
 static BOOL firstInstance( void )
@@ -375,8 +400,7 @@ static BOOL firstInstance( void )
 
 
     if( !VxDPresent() ) {
-        MessageBox( NULL,"Cannot run, WDEBUG.386 not present!",
-                        "Startup Error", MB_OK | MB_TASKMODAL );
+        MessageBox( NULL, "Cannot run, WDEBUG.386 not present!", "Startup Error", MB_OK | MB_TASKMODAL );
         return( FALSE );
     }
 
@@ -385,7 +409,7 @@ static BOOL firstInstance( void )
      * set up and register window class
      */
     wc.style = CS_HREDRAW | CS_VREDRAW;
-    wc.lpfnWndProc = (LPVOID) WindowProc;
+    wc.lpfnWndProc = MainWindowProc;
     wc.cbClsExtra = 0;
     wc.cbWndExtra = sizeof( DWORD );
     wc.hInstance = ourInstance;
@@ -458,7 +482,7 @@ int PASCAL WinMain( HINSTANCE this_inst, HINSTANCE prev_inst, LPSTR cmdline,
     if( !firstInstance() ) return( FALSE );
     if( !anyInstance() ) return( FALSE );
 
-    while( GetMessage( &msg, NULL, NULL, NULL ) ) {
+    while( GetMessage( &msg, NULL, 0, 0 ) ) {
         TranslateMessage( &msg );
         DispatchMessage( &msg );
     }

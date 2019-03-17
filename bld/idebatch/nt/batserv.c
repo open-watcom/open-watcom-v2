@@ -119,7 +119,8 @@ static void ProcessConnection( void )
 
     for( ;; ) {
         bytes_read = BatservRead( buff, sizeof( buff ) );
-        if( bytes_read == 0 ) break;
+        if( bytes_read == 0 )
+            break;
         buff[bytes_read] = '\0';
         switch( buff[0] ) {
         case LNK_CWD:
@@ -139,7 +140,8 @@ static void ProcessConnection( void )
             --max;
             if( PeekNamedPipe( RedirRead, buff, 0, NULL, &bytes_read,
                         NULL ) && bytes_read != 0 ) {
-                if( bytes_read < max ) max = bytes_read;
+                if( bytes_read < max )
+                    max = bytes_read;
                 ReadFile( RedirRead, &buff[1], max, &bytes_read, NULL );
                 buff[0] = LNK_OUTPUT;
                 BatservWrite( buff, bytes_read + 1 );
