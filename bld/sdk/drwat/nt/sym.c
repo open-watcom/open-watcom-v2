@@ -32,7 +32,6 @@
 
 #include "drwatcom.h"
 #include <io.h>
-#include <alloca.h>
 #include "mad.h"
 
 

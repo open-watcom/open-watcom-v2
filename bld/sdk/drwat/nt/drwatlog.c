@@ -36,7 +36,6 @@
 #include <io.h>
 #include <ctype.h>
 #include <sys/stat.h>
-#include <alloca.h>
 #include "srchmsg.h"
 #include "intdlg.h"
 #include "drwatlog.h"

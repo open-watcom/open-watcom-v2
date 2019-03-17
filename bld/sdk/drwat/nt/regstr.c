@@ -33,7 +33,6 @@
 
 #include "drwatcom.h"
 #include <errno.h>
-#include <alloca.h>
 #include "wclbproc.h"
 #include "regstr.h"
 #include "mad.h"
