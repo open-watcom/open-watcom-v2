@@ -159,30 +159,17 @@ static void GetNewBlock( block_data *block, size_t size )
 static void *AllocBlock( size_t size, block_data *block )
 /*******************************************************/
 {
-    void                *ptr;
-    unsigned long       newbrk;
+    void            *ptr;
+    size_t          newbrk;
 
-#define ROUND (sizeof(int)-1)
+    #define ROUND (sizeof( int ) - 1)
 
     size = (size + ROUND) & ~ROUND;
-    newbrk = (unsigned long)block->currbrk + size;
+    newbrk = block->currbrk + size;
     if( block->list == NULL ) {
         GetNewBlock( block, size );
     } else if( newbrk > block->list->size ) {
-#ifdef __WATCOMC__
-        ptr = NULL;
-        if( newbrk < UINT_MAX - ALLOC_SIZE  ) {
-            /* try to expand block without moving it */
-            _LnkExpand( ptr, block->list, ALLOC_SIZE + newbrk );
-        }
-        if( ptr != NULL ) {
-            block->list->size = newbrk;
-        } else {
-            GetNewBlock( block, size );
-        }
-#else
         GetNewBlock( block, size );
-#endif
     }
     ptr = block->list->block + block->currbrk;
     block->currbrk += size;

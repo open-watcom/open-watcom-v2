@@ -39,7 +39,6 @@ extern void     *LnkRealloc( void *, size_t );
 extern void     LFree( void * );
 extern void     *PermAlloc( size_t );
 extern void     *Pass1Alloc( size_t );
-extern void     *LnkExpand( void *, size_t );
 
 extern void     LnkMemInit( void );
 extern void     LnkMemFini( void );
@@ -56,7 +55,6 @@ extern void     ReleasePass1( void );
 #define _LnkFree( ptr )                 LFree( ptr )
 #define _PermFree( ptr )                /* nothing to do */
 #define _Pass1Alloc( dest, size )       dest = Pass1Alloc( size );
-#define _LnkExpand( dest, src, size )   dest = LnkExpand( src, size );
 
 extern int      ValidateMem( void );    // just for debugging
 

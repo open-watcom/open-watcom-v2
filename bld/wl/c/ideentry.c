@@ -31,7 +31,7 @@
 #include <stdlib.h>
 #include <string.h>
 #if defined( __WATCOMC__ )
-#include <malloc.h>
+    #include <malloc.h>     /* necessary for _heapshrink() */
 #endif
 #include "linkstd.h"
 #include "msg.h"

@@ -32,8 +32,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#ifdef __WATCOMC__
-    #include <malloc.h>     /* for _expand() */
+#if defined( __WATCOMC__ )
+    #include <malloc.h>     /* necessary for __(n/f)memneed */
 #endif
 #ifdef TRMEM
     #include "trmem.h"
@@ -87,8 +87,7 @@ void LnkMemInit( void )
     Chunks = 0;
 #endif
 #ifdef TRMEM
-    TrHdl = _trmem_open( malloc, free, realloc, _expand,
-            NULL, PrintLine,
+    TrHdl = _trmem_open( malloc, free, realloc, NULL, NULL, PrintLine,
             _TRMEM_ALLOC_SIZE_0 | _TRMEM_REALLOC_SIZE_0 | _TRMEM_REALLOC_NULL |
             _TRMEM_FREE_NULL | _TRMEM_OUT_OF_MEMORY | _TRMEM_CLOSE_CHECK_FREE );
 #endif
@@ -181,26 +180,14 @@ void LFree( void *p )
 #endif
 }
 
-void *LnkExpand( void *src, size_t size )
-/***************************************/
-// try to expand a block of memory
-{
-#ifdef _ZDOS
-    /* unused parameters */ (void)src; (void)size;
-
-    return ( NULL );
-#else
-  #ifdef TRMEM
-    return( _trmem_expand( src, size, _trmem_guess_who(), TrHdl ) );
-  #else
-    return( _expand( src, size ) );
-  #endif
-#endif
-}
-
 void *LnkRealloc( void *src, size_t size )
 /****************************************/
-// reallocate a block of memory.
+/*
+ * reallocate a block of memory.
+ * Notes for LnkRealloc
+ * NOTE 1: we don't want to call FreeUpMemory, since that does a permshrink
+ * and this function is called from permshrink
+*/
 {
     void    *dest;
 #ifdef TRMEM
@@ -221,10 +208,6 @@ void *LnkRealloc( void *src, size_t size )
     }
     return( dest );
 }
-/* Notes for LnkRealloc
- * NOTE 1: we don't want to call FreeUpMemory, since that does a permshrink
- * and this function is called from permshrink
-*/
 
 #ifdef TRMEM
 int ValidateMem( void )
@@ -287,6 +270,7 @@ bool FreeUpMemory( void )
     return( PermShrink() || CacheRelease() || SwapOutVirt() || SwapOutRelocs() );
 }
 
+#if defined( __WATCOMC__ )
 int __nmemneed( size_t amount )
 /*****************************/
 {
@@ -303,4 +287,5 @@ int __fmemneed( size_t amount )
 
     return( FreeUpMemory() );
 }
+#endif
 #endif
