@@ -32,7 +32,6 @@
 #if defined( __OS2__ )
     #include <stdlib.h>
     #include <string.h>
-    #include <malloc.h>
     #define INCL_WINSHELLDATA
     #include <os2.h>
 #elif defined( __WINDOWS__ ) || defined( __NT__ )
