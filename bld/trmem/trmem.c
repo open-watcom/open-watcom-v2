@@ -34,8 +34,8 @@
 #include <string.h>
 #include <ctype.h>
 
-#if defined( _M_IX86 ) && !defined( __UNIX__ )
-#include <i86.h>
+#if defined( _M_I86 )
+    #include <i86.h>
 #endif
 #ifdef __WINDOWS__
 #define INCLUDE_TOOLHELP_H
