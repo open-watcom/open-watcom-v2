@@ -34,7 +34,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
-#include <malloc.h>
 #include "trmemcvr.h"
 #include "wresall.h"
 #include "global.h"
@@ -42,6 +41,7 @@
 #include "types.h"
 #include "swchar.h"
 #include "wresdefn.h"
+
 
 static int CheckPredefType( const char * restype )
 {
