@@ -644,9 +644,9 @@ WPI_HANDLE _wpi_selectbitmap( WPI_PRES pres, WPI_HANDLE bitmap )
         old_obj = _wpi_malloc( sizeof( WPI_OBJECT ) );
         old_obj->type = WPI_BITMAP_OBJ;
         old_obj->bitmap = GpiSetBitmap( pres, obj->bitmap );
+        return( (WPI_HANDLE)old_obj );
     }
-
-    return( (WPI_HANDLE)old_obj );
+    return( NULL );
 } /* _wpi_selectbitmap */
 
 void _wpi_getoldbitmap( WPI_PRES pres, WPI_HANDLE oldobj )
@@ -656,7 +656,7 @@ void _wpi_getoldbitmap( WPI_PRES pres, WPI_HANDLE oldobj )
 
     oldbitmap = (WPI_OBJECT *)oldobj;
 
-    if( oldbitmap && oldbitmap->type == WPI_BITMAP_OBJ ) {
+    if( oldbitmap != NULL && oldbitmap->type == WPI_BITMAP_OBJ ) {
         GpiSetBitmap( pres, oldbitmap->bitmap );
         _wpi_free( oldbitmap );
     }
@@ -1016,8 +1016,8 @@ WPI_FONT _wpi_selectfont( WPI_PRES hps, WPI_FONT wfont )
 //    LONG              matched;
 
     GpiQueryFontMetrics( hps, sizeof(FONTMETRICS), &fm );
-    oldwfont = (FATTRS *) _wpi_malloc( sizeof(FATTRS) );
-    if( oldwfont ) {
+    oldwfont = (FATTRS *)_wpi_malloc( sizeof( FATTRS ) );
+    if( oldwfont != NULL ) {
         _wpi_getfontattrs( &fm, oldwfont );
     }
 
@@ -1034,8 +1034,8 @@ WPI_FONT _wpi_selectfont( WPI_PRES hps, WPI_FONT wfont )
         memcpy( tmp_wfont, tmp_font, sizeof( FATTRS ) );
         tmp_wfont->lMaxBaselineExt = SysFontHeight;
         tmp_wfont->lAveCharWidth = SysFontWidth;
-        if( GpiCreateLogFont( (WPI_PRES) hps, (PSTR8) NULL, 1L,
-                            (PFATTRS) tmp_wfont ) == FONT_MATCH ) {
+        if( GpiCreateLogFont( (WPI_PRES)hps, (PSTR8)NULL, 1L,
+                            (PFATTRS)tmp_wfont ) == FONT_MATCH ) {
             goto found;
         }
         GpiDeleteSetId( hps, 1L );
@@ -1043,22 +1043,22 @@ WPI_FONT _wpi_selectfont( WPI_PRES hps, WPI_FONT wfont )
     }
 
     /* Conceed defeat, look for it manually */
-    num_fonts = GpiQueryFonts( (HPS) hps,
-                (ULONG) QF_PUBLIC | QF_PRIVATE,
-                (PSZ) (wfont)->szFacename,
-                (PLONG) &ltemp, (LONG) sizeof( FONTMETRICS ),
-                (PFONTMETRICS) NULL );
+    num_fonts = GpiQueryFonts( (HPS)hps,
+                (ULONG)(QF_PUBLIC | QF_PRIVATE),
+                (PSZ)(wfont)->szFacename,
+                (PLONG)&ltemp, (LONG)sizeof( FONTMETRICS ),
+                (PFONTMETRICS)NULL );
     if( num_fonts != 0 && num_fonts != GPI_ALTERROR ) {
         _wpi_malloc2( pfm, num_fonts );
-        ltemp = GpiQueryFonts( (HPS) hps,
-                    (ULONG) QF_PUBLIC | QF_PRIVATE,
-                    (PSZ) (wfont)->szFacename,
-                    (PLONG) &num_fonts,
-                    (LONG) sizeof( FONTMETRICS ),
-                    (PFONTMETRICS) pfm );
+        ltemp = GpiQueryFonts( (HPS)hps,
+                    (ULONG)(QF_PUBLIC | QF_PRIVATE),
+                    (PSZ)(wfont)->szFacename,
+                    (PLONG)&num_fonts,
+                    (LONG)sizeof( FONTMETRICS ),
+                    (PFONTMETRICS)pfm );
         for( i = 0; i < num_fonts; i++ ) {
             if( pfm[i].fsDefn & FM_DEFN_OUTLINE
-                        && pfm[i].fsDefn & FM_DEFN_GENERIC ) {
+                        && (pfm[i].fsDefn & FM_DEFN_GENERIC) ) {
 #if 0
                 _wpi_getfontattrs( &pfm[i], tmp_wfont );
                 (tmp_wfont)->fsFontUse = FATTR_FONTUSE_OUTLINE;
@@ -1075,8 +1075,8 @@ WPI_FONT _wpi_selectfont( WPI_PRES hps, WPI_FONT wfont )
                 (tmp_wfont)->fsType = 0;
                 (tmp_wfont)->lMaxBaselineExt = pfm[i].lMaxBaselineExt;
                 (tmp_wfont)->lAveCharWidth = pfm[i].lAveCharWidth;
-                if( GpiCreateLogFont( (WPI_PRES) hps, (PSTR8) NULL, (LONG) 1L,
-                        (PFATTRS) tmp_wfont ) == FONT_MATCH ) {
+                if( GpiCreateLogFont( (WPI_PRES)hps, (PSTR8)NULL, (LONG)1L,
+                        (PFATTRS)tmp_wfont ) == FONT_MATCH ) {
                     _wpi_free( pfm );
                     goto found;
                 }
@@ -1099,8 +1099,8 @@ WPI_FONT _wpi_selectfont( WPI_PRES hps, WPI_FONT wfont )
             _wpi_getfontattrs( &pfm[selected], tmp_wfont );
             (tmp_wfont)->fsType = 0;
             (tmp_wfont)->fsSelection = (wfont)->fsSelection;
-            if( GpiCreateLogFont( (WPI_PRES) hps, (PSTR8) NULL, (LONG) 1L,
-                                    (PFATTRS) tmp_wfont ) == FONT_MATCH ) {
+            if( GpiCreateLogFont( (WPI_PRES)hps, (PSTR8)NULL, (LONG)1L,
+                                    (PFATTRS)tmp_wfont ) == FONT_MATCH ) {
                 _wpi_free( pfm );
                 goto found;
             }
@@ -1197,7 +1197,7 @@ BOOL _wpi_setscrollrange( HWND parent, int scroll, int min, int max, BOOL redraw
         scroll_bar = parent;
     }
     pos = (SHORT)WinSendMsg( scroll_bar, SBM_QUERYPOS, 0, 0 );
-    return( (BOOL)WinSendMsg( scroll_bar, SBM_SETSCROLLBAR, MPFROMSHORT(pos),
+    return( (BOOL)WinSendMsg( scroll_bar, SBM_SETSCROLLBAR, MPFROMSHORT( pos ),
                                MPFROM2SHORT( min, max ) ) );
 }
 
@@ -1248,7 +1248,7 @@ WPI_FONT _wpi_getsystemfont( void )
                 selected_font = i;
                 break;
             } else {
-                if( GETSYSFONT_DIST(closest_match) > GETSYSFONT_DIST(i) ) {
+                if( GETSYSFONT_DIST( closest_match ) > GETSYSFONT_DIST( i ) ) {
                     closest_match = i;
                 }
             }
@@ -1272,7 +1272,6 @@ WPI_FONT _wpi_getsystemfont( void )
         } else {
             return( NULL );
         }
-
     }
 
     return( &SysFont );
@@ -1325,8 +1324,8 @@ HBRUSH _wpi_createnullbrush( void )
 {
     WPI_OBJECT  *null_brush;
 
-    null_brush = _wpi_malloc( sizeof(WPI_OBJECT) );
-    memset( null_brush, 0, sizeof(WPI_OBJECT) );
+    null_brush = _wpi_malloc( sizeof( WPI_OBJECT ) );
+    memset( null_brush, 0, sizeof( WPI_OBJECT ) );
     null_brush->type = WPI_NULLBRUSH_OBJ;
     null_brush->brush.info.usSymbol = PATSYM_BLANK;
     null_brush->brush.info.usMixMode = FM_LEAVEALONE;
@@ -1340,7 +1339,7 @@ HBRUSH _wpi_createpatternbrush( WPI_HANDLE bitmap )
     WPI_OBJECT          *brush;
 
     obj = (WPI_OBJECT *)bitmap;
-    brush = _wpi_malloc( sizeof(WPI_OBJECT) );
+    brush = _wpi_malloc( sizeof( WPI_OBJECT ) );
     brush->type = WPI_PATBRUSH_OBJ;
     brush->brush.info.usMixMode = FM_OVERPAINT;
     brush->brush.bitmap = obj->bitmap;
@@ -1356,8 +1355,8 @@ HBRUSH _wpi_createsolidbrush( WPI_COLOUR colour )
 {
     WPI_OBJECT  *new_brush;
 
-    new_brush = _wpi_malloc( sizeof(WPI_OBJECT) );
-    memset( new_brush, 0, sizeof(WPI_OBJECT) );
+    new_brush = _wpi_malloc( sizeof( WPI_OBJECT ) );
+    memset( new_brush, 0, sizeof( WPI_OBJECT ) );
 
     new_brush->type = WPI_BRUSH_OBJ;
     new_brush->brush.info.usSymbol = PATSYM_SOLID;
@@ -1448,7 +1447,7 @@ HBRUSH _wpi_createbrush( LOGBRUSH *log_brush )
         }
     }
 
-    return( (HBRUSH) brush );
+    return( (HBRUSH)brush );
 }
 
 HBRUSH _wpi_selectbrush( WPI_PRES pres, HBRUSH obj )
@@ -1458,7 +1457,7 @@ HBRUSH _wpi_selectbrush( WPI_PRES pres, HBRUSH obj )
     WPI_OBJECT  *old_brush;
 
     brush = (WPI_OBJECT *)obj;
-    old_brush = _wpi_malloc( sizeof(WPI_OBJECT) );
+    old_brush = _wpi_malloc( sizeof( WPI_OBJECT ) );
     _OldBrush( pres, old_brush );
 
     switch( brush->type ) {
@@ -1478,7 +1477,7 @@ HBRUSH _wpi_selectbrush( WPI_PRES pres, HBRUSH obj )
         brush->brush.info.lColor = GpiQueryColor( pres );
         brush->brush.info.lBackColor = GpiQueryBackColor( pres );
         /* give the bitmap an id */
-        GpiSetBitmapId(pres, brush->brush.bitmap, brush->brush.info.usSet );
+        GpiSetBitmapId( pres, brush->brush.bitmap, brush->brush.info.usSet );
         GpiSetAttrs( pres, PRIM_AREA, ABB_COLOR | ABB_BACK_COLOR |
                            ABB_MIX_MODE | ABB_BACK_MIX_MODE | ABB_SET,
                                                   0L, &(brush->brush.info) );
@@ -1489,35 +1488,34 @@ HBRUSH _wpi_selectbrush( WPI_PRES pres, HBRUSH obj )
                                                 0L, &(brush->brush.info) );
         break;
     default :
-        return( ( HBRUSH ) NULL );
+        _wpi_free( old_brush );
+        old_brush = NULL;
+        break;
     }
 
     return( (HBRUSH)old_brush );
 } /* _wpi_selectbrush */
 
 
-WPI_HANDLE __wpi_selectobject( WPI_PRES pres, WPI_HANDLE v_obj, void *v_old_obj )
-/**********************************************************************/
+WPI_HANDLE _wpi_selectobject( WPI_PRES pres, WPI_HANDLE v_obj )
+/*************************************************************/
 {
     WPI_OBJECT  *obj;
     WPI_OBJECT  *old_obj;
 
     obj = (WPI_OBJECT *)v_obj;
-    old_obj = (WPI_OBJECT *)v_old_obj;
+    old_obj = _wpi_malloc( sizeof( WPI_OBJECT ) );
 
     switch( obj->type ) {
     case WPI_PEN_OBJ:
         old_obj->type = WPI_PEN_OBJ;
-        GpiQueryAttrs( pres, PRIM_LINE, LBB_COLOR | LBB_MIX_MODE |
-                                LBB_WIDTH | LBB_TYPE, &(old_obj->pen) );
-        GpiSetAttrs( pres, PRIM_LINE, LBB_COLOR | LBB_WIDTH |
-                                LBB_TYPE, 0L, &(obj->pen) );
+        GpiQueryAttrs( pres, PRIM_LINE, LBB_COLOR | LBB_MIX_MODE | LBB_WIDTH | LBB_TYPE, &(old_obj->pen) );
+        GpiSetAttrs( pres, PRIM_LINE, LBB_COLOR | LBB_WIDTH | LBB_TYPE, 0L, &(obj->pen) );
         break;
 
     case WPI_NULLPEN_OBJ:
         old_obj->type = WPI_PEN_OBJ;
-        GpiQueryAttrs( pres, PRIM_LINE, LBB_COLOR | LBB_MIX_MODE |
-                                LBB_WIDTH | LBB_TYPE, &(old_obj->pen) );
+        GpiQueryAttrs( pres, PRIM_LINE, LBB_COLOR | LBB_MIX_MODE | LBB_WIDTH | LBB_TYPE, &(old_obj->pen) );
         GpiSetAttrs( pres, PRIM_LINE, LBB_MIX_MODE, 0L, &(obj->pen) );
         break;
 
@@ -1527,8 +1525,7 @@ WPI_HANDLE __wpi_selectobject( WPI_PRES pres, WPI_HANDLE v_obj, void *v_old_obj 
 
     case WPI_BRUSH_OBJ:
         _OldBrush( pres, old_obj );
-        GpiSetAttrs( pres, PRIM_AREA, ABB_COLOR | ABB_SYMBOL,
-                                                0L, &(obj->brush.info) );
+        GpiSetAttrs( pres, PRIM_AREA, ABB_COLOR | ABB_SYMBOL, 0L, &(obj->brush.info) );
         break;
 
     case WPI_PATBRUSH_OBJ:
@@ -1538,16 +1535,14 @@ WPI_HANDLE __wpi_selectobject( WPI_PRES pres, WPI_HANDLE v_obj, void *v_old_obj 
         obj->brush.info.lColor = GpiQueryColor( pres );
         obj->brush.info.lBackColor = GpiQueryBackColor( pres );
         /* give the bitmap an id */
-        GpiSetBitmapId(pres, obj->brush.bitmap, obj->brush.info.usSet );
-        GpiSetAttrs( pres, PRIM_AREA, ABB_COLOR | ABB_BACK_COLOR |
-                           ABB_MIX_MODE | ABB_BACK_MIX_MODE | ABB_SET,
+        GpiSetBitmapId( pres, obj->brush.bitmap, obj->brush.info.usSet );
+        GpiSetAttrs( pres, PRIM_AREA, ABB_COLOR | ABB_BACK_COLOR | ABB_MIX_MODE | ABB_BACK_MIX_MODE | ABB_SET,
                                                   0L, &(obj->brush.info) );
         break;
 
     case WPI_NULLBRUSH_OBJ:
         _OldBrush( pres, old_obj );
-        GpiSetAttrs( pres, PRIM_AREA, ABB_COLOR | ABB_MIX_MODE,
-                                                  0L, &(obj->brush.info) );
+        GpiSetAttrs( pres, PRIM_AREA, ABB_COLOR | ABB_MIX_MODE, 0L, &(obj->brush.info) );
         break;
 
     case WPI_BITMAP_OBJ:
@@ -1556,10 +1551,41 @@ WPI_HANDLE __wpi_selectobject( WPI_PRES pres, WPI_HANDLE v_obj, void *v_old_obj 
         break;
 
     default:
+        _wpi_free( old_obj );
+        old_obj = NULL;
         break;
     }
     return( (WPI_HANDLE)old_obj );
-} /* __wpi_selectobject */
+} /* _wpi_selectobject */
+
+void _wpi_getoldobject( WPI_PRES pres, WPI_HANDLE v_old_obj )
+/***********************************************************/
+{
+    WPI_OBJECT  *old_obj;
+
+    old_obj = (WPI_OBJECT *)v_old_obj;
+
+    switch( old_obj->type ) {
+    case WPI_PEN_OBJ:
+        GpiSetAttrs( pres, PRIM_LINE, LBB_COLOR | LBB_WIDTH | LBB_TYPE | LBB_MIX_MODE, 0L, &(old_obj->pen) );
+        break;
+
+    case WPI_BRUSH_OBJ:
+        GpiSetAttrs( pres, PRIM_AREA, ABB_COLOR | ABB_SYMBOL | ABB_MIX_MODE, 0L, &(old_obj->brush.info) );
+        break;
+    case WPI_PATBRUSH_OBJ:
+        GpiSetAttrs( pres, PRIM_AREA, ABB_COLOR | ABB_SET, 0L, &(old_obj->brush.info) );
+        break;
+
+    case WPI_BITMAP_OBJ:
+        GpiSetBitmap( pres, old_obj->bitmap );
+        break;
+
+    default:
+        break;
+    }
+    _wpi_free( old_obj );
+} /* _wpi_getoldobject */
 
 void _wpi_deleteobject( WPI_HANDLE object )
 /**********************************************************************/
@@ -1579,9 +1605,9 @@ HPEN _wpi_createnullpen( void )
 {
     WPI_OBJECT  *nullpen;
 
-    nullpen = _wpi_malloc( sizeof(WPI_OBJECT) );
+    nullpen = _wpi_malloc( sizeof( WPI_OBJECT ) );
 
-    memset( nullpen, 0, sizeof(WPI_OBJECT) );
+    memset( nullpen, 0, sizeof( WPI_OBJECT ) );
     nullpen->type = WPI_NULLPEN_OBJ;
     nullpen->pen.usType = LINETYPE_INVISIBLE;
 #ifdef __FLAT__
@@ -1596,7 +1622,7 @@ HPEN _wpi_createpen( USHORT type, short width, WPI_COLOUR colour )
 {
     WPI_OBJECT  *new_pen;
 
-    new_pen = _wpi_malloc( sizeof(WPI_OBJECT) );
+    new_pen = _wpi_malloc( sizeof( WPI_OBJECT ) );
 
     new_pen->type = WPI_PEN_OBJ;
     new_pen->pen.usMixMode = FM_OVERPAINT;
@@ -1616,7 +1642,7 @@ HPEN _wpi_selectpen( WPI_PRES pres, HPEN obj )
     WPI_OBJECT  *oldpen;
     WPI_OBJECT  *pen;
 
-    oldpen = _wpi_malloc( sizeof(WPI_OBJECT) );
+    oldpen = _wpi_malloc( sizeof( WPI_OBJECT ) );
     pen = (WPI_OBJECT *)obj;
     oldpen->type = WPI_PEN_OBJ;
 
@@ -1658,15 +1684,15 @@ void _wpi_enumfonts( WPI_PRES pres, char *facename, WPI_FONTENUMPROC proc, char 
     facename = facename;                // not used in PM version
 
     num_fonts = GpiQueryFonts( pres, (ULONG)QF_PUBLIC | QF_PRIVATE, (PSZ)NULL,
-                                        &ltemp, (LONG)sizeof(FONTMETRICS),
+                                        &ltemp, (LONG)sizeof( FONTMETRICS ),
                                         (PFONTMETRICS)NULL );
     if( num_fonts != 0 && num_fonts != GPI_ALTERROR ) {
         _wpi_malloc2( pfm, num_fonts );
         ltemp = GpiQueryFonts( pres, (ULONG)QF_PUBLIC | QF_PRIVATE, (PSZ)NULL,
-                                        &num_fonts, (LONG)sizeof(FONTMETRICS),
+                                        &num_fonts, (LONG)sizeof( FONTMETRICS ),
                                         (PFONTMETRICS)pfm );
         for( i = 0; i < num_fonts; i++ ) {
-            ret = proc( (WPI_LOGFONT *) &pfm[i], (WPI_TEXTMETRIC *) &pfm[i],
+            ret = proc( (WPI_LOGFONT *)&pfm[i], (WPI_TEXTMETRIC *)&pfm[i],
                                         (short)pfm[i].fsDefn, (LPSTR)data );
             if( !ret ) {
                 break;
@@ -1703,15 +1729,15 @@ void _wpi_checkradiobutton( HWND hwnd, int start_id, int end_id, int check_id )
     HWND                button;
     USHORT              action;
 
-    for( i= start_id; i<= end_id; i++ ) {
-        button = WinWindowFromID( hwnd, i);
+    for( i = start_id; i <= end_id; i++ ) {
+        button = WinWindowFromID( hwnd, i );
         if( button != (HWND)NULL ) {
             if( i== check_id ) {
                 action = TRUE;
             } else {
                 action = FALSE;
             }
-            WinSendMsg( button, BM_SETCHECK, (WPI_PARAM1) action, NULL );
+            WinSendMsg( button, BM_SETCHECK, (WPI_PARAM1)action, NULL );
         }
     }
 } /* _wpi_checkradiobutton */
@@ -1761,13 +1787,13 @@ LONG _wpi_getbitmapbits( WPI_HANDLE hbitmap, int size, BYTE *bits )
     ih.cbFix = sizeof( BITMAPINFOHEADER );
     GpiQueryBitmapParameters( obj->bitmap, &ih );
 
-    bitsize = sizeof(BITMAPINFO) + sizeof(RGB) * (1 << ih.cBitCount);
+    bitsize = sizeof( BITMAPINFO ) + sizeof( RGB ) * ( 1 << ih.cBitCount );
     bmi = _wpi_malloc( bitsize );
     if( !bmi )
         return( 0L );
 
     memset( bmi, 0, bitsize );
-    memcpy( bmi, &ih, sizeof(BITMAPINFOHEADER) );
+    memcpy( bmi, &ih, sizeof( BITMAPINFOHEADER ) );
 
     hab = WinQueryAnchorBlock( HWND_DESKTOP );
     hdc = DevOpenDC( hab, OD_MEMORY, "*", 5L, (PDEVOPENDATA)&dop, NULLHANDLE );
@@ -1777,7 +1803,7 @@ LONG _wpi_getbitmapbits( WPI_HANDLE hbitmap, int size, BYTE *bits )
     slcount = ( 32 * size ) / ( 4 * ih.cx * ih.cBitCount );
     if( ih.cy < slcount )
         slcount = ih.cy;
-    ret = GpiQueryBitmapBits( memhps, 0L, slcount, bits, (WPI_BITMAPINFO *)bmi);
+    ret = GpiQueryBitmapBits( memhps, 0L, slcount, bits, (WPI_BITMAPINFO *)bmi );
 
     GpiSetBitmap( memhps, oldbitmap );
     GpiDestroyPS( memhps );
@@ -1805,8 +1831,8 @@ LONG _wpi_setbitmapbits( WPI_HANDLE hbitmap, int size, BYTE *bits )
     obj = (WPI_OBJECT *)hbitmap;
     ih.cbFix = sizeof( BITMAPINFOHEADER );
     GpiQueryBitmapParameters( obj->bitmap, &ih );
-    bmi = _wpi_malloc( sizeof(BITMAPINFO) + sizeof(RGB) * (1<<ih.cBitCount) );
-    memcpy( bmi, &ih, sizeof(BITMAPINFOHEADER) );
+    bmi = _wpi_malloc( sizeof( BITMAPINFO ) + sizeof( RGB ) * ( 1 << ih.cBitCount ) );
+    memcpy( bmi, &ih, sizeof( BITMAPINFOHEADER ) );
 
     hab = WinQueryAnchorBlock( HWND_DESKTOP );
     hdc = DevOpenDC( hab, OD_MEMORY, "*", 5L, (PDEVOPENDATA)&dop, NULLHANDLE );
@@ -1842,7 +1868,7 @@ BOOL _wpi_movewindow( HWND hwnd, int x, int y, int width, int height, BOOL repai
     return( ret );
 } /* _wpi_movewindow */
 
-void _wpi_recttowpirect( RECT *src_rc, WPI_RECT *dest_rc)
+void _wpi_recttowpirect( RECT *src_rc, WPI_RECT *dest_rc )
 /****************************************************************/
 /* This routine converts a RECT (ie. the windows form) to a     */
 /* WPI_RECT (ie. in this case, a RECTL)                         */
@@ -1880,7 +1906,7 @@ WPI_HANDLE _wpi_loadbitmap( WPI_INST inst, int id )
     WPI_OBJECT  *obj;
     WPI_PRES    pres;
 
-    obj = _wpi_malloc( sizeof(WPI_OBJECT) );
+    obj = _wpi_malloc( sizeof( WPI_OBJECT ) );
     obj->type = WPI_BITMAP_OBJ;
     pres = _wpi_getpres( HWND_DESKTOP );
     obj->bitmap = GpiLoadBitmap( pres, inst.mod_handle, (ULONG)id, 0, 0 );
@@ -1898,8 +1924,8 @@ WPI_HANDLE _wpi_createbitmap( int width, int height, int planes, int bitcount,
     HPS                         hps;
     WPI_OBJECT                  *obj;
 
-    memset( &bitsinfo, 0, sizeof(WPI_BITMAPINFO) );
-    (bitsinfo).cbFix = sizeof(WPI_BITMAPINFO);
+    memset( &bitsinfo, 0, sizeof( WPI_BITMAPINFO ) );
+    (bitsinfo).cbFix = sizeof( WPI_BITMAPINFO );
     (bitsinfo).cx = width;
     (bitsinfo).cy = height;
 #ifdef __FLAT__
@@ -1911,7 +1937,7 @@ WPI_HANDLE _wpi_createbitmap( int width, int height, int planes, int bitcount,
     (bitsinfo).ulColorEncoding = BCE_RGB;
 #endif
 
-    memset( &bmih, 0, sizeof(WPI_BITMAPINFOHEADER) );
+    memset( &bmih, 0, sizeof( WPI_BITMAPINFOHEADER ) );
     (bmih).cbFix = sizeof( WPI_BITMAPINFOHEADER );
     (bmih).cx = width;
     (bmih).cy = height;
@@ -1921,7 +1947,7 @@ WPI_HANDLE _wpi_createbitmap( int width, int height, int planes, int bitcount,
      */
     (bmih).cBitCount = (USHORT)bitcount;
 
-    obj = _wpi_malloc( sizeof(WPI_OBJECT) );
+    obj = _wpi_malloc( sizeof( WPI_OBJECT ) );
     obj->type = WPI_BITMAP_OBJ;
 
     hps = WinGetScreenPS( HWND_DESKTOP );
@@ -1939,7 +1965,7 @@ WPI_HANDLE _wpi_createdibitmap( WPI_PRES pres, WPI_BITMAP *info, ULONG opt,
 {
     WPI_OBJECT  *obj;
 
-    obj = _wpi_malloc( sizeof(WPI_OBJECT) );
+    obj = _wpi_malloc( sizeof( WPI_OBJECT ) );
     if( !obj )
         return( (WPI_HANDLE)NULL );
 
@@ -2037,8 +2063,8 @@ static BOOL WinPopupMenu( HWND hwndParent, HWND hwndOwner, HWND hwndMenu,
     item_count = _wpi_getmenuitemcount( hwndMenu );
     for( pos = 0; pos <= item_count; ++pos ) {
         id = _wpi_getmenuitemidfrompos( hwndMenu, pos );
-        if( (BOOL)WinSendMsg( hwndMenu, MM_ISITEMVALID, MPFROM2SHORT(id, FALSE), NULL ) ) {
-            WinSendMsg( hwndMenu, MM_SELECTITEM, MPFROM2SHORT(id, FALSE), NULL );
+        if( (BOOL)WinSendMsg( hwndMenu, MM_ISITEMVALID, MPFROM2SHORT( id, FALSE ), NULL ) ) {
+            WinSendMsg( hwndMenu, MM_SELECTITEM, MPFROM2SHORT( id, FALSE ), NULL );
             break;
         }
     }
@@ -2047,7 +2073,7 @@ static BOOL WinPopupMenu( HWND hwndParent, HWND hwndOwner, HWND hwndMenu,
     // item to be the first one
     if( pos > item_count ) {
         id = _wpi_getmenuitemidfrompos( hwndMenu, 0 );
-        WinSendMsg( hwndMenu, MM_SELECTITEM, MPFROM2SHORT(id, FALSE), NULL );
+        WinSendMsg( hwndMenu, MM_SELECTITEM, MPFROM2SHORT( id, FALSE ), NULL );
     }
 
     return( TRUE );

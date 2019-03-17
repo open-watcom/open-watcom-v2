@@ -44,7 +44,6 @@
 /*************/
 
 #include <math.h>
-#include <malloc.h>
 #include <string.h>
 #include <stdlib.h>
 #include "wpitypes.h"
