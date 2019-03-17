@@ -30,10 +30,10 @@
 ****************************************************************************/
 
 
+#include <stdlib.h>
 #include <string.h>
 #include <stddef.h>
 #include <conio.h>
-#include <malloc.h>
 #include <dos.h>
 
 #define INCL_DOSNMPIPES

@@ -291,10 +291,12 @@ int main(int argc, char *argv[])
         else
                 strcpy(ServiceExe,argv[1]);
 
+#ifndef _WIN64
         if (GetVersion() & 0x80000000) {
                 if (!Quiet) printf( "Not on Windows NT, can not install driver.\n" );
                 return 0;
                 }
+#endif
         if (test_file != NULL && OpenDevice(test_file)) {
                 if (!Quiet) printf( "Driver already running\n" );
                 return 0;

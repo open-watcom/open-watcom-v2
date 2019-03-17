@@ -32,7 +32,6 @@
 
 #include <stdio.h>
 #include <dos.h>
-#include <malloc.h>
 #include "wdebug.h"
 #include "stdwin.h"
 #include "trpsys.h"

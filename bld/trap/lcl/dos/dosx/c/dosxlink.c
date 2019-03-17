@@ -33,7 +33,6 @@
 
 #include <setjmp.h>
 #include <stdio.h>
-#include <malloc.h>
 #include <string.h>
 #include <i86.h>
 #include "cpuglob.h"

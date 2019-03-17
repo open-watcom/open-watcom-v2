@@ -38,7 +38,6 @@
 #include <limits.h>
 #include <string.h>
 #include <i86.h>
-#include <malloc.h>
 #include <sys/name.h>
 #include <sys/proxy.h>
 #include <sys/kernel.h>

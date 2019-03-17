@@ -30,7 +30,7 @@
 
 
 #include <stdlib.h>
-#include <malloc.h>
+#include <malloc.h>     /* necessary for near/far versions */
 #include <sys/types.h>
 #include <signal.h>
 #include "trptypes.h"
