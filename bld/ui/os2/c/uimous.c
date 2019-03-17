@@ -31,7 +31,6 @@
 
 
 #include <dos.h>
-#include <malloc.h>
 #include "uidef.h"
 #include "doscall.h"
 #include "uimouse.h"

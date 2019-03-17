@@ -30,7 +30,6 @@
 
 
 #include <dos.h>
-#include <malloc.h>
 #include "uidef.h"
 #include "uimouse.h"
 

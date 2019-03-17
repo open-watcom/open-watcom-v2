@@ -401,8 +401,8 @@ extern void _desqview_update( LP_PIXEL, unsigned );
 #pragma aux _desqview_update = \
         "mov  ah,0ffh"      \
         _INT_10             \
-    __parm      [] \
     __parm      [__es __di] [__cx] \
+    __value     \
     __modify    [__ah]
 #endif
 
