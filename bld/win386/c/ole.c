@@ -34,7 +34,6 @@
 #include <string.h>
 #include <dos.h>
 #include <windows.h>
-#include <malloc.h>
 #include <ole.h>
 #include "winext.h"
 #include "winstubs.h"

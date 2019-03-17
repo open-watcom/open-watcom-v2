@@ -32,7 +32,6 @@
 #include <stddef.h>
 #include <stdio.h>
 #include <string.h>
-#include <malloc.h>
 #include <dos.h>
 #define INCLUDE_MMSYSTEM_H
 #include <windows.h>
