@@ -91,7 +91,13 @@ typedef void                *patch_handle;      /* used to stuff patchable ints 
 
 typedef void                (*cg_callback)( callback_handle );
 
-typedef short               segment_id;         /* must be signed */
+/*
+ * segment_id must be signed
+ * id < 0 is virtual segment used for imported symbols
+ * id > 0 is real (allocated) segment
+ * id = 0 is used as special value by front end for unasigned segment value
+ */
+typedef short               segment_id;
 
 typedef int                 level_depth;
 
