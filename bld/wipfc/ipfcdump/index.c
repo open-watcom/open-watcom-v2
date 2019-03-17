@@ -1,7 +1,6 @@
 // Dump the index data
 
 #include <string.h>
-#include <stdlib.h>
 #include "ipfcdump.h"
 
 static void processIndex( FILE *, FILE *, size_t );

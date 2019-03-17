@@ -1,6 +1,5 @@
 // Dump the cell data
 
-#include <malloc.h>
 #include <string.h>
 #include "ipfcdump.h"
 

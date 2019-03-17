@@ -1,6 +1,5 @@
 // Read the header and extended header of the IPF file
 
-#include <stdlib.h>
 #include <string.h>
 #include "ipfcdump.h"
 

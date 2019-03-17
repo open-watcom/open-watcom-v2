@@ -1,7 +1,6 @@
 // Dump the controls data
 
 #include "ipfcdump.h"
-#include <stdlib.h>
 
 
 void readControls( FILE *in, FILE *out )

@@ -1,8 +1,6 @@
 // Dump the dictionary
 
-#include <malloc.h>
 #include <string.h>
-#include <stdlib.h>
 #include "ipfcdump.h"
 
 wchar_t **Vocabulary;

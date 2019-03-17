@@ -1,8 +1,6 @@
 /* Dumps the structure of an OS/2 IPF help file
 */
 
-#include <malloc.h>
-#include <stdlib.h>
 #include "ipfcdump.h"
 
 static int parseFile( char * );

@@ -1,6 +1,5 @@
 // Dump the TOC data
 
-#include <stdlib.h>
 #include "ipfcdump.h"
 
 

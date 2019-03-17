@@ -1,6 +1,5 @@
 // Dump the panel numbers and names
 
-#include <malloc.h>
 #include "ipfcdump.h"
 
 static void readPanelNumbers( FILE *in, FILE *out );
