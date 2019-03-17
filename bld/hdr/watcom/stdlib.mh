@@ -102,9 +102,11 @@ using std::wcstoull;
 
 :include mbcurmax.sp
 
+:include ext.sp
 :keep MAXPATH
 :include maxpath.sp
 :remove MAXPATH
+:include extepi.sp
 
 #define RAND_MAX        32767U
 #define EXIT_SUCCESS    0
@@ -348,13 +350,11 @@ _WCRTLINK extern unsigned __int64 _strtoui64( const char *__nptr, char **__endpt
 :endsegment
 #endif
 
-:include ext.sp
  _WCRTLINK extern int     _fwctomb( char _WCFAR * __s, wchar_t __wchar );
  _WCRTLINK extern size_t  _fmbstowcs( wchar_t _WCFAR * __pwcs, const char _WCFAR * __s, size_t __n );
  _WCRTLINK extern size_t  _fwcstombs( char _WCFAR * __s, const wchar_t _WCFAR * __pwcs, size_t __n );
  _WCRTLINK extern int     _fmblen( const char _WCFAR * __s, size_t __n );
  _WCRTLINK extern int     _fmbtowc( wchar_t _WCFAR * __pwc, const char _WCFAR * __s, size_t __n );
-:include extepi.sp
 
 :endsegment
 /* min and max macros */
@@ -607,11 +607,13 @@ _WCRTLINK extern errno_t    wcstombs_s( size_t * __restrict __retval, char * __r
 
 :segment CNAME
 :include cplusepi.sp
-:elsesegment
-#endif /* __cplusplus not defined */
-:endsegment
 
 #endif /* _CSTDLIB_INCLUDED */
+:elsesegment
+#endif /* __cplusplus not defined */
+
+#endif /* _STDLIB_H_INCLUDED */
+:endsegment
 ::::::::: C++ only :::::::::
 :segment CNAME
 
