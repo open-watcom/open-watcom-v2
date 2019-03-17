@@ -457,7 +457,7 @@ void ToolBarDestroy ( toolbar *bar )
             MemFree( curr );
         }
         if( bar->bgbrush != NULLHANDLE ) {
-            _wpi_deleteobject( bar->bgbrush );
+            _wpi_deletebrush( bar->bgbrush );
         }
         MemFree( bar );
     }
@@ -472,12 +472,12 @@ void ToolBarFini( toolbar *bar )
     ToolBarDestroy( bar );
 
     if( gdiObjectsCreated ) {
-        _wpi_deleteobject( blackPen );
-        _wpi_deleteobject( btnShadowPen );
-        _wpi_deleteobject( btnHighlightPen );
-        _wpi_deleteobject( btnFacePen );
-        _wpi_deleteobject( blackBrush );
-        _wpi_deleteobject( btnFaceBrush );
+        _wpi_deletepen( blackPen );
+        _wpi_deletepen( btnShadowPen );
+        _wpi_deletepen( btnHighlightPen );
+        _wpi_deletepen( btnFacePen );
+        _wpi_deletebrush( blackBrush );
+        _wpi_deletebrush( btnFaceBrush );
         gdiObjectsCreated = false;
     }
 
@@ -694,7 +694,7 @@ void ToolBarDisplay( toolbar *bar, TOOLDISPLAYINFO *disp )
     mouse_captured = false;
 
     if( bar->bgbrush != NULLHANDLE ) {
-        _wpi_deleteobject( bar->bgbrush );
+        _wpi_deletebrush( bar->bgbrush );
         bar->bgbrush = NULLHANDLE;
     }
 
@@ -990,7 +990,7 @@ static void drawBorder( WPI_PRES pres, WPI_POINT size, int border )
     _wpi_lineto( pres, &pt );
     _wpi_getoldpen( pres, old_pen );
 
-    _wpi_selectpen( pres, btnFacePen );
+    old_pen = _wpi_selectpen( pres, btnFacePen );
     _wpi_setpoint( &pt, 0, _wpi_cvth_y( 0, size.y ) );
     _wpi_movetoex( pres, &pt, NULL );
     pt.x = border;

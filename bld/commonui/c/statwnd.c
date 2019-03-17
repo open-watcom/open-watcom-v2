@@ -269,9 +269,9 @@ WPI_MRESULT CALLBACK StatusWndCallback( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wpara
         if( colorButtonFace != GetSysColor( COLOR_BTNFACE ) ) {
             RECT rs;
             if( hasGDIObjects ) {
-                _wpi_deleteobject( penLight );
-                _wpi_deleteobject( penShade );
-                _wpi_deleteobject( brushButtonFace );
+                _wpi_deletepen( penLight );
+                _wpi_deletepen( penShade );
+                _wpi_deletebrush( brushButtonFace );
             }
             colorButtonFace = GetSysColor( COLOR_BTNFACE );
             _wpi_setbackcolour( pres, colorButtonFace );
@@ -436,9 +436,9 @@ void StatusWndChangeSysColors( COLORREF btnFace, COLORREF btnText,
     if( !IsCommCtrlLoaded() ) {
 #endif
         if( hasGDIObjects ) {
-            _wpi_deleteobject( penLight );
-            _wpi_deleteobject( penShade );
-            _wpi_deleteobject( brushButtonFace );
+            _wpi_deletepen( penLight );
+            _wpi_deletepen( penShade );
+            _wpi_deletebrush( brushButtonFace );
         }
 
         colorButtonFace = btnFace;
@@ -831,9 +831,9 @@ void StatusWndDestroy( statwnd *sw )
 void StatusWndFini( void )
 {
     if( hasGDIObjects ) {
-        _wpi_deleteobject( penLight );
-        _wpi_deleteobject( penShade );
-        _wpi_deleteobject( brushButtonFace );
+        _wpi_deletepen( penLight );
+        _wpi_deletepen( penShade );
+        _wpi_deletebrush( brushButtonFace );
         hasGDIObjects = false;
     }
     if( classRegistered ) {
