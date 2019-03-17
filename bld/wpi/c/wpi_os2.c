@@ -62,8 +62,8 @@ static HWND _wpi_getscrollhwnd( HWND parent, int scroll )
 {
     HWND        scroll_bar;
 
-    if( parent == (HWND)NULL ) {
-        return( (HWND)NULL );
+    if( parent == NULLHANDLE ) {
+        return( NULLHANDLE );
     }
 
     if( scroll == SB_HORZ ) {
@@ -257,7 +257,7 @@ WPI_HANDLE _wpi_createcompatiblebitmap( WPI_PRES pres, int width, int height )
     LONG                formats[24];
     WPI_OBJECT          *obj;
 
-    memset( &bmih, 0, sizeof(WPI_BITMAP) );
+    memset( &bmih, 0, sizeof( WPI_BITMAP ) );
     GpiQueryDeviceBitmapFormats( pres, 24L, formats );
     bmih.cbFix = sizeof( WPI_BITMAP );
     bmih.cx = width;
@@ -265,7 +265,7 @@ WPI_HANDLE _wpi_createcompatiblebitmap( WPI_PRES pres, int width, int height )
     bmih.cPlanes = (USHORT)formats[0];
     bmih.cBitCount = (USHORT)formats[1];
 
-    obj = _wpi_malloc( sizeof(WPI_OBJECT) );
+    obj = _wpi_malloc( sizeof( WPI_OBJECT ) );
     obj->type = WPI_BITMAP_OBJ;
     obj->bitmap = GpiCreateBitmap( pres, &bmih, 0L, NULL, NULL );
 
@@ -325,7 +325,7 @@ int _wpi_dialogbox( HWND parent, WPI_DLGPROC dlgproc, WPI_INST inst, LPCSTR res_
     int                 ret;
 
     new_dlg = WinLoadDlg( HWND_DESKTOP, parent, dlgproc, inst.mod_handle, (ULONG)res_id, (PVOID)data );
-    if( new_dlg == (HWND)NULL ) {
+    if( new_dlg == NULLHANDLE ) {
         return( -1 );
     }
     ret = WinProcessDlg( new_dlg );
@@ -646,7 +646,7 @@ WPI_HANDLE _wpi_selectbitmap( WPI_PRES pres, WPI_HANDLE bitmap )
         old_obj->bitmap = GpiSetBitmap( pres, obj->bitmap );
         return( (WPI_HANDLE)old_obj );
     }
-    return( NULL );
+    return( NULLHANDLE );
 } /* _wpi_selectbitmap */
 
 void _wpi_getoldbitmap( WPI_PRES pres, WPI_HANDLE oldobj )
@@ -671,7 +671,7 @@ void _wpi_deletebitmap( WPI_HANDLE bmp )
     obj = (WPI_OBJECT *)bmp;
 
     if( obj != NULL ) {
-        if( obj->bitmap != (HBITMAP)NULL ) {
+        if( obj->bitmap != NULLHANDLE ) {
             GpiDeleteBitmap( obj->bitmap );
         }
         _wpi_free( obj );
@@ -1015,7 +1015,7 @@ WPI_FONT _wpi_selectfont( WPI_PRES hps, WPI_FONT wfont )
     int                 point_size_x, point_size_y;
 //    LONG              matched;
 
-    GpiQueryFontMetrics( hps, sizeof(FONTMETRICS), &fm );
+    GpiQueryFontMetrics( hps, sizeof( FONTMETRICS ), &fm );
     oldwfont = (FATTRS *)_wpi_malloc( sizeof( FATTRS ) );
     if( oldwfont != NULL ) {
         _wpi_getfontattrs( &fm, oldwfont );
@@ -1655,7 +1655,7 @@ HPEN _wpi_selectpen( WPI_PRES pres, HPEN obj )
     } else if( pen->type == WPI_NULLPEN_OBJ ) {
         GpiSetAttrs( pres, PRIM_LINE, LBB_MIX_MODE, 0L, &(pen->pen) );
     } else {
-        return( (HPEN)NULL );
+        return( NULLHANDLE );
     }
     return( (HPEN)oldpen );
 } /* _wpi_selectpen */
@@ -1731,7 +1731,7 @@ void _wpi_checkradiobutton( HWND hwnd, int start_id, int end_id, int check_id )
 
     for( i = start_id; i <= end_id; i++ ) {
         button = WinWindowFromID( hwnd, i );
-        if( button != (HWND)NULL ) {
+        if( button != NULLHANDLE ) {
             if( i== check_id ) {
                 action = TRUE;
             } else {
@@ -1967,7 +1967,7 @@ WPI_HANDLE _wpi_createdibitmap( WPI_PRES pres, WPI_BITMAP *info, ULONG opt,
 
     obj = _wpi_malloc( sizeof( WPI_OBJECT ) );
     if( !obj )
-        return( (WPI_HANDLE)NULL );
+        return( NULLHANDLE );
 
     obj->type = WPI_BITMAP_OBJ;
     obj->bitmap = GpiCreateBitmap( pres, (WPI_BITMAP *)info, opt, data,
@@ -2208,7 +2208,7 @@ BOOL _wpi_trackpopupmenu( HMENU hmenu, ULONG flags, LONG x, LONG y,
         }
     }
 
-    WinSetCapture( HWND_DESKTOP, (HWND)NULL );
+    WinSetCapture( HWND_DESKTOP, NULLHANDLE );
 
     return( TRUE );
 }
@@ -2222,7 +2222,7 @@ WPI_HANDLE _wpi_getclipboarddata( WPI_INST inst, UINT format )
     WPI_OBJECT  *obj;
 
     if( format == CF_BITMAP ) {
-        obj = _wpi_malloc( sizeof(WPI_OBJECT) );
+        obj = _wpi_malloc( sizeof( WPI_OBJECT ) );
         obj->type = WPI_BITMAP_OBJ;
         obj->bitmap = WinQueryClipbrdData( inst.hab, (ULONG)format );
     } else {

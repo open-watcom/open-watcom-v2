@@ -145,7 +145,7 @@ BOOL _wpi_setmenutext( HMENU hmenu, unsigned id, const char *text, BOOL by_posit
     if( !_wpi_getmenustate( hmenu, id, (WPI_MENUSTATE *)&state, by_position ) ) {
         return( FALSE );
     }
-    popup = (HMENU)NULLHANDLE;
+    popup = NULLHANDLE;
     if( state & MF_POPUP ) {
         if( !by_position ) {
             return( FALSE );
@@ -153,12 +153,12 @@ BOOL _wpi_setmenutext( HMENU hmenu, unsigned id, const char *text, BOOL by_posit
         popup = _wpi_getsubmenu( hmenu, (int)id );
     }
     state = MF_STRING | ((by_position) ? MF_BYPOSITION : MF_BYCOMMAND);
-    if( popup != (HMENU)NULLHANDLE ) {
+    if( popup != NULLHANDLE ) {
         state |= MF_POPUP;
     }
     return(
         ModifyMenu( hmenu, id, state,
-                    (popup != (HMENU)NULLHANDLE) ? (UINT_PTR)popup : (UINT_PTR)id,
+                    (popup != NULLHANDLE) ? (UINT_PTR)popup : (UINT_PTR)id,
                     text ) );
 }
 
@@ -338,7 +338,7 @@ void _wpi_suspendthread( UINT thread_id, WPI_QMSG *msg )
     thread_id = thread_id;              // not used in windows
 
     for( ;; ) {
-        _wpi_getmessage( NULL, msg, (HWND)NULLHANDLE, 0, 0 );
+        _wpi_getmessage( NULL, msg, NULLHANDLE, 0, 0 );
 
         if( _wpi_ismessage( (*msg), WM_QUIT ) ) {
             break;
