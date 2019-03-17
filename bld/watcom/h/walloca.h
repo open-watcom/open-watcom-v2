@@ -33,10 +33,10 @@
 #ifndef _WALLOCA_H_INCLUDED
 #define _WALLOCA_H_INCLUDED
 
-#if defined( __WATCOMC__ ) || !defined( __UNIX__ )
-    #include <malloc.h>
-#else
+#if defined( __UNIX__ ) || defined( __WATCOMC__ ) && ( __WATCOMC__ > 1290 )
     #include <stdlib.h>
+#else
+    #include <malloc.h>
 #endif
 
 #if defined( __WATCOMC__ )

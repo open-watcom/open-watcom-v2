@@ -46,8 +46,6 @@
 #define SYSH2LH(sh)     (tiny_handle_t)((sh).u._32[0])
 #define LH2SYSH(sh,lh)  (sh).u._32[0]=lh;(sh).u._32[1]=0
 
-extern char     _osmajor;
-
 const file_components   LclFile = { '.', ':', { '\\', '/' }, { '\r', '\n' } };
 const char              LclPathSep = { ';' };
 
