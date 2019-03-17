@@ -34,18 +34,17 @@
 // EPMSPY       : DDE spy for WorkFrame/2 and EPM communication
 //
 
-#include <process.h>
 #include <string.h>
-#include <malloc.h>
 #include <stdio.h>
+#include <process.h>
 #include <io.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
-
 #define INCL_WINDDE
 #define INCL_WINWINDOWMGR
 #include <os2.h>
+
 
 typedef struct errstr {
     ULONG       errorline;

@@ -30,13 +30,12 @@
 ****************************************************************************/
 
 
-#include <wwindows.h>
-#include <string.h>
-#include <stdio.h>
-#include <ddeml.h>
-#include <malloc.h>
 #include <stdlib.h>
 #include <assert.h>
+#include <string.h>
+#include <stdio.h>
+#include <wwindows.h>
+#include <ddeml.h>
 #include "wedit.h"
 #include "dllmain.h"
 
@@ -149,7 +148,7 @@ int EDITAPI EDITConnect( void )
                 rc = WaitForInputIdle( pi.hProcess, INFINITE );
                 if( rc == 0 ) {
                     // Now this is starting to get scary
-                    // if some problem to get connection then try in loop 100 times (maximum about 30 seconds) 
+                    // if some problem to get connection then try in loop 100 times (maximum about 30 seconds)
                     for( n = 0; n < 100; ++n ) {
                         DWORD   status;
 
