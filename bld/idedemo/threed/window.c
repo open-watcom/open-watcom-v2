@@ -60,18 +60,18 @@ static char Dummy_text[]="M";
 
 static text_dir Text_path;
 
-static WPI_COLOUR       Set_color;
-static int      Set_fill_style;
-static int      Set_pen_style;
-static wl_style Set_wl_style;
-static wl_width Set_wl_width;
-static bool     Set_end_marker;     // for wide lines
+static WPI_COLOUR   Set_color;
+static int          Set_fill_style;
+static int          Set_pen_style;
+static wl_style     Set_wl_style;
+static wl_width     Set_wl_width;
+static bool         Set_end_marker;     // for wide lines
 
-static bool     Save_style_on = FALSE;
-static int      Save_style;
+static bool         Save_style_on = FALSE;
+static int          Save_style;
 
-static HPEN             Old_pen;
-static HBRUSH           Old_brush;
+static HPEN         Old_pen;
+static HBRUSH       Old_brush;
 
 extern void _wsetendmarker(
 /*************************/
@@ -804,14 +804,12 @@ static void get_obj_settings(
 ) {
 
     switch( fill_type ) {
-
     case FILL_BORDER:           // border only: interior not touched (pen)
         *pen = _wpi_createpen( Set_pen_style, 1, Set_color );
         *brush = _wpi_createnullbrush();
         Old_pen = _wpi_selectpen( Win_dc, *pen );
         Old_brush = _wpi_selectbrush( Win_dc, *brush );
         break;
-
     case FILL_INTERIOR:         // interior only: border not touched (brush)
         /* Windows has a nasty bug. NULL_PEN generates a 'non-written'
            border. 'Width' = 0 doesn't help either. With NULL_PEN,
@@ -823,19 +821,21 @@ static void get_obj_settings(
         Old_pen = _wpi_selectpen( Win_dc, *pen );
         Old_brush = _wpi_selectbrush( Win_dc, *brush );
         break;
-
     case FILL_BORDER_CLEAR:             // border WITH interior erased to bkgd (pen)
         *pen = _wpi_createpen( Set_pen_style, 1, Set_color );
         *brush = cgr_make_brush( GetBkColor( Win_dc ), FILL_SOLID );
         Old_pen = _wpi_selectpen( Win_dc, *pen );
         Old_brush = _wpi_selectbrush( Win_dc, *brush );
         break;
-
     case FILL_BORDER_FILL:              // border and interior (pen & brush)
         *pen = _wpi_createpen( Set_pen_style, 1, Set_color );
         *brush = cgr_make_brush( Set_color, Set_fill_style );
         Old_pen = _wpi_selectpen( Win_dc, *pen );
         Old_brush = _wpi_selectbrush( Win_dc, *brush );
+        break;
+    default:
+        Old_pen = (HPEN)NULL;
+        Old_brush = (HBRUSH)NULL;
         break;
     }
 }
@@ -847,30 +847,31 @@ static void del_obj_settings(
     HPEN                pen,
     HBRUSH              brush
 ) {
-    if (Old_pen) {
+    if( Old_pen != (HPEN)NULL ) {
         _wpi_getoldpen( Win_dc, Old_pen );
+        Old_pen = (HPEN)NULL;
     }
 
-    if (Old_brush) {
+    if( Old_brush != (HBRUSH)NULL ) {
         _wpi_getoldbrush( Win_dc, Old_brush );
+        Old_brush = (HBRUSH)NULL;
     }
 
     switch( fill_type ) {
-
     case FILL_BORDER:           // border only: interior not touched (pen)
         _wpi_deletepen( pen );
         _wpi_deletenullbrush( brush );
         break;
-
     case FILL_INTERIOR:         // interior only: border not touched (brush)
         _wpi_deletenullpen( pen );
         _wpi_deletebrush( brush );
         break;
-
     case FILL_BORDER_CLEAR:             // border WITH interior erased to bkgd (pen)
     case FILL_BORDER_FILL:              // border and interior (pen & brush)
         _wpi_deletepen( pen );
         _wpi_deletebrush( brush );
+        break;
+    default:
         break;
     }
 }
