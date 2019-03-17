@@ -553,10 +553,8 @@ extern  wchar_t **__wargv;      /* vector of wide cmd line args */
 #endif
 :endsegment
 
-:segment LINUX | QNX
 :include alloca.sp
 
-:endsegment
 :include brk.sp
 
 typedef void (_WCCALLBACK *onexit_t)( void );
