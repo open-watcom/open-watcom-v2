@@ -187,7 +187,7 @@ extern gui_colour_set           DialColours;
 extern gui_colour_set           DialFrameColours;
 #endif
 
-extern gui_toolbar_struct       ToolBar[];
+extern gui_toolbar_items        tb_ToolBar;
 extern gui_menu_struct          PopupMenu[];
 extern gui_menu_struct          ModifyColour[];
 //extern gui_menu_struct          NewMainMenu[];

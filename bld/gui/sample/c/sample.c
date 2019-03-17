@@ -33,7 +33,6 @@
 #include <string.h>
 #include <stdlib.h>
 #include <stdio.h>
-#include <malloc.h>
 #include "sample.h"
 #include "dlgstat.h"
 #include "dlgdynam.h"
@@ -678,7 +677,7 @@ bool MainWndGUIEventProc( gui_window *gui, gui_event gui_ev, void *param )
         case MENU_FIXED_TOOLBAR :
         case MENU_FLOATING_TOOLBAR :
             if( GUICreateToolBar( gui, ( id == MENU_FIXED_TOOLBAR ), 0,
-                                  NUM_TOOLBAR_BUTTONS, ToolBar, true,
+                                  &tb_ToolBar, true,
                                   &ToolPlain, &ToolStandout ) ) {
                 SetFixedFloat( gui );
                 SetToolbarCreate( gui );

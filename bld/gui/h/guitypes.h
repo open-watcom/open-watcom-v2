@@ -34,6 +34,4 @@
 
 #define GUIEVENT( wnd, event, param )   ((*wnd->gui_call_back)(wnd, event, param))
 
-#define GUI_ARRAY_SIZE( x )             ( sizeof( x ) / sizeof( *x ) )
-
 #define UCHAR_VALUE( c )                (unsigned char)(c)

@@ -35,9 +35,11 @@
 #include "initmode.h"
 
 
-#define GUI_LAST_INTERNAL_MSG 255
+#define GUI_LAST_INTERNAL_MSG   255
 
-#define GUI_LAST_MENU_ID 10000
+#define GUI_LAST_MENU_ID        10000
+
+#define GUI_ARRAY_SIZE( x )     (sizeof( x ) / sizeof( *x ))
 
 typedef enum {
     GUI_NO_EVENT,
