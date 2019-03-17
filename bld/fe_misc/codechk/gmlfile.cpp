@@ -180,13 +180,4 @@ void JavaGMLFile::_loadNext()
             }
         }
     }
-
-
-
-
-
-
-};
-
-
-
+}
