@@ -57,5 +57,5 @@ typedef struct {
     PBDefInfo   *lastfunc;
 } SymbolList;
 
-void PrintPBDef( SymbolList *info );
-void CreateNonVisualObj( SymbolList *info );
+extern void     PrintPBDef( SymbolList *info );
+extern void     CreateNonVisualObj( SymbolList *info );

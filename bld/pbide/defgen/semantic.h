@@ -64,9 +64,8 @@ typedef struct {
     unsigned            ptrcnt;
 } FunctionInfo;
 
-void SemLine( char *fname, char *lineno );
-ParamInfo *SemCreateParam( TypeInfo *tinfo, char *name, int ptrcnt,
-                           int arraycnt );
-ModifierInfo *SemAddSpecifier( ModifierInfo *table, int tok );
-void SemFunction( ParamInfo *finfo );
-void DoOutput( void );
+extern void         SemLine( char *fname, char *lineno );
+extern ParamInfo    *SemCreateParam( TypeInfo *tinfo, char *name, int ptrcnt, int arraycnt );
+extern ModifierInfo *SemAddSpecifier( ModifierInfo *table, int tok );
+extern void         SemFunction( ParamInfo *finfo );
+extern void         DoOutput( void );

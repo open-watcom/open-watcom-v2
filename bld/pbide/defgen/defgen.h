@@ -48,6 +48,7 @@ typedef struct {
 extern CmdLineInfo      Config;
 extern BOOL             ErrorHasOccured;
 
-void ReportError( char *msg, ... );
-void DebugOut( char *msg, ... );
-void ReportWarning( char *msg, ... );
+extern void         ReportError( char *msg, ... );
+extern void         DebugOut( char *msg, ... );
+extern void         ReportWarning( char *msg, ... );
+extern int          yyparse( void );
