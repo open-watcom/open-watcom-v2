@@ -208,20 +208,19 @@ static void outlineRect( statwnd *sw, WPI_PRES pres, WPI_RECT *r )
     _wpi_cvth_pt( &pt, sw->wndHeight );
     _wpi_movetoex( pres, &pt, NULL );
 
-    oldpen = _wpi_selectobject( pres, penLight );
+    oldpen = _wpi_selectpen( pres, penLight );
     pt.x = right - 1;
     _wpi_lineto( pres, &pt );
     pt.y = _wpi_cvth_y( top, sw->wndHeight );
     _wpi_lineto( pres, &pt );
+    _wpi_getoldpen( pres, oldpen );
 
-    _wpi_selectobject( pres, penShade );
-
+    oldpen = _wpi_selectpen( pres, penShade );
     pt.x = left;
     _wpi_lineto( pres, &pt );
     pt.y = _wpi_cvth_y( bottom - 1, sw->wndHeight );
     _wpi_lineto( pres, &pt );
-
-    _wpi_selectobject( pres, oldpen );
+    _wpi_getoldpen( pres, oldpen );
 
 } /* outlineRect */
 
@@ -575,14 +574,14 @@ void StatusWndDraw3DBox( statwnd *sw, WPI_PRES pres )
     int         i;
     WPI_RECT    r;
 
-    old_pen = _wpi_selectobject( pres, penLight );
+    old_pen = _wpi_selectpen( pres, penLight );
     for( i = 0; i <= sw->numSections; i++ ) {
         getRect( sw, &r, i );
         outlineRect( sw, pres, &r );
         makeInsideRect( &r );
         _wpi_fillrect( pres, &r, colorButtonFace, brushButtonFace );
     }
-    _wpi_selectobject( pres, old_pen );
+    _wpi_getoldpen( pres, old_pen );
 
 } /* StatusWndDraw3DBox */
 
