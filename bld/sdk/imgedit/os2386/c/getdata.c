@@ -75,11 +75,11 @@ BITMAPINFO2 *GetXorBitmapInfo( img_node *node )
 
     GetBitmapInfoHeader( &bmih, node );
     memcpy( bmi, &bmih, sizeof(WPI_BITMAPINFOHEADER) );
-    oldbitmap = _wpi_selectobject( mempres, node->hxorbitmap );
+    oldbitmap = _wpi_selectbitmap( mempres, node->hxorbitmap );
 
     GpiQueryBitmapBits( mempres, 0, node->height, NULL, bmi );
 
-    _wpi_selectobject( mempres, oldbitmap );
+    _wpi_getoldbitmap( mempres, oldbitmap );
     _wpi_deletecompatiblepres( mempres, memdc );
     return( bmi );
 } /* GetXorBitmapInfo */
@@ -113,9 +113,9 @@ BITMAPINFO2 *GetAndBitmapInfo( img_node *node )
     bmih.cclrUsed = 2;
     memcpy( bmi, &bmih, sizeof(WPI_BITMAPINFOHEADER) );
 
-    oldbitmap = _wpi_selectobject( mempres, node->handbitmap );
+    oldbitmap = _wpi_selectbitmap( mempres, node->handbitmap );
     GpiQueryBitmapBits( mempres, 0, node->height, NULL, bmi );
-    _wpi_selectobject( mempres, oldbitmap );
+    _wpi_getoldbitmap( mempres, oldbitmap );
     _wpi_deletecompatiblepres( mempres, memdc );
 
     bmi->cbImage = BITS_TO_BYTES( node->bitcount, 2*node->height );

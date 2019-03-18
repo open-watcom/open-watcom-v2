@@ -168,10 +168,10 @@ void RedrawPrevClip( HWND hwnd )
     _wpi_torgbmode( pres );
     prevROP2 = _wpi_setrop2( pres, R2_XORPEN );
     blackbrush = _wpi_createsolidbrush( BLACK );
-    oldbrush = _wpi_selectobject( pres, blackbrush );
+    oldbrush = _wpi_selectbrush( pres, blackbrush );
 
     whitepen = _wpi_createpen( PS_SOLID, 0, WHITE );
-    oldpen = _wpi_selectobject( pres, whitepen );
+    oldpen = _wpi_selectpen( pres, whitepen );
 
     _wpi_getrectvalues( clipRect.rect, &left, &top, &right, &bottom );
 
@@ -183,12 +183,12 @@ void RedrawPrevClip( HWND hwnd )
     _wpi_rectangle( pres, left * pointsize.x, top * pointsize.y,
                     right * pointsize.x, bottom * pointsize.y );
 #endif
-    _wpi_selectobject( pres, oldpen );
-    _wpi_selectobject( pres, oldbrush );
+    _wpi_getoldpen( pres, oldpen );
+    _wpi_getoldbrush( pres, oldbrush );
     _wpi_setrop2( pres, prevROP2 );
     _wpi_releasepres( hwnd, pres );
-    _wpi_deleteobject( whitepen );
-    _wpi_deleteobject( blackbrush );
+    _wpi_deletepen( whitepen );
+    _wpi_deletebrush( blackbrush );
 
 } /* RedrawPrevClip */
 
@@ -649,9 +649,9 @@ void DragClipBitmap( HWND hwnd, WPI_POINT *newpt, WPI_POINT pointsize )
     }
     prevROP2 = _wpi_setrop2( pres, R2_XORPEN );
     hbrush = _wpi_createsolidbrush( CLR_BLACK );
-    holdbrush = _wpi_selectobject( pres, hbrush );
+    holdbrush = _wpi_selectbrush( pres, hbrush );
     hwhitepen = _wpi_createpen( PS_SOLID, 0, CLR_WHITE );
-    holdpen = _wpi_selectobject( pres, hwhitepen );
+    holdpen = _wpi_selectpen( pres, hwhitepen );
 
     if( !firstTime ) {
         _wpi_rectangle( pres, prevPoint.x * pointsize.x, prevPoint.y * pointsize.y,
@@ -663,10 +663,10 @@ void DragClipBitmap( HWND hwnd, WPI_POINT *newpt, WPI_POINT pointsize )
                           newpt->x * pointsize.x + dragWidth,
                           newpt->y * pointsize.y + dragHeight );
 
-    _wpi_selectobject( pres, holdpen );
-    _wpi_selectobject( pres, holdbrush );
-    _wpi_deleteobject( hwhitepen );
-    _wpi_deleteobject( hbrush );
+    _wpi_getoldpen( pres, holdpen );
+    _wpi_getoldbrush( pres, holdbrush );
+    _wpi_deletepen( hwhitepen );
+    _wpi_deletebrush( hbrush );
 
     _wpi_setrop2( pres, prevROP2 );
     _wpi_releasepres( hwnd, pres );

@@ -152,7 +152,7 @@ void BlowupImage( HWND hmdiwnd, WPI_PRES pres )
         new_pres = TRUE;
     }
     mempres = _wpi_createcompatiblepres( pres, Instance, &memdc );
-    oldbitmap = _wpi_selectobject( mempres, newbitmap );
+    oldbitmap = _wpi_selectbitmap( mempres, newbitmap );
 
     if( ImgedConfigInfo.grid_on ) {
         showGrid( hwnd, mempres );
@@ -163,7 +163,7 @@ void BlowupImage( HWND hmdiwnd, WPI_PRES pres )
         RedrawPrevClip( hwnd );   // Redraw if there was a clip region specified.
     }
 
-    _wpi_selectobject( mempres, oldbitmap );
+    _wpi_getoldbitmap( mempres, oldbitmap );
     _wpi_deletebitmap( newbitmap );
     _wpi_deletecompatiblepres( mempres, memdc );
 
@@ -257,7 +257,7 @@ static void showGrid( HWND hwnd, WPI_PRES mempres )
         psy = height / node->height;
 
         hblackpen = _wpi_createpen( PS_SOLID, 0, BLACK );
-        holdpen = _wpi_selectobject( mempres, hblackpen );
+        holdpen = _wpi_selectpen( mempres, hblackpen );
 
         _wpi_getrectvalues( rcclient, &left, &top, &right, &bottom );
 
@@ -274,8 +274,8 @@ static void showGrid( HWND hwnd, WPI_PRES mempres )
             _wpi_lineto( mempres, &endpt );
         }
 
-        _wpi_selectobject( mempres, holdpen );
-        _wpi_deleteobject( hblackpen );
+        _wpi_getoldpen( mempres, holdpen );
+        _wpi_deletepen( hblackpen );
     }
 
     pres = _wpi_getpres( hwnd );
@@ -379,9 +379,9 @@ void DrawSinglePoint( HWND hwnd, WPI_POINT *pt, short mousebutton )
     _wpi_torgbmode( pres );
     dithered = GetSelectedColor( mousebutton, &selected_color, &type );
     colorbrush = _wpi_createsolidbrush( selected_color );
-    oldbrush = _wpi_selectobject( pres, colorbrush );
+    oldbrush = _wpi_selectbrush( pres, colorbrush );
     colorpen = _wpi_createpen( PS_SOLID, 0, selected_color );
-    oldpen = _wpi_selectobject( pres, colorpen );
+    oldpen = _wpi_selectpen( pres, colorpen );
 
     if( gridvisible && toolType == IMGED_BRUSH ) {
         for( i = 0; i < brushsize; i++ ) {
@@ -394,12 +394,12 @@ void DrawSinglePoint( HWND hwnd, WPI_POINT *pt, short mousebutton )
         _wpi_patblt( pres, truncated_x, truncated_y, width, height, PATCOPY );
     }
 
-    _wpi_selectobject( pres, oldbrush );
-    _wpi_selectobject( pres, oldpen );
+    _wpi_getoldbrush( pres, oldbrush );
+    _wpi_getoldpen( pres, oldpen );
     _wpi_releasepres( hwnd, pres );
 
-    _wpi_deleteobject( colorbrush );
-    _wpi_deleteobject( colorpen );
+    _wpi_deletebrush( colorbrush );
+    _wpi_deletepen( colorpen );
 
     /*
      * Draw the points in the view window.
@@ -510,9 +510,9 @@ void CALLBACK DrawPt( int xpos, int ypos, WPI_PARAM2 lparam )
     dithered = GetSelectedColor( mousebutton, &selected_color, &type );
 
     colorbrush = _wpi_createsolidbrush( selected_color );
-    oldbrush = _wpi_selectobject( pres, colorbrush );
+    oldbrush = _wpi_selectbrush( pres, colorbrush );
     colorpen = _wpi_createpen( PS_SOLID, 0, selected_color );
-    oldpen = _wpi_selectobject( pres, colorpen );
+    oldpen = _wpi_selectpen( pres, colorpen );
 
     if( gridvisible && toolType == IMGED_BRUSH ) {
         for( i = 0; i < brushsize; i++ ) {
@@ -525,12 +525,12 @@ void CALLBACK DrawPt( int xpos, int ypos, WPI_PARAM2 lparam )
         _wpi_patblt( pres, area_x, area_y, width, height, PATCOPY );
     }
 
-    _wpi_selectobject( pres, oldbrush );
-    _wpi_selectobject( pres, oldpen );
+    _wpi_getoldbrush( pres, oldbrush );
+    _wpi_getoldpen( pres, oldpen );
     _wpi_releasepres( hwnd, pres );
 
-    _wpi_deleteobject( colorbrush );
-    _wpi_deleteobject( colorpen );
+    _wpi_deletebrush( colorbrush );
+    _wpi_deletepen( colorpen );
 
     pt.x = area_x / pointSize.x;
     pt.y = area_y / pointSize.y;
@@ -646,7 +646,7 @@ void OutlineLine( HWND hwnd, WPI_POINT *start_pt, WPI_POINT *end_pt,
     pres = _wpi_getpres( hwnd );
     _wpi_torgbmode( pres );
     hwhitepen = _wpi_createpen( PS_SOLID, 0, WHITE );
-    holdpen = _wpi_selectobject( pres, hwhitepen );
+    holdpen = _wpi_selectpen( pres, hwhitepen );
 
     prevROP2 = _wpi_setrop2( pres, R2_XORPEN );
 
@@ -662,8 +662,8 @@ void OutlineLine( HWND hwnd, WPI_POINT *start_pt, WPI_POINT *end_pt,
     _wpi_lineto( pres, &endpt );
 
     _wpi_setrop2( pres, prevROP2 );
-    _wpi_selectobject( pres, holdpen );
-    _wpi_deleteobject( hwhitepen );
+    _wpi_getoldpen( pres, holdpen );
+    _wpi_deletepen( hwhitepen );
 
     _wpi_releasepres( hwnd, pres );
 
@@ -903,8 +903,8 @@ void OutlineRegion( HWND hwnd, WPI_POINT *start_pt, WPI_POINT *end_pt,
     hbrush = _wpi_createsolidbrush( BLACK );
     hwhitepen = _wpi_createpen( PS_SOLID, 0, WHITE );
 
-    holdbrush = _wpi_selectobject( pres, hbrush );
-    holdpen = _wpi_selectobject( pres, hwhitepen );
+    holdbrush = _wpi_selectbrush( pres, hbrush );
+    holdpen = _wpi_selectpen( pres, hwhitepen );
 
     if( !firsttime ) {
         if( toolType == IMGED_CIRCLEO || toolType == IMGED_CIRCLEF ) {
@@ -919,11 +919,11 @@ void OutlineRegion( HWND hwnd, WPI_POINT *start_pt, WPI_POINT *end_pt,
     } else {
         _wpi_rectangle( pres, topleft.x, topleft.y, bottomright.x, bottomright.y );
     }
-    _wpi_selectobject( pres, holdpen );
-    _wpi_selectobject( pres, holdbrush );
+    _wpi_getoldpen( pres, holdpen );
+    _wpi_getoldbrush( pres, holdbrush );
 
-    _wpi_deleteobject( hwhitepen );
-    _wpi_deleteobject( hbrush );
+    _wpi_deletepen( hwhitepen );
+    _wpi_deletebrush( hbrush );
     _wpi_setrop2( pres, prevROP2 );
     _wpi_releasepres( hwnd, pres );
 

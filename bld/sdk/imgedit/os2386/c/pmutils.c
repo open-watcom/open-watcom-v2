@@ -69,16 +69,16 @@ HBITMAP CreateInverseBitmap( HBITMAP andbitmap, HBITMAP xorbitmap )
     _wpi_getbitmapdim( xorbitmap, &width, &height );
     new_bitmap = _wpi_createbitmap( width, height, 1, 1, NULL );
 
-    oldsrc = _wpi_selectobject( srcpres, xorbitmap );
-    olddest = _wpi_selectobject( destpres, new_bitmap );
+    oldsrc = _wpi_selectbitmap( srcpres, xorbitmap );
+    olddest = _wpi_selectbitmap( destpres, new_bitmap );
 
     _wpi_bitblt( destpres, 0, 0, width, height, srcpres, 0, 0, SRCCOPY );
-    _wpi_selectobject( srcpres, oldsrc );
-    oldsrc = _wpi_selectobject( srcpres, andbitmap );
+    _wpi_selectbitmap( srcpres, oldsrc );
+    oldsrc = _wpi_selectbitmap( srcpres, andbitmap );
 
     _wpi_bitblt( destpres, 0, 0, width, height, srcpres, 0, 0, SRCAND );
-    _wpi_selectobject( srcpres, oldsrc );
-    _wpi_selectobject( destpres, olddest );
+    _wpi_selectbitmap( srcpres, oldsrc );
+    _wpi_selectbitmap( destpres, olddest );
 
     _wpi_deletecompatiblepres( srcpres, srcdc );
     _wpi_deletecompatiblepres( destpres, destdc );
@@ -126,16 +126,16 @@ HBITMAP CreateColourBitmap( HBITMAP andbitmap, HBITMAP xorbitmap )
 
     _wpi_getbitmapparms(xorbitmap, &width, &height, &planes, NULL, &bitspixel);
     new_bitmap = _wpi_createbitmap( width, height, planes, bitspixel, NULL );
-    oldsrc = _wpi_selectobject( srcpres, andbitmap );
-    olddest = _wpi_selectobject( destpres, new_bitmap );
+    oldsrc = _wpi_selectbitmap( srcpres, andbitmap );
+    olddest = _wpi_selectbitmap( destpres, new_bitmap );
 
     _wpi_bitblt( destpres, 0, 0, width, height, srcpres, 0, 0, SRCCOPY );
-    _wpi_selectobject( srcpres, oldsrc );
-    oldsrc = _wpi_selectobject( srcpres, xorbitmap );
+    _wpi_selectbitmap( srcpres, oldsrc );
+    oldsrc = _wpi_selectbitmap( srcpres, xorbitmap );
 
     _wpi_bitblt( destpres, 0, 0, width, height, srcpres, 0, 0, SRCAND );
-    _wpi_selectobject( srcpres, oldsrc );
-    _wpi_selectobject( destpres, olddest );
+    _wpi_selectbitmap( srcpres, oldsrc );
+    _wpi_selectbitmap( destpres, olddest );
 
     _wpi_deletecompatiblepres( srcpres, srcdc );
     _wpi_deletecompatiblepres( destpres, destdc );
@@ -168,17 +168,17 @@ void InitXorAndBitmaps( img_node *node )
 
     _wpi_torgbmode( mempres );
 
-    oldbitmap = _wpi_selectobject( mempres, node->hxorbitmap );
+    oldbitmap = _wpi_selectbitmap( mempres, node->hxorbitmap );
     _wpi_patblt( mempres, 0, 0, node->width, node->height, WHITENESS );
-    _wpi_selectobject( mempres, oldbitmap );
+    _wpi_selectbitmap( mempres, oldbitmap );
 
     bmih.cBitCount = (USHORT)1;
     node->handbitmap = _wpi_createbitmap( node->width, node->height, 1, 1, NULL );
     _wpi_releasepres( HWND_DESKTOP, pres );
 
-    oldbitmap = _wpi_selectobject( mempres, node->handbitmap );
+    oldbitmap = _wpi_selectbitmap( mempres, node->handbitmap );
     _wpi_patblt( mempres, 0, 0, node->width, node->height, BLACKNESS );
-    _wpi_selectobject( mempres, oldbitmap );
+    _wpi_selectbitmap( mempres, oldbitmap );
 
     _wpi_deletecompatiblepres( mempres, hdc );
 } /* InitXorAndBitmaps */

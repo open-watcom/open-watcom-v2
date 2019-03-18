@@ -68,7 +68,7 @@ static void paintPalette( HWND hwnd )
 #else
     hgraypen = _wpi_createpen( PS_SOLID, 0, DKGRAY );
 #endif
-    holdpen = _wpi_selectobject( hdc, hgraypen );
+    holdpen = _wpi_selectpen( hdc, hgraypen );
     pt.x = 2;
     pt.y = 50;
     _wpi_cvth_pt( &pt, height );
@@ -80,23 +80,23 @@ static void paintPalette( HWND hwnd )
     pt.x = 90;
     _wpi_lineto( hdc, &pt );
 
-    _wpi_selectobject( hdc, holdpen );
-    _wpi_deleteobject( hgraypen );
+    _wpi_getoldpen( hdc, holdpen );
+    _wpi_deletepen( hgraypen );
 
 #if defined( __NT__ )
     hwhitepen = _wpi_createpen( PS_SOLID, 0, GetSysColor( COLOR_BTNHIGHLIGHT ) );
 #else
     hwhitepen = _wpi_createpen( PS_SOLID, 0, WHITE );
 #endif
-    holdpen = _wpi_selectobject( hdc, hwhitepen );
+    holdpen = _wpi_selectpen( hdc, hwhitepen );
     pt.y = 50;
     _wpi_cvth_pt( &pt, height );
     _wpi_lineto( hdc, &pt );
     pt.x = 2;
     _wpi_lineto( hdc, &pt );
 
-    _wpi_selectobject( hdc, holdpen );
-    _wpi_deleteobject( hwhitepen );
+    _wpi_getoldpen( hdc, holdpen );
+    _wpi_deletepen( hwhitepen );
     _wpi_endpaint( hwnd, hdc, &rect );
 
 } /* paintPalette */
@@ -134,7 +134,7 @@ WPI_MRESULT CALLBACK ColorPalWinProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 mp1, WP
         break;
 
     case WM_PAINT:
-        _wpi_deleteobject( hbrush );
+        _wpi_deletebrush( hbrush );
         SetBkColor( (HDC)mp1, GetSysColor( COLOR_BTNFACE ) );
         SetTextColor( (HDC)mp1, GetSysColor( COLOR_BTNTEXT ) );
         hbrush = _wpi_createsolidbrush( GetSysColor( COLOR_BTNFACE ) );
@@ -146,7 +146,7 @@ WPI_MRESULT CALLBACK ColorPalWinProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 mp1, WP
     case WM_SYSCOLORCHANGE:
     case WM_CTLCOLORSTATIC:
     case WM_CTLCOLORBTN:
-        _wpi_deleteobject( hbrush );
+        _wpi_deletebrush( hbrush );
         hbrush = _wpi_createsolidbrush( GetSysColor( COLOR_BTNFACE ) );
         SetBkColor( (HDC)mp1, GetSysColor( COLOR_BTNFACE ) );
         SetTextColor( (HDC)mp1, GetSysColor( COLOR_BTNTEXT ) );
@@ -174,7 +174,7 @@ WPI_MRESULT CALLBACK ColorPalWinProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 mp1, WP
         break;
 
     case WM_DESTROY:
-        _wpi_deleteobject( hbrush );
+        _wpi_deletebrush( hbrush );
         break;
 
     default:

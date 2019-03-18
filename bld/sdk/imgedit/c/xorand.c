@@ -58,10 +58,10 @@ void MakeBitmap( img_node *node, BOOL isnew )
         _wpi_releasepres( HWND_DESKTOP, pres );
 
         _wpi_torgbmode( mempres );
-        oldbitmap = _wpi_selectobject( mempres, node->handbitmap );
+        oldbitmap = _wpi_selectbitmap( mempres, node->handbitmap );
         _wpi_patblt( mempres, 0, 0, node->width, node->height, BLACKNESS );
 
-        _wpi_selectobject( mempres, oldbitmap );
+        _wpi_getoldbitmap( mempres, oldbitmap );
         _wpi_deletecompatiblepres( mempres, hdc );
     }
 
@@ -104,16 +104,16 @@ void LineXorAnd( COLORREF xorcolor, COLORREF andcolor,
 
     _wpi_torgbmode( mempres );
     hpen = _wpi_createpen( PS_SOLID, 0, xorcolor );
-    oldpen = _wpi_selectobject( mempres, hpen );
-    oldbitmap = _wpi_selectobject( mempres, activeImage->hxorbitmap );
+    oldpen = _wpi_selectpen( mempres, hpen );
+    oldbitmap = _wpi_selectbitmap( mempres, activeImage->hxorbitmap );
 
     _wpi_movetoex( mempres, startpt, NULL );
     _wpi_lineto( mempres, endpt );
     _wpi_setpixel( mempres, endpt->x, endpt->y, xorcolor );
 
-    _wpi_selectobject( mempres, oldpen );
-    _wpi_deleteobject( hpen );
-    _wpi_selectobject( mempres, oldbitmap );
+    _wpi_getoldpen( mempres, oldpen );
+    _wpi_deletepen( hpen );
+    _wpi_getoldbitmap( mempres, oldbitmap );
 
     if( activeImage->imgtype == BITMAP_IMG ) {
         _wpi_deletecompatiblepres( mempres, memdc );
@@ -121,16 +121,16 @@ void LineXorAnd( COLORREF xorcolor, COLORREF andcolor,
     }
 
     hpen = _wpi_createpen( PS_SOLID, 0, andcolor );
-    oldpen = _wpi_selectobject( mempres, hpen );
-    oldbitmap = _wpi_selectobject( mempres, activeImage->handbitmap );
+    oldpen = _wpi_selectpen( mempres, hpen );
+    oldbitmap = _wpi_selectbitmap( mempres, activeImage->handbitmap );
 
     _wpi_movetoex( mempres, startpt, NULL );
     _wpi_lineto( mempres, endpt );
     _wpi_setpixel( mempres, endpt->x, endpt->y, andcolor );
 
-    _wpi_selectobject( mempres, oldpen );
-    _wpi_deleteobject( hpen );
-    _wpi_selectobject( mempres, oldbitmap );
+    _wpi_getoldpen( mempres, oldpen );
+    _wpi_deletepen( hpen );
+    _wpi_getoldbitmap( mempres, oldbitmap );
 //    _wpi_deletecompatiblepres( mempres, anddc );
 
 } /* LineXorAnd */
@@ -162,8 +162,8 @@ void RegionXorAnd( COLORREF xorcolor, COLORREF andcolor,
     _wpi_torgbmode( mempres );
 
     hpen = _wpi_createpen( PS_SOLID, 0, xorcolor );
-    oldpen = _wpi_selectobject( mempres, hpen );
-    oldbitmap = _wpi_selectobject( mempres, activeImage->hxorbitmap );
+    oldpen = _wpi_selectpen( mempres, hpen );
+    oldbitmap = _wpi_selectbitmap( mempres, activeImage->hxorbitmap );
 
     if( fFillRgn ) {
         hbrush = _wpi_createsolidbrush( xorcolor );
@@ -171,7 +171,7 @@ void RegionXorAnd( COLORREF xorcolor, COLORREF andcolor,
         hbrush = _wpi_createnullbrush();
     }
 
-    oldbrush = _wpi_selectobject( mempres, hbrush );
+    oldbrush = _wpi_selectbrush( mempres, hbrush );
     _wpi_getintrectvalues( *r, &left, &top, &right, &bottom );
     if( is_rect ) {
         _wpi_rectangle( mempres, left, top, right, bottom );
@@ -179,12 +179,12 @@ void RegionXorAnd( COLORREF xorcolor, COLORREF andcolor,
         _wpi_ellipse( mempres, left, top, right, bottom );
     }
 
-    _wpi_selectobject( mempres, oldpen );
+    _wpi_getoldpen( mempres, oldpen );
     _wpi_deletepen( hpen );
-    _wpi_selectobject( mempres, oldbrush );
-    _wpi_selectobject( mempres, oldbitmap );
+    _wpi_getoldbrush( mempres, oldbrush );
+    _wpi_getoldbitmap( mempres, oldbitmap );
     if( fFillRgn ) {
-        _wpi_deleteobject( hbrush );
+        _wpi_deletebrush( hbrush );
     } else {
         _wpi_deletenullbrush( hbrush );
     }
@@ -195,27 +195,27 @@ void RegionXorAnd( COLORREF xorcolor, COLORREF andcolor,
     }
 
     hpen = _wpi_createpen( PS_SOLID, 0, andcolor );
-    oldpen = _wpi_selectobject( mempres, hpen );
-    oldbitmap = _wpi_selectobject( mempres, activeImage->handbitmap );
+    oldpen = _wpi_selectpen( mempres, hpen );
+    oldbitmap = _wpi_selectbitmap( mempres, activeImage->handbitmap );
 
     if( fFillRgn ) {
         hbrush = _wpi_createsolidbrush( andcolor );
     } else {
         hbrush = _wpi_createnullbrush();
     }
-    oldbrush = _wpi_selectobject( mempres, hbrush );
+    oldbrush = _wpi_selectbrush( mempres, hbrush );
 
     if( is_rect ) {
         _wpi_rectangle( mempres, left, top, right, bottom );
     } else {
         _wpi_ellipse( mempres, left, top, right, bottom );
     }
-    _wpi_selectobject( mempres, oldpen );
+    _wpi_getoldpen( mempres, oldpen );
     _wpi_deletepen( hpen );
-    _wpi_selectobject( mempres, oldbrush );
-    _wpi_selectobject( mempres, oldbitmap );
+    _wpi_getoldbrush( mempres, oldbrush );
+    _wpi_getoldbitmap( mempres, oldbitmap );
     if( fFillRgn ) {
-        _wpi_deleteobject( hbrush );
+        _wpi_deletebrush( hbrush );
     } else {
         _wpi_deletenullbrush( hbrush );
     }

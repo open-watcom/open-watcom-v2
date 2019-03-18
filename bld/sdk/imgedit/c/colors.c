@@ -366,19 +366,19 @@ void DisplayColorBox( WPI_PRES pres, palette_box *box )
     int                 height;
 
     blackpen = _wpi_createpen( PS_SOLID, 0, BLACK );
-    holdpen = _wpi_selectobject( pres, blackpen );
+    holdpen = _wpi_selectpen( pres, blackpen );
     hcolorbrush = _wpi_createsolidbrush( box->color );
-    holdbrush = _wpi_selectobject( pres, hcolorbrush );
+    holdbrush = _wpi_selectbrush( pres, hcolorbrush );
 
     height = 2 * SQR_SIZE + 1;
     top = _wpi_cvth_y( box->box.top, height );
     bottom = _wpi_cvth_y( box->box.bottom, height );
     _wpi_rectangle( pres, box->box.left, top, box->box.right, bottom );
 
-    _wpi_selectobject( pres, holdbrush );
-    _wpi_deleteobject( hcolorbrush );
-    _wpi_selectobject( pres, holdpen );
-    _wpi_deleteobject( blackpen );
+    _wpi_getoldbrush( pres, holdbrush );
+    _wpi_deletebrush( hcolorbrush );
+    _wpi_getoldpen( pres, holdpen );
+    _wpi_deletepen( blackpen );
 
 } /* DisplayColorBox */
 
@@ -861,8 +861,8 @@ void InitPaletteBitmaps( HWND hwnd, HBITMAP *colorbitmap, HBITMAP *monobitmap )
     _wpi_torgbmode( mempres );
 
     blackpen = _wpi_createpen( PS_SOLID, 0, BLACK );
-    oldpen = _wpi_selectobject( mempres, blackpen );
-    oldbitmap = _wpi_selectobject( mempres, *colorbitmap );
+    oldpen = _wpi_selectpen( mempres, blackpen );
+    oldbitmap = _wpi_selectbitmap( mempres, *colorbitmap );
 
     /*
      * PM NOTE: All box coordinates are relative to the window's origin
@@ -874,63 +874,63 @@ void InitPaletteBitmaps( HWND hwnd, HBITMAP *colorbitmap, HBITMAP *monobitmap )
         color = RGB( palette[COLOR_16][i].rgbRed, palette[COLOR_16][i].rgbGreen,
                      palette[COLOR_16][i].rgbBlue );
         colorbrush = _wpi_createsolidbrush( color );
-        oldbrush = _wpi_selectobject( mempres, colorbrush );
+        oldbrush = _wpi_selectbrush( mempres, colorbrush );
 
         top = _wpi_cvth_y( 0, height );
         bottom = _wpi_cvth_y( SQR_SIZE + 1, height );
 
         _wpi_rectangle( mempres, left_sqr, top, left_sqr + SQR_SIZE + 1, bottom );
-        _wpi_selectobject( mempres, oldbrush );
-        _wpi_deleteobject( colorbrush );
+        _wpi_getoldbrush( mempres, oldbrush );
+        _wpi_deletebrush( colorbrush );
         color = RGB( palette[COLOR_16][i + 1].rgbRed, palette[COLOR_16][i + 1].rgbGreen,
                      palette[COLOR_16][i + 1].rgbBlue );
         colorbrush = _wpi_createsolidbrush( color );
-        oldbrush = _wpi_selectobject( mempres, colorbrush );
+        oldbrush = _wpi_selectbrush( mempres, colorbrush );
 
         top = _wpi_cvth_y( SQR_SIZE, height );
         bottom = _wpi_cvth_y( 2 * SQR_SIZE + 1, height );
 
         _wpi_rectangle( mempres, left_sqr, top, left_sqr + SQR_SIZE + 1, bottom );
-        _wpi_selectobject( mempres, oldbrush );
-        _wpi_deleteobject( colorbrush );
+        _wpi_getoldbrush( mempres, oldbrush );
+        _wpi_deletebrush( colorbrush );
 
         left_sqr += SQR_SIZE;
     }
 
-    _wpi_selectobject( mempres, oldbitmap );
-    oldbitmap = _wpi_selectobject( mempres, *monobitmap );
+    _wpi_getoldbitmap( mempres, oldbitmap );
+    oldbitmap = _wpi_selectbitmap( mempres, *monobitmap );
 
     left_sqr = 0;
     for( i = 0; i < PALETTE_SIZE; i += 2 ) {
         color = RGB( palette[COLOR_2][i].rgbRed, palette[COLOR_2][i].rgbGreen,
                      palette[COLOR_2][i].rgbBlue );
         colorbrush = _wpi_createsolidbrush( color );
-        oldbrush = _wpi_selectobject( mempres, colorbrush );
+        oldbrush = _wpi_selectbrush( mempres, colorbrush );
 
         top = _wpi_cvth_y( 0, height );
         bottom = _wpi_cvth_y( SQR_SIZE + 1, height );
 
         _wpi_rectangle( mempres, left_sqr, top, left_sqr + SQR_SIZE + 1, bottom );
-        _wpi_selectobject( mempres, oldbrush );
-        _wpi_deleteobject( colorbrush );
+        _wpi_getoldbrush( mempres, oldbrush );
+        _wpi_deletebrush( colorbrush );
 
         color = RGB( palette[COLOR_2][i + 1].rgbRed, palette[COLOR_2][i + 1].rgbGreen,
                      palette[COLOR_2][i + 1].rgbBlue );
         colorbrush = _wpi_createsolidbrush( color );
-        oldbrush = _wpi_selectobject( mempres, colorbrush );
+        oldbrush = _wpi_selectbrush( mempres, colorbrush );
 
         top = _wpi_cvth_y( SQR_SIZE, height );
         bottom = _wpi_cvth_y( 2 * SQR_SIZE + 1, height );
 
         _wpi_rectangle( mempres, left_sqr, top, left_sqr + SQR_SIZE + 1, bottom );
-        _wpi_selectobject( mempres, oldbrush );
-        _wpi_deleteobject( colorbrush );
+        _wpi_getoldbrush( mempres, oldbrush );
+        _wpi_deletebrush( colorbrush );
 
         left_sqr += SQR_SIZE;
     }
-    _wpi_selectobject( mempres, oldbitmap );
-    _wpi_selectobject( mempres, oldpen );
+    _wpi_getoldbitmap( mempres, oldbitmap );
+    _wpi_getoldpen( mempres, oldpen );
     _wpi_deletecompatiblepres( mempres, hdc );
-    _wpi_deleteobject( blackpen );
+    _wpi_deletepen( blackpen );
 
 } /* InitPaletteBitmaps */

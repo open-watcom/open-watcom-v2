@@ -62,17 +62,15 @@ static void paintCurrent( HWND hwnd )
     mempres = _wpi_createcompatiblepres( pres, Instance, &hdc );
     _wpi_torgbmode( pres );
     _wpi_torgbmode( mempres );
-    oldbitmap = _wpi_selectobject( mempres, lButton.bitmap );
+    oldbitmap = _wpi_selectbitmap( mempres, lButton.bitmap );
 
-    _wpi_bitblt( pres, 0, 0, CUR_SQR_SIZE + 1, 2 * CUR_SQR_SIZE + 1, mempres,
-                 0, 0, SRCCOPY );
-    _wpi_selectobject( mempres, oldbitmap );
-    oldbitmap = _wpi_selectobject( mempres, rButton.bitmap );
+    _wpi_bitblt( pres, 0, 0, CUR_SQR_SIZE + 1, 2 * CUR_SQR_SIZE + 1, mempres, 0, 0, SRCCOPY );
+    _wpi_getoldbitmap( mempres, oldbitmap );
+    oldbitmap = _wpi_selectbitmap( mempres, rButton.bitmap );
 
-    _wpi_bitblt( pres, CUR_RCOL_X - 1, 0, CUR_SQR_SIZE + 1, 2 * CUR_SQR_SIZE + 1,
-                 mempres, 0, 0, SRCCOPY );
+    _wpi_bitblt( pres, CUR_RCOL_X - 1, 0, CUR_SQR_SIZE + 1, 2 * CUR_SQR_SIZE + 1, mempres, 0, 0, SRCCOPY );
 
-    _wpi_selectobject( mempres, oldbitmap );
+    _wpi_getoldbitmap( mempres, oldbitmap );
     _wpi_deletecompatiblepres( mempres, hdc );
 
     _wpi_setbackmode( pres, TRANSPARENT );
@@ -177,31 +175,31 @@ void SetColor( int mousebutton, COLORREF color, COLORREF solid, wie_clrtype type
             }
             mempres = _wpi_createcompatiblepres( pres, Instance, &hdc );
             _wpi_torgbmode( mempres );
-            oldbitmap = _wpi_selectobject( mempres, lButton.bitmap );
+            oldbitmap = _wpi_selectbitmap( mempres, lButton.bitmap );
             _wpi_releasepres( HWND_DESKTOP, pres );
 
-            oldpen = _wpi_selectobject( mempres, blackpen );
+            oldpen = _wpi_selectpen( mempres, blackpen );
             brush = _wpi_createsolidbrush( solid );
-            oldbrush = _wpi_selectobject( mempres, brush );
+            oldbrush = _wpi_selectbrush( mempres, brush );
 
             top = _wpi_cvth_y( 0, currentHeight );
             bottom = _wpi_cvth_y( CUR_SQR_SIZE + 1, currentHeight );
 
             _wpi_rectangle( mempres, 0, top, CUR_SQR_SIZE + 1, bottom );
-            _wpi_selectobject( mempres, oldbrush );
-            _wpi_deleteobject( brush );
+            _wpi_getoldbrush( mempres, oldbrush );
+            _wpi_deletebrush( brush );
 
             brush = _wpi_createsolidbrush( color );
-            oldbrush = _wpi_selectobject( mempres, brush );
+            oldbrush = _wpi_selectbrush( mempres, brush );
 
             top = _wpi_cvth_y( CUR_SQR_SIZE, currentHeight );
             bottom = _wpi_cvth_y( 2 * CUR_SQR_SIZE + 1, currentHeight );
 
             _wpi_rectangle( mempres, 0, top, CUR_SQR_SIZE + 1, bottom );
-            _wpi_selectobject( mempres, oldbrush );
-            _wpi_deleteobject( brush );
-            _wpi_selectobject( mempres, oldbitmap );
-            _wpi_selectobject( mempres, oldpen );
+            _wpi_getoldbrush( mempres, oldbrush );
+            _wpi_deletebrush( brush );
+            _wpi_getoldbitmap( mempres, oldbitmap );
+            _wpi_getoldpen( mempres, oldpen );
             _wpi_deletecompatiblepres( mempres, hdc );
         }
     } else {
@@ -221,33 +219,33 @@ void SetColor( int mousebutton, COLORREF color, COLORREF solid, wie_clrtype type
             mempres = _wpi_createcompatiblepres( pres, Instance, &hdc );
             _wpi_torgbmode( mempres );
 
-            oldbitmap = _wpi_selectobject( mempres, rButton.bitmap );
+            oldbitmap = _wpi_selectbitmap( mempres, rButton.bitmap );
             _wpi_releasepres( HWND_DESKTOP, pres );
-            oldpen = _wpi_selectobject( mempres, blackpen );
+            oldpen = _wpi_selectpen( mempres, blackpen );
             brush = _wpi_createsolidbrush( solid );
-            oldbrush = _wpi_selectobject( mempres, brush );
+            oldbrush = _wpi_selectbrush( mempres, brush );
 
             top = _wpi_cvth_y( 0, currentHeight );
             bottom = _wpi_cvth_y( CUR_SQR_SIZE + 1, currentHeight );
             _wpi_rectangle( mempres, 0, top, CUR_SQR_SIZE + 1, bottom );
-            _wpi_selectobject( mempres, oldbrush );
-            _wpi_deleteobject( brush );
+            _wpi_getoldbrush( mempres, oldbrush );
+            _wpi_deletebrush( brush );
 
             brush = _wpi_createsolidbrush( color );
-            oldbrush = _wpi_selectobject( mempres, brush );
+            oldbrush = _wpi_selectbrush( mempres, brush );
 
             top = _wpi_cvth_y( CUR_SQR_SIZE, currentHeight );
             bottom = _wpi_cvth_y( 2 * CUR_SQR_SIZE + 1, currentHeight );
 
             _wpi_rectangle( mempres, 0, top, CUR_SQR_SIZE + 1, bottom );
-            _wpi_selectobject( mempres, oldbrush );
-            _wpi_deleteobject( brush );
-            _wpi_selectobject( mempres, oldbitmap );
-            _wpi_selectobject( mempres, oldpen );
+            _wpi_getoldbrush( mempres, oldbrush );
+            _wpi_deletebrush( brush );
+            _wpi_getoldbitmap( mempres, oldbitmap );
+            _wpi_getoldpen( mempres, oldpen );
             _wpi_deletecompatiblepres( mempres, hdc );
         }
     }
-    _wpi_deleteobject( blackpen );
+    _wpi_deletepen( blackpen );
     InvalidateRect( hCurrentWnd, NULL, TRUE );
 
 } /* SetColor */
@@ -353,13 +351,13 @@ void SetCurrentNumColors( int color_count )
             mempres = _wpi_createcompatiblepres( pres, Instance, &memdc );
             _wpi_torgbmode( mempres );
 
-            oldbitmap = _wpi_selectobject( mempres, lButton.bitmap );
+            oldbitmap = _wpi_selectbitmap( mempres, lButton.bitmap );
             _wpi_patblt( mempres, 0, 0, CUR_SQR_SIZE + 1, 2 * CUR_SQR_SIZE + 1, BLACKNESS );
-            _wpi_selectobject( mempres, oldbitmap );
+            _wpi_getoldbitmap( mempres, oldbitmap );
 
-            oldbitmap = _wpi_selectobject( mempres, rButton.bitmap );
+            oldbitmap = _wpi_selectbitmap( mempres, rButton.bitmap );
             _wpi_patblt( mempres, 0, 0, CUR_SQR_SIZE + 1, 2 * CUR_SQR_SIZE + 1, WHITENESS );
-            _wpi_selectobject( mempres, oldbitmap );
+            _wpi_getoldbitmap( mempres, oldbitmap );
             _wpi_deletecompatiblepres( mempres, memdc );
             firstTime = false;
         }

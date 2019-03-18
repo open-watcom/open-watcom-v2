@@ -87,21 +87,21 @@ HBITMAP CreateViewBitmap( img_node *mdi_node )
 #ifdef __OS2_PM__
     _wpi_preparemono( mempres, BLACK, bkcolor );
 #endif
-    oldbitmap = _wpi_selectobject( mempres, newbitmap );
+    oldbitmap = _wpi_selectbitmap( mempres, newbitmap );
 
     brush = _wpi_createsolidbrush( bkcolor );
-    oldbrush = _wpi_selectobject( mempres, brush );
+    oldbrush = _wpi_selectbrush( mempres, brush );
 
     _wpi_patblt( mempres, 0, 0, node->width, node->height, PATCOPY );
-    _wpi_selectobject( mempres, oldbrush );
+    _wpi_selectbrush( mempres, oldbrush );
     _wpi_deletebrush( brush );
 
     GetFreeHandPresentationSpaces( NULL, &freehandpres, NULL );
     if( freehandpres == (WPI_PRES)NULL ) {
-        oldxorandbitmap = _wpi_selectobject( xorandpres, node->handbitmap );
+        oldxorandbitmap = _wpi_selectbitmap( xorandpres, node->handbitmap );
         _wpi_bitblt( mempres, 0, 0, node->width, node->height,
                      xorandpres, 0, 0, SRCAND );
-        _wpi_selectobject( xorandpres, oldxorandbitmap );
+        _wpi_selectbitmap( xorandpres, oldxorandbitmap );
     } else {
         _wpi_bitblt( mempres, 0, 0, node->width, node->height,
                      freehandpres, 0, 0, SRCAND );
@@ -109,17 +109,17 @@ HBITMAP CreateViewBitmap( img_node *mdi_node )
 
     GetFreeHandPresentationSpaces( NULL, NULL, &freehandpres );
     if( freehandpres == (WPI_PRES)NULL ) {
-        oldxorandbitmap = _wpi_selectobject( xorandpres, node->hxorbitmap );
+        oldxorandbitmap = _wpi_selectbitmap( xorandpres, node->hxorbitmap );
         _wpi_bitblt( mempres, 0, 0, node->width, node->height,
                      xorandpres, 0, 0, SRCINVERT );
-        _wpi_selectobject( xorandpres, oldxorandbitmap );
+        _wpi_selectbitmap( xorandpres, oldxorandbitmap );
     } else {
         _wpi_bitblt( mempres, 0, 0, node->width, node->height,
                      freehandpres, 0, 0, SRCINVERT );
     }
 
     _wpi_deletecompatiblepres( xorandpres, xoranddc );
-    _wpi_selectobject( mempres, oldbitmap );
+    _wpi_selectbitmap( mempres, oldbitmap );
     _wpi_deletecompatiblepres( mempres, memdc );
 
     return( newbitmap );
@@ -152,13 +152,13 @@ HBITMAP DuplicateBitmap( HBITMAP hbitmap )
 
     newbitmap = _wpi_createbitmap( width, height, planes, bitspixel, NULL );
 
-    oldbitmap = _wpi_selectobject( srcpres, hbitmap );
-    oldnewbitmap = _wpi_selectobject( destpres, newbitmap );
+    oldbitmap = _wpi_selectbitmap( srcpres, hbitmap );
+    oldnewbitmap = _wpi_selectbitmap( destpres, newbitmap );
 
     _wpi_bitblt( destpres, 0, 0, width, height, srcpres, 0, 0, SRCCOPY );
 
-    _wpi_selectobject( srcpres, oldbitmap );
-    _wpi_selectobject( destpres, oldnewbitmap );
+    _wpi_selectbitmap( srcpres, oldbitmap );
+    _wpi_selectbitmap( destpres, oldnewbitmap );
 
     _wpi_deletecompatiblepres( srcpres, srcdc );
     _wpi_deletecompatiblepres( destpres, destdc );
@@ -225,7 +225,7 @@ static BOOL IEStretchBlt( WPI_PRES hdcDest, int nXOriginDest, int nYOriginDest,
 
     srcpres = _wpi_createcompatiblepres( hdcDest, Instance, &srcdc );
     newbitmap = _wpi_createcompatiblebitmap( hdcDest, dlines.x, dlines.y );
-    oldbitmap = _wpi_selectobject( srcpres, newbitmap );
+    oldbitmap = _wpi_selectbitmap( srcpres, newbitmap );
 
     sw = slines.x;
     dw = dlines.x;
@@ -249,8 +249,8 @@ static BOOL IEStretchBlt( WPI_PRES hdcDest, int nXOriginDest, int nYOriginDest,
         }
     }
 
-    _wpi_selectobject( srcpres, oldbitmap );
-    _wpi_deleteobject( newbitmap );
+    _wpi_selectbitmap( srcpres, oldbitmap );
+    _wpi_deletebitmap( newbitmap );
     _wpi_deletecompatiblepres( srcpres, srcdc );
 
     return( TRUE );
@@ -312,8 +312,8 @@ HBITMAP EnlargeImage( HWND hwnd )
 
     _wpi_torgbmode( destpres );
     _wpi_torgbmode( srcpres );
-    olddestbitmap = _wpi_selectobject( destpres, newbitmap );
-    oldbitmap = _wpi_selectobject( srcpres, viewbitmap );
+    olddestbitmap = _wpi_selectbitmap( destpres, newbitmap );
+    oldbitmap = _wpi_selectbitmap( srcpres, viewbitmap );
     height = node->height;
     width = node->width;
 
@@ -321,11 +321,11 @@ HBITMAP EnlargeImage( HWND hwnd )
                   _wpi_getheightrect( rc ), srcpres, 0, 0, width, height,
                   SRCCOPY, bm.bmBitsPixel );
 
-    _wpi_selectobject( srcpres, oldbitmap );
+    _wpi_selectbitmap( srcpres, oldbitmap );
     _wpi_deletecompatiblepres( srcpres, srcdc );
-    _wpi_deleteobject( viewbitmap );
+    _wpi_deletebitmap( viewbitmap );
 
-    _wpi_selectobject( destpres, olddestbitmap );
+    _wpi_selectbitmap( destpres, olddestbitmap );
     _wpi_deletecompatiblepres( destpres, destdc );
 
     return( newbitmap );
@@ -416,8 +416,8 @@ void OutlineRectangle( bool firsttime, WPI_PRES pres, WPI_RECT *prevrc, WPI_RECT
 
     nullbrush = _wpi_createnullbrush();
     whitepen = _wpi_createpen( PS_SOLID, 0, WHITE );
-    holdbrush = _wpi_selectobject( pres, nullbrush );
-    holdpen = _wpi_selectobject( pres, whitepen );
+    holdbrush = _wpi_selectbrush( pres, nullbrush );
+    holdpen = _wpi_selectpen( pres, whitepen );
 
     prevrop2 = _wpi_setrop2( pres, R2_XORPEN );
     if( !firsttime ) {
@@ -432,10 +432,10 @@ void OutlineRectangle( bool firsttime, WPI_PRES pres, WPI_RECT *prevrc, WPI_RECT
     _wpi_getintrectvalues( *newrc, &left, &top, &right, &bottom );
     _wpi_rectangle( pres, left, top, right, bottom );
 
-    _wpi_selectobject( pres, holdbrush );
-    _wpi_selectobject( pres, holdpen );
+    _wpi_selectbrush( pres, holdbrush );
+    _wpi_selectpen( pres, holdpen );
     _wpi_setrop2( pres, prevrop2 );
-    _wpi_deleteobject( whitepen );
+    _wpi_deletepen( whitepen );
     _wpi_deletenullbrush( nullbrush );
 
 } /* OutlineRectangle */

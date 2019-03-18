@@ -88,23 +88,23 @@ void BrushThePoints( COLORREF color, COLORREF xorcolor, COLORREF andcolor,
     HBRUSH      oldbrush;
 
     hbrush = _wpi_createsolidbrush( xorcolor );
-    oldbrush = _wpi_selectobject( xorMempres, hbrush );
+    oldbrush = _wpi_selectbrush( xorMempres, hbrush );
     _wpi_patblt( xorMempres, pt->x, pt->y, brushsize, brushsize, PATCOPY );
-    _wpi_selectobject( xorMempres, oldbrush );
-    _wpi_deleteobject( hbrush );
+    _wpi_getoldbrush( xorMempres, oldbrush );
+    _wpi_deletebrush( hbrush );
 
     hbrush = _wpi_createsolidbrush( andcolor );
-    oldbrush = _wpi_selectobject( andMempres, hbrush );
+    oldbrush = _wpi_selectbrush( andMempres, hbrush );
     _wpi_patblt( andMempres, pt->x, pt->y, brushsize, brushsize, PATCOPY );
-    _wpi_selectobject( andMempres, oldbrush );
-    _wpi_deleteobject( hbrush );
+    _wpi_getoldbrush( andMempres, oldbrush );
+    _wpi_deletebrush( hbrush );
 
     hbrush = _wpi_createsolidbrush( color );
-    oldbrush = _wpi_selectobject( presWindow, hbrush );
+    oldbrush = _wpi_selectbrush( presWindow, hbrush );
     _wpi_patblt( presWindow, BORDER_WIDTH + pt->x, BORDER_WIDTH + pt->y,
                  brushsize, brushsize, PATCOPY );
-    _wpi_selectobject( presWindow, oldbrush );
-    _wpi_deleteobject( hbrush );
+    _wpi_getoldbrush( presWindow, oldbrush );
+    _wpi_deletebrush( hbrush );
 
 } /* BrushThePoints */
 

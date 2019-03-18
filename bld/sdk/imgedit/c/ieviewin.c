@@ -84,14 +84,14 @@ static void drawBorder( img_node *node )
 #else
         hgraypen = _wpi_createpen( PS_SOLID, 0, CLR_DARKGRAY );
 #endif
-        holdpen = _wpi_selectobject( presborder, hgraypen );
+        holdpen = _wpi_selectpen( presborder, hgraypen );
 
 #if defined( __NT__ )
         hnewbrush = _wpi_createsolidbrush( GetSysColor( COLOR_BTNFACE ) );
 #else
         hnewbrush = _wpi_createsolidbrush( CLR_PALEGRAY );
 #endif
-        holdbrush = _wpi_selectobject( presborder, hnewbrush );
+        holdbrush = _wpi_selectbrush( presborder, hnewbrush );
 
         top = 0;
         bottom = height;
@@ -102,11 +102,11 @@ static void drawBorder( img_node *node )
         /*
          * Draw black border and selected background color in the view window.
          */
-        _wpi_selectobject( presborder, hblackpen );
-        _wpi_selectobject( presborder, holdbrush );
-        _wpi_deleteobject( hnewbrush );
+        _wpi_selectpen( presborder, hblackpen );
+        _wpi_selectbrush( presborder, holdbrush );
+        _wpi_deletebrush( hnewbrush );
         hnewbrush = _wpi_createsolidbrush( bkgroundColor );
-        _wpi_selectobject( presborder, hnewbrush );
+        _wpi_selectbrush( presborder, hnewbrush );
 
         top = BORDER_WIDTH - 1;
         bottom = height - BORDER_WIDTH + 1;
@@ -120,27 +120,27 @@ static void drawBorder( img_node *node )
         _wpi_rectangle( presborder, BORDER_WIDTH - 1, top,
                         node->width + BORDER_WIDTH + 1, top + node->height + 2 );
 #endif
-        _wpi_selectobject( presborder, holdbrush );
-        _wpi_selectobject( presborder, holdpen );
-        _wpi_deleteobject( hnewbrush );
+        _wpi_selectbrush( presborder, holdbrush );
+        _wpi_selectpen( presborder, holdpen );
+        _wpi_deletebrush( hnewbrush );
     } else {
 #ifdef __OS2_PM__
         // I can't seem to get the thick pen to work so I'm using this
         // method.
         hgraypen = _wpi_createpen( PS_SOLID, 0, CLR_PALEGRAY );
-        holdpen = _wpi_selectobject( presborder, hgraypen );
+        holdpen = _wpi_selectpen( presborder, hgraypen );
         hnewbrush = _wpi_createsolidbrush( CLR_PALEGRAY );
-        holdbrush = _wpi_selectobject( presborder, hnewbrush );
+        holdbrush = _wpi_selectbrush( presborder, hnewbrush );
 
         _wpi_rectangle( presborder, 0, 0, width + 1, BORDER_WIDTH + 1 );
         _wpi_rectangle( presborder, 0, 0, BORDER_WIDTH + 1, height + 1 );
         _wpi_rectangle( presborder, 0, height - BORDER_WIDTH, width + 1, height + 1 );
         _wpi_rectangle( presborder, width - BORDER_WIDTH, 0, width + 1, height + 1 );
 
-        _wpi_selectobject( presborder, holdbrush );
-        _wpi_deleteobject( hnewbrush );
-        _wpi_selectobject( presborder, holdpen );
-        _wpi_deleteobject( hgraypen );
+        _wpi_selectbrush( presborder, holdbrush );
+        _wpi_deletebrush( hnewbrush );
+        _wpi_selectpen( presborder, holdpen );
+        _wpi_deletepen( hgraypen );
 #else
 #if defined( __NT__ )
         hgraypen = _wpi_createpen( PS_INSIDEFRAME, BORDER_WIDTH,
@@ -148,14 +148,14 @@ static void drawBorder( img_node *node )
 #else
         hgraypen = _wpi_createpen( PS_INSIDEFRAME, BORDER_WIDTH, CLR_PALEGRAY );
 #endif
-        holdpen = _wpi_selectobject( presborder, hgraypen );
+        holdpen = _wpi_selectpen( presborder, hgraypen );
         nullbrush = _wpi_createnullbrush();
         holdbrush = _wpi_selectbrush( presborder, nullbrush );
 
         _wpi_rectangle( presborder, 0, 0, rcclient.right, rcclient.bottom );
         _wpi_getoldbrush( presborder, holdbrush );
-        _wpi_selectobject( presborder, holdpen );
-        _wpi_deleteobject( hgraypen );
+        _wpi_selectpen( presborder, holdpen );
+        _wpi_deletepen( hgraypen );
         _wpi_deletenullbrush( nullbrush );
 #endif
 
@@ -166,14 +166,14 @@ static void drawBorder( img_node *node )
         hgraypen = _wpi_createpen( PS_SOLID, 0, CLR_DARKGRAY );
 #endif
         holdbrush = _wpi_selectbrush( presborder, nullbrush );
-        holdpen = _wpi_selectobject( presborder, hgraypen );
+        holdpen = _wpi_selectpen( presborder, hgraypen );
         top = 0;
         bottom = height;
         top = _wpi_cvth_y( top, height );
         bottom = _wpi_cvth_y( bottom, height );
         _wpi_rectangle( presborder, 0, top, width, bottom );
 
-        _wpi_selectobject( presborder, hblackpen );
+        _wpi_selectpen( presborder, hblackpen );
         top = BORDER_WIDTH - 1;
         bottom = height - BORDER_WIDTH + 1;
         top = _wpi_cvth_y( top, height );
@@ -187,7 +187,7 @@ static void drawBorder( img_node *node )
                         node->width + BORDER_WIDTH + 1, top + node->height + 2 );
 #endif
 
-        _wpi_selectobject( presborder, holdpen );
+        _wpi_selectpen( presborder, holdpen );
         _wpi_selectbrush( presborder, holdbrush );
         _wpi_deletenullbrush( nullbrush );
     }
@@ -196,7 +196,7 @@ static void drawBorder( img_node *node )
      * Give the view window the 3D effect.
      */
 #ifndef __NT__
-    holdpen = _wpi_selectobject( presborder, hwhitepen );
+    holdpen = _wpi_selectpen( presborder, hwhitepen );
 
     _wpi_setpoint( &pt, 0, height - 1 );
     _wpi_cvth_pt( &pt, height );
@@ -218,7 +218,7 @@ static void drawBorder( img_node *node )
     pt.x = BORDER_WIDTH - 2;
     _wpi_lineto( presborder, &pt );
 
-    _wpi_selectobject( presborder, hgraypen );
+    _wpi_selectpen( presborder, hgraypen );
 
     _wpi_setpoint( &pt, BORDER_WIDTH - 2, BORDER_WIDTH - 2 );
     _wpi_cvth_pt( &pt, height );
@@ -226,11 +226,11 @@ static void drawBorder( img_node *node )
     pt.x = width - BORDER_WIDTH + 1;
     _wpi_lineto( presborder, &pt );
 
-    _wpi_selectobject( presborder, holdpen );
+    _wpi_selectpen( presborder, holdpen );
 #endif
-    _wpi_deleteobject( hgraypen );
-    _wpi_deleteobject( hwhitepen );
-    _wpi_deleteobject( hblackpen );
+    _wpi_deletepen( hgraypen );
+    _wpi_deletepen( hwhitepen );
+    _wpi_deletepen( hblackpen );
     _wpi_releasepres( node->viewhwnd, presborder );
 
 } /* drawBorder */
