@@ -40,19 +40,16 @@ extra_c_flags_wicgener = $(trmem_cover_cflags)
 
 inc_dirs = -I"../h"
 
+libs = $(wres_lib) $(osildr)
+
 ##############################################################################
 
-$(name).exe : $(objs) wresui.res $(wres_lib) $(osildr) $(__MAKEFILES__)
-    $(noecho)%create $^&.lnk
-    @%append $^&.lnk option quiet
-    @%append $^&.lnk debug all
-!ifeq release 1
-    @%append $^&.lnk option symfile
+$(name).exe : $(objs) wresui.res $(sys_objs) $(libs) $(sys_libs) $(__MAKEFILES__)
+!ifndef __WATCOM_TOOLS__
+    $(cl) $(clflags) $(objs) $(sys_objs) $(libs) $(sys_libs) $(ldflags)
+!else
+    $(linker) name $^@ $(lflags) file {$(objs)} lib {$(libs) $(sys_libs)}
 !endif
-    @%append $^&.lnk lib $(wres_lib)
-    @for %i in ($(objs)) do @@%append $^&.lnk file %i
-    @%make echo_link
-    $(linker) name $(lname) $(lflags) @$^&.lnk
     @%make bind_osildr
     @%make bind_res_wresui
 

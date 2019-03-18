@@ -40,9 +40,9 @@ static int _scanSize(char *str, SizeType *type) {
 
     sscanf(str, "%d", &temp);
     switch (temp) {
-        case 16: *type = SIZE_16; break;
-        case 32: *type = SIZE_32; break;
-        case 48: *type = SIZE_48; break;
+        case 16: *type = SIZETYPE_16; break;
+        case 32: *type = SIZETYPE_32; break;
+        case 48: *type = SIZETYPE_48; break;
         default:
             reportError(ERR_INV_CMD_LINE_OPTION, str);
             return 0;
@@ -179,14 +179,14 @@ static void _scanCurrArg(char *currArg) {
             } else if (currArg[0] == 'h') {
                 _scanSize(currArg+1, &(g_opt.hugePtrSize));
             } else {
-                SizeType temp = SIZE_MAX;
+                SizeType temp = SIZETYPE_MAX;
                 _scanSize(currArg, &temp);
-                if (temp == SIZE_16) {
+                if (temp == SIZETYPE_16) {
                     _scanCurrArg("-Pn16");
                     _scanCurrArg("-Pd16");
                     _scanCurrArg("-Pf32");
                     _scanCurrArg("-Ph32");
-                } else if (temp == SIZE_32) {
+                } else if (temp == SIZETYPE_32) {
                     _scanCurrArg("-Pn32");
                     _scanCurrArg("-Pd32");
                     _scanCurrArg("-Pf32");
@@ -245,11 +245,11 @@ void getCmdLineOptions(int argc, char *argv[]) {
     g_opt.outLineLen = 0;
     g_opt.fileNameList = createSLList();
     g_opt.incPathList = createSLList();
-    g_opt.intSize = SIZE_32;
-    g_opt.nearPtrSize = SIZE_32;
-    g_opt.ptrSize = SIZE_32;
-    g_opt.farPtrSize = SIZE_32;
-    g_opt.hugePtrSize = SIZE_48;
+    g_opt.intSize = SIZETYPE_32;
+    g_opt.nearPtrSize = SIZETYPE_32;
+    g_opt.ptrSize = SIZETYPE_32;
+    g_opt.farPtrSize = SIZETYPE_32;
+    g_opt.hugePtrSize = SIZETYPE_48;
     g_opt.debug = 0;
 
     if (argc <= 1) {

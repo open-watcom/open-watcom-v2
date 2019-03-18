@@ -120,7 +120,7 @@ static void getNextChar(void)
     }
 }
 
-void pushChar(char ch)
+static void pushChar(char ch)
 {
     if (currTokLen < MAX_TOKEN_SIZE - 1) {
         currTok[currTokLen++] = ch;
@@ -128,13 +128,13 @@ void pushChar(char ch)
     }
 }
 
-void pushGetNextChar(void)
+static void pushGetNextChar(void)
 {
     pushChar(NEXT_CHAR);
     getNextChar();
 }
 
-void popChars(int num)  /* Delete last 'num' chars from currTok */
+static void popChars(int num)  /* Delete last 'num' chars from currTok */
 {
     currTokLen -= num;
     if (currTokLen < 0)
@@ -295,7 +295,7 @@ static int skipBlank(void)
     return count;
 }
 
-int scanId(void)  // Returns 0 iff 1st char is 'L' and 2nd is '"'
+static int scanId(void)  // Returns 0 iff 1st char is 'L' and 2nd is '"'
 {
     char firstChar = NEXT_CHAR;
     pushGetNextChar();
@@ -332,7 +332,7 @@ static WicErrors scanComment(pTokData tokData)
 
     NormalReturn:
         tokData->code = Y_PRE_COMMENT;
-        tokData->repr.string = registerString(wicStrdup(currTok), FREE_STRING);
+        tokData->repr.ginfo.string = registerString(wicStrdup(currTok), FREE_STRING);
         return ERR_NONE;
 }
 
@@ -342,7 +342,7 @@ static WicErrors scanCPlusPlusComment(pTokData tokData)
     while (1) {
         if (NEXT_CHAR == '\n') {
             tokData->code = Y_PRE_COMMENT;
-            tokData->repr.string = registerString(wicStrdup(currTok),
+            tokData->repr.ginfo.string = registerString(wicStrdup(currTok),
                                     FREE_STRING);
             if (prevChar != '\\') {
                 STATE = TS_START;
@@ -517,7 +517,7 @@ static WicErrors scanIncludeFileName(pTokData tokData, char termChar) {
 
     if (retVal == ERR_NONE) {
         tokData->code = Y_INCLUDE_FILE_NAME;
-        tokData->repr.string = registerString(wicStrdup(currTok), FREE_STRING);
+        tokData->repr.ginfo.string = registerString(wicStrdup(currTok), FREE_STRING);
     }
     return( retVal );
 }
@@ -982,7 +982,7 @@ WicErrors getNextToken(pToken tok)
                     tok->data->code = Y_PRE_SPECIAL_LEFT_PAREN;
                 }
             }
-            tok->data->repr.string = registerString(tokTabPtr->name,
+            tok->data->repr.ginfo.string = registerString(tokTabPtr->name,
                                                   !FREE_STRING);
         }
         else {
@@ -991,7 +991,7 @@ WicErrors getNextToken(pToken tok)
                 goto Return;
             } else {
                 tok->data->code = Y_ID;
-                tok->data->repr.string = registerString(wicStrdup(currTok),
+                tok->data->repr.ginfo.string = registerString(wicStrdup(currTok),
                                                       FREE_STRING);
             }
         }
@@ -1017,7 +1017,7 @@ WicErrors getNextToken(pToken tok)
 }
 
 void setTokPos(pTokPos pos, char *fileName, int8 fileLevel, int16 lineNum,
-    int16  colNum, uint8  linesBefore, uint8  spacesBefore, long orderLineNum)
+    int16  colNum, uint8  linesBefore, uint8  spacesBefore, long orderLineNum1)
 {
     pos->fileName = fileName;
     pos->fileLevel = fileLevel;
@@ -1025,7 +1025,7 @@ void setTokPos(pTokPos pos, char *fileName, int8 fileLevel, int16 lineNum,
     pos->colNum = colNum;
     pos->linesBefore = linesBefore;
     pos->spacesBefore = spacesBefore;
-    pos->orderLineNum = orderLineNum;
+    pos->orderLineNum = orderLineNum1;
 }
 
 TokenType getTokDataType(pTokData tokData) {
@@ -1050,7 +1050,7 @@ char *getTokDataIdName(pTokData data) {
     if (data == NULL) {
         return NULL;
     } else {
-        return data->repr.string;
+        return data->repr.ginfo.string;
     }
 }
 
@@ -1080,7 +1080,7 @@ pTokPos createTokPos(void) {
 pTokData createTokData(void) {
     pTokData newData = wicMalloc(sizeof *newData);
     memset(newData, 0, sizeof *newData);
-    newData->repr.string = NULL;
+    newData->repr.ginfo.string = NULL;
     return newData;
 }
 
@@ -1096,14 +1096,14 @@ pToken createEnumNumToken(unsigned long num) {
 pToken createPLUSToken(void) {
     pToken tok = createToken(createTokData(), NULL);
     tok->data->code = Y_PLUS;
-    tok->data->repr.string = registerString("+", !FREE_STRING);
+    tok->data->repr.ginfo.string = registerString("+", !FREE_STRING);
     return tok;
 }
 
 pToken createEQUALToken(void) {
     pToken tok = createToken(createTokData(), NULL);
     tok->data->code = Y_EQUAL;
-    tok->data->repr.string = registerString("=", !FREE_STRING);
+    tok->data->repr.ginfo.string = registerString("=", !FREE_STRING);
     return tok;
 }
 
@@ -1112,18 +1112,18 @@ pToken createIDTokenAfter( char *str, pTokPos pos) {
     tok->pos->spacesBefore = 1;
     tok->pos->linesBefore = 0;
     tok->data->code = Y_ID;
-    tok->data->repr.string = registerString(wicStrdup(str), FREE_STRING);
+    tok->data->repr.ginfo.string = registerString(wicStrdup(str), FREE_STRING);
     return tok;
 }
 
 pToken createCommentToken(char *str, pTokPos pos) {
     pToken tok = createToken(createTokData(), pos);
     tok->data->code = Y_PRE_COMMENT;
-    tok->data->repr.string = registerString(str, FREE_STRING);
+    tok->data->repr.ginfo.string = registerString(str, FREE_STRING);
     return tok;
 }
 
-int cmpTokData(pTokData d1, pTokData d2) {
+static int cmpTokData(pTokData d1, pTokData d2) {
     if (d1 == NULL && d2 != NULL) {
         return 1;
     } else if (d1 != NULL && d2 == NULL) {

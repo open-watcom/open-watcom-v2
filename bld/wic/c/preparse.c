@@ -45,7 +45,6 @@ static pToken _lastDefineTok;
 #define __SMALL__ 0            // To avoid warnings in MKS yacc
 #endif
 
-#pragma disable_message(118)
 #define Y_EOF   300
 #define Y_EXCLAMATION   301
 #define Y_NE    302
@@ -167,7 +166,7 @@ static int expandThisLine;
 int expandThisLineHideErrors;
 int successfulExpand;
 
-int preerror(char *str) {
+static int preerror(char *str) {
     str = str;
     return 0;
 }
@@ -217,7 +216,7 @@ static void *_dupTokenKeepPos(void *_tok) {
     return dupToken(tok, NULL);
 }
 
-pCTree createDefineMacroCTree(void) {
+static pCTree createDefineMacroCTree(void) {
     pCTree tree;
     pSLList list;
     pToken tempTok;
@@ -262,7 +261,7 @@ pCTree createDefineMacroCTree(void) {
     return tree;
 }
 
-pCTree eatPreDirList(pToken tok) {
+static pCTree eatPreDirList(pToken tok) {
     pSLList list;
 
     list = createSLList();
@@ -1228,7 +1227,7 @@ case PREr97: {  /* type-spec :  enum-spec */
 } break;
 
 case PREr98: {  /* typedef-name :  Y_TYPEDEF_NAME */
- preval.dinfo = dupDeclInfo(prepvt[0].token->data->repr.pTypeDecl, prepvt[0].token->pos); zapToken(prepvt[0].token);
+ preval.dinfo = dupDeclInfo(prepvt[0].token->data->repr.ginfo.pTypeDecl, prepvt[0].token->pos); zapToken(prepvt[0].token);
 } break;
 
 case PREr101: { /* maybe-type-decl-specs :  maybe-type-decl-specs non-type-decl-spec */
@@ -1648,14 +1647,14 @@ L02:
 #endif
         prestate = ~(prei == *--prep? PREQPREP: *preq);
         goto preStack;
-
+#if 0
 preerrlabel:    ;               /* come here from PREERROR      */
 /*
 #pragma used preerrlabel
  */
         preerrflag = 1;
         preps--, prepv--;
-
+#endif
 preError:
         switch (preerrflag) {
 

@@ -32,11 +32,10 @@
 
 #include <stdlib.h>
 #include <stdio.h>
-#include <malloc.h>
 #include "wic.h"
 
 
-void initWicBasics(int argc, char *argv[], float dummy) {
+static void initWicBasics(int argc, char *argv[], float dummy) {
     dummy = dummy; /* Dummy argument to include floating point routines */
     initMemory();
     initWicResources(argv[0]);
@@ -69,7 +68,7 @@ void wicExit(int exitCode) {
     exit(exitCode);
 }
 
-void doConversion(void **name) {
+static void doConversion(void **name) {
     char *newName = *name;
     initErrorFile(newName);
     initExpandToken();

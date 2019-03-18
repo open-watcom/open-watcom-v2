@@ -48,16 +48,16 @@ struct DeclTreeElem {
     union {
         pDeclInfo decl;
         pDeclTree list;
-    };
+    } u;
 };
 
-pDeclTreeElem createDeclTreeElem(DeclTreeElemType type, void *data) {
+static pDeclTreeElem createDeclTreeElem(DeclTreeElemType type, void *data) {
     pDeclTreeElem newElem = wicMalloc(sizeof *newElem);
     newElem->type = type;
     if (type == DECL_TREE_ELEM) {
-        newElem->list = data;
+        newElem->u.list = data;
     } else if (type == DECL_INFO) {
-        newElem->decl = data;
+        newElem->u.decl = data;
     } else {
         assert(0);
     }
@@ -73,10 +73,10 @@ static void zapDeclTreeElem(void *_elem) {
 
     switch(elem->type) {
         case DECL_INFO:
-            zapDeclInfo(elem->decl);
+            zapDeclInfo(elem->u.decl);
             break;
         case DECL_TREE_ELEM:
-            zapSLList(elem->list, zapDeclTreeElem);
+            zapSLList(elem->u.list, zapDeclTreeElem);
             break;
         default:
             assert(0);
@@ -86,7 +86,7 @@ static void zapDeclTreeElem(void *_elem) {
 }
 
 
-char *_get1stDclrName(pDclrList list) {
+static char *_get1stDclrName(pDclrList list) {
     pDclr dclr;
 
     rewindCurrSLListPos(list);
@@ -98,7 +98,7 @@ char *_get1stDclrName(pDclrList list) {
     return getDclrName(dclr);
 }
 
-char *_createUnnamedDeclStructDclrList(pDeclInfo decl) {
+static char *_createUnnamedDeclStructDclrList(pDeclInfo decl) {
     static char noname[] = { "noname           " };
     static unsigned int counter = 1;
     pTokPos endPos;
@@ -240,7 +240,7 @@ static pDeclTree _unNestDecl(pDeclInfo decl) {
                 if (getCurrSLListPosElem(inside, &node2))
                 {
                     addSLListElem(prepend, node1);
-                    setCurrSLListPosElem(body->declList, node2->decl);
+                    setCurrSLListPosElem(body->declList, node2->u.decl);
                 }
                 incCurrSLListPos(body->declList);
             }
@@ -363,7 +363,8 @@ static void _storeTypedef(pDclr dclr, pDeclInfo decl) {
     }
 }
 
-static pDeclInfo _stripStoreTypedef(pDeclInfo decl) {
+static pDeclInfo _stripStoreTypedef(pDeclInfo decl)
+{
     pDclrList dclrList;
     pDclr dclr;
 
@@ -394,7 +395,7 @@ static pDeclInfo _stripStoreTypedef(pDeclInfo decl) {
                 return NULL;
             } else {
                 decl->storage &= !STG_TYPEDEF;
-                if (decl->prefixPos != STG_NULL) {
+                if (decl->prefixPos != NULL) {
                     zapTokPos(decl->repr.s->typePos);
                     decl->repr.s->typePos = decl->prefixPos;
                     decl->prefixPos = NULL;
@@ -415,7 +416,7 @@ static pDeclInfo _stripStoreTypedef(pDeclInfo decl) {
     }
 }
 
-void _pushDeclTree(pDeclTreeElem *stack, int *stackPos, int MAX,
+static void _pushDeclTree(pDeclTreeElem *stack, int *stackPos, int MAX,
                    pDeclTree declTree) {
     pDeclTreeElem elem;
 
@@ -433,7 +434,7 @@ void _pushDeclTree(pDeclTreeElem *stack, int *stackPos, int MAX,
     zapSLList(declTree, NULL);
 }
 
-pDeclList _flattenDeclTree(pDeclTree declTree) {
+static pDeclList _flattenDeclTree(pDeclTree declTree) {
     pDeclList retVal;
     enum { MAX = 100 };
     pDeclTreeElem stack[MAX];
@@ -448,12 +449,12 @@ pDeclList _flattenDeclTree(pDeclTree declTree) {
     while(stackPos > 0) {
         stackPos--;
         if (stack[stackPos]->type == DECL_TREE_ELEM) {
-            _pushDeclTree(stack, &stackPos, MAX, stack[stackPos]->list);
+            _pushDeclTree(stack, &stackPos, MAX, stack[stackPos]->u.list);
         } else if (stack[stackPos]->type == DECL_INFO) {
-            if (stack[stackPos]->decl != NULL) {
-                addBegSLListElem(retVal, stack[stackPos]->decl);
+            if (stack[stackPos]->u.decl != NULL) {
+                addBegSLListElem(retVal, stack[stackPos]->u.decl);
             }
-            stack[stackPos]->decl = NULL; zapDeclTreeElem(stack[stackPos]);
+            stack[stackPos]->u.decl = NULL; zapDeclTreeElem(stack[stackPos]);
         } else {
             assert(0);
         }
@@ -461,7 +462,8 @@ pDeclList _flattenDeclTree(pDeclTree declTree) {
     return retVal;
 }
 
-pDeclList _expandDeclDclrList(pDeclList declList) {
+static pDeclList _expandDeclDclrList(pDeclList declList)
+{
     pDeclInfo currDecl;
     pDclrList dclrList;
     if (declList == NULL) {
@@ -501,7 +503,8 @@ pDeclList _expandDeclDclrList(pDeclList declList) {
     return declList;
 }
 
-int _checkNonTranslatableConstructs(pDeclInfo decl) {
+static int _checkNonTranslatableConstructs(pDeclInfo decl)
+{
     switch (decl->type) {
     case DIT_SCALAR:
         if (decl->dclrList == NULL) {

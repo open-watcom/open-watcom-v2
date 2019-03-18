@@ -48,9 +48,9 @@ struct _TagBlkElem {
     union {
         pBlkElem nextFreeElem;
         char data[1];
-    };
+    } u;
 };
-#define BLK_ELEM_SIZE(dataSize)   (CARVER_ELEM_PREFIX_SIZE+ (dataSize))
+#define BLK_ELEM_SIZE(dataSize)   (CARVER_ELEM_PREFIX_SIZE + (dataSize))
 
 static int guessCarverBlockSize = 0;
 
@@ -70,13 +70,13 @@ Data &12345678: aa bb cc dd; Size 123 chk a5
     if (blkElem == NULL) {
         len += sprintf(str+len, "Data could not be accessed");
     } else {
-        len += sprintf(str+len, "Data &%X:", blkElem->data);
+        len += sprintf(str+len, "Data &%X:", (unsigned)blkElem->u.data);
     }
     len1 = blkElem->info.size;
     if( len1 > 4 )
         len1 = 4;
     for( i = 0; i < len1; i++ ) {
-        len += sprintf(str+len, " %2X", blkElem->data[i]);
+        len += sprintf(str+len, " %2X", blkElem->u.data[i]);
     }
     len += sprintf(str+len, "; Size %d", blkElem->info.size);
     temp = CARVER_ELEM_PREFIX_SIZE - sizeof(CarverElemSize);
@@ -102,7 +102,7 @@ static void CarverMsg(CarverMsgType type, pCarver carver, pBlkElem blkElem)
     if (!(carverSupressMsgs & type)) {
         static char errStr[200];
         int errStrLen = 0;
-        errStrLen += sprintf(errStr, "CARVER &%X: ", carver);
+        errStrLen += sprintf(errStr, "CARVER &%X: ", (unsigned)carver);
         switch(type) {
         case CARVER_CORRUPTED:
             errStrLen += sprintf(errStr+errStrLen, "Corrupted!      ");
@@ -156,7 +156,7 @@ void InitCarver(pCarver carver,
     carver->printMsgFunc = printMsgFunc;
     carver->supressMsgs = supressMsgs;
     if (guessCarverBlockSize) {
-        blkSize = 0;
+        blkSize = GUESS_CARVER_BLOCK_SIZE;
     }
     if (elemSize < sizeof (void *)) {
         if (elemSize == 0) {
@@ -193,15 +193,18 @@ void* CreateCarver(
 }
 
 
-static long getCurrBlockSize(pCarver carver) {
+static long getCurrBlockSize(pCarver carver)
+{
     int temp;
+
     assert(carver != NULL);
     assert(carver->numBlks != 0);
-    if (carver->blkSize == 0) {
+
+    if (carver->blkSize == GUESS_CARVER_BLOCK_SIZE) {
         int temp2 = carver->numBlks;
         if( temp2 > 15 )
             temp2 = 15;
-        temp = 1 << temp2 - 1;
+        temp = 1 << ( temp2 - 1 );
         if( temp > MAX_NUM_ELEM_IN_BLOCK ) {
             temp = MAX_NUM_ELEM_IN_BLOCK;
         }
@@ -249,12 +252,12 @@ void* AllocCarverElem(pCarver carver) {
     assert(carver != NULL);
     if (carver->freeList != NULL) {
         newElem = carver->freeList;
-        carver->freeList = newElem->nextFreeElem;
+        carver->freeList = newElem->u.nextFreeElem;
         if (newElem->info.size != 0) {
             CarverMsg(CARVER_CORRUPTED, carver, newElem);
         }
         SETUP_NEW_ELEMENT
-        return newElem->data;
+        return newElem->u.data;
     }
 
     if (carver->tail == NULL) {
@@ -269,7 +272,7 @@ void* AllocCarverElem(pCarver carver) {
     newElem = carver->topElem;
     SETUP_NEW_ELEMENT
 
-    return newElem->data;
+    return newElem->u.data;
     #undef SETUP_NEW_ELEMENT
 }
 
@@ -289,7 +292,7 @@ void FreeCarverElem(pCarver carver, void *elem) {
         }
     } else {
         blkElem->info.size = 0;
-        blkElem->nextFreeElem = carver->freeList;
+        blkElem->u.nextFreeElem = carver->freeList;
         carver->freeList = blkElem;
         carver->totalNumElems--;
     }
