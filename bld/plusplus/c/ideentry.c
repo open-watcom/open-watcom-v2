@@ -33,7 +33,7 @@
 #include "plusplus.h"
 #include <ctype.h>
 #ifdef __WATCOMC__
-#include <malloc.h>     /* For _heapmin() */
+    #include <malloc.h>     /* necessary for _heapmin() */
 #endif
 #include "memmgr.h"
 #include "idedll.h"
