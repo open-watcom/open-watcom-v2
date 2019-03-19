@@ -136,7 +136,7 @@ vi_rc SwapToMemoryFromEMSMemory( fcb *fb )
 /*
  * eMSAlloc - allocate some expanded memory
  */
-static long eMSAlloc( U_INT size )
+static long eMSAlloc( unsigned size )
 {
     unsigned char       handle;
     ems_addr            h;
@@ -243,7 +243,7 @@ void EMSInit( void )
  */
 void EMSFini( void )
 {
-    U_INT       curr;
+    unsigned    curr;
 
     if( !EMSCtrl.inuse ) {
         return;
@@ -291,7 +291,7 @@ static bool locatePhysicalPage( unsigned char h, unsigned char l, unsigned char 
 static void *emsAccess( ems_addr x )
 {
     unsigned char       handle, logical, physical;
-    U_INT               offset;
+    unsigned            offset;
 
     if( x.external == 0 ) {
         return( NULL );

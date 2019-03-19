@@ -138,7 +138,7 @@ static void *xmsControl;
 static unsigned long xmsAlloc( int size )
 {
     xms_addr            h;
-    U_INT               handle, new_size, page_request;
+    unsigned            handle, new_size, page_request;
     unsigned long       offset;
 
     size = (size + 0x03) & ~0x03;
@@ -194,7 +194,7 @@ static unsigned long xmsAlloc( int size )
  */
 void XMSInit( void )
 {
-    U_INT       size;
+    unsigned    size;
     int         i;
     xms_addr    h;
 
@@ -256,7 +256,7 @@ void XMSInit( void )
  */
 void XMSFini( void )
 {
-    U_INT       handle;
+    unsigned    handle;
 
     if( !XMSCtrl.inuse ) {
         return;
@@ -283,11 +283,11 @@ void XMSFini( void )
 static size_t xmsRead( long addr, void __far *buff, size_t size )
 {
     xms_addr            h;
-    U_INT               offset;
+    unsigned            offset;
     xms_move_descriptor control;
     void                *dest;
 
-    if( addr == NULL ) {
+    if( addr == 0 ) {
         return( XMS_IO_ERROR );
     }
     size = (size + 1) & ~1;
@@ -325,10 +325,10 @@ static size_t xmsWrite( long addr, void __far *buff, size_t size )
 {
     xms_addr            h;
     xms_move_descriptor control;
-    U_INT               offset;
+    unsigned            offset;
     void                *dest;
 
-    if( addr == NULL ) {
+    if( addr == 0 ) {
         return( XMS_IO_ERROR );
     }
     size = (size + 1) & ~1;

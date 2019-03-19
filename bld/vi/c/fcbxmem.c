@@ -109,7 +109,7 @@ void XMemInit( void )
 {
     long        blocks, rc;
     int         j, i, extra;
-    U_INT       amount;
+    unsigned    amount;
 
     /*
      * init
