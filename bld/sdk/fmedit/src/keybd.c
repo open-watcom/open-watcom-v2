@@ -119,7 +119,7 @@ static void SetKbdMoveGrid( void )
             }
         }
     }
-    if( hinc != 0 && vinc != 0 ) {
+    if( hinc > 0 && vinc > 0 ) {
         SetResizeGrid( hinc, vinc );
     }
 }
