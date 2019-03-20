@@ -35,9 +35,11 @@ typedef enum {
     ON_DISK
 } where_parm;
 
+typedef long    xhandle;
+
 extern bool CheckPointMem( where_parm where, unsigned max, char *f_buff );
 extern void CheckPointRestore( where_parm where );
 
 #if defined( USE_XMS ) || defined( USE_EMS )
-extern void XSwapInit( int count, long *handles, unsigned short *sizes );
+extern void XSwapInit( int count, xhandle *handles, unsigned short *sizes );
 #endif
