@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -35,7 +36,7 @@ typedef enum {
     ON_DISK
 } where_parm;
 
-typedef long    xhandle;
+typedef unsigned long   xhandle;
 
 extern bool CheckPointMem( where_parm where, unsigned max, char *f_buff );
 extern void CheckPointRestore( where_parm where );
