@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,6 +34,9 @@
 #define _STRUCT_INCLUDED
 
 #include <stdio.h>
+#if defined( __DOS__ )
+    #include "doschk.h"
+#endif
 
 typedef unsigned short  vi_ushort;
 
@@ -217,7 +220,9 @@ typedef struct fcb {
     linenum     start_line, end_line;       // starting/ending line number
     long        offset;                     // offset in swap file
     long        last_swap;                  // time fcb was last swapped
-    long        xmemaddr;                   // address of fcb in extended memory
+#if defined( __DOS__ )
+    xhandle     xmemaddr;                   // address of fcb in extended memory
+#endif
     short       byte_cnt;                   // number of bytes in lines
     bool        swapped             : 1;    // fcb is swapped
     bool        in_memory           : 1;    // fcb is in memory

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -41,6 +42,8 @@
 #include "pragmas.h"
 
 
+#define XHANDLE2FLAT(x)     ((unsigned long)x)
+
 static descriptor GDT[] = {
     { 0, 0, 0 },    /* dummy segment */
     { 0, 0, 0 },    /* data segment */
@@ -52,8 +55,8 @@ static descriptor GDT[] = {
 
 xtd_struct XMemCtrl;
 
-static void xmemWrite( long , void *, size_t );
-static void xmemRead( long , void *, size_t );
+static void xmemWrite( xhandle , void *, size_t );
+static void xmemRead( xhandle , void *, size_t );
 static bool checkVDISK( flat_address * );
 
 /*
@@ -61,7 +64,7 @@ static bool checkVDISK( flat_address * );
  */
 vi_rc SwapToExtendedMemory( fcb *fb )
 {
-    long        addr;
+    xhandle     addr;
     size_t      len;
 
     if( !XMemCtrl.inuse ) {
@@ -198,12 +201,12 @@ void XMemFini( void )
 /*
  * xmemRead - read from extended memory
  */
-static void xmemRead( long addr, void *buff, size_t size )
+static void xmemRead( xhandle addr, void *buff, size_t size )
 {
     flat_address        source, target;
 
     size = ROUNDUP( size, 2 );
-    source = addr;
+    source = XHANDLE2FLAT( addr );
     GDT[GDT_SOURCE].address = GDT_RW_DATA | source;
     GDT[GDT_SOURCE].length = size;
     target = MAKE_LINEAR( buff );
@@ -217,12 +220,12 @@ static void xmemRead( long addr, void *buff, size_t size )
 /*
  * xmemWrite - write to extended memory
  */
-static void xmemWrite( long addr, void *buff, size_t size )
+static void xmemWrite( xhandle addr, void *buff, size_t size )
 {
     flat_address        source, target;
 
     size = ROUNDUP( size, 2 );
-    target = addr;
+    target = XHANDLE2FLAT( addr );
     GDT[GDT_TARGET].address = GDT_RW_DATA | target;
     GDT[GDT_TARGET].length = size;
     source = MAKE_LINEAR( buff );
@@ -261,7 +264,7 @@ static bool checkVDISK( flat_address *start )
 /*
  * GiveBackXMemBlock - return some extended memory
  */
-void GiveBackXMemBlock( long addr )
+void GiveBackXMemBlock( xhandle addr )
 {
     GiveBackBlock( addr - XMemCtrl.offset, XMemBlocks );
     XMemCtrl.allocated--;

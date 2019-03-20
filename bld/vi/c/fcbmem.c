@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -93,23 +94,25 @@ void FcbFree( fcb *cfcb )
     if( cfcb->offset >= 0 ) {
         GiveBackSwapBlock( cfcb->offset );
     }
-    if( cfcb->xmemaddr > 0 ) {
-#if defined( USE_EMS )
+#if defined( __DOS__ )
+    if( cfcb->xmemaddr != 0 ) {
+  #if defined( USE_EMS )
         if( cfcb->in_ems_memory ) {
             GiveBackEMSBlock( cfcb->xmemaddr );
         }
-#endif
-#if defined( USE_XTD )
+  #endif
+  #if defined( USE_XTD )
         if( cfcb->in_extended_memory ) {
             GiveBackXMemBlock( cfcb->xmemaddr );
         }
-#endif
-#if defined( USE_XMS )
+  #endif
+  #if defined( USE_XMS )
         if( cfcb->in_xms_memory ) {
             GiveBackXMSBlock( cfcb->xmemaddr );
         }
-#endif
+  #endif
     }
+#endif
 
     if( cfcb == FcbThreadHead ) {
         FcbThreadHead = cfcb->thread_next;

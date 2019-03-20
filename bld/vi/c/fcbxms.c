@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -43,10 +44,10 @@
 #define XMS_IO_ERROR    ((size_t)-1)
 
 xms_struct              XMSCtrl;
-static long             *xmsPtrs;
+static xhandle          *xmsPtrs;
 
-static size_t   xmsRead( long, void __far *, size_t );
-static size_t   xmsWrite( long, void __far *, size_t );
+static size_t   xmsRead( xhandle, void __far *, size_t );
+static size_t   xmsWrite( xhandle, void __far *, size_t );
 
 vi_rc XMSBlockTest( unsigned short blocks )
 {
@@ -60,22 +61,22 @@ vi_rc XMSBlockTest( unsigned short blocks )
 
 } /* XMSBlockTest */
 
-void XMSBlockRead( long addr, void __far *buff, size_t len )
+void XMSBlockRead( xhandle addr, void __far *buff, size_t len )
 {
     xmsRead( addr, buff, len );
 
 } /* XMSBlockRead */
 
-void XMSBlockWrite( long addr, void __far *buff, size_t len )
+void XMSBlockWrite( xhandle addr, void __far *buff, size_t len )
 {
     xmsWrite( addr, buff, len );
 
 } /* XMSBlockWrite */
 
-vi_rc XMSGetBlock( long *addr )
+vi_rc XMSGetBlock( xhandle *addr )
 {
     vi_rc       rc;
-    long        found;
+    xhandle     found;
     int         i;
 
     rc = XMSBlockTest( 1 );
@@ -102,8 +103,9 @@ vi_rc SwapToXMSMemory( fcb *fb )
 {
     vi_rc       rc;
     size_t      len;
-    long        found = 0;
+    xhandle     found;
 
+    found = 0;
     rc = XMSGetBlock( &found );
     if( rc == ERR_NO_ERR ) {
         len = MakeWriteBlock( fb );
@@ -138,7 +140,7 @@ static void *xmsControl;
 /*
  * xmsAlloc - allocate some xms memory
  */
-static unsigned long xmsAlloc( int size )
+static xhandle xmsAlloc( int size )
 {
     xms_addr            h;
     unsigned            handle, new_size, page_request;
@@ -235,7 +237,7 @@ void XMSInit( void )
         XMSCtrl.size = XMS_MAX_BLOCK_SIZE;
     }
 
-    xmsPtrs = _MemAllocArray( long, EditVars.MaxXMSBlocks );
+    xmsPtrs = _MemAllocArray( xhandle, EditVars.MaxXMSBlocks );
 
     for( i = 0; i < EditVars.MaxXMSBlocks; i++ ) {
         xmsPtrs[i] = xmsAlloc( MAX_IO_BUFFER );
@@ -245,7 +247,7 @@ void XMSInit( void )
         h.external = xmsPtrs[i];
         TotalXMSBlocks++;
     }
-    xmsPtrs = realloc( xmsPtrs, TotalXMSBlocks * sizeof( long ) );
+    xmsPtrs = realloc( xmsPtrs, TotalXMSBlocks * sizeof( xhandle ) );
     if( xmsPtrs == NULL ) {
         return;
     }
@@ -283,7 +285,7 @@ void XMSFini( void )
 /*
  * xmsRead - read from XMS memory
  */
-static size_t xmsRead( long addr, void __far *buff, size_t size )
+static size_t xmsRead( xhandle addr, void __far *buff, size_t size )
 {
     xms_addr            h;
     unsigned            offset;
@@ -324,7 +326,7 @@ static size_t xmsRead( long addr, void __far *buff, size_t size )
 /*
  * xmsWrite - write some XMS memory
  */
-static size_t xmsWrite( long addr, void __far *buff, size_t size )
+static size_t xmsWrite( xhandle addr, void __far *buff, size_t size )
 {
     xms_addr            h;
     xms_move_descriptor control;
@@ -367,7 +369,7 @@ static size_t xmsWrite( long addr, void __far *buff, size_t size )
 /*
  * GiveBackXMSBlock - return an XMS block to the pool
  */
-void GiveBackXMSBlock( long addr )
+void GiveBackXMSBlock( xhandle addr )
 {
     int i;
 

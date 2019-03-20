@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -42,16 +43,18 @@ void    SwapFileClose( void );
 void    SwapBlockInit( int );
 
 /* fcbems.c */
+#if defined( __DOS__ ) && defined( _M_I86 )
 vi_rc   EMSBlockTest( unsigned short );
 void    EMSBlockRead( long, void *, size_t );
 void    EMSBlockWrite( long , void *, size_t );
-vi_rc   EMSGetBlock( long * );
+vi_rc   EMSGetBlock( xhandle * );
 vi_rc   SwapToEMSMemory( fcb * );
 vi_rc   SwapToMemoryFromEMSMemory( fcb * );
 void    EMSInit( void );
 void    EMSFini( void );
 void    GiveBackEMSBlock( long );
 void    EMSBlockInit( int );
+#endif
 
 /* fcbswap.c */
 void    SwapFcb( fcb * );
@@ -65,10 +68,11 @@ void    XMemFini( void );
 void    GiveBackXMemBlock( long );
 
 /* fcbxms.c */
+#if defined( __DOS__ )
 vi_rc   XMSBlockTest( unsigned short );
 void    XMSBlockRead( long, void *, size_t );
 void    XMSBlockWrite( long , void *, size_t );
-vi_rc   XMSGetBlock( long * );
+vi_rc   XMSGetBlock( xhandle * );
 vi_rc   SwapToXMSMemory( fcb * );
 vi_rc   SwapToMemoryFromXMSMemory( fcb * );
 void    XMSInit( void );
@@ -77,4 +81,5 @@ void    GiveBackXMSBlock( long );
 void    XMSBlockInit( int );
 #if defined( USE_XTD )
 void __interrupt XMemIntHandler( volatile union INTPACK r );
+#endif
 #endif

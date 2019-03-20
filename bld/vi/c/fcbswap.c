@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -144,15 +145,17 @@ vi_rc RestoreToNormalMemory( fcb *fb, size_t len )
     /*
      * reset flags
      */
+#if defined( __DOS__ )
     fb->xmemaddr = 0L;
-#if defined( USE_XTD )
+  #if defined( USE_XTD )
     fb->in_extended_memory = false;
-#endif
-#if defined( USE_EMS )
+  #endif
+  #if defined( USE_EMS )
     fb->in_ems_memory = false;
-#endif
-#if defined( USE_XMS )
+  #endif
+  #if defined( USE_XMS )
     fb->in_xms_memory = false;
+  #endif
 #endif
     fb->swapped = false;
     fb->in_memory = true;

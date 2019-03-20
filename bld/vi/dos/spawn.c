@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -35,7 +36,6 @@
     #include "fcbmem.h"
     #include "pragmas.h"
     #include "tinyio.h"
-    #include "doschk.h"
 #endif
 
 void ResetSpawnScreen( void )
@@ -66,7 +66,7 @@ long MySpawn( const char *cmd )
     long        minMemoryLeft;
 #if defined( USE_XMS ) || defined( USE_EMS )
     int         chkSwapSize;
-    long        *xHandle;
+    xhandle     *xHandle;
     unsigned short *xSize;
 #endif
 
@@ -80,7 +80,7 @@ long MySpawn( const char *cmd )
      */
 #if defined( USE_EMS )
     if( EMSBlockTest( chkSwapSize ) == ERR_NO_ERR ) {
-        xHandle = alloca( chkSwapSize * sizeof( long ) );
+        xHandle = alloca( chkSwapSize * sizeof( xhandle ) );
         xSize = alloca( chkSwapSize * sizeof( short ) );
         for( i = 0; i < chkSwapSize; i++ ) {
             EMSGetBlock( &xHandle[i] );
@@ -92,7 +92,7 @@ long MySpawn( const char *cmd )
 #endif
 #if defined( USE_XMS )
     if( XMSBlockTest( chkSwapSize ) == ERR_NO_ERR ) {
-        xHandle = alloca( chkSwapSize * sizeof( long ) );
+        xHandle = alloca( chkSwapSize * sizeof( xhandle ) );
         xSize = alloca( chkSwapSize * sizeof( short ) );
         for( i = 0; i < chkSwapSize; i++ ) {
             XMSGetBlock( &xHandle[i] );

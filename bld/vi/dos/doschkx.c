@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,7 +35,6 @@
 #include "vi.h"
 #include "tinyio.h"
 #include "fcbmem.h"
-#include "doschk.h"
 #include "doschkx.h"
 
 
@@ -49,11 +49,11 @@ static tiny_handle_t    fileHandle = TINY_HANDLE_NULL;
 #if defined( USE_XMS ) || defined( USE_EMS )
 
 static unsigned short   *xSize = NULL;
-static long             *xHandle = NULL;
+static xhandle          *xHandle = NULL;
 static unsigned short   currMem = 0;
 static int              chkSwapSize = 0;
 
-static void memGiveBack( void (*rtn)( long ) )
+static void memGiveBack( void (*rtn)(xhandle) )
 {
     int i;
 
@@ -62,7 +62,7 @@ static void memGiveBack( void (*rtn)( long ) )
     }
 }
 
-static void memBlockWrite( void (*rtn)(long, void*, unsigned), __segment buff, unsigned *size )
+static void memBlockWrite( void (*rtn)(xhandle, void*, unsigned), __segment buff, unsigned *size )
 {
     unsigned    bytes;
 
@@ -75,7 +75,7 @@ static void memBlockWrite( void (*rtn)(long, void*, unsigned), __segment buff, u
     currMem++;
 }
 
-static bool memBlockRead( void (*rtn)(long, void*, unsigned), __segment *buff )
+static bool memBlockRead( void (*rtn)(xhandle, void*, unsigned), __segment *buff )
 {
     rtn( xHandle[currMem], MK_FP( *buff, 0 ), xSize[currMem] );
     *buff += 0x200;
@@ -86,7 +86,7 @@ static bool memBlockRead( void (*rtn)(long, void*, unsigned), __segment *buff )
     return( true );
 }
 
-void XSwapInit( int count, long *handles, unsigned short *sizes )
+void XSwapInit( int count, xhandle *handles, unsigned short *sizes )
 {
     chkSwapSize = count;
     xHandle = handles;
