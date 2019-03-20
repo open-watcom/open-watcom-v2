@@ -82,7 +82,8 @@ static int compareRevI( const void *p1, const void *p2 )
     return( stricmp( *cp2, *cp1 ) );
 }
 
-void main( int argc, char **argv )
+// main is allways int on windows
+int main( int argc, char **argv )
 {
     int     rflag = 0, fflag = 0, ch;
     int     line_count = 0;
@@ -91,11 +92,13 @@ void main( int argc, char **argv )
     int     i;
     FILE    *infile, *outfile;
     int     own_infile = 0, own_outfile = 0;
+	int     ret;
 
     infile = NULL;
     outfile = NULL;
     argv = ExpandEnv( &argc, argv );
-
+	ret = EXIT_SUCCESS;
+	
     for( ;; ) {
         ch = GetOpt( &argc, argv, "o:fr", usageMsg );
         if( ch == -1 ) {
@@ -108,21 +111,24 @@ void main( int argc, char **argv )
             outfile = fopen( OptArg, "w" );
             if( outfile == NULL ) {
                 fprintf( stderr, "sort: cannot open output file \"%s\"\n", OptArg );
-                exit( EXIT_FAILURE );
+                ret = EXIT_FAILURE;
+                goto done;
             }
             own_outfile = 1;
         }
     }
-
     argv++;
+		
     if( *argv != NULL ) {
-        infile = fopen( *argv, "r" );
+        // allways open in binary mode on windows
+        infile = fopen( *argv, "rb" );
         if( infile == NULL ) {
             fprintf( stderr, "sort: cannot open input file \"%s\"\n", *argv );
             if( own_outfile ) {
                 fclose( outfile );
             }
-            exit( EXIT_FAILURE );
+            ret = EXIT_FAILURE;
+            goto done;
         }
         own_infile = 1;
     } else {
@@ -167,6 +173,7 @@ void main( int argc, char **argv )
     if( own_outfile ) {
         fclose( outfile );
     }
-    exit( EXIT_SUCCESS );
+done:; // a goto! flee in terror...
+    return( ret );
 }
 
