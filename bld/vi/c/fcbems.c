@@ -44,7 +44,7 @@
 #define EMS_IO_ERROR    ((size_t)-1)
 
 ems_struct              EMSCtrl;
-static unsigned long    *emsPtrs;
+static long             *emsPtrs;
 
 static size_t   emsRead( long, void __far *, size_t );
 static size_t   emsWrite( long, void __far *, size_t );
@@ -141,7 +141,7 @@ static long eMSAlloc( unsigned size )
     unsigned char       handle;
     ems_addr            h;
 
-    size = ( size + 1 ) & ~1;
+    size = ROUNDUP( size, 2 );
     if( size > EMS_MAX_PAGE_SIZE || EMSCtrl.exhausted ) {
         return( 0 );
     }

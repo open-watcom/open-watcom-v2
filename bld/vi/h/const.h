@@ -49,6 +49,8 @@
 
 #define GET_BOOL_PREFIX(b)      ((b) ? "" : "no")
 
+#define ROUNDUP( size, word )   (((size)+((word)-1)) & ~((word)-1))
+
 typedef enum {
     DRIVE_TYPE_NONE,
     DRIVE_TYPE_IS_REMOVABLE,

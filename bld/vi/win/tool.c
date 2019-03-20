@@ -468,7 +468,7 @@ static void createToolBar( RECT *rect )
     dinfo.is_fixed = true;
     toolbar_height = TOOLBAR_HEIGHT( EditVars.ToolBarButtonHeight );
     dinfo.area = *rect;
-    dinfo.area.bottom = ((dinfo.area.top + toolbar_height + 1) & ~1) - 1;
+    dinfo.area.bottom = ROUNDUP( dinfo.area.top + toolbar_height, 2 ) - 1;
     dinfo.area.top -= 1;
     dinfo.area.bottom -= 1;
     dinfo.area.left -= 1;

@@ -73,9 +73,7 @@ long MySpawn( const char *cmd )
 
     minMemoryLeft = MaxMemFree & ~((long)MAX_IO_BUFFER - 1);
 #if defined( USE_XMS ) || defined( USE_EMS )
-    chkSwapSize = 1 + (unsigned short)
-        (((minMemoryLeft + ((long)MAX_IO_BUFFER - 1)) & ~((long)MAX_IO_BUFFER - 1)) /
-         (long)MAX_IO_BUFFER);
+    chkSwapSize = 1 + (unsigned short)( minMemoryLeft / MAX_IO_BUFFER );
 
     /*
      * set up checkpoint file stuff:

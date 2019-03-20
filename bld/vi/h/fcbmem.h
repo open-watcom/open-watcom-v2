@@ -75,3 +75,6 @@ void    XMSInit( void );
 void    XMSFini( void );
 void    GiveBackXMSBlock( long );
 void    XMSBlockInit( int );
+#if defined( USE_XTD )
+void __interrupt XMemIntHandler( volatile union INTPACK r );
+#endif

@@ -34,12 +34,12 @@
 
 #if defined( USE_XTD )
 
+#include <i86.h>
 #include "dosx.h"
 #include "xmem.h"
 #include "fcbmem.h"
 #include "pragmas.h"
 
-extern void __interrupt XMemIntHandler( void );
 
 static descriptor GDT[] = {
     { 0, 0, 0 },    /* dummy segment */
@@ -140,7 +140,7 @@ void XMemInit( void )
     }
 
     XMemCtrl.xtd_vector = DosGetVect( XMEM_INTERRUPT );
-    DosSetVect( XMEM_INTERRUPT, XMemIntHandler );
+    DosSetVect( XMEM_INTERRUPT, (void (__interrupt *)( void ))XMemIntHandler );
     XMemCtrl.inuse = true;
 
     /*
@@ -202,7 +202,7 @@ static void xmemRead( long addr, void *buff, size_t size )
 {
     flat_address        source, target;
 
-    size = (size + 1) & ~1;
+    size = ROUNDUP( size, 2 );
     source = addr;
     GDT[GDT_SOURCE].address = GDT_RW_DATA | source;
     GDT[GDT_SOURCE].length = size;
@@ -221,7 +221,7 @@ static void xmemWrite( long addr, void *buff, size_t size )
 {
     flat_address        source, target;
 
-    size = (size + 1) & ~1;
+    size = ROUNDUP( size, 2 );
     target = addr;
     GDT[GDT_TARGET].address = GDT_RW_DATA | target;
     GDT[GDT_TARGET].length = size;

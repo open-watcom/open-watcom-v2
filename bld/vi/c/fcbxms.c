@@ -34,6 +34,7 @@
 
 #if defined( USE_XMS )
 
+#include <i86.h>
 #include "dosx.h"
 #include "xmem.h"
 #include "fcbmem.h"
@@ -42,7 +43,7 @@
 #define XMS_IO_ERROR    ((size_t)-1)
 
 xms_struct              XMSCtrl;
-static unsigned long    *xmsPtrs;
+static long             *xmsPtrs;
 
 static size_t   xmsRead( long, void __far *, size_t );
 static size_t   xmsWrite( long, void __far *, size_t );
@@ -74,11 +75,13 @@ void XMSBlockWrite( long addr, void __far *buff, size_t len )
 vi_rc XMSGetBlock( long *addr )
 {
     vi_rc       rc;
-    long        found = 0;
+    long        found;
+    int         i;
 
     rc = XMSBlockTest( 1 );
     if( rc == ERR_NO_ERR ) {
         XMSBlocksInUse++;
+        found = 0;
         for( i = 0; i < TotalXMSBlocks; i++ ) {
             if( xmsPtrs[i] != 0 ) {
                 found = xmsPtrs[i];
@@ -141,7 +144,7 @@ static unsigned long xmsAlloc( int size )
     unsigned            handle, new_size, page_request;
     unsigned long       offset;
 
-    size = (size + 0x03) & ~0x03;
+    size = ROUNDUP( size, 4 );
     if( XMSCtrl.exhausted ) {
         return( 0 );
     }
@@ -152,7 +155,7 @@ static unsigned long xmsAlloc( int size )
         }
 
         /* align offset to 1k boundary */
-        offset = (XMSCtrl.offset + 0x03ff) & ~0x03ff;
+        offset = ROUNDUP( XMSCtrl.offset, 0x400 );
         if( offset < XMSCtrl.size ) {
             /* reallocate the block to eliminate internal fragmentation */
             new_size = offset / 0x0400;
@@ -232,9 +235,9 @@ void XMSInit( void )
         XMSCtrl.size = XMS_MAX_BLOCK_SIZE;
     }
 
-    xmsPtrs = _MemAllocArray( long, MaxXMSBlocks );
+    xmsPtrs = _MemAllocArray( long, EditVars.MaxXMSBlocks );
 
-    for( i = 0; i < MaxXMSBlocks; i++ ) {
+    for( i = 0; i < EditVars.MaxXMSBlocks; i++ ) {
         xmsPtrs[i] = xmsAlloc( MAX_IO_BUFFER );
         if( xmsPtrs[i] == 0 ) {
             break;
@@ -290,7 +293,7 @@ static size_t xmsRead( long addr, void __far *buff, size_t size )
     if( addr == 0 ) {
         return( XMS_IO_ERROR );
     }
-    size = (size + 1) & ~1;
+    size = ROUNDUP( size, 2 );
 
     h.external = addr;
     offset = h.internal.offset << 2;
@@ -331,7 +334,7 @@ static size_t xmsWrite( long addr, void __far *buff, size_t size )
     if( addr == 0 ) {
         return( XMS_IO_ERROR );
     }
-    size = (size + 1) & ~1;
+    size = ROUNDUP( size, 2 );
     h.external = addr;
     offset = h.internal.offset << 2;
     if( h.internal.handle == XMS_HMA_HANDLE ) {
@@ -386,8 +389,8 @@ void XMSBlockInit( int i )
     if( XMSCtrl.inuse ) {
         return;
     }
-    MaxXMSBlocks = i;
-    MaxXMSBlocks /= (MAX_IO_BUFFER / 1024);
+    EditVars.MaxXMSBlocks = i;
+    EditVars.MaxXMSBlocks /= (MAX_IO_BUFFER / 1024);
 
 } /* XMSBlockInit */
 
