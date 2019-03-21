@@ -204,7 +204,7 @@ static void xmemRead( long addr, void *buff, size_t size )
     flat_address        source, target;
 
     size = ROUNDUP( size, 2 );
-    source = XHANDLE2FLAT( addr );
+    source = addr;
     GDT[GDT_SOURCE].address = GDT_RW_DATA | source;
     GDT[GDT_SOURCE].length = size;
     target = MAKE_LINEAR( buff );
