@@ -31,8 +31,8 @@
 
 
 #include "vi.h"
-#include <malloc.h>
 #include "stack.h"
+
 
 void main( int argc, char *argv[] )
 {

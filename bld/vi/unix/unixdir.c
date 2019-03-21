@@ -49,7 +49,7 @@ void GetFileInfo( direct_ent *tmp, struct dirent *dire, const char *path )
     struct stat st;
 
     len = strlen( path );
-    tmpname = malloc( len + strlen( dire->d_name ) + 3 );
+    tmpname = MemAlloc( len + strlen( dire->d_name ) + 3 );
     strcpy( tmpname, path );
     if( tmpname[len - 1] != FILE_SEP ) {
         tmpname[len++] = FILE_SEP;
@@ -57,7 +57,7 @@ void GetFileInfo( direct_ent *tmp, struct dirent *dire, const char *path )
     }
     strcpy( tmpname + len, dire->d_name );
     stat( tmpname, &st );
-    free( tmpname );
+    MemFree( tmpname );
     tmp->attr = SET_ATTRIBS( st.st_mode );
     tmp->fsize = st.st_size;
     tmp->time = st.st_mtime;
@@ -112,7 +112,7 @@ void FormatFileEntry( direct_ent *file, char *res )
     size1 = strlen( file->name ) + 4;
     if( size1 < NAMEWIDTH + 1 )
         size1 = NAMEWIDTH + 1;
-    tmp = malloc( size1 );
+    tmp = MemAlloc( size1 );
 
     size = file->fsize;
     MySprintf( tmp, "  %S", file->name );
@@ -182,4 +182,5 @@ void FormatFileEntry( direct_ent *file, char *res )
                (int)tm->tm_hour,
                (int)tm->tm_min );
 
+    MemFree( tmp );
 } /* FormatFileEntry */

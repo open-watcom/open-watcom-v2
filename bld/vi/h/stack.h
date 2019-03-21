@@ -31,9 +31,21 @@
 
 #if defined( __WATCOMC__ ) && defined( _M_IX86 ) && !defined( __OS2V2__ )
 
-#if !defined( _M_I86 )
-    #define _nheapgrow()
-    #define _nheapshrink()
+#if defined( _M_I86 )
+    #include <malloc.h>
+    #define VIHEAPGROW()    _nheapgrow()
+    #define VIHEAPSHRINK()  _nheapshrink()
+#else
+    #define VIHEAPGROW()
+    #define VIHEAPSHRINK()
+#endif
+
+#if defined( _M_I86 ) && ( defined(__COMPACT__) || defined(__LARGE__) || defined(__HUGE__) )
+    #define VIMALLOC    _nmalloc
+    #define VIFREE      _nfree
+#else
+    #define VIMALLOC    malloc
+    #define VIFREE      free
 #endif
 
 extern char _NEAR *GetSP( void );
@@ -54,23 +66,23 @@ extern void SetSP( char _NEAR * );
 
 #define InitialStack() \
     { \
-        _nheapgrow(); \
+        VIHEAPGROW(); \
         sp = GetSP(); \
-        stackptr = _nmalloc( MIN_STACK_K * 1024 ); \
+        stackptr = VIMALLOC( MIN_STACK_K * 1024 ); \
         if( stackptr == NULL ) { \
             exit( 1 ); \
         } \
         SetSP( stackptr + MIN_STACK_K * 1024 - 16 ); \
-        _STACKLOW = (unsigned) stackptr; \
-        _STACKTOP = (unsigned) (stackptr + MIN_STACK_K * 1024 - 16); \
+        _STACKLOW = (unsigned)stackptr; \
+        _STACKTOP = (unsigned)( stackptr + MIN_STACK_K * 1024 - 16 ); \
     }
 
 #define FinalStack() \
     { \
         SetSP( sp ); \
-        _nfree( stackptr ); \
+        VIFREE( stackptr ); \
         for( ;; ) { \
-            stackptr2 = _nmalloc( EditVars.StackK * 1024 ); \
+            stackptr2 = VIMALLOC( EditVars.StackK * 1024 ); \
             if( stackptr2 == NULL ) { \
                 EditVars.StackK--; \
                 if( EditVars.StackK < MIN_STACK_K ) { \
@@ -81,9 +93,9 @@ extern void SetSP( char _NEAR * );
             } \
         } \
         SetSP( stackptr2 + EditVars.StackK * 1024 - 16 ); \
-        _STACKLOW = (unsigned) stackptr2; \
-        _STACKTOP = (unsigned) (stackptr2 + EditVars.StackK * 1024 - 16); \
-        _nheapshrink(); \
+        _STACKLOW = (unsigned)stackptr2; \
+        _STACKTOP = (unsigned)( stackptr2 + EditVars.StackK * 1024 - 16 ); \
+        VIHEAPSHRINK(); \
     }
 
 static char _NEAR  *stackptr, _NEAR *stackptr2;

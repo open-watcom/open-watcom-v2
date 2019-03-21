@@ -33,8 +33,7 @@
 #include "commonui.h"
 #include "vi.h"
 #ifdef __WATCOMC__
-#include <process.h>
-#include <malloc.h>
+    #include <process.h>
 #endif
 #include "win.h"
 // #include "ole2def.h"

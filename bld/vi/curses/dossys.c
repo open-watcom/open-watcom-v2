@@ -90,7 +90,7 @@ void ScreenInit( void )
     EditVars.WindMaxHeight = LINES;
 
     size = EditVars.WindMaxWidth * EditVars.WindMaxHeight * sizeof( char_info );
-    Scrn = malloc( size );
+    Scrn = MemAlloc( size );
 
     // EditFlags.Monocolor = true;
     EditFlags.HasSystemMouse = false;

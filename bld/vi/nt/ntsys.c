@@ -101,7 +101,7 @@ void ScreenInit( void )
 
     EditFlags.Color = true;
 
-    Scrn = malloc( EditVars.WindMaxWidth * EditVars.WindMaxHeight * sizeof( char_info ) );
+    Scrn = MemAlloc( EditVars.WindMaxWidth * EditVars.WindMaxHeight * sizeof( char_info ) );
     ScreenPage( 0 );
 
     tmp[0] = '\0';

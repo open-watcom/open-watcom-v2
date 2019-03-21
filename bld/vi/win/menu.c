@@ -31,9 +31,9 @@
 
 
 #include "vi.h"
-#include <malloc.h>
 #include "menu.h"
 #include <assert.h>
+
 
 /* The following value comes from Petzold - page 344 */
 /* we don't want to interfere with any system id's   */

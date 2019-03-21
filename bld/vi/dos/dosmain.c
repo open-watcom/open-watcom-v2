@@ -30,8 +30,8 @@
 
 
 #include "vi.h"
-#include <malloc.h>
 #include "stack.h"
+
 
 void main( int argc, char *argv[] )
 {
@@ -45,7 +45,7 @@ void main( int argc, char *argv[] )
     InitializeEditor();
     FinalStack();
     EditMain();
-    
+
     FiniMem();
 
 } /* main */

@@ -255,7 +255,7 @@ static FILE *GetFromEnvAndOpen( char *inpath )
 /*
  * Usage - dump the usage message
  */
-#if defined( __WATCOMC__ ) && !defined( __AXP__ )
+#if defined( __WATCOMC__ )
     #pragma aux Usage __aborts
 #endif
 static void Usage( char *msg )

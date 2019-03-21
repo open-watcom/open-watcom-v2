@@ -32,7 +32,6 @@
 
 #include "commonui.h"
 #include "vi.h"
-#include <malloc.h>
 #include <shellapi.h>
 #include "toolbr.h"
 #include "color.h"
