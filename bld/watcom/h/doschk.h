@@ -30,6 +30,9 @@
 ****************************************************************************/
 
 
+#include "dosswpcf.h"
+
+
 typedef enum {
     IN_EMS,
     IN_XMS,
@@ -41,6 +44,6 @@ typedef unsigned long   xhandle;
 extern bool CheckPointMem( where_parm where, unsigned max, char *f_buff );
 extern void CheckPointRestore( where_parm where );
 
-#if defined( USE_XMS ) || defined( USE_EMS )
+#if defined( USE_XMEM )
 extern void XSwapInit( int count, xhandle *handles, unsigned short *sizes );
 #endif
