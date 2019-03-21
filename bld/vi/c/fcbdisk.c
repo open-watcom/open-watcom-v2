@@ -33,6 +33,7 @@
 #include "posix.h"
 #include <fcntl.h>
 #include "fcbmem.h"
+#include "tempio.h"
 
 #include "clibext.h"
 
@@ -60,7 +61,7 @@ vi_rc SwapToDisk( fcb *fb )
     rc = swapFileOpen();
     if( rc == ERR_NO_ERR ) {
         len = MakeWriteBlock( fb );
-    
+
         /*
          * now write the buffer
          */

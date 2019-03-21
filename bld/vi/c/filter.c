@@ -33,6 +33,7 @@
 #include "vi.h"
 #include "win.h"
 #include "wio.h"
+#include "tempio.h"
 
 #include "clibext.h"
 

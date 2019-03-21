@@ -40,6 +40,7 @@
 #include "posix.h"
 #include "win.h"
 #include "fts.h"
+#include "tempio.h"
 #ifdef __WIN__
   #include "winrtns.h"
 #endif

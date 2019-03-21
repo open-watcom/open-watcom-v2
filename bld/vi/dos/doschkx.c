@@ -36,6 +36,7 @@
 #include "tinyio.h"
 #include "fcbmem.h"
 #include "doschkx.h"
+#include "tempio.h"
 
 
 #define FILE_BUFFER_SIZE    0x8000

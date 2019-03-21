@@ -51,6 +51,7 @@
 #include "rcs.h"
 #include "autoenv.h"
 #include "iopath.h"
+#include "tempio.h"
 
 #include "clibext.h"
 #include "clibint.h"

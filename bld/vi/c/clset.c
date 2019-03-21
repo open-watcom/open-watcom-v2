@@ -39,6 +39,7 @@
 #include "fcbmem.h"
 #include "win.h"
 #include "menu.h"
+#include "tempio.h"
 
 #include "clibext.h"
 

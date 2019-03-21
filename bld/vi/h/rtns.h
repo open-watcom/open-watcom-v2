@@ -465,8 +465,6 @@ void    GetFromEnv( const char *, char * );
 void    FileLower( char *str );
 bool    FileTemplateMatch( const char *, const char * );
 char    *StripPath( const char * );
-void    VerifyTmpDir( void );
-char    *MakeTmpPath( char *out, const char *in );
 
 /* key.c */
 vi_key  GetVIKey( unsigned code, unsigned scan, bool shift );
