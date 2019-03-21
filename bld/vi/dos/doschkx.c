@@ -66,7 +66,7 @@ static void memBlockWrite( void (*rtn)(xhandle, void*, unsigned), __segment buff
 {
     unsigned    bytes;
 
-    if( *size >= 0x0200 ) {
+    if( *size > 0x0200 ) {
         *size = 0x0200;
     }
     bytes = *size << 4;
