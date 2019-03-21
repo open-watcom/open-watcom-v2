@@ -114,7 +114,7 @@ vi_rc SwapToXMSMemory( fcb *fb )
         /*
          * finish up
          */
-        fb->xmemaddr = found;
+        fb->xblock.handle = found;
         fb->in_xms_memory = true;
     }
     return( rc );
@@ -129,8 +129,8 @@ vi_rc SwapToMemoryFromXMSMemory( fcb *fb )
     size_t  len;
 
     len = FcbSize( fb );
-    xmsRead( fb->xmemaddr, ReadBuffer, len );
-    GiveBackXMSBlock( fb->xmemaddr );
+    xmsRead( fb->xblock.handle, ReadBuffer, len );
+    GiveBackXMSBlock( fb->xblock.handle );
     return( RestoreToNormalMemory( fb, len ) );
 
 } /* SwapToMemoryFromXMSMemory */

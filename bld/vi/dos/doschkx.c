@@ -67,8 +67,8 @@ static void memBlockWrite( void (*rtn)(xhandle, void*, unsigned), __segment buff
 {
     unsigned    bytes;
 
-    if( *size > 0x0200 ) {
-        *size = 0x0200;
+    if( *size > MAX_IO_BUFFER >> 4 ) {
+        *size = MAX_IO_BUFFER >> 4;
     }
     bytes = *size << 4;
     rtn( xHandle[currMem], MK_FP( buff, 0 ), bytes );
@@ -79,7 +79,7 @@ static void memBlockWrite( void (*rtn)(xhandle, void*, unsigned), __segment buff
 static bool memBlockRead( void (*rtn)(xhandle, void*, unsigned), __segment *buff )
 {
     rtn( xHandle[currMem], MK_FP( *buff, 0 ), xSize[currMem] );
-    *buff += 0x200;
+    *buff += MAX_IO_BUFFER >> 4;
     if( xSize[currMem] < MAX_IO_BUFFER ) {
         return( false );
     }

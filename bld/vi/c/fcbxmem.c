@@ -42,8 +42,6 @@
 #include "pragmas.h"
 
 
-#define XHANDLE2FLAT(x)     ((unsigned long)x)
-
 static descriptor GDT[] = {
     { 0, 0, 0 },    /* dummy segment */
     { 0, 0, 0 },    /* data segment */
@@ -55,8 +53,8 @@ static descriptor GDT[] = {
 
 xtd_struct XMemCtrl;
 
-static void xmemWrite( xhandle , void *, size_t );
-static void xmemRead( xhandle , void *, size_t );
+static void xmemWrite( long, void *, size_t );
+static void xmemRead( long, void *, size_t );
 static bool checkVDISK( flat_address * );
 
 /*
@@ -64,7 +62,7 @@ static bool checkVDISK( flat_address * );
  */
 vi_rc SwapToExtendedMemory( fcb *fb )
 {
-    xhandle     addr;
+    long        addr;
     size_t      len;
 
     if( !XMemCtrl.inuse ) {
@@ -85,7 +83,7 @@ vi_rc SwapToExtendedMemory( fcb *fb )
     /*
      * finish up
      */
-    fb->xmemaddr = addr;
+    fb->xblock.addr = addr;
     fb->in_extended_memory = true;
     return( ERR_NO_ERR );
 
@@ -99,8 +97,8 @@ vi_rc SwapToMemoryFromExtendedMemory( fcb *fb )
     size_t  len;
 
     len = FcbSize( fb );
-    xmemRead( fb->xmemaddr, ReadBuffer, len );
-    GiveBackXMemBlock( fb->xmemaddr );
+    xmemRead( fb->xblock.addr, ReadBuffer, len );
+    GiveBackXMemBlock( fb->xblock.addr );
     return( RestoreToNormalMemory( fb, len ) );
 
 } /* SwapToMemoryFromExtendedMemory */
@@ -201,7 +199,7 @@ void XMemFini( void )
 /*
  * xmemRead - read from extended memory
  */
-static void xmemRead( xhandle addr, void *buff, size_t size )
+static void xmemRead( long addr, void *buff, size_t size )
 {
     flat_address        source, target;
 
@@ -220,12 +218,12 @@ static void xmemRead( xhandle addr, void *buff, size_t size )
 /*
  * xmemWrite - write to extended memory
  */
-static void xmemWrite( xhandle addr, void *buff, size_t size )
+static void xmemWrite( long addr, void *buff, size_t size )
 {
     flat_address        source, target;
 
     size = ROUNDUP( size, 2 );
-    target = XHANDLE2FLAT( addr );
+    target = addr;
     GDT[GDT_TARGET].address = GDT_RW_DATA | target;
     GDT[GDT_TARGET].length = size;
     source = MAKE_LINEAR( buff );
@@ -264,7 +262,7 @@ static bool checkVDISK( flat_address *start )
 /*
  * GiveBackXMemBlock - return some extended memory
  */
-void GiveBackXMemBlock( xhandle addr )
+void GiveBackXMemBlock( long addr )
 {
     GiveBackBlock( addr - XMemCtrl.offset, XMemBlocks );
     XMemCtrl.allocated--;

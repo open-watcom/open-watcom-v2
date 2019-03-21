@@ -115,7 +115,7 @@ vi_rc SwapToEMSMemory( fcb *fb )
         /*
          * finish up
          */
-        fb->xmemaddr = found;
+        fb->xblock.handle = found;
         fb->in_ems_memory = true;
     }
     return( rc );
@@ -130,8 +130,8 @@ vi_rc SwapToMemoryFromEMSMemory( fcb *fb )
     size_t  len;
 
     len = FcbSize( fb );
-    emsRead( fb->xmemaddr, ReadBuffer, len );
-    GiveBackEMSBlock( fb->xmemaddr );
+    emsRead( fb->xblock.handle, ReadBuffer, len );
+    GiveBackEMSBlock( fb->xblock.handle );
     return( RestoreToNormalMemory( fb, len ) );
 
 } /* SwapToMemoryFromEMSMemory */

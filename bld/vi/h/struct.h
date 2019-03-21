@@ -221,7 +221,10 @@ typedef struct fcb {
     long        offset;                     // offset in swap file
     long        last_swap;                  // time fcb was last swapped
 #if defined( __DOS__ )
-    xhandle     xmemaddr;                   // address of fcb in extended memory
+    union {
+        long    addr;
+        xhandle handle;
+    } xblock;                               // address of fcb in extended memory
 #endif
     short       byte_cnt;                   // number of bytes in lines
     bool        swapped             : 1;    // fcb is swapped

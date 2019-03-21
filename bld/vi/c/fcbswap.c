@@ -146,14 +146,16 @@ vi_rc RestoreToNormalMemory( fcb *fb, size_t len )
      * reset flags
      */
 #if defined( __DOS__ )
-    fb->xmemaddr = 0L;
   #if defined( USE_XTD )
+    fb->xblock.addr = 0;
     fb->in_extended_memory = false;
   #endif
   #if defined( USE_EMS )
+    fb->xblock.handle = 0;
     fb->in_ems_memory = false;
   #endif
   #if defined( USE_XMS )
+    fb->xblock.handle = 0;
     fb->in_xms_memory = false;
   #endif
 #endif
