@@ -10,6 +10,8 @@ vicomp_autodepends = .autodepend
 
 .c : ../../c
 
+inc_dirs_dos = -I"../../dos"
+
 inc_dirs = -I. -I"../../h" -I"$(posix_dir)/h"
 
 extra_cpp_flags = -DVICOMP

@@ -25,34 +25,71 @@
 *
 *  ========================================================================
 *
-* Description:  Check DOS memory blocks for consistency.
+* Description:  DOS memory Swap handling
 *
 ****************************************************************************/
 
 
 #include <stdlib.h>
+#include <string.h>
 #include <i86.h>
-#include "vi.h"
+#include "bool.h"
 #include "tinyio.h"
+#include "vi.h"
 #include "fcbmem.h"
-#include "doschkx.h"
 #include "tempio.h"
+#include "doschkx.h"
 
 
-#define FILE_BUFFER_SIZE    0x8000
+#define SPAWN_FILE_NAME     "SWXXXXXX"
+
 #define TINY_HANDLE_NULL    ((tiny_handle_t)-1)
 
-#define SPAWN_FILE_NAME    "SWXXXXXX"
+static char                 *fullName = NULL;
 
-static char             *fullName = NULL;
-static tiny_handle_t    fileHandle = TINY_HANDLE_NULL;
+#if defined( USE_XMEM )
 
-#if defined( USE_XMS ) || defined( USE_EMS )
+#define MAX_IO_BUFFER   0x2000  // 8 kB EMS/XMS page
 
 static unsigned short   *xSize = NULL;
 static xhandle          *xHandle = NULL;
 static unsigned short   currMem = 0;
 static int              chkSwapSize = 0;
+
+#endif
+
+void XchkDeleteFile( void )
+{
+    TinyDelete( fullName );
+    fullName = NULL;
+}
+
+tiny_handle_t XchkOpenFile( char *f_buff )
+{
+    tiny_ret_t      rc;
+    tiny_handle_t   filehandle;
+
+    filehandle = TINY_HANDLE_NULL;
+    if( f_buff != NULL ) {
+        fullName = f_buff;
+        MakeTmpPath( f_buff, SPAWN_FILE_NAME );
+        filehandle = mkstemp( f_buff );
+        if( filehandle == TINY_HANDLE_NULL ) {
+            fullName = NULL;
+        }
+    } else {
+        filehandle = TINY_HANDLE_NULL;
+        if( fullName != NULL ) {
+            rc = TinyOpen( fullName, TIO_READ );
+            if( TINY_OK( rc ) ) {
+                filehandle = TINY_INFO( rc );
+            }
+        }
+    }
+    return( filehandle );
+}
+
+#if defined( USE_XMEM )
 
 static void memGiveBack( void (*rtn)(xhandle) )
 {
@@ -63,7 +100,7 @@ static void memGiveBack( void (*rtn)(xhandle) )
     }
 }
 
-static void memBlockWrite( void (*rtn)(xhandle, void*, unsigned), __segment buff, unsigned *size )
+static bool memBlockWrite( void (*rtn)(xhandle, void*, unsigned), __segment buff, unsigned *size )
 {
     unsigned    bytes;
 
@@ -74,6 +111,7 @@ static void memBlockWrite( void (*rtn)(xhandle, void*, unsigned), __segment buff
     rtn( xHandle[currMem], MK_FP( buff, 0 ), bytes );
     xSize[currMem] = bytes;
     currMem++;
+    return( true );
 }
 
 static bool memBlockRead( void (*rtn)(xhandle, void*, unsigned), __segment *buff )
@@ -94,124 +132,63 @@ void XSwapInit( int count, xhandle *handles, unsigned short *sizes )
     xSize = sizes;
 }
 
-#endif
-
-void XcleanUp( where_parm where )
+void XMemCleanUp( where_parm where )
 {
-    switch( where ) {
-    case ON_DISK:
-        TinyClose( fileHandle );
-        fileHandle = TINY_HANDLE_NULL;
-        TinyDelete( fullName );
-        fullName = NULL;
-        break;
-#if defined( USE_XMS )
-    case IN_XMS:
+  #if defined( USE_XMS )
+    if( where == IN_XMS ) {
         memGiveBack( &GiveBackXMSBlock );
-        break;
-#endif
-#if defined( USE_EMS )
-    case IN_EMS:
+    }
+  #endif
+  #if defined( USE_EMS )
+    if( where == IN_EMS ) {
         memGiveBack( &GiveBackEMSBlock );
-        break;
-#endif
     }
+  #endif
 }
 
-bool XchkOpen( where_parm where, char *f_buff )
+bool XMemChkOpen( where_parm where )
 {
-    tiny_ret_t      rc;
-
-    switch( where ) {
-    case ON_DISK:
-        if( f_buff != NULL ) {
-            fullName = f_buff;
-            MakeTmpPath( f_buff, SPAWN_FILE_NAME );
-            fileHandle = mkstemp( f_buff );
-            if( fileHandle == TINY_HANDLE_NULL ) {
-                fullName = NULL;
-            }
-        } else {
-            fileHandle = TINY_HANDLE_NULL;
-            if( fullName != NULL ) {
-                rc = TinyOpen( fullName, TIO_READ );
-                if( TINY_OK( rc ) ) {
-                    fileHandle = TINY_INFO( rc );
-                }
-            }
-        }
-        return( fileHandle != TINY_HANDLE_NULL );
-#if defined( USE_EMS )
-    case IN_EMS:
+  #if defined( USE_EMS )
+    if( where == IN_XMS ) {
         currMem = 0;
-        break;
-#endif
-#if defined( USE_XMS )
-    case IN_XMS:
-        currMem = 0;
-        break;
-#endif
     }
+  #endif
+  #if defined( USE_XMS )
+    if( where == IN_EMS ) {
+        currMem = 0;
+    }
+  #endif
     return( true );
 }
 
-void XchkClose( where_parm where )
+bool XMemChkWrite( where_parm where, __segment buff, unsigned *size )
 {
-    switch( where ) {
-    case ON_DISK:
-        TinyClose( fileHandle );
-        fileHandle = TINY_HANDLE_NULL;
-        break;
+  #if defined( USE_EMS )
+    if( where == IN_XMS ) {
+        return( memBlockWrite( EMSBlockWrite, buff, size ) );
     }
-}
-
-bool XchkWrite( where_parm where, __segment buff, unsigned *size )
-{
-    tiny_ret_t      rc;
-    unsigned        bytes;
-
-    switch( where ) {
-    case ON_DISK:
-        if( *size >= 0x1000 ) {
-            *size = FILE_BUFFER_SIZE >> 4;
-        }
-        bytes = *size << 4;
-        rc = TinyFarWrite( fileHandle, MK_FP( buff, 0 ), bytes );
-        return( TINY_OK( rc ) && TINY_INFO( rc ) == bytes );
-#if defined( USE_EMS )
-    case IN_EMS:
-        memBlockWrite( EMSBlockWrite, buff, size );
-        break;
-#endif
-#if defined( USE_XMS )
-    case IN_XMS:
-        memBlockWrite( XMSBlockWrite, buff, size );
-        break;
-#endif
+  #endif
+  #if defined( USE_XMS )
+    if( where == IN_EMS ) {
+        return( memBlockWrite( XMSBlockWrite, buff, size ) );
     }
+  #endif
     return( true );
 }
 
-bool XchkRead( where_parm where, __segment *buff )
+bool XMemChkRead( where_parm where, __segment *buff )
 {
-    tiny_ret_t      rc;
-
-    switch( where ) {
-    case ON_DISK:
-        rc = TinyFarRead( fileHandle, MK_FP( *buff, 0 ), FILE_BUFFER_SIZE );
-        if( TINY_ERROR( rc ) || TINY_INFO( rc ) != FILE_BUFFER_SIZE ) {
-            return( false );
-        }
-        *buff += FILE_BUFFER_SIZE >> 4;
-        break;
-#if defined( USE_EMS )
-    case IN_EMS:
+  #if defined( USE_EMS )
+    if( where == IN_XMS ) {
         return( memBlockRead( EMSBlockRead, buff ) );
-#endif
-#if defined( USE_XMS )
-    case IN_XMS:
-        return( memBlockRead( XMSBlockRead, buff ) );
-#endif
     }
+  #endif
+  #if defined( USE_XMS )
+    if( where == IN_EMS ) {
+        return( memBlockRead( XMSBlockRead, buff ) );
+    }
+  #endif
     return( true );
 }
+
+#endif

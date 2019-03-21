@@ -2,6 +2,8 @@ inc_dirs = -I. -I"$(vi_dir)/h" -I"$(rcsdll_dir)" -I"$(posix_dir)/h"
 
 !ifdef curses
 inc_dirs_dos = -I"$(curses_dir)/h"
+!else
+inc_dirs_dos =
 !endif
 
 inc_dirs_linux = $(ui_inc_dirs) -I"$(ui_dir)/unix/h"

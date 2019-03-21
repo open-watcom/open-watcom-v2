@@ -25,68 +25,12 @@
 *
 *  ========================================================================
 *
-* Description:  DOS memory Swap handling
+* Description:  DOS memory Swap handling configuration.
 *
 ****************************************************************************/
 
 
-#include <stdlib.h>
-#include <string.h>
-#include <i86.h>
-#include "bool.h"
-#include "tinyio.h"
-#include "doschk.h"
-#include "doschkx.h"
-
-
-#define CHECK_FILE          "___CHK.MEM"
-
-#define TINY_HANDLE_NULL    ((tiny_handle_t)-1)
-
-static char                 *fullName = NULL;
-
-void XchkDeleteFile( void )
-{
-    TinyDelete( fullName );
-    fullName = NULL;
-}
-
-tiny_handle_t XchkOpenFile( char *f_buff )
-{
-    tiny_ret_t      rc;
-    tiny_handle_t   filehandle;
-
-    filehandle = TINY_HANDLE_NULL;
-    if( f_buff != NULL ) {
-        fullName = f_buff;
-        *f_buff++ = TinyGetCurrDrive() + 'A';
-        *f_buff++ = ':';
-        *f_buff++ = '\\';
-        rc = TinyFarGetCWDir( f_buff, 0 );
-        if( TINY_OK( rc ) ) {
-            while( *f_buff != 0 )
-                ++f_buff;
-            if( f_buff[-1] == '\\' ) {
-                --f_buff;
-            } else {
-                *f_buff++ = '\\';
-            }
-            memcpy( f_buff, CHECK_FILE, sizeof( CHECK_FILE ) );
-            rc = TinyCreate( fullName, TIO_NORMAL );
-            if( TINY_OK( rc ) ) {
-                filehandle = TINY_INFO( rc );
-            }
-        }
-        if( filehandle == TINY_HANDLE_NULL ) {
-            fullName = NULL;
-        }
-    } else {
-        if( fullName != NULL ) {
-            rc = TinyOpen( fullName, TIO_READ );
-            if( TINY_OK( rc ) ) {
-                filehandle = TINY_INFO( rc );
-            }
-        }
-    }
-    return( filehandle );
-}
+//#define USE_XMEM
+//#define USE_XMS
+//#define USE_EMS
+//#define USE_XTD

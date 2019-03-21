@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -24,7 +25,7 @@
 *
 *  ========================================================================
 *
-* Description:  Check DOS memory blocks for consistency.
+* Description:  DOS memory swapping to file or to EMS/XMS pages.
 *
 ****************************************************************************/
 
@@ -35,7 +36,7 @@
 #include "bool.h"
 #include "tinyio.h"
 #include "doschk.h"
-#include "doschkxf.h"
+#include "doschkx.h"
 
 
 #define FILE_BLOCK_SIZE     0x8000
@@ -62,18 +63,14 @@ static tiny_handle_t    fileHandle = TINY_HANDLE_NULL;
 static void XcleanUp( where_parm where )
 {
 #if defined( USE_XMEM )
-    switch( where ) {
-    case ON_DISK:
+    if( where == ON_DISK ) {
 #endif
         TinyClose( fileHandle );
         fileHandle = TINY_HANDLE_NULL;
         XchkDeleteFile();
 #if defined( USE_XMEM )
-        break;
-    case IN_XMS:
-    case IN_EMS:
+    } else {
         XMemCleanUp( where );
-        break;
     }
 #endif
 }
@@ -81,31 +78,26 @@ static void XcleanUp( where_parm where )
 static bool XchkOpen( where_parm where, char *f_buff )
 {
 #if defined( USE_XMEM )
-    switch( where ) {
-    case ON_DISK:
+    if( where == ON_DISK ) {
 #endif
         fileHandle = XchkOpenFile( f_buff );
         return( fileHandle != TINY_HANDLE_NULL );
 #if defined( USE_XMEM )
-    case IN_EMS:
-    case IN_XMS:
+    } else {
         XMemChkOpen( where );
-        break;
+        return( true );
     }
-    return( true );
 #endif
 }
 
 static void XchkClose( where_parm where )
 {
 #if defined( USE_XMEM )
-    switch( where ) {
-    case ON_DISK:
+    if( where == ON_DISK ) {
 #endif
         TinyClose( fileHandle );
         fileHandle = TINY_HANDLE_NULL;
 #if defined( USE_XMEM )
-        break;
     }
 #endif
 }
@@ -116,8 +108,7 @@ static bool XchkWrite( where_parm where, __segment buff, unsigned *size )
     unsigned        bytes;
 
 #if defined( USE_XMEM )
-    switch( where ) {
-    case ON_DISK:
+    if( where == ON_DISK ) {
 #endif
         if( *size >= FILE_BLOCK_SIZE >> 4 ) {
             *size = FILE_BLOCK_SIZE >> 4;
@@ -126,11 +117,9 @@ static bool XchkWrite( where_parm where, __segment buff, unsigned *size )
         rc = TinyFarWrite( fileHandle, MK_FP( buff, 0 ), bytes );
         return( TINY_OK( rc ) && TINY_INFO( rc ) == bytes );
 #if defined( USE_XMEM )
-    case IN_EMS:
-    case IN_XMS:
+    } else {
         return( XMemChkWrite( where, buff, size ) );
     }
-    return( true );
 #endif
 }
 
@@ -139,22 +128,19 @@ static bool XchkRead( where_parm where, __segment *buff )
     tiny_ret_t      rc;
 
 #if defined( USE_XMEM )
-    switch( where ) {
-    case ON_DISK:
+    if( where == ON_DISK ) {
 #endif
         rc = TinyFarRead( fileHandle, MK_FP( *buff, 0 ), FILE_BLOCK_SIZE );
         if( TINY_ERROR( rc ) || TINY_INFO( rc ) != FILE_BLOCK_SIZE ) {
             return( false );
         }
         *buff += FILE_BLOCK_SIZE >> 4;
+        return( true );
 #if defined( USE_XMEM )
-        break;
-    case IN_EMS:
-    case IN_XMS:
+    } else {
         return( XMemChkRead( where, buff ) );
     }
 #endif
-    return( true );
 }
 
 bool CheckPointMem( where_parm where, unsigned max, char *f_buff )
