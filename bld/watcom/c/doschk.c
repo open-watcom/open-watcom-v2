@@ -46,6 +46,8 @@
 #define MCB_PTR(curr)       ((dos_mem_block __based( curr ) *)0)
 #define NEXT_MCB(curr)      (curr + MCB_PTR( curr )->size + 1)
 
+#define TINY_HANDLE_NULL    ((tiny_handle_t)-1)
+
 #include "pushpck1.h"
 typedef struct {
     char            chain;  /* 'M' memory block, 'Z' is last in chain */
