@@ -33,8 +33,7 @@
 #include <stdarg.h>
 #include <string.h>
 #include <ctype.h>
-
-#if defined( _M_I86 )
+#if defined( _M_IX86 )
     #include <i86.h>
 #endif
 #ifdef __WINDOWS__
