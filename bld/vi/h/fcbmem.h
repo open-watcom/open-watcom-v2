@@ -43,7 +43,7 @@ void    SwapFileClose( void );
 void    SwapBlockInit( int );
 
 /* fcbems.c */
-#if defined( __DOS__ ) && defined( _M_I86 )
+#if defined( USE_EMS )
 vi_rc   EMSBlockTest( unsigned short );
 void    EMSBlockRead( xhandle, void *, size_t );
 void    EMSBlockWrite( xhandle, void *, size_t );
@@ -61,6 +61,7 @@ void    SwapFcb( fcb * );
 vi_rc   RestoreToNormalMemory( fcb *, size_t );
 
 /* fcbxmem.c */
+#if defined( USE_XTD )
 vi_rc   SwapToExtendedMemory( fcb * );
 vi_rc   SwapToMemoryFromExtendedMemory( fcb * );
 void    XMemInit( void );
@@ -68,12 +69,11 @@ void    XMemFini( void );
 void    GiveBackXMemBlock( long );
 
 /* fcbxmini.c */
-#if defined( USE_XTD )
 void __interrupt XMemIntHandler( volatile union INTPACK r );
 #endif
 
 /* fcbxms.c */
-#if defined( __DOS__ )
+#if defined( USE_XMS )
 vi_rc   XMSBlockTest( unsigned short );
 void    XMSBlockRead( xhandle, void *, size_t );
 void    XMSBlockWrite( xhandle, void *, size_t );
