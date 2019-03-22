@@ -965,7 +965,9 @@ static bool dialog_static( char *next, DIALOG_INFO *dlg )
     VbufInit( &text );
     line = next; next = NextToken( line, '"' );
     line = next; next = NextToken( line, '"' );
-    VbufConcStr( &text, line );
+    if( line != NULL ) {
+        VbufConcStr( &text, line );
+    }
     line = next; next = NextToken( line, ',' );
     line = next; next = NextToken( line, ',' );
     if( EvalCondition( line ) ) {
