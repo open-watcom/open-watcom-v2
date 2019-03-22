@@ -42,6 +42,9 @@ ncurses_trace_objs = &
     tracebuf.obj &
     version.obj &
     visbuf.obj
+!else
+ncurses_trace_objs = &
+    notrace.obj
 !endif
 
 objs = $(ncurses_objs) $(ncurses_trace_objs)
