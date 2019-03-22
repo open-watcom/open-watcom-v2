@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -135,8 +136,6 @@ extern bool             SimSubFileIsNLM( int parm, int subfile );
 extern bool             SimSubFileIsDLL( int parm, int subfile );
 extern bool             SimSubFileReadOnly( int parm, int subfile );
 extern long             SimSubFileSize( int parm, int subfile );
-extern bool             SimFileSplit( int parm );
-extern bool             SimFileLastSplit( int parm );
 extern void             SaveState( void );
 extern long             SimInit( const VBUF *inf_name );
 extern void             SimSetTargTempDisk( int parm, char disk );
@@ -157,8 +156,6 @@ extern int              SimNumFiles( void );
 extern void             SimGetFileDesc( int parm, VBUF *buff );
 extern void             SimGetFileName( int parm, VBUF *buff );
 extern long             SimFileSize( int parm );
-extern int              SimFileDisk( int parm, VBUF *buff );
-extern int              SimFileDiskNum( int parm );
 extern bool             SimFileOldDir( int parm, VBUF *buff );
 extern void             SimFileDir( int parm, VBUF *buff );
 extern int              SimFileDirNum( int parm );
@@ -217,7 +214,6 @@ extern int              SimNumSpawns( void );
 extern bool             SimGetSpawnCommand( int i, VBUF *buff );
 extern when_time        SimWhen( int i );
 extern bool             SimEvalSpawnCondition( int i );
-extern int              SimGetNumDisks( void );
 extern int              SimNumDeletes( void );
 extern const char       *SimDeleteName( int );
 extern bool             SimDeleteIsDialog( int );

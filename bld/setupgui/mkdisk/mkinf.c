@@ -46,6 +46,8 @@
 #include "clibext.h"
 
 
+#define BLOCKSIZE       512
+
 #define RoundUp( size, limit )  ( ( ( size + limit - 1 ) / limit ) * limit )
 
 #define IS_EMPTY(p)     ((p)[0] == '\0' || (p)[0] == '.' && (p)[1] == '\0')
@@ -93,8 +95,6 @@ enum {
 };
 
 static char                 *Product;
-static long                 DiskSize;
-static int                  BlockSize;
 static char                 *RelRoot;
 static char                 *Setup = NULL;
 static FILE_INFO            *FileList = NULL;
@@ -121,8 +121,6 @@ static LIST                 *ForceDLLInstallList = NULL;
 static LIST                 *AssociationList = NULL;
 static LIST                 *ErrMsgList = NULL;
 static LIST                 *SetupErrMsgList = NULL;
-static unsigned             MaxDiskFiles;
-static int                  FillFirst = 1;
 static int                  Lang = 1;
 static bool                 Upgrade = false;
 static bool                 Verbose = false;
@@ -231,7 +229,7 @@ static long FileSize( const char *file )
         printf( "Can't find '%s'\n", file );
         return( 0 );
     } else {
-        return( RoundUp( stat_buf.st_size, BlockSize ) );
+        return( RoundUp( stat_buf.st_size, BLOCKSIZE ) );
     }
 }
 
@@ -244,12 +242,9 @@ bool CheckParms( int *pargc, char **pargv[] )
     int                 argc;
     LIST                *new;
 
-    FillFirst = 1;
     if( *pargc > 1 ) {
         while( ((*pargv)[1] != NULL) && ((*pargv)[1][0] == '-') ) {
-            if( (*pargv)[1][1] == '0' ) {
-                FillFirst = 0;
-            } else if( tolower( (*pargv)[1][1] ) == 'l' ) {
+            if( tolower( (*pargv)[1][1] ) == 'l' ) {
                 Lang = (*pargv)[1][2] - '0';
             } else if( tolower( (*pargv)[1][1] ) == 'd' ) {
                 new = malloc( sizeof( LIST ) );
@@ -298,18 +293,6 @@ bool CheckParms( int *pargc, char **pargv[] )
         return( false );
     }
     Product = argv[1];
-#if 0
-    // diskete 1.44 MB capacity info
-    DiskSize = (1457664L-4096);
-    MaxDiskFiles = 215;
-    BlockSize = 512;
-#else
-    // single ZIP archive
-    DiskSize = LONG_MAX;
-    MaxDiskFiles = UINT_MAX;
-    BlockSize = 512;
-#endif
-
     RelRoot  = argv[3];
     if( stat( RelRoot, &stat_buf ) != 0 ) {  // exists
         printf( "\nDirectory '%s' does not exist\n", RelRoot );
@@ -1152,17 +1135,15 @@ void DumpFile( FILE *out, const char *fname )
 }
 
 
-int CreateScript( long init_size, unsigned padding )
-/**************************************************/
+static void CreateScript( long init_size, unsigned padding )
+/**********************************************************/
 {
-    int                 disk;
     FILE                *fp;
     FILE_INFO           *curr;
     PATH_INFO           *path;
     LIST                *list;
     LIST                *list2;
     unsigned            nfiles;
-    int                 i;
 
     /* unused parameters */ (void)init_size;
 
@@ -1175,7 +1156,6 @@ int CreateScript( long init_size, unsigned padding )
     for( list = AppSection; list != NULL; list = list->next ) {
         fprintf( fp, "%s\n", list->item );
     }
-    fprintf( fp, "DisketteSize=%ld\n", DiskSize );
     if( Upgrade ) {
         fprintf( fp, "IsUpgrade=1\n" );
     }
@@ -1195,22 +1175,15 @@ int CreateScript( long init_size, unsigned padding )
         fprintf( fp, "%s,%d,%d\n", path->path, path->target, path->parent );
     }
 
-    disk = 1;
     nfiles = 0;
     fprintf( fp, "\n[Files]\n" );
     for( curr = FileList; curr != NULL; curr = curr->next ) {
-        if( ++nfiles > MaxDiskFiles ) {
-            nfiles = 0;
-            ++disk;
-        }
         fprintf( fp, "%s,", curr->pack );
         DumpSizes( fp, curr );
         fput36( fp, curr->path );
         fprintf( fp, "," );
         fput36( fp, curr->old_path );
-        fprintf( fp, "," );
-        fput36( fp, disk );
-        fprintf( fp, ",.,%s\n", curr->condition );
+        fprintf( fp, ",%s\n", curr->condition );
     }
 
     if( DeleteList != NULL ) {
@@ -1229,11 +1202,6 @@ int CreateScript( long init_size, unsigned padding )
             }
             fprintf( fp, "%s\n", list->item );
         }
-    }
-
-    fprintf( fp, "\n[Disks]\n" );          // do this after # of disks determined
-    for( i = 1; i <= disk; ++i ) {
-        fprintf( fp, "Disk %d\n", i );
     }
 
     if( IconList != NULL ) {
@@ -1349,14 +1317,12 @@ int CreateScript( long init_size, unsigned padding )
     }
 
     fclose( fp );
-    return( disk );
 }
 
 
-int MakeScript( void )
-/********************/
+static void MakeScript( void )
+/****************************/
 {
-    int                 disks;
     FILE_INFO           *curr;
     size_list           *csize;
     long                act_size;
@@ -1378,11 +1344,9 @@ int MakeScript( void )
     }
     inf_size = 0;
     old_size = 0;
-    if( !FillFirst )
-        size = DiskSize;
     for ( ;; ) {
         /* keep creating script until size stabilizes */
-        disks = CreateScript( size+inf_size, 0 );
+        CreateScript( size + inf_size, 0 );
         inf_size = FileSize( "setup.inf" );
         if( old_size > inf_size ) {
             /*
@@ -1391,15 +1355,14 @@ int MakeScript( void )
                 to bring it up to the old size. This prevents us from
                 going into an oscillation between two sizes.
             */
-            disks = CreateScript( size+old_size, old_size - inf_size );
+            CreateScript( size + old_size, old_size - inf_size );
             inf_size = old_size;
         }
         if( old_size == inf_size )
             break;
         old_size = inf_size;
     }
-    printf( "Installation will require %d disks\n", disks );
-    return( disks );
+    printf( "Installation will require 1 disk.\n" );
 }
 
 

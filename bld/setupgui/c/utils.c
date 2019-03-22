@@ -1525,7 +1525,6 @@ COPYFILE_ERROR DoCopyFile( const VBUF *src_path, const VBUF *dst_path, bool appe
 typedef struct split_file {
     struct split_file   *next;
     char                *src_path;
-    char                *disk_desc;     // a file may span multiple disks
 } split_file;
 
 #define OVERHEAD_SIZE 10000 // removing a file is about like copying a small file
@@ -1792,7 +1791,6 @@ static bool DoCopyFiles( void )
 /*****************************/
 {
     int                 filenum;
-//    int                 disk_num;
     int                 subfilenum, max_subfiles;
     COPYFILE_ERROR      copy_error;
 //    VBUF                dst_path;
@@ -1802,7 +1800,6 @@ static bool DoCopyFiles( void )
     VBUF                file_desc;
     VBUF                dir;
     VBUF                tmp;
-//    VBUF                disk_desc;
     VBUF                old_dir;
     long                num_total_install;
     long                num_installed;
@@ -1836,9 +1833,6 @@ static bool DoCopyFiles( void )
         SimFileDir( filenum, &dir );
         if( SimFileAdd( filenum ) && !SimFileUpToDate( filenum ) ) {
             num_total_install += SimFileSize( filenum );
-            if( SimFileSplit( filenum ) ) {
-                num_total_install += SimFileSize( filenum );
-            }
             max_subfiles = SimNumSubFiles( filenum );
             for( subfilenum = 0; subfilenum < max_subfiles; ++subfilenum ) {
                 if( SimSubFileReadOnly( filenum, subfilenum ) ) {
@@ -1947,8 +1941,6 @@ static bool DoCopyFiles( void )
                 SimFileDir( filenum, &dir );
                 SimGetFileDesc( filenum, &file_desc );
 //                SimGetFileName( filenum, &file_name );
-//                disk_num = SimFileDisk( filenum, &disk_desc );
-//                SimFileDisk( filenum, &disk_desc );
 
 //                _splitpath( file_desc, NULL, NULL, NULL, file_ext );
 //                VbufMakepath( &dst_path, NULL, &dir, &file_desc, NULL );

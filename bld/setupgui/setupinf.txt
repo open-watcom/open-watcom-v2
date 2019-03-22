@@ -266,12 +266,6 @@ Sections
    would have been the 8th directory line. If the parent is "-1", then ??
 
 
-[Disks]
-   This section defines the names of the disks on which the software is
-   supplied. Each line names one disk, e.g. "Disk 1". Used primarily for
-   floppy installs.
-
-
 [End]
    This is the final section which terminates the install script.
 
@@ -360,19 +354,15 @@ Sections
 
    Following is the trailing part of an archive entry. Example:
 
-   6,-1,4,.,wnttarg
+   6,-1,wnttarg
 
    The first field is the base-36 index of the directory into which the
    file(s) should be placed. The second field is the base-36 "old directory"
    index: It is used when a file moved from one directory to another between
    releases; value of -1 indicates there is no previous directory. The third
-   field is the base-36 disk index. The fourth field is the file type, which
-   can be '1', 'm' or '$' (?? possibly to do with if a file is split over
-   multiple diskettes, where '1' is the first part, 'm' is an intermediate
-   part and '$' is the last part). If not specified, it is a single-part file.
-   This is used to calculate file sizes. The fifth field (string) specifies a
-   condition (in a format described above in the 'Conditions' section). This
-   condition must be true for an archive to be processed.
+   field (string) specifies a condition (in a format described above in the
+   'Conditions' section). This condition must be true for an archive to be
+   processed.
 
 
 [ForceDLLInstall]

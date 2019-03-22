@@ -55,9 +55,6 @@ dbclienw.exe, dbclienw, 2, 1, Y, .
 isqlw.exe, isqlw, 1, 1, Y, .
 odbcadm.exe, odbcadme, 1, 1, Y, .
 
-[Disks]
-1=Disk 1
-
 [PM Info]
 wsqldde.exe,    ,DDE Server
 dbclienw.exe,   ,Database Client
