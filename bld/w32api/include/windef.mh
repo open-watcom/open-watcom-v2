@@ -32,10 +32,8 @@
 /* Calling conventions */
 #undef pascal
 #undef _pascal
-#undef __pascal
 #define pascal      __stdcall
 #define _pascal     __stdcall
-#define __pascal    __stdcall
 #ifndef CDECL
     #define CDECL   __cdecl
 #endif
