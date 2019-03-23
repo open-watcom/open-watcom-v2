@@ -35,7 +35,6 @@
 #include <ctype.h>
 #include <string.h>
 #include <process.h>
-#include <malloc.h>
 #include <conio.h>
 #include <i86.h>
 #include <sys/types.h>

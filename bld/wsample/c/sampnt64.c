@@ -34,7 +34,6 @@
 #include <stddef.h>
 #include <ctype.h>
 #include <string.h>
-#include <malloc.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include "sample.h"

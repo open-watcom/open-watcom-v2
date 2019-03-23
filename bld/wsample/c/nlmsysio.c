@@ -32,7 +32,6 @@
 
 #include <stdio.h>
 #include <io.h>
-#include <malloc.h>
 #include <fcntl.h>
 #include "sample.h"
 #include "smpstuff.h"

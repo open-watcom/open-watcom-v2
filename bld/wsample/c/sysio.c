@@ -30,8 +30,8 @@
 
 
 #include <stdio.h>
+#include <stdlib.h>
 #include <unistd.h>
-#include <malloc.h>
 #include <fcntl.h>
 #include <sys/stat.h>
 #include "sample.h"

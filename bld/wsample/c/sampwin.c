@@ -37,7 +37,6 @@
 #include <string.h>
 #include <stdarg.h>
 #include <dos.h>
-#include <malloc.h>
 #include <conio.h>
 #include <fcntl.h>
 #include <sys/types.h>
@@ -49,6 +48,7 @@
 #include "sampwin.h"
 #include "exeos2.h"
 #include "exedos.h"
+
 
 #define BUFF_SIZE 512
 

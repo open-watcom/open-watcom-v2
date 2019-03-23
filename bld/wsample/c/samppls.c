@@ -39,7 +39,6 @@
 #include <ctype.h>
 #include <string.h>
 #include <process.h>
-#include <malloc.h>
 #include <conio.h>
 #include <sys/types.h>
 #include <sys/stat.h>
