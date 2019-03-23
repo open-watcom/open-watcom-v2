@@ -29,7 +29,7 @@
 ****************************************************************************/
 
 
-extern void         clear_shift( void );
+extern void         intern clear_shift( void );
 extern int          nextc( int n );
 extern void         nextc_unget( char *, size_t );
 extern ui_event     ck_keyboardevent( void );

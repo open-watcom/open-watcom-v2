@@ -30,8 +30,8 @@
 ****************************************************************************/
 
 
-extern void     *uimalloc( size_t );
-extern void     uifree( void * );
-extern void     *uirealloc( void *old, size_t size );
-extern void     UIMemOpen( void );
-extern void     UIMemClose( void );
+extern void     * UIAPI uimalloc( size_t );
+extern void     UIAPI uifree( void * );
+extern void     * UIAPI uirealloc( void *old, size_t size );
+extern void     UIAPI UIMemOpen( void );
+extern void     UIAPI UIMemClose( void );

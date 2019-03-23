@@ -31,5 +31,5 @@
 ****************************************************************************/
 
 
-extern void         (intern *DrawCursor)( void );
-extern void         (intern *EraseCursor)( void );
+extern void         (intern * DrawCursor)( void );
+extern void         (intern * EraseCursor)( void );

@@ -80,13 +80,14 @@ static const char   *alt = "qwertyuiop\0\0\0\0asdfghjkl\0\0\0\0\0zxcvbnm";
 
 static bool         InitMenuPopupPending = false;
 
-void uisetbetweentitles( unsigned between )
+void UIAPI uisetbetweentitles( unsigned between )
+/***********************************************/
 {
     BetweenTitles = between;
 }
 
-char uialtchar( ui_event ui_ev )
-/******************************/
+char UIAPI uialtchar( ui_event ui_ev )
+/************************************/
 {
     if( ( ui_ev >= EV_ALT_Q ) && ( ui_ev <= EV_ALT_M ) ) {
         return( alt[ui_ev - EV_ALT_Q] );
@@ -749,7 +750,8 @@ void UIAPI uidescmenu( UIMENUITEM *menuitems, DESCMENU *desc )
     }
 }
 
-void uimenutitlebar( void )
+void UIAPI uimenutitlebar( void )
+/*******************************/
 {
     int         i;
 
@@ -773,8 +775,8 @@ static void drawbar( SAREA area, void *dummy )
     permit_refresh();
 }
 
-bool uienablepopupitem( int menuitem, int popupitem, bool enable )
-/****************************************************************/
+bool UIAPI uienablepopupitem( int menuitem, int popupitem, bool enable )
+/**********************************************************************/
 {
     bool        prev;
     UIMENUITEM  *pitem;

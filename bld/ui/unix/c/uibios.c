@@ -135,12 +135,12 @@ void intern finibios( void )
 
 static unsigned RefreshForbid = 0;
 
-void forbid_refresh( void )
+void intern forbid_refresh( void )
 {
     RefreshForbid++;
 }
 
-void permit_refresh( void )
+void intern permit_refresh( void )
 {
     if( RefreshForbid ) {
         RefreshForbid--;

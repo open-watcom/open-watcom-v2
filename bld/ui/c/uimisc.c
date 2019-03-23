@@ -34,8 +34,8 @@
 #include "uidef.h"
 #include "uimenu.h"
 
-VSCREEN intern *uiopen( SAREA *area, const char *title, screen_flags flags )
-/**************************************************************************/
+VSCREEN * intern uiopen( SAREA *area, const char *title, screen_flags flags )
+/***************************************************************************/
 {
     VSCREEN             *s;
 

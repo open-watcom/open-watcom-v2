@@ -36,8 +36,8 @@
 static ui_event_list EventList = { 0 };
 
 
-void initeventlists( void )
-/*************************/
+void intern initeventlists( void )
+/********************************/
 {
     UIData->events = &EventList;
     UIData->events->num_lists = 0;

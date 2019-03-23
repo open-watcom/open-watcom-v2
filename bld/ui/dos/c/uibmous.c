@@ -38,8 +38,8 @@
 
 #define OFF_SCREEN      200
 
-void (intern *DrawCursor)( void ) = NULL;
-void (intern *EraseCursor)( void ) = NULL;
+void (intern * DrawCursor)( void ) = NULL;
+void (intern * EraseCursor)( void ) = NULL;
 
 static MOUSEORD OldMouseRow;
 static MOUSEORD OldMouseCol = OFF_SCREEN;

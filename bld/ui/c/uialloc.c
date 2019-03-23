@@ -33,7 +33,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
-#include "uimem.h"
+#include "uidef.h"
 #ifdef TRMEM
 #include "trmem.h"
 
@@ -64,7 +64,7 @@ void UIMemRedirect( FILE *fp )
 }
 #endif
 
-void UIMemOpen( void )
+void UIAPI UIMemOpen( void )
 {
 #ifdef TRMEM
     const char      *tmpdir;
@@ -85,7 +85,7 @@ void UIMemOpen( void )
 #endif
 }
 
-void UIMemClose( void )
+void UIAPI UIMemClose( void )
 {
 #ifdef TRMEM
     _trmem_prt_list( UIMemHandle );
@@ -106,7 +106,7 @@ void UIMemPrtUsage( void )
 #endif
 
 
-void *uimalloc( size_t size )
+void * UIAPI uimalloc( size_t size )
 {
 #ifdef TRMEM
     return( _trmem_alloc( size, _trmem_guess_who(), UIMemHandle ) );
@@ -115,7 +115,7 @@ void *uimalloc( size_t size )
 #endif
 }
 
-void uifree( void *ptr )
+void UIAPI uifree( void *ptr )
 {
 #ifdef TRMEM
     _trmem_free( ptr, _trmem_guess_who(), UIMemHandle );
@@ -124,7 +124,7 @@ void uifree( void *ptr )
 #endif
 }
 
-void *uirealloc( void *old, size_t size )
+void * UIAPI uirealloc( void *old, size_t size )
 {
 #ifdef TRMEM
     return( _trmem_realloc( old, size, _trmem_guess_who(), UIMemHandle ) );

@@ -79,8 +79,7 @@ SAREA                       (*ind_xfer_sarea( SAREA (__far *rtn)() ) )();
 
 #endif
 
-#define                 UIAPI
-#define                 intern          /* near */
+#define intern          /* internal API */
 
 extern ui_event         Event;
 
@@ -88,90 +87,89 @@ extern ui_event         Event;
     extern "C" {
 #endif
 
-extern bool             intern  balloc( BUFFER *, uisize, uisize );
-extern void             intern  battrflip( BUFFER *, int, int, uisize, uisize );
-extern void             intern  battribute( BUFFER *, int, int, uisize, uisize, ATTR );
-extern void             intern  uibcopy( BUFFER *, int, int, BUFFER *, int, int, uisize );
-extern void             intern  bframe( struct buffer * );
-extern void             intern  bfree( struct buffer * );
-extern void             intern  bfake( BUFFER *, ORD, ORD );
-extern void             intern  bfill( BUFFER *, int, int, ATTR, char, uisize );
-extern void             intern  bpixel( BUFFER *, ORD, ORD, ATTR, char );
-extern void             intern  braw( BUFFER *, int, int, PIXEL *, uisize );
-extern void             intern  bstring( BUFFER *, int, int, ATTR, LPC_STRING, uisize );
-extern void             intern  bunframe( struct buffer * );
-extern int              intern  checkkey( void );
-extern void             intern  checkmouse( MOUSESTAT *, MOUSEORD *, MOUSEORD *, MOUSETIME * );
-extern unsigned char    intern  checkshift( void );
-extern void             intern  closebackground( void );
-extern void             intern  closewindow( UI_WINDOW * );
-extern void             intern  dirtyarea( UI_WINDOW *, SAREA );
-extern void             intern  dirtynext( SAREA, UI_WINDOW * );
-extern void             intern  dividearea( SAREA, SAREA, SAREA * );
-extern void             intern  drawbox( BUFFER *, SAREA, const char *, ATTR, bool );
-extern VSCREEN*         intern  findvscreen( ORD, ORD );
-extern void             intern  finibios( void );
-extern void             intern  finikeyboard( void );
-extern void             intern  flushkey( void );
-extern void             intern  frontwindow( UI_WINDOW * );
-extern unsigned         intern  getkey( void );
-extern bool             intern  initbios( void );
-extern bool             intern  initkeyboard( void );
-extern bool             intern  isdialogue( VSCREEN * );
-extern bool             intern  isscreen( BUFFER * );
-extern bool             intern  issnow( BUFFER * );
-extern void             intern  kbdspawnstart( void );
-extern void             intern  kbdspawnend( void );
-extern ui_event         intern  keyboardevent( void );
-extern ui_event         intern  menuevent( VSCREEN * );
-extern ui_event         intern  mouseevent( void );
-extern void             intern  mouseon( void );
-extern void             intern  mouseoff( void );
-extern void             intern  mousespawnstart( void );
-extern void             intern  mousespawnend( void );
-extern void             intern  okarea( SAREA );
-extern void             intern  okline( ORD, ORD, uisize, SAREA );
-extern void             intern  okopen( VSCREEN * );
-extern void             intern  oksubarea( SAREA, SAREA );
-extern void             intern  openbackground( void );
-extern bool             intern  openwindow( UI_WINDOW * );
-extern void             intern  movewindow( UI_WINDOW *, ORD, ORD );
-extern void             intern  physupdate( SAREA * );
+extern bool             intern balloc( BUFFER *, uisize, uisize );
+extern void             intern battrflip( BUFFER *, int, int, uisize, uisize );
+extern void             intern battribute( BUFFER *, int, int, uisize, uisize, ATTR );
+extern void             intern uibcopy( BUFFER *, int, int, BUFFER *, int, int, uisize );
+extern void             intern bframe( struct buffer * );
+extern void             intern bfree( struct buffer * );
+extern void             intern bfake( BUFFER *, ORD, ORD );
+extern void             intern bfill( BUFFER *, int, int, ATTR, char, uisize );
+extern void             intern bpixel( BUFFER *, ORD, ORD, ATTR, char );
+extern void             intern braw( BUFFER *, int, int, PIXEL *, uisize );
+extern void             intern bstring( BUFFER *, int, int, ATTR, LPC_STRING, uisize );
+extern void             intern bunframe( struct buffer * );
+extern int              intern checkkey( void );
+extern void             intern checkmouse( MOUSESTAT *, MOUSEORD *, MOUSEORD *, MOUSETIME * );
+extern unsigned char    intern checkshift( void );
+extern void             intern closebackground( void );
+extern void             intern closewindow( UI_WINDOW * );
+extern void             intern dirtyarea( UI_WINDOW *, SAREA );
+extern void             intern dirtynext( SAREA, UI_WINDOW * );
+extern void             intern dividearea( SAREA, SAREA, SAREA * );
+extern void             intern drawbox( BUFFER *, SAREA, const char *, ATTR, bool );
+extern VSCREEN*         intern findvscreen( ORD, ORD );
+extern void             intern finibios( void );
+extern void             intern finikeyboard( void );
+extern void             intern flushkey( void );
+extern void             intern frontwindow( UI_WINDOW * );
+extern unsigned         intern getkey( void );
+extern bool             intern initbios( void );
+extern bool             intern initkeyboard( void );
+extern bool             intern isdialogue( VSCREEN * );
+extern bool             intern isscreen( BUFFER * );
+extern bool             intern issnow( BUFFER * );
+extern void             intern kbdspawnstart( void );
+extern void             intern kbdspawnend( void );
+extern ui_event         intern keyboardevent( void );
+extern ui_event         intern menuevent( VSCREEN * );
+extern ui_event         intern mouseevent( void );
+extern void             intern mouseon( void );
+extern void             intern mouseoff( void );
+extern void             intern mousespawnstart( void );
+extern void             intern mousespawnend( void );
+extern void             intern okarea( SAREA );
+extern void             intern okline( ORD, ORD, uisize, SAREA );
+extern void             intern okopen( VSCREEN * );
+extern void             intern oksubarea( SAREA, SAREA );
+extern void             intern openbackground( void );
+extern bool             intern openwindow( UI_WINDOW * );
+extern void             intern movewindow( UI_WINDOW *, ORD, ORD );
+extern void             intern physupdate( SAREA * );
 #if defined( __UNIX__ )
-extern void             intern  forbid_refresh( void );
-extern void             intern  permit_refresh( void );
+extern void             intern forbid_refresh( void );
+extern void             intern permit_refresh( void );
 #else
 #define forbid_refresh()
 #define permit_refresh()
 #endif
-extern ui_event         intern  saveevent( void );
-extern ui_event         intern  getprime( VSCREEN * );
-extern void             intern  setupmouse( void );
-extern void             intern  setvideomode( unsigned char );
-extern int              intern  videopage( void );
-extern void             intern  vertretrace( void );
-extern ui_event         intern  getanyevent( void );
-extern void             intern  waitforevent( void );
-extern void             intern  initeventlists( void );
+extern ui_event         intern saveevent( void );
+extern ui_event         intern getprime( VSCREEN * );
+extern void             intern setupmouse( void );
+extern void             intern setvideomode( unsigned char );
+extern int              intern videopage( void );
+extern void             intern vertretrace( void );
+extern ui_event         intern getanyevent( void );
+extern void             intern waitforevent( void );
+extern void             intern initeventlists( void );
 
-extern void             intern  SetCharacterTables( void );
-extern int              intern  GetNewPos( int pos, int num );
+extern void             intern SetCharacterTables( void );
+extern int              intern GetNewPos( int pos, int num );
 
-extern VSCREEN          intern  _FARD *uiopen( SAREA *, const char *, screen_flags );
-extern void             intern  uiclose( VSCREEN _FARD * );
+extern VSCREEN          _FARD * intern uiopen( SAREA *, const char *, screen_flags );
+extern void             intern uiclose( VSCREEN _FARD * );
+
+extern void             intern newcursor( void );
 
 /*
  * below are OS specific internal shared functions
  */
 
-#if defined( __UNIX__ )
-extern void             intern  newcursor( void );
-#endif
 #if defined( __NETWARE__ )
-extern bool             intern  kbdisblocked( void );
+extern bool             intern kbdisblocked( void );
 #endif
 #if defined( __DOS__ )
-extern bool             intern  mouse_installed( void );
+extern bool             intern mouse_installed( void );
 #endif
 
 #ifdef __cplusplus

@@ -350,7 +350,7 @@ static bool createsubpopup( UIMENUITEM *parentitems, bool left, bool right,
  *
  */
 
-bool uiposfloatingpopup( UIMENUITEM *menuitems, DESCMENU *desc, ORD row, ORD col,
+bool UIAPI uiposfloatingpopup( UIMENUITEM *menuitems, DESCMENU *desc, ORD row, ORD col,
                          SAREA *keep_inside, SAREA *keep_visible )
 {
     desc->area.row = row;

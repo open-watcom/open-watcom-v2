@@ -126,7 +126,7 @@ static void savecursor( void )
 }
 
 
-static void newcursor( void )
+void intern newcursor( void )
 /***************************/
 {
     if( UIData->cursor_type == C_OFF ) {

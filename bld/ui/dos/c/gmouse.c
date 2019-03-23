@@ -163,7 +163,7 @@ static void PlotEgaVgaCursor( plot_func action )
     }
 }
 
-static void DrawEgaVgaCursor( void )
+static void intern DrawEgaVgaCursor( void )
 {
     unsigned short  off;
     unsigned short  shift;
@@ -297,7 +297,7 @@ static void MouDeinit( void )
     */
 }
 
-static void EraseEgaVgaCursor( void )
+static void intern EraseEgaVgaCursor( void )
 {
     PlotEgaVgaCursor( ERASE );
 }

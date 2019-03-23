@@ -42,7 +42,7 @@ typedef struct vbuffer {
     bool            auto_clear  :1;
 } VBUFFER;
 
-extern void         uipadblanks( char *, unsigned );
-extern ui_event     uieditevent( ui_event, VBUFFER * );
+extern void         UIAPI uipadblanks( char *, unsigned );
+extern ui_event     UIAPI uieditevent( ui_event, VBUFFER * );
 
 #endif

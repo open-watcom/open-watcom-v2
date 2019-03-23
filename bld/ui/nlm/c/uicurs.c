@@ -89,7 +89,7 @@ void UIAPI uioncursor( void )
     UIData->cursor_on = true;
 }
 
-static void newcursor( void )
+void intern newcursor( void )
 /***************************/
 {
     if( UIData->cursor_type == C_OFF ) {

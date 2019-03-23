@@ -119,7 +119,7 @@ extern void _snowcopy( LP_PIXEL, LP_PIXEL, int );
 
 #define ATTR_FLIP_MASK      0x77
 
-intern void farfill( LP_PIXEL start, PIXEL fill, size_t len, bool snow )
+void intern farfill( LP_PIXEL start, PIXEL fill, size_t len, bool snow )
 {
     size_t      i;
 
@@ -141,7 +141,7 @@ intern void farfill( LP_PIXEL start, PIXEL fill, size_t len, bool snow )
 }
 
 
-intern void farcopy( LP_PIXEL src, LP_PIXEL dst, size_t len, bool snow )
+void intern farcopy( LP_PIXEL src, LP_PIXEL dst, size_t len, bool snow )
 {
 #ifdef _M_I86
     if( snow ) {
@@ -175,7 +175,7 @@ intern void farcopy( LP_PIXEL src, LP_PIXEL dst, size_t len, bool snow )
 }
 
 
-intern void farstring( LP_PIXEL start, ATTR attr, LPC_STRING str, size_t str_len, bool snow )
+void intern farstring( LP_PIXEL start, ATTR attr, LPC_STRING str, size_t str_len, bool snow )
 {
     size_t      i;
     PIXEL       p;
@@ -207,7 +207,7 @@ intern void farstring( LP_PIXEL start, ATTR attr, LPC_STRING str, size_t str_len
     farfill( start, p, str_len - i, snow );
 }
 
-intern void farattrib( LP_PIXEL start, ATTR attr, size_t len, bool snow )
+void intern farattrib( LP_PIXEL start, ATTR attr, size_t len, bool snow )
 {
     size_t      i;
     PIXEL       p;
@@ -234,7 +234,7 @@ intern void farattrib( LP_PIXEL start, ATTR attr, size_t len, bool snow )
 #endif
 }
 
-intern void farattrflip( LP_PIXEL start, size_t len, bool snow )
+void intern farattrflip( LP_PIXEL start, size_t len, bool snow )
 {
     size_t      i;
     PIXEL       p;
