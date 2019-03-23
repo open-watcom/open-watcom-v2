@@ -31,7 +31,6 @@
 
 
 #include <stdlib.h>
-#include <malloc.h>
 #include <conio.h>
 #include <ctype.h>
 #include <process.h>
@@ -51,7 +50,11 @@
 #include "rfxacc.h"
 #include "rfx.h"
 
-const char _Literal_No_Mem_4_Path[] = { "no memory for PATH" };
+
+#define REAL_CODE( err ) (GetSystemErrCode(err)&0xffff)
+
+#define IO_SUBDIRECTORY 0x10
+#define BUFF_LEN        4096
 
 enum {
     IO_OK,
@@ -81,9 +84,6 @@ enum {
     IO_FIND_NO_MORE_FILES  = 18,
 };
 
-#define IO_SUBDIRECTORY 0x10
-#define BUFF_LEN        4096
-
 enum {
     RFX_EOR,
     RFX_EOF,
@@ -106,13 +106,18 @@ typedef struct dir_handle {
     char        status;
 } dir_handle;
 
-extern  bool            InitTrap( const char * );
-extern  bool            InitRFXSupp( void );
-extern  void            FiniTrap( void );
-extern  long            FreeSpace( int drive, object_loc loc );
+extern bool             InitTrap( const char * );
+extern bool             InitRFXSupp( void );
+extern void             FiniTrap( void );
+extern long             FreeSpace( int drive, object_loc loc );
 
-extern  const char      *_FileParse( const char *name, file_parse *file );
-extern  char            *Squish( file_parse *parse, char *into );
+extern const char       *_FileParse( const char *name, file_parse *file );
+extern char             *Squish( file_parse *parse, char *into );
+
+/* Forward declarations */
+extern void             Replace( const char *frum, const char *to, char *into );
+extern void             FinishName( const char *fn, file_parse *parse, object_loc loc, int addext );
+extern int              GetFreeSpace( dir_handle *dh, object_loc loc );
 
 dbg_switches            DbgSwitches;
 char                    *TxtBuff;
@@ -122,20 +127,12 @@ int                     MaxOnLine = { 0 };
 bool                    Typing = false;
 error_handle            ErrorStatus = { 0 };
 object_loc              DefaultLocation = LOC_DEFAULT;
-static  file_parse      Parse1;
-static  file_parse      Parse2;
-static  file_parse      Parse3;
-static  char            Name1[MAX_DRIVE+MAX_PATH+MAX_NAME+MAX_EXT+2];
-static  char            Name2[MAX_DRIVE+MAX_PATH+MAX_NAME+MAX_EXT+2];
-static  char            Name3[MAX_DRIVE+MAX_PATH+MAX_NAME+MAX_EXT+2];
-static  int             FilesCopied;
-static  int             DirectoriesMade;
 system_config           SysConfig;
 
 
 COPYPTR CopySpecs;
 
-#define REAL_CODE( err ) (GetSystemErrCode(err)&0xffff)
+const char _Literal_No_Mem_4_Path[] = { "no memory for PATH" };
 
 const char * const HelpText[] = {
     "",
@@ -209,23 +206,7 @@ const char * const ErrMessages[] = {
     "General failure"
 };
 
-
-static const char * const Day[] = {
-    "Sun  ",
-    "Mon  ",
-    "Tue  ",
-    "Wed  ",
-    "Thu  ",
-    "Fri  ",
-    "Sat  "
-};
-
-
 /* Forward declarations */
-extern void     Replace( const char *frum, const char *to, char *into );
-extern void     FinishName( const char *fn, file_parse *parse, object_loc loc, int addext );
-extern int      GetFreeSpace( dir_handle *dh, object_loc loc );
-
 void    FreeCopySpec( COPYPTR junk );
 void    ProcCD( int argc, char **argv, int crlf );
 int     ProcessCmd( const char * cmd );
@@ -238,6 +219,26 @@ void    ProcDelDir( int argc, char **argv );
 void    ProcRename( int argc, char **argv );
 void    ProcType( int argc, char **argv );
 bool    ProcDrive( int argc, char **argv );
+
+static  file_parse      Parse1;
+static  file_parse      Parse2;
+static  file_parse      Parse3;
+static  char            Name1[MAX_DRIVE+MAX_PATH+MAX_NAME+MAX_EXT+2];
+static  char            Name2[MAX_DRIVE+MAX_PATH+MAX_NAME+MAX_EXT+2];
+static  char            Name3[MAX_DRIVE+MAX_PATH+MAX_NAME+MAX_EXT+2];
+static  int             FilesCopied;
+static  int             DirectoriesMade;
+
+static const char * const Day[] = {
+    "Sun  ",
+    "Mon  ",
+    "Tue  ",
+    "Wed  ",
+    "Thu  ",
+    "Fri  ",
+    "Sat  "
+};
+
 
 static void     CopyStrMax( const char *src, char *dst, size_t max_len );
 static void     FormatDTA( char *buff, const trap_dta *dta, bool wide );

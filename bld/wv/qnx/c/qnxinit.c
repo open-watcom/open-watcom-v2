@@ -49,6 +49,9 @@
 #include "dbgcmdln.h"
 #include "owqnx.h"
 #include "dbgscrn.h"
+#ifndef __NOUI__
+#include "aui.h"
+#endif
 
 #include "clibint.h"
 

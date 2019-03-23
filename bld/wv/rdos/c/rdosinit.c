@@ -32,7 +32,6 @@
 #include <process.h>
 #include <stddef.h>
 #include <stdlib.h>
-#include <malloc.h>
 #include <direct.h>
 #include <stdarg.h>
 #include "rdos.h"
