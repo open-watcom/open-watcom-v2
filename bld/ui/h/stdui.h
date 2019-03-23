@@ -50,8 +50,6 @@
 #define UIAPI                   /* public API */
 #define UICALLBACK              /* public callback */
 
-#include "uimem.h"
-
 typedef enum ui_event {
     EV_SIGNED_TYPE               = -1,    /* ensure ui_event is signed type, required by uiungetevent */
     EV_NO_EVENT                  = 0x0000,
@@ -780,6 +778,9 @@ extern bool             UIAPI uiisdbcs( void );
 extern int              UIAPI uicharlen( int ch );        // returns 2 if dbcs lead byte
 
 extern int              UIAPI uimousealign( void );
+
+extern void             UIAPI UIMemOpen( void );
+extern void             UIAPI UIMemClose( void );
 
 /*
  * Application related functions
