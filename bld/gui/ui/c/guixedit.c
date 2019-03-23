@@ -50,28 +50,26 @@ bool GUISetEditText( an_edit_control *edit_control, char const *text, bool is_GU
  * isGUIdata chooses between local and ui functions to allow ui to realloc
  */
 {
-    void        *(*allocate)( size_t size );
-    void        (*dealloc)( void *ptr );
     char const  *filler;
     size_t      fillerLength;
     char        *new;
 
-    if( is_GUI_data ) {
-        allocate = GUIMemAlloc;
-        dealloc = GUIMemFree;
-    }
-    else {
-        allocate = uimalloc;
-        dealloc = uifree;
-    }
     filler = ( text == NULL ) ? LIT( Empty ) : text;
     fillerLength = strlen( filler );
-    new = allocate( fillerLength + 1 );
+    if( is_GUI_data ) {
+        new = GUIMemAlloc( fillerLength + 1 );
+    } else {
+        new = uimalloc( fillerLength + 1 );
+    }
     if( new == NULL ) {
         return( false );
     }
     strcpy( new, filler );
-    dealloc( edit_control->buffer );
+    if( is_GUI_data ) {
+        GUIMemFree( edit_control->buffer );
+    } else {
+        uifree( edit_control->buffer );
+    }
     edit_control->buffer = new;
     edit_control->length = fillerLength;
     return( true );

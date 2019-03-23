@@ -167,7 +167,7 @@ void *PMmalloc( size_t size )
 }
 #endif
 #else
-void *uimalloc( size_t size )
+void * UIAPI uimalloc( size_t size )
 {
 #ifdef TRMEM
     return( _trmem_alloc( size, _trmem_guess_who(), GUIMemHandle ) );
@@ -227,7 +227,7 @@ void PMfree( void *ptr )
 }
 #endif
 #else
-void uifree( void *ptr )
+void UIAPI uifree( void *ptr )
 {
 #ifdef TRMEM
     _trmem_free( ptr, _trmem_guess_who(), GUIMemHandle );
@@ -287,7 +287,7 @@ void *PMrealloc( void *ptr, size_t size )
 }
 #endif
 #else
-void *uirealloc( void *ptr, size_t size )
+void * UIAPI uirealloc( void *ptr, size_t size )
 {
 #ifdef TRMEM
     return( _trmem_realloc( ptr, size, _trmem_guess_who(), GUIMemHandle ) );
