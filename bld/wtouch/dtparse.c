@@ -62,6 +62,7 @@
 #include "bool.h"
 #include "touch.h"
 #include "wtmsg.h"
+#include "dtparse.h"
 
 
 static char * (*firstParse)( char * );
@@ -80,7 +81,7 @@ char *      dateFormat;
 
 extern void Error( int, char * );
 
-extern void DoDOption( char *date )
+void DoDOption( char *date )
 /*********************************/
 {
     date = firstParse( date );
@@ -108,7 +109,7 @@ static void badCharInTime( char c )
     Error( MSG_INV_TIME, cbuff );
 }
 
-extern void DoTOption( char *time )
+void DoTOption( char *time )
 /*********************************/
 {
     unsigned hours;
@@ -325,7 +326,7 @@ static char *parseDay( char *p )
     }
 }
 
-extern void WhereAmI( void )
+void WhereAmI( void )
 /**************************/
 {
     TouchFlags.time_24hr = 0;
