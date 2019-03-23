@@ -1755,8 +1755,8 @@ static void CopySetupInfFile( void )
     VbufFree( &dst_path );
 }
 
-static int UnPackHook( int filenum, int subfilenum, VBUF *name )
-/**************************************************************/
+static int checkForNewName( int filenum, int subfilenum, VBUF *name )
+/*******************************************************************/
 {
     VBUF        ext;
     int         rc;
@@ -1976,7 +1976,7 @@ static bool DoCopyFiles( void )
                         VbufSetLen( &src_path, src_path_pos2 );     // nuke name from end of src_path
                         VbufConcVbuf( &src_path, &file_desc );
                         StatusLinesVbuf( STAT_COPYINGFILE, &tmp_path );
-                        UnPackHook( filenum, subfilenum, &tmp_path );
+                        checkForNewName( filenum, subfilenum, &tmp_path );
                         copy_error = DoCopyFile( &src_path, &tmp_path, false );
 
                         switch( copy_error ) {
