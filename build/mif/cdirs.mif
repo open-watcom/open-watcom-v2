@@ -307,3 +307,6 @@ wstub_dir       = $(src_dir)/wstuba
 !ifndef rsilib_dir
 rsilib_dir      = $(src_dir)/rsilib
 !endif
+!ifndef wprof_dir
+wprof_dir      = $(src_dir)/wprof
+!endif
