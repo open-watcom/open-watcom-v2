@@ -40,7 +40,7 @@
         #include "os2mem.h"
     #endif
 #else
-    #include "uimem.h"
+    #include "stdui.h"
     #include "helpmem.h"
 #endif
 #ifdef TRMEM
@@ -120,7 +120,7 @@ void GUIMemOpen( void )
 #endif
 }
 #if !defined( GUI_IS_GUI )
-void UIMemOpen( void ) {}
+void UIAPI UIMemOpen( void ) {}
 void HelpMemOpen( void ) {}
 #endif
 
@@ -136,7 +136,7 @@ void GUIMemClose( void )
 #endif
 }
 #if !defined( GUI_IS_GUI )
-void UIMemClose( void ) {}
+void UIAPI UIMemClose( void ) {}
 void HelpMemClose( void ) {}
 #endif
 
@@ -186,7 +186,7 @@ void *PMmalloc( size_t size )
 }
 #endif
 #else
-void *uimalloc( size_t size )
+void * UIAPI uimalloc( size_t size )
 {
 #ifdef TRMEM
     return( _trmem_alloc( size, _trmem_guess_who(), GUIMemHandle ) );
@@ -246,7 +246,7 @@ void PMfree( void *ptr )
 }
 #endif
 #else
-void uifree( void *ptr )
+void UIAPI uifree( void *ptr )
 {
 #ifdef TRMEM
     _trmem_free( ptr, _trmem_guess_who(), GUIMemHandle );
@@ -306,7 +306,7 @@ void *PMrealloc( void *ptr, size_t size )
 }
 #endif
 #else
-void *uirealloc( void *old, size_t size )
+void * UIAPI uirealloc( void *old, size_t size )
 {
 #ifdef TRMEM
     return( _trmem_realloc( old, size, _trmem_guess_who(), GUIMemHandle ) );

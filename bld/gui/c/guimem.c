@@ -103,7 +103,7 @@ void GUIMemOpen( void )
 #endif
 }
 #if !defined( GUI_IS_GUI )
-void UIMemOpen( void ) {}
+void UIAPI UIMemOpen( void ) {}
 #endif
 
 void GUIMemClose( void )
@@ -118,7 +118,7 @@ void GUIMemClose( void )
 #endif
 }
 #if !defined( GUI_IS_GUI )
-void UIMemClose( void ) {}
+void UIAPI UIMemClose( void ) {}
 #endif
 
 

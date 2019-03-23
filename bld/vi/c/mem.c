@@ -462,11 +462,11 @@ char *MemStrDup( const char *string )
 }
 
 #if defined( __LINUX__ )
-void UIMemOpen( void ) {}
+void UIAPI UIMemOpen( void ) {}
 
-void UIMemClose( void ) {}
+void UIAPI UIMemClose( void ) {}
 
-void *uimalloc( size_t size )
+void * UIAPI uimalloc( size_t size )
 {
     void        *tmp;
 
@@ -485,7 +485,7 @@ void *uimalloc( size_t size )
     return( tmp );
 }
 
-void *uirealloc( void *ptr, size_t size )
+void * UIAPI uirealloc( void *ptr, size_t size )
 {
     void        *tmp;
 
@@ -504,7 +504,7 @@ void *uirealloc( void *ptr, size_t size )
     return( tmp );
 }
 
-void uifree( void *ptr )
+void UIAPI uifree( void *ptr )
 {
 #ifdef TRMEM
 #ifndef __WATCOMC__

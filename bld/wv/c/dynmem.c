@@ -428,7 +428,7 @@ void GUIMemOpen( void )
 #endif
 }
 #if !defined( GUI_IS_GUI )
-void UIMemOpen( void ) {}
+void UIAPI UIMemOpen( void ) {}
 #endif
 
 void GUIMemClose( void )
@@ -443,7 +443,7 @@ void GUIMemClose( void )
 #endif
 }
 #if !defined( GUI_IS_GUI )
-void UIMemClose( void ) {}
+void UIAPI UIMemClose( void ) {}
 #endif
 
 
@@ -492,7 +492,7 @@ void *PMmalloc( size_t size )
 }
 #endif
 #else
-void *uimalloc( size_t size )
+void * UIAPI uimalloc( size_t size )
 {
 #ifdef TRMEM
     return( _trmem_alloc( size, _trmem_guess_who(), GUIMemHandle ) );
@@ -500,7 +500,7 @@ void *uimalloc( size_t size )
     return( malloc( size ) );
 #endif
 }
-LP_VOID uifaralloc( size_t size )
+LP_VOID UIAPI uifaralloc( size_t size )
 {
 #ifdef TRMEM
     return( _trmem_alloc( size, _trmem_guess_who(), GUIMemHandle ) );
@@ -560,7 +560,7 @@ void PMfree( void *ptr )
 }
 #endif
 #else
-void uifree( void *ptr )
+void UIAPI uifree( void *ptr )
 {
 #ifdef TRMEM
     _trmem_free( ptr, _trmem_guess_who(), GUIMemHandle );
@@ -573,7 +573,7 @@ void uifree( void *ptr )
 #else
 #define MEM_NEAR_PTR(x)     x
 #endif
-void uifarfree( LP_VOID ptr )
+void UIAPI uifarfree( LP_VOID ptr )
 {
     if( ptr != NULL ) {
 #ifdef TRMEM
@@ -635,7 +635,7 @@ void *PMrealloc( void *ptr, size_t size )
 }
 #endif
 #else
-void *uirealloc( void *ptr, size_t size )
+void * UIAPI uirealloc( void *ptr, size_t size )
 {
 #ifdef TRMEM
     return( _trmem_realloc( ptr, size, _trmem_guess_who(), GUIMemHandle ) );

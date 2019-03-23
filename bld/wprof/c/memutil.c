@@ -43,7 +43,7 @@
     #include "cguimem.h"
     #include "wpimem.h"
 #else
-    #include "uimem.h"
+    #include "stdui.h"
     #include "helpmem.h"
 #endif
 #include "memutil.h"
@@ -116,7 +116,7 @@ void GUIMemOpen( void )
 #endif
 }
 #if !defined( GUI_IS_GUI )
-void UIMemOpen( void ) {}
+void UIAPI UIMemOpen( void ) {}
 #endif
 
 
@@ -133,7 +133,7 @@ void GUIMemClose( void )
 #endif
 }
 #if !defined( GUI_IS_GUI )
-void UIMemClose( void ) {}
+void UIAPI UIMemClose( void ) {}
 #endif
 
 #ifdef TRMEM
@@ -272,7 +272,7 @@ void * _wpi_malloc( size_t size )
     return( mem );
 }
 #else
-void *uimalloc( size_t size )
+void * UIAPI uimalloc( size_t size )
 {
     void    *mem;
 
@@ -376,7 +376,7 @@ void _wpi_free( void *ptr )
 #endif
 }
 #else
-void uifree( void *ptr )
+void UIAPI uifree( void *ptr )
 {
 #ifdef TRMEM
     profMemCheck( "ProfFree" );
@@ -517,7 +517,7 @@ void *MemRealloc( void *ptr, size_t new_size )
     return( new );
 }
 #else
-void *uirealloc( void *ptr, size_t new_size )
+void * UIAPI uirealloc( void *ptr, size_t new_size )
 {
     void    *new;
 
