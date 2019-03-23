@@ -47,6 +47,7 @@
     #include "helpmem.h"
 #endif
 #include "memutil.h"
+#include "dumpmem.h"
 #ifdef TRMEM
     #include "trmem.h"
 #endif
@@ -65,10 +66,12 @@ static void WPMemPrintLine( void *parm, const char *buff, size_t len )
 
     fwrite( buff, 1, len, WPMemFP );
 }
+#if 0
 static void GUIMemPrintLine( void *parm, const char *buff, size_t len )
 {
     /* unused parameters */ (void)parm; (void)buff; (void)len;
 }
+#endif
 #endif
 
 void GUIMemRedirect( FILE *fp )
@@ -134,7 +137,7 @@ void UIMemClose( void ) {}
 #endif
 
 #ifdef TRMEM
-STATIC void profMemCheck( char *msg )
+static void profMemCheck( char *msg )
 /***********************************/
 {
     if( !WalkMem() ) {

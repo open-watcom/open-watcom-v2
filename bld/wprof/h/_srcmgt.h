@@ -30,7 +30,6 @@
 ****************************************************************************/
 
 
-#include <malloc.h>
 #include <stdio.h>
 
 #define SMTabIntervalGet()              8
