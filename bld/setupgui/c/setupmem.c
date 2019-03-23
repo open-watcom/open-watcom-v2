@@ -52,7 +52,7 @@
 static _trmem_hdl  GUIMemHandle;
 
 static FILE *GUIMemFP = NULL;           /* stream to put output on */
-static int  GUIMemOpened = 0;
+static bool GUIMemOpened = false;
 
 static void GUIMemPrintLine( void *parm, const char *buff, size_t len )
 /*********************************************************************/
@@ -115,7 +115,7 @@ void GUIMemOpen( void )
         if( tmpdir != NULL ) {
             GUIMemFP = fopen( tmpdir, "w" );
         }
-        GUIMemOpened = 1;
+        GUIMemOpened = true;
     }
 #endif
 }

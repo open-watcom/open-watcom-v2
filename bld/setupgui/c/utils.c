@@ -1755,11 +1755,11 @@ static void CopySetupInfFile( void )
     VbufFree( &dst_path );
 }
 
-static int checkForNewName( int filenum, int subfilenum, VBUF *name )
-/*******************************************************************/
+static bool checkForNewName( int filenum, int subfilenum, VBUF *name )
+/********************************************************************/
 {
     VBUF        ext;
-    int         rc;
+    bool        rc;
 
     VbufInit( &ext );
 
@@ -1767,7 +1767,7 @@ static int checkForNewName( int filenum, int subfilenum, VBUF *name )
         NewFileToCheck( name, false );
         VbufSetStr( &ext, "._N_" );
         VbufSetPathExt( name, &ext );
-        rc = 1;
+        rc = true;
     } else if( SimSubFileIsDLL( filenum, subfilenum ) ) {
         NewFileToCheck( name, true );
 #ifdef EXTRA_CAUTIOUS_FOR_DLLS
@@ -1776,9 +1776,9 @@ static int checkForNewName( int filenum, int subfilenum, VBUF *name )
             VbufSetPathExt( name, &ext );
         }
 #endif
-        rc = 1;
+        rc = true;
     } else {
-        rc = 0;
+        rc = false;
     }
 
     VbufFree( &ext );
