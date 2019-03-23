@@ -61,10 +61,12 @@ static void GUIMemPrintLine( void *parm, const char *buff, size_t len )
 
     fwrite( buff, 1, len, GUIMemFP );
 }
+#if 0
 static void UIMemPrintLine( void *parm, const char *buff, size_t len )
 {
     /* unused parameters */ (void)parm; (void)buff; (void)len;
 }
+#endif
 #endif
 
 void GUIMemPrtUsage( void )
