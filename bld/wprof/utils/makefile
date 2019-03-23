@@ -1,17 +1,18 @@
-.erase
 
-.c: $(wsampledir)dump
-.c.obj :
-    wccp $[@ -mc -oas -d1 -w4 -s -zq
+host_cpu = $(bld_cpu)
+host_os = $(bld_os)
 
-.obj.exe:
-    wlink NAME $^* DEBUG line OPTION quiet FORM dos FILE $[*
+proj_name = utils
 
-.before
-    set INCLUDE=$(%INCLUDE);..\h;$(wsampledir)h;$(ui_h)
+!include cproj.mif
+!include defrule.mif
+!include deftarg.mif
 
-#all : smpsync.exe mergehlp.exe smpmt.exe .symbolic
-#@%null
+.c: .
 
-all : smpdump.exe smpsync.exe mergehlp.exe smpmt.exe .symbolic
+all : smpsync.exe mergehlp.exe smpmt.exe .symbolic
     @%null
+
+.c.exe :
+    @%make echo_bldcl
+    $(bld_cl) -I"$(wprof_dir)/h" -I"$(dig_dir)/h" -I"$(wsample_dir)/h" $(bld_clflags) $[@ $(bld_ldflags)

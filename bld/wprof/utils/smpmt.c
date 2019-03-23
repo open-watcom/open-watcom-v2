@@ -42,7 +42,7 @@
 #include <string.h>
 #include <io.h>
 #include <fcntl.h>
-#include <malloc.h>
+//#include <malloc.h>
 #include <direct.h>
 
 #include "common.h"
@@ -91,7 +91,7 @@ void main( int argc, char **argv )
 {
     samp_header         header;
     samp_block_prefix   prefix;
-    fpos_t              curr_position;
+    long                curr_position;
     FILE                *in;
     uint_16             new_thread;
 
@@ -118,7 +118,7 @@ puts( "WATCOM is a trademark of WATCOM Systems Inc." );
     fseek( in, header.sample_start, SEEK_SET );
     new_thread = 0;
     for( ;; ) {
-        curr_position = tell( in );
+        curr_position = ftell( in );
         fread( &prefix, 1, sizeof( prefix ), in );
         if( prefix.kind == SAMP_LAST )
             break;

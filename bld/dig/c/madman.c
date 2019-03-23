@@ -1014,7 +1014,7 @@ static mad_status DecomposeFloat( const mad_type_info *mti, const void *src, dec
         }
     }
 
-    ExtractBits( mti->f.exp.pos, mti->f.exp.data.b.bits, &v->f.mantissa, &v->f.exp, sizeof( v->f.exp ) );
+    ExtractBits( (dig_size_bits)mti->f.exp.pos, mti->f.exp.data.b.bits, &v->f.mantissa, &v->f.exp, sizeof( v->f.exp ) );
     /* Assuming IEEE here */
     if( v->f.exp == 0 ) {
         v->f.type = F_DENORMAL;
@@ -1128,7 +1128,7 @@ static mad_status ComposeFloat( decomposed_item *v, const mad_type_info *mti, vo
     ShiftBits( TYPE2BITS( v->f.mantissa ),
         mant_bits - TYPE2BITS( v->f.mantissa ), &v->f.mantissa );
     memcpy( dst, &v->f.mantissa, bytes );
-    InsertBits( mti->f.exp.pos, mti->f.exp.data.b.bits, &v->f.exp, dst );
+    InsertBits( (dig_size_bits)mti->f.exp.pos, mti->f.exp.data.b.bits, &v->f.exp, dst );
     if( v->f.sign != 0 ) {
         InsertBits( mti->f.mantissa.sign_pos, 1, &v->f.sign, dst );
     }
