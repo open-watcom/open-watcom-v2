@@ -83,10 +83,9 @@ static EXE_TYPE         exeType;
 static uint_16          exeAmount;
 static uint_16          exeCurrent;
 static unsigned long    exePosition;
-static unsigned_16      nbytes = BUFF_SIZE;
+static uint_16          nbytes = BUFF_SIZE;
 static uint_16          numBytes = MAX_INSTR_BYTES;
 static char             exeBuff[BUFF_SIZE];
-
 
 STATIC void             AdvanceCurrentOffset( uint_32 );
 STATIC unsigned long    TransformExeOffset( uint_16, uint_32, uint_16 );
@@ -133,7 +132,7 @@ void ExeClose( FILE *fp )
 STATIC bool exeSeek( unsigned long fileoffset )
 /*********************************************/
 {
-    if(( fileoffset >= exePosition )&&( fileoffset < ( exePosition + exeAmount ))) {
+    if( ( fileoffset >= exePosition ) && ( fileoffset < ( exePosition + exeAmount ) ) ) {
         exeCurrent = fileoffset - exePosition;
         return( true );
     }
@@ -535,7 +534,6 @@ STATIC void readEntry( uint_32 *v, size_t mini_off )
 STATIC void searchQNX( uint_16 seg, uint_32 off )
 /***********************************************/
 {
-    int                 st;
     uint_16             seg_idx;
     uint_32             hi;
     uint_32             lo;
@@ -553,8 +551,7 @@ STATIC void searchQNX( uint_16 seg, uint_32 off )
     isHole = false;
     fseek( exeFP, 0, SEEK_SET );
     for( ;; ) {
-        st = fread( &rec_head, 1, sizeof( rec_head ), exeFP );
-        if( st != sizeof( rec_head ) )
+        if( fread( &rec_head, 1, sizeof( rec_head ), exeFP ) != sizeof( rec_head ) )
             break;
         nbytes = rec_head.data_nbytes;
         if( rec_head.rec_type == LMF_IMAGE_END_REC )
@@ -563,8 +560,7 @@ STATIC void searchQNX( uint_16 seg, uint_32 off )
             fseek( exeFP, rec_head.data_nbytes, SEEK_CUR );
             continue;
         }
-        st = fread( &load_data, 1, sizeof( load_data ), exeFP );
-        if( st != sizeof( load_data ) )
+        if( fread( &load_data, 1, sizeof( load_data ), exeFP ) != sizeof( load_data ) )
             break;
         rec_head.data_nbytes -= sizeof( load_data );
         lo = load_data.offset;
@@ -1165,24 +1161,25 @@ void CodeAdvance( address *addr )
 STATIC unsigned char exeGetChar( void )
 /*************************************/
 {
+    uint_16     size;
+
     if( isHole ) {
         return( 0 );
     }
     if( exeCurrent >= exeAmount ) {
         exePosition += exeAmount;
         fseek( exeFP, exePosition, SEEK_SET );
-        if( nbytes < BUFF_SIZE ) {
-            exeAmount = fread( exeBuff, 1, nbytes, exeFP );
-        } else {
-            exeAmount = fread( exeBuff, 1, BUFF_SIZE, exeFP );
-        }
-        if( exeAmount == 0 || exeAmount == (uint_16)-1 ) {
+        size = BUFF_SIZE;
+        if( size > nbytes )
+            size = nbytes;
+        exeAmount = fread( exeBuff, 1, size, exeFP );
+        if( exeAmount == 0 ) {
             exeFlags.end_of_file = true;
             return( 0 );
         }
         exeCurrent = 0;
     }
-    return( exeBuff[ exeCurrent++ ] );
+    return( exeBuff[exeCurrent++] );
 }
 
 size_t FormatAddr( address a, char *buffer, size_t max )
