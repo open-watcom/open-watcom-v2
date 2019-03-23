@@ -188,14 +188,12 @@ Sections
       append to the end of each control specification.
 
   static_text="<text>"[,<cond>[,<visib.cond>]]
+  static_text="@filename"[,<cond>[,<visib.cond>]]
      Add a static text control to the dialog. If no text is following the '='
      sign, and empty line is added, which is useful to add padding in
      dialogs. The character '@' in static text is replaced by the name of
      the installtion program (e.g. 'SETUP' or 'INSTALL'). Note that the text
      must be enclosed in quotes.
-
-  dialog_text="<text>"[,<cond>[,<visib.cond>]]
-  dialog_text="@filename"[,<cond>[,<visib.cond>]]
 
   dynamic_text=FormattedDiskInfo,""[,<cond>[,<visib.cond>]]
 
