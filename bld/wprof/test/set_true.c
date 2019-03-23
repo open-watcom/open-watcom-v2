@@ -31,33 +31,22 @@
 
 #include <stdio.h>
 #include <string.h>
-
+#include "bool.h"
 #include "pt.h"
+
 
 extern bool flags[SIZE+1];
 extern int count, niter, iter;
 
 
-void set_true()
-{
-    int i, k;
-
-    for( k = 0; k < (iter%10); ++k ) {
-        for( i = 0; i <= SIZE; i++) {          /* set all flags true */
-            flags[i] = true;
-        }
-    }
-    delay_me();
-}
-
-void delay_me()
+static void delay_me( void )
 {
     static char control[] = "Profiler Test Program Output\r\n" "\x1a";
-    FILE   *fp;
-    char    buf[ sizeof( control ) ];
-    unsigned    count;
+    FILE        *fp;
+    char        buf[ sizeof( control ) ];
+    unsigned    count1;
 
-    for( count = (iter%4); count; --count ) {
+    for( count1 = (iter%4); count1 > 0 ; --count1 ) {
         fp = fopen( "PT_TEMP.TMP", "wb" );
         if( fp ) {
             fwrite( control, sizeof( control ), sizeof( char ), fp );
@@ -76,4 +65,16 @@ void delay_me()
         }
         memset( buf, 0, sizeof( control ) );
     }
+}
+
+void set_true( void )
+{
+    int i, k;
+
+    for( k = 0; k < (iter%10); ++k ) {
+        for( i = 0; i <= SIZE; i++) {          /* set all flags true */
+            flags[i] = true;
+        }
+    }
+    delay_me();
 }

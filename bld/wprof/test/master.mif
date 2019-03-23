@@ -1,0 +1,116 @@
+proj_name = test
+
+!include cproj.mif
+!include defrule.mif
+!include deftarg.mif
+
+inc_dirs = -I"../../h" -I"$(wsample_dir)"
+
+.c : ..
+
+objs = &
+    quoi.obj &
+    fetch.obj &
+    set_true.obj &
+    do_it.obj  &
+    set_fals.obj &
+    check_if.obj &
+    show.obj &
+    dont_do.obj
+
+extra_l_flags_dos = option stack=6k
+
+!ifeq host_os dos
+
+all : .SYMBOLIC pt.exe ptd.exe pt1.exe pt2.exe pt3.exe pt4.exe
+    @%null
+
+wsamplecmd = ..\..\..\wsample\dosi86\wsample
+
+pt.exe : $(objs)
+    @%write  $^&.lnk $(lflags)
+    @%append $^&.lnk FILE show.obj, dont_do.obj, check_if.obj, do_it.obj, fetch.obj, quoi.obj, set_fals.obj, set_true.obj
+    @%make echo_link
+    $(linker) name $@ @$^&.lnk
+    $(wsamplecmd) /r=1 /b=20 $@ 2
+
+ptd.exe : $(objs)
+    @%write  $^&.lnk $(lflags)
+    @%append $^&.lnk OPTION dynamic, area=58k
+    # root
+    @%append $^&.lnk FILE quoi.obj, check_if.obj, set_fals.obj
+    # overlays
+    @%append $^&.lnk BEGIN
+    @%append $^&.lnk     SECTION FILE fetch.obj
+    @%append $^&.lnk     SECTION FILE set_true.obj, show.obj
+    @%append $^&.lnk     SECTION FILE dont_do.obj
+    @%append $^&.lnk     SECTION FILE do_it.obj
+    @%append $^&.lnk END
+    @%make echo_link
+    $(linker) name $@ @$^&.lnk
+    $(wsamplecmd) /r=1 /b=20 $@ 2
+
+pt1.exe : $(objs)
+    @%write  $^&.lnk $(lflags)
+    @%append $^&.lnk FILE quoi.obj, check_if.obj, set_fals.obj, do_it.obj, dont_do.obj
+    # overlays
+    @%append $^&.lnk BEGIN
+    @%append $^&.lnk     SECTION FILE fetch.obj
+    @%append $^&.lnk     SECTION FILE set_true.obj, show.obj
+    @%append $^&.lnk END
+    @%make echo_link
+    $(linker) name $@ @$^&.lnk
+    $(wsamplecmd) /r=1 /b=20 $@ 2
+
+pt2.exe : $(objs)
+    @%write  $^&.lnk $(lflags)
+    @%append $^&.lnk FILE quoi.obj, check_if.obj, set_fals.obj
+    # overlays
+    @%append $^&.lnk BEGIN
+    @%append $^&.lnk     SECTION FILE fetch.obj
+    @%append $^&.lnk     SECTION FILE set_true.obj, show.obj
+    @%append $^&.lnk END
+    @%append $^&.lnk BEGIN
+    @%append $^&.lnk     SECTION FILE dont_do.obj
+    @%append $^&.lnk     SECTION FILE do_it.obj
+    @%append $^&.lnk END
+    @%make echo_link
+    $(linker) name $@ @$^&.lnk
+    $(wsamplecmd) /r=1 /b=20 $@ 2
+
+pt3.exe : $(objs)
+    @%write  $^&.lnk $(lflags)
+    @%append $^&.lnk FILE quoi.obj, check_if.obj, set_fals.obj, do_it.obj, dont_do.obj
+    # overlays
+    @%append $^&.lnk BEGIN
+    @%append $^&.lnk     SECTION INTO aaa_3 FILE fetch
+    @%append $^&.lnk     SECTION FILE set_true, show
+    @%append $^&.lnk END
+    @%make echo_link
+    $(linker) name $@ @$^&.lnk
+    $(wsamplecmd) /r=1 /b=20 $@ 2
+
+pt4.exe : $(objs)
+    @%write  $^&.lnk $(lflags)
+    @%append $^&.lnk FILE quoi.obj, check_if.obj, set_fals.obj, do_it.obj, dont_do.obj
+    # overlays
+    @%append $^&.lnk BEGIN
+    @%append $^&.lnk     SECTION INTO aaa_4 FILE fetch
+    @%append $^&.lnk     SECTION INTO bbb_4 FILE set_true, show
+    @%append $^&.lnk END
+    @%make echo_link
+    $(linker) name $@ @$^&.lnk
+    $(wsamplecmd) /r=1 /b=20 $@ 2
+
+!elseifeq host_os os2
+
+all : .SYMBOLIC threaded.exe
+    @%null
+
+threaded.exe : threaded.obj
+    @%write  $^&.lnk $(lflags)
+    @%append $^&.lnk FILE threaded.obj
+    @%make echo_link
+    $(linker) name $@ @$^&.lnk
+
+!endif

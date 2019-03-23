@@ -41,7 +41,7 @@ extern int count, niter;
 extern void (*check_if)(int);
 
 
-void hopla_oops( unsigned num )
+static void hopla_oops( unsigned num )
 {
         while( --num )
         {
@@ -50,7 +50,7 @@ void hopla_oops( unsigned num )
         }
 }
 
-void blink_one( unsigned num )
+static void blink_one( unsigned num )
 {
     unsigned long   dogy;
 
@@ -65,7 +65,7 @@ void blink_one( unsigned num )
     }
 }
 
-void up_and_down( unsigned num )
+static void up_and_down( unsigned num )
 {
         while( --num )
         {
