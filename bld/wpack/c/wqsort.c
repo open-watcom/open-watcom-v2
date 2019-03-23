@@ -44,6 +44,8 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include "wqsort.h"
+
 
 /* Support OS/2 16-bit protected mode - will never get stack overflow */
 #define MAXDEPTH        (sizeof(long) * 8)
@@ -76,7 +78,7 @@ typedef int WORD;
         __value             \
         __modify __exact    [__eax __ecx __edx __edi __esi]
 
-    void inline_swap( char *p, char *q, size_t size );
+    void inline_swap( const char *p, const char *q, size_t size );
     #pragma aux inline_swap = \
             "push es"           \
             "push ds"           \
@@ -101,7 +103,7 @@ typedef int WORD;
         "L3: pop  es"           \
         SWAP_AUX_INFO
     #pragma aux byteswap    SWAP_AUX_INFO
-    static void byteswap( char *p, char *q, size_t size )
+    static void byteswap( const char *p, const char *q, size_t size )
     {
         inline_swap( p, q, size );
     }
@@ -112,7 +114,7 @@ typedef int WORD;
         __value             \
         __modify __exact    [__si __di __cx __ax]
 
-    void inline_swap( char *p, char *q, size_t size );
+    void inline_swap( const char *p, const char *q, size_t size );
     #pragma aux inline_swap = \
             "push ds"           \
             "mov  ds,dx"        \
@@ -132,7 +134,7 @@ typedef int WORD;
         "L3: pop  ds"           \
         SWAP_AUX_INFO
     #pragma aux byteswap    SWAP_AUX_INFO
-    static void byteswap( char *p, char *q, size_t size )
+    static void byteswap( const char *p, const char *q, size_t size )
     {
         inline_swap( p, q, size );
     }
@@ -144,7 +146,7 @@ typedef int WORD;
         __modify __exact    [__si __di __cx __ax]
 
     /* we'll ask for char __far *q to save us writing code to load es */
-    void inline_swap( char *p, char *q, size_t size );
+    void inline_swap( const char *p, const char *q, size_t size );
     #pragma aux inline_swap = \
             "shr  cx,1"         \
             "je short L1"       \
@@ -162,7 +164,7 @@ typedef int WORD;
         "L3:"                   \
         SWAP_AUX_INFO
     #pragma aux byteswap    SWAP_AUX_INFO
-    static void byteswap( char *p, char *q, size_t size )
+    static void byteswap( const char *p, const char *q, size_t size )
     {
         inline_swap( p, q, size );
     }
@@ -170,33 +172,33 @@ typedef int WORD;
 #else
     /* this is an optimized version of a simple byteswap */
     #define inline_swap byteswap
-    static void byteswap( char *p, char *q, size_t size ) {
+    static void byteswap( const char *p, const char *q, size_t size ) {
         long dword;
         short word;
         char byte;
 
         #if 1       /* this is for 32 bit machines */
             while( size > 3 ) {
-                dword = *(long *)p;
-                *(long *)p = *(long *)q;
-                *(long *)q = dword;
+                dword = *(const long *)p;
+                *(long *)p = *(const long *)q;      // enable write to const array
+                *(long *)q = dword;                 // enable write to const array
                 p += 4;
                 q += 4;
                 size -= 4;
             }
             if( size > 1 ) {
-                word = *(short *)p;
-                *(short *)p = *(short *)q;
-                *(short *)q = word;
+                word = *(const short *)p;
+                *(short *)p = *(const short *)q;    // enable write to const array
+                *(short *)q = word;                 // enable write to const array
                 p += 2;
                 q += 2;
                 size -= 2;
             }
         #else       /* this is for 16 bit machines */
             while( size > 1 ) {
-                word = *(short *)p;
-                *(short *)p = *(short *)q;
-                *(short *)q = word;
+                word = *(const short *)p;
+                *(short *)p = *(const short *)q;    // enable write to const array
+                *(short *)q = word;                 // enable write to const array
                 p += 2;
                 q += 2;
                 size -= 2;
@@ -204,13 +206,13 @@ typedef int WORD;
         #endif
         if( size ) {
             byte = *p;
-            *p = *q;
-            *q = byte;
+            *(char *)p = *q;                        // enable write to const array
+            *(char *)q = byte;                      // enable write to const array
         }
     }
 #endif
 
-typedef int qcomp( char *, char * );
+typedef int qcomp( const char *, const char * );
 #if defined( __WATCOMC__ ) && defined(_M_IX86)
     // this is only needed when being built for the C library
     //#pragma aux (__outside_CLIB) qcomp;
@@ -218,7 +220,7 @@ typedef int qcomp( char *, char * );
 
 
 /* Function to find the median value */
-static char *med3( char *a, char *b, char *c, qcomp cmp )
+static const char *med3( const char *a, const char *b, const char *c, qcomp cmp )
 {
     if( cmp( a, b ) > 0 ) {
         if( cmp( a, c ) > 0 ) {
@@ -243,19 +245,26 @@ static char *med3( char *a, char *b, char *c, qcomp cmp )
     }
 }
 
-void wpack_qsort( char *base, size_t n, size_t size,
-                  int (*compar)(char *, char *) )
-/***********************************************/
+void wpack_qsort( const void *_base, size_t n, size_t size, int (*compar)(const void *, const void *) )
+/****************************************************************************************************/
 {
-    char *p1, *p2, *pa, *pb, *pc, *pd, *pn, *pv;
-    char *mid;
+    const char *p1;
+    const char *p2;
+    const char *pa;
+    const char *pb;
+    const char *pc;
+    const char *pd;
+    const char *pn;
+    const char *pv;
+    const char *mid;
     WORD v, t; /* v is used in pivot initialization, t in exch() macro */
     int  comparison, swaptype, shell;
     size_t r, s;
     unsigned int sp;
-    auto char *base_stack[MAXDEPTH];
+    const char *base_stack[MAXDEPTH];
     auto unsigned int n_stack[MAXDEPTH];
-    qcomp *cmp = compar;
+    qcomp *cmp = (qcomp *)compar;
+    const char *base = _base;
 
     /*
         Initialization of the swaptype variable, which determines which

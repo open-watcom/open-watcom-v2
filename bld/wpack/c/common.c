@@ -34,23 +34,19 @@
 #include <stdlib.h>
 #include "wpack.h"
 #include "txttable.h"
+#include "common.h"
+#include "wpackio.h"
 
-// external function declarations
-extern void             QSeek( int, signed long, int );
-extern int              QRead( int, void *, int );
-extern int              QClose( int );
-extern int              NoErrOpen( char * );
-extern void             PackExit( void );
 
 int             infile, outfile;
 
-unsigned char      text_buf[N + F - 1];
+unsigned char   text_buf[N + F - 1];
 
-byte        len[ NUM_CHARS ];       // the length of the code value
-int         indicies[ NUM_CHARS ];  // indicies to make len look sorted
+byte            len[NUM_CHARS];         // the length of the code value
+int             indicies[NUM_CHARS];    // indicies to make len look sorted
 
 #ifdef PATCH
-extern unsigned_32 ReadInternal( char *srcfullpath )
+unsigned_32 ReadInternal( char *srcfullpath )
 /**************************************************/
 {
     arc_header          header;
@@ -76,7 +72,7 @@ extern unsigned_32 ReadInternal( char *srcfullpath )
 
 #endif
 
-extern file_info ** ReadHeader( arccmd *cmd, arc_header *header )
+file_info ** ReadHeader( arccmd *cmd, arc_header *header )
 /***************************************************************/
 // read the archive information & parse it into the internal structure.
 {
@@ -139,7 +135,7 @@ typedef struct node {
     struct node *   next;
 } node;
 
-extern void LinkList( void *in_head, void *newnode )
+void LinkList( void *in_head, void *newnode )
 /**************************************************/
 /* Link a new node into a linked list (new node goes at the end of the list) */
 {

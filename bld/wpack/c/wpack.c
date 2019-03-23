@@ -42,29 +42,23 @@
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
-#include <malloc.h>
+#ifdef __WATCOMC__
+    #include <malloc.h>
+#endif
 //#include "formglob.h"
 #include "wpack.h"
 //#include "rsr.h"
 #include "txttable.h"
+#include "walloca.h"
 #ifndef __WATCOMC__
-#include "libext.h"
+    #include <malloc.h>
 #endif
+#include "common.h"
+#include "wpackio.h"
+#include "dtparse.h"
 
-// external declarations
-extern void             IndentLine( unsigned );
-extern void             WriteMsg( char * );
-extern void             WriteLen( char *, int );
-extern int              InitIO( void );
-extern file_info **     ReadHeader( arccmd *, arc_header * );
-extern void             QClose( int );
-extern int              QWrite( int, void *, int );
-extern void             CopyInfo( int, int, unsigned long );
-extern void             QSeek( int, signed long, int );
-extern int              QOpenW( char * );
-extern void             WhereAmI( void );
-extern void             DoTOption( char * );
-extern void             DoDOption( char * );
+#include "clibext.h"
+
 
 typedef struct {
     uint_16     year;           /* full year (e.g., 1990) */
@@ -78,19 +72,20 @@ typedef struct {
     uint_8      seconds;        /* 0-59 */
 } timestruct;
 
-extern int  infile, outfile;
+// external declarations
+
 extern datestruct DateAdjust;
 extern timestruct TimeAdjust;
 
-static bool BannerPrinted = FALSE;
+static bool BannerPrinted = false;
 
-extern void PackExit( void )
+void PackExit( void )
 /**************************/
 {
     exit( EXIT_FAILED );
 }
 
-extern void Error(int code,char *message)
+void Error(int code,char *message)
 /******************************/
 {
     code=code;
@@ -100,7 +95,7 @@ extern void Error(int code,char *message)
     PackExit();
 }
 
-extern void * WPMemAlloc( size_t amount )
+void * WPMemAlloc( size_t amount )
 /***************************************/
 {
     void *  ret;
@@ -112,7 +107,7 @@ extern void * WPMemAlloc( size_t amount )
     return( ret );
 }
 
-extern void WPMemFree( void *mem )
+void WPMemFree( void *mem )
 /******************************/
 {
     free( mem );
@@ -154,12 +149,12 @@ static void Usage( bool verbose )
 static void ProcPath( char **argv, arccmd *cmd )
 /**********************************************/
 {
-    size_t len;
+    size_t len1;
 
     (*argv)++;
-    len = strlen( *argv ) + 1;
-    cmd->u.path = WPMemAlloc( len );
-    memcpy( cmd->u.path, *argv, len );
+    len1 = strlen( *argv ) + 1;
+    cmd->u.path = WPMemAlloc( len1 );
+    memcpy( cmd->u.path, *argv, len1 );
 }
 
 static void SetCmdTime( arccmd *cmd )
@@ -245,11 +240,11 @@ static void PrintBanner( void )
     if( !BannerPrinted ) {
         WriteMsg( "WATCOM Install Archiver Version 1.3\n" );
         WriteMsg( "Copyright by WATCOM Systems Inc. 1992.  All rights reserved.\n" );
-        BannerPrinted = TRUE;
+        BannerPrinted = true;
     }
 }
 
-extern int ProcessArgs( char **argv, arccmd *cmd )
+static int ProcessArgs( char **argv, arccmd *cmd )
 /************************************************/
 {
     int     status;
@@ -266,7 +261,7 @@ extern int ProcessArgs( char **argv, arccmd *cmd )
             c = toupper( **argv );
             switch( c ) {
             case '?':
-                Usage( TRUE );
+                Usage( true );
                 break;
             case 'A':
                 status = DO_ENCODE;
@@ -300,7 +295,7 @@ extern int ProcessArgs( char **argv, arccmd *cmd )
                 ProcPath( argv, cmd );
                 break;
             case 'Q':
-                BannerPrinted = TRUE;
+                BannerPrinted = true;
                 cmd->flags |= BE_QUIET;
                 break;
             case 'R':
@@ -327,7 +322,7 @@ extern int ProcessArgs( char **argv, arccmd *cmd )
                 WriteMsg( "unknown option: ");
                 WriteMsg( *argv );
                 WriteMsg( "\n" );
-                Usage( FALSE );
+                Usage( false );
             }
         } else {
             break;
@@ -359,7 +354,7 @@ static void WriteNumber( unsigned long number, unsigned indent )
     WriteMsg( numstr );
 }
 
-extern int DisplayArchive( arccmd *cmd )
+static int DisplayArchive( arccmd *cmd )
 /**************************************/
 {
     file_info **    filedata;
@@ -400,7 +395,7 @@ extern int DisplayArchive( arccmd *cmd )
         WriteNumber( totaluncomp, 10 );
         WriteNumber( totalcomp, 11 );
     }
-    return( TRUE );
+    return( true );
 }
 
 static int HandleError( arccmd *cmd )
@@ -408,7 +403,7 @@ static int HandleError( arccmd *cmd )
 {
     cmd = cmd;
     PackExit();
-    return( TRUE );
+    return( true );
 }
 
 static int DeleteEntry( arccmd *cmd )
@@ -454,14 +449,14 @@ static int DeleteEntry( arccmd *cmd )
     QWrite( outfile, &header, sizeof( arc_header ) );   // reserve space
     offset = sizeof( arc_header );
     QSeek( infile, sizeof( arc_header ), SEEK_SET );
-    onedeleted = FALSE;
+    onedeleted = false;
     for( currdata = filedata; *currdata != NULL; currdata++ ) {
-        deletethis = FALSE;
+        deletethis = false;
         for( currfile = cmd->files; currfile->filename != NULL; currfile++ ) {
             namelen = (*currdata)->namelen & NAMELEN_MASK;
             if( strlen( currfile->filename ) == namelen &&
                 memicmp( currfile->filename, (*currdata)->name, namelen ) == 0 ) {
-               deletethis = TRUE;
+               deletethis = true;
                break;
             }
         }
@@ -472,7 +467,7 @@ static int DeleteEntry( arccmd *cmd )
             compressed = nextdata->disk_addr - (*currdata)->disk_addr;
         }
         if( deletethis ) {
-            onedeleted = TRUE;
+            onedeleted = true;
             header.num_files--;
             *currdata = NULL;
             QSeek( infile, nextdata->disk_addr, SEEK_SET );
@@ -522,7 +517,7 @@ static int DeleteEntry( arccmd *cmd )
         remove( cmd->arcname );
         rename( tmpfname, cmd->arcname );
     }
-    return( TRUE );
+    return( true );
 }
 
 static int (*CmdJumpTable[])(arccmd *) = {
@@ -542,9 +537,11 @@ static char *StartUp()
     RSRNAME( txt_table, "TEXT_TABLE" );
     char *msg;
 
+#ifdef __WATCOMC__
     _nheapgrow();
+#endif
 //  form_init();
-//  form_start_up( FALSE );
+//  form_start_up( false );
     msg = rsr_load_file( "wpack.rsr" );
     if( msg == NULL ) {
         msg = rsr_text_connect( &txt_table.rsr_string );
@@ -568,7 +565,7 @@ int main( int argc, char **argv )
     arccmd  cmd;
 
     if (argc < 2) {
-        Usage( FALSE );
+        Usage( false );
     } else {
         action = ProcessArgs( argv, &cmd );
     }
@@ -578,7 +575,7 @@ int main( int argc, char **argv )
         exit ( -1 );
     }
 #endif
-#ifndef __OS2__
+#if defined( __WATCOMC__ ) && !defined( __OS2__ )
     _nheapgrow();
 #endif
     SetupTextTable();

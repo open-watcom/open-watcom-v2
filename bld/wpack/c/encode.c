@@ -32,59 +32,29 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
-#include <malloc.h>
 #include "wpack.h"
-#ifndef __WATCOMC__
+#include "walloca.h"
+#include "wpackio.h"
+#include "common.h"
+#include "encode.h"
+#include "txttable.h"
+
 #include "clibext.h"
-#endif
 
-// external function declarations
 
-extern void             EncWriteByte( char );
-extern byte             EncReadByte( void );
-extern void             DecWriteByte( unsigned char );
-extern void             WriteMsg( char * );
-extern void             WriteFiller( unsigned );
-extern void             FlushRead( void );
-extern void             FlushWrite( void );
-extern int              QOpenR( char * );
-extern unsigned long    QFileLen( int );
-extern unsigned long    QGetDate( int );
-extern unsigned_32      GetCRC( void );
-extern void             LinkList( void *, void * );
-extern void             QClose( int );
-extern void             QSeek( int, signed long, int );
-extern int              QWrite( int, void *, int );
-extern void             WriteNumeric( char *, unsigned long );
-extern file_info **     ReadHeader( arccmd *, arc_header * );
-extern void             Error( int, char * );
-extern void             PackExit( void );
-extern int              QOpenM( char * );
-extern void             CopyInfo( int, int, unsigned long );
-extern int              WriteSeek( unsigned long );
-extern int              QOpenW( char * );
-extern void             SwitchBuffer( int, bool, void * );
-extern void             RestoreBuffer( bool );
-extern int              QRead( int, void *, int );
-extern int              QWrite( int, void *, int );
-
-extern uchar            text_buf[];
-extern int              IOStatus;
-extern int              infile, outfile;
-extern int              indicies[];
-extern byte             len[];
+#define MAX_COPYLIST_SIZE (16*1024)
 
 typedef struct runlist {
     struct runlist *        next;
     char                    data[1];
 } runlist;
 
-#define MAX_COPYLIST_SIZE (16*1024)
-
 // the code array is also used to keep track of the frequency in the first
 // pass through encoding the information
 
 unsigned                code[ NUM_CHARS ];     // the code value for each char
+unsigned long           codesize;
+
 static int              match_position, match_length;
 static int              lson[N + 1], rson[N + 257], dad[N + 1];
 static runlist *        RunList;
@@ -94,8 +64,6 @@ static int              NumSpilled;
 static int              RunHandle;
 static int              TmpHandle;
 static void *           AltBuffer;
-
-unsigned long    codesize;
 
 #if defined( __WATCOMC__ ) && defined( __386__ )
 unsigned fastcmp( unsigned char *src, unsigned char *dst, int *cmp );
@@ -292,7 +260,7 @@ static void SortLengths( int num )
 static bool AssignCodes( int num, arccmd *cmd )
 /*********************************************/
 // this generates the shannon-fano code values in reverse order in the high
-// bits of the code array. returns TRUE if codes successfully assigned.
+// bits of the code array. returns true if codes successfully assigned.
 {
     unsigned    codeinc;
     unsigned    lastlen;
@@ -304,7 +272,7 @@ static bool AssignCodes( int num, arccmd *cmd )
         if( !(cmd->flags & BE_QUIET) ) {
             WriteMsg( "Can't do shannon-fano compression: code length too long\n" );
         }
-        return( FALSE );
+        return( false );
     }
     memset( code, 0, NUM_CHARS * sizeof( unsigned ) );
     codeval = 0;
@@ -318,7 +286,7 @@ static bool AssignCodes( int num, arccmd *cmd )
         }
         code[ indicies[ index ] ] = codeval;
     }
-    return( TRUE );
+    return( true );
 }
 
 static unsigned putbuf = 0;
@@ -595,12 +563,12 @@ static int DoEncode( arccmd *cmd )
     bool            doshannon;
 
     codesize = 0;
-    WasLiteral = TRUE;
+    WasLiteral = true;
     CurrRunLen = 0;
     StartRunList();
     QSeek( TmpHandle, 0, SEEK_SET );
     QSeek( RunHandle, 0, SEEK_SET );
-    SwitchBuffer( TmpHandle, TRUE, AltBuffer );
+    SwitchBuffer( TmpHandle, true, AltBuffer );
     memset( code, 0, NUM_CHARS * sizeof( unsigned ) );
     InitTree();
     s = 0;
@@ -621,11 +589,11 @@ static int DoEncode( arccmd *cmd )
             match_length = num;
         if (match_length <= THRESHOLD) {
             match_length = 1;
-            inliteral = TRUE;
+            inliteral = true;
             currvalue = text_buf[r];
             DecWriteByte( currvalue );
         } else {
-            inliteral = FALSE;
+            inliteral = false;
             currvalue = 255 - THRESHOLD + match_length;
             DecWriteByte( match_length );
             DecWriteByte( match_position >> 6 );
@@ -654,8 +622,8 @@ static int DoEncode( arccmd *cmd )
     } while (num > 0);
     AddRunEntry();
     FlushWrite();
-    RestoreBuffer( TRUE );
-    SwitchBuffer( TmpHandle, FALSE, NULL );
+    RestoreBuffer( true );
+    SwitchBuffer( TmpHandle, false, NULL );
 // now set up the compression stuff & do the second pass.
     num = 0;
     total = 0;
@@ -677,7 +645,7 @@ static int DoEncode( arccmd *cmd )
     }
     DoSecondPass( doshannon );
     EncodeEnd();
-    RestoreBuffer( FALSE );
+    RestoreBuffer( false );
     FreeRunList();
     return( !doshannon );
 }
@@ -816,7 +784,7 @@ static void MultiPack( arccmd *cmd, info_list *list )
     remove( cmd->arcname );
 }
 
-extern int Encode( arccmd *cmd )
+int Encode( arccmd *cmd )
 /******************************/
 {
     wpackfile *     currname;       // current file name being processed.
@@ -947,7 +915,7 @@ extern int Encode( arccmd *cmd )
             QClose( outfile );      // close the archive file.
         }
     }
-    return( TRUE );
+    return( true );
 }
 
 

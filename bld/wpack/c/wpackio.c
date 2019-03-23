@@ -31,11 +31,9 @@
 
 
 #include <stdlib.h>
-#include <unistd.h>
 #include <fcntl.h>
 #include <errno.h>
 #include <string.h>
-#include <malloc.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 #if defined(__UNIX__) || defined( __WATCOMC__ )
@@ -43,32 +41,35 @@
 #else
     #include <sys/utime.h>
 #endif
-#include "clibext.h"
+#include "wio.h"
 #include "wpack.h"
 #include "txttable.h"
+#include "common.h"
+#include "message.h"
+#include "wpackio.h"
 
-extern void     BumpStatus( long );
+#include "clibext.h"
+
 
 #define STDOUT_HANDLE 1
 
 int IOStatus;
-extern int infile, outfile;
 static unsigned long infile_posn;
 
-extern void WriteMsg( char *msg )
+void WriteMsg( char *msg )
 /*******************************/
 {
     write( STDOUT_HANDLE, msg, strlen( msg ) );
 }
 
 #if _WPACK
-extern void WriteLen( char *msg, int len )
+void WriteLen( char *msg, int len1 )
 /****************************************/
 {
-    write( STDOUT_HANDLE, msg, len );
+    write( STDOUT_HANDLE, msg, len1 );
 }
 
-extern void IndentLine( int amount )
+void IndentLine( int amount )
 /**********************************/
 // grossly inefficient, but it doesn't really matter
 {
@@ -78,7 +79,7 @@ extern void IndentLine( int amount )
     }
 }
 
-extern void WriteNumeric( char *msg, unsigned long num )
+void WriteNumeric( char *msg, unsigned long num )
 /******************************************************/
 {
     char    buf[ 11 ];
@@ -105,7 +106,7 @@ static void IOError( unsigned errnum, char *name )
     Error( errnum, errstr );
 }
 
-extern int QRead( int file, void *buffer, int amount )
+int QRead( int file, void *buffer, int amount )
 /****************************************************/
 {
     int amtread;
@@ -117,7 +118,7 @@ extern int QRead( int file, void *buffer, int amount )
     return( amtread );
 }
 
-extern int QWrite( int file, void *buffer, int amount )
+int QWrite( int file, void *buffer, int amount )
 /*****************************************************/
 {
     int result;
@@ -135,7 +136,7 @@ extern int QWrite( int file, void *buffer, int amount )
     return( result );
 }
 
-extern int QOpenR( char * filename )
+int QOpenR( char * filename )
 /**********************************/
 {
     int result;
@@ -147,21 +148,19 @@ extern int QOpenR( char * filename )
     return( result );
 }
 
-extern int NoErrOpen( char * filename )
+int NoErrOpen( char * filename )
 /*************************************/
 {
     infile_posn = ~0L;
     return( open( filename, O_BINARY | O_RDONLY, 0 ) );
 }
 
-extern int QOpenW( char * filename )
+int QOpenW( char * filename )
 /**********************************/
 {
     int result;
 
-    result = open( filename,
-                   O_BINARY | O_RDWR | O_CREAT | O_TRUNC,
-                   S_IRWXU | S_IRWXG | S_IRWXO );
+    result = open( filename, O_BINARY | O_RDWR | O_CREAT | O_TRUNC, PMODE_RWX );
     if( result == -1 ) {
         IOError( TXT_NOT_OPEN, filename );
     }
@@ -169,7 +168,7 @@ extern int QOpenW( char * filename )
 }
 
 #if _WPACK
-extern int QOpenM( char * filename )
+int QOpenM( char * filename )
 /**********************************/
 {
     int result;
@@ -181,13 +180,13 @@ extern int QOpenM( char * filename )
     return( result );
 }
 
-extern unsigned long QFileLen( int file )
+unsigned long QFileLen( int file )
 /***************************************/
 {
     return( filelength( file ) );
 }
 
-extern unsigned long QGetDate( int handle )
+unsigned long QGetDate( int handle )
 /*********************************************/
 {
     struct stat     statblk;
@@ -197,19 +196,19 @@ extern unsigned long QGetDate( int handle )
 }
 #endif
 
-extern void QSeek( int file, signed long position, int seektype )
+void QSeek( int file, signed long position, int seektype )
 /***************************************************************/
 {
     lseek( file, position, seektype );
 }
 
-extern void QClose( int file )
+void QClose( int file )
 /****************************/
 {
     close( file );
 }
 
-extern void QSetDate( char *fname, unsigned long stamp )
+void QSetDate( char *fname, unsigned long stamp )
 /******************************************************/
 {
     struct stat     statblk;
@@ -327,14 +326,14 @@ static unsigned_32  CRCTable[] = {
       0xb40bbe37, 0xc30c8ea1, 0x5a05df1b, 0x2d02ef8d
 };
 
-extern int InitIO( void )
+int InitIO( void )
 /************************/
 {
 //  _nheapgrow();   called in main()
     ReadBuf = (char *)WPMemAlloc( READ_SIZE + 3 ) + 3;  // so we can "unread"
     WriteBuf = WPMemAlloc( WRITE_SIZE ); // 3 bytes
     if( ReadBuf == NULL  ||  WriteBuf == NULL ) {
-        return( FALSE );
+        return( false );
     }
     BytesRead = READ_SIZE + 1;
     ReadLimit = 0;              // force reloading of buffer.
@@ -343,10 +342,10 @@ extern int InitIO( void )
     CRC = 0xFFFFFFFF;
     IOStatus = OK;
     infile_posn = ~0L;
-    return( TRUE );
+    return( true );
 }
 
-extern void FiniIO( void )
+void FiniIO( void )
 /************************/
 {
     if( ReadBuf != NULL ) {
@@ -357,7 +356,7 @@ extern void FiniIO( void )
     }
 }
 
-extern int BufSeek( unsigned long position )
+int BufSeek( unsigned long position )
 /******************************************/
 {
     unsigned long   sect_start;
@@ -383,41 +382,41 @@ extern int BufSeek( unsigned long position )
 }
 
 #if _WPACK
-extern void CopyInfo( int dstfile, int srcfile, unsigned long len )
+void CopyInfo( int dstfile, int srcfile, unsigned long len1 )
 /*****************************************************************/
 // make sure nothing is being buffered when this routine is being called.
 {
-    while( len > READ_SIZE ) {
+    while( len1 > READ_SIZE ) {
         QRead( srcfile, ReadBuf, READ_SIZE );
         QWrite( dstfile, ReadBuf, READ_SIZE );
-        len -= READ_SIZE;
+        len1 -= READ_SIZE;
     }
-    if( len > 0 ) {
-        QRead( srcfile, ReadBuf, len );
-        QWrite( dstfile, ReadBuf, len );
+    if( len1 > 0 ) {
+        QRead( srcfile, ReadBuf, len1 );
+        QWrite( dstfile, ReadBuf, len1 );
     }
 }
 
-extern int WriteSeek( unsigned long position )
+int WriteSeek( unsigned long position )
 /********************************************/
 // preload write buffer with the information at the start of the sector
 // containing position.
 {
     unsigned long   sect_start;
-    int             len;
+    int             len1;
 
     sect_start = position & ~(SECTOR_SIZE - 1);
     QSeek( outfile, sect_start, SEEK_SET );
-    len = position - sect_start;
-    if( len > 0 ) {
-        if( QRead( outfile, WriteBuf, SECTOR_SIZE ) < len ) {
+    len1 = position - sect_start;
+    if( len1 > 0 ) {
+        if( QRead( outfile, WriteBuf, SECTOR_SIZE ) < len1 ) {
             return( -1 );
         }
         QSeek( outfile, sect_start, SEEK_SET );
-        BytesWrote = len;
-        CurrWrite += len;
+        BytesWrote = len1;
+        CurrWrite += len1;
     }
-    return( len );
+    return( len1 );
 }
 #endif
 
@@ -449,7 +448,7 @@ static void ReloadTheBuffer( void )
     BytesRead = 0;
 }
 
-extern byte EncReadByte( void )
+byte EncReadByte( void )
 /*****************************/
 {
     byte    data;
@@ -463,7 +462,7 @@ extern byte EncReadByte( void )
     return( data );
 }
 
-extern void UnReadByte( byte value )
+void UnReadByte( byte value )
 /**********************************/
 {
     CurrRead--;
@@ -471,7 +470,7 @@ extern void UnReadByte( byte value )
     BytesRead--;
 }
 
-extern byte DecReadByte( void )
+byte DecReadByte( void )
 /*****************************/
 {
     byte    index;
@@ -489,7 +488,7 @@ extern byte DecReadByte( void )
 
 #if _WPACK
 void DecWriteByte( byte c );            // DecWriteByte is declared further down in the file
-extern void EncWriteByte( byte c )
+void EncWriteByte( byte c )
 /********************************/
 {
     byte    index;
@@ -512,7 +511,7 @@ static void WriteTheBuffer( void )
     BytesWrote = 0;
 }
 
-extern void DecWriteByte( byte c )
+void DecWriteByte( byte c )
 /********************************/
 {
     *CurrWrite = c;
@@ -523,7 +522,7 @@ extern void DecWriteByte( byte c )
     }
 }
 
-extern void FlushWrite( void )
+void FlushWrite( void )
 /****************************/
 {
     if( BytesWrote != 0 ) {
@@ -534,7 +533,7 @@ extern void FlushWrite( void )
     IOStatus = OK;
 }
 
-extern void FlushRead( void )
+void FlushRead( void )
 /***************************/
 {
     BytesRead = READ_SIZE + 1;     // force a read next time
@@ -543,7 +542,7 @@ extern void FlushRead( void )
 }
 
 #if _WPACK
-extern void SwitchBuffer( int handle, bool iswrite, void *buf )
+void SwitchBuffer( int handle, bool iswrite, void *buf )
 /*****************************************************************/
 {
     if( iswrite ) {
@@ -562,7 +561,7 @@ extern void SwitchBuffer( int handle, bool iswrite, void *buf )
     }
 }
 
-extern void RestoreBuffer( bool iswrite )
+void RestoreBuffer( bool iswrite )
 /***************************************/
 {
     if( iswrite ) {
@@ -577,7 +576,7 @@ extern void RestoreBuffer( bool iswrite )
     }
 }
 
-extern void WriteFiller( unsigned amount )
+void WriteFiller( unsigned amount )
 /*****************************************/
 // note this assumes that a write past the end of the buffer won't happen.
 {
@@ -585,7 +584,7 @@ extern void WriteFiller( unsigned amount )
     CurrWrite += amount;
 }
 
-extern unsigned_32 GetCRC( void )
+unsigned_32 GetCRC( void )
 /*******************************/
 {
     unsigned_32 result;
@@ -596,7 +595,7 @@ extern unsigned_32 GetCRC( void )
 }
 #endif
 
-extern void ModifyCRC( unsigned long *value, byte data )
+void ModifyCRC( unsigned long *value, byte data )
 /******************************************************/
 // this is used for adjusting the value of the CRC stored in the file to take
 // into account the few extra bytes of "read ahead" done by the compression
@@ -612,7 +611,7 @@ extern void ModifyCRC( unsigned long *value, byte data )
     CRC = SaveCRC;
 }
 
-extern bool CheckCRC( unsigned_32 value )
+bool CheckCRC( unsigned_32 value )
 /***************************************/
 {
     byte     crcidx;

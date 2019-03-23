@@ -35,9 +35,11 @@
 #include <string.h>
 #include <ctype.h>
 #include <fcntl.h>
-#include <unistd.h>
+#include "wio.h"
 #include "txttable.h"
 #include "wpack.h"
+#include "message.h"
+
 
 #define STDOUT_HANDLE 1
 void LogUnPacking( char *name )
@@ -67,12 +69,12 @@ void BumpStatus( long by )
 
 #undef STDOUT_HANDLE
 
-void getinput( char *buffer, int len )
+void getinput( char *buffer, int len1 )
     {
-        while( len > 1 ) {
+        while( len1 > 1 ) {
             *buffer = getchar();
             if( *buffer == '\n' ) break;
-            --len;
+            --len1;
             ++buffer;
         }
         *buffer = '\0';

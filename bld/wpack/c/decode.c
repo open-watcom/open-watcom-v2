@@ -31,49 +31,31 @@
 
 #include <stdlib.h>
 #include <string.h>
-#include <malloc.h>
 #include <sys/types.h>
 #include <sys/stat.h>
-#ifndef __WATCOMC__
-#include "clibext.h"
-#endif
 #ifndef __UNIX__
 #include <dos.h>
 #endif
+#include "wio.h"
 #include "wpack.h"
 #include "txttable.h"
+#include "common.h"
+#include "message.h"
+#include "wqsort.h"
+#include "walloca.h"
+#ifndef __WATCOMC__
+//    #include <malloc.h>
+#endif
+#include "wpackio.h"
+#include "decode.h"
 
-// external function declarations
-extern unsigned char    DecReadByte( void );
-extern void             DecWriteByte( unsigned char );
-extern void             FlushRead( void );
-extern void             FlushWrite( void );
-extern int              BufSeek( unsigned long );
-extern void             QSetDate( char *, unsigned long );
-extern int              QWrite( int, void *, int );
-extern bool             CheckCRC( unsigned_32 );
-extern void             QClose( int );
-extern int              QOpenW( char * );
-extern file_info **     ReadHeader( arccmd *, arc_header * );
-extern void             FreeHeader( file_info ** );
-extern void             AssignCodes( int );
-extern void             ModifyCRC( unsigned long *, byte );
-extern void             UnReadByte( byte );
-extern void             DecWriteBuf( void *, int );
-extern int              OK_ToReplace( char * );
-extern int              OK_ReplaceRDOnly( char * );
-extern void             LogUnPacking( char * );
-extern int              UnPackHook( char * );
+#include "clibext.h"
+
 
 #ifdef _M_IX86
 #pragma aux DecReadByte __parm __nomemory __modify __nomemory;
 #pragma aux DecWriteByte __parm __nomemory __modify __nomemory;
 #endif
-
-extern int          infile, outfile;
-extern uchar        text_buf[];
-extern int          indicies[];
-extern byte         len[];
 
 unsigned short   MinCodeLen;
 unsigned short   MinVal[ MAX_CODE_BITS + 1];
@@ -157,7 +139,7 @@ static uchar          secondbuf;
 
 // this not needed anymore
 #if 0
-GLOBAL int GetBit( void )
+int GetBit( void )
 /***********************/
 /* get one bit */
 {
@@ -175,7 +157,7 @@ GLOBAL int GetBit( void )
 }
 #endif
 
-GLOBAL unsigned short GetByte(void)
+unsigned short GetByte(void)
 /*********************************/
 /* get a byte */
 {
@@ -196,7 +178,7 @@ GLOBAL unsigned short GetByte(void)
 
 static byte Mask[] = { 0, 1, 3, 7, 0xF, 0x1F, 0x3F, 0x7F, 0xFF };
 
-GLOBAL int DecodePosition( void )
+int DecodePosition( void )
 /*******************************/
 {
     unsigned short i, j, c;
@@ -268,14 +250,10 @@ static int CompLen( const int *left, const int *right )
 static void SortLengths( int num )
 /********************************/
 {
-    extern int wpack_qsort( void *, int, int,
-                            int (*)(const void *, const void *) );
-
-    wpack_qsort( indicies, num, sizeof( int ),
-                 (int (*)(const void *, const void *))CompLen );
+    wpack_qsort( indicies, num, sizeof( int ), (int (*)(const void *, const void *))CompLen );
 }
 
-extern void AssignCodes( int num )
+void AssignCodes( int num )
 /********************************/
 // this builds the decompression structures.
 {
@@ -307,7 +285,7 @@ extern void AssignCodes( int num )
     }
 }
 
-extern void NoShannonDecode( unsigned long textsize )
+void NoShannonDecode( unsigned long textsize )
 /***************************************************/
 /* Decoding/Uncompressing */
 {
@@ -357,7 +335,7 @@ extern void NoShannonDecode( unsigned long textsize )
     FlushWrite();
 }
 
-extern void DoDecode( unsigned long textsize )
+void DoDecode( unsigned long textsize )
 /********************************************/
 /* Decoding/Uncompressing */
 {
@@ -451,8 +429,38 @@ static bool CompareCRC( unsigned long crcvalue )
     return( retval );
 }
 
-static int FileExists( char *name, file_info *info );           // FileExists defined further down in this file
-extern bool DecodeFile( file_info *info, arccmd *cmd )
+static int FileExists( char *name, file_info *info )
+{
+    auto struct stat            statblk;
+    int                         rc;
+
+    rc = stat( name, &statblk );
+    if( rc == 0 ) {
+        if( !( statblk.st_mode & S_IWRITE ) ) {
+            /* file is read-only */
+            if( !OK_ReplaceRDOnly( name ) ) {
+                return( 1 );
+            }
+            chmod( name, PMODE_RW );
+        }
+        if( UnPackHook( name ) )
+            return( 0 ); // this is allowed to modify name
+        if( statblk.st_mtime == info->stamp ) {
+            return( 1 );
+        }
+        if( statblk.st_mtime > info->stamp ) {
+            /* file already exists with newer date */
+            if( !OK_ToReplace( name ) ) {
+                return( 1 );
+            }
+        }
+    } else {
+        UnPackHook( name );
+    }
+    return( 0 );    /* file does not exist, or it has different date or size */
+}
+
+bool DecodeFile( file_info *info, arccmd *cmd )
 /****************************************************/
 {
     char           drive[_MAX_DRIVE];
@@ -488,7 +496,7 @@ extern bool DecodeFile( file_info *info, arccmd *cmd )
     if( ! FileExists( name, info ) ) {
         outfile = QOpenW( name );
         if( outfile == -1 )  {
-            return( FALSE );
+            return( false );
         } else {
             LogUnPacking( name );
             if( info->namelen & NO_SHANNON_CODE ) {
@@ -506,56 +514,14 @@ extern bool DecodeFile( file_info *info, arccmd *cmd )
                 strcat( msg, "\' " );
                 strcat( msg, LookupText( NULL, TXT_INC_CRC ) );
                 Error( TXT_INC_CRC, msg );
-                return( FALSE );
+                return( false );
             }
         }
     }
-    return( TRUE );
+    return( true );
 }
 
-static int FileExists( char *name, file_info *info )            /* 26-may-90 */
-{
-    auto struct stat            statblk;
-#if !defined( __UNIX__ )
-    unsigned                    attribute;
-#endif
-    int                         rc;
-
-    rc = stat( name, &statblk );
-    if( rc == 0 ) {
-#if defined( __UNIX__ )
-        if( !( statblk.st_mode & S_IWRITE ) ) {
-#else
-        _dos_getfileattr( name, &attribute );
-        if( attribute & ( _A_RDONLY | _A_HIDDEN ) ) {
-#endif
-            /* file is read-only */
-            if( !OK_ReplaceRDOnly( name ) ) {
-                return( 1 );
-            }
-#if defined( __UNIX__ )
-            chmod( name, 0777 );
-#else
-            _dos_setfileattr( name, _A_NORMAL );
-#endif
-        }
-        if( UnPackHook( name ) ) return( 0 ); // this is allowed to modify name
-        if( statblk.st_mtime == info->stamp ) {
-            return( 1 );
-        }
-        if( statblk.st_mtime > info->stamp ) {                  /* 14-sep-91 */
-            /* file already exists with newer date */
-            if( !OK_ToReplace( name ) ) {
-                return( 1 );
-            }
-        }
-    } else {
-        UnPackHook( name );
-    }
-    return( 0 );    /* file does not exist, or it has different date or size */
-}
-
-extern int Decode( arccmd *cmd )
+int Decode( arccmd *cmd )
 /*******************************/
 {
     file_info **    currfile;
@@ -569,14 +535,14 @@ extern int Decode( arccmd *cmd )
     if( filedata == NULL ) {
         msg = LookupText( NULL, TXT_ARC_NOT_EXIST );
         Error( TXT_ARC_NOT_EXIST, msg );
-        return FALSE;
+        return false;
     }
     if( cmd->files == NULL  ||  cmd->files->filename == NULL ) {
 //      BufSeek( sizeof( arc_header ) );    // skip header.
         for( currfile = filedata; *currfile != NULL; currfile++ ) {
             if( BufSeek( (*currfile)->disk_addr ) != -1 ) {
                 if( !DecodeFile( *currfile, cmd ) ) {
-                    return FALSE;
+                    return false;
                 }
             }
         }
@@ -588,21 +554,20 @@ extern int Decode( arccmd *cmd )
                     memicmp(currname->filename, (*currfile)->name, namelen) == 0 ) {
                     if( BufSeek( (*currfile)->disk_addr ) != -1 ) {
                         if( !DecodeFile( *currfile, cmd ) ) {
-                            return FALSE;
+                            return false;
                         }
                     }
                     break;
                 }
             }
             if( *currfile == NULL ) {
-                char msg[ 50 ];
-                strcpy( msg, LookupText( NULL, TXT_NOT_IN_ARC ) );
-                Log( LookupText( NULL, TXT_WARN_FILE ), "\"", currname->filename, "\"",
-                     msg, NULL );
+                char msgx[ 50 ];
+                strcpy( msgx, LookupText( NULL, TXT_NOT_IN_ARC ) );
+                Log( LookupText( NULL, TXT_WARN_FILE ), "\"", currname->filename, "\"", msgx, NULL );
             }
         }  // end for
     } // end if
     QClose( infile );       // close the archive file.
     FreeHeader( filedata );
-    return TRUE;
+    return true;
 }
