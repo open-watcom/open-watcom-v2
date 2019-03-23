@@ -132,6 +132,16 @@ enum {
 
 extern bool             ConfigModified;
 extern gui_window       *MainWnd;
+extern bool             IsPatch;
+extern bool             CancelSetup;
+extern bool             SkipDialogs;
+extern bool             Invisible;
+extern gui_coord        GUIScale;
+extern char             *VariablesFile;
+extern bool             VisibilityCondition;
+extern gui_colour_set   MainColours[];
+extern gui_colour_set   StatusColours[];
+extern gui_ord          BitMapBottom;
 
 extern void             ReplaceVars( VBUF *dst, const char *src );
 extern bool             CheckInstallDLL( const VBUF *, vhandle );

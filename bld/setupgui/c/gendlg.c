@@ -54,8 +54,6 @@
 #include "clibext.h"
 
 
-extern bool            SkipDialogs;
-
 static a_dialog_header *FirstDialog = NULL;
 static a_dialog_header *LastDialog = NULL;
 

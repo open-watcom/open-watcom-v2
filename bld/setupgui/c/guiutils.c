@@ -47,9 +47,6 @@
 #include "clibext.h"
 
 
-extern gui_colour_set   MainColours[];
-extern void             GUISetJapanese();
-extern bool             Invisible;
 gui_window              *MainWnd = NULL;
 int                     NominalButtonWidth = 11;
 

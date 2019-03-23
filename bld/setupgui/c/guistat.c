@@ -64,13 +64,6 @@
 #define STATUS_ROW      4
 #define BAR_INDENT      4
 
-extern gui_colour_set   StatusColours[];
-extern gui_colour_set   StatusBackground;
-extern gui_window       *MainWnd;
-extern int              IsPatch;
-extern gui_ord          BitMapBottom;
-extern gui_coord        GUIScale;
-
 int                     MsgLine0 = STAT_BLANK;
 bool                    CancelSetup = false;
 gui_colour_set          ToolPlain = { GUI_BLACK, GUI_BLUE, };

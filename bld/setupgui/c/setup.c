@@ -49,14 +49,7 @@
 #include "clibext.h"
 
 
-extern void DoSpawn( when_time );
-extern void DeleteObsoleteFiles();
-extern void ResetDiskInfo( void );
-
-extern bool     SkipDialogs;
-extern bool     CancelSetup;
-
-int IsPatch = 0;
+bool    IsPatch = false;
 
 typedef enum {
     Stack_Push,
@@ -82,7 +75,7 @@ static bool SetupOperations( void )
     DoSpawn( WHEN_BEFORE );
 #ifdef PATCH
     if( GetVariableBoolVal( "Patch" ) ) {
-        IsPatch = 1;
+        IsPatch = true;
         if( !PatchFiles() ) {
             return( false );
         }

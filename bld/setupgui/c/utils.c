@@ -89,8 +89,6 @@ typedef struct def_var {
 bool            ConfigModified = false;
 static enum { SRC_UNKNOWN, SRC_CD, SRC_DISK } SrcInstState;
 
-extern int      IsPatch;
-extern bool     CancelSetup;
 bool            SkipDialogs;
 char            *VariablesFile;
 DEF_VAR         *ExtraVariables;

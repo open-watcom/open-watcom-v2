@@ -199,11 +199,6 @@ typedef struct dialog_info {    // structure used when parsing a dialog
     int                 col_num;
 } DIALOG_INFO;
 
-extern char             *TrimQuote(char*);
-extern bool             SkipDialogs;
-extern bool             VisibilityCondition;
-extern char             *VariablesFile;
-
 #define defvar( x, y ) vhandle x;
 MAGICVARS( defvar, 0 )
 NONMAGICVARS( defvar, 0 )
@@ -364,7 +359,6 @@ static char             *ReadBuf;
 static size_t           ReadBufSize;
 static char             *RawReadBuf;
 static char             *RawBufPos;
-extern gui_coord        GUIScale;
 static int              MaxWidthChars;
 static int              CharWidth;
 
