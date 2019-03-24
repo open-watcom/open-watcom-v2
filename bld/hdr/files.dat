@@ -3,7 +3,7 @@
 #
 # Headers for DOS, Windows, OS/2 and Netware
 #
-[ DEFAULT type="s" dir="h" where="c jc f77 jf77 ac" cond="dostarg wintarg os2targ wnttarg nlmtarg | | | | |" ]
+[ DEFAULT type="s" dir="h" where="c jc f77 jf77 ac" cond="dostarg wintarg os2targ wnttarg nlmtarg | | | |" ]
 #
 # Standard C99 headers
 #
@@ -72,7 +72,7 @@ usr="varargs.h"
 usr="wdefwin.h"
 usr="wsample.h"
 
-[ DEFAULT type="s" dir="h/sys" where="c jc f77 jf77 ac" cond="dostarg wintarg os2targ wnttarg nlmtarg | | | | |" ]
+[ DEFAULT type="s" dir="h/sys" where="c jc f77 jf77 ac" cond="dostarg wintarg os2targ wnttarg nlmtarg | | | |" ]
 usr="locking.h"
 usr="stat.h"
 usr="time.h"
@@ -83,7 +83,7 @@ usr="utime.h"
 [ DEFAULT type="s" dir="h/sys" where="c jc f77 jf77 ac" cond="dostarg" ]
 usr="_lfndos.h"
 
-[ DEFAULT type="s" dir="h" where="c jc f77 jf77 ac" cond="dostarg wintarg os2targ wnttarg nlmtarg | | | | | cplusplus" ]
+[ DEFAULT type="s" dir="h" where="c jc f77 jf77 ac" cond="dostarg wintarg os2targ wnttarg nlmtarg | | | | cplusplus" ]
 #
 # C++ headers
 #
@@ -206,7 +206,7 @@ usr="utility"
 usr="valarray"
 usr="vector"
 
-[ DEFAULT type="s" dir="h" where="c jc f77 jf77 ac" cond="dostarg wintarg os2targ wnttarg nlmtarg | | | | | cplusplus" ]
+[ DEFAULT type="s" dir="h" where="c jc f77 jf77 ac" cond="dostarg wintarg os2targ wnttarg nlmtarg | | | | cplusplus" ]
 usr="except.h"
 usr="exceptio.h"
 usr="stdexcep.h"
