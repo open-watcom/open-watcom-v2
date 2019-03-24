@@ -406,31 +406,51 @@ static tree_node *BuildExprTree( const char *str )
     char                *p;
     tree_node           *tree;
 
+    #define STACK_SIZE  ( sizeof( stack ) / sizeof( *stack ) )
+
     if( str == NULL || IS_EMPTY( str ) ) {
         return( TreeNode( OP_TRUE, NULL, NULL ) );
     }
     stack_top = -1;
     str2 = GUIStrDup( str, NULL );  // copy string so we can use STRTOK
-    token = strtok( str2, " " );
-    while( token != NULL ) {
+    for( token = strtok( str2, " " ); token != NULL; token = strtok( NULL, " " ) ) {
         if( token[0] == '|' ) { // or together top 2 values
             --stack_top;
+            if( stack_top < 0 ) {
+                GUIDisplayMessage( MainWnd, "Expression stack underflow!", "Setup script", GUI_OK );
+                stack_top = 0;
+                break;
+            }
             stack[stack_top] = TreeNode( OP_OR, stack[stack_top], stack[stack_top + 1] );
         } else if( token[0] == '&' ) { // and together top 2 values
             --stack_top;
+            if( stack_top < 0 ) {
+                GUIDisplayMessage( MainWnd, "Expression stack underflow!", "Setup script", GUI_OK );
+                stack_top = 0;
+                break;
+            }
             stack[stack_top] = TreeNode( OP_AND, stack[stack_top], stack[stack_top + 1] );
         } else if( token[0] == '!' ) { // not top value
             stack[stack_top] = TreeNode( OP_NOT, stack[stack_top], NULL );
         } else if( token[0] == '?' ) {  // check for file existence
             p = GUIStrDup( token + 1, NULL );
             ++stack_top;
-            stack[stack_top] = TreeNode( OP_EXIST, p, NULL );
+            if( stack_top > STACK_SIZE - 1 ) {
+                GUIDisplayMessage( MainWnd, "Expression stack overflow!", "Setup script", GUI_OK );
+                stack_top = STACK_SIZE - 1;
+            } else {
+                stack[stack_top] = TreeNode( OP_EXIST, p, NULL );
+            }
         } else {                // push current value
             ++stack_top;
-            stack[stack_top] = TreeNode( OP_VAR, NULL, NULL );
-            stack[stack_top]->u.v = GetTokenHandle( token );
+            if( stack_top > STACK_SIZE - 1 ) {
+                GUIDisplayMessage( MainWnd, "Expression stack overflow!", "Setup script", GUI_OK );
+                stack_top = STACK_SIZE - 1;
+            } else {
+                stack[stack_top] = TreeNode( OP_VAR, NULL, NULL );
+                stack[stack_top]->u.v = GetTokenHandle( token );
+            }
         }
-        token = strtok( NULL, " " );
     }
     // and together whatever is left on stack
     tree = stack[stack_top];
@@ -3330,7 +3350,6 @@ static bool CheckDLLSupplemental( int i, const VBUF *filename )
         if( VbufCompStr( &ext, ".DLL", true ) == 0 ) {
             VBUF        file_desc;
             VBUF        dir;
-//            VBUF        file_name;
             VBUF        dst_path;
             bool        flag;
             int         m;
@@ -3340,7 +3359,6 @@ static bool CheckDLLSupplemental( int i, const VBUF *filename )
             VbufInit( &file_desc );
             SimFileDir( i, &dir );
             SimGetFileDesc( i, &file_desc );
-//            SimGetFileName( i, &file_name );
             VbufMakepath( &dst_path, NULL, &dir, &file_desc, NULL );
             VbufFree( &file_desc );
             VbufFree( &dir );
@@ -4442,8 +4460,7 @@ static char *CompileCondition( const char *str )
     var_handle = NO_VAR;
     buff[0] = '\0';
     str2 = GUIStrDup( str, NULL );  // copy string so we can use STRTOK
-    token = strtok( str2, " " );
-    while( token != NULL ) {
+    for( token = strtok( str2, " " ); token != NULL; token = strtok( NULL, " " ) ) {
         switch( token[0] ) {
         case '|':
         case '&':
@@ -4459,7 +4476,6 @@ static char *CompileCondition( const char *str )
             itoa( var_handle, buff + strlen( buff ), 10 );
             strcat( buff, " " );
         }
-        token = strtok( NULL, " " );
     }
     GUIMemFree( str2 );
     return( GUIStrDup( buff, NULL ) );

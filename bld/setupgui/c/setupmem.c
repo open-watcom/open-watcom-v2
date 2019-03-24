@@ -32,6 +32,7 @@
 
 #include <stdlib.h>
 #include <string.h>
+#include "bool.h"
 #include "guimem.h"
 #if defined( GUI_IS_GUI )
     #include "cguimem.h"
