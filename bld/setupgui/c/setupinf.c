@@ -3656,7 +3656,7 @@ static bool FindStr( FILE *fp, char *fullpath, char *pattern )
         }
     }
     if( found ) {
-        fseek( fp,  -((long)len + patternlen - i), SEEK_CUR );
+        fseek( fp,  -(long)(len + patternlen - i), SEEK_CUR );
         free( buff );
         return( true );
     }
