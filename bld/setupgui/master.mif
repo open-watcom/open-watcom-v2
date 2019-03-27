@@ -63,10 +63,9 @@ mem_objs = &
     setupmem.obj     &
     $(trmem_objs)
 
-#                     i_dos i_linux i_nt i_os2 i_win i_wini86 i_win386 i_osx
+#                     i_dos i_linux i_nt i_os2 i_win i_osx
 #===========================================================================
-!inject setupio.obj   i_dos i_linux i_nt i_os2                i_win386 i_osx
-!inject setupiod.obj                                 i_wini86
+!inject setupio.obj   i_dos i_linux i_nt i_os2 i_win i_osx
 !inject os2util.obj                      i_os2
 !inject winutil.obj                 i_nt i_os2 i_win
 !inject winddeml.obj                i_nt       i_win

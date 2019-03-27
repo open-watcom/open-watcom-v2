@@ -30,13 +30,21 @@
 ****************************************************************************/
 
 
+#if defined( _M_I86 )
+    #undef  USE_ZIP     /* ziplib and zlib code don't support 16-bit architectures */
+#else
+    #define USE_ZIP
+#endif
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include "wio.h"
 #include "setup.h"
 #include "setupio.h"
-#include "zip.h"
+#ifdef USE_ZIP
+    #include "zip.h"
+#endif
 
 
 typedef enum ds_type {
@@ -49,11 +57,15 @@ typedef struct file_handle_t {
     ds_type                 type;
     union {
         FILE                *fp;
+#ifdef USE_ZIP
         struct zip_file     *zf;
+#endif
     } u;
 } *file_handle;
 
 static ds_type          srcType;
+
+#ifdef USE_ZIP
 static struct zip       *srcZip;
 
 /* At the moment the incoming path may have either forward or backward
@@ -76,9 +88,11 @@ static void flipBackSlashes( const VBUF *old_path, VBUF *new_path )
         ++s;
     }
 }
+#endif
 
 int FileInit( const VBUF *archive )
 {
+#ifdef USE_ZIP
     int             zerr;
 
     /* Attempt to open a ZIP archive */
@@ -88,15 +102,20 @@ int FileInit( const VBUF *archive )
     } else {
         srcType = DS_FILE;
     }
+#else
+    srcType = DS_FILE;
+#endif
     return( 0 );
 }
 
 
 int FileFini( void )
 {
+#ifdef USE_ZIP
     if( srcType == DS_ZIP ) {
         zip_close( srcZip );
     }
+#endif
     return( 0 );
 }
 
@@ -116,6 +135,7 @@ int FileIsArchive( void )
 int FileStat( const VBUF *path, struct stat *buf )
 {
     int                 rc;
+#ifdef USE_ZIP
     struct zip_stat     zs;
 
     rc = -1;
@@ -138,9 +158,12 @@ int FileStat( const VBUF *path, struct stat *buf )
         VbufFree( &alt_path );
     }
     if( rc != 0 ) {
+#endif
         /* If that fails, try local file */
         rc = stat_vbuf( path, buf );
+#ifdef USE_ZIP
     }
+#endif
     return( rc );
 }
 
@@ -153,6 +176,7 @@ file_handle FileOpen( const VBUF *path, const char *flags )
     if( fh == NULL )
         return( NULL );
 
+#ifdef USE_ZIP
     fh->u.zf = NULL;
     if( srcType == DS_ZIP ) {
         VBUF    alt_path;
@@ -168,10 +192,13 @@ file_handle FileOpen( const VBUF *path, const char *flags )
         VbufFree( &alt_path );
     }
     if( fh->u.zf == NULL ) {
+#endif
         /* If that fails, try opening the file directly */
         fh->u.fp = fopen_vbuf( path, flags );
         fh->type = DS_FILE;
+#ifdef USE_ZIP
     }
+#endif
     if( fh->type == DS_FILE && fh->u.fp == NULL ) {
         free( fh );
         fh = NULL;
@@ -188,9 +215,11 @@ int FileClose( file_handle fh )
     case DS_FILE:
         rc = fclose( fh->u.fp );
         break;
+#ifdef USE_ZIP
     case DS_ZIP:
         rc = zip_fclose( fh->u.zf );
         break;
+#endif
     default:
         rc = -1;
     }
@@ -212,8 +241,10 @@ long FileSeek( file_handle fh, long offset, int origin )
             pos = ftell( fh->u.fp );
         }
         break;
+#ifdef USE_ZIP
     case DS_ZIP:
         /* I really want to be able to seek! */
+#endif
     default:
         pos = -1;
     }
@@ -230,9 +261,11 @@ size_t FileRead( file_handle fh, void *buffer, size_t length )
     case DS_FILE:
         amt = fread( buffer, 1, length, fh->u.fp );
         break;
+#ifdef USE_ZIP
     case DS_ZIP:
         amt = zip_fread( fh->u.zf, buffer, length );
         break;
+#endif
     default:
         amt = 0;
     }
