@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -142,12 +143,13 @@ STATIC const char *scopeTxt[] = {
 #define INDENT  "    "
 #define END "\n"
 
-STATIC int doPrintType( void *_type, void *parm ) {
+STATIC int doPrintType( void *_type, void *parm1 ) {
 
     cantype        *type = _type;
     uint            tmp;
 
-    parm = parm;
+    /* unused parameters */ (void)parm1;
+
     if( type == NULL ) {
         return( 0 );
     }
@@ -342,7 +344,6 @@ STATIC const char *regNames[] = {
 #define IND_WIDTH   4
 #define MAX_SPACES  160
 
-#pragma on (check_stack);
 STATIC void doPrintSymbs( void ) {
 
     symb_handle hdl;
@@ -477,7 +478,6 @@ STATIC void doPrintSymbs( void ) {
         hdl = CanSFwd( hdl );
     } while( hdl != head );
 }
-#pragma off(check_stack);
 
 STATIC void doPrintMisc( void ) {
 
@@ -507,7 +507,6 @@ STATIC void doPrintMisc( void ) {
     PrtFmt( "\n" );
 }
 
-#pragma on (check_stack);
 STATIC void center( const char *text ) {
 
     char        buf[81];
@@ -524,7 +523,6 @@ STATIC void center( const char *text ) {
     buf[ spaces + len ] = 0;
     PrtFmt( "%s\n", buf );
 }
-#pragma off(check_stack);
 
 STATIC void centerMsg( int msgnum ) {
 

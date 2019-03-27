@@ -31,14 +31,7 @@
 ****************************************************************************/
 
 
-/* womp error and warning messages */
+#define MSG_RC_BASE 16
+#define MSG_USE_BASE 200
 
-#include "bool.h"
-#include "wpmsgrc.h"
 #include "wmpmsg.gh"
-
-#define MAX_RESOURCE_SIZE       128
-
-extern bool MsgInit( char *fname );
-extern void MsgGet( int resourceid, char *buffer );
-extern bool MsgFini( void );

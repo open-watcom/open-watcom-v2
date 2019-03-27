@@ -12,7 +12,7 @@
  *  %Z  : message from 'system error' (see below)
  */
 
-#include "wpmsg.h"
+#include "wpmsgrc.h"
 
 STRINGTABLE
 BEGIN
@@ -22,7 +22,7 @@ BEGIN
     #define pick(c,e,j) c, [ e ]
   #endif
 
-    #include "..\womp.msg"
+    #include "womp.msg"
 
     #undef pick
 

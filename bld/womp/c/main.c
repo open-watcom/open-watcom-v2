@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -114,15 +115,15 @@ static void cleanupHandler( void )
     MemFini();
 }
 
-#pragma off (unreferenced);
-void main( int argc, char *argv[] ) {
-#pragma on (unreferenced);
-
+void main( int argc, char *argv[] )
+{
     uint        i;
     uint        num_files;
     cmdline_t   *cmd;
     int         multi_module;
     pobj_lib_info pli;
+
+    /* unused parameters */ (void)argc;
 
     atexit( cleanupHandler );
     MemInit();
