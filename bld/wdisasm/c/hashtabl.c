@@ -33,6 +33,7 @@
 #include <stdlib.h>
 #include "hashtabl.h"
 
+
 static hash_value stringEncode( const char *string )
 //**************************************************
 {

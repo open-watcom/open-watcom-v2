@@ -33,6 +33,7 @@
 #include "disasm.h"
 #include "wdismsg.h"
 
+
 rec_type                RecType;
 bool                    EndOfRecord;
 unsigned                RecNumber;

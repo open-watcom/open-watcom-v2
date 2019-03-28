@@ -31,13 +31,10 @@
 
 
 #include <ctype.h>
-#include <malloc.h>
 #include <process.h>
-#include <stdlib.h>
-#include <stdio.h>
-#include <string.h>
-#include "wdismsg.h"
 #include "disasm.h"
+#include "wdismsg.h"
+
 
 #define CMD_LINE_SIZE   128
 #if !defined( __QNX__ )

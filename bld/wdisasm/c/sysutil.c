@@ -29,13 +29,11 @@
 ****************************************************************************/
 
 
-#include <stdlib.h>
-#include <string.h>
 #include <ctype.h>
-#include <malloc.h>
 #include "disasm.h"
 #include "banner.h"
 #include "wdismsg.h"
+
 
 #ifdef __OSI__
  extern char    *_Copyright;

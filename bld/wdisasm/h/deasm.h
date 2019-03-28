@@ -31,8 +31,6 @@
 
 
 #include "watcom.h"
-#include "stdio.h"
-
 #include "consts.h"
 #include "formopt.h"
 #include "insdef.h"

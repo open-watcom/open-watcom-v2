@@ -31,7 +31,8 @@
 
 
 #include "watcom.h"
-#include "standard.h"
+#include "bool.h"
+
 
 typedef uint_32         hash_value;
 typedef uint_32         hash_table_size;

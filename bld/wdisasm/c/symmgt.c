@@ -31,12 +31,11 @@
 
 
 
-#include <stdlib.h>
-#include <string.h>
 #include <ctype.h>
 #include "disasm.h"
 #include "wdismsg.h"
 #include "demangle.h"
+
 
 static  int             Count;
 static  char            SeenInitChar[256];

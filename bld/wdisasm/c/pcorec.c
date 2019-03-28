@@ -30,10 +30,10 @@
 ****************************************************************************/
 
 
-#include <string.h>
 #include "disasm.h"
 #include "wdismsg.h"
 #include "hashtabl.h"
+
 
 #define IMPORT_LOOKUP_TABLE_SIZE    127
 #define EXPORT_LOOKUP_TABLE_SIZE    29

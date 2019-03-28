@@ -31,9 +31,8 @@
 
 
 #include <ctype.h>
-#include <stdlib.h>
-#include <string.h>
 #include "disasm.h"
+
 
 #define ADDR_BITS               32
 #define PAGE_OFFSET_BITS        8

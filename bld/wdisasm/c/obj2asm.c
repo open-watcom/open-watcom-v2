@@ -30,10 +30,9 @@
 ****************************************************************************/
 
 
-#include <string.h>
-#include <stdlib.h>
 #include "disasm.h"
 #include "wdismsg.h"
+
 
 #ifdef __PCODE__
 extern int              SwitchCount;

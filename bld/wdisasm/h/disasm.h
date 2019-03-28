@@ -31,28 +31,22 @@
 
 
 #include <stdio.h>
-#include "watcom.h"
-
-#include "standard.h"
+#include <stdlib.h>
+#include <string.h>
+#include "bool.h"
+#include "deasm.h"
 #include "object.h"
-#include "insdef.h"
-#include "optype.h"
-#include "opdesc.h"
-#include "consts.h"
-#include "regdef.h"
-#include "instr.h"
-#include "formopt.h"
 #include "fpptype.h"
 #include "pcodef.h"
 #include "trans.h"
 #include "word.h"
 #include "prototyp.h"
-#include "global.h"
 
-#include "intrface.h"   /* to cause compile errors if intrface changes */
 
 #undef NULL
-#define NULL ((void *)0)
+#define NULL        ((void *)0)
+
+#define NULLCHAR    0
 
 #if defined( O2A ) && defined( _M_IX86 )
     #pragma aux Data "__*";          /* so we can disassemble & reassemble */

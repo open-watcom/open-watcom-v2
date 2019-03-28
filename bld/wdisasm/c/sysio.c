@@ -31,10 +31,9 @@
 
 
 
-#include <string.h>
-#include <stdlib.h>
 #include "disasm.h"
 #include "wdismsg.h"
+
 
 static  char            *buffer;
 static  uint_16         bufPos;

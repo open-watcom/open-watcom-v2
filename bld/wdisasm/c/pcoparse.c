@@ -31,10 +31,9 @@
 
 
 #include <limits.h>
-#include <string.h>
-#include <stdlib.h>
 #include "disasm.h"
 #include "wdismsg.h"
+
 
 #define NUM_BYTES   ( sizeof( rec_type ) * ( CHAR_MAX / CHAR_BIT ) )
 

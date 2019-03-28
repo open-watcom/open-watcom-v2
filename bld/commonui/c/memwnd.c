@@ -48,7 +48,6 @@
 #include "cguimem.h"
 #include "dlgmod.h"
 #include "descript.h"
-#include "standard.h"
 #include "savelbox.h"
 #include "memwnd.h"
 #include "deasm.h"
