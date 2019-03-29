@@ -73,17 +73,15 @@ static int          Save_style;
 static HPEN         Old_pen;
 static HBRUSH       Old_brush;
 
-extern void _wsetendmarker(
-/*************************/
-    bool    end_marker
-) {
+void _wsetendmarker( bool end_marker )
+/************************************/
+{
     Set_end_marker = end_marker;
 }
 
-extern bool _wsetstylewrap(
-/*************************/
-    bool    save_style
-) {
+bool _wsetstylewrap( bool save_style )
+/************************************/
+{
     bool    old_save;
 
     old_save = Save_style_on;
@@ -93,12 +91,10 @@ extern bool _wsetstylewrap(
     return( old_save );
 }
 
-WPI_COLOUR get_palette_color(
-/***************************/
+WPI_COLOUR get_palette_color( int index )
+/***************************************/
 /* takes a 0 origin colour index, and returns the RGB for the current chart */
-
-    int                 index
-) {
+{
     if( index >= Palette_size ) {
         index = Palette_size - 1;
     }
@@ -106,12 +102,10 @@ WPI_COLOUR get_palette_color(
     return( Curr_palette[index] );
 }
 
-void _winitwindow(
-/****************/
+void _winitwindow( WPI_RECT *area )
+/*********************************/
 /* this must be called once before using any of the other window functions */
-
-    WPI_RECT            *area
-) {
+{
     int                 left, right, top, bottom;
 
     _wpi_getintrectvalues( *area, &left, &top, &right, &bottom );
@@ -143,25 +137,18 @@ void _winitwindow(
 #endif
 }
 
-void WINEXP cgr_aspect_ratio(
-/***************************/
+void WINEXP cgr_aspect_ratio( float __far *aspect )
+/*************************************************/
 /* returns last display aspect ratio. MAKE SURE that cgr_display_chart
    was called once before calling this routine */
-
-    float __far         *aspect
-) {
+{
     *aspect = Aspect_ratio;
 }
 
-void _wsetwindow(
-/***************/
+void _wsetwindow( float xl, float yb, float xr, float yt )
+/********************************************************/
 /* setup the window */
-
-    float               xl,
-    float               yb,
-    float               xr,
-    float               yt
-) {
+{
     Win_width =  xr - xl;
     Win_height =  yt - yb;
     X_start = xl;
@@ -171,36 +158,26 @@ void _wsetwindow(
 
 }
 
-extern void convert_pt(
-/*********************/
-
-    float               x,
-    float               y,
-    int                 *dx,
-    int                 *dy
-) {
+void convert_pt( float x, float y, int *dx, int *dy )
+/***************************************************/
+{
     *dx =  ( x - X_start ) * X_width + Win_x_start + .5;
     *dy =  ( Y_start - y ) * Y_width + Win_y_start + .5;
     *dy = _wpi_convertheight( *dy, (Win_y_start + Height), Win_y_start );
 }
 
-static int points_to_pixel(
-/*************************/
+static int points_to_pixel( int pts )
+/***********************************/
 /* returns pixels in vert. dir */
-
-    int                 pts
-) {
+{
     return( (pts * Log_y) / 72 );
 }
 
-float max_psize(
-/**************/
+float max_psize( float psize, int max_points )
+/********************************************/
 /* wierd function which takes percentage size and returns it, or up
    to a max governed by the max point size */
-
-    float               psize,
-    int                 max_points
-) {
+{
     int                 max_pixel;
 
     max_pixel = points_to_pixel( max_points );
@@ -212,12 +189,10 @@ float max_psize(
     return( psize );
 }
 
-WPI_FONT _wtextinit(
-/******************/
+WPI_FONT _wtextinit( text_def *text )
+/***********************************/
 /* initial text, pass back font handle for _wtextout */
-
-    text_def            *text
-) {
+{
     WPI_LOGFONT         font;
     WPI_FONT            font_hld;
     BOOL                is_bold;
@@ -275,22 +250,16 @@ WPI_FONT _wtextinit(
     return( font_hld );
 }
 
-void _wtextdone(
-/**************/
+void _wtextdone( WPI_FONT font )
+/******************************/
 /* make sure that the font is not currently selected into the display */
-    WPI_FONT            font
-) {
+{
     _wpi_deletefont( font );
 }
 
-static void textdim(
-/******************/
-
-    char                *text_line,
-    text_def            *text,
-    int                 *width,
-    int                 *height
-) {
+static void textdim( char *text_line, text_def *text, int *width, int *height )
+/*****************************************************************************/
+{
     WPI_FONT            font_hld;
     WPI_FONT            old_font;
 
@@ -309,13 +278,9 @@ static void textdim(
     _wtextdone( font_hld );
 }
 
-static void textdim_font(
-/***********************/
-    char                *text_line,
-    WPI_FONT            font_hld,
-    int                 *width,
-    int                 *height
-) {
+static void textdim_font( char *text_line, WPI_FONT font_hld, int *width, int *height )
+/*************************************************************************************/
+{
     WPI_FONT            old_font;
 
     if( text_line == NULL ) {
@@ -328,14 +293,11 @@ static void textdim_font(
     _wpi_getoldfont( Win_dc, old_font );
 }
 
-float _ptextwidth(
-/****************/
+float _ptextwidth( char *text_line, text_def *text )
+/**************************************************/
 /* return text width in percentage screen width of text line. If text_line
    is NULL, assume 1 character */
-
-    char                *text_line,
-    text_def            *text
-) {
+{
     int                 pix_width;
     int                 pix_height;
     float               width;
@@ -347,12 +309,9 @@ float _ptextwidth(
     return( _min( width, 1.0 ) );
 }
 
-float _ptextmaxwidth(
-/*******************/
-
-    int                 num_chars,
-    text_def            *text
-) {
+float _ptextmaxwidth( int num_chars, text_def *text )
+/***************************************************/
+{
     char                *ptr;
     float               width;
 
@@ -368,12 +327,10 @@ float _ptextmaxwidth(
     return( width );
 }
 
-float _ptextheight(
-/*****************/
+float _ptextheight( text_def *text )
+/**********************************/
 /* return height of 1 char */
-
-    text_def            *text
-) {
+{
     int                 pix_width;
     int                 pix_height;
     float               height;
@@ -385,12 +342,10 @@ float _ptextheight(
     return( _min( height, 1.0 ) );
 }
 
-float _wtextheight(
-/*****************/
+float _wtextheight( text_def *text )
+/**********************************/
 /* return text height in window coords of text line */
-
-    text_def            *text
-) {
+{
     int                 pix_width;
     int                 pix_height;
     float               height;
@@ -402,12 +357,10 @@ float _wtextheight(
     return( _min( height, Win_height ) );
 }
 
-extern float _wtextheight_font(
-/*****************************/
+float _wtextheight_font( char *text, WPI_FONT font )
+/**************************************************/
 /* returns text height in window coords using the given font */
-    char *          text,
-    WPI_FONT        font
-) {
+{
     int             pix_height;
     int             pix_width;
     float           height;
@@ -424,11 +377,9 @@ extern float _wtextheight_font(
     return( _min( height, Win_height ) );
 }
 
-float _ptextheightsize(
-/*********************/
-    int                 pt_size,
-    text_def            *text
-) {
+float _ptextheightsize( int pt_size, text_def *text )
+/***************************************************/
+{
     int                 old_size;
     float               height;
 
@@ -441,14 +392,11 @@ float _ptextheightsize(
     return( height );
 }
 
-float _wtextwidth(
-/****************/
+float _wtextwidth( char *text_line, text_def *text )
+/**************************************************/
 /* return text width in window coords of text line. If text_line
    is NULL, assume 1 character */
-
-    char                *text_line,
-    text_def            *text
-) {
+{
     int                 pix_width;
     int                 pix_height;
     float               width;
@@ -460,13 +408,11 @@ float _wtextwidth(
     return( _min( width, Win_width ) );
 }
 
-extern float _wtextwidth_font(
-/****************************/
+float _wtextwidth_font( char *text_line, WPI_FONT font )
+/******************************************************/
 /* return text width in window coords of text line. If text_line
    is NULL, assume 1 character */
-    char                *text_line,
-    WPI_FONT            font
-) {
+{
     int                 pix_width;
     int                 pix_height;
     float               width;
@@ -482,12 +428,9 @@ extern float _wtextwidth_font(
     return( _min( width, Win_width ) );
 }
 
-float _wtextmaxwidth(
-/*******************/
-
-    int                 num_chars,
-    text_def            *text
-) {
+float _wtextmaxwidth( int num_chars, text_def *text )
+/***************************************************/
+{
     char                *ptr;
     float               width;
 
@@ -504,25 +447,16 @@ float _wtextmaxwidth(
 }
 
 
-void _wsetpath(
-/*************/
+void _wsetpath( text_dir dir )
+/****************************/
 /* path for text */
-
-    text_dir            dir
-) {
+{
     Text_path = dir;
 }
 
-void _wtextout(
-/*************/
-
-    char                *text,
-    float               x,
-    float               y,
-    int                 hor_align,
-    int                 ver_align,
-    void                *wfont
-) {
+void _wtextout( char *text, float x, float y, int hor_align, int ver_align, void *wfont )
+/***************************************************************************************/
+{
     WORD                horiz_flags;
     WORD                vert_flags;
     WPI_FONT            old_font;
@@ -660,10 +594,9 @@ void _wtextout(
     _wpi_setbackmode( Win_dc, bk_mode );
 }
 
-extern void _wsetlinewidth(
-/*************************/
-    line_width      width
-) {
+void _wsetlinewidth( line_width width )
+/*************************************/
+{
     switch( width ) {
     case WIDTH_SINGLE:
         Set_wl_width = LW_SINGLE;
@@ -677,11 +610,9 @@ extern void _wsetlinewidth(
     }
 }
 
-void _wsetlinestyle(
-/******************/
-
-    line_style          style
-) {
+void _wsetlinestyle( line_style style )
+/*************************************/
+{
     switch( style ) {
 
     case LINE_NONE:
@@ -711,27 +642,21 @@ void _wsetlinestyle(
     }
 }
 
-void _wsetfillstyle(
-/******************/
-
-    fill_style          style
-) {
+void _wsetfillstyle( fill_style style )
+/*************************************/
+{
     Set_fill_style = style;
 }
 
-void APIENTRY cgr_delete_brush(
-/*****************************/
-    HBRUSH                      brush_hld
-) {
+void APIENTRY cgr_delete_brush( HBRUSH brush_hld )
+/************************************************/
+{
     _wpi_deletebrush( brush_hld );
 }
 
-HBRUSH WINEXP cgr_make_brush(
-/***************************/
-
-    WPI_COLOUR                  color,
-    fill_style                  fill
-) {
+HBRUSH WINEXP cgr_make_brush( WPI_COLOUR color, fill_style fill )
+/***************************************************************/
+{
     LOGBRUSH                    brush;
     HBRUSH                      new_brush;
 
@@ -774,11 +699,9 @@ HBRUSH WINEXP cgr_make_brush(
     return( new_brush );
 }
 
-void _wsetcolor(
-/**************/
-
-    int         color
-) {
+void _wsetcolor( int color )
+/**************************/
+{
     if( color < 0 ) {
         /* indicates that real BLACK is desired */
         Set_color = _wpi_getrgb( 0, 0, 0 );
@@ -787,29 +710,26 @@ void _wsetcolor(
     }
 }
 
-void _wsetrgbcolor(
-/*****************/
-    WPI_COLOUR  rgb
-) {
+void _wsetrgbcolor( WPI_COLOUR rgb )
+/**********************************/
+{
     Set_color = rgb;
 }
 
-static void get_obj_settings(
-/***************************/
+static void get_obj_settings( int fill_type, HPEN *pen, HBRUSH *brush )
+/*********************************************************************/
 /* set brush and pen based on fill type, for normal objects (polys, pies)  */
-
-    int                 fill_type,
-    HPEN                *pen,
-    HBRUSH              *brush
-) {
+{
 
     switch( fill_type ) {
+
     case FILL_BORDER:           // border only: interior not touched (pen)
         *pen = _wpi_createpen( Set_pen_style, 1, Set_color );
         *brush = _wpi_createnullbrush();
         Old_pen = _wpi_selectpen( Win_dc, *pen );
         Old_brush = _wpi_selectbrush( Win_dc, *brush );
         break;
+
     case FILL_INTERIOR:         // interior only: border not touched (brush)
         /* Windows has a nasty bug. NULL_PEN generates a 'non-written'
            border. 'Width' = 0 doesn't help either. With NULL_PEN,
@@ -821,74 +741,57 @@ static void get_obj_settings(
         Old_pen = _wpi_selectpen( Win_dc, *pen );
         Old_brush = _wpi_selectbrush( Win_dc, *brush );
         break;
+
     case FILL_BORDER_CLEAR:             // border WITH interior erased to bkgd (pen)
         *pen = _wpi_createpen( Set_pen_style, 1, Set_color );
         *brush = cgr_make_brush( GetBkColor( Win_dc ), FILL_SOLID );
         Old_pen = _wpi_selectpen( Win_dc, *pen );
         Old_brush = _wpi_selectbrush( Win_dc, *brush );
         break;
+
     case FILL_BORDER_FILL:              // border and interior (pen & brush)
         *pen = _wpi_createpen( Set_pen_style, 1, Set_color );
         *brush = cgr_make_brush( Set_color, Set_fill_style );
         Old_pen = _wpi_selectpen( Win_dc, *pen );
         Old_brush = _wpi_selectbrush( Win_dc, *brush );
         break;
-    default:
-        Old_pen = (HPEN)NULL;
-        Old_brush = (HBRUSH)NULL;
-        break;
     }
 }
 
-static void del_obj_settings(
-/***************************/
-
-    int                 fill_type,
-    HPEN                pen,
-    HBRUSH              brush
-) {
-    if( Old_pen != (HPEN)NULL ) {
+static void del_obj_settings( int fill_type, HPEN pen, HBRUSH brush )
+/*******************************************************************/
+{
+    if (Old_pen) {
         _wpi_getoldpen( Win_dc, Old_pen );
-        Old_pen = (HPEN)NULL;
     }
 
-    if( Old_brush != (HBRUSH)NULL ) {
+    if (Old_brush) {
         _wpi_getoldbrush( Win_dc, Old_brush );
-        Old_brush = (HBRUSH)NULL;
     }
 
     switch( fill_type ) {
+
     case FILL_BORDER:           // border only: interior not touched (pen)
         _wpi_deletepen( pen );
         _wpi_deletenullbrush( brush );
         break;
+
     case FILL_INTERIOR:         // interior only: border not touched (brush)
         _wpi_deletenullpen( pen );
         _wpi_deletebrush( brush );
         break;
+
     case FILL_BORDER_CLEAR:             // border WITH interior erased to bkgd (pen)
     case FILL_BORDER_FILL:              // border and interior (pen & brush)
         _wpi_deletepen( pen );
         _wpi_deletebrush( brush );
         break;
-    default:
-        break;
     }
 }
 
-void _wpie(
-/*********/
-
-    int                 fill_type,
-    float               x1,
-    float               y1,
-    float               x2,
-    float               y2,
-    float               x3,
-    float               y3,
-    float               x4,
-    float               y4
-) {
+void _wpie( int fill_type, float x1, float y1, float x2, float y2, float x3, float y3, float x4, float y4 )
+/*********************************************************************************************************/
+{
     HPEN                pen;
     HBRUSH              brush;
     int                 px1, py1;
@@ -909,12 +812,9 @@ void _wpie(
     del_obj_settings( fill_type, pen, brush );
 }
 
-void _wmoveto(
-/************/
-
-    float               x,
-    float               y
-) {
+void _wmoveto( float x, float y )
+/*******************************/
+{
     int                 px;
     int                 py;
     WPI_POINT           pt;
@@ -926,28 +826,18 @@ void _wmoveto(
     _wpi_moveto( Win_dc, &pt );
 }
 
-void _wlineto(
-/************/
-
-    float               x,
-    float               y,
-    BOOL                fill_last
-) {
+void _wlineto( float x, float y, BOOL fill_last )
+/***********************************************/
+{
     int                 px, py;
 
     convert_pt( x, y, &px, &py );
     _wline( px, py, fill_last, TRUE, FALSE );
 }
 
-void _wline(
-/**********/
-
-    int                 px,
-    int                 py,
-    BOOL                fill_last,
-    BOOL                rgn_on,
-    BOOL                line_with_two_boxes
-) {
+void _wline( int px, int py, BOOL fill_last, BOOL rgn_on, BOOL line_with_two_boxes )
+/**********************************************************************************/
+{
     WPI_POINT           initial_pos;
 
     _wpi_getcurrpos( Win_dc, &initial_pos );
@@ -991,24 +881,15 @@ void _wline(
 #endif
 }
 
-void _wpolygon(
-/*************/
-
-    int                 fill_type,
-    int                 num_pts,
-    wcoord              *pts
-) {
+void _wpolygon( int fill_type, int num_pts, wcoord *pts )
+/*******************************************************/
+{
     _wpolygon_rgn( fill_type, num_pts, pts, TRUE );
 }
 
-void _wpolygon_rgn(
-/*****************/
-
-    int                 fill_type,
-    int                 num_pts,
-    wcoord              *pts,
-    BOOL                rgn_on
-) {
+void _wpolygon_rgn( int fill_type, int num_pts, wcoord *pts, BOOL rgn_on )
+/************************************************************************/
+{
     HPEN                pen;
     HBRUSH              brush;
     WPI_POINT           *p_pts;
@@ -1035,15 +916,9 @@ void _wpolygon_rgn(
     _free( p_pts );
 }
 
-void _wellipse(
-/*************/
-
-    int                 fill_type,
-    float               x1,
-    float               y1,
-    float               x2,
-    float               y2
-) {
+void _wellipse( int fill_type, float x1, float y1, float x2, float y2 )
+/*********************************************************************/
+{
     int                 px1, py1;
     int                 px2, py2;
 
@@ -1052,15 +927,9 @@ void _wellipse(
     _world_ellipse( fill_type, px1, py1, px2, py2 );
 }
 
-void _world_ellipse(
-/******************/
-
-    int                 fill_type,
-    int                 px1,
-    int                 py1,
-    int                 px2,
-    int                 py2
-) {
+void _world_ellipse( int fill_type, int px1, int py1, int px2, int py2 )
+/**********************************************************************/
+{
     HPEN                pen;
     HBRUSH              brush;
 
@@ -1077,24 +946,18 @@ void _world_ellipse(
     del_obj_settings( fill_type, pen, brush );
 }
 
-void _wdot(
-/*********/
-
-    float               x,
-    float               y
-) {
+void _wdot( float x, float y )
+/****************************/
+{
     int                 px, py;
 
     convert_pt( x, y, &px, &py );
     _wdot_world( px, py );
 }
 
-void _wdot_world(
-/***************/
-
-    int                 px,
-    int                 py
-) {
+void _wdot_world( int px, int py )
+/********************************/
+{
     HPEN                pen;
     HBRUSH              brush;
 
@@ -1105,14 +968,9 @@ void _wdot_world(
     del_obj_settings( FILL_BORDER_FILL, pen, brush );
 }
 
-void wrgn_rectangle(
-/******************/
-
-    float               x1,
-    float               y1,
-    float               x2,
-    float               y2
-) {
+void wrgn_rectangle( float x1, float y1, float x2, float y2 )
+/***********************************************************/
+{
     int                 px1, py1;
     int                 px2, py2;
 
@@ -1122,12 +980,9 @@ void wrgn_rectangle(
     rgn_rectangle( px1, py1, px2, py2 );
 }
 
-void wrgn_polygon(
-/****************/
-
-    int                 num_pts,
-    wcoord              *pts
-) {
+void wrgn_polygon( int num_pts, wcoord *pts )
+/*******************************************/
+{
     WPI_POINT           *p_pts;
     int                 i;
 
@@ -1144,32 +999,20 @@ void wrgn_polygon(
     _free( p_pts );
 }
 
-void wrgn_set_add(
-/****************/
-
-    wcoord              *pt
-) {
+void wrgn_set_add( wcoord *pt )
+/*****************************/
+{
     WPI_POINT           win_pt;
 
     /* assumption: sizeof(int)==sizeof(short) */
-    convert_pt( pt->xcoord, pt->ycoord, (int *) &win_pt.x, (int *) &win_pt.y );
+    convert_pt( pt->xcoord, pt->ycoord, (int *)&win_pt.x, (int *)&win_pt.y );
     rgn_set_add( &win_pt );
 }
 
-void _warc(
-/*********/
+void _warc( int fill_type, float x1, float y1, float x2, float y2, float x3, float y3, float x4, float y4 )
+/*********************************************************************************************************/
 /* NOTE: this primitive WILL NOT have an associated region */
-
-    int                 fill_type,
-    float               x1,
-    float               y1,
-    float               x2,
-    float               y2,
-    float               x3,
-    float               y3,
-    float               x4,
-    float               y4
-) {
+{
     HPEN                pen;
     HBRUSH              brush;
     int                 px1, py1;
@@ -1189,16 +1032,10 @@ void _warc(
     del_obj_settings( fill_type, pen, brush );
 }
 
-void _wrectangle(
-/***************/
+void _wrectangle( int fill_type, float x1, float y1, float x2, float y2 )
+/***********************************************************************/
 /* NOTE: this primitive WILL NOT have an associated region */
-
-    int                 fill_type,
-    float               x1,
-    float               y1,
-    float               x2,
-    float               y2
-) {
+{
     HPEN                pen;
     HBRUSH              brush;
     int                 px1, py1;
@@ -1214,13 +1051,9 @@ void _wrectangle(
     del_obj_settings( fill_type, pen, brush );
 }
 
-extern bool _wrectvisible(
-/************************/
-    float               x1,
-    float               y1,
-    float               x2,
-    float               y2
-) {
+bool _wrectvisible( float x1, float y1, float x2, float y2 )
+/**********************************************************/
+{
     int                 px1, py1;
     int                 px2, py2;
     WPI_RECT            rect;
@@ -1238,26 +1071,26 @@ extern bool _wrectvisible(
     return( RectVisible( Win_dc, &rect ) );
 }
 
-extern int _left_coord(
+int _left_coord( void )
 /*********************/
-) {
+{
     return( Win_x_start );
 }
 
-extern int _bottom_coord(
+int _bottom_coord( void )
 /***********************/
-) {
+{
     return( Win_y_start + Height );
 }
 
-extern int _right_coord(
+int _right_coord( void )
 /**********************/
-) {
+{
     return( Win_x_start + Width );
 }
 
-extern int _top_coord(
+int _top_coord( void )
 /********************/
-) {
+{
     return( Win_y_start );
 }
