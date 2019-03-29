@@ -161,9 +161,7 @@ static const mad_string EmptyStrList[] = {
 };
 
 static const mad_toggle_strings EmptyToggleList[] = {
-    { MAD_MSTR_NIL },
-    { MAD_MSTR_NIL },
-    { MAD_MSTR_NIL }
+    { MAD_MSTR_NIL, MAD_MSTR_NIL, MAD_MSTR_NIL }
 };
 
 static mad_status MADStatus( mad_status ms )
