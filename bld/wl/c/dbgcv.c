@@ -708,8 +708,8 @@ void CVFini( section *sect )
     map.cSegLog = NumGroups;
     DumpInfo( CVSECT_MISC, &map, sizeof( cv_sst_seg_map ) - sizeof( seg_desc ) );
     memset( &desc, 0, sizeof( seg_desc ) );
-    desc.u.b.fSel = ( (LinkFlags & MK_REAL_MODE) == 0 );
-    desc.u.b.fRead = true;
+    desc.u.b.fSel = 1;
+    desc.u.b.fRead = 1;
     desc.iSegName = 0xFFFF;
     desc.iClassName = 0xFFFF;
     for( group = Groups; group != NULL; group = group->next_group ) {
@@ -730,7 +730,7 @@ void CVFini( section *sect )
         if( leader->info & USE_32 ) {
             desc.u.b.f32Bit = 1;
         }
-        desc.u.b.fSel = 1;
+//        desc.u.b.fSel = 1;
         DumpInfo( CVSECT_MISC, &desc, sizeof( seg_desc ) );
     }
 }
