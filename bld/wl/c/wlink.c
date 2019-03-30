@@ -231,12 +231,12 @@ static void DoLink( char *cmdline )
     ProcObjFiles(); /* ObjPass1 */
     CheckErr();
     DoDefaultSystem();
-    if( LinkState & LIBRARIES_ADDED ) {
+    if( LinkState & LS_LIBRARIES_ADDED ) {
         FindLibPaths();
-        LinkState |= SEARCHING_LIBRARIES;
+        LinkState |= LS_SEARCHING_LIBRARIES;
         ResolveUndefined();
-        LinkState &= ~SEARCHING_LIBRARIES;
-        LinkState |= GENERATE_LIB_LIST;
+        LinkState &= ~LS_SEARCHING_LIBRARIES;
+        LinkState |= LS_GENERATE_LIB_LIST;
     }
     ProcLocalImports();
     DecideFormat();
@@ -287,7 +287,7 @@ static void PreAddrCalcFormatSpec( void )
         ChkPEData();
     } else if( FmtData.type & (MK_OS2|MK_WIN_VXD) ) {
 #if 0
-        if( (LinkState & HAVE_PPC_CODE) && (FmtData.type & MK_OS2) ) {
+        if( (LinkState & LS_HAVE_PPC_CODE) && (FmtData.type & MK_OS2) ) {
             // Development temporarly on hold:
             // ChkOS2ElfData();
         } else {
@@ -304,7 +304,7 @@ static void PreAddrCalcFormatSpec( void )
     }
 #endif
 #ifdef _PHARLAP
-    if( (FmtData.type & MK_PHAR_FLAT) && (LinkState & HAVE_16BIT_CODE) && (CmdFlags & CF_HAVE_REALBREAK) == 0 ) {
+    if( (FmtData.type & MK_PHAR_FLAT) && (LinkState & LS_HAVE_16BIT_CODE) && (CmdFlags & CF_HAVE_REALBREAK) == 0 ) {
         LnkMsg( WRN+MSG_NO_REALBREAK_WITH_16BIT, NULL );
     }
 #endif
@@ -321,7 +321,7 @@ static void PostAddrCalcFormatSpec( void )
         ChkElfData();
     } else if( FmtData.type & (MK_OS2|MK_WIN_VXD) ) {
 #if 0
-        if( (LinkState & HAVE_PPC_CODE) && (FmtData.type & MK_OS2) ) {
+        if( (LinkState & LS_HAVE_PPC_CODE) && (FmtData.type & MK_OS2) ) {
             // Development temporarly on hold:
             //PrepareOS2Elf();
         } else {
@@ -343,8 +343,8 @@ static void ResetMisc( void )
 /***************************/
 /* Linker support initialization. */
 {
-    LinkFlags = REDEFS_OK | CASE_FLAG | FAR_CALLS_FLAG;
-    LinkState = MAKE_RELOCS;
+    LinkFlags = LF_REDEFS_OK | LF_CASE_FLAG | LF_FAR_CALLS_FLAG;
+    LinkState = LS_MAKE_RELOCS;
     AbsGroups = NULL;
     DataGroup = NULL;
     IDataGroup = NULL;
@@ -373,21 +373,21 @@ static void DoDefaultSystem( void )
  * os/2 v1 & os/2 v2), and if that doesn't decide it, haul in the default
  * system block */
 {
-    if( (LinkState & FMT_DECIDED) == 0 ) {
-        if( LinkState & FMT_SEEN_64_BIT ) {
+    if( (LinkState & LS_FMT_DECIDED) == 0 ) {
+        if( LinkState & LS_FMT_SEEN_64_BIT ) {
             HintFormat( MK_64BIT );
-        } else if( LinkState & FMT_SEEN_32_BIT ) {
+        } else if( LinkState & LS_FMT_SEEN_32_BIT ) {
             HintFormat( MK_32BIT );
         } else {
             HintFormat( MK_16BIT | MK_QNX );
         }
-        if( (LinkState & FMT_DECIDED) == 0 ) {
-            if( LinkState & FMT_SPECIFIED ) {
+        if( (LinkState & LS_FMT_DECIDED) == 0 ) {
+            if( LinkState & LS_FMT_SPECIFIED ) {
                 LnkMsg( FTL+MSG_AMBIG_FORMAT, NULL );
             }
-            if( LinkState & FMT_SEEN_64_BIT ) {
+            if( LinkState & LS_FMT_SEEN_64_BIT ) {
                 ExecSystem( "64bit" );
-            } else if( LinkState & FMT_SEEN_32_BIT ) {
+            } else if( LinkState & LS_FMT_SEEN_32_BIT ) {
                 ExecSystem( "386" );
             } else {
                 ExecSystem( "286" ); /* no 386 obj's after this */
@@ -400,9 +400,9 @@ static void FindLibPaths( void )
 /******************************/
 {
     AddFmtLibPaths();
-    if( LinkState & FMT_SEEN_64_BIT ) {
+    if( LinkState & LS_FMT_SEEN_64_BIT ) {
         AddLibPathsToEnd( GetEnvString( "LIBX64" ) );
-    } else if( LinkState & FMT_SEEN_32_BIT ) {
+    } else if( LinkState & LS_FMT_SEEN_32_BIT ) {
         AddLibPathsToEnd( GetEnvString( "LIB386" ) );
     } else {
         AddLibPathsToEnd( GetEnvString( "LIB286" ) );

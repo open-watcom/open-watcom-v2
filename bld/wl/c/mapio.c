@@ -767,8 +767,8 @@ static void AddSymRecList( symbol *sym, symrecinfo **head )
 void ProcUndefined( symbol *sym )
 /***************************************/
 {
-    if( (LinkFlags & UNDEFS_ARE_OK) == 0 )
-        LinkState |= LINK_ERROR;
+    if( (LinkFlags & LF_UNDEFS_ARE_OK) == 0 )
+        LinkState |= LS_LINK_ERROR;
     AddSymRecList( sym, &UndefList );
 }
 
@@ -817,8 +817,8 @@ void WriteUndefined( void )
         WriteMapNL( 1 );
         RingWalk( UndefList, PrintUndefined );
     }
-    if( LinkState & UNDEFED_SYM_ERROR ) {
-        LinkState |= LINK_ERROR;
+    if( LinkState & LS_UNDEFED_SYM_ERROR ) {
+        LinkState |= LS_LINK_ERROR;
     }
 }
 
@@ -848,7 +848,7 @@ void WriteLibsUsed( void )
     file_list   *lib;
     char        new_name[PATH_MAX];
 
-    if( LinkState & GENERATE_LIB_LIST ) {
+    if( LinkState & LS_GENERATE_LIB_LIST ) {
         WriteBox( MSG_MAP_BOX_LIB_USED );
         for( lib = ObjLibFiles; lib != NULL; lib = lib->next_file ) {
             if( lib->status & STAT_LIB_USED ) {
@@ -856,7 +856,7 @@ void WriteLibsUsed( void )
                 WriteMap( "%s", new_name );
             }
         }
-        LinkState &= ~GENERATE_LIB_LIST;
+        LinkState &= ~LS_GENERATE_LIB_LIST;
     }
 }
 

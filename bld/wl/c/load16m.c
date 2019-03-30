@@ -189,7 +189,7 @@ static unsigned GetRelocBlock( reloc_addr **reloc_data )
     context         info;
 
     *reloc_data = NULL;
-    if( (LinkState & MAKE_RELOCS) && Root->relocs ) {
+    if( (LinkState & LS_MAKE_RELOCS) && Root->relocs ) {
         relocs = Root->reloclist;
         num_relocs = Root->relocs;
         *reloc_data = ChkLAlloc( sizeof( reloc_addr ) * num_relocs );

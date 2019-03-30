@@ -134,7 +134,7 @@ bool ProcExtraSections( void )
 bool ProcELFNoRelocs( void )
 /*********************************/
 {
-    LinkState &= ~MAKE_RELOCS;
+    LinkState &= ~LS_MAKE_RELOCS;
     return true;
 }
 

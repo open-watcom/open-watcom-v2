@@ -529,7 +529,7 @@ void WritePermData( void )
     perm_write_info     info;
     size_t              strsize;
 
-    if( (LinkFlags & INC_LINK_FLAG) == 0 || (LinkState & LINK_ERROR) )
+    if( (LinkFlags & LF_INC_LINK_FLAG) == 0 || (LinkState & LS_LINK_ERROR) )
         return;
     InitStringTable( &info.strtab, false );
     AddCharStringTable( &info.strtab, '\0' );   // make 0 idx not valid
@@ -574,7 +574,7 @@ void WritePermData( void )
     hdr.rootmodidx = (cv_index)(pointer_int)CarveGetIndex( CarveModEntry, Root->mods );
     hdr.headsymidx = (cv_index)(pointer_int)CarveGetIndex( CarveSymbol, HeadSym );
     hdr.libmodidx = (cv_index)(pointer_int)CarveGetIndex( CarveModEntry, LibModules );
-    hdr.linkstate = (unsigned_32)( LinkState & ~CLEAR_ON_INC );
+    hdr.linkstate = (unsigned_32)( LinkState & ~LS_CLEAR_ON_INC );
     hdr.relocsize = SizeRelocs;
     PrepStartValue( &hdr );
     QSeek( info.incfhdl, 0, IncFileName );
@@ -917,7 +917,7 @@ void ReadPermData( void )
     Root->mods = CarveMapIndex( CarveModEntry, (void *)(pointer_int)hdr->rootmodidx );
     HeadSym = CarveMapIndex( CarveSymbol, (void *)(pointer_int)hdr->headsymidx );
     LibModules = CarveMapIndex( CarveModEntry, (void *)(pointer_int)hdr->libmodidx );
-    LinkState = (stateflag)hdr->linkstate | GOT_PREV_STRUCTS | (LinkState & CLEAR_ON_INC);
+    LinkState = (stateflag)hdr->linkstate | LS_GOT_PREV_STRUCTS | (LinkState & LS_CLEAR_ON_INC);
     ReadStartInfo( hdr );
     _LnkFree( info.buffer );
 }
@@ -1000,7 +1000,7 @@ void *GetAltdefContents( segdata *sdata )
 void FreeSavedRelocs( void )
 /*********************************/
 {
-    if( (LinkFlags & INC_LINK_FLAG) == 0 ) {
+    if( (LinkFlags & LF_INC_LINK_FLAG) == 0 ) {
         _LnkFree( ReadRelocs );
         ReadRelocs = NULL;
     }
@@ -1010,7 +1010,7 @@ void CleanPermData( void )
 /*******************************/
 {
 #ifndef NDEBUG
-    if( (LinkFlags & INC_LINK_FLAG) == 0 ) {
+    if( (LinkFlags & LF_INC_LINK_FLAG) == 0 ) {
         CarveVerifyAllGone( CarveLeader, "seg_leader" );
         CarveVerifyAllGone( CarveModEntry, "mod_entry" );
         CarveVerifyAllGone( CarveDLLInfo, "dll_sym_info" );
@@ -1021,7 +1021,7 @@ void CleanPermData( void )
         CarveVerifyAllGone( CarveGroup, "group_entry" );
     }
 #endif
-    if( LinkState & LINK_ERROR ) {
+    if( LinkState & LS_LINK_ERROR ) {
         QDelete( IncFileName );
     }
     CarveDestroy( CarveLeader );

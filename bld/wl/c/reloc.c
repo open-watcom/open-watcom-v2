@@ -285,7 +285,7 @@ static void FreeGroupRelocs( group_entry *group )
     unsigned_32         index;
     reloc_info ***      reloclist;
 
-    if( (LinkState & MAKE_RELOCS) == 0 )
+    if( (LinkState & LS_MAKE_RELOCS) == 0 )
         return;
     if( FmtData.type & (MK_OS2_FLAT | MK_PE) ) {
         TraverseOS2RelocList( group, FreeRelocList );
@@ -312,7 +312,7 @@ void FreeRelocInfo( void )
 {
     group_entry         *group;
 
-    if( (LinkState & MAKE_RELOCS) == 0 )
+    if( (LinkState & LS_MAKE_RELOCS) == 0 )
         return;
     if( FmtData.type & (MK_ELF | MK_OS2_FLAT | MK_PE | MK_OS2_16BIT | MK_QNX) ) {
         for( group = Groups; group != NULL; group = group->next_group ) {
@@ -484,7 +484,7 @@ bool SwapOutRelocs( void )
 {
     group_entry         *group;
 
-    if( (LinkState & FMT_DECIDED) == 0 )
+    if( (LinkState & LS_FMT_DECIDED) == 0 )
         return( false );
     if( FmtData.type & (MK_OS2_FLAT | MK_PE) ) {
         for( group = Groups; group != NULL; group = group->next_group ) {

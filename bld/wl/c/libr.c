@@ -157,7 +157,7 @@ static void SortARDict( ar_dict_entry *ar_dict )
     }
     // Sort the index table using the corresponding symbol names
     // to determine the sort order (see ARCompI() for more info).
-    if( LinkFlags & CASE_FLAG ) {
+    if( LinkFlags & LF_CASE_FLAG ) {
         qsort( index_tab, d.num_entries, sizeof( index_type ), ARComp );
     } else {
         qsort( index_tab, d.num_entries, sizeof( index_type ), ARCompI );
@@ -333,7 +333,7 @@ static bool ReadARDict( file_list *list, unsigned long *loc, bool makedict )
             list->u.dict = NULL;
             return( false );
         }
-        if( (LinkFlags & CASE_FLAG) == 0 || numdicts == 1 ) {
+        if( (LinkFlags & LF_CASE_FLAG) == 0 || numdicts == 1 ) {
             SortARDict( &list->u.dict->a );
         }
     }
@@ -598,7 +598,7 @@ static unsigned OMFCompName( const char *name, const unsigned_8 *buff, unsigned 
     off = buff[index];
     buff += off * 2;
     len = *buff++;
-    if( LinkFlags & CASE_FLAG ) {
+    if( LinkFlags & LF_CASE_FLAG ) {
         result = memcmp( buff, name, len );
     } else {
         result = memicmp( buff, name, len );
@@ -636,7 +636,7 @@ static bool ARSearchExtLib( file_list *lib, const char *name, unsigned long *off
     unsigned            tabidx;
 
     dict = &lib->u.dict->a;
-    if( LinkFlags & CASE_FLAG ) {
+    if( LinkFlags & LF_CASE_FLAG ) {
         result = bsearch( name, dict->symbtab, dict->num_entries, sizeof( char * ), ARCompName );
     } else {
         result = bsearch( name, dict->symbtab, dict->num_entries, sizeof( char * ), ARCompIName );

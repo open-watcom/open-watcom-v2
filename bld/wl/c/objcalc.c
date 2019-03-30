@@ -317,7 +317,7 @@ static void FindUninitDataStart( void )
     setnext = true;
     FmtData.dgroupsplitseg = NULL;
     FmtData.bsspad = 0;
-    if( (LinkState & DOSSEG_FLAG) == 0 )
+    if( (LinkState & LS_DOSSEG_FLAG) == 0 )
         return;
     for( class = Root->classlist; class != NULL; class = class->next_class ) {
         if( (class->flags & CLASS_DEBUG_INFO) == 0 ) {
@@ -798,11 +798,11 @@ void CalcAddresses( void )
         } else if( FmtData.type & MK_OS2_FLAT ) {
             FmtData.base = FLAT_GRANULARITY;
         } else if( FmtData.type & MK_ELF ) {
-            if( LinkState & HAVE_PPC_CODE ) {
+            if( LinkState & LS_HAVE_PPC_CODE ) {
                 FmtData.base = 0x10000000;
-            } else if( LinkState & HAVE_MIPS_CODE ) {
+            } else if( LinkState & LS_HAVE_MIPS_CODE ) {
                 FmtData.base = 0x00400000;
-            } else if( LinkState & HAVE_X64_CODE ) {
+            } else if( LinkState & LS_HAVE_X64_CODE ) {
                 // TODO
                 FmtData.base = 0x08048000;
             } else {
@@ -818,9 +818,9 @@ void CalcAddresses( void )
         AllocFileSegs();
         if( FmtData.objalign == NO_BASE_SPEC ) {
             if( FmtData.type & MK_PE ) {
-                if( (LinkState & HAVE_I86_CODE) ) {
+                if( (LinkState & LS_HAVE_I86_CODE) ) {
                     FmtData.objalign = 4*1024;
-                } else if( (LinkState & HAVE_X64_CODE) ) {
+                } else if( (LinkState & LS_HAVE_X64_CODE) ) {
                     // TODO
                     FmtData.objalign = ( 64 * 1024UL );
                 } else {
@@ -829,7 +829,7 @@ void CalcAddresses( void )
             } else if( FmtData.type & MK_QNX ) {
                 FmtData.objalign = QNX_GROUP_ALIGN;
 #if 0
-            } else if( (LinkState & HAVE_PPC_CODE) && (FmtData.type & MK_OS2) ) {
+            } else if( (LinkState & LS_HAVE_PPC_CODE) && (FmtData.type & MK_OS2) ) {
                 // Development temporarly on hold:
                 // FmtData.objalign = 1024;
 #endif
@@ -1283,9 +1283,9 @@ void CheckClassOrder( void )
 /* Reorder the classes if DOSSEG flag set or ORDER directive given */
 {
     SortSegments();
-    if( LinkState & SPEC_ORDER_FLAG ) {
+    if( LinkState & LS_SPEC_ORDER_FLAG ) {
        WalkAllSects( SortClasses );
-    } else if( LinkState & DOSSEG_FLAG ) {
+    } else if( LinkState & LS_DOSSEG_FLAG ) {
        WalkAllSects( ReOrderClasses );
     }
 }

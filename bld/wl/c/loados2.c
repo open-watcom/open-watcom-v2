@@ -386,7 +386,7 @@ static unsigned long WriteTabList( obj_name_list *val, unsigned long *pcount, bo
 unsigned long ImportProcTable( unsigned long *count )
 /***************************************************/
 {
-    return( WriteTabList( FmtData.u.os2.imp_tab_list, count, (LinkFlags & CASE_FLAG) == 0 ) );
+    return( WriteTabList( FmtData.u.os2.imp_tab_list, count, (LinkFlags & LF_CASE_FLAG) == 0 ) );
 }
 
 unsigned long ImportModTable( unsigned long *count )
@@ -504,7 +504,7 @@ unsigned long ResNonResNameTable( bool dores )
         if( (dores && exp->isresident) || (!dores && !exp->isresident) ) {
             char    ext_name[255 + 1];
 
-            len = create_exp_extname( exp, ext_name, (LinkFlags & CASE_FLAG) == 0 );
+            len = create_exp_extname( exp, ext_name, (LinkFlags & LF_CASE_FLAG) == 0 );
             size += WriteLoadU8Name( ext_name, len, false );
             WriteLoadU16( exp->ordinal );
             size += 2;
@@ -1039,7 +1039,7 @@ void FiniOS2LoadFile( void )
         }
     }
 
-    if( LinkState & LINK_ERROR ) {
+    if( LinkState & LS_LINK_ERROR ) {
         exe_head.info |= OS2_LINK_ERROR;
     }
     SeekLoad( stub_len );

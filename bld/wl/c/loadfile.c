@@ -148,7 +148,7 @@ static void DoCVPack( void )
     int         retval;
     char        *name;
 
-    if( (LinkFlags & CVPACK_FLAG) && (LinkState & LINK_ERROR) == 0 ) {
+    if( (LinkFlags & LF_CVPACK_FLAG) && (LinkState & LS_LINK_ERROR) == 0 ) {
         if( SymFileName != NULL ) {
             name = SymFileName;
         } else {
@@ -220,7 +220,7 @@ void FiniLoadFile( void )
         FiniDOSLoadFile();
 #ifdef _OS2
 #if 0
-    } else if( (LinkState & HAVE_PPC_CODE) && (FmtData.type & MK_OS2) ) {
+    } else if( (LinkState & LS_HAVE_PPC_CODE) && (FmtData.type & MK_OS2) ) {
         // development temporarly on hold:
         // FiniELFLoadFile();
 #endif
@@ -307,7 +307,7 @@ void GetStkAddr( void )
             StackAddr.off = StackSegPtr->seg_addr.off + StackSegPtr->size;
         } else {
 #ifdef _OS2
-            if( (FmtData.type & MK_WINDOWS) && (LinkFlags & STK_SIZE_FLAG) ) {
+            if( (FmtData.type & MK_WINDOWS) && (LinkFlags & LF_STK_SIZE_FLAG) ) {
                 PhoneyStack();
             } else {
 #endif
@@ -401,7 +401,7 @@ static void DefBSSStartSize( const char *name, class_entry *class )
         sym->p.seg = (segdata *)RingFirst( seg->pieces );
         sym->addr = seg->seg_addr;
         ConvertToFrame( &sym->addr, seg->group->grp_addr.seg, ( (seg->info & USE_32) == 0 ) );
-    } else if( LinkState & DOSSEG_FLAG ) {
+    } else if( LinkState & LS_DOSSEG_FLAG ) {
         CheckBSSInStart( sym, name );
     }
 }
@@ -422,7 +422,7 @@ static void DefBSSEndSize( const char *name, class_entry *class )
         sym->p.seg = (segdata *)RingLast( seg->pieces );
         SET_SYM_ADDR( sym, seg->seg_addr.off + seg->size, seg->seg_addr.seg );
         ConvertToFrame( &sym->addr, seg->group->grp_addr.seg, ( (seg->info & USE_32) == 0 ) );
-    } else if( LinkState & DOSSEG_FLAG ) {
+    } else if( LinkState & LS_DOSSEG_FLAG ) {
         CheckBSSInStart( sym, name );
     }
 }
@@ -459,7 +459,7 @@ void SetStkSize( void )
     if( FmtData.dll ) {
         StackSize = 0;  // DLLs don't have their own stack
     } else {
-        if( LinkFlags & STK_SIZE_FLAG ) {
+        if( LinkFlags & LF_STK_SIZE_FLAG ) {
             if( StackSize < 0x200 ) {
                 LnkMsg( WRN+MSG_STACK_SMALL, "d", 0x200 );
             }
@@ -467,13 +467,13 @@ void SetStkSize( void )
         } else {
             if( FmtData.type & MK_PE ) {
                 StackSize = DefStackSizePE();
-                LinkFlags |= STK_SIZE_FLAG;
+                LinkFlags |= LF_STK_SIZE_FLAG;
             }
 #endif
         }
     }
     if( StackSegPtr != NULL ) {
-        if( LinkFlags & STK_SIZE_FLAG ) {
+        if( LinkFlags & LF_STK_SIZE_FLAG ) {
             if( (FmtData.type & MK_NOVELL) == 0 ) {
                 StackSegPtr->size = StackSize;
             }
@@ -512,7 +512,7 @@ void SetStartSym( const char *name )
         StartInfo.targ.sym->info |= SYM_DCE_REF;
         StartInfo.type = START_IS_SYM;
         StartInfo.mod = CurrMod;
-        if( LinkFlags & STRIP_CODE ) {
+        if( LinkFlags & LF_STRIP_CODE ) {
             DataRef( StartInfo.targ.sym );
         }
     }
@@ -758,11 +758,13 @@ static void ExecWlib( void )
     _ChkAlloc( cmdline, namelen + impnamelen +19 +2 +1 +4 +1 );
     memcpy( cmdline, "-c -b -n -q -pa -ii \"", 19 + 2 );
     temp = cmdline + 19 - 1;
-    if( LinkState & HAVE_ALPHA_CODE ) {
+    if( LinkState & LS_HAVE_ALPHA_CODE ) {
         *temp = 'a';
-    } else if( LinkState & HAVE_PPC_CODE ) {
+    } else if( LinkState & LS_HAVE_PPC_CODE ) {
         *temp = 'p';
-    } else if( LinkState & HAVE_X64_CODE ) {
+    } else if( LinkState & LS_HAVE_MIPS_CODE ) {
+        *temp = 'm';
+    } else if( LinkState & LS_HAVE_X64_CODE ) {
         *temp = '6';
     }
     temp += 3;
@@ -790,11 +792,13 @@ static void ExecWlib( void )
     _ChkAlloc( atfname, namelen + 1 );  // +1 for the @
     *atfname = '@';
     memcpy( atfname + 1, ImpLib.fname, namelen );
-    if( LinkState & HAVE_ALPHA_CODE ) {
+    if( LinkState & LS_HAVE_ALPHA_CODE ) {
         libtype = "-ia";
-    } else if( LinkState & HAVE_PPC_CODE ) {
+    } else if( LinkState & LS_HAVE_PPC_CODE ) {
         libtype = "-ip";
-    } else if( LinkState & HAVE_X64_CODE ) {
+    } else if( LinkState & LS_HAVE_MIPS_CODE ) {
+        libtype = "-im";
+    } else if( LinkState & LS_HAVE_X64_CODE ) {
         libtype = "-i6";
     } else {
         libtype = "-ii";
@@ -817,7 +821,7 @@ static void FlushImpBuffer( void )
 void BuildImpLib( void )
 /*****************************/
 {
-    if( (LinkState & LINK_ERROR) || ImpLib.handle == NIL_FHANDLE || !FmtData.make_implib )
+    if( (LinkState & LS_LINK_ERROR) || ImpLib.handle == NIL_FHANDLE || !FmtData.make_implib )
         return;
     if( ImpLib.bufsize > 0 ) {
         FlushImpBuffer();
@@ -1076,7 +1080,7 @@ void FreeOutFiles( void )
 
     CloseOutFiles();
     for( fnode = OutFiles; fnode != NULL; fnode = OutFiles ) {
-        if( LinkState & LINK_ERROR ) {
+        if( LinkState & LS_LINK_ERROR ) {
             QDelete( fnode->fname );
         }
         _LnkFree( fnode->fname );

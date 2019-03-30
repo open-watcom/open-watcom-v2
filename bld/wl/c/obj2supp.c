@@ -179,18 +179,18 @@ static void TraceFixup( fix_type type, target_spec *target )
     bool        overlay;            // true if doing overlays;
 
     overlay = ( (FmtData.type & MK_OVERLAYS) && !FmtData.u.dos.noindirect );
-    if( (LinkFlags & STRIP_CODE) || overlay ) {
+    if( (LinkFlags & LF_STRIP_CODE) || overlay ) {
         isovldata = ( (CurrRec.seg->u.leader->info & SEG_OVERLAYED) == 0 );
         if( ObjFormat & FMT_UNSAFE_FIXUPP )
             isovldata = true;
         if( target->type == FIX_TARGET_SEG ) {
-            if( LinkFlags & STRIP_CODE ) {
+            if( LinkFlags & LF_STRIP_CODE ) {
                 if( target->u.sdata->iscode && target->u.sdata != CurrRec.seg ) {
                     RefSeg( target->u.sdata );
                 }
             }
         } else if( target->type == FIX_TARGET_EXT ) {
-            if( LinkFlags & STRIP_CODE ) {
+            if( LinkFlags & LF_STRIP_CODE ) {
                 DCERelocRef( target->u.sym, !CurrRec.seg->iscode );
             }
             if( (type & FIX_REL) == 0 && overlay ) {
@@ -535,7 +535,7 @@ size_t IncExecRelocs( void *_save )
 
     if( fixtype & FIX_CHANGE_SEG ) {
         sdata = save->u.sdata.sdata;
-        if( LinkFlags & INC_LINK_FLAG ) {
+        if( LinkFlags & LF_INC_LINK_FLAG ) {
             save->u.sdata.sdata = CarveGetIndex( CarveSegData, sdata );
         }
         if( !sdata->isdead ) {
@@ -556,7 +556,7 @@ size_t IncExecRelocs( void *_save )
         if( LastSegData != NULL ) {
             BuildReloc( save, &target, &frame );
         }
-        if( LinkFlags & INC_LINK_FLAG ) {
+        if( LinkFlags & LF_INC_LINK_FLAG ) {
             MapTargetPtr( &target, &save->u.fixup.target );
             if( FRAME_HAS_DATA( frame.type ) ) {
                 MapFramePtr( &frame, &save->u.fixupf.frame );
@@ -1174,7 +1174,7 @@ static void PatchData( fix_relo_data *fix )
                 if( segval == 0 ) {
                     LnkMsg( LOC+ERR+MSG_BAD_RELOC_TYPE, NULL );
                 }
-            } else if( isdbi && (LinkFlags & CV_DBI_FLAG) ) {    // FIXME
+            } else if( isdbi && (LinkFlags & LF_CV_DBI_FLAG) ) {    // FIXME
                 segval = FindGroupIdx( fix->tgt_addr.seg );
             } else if( fix->type & FIX_ABS ) {
                 /* MASM 5.1 stuffs abs seg length in displacement; ignore it like LINK. */
@@ -1221,7 +1221,7 @@ static bool FarCallOpt( fix_relo_data *fix )
  */
 
     // optimization is valid only for Intel CPU
-    if( LinkState & (HAVE_MACHTYPE_MASK & ~HAVE_I86_CODE) )
+    if( LinkState & (LS_HAVE_MACHTYPE_MASK & ~LS_HAVE_I86_CODE) )
         return( false );
     if( fix->type & FIX_UNSAFE )
         return( false );
@@ -1368,8 +1368,8 @@ static void FmtReloc( fix_relo_data *fix, target_spec *tthread )
     ftype = fix->type & (FIX_OFFSET_MASK | FIX_BASE);
     if( (FmtData.type & (MK_PHAR_SIMPLE | MK_PHAR_FLAT))
         || (FmtData.type & (MK_NOVELL | MK_ELF))
-            && (LinkState & HAVE_I86_CODE) && (ftype != FIX_OFFSET_32)
-        || (FmtData.type & MK_ELF) && (LinkState & HAVE_I86_CODE) == 0
+            && (LinkState & LS_HAVE_I86_CODE) && (ftype != FIX_OFFSET_32)
+        || (FmtData.type & MK_ELF) && (LinkState & LS_HAVE_I86_CODE) == 0
             && (ftype & (FIX_BASE | FIX_OFFSET_8))
         || (FmtData.type & MK_PE) && (ftype & (FIX_BASE | FIX_OFFSET_8))
         || ((FmtData.type & (MK_PHAR_REX | MK_ZDOS | MK_RAW)) && (ftype != FIX_OFFSET_16)
@@ -1377,7 +1377,7 @@ static void FmtReloc( fix_relo_data *fix, target_spec *tthread )
         LnkMsg( LOC+ERR+MSG_INVALID_FLAT_RELOC, "a", &fix->loc_addr );
         return;
     }
-    if( (LinkState & MAKE_RELOCS) == 0 )
+    if( (LinkState & LS_MAKE_RELOCS) == 0 )
         return;
     if( FmtData.type & MK_QNX ) {
         if( ftype == FIX_OFFSET_32 ) {
@@ -1652,15 +1652,15 @@ static void FmtReloc( fix_relo_data *fix, target_spec *tthread )
     } else if( FmtData.type & MK_ELF ) {
         symbol *sym;
 
-        if( LinkState & HAVE_I86_CODE ) {
+        if( LinkState & LS_HAVE_I86_CODE ) {
             if( fix->type & FIX_REL ) {
                 breloc.item.elf.info = R_386_PC32;
             } else {
                 breloc.item.elf.info = R_386_32;
             }
-        } else if( LinkState & HAVE_X64_CODE ) {
+        } else if( LinkState & LS_HAVE_X64_CODE ) {
             // TODO
-        } else if( LinkState & HAVE_PPC_CODE ) {
+        } else if( LinkState & LS_HAVE_PPC_CODE ) {
             if( fix->type & FIX_HIGH ) {
                 breloc.item.elf.info = R_PPC_ADDR16_HI;
                 breloc.item.elf.addend = (unsigned_16)target.off;
@@ -1673,7 +1673,7 @@ static void FmtReloc( fix_relo_data *fix, target_spec *tthread )
                 breloc.item.elf.info = R_PPC_REL32;
                 LnkMsg( LOC + ERR + MSG_INVALID_FLAT_RELOC, "a", &fix->loc_addr );
             }
-        } else if( LinkState & HAVE_MIPS_CODE ) {
+        } else if( LinkState & LS_HAVE_MIPS_CODE ) {
             if( fix->type & FIX_HIGH ) {
                 breloc.item.elf.info = R_MIPS_HI16;
                 breloc.item.elf.addend = (unsigned_16)target.off;
@@ -1753,7 +1753,7 @@ static void Relocate( offset off, fix_relo_data *fix, target_spec *target )
     fix->os2_selfrel = false;
     fix->data = addbuf;
 
-    if( (LinkFlags & FAR_CALLS_FLAG) && (LinkState & HAVE_I86_CODE) ) {
+    if( (LinkFlags & LF_FAR_CALLS_FLAG) && (LinkState & LS_HAVE_I86_CODE) ) {
 
         /*
          * it is necessary to copy also two bytes before reloc position to addbuf
@@ -1770,7 +1770,7 @@ static void Relocate( offset off, fix_relo_data *fix, target_spec *target )
 
     if( !CheckSpecials( fix, target ) ) {
         PatchData( fix );
-        if( (LinkFlags & FAR_CALLS_FLAG) && (LinkState & HAVE_I86_CODE) )
+        if( (LinkFlags & LF_FAR_CALLS_FLAG) && (LinkState & LS_HAVE_I86_CODE) )
             FarCallOpt( fix );
         FmtReloc( fix, target );
     }

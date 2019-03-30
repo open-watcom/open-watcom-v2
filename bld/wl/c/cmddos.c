@@ -138,16 +138,16 @@ bool ProcBegin( void )
     file_list       **oldflist;
     section         *sect;
 
-    LinkState |= FMT_SPECIFIED;      // she must want DOS mode.
+    LinkState |= LS_FMT_SPECIFIED;      // she must want DOS mode.
     if( ( OvlLevel > 0 ) && FmtData.u.dos.dynamic ) {
         oldsect = NULL;
         oldflist = NULL;
-        CmdFlags &= ~CF_AUTOSECTION;        // merge old area with this.
+        CmdFlags &= ~CF_AUTOSECTION;    // merge old area with this.
     } else {
         oldsect = CurrSect;
         oldflist = CurrFList;
         sect = NewSection();
-        if( LinkFlags & ANY_DBI_FLAG ) {
+        if( LinkFlags & LF_ANY_DBI_FLAG ) {
             DBISectInit( sect );
         }
         NewArea( sect );
@@ -225,7 +225,7 @@ void MakeNewSection( void )
 
     if( CurrSect->relocs != SECT_ALREADY_MADE ) {
         sect = NewSection();
-        if( LinkFlags & ANY_DBI_FLAG ) {
+        if( LinkFlags & LF_ANY_DBI_FLAG ) {
             DBISectInit( sect );
         }
         if( CmdFlags & CF_AUTOSECTION ) {

@@ -238,7 +238,7 @@ void DoCmdFile( char *fname )
         Suicide();
     }
     GetExtraCommands();
-    if( (LinkState & FMT_DECIDED) == 0 ) {
+    if( (LinkState & LS_FMT_DECIDED) == 0 ) {
         /* restrict set to automatically decided ones */
 #if defined( __QNX__ )
 #define LAST_CHANCE ( MK_OS2_LX | MK_OS2_LE | MK_OS2_NE | MK_QNX )
@@ -263,7 +263,7 @@ void DoCmdFile( char *fname )
             }
         }
     }
-    if( (FmtData.type & (MK_NOVELL | MK_DOS)) && (LinkFlags & INC_LINK_FLAG) ) {
+    if( (FmtData.type & (MK_NOVELL | MK_DOS)) && (LinkFlags & LF_INC_LINK_FLAG) ) {
         LnkMsg( FTL+MSG_FORMAT_BAD_OPTION, "s", "incremental" );
     }
 #ifdef _NOVELL
@@ -291,7 +291,7 @@ void DoCmdFile( char *fname )
         MapFlags = 0;   // if main isn't set, don't set anything.
     }
     if( SymFileName == NULL && ( (CmdFlags & CF_SEPARATE_SYM) ||
-                   (LinkFlags & OLD_DBI_FLAG) && (FmtData.type & MK_COM) ) ) {
+                   (LinkFlags & LF_OLD_DBI_FLAG) && (FmtData.type & MK_COM) ) ) {
         SymFileName = FileName( Name, namelen, E_SYM, true );
     }
     if( FmtData.make_implib && FmtData.implibname == NULL ) {
@@ -734,7 +734,7 @@ void AddFmtLibPaths( void )
     struct select_format const *check;
     exe_format                  possible;
 
-    if( (LinkState & FMT_DECIDED) == 0 )
+    if( (LinkState & LS_FMT_DECIDED) == 0 )
         return;
     for( check = PossibleFmt; (possible = check->bits) != 0; ++check ) {
         if( (~possible & FmtData.type) == 0 ) {
@@ -749,11 +749,11 @@ void AddFmtLibPaths( void )
 static void InitFmt( void (*set)(void) )
 /**************************************/
 {
-    if( LinkState & FMT_INITIALIZED )
+    if( LinkState & LS_FMT_INITIALIZED )
         return;
     if( set != NULL )
         set();
-    LinkState |= FMT_INITIALIZED;
+    LinkState |= LS_FMT_INITIALIZED;
 }
 
 bool HintFormat( exe_format hint )
@@ -765,7 +765,7 @@ bool HintFormat( exe_format hint )
     if( (hint & FmtData.type) == 0 )
         return( false );
     FmtData.type &= hint;
-    if( LinkState & FMT_DECIDED )
+    if( LinkState & LS_FMT_DECIDED )
         return( true );
 
     for( check = PossibleFmt; (possible = check->bits) != 0; ++check ) {
@@ -784,8 +784,8 @@ bool HintFormat( exe_format hint )
         return( true );
     }
     InitFmt( check->set_func );
-    LinkState |= FMT_DECIDED;
-    if( LinkState & SEARCHING_LIBRARIES )
+    LinkState |= LS_FMT_DECIDED;
+    if( LinkState & LS_SEARCHING_LIBRARIES )
         AddFmtLibPaths();
     return( true );
 }
@@ -797,15 +797,15 @@ void DecideFormat( void )
     exe_format  allowed;
     char        rc_buff[RESOURCE_MAX_SIZE];
 
-    if( (LinkState & FMT_DECIDED) == 0 ) {
+    if( (LinkState & LS_FMT_DECIDED) == 0 ) {
         possible = FmtData.type;
         allowed = MK_OS2_NE | MK_OS2_LX;
-        if( (LinkState & FMT_SEEN_IMPORT_CMT) == 0 )
+        if( (LinkState & LS_FMT_SEEN_IMPORT_CMT) == 0 )
             allowed = ~allowed;
         if( (possible & allowed) != 0 )
             possible &= allowed;
         HintFormat( possible );
-        if( (LinkState & FMT_DECIDED) == 0 ) {
+        if( (LinkState & LS_FMT_DECIDED) == 0 ) {
             Msg_Get( MSG_FORMAT_NOT_DECIDED, rc_buff );
             LnkMsg( FTL+MSG_INTERNAL, "s", rc_buff );
         }
@@ -818,7 +818,7 @@ void FreeFormatStuff( void )
     struct select_format const *check;
     exe_format                  possible;
 
-    if( (LinkState & FMT_DECIDED) == 0 )
+    if( (LinkState & LS_FMT_DECIDED) == 0 )
         return;
     for( check = PossibleFmt; (possible = check->bits) != 0; ++check ) {
         if( (~possible & FmtData.type) == 0 ) {
@@ -1118,7 +1118,7 @@ bool ProcXDbg( void )
 bool ProcIntDbg( void )
 /****************************/
 {
-    LinkState |= INTERNAL_DEBUG;
+    LinkState |= LS_INTERNAL_DEBUG;
     return( true );
 }
 #endif

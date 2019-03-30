@@ -50,8 +50,8 @@
 extern bool ProcZdos( void )
 /*************************/
 {
-    FmtData.base = 0x1000;                      // assume user application
-    LinkState |= MAKE_RELOCS | FMT_DECIDED;     // make relocations;
+    FmtData.base = 0x1000;                          // assume user application
+    LinkState |= LS_MAKE_RELOCS | LS_FMT_DECIDED;   // make relocations;
     ProcOne( ZdosOptions, SEP_NO, false );
     return( true );
 }

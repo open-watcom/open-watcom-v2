@@ -105,7 +105,7 @@ void InitToc( void )
 {
     Toc = CreateHTable( 1024, TocEntryHashFunc, TocEntryCmp, ChkLAlloc, LFree );
     TocSize = 0;
-    if( (LinkState & HAVE_PPC_CODE) && (FmtData.type & MK_PE) ) {
+    if( (LinkState & LS_HAVE_PPC_CODE) && (FmtData.type & MK_PE) ) {
         TocName = TocSymName;
         TocShift = 0x8000;
     } else {
@@ -218,7 +218,7 @@ void PrepareToc( void )
     WalkHTable( Toc, ConvertTocEntry );
     RehashHTable( Toc );
 #if 0
-    if( (LinkState & HAVE_PPC_CODE) && (FmtData.type & MK_OS2) ) {
+    if( (LinkState & LS_HAVE_PPC_CODE) && (FmtData.type & MK_OS2) ) {
         // Development temporarly on hold
         offset middle = ( TocSize / 2 ) & ~0x3;
         WalkHTableCookie( Toc, AdjustGotEntry, &middle );
@@ -229,7 +229,7 @@ void PrepareToc( void )
     if( TocSym != NULL )  {
         TocSym->info |= SYM_DCE_REF | SYM_DEFINED;
         SetAddPubSym( TocSym, SYM_REGULAR, FakeModule, 0, 0 );
-        if( LinkFlags & STRIP_CODE ) {
+        if( LinkFlags & LF_STRIP_CODE ) {
             CleanStripInfo( TocSym );
         }
     }
@@ -320,7 +320,7 @@ void WriteToc( virt_mem buf )
         return;
     WalkHTableCookie( Toc, WriteOutTokElem, &buf );
 #if 0
-    if( (LinkState & HAVE_PPC_CODE) && (FmtData.type & MK_OS2) ) {
+    if( (LinkState & LS_HAVE_PPC_CODE) && (FmtData.type & MK_OS2) ) {
         // Development temporarly on hold
         offset res[GOT_RESERVED_SIZE / sizeof( offset )] = { 0 };
         enum { zero = GOT_RESERVED_NEG_SIZE / sizeof( offset ) };

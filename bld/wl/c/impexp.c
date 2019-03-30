@@ -107,7 +107,7 @@ void FreeExportList( void )
 {
     entry_export    *exp;
 
-    if( (LinkFlags & INC_LINK_FLAG) == 0 ) {
+    if( (LinkFlags & LF_INC_LINK_FLAG) == 0 ) {
         for( exp = FmtData.u.os2.exports; exp != NULL; ) {
             exp = FreeAnExport( exp );
         }
@@ -238,7 +238,7 @@ void MSExportKeyword( const length_name *expname, const length_name *intname, un
     } else {
         exp->sym = SymOp( ST_CREATE | ST_REFERENCE, expname->name, expname->len );
     }
-    if( LinkFlags & STRIP_CODE ) {
+    if( LinkFlags & LF_STRIP_CODE ) {
         DataRef( exp->sym );    // make sure it isn't removed.
     }
     if( flags & EXPDEF_ORDINAL ) {
@@ -274,7 +274,7 @@ static symbol *GetIATSym( symbol *sym )
     const char  *name;
 
     name = sym->name.u.ptr;
-    if( LinkState & HAVE_PPC_CODE ) {
+    if( LinkState & LS_HAVE_PPC_CODE ) {
         DbgAssert(name[0] == '.' && name[1] == '.');
         name += 2;  // skip '..' at the beginning of the name
     }
@@ -296,7 +296,7 @@ void MSImportKeyword( symbol *sym, const length_name *modname, const length_name
 
     if( (sym->info & SYM_DEFINED) == 0 ) {
         sym->info |= SYM_DEFINED | SYM_DCE_REF;
-        if( LinkFlags & STRIP_CODE ) {
+        if( LinkFlags & LF_STRIP_CODE ) {
             DefStripImpSym(sym);
         }
         SET_SYM_TYPE( sym, SYM_IMPORTED );
@@ -338,7 +338,7 @@ static void ReadNameTable( f_handle the_file )
     const char          *fname;
 
     fname = FmtData.u.os2.old_lib_name;
-    if( LinkFlags & CASE_FLAG ) {
+    if( LinkFlags & LF_CASE_FLAG ) {
         rtn = strcmp;
     } else {
         rtn = stricmp;

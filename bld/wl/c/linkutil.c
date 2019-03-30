@@ -82,7 +82,7 @@ void WriteNulls( f_handle file, size_t len, const char *name )
 void CheckErr( void )
 /**************************/
 {
-    if( LinkState & ( LINK_ERROR | STOP_WORKING ) ) {
+    if( LinkState & ( LS_LINK_ERROR | LS_STOP_WORKING ) ) {
         WriteLibsUsed();
         Suicide();
     }
@@ -91,7 +91,7 @@ void CheckErr( void )
 void CheckStop( void )
 /***************************/
 {
-    if( LinkState & STOP_WORKING ) {
+    if( LinkState & LS_STOP_WORKING ) {
         Suicide();
     }
 }

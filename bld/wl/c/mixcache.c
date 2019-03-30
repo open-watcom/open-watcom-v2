@@ -92,9 +92,9 @@ bool CacheOpen( file_list *list )
         }
     }
     if( (file->flags & INSTAT_SET_CACHE) == 0 ) {
-        if( LinkFlags & CACHE_FLAG ) {
+        if( LinkFlags & LF_CACHE_FLAG ) {
             file->flags |= INSTAT_FULL_CACHE;
-        } else if( LinkFlags & NOCACHE_FLAG ) {
+        } else if( LinkFlags & LF_NOCACHE_FLAG ) {
             file->flags |= INSTAT_PAGE_CACHE;
         } else {
             if( file->flags & INSTAT_LIBRARY ) {

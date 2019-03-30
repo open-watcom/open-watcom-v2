@@ -86,7 +86,7 @@ void CmdQNXFini( void )
 /****************************/
 {
     if( !FmtData.u.qnx.gen_linear_relocs && !FmtData.u.qnx.gen_seg_relocs ) {
-        LinkState &= ~MAKE_RELOCS;
+        LinkState &= ~LS_MAKE_RELOCS;
     }
 }
 

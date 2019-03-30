@@ -145,7 +145,7 @@ extern bool ProcSymTrace( void )
 {
     bool ret;
 
-    LinkFlags |= TRACE_FLAG;
+    LinkFlags |= LF_TRACE_FLAG;
     ret = ProcArgList( &AddSymTrace, TOK_INCLUDE_DOT );
     return( ret );
 }
@@ -164,7 +164,7 @@ extern bool ProcModTrace( void )
 {
     bool            ret;
 
-    LinkFlags |= TRACE_FLAG;
+    LinkFlags |= LF_TRACE_FLAG;
     ret = ProcArgList( &AddModTrace, TOK_INCLUDE_DOT );
     return( ret );
 }

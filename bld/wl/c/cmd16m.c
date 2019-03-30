@@ -99,7 +99,7 @@ extern bool ProcTData( void )
         LnkMsg( LOC+LINE+WRN+MSG_TRANS_RELOCS_NEEDED, NULL );
     }
     FmtData.u.d16m.flags |= TRANS_DATA;
-    LinkState |= MAKE_RELOCS;
+    LinkState |= LS_MAKE_RELOCS;
     return( true );
 }
 
@@ -161,7 +161,7 @@ extern bool ProcAuto( void )
         LnkMsg( LOC+LINE+WRN+MSG_BOTH_RELOC_OPTIONS, NULL );
     }
     FmtData.u.d16m.options |= OPT_AUTO;
-    LinkState |= MAKE_RELOCS;
+    LinkState |= LS_MAKE_RELOCS;
     return( true );
 }
 
@@ -205,14 +205,14 @@ extern bool ProcRelocs( void )
     if( FmtData.u.d16m.flags & FORCE_NO_RELOCS ) {
         LnkMsg( LOC+LINE+WRN+MSG_BOTH_RELOC_OPTIONS, NULL );
     }
-    LinkState |= MAKE_RELOCS;
+    LinkState |= LS_MAKE_RELOCS;
     return( true );
 }
 
 extern bool Proc16MNoRelocs( void )
 /*********************************/
 {
-    if( LinkState & MAKE_RELOCS ) {
+    if( LinkState & LS_MAKE_RELOCS ) {
         LnkMsg( LOC+LINE+WRN+MSG_BOTH_RELOC_OPTIONS, NULL );
     } else {
         FmtData.u.d16m.flags |= FORCE_NO_RELOCS;
@@ -287,7 +287,7 @@ extern bool ProcDataSize( void )
 extern void SetD16MFmt( void )
 /****************************/
 {
-    LinkState &= ~MAKE_RELOCS;              // assume none being produced.
+    LinkState &= ~LS_MAKE_RELOCS;           // assume none being produced.
     Extension = E_PROTECT;
     FmtData.u.d16m.options = 0;
     FmtData.u.d16m.flags = 0;

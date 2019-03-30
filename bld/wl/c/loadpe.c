@@ -245,27 +245,27 @@ static void XFerReloc( offset off, group_entry *group, unsigned type )
     WriteReloc( group, off, &reloc, size );
 }
 
-static int GetTransferGlueSize( stateflag lnk_state )
-/***************************************************/
+static int GetTransferGlueSize( void )
+/************************************/
 {
-    switch( lnk_state & HAVE_MACHTYPE_MASK ) {
-    case HAVE_ALPHA_CODE:   return( ALPHA_TRANSFER_SIZE );
-    case HAVE_I86_CODE:     return( I386_TRANSFER_SIZE );
-    case HAVE_X64_CODE:     return( X64_TRANSFER_SIZE ); // TODO
-    case HAVE_PPC_CODE:     return( PPC_TRANSFER_SIZE );
-    default:                DbgAssert( 0 ); return( 0 );
+    switch( LinkState & LS_HAVE_MACHTYPE_MASK ) {
+    case LS_HAVE_ALPHA_CODE:    return( ALPHA_TRANSFER_SIZE );
+    case LS_HAVE_I86_CODE:      return( I386_TRANSFER_SIZE );
+    case LS_HAVE_X64_CODE:      return( X64_TRANSFER_SIZE ); // TODO
+    case LS_HAVE_PPC_CODE:      return( PPC_TRANSFER_SIZE );
+    default:                    DbgAssert( 0 ); return( 0 );
     }
 }
 
-static void *GetTransferGlueCode( stateflag lnk_state )
-/*****************************************************/
+static void *GetTransferGlueCode( void )
+/**************************************/
 {
-    switch( lnk_state & HAVE_MACHTYPE_MASK ) {
-    case HAVE_ALPHA_CODE:   return( &AlphaJump );
-    case HAVE_I86_CODE:     return( &I386Jump );
-    case HAVE_X64_CODE:     return( &X64Jump ); // TODO
-    case HAVE_PPC_CODE:     return( &PPCJump );
-    default:                DbgAssert( 0 ); return( NULL );
+    switch( LinkState & LS_HAVE_MACHTYPE_MASK ) {
+    case LS_HAVE_ALPHA_CODE:    return( &AlphaJump );
+    case LS_HAVE_I86_CODE:      return( &I386Jump );
+    case LS_HAVE_X64_CODE:      return( &X64Jump ); // TODO
+    case LS_HAVE_PPC_CODE:      return( &PPCJump );
+    default:                    DbgAssert( 0 ); return( NULL );
     }
 }
 
@@ -302,14 +302,14 @@ static void GenPETransferTable( void )
     group = XFerSegData->u.leader->group;
     base = XFerSegData->u.leader->seg_addr.off + XFerSegData->a.delta;
     if( IDataGroup != NULL ) {
-        datalen = GetTransferGlueSize( LinkState );
-        data = GetTransferGlueCode( LinkState );
+        datalen = GetTransferGlueSize();
+        data = GetTransferGlueCode();
         WALK_IMPORT_SYMBOLS( sym ) {
-            if( LinkState & HAVE_ALPHA_CODE ) {
+            if( LinkState & LS_HAVE_ALPHA_CODE ) {
                 offset dest = FindIATSymAbsOff( sym );
                 AlphaJump.high = dest >> 16;
                 AlphaJump.low = dest;
-                if( LinkState & MAKE_RELOCS ) {
+                if( LinkState & LS_MAKE_RELOCS ) {
                     if( (FmtData.objalign & 0xFFFF) == 0 ) {
                         XFerReloc( sym->addr.off + offsetof( alpha_transfer, high ),
                                    group, PE_FIX_HIGH );
@@ -320,19 +320,19 @@ static void GenPETransferTable( void )
                                     group, PE_FIX_HIGHADJ );
                     }
                 }
-            } else if( LinkState & HAVE_I86_CODE ) {
+            } else if( LinkState & LS_HAVE_I86_CODE ) {
                 offset dest = FindIATSymAbsOff( sym );
                 I386Jump.dest = dest;
-                if( LinkState & MAKE_RELOCS ) {
+                if( LinkState & LS_MAKE_RELOCS ) {
                     XFerReloc( sym->addr.off + offsetof( i386_transfer, dest ),
                                 group, PE_FIX_HIGHLOW );
                 }
-            } else if( LinkState & HAVE_X64_CODE ) {
+            } else if( LinkState & LS_HAVE_X64_CODE ) {
                 // TODO
                 offset dest = FindIATSymAbsOff( sym );
                 X64Jump.dest.u._32[0] = dest;
                 X64Jump.dest.u._32[1] = 0;
-                if( LinkState & MAKE_RELOCS ) {
+                if( LinkState & LS_MAKE_RELOCS ) {
                     XFerReloc( sym->addr.off + offsetof( x64_transfer, dest ), group, PE_FIX_HIGHLOW );
                 }
             } else {
@@ -348,7 +348,7 @@ static void GenPETransferTable( void )
         addr = FindLinearAddr( &loc_imp->locsym->addr ) + FmtData.base;
         PutInfo( XFerSegData->u1.vm_ptr + off, &addr, sizeof( addr ) );
     }
-    if( LinkState & MAKE_RELOCS ) {
+    if( LinkState & LS_MAKE_RELOCS ) {
         for( loc_imp = PELocalImpList; loc_imp != NULL; loc_imp = loc_imp->next ) {
             XFerReloc( loc_imp->iatsym->addr.off, group, PE_FIX_HIGHLOW );
         }
@@ -456,7 +456,7 @@ static unsigned_32 WriteDataPages( exe_pe_header *h, pe_object *object, unsigned
     if( data_base == 0xFFFFFFFFUL ) {
         data_base = 0;
     }
-    if( LinkState & HAVE_X64_CODE ) {
+    if( LinkState & LS_HAVE_X64_CODE ) {
         PE64( *h ).code_base = code_base;
         PE64( *h ).entry_rva = entry_rva;
         PE64( *h ).init_data_size = init_data_size;
@@ -900,7 +900,7 @@ static void CheckNumRelocs( void )
     group_entry *group;
     symbol      *sym;
 
-    if( (LinkState & MAKE_RELOCS) == 0 )
+    if( (LinkState & LS_MAKE_RELOCS) == 0 )
         return;
     for( group = Groups; group != NULL; group = group->next_group ) {
         if( group->g.grp_relocs != NULL ) {
@@ -908,11 +908,11 @@ static void CheckNumRelocs( void )
         }
     }
     WALK_IMPORT_SYMBOLS( sym ) {
-        if( LinkState & HAVE_MACHTYPE_MASK ) {
+        if( LinkState & LS_HAVE_MACHTYPE_MASK ) {
             return;
         }
     }
-    LinkState &= ~MAKE_RELOCS;
+    LinkState &= ~LS_MAKE_RELOCS;
 }
 
 static seg_leader *SetLeaderTable( const char *name, pe_hdr_table_entry *entry )
@@ -1003,11 +1003,11 @@ static unsigned FindNumObjects( void )
     unsigned            num_objects;
 
     num_objects = NumGroups;
-    if( LinkState & MAKE_RELOCS )
+    if( LinkState & LS_MAKE_RELOCS )
         ++num_objects;
     if( FmtData.u.os2.exports != NULL )
         ++num_objects;
-    if( LinkFlags & CV_DBI_FLAG )
+    if( LinkFlags & LF_CV_DBI_FLAG )
         ++num_objects;
     if( FmtData.description != NULL )
         ++num_objects;
@@ -1051,7 +1051,7 @@ void FiniPELoadFile( void )
     CheckNumRelocs();
     num_objects = FindNumObjects();
     memset( &h, 0, sizeof( h ) ); /* zero all header fields */
-    if( LinkState & HAVE_X64_CODE ) {
+    if( LinkState & LS_HAVE_X64_CODE ) {
         head_size = sizeof( pe_header64 );
         PE64( h ).magic = 0x20b;
         if( FmtData.u.pe.signature != 0 ) {
@@ -1067,10 +1067,10 @@ void FiniPELoadFile( void )
         if( FmtData.u.pe.nolargeaddressaware ) {
             PE64( h ).flags &= ~PE_FLG_LARGE_ADDRESS_AWARE;
         }
-        if( (LinkState & MAKE_RELOCS) == 0 ) {
+        if( (LinkState & LS_MAKE_RELOCS) == 0 ) {
             PE64( h ).flags |= PE_FLG_RELOCS_STRIPPED;
         }
-        if( (LinkState & LINK_ERROR) == 0 ) {
+        if( (LinkState & LS_LINK_ERROR) == 0 ) {
             PE64( h ).flags |= PE_FLG_IS_EXECUTABLE;
         }
         if( FmtData.dll ) {
@@ -1174,7 +1174,7 @@ void FiniPELoadFile( void )
             image_size += ROUND_UP( size, FmtData.objalign );
             ++tbl_obj;
         }
-        if( LinkState & MAKE_RELOCS ) {
+        if( LinkState & LS_MAKE_RELOCS ) {
             tbl_obj->rva = image_size;
             size = WriteFixupInfo( tbl_obj, file_align, PE64( h ).table );
             image_size += ROUND_UP( size, FmtData.objalign );
@@ -1192,7 +1192,7 @@ void FiniPELoadFile( void )
             image_size += ROUND_UP( size, FmtData.objalign );
             ++tbl_obj;
         }
-        if( LinkFlags & CV_DBI_FLAG ) {
+        if( LinkFlags & LF_CV_DBI_FLAG ) {
             tbl_obj->rva = image_size;
             size = WriteDebugTable( tbl_obj, SymFileName, file_align, PE64( h ).time_stamp, PE64( h ).table );
             image_size += ROUND_UP( size, FmtData.objalign );
@@ -1209,9 +1209,9 @@ void FiniPELoadFile( void )
         } else {
             PE32( h ).signature = PE_SIGNATURE;
         }
-        if( LinkState & HAVE_I86_CODE ) {
+        if( LinkState & LS_HAVE_I86_CODE ) {
             PE32( h ).cpu_type = PE_CPU_386;
-        } else if( LinkState & HAVE_ALPHA_CODE ) {
+        } else if( LinkState & LS_HAVE_ALPHA_CODE ) {
             PE32( h ).cpu_type = PE_CPU_ALPHA;
         } else {
             PE32( h ).cpu_type = PE_CPU_POWERPC;
@@ -1223,10 +1223,10 @@ void FiniPELoadFile( void )
         if( FmtData.u.pe.largeaddressaware ) {
             PE32( h ).flags |= PE_FLG_LARGE_ADDRESS_AWARE;
         }
-        if( (LinkState & MAKE_RELOCS) == 0 ) {
+        if( (LinkState & LS_MAKE_RELOCS) == 0 ) {
             PE32( h ).flags |= PE_FLG_RELOCS_STRIPPED;
         }
-        if( (LinkState & LINK_ERROR) == 0 ) {
+        if( (LinkState & LS_LINK_ERROR) == 0 ) {
             PE32( h ).flags |= PE_FLG_IS_EXECUTABLE;
         }
         if( FmtData.dll ) {
@@ -1323,7 +1323,7 @@ void FiniPELoadFile( void )
             image_size += ROUND_UP( size, FmtData.objalign );
             ++tbl_obj;
         }
-        if( LinkState & MAKE_RELOCS ) {
+        if( LinkState & LS_MAKE_RELOCS ) {
             tbl_obj->rva = image_size;
             size = WriteFixupInfo( tbl_obj, file_align, PE32( h ).table );
             image_size += ROUND_UP( size, FmtData.objalign );
@@ -1341,7 +1341,7 @@ void FiniPELoadFile( void )
             image_size += ROUND_UP( size, FmtData.objalign );
             ++tbl_obj;
         }
-        if( LinkFlags & CV_DBI_FLAG ) {
+        if( LinkFlags & LF_CV_DBI_FLAG ) {
             tbl_obj->rva = image_size;
             size = WriteDebugTable( tbl_obj, SymFileName, file_align, PE32( h ).time_stamp, PE32( h ).table );
             image_size += ROUND_UP( size, FmtData.objalign );
@@ -1356,7 +1356,7 @@ void FiniPELoadFile( void )
 
     if( FmtData.u.pe.checksumfile ) {
         /* Ensure checksum is 0 before we calculate it */
-        if( LinkState & HAVE_X64_CODE ) {
+        if( LinkState & LS_HAVE_X64_CODE ) {
             PE64( h ).file_checksum = 0L;
         } else {
             PE32( h ).file_checksum = 0L;
@@ -1403,7 +1403,7 @@ void FiniPELoadFile( void )
             _LnkFree( buffer );
             crc += totalsize;
 
-            if( LinkState & HAVE_X64_CODE ) {
+            if( LinkState & LS_HAVE_X64_CODE ) {
                 PE64( h ).file_checksum = crc;
             } else {
                 PE32( h ).file_checksum = crc;
@@ -1465,7 +1465,7 @@ unsigned long GetPEHeaderSize( void )
 
     num_objects = FindNumObjects();
     size = ROUND_UP( getStubSize(), STUB_ALIGN ) + num_objects * sizeof( pe_object );
-    if( LinkState & HAVE_X64_CODE ) {
+    if( LinkState & LS_HAVE_X64_CODE ) {
         size += sizeof( pe_header64 );
     } else {
         size += sizeof( pe_header );
@@ -1552,7 +1552,7 @@ static void CreateIDataSection( void )
         class = FindClass( Root, CoffIDataSegName, true, false );
         class->flags |= CLASS_IDATA | CLASS_LXDATA_SEEN;
         sdata = AllocSegData();
-        if( LinkState & HAVE_X64_CODE ) {
+        if( LinkState & LS_HAVE_X64_CODE ) {
             sdata->align = 4;
         } else {
             sdata->align = 2;
@@ -1634,7 +1634,7 @@ static void CreateTransferSegment( class_entry *class )
     segdata     *sdata;
 
     size = 0;
-    glue_size = GetTransferGlueSize( LinkState );
+    glue_size = GetTransferGlueSize();
     WALK_IMPORT_SYMBOLS( sym ) {
         size += glue_size;
         RegisterImport( sym->p.import );
@@ -1644,7 +1644,7 @@ static void CreateTransferSegment( class_entry *class )
     if( size != 0 ) {
         class->flags |= CLASS_TRANSFER;
         sdata = AllocSegData();
-        if( LinkState & HAVE_X64_CODE ) {
+        if( LinkState & LS_HAVE_X64_CODE ) {
             sdata->align = 4;
         } else {
             sdata->align = 2;
@@ -1722,7 +1722,7 @@ void AllocPETransferTable( void )
         SET_SYM_ADDR( loc_imp->iatsym, off, seg );
     }
     if( IDataGroup != NULL ) {
-        glue_size = GetTransferGlueSize( LinkState );
+        glue_size = GetTransferGlueSize();
         WALK_IMPORT_SYMBOLS( sym ) {
             off -= glue_size;
             SET_SYM_ADDR( sym, off, seg );
@@ -1768,7 +1768,7 @@ bool ImportPELocalSym( symbol *iatsym )
         return( false );
     LnkMsg( WRN+MSG_IMPORT_LOCAL, "s", locsym->name.u.ptr );
     iatsym->info |= SYM_DEFINED | SYM_DCE_REF;
-    if( LinkFlags & STRIP_CODE ) {
+    if( LinkFlags & LF_STRIP_CODE ) {
         DefStripImpSym( iatsym );
     }
     AddPEImportLocalSym( locsym, iatsym );

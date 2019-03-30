@@ -142,7 +142,7 @@ void DataRef( symbol * sym )
 /*********************************/
 /* symbol referenced from data, so make sure it is included */
 {
-    if( (LinkState & HAVE_PPC_CODE) && (FmtData.type & MK_PE) ) {
+    if( (LinkState & LS_HAVE_PPC_CODE) && (FmtData.type & MK_PE) ) {
         size_t      len = strlen( sym->name.u.ptr ) + 3;
         char        *s = alloca( len );
 

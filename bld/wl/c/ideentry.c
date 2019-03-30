@@ -204,7 +204,7 @@ unsigned IDEAPI IDEGetVersion( void )
 void IDEAPI IDEStopRunning( void )
 /********************************/
 {
-    LinkState |= STOP_WORKING|LINK_ERROR;
+    LinkState |= LS_STOP_WORKING | LS_LINK_ERROR;
 }
 
 void IDEAPI IDEFreeHeap( void )
@@ -240,7 +240,7 @@ IDEBool IDEAPI IDERunYourSelf( IDEDllHdl hdl, const char * opts, IDEBool *fatale
     /* unused parameters */ (void)hdl;
 
     LinkMainLine( (char *) opts );
-    *fatalerr = (LinkState & LINK_ERROR) != 0;
+    *fatalerr = (LinkState & LS_LINK_ERROR) != 0;
     return( *fatalerr );
 }
 
@@ -254,6 +254,6 @@ IDEBool IDEAPI IDERunYourSelfArgv( IDEDllHdl hdl, int argc, char **argv, IDEBool
     _argc = argc;
 #endif
     LinkMainLine( NULL );
-    *fatalerr = (LinkState & LINK_ERROR) != 0;
+    *fatalerr = (LinkState & LS_LINK_ERROR) != 0;
     return( *fatalerr );
 }

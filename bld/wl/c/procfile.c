@@ -71,22 +71,22 @@ void ProcObjFiles( void )
 /* Perform Pass 1 on all object files */
 {
     CurrMod = NULL;
-    if( LinkFlags & INC_LINK_FLAG ) {
-        if( (LinkFlags & DWARF_DBI_FLAG) == 0 && (LinkFlags & ANY_DBI_FLAG) ) {
+    if( LinkFlags & LF_INC_LINK_FLAG ) {
+        if( (LinkFlags & LF_DWARF_DBI_FLAG) == 0 && (LinkFlags & LF_ANY_DBI_FLAG) ) {
             LnkMsg( FTL+MSG_INC_ONLY_SUPPORTS_DWARF, NULL );
         }
-        if( LinkFlags & STRIP_CODE ) {
+        if( LinkFlags & LF_STRIP_CODE ) {
             LnkMsg( FTL+MSG_INC_AND_DCE_NOT_ALLOWED, NULL );
         }
-        if( LinkFlags & VF_REMOVAL ) {
+        if( LinkFlags & LF_VF_REMOVAL ) {
             LnkMsg( FTL+MSG_INC_AND_VFR_NOT_ALLOWED, NULL );
         }
     }
     LnkMsg( INF+MSG_LOADING_OBJECT, NULL );
-    if( LinkFlags & STRIP_CODE ) {
-        LinkState |= CAN_REMOVE_SEGMENTS;
+    if( LinkFlags & LF_STRIP_CODE ) {
+        LinkState |= LS_CAN_REMOVE_SEGMENTS;
     }
-    if( LinkState & GOT_PREV_STRUCTS ) {
+    if( LinkState & LS_GOT_PREV_STRUCTS ) {
         IncLoadObjFiles();
     } else {
         LoadObjFiles( Root );
@@ -123,7 +123,7 @@ static void CheckNewFile( mod_entry *mod, file_list *list,
 {
     time_t      modtime;
 
-    if( (LinkFlags & GOT_CHGD_FILES) == 0 || AlwaysCheckUsingDate ) {
+    if( (LinkFlags & LF_GOT_CHGD_FILES) == 0 || AlwaysCheckUsingDate ) {
         if( QModTime( list->file->name.u.ptr, &modtime ) || modtime > mod->modtime ) {
             list->status |= STAT_HAS_CHANGED;
         }
@@ -688,13 +688,13 @@ void ResolveUndefined( void )
 
     LnkMsg( INF+MSG_SEARCHING_LIBS, NULL );
     if( (FmtData.type & MK_OVERLAYS) && FmtData.u.dos.distribute ) {
-        LinkState |= CAN_REMOVE_SEGMENTS;
+        LinkState |= LS_CAN_REMOVE_SEGMENTS;
         InitModTable();
     }
     CurrSect = Root;
     ResolveVFExtdefs();
     do {
-        LinkState &= ~LIBRARIES_ADDED;
+        LinkState &= ~LS_LIBRARIES_ADDED;
         for( lib = ObjLibFiles; lib != NULL; lib = lib->next_file ) {
             if( lib->status & STAT_SEEN_LIB ) {
                 lib->status |= STAT_OLD_LIB;
@@ -712,7 +712,7 @@ void ResolveUndefined( void )
             sym->info |= SYM_CHECKED;
         }
         keepgoing = ResolveVFExtdefs();
-    } while( keepgoing || LinkState & LIBRARIES_ADDED );
+    } while( keepgoing || (LinkState & LS_LIBRARIES_ADDED) );
 
     BurnLibs();
     PrintBadTraces();

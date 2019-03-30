@@ -57,7 +57,7 @@ void SetPharFmt( void )
 /****************************/
 {
     Extension = E_PROTECT;
-    LinkState &= ~MAKE_RELOCS;     // do not generate relocations.
+    LinkState &= ~LS_MAKE_RELOCS;   // do not generate relocations.
     _ChkAlloc( FmtData.u.phar.params, sizeof( *FmtData.u.phar.params ) );
     FmtData.u.phar.mindata = 0;
     FmtData.u.phar.maxdata = 0xFFFFFFFF;
@@ -95,14 +95,14 @@ bool ProcRex( void )
 /*************************/
 {
     Extension = E_REX;
-    LinkState |= MAKE_RELOCS;       // make relocations;
+    LinkState |= LS_MAKE_RELOCS;    // make relocations;
     return( true );
 }
 
 bool ProcPharSegmented( void )
 /***********************************/
 {
-    LinkState |= MAKE_RELOCS;       // make relocations;
+    LinkState |= LS_MAKE_RELOCS;    // make relocations;
     return true;
 }
 

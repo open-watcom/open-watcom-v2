@@ -203,7 +203,7 @@ size_t DoFmtStr( char *buff, size_t len, const char *src, va_list *args )
                 } else {
                     str = va_arg( *args, symbol * )->name.u.ptr;
                 }
-                if( (LinkFlags & DONT_UNMANGLE) == 0 ) {
+                if( (LinkFlags & LF_DONT_UNMANGLE) == 0 ) {
                     size = __demangle_l( str, 0, dest, len );
                     if( size > ( len - 1 ) )
                         size = len - 1;
@@ -424,10 +424,10 @@ static void MessageFini( unsigned num, char *buff, size_t len )
     msgprefixlen = 0;
     class = num & CLASS_MSK;
     if( class >= (ERR & CLASS_MSK) ) {
-        LinkState |= LINK_ERROR;
+        LinkState |= LS_LINK_ERROR;
     }
     if( num & OUT_TERM ) {
-        if( (LinkFlags & QUIET_FLAG) == 0 ) {
+        if( (LinkFlags & LF_QUIET_FLAG) == 0 ) {
             WLPrtBanner();
             WriteStdOutInfo( buff, num, CurrSymName );
         } else if( class != (INF & CLASS_MSK) ) {
@@ -444,7 +444,7 @@ static void MessageFini( unsigned num, char *buff, size_t len )
         Suicide();
     /* yells are counted as errors for limits */
     if(( class == (YELL & CLASS_MSK) ) || ( class >= (MILD_ERR & CLASS_MSK) )) {
-        if( LinkFlags & MAX_ERRORS_FLAG ) {
+        if( LinkFlags & LF_MAX_ERRORS_FLAG ) {
             MaxErrors--;
             if( MaxErrors == 0 ) {
                 LnkMsg( FTL+MSG_TOO_MANY_ERRORS, NULL );
@@ -625,7 +625,7 @@ int SymAlphaCompare( const void *a, const void *b )
 
     left = *((symbol **) a);
     right = *((symbol **) b);
-    if( (LinkFlags & DONT_UNMANGLE) == 0 ) {
+    if( (LinkFlags & LF_DONT_UNMANGLE) == 0 ) {
         __unmangled_name( left->name.u.ptr, 0, &leftname, &leftsize );
         __unmangled_name( right->name.u.ptr, 0, &rightname, &rightsize );
     } else {
