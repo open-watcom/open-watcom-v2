@@ -294,6 +294,11 @@ void FuncChangeOptions( void )
     WndForAllClass( WND_GBLFUNCTIONS, FuncSetOptions );
 }
 
+static bool ChkUpdate( void )
+{
+    return( UpdateFlags & (UP_SYM_CHANGE | UP_BREAK_CHANGE | UP_CODE_ADDR_CHANGE) );
+}
+
 wnd_info FuncInfo = {
     FuncWndEventProc,
     FuncRefresh,
@@ -306,8 +311,7 @@ wnd_info FuncInfo = {
     FuncNumRows,
     NoNextRow,
     NoNotify,
-    ChkFlags,
-    UP_SYM_CHANGE | UP_BREAK_CHANGE | UP_CODE_ADDR_CHANGE,
+    ChkUpdate,
     PopUp( FuncMenu )
 };
 

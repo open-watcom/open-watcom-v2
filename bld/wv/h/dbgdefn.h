@@ -80,35 +80,35 @@ typedef unsigned_8 screen_state; enum {
         USR_SCRN_VISIBLE = 0x08
 };
 
-#define UP_NO_CHANGE            0x00000000UL
-#define UP_MEM_CHANGE           0x00000001UL
-#define UP_CSIP_CHANGE          0x00000002UL
-#define UP_BREAK_CHANGE         0x00000004UL
-#define UP_OPEN_CHANGE          0x00000008UL
-#define UP_NEW_SRC              0x00000010UL
-#define UP_REG_CHANGE           0x00000020UL
-#define UP_RADIX_CHANGE         0x00000040UL
-#define UP_CODE_ADDR_CHANGE     0x00000080UL
-#define UP_SYMBOLS_LOST         0x00000100UL
-#define UP_CODE_EXECUTED        0x00000200UL
-#define UP_THREAD_STATE         0x00000400UL
-#define UP_SYMBOLS_ADDED        0x00000800UL
-#define UP_DLG_WRITTEN          0x00001000UL
-#define UP_NEW_PROGRAM          0x00002000UL
-#define UP_CLIP_CHANGE          0x00004000UL
-#define UP_CSIP_JUMPED          0x00008000UL
-#define UP_MACRO_CHANGE         0x00010000UL
-#define UP_STACKPOS_CHANGE      0x00020000UL
-#define UP_EVENT_CHANGE         0x00040000UL
-#define UP_MAD_CHANGE           0x00080000UL
-#define UP_REG_RESIZE           0x00100000UL
-#define UP_ASM_RESIZE           0x00200000UL
-#define UP_VAR_DISPLAY          0x00400000UL
-#define UP_ALL_CHANGE           0xFFFFFFFFUL
+typedef enum {
+    UP_NO_CHANGE            = 0x00000000UL,
+    UP_MEM_CHANGE           = 0x00000001UL,
+    UP_CSIP_CHANGE          = 0x00000002UL,
+    UP_BREAK_CHANGE         = 0x00000004UL,
+    UP_OPEN_CHANGE          = 0x00000008UL,
+    UP_NEW_SRC              = 0x00000010UL,
+    UP_REG_CHANGE           = 0x00000020UL,
+    UP_RADIX_CHANGE         = 0x00000040UL,
+    UP_CODE_ADDR_CHANGE     = 0x00000080UL,
+    UP_SYMBOLS_LOST         = 0x00000100UL,
+    UP_CODE_EXECUTED        = 0x00000200UL,
+    UP_THREAD_STATE         = 0x00000400UL,
+    UP_SYMBOLS_ADDED        = 0x00000800UL,
+    UP_DLG_WRITTEN          = 0x00001000UL,
+    UP_NEW_PROGRAM          = 0x00002000UL,
+    UP_CLIP_CHANGE          = 0x00004000UL,
+    UP_CSIP_JUMPED          = 0x00008000UL,
+    UP_MACRO_CHANGE         = 0x00010000UL,
+    UP_STACKPOS_CHANGE      = 0x00020000UL,
+    UP_EVENT_CHANGE         = 0x00040000UL,
+    UP_MAD_CHANGE           = 0x00080000UL,
+    UP_REG_RESIZE           = 0x00100000UL,
+    UP_ASM_RESIZE           = 0x00200000UL,
+    UP_VAR_DISPLAY          = 0x00400000UL,
+    UP_ALL_CHANGE           = 0xFFFFFFFFUL,
 
-#define UP_SYM_CHANGE           (UP_SYMBOLS_LOST | UP_SYMBOLS_ADDED)
-
-typedef unsigned long update_list;
+    UP_SYM_CHANGE           = (UP_SYMBOLS_LOST | UP_SYMBOLS_ADDED)
+} update_flags;
 
 typedef unsigned_8 task_status; enum {
         TASK_NONE,

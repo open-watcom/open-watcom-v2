@@ -185,10 +185,10 @@ static void CallScrollPos( a_window wnd )
 }
 
 
-static void     CallRefresh( a_window wnd )
+static void CallRefresh( a_window wnd )
 {
 
-    if( ( UpdateFlags & ~UP_STACKPOS_CHANGE ) & CallInfo.flags ) {
+    if( UpdateFlags & (UP_RADIX_CHANGE | UP_SYM_CHANGE | UP_CSIP_CHANGE) ) {
         CallInit( wnd );
     }
     CallScrollPos( wnd );
@@ -226,6 +226,11 @@ static bool CallWndEventProc( a_window wnd, gui_event gui_ev, void *parm )
 }
 
 
+static bool ChkUpdate( void )
+{
+    return( UpdateFlags & (UP_RADIX_CHANGE | UP_SYM_CHANGE | UP_CSIP_CHANGE | UP_STACKPOS_CHANGE) );
+}
+
 wnd_info CallInfo = {
     CallWndEventProc,
     CallRefresh,
@@ -238,8 +243,7 @@ wnd_info CallInfo = {
     CallNumRows,
     NoNextRow,
     NoNotify,
-    ChkFlags,
-    UP_RADIX_CHANGE | UP_SYM_CHANGE | UP_CSIP_CHANGE | UP_STACKPOS_CHANGE,
+    ChkUpdate,
     PopUp( CallMenu )
 };
 

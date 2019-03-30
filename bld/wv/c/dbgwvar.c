@@ -1045,6 +1045,11 @@ void VarChangeOptions( void )
     VarWndDoAll( DoVarChangeOptions );
 }
 
+static bool ChkUpdate( void )
+{
+    return( UpdateFlags & (UP_VAR_DISPLAY | UP_MEM_CHANGE | UP_STACKPOS_CHANGE | UP_CSIP_CHANGE | UP_REG_CHANGE | UP_RADIX_CHANGE | UP_SYM_CHANGE) );
+}
+
 wnd_info VarInfo = {
     VarWndEventProc,
     VarRefresh,
@@ -1057,8 +1062,7 @@ wnd_info VarInfo = {
     VarNumRows,
     NoNextRow,
     NoNotify,
-    ChkFlags,
-    UP_VAR_DISPLAY | UP_MEM_CHANGE | UP_STACKPOS_CHANGE | UP_CSIP_CHANGE | UP_REG_CHANGE | UP_RADIX_CHANGE | UP_SYM_CHANGE,
+    ChkUpdate,
     PopUp( VarMenu )
 };
 

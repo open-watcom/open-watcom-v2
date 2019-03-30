@@ -104,19 +104,19 @@ enum {
     APP_NUMBER_OF_COLOURS
 };
 
-enum {
+typedef enum {
     EV_UPDATE_NONE      = 0x0000,
     EV_UPDATE_1         = 0x0001,
     EV_UPDATE_2         = 0x0002,
     EV_UPDATE_ALL       = 0xFFFF,
-};
+} wnd_update_flags;
 
 enum {
     CLASS_W1,
     CLASS_W2
 };
 
-extern wnd_update_list  WndFlags;
+extern wnd_update_flags WndUpdateFlags;
 
 extern int RandNum( int );
 
@@ -124,7 +124,6 @@ extern int RandNum( int );
 #define WORD_SIZE 50
 
 extern char     *Word[WORD_SIZE];
-extern bool     ChkFlags( wnd_update_list flags );
 
 extern WNDOPEN W1Open;
 extern WNDOPEN W2Open;

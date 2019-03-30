@@ -1045,6 +1045,12 @@ void AsmChangeOptions( void )
     WndForAllClass( WND_ASSEMBLY, DoAsmChangeOptions );
 }
 
+static bool ChkUpdate( void )
+{
+    return( UpdateFlags & (UP_MAD_CHANGE | UP_SYM_CHANGE | UP_NEW_PROGRAM | UP_NEW_SRC | UP_STACKPOS_CHANGE
+            | UP_CSIP_CHANGE | UP_BREAK_CHANGE | UP_RADIX_CHANGE | UP_ASM_RESIZE) );
+}
+
 wnd_info AsmInfo = {
     AsmWndEventProc,
     AsmRefresh,
@@ -1057,9 +1063,7 @@ wnd_info AsmInfo = {
     NoNumRows,
     NoNextRow,
     AsmNotify,
-    ChkFlags,
-    UP_MAD_CHANGE | UP_SYM_CHANGE | UP_NEW_PROGRAM | UP_NEW_SRC | UP_STACKPOS_CHANGE
-     | UP_CSIP_CHANGE | UP_BREAK_CHANGE | UP_RADIX_CHANGE | UP_ASM_RESIZE,
+    ChkUpdate,
     PopUp( AsmMenu )
 };
 

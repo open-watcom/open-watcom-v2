@@ -314,6 +314,11 @@ static bool IOWndEventProc( a_window wnd, gui_event gui_ev, void *parm )
     return( false );
 }
 
+static bool ChkUpdate( void )
+{
+    return( UpdateFlags & UP_RADIX_CHANGE );
+}
+
 wnd_info IOInfo = {
     IOWndEventProc,
     IORefresh,
@@ -326,8 +331,7 @@ wnd_info IOInfo = {
     IONumRows,
     NoNextRow,
     NoNotify,
-    ChkFlags,
-    UP_RADIX_CHANGE,
+    ChkUpdate,
     PopUp( IOMenu )
 };
 

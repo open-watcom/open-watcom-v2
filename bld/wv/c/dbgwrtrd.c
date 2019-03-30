@@ -277,6 +277,11 @@ static bool    RunTrdGetLine( a_window wnd, wnd_row row, wnd_piece piece, wnd_li
     return( false );
 }
 
+static bool ChkUpdate( void )
+{
+    return( UpdateFlags & UP_THREAD_STATE );
+}
+
 wnd_info RunTrdInfo = {
     RunTrdWndEventProc,
     RunTrdRefresh,
@@ -289,8 +294,7 @@ wnd_info RunTrdInfo = {
     RunTrdNumRows,
     NoNextRow,
     NoNotify,
-    ChkFlags,
-    UP_THREAD_STATE,
+    ChkUpdate,
     PopUp( RunTrdMenu ),
 };
 

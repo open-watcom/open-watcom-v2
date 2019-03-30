@@ -628,6 +628,11 @@ static bool MacWndEventProc( a_window wnd, gui_event gui_ev, void *parm )
     return( false );
 }
 
+static bool ChkUpdate( void )
+{
+    return( UpdateFlags & UP_MACRO_CHANGE );
+}
+
 wnd_info MacInfo = {
     MacWndEventProc,
     MacRefresh,
@@ -640,8 +645,7 @@ wnd_info MacInfo = {
     MacNumRows,
     NoNextRow,
     NoNotify,
-    ChkFlags,
-    UP_MACRO_CHANGE,
+    ChkUpdate,
     PopUp( MacMenu )
 };
 

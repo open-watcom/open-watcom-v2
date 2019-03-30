@@ -1008,6 +1008,21 @@ static bool MemWndEventProc( a_window wnd, gui_event gui_ev, void *parm )
     return( false );
 }
 
+static bool ChkUpdateBin( void )
+{
+    return( UpdateFlags & UP_RADIX_CHANGE );
+}
+
+static bool ChkUpdateMem( void )
+{
+    return( UpdateFlags & (UP_RADIX_CHANGE | UP_MEM_CHANGE | UP_SYM_CHANGE | UP_NEW_PROGRAM) );
+}
+
+static bool ChkUpdateStk( void )
+{
+    return( UpdateFlags & (UP_RADIX_CHANGE | UP_MEM_CHANGE | UP_STACKPOS_CHANGE | UP_REG_CHANGE | UP_SYM_CHANGE | UP_NEW_PROGRAM) );
+}
+
 wnd_info BinInfo = {
     MemWndEventProc,
     MemRefresh,
@@ -1020,8 +1035,7 @@ wnd_info BinInfo = {
     NoNumRows,
     NoNextRow,
     NoNotify,
-    ChkFlags,
-    UP_RADIX_CHANGE,
+    ChkUpdateBin,
     PopUp( MemMenu )
 };
 
@@ -1037,8 +1051,7 @@ wnd_info MemInfo = {
     NoNumRows,
     NoNextRow,
     NoNotify,
-    ChkFlags,
-    UP_RADIX_CHANGE | UP_MEM_CHANGE | UP_SYM_CHANGE | UP_NEW_PROGRAM,
+    ChkUpdateMem,
     PopUp( MemMenu )
 };
 
@@ -1054,8 +1067,7 @@ wnd_info StkInfo = {
     NoNumRows,
     NoNextRow,
     NoNotify,
-    ChkFlags,
-    UP_RADIX_CHANGE | UP_MEM_CHANGE | UP_STACKPOS_CHANGE | UP_REG_CHANGE | UP_SYM_CHANGE | UP_NEW_PROGRAM,
+    ChkUpdateStk,
     PopUp( MemMenu )
 };
 

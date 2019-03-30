@@ -29,4 +29,4 @@
 ****************************************************************************/
 
 
-extern void DbgUpdate( update_list flags );
+extern void DbgUpdate( update_flags flags );

@@ -245,6 +245,11 @@ static bool W2WndEventProc( a_window wnd, gui_event gui_ev, void *parm )
     return( false );
 }
 
+static bool ChkUpdate( void )
+{
+    return( WndUpdateFlags & EV_UPDATE_2 );
+}
+
 static wnd_info W2Info = {
     W2WndEventProc,
     W2Refresh,
@@ -257,8 +262,7 @@ static wnd_info W2Info = {
     NoNumRows,
     W2NextRow,
     NoNotify,
-    ChkFlags,
-    EV_UPDATE_2,
+    ChkUpdate,
     PopUp( W2PopUp )
 };
 

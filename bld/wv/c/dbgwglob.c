@@ -183,6 +183,11 @@ void GlobChangeOptions( void )
     WndForAllClass( WND_GLOBALS, GlobSetOptions );
 }
 
+static bool ChkUpdate( void )
+{
+    return( UpdateFlags & UP_SYM_CHANGE );
+}
+
 wnd_info GlobInfo = {
     GlobWndEventProc,
     GlobRefresh,
@@ -195,8 +200,7 @@ wnd_info GlobInfo = {
     GlobNumRows,
     NoNextRow,
     NoNotify,
-    ChkFlags,
-    UP_SYM_CHANGE,
+    ChkUpdate,
     PopUp( GlobMenu )
 };
 
@@ -212,10 +216,4 @@ a_window DoWndGlobOpen( mod_handle mod )
 a_window WndGlobOpen( void )
 {
     return( DoWndGlobOpen( NO_MOD ) );
-}
-
-
-bool ChkFlags( wnd_update_list flags )
-{
-    return( flags & UpdateFlags );
 }

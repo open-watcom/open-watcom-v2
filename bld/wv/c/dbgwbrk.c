@@ -272,7 +272,7 @@ static void     BrkRefresh( a_window wnd )
     brkp        *bp;
     int         row;
 
-    if( UpdateFlags & BrkInfo.flags & ~(UP_OPEN_CHANGE | UP_MEM_CHANGE) ) {
+    if( UpdateFlags & (UP_RADIX_CHANGE | UP_SYM_CHANGE | UP_BREAK_CHANGE) ) {
         BrkInit( wnd );
     } else if( UpdateFlags & UP_MEM_CHANGE ) {
         row = 0;
@@ -323,6 +323,11 @@ static bool BrkWndEventProc( a_window wnd, gui_event gui_ev, void *parm )
     return( false );
 }
 
+static bool ChkUpdate( void )
+{
+    return( UpdateFlags & (UP_MEM_CHANGE | UP_RADIX_CHANGE | UP_SYM_CHANGE | UP_BREAK_CHANGE | UP_OPEN_CHANGE) );
+}
+
 wnd_info BrkInfo = {
     BrkWndEventProc,
     BrkRefresh,
@@ -335,8 +340,7 @@ wnd_info BrkInfo = {
     BrkNumRows,
     NoNextRow,
     NoNotify,
-    ChkFlags,
-    UP_MEM_CHANGE | UP_RADIX_CHANGE | UP_SYM_CHANGE | UP_BREAK_CHANGE | UP_OPEN_CHANGE,
+    ChkUpdate,
     PopUp( BrkMenu )
 };
 

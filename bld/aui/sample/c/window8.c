@@ -74,8 +74,7 @@ static wnd_info W8Info = {
     W8NumRows,
     NoNextRow,
     NoNotify,
-    NoChkFlags,
-    NoUpdateFlags,
+    NoChkUpdate,
     NoPopUp
 };
 

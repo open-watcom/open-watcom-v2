@@ -470,6 +470,11 @@ static bool RegWndEventProc( a_window wnd, gui_event gui_ev, void *parm )
     return( false );
 }
 
+static bool ChkUpdate( void )
+{
+    return( UpdateFlags & (UP_MAD_CHANGE | UP_REG_CHANGE | UP_REG_RESIZE) );
+}
+
 wnd_info MadRegInfo = {
     RegWndEventProc,
     RegRefresh,
@@ -482,8 +487,7 @@ wnd_info MadRegInfo = {
     RegNumRows,
     NoNextRow,
     NoNotify,
-    ChkFlags,
-    UP_MAD_CHANGE | UP_REG_CHANGE | UP_REG_RESIZE,
+    ChkUpdate,
     PopUp( RegMenu )
 };
 

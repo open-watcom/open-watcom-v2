@@ -34,7 +34,7 @@
 #include "watcom.h"
 //#include "stdui.h"
 
-wnd_update_list WndFlags = 0;
+wnd_update_flags    WndUpdateFlags = 0;
 
 #if 0
 these are optional
@@ -66,7 +66,7 @@ void WndStartFreshAll()
 void WndEndFreshAll( void )
 {
     // hook called just after windows are all refreshed
-    WndFlags = 0;
+    WndUpdateFlags = 0;
 }
 
 typedef struct {
@@ -205,8 +205,3 @@ void GUImain( void )
     WndSetIcon( WndMain, &MainIcon );
     WndMainMenuProc( WndMain, MENU_OPEN1 );
 } // returning starts the events rolling
-
-bool ChkFlags( wnd_update_list flags )
-{
-    return( flags & WndFlags );
-}

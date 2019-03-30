@@ -387,7 +387,7 @@ bool DUIInfoRelease( void )
     // used when we're low on memory
     return( false );
 }
-void DUIUpdate( update_list flags )
+void DUIUpdate( update_flags flags )
 {
     // flags indicates what conditions have changed.  They should be saved
     // until an appropriate time, then windows updated accordingly

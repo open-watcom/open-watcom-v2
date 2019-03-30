@@ -231,6 +231,11 @@ static bool RepWndEventProc( a_window wnd, gui_event gui_ev, void *parm )
     return( false );
 }
 
+static bool ChkUpdate( void )
+{
+    return( UpdateFlags & UP_EVENT_CHANGE );
+}
+
 wnd_info RepInfo = {
     RepWndEventProc,
     RepRefresh,
@@ -243,8 +248,7 @@ wnd_info RepInfo = {
     RepNumRows,
     NoNextRow,
     NoNotify,
-    ChkFlags,
-    UP_EVENT_CHANGE,
+    ChkUpdate,
     PopUp( RepMenu )
 };
 

@@ -296,7 +296,7 @@ static void     SrchRefresh( a_window wnd )
     found_item  *found;
     int         i;
 
-    if( ( UpdateFlags & ~UP_OPEN_CHANGE ) & SrchInfo.flags ) {
+    if( UpdateFlags & UP_SYMBOLS_LOST ) {
         if( UpdateFlags & UP_SYMBOLS_LOST ) {
             srch->walk = NoModWalker;
         }
@@ -331,6 +331,11 @@ static bool SrchWndEventProc( a_window wnd, gui_event gui_ev, void *parm )
     return( false );
 }
 
+static bool ChkUpdate( void )
+{
+    return( UpdateFlags & (UP_SYMBOLS_LOST | UP_OPEN_CHANGE) );
+}
+
 wnd_info SrchInfo = {
     SrchWndEventProc,
     SrchRefresh,
@@ -343,8 +348,7 @@ wnd_info SrchInfo = {
     SrchNumRows,
     NoNextRow,
     NoNotify,
-    ChkFlags,
-    UP_SYMBOLS_LOST | UP_OPEN_CHANGE,
+    ChkUpdate,
     PopUp( SrchMenu ),
 };
 

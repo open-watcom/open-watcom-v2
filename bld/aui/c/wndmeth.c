@@ -45,8 +45,7 @@ wnd_info NoInfo = {
     NoNumRows,
     NoNextRow,
     NoNotify,
-    NoChkFlags,
-    NoUpdateFlags,
+    NoChkUpdate,
     NoPopUp
 };
 

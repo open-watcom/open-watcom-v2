@@ -117,8 +117,7 @@ static wnd_info     AboutInfo = {
     AboutNumRows,
     NoNextRow,
     NoNotify,
-    NoChkFlags,
-    NoUpdateFlags,
+    NoChkUpdate,
     NoPopUp,
 };
 

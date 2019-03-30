@@ -262,6 +262,11 @@ static bool ImgWndEventProc( a_window wnd, gui_event gui_ev, void *parm )
     return( false );
 }
 
+static bool ChkUpdate( void )
+{
+    return( UpdateFlags & UP_SYM_CHANGE );
+}
+
 wnd_info ImgInfo = {
     ImgWndEventProc,
     ImgRefresh,
@@ -274,8 +279,7 @@ wnd_info ImgInfo = {
     ImgNumRows,
     NoNextRow,
     NoNotify,
-    ChkFlags,
-    UP_SYM_CHANGE,
+    ChkUpdate,
     PopUp( ImgMenu )
 };
 

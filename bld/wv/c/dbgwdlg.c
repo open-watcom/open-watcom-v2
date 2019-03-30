@@ -222,6 +222,11 @@ static bool DlgWndEventProc( a_window wnd, gui_event gui_ev, void *parm )
     return( false );
 }
 
+static bool ChkUpdate( void )
+{
+    return( UpdateFlags & UP_DLG_WRITTEN );
+}
+
 wnd_info LogInfo = {
     DlgWndEventProc,
     DlgRefresh,
@@ -234,8 +239,7 @@ wnd_info LogInfo = {
     DlgNumRows,
     NoNextRow,
     NoNotify,
-    ChkFlags,
-    UP_DLG_WRITTEN,
+    ChkUpdate,
     NoPopUp
 };
 

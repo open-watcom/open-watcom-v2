@@ -246,6 +246,11 @@ static bool    TrdGetLine( a_window wnd, wnd_row row, wnd_piece piece, wnd_line_
 }
 
 
+static bool ChkUpdate( void )
+{
+    return( UpdateFlags & UP_THREAD_STATE );
+}
+
 wnd_info TrdInfo = {
     NoWndEventProc,
     TrdRefresh,
@@ -258,8 +263,7 @@ wnd_info TrdInfo = {
     TrdNumRows,
     NoNextRow,
     NoNotify,
-    ChkFlags,
-    UP_THREAD_STATE,
+    ChkUpdate,
     PopUp( TrdMenu ),
 };
 

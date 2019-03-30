@@ -136,7 +136,7 @@ static void StopTimer( void )
 #endif
 
 
-void DUIUpdate( update_list flags )
+void DUIUpdate( update_flags flags )
 {
     if( flags & UP_NEW_PROGRAM ) {
         SetTargMenuItems();

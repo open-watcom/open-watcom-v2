@@ -51,7 +51,7 @@
 #include "dbgdot.h"
 
 
-void DbgUpdate( update_list flags )
+void DbgUpdate( update_flags flags )
 {
     mod_handle  prev_mod;
     input_stack *inp;

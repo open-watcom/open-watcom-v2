@@ -115,5 +115,3 @@ extern const char   WndNameTab[];
 extern wnd_macro    *WndMacroList;
 
 extern char         *WndClipItem;
-
-extern void         WndUpdate( update_list );

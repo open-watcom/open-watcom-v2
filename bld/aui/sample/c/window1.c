@@ -77,11 +77,11 @@ static void W1MenuItem( a_window wnd, gui_ctl_id id, wnd_row row, wnd_piece piec
         break;
     case MENU_W1_ALIGN:
         w1->align = true;
-        WndFlags |= EV_UPDATE_1;
+        WndUpdateFlags |= EV_UPDATE_1;
         break;
     case MENU_W1_UNALIGN:
         w1->align = false;
-        WndFlags |= EV_UPDATE_1;
+        WndUpdateFlags |= EV_UPDATE_1;
         break;
     case MENU_W1_SAY:
         Say( w1->rows[row].pieces[piece] );
@@ -90,7 +90,7 @@ static void W1MenuItem( a_window wnd, gui_ctl_id id, wnd_row row, wnd_piece piec
         buff[0]='\0';
         DlgNew( "Enter New Word", buff, 80 );
         Word[RandNum( WORD_SIZE ) - 1] = (char *)strdup( buff ); // nyi - never freed
-        WndFlags |= EV_UPDATE_1;
+        WndUpdateFlags |= EV_UPDATE_1;
         W1Init( wnd );
         break;
     }
@@ -223,6 +223,11 @@ static bool W1WndEventProc( a_window wnd, gui_event gui_ev, void *parm )
     return( false );
 }
 
+static bool ChkUpdate( void )
+{
+    return( WndUpdateFlags & EV_UPDATE_1 );
+}
+
 static wnd_info W1Info = {
     W1WndEventProc,
     W1Refresh,
@@ -235,8 +240,7 @@ static wnd_info W1Info = {
     W1NumRows,
     NoNextRow,
     NoNotify,
-    ChkFlags,
-    EV_UPDATE_1,
+    ChkUpdate,
     PopUp( W1PopUp )
 };
 

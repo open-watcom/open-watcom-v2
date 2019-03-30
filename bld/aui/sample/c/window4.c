@@ -209,8 +209,7 @@ static wnd_info W4Info = {
     W4NumRows,
     NoNextRow,
     NoNotify,
-    NoChkFlags,
-    NoUpdateFlags,
+    NoChkUpdate,
     PopUp( W4PopUp )
 };
 

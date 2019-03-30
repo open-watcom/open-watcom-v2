@@ -312,6 +312,11 @@ void ModChangeOptions( void )
     WndForAllClass( WND_MODULES, ModSetOptions );
 }
 
+static bool ChkUpdate( void )
+{
+    return( UpdateFlags & (UP_SYM_CHANGE | UP_OPEN_CHANGE | UP_CSIP_CHANGE | UP_STACKPOS_CHANGE) );
+}
+
 wnd_info ModInfo = {
     ModWndEventProc,
     ModRefresh,
@@ -324,8 +329,7 @@ wnd_info ModInfo = {
     ModNumRows,
     NoNextRow,
     NoNotify,
-    ChkFlags,
-    UP_SYM_CHANGE | UP_OPEN_CHANGE | UP_CSIP_CHANGE | UP_STACKPOS_CHANGE,
+    ChkUpdate,
     PopUp( ModMenu )
 };
 

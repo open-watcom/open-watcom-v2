@@ -821,6 +821,11 @@ static bool FileWndEventProc( a_window wnd, gui_event gui_ev, void *parm )
     return( false );
 }
 
+static bool ChkUpdate( void )
+{
+    return( UpdateFlags & (UP_NEW_SRC | UP_SYM_CHANGE | UP_CSIP_CHANGE | UP_STACKPOS_CHANGE | UP_BREAK_CHANGE) );
+}
+
 wnd_info FileInfo = {
     FileWndEventProc,
     FileRefresh,
@@ -833,8 +838,7 @@ wnd_info FileInfo = {
     NoNumRows,
     NoNextRow,
     FileNotify,
-    ChkFlags,
-    UP_NEW_SRC | UP_SYM_CHANGE | UP_CSIP_CHANGE | UP_STACKPOS_CHANGE | UP_BREAK_CHANGE,
+    ChkUpdate,
     PopUp( FileMenu )
 };
 

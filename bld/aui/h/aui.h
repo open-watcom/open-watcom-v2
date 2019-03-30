@@ -142,7 +142,6 @@ typedef int             wnd_colidx;
 typedef unsigned char   wnd_piece;
 
 typedef signed char     wnd_class;
-typedef unsigned long   wnd_update_list;
 
 typedef struct wnd_line_piece {
     const char  *text;                  // default ""
@@ -268,7 +267,7 @@ typedef bool        (WNDGETLINE)( a_window wnd, wnd_row row, wnd_piece piece, wn
 typedef void        (WNDNOTIFY)( a_window wnd, wnd_row row, wnd_piece piece );
 typedef void        (WNDBEGPAINT)( a_window wnd, wnd_row row, int num );
 typedef void        (WNDENDPAINT)( a_window wnd, wnd_row row, int num );
-typedef bool        (WNDCHKFLAGS)( wnd_update_list );
+typedef bool        (WNDCHKUPDATE)( void );
 typedef a_window    (WNDOPEN)( void );
 typedef a_window    (WNDCREATE)( char *, struct wnd_info *, wnd_class, void * );
 typedef void        (WNDCLOSE)( a_window );
@@ -287,8 +286,7 @@ typedef struct wnd_info {
     WNDNUMROWS              *numrows;
     WNDNEXTROW              *nextrow;
     WNDNOTIFY               *notify;
-    WNDCHKFLAGS             *chkflags;
-    wnd_update_list         flags;
+    WNDCHKUPDATE            *chkupdate;
     gui_menu_items          popup;
 } wnd_info;
 
@@ -374,7 +372,6 @@ extern bool                 WndSearch( a_window, bool, int );
 extern void                 WndInitNumRows( a_window );
 extern void                 WndRXError( int );
 
-extern void                 WndFreshAll( void );
 extern a_window             WndNext( a_window );
 
 extern wnd_info             NoInfo;
@@ -391,8 +388,7 @@ extern WNDNOTIFY            NoNotify;
 extern WNDNUMROWS           NoNumRows;
 extern WNDNEXTROW           NoNextRow;
 
-#define NoChkFlags          NULL
-#define NoUpdateFlags       0
+#define NoChkUpdate         NULL
 
 extern WNDREFRESH           WndRefresh;
 extern WNDGETLINE           WndGetLine;
@@ -424,8 +420,6 @@ extern void                 Ring( void );
 
 extern void                 WndSysInit( void );
 extern void                 WndDoInput( void );
-extern void                 WndStartFreshAll( void );
-extern void                 WndEndFreshAll( void );
 extern void                 WndZapped( a_window );
 
 extern a_window             WndFindClass( a_window, wnd_class );
@@ -566,6 +560,12 @@ extern char                 WndBackgroundChar;
 
 #define WndMenuFields( x )  (sizeof( x ) / sizeof( *(x) )), x
 extern void                 WndSetMainMenu( gui_menu_items *menus );
+
+/* following function are all window refresh hooks */
+/* may be defined in application otherwise default will be used */
+
+extern void                 WndStartFreshAll( void );
+extern void                 WndEndFreshAll( void );
 
 /* following function may be defined in application otherwise default will be used */
 

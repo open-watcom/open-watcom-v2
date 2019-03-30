@@ -133,8 +133,7 @@ static wnd_info FingInfo = {
     FingNumRows,
     NoNextRow,
     NoNotify,
-    NoChkFlags,
-    NoUpdateFlags,
+    NoChkUpdate,
     NoPopUp,
 };
 
