@@ -87,10 +87,6 @@ struct srch_window {
     bool        use_rx      : 1;
 };
 
-extern wnd_info SrchInfo;
-
-extern unsigned int     InfoSize(mod_handle ,unsigned int, unsigned );
-
 static gui_menu_struct SrchMenu[] = {
     #include "menusrch.h"
 };

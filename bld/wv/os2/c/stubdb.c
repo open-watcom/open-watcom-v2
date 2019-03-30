@@ -470,6 +470,7 @@ bool DUIInfoRelease( void )
     // used when we're low on memory
     return( false );
 }
+
 void DUIUpdate( update_flags flags )
 {
     // flags indicates what conditions have changed.  They should be saved

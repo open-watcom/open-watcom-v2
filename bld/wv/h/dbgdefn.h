@@ -80,32 +80,38 @@ typedef unsigned_8 screen_state; enum {
         USR_SCRN_VISIBLE = 0x08
 };
 
+#ifdef _M_I86
+#define ENUMU32(x)      x ## UL
+#else
+#define ENUMU32(x)      x ## U
+#endif
+
 typedef enum {
-    UP_NO_CHANGE            = 0x00000000UL,
-    UP_MEM_CHANGE           = 0x00000001UL,
-    UP_CSIP_CHANGE          = 0x00000002UL,
-    UP_BREAK_CHANGE         = 0x00000004UL,
-    UP_OPEN_CHANGE          = 0x00000008UL,
-    UP_NEW_SRC              = 0x00000010UL,
-    UP_REG_CHANGE           = 0x00000020UL,
-    UP_RADIX_CHANGE         = 0x00000040UL,
-    UP_CODE_ADDR_CHANGE     = 0x00000080UL,
-    UP_SYMBOLS_LOST         = 0x00000100UL,
-    UP_CODE_EXECUTED        = 0x00000200UL,
-    UP_THREAD_STATE         = 0x00000400UL,
-    UP_SYMBOLS_ADDED        = 0x00000800UL,
-    UP_DLG_WRITTEN          = 0x00001000UL,
-    UP_NEW_PROGRAM          = 0x00002000UL,
-    UP_CLIP_CHANGE          = 0x00004000UL,
-    UP_CSIP_JUMPED          = 0x00008000UL,
-    UP_MACRO_CHANGE         = 0x00010000UL,
-    UP_STACKPOS_CHANGE      = 0x00020000UL,
-    UP_EVENT_CHANGE         = 0x00040000UL,
-    UP_MAD_CHANGE           = 0x00080000UL,
-    UP_REG_RESIZE           = 0x00100000UL,
-    UP_ASM_RESIZE           = 0x00200000UL,
-    UP_VAR_DISPLAY          = 0x00400000UL,
-    UP_ALL_CHANGE           = 0xFFFFFFFFUL,
+    UP_NO_CHANGE            = ENUMU32( 0x00000000 ),
+    UP_MEM_CHANGE           = ENUMU32( 0x00000001 ),
+    UP_CSIP_CHANGE          = ENUMU32( 0x00000002 ),
+    UP_BREAK_CHANGE         = ENUMU32( 0x00000004 ),
+    UP_OPEN_CHANGE          = ENUMU32( 0x00000008 ),
+    UP_NEW_SRC              = ENUMU32( 0x00000010 ),
+    UP_REG_CHANGE           = ENUMU32( 0x00000020 ),
+    UP_RADIX_CHANGE         = ENUMU32( 0x00000040 ),
+    UP_CODE_ADDR_CHANGE     = ENUMU32( 0x00000080 ),
+    UP_SYMBOLS_LOST         = ENUMU32( 0x00000100 ),
+    UP_CODE_EXECUTED        = ENUMU32( 0x00000200 ),
+    UP_THREAD_STATE         = ENUMU32( 0x00000400 ),
+    UP_SYMBOLS_ADDED        = ENUMU32( 0x00000800 ),
+    UP_DLG_WRITTEN          = ENUMU32( 0x00001000 ),
+    UP_NEW_PROGRAM          = ENUMU32( 0x00002000 ),
+    UP_CLIP_CHANGE          = ENUMU32( 0x00004000 ),
+    UP_CSIP_JUMPED          = ENUMU32( 0x00008000 ),
+    UP_MACRO_CHANGE         = ENUMU32( 0x00010000 ),
+    UP_STACKPOS_CHANGE      = ENUMU32( 0x00020000 ),
+    UP_EVENT_CHANGE         = ENUMU32( 0x00040000 ),
+    UP_MAD_CHANGE           = ENUMU32( 0x00080000 ),
+    UP_REG_RESIZE           = ENUMU32( 0x00100000 ),
+    UP_ASM_RESIZE           = ENUMU32( 0x00200000 ),
+    UP_VAR_DISPLAY          = ENUMU32( 0x00400000 ),
+    UP_ALL_CHANGE           = ENUMU32( 0xFFFFFFFF ),
 
     UP_SYM_CHANGE           = (UP_SYMBOLS_LOST | UP_SYMBOLS_ADDED)
 } update_flags;
