@@ -30,6 +30,11 @@
 ****************************************************************************/
 
 
+#ifdef _M_I86
+#define ENUMU32(x)      x ## UL
+#else
+#define ENUMU32(x)      x ## U
+#endif
 
 typedef unsigned long linkflag;
 
@@ -82,37 +87,38 @@ typedef enum mapflag {
     MAP_LINES           = 0x0080        // put line numbers in map file
 } mapflag;
 
-typedef unsigned long stateflag;
 
-#define MAKE_RELOCS             0x00000001
-#define SEARCHING_LIBRARIES     0x00000002
-#define LIBRARIES_ADDED         0x00000004
-#define LINK_ERROR              0x00000008
-#define FMT_SPECIFIED           0x00000010
-#define FMT_DECIDED             0x00000020
-#define FMT_SEEN_32_BIT         0x00000040
-#define FMT_SEEN_IMPORT_CMT     0x00000080
-#define PROC_LIBS_ADDED         0x00000100
-#define FMT_INITIALIZED         0x00000200
-#define UNDEFED_SYM_ERROR       0x00000400
-#define GENERATE_LIB_LIST       0x00000800
-#define HAVE_16BIT_CODE         0x00001000      // true if we have 16 bit code.
-#define HAVE_ALPHA_CODE         0x00002000
-#define HAVE_PPC_CODE           0x00004000
-#define HAVE_I86_CODE           0x00008000
-#define HAVE_MIPS_CODE          0x00010000
-#define HAVE_X64_CODE           0x00020000
-#define CAN_REMOVE_SEGMENTS     0x00040000
-#define STOP_WORKING            0x00080000      // IDE wants us to stop now
-#define INTERNAL_DEBUG          0x00100000
-#define GOT_PREV_STRUCTS        0x00200000
-#define DOSSEG_FLAG             0x00400000
-#define SPEC_ORDER_FLAG         0x00800000
-#define FMT_SEEN_64_BIT         0x01000000
+typedef enum {
+    MAKE_RELOCS             ENUMU32( 0x00000001 ),
+    SEARCHING_LIBRARIES     ENUMU32( 0x00000002 ),
+    LIBRARIES_ADDED         ENUMU32( 0x00000004 ),
+    LINK_ERROR              ENUMU32( 0x00000008 ),
+    FMT_SPECIFIED           ENUMU32( 0x00000010 ),
+    FMT_DECIDED             ENUMU32( 0x00000020 ),
+    FMT_SEEN_32_BIT         ENUMU32( 0x00000040 ),
+    FMT_SEEN_IMPORT_CMT     ENUMU32( 0x00000080 ),
+    PROC_LIBS_ADDED         ENUMU32( 0x00000100 ),
+    FMT_INITIALIZED         ENUMU32( 0x00000200 ),
+    UNDEFED_SYM_ERROR       ENUMU32( 0x00000400 ),
+    GENERATE_LIB_LIST       ENUMU32( 0x00000800 ),
+    HAVE_16BIT_CODE         ENUMU32( 0x00001000 ),  // true if we have 16 bit code.
+    HAVE_ALPHA_CODE         ENUMU32( 0x00002000 ),
+    HAVE_PPC_CODE           ENUMU32( 0x00004000 ),
+    HAVE_I86_CODE           ENUMU32( 0x00008000 ),
+    HAVE_MIPS_CODE          ENUMU32( 0x00010000 ),
+    HAVE_X64_CODE           ENUMU32( 0x00020000 ),
+    CAN_REMOVE_SEGMENTS     ENUMU32( 0x00040000 ),
+    STOP_WORKING            ENUMU32( 0x00080000 ),  // IDE wants us to stop now
+    INTERNAL_DEBUG          ENUMU32( 0x00100000 ),
+    GOT_PREV_STRUCTS        ENUMU32( 0x00200000 ),
+    DOSSEG_FLAG             ENUMU32( 0x00400000 ),
+    SPEC_ORDER_FLAG         ENUMU32( 0x00800000 ),
+    FMT_SEEN_64_BIT         ENUMU32( 0x01000000 ),
 
-#define HAVE_MACHTYPE_MASK      (HAVE_I86_CODE | HAVE_X64_CODE | HAVE_ALPHA_CODE | HAVE_PPC_CODE | HAVE_MIPS_CODE)
-#define CLEAR_ON_INC    (STOP_WORKING | INTERNAL_DEBUG | GOT_PREV_STRUCTS | MAKE_RELOCS | FMT_SPECIFIED | FMT_DECIDED | FMT_INITIALIZED)
-#define ORDER_FLAG_MASK (DOSSEG_FLAG | SPEC_ORDER_FLAG)
+    HAVE_MACHTYPE_MASK      = (HAVE_I86_CODE | HAVE_X64_CODE | HAVE_ALPHA_CODE | HAVE_PPC_CODE | HAVE_MIPS_CODE),
+    CLEAR_ON_INC            = (STOP_WORKING | INTERNAL_DEBUG | GOT_PREV_STRUCTS | MAKE_RELOCS | FMT_SPECIFIED | FMT_DECIDED | FMT_INITIALIZED),
+    ORDER_FLAG_MASK         = (DOSSEG_FLAG | SPEC_ORDER_FLAG)
+} stateflag;
 
 // this used for ID splits.
 

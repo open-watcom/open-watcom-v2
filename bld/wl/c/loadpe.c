@@ -245,8 +245,8 @@ static void XFerReloc( offset off, group_entry *group, unsigned type )
     WriteReloc( group, off, &reloc, size );
 }
 
-static int GetTransferGlueSize( int lnk_state )
-/*********************************************/
+static int GetTransferGlueSize( stateflag lnk_state )
+/***************************************************/
 {
     switch( lnk_state & HAVE_MACHTYPE_MASK ) {
     case HAVE_ALPHA_CODE:   return( ALPHA_TRANSFER_SIZE );
@@ -257,8 +257,8 @@ static int GetTransferGlueSize( int lnk_state )
     }
 }
 
-static void *GetTransferGlueCode( int lnk_state )
-/***********************************************/
+static void *GetTransferGlueCode( stateflag lnk_state )
+/*****************************************************/
 {
     switch( lnk_state & HAVE_MACHTYPE_MASK ) {
     case HAVE_ALPHA_CODE:   return( &AlphaJump );

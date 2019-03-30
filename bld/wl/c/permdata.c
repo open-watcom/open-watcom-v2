@@ -574,7 +574,7 @@ void WritePermData( void )
     hdr.rootmodidx = (cv_index)(pointer_int)CarveGetIndex( CarveModEntry, Root->mods );
     hdr.headsymidx = (cv_index)(pointer_int)CarveGetIndex( CarveSymbol, HeadSym );
     hdr.libmodidx = (cv_index)(pointer_int)CarveGetIndex( CarveModEntry, LibModules );
-    hdr.linkstate = LinkState & ~CLEAR_ON_INC;
+    hdr.linkstate = (unsigned_32)( LinkState & ~CLEAR_ON_INC );
     hdr.relocsize = SizeRelocs;
     PrepStartValue( &hdr );
     QSeek( info.incfhdl, 0, IncFileName );
@@ -917,7 +917,7 @@ void ReadPermData( void )
     Root->mods = CarveMapIndex( CarveModEntry, (void *)(pointer_int)hdr->rootmodidx );
     HeadSym = CarveMapIndex( CarveSymbol, (void *)(pointer_int)hdr->headsymidx );
     LibModules = CarveMapIndex( CarveModEntry, (void *)(pointer_int)hdr->libmodidx );
-    LinkState = hdr->linkstate | GOT_PREV_STRUCTS | (LinkState & CLEAR_ON_INC);
+    LinkState = (stateflag)hdr->linkstate | GOT_PREV_STRUCTS | (LinkState & CLEAR_ON_INC);
     ReadStartInfo( hdr );
     _LnkFree( info.buffer );
 }
