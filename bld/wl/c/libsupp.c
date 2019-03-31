@@ -98,7 +98,7 @@ bool LibFind( const char *name, bool old_sym )
     DEBUG(( DBG_OLD, "LibFind( %s )", name ));
     isimpsym = (FmtData.type & MK_PE) && memcmp( name, ImportSymPrefix, PREFIX_LEN ) == 0;
     for( lib = ObjLibFiles; lib != NULL; lib = lib->next_file ) {
-        if( lib->file->status & INSTAT_IOERR )
+        if( lib->infile->status & INSTAT_IOERR )
             continue;
         if( old_sym && (lib->flags & STAT_OLD_LIB) )
             continue;

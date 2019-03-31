@@ -35,26 +35,25 @@ typedef enum linkflag {
     LF_STK_SIZE_FLAG        = CONSTU32( 0x00000002 ),
     LF_GOT_CHGD_FILES       = CONSTU32( 0x00000004 ),
     LF_TRACE_FLAG           = CONSTU32( 0x00000008 ),
-    LF___UNUSED_FLAG_0      = CONSTU32( 0x00000010 ),
-    LF_CV_DBI_FLAG          = CONSTU32( 0x00000020 ),
-    LF_UNDEFS_ARE_OK        = CONSTU32( 0x00000040 ),
-    LF_REDEFS_OK            = CONSTU32( 0x00000080 ),
-    LF_QUIET_FLAG           = CONSTU32( 0x00000100 ),
-    LF_PACKCODE_FLAG        = CONSTU32( 0x00000200 ),   // set if packcode specified
-    LF_VF_REMOVAL           = CONSTU32( 0x00000400 ),
-    LF_NOVELL_DBI_FLAG      = CONSTU32( 0x00000800 ),   // set if generating novell debug info
-    LF_PACKDATA_FLAG        = CONSTU32( 0x00001000 ),
-    LF_CASE_FLAG            = CONSTU32( 0x00002000 ),   // set for case sensitive operation
-    LF_OLD_DBI_FLAG         = CONSTU32( 0x00004000 ),   // set if making WATCOM debug info
-    LF_SHOW_DEAD            = CONSTU32( 0x00008000 ),
-    LF_STRIP_CODE           = CONSTU32( 0x00010000 ),   // strip dead code.
-    LF_CVPACK_FLAG          = CONSTU32( 0x00020000 ),
-    LF_MAX_ERRORS_FLAG      = CONSTU32( 0x00040000 ),   // there is a max. number of errors.
-    LF_DONT_UNMANGLE        = CONSTU32( 0x00080000 ),   // don't unmangle the names
-    LF_INC_LINK_FLAG        = CONSTU32( 0x00100000 ),
-    LF_NOCACHE_FLAG         = CONSTU32( 0x00200000 ),
-    LF_CACHE_FLAG           = CONSTU32( 0x00400000 ),
-    LF_FAR_CALLS_FLAG       = CONSTU32( 0x00800000 ),   // optimize far calls
+    LF_CV_DBI_FLAG          = CONSTU32( 0x00000010 ),
+    LF_UNDEFS_ARE_OK        = CONSTU32( 0x00000020 ),
+    LF_REDEFS_OK            = CONSTU32( 0x00000040 ),
+    LF_QUIET_FLAG           = CONSTU32( 0x00000080 ),
+    LF_PACKCODE_FLAG        = CONSTU32( 0x00000100 ),   // set if packcode specified
+    LF_VF_REMOVAL           = CONSTU32( 0x00000200 ),
+    LF_NOVELL_DBI_FLAG      = CONSTU32( 0x00000400 ),   // set if generating novell debug info
+    LF_PACKDATA_FLAG        = CONSTU32( 0x00000800 ),
+    LF_CASE_FLAG            = CONSTU32( 0x00001000 ),   // set for case sensitive operation
+    LF_OLD_DBI_FLAG         = CONSTU32( 0x00002000 ),   // set if making WATCOM debug info
+    LF_SHOW_DEAD            = CONSTU32( 0x00004000 ),
+    LF_STRIP_CODE           = CONSTU32( 0x00008000 ),   // strip dead code.
+    LF_CVPACK_FLAG          = CONSTU32( 0x00010000 ),
+    LF_MAX_ERRORS_FLAG      = CONSTU32( 0x00020000 ),   // there is a max. number of errors.
+    LF_DONT_UNMANGLE        = CONSTU32( 0x00040000 ),   // don't unmangle the names
+    LF_INC_LINK_FLAG        = CONSTU32( 0x00080000 ),
+    LF_NOCACHE_FLAG         = CONSTU32( 0x00100000 ),
+    LF_CACHE_FLAG           = CONSTU32( 0x00200000 ),
+    LF_FAR_CALLS_FLAG       = CONSTU32( 0x00400000 ),   // optimize far calls
 } linkflag;
 
 // Novell treated differently, as it can be generated at the same time as the others.
@@ -114,21 +113,21 @@ typedef enum stateflag {
 
 /*  Object file formats & flags */
 typedef enum obj_format {
+    /* bits 0..4 is available (used by DBI_xxxx symbols ) */
     FMT_EASY_OMF            = 0x0001,
     FMT_MS_386              = 0x0002,
-    FMT_UNUSED_3            = 0x0004,
-    FMT_IS_LIDATA           = 0x0008,   // true if last data was lidata
-    FMT_TOLD_XXBIT          = 0x0010,   // already said object was xx-bit
-    FMT_IGNORE_FIXUPP       = 0x0020,   // don't process a fixup record
-    FMT_UNSAFE_FIXUPP       = 0x0040,   // don't optimize calls in current fixupp
-    FMT_UNUSED_1            = 0x0080,
+    FMT_IS_LIDATA           = 0x0004,   // true if last data was lidata
+    FMT_TOLD_BITNESS        = 0x0008,   // already said object was 16/32/64-bit
+    FMT_DEBUG_COMENT        = 0x0010,   // saw an object debug coment.
+    /* bits 5..7 are reserved for FMT_xxxx symbols (for deciding .obj format) */
     FMT_PE_XFER             = 0x0000,   // .obj is PE xfer code segment(see note)
-    FMT_OMF                 = 0x0100,   // .obj is an OMF object file (see note)
-    FMT_COFF                = 0x0200,   // .obj is a COFF object file (see note)
-    FMT_ELF                 = 0x0300,   // .obj is an ELF object file (see note)
-    FMT_INCREMENTAL         = 0x0400,   // .obj is saved inc. linking info
-    FMT_UNUSED_2            = 0x0800,
-    FMT_DEBUG_COMENT        = 0x1000,   // saw an object debug coment.
+    FMT_OMF                 = 0x0020,   // .obj is an OMF object file (see note)
+    FMT_COFF                = 0x0040,   // .obj is a COFF object file (see note)
+    FMT_ELF                 = 0x0060,   // .obj is an ELF object file (see note)
+    FMT_INCREMENTAL         = 0x0080,   // .obj is saved inc. linking info
+    /* bits 8..max is available, not shared with other types */
+    FMT_IGNORE_FIXUPP       = 0x0100,   // don't process a fixup record
+    FMT_UNSAFE_FIXUPP       = 0x0200,   // don't optimize calls in current fixupp
 } obj_format;
 
 /* NOTE:  these are also stored into the
@@ -139,7 +138,7 @@ typedef enum obj_format {
 #define FMT_32BIT_REC           (FMT_EASY_OMF | FMT_MS_386)
 
 #define FMT_OBJ_FMT_MASK        (FMT_PE_XFER | FMT_OMF | FMT_COFF | FMT_ELF | FMT_INCREMENTAL)
-#define FMT_IDX_SHIFT           8
+#define FMT_IDX_SHIFT           5
 #define GET_FMT_IDX(x)          (((x) & FMT_OBJ_FMT_MASK) >> FMT_IDX_SHIFT)
 #define IS_FMT_ORL(x)           (((x) & FMT_OBJ_FMT_MASK) >= FMT_COFF)
 #define IS_FMT_OMF(x)           (((x) & FMT_OBJ_FMT_MASK) == FMT_OMF)

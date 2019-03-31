@@ -128,7 +128,8 @@ typedef struct infilelist {
 } infilelist;
 
 typedef enum dbi_flags {
-    DBI_LINE            = 0x0001,    /*  values for DBIFlag */
+    /* bits 0..4 are reserved for DBI_xxxx symbols */
+    DBI_LINE            = 0x0001,
     DBI_TYPE            = 0x0002,
     DBI_LOCAL           = 0x0004,
     DBI_ONLY_EXPORTS    = 0x0008,
@@ -139,17 +140,19 @@ typedef enum dbi_flags {
 #define DBI_MASK        (DBI_ALL | DBI_ONLY_EXPORTS)
 
 typedef enum file_flags {
-    STAT_HAS_CHANGED    = CONSTU32( 0x00000040 ),
-    STAT_OMF_LIB        = CONSTU32( 0x00000080 ),
-    STAT_AR_LIB         = CONSTU32( 0x00000100 ),
-    STAT_LAST_SEG       = CONSTU32( 0x00000200 ),   // set by newsegment option
-    STAT_TRACE_SYMS     = CONSTU32( 0x00000400 ),
-    STAT_LIB_FIXED      = CONSTU32( 0x00000800 ),
-    STAT_OLD_LIB        = CONSTU32( 0x00001000 ),
-    STAT_LIB_USED       = CONSTU32( 0x00002000 ),
-    STAT_SEEN_LIB       = CONSTU32( 0x00004000 ),
-    STAT_HAS_MEMBER     = CONSTU32( 0x00008000 ),
-    STAT_USER_SPECD     = CONSTU32( 0x00010000 )
+    /* bits 0..4 are reserved for DBI_xxxx symbols */
+    /* bits 5..max is not shared with other types */
+    STAT_HAS_CHANGED    = 0x0020,
+    STAT_OMF_LIB        = 0x0040,
+    STAT_AR_LIB         = 0x0080,
+    STAT_LAST_SEG       = 0x0100,    // set by newsegment option
+    STAT_TRACE_SYMS     = 0x0200,
+    STAT_LIB_FIXED      = 0x0400,
+    STAT_OLD_LIB        = 0x0800,
+    STAT_LIB_USED       = 0x1000,
+    STAT_SEEN_LIB       = 0x2000,
+    STAT_HAS_MEMBER     = 0x4000,
+    STAT_USER_SPECD     = 0x8000
 } file_flags;
 
 #define STAT_IS_LIB     (STAT_AR_LIB | STAT_OMF_LIB)
@@ -169,7 +172,7 @@ typedef enum lib_priorities {
 
 typedef struct file_list {
     FILE_LIST           *next_file;
-    infilelist          *file;
+    infilelist          *infile;
     union {
         union dict_entry    *dict;
         MEMBER_LIST         *member;
@@ -191,19 +194,20 @@ typedef struct trace_info {
     bool                found;
 } trace_info;
 
-typedef enum {
-    // DBI_xxxx symbols are also stored here.
-    // FMT_xxxx symbols (for deciding .obj format) are also stored here
-    MOD_DBI_SEEN        = CONSTU32( 0x00000800 ),   // true if dbi segment seen in this mod.
-    MOD_FIXED           = CONSTU32( 0x00001000 ),   // true if mod must stay in spec'd section
-    MOD_VISITED         = CONSTU32( 0x00002000 ),   // true if visited in call graph analysis.
-    MOD_NEED_PASS_2     = CONSTU32( 0x00004000 ),   // true if pass 2 needed for this module.
-    MOD_LAST_SEG        = CONSTU32( 0x00008000 ),   // true if this module should end a group
-    MOD_GOT_NAME        = CONSTU32( 0x00010000 ),   // true if already got a source file name
-    MOD_IMPORT_LIB      = CONSTU32( 0x00020000 ),   // ORL: true if this is an import lib.
-    MOD_KILL            = CONSTU32( 0x00040000 ),   // module should be removed from list
-    MOD_FLATTEN_DBI     = CONSTU32( 0x00080000 ),   // flatten DBI found in this mod.
-    MOD_DONE_PASS_1     = CONSTU32( 0x00100000 ),   // module been through pass 1 already.
+typedef enum module_flags {
+    /* bits 0..4 are reserved for DBI_xxxx symbols */
+    /* bits 5..7 are reserved for FMT_xxxx symbols (for deciding .obj format) */
+    /* bits 8..max is available, not shared with other types */
+    MOD_DBI_SEEN        = CONSTU32( 0x00000100 ),   // true if dbi segment seen in this mod.
+    MOD_FIXED           = CONSTU32( 0x00000200 ),   // true if mod must stay in spec'd section
+    MOD_VISITED         = CONSTU32( 0x00000400 ),   // true if visited in call graph analysis.
+    MOD_NEED_PASS_2     = CONSTU32( 0x00000800 ),   // true if pass 2 needed for this module.
+    MOD_LAST_SEG        = CONSTU32( 0x00001000 ),   // true if this module should end a group
+    MOD_GOT_NAME        = CONSTU32( 0x00002000 ),   // true if already got a source file name
+    MOD_IMPORT_LIB      = CONSTU32( 0x00004000 ),   // ORL: true if this is an import lib.
+    MOD_KILL            = CONSTU32( 0x00008000 ),   // module should be removed from list
+    MOD_FLATTEN_DBI     = CONSTU32( 0x00010000 ),   // flatten DBI found in this mod.
+    MOD_DONE_PASS_1     = CONSTU32( 0x00020000 ),   // module been through pass 1 already.
     MOD_IS_FREE         = CONSTU32( 0x80000000 ),   // used for marking carve free blocks
 } module_flags;
 

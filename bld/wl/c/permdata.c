@@ -284,7 +284,7 @@ static void PrepModEntry( void *_mod, void *info )
     mod->segs = CarveGetIndex( CarveSegData, mod->segs );
     mod->modinfo &= ~MOD_CLEAR_ON_INC;
     if( mod->f.source != NULL ) {
-        mod->f.fname = mod->f.source->file->name;
+        mod->f.fname = mod->f.source->infile->name;
     }
 }
 
@@ -366,12 +366,12 @@ static void PrepNameTable( obj_name_list *list, perm_write_info *info )
 static void PrepFileList( perm_write_info *info )
 /***********************************************/
 {
-    infilelist  *list;
+    infilelist  *infile;
     char        new_name[ PATH_MAX ];
 
-    for( list = CachedFiles; list != NULL; list = list->next ) {
-        MakeFileName( list, new_name );
-        list->name.u.offs = GetString( info, new_name );
+    for( infile = CachedFiles; infile != NULL; infile = infile->next ) {
+        MakeFileName( infile, new_name );
+        infile->name.u.offs = GetString( info, new_name );
     }
 }
 
@@ -514,7 +514,7 @@ static unsigned_32 WriteLibList( perm_write_info *info, bool douser )
     numlibs = 0;
     for( file = ObjLibFiles; file != NULL; file = file->next_file ) {
         if( (((file->flags & STAT_USER_SPECD) != 0) ^ douser) == 0 ) {
-            U32WritePermFile( info, GetString( info, file->file->name.u.ptr ) );
+            U32WritePermFile( info, GetString( info, file->infile->name.u.ptr ) );
             BufWritePermFile( info, &file->priority, sizeof( file->priority ) );
             numlibs++;
         }

@@ -428,7 +428,7 @@ static void PrintSect( section *sect )
             DEBUG(( DBG_OLD, "\"Non-section\"" ));
         }
         for( list = sect->files; list != NULL; list = list->next_file ) {
-            DEBUG(( DBG_OLD, "%s", list->file->name ));
+            DEBUG(( DBG_OLD, "%s", list->infile->name ));
         }
         PrintAreas( sect->areas );
     }

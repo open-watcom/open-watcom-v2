@@ -325,7 +325,7 @@ list_of_names *MakeListName( char *name, size_t len )
 unsigned long BadObjFormat( void )
 /***************************************/
 {
-    LnkMsg( FTL+MSG_BAD_OBJECT, "s", CurrMod->f.source->file->name );
+    LnkMsg( FTL+MSG_BAD_OBJECT, "s", CurrMod->f.source->infile->name );
     return( 0 );
 }
 

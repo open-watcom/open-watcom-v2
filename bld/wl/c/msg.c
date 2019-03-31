@@ -377,7 +377,7 @@ static void LocateFile( unsigned num )
                 Locator( CmdFile->name, NULL, 0 );
             }
          } else {
-            Locator( CurrMod->f.source->file->name.u.ptr, CurrMod->name.u.ptr, rec );
+            Locator( CurrMod->f.source->infile->name.u.ptr, CurrMod->name.u.ptr, rec );
         }
     }
 }

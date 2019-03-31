@@ -345,7 +345,7 @@ void WritePubModHead( void )
     if ( CurrMod->f.source == NULL ) {
         strcpy( full_name, CurrMod->name.u.ptr );
     } else {
-        MakeFileName( CurrMod->f.source->file, full_name );
+        MakeFileName( CurrMod->f.source->infile, full_name );
     }
     Msg_Write_Map( MSG_MAP_DEFINING_MODULE, full_name, CurrMod->name.u.ptr );
 }
@@ -788,10 +788,10 @@ static void PrintUndefined( void *_info )
     mod_entry   *mod;
 
     mod = info->mod;
-    LnkMsg( YELL+MSG_UNDEF_SYM, "12S", mod->f.source->file->name, mod->name,
+    LnkMsg( YELL+MSG_UNDEF_SYM, "12S", mod->f.source->infile->name, mod->name,
                                        info->sym );
     WriteFormat( 0, "%S", info->sym );
-    WriteFormat( 32, "%s(%s)", mod->f.source->file->name, mod->name );
+    WriteFormat( 32, "%s(%s)", mod->f.source->infile->name, mod->name );
     WriteMapNL( 1 );
 }
 
@@ -853,7 +853,7 @@ void WriteLibsUsed( void )
         WriteBox( MSG_MAP_BOX_LIB_USED );
         for( lib = ObjLibFiles; lib != NULL; lib = lib->next_file ) {
             if( lib->flags & STAT_LIB_USED ) {
-                MakeFileName( lib->file, new_name );
+                MakeFileName( lib->infile, new_name );
                 WriteMap( "%s", new_name );
             }
         }

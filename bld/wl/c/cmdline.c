@@ -871,11 +871,11 @@ void AddLibPaths( const char *path_list, size_t len, bool add_to_front )
     }
     if( UsrLibPath == newpath ) {
         for( libfiles = ObjLibFiles; libfiles != NULL; libfiles = libfiles->next_file ) {
-            libfiles->file->path_list = UsrLibPath;
+            libfiles->infile->path_list = UsrLibPath;
         }
         for( libfiles = Root->files; libfiles != NULL; libfiles = libfiles->next_file ) {
-            if( libfiles->file->status & INSTAT_USE_LIBPATH ) {
-                libfiles->file->path_list = UsrLibPath;
+            if( libfiles->infile->status & INSTAT_USE_LIBPATH ) {
+                libfiles->infile->path_list = UsrLibPath;
             }
         }
     }

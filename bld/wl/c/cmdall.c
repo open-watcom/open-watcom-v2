@@ -330,7 +330,7 @@ static void *AddObjFile( const char *name, char *member, file_list **filelist )
         new_member->next = NULL;
         _LnkFree( member );
         for( new_entry = CurrSect->files; new_entry != NULL; new_entry = new_entry->next_file ) {
-            if( FNAMECMPSTR( new_entry->file->name.u.ptr, name ) == 0 ) {
+            if( FNAMECMPSTR( new_entry->infile->name.u.ptr, name ) == 0 ) {
                 CmdFlags |= CF_MEMBER_ADDED;
                 if( new_entry->u.member != NULL ) {
                     LinkList( &new_entry->u.member, new_member );
@@ -344,10 +344,10 @@ static void *AddObjFile( const char *name, char *member, file_list **filelist )
     }
     new_entry = AllocNewFile( new_member );
     if( new_member != NULL ) {
-        new_entry->file = AllocUniqueFileEntry( name, UsrLibPath );
-        new_entry->file->status |= INSTAT_LIBRARY;
+        new_entry->infile = AllocUniqueFileEntry( name, UsrLibPath );
+        new_entry->infile->status |= INSTAT_LIBRARY;
     } else {
-        new_entry->file = AllocFileEntry( name, ObjPath );
+        new_entry->infile = AllocFileEntry( name, ObjPath );
     }
     *filelist = new_entry;
     return( new_entry );
@@ -367,14 +367,14 @@ file_list *AddObjLib( const char *name, lib_priority priority )
         if( lib->priority < priority )
             break;
         /* end search if library already exists with same or a higher priority */
-        if( FNAMECMPSTR( lib->file->name.u.ptr, name ) == 0 ) {
+        if( FNAMECMPSTR( lib->infile->name.u.ptr, name ) == 0 ) {
             return( lib );
         }
     }
     new_owner = owner;
     /* search for library definition with a lower priority */
     for( ; (lib = *owner) != NULL; owner = &lib->next_file ) {
-        if( FNAMECMPSTR( lib->file->name.u.ptr, name ) == 0 ) {
+        if( FNAMECMPSTR( lib->infile->name.u.ptr, name ) == 0 ) {
             /* remove library entry from linked list */
             *owner = lib->next_file;
             break;
@@ -383,8 +383,8 @@ file_list *AddObjLib( const char *name, lib_priority priority )
     /* if we need to add one */
     if( lib == NULL ) {
         lib = AllocNewFile( NULL );
-        lib->file = AllocUniqueFileEntry( name, UsrLibPath );
-        lib->file->status |= INSTAT_LIBRARY | INSTAT_OPEN_WARNING;
+        lib->infile = AllocUniqueFileEntry( name, UsrLibPath );
+        lib->infile->status |= INSTAT_LIBRARY | INSTAT_OPEN_WARNING;
         LinkState |= LS_LIBRARIES_ADDED;
     }
     /* put it to new position and setup priority */
@@ -411,14 +411,14 @@ static bool AddLibFile( void )
         return( true );
     }
     entry = AllocNewFile( NULL );
-    entry->file = AllocFileEntry( ptr, UsrLibPath );
+    entry->infile = AllocFileEntry( ptr, UsrLibPath );
     entry->next_file = *LastLibFile;
     *LastLibFile = entry;
     LastLibFile = &entry->next_file;
     if( *LastLibFile == NULL ) {        // no file directives found yet
         CurrFList = LastLibFile;
     }
-    entry->file->status |= INSTAT_USE_LIBPATH;
+    entry->infile->status |= INSTAT_USE_LIBPATH;
     _LnkFree( ptr );
     return( true );
 }
@@ -517,7 +517,7 @@ static bool AddLib( void )
         }
     }
     if( CmdFlags & CF_DOING_OPTLIB ) {
-        result->file->status |= INSTAT_NO_WARNING;
+        result->infile->status |= INSTAT_NO_WARNING;
     }
     DEBUG(( DBG_BASE, "library: %s", ptr ));
     _LnkFree( ptr );

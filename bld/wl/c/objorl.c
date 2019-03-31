@@ -107,7 +107,7 @@ static int ORLSeek( FILE *fp, long pos, int where )
     } else if( where == SEEK_CUR ) {
         ORLPos += pos;
     } else {
-        ORLPos = FP2FL( fp )->file->len - ORLFilePos - pos;
+        ORLPos = FP2FL( fp )->infile->len - ORLFilePos - pos;
     }
     return( 0 );
 }
@@ -136,7 +136,7 @@ static long ORLFileSeek( file_list *list, long pos, int where )
     } else if( where == SEEK_CUR ) {
         ORLFilePos += pos;
     } else {
-        ORLFilePos = list->file->len - pos;
+        ORLFilePos = list->infile->len - pos;
     }
     return( ORLFilePos + ORLPos );
 }
@@ -253,7 +253,7 @@ static bool CheckFlags( orl_file_handle filehdl )
     test = (typemask | LinkState) & LS_HAVE_MACHTYPE_MASK;
     test &= test - 1;           // turn off one bit
     if( test != 0 ) {   // multiple bits were turned on.
-        LnkMsg( WRN+MSG_MACHTYPE_DIFFERENT, "s", CurrMod->f.source->file->name.u.ptr );
+        LnkMsg( WRN+MSG_MACHTYPE_DIFFERENT, "s", CurrMod->f.source->infile->name.u.ptr );
     } else {
         LinkState |= typemask;
     }
@@ -925,8 +925,8 @@ unsigned long ORLPass1( void )
     PermStartMod( CurrMod );
     filehdl = InitFile();
     if( filehdl == NULL ) {
-        LnkMsg( FTL+MSG_BAD_OBJECT, "s", CurrMod->f.source->file->name.u.ptr );
-        CurrMod->f.source->file->status |= INSTAT_IOERR;
+        LnkMsg( FTL+MSG_BAD_OBJECT, "s", CurrMod->f.source->infile->name.u.ptr );
+        CurrMod->f.source->infile->status |= INSTAT_IOERR;
         return( (unsigned long)-1 );
     }
     if( CheckFlags( filehdl ) ) {
