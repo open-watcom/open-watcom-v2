@@ -119,9 +119,9 @@ typedef enum {
 
 #define SYM_FFIX        (SYM_VF_MARKED | SYM_DCE_REF | SYM_VF_REFS_DONE)
 
-#define SYM_CLEAR_ON_P2  /* 0xE00000A0 bits to clear before pass 2 starts. */ \
+#define SYM_CLEAR_ON_P2  /* 0xE00000A0 flags to clear before pass 2 starts. */ \
     (SYM_OLDHAT | SYM_CHECKED | SYM_MAP_GLOBAL | SYM_FFIX)
-#define SYM_CLEAR_ON_INC /* 0x010404F0 bits to clear when incremental linking. */ \
+#define SYM_CLEAR_ON_INC /* 0x010404F0 flags to clear when incremental linking. */ \
     (SYM_DEAD | SYM_FREE_ALIAS | SYM_OLDHAT | SYM_REFERENCED | SYM_CHECKED | SYM_MAP_GLOBAL | SYM_TRACE | SYM_RELOC_REFD | SYM_NAME_XLATED)
 #define SYM_CLEAR_ON_ALT /* 0x00980010 */ \
     (SYM_DEAD | SYM_FREE_ALIAS | SYM_KILL | SYM_IS_ALTDEF | SYM_HAS_DATA)
