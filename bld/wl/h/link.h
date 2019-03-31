@@ -113,19 +113,19 @@ typedef enum stateflag {
 
 /*  Object file formats & flags */
 typedef enum obj_format {
-    /* bits 0..4 is available (used by DBI_xxxx symbols ) */
+    /* bits 0..4 available (bits 0..4 reserved for DBI_xxxx symbols, not used here) */
     FMT_EASY_OMF            = 0x0001,
     FMT_MS_386              = 0x0002,
     FMT_IS_LIDATA           = 0x0004,   // true if last data was lidata
     FMT_TOLD_BITNESS        = 0x0008,   // already said object was 16/32/64-bit
     FMT_DEBUG_COMENT        = 0x0010,   // saw an object debug coment.
-    /* bits 5..7 are reserved for FMT_xxxx symbols (for deciding .obj format) */
+    /* bits 5..7 reserved for FMT_xxxx symbols (for deciding .obj format) */
     FMT_PE_XFER             = 0x0000,   // .obj is PE xfer code segment(see note)
     FMT_OMF                 = 0x0020,   // .obj is an OMF object file (see note)
     FMT_COFF                = 0x0040,   // .obj is a COFF object file (see note)
     FMT_ELF                 = 0x0060,   // .obj is an ELF object file (see note)
     FMT_INCREMENTAL         = 0x0080,   // .obj is saved inc. linking info
-    /* bits 8..max is available, not shared with other types */
+    /* bits 8..max available */
     FMT_IGNORE_FIXUPP       = 0x0100,   // don't process a fixup record
     FMT_UNSAFE_FIXUPP       = 0x0200,   // don't optimize calls in current fixupp
 } obj_format;

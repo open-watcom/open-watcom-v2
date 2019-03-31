@@ -128,7 +128,7 @@ typedef struct infilelist {
 } infilelist;
 
 typedef enum dbi_flags {
-    /* bits 0..4 are reserved for DBI_xxxx symbols */
+    /* bits 0..4 reserved for DBI_xxxx symbols */
     DBI_LINE            = 0x0001,
     DBI_TYPE            = 0x0002,
     DBI_LOCAL           = 0x0004,
@@ -140,8 +140,8 @@ typedef enum dbi_flags {
 #define DBI_MASK        (DBI_ALL | DBI_ONLY_EXPORTS)
 
 typedef enum file_flags {
-    /* bits 0..4 are reserved for DBI_xxxx symbols */
-    /* bits 5..max is not shared with other types */
+    /* bits 0..4 reserved for DBI_xxxx symbols are also stored here */
+    /* bits 5..max available (bits 5..7 reserved for FMT_xxxx symbols, not used here) */
     STAT_HAS_CHANGED    = 0x0020,
     STAT_OMF_LIB        = 0x0040,
     STAT_AR_LIB         = 0x0080,
@@ -194,10 +194,10 @@ typedef struct trace_info {
     bool                found;
 } trace_info;
 
-typedef enum module_flags {
-    /* bits 0..4 are reserved for DBI_xxxx symbols */
-    /* bits 5..7 are reserved for FMT_xxxx symbols (for deciding .obj format) */
-    /* bits 8..max is available, not shared with other types */
+typedef enum {
+    /* bits 0..4 reserved for DBI_xxxx symbols are also stored here */
+    /* bits 5..7 reserved for FMT_xxxx symbols are also stored here */
+    /* bits 8..max available */
     MOD_DBI_SEEN        = CONSTU32( 0x00000100 ),   // true if dbi segment seen in this mod.
     MOD_FIXED           = CONSTU32( 0x00000200 ),   // true if mod must stay in spec'd section
     MOD_VISITED         = CONSTU32( 0x00000400 ),   // true if visited in call graph analysis.
