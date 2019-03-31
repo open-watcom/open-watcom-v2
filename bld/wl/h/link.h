@@ -30,51 +30,36 @@
 ****************************************************************************/
 
 
-#ifdef _M_I86
-#define ENUMU32(x)          x ## UL
-#else
-#define ENUMU32(x)          x ## U
-#endif
-
 typedef enum linkflag {
-    LF_DWARF_DBI_FLAG       = ENUMU32( 0x00000001 ),    // set if making DWARF debug info
-    LF_STK_SIZE_FLAG        = ENUMU32( 0x00000002 ),
-    LF_GOT_CHGD_FILES       = ENUMU32( 0x00000004 ),
-    LF_TRACE_FLAG           = ENUMU32( 0x00000008 ),
-    LF___UNUSED_FLAG_0      = ENUMU32( 0x00000010 ),
-    LF_CV_DBI_FLAG          = ENUMU32( 0x00000020 ),
-    LF_UNDEFS_ARE_OK        = ENUMU32( 0x00000040 ),
-    LF_REDEFS_OK            = ENUMU32( 0x00000080 ),
-    LF_QUIET_FLAG           = ENUMU32( 0x00000100 ),
-    LF_PACKCODE_FLAG        = ENUMU32( 0x00000200 ),    // set if packcode specified
-    LF_VF_REMOVAL           = ENUMU32( 0x00000400 ),
-    LF_NOVELL_DBI_FLAG      = ENUMU32( 0x00000800 ),    // set if generating novell debug info
-    LF_PACKDATA_FLAG        = ENUMU32( 0x00001000 ),
-    LF_CASE_FLAG            = ENUMU32( 0x00002000 ),    // set for case sensitive operation
-    LF_OLD_DBI_FLAG         = ENUMU32( 0x00004000 ),    // set if making WATCOM debug info
-    LF_SHOW_DEAD            = ENUMU32( 0x00008000 ),
-    LF_STRIP_CODE           = ENUMU32( 0x00010000 ),    // strip dead code.
-    LF_CVPACK_FLAG          = ENUMU32( 0x00020000 ),
-    LF_MAX_ERRORS_FLAG      = ENUMU32( 0x00040000 ),    // there is a max. number of errors.
-    LF_DONT_UNMANGLE        = ENUMU32( 0x00080000 ),    // don't unmangle the names
-    LF_INC_LINK_FLAG        = ENUMU32( 0x00100000 ),
-    LF_NOCACHE_FLAG         = ENUMU32( 0x00200000 ),
-    LF_CACHE_FLAG           = ENUMU32( 0x00400000 ),
-    LF_FAR_CALLS_FLAG       = ENUMU32( 0x00800000 ),    // optimize far calls
-    LF___UNUSED_FLAG_8      = ENUMU32( 0x01000000 ),
-    LF___UNUSED_FLAG_7      = ENUMU32( 0x02000000 ),
-    LF___UNUSED_FLAG_6      = ENUMU32( 0x04000000 ),
-    LF___UNUSED_FLAG_5      = ENUMU32( 0x08000000 ),
-    LF___UNUSED_FLAG_4      = ENUMU32( 0x10000000 ),
-    LF___UNUSED_FLAG_3      = ENUMU32( 0x20000000 ),
-    LF___UNUSED_FLAG_2      = ENUMU32( 0x40000000 ),
-    LF___UNUSED_FLAG_1      = ENUMU32( 0x80000000 ),
-
-// Novell treated differently, as it can be generated at the same time as the
-// others.
-
-    LF_ANY_DBI_FLAG         = (LF_DWARF_DBI_FLAG | LF_CV_DBI_FLAG | LF_OLD_DBI_FLAG)
+    LF_DWARF_DBI_FLAG       = CONSTU32( 0x00000001 ),   // set if making DWARF debug info
+    LF_STK_SIZE_FLAG        = CONSTU32( 0x00000002 ),
+    LF_GOT_CHGD_FILES       = CONSTU32( 0x00000004 ),
+    LF_TRACE_FLAG           = CONSTU32( 0x00000008 ),
+    LF___UNUSED_FLAG_0      = CONSTU32( 0x00000010 ),
+    LF_CV_DBI_FLAG          = CONSTU32( 0x00000020 ),
+    LF_UNDEFS_ARE_OK        = CONSTU32( 0x00000040 ),
+    LF_REDEFS_OK            = CONSTU32( 0x00000080 ),
+    LF_QUIET_FLAG           = CONSTU32( 0x00000100 ),
+    LF_PACKCODE_FLAG        = CONSTU32( 0x00000200 ),   // set if packcode specified
+    LF_VF_REMOVAL           = CONSTU32( 0x00000400 ),
+    LF_NOVELL_DBI_FLAG      = CONSTU32( 0x00000800 ),   // set if generating novell debug info
+    LF_PACKDATA_FLAG        = CONSTU32( 0x00001000 ),
+    LF_CASE_FLAG            = CONSTU32( 0x00002000 ),   // set for case sensitive operation
+    LF_OLD_DBI_FLAG         = CONSTU32( 0x00004000 ),   // set if making WATCOM debug info
+    LF_SHOW_DEAD            = CONSTU32( 0x00008000 ),
+    LF_STRIP_CODE           = CONSTU32( 0x00010000 ),   // strip dead code.
+    LF_CVPACK_FLAG          = CONSTU32( 0x00020000 ),
+    LF_MAX_ERRORS_FLAG      = CONSTU32( 0x00040000 ),   // there is a max. number of errors.
+    LF_DONT_UNMANGLE        = CONSTU32( 0x00080000 ),   // don't unmangle the names
+    LF_INC_LINK_FLAG        = CONSTU32( 0x00100000 ),
+    LF_NOCACHE_FLAG         = CONSTU32( 0x00200000 ),
+    LF_CACHE_FLAG           = CONSTU32( 0x00400000 ),
+    LF_FAR_CALLS_FLAG       = CONSTU32( 0x00800000 ),   // optimize far calls
 } linkflag;
+
+// Novell treated differently, as it can be generated at the same time as the others.
+
+#define LF_ANY_DBI_FLAG     (LF_DWARF_DBI_FLAG | LF_CV_DBI_FLAG | LF_OLD_DBI_FLAG)
 
 typedef enum mapflag {
     MAP_FLAG                = 0x0001,
@@ -89,36 +74,38 @@ typedef enum mapflag {
 
 
 typedef enum stateflag {
-    LS_MAKE_RELOCS          = ENUMU32( 0x00000001 ),
-    LS_SEARCHING_LIBRARIES  = ENUMU32( 0x00000002 ),
-    LS_LIBRARIES_ADDED      = ENUMU32( 0x00000004 ),
-    LS_LINK_ERROR           = ENUMU32( 0x00000008 ),
-    LS_FMT_SPECIFIED        = ENUMU32( 0x00000010 ),
-    LS_FMT_DECIDED          = ENUMU32( 0x00000020 ),
-    LS_FMT_SEEN_32_BIT      = ENUMU32( 0x00000040 ),
-    LS_FMT_SEEN_IMPORT_CMT  = ENUMU32( 0x00000080 ),
-    LS_PROC_LIBS_ADDED      = ENUMU32( 0x00000100 ),
-    LS_FMT_INITIALIZED      = ENUMU32( 0x00000200 ),
-    LS_UNDEFED_SYM_ERROR    = ENUMU32( 0x00000400 ),
-    LS_GENERATE_LIB_LIST    = ENUMU32( 0x00000800 ),
-    LS_HAVE_16BIT_CODE      = ENUMU32( 0x00001000 ),    // true if we have 16 bit code.
-    LS_HAVE_ALPHA_CODE      = ENUMU32( 0x00002000 ),
-    LS_HAVE_PPC_CODE        = ENUMU32( 0x00004000 ),
-    LS_HAVE_I86_CODE        = ENUMU32( 0x00008000 ),
-    LS_HAVE_MIPS_CODE       = ENUMU32( 0x00010000 ),
-    LS_HAVE_X64_CODE        = ENUMU32( 0x00020000 ),
-    LS_CAN_REMOVE_SEGMENTS  = ENUMU32( 0x00040000 ),
-    LS_STOP_WORKING         = ENUMU32( 0x00080000 ),    // IDE wants us to stop now
-    LS_INTERNAL_DEBUG       = ENUMU32( 0x00100000 ),
-    LS_GOT_PREV_STRUCTS     = ENUMU32( 0x00200000 ),
-    LS_DOSSEG_FLAG          = ENUMU32( 0x00400000 ),
-    LS_SPEC_ORDER_FLAG      = ENUMU32( 0x00800000 ),
-    LS_FMT_SEEN_64_BIT      = ENUMU32( 0x01000000 ),
-
-    LS_HAVE_MACHTYPE_MASK   = (LS_HAVE_I86_CODE | LS_HAVE_X64_CODE | LS_HAVE_ALPHA_CODE | LS_HAVE_PPC_CODE | LS_HAVE_MIPS_CODE),
-    LS_CLEAR_ON_INC         = (LS_STOP_WORKING | LS_INTERNAL_DEBUG | LS_GOT_PREV_STRUCTS | LS_MAKE_RELOCS | LS_FMT_SPECIFIED | LS_FMT_DECIDED | LS_FMT_INITIALIZED),
-    LS_ORDER_FLAG_MASK      = (LS_DOSSEG_FLAG | LS_SPEC_ORDER_FLAG)
+    LS_MAKE_RELOCS          = CONSTU32( 0x00000001 ),
+    LS_SEARCHING_LIBRARIES  = CONSTU32( 0x00000002 ),
+    LS_LIBRARIES_ADDED      = CONSTU32( 0x00000004 ),
+    LS_LINK_ERROR           = CONSTU32( 0x00000008 ),
+    LS_FMT_SPECIFIED        = CONSTU32( 0x00000010 ),
+    LS_FMT_DECIDED          = CONSTU32( 0x00000020 ),
+    LS_FMT_SEEN_32_BIT      = CONSTU32( 0x00000040 ),
+    LS_FMT_SEEN_IMPORT_CMT  = CONSTU32( 0x00000080 ),
+    LS_PROC_LIBS_ADDED      = CONSTU32( 0x00000100 ),
+    LS_FMT_INITIALIZED      = CONSTU32( 0x00000200 ),
+    LS_UNDEFED_SYM_ERROR    = CONSTU32( 0x00000400 ),
+    LS_GENERATE_LIB_LIST    = CONSTU32( 0x00000800 ),
+    LS_HAVE_16BIT_CODE      = CONSTU32( 0x00001000 ),   // true if we have 16 bit code.
+    LS_HAVE_ALPHA_CODE      = CONSTU32( 0x00002000 ),
+    LS_HAVE_PPC_CODE        = CONSTU32( 0x00004000 ),
+    LS_HAVE_I86_CODE        = CONSTU32( 0x00008000 ),
+    LS_HAVE_MIPS_CODE       = CONSTU32( 0x00010000 ),
+    LS_HAVE_X64_CODE        = CONSTU32( 0x00020000 ),
+    LS_CAN_REMOVE_SEGMENTS  = CONSTU32( 0x00040000 ),
+    LS_STOP_WORKING         = CONSTU32( 0x00080000 ),   // IDE wants us to stop now
+    LS_INTERNAL_DEBUG       = CONSTU32( 0x00100000 ),
+    LS_GOT_PREV_STRUCTS     = CONSTU32( 0x00200000 ),
+    LS_DOSSEG_FLAG          = CONSTU32( 0x00400000 ),
+    LS_SPEC_ORDER_FLAG      = CONSTU32( 0x00800000 ),
+    LS_FMT_SEEN_64_BIT      = CONSTU32( 0x01000000 ),
 } stateflag;
+
+#define LS_HAVE_MACHTYPE_MASK   (LS_HAVE_I86_CODE | LS_HAVE_X64_CODE | LS_HAVE_ALPHA_CODE | LS_HAVE_PPC_CODE | LS_HAVE_MIPS_CODE)
+#define LS_ORDER_FLAG_MASK      (LS_DOSSEG_FLAG | LS_SPEC_ORDER_FLAG)
+
+#define LS_CLEAR_ON_INC     /* flags to clear when incremental linking. */ \
+    (LS_STOP_WORKING | LS_INTERNAL_DEBUG | LS_GOT_PREV_STRUCTS | LS_MAKE_RELOCS | LS_FMT_SPECIFIED | LS_FMT_DECIDED | LS_FMT_INITIALIZED)
 
 // this used for ID splits.
 
@@ -140,7 +127,6 @@ typedef enum obj_format {
     FMT_COFF                = 0x0200,   // .obj is a COFF object file (see note)
     FMT_ELF                 = 0x0300,   // .obj is an ELF object file (see note)
     FMT_INCREMENTAL         = 0x0400,   // .obj is saved inc. linking info
-    FMT_OBJ_FMT_MASK        = 0x0700,
     FMT_UNUSED_2            = 0x0800,
     FMT_DEBUG_COMENT        = 0x1000,   // saw an object debug coment.
 } obj_format;
@@ -151,9 +137,10 @@ typedef enum obj_format {
 */
 
 #define FMT_32BIT_REC           (FMT_EASY_OMF | FMT_MS_386)
+
+#define FMT_OBJ_FMT_MASK        (FMT_PE_XFER | FMT_OMF | FMT_COFF | FMT_ELF | FMT_INCREMENTAL)
 #define FMT_IDX_SHIFT           8
-#define FMT_IDX_BITS            (FMT_OBJ_FMT_MASK >> FMT_IDX_SHIFT)
-#define GET_FMT_IDX(x)          (((x) >> FMT_IDX_SHIFT) & FMT_IDX_BITS)
+#define GET_FMT_IDX(x)          (((x) & FMT_OBJ_FMT_MASK) >> FMT_IDX_SHIFT)
 #define IS_FMT_ORL(x)           (((x) & FMT_OBJ_FMT_MASK) >= FMT_COFF)
 #define IS_FMT_OMF(x)           (((x) & FMT_OBJ_FMT_MASK) == FMT_OMF)
 #define IS_FMT_ELF(x)           (((x) & FMT_OBJ_FMT_MASK) == FMT_ELF)

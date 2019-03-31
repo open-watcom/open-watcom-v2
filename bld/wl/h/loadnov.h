@@ -101,12 +101,6 @@ typedef struct nov_import {
     } u;
 } nov_import;
 
-// values for upper bits of the relocation offsets.
-#define NOV_IMP_NONRELATIVE  0x80000000
-#define NOV_IMP_ISCODE       0x40000000
-
-#define NOV_EXP_ISCODE      0x80000000
-
 #define DO_NOV_EXPORTS          0x80
 #define DO_WATCOM_EXPORTS       0x40
 #define DO_NOV_REF_ONLY         0x20

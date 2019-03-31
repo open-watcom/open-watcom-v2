@@ -31,28 +31,28 @@
 
 
 typedef enum exe_format {       // there is a corresp. table in MSG.C
-    MK_OS2_NE           = 0x00000001,
-    MK_OS2_LE           = 0x00000002,
-    MK_OS2_LX           = 0x00000004,
-    MK_WINDOWS          = 0x00000008,
-    MK_PE               = 0x00000010,
-    MK_DOS_EXE          = 0x00000020,
-    MK_COM              = 0x00000040,
-    MK_OVERLAYS         = 0x00000080,
-    MK_NOVELL           = 0x00000100,
-    MK_QNX_16           = 0x00000200,     // POSIX QNX, not ICON QNX
-    MK_PHAR_SIMPLE      = 0x00000400,
-    MK_PHAR_FLAT        = 0x00000800,
-    MK_PHAR_REX         = 0x00001000,
-    MK_PHAR_MULTISEG    = 0x00002000,
-    MK_QNX_FLAT         = 0x00004000,
-    MK_ELF              = 0x00008000,
-    MK_WIN_VXD          = 0x00010000,
-    MK_DOS16M           = 0x00020000,
-    MK_ZDOS             = 0x00040000,
-    MK_RAW              = 0x00080000,
-    MK_RDOS             = 0x00100000,
-    MK_ALL              = 0x001FFFFF
+    MK_OS2_NE           = CONSTU32( 0x00000001 ),
+    MK_OS2_LE           = CONSTU32( 0x00000002 ),
+    MK_OS2_LX           = CONSTU32( 0x00000004 ),
+    MK_WINDOWS          = CONSTU32( 0x00000008 ),
+    MK_PE               = CONSTU32( 0x00000010 ),
+    MK_DOS_EXE          = CONSTU32( 0x00000020 ),
+    MK_COM              = CONSTU32( 0x00000040 ),
+    MK_OVERLAYS         = CONSTU32( 0x00000080 ),
+    MK_NOVELL           = CONSTU32( 0x00000100 ),
+    MK_QNX_16           = CONSTU32( 0x00000200 ),   // POSIX QNX, not ICON QNX
+    MK_PHAR_SIMPLE      = CONSTU32( 0x00000400 ),
+    MK_PHAR_FLAT        = CONSTU32( 0x00000800 ),
+    MK_PHAR_REX         = CONSTU32( 0x00001000 ),
+    MK_PHAR_MULTISEG    = CONSTU32( 0x00002000 ),
+    MK_QNX_FLAT         = CONSTU32( 0x00004000 ),
+    MK_ELF              = CONSTU32( 0x00008000 ),
+    MK_WIN_VXD          = CONSTU32( 0x00010000 ),
+    MK_DOS16M           = CONSTU32( 0x00020000 ),
+    MK_ZDOS             = CONSTU32( 0x00040000 ),
+    MK_RAW              = CONSTU32( 0x00080000 ),
+    MK_RDOS             = CONSTU32( 0x00100000 ),
+    MK_ALL              = CONSTU32( 0x001FFFFF ),
 } exe_format;
 
 #define MK_DOS       (MK_OVERLAYS | MK_DOS_EXE | MK_COM)
