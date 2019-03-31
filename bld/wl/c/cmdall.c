@@ -53,13 +53,20 @@
 
 #include "clibext.h"
 
-static void         *LastFile;
+
+static struct {
+    union {
+        file_list   *file;
+        member_list *module;
+    } u;
+} LastFile;
+
 static file_list    **LastLibFile;
 
 void ResetCmdAll( void )
 /**********************/
 {
-    LastFile = NULL;
+    LastFile.u.file = NULL;
     LastLibFile = NULL;
     UsrLibPath = NULL;
 }
@@ -471,11 +478,11 @@ static bool AddFile( void )
     if( *CurrFList != NULL ) {
         CurrFList = &(*CurrFList)->next_file;
     }
-    LastFile = AddObjFile( ptr, membname, CurrFList );
+    LastFile.u.file = AddObjFile( ptr, membname, CurrFList );
     if( CmdFlags & CF_MEMBER_ADDED ) {
         CurrFList = temp;   // go back to previous entry.
     } else if( membname != NULL ) {     // 1st member added
-        LastFile = ((file_list *)LastFile)->u.member;
+        LastFile.u.module = LastFile.u.file->u.member;
         CmdFlags |= CF_MEMBER_ADDED;
     }
     _LnkFree( ptr );
@@ -949,13 +956,13 @@ bool ProcNewSegment( void )
 /********************************/
 // force the start of a new auto-group after the previous object file.
 {
-    if( LastFile == NULL ) {
+    if( LastFile.u.file == NULL ) {
         LnkMsg( LOC+LINE+WRN+MSG_NEWSEG_BEFORE_OBJ, NULL );
     } else {
         if( CmdFlags & CF_MEMBER_ADDED ) {
-            ((member_list *)LastFile)->flags |= MOD_LAST_SEG;
+            LastFile.u.module->flags |= MOD_LAST_SEG;
         } else {
-            ((file_list *)LastFile)->flags |= STAT_LAST_SEG;
+            LastFile.u.file->flags |= STAT_LAST_SEG;
         }
     }
     return( true );
