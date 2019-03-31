@@ -30,7 +30,7 @@
 
 
 
-typedef enum exe_format {       // there is a corresp. table in MSG.C
+typedef enum {          // there is a corresp. table in MSG.C
     MK_OS2_NE           = CONSTU32( 0x00000001 ),
     MK_OS2_LE           = CONSTU32( 0x00000002 ),
     MK_OS2_LX           = CONSTU32( 0x00000004 ),

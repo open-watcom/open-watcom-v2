@@ -76,7 +76,7 @@ typedef struct odbimodinfo {
 } odbimodinfo;
 
 #if 0
-typedef struct seginfo     {
+typedef struct seginfo {
     struct seginfo      *next;
     unsigned_32         dbioff;
     seg_dbg_info        head;

@@ -54,7 +54,7 @@ typedef struct sym_block {
 
 #define ALLOC_SIZE  (sizeof( sym_block )-1)
 
-typedef struct block_data {
+typedef struct {
     sym_block *     list;
     size_t          currbrk;
 } block_data;

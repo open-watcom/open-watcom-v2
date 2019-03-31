@@ -30,7 +30,7 @@
 ****************************************************************************/
 
 
-typedef enum linkflag {
+typedef enum {
     LF_DWARF_DBI_FLAG       = CONSTU32( 0x00000001 ),   // set if making DWARF debug info
     LF_STK_SIZE_FLAG        = CONSTU32( 0x00000002 ),
     LF_GOT_CHGD_FILES       = CONSTU32( 0x00000004 ),
@@ -60,7 +60,7 @@ typedef enum linkflag {
 
 #define LF_ANY_DBI_FLAG     (LF_DWARF_DBI_FLAG | LF_CV_DBI_FLAG | LF_OLD_DBI_FLAG)
 
-typedef enum mapflag {
+typedef enum {
     MAP_FLAG                = 0x0001,
     MAP_STATICS             = 0x0002,       // put statics in the map file
     MAP_ARTIFICIAL          = 0x0004,       // put artificial syms in the map file
@@ -72,7 +72,7 @@ typedef enum mapflag {
 } mapflag;
 
 
-typedef enum stateflag {
+typedef enum {
     LS_MAKE_RELOCS          = CONSTU32( 0x00000001 ),
     LS_SEARCHING_LIBRARIES  = CONSTU32( 0x00000002 ),
     LS_LIBRARIES_ADDED      = CONSTU32( 0x00000004 ),
@@ -112,7 +112,7 @@ typedef enum stateflag {
 #define DATA_SEGMENT        2
 
 /*  Object file formats & flags */
-typedef enum obj_format {
+typedef enum {
     /* bits 0..4 available (bits 0..4 reserved for DBI_xxxx symbols, not used here) */
     FMT_EASY_OMF            = 0x0001,
     FMT_MS_386              = 0x0002,
@@ -149,7 +149,7 @@ typedef enum obj_format {
 
 /* Default File Extension Enumeration, see ldefext.h */
 
-typedef enum file_defext {
+typedef enum {
     #define pick1(enum,text) enum,
     #include "ldefext.h"
     #undef pick1

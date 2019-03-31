@@ -50,7 +50,7 @@ typedef offset  hex_offset;
 
 typedef segment hex_segment;
 
-typedef struct hex_addr {
+typedef struct {
     hex_offset      off;
     hex_segment     seg;
 } hex_addr;
@@ -286,7 +286,7 @@ static void WriteStart( void )
     WriteLoad( str_buf, 21 );
 }
 
-typedef struct  {
+typedef struct {
     hex_offset      offs;
     group_entry     *lastgrp;  // used only for copy classes
 } grpwriteinfo;

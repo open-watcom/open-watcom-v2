@@ -30,7 +30,7 @@
 
 
 
-typedef enum fix_type {
+typedef enum {
     FIX_CHANGE_SEG      = CONSTU32( 0x00000001 ),
     FIX_ADDEND_ZERO     = CONSTU32( 0x00000002 ),
     FIX_UNSAFE          = CONSTU32( 0x00000004 ),

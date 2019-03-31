@@ -67,7 +67,7 @@ typedef enum {
     ST_INVALID_ORDINAL
 } ord_state;
 
-typedef struct tok {
+typedef struct {
     char        *buff;
     size_t      len;
     char        *next;
@@ -81,7 +81,7 @@ typedef struct tok {
     unsigned_16 line;
 } tok;
 
-typedef enum commandflag {
+typedef enum {
     CF_TO_STDOUT            = CONSTU32( 0x00000001 ),
     CF_SET_SECTION          = CONSTU32( 0x00000002 ),   // used for LIB/FIXEDLIB directives
     CF_NO_DEF_LIBS          = CONSTU32( 0x00000004 ),
@@ -115,10 +115,10 @@ typedef struct cmdfilelist {
     tok                 token;
 } cmdfilelist;
 
-typedef struct parse_entry {
+typedef struct {
     char                *keyword;
     bool                (*rtn)( void );
-    enum exe_format     format;
+    exe_format          format;
     commandflag         flags;
 } parse_entry;
 

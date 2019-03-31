@@ -49,14 +49,14 @@ static bool             GotModName = false;
 static bool             GotOvl;
 
 /* An entry for parsing .def files. */
-typedef struct parse_entry {
+typedef struct {
     const char          *keyword;
     void                (*rtn)( void );
     unsigned char       minlen;
 } parse_entry;
 
 /* An entry for parsing command line switches. */
-typedef struct switch_entry {
+typedef struct {
     const char          *keyword;
     void                (*rtn)( const char *arg );
     unsigned char       minlen;

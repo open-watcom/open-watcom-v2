@@ -477,9 +477,9 @@ static void ProcFile( const char *fname )
 int CopyFile( const char * file1, const char * file2 )
 /****************************************************/
 {
-    size_t                  len;
-    auto struct stat        statblk;
-    auto struct utimbuf     utimebuf;
+    size_t              len;
+    struct stat         statblk;
+    struct utimbuf      utimebuf;
 
     remove( file2 );
     OutFile = NULL;
@@ -500,7 +500,7 @@ int CopyFile( const char * file1, const char * file2 )
 // these are utility routines used frequently in TDCVT.
 
 typedef struct _node {      // structure used for list traversal routines.
-    struct _node *  next;
+    struct _node    *next;
 } node;
 
 void LinkList( void **in_head, void *newnode )

@@ -49,7 +49,7 @@ typedef struct reloc_info {
     spilladdr           loc;
 } reloc_info;
 
-typedef struct os2_reloc_header {
+typedef struct {
     reloc_info          *externals; /* external and segment style fixups */
     reloc_info          *internals; /* internal, non-segment fixups */
 } os2_reloc_header;

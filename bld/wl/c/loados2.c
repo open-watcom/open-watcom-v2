@@ -87,7 +87,7 @@ typedef struct FullTypeRecord {
     resource_type_record    Info;
 } FullTypeRecord;
 
-typedef struct ExeResDir {
+typedef struct {
     unsigned_16         ResShiftCount;
     unsigned_16         NumTypes;
     unsigned_16         NumResources;
@@ -96,7 +96,7 @@ typedef struct ExeResDir {
     FullTypeRecord      *Tail;
 } ExeResDir;
 
-typedef struct ResTable {
+typedef struct {
     ExeResDir       Dir;
     StringsBlock    Str;
 } ResTable;

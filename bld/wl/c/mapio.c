@@ -256,7 +256,7 @@ static void WriteNonAbsSeg( void *_seg )
     }
 }
 
-typedef struct seg_info {
+typedef struct {
     unsigned    idx;
     seg_leader  *seg;
 } seg_info;

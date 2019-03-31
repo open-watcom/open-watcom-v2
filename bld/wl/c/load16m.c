@@ -67,7 +67,7 @@
 
 typedef dos_addr reloc_addr;
 
-typedef struct context {
+typedef struct {
     reloc_addr      *reloc_data;
 } context;
 

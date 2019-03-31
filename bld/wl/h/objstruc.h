@@ -99,7 +99,7 @@ typedef struct outfilelist {
     unsigned long       origin;
 } outfilelist;
 
-typedef enum infile_status {
+typedef enum {
     INSTAT_USE_LIBPATH  = 0x0001,   // use libpath for this file.
     INSTAT_LIBRARY      = 0x0002,   // file is a library
     INSTAT_IOERR        = 0x0004,   // problem reading this file
@@ -127,7 +127,7 @@ typedef struct infilelist {
     infile_status       status;
 } infilelist;
 
-typedef enum dbi_flags {
+typedef enum {
     /* bits 0..4 reserved for DBI_xxxx symbols */
     DBI_LINE            = 0x0001,
     DBI_TYPE            = 0x0002,
@@ -139,7 +139,7 @@ typedef enum dbi_flags {
 #define DBI_ALL         (DBI_LINE | DBI_TYPE | DBI_LOCAL | DBI_STATICS)
 #define DBI_MASK        (DBI_ALL | DBI_ONLY_EXPORTS)
 
-typedef enum file_flags {
+typedef enum {
     /* bits 0..4 reserved for DBI_xxxx symbols are also stored here */
     /* bits 5..max available (bits 5..7 reserved for FMT_xxxx symbols, not used here) */
     STAT_HAS_CHANGED    = 0x0020,
@@ -164,7 +164,7 @@ typedef enum file_flags {
  * compiler user specified library priority 9
  * WLINK user specified library priority    10
  */
-typedef enum lib_priorities {
+typedef enum {
     LIB_PRIORITY_MIN    = 0,
     LIB_PRIORITY_MID    = 5,
     LIB_PRIORITY_MAX    = 10
@@ -238,7 +238,7 @@ typedef union {
 // fields used only in distributing libs are marked dist:
 // remember to change DIST_ONLY_SIZE if you remove or add a "dist" field!
 
-typedef struct arcdata {
+typedef struct {
     unsigned_16         ovlref;     // dist: # of the module
     unsigned_16         numarcs;    // dist: of arcs in the list
     dist_arc            arcs[1];    // dist: the actual arcs.
@@ -498,7 +498,7 @@ typedef struct segdata {
     bool                hascdatsym : 1; // true if comdat and has a symbol defd
 } segdata;
 
-typedef struct node {
+typedef struct {
     void                *next;
     void                *entry;
 } node;
@@ -507,7 +507,7 @@ typedef struct node {
 
 typedef signed_32       ordinal_t;
 
-typedef struct dll_sym_info {
+typedef struct {
     union {
         obj_name_list   *modnum;        /* # of DLL in imported names table */
         name_strtab     modname;
@@ -537,7 +537,7 @@ typedef struct seg_flags {
     segflag_type        type;
 } seg_flags;
 
-typedef struct extnode {
+typedef struct {
     symbol              *entry;
     orl_symbol_handle   handle;         // ORL: handle for the symbol
     unsigned            ovlref  : 12;
@@ -545,11 +545,11 @@ typedef struct extnode {
     unsigned            isdefd  : 1;    // used in ORL
 } extnode;
 
-typedef struct grpnode {
+typedef struct {
     GROUP_ENTRY         *entry;
 } grpnode;
 
-typedef struct segnode {
+typedef struct {
     SEGDATA             *entry;
     orl_sec_handle      handle;     // ORL: handle for the segment.
     unsigned_8          *contents;  // ORL: pointer to contents of segment.
@@ -561,7 +561,7 @@ typedef struct list_of_names {
     char                name[ 1 ];
 } list_of_names;
 
-typedef struct lobject_data {
+typedef struct {
     segdata             *seg;
     offset              obj_offset; // pass 1: delta for fixup offsets
     targ_addr           addr;

@@ -689,14 +689,14 @@ void SetFormat( void )
     SetRelocSize();
 }
 
-struct select_format {
+typedef struct {
     exe_format      bits;
     char            *lib_var_name;
     void            (*set_func)(void);
     void            (*free_func)(void);
-};
+} select_format;
 
-static struct select_format PossibleFmt[] = {
+static const select_format PossibleFmt[] = {
     MK_DOS,         "LIBDOS",       NULL,           NULL,
 #ifdef _DOS16M
     MK_DOS16M,      "LIBDOS16M",    SetD16MFmt,     FreeD16MFmt,
@@ -731,8 +731,8 @@ static struct select_format PossibleFmt[] = {
 void AddFmtLibPaths( void )
 /********************************/
 {
-    struct select_format const *check;
-    exe_format                  possible;
+    const select_format     *check;
+    exe_format              possible;
 
     if( (LinkState & LS_FMT_DECIDED) == 0 )
         return;
@@ -759,8 +759,8 @@ static void InitFmt( void (*set)(void) )
 bool HintFormat( exe_format hint )
 /***************************************/
 {
-    struct select_format const *check;
-    exe_format                  possible;
+    const select_format     *check;
+    exe_format              possible;
 
     if( (hint & FmtData.type) == 0 )
         return( false );
@@ -815,8 +815,8 @@ void DecideFormat( void )
 void FreeFormatStuff( void )
 /***************************/
 {
-    struct select_format const *check;
-    exe_format                  possible;
+    const select_format     *check;
+    exe_format              possible;
 
     if( (LinkState & LS_FMT_DECIDED) == 0 )
         return;

@@ -33,7 +33,7 @@
 
 #ifdef _EXENOV_H
 // this is the portion of the nlm_header which is of a fixed size.
-typedef struct fixed_header {
+typedef struct {
     char            signature[ sizeof( NLM_SIGNATURE ) - 1 ];
     unsigned_32     version;
     char            moduleName[14];     // 1st character is a length byte.
@@ -88,7 +88,7 @@ typedef struct {
 #define IMP_VIRT_ALLOC_SIZE 512     // size of virtual mem block to allocate
 #define IMP_NUM_VIRT        (IMP_VIRT_ALLOC_SIZE / sizeof( unsigned_32 ) )
 
-typedef struct nov_import {
+typedef struct {
     byte        contents;           // # of relocs || # of virtmem blocks + 10
     union {
         struct {

@@ -70,7 +70,7 @@
 
 #define FIX_POINTER_MASK            (FIX_BASE | FIX_HIGH | FIX_OFFSET_MASK)
 
-typedef struct fix_relo_data {
+typedef struct {
     byte            *data;
     offset          value;      /* value at location being patched */
     targ_addr       loc_addr;
@@ -109,7 +109,7 @@ typedef struct {
     } u;
 } save_fixup;
 
-typedef struct base_reloc {
+typedef struct {
     unsigned        rel_size;       /* actual size of reloc item */
     unsigned        fix_size;       /* size of field being fixed up */
     offset          fix_off;        /* start addr of field being fixed */

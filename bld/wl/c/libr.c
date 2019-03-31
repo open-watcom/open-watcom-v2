@@ -48,7 +48,7 @@
 
 #include "clibext.h"
 
-typedef struct omf_dict_entry {
+typedef struct {
     void            **cache;        /* for extra memory store of dictionary */
     long            start;          /* recno of start of dictionary         */
     unsigned        pages;          /* number of pages in dictionary        */
@@ -56,7 +56,7 @@ typedef struct omf_dict_entry {
     unsigned_8      *buffer;
 } omf_dict_entry;
 
-typedef struct ar_dict_entry {
+typedef struct {
     unsigned_32         *filepostab;
     unsigned_16         *offsettab;
     char                **symbtab;
