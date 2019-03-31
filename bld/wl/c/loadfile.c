@@ -326,13 +326,13 @@ void GetStkAddr( void )
 static class_entry *LocateBSSClass( void )
 /****************************************/
 {
-    class_entry *currclass;
+    class_entry *class;
     section     *sect;
 
     sect = (Root->areas == NULL) ? Root : NonSect;
-    for( currclass = sect->classlist; currclass != NULL; currclass = currclass->next_class ) {
-        if( stricmp( currclass->name.u.ptr, BSSClassName ) == 0 ) {
-            return( currclass );
+    for( class = sect->classlist; class != NULL; class = class->next_class ) {
+        if( stricmp( class->name.u.ptr, BSSClassName ) == 0 ) {
+            return( class );
         }
     }
     return( NULL );

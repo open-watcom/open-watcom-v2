@@ -55,6 +55,7 @@
 
 #include "clibext.h"
 
+
 typedef struct {
     unsigned_32         address;
     unsigned            file;
@@ -275,7 +276,7 @@ void WriteSegs( section *sect )
 /*******************************************/
 /* write segment info into mapfile */
 {
-    class_entry     *cl;
+    class_entry     *class;
     size_t          count;
     size_t          i;
     seg_leader      *seg;
@@ -287,17 +288,17 @@ void WriteSegs( section *sect )
         Msg_Write_Map( MSG_MAP_TITLE_SEGMENTS_1 );
         WriteMapNL( 1 );
         count = 0;
-        for( cl = sect->classlist; cl != NULL; cl = cl->next_class ) {
-            if( (cl->flags & CLASS_DEBUG_INFO) == 0 ) {
-                count += RingCount( cl->segs );
+        for( class = sect->classlist; class != NULL; class = class->next_class ) {
+            if( (class->flags & CLASS_DEBUG_INFO) == 0 ) {
+                count += RingCount( class->segs );
             }
         }
         _ChkAlloc( segs, count * sizeof( seg_info ) );
         count = 0;
-        for( cl = sect->classlist; cl != NULL; cl = cl->next_class ) {
-            if( (cl->flags & CLASS_DEBUG_INFO) == 0 ) {
+        for( class = sect->classlist; class != NULL; class = class->next_class ) {
+            if( (class->flags & CLASS_DEBUG_INFO) == 0 ) {
                 seg = NULL;
-                while( (seg = RingStep( cl->segs, seg )) != NULL ) {
+                while( (seg = RingStep( class->segs, seg )) != NULL ) {
                     segs[count].idx = count;
                     segs[count].seg = seg;
                     count++;

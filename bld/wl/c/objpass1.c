@@ -530,22 +530,22 @@ void AddSegment( segdata *sd, class_entry *class )
     }
 }
 
-class_entry *DuplicateClass( class_entry *old )
-/*********************************************/
+class_entry *DuplicateClass( class_entry *class )
+/***********************************************/
 {
-    class_entry *new;
+    class_entry *newclass;
 
-    new = CarveAlloc( CarveClass );
-    memcpy( new, old, sizeof( class_entry ) );
-    new->name.u.ptr = AddBufferStringTable( &PermStrings, old->name.u.ptr, strlen( old->name.u.ptr ) + 1 );
-    old->next_class = new;
-    return( new );
+    newclass = CarveAlloc( CarveClass );
+    memcpy( newclass, class, sizeof( class_entry ) );
+    newclass->name.u.ptr = AddBufferStringTable( &PermStrings, class->name.u.ptr, strlen( class->name.u.ptr ) + 1 );
+    class->next_class = newclass;
+    return( newclass );
 }
 
 class_entry *FindClass( section *sect, const char *name, bool is32bit, bool iscode )
 /**********************************************************************************/
 {
-    class_entry     *currclass;
+    class_entry     *class;
     class_entry     *lastclass;
     size_t          namelen;
     class_status    cls_is32bit;
@@ -554,38 +554,38 @@ class_entry *FindClass( section *sect, const char *name, bool is32bit, bool isco
     if( is32bit )
         cls_is32bit = CLASS_32BIT;
     lastclass = sect->classlist;
-    for( currclass = sect->classlist; currclass != NULL; currclass = currclass->next_class ) {
-        if( stricmp( currclass->name.u.ptr, name ) == 0 && (currclass->flags & CLASS_32BIT) == cls_is32bit ) {
-            return( currclass );
+    for( class = sect->classlist; class != NULL; class = class->next_class ) {
+        if( stricmp( class->name.u.ptr, name ) == 0 && (class->flags & CLASS_32BIT) == cls_is32bit ) {
+            return( class );
         }
-        lastclass = currclass;
+        lastclass = class;
     }
     namelen = strlen( name );
-    currclass = CarveAlloc( CarveClass );
-    currclass->flags = 0;
-    currclass->name.u.ptr = AddBufferStringTable( &PermStrings, name, namelen + 1 );
-    currclass->segs = NULL;
-    currclass->section = sect;
-    currclass->next_class = NULL;
+    class = CarveAlloc( CarveClass );
+    class->flags = 0;
+    class->name.u.ptr = AddBufferStringTable( &PermStrings, name, namelen + 1 );
+    class->segs = NULL;
+    class->section = sect;
+    class->next_class = NULL;
     if( lastclass == NULL ) {
-        sect->classlist = currclass;
+        sect->classlist = class;
     } else {
-        lastclass->next_class = currclass;
+        lastclass->next_class = class;
     }
-    DBIColClass( currclass );
+    DBIColClass( class );
     if( is32bit ) {
-        currclass->flags |= CLASS_32BIT;
+        class->flags |= CLASS_32BIT;
     }
     if( iscode ) {
-        currclass->flags |= CLASS_CODE;
+        class->flags |= CLASS_CODE;
     }
     if( IsConstClass( name, namelen ) ) {
-        currclass->flags |= CLASS_READ_ONLY;
+        class->flags |= CLASS_READ_ONLY;
     }
     if( IsStackClass( name, namelen ) ) {
-        currclass->flags |= CLASS_STACK;
+        class->flags |= CLASS_STACK;
     }
-    return( currclass );
+    return( class );
 }
 
 static void CheckForLast( seg_leader *seg, class_entry *class )

@@ -311,20 +311,20 @@ void ODBIP1ModuleFinished( mod_entry *obj )
     dinfo->linelinks.size = 0;
 }
 
-void ODBIDefClass( class_entry *cl, unsigned_32 size )
-/****************************************************/
+void ODBIDefClass( class_entry *class, unsigned_32 size )
+/*******************************************************/
 {
     debug_info *dinfo;
 
     dinfo = CurrSect->dbg_info;
     if( dinfo == NULL )
         return;
-    if( cl->flags & CLASS_MS_TYPE ) {
+    if( class->flags & CLASS_MS_TYPE ) {
         dinfo->type.curr.u.vm_offs += size;
-        dinfo->TypeClass = cl;
-    } else if( cl->flags & CLASS_MS_LOCAL ) {
+        dinfo->TypeClass = class;
+    } else if( class->flags & CLASS_MS_LOCAL ) {
         dinfo->local.curr.u.vm_offs += size;
-        dinfo->LocalClass = cl;
+        dinfo->LocalClass = class;
     }
 }
 

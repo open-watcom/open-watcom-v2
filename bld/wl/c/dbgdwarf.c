@@ -459,17 +459,17 @@ static void DefAClass( void *_seg )
     }
 }
 
-void DwarfDefClass( class_entry *cl, unsigned_32 size )
+void DwarfDefClass( class_entry *class, unsigned_32 size )
 /************************************************************/
 // go through the list of dwarf segments, and make sure VM is allocated for
 // all of them.
 {
     /* unused parameters */ (void)size;
 
-    if( (cl->flags & CLASS_DEBUG_INFO) != CLASS_DWARF )
+    if( (class->flags & CLASS_DEBUG_INFO) != CLASS_DWARF )
         return;
-    DBIClass = cl;
-    RingWalk( cl->segs, DefAClass );
+    DBIClass = class;
+    RingWalk( class->segs, DefAClass );
 }
 
 void DwarfAddGlobal( symbol *sym )

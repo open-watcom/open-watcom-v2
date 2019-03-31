@@ -352,16 +352,16 @@ void DBIGenModule( void )
     }
 }
 
-void DBIDefClass( class_entry *cl, unsigned_32 size )
-/***************************************************/
+void DBIDefClass( class_entry *class, unsigned_32 size )
+/******************************************************/
 // called during address calculation
 {
     if( LinkFlags & LF_OLD_DBI_FLAG ) {
-        ODBIDefClass( cl, size );
+        ODBIDefClass( class, size );
     } else if( LinkFlags & LF_DWARF_DBI_FLAG ) {
-        DwarfDefClass( cl, size );
+        DwarfDefClass( class, size );
     } else if( LinkFlags & LF_CV_DBI_FLAG ) {
-        CVDefClass( cl, size );
+        CVDefClass( class, size );
     }
 }
 

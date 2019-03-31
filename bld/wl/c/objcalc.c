@@ -124,10 +124,10 @@ static bool CheckLxdataSeen( void *_seg, void *dummy )
     return( false );
 }
 
-static void CheckClassUninitialized( class_entry *currcl )
-/*********************************************************/
+static void CheckClassUninitialized( class_entry *class )
+/*******************************************************/
 {
-    RingLookup( currcl->segs, CheckLxdataSeen, NULL );
+    RingLookup( class->segs, CheckLxdataSeen, NULL );
 }
 
 static void InsertPrevRing( seg_leader **list, seg_leader *curr, seg_leader *prev )
@@ -918,14 +918,14 @@ static void FillTypeFlags( unsigned_16 flags, segflag_type type )
 /***************************************************************/
 {
     class_entry     *class;
-    class_status    clflags;
+    class_status    class_flags;
 
-    clflags = 0;
+    class_flags = 0;
     if( type == SEGFLAG_CODE ) {
-        clflags = CLASS_CODE;
+        class_flags = CLASS_CODE;
     }
     for( class = Root->classlist; class != NULL; class = class->next_class ) {
-        if( clflags == (class->flags & CLASS_CODE) ) {
+        if( class_flags == (class->flags & CLASS_CODE) ) {
             RingLookup( class->segs, SetClassFlag, &flags );
         }
     }
@@ -977,16 +977,16 @@ static void SplitDGroupClasses( section *sec )
 /********************************************/
 // split classes in DGROUP
 {
-    class_entry         *currcl;
+    class_entry         *class;
     class_entry         *newclass;
     seg_leader          *curr;
     seg_leader          *newlist;
     seg_leader          *oldlist;
 
-    for( currcl = sec->classlist; currcl != NULL; currcl = currcl->next_class ){
+    for( class = sec->classlist; class != NULL; class = class->next_class ){
         newlist = NULL;
         oldlist = NULL;
-        while( (curr = RingPop( &currcl->segs )) != NULL ) {
+        while( (curr = RingPop( &class->segs )) != NULL ) {
             if( curr->group == DataGroup ) {
                 RingAppend( &newlist, curr );
             } else {
@@ -994,18 +994,18 @@ static void SplitDGroupClasses( section *sec )
             }
         }
         if( oldlist != NULL ) {
-            currcl->segs = oldlist;
+            class->segs = oldlist;
             if( newlist != NULL ) {
-                newclass = DuplicateClass( currcl );
+                newclass = DuplicateClass( class );
                 newclass->segs = newlist;
-                currcl->next_class = newclass;
-                currcl = newclass;
+                class->next_class = newclass;
+                class = newclass;
                 for( curr = NULL; (curr = RingStep( newlist, curr )) != NULL; ) {
                     curr->class = newclass;
                 }
             }
         } else if( newlist != NULL ) {
-            currcl->segs = newlist;
+            class->segs = newlist;
         }
     }
 }
@@ -1017,8 +1017,8 @@ static void ReOrderClasses( section *sec )
 // together.
 {
     class_entry         *rings[ORD_LAST + 1];
-    class_entry         *nextcl;
-    class_entry         *currcl;
+    class_entry         *nextclass;
+    class_entry         *class;
     class_entry         **owner;
     seg_leader          *currseg;
     seg_leader          *prevseg;
@@ -1030,16 +1030,16 @@ static void ReOrderClasses( section *sec )
         rings[i] = NULL;
     }
     SplitDGroupClasses( sec );
-    for( currcl = sec->classlist; currcl != NULL; currcl = nextcl ) {
-        nextcl = currcl->next_class;  // Take class out of original ring
-        currcl->next_class = NULL;
-        CheckClassUninitialized( currcl );
+    for( class = sec->classlist; class != NULL; class = nextclass ) {
+        nextclass = class->next_class;  // Take class out of original ring
+        class->next_class = NULL;
+        CheckClassUninitialized( class );
         if( (FmtData.type & (MK_NOVELL | MK_PHAR_LAP | MK_OS2_LX))
-            && (currcl->flags & CLASS_32BIT) == 0 ) {
+            && (class->flags & CLASS_32BIT) == 0 ) {
             ord = ORD_REALMODE;
         } else {
-            name = currcl->name.u.ptr;
-            if( currcl->flags & CLASS_CODE ) {
+            name = class->name.u.ptr;
+            if( class->flags & CLASS_CODE ) {
                 if( stricmp( name, OvlMgrClass ) == 0 ) {
                     ord = ORD_OVLMGR;
                 } else if( stricmp( name, BegCodeClassName ) == 0 ) {
@@ -1047,9 +1047,9 @@ static void ReOrderClasses( section *sec )
                 } else {
                     ord = ORD_CODE;
                 }
-            } else if( ( currcl->segs == NULL )
-                || ( currcl->segs->group == NULL )
-                || ( currcl->segs->group != DataGroup ) ) {
+            } else if( ( class->segs == NULL )
+                || ( class->segs->group == NULL )
+                || ( class->segs->group != DataGroup ) ) {
                 ord = ORD_OTHER;
             } else {     // it's the DGROUP segments.
                 if( stricmp( name, BSSClassName ) == 0 ) {
@@ -1060,7 +1060,7 @@ static void ReOrderClasses( section *sec )
                     ord = ORD_BEGDGROUP;
                 } else if( stricmp( name, DataClassName ) == 0 ) {
                     ord = ORD_DATA;
-                } else if( currcl->flags & CLASS_LXDATA_SEEN ) {
+                } else if( class->flags & CLASS_LXDATA_SEEN ) {
                     ord = ORD_INITDGROUP;
                 } else {
                     ord = ORD_UNINITDGROUP;
@@ -1070,34 +1070,34 @@ static void ReOrderClasses( section *sec )
         /* add the class to the appropriate ring */
         /* 'rings[ord]' points to the _last_ element of the ring */
         if( rings[ord] == NULL ) {
-            currcl->next_class = currcl;
+            class->next_class = class;
         } else {
-            currcl->next_class = rings[ord]->next_class;
-            rings[ord]->next_class = currcl;
+            class->next_class = rings[ord]->next_class;
+            rings[ord]->next_class = class;
         }
-        rings[ord] = currcl;
+        rings[ord] = class;
     }
 
     /* move the BEGTEXT segment in CODE class to front of segment list */
-    currcl = rings[ORD_CODE];
-    if( currcl != NULL ) {
+    class = rings[ORD_CODE];
+    if( class != NULL ) {
         do {
-            prevseg = currcl->segs;
+            prevseg = class->segs;
             if( prevseg == NULL )
                 break;
             currseg = prevseg->next_seg;
             for( ;; ) {
                 if( stricmp( currseg->segname.u.ptr, BegTextSegName ) == 0 ) {
-                    RingPromote( &currcl->segs, currseg, prevseg );
+                    RingPromote( &class->segs, currseg, prevseg );
                     break;
                 }
-                if( currseg == currcl->segs )
+                if( currseg == class->segs )
                     break;
                 prevseg = currseg;
                 currseg = currseg->next_seg;
             }
-            currcl = currcl->next_class;
-        } while( currcl != rings[ORD_CODE] );
+            class = class->next_class;
+        } while( class != rings[ORD_CODE] );
     }
 
     /* now construct list out of the collected parts. */
@@ -1120,8 +1120,8 @@ static void SortClasses( section *sec )
 // information is provided.
 {
     class_entry         *DefaultRing;   // Where to put classes that don't match anything
-    class_entry         *nextcl;
-    class_entry         *currcl;
+    class_entry         *nextclass;
+    class_entry         *class;
     class_entry         **NewRing;
     class_entry         **owner;
     seg_leader          *currseg;
@@ -1131,40 +1131,40 @@ static void SortClasses( section *sec )
 
     DefaultRing = NULL;
 
-    for( currcl = sec->classlist; currcl != NULL; currcl = nextcl ) {
-        nextcl = currcl->next_class;  // Take class out of original ring
-        currcl->next_class = NULL;
-        CheckClassUninitialized( currcl );
+    for( class = sec->classlist; class != NULL; class = nextclass ) {
+        nextclass = class->next_class;  // Take class out of original ring
+        class->next_class = NULL;
+        CheckClassUninitialized( class );
         NewRing = &DefaultRing;  // In case no special class is found
         for( MatchClass = sec->orderlist; MatchClass != NULL; MatchClass = MatchClass->NextClass ) {
-            if( stricmp( currcl->name.u.ptr, MatchClass->Name ) == 0 ) { // search order list for name match
+            if( stricmp( class->name.u.ptr, MatchClass->Name ) == 0 ) { // search order list for name match
                 NewRing = &(MatchClass->Ring);   // if found save ptr to instance
                 if( MatchClass->FixedAddr ) {    // and copy any flags or address from it
-                    currcl->flags |= CLASS_FIXED;
-                    currcl->BaseAddr = MatchClass->Base;
+                    class->flags |= CLASS_FIXED;
+                    class->BaseAddr = MatchClass->Base;
                     FmtData.base = 0;  // Otherwise PE will use default and blow up
                 }
                 if( MatchClass->NoEmit ) {
-                    currcl->flags |= CLASS_NOEMIT;
+                    class->flags |= CLASS_NOEMIT;
                 }
                 break;
             }
         }
         // add the class to front of ring attached to order class, or to default ring
         if( *NewRing == NULL ) {
-            currcl->next_class = currcl;
+            class->next_class = class;
         } else {
-            currcl->next_class = (*NewRing)->next_class;
-            (*NewRing)->next_class = currcl;
+            class->next_class = (*NewRing)->next_class;
+            (*NewRing)->next_class = class;
         }
-        *NewRing = currcl;
+        *NewRing = class;
     }
     // Now re-arrange segments in any order classes for which we have segments specified
     for( MatchClass = sec->orderlist; MatchClass != NULL; MatchClass = MatchClass->NextClass ) {
         for( MatchSeg = MatchClass->SegList; MatchSeg != NULL; MatchSeg = MatchSeg->NextSeg ) {
-           currcl = MatchClass->Ring;
+            class = MatchClass->Ring;
             do {
-                prevseg = currcl->segs;
+                prevseg = class->segs;
                 if( prevseg == NULL )
                     break;
                 currseg = prevseg->next_seg;
@@ -1178,17 +1178,17 @@ static void SortClasses( section *sec )
                         if( MatchSeg->NoEmit ) {
                             currseg->segflags |= SEG_NOEMIT;
                         }
-                        RingPromote( &currcl->segs, currseg, prevseg );
+                        RingPromote( &class->segs, currseg, prevseg );
                         break;
                     }
-                    if( currseg == currcl->segs ) {
+                    if( currseg == class->segs ) {
                         break;
                     }
                     prevseg = currseg;
                     currseg = currseg->next_seg;
                 }
-                currcl = currcl->next_class;
-            } while( currcl != MatchClass->Ring );
+                class = class->next_class;
+            } while( class != MatchClass->Ring );
         }
     }
     /* now construct list out of the collected parts. */
@@ -1207,9 +1207,9 @@ static void SortClasses( section *sec )
     // This has to happen after the class list is rebuilt, so it can be searched
     for( MatchClass = sec->orderlist; MatchClass != NULL; MatchClass = MatchClass->NextClass ) {
          if( MatchClass->Copy && MatchClass->Ring != NULL ) {   // If this is a duplicate destination, find the source
-             for( currcl = sec->classlist; currcl != NULL; currcl = currcl->next_class ) {
-                if( stricmp( MatchClass->SrcName, currcl->name.u.ptr ) == 0 ) {
-                    MatchClass->Ring->DupClass = currcl;
+             for( class = sec->classlist; class != NULL; class = class->next_class ) {
+                if( stricmp( MatchClass->SrcName, class->name.u.ptr ) == 0 ) {
+                    MatchClass->Ring->DupClass = class;
                     MatchClass->Ring->flags |= CLASS_COPY;
                     break;
                 }
@@ -1223,7 +1223,7 @@ static void SortSegments( void )
 /******************************/
 // reorder segments based on COFF name grouping
 {
-    class_entry         *currcl;
+    class_entry         *class;
     seg_leader          *prev;
     seg_leader          *curr;
     seg_leader          *comp;
@@ -1236,10 +1236,10 @@ static void SortSegments( void )
     bool                added;
 
 
-    for( currcl = Root->classlist; currcl != NULL; currcl = currcl->next_class ){
+    for( class = Root->classlist; class != NULL; class = class->next_class ){
         foundgroup = false;
         newlist = NULL;
-        for( curr = RingPop( &currcl->segs ); curr != NULL; curr = RingPop( &currcl->segs ) ) {
+        for( curr = RingPop( &class->segs ); curr != NULL; curr = RingPop( &class->segs ) ) {
             dollarpos = strchr( curr->segname.u.ptr, '$' );
             if( dollarpos != NULL ) {
                 currlen = dollarpos - curr->segname.u.ptr;
@@ -1274,7 +1274,7 @@ static void SortSegments( void )
                 RingAppend( &newlist, curr );
             }
         }
-        currcl->segs = newlist;
+        class->segs = newlist;
     }
 }
 

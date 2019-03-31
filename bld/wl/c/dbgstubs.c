@@ -69,10 +69,10 @@ void DBIP2Source( byte *buff, byte *endbuff )
     endbuff = endbuff;
 }
 
-section * DBIGetSect( char *clname )
+section * DBIGetSect( char *classname )
 /*****************************************/
 {
-    clname = clname;
+    classname = classname;
     return NULL;
 }
 
@@ -131,10 +131,10 @@ void DBIGenModule( void )
 {
 }
 
-void DBIDefClass( class_entry *cl, unsigned_32 size )
+void DBIDefClass( class_entry *class, unsigned_32 size )
 /**********************************************************/
 {
-    cl = cl;
+    class = class;
     size = size;
 }
 
