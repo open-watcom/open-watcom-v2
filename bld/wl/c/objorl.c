@@ -926,7 +926,7 @@ unsigned long ORLPass1( void )
     filehdl = InitFile();
     if( filehdl == NULL ) {
         LnkMsg( FTL+MSG_BAD_OBJECT, "s", CurrMod->f.source->file->name.u.ptr );
-        CurrMod->f.source->file->flags |= INSTAT_IOERR;
+        CurrMod->f.source->file->status |= INSTAT_IOERR;
         return( (unsigned long)-1 );
     }
     if( CheckFlags( filehdl ) ) {

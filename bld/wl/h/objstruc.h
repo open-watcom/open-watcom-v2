@@ -99,7 +99,7 @@ typedef struct outfilelist {
     unsigned long       origin;
 } outfilelist;
 
-enum infile_flags {
+typedef enum infile_status {
     INSTAT_USE_LIBPATH  = 0x0001,       // use libpath for this file.
     INSTAT_LIBRARY      = 0x0002,       // file is a library
     INSTAT_IOERR        = 0x0004,       // problem reading this file
@@ -109,9 +109,10 @@ enum infile_flags {
     INSTAT_PAGE_CACHE   = 0x0040,       // read in "paged"
     INSTAT_GOT_MODTIME  = 0x0080,
     INSTAT_NO_WARNING   = 0x0100
-};
+} infile_status;
 
 #define INSTAT_SET_CACHE (INSTAT_FULL_CACHE | INSTAT_PAGE_CACHE)
+#define INSTAT_LIB_SEARCH (INSTAT_USE_LIBPATH | INSTAT_LIBRARY)
 
 typedef struct infilelist {
     INFILELIST          *next;
@@ -123,10 +124,10 @@ typedef struct infilelist {
     f_handle            handle;
     time_t              modtime;
     name_strtab         name;
-    enum infile_flags   flags;
+    infile_status       status;
 } infilelist;
 
-enum file_status {
+typedef enum dbi_flags {
     DBI_LINE            = 0x00000001,    /*  values for DBIFlag */
     DBI_TYPE            = 0x00000002,
     DBI_LOCAL           = 0x00000004,
@@ -134,6 +135,9 @@ enum file_status {
     DBI_STATICS         = 0x00000010,
     DBI_ALL             = ( DBI_LINE | DBI_TYPE | DBI_LOCAL | DBI_STATICS ),
     DBI_MASK            = ( DBI_ALL | DBI_ONLY_EXPORTS ),
+} dbi_flags;
+
+typedef enum file_flags {
     STAT_HAS_CHANGED    = 0x00000040,
     STAT_OMF_LIB        = 0x00000080,
     STAT_AR_LIB         = 0x00000100,
@@ -146,7 +150,7 @@ enum file_status {
     STAT_SEEN_LIB       = 0x00004000,
     STAT_HAS_MEMBER     = 0x00008000,
     STAT_USER_SPECD     = 0x00010000
-};
+} file_flags;
 
 /*
  * overlay manager library priority         0
@@ -169,7 +173,7 @@ typedef struct file_list {
         MEMBER_LIST         *member;
     } u;
     char                *strtab; /* for AR format */
-    enum file_status    status;
+    file_flags          flags;
     lib_priority        priority;       /* for libraries */
     unsigned            ovlref   : 16;  /* for fixed libraries */
     unsigned                     : 0;

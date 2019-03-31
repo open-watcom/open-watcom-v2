@@ -76,7 +76,7 @@ static infilelist *AllocEntry( const char *name, const path_entry *path )
     entry->handle = NIL_FHANDLE;
     entry->cache = NULL;
     entry->len = 0;
-    entry->flags = 0;
+    entry->status = 0;
     return( entry );
 }
 
@@ -117,7 +117,7 @@ bool CleanCachedHandles( void )
     infilelist *list;
 
     for( list = CachedFiles; list != NULL; list = list->next ) {
-        if( (list->flags & INSTAT_IN_USE) == 0 && list->handle != NIL_FHANDLE ) {
+        if( (list->status & INSTAT_IN_USE) == 0 && list->handle != NIL_FHANDLE ) {
             break;
         }
     }
@@ -170,8 +170,6 @@ bool MakeFileNameFromList( const char **path_list, char *name, char *fullname )
     return( false );
 }
 
-#define LIB_SEARCH (INSTAT_USE_LIBPATH | INSTAT_LIBRARY)
-
 static f_handle PathObjOpen( const char *path_ptr, char *name, char *new_name, infilelist *file )
 /***********************************************************************************************/
 {
@@ -213,7 +211,7 @@ bool DoObjOpen( infilelist *file )
         fp = QObjOpen( new_name );
     } else {                                // new, no searched path
         fp = NIL_FHANDLE;
-        if( (file->flags & LIB_SEARCH) || file->path_list == NULL ) {
+        if( (file->status & INSTAT_LIB_SEARCH) || file->path_list == NULL ) {
             /* try in current directory */
             fp = QObjOpen( name );
         }
@@ -224,7 +222,7 @@ bool DoObjOpen( infilelist *file )
                     break;
                 }
             }
-            if( fp == NIL_FHANDLE && (file->flags & INSTAT_USE_LIBPATH) ) {
+            if( fp == NIL_FHANDLE && (file->status & INSTAT_USE_LIBPATH) ) {
                 if( LibPath != NULL ) {
                     fp = PathObjOpen( LibPath, name, new_name, file );
                 }
@@ -232,13 +230,13 @@ bool DoObjOpen( infilelist *file )
         }
     }
     if( fp != NIL_FHANDLE ) {
-        if( (file->flags & INSTAT_GOT_MODTIME) == 0 ) {
+        if( (file->status & INSTAT_GOT_MODTIME) == 0 ) {
             file->modtime = QFModTime( fp );
         }
         file->handle = fp;
         return( true );
-    } else if( (file->flags & INSTAT_NO_WARNING) == 0 ) {
-        err = ( file->flags & INSTAT_OPEN_WARNING ) ? WRN+MSG_CANT_OPEN : ERR+MSG_CANT_OPEN;
+    } else if( (file->status & INSTAT_NO_WARNING) == 0 ) {
+        err = ( file->status & INSTAT_OPEN_WARNING ) ? WRN+MSG_CANT_OPEN : ERR+MSG_CANT_OPEN;
         PrintIOError( err, "12", name );
         file->prefix = NULL;
         file->handle = NIL_FHANDLE;
@@ -265,14 +263,14 @@ void FreeTokBuffs( void )
 void BadObject( void )
 /***************************/
 {
-    CurrMod->f.source->file->flags |= INSTAT_IOERR;
+    CurrMod->f.source->file->status |= INSTAT_IOERR;
     LnkMsg( LOC+ERR+MSG_OBJ_FILE_ATTR, NULL );
 }
 
 void EarlyEOF( void )
 /**************************/
 {
-    CurrMod->f.source->file->flags |= INSTAT_IOERR;
+    CurrMod->f.source->file->status |= INSTAT_IOERR;
     Locator( CurrMod->f.source->file->name.u.ptr, NULL, 0 );
     LnkMsg( ERR+MSG_EARLY_EOF, NULL );
 }

@@ -295,7 +295,7 @@ static void Pass1Cmd( byte cmd )
         LnkMsg( LOC_REC+WRN+MSG_REC_NOT_DONE, "x", cmd );
         break;
     default:
-        CurrMod->f.source->file->flags |= INSTAT_IOERR;
+        CurrMod->f.source->file->status |= INSTAT_IOERR;
         LnkMsg( LOC_REC+ERR+MSG_BAD_REC_TYPE, "x", cmd );
         break;
     }

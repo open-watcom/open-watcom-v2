@@ -851,7 +851,7 @@ void WriteLibsUsed( void )
     if( LinkState & LS_GENERATE_LIB_LIST ) {
         WriteBox( MSG_MAP_BOX_LIB_USED );
         for( lib = ObjLibFiles; lib != NULL; lib = lib->next_file ) {
-            if( lib->status & STAT_LIB_USED ) {
+            if( lib->flags & STAT_LIB_USED ) {
                 MakeFileName( lib->file, new_name );
                 WriteMap( "%s", new_name );
             }

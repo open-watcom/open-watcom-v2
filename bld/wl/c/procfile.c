@@ -116,11 +116,11 @@ static void CheckNewFile( mod_entry *mod, file_list *list,
 
     if( (LinkFlags & LF_GOT_CHGD_FILES) == 0 || AlwaysCheckUsingDate ) {
         if( QModTime( list->file->name.u.ptr, &modtime ) || modtime > mod->modtime ) {
-            list->status |= STAT_HAS_CHANGED;
+            list->flags |= STAT_HAS_CHANGED;
         }
     } else {
         if( FindHTableElem( Root->modFilesHashed, list->file->name.u.ptr ) ) {
-            list->status |= STAT_HAS_CHANGED;
+            list->flags |= STAT_HAS_CHANGED;
         }
     }
 }
@@ -135,7 +135,7 @@ static void SetStartAddr( void )
     mod = StartInfo.mod;
     if( mod == NULL )
         return;
-    if( (mod->modinfo & MOD_KILL) || (mod->f.source->status & STAT_HAS_CHANGED) ) {
+    if( (mod->modinfo & MOD_KILL) || (mod->f.source->flags & STAT_HAS_CHANGED) ) {
         ClearStartAddr();
     }
 }
@@ -198,7 +198,7 @@ static void CheckBlacklist( file_list *list, libnamelist *blacklist )
     size_t      length_b;
     size_t      delta;
 
-    if( list->status & STAT_HAS_CHANGED )
+    if( list->flags & STAT_HAS_CHANGED )
         return;
     length = strlen( list->file->name.u.ptr );
     for( ; blacklist != NULL; blacklist = blacklist->next ) {
@@ -206,7 +206,7 @@ static void CheckBlacklist( file_list *list, libnamelist *blacklist )
         if( length >= length_b ) {
             delta = length - length_b;
             if( FNAMECMPSTR( blacklist->name, list->file->name.u.ptr + delta ) == 0 ) {
-                list->status |= STAT_HAS_CHANGED;
+                list->flags |= STAT_HAS_CHANGED;
                 return;
             }
         }
@@ -315,7 +315,7 @@ static void IncIterateMods( mod_entry *mod, void (*proc_fn)(mod_entry *), bool d
     bool haschanged;
 
     for( ; mod != NULL; mod = mod->n.next_mod ) {
-        haschanged = (mod->modinfo & MOD_KILL) || (mod->f.source->status & STAT_HAS_CHANGED);
+        haschanged = (mod->modinfo & MOD_KILL) || (mod->f.source->flags & STAT_HAS_CHANGED);
         if( haschanged == dochanged ) {
             proc_fn( mod );
         }
@@ -374,7 +374,7 @@ static bool EndOfLib( file_list *list, unsigned long loc )
 {
     unsigned_8 *id;
 
-    if( list->status & STAT_OMF_LIB ) {
+    if( list->flags & STAT_OMF_LIB ) {
         id = CacheRead( list, loc, sizeof( unsigned_8 ) );
         return( *id == LIB_TRAILER_REC );
     } else {
@@ -404,8 +404,8 @@ static void DoPass1( mod_entry *next, file_list *list )
             if( EndOfLib( list, loc ) )
                 break;
             membname = IdentifyObject( list, &loc, &size );
-            if( list->status & STAT_IS_LIB ) {
-                if( (list->status & STAT_HAS_MEMBER) && list->u.member != NULL ) {
+            if( list->flags & STAT_IS_LIB ) {
+                if( (list->flags & STAT_HAS_MEMBER) && list->u.member != NULL ) {
                     member = FindMember( list, membname );
                     if( member == NULL ) {
                         ignoreobj = true;
@@ -433,9 +433,9 @@ static void DoPass1( mod_entry *next, file_list *list )
                     next->modinfo |= member->flags;
                     _LnkFree( member );
                 }
-                if( (list->status & STAT_HAS_MEMBER) == 0 ) {
-                    next->modinfo |= list->status & DBI_MASK;
-                    if( list->status & STAT_LAST_SEG ) {
+                if( (list->flags & STAT_HAS_MEMBER) == 0 ) {
+                    next->modinfo |= list->flags & DBI_MASK;
+                    if( list->flags & STAT_LAST_SEG ) {
                         next->modinfo |= MOD_LAST_SEG;
                     }
                 }
@@ -446,13 +446,13 @@ static void DoPass1( mod_entry *next, file_list *list )
                 }
                 next->name.u.ptr = membname;
                 loc = ObjPass1();
-                if( list->status & STAT_TRACE_SYMS ) {
+                if( list->flags & STAT_TRACE_SYMS ) {
                     TraceSymList( CurrMod->publist );
                 }
                 next = NULL;
             }
             ObjFormat = 0;
-            if( list->status & STAT_IS_LIB ) {      // skip library padding.
+            if( list->flags & STAT_IS_LIB ) {      // skip library padding.
                 unsigned_16 modulus;
 
                 modulus = (unsigned_16)( loc % reclength );
@@ -493,7 +493,7 @@ static void ProcessMods( void )
                 DoPass1( NULL, list );
                 break;
             } else {
-                if( list->status & STAT_HAS_CHANGED ) {
+                if( list->flags & STAT_HAS_CHANGED ) {
                     memset( mod, 0, sizeof( mod_entry ) );
                     DoPass1( mod, list );
                 } else {
@@ -515,7 +515,7 @@ static void ProcessMods( void )
     for( mod = LibModules; mod != NULL; mod = next ) {
         next = mod->n.next_mod;
         if( (mod->modinfo & MOD_KILL)
-                || mod->f.source != NULL && (mod->f.source->status & STAT_HAS_CHANGED) ) {
+                || mod->f.source != NULL && (mod->f.source->flags & STAT_HAS_CHANGED) ) {
             FreeModEntry( mod );
         } else {
             SavedPass1( mod );
@@ -597,7 +597,7 @@ char *IdentifyObject( file_list *list, unsigned long *loc, unsigned long *size )
     name = NULL;
     *size = 0;
     ar_loc = 0;
-    if( list->status & STAT_AR_LIB ) {
+    if( list->flags & STAT_AR_LIB ) {
         ar_loc = MAKE_EVEN( *loc );     /* AR headers are word aligned. */
         ar_hdr = CacheRead( list, ar_loc, sizeof( ar_header ) );
         ar_loc += sizeof( ar_header );
@@ -609,7 +609,7 @@ char *IdentifyObject( file_list *list, unsigned long *loc, unsigned long *size )
         if( IsOMF( list, *loc ) ) {
             ObjFormat |= FMT_OMF;
             name = GetOMFName( list, loc );
-            if( list->status & STAT_AR_LIB ) {
+            if( list->flags & STAT_AR_LIB ) {
                 *loc = ar_loc;          /* Restore the location. */
             }
         }
@@ -692,10 +692,10 @@ void ResolveUndefined( void )
     do {
         LinkState &= ~LS_LIBRARIES_ADDED;
         for( lib = ObjLibFiles; lib != NULL; lib = lib->next_file ) {
-            if( lib->status & STAT_SEEN_LIB ) {
-                lib->status |= STAT_OLD_LIB;
+            if( lib->flags & STAT_SEEN_LIB ) {
+                lib->flags |= STAT_OLD_LIB;
             } else {
-                lib->status |= STAT_SEEN_LIB;
+                lib->flags |= STAT_SEEN_LIB;
             }
         }
         for( sym = HeadSym; sym != NULL; sym = sym->link ) {

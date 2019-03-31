@@ -80,7 +80,7 @@ static  void            SetDict( file_list *, unsigned );
 static void BadLibrary( file_list *list )
 /***************************************/
 {
-    list->file->flags |= INSTAT_IOERR;
+    list->file->status |= INSTAT_IOERR;
     _LnkFree( list->u.dict );
     list->u.dict = NULL;
     Locator( list->file->name.u.ptr, NULL, 0 );
@@ -351,14 +351,14 @@ int CheckLibraryType( file_list *list, unsigned long *loc, bool makedict )
     if( header[0] == 0xf0 && header[1] == 0x01 ) {
         // COFF object for PPC
     } else if( header[0] == LIB_HEADER_REC ) {   // reading from a library
-        list->status |= STAT_OMF_LIB;
+        list->flags |= STAT_OMF_LIB;
         reclength = ReadOMFDict( list, header, makedict );
         if( reclength < 0 ) {
             return( -1 );
         }
         *loc += ROUND_UP( sizeof( lib_header ), reclength );
     } else if( memcmp( header, AR_IDENT, AR_IDENT_LEN ) == 0 ) {
-        list->status |= STAT_AR_LIB;
+        list->flags |= STAT_AR_LIB;
         reclength = 2;
         *loc += AR_IDENT_LEN;
         if( !ReadARDict( list, loc, makedict ) ) {
@@ -381,12 +381,12 @@ mod_entry *SearchLib( file_list *lib, const char *name )
     if( lib->u.dict == NULL ) {
         if( CheckLibraryType( lib, &pos, true ) == -1 )
             return( NULL );
-        if( (lib->status & STAT_IS_LIB) == 0 ) {
+        if( (lib->flags & STAT_IS_LIB) == 0 ) {
             BadLibrary( lib );
             return( NULL );
         }
     }
-    if( lib->status & STAT_OMF_LIB ) {
+    if( lib->flags & STAT_OMF_LIB ) {
         retval = OMFSearchExtLib( lib, name, &pos );
     } else {
         retval = ARSearchExtLib( lib, name, &pos );
@@ -402,7 +402,7 @@ mod_entry *SearchLib( file_list *lib, const char *name )
     obj->location = pos;
     obj->f.source = lib;
     obj->modtime = lib->file->modtime;
-    obj->modinfo = (lib->status & DBI_MASK) | (ObjFormat & FMT_OBJ_FMT_MASK);
+    obj->modinfo = (lib->flags & DBI_MASK) | (ObjFormat & FMT_OBJ_FMT_MASK);
     return( obj );
 }
 
@@ -542,7 +542,7 @@ bool DiscardDicts( void )
     for( curr = ObjLibFiles; curr != NULL; curr = curr->next_file ) {
         if( curr->u.dict == NULL )
             continue;
-        if( curr->status & STAT_AR_LIB )
+        if( curr->flags & STAT_AR_LIB )
             continue;
         if( curr->u.dict->o.cache == NULL )
             continue;
@@ -564,14 +564,14 @@ void BurnLibs( void )
     dict_entry  *dict;
 
     for( temp = ObjLibFiles; temp != NULL; temp = temp->next_file ) {
-        if( temp->status & STAT_AR_LIB ) {
+        if( temp->flags & STAT_AR_LIB ) {
             CacheFree( temp, temp->strtab );
             temp->strtab = NULL;
         }
         dict = temp->u.dict;
         if( dict == NULL )
             continue;
-        if( temp->status & STAT_AR_LIB ) {
+        if( temp->flags & STAT_AR_LIB ) {
             CacheFree( temp, dict->a.filepostab - 1 );
             _LnkFree( dict->a.symbtab );
         } else {

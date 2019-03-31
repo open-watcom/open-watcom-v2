@@ -75,37 +75,37 @@ bool CacheOpen( file_list *list )
     if( list == NULL )
         return( true );
     file = list->file;
-    if( file->flags & INSTAT_IOERR )
+    if( file->status & INSTAT_IOERR )
         return( false );
     if( DoObjOpen( file ) ) {
-        file->flags |= INSTAT_IN_USE;
+        file->status |= INSTAT_IN_USE;
     } else {
-        file->flags |= INSTAT_IOERR;
+        file->status |= INSTAT_IOERR;
         return( false );
     }
     if( file->len == 0 ) {
         file->len = QFileSize( file->handle );
         if( file->len == 0 ) {
             LnkMsg( ERR+MSG_BAD_OBJECT, "s", file->name );
-            file->flags |= INSTAT_IOERR;
+            file->status |= INSTAT_IOERR;
             return( false );
         }
     }
-    if( (file->flags & INSTAT_SET_CACHE) == 0 ) {
+    if( (file->status & INSTAT_SET_CACHE) == 0 ) {
         if( LinkFlags & LF_CACHE_FLAG ) {
-            file->flags |= INSTAT_FULL_CACHE;
+            file->status |= INSTAT_FULL_CACHE;
         } else if( LinkFlags & LF_NOCACHE_FLAG ) {
-            file->flags |= INSTAT_PAGE_CACHE;
+            file->status |= INSTAT_PAGE_CACHE;
         } else {
-            if( file->flags & INSTAT_LIBRARY ) {
-                file->flags |= INSTAT_PAGE_CACHE;
+            if( file->status & INSTAT_LIBRARY ) {
+                file->status |= INSTAT_PAGE_CACHE;
             } else {
-                file->flags |= INSTAT_FULL_CACHE;
+                file->status |= INSTAT_FULL_CACHE;
             }
         }
     }
     if( file->cache == NULL ) {
-        if( file->flags & INSTAT_FULL_CACHE ) {
+        if( file->status & INSTAT_FULL_CACHE ) {
             _ChkAlloc( file->cache, file->len );
             if( file->currpos != 0 ) {
                 QLSeek( file->handle, 0, SEEK_SET, file->name.u.ptr );
@@ -134,11 +134,11 @@ void CacheClose( file_list *list, unsigned pass )
         return;
     file = list->file;
 //    if( file->handle == NIL_FHANDLE ) return;
-    file->flags &= ~INSTAT_IN_USE;
+    file->status &= ~INSTAT_IN_USE;
     switch( pass ) {
     case 1: /* first pass */
-        nukecache = ( (file->flags & INSTAT_LIBRARY) == 0 );
-        if( file->flags & INSTAT_FULL_CACHE ) {
+        nukecache = ( (file->status & INSTAT_LIBRARY) == 0 );
+        if( file->status & INSTAT_FULL_CACHE ) {
             if( nukecache ) {
                 FreeObjCache( list );
             }
@@ -163,7 +163,7 @@ void *CachePermRead( file_list *list, unsigned long pos, size_t len )
     char        *result;
 
     buf = CacheRead( list, pos, len );
-    if( list->file->flags & INSTAT_FULL_CACHE )
+    if( list->file->status & INSTAT_FULL_CACHE )
         return( buf );
     if( Multipage ) {
         _LnkRealloc( result, buf, len );
@@ -189,7 +189,7 @@ void *CacheRead( file_list *list, unsigned long pos, size_t len )
     unsigned long   newpos;
     infilelist      *file;
 
-    if( list->file->flags & INSTAT_FULL_CACHE ) {
+    if( list->file->status & INSTAT_FULL_CACHE ) {
         if( pos + len > list->file->len )
             return( NULL );
         return( (char *)list->file->cache + pos );
@@ -265,7 +265,7 @@ void CacheFree( file_list *list, void *mem )
 /*************************************************/
 // used for disposing things allocated by CachePermRead
 {
-    if( list->file->flags & INSTAT_PAGE_CACHE ) {
+    if( list->file->status & INSTAT_PAGE_CACHE ) {
         _LnkFree( mem );
     }
 }
@@ -305,7 +305,7 @@ void FreeObjCache( file_list *list )
 {
     if( list == NULL )
         return;
-    if( list->file->flags & INSTAT_FULL_CACHE ) {
+    if( list->file->status & INSTAT_FULL_CACHE ) {
         _LnkFree( list->file->cache );
     } else {
         DumpFileCache( list->file, true );
@@ -320,7 +320,7 @@ bool DumpObjCache( void )
     infilelist *file;
 
     for( file = CachedFiles; file != NULL; file = file->next ) {
-        if( file->flags & INSTAT_PAGE_CACHE ) {
+        if( file->status & INSTAT_PAGE_CACHE ) {
             if( CurrMod == NULL || CurrMod->f.source == NULL
                                 || CurrMod->f.source->file != file ) {
                 if( DumpFileCache( file, true ) ) {

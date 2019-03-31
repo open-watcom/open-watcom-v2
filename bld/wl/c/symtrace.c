@@ -97,7 +97,7 @@ static void CheckFileTrace( section *sect )
         if( FNAMECMPSTR( list->file->name.u.ptr, CurrTrace->u.name ) == 0 ) {
             CurrTrace->found = true;
             _LnkFree( CurrTrace->u.name );
-            list->status |= STAT_TRACE_SYMS;
+            list->flags |= STAT_TRACE_SYMS;
             return;
         }
     }

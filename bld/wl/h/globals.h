@@ -81,7 +81,7 @@ GLOB unsigned       TokSize;        // size of above buffer
 GLOB offset         PackCodeLimit;  // Maximum size of a packed code seg
 GLOB offset         PackDataLimit;  // Maximum size of a packed data seg
 GLOB symbol         *HeadSym;       /* head of symbol table list */
-GLOB byte           DBIFlag;
+GLOB dbi_flags      DBIFlag;
 GLOB struct fmt_data FmtData;       /* format specific data */
 GLOB obj_format     ObjFormat;
 GLOB f_handle       TempFile;

@@ -307,11 +307,11 @@ static file_list *AllocNewFile( member_list *member )
 
     _PermAlloc( new_entry, sizeof(file_list) );
     new_entry->next_file = NULL;
-    new_entry->status = DBIFlag;
+    new_entry->flags = DBIFlag;
     new_entry->strtab = NULL;
     new_entry->u.member = member;
     if( member != NULL ) {
-        new_entry->status |= STAT_HAS_MEMBER;
+        new_entry->flags |= STAT_HAS_MEMBER;
     }
     return( new_entry );
 }
@@ -345,7 +345,7 @@ static void *AddObjFile( const char *name, char *member, file_list **filelist )
     new_entry = AllocNewFile( new_member );
     if( new_member != NULL ) {
         new_entry->file = AllocUniqueFileEntry( name, UsrLibPath );
-        new_entry->file->flags |= INSTAT_LIBRARY;
+        new_entry->file->status |= INSTAT_LIBRARY;
     } else {
         new_entry->file = AllocFileEntry( name, ObjPath );
     }
@@ -384,7 +384,7 @@ file_list *AddObjLib( const char *name, lib_priority priority )
     if( lib == NULL ) {
         lib = AllocNewFile( NULL );
         lib->file = AllocUniqueFileEntry( name, UsrLibPath );
-        lib->file->flags |= INSTAT_LIBRARY | INSTAT_OPEN_WARNING;
+        lib->file->status |= INSTAT_LIBRARY | INSTAT_OPEN_WARNING;
         LinkState |= LS_LIBRARIES_ADDED;
     }
     /* put it to new position and setup priority */
@@ -418,7 +418,7 @@ static bool AddLibFile( void )
     if( *LastLibFile == NULL ) {        // no file directives found yet
         CurrFList = LastLibFile;
     }
-    entry->file->flags |= INSTAT_USE_LIBPATH;
+    entry->file->status |= INSTAT_USE_LIBPATH;
     _LnkFree( ptr );
     return( true );
 }
@@ -507,9 +507,9 @@ static bool AddLib( void )
 
     ptr = FileName( Token.this, Token.len, E_LIBRARY, false );
     result = AddObjLib( ptr, LIB_PRIORITY_MAX );
-    result->status |= STAT_USER_SPECD;
+    result->flags |= STAT_USER_SPECD;
     if( CmdFlags & CF_SET_SECTION ) {
-        result->status |= STAT_LIB_FIXED;
+        result->flags |= STAT_LIB_FIXED;
         if( OvlLevel == 0 ) {
             result->ovlref = 0;
         } else {
@@ -517,7 +517,7 @@ static bool AddLib( void )
         }
     }
     if( CmdFlags & CF_DOING_OPTLIB ) {
-        result->file->flags |= INSTAT_NO_WARNING;
+        result->file->status |= INSTAT_NO_WARNING;
     }
     DEBUG(( DBG_BASE, "library: %s", ptr ));
     _LnkFree( ptr );
@@ -955,7 +955,7 @@ bool ProcNewSegment( void )
         if( CmdFlags & CF_MEMBER_ADDED ) {
             ((member_list *)LastFile)->flags |= MOD_LAST_SEG;
         } else {
-            ((file_list *)LastFile)->status |= STAT_LAST_SEG;
+            ((file_list *)LastFile)->flags |= STAT_LAST_SEG;
         }
     }
     return( true );

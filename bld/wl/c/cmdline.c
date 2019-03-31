@@ -874,7 +874,7 @@ void AddLibPaths( const char *path_list, size_t len, bool add_to_front )
             libfiles->file->path_list = UsrLibPath;
         }
         for( libfiles = Root->files; libfiles != NULL; libfiles = libfiles->next_file ) {
-            if( libfiles->file->flags & INSTAT_USE_LIBPATH ) {
+            if( libfiles->file->status & INSTAT_USE_LIBPATH ) {
                 libfiles->file->path_list = UsrLibPath;
             }
         }
