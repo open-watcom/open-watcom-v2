@@ -57,7 +57,7 @@ void RemoveNewline( char *p )
 
 void ReadCNames( void )
 {
-    ok = fgets( cbuff, MAX_LINE_SIZE, cfp );
+    ok = fgets( cbuff, sizeof( cbuff ), cfp );
     if( !ok ) {
         cbuff[0] = '\0';
         return;
@@ -165,7 +165,7 @@ void UnderLine( char *p )
 
 void FlushText( void )
 {
-    ok = fgets( hbuff, MAX_LINE_SIZE, hfp );
+    ok = fgets( hbuff, sizeof( hbuff ), hfp );
     if( !ok || IsHelpName( ok ) ) {
         return;
     }
@@ -177,12 +177,12 @@ void FlushText( void )
         CenterTitle( hbuff );
     } else {
         puts( hbuff );
-        ok = fgets( hbuff, MAX_LINE_SIZE, hfp );
+        ok = fgets( hbuff, sizeof( hbuff ), hfp );
     }
     while( ! IsHelpName( ok ) ) {
         RemoveNewline( hbuff );
         puts( hbuff );
-        ok = fgets( hbuff, MAX_LINE_SIZE, hfp );
+        ok = fgets( hbuff, sizeof( hbuff ), hfp );
     }
 }
 
