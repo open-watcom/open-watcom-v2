@@ -345,31 +345,31 @@ void ProcAccel( void )
     DoProcAccel( false, &menu, &parent, WndClass( WndFindActive() ));
 }
 
-static void FreeLabels( gui_menu_struct *menu, int num_items )
+static void FreeLabels( gui_menu_items *menus )
 {
     int     i;
 
-    for( i = 0; i < num_items; i++ ) {
-        FreeLabels( menu[i].child.menu, menu[i].child.num_items );
-        if( menu[i].style & WND_MENU_ALLOCATED ) {
-            menu[i].style &= ~WND_MENU_ALLOCATED;
-            WndFree( (void *)menu[i].label );
-            WndFree( (void *)menu[i].hinttext );
+    for( i = 0; i < menus->num_items; i++ ) {
+        FreeLabels( &menus->menu[i].child );
+        if( menus->menu[i].style & WND_MENU_ALLOCATED ) {
+            menus->menu[i].style &= ~WND_MENU_ALLOCATED;
+            WndFree( (void *)menus->menu[i].label );
+            WndFree( (void *)menus->menu[i].hinttext );
         }
     }
 }
 
 
-static void LoadLabels( gui_menu_struct *menu, int num_items )
+static void LoadLabels( gui_menu_items *menus )
 {
     int     i;
 
-    for( i = 0; i < num_items; i++ ) {
-        LoadLabels( menu[i].child.menu, menu[i].child.num_items );
-        if( (menu[i].style & (GUI_STYLE_MENU_SEPARATOR | WND_MENU_ALLOCATED)) == 0 ) {
-            menu[i].label = WndLoadString( (gui_res_id)(pointer_int)menu[i].label );
-            menu[i].hinttext = WndLoadString( (gui_res_id)(pointer_int)menu[i].hinttext );
-            menu[i].style |= WND_MENU_ALLOCATED;
+    for( i = 0; i < menus->num_items; i++ ) {
+        LoadLabels( &menus->menu[i].child );
+        if( (menus->menu[i].style & (GUI_STYLE_MENU_SEPARATOR | WND_MENU_ALLOCATED)) == 0 ) {
+            menus->menu[i].label = WndLoadString( (gui_res_id)(pointer_int)menus->menu[i].label );
+            menus->menu[i].hinttext = WndLoadString( (gui_res_id)(pointer_int)menus->menu[i].hinttext );
+            menus->menu[i].style |= WND_MENU_ALLOCATED;
         }
     }
 }
@@ -411,13 +411,13 @@ void SetTargMenuItems( void )
     SetMADMenuItems();
 }
 
-static void ForAllMenus( void (*rtn)( gui_menu_struct *menu, int num_items ) )
+static void ForAllMenus( void (*rtn)( gui_menu_items *menus ) )
 {
-    wnd_class_wv    wndclass;
+    int             i;
 
-    rtn( DbgMainMenu, ArraySize( DbgMainMenu ) );
-    for( wndclass = 0; wndclass < NUM_WNDCLS_ALL; ++wndclass ) {
-        rtn( WndPopupMenu( WndInfoTab[wndclass] ), WndNumPopups( WndInfoTab[wndclass] ) );
+    rtn( &WndMainMenu );
+    for( i = 0; i < NUM_WNDCLS_ALL; i++ ) {
+        rtn( &WndInfoTab[i]->popup );
     }
 }
 

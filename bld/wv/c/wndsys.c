@@ -382,28 +382,24 @@ static bool AmpEqual( const char *label, char ch )
 }
 
 
-static gui_menu_struct *FindLocalMenu( char ch, gui_menu_struct *child, int size )
+static gui_menu_struct *FindLocalMenu( char ch, gui_menu_items *menus )
 {
-    gui_menu_struct     *curr;
     int                 i;
 
-    curr = child;
-    for( i = 0; i < size; ++i ) {
-        if( AmpEqual( curr->label, ch ) )
-            return( curr );
-        ++curr;
+    for( i = 0; i < menus->num_items; ++i ) {
+        if( AmpEqual( menus->menu[i].label, ch ) ) {
+            return( &menus->menu[i] );
+        }
     }
 #ifdef DO_WE_REALLY_WANT_THIS
     gui_menu_struct     *sub;
-    curr = child;
-    for( i = 0; i < size; ++i ) {
-        if( curr->child_num_items > 0 ) {
-            sub = FindLocalMenu( ch, curr->child, curr->child_num_items );
+    for( i = 0; i < menus->num_items; ++i ) {
+        if( menus[i].child.num_items > 0 ) {
+            sub = FindLocalMenu( ch, &menus[i].child );
             if( sub != NULL ) {
                 return( sub );
             }
         }
-        ++curr;
     }
 #endif
     return( NULL );
@@ -439,7 +435,7 @@ bool    WndProcMacro( a_window wnd, gui_key key )
     ch = LookUpCtrlKey( key );
     if( ch == 0 )
         return( false );
-    menu = FindLocalMenu( ch, WndPopupMenu( wnd ), WndNumPopups( wnd ) );
+    menu = FindLocalMenu( ch, &wnd->popup );
     if( menu == NULL )
         return( false );
     AccelMenuItem( menu, false );
