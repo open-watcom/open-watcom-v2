@@ -240,13 +240,15 @@ static bool MakeGUIMenuStruct( GUIRMenuEntry *rmenu, gui_menu_items *menus )
 
     if( ok ) {
         menu = GUIMemAlloc( num_items * sizeof( gui_menu_struct ) );
-        ok = ( menu != NULL );
+        if( menu == NULL ) {
+            ok = false;
+        }
     }
 
     if( ok ) {
-        memset( menu, 0, num_items * sizeof( gui_menu_struct ) );
         menuitem = menu;
         for( ; rmenu != NULL; rmenu = rmenu->next ) {
+            menuitem->hinttext = NULL;
             menuitem->child = NoMenu;
             if( rmenu->item->IsPopup ) {
                 menuitem->label = GUIStrDup( rmenu->item->Item.Popup.ItemText, NULL );
