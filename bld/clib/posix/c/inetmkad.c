@@ -25,7 +25,7 @@
 *
 *  ========================================================================
 *
-* Description:  Implementation of inet_makeaddr() for RDOS.
+* Description:  Implementation of inet_makeaddr() for RDOS and Linux.
 *
 ****************************************************************************/
 

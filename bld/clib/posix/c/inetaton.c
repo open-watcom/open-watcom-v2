@@ -24,7 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  Implementation of inet_aton() for RDOS.
+* Description:  Implementation of inet_aton() for RDOS and Linux.
 *
 ****************************************************************************/
 

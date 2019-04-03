@@ -25,11 +25,11 @@
 !inject htonl.obj                                                                       l32 lpc lmp rdu
 !inject htons.obj                                                                       l32 lpc lmp rdu
 !inject inetaddr.obj                                                                    l32 lpc lmp rdu
-!inject inetaton.obj                                                                                rdu
-!inject inetlnof.obj                                                                                rdu
-!inject inetmkad.obj                                                                                rdu
-!inject inetnet.obj                                                                                 rdu
-!inject inetneto.obj                                                                                rdu
+!inject inetaton.obj                                                                    l32 lpc lmp rdu
+!inject inetlnof.obj                                                                    l32 lpc lmp rdu
+!inject inetmkad.obj                                                                    l32 lpc lmp rdu
+!inject inetnet.obj                                                                     l32 lpc lmp rdu
+!inject inetneto.obj                                                                    l32 lpc lmp rdu
 !inject inetntoa.obj                                                                    l32 lpc lmp rdu
 !inject langinfo.obj                                                                    l32 lpc lmp
 !inject listen.obj                                                                      l32 lpc lmp rdu
