@@ -1199,14 +1199,12 @@ bool CheckDrive( bool issue_message )
     bool                ok;
     disk_size           free_disk_space;
     disk_ssize          disk_space_needed;
-    disk_size           max_tmp_file;
     int                 max_targs;
     int                 i, j, targ_num;
     char                *disks[MAX_DRIVES];
     bool                disk_counted[MAX_DRIVES];
     VBUF                tmp_dir;
 #if !defined( __UNIX__ )
-    char                drive;
     gui_message_return  reply;
 #endif
     char                buff[_MAX_PATH];
@@ -1214,7 +1212,6 @@ bool CheckDrive( bool issue_message )
     struct {
         char                *drive;
         disk_ssize  needed;
-        disk_size   max_tmp;
         disk_size   free;
         int         num_files;
     }                   space[MAX_DRIVES];
@@ -1252,7 +1249,6 @@ bool CheckDrive( bool issue_message )
             if( !disk_counted[i] ) {
                 targ_num = i;
                 disk_space_needed = SimTargetSpaceNeeded( i );
-                max_tmp_file = SimMaxTmpFile( i );
                 for( j = i + 1; j < max_targs; ++j ) {
 #ifdef UNC_SUPPORT
                     GetRootFromPath( &UNC_root1, disks[i] );
@@ -1268,9 +1264,6 @@ bool CheckDrive( bool issue_message )
 #endif
                         targ_num = j;
                         disk_space_needed += SimTargetSpaceNeeded( j );
-                        if( SimMaxTmpFile( j ) > max_tmp_file ) {
-                            max_tmp_file = SimMaxTmpFile( j );
-                        }
                         disk_counted[j] = true;
                     }
                 }
@@ -1300,34 +1293,8 @@ bool CheckDrive( bool issue_message )
                 space[i].drive = disks[i];
                 space[i].free = free_disk_space;
                 space[i].needed = disk_space_needed;
-                space[i].max_tmp = max_tmp_file;
                 space[i].num_files = SimGetTargNumFiles( targ_num );
 #if !defined( __UNIX__ )
-                if( disk_space_needed > 0 && free_disk_space < (disk_size)disk_space_needed + max_tmp_file ) {
-                    for( drive = 'c'; drive <= 'z'; ++drive ) {
-                        if( drive == tolower( *disks[i] ) )
-                            continue;
-                        if( !IsFixedDisk( drive ) )
-                            continue;
-                        if( GetFreeDiskSpace( drive, false ) > max_tmp_file ) {
-                            SimSetTargTempDisk( i, drive );
-                            for( j = i + 1; j < max_targs; ++j ) {
-                                if( tolower( *disks[j] ) == tolower( *disks[i] ) ) {
-                                    SimSetTargTempDisk( j, drive );
-                                }
-                            }
-                            break;
-                        }
-                        if( drive == 'z' && issue_message ) {
-                            MsgBox( NULL, "IDS_NOTEMPSPACE", GUI_OK, max_tmp_file / 1000 );
-                            ok = false;
-                            break;
-                        }
-                    }
-                    if( !ok ) {
-                        break;
-                    }
-                }
                 if( issue_message ) {
                     if( disk_space_needed > 0 && free_disk_space < (disk_size)disk_space_needed ) {
     #ifdef UNC_SUPPORT

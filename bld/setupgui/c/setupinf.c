@@ -255,7 +255,6 @@ static struct dir_info {
 static struct target_info {
     char                *name;
     disk_ssize          space_needed;
-    disk_size           max_tmp_file;
     int                 num_files;
     int                 supplemental;
     bool                needs_update;
@@ -2673,12 +2672,6 @@ disk_ssize SimTargetSpaceNeeded( int i )
     return( TargetInfo[i].space_needed );
 }
 
-disk_size SimMaxTmpFile( int i )
-/******************************/
-{
-    return( TargetInfo[i].max_tmp_file );
-}
-
 int SimGetTargNumFiles( int i )
 /*****************************/
 {
@@ -3533,7 +3526,6 @@ bool SimCalcTargetSpaceNeeded( void )
         }
         strcpy( TargetInfo[i].temp_disk, temp );
         TargetInfo[i].space_needed = 0;
-        TargetInfo[i].max_tmp_file = 0;
         TargetInfo[i].num_files = 0;
         TargetInfo[i].needs_update = false;
     }

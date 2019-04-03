@@ -145,7 +145,6 @@ extern int              SimNumTargets( void );
 extern disk_ssize       SimTargetSpaceNeeded( int parm );
 extern void             SimTargetDir( int i, VBUF *buff );
 extern void             SimTargetDirName( int i, VBUF *buff );
-extern disk_size        SimMaxTmpFile( int i );
 extern int              SimNumDirs( void );
 extern void             SimDirNoEndSlash( int parm, VBUF *buff );
 extern bool             SimDirUsed( int parm );
