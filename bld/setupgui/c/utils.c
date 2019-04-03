@@ -87,14 +87,14 @@ typedef struct def_var {
 } DEF_VAR;
 
 bool            ConfigModified = false;
-static enum { SRC_UNKNOWN, SRC_CD, SRC_DISK } SrcInstState;
-
 bool            SkipDialogs;
 char            *VariablesFile;
 DEF_VAR         *ExtraVariables;
 bool            Invisible;
 bool            ProgramGroups;
 bool            StartupChange;
+
+static enum { SRC_UNKNOWN, SRC_CD, SRC_DISK } SrcInstState;
 
 void ConcatDirSep( char *dir )
 /****************************/
