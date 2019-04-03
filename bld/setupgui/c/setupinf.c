@@ -3480,7 +3480,7 @@ void SimCalcAddRemove( void )
         /* Estimate space used for directories. Be generous. */
         if( !uninstall ) {
             for( i = 0; i < SetupInfo.target.num; ++i ) {
-                cs = GetClusterSize( *TargetInfo[targ_index].temp_disk );
+                cs = GetClusterSize( *TargetInfo[i].temp_disk );
                 for( j = 0; j < SetupInfo.dirs.num; ++j ) {
                     if( DirInfo[j].target != i )
                         continue;
