@@ -39,7 +39,6 @@ objs = &
     guistat.obj     &
     dlggen.obj      &
     guiutils.obj    &
-    guicolor.obj    &
     guictrl.obj     &
     genvbl.obj      &
     dynarray.obj    &

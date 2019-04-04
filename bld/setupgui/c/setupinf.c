@@ -2956,8 +2956,8 @@ int SimGetPMProgsNum( void )
     return( SetupInfo.pm_files.num );
 }
 
-static int SimFindDirForFile( VBUF *buff )
-/****************************************/
+static int SimFindDirForFile( const VBUF *buff )
+/**********************************************/
 {
     int         i;
     int         j;

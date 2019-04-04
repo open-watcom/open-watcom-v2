@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -173,8 +174,8 @@ dlg_state DoDialogByPointer( gui_window *parent, a_dialog_header *dlg )
     return( GenericDialog( parent, dlg ) );
 }
 
-dlg_state DoDialogWithParent( void *parent, const char *name )
-/************************************************************/
+dlg_state DoDialogWithParent( gui_window *parent, const char *name )
+/******************************************************************/
 {
     a_dialog_header     *dlg;
     dlg_state           return_state;

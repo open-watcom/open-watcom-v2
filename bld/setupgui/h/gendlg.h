@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -40,11 +41,10 @@ extern a_dialog_header  *GetNextDialog      ( void );
 extern a_dialog_header  *FindDialogByName   ( const char * );
 extern bool             CheckDialog         ( const char * );
 extern dlg_state        DoDialog            ( const char * );
-extern dlg_state        DoDialogWithParent  ( void *, const char * );
-extern dlg_state        DoDialogByPointer   ( gui_window *parent, a_dialog_header *dlg );
+extern dlg_state        DoDialogWithParent  ( gui_window *, const char * );
+extern dlg_state        DoDialogByPointer   ( gui_window *, a_dialog_header * );
 extern void             InitDefaultDialogs  ( void );
 extern void             FreeDefaultDialogs  ( void );
 
-
-extern  dlg_state       GenericDialog( gui_window *parent, a_dialog_header * );
-extern  dlg_state       IdToDlgState( gui_ctl_id id );
+extern  dlg_state       GenericDialog       ( gui_window *, a_dialog_header * );
+extern  dlg_state       IdToDlgState        ( gui_ctl_id );
