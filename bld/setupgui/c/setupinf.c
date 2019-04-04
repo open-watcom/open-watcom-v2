@@ -2650,6 +2650,7 @@ int SimNumTargets( void )
 void SimTargetDir( int i, VBUF *buff )
 /************************************/
 {
+    // same as SimTargetDirName, only expand macros
     ReplaceVars( buff, GetVariableStrVal( TargetInfo[i].name ) );
 }
 
@@ -2678,16 +2679,16 @@ int SimGetTargNumFiles( int i )
     return( TargetInfo[i].num_files );
 }
 
-void SimSetTargTempDisk( int parm, char disk )
-/********************************************/
+void SimSetTargTempDisk( int i, char disk )
+/*****************************************/
 {
-    *TargetInfo[parm].temp_disk = disk;
+    *TargetInfo[i].temp_disk = disk;
 }
 
-const char *SimGetTargTempDisk( int parm )
-/****************************************/
+const char *SimGetTargTempDisk( int i )
+/*************************************/
 {
-    return( TargetInfo[parm].temp_disk );
+    return( TargetInfo[i].temp_disk );
 }
 
 /*
