@@ -129,8 +129,6 @@ enum {
     #undef pick
 };
 
-#define MAX_DRIVES 10
-
 extern bool             ConfigModified;
 extern gui_window       *MainWnd;
 extern bool             IsPatch;

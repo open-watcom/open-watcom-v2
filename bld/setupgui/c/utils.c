@@ -72,6 +72,8 @@
 #include "clibext.h"
 
 
+#define MAX_DRIVES  10
+
 #define TMPFILENAME "_watcom_.tmp"
 
 #if defined( __NT__ ) || defined( __WINDOWS__ )
