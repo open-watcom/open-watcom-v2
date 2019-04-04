@@ -41,17 +41,17 @@
 static GUICALLBACK TestDialogWndGUIEventProc;
 
 static gui_create_info DialogControl = {
-    "Test Dialog Box",                  // Title
-    { 150, 250, 700, 700 },             // Position
-    GUI_NOSCROLL,                       // Scroll Styles
-    GUI_VISIBLE | GUI_CLOSEABLE,        // Window Styles
-    NULL,                               // Parent
-    { 0, NULL },                        // Menu array
-    { 0, NULL },                        // Colour attribute array
-    &TestDialogWndGUIEventProc,         // GUI Event Callback function
-    NULL,                               // Extra
-    NULL,                               // Icon
-    NULL                                // Menu Resource
+    "Test Dialog Box",              // Title
+    { 150, 250, 700, 700 },         // Position
+    GUI_NOSCROLL,                   // Scroll Styles
+    GUI_VISIBLE | GUI_CLOSEABLE,    // Window Styles
+    NULL,                           // Parent
+    GUI_NO_MENU,                    // Menu array
+    GUI_NO_COLOUR,                  // Colour attribute array
+    &TestDialogWndGUIEventProc,     // GUI Event Callback function
+    NULL,                           // Extra
+    NULL,                           // Icon
+    NULL                            // Menu Resource
 };
 
 /*
@@ -218,17 +218,17 @@ static bool DummyWndGUIEventProc( gui_window *gui, gui_event gui_ev, void *param
 }
 
 static gui_create_info ResDialog = {
-    NULL,                               // Title
-    { 0, 0, 0, 0 },                     // Position
-    GUI_NOSCROLL,                       // Scroll Styles
-    GUI_VISIBLE | GUI_CLOSEABLE,        // Window Styles
-    NULL,                               // Parent
-    { 0, NULL },                        // Menu array
-    { 0, NULL },                        // Colour attribute array
-    &DummyWndGUIEventProc,              // GUI Event Callback function
-    NULL,                               // Extra
-    NULL,                               // Icon
-    NULL                                // Menu Resource
+    NULL,                           // Title
+    { 0, 0, 0, 0 },                 // Position
+    GUI_NOSCROLL,                   // Scroll Styles
+    GUI_VISIBLE | GUI_CLOSEABLE,    // Window Styles
+    NULL,                           // Parent
+    GUI_NO_MENU,                    // Menu array
+    GUI_NO_COLOUR,                  // Colour attribute array
+    &DummyWndGUIEventProc,          // GUI Event Callback function
+    NULL,                           // Extra
+    NULL,                           // Icon
+    NULL                            // Menu Resource
 };
 
 void ResDialogCreate( gui_window *parent )

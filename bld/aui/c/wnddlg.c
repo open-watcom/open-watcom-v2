@@ -86,17 +86,17 @@ void DlgOpen( const char *title, int rows, int cols,
 }
 
 static gui_create_info ResDialog = {
-    NULL,                               // Title
-    { 0, 0, 0, 0 },                     // Position
-    GUI_NOSCROLL,                       // Scroll Styles
-    GUI_VISIBLE | GUI_CLOSEABLE,        // Window Styles
-    NULL,                               // Parent
-    { 0, NULL },                        // Menu array
-    { 0, NULL },                        // Colour attribute array
-    dlgOpenGUIEventProc,                // GUI Event Callback function
-    NULL,                               // Extra
-    NULL,                               // Icon
-    NULL                                // Menu Resource
+    NULL,                           // Title
+    { 0, 0, 0, 0 },                 // Position
+    GUI_NOSCROLL,                   // Scroll Styles
+    GUI_VISIBLE | GUI_CLOSEABLE,    // Window Styles
+    NULL,                           // Parent
+    GUI_NO_MENU,                    // Menu array
+    GUI_NO_COLOUR,                  // Colour attribute array
+    dlgOpenGUIEventProc,            // GUI Event Callback function
+    NULL,                           // Extra
+    NULL,                           // Icon
+    NULL                            // Menu Resource
 };
 
 void ResDlgOpen( GUICALLBACK *gui_call_back, void *extra, int dlg_id )
