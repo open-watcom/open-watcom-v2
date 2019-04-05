@@ -625,18 +625,6 @@ void UnLoadImgSymInfo( image_entry *image, bool nofree )
     }
 }
 
-bool ReLoadImgSymInfo( image_entry *image )
-{
-    if( ProcImgSymInfo( image ) ) {
-        DIPMapInfo( image->dip_handle, image );
-        DbgUpdate( UP_SYMBOLS_ADDED );
-        InitImageInfo( image );
-        return( true );
-    }
-    return( false );
-}
-
-
 remap_return ReMapImageAddress( mappable_addr *loc, image_entry *image )
 {
     map_entry           *map;
@@ -762,6 +750,18 @@ static void InitImageInfo( image_entry *image )
     SetWDPresent( image->dip_handle );
     VarReMapScopes( image );
     ReMapPoints( image );
+}
+
+
+bool ReLoadImgSymInfo( image_entry *image )
+{
+    if( ProcImgSymInfo( image ) ) {
+        DIPMapInfo( image->dip_handle, image );
+        DbgUpdate( UP_SYMBOLS_ADDED );
+        InitImageInfo( image );
+        return( true );
+    }
+    return( false );
 }
 
 
