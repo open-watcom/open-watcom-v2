@@ -630,6 +630,7 @@ bool ReLoadImgSymInfo( image_entry *image )
     if( ProcImgSymInfo( image ) ) {
         DIPMapInfo( image->dip_handle, image );
         DbgUpdate( UP_SYMBOLS_ADDED );
+        InitImageInfo( image );
         return( true );
     }
     return( false );
@@ -775,7 +776,6 @@ bool LoadDeferredSymbols( void )
     for( image = DbgImageList; image != NULL; image = image->link ) {
         if( image->deferred_symbols ) {
             if( ReLoadImgSymInfo( image ) ) {
-                InitImageInfo( image );
                 image->deferred_symbols = false;
                 rc = true;
             }
@@ -812,9 +812,7 @@ bool AddLibInfo( bool already_stopping, bool *force_stop )
             image = CreateImage( TxtBuff, NULL );
             if( image != NULL ) {
                 image->system_handle = module;
-                if( ReLoadImgSymInfo( image ) ) {
-                    InitImageInfo( image );
-                }
+                ReLoadImgSymInfo( image );
                 DUIImageLoaded( image, true, already_stopping, force_stop );
             }
         }
