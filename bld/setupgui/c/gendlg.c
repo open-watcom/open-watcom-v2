@@ -63,7 +63,7 @@ a_dialog_header *FindDialogByName( const char *dlg_name )
 {
     a_dialog_header *d;
 
-    for( d = FirstDialog; d != NULL; d = d->next ){
+    for( d = FirstDialog; d != NULL; d = d->next ) {
         if( stricmp( d->name, dlg_name ) == 0 ) {
             break;
         }
@@ -71,8 +71,8 @@ a_dialog_header *FindDialogByName( const char *dlg_name )
     return( d );
 }
 
-static void FreeDialog( a_dialog_header *tmp_dialog)
-/**************************************************/
+static void FreeDialog( a_dialog_header *tmp_dialog )
+/***************************************************/
 {
     int i;
 
@@ -85,7 +85,7 @@ static void FreeDialog( a_dialog_header *tmp_dialog)
                 GUIMemFree( tmp_dialog->pConditions[i] );
             }
         }
-        for( i = 0; i < tmp_dialog->num_controls; i++ ){
+        for( i = 0; i < tmp_dialog->num_controls; i++ ) {
             GUIMemFree( (void *)tmp_dialog->controls[i].text );
             if( tmp_dialog->controls_ext[i].pVisibilityConds != NULL ) {
                 GUIMemFree( tmp_dialog->controls_ext[i].pVisibilityConds );

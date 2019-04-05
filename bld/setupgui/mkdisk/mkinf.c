@@ -1106,8 +1106,8 @@ bool CheckForDuplicateFiles( void )
 }
 
 
-void DumpFile( FILE *out, const char *fname )
-/*******************************************/
+static void DumpFile( FILE *out, const char *fname )
+/**************************************************/
 {
     FILE                *in;
     char                *buf;
@@ -1362,7 +1362,6 @@ static void MakeScript( void )
             break;
         old_size = inf_size;
     }
-    printf( "Installation will require 1 disk.\n" );
 }
 
 

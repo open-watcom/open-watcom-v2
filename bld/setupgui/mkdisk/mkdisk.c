@@ -1137,8 +1137,8 @@ bool CheckForDuplicateFiles( void )
 }
 
 
-void DumpFile( FILE *out, char *fname )
-/*************************************/
+static void DumpFile( FILE *out, const char *fname )
+/**************************************************/
 {
     FILE                *in;
     char                *buf;
