@@ -825,7 +825,6 @@ static char *StripBlanks( char *p )
 static char *StripQuotes( char *p )
 /*********************************/
 {
-    char        *q;
     size_t      len;
 
     if( p != NULL ) {
