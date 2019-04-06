@@ -25,21 +25,27 @@
 CREATEPROCESS_MANIFEST_RESOURCE_ID RT_MANIFEST MOVEABLE PURE "appmanif.xml"
 #endif
 
-APPLICON        ICON    viw.ico
-WATCOMICON      ICON    watcom.ico
-IDI_CFILE       ICON    cfile.ico
-IDI_CPPFILE     ICON    cppfile.ico
-IDI_HFILE       ICON    hfile.ico
-IDI_HPPFILE     ICON    hppfile.ico
-IDI_FORFILE     ICON    forfile.ico
-IDI_FIFILE      ICON    fifile.ico
-IDI_MAKFILE     ICON    makfile.ico
-IDI_TXTFILE     ICON    txtfile.ico
-IDI_OBJFILE     ICON    objfile.ico
-IDI_RCFILE      ICON    rcfile.ico
-IDI_RHFILE      ICON    rhfile.ico
-IDI_LIBFILE     ICON    libfile.ico
-IDI_AWKFILE     ICON    awkfile.ico
+/*
+ * hold this order of ICONS
+ * it defines icons index in executable
+ * this index is used for file extensions association by OW installer
+ */
+APPLICON        ICON    viw.ico         /* 0 */
+WATCOMICON      ICON    watcom.ico      /* 1 */
+IDI_CFILE       ICON    cfile.ico       /* 2    used by installer */
+IDI_CPPFILE     ICON    cppfile.ico     /* 3    used by installer */
+IDI_HFILE       ICON    hfile.ico       /* 4    used by installer */
+IDI_HPPFILE     ICON    hppfile.ico     /* 5    used by installer */
+IDI_FORFILE     ICON    forfile.ico     /* 6    used by installer */
+IDI_FIFILE      ICON    fifile.ico      /* 7    used by installer */
+IDI_MAKFILE     ICON    makfile.ico     /* 8    used by installer */
+IDI_TXTFILE     ICON    txtfile.ico     /* 9    used by installer */
+IDI_OBJFILE     ICON    objfile.ico     /* 10   used by installer */
+IDI_RCFILE      ICON    rcfile.ico      /* 11   used by installer */
+IDI_RHFILE      ICON    rhfile.ico      /* 12   used by installer */
+IDI_LIBFILE     ICON    libfile.ico     /* 13   used by installer */
+IDI_AWKFILE     ICON    awkfile.ico     /* 14   used by installer */
+
 BUTTONPATTERN   BITMAP  button.bmp
 SAVE            BITMAP  save.bmp
 COPY            BITMAP  copy.bmp

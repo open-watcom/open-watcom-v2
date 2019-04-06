@@ -43,10 +43,14 @@ BEGIN
     "T",        IDM_TEST_MODE,          CONTROL, VIRTKEY
 END
 
-/* icons */
-"APPLICON"      ICON "wde.ico"
-"ResIcon"       ICON "dlgfile.ico"
-"DefaultIcon"   ICON "owde.ico"
+/*
+ * hold this order of ICONS
+ * it defines icons index in executable
+ * this index is used for file extensions association by OW installer
+ */
+"APPLICON"      ICON "wde.ico"          /* 0 */
+"ResIcon"       ICON "dlgfile.ico"      /* 1 */
+"DefaultIcon"   ICON "owde.ico"         /* 2    used by installer */
 
 /* ribbon bitmaps */
 "New"           BITMAP "new.bmp"

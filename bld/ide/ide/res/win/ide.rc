@@ -22,9 +22,14 @@ B_sourceItem    BITMAP  srcitem.bmp
 B_flashPage     BITMAP  ide_s.bmp
 B_powerbuilder  BITMAP  rtrn2pb.bmp
 
-I_Ide           ICON    ide.ico
-I_Target        ICON    target.ico
-I_MsgLog        ICON    msglog.ico
+/*
+ * hold this order of ICONS
+ * it defines icons index in executable
+ * this index is used for file extensions association by OW installer
+ */
+I_Ide           ICON    ide.ico         /* 0    used by installer */
+I_Target        ICON    target.ico      /* 1 */
+I_MsgLog        ICON    msglog.ico      /* 2 */
 
 #ifdef __NT__
 CREATEPROCESS_MANIFEST_RESOURCE_ID RT_MANIFEST MOVEABLE PURE "appmanif.xml"

@@ -34,9 +34,13 @@ BEGIN
     "S",          IDM_SAVE,         CONTROL, VIRTKEY
 END
 
-/* icons */
-"APPLICON"  ICON "wre.ico"
-"ResIcon"   ICON "restext.ico"
+/*
+ * hold this order of ICONS
+ * it defines icons index in executable
+ * this index is used for file extensions association by OW installer
+ */
+"APPLICON"  ICON "wre.ico"          /* 0 */
+"ResIcon"   ICON "restext.ico"      /* 1    used by installer */
 
 /* private clipboard format bitmap */
 "PrivateFmt"    BITMAP "clip.bmp"
