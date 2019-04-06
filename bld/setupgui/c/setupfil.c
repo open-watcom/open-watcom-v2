@@ -1758,7 +1758,7 @@ bool ModifyRegAssoc( bool uninstall )
             SimGetAssociationDescription( i, &temp );
             RegSetValue( hkey, NULL, REG_SZ, VbufString( &temp ), (DWORD)VbufLen( &temp ) );
             SimGetAssociationProgram( i, &program );
-            if( SimGetAssociationNoOpen( i ) != 1 ) {
+            if( !SimGetAssociationNoOpen( i ) ) {
                 VbufSetVbuf( &temp, &program );
                 VbufConcStr( &temp, " %%1" );
                 ReplaceVars( &temp, NULL );

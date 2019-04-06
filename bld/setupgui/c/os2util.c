@@ -125,151 +125,148 @@ bool CreatePMInfo( bool uninstall )
 
     VbufInit( &group );
     SimGetPMGroup( &group );
-    if( VbufLen( &group ) == 0 ) {
-        VbufFree( &group );
-        return( true );
-    }
-
-    VbufInit( &GroupFileName );
-    SimGetPMGroupFileName( &GroupFileName );
-    if( VbufLen( &GroupFileName ) > 0 ) {
-        VbufPrepChr( &GroupFileName, '<' );
-        VbufConcChr( &GroupFileName, '>' );
-    } else {
-        VbufConcStr( &GroupFileName, "<WSETUP_FLDR>" );
-    }
-
-    obj = create_group( &group, &GroupFileName );
-
-    VbufInit( &tmp );
-    VbufInit( &PMProgName );
-    VbufInit( &PMProgDesc );
-    VbufInit( &PMParams );
-    VbufInit( &PMIconFileName );
-    VbufInit( &WorkingDir );
-    VbufInit( &Folder );
-    VbufInit( &Cmd );
-
-    /*
-     * Add the individual PM files to the Group box.
-     */
-    StatusLines( STAT_CREATEPROGRAMFOLDER, "" );
-    num = SimGetPMProgsNum();
-    StatusAmount( 0, num );
-    for( i = 0; (obj != NULLHANDLE) && (i < num); i++ ) {
-        StatusAmount( i, num );
-        if( !SimCheckPMCondition( i ) ) {
-            continue;
-        }
-        /*
-         * Replace '\n' in Description with LineFeed character
-         */
-        SimGetPMDesc( i, &PMProgDesc );
-        for( p = VbufString( &PMProgDesc ); *p != '\0'; ++p ) {
-            if( p[0] == '\\' && p[1] == 'n' ) {
-                len = p - VbufString( &PMProgDesc );
-                VbufSetStr( &tmp, p + 2 );
-                VbufSetLen( &PMProgDesc, len );
-                VbufConcChr( &PMProgDesc, '\n' );
-                VbufConcVbuf( &PMProgDesc, &tmp );
-                p = VbufString( &PMProgDesc ) + len + 1;
-            }
-        }
-
-        if( SimPMProgIsGroup( i ) ) {
-            /*
-             * Process a group (ie. folder)
-             */
-            SimGetPMParms( i, &GroupFileName );
-            if( VbufLen( &GroupFileName ) == 0 ) {
-                break;
-            }
-            if( VbufLen( &PMProgDesc ) > 0 ) {
-                VbufPrepChr( &GroupFileName, '<' );
-                VbufConcChr( &GroupFileName, '>' );
-            } else {
-                VbufSetStr( &GroupFileName, "<WSETUP_FOL>" );
-            }
-            obj = create_group( &PMProgDesc, &GroupFileName );
+    if( VbufLen( &group ) > 0 ) {
+        VbufInit( &GroupFileName );
+        SimGetPMGroupFileName( &GroupFileName );
+        if( VbufLen( &GroupFileName ) > 0 ) {
+            VbufPrepChr( &GroupFileName, '<' );
+            VbufConcChr( &GroupFileName, '>' );
         } else {
-            /*
-             * Process a regular object
-             */
-            nDirIndex = SimGetPMProgName( i, &PMProgName );
-            if( nDirIndex == -1 ) {
-                VbufRewind( &WorkingDir );
-                ReplaceVars( &PMProgName, NULL );
-            } else {
-                SimGetDir( nDirIndex, &WorkingDir );
+            VbufConcStr( &GroupFileName, "<WSETUP_FLDR>" );
+        }
+
+        obj = create_group( &group, &GroupFileName );
+
+        VbufInit( &tmp );
+        VbufInit( &PMProgName );
+        VbufInit( &PMProgDesc );
+        VbufInit( &PMParams );
+        VbufInit( &PMIconFileName );
+        VbufInit( &WorkingDir );
+        VbufInit( &Folder );
+        VbufInit( &Cmd );
+
+        /*
+         * Add the individual PM files to the Group box.
+         */
+        StatusLines( STAT_CREATEPROGRAMFOLDER, "" );
+        num = SimGetPMProgsNum();
+        StatusAmount( 0, num );
+        for( i = 0; (obj != NULLHANDLE) && (i < num); i++ ) {
+            StatusAmount( i, num );
+            if( !SimCheckPMCondition( i ) ) {
+                continue;
             }
             /*
-             * Get parameters
+             * Replace '\n' in Description with LineFeed character
              */
-            SimGetPMParms( i, &PMParams );
-            ReplaceVars( &PMParams, NULL );
-            if( VbufString( &PMParams )[0] == '+' ) {
-                p = strchr( VbufString( &PMParams ) + 1, '+' );
-                if( p == NULL ) {
-                    /*
-                     * Format is: "+folder_name"
-                     */
-                    VbufSetVbufPos( &Folder, &PMParams, 1 );
-                    VbufRewind( &PMParams );
+            SimGetPMDesc( i, &PMProgDesc );
+            for( p = VbufString( &PMProgDesc ); *p != '\0'; ++p ) {
+                if( p[0] == '\\' && p[1] == 'n' ) {
+                    len = p - VbufString( &PMProgDesc );
+                    VbufSetStr( &tmp, p + 2 );
+                    VbufSetLen( &PMProgDesc, len );
+                    VbufConcChr( &PMProgDesc, '\n' );
+                    VbufConcVbuf( &PMProgDesc, &tmp );
+                    p = VbufString( &PMProgDesc ) + len + 1;
+                }
+            }
+
+            if( SimPMProgIsGroup( i ) ) {
+                /*
+                 * Process a group (ie. folder)
+                 */
+                SimGetPMParms( i, &GroupFileName );
+                if( VbufLen( &GroupFileName ) == 0 ) {
+                    break;
+                }
+                if( VbufLen( &PMProgDesc ) > 0 ) {
+                    VbufPrepChr( &GroupFileName, '<' );
+                    VbufConcChr( &GroupFileName, '>' );
+                } else {
+                    VbufSetStr( &GroupFileName, "<WSETUP_FOL>" );
+                }
+                obj = create_group( &PMProgDesc, &GroupFileName );
+            } else {
+                /*
+                 * Process a regular object
+                 */
+                nDirIndex = SimGetPMProgName( i, &PMProgName );
+                if( nDirIndex == -1 ) {
+                    VbufRewind( &WorkingDir );
+                    ReplaceVars( &PMProgName, NULL );
+                } else {
+                    SimGetDir( nDirIndex, &WorkingDir );
+                }
+                /*
+                 * Get parameters
+                 */
+                SimGetPMParms( i, &PMParams );
+                ReplaceVars( &PMParams, NULL );
+                if( VbufString( &PMParams )[0] == '+' ) {
+                    p = strchr( VbufString( &PMParams ) + 1, '+' );
+                    if( p == NULL ) {
+                        /*
+                         * Format is: "+folder_name"
+                         */
+                        VbufSetVbufPos( &Folder, &PMParams, 1 );
+                        VbufRewind( &PMParams );
+                    } else {
+                        /*
+                         * Format is: "+folder_name+parameters"
+                         */
+                        VbufSetBuffer( &Folder, VbufString( &PMParams ) + 1, p - VbufString( &PMParams ) - 1 );
+                        VbufSetStr( &PMParams, p + 1);
+                    }
                 } else {
                     /*
-                     * Format is: "+folder_name+parameters"
+                     * Format is: "" use default folder
                      */
-                    VbufSetBuffer( &Folder, VbufString( &PMParams ) + 1, p - VbufString( &PMParams ) - 1 );
-                    VbufSetStr( &PMParams, p + 1);
+                    VbufSetVbuf( &Folder, &GroupFileName );
                 }
-            } else {
                 /*
-                 * Format is: "" use default folder
+                 * Append the subdir where the icon file is and the icon file's name.
                  */
-                VbufSetVbuf( &Folder, &GroupFileName );
-            }
-            /*
-             * Append the subdir where the icon file is and the icon file's name.
-             */
-            nDirIndex = SimGetPMIconInfo( i, &PMIconFileName, &icon_number );
-            if( icon_number == -1 ) {
-                icon_number = 0;
-            }
-            if( nDirIndex != -1 ) {
-                SimGetDir( nDirIndex, &tmp );
-                VbufPrepVbuf( &PMIconFileName, &tmp );
-            }
-            if( SimPMProgIsShadow( i ) ) {
-                VbufSetStr( &Cmd, "SHADOWID=" );
-                VbufConcVbuf( &Cmd, &WorkingDir );
-                VbufConcVbuf( &Cmd, &PMProgName );
-                obj = WinCreateObject( "WPShadow", VbufString( &PMProgDesc ), VbufString( &Cmd ), VbufString( &Folder ), CO_REPLACEIFEXISTS );
-            } else {
-                /*
-                 * Add the new file to the already created PM Group.
-                 */
-                VbufSetStr( &Cmd, "EXENAME=" );
-                VbufConcVbuf( &Cmd, &WorkingDir );
-                VbufConcVbuf( &Cmd, &PMProgName );
-                VbufConcStr( &Cmd, ";PARAMETERS=" );
-                VbufConcVbuf( &Cmd, &PMParams );
-                VbufConcStr( &Cmd, ";STARTUPDIR=" );
-                VbufConcVbuf( &Cmd, &WorkingDir );
-                obj = WinCreateObject( "WPProgram", VbufString( &PMProgDesc ), VbufString( &Cmd ), VbufString( &Folder ), CO_REPLACEIFEXISTS );
+                nDirIndex = SimGetPMIconInfo( i, &PMIconFileName, &icon_number );
+                if( icon_number == -1 ) {
+                    icon_number = 0;
+                }
+                if( nDirIndex != -1 ) {
+                    SimGetDir( nDirIndex, &tmp );
+                    VbufPrepVbuf( &PMIconFileName, &tmp );
+                }
+                if( SimPMProgIsShadow( i ) ) {
+                    VbufSetStr( &Cmd, "SHADOWID=" );
+                    VbufConcVbuf( &Cmd, &WorkingDir );
+                    VbufConcVbuf( &Cmd, &PMProgName );
+                    obj = WinCreateObject( "WPShadow", VbufString( &PMProgDesc ), VbufString( &Cmd ), VbufString( &Folder ), CO_REPLACEIFEXISTS );
+                } else {
+                    /*
+                     * Add the new file to the already created PM Group.
+                     */
+                    VbufSetStr( &Cmd, "EXENAME=" );
+                    VbufConcVbuf( &Cmd, &WorkingDir );
+                    VbufConcVbuf( &Cmd, &PMProgName );
+                    VbufConcStr( &Cmd, ";PARAMETERS=" );
+                    VbufConcVbuf( &Cmd, &PMParams );
+                    VbufConcStr( &Cmd, ";STARTUPDIR=" );
+                    VbufConcVbuf( &Cmd, &WorkingDir );
+                    obj = WinCreateObject( "WPProgram", VbufString( &PMProgDesc ), VbufString( &Cmd ), VbufString( &Folder ), CO_REPLACEIFEXISTS );
+                }
             }
         }
-    }
-    StatusAmount( num, num );
+        StatusAmount( num, num );
 
-    VbufFree( &Cmd );
-    VbufFree( &Folder );
-    VbufFree( &WorkingDir );
-    VbufFree( &PMIconFileName );
-    VbufFree( &PMParams );
-    VbufFree( &PMProgDesc );
-    VbufFree( &PMProgName );
-    VbufFree( &tmp );
-    VbufFree( &GroupFileName );
+        VbufFree( &Cmd );
+        VbufFree( &Folder );
+        VbufFree( &WorkingDir );
+        VbufFree( &PMIconFileName );
+        VbufFree( &PMParams );
+        VbufFree( &PMProgDesc );
+        VbufFree( &PMProgName );
+        VbufFree( &tmp );
+        VbufFree( &GroupFileName );
+    }
     VbufFree( &group );
     return( true );
 }

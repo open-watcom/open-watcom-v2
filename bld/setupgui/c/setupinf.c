@@ -71,13 +71,15 @@
 #include "clibext.h"
 
 
-#define IS_EMPTY(p)     ((p)[0] == '\0' || (p)[0] == '.' && (p)[1] == '\0')
+#define GET36( x )          strtol( x, NULL, 36 )
 
-#define RoundUp( v, r ) (((v) + (r) - 1) & ~(unsigned long)((r)-1))
+#define IS_EMPTY(p)         ((p)[0] == '\0' || (p)[0] == '.' && (p)[1] == '\0')
 
-#define BUF_SIZE        8192
+#define RoundUp( v, r )     (((v) + (r) - 1) & ~(unsigned long)((r)-1))
 
-#define MAX_WINDOW_WIDTH 90
+#define BUF_SIZE            8192
+
+#define MAX_WINDOW_WIDTH    90
 
 #define NONMAGICVARS( x, y ) \
     x( IsDos, y ) \
@@ -256,9 +258,9 @@ static struct target_info {
     char                *name;
     disk_ssize          space_needed;
     int                 num_files;
-    int                 supplemental;
-    bool                needs_update;
     char                *temp_disk;
+    bool                supplemental    : 1;
+    bool                needs_update    : 1;
 } *TargetInfo = NULL;
 
 static struct label_info {
@@ -275,9 +277,9 @@ static struct association_info {
     char    *keyname;
     char    *program;
     char    *description;
-    int     icon_index;
-    int     no_open;
     char    *condition;
+    int     icon_index;
+    bool    no_open         : 1;
 } *AssociationInfo = NULL;
 
 static file_cond_info   *FileCondInfo = NULL;
@@ -800,8 +802,8 @@ static char *NextToken( char *buf, char delim )
 }
 
 
-static char *StripEndBlanks( char *p )
-/************************************/
+static char *StripBlanks( char *p )
+/*********************************/
 {
     char        *q;
 
@@ -815,6 +817,23 @@ static char *StripEndBlanks( char *p )
     while( q >= p && (*q == ' ' || *q == '\t' || *q == '\n') ) {
         *q = '\0';
         --q;
+    }
+    return( p );
+}
+
+
+static char *StripQuotes( char *p )
+/*********************************/
+{
+    char        *q;
+    size_t      len;
+
+    if( p != NULL ) {
+        len = strlen( p );
+        if( len > 1 && p[0] == '"' && p[len - 1] == '"' ) {
+            p[len - 1] = '\0';
+            p++;
+        }
     }
     return( p );
 }
@@ -1675,11 +1694,9 @@ static bool ProcLine( char *line, pass_type pass )
 {
     char                *next;
     int                 num;
-    int                 tmp;
-    char                *p;
 
     // Remove leading and trailing white-space.
-    line = StripEndBlanks( line );
+    line = StripBlanks( line );
 
     // Check for comment
     if( *line == '#' ) {
@@ -1881,7 +1898,6 @@ static bool ProcLine( char *line, pass_type pass )
             }
         }
         break;
-
     case RS_DIRS:
         num = SetupInfo.dirs.num;
         if( !BumpArray( &SetupInfo.dirs ) )
@@ -1895,87 +1911,87 @@ static bool ProcLine( char *line, pass_type pass )
             DirInfo[num].parent--;
         }
         break;
-
     case RS_FILES:
-      {
-        VBUF    fext;
+        {
+            int         num_files;
+            a_file_info *file;
+            char        *p;
+            VBUF        fext;
 
-        num = SetupInfo.files.num;
-        if( !BumpArray( &SetupInfo.files ) )
-            return( false );
-        next = NextToken( line, ',' );
-        FileInfo[num].filename = GUIStrDup( line, NULL );
-        line = next; next = NextToken( line, ',' );
-        /*
-            Multiple files in archive. First number is number of files,
-            followed by a list of file sizes in 512 byte blocks.
-        */
-        #define get36( x ) strtol( x, NULL, 36 )
-        tmp = get36( line );
-        if( tmp == 0 ) {
-            FileInfo[num].files = NULL;
-        } else {
-            FileInfo[num].files = GUIMemAlloc( tmp * sizeof( a_file_info ) );
-            if( FileInfo[num].files == NULL ) {
+            num = SetupInfo.files.num;
+            if( !BumpArray( &SetupInfo.files ) )
                 return( false );
-            }
-        }
-        FileInfo[num].supplemental = false;
-        FileInfo[num].core_component = false;
-        FileInfo[num].num_files = tmp;
-        VbufInit( &fext );
-        while( --tmp >= 0 ) {
-            a_file_info *file = &FileInfo[num].files[tmp];
-
+            next = NextToken( line, ',' );
+            FileInfo[num].filename = GUIStrDup( line, NULL );
             line = next; next = NextToken( line, ',' );
-            p = NextToken( line, '!' );
-            VbufInit( &file->name );
-            VbufConcStr( &file->name, line );
-            VbufSplitpath( &file->name, NULL, NULL, NULL, &fext );
-            file->is_nlm = VbufCompStr( &fext, ".nlm", true ) == 0;
-            file->is_dll = VbufCompStr( &fext, ".dll", true ) == 0;
-            line = p; p = NextToken( line, '!' );
-            file->size = get36( line ) * 512UL;
-            if( p != NULL && *p != '\0' && *p != '!' ) {
-                file->date = get36( p );
+            /*
+                Multiple files in archive. First number is number of files,
+                followed by a list of file sizes in 512 byte blocks.
+            */
+            num_files = GET36( line );
+            if( num_files == 0 ) {
+                FileInfo[num].files = NULL;
             } else {
-                file->date = SetupInfo.stamp;
-            }
-            line = p; p = NextToken( line, '!' );
-            if( p != NULL && *p != '\0' && *p != '!' ) {
-                file->dst_var = AddVariable( p );
-            } else {
-                file->dst_var = NO_VAR;
-            }
-            line = p; p = NextToken( line, '!' );
-            file->executable = false;
-            if( p != NULL ) {
-                if( *p == 'e' ) {
-                    file->executable = true;
+                FileInfo[num].files = GUIMemAlloc( num_files * sizeof( a_file_info ) );
+                if( FileInfo[num].files == NULL ) {
+                    return( false );
                 }
             }
-            line = p; p = NextToken( line, '!' );
-            if( p != NULL ) {
-                if( *p == 's' ) {
-                    FileInfo[num].supplemental = true;
-                } else if( *p == 'k' ) {
-                    FileInfo[num].core_component = true;
+            FileInfo[num].supplemental = false;
+            FileInfo[num].core_component = false;
+            FileInfo[num].num_files = num_files;
+            VbufInit( &fext );
+            file = FileInfo[num].files;
+            for( ; num_files-- > 0; ) {
+                line = next; next = NextToken( line, ',' );
+                p = NextToken( line, '!' );
+                VbufInit( &file->name );
+                VbufConcStr( &file->name, line );
+                VbufSplitpath( &file->name, NULL, NULL, NULL, &fext );
+                file->is_nlm = VbufCompStr( &fext, ".nlm", true ) == 0;
+                file->is_dll = VbufCompStr( &fext, ".dll", true ) == 0;
+                line = p; p = NextToken( line, '!' );
+                file->size = GET36( line ) * 512UL;
+                if( p != NULL && *p != '\0' && *p != '!' ) {
+                    file->date = GET36( p );
+                } else {
+                    file->date = SetupInfo.stamp;
                 }
+                line = p; p = NextToken( line, '!' );
+                if( p != NULL && *p != '\0' && *p != '!' ) {
+                    file->dst_var = AddVariable( p );
+                } else {
+                    file->dst_var = NO_VAR;
+                }
+                line = p; p = NextToken( line, '!' );
+                file->executable = false;
+                if( p != NULL ) {
+                    if( *p == 'e' ) {
+                        file->executable = true;
+                    }
+                }
+                line = p; p = NextToken( line, '!' );
+                if( p != NULL ) {
+                    if( *p == 's' ) {
+                        FileInfo[num].supplemental = true;
+                    } else if( *p == 'k' ) {
+                        FileInfo[num].core_component = true;
+                    }
+                }
+                file++;
             }
+            VbufFree( &fext );
+            line = next; next = NextToken( line, ',' );
+            FileInfo[num].dir_index = GET36( line ) - 1;
+            line = next; next = NextToken( line, ',' );
+            FileInfo[num].old_dir_index = GET36( line );
+            if( FileInfo[num].old_dir_index != -1 ) {
+                FileInfo[num].old_dir_index--;
+            }
+            line = next; next = NextToken( line, ',' );
+            FileInfo[num].condition.i = NewFileCond( line );
         }
-        VbufFree( &fext );
-        line = next; next = NextToken( line, ',' );
-        FileInfo[num].dir_index = get36( line ) - 1;
-        line = next; next = NextToken( line, ',' );
-        FileInfo[num].old_dir_index = get36( line );
-        if( FileInfo[num].old_dir_index != -1 ) {
-            FileInfo[num].old_dir_index--;
-        }
-        line = next; next = NextToken( line, ',' );
-        FileInfo[num].condition.i = NewFileCond( line );
         break;
-      }
-
 #ifdef PATCH
     case RS_PATCH:
         num = SetupInfo.patch_files.num;
@@ -2022,7 +2038,6 @@ static bool ProcLine( char *line, pass_type pass )
         }
         break;
 #endif
-
     case RS_AUTOSET:
         next = NextToken( line, '=' );
         if( VariablesFile == NULL ) {
@@ -2031,12 +2046,10 @@ static bool ProcLine( char *line, pass_type pass )
             AddVariable( line );
         }
         break;
-
     case RS_RESTRICTIONS:
         next = NextToken( line, '=' );
         VarSetAutoSetRestriction( AddVariable( line ), next );
         break;
-
     case RS_SPAWN:
         num = SetupInfo.spawn.num;
         if( !BumpArray( &SetupInfo.spawn ) )
@@ -2053,7 +2066,6 @@ static bool ProcLine( char *line, pass_type pass )
         SpawnInfo[num].command = GUIStrDup( line, NULL );
         SpawnInfo[num].condition = CompileCondition( next );
         break;
-
     case RS_DELETEFILES:
         num = SetupInfo.delete.num;
         if( !BumpArray( &SetupInfo.delete ) )
@@ -2069,7 +2081,6 @@ static bool ProcLine( char *line, pass_type pass )
         line = next; next = NextToken( line, ',' );
         DeleteInfo[num].name = GUIStrDup( line, NULL );
         break;
-
     case RS_PMINFO:
         num = SetupInfo.pm_files.num;
         if( !BumpArray( &SetupInfo.pm_files ) )
@@ -2108,7 +2119,6 @@ static bool ProcLine( char *line, pass_type pass )
         }
         PMInfo[num].condition = CompileCondition( next );
         break;
-
     case RS_PROFILE:
         num = SetupInfo.profile.num;
         if( !BumpArray( &SetupInfo.profile ) )
@@ -2125,19 +2135,15 @@ static bool ProcLine( char *line, pass_type pass )
         ProfileInfo[num].hive_name = GUIStrDup( line, NULL );
         ProfileInfo[num].condition = CompileCondition( next );
         break;
-
     case RS_AUTOEXEC:
         GrabConfigInfo( line, &SetupInfo.autoexec );
         break;
-
     case RS_CONFIG:
         GrabConfigInfo( line, &SetupInfo.config );
         break;
-
     case RS_ENVIRONMENT:
         GrabConfigInfo( line, &SetupInfo.environment );
         break;
-
     case RS_TARGET:
         num = SetupInfo.target.num;
         if( !BumpArray( &SetupInfo.target ) )
@@ -2154,7 +2160,6 @@ static bool ProcLine( char *line, pass_type pass )
         }
         *TargetInfo[num].temp_disk = 0;
         break;
-
     case RS_LABEL:
         num = SetupInfo.label.num;
         if( !BumpArray( &SetupInfo.label ) )
@@ -2163,21 +2168,18 @@ static bool ProcLine( char *line, pass_type pass )
         LabelInfo[num].dir = GUIStrDup( line, NULL );
         LabelInfo[num].label = GUIStrDup( next, NULL );
         break;
-
     case RS_UPGRADE:
         num = SetupInfo.upgrade.num;
         if( !BumpArray( &SetupInfo.upgrade ) )
             return( false );
         UpgradeInfo[num].name = GUIStrDup( line, NULL );
         break;
-
     case RS_FORCEDLLINSTALL:
         num = SetupInfo.force_DLL_install.num;
         if( !BumpArray( &SetupInfo.force_DLL_install ) )
             return( false );
         ForceDLLInstall[num].name = GUIStrDup( line, NULL );
         break;
-
     case RS_ASSOCIATIONS:
         num = SetupInfo.associations.num;
         if( !BumpArray( &SetupInfo.associations ) )
@@ -2193,13 +2195,14 @@ static bool ProcLine( char *line, pass_type pass )
         line = next; next = NextToken( line, ',' );
         AssociationInfo[num].icon_index = strtol( line, NULL, 10 );
         line = next; next = NextToken( line, ',' );
-        AssociationInfo[num].no_open = strtol( line, NULL, 10 );
+        AssociationInfo[num].no_open = strtol( line, NULL, 10 ) != 0;
         AssociationInfo[num].condition = CompileCondition( next );
         break;
-
-        /* for now Setup Error Messages, Status line Messages and Misc Messages
-            are treated as global symbolic variables just like
-            regular Error Messages */
+    /*
+     * For now Setup Error Messages, Status line Messages and Misc Messages
+     * are treated as global symbolic variables just like
+     * regular Error Messages
+     */
     case RS_SETUPERRORMESSAGE:
     case RS_STATUSLINEMESSAGE:
     case RS_MISCMESSAGE:
@@ -2208,18 +2211,14 @@ static bool ProcLine( char *line, pass_type pass )
     case RS_LICENSEMESSAGE:
 #endif
         {
-            char    *remnewline;
+            char    *p;
 
             next = NextToken( line, '=' );
-            next = StripEndBlanks( next );
-            next++;
-            *(strchr( next, '\0' ) - 1) = '\0';
-            for( ;; ) {
-                remnewline = strstr( next, "\\n" );
-                if( remnewline == NULL )
-                    break;
-                *remnewline = '\n';
-                memmove( remnewline + 1, remnewline + 2, strlen( remnewline + 2 ) + 1 );
+            next = StripBlanks( next );
+            next = StripQuotes( next );
+            for( ; (p = strstr( next, "\\n" )) != NULL; ) {
+                *p = '\n';
+                memmove( p + 1, p + 2, strlen( p + 2 ) + 1 );
             }
             SetVariableByName( line, next );
             break;
@@ -2227,7 +2226,6 @@ static bool ProcLine( char *line, pass_type pass )
     default:
         break;
     }
-
     return( true );
 }
 
@@ -2246,53 +2244,52 @@ static bool GetFileInfo( int dir_index, int i, bool in_old_dir, bool *pzeroed )
 
     if( dir_index == -1 )
         return( false );
+    found = false;
     VbufInit( &buff );
     SimDirNoEndSlash( dir_index, &buff );
-    if( access_vbuf( &buff, F_OK ) != 0 ) {
-        VbufFree( &buff );
-        return( false );
-    }
-
-    VbufAddDirSep( &buff );
-    dir_end = VbufLen( &buff );
-    found = false;
-    supp = TargetInfo[DirInfo[FileInfo[i].dir_index].target].supplemental;
-    if( supp ) {
-        // don't turn off supplemental bit if file is already marked
-        FileInfo[i].supplemental = supp;
-    }
-    for( j = 0; j < FileInfo[i].num_files; ++j ) {
-        file = &FileInfo[i].files[j];
-        file->disk_size = 0;
-        if( VbufLen( &file->name ) == 0 )
-            continue;
-        VbufSetLen( &buff, dir_end );
-        VbufConcVbuf( &buff, &file->name );
-        if( access_vbuf( &buff, F_OK ) == 0 ) {
-            stat_vbuf( &buff, &buf );
-            found = true;
-            file->disk_size = buf.st_size;
-            file->disk_date = (unsigned long)buf.st_mtime;
-            if( in_old_dir ) {
-                file->in_old_dir = true;
-            } else {
-                file->in_new_dir = true;
-            }
-            file->read_only = !(buf.st_mode & S_IWRITE);
-            if( supp )
+    if( access_vbuf( &buff, F_OK ) == 0 ) {
+        VbufAddDirSep( &buff );
+        dir_end = VbufLen( &buff );
+        supp = TargetInfo[DirInfo[FileInfo[i].dir_index].target].supplemental;
+        if( supp ) {
+            // don't turn off supplemental bit if file is already marked
+            FileInfo[i].supplemental = supp;
+        }
+        file = FileInfo[i].files;
+        for( j = 0; j < FileInfo[i].num_files; ++j, file++ ) {
+            file->disk_size = 0;
+            file->disk_date = 0;
+            file->read_only = false;
+            if( VbufLen( &file->name ) == 0 )
                 continue;
-            if( !*pzeroed ) {
-                ZeroAutoSetValues();
-                for( k = 0; k < SetupInfo.fileconds.num; ++k ) {
-                    FileCondInfo[k].one_uptodate = false;
+            VbufSetLen( &buff, dir_end );
+            VbufConcVbuf( &buff, &file->name );
+            if( access_vbuf( &buff, F_OK ) == 0 ) {
+                stat_vbuf( &buff, &buf );
+                found = true;
+                file->disk_size = buf.st_size;
+                file->disk_date = (unsigned long)buf.st_mtime;
+                if( in_old_dir ) {
+                    file->in_old_dir = true;
+                } else {
+                    file->in_new_dir = true;
                 }
-                *pzeroed = true;
-            }
-            PropagateValue( FileInfo[i].condition.p->cond, true );
-            if( file->in_new_dir &&
-                RoundUp( file->disk_size, 512 ) == file->size &&
-                file->date == file->disk_date ) {
-                FileInfo[i].condition.p->one_uptodate = true;
+                file->read_only = !(buf.st_mode & S_IWRITE);
+                if( supp )
+                    continue;
+                if( !*pzeroed ) {
+                    ZeroAutoSetValues();
+                    for( k = 0; k < SetupInfo.fileconds.num; ++k ) {
+                        FileCondInfo[k].one_uptodate = false;
+                    }
+                    *pzeroed = true;
+                }
+                PropagateValue( FileInfo[i].condition.p->cond, true );
+                if( file->in_new_dir &&
+                    RoundUp( file->disk_size, 512 ) == file->size &&
+                    file->date == file->disk_date ) {
+                    FileInfo[i].condition.p->one_uptodate = true;
+                }
             }
         }
     }
@@ -3203,8 +3200,8 @@ int SimGetAssociationIconIndex( int parm )
     return( AssociationInfo[parm].icon_index );
 }
 
-int SimGetAssociationNoOpen( int parm )
-/*************************************/
+bool SimGetAssociationNoOpen( int parm )
+/**************************************/
 {
     return( AssociationInfo[parm].no_open );
 }

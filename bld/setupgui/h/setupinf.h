@@ -192,7 +192,7 @@ extern void             SimGetAssociationKeyName( int parm, VBUF *buff );
 extern void             SimGetAssociationProgram( int parm, VBUF *buff );
 extern void             SimGetAssociationDescription( int parm, VBUF *buff );
 extern int              SimGetAssociationIconIndex( int parm );
-extern int              SimGetAssociationNoOpen( int parm );
+extern bool             SimGetAssociationNoOpen( int parm );
 extern bool             SimCheckAssociationCondition( int parm );
 extern int              SimNumLabels( void );
 extern void             SimGetLabelDir( int parm, VBUF *buff );
