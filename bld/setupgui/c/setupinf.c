@@ -236,9 +236,9 @@ static struct setup_info {
 #ifdef PATCH
 static struct patch_info {
     PATCHCOMMANDTYPE    command;
-    char                *destdir;
-    char                *destfile;
-    char                *srcfile;
+    VBUF                destdir;
+    VBUF                destfile;
+    VBUF                srcfile;
     char                *exetype;
     char                *condition;
 } *PatchInfo = NULL;
@@ -273,13 +273,13 @@ static struct upgrade_info {
 } *UpgradeInfo = NULL;
 
 static struct association_info {
-    char    *ext;
-    char    *keyname;
-    char    *program;
-    char    *description;
-    char    *condition;
-    int     icon_index;
-    bool    no_open         : 1;
+    char                *ext;
+    char                *keyname;
+    char                *description;
+    char                *program;
+    char                *condition;
+    char                *iconfile;
+    int                 iconindex;
 } *AssociationInfo = NULL;
 
 static file_cond_info   *FileCondInfo = NULL;
@@ -629,7 +629,7 @@ static bool DoEvalCondition( const char *str, bool is_minimal )
 }
 
 bool EvalCondition( const char *str )
-/**********************************/
+/***********************************/
 {
     if( str == NULL || *str == '\0' )
         return( true );
@@ -686,12 +686,12 @@ static void GetDestDir( int i, VBUF *dstdir )
 
     ReplaceVars( dstdir, GetVariableStrVal( "DstDir" ) );
     VbufAddDirSep( dstdir );
-    intvalue = atoi( PatchInfo[i].destdir );
-    if( intvalue != 0 ) {
+    intvalue = atoi( VbufString( &PatchInfo[i].destdir ) );
+    if( intvalue > 0 ) {
         VbufConcStr( dstdir, strchr( DirInfo[intvalue - 1].desc, '=' ) + 1 );
     } else {
         // if destination dir specifies the drive, just use it
-        ReplaceVars( &temp, PatchInfo[i].destdir );
+        ReplaceVars( &temp, VbufString( &PatchInfo[i].destdir ) );
         VbufSplitpath( &temp, &drive, NULL, NULL, NULL );
         if( VbufLen( &drive ) > 0 ) {   // drive specified
             VbufRewind( dstdir );
@@ -1998,24 +1998,27 @@ static bool ProcLine( char *line, pass_type pass )
             return( false );
         memset( &PatchInfo[num], 0, sizeof( *PatchInfo ) );
         next = NextToken( line, ',' );
+        VbufInit( &PatchInfo[num].srcfile );
+        VbufInit( &PatchInfo[num].destfile );
+        VbufInit( &PatchInfo[num].destdir );
         if( stricmp( line, "copy" ) == 0 ) {
             PatchInfo[num].command = PATCH_COPY_FILE;
             line = next; next = NextToken( line, ',' );
-            PatchInfo[num].srcfile = GUIStrDup( line, NULL );
+            VbufConcStr( &PatchInfo[num].srcfile, line );
             line = next; next = NextToken( line, ',' );
-            PatchInfo[num].destdir = GUIStrDup( line, NULL );
+            VbufConcStr( &PatchInfo[num].destdir, line );
             line = next; next = NextToken( line, ',' );
-            PatchInfo[num].destfile = GUIStrDup( line, NULL );
+            VbufConcStr( &PatchInfo[num].destfile, line );
             line = next; next = NextToken( line, ',' );
             PatchInfo[num].condition = GUIStrDup( line, NULL );
         } else if( stricmp( line, "patch" ) == 0 ) {
             PatchInfo[num].command = PATCH_FILE;
             line = next; next = NextToken( line, ',' );
-            PatchInfo[num].srcfile = GUIStrDup( line, NULL );
+            VbufConcStr( &PatchInfo[num].srcfile, line );
             line = next; next = NextToken( line, ',' );
-            PatchInfo[num].destdir = GUIStrDup( line, NULL );
+            VbufConcStr( &PatchInfo[num].destdir, line );
             line = next; next = NextToken( line, ',' );
-            PatchInfo[num].destfile = GUIStrDup( line, NULL );
+            VbufConcStr( &PatchInfo[num].destfile, line );
             line = next; next = NextToken( line, ',' );
             PatchInfo[num].exetype = GUIStrDup( line, NULL );
             line = next; next = NextToken( line, ',' );
@@ -2023,15 +2026,15 @@ static bool ProcLine( char *line, pass_type pass )
         } else if( stricmp( line, "delete" ) == 0 ) {
             PatchInfo[num].command = PATCH_DELETE_FILE;
             line = next; next = NextToken( line, ',' );
-            PatchInfo[num].destfile = GUIStrDup( line, NULL );
+            VbufConcStr( &PatchInfo[num].destfile, line );
             line = next; next = NextToken( line, ',' );
-            PatchInfo[num].destdir = GUIStrDup( line, NULL );
+            VbufConcStr( &PatchInfo[num].destdir, line );
             line = next; next = NextToken( line, ',' );
             PatchInfo[num].condition = GUIStrDup( line, NULL );
         } else if( stricmp( line, "mkdir" ) == 0 ) {
             PatchInfo[num].command = PATCH_MAKE_DIR;
             line = next; next = NextToken( line, ',' );
-            PatchInfo[num].destdir = GUIStrDup( line, NULL );
+            VbufConcStr( &PatchInfo[num].destdir, line );
             line = next; next = NextToken( line, ',' );
             PatchInfo[num].condition = GUIStrDup( line, NULL );
         }
@@ -2188,13 +2191,13 @@ static bool ProcLine( char *line, pass_type pass )
         line = next; next = NextToken( line, ',' );
         AssociationInfo[num].keyname = GUIStrDup( line, NULL );
         line = next; next = NextToken( line, ',' );
-        AssociationInfo[num].program = GUIStrDup( line, NULL );
-        line = next; next = NextToken( line, ',' );
         AssociationInfo[num].description = GUIStrDup( line, NULL );
         line = next; next = NextToken( line, ',' );
-        AssociationInfo[num].icon_index = strtol( line, NULL, 10 );
+        AssociationInfo[num].program = GUIStrDup( line, NULL );
         line = next; next = NextToken( line, ',' );
-        AssociationInfo[num].no_open = strtol( line, NULL, 10 ) != 0;
+        AssociationInfo[num].iconfile = GUIStrDup( line, NULL );
+        line = next; next = NextToken( line, ',' );
+        AssociationInfo[num].iconindex = strtol( line, NULL, 10 );
         AssociationInfo[num].condition = CompileCondition( next );
         break;
     /*
@@ -3193,16 +3196,16 @@ void SimGetAssociationDescription( int parm, VBUF *buff )
     VbufSetStr( buff, AssociationInfo[parm].description );
 }
 
+void SimGetAssociationIconFileName( int parm, VBUF *buff )
+/********************************************************/
+{
+    VbufSetStr( buff, AssociationInfo[parm].iconfile );
+}
+
 int SimGetAssociationIconIndex( int parm )
 /****************************************/
 {
-    return( AssociationInfo[parm].icon_index );
-}
-
-bool SimGetAssociationNoOpen( int parm )
-/**************************************/
-{
-    return( AssociationInfo[parm].no_open );
+    return( AssociationInfo[parm].iconindex );
 }
 
 bool SimCheckAssociationCondition( int parm )
@@ -3550,30 +3553,6 @@ bool SimCalcTargetSpaceNeeded( void )
 
 #ifdef PATCH
 
-static void AddFileName( int i, VBUF *buffer, bool rename )
-/*********************************************************/
-{
-    VbufAddDirSep( buffer );
-    if( !rename ) {
-        if( PatchInfo[i].destfile != NULL ) {
-            VbufConcStr( buffer, PatchInfo[i].destfile );
-        } else {
-            if( PatchInfo[i].srcfile != NULL ) {
-                VbufConcStr( buffer, PatchInfo[i].srcfile );
-            }
-        }
-    }
-}
-
-
-static void GetSourcePath( int i, VBUF *buff )
-/********************************************/
-{
-    ReplaceVars( buff, GetVariableStrVal( "Srcdir" ) );
-    VbufConcStr( buff, PatchInfo[i].srcfile );
-}
-
-
 static bool CopyErrorDialog( int ret, int i, const VBUF *file )
 /*************************************************************/
 {
@@ -3596,7 +3575,7 @@ static bool PatchErrorDialog( PATCH_RET_CODE ret, int i )
     if( ret != PATCH_RET_OKAY && ret != PATCH_CANT_FIND_PATCH ) {
         if( ret != PATCH_RET_CANCEL ) {
             // error, attempt to continue patch process
-            return( MsgBox ( NULL, "IDS_PATCHFILEERROR", GUI_YES_NO, PatchInfo[i].srcfile ) == GUI_RET_YES );
+            return( MsgBoxVbuf( NULL, "IDS_PATCHFILEERROR", GUI_YES_NO, &PatchInfo[i].srcfile ) == GUI_RET_YES );
         } else {
             return( false );
         }
@@ -3851,13 +3830,14 @@ bool PatchFiles( void )
         VbufRewind( &destfullpath );
         switch( PatchInfo[i].command ) {
         case PATCH_FILE:
-            GetSourcePath( i, &srcfullpath );
+            ReplaceVars( &srcfullpath, GetVariableStrVal( "Srcdir" ) );
+            VbufConcVbuf( &srcfullpath, &PatchInfo[i].srcfile );
             if( access_vbuf( &srcfullpath, R_OK ) == 0 ) {
                 PATCH_RET_CODE  ret;
                 char            temp[_MAX_PATH];
 
                 patchDirIndex = i;       // used in secondary search during patch
-                if( SecondaryPatchSearch( PatchInfo[i].destfile, temp ) ) {
+                if( SecondaryPatchSearch( VbufString( &PatchInfo[i].destfile ), temp ) ) {
                     VbufConcStr( &destfullpath, temp );
                     if( PatchInfo[i].exetype[0] != '.'
                       && ExeType( VbufString( &destfullpath ), exetype )
@@ -3884,12 +3864,14 @@ bool PatchFiles( void )
             }
             break;
         case PATCH_COPY_FILE:
-            GetSourcePath( i, &srcfullpath );
+            ReplaceVars( &srcfullpath, GetVariableStrVal( "Srcdir" ) );
+            VbufConcVbuf( &srcfullpath, &PatchInfo[i].srcfile );
             GetDestDir( i, &destfullpath );
             // get rid of trailing slash: OS/2 needs this for access(...) to work
             VbufRemDirSep( &destfullpath );
             if( access_vbuf( &destfullpath, F_OK ) == 0 ) {
-                AddFileName( i, &destfullpath, false );
+                VbufAddDirSep( &destfullpath );
+                VbufConcVbuf( &destfullpath, &PatchInfo[i].destfile );
                 StatusLinesVbuf( STAT_CREATEFILE, &destfullpath );
                 StatusShow( true );
                 if( access_vbuf( &srcfullpath, R_OK ) == 0 ) {
@@ -3909,7 +3891,8 @@ bool PatchFiles( void )
             break;
         case PATCH_DELETE_FILE:
             GetDestDir( i, &destfullpath );
-            AddFileName( i, &destfullpath, false );
+            VbufAddDirSep( &destfullpath );
+            VbufConcVbuf( &destfullpath, &PatchInfo[i].destfile );
             StatusLinesVbuf( STAT_DELETEFILE, &destfullpath );
             StatusShow( true );
             if( access_vbuf( &destfullpath, F_OK | W_OK ) == 0 ) {
@@ -3928,7 +3911,7 @@ bool PatchFiles( void )
             }
             break;
         case PATCH_MAKE_DIR:
-            ReplaceVars( &destfullpath, PatchInfo[i].destdir );
+            ReplaceVars( &destfullpath, VbufString( &PatchInfo[i].destdir ) );
 
             StatusLinesVbuf( STAT_CREATEDIRECTORY, &destfullpath );
             StatusShow( true );
@@ -4193,9 +4176,9 @@ static void FreePatchInfo( void )
     int i;
 
     for( i = 0; i < SetupInfo.patch_files.num; i++ ) {
-        GUIMemFree( PatchInfo[i].destdir );
-        GUIMemFree( PatchInfo[i].destfile );
-        GUIMemFree( PatchInfo[i].srcfile );
+        VbufFree( &PatchInfo[i].destdir );
+        VbufFree( &PatchInfo[i].destfile );
+        VbufFree( &PatchInfo[i].srcfile );
         GUIMemFree( PatchInfo[i].condition );
         GUIMemFree( PatchInfo[i].exetype );
     }
@@ -4329,8 +4312,9 @@ static void FreeAssociationInfo( void )
         for( i = 0; i < SetupInfo.associations.num; i++ ) {
             GUIMemFree( AssociationInfo[i].ext );
             GUIMemFree( AssociationInfo[i].keyname );
-            GUIMemFree( AssociationInfo[i].program );
             GUIMemFree( AssociationInfo[i].description );
+            GUIMemFree( AssociationInfo[i].program );
+            GUIMemFree( AssociationInfo[i].iconfile );
             GUIMemFree( AssociationInfo[i].condition );
         }
         GUIMemFree( AssociationInfo );

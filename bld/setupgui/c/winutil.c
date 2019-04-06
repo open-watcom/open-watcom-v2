@@ -507,8 +507,8 @@ void WriteProfileStrings( bool uninstall )
     VbufInit( &file_name );
     for( ; i != end; i += sign ) {
         SimProfInfo( i, &app_name, &key_name, &value, &file_name, &hive_name );
-        ReplaceVars( &value, NULL );
-        ReplaceVars( &file_name, NULL );
+        ReplaceVars1( &value );
+        ReplaceVars1( &file_name );
         if( !uninstall ) {
             add = SimCheckProfCondition( i );
             if( !add ) {

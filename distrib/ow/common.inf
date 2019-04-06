@@ -315,49 +315,49 @@ icon=view.exe, %HDir%\binp\help\fpguide.inf, F77 Programmer's Reference,,, IsOS2
 icon=view.exe, %HDir%\binp\help\ftools.inf, F77 Tools Guide,,, IsOS2 DoCreateHelpIcons os2_helpfiles ?%HDir%\binp\help\ftools.inf IsFortranInstall
 icon=view.exe, %HDir%\binp\help\f77graph.inf, F77 Graphics Library,,, IsOS2 DoCreateHelpIcons os2_helpfiles ?%HDir%\binp\help\f77graph.inf IsFortranInstall
 icon=view.exe, %HDir%\binp\help\f77lr.inf, F77 Language Reference,,, IsOS2 DoCreateHelpIcons os2_helpfiles ?%HDir%\binp\help\f77lr.inf IsFortranInstall
-assoc=c=cfile, %DstDir%\binnt\viw.exe, C Source File, 2, 0, IsWin32
-assoc=cpp=cppfile, %DstDir%\binnt\viw.exe, C++ Source File, 3, 0, IsWin32
-assoc=cxx=cxxfile, %DstDir%\binnt\viw.exe, C++ Source File, 3, 0, IsWin32
-assoc=h=hfile, %DstDir%\binnt\viw.exe, C/C++ Header File, 4, 0, IsWin32
-assoc=hpp=hppfile, %DstDir%\binnt\viw.exe, C++ Header File, 5, 0, IsWin32
-assoc=hxx=hxxfile, %DstDir%\binnt\viw.exe, C++ Header File, 5, 0, IsWin32
-assoc=inl=inlfile, %DstDir%\binnt\viw.exe, Inline Function File, 9, 0, IsWin32
-assoc=for=forfile, %DstDir%\binnt\viw.exe, FORTRAN Source File, 6, 0, IsWin32
-assoc=f=ffile, %DstDir%\binnt\viw.exe, FORTRAN Source File, 6, 0, IsWin32
-assoc=fi=fifile, %DstDir%\binnt\viw.exe, FORTRAN Include File, 7, 0, IsWin32
-assoc=mak=makfile, %DstDir%\binnt\viw.exe, Makefile, 8, 0, IsWin32
-assoc=mk=mkfile, %DstDir%\binnt\viw.exe, Makefile, 8, 0, IsWin32
-assoc=mif=miffile, %DstDir%\binnt\viw.exe, Make Include File, 8, 0, IsWin32
-assoc=def=deffile, %DstDir%\binnt\viw.exe, Module Definition File, 9, 0, IsWin32
-assoc=obj=objfile, %DstDir%\binnt\viw.exe, Object File, 10, 1, IsWin32
-assoc=pch=pchfile, %DstDir%\binnt\viw.exe, Precompiled Header File, 10, 1, IsWin32
-assoc=rc=rcfile, %DstDir%\binnt\viw.exe, Resource Source File, 11, 0, IsWin32
-assoc=rh=rhfile, %DstDir%\binnt\viw.exe, Resource Header File, 12, 0, IsWin32
-assoc=lib=libfile, %DstDir%\binnt\viw.exe, Static Library, 13, 1, IsWin32
-assoc=awk=awkfile, %DstDir%\binnt\viw.exe, AWK File, 14, 0, IsWin32
-assoc=dlg=dlgfile, %DstDir%\binnt\wde.exe, Dialog File, 2, 0, IsWin32
-assoc=res=resfile, %DstDir%\binnt\wre.exe, Resource File, 1, 0, IsWin32
-assoc=wpj=wpjfile, %DstDir%\binnt\ide.exe, Open Watcom Project File, 0, 0, IsWin32
-assoc=c=cfile, %DstDir%\binnt64\viw.exe, C Source File, 2, 0, IsWin64
-assoc=cpp=cppfile, %DstDir%\binnt64\viw.exe, C++ Source File, 3, 0, IsWin64
-assoc=cxx=cxxfile, %DstDir%\binnt64\viw.exe, C++ Source File, 3, 0, IsWin64
-assoc=h=hfile, %DstDir%\binnt64\viw.exe, C/C++ Header File, 4, 0, IsWin64
-assoc=hpp=hppfile, %DstDir%\binnt64\viw.exe, C++ Header File, 5, 0, IsWin64
-assoc=hxx=hxxfile, %DstDir%\binnt64\viw.exe, C++ Header File, 5, 0, IsWin64
-assoc=inl=inlfile, %DstDir%\binnt64\viw.exe, Inline Function File, 9, 0, IsWin64
-assoc=for=forfile, %DstDir%\binnt64\viw.exe, FORTRAN Source File, 6, 0, IsWin64
-assoc=f=ffile, %DstDir%\binnt64\viw.exe, FORTRAN Source File, 6, 0, IsWin64
-assoc=fi=fifile, %DstDir%\binnt64\viw.exe, FORTRAN Include File, 7, 0, IsWin64
-assoc=mak=makfile, %DstDir%\binnt64\viw.exe, Makefile, 8, 0, IsWin64
-assoc=mk=mkfile, %DstDir%\binnt64\viw.exe, Makefile, 8, 0, IsWin64
-assoc=mif=miffile, %DstDir%\binnt64\viw.exe, Make Include File, 8, 0, IsWin64
-assoc=def=deffile, %DstDir%\binnt64\viw.exe, Module Definition File, 9, 0, IsWin64
-assoc=obj=objfile, %DstDir%\binnt64\viw.exe, Object File, 10, 1, IsWin64
-assoc=pch=pchfile, %DstDir%\binnt64\viw.exe, Precompiled Header File, 10, 1, IsWin64
-assoc=rc=rcfile, %DstDir%\binnt64\viw.exe, Resource Source File, 11, 0, IsWin64
-assoc=rh=rhfile, %DstDir%\binnt64\viw.exe, Resource Header File, 12, 0, IsWin64
-assoc=lib=libfile, %DstDir%\binnt64\viw.exe, Static Library, 13, 1, IsWin64
-assoc=awk=awkfile, %DstDir%\binnt64\viw.exe, AWK File, 14, 0, IsWin64
-assoc=dlg=dlgfile, %DstDir%\binnt64\wde.exe, Dialog File, 2, 0, IsWin64
-assoc=res=resfile, %DstDir%\binnt64\wre.exe, Resource File, 1, 0, IsWin64
-assoc=wpj=wpjfile, %DstDir%\binnt64\ide.exe, Open Watcom Project File, 0, 0, IsWin64
+assoc=c=cfile, C Source File, %DstDir%\binnt\viw.exe,, 2, IsWin32
+assoc=cpp=cppfile, C++ Source File, %DstDir%\binnt\viw.exe,, 3, IsWin32
+assoc=cxx=cxxfile, C++ Source File, %DstDir%\binnt\viw.exe,, 3, IsWin32
+assoc=h=hfile, C/C++ Header File, %DstDir%\binnt\viw.exe,, 4, IsWin32
+assoc=hpp=hppfile, C++ Header File, %DstDir%\binnt\viw.exe,, 5, IsWin32
+assoc=hxx=hxxfile, C++ Header File, %DstDir%\binnt\viw.exe,, 5, IsWin32
+assoc=inl=inlfile, Inline Function File, %DstDir%\binnt\viw.exe,, 9, IsWin32
+assoc=for=forfile, FORTRAN Source File, %DstDir%\binnt\viw.exe,, 6, IsWin32
+assoc=f=ffile, FORTRAN Source File, %DstDir%\binnt\viw.exe,, 6, IsWin32
+assoc=fi=fifile, FORTRAN Include File, %DstDir%\binnt\viw.exe,, 7, IsWin32
+assoc=mak=makfile, Makefile, %DstDir%\binnt\viw.exe,, 8, IsWin32
+assoc=mk=mkfile, Makefile, %DstDir%\binnt\viw.exe,, 8, IsWin32
+assoc=mif=miffile, Make Include File, %DstDir%\binnt\viw.exe,, 8, IsWin32
+assoc=def=deffile, Module Definition File, %DstDir%\binnt\viw.exe,, 9, IsWin32
+assoc=obj=objfile, Object File,, %DstDir%\binnt\viw.exe, 10, IsWin32
+assoc=pch=pchfile, Precompiled Header File,, %DstDir%\binnt\viw.exe, 10, IsWin32
+assoc=rc=rcfile, Resource Source File, %DstDir%\binnt\viw.exe,, 11, IsWin32
+assoc=rh=rhfile, Resource Header File, %DstDir%\binnt\viw.exe,, 12, IsWin32
+assoc=lib=libfile, Static Library,, %DstDir%\binnt\viw.exe, 13, IsWin32
+assoc=awk=awkfile, AWK File, %DstDir%\binnt\viw.exe,, 14, IsWin32
+assoc=dlg=dlgfile, Dialog File, %DstDir%\binnt\wde.exe,, 2, IsWin32
+assoc=res=resfile, Resource File, %DstDir%\binnt\wre.exe,, 1, IsWin32
+assoc=wpj=wpjfile, Open Watcom Project File, %DstDir%\binnt\ide.exe,, 0, IsWin32
+assoc=c=cfile, C Source File, %DstDir%\binnt64\viw.exe,, 2, IsWin64
+assoc=cpp=cppfile, C++ Source File, %DstDir%\binnt64\viw.exe,, 3, IsWin64
+assoc=cxx=cxxfile, C++ Source File, %DstDir%\binnt64\viw.exe,, 3, IsWin64
+assoc=h=hfile, C/C++ Header File, %DstDir%\binnt64\viw.exe,, 4, IsWin64
+assoc=hpp=hppfile, C++ Header File, %DstDir%\binnt64\viw.exe,, 5, IsWin64
+assoc=hxx=hxxfile, C++ Header File, %DstDir%\binnt64\viw.exe,, 5, IsWin64
+assoc=inl=inlfile, Inline Function File, %DstDir%\binnt64\viw.exe,, 9, IsWin64
+assoc=for=forfile, FORTRAN Source File, %DstDir%\binnt64\viw.exe,, 6, IsWin64
+assoc=f=ffile, FORTRAN Source File, %DstDir%\binnt64\viw.exe,, 6, IsWin64
+assoc=fi=fifile, FORTRAN Include File, %DstDir%\binnt64\viw.exe,, 7, IsWin64
+assoc=mak=makfile, Makefile, %DstDir%\binnt64\viw.exe,, 8, IsWin64
+assoc=mk=mkfile, Makefile, %DstDir%\binnt64\viw.exe,, 8, IsWin64
+assoc=mif=miffile, Make Include File, %DstDir%\binnt64\viw.exe,, 8, IsWin64
+assoc=def=deffile, Module Definition File, %DstDir%\binnt64\viw.exe,, 9, IsWin64
+assoc=obj=objfile, Object File,, %DstDir%\binnt64\viw.exe, 10, IsWin64
+assoc=pch=pchfile, Precompiled Header File,, %DstDir%\binnt64\viw.exe, 10, IsWin64
+assoc=rc=rcfile, Resource Source File, %DstDir%\binnt64\viw.exe,, 11, IsWin64
+assoc=rh=rhfile, Resource Header File, %DstDir%\binnt64\viw.exe,, 12, IsWin64
+assoc=lib=libfile, Static Library,, %DstDir%\binnt64\viw.exe, 13, IsWin64
+assoc=awk=awkfile, AWK File, %DstDir%\binnt64\viw.exe,, 14, IsWin64
+assoc=dlg=dlgfile, Dialog File, %DstDir%\binnt64\wde.exe,, 2, IsWin64
+assoc=res=resfile, Resource File, %DstDir%\binnt64\wre.exe,, 1, IsWin64
+assoc=wpj=wpjfile, Open Watcom Project File, %DstDir%\binnt64\ide.exe,, 0, IsWin64

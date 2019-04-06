@@ -330,7 +330,7 @@ static bool UseDDE( bool uninstall )
                     dir_index = SimGetPMProgName( i, &prog_name );
                     if( dir_index == -1 ) {
                         VbufRewind( &working_dir );
-                        ReplaceVars( &prog_name, NULL );
+                        ReplaceVars1( &prog_name );
                     } else {
                         SimDirNoEndSlash( dir_index, &working_dir );
                     }
@@ -338,7 +338,7 @@ static bool UseDDE( bool uninstall )
                      * Get parameters
                      */
                     SimGetPMParms( i, &prog_args );
-                    ReplaceVars( &prog_args, NULL );
+                    ReplaceVars1( &prog_args );
                     /*
                      * Append the subdir where the icon file is and the icon file's name.
                      */
@@ -627,7 +627,7 @@ static bool UseIShellLink( bool uninstall )
                 dir_index = SimGetPMProgName( i, &prog_name );
                 if( dir_index == -1 ) {
                     VbufRewind( &working_dir );
-                    ReplaceVars( &prog_name, NULL );
+                    ReplaceVars1( &prog_name );
                 } else {
                     SimDirNoEndSlash( dir_index, &working_dir );
                 }
@@ -635,7 +635,7 @@ static bool UseIShellLink( bool uninstall )
                  * Get parameters
                  */
                 SimGetPMParms( i, &prog_args );
-                ReplaceVars( &prog_args, NULL );
+                ReplaceVars1( &prog_args );
                 /*
                  * Append the subdir where the icon file is and the icon file's name.
                  */

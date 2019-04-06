@@ -58,8 +58,8 @@ static HOBJECT create_group( const VBUF *group, const VBUF *grp_filename )
     // add more parms here if necessary
     SimGetPMGroupIcon( &icon_file );
     if( VbufLen( &icon_file ) > 0 ) {
+        ReplaceVars1( &icon_file );
         VbufConcStr( &cmd, ICONFILETAG );
-        ReplaceVars( &icon_file, NULL );
         VbufConcVbuf( &cmd, &icon_file );
         VbufConcChr( &cmd, ';' );
     }
@@ -194,7 +194,7 @@ bool CreatePMInfo( bool uninstall )
                 nDirIndex = SimGetPMProgName( i, &PMProgName );
                 if( nDirIndex == -1 ) {
                     VbufRewind( &WorkingDir );
-                    ReplaceVars( &PMProgName, NULL );
+                    ReplaceVars1( &PMProgName );
                 } else {
                     SimGetDir( nDirIndex, &WorkingDir );
                 }
@@ -202,7 +202,7 @@ bool CreatePMInfo( bool uninstall )
                  * Get parameters
                  */
                 SimGetPMParms( i, &PMParams );
-                ReplaceVars( &PMParams, NULL );
+                ReplaceVars1( &PMParams );
                 if( VbufString( &PMParams )[0] == '+' ) {
                     p = strchr( VbufString( &PMParams ) + 1, '+' );
                     if( p == NULL ) {
@@ -334,7 +334,7 @@ void LabelDirs( void )
     num = SimNumLabels();
     for( i = 0; i < num; ++i ) {
         SimGetLabelDir( i, &dir_name );
-        ReplaceVars( &dir_name, NULL );
+        ReplaceVars1( &dir_name );
         SimGetLabelLabel( i, &label );
         SetEAttr( VbufString( &dir_name ), ".LONGNAME", VbufString( &label ) );
     }

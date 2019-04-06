@@ -1728,7 +1728,6 @@ bool ModifyRegAssoc( bool uninstall )
     VBUF    temp;
     VBUF    ext;
     VBUF    keyname;
-    VBUF    program;
     int     num;
     int     i;
 
@@ -1742,7 +1741,6 @@ bool ModifyRegAssoc( bool uninstall )
         VbufInit( &temp );
         VbufInit( &ext );
         VbufInit( &keyname );
-        VbufInit( &program );
         num = SimNumAssociations();
         for( i = 0; i < num; i++ ) {
             if( !SimCheckAssociationCondition( i ) )
@@ -1757,21 +1755,29 @@ bool ModifyRegAssoc( bool uninstall )
             RegCreateKey( HKEY_CLASSES_ROOT, VbufString( &keyname ), &hkey );
             SimGetAssociationDescription( i, &temp );
             RegSetValue( hkey, NULL, REG_SZ, VbufString( &temp ), (DWORD)VbufLen( &temp ) );
-            SimGetAssociationProgram( i, &program );
-            if( !SimGetAssociationNoOpen( i ) ) {
-                VbufSetVbuf( &temp, &program );
+            /* process program definition */
+            SimGetAssociationProgram( i, &temp );
+            if( VbufLen( &temp ) > 0 ) {
                 VbufConcStr( &temp, " %%1" );
-                ReplaceVars( &temp, NULL );
+                ReplaceVars1( &temp );
                 RegSetValue( hkey, "shell\\open\\command", REG_SZ, VbufString( &temp ), (DWORD)VbufLen( &temp ) );
             }
-            VbufSetVbuf( &temp, &program );
+            /* process icon definition */
+            if( VbufLen( &temp ) > 0 ) {
+                SimGetAssociationIconFileName( i, &temp );
+                if( VbufLen( &temp ) == 0 ) {
+                    /* if icon file not defined then use program name */
+                    SimGetAssociationProgram( i, &temp );
+                }
+            } else {
+                SimGetAssociationIconFileName( i, &temp );
+            }
             VbufConcChr( &temp, ',' );
             VbufConcInteger( &temp, SimGetAssociationIconIndex( i ), 0 );
-            ReplaceVars( &temp, NULL );
+            ReplaceVars1( &temp );
             RegSetValue( hkey, "DefaultIcon", REG_SZ, VbufString( &temp ), (DWORD)VbufLen( &temp ) );
             RegCloseKey( hkey );
         }
-        VbufFree( &program );
         VbufFree( &keyname );
         VbufFree( &ext );
         VbufFree( &temp );

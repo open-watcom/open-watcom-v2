@@ -335,13 +335,13 @@ void VbufConcInteger(           // CONCATENATE A INTEGER TO VBUF
 {
     char    buffer[16];         // - temp buffer
 
-    VbufSetLen( vbuf, 0 );
     if( value < 0 ) {
         VbufConcChr( vbuf, '-' );
         value = -value;
     }
     ltoa( value, buffer, 10 );
     digits -= (int)strlen( buffer );
+    /* add leading '0' if necessary */
     while( digits-- > 0 ) {
         VbufConcChr( vbuf, '0' );
     }

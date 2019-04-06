@@ -189,10 +189,10 @@ extern append_mode      SimGetEnvironmentStrings( int parm, VBUF *new_var, VBUF 
 extern int              SimNumAssociations( void );
 extern void             SimGetAssociationExt( int parm, VBUF *buff );
 extern void             SimGetAssociationKeyName( int parm, VBUF *buff );
-extern void             SimGetAssociationProgram( int parm, VBUF *buff );
 extern void             SimGetAssociationDescription( int parm, VBUF *buff );
+extern void             SimGetAssociationProgram( int parm, VBUF *buff );
+extern void             SimGetAssociationIconFileName( int parm, VBUF *buff );
 extern int              SimGetAssociationIconIndex( int parm );
-extern bool             SimGetAssociationNoOpen( int parm );
 extern bool             SimCheckAssociationCondition( int parm );
 extern int              SimNumLabels( void );
 extern void             SimGetLabelDir( int parm, VBUF *buff );

@@ -1708,7 +1708,7 @@ static void CopySetupInfFile( void )
     // if DoCopyInf variable is set, copy/delete setup.inf
     VbufSetStr( &tmp_path, GetVariableStrVal( "DoCopyInf" ) );
     if( VbufLen( &tmp_path ) > 0 ) {
-        ReplaceVars( &tmp_path, NULL );
+        ReplaceVars1( &tmp_path );
         VbufSetStr( &fname, "setup.inf" );
         VbufMakepath( &dst_path, NULL, &tmp_path, &fname, NULL );
         if( VarGetBoolVal( UnInstall ) ) {
