@@ -45,8 +45,8 @@
 #include "genvbl.h"
 #include "utils.h"
 #if !defined( GUI_IS_GUI )
-  #include "stdui.h"
-  #include "uigchar.h"
+    #include "stdui.h"
+    #include "uigchar.h"
 #endif
 #include "guistat.h"
 
@@ -431,11 +431,7 @@ void StatusLines( int msg0, const char *message1 )
 void BumpStatus( long by )
 /************************/
 {
-    if( !IsPatch ) {
-        // if a patch, don't change status because denominator of status
-        // fraction is the number of operations, not a number of bytes
-        StatusAmount( Parts_Complete + by, Parts_Injob );
-    }
+    StatusAmount( Parts_Complete + by, Parts_Injob );
 }
 
 void StatusAmount( long parts_complete, long parts_injob )

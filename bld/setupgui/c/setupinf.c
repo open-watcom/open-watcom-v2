@@ -59,12 +59,6 @@
 #include "utils.h"
 #include "setupio.h"
 #include "iopath.h"
-#ifdef PATCH
-    #include "bdiff.h"
-    #include "installp.h"
-    #include "msg.h"
-    #include "exetype.h"
-#endif
 #include "watcom.h"
 #include "dynarray.h"
 
@@ -98,20 +92,6 @@
     x( IsLinux64, y ) \
     x( IsAlpha, y ) \
     x( HelpFiles, y ) \
-
-#ifdef PATCH
-typedef enum {
-    PATCH_NOTHING,
-    PATCH_COPY_FILE,
-    PATCH_DELETE_FILE,
-    PATCH_FILE,
-    PATCH_MAKE_DIR
-} PATCHCOMMANDTYPE;
-
-typedef enum {
-    REG_EXE             = 0
-} FILETYPE;
-#endif
 
 typedef struct a_file_info {
     VBUF                name;
@@ -179,7 +159,6 @@ typedef enum {
     RS_STATUSLINEMESSAGE,
     RS_MISCMESSAGE,
     RS_LICENSEMESSAGE,
-    RS_PATCH,
     RS_AUTOSET,
     RS_SPAWN,
     RS_RESTRICTIONS,
@@ -221,9 +200,6 @@ static struct setup_info {
     array_info          target;
     array_info          label;
     array_info          upgrade;
-#ifdef PATCH
-    array_info          patch_files;
-#endif
     array_info          spawn;
     array_info          delete;
     array_info          fileconds;
@@ -232,17 +208,6 @@ static struct setup_info {
     array_info          all_pm_groups;
     array_info          associations;
 } SetupInfo;
-
-#ifdef PATCH
-static struct patch_info {
-    PATCHCOMMANDTYPE    command;
-    VBUF                destdir;
-    VBUF                destfile;
-    VBUF                srcfile;
-    char                *exetype;
-    char                *condition;
-} *PatchInfo = NULL;
-#endif
 
 static struct dir_info {
     char                *desc;
@@ -362,10 +327,6 @@ static char             *RawReadBuf;
 static char             *RawBufPos;
 static int              MaxWidthChars;
 static int              CharWidth;
-
-#ifdef PATCH
-static int              patchDirIndex = 0;      // used in secondary search during patch
-#endif
 
 static vhandle GetTokenHandle( const char *p );
 static void ZeroAutoSetValues( void );
@@ -672,109 +633,6 @@ static void PropagateValue( tree_node *tree, bool value )
         break;
     }
 }
-
-#ifdef PATCH
-static void GetDestDir( int i, VBUF *dstdir )
-/*******************************************/
-{
-    VBUF                temp;
-    VBUF                drive;
-    int                 intvalue = 0;
-
-    VbufInit( &temp );
-    VbufInit( &drive );
-
-    ReplaceVars( dstdir, GetVariableStrVal( "DstDir" ) );
-    VbufAddDirSep( dstdir );
-    intvalue = atoi( VbufString( &PatchInfo[i].destdir ) );
-    if( intvalue > 0 ) {
-        VbufConcStr( dstdir, strchr( DirInfo[intvalue - 1].desc, '=' ) + 1 );
-    } else {
-        // if destination dir specifies the drive, just use it
-        ReplaceVars( &temp, VbufString( &PatchInfo[i].destdir ) );
-        VbufSplitpath( &temp, &drive, NULL, NULL, NULL );
-        if( VbufLen( &drive ) > 0 ) {   // drive specified
-            VbufRewind( dstdir );
-        }
-        VbufConcVbuf( dstdir, &temp );
-    }
-    VbufAddDirSep( dstdir );
-
-    VbufFree( &drive );
-    VbufFree( &temp );
-}
-
-// calback for DoPatch in bld/bdiff project
-bool SecondaryPatchSearch( const char *filename, char *buff )
-/***********************************************************/
-{
-// search for patch output files (originals to be patched) in following order
-// 1.)  check .INF specified directory in PatchInfo structure (if it exists)
-// 2.)  check DstDir "variable"
-// 2b)  if not found in %DstDir%\destdir just try %DstDir%
-// 3.)  check system path
-
-// this function performs the first two checks
-// findold() in OLDFILE.C (bdiff project) does system path search
-// if first two searches fail and this function returns nonzero.
-
-    VBUF                path;
-    VBUF                ext;
-    bool                ok;
-
-    VbufInit( &path );
-
-    GetDestDir( patchDirIndex, &path );
-    VbufConcStr( &path, filename );
-    ok = ( access_vbuf( &path, F_OK ) == 0 );
-    if( !ok ) {
-        ReplaceVars( &path, GetVariableStrVal( "DstDir" ) );
-        VbufAddDirSep( &path );
-        VbufConcStr( &path, filename );
-        ok = ( access_vbuf( &path, F_OK ) == 0 );
-    }
-    if( ok ) {
-        strcpy( buff, VbufString( &path ) );
-    } else {
-        buff[0] = '\0';
-        VbufInit( &ext );
-        VbufSetStr( &path, filename );
-        VbufSplitpath( &path, NULL, NULL, NULL, &ext );
-        if( VbufCompStr( &ext, ".dll", true ) == 0 ) {
-            _searchenv( filename, "PATH", buff );
-        }
-        VbufFree( &ext );
-        ok = ( buff[0] != '\0' );
-    }
-
-    VbufFree( &path );
-    return( ok );
-}
-
-// calback for DoPatch in bld/bdiff project
-void PatchingFileStatusShow( const char *patchname, const char *path )
-/********************************************************************/
-{
-    VBUF    buff;
-
-    VbufInit( &buff );
-
-    VbufConcStr( &buff, patchname );
-    VbufConcStr( &buff, " to file " );
-    VbufConcStr( &buff, path );
-    StatusLinesVbuf( STAT_PATCHFILE, &buff );
-    StatusShow( true );
-
-    VbufFree( &buff );
-}
-
-// calback for DoPatch in bld/bdiff project
-bool PatchStatusCancelled( void )
-/*******************************/
-{
-    return( StatusCancelled() );
-}
-#endif
 
 static char *NextToken( char *buf, char delim )
 /*********************************************/
@@ -1751,11 +1609,6 @@ static bool ProcLine( char *line, pass_type pass )
             State = RS_MISCMESSAGE;
         } else if( stricmp( line, "[LicenseMessage]" ) == 0 ) {
             State = RS_LICENSEMESSAGE;
-#ifdef PATCH
-        } else if( stricmp( line, "[Patch]" ) == 0 ) {
-            State = RS_PATCH;
-            LineCountPointer = &SetupInfo.patch_files.alloc;
-#endif
         } else if( stricmp( line, "[Restrictions]" ) == 0 ) {
             State = RS_RESTRICTIONS;
         } else if( stricmp( line, "[DeleteFiles]" ) == 0 ) {
@@ -1991,55 +1844,6 @@ static bool ProcLine( char *line, pass_type pass )
             FileInfo[num].condition.i = NewFileCond( line );
         }
         break;
-#ifdef PATCH
-    case RS_PATCH:
-        num = SetupInfo.patch_files.num;
-        if( !BumpArray( &SetupInfo.patch_files ) )
-            return( false );
-        memset( &PatchInfo[num], 0, sizeof( *PatchInfo ) );
-        next = NextToken( line, ',' );
-        VbufInit( &PatchInfo[num].srcfile );
-        VbufInit( &PatchInfo[num].destfile );
-        VbufInit( &PatchInfo[num].destdir );
-        if( stricmp( line, "copy" ) == 0 ) {
-            PatchInfo[num].command = PATCH_COPY_FILE;
-            line = next; next = NextToken( line, ',' );
-            VbufConcStr( &PatchInfo[num].srcfile, line );
-            line = next; next = NextToken( line, ',' );
-            VbufConcStr( &PatchInfo[num].destdir, line );
-            line = next; next = NextToken( line, ',' );
-            VbufConcStr( &PatchInfo[num].destfile, line );
-            line = next; next = NextToken( line, ',' );
-            PatchInfo[num].condition = GUIStrDup( line, NULL );
-        } else if( stricmp( line, "patch" ) == 0 ) {
-            PatchInfo[num].command = PATCH_FILE;
-            line = next; next = NextToken( line, ',' );
-            VbufConcStr( &PatchInfo[num].srcfile, line );
-            line = next; next = NextToken( line, ',' );
-            VbufConcStr( &PatchInfo[num].destdir, line );
-            line = next; next = NextToken( line, ',' );
-            VbufConcStr( &PatchInfo[num].destfile, line );
-            line = next; next = NextToken( line, ',' );
-            PatchInfo[num].exetype = GUIStrDup( line, NULL );
-            line = next; next = NextToken( line, ',' );
-            PatchInfo[num].condition = GUIStrDup( line, NULL );
-        } else if( stricmp( line, "delete" ) == 0 ) {
-            PatchInfo[num].command = PATCH_DELETE_FILE;
-            line = next; next = NextToken( line, ',' );
-            VbufConcStr( &PatchInfo[num].destfile, line );
-            line = next; next = NextToken( line, ',' );
-            VbufConcStr( &PatchInfo[num].destdir, line );
-            line = next; next = NextToken( line, ',' );
-            PatchInfo[num].condition = GUIStrDup( line, NULL );
-        } else if( stricmp( line, "mkdir" ) == 0 ) {
-            PatchInfo[num].command = PATCH_MAKE_DIR;
-            line = next; next = NextToken( line, ',' );
-            VbufConcStr( &PatchInfo[num].destdir, line );
-            line = next; next = NextToken( line, ',' );
-            PatchInfo[num].condition = GUIStrDup( line, NULL );
-        }
-        break;
-#endif
     case RS_AUTOSET:
         next = NextToken( line, '=' );
         if( VariablesFile == NULL ) {
@@ -2574,9 +2378,6 @@ long SimInit( const VBUF *inf_name )
     InitArray( (void **)&TargetInfo, sizeof( struct target_info ), &SetupInfo.target );
     InitArray( (void **)&LabelInfo, sizeof( struct label_info ), &SetupInfo.label );
     InitArray( (void **)&UpgradeInfo, sizeof( struct upgrade_info ), &SetupInfo.upgrade );
-#ifdef PATCH
-    InitArray( (void **)&PatchInfo, sizeof( struct patch_info ), &SetupInfo.patch_files );
-#endif
     InitArray( (void **)&SpawnInfo, sizeof( struct spawn_info ), &SetupInfo.spawn );
     InitArray( (void **)&DeleteInfo, sizeof( struct spawn_info ), &SetupInfo.delete );
     InitArray( (void **)&FileCondInfo, sizeof( struct file_cond_info ), &SetupInfo.fileconds );
@@ -3551,528 +3352,6 @@ bool SimCalcTargetSpaceNeeded( void )
 }
 
 
-#ifdef PATCH
-
-static bool CopyErrorDialog( int ret, int i, const VBUF *file )
-/*************************************************************/
-{
-    /* unused parameters */ (void)i;
-
-    if( ret != CFE_NOERROR ) {
-        if( ret != CFE_ABORT ) {
-            return( MsgBoxVbuf( NULL, "IDS_COPYFILEERROR", GUI_YES_NO, file ) == GUI_RET_YES );
-        } else {
-            return( false );
-        }
-    }
-    return( true );
-}
-
-
-static bool PatchErrorDialog( PATCH_RET_CODE ret, int i )
-/*******************************************************/
-{
-    if( ret != PATCH_RET_OKAY && ret != PATCH_CANT_FIND_PATCH ) {
-        if( ret != PATCH_RET_CANCEL ) {
-            // error, attempt to continue patch process
-            return( MsgBoxVbuf( NULL, "IDS_PATCHFILEERROR", GUI_YES_NO, &PatchInfo[i].srcfile ) == GUI_RET_YES );
-        } else {
-            return( false );
-        }
-    }
-    return( true );
-}
-
-
-#if 0
-static bool FindStr( FILE *fp, char *fullpath, char *pattern )
-/************************************************************/
-{
-    char            *buff;
-    size_t          len;
-    size_t          readsize;
-    char            *p;
-    size_t          i;
-    bool            found;
-    size_t          patternlen;
-
-    patternlen = strlen( pattern );
-    found = false;
-
-    buff = NULL;
-    for( readsize = 8 * 1024; readsize > 0; readsize = readsize / 2 ) {
-        buff = malloc( readsize + patternlen );
-        if( buff != NULL ) {
-            break;
-        }
-    }
-    if( readsize == 0 ) {
-        free( buff );
-        return( false );
-    }
-    memset( buff, 0, patternlen );
-    while( !found && !feof( fp ) ) {
-        len = fread( &buff[patternlen], 1, readsize, fp );
-        for( p = buff, i = 0; i < len; ++i, ++p ) {
-            if( *p == pattern[0] && memcmp( p, pattern, patternlen ) == 0 ) {
-                found = true;
-                break;
-            }
-        }
-        if( len > patternlen ) {
-            memcpy( buff,  &buff[len], patternlen );
-        }
-    }
-    if( found ) {
-        fseek( fp,  -(long)(len + patternlen - i), SEEK_CUR );
-        free( buff );
-        return( true );
-    }
-    free( buff );
-    return( false );
-}
-
-bool ReadBlock( char *fullpath, char *pattern, void *block, long blocklen )
-/*************************************************************************/
-{
-    FILE            *fp;
-    int             len;
-    struct stat     statbuf;
-
-    if( stat( fullpath, &statbuf ) != 0 ) {
-        // Cannot open file
-        return( false );
-    }
-    fp = fopen( fullpath, "rb" );
-    if( fp == NULL ) {
-        return( false );
-    }
-    if( FindStr( fp, fullpath, pattern ) ) {
-        len = fread( block, 1, blocklen, fp );
-        if( len == blocklen ) {
-            if( fclose( fp ) != 0 ) {
-                return( false );
-            }
-            return( true );
-        }
-    }
-    fclose( fp );
-    return( false );
-}
-
-
-bool WriteBlock( char *fullpath, char *pattern, void *block, long blocklen )
-/**************************************************************************/
-{
-    bool            foundstr;
-    FILE            *fp;
-    int             len;
-    struct stat     statbuf;
-    struct utimbuf  utimbuf;
-
-    if( stat( fullpath, &statbuf ) != 0 ) {
-        // Cannot open file
-        return( false );
-    }
-    utimbuf.actime = statbuf.st_atime;
-    utimbuf.modtime = statbuf.st_mtime;
-    fp = fopen( fullpath, "rb+" );
-    if( fp == NULL ) {
-        return( false );
-    }
-
-    foundstr = false;
-
-    //there may be more than one block
-    while( FindStr( fp, fullpath, pattern ) ) {
-        len = fwrite( block, 1, blocklen, fp );
-        fflush( fp );
-        if( len != blocklen ) {
-            fclose( fp );
-            return( false );
-        }
-        foundstr = true;
-    }
-    fclose( fp );
-    utime( fullpath, &utimbuf );
-    return( foundstr );
-}
-#endif
-
-typedef struct {
-    FILE    *log_file;
-    bool    do_log;
-} log_state;
-
-
-static FILE *LogFileOpen( void )
-/******************************/
-{
-    FILE        *logfp;
-    VBUF        patchlog;
-
-    VbufInit( &patchlog );
-
-    logfp = NULL;
-    VbufConcStr( &patchlog, GetVariableStrVal( "PatchLog" ) );
-    if( VbufLen( &patchlog ) > 0 ) {
-        if( access_vbuf( &patchlog, F_OK | W_OK | R_OK ) == 0
-          && MsgBoxVbuf( NULL, "IDS_LOGFILE_EXISTS", GUI_YES_NO, &patchlog ) == GUI_RET_NO ) {
-            // cancel
-        } else if( access_vbuf( &patchlog, F_OK ) == 0 ) {
-            MsgBoxVbuf( NULL, "IDS_CANT_OPEN_LOGFILE", GUI_OK, &patchlog );
-        } else {
-            remove_vbuf( &patchlog );
-            logfp = fopen_vbuf( &patchlog, "wt+" );
-            if( logfp == NULL ) {
-                MsgBoxVbuf( NULL, "IDS_CANT_OPEN_LOGFILE", GUI_OK, &patchlog );
-            }
-        }
-    }
-
-    VbufFree( &patchlog );
-    return( logfp );
-}
-
-
-static void LogFileClose( log_state *ls )
-/***************************************/
-{
-    if( ls->do_log && (fclose( ls->log_file ) != 0) ) {
-        MsgBox( NULL, "IDS_CANT_WRITE_LOGFILE", GUI_OK, GetVariableStrVal( "PatchLog" ) );
-    }
-}
-
-#define GetVariableMsgVal GetVariableStrVal
-
-static void LogWriteMsg( log_state *ls, const char *msg_id )
-/**********************************************************/
-{
-    if( ls->do_log ) {
-        fprintf( ls->log_file, "%s\n", GetVariableMsgVal( msg_id ) );
-    }
-}
-
-
-static void LogWriteMsgStr( log_state *ls, const char *msg_id, const VBUF *str )
-/******************************************************************************/
-{
-    if( ls->do_log ) {
-        fprintf( ls->log_file, GetVariableMsgVal( msg_id ), VbufString( str ) );
-    }
-}
-
-
-static int DoPatchFile( const VBUF *src, const VBUF *dst, unsigned_32 flag )
-/**************************************************************************/
-{
-    // TODO: Perform some useful function here
-
-    return( DoPatch( VbufString( src ), 0, 0, 0, VbufString( dst ) ) );
-}
-
-
-bool PatchFiles( void )
-/*********************/
-{
-    // this function performs the operations normally done in a batch file
-    // (like applyd.bat).  Operations are:  patch file, copy (create) file,
-    // and delete file.  Commands are set in [Patch] section of .INF file/
-    // "Patch" in [Application] section must be set to 1 for this function to
-    // be called.  Setting "Patch" to 1 overrides any regular setup (ie.
-    // only this function will be called )
-
-    int                 i;
-    VBUF                destfullpath;
-    VBUF                srcfullpath;
-    gui_message_return  guiret;
-    int                 count;      // count successful patches
-    const char          *appname;
-    char                exetype[3];
-    log_state           logstate;
-    log_state           *log;
-    bool                ok;
-
-
-    // note:  Up until this point, PatchInfo[x].destdir contains an
-    //        integer string representing the directory defined in
-    //        the [dirs] section on the .INF file.  This function will replace
-    //        the .destdir member with the actual (full) directory path.
-    //        The conversion is done here (instead of in initialization) so
-    //        that that user can change the DstDir before the patch process
-    //        begins.
-
-    count = 0;
-    log = &logstate;
-
-    if( GetVariableBoolVal( "DoPatchLog" ) ) {
-        log->log_file = LogFileOpen();
-        if( log->log_file == NULL ) {
-            MsgBox( NULL, "IDS_PATCHABORT", GUI_OK );
-            return( false );
-        }
-        log->do_log = true;
-        appname = GetVariableStrVal( "AppName" );
-        fprintf( log->log_file, "%s\n\n", appname );
-    } else {
-        log->log_file = NULL;
-        log->do_log = false;
-    }
-    VbufInit( &destfullpath );
-    VbufInit( &srcfullpath );
-    ok = true;
-    for( i = 0; ok && i < SetupInfo.patch_files.num; i++ ) {
-        if( !EvalCondition( PatchInfo[i].condition ) ) {
-            StatusAmount( i + 1, SetupInfo.patch_files.num );
-            continue;
-        }
-        VbufRewind( &srcfullpath );
-        VbufRewind( &destfullpath );
-        switch( PatchInfo[i].command ) {
-        case PATCH_FILE:
-            ReplaceVars( &srcfullpath, GetVariableStrVal( "Srcdir" ) );
-            VbufConcVbuf( &srcfullpath, &PatchInfo[i].srcfile );
-            if( access_vbuf( &srcfullpath, R_OK ) == 0 ) {
-                PATCH_RET_CODE  ret;
-                char            temp[_MAX_PATH];
-
-                patchDirIndex = i;       // used in secondary search during patch
-                if( SecondaryPatchSearch( VbufString( &PatchInfo[i].destfile ), temp ) ) {
-                    VbufConcStr( &destfullpath, temp );
-                    if( PatchInfo[i].exetype[0] != '.'
-                      && ExeType( VbufString( &destfullpath ), exetype )
-                      && strcmp( exetype, PatchInfo[i].exetype ) != 0 ) {
-                        break;
-                    }
-                    StatusLinesVbuf( STAT_PATCHFILE, &destfullpath );
-                    StatusShow( true );
-                    LogWriteMsgStr( log, "IDS_UNPACKING", &destfullpath );
-                    ret = DoPatchFile( &srcfullpath, &destfullpath, 0 );
-                    if( ret == PATCH_RET_OKAY ) {
-                        ++count;
-                        LogWriteMsg( log, "IDS_SUCCESS" );
-                        break;
-                    } else {
-                        LogWriteMsg( log, "IDS_FAILED_UNPACKING" );
-                        if( !PatchErrorDialog( ret, i ) ) {
-                            LogWriteMsg( log, "IDS_PATCHABORT" );
-                            ok = false;
-                            break;
-                        }
-                    }
-                }
-            }
-            break;
-        case PATCH_COPY_FILE:
-            ReplaceVars( &srcfullpath, GetVariableStrVal( "Srcdir" ) );
-            VbufConcVbuf( &srcfullpath, &PatchInfo[i].srcfile );
-            GetDestDir( i, &destfullpath );
-            // get rid of trailing slash: OS/2 needs this for access(...) to work
-            VbufRemDirSep( &destfullpath );
-            if( access_vbuf( &destfullpath, F_OK ) == 0 ) {
-                VbufAddDirSep( &destfullpath );
-                VbufConcVbuf( &destfullpath, &PatchInfo[i].destfile );
-                StatusLinesVbuf( STAT_CREATEFILE, &destfullpath );
-                StatusShow( true );
-                if( access_vbuf( &srcfullpath, R_OK ) == 0 ) {
-                    LogWriteMsgStr( log, "IDS_UNPACKING", &destfullpath );
-                    if( DoCopyFile( &srcfullpath, &destfullpath, false ) == CFE_NOERROR ) {
-                        ++count;
-                        LogWriteMsg( log, "IDS_SUCCESS" );
-                        break;
-                    }
-                    LogWriteMsg( log, "IDS_FAILED_UNPACKING" );
-                    if( !CopyErrorDialog( CFE_ERROR, i, &srcfullpath ) ) {
-                        LogWriteMsg( log, "IDS_PATCHABORT" );
-                        ok = false;
-                    }
-                }
-            }
-            break;
-        case PATCH_DELETE_FILE:
-            GetDestDir( i, &destfullpath );
-            VbufAddDirSep( &destfullpath );
-            VbufConcVbuf( &destfullpath, &PatchInfo[i].destfile );
-            StatusLinesVbuf( STAT_DELETEFILE, &destfullpath );
-            StatusShow( true );
-            if( access_vbuf( &destfullpath, F_OK | W_OK ) == 0 ) {
-                LogWriteMsgStr( log, "IDS_DELETING", &destfullpath );
-                if( DoDeleteFile( &destfullpath ) ) {
-                    ++count;
-                    LogWriteMsg( log, "IDS_SUCCESS" );
-                } else {
-                    LogWriteMsg( log, "IDS_FAILED_DELETING" );
-                    guiret = MsgBoxVbuf( NULL, "IDS_DELETEFILEERROR", GUI_YES_NO, &destfullpath );
-                    if( guiret == GUI_RET_NO ) {
-                        LogWriteMsg( log, "IDS_PATCHABORT" );
-                        ok = false;
-                    }
-                }
-            }
-            break;
-        case PATCH_MAKE_DIR:
-            ReplaceVars( &destfullpath, VbufString( &PatchInfo[i].destdir ) );
-
-            StatusLinesVbuf( STAT_CREATEDIRECTORY, &destfullpath );
-            StatusShow( true );
-            if( access_vbuf( &destfullpath, F_OK ) != 0 ) {
-                LogWriteMsgStr( log, "IDS_CREATINGDIR", &destfullpath );
-#ifdef __UNIX__
-                if( mkdir_vbuf( &destfullpath, PMODE_RWX ) == 0 ) {
-#else
-                if( mkdir_vbuf( &destfullpath ) == 0 ) {
-#endif
-                    LogWriteMsg( log, "IDS_SUCCESS" );
-                } else {
-                    guiret = MsgBoxVbuf( NULL, "IDS_CREATEDIRERROR", GUI_YES_NO, &destfullpath );
-                    if( guiret == GUI_RET_NO ) {
-                        LogWriteMsg( log, "IDS_FAILED_CREATINGDIR" );
-                        ok = false;
-                    }
-                }
-            }
-            break;
-        default:
-            /* Something went wrong, but what can we do about it now? */
-            break;
-        }
-
-        StatusAmount( i + 1, SetupInfo.patch_files.num );
-        if( PatchStatusCancelled() ) {
-            LogWriteMsg( log, "IDS_PATCHABORT" );
-            ok = false;
-        }
-    }
-    VbufFree( &destfullpath );
-    VbufFree( &srcfullpath );
-    PatchStatusCancelled(); /* make sure display gets updated */
-
-    if( ok && count == 0 ) {
-        LogWriteMsg( log, "IDS_NO_FILES_PATCHED" );
-    }
-    LogFileClose( log );
-    if( ok && count == 0 ) {
-        // no files patched successfully
-        MsgBox( NULL, "IDS_NO_FILES_PATCHED", GUI_OK );
-        ok = false;
-    }
-    return( ok );
-}
-
-
-void MsgPut( int resourceid, va_list arglist )
-{
-    const char  *msgbuf;
-    char        *messageid;
-    char        *argbuf[3];
-    int         i;
-
-    for( i = 0; i < 3; i++ ) {
-        argbuf[i] = va_arg( arglist, char * );
-    }
-    switch( resourceid ) {
-  #if !defined( __UNIX__ )
-    case ERR_TWO_NAMES:
-        messageid = "IDS_TWONAMES";
-        break;
-    case ERR_WRONG_SIZE:
-        messageid = "IDS_BADLENGTH";
-        break;
-    case ERR_CANT_RENAME:
-        messageid = "IDS_CANTRENAME";
-        break;
-    case ERR_WRONG_CHECKSUM:
-        messageid = "IDS_WRONGCHECKSUM";
-        break;
-    case ERR_PATCH_ABORTED:
-        messageid = "IDS_PATCHABORT";
-        break;
-    case ERR_NOT_PATCHFILE:
-        messageid = "IDS_NOTPATCHFILE";
-        break;
-    case ERR_BAD_PATCHFILE:
-        messageid = "IDS_BADPATCHFILE";
-        break;
-    case ERR_CANT_FIND:
-        messageid = "IDS_CANTOPENSRC";
-        break;
-    case ERR_CANT_READ:
-        messageid = "IDS_CANTREADFILE";
-        break;
-    case ERR_CANT_WRITE:
-        messageid = "IDS_CANTWRITE";
-        break;
-    case ERR_CANT_OPEN:
-        messageid = "IDS_CANTFINDOUTPUT";
-        break;
-    case ERR_IO_ERROR:
-        messageid = "IDS_IOERROR";
-        break;
-    case ERR_MEMORY_OUT:
-        messageid = "IDS_NOMEMORY";
-        break;
-    case ERR_CANT_GET_ATTRIBUTES:
-        messageid = "IDS_NOATTRIBUTES";
-        break;
-  #endif
-    default:
-        messageid = "IDS_ERROR";
-    }
-    msgbuf = GetVariableStrVal( messageid );
-    MsgBox( NULL, messageid, GUI_OK, argbuf[0], argbuf[1], argbuf[2] );
-}
-
-
-void PatchError( int format, ... )
-{
-    va_list     args;
-
-    // don't give error message if the patch file cant be found
-    // just continue
-  #if !defined( __UNIX__ )
-    if( format == ERR_CANT_FIND )
-        return;
-  #endif
-    if( GetVariableBoolVal( "Debug" ) ) {
-        va_start( args, format );
-        MsgPut( format, args );
-        va_end( args );
-    }
-}
-
-
-void FilePatchError( int format, ... )
-{
-    va_list     args;
-
-  #if !defined( __UNIX__ )
-    if( format == ERR_CANT_FIND )
-        return;
-    if( format == ERR_CANT_OPEN )
-        return;
-  #endif
-    va_start( args, format );
-    MsgPut( format, args );
-    va_end( args );
-}
-
-void FileCheck( FILE *fd, const char *name )
-{
-    if( fd == NULL ) {
-        FilePatchError( ERR_CANT_OPEN, name );
-    }
-}
-
-void SeekCheck( int rc, const char *name )
-{
-    if( rc != 0 ) {
-        FilePatchError( ERR_IO_ERROR, name );
-    }
-}
-
-#endif  /* PATCH */
-
-
 /* ********** Free up all structures associated with this file ******* */
 
 
@@ -4177,26 +3456,6 @@ static void FreeForceDLLInstall( void )
         SetupInfo.force_DLL_install.num = 0;
     }
 }
-
-#ifdef PATCH
-static void FreePatchInfo( void )
-/*******************************/
-{
-    int i;
-
-    for( i = 0; i < SetupInfo.patch_files.num; i++ ) {
-        VbufFree( &PatchInfo[i].destdir );
-        VbufFree( &PatchInfo[i].destfile );
-        VbufFree( &PatchInfo[i].srcfile );
-        GUIMemFree( PatchInfo[i].condition );
-        GUIMemFree( PatchInfo[i].exetype );
-    }
-    GUIMemFree( PatchInfo );
-    PatchInfo = NULL;
-    SetupInfo.patch_files.num = 0;
-}
-#endif
-
 
 static void FreeSpawnInfo( void )
 /*******************************/
@@ -4376,9 +3635,6 @@ void FreeAllStructs( void )
     FreeDirInfo();
     FreeFileInfo();
     FreeFileCondInfo();
-#ifdef PATCH
-    FreePatchInfo();
-#endif
     FreePMInfo();
     FreeProfileInfo();
     FreeEnvironmentInfo();

@@ -83,11 +83,9 @@ static const char   *DefDir    = NULL;
 static const char   *DefUsr    = NULL;
 static const char   *DefRel    = NULL;
 static const char   *DefCond   = NULL;
-static const char   *DefPack   = NULL;
 static const char   *DefWhere  = NULL;
 static const char   *DefDesc   = NULL;
 static const char   *DefOld    = NULL;
-static const char   *DefPatch  = NULL;
 static const char   *DefDstvar = NULL;
 static const char   *DefKeys   = NULL;
 
@@ -504,8 +502,6 @@ static void ProcessLine( const char *line )
     const char  *old;
     const char  *dstvar;
     const char  *keys;
-//    const char  *pack;
-//    const char  *patch;
     bool    special;
 
     special = false;
@@ -515,11 +511,9 @@ static void ProcessLine( const char *line )
     usr = DEFVAL( DefUsr );
     rel = DEFVAL( DefRel );
     cond = DEFVALA( DefCond );
-//    pack = DEFVAL( DefPack );
     where = DEFVALA( DefWhere );
     desc = DEFVAL( DefDesc );
     old = DEFVAL( DefOld );
-//    patch = DEFVAL( DefPatch );
     dstvar = DEFVAL( DefDstvar );
     keys = DEFVAL( DefKeys );
 
@@ -546,8 +540,6 @@ static void ProcessLine( const char *line )
             cond = item_redef( cond, str );
         } else if( !stricmp( cmd, "conda" ) ) {
             cond = item_append( cond, str );
-        } else if( !stricmp( cmd, "pack" ) ) {
-//            pack = str;
         } else if( !stricmp( cmd, "where" ) ) {
             where = item_redef( where, str );
         } else if( !stricmp( cmd, "wherea" ) ) {
@@ -558,8 +550,6 @@ static void ProcessLine( const char *line )
             desc = str;
         } else if( !stricmp( cmd, "old" ) ) {
             old = str;
-        } else if( !stricmp( cmd, "patch" ) ) {
-//            patch = str;
         } else if( !stricmp( cmd, "dstvar" ) ) {
             dstvar = str;
         } else if( !stricmp( cmd, "keys" ) ) {
@@ -602,11 +592,9 @@ static void FreeDefault( void )
     FREE_ITEM( DefUsr );
     FREE_ITEM( DefRel );
     FREE_ITEM( DefCond );
-    FREE_ITEM( DefPack );
     FREE_ITEM( DefWhere );
     FREE_ITEM( DefDesc );
     FREE_ITEM( DefOld );
-    FREE_ITEM( DefPatch );
     FREE_ITEM( DefDstvar );
     FREE_ITEM( DefKeys );
 }
@@ -644,16 +632,12 @@ static void ProcessDefault( const char *line )
                 DefRel = item_def( DefRel, str, cmd );
             } else if( !stricmp( cmd, "cond" ) ) {
                 DefCond = item_def( DefCond, str, cmd );
-            } else if( !stricmp( cmd, "pack" ) ) {
-                DefPack = item_def( DefPack, str, cmd );
             } else if( !stricmp( cmd, "where" ) ) {
                 DefWhere = item_def( DefWhere, str, cmd );
             } else if( !stricmp( cmd, "desc" ) ) {
                 DefDesc = item_def( DefDesc, str, cmd );
             } else if( !stricmp( cmd, "old" ) ) {
                 DefOld = item_def( DefOld, str, cmd );
-            } else if( !stricmp( cmd, "patch" ) ) {
-                DefPatch = item_def( DefPatch, str, cmd );
             } else if( !stricmp( cmd, "dstvar" ) ) {
                 DefDstvar = item_def( DefDstvar, str, cmd );
             } else if( !stricmp( cmd, "keys" ) ) {

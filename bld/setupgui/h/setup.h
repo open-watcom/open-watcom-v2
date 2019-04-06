@@ -131,7 +131,6 @@ enum {
 
 extern bool             ConfigModified;
 extern gui_window       *MainWnd;
-extern bool             IsPatch;
 extern bool             CancelSetup;
 extern bool             SkipDialogs;
 extern bool             Invisible;

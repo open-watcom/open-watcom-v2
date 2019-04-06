@@ -62,10 +62,6 @@
 #include "utils.h"
 #include "setupio.h"
 #include "iopath.h"
-#ifdef PATCH
-    #include "bdiff.h"
-    #include "wpack.h"
-#endif
 #include "errno.h"
 #include "guistat.h"
 
@@ -1258,11 +1254,10 @@ bool CheckDrive( bool issue_message )
                     // identical drives are combined, and so are UNC paths pointing to the same share
                     // BUT:  drives and UNC paths that happen to be the same are NOT combined. (I am lazy)
 
-                    if( ( tolower( *disks[j] ) == tolower( *disks[i] ) &&
-                        isalpha( *disks[i] ) ) || VbufCompVbuf( &UNC_root1, &UNC_root2, true ) == 0 ) {
+                    if( ( tolower( *disks[j] ) == tolower( *disks[i] ) && isalpha( *disks[i] ) )
+                        || VbufCompVbuf( &UNC_root1, &UNC_root2, true ) == 0 ) {
 #else
-                    if( tolower( *disks[j] ) == tolower( *disks[i] ) &&
-                        isalpha( *disks[i] ) ) {
+                    if( tolower( *disks[j] ) == tolower( *disks[i] ) && isalpha( *disks[i] ) ) {
 #endif
                         targ_num = j;
                         disk_space_needed += SimTargetSpaceNeeded( j );
@@ -1344,8 +1339,7 @@ bool CheckDrive( bool issue_message )
                     sprintf( buff, GetVariableStrVal( "IDS_DRIVE_SPEC_UNC" ), &UNC_root1 );
                 } else {
 #endif
-                    sprintf( buff, GetVariableStrVal( "IDS_DRIVE_SPEC" ),
-                             toupper( *space[i].drive ) );
+                    sprintf( buff, GetVariableStrVal( "IDS_DRIVE_SPEC" ), toupper( *space[i].drive ) );
 #ifdef UNC_SUPPORT
                 }
 #endif
@@ -1363,8 +1357,8 @@ bool CheckDrive( bool issue_message )
             }
             drive_freesp[strlen( drive_freesp ) - 1] = i + 1 + '0';
 #ifdef UNC_SUPPORT
-            if( TEST_UNC( space[i].drive ) && (!DriveInfoIsAvailable( space[i].drive ) ||
-                                               !IsDriveWritable( space[i].drive )) ) {
+            if( TEST_UNC( space[i].drive )
+              && (!DriveInfoIsAvailable( space[i].drive ) || !IsDriveWritable( space[i].drive )) ) {
                 strcpy( buff, "" );
             }
 #endif
@@ -1740,10 +1734,8 @@ static bool checkForNewName( int filenum, int subfilenum, VBUF *name )
     } else if( SimSubFileIsDLL( filenum, subfilenum ) ) {
         NewFileToCheck( name, true );
 #ifdef EXTRA_CAUTIOUS_FOR_DLLS
-        if( !IsPatch ) {
-            VbufSetStr( &ext, "._D_" );
-            VbufSetPathExt( name, &ext );
-        }
+        VbufSetStr( &ext, "._D_" );
+        VbufSetPathExt( name, &ext );
 #endif
         rc = true;
     } else {
@@ -1907,7 +1899,6 @@ static bool DoCopyFiles( void )
                 }
                 SimFileDir( filenum, &dir );
                 SimGetFileDesc( filenum, &file_desc );
-//                SimGetFileName( filenum, &file_name );
 
 //                _splitpath( file_desc, NULL, NULL, NULL, file_ext );
 //                VbufMakepath( &dst_path, NULL, &dir, &file_desc, NULL );

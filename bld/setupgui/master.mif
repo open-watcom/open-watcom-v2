@@ -48,16 +48,6 @@ objs = &
     strvbuf.obj     &
     utils.obj
 
-!ifdef patch
-objs +=             &
-    exetype.obj     &
-    oldfile.obj     &
-    bpatch.obj      &
-    patchio.obj     &
-    myio.obj        &
-    dopatch.obj
-!endif
-
 mem_objs = &
     setupmem.obj     &
     $(trmem_objs)
@@ -129,9 +119,6 @@ extra_deps += $(manifest_$(host_os)_$(host_cpu)) wresui.res
 # cflags
 #########
 extra_cpp_flags =
-!ifdef patch
-extra_cpp_flags += -DPATCH -DINSTALL_PROGRAM
-!endif
 !ifeq sys_windowed 1
 extra_cpp_flags += -DGUI_IS_GUI
 !endif
@@ -180,11 +167,7 @@ dep_res1 = ../h/setup.h setup.ico disk.ico gui.rc
 # where to find objects
 ########################
 
-.c : ../c
-!ifdef patch
-.c : $(bdiff_dir)/c;$(wpack_dir)/c
-!endif
-.c : $(trmem_dir)
+.c : ../c;$(trmem_dir)
 .rc : ../res;$(res_dir);$(gui_dir)/h
 .ico : $(res_dir)
 
@@ -192,9 +175,6 @@ res_inc_dirs = -I"$(res_dir)" -I"../res" $(gui_inc_dirs) $(inc_dirs_sys)
 
 inc_dirs  = -I"../h" $(ui_inc_dirs) $(wpi_inc_dirs) $(gui_inc_dirs) $(commonui_inc_dirs) $(wpi_inc_dirs) $(hlpview_inc_dirs)
 inc_dirs += -I"$(trmem_dir)" -I"$(libzip_dir)/lib"
-!ifdef patch
-inc_dirs += -I"$(bdiff_dir)/h" -I"$(wpack_dir)/h"
-!endif
 
 # explicit rules
 ##################

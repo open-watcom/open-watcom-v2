@@ -49,8 +49,6 @@
 #include "clibext.h"
 
 
-bool    IsPatch = false;
-
 typedef enum {
     Stack_Push,
     Stack_Pop,
@@ -73,14 +71,6 @@ static bool SetupOperations( void )
     }
 
     DoSpawn( WHEN_BEFORE );
-#ifdef PATCH
-    if( GetVariableBoolVal( "Patch" ) ) {
-        IsPatch = true;
-        if( !PatchFiles() ) {
-            return( false );
-        }
-    }
-#endif
 
     DeleteObsoleteFiles();
 
