@@ -328,32 +328,13 @@ static bool StatusGUIEventProc( gui_window *gui, gui_event gui_ev, void *parm )
     return( false );
 }
 
-static gui_create_info StatusInfo = {
-    NULL,                                   // Title
-    { 1500, 2500, 6500, 6000 },             // Position
-    GUI_NOSCROLL,                           // Scroll Styles
-    GUI_VISIBLE                             // Window Styles
-//  | GUI_CLOSEABLE
-    | GUI_SYSTEM_MENU
-/*  | GUI_RESIZEABLE
-    | GUI_MAXIMIZE
-    | GUI_MINIMIZE
-    | GUI_DIALOG_LOOK */,
-    NULL,                                   // Parent
-    GUI_NO_MENU,                            // Menu array
-    GUI_COLOUR_ARRAY( StatusColours ),      // Colour attribute array
-    &StatusGUIEventProc,                    // GUI Event Callback function
-    NULL,                                   // Extra
-    NULL,                                   // Icon
-    NULL                                    // Menu Resource
-};
-
 static bool OpenStatusWindow( const char *title )
 /***********************************************/
 {
     gui_text_metrics    metrics;
 //    int                 i;
     gui_rect            rect;
+    gui_create_info     init;
 
 //    for( i = STAT_BLANK; i < sizeof( Messages ) / sizeof( Messages[0] ); ++i ) {
 //      Messages[i] = GetVariableStrVal( Messages[i] );
@@ -363,24 +344,30 @@ static bool OpenStatusWindow( const char *title )
     CharSize.y = 5 * metrics.avg.y / 4;
     GUITruncToPixel( &CharSize );
 
-    StatusInfo.parent = MainWnd;
-    StatusInfo.title = GUIStrDup( title, NULL );
-    StatusInfo.rect.width = STATUS_WIDTH * CharSize.x;
-    StatusInfo.rect.height = STATUS_HEIGHT * CharSize.y;
+    memset( &init, 0, sizeof( init ) );
+    init.title = title;
+    init.rect.width = STATUS_WIDTH * CharSize.x;
+    init.rect.height = STATUS_HEIGHT * CharSize.y;
     GUIGetClientRect( MainWnd, &rect );
     if( GUIIsGUI() ) {
-        StatusInfo.rect.y = BitMapBottom;
+        init.rect.y = BitMapBottom;
     } else {
-        StatusInfo.rect.y = (GUIScale.y - StatusInfo.rect.height) / 2;
+        init.rect.y = (GUIScale.y - init.rect.height) / 2;
     }
-    if( StatusInfo.rect.y > rect.height - StatusInfo.rect.height ) {
-        StatusInfo.rect.y = rect.height - StatusInfo.rect.height;
+    if( init.rect.y > rect.height - init.rect.height ) {
+        init.rect.y = rect.height - init.rect.height;
     }
-    StatusInfo.rect.x = (GUIScale.x - StatusInfo.rect.width) / 2;
+    init.rect.x = (GUIScale.x - init.rect.width) / 2;
+    init.scroll = GUI_NOSCROLL;
+    init.style = GUI_VISIBLE | GUI_SYSTEM_MENU;
+    init.parent = MainWnd;
+    init.colours.num_items = GUI_ARRAY_SIZE( StatusColours );
+    init.colours.colour = StatusColours;
+    init.gui_call_back = StatusGUIEventProc;
 
     StatusBarLen = 0;
 
-    StatusWnd = GUICreateWindow( &StatusInfo );
+    StatusWnd = GUICreateWindow( &init );
 
     GUIGetClientRect( StatusWnd, &StatusRect );
 
@@ -479,12 +466,14 @@ void StatusAmount( long parts_complete, long parts_injob )
             Percent = 100;
         }
     }
-    if( old_percent == Percent ) return;
+    if( old_percent == Percent )
+        return;
     if( Percent != 0 && Percent < old_percent ) {
         Percent = old_percent;
         return;
     }
-    if( StatusWnd == NULL ) return;
+    if( StatusWnd == NULL )
+        return;
 #if !defined( GUI_IS_GUI )
     GUIWndDirty( StatusWnd );
 #else
@@ -555,9 +544,6 @@ void StatusFini( void )
 /*********************/
 {
     if( StatusWnd != NULL ){
-        if( StatusInfo.title != NULL ) {
-            GUIMemFree( (void *)StatusInfo.title );
-        }
         GUIDestroyWnd( StatusWnd );
         StatusWnd = NULL;
     }
