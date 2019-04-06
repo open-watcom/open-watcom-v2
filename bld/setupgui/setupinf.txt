@@ -101,18 +101,18 @@ Sections
    Set variable <var> to value <value>, create the variable if needed.
 
 [Associations]
-  <ext>=<key>,<prog>,<descr>,<icon>,<no open>,<cond>
+  <ext>=<key>,<descr>,<prog>,<iconfile>,<iconidx>,<cond>
     used only by Windows 32/64-bit
 
-   <ext>    file extension, which is associated with program
-   <key>    name of registry key for file extension
-   <prog>   program name associated with file extension
-   <desc>   value of registry key for file extension
-   <icon>   ICON index in program file
-   <no open> don't use program file for open associated file
-   <cond>   a condition is a variable name which is true or false. The 
-            condition can be negated by following the name with a space and
-            an exclamation mark '!'
+   <ext>        file extension, which is associated with program/icon
+   <key>        name of registry key for file extension
+   <desc>       description for file extension
+   <prog>       program name used for open files with file extension
+   <iconfile>   icon file, if not specified then program file is used
+   <iconidx>    icon index in icon file
+   <cond>       a condition is a variable name which is true or false. The 
+                condition can be negated by following the name with a space
+                and an exclamation mark '!'
 
 [Autoexec]
    This section defines modifications to be made to autoexec.bat file only.
