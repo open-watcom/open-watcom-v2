@@ -345,10 +345,6 @@ IDS_NOSETUPINFOFILE=\
     //1"The %s file cannot be found.\nPlease verify the distribution diskette."\
     //2"ファイル %s が見つかりません。\nディスケットを確認してください。"\
     //0
-ID_NOTEMPSPACE=\
-    //1"A drive could not be found with at least %ldK free to write a temporary file needed by @."\
-    //2"@ が必要としているテンポラリ・ファイルを書き出すための最低 %ldK のフリースペースがドライブにありません。"\
-    //0
 IDS_NODISKSPACE=\
     //1"Drive %c: contains %ldK of free disk space.\n@ requires a minimum of %ldK.&\n\nThe installation may fail. Do you want to proceed anyway?"\
     //2"ドライブ %c: には %ldK のフリーなディスクスペースがあります。\n@ は最低 %ldK 必要です。&\n\nインストールは失敗するかもしれませんが、続けますか?"\
