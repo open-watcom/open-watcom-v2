@@ -4095,6 +4095,8 @@ static void FreeTargetVal( void )
         GUIMemFree( TargetInfo[i].temp_disk );
     }
     GUIMemFree( TargetInfo );
+    TargetInfo = NULL;
+    SetupInfo.target.num = 0;
 }
 
 
@@ -4106,6 +4108,8 @@ static void FreeDirInfo( void )
         GUIMemFree( DirInfo[i].desc );
     }
     GUIMemFree( DirInfo );
+    DirInfo = NULL;
+    SetupInfo.dirs.num = 0;
 }
 
 
@@ -4124,6 +4128,8 @@ static void FreeFileInfo( void )
             GUIMemFree( FileInfo[i].files );
         }
         GUIMemFree( FileInfo );
+        FileInfo = NULL;
+        SetupInfo.files.num = 0;
     }
 }
 
@@ -4138,6 +4144,7 @@ static void FreeDLLsToCheck( void )
         }
         GUIMemFree( DLLsToCheck );
         DLLsToCheck = NULL;
+        SetupInfo.dlls_to_count.num = 0;
     }
 }
 
@@ -4152,6 +4159,7 @@ static void FreeFileCondInfo( void )
         }
         GUIMemFree( FileCondInfo );
         FileCondInfo = NULL;
+        SetupInfo.fileconds.num = 0;
     }
 }
 
@@ -4166,6 +4174,7 @@ static void FreeForceDLLInstall( void )
         }
         GUIMemFree( ForceDLLInstall );
         ForceDLLInstall = NULL;
+        SetupInfo.force_DLL_install.num = 0;
     }
 }
 
@@ -4183,6 +4192,8 @@ static void FreePatchInfo( void )
         GUIMemFree( PatchInfo[i].exetype );
     }
     GUIMemFree( PatchInfo );
+    PatchInfo = NULL;
+    SetupInfo.patch_files.num = 0;
 }
 #endif
 
@@ -4197,6 +4208,8 @@ static void FreeSpawnInfo( void )
         GUIMemFree( SpawnInfo[i].condition );
     }
     GUIMemFree( SpawnInfo );
+    SpawnInfo = NULL;
+    SetupInfo.spawn.num = 0;
 }
 
 
@@ -4209,6 +4222,8 @@ static void FreeDeleteInfo( void )
         GUIMemFree( DeleteInfo[i].name );
     }
     GUIMemFree( DeleteInfo );
+    DeleteInfo = NULL;
+    SetupInfo.delete.num = 0;
 }
 
 
@@ -4225,6 +4240,8 @@ static void FreePMInfo( void )
         GUIMemFree( PMInfo[i].condition );
     }
     GUIMemFree( PMInfo );
+    PMInfo = NULL;
+    SetupInfo.pm_files.num = 0;
 }
 
 
@@ -4242,6 +4259,8 @@ static void FreeProfileInfo( void )
         GUIMemFree( ProfileInfo[i].condition );
     }
     GUIMemFree( ProfileInfo );
+    ProfileInfo = NULL;
+    SetupInfo.profile.num = 0;
 }
 
 
@@ -4256,8 +4275,32 @@ static void FreeOneConfigInfo( array_info *info, struct config_info *array )
         GUIMemFree( array[i].condition );
     }
     GUIMemFree( array );
+    info->num = 0;
 }
 
+static void FreeEnvironmentInfo( void )
+{
+    if( EnvironmentInfo != NULL ) {
+        FreeOneConfigInfo( &SetupInfo.environment, EnvironmentInfo );
+        EnvironmentInfo = NULL;
+    }
+}
+
+static void FreeAutoExecInfo( void )
+{
+    if( AutoExecInfo != NULL ) {
+        FreeOneConfigInfo( &SetupInfo.autoexec, AutoExecInfo );
+        AutoExecInfo = NULL;
+    }
+}
+
+static void FreeConfigInfo( void )
+{
+    if( ConfigInfo != NULL ) {
+        FreeOneConfigInfo( &SetupInfo.config, ConfigInfo );
+        ConfigInfo = NULL;
+    }
+}
 
 static void FreeUpgradeInfo( void )
 /*********************************/
@@ -4270,6 +4313,7 @@ static void FreeUpgradeInfo( void )
         }
         GUIMemFree( UpgradeInfo );
         UpgradeInfo = NULL;
+        SetupInfo.upgrade.num = 0;
     }
 }
 
@@ -4285,6 +4329,7 @@ static void FreeLabelInfo( void )
         }
         GUIMemFree( LabelInfo );
         LabelInfo = NULL;
+        SetupInfo.label.num = 0;
     }
 }
 
@@ -4300,6 +4345,7 @@ static void FreeAllPMGroups( void )
         }
         GUIMemFree( AllPMGroups );
         AllPMGroups = NULL;
+        SetupInfo.all_pm_groups.num = 0;
     }
 }
 
@@ -4319,6 +4365,7 @@ static void FreeAssociationInfo( void )
         }
         GUIMemFree( AssociationInfo );
         AssociationInfo = NULL;
+        SetupInfo.associations.num = 0;
     }
 }
 
@@ -4334,9 +4381,9 @@ void FreeAllStructs( void )
 #endif
     FreePMInfo();
     FreeProfileInfo();
-    FreeOneConfigInfo( &SetupInfo.environment, EnvironmentInfo );
-    FreeOneConfigInfo( &SetupInfo.autoexec, AutoExecInfo );
-    FreeOneConfigInfo( &SetupInfo.config, ConfigInfo );
+    FreeEnvironmentInfo();
+    FreeAutoExecInfo();
+    FreeConfigInfo();
     FreeSetupInfoVal();
     FreeSpawnInfo();
     FreeDeleteInfo();
