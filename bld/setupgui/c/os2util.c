@@ -47,25 +47,25 @@ static HOBJECT create_group( const VBUF *group, const VBUF *grp_filename )
 {
     HOBJECT     hobj;
     VBUF        cmd;
-    VBUF        icon_file;
+    VBUF        iconfile;
 
     VbufInit( &cmd );
-    VbufInit( &icon_file );
+    VbufInit( &iconfile );
 
     VbufConcStr( &cmd, "OPEN=ICON;OBJECTID=" );
     VbufConcVbuf( &cmd, grp_filename );
     VbufConcChr( &cmd, ';' );
     // add more parms here if necessary
-    SimGetPMGroupIcon( &icon_file );
-    if( VbufLen( &icon_file ) > 0 ) {
-        ReplaceVars1( &icon_file );
+    SimGetPMGroupIcon( &iconfile );
+    if( VbufLen( &iconfile ) > 0 ) {
+        ReplaceVars1( &iconfile );
         VbufConcStr( &cmd, ICONFILETAG );
-        VbufConcVbuf( &cmd, &icon_file );
+        VbufConcVbuf( &cmd, &iconfile );
         VbufConcChr( &cmd, ';' );
     }
     hobj = WinCreateObject( "WPFolder", VbufString( group ), VbufString( &cmd ), "<WP_DESKTOP>", CO_UPDATEIFEXISTS );
 
-    VbufFree( &icon_file );
+    VbufFree( &iconfile );
     VbufFree( &cmd );
     return( hobj );
 }

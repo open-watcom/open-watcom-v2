@@ -505,7 +505,7 @@ static void linkDeleteGroup( const VBUF *group )
 }
 
 static bool linkGroupAddItem( const VBUF *group, const VBUF *prog_name, const VBUF *prog_desc,
-        const VBUF *prog_args, const VBUF *working_dir, const VBUF *iconfile, int icon_num )
+        const VBUF *prog_args, const VBUF *working_dir, const VBUF *iconfile, int iconindex )
 /********************************************************************************************/
 {
     HRESULT             hres;
@@ -538,7 +538,7 @@ static bool linkGroupAddItem( const VBUF *group, const VBUF *prog_name, const VB
             hres = m_link->lpVtbl->SetDescription( m_link, VbufString( prog_desc ) );
             hres = m_link->lpVtbl->SetWorkingDirectory( m_link, VbufString( working_dir ) );
             hres = m_link->lpVtbl->SetArguments( m_link, VbufString( prog_args ) );
-            hres = m_link->lpVtbl->SetIconLocation( m_link, VbufString( iconfile ), icon_num );
+            hres = m_link->lpVtbl->SetIconLocation( m_link, VbufString( iconfile ), iconindex );
 
             // Save the shortcut via the IPersistFile::Save member function.
             hres = p_file->lpVtbl->Save( p_file, w_link, TRUE );
