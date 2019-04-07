@@ -269,8 +269,8 @@ static struct pm_info {
     char                *filename;
     char                *parameters;
     char                *desc;
-    char                *icoioname;
-    int                 icon_pos;
+    char                *iconfile;
+    int                 iconindex;
     char                *condition;
     bool                group           : 1;
     bool                shadow          : 1;
@@ -1910,17 +1910,14 @@ static bool ProcLine( char *line, pass_type pass )
                 return( false );
             }
         }
-        if( next == NULL ) {
-            PMInfo[num].icoioname = NULL;
-            PMInfo[num].icon_pos = 0;
-        } else {
+        PMInfo[num].iconfile = NULL;
+        PMInfo[num].iconindex = 0;
+        if( next != NULL ) {
             line = next; next = NextToken( line, ',' );
-            PMInfo[num].icoioname = GUIStrDup( line, NULL );
-            if( next == NULL ) {
-                PMInfo[num].icon_pos = 0;
-            } else {
+            PMInfo[num].iconfile = GUIStrDup( line, NULL );
+            if( next != NULL ) {
                 line = next; next = NextToken( line, ',' );
-                PMInfo[num].icon_pos = atoi( line );
+                PMInfo[num].iconindex = atoi( line );
             }
         }
         PMInfo[num].condition = CompileCondition( next );
@@ -2805,16 +2802,16 @@ void SimGetPMDesc( int parm, VBUF *buff )
     VbufSetStr( buff, PMInfo[parm].desc );
 }
 
-int SimGetPMIconInfo( int parm, VBUF *buff, int *icon_pos )
-/*********************************************************/
+int SimGetPMIconInfo( int parm, VBUF *iconfile, int *iconindex )
+/**************************************************************/
 {
-    if( PMInfo[parm].icoioname == NULL ) {
-        ReplaceVars( buff, PMInfo[parm].filename );
+    if( PMInfo[parm].iconfile == NULL ) {
+        ReplaceVars( iconfile, PMInfo[parm].filename );
     } else {
-        VbufSetStr( buff, PMInfo[parm].icoioname );
+        VbufSetStr( iconfile, PMInfo[parm].iconfile );
     }
-    *icon_pos = PMInfo[parm].icon_pos;
-    return( SimFindDirForFile( buff ) );
+    *iconindex = PMInfo[parm].iconindex;
+    return( SimFindDirForFile( iconfile ) );
 }
 
 bool SimCheckPMCondition( int parm )
@@ -3495,7 +3492,7 @@ static void FreePMInfo( void )
         GUIMemFree( PMInfo[i].desc );
         GUIMemFree( PMInfo[i].filename );
         GUIMemFree( PMInfo[i].parameters );
-        GUIMemFree( PMInfo[i].icoioname );
+        GUIMemFree( PMInfo[i].iconfile );
         GUIMemFree( PMInfo[i].condition );
     }
     GUIMemFree( PMInfo );

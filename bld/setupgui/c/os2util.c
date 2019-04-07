@@ -87,7 +87,7 @@ bool CreatePMInfo( bool uninstall )
     VBUF                PMProgName;
     VBUF                PMProgDesc;
     VBUF                PMParams;
-    VBUF                PMIconFileName;
+    VBUF                iconfile;
     VBUF                WorkingDir;
     VBUF                Folder;
     VBUF                Cmd;
@@ -95,7 +95,7 @@ bool CreatePMInfo( bool uninstall )
     VBUF                group;
     VBUF                GroupFileName;
     int                 nDirIndex;
-    int                 icon_number;
+    int                 iconindex;
     int                 i;
     int                 num;
     size_t              len;
@@ -141,7 +141,7 @@ bool CreatePMInfo( bool uninstall )
         VbufInit( &PMProgName );
         VbufInit( &PMProgDesc );
         VbufInit( &PMParams );
-        VbufInit( &PMIconFileName );
+        VbufInit( &iconfile );
         VbufInit( &WorkingDir );
         VbufInit( &Folder );
         VbufInit( &Cmd );
@@ -227,13 +227,13 @@ bool CreatePMInfo( bool uninstall )
                 /*
                  * Append the subdir where the icon file is and the icon file's name.
                  */
-                nDirIndex = SimGetPMIconInfo( i, &PMIconFileName, &icon_number );
-                if( icon_number == -1 ) {
-                    icon_number = 0;
+                nDirIndex = SimGetPMIconInfo( i, &iconfile, &iconindex );
+                if( iconindex == -1 ) {
+                    iconindex = 0;
                 }
                 if( nDirIndex != -1 ) {
                     SimGetDir( nDirIndex, &tmp );
-                    VbufPrepVbuf( &PMIconFileName, &tmp );
+                    VbufPrepVbuf( &iconfile, &tmp );
                 }
                 if( SimPMProgIsShadow( i ) ) {
                     VbufSetStr( &Cmd, "SHADOWID=" );
@@ -260,7 +260,7 @@ bool CreatePMInfo( bool uninstall )
         VbufFree( &Cmd );
         VbufFree( &Folder );
         VbufFree( &WorkingDir );
-        VbufFree( &PMIconFileName );
+        VbufFree( &iconfile );
         VbufFree( &PMParams );
         VbufFree( &PMProgDesc );
         VbufFree( &PMProgName );

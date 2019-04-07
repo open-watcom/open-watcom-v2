@@ -129,7 +129,7 @@ static bool ddeGroupReplaceItem( DWORD ddeinst, HCONV hconv, const VBUF *prog_de
 
 static bool ddeGroupAddItem1( DWORD ddeinst, HCONV hconv, const VBUF *prog_name,
             const VBUF *prog_desc, const VBUF *prog_args, const VBUF *working_dir,
-                                const VBUF *icon_name, int icon_number )
+                                const VBUF *iconfile, int iconindex )
 /********************************************************************************/
 {
     VBUF    buff;
@@ -143,9 +143,9 @@ static bool ddeGroupAddItem1( DWORD ddeinst, HCONV hconv, const VBUF *prog_name,
     VbufConcChr( &buff, ',' );
     VbufConcVbuf( &buff, prog_desc );
     VbufConcChr( &buff, ',' );
-    VbufConcVbuf( &buff, icon_name );
+    VbufConcVbuf( &buff, iconfile );
     VbufConcChr( &buff, ',' );
-    VbufConcInteger( &buff, icon_number, 0 );
+    VbufConcInteger( &buff, iconindex, 0 );
     VbufConcStr( &buff, ",-1,-1," );
     VbufConcVbuf( &buff, working_dir );
     VbufConcStr( &buff, ")]" );
@@ -157,7 +157,7 @@ static bool ddeGroupAddItem1( DWORD ddeinst, HCONV hconv, const VBUF *prog_name,
 #if defined( __WINDOWS__ )
 static bool ddeGroupAddItem2( DWORD ddeinst, HCONV hconv, const VBUF *prog_name,
             const VBUF *prog_desc, const VBUF *prog_args, const VBUF *working_dir,
-                                const VBUF *icon_name, int icon_number )
+                                const VBUF *iconfile, int iconindex )
 /********************************************************************************/
 {
     VBUF    buff;
@@ -172,9 +172,9 @@ static bool ddeGroupAddItem2( DWORD ddeinst, HCONV hconv, const VBUF *prog_name,
     VbufConcChr( &buff, ',' );
     VbufConcVbuf( &buff, prog_desc );
     VbufConcChr( &buff, ',' );
-    VbufConcVbuf( &buff, icon_name );
+    VbufConcVbuf( &buff, iconfile );
     VbufConcChr( &buff, ',' );
-    VbufConcInteger( &buff, icon_number, 0 );
+    VbufConcInteger( &buff, iconindex, 0 );
     VbufConcStr( &buff, ")]" );
     ok = ddeSendCommand( ddeinst, hconv, &buff );
     VbufFree( &buff );
@@ -184,7 +184,7 @@ static bool ddeGroupAddItem2( DWORD ddeinst, HCONV hconv, const VBUF *prog_name,
 
 static bool ddeGroupAddItem( DWORD ddeinst, HCONV hconv, const VBUF *prog_name,
             const VBUF *prog_desc, const VBUF *prog_args, const VBUF *working_dir,
-                                const VBUF *icon_name, int icon_number )
+                                const VBUF *iconfile, int iconindex )
 /********************************************************************************/
 {
     bool    ok;
@@ -198,10 +198,10 @@ static bool ddeGroupAddItem( DWORD ddeinst, HCONV hconv, const VBUF *prog_name,
         (LOBYTE( version ) == 3 && HIBYTE( version ) > 0) ) {
 #endif
         ok = ddeGroupReplaceItem( ddeinst, hconv, prog_desc );
-        ok = ddeGroupAddItem1( ddeinst, hconv, prog_name, prog_desc, prog_args, working_dir, icon_name, icon_number );
+        ok = ddeGroupAddItem1( ddeinst, hconv, prog_name, prog_desc, prog_args, working_dir, iconfile, iconindex );
 #if defined( __WINDOWS__ )
     } else {
-        ok = ddeGroupAddItem2( ddeinst, hconv, prog_name, prog_desc, prog_args, working_dir, icon_name, icon_number );
+        ok = ddeGroupAddItem2( ddeinst, hconv, prog_name, prog_desc, prog_args, working_dir, iconfile, iconindex );
     }
 #endif
     return( ok );
@@ -211,7 +211,7 @@ static bool UseDDE( bool uninstall )
 /**********************************/
 {
     int                 dir_index;
-    int                 icon_number;
+    int                 iconindex;
     int                 i;
     int                 num_icons;
     int                 num_groups;
@@ -222,7 +222,7 @@ static bool UseDDE( bool uninstall )
     VBUF                prog_name;
     VBUF                prog_desc;
     VBUF                prog_args;
-    VBUF                icon_name;
+    VBUF                iconfile;
     VBUF                working_dir;
     VBUF                tmp;
     HWND                hwnd_pm;
@@ -259,7 +259,7 @@ static bool UseDDE( bool uninstall )
         VbufInit( &prog_name );
         VbufInit( &prog_desc );
         VbufInit( &prog_args );
-        VbufInit( &icon_name );
+        VbufInit( &iconfile );
         VbufInit( &tmp );
         /*
          * Disable the Program Manager so that the user can't work with it
@@ -342,18 +342,18 @@ static bool UseDDE( bool uninstall )
                     /*
                      * Append the subdir where the icon file is and the icon file's name.
                      */
-                    dir_index = SimGetPMIconInfo( i, &icon_name, &icon_number );
-                    if( icon_number == -1 ) {
-                        icon_number = 0;
+                    dir_index = SimGetPMIconInfo( i, &iconfile, &iconindex );
+                    if( iconindex == -1 ) {
+                        iconindex = 0;
                     }
                     if( dir_index != -1 ) {
                         SimGetDir( dir_index, &tmp );
-                        VbufPrepVbuf( &icon_name, &tmp );
+                        VbufPrepVbuf( &iconfile, &tmp );
                     }
                     /*
                      * Add the new file to the already created PM Group.
                      */
-                    ok = ddeGroupAddItem( ddeinst, hconv, &prog_name, &prog_desc, &prog_args, &working_dir, &icon_name, icon_number );
+                    ok = ddeGroupAddItem( ddeinst, hconv, &prog_name, &prog_desc, &prog_args, &working_dir, &iconfile, iconindex );
                 }
                 ++num_installed;
                 StatusAmount( num_installed, num_total_install );
@@ -376,7 +376,7 @@ static bool UseDDE( bool uninstall )
          */
 //         DdeDisconnect( hconv );
         VbufFree( &tmp );
-        VbufFree( &icon_name );
+        VbufFree( &iconfile );
         VbufFree( &prog_args );
         VbufFree( &prog_desc );
         VbufFree( &prog_name );
@@ -505,7 +505,7 @@ static void linkDeleteGroup( const VBUF *group )
 }
 
 static bool linkGroupAddItem( const VBUF *group, const VBUF *prog_name, const VBUF *prog_desc,
-        const VBUF *prog_args, const VBUF *working_dir, const VBUF *icon_name, int icon_num )
+        const VBUF *prog_args, const VBUF *working_dir, const VBUF *iconfile, int icon_num )
 /********************************************************************************************/
 {
     HRESULT             hres;
@@ -538,7 +538,7 @@ static bool linkGroupAddItem( const VBUF *group, const VBUF *prog_name, const VB
             hres = m_link->lpVtbl->SetDescription( m_link, VbufString( prog_desc ) );
             hres = m_link->lpVtbl->SetWorkingDirectory( m_link, VbufString( working_dir ) );
             hres = m_link->lpVtbl->SetArguments( m_link, VbufString( prog_args ) );
-            hres = m_link->lpVtbl->SetIconLocation( m_link, VbufString( icon_name ), icon_num );
+            hres = m_link->lpVtbl->SetIconLocation( m_link, VbufString( iconfile ), icon_num );
 
             // Save the shortcut via the IPersistFile::Save member function.
             hres = p_file->lpVtbl->Save( p_file, w_link, TRUE );
@@ -556,7 +556,7 @@ static bool UseIShellLink( bool uninstall )
 /*****************************************/
 {
     int                 dir_index;
-    int                 icon_number;
+    int                 iconindex;
     int                 i;
     int                 num_icons;
     int                 num_groups;
@@ -564,7 +564,7 @@ static bool UseIShellLink( bool uninstall )
     int                 num_total_install;
     VBUF                prog_name;
     VBUF                prog_desc;
-    VBUF                icon_name;
+    VBUF                iconfile;
     VBUF                working_dir;
     VBUF                group;
     VBUF                prog_args;
@@ -606,7 +606,7 @@ static bool UseIShellLink( bool uninstall )
         }
         VbufInit( &prog_name );
         VbufInit( &prog_desc );
-        VbufInit( &icon_name );
+        VbufInit( &iconfile );
         VbufInit( &working_dir );
         VbufInit( &prog_args );
         VbufInit( &tmp );
@@ -639,17 +639,17 @@ static bool UseIShellLink( bool uninstall )
                 /*
                  * Append the subdir where the icon file is and the icon file's name.
                  */
-                dir_index = SimGetPMIconInfo( i, &icon_name, &icon_number );
-                if( icon_number == -1 )
-                    icon_number = 0;
+                dir_index = SimGetPMIconInfo( i, &iconfile, &iconindex );
+                if( iconindex == -1 )
+                    iconindex = 0;
                 if( dir_index != -1 ) {
                     SimGetDir( dir_index, &tmp );
-                    VbufPrepVbuf( &icon_name, &tmp );
+                    VbufPrepVbuf( &iconfile, &tmp );
                 }
                 /*
                  * Add the new file to the already created PM Group.
                  */
-                ok = linkGroupAddItem( &group, &prog_name, &prog_desc, &prog_args, &working_dir, &icon_name, icon_number );
+                ok = linkGroupAddItem( &group, &prog_name, &prog_desc, &prog_args, &working_dir, &iconfile, iconindex );
             }
             ++num_installed;
             StatusAmount( num_installed, num_total_install );
@@ -662,7 +662,7 @@ static bool UseIShellLink( bool uninstall )
         VbufFree( &tmp );
         VbufFree( &prog_args );
         VbufFree( &working_dir );
-        VbufFree( &icon_name );
+        VbufFree( &iconfile );
         VbufFree( &prog_desc );
         VbufFree( &prog_name );
     }
