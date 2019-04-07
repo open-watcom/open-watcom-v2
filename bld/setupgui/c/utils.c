@@ -1106,48 +1106,52 @@ static bool MatchEnd( const char *path, const char *end )
 static bool FindUpgradeFile( char *path )
 /***************************************/
 {
-    DIR                 *d;
+    DIR                 *dirp;
     struct dirent       *info;
     char                *path_end;
-    int                 upgrades = SimNumUpgrades();
+    int                 upgrades;
     int                 i;
+    bool                ok;
 #if defined( __UNIX__ )
     struct stat         statbuf;
 #endif
 
+    ok = false;
     StatusAmount( 0, 1 );
     StatusLines( STAT_CHECKING, path );
-    if( StatusCancelled() )
-        return( false );
-    d = opendir( path );
-    ConcatDirSep( path );
-    path_end = path + strlen( path );
-    while( (info = readdir( d )) != NULL ) {
-        strcpy( path_end, info->d_name );
+    if( !StatusCancelled() ) {
+        dirp = opendir( path );
+        if( dirp != NULL ) {
+            upgrades = SimNumUpgrades();
+            ConcatDirSep( path );
+            path_end = path + strlen( path );
+            while( !ok && (info = readdir( dirp )) != NULL ) {
+                strcpy( path_end, info->d_name );
 #if defined( __UNIX__ )
-        stat( path, &statbuf );
-        if( S_ISDIR( statbuf.st_mode ) ) {
+                stat( path, &statbuf );
+                if( S_ISDIR( statbuf.st_mode ) ) {
 #else
-        if( info->d_attr & _A_SUBDIR ) {
+                if( info->d_attr & _A_SUBDIR ) {
 #endif
-            if( info->d_name[0] != '.' ) {
-                if( FindUpgradeFile( path ) ) {
-                    closedir( d );
-                    return( true );
+                    if( info->d_name[0] != '.' ) {
+                        if( FindUpgradeFile( path ) ) {
+                            ok = true;
+                        }
+                    }
+                } else {
+                    for( i = 0; i < upgrades; ++i ) {
+                        if( MatchEnd( path, SimGetUpgradeName( i ) ) ) {
+                            ok = true;
+                            break;
+                        }
+                    }
                 }
             }
-        } else {
-            for( i = 0; i < upgrades; ++i ) {
-                if( MatchEnd( path, SimGetUpgradeName( i ) ) ) {
-                    closedir( d );
-                    return( true );
-                }
-            }
+            *path_end = '\0';
+            closedir( dirp );
         }
     }
-    *path_end = '\0';
-    closedir( d );
-    return( false );
+    return( ok );
 }
 
 bool CheckUpgrade( void )
@@ -2113,7 +2117,7 @@ bool CopyAllFiles( void )
 static bool NukePath( VBUF *path, int status )
 /********************************************/
 {
-    DIR                 *d;
+    DIR                 *dirp;
     struct dirent       *info;
     bool                ok;
     size_t              path_len;
@@ -2121,43 +2125,45 @@ static bool NukePath( VBUF *path, int status )
     struct stat         statbuf;
 #endif
 
-    d = opendir_vbuf( path );
-    VbufAddDirSep( path );
-    path_len = VbufLen( path );
     ok = true;
-    while( (info = readdir( d )) != NULL ) {
-        VbufSetLen( path, path_len );
-        VbufConcStr( path, info->d_name );
+    dirp = opendir_vbuf( path );
+    if( dirp != NULL ) {
+        VbufAddDirSep( path );
+        path_len = VbufLen( path );
+        while( (info = readdir( dirp )) != NULL ) {
+            VbufSetLen( path, path_len );
+            VbufConcStr( path, info->d_name );
 #if defined( __UNIX__ )
-        stat_vbuf( path, &statbuf );
-        if( S_ISDIR( statbuf.st_mode ) ) {
+            stat_vbuf( path, &statbuf );
+            if( S_ISDIR( statbuf.st_mode ) ) {
 #else
-        if( info->d_attr & _A_SUBDIR ) {
+            if( info->d_attr & _A_SUBDIR ) {
 #endif
-            if( info->d_name[0] != '.' ) {
-                if( !NukePath( path, status ) ) {
+                if( info->d_name[0] != '.' ) {
+                    if( !NukePath( path, status ) ) {
+                        ok = false;
+                        break;
+                    }
+                    rmdir_vbuf( path );
+                }
+            } else {
+#if defined( __UNIX__ )
+                if( (statbuf.st_mode & S_IWUSR) == 0 || !S_ISREG( statbuf.st_mode ) ) {
+#else
+                if( info->d_attr & (_A_RDONLY | _A_SYSTEM | _A_HIDDEN) ) {
+#endif
+                    chmod_vbuf( path, PMODE_USR_W );
+                }
+                if( remove_vbuf( path ) != 0 ) {
                     ok = false;
                     break;
                 }
-                rmdir_vbuf( path );
             }
-        } else {
-#if defined( __UNIX__ )
-            if( (statbuf.st_mode & S_IWUSR) == 0 || !S_ISREG( statbuf.st_mode ) ) {
-#else
-            if( info->d_attr & (_A_RDONLY | _A_SYSTEM | _A_HIDDEN) ) {
-#endif
-                chmod_vbuf( path, PMODE_USR_W );
-            }
-            if( remove_vbuf( path ) != 0 ) {
-                ok = false;
-                break;
-            }
+            StatusLinesVbuf( status, path );
         }
-        StatusLinesVbuf( status, path );
+        VbufSetLen( path, path_len );
+        closedir( dirp );
     }
-    VbufSetLen( path, path_len );
-    closedir( d );
     return( ok );
 }
 

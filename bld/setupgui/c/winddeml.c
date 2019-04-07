@@ -475,11 +475,7 @@ static void delete_dir( const VBUF *dir )
     VbufConcStr( &file, "*.*" );
     dirp = opendir_vbuf( &file );
     if( dirp != NULL ) {
-        for( ;; ) {
-            direntp = readdir( dirp );
-            if( direntp == NULL ) {
-                break;
-            }
+        for( ; (direntp = readdir( dirp )) != NULL; ) {
             if( direntp->d_attr & 0x10 ) {        /* don't care about directories */
                 continue;
             }

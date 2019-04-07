@@ -60,20 +60,16 @@ int main( int argc, char *argv[] )
     }
     pattern = argv[1];
     dirp = opendir( pattern );
-    if( dirp == NULL ) {
-        printf( "No files found matching '%s'\n", pattern );
-        return( 1 );
-    }
-    _splitpath( pattern, drive, dir, NULL, NULL );
-    for( ;; ) {
-        direntp = readdir( dirp );
-        if( direntp == NULL ) {
-            break;
+    if( dirp != NULL ) {
+        _splitpath( pattern, drive, dir, NULL, NULL );
+        for( ; (direntp = readdir( dirp )) != NULL; ) {
+            CheckFile( direntp->d_name, drive, dir );
         }
-        CheckFile( direntp->d_name, drive, dir );
+        closedir( dirp );
+        return( 0 );
     }
-    closedir( dirp );
-    return( 0 );
+    printf( "No files found matching '%s'\n", pattern );
+    return( 1 );
 }
 
 
