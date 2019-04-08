@@ -2037,8 +2037,12 @@ static void RemoveExtraFiles( void )
 #if !defined( __UNIX__ )
     const char          *p;
     char                dst_path[_MAX_PATH];
+#endif
+    bool                uninstall;
 
-    if( VarGetBoolVal( UnInstall ) ) {
+    uninstall = VarGetBoolVal( UnInstall );
+    if( uninstall ) {
+#if !defined( __UNIX__ )
         // delete saved autoexec's and config's
         p = GetVariableStrVal( "DstDir" );
 #if defined( __NT__ )
@@ -2065,8 +2069,11 @@ static void RemoveExtraFiles( void )
         strcat( dst_path, "\\CONFIG.DOS" );
         remove( dst_path );
 #endif
-    }
 #endif
+        if( GetVariableBoolVal( "GenerateBatchFile" ) ) {
+            GenerateBatchFile( uninstall );
+        }
+    }
 }
 
 static void DetermineSrcState( const VBUF *src_dir )
