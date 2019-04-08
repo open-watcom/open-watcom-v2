@@ -1171,11 +1171,14 @@ bool CheckUpgrade( void )
         return( true );
     }
 #else
+    disk[0] = 'c';
+    disk[1] = ':';
+    disk[2] = '\\';
     for( disk[0] = 'c'; disk[0] <= 'z'; disk[0]++ ) {
         if( !IsFixedDisk( disk[0] ) )
             continue;
-        strcpy( disk + 1, ":\\" );
         StatusCancelled();
+        disk[3] = '\0';
         if( FindUpgradeFile( disk ) ) {
             return( true );
         }
