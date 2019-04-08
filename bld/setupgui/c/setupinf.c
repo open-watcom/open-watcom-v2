@@ -187,9 +187,9 @@ NONMAGICVARS( defvar, 0 )
 
 static struct setup_info {
     unsigned long       stamp;
-    char                *pm_group_file_name;
+    char                *pm_group_file;
     char                *pm_group_name;
-    char                *pm_group_icon;
+    char                *pm_group_iconfile;
     array_info          dirs;
     array_info          files;
     array_info          pm_files;
@@ -312,8 +312,8 @@ static struct force_DLL_install {
 } *ForceDLLInstall = NULL;
 
 static struct all_pm_groups {
-    char                *group;
-    char                *group_file_name;
+    char                *group_name;
+    char                *group_file;
 } *AllPMGroups = NULL;
 
 static read_state       State;
@@ -1729,15 +1729,15 @@ static bool ProcLine( char *line, pass_type pass )
         next = NextToken( line, '=' );
         if( stricmp( line, "DefPMGroup" ) == 0 ) {
             line = next; next = NextToken( line, ',' );
-            SetupInfo.pm_group_file_name = GUIStrDup( line, NULL );
+            SetupInfo.pm_group_file = GUIStrDup( line, NULL );
             line = next; next = NextToken( line, ',' );
             SetupInfo.pm_group_name = GUIStrDup( line, NULL );
             num = SetupInfo.all_pm_groups.num;
             if( !BumpArray( &SetupInfo.all_pm_groups ) )
                 return( false );
-            AllPMGroups[num].group = GUIStrDup( line, NULL );
-            AllPMGroups[num].group_file_name = GUIStrDup( SetupInfo.pm_group_file_name, NULL );
-            SetupInfo.pm_group_icon = GUIStrDup( next, NULL );
+            AllPMGroups[num].group_name = GUIStrDup( line, NULL );
+            AllPMGroups[num].group_file = GUIStrDup( SetupInfo.pm_group_file, NULL );
+            SetupInfo.pm_group_iconfile = GUIStrDup( next, NULL );
         } else {
             if( line[0] == '$' ) {
                 // global variables start with '$'
@@ -1904,8 +1904,8 @@ static bool ProcLine( char *line, pass_type pass )
         line = next; next = NextToken( line, ',' );
         PMInfo[num].desc = GUIStrDup( line, NULL );
         if( PMInfo[num].group ) {
-            AllPMGroups[SetupInfo.all_pm_groups.num].group = GUIStrDup( line, NULL );
-            AllPMGroups[SetupInfo.all_pm_groups.num].group_file_name = GUIStrDup( PMInfo[num].parameters, NULL );
+            AllPMGroups[SetupInfo.all_pm_groups.num].group_name = GUIStrDup( line, NULL );
+            AllPMGroups[SetupInfo.all_pm_groups.num].group_file = GUIStrDup( PMInfo[num].parameters, NULL );
             if( !BumpArray( &SetupInfo.all_pm_groups ) ) {
                 return( false );
             }
@@ -2721,26 +2721,26 @@ bool SimFileRemove( int parm )
  * =======================================================================
  */
 
-void SimGetPMGroupFileName( VBUF *buff )
+void SimGetPMApplGroupFile( VBUF *buff )
 /**************************************/
 {
     VbufRewind( buff );
-    if( SetupInfo.pm_group_file_name != NULL ) {
-        VbufConcStr( buff, SetupInfo.pm_group_file_name );
+    if( SetupInfo.pm_group_file != NULL ) {
+        VbufConcStr( buff, SetupInfo.pm_group_file );
     }
 }
 
-void SimGetPMGroupIcon( VBUF *buff )
-/**********************************/
+void SimGetPMApplGroupIconFile( VBUF *buff )
+/******************************************/
 {
     VbufRewind( buff );
-    if( SetupInfo.pm_group_icon != NULL ) {
-        VbufConcStr( buff, SetupInfo.pm_group_icon );
+    if( SetupInfo.pm_group_iconfile != NULL ) {
+        VbufConcStr( buff, SetupInfo.pm_group_iconfile );
     }
 }
 
-void SimGetPMGroup( VBUF *buff )
-/******************************/
+void SimGetPMApplGroupName( VBUF *buff )
+/**************************************/
 {
     VbufRewind( buff );
     if( SetupInfo.pm_group_name != NULL ) {
@@ -2748,8 +2748,14 @@ void SimGetPMGroup( VBUF *buff )
     }
 }
 
-int SimGetPMProgsNum( void )
-/**************************/
+bool SimIsPMApplGroupDefined( void )
+/**********************************/
+{
+    return( SetupInfo.pm_group_name != NULL );
+}
+
+int SimGetPMsNum( void )
+/**********************/
 {
     return( SetupInfo.pm_files.num );
 }
@@ -2771,21 +2777,21 @@ static int SimFindDirForFile( const VBUF *buff )
 }
 
 
-int SimGetPMProgName( int parm, VBUF *buff )
+int SimGetPMProgInfo( int parm, VBUF *buff )
 /******************************************/
 {
     VbufSetStr( buff, PMInfo[parm].filename );
     return( SimFindDirForFile( buff ) );
 }
 
-bool SimPMProgIsShadow( int parm )
-/********************************/
+bool SimPMIsShadow( int parm )
+/****************************/
 {
     return( PMInfo[parm].shadow );
 }
 
-bool SimPMProgIsGroup( int parm )
-/*******************************/
+bool SimPMIsGroup( int parm )
+/***************************/
 {
     return( PMInfo[parm].group );
 }
@@ -2829,13 +2835,13 @@ int SimGetPMGroupsNum( void )
 void SimGetPMGroupName( int parm, VBUF *buff )
 /********************************************/
 {
-    VbufSetStr( buff, AllPMGroups[parm].group );
+    VbufSetStr( buff, AllPMGroups[parm].group_name );
 }
 
-void SimGetPMGroupFName( int parm, VBUF *buff )
-/*********************************************/
+void SimGetPMGroupFile( int parm, VBUF *buff )
+/********************************************/
 {
-    VbufSetStr( buff, AllPMGroups[parm].group_file_name );
+    VbufSetStr( buff, AllPMGroups[parm].group_file );
 }
 
 /*
@@ -3355,9 +3361,9 @@ bool SimCalcTargetSpaceNeeded( void )
 static void FreeSetupInfoVal( void )
 /**********************************/
 {
-    GUIMemFree( SetupInfo.pm_group_file_name );
+    GUIMemFree( SetupInfo.pm_group_file );
     GUIMemFree( SetupInfo.pm_group_name );
-    GUIMemFree( SetupInfo.pm_group_icon );
+    GUIMemFree( SetupInfo.pm_group_iconfile );
 }
 
 
@@ -3596,8 +3602,8 @@ static void FreeAllPMGroups( void )
 
     if( AllPMGroups != NULL ) {
         for( i = 0; i < SetupInfo.all_pm_groups.num; i++ ) {
-            GUIMemFree( AllPMGroups[i].group );
-            GUIMemFree( AllPMGroups[i].group_file_name );
+            GUIMemFree( AllPMGroups[i].group_name );
+            GUIMemFree( AllPMGroups[i].group_file );
         }
         GUIMemFree( AllPMGroups );
         AllPMGroups = NULL;

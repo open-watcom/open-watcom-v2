@@ -233,11 +233,8 @@ static bool UseDDE( bool uninstall )
     HCONV               hconv;
     char                progman[] = "PROGMAN";
 
-    VbufInit( &group );
     if( !uninstall ) {
-        SimGetPMGroup( &group );
-        if( VbufLen( &group ) == 0 ) {
-            VbufFree( &group );
+        if( !SimIsPMApplGroupDefined() ) {
             return( true );
         }
     }
@@ -247,7 +244,6 @@ static bool UseDDE( bool uninstall )
      */
     rc = DdeInitialize( &ddeinst, NULL, APPCMD_CLIENTONLY, 0L );
     if( rc != 0 ) {
-        VbufFree( &group );
         return( false );
     }
     happ = DdeCreateStringHandle( ddeinst, progman, CP_WINANSI );
@@ -255,6 +251,7 @@ static bool UseDDE( bool uninstall )
     hconv = DdeConnect( ddeinst, happ, htopic, NULL );
     ok = ( hconv != (HCONV)NULL );
     if( ok ) {
+        VbufInit( &group );
         VbufInit( &working_dir );
         VbufInit( &prog_name );
         VbufInit( &prog_desc );
@@ -283,6 +280,7 @@ static bool UseDDE( bool uninstall )
                 }
             }
         } else {
+            SimGetPMApplGroupName( &group );
             /*
              * Delete the PM Group box to get rid of stale icons
              * (Don't do this for SQL install, since user may install
@@ -292,13 +290,13 @@ static bool UseDDE( bool uninstall )
             /*
              * re-Create the PM Group box.
              */
-            SimGetPMGroupFileName( &tmp );
+            SimGetPMApplGroupFile( &tmp );
             ok = ddeCreateGroup( ddeinst, hconv, &group, &tmp );
 
             /*
              * Add the individual PM files to the Group box.
              */
-            num_icons = SimGetPMProgsNum();
+            num_icons = SimGetPMsNum();
             StatusLines( STAT_CREATEPROGRAMFOLDER, "" );
             num_total_install = 0;
             for( i = 0; i < num_icons; i++ ) {
@@ -313,7 +311,7 @@ static bool UseDDE( bool uninstall )
                     continue;
                 }
                 SimGetPMDesc( i, &prog_desc );
-                if( SimPMProgIsGroup( i ) ) {
+                if( SimPMIsGroup( i ) ) {
                     /*
                      * Delete the PM Group box to get rid of stale icons
                      */
@@ -327,7 +325,7 @@ static bool UseDDE( bool uninstall )
                     /*
                      * Adding item to group
                      */
-                    dir_index = SimGetPMProgName( i, &prog_name );
+                    dir_index = SimGetPMProgInfo( i, &prog_name );
                     if( dir_index == -1 ) {
                         VbufRewind( &working_dir );
                         ReplaceVars1( &prog_name );
@@ -381,11 +379,11 @@ static bool UseDDE( bool uninstall )
         VbufFree( &prog_desc );
         VbufFree( &prog_name );
         VbufFree( &working_dir );
+        VbufFree( &group );
     }
     DdeFreeStringHandle( ddeinst, happ );
     DdeFreeStringHandle( ddeinst, htopic );
     DdeUninitialize( ddeinst );
-    VbufFree( &group );
     return( ok );
 }
 
@@ -567,8 +565,9 @@ static bool UseIShellLink( bool uninstall )
     VBUF                tmp;
     bool                ok;
 
-    VbufInit( &group );
+    ok = true;
     if( uninstall ) {
+        VbufInit( &group );
         num_groups = SimGetPMGroupsNum();
         for( i = 0; i < num_groups; i++ ) {
             SimGetPMGroupName( i, &group );
@@ -578,92 +577,87 @@ static bool UseIShellLink( bool uninstall )
             }
         }
         VbufFree( &group );
-        return( true );
-    }
-    SimGetPMGroup( &group );
-    if( VbufLen( &group ) == 0 ) {
-        VbufFree( &group );
-        return( true );
-    }
-
-    CoInitialize( NULL );
-
-    // Create the PM Group box.
-    ok = linkCreateGroup( &group );
-    if( ok ) {
-        // Add the individual PM files to the Group box.
-        num_icons = SimGetPMProgsNum();
-        StatusLines( STAT_CREATEPROGRAMFOLDER, "" );
-        num_total_install = 0;
-        for( i = 0; i < num_icons; i++ ) {
-            if( SimCheckPMCondition( i ) ) {
-                ++num_total_install;
+    } else if( SimIsPMApplGroupDefined() ) {
+        CoInitialize( NULL );
+        // Create the PM Group box.
+        VbufInit( &group );
+        SimGetPMApplGroupName( &group );
+        ok = linkCreateGroup( &group );
+        if( ok ) {
+            // Add the individual PM files to the Group box.
+            num_icons = SimGetPMsNum();
+            StatusLines( STAT_CREATEPROGRAMFOLDER, "" );
+            num_total_install = 0;
+            for( i = 0; i < num_icons; i++ ) {
+                if( SimCheckPMCondition( i ) ) {
+                    ++num_total_install;
+                }
             }
-        }
-        VbufInit( &prog_name );
-        VbufInit( &prog_desc );
-        VbufInit( &iconfile );
-        VbufInit( &working_dir );
-        VbufInit( &prog_args );
-        VbufInit( &tmp );
-        num_installed = 0;
-        StatusAmount( 0, num_total_install );
-        for( i = 0; ok && i < num_icons; i++ ) {
-            if( !SimCheckPMCondition( i ) ) {
-                continue;
-            }
-            SimGetPMDesc( i, &prog_desc );
-            if( SimPMProgIsGroup( i ) ) {
-                /* creating a new group */
-                ok = linkCreateGroup( &prog_desc );
-            } else {
-                /*
-                 * Adding item to group
-                 */
-                dir_index = SimGetPMProgName( i, &prog_name );
-                if( dir_index == -1 ) {
-                    VbufRewind( &working_dir );
-                    ReplaceVars1( &prog_name );
+            VbufInit( &prog_name );
+            VbufInit( &prog_desc );
+            VbufInit( &iconfile );
+            VbufInit( &working_dir );
+            VbufInit( &prog_args );
+            VbufInit( &tmp );
+            num_installed = 0;
+            StatusAmount( 0, num_total_install );
+            for( i = 0; ok && i < num_icons; i++ ) {
+                if( !SimCheckPMCondition( i ) ) {
+                    continue;
+                }
+                SimGetPMDesc( i, &prog_desc );
+                if( SimPMIsGroup( i ) ) {
+                    /* creating a new group */
+                    ok = linkCreateGroup( &prog_desc );
                 } else {
-                    SimDirNoEndSlash( dir_index, &working_dir );
+                    /*
+                     * Adding item to group
+                     */
+                    dir_index = SimGetPMProgInfo( i, &prog_name );
+                    if( dir_index == -1 ) {
+                        VbufRewind( &working_dir );
+                        ReplaceVars1( &prog_name );
+                    } else {
+                        SimDirNoEndSlash( dir_index, &working_dir );
+                    }
+                    /*
+                     * Get parameters
+                     */
+                    SimGetPMParms( i, &prog_args );
+                    ReplaceVars1( &prog_args );
+                    /*
+                     * Append the subdir where the icon file is and the icon file's name.
+                     */
+                    dir_index = SimGetPMIconInfo( i, &iconfile, &iconindex );
+                    if( iconindex == -1 )
+                        iconindex = 0;
+                    if( dir_index != -1 ) {
+                        SimGetDir( dir_index, &tmp );
+                        VbufPrepVbuf( &iconfile, &tmp );
+                    }
+                    /*
+                     * Add the new file to the already created PM Group.
+                     */
+                    ok = linkGroupAddItem( &group, &prog_name, &prog_desc, &prog_args, &working_dir, &iconfile, iconindex );
                 }
-                /*
-                 * Get parameters
-                 */
-                SimGetPMParms( i, &prog_args );
-                ReplaceVars1( &prog_args );
-                /*
-                 * Append the subdir where the icon file is and the icon file's name.
-                 */
-                dir_index = SimGetPMIconInfo( i, &iconfile, &iconindex );
-                if( iconindex == -1 )
-                    iconindex = 0;
-                if( dir_index != -1 ) {
-                    SimGetDir( dir_index, &tmp );
-                    VbufPrepVbuf( &iconfile, &tmp );
+                ++num_installed;
+                StatusAmount( num_installed, num_total_install );
+                if( StatusCancelled() ) {
+                    break;
                 }
-                /*
-                 * Add the new file to the already created PM Group.
-                 */
-                ok = linkGroupAddItem( &group, &prog_name, &prog_desc, &prog_args, &working_dir, &iconfile, iconindex );
             }
-            ++num_installed;
-            StatusAmount( num_installed, num_total_install );
-            if( StatusCancelled() ) {
-                break;
-            }
-        }
-        StatusAmount( num_total_install, num_total_install );
+            StatusAmount( num_total_install, num_total_install );
 
-        VbufFree( &tmp );
-        VbufFree( &prog_args );
-        VbufFree( &working_dir );
-        VbufFree( &iconfile );
-        VbufFree( &prog_desc );
-        VbufFree( &prog_name );
+            VbufFree( &tmp );
+            VbufFree( &prog_args );
+            VbufFree( &working_dir );
+            VbufFree( &iconfile );
+            VbufFree( &prog_desc );
+            VbufFree( &prog_name );
+        }
+        VbufFree( &group );
+        CoUninitialize();
     }
-    CoUninitialize();
-    VbufFree( &group );
     return( ok );
 }
 
