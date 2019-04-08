@@ -50,6 +50,7 @@
 #else
     #include <direct.h>
 #endif
+#include <errno.h>
 #include "wio.h"
 #include "watcom.h"
 #include "walloca.h"
@@ -62,7 +63,6 @@
 #include "utils.h"
 #include "setupio.h"
 #include "iopath.h"
-#include "errno.h"
 #include "guistat.h"
 
 #include "clibext.h"
