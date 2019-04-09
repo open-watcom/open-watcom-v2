@@ -139,6 +139,22 @@ void VbufSetChr(                // CONCATENATE CHAR TO vbuf->buf
     VBUF *vbuf,                 // - VBUF structure
     char chr )                  // - char to be concatenated
 ;
+void VbufSetBufferAt(           // CONCATENATE A BUFFER TO VBUF AT POSITION
+    VBUF *vbuf,                 // - VBUF structure
+    char const *buffer,         // - size of buffer
+    size_t size,                // - buffer
+    size_t atpos )              // - at position
+;
+void VbufSetStrAt(              // CONCATENATE A STRING TO VBUF AT POSITION
+    VBUF *vbuf,                 // - VBUF structure
+    char const *string,         // - string to be concatenated
+    size_t atpos )              // - at position
+;
+void VbufSetVbufAt(             // CONCATENATE A VBUF TO VBUF AT POSITION
+    VBUF *vbuf1,                // - VBUF structure
+    const VBUF *vbuf2,          // - VBUF structure
+    size_t atpos )              // - at position
+;
 #if 0
 void VbufConcDecimal(           // CONCATENATE A DECIMAL TO VBUF
     VBUF *vbuf,                 // - VBUF structure

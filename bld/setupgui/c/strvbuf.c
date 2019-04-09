@@ -316,6 +316,45 @@ void VbufSetChr(                // SET A CHAR TO VBUF
     VbufConcChr( vbuf, chr );
 }
 
+void VbufSetBufferAt(           // CONCATENATE A BUFFER TO VBUF AT POSITION
+    VBUF *vbuf,                 // - VBUF structure
+    char const *buffer,         // - size of buffer
+    size_t size,                // - buffer
+    size_t atpos )              // - at position
+{
+    if( atpos > vbuf->used )
+        atpos = vbuf->used;
+    VbufReqd( vbuf, atpos + size );
+    if( size > 0 ) {
+        memcpy( vbuf->buf + atpos, buffer, size );
+    }
+    vbuf->used = atpos + size;
+    vbuf->buf[vbuf->used] = '\0';
+}
+
+void VbufSetStrAt(              // CONCATENATE A STRING TO VBUF AT POSITION
+    VBUF *vbuf,                 // - VBUF structure
+    char const *string,         // - string to be concatenated
+    size_t atpos )              // - at position
+{
+    VbufSetBufferAt( vbuf, string, strlen( string ), atpos );
+}
+
+void VbufSetVbufAt(             // CONCATENATE A VBUF TO VBUF AT POSITION
+    VBUF *vbuf1,                // - VBUF structure
+    const VBUF *vbuf2,          // - VBUF structure
+    size_t atpos )              // - at position
+{
+    if( atpos > vbuf1->used )
+        atpos = vbuf1->used;
+    VbufReqd( vbuf1, atpos + vbuf2->used );
+    if( vbuf2->used > 0 ) {
+        memcpy( vbuf1->buf + atpos, vbuf2->buf, vbuf2->used );
+    }
+    vbuf1->used = atpos + vbuf2->used;
+    vbuf1->buf[vbuf1->used] = '\0';
+}
+
 #if 0
 void VbufConcDecimal(           // CONCATENATE A DECIMAL TO VBUF
     VBUF *vbuf,                 // - VBUF structure
