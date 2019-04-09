@@ -89,6 +89,26 @@
 
 // Defines used by the SETUP program.
 
+#if defined( __UNIX__ )
+    #define BATCHEXT        ".sh"
+#elif defined( __OS2__ )
+    #define BATCHEXT        ".cmd"
+#else
+    #define BATCHEXT        ".bat"
+#endif
+
+#if defined( __OS2__ )
+    #define BATCH_EXT_SAVED "OS2"
+#elif defined( __NT__ )
+    #define BATCH_EXT_SAVED "W95"
+#elif defined( __DOS__ ) || defined( __WINDOWS__ )
+    #define BATCH_EXT_SAVED "DOS"
+#else
+    // not used
+#endif
+
+#define IS_VALID_DIR(p)     ((p)->d_name[0] != '.' || (p)->d_name[1] != '\0' && ((p)->d_name[1] != '.' || (p)->d_name[2] != '\0'))
+
 typedef enum {
     CFE_NOERROR,
     CFE_NOMEMORY,

@@ -63,14 +63,6 @@
     #define ENV_NAME2       "%%"
 #endif
 
-#if defined( __UNIX__ )
-    #define BATCHEXT        ".sh"
-#elif defined( __OS2__ )
-    #define BATCHEXT        ".cmd"
-#else
-    #define BATCHEXT        ".bat"
-#endif
-
 typedef enum {
     VAR_SETENV_ASSIGN,  // format is 'SETENV NAME = VALUE' and inf var name is "NAME"
     VAR_ASSIGN_SETENV,  // format is 'SETENV NAME = VALUE' and inf var name is "SETENV NAME"
@@ -1093,13 +1085,7 @@ bool ModifyAutoExec( bool uninstall )
                 }
             }
         } else {    // handle "ModLater" case
-#if defined( __OS2__ )
-            VbufConcStr( &new_ext, "OS2" );
-#elif defined( __NT__ )
-            VbufConcStr( &new_ext, "W95" );
-#else
-            VbufConcStr( &new_ext, "DOS" );
-#endif
+            VbufConcStr( &new_ext, BATCH_EXT_SAVED );
             // place modifications in AUTOEXEC.NEW and CONFIG.NEW
 #ifndef __OS2__
             GetOldConfigFileDir( &newauto, &OrigAutoExec, uninstall );

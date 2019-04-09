@@ -1133,7 +1133,7 @@ static bool FindUpgradeFile( char *path )
 #else
                 if( info->d_attr & _A_SUBDIR ) {
 #endif
-                    if( info->d_name[0] != '.' ) {
+                    if( IS_VALID_DIR( info ) ) {
                         if( FindUpgradeFile( path ) ) {
                             ok = true;
                         }
@@ -2045,30 +2045,21 @@ static void RemoveExtraFiles( void )
 #if !defined( __UNIX__ )
         // delete saved autoexec's and config's
         p = GetVariableStrVal( "DstDir" );
-#if defined( __NT__ )
+    #if defined( __NT__ )
         // Windows NT
         strcpy( dst_path, p );
         strcat( dst_path, "\\CHANGES.ENV" );
         remove( dst_path );
-        // Windows 95
+    #endif
+    #if defined( __NT__ ) || defined( __WINDOWS__ ) || defined( __DOS__ )
+        // Windows 95, Windows 3.x, DOS
         strcpy( dst_path, p );
-        strcat( dst_path, "\\AUTOEXEC.W95" );
+        strcat( dst_path, "\\AUTOEXEC." BATCH_EXT_SAVED );
         remove( dst_path );
+    #endif
         strcpy( dst_path, p );
-        strcat( dst_path, "\\CONFIG.W95" );
+        strcat( dst_path, "\\CONFIG." BATCH_EXT_SAVED );
         remove( dst_path );
-#elif defined( __OS2__ )
-        strcpy( dst_path, p );
-        strcat( dst_path, "\\CONFIG.OS2" );
-        remove( dst_path );
-#else
-        strcpy( dst_path, p );
-        strcat( dst_path, "\\AUTOEXEC.DOS" );
-        remove( dst_path );
-        strcpy( dst_path, p );
-        strcat( dst_path, "\\CONFIG.DOS" );
-        remove( dst_path );
-#endif
 #endif
         if( GetVariableBoolVal( "GenerateBatchFile" ) ) {
             GenerateBatchFile( uninstall );
@@ -2149,7 +2140,7 @@ static bool NukePath( VBUF *path, int status )
 #else
             if( info->d_attr & _A_SUBDIR ) {
 #endif
-                if( info->d_name[0] != '.' ) {
+                if( IS_VALID_DIR( info ) ) {
                     if( !NukePath( path, status ) ) {
                         ok = false;
                         break;
