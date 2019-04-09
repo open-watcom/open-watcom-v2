@@ -2268,15 +2268,15 @@ void AddInstallName( VBUF *str )
     // p = strchr( text, '@' ); no good for dbcs!!!
     p = VbufString( str );
     while( *p != '\0' ) {
-        if( *p == '@' ) {
-            len = p - VbufString( str );
-            VbufSetStr( &temp, p + 1 );
-            VbufSetVbufAt( str, &inst_name, len );
-            VbufConcVbuf( str, &temp );
-            p = VbufString( str ) + len;
+        if( *p != '@' ) {
+            p += GUICharLen( UCHAR_VALUE( *p ) );
             continue;
         }
-        p += GUICharLen( UCHAR_VALUE( *p ) );
+        len = p - VbufString( str );
+        VbufSetStr( &temp, p + 1 );
+        VbufSetVbufAt( str, &inst_name, len );
+        VbufConcVbuf( str, &temp );
+        p = VbufString( str ) + len;
     }
 
     VbufFree( &inst_name );
