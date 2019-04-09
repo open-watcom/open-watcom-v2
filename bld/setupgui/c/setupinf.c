@@ -2065,8 +2065,7 @@ static bool GetFileInfo( int dir_index, int i, bool in_old_dir, bool *pzeroed )
             file->read_only = false;
             if( VbufLen( &file->name ) == 0 )
                 continue;
-            VbufSetLen( &buff, dir_end );
-            VbufConcVbuf( &buff, &file->name );
+            VbufSetVbufAt( &buff, &file->name, dir_end );
             if( access_vbuf( &buff, F_OK ) == 0 ) {
                 stat_vbuf( &buff, &buf );
                 found = true;

@@ -1940,8 +1940,7 @@ static bool DoCopyFiles( void )
                         var_handle = SimSubFileVar( filenum, subfilenum );
                         VbufMakepath( &tmp_path, NULL, &dir, &file_desc, NULL );
 
-                        VbufSetLen( &src_path, src_path_pos2 );     // nuke name from end of src_path
-                        VbufConcVbuf( &src_path, &file_desc );
+                        VbufSetVbufAt( &src_path, &file_desc, src_path_pos2 );  // add name to end of src_path
                         StatusLinesVbuf( STAT_COPYINGFILE, &tmp_path );
                         checkForNewName( filenum, subfilenum, &tmp_path );
                         copy_error = DoCopyFile( &src_path, &tmp_path, false );
@@ -2132,8 +2131,7 @@ static bool NukePath( VBUF *path, int status )
         VbufAddDirSep( path );
         path_len = VbufLen( path );
         while( (info = readdir( dirp )) != NULL ) {
-            VbufSetLen( path, path_len );
-            VbufConcStr( path, info->d_name );
+            VbufSetStrAt( path, info->d_name, path_len );
 #if defined( __UNIX__ )
             stat_vbuf( path, &statbuf );
             if( S_ISDIR( statbuf.st_mode ) ) {
@@ -2273,8 +2271,7 @@ void AddInstallName( VBUF *str )
         if( *p == '@' ) {
             len = p - VbufString( str );
             VbufSetStr( &temp, p + 1 );
-            VbufSetLen( str, len );
-            VbufConcVbuf( str, &inst_name );
+            VbufSetVbufAt( str, &inst_name, len );
             VbufConcVbuf( str, &temp );
             p = VbufString( str ) + len;
             continue;
@@ -2296,15 +2293,14 @@ static void remove_ampersand( VBUF *str )
     VbufInit( &tmp );
     s = VbufString( str );
     while( *s != '\0' ) {
-        if( *s == '&' ) {
-            len = s - VbufString( str );
-            VbufSetStr( &tmp, s + 1 );
-            VbufSetLen( str, len );
-            VbufConcVbuf( str, &tmp );
-            s = VbufString( str ) + len;
+        if( *s != '&' ) {
+            s++;
             continue;
         }
-        s++;
+        len = s - VbufString( str );
+        VbufSetStr( &tmp, s + 1 );
+        VbufSetVbufAt( str, &tmp, len );
+        s = VbufString( str ) + len;
     }
     VbufFree( &tmp );
 }

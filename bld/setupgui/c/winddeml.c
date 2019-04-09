@@ -404,19 +404,24 @@ static void munge_fname( VBUF *name )
     const char  *s;
     VBUF        tmp;
     size_t      len;
+    const char  *replacement;
 
     VbufInit( &tmp );
-    for( s = VbufString( name ); *s != '\0'; s++ ) {
+    for( s = VbufString( name ); *s != '\0'; ) {
         if( *s == '/' ) {
-//    MessageBox(0, VbufString( name ), 0, 0);
-            len = s - VbufString( name );
-            VbufSetStr( &tmp, s + 1 );
-            VbufSetLen( name, len );
-            VbufConcStr( &tmp, " - " );     // replace slash by underscore
-            VbufConcVbuf( name, &tmp );
-            s = VbufString( name ) + len + 2;
-//    MessageBox(0, VbufString( name ), 0, 0);
+            replacement = " - ";
+        } else {
+            s++;
+            continue;
         }
+//        MessageBox(0, VbufString( name ), 0, 0);
+        len = s - VbufString( name );
+        VbufSetStr( &tmp, s + 1 );
+        VbufSetStrAt( name, replacement, len );
+        len = VbufLen( name );
+        VbufConcVbuf( name, &tmp );
+        s = VbufString( name ) + len;
+//        MessageBox(0, VbufString( name ), 0, 0);
     }
     VbufFree( &tmp );
 }
@@ -477,8 +482,7 @@ static void delete_dir( const VBUF *dir )
             if( direntp->d_attr & _A_SUBDIR ) {   /* don't care about directories */
                 continue;
             }
-            VbufSetLen( &file, dir_len );
-            VbufConcStr( &file, direntp->d_name );
+            VbufSetStrAt( &file, direntp->d_name, dir_len );
             remove_vbuf( &file );
         }
         closedir( dirp );

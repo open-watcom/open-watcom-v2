@@ -1148,8 +1148,7 @@ void ReplaceVars( VBUF *dst, const char *src )
         if( *p == '%' ) {
             len = p - VbufString( dst );
             VbufSetStr( &tmp, p + 1 );
-            VbufSetLen( dst, len );
-            VbufConcVbuf( dst, &tmp );
+            VbufSetVbufAt( dst, &tmp, len );
             p = VbufString( dst ) + len;
             continue;
         }
@@ -1182,13 +1181,12 @@ void ReplaceVars( VBUF *dst, const char *src )
             }
             varname = colon;
         }
-        VbufSetStr( &tmp, e + 1 );
         len = p - 1 - VbufString( dst );
-        VbufSetLen( dst, len );
+        VbufSetStr( &tmp, e + 1 );
         if( varval != NULL ) {
-            VbufConcStr( dst, varval );
+            VbufPrepStr( &tmp, varval );
         }
-        VbufConcVbuf( dst, &tmp );
+        VbufSetVbufAt( dst, &tmp, len );
         p = VbufString( dst ) + len;
     }
     VbufFree( &tmp );

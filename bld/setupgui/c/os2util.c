@@ -40,8 +40,6 @@
 #include "guistat.h"
 
 
-#define ICONFILETAG     "ICONFILE="
-
 static HOBJECT create_group( const VBUF *group, const VBUF *grp_filename )
 /************************************************************************/
 {
@@ -59,7 +57,7 @@ static HOBJECT create_group( const VBUF *group, const VBUF *grp_filename )
     SimGetPMApplGroupIconFile( &iconfile );
     if( VbufLen( &iconfile ) > 0 ) {
         ReplaceVars1( &iconfile );
-        VbufConcStr( &cmd, ICONFILETAG );
+        VbufConcStr( &cmd, "ICONFILE=" );
         VbufConcVbuf( &cmd, &iconfile );
         VbufConcChr( &cmd, ';' );
     }
@@ -159,14 +157,13 @@ bool CreatePMInfo( bool uninstall )
              * Replace '\n' in Description with LineFeed character
              */
             SimGetPMDesc( i, &PMProgDesc );
-            for( p = VbufString( &PMProgDesc ); *p != '\0'; ++p ) {
+            for( p = VbufString( &PMProgDesc ); *p != '\0'; p++ ) {
                 if( p[0] == '\\' && p[1] == 'n' ) {
                     len = p - VbufString( &PMProgDesc );
-                    VbufSetStr( &tmp, p + 2 );
-                    VbufSetLen( &PMProgDesc, len );
-                    VbufConcChr( &PMProgDesc, '\n' );
-                    VbufConcVbuf( &PMProgDesc, &tmp );
-                    p = VbufString( &PMProgDesc ) + len + 1;
+                    VbufSetChr( &tmp, '\n' );
+                    VbufConcStr( &tmp, p + 2 );
+                    VbufSetVbufAt( &PMProgDesc, &tmp, len );
+                    p = VbufString( &PMProgDesc ) + len;
                 }
             }
 

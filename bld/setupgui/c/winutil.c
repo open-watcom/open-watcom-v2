@@ -378,8 +378,7 @@ static void WindowsWriteProfile( const VBUF *app_name, const VBUF *key_name,
 
                 VbufInit( &tmp );
                 VbufConcStr( &tmp, substr + len );
-                VbufSetLen( &vbuf, substr - VbufString( &vbuf ) );
-                VbufConcVbuf( &vbuf, &tmp );
+                VbufSetVbufAt( &vbuf, &tmp, substr - VbufString( &vbuf ) );
                 VbufFree( &tmp );
             }
         } else {
