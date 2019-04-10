@@ -35,6 +35,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <errno.h>
+#include "wio.h"
 #include "watcom.h"
 #include "setup.h"
 #include "setupinf.h"
@@ -401,51 +402,24 @@ static bool UseDDE( bool uninstall )
 static void munge_fname_add( VBUF *buff, const VBUF *name )
 /*********************************************************/
 {
-    const char  *s;
-    VBUF        tmp;
-    VBUF        tmp1;
-    size_t      len;
+    const char  *start;
+    const char  *p;
     const char  *replacement;
 
-    VbufInit( &tmp );
-    VbufInit( &tmp1 );
-
-    VbufConcVbuf( &tmp, name );
-    for( s = VbufString( &tmp ); *s != '\0'; ) {
-        if( *s == '/' ) {
+    start = VbufString( name );
+    for( p = start; *p != '\0'; p++ ) {
+        if( *p == '/' ) {
             replacement = " - ";
         } else {
-            s++;
             continue;
         }
-//        MessageBox(0, VbufString( &tmp ), 0, 0);
-        len = s - VbufString( &tmp );
-        VbufSetStr( &tmp1, s + 1 );
-        VbufSetStrAt( &tmp, replacement, len );
-        len = VbufLen( &tmp );
-        VbufConcVbuf( &tmp, &tmp1 );
-        s = VbufString( &tmp ) + len;
-//        MessageBox(0, VbufString( &tmp ), 0, 0);
+        VbufConcBuffer( buff, start, p - start );
+        VbufConcStr( buff, replacement );
+        start = p + 1;
     }
-    VbufConcVbuf( buff, &tmp );
-
-    VbufFree( &tmp1 );
-    VbufFree( &tmp );
-}
-
-static void append_curr_group_name( VBUF *buff, const VBUF *group )
-/*****************************************************************/
-{
-    VBUF    root_group;
-
-    VbufInit( &root_group );
-    SimGetPMApplGroupName( &root_group );
-    munge_fname_add( buff, &root_group );
-    if( group != NULL && VbufLen( group ) > 0 ) {
-        VbufConcChr( buff, '\\' );
-        munge_fname_add( buff, group );
+    if( p != start ) {
+        VbufConcBuffer( buff, start, p - start );
     }
-    VbufFree( &root_group );
 }
 
 static void get_group_name( VBUF *buff, const VBUF *group )
@@ -463,7 +437,7 @@ static void get_group_name( VBUF *buff, const VBUF *group )
         VbufConcStr( buff, "\\Start Menu\\Programs" );
     }
     VbufConcChr( buff, '\\' );
-    append_curr_group_name( buff, group );
+    munge_fname_add( buff, group );
 }
 
 static bool linkCreateGroup( const VBUF *group )
@@ -482,8 +456,6 @@ static bool linkCreateGroup( const VBUF *group )
         return( true );
     }
 }
-
-#define linkCreateApplGroup()   linkCreateGroup( NULL )
 
 static void delete_dir( const VBUF *dir )
 /***************************************/
@@ -592,8 +564,8 @@ static bool UseIShellLink( bool uninstall )
     bool                ok;
 
     ok = true;
+    VbufInit( &group );
     if( uninstall ) {
-        VbufInit( &group );
         num_groups = SimGetPMGroupsNum();
         for( i = 0; i < num_groups; i++ ) {
             SimGetPMGroupName( i, &group );
@@ -602,11 +574,11 @@ static bool UseIShellLink( bool uninstall )
                 linkDeleteGroup( &group );
             }
         }
-        VbufFree( &group );
     } else if( SimIsPMApplGroupDefined() ) {
         CoInitialize( NULL );
         // Create the PM Group box.
-        ok = linkCreateApplGroup();
+        SimGetPMApplGroupName( &group );
+        ok = linkCreateGroup( &group );
         if( ok ) {
             // Add the individual PM files to the Group box.
             num_icons = SimGetPMsNum();
@@ -617,7 +589,6 @@ static bool UseIShellLink( bool uninstall )
                     ++num_total_install;
                 }
             }
-            VbufInit( &group );
             VbufInit( &prog_name );
             VbufInit( &prog_desc );
             VbufInit( &iconfile );
@@ -680,10 +651,10 @@ static bool UseIShellLink( bool uninstall )
             VbufFree( &iconfile );
             VbufFree( &prog_desc );
             VbufFree( &prog_name );
-            VbufFree( &group );
         }
         CoUninitialize();
     }
+    VbufFree( &group );
     return( ok );
 }
 

@@ -161,10 +161,10 @@ bool CreatePMInfo( bool uninstall )
                  * Process a group (ie. folder)
                  */
                 SimGetPMDesc( i, &GroupName );
-                SimGetPMParms( i, &GroupFile );
                 if( VbufLen( &GroupName ) == 0 ) {
                     break;
                 }
+                SimGetPMParms( i, &GroupFile );
                 if( VbufLen( &GroupFile ) > 0 ) {
                     VbufPrepChr( &GroupFile, '<' );
                     VbufConcChr( &GroupFile, '>' );
