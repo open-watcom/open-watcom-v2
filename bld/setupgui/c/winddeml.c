@@ -398,31 +398,38 @@ static bool UseDDE( bool uninstall )
 // Directory names cannot have forward slashes in them, and probably other
 // characters. This is a problem for "C/C++". Not all platforms are restricted
 // like this, so just munge the file name here.
-static void munge_fname( VBUF *name )
-/***********************************/
+static void munge_fname_add( VBUF *buff, const VBUF *name )
+/*********************************************************/
 {
     const char  *s;
     VBUF        tmp;
+    VBUF        tmp1;
     size_t      len;
     const char  *replacement;
 
     VbufInit( &tmp );
-    for( s = VbufString( name ); *s != '\0'; ) {
+    VbufInit( &tmp1 );
+
+    VbufConcVbuf( &tmp, name );
+    for( s = VbufString( &tmp ); *s != '\0'; ) {
         if( *s == '/' ) {
             replacement = " - ";
         } else {
             s++;
             continue;
         }
-//        MessageBox(0, VbufString( name ), 0, 0);
-        len = s - VbufString( name );
-        VbufSetStr( &tmp, s + 1 );
-        VbufSetStrAt( name, replacement, len );
-        len = VbufLen( name );
-        VbufConcVbuf( name, &tmp );
-        s = VbufString( name ) + len;
-//        MessageBox(0, VbufString( name ), 0, 0);
+//        MessageBox(0, VbufString( &tmp ), 0, 0);
+        len = s - VbufString( &tmp );
+        VbufSetStr( &tmp1, s + 1 );
+        VbufSetStrAt( &tmp, replacement, len );
+        len = VbufLen( &tmp );
+        VbufConcVbuf( &tmp, &tmp1 );
+        s = VbufString( &tmp ) + len;
+//        MessageBox(0, VbufString( &tmp ), 0, 0);
     }
+    VbufConcVbuf( buff, &tmp );
+
+    VbufFree( &tmp1 );
     VbufFree( &tmp );
 }
 
@@ -441,8 +448,7 @@ static void get_group_name( VBUF *buff, const VBUF *group )
         VbufConcStr( buff, "\\Start Menu\\Programs" );
     }
     VbufConcChr( buff, '\\' );
-    VbufConcVbuf( buff, group );
-    munge_fname( buff );
+    munge_fname_add( buff, group );
 }
 
 static bool linkCreateGroup( const VBUF *group )
@@ -516,9 +522,8 @@ static bool linkGroupAddItem( const VBUF *group, const VBUF *prog_name, const VB
     // Determine names of link files
     get_group_name( &link, group );
     VbufConcChr( &link, '\\' );
-    VbufConcVbuf( &link, prog_desc );
+    munge_fname_add( &link, prog_desc );
     VbufConcStr( &link, ".lnk" );
-    munge_fname( &link );
 
     MultiByteToWideChar( CP_ACP, 0, VbufString( &link ), -1, w_link, _MAX_PATH );
 
