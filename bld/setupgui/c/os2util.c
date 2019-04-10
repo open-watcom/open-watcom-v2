@@ -40,30 +40,30 @@
 #include "guistat.h"
 
 
-static HOBJECT create_group( const VBUF *group, const VBUF *grp_filename )
-/************************************************************************/
+static HOBJECT create_group( const VBUF *group, const VBUF *groupfile, const VBUF *iconfile )
+/*******************************************************************************************/
 {
     HOBJECT     hobj;
     VBUF        cmd;
-    VBUF        iconfile;
 
     VbufInit( &cmd );
-    VbufInit( &iconfile );
 
     VbufConcStr( &cmd, "OPEN=ICON;OBJECTID=" );
-    VbufConcVbuf( &cmd, grp_filename );
+    VbufConcVbuf( &cmd, groupfile );
     VbufConcChr( &cmd, ';' );
     // add more parms here if necessary
-    SimGetPMApplGroupIconFile( &iconfile );
-    if( VbufLen( &iconfile ) > 0 ) {
-        ReplaceVars1( &iconfile );
+    if( iconfile != NULL && VbufLen( iconfile ) > 0 ) {
+        VBUF    tmp;
+
+        VbufInit( &tmp );
         VbufConcStr( &cmd, "ICONFILE=" );
-        VbufConcVbuf( &cmd, &iconfile );
+        ReplaceVars( &tmp, VbufString( iconfile ) );
+        VbufConcVbuf( &cmd, &tmp );
         VbufConcChr( &cmd, ';' );
+        VbufFree( &tmp );
     }
     hobj = WinCreateObject( "WPFolder", VbufString( group ), VbufString( &cmd ), "<WP_DESKTOP>", CO_UPDATEIFEXISTS );
 
-    VbufFree( &iconfile );
     VbufFree( &cmd );
     return( hobj );
 }
@@ -85,15 +85,16 @@ bool CreatePMInfo( bool uninstall )
     VBUF                PMProgName;
     VBUF                PMProgDesc;
     VBUF                PMParams;
-    VBUF                iconfile;
+    VBUF                PMIconFile;
     VBUF                WorkingDir;
     VBUF                Folder;
     VBUF                Cmd;
     VBUF                tmp;
-    VBUF                group;
-    VBUF                GroupFileName;
+    VBUF                GroupName;
+    VBUF                GroupFile;
+    VBUF                GroupIconFile;
     int                 nDirIndex;
-    int                 iconindex;
+    int                 PMIconIndex;
     int                 i;
     int                 num;
     size_t              len;
@@ -105,39 +106,41 @@ bool CreatePMInfo( bool uninstall )
      */
     ok = true;
     if( uninstall ) {
-        VbufInit( &GroupFileName );
+        VbufInit( &GroupFile );
         num = SimGetPMGroupsNum();
         for( i = 0; i < num; i++ ) {
-            SimGetPMGroupFile( i, &GroupFileName );
-            if( VbufLen( &GroupFileName ) > 0 ) {
+            SimGetPMGroupFile( i, &GroupFile );
+            if( VbufLen( &GroupFile ) > 0 ) {
                 /*
                  * Delete the PM Group box
                  */
-                VbufPrepChr( &GroupFileName, '<' );
-                VbufConcChr( &GroupFileName, '>' );
-                remove_group( &GroupFileName );
+                VbufPrepChr( &GroupFile, '<' );
+                VbufConcChr( &GroupFile, '>' );
+                remove_group( &GroupFile );
             }
         }
-        VbufFree( &GroupFileName );
+        VbufFree( &GroupFile );
     } else if( SimIsPMApplGroupDefined() ) {
-        VbufInit( &group );
-        VbufInit( &GroupFileName );
+        VbufInit( &GroupName );
+        VbufInit( &GroupFile );
+        VbufInit( &GroupIconFile );
 
-        SimGetPMApplGroupName( &group );
-        SimGetPMApplGroupFile( &GroupFileName );
-        if( VbufLen( &GroupFileName ) > 0 ) {
-            VbufPrepChr( &GroupFileName, '<' );
-            VbufConcChr( &GroupFileName, '>' );
+        SimGetPMApplGroupName( &GroupName );
+        SimGetPMApplGroupFile( &GroupFile );
+        if( VbufLen( &GroupFile ) > 0 ) {
+            VbufPrepChr( &GroupFile, '<' );
+            VbufConcChr( &GroupFile, '>' );
         } else {
-            VbufConcStr( &GroupFileName, "<WSETUP_FLDR>" );
+            VbufConcStr( &GroupFile, "<WSETUP_FLDR>" );
         }
-        ok = ( create_group( &group, &GroupFileName ) != NULLHANDLE );
+        SimGetPMApplGroupIconFile( &GroupIconFile );
+        ok = ( create_group( &GroupName, &GroupFile, &GroupIconFile ) != NULLHANDLE );
 
         VbufInit( &tmp );
         VbufInit( &PMProgName );
         VbufInit( &PMProgDesc );
         VbufInit( &PMParams );
-        VbufInit( &iconfile );
+        VbufInit( &PMIconFile );
         VbufInit( &WorkingDir );
         VbufInit( &Folder );
         VbufInit( &Cmd );
@@ -153,38 +156,42 @@ bool CreatePMInfo( bool uninstall )
             if( !SimCheckPMCondition( i ) ) {
                 continue;
             }
-            /*
-             * Replace '\n' in Description with LineFeed character
-             */
-            SimGetPMDesc( i, &PMProgDesc );
-            for( p = VbufString( &PMProgDesc ); *p != '\0'; p++ ) {
-                if( p[0] == '\\' && p[1] == 'n' ) {
-                    len = p - VbufString( &PMProgDesc );
-                    VbufSetChr( &tmp, '\n' );
-                    VbufConcStr( &tmp, p + 2 );
-                    VbufSetVbufAt( &PMProgDesc, &tmp, len );
-                    p = VbufString( &PMProgDesc ) + len;
-                }
-            }
-
             if( SimPMIsGroup( i ) ) {
                 /*
                  * Process a group (ie. folder)
                  */
-                SimGetPMParms( i, &GroupFileName );
-                if( VbufLen( &GroupFileName ) == 0 ) {
+                SimGetPMDesc( i, &GroupName );
+                SimGetPMParms( i, &GroupFile );
+                if( VbufLen( &GroupName ) == 0 ) {
                     break;
                 }
-                if( VbufLen( &PMProgDesc ) > 0 ) {
-                    VbufPrepChr( &GroupFileName, '<' );
-                    VbufConcChr( &GroupFileName, '>' );
+                if( VbufLen( &GroupFile ) > 0 ) {
+                    VbufPrepChr( &GroupFile, '<' );
+                    VbufConcChr( &GroupFile, '>' );
                 } else {
-                    VbufSetStr( &GroupFileName, "<WSETUP_FOL>" );
+                    VbufSetStr( &GroupFile, "<WSETUP_FOL>" );
                 }
-                ok = ( create_group( &PMProgDesc, &GroupFileName ) != NULLHANDLE );
+                SimGetPMApplGroupIconFile( &GroupIconFile );
+                ok = ( create_group( &GroupName, &GroupFile, &GroupIconFile ) != NULLHANDLE );
             } else {
                 /*
                  * Process a regular object
+                 */
+                SimGetPMDesc( i, &PMProgDesc );
+                /*
+                 * Replace '\n' in Description with LineFeed character
+                 */
+                for( p = VbufString( &PMProgDesc ); *p != '\0'; p++ ) {
+                    if( p[0] == '\\' && p[1] == 'n' ) {
+                        len = p - VbufString( &PMProgDesc );
+                        VbufSetChr( &tmp, '\n' );
+                        VbufConcStr( &tmp, p + 2 );
+                        VbufSetVbufAt( &PMProgDesc, &tmp, len );
+                        p = VbufString( &PMProgDesc ) + len;
+                    }
+                }
+                /*
+                 * Process a program file info
                  */
                 nDirIndex = SimGetPMProgInfo( i, &PMProgName );
                 if( nDirIndex == -1 ) {
@@ -217,18 +224,18 @@ bool CreatePMInfo( bool uninstall )
                     /*
                      * Format is: "" use default folder
                      */
-                    VbufSetVbuf( &Folder, &GroupFileName );
+                    VbufSetVbuf( &Folder, &GroupFile );
                 }
                 /*
                  * Append the subdir where the icon file is and the icon file's name.
                  */
-                nDirIndex = SimGetPMIconInfo( i, &iconfile, &iconindex );
-                if( iconindex == -1 ) {
-                    iconindex = 0;
+                nDirIndex = SimGetPMIconInfo( i, &PMIconFile, &PMIconIndex );
+                if( PMIconIndex == -1 ) {
+                    PMIconIndex = 0;
                 }
                 if( nDirIndex != -1 ) {
                     SimGetDir( nDirIndex, &tmp );
-                    VbufPrepVbuf( &iconfile, &tmp );
+                    VbufPrepVbuf( &PMIconFile, &tmp );
                 }
                 if( SimPMIsShadow( i ) ) {
                     VbufSetStr( &Cmd, "SHADOWID=" );
@@ -255,13 +262,15 @@ bool CreatePMInfo( bool uninstall )
         VbufFree( &Cmd );
         VbufFree( &Folder );
         VbufFree( &WorkingDir );
-        VbufFree( &iconfile );
+        VbufFree( &PMIconFile );
         VbufFree( &PMParams );
         VbufFree( &PMProgDesc );
         VbufFree( &PMProgName );
         VbufFree( &tmp );
-        VbufFree( &GroupFileName );
-        VbufFree( &group );
+
+        VbufFree( &GroupIconFile );
+        VbufFree( &GroupFile );
+        VbufFree( &GroupName );
     }
     return( ok );
 }
