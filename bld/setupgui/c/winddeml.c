@@ -433,6 +433,21 @@ static void munge_fname_add( VBUF *buff, const VBUF *name )
     VbufFree( &tmp );
 }
 
+static void append_curr_group_name( VBUF *buff, const VBUF *group )
+/*****************************************************************/
+{
+    VBUF    root_group;
+
+    VbufInit( &root_group );
+    SimGetPMApplGroupName( &root_group );
+    munge_fname_add( buff, &root_group );
+    if( group != NULL && VbufLen( group ) > 0 ) {
+        VbufConcChr( buff, '\\' );
+        munge_fname_add( buff, group );
+    }
+    VbufFree( &root_group );
+}
+
 static void get_group_name( VBUF *buff, const VBUF *group )
 /*********************************************************/
 {
@@ -448,7 +463,7 @@ static void get_group_name( VBUF *buff, const VBUF *group )
         VbufConcStr( buff, "\\Start Menu\\Programs" );
     }
     VbufConcChr( buff, '\\' );
-    munge_fname_add( buff, group );
+    append_curr_group_name( buff, group );
 }
 
 static bool linkCreateGroup( const VBUF *group )
@@ -467,6 +482,8 @@ static bool linkCreateGroup( const VBUF *group )
         return( true );
     }
 }
+
+#define linkCreateApplGroup()   linkCreateGroup( NULL )
 
 static void delete_dir( const VBUF *dir )
 /***************************************/
@@ -589,9 +606,7 @@ static bool UseIShellLink( bool uninstall )
     } else if( SimIsPMApplGroupDefined() ) {
         CoInitialize( NULL );
         // Create the PM Group box.
-        VbufInit( &group );
-        SimGetPMApplGroupName( &group );
-        ok = linkCreateGroup( &group );
+        ok = linkCreateApplGroup();
         if( ok ) {
             // Add the individual PM files to the Group box.
             num_icons = SimGetPMsNum();
@@ -602,6 +617,7 @@ static bool UseIShellLink( bool uninstall )
                     ++num_total_install;
                 }
             }
+            VbufInit( &group );
             VbufInit( &prog_name );
             VbufInit( &prog_desc );
             VbufInit( &iconfile );
@@ -614,11 +630,12 @@ static bool UseIShellLink( bool uninstall )
                 if( !SimCheckPMCondition( i ) ) {
                     continue;
                 }
-                SimGetPMDesc( i, &prog_desc );
                 if( SimPMIsGroup( i ) ) {
                     /* creating a new group */
-                    ok = linkCreateGroup( &prog_desc );
+                    SimGetPMDesc( i, &group );
+                    ok = linkCreateGroup( &group );
                 } else {
+                    SimGetPMDesc( i, &prog_desc );
                     /*
                      * Adding item to group
                      */
@@ -663,8 +680,8 @@ static bool UseIShellLink( bool uninstall )
             VbufFree( &iconfile );
             VbufFree( &prog_desc );
             VbufFree( &prog_name );
+            VbufFree( &group );
         }
-        VbufFree( &group );
         CoUninitialize();
     }
     return( ok );
