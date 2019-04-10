@@ -949,11 +949,12 @@ static void RemoveDstDir( int dir_index, VBUF *buff )
 /***************************************************/
 {
     int         child;
-    int         max_dirs = SimNumDirs();
+    int         max_dirs;
 
     SimDirNoEndSlash( dir_index, buff );
     if( access_vbuf( buff, F_OK ) != 0 )
         return;
+    max_dirs = SimNumDirs();
     for( child = 0; child < max_dirs; ++child ) {
         if( SimDirParent( child ) == dir_index ) {
             RemoveDstDir( child, buff );
@@ -2033,15 +2034,14 @@ static void RemoveExtraFiles( void )
 /**********************************/
 // remove supplemental files
 {
-#if !defined( __UNIX__ )
-    const char          *p;
-    char                dst_path[_MAX_PATH];
-#endif
     bool                uninstall;
 
     uninstall = VarGetBoolVal( UnInstall );
     if( uninstall ) {
 #if !defined( __UNIX__ )
+        const char      *p;
+        char            dst_path[_MAX_PATH];
+
         // delete saved autoexec's and config's
         p = GetVariableStrVal( "DstDir" );
     #if defined( __NT__ )
@@ -2060,6 +2060,7 @@ static void RemoveExtraFiles( void )
         strcat( dst_path, "\\CONFIG." BATCH_EXT_SAVED );
         remove( dst_path );
 #endif
+        // delete saved environment setup batch script file
         if( GetVariableBoolVal( "GenerateBatchFile" ) ) {
             GenerateBatchFile( uninstall );
         }
