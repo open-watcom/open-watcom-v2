@@ -179,14 +179,14 @@ vector       : $(vector_deps)
 
 # The follow describe the dependences for the various *.h files.
 
-fcntl_deps     = $(crwatqnx_sp) ../readonly.sp ../owrtlink.sp ../systypes.sp $(cplus) $(packll) $(packlnxk) ../off_t.sp ../pid_t.sp ../mode_t.sp ../wchar_t.sp ../modedef.sp ../incdir.sp $(extension) $(posixext)
+fcntl_deps     = $(crwatqnx_sp) ../readonly.sp ../owrtlink.sp ../systypes.sp $(cplus) $(packll) $(packlnxk) ../off_t.sp ../pid_t.sp ../mode_t.sp ../wchar_t.sp ../modedef.sp ../loff_t.sp ../incdir.sp $(extension) $(posixext)
 graph_deps     = $(owhdr) $(cplus) $(packll)
 pgchart_deps   = $(owhdr) $(cplus) $(packll)
 process_deps   = $(crwatqnx_sp) ../readonly.sp ../owrtlink.sp ../lfndos.sp ../systypes.sp $(cplus) ../pid_t.sp ../wchar_t.sp ../thrdhndl.sp ../process1.sp ../_exit.sp $(extension)
 unistd_deps    = $(crwatqnx_sp) ../readonly.sp ../owrtlink.sp ../systypes.sp $(cplus) ../null.sp ../access.sp ../seekpos.sp ../pid_t.sp ../uid_t.sp ../gid_t.sp ../off_t.sp ../size_t.sp ../ssize_t.sp ../_exit.sp ../brk.sp $(posixext) $(unixext) $(extension)
 sys_stat_deps  = $(owhdr) ../lfndos.sp $(cplus) $(packll) $(packlnxk) ../incdir.sp ../time_t.sp ../off_t.sp ../dev_t.sp ../ino_t.sp ../mode_t.sp ../nlink_t.sp ../uid_t.sp ../gid_t.sp ../wchar_t.sp ../modedef.sp $(extension) $(posixext)
 sys_time_deps  = $(owhdrcnt) ../owrtlink.sp $(cplus) $(packll) $(packlnxk) ../time_t.sp ../timeval.sp
-sys_types_deps = $(owhdr) $(cplus) $(packll) $(packlnxk) ../incdir.sp ../time_t.sp ../size_t.sp ../exactint.sp ../ssize_t.sp ../pid_t.sp ../off_t.sp ../timer_t.sp ../clockidt.sp ../schedp.sp ../dev_t.sp ../ino_t.sp ../mode_t.sp ../nlink_t.sp ../uid_t.sp ../gid_t.sp ../id_t.sp ../schedp.sp ../sem_t.sp ../pthread1.sp ../pthread2.sp $(extension)
+sys_types_deps = $(owhdr) $(cplus) $(packll) $(packlnxk) ../loff_t.sp ../incdir.sp ../time_t.sp ../size_t.sp ../exactint.sp ../ssize_t.sp ../pid_t.sp ../off_t.sp ../timer_t.sp ../clockidt.sp ../schedp.sp ../dev_t.sp ../ino_t.sp ../mode_t.sp ../nlink_t.sp ../uid_t.sp ../gid_t.sp ../id_t.sp ../schedp.sp ../sem_t.sp ../pthread1.sp ../pthread2.sp $(extension)
 
 _algmut.h       : _algmut.mh $(owhdrcnt) $(ns_std)
 _algnmod.h      : _algnmod.mh $(owhdrcnt) $(ns_std)

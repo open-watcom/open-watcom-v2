@@ -66,7 +66,9 @@ typedef unsigned __int64 u_quad_t;
 typedef __int64         quad_t;
 typedef quad_t          *qaddr_t;
 typedef int             key_t;
-typedef quad_t          loff_t;
+:include ext.sp
+:include loff_t.sp
+:include extepi.sp
 
 :elsesegment QNX
 :keep XLOCALE

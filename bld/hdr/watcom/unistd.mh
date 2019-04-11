@@ -232,12 +232,13 @@ _WCRTLINK extern off_t  ltrunc( int __fildes, off_t __offset, int __origin );
 :include extepi.sp
 
 :segment LINUX
-/* These are Linux specific */
-
+_WCRTLINK extern int    nice( int __val );
+:: These are Linux specific
+:include ext.sp
 _WCRTLINK extern int    ioperm( unsigned long __from, unsigned long __num, int __turn_on );
 _WCRTLINK extern int    iopl( int __level );
-_WCRTLINK extern int    nice( int __val );
 _WCRTLINK extern int    _llseek( unsigned int __fildes, unsigned long __hi, unsigned long __lo, loff_t *__res, unsigned int __whence );
+:include extepi.sp
 
 :endsegment
 :segment QNX
