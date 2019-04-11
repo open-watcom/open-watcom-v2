@@ -37,15 +37,9 @@
 */
 
 #include "uidef.h"
-#include "uidbg.h"
+#include "uirefrhk.h"
 #include "uidebug.h"
 
-
-#ifdef OWDEBUGGER_API
-#define UIREFRESH UIDBG _uirefresh
-#else
-#define UIREFRESH UIAPI uirefresh
-#endif
 
 typedef struct update_area {
     unsigned        start;
@@ -81,8 +75,12 @@ static void _dorefresh( update_area *total, SAREA area, UI_WINDOW *wptr, UI_WIND
     }
 }
 
-void UIREFRESH( void )
-/********************/
+#if defined( __DOS__ ) || defined( __WINDOWS__ )
+void        _uirefresh( void )
+#else
+void UIAPI  uirefresh( void )
+#endif
+/****************************/
 {
     UI_WINDOW       *wptr;
     update_area     total;

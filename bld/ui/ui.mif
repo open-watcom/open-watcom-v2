@@ -82,9 +82,8 @@ objs = &
 !inject uikeyb.obj    dos  nlm      os2   qnx  unix  win
 !inject uimapch.obj   dos
 !inject uiproxy.obj                       qnx
-!inject uirefer.obj   dos                            win
-!inject ui_rfrsh.obj  dos                            win
-!inject uirefrsh.obj       nlm  nt  os2   qnx  unix       rdos
+!inject uirefrhk.obj  dos                            win
+!inject uirefrsh.obj  dos  nlm  nt  os2   qnx  unix  win  rdos
 !inject uiscrnam.obj       nlm
 !inject uiutil.obj    dos
 !inject uivirt.obj                        qnx  unix
