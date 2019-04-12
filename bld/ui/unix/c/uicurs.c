@@ -42,7 +42,7 @@ static ORD              OldCursorRow;
 static ORD              OldCursorCol;
 static CURSOR_TYPE      OldCursorType;
 
-void UIAPI uioffcursor( void )
+void UIHOOK uioffcursor( void )
 /*****************************/
 {
     UIData->cursor_type = C_OFF;
@@ -53,7 +53,7 @@ void UIAPI uioffcursor( void )
 }
 
 
-void UIAPI uioncursor( void )
+void UIHOOK uioncursor( void )
 /****************************/
 {
     if( !UIData->cursor_on ) {
@@ -94,21 +94,21 @@ static void swapcursor( void )
 }
 
 
-void UIAPI uigetcursor( ORD *row, ORD *col, CURSOR_TYPE *type, CATTR *attr )
-/**************************************************************************/
+void UIHOOK uigetcursor( ORD *row, ORD *col, CURSOR_TYPE *type, CATTR *attr )
+/***************************************************************************/
 {
     _uigetcursor( row, col, type, attr );
 }
 
 
-void UIAPI uisetcursor( ORD row, ORD col, CURSOR_TYPE typ, CATTR attr )
-/*********************************************************************/
+void UIHOOK uisetcursor( ORD row, ORD col, CURSOR_TYPE typ, CATTR attr )
+/**********************************************************************/
 {
     _uisetcursor( row, col, typ, attr );
 }
 
 
-void UIAPI uiswapcursor( void )
+void UIHOOK uiswapcursor( void )
 /******************************/
 {
     swapcursor();
@@ -116,7 +116,7 @@ void UIAPI uiswapcursor( void )
 }
 
 
-void UIAPI uiinitcursor( void )
+void UIHOOK uiinitcursor( void )
 /******************************/
 {
     UIData->cursor_row = (ORD)-1;
@@ -128,7 +128,7 @@ void UIAPI uiinitcursor( void )
 }
 
 
-void UIAPI uifinicursor( void )
+void UIHOOK uifinicursor( void )
 /******************************/
 {
     UIData->cursor_row = 0;
