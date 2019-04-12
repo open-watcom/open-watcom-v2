@@ -59,16 +59,6 @@ extern nid_t            UIConNid;
 extern struct _timesel  __far *_SysTime;
 #else
 extern FILE             *UIConFile;
-
-#define uicon_putp( str )   {tputs( str, 1, uicon_putchar );}
-
-#if defined( SUN )
-extern int              uicon_putchar( char ch );
-#elif defined( HP ) && ( ( OSVER < 1100 ) || defined( __GNUC__ ) )
-extern void             uicon_putchar( int ch );
-#else
-extern int              uicon_putchar( int ch );
-#endif
 #endif
 
 #endif

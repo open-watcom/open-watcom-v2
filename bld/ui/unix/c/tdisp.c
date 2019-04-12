@@ -130,6 +130,27 @@ bool    UserForcedTermRefresh = false;
 
 #endif
 
+#define uicon_putp( str )   {tputs( str, 1, uicon_putchar );}
+
+#if defined( SUN )
+static int     uicon_putchar( char ch )
+{
+    fputc( (unsigned char)ch, UIConFile );
+    return( 0 );
+}
+#elif defined( HP ) && ( ( OSVER < 1100 ) || defined( __GNUC__ ) )
+static void    uicon_putchar( int ch )
+{
+    fputc( ch, UIConFile );
+}
+#else
+static int     uicon_putchar( int ch )
+{
+    fputc( ch, UIConFile );
+    return( 0 );
+}
+#endif
+
 bool TInfCheck( void )
 /********************/
 {

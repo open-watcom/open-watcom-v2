@@ -315,11 +315,11 @@ static bool tm_init( init_mode install )
         if( key_mouse != NULL ) {
 #if 0 /* doesn't seem to work here, leave it for now (bart) */
             /* save current xterm mouse state */
-            uicon_putp( _ESC "[?1001s" );
+            uiwritec( _ESC "[?1001s" );
 #endif
             TryOne( M_XT, NULL, XT_INIT, XT_MOUSE );
             /* set xterm into full mouse tracking mode */
-            uicon_putp( _ESC "[?1003h" );
+            uiwritec( _ESC "[?1003h" );
         } else {
             TryOne( M_XT, NULL, XT_INIT, ANSI_HDR "M" );
         }
@@ -340,11 +340,11 @@ static bool tm_fini( void )
     case M_XT:
         if( key_mouse != NULL ) {
             /* disable mouse tracking */
-            uicon_putp( _ESC "[?1003l" );
+            uiwritec( _ESC "[?1003l" );
             uiwritec( XT_FINI );
 #if 0 /* doesn't seem to work here, leave it for now */
             /* restore old xterm mouse state */
-            uicon_putp( _ESC "[?1001r" );
+            uiwritec( _ESC "[?1001r" );
 #endif
         } else {
             uiwritec( XT_FINI );
