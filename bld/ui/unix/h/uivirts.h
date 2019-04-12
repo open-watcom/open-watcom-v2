@@ -91,6 +91,8 @@ typedef struct {
 
 extern VirtDisplay      UIVirt;
 
+#define UIVIRTS
+
 /*-
  * convenient naming, and easier changes later...
  */

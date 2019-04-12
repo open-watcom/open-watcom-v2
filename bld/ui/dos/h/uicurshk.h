@@ -45,6 +45,8 @@ extern void     UIHOOK uigetcursor( ORD *row, ORD *col, CURSOR_TYPE *type, CATTR
 extern void     UIHOOK uisetcursor( ORD row, ORD col, CURSOR_TYPE typ, CATTR attr );
 extern void     UIHOOK uiswapcursor( void );
 
+#ifndef UIVIRTS
+
 extern void     UIHOOK _uiinitcursor( void );
 extern void     UIHOOK _uifinicursor( void );
 extern void     UIHOOK _uioncursor( void );
@@ -52,3 +54,5 @@ extern void     UIHOOK _uioffcursor( void );
 extern void     UIHOOK _uigetcursor( ORD *row, ORD *col, CURSOR_TYPE *typ, CATTR *attr );
 extern void     UIHOOK _uisetcursor( ORD row, ORD col, CURSOR_TYPE typ, CATTR attr );
 extern void     UIHOOK _uiswapcursor( void );
+
+#endif
