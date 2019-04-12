@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -29,12 +29,12 @@
 *
 ****************************************************************************/
 
+
 #include "vi.h"
-#include "uidef.h"
+#include "stdui.h"
+#include "uiextrn.h"
 #include "getspcmd.h"
 
-
-extern bool UserForcedTermRefresh;
 
 const char _NEAR * _NEAR InternalCommands[] = {
     (const char _NEAR *)""
@@ -50,9 +50,7 @@ int ExeExtensionCount = sizeof( ExeExtensions ) / sizeof( char * );
 
 void ResetSpawnScreen( void )
 {
-    physupdate( NULL );
-    UserForcedTermRefresh = true;
-    return;
+    TermRefresh( NULL );
 }
 
 long MySpawn( const char *cmd )

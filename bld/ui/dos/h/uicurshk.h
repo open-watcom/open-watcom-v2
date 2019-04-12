@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -30,5 +31,24 @@
 ****************************************************************************/
 
 
-#define OWDEBUGGER_API
-#include "uirfrsh.c"
+// these functions get overridden by the OW Debugger if it's doing its own
+// hardware cursor on a monochrome screen, but the debugger needs
+// to call the original version if it's on the main screen, so I've changed
+// the original versions into _uixxx().  In a normal UI app, these stubs kick
+// in so the world is back to normal
+
+extern void     UIHOOK uiinitcursor( void );
+extern void     UIHOOK uifinicursor( void );
+extern void     UIHOOK uioncursor( void );
+extern void     UIHOOK uioffcursor( void );
+extern void     UIHOOK uigetcursor( ORD *row, ORD *col, CURSOR_TYPE *type, CATTR *attr );
+extern void     UIHOOK uisetcursor( ORD row, ORD col, CURSOR_TYPE typ, CATTR attr );
+extern void     UIHOOK uiswapcursor( void );
+
+extern void     UIHOOK _uiinitcursor( void );
+extern void     UIHOOK _uifinicursor( void );
+extern void     UIHOOK _uioncursor( void );
+extern void     UIHOOK _uioffcursor( void );
+extern void     UIHOOK _uigetcursor( ORD *row, ORD *col, CURSOR_TYPE *typ, CATTR *attr );
+extern void     UIHOOK _uisetcursor( ORD row, ORD col, CURSOR_TYPE typ, CATTR attr );
+extern void     UIHOOK _uiswapcursor( void );

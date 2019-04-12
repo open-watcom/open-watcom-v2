@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -31,12 +32,12 @@
 
 #include "vi.h"
 #include "win.h"
-#include "uidef.h"
-#include "uivirt.h"
+#include "stdui.h"
+#include "uiextrn.h"
 #include "vibios.h"
 
+
 extern int      PageCnt;
-extern bool     UserForcedTermRefresh;
 
 void    BIOSGetColorPalette( void *a ) {}
 uint_32 BIOSGetColorRegister( unsigned short a ) { return( 0 ); }
@@ -52,8 +53,8 @@ void    BIOSSetCursor( unsigned char page, unsigned char row, unsigned char col 
 
     /* unused parameters */ (void)page;
 
-    _uigetcursor( &oldrow, &oldcol, &type, &attr );
-    _uisetcursor( row, col, type, attr );
+    uigetcursor( &oldrow, &oldcol, &type, &attr );
+    uisetcursor( row, col, type, attr );
 }
 
 unsigned short BIOSGetCursor( unsigned char page )
@@ -64,7 +65,7 @@ unsigned short BIOSGetCursor( unsigned char page )
 
     /* unused parameters */ (void)page;
 
-    _uigetcursor( &row, &col, &type, &attr );
+    uigetcursor( &row, &col, &type, &attr );
     return( ( row << 8 ) | col );
 }
 
@@ -231,14 +232,7 @@ unsigned BIOSGetKeyboard( unsigned *scan )
  */
 bool BIOSKeyboardHit( void )
 {
-    int             attr;
-    CURSOR_TYPE     type;
-    unsigned char   row, col;
-
-    _uigetcursor( &row, &col, &type, &attr );
-    _uisetcursor( row, col, C_NORMAL, attr );
-    _ui_refresh( 0 );
-    return( _uiwaitkeyb( 0, 0 ) != 0 );
+    return( TermKeyboardHit() );
 
 } /* BIOSKeyboardHit */
 
@@ -254,8 +248,7 @@ void  BIOSUpdateScreen( size_t offset, unsigned nchars )
     }
 
     if( nchars == EditVars.WindMaxWidth * EditVars.WindMaxHeight ) {
-        _physupdate( NULL );
-        UserForcedTermRefresh = true;
+        TermRefresh( NULL );
         return;
     }
 
@@ -263,7 +256,6 @@ void  BIOSUpdateScreen( size_t offset, unsigned nchars )
     area.col = offset % EditVars.WindMaxWidth;
     area.width = nchars;
     area.height = 1;
-
-    _physupdate(&area);
+    TermRefresh( &area );
 
 } /* BIOSUpdateScreen */

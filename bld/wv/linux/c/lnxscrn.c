@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -51,8 +51,7 @@
 #include "dbgdata.h"
 #include "dbgio.h"
 #include "dbgmem.h"
-#include "uidef.h"
-#include "uivirts.h"
+#include "stdui.h"
 #include "uiextrn.h"
 #include "dbgscrn.h"
 #include "strutil.h"
@@ -66,8 +65,6 @@
 
 #include "clibext.h"
 
-
-extern bool     UserForcedTermRefresh;
 
 char            XConfig[2048];
 char            *DbgTerminal;
@@ -392,8 +389,7 @@ bool DebugScreen( void )
     case C_TTY:
         return( true );
     case C_CURTTY:
-        _physupdate( NULL );
-        UserForcedTermRefresh = true;
+        TermRefresh( NULL );
         tputs( enter_ca_mode, 1, DebugPutc );
         break;
     case C_VC:
