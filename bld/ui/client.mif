@@ -9,7 +9,7 @@ ui_os = $(ui_os_$(host_os))
 !else
 ui_os = $(host_os)
 !endif
-#ui_extra_inc_dirs_dos   = -I"$(ui_dir)/dos/h"
+ui_extra_inc_dirs_dos   = -I"$(ui_dir)/dos/h"
 #ui_extra_inc_dirs_nlm   = -I"$(ui_dir)/nlm/h"
 #ui_extra_inc_dirs_nt    = -I"$(ui_dir)/nt/h"
 #ui_extra_inc_dirs_os2   = -I"$(ui_dir)/os2/h"
