@@ -35,6 +35,7 @@
 #include "uiintern.h"
 #include "uiextrn.h"
 #include "uivirts.h"
+#include "uicurshk.h"
 
 
 int     UIConHandle = -1;

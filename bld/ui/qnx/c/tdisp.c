@@ -63,6 +63,7 @@
 #include "tixparse.h"
 #include "tixsupp.h"
 #include "doparse.h"
+#include "uicurshk.h"
 #include "tdisp.h"
 
 

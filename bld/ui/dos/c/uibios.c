@@ -41,6 +41,7 @@
 #include "uigchar.h"
 #include "getltdos.h"
 #include "osidle.h"
+#include "uicurshk.h"
 
 
 typedef struct {

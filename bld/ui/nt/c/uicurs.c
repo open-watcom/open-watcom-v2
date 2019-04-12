@@ -34,6 +34,7 @@
 #include "uidef.h"
 #include "uiattrs.h"
 #include <windows.h>
+#include "uicurshk.h"
 
 
 #define _swap(a,b)      {int i; i=a; a=b; b=i;}

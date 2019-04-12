@@ -34,6 +34,7 @@
 #include "uidef.h"
 #include "uivirts.h"
 #include "uimouse.h"
+#include "uicurshk.h"
 
 
 void UIAPI uispawnstart( void )

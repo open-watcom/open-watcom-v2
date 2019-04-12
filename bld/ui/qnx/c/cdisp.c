@@ -52,6 +52,7 @@
 #include "uiintern.h"
 #include "uiextrn.h"
 #include "ctkeyb.h"
+#include "uicurshk.h"
 
 
 static MONITOR ui_data = {

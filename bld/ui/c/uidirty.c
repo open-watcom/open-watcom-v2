@@ -32,6 +32,7 @@
 
 
 #include "uidef.h"
+#include "uicurshk.h"
 
 
 void intern dirtyarea( UI_WINDOW *wptr, SAREA area )

@@ -32,6 +32,7 @@
 
 #include <stdio.h>
 #include "uidef.h"
+#include "uicurshk.h"
 
 
 void UIAPI uispawnstart( void )

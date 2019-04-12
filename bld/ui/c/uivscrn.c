@@ -32,6 +32,7 @@
 
 
 #include "uidef.h"
+#include "uicurshk.h"
 
 
 VSCREEN* intern findvscreen( ORD row, ORD col )

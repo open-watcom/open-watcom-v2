@@ -34,6 +34,8 @@
 #include <conio.h>
 #include <stdio.h>
 #include "uidef.h"
+#include "uicurshk.h"
+
 
 static MONITOR ui_data = {
     25,

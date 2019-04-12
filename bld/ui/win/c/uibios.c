@@ -35,6 +35,7 @@
 #include "uidef.h"
 #include "uidos.h"
 #include "biosui.h"
+#include "uicurshk.h"
 
 
 extern char     _B000h[];

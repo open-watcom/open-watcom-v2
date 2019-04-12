@@ -34,6 +34,8 @@
 #include <stdio.h>
 #include "uidef.h"
 #include <windows.h>
+#include "uicurshk.h"
+
 
 static MONITOR ui_data = {
     50,

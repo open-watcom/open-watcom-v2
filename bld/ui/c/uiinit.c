@@ -37,6 +37,7 @@
 #endif
 #include "uiforce.h"
 #include "uigchar.h"
+#include "uicurshk.h"
 
 
 bool UIAPI uistart( void )
