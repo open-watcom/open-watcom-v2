@@ -40,6 +40,7 @@
 #include "wterm.h"
 #include "uidef.h"
 #include "uivirts.h"
+#include "uiintern.h"
 #include "uiextrn.h"
 #include "ctkeyb.h"
 #include "qdebug.h"
@@ -90,6 +91,7 @@ bool intern initbios( void )
 {
     PossibleDisplay     *curr;
 
+    UIPGroup = getpgrp();
     if( UIConFile == NULL ) {
         const char  *tty;
 

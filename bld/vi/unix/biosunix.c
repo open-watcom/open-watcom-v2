@@ -249,13 +249,12 @@ void  BIOSUpdateScreen( size_t offset, unsigned nchars )
 
     if( nchars == EditVars.WindMaxWidth * EditVars.WindMaxHeight ) {
         TermRefresh( NULL );
-        return;
+    } else {
+        area.row = offset / EditVars.WindMaxWidth;
+        area.col = offset % EditVars.WindMaxWidth;
+        area.width = nchars;
+        area.height = 1;
+        TermRefresh( &area );
     }
-
-    area.row = offset / EditVars.WindMaxWidth;
-    area.col = offset % EditVars.WindMaxWidth;
-    area.width = nchars;
-    area.height = 1;
-    TermRefresh( &area );
 
 } /* BIOSUpdateScreen */

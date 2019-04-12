@@ -68,6 +68,12 @@
 #define XT_INIT         _ESC "[?1000h"
 #define XT_FINI         _ESC "[?1000l"
 
+#define XT_SAVE_MOUSE   _ESC "[?1001s"
+#define XT_REST_MOUSE   _ESC "[?1001r"
+
+#define XT_ENAB_MOUSE   _ESC "[?1003h"
+#define XT_DISA_MOUSE   _ESC "[?1003l"
+
 #ifdef __LINUX__
 static void             GPM_parse( void );
 #endif
@@ -149,7 +155,7 @@ static int tm_stop( void )
     return 0;
 }
 
-static void TryOne( int type, char *test, char *init, const char *input )
+static void TryOne( int type, char *test, const char *init, const char *input )
 {
     MOUSEORD    row;
     MOUSEORD    col;
@@ -314,13 +320,11 @@ static bool tm_init( init_mode install )
 
     if( strstr( GetTermType(), "xterm" ) != NULL ) {
         if( key_mouse != NULL ) {
-#if 0 /* doesn't seem to work here, leave it for now (bart) */
             /* save current xterm mouse state */
-            uiwritec( _ESC "[?1001s" );
-#endif
+            uiwritec( XT_SAVE_MOUSE );
             TryOne( M_XT, NULL, XT_INIT, XT_MOUSE );
             /* set xterm into full mouse tracking mode */
-            uiwritec( _ESC "[?1003h" );
+            uiwritec( XT_ENAB_MOUSE );
         } else {
             TryOne( M_XT, NULL, XT_INIT, ANSI_HDR "M" );
         }
@@ -341,12 +345,10 @@ static bool tm_fini( void )
     case M_XT:
         if( key_mouse != NULL ) {
             /* disable mouse tracking */
-            uiwritec( _ESC "[?1003l" );
+            uiwritec( XT_DISA_MOUSE );
             uiwritec( XT_FINI );
-#if 0 /* doesn't seem to work here, leave it for now */
             /* restore old xterm mouse state */
-            uiwritec( _ESC "[?1001r" );
-#endif
+            uiwritec( XT_REST_MOUSE );
         } else {
             uiwritec( XT_FINI );
         }

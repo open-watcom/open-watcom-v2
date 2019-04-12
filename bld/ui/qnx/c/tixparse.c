@@ -39,7 +39,6 @@
 #include <sys/uio.h>
 #include <unistd.h>
 #include "wterm.h"
-#include "bool.h"
 #include "stdui.h"
 #include "tixparse.h"
 #include "tixsupp.h"

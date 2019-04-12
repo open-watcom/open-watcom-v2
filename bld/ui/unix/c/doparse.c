@@ -37,7 +37,6 @@
 #include <ctype.h>
 #include <string.h>
 #include <unistd.h>
-#include "bool.h"
 #include "wterm.h"
 #include "uidef.h"
 #include "trie.h"

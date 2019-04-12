@@ -76,7 +76,7 @@ static void _dorefresh( update_area *total, SAREA area, UI_WINDOW *wptr, UI_WIND
 }
 
 #if defined( __DOS__ ) || defined( __WINDOWS__ )
-void        _uirefresh( void )
+void UIHOOK _uirefresh( void )
 #else
 void UIAPI  uirefresh( void )
 #endif

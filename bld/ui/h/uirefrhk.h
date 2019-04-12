@@ -24,12 +24,11 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  UI internal functions used directly by OW Debugger
 *
 ****************************************************************************/
 
 
 #if defined( __DOS__ ) || defined( __WINDOWS__ )
-extern void     _uirefresh( void );
+extern void UIHOOK  _uirefresh( void );
 #endif

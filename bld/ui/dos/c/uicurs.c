@@ -72,7 +72,7 @@ void UIHOOK _uioffcursor( void )
 
 
 void UIHOOK _uioncursor( void )
-/****p************************/
+/*****************************/
 {
     union REGS      r;
 
