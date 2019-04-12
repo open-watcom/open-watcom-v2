@@ -30,7 +30,7 @@
 
 
 #include "watcom.h"
-#include "uidef.h"
+#include "stdui.h"
 #include "uidialog.h"
 #include "search.h"
 

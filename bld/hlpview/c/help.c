@@ -35,7 +35,7 @@
 #include <stdio.h>
 #include "wio.h"
 #include "watcom.h"
-#include "uidef.h"
+#include "stdui.h"
 #include "helpmem.h"
 #include "uibox.h"
 #include "help.h"
