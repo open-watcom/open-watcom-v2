@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -30,19 +31,23 @@
 ****************************************************************************/
 
 
-#ifndef _UIEXTRN_H_INCLUDED
-#define _UIEXTRN_H_INCLUDED
+#ifndef _UIINTERN_H_INCLUDED
+#define _UIINTERN_H_INCLUDED
 
-extern int              UIConHandle;
-#ifndef __QNX__
-extern FILE             *UIConFile;
-#endif
+#define uiwrite(s)      write( UIConHandle, s, strlen( s ) )
+#define uiwritec(c)     write( UIConHandle, c, sizeof( c ) - 1 )
 
-extern char             *GetTermType( void );
-extern void             SetTermType( const char * );
-#ifndef __QNX__
-extern void             TermRefresh( SAREA *area );
-extern bool             TermKeyboardHit( void );
+extern pid_t            UIProxy;
+extern pid_t            UIPGroup;
+extern bool             UIDisableShiftChanges;
+extern bool             UserForcedTermRefresh;
+
+#ifdef __QNX__
+extern int              UIConsole;
+extern pid_t            UILocalProxy;
+extern pid_t            UIRemProxy;
+extern nid_t            UIConNid;
+extern struct _timesel  __far *_SysTime;
 #endif
 
 #endif

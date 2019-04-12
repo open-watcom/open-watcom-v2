@@ -45,6 +45,7 @@
 #include "uidef.h"
 #include "uimouse.h"
 #include "uivirts.h"
+#include "uiintern.h"
 #include "uiextrn.h"
 
 

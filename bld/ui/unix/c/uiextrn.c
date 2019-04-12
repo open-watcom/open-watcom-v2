@@ -30,24 +30,35 @@
 ****************************************************************************/
 
 
+#include <sys/types.h>
 #include "uidef.h"
+#include "uiintern.h"
 #include "uiextrn.h"
 #include "uivirts.h"
 
 
-int         UIConHandle = -1;               /* filedescriptor */
-pid_t       UIProxy;                        /* proxy for all events */
-pid_t       UIRemProxy;                     /* remote proxy if nec.. */
-pid_t       UIPGroup;                       /* process group */
-bool        UIWantShiftChanges = true;      /* tell keyboard app wants to see shift, alt, ... keys... */
-bool        UIDisableShiftChanges = false;  /* Disable checking on non console devices */
-VirtDisplay UIVirt;                         /* Active virtual console functions */
+int     UIConHandle = -1;
+#ifndef __QNX__
+FILE    *UIConFile = NULL;
 
-#ifdef __QNX__
-int         UIConsole = 0;                  /* console number */
-pid_t       UILocalProxy;                   /* proxy's incoming value (usually same as UIProxy */
-nid_t       UIConNid;                       /* Node of console mgr */
-#else
-FILE        *UIConFile = NULL;              /* filedescriptor */
+void    TermRefresh( SAREA *area )
+{
+    _physupdate( area );
+    if( area == NULL ) {
+        UserForcedTermRefresh = true;
+    }
+}
+
+bool    TermKeyboardHit( void )
+{
+    CATTR           attr;
+    CURSOR_TYPE     type;
+    unsigned char   row, col;
+
+    uigetcursor( &row, &col, &type, &attr );
+    uisetcursor( row, col, C_NORMAL, attr );
+    _ui_refresh( 0 );
+    return( _uiwaitkeyb( 0, 0 ) != 0 );
+}
 
 #endif

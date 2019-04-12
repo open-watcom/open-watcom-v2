@@ -53,7 +53,6 @@
 #include "uishift.h"
 #include "uivirts.h"
 #include "ctkeyb.h"
-#include "uiextrn.h"
 #include "trie.h"
 
 

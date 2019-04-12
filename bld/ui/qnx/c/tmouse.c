@@ -45,6 +45,7 @@
 #include "trie.h"
 #include "qdebug.h"
 #include "uivirts.h"
+#include "uiintern.h"
 #include "uiextrn.h"
 #include "ctkeyb.h"
 

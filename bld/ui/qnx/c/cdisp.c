@@ -49,6 +49,7 @@
 #include <i86.h>
 #include "uidef.h"
 #include "uivirt.h"
+#include "uiintern.h"
 #include "uiextrn.h"
 #include "ctkeyb.h"
 

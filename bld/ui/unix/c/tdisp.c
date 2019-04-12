@@ -78,6 +78,7 @@
 #include "qdebug.h"
 
 #include "uivirt.h"
+#include "uiintern.h"
 #include "uiextrn.h"
 #include "ctkeyb.h"
 #include "tixparse.h"
@@ -108,6 +109,7 @@
 
 #define ostream_flush()       {fflush( UIConFile );}
 #define ostream_putc( c )     {fputc( c, UIConFile );}
+#define ostream_putp( str )   {tputs( str, 1, ostream_putchar );}
 
 bool    UserForcedTermRefresh = false;
 
@@ -129,8 +131,6 @@ bool    UserForcedTermRefresh = false;
 #define UNIX_TPARM3(str, arg1, arg2) tparm((str), (arg1), (arg2))
 
 #endif
-
-#define ostream_putp( str )   {tputs( str, 1, ostream_putchar );}
 
 #if defined( SUN )
 static int     ostream_putchar( char ch )

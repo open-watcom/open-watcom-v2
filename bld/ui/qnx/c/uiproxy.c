@@ -32,7 +32,7 @@
 
 #include <sys/proxy.h>
 #include "uidef.h"
-#include "uiextrn.h"
+#include "uiintern.h"
 #include "uiproxy.h"
 
 

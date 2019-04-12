@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -30,19 +31,25 @@
 ****************************************************************************/
 
 
-#ifndef _UIEXTRN_H_INCLUDED
-#define _UIEXTRN_H_INCLUDED
+#ifndef _UIINTERN_H_INCLUDED
+#define _UIINTERN_H_INCLUDED
 
-extern int              UIConHandle;
-#ifndef __QNX__
-extern FILE             *UIConFile;
-#endif
+#include <sys/types.h>
+#include "uidef.h"
+#include "uivirts.h"
+#include "uiintern.h"
 
-extern char             *GetTermType( void );
-extern void             SetTermType( const char * );
-#ifndef __QNX__
-extern void             TermRefresh( SAREA *area );
-extern bool             TermKeyboardHit( void );
+
+pid_t       UIProxy;                        /* proxy for all events */
+pid_t       UIPGroup;                       /* process group */
+bool        UIDisableShiftChanges = false;  /* Disable checking on non console devices */
+VirtDisplay UIVirt;                         /* Active virtual console functions */
+
+#ifdef __QNX__
+int         UIConsole = 0;                  /* console number */
+pid_t       UILocalProxy;                   /* proxy's incoming value (usually same as UIProxy */
+pid_t       UIRemProxy;                     /* remote proxy if nec.. */
+nid_t       UIConNid;                       /* Node of console mgr */
 #endif
 
 #endif

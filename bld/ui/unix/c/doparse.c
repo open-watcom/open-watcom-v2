@@ -41,13 +41,12 @@
 #include "wterm.h"
 #include "uidef.h"
 #include "trie.h"
+#include "uiintern.h"
 #include "uiextrn.h"
 #include "tixparse.h"
 #include "doparse.h"
 
-#if !defined( __WATCOMC__ )
 #include "clibext.h"
-#endif
 #endif
 
 #define TC_ERROR    ((unsigned)-1)
