@@ -146,11 +146,11 @@ static xhandle xmsAlloc( int size )
     unsigned            handle, new_size, page_request;
     unsigned long       offset;
 
-    size = ROUNDUP( size, 4 );
     if( XMSCtrl.exhausted ) {
         return( 0 );
     }
 
+    size = ROUNDUP( size, 4 );
     if( XMSCtrl.offset + size > XMSCtrl.size ) {
         if( XMSCtrl.small_block ) {
             return( 0 );

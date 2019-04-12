@@ -205,7 +205,7 @@ static bool endColumn( input_buffer *input )
         if( column < width - 1 ) {
             left = 0;
         } else {
-        	left = column - ( width - 1 );
+            left = column - ( width - 1 );
         }
     }
     input->curr_pos = column;
