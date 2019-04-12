@@ -35,7 +35,6 @@
 #include "uiintern.h"
 #include "uiextrn.h"
 #include "uivirts.h"
-#include "uicurshk.h"
 
 
 int     UIConHandle = -1;
@@ -56,10 +55,29 @@ bool    TermKeyboardHit( void )
     CURSOR_TYPE     type;
     unsigned char   row, col;
 
-    uigetcursor( &row, &col, &type, &attr );
-    uisetcursor( row, col, C_NORMAL, attr );
+    _uigetcursor( &row, &col, &type, &attr );
+    _uisetcursor( row, col, C_NORMAL, attr );
     _ui_refresh( 0 );
     return( _uiwaitkeyb( 0, 0 ) != 0 );
+}
+
+void TermGetCursor( ORD *row, ORD *col )
+{
+    CATTR           attr;
+    CURSOR_TYPE     type;
+
+    _uigetcursor( row, col, &type, &attr );
+}
+
+void TermSetCursor( ORD row, ORD col )
+{
+    CATTR           attr;
+    CURSOR_TYPE     type;
+    ORD             oldrow;
+    ORD             oldcol;
+
+    _uigetcursor( &oldrow, &oldcol, &type, &attr );
+    _uisetcursor( row, col, type, attr );
 }
 
 #endif

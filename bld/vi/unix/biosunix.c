@@ -47,26 +47,20 @@ void    BIOSSetColorRegister( unsigned short reg, unsigned char r, unsigned char
 
 void    BIOSSetCursor( unsigned char page, unsigned char row, unsigned char col )
 {
-    int             attr;
-    CURSOR_TYPE     type;
-    unsigned char   oldrow, oldcol;
-
     /* unused parameters */ (void)page;
 
-    uigetcursor( &oldrow, &oldcol, &type, &attr );
-    uisetcursor( row, col, type, attr );
+    TermSetCursor( row, col );
 }
 
 unsigned short BIOSGetCursor( unsigned char page )
 {
-    unsigned char   row, col;
-    int             attr;
-    CURSOR_TYPE     type;
+    ORD   row;
+    ORD   col;
 
     /* unused parameters */ (void)page;
 
-    uigetcursor( &row, &col, &type, &attr );
-    return( ( row << 8 ) | col );
+    TermGetCursor( &row, &col );
+    return( ( (row & 0xFF) << 8 ) | (col & 0xFF) );
 }
 
 static unsigned short vi_keys[EV_FIRST_UNUSED];
