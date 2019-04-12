@@ -51,8 +51,8 @@ static WORD             OldCursorRow;
 static WORD             OldCursorCol;
 static CURSOR_TYPE      OldCursorType;
 
-void UIAPI uioffcursor( void )
-/****************************/
+void UIHOOK uioffcursor( void )
+/*****************************/
 {
     if( UIData->cursor_on ) {
         HideInputCursor();
@@ -61,8 +61,8 @@ void UIAPI uioffcursor( void )
     UIData->cursor_type = C_OFF;
 }
 
-void UIAPI uioncursor( void )
-/***************************/
+void UIHOOK uioncursor( void )
+/****************************/
 {
     BYTE startline;     /* first cursor scan line */
     BYTE endline;       /* last cursor scan line  */
@@ -100,8 +100,8 @@ void intern newcursor( void )
     }
 }
 
-void UIAPI uigetcursor( ORD *row, ORD *col, CURSOR_TYPE *type, CATTR *attr )
-/**************************************************************************/
+void UIHOOK uigetcursor( ORD *row, ORD *col, CURSOR_TYPE *type, CATTR *attr )
+/***************************************************************************/
 {
     BYTE startline;
     BYTE endline;
@@ -131,8 +131,8 @@ void UIAPI uigetcursor( ORD *row, ORD *col, CURSOR_TYPE *type, CATTR *attr )
     //NYI:  Read the attribute
 }
 
-void UIAPI uisetcursor( ORD row, ORD col, CURSOR_TYPE typ, CATTR attr )
-/*********************************************************************/
+void UIHOOK uisetcursor( ORD row, ORD col, CURSOR_TYPE typ, CATTR attr )
+/**********************************************************************/
 {
     if( ( typ != UIData->cursor_type ) || ( row != UIData->cursor_row ) ||
         ( col != UIData->cursor_col ) || ( attr != UIData->cursor_attr ) ) {
@@ -184,23 +184,23 @@ static void swapcursor( void )
     UIData->cursor_on = true;
 }
 
-void UIAPI uiswapcursor( void )
-/*****************************/
+void UIHOOK uiswapcursor( void )
+/******************************/
 {
     swapcursor();
     newcursor();
 }
 
-void UIAPI uiinitcursor( void )
-/*****************************/
+void UIHOOK uiinitcursor( void )
+/******************************/
 {
     savecursor();
     uisetcursor( OldCursorRow, OldCursorCol, OldCursorType, OldCursorAttr );
     uioffcursor();
 }
 
-void UIAPI uifinicursor( void )
-/*****************************/
+void UIHOOK uifinicursor( void )
+/******************************/
 {
     uioncursor();
 }
