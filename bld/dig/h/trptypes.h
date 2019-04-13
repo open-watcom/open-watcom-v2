@@ -33,7 +33,9 @@
 #define _TRPTYPES_H_INCLUDED
 
 #include "digtypes.h"
-#include "setevent.h"
+#if defined( __WINDOWS__ )
+    #include "setevent.h"
+#endif
 
 #if defined( __WINDOWS__ )
     #define     TRAPENTRY   __far __pascal

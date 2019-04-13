@@ -39,11 +39,7 @@
  * to register multiple event hooks anyway). See Undocumented Windows.
  */
 
-#ifdef __WINDOWS__
-
 typedef void __far __loadds event_hook_fn( unsigned, unsigned );
 #pragma aux event_hook_fn __parm [__ax] [__cx]
 
 extern void __far __pascal SetEventHook( event_hook_fn * );
-
-#endif
