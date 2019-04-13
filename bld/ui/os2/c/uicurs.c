@@ -40,8 +40,8 @@
 #define _swap(a,b)      {int i; i=a; a=b; b=i;}
 
 static CATTR            OldCursorAttr;
-static unsigned         OldCursorRow;
-static unsigned         OldCursorCol;
+static CURSORORD        OldCursorRow;
+static CURSORORD        OldCursorCol;
 static CURSOR_TYPE      OldCursorType;
 static USHORT           length;
 static USHORT           r;
@@ -149,8 +149,8 @@ static void swapcursor( void )
 }
 
 
-void UIHOOK uigetcursor( ORD *row, ORD *col, CURSOR_TYPE *type, CATTR *attr )
-/***************************************************************************/
+void UIHOOK uigetcursor( CURSORORD *row, CURSORORD *col, CURSOR_TYPE *type, CATTR *attr )
+/***************************************************************************************/
 {
 
     USHORT              length;
@@ -177,8 +177,8 @@ void UIHOOK uigetcursor( ORD *row, ORD *col, CURSOR_TYPE *type, CATTR *attr )
 }
 
 
-void UIHOOK uisetcursor( ORD row, ORD col, CURSOR_TYPE typ, CATTR attr )
-/**********p***********************************************************/
+void UIHOOK uisetcursor( CURSORORD row, CURSORORD col, CURSOR_TYPE typ, CATTR attr )
+/**********p***********************************************************************/
 {
     if( ( typ != UIData->cursor_type ) ||
         ( row != UIData->cursor_row ) ||

@@ -43,8 +43,8 @@ extern void             SetTermType( const char * );
 #ifndef __QNX__
 extern void             TermRefresh( SAREA *area );
 extern bool             TermKeyboardHit( void );
-extern void             TermGetCursor( ORD *row, ORD *col );
-extern void             TermSetCursor( ORD row, ORD col );
+extern void             TermGetCursor( CURSORORD *row, CURSORORD *col );
+extern void             TermSetCursor( CURSORORD row, CURSORORD col );
 #endif
 
 #endif

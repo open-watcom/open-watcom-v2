@@ -51,8 +51,8 @@
 #endif
 
 static CATTR            OldCursorAttr;
-static ORD              OldCursorRow;
-static ORD              OldCursorCol;
+static CURSORORD        OldCursorRow;
+static CURSORORD        OldCursorCol;
 static CURSOR_TYPE      OldCursorType;
 
 void UIHOOK _uioffcursor( void )
@@ -165,8 +165,8 @@ static void swapcursor( void )
 }
 
 
-void UIHOOK _uigetcursor( ORD *row, ORD *col, CURSOR_TYPE *type, CATTR *attr )
-/****************************************************************************/
+void UIHOOK _uigetcursor( CURSORORD *row, CURSORORD *col, CURSOR_TYPE *type, CATTR *attr )
+/****************************************************************************************/
 {
     union REGS      r;
 
@@ -193,8 +193,8 @@ void UIHOOK _uigetcursor( ORD *row, ORD *col, CURSOR_TYPE *type, CATTR *attr )
 }
 
 
-void UIHOOK _uisetcursor( ORD row, ORD col, CURSOR_TYPE typ, CATTR attr )
-/***********************************************************************/
+void UIHOOK _uisetcursor( CURSORORD row, CURSORORD col, CURSOR_TYPE typ, CATTR attr )
+/***********************************************************************************/
 {
     if( ( typ != UIData->cursor_type ) ||
         ( row != UIData->cursor_row ) ||

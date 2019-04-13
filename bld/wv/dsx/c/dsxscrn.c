@@ -72,8 +72,8 @@ extern gui_window_styles        WndStyle;
 static flip_types               FlipMech;
 static mode_types               ScrnMode;
 static rm_call_struct           CallStruct;
-static unsigned char            OldRow;
-static unsigned char            OldCol;
+static CURSORORD                OldRow;
+static CURSORORD                OldCol;
 static CURSOR_TYPE              OldTyp;
 static bool                     OnAlt;
 static screen_info              StartScrn;
@@ -1127,14 +1127,14 @@ void FiniScreen( void )
  *                                                                           *
 \*****************************************************************************/
 
-void uiinitcursor( void )
+void UIHOOK uiinitcursor( void )
 {
     if( FlipMech != FLIP_TWO ) {
         _uiinitcursor();
     }
 }
 
-void uisetcursor( ORD row, ORD col, CURSOR_TYPE typ, int attr )
+void UIHOOK uisetcursor( CURSORORD row, CURSORORD col, CURSOR_TYPE typ, int attr )
 {
     uint_16     bios_cur_pos;
 
@@ -1158,7 +1158,7 @@ void uisetcursor( ORD row, ORD col, CURSOR_TYPE typ, int attr )
     }
 }
 
-void uioffcursor( void )
+void UIHOOK uioffcursor( void )
 {
     if( FlipMech != FLIP_TWO ) {
         _uioffcursor();
@@ -1168,21 +1168,21 @@ void uioffcursor( void )
     }
 }
 
-void uiswapcursor( void )
+void UIHOOK uiswapcursor( void )
 {
     if( FlipMech != FLIP_TWO ) {
         _uiswapcursor();
     }
 }
 
-void uifinicursor( void )
+void UIHOOK uifinicursor( void )
 {
     if( FlipMech != FLIP_TWO ) {
         _uifinicursor();
     }
 }
 
-void uirefresh( void )
+void UIAPI uirefresh( void )
 {
     if( ScrnState & DBG_SCRN_ACTIVE ) {
         _uirefresh();

@@ -476,6 +476,9 @@ typedef unsigned char   ORD;
 typedef unsigned short  MOUSEORD;
 typedef unsigned long   MOUSETIME;
 
+typedef signed short  	CURSORORD;
+#define CURSOR_INVALID  ((CURSORORD)-1)
+
 typedef unsigned short  uisize;
 
 typedef struct sarea {
@@ -618,8 +621,8 @@ typedef struct monitor {
     unsigned        mouse_clk_delay;    /* double click delay               */
     unsigned        tick_delay;         /* clock tick delay                 */
     CATTR           cursor_attr;        /* cursor attribute                 */
-    ORD             cursor_row;         /* cursor row                       */
-    ORD             cursor_col;         /* cursor column                    */
+    CURSORORD       cursor_row;         /* cursor row                       */
+    CURSORORD       cursor_col;         /* cursor column                    */
     CURSOR_TYPE     cursor_type;        /* cursor type                      */
     UI_WINDOW       blank;              /* blank window                     */
     BUFFER          screen;             /* screen                           */
@@ -800,7 +803,7 @@ extern LP_PIXEL         UIAPI dos_uishadowbuffer( LP_PIXEL vbuff );
 extern void             UIAPI win_uisetmono( void );
 extern void             UIAPI win_uisetcolor( int clr );
 
-extern void             (UICALLBACK __loadds __far win_uihookrtn)( unsigned event, unsigned info );
+extern void             __loadds __far win_uihookrtn( unsigned event, unsigned info );
 #pragma aux win_uihookrtn __parm [__ax] [__cx]
 
 #elif defined( __RDOS__ )

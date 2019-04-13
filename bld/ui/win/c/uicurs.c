@@ -96,7 +96,8 @@ unsigned        VIDPort = VIDMONOINDXREG;
 static unsigned RegCur;
 static unsigned InsCur;
 
-static char         OldRow, OldCol;
+static CURSORORD    OldRow;
+static CURSORORD    OldCol;
 static CURSOR_TYPE  OldTyp;
 
 void uiinitcursor( void )
@@ -110,7 +111,7 @@ void uiinitcursor( void )
     InsCur = ( ((RegCur + 0x100) >> 1 & 0xFF00) + 0x100 ) | ( RegCur & 0x00FF );
 }
 
-void uisetcursor( ORD row, ORD col, CURSOR_TYPE typ, CATTR attr )
+void uisetcursor( CURSORORD row, CURSORORD col, CURSOR_TYPE typ, CATTR attr )
 {
     /* unused parameters */ (void)attr;
 

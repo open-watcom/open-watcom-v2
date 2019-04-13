@@ -37,6 +37,7 @@
 #include "biosui.h"
 #include "uiwin.h"
 #include <windows.h>
+#include "setevent.h"
 
 
 #define PICK_ONE(x) PickOne( EV_ALT_##x, EV_CTRL_##x, EV_SHIFT_##x, EV_##x )
@@ -345,12 +346,10 @@ void HookOutQueue( void )
 }
 #endif
 
-extern void __far __pascal SetEventHook( LPVOID );
-
 bool intern initkeyboard( void )
 /******************************/
 {
-    SetEventHook( &win_uihookrtn );
+    SetEventHook( win_uihookrtn );
     return( false );
 }
 

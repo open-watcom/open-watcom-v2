@@ -47,8 +47,8 @@
 #define END_NORMAL_CURSOR   14
 
 static CATTR            OldCursorAttr;
-static WORD             OldCursorRow;
-static WORD             OldCursorCol;
+static CURSORORD        OldCursorRow;
+static CURSORORD        OldCursorCol;
 static CURSOR_TYPE      OldCursorType;
 
 void UIHOOK uioffcursor( void )
@@ -100,21 +100,16 @@ void intern newcursor( void )
     }
 }
 
-void UIHOOK uigetcursor( ORD *row, ORD *col, CURSOR_TYPE *type, CATTR *attr )
-/***************************************************************************/
+void UIHOOK uigetcursor( CURSORORD *row, CURSORORD *col, CURSOR_TYPE *type, CATTR *attr )
+/***************************************************************************************/
 {
     BYTE startline;
     BYTE endline;
 
-    WORD roww, colw;
-
     /* unused parameters */ (void)attr;
 
-    colw = wherex();
-    roww = wherey();
-
-    *row = roww;
-    *col = colw;
+    *row = wherey();
+    *col = wherex();
 
     GetCursorShape( &startline, &endline );
 
@@ -131,8 +126,8 @@ void UIHOOK uigetcursor( ORD *row, ORD *col, CURSOR_TYPE *type, CATTR *attr )
     //NYI:  Read the attribute
 }
 
-void UIHOOK uisetcursor( ORD row, ORD col, CURSOR_TYPE typ, CATTR attr )
-/**********************************************************************/
+void UIHOOK uisetcursor( CURSORORD row, CURSORORD col, CURSOR_TYPE typ, CATTR attr )
+/**********************************************************************************/
 {
     if( ( typ != UIData->cursor_type ) || ( row != UIData->cursor_row ) ||
         ( col != UIData->cursor_col ) || ( attr != UIData->cursor_attr ) ) {

@@ -53,7 +53,8 @@ bool    TermKeyboardHit( void )
 {
     CATTR           attr;
     CURSOR_TYPE     type;
-    unsigned char   row, col;
+    CURSORORD       row;
+    CURSORORD       col;
 
     _uigetcursor( &row, &col, &type, &attr );
     _uisetcursor( row, col, C_NORMAL, attr );
@@ -61,7 +62,7 @@ bool    TermKeyboardHit( void )
     return( _uiwaitkeyb( 0, 0 ) != 0 );
 }
 
-void TermGetCursor( ORD *row, ORD *col )
+void TermGetCursor( CURSORORD *row, CURSORORD *col )
 {
     CATTR           attr;
     CURSOR_TYPE     type;
@@ -69,12 +70,12 @@ void TermGetCursor( ORD *row, ORD *col )
     _uigetcursor( row, col, &type, &attr );
 }
 
-void TermSetCursor( ORD row, ORD col )
+void TermSetCursor( CURSORORD row, CURSORORD col )
 {
     CATTR           attr;
     CURSOR_TYPE     type;
-    ORD             oldrow;
-    ORD             oldcol;
+    CURSORORD       oldrow;
+    CURSORORD       oldcol;
 
     _uigetcursor( &oldrow, &oldcol, &type, &attr );
     _uisetcursor( row, col, type, attr );

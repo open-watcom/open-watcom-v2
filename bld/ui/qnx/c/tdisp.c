@@ -1562,8 +1562,8 @@ QNXDebugPrintf2( "colour[%d, %d]\n", _attr_fore( nval ), _attr_back( nval ) );
     return( nattr );
 }
 
-static int td_getcur( ORD *row, ORD *col, CURSOR_TYPE *type, CATTR *attr )
-/************************************************************************/
+static int UIHOOK td_getcur( CURSORORD *row, CURSORORD *col, CURSOR_TYPE *type, CATTR *attr )
+/*******************************************************************************************/
 {
     *row = UIData->cursor_row;
     *col = UIData->cursor_col;
@@ -1572,8 +1572,8 @@ static int td_getcur( ORD *row, ORD *col, CURSOR_TYPE *type, CATTR *attr )
     return( 0 );
 }
 
-static int td_setcur( ORD row, ORD col, CURSOR_TYPE typ, CATTR attr )
-/*******************************************************************/
+static int UIHOOK td_setcur( CURSORORD row, CURSORORD col, CURSOR_TYPE typ, CATTR attr )
+/**************************************************************************************/
 {
     /* unused parameters */ (void)attr;
 

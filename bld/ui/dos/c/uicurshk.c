@@ -55,12 +55,12 @@ void UIHOOK uioncursor( void )
     _uioncursor();
 }
 
-void UIHOOK uigetcursor( ORD *row, ORD *col, CURSOR_TYPE *type, CATTR *attr )
+void UIHOOK uigetcursor( CURSORORD *row, CURSORORD *col, CURSOR_TYPE *type, CATTR *attr )
 {
     _uigetcursor( row, col, type, attr );
 }
 
-void UIHOOK uisetcursor( ORD row, ORD col, CURSOR_TYPE typ, CATTR attr )
+void UIHOOK uisetcursor( CURSORORD row, CURSORORD col, CURSOR_TYPE typ, CATTR attr )
 {
     _uisetcursor( row, col, typ, attr );
 }

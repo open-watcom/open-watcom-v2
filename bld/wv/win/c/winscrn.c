@@ -283,7 +283,7 @@ unsigned ConfigScreen( void )
  *                                                                           *
 \*****************************************************************************/
 
-void uirefresh( void )
+void UIAPI uirefresh( void )
 {
     if( ScrnState & DBG_SCRN_ACTIVE ) {
         _uirefresh();

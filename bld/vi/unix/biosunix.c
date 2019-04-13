@@ -54,8 +54,8 @@ void    BIOSSetCursor( unsigned char page, unsigned char row, unsigned char col 
 
 unsigned short BIOSGetCursor( unsigned char page )
 {
-    ORD   row;
-    ORD   col;
+    CURSORORD   row;
+    CURSORORD   col;
 
     /* unused parameters */ (void)page;
 
