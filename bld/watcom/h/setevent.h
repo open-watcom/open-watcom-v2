@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -24,57 +25,27 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  16-bit Windows Event Hook related prototypes
+*                SetEventHook is undocumented entry USER.321
 *
 ****************************************************************************/
 
 
-#include <stddef.h>
-#include <windows.h>
-#include "trptypes.h"
-
-extern TRAPENTRY_FUNC( InputHook );
-extern TRAPENTRY_FUNC( InfoFunction );
-extern TRAPENTRY_FUNC( UnLockInput );
-extern TRAPENTRY_FUNC( SetHardMode );
-extern TRAPENTRY_FUNC( HardModeCheck );
-extern TRAPENTRY_FUNC( GetHwndFunc );
-
-void TRAPENTRY InfoFunction( HWND hwnd )
-{
-    hwnd = hwnd;
-}
-
-void TRAPENTRY InputHook( event_hook_fn *ptr )
-{
-    ptr = ptr;
-}
-
-bool TRAPENTRY HardModeCheck( void )
-{
-    return( false );
-}
 /*
- * GetHwndFunc - inform trap file of gui debugger being used
+ * The handler installed by SetEventHook uses non-standard calling convention.
+ * Arguments are passed in ax and cx, and setting carry flag before exit
+ * may cause the message to be discarded. Also, the routine has to set ds
+ * to the proper value (ie. no multiple instances - but it may not be possible
+ * to register multiple event hooks anyway). See Undocumented Windows.
+ *
+ * #pragma aux event_hook_fn __far __parm [__ax] [__cx] __modify __exact []
+ *
  */
 
-HWND TRAPENTRY GetHwndFunc( void )
-{
-    return( (HWND)NULL );
-}
+#ifdef __WINDOWS__
 
-/*
- * SetHardMode - force hard mode
- */
-void TRAPENTRY SetHardMode( bool force )
-{
-    force=force;
-}
+typedef void __far __loadds event_hook_fn( unsigned, unsigned );
 
-/*
- * UnLockInput - unlock input from the debugger
- */
-void TRAPENTRY UnLockInput( void )
-{
-}
+extern void __far __pascal SetEventHook( event_hook_fn * );
+
+#endif

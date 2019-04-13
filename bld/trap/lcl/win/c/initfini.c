@@ -253,7 +253,7 @@ HWND TRAPENTRY GetHwndFunc( void )
 /*
  * set input hook routine
  */
-void TRAPENTRY InputHook( hook_fn *ptr )
+void TRAPENTRY InputHook( event_hook_fn *ptr )
 {
     HookRtn = ptr;
 }

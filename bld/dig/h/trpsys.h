@@ -58,7 +58,7 @@ extern bool     TrapHardModeRequired;
 extern bool     TrapTellHWND( HWND hwnd );
 extern void     TrapSetHardMode( bool mode );
 extern void     TrapHardModeCheck( void );
-extern void     TrapInputHook( hook_fn * );
+extern void     TrapInputHook( event_hook_fn * );
 extern void     TrapUnLockInput( void );
 
 #endif

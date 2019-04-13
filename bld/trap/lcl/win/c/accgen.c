@@ -43,8 +43,6 @@
 extern void set_carry(void);
 #pragma aux set_carry = 0xf9;
 
-extern void FAR PASCAL SetEventHook( void __far * );
-
 volatile bool HaveKey;
 int _info;
 

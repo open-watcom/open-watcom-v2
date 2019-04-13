@@ -33,6 +33,7 @@
 #define _TRPTYPES_H_INCLUDED
 
 #include "digtypes.h"
+#include "setevent.h"
 
 #if defined( __WINDOWS__ )
     #define     TRAPENTRY   __far __pascal
@@ -109,10 +110,6 @@ typedef struct {
 } in_mx_entry;
 #include "digunpck.h"
 
-#if defined( __WINDOWS__ )
-typedef void __far hook_fn(unsigned, unsigned);
-#endif
-
 #if defined( _M_I86 )
 typedef mx_entry        __far *mx_entry_p;
 typedef in_mx_entry     __far *in_mx_entry_p;
@@ -165,7 +162,7 @@ typedef const trap_requests *trap_load_func( const trap_callbacks *client );
 #elif defined( __WINDOWS__ )
 #define TRAPENTRY_FUNC_InfoFunction(x)  void TRAPENTRY x (HWND)
 #define TRAPENTRY_FUNC_GetHwndFunc(x)   HWND TRAPENTRY x (void)
-#define TRAPENTRY_FUNC_InputHook(x)     void TRAPENTRY x (hook_fn *)
+#define TRAPENTRY_FUNC_InputHook(x)     void TRAPENTRY x (event_hook_fn *)
 #define TRAPENTRY_FUNC_HardModeCheck(x) bool TRAPENTRY x (void)
 #define TRAPENTRY_FUNC_SetHardMode(x)   void TRAPENTRY x (bool)
 #define TRAPENTRY_FUNC_UnLockInput(x)   void TRAPENTRY x (void)

@@ -62,7 +62,7 @@ bool                    InSoftMode;
 WORD                    CSAlias;
 WORD                    SegmentToAccess;
 BOOL                    PendingTrap;
-hook_fn                 *HookRtn;
+event_hook_fn           *HookRtn;
 bool                    HardModeRequired;
 bool                    ForceHardMode;
 BOOL                    InputLocked;
