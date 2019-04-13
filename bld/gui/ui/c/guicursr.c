@@ -53,8 +53,8 @@ bool GUISetCursorPos( gui_window *wnd, gui_point *point )
         }
         if( ( pt.x >= 0 ) && ( pt.y >= 0 ) && ( pt.y < wnd->use.height ) &&
             ( pt.x < ( wnd->use.width  ) ) ) {
-            wnd->screen.row = pt.y + wnd->use.row;
-            wnd->screen.col = pt.x + wnd->use.col;
+            wnd->screen.cursor_row = pt.y + wnd->use.row;
+            wnd->screen.cursor_col = pt.x + wnd->use.col;
             return( GUISetCursor( wnd ) );
         }
     }
@@ -66,8 +66,8 @@ bool GUIGetCursorPos( gui_window *wnd, gui_point *point )
     if( ( point == NULL ) || (wnd->style & GUI_CURSOR) == 0 ) {
         return( false );
     }
-    point->x = wnd->screen.col - wnd->use.col;
-    point->y = wnd->screen.row - wnd->use.col;
+    point->x = wnd->screen.cursor_col - wnd->use.col;
+    point->y = wnd->screen.cursor_row - wnd->use.col;
     if( ( wnd->hgadget != NULL ) && !GUI_HSCROLL_EVENTS_SET( wnd ) ) {
         point->x += wnd->hgadget->pos;
     }
@@ -83,7 +83,7 @@ bool GUIGetCursorType( gui_window *wnd, gui_char_cursor *cursor )
     if( (wnd->style & GUI_CURSOR) == 0 || ( cursor == NULL ) ) {
         return( false );
     }
-    switch( wnd->screen.cursor ) {
+    switch( wnd->screen.cursor_type ) {
     case C_OFF :
         *cursor = GUI_NO_CURSOR;
         break;
@@ -116,6 +116,6 @@ bool GUISetCursorType( gui_window *wnd, gui_char_cursor cursor )
     default :
         return( false );
     }
-    wnd->screen.cursor = type;
+    wnd->screen.cursor_type = type;
     return( GUISetCursor( wnd ) );
 }

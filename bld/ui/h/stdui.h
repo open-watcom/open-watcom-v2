@@ -476,7 +476,7 @@ typedef unsigned char   ORD;
 typedef unsigned short  MOUSEORD;
 typedef unsigned long   MOUSETIME;
 
-typedef signed short  	CURSORORD;
+typedef signed short    CURSORORD;
 #define CURSOR_INVALID  ((CURSORORD)-1)
 
 typedef unsigned short  uisize;
@@ -600,9 +600,9 @@ typedef struct vscreen {
     const char      _FARD *title;       /* title of virtual screen          */
     SAREA           area;               /* position on physical screen      */
     screen_flags    flags;              /* dialogue, unframed, movable etc. */
-    ORD             row;                /* position of cursor on the screen */
-    ORD             col;                /* position of cursor on the screen */
-    CURSOR_TYPE     cursor;             /* cursor type                      */
+    CURSORORD       cursor_row;         /* position of cursor on the screen */
+    CURSORORD       cursor_col;         /* position of cursor on the screen */
+    CURSOR_TYPE     cursor_type;        /* cursor type                      */
     bool            open;               /* bool: init to false, set by ui   */
     bool            dynamic_title;      /* title is allocated dynamicaly    */
     UI_WINDOW       window;             /* used by the window manager       */
@@ -683,7 +683,7 @@ extern void             UIAPI uiblankscreen( void );
 extern void             UIAPI uiblankattr( ATTR );
 extern void             UIAPI uicntrtext( VSCREEN _FARD *, SAREA *, ATTR, unsigned, const char * );
 extern bool             UIAPI uiconfig( char *, char ** );
-extern void             UIAPI uicursor( VSCREEN _FARD *, ORD, ORD, CURSOR_TYPE );
+extern void             UIAPI uicursor( VSCREEN _FARD *, CURSORORD, CURSORORD, CURSOR_TYPE );
 extern ui_event         UIAPI uidialogevent( VSCREEN _FARD * );
 extern void             UIAPI uidirty( SAREA );
 extern void             UIAPI uidrawbox( VSCREEN _FARD *, SAREA *area, ATTR attr, const char * );

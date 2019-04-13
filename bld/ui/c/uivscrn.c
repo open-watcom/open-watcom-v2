@@ -77,9 +77,9 @@ void UIAPI uivsetcursor( VSCREEN *vptr )
     ORD             col;
 
     if( vptr != NULL ) {
-        row = vptr->area.row + vptr->row;
-        col = vptr->area.col + vptr->col;
-        uisetcursor( row, col, vptr->cursor, CATTR_VOFF );
+        row = vptr->area.row + vptr->cursor_row;
+        col = vptr->area.col + vptr->cursor_col;
+        uisetcursor( row, col, vptr->cursor_type, CATTR_VOFF );
     } else {
         uioffcursor();
     }

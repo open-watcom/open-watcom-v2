@@ -293,7 +293,9 @@ static int cd_update( SAREA *area )
 {
     unsigned short  offset; /* pixel offset into buffer to begin update at */
     unsigned short  count;  /* number of pixels to update */
-    int     row, col, type, i;
+    CURSORORD       row;
+    CURSORORD       col;
+    int             type, i;
 
     row = UIData->cursor_row;
     col = UIData->cursor_col;

@@ -930,20 +930,20 @@ static void putline( char *buffer, int line )
     int                 i;
     int                 start;
 
-    helpScreen.col = 0;
+    helpScreen.cursor_col = 0;
     i = 0;
-    while( buffer[i] && helpScreen.col < helpScreen.area.width ) {
+    while( buffer[i] && helpScreen.cursor_col < helpScreen.area.width ) {
         start = i;
         while( buffer[i] && buffer[i] != HELP_ESCAPE &&
-               helpScreen.col+i-start<=helpScreen.area.width ) {
+               helpScreen.cursor_col + i - start <= helpScreen.area.width ) {
             if( (unsigned char)buffer[i] == 0xFF )
                 buffer[i] = 0x20;
             ++i;
         }
         if( i - start > 0 ) {
-            uivtextput( &helpScreen, line, helpScreen.col, currentAttr, &buffer[start], i - start );
+            uivtextput( &helpScreen, line, helpScreen.cursor_col, currentAttr, &buffer[start], i - start );
         }
-        helpScreen.col += i-start;
+        helpScreen.cursor_col += i - start;
         if( buffer[i] == HELP_ESCAPE ) {
             switch( buffer[i+1] ) {
             case H_UNDERLINE:

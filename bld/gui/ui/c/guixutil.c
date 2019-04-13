@@ -92,7 +92,7 @@ bool GUISetupStruct( gui_window *wnd, gui_create_info *dlg_info, bool dialog )
         }
     }
     if( wnd->style & GUI_CURSOR ) {
-        wnd->screen.cursor = C_NORMAL;
+        wnd->screen.cursor_type = C_NORMAL;
         GUISetCursor( wnd );
     }
     return( GUISetColours( wnd, dlg_info->colours.num_items, dlg_info->colours.colour ) );
@@ -427,7 +427,7 @@ bool GUISetCursor( gui_window *wnd )
         if( GUI_WND_MINIMIZED( wnd ) ) {
             uinocursor( &wnd->screen );
         } else {
-            uicursor( &wnd->screen, wnd->screen.row, wnd->screen.col, wnd->screen.cursor );
+            uicursor( &wnd->screen, wnd->screen.cursor_row, wnd->screen.cursor_col, wnd->screen.cursor_type );
             return( true );
         }
     }

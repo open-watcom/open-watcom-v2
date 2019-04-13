@@ -199,7 +199,7 @@ void GUIXSetupWnd( gui_window *wnd )
 {
     wnd->screen.event = EV_NO_EVENT;
     wnd->screen.flags = V_UNFRAMED | V_GUI_WINDOW;
-    wnd->screen.cursor = C_OFF;
+    wnd->screen.cursor_type = C_OFF;
     wnd->flags = CHECK_CHILDREN_ON_RESIZE;
     wnd->background = ' ';
 }
