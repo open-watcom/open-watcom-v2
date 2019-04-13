@@ -1134,27 +1134,27 @@ void UIHOOK uiinitcursor( void )
     }
 }
 
-void UIHOOK uisetcursor( CURSORORD row, CURSORORD col, CURSOR_TYPE typ, int attr )
+void UIHOOK uisetcursor( CURSORORD crow, CURSORORD ccol, CURSOR_TYPE ctype, CATTR cattr )
 {
     uint_16     bios_cur_pos;
 
     if( FlipMech != FLIP_TWO ) {
-        _uisetcursor( row, col, typ, attr );
-    } else if( typ == C_OFF ) {
+        _uisetcursor( crow, ccol, ctype, cattr );
+    } else if( ctype == C_OFF ) {
         uioffcursor();
     } else if( VIDPort != 0 && (ScrnState & DBG_SCRN_ACTIVE)
-      && ( ( row != OldRow ) || ( col != OldCol ) || ( typ != OldTyp ) ) ) {
-        OldTyp = typ;
-        OldRow = row;
-        OldCol = col;
+      && ( ( crow != OldRow ) || ( ccol != OldCol ) || ( ctype != OldTyp ) ) ) {
+        OldTyp = ctype;
+        OldRow = crow;
+        OldCol = ccol;
         bios_cur_pos = BD_CURPOS;
         if( FlipMech == FLIP_PAGE ) {
             bios_cur_pos += 2;
         }
         BIOSData( bios_cur_pos + 0, unsigned char ) = OldCol;
         BIOSData( bios_cur_pos + 1, unsigned char ) = OldRow;
-        VIDSetPos( VIDPort, CurOffst + row * UIData->width + col );
-        VIDSetCurTyp( VIDPort, ( typ == C_INSERT ) ? InsCur : RegCur );
+        VIDSetPos( VIDPort, CurOffst + crow * UIData->width + ccol );
+        VIDSetCurTyp( VIDPort, ( ctype == C_INSERT ) ? InsCur : RegCur );
     }
 }
 
@@ -1198,7 +1198,7 @@ void SetNumLines( int num )
 
 void SetNumColumns( int num )
 {
-    num=num;
+    /* unused parameters */ (void)num;
 }
 
 static void GetLines( void )

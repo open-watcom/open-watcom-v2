@@ -25,27 +25,9 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  16-bit Windows Keyboard Event Hook function declaration
 *
 ****************************************************************************/
 
 
-#ifndef _UIEXTRN_H_INCLUDED
-#define _UIEXTRN_H_INCLUDED
-
-extern int              UIConHandle;
-#ifndef __QNX__
-extern FILE             *UIConFile;
-#endif
-
-extern char             *GetTermType( void );
-extern void             SetTermType( const char * );
-#ifndef __QNX__
-extern void             TermRefresh( SAREA *area );
-extern bool             TermKeyboardHit( void );
-extern void             TermGetCursor( CURSORORD *crow, CURSORORD *ccol );
-extern void             TermSetCursor( CURSORORD crow, CURSORORD ccol );
-#endif
-
-#endif
+extern event_hook_fn    win_uihookrtn;

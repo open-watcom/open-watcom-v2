@@ -804,9 +804,6 @@ extern LP_PIXEL         UIAPI dos_uishadowbuffer( LP_PIXEL vbuff );
 extern void             UIAPI win_uisetmono( void );
 extern void             UIAPI win_uisetcolor( int clr );
 
-extern void             __loadds __far win_uihookrtn( unsigned event, unsigned info );
-#pragma aux win_uihookrtn __parm [__ax] [__cx]
-
 #elif defined( __RDOS__ )
 
 typedef void            (UICALLBACK rdos_uitimer_callback)( void );

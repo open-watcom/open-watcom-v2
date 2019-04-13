@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2017-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -441,8 +441,8 @@ static void TI_REPEAT_CHAR( char c, int n, bool a, ORD x )
     }
 }
 
-int     OldCol= -1,
-        OldRow= -1;
+int   OldCol = -1;
+int   OldRow = -1;
 
 // This macro will pick method "x" for axis "a" if method "x" is faster
 // and usable (ie: less chars, but not zero chars)

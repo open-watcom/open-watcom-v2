@@ -37,14 +37,12 @@
  * may cause the message to be discarded. Also, the routine has to set ds
  * to the proper value (ie. no multiple instances - but it may not be possible
  * to register multiple event hooks anyway). See Undocumented Windows.
- *
- * #pragma aux event_hook_fn __far __parm [__ax] [__cx] __modify __exact []
- *
  */
 
 #ifdef __WINDOWS__
 
 typedef void __far __loadds event_hook_fn( unsigned, unsigned );
+#pragma aux event_hook_fn __parm [__ax] [__cx]
 
 extern void __far __pascal SetEventHook( event_hook_fn * );
 

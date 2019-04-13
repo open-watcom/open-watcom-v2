@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -77,9 +78,6 @@ static bool initmonitor( void )
     return( true );
 }
 
-
-//static void (__far __pascal *HookFunc)(void __far *) = NULL;
-extern void __far HookRtn( unsigned , unsigned );
 
 bool intern initbios( void )
 /**************************/
