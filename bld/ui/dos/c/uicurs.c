@@ -165,8 +165,8 @@ static void swapcursor( void )
 }
 
 
-void UIHOOK _uigetcursor( CURSORORD *row, CURSORORD *col, CURSOR_TYPE *type, CATTR *attr )
-/****************************************************************************************/
+void UIHOOK _uigetcursor( CURSORORD *crow, CURSORORD *ccol, CURSOR_TYPE *ctype, CATTR *cattr )
+/********************************************************************************************/
 {
     union REGS      r;
 
@@ -176,35 +176,35 @@ void UIHOOK _uigetcursor( CURSORORD *row, CURSORORD *col, CURSOR_TYPE *type, CAT
     /* read OldCursor position */
     r.h.ah = 3;
     intx86( BIOS_VIDEO, &r, &r );
-    *row = r.h.dh;
-    *col = r.h.dl;
+    *crow = r.h.dh;
+    *ccol = r.h.dl;
     if( r.h.cl > r.h.ch + 1 ) {
-        *type = C_INSERT;
+        *ctype = C_INSERT;
     } else {
-        *type = C_NORMAL;
+        *ctype = C_NORMAL;
     }
     if( !UIData->cursor_on ) {
-        *type = C_OFF;
+        *ctype = C_OFF;
     }
     /* read character and attribute */
     r.h.ah = 8;
     intx86( BIOS_VIDEO, &r, &r );
-    *attr = r.h.ah;
+    *cattr = r.h.ah;
 }
 
 
-void UIHOOK _uisetcursor( CURSORORD row, CURSORORD col, CURSOR_TYPE typ, CATTR attr )
-/***********************************************************************************/
+void UIHOOK _uisetcursor( CURSORORD crow, CURSORORD ccol, CURSOR_TYPE ctyp, CATTR cattr )
+/***************************************************************************************/
 {
-    if( ( typ != UIData->cursor_type ) ||
-        ( row != UIData->cursor_row ) ||
-        ( col != UIData->cursor_col ) ||
-        ( attr != UIData->cursor_attr ) ) {
-        UIData->cursor_type = typ;
-        UIData->cursor_row = row;
-        UIData->cursor_col = col;
-        if( attr != CATTR_OFF ) {
-            UIData->cursor_attr = attr;
+    if( ( ctyp != UIData->cursor_type ) ||
+        ( crow != UIData->cursor_row ) ||
+        ( ccol != UIData->cursor_col ) ||
+        ( cattr != UIData->cursor_attr ) ) {
+        UIData->cursor_type = ctyp;
+        UIData->cursor_row = crow;
+        UIData->cursor_col = ccol;
+        if( cattr != CATTR_OFF ) {
+            UIData->cursor_attr = cattr;
         }
         newcursor();
     }

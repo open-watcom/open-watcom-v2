@@ -41,8 +41,8 @@ extern void     UIHOOK uiinitcursor( void );
 extern void     UIHOOK uifinicursor( void );
 extern void     UIHOOK uioncursor( void );
 extern void     UIHOOK uioffcursor( void );
-extern void     UIHOOK uigetcursor( CURSORORD *row, CURSORORD *col, CURSOR_TYPE *type, CATTR *attr );
-extern void     UIHOOK uisetcursor( CURSORORD row, CURSORORD col, CURSOR_TYPE typ, CATTR attr );
+extern void     UIHOOK uigetcursor( CURSORORD *crow, CURSORORD *ccol, CURSOR_TYPE *ctype, CATTR *cattr );
+extern void     UIHOOK uisetcursor( CURSORORD crow, CURSORORD ccol, CURSOR_TYPE ctype, CATTR cattr );
 extern void     UIHOOK uiswapcursor( void );
 
 #ifndef UIVIRTS
@@ -51,8 +51,8 @@ extern void     UIHOOK _uiinitcursor( void );
 extern void     UIHOOK _uifinicursor( void );
 extern void     UIHOOK _uioncursor( void );
 extern void     UIHOOK _uioffcursor( void );
-extern void     UIHOOK _uigetcursor( CURSORORD *row, CURSORORD *col, CURSOR_TYPE *typ, CATTR *attr );
-extern void     UIHOOK _uisetcursor( CURSORORD row, CURSORORD col, CURSOR_TYPE typ, CATTR attr );
+extern void     UIHOOK _uigetcursor( CURSORORD *crow, CURSORORD *ccol, CURSOR_TYPE *ctype, CATTR *cattr );
+extern void     UIHOOK _uisetcursor( CURSORORD crow, CURSORORD ccol, CURSOR_TYPE ctype, CATTR cattr );
 extern void     UIHOOK _uiswapcursor( void );
 
 #endif

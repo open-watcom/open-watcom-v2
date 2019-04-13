@@ -50,8 +50,8 @@ typedef struct Display {
     int         (*update)(SAREA *area);     /* change screen */
     int         (*refresh)(bool noopt);     /* force redraw of screen */
     /*- cursor */
-    int         UIHOOK (*getcur)(CURSORORD *row, CURSORORD *col, CURSOR_TYPE *type, CATTR *attr);
-    int         UIHOOK (*setcur)(CURSORORD row, CURSORORD col, CURSOR_TYPE type, CATTR attr);
+    int         UIHOOK (*getcur)(CURSORORD *crow, CURSORORD *ccol, CURSOR_TYPE *ctype, CATTR *cattr);
+    int         UIHOOK (*setcur)(CURSORORD crow, CURSORORD ccol, CURSOR_TYPE ctype, CATTR cattr);
     ui_event    (*event)( void );
 } Display;
 

@@ -51,34 +51,34 @@ void    TermRefresh( SAREA *area )
 
 bool    TermKeyboardHit( void )
 {
-    CATTR           attr;
-    CURSOR_TYPE     type;
-    CURSORORD       row;
-    CURSORORD       col;
+    CATTR           cattr;
+    CURSOR_TYPE     ctype;
+    CURSORORD       crow;
+    CURSORORD       ccol;
 
-    _uigetcursor( &row, &col, &type, &attr );
-    _uisetcursor( row, col, C_NORMAL, attr );
+    _uigetcursor( &crow, &ccol, &ctype, &cattr );
+    _uisetcursor( crow, ccol, C_NORMAL, cattr );
     _ui_refresh( 0 );
     return( _uiwaitkeyb( 0, 0 ) != 0 );
 }
 
-void TermGetCursor( CURSORORD *row, CURSORORD *col )
+void TermGetCursor( CURSORORD *crow, CURSORORD *ccol )
 {
-    CATTR           attr;
-    CURSOR_TYPE     type;
+    CATTR           cattr;
+    CURSOR_TYPE     ctype;
 
-    _uigetcursor( row, col, &type, &attr );
+    _uigetcursor( crow, ccol, &ctype, &cattr );
 }
 
-void TermSetCursor( CURSORORD row, CURSORORD col )
+void TermSetCursor( CURSORORD crow, CURSORORD ccol )
 {
-    CATTR           attr;
-    CURSOR_TYPE     type;
+    CATTR           cattr;
+    CURSOR_TYPE     ctype;
     CURSORORD       oldrow;
     CURSORORD       oldcol;
 
-    _uigetcursor( &oldrow, &oldcol, &type, &attr );
-    _uisetcursor( row, col, type, attr );
+    _uigetcursor( &oldrow, &oldcol, &ctype, &cattr );
+    _uisetcursor( crow, ccol, ctype, cattr );
 }
 
 #endif

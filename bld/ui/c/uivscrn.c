@@ -73,8 +73,8 @@ void UIAPI uivsetactive( VSCREEN *vptr )
 void UIAPI uivsetcursor( VSCREEN *vptr )
 /**************************************/
 {
-    ORD             row;
-    ORD             col;
+    CURSORORD       row;
+    CURSORORD       col;
 
     if( vptr != NULL ) {
         row = vptr->area.row + vptr->cursor_row;

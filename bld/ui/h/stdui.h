@@ -492,6 +492,7 @@ typedef unsigned char   ATTR;           /* character attributes type */
 typedef int             CATTR;          /* cursor attributes type */
 #define CATTR_VOFF      ((CATTR)(-2))   /* cursor attribute OFF virtual window */
 #define CATTR_OFF       ((CATTR)(-1))   /* cursor attribute OFF global */
+#define CATTR_NONE      0
 
 #define iseditchar( ev )        ( ( ev >= EV_FIRST_EDIT_CHAR ) && ( ev <= EV_LAST_EDIT_CHAR ) )
 #define iskeyboardchar( ev )    ( ( ev >= EV_FIRST_EVENT ) && ( ev <= EV_LAST_KEYBOARD ) )

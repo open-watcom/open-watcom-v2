@@ -66,9 +66,9 @@ void UIHOOK uioncursor( void )
 static void savecursor( void )
 /****************************/
 {
-    CATTR   dummy;
+    CATTR   cattr;
 
-    _uigetcursor( &OldCursorRow, &OldCursorCol, &OldCursorType, &dummy );
+    _uigetcursor( &OldCursorRow, &OldCursorCol, &OldCursorType, &cattr );
     UIData->cursor_on = true;
 }
 
@@ -94,17 +94,17 @@ static void swapcursor( void )
 }
 
 
-void UIHOOK uigetcursor( CURSORORD *row, CURSORORD *col, CURSOR_TYPE *type, CATTR *attr )
-/***************************************************************************************/
+void UIHOOK uigetcursor( CURSORORD *crow, CURSORORD *ccol, CURSOR_TYPE *ctype, CATTR *cattr )
+/*******************************************************************************************/
 {
-    _uigetcursor( row, col, type, attr );
+    _uigetcursor( crow, ccol, ctype, cattr );
 }
 
 
-void UIHOOK uisetcursor( CURSORORD row, CURSORORD col, CURSOR_TYPE typ, CATTR attr )
-/**********************************************************************************/
+void UIHOOK uisetcursor( CURSORORD crow, CURSORORD ccol, CURSOR_TYPE ctype, CATTR cattr )
+/***************************************************************************************/
 {
-    _uisetcursor( row, col, typ, attr );
+    _uisetcursor( crow, ccol, ctype, cattr );
 }
 
 
@@ -123,7 +123,7 @@ void UIHOOK uiinitcursor( void )
     UIData->cursor_col = CURSOR_INVALID;
     UIData->cursor_type = C_OFF;
     savecursor();
-    _uisetcursor( OldCursorRow, OldCursorCol, OldCursorType, 0 );
+    _uisetcursor( OldCursorRow, OldCursorCol, OldCursorType, CATTR_NONE );
     uioffcursor();
 }
 

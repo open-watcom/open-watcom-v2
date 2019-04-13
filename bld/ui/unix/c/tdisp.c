@@ -1387,27 +1387,27 @@ static int ti_refresh( bool must )
     return( 0 );
 }
 
-static int UIHOOK td_getcur( CURSORORD *row, CURSORORD *col, CURSOR_TYPE *type, CATTR *attr )
-/*******************************************************************************************/
+static int UIHOOK td_getcur( CURSORORD *crow, CURSORORD *ccol, CURSOR_TYPE *ctype, CATTR *cattr )
+/***********************************************************************************************/
 {
-    *row = UIData->cursor_row;
-    *col = UIData->cursor_col;
-    *type = UIData->cursor_type;
-    *attr = 0;
+    *crow = UIData->cursor_row;
+    *ccol = UIData->cursor_col;
+    *ctype = UIData->cursor_type;
+    *cattr = CATTR_NONE;
     return( 0 );
 }
 
-static int UIHOOK td_setcur( CURSORORD row, CURSORORD col, CURSOR_TYPE typ, CATTR attr )
-/**************************************************************************************/
+static int UIHOOK td_setcur( CURSORORD crow, CURSORORD ccol, CURSOR_TYPE ctype, CATTR cattr )
+/*******************************************************************************************/
 {
-    /* unused parameters */ (void)attr;
+    /* unused parameters */ (void)cattr;
 
-    if( ( typ != UIData->cursor_type ) ||
-        ( row != UIData->cursor_row ) ||
-        ( col != UIData->cursor_col ) ) {
-        UIData->cursor_type = typ;
-        UIData->cursor_row = row;
-        UIData->cursor_col = col;
+    if( ( ctype != UIData->cursor_type ) ||
+        ( crow != UIData->cursor_row ) ||
+        ( ccol != UIData->cursor_col ) ) {
+        UIData->cursor_type = ctype;
+        UIData->cursor_row = crow;
+        UIData->cursor_col = ccol;
         newcursor();
         ti_hwcursor();
     }

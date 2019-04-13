@@ -111,20 +111,20 @@ void uiinitcursor( void )
     InsCur = ( ((RegCur + 0x100) >> 1 & 0xFF00) + 0x100 ) | ( RegCur & 0x00FF );
 }
 
-void uisetcursor( CURSORORD row, CURSORORD col, CURSOR_TYPE typ, CATTR attr )
+void uisetcursor( CURSORORD crow, CURSORORD ccol, CURSOR_TYPE ctype, CATTR cattr )
 {
-    /* unused parameters */ (void)attr;
+    /* unused parameters */ (void)cattr;
 
-    if( typ == C_OFF ) {
+    if( ctype == C_OFF ) {
         uioffcursor();
     } else {
-        if( row == OldRow && col == OldCol && typ == OldTyp )
+        if( crow == OldRow && ccol == OldCol && ctype == OldTyp )
             return;
-        OldTyp = typ;
-        OldRow = row;
-        OldCol = col;
-        VIDSetPos( VIDPort, row * UIData->width + col );
-        VIDSetCurTyp( VIDPort, typ == C_INSERT ? InsCur : RegCur );
+        OldTyp = ctype;
+        OldRow = crow;
+        OldCol = ccol;
+        VIDSetPos( VIDPort, crow * UIData->width + ccol );
+        VIDSetCurTyp( VIDPort, ( ctype == C_INSERT ) ? InsCur : RegCur );
     }
 }
 
