@@ -68,6 +68,9 @@ common_cppflags_x64  =
 common_cppflags_nt_386  = -D__NT_386__
 common_cppflags_nt_x64  = -D__NT_X64__
 
+common_cflags_386   =
+common_cflags_x64   =
+
 # common release/debug flags
 !ifdef __INTEL_TOOLS__
 common_flags_rel = -Ox -Zi -fast
@@ -143,7 +146,7 @@ bld_incs = $(bld_extra_incs) -I"$(watcom_dir)/h"
 
 bld_cppflags = $(build_cppflags) $(common_cppflags) $(common_cppflags_$(bld_os)) $(common_cppflags_$(bld_cpu)) $(common_cppflags_$(bld_os)_$(bld_cpu))
 
-bld_cflags   = $(common_cflags) $(common_flags) -Fo$@
+bld_cflags   = $(common_cflags) $(common_cflags_$(bld_cpu)) $(common_flags) -Fo$@
 
 bld_c_flags   =
 bld_cxx_flags = -EHsc
@@ -156,7 +159,7 @@ bld_ldflags  =  -link -nologo &
     $(bld_extra_ldflags) $(bld_ldflags_$(proj_type))
 
 # options for linking via cl
-bld_clflags  = $(bld_cppflags) $(common_cflags) $(common_flags) -Fe$@ $(cl_extra_libs_gen) $(bld_ldflags1)
+bld_clflags  = $(bld_cppflags) $(common_cflags) $(common_cflags_$(bld_cpu)) $(common_flags) -Fe$@ $(cl_extra_libs_gen) $(bld_ldflags1)
 
 bld_libflags = -out:$^@
 
@@ -183,8 +186,8 @@ cppflags_x64 = $(common_cppflags_x64) $(common_cppflags_$(host_os)_x64)
 c_flags   =
 cxx_flags = -EHsc
 
-cflags_gen  = $(bld_cc_sys) $(common_cflags) $(common_flags) -Fo$@
-cflags_dll  = $(bld_cc_sys) $(common_cflags) $(common_flags) $(common_cflags_lib_shared) -Fo$@
+cflags_gen  = $(bld_cc_sys) $(common_cflags) $(common_cflags_$(bld_cpu)) $(common_flags) -Fo$@
+cflags_dll  = $(bld_cc_sys) $(common_cflags) $(common_cflags_$(bld_cpu)) $(common_flags) $(common_cflags_lib_shared) -Fo$@
 cflags_wind = $(cflags_gen)
 
 # options for linking
@@ -278,6 +281,12 @@ common_cppflags_osx_x64     = -D__OSX_X64__
 common_cppflags_osx_ppc     =
 common_cppflags_osx_arm     = -D__OSX_ARM__
 
+common_cflags_386       =
+common_cflags_x64       = -march=core2
+common_cflags_ppc       =
+common_cflags_mps       =
+common_cflags_arm       =
+
 # common release/debug flags
 common_flags_rel = -O -g
 common_flags_dbg = -g
@@ -345,7 +354,7 @@ bld_incs = $(bld_extra_incs) -I"$(watcom_dir)/h"
 
 bld_cppflags = $(build_cppflags) $(common_cppflags) $(common_cppflags_$(bld_os)) $(common_cppflags_$(bld_cpu)) $(common_cppflags_$(bld_os)_$(bld_cpu))
 
-bld_cflags   = $(common_cflags) $(common_flags) -o $@
+bld_cflags   = $(common_cflags) $(common_cflags_$(bld_cpu)) $(common_flags) -o $@
 
 bld_c_flags   =
 bld_cxx_flags = -std=c++98
@@ -379,7 +388,7 @@ bld_ldflags1 = $(common_ldflags) -Wl,-Map,$^&.map
 bld_ldflags  = $(bld_extra_ldflags) $(bld_ldflags_$(proj_type))
 
 # options for linking via cl
-bld_clflags  = $(bld_cppflags) $(common_cflags) $(common_flags) -o $@ $(cl_extra_libs_gen) $(bld_ldflags1)
+bld_clflags  = $(bld_cppflags) $(common_cflags) $(common_cflags_$(bld_cpu)) $(common_flags) -o $@ $(cl_extra_libs_gen) $(bld_ldflags1)
 
 bld_libflags = crs $^@
 
@@ -412,8 +421,8 @@ cppflags_arm    = $(common_cppflags_arm) $(common_cppflags_$(host_os)_arm)
 c_flags   =
 cxx_flags = -std=c++98
 
-cflags_gen  = $(bld_cc_sys) $(common_cflags) $(common_flags) -o $@
-cflags_dll  = $(bld_cc_sys) $(common_cflags) $(common_flags) $(common_cflags_lib_shared) -o $@
+cflags_gen  = $(bld_cc_sys) $(common_cflags) $(common_cflags_$(bld_cpu)) $(common_flags) -o $@
+cflags_dll  = $(bld_cc_sys) $(common_cflags) $(common_cflags_$(bld_cpu)) $(common_flags) $(common_cflags_lib_shared) -o $@
 cflags_wind = $(cflags_gen)
 
 # options for linking
