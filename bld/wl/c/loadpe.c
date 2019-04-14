@@ -196,7 +196,7 @@ static offset CalcIDataSize( void )
     for( mod = PEImpList; mod != NULL; mod = mod->next ) {
         for( imp = mod->imports; imp != NULL; imp = imp->next ) {
             if( imp->imp != NULL ) {
-                size += (size & 1); /* round up */
+                size = MAKE_EVEN( size );
                 size += imp->imp->len + sizeof( unsigned_16 ) + sizeof( unsigned_8 );
             }
         }
@@ -500,7 +500,7 @@ static void WriteIAT( virt_mem buf, offset linear )
     for( mod = PEImpList; mod != NULL; mod = mod->next ) {
         for( imp = mod->imports; imp != NULL; imp = imp->next ) {
             if( imp->imp != NULL ) {
-                hint_rva += (hint_rva & 1); /* round up */
+                hint_rva = MAKE_EVEN( hint_rva );
                 iat = PE_IMPORT_BY_NAME | hint_rva;
                 hint_rva += imp->imp->len + ( sizeof( unsigned_16 ) + sizeof( unsigned_8 ) );
             } else {
@@ -571,14 +571,16 @@ static void WriteImportInfo( void )
         hint = 1;
         for( imp = mod->imports; imp != NULL; imp = imp->next ) {
             if( imp->imp != NULL ) {
-                PutInfoNulls( buf + pos, pos & 1 );
-                pos += pos & 1;/* round up */
+                if( pos & 1 ) {         /* round up */
+                    PutInfoNulls( buf + pos, 1 );
+                    pos++;
+                }
                 PutInfo( buf + pos, &hint, sizeof( hint ) );
                 pos += sizeof( hint );
                 size = imp->imp->len;
                 PutInfo( buf + pos, imp->imp->name.u.ptr, size );
                 pos += size;
-                PutInfoNulls( buf + pos, 1);
+                PutInfoNulls( buf + pos, 1 );
                 pos++;
                 hint++;
             }

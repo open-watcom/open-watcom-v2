@@ -162,9 +162,7 @@ static void *AllocBlock( size_t size, block_data *block )
     void            *ptr;
     size_t          newbrk;
 
-    #define ROUND (sizeof( int ) - 1)
-
-    size = (size + ROUND) & ~ROUND;
+    size = ROUND_UP( size, sizeof( int ) );
     newbrk = block->currbrk + size;
     if( block->list == NULL ) {
         GetNewBlock( block, size );
