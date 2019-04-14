@@ -49,7 +49,7 @@ bool intern isdialogue( VSCREEN *vptr )
 bool intern isscreen( BUFFER * bptr )
 /***********************************/
 {
-#if defined( HAVE_FAR ) && !defined( __UNIX__ )
+#if defined( HAVE_FAR )
     // Short cut when using far pointers. Just check segment:
 
     return( FP_SEG( bptr->origin ) == FP_SEG( UIData->screen.origin ) );

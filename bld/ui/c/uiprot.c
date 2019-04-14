@@ -46,7 +46,7 @@ void UIAPI uiunprotect( VSCREEN *vptr )
         vptr->area.width += 2;
         vptr->flags |= V_UNFRAMED;
         vptr->flags |= V_UNPROTECTED;
-        bunframe( &(vptr->window.type.buffer ) );
+        bunframe( &(vptr->window.buffer) );
     }
 }
 
@@ -61,7 +61,7 @@ void UIAPI uiprotect( VSCREEN *vptr )
         vptr->area.width -= 2;
         vptr->flags &= ~V_UNFRAMED;
         vptr->flags &= ~V_UNPROTECTED;
-        bframe( &(vptr->window.type.buffer ) );
+        bframe( &(vptr->window.buffer) );
     }
 }
 

@@ -50,7 +50,7 @@ static void update( SAREA area, void *_vptr )
     for( row = area.row; row < area.row + area.height; ++row ) {
         vrow = row - (int)vptr->area.row;
         vcol = (int)area.col - (int)vptr->area.col;
-        uibcopy( &(vptr->window.type.buffer), vrow, vcol, &UIData->screen, row, area.col, area.width );
+        uibcopy( &(vptr->window.buffer), vrow, vcol, &UIData->screen, row, area.col, area.width );
     }
 }
 
@@ -96,11 +96,11 @@ VSCREEN* UIAPI uivopen( VSCREEN *vptr )
     }
     if( flags & V_UNBUFFERED ) {
         priority = P_UNBUFFERED;
-        bfake( &(vptr->window.type.buffer), area.row, area.col );
+        bfake( &(vptr->window.buffer), area.row, area.col );
         okbuffer = true;
         updatertn = NULL;
     } else {
-        okbuffer = balloc( &(vptr->window.type.buffer), area.height, area.width );
+        okbuffer = balloc( &(vptr->window.buffer), area.height, area.width );
         updatertn = update;
     }
     if( okbuffer ) {
@@ -113,29 +113,29 @@ VSCREEN* UIAPI uivopen( VSCREEN *vptr )
         if( ISFRAMED( flags ) ) {
             area.row = 0;
             area.col = 0;
-            drawbox( &(vptr->window.type.buffer), area, box, attr, false );
+            drawbox( &(vptr->window.buffer), area, box, attr, false );
             if( vptr->title != NULL ) {
 #if 0
 do not delete this stuff
                 col = 0;
                 len = area.width;
-                bstring( &(vptr->window.type.buffer), 0, col,
+                bstring( &(vptr->window.buffer), 0, col,
                          UIData->attrs[ATTR_CURR_SELECT_DIAL], " ", len );
                 len = strlen( vptr->name );
                 if( len > area.width )
                     len = area.width;
                 col = ( area.width - len ) / 2;
-                bstring( &(vptr->window.type.buffer), 0, col,
+                bstring( &(vptr->window.buffer), 0, col,
                          UIData->attrs[ATTR_CURR_SELECT_DIAL], vptr->name, len );
 #else
                 len = strlen( vptr->title );
                 if( len > area.width )
                     len = area.width;
                 col = ( area.width - len ) / 2;
-                bstring( &(vptr->window.type.buffer), 0, col, attr, vptr->title, len );
+                bstring( &(vptr->window.buffer), 0, col, attr, vptr->title, len );
 #endif
             }
-            bframe( &(vptr->window.type.buffer ) );
+            bframe( &(vptr->window.buffer) );
         }
         area = vptr->area;
         area.row = 0;
@@ -157,9 +157,9 @@ void UIAPI uivclose( VSCREEN *vptr )
         closewindow( &(vptr->window) );
         if( ISBUFFERED( vptr->flags ) ) {
             if( ISFRAMED( vptr->flags ) ) {
-                bunframe( &(vptr->window.type.buffer) );
+                bunframe( &(vptr->window.buffer) );
             }
-            bfree( &(vptr->window.type.buffer) );
+            bfree( &(vptr->window.buffer) );
         }
         vptr->open = false;
     }
@@ -184,9 +184,9 @@ VSCREEN * UIAPI uivresize( VSCREEN *vptr, SAREA new )
     if( vptr->open ) {
         closewindow( wptr );
     }
-    memcpy( &old_buff, &(wptr->type.buffer), sizeof( BUFFER ) );
+    memcpy( &old_buff, &(wptr->buffer), sizeof( BUFFER ) );
     old = vptr->area;
-    if( balloc( &(wptr->type.buffer), new.height, new.width ) ) {
+    if( balloc( &(wptr->buffer), new.height, new.width ) ) {
         vptr->area = new;
         if( ISFRAMED( vptr->flags ) ) {
             (new.row)--;
@@ -204,13 +204,13 @@ VSCREEN * UIAPI uivresize( VSCREEN *vptr, SAREA new )
         if( min_height > old.height )
             min_height = old.height;
         for( i = 0; i < min_height; i++ ) {
-            uibcopy( &(old_buff), i, 0, &(wptr->type.buffer), i, 0, min_width );
+            uibcopy( &(old_buff), i, 0, &(wptr->buffer), i, 0, min_width );
         }
         bfree( &old_buff );
         openwindow( wptr );
         return( vptr );
     } else {
-        memcpy( &(vptr->window.type.buffer), &old_buff, sizeof( BUFFER ) );
+        memcpy( &(vptr->window.buffer), &old_buff, sizeof( BUFFER ) );
         vptr->area = old;
         wptr->area = old;
         openwindow( wptr );

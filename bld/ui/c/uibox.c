@@ -67,7 +67,7 @@ void uidrawbox( VSCREEN *vs, SAREA *area, ATTR attr, const char *title )
     uisize      field_len;
 
     if( area->width > 1 ) {
-        drawbox( &(vs->window.type.buffer), *area, SBOX_CHARS(), attr, false );
+        drawbox( &(vs->window.buffer), *area, SBOX_CHARS(), attr, false );
         if( title != NULL ) {
             field_len = strlen( title );
             if( field_len > area->width - 2 ) {
