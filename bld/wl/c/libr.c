@@ -106,7 +106,7 @@ static int ReadOMFDict( file_list *list, unsigned_8 *header, bool makedict )
         header += sizeof( unsigned_32 );
         omf_dict->pages = _ReadLittleEndian16UN( header );
         header += sizeof( unsigned_16 );
-        if( omf_dict->start == 0 || omf_dict->pages == 0 ) {
+        if( omf_dict->start == 0 || omf_dict->pages == 0 || ( omf_dict->start + omf_dict->pages * DIC_REC_SIZE ) > list->infile->len ) {
             BadLibrary( list );
             return( -1 );
         }
@@ -457,8 +457,8 @@ static void SetDict( file_list *lib, unsigned dict_page )
     unsigned        num_buckets;
     unsigned        residue;
     unsigned        bucket;
-    long   off;
-    long   dictoff;
+    long            off;
+    long            dictoff;
     omf_dict_entry  *dict;
 
     dict = &lib->u.dict->o;
