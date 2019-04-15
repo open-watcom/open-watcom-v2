@@ -31,7 +31,7 @@
 
 
 #include "imgedit.h"
-#include "settings.h"
+#include "settings.rh"
 
 /*
  * FlipImage - flip the image along either the x-axis or the y-axis

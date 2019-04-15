@@ -32,7 +32,7 @@
 
 
 #include "imgedit.h"
-#include "settings.h"
+#include "settings.rh"
 #include "ieprofil.h"
 
 
