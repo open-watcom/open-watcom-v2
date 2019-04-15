@@ -30,6 +30,12 @@
 ****************************************************************************/
 
 
+#if defined( _M_IX86 )
+#define MD_x86
+#elif defined __AXP__
+#define MD_axp
+#endif
+
 #include "drwatcom.h"
 #include <io.h>
 #include <sys/types.h>
@@ -38,6 +44,7 @@
 #include "dip.h"
 #include "dipimp.h"
 #include "dipcli.h"
+#include "madregs.h"
 
 
 /*
@@ -169,7 +176,8 @@ unsigned DIGCLIENTRY( MachineData )( address addr, dig_info_type info_type,
                         dig_elen in_size,  const void *in,
                         dig_elen out_size, void *out )
 {
-    enum x86_addr_characteristics       *a_char;
+#if defined( _M_IX86 )
+    enum x86_addr_characteristics   *a_char;
 
     switch( SysConfig.arch ) {
     case DIG_ARCH_X86:
@@ -177,5 +185,14 @@ unsigned DIGCLIENTRY( MachineData )( address addr, dig_info_type info_type,
         *a_char = X86AC_BIG;
         return( sizeof( *a_char ) );
     }
+#elif defined( __AXP__ )
+  #if 0
+    switch( SysConfig.arch ) {
+    case DIG_ARCH_AXP:
+        memcpy( out, in, sizeof( axp_data ) );
+        return( sizeof( axp_data ) );
+    }
+  #endif
+#endif
     return( 0 );
 }
