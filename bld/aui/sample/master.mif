@@ -22,7 +22,7 @@ rcfiles = &
     $(gui_dir)/h/gui.rc &
     $(aui_dialogs) &
     ../../res/aui.rc &
-    ../h/dlgoptn.h &
+    ../h/dlgoptn.rh &
     ../res/one.bmp &
     ../res/two.bmp &
     ../res/three.bmp &
