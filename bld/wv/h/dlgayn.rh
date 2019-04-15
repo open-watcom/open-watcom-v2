@@ -30,8 +30,8 @@
 ****************************************************************************/
 
 
-#include "dlglist.rh"
+#define DIALOG_AYN 3003
 
-
-extern void DlgList( const char *title, void (*clear)(void), void (*add)(const char *,unsigned),
-                               char_ring *(*next)(char_ring *), char *(*name)(char_ring *) );
+#define CTL_AYN_NO_WAY 102
+#define CTL_AYN_YES 100
+#define CTL_AYN_NO 101

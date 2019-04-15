@@ -30,8 +30,10 @@
 ****************************************************************************/
 
 
-#include "dlglist.rh"
+#define DIALOG_VARX 3008
 
-
-extern void DlgList( const char *title, void (*clear)(void), void (*add)(const char *,unsigned),
-                               char_ring *(*next)(char_ring *), char *(*name)(char_ring *) );
+#define CTL_VARX_START 104
+#define CTL_VARX_END 105
+#define CTL_VARX_OK 100
+#define CTL_VARX_DEFAULTS 102
+#define CTL_VARX_CANCEL 103

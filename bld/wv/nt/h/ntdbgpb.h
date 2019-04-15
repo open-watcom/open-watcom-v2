@@ -24,14 +24,10 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Sybase Power Builder check routines for NT host.
 *
 ****************************************************************************/
 
 
-#include "dlglist.rh"
-
-
-extern void DlgList( const char *title, void (*clear)(void), void (*add)(const char *,unsigned),
-                               char_ring *(*next)(char_ring *), char *(*name)(char_ring *) );
+extern BOOL         CALLBACK FindPidPB( HWND  hwnd, LPARAM  lParam );
+extern const char   *CheckForPowerBuilder( const char *name );

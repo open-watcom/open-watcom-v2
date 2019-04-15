@@ -30,7 +30,7 @@
 ****************************************************************************/
 
 
-#include "rcdef.h"
+#include "rcdef.rh"
 #define G_OPENER                "+"
 #define G_CLOSER                "-"
 #define G_BREAK                 "!"

@@ -24,14 +24,11 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Async program running dialog
 *
 ****************************************************************************/
 
 
-#include "dlglist.rh"
+#define DIALOG_ASYNC_RUN 3012
 
-
-extern void DlgList( const char *title, void (*clear)(void), void (*add)(const char *,unsigned),
-                               char_ring *(*next)(char_ring *), char *(*name)(char_ring *) );
+#define CTL_ASYNC_STOP  101

@@ -36,7 +36,7 @@
 #include "dbgerr.h"
 #include "guidlg.h"
 #include "guipick.h"
-#include "dlgamb.h"
+#include "dlgamb.rh"
 #include "dui.h"
 #include "strutil.h"
 #include "dbgutil.h"

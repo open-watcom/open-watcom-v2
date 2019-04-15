@@ -57,8 +57,6 @@
 #define TstMono()       ChkCntrlr( VIDMONOINDXREG )
 #define TstColour()     ChkCntrlr( VIDCOLRINDXREG )
 
-extern volatile bool    BrkPending;
-
 static bool             WantFast;
 static int              ScrnLines = 25;
 static flip_types       FlipMech;

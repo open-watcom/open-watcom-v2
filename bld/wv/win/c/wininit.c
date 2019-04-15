@@ -40,9 +40,7 @@
 #include "wwindows.h"
 #include "dbgdefn.h"
 #include "dbgwind.h"
-#ifndef __NT__
 #include "tinyio.h"
-#endif
 #include "dbgmem.h"
 #include "autoenv.h"
 #include "strutil.h"
@@ -131,14 +129,8 @@ void SetCmdArgStart( int num, char *ptr )
 
 void KillDebugger( int ret_code )
 {
-#ifdef __NT__
-    ret_code = ret_code;
-    ExitProcess( 0 );
-    // never return
-#else
     TinyExit( ret_code );
     // never return
-#endif
 }
 
 void GrabHandlers( void )

@@ -30,14 +30,6 @@
 ****************************************************************************/
 
 
-#define DIALOG_CMD 3004
+#include "dlgcmd.rh"
 
-#define CTL_CMD_EDIT 102
-#define CTL_CMD_LIST 103
-#define CTL_CMD_OK 100
-#define CTL_CMD_SYMBOL 104
-#define CTL_CMD_CANCEL 101
-
-#ifndef RC
 extern  void    DlgCmd( void );
-#endif

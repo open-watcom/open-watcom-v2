@@ -95,8 +95,6 @@ void TabIntervalSet( int new );
 /******************************************/
 
 
-volatile bool           BrkPending;
-
 static char             *CmdData;
 static bool             Done;
 
@@ -843,9 +841,7 @@ bool DUIScreenOption( const char *start, unsigned len, int pass )
     return( true );
 }
 
-#if defined( __NT__ )
 const char *CheckForPowerBuilder( const char *name )
 {
     return( name );
 }
-#endif

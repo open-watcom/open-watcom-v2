@@ -42,6 +42,9 @@
 #ifndef __NOUI__
 #include "dbgwind.h"
 #endif
+#if !defined( __NOUI__ ) && !defined( GUI_IS_GUI )
+#include "uiextrn.h"
+#endif
 #include "dbgmem.h"
 #include "autoenv.h"
 #include "dbglit.h"
@@ -57,8 +60,6 @@
 
 
 extern void     NewConsoleTitle( void );
-
-extern volatile bool    BrkPending;
 
 static char             *CmdData;
 
@@ -146,11 +147,15 @@ long _fork( const char *cmd, size_t len )
 
 bool TBreak( void )
 {
+#if !defined( __NOUI__ ) && !defined( GUI_IS_GUI )
     bool    ret;
 
     ret = BrkPending;
     BrkPending = false;
     return( ret );
+#else
+    return( false );
+#endif
 }
 
 void PopErrBox( const char *buff )

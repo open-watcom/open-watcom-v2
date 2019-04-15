@@ -44,8 +44,6 @@
 #include "guigsysh.h"
 
 
-volatile bool   BrkPending;
-
 static HWND     HwndFore = NULL;
 static HWND     FirstForeWnd = NULL;
 

@@ -30,8 +30,9 @@
 ****************************************************************************/
 
 
-#include "dlglist.rh"
+#define DIALOG_STACK        3010
+#define DIALOG_HISTORY      3011
 
-
-extern void DlgList( const char *title, void (*clear)(void), void (*add)(const char *,unsigned),
-                               char_ring *(*next)(char_ring *), char *(*name)(char_ring *) );
+#define CTL_STK_YES         100
+#define CTL_STK_NO          101
+#define CTL_STK_CANCEL      102

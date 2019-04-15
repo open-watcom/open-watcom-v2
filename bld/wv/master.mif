@@ -46,11 +46,7 @@ cdir   = $(wv_dir)/c
 hdir   = $(wv_dir)/h
 rdir   = ../../res
 
-!ifeq host_os nt
-sysdir = win
-!else
 sysdir = $(host_os)
-!endif
 
 !ifndef syscdir
 syscdir = ../c
@@ -387,18 +383,18 @@ rcfiles = &
     $(rdir)/dialogs.rc &
     $(rdir)/strings.rc &
     litdef.gh &
-    $(hdir)/dlgamb.h &
-    $(hdir)/dlgayn.h &
-    $(hdir)/dlgstk.h &
-    $(hdir)/dlgbrk.h &
-    $(hdir)/dlgcmd.h &
-    $(hdir)/dlglist.h &
-    $(hdir)/dlgnewp.h &
-    $(hdir)/dlgoptn.h &
-    $(hdir)/dlgvarx.h &
-    $(hdir)/dlgwind.h &
-    $(hdir)/dlgstk.h &
-    $(hdir)/dlgasync.h &
+    $(hdir)/dlgamb.rh &
+    $(hdir)/dlgayn.rh &
+    $(hdir)/dlgstk.rh &
+    $(hdir)/dlgbrk.rh &
+    $(hdir)/dlgcmd.rh &
+    $(hdir)/dlglist.rh &
+    $(hdir)/dlgnewp.rh &
+    $(hdir)/dlgoptn.rh &
+    $(hdir)/dlgvarx.rh &
+    $(hdir)/dlgwind.rh &
+    $(hdir)/dlgstk.rh &
+    $(hdir)/dlgasync.rh &
     $(wv_dialogs)
 
 

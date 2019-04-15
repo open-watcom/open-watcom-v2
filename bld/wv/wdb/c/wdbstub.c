@@ -226,8 +226,6 @@ extern void             ShowCalls( void );
 extern void             ShowVarDisplay( void );
 //extern var_node         *VarGetDisplayPiece( var_info *i, int row, wnd_piece piece, int *pdepth, int *pinherit );
 
-volatile bool           BrkPending;
-
 static char             *CmdData;
 static bool             Done;
 

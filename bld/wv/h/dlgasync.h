@@ -29,11 +29,7 @@
 ****************************************************************************/
 
 
-#define DIALOG_ASYNC_RUN 3012
+#include "dlgasync.rh"
 
-#define CTL_ASYNC_STOP  101
-
-#ifndef RC
 extern void     AsyncNotify( void );
 extern unsigned DlgAsyncRun( void );
-#endif

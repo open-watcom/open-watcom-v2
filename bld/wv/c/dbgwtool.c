@@ -31,7 +31,7 @@
 
 #include "dbgdefn.h"
 #include "dbgwind.h"
-#include "rcdef.h"
+#include "rcdef.rh"
 #include "dbgwtool.h"
 #include "dbginit.h"
 #include "menudef.h"

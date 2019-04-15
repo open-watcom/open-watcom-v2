@@ -30,8 +30,18 @@
 ****************************************************************************/
 
 
-#include "dlglist.rh"
+#include <string.h>
+#include <windows.h>
+#include "dbgdefn.h"
+#include "dbgmem.h"
+#include "envlkup.h"
 
 
-extern void DlgList( const char *title, void (*clear)(void), void (*add)(const char *,unsigned),
-                               char_ring *(*next)(char_ring *), char *(*name)(char_ring *) );
+/*
+ * EnvLkup -- lookup up string in environment area
+ */
+
+size_t EnvLkup( const char *name, char *buff, size_t buff_len )
+{
+    return( GetEnvironmentVariable( name, buff, buff_len ) );
+}

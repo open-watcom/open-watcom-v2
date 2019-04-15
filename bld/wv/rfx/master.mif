@@ -41,7 +41,7 @@ objs += inthdlrs.obj
 
 .str: $(wv_dir)/h
 
-.c: ..;../$(host_os)$(host_cpu);$(wv_dir)/$(host_os)/c;$(wv_dir)/c;$(dig_srcs);../../win/c
+.c: ..;../$(host_os)$(host_cpu);$(wv_dir)/$(host_os)/c;$(wv_dir)/c;$(dig_srcs)
 
 .asm: ..;../$(host_os)i86
 

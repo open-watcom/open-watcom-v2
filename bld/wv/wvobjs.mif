@@ -125,7 +125,7 @@ eng_objs_nt = &
     $(_subdir_)ntfilio.obj &
     $(_subdir_)ntfinfo.obj &
     $(_subdir_)ntcmd.obj &
-    $(_subdir_)winlkup.obj
+    $(_subdir_)ntlkup.obj
 
 eng_objs_wini86 = &
     $(_subdir_)wininit.obj &

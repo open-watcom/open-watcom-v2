@@ -53,8 +53,6 @@ enum {
     UNKNOWN_SCREEN
 } ScreenState = UNKNOWN_SCREEN;
 
-extern volatile bool    BrkPending;
-
 static unsigned     ScrnLines = 50;
 static bool         WantFast;
 static bool         TrapForceHardMode = false;
