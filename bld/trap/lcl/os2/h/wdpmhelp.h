@@ -29,6 +29,9 @@
 ****************************************************************************/
 
 
+#include "wdpmhelp.rh"
+
+
 #define ADJUST_HFILE 'A'
 
 typedef _Packed struct {

@@ -52,7 +52,7 @@ wdpmhelp.exe: _err.gh _jerr.gh pmhelp.obj wdpmhelp.res $(__MAKEFILES__)
 
 .c: ../c
 
-wdpmhelp.res: ../h/pmhelp.rc ../h/wdpmhelp.h
+wdpmhelp.res: ../h/pmhelp.rc ../h/wdpmhelp.rh
     @%make echo_rc
     $(rc) $(rc_flags) $(inc_dirs_sys_os2) -fo=$@ $[@
 

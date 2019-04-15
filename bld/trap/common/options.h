@@ -30,6 +30,9 @@
 ****************************************************************************/
 
 
+#include "options.rh"
+
+
 extern char ServParms[PARMS_MAXLEN];
 
 WINEXPORT extern INT_PTR CALLBACK OptionsDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );

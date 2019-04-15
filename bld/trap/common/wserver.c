@@ -38,7 +38,7 @@
 #include "trpsys.h"
 #include "trperr.h"
 #include "packet.h"
-#include "servname.h"
+#include "servname.rh"
 #include "servio.h"
 #include "tcerr.h"
 #include "nothing.h"

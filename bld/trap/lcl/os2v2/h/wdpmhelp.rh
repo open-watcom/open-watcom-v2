@@ -24,13 +24,20 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  OS/2 Debugger PM helper - stuff shared with the trap
+*               files.
 *
 ****************************************************************************/
 
 
-#include "wserver.rh"
+#define MSGBOXID    1001
 
-WINEXPORT extern INT_PTR CALLBACK AboutDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
-WINEXPORT extern LRESULT CALLBACK WindowProc( HWND, UINT, WPARAM, LPARAM );
+#define ID_WINDOW   256
+#define ID_WINDOW2  356
+
+#define ID_OPTIONS  257
+#define ID_LOCK     258
+#define ID_UNLOCK   259
+#define ID_EXITPROG 260
+#define ID_SWITCH   261
+#define ID_BUTTON   262

@@ -30,6 +30,9 @@
 ****************************************************************************/
 
 
+#include "wdpmhelp.rh"
+
+
 #define ADJUST_HFILE 'A'
 
 typedef _Packed struct {
@@ -44,18 +47,6 @@ enum {
     PMHELP_EXIT,
     PMHELP_SWITCHBACK,
 };
-
-#define MSGBOXID    1001
-
-#define ID_WINDOW   256
-#define ID_WINDOW2  356
-
-#define ID_OPTIONS  257
-#define ID_LOCK     258
-#define ID_UNLOCK   259
-#define ID_EXITPROG 260
-#define ID_SWITCH   261
-#define ID_BUTTON   262
 
 extern void StartPMHelp(void);
 extern void StopPMHelp(void);
