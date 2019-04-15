@@ -47,20 +47,20 @@ static bool     mouseOn = false;
 static ATTR     OldAttr;
 static int      ColAdjust;
 
-static LP_STRING RegenPos( unsigned row, unsigned col )
-/*****************************************************/
+static LP_PIXEL RegenPos( unsigned row, unsigned col )
+/****************************************************/
 {
-    LP_STRING   pos;
-    LP_STRING   col0;
+    LP_PIXEL    pos;
+    LP_PIXEL    col0;
 
-    col0 = (LP_STRING)UIData->screen.origin + ( row * UIData->screen.increment ) * sizeof( PIXEL );
-    pos = col0 + col * sizeof( PIXEL );
+    col0 = UIData->screen.origin + row * UIData->screen.increment;
+    pos = col0 + col;
     while( col0 < pos ) {
-        col0 += uicharlen( UCHAR_VALUE( *col0 ) ) * sizeof( PIXEL );
+        col0 += uicharlen( UCHAR_VALUE( col0->ch ) );
     }
     if( col0 != pos ) {
         ColAdjust = -1;
-        pos -= sizeof( PIXEL ); // put on char boundary
+        pos--;          // put on char boundary
     } else {
         ColAdjust = 0;
     }
@@ -71,16 +71,16 @@ static LP_STRING RegenPos( unsigned row, unsigned col )
 static void uisetmouseoff( void )
 /*******************************/
 {
-    LP_STRING   old;
+    LP_PIXEL    old;
     SAREA       area;
 
     if( mouseOn ) {
         if( EraseCursor == NULL ) {
             old = RegenPos( OldMouseRow, OldMouseCol );
-            if( uicharlen( UCHAR_VALUE( *old ) ) == 2 ) {
-                old[3] = OldAttr;
+            if( uicharlen( UCHAR_VALUE( old->ch ) ) == 2 ) {
+                old[1].attr = OldAttr;
             }
-            old[1] = OldAttr;
+            old[0].attr = OldAttr;
             area.row = OldMouseRow;
             area.col = OldMouseCol + ColAdjust;
             area.height = 1;
@@ -93,30 +93,30 @@ static void uisetmouseoff( void )
     }
 }
 
-static void FlipAttr( LP_STRING p )
+static void FlipAttr( LP_PIXEL p )
 {
-    OldAttr = *p;
+    OldAttr = p->attr;
 
     if( UIData->colour == M_MONO ) {
-        *p = (OldAttr & 0x79) ^ 0x71;
+        p->attr = (OldAttr & 0x79) ^ 0x71;
     } else {
-        *p = (OldAttr & 0x7f) ^ 0x77;
+        p->attr = (OldAttr & 0x7f) ^ 0x77;
     }
 }
 
 static void uisetmouseon( MOUSEORD row, MOUSEORD col )
 /****************************************************/
 {
-    LP_STRING   new;
+    LP_PIXEL    new;
     SAREA       area;
 
     if( mouseOn ) {
         if( DrawCursor == NULL ) {
             new = RegenPos( row, col );
-            if( uicharlen( UCHAR_VALUE( *new ) ) == 2 ) {
-                FlipAttr( new + 3 );
+            if( uicharlen( UCHAR_VALUE( new->ch ) ) == 2 ) {
+                FlipAttr( new + 1 );
             }
-            FlipAttr( new + 1 );
+            FlipAttr( new );
             area.row = row;
             area.col = col + ColAdjust;
             area.width = 1 - ColAdjust;

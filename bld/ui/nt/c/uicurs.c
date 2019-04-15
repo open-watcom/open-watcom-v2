@@ -35,11 +35,10 @@
 #include "uiattrs.h"
 #include <windows.h>
 #include "uicurshk.h"
+#include "uiintern.h"
 
 
 #define _swap(a,b)      {int i; i=a; a=b; b=i;}
-
-extern HANDLE           OutputHandle;
 
 static CURSORORD        OldCursorRow;
 static CURSORORD        OldCursorCol;

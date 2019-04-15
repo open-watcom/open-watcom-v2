@@ -504,6 +504,7 @@ typedef int             CATTR;          /* cursor attributes type */
     } PIXEL;
     #define __FAR       __far
     #define HAVE_FAR
+    #define UIDBCS
 #elif defined(__NT__)
     typedef struct pixel {
         unsigned short  ch;
@@ -511,6 +512,7 @@ typedef int             CATTR;          /* cursor attributes type */
     } PIXEL;
     #define __FAR
     #undef HAVE_FAR
+    #define UIDBCS
 #elif defined(__OS2__)
     typedef struct pixel {
         unsigned char   ch;
@@ -518,6 +520,7 @@ typedef int             CATTR;          /* cursor attributes type */
     } PIXEL;
     #define __FAR
     #undef HAVE_FAR
+    #define UIDBCS
 #elif defined(__RDOS__)
     typedef struct pixel {
         unsigned char   ch;
@@ -525,6 +528,7 @@ typedef int             CATTR;          /* cursor attributes type */
     } PIXEL;
     #define __FAR
     #undef HAVE_FAR
+    #undef UIDBCS
 #elif defined(__UNIX__)
     typedef struct pixel {
         unsigned char   ch;
@@ -532,6 +536,7 @@ typedef int             CATTR;          /* cursor attributes type */
     } PIXEL;
     #define __FAR
     #undef HAVE_FAR
+    #undef UIDBCS
 #elif defined( __NETWARE__ )
     typedef struct pixel {
         unsigned char   ch;
@@ -539,6 +544,7 @@ typedef int             CATTR;          /* cursor attributes type */
     } PIXEL;
     #define __FAR       __far   /* ?? on netware probably should be near ?? */
     #define HAVE_FAR
+    #undef UIDBCS
 #elif defined( _M_IX86 )        /* 32-bit DOS */
     typedef struct pixel {
         unsigned char   ch;
@@ -546,6 +552,7 @@ typedef int             CATTR;          /* cursor attributes type */
     } PIXEL;
     #define __FAR       __far
     #define HAVE_FAR
+    #define UIDBCS
 #else
     #error pixel structure not configured for system
 #endif

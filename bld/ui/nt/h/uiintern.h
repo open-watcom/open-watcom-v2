@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -24,43 +25,10 @@
 *
 *  ========================================================================
 *
-* Description:  Multi-byte character support for ui library.
+* Description:  Low level console support for Win32, global variables
 *
 ****************************************************************************/
 
 
-#include "uidef.h"
-
-#if defined( UIDBCS ) && !defined( _WIN64 )
-
-#include <mbctype.h>
-
-int UIAPI uicharlen( int ch )
-/***************************/
-{
-    return( _ismbblead( ch ) ? 2 : 1 );
-}
-
-bool UIAPI uiisdbcs( void )
-/*************************/
-{
-    return( __IsDBCS != 0 );
-}
-
-#else
-
-int UIAPI uicharlen( int ch )
-/***************************/
-{
-    /* unused parameters */ (void)ch;
-
-    return( 1 );
-}
-
-bool UIAPI uiisdbcs( void )
-/*************************/
-{
-    return( false );
-}
-
-#endif
+extern HANDLE           OutputHandle;
+extern HANDLE           InputHandle;

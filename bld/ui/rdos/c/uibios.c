@@ -109,15 +109,3 @@ void intern physupdate( SAREA *area )
         RdosWriteAttributeString( i + area->row, area->col, bufptr, area->width );
     }
 }
-
-bool UIAPI uiisdbcs( void )
-{
-    return( false );
-}
-
-int UIAPI uicharlen( int ch )
-{
-    /* unused parameters */ (void)ch;
-
-    return( 1 );
-}

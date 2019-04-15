@@ -35,6 +35,7 @@
 #include "uidef.h"
 #include <windows.h>
 #include "uicurshk.h"
+#include "uiintern.h"
 
 
 static MONITOR ui_data = {
@@ -49,20 +50,21 @@ static MONITOR ui_data = {
     1
 };
 
-HANDLE          OutputHandle;
-HANDLE          InputHandle;
-COORD           BSize;
-volatile int    BrkPending;
-static DWORD    oldInputMode;
-static HANDLE   oldOutputHandle;
+HANDLE              OutputHandle;
+HANDLE              InputHandle;
+volatile bool       BrkPending;
+
+static COORD        BSize;
+static DWORD        oldInputMode;
+static HANDLE       oldOutputHandle;
 
 /*
  * consoleHandler - handle console ctrl c
  */
 static BOOL WINAPI consoleHandler( DWORD type )
 {
+    /* unused parameters */ (void)type;
 
-    type = type;
     BrkPending = true;
     return( true );
 
@@ -98,8 +100,7 @@ bool intern initbios( void )
     BSize.Y = UIData->height = sbi.dwMaximumWindowSize.Y;
     UIData->colour = M_VGA;
 
-    UIData->screen.origin = (LP_PIXEL)LocalAlloc( LMEM_FIXED | LMEM_ZEROINIT,
-                    UIData->width * UIData->height * sizeof( PIXEL ) );
+    UIData->screen.origin = (LP_PIXEL)uimalloc( UIData->width * UIData->height * sizeof( PIXEL ) );
     UIData->screen.increment = UIData->width;
     uiinitcursor();
     initkeyboard();
@@ -118,6 +119,7 @@ void intern finibios( void )
     SetConsoleActiveScreenBuffer( oldOutputHandle );
     uifinicursor();
     finikeyboard();
+    uifree( (void *)UIData->screen.origin );
     SetConsoleCtrlHandler( consoleHandler, false );
 }
 
@@ -135,8 +137,7 @@ void intern physupdate( SAREA *area )
         // WriteConsoleOutput crashes if the area is not on the screen
         return;
     }
-    WriteConsoleOutput( OutputHandle, (PCHAR_INFO) UIData->screen.origin,
-                                BSize, bcoord, &sr );
+    WriteConsoleOutput( OutputHandle, (PCHAR_INFO)UIData->screen.origin, BSize, bcoord, &sr );
 #if 0
     {
         int     i,j;

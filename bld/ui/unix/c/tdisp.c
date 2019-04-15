@@ -802,7 +802,8 @@ static bool setupscrnbuff( uisize srows, uisize scols )
     scrn = uirealloc( scrn, size );
     if( scrn == NULL )
         return( false );
-    if( (shadow = uirealloc( shadow, size )) == NULL ) {
+    shadow = uirealloc( shadow, size );
+    if( shadow == NULL ) {
         uifree( scrn );
         return( false );
     }

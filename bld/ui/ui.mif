@@ -73,7 +73,7 @@ objs = &
 !inject tmouse.obj                        qnx  unix
 !inject trie.obj                          qnx  unix
 !inject uibmous.obj   dos  nlm  nt  os2   qnx  unix  win  rdos
-!inject uichlen.obj        nlm  nt  os2   qnx  unix  win
+!inject uichlen.obj   dos  nlm  nt  os2   qnx  unix  win  rdos
 !inject uicurshk.obj  dos
 !inject uievent.obj             nt                        rdos
 !inject uimous.obj    dos  nlm      os2   qnx  unix  win
