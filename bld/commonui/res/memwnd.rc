@@ -1,3 +1,5 @@
+#include "memwnd.rh"
+
 #ifdef JAPANESE
  #define sp( s1, s2 ) s2
 #else

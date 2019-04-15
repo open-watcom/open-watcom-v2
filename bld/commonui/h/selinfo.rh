@@ -24,20 +24,16 @@
 *
 *  ========================================================================
 *
-* Description:  Handle information resource identifiers.
+* Description:  Selector types.
 *
 ****************************************************************************/
 
 
-#ifndef _HDLINFO_H_INCLUDED
-#define _HDLINFO_H_INCLUDED
-
-#define HDL_INFO_DONT_CARE              300
-#define HDL_INFO_PLOCK                  301
-#define HDL_INFO_LOCK                   302
-#define HDL_INFO_SIZE                   303
-#define HDL_INFO_ADDR                   304
-#define HDL_INFO_HDL                    305
-#define HDL_INFO_TYPE                   306
-
-#endif /* _HDLINFO_H_INCLUDED */
+#define SEL_INFO_DONT_CARE              300
+#define SEL_INFO_GRAN                   301
+#define SEL_INFO_TYPE                   302
+#define SEL_INFO_LIMIT                  303
+#define SEL_INFO_BASE                   304
+#define SEL_INFO_SEL                    305
+#define SEL_INFO_DPL                    306
+#define SEL_INFO_ACCESS                 307

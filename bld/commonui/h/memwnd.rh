@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -24,19 +25,25 @@
 *
 *  ========================================================================
 *
-* Description:  Mark dialog interface.
+* Description:  Interface to memory display window.
 *
 ****************************************************************************/
 
 
-#ifndef _MARK_H_INCLUDED
-#define _MARK_H_INCLUDED
+#include "selinfo.rh"
+#include "hdlinfo.rh"
+#include "offset.rh"
 
-#include "mark.rh"
+#define MEMINFO_SAVE                    400
+#define MEMINFO_SAVE_TO                 401
+#define MEMINFO_SHOW                    403
+#define MEMINFO_AUTO_POS                404
+#define MEMINFO_EXIT                    405
 
+#define MEMINFO_BYTE                    410
+#define MEMINFO_WORD                    411
+#define MEMINFO_DWORD                   412
+#define MEMINFO_CODE_16                 413
+#define MEMINFO_CODE_32                 414
 
-#define MARK_LEN        100
-
-void    ProcessMark( HWND owner, HANDLE instance, void (*fn)( char * ) );
-
-#endif /* _MARK_H_INCLUDED */
+#define MEMINFO_OFFSET                  420

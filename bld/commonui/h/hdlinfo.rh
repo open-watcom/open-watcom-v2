@@ -24,21 +24,15 @@
 *
 *  ========================================================================
 *
-* Description:  About dialog resource identifiers.
+* Description:  Handle information resource identifiers.
 *
 ****************************************************************************/
 
 
-#ifndef _ABOUT_H_INCLUDED
-#define _ABOUT_H_INCLUDED
-
-#define ABOUT_INFO1                 103
-#define ABOUT_INFO2                 104
-#define ABOUT_INFO3                 105
-#define ABOUT_VERSION               106
-#define ABOUT_NAME                  107
-#define ABOUT_ICON                  108
-#define ABOUT_COPYRIGHT             109
-#define APPICON                     101
-
-#endif /* _ABOUT_H_INCLUDED */
+#define HDL_INFO_DONT_CARE              300
+#define HDL_INFO_PLOCK                  301
+#define HDL_INFO_LOCK                   302
+#define HDL_INFO_SIZE                   303
+#define HDL_INFO_ADDR                   304
+#define HDL_INFO_HDL                    305
+#define HDL_INFO_TYPE                   306
