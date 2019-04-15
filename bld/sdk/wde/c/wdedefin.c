@@ -44,7 +44,7 @@
 #include "wdefutil.h"
 #include "wdecurr.h"
 #include "wdectl3d.h"
-#include "wde_rc.h"
+#include "wde.rh"
 #include "wdedefin.h"
 #include "jdlg.h"
 #include "wclbproc.h"

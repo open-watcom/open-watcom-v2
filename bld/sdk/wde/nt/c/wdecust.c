@@ -44,7 +44,7 @@
 #include "wdestat.h"
 #include "wdelist.h"
 #include "wdedebug.h"
-#include "wde_rc.h"
+#include "wde.rh"
 #include "jdlg.h"
 #include "wrdll.h"
 #include "wclbproc.h"

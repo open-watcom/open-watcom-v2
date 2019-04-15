@@ -51,7 +51,7 @@
 #include "wdectl3d.h"
 #include "wdeopts.h"
 #include "wdedebug.h"
-#include "wde_rc.h"
+#include "wde.rh"
 #include "wdefbase.h"
 #include "windlg.h"
 #include "windlg32.h"
