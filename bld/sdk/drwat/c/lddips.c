@@ -34,7 +34,7 @@
 #include "drwatcom.h"
 #include "wclbproc.h"
 #include "dip.h"
-#include "dipload.h"
+#include "dipload.rh"
 #include "diplasth.h"
 #include "ldstr.h"
 #include "rcstr.gh"

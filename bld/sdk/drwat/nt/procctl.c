@@ -32,7 +32,7 @@
 
 #include "drwatcom.h"
 #include <process.h>
-#include "menu.h"
+#include "menu.rh"
 
 
 #ifdef DEBUG

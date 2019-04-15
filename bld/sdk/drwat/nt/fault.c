@@ -32,7 +32,7 @@
 
 #include "drwatcom.h"
 #include "srchmsg.h"
-#include "intdlg.h"
+#include "intdlg.rh"
 #include "jdlg.h"
 #include "madrtn.h"
 #include "madsys1.h"

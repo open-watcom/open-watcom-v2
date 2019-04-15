@@ -2,7 +2,6 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -31,7 +30,15 @@
 ****************************************************************************/
 
 
-#include "drwatlog.rh"
-
-
-WINEXPORT BOOL FAR PASCAL LogDialog( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
+#define PROCCTL_ATTATCH             100
+#define PROCCTL_THREAD              101
+#define PROCCTL_TASKLIST            102
+#define PROCCTL_KILL                103
+#define PROCCTL_TASKNAME            107
+#define PROCCTL_PRIORITY            110
+#define PROCCTL_SET_PRIORITY        104
+#define PROCCTL_PID                 108
+#define PROCCTL_PATH                109
+#define PROCCTL_MEM                 201
+#define PROCCTL_REFRESH             202
+#define PROCCTL_VIEWMEM             203

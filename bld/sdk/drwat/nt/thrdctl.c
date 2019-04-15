@@ -33,10 +33,10 @@
 
 #include "drwatcom.h"
 #include <ctype.h>
-#include "thrdctl.h"
+#include "thrdctl.rh"
 #include "srchmsg.h"
-#include "priority.h"
-#include "retcode.h"
+#include "priority.rh"
+#include "retcode.rh"
 #include "jdlg.h"
 
 

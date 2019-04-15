@@ -31,7 +31,18 @@
 ****************************************************************************/
 
 
-#include "drwatlog.rh"
-
-
-WINEXPORT BOOL FAR PASCAL LogDialog( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
+#define LOG_STACK_TRACE   800
+#define LOG_TASKS         801
+#define LOG_MODULES       802
+#define LOG_GDI           803
+#define LOG_USER          804
+#define LOG_MEM           805
+#define LOG_MOD_SEGMENTS  806
+#define LOG_AUTOLOG       807
+#define LOG_NOTES         808
+#define LOG_MAXFL         LOG_NOTES
+#define LOG_FILE_NAME     820
+#define LOG_MAX_FILE_SIZE 823
+#define LOG_DISASM_LINES  824
+#define LOG_DISASM_BACKUP 825
+#define LOG_BROWSE        102

@@ -32,11 +32,11 @@
 
 #include "drwatcom.h"
 #include <time.h>
-#include "menu.h"
+#include "menu.rh"
 #include "aboutdlg.h"
 #include "savelbox.h"
 #include "mark.h"
-#include "end.h"
+#include "end.rh"
 #include "wwinhelp.h"
 #include "jdlg.h"
 

@@ -44,7 +44,7 @@
 #include "bool.h"
 #include "font.h"
 #include "procctl.h"
-#include "stat.h"
+#include "stat.rh"
 #include "dlgmod.h"
 #include "reg.h"
 #include "machtype.h"

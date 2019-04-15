@@ -33,8 +33,8 @@
 
 #include "drwatcom.h"
 #include "srchmsg.h"
-#include "priority.h"
-#include "menu.h"
+#include "priority.rh"
+#include "menu.rh"
 #include "jdlg.h"
 #include "madrtn.h"
 #include "madsys1.h"
