@@ -30,8 +30,8 @@
 
 
 #include "wddespy.h"
-#include "cbfilt.h"
-#include "msgfilt.h"
+#include "cbfilt.rh"
+#include "msgfilt.rh"
 
 static struct {
     bool        *filter;

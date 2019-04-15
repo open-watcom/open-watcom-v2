@@ -1,10 +1,10 @@
 #include <windows.h>
-#include "ddemenu.h"
+#include "ddemenu.rh"
 #include "rcstr.gh"
 #include "uistr.gh"
-#include "cbfilt.h"
-#include "msgfilt.h"
-#include "about.h"
+#include "cbfilt.rh"
+#include "msgfilt.rh"
+#include "about.rh"
 #include "banner.h"
 
 #define FIRST_COPYRIGHT_YEAR 1994
