@@ -40,7 +40,7 @@
 #include "aui.h"
 #include "wpaui.h"
 #if defined( __OS2_PM__ )
-#include "rcdef.h"
+#include "rcdef.rh"
 #endif
 #include "dlgsamp.h"
 #include "wpdriver.h"
