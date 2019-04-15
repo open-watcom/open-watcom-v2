@@ -35,7 +35,7 @@
 #include "fmedit.def"
 #include "state.def"
 #include "object.h"
-#include "fmdlgs.h"
+#include "fmdlgs.rh"
 #include "scroll.def"
 
 /* this constant must correspond to the index of the object menu item */

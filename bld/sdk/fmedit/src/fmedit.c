@@ -39,7 +39,7 @@
 /* imports */
 
 #include "fmedit.def"
-#include "fmdlgs.h"
+#include "fmdlgs.rh"
 #include "state.def"
 #include "paint.def"
 #include "mouse.def"

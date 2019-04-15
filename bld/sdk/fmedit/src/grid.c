@@ -34,7 +34,7 @@
 #include "fmedit.def"
 #include "state.def"
 #include "grid.def"
-#include "fmdlgs.h"
+#include "fmdlgs.rh"
 
 bool SnapRectToGrid( RECT *rec )
 /******************************/
