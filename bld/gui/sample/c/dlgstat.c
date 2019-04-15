@@ -32,7 +32,7 @@
 #include <string.h>
 #include "sample.h"
 #include "dlgstat.h"
-#include "samprc.h"
+#include "samprc.rh"
 
 
 #define GUI_NO_ID   ((gui_ctl_id)-1)
