@@ -43,6 +43,7 @@
 *.ps  text
 *.rc  text
 *.re  text
+*.rh  text
 *.rtf text
 *.sed text
 *.sh  text
