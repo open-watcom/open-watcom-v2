@@ -1,5 +1,5 @@
 #include <windows.h>
-#include "about.rh"
+#include "about.h"
 #include "banner.h"
 #include "wre_rc.h"
 #include "rcstr.gh"

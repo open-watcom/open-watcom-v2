@@ -8,7 +8,7 @@
 #include "cmd.h"
 #include "banner.h"
 #include "aboutdlg.h"
-#include "about.rh"
+#include "about.h"
 #include "usage.h"
 #include "tagdlg.h"
 #include "linedlg.h"

@@ -40,8 +40,9 @@
 #include "wdehints.h"
 #include "wdemsgbx.h"
 #include "rcstr.gh"
-#include "wde.rh"
+#include "wde_rc.h"
 #include "wderibbn.h"
+#include "wde_rc.h"
 
 /****************************************************************************/
 /* macro definitions                                                        */

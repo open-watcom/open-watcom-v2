@@ -1,7 +1,7 @@
 #include <windows.h>
-#include "about.rh"
+#include "about.h"
 #include "banner.h"
-#include "wde.rh"
+#include "wde_rc.h"
 #include "rcstr.gh"
 #include "uistr.gh"
 

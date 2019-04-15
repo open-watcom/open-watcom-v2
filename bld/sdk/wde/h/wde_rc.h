@@ -30,8 +30,8 @@
 ****************************************************************************/
 
 
-#ifndef WDE_RH_INCLUDED
-#define WDE_RH_INCLUDED
+#ifndef WDE_RC_INCLUDED
+#define WDE_RC_INCLUDED
 
 #include "symbols.h"
 #include "loadcust.h"

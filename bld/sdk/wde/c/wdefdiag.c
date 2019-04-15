@@ -61,7 +61,7 @@
 #include "wdedebug.h"
 #include "wdedefin.h"
 #include "wresall.h"
-#include "wde.rh"
+#include "wde_rc.h"
 #include "wdesvobj.h"
 #include "wdectl3d.h"
 #include "wdecctl.h"

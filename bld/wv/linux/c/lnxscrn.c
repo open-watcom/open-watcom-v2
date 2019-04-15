@@ -208,8 +208,7 @@ static bool TryXWindows( void )
             ++p;
         argv[argc++] = p;
     }
-    Format( p, "-S%s/%u", slavename, masterfd );
-    PopErrBox( p );
+    Format( p, "-SXX%u", masterfd );
     argv[argc++] = p;
     argv[argc] = NULL;
 

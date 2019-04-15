@@ -33,7 +33,7 @@
 #include "wdeglbl.h"
 #include "wdestat.h"
 #include "wdemain.h"
-#include "wde.rh"
+#include "wde_rc.h"
 #include "wdehints.h"
 #include "wdemsgbx.h"
 #include "rcstr.gh"

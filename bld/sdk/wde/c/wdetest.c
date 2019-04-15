@@ -42,7 +42,7 @@
 #include "rcstr.gh"
 #include "wdeopts.h"
 #include "wdectl3d.h"
-#include "wde.rh"
+#include "wde_rc.h"
 #include "wdetest.h"
 #include "wclbproc.h"
 

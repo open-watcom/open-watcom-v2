@@ -30,7 +30,7 @@
 
 
 #include "wdeglbl.h"
-#include "wde.rh"
+#include "wde_rc.h"
 #include "wdetmenu.h"
 
 /****************************************************************************/

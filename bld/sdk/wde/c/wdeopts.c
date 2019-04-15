@@ -42,7 +42,7 @@
 #include "wdemain.h"
 #include "wdestat.h"
 #include "wdectl3d.h"
-#include "wde.rh"
+#include "wde_rc.h"
 #include "wdeopts.h"
 #include "jdlg.h"
 #include "watini.h"

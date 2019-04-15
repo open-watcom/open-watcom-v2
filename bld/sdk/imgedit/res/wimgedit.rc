@@ -3,7 +3,7 @@
 #include "menuids.h"
 #include "settings.h"
 #include "dialogs.h"
-#include "about.rh"
+#include "about.h"
 #include "rcstr.gh"
 #include "uistr.gh"
 

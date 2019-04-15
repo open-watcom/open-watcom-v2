@@ -53,7 +53,7 @@
 #include "wdectl3d.h"
 #include "rcstr.gh"
 #include "wde_wres.h"
-#include "wde.rh"
+#include "wde_rc.h"
 #include "wdecctl.h"
 #include "wdefutil.h"
 #include "wrstrdup.h"

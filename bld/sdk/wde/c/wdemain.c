@@ -59,7 +59,7 @@
 #include "wdefordr.h"
 #include "wdestken.h"
 #include "wdectl3d.h"
-#include "wde.rh"
+#include "wde_rc.h"
 #include "wdemain.h"
 #include "wdesvdlg.h"
 #include "wdedde.h"

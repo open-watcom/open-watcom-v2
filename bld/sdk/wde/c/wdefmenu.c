@@ -38,7 +38,7 @@
 #include "wderibbn.h"
 #include "wdecurr.h"
 #include "wdegoto.h"
-#include "wde.rh"
+#include "wde_rc.h"
 #include "wdecctl.h"
 #include "wdecust.h"
 #include "wdefmenu.h"

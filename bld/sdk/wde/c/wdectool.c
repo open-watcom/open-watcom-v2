@@ -49,7 +49,7 @@
 #include "wdefordr.h"
 #include "wdecctl.h"
 #include "wdectool.h"
-#include "wde.rh"
+#include "wde_rc.h"
 
 /****************************************************************************/
 /* macro definitions                                                        */
