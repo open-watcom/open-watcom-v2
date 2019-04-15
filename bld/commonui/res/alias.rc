@@ -1,4 +1,4 @@
-#include "aliasi.h"
+#include "alias.rh"
 
 ALIAS_DLG DIALOG 6, 18, 187, 175
 STYLE DS_MODALFRAME | WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU

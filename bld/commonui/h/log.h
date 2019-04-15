@@ -33,6 +33,7 @@
 #define _LOG_H_INCLUDED
 
 #include <stdio.h>
+#include "log.rh"
 
 
 #define LOG_ACTION_TRUNC                1

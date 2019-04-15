@@ -1,4 +1,4 @@
-#include "mark.h"
+#include "mark.rh"
 
 MARK_DLG DIALOG 30, 18, 112, 87
 STYLE DS_MODALFRAME | WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
