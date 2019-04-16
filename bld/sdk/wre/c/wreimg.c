@@ -47,7 +47,7 @@
 #include "wredel.h"
 #include "wrestat.h"
 #include "wredde.h"
-#include "wre_rc.h"
+#include "wre.rh"
 #include "wreimage.h"
 #include "wreimg.h"
 #include "wresdefn.h"

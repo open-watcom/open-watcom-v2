@@ -46,7 +46,7 @@
 #include "wreftype.h"
 #include "wrenames.h"
 #include "wrrnames.h"
-#include "wre_rc.h"
+#include "wre.rh"
 #include "wresdefn.h"
 
 /****************************************************************************/

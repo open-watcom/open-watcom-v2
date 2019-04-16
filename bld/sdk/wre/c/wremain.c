@@ -48,7 +48,7 @@
 #include "wresvobj.h"
 #include "wresvmlt.h"
 #include "wrerenam.h"
-#include "wre_rc.h"
+#include "wre.rh"
 #include "wrectl3d.h"
 #include "wredde.h"
 #include "wregcres.h"

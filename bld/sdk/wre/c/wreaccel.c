@@ -46,7 +46,7 @@
 #include "wreres.h"
 #include "wremain.h"
 #include "wre_wres.h"
-#include "wre_rc.h"
+#include "wre.rh"
 #include "wreaccel.h"
 #include "wresdefn.h"
 

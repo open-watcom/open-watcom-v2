@@ -40,7 +40,7 @@
 #include "wreftype.h"
 #include "wrectl3d.h"
 #include "wrerenam.h"
-#include "wre_rc.h"
+#include "wre.rh"
 #include "wrdll.h"
 #include "wresall.h"
 #include "jdlg.h"

@@ -33,7 +33,7 @@
 #include "wreglbl.h"
 #include "wrestat.h"
 #include "wremain.h"
-#include "wre_rc.h"
+#include "wre.rh"
 #include "wrelist.h"
 #include "wrehints.h"
 #include "wremsg.h"

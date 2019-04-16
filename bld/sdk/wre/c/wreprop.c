@@ -36,7 +36,7 @@
 #include "wreseted.h"
 #include "wreprop.h"
 #include "wrdll.h"
-#include "prop.h"
+#include "wre.rh"
 
 /****************************************************************************/
 /* macro definitions                                                        */

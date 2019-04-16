@@ -48,7 +48,7 @@
 #include "wretoolb.h"
 #include "wremain.h"
 #include "wre_wres.h"
-#include "wre_rc.h"
+#include "wre.rh"
 #include "wrestr.h"
 #include "wresdefn.h"
 

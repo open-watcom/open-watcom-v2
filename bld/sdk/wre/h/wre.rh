@@ -33,10 +33,11 @@
 #ifndef WRE_RC_INCLUDED
 #define WRE_RC_INCLUDED
 
-#include "del.h"
-#include "renam.h"
-#include "res.h"
-#include "paste.h"
+#include "del.rh"
+#include "renam.rh"
+#include "res.rh"
+#include "paste.rh"
+#include "prop.rh"
 
 /****************************************************************************/
 /* Menu Identifiers                                                         */

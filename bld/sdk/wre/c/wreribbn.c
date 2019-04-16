@@ -39,7 +39,7 @@
 #include "wremsg.h"
 #include "ldstr.h"
 #include "rcstr.gh"
-#include "wre_rc.h"
+#include "wre.rh"
 #include "wreribbn.h"
 
 /****************************************************************************/
