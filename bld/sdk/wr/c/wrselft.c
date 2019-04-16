@@ -34,7 +34,7 @@
 #include "wrmsg.h"
 #include "wrmaini.h"
 #include "wrdmsgi.h"
-#include "selft.h"
+#include "selft.rh"
 #include "jdlg.h"
 #include "winexprt.h"
 #include "wclbproc.h"
