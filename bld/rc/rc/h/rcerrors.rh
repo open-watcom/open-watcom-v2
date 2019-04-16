@@ -30,20 +30,6 @@
 ****************************************************************************/
 
 
-#include "rcerrors.rh"
+#include "rcmsg.gh"
 
-enum {
-    INTERR_UNKNOWN_RCSTATUS,
-    INTERR_EXE_HAS_MINUS_1_SEGS,
-    INTERR_ERR_BUILDING_RES_DIR,
-    INTERR_MEM_FREE_FAILED,
-    INTERR_MEM_REALLOC_FAILED
-};
-
-extern void RcWarning( unsigned errornum, ... );
-extern void RcError(unsigned int ,... );
-#if defined(__WATCOMC__)
-#pragma aux RcFatalError __aborts
-#endif
-extern void RcFatalError( unsigned int, ... );
-extern void ErrorInitStatics( void );
+#define MSG_LANG_SPACING        1000

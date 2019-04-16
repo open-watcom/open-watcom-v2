@@ -1,4 +1,4 @@
-#include "rcerrors.h"
+#include "rcerrors.rh"
 #include "wreslang.rh"
 
 STRINGTABLE
