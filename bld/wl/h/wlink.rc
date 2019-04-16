@@ -5,7 +5,7 @@
 #define MSG_BASE        0
 #endif
 #include "wlmsgs.h"
-#include "wreslang.h"
+#include "wreslang.rh"
 #include "rcmsg.gh"
 
 STRINGTABLE

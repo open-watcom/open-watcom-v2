@@ -1,4 +1,4 @@
-#include "wreslang.h"
+#include "wreslang.rh"
 #include "errnum.h"
 
 STRINGTABLE
