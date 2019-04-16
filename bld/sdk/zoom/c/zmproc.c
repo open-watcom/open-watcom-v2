@@ -31,6 +31,7 @@
 
 #include "wzoom.h"
 #include "aboutdlg.h"
+#include "wzoom.rh"
 
 #define ZOOM_FREQUENCY          100
 #define SCROLL_TIMEOUT          1000

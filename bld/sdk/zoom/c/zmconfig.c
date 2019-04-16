@@ -35,6 +35,7 @@
 #include "wclbproc.h"
 #include "watini.h"
 #include "inipath.h"
+#include "config.rh"
 
 
 /* Local Window callback functions prototypes */

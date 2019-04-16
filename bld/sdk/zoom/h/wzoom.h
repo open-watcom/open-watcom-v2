@@ -36,27 +36,12 @@
 #include <string.h>
 #include "watcom.h"
 #include "cguimem.h"
-#include "config.h"
 #include "rcstr.gh"
 #include "uistr.gh"
 #include "ldstr.h"
 
 
 #define RCSTR_MAX_LEN           128
-
-#define ZMMENU_ABOUT            101
-#define ZMMENU_BEGIN            102
-#define ZMMENU_PASTE            103
-#define ZMMENU_EXIT             104
-#define ZMMENU_CONFIG           105
-#define ZMMENU_SETLIMITS        106
-
-#define ZMMENU_ZOOMIN           110
-#define ZMMENU_ZOOMOUT          120
-
-#define ZM_TIMER                300
-#define ZM_SCROLL_TIMER         301
-#define ZM_REFRESH_TIMER        302
 
 typedef struct {
     HWND        hwnd;
