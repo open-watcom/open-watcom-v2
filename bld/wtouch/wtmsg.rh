@@ -25,17 +25,16 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Message output routines for wtouch.
 *
 ****************************************************************************/
 
 
-#include "bool.h"
-#include "wstripms.rh"
+/* wtouch error messages */
 
-extern void    Fatal( int, const char * );
-extern bool    Msg_Init( void );
-extern bool    Msg_Fini( void );
-extern void    Usage( void );
-extern void    Banner( void );
+#define MSG_RC_BASE         0
+#define MSG_USAGE_BASE      500
+
+#define MSG_LANG_SPACING    1000
+
+#include "msg.gh"

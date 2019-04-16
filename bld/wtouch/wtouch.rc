@@ -6,7 +6,7 @@
  *  %Z  : message from 'system error' (see below)
  */
 
-#include "wtmsg.h"
+#include "wtmsg.rh"
 #include "wreslang.rh"
 
 STRINGTABLE

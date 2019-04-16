@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -29,22 +30,9 @@
 ****************************************************************************/
 
 
-/* wtouch error messages */
-
-#define MSG_RC_BASE         0
-#define MSG_USAGE_BASE      500
-
-#define MSG_LANG_SPACING    1000
-
-#include "msg.gh"
-
-// #define      MSG_NO_TIME_STAMP       16
-// #define      MSG_SYS_ERR_0           48
-// #define      MSG_USAGE_LN_0          64
-// #define      MSG_USAGE_DATE_FORM     80
+#include "wtmsg.rh"
 
 #define MAX_RESOURCE_SIZE   128
-
 
 typedef struct table_type {
     int         msgid;

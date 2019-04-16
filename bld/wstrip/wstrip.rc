@@ -2,7 +2,7 @@
 /*                         WSTRIP RESOURCE FILE                         */
 /************************************************************************/
 
-#include "wstripms.h"
+#include "wstripms.rh"
 #include "wreslang.rh"
 
 STRINGTABLE
