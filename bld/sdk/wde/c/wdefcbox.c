@@ -41,7 +41,7 @@
 #include "wdedebug.h"
 #include "wdedefsz.h"
 #include "wdeoinfo.h"
-#include "wde_rc.h"
+#include "wde.rh"
 #include "wdecctl.h"
 #include "wdefcbox.h"
 #include "wdedispa.h"

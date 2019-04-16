@@ -41,7 +41,7 @@
 #include "wdefutil.h"
 #include "wdedefsz.h"
 #include "wdetxtsz.h"
-#include "wde_rc.h"
+#include "wde.rh"
 #include "wde_wres.h"
 #include "wdecctl.h"
 #include "wdefbutt.h"

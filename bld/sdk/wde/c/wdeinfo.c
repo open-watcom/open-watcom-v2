@@ -43,7 +43,7 @@
 #include "wdedebug.h"
 #include "wdemain.h"
 #include "wdectl3d.h"
-#include "wde_rc.h"
+#include "wde.rh"
 #include "wdeinfo.h"
 #include "wrdll.h"
 #include "jdlg.h"

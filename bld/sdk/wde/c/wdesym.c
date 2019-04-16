@@ -45,7 +45,7 @@
 #include "wdewait.h"
 #include "wdestken.h"
 #include "wdedebug.h"
-#include "wde_rc.h"
+#include "wde.rh"
 #include "wdectl3d.h"
 #include "wdecurr.h"
 #include "wdesym.h"

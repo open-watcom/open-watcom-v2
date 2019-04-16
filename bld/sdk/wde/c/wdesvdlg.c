@@ -39,7 +39,7 @@
 #include "wdesdup.h"
 #include "wresall.h"
 #include "wdecctl.h"
-#include "wde_rc.h"
+#include "wde.rh"
 #include "wde_wres.h"
 #include "wrdll.h"
 

@@ -60,7 +60,7 @@
 #include "wdefbase.h"
 #include "wdedde.h"
 #include "wdefont.h"
-#include "wde_rc.h"
+#include "wde.rh"
 #include "wrdll.h"
 
 /****************************************************************************/

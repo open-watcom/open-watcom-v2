@@ -40,7 +40,7 @@
 #include "wdedefsz.h"
 #include "wdedebug.h"
 #include "wderes.h"
-#include "wde_rc.h"
+#include "wde.rh"
 #include "wdesdup.h"
 #include "wdecctl.h"
 #include "wdefcntl.h"
