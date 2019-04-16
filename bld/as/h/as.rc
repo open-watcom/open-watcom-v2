@@ -1,4 +1,4 @@
-#include "msg.h"
+#include "msg.rh"
 #include "wreslang.rh"
 
 STRINGTABLE
