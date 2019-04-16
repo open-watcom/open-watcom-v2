@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////
-// FILE: unorders (Definition of std::unordered_set)
+// FILE: unordered_set (Definition of std::unordered_set)
 //
 :keep CPP_HDR
 :include crwatcnt.sp

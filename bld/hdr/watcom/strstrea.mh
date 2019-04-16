@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////
-// FILE: strstrea/strstrea.h (strstream support)
+// FILE: strstream/strstream.h (strstream support)
 //
 :keep CPP_HDR
 :include crwat.sp
