@@ -68,13 +68,6 @@
 #include "bool.h"
 #include "vhandle.h"
 #include "guitypes.h"
-#if defined( __WINDOWS__ )
-    #include "setupdlg.h"
-#elif defined( __NT__ )
-    #include "setupdlg.h"
-#elif defined( __OS2__ )
-    #include "setupdlg.h"
-#endif
 #include "gui.h"
 #include "strvbuf.h"
 

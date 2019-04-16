@@ -1,6 +1,6 @@
 
 #include <windows.h>
-#include "resource.h"
+#include "resource.rh"
 
 ApplIcon    ICON     PRELOAD FIXED setup.ico
 

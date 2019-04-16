@@ -1,4 +1,4 @@
-#include "resource.h"
+#include "resource.rh"
 #define ICON_SETUP  1
 
 ICON ICON_SETUP "../res/os2/setup.ico"
