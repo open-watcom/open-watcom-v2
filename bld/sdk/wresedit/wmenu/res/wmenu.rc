@@ -2,7 +2,7 @@
 #include "sys_rc.h"
 #include "rcstr.gh"
 #include "uistr.gh"
-#include "about.h"
+#include "about.rh"
 #include "banner.h"
 
 #define FIRST_COPYRIGHT_YEAR 2002

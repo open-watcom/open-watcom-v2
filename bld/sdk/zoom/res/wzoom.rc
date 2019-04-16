@@ -1,5 +1,5 @@
 #include "wzoom.h"
-#include "about.h"
+#include "about.rh"
 #include "banner.h"
 
 #define FIRST_COPYRIGHT_YEAR 1994

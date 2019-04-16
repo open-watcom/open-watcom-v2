@@ -1,9 +1,9 @@
 #include <windows.h>
 #include "banner.h"
-#include "menuids.h"
-#include "settings.h"
-#include "dialogs.h"
-#include "about.h"
+#include "menuids.rh"
+#include "settings.rh"
+#include "dialogs.rh"
+#include "about.rh"
 #include "rcstr.gh"
 #include "uistr.gh"
 
