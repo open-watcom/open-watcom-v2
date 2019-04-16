@@ -1,4 +1,4 @@
-#include "tagdlg.h"
+#include "tagdlg.rh"
 
 TAGS DIALOG 28, 25, 143, 98
 STYLE DS_MODALFRAME | WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU

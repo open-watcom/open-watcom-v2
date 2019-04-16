@@ -1,4 +1,4 @@
-#include "grep.h"
+#include "grep.rh"
 
 GREPDLG DIALOG 6, 18, 174, 62
 STYLE WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU

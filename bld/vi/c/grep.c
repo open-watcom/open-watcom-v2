@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -37,7 +37,7 @@
 #include "rxsupp.h"
 #include "win.h"
 #ifdef __WIN__
-    #include "filelist.h"
+    #include "filelist.rh"
     #include "vifont.h"
     #include "loadcc.h"
     #ifdef __NT__

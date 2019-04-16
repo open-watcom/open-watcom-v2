@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -30,13 +31,7 @@
 ****************************************************************************/
 
 
-#define REP_FIND                102
-#define REP_REPLACE             110
-#define REP_CASE_SENSITIVE      101
-#define REP_REGULAR_EXPRESSIONS 103
-#define REP_LISTBOX             104
-#define REP_SEARCH_BACKWARDS    105
-#define REP_IGNORE_CASE         106
-#define REP_SEARCH_WRAP         107
-#define REP_PROMPT_ON_REPLACE   108
-#define REP_SELECTION_ONLY      109
+#define STARTUP_EDITORBITMAP        101
+#define STARTUP_WATCOMBITMAP        104
+#define STARTUP_VERSION             105
+#define STARTUP_EDITORNAME          2

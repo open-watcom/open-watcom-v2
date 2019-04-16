@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -30,6 +31,4 @@
 ****************************************************************************/
 
 
-#define SS_SPLIT                    500
-#define SS_DESTROY                  501
-#define SS_DEFAULTS                 502
+#define GREP_CURRENT_FILE           101

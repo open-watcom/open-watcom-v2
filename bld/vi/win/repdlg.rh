@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -24,21 +25,19 @@
 *
 *  ========================================================================
 *
-* Description:  Identifiers for file type icons.
+* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
+*               DESCRIBE IT HERE!
 *
 ****************************************************************************/
 
 
-#define IDI_CFILE       100
-#define IDI_CPPFILE     101
-#define IDI_HFILE       102
-#define IDI_HPPFILE     103
-#define IDI_FORFILE     104
-#define IDI_FIFILE      105
-#define IDI_MAKFILE     106
-#define IDI_TXTFILE     107
-#define IDI_OBJFILE     108
-#define IDI_RCFILE      109
-#define IDI_RHFILE      110
-#define IDI_LIBFILE     111
-#define IDI_AWKFILE     112
+#define REP_FIND                102
+#define REP_REPLACE             110
+#define REP_CASE_SENSITIVE      101
+#define REP_REGULAR_EXPRESSIONS 103
+#define REP_LISTBOX             104
+#define REP_SEARCH_BACKWARDS    105
+#define REP_IGNORE_CASE         106
+#define REP_SEARCH_WRAP         107
+#define REP_PROMPT_ON_REPLACE   108
+#define REP_SELECTION_ONLY      109

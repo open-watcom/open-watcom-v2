@@ -1,4 +1,4 @@
-#include "filelist.h"
+#include "filelist.rh"
 
 FILELIST DIALOG 80, 16, 152, 109
 STYLE DS_MODALFRAME | WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
