@@ -37,7 +37,7 @@
 #include "wstat.h"
 #include "whints.h"
 #include "wmsg.h"
-#include "sys_rc.h"
+#include "sysall.rh"
 #include "wribbon.h"
 #include "ldstr.h"
 #include "rcstr.gh"

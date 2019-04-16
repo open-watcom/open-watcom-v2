@@ -33,7 +33,7 @@
 #include "wglbl.h"
 #include "ldstr.h"
 #include "wstat.h"
-#include "sys_rc.h"
+#include "sysall.rh"
 #include "wlist.h"
 #include "whints.h"
 #include "rcstr.gh"

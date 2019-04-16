@@ -43,7 +43,7 @@
 #include "wctl3d.h"
 #include "wsetedit.h"
 #include "wclip.h"
-#include "sys_rc.h"
+#include "sysall.rh"
 #include "ldstr.h"
 #include "rcstr.gh"
 #include "jdlg.h"

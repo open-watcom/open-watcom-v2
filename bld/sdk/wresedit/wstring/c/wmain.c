@@ -46,7 +46,7 @@
 #include "whints.h"
 #include "wopts.h"
 #include "whndl.h"
-#include "sys_rc.h"
+#include "sysall.rh"
 #include "wctl3d.h"
 #include "wsvobj.h"
 #include "wsetedit.h"

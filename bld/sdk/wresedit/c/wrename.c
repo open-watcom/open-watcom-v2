@@ -37,7 +37,7 @@
 #include "wsetedit.h"
 #include "wrename.h"
 #include "wctl3d.h"
-#include "w_rc.h"
+#include "sysindep.rh"
 #include "wresall.h"
 #include "jdlg.h"
 #include "wclbproc.h"

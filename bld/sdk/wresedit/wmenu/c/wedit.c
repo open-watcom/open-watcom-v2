@@ -44,7 +44,7 @@
 #include "ldstr.h"
 #include "rcstr.gh"
 #include "wmsg.h"
-#include "sys_rc.h"
+#include "sysall.rh"
 #include "jdlg.h"
 #include "wclbproc.h"
 

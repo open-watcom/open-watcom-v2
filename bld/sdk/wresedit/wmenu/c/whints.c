@@ -34,7 +34,7 @@
 #include "w_menu.h"
 #include "wmain.h"
 #include "wstat.h"
-#include "sys_rc.h"
+#include "sysall.rh"
 #include "wlist.h"
 #include "whints.h"
 #include "rcstr.gh"

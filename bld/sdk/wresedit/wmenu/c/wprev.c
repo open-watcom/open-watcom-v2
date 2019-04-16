@@ -31,7 +31,7 @@
 
 
 #include "wglbl.h"
-#include "sys_rc.h"
+#include "sysall.rh"
 #include "wedit.h"
 #include "wmsg.h"
 #include "ldstr.h"

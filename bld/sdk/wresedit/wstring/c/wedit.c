@@ -45,7 +45,7 @@
 #include "wstrdup.h"
 #include "widn2str.h"
 #include "wclip.h"
-#include "sys_rc.h"
+#include "sysall.rh"
 #include "jdlg.h"
 #include "wclbproc.h"
 
