@@ -1,5 +1,5 @@
 #include <windows.h>
-#include "rcdefs.h"
+#include "rcdefs.rh"
 #include "gui.rc"
 
 B_newproj       BITMAP  newproj.bmp

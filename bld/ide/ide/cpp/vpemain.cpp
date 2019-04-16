@@ -31,7 +31,7 @@
 
 #include <io.h>
 #include <stdlib.h>
-#include "rcdefs.h"
+#include "rcdefs.rh"
 #include "banner.h"
 
 #include "vpemain.hpp"

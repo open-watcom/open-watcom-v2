@@ -1,5 +1,5 @@
 #include "wreslang.rh"
-#include "errnum.h"
+#include "errnum.rh"
 
 STRINGTABLE
 BEGIN

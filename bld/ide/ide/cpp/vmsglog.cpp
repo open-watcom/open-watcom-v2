@@ -32,7 +32,7 @@
 
 #include <stddef.h>
 #include <stdio.h>
-#include "rcdefs.h"
+#include "rcdefs.rh"
 #ifdef __WINDOWS__
     #include "common.h"
     #include "link.h"

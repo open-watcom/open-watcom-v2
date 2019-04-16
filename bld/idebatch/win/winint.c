@@ -37,7 +37,7 @@
 #include <stdarg.h>
 #include <string.h>
 #include <dos.h>
-#include "winint.h"
+#include "winint.rh"
 #include "link.h"
 #include "common.h"
 #include "winexprt.h"
