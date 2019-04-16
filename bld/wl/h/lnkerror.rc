@@ -2,7 +2,7 @@
  *  linker information, warning messages and error messages
  */
 
-#include "wlnkmsg.h"
+#include "wlnkmsg.rh"
 
 STRINGTABLE
 BEGIN
