@@ -351,6 +351,7 @@ typedef unsigned long long      syscall_res;
 #define SYS_add_key                 4280
 #define SYS_request_key             4281
 #define SYS_keyctl                  4282
+#define SYS_set_thread_area         4283
 
 /*
  * internal sub-numbers for SYS_socketcall
