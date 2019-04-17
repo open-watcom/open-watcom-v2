@@ -67,7 +67,7 @@ typedef struct object {
     DISPATCH_FN     *dispatcher;
 } OBJECT;
 
-#include "fmmenu.def"
+#include "fmmenu.rh"
 #include "list.def"
 #include "subreq.def"
 
