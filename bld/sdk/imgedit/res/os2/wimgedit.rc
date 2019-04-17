@@ -1,11 +1,11 @@
 #include  "os2.h"
-rcinclude "img_os2.h"
-rcinclude "dialogs.rh"
-rcinclude "settings.rh"
-rcinclude "menuids.rh"
-rcinclude "selimg.dlg"
-rcinclude "settings.dlg"
-rcinclude "selcolor.dlg"
+#include "img_os2.h"
+#include "dialogs.rh"
+#include "settings.rh"
+#include "menuids.rh"
+#include "selimg.dlg"
+#include "settings.dlg"
+#include "selcolor.dlg"
 
 //ICON  ICON_ID         test.ico
 ICON    ICON_ID         app_pm.ico
