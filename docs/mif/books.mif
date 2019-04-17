@@ -28,6 +28,7 @@
 !inject f77lr           dos  html  htmlhelp  nt  os2  pdf  ps  win doctrav
 !inject f_readme        dos  html  htmlhelp  nt  os2  pdf  ps  win doctrav
 !inject fbooks                               nt
+!inject fmedidoc
 !inject fpguide         dos  html  htmlhelp  nt  os2  pdf  ps  win doctrav
 !inject freadme     txt
 !inject ftools          dos  html  htmlhelp  nt  os2  pdf  ps  win doctrav
@@ -57,6 +58,7 @@
 !inject wfcerrs         dos  html  htmlhelp  nt  os2           win
 !inject wjcerrs
 !inject wlnkerrs             html  htmlhelp  nt                win
+!inject wpidoc
 !inject wpperrs         dos  html  htmlhelp  nt  os2           win
 !inject wprof           dos  html  htmlhelp  nt  os2           win
 !inject wrcerrs              html  htmlhelp  nt                win
@@ -639,6 +641,20 @@ book_multi_chapter=1
 !else ifeq hbook freadme
 
 !else ifeq hbook readme
+
+!else ifeq hbook wpidoc
+# wpidoc
+book_title=$(company) $(bld_ver_str) WATCOM Programming Interface
+book_objs=$(objs_wpidoc)
+book_incs=$(incs_wpidoc)
+book_src=wpidoc
+
+!else ifeq hbook fmedidoc
+# fmedidoc
+book_title=$(company) $(bld_ver_str) WATCOM Forms Editor Application Interface
+book_objs=$(objs_fmedidoc)
+book_incs=$(incs_fmedidoc)
+book_src=fmedidoc
 
 !else
 
