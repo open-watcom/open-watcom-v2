@@ -152,7 +152,7 @@ typedef int                     HFILE;
 
 #ifndef RC_INVOKED
 
-#pragma pack( push, 1 )
+#pragma pack( __push, 1 )
 
 typedef signed short int SHORT;
 
@@ -185,7 +185,7 @@ DWORD WINAPI    VerInstallFile( UINT, LPCSTR, LPCSTR, LPCSTR, LPCSTR, LPCSTR, LP
 UINT WINAPI     VerLanguageName( UINT, LPSTR, UINT );
 BOOL WINAPI     VerQueryValue( const void FAR *, LPCSTR, void FAR * FAR *, UINT FAR * );
 
-#pragma pack( pop )
+#pragma pack( __pop )
 
 #endif
 

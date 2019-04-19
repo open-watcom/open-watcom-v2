@@ -805,7 +805,7 @@ extern DWORD      MK_FP16( void __far * );
 
 /* Inline assembly implementation of functions defined above */
 #pragma aux MK_LOCAL32 "*_" = \
-       0x0F 0xB7 0x15 offset LocalPtr /* movzx edx,_LocalPtr */ \
+       0x0F 0xB7 0x15 __offset LocalPtr /* movzx edx,_LocalPtr */ \
        "and   eax,0FFFFh" \
     __parm              [__eax] \
     __value             [__dx __eax] \
