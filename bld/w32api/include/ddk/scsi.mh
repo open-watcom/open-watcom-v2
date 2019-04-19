@@ -749,7 +749,7 @@
 #define GET_SESSION_DATA    0x02
 
 /* All structures in this file get one-byte packing. */
-#pragma pack( push, 1 )
+#include <pshpack1.h>
 
 /* There is a constant called _PRINT declared in ctype.h that causes a conflict with
  * the following structure.
@@ -2872,7 +2872,7 @@ typedef union _TWO_BYTE {
 typedef TWO_BYTE    *PTWO_BYTE;
 
 /* Revert to default packing. */
-#pragma pack( pop )
+#include <poppack.h>
 
 /* Byte-reversing macros */
 #define REVERSE_BYTES_QUAD( p1, p2 ) \
