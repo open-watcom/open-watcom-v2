@@ -32,7 +32,7 @@
 
 // functions for allocating real-mode DOS memory from protected mode
 
-#pragma pack(push, 1);
+#pragma pack(__push, 1);
 
 typedef struct rm_alloc {
     unsigned short      rm_seg;
@@ -44,4 +44,4 @@ short                   _RMAlloc( int, RM_ALLOC * );
 void                    _RMFree( RM_ALLOC * );
 short                   _RMInterrupt( short, short, short, short, short, short, short );
 
-#pragma pack (pop);
+#pragma pack (__pop);

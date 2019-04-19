@@ -29,7 +29,7 @@
 ****************************************************************************/
 
 
-#pragma pack(push, 1);
+#pragma pack(__push, 1);
 struct picture {
     short           picwidth;               /* # of pixels across   */
     short           picheight;              /* # of pixels down     */
@@ -42,4 +42,4 @@ struct picture {
     char            buffer;                 /* buffer for image     */
 #endif
 };
-#pragma pack (pop);
+#pragma pack (__pop);

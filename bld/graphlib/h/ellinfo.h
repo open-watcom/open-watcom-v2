@@ -30,11 +30,11 @@
 ****************************************************************************/
 
 
-#pragma pack(push, 1);
+#pragma pack(__push, 1);
 struct ellipse_info {
     short               prev_y;
     short               x_reflect;
     short               y_reflect;
     unsigned short      line_mask[ 4 ];
 };
-#pragma pack (pop);
+#pragma pack (__pop);

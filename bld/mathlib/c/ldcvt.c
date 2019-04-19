@@ -104,8 +104,8 @@
         "pop  ecx"          \
         "xor  al,al"        \
         "mov  [ebx],al"     \
-    __parm __caller [eax] [ebx] \
-    __value         [ebx] \
+    __parm __caller [__eax] [__ebx] \
+    __value         [__ebx] \
     __modify        []
 #elif defined( _M_I86 )
  char _WCNEAR *Fmt8Digits( unsigned long value, char *p );

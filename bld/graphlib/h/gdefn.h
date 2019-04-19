@@ -97,7 +97,7 @@ typedef void __pascal vgapage_fn( short );
 #pragma aux (VGAPAGE_FUNC) vgapage_fn;
 
 
-#pragma pack(push, 1);
+#pragma pack(__push, 1);
 typedef struct {
     unsigned char       start_range;
     unsigned char       end_range;
@@ -234,7 +234,7 @@ struct window_def {
     float           xright;
     float           ytop;
 };
-#pragma pack (pop);
+#pragma pack (__pop);
 
 #if defined( _DEFAULT_WINDOWS )
     // This macro causes repaints to be done

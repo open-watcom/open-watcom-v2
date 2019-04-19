@@ -36,11 +36,11 @@
     #define NUM_CHARS   ( 0x7e - '!' + 1 )  // range of printable chars
 #endif
 
-#pragma pack(push, 1);
+#pragma pack(__push, 1);
 typedef struct font_def {
     unsigned short      key[ NUM_CHARS + 1 ];
     char                data;               // variable size
 } font_def;
-#pragma pack (pop);
+#pragma pack (__pop);
 
 #define MAX             32                  // maximum x and y values
