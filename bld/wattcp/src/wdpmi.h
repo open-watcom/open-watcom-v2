@@ -17,8 +17,8 @@
           "mov  sp, si"  \
           "push ax"      \
           "push bx"      \
-          parm [dx si]   \
-          modify [ax bx];
+          __parm [__dx __si]   \
+          __modify [__ax __bx];
 
   extern void stackrestore (void);
   #pragma aux stackrestore = \
@@ -26,7 +26,7 @@
           "pop ax"     \
           "mov ss, ax" \
           "mov sp, bx"             /* don't put esp here */  \
-          modify [ax bx];
+          __modify [__ax __bx];
 
 #elif defined(__WATCOM386__)       /* 32-bit Watcom targets */
   #define USES_DPMI_API
@@ -40,8 +40,8 @@
           "mov  esp, esi" \
           "push eax"      \
           "push ebx"      \
-          parm [esi]      \
-          modify [eax ebx ecx];   
+          __parm [__esi]      \
+          __modify [__eax __ebx __ecx];
 
   extern void stackrestore (void);
   #pragma aux stackrestore = \
@@ -50,17 +50,17 @@
   extern WORD My_CS (void);
   #pragma aux My_CS =  \
           "mov ax, cs" \
-          modify [ax];
+          __modify [__ax];
 
   extern WORD My_DS(void);
   #pragma aux My_DS =  \
           "mov ax, ds" \
-          modify [ax];
+          __modify [__ax];
 
   extern DWORD _get_limit (WORD sel);
   #pragma aux _get_limit = \
           "lsl eax, eax"   \
-          parm [eax];
+          __parm [__eax];
 
 #elif defined(__BORLAND386__) && (DOSX == WDOSX)
   #define USES_DPMI_API

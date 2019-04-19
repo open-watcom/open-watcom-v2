@@ -738,17 +738,17 @@ static void analyseAnyTargetOptions( OPT_STORAGE *data )
     switch( data->iso ) {
     case OPT_iso_za:
         CompFlags.extensions_enabled = false;
-        CompFlags.oldmacros_enabled = false;
+        CompFlags.non_iso_compliant_names_enabled = false;
         CompFlags.unique_functions = true;
         break;
     case OPT_iso_ze:
     default:
         CompFlags.extensions_enabled = true;
-        CompFlags.oldmacros_enabled = true;
+        CompFlags.non_iso_compliant_names_enabled = true;
         break;
     }
     if( data->zam ) {
-        CompFlags.oldmacros_enabled = false;
+        CompFlags.non_iso_compliant_names_enabled = false;
     }
     // following must precede processing of data->oe
     switch( data->debug_info ) {

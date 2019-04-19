@@ -1192,7 +1192,7 @@ hw_reg_set PragRegName(         // GET REGISTER NAME
     hw_reg_set      name;
 
     if( *str != '\0' ) {
-        str = SkipUnderscorePrefix( str, &len );
+        str = SkipUnderscorePrefix( str, &len, true );
         index = PragRegIndex( Registers, str, len, true );
         if( index != -1 ) {
             return( RegBits[RegMap[index]] );

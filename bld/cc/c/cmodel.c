@@ -271,7 +271,7 @@ void MiscMacroDefs( void )
     if( CompFlags.inline_functions ) {
         Define_Macro( "__INLINE_FUNCTIONS__" );
     }
-    if( CompFlags.oldmacros_enabled ) {
+    if( CompFlags.non_iso_compliant_names_enabled ) {
         Define_Macros_Extension();
     }
     if( !CompFlags.extensions_enabled ) {
@@ -316,35 +316,35 @@ void InitModInfo( void )
     PackAmount = 8;
 #endif
     PreProcChar = '#';
-    CompFlags.check_syntax              = false;
-    CompFlags.signed_char               = false;
-    CompFlags.use_full_codegen_od       = false;
-    CompFlags.inline_functions          = false;
-    CompFlags.dump_prototypes           = false;
-    CompFlags.generate_prototypes       = false;
-    CompFlags.bss_segment_used          = false;
-    CompFlags.undefine_all_macros       = false;
-    CompFlags.extensions_enabled        = true;
-    CompFlags.oldmacros_enabled         = true;
-    CompFlags.unix_ext                  = false;
-    CompFlags.slack_byte_warning        = false;
-    CompFlags.errfile_written           = false;
-    CompFlags.zu_switch_used            = false;
-    CompFlags.register_conventions      = false;
-    CompFlags.pragma_library            = false;
-    CompFlags.emit_all_default_libs     = false;
-    CompFlags.emit_library_names        = true;
-    CompFlags.emit_dependencies         = true;
-    CompFlags.emit_targimp_symbols      = true;
-    CompFlags.use_unicode               = true;
-    CompFlags.no_debug_type_names       = false;
-    CompFlags.auto_agg_inits            = false;
-    CompFlags.no_check_inits            = false;
-    CompFlags.no_check_qualifiers       = false;
-    CompFlags.ignore_default_dirs       = false;
-    CompFlags.use_stdcall_at_number     = true;
-    CompFlags.rent                      = false;
-    CompFlags.check_truncated_fnames    = true;
+    CompFlags.check_syntax                      = false;
+    CompFlags.signed_char                       = false;
+    CompFlags.use_full_codegen_od               = false;
+    CompFlags.inline_functions                  = false;
+    CompFlags.dump_prototypes                   = false;
+    CompFlags.generate_prototypes               = false;
+    CompFlags.bss_segment_used                  = false;
+    CompFlags.undefine_all_macros               = false;
+    CompFlags.extensions_enabled                = true;
+    CompFlags.non_iso_compliant_names_enabled   = true;
+    CompFlags.unix_ext                          = false;
+    CompFlags.slack_byte_warning                = false;
+    CompFlags.errfile_written                   = false;
+    CompFlags.zu_switch_used                    = false;
+    CompFlags.register_conventions              = false;
+    CompFlags.pragma_library                    = false;
+    CompFlags.emit_all_default_libs             = false;
+    CompFlags.emit_library_names                = true;
+    CompFlags.emit_dependencies                 = true;
+    CompFlags.emit_targimp_symbols              = true;
+    CompFlags.use_unicode                       = true;
+    CompFlags.no_debug_type_names               = false;
+    CompFlags.auto_agg_inits                    = false;
+    CompFlags.no_check_inits                    = false;
+    CompFlags.no_check_qualifiers               = false;
+    CompFlags.ignore_default_dirs               = false;
+    CompFlags.use_stdcall_at_number             = true;
+    CompFlags.rent                              = false;
+    CompFlags.check_truncated_fnames            = true;
 
     SetAuxWatcallInfo();
 }

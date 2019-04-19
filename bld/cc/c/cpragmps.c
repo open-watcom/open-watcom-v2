@@ -318,7 +318,7 @@ hw_reg_set PragRegName( const char *strreg, size_t len )
     char            buffer[20];
 
     if( len != 0 ) {
-        strreg = SkipUnderscorePrefix( strreg, &len );
+        strreg = SkipUnderscorePrefix( strreg, &len, false );
         if( len > ( sizeof( buffer ) - 1 ) )
             len = sizeof( buffer ) - 1;
         str = memcpy( buffer, strreg, len );

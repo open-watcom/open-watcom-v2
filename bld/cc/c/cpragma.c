@@ -132,16 +132,25 @@ static void EndOfPragma( void )
     }
 }
 
-const char *SkipUnderscorePrefix( const char *str, size_t *len )
-/**************************************************************/
+const char *SkipUnderscorePrefix( const char *str, size_t *len, bool iso_compliant_names )
+/****************************************************************************************/
 {
     const char  *start;
 
     start = str;
-    if( *str == '_' ) {
-        str++;
+    if( !iso_compliant_names || CompFlags.non_iso_compliant_names_enabled ) {
         if( *str == '_' ) {
             str++;
+            if( *str == '_' ) {
+                str++;
+            }
+        }
+    } else {
+        if( str[0] == '_' && str[1] == '_' ) {
+            str += 2;
+        } else {
+            start = "";
+            str = start;
         }
     }
     if( len != NULL ) {
@@ -155,7 +164,7 @@ static bool PragIdRecog( const char *what )
 {
     bool    rc;
 
-    rc = ( stricmp( what, SkipUnderscorePrefix( Buffer, NULL ) ) == 0 );
+    rc = ( stricmp( what, SkipUnderscorePrefix( Buffer, NULL, true ) ) == 0 );
     if( rc ) {
         PPNextToken();
     }
@@ -249,7 +258,7 @@ static aux_info *MagicKeyword( const char *name )
 {
     int         i;
 
-    name = SkipUnderscorePrefix( name, NULL );
+    name = SkipUnderscorePrefix( name, NULL, true );
     for( i = 0; MagicWords[i].name != NULL; ++i ) {
         if( strcmp( name, MagicWords[i].name + 2 ) == 0 ) {
             break;

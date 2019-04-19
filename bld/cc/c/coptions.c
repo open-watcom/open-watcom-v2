@@ -207,7 +207,7 @@ static void SetTargSystem( void )
     char        buff[128];
     size_t      len;
 
-    if( CompFlags.oldmacros_enabled ) {
+    if( CompFlags.non_iso_compliant_names_enabled ) {
 #if _CPU == _AXP
         PreDefine_Macro( "M_ALPHA" );
 #elif _CPU == _SPARC
@@ -329,7 +329,7 @@ static void SetTargSystem( void )
 
     switch( TargSys ) {
     case TS_DOS:
-        if( CompFlags.oldmacros_enabled ) {
+        if( CompFlags.non_iso_compliant_names_enabled ) {
             PreDefine_Macro( "MSDOS" );
         }
         PreDefine_Macro( "_DOS" );
@@ -534,7 +534,7 @@ static void MacroDefs( void )
   #else
     #define MX86 "M_386"
   #endif
-    if( CompFlags.oldmacros_enabled ) {
+    if( CompFlags.non_iso_compliant_names_enabled ) {
         switch( SwData.mem ) {
         case SW_MS:
             Define_Macro( MX86 "SM" );
@@ -1296,7 +1296,7 @@ static void Set_ZA99( void )
 static void Set_ZA( void )
 {
     CompFlags.extensions_enabled = false;
-    CompFlags.oldmacros_enabled = false;
+    CompFlags.non_iso_compliant_names_enabled = false;
     CompFlags.unique_functions = true;
     TargetSwitches &= ~I_MATH_INLINE;
 }
@@ -1309,7 +1309,7 @@ static void SetStrictANSI( void )
 
 static void Set_ZAM( void )
 {
-    CompFlags.oldmacros_enabled = false;
+    CompFlags.non_iso_compliant_names_enabled = false;
 }
 
 #if _CPU == 8086 || _CPU == 386
@@ -1330,7 +1330,7 @@ static void Set_ZGP( void )         { SwData.peg_gs_used = true; SwData.peg_gs_o
 static void Set_ZE( void )
 {
     CompFlags.extensions_enabled = true;
-    CompFlags.oldmacros_enabled = true;
+    CompFlags.non_iso_compliant_names_enabled = true;
 }
 static void Set_ZG( void )
 {

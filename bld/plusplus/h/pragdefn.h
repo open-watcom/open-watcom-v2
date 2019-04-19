@@ -197,7 +197,9 @@ void AsmSysPCHReadCode(         // read code sequence from PCH
     AUX_INFO *info )            // - code sequence
 ;
 const char *SkipUnderscorePrefix(
-    const char *str, size_t *len )
+    const char *str,
+    size_t *len,
+    bool iso_compliant_names )
 ;
 
 bool GetPragAuxAliasInfo(

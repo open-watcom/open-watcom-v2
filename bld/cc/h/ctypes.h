@@ -528,74 +528,74 @@ typedef enum {
 #define PPCTL_DISABLE_MACROS()  Pre_processing |= PPCTL_NO_EXPAND
 
 typedef struct comp_flags {
-    bool label_dropped              : 1;
-    bool has_main                   : 1;
-    bool float_used                 : 1;
-    bool signed_char                : 1;
-    bool stats_printed              : 1;
-    bool far_strings                : 1;
-    bool check_syntax               : 1;
-    bool meaningless_stmt           : 1;
+    bool label_dropped                      : 1;
+    bool has_main                           : 1;
+    bool float_used                         : 1;
+    bool signed_char                        : 1;
+    bool stats_printed                      : 1;
+    bool far_strings                        : 1;
+    bool check_syntax                       : 1;
+    bool meaningless_stmt                   : 1;
 
-    bool scanning_cpp_comment       : 1;
-    bool thread_data_present        : 1;    /* __declspec(thread) */
-    bool in_finally_block           : 1;    /* in _finally { ... } */
-    bool unix_ext                   : 1;    /* like sizeof( void ) == 1 */
-    bool slack_byte_warning         : 1;
+    bool scanning_cpp_comment               : 1;
+    bool thread_data_present                : 1;    /* __declspec(thread) */
+    bool in_finally_block                   : 1;    /* in _finally { ... } */
+    bool unix_ext                           : 1;    /* like sizeof( void ) == 1 */
+    bool slack_byte_warning                 : 1;
 
-    bool ef_switch_used             : 1;
-    bool in_pragma                  : 1;
-    bool br_switch_used             : 1;    /* -br: use DLL C runtime */
-    bool extensions_enabled         : 1;
-    bool inline_functions           : 1;
-    bool auto_agg_inits             : 1;
-    bool use_full_codegen_od        : 1;
-    bool has_wchar_entry            : 1;
+    bool ef_switch_used                     : 1;
+    bool in_pragma                          : 1;
+    bool br_switch_used                     : 1;    /* -br: use DLL C runtime */
+    bool extensions_enabled                 : 1;
+    bool inline_functions                   : 1;
+    bool auto_agg_inits                     : 1;
+    bool use_full_codegen_od                : 1;
+    bool has_wchar_entry                    : 1;
 
-    bool bc_switch_used             : 1;    /* build charater mode */
-    bool bg_switch_used             : 1;    /* build gui      mode */
-    bool emit_all_default_libs      : 1;
-    bool emit_targimp_symbols       : 1;    /* emit per target auto symbols */
-    bool low_on_memory_printed      : 1;
-    bool extra_stats_wanted         : 1;
-    bool external_defn_found        : 1;
-    bool scanning_comment           : 1;
+    bool bc_switch_used                     : 1;    /* build charater mode */
+    bool bg_switch_used                     : 1;    /* build gui      mode */
+    bool emit_all_default_libs              : 1;
+    bool emit_targimp_symbols               : 1;    /* emit per target auto symbols */
+    bool low_on_memory_printed              : 1;
+    bool extra_stats_wanted                 : 1;
+    bool external_defn_found                : 1;
+    bool scanning_comment                   : 1;
 
-    bool initializing_data          : 1;
-    bool dump_prototypes            : 1;    /* keep typedefs in prototypes*/
-    bool non_zero_data              : 1;
-    bool quiet_mode                 : 1;
-    bool useful_side_effect         : 1;
-    bool keep_comments              : 1;    /* wcpp - output comments */
-    bool cpp_line_wanted            : 1;    /* wcpp - emit #line    */
-    bool cpp_ignore_line            : 1;    /* wcpp - ignore #line */
+    bool initializing_data                  : 1;
+    bool dump_prototypes                    : 1;    /* keep typedefs in prototypes*/
+    bool non_zero_data                      : 1;
+    bool quiet_mode                         : 1;
+    bool useful_side_effect                 : 1;
+    bool keep_comments                      : 1;    /* wcpp - output comments */
+    bool cpp_line_wanted                    : 1;    /* wcpp - emit #line    */
+    bool cpp_ignore_line                    : 1;    /* wcpp - ignore #line */
 
-    bool generate_prototypes        : 1;    /* generate prototypes  */
-    bool no_conmsg                  : 1;    /* don't write wng &err to console */
-    bool bss_segment_used           : 1;
-    bool zu_switch_used             : 1;
-    bool extended_defines           : 1;
-    bool errfile_written            : 1;
-    bool main_has_parms             : 1;    /* on if "main" has parm(s) */
-    bool register_conventions       : 1;    /* on for -3r, off for -3s */
+    bool generate_prototypes                : 1;    /* generate prototypes  */
+    bool no_conmsg                          : 1;    /* don't write wng &err to console */
+    bool bss_segment_used                   : 1;
+    bool zu_switch_used                     : 1;
+    bool extended_defines                   : 1;
+    bool errfile_written                    : 1;
+    bool main_has_parms                     : 1;    /* on if "main" has parm(s) */
+    bool register_conventions               : 1;    /* on for -3r, off for -3s */
 
-    bool pgm_used_8087              : 1;    /* on => 8087 ins. generated */
-    bool emit_library_names         : 1;    /* on => put LIB name in obj */
-    bool strings_in_code_segment    : 1;    /* on => put strings in CODE */
-    bool ok_to_use_precompiled_hdr  : 1;    /* on => ok to use PCH */
-    bool strict_ANSI                : 1;    /* on => strict ANSI C (-zA)*/
-    bool expand_macros              : 1;    /* on => expand macros in WCPP*/
-    bool exception_filter_expr      : 1;    /* on => parsing _except(expr)*/
-    bool exception_handler          : 1;    /* on => inside _except block*/
+    bool pgm_used_8087                      : 1;    /* on => 8087 ins. generated */
+    bool emit_library_names                 : 1;    /* on => put LIB name in obj */
+    bool strings_in_code_segment            : 1;    /* on => put strings in CODE */
+    bool ok_to_use_precompiled_hdr          : 1;    /* on => ok to use PCH */
+    bool strict_ANSI                        : 1;    /* on => strict ANSI C (-zA)*/
+    bool expand_macros                      : 1;    /* on => expand macros in WCPP*/
+    bool exception_filter_expr              : 1;    /* on => parsing _except(expr)*/
+    bool exception_handler                  : 1;    /* on => inside _except block*/
 
-    bool comments_wanted            : 1;    /* on => comments wanted     */
-    bool wide_char_string           : 1;    /* on => T_STRING is L"xxx"  */
-    bool banner_printed             : 1;    /* on => banner printed      */
-    bool undefine_all_macros        : 1;    /* on => -u all macros       */
-    bool emit_browser_info          : 1;    /* -db emit broswer info */
-    bool rescan_buffer_done         : 1;    /* ## re-scan buffer used up */
-    bool cpp_output                 : 1;    /* WCC doing CPP output      */
-    bool cpp_output_to_file         : 1;    /* WCC doing CPP output to?.i*/
+    bool comments_wanted                    : 1;    /* on => comments wanted     */
+    bool wide_char_string                   : 1;    /* on => T_STRING is L"xxx"  */
+    bool banner_printed                     : 1;    /* on => banner printed      */
+    bool undefine_all_macros                : 1;    /* on => -u all macros       */
+    bool emit_browser_info                  : 1;    /* -db emit broswer info */
+    bool rescan_buffer_done                 : 1;    /* ## re-scan buffer used up */
+    bool cpp_output                         : 1;    /* WCC doing CPP output      */
+    bool cpp_output_to_file                 : 1;    /* WCC doing CPP output to?.i*/
 
 /*  /d1+
     generate info on BP-chains if possible
@@ -605,65 +605,65 @@ typedef struct comp_flags {
             - externs and statics
             - parms with /3s
 */
-    bool debug_info_some            : 1;    /* d1 + some typing info     */
-    bool register_conv_set          : 1;    /* has call conv been set    */
-    bool emit_names                 : 1;    /* /en switch used           */
-    bool cpp_output_requested       : 1;    /* CPP output requested      */
-    bool warnings_cause_bad_exit    : 1;    /* warnings=>non-zero exit   */
-    bool save_restore_segregs       : 1;    /* save/restore segregs      */
-    bool has_winmain                : 1;    /* WinMain defined           */
-    bool make_enums_an_int          : 1;    /* force all enums to be int */
+    bool debug_info_some                    : 1;    /* d1 + some typing info     */
+    bool register_conv_set                  : 1;    /* has call conv been set    */
+    bool emit_names                         : 1;    /* /en switch used           */
+    bool cpp_output_requested               : 1;    /* CPP output requested      */
+    bool warnings_cause_bad_exit            : 1;    /* warnings=>non-zero exit   */
+    bool save_restore_segregs               : 1;    /* save/restore segregs      */
+    bool has_winmain                        : 1;    /* WinMain defined           */
+    bool make_enums_an_int                  : 1;    /* force all enums to be int */
 
-    bool original_enum_setting      : 1;    /* reset value if pragma used*/
-    bool zc_switch_used             : 1;    /* -zc switch specified   */
-    bool use_unicode                : 1;    /* use unicode for L"abc" */
-    bool op_switch_used             : 1;    /* -op force floats to mem */
-    bool no_debug_type_names        : 1;    /* -d2~ switch specified  */
-    bool asciiout_used              : 1;    /* (asciiout specified  */
-    bool addr_of_auto_taken         : 1;    /*=>can't opt tail recursion*/
-    bool sg_switch_used             : 1;    /* /sg switch used */
+    bool original_enum_setting              : 1;    /* reset value if pragma used*/
+    bool zc_switch_used                     : 1;    /* -zc switch specified   */
+    bool use_unicode                        : 1;    /* use unicode for L"abc" */
+    bool op_switch_used                     : 1;    /* -op force floats to mem */
+    bool no_debug_type_names                : 1;    /* -d2~ switch specified  */
+    bool asciiout_used                      : 1;    /* (asciiout specified  */
+    bool addr_of_auto_taken                 : 1;    /*=>can't opt tail recursion*/
+    bool sg_switch_used                     : 1;    /* /sg switch used */
 
-    bool bm_switch_used             : 1;    /* /bm switch used */
-    bool bd_switch_used             : 1;    /* /bd switch used */
-    bool bw_switch_used             : 1;    /* /bw switch used */
-    bool zm_switch_used             : 1;    /* /zm switch used */
-    bool has_libmain                : 1;    /* LibMain defined */
-    bool ep_switch_used             : 1;    /* emit prolog hooks */
-    bool ee_switch_used             : 1;    /* emit epilog hooks */
-    bool dump_types_with_names      : 1;    /* -d3 information */
+    bool bm_switch_used                     : 1;    /* /bm switch used */
+    bool bd_switch_used                     : 1;    /* /bd switch used */
+    bool bw_switch_used                     : 1;    /* /bw switch used */
+    bool zm_switch_used                     : 1;    /* /zm switch used */
+    bool has_libmain                        : 1;    /* LibMain defined */
+    bool ep_switch_used                     : 1;    /* emit prolog hooks */
+    bool ee_switch_used                     : 1;    /* emit epilog hooks */
+    bool dump_types_with_names              : 1;    /* -d3 information */
 
-    bool ec_switch_used             : 1;    /* emit coverage hooks */
-    bool jis_to_unicode             : 1;    /* convert JIS to UNICODE */
-    bool using_overlays             : 1;    /* user doing overlays */
-    bool unique_functions           : 1;    /* func addrs are unique */
-    bool st_switch_used             : 1;    /* touch stack through esp */
-    bool make_precompiled_header    : 1;    /* make precompiled header */
-    bool emit_dependencies          : 1;    /* include file dependencies*/
-    bool multiple_code_segments     : 1;    /* more than 1 code seg */
+    bool ec_switch_used                     : 1;    /* emit coverage hooks */
+    bool jis_to_unicode                     : 1;    /* convert JIS to UNICODE */
+    bool using_overlays                     : 1;    /* user doing overlays */
+    bool unique_functions                   : 1;    /* func addrs are unique */
+    bool st_switch_used                     : 1;    /* touch stack through esp */
+    bool make_precompiled_header            : 1;    /* make precompiled header */
+    bool emit_dependencies                  : 1;    /* include file dependencies*/
+    bool multiple_code_segments             : 1;    /* more than 1 code seg */
 
-    bool returns_promoted           : 1;    /* return char/short as int */
-    bool pending_dead_code          : 1;    /* aborts func in an expr */
-    bool use_precompiled_header     : 1;    /* use precompiled header */
-    bool doing_macro_expansion      : 1;    /* doing macro expansion */
-    bool no_pch_warnings            : 1;    /* disable PCH warnings */
-    bool align_structs_on_qwords    : 1;    /* for Alpha */
-    bool no_check_inits             : 1;    /* ease init  type checking */
-    bool no_check_qualifiers        : 1;    /* ease qualifier mismatch */
+    bool returns_promoted                   : 1;    /* return char/short as int */
+    bool pending_dead_code                  : 1;    /* aborts func in an expr */
+    bool use_precompiled_header             : 1;    /* use precompiled header */
+    bool doing_macro_expansion              : 1;    /* doing macro expansion */
+    bool no_pch_warnings                    : 1;    /* disable PCH warnings */
+    bool align_structs_on_qwords            : 1;    /* for Alpha */
+    bool no_check_inits                     : 1;    /* ease init  type checking */
+    bool no_check_qualifiers                : 1;    /* ease qualifier mismatch */
 
-    bool use_stdcall_at_number      : 1;    /* add @nn thing */
-    bool rent                       : 1;    /* make re-entrant r/w split thind  */
-    bool unaligned_segs             : 1;    /* don't align segments */
-    bool trigraph_alert             : 1;    /* trigraph char alert */
-    bool generate_auto_depend       : 1;    /* Generate make auto depend file */
-    bool c99_extensions             : 1;    /* C99 extensions enabled */
-    bool use_long_double            : 1;    /* Make CC send long double types to code gen */
-    bool track_includes             : 1;    /* report opens of include files */
+    bool use_stdcall_at_number              : 1;    /* add @nn thing */
+    bool rent                               : 1;    /* make re-entrant r/w split thind  */
+    bool unaligned_segs                     : 1;    /* don't align segments */
+    bool trigraph_alert                     : 1;    /* trigraph char alert */
+    bool generate_auto_depend               : 1;    /* Generate make auto depend file */
+    bool c99_extensions                     : 1;    /* C99 extensions enabled */
+    bool use_long_double                    : 1;    /* Make CC send long double types to code gen */
+    bool track_includes                     : 1;    /* report opens of include files */
 
-    bool cpp_ignore_env             : 1;    /* ignore *INCLUDE env var(s) */
-    bool ignore_default_dirs        : 1;    /* ignore default directories for file search .,../h,../c, etc. */
-    bool pragma_library             : 1;    /* pragma library simulate -zlf option */
-    bool oldmacros_enabled          : 1;    /* enable old predefined macros (non-ISO compatible) */
-    bool check_truncated_fnames     : 1;    /* do not check for truncated versions of file names */
+    bool cpp_ignore_env                     : 1;    /* ignore *INCLUDE env var(s) */
+    bool ignore_default_dirs                : 1;    /* ignore default directories for file search .,../h,../c, etc. */
+    bool pragma_library                     : 1;    /* pragma library simulate -zlf option */
+    bool non_iso_compliant_names_enabled    : 1;    /* enable all compiler non-ISO compliant names (macros, symbols, etc.) */
+    bool check_truncated_fnames             : 1;    /* do not check for truncated versions of file names */
 } comp_flags;
 
 typedef struct global_comp_flags {  // things that live across compiles

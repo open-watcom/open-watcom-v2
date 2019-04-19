@@ -787,7 +787,7 @@ static int pkt_init (void)
 
 #if defined(__WATCOM386__)
 //#pragma option -zu                    /* assume SS != DS (doesn't work) */
-//#pragma aux pkt_release __modify[ss]; /* !! fix-me (doesn't work) */
+//#pragma aux pkt_release __modify[__ss]; /* !! fix-me (doesn't work) */
 #endif
 
 #if (defined(__TURBOC__) || defined(__BORLANDC__)) && !defined(OLD_TURBOC)

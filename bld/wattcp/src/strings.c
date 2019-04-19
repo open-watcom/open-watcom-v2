@@ -23,8 +23,8 @@
   #pragma aux _outchar = \
           "mov ah, 2"    \
           "int 21h"      \
-          parm [dl]      \
-          modify [ax];
+          __parm [__dl]      \
+          __modify [__ax];
 #endif
 
 /*
