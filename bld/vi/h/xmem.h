@@ -79,7 +79,7 @@ extern long _XtdGetSize( void );
         "mov ah,88h" \
         "int 15h"    \
         "sbb dx,dx"  \
-    __parm caller       [] \
+    __parm __caller     [] \
     __value             [__dx __ax] \
     __modify __exact    [__ax __dx]
 

@@ -201,7 +201,7 @@ bool DoGlobalEntryModule( GLOBALENTRY *ge, HMODULE hmod, WORD seg );
 bool DoGlobalEntryHandle( GLOBALENTRY *ge, HANDLE hmem );
 
 /* winmain.c */
-#pragma aux Death aborts;
+#pragma aux Death __aborts;
 void Death( msg_id msgid, ... );
 
 /* winproc.c */
