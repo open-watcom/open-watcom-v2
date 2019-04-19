@@ -31,11 +31,8 @@
 
 
 #include "uidef.h"
-#ifndef __UNIX__
-#include <conio.h>
 #if defined(HAVE_FAR)
 #include <i86.h>
-#endif
 #endif
 
 
