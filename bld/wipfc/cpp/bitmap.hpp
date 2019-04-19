@@ -44,7 +44,7 @@ public:
 private:
     Bitmap( const Bitmap& rhs );            //no copy
     Bitmap& operator=( const Bitmap& rhs ); //no assignment
-#pragma pack(push,1)
+#pragma pack(__push,1)
     struct BitmapFileHeader {
         byte    type[ 2 ];       //'BM' for input, 'bM' for output
         dword   size;            //including this header, before lzw compression
@@ -84,7 +84,7 @@ private:
         void read( std::FILE* bmfpi );
         void write( std::FILE* bmfpo ) const;
     };
-#pragma pack(pop)
+#pragma pack(__pop)
     void readHeader16( std::FILE* bmfpi );
     void readHeaderW32( std::FILE* bmfpi );
     void readHeaderOS2( std::FILE* bmfpi );

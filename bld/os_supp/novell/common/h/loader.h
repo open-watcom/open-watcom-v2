@@ -5,7 +5,7 @@
 *                            Open Watcom Project
 *
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
-*    Portions Copyright (c) 1989-2002 Novell, Inc.  All Rights Reserved.                      
+*    Portions Copyright (c) 1989-2002 Novell, Inc.  All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -30,7 +30,7 @@
 *   This header file was generated for the OpenWatcom project by Carl Young
 *       carl.young@keycomm.co.uk
 *   Any problems or updates required, please either contact the author or
-*   the OpenWatcom contributors forums. 
+*   the OpenWatcom contributors forums.
 *       http://www.openwatcom.com/
 *
 * Description:  Provides a dumbed down version of the internal loader
@@ -41,7 +41,7 @@
 
 #include <clib.h>
 
-#pragma pack (push, 1)
+#pragma pack (__push, 1)
 
 /*
 //  As you will be able to clearly see this structure is not well defined
@@ -51,26 +51,26 @@
 /* LoadDefinitionStructure */
 typedef struct LoadDefinitionStructure
 {
-	struct LoadDefinitionStructure *	LDLink;
-	LONG                                undef00[4];
-	UINT32 /* UINT8 * */				LDCodeImageOffset;
-	LONG                                undef01;
-	UINT32 /* UINT8 * */				LDDataImageOffset;
-	LONG                                undef02[6];
+        struct LoadDefinitionStructure *        LDLink;
+        LONG                                undef00[4];
+        UINT32 /* UINT8 * */                            LDCodeImageOffset;
+        LONG                                undef01;
+        UINT32 /* UINT8 * */                            LDDataImageOffset;
+        LONG                                undef02[6];
     LONG                                LDInitializationProcedure;
     LONG                                undef03[3];
-	MEON								LDFileName[36];
+        MEON                                                            LDFileName[36];
 }LoadDefinitionStructure;
 
 #if !defined(MODULE_HANDLE)
 #define MODULE_HANDLE MODULE_HANDLE
-typedef LoadDefinitionStructure	MODULE_HANDLE;
+typedef LoadDefinitionStructure MODULE_HANDLE;
 #endif
 
 #if !defined(LoadDefinitionStruct)
 #define LoadDefinitionStruct LoadDefinitionStructure
 #endif
 
-#pragma pack (pop)
+#pragma pack (__pop)
 
 #endif /* _LOADER_H_F39997A6_88FC_434B_B339_554BE343B3E8 */

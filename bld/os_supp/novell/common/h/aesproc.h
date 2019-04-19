@@ -6,7 +6,7 @@
 *                            Open Watcom Project
 *
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
-*    Portions Copyright (c) 1989-2002 Novell, Inc.  All Rights Reserved.                      
+*    Portions Copyright (c) 1989-2002 Novell, Inc.  All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -31,7 +31,7 @@
 *   This header file was generated for the OpenWatcom project by Carl Young
 *       carl.young@keycomm.co.uk
 *   Any problems or updates required, please either contact the author or
-*   the OpenWatcom contributors forums. 
+*   the OpenWatcom contributors forums.
 *       http://www.openwatcom.com/
 *
 * Description:  Defines the Asynchronous Event control block.
@@ -40,7 +40,7 @@
 
 CPP_START
 
-#pragma pack (push, 1)
+#pragma pack (__push, 1)
 struct   AESProcessStructure
 {
    struct AESProcessStructure *ALink;/* Set by AES */
@@ -50,10 +50,10 @@ struct   AESProcessStructure
    LONG ARTag;                       /* Set to resource tag; unchanged */
    LONG AOldLink;                    /* Set to NULL             */
 };
-#pragma pack (pop)
+#pragma pack (__pop)
 
 extern void ScheduleSleepAESProcessEvent(
-	struct AESProcessStructure *__EventNode	);
+        struct AESProcessStructure *__EventNode );
 
 CPP_END
 

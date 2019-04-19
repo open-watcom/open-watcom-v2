@@ -5,7 +5,7 @@
 *                            Open Watcom Project
 *
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
-*    Portions Copyright (c) 1989-2002 Novell, Inc.  All Rights Reserved.                      
+*    Portions Copyright (c) 1989-2002 Novell, Inc.  All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -30,7 +30,7 @@
 *   This header file was generated for the OpenWatcom project by Carl Young
 *       carl.young@keycomm.co.uk
 *   Any problems or updates required, please either contact the author or
-*   the OpenWatcom contributors forums. 
+*   the OpenWatcom contributors forums.
 *       http://www.openwatcom.com/
 *
 * Description:  Defines Netware's low level ECB (Event Control Blocks) and
@@ -42,7 +42,7 @@
 
 struct ResourceTagStructure;
 
-#pragma pack (push, 1)
+#pragma pack (__push, 1)
 
 typedef struct IPXAddress
 {
@@ -110,110 +110,110 @@ typedef struct ECB {
 /* applications are using                                               */
 typedef struct TimeCallBackStructure
    {
-   struct TimeCallBackStructure *	TLink; /* Set by CScheduleInterruptTimeCallBack */
-   void								(*TCallBackProcedure)(	LONG parameter);              /* Set to function to call; unchanged */
-   LONG								TCallBackParameter;           /* Set to value to pass to func; unchanged */
-   LONG								TCallBackWaitTime;            /* Set to # ticks to wait; unchanged; 
-																		looked at only when call is made */
-   //LONG								TResourceTag;                 /* Set to resource tag; unchanged */
-   struct ResourceTagStructure *	TResourceTag;				  /* Set to resource tag; unchanged */
-   LONG								TWorkWakeUpTime;              /* Set by CScheduleInterruptTimeCallBack */
-   LONG								TSignature;                   /* Set by CScheduleInterruptTimeCallBack */
+   struct TimeCallBackStructure *       TLink; /* Set by CScheduleInterruptTimeCallBack */
+   void                                                         (*TCallBackProcedure)(  LONG parameter);              /* Set to function to call; unchanged */
+   LONG                                                         TCallBackParameter;           /* Set to value to pass to func; unchanged */
+   LONG                                                         TCallBackWaitTime;            /* Set to # ticks to wait; unchanged;
+                                                                                                                                                looked at only when call is made */
+   //LONG                                                               TResourceTag;                 /* Set to resource tag; unchanged */
+   struct ResourceTagStructure *        TResourceTag;                             /* Set to resource tag; unchanged */
+   LONG                                                         TWorkWakeUpTime;              /* Set by CScheduleInterruptTimeCallBack */
+   LONG                                                         TSignature;                   /* Set by CScheduleInterruptTimeCallBack */
 }TimeCallBackStructure;
 
-#define TCallBackEBXParameter	TCallBackParameter
-#define	TimerDataStructure		TimeCallBackStructure
+#define TCallBackEBXParameter   TCallBackParameter
+#define TimerDataStructure              TimeCallBackStructure
 
-#pragma pack (pop)
+#pragma pack (__pop)
 
 CPP_START
 
 LONG CIPXCancelECB(
-		void *eventControlBlock);
+                void *eventControlBlock);
 
 LONG CIPXCheckForSocket(
-		LONG socketNumber);
+                LONG socketNumber);
 
 LONG CIPXCloseSocket(
-		LONG socketNumber);
+                LONG socketNumber);
 
 LONG CIPXCountReceiveECBs(
-		LONG socketNumber);
+                LONG socketNumber);
 
 LONG CIPXGetECB(
-		LONG socketNumber);
+                LONG socketNumber);
 
 void CIPXGetInternetworkAddress(
-		BYTE *networkAddress);
+                BYTE *networkAddress);
 
 LONG CIPXGetLocalTarget(
-		BYTE *networkAddress,
-		BYTE *immediateAddress,
-		LONG *transportTime);
+                BYTE *networkAddress,
+                BYTE *immediateAddress,
+                LONG *transportTime);
 
 LONG CIPXListen(
-		void *eventControlBlock);
+                void *eventControlBlock);
 
 LONG CIPXOpenSocket(
-		LONG *socketNumber);
+                LONG *socketNumber);
 
 LONG CIPXSendPacket(
-		void *eventControlBlock);
+                void *eventControlBlock);
 
 LONG CIPXSendPacketSkipChkSum(
-		void *eventControlBlock);
+                void *eventControlBlock);
 
 LONG CSPXAbortConnection(
-		LONG sessionID);
+                LONG sessionID);
 
 LONG CSPXCancelSessionListen(
-		void *eventControlBlock);
+                void *eventControlBlock);
 
 LONG CSPXCheckInstallation(
-		WORD *version,
-		LONG *maxConnections);
+                WORD *version,
+                LONG *maxConnections);
 
 LONG CSPXEstablishConnection(
-		BYTE retryCount,
-		BYTE watchDog,
-		LONG *sessionID,
-		void *eventControlBlock);
+                BYTE retryCount,
+                BYTE watchDog,
+                LONG *sessionID,
+                void *eventControlBlock);
 
 LONG CSPXGetConnectionStatus(
-		LONG sessionID,
-		void *buffer);
+                LONG sessionID,
+                void *buffer);
 
 LONG CSPXListenForConnectedPacket(
-		void *eventControlBlock,
-		LONG sessionID);
+                void *eventControlBlock,
+                LONG sessionID);
 
 LONG CSPXListenForConnection(
-		BYTE retryCount,
-		BYTE watchDog,
-		LONG *sessionID,
-		void *eventControlBlock);
+                BYTE retryCount,
+                BYTE watchDog,
+                LONG *sessionID,
+                void *eventControlBlock);
 
 LONG CSPXListenForSequencedPacket(
-		void *eventControlBlock);
+                void *eventControlBlock);
 
 LONG CSPXSendSequencedPacket(
-		LONG sessionID,
-		void *eventControlBlock);
+                LONG sessionID,
+                void *eventControlBlock);
 
 LONG CSPXTerminateConnection(
-		LONG sessionID,
-		void *eventControlBlock);
+                LONG sessionID,
+                void *eventControlBlock);
 
-LONG CIPXOpenSocketRTag( 
-		LONG	*	socket, 
-		struct ResourceTagStructure * pTag
-		);
+LONG CIPXOpenSocketRTag(
+                LONG    *       socket,
+                struct ResourceTagStructure * pTag
+                );
 
 void CScheduleInterruptTimeCallBack(
-		TimeCallBackStructure *TimerNode);
+                TimeCallBackStructure *TimerNode);
 
 void CCancelInterruptTimeCallBack(
-		TimeCallBackStructure *TimerNode);
+                TimeCallBackStructure *TimerNode);
 
 CPP_END
 

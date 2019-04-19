@@ -5,7 +5,7 @@
 #define STRING_MAX_LEN      256
 #define WSTRING_MAX_LEN     256
 
-#pragma pack(push, 1)
+#pragma pack(__push, 1)
 typedef struct {
     uint8_t     id[3];              // "HSP"
     uint8_t     flags;              // 0x01 if INF style file, 0x10 if HLP style file
@@ -622,7 +622,7 @@ typedef struct {
     //variable length data follows
     //uint16_t  children[(size - 3) / 2];
 } ChildPages;
-#pragma pack(pop)
+#pragma pack(__pop)
 
 extern void         readHeader( FILE *, FILE * );
 extern void         readGNames( FILE *, FILE * );

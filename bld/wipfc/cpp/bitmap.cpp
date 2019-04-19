@@ -34,7 +34,7 @@
 #include "bitmap.hpp"
 #include "errors.hpp"
 
-#pragma pack(push,1)
+#pragma pack(__push,1)
 
 //used for input
 struct BitmapInfoHeaderWin32 {
@@ -76,7 +76,7 @@ struct BitmapInfoHeaderOS22x {
     //possibly followed by rgb triples
 };
 
-#pragma pack(pop)
+#pragma pack(__pop)
 
 Bitmap::Bitmap( std::string& fname ) : _dataSize( sizeof( word ) ), _blockSize( 0 )
 {

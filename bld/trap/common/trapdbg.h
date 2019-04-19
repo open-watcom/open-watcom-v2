@@ -119,7 +119,7 @@ extern void _DBG_KeyWait( void );
         "int  21h"                                          \
     __parm                                                    \
     __value                                                   \
-    __modify __exact [ax]
+    __modify __exact [__ax]
 
 extern void _DBG_DumpMultChars( uint_8 ch, uint_16 count, uint_16 fhandle );
 #pragma aux _DBG_DumpMultChars = \
