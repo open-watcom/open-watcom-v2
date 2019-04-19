@@ -45,7 +45,7 @@
     extern unsigned char    _dos( unsigned char );
     #pragma aux _dos = \
             "int 21h"      \
-        __parm caller   [__ah] \
+        __parm __caller [__ah] \
         __value         [__al]
 #endif
 
