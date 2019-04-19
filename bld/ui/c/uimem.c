@@ -33,12 +33,12 @@
 #include "uidef.h"
 #include "uifar.h"
 
-LP_PIXEL intern faralloc( size_t size )
-/************************************/
+LP_PIXEL intern faralloc( uisize size )
+/*************************************/
 {
     LP_PIXEL    ptr;
 
-    ptr = uifaralloc( size );
+    ptr = uifaralloc( sizeof( PIXEL ) * size );
     return( ptr );
 }
 

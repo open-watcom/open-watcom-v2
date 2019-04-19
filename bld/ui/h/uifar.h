@@ -29,10 +29,10 @@
 ****************************************************************************/
 
 
-extern void         intern farfill( LP_PIXEL, PIXEL, size_t, bool );
-extern void         intern farcopy( LP_PIXEL, LP_PIXEL, size_t, bool );
-extern void         intern farstring( LP_PIXEL, ATTR, LPC_STRING, size_t, bool );
-extern void         intern farattrib( LP_PIXEL, ATTR, size_t, bool );
-extern void         intern farattrflip( LP_PIXEL, size_t, bool );
-extern LP_PIXEL     intern faralloc( size_t size );
+extern void         intern farfill( LP_PIXEL, PIXEL, uisize, bool );
+extern void         intern farcopy( LP_PIXEL, LP_PIXEL, uisize, bool );
+extern void         intern farstring( LP_PIXEL, ATTR, LPC_STRING, uisize, bool );
+extern void         intern farattrib( LP_PIXEL, ATTR, uisize, bool );
+extern void         intern farattrflip( LP_PIXEL, uisize, bool );
+extern LP_PIXEL     intern faralloc( uisize size );
 extern void         intern farfree( LP_PIXEL ptr );

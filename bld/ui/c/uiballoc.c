@@ -48,7 +48,7 @@ bool intern balloc( BUFFER *bptr, uisize rows, uisize cols )
 /**********************************************************/
 {
     bptr->increment = cols;
-    bptr->origin = faralloc( sizeof( PIXEL ) * rows * cols );
+    bptr->origin = faralloc( rows * cols );
     return( bptr->origin != NULL );
 }
 
