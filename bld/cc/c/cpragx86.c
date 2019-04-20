@@ -205,7 +205,7 @@ bool GetPragAuxAlias( void )
 {
     bool    isfar16;
 
-    isfar16 = PragRecog( "far16" );
+    isfar16 = PragRecogId( "far16" );
     if( IS_ID_OR_KEYWORD( CurToken ) ) {
         CurrAlias = SearchPragAuxAlias( Buffer );
         PPNextToken();
@@ -231,13 +231,13 @@ static fix_words FixupKeyword( void )
 {
     fix_words retn;             // - return
 
-    if( PragRecog( "float" ) ) {
+    if( PragRecogId( "float" ) ) {
         retn = FIXWORD_FLOAT;
-    } else if( PragRecog( "seg" ) ) {
+    } else if( PragRecogId( "seg" ) ) {
         retn = FIXWORD_SEGMENT;
-    } else if( PragRecog( "offset" ) ) {
+    } else if( PragRecogId( "offset" ) ) {
         retn = FIXWORD_OFFSET;
-    } else if( PragRecog( "reloff" ) ) {
+    } else if( PragRecogId( "reloff" ) ) {
         retn = FIXWORD_RELOFF;
     } else {
         retn = FIXWORD_NONE;
@@ -746,20 +746,20 @@ static void GetParmInfo( void )
     have.f_nomemory = false;
     have.f_list = false;
     for( ;; ) {
-        if( !have.f_pop && PragRecog( "caller" ) ) {
+        if( !have.f_pop && PragRecogId( "caller" ) ) {
             AuxInfo.cclass |= CALLER_POPS;
             have.f_pop = true;
-        } else if( !have.f_pop && PragRecog( "routine" ) ) {
+        } else if( !have.f_pop && PragRecogId( "routine" ) ) {
             AuxInfo.cclass &= ~ CALLER_POPS;
             AuxInfoFlg.f_routine_pops = true;
             have.f_pop = true;
-        } else if( !have.f_reverse && PragRecog( "reverse" ) ) {
+        } else if( !have.f_reverse && PragRecogId( "reverse" ) ) {
             AuxInfo.cclass |= REVERSE_PARMS;
             have.f_reverse = true;
-        } else if( !have.f_nomemory && PragRecog( "nomemory" ) ) {
+        } else if( !have.f_nomemory && PragRecogId( "nomemory" ) ) {
             AuxInfo.cclass |= NO_MEMORY_READ;
             have.f_nomemory = true;
-        } else if( !have.f_loadds && PragRecog( "loadds" ) ) {
+        } else if( !have.f_loadds && PragRecogId( "loadds" ) ) {
             AuxInfo.cclass |= LOAD_DS_ON_CALL;
             have.f_loadds = true;
         } else if( !have.f_list && PragRegSet() != T_NULL ) {
@@ -787,16 +787,16 @@ static void GetSTRetInfo( void )
     have.f_allocs = false;
     have.f_list = false;
     for( ;; ) {
-        if( !have.f_float && PragRecog( "float" ) ) {
+        if( !have.f_float && PragRecogId( "float" ) ) {
             have.f_float = true;
             AuxInfo.cclass |= NO_FLOAT_REG_RETURNS;
-        } else if( !have.f_struct && PragRecog( "struct" ) ) {
+        } else if( !have.f_struct && PragRecogId( "struct" ) ) {
             have.f_struct = true;
             AuxInfo.cclass |= NO_STRUCT_REG_RETURNS;
-        } else if( !have.f_allocs && PragRecog( "routine" ) ) {
+        } else if( !have.f_allocs && PragRecogId( "routine" ) ) {
             have.f_allocs = true;
             AuxInfo.cclass |= ROUTINE_RETURN;
-        } else if( !have.f_allocs && PragRecog( "caller" ) ) {
+        } else if( !have.f_allocs && PragRecogId( "caller" ) ) {
             have.f_allocs = true;
             AuxInfo.cclass &= ~ROUTINE_RETURN;
             AuxInfoFlg.f_caller_return = true;
@@ -826,7 +826,7 @@ static void GetRetInfo( void )
     AuxInfo.cclass &= ~ NO_8087_RETURNS;
     AuxInfoFlg.f_8087_returns = true;
     for( ;; ) {
-        if( !have.f_no8087 && PragRecog( "no8087" ) ) {
+        if( !have.f_no8087 && PragRecogId( "no8087" ) ) {
             have.f_no8087 = true;
             HW_CTurnOff( AuxInfo.returns, HW_FLTS );
             AuxInfo.cclass |= NO_8087_RETURNS;
@@ -834,7 +834,7 @@ static void GetRetInfo( void )
             have.f_list = true;
             AuxInfo.cclass |= SPECIAL_RETURN;
             AuxInfo.returns = PragRegList();
-        } else if( !have.f_struct && PragRecog( "struct" ) ) {
+        } else if( !have.f_struct && PragRecogId( "struct" ) ) {
             have.f_struct = true;
             GetSTRetInfo();
         } else {
@@ -857,10 +857,10 @@ static void GetSaveInfo( void )
     have.f_nomemory = false;
     have.f_list = false;
     for( ;; ) {
-        if( !have.f_exact && PragRecog( "exact" ) ) {
+        if( !have.f_exact && PragRecogId( "exact" ) ) {
             AuxInfo.cclass |= MODIFY_EXACT;
             have.f_exact = true;
-        } else if( !have.f_nomemory && PragRecog( "nomemory" ) ) {
+        } else if( !have.f_nomemory && PragRecogId( "nomemory" ) ) {
             AuxInfo.cclass |= NO_MEMORY_CHANGED;
             have.f_nomemory = true;
         } else if( !have.f_list && PragRegSet() != T_NULL ) {
@@ -907,35 +907,35 @@ void PragAux( void )
             if( !have.f_call && CurToken == T_EQUAL ) {
                 have.uses_auto = GetByteSeq( &AuxInfo.code );
                 have.f_call = true;
-            } else if( !have.f_call && PragRecog( "far" ) ) {
+            } else if( !have.f_call && PragRecogId( "far" ) ) {
                 AuxInfo.cclass |= FAR_CALL;
                 have.f_call = true;
-            } else if( !have.f_call && PragRecog( "near" ) ) {
+            } else if( !have.f_call && PragRecogId( "near" ) ) {
                 AuxInfo.cclass &= ~FAR_CALL;
                 AuxInfoFlg.f_near = true;
                 have.f_call = true;
-            } else if( !have.f_loadds && PragRecog( "loadds" ) ) {
+            } else if( !have.f_loadds && PragRecogId( "loadds" ) ) {
                 AuxInfo.cclass |= LOAD_DS_ON_ENTRY;
                 have.f_loadds = true;
-            } else if( !have.f_rdosdev && PragRecog( "rdosdev" ) ) {
+            } else if( !have.f_rdosdev && PragRecogId( "rdosdev" ) ) {
                 AuxInfo.cclass |= LOAD_RDOSDEV_ON_ENTRY;
                 have.f_rdosdev = true;
-            } else if( !have.f_export && PragRecog( "export" ) ) {
+            } else if( !have.f_export && PragRecogId( "export" ) ) {
                 AuxInfo.cclass |= DLL_EXPORT;
                 have.f_export = true;
-            } else if( !have.f_parm && PragRecog( "parm" ) ) {
+            } else if( !have.f_parm && PragRecogId( "parm" ) ) {
                 GetParmInfo();
                 have.f_parm = true;
-            } else if( !have.f_value && PragRecog( "value" ) ) {
+            } else if( !have.f_value && PragRecogId( "value" ) ) {
                 GetRetInfo();
                 have.f_value = true;
-            } else if( !have.f_value && PragRecog( "aborts" ) ) {
+            } else if( !have.f_value && PragRecogId( "aborts" ) ) {
                 AuxInfo.cclass |= SUICIDAL;
                 have.f_value = true;
-            } else if( !have.f_modify && PragRecog( "modify" ) ) {
+            } else if( !have.f_modify && PragRecogId( "modify" ) ) {
                 GetSaveInfo();
                 have.f_modify = true;
-            } else if( !have.f_frame && PragRecog( "frame" ) ) {
+            } else if( !have.f_frame && PragRecogId( "frame" ) ) {
                 AuxInfo.cclass |= GENERATE_STACK_FRAME;
                 have.f_frame = true;
             } else {

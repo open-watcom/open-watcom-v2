@@ -40,6 +40,9 @@
 #include "clibext.h"
 
 
+#define pragmaNameRecog(what)   (strcmp(Buffer, what) == 0)
+#define pragmaIdRecog(what)     (stricmp(what, SkipUnderscorePrefix(Buffer, NULL, true)) == 0)
+
 struct  pack_info {
     struct pack_info    *next;
     align_type          pack_amount;
@@ -159,25 +162,34 @@ const char *SkipUnderscorePrefix( const char *str, size_t *len, bool iso_complia
     return( str );
 }
 
-static bool PragIdRecog( const char *what )
-/*****************************************/
+bool PragRecogId( const char *what )
+/**********************************/
 {
-    bool    rc;
+    bool    ok;
 
-    rc = ( stricmp( what, SkipUnderscorePrefix( Buffer, NULL, true ) ) == 0 );
-    if( rc ) {
-        PPNextToken();
+    ok = IS_ID_OR_KEYWORD( CurToken );
+    if( ok ) {
+        ok = pragmaIdRecog(what);
+        if( ok ) {
+            PPNextToken();
+        }
     }
-    return( rc );
+    return( ok );
 }
 
-bool PragRecog( const char *what )
-/********************************/
+bool PragRecogName( const char *what )
+/************************************/
 {
-    if( IS_ID_OR_KEYWORD( CurToken ) ) {
-        return( PragIdRecog( what ) );
+    bool    ok;
+
+    ok = IS_ID_OR_KEYWORD( CurToken );
+    if( ok ) {
+        ok = pragmaNameRecog( what );
+        if( ok ) {
+            PPNextToken();
+        }
     }
-    return( false );
+    return( ok );
 }
 
 static void advanceToken( void )
@@ -700,7 +712,7 @@ static void pragComment( void )
     PPNextToken();
     if( ExpectingToken( T_LEFT_PAREN ) ) {
         PPNextToken();
-        if( PragRecog( "lib" ) ) {
+        if( PragRecogId( "lib" ) ) {
             if( ExpectingToken( T_COMMA ) ) {
                 PPNextToken();
             }
@@ -733,7 +745,7 @@ static void getPackArgs( void )
     struct pack_info    *pi;
 
     /* check to make sure it is a numeric token */
-    if( PragRecog( "push" ) ) {
+    if( PragRecogId( "push" ) ) {
         pi = (struct pack_info *)CMemAlloc( sizeof( struct pack_info ) );
         pi->next = PackInfo;
         pi->pack_amount = PackAmount;
@@ -745,7 +757,7 @@ static void getPackArgs( void )
             }
             PPNextToken();
         }
-    } else if( PragRecog( "pop" ) ) {
+    } else if( PragRecogId( "pop" ) ) {
         pi = PackInfo;
         if( pi != NULL ) {
             PackAmount = pi->pack_amount;
@@ -989,16 +1001,16 @@ static void pragEnum( void )
 {
     PPCTL_ENABLE_MACROS();
     PPNextToken();
-    if( PragRecog( "int" ) ) {
+    if( PragRecogId( "int" ) ) {
         PushEnum();
         CompFlags.make_enums_an_int = true;
-    } else if( PragRecog( "minimum" ) ) {
+    } else if( PragRecogId( "minimum" ) ) {
         PushEnum();
         CompFlags.make_enums_an_int = false;
-    } else if( PragRecog( "original" ) ) {
+    } else if( PragRecogId( "original" ) ) {
         PushEnum();
         CompFlags.make_enums_an_int = CompFlags.original_enum_setting;
-    } else if( PragRecog( "pop" ) ) {
+    } else if( PragRecogId( "pop" ) ) {
         PopEnum();
     }
     PPCTL_DISABLE_MACROS();
@@ -1263,9 +1275,9 @@ static void pragOnce( void )
 static void OptionPragSTDC( void )
 /********************************/
 {
-    if( PragRecog( "ON" ) ) {
-    } else if( PragRecog( "OFF" ) ) {
-    } else if( PragRecog( "DEFAULT" ) ) {
+    if( PragRecogName( "ON" ) ) {
+    } else if( PragRecogName( "OFF" ) ) {
+    } else if( PragRecogName( "DEFAULT" ) ) {
     }
 }
 
@@ -1276,16 +1288,15 @@ static void OptionPragSTDC( void )
 static void pragSTDC( void )
 /**************************/
 {
-    PPCTL_ENABLE_MACROS();
+    PPCTL_DISABLE_MACROS();
     PPNextToken();
-    if( PragRecog( "FP_CONTRACT" ) ) {
+    if( PragRecogName( "FP_CONTRACT" ) ) {
         OptionPragSTDC();
-    } else if( PragRecog( "FENV_ACCESS" ) ) {
+    } else if( PragRecogName( "FENV_ACCESS" ) ) {
         OptionPragSTDC();
-    } else if( PragRecog( "CX_LIMITED_RANGE" ) ) {
+    } else if( PragRecogName( "CX_LIMITED_RANGE" ) ) {
         OptionPragSTDC();
     }
-    PPCTL_DISABLE_MACROS();
 }
 
 void AddExtRefN ( const char *name )
@@ -1438,8 +1449,6 @@ void CPragma( void )
 {
     bool    check_end = true;
 
-#define pragmaNameRecog(what)   (strcmp(Buffer, what) == 0)
-
     /* Note that the include_alias pragma must always be processed
      * because it's intended for the preprocessor, not the compiler.
      */
@@ -1511,6 +1520,4 @@ void CPragma( void )
     if( check_end )
         EndOfPragma();
     CompFlags.in_pragma = false;
-
-#undef pragmaNameRecog
 }

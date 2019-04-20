@@ -163,8 +163,11 @@ void PragmaSetToggle(           // SET TOGGLE
 void PragObjNameInfo(           // RECOGNIZE OBJECT NAME INFORMATION
     void )
 ;
-bool PragRecog(                 // RECOGNIZE PRAGMA ID
+bool PragRecogId(               // RECOGNIZE PRAGMA ID
     const char *what )          // - id
+;
+bool PragRecogName(             // RECOGNIZE PRAGMA NAME
+    const char *what )          // - name
 ;
 int PragRegIndex(               // GET PRAGMA REGISTER INDEX
     const char *registers,

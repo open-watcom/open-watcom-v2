@@ -219,7 +219,7 @@ void GetPragAuxAlias( void )
 {
     bool    isfar16;
 
-    isfar16 = PragRecog( "far16" );
+    isfar16 = PragRecogId( "far16" );
     PragCurrAlias();
     NextToken();
     if( CurToken == T_RIGHT_PAREN ) {
@@ -248,19 +248,19 @@ static void GetParmInfo(
     have.f_nomemory      = 0;
     have.f_list          = 0;
     for( ;; ) {
-        if( !have.f_pop && PragRecog( "caller" ) ) {
+        if( !have.f_pop && PragRecogId( "caller" ) ) {
             CurrInfo->cclass |= CALLER_POPS;
             have.f_pop = 1;
-        } else if( !have.f_pop && PragRecog( "routine" ) ) {
+        } else if( !have.f_pop && PragRecogId( "routine" ) ) {
             CurrInfo->cclass &= ~ CALLER_POPS;
             have.f_pop = 1;
-        } else if( !have.f_reverse && PragRecog( "reverse" ) ) {
+        } else if( !have.f_reverse && PragRecogId( "reverse" ) ) {
             CurrInfo->cclass |= REVERSE_PARMS;
             have.f_reverse = 1;
-        } else if( !have.f_nomemory && PragRecog( "nomemory" ) ) {
+        } else if( !have.f_nomemory && PragRecogId( "nomemory" ) ) {
             CurrInfo->cclass |= NO_MEMORY_READ;
             have.f_nomemory = 1;
-        } else if( !have.f_loadds && PragRecog( "loadds" ) ) {
+        } else if( !have.f_loadds && PragRecogId( "loadds" ) ) {
             CurrInfo->cclass |= LOAD_DS_ON_CALL;
             have.f_loadds = 1;
         } else if( !have.f_list && IS_REGSET( CurToken ) ) {
@@ -287,16 +287,16 @@ static void GetSTRetInfo(
     have.f_allocs = 0;
     have.f_list   = 0;
     for( ;; ) {
-        if( !have.f_float && PragRecog( "float" ) ) {
+        if( !have.f_float && PragRecogId( "float" ) ) {
             have.f_float = 1;
             CurrInfo->cclass |= NO_FLOAT_REG_RETURNS;
-        } else if( !have.f_struct && PragRecog( "struct" ) ) {
+        } else if( !have.f_struct && PragRecogId( "struct" ) ) {
             have.f_struct = 1;
             CurrInfo->cclass |= NO_STRUCT_REG_RETURNS;
-        } else if( !have.f_allocs && PragRecog( "routine" ) ) {
+        } else if( !have.f_allocs && PragRecogId( "routine" ) ) {
             have.f_allocs = 1;
             CurrInfo->cclass |= ROUTINE_RETURN;
-        } else if( !have.f_allocs && PragRecog( "caller" ) ) {
+        } else if( !have.f_allocs && PragRecogId( "caller" ) ) {
             have.f_allocs = 1;
             CurrInfo->cclass &= ~ROUTINE_RETURN;
         } else if( !have.f_list && IS_REGSET( CurToken ) ) {
@@ -323,7 +323,7 @@ static void GetRetInfo(
     have.f_struct  = 0;
     CurrInfo->cclass &= ~ NO_8087_RETURNS;
     for( ;; ) {
-        if( !have.f_no8087 && PragRecog( "no8087" ) ) {
+        if( !have.f_no8087 && PragRecogId( "no8087" ) ) {
             have.f_no8087 = 1;
             HW_CTurnOff( CurrInfo->returns, HW_FLTS );
             CurrInfo->cclass |= NO_8087_RETURNS;
@@ -331,7 +331,7 @@ static void GetRetInfo(
             have.f_list = 1;
             CurrInfo->cclass |= SPECIAL_RETURN;
             CurrInfo->returns = PragRegList();
-        } else if( !have.f_struct && PragRecog( "struct" ) ) {
+        } else if( !have.f_struct && PragRecogId( "struct" ) ) {
             have.f_struct = 1;
             GetSTRetInfo();
         } else {
@@ -358,10 +358,10 @@ static void GetSaveInfo(
     have.f_nomemory = 0;
     have.f_list     = 0;
     for( ;; ) {
-        if( !have.f_exact && PragRecog( "exact" ) ) {
+        if( !have.f_exact && PragRecogId( "exact" ) ) {
             CurrInfo->cclass |= MODIFY_EXACT;
             have.f_exact = 1;
-        } else if( !have.f_nomemory && PragRecog( "nomemory" ) ) {
+        } else if( !have.f_nomemory && PragRecogId( "nomemory" ) ) {
             CurrInfo->cclass |= NO_MEMORY_CHANGED;
             have.f_nomemory = 1;
         } else if( !have.f_list && IS_REGSET( CurToken ) ) {
@@ -422,34 +422,34 @@ void PragAux(                   // #PRAGMA AUX ...
                 if( !have.f_call && CurToken == T_EQUAL ) {
                     have.uses_auto = GetByteSeq();
                     have.f_call = 1;
-                } else if( !have.f_call && PragRecog( "far" ) ) {
+                } else if( !have.f_call && PragRecogId( "far" ) ) {
                     CurrInfo->cclass |= FAR_CALL;
                     have.f_call = 1;
-                } else if( !have.f_call && PragRecog( "near" ) ) {
+                } else if( !have.f_call && PragRecogId( "near" ) ) {
                     CurrInfo->cclass &= ~FAR_CALL;
                     have.f_call = 1;
-                } else if( !have.f_loadds && PragRecog( "loadds" ) ) {
+                } else if( !have.f_loadds && PragRecogId( "loadds" ) ) {
                     CurrInfo->cclass |= LOAD_DS_ON_ENTRY;
                     have.f_loadds = 1;
-                } else if( !have.f_rdosdev && PragRecog( "rdosdev" ) ) {
+                } else if( !have.f_rdosdev && PragRecogId( "rdosdev" ) ) {
                     CurrInfo->cclass |= LOAD_RDOSDEV_ON_ENTRY;
                     have.f_rdosdev = 1;
-                } else if( !have.f_export && PragRecog( "export" ) ) {
+                } else if( !have.f_export && PragRecogId( "export" ) ) {
                     CurrInfo->cclass |= DLL_EXPORT;
                     have.f_export = 1;
-                } else if( !have.f_parm && PragRecog( "parm" ) ) {
+                } else if( !have.f_parm && PragRecogId( "parm" ) ) {
                     GetParmInfo();
                     have.f_parm = 1;
-                } else if( !have.f_value && PragRecog( "value" ) ) {
+                } else if( !have.f_value && PragRecogId( "value" ) ) {
                     GetRetInfo();
                     have.f_value = 1;
-                } else if( !have.f_value && PragRecog( "aborts" ) ) {
+                } else if( !have.f_value && PragRecogId( "aborts" ) ) {
                     CurrInfo->cclass |= SUICIDAL;
                     have.f_value = 1;
-                } else if( !have.f_modify && PragRecog( "modify" ) ) {
+                } else if( !have.f_modify && PragRecogId( "modify" ) ) {
                     GetSaveInfo();
                     have.f_modify = 1;
-                } else if( !have.f_frame && PragRecog( "frame" ) ) {
+                } else if( !have.f_frame && PragRecogId( "frame" ) ) {
                     CurrInfo->cclass |= GENERATE_STACK_FRAME;
                     have.f_frame = 1;
                 } else {
@@ -478,13 +478,13 @@ static fix_words FixupKeyword( void )
 {
     fix_words retn;             // - return
 
-    if( PragRecog( "float" ) ) {
+    if( PragRecogId( "float" ) ) {
         retn = FIXWORD_FLOAT;
-    } else if( PragRecog( "seg" ) ) {
+    } else if( PragRecogId( "seg" ) ) {
         retn = FIXWORD_SEGMENT;
-    } else if( PragRecog( "offset" ) ) {
+    } else if( PragRecogId( "offset" ) ) {
         retn = FIXWORD_OFFSET;
-    } else if( PragRecog( "reloff" ) ) {
+    } else if( PragRecogId( "reloff" ) ) {
         retn = FIXWORD_RELOFF;
     } else {
         retn = FIXWORD_NONE;

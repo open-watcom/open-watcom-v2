@@ -56,6 +56,10 @@
 #include "clibext.h"
 
 
+
+#define pragmaNameRecog(what)   (strcmp(Buffer, what) == 0)
+#define pragmaIdRecog(what)     (stricmp(SkipUnderscorePrefix(Buffer, NULL, true), what) == 0)
+
 #define PCH_LIST_TERM       ((unsigned)-1)
 #define PCH_GLOBAL_PACK     ((unsigned)-1)
 
@@ -143,25 +147,34 @@ const char *SkipUnderscorePrefix( const char *str, size_t *len, bool iso_complia
     return( str );
 }
 
-static bool PragIdRecog(        // RECOGNIZE PRAGMA ID
+bool PragRecogId(               // RECOGNIZE PRAGMA ID
     const char *what )          // - id
 {
     bool ok;
 
-    ok = ( stricmp( SkipUnderscorePrefix( Buffer, NULL, true ), what ) == 0 );
+    ok = IS_ID_OR_KEYWORD( CurToken );
     if( ok ) {
-        NextToken();
+        ok = pragmaIdRecog( what );
+        if( ok ) {
+            NextToken();
+        }
     }
     return( ok );
 }
 
-bool PragRecog(                 // RECOGNIZE PRAGMA ID
-    const char *what )          // - id
+bool PragRecogName(             // RECOGNIZE PRAGMA NAME
+    const char *what )          // - name
 {
-    if( IS_ID_OR_KEYWORD( CurToken ) ) {
-        return( PragIdRecog( what ) );
+    bool ok;
+
+    ok = IS_ID_OR_KEYWORD( CurToken );
+    if( ok ) {
+        ok = pragmaNameRecog( what );
+        if( ok ) {
+            NextToken();
+        }
     }
-    return( false );
+    return( ok );
 }
 
 // forms:
@@ -219,7 +232,7 @@ static void pragComment(        // #PRAGMA COMMENT
     NextToken();
     if( ExpectingToken( T_LEFT_PAREN ) ) {
         NextToken();
-        if( PragRecog( "lib" ) ) {
+        if( PragRecogId( "lib" ) ) {
             if( ExpectingToken( T_COMMA ) ) {
                 NextToken();
             }
@@ -298,16 +311,16 @@ static void pragInlineRecursion( // PROCESS #pragma inline_recusrion
 {
     PPCTL_ENABLE_MACROS();
     NextToken();
-    if( PragRecog( "on" ) ) {
+    if( PragRecogId( "on" ) ) {
         CgBackSetInlineRecursion( true );
-    } else if( PragRecog( "off" ) ) {
+    } else if( PragRecogId( "off" ) ) {
         CgBackSetInlineRecursion( false );
     } else {
         if( CurToken == T_LEFT_PAREN ) {
             NextToken();
-            if( PragRecog( "on" ) ) {
+            if( PragRecogId( "on" ) ) {
                 CgBackSetInlineRecursion( true );
-            } else if( PragRecog( "off" ) ) {
+            } else if( PragRecogId( "off" ) ) {
                 CgBackSetInlineRecursion( false );
             } else {
                 MustRecog( T_ID );
@@ -591,9 +604,9 @@ static void pragInitialize(     // #pragma initialize ...
     NextToken();
     for( ;; ) {
         /* allow "before before library" */
-        if( PragRecog( "after" ) ) {
+        if( PragRecogId( "after" ) ) {
             ++adjust;
-        } else if( PragRecog( "before" ) ) {
+        } else if( PragRecogId( "before" ) ) {
             --adjust;
         } else {
             break;
@@ -607,9 +620,9 @@ static void pragInitialize(     // #pragma initialize ...
         } else {
             CErr1( ERR_PRAG_INITIALIZE_PRIORITY );
         }
-    } else if( PragRecog( "library" ) ) {
+    } else if( PragRecogId( "library" ) ) {
         priority = INIT_PRIORITY_LIBRARY;
-    } else if( PragRecog( "program" ) ) {
+    } else if( PragRecogId( "program" ) ) {
         priority = INIT_PRIORITY_PROGRAM;
     } else {
         CErr1( ERR_PRAG_INITIALIZE_PRIORITY );
@@ -673,16 +686,16 @@ static void pragEnum            // #pragma enum PARSING
 
     PPCTL_ENABLE_MACROS();
     NextToken();
-    if( PragRecog( "int" ) ) {
+    if( PragRecogId( "int" ) ) {
         pushPrag( &HeadEnums, CompFlags.make_enums_an_int );
         CompFlags.make_enums_an_int = true;
-    } else if( PragRecog( "minimum" ) ) {
+    } else if( PragRecogId( "minimum" ) ) {
         pushPrag( &HeadEnums, CompFlags.make_enums_an_int );
         CompFlags.make_enums_an_int = false;
-    } else if( PragRecog( "original" ) ) {
+    } else if( PragRecogId( "original" ) ) {
         pushPrag( &HeadEnums, CompFlags.make_enums_an_int );
         CompFlags.make_enums_an_int = CompFlags.original_enum_setting;
-    } else if( PragRecog( "pop" ) ) {
+    } else if( PragRecogId( "pop" ) ) {
         if( popPrag( &HeadEnums, &make_enums_an_int ) ) {
             CompFlags.make_enums_an_int = ( make_enums_an_int != 0 );
         }
@@ -706,9 +719,9 @@ static void pragInitSeg(     // #pragma init_seg ...
     NextToken();
     if( ExpectingToken( T_LEFT_PAREN ) ) {
         NextToken();
-        if( PragRecog( "compiler" ) ) {
+        if( PragRecogId( "compiler" ) ) {
             priority = INIT_PRIORITY_LIBRARY - 1;
-        } else if( PragRecog( "lib" ) ) {
+        } else if( PragRecogId( "lib" ) ) {
             priority = INIT_PRIORITY_LIBRARY;
         } else {
             priority = INIT_PRIORITY_PROGRAM;
@@ -902,11 +915,11 @@ static DT_METHOD parseDtorMethod( // PARSE A DESTRUCTOR METHOD
 {
     DT_METHOD method;           // - method specified
 
-    if( PragRecog( "direct" ) ) {
+    if( PragRecogId( "direct" ) ) {
         method = DTM_DIRECT;
-    } else if( PragRecog( "small" ) ) {
+    } else if( PragRecogId( "small" ) ) {
         method = DTM_TABLE_SMALL;
-    } else if( PragRecog( "table" ) ) {
+    } else if( PragRecogId( "table" ) ) {
         method = DTM_TABLE;
     } else {
         method = DTM_COUNT;
@@ -1171,9 +1184,9 @@ static void pragPack(           // #PRAGMA PACK
         NextToken();
         switch( CurToken ) {
         case T_ID:
-            if( PragRecog( "pop" ) ) {
+            if( PragRecogId( "pop" ) ) {
                 popPrag( &HeadPacks, &PackAmount );
-            } else if( PragRecog( "push" ) ) {
+            } else if( PragRecogId( "push" ) ) {
                 if( CurToken == T_RIGHT_PAREN ) {
                     pushPrag( &HeadPacks, PackAmount );
                 } else {
@@ -1210,9 +1223,9 @@ static void pragPack(           // #PRAGMA PACK
 static void optionPragSTDC( void )
 /********************************/
 {
-    if( PragRecog( "ON" ) ) {
-    } else if( PragRecog( "OFF" ) ) {
-    } else if( PragRecog( "DEFAULT" ) ) {
+    if( PragRecogName( "ON" ) ) {
+    } else if( PragRecogName( "OFF" ) ) {
+    } else if( PragRecogName( "DEFAULT" ) ) {
     }
 }
 
@@ -1223,24 +1236,21 @@ static void optionPragSTDC( void )
 static void pragSTDC( void )
 /**************************/
 {
-    PPCTL_ENABLE_MACROS();
+    PPCTL_DISABLE_MACROS();
     NextToken();
-    if( PragRecog( "FP_CONTRACT" ) ) {
+    if( PragRecogName( "FP_CONTRACT" ) ) {
         optionPragSTDC();
-    } else if( PragRecog( "FENV_ACCESS" ) ) {
+    } else if( PragRecogName( "FENV_ACCESS" ) ) {
         optionPragSTDC();
-    } else if( PragRecog( "CX_LIMITED_RANGE" ) ) {
+    } else if( PragRecogName( "CX_LIMITED_RANGE" ) ) {
         optionPragSTDC();
     }
-    PPCTL_DISABLE_MACROS();
 }
 
 
 void CPragma( void )                  // PROCESS A PRAGMA
 {
     bool check_end = true;
-
-#define pragmaNameRecog(what)   (strcmp(Buffer, what) == 0)
 
     SrcFileGuardStateSig();
     CompFlags.in_pragma = true;
@@ -1334,8 +1344,6 @@ void CPragma( void )                  // PROCESS A PRAGMA
         endOfPragma();
     }
     CompFlags.in_pragma = false;
-
-#undef pragmaNameRecog
 }
 
 

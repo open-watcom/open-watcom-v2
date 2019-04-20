@@ -294,22 +294,22 @@ void PragAux( void )
         for( ;; ) {
             if( CurToken == T_EQUAL ) {
                 have.uses_auto = GetByteSeq( &AuxInfo.code );
-            } else if( !have.f_export && PragRecog( "export" ) ) {
+            } else if( !have.f_export && PragRecogId( "export" ) ) {
                 AuxInfo.cclass |= DLL_EXPORT;
                 have.f_export = true;
-            } else if( !have.f_parm && PragRecog( "parm" ) ) {
+            } else if( !have.f_parm && PragRecogId( "parm" ) ) {
 //                GetParmInfo();
                 have.f_parm = true;
-            } else if( !have.f_value && PragRecog( "value" ) ) {
+            } else if( !have.f_value && PragRecogId( "value" ) ) {
 //                GetRetInfo();
                 have.f_value = true;
-            } else if( !have.f_value && PragRecog( "aborts" ) ) {
+            } else if( !have.f_value && PragRecogId( "aborts" ) ) {
                 AuxInfo.cclass |= SUICIDAL;
                 have.f_value = true;
-            } else if( !have.f_modify && PragRecog( "modify" ) ) {
+            } else if( !have.f_modify && PragRecogId( "modify" ) ) {
 //                GetSaveInfo();
                 have.f_modify = true;
-            } else if( !have.f_frame && PragRecog( "frame" ) ) {
+            } else if( !have.f_frame && PragRecogId( "frame" ) ) {
 //                AuxInfo.cclass |= GENERATE_STACK_FRAME;
                 have.f_frame = true;
             } else {
