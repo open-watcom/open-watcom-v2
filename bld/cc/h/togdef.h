@@ -30,7 +30,7 @@
 ****************************************************************************/
 
 
-TOGDEF(  check_stack,             TOGGLE_CHECK_STACK )
+TOGDEF( check_stack,              TOGGLE_CHECK_STACK )
 TOGDEF( unreferenced,             TOGGLE_UNREFERENCED )
 TOGDEF( inline,                   TOGGLE_INLINE )
 TOGDEF( dump_cg,                  TOGGLE_DUMP_CG )
