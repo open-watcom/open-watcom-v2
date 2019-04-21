@@ -278,7 +278,8 @@ static bool skipEqualOrSharpOK( void )
 
 static MEPTR grabTokens(            // SAVE TOKENS IN A MACRO DEFINITION
     MAC_PARM        **parm_names,   // - macro parm names
-    int             parm_cnt,       // - parameter count
+    mac_parm_count  parm_count,     // - parameter count
+    bool            has_var_args,   // - has variable arguments
     macro_scanning  defn,           // - scanning definition
     size_t          name_len,       // - length of macro name
     size_t          mlen,           // - length of macro def'n (so far)
@@ -289,17 +290,11 @@ static MEPTR grabTokens(            // SAVE TOKENS IN A MACRO DEFINITION
     unsigned parm_index;
     TOKEN prev_token;
     TOKEN prev_non_ws_token;
-    unsigned has_var_args = 0;
 
     // MacroOverflow was called for the name of the macro + mentry already
     mentry = (MEPTR)MacroOffset;
     DbgAssert( ( MacroOverflow( mlen, 0 ), MacroOffset == (void *)mentry ) );
-    if( parm_cnt < 0 )
-    {
-        has_var_args = 1;
-        parm_cnt = -parm_cnt;
-    }
-    mentry->parm_count = parm_cnt;
+    mentry->parm_count = parm_count;
     mentry->macro_defn = mlen;
     prev_token = T_NULL;
     prev_non_ws_token = T_NULL;
@@ -332,7 +327,7 @@ static MEPTR grabTokens(            // SAVE TOKENS IN A MACRO DEFINITION
         case T_SHARP:
         case T_ALT_SHARP:
             /* if it is a function-like macro definition */
-            if( parm_cnt != 0 ) {
+            if( parm_count > 0 ) {
                 CurToken = T_MACRO_SHARP;
             }
             MacroOffsetAddToken( &mlen, CurToken );
@@ -350,7 +345,7 @@ static MEPTR grabTokens(            // SAVE TOKENS IN A MACRO DEFINITION
         case T_ID:
             parm_index = findParmName( parm_names );
             if( parm_index != 0 ) {
-                if( has_var_args && parm_index == ( parm_cnt - 1 ) )
+                if( has_var_args && parm_index == ( parm_count - 1 ) )
                     CurToken = T_MACRO_VAR_PARM;
                 else
                     CurToken = T_MACRO_PARM;
@@ -426,14 +421,14 @@ static MEPTR grabTokens(            // SAVE TOKENS IN A MACRO DEFINITION
 MEPTR MacroScan(                // SCAN AND DEFINE A MACRO (#define, -d)
     macro_scanning defn )       // - scanning definition
 {
-    int         parm_cnt;       // - parameter count, end found
-    int         parm_end;       // - parameter count, end found
-    size_t      name_len;       // - length of macro name
-    MEPTR       mentry;         // - final macro defn
-    MAC_PARM    *parm_names;    // - macro parm names
-    bool        ppscan_mode;    // - previous ppnumber scan mode
-    size_t      mlen;           // - current length of macro def'n
-    TOKEN_LOCN  locn;           // - location for definition
+    mac_parm_count  parm_count;     // - parameter count, end found
+    bool            has_var_args;   // - has variable arguments
+    size_t          name_len;       // - length of macro name
+    MEPTR           mentry;         // - final macro defn
+    MAC_PARM        *parm_names;    // - macro parm names
+    bool            ppscan_mode;    // - previous ppnumber scan mode
+    size_t          mlen;           // - current length of macro def'n
+    TOKEN_LOCN      locn;           // - location for definition
 
     SrcFileGuardStateSig();
     NextToken();
@@ -444,6 +439,8 @@ MEPTR MacroScan(                // SCAN AND DEFINE A MACRO (#define, -d)
     name_len = TokenLen;
     mlen = offsetof( MEDEFN, macro_name );
     parm_names = NULL;
+    has_var_args = false;
+    parm_count = 0;
     MacroOffsetAddMemNoCopy( &mlen, Buffer, TokenLen + 1 );
     if( CurrChar == '(' ) {         /* parms present */
         if( (defn & MSCAN_MANY) == 0 ) {
@@ -452,10 +449,9 @@ MEPTR MacroScan(                // SCAN AND DEFINE A MACRO (#define, -d)
         }
         NextToken();                /* grab the '(' */
         NextToken();
-        parm_cnt = 0;               /* 0 ==> () following */
-        parm_end = 0;
+        parm_count = 1;               /* 1 ==> () following */
         for( ; CurToken != T_RIGHT_PAREN; ) {
-            if( parm_end ) {
+            if( has_var_args ) {
                 ExpectingToken( T_RIGHT_PAREN );
                 return( NULL );
             }
@@ -465,9 +461,9 @@ MEPTR MacroScan(                // SCAN AND DEFINE A MACRO (#define, -d)
             if( addParmName( &parm_names, true ) != 0 ) {
                 CErr2p( ERR_DUPLICATE_MACRO_PARM, Buffer );
             } else {
-                ++parm_cnt;
+                ++parm_count;
                 if( CurToken == T_DOT_DOT_DOT )
-                    parm_end = 1; // can have no further tokens
+                    has_var_args = true; // can have no further tokens
                 MacroOffsetAddMem( &mlen, Buffer, TokenLen + 1 );
             }
             NextToken();
@@ -479,18 +475,10 @@ MEPTR MacroScan(                // SCAN AND DEFINE A MACRO (#define, -d)
             }
             MustRecog( T_COMMA );
         }
-    } else {
-        parm_end = 0;
-        parm_cnt = -1;          /* -1 ==> no () following */
     }
     /* grab replacement tokens */
     ppscan_mode = InitPPScan();         // enable T_PPNUMBER tokens
-    mentry = grabTokens( &parm_names
-                     , parm_end ? -(parm_cnt + 1) : (parm_cnt + 1)
-                     , defn
-                     , name_len
-                     , mlen
-                     , &locn );
+    mentry = grabTokens( &parm_names, parm_count, has_var_args, defn, name_len, mlen, &locn );
     FiniPPScan( ppscan_mode );          // disable T_PPNUMBER tokens
 
     RingFree( &parm_names );

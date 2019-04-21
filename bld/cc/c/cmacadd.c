@@ -153,11 +153,11 @@ void MacLkAdd( MEPTR mentry, size_t len, macro_flags mflags )
             *lnk = old_mentry->next_macro;
             old_mentry = NULL;
         } else if( MacroCompare( mentry, old_mentry ) != 0 ) {
-            if( old_mentry->macro_defn ) {
+            if( !MacroIsSpecial( old_mentry ) ) {
                 SetDiagMacro( old_mentry );
             }
             CErr2p( ERR_MACRO_DEFN_NOT_IDENTICAL, mentry->macro_name );
-            if( old_mentry->macro_defn ) {
+            if( !MacroIsSpecial( old_mentry ) ) {
                 SetDiagPop();
             }
         }

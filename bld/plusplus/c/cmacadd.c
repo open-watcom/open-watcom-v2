@@ -550,7 +550,7 @@ MEPTR MacroDefine(              // DEFINE A NEW MACRO
                 old_mentry = NULL;
             } else {
                 if( macroCompare( mentry, old_mentry ) != 0 ) {
-                    if( old_mentry->macro_defn == 0 ) {
+                    if( MacroIsSpecial( old_mentry ) ) {
                         CErr2p( ERR_DEFINE_IMPOSSIBLE, mac_name );
                         InfMacroDecl( old_mentry );
                     } else {
@@ -574,7 +574,7 @@ MEPTR MacroDefine(              // DEFINE A NEW MACRO
             RingAppend( &macroHashTable[hash], new_mentry );
             ExtraRptIncrementCtr( macros_defined );
 #ifdef XTRA_RPT
-            if( mentry->parm_count != 0 ) {
+            if( MacroWithParenthesis( mentry ) ) {
                 ExtraRptIncrementCtr( macros_defined_with_parms );
             }
 #endif
@@ -665,7 +665,7 @@ static void doMacroUndef( char *name, size_t len, bool quiet )
     } else {
         mentry = macroFind( name, len, &hash );
         if( mentry != NULL ) {
-            if( mentry->macro_defn == 0 ) {
+            if( MacroIsSpecial( mentry ) ) {
                 if( !quiet ) {
                     CErr2p( ERR_UNDEF_IMPOSSIBLE, name );
                 }

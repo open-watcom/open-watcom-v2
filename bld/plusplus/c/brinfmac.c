@@ -144,7 +144,7 @@ static MACVALUE* findValue      // LOOKUP VALUE IN SAVED VALUES
                  && (curr_mentry->macro_flags & MFLAG_BRINFO_DEFN) == (mentry->macro_flags & MFLAG_BRINFO_DEFN)
                  && curr_mentry->macro_name[0] == mentry->macro_name[0]
                  && 0 == strcmp( curr_mentry->macro_name, mentry->macro_name )
-                 && ( curr_mentry->macro_defn == 0
+                 && ( MacroIsSpecial( curr_mentry )
                    || 0 == memcmp( (char *)curr_mentry + src_defn, (char *)mentry + src_defn, src_dsize ) )
                  ) {
                     retn = srch;
@@ -285,7 +285,7 @@ uint_8 const *BrinfMacValueDefn // GET LOCATION FOR MACVALUE DECLARATION
 
     DbgVerify( mv->type == MVT_VALUE, "Cannot get definition for non-value" );
     mentry = mv->u.mentry;
-    if( 0 == mentry->macro_defn ) {
+    if( MacroIsSpecial( mentry ) ) {
         // special macro
         length = 0;
         defn = NULL;

@@ -84,24 +84,25 @@ static struct special_macro_names  SpcMacros[] = {
     { "__STDC_HOSTED__",    MACRO_STDC_HOSTED   },
     { "__STDC_VERSION__",   MACRO_STDC_VERSION  },
     { "__TIME__",           MACRO_TIME          },
-    { NULL,                 0                   }
+    /* compile time macros */
+    { "__FUNCTION__",       MACRO_FUNCTION      },
+    { "__func__",           MACRO_FUNC          },
 };
 
 static void SpecialMacrosInit( special_macro_names *mac )
 {
     MEPTR               mentry;
 
-    for( ; mac->name != NULL; ++mac ) {
-        mentry = CreateMEntry( mac->name, strlen( mac->name ) );
-        mentry->parm_count = (mac_parm_count)mac->value;
-        MacroAdd( mentry, NULL, 0, MFLAG_NONE );
-        FreeMEntry( mentry );
-    }
+    mentry = CreateMEntry( mac->name, strlen( mac->name ) );
+    mentry->parm_count = (mac_parm_count)mac->value;
+    MacroAdd( mentry, NULL, 0, MFLAG_NONE );
+    FreeMEntry( mentry );
 }
 
 void MacroInit( void )
 {
     mac_hash_idx    h;
+    int             i;
 
     MTokenLen = 0;
     MacroCount = 0;
@@ -117,19 +118,19 @@ void MacroInit( void )
     for( h = 0; h < MACRO_HASH_SIZE; ++h ) {
         MacHash[h] = NULL;
     }
-    SpecialMacrosInit( SpcMacros );
+    for( i = MACRO_FIRST; i <= MACRO_LAST; i++ ) {
+        SpecialMacrosInit( &SpcMacros[i] );
+    }
     TimeInit(); /* grab time and date for __TIME__ and __DATE__ */
 }
 
-static struct special_macro_names  SpcMacroCompOnly[] = {
-    { "__FUNCTION__",   MACRO_FUNC },
-    { "__func__",       MACRO_FUNC },
-    { NULL,             0 }
-};
-
 void MacroAddComp( void )
 {
-    SpecialMacrosInit( SpcMacroCompOnly );
+    int             i;
+
+    for( i = MACRO_COMP_FIRST; i <= MACRO_COMP_LAST; i++ ) {
+        SpecialMacrosInit( &SpcMacros[i] );
+    }
 }
 
 void MacroFini( void )
@@ -168,7 +169,7 @@ static void DeleteNestedMacro( void )
         mentry = nested->mentry;
         CMemFree( nested );
         if( macro_parms != NULL ) {
-            for( parmno = mentry->parm_count - 1; parmno-- > 0; ) {
+            for( parmno = GetMacroParmCount( mentry ); parmno-- > 0; ) {
                 CMemFree( macro_parms[parmno].arg );
             }
             CMemFree( macro_parms );
@@ -370,6 +371,7 @@ TOKEN SpecialMacro( MEPTR mentry )
         }
         ConstType = TYPE_LONG;
         return( T_CONSTANT );
+    case MACRO_FUNCTION:
     case MACRO_FUNC:
         Buffer[0] = '\0';
         if( CurFunc != NULL ) {
@@ -423,7 +425,7 @@ static void SaveParm( MEPTR mentry, size_t size, mac_parm_count parmno,
     MTOK( TokenBuf + size ) = T_NULL;
     MTOKINC( size );
 
-    if( parmno < mentry->parm_count - 1 ) {
+    if( parmno < GetMacroParmCount( mentry ) ) {
         p = CMemAlloc( size );
         macro_parms[parmno].arg = p;
         if( p != NULL ) {
@@ -446,15 +448,17 @@ static MACRO_ARG *CollectParms( MEPTR mentry )
     TOKEN           tok;
     TOKEN           prev_tok;
     mac_parm_count  parmno;
+    mac_parm_count  parm_count_reqd;
     bool            ppscan_mode;
     MACRO_ARG       *macro_parms;
     tokens          *token_head;
 
     macro_parms = NULL;
-    if( mentry->parm_count != 0 ) {     /* if() expected */
+    if( MacroWithParenthesis( mentry ) ) {     /* if () expected */
         ppscan_mode = InitPPScan();     // enable T_PPNUMBER tokens
-        if( mentry->parm_count > 1 ) {
-            macro_parms = (MACRO_ARG *)CMemAlloc( ( mentry->parm_count - 1 ) * sizeof( MACRO_ARG ) );
+        parm_count_reqd = GetMacroParmCount( mentry );
+        if( parm_count_reqd > 0 ) {
+            macro_parms = (MACRO_ARG *)CMemAlloc( parm_count_reqd * sizeof( MACRO_ARG ) );
         }
         parmno = 0;
         do {
@@ -484,7 +488,7 @@ static MACRO_ARG *CollectParms( MEPTR mentry )
                     break;
                 --bracket;
             } else if( tok == T_COMMA && bracket == 0
-              && ( (mentry->macro_flags & MFLAG_VAR_ARGS) == 0 || parmno != mentry->parm_count - 2 ) ) {
+              && ( (mentry->macro_flags & MFLAG_VAR_ARGS) == 0 || parmno != parm_count_reqd - 1 ) ) {
                 if( prev_tok == T_WHITE_SPACE ) {
                     MTOKDEC( MTokenLen );
                 }
@@ -559,11 +563,11 @@ static MACRO_ARG *CollectParms( MEPTR mentry )
         } else if( MTokenLen != 0 ) {
             ++parmno;                   // will cause "too many parms" error
         }
-        if( (mentry->macro_flags & MFLAG_VAR_ARGS) && parmno < ( mentry->parm_count - 2 )
-          || (mentry->macro_flags & MFLAG_VAR_ARGS) == 0 && parmno < ( mentry->parm_count - 1 ) ) {
+        if( (mentry->macro_flags & MFLAG_VAR_ARGS) && parmno < ( parm_count_reqd - 1 )
+          || (mentry->macro_flags & MFLAG_VAR_ARGS) == 0 && parmno < parm_count_reqd ) {
             CErr2p( ERR_TOO_FEW_MACRO_PARMS, mentry->macro_name );
-        } else if( (mentry->macro_flags & MFLAG_VAR_ARGS) == 0 && parmno > ( mentry->parm_count - 1 ) ) {
-            if( mentry->parm_count - 1 != 0 ) {
+        } else if( (mentry->macro_flags & MFLAG_VAR_ARGS) == 0 && parmno > parm_count_reqd ) {
+            if( parm_count_reqd > 0 ) {
                 CWarn2p( WARN_PARM_COUNT_MISMATCH, ERR_TOO_MANY_MACRO_PARMS, mentry->macro_name  );
             }
         } else if( CMPLIT( mentry->macro_name, "va_start" ) == 0 ) {
@@ -700,10 +704,10 @@ static int Expandable( MACRO_TOKEN *mtok, bool macro_parm, MEPTR mentry )
 {
     int         lparen;
 
-    if( mentry->macro_defn == 0 ) {  /* if special macro */
+    if( MacroIsSpecial( mentry ) ) {            /* if special macro */
         return( 1 );
     }
-    if( mentry->parm_count == 0 ) {  /* if() not expected */
+    if( !MacroWithParenthesis( mentry ) ) {     /* if () not expected */
         if( macro_parm ) {
             if( MacroBeingExpanded( mentry ) ) {
                 return( 0 );
@@ -1138,7 +1142,7 @@ static MACRO_TOKEN *MacroExpansion( bool rescanning, MEPTR mentry )
     nested->rescanning = rescanning;
     nested->substituting_parms = false;
     nested->macro_parms = NULL;
-    if( mentry->macro_defn == 0 ) {     /* if special macro */
+    if( MacroIsSpecial( mentry ) ) {    /* if special macro */
         tok = SpecialMacro( mentry );
         head = BuildAToken( tok, Buffer );
         nested->next = NestedMacros;

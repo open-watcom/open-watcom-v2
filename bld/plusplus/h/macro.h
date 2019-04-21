@@ -32,12 +32,23 @@
 #ifndef MACRO_H
 #define MACRO_H
 
+
+#define GetMacroParmCount(m)    (mentry->parm_count - 1)
+#define MacroWithParenthesis(m) (mentry->parm_count > 0)
+#define MacroIsSpecial(m)       (mentry->macro_defn == 0)
+
+typedef unsigned char   mac_parm_count;
+
 typedef enum {
     #define pick( s, i, f )    i,
     #include "specmac.h"
     #undef pick
-    MACRO_MAX
 } special_macros;
+
+#define MACRO_FIRST         MACRO_LINE
+#define MACRO_LAST          MACRO_FUNC
+#define MACRO_ALT_FIRST     MACRO_ALT_AND
+#define MACRO_ALT_LAST      MACRO_ALT_COMPL
 
 typedef enum {                          // kind of macro scanning
     MSCAN_MANY          = 0x01,         // - many tokens to be scanned
@@ -83,7 +94,7 @@ typedef struct macro_entry {
     uint_16             macro_defn;     /* offset to defn, 0 ==> special macro name*/
     uint_16             macro_len;      /* length of macro definition */
     macro_flags         macro_flags;    /* flags */
-    uint_8              parm_count;     /* special macro indicator if defn == 0 */
+    mac_parm_count      parm_count;     /* special macro indicator if defn == 0 */
     unsigned            : 0;            /* align macro_name to a DWORD boundary */
     char                macro_name[1];  /* name,parms, and macro definition */
 } MEDEFN, *MEPTR;

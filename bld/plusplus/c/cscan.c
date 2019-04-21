@@ -788,13 +788,13 @@ static TOKEN doScanName( int c, bool expanding )
     if( mentry == NULL )
         return( KwLookup( TokenLen ) );
     prt_char( ' ' );
-    if( mentry->macro_defn == 0 ) {
+    if( MacroIsSpecial( mentry ) ) {
         return( SpecialMacro( mentry ) );
     }
     mentry->macro_flags |= MFLAG_REFERENCED;
     /* if macro requires parameters and next char is not a '('
     then this is not a macro */
-    if( mentry->parm_count != 0 ) {
+    if( MacroWithParenthesis( mentry ) ) {
         SkipAhead();
         if( CurrChar != '(' ) {
             if( CompFlags.cpp_output ) {

@@ -715,7 +715,7 @@ bool MacroDel( const char *name )
         prev_mentry = mentry;
     }
     if( mentry != NULL ) {
-        if( mentry->macro_defn == 0 ) {
+        if( MacroIsSpecial( mentry ) ) {
             CErr2p( ERR_CANT_UNDEF_THESE_NAMES, name );
         } else {
             if( prev_mentry != NULL ) {
