@@ -35,23 +35,17 @@
 #define MTOKPARM(p)     (*(mac_parm_count *)(p))
 #define MTOKPARMINC(p)  p += sizeof( mac_parm_count )
 
-#define GetMacroParmCount(m)    (mentry->parm_count - 1)
-#define MacroWithParenthesis(m) (mentry->parm_count > 0)
-#define MacroIsSpecial(m)       (mentry->macro_defn == 0)
+#define GetMacroParmCount(m)    ((m)->parm_count - 1)
+#define MacroWithParenthesis(m) ((m)->parm_count > 0)
+#define MacroIsSpecial(m)       ((m)->macro_defn == 0)
 
 typedef enum special_macros {
-    MACRO_DATE,
-    MACRO_FILE,
-    MACRO_LINE,
-    MACRO_STDC,
-    MACRO_STDC_HOSTED,
-    MACRO_STDC_VERSION,
-    MACRO_TIME,
-    MACRO_FUNCTION,
-    MACRO_FUNC,
+    #define pick(s,i)       i,
+    #include "specmac.h"
+    #undef pick
 } special_macros;
 
-#define MACRO_FIRST         MACRO_LINE
+#define MACRO_FIRST         MACRO_DATE
 #define MACRO_LAST          MACRO_TIME
 #define MACRO_COMP_FIRST    MACRO_FUNCTION
 #define MACRO_COMP_LAST     MACRO_FUNC

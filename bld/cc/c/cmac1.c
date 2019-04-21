@@ -77,16 +77,9 @@ static size_t       MTokenLen;              /* macro token length */
 static MACRO_TOKEN  *ExpandNestedMacros( MACRO_TOKEN *head, bool rescanning );
 
 static struct special_macro_names  SpcMacros[] = {
-    { "__DATE__",           MACRO_DATE          },
-    { "__FILE__",           MACRO_FILE          },
-    { "__LINE__",           MACRO_LINE          },
-    { "__STDC__",           MACRO_STDC          },
-    { "__STDC_HOSTED__",    MACRO_STDC_HOSTED   },
-    { "__STDC_VERSION__",   MACRO_STDC_VERSION  },
-    { "__TIME__",           MACRO_TIME          },
-    /* compile time macros */
-    { "__FUNCTION__",       MACRO_FUNCTION      },
-    { "__func__",           MACRO_FUNC          },
+    #define pick(s,i)       { s, i },
+    #include "specmac.h"
+    #undef pick
 };
 
 static void SpecialMacrosInit( special_macro_names *mac )
