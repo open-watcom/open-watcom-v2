@@ -39,6 +39,8 @@
 #include "cmd16m.h"
 #include "wlnkmsg.h"
 
+#include "clibext.h"
+
 
 extern bool ProcMemory16M( void )
 /*******************************/

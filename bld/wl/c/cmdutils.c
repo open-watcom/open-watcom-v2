@@ -49,6 +49,7 @@
 
 #include "clibext.h"
 
+
 #define _LinkerPrompt "WLINK>"
 
 #define IS_WHITESPACE(ptr) (*(ptr) == ' ' || *(ptr) =='\t' || *(ptr) == '\r')
