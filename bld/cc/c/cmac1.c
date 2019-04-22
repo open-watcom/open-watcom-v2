@@ -104,7 +104,7 @@ void MacroInit( void )
     NestedMacros = NULL;
     TokenList = NULL;
     UndefMacroList = NULL;
-    InitialMacroFlag = MFLAG_DEFINED_BEFORE_FIRST_INCLUDE;
+    InitialMacroFlags = MFLAG_DEFINED_BEFORE_FIRST_INCLUDE;
     AllocMacroSegment( 0x1000 );
     MacHash = (MEPTR *)MacroSegment;
     MacroOffset = MacroSegment + MACRO_HASH_SIZE * sizeof( MEPTR );
@@ -481,7 +481,7 @@ static MACRO_ARG *CollectParms( MEPTR mentry )
                     break;
                 --bracket;
             } else if( tok == T_COMMA && bracket == 0
-              && ( (mentry->macro_flags & MFLAG_VAR_ARGS) == 0 || parmno != parm_count_reqd - 1 ) ) {
+              && ( !MacroHasVarArgs( mentry ) || parmno != parm_count_reqd - 1 ) ) {
                 if( prev_tok == T_WHITE_SPACE ) {
                     MTOKDEC( MTokenLen );
                 }
@@ -556,10 +556,10 @@ static MACRO_ARG *CollectParms( MEPTR mentry )
         } else if( MTokenLen != 0 ) {
             ++parmno;                   // will cause "too many parms" error
         }
-        if( (mentry->macro_flags & MFLAG_VAR_ARGS) && parmno < ( parm_count_reqd - 1 )
-          || (mentry->macro_flags & MFLAG_VAR_ARGS) == 0 && parmno < parm_count_reqd ) {
+        if( MacroHasVarArgs( mentry ) && parmno < ( parm_count_reqd - 1 )
+          || !MacroHasVarArgs( mentry ) && parmno < parm_count_reqd ) {
             CErr2p( ERR_TOO_FEW_MACRO_PARMS, mentry->macro_name );
-        } else if( (mentry->macro_flags & MFLAG_VAR_ARGS) == 0 && parmno > parm_count_reqd ) {
+        } else if( !MacroHasVarArgs( mentry ) && parmno > parm_count_reqd ) {
             if( parm_count_reqd > 0 ) {
                 CWarn2p( WARN_PARM_COUNT_MISMATCH, ERR_TOO_MANY_MACRO_PARMS, mentry->macro_name  );
             }

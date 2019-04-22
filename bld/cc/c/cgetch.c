@@ -85,7 +85,7 @@ static bool ReadBuffer( FCB *srcfcb )
     }
     if( srcfcb->src_end == notFilled + 1 ) {
         if( srcfcb->typ == FT_HEADER_FORCED ) {
-            InitialMacroFlag = MFLAG_NONE;
+            InitialMacroFlags = MFLAG_NONE;
             if( PCH_FileName != NULL && CompFlags.make_precompiled_header == 0 ) {
                 if( CompFlags.ok_to_use_precompiled_hdr ) {
                     CompFlags.use_precompiled_header = true;

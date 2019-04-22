@@ -34,6 +34,9 @@
 #include <stddef.h>
 #include "cgmisc.h"
 
+
+#define HasVarArgs(m)      ((m) & MFLAG_HAS_VAR_ARGS)
+
 extern bool PrintWhiteSpace;  //ppc printing   (from ccmain.c)
 
 static void    CSkip( void );
@@ -51,7 +54,7 @@ static void    CLine( void );
 static void    CError( void );
 static void    CIdent( void );
 
-static void GrabTokens( mac_parm_count parm_count, macro_flags mflags, MPPTR formal_parms, const char *mac_name, source_loc *src_loc );
+static MEPTR GrabTokens( mac_parm_count parm_count, macro_flags mflags, MPPTR formal_parms, const char *mac_name, source_loc *src_loc );
 static mac_parm_count FormalParm( MPPTR formal_parms );
 
 struct preproc {
@@ -276,7 +279,7 @@ void CInclude( void )
     if( CompFlags.use_precompiled_header ) {
         InitBuildPreCompiledHeader();
     }
-    InitialMacroFlag = MFLAG_NONE;
+    InitialMacroFlags = MFLAG_NONE;
     in_macro = ( MacroPtr != NULL );
     PPCTL_ENABLE_MACROS();
     PPNextToken();
@@ -323,7 +326,7 @@ void CInclude( void )
 }
 
 
-static void CDefine( void )
+MEPTR MacroScan( void )
 {
     MPPTR           mp;
     MPPTR           prev_mp;
@@ -333,37 +336,38 @@ static void CDefine( void )
     bool            ppscan_mode;
     char            *token_buf;
     source_loc      macro_loc;
+    MEPTR           mentry;
 
     PPNextToken();
     if( CurToken != T_ID ) {
         ExpectIdentifier();
-        return;
+        return( NULL );
     }
     if( CMPLIT( Buffer, "defined" ) == 0 ) {
         CErr1( ERR_CANT_DEFINE_DEFINED );
-        return;
+        return( NULL );
     }
     token_buf = CStrSave( Buffer );
     formal_parms = NULL;
     macro_loc = SrcFileLoc;
     parm_count = 0;             /* 0 ==> no () following */
-    mflags = MFLAG_USER_DEFINED;
+    mflags = MFLAG_NONE;
     if( CurrChar == '(' ) {     /* parms present */
         PPNextToken();          /* grab the '(' */
         PPNextToken();
         parm_count = 1;         /* 1 ==> () following */
         prev_mp = NULL;
         for( ; CurToken != T_RIGHT_PAREN; ) {
-            if( mflags & MFLAG_VAR_ARGS ) {
+            if( HasVarArgs( mflags ) ) {
                 ExpectingAfter( T_RIGHT_PAREN, T_DOT_DOT_DOT );
-                return;
+                return( NULL );
             }
             if( CurToken != T_DOT_DOT_DOT && !ExpectingToken( T_ID ) ) {
-                return;
+                return( NULL );
             }
             ++parm_count;
             if( CurToken == T_DOT_DOT_DOT ) {
-                mflags |= MFLAG_VAR_ARGS;   /* can have no more parms after this. */
+                mflags |= MFLAG_HAS_VAR_ARGS;   /* can have no more parms after this. */
             }
             mp = (MPPTR)CMemAlloc( sizeof( MPDEFN ) );
             if( formal_parms == NULL ) {
@@ -387,19 +391,19 @@ static void CDefine( void )
                 CErr1( ERR_INVALID_MACRO_DEFN );
                 break;
             }
-            if( mflags & MFLAG_VAR_ARGS ) {
+            if( HasVarArgs( mflags ) ) {
                 ExpectingAfter( T_RIGHT_PAREN, T_DOT_DOT_DOT );
-                return;
+                return( NULL );
             }
             MustRecog( T_COMMA );
             if( CurToken != T_DOT_DOT_DOT && !ExpectingToken( T_ID ) ) {
-                return;
+                return( NULL );
             }
         }
     }
     /* grab replacement tokens */
     ppscan_mode = InitPPScan();         // enable T_PPNUMBER tokens
-    GrabTokens( parm_count, mflags, formal_parms, token_buf, &macro_loc );
+    mentry = GrabTokens( parm_count, mflags, formal_parms, token_buf, &macro_loc );
     FiniPPScan( ppscan_mode );          // disable T_PPNUMBER tokens
     for( ; (mp = formal_parms) != NULL; ) {
         formal_parms = mp->next;
@@ -407,12 +411,23 @@ static void CDefine( void )
         CMemFree( mp );
     }
     CMemFree( token_buf );
+    return( mentry );
 }
 
-
-static void GrabTokens( mac_parm_count parm_count, macro_flags mflags, MPPTR formal_parms, const char *mac_name, source_loc *loc )
+static void CDefine( void )
 {
     MEPTR           mentry;
+
+    mentry = MacroScan();
+    if( mentry != NULL ) {
+        mentry->macro_flags |= MFLAG_USER_DEFINED;
+    }
+}
+
+static MEPTR GrabTokens( mac_parm_count parm_count, macro_flags mflags, MPPTR formal_parms, const char *mac_name, source_loc *loc )
+{
+    MEPTR           mentry;
+    MEPTR           new_mentry;
     size_t          len;
     TOKEN           prev_token;
     TOKEN           prev_non_ws_token;
@@ -459,7 +474,7 @@ static void GrabTokens( mac_parm_count parm_count, macro_flags mflags, MPPTR for
         case T_ID:
             parmno = FormalParm( formal_parms );
             if( parmno != 0 ) {
-                if( (mflags & MFLAG_VAR_ARGS) && (parmno == parm_count - 1) ) {
+                if( HasVarArgs( mflags ) && (parmno == parm_count - 1) ) {
                     CurToken = T_MACRO_VAR_PARM;
                 } else {
                     CurToken = T_MACRO_PARM;
@@ -522,9 +537,10 @@ static void GrabTokens( mac_parm_count parm_count, macro_flags mflags, MPPTR for
         CErr1( ERR_MISPLACED_SHARP_SHARP );
     }
     mentry->macro_len = mlen;
-    MacLkAdd( mentry, mlen, mflags );
+    new_mentry = MacroDefine( mentry, mlen, mflags );
     FreeMEntry( mentry );
     MacroSize += mlen;
+    return( new_mentry );
 }
 
 
@@ -723,7 +739,7 @@ bool MacroDel( const char *name )
             } else {
                 MacHash[MacHashValue] = mentry->next_macro;
             }
-            if( (InitialMacroFlag & MFLAG_DEFINED_BEFORE_FIRST_INCLUDE) == 0 ) {
+            if( (InitialMacroFlags & MFLAG_DEFINED_BEFORE_FIRST_INCLUDE) == 0 ) {
                 /* remember macros that were defined before first include */
                 if( mentry->macro_flags & MFLAG_DEFINED_BEFORE_FIRST_INCLUDE ) {
                     mentry->next_macro = UndefMacroList;

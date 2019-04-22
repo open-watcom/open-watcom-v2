@@ -379,7 +379,7 @@ global segment_id   DefDataSegment;     /* #pragma data_seg("segname","class") *
 global textsegment  *DefCodeSegment;    /* #pragma code_seg("seg","c") */
 
 global unroll_type  UnrollCount;        /* #pragma unroll(#); */
-global macro_flags  InitialMacroFlag;
+global macro_flags  InitialMacroFlags;
 global unsigned char Stack87;
 global char         *ErrorFileName;
 
@@ -640,14 +640,15 @@ extern TOKEN        ChkControl(void);
 extern bool         MacroDel( const char *name );
 extern void         CppStackInit( void );
 extern void         CppStackFini(void);
+extern MEPTR        MacroScan( void );
 
 /* cmacadd.c */
 extern void         AllocMacroSegment(size_t);
 extern void         FreeMacroSegments(void);
 extern MEPTR        CreateMEntry(const char *, size_t len);
 extern void         FreeMEntry( MEPTR mentry );
-extern void         MacLkAdd( MEPTR mentry, size_t len, macro_flags flags );
-extern void         MacroAdd( MEPTR mentry, const char *buf, size_t len, macro_flags flags );
+extern MEPTR        MacroDefine( MEPTR mentry, size_t len, macro_flags mflags );
+extern void         MacroAdd( MEPTR mentry, const char *buf, size_t len, macro_flags mflags );
 extern int          MacroCompare(MEPTR,MEPTR);
 extern void         MacroCopy(const void *,MACADDR_T,size_t);
 extern MEPTR        MacroLookup(const char *);

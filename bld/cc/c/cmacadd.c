@@ -66,7 +66,7 @@ void MacroAdd( MEPTR mentry, const char *buf, size_t len, macro_flags mflags )
     if( len != 0 ) {
         MacroCopy( buf, MacroOffset + size, len );
     }
-    MacLkAdd( mentry, size + len, mflags );
+    MacroDefine( mentry, size + len, mflags );
 }
 
 
@@ -136,11 +136,14 @@ static MEPTR *MacroLkUp( const char *name, MEPTR *lnk )
 }
 
 
-void MacLkAdd( MEPTR mentry, size_t len, macro_flags mflags )
+MEPTR MacroDefine( MEPTR mentry, size_t len, macro_flags mflags )
 {
-    MEPTR       old_mentry, *lnk;
+    MEPTR       old_mentry;
+    MEPTR       *lnk;
+    MEPTR       new_mentry;
     macro_flags old_mflags;
 
+    new_mentry = NULL;
     MacroCopy( mentry, MacroOffset, offsetof(MEDEFN,macro_name) );
     mentry = (MEPTR)MacroOffset;
     CalcHash( mentry->macro_name, strlen( mentry->macro_name ) );
@@ -167,8 +170,10 @@ void MacLkAdd( MEPTR mentry, size_t len, macro_flags mflags )
         mentry->next_macro = MacHash[MacHashValue];
         MacHash[MacHashValue] = mentry;
         MacroOffset += _RoundUp( len, sizeof( int ) );
-        mentry->macro_flags = InitialMacroFlag | mflags;
+        mentry->macro_flags = InitialMacroFlags | mflags;
+        new_mentry = mentry;
     }
+    return( new_mentry );
 }
 
 SYM_HASHPTR SymHashAlloc( size_t amount )

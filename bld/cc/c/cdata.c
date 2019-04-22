@@ -217,7 +217,7 @@ void InitGlobalVars( void )
     DefCodeSegment          = NULL; /* #pragma code_seg("seg","c") */
 
     UnrollCount             = 0;    /* #pragma unroll(#); */
-    InitialMacroFlag        = MFLAG_NONE;
+    InitialMacroFlags       = MFLAG_NONE;
     Stack87                 = 0;
     ErrorFileName           = NULL;
 
