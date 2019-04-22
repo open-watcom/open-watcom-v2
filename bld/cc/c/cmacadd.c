@@ -34,6 +34,8 @@
 #include <stddef.h>
 
 
+#define macroSizeAlign(x)   _RoundUp( (x), sizeof( int ) )
+
 MEPTR CreateMEntry( const char *name, size_t len )
 {
     MEPTR   mentry;
@@ -112,7 +114,7 @@ void MacroReallocOverflow( size_t amount_needed, size_t amount_used )
 {
     MACADDR_T old_offset;
 
-    amount_needed = _RoundUp( amount_needed, sizeof( int ) );
+    amount_needed = macroSizeAlign( amount_needed );
     if( amount_needed > MacroSegmentLimit ) {
         old_offset = MacroOffset;
         AllocMacroSegment( amount_needed );
@@ -169,7 +171,7 @@ MEPTR MacroDefine( MEPTR mentry, size_t len, macro_flags mflags )
         ++MacroCount;
         mentry->next_macro = MacHash[MacHashValue];
         MacHash[MacHashValue] = mentry;
-        MacroOffset += _RoundUp( len, sizeof( int ) );
+        MacroOffset += macroSizeAlign( len );
         mentry->macro_flags = InitialMacroFlags | mflags;
         new_mentry = mentry;
     }
@@ -180,7 +182,7 @@ SYM_HASHPTR SymHashAlloc( size_t amount )
 {
     SYM_HASHPTR hsym;
 
-    amount = _RoundUp( amount, sizeof( int ) );
+    amount = macroSizeAlign( amount );
     if( amount > MacroSegmentLimit ) {
         AllocMacroSegment( amount );
     }
