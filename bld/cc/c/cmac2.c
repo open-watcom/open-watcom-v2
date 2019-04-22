@@ -440,7 +440,7 @@ static MEPTR GrabTokens( mac_parm_count parm_count, macro_flags mflags, MPPTR fo
     mentry->src_loc.line = loc->line;
     mlen = mentry->macro_len;
     mentry->macro_defn = mlen;
-    MacroOverflow( mlen, 0 );
+    MacroReallocOverflow( mlen, 0 );
     MacroCopy( mentry, MacroOffset, mlen );
     prev_token = T_NULL;
     prev_non_ws_token = T_NULL;
@@ -520,7 +520,7 @@ static MEPTR GrabTokens( mac_parm_count parm_count, macro_flags mflags, MPPTR fo
         }
         prev_token = CurToken;
         CurToken = ScanToken();
-        MacroOverflow( mlen + len, mlen );
+        MacroReallocOverflow( mlen + len, mlen );
         MacroCopy( TokenBuf, MacroOffset + mlen, len );
         mlen += len;
     }
@@ -530,7 +530,7 @@ static MEPTR GrabTokens( mac_parm_count parm_count, macro_flags mflags, MPPTR fo
     if( prev_token == T_WHITE_SPACE ) {
         MTOKDEC( mlen );
     }
-    MacroOverflow( mlen + sizeof( TOKEN ), mlen );
+    MacroReallocOverflow( mlen + sizeof( TOKEN ), mlen );
     MTOK( MacroOffset + mlen ) = T_NULL;
     MTOKINC( mlen );
     if( prev_non_ws_token == T_SHARP_SHARP ) {

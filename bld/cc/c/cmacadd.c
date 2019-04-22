@@ -61,7 +61,7 @@ void MacroAdd( MEPTR mentry, const char *buf, size_t len, macro_flags mflags )
         mentry->macro_defn = size;
     }
     mentry->macro_len += len;
-    MacroOverflow( size + len, 0 );
+    MacroReallocOverflow( size + len, 0 );
     MacroCopy( mentry, MacroOffset, size );
     if( len != 0 ) {
         MacroCopy( buf, MacroOffset + size, len );
@@ -78,7 +78,7 @@ void AllocMacroSegment( size_t minimum )
     amount = _RoundUp( minimum, 0x8000 );
     MacroSegment = FEmalloc( amount );
     MacroOffset = MacroSegment;
-    MacroLimit = MacroOffset + amount - 2;
+    MacroSegmentLimit = amount - 2;
     if( MacroSegment == NULL ) {
         CErr1( ERR_OUT_OF_MACRO_MEMORY );
         CSuicide();
@@ -108,12 +108,12 @@ void MacroCopy( const void *mptr, MACADDR_T offset, size_t amount )
 }
 
 
-void MacroOverflow( size_t amount_needed, size_t amount_used )
+void MacroReallocOverflow( size_t amount_needed, size_t amount_used )
 {
     MACADDR_T old_offset;
 
     amount_needed = _RoundUp( amount_needed, sizeof( int ) );
-    if( MacroOffset + amount_needed > MacroLimit ) {
+    if( amount_needed > MacroSegmentLimit ) {
         old_offset = MacroOffset;
         AllocMacroSegment( amount_needed );
         MacroCopy( old_offset, MacroOffset, amount_used );
@@ -181,7 +181,7 @@ SYM_HASHPTR SymHashAlloc( size_t amount )
     SYM_HASHPTR hsym;
 
     amount = _RoundUp( amount, sizeof( int ) );
-    if( MacroOffset + amount > MacroLimit ) {
+    if( amount > MacroSegmentLimit ) {
         AllocMacroSegment( amount );
     }
     hsym = (SYM_HASHPTR) MacroOffset;

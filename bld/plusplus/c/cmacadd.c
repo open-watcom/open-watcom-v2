@@ -414,7 +414,7 @@ pch_status PCHReadMacros( void )
 
     macroStorageRestart( &old_seglist, &old_hashtab );
     for( ; (mlen = PCHReadUInt()) != 0; ) {
-        MacroOverflow( mlen, 0 );
+        MacroReallocOverflow( mlen, 0 );
         new_mac = macroAllocateInSeg( mlen );
         PCHRead( new_mac, mlen );
         hash = PCHGetUInt( new_mac->next_macro );
@@ -494,7 +494,7 @@ static MEPTR macroFind(         // LOOK UP A HASHED MACRO
 }
 
 
-void MacroOverflow(             // OVERFLOW SEGMENT IF REQUIRED
+void MacroReallocOverflow(      // OVERFLOW SEGMENT IF REQUIRED
     size_t amount_needed,       // - amount for macro
     size_t amount_used )        // - amount used in segment
 {
@@ -597,7 +597,7 @@ MEPTR MacroSpecialAdd(          // ADD A SPECIAL MACRO
 
     len = strlen( name );
     reqd = offsetof( MEDEFN, macro_name ) + 1 + len;
-    MacroOverflow( reqd, 0 );
+    MacroReallocOverflow( reqd, 0 );
     mentry = (MEPTR)MacroOffset;
     TokenLocnClear( mentry->defn );
     mentry->macro_defn = 0;     /* indicate special macro */

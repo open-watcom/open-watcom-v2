@@ -277,7 +277,7 @@ MEPTR MacroLookup(              // LOOKUP NAME AS A MACRO
     char const *name,           // - name
     size_t len )                // - length of name
 ;
-void MacroOverflow(             // OVERFLOW SEGMENT IF REQUIRED
+void MacroReallocOverflow(      // OVERFLOW SEGMENT IF REQUIRED
     size_t amount_needed,       // - amount for macro
     size_t amount_used )        // - amount used in segment
 ;

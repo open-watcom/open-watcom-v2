@@ -262,7 +262,7 @@ global struct macro_seg_list {
 
 global MACADDR_T    MacroSegment;       /* segment for macro definitions */
 global MACADDR_T    MacroOffset;        /* first free byte in MacroSegment */
-global MACADDR_T    MacroLimit;         /* last  free byte in MacroSegment */
+global size_t       MacroSegmentLimit;  /* last  free byte in MacroSegment */
 
 global int          SwitchChar;         /* DOS switch character */
 global int          LoopDepth;          /* current nesting of loop constructs */
@@ -652,7 +652,7 @@ extern void         MacroAdd( MEPTR mentry, const char *buf, size_t len, macro_f
 extern int          MacroCompare(MEPTR,MEPTR);
 extern void         MacroCopy(const void *,MACADDR_T,size_t);
 extern MEPTR        MacroLookup(const char *);
-extern void         MacroOverflow(size_t,size_t);
+extern void         MacroReallocOverflow(size_t,size_t);
 extern SYM_HASHPTR  SymHashAlloc(size_t);
 
 /* cmath.c */
