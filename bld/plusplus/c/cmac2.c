@@ -46,6 +46,8 @@
 #include "clibext.h"
 
 
+#define HasVarArgs(m)      ((m) & MFLAG_HAS_VAR_ARGS)
+
 typedef struct mac_parm MAC_PARM;
 struct mac_parm {
     MAC_PARM    *next;
@@ -166,7 +168,7 @@ static void CInclude( void )
     auto char   buf[_MAX_PATH];
 
     SrcFileGuardStateSig();
-    InitialMacroFlag = MFLAG_NONE;
+    InitialMacroFlags = MFLAG_NONE;
     flags.in_macro = CompFlags.use_macro_tokens;
     PPCTL_ENABLE_MACROS();
     NextToken();
@@ -279,7 +281,7 @@ static bool skipEqualOrSharpOK( void )
 static MEPTR grabTokens(            // SAVE TOKENS IN A MACRO DEFINITION
     MAC_PARM        **parm_names,   // - macro parm names
     mac_parm_count  parm_count,     // - parameter count
-    bool            has_var_args,   // - has variable arguments
+    macro_flags     mflags,         // - macro flags
     macro_scanning  defn,           // - scanning definition
     size_t          name_len,       // - length of macro name
     size_t          mlen,           // - length of macro def'n (so far)
@@ -320,9 +322,7 @@ static MEPTR grabTokens(            // SAVE TOKENS IN A MACRO DEFINITION
             NextToken();
         }
     }
-    for(;;) {
-        if( CurToken == T_NULL )
-            break;
+    for( ; CurToken != T_NULL; ) {
         switch( CurToken ) {
         case T_SHARP:
         case T_ALT_SHARP:
@@ -345,10 +345,11 @@ static MEPTR grabTokens(            // SAVE TOKENS IN A MACRO DEFINITION
         case T_ID:
             parm_index = findParmName( parm_names );
             if( parm_index != 0 ) {
-                if( has_var_args && parm_index == ( parm_count - 1 ) )
+                if( HasVarArgs( mflags ) && parm_index == ( parm_count - 1 ) ) {
                     CurToken = T_MACRO_VAR_PARM;
-                else
+                } else {
                     CurToken = T_MACRO_PARM;
+                }
                 MacroOffsetAddToken( &mlen, CurToken );
                 MacroOffsetAddChar( &mlen, parm_index - 1 );
             } else {
@@ -401,10 +402,7 @@ static MEPTR grabTokens(            // SAVE TOKENS IN A MACRO DEFINITION
     mentry = (MEPTR)MacroOffset;        // MacroOffset could have changed
     TokenLocnAssign( mentry->defn, *locn );
     mentry->macro_len = mlen;
-    if( has_var_args )
-        InitialMacroFlag |= MFLAG_HAS_VAR_ARGS;
-    new_mentry = MacroDefine( mentry, mlen, name_len );
-    InitialMacroFlag &= ~MFLAG_HAS_VAR_ARGS;
+    new_mentry = MacroDefine( mentry, mlen, mflags );
     BrinfDeclMacro( new_mentry );
     if( (defn & MSCAN_MANY) == 0 ) {
         while( CurToken == T_WHITE_SPACE ) {
@@ -422,7 +420,7 @@ MEPTR MacroScan(                // SCAN AND DEFINE A MACRO (#define, -d)
     macro_scanning defn )       // - scanning definition
 {
     mac_parm_count  parm_count;     // - parameter count, end found
-    bool            has_var_args;   // - has variable arguments
+    macro_flags     mflags;         // - macro flags
     size_t          name_len;       // - length of macro name
     MEPTR           mentry;         // - final macro defn
     MAC_PARM        *parm_names;    // - macro parm names
@@ -439,7 +437,7 @@ MEPTR MacroScan(                // SCAN AND DEFINE A MACRO (#define, -d)
     name_len = TokenLen;
     mlen = offsetof( MEDEFN, macro_name );
     parm_names = NULL;
-    has_var_args = false;
+    mflags = MFLAG_NONE;
     parm_count = 0;
     MacroOffsetAddMemNoCopy( &mlen, Buffer, TokenLen + 1 );
     if( CurrChar == '(' ) {         /* parms present */
@@ -449,9 +447,9 @@ MEPTR MacroScan(                // SCAN AND DEFINE A MACRO (#define, -d)
         }
         NextToken();                /* grab the '(' */
         NextToken();
-        parm_count = 1;               /* 1 ==> () following */
+        parm_count = 1;             /* 1 ==> () following */
         for( ; CurToken != T_RIGHT_PAREN; ) {
-            if( has_var_args ) {
+            if( HasVarArgs( mflags ) ) {
                 ExpectingToken( T_RIGHT_PAREN );
                 return( NULL );
             }
@@ -463,7 +461,7 @@ MEPTR MacroScan(                // SCAN AND DEFINE A MACRO (#define, -d)
             } else {
                 ++parm_count;
                 if( CurToken == T_DOT_DOT_DOT )
-                    has_var_args = true; // can have no further tokens
+                    mflags |= MFLAG_HAS_VAR_ARGS; // can have no further tokens
                 MacroOffsetAddMem( &mlen, Buffer, TokenLen + 1 );
             }
             NextToken();
@@ -478,7 +476,7 @@ MEPTR MacroScan(                // SCAN AND DEFINE A MACRO (#define, -d)
     }
     /* grab replacement tokens */
     ppscan_mode = InitPPScan();         // enable T_PPNUMBER tokens
-    mentry = grabTokens( &parm_names, parm_count, has_var_args, defn, name_len, mlen, &locn );
+    mentry = grabTokens( &parm_names, parm_count, mflags, defn, name_len, mlen, &locn );
     FiniPPScan( ppscan_mode );          // disable T_PPNUMBER tokens
 
     RingFree( &parm_names );
@@ -818,10 +816,7 @@ void DirectiveFini(             // COMPLETE DIRECTIVE PROCESSING
 {
     struct cpp_info *pp;        // - unclosed entry
 
-    for(;;) {
-        pp = VstkPop( &vstkPp );
-        if( pp == NULL )
-            break;
+    for( ; (pp = VstkPop( &vstkPp )) != NULL; ) {
         SetErrLoc( &pp->locn );
         CErr1( ERR_MISSING_CENDIF );
     }

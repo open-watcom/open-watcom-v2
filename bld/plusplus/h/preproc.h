@@ -87,7 +87,7 @@ global  int         NestLevel;          // pre-processing level of #if
 global  int         SkipLevel;          // pre-processing level of #if to skip to
 global  NAME        SavedId;            // saved id when doing look ahead
 global  TOKEN       LAToken;            // look ahead token
-global  macro_flags InitialMacroFlag;   // current value to init macro flags to
+global  macro_flags InitialMacroFlags;  // current value to init macro flags to
 global  char        *MacroOffset;       // first free byte in MacroSegment
 global  char        __Time[9];          // "HH:MM:SS" for __TIME__ macro
 global  char        __Date[12];         // "MMM DD YYYY" for __DATE__ macro
@@ -264,14 +264,14 @@ void KwEnable(                  // ENABLE A KEYWORD TOKEN FROM T_ID
     TOKEN token )               // - token id
 ;
 MEPTR MacroSpecialAdd(          // ADD A SPECIAL MACRO
-    char *name,                 // - macro name
+    const char *name,           // - macro name
     special_macros value,       // - value for special macro
-    macro_flags flags )         // - macro flags
+    macro_flags mflags )        // - macro flags
 ;
 MEPTR MacroDefine(              // DEFINE A NEW MACRO
     MEPTR mentry,               // - scanned macro
-    unsigned len,               // - length of entry
-    size_t name_len )           // - name of macro name
+    size_t mlen,                // - length of entry
+    macro_flags mflags )        // - macro flags
 ;
 MEPTR MacroLookup(              // LOOKUP NAME AS A MACRO
     char const *name,           // - name

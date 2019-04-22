@@ -36,6 +36,7 @@
 #define GetMacroParmCount(m)    ((m)->parm_count - 1)
 #define MacroWithParenthesis(m) ((m)->parm_count > 0)
 #define MacroIsSpecial(m)       ((m)->macro_defn == 0)
+#define MacroHasVarArgs(m)      ((m)->macro_flags & MFLAG_HAS_VAR_ARGS)
 
 typedef unsigned char   mac_parm_count;
 

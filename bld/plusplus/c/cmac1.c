@@ -91,7 +91,6 @@ static struct special_macro_name {
     #undef pick
 };
 
-
 static void macroDiagNesting(   // DIAGNOSE NESTING
     void )
 {
@@ -114,7 +113,7 @@ static void macroInit(          // MACRO PROCESSING -- INITIALIZATION
     DirectiveInit();
     nestedMacros = NULL;
     scannerTokenList = NULL;
-    InitialMacroFlag = MFLAG_DEFINED_BEFORE_FIRST_INCLUDE;
+    InitialMacroFlags = MFLAG_DEFINED_BEFORE_FIRST_INCLUDE;
     MacroStorageInit();
     for( i = MACRO_FIRST; i <= MACRO_LAST; ++i ) {
         MacroSpecialAdd( SpcMacros[i].name, SpcMacros[i].value, SpcMacros[i].flags );
@@ -498,7 +497,7 @@ static MACRO_ARG *collectParms( MEPTR mentry )
         htokenbuf = TokenBufInit( NULL );
         if( parm_count_reqd > 0 ) {
             macro_parms = CMemAlloc( parm_count_reqd * sizeof( *macro_parms ) );
-            if( mentry->macro_flags & MFLAG_HAS_VAR_ARGS ) {
+            if( MacroHasVarArgs( mentry ) ) {
                 macro_parms[parm_count_reqd - 1].arg = NULL;
             }
         }
@@ -538,7 +537,7 @@ static MACRO_ARG *collectParms( MEPTR mentry )
                     break;
                 --bracket;
             } else if( tok == T_COMMA && bracket == 0 &&
-                  !( (mentry->macro_flags & MFLAG_HAS_VAR_ARGS) && parmno == ( parm_count_reqd - 1 ) ) ) {
+                  !( MacroHasVarArgs( mentry ) && parmno == ( parm_count_reqd - 1 ) ) ) {
                 TokenBufRemoveWhiteSpace( htokenbuf );
                 if( macro_parms != NULL ) {     // if expecting parms
                     saveParm( mentry, parmno, macro_parms, token_head, total, &htokenbuf );
@@ -583,8 +582,8 @@ static MACRO_ARG *collectParms( MEPTR mentry )
         } else if( TokenBufSize( htokenbuf ) + total != 0 ) {
             ++parmno;
         }
-        if( ( ( mentry->macro_flags & MFLAG_HAS_VAR_ARGS ) && ( parmno < parm_count_reqd - 1 ) )
-            || ( (mentry->macro_flags & MFLAG_HAS_VAR_ARGS) == 0 && ( parmno < parm_count_reqd ) ) ) {
+        if( ( MacroHasVarArgs( mentry ) && ( parmno < parm_count_reqd - 1 ) )
+            || ( !MacroHasVarArgs( mentry ) && ( parmno < parm_count_reqd ) ) ) {
             CErr( ERR_TOO_FEW_MACRO_PARMS, mentry->macro_name );
             InfMacroDecl( mentry );
             macroDiagNesting();
@@ -593,7 +592,7 @@ static MACRO_ARG *collectParms( MEPTR mentry )
                 saveParm( mentry, parmno, macro_parms, NULL, 1, &htokenbuf );
                 ++parmno;
             } while( parmno < parm_count_reqd );
-        } else if( (mentry->macro_flags & MFLAG_HAS_VAR_ARGS) == 0 && ( parmno > parm_count_reqd ) ) {
+        } else if( !MacroHasVarArgs( mentry ) && ( parmno > parm_count_reqd ) ) {
             CErr( ANSI_TOO_MANY_MACRO_PARMS, mentry->macro_name );
             InfMacroDecl( mentry );
             macroDiagNesting();

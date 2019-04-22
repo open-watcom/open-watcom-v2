@@ -674,7 +674,7 @@ static bool srcReadBuffer(      // READ NEXT BUFFER
                 close_top_file = false;
             } else {
                 if( src_file->force_include && act->nextc == notFilled ) {
-                    InitialMacroFlag = MFLAG_NONE;
+                    InitialMacroFlags = MFLAG_NONE;
                 }
                 act->nextc = &act->buff[0];
                 if( src_file->found_eof ) {

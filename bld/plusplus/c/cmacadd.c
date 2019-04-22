@@ -516,7 +516,7 @@ static void unlinkMacroFromTable( MEPTR mentry, unsigned hash )
 {
     ++undefCount;
     RingPrune( &macroHashTable[hash], mentry );
-    if(( InitialMacroFlag & MFLAG_DEFINED_BEFORE_FIRST_INCLUDE ) == 0 ) {
+    if(( InitialMacroFlags & MFLAG_DEFINED_BEFORE_FIRST_INCLUDE ) == 0 ) {
         // make sure we only do this *after* the first include has started
         // processing otherwise the PCH is created in such a way that
         // the #undef'd macro must be defined before the #include 98/07/13
@@ -528,14 +528,15 @@ static void unlinkMacroFromTable( MEPTR mentry, unsigned hash )
 
 MEPTR MacroDefine(              // DEFINE A NEW MACRO
     MEPTR mentry,               // - scanned macro
-    unsigned len,               // - length of entry
-    size_t name_len )           // - name of macro name
+    size_t mlen,                // - length of entry
+    macro_flags mflags )        // - macro flags
 {
     MEPTR new_mentry;           // - new entry for macro
     MEPTR old_mentry;           // - old entry for macro
     char *mac_name;             // - name for macro
     unsigned hash;              // - hash bucket for macro
     msg_status_t msg_st;        // - error message status
+    size_t name_len;
 
     DbgAssert( mentry == (MEPTR)MacroOffset );
     new_mentry = NULL;
@@ -543,6 +544,7 @@ MEPTR MacroDefine(              // DEFINE A NEW MACRO
     if( magicPredefined( mac_name ) ) {
         CErr2p( ERR_DEFINE_IMPOSSIBLE, mac_name );
     } else {
+        name_len = strlen( mac_name );
         old_mentry = macroFind( mac_name, name_len, &hash );
         if( old_mentry != NULL ) {
             if( old_mentry->macro_flags & MFLAG_CAN_BE_REDEFINED ) {
@@ -568,8 +570,8 @@ MEPTR MacroDefine(              // DEFINE A NEW MACRO
             }
         }
         if( old_mentry == NULL ) {
-            mentry->macro_flags = InitialMacroFlag;
-            new_mentry = macroAllocateInSeg( len );
+            mentry->macro_flags = InitialMacroFlags | mflags;
+            new_mentry = macroAllocateInSeg( mlen );
             DbgAssert( new_mentry == mentry );
             RingAppend( &macroHashTable[hash], new_mentry );
             ExtraRptIncrementCtr( macros_defined );
@@ -585,9 +587,9 @@ MEPTR MacroDefine(              // DEFINE A NEW MACRO
 
 
 MEPTR MacroSpecialAdd(          // ADD A SPECIAL MACRO
-    char *name,                 // - macro name
+    const char *name,           // - macro name
     special_macros value,       // - value for special macro
-    macro_flags flags )         // - macro flags
+    macro_flags mflags )        // - macro flags
 {
     size_t len;
     size_t reqd;
@@ -602,11 +604,7 @@ MEPTR MacroSpecialAdd(          // ADD A SPECIAL MACRO
     mentry->macro_len = reqd;
     mentry->parm_count = value;
     memcpy( mentry->macro_name, name, len + 1 );
-
-    mentry = MacroDefine( mentry, reqd, len );
-    if( mentry != NULL ) {
-        mentry->macro_flags |= flags;
-    }
+    mentry = MacroDefine( mentry, reqd, mflags );
     return( mentry );
 }
 
