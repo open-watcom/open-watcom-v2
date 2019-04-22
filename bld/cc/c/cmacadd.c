@@ -59,16 +59,28 @@ void MacroAdd( MEPTR mentry, const char *buf, size_t len, macro_flags mflags )
     size_t      size;
 
     size = mentry->macro_len;
-    if( len != 0 ) {                // if not a special macro
+    if( len > 0 ) {                // if not a special macro
         mentry->macro_defn = size;
     }
     mentry->macro_len += len;
     MacroReallocOverflow( size + len, 0 );
     MacroCopy( mentry, MacroOffset, size );
-    if( len != 0 ) {
+    if( len > 0 ) {
         MacroCopy( buf, MacroOffset + size, len );
     }
     MacroDefine( mentry, size + len, mflags );
+}
+
+
+static void *MacroAllocateInSeg( size_t size )
+{
+    void *retn;
+
+    retn = MacroOffset;
+    size = macroSizeAlign( size );
+    MacroOffset += size;
+    MacroSegmentLimit -= size;
+    return( retn );
 }
 
 
@@ -171,24 +183,19 @@ MEPTR MacroDefine( MEPTR mentry, size_t len, macro_flags mflags )
         ++MacroCount;
         mentry->next_macro = MacHash[MacHashValue];
         MacHash[MacHashValue] = mentry;
-        MacroOffset += macroSizeAlign( len );
         mentry->macro_flags = InitialMacroFlags | mflags;
-        new_mentry = mentry;
+        new_mentry = MacroAllocateInSeg( len );
     }
     return( new_mentry );
 }
 
 SYM_HASHPTR SymHashAlloc( size_t amount )
 {
-    SYM_HASHPTR hsym;
-
     amount = macroSizeAlign( amount );
     if( amount > MacroSegmentLimit ) {
         AllocMacroSegment( amount );
     }
-    hsym = (SYM_HASHPTR) MacroOffset;
-    MacroOffset += amount;
-    return( hsym );
+    return( MacroAllocateInSeg( amount ) );
 }
 
 

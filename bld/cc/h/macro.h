@@ -41,7 +41,7 @@
 #define MacroHasVarArgs(m)      ((m)->macro_flags & MFLAG_HAS_VAR_ARGS)
 
 typedef enum special_macros {
-    #define pick(s,i)       i,
+    #define pick(s,i,f)     i,
     #include "specmac.h"
     #undef pick
 } special_macros;
@@ -66,6 +66,7 @@ typedef enum macro_flags {
     MFLAG_USER_DEFINED                  =   0x04,
     MFLAG_REFERENCED                    =   0x08,
     MFLAG_HAS_VAR_ARGS                  =   0x10,   // macro has varargs.
+    MFLAG_HIDDEN                        =   0x20,
 } macro_flags;
 
 typedef struct  macro_entry {

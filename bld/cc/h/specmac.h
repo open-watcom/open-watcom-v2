@@ -29,13 +29,13 @@
 ****************************************************************************/
 
 
-pick( "__DATE__",           MACRO_DATE          )
-pick( "__FILE__",           MACRO_FILE          )
-pick( "__LINE__",           MACRO_LINE          )
-pick( "__STDC__",           MACRO_STDC          )
-pick( "__STDC_HOSTED__",    MACRO_STDC_HOSTED   )
-pick( "__STDC_VERSION__",   MACRO_STDC_VERSION  )
-pick( "__TIME__",           MACRO_TIME          )
+pick( "__DATE__",           MACRO_DATE,         MFLAG_NONE )
+pick( "__FILE__",           MACRO_FILE,         MFLAG_NONE )
+pick( "__LINE__",           MACRO_LINE,         MFLAG_NONE )
+pick( "__STDC__",           MACRO_STDC,         MFLAG_NONE )
+pick( "__STDC_HOSTED__",    MACRO_STDC_HOSTED,  MFLAG_NONE )
+pick( "__STDC_VERSION__",   MACRO_STDC_VERSION, MFLAG_NONE )
+pick( "__TIME__",           MACRO_TIME,         MFLAG_NONE )
 /* compile time macros */
-pick( "__FUNCTION__",       MACRO_FUNCTION      )
-pick( "__func__",           MACRO_FUNC          )
+pick( "__FUNCTION__",       MACRO_FUNCTION,     MFLAG_NONE )
+pick( "__func__",           MACRO_FUNC,         MFLAG_HIDDEN )
