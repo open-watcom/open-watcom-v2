@@ -74,7 +74,7 @@ typedef enum macro_flags {
     MFLAG_PCH_OVERRIDE                  = 0x40,
 // a special macro won't appear as a macro to the program (e.g. ifdef
 // will return false)
-    MFLAG_SPECIAL                       = 0x80,
+    MFLAG_HIDDEN                        = 0x80,
 // Following are used only in browsing, not in macro definitions
     MFLAG_BRINFO_UNDEF                  = 0x100,
 } macro_flags;
