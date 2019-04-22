@@ -8,8 +8,8 @@ coverity_load_proc()
     TOOL_ARCHIVE=/tmp/cov-analysis-${PLATFORM}.tgz
     TOOL_BASE=/tmp/coverity-scan-analysis
 
-    wget -nv -O $TOOL_ARCHIVE https://scan.coverity.com/download/${PLATFORM} --post-data "project=$TRAVIS_REPO_SLUG&token=$COVERITY_SCAN_TOKEN"
-#    curl -o $TOOL_ARCHIVE https://scan.coverity.com/download/${PLATFORM} -d "project=$TRAVIS_REPO_SLUG&token=$COVERITY_SCAN_TOKEN"
+#    wget -nv -O $TOOL_ARCHIVE https://scan.coverity.com/download/cxx/linux64 --post-data "project=$TRAVIS_REPO_SLUG&token=$COVERITY_SCAN_TOKEN"
+    curl -o $TOOL_ARCHIVE https://scan.coverity.com/download/cxx/linux64 -d "project=$TRAVIS_REPO_SLUG&token=$COVERITY_SCAN_TOKEN"
 
     mkdir -p $TOOL_BASE
     tar xzf $TOOL_ARCHIVE -C $TOOL_BASE
