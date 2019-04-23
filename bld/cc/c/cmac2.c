@@ -35,7 +35,7 @@
 #include "cgmisc.h"
 
 
-#define HasVarArgs(m)      ((m) & MFLAG_HAS_VAR_ARGS)
+#define HasVarArgs(m)      (((m) & MFLAG_HAS_VAR_ARGS) != 0)
 
 extern bool PrintWhiteSpace;  //ppc printing   (from ccmain.c)
 

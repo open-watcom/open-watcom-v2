@@ -38,7 +38,7 @@
 #define GetMacroParmCount(m)    ((m)->parm_count - 1)
 #define MacroWithParenthesis(m) ((m)->parm_count > 0)
 #define MacroIsSpecial(m)       ((m)->macro_defn == 0)
-#define MacroHasVarArgs(m)      ((m)->macro_flags & MFLAG_HAS_VAR_ARGS)
+#define MacroHasVarArgs(m)      (((m)->macro_flags & MFLAG_HAS_VAR_ARGS) != 0)
 
 typedef enum special_macros {
     #define pick(s,i,f)     i,

@@ -72,7 +72,7 @@ void MacroAdd( MEPTR mentry, const char *buf, size_t len, macro_flags mflags )
 }
 
 
-static void *MacroAllocateInSeg( size_t size )
+void *MacroAllocateInSeg( size_t size )
 {
     void *retn;
 
@@ -130,7 +130,9 @@ void MacroReallocOverflow( size_t amount_needed, size_t amount_used )
     if( amount_needed > MacroSegmentLimit ) {
         old_offset = MacroOffset;
         AllocMacroSegment( amount_needed );
-        MacroCopy( old_offset, MacroOffset, amount_used );
+        if( amount_used > 0 ) {
+            MacroCopy( old_offset, MacroOffset, amount_used );
+        }
     }
 }
 
@@ -150,7 +152,7 @@ static MEPTR *MacroLkUp( const char *name, MEPTR *lnk )
 }
 
 
-MEPTR MacroDefine( MEPTR mentry, size_t len, macro_flags mflags )
+MEPTR MacroDefine( MEPTR mentry, size_t mlen, macro_flags mflags )
 {
     MEPTR       old_mentry;
     MEPTR       *lnk;
@@ -184,7 +186,7 @@ MEPTR MacroDefine( MEPTR mentry, size_t len, macro_flags mflags )
         mentry->next_macro = MacHash[MacHashValue];
         MacHash[MacHashValue] = mentry;
         mentry->macro_flags = InitialMacroFlags | mflags;
-        new_mentry = MacroAllocateInSeg( len );
+        new_mentry = MacroAllocateInSeg( mlen );
     }
     return( new_mentry );
 }
