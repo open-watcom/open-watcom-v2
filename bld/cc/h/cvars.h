@@ -645,6 +645,7 @@ extern MEPTR        MacroScan( void );
 /* cmacadd.c */
 extern void         AllocMacroSegment(size_t);
 extern void         FreeMacroSegments(void);
+extern void         *MacroAllocateInSeg( size_t size );
 extern MEPTR        CreateMEntry(const char *, size_t len);
 extern void         FreeMEntry( MEPTR mentry );
 extern MEPTR        MacroDefine( MEPTR mentry, size_t len, macro_flags mflags );
