@@ -533,7 +533,7 @@ static MEPTR GrabTokens( mac_parm_count parm_count, macro_flags mflags, MPPTR fo
     MacroReallocOverflow( mlen + sizeof( TOKEN ), mlen );
     MTOK( MacroOffset + mlen ) = T_NULL;
     MTOKINC( mlen );
-    if( prev_non_ws_token == T_SHARP_SHARP ) {
+    if( prev_non_ws_token == T_MACRO_SHARP_SHARP ) {
         CErr1( ERR_MISPLACED_SHARP_SHARP );
     }
     mentry->macro_len = mlen;
