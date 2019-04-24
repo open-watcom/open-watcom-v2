@@ -94,7 +94,7 @@ static char *Def_Macro_Tokens( const char *str, bool multiple_tokens, macro_flag
         CErr1( ERR_NO_MACRO_ID_COMMAND_LINE );
         return( (char *)str );
     }
-    mentry = CreateMEntry( str, len );
+    mentry = CreateMEntryH( str, len );
     str += len;
     len = 0;
     if( !EqualChar( *str ) ) {
@@ -146,7 +146,7 @@ static char *Def_Macro_Tokens( const char *str, bool multiple_tokens, macro_flag
     } else {
         CErr1( ERR_CANT_DEFINE_DEFINED );
     }
-    FreeMEntry( mentry );
+    FreeMEntryH( mentry );
     return( (char *)str );
 }
 

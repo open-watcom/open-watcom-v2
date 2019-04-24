@@ -87,10 +87,10 @@ static void SpecialMacroAdd( special_macro_names *mac )
 {
     MEPTR           mentry;
 
-    mentry = CreateMEntry( mac->name, strlen( mac->name ) );
+    mentry = CreateMEntryH( mac->name, 0 );
     mentry->parm_count = (mac_parm_count)mac->value;
     MacroAdd( mentry, NULL, 0, mac->flags );
-    FreeMEntry( mentry );
+    FreeMEntryH( mentry );
 }
 
 void MacroInit( void )

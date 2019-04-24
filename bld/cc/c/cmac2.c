@@ -434,10 +434,9 @@ static MEPTR GrabTokens( mac_parm_count parm_count, macro_flags mflags, MPPTR fo
     size_t          mlen;
     mac_parm_count  parmno;
 
-    mentry = CreateMEntry( mac_name, strlen( mac_name ) );
+    mentry = CreateMEntryH( mac_name, 0 );
     mentry->parm_count = parm_count;
-    mentry->src_loc.fno = loc->fno;
-    mentry->src_loc.line = loc->line;
+    mentry->src_loc = *loc;
     mlen = mentry->macro_len;
     mentry->macro_defn = mlen;
     MacroReallocOverflow( mlen, 0 );
@@ -538,7 +537,7 @@ static MEPTR GrabTokens( mac_parm_count parm_count, macro_flags mflags, MPPTR fo
     }
     mentry->macro_len = mlen;
     new_mentry = MacroDefine( mentry, mlen, mflags );
-    FreeMEntry( mentry );
+    FreeMEntryH( mentry );
     MacroSize += mlen;
     return( new_mentry );
 }

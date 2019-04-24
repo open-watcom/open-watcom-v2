@@ -36,22 +36,48 @@
 
 #define macroSizeAlign(x)   _RoundUp( (x), sizeof( int ) )
 
-MEPTR CreateMEntry( const char *name, size_t len )
+MEPTR CreateMEntryH( const char *name, size_t len )
 {
     MEPTR   mentry;
+    size_t  size;
 
-    mentry = (MEPTR)CMemAlloc( sizeof( MEDEFN ) + len );
+    if( len == 0 ) {
+        len = strlen( name );
+    }
+    size = offsetof( MEDEFN, macro_name ) + len + 1;
+    mentry = (MEPTR)CMemAlloc( size );
     memcpy( mentry->macro_name, name, len );
     mentry->macro_name[len] = '\0';
-    mentry->macro_len = sizeof( MEDEFN ) + len;
+    mentry->macro_len = size;
     mentry->parm_count = 0;
     mentry->macro_defn = 0; /* indicate special macro */
     return( mentry );
 }
 
-void FreeMEntry( MEPTR mentry )
+void FreeMEntryH( MEPTR mentry )
 {
     CMemFree( mentry );
+}
+
+MEPTR CreateMEntry( const char *name, size_t len )
+{
+    MEPTR   mentry;
+    size_t  size;
+
+    if( len == 0 ) {
+        len = strlen( name );
+    }
+    size = offsetof( MEDEFN, macro_name ) + len + 1;
+    MacroReallocOverflow( size, 0 );
+    mentry = (MEPTR)MacroOffset;
+    memcpy( mentry->macro_name, name, len );
+    mentry->macro_name[len] = '\0';
+    mentry->macro_len = size;
+    mentry->macro_defn = 0;
+    mentry->parm_count = 0;
+    mentry->src_loc.fno = 0;
+    mentry->src_loc.line = 0;
+    return( mentry );
 }
 
 void MacroAdd( MEPTR mentry, const char *buf, size_t len, macro_flags mflags )
