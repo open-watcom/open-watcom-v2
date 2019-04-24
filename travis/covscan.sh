@@ -34,7 +34,7 @@ coverity_upload_proc()
     SHA=`git rev-parse --short HEAD`
 
     response=$(curl \
-      --silent --write-out "\n%{http_code}\n" \
+      --write-out "\n%{http_code}\n" \
       --form project=$TRAVIS_REPO_SLUG \
       --form token=$COVERITY_SCAN_TOKEN \
       --form email=malak.jiri@gmail.com \
