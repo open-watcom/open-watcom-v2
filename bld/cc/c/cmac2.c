@@ -453,22 +453,24 @@ static MEPTR GrabTokens( mac_parm_count parm_count, macro_flags mflags, MPPTR fo
         }
     }
     for( ; CurToken != T_NULL && CurToken != T_EOF ; ) {
-        MTOK( TokenBuf ) = CurToken;
-        len = sizeof( TOKEN );
         switch( CurToken ) {
         case T_SHARP:
             /* if it is a function-like macro definition */
             if( parm_count != 0 ) {
                 CurToken = T_MACRO_SHARP;
-                MTOK( TokenBuf ) = CurToken;
             }
+            MTOK( TokenBuf ) = CurToken;
+            len = sizeof( TOKEN );
             break;
         case T_SHARP_SHARP:
-            MTOK( TokenBuf ) = T_MACRO_SHARP_SHARP;
+            CurToken = T_MACRO_SHARP_SHARP;
+            MTOK( TokenBuf ) = CurToken;
+            len = sizeof( TOKEN );
             break;
         case T_WHITE_SPACE:
-            if( prev_token == T_WHITE_SPACE )
-                MTOKDEC( len );
+            if( prev_token != T_WHITE_SPACE )
+                MTOK( TokenBuf ) = CurToken;
+                len = sizeof( TOKEN );
             break;
         case T_ID:
             parmno = FormalParm( formal_parms );
@@ -479,14 +481,19 @@ static MEPTR GrabTokens( mac_parm_count parm_count, macro_flags mflags, MPPTR fo
                     CurToken = T_MACRO_PARM;
                 }
                 MTOK( TokenBuf ) = CurToken;
+                len = sizeof( TOKEN );
                 MTOKPARM( TokenBuf + len ) = parmno - 1;
                 MTOKPARMINC( len );
             } else {
+                MTOK( TokenBuf ) = CurToken;
+                len = sizeof( TOKEN );
                 memcpy( TokenBuf + len, Buffer, TokenLen + 1 );
                 len += TokenLen + 1;
             }
             break;
         case T_BAD_CHAR:
+            MTOK( TokenBuf ) = CurToken;
+            len = sizeof( TOKEN );
             TokenBuf[len++] = Buffer[0];
             if( Buffer[1] != '\0' ) {
                 MTOK( TokenBuf + len ) = T_WHITE_SPACE;
@@ -496,24 +503,27 @@ static MEPTR GrabTokens( mac_parm_count parm_count, macro_flags mflags, MPPTR fo
         case T_STRING:
             if( CompFlags.wide_char_string ) {
                 CurToken = T_LSTRING;
-                MTOK( TokenBuf ) = CurToken;
             }
             /* fall through */
         case T_CONSTANT:
         case T_LSTRING:
         case T_BAD_TOKEN:
         case T_PPNUMBER:
+            MTOK( TokenBuf ) = CurToken;
+            len = sizeof( TOKEN );
             memcpy( TokenBuf + len, Buffer, TokenLen + 1 );
             len += TokenLen + 1;
             break;
         default:
+            MTOK( TokenBuf ) = CurToken;
+            len = sizeof( TOKEN );
             break;
         }
         if( CurToken != T_WHITE_SPACE ) {
             if( prev_non_ws_token == T_MACRO_SHARP
               && CurToken != T_MACRO_PARM && CurToken != T_MACRO_VAR_PARM ) {
                 CErr1( ERR_MUST_BE_MACRO_PARM );
-                MTOK( MacroOffset + mlen - sizeof( TOKEN ) ) = T_SHARP;
+//                MTOK( MacroOffset + mlen - sizeof( TOKEN ) ) = T_SHARP;
             }
             prev_non_ws_token = CurToken;
         }
