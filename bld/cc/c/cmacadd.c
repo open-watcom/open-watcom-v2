@@ -228,6 +228,7 @@ MEPTR MacroDefine( size_t mlen, macro_flags mflags )
 
     new_mentry = NULL;
     mentry = (MEPTR)MacroOffset;
+    mentry->macro_len = mlen;
     mname = mentry->macro_name;
     CalcHash( mname, strlen( mname ) );
     lnk = &MacHash[MacHashValue];
