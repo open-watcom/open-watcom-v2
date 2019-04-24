@@ -536,7 +536,7 @@ static MEPTR GrabTokens( mac_parm_count parm_count, macro_flags mflags, MPPTR fo
         CErr1( ERR_MISPLACED_SHARP_SHARP );
     }
     mentry->macro_len = mlen;
-    new_mentry = MacroDefine( mentry, mlen, mflags );
+    new_mentry = MacroDefineH( mentry, mlen, mflags );
     FreeMEntryH( mentry );
     MacroSize += mlen;
     return( new_mentry );

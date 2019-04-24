@@ -94,7 +94,7 @@ void MacroAdd( MEPTR mentry, const char *buf, size_t len, macro_flags mflags )
     if( len > 0 ) {
         MacroCopy( buf, MacroOffset + size, len );
     }
-    MacroDefine( mentry, size + len, mflags );
+    MacroDefineH( mentry, size + len, mflags );
 }
 
 
@@ -178,7 +178,7 @@ static MEPTR *MacroLkUp( const char *name, MEPTR *lnk )
 }
 
 
-MEPTR MacroDefine( MEPTR mentry, size_t mlen, macro_flags mflags )
+MEPTR MacroDefineH( MEPTR mentry, size_t mlen, macro_flags mflags )
 {
     MEPTR       old_mentry;
     MEPTR       *lnk;
@@ -213,6 +213,47 @@ MEPTR MacroDefine( MEPTR mentry, size_t mlen, macro_flags mflags )
         MacHash[MacHashValue] = mentry;
         mentry->macro_flags = InitialMacroFlags | mflags;
         new_mentry = MacroAllocateInSeg( mlen );
+    }
+    return( new_mentry );
+}
+
+MEPTR MacroDefine( size_t mlen, macro_flags mflags )
+{
+    MEPTR       old_mentry;
+    MEPTR       *lnk;
+    MEPTR       new_mentry;
+    macro_flags old_mflags;
+    MEPTR       mentry;
+    const char  *mname;
+
+    new_mentry = NULL;
+    mentry = (MEPTR)MacroOffset;
+    mname = mentry->macro_name;
+    CalcHash( mname, strlen( mname ) );
+    lnk = &MacHash[MacHashValue];
+    lnk = MacroLkUp( mname, lnk );
+    old_mentry = *lnk;
+    if( old_mentry != NULL ) {
+        old_mflags = old_mentry->macro_flags;
+        if( old_mflags & MFLAG_CAN_BE_REDEFINED ) {//delete old entry
+            *lnk = old_mentry->next_macro;
+            old_mentry = NULL;
+        } else if( MacroCompare( mentry, old_mentry ) != 0 ) {
+            if( !MacroIsSpecial( old_mentry ) ) {
+                SetDiagMacro( old_mentry );
+            }
+            CErr2p( ERR_MACRO_DEFN_NOT_IDENTICAL, mname );
+            if( !MacroIsSpecial( old_mentry ) ) {
+                SetDiagPop();
+            }
+        }
+    }
+    if( old_mentry == NULL ) {  //add new entry
+        ++MacroCount;
+        new_mentry = MacroAllocateInSeg( mlen );
+        new_mentry->macro_flags = InitialMacroFlags | mflags;
+        new_mentry->next_macro = MacHash[MacHashValue];
+        MacHash[MacHashValue] = new_mentry;
     }
     return( new_mentry );
 }
