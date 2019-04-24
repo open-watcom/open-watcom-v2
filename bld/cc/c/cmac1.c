@@ -64,7 +64,7 @@ typedef struct nested_macros {
 } NESTED_MACRO;
 
 typedef struct special_macro_names {
-    char            *name;
+    const char      *name;
     special_macros  value;
     macro_flags     flags;
 } special_macro_names;
@@ -87,10 +87,9 @@ static void SpecialMacroAdd( special_macro_names *mac )
 {
     MEPTR           mentry;
 
-    mentry = CreateMEntryH( mac->name, 0 );
+    mentry = CreateMEntry( mac->name, 0 );
     mentry->parm_count = (mac_parm_count)mac->value;
-    MacroAdd( mentry, NULL, 0, mac->flags );
-    FreeMEntryH( mentry );
+    MacroDefine( mentry->macro_len, mac->flags );
 }
 
 void MacroInit( void )
