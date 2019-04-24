@@ -468,9 +468,10 @@ static MEPTR GrabTokens( mac_parm_count parm_count, macro_flags mflags, MPPTR fo
             len = sizeof( TOKEN );
             break;
         case T_WHITE_SPACE:
-            if( prev_token != T_WHITE_SPACE )
+            if( prev_token != T_WHITE_SPACE ) {
                 MTOK( TokenBuf ) = CurToken;
                 len = sizeof( TOKEN );
+            }
             break;
         case T_ID:
             parmno = FormalParm( formal_parms );
@@ -480,13 +481,13 @@ static MEPTR GrabTokens( mac_parm_count parm_count, macro_flags mflags, MPPTR fo
                 } else {
                     CurToken = T_MACRO_PARM;
                 }
-                MTOK( TokenBuf ) = CurToken;
-                len = sizeof( TOKEN );
+            }
+            MTOK( TokenBuf ) = CurToken;
+            len = sizeof( TOKEN );
+            if( parmno != 0 ) {
                 MTOKPARM( TokenBuf + len ) = parmno - 1;
                 MTOKPARMINC( len );
             } else {
-                MTOK( TokenBuf ) = CurToken;
-                len = sizeof( TOKEN );
                 memcpy( TokenBuf + len, Buffer, TokenLen + 1 );
                 len += TokenLen + 1;
             }
@@ -538,8 +539,9 @@ static MEPTR GrabTokens( mac_parm_count parm_count, macro_flags mflags, MPPTR fo
     }
     if( prev_token == T_WHITE_SPACE ) {
         MTOKDEC( mlen );
+    } else {
+        MacroReallocOverflow( mlen + sizeof( TOKEN ), mlen );
     }
-    MacroReallocOverflow( mlen + sizeof( TOKEN ), mlen );
     MTOK( MacroOffset + mlen ) = T_NULL;
     MTOKINC( mlen );
     if( prev_non_ws_token == T_MACRO_SHARP_SHARP ) {
