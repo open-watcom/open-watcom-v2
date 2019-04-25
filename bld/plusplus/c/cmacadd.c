@@ -630,7 +630,7 @@ bool MacroExists(           // TEST IF MACRO EXISTS
     mac = macroFind( macname, len, &hash );
     if( mac != NULL ) {
         mac->macro_flags |= MFLAG_REFERENCED;
-        exists = ( (mac->macro_flags & MFLAG_HIDDEN ) == 0 );
+        exists = ( (mac->macro_flags & MFLAG_HIDDEN) == 0 );
     } else {
         exists = false;
     }

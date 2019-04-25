@@ -307,8 +307,8 @@ static MEPTR grabTokens(            // SAVE TOKENS IN A MACRO DEFINITION
         if( defn & MSCAN_EQUALS ) {
             if( CurToken == T_NULL ) {
                 // -dFOO from a command line
-                MacroOffsetAddToken( &mlen, T_PPNUMBER );
-                MacroOffsetAddMem( &mlen, "1", 2 );
+                MacroSegmentAddToken( &mlen, T_PPNUMBER );
+                MacroSegmentAddMem( &mlen, "1", 2 );
                 prev_non_ws_token = T_PPNUMBER;
                 prev_token = T_PPNUMBER;
             } else {
@@ -330,16 +330,16 @@ static MEPTR grabTokens(            // SAVE TOKENS IN A MACRO DEFINITION
             if( parm_count > 0 ) {
                 CurToken = T_MACRO_SHARP;
             }
-            MacroOffsetAddToken( &mlen, CurToken );
+            MacroSegmentAddToken( &mlen, CurToken );
             break;
         case T_SHARP_SHARP:
         case T_ALT_SHARP_SHARP:
             CurToken = T_MACRO_SHARP_SHARP;
-            MacroOffsetAddToken( &mlen, CurToken );
+            MacroSegmentAddToken( &mlen, CurToken );
             break;
         case T_WHITE_SPACE:
             if( prev_token != T_WHITE_SPACE ) {
-                MacroOffsetAddToken( &mlen, CurToken );
+                MacroSegmentAddToken( &mlen, CurToken );
             }
             break;
         case T_ID:
@@ -350,34 +350,34 @@ static MEPTR grabTokens(            // SAVE TOKENS IN A MACRO DEFINITION
                 } else {
                     CurToken = T_MACRO_PARM;
                 }
-                MacroOffsetAddToken( &mlen, CurToken );
-                MacroOffsetAddChar( &mlen, parm_index - 1 );
+                MacroSegmentAddToken( &mlen, CurToken );
+                MacroSegmentAddChar( &mlen, parm_index - 1 );
             } else {
-                MacroOffsetAddToken( &mlen, CurToken );
-                MacroOffsetAddMem( &mlen, Buffer, TokenLen + 1 );
+                MacroSegmentAddToken( &mlen, CurToken );
+                MacroSegmentAddMem( &mlen, Buffer, TokenLen + 1 );
             }
             break;
         case T_BAD_CHAR:
-            MacroOffsetAddToken( &mlen, CurToken );
-            MacroOffsetAddChar( &mlen, Buffer[0] );
+            MacroSegmentAddToken( &mlen, CurToken );
+            MacroSegmentAddChar( &mlen, Buffer[0] );
             if( Buffer[1] != '\0' ) {
-                MacroOffsetAddToken( &mlen, T_WHITE_SPACE );
+                MacroSegmentAddToken( &mlen, T_WHITE_SPACE );
             }
             break;
         case T_BAD_TOKEN :
         case T_CONSTANT:
         case T_PPNUMBER:
-            MacroOffsetAddToken( &mlen, CurToken );
-            MacroOffsetAddMem( &mlen, Buffer, TokenLen + 1 );
+            MacroSegmentAddToken( &mlen, CurToken );
+            MacroSegmentAddMem( &mlen, Buffer, TokenLen + 1 );
             break;
         case T_STRING:
         case T_LSTRING:
             // TokenLen includes '\0' for strings
-            MacroOffsetAddToken( &mlen, CurToken );
-            MacroOffsetAddMem( &mlen, Buffer, TokenLen );
+            MacroSegmentAddToken( &mlen, CurToken );
+            MacroSegmentAddMem( &mlen, Buffer, TokenLen );
             break;
         default :
-            MacroOffsetAddToken( &mlen, CurToken );
+            MacroSegmentAddToken( &mlen, CurToken );
             break;
         }
         if( CurToken != T_WHITE_SPACE ) {
@@ -395,7 +395,7 @@ static MEPTR grabTokens(            // SAVE TOKENS IN A MACRO DEFINITION
     if( prev_token == T_WHITE_SPACE ) {
         mlen -= sizeof( TOKEN );
     }
-    MacroOffsetAddToken( &mlen, T_NULL );
+    MacroSegmentAddToken( &mlen, T_NULL );
     if( prev_non_ws_token == T_MACRO_SHARP_SHARP ) {
         CErr1( ERR_MISPLACED_SHARP_SHARP );
     }
@@ -439,7 +439,7 @@ MEPTR MacroScan(                // SCAN AND DEFINE A MACRO (#define, -d)
     parm_names = NULL;
     mflags = MFLAG_NONE;
     parm_count = 0;
-    MacroOffsetAddMemNoCopy( &mlen, Buffer, TokenLen + 1 );
+    MacroSegmentAddMemNoCopy( &mlen, Buffer, TokenLen + 1 );
     if( CurrChar == '(' ) {         /* parms present */
         if( (defn & MSCAN_MANY) == 0 ) {
             BadCmdLine( ERR_INVALID_OPTION );
@@ -462,7 +462,7 @@ MEPTR MacroScan(                // SCAN AND DEFINE A MACRO (#define, -d)
                 ++parm_count;
                 if( CurToken == T_DOT_DOT_DOT )
                     mflags |= MFLAG_HAS_VAR_ARGS; // can have no further tokens
-                MacroOffsetAddMem( &mlen, Buffer, TokenLen + 1 );
+                MacroSegmentAddMem( &mlen, Buffer, TokenLen + 1 );
             }
             NextToken();
             if( CurToken == T_RIGHT_PAREN )

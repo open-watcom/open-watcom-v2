@@ -32,21 +32,21 @@
 #ifndef _CMACSUPP_H
 #define _CMACSUPP_H
 
-void MacroOffsetAddChar(        // MacroOffset: ADD A CHARACTER
-    size_t *mlen,               // - Macro Offset Length
+void MacroSegmentAddChar(       // MacroSegment: ADD A CHARACTER
+    size_t *mlen,               // - data length
     char chr )                  // - character to be added
 ;
-void MacroOffsetAddToken(       // MacroOffset: ADD A TOKEN
-    size_t *mlen,               // - Macro Offset Length
+void MacroSegmentAddToken(      // MacroSegment: ADD A TOKEN
+    size_t *mlen,               // - data length
     TOKEN token )               // - token to be added
 ;
-void MacroOffsetAddMem(         // MacroOffset: ADD A SEQUENCE OF BYTES
-    size_t *mlen,               // - Macro Offset Length
+void MacroSegmentAddMem(        // MacroSegment: ADD A SEQUENCE OF BYTES
+    size_t *mlen,               // - data length
     const char *buff,           // - bytes to be added
     size_t len )                // - number of bytes
 ;
-void MacroOffsetAddMemNoCopy(   // As above, but no copy from old macro
-    size_t *mlen,               // - Macro Offset Length
+void MacroSegmentAddMemNoCopy(  // As above, but no copy from old macro
+    size_t *mlen,               // - data length
     const char *buff,           // - bytes to be added
     size_t len )                // - number of bytes
 ;
