@@ -105,8 +105,7 @@ void MacroInit( void )
     TokenList = NULL;
     UndefMacroList = NULL;
     InitialMacroFlags = MFLAG_DEFINED_BEFORE_FIRST_INCLUDE;
-    AllocMacroSegment( MACRO_HASH_SIZE * sizeof( MEPTR ) );
-    MacHash = (MEPTR *)MacroAllocateInSeg( MACRO_HASH_SIZE * sizeof( MEPTR ) );
+    MacHash = PermMemAlloc( MACRO_HASH_SIZE * sizeof( MEPTR ) );
     for( h = 0; h < MACRO_HASH_SIZE; ++h ) {
         MacHash[h] = NULL;
     }

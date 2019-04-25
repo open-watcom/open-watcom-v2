@@ -643,7 +643,7 @@ extern void         CppStackFini(void);
 extern MEPTR        MacroScan( void );
 
 /* cmacadd.c */
-extern void         AllocMacroSegment(size_t);
+extern void         *PermMemAlloc( size_t amount );
 extern void         FreeMacroSegments(void);
 extern void         *MacroAllocateInSeg( size_t size );
 extern MEPTR        CreateMEntry(const char *, size_t len);
@@ -656,7 +656,6 @@ extern int          MacroCompare(MEPTR,MEPTR);
 extern void         MacroCopy(const void *,MACADDR_T,size_t);
 extern MEPTR        MacroLookup(const char *);
 extern void         MacroReallocOverflow(size_t,size_t);
-extern SYM_HASHPTR  SymHashAlloc(size_t);
 
 /* cmath.c */
 extern TREEPTR      AddOp(TREEPTR,TOKEN,TREEPTR);

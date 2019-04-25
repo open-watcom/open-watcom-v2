@@ -68,7 +68,7 @@ void SymInit( void )
     SymLevel = 0;
     GblSymCount = 0;
     LclSymCount = 0;
-    HashTab = (SYM_HASHPTR *)SymHashAlloc( ID_HASH_SIZE * sizeof( SYM_HASHPTR ) );
+    HashTab = PermMemAlloc( ID_HASH_SIZE * sizeof( SYM_HASHPTR ) );
     for( h = 0; h < ID_HASH_SIZE; h++ ) {
         HashTab[h] = NULL;
     }
@@ -371,7 +371,7 @@ static SYM_HASHPTR SymHash( SYMPTR sym, SYM_HANDLE sym_handle )
     size_t          sym_len;
 
     sym_len = strlen( sym->name ) + 1;
-    hsym = SymHashAlloc( offsetof( id_hash_entry, name ) + sym_len );
+    hsym = PermMemAlloc( offsetof( id_hash_entry, name ) + sym_len );
     hsym->sym_type = NULL;
     if( sym->attribs.stg_class == SC_TYPEDEF ) {
         typ = sym->sym_type;

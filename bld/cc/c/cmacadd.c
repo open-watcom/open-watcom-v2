@@ -110,12 +110,12 @@ void *MacroAllocateInSeg( size_t size )
 }
 
 
-void AllocMacroSegment( size_t minimum )
+static void AllocMacroSegment( size_t minimum )
 {
     struct macro_seg_list *msl;
     size_t amount;
 
-    amount = _RoundUp( minimum, 0x8000 );
+    amount = _RoundUp( minimum + 2, 0x8000 );
     MacroSegment = FEmalloc( amount );
     MacroOffset = MacroSegment;
     MacroSegmentLimit = amount - 2;
@@ -259,7 +259,7 @@ MEPTR MacroDefine( size_t mlen, macro_flags mflags )
     return( new_mentry );
 }
 
-SYM_HASHPTR SymHashAlloc( size_t amount )
+void *PermMemAlloc( size_t amount )
 {
     amount = macroSizeAlign( amount );
     if( amount > MacroSegmentLimit ) {
@@ -267,7 +267,6 @@ SYM_HASHPTR SymHashAlloc( size_t amount )
     }
     return( MacroAllocateInSeg( amount ) );
 }
-
 
 int MacroCompare( MEPTR m1, MEPTR m2 )
 {

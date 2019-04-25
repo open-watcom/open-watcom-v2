@@ -498,8 +498,8 @@ static MEPTR GrabTokens( mac_parm_count parm_count, macro_flags mflags, MPPTR fo
                 CurToken = T_LSTRING;
             }
             /* fall through */
-        case T_CONSTANT:
         case T_LSTRING:
+        case T_CONSTANT:
         case T_BAD_TOKEN:
         case T_PPNUMBER:
             MacroSegmentAddToken( &mlen, CurToken );
