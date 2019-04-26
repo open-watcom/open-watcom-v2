@@ -66,6 +66,7 @@ typedef enum macro_flags {
     MFLAG_USER_DEFINED                  =   0x04,
     MFLAG_REFERENCED                    =   0x08,
     MFLAG_HAS_VAR_ARGS                  =   0x10,   // macro has varargs.
+/* a special macro won't appear as a macro to the program (e.g. ifdef will return false) */
     MFLAG_HIDDEN                        =   0x20,
 } macro_flags;
 
