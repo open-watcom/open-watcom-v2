@@ -97,6 +97,7 @@ static char *Def_Macro_Tokens( const char *str, bool multiple_tokens, macro_flag
     mentry = CreateMEntry( str, mlen );
     str += mlen;
     mlen = mentry->macro_len;
+    mentry->macro_defn = mlen;
     if( !EqualChar( *str ) ) {
         MacroSegmentAddToken( &mlen, T_PPNUMBER );
         MacroSegmentAddChar( &mlen, '1' );
