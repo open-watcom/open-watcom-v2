@@ -368,6 +368,7 @@ jobs:
       install:
         # install DOS Emulator
         - sudo apt-get install -y dosemu
+        - sudo apt-get install -y curl
         - . ./cmnvars.sh
       script: 
         - travis/covscan.sh
