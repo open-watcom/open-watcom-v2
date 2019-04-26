@@ -260,9 +260,7 @@ global struct macro_seg_list {
     MACADDR_T             macro_seg;
 } *MacSegList;                          /* pointer to list of macro segments */
 
-global MACADDR_T    MacroSegment;       /* segment for macro definitions */
 global MACADDR_T    MacroOffset;        /* first free byte in MacroSegment */
-global size_t       MacroSegmentLimit;  /* last  free byte in MacroSegment */
 
 global int          SwitchChar;         /* DOS switch character */
 global int          LoopDepth;          /* current nesting of loop constructs */
@@ -647,11 +645,7 @@ extern void         *PermMemAlloc( size_t amount );
 extern void         FreeMacroSegments(void);
 extern void         *MacroAllocateInSeg( size_t size );
 extern MEPTR        CreateMEntry(const char *, size_t len);
-extern MEPTR        CreateMEntryH(const char *, size_t len);
-extern void         FreeMEntryH( MEPTR mentry );
-extern MEPTR        MacroDefineH( MEPTR mentry, size_t len, macro_flags mflags );
 extern MEPTR        MacroDefine( size_t len, macro_flags mflags );
-extern void         MacroAdd( MEPTR mentry, const char *buf, size_t len, macro_flags mflags );
 extern int          MacroCompare(MEPTR,MEPTR);
 extern void         MacroCopy(const void *,MACADDR_T,size_t);
 extern MEPTR        MacroLookup(const char *);

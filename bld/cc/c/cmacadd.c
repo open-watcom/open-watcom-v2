@@ -36,28 +36,8 @@
 
 #define macroSizeAlign(x)   _RoundUp( (x), sizeof( int ) )
 
-MEPTR CreateMEntryH( const char *name, size_t len )
-{
-    MEPTR   mentry;
-    size_t  size;
-
-    if( len == 0 ) {
-        len = strlen( name );
-    }
-    size = offsetof( MEDEFN, macro_name ) + len + 1;
-    mentry = (MEPTR)CMemAlloc( size );
-    memcpy( mentry->macro_name, name, len );
-    mentry->macro_name[len] = '\0';
-    mentry->macro_len = size;
-    mentry->parm_count = 0;
-    mentry->macro_defn = 0; /* indicate special macro */
-    return( mentry );
-}
-
-void FreeMEntryH( MEPTR mentry )
-{
-    CMemFree( mentry );
-}
+static MACADDR_T    MacroSegment;       /* segment for macro definitions */
+static size_t       MacroSegmentLimit;  /* remaining free bytes in MacroSegment */
 
 MEPTR CreateMEntry( const char *name, size_t len )
 {
@@ -79,24 +59,6 @@ MEPTR CreateMEntry( const char *name, size_t len )
     mentry->src_loc.line = 0;
     return( mentry );
 }
-
-void MacroAdd( MEPTR mentry, const char *buf, size_t len, macro_flags mflags )
-{
-    size_t      size;
-
-    size = mentry->macro_len;
-    if( len > 0 ) {                // if not a special macro
-        mentry->macro_defn = size;
-    }
-    mentry->macro_len += len;
-    MacroReallocOverflow( size + len, 0 );
-    MacroCopy( mentry, MacroOffset, size );
-    if( len > 0 ) {
-        MacroCopy( buf, MacroOffset + size, len );
-    }
-    MacroDefineH( mentry, size + len, mflags );
-}
-
 
 void *MacroAllocateInSeg( size_t size )
 {
@@ -175,46 +137,6 @@ static MEPTR *MacroLkUp( const char *name, MEPTR *lnk )
         lnk = &mentry->next_macro;
     }
     return( lnk );
-}
-
-
-MEPTR MacroDefineH( MEPTR mentry, size_t mlen, macro_flags mflags )
-{
-    MEPTR       old_mentry;
-    MEPTR       *lnk;
-    MEPTR       new_mentry;
-    macro_flags old_mflags;
-
-    new_mentry = NULL;
-    MacroCopy( mentry, MacroOffset, offsetof(MEDEFN,macro_name) );
-    mentry = (MEPTR)MacroOffset;
-    CalcHash( mentry->macro_name, strlen( mentry->macro_name ) );
-    lnk = &MacHash[MacHashValue];
-    lnk = MacroLkUp( mentry->macro_name, lnk );
-    old_mentry = *lnk;
-    if( old_mentry != NULL ) {
-        old_mflags = old_mentry->macro_flags;
-        if( old_mflags & MFLAG_CAN_BE_REDEFINED ) {//delete old entry
-            *lnk = old_mentry->next_macro;
-            old_mentry = NULL;
-        } else if( MacroCompare( mentry, old_mentry ) != 0 ) {
-            if( !MacroIsSpecial( old_mentry ) ) {
-                SetDiagMacro( old_mentry );
-            }
-            CErr2p( ERR_MACRO_DEFN_NOT_IDENTICAL, mentry->macro_name );
-            if( !MacroIsSpecial( old_mentry ) ) {
-                SetDiagPop();
-            }
-        }
-    }
-    if( old_mentry == NULL ) {  //add new entry
-        ++MacroCount;
-        mentry->next_macro = MacHash[MacHashValue];
-        MacHash[MacHashValue] = mentry;
-        mentry->macro_flags = InitialMacroFlags | mflags;
-        new_mentry = MacroAllocateInSeg( mlen );
-    }
-    return( new_mentry );
 }
 
 MEPTR MacroDefine( size_t mlen, macro_flags mflags )

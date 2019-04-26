@@ -34,12 +34,12 @@
 #include "scan.h"
 #include "pdefn2.h"
 #include <ctype.h>
+#include "cmacsupp.h"
+
 
 extern  char    CompilerID[];
 
-
 /* COMMAND LINE PARSING OF MACRO DEFINITIONS */
-
 
 static size_t get_namelen( const char *start )
 {
@@ -86,22 +86,21 @@ char *BadCmdLine( int error_code, const char *str )
 
 static char *Def_Macro_Tokens( const char *str, bool multiple_tokens, macro_flags mflags )
 {
-    size_t      len;
+    size_t      mlen;
     MEPTR       mentry;
 
-    len = get_namelen( str );
-    if( len == 0 ) {
+    mlen = get_namelen( str );
+    if( mlen == 0 ) {
         CErr1( ERR_NO_MACRO_ID_COMMAND_LINE );
         return( (char *)str );
     }
-    mentry = CreateMEntryH( str, len );
-    str += len;
-    len = 0;
+    mentry = CreateMEntry( str, mlen );
+    str += mlen;
+    mlen = mentry->macro_len;
     if( !EqualChar( *str ) ) {
-        MTOK( TokenBuf + len ) = T_PPNUMBER;
-        MTOKINC( len );
-        TokenBuf[len++] = '1';
-        TokenBuf[len++] = '\0';
+        MacroSegmentAddToken( &mlen, T_PPNUMBER );
+        MacroSegmentAddChar( &mlen, '1' );
+        MacroSegmentAddChar( &mlen, '\0' );
     } else {
         bool ppscan_mode;
 
@@ -115,19 +114,17 @@ static char *Def_Macro_Tokens( const char *str, bool multiple_tokens, macro_flag
                 break;
             if( CurToken == T_BAD_CHAR && !multiple_tokens )
                 break;
-            MTOK( TokenBuf + len ) = CurToken;
-            MTOKINC( len );
+            MacroSegmentAddToken( &mlen, CurToken );
             switch( CurToken ) {
             case T_BAD_CHAR:
-                TokenBuf[len++] = Buffer[0];
+                MacroSegmentAddChar( &mlen, Buffer[0] );
                 break;
             case T_CONSTANT:
             case T_PPNUMBER:
             case T_ID:
             case T_LSTRING:
             case T_STRING:
-                memcpy( &TokenBuf[len], &Buffer[0], TokenLen + 1 );
-                len += TokenLen + 1;
+                MacroSegmentAddMem( &mlen, Buffer, TokenLen + 1 );
                 break;
             default:
                 break;
@@ -139,14 +136,12 @@ static char *Def_Macro_Tokens( const char *str, bool multiple_tokens, macro_flag
         }
         FiniPPScan( ppscan_mode );
     }
-    MTOK( TokenBuf + len ) = T_NULL;
-    MTOKINC( len );
+    MacroSegmentAddToken( &mlen, T_NULL );
     if( CMPLIT( mentry->macro_name, "defined" ) != 0 ) {
-        MacroAdd( mentry, TokenBuf, len, mflags );
+        MacroDefine( mlen, mflags );
     } else {
         CErr1( ERR_CANT_DEFINE_DEFINED );
     }
-    FreeMEntryH( mentry );
     return( (char *)str );
 }
 
