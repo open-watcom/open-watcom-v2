@@ -176,10 +176,10 @@ pick( T_ALT_TILDE,                      "compl",                 TC_A2, 15 )
 
 /* start of keywords */
 #include "keywords.gh"
-                                                                 
+
 #define LAST_KEYWORD    (T_MACRO_VAR_PARM - 1)
 
 pick( T_MACRO_VAR_PARM,                 "macro var parm",        TC_A1, -1 )
-pick( T_MACRO_EMPTY_VAR_PARM,           "macro var empty parm",  TC_A1, -1 )
+pick( T_MACRO_EMPTY_VAR_PARM,           "macro var empty parm",  TC_A3, -1 )
 
 #endif
