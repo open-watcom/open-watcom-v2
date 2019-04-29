@@ -68,7 +68,11 @@ TOKEN KwLookup(         // TRANSFORM TO T_ID OR KEYWORD TOKEN
         ExtraRptIncrementCtr( ctr_len_mask );
 #endif
     token = keyword_hash( Buffer, TokValue, len ) + FIRST_KEYWORD;
-    /* hash is now a token number */
+
+    /* temporary until _Pragma() operator will be implemented */
+    if( token == T__PRAGMA )
+        return( T_ID );
+
     ++len;
     if( NameMemCmp( Tokens[token], Buffer, len ) != 0 || (kw_flags[token / BITSIZE] & _bits[token % BITSIZE]) ) {
         ExtraRptIncrementCtr( ctr_ids );

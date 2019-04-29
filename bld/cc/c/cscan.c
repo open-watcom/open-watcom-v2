@@ -191,31 +191,36 @@ id_hash_idx CalcHash( const char *id, size_t len )
 TOKEN KwLookup( const char *buf, size_t len )
 {
     char        *keyword;
-    TOKEN       hash;
+    TOKEN       token;
 
-    hash = keyword_hash( buf, TokValue, len ) + FIRST_KEYWORD;
+    token = keyword_hash( buf, TokValue, len ) + FIRST_KEYWORD;
+
+    /* temporary until _Pragma() operator will be implemented */
+    if( token == T__PRAGMA )
+        return( T_ID );
 
     /* look up id in keyword table */
     if( !CompFlags.c99_extensions ) {
-        switch( hash ) {
+        switch( token ) {
         case T_INLINE:
+        case T__PRAGMA:
             if( !CompFlags.extensions_enabled )
-                hash = T_ID;
+                token = T_ID;
             break;
         case T_RESTRICT:
         case T__COMPLEX:
         case T__IMAGINARY:
         case T__BOOL:
         case T___OW_IMAGINARY_UNIT:
-            hash = T_ID;
+            token = T_ID;
             break;
         }
     }
 
-    keyword = Tokens[hash];
+    keyword = Tokens[token];
     if( *keyword == buf[0] ) {
         if( memcmp( keyword, buf, len + 1 ) == 0 ) {
-            return( hash );
+            return( token );
         }
     }
 
