@@ -562,7 +562,7 @@ that DS should point to "DGROUP" before calling the function.
 .ix 'DS segment register'
 .ix 'segment registers' 'DS'
 .np
-.us #pragma aux _Setcolor parm loadds
+.us #pragma aux _Setcolor __parm __loadds
 .np
 In the above example,
 .us _Setcolor

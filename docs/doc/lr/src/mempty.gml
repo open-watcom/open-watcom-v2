@@ -54,7 +54,7 @@ long featureflags( void );
     "mov eax,1"     \
     "cpuid"         \
     "mov eax,edx"   \
-    modify [eax ebx ecx edx]
+    __modify [eax ebx ecx edx]
 .exmp break
 #define MM_EXTENSION 0x00800000
 .exmp break
