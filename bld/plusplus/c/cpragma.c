@@ -109,14 +109,15 @@ static bool grabNum( unsigned *val )
     return( false );
 }
 
-static void endOfPragma(
-    void )
+static void endOfPragma( bool check_end )
 {
-    if( CurToken == T_SEMI_COLON )
-        NextToken();
-    ExpectingToken( T_NULL );
-    while( CurToken != T_NULL && CurToken != T_EOF ) {
-        NextToken();
+    if( check_end ) {
+        if( CurToken == T_SEMI_COLON )
+            NextToken();
+        ExpectingToken( T_NULL );
+        while( CurToken != T_NULL && CurToken != T_EOF ) {
+            NextToken();
+        }
     }
 }
 
@@ -1250,10 +1251,11 @@ static void pragSTDC( void )
 
 void CPragma( void )                  // PROCESS A PRAGMA
 {
-    bool check_end = true;
+    bool check_end;
 
     SrcFileGuardStateSig();
     CompFlags.in_pragma = true;
+    check_end = true;
     NextToken();
     if( IS_ID_OR_KEYWORD( CurToken ) && pragmaNameRecog( "include_alias" ) ) {
         pragIncludeAlias();
@@ -1340,9 +1342,7 @@ void CPragma( void )                  // PROCESS A PRAGMA
     } else {                    /* unknown pragma */
         check_end = false;      /* skip rest of line */
     }
-    if( check_end ) {
-        endOfPragma();
-    }
+    endOfPragma( check_end );
     CompFlags.in_pragma = false;
 }
 

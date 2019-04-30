@@ -124,14 +124,16 @@ void CPragmaFini( void )
     }
 }
 
-static void EndOfPragma( void )
-/*****************************/
+static void endOfPragma( bool check_end  )
+/****************************************/
 {
-    if( CurToken == T_SEMI_COLON )
-        PPNextToken();
-    ExpectingToken( T_NULL );
-    while( CurToken != T_NULL && CurToken != T_EOF ) {
-        PPNextToken();
+    if( check_end ) {
+        if( CurToken == T_SEMI_COLON )
+            PPNextToken();
+        ExpectingToken( T_NULL );
+        while( CurToken != T_NULL && CurToken != T_EOF ) {
+            PPNextToken();
+        }
     }
 }
 
@@ -1447,12 +1449,13 @@ static void pragAlias( void )
 void CPragma( void )
 /******************/
 {
-    bool    check_end = true;
+    bool    check_end;
 
     /* Note that the include_alias pragma must always be processed
      * because it's intended for the preprocessor, not the compiler.
      */
     CompFlags.in_pragma = true;
+    check_end = true;
     PPNextToken();
     if( IS_ID_OR_KEYWORD( CurToken ) && pragmaNameRecog( "include_alias" ) ) {
         pragIncludeAlias();
@@ -1517,7 +1520,6 @@ void CPragma( void )
     } else {
         check_end = false;
     }
-    if( check_end )
-        EndOfPragma();
+    endOfPragma( check_end );
     CompFlags.in_pragma = false;
 }
