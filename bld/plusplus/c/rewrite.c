@@ -82,8 +82,6 @@
         followed by contents of BadTokenInfo
 */
 
-#define T_REWRITE_MODS         T_LAST_TOKEN
-
 #define CODE_FILE 0x00              // code for SRCFILE
 #define CODE_ABS  0x80              // code for line#, col#
 #define MASK_ABS_LINE 0x80000000    // mask for absolute line

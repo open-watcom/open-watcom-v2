@@ -43,8 +43,6 @@
 #include "dumpapi.h"
 
 
-#define T_UNEXPANDABLE_ID       T_LAST_TOKEN
-
 typedef struct _tokens TOKEN_LIST;
 struct _tokens {
     TOKEN_LIST  *next;

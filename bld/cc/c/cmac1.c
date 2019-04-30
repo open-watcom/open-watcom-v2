@@ -37,8 +37,6 @@
 #include "clibext.h"
 
 
-#define T_UNEXPANDABLE_ID       T_LAST_TOKEN
-
 typedef struct tokens {
     struct  tokens  *next;
     size_t          length;
