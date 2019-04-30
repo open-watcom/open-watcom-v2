@@ -125,7 +125,7 @@ static void reScanGetNextCharUndo( int c )
 {
     /* unused parameters */ (void)c;
 
-    --SrcFile->src_ptr;
+    SrcFile->src_ptr--;
     CompFlags.rescan_buffer_done = false;
 }
 
@@ -1657,7 +1657,7 @@ bool ReScanToken( void )
     if( CurToken == T_STRING && CompFlags.wide_char_string ) {
         CurToken = T_LSTRING;
     }
-    --SrcFile->src_ptr;
+    SrcFile->src_ptr--;
 
     SrcFile = oldSrcFile;
     CurrChar = saved_currchar;

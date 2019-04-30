@@ -287,7 +287,7 @@ static void SymAccess( unsigned sym_num )
     if( sym_num < FirstSymInBuf || sym_num >= FirstSymInBuf + SYMS_PER_BUF ) {
         buf_num = sym_num / SYMS_PER_BUF;
         if( SymBufDirty ) {
-            ++SymStats.write;
+            SymStats.write++;
             si = &SymBufSegs[SymBufSegNum];
             if( !si->allocated ) {
                 SymBufSegment = AllocSegment( si );
@@ -310,7 +310,7 @@ SYMPTR SymGetPtr( SYM_HANDLE sym_handle )
     unsigned    handle = (unsigned)(pointer_int)sym_handle;
     SYMPTR      symptr;
 
-    ++SymStats.getptr;
+    SymStats.getptr++;
     if( sym_handle == CurFuncHandle ) {
         symptr = &CurFuncSym;
     } else if( handle < PCH_MaxSymHandle ) {
@@ -329,7 +329,7 @@ void SymGet( SYMPTR sym, SYM_HANDLE sym_handle )
     unsigned    handle = (unsigned)(pointer_int)sym_handle;
     SYMPTR      symptr;
 
-    ++SymStats.get;
+    SymStats.get++;
     if( sym_handle == CurFuncHandle ) {
         symptr = &CurFuncSym;
     } else if( handle < PCH_MaxSymHandle ) {
@@ -348,7 +348,7 @@ void SymReplace( SYMPTR sym, SYM_HANDLE sym_handle )
 {
     unsigned    handle = (unsigned)(pointer_int)sym_handle;
 
-    ++SymStats.replace;
+    SymStats.replace++;
     if( sym_handle == CurFuncHandle ) {
         memcpy( &CurFuncSym, sym, sizeof( SYM_ENTRY ) );
     }
