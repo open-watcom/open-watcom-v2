@@ -205,15 +205,14 @@ TOKEN KwLookup( const char *buf, size_t len )
         case T_INLINE:
         case T__PRAGMA:
             if( !CompFlags.extensions_enabled )
-                token = T_ID;
+                return( T_ID );
             break;
         case T_RESTRICT:
         case T__COMPLEX:
         case T__IMAGINARY:
         case T__BOOL:
         case T___OW_IMAGINARY_UNIT:
-            token = T_ID;
-            break;
+            return( T_ID );
         }
     }
 

@@ -826,6 +826,9 @@ static void scopeInit(          // SCOPES INITIALIZATION
     injectChipBug();
     injectDwarfAbbrev();
     injectBool();
+    if( !CompFlags.extensions_enabled && !CompFlags.enable_std0x ) {
+        KwDisable( T__PRAGMA );
+    }
     if( !CompFlags.enable_std0x ) {
         KwDisable( T_STATIC_ASSERT );
         KwDisable( T_DECLTYPE );
@@ -856,6 +859,9 @@ static void scopeFini(          // SCOPES COMPLETION
     DbgStmt( CarveVerifyAllGone( carveSYMBOL_EXCLUDE, "SYMBOL_EXCLUDE" ) );
     if( CompFlags.extensions_enabled ) {
         KwEnable( T_BOOL );
+    }
+    if( !CompFlags.extensions_enabled && !CompFlags.enable_std0x ) {
+        KwEnable( T__PRAGMA );
     }
     if( !CompFlags.enable_std0x ) {
         KwEnable( T_STATIC_ASSERT );
