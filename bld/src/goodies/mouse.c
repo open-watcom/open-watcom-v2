@@ -91,8 +91,8 @@ void _loadds far click_handler( int max, int mbx,
                                 int mcx, int mdx,
                                 int msi, int mdi )
 {
-#pragma aux click_handler parm [EAX] [EBX] [ECX] \
-                               [EDX] [ESI] [EDI]
+#pragma aux click_handler __parm [__eax] [__ebx] [__ecx] \
+                               [__edx] [__esi] [__edi]
     cbd.mouse_event = 1;
 
     cbd.mouse_code = (unsigned short)max;

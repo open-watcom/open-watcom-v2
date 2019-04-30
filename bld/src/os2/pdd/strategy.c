@@ -55,11 +55,11 @@ void popf( void );
 
 // want to do a 32 = 16*16 multiply
 // without getting a runtime call
-#pragma aux mul32 =  \
-  "mul dx"           \
-  modify [dx]        \
-  parm [ax] [dx]     \
-  value [ax dx]
+#pragma aux mul32 = \
+    "mul dx"                \
+    __modify [__dx]         \
+    __parm [__ax] [__dx]    \
+    __value [__ax __dx]
 ULONG  mul32( USHORT a, USHORT b );
 
 /* ====================== start of interrupt handler ====================== */
@@ -185,7 +185,7 @@ static VOID StratClose( REQP_OPENCLOSE FAR *rp )
 // calling convention, which fetches arguments from the correct registers.
 
 
-#pragma aux STRATEGY far parm [es bx];
+#pragma aux STRATEGY __far __parm [__es __bx];
 #pragma aux (STRATEGY) Strategy;
 
 VOID Strategy( REQP_ANY FAR *rp )

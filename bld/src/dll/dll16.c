@@ -25,7 +25,7 @@ extern void BreakPoint( void );
 #pragma aux BreakPoint = 0xcc;
 
 extern short GetSS( void );
-#pragma aux GetSS = 0x8C 0xD0 value[ax];
+#pragma aux GetSS = 0x8C 0xD0 __value [__ax];
 
 #pragma off (unreferenced);
 BOOL FAR PASCAL LibMain( HINSTANCE hInstance, WORD wDataSegment,
