@@ -99,9 +99,9 @@ void ReScanInit( const char *ptr )
     rescan_tmp_file.src_ptr = (unsigned char *)ptr;
 }
 
-char *ReScanPos( void )
+const char *ReScanPos( void )
 {
-    return( (char *)rescan_tmp_file.src_ptr );
+    return( (const char *)rescan_tmp_file.src_ptr );
 }
 
 static int reScanGetNextChar( void )

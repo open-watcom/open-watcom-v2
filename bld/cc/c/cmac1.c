@@ -211,8 +211,8 @@ void GetMacroToken( void )
         case T_PPNUMBER:
             ReScanInit( mtok->data );
             if( ReScanToken() ) {   // didn't finish string bad boy
-                char    *tcur;
-                char    *tbeg;
+                const char  *tcur;
+                char        *tbeg;
 
                 tbeg = mtok->data;
                 tcur = ReScanPos();

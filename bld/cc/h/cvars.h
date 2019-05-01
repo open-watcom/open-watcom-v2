@@ -755,7 +755,7 @@ extern void         SkipAhead( void );
 extern TOKEN        ScanToken( void );
 extern void         ReScanInit( const char * );
 extern bool         ReScanToken( void );
-extern char         *ReScanPos( void );
+extern const char   *ReScanPos( void );
 extern TOKEN        KwLookup( const char *, size_t );
 extern TOKEN        NextToken( void );
 extern TOKEN        PPNextToken( void );
