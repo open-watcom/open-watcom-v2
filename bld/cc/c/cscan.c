@@ -261,37 +261,41 @@ static TOKEN doScanName( void )
     if( Pre_processing & PPCTL_NO_EXPAND )
         return( T_ID );
     mentry = MacroLookup( Buffer );
-    if( mentry == NULL )
-        return( KwLookup( Buffer, TokenLen ) );
-    /* this is a macro */
-    if( MacroIsSpecial( mentry ) ) {
-        return( SpecialMacro( mentry ) );
-    }
-    mentry->macro_flags |= MFLAG_REFERENCED;
-    /* if macro requires parameters and next char is not a '('
-    then this is not a macro */
-    if( MacroWithParenthesis( mentry ) ) {
-        SkipAhead();
-        if( CurrChar != '(' ) {
-            if( CompFlags.cpp_output ) {
-                Buffer[TokenLen++] = ' ';
-                Buffer[TokenLen] = '\0';
-                return( T_ID );
-            }
-            return( KwLookup( Buffer, TokenLen ) );
+    if( mentry == NULL ) {
+        token = KwLookup( Buffer, TokenLen );
+    } else {
+        /* this is a macro */
+        if( MacroIsSpecial( mentry ) ) {
+            return( SpecialMacro( mentry ) );
         }
-    }
-    DoMacroExpansion( mentry );             /* start macro expansion */
-    GetMacroToken();
-    token = CurToken;
+        mentry->macro_flags |= MFLAG_REFERENCED;
+        /* if macro requires parameters and next char is not a '('
+        then this is not a macro */
+        if( MacroWithParenthesis( mentry ) ) {
+            SkipAhead();
+            if( CurrChar != '(' ) {
+                if( CompFlags.cpp_output ) {
+                    Buffer[TokenLen++] = ' ';
+                    Buffer[TokenLen] = '\0';
+                    token = T_ID;
+                } else {
+                    token = KwLookup( Buffer, TokenLen );
+                }
+                return( token );
+            }
+        }
+        DoMacroExpansion( mentry );             /* start macro expansion */
+        GetMacroToken();
+        token = CurToken;
 #if 0
-    if( MacroPtr != NULL ) {
-        SavedCurrChar = CurrChar;
-        CurrChar = MACRO_CHAR;
-    }
+        if( MacroPtr != NULL ) {
+            SavedCurrChar = CurrChar;
+            CurrChar = MACRO_CHAR;
+        }
 #endif
-    if( token == T_NULL ) {
-        token = T_WHITE_SPACE;
+        if( token == T_NULL ) {
+            token = T_WHITE_SPACE;
+        }
     }
     return( token );
 }

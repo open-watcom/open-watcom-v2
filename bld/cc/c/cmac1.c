@@ -760,8 +760,8 @@ static char *GlueTokenToBuffer( MACRO_TOKEN *first, char *gluebuf )
     return( buf );
 }
 
-static MACRO_TOKEN *ReTokenGlueBuffer( char *gluebuf )
-// retokenize starting at gluebuf
+static MACRO_TOKEN *ReTokenBuffer( char *buffer )
+// retokenize starting at buffer
 {
     MACRO_TOKEN *head;
     MACRO_TOKEN **lnk;
@@ -769,12 +769,11 @@ static MACRO_TOKEN *ReTokenGlueBuffer( char *gluebuf )
     bool        ppscan_mode;
 
     ppscan_mode = InitPPScan();
-    if( gluebuf == NULL )
-        gluebuf = "";
-    ReScanInit( gluebuf );
+    ReScanInit( buffer );
     head = NULL;
     lnk = &head;
     for( ;; ) {
+        Buffer[0] = '\0';
         ReScanToken();
         new = BuildAToken( CurToken, Buffer );
         *lnk = new;
@@ -849,7 +848,7 @@ static MACRO_TOKEN *GlueTokens( MACRO_TOKEN *head )
                 }
                 if( pos >= 0 ) {
                     if( gluebuf != NULL ) {
-                        mtok = ReTokenGlueBuffer( gluebuf );
+                        mtok = ReTokenBuffer( gluebuf );
                         CMemFree( gluebuf );
                     } else {
                         /* Both ends of ## were empty */
