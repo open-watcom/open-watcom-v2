@@ -59,7 +59,7 @@ static struct tri_graph TriGraphs[] = {
     { '\0','\0'}
 };
 
-static unsigned char    notFilled[] = { '\n', '\0' };
+static const unsigned char  notFilled[] = { '\n', '\0' };
 
 static int      LastChar;
 static int      Blank1Count;

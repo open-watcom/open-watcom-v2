@@ -96,7 +96,7 @@ static  void    ScanComment( void );
 
 void ReScanInit( const char *ptr )
 {
-    rescan_tmp_file.src_ptr = (unsigned char *)ptr;
+    rescan_tmp_file.src_ptr = (const unsigned char *)ptr;
 }
 
 const char *ReScanPos( void )
