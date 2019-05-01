@@ -25,51 +25,10 @@
 *
 *  ========================================================================
 *
-* Description:  Keyword hash function; must correspond to findhash.c.
+* Description:  Keyword hash function; version which ignore character case
 *
 ****************************************************************************/
 
 
-static unsigned keyword_hash( const char *name, const unsigned char *weights, size_t len )
-{
-    unsigned        hash;
-    unsigned char   c;
-
-    c = name[LEN_MIN];
-#ifdef IGNORE_CASE
-    hash = (unsigned)( len + tolower( c ) );
-#else
-    hash = (unsigned)( len + c );
-#endif
-    if( len > FIRST_INDEX ) {
-        c = name[FIRST_INDEX];
-    } else {
-        c = name[len - 1];
-    }
-#ifdef IGNORE_CASE
-    hash += weights[tolower( c )] * FIRST_SCALE;
-#else
-    hash += weights[c] * FIRST_SCALE;
-#endif
-    if( len > LAST_INDEX ) {
-        c = name[len - ( LAST_INDEX + 1 )];
-    } else {
-        c = name[0];
-    }
-#ifdef IGNORE_CASE
-    hash += weights[tolower( c )] * LAST_SCALE;
-#else
-    hash += weights[c] * LAST_SCALE;
-#endif
-#ifdef KEYWORD_HASH_MASK
-    hash &= KEYWORD_HASH_MASK;
-  #ifdef KEYWORD_HASH_EXTRA
-    if( hash >= KEYWORD_HASH ) {
-        hash -= KEYWORD_HASH;
-    }
-  #endif
-#else
-    hash %= KEYWORD_HASH;
-#endif
-    return( hash );
-}
+#define IGNORE_CASE
+#include "kwhash.h"
