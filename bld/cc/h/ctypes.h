@@ -594,8 +594,8 @@ typedef struct comp_flags {
     bool undefine_all_macros                : 1;    /* on => -u all macros       */
     bool emit_browser_info                  : 1;    /* -db emit broswer info */
     bool rescan_buffer_done                 : 1;    /* ## re-scan buffer used up */
-    bool cpp_output                         : 1;    /* WCC doing CPP output      */
-    bool cpp_output_to_file                 : 1;    /* WCC doing CPP output to?.i*/
+    bool cpp_output                         : 1;    /* compiler doing CPP output        */
+    bool cpp_output_to_file                 : 1;    /* compiler doing CPP output to?.i  */
 
 /*  /d1+
     generate info on BP-chains if possible

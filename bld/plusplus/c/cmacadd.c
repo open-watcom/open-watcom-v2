@@ -505,7 +505,7 @@ void MacroReallocOverflow(      // OVERFLOW SEGMENT IF REQUIRED
     if( macroSegmentLimit < amount_needed ) {
         old_offset = MacroOffset;
         macroAllocSegment( amount_needed );
-        if( amount_used != 0 ) {
+        if( amount_used > 0 ) {
             ExtraRptSpaceSubtract( macro_space, amount_used );
             memcpy( MacroOffset, old_offset, amount_used );
         }

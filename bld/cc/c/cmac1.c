@@ -110,7 +110,8 @@ void MacroInit( void )
     for( i = MACRO_FIRST; i <= MACRO_LAST; i++ ) {
         SpecialMacroAdd( &SpcMacros[i] );
     }
-    TimeInit(); /* grab time and date for __TIME__ and __DATE__ */
+    /* grab time and date for __TIME__ and __DATE__ */
+    TimeInit();
 }
 
 void MacroAddComp( void )

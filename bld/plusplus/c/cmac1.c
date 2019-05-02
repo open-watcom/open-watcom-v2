@@ -43,6 +43,9 @@
 #include "dumpapi.h"
 
 
+#define MACRO_END_CHAR          'Z'
+#define MACRO_END_STRING        "Z-<end of macro>"
+
 typedef struct _tokens TOKEN_LIST;
 struct _tokens {
     TOKEN_LIST  *next;
@@ -254,7 +257,7 @@ static void doGetMacroToken(        // GET NEXT TOKEN
         case T_BAD_CHAR:
             break;
         case T_NULL:
-            if( Buffer[0] == 'Z' ) {    // if end of macro
+            if( Buffer[0] == MACRO_END_CHAR ) {    // if end of macro
                 deleteNestedMacro();
             }
             flag.next_token = true;
@@ -867,7 +870,7 @@ static MACRO_TOKEN *expandNestedMacros( MACRO_TOKEN *head, bool rescanning )
             }
         } else if( mtok->token == T_NULL ) {
             toklist = mtok->next;
-            if( mtok->data[0] == 'Z' ) {        // end of a macro
+            if( mtok->data[0] == MACRO_END_CHAR ) {        // end of a macro
                 rescanning = nestedMacros->rescanning;
                 deleteNestedMacro();
                 CMemFree( mtok );
@@ -1335,7 +1338,7 @@ static MACRO_TOKEN *macroExpansion( MEPTR mentry, bool rescanning )
         head = glueTokens( head );
         markUnexpandableIds( head );
     }
-    head = appendToken( head, T_NULL, "Z-<end of macro>" );
+    head = appendToken( head, T_NULL, MACRO_END_STRING );
     return( head );
 }
 
