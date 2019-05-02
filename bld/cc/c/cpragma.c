@@ -124,8 +124,8 @@ void CPragmaFini( void )
     }
 }
 
-static void endOfPragma( bool check_end  )
-/****************************************/
+static void endOfPragma( bool check_end )
+/***************************************/
 {
     if( check_end ) {
         if( CurToken == T_SEMI_COLON )
