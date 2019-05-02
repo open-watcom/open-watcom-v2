@@ -37,6 +37,27 @@ can be generated in the object code.
 Pragmas are specified in the source file using the
 .kw pragma
 directive.
+A pragma operator of the form, 
+.kw _Pragma 
+( string-literal ) 
+is an alternative method of specifying
+.kw pragma 
+directives.
+.np
+For example, the following two statements are equivalent.
+.millust begin
+_Pragma( "library (\"kernel32.lib\")" )
+#pragma library ("kernel32.lib")
+.millust end
+The
+.kw _Pragma
+operator can be used in macro definition.
+.millust begin
+# define LIBRARY(X) PRAGMA(library (#X))
+# define PRAGMA(X) _Pragma(#X)
+LIBRARY(kernel32.lib)  // same as #pragma library ("kernel32.lib")
+.millust end
+.np
 .ix 'pragmas' 'notation used to describe'
 The following notation is used to describe the syntax of pragmas.
 .begnote
