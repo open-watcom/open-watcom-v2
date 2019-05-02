@@ -883,6 +883,30 @@ tokens
 informs the compiler about some aspect of the compilation,
 in an implementation-defined manner.
 .*
+.pp
+A pragma operator of the form,
+.ppix _Pragma
+.cillust begin
+.kwpp _Pragma
+( string-literal )
+.cillust end
+.pc
+is an alternative method of specifying #pragma directives. 
+For example, the following two statements are equivalent.
+.cillust begin
+_Pragma( "library (\"kernel32.lib\")" )
+.cillust break
+#pragma library ("kernel32.lib")
+.cillust end
+The _Pragma operator can be used in macro definition. 
+.cillust begin
+# define LIBRARY(X) PRAGMA(library (#X))
+.cillust break
+# define PRAGMA(X) _Pragma(#X)
+.cillust break
+LIBRARY(kernel32.lib)  // same as #pragma library ("kernel32.lib")
+.cillust end
+.*
 .************************************************************************
 .*
 ..if '&target' eq 'PC' or '&target' eq 'PC 370' ..th ..do begin
