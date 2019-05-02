@@ -1264,10 +1264,8 @@ void CPragma( void )                  // PROCESS A PRAGMA
         if( CurToken != T_NULL ) {
             PrtToken();
             PPCTL_ENABLE_MACROS();
-            GetNextToken();
-            for( ; CurToken != T_NULL; ) {
+            for( GetNextToken(); CurToken != T_NULL; GetNextToken() ) {
                 PrtToken();
-                GetNextToken();
             }
             PPCTL_DISABLE_MACROS();
         }

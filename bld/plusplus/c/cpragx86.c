@@ -1144,7 +1144,7 @@ static int GetByteSeq( void )
                     } else if( CurToken == T_MINUS ) {
                         NextToken();
                         if( CurToken == T_CONSTANT ) {
-                            offset = - U32Fetch( Constant64 );
+                            offset = -(int)U32Fetch( Constant64 );
                             NextToken();
                         }
                     }

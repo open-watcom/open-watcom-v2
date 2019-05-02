@@ -227,11 +227,11 @@ void DoMacroExpansion(          // EXPAND A MACRO
 ;
 void EmitLine(                  // EMIT #LINE DIRECTIVE, IF REQ'D
     LINE_NO line_num,           // - line number
-    char *filename )            // - file name
+    const char *filename )      // - file name
 ;
 void EmitLineNL(                // EMIT #LINE DIRECTIVE ON ITS OWN LINE, IF REQ'D
     LINE_NO line_num,           // - line number
-    char *filename )            // - file name
+    const char *filename )      // - file name
 ;
 void Expecting(                 // ISSUE EXPECTING ERROR FOR A TOKEN
     const char *a_token )       // - required token
@@ -313,7 +313,7 @@ void PrtToken(                  // PRINT PREPROC TOKEN IF REQ'D
     void )
 ;
 void ReScanInit(                // RE-SCAN TOKEN INITIALIZATION
-    char *buf )
+    const char *buf )
 ;
 bool ReScanToken(               // RE-SCAN TOKEN FROM BUFFER
     void )

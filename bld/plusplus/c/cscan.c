@@ -58,7 +58,7 @@
 static void             nextMacroToken( void );
 static token_source_fn  *tokenSource;
 
-static char             *ReScanPtr;
+static const char       *ReScanPtr;
 
 ExtraRptCtr( nextTokenCalls );
 ExtraRptCtr( nextTokenSavedId );
@@ -129,15 +129,15 @@ static unsigned_64 uintMax  = I64Val( 0x00000000, 0xffffffff );
 #define diagnose_lex_error( e ) \
         (!(e) && ( SkipLevel == NestLevel ) && (PPControl & PPCTL_NO_LEX_ERRORS) == 0 )
 
-void ReScanInit( char *ptr )
-/**************************/
+void ReScanInit( const char *ptr )
+/********************************/
 {
     ReScanPtr = ptr;
 }
 
 static int rescanBuffer( void )
 {
-    CurrChar = *(unsigned char *)ReScanPtr++;
+    CurrChar = *(const unsigned char *)ReScanPtr++;
     if( CurrChar == '\0' ) {
         CompFlags.rescan_buffer_done = true;
     }
