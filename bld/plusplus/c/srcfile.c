@@ -122,7 +122,7 @@ static SRCFILE primarySrcFile;              // primary source file
 static DIR_LIST* roDirs;                    // read-only directories
 static unsigned totalSrcFiles;              // running total of SRCFILE's
 
-static unsigned char notFilled[2] = { '\n', '\0' };  // default buffer to force srcReadBuffer
+static const unsigned char  notFilled[2] = { '\n', '\0' };  // default buffer to force srcReadBuffer
 
 static int lastChar;                    // unknown char to return in GetNextChar
 
@@ -676,16 +676,16 @@ static bool srcReadBuffer(      // READ NEXT BUFFER
                 if( src_file->force_include && act->nextc == notFilled ) {
                     InitialMacroFlags = MFLAG_NONE;
                 }
-                act->nextc = &act->buff[0];
+                act->lastc = act->nextc = act->buff;
                 if( src_file->found_eof ) {
                     src_file->found_eof = false;
                     amt_read = 0;
                     DbgAssert( !( SysRead( fileno( act->fp )
-                                        , act->nextc
+                                        , act->buff
                                         , PRODUCTION_BUFFER_SIZE ) > 0 ) );
                 } else {
                     amt_read = SysRead( fileno( act->fp )
-                                        , act->nextc
+                                        , act->buff
                                         , PRODUCTION_BUFFER_SIZE );
                 }
                 if( amt_read > 0 ) {
@@ -695,8 +695,8 @@ static bool srcReadBuffer(      // READ NEXT BUFFER
                         }
                     }
                     // mark end of buffer
-                    act->lastc = &act->buff[amt_read];
-                    *(act->lastc) = '\0';
+                    act->buff[amt_read] = '\0';
+                    act->lastc += amt_read;
                     /* CurrChar not set; must read buffer */
                     return( false );
                 }
@@ -722,7 +722,7 @@ static bool srcReadBuffer(      // READ NEXT BUFFER
                         act->buff[1] = ';';
                         act->buff[2] = ';';
                         act->buff[3] = '\0';
-                        act->lastc = &act->buff[3];
+                        act->lastc += 3;
                         if( CurrChar != '\n' ) {
                             // terminate the last line (if necessary)
                             CurrChar = '\n';
@@ -738,7 +738,6 @@ static bool srcReadBuffer(      // READ NEXT BUFFER
                             src_file->found_eof = true;
                         }
                         act->buff[0] = '\0';
-                        act->lastc = &act->buff[0];
                         CurrChar = '\n';
                         return( true );
                     }
@@ -1198,10 +1197,10 @@ int GetNextChar( void )
 
 void SrcFileScanName( int e )   // CALLED FROM CSCAN TO SCAN AN IDENTIFIER
 {
-    size_t          len;
-    unsigned char   *p;
-    OPEN_FILE       *act;
-    int             c;
+    size_t              len;
+    const unsigned char *p;
+    OPEN_FILE           *act;
+    int                 c;
 
     len = TokenLen - 1;
     if( CharSet[e] & (C_AL|C_DI) ) {
@@ -1297,9 +1296,9 @@ void SrcFileScanName( int e )   // CALLED FROM CSCAN TO SCAN AN IDENTIFIER
 
 void SrcFileScanWhiteSpace( bool expanding )
 {
-    unsigned char   *p;
-    OPEN_FILE       *act;
-    int             c;
+    const unsigned char *p;
+    OPEN_FILE           *act;
+    int                 c;
 
     /* unused parameters */ (void)expanding;
 
@@ -1372,9 +1371,9 @@ void SrcFileScanWhiteSpace( bool expanding )
 
 void SrcFileScanCppComment( void )
 {
-    unsigned char   *p;
-    OPEN_FILE       *act;
-    int             c;
+    const unsigned char *p;
+    OPEN_FILE           *act;
+    int                 c;
 
     if( NextChar == GetNextChar ) {
         for( ;; ) {
