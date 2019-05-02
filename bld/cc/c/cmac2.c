@@ -846,3 +846,56 @@ void CppStackFini( void )
     }
     CppStack = NULL;
 }
+
+static void stringize( char *s )
+{
+    char    *d;
+
+    d = s;
+    while( *s != '\0' ) {
+        if( s[0] == '\\' ) {
+            if( s[1] == '\\' || s[1] == '\"' ) {
+                s++;
+            }
+        }
+        *d++ = *s++;
+    }
+    *d = '\0';
+}
+
+TOKEN Process_Pragma( void )
+{
+    PPNextToken();
+    if( CurToken == T_LEFT_PAREN ) {
+        PPNextToken();
+        if( CurToken == T_STRING ) {
+            char        *token_buf;
+
+            token_buf = CStrSave( Buffer );
+            PPNextToken();
+            if( CurToken == T_RIGHT_PAREN ) {
+                ppctl_t old_ppctl;
+
+                stringize( token_buf );
+                InsertReScanPragmaTokens( token_buf );
+                // call CPragma()
+                old_ppctl = Pre_processing;
+                PPCTL_ENABLE_EOL();
+                CPragma();
+                Pre_processing = old_ppctl;
+            } else {
+                /* error, incorrect syntax of the operator _Pragma() */
+            }
+            CMemFree( token_buf );
+            PPNextToken();
+        } else {
+            /* error, incorrect syntax of the operator _Pragma() */
+        }
+    } else {
+        InsertToken( CurToken, Buffer );
+        strcpy( Buffer, "_Pragma" );
+        TokenLen = strlen( Buffer );
+        CurToken = T_ID;
+    }
+    return( CurToken );
+}

@@ -130,6 +130,8 @@ static void endOfPragma( bool check_end  )
     if( check_end ) {
         if( CurToken == T_SEMI_COLON )
             PPNextToken();
+    	if( CurToken == T_PRAGMA_END )
+        	return;
         ExpectingToken( T_NULL );
         while( CurToken != T_NULL && CurToken != T_EOF ) {
             PPNextToken();
@@ -1464,7 +1466,7 @@ void CPragma( void )
         if( CurToken != T_NULL ) {
             CppPrtToken();
             PPCTL_ENABLE_MACROS();
-            for( GetNextToken(); CurToken != T_NULL; GetNextToken() ) {
+            for( GetNextToken(); CurToken != T_NULL && CurToken != T_PRAGMA_END; GetNextToken() ) {
                 CppPrtToken();
             }
             PPCTL_DISABLE_MACROS();

@@ -192,6 +192,13 @@ void GetMacroToken( void )
             CalcHash( buf, len );
             if( !CompFlags.doing_macro_expansion ) {
                 CurToken = KwLookup( buf, len );
+                if( CurToken == T__PRAGMA ) {
+                    TokenList = mtok->next;
+                    CMemFree( mtok );
+                    CurToken = Process_Pragma();
+                    mtok = TokenList;
+                    keep_token = true;
+                }
             }
             break;
         case T_ID:
@@ -201,6 +208,13 @@ void GetMacroToken( void )
                 CurToken = T_ID;
             } else {
                 CurToken = KwLookup( buf, len );
+                if( CurToken == T__PRAGMA ) {
+                    TokenList = mtok->next;
+                    CMemFree( mtok );
+                    CurToken = Process_Pragma();
+                    mtok = TokenList;
+                    keep_token = true;
+                }
             }
             break;
         case T_BAD_TOKEN:
@@ -1311,6 +1325,39 @@ void DoMacroExpansion( MEPTR mentry )               // called from cscan
     if( TokenList == NULL ) {
         MacroPtr = NULL;
     } else {
+        MacroPtr = "";
+    }
+}
+
+
+void InsertReScanPragmaTokens( char *pragma )
+{
+    MACRO_TOKEN *toklist;
+
+    toklist = ReTokenBuffer( pragma );
+    if( toklist != NULL ) {
+        MACRO_TOKEN *old_list;
+
+        old_list = TokenList;
+        TokenList = toklist;
+        while( toklist->next != NULL ) {
+            toklist = toklist->next;
+        }
+        toklist->next = BuildAToken( T_PRAGMA_END, "" );
+        toklist = toklist->next;
+        toklist->next = old_list;
+        MacroPtr = "";
+    }
+}
+
+void InsertToken( TOKEN token, const char *str )
+{
+    MACRO_TOKEN *toklist;
+
+    toklist = BuildAToken( token, str );
+    if( toklist != NULL ) {
+        toklist->next = TokenList;
+        TokenList = toklist;
         MacroPtr = "";
     }
 }

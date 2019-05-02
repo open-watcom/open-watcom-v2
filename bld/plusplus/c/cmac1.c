@@ -204,16 +204,31 @@ static void doGetMacroToken(        // GET NEXT TOKEN
             if( ! doing_macro_expansion ) {
                 CurToken = KwLookup( i );
                 TokenLen = i;
+                if( CurToken == T__PRAGMA ) {
+                    *mlist = mtok->next;
+                    CMemFree( mtok );
+                    CurToken = Process_Pragma( internal );
+                    mtok = *mlist;
+                    flag.keep_token = true;
+                }
             }
             break;
         case T_ID:
         case T_SAVED_ID:
             if( doing_macro_expansion ) {
                 CurToken = T_ID;
+                TokenLen = i;
             } else {
                 CurToken = KwLookup( i );
+                TokenLen = i;
+                if( CurToken == T__PRAGMA ) {
+                    *mlist = mtok->next;
+                    CMemFree( mtok );
+                    CurToken = Process_Pragma( internal );
+                    mtok = *mlist;
+                    flag.keep_token = true;
+                }
             }
-            TokenLen = i;
             break;
         case T_BAD_TOKEN:
         case T_CONSTANT:
@@ -245,11 +260,11 @@ static void doGetMacroToken(        // GET NEXT TOKEN
             flag.next_token = true;
             break;
         }
-        if( ! flag.keep_token ) {
+        if( !flag.keep_token ) {
             *mlist = mtok->next;
             CMemFree( mtok );
         }
-        if( ! flag.next_token ) {
+        if( !flag.next_token ) {
             break;
         }
     }
@@ -1347,5 +1362,47 @@ void DefineAlternativeTokens(   // DEFINE ALTERNATIVE TOKENS
 
     for( i = MACRO_ALT_FIRST; i <= MACRO_ALT_LAST; ++i ) {
         MacroSpecialAdd( SpcMacros[i].name, SpcMacros[i].value, SpcMacros[i].flags );
+    }
+}
+
+
+void InsertReScanPragmaTokens( const char *pragma, bool internal )
+{
+    MACRO_TOKEN *toklist;
+
+    toklist = reTokenBuffer( pragma );
+    if( toklist != NULL ) {
+        MACRO_TOKEN *old_list;
+        if( internal ) {
+            old_list = internalTokenList;
+            internalTokenList = toklist;
+        } else {
+            old_list = scannerTokenList;
+            scannerTokenList = toklist;
+        }
+        while( toklist->next != NULL ) {
+            toklist = toklist->next;
+        }
+        toklist->next = buildAToken( T_PRAGMA_END, "" );
+        toklist = toklist->next;
+        toklist->next = old_list;
+        CompFlags.use_macro_tokens = true;
+    }
+}
+
+void InsertToken( TOKEN token, const char *str, bool internal )
+{
+    MACRO_TOKEN *toklist;
+
+    toklist = buildAToken( token, str );
+    if( toklist != NULL ) {
+        if( internal ) {
+            toklist->next = internalTokenList;
+            internalTokenList = toklist;
+        } else {
+            toklist->next = scannerTokenList;
+            scannerTokenList = toklist;
+        }
+        CompFlags.use_macro_tokens = true;
     }
 }

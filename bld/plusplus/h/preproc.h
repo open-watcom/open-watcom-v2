@@ -333,4 +333,7 @@ void TimeInit(                  // INITIALIZE TIME
 time_t TimeOfCompilation(       // GET TIME OF COMPILATION
     void )
 ;
+extern void         InsertReScanPragmaTokens( const char *pragma, bool internal );
+extern void         InsertToken( TOKEN token, const char *str, bool internal );
+extern TOKEN        Process_Pragma( bool internal );
 #endif

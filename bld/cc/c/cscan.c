@@ -195,10 +195,6 @@ TOKEN KwLookup( const char *buf, size_t len )
 
     token = keyword_hash( buf, TokValue, len ) + FIRST_KEYWORD;
 
-    /* temporary until _Pragma() operator will be implemented */
-    if( token == T__PRAGMA )
-        return( T_ID );
-
     /* look up id in keyword table */
     if( !CompFlags.c99_extensions ) {
         switch( token ) {
@@ -263,6 +259,9 @@ static TOKEN doScanName( void )
     mentry = MacroLookup( Buffer );
     if( mentry == NULL ) {
         token = KwLookup( Buffer, TokenLen );
+        if( token == T__PRAGMA ) {
+            token = Process_Pragma();
+        }
     } else {
         /* this is a macro */
         if( MacroIsSpecial( mentry ) ) {
@@ -280,6 +279,9 @@ static TOKEN doScanName( void )
                     token = T_ID;
                 } else {
                     token = KwLookup( Buffer, TokenLen );
+                    if( token == T__PRAGMA ) {
+                        token = Process_Pragma();
+                    }
                 }
                 return( token );
             }

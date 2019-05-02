@@ -632,6 +632,8 @@ extern void         MacroPurge(void);
 extern void         GetMacroToken(void);
 extern TOKEN        SpecialMacro( MEPTR );
 extern void         DoMacroExpansion( MEPTR );
+extern void         InsertReScanPragmaTokens( char *pragma );
+extern void         InsertToken( TOKEN token, const char *str );
 
 /* cmac2.c */
 extern TOKEN        ChkControl(void);
@@ -639,6 +641,7 @@ extern bool         MacroDel( const char *name );
 extern void         CppStackInit( void );
 extern void         CppStackFini(void);
 extern MEPTR        MacroScan( void );
+extern TOKEN        Process_Pragma( void );
 
 /* cmacadd.c */
 extern void         *PermMemAlloc( size_t amount );
