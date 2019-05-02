@@ -1654,9 +1654,9 @@ bool ReScanToken( void )
     NextChar = reScanGetNextChar;
     UnGetChar = reScanGetNextCharUndo;
     GetCharCheck = reScanGetCharCheck;
-    CurrChar = NextChar();
-
     CompFlags.rescan_buffer_done = false;
+
+    CurrChar = NextChar();
     CompFlags.doing_macro_expansion = true;     // return macros as ID's
     CurToken = ScanToken();
     CompFlags.doing_macro_expansion = false;
