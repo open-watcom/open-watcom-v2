@@ -296,7 +296,7 @@ STATIC DHEADPTR findDir( const char *path )
 
     dlast = NULL;
     for( dcur = cacheHead; dcur != NULL; dcur = dcur->dh_next ) {
-        if( *path == *dcur->dh_name && FarFNameEq( dcur->dh_name, path ) ) {
+        if( FarFNameEq( dcur->dh_name, path ) ) {
             break;
         }
         dlast = dcur;
