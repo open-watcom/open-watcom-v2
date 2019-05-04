@@ -1373,8 +1373,8 @@ STATIC RET_T handleRMSyntaxError( void )
     return( RET_ERROR );
 }
 
-STATIC RET_T getRMArgs( char *line, rm_flags *flags, const char **pfile )
-/************************************************************************
+STATIC RET_T getRMArgs( char *line, rm_flags *flags, const char **name )
+/***********************************************************************
  * returns RET_WARN when there are no more arguments
  */
 {
@@ -1385,8 +1385,8 @@ STATIC RET_T getRMArgs( char *line, rm_flags *flags, const char **pfile )
         flags->bDirs    = false;
         flags->bVerbose = false;
 
-        /* find all options after "RM" */
-        for( p = SkipWS( line + 2 ); p[0] == '-'; p = SkipWS( p ) ) {
+        /* find all options after "RM " */
+        for( p = SkipWS( line + 3 ); p[0] == '-'; p = SkipWS( p ) ) {
             p++;
             while( cisalpha( p[0] ) ) {
                 switch( ctolower( p[0] ) ) {
@@ -1406,20 +1406,16 @@ STATIC RET_T getRMArgs( char *line, rm_flags *flags, const char **pfile )
             }
         }
     }
-
+    *name = p;
     if( p != NULL && *p != NULLCHAR ) {
-        *pfile = p;
         p = FindNextWS( p );
-        if( *p == NULLCHAR ) {
-            p = NULL;
-        } else {
+        if( *p != NULLCHAR ) {
             *p++ = NULLCHAR;
+            p = SkipWS( p );
         }
-    } else {
-        return( RET_WARN );
+        return( RET_SUCCESS );
     }
-
-    return( RET_SUCCESS );
+    return( RET_WARN );
 }
 
 STATIC bool remove_item( const char *name, const rm_flags *flags, bool dir )
@@ -1474,7 +1470,7 @@ static bool chk_is_dir( const char *name )
 }
 #endif
 
-static bool doRM( const char *f, const rm_flags *flags )
+static bool doRM( const char *fullpath, const rm_flags *flags )
 {
     iolist              *tmp;
     iolist              *dhead = NULL;
@@ -1490,10 +1486,9 @@ static bool doRM( const char *f, const rm_flags *flags )
     bool                rc = true;
 
     /* separate file name to path and file name parts */
-    len = strlen( f );
+    len = strlen( fullpath );
     for( i = len; i > 0; --i ) {
-        char ch = f[i - 1];
-        if( cisdirc( ch ) ) {
+        if( cisdirc( fullpath[i - 1] ) ) {
             break;
         }
     }
@@ -1501,20 +1496,24 @@ static bool doRM( const char *f, const rm_flags *flags )
     /* if no path then use current directory */
     if( i == 0 ) {
         fpath[i++] = '.';
+#ifdef __UNIX__
         fpath[i++] = '/';
+#else
+        fpath[i++] = '\\';
+#endif
     } else {
-        memcpy( fpath, f, i );
+        memcpy( fpath, fullpath, i );
     }
     fpathend = fpath + i;
     *fpathend = NULLCHAR;
 #ifdef __UNIX__
-    memcpy( fname, f + j, len - j + 1 );
+    memcpy( fname, fullpath + j, len - j + 1 );
 #else
-    if( strcmp( f + j, MASK_ALL_ITEMS ) == 0 ) {
+    if( strcmp( fullpath + j, MASK_ALL_ITEMS ) == 0 ) {
         fname[0] = '*';
         fname[1] = NULLCHAR;
     } else {
-        memcpy( fname, f + j, len - j + 1 );
+        memcpy( fname, fullpath + j, len - j + 1 );
     }
 #endif
     d = opendir( fpath );
@@ -1582,7 +1581,11 @@ static bool RecursiveRM( const char *dir, const rm_flags *flags )
 
     /* purge the files */
     strcpy( fname, dir );
+#ifdef __UNIX__
     strcat( fname, "/" MASK_ALL_ITEMS );
+#else
+    strcat( fname, "\\" MASK_ALL_ITEMS );
+#endif
     rc = doRM( fname, flags );
     /* purge the directory */
     rc2 = remove_item( dir, flags, true );
@@ -1630,25 +1633,21 @@ STATIC RET_T handleRM( char *cmd )
 {
     rm_flags    flags;
     RET_T       rt;
-    const char  *pfname;
+    const char  *name;
 
 #ifdef DEVELOPMENT
     PrtMsg( DBG | INF | INTERPRETING, dosInternals[COM_RM] );
 #endif
 
     if( Glob.noexec )
-        return RET_SUCCESS;
+        return( RET_SUCCESS );
 
-    for( rt = getRMArgs( cmd, &flags, &pfname );
-        rt == RET_SUCCESS;
-        rt = getRMArgs( NULL, NULL, &pfname ) )
-    {
-        RemoveDoubleQuotes( (char *)pfname, strlen( pfname ) + 1, pfname );
-        if( !processRM( pfname, &flags ) ) {
+    for( rt = getRMArgs( cmd, &flags, &name ); rt == RET_SUCCESS; rt = getRMArgs( NULL, NULL, &name ) ) {
+        RemoveDoubleQuotes( (char *)name, strlen( name ) + 1, name );
+        if( !processRM( name, &flags ) ) {
             return( RET_ERROR );
         }
     }
-
     if( rt == RET_WARN ) {
         rt = RET_SUCCESS;
     }
