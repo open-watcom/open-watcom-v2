@@ -47,6 +47,16 @@
 #include "clibext.h"
 
 
+#if defined( __DOS__ )
+/* DOS: down case all filenames, convert fwd-slash to back-slash */
+#define FIX_CHAR(c) ((c == '/') ? '\\' : ((cisalpha( (c) ) && (c) < 'a') ? (c) - 'A' + 'a' : (c)))
+#elif defined( __OS2__ ) || defined( __NT__ ) || defined( __RDOS__ )
+/* OS2, NT and RDOS: convert fwd-slash to back-slash */
+#define FIX_CHAR(c) ((c == '/') ? '\\' : (c))
+#else
+#define FIX_CHAR(c) (c)
+#endif
+
 static ENV_TRACKER  *envList;
 
 char *SkipWS( const char *p )
@@ -179,53 +189,18 @@ char *RemoveDoubleQuotes( char *dst, size_t maxlen, const char *src )
 
 char *FixName( char *name )
 {
-#if defined( __DOS__ )
-/*********************************
- * Down case all filenames, converting fwd-slash to back-slash
+#if defined( __DOS__ ) || defined( __OS2__ ) || defined( __NT__ ) || defined( __RDOS__ )
+/***************************************************************************************
+ * DOS: down case all characters, convert fwd-slash to back-slash
+ * OS2, NT and RDOS: convert fwd-slash to back-slash
  */
     char    *ptr;
     char    hold;
 
     assert( name != NULL );
 
-    for( ptr = name; (hold = *ptr) != NULLCHAR; hold = *++ptr ) {
-        if( hold == '/' ) {
-            *ptr = '\\';
-        } else if( cisalpha( hold ) && hold < 'a') {
-            *ptr = hold - 'A' + 'a';
-        }
-        hold = *++ptr;
-        if( hold == NULLCHAR ) {
-            break;
-        }
-        if( hold == '/' ) {
-            *ptr = '\\';
-        } else if( cisalpha( hold ) && hold < 'a') {
-            *ptr = hold - 'A' + 'a';
-        }
-    }
-
-    return( name );
-#elif defined( __OS2__ ) || defined( __NT__ ) || defined( __RDOS__ )
-/*********************************
- * convert fwd-slash to back-slash
- */
-    char    *ptr;
-    char    hold;
-
-    assert( name != NULL );
-
-    for( ptr = name; (hold = *ptr) != NULLCHAR; hold = *++ptr ) {
-        if( hold == '/' ) {
-            *ptr = '\\';
-        }
-        hold = *++ptr;
-        if( hold == NULLCHAR ) {
-            break;
-        }
-        if( hold == '/' ) {
-            *ptr = '\\';
-        }
+    for( ptr = name; (hold = *ptr) != NULLCHAR; ptr++ ) {
+        *ptr = FIX_CHAR( hold );
     }
 
     return( name );
@@ -238,7 +213,7 @@ char *FixName( char *name )
 bool FNameEq( const char *a, const char *b )
 /******************************************/
 {
-#if defined( __OS2__ ) || defined( __NT__ ) || defined( __DOS__ )
+#if defined( __DOS__ ) || defined( __OS2__ ) || defined( __NT__ ) || defined( __RDOS__ )
     return( stricmp( a, b ) == 0 );
 #else
     return( strcmp( a, b ) == 0 );
@@ -249,7 +224,7 @@ bool FNameEq( const char *a, const char *b )
 static bool FNameChrEq( char a, char b )
 /**************************************/
 {
-#if defined( __OS2__ ) || defined( __NT__ ) || defined( __DOS__ ) || defined( __RDOS__ )
+#if defined( __DOS__ ) || defined( __OS2__ ) || defined( __NT__ ) || defined( __RDOS__ )
     return( ctolower( a ) == ctolower( b ) );
 #else
     return( a == b );
@@ -261,7 +236,7 @@ static bool FNameChrEq( char a, char b )
 bool FarFNameEq( const char FAR *a, const char FAR *b )
 /*****************************************************/
 {
-#if defined( __OS2__ ) || defined( __NT__ ) || defined( __DOS__ ) || defined( __RDOS__ )
+#if defined( __DOS__ ) || defined( __OS2__ ) || defined( __NT__ ) || defined( __RDOS__ )
     return( _fstricmp( a, b ) == 0 );
 #else
     return( _fstrcmp( a, b ) == 0 );
