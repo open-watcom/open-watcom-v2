@@ -56,7 +56,6 @@
 
 #if defined( __DOS__ )
 
-//extern char             DOSSwitchChar(void);
 extern char DOSSwitchChar( void );
 #pragma aux DOSSwitchChar = \
         "mov ax,3700h"  \
@@ -66,10 +65,9 @@ extern char DOSSwitchChar( void );
     __modify        [__ax __dx]
 
 #if defined ( _M_I86 )
-/* see page 90-91 of "Undocumented DOS" */
 
-//extern void __far *       _DOS_list_of_lists( void );
-void __far *_DOS_list_of_lists( void );
+/* see page 90-91 of "Undocumented DOS" */
+extern void __far *_DOS_list_of_lists( void );
 #pragma aux _DOS_list_of_lists = \
         "mov ax,5200h"  \
         "int 21h"       \
