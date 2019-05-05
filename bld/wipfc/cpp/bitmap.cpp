@@ -48,7 +48,7 @@ struct BitmapInfoHeaderWin32 {
     dword   usedColors;
     dword   importantColors;
     void read( std::FILE* bmfpi );
-    static std::size_t SIZE() { return( 2 * sizeof( dword ) + 2 * sizeof( word ) + 6 * sizeof( dword ) ); };
+    static unsigned SIZE() { return( 2 * sizeof( dword ) + 2 * sizeof( word ) + 6 * sizeof( dword ) ); };
     //possibly followed by rgb quads
 };
 
@@ -73,7 +73,7 @@ struct BitmapInfoHeaderOS22x {
     dword   colorEncoding;
     dword   identifier;
     void read( std::FILE* bmfpi );
-    static std::size_t SIZE() { return( 2 * sizeof( dword ) + 2 * sizeof( word ) + 6 * sizeof( dword ) + 4 * sizeof( word ) + 4 * sizeof( dword ) ); };
+    static unsigned SIZE() { return( 2 * sizeof( dword ) + 2 * sizeof( word ) + 6 * sizeof( dword ) + 4 * sizeof( word ) + 4 * sizeof( dword ) ); };
     //possibly followed by rgb triples
 };
 

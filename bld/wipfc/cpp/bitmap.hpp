@@ -53,7 +53,7 @@ private:
         dword   bmihSize;       //size of BitmapInfoHeader16 + this entry
         void read( std::FILE* bmfpi );
         void write( std::FILE* bmfpo ) const;
-        static std::size_t SIZE() { return( 2 * sizeof( byte ) + sizeof( dword ) + 2 * sizeof( sword ) + 2 * sizeof( dword ) ); };
+        static unsigned SIZE() { return( 2 * sizeof( byte ) + sizeof( dword ) + 2 * sizeof( sword ) + 2 * sizeof( dword ) ); };
         //followed by BitmapInfoHeaderXX
     };
     // win16 or os/2 1.x
@@ -65,7 +65,7 @@ private:
         word    bitsPerPixel;
         void read( std::FILE* bmfpi );
         void write( std::FILE* bmfpo ) const;
-        static std::size_t SIZE() { return( 4 * sizeof( word ) ); };
+        static unsigned SIZE() { return( 4 * sizeof( word ) ); };
         //followed by rgb triples if <= 8bpp
     };
     struct RGBA {
@@ -74,7 +74,7 @@ private:
         byte    red;
         byte    reserved;
         void read( std::FILE* bmfpi );
-        static std::size_t SIZE() { return( 4 * sizeof( byte ) ); };
+        static unsigned SIZE() { return( 4 * sizeof( byte ) ); };
     };
     struct RGB {
         byte    blue;
@@ -85,7 +85,7 @@ private:
         RGB& operator=( RGBA& rhs ) { blue = rhs.blue; green = rhs.green; red = rhs.red; return *this; };
         void read( std::FILE* bmfpi );
         void write( std::FILE* bmfpo ) const;
-        static std::size_t SIZE() { return( 3 * sizeof( byte ) ); };
+        static unsigned SIZE() { return( 3 * sizeof( byte ) ); };
     };
     void readHeader16( std::FILE* bmfpi );
     void readHeaderW32( std::FILE* bmfpi );
