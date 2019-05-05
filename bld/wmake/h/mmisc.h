@@ -50,6 +50,7 @@ extern char         *SkipWS( const char *p );
 extern char         *FindNextWS( const char *str );
 extern char         *FindNextWSorEqual( const char *str );
 extern char         *RemoveDoubleQuotes( char *dst, size_t maxlen, const char *src );
+extern char         *GetFixFNameLong( char *src, char **fname, bool osname );
 extern int          PutEnvSafe( ENV_TRACKER *env );
 #if !defined(NDEBUG) || defined(DEVELOPMENT)
 extern void         PutEnvFini( void );
