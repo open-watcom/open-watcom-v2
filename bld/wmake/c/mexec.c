@@ -614,23 +614,8 @@ STATIC RET_T percentWrite( char *arg, enum write_type type )
     if( Glob.noexec ) {
         return( RET_SUCCESS );
     }
-
-    fn = p = SkipWS( arg );
-    if( *p != '\"' ) {
-        while( cisfilec( *p ) ) {
-            ++p;
-        }
-    } else {
-        ++p;    // Skip the first quote
-        ++fn;
-        while( *p != '\"' && *p != NULLCHAR ) {
-            ++p;
-        }
-        if( *p != NULLCHAR ) {
-            *p++ = NULLCHAR;
-        }
-    }
-
+    /* handle LFN */
+    p = GetFixFNameLong( arg, &fn, true );
     if( *p != NULLCHAR ) {
         if( !cisws( *p ) ) {
             switch( type ) {
@@ -655,14 +640,12 @@ STATIC RET_T percentWrite( char *arg, enum write_type type )
         text = p;           /* set text pointer */
         p += strlen( p );   /* find null terminator */
     } else {
-        *p = NULLCHAR;      /* terminate file name */
         text = p;           /* set text pointer */
     }
 
     /* now text points to the beginning of string to write, and p points to
      * the end of the string.  fn points to the name of the file to write to
      */
-    FixName( fn );
     if( type == WR_CREATE || currentFileName == NULL || !FNameEq( currentFileName, fn ) ) {
         closeCurrentFile();
         currentFileName = StrDupSafe( fn );
@@ -699,7 +682,19 @@ STATIC RET_T percentWrite( char *arg, enum write_type type )
 STATIC RET_T percentErase( char *arg )
 /************************************/
 {
-    if( 0 == unlink( FixName( arg ) ) ) {
+    char    *fn;
+    char    *p;
+
+    /* handle LFN */
+    p = GetFixFNameLong( arg, &fn, true );
+    if( *p != NULLCHAR && !cisws( *p ) ) {
+        PrtMsg( ERR | SYNTAX_ERROR_IN, percentCmds[PER_RENAME] );
+        PrtMsg( INF | PRNTSTR, "File" );
+        PrtMsg( INF | PRNTSTR, fn );
+        return( RET_ERROR );
+    }
+    *p = NULLCHAR;      /* terminate file name */
+    if( 0 == unlink( fn ) ) {
         return( RET_SUCCESS );
     }
     return( RET_ERROR );
@@ -717,48 +712,19 @@ STATIC RET_T percentRename( char *arg )
         return( RET_SUCCESS );
     }
 
-    /* Get first file name, must end in space but may be surrounded by double quotes */
-    fn1 = p = SkipWS( arg );
-    if( *p != '\"' ) {
-        while( cisfilec( *p ) ) {
-            ++p;
-        }
-    } else {
-        ++p;    // Skip the first quote
-        ++fn1;
-        while( *p != '\"' && *p != NULLCHAR ) {
-            ++p;
-        }
-        if( *p != NULLCHAR ) {
-            *p++ = NULLCHAR;
-        }
-    }
-
+    /* Get first LFN */
+    p = GetFixFNameLong( arg, &fn1, true );
     if( *p == NULLCHAR || !cisws( *p ) ) {
         PrtMsg( ERR | SYNTAX_ERROR_IN, percentCmds[PER_RENAME] );
         PrtMsg( INF | PRNTSTR, "First file" );
-        PrtMsg( INF | PRNTSTR, p );
+        PrtMsg( INF | PRNTSTR, fn1 );
         return( RET_ERROR );
     }
     *p++ = NULLCHAR;        /* terminate first file name */
-
-    /* Get second file name as well */
-    fn2 = p = SkipWS( p );
-    if( *p != '\"' ) {
-        while( cisfilec( *p ) ) {
-            ++p;
-        }
-    } else {
-        ++p;    // Skip the first quote
-        ++fn2;
-        while( *p != '\"' && *p != NULLCHAR ) {
-            ++p;
-        }
-        if( *p != NULLCHAR ) {
-            *p++ = NULLCHAR;
-        }
-    }
-
+    /* skip ws after first and before second file name */
+    p = SkipWS( p );
+    /* Get second LFN as well */
+    p = GetFixFNameLong( p, &fn2, true );
     if( *p != NULLCHAR && !cisws( *p ) ) {
         PrtMsg( ERR | SYNTAX_ERROR_IN, percentCmds[PER_RENAME] );
         return( RET_ERROR );
@@ -1041,21 +1007,18 @@ STATIC RET_T handleIf( char *cmd )
         *p++ = NULLCHAR;
         condition = ( lastErrorLevel >= atoi( tmp2 ) );
     } else if( KeywordEqualUcase( "EXIST", p, false ) ) {
-        p = SkipWS( p + 5 );     /* skip ws after "EXIST" */
+        p = SkipWS( p + 5 );        /* skip ws after "EXIST" */
         if( *p == NULLCHAR ) {
             PrtMsg( ERR | SYNTAX_ERROR_IN, dosInternals[COM_IF] );
             return( RET_ERROR );
         }
-        tmp2 = p;
-        p = FindNextWS( p );
+        // handle LFN
+        p = GetFixFNameLong( p, &tmp2, false );
         if( *p == NULLCHAR ) {
             PrtMsg( ERR | SYNTAX_ERROR_IN, dosInternals[COM_IF] );
             return( RET_ERROR );
         }
-        *p++ = NULLCHAR;
-
-        // handle long filenames
-        RemoveDoubleQuotes( tmp2, strlen( tmp2 ) + 1, tmp2 );
+        *p++ = NULLCHAR;            /* terminate file name */
 
         file = DoWildCard( tmp2 );
         condition = ( ( file != NULL ) && CacheExists( file ) );
@@ -1094,7 +1057,6 @@ STATIC RET_T handleIf( char *cmd )
         PrtMsg( ERR | SYNTAX_ERROR_IN, dosInternals[COM_IF] );
         return( RET_ERROR );
     }
-
     if( not ^ condition ) {
         return( execLine( p ) );
     }
@@ -1316,6 +1278,7 @@ STATIC RET_T handleCD( char *cmd )
 /********************************/
 {
     char        *p;     // pointer to walk with
+    char        *path;
 
 #ifdef DEVELOPMENT
     PrtMsg( DBG | INF | INTERPRETING, dosInternals[COM_CD] );
@@ -1338,11 +1301,11 @@ STATIC RET_T handleCD( char *cmd )
         }
     }
 
-    // handle long filenames
-    RemoveDoubleQuotes( p, strlen( p ) + 1, p );
-
-    if( chdir( p ) != 0 ) {         /* an error changing path */
-        PrtMsg( ERR | CHANGING_DIR, p );
+    // handle LFN
+    p = GetFixFNameLong( p, &path, true );
+    *p = NULLCHAR;      /* terminate path */
+    if( chdir( path ) != 0 ) {         /* an error changing path */
+        PrtMsg( ERR | CHANGING_DIR, path );
         return( RET_ERROR );
     }
     return( RET_SUCCESS );
@@ -1379,8 +1342,8 @@ STATIC RET_T handleRMSyntaxError( void )
     return( RET_ERROR );
 }
 
-STATIC RET_T getRMArgs( char *line, rm_flags *flags, const char **name )
-/***********************************************************************
+STATIC RET_T getRMArgs( char *line, rm_flags *flags, char **name )
+/*****************************************************************
  * returns RET_WARN when there are no more arguments
  */
 {
@@ -1639,7 +1602,8 @@ STATIC RET_T handleRM( char *cmd )
 {
     rm_flags    flags;
     RET_T       rt;
-    const char  *name;
+    char        *name;
+    char        *p;
 
 #ifdef DEVELOPMENT
     PrtMsg( DBG | INF | INTERPRETING, dosInternals[COM_RM] );
@@ -1648,8 +1612,10 @@ STATIC RET_T handleRM( char *cmd )
     if( Glob.noexec )
         return( RET_SUCCESS );
 
-    for( rt = getRMArgs( cmd, &flags, &name ); rt == RET_SUCCESS; rt = getRMArgs( NULL, NULL, &name ) ) {
-        RemoveDoubleQuotes( (char *)name, strlen( name ) + 1, name );
+    for( rt = getRMArgs( cmd, &flags, &p ); rt == RET_SUCCESS; rt = getRMArgs( NULL, NULL, &p ) ) {
+        // handle LFN
+        p = GetFixFNameLong( p, &name, true );
+        *p = NULLCHAR;      /* terminate file name */
         if( !processRM( name, &flags ) ) {
             return( RET_ERROR );
         }
@@ -1840,7 +1806,7 @@ STATIC RET_T shellSpawn( char *cmd, shell_flags flags )
         _splitpath( cmdname, NULL, NULL, NULL, ext );
         if( ext[0] == '.' ) {
             FixName( ext );
-            /* if extension specified let the shell handle it (26-apr-91) */
+            /* if extension specified let the shell handle it */
             if( !FNameEq( ext, ".exe" ) && !FNameEq( ext, ".com" ) ) {
                 flags |= FLAG_SHELL; /* .bat and .cmd need the shell anyway */
             }

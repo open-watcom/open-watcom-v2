@@ -130,67 +130,6 @@ char *FindNextWSorEqual( const char *str )
     return( FindNextSep( str, is_ws_or_equal ) );
 }
 
-char *RemoveDoubleQuotes( char *dst, size_t maxlen, const char *src )
-/************************************************************************
- * Removes doublequote characters from string and copies other content
- * from src to dst. Only maxlen number of characters are copied to dst
- * including terminating NUL character.
- */
-{
-    char    *orgdst = dst;
-    bool    string_open = false;
-    size_t  pos = 0;
-    char    t;
-
-    assert( maxlen );
-
-    // leave space for NUL terminator
-    maxlen--;
-
-    while( pos < maxlen ) {
-        t = *src++;
-
-        if( t == NULLCHAR ) {
-            break;
-        }
-
-        if( t == '\\' ) {
-            t = *src++;
-
-            if( t == '\"' ) {
-                *dst++ = '\"';
-                pos++;
-            } else {
-                *dst++ = '\\';
-                pos++;
-
-                if( pos < maxlen ) {
-                    *dst++ = t;
-                    pos++;
-                }
-            }
-        } else {
-            if( t == '\"' ) {
-                string_open = !string_open;
-            } else {
-                if( string_open ) {
-                    *dst++ = t;
-                    pos++;
-                } else if( cisws( t ) ) {
-                    break;
-                } else {
-                    *dst++ = t;
-                    pos++;
-                }
-            }
-        }
-    }
-
-    *dst = NULLCHAR;
-
-    return( orgdst );
-}
-
 char *FixName( char *name )
 {
 #if defined( __DOS__ ) || defined( __OS2__ ) || defined( __NT__ ) || defined( __RDOS__ )
