@@ -35,11 +35,11 @@ locale_deps   = locale.mh $(crwatqnx_sp) $(owhdrcnt) ../owrtlink.sp $(cplus) $(p
 math_deps     = math.mh $(owhdr) $(extension) $(c99ext) $(cplus) $(packll) $(ns_std)
 setjmp_deps   = setjmp.mh $(crwatqnx_sp) ../readonly.sp ../owrtlink.sp $(cplus) $(unixext) $(packll)
 signal_deps   = signal.mh $(crwatqnx_sp) ../readonly.sp ../owrtlink.sp $(cplus) $(packll) $(ns_std) ../size_t.sp ../uid_t.sp ../timespec.sp ../systypes.sp ../pthread1.sp ../incdir.sp $(posixext) $(unixext)
-stdarg_deps   = stdarg.mh $(owhdr) $(cplus) ../valist.sp $(extension) $(ns_std)
+stdarg_deps   = stdarg.mh $(owhdr) $(cplus) ../_valist.sp $(extension) $(ns_std)
 stdbool_deps  = stdbool.mh $(owhdr)
 stddef_deps   = stddef.mh $(owhdr) $(cplus) ../size_t.sp ../wchar_t.sp ../null.sp ../ptrdifft.sp $(saferc) $(extension) ../thrdhndl.sp
 stdint_deps   = stdint.mh $(owhdr) $(saferc) ../exactint.sp ../intptr_t.sp ../uintptrt.sp $(ns_std)
-stdio_deps    = stdio.mh $(crwatqnx_sp) ../readonly.sp $(extension) $(c99ext) $(unixext) ../owrtlink.sp ../lfndos.sp ../systypes.sp $(cplus) $(packll) ../size_t.sp ../null.sp ../valist.sp ../seekpos.sp ../wchar_t.sp ../wint_t.sp $(saferc) $(maxpath_sp) $(ns_std) ../weof.sp ../file.sp
+stdio_deps    = stdio.mh $(crwatqnx_sp) ../readonly.sp $(extension) $(c99ext) $(unixext) ../owrtlink.sp ../lfndos.sp ../systypes.sp $(cplus) $(packll) ../size_t.sp ../null.sp ../_valist.sp ../seekpos.sp ../wchar_t.sp ../wint_t.sp $(saferc) $(maxpath_sp) $(ns_std) ../weof.sp ../file.sp
 stdlib_deps   = stdlib.mh $(crwatqnx_sp) ../readonly.sp $(extension) $(unixext) ../owrtlink.sp ../lfndos.sp $(cplus) $(packll) ../wchar_t.sp ../size_t.sp $(saferc) ../null.sp ../mbcurmax.sp $(maxpath_sp) ../errno.sp ../alloca.sp ../brk.sp ../process1.sp ../_exit.sp $(ns_std)
 stdnoret_deps = stdnoret.mh $(owhdr)
 string_deps   = string.mh $(owhdr) $(crwatcnt_sp)  $(extension) $(cplus) ../wchar_t.sp ../wint_t.sp ../size_t.sp $(saferc) ../null.sp ../nlserror.sp ../namwat.sp $(ns_std) ../windowsx.sp
@@ -203,7 +203,7 @@ bios.h          : bios.mh $(owhdr) $(cplus) $(packll) $(extension)
 bios98.h        : bios98.mh $(owhdr) $(cplus) $(packll) $(extension)
 common.cnv      : common.mh $(crwat_sp)
 complex.h       : $(complex_deps)
-conio.h         : conio.mh $(owhdr) $(cplus) ../valist.sp
+conio.h         : conio.mh $(owhdr) $(cplus) ../_valist.sp
 crtdbg.h        : crtdbg.mh $(owhdr) $(cplus)
 ctype.h         : $(ctype_deps)
 direct.h        : direct.mh $(owhdr) ../lfndos.sp ../systypes.sp $(cplus) $(packll) ../wchar_t.sp $(maxpath_sp) ../dskfreet.sp

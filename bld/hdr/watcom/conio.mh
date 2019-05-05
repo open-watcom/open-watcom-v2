@@ -12,7 +12,7 @@
 
 :include cpluspro.sp
 
-:include valist.sp
+:include _valist.sp
 
 _WCRTLINK extern char *cgets(char *__buf);
 _WCRTLINK extern int cputs(const char *__buf);

@@ -36,7 +36,7 @@ using std::va_list;
 :include cpluspro.sp
 
 :endsegment
-:include valist.sp
+:include _valist.sp
 
 :include nsstd.sp
 typedef __va_list va_list;

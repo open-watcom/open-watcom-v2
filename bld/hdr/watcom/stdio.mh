@@ -243,7 +243,7 @@ using std::wscanf;
 
 :include ssize_t.sp
 
-:include valist.sp
+:include _valist.sp
 
 :keep DECLARE_STRUCT
 :include file.sp
