@@ -37,9 +37,10 @@ echo \# ===========================
 TEST=01
 print_header
 $1 -h -f create
+echo >err$TEST.ref
 echo >err$TEST.lst
 $1 -h -f maketst1 -l err$TEST.lst > test$TEST.lst
-diff -b err$TEST.chk err$TEST.lst
+diff -b err$TEST.ref err$TEST.lst
 do_check a
 diff -b test$TEST.chk test$TEST.lst
 do_check b
@@ -48,6 +49,7 @@ rm -f *.obj
 rm -f main.*
 rm -f foo*.c
 if [ "$ERRORS" -eq "0" ]; then
+    rm -f *.ref
     rm -f *.lst
     rm -f maketst1
 fi

@@ -24,6 +24,7 @@ all: .symbolic
     @%append maketst1 proj_name = wmaketest
     @%append maketst1
     @%append maketst1 verbose = 0
+    @%append maketst1 noecho = @
     @%append maketst1
     @%append maketst1 !include cproj.mif
     @%append maketst1 !include defrule.mif
