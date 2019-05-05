@@ -1027,11 +1027,12 @@ STATIC RET_T handleIf( char *cmd )
     }
 
     if( KeywordEqualUcase( "ERRORLEVEL", p, false ) ) {
-        tmp2 = p = SkipWS( p + 10 );    /* skip ws after "ERRORLEVEL" */
+        p = SkipWS( p + 10 );    /* skip ws after "ERRORLEVEL" */
         if( *p == NULLCHAR ) {
             PrtMsg( ERR | SYNTAX_ERROR_IN, dosInternals[COM_IF] );
             return( RET_ERROR );
         }
+        tmp2 = p;
         p = FindNextWS( p );
         if( *p == NULLCHAR ) {
             PrtMsg( ERR | SYNTAX_ERROR_IN, dosInternals[COM_IF] );
@@ -1040,11 +1041,12 @@ STATIC RET_T handleIf( char *cmd )
         *p++ = NULLCHAR;
         condition = ( lastErrorLevel >= atoi( tmp2 ) );
     } else if( KeywordEqualUcase( "EXIST", p, false ) ) {
-        tmp2 = p = SkipWS( p + 5 );     /* skip ws after "EXIST" */
+        p = SkipWS( p + 5 );     /* skip ws after "EXIST" */
         if( *p == NULLCHAR ) {
             PrtMsg( ERR | SYNTAX_ERROR_IN, dosInternals[COM_IF] );
             return( RET_ERROR );
         }
+        tmp2 = p;
         p = FindNextWS( p );
         if( *p == NULLCHAR ) {
             PrtMsg( ERR | SYNTAX_ERROR_IN, dosInternals[COM_IF] );
@@ -1061,22 +1063,23 @@ STATIC RET_T handleIf( char *cmd )
         DoWildCardClose();
     } else {
         tmp1 = p;                   /* find first string after IF [NOT] */
-        end1 = p = FindNextWSorEqual( p );
+        p = FindNextWSorEqual( p );
         if( *p == NULLCHAR ) {
             PrtMsg( ERR | SYNTAX_ERROR_IN, dosInternals[COM_IF] );
             return( RET_ERROR );
         }
+        end1 = p;
         p = SkipWS( p );            /* skip ws after first string and before "==" */
         if( p[0] != '=' || p[1] != '=' ) {
             PrtMsg( ERR | SYNTAX_ERROR_IN, dosInternals[COM_IF] );
             return( RET_ERROR );
         }
-        tmp2 = p = SkipWS( p + 2 ); /* skip ws after "==" and before second string */
+        p = SkipWS( p + 2 );        /* skip ws after "==" and before second string */
         if( *p == NULLCHAR ) {
             PrtMsg( ERR | SYNTAX_ERROR_IN, dosInternals[COM_IF] );
             return( RET_ERROR );
         }
-
+        tmp2 = p;
         p = FindNextWS( p );
         if( *p == NULLCHAR ) {
             PrtMsg( ERR | SYNTAX_ERROR_IN, dosInternals[COM_IF] );
