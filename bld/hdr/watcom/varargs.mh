@@ -33,10 +33,16 @@
  #define va_alist       void *__alist, ...
  #define va_dcl
  #define va_start(__ap) (__builtin_va_start(&__ap,__alist,0))
-#else
+#elif defined(__MIPS__)
+ extern void *__builtin_va_start(va_list *, ...);
+ #pragma intrinsic(__builtin_va_start)
  #define va_alist       void *__alist, ...
  #define va_dcl
-:segment DOS | QNX | RDOS
+ #define va_start(__ap) (__builtin_va_start(&__ap,__alist,0))
+#elif defined(_M_IX86)
+ #define va_alist       void *__alist, ...
+ #define va_dcl
+:segment DOS | QNX
  #if defined(__HUGE__) || defined(__SW_ZU)
 :elsesegment
  #ifdef __SW_ZU
