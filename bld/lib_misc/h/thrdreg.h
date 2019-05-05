@@ -36,7 +36,11 @@
 extern "C" {
 #endif
 
+#if defined(_M_I86)
 typedef void        _WCI86FAR thread_fn( void _WCI86FAR * );
+#else
+typedef void        thread_fn( void * );
+#endif
 typedef thread_fn   __thread_fn;
 #ifdef __NT__
 typedef unsigned    __stdcall thread_fnex( void * );

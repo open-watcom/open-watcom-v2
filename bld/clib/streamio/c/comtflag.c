@@ -40,8 +40,11 @@ int     _commode = 0;
 /*
  * Before changing any of this, check startup/c/commode.c!
  */
-
+#ifdef _M_I86
 _WCRTLINK void _WCI86FAR __set_commode( void )
+#else
+_WCRTLINK void           __set_commode( void )
+#endif
 {
     _commode = _COMMIT;
 }

@@ -115,6 +115,9 @@ void __setenvp( void )
   #if defined(__WINDOWS_386__) || defined(__DOS_386__)
     char    _WCFAR *startp;
     char    _WCFAR *p;
+  #elif defined(__RDOS__) || defined(__RDOSDEV__)
+    char    *startp;
+    char    *p;
   #else
     char    _WCI86FAR *startp;
     char    _WCI86FAR *p;

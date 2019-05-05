@@ -29,7 +29,11 @@
 ****************************************************************************/
 
 
+#ifdef _M_I86
 typedef void _WCI86FAR      FPEhandler( int );
+#else
+typedef void                FPEhandler( int );
+#endif
 
 extern FPEhandler           *__FPE_handler;
 #define _RWD_FPE_handler    __FPE_handler

@@ -64,8 +64,15 @@
 #endif
 
 typedef void (*pfn)(void);
+#ifdef _M_I86
 typedef void (_WCI86FAR * _WCI86FAR fpfn)(void);
 typedef void (_WCI86NEAR * _WCI86NEAR npfn)(void);
+typedef struct rt_init _WCI86NEAR   *struct_rt_init_ptr;
+#else
+typedef void (* fpfn)(void);
+typedef void (* npfn)(void);
+typedef struct rt_init              *struct_rt_init_ptr;
+#endif
 
 #if defined( _M_I86 )
     extern void save_dx( void );
@@ -165,7 +172,7 @@ void _WCI86FAR __FInitRtns( unsigned limit )
 void __InitRtns( unsigned limit )
 {
     __type_rtp local_limit;
-    struct rt_init _WCI86NEAR *pnext;
+    struct_rt_init_ptr  pnext;
     save_ds();
     save_es();
     __GETDS();
@@ -174,17 +181,17 @@ void __InitRtns( unsigned limit )
     for( ;; ) {
         {
             __type_rtp working_limit;
-            struct rt_init _WCI86NEAR *pcur;
+            struct_rt_init_ptr  pcur;
 
-            pcur = (struct rt_init _WCI86NEAR*)&_Start_XI;
+            pcur = (struct_rt_init_ptr)&_Start_XI;
+            pnext = (struct_rt_init_ptr)&_End_XI;
+            working_limit = local_limit;
 #if defined(COMP_CFG_COFF)
             pcur++;
 #endif
-            pnext = (struct rt_init _WCI86NEAR*)&_End_XI;
-            working_limit = local_limit;
 
             // walk list of routines
-            while( pcur < (struct rt_init _WCI86NEAR*)&_End_XI ) {
+            while( pcur < (struct_rt_init_ptr)&_End_XI ) {
                 // if this one hasn't been called
                 if( pcur->rtn_type != PDONE ) {
                     // if the priority is better than best so far
@@ -199,7 +206,7 @@ void __InitRtns( unsigned limit )
             }
             // check to see if all done, if we didn't find any
             // candidates then we can return
-            if( pnext == (struct rt_init _WCI86NEAR*)&_End_XI ) {
+            if( pnext == (struct_rt_init_ptr)&_End_XI ) {
                 break;
             }
         }
@@ -236,7 +243,7 @@ void __FiniRtns( unsigned min_limit, unsigned max_limit )
 {
     __type_rtp local_min_limit;
     __type_rtp local_max_limit;
-    struct rt_init _WCI86NEAR *pnext;
+    struct_rt_init_ptr  pnext;
     save_ds();
     save_es();
     __GETDS();
@@ -246,17 +253,17 @@ void __FiniRtns( unsigned min_limit, unsigned max_limit )
     for( ;; ) {
         {
             __type_rtp working_limit;
-            struct rt_init _WCI86NEAR *pcur;
+            struct_rt_init_ptr  pcur;
 
-            pcur = (struct rt_init _WCI86NEAR*)&_Start_YI;
+            pcur = (struct_rt_init_ptr)&_Start_YI;
+            pnext = (struct_rt_init_ptr)&_End_YI;
+            working_limit = local_min_limit;
 #if defined(COMP_CFG_COFF)
             pcur++;
 #endif
-            pnext = (struct rt_init _WCI86NEAR*)&_End_YI;
-            working_limit = local_min_limit;
 
             // walk list of routines
-            while( pcur < (struct rt_init _WCI86NEAR*)&_End_YI ) {
+            while( pcur < (struct_rt_init_ptr)&_End_YI ) {
                 // if this one hasn't been called
                 if( pcur->rtn_type != PDONE ) {
                     // if the priority is better than best so far
@@ -271,7 +278,7 @@ void __FiniRtns( unsigned min_limit, unsigned max_limit )
             }
             // check to see if all done, if we didn't find any
             // candidates then we can return
-            if( pnext == (struct rt_init _WCI86NEAR*)&_End_YI ) {
+            if( pnext == (struct_rt_init_ptr)&_End_YI ) {
                 break;
             }
         }

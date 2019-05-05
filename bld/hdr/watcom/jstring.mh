@@ -92,6 +92,7 @@ _WCRTLINK extern size_t   jstrspn( const JCHAR *__s1, const JCHAR *__s2 );
 _WCRTLINK extern JSTRING  jstrstr( const JCHAR *__s1, const JCHAR *__s2 );
 _WCRTLINK extern JSTRING  jstrtok( JCHAR *__targ, const JCHAR *__brk );
 _WCRTLINK extern JSTRING  jstrupr( JCHAR *__s );
+:segment DOS | QNX
 /* ----------- memory model independent equivalents ----------- */
 _WCRTLINK extern size_t   _WCI86FAR _fbtom( const JCHAR _WCFAR *__s, size_t __nb );
 _WCRTLINK extern size_t   _WCI86FAR _fmtob( const JCHAR _WCFAR *__s, size_t __nm );
@@ -121,6 +122,7 @@ _WCRTLINK extern FJSTRING _WCI86FAR _fjstrstr( const JCHAR _WCFAR *__s1, const J
 _WCRTLINK extern FJSTRING _WCI86FAR _fjstrtok( JCHAR _WCFAR *__targ, const JCHAR _WCFAR *__brk );
 _WCRTLINK extern FJSTRING _WCI86FAR _fjstrupr( JCHAR _WCFAR *__s );
 /* ----------- end of memory model independent equivalents ----------- */
+:endsegment
 
 :include cplusepi.sp
 
