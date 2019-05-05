@@ -154,13 +154,13 @@ _WCIRTLINK extern long int labs( long int __j );
 #pragma aux labs __parm __nomemory __modify __nomemory
 #endif
 
-:segment DOS | QNX | RDOS
+:segment DOS | QNX
 #ifdef _M_I86
 _WCRTLINK extern ldiv_t  ldiv( long int __numer, long int __denom );
 #else
 :endsegment
 _WCIRTLINK extern ldiv_t  ldiv( long int __numer, long int __denom );
-:segment DOS | QNX | RDOS
+:segment DOS | QNX
 #endif
 :endsegment
 _WCRTLINK extern long long int llabs( long long int __j );
@@ -193,11 +193,11 @@ _WCRTLINK extern unsigned long long int strtoull( const char *__nptr, char **__e
 :include nsstd.sp
 #ifdef __INLINE_FUNCTIONS__
 #pragma intrinsic(abs,div,labs)
-:segment DOS | QNX | RDOS
+:segment DOS | QNX
 #ifndef _M_I86
 :endsegment
  #pragma intrinsic(ldiv)
-:segment DOS | QNX | RDOS
+:segment DOS | QNX
 #endif
 :endsegment
 #endif /* __INLINE_FUNCTIONS__ */
@@ -233,20 +233,20 @@ _WMRTLINK extern char    *gcvt( double __val, int __ndig, char *__buf );
 _WMRTLINK extern char    *_gcvt( double __val, int __ndig, char *__buf );
 _WCRTLINK extern char    *itoa( int __value, char *__buf, int __radix );
 _WCRTLINK extern char    *_itoa( int __value, char *__buf, int __radix );
-:segment DOS | QNX | RDOS
+:segment DOS | QNX
 #ifdef _M_I86
 _WCRTLINK extern unsigned long _lrotl( unsigned long __value, unsigned int __shift );
 #else
 :endsegment
 _WCIRTLINK extern unsigned long _lrotl( unsigned long __value, unsigned int __shift );
-:segment DOS | QNX | RDOS
+:segment DOS | QNX
 #endif
 #ifdef _M_I86
 _WCRTLINK extern unsigned long _lrotr( unsigned long __value, unsigned int __shift );
 #else
 :endsegment
 _WCIRTLINK extern unsigned long _lrotr( unsigned long __value, unsigned int __shift );
-:segment DOS | QNX | RDOS
+:segment DOS | QNX
 #endif
 :endsegment
 _WCRTLINK extern char    *ltoa( long int __value, char *__buf, int __radix );
@@ -341,11 +341,11 @@ _WCRTLINK extern unsigned __int64 _strtoui64( const char *__nptr, char **__endpt
 :segment !CNAME
 #ifdef __INLINE_FUNCTIONS__
  #pragma intrinsic(_rotl,_rotr)
-:segment DOS | QNX | RDOS
+:segment DOS | QNX
  #ifndef _M_I86
 :endsegment
   #pragma intrinsic(_lrotl,_lrotr)
-:segment DOS | QNX | RDOS
+:segment DOS | QNX
  #endif
 :endsegment
 #endif
@@ -415,7 +415,7 @@ _WCRTLINK extern char **__get_pgmptr_ptr( void );
 _WCRTDATA extern char * _WCDATA _pgmptr;  /* pointer to executable name */
 
 :: Wide character version
-:segment DOS | RDOS
+:segment DOS
 #if defined(__NT__) || ( defined(__OS2__) && !defined(_M_I86) )
 _WCRTLINK extern wchar_t **__get_wpgmptr_ptr( void );
 #ifdef __FUNCTION_DATA_ACCESS
@@ -427,7 +427,7 @@ _WCRTDATA extern wchar_t * _WCDATA _wpgmptr;     /* pointer to wide executable n
 #endif
 
 :endsegment
-:segment DOS | RDOS
+:segment DOS
 #ifdef __NT__
  _WCRTLINK extern int *__get_fileinfo_ptr( void );
  #ifdef __FUNCTION_DATA_ACCESS
@@ -442,49 +442,65 @@ _WCRTDATA extern wchar_t * _WCDATA _wpgmptr;     /* pointer to wide executable n
 :include errno.sp
 
 :segment DOS | RDOS
+:segment DOS
 #ifndef __NETWARE__
+:endsegment
  _WCRTDATA extern int    _doserrno;
  _WCRTLINK extern int    *__get_doserrno_ptr( void );
  #define _doserrno       (*__get_doserrno_ptr())     /* DOS system error code value */
+:segment DOS
 #endif
+:endsegment
 
 _WCRTLINK extern unsigned       *__get_psp_ptr( void );
 _WCRTLINK extern unsigned char  *__get_osmode_ptr( void );
 _WCRTLINK extern int            *__get_fmode_ptr( void );
 _WCRTLINK extern unsigned       *__get_minreal_ptr( void );
+:segment DOS
 _WCRTLINK extern unsigned long  *__get_win_alloc_flags_ptr( void );
 _WCRTLINK extern unsigned long  *__get_win_realloc_flags_ptr( void );
+:endsegment
 #ifdef __FUNCTION_DATA_ACCESS
  #define _psp                (*__get_psp_ptr())
  #define _osmode             (*__get_osmode_ptr())
  #define _fmode              (*__get_fmode_ptr())
  #define __minreal           (*__get_minreal_ptr())
+:segment DOS
  #define __win_alloc_flags   (*__get_win_alloc_flags_ptr())
  #define __win_realloc_flags (*__get_win_realloc_flags_ptr())
+:endsegment
 #elif defined(__SW_BR) || defined(_RTDLL)
  #define _psp                _psp_br
  #define _osmode             _osmode_br
  #define _fmode              _fmode_br
  #define __minreal           __minreal_br
+:segment DOS
  #define __win_alloc_flags   __win_alloc_flags_br
  #define __win_realloc_flags __win_realloc_flags_br
+:endsegment
 #endif
 _WCRTDATA extern unsigned      _WCDATA _psp;                /* Program Segment Prefix */
 _WCRTDATA extern unsigned char _WCDATA _osmode;             /* DOS_MODE or OS2_MODE */
 _WCRTDATA extern int           _WCDATA _fmode;              /* default file translation mode */
 _WCRTDATA extern unsigned      _WCDATA __minreal;           /* DOS4GW var for WLINK MINREAL option*/
+:segment DOS
 _WCRTDATA extern unsigned long _WCDATA __win_alloc_flags;   /* Windows allocation flags */
 _WCRTDATA extern unsigned long _WCDATA __win_realloc_flags; /* Windows reallocation flags */
+:endsegment
 
 #define DOS_MODE 0  /* Real Address Mode */
 #define OS2_MODE 1  /* Protected Address Mode */
 
 :endsegment
 :segment DOS | LINUX | RDOS
+:segment DOS
 #ifndef __NETWARE__
+:endsegment
 #define sys_errlist _sys_errlist
 #define sys_nerr _sys_nerr
+:segment DOS
 #endif
+:endsegment
 _WCRTLINK extern char        **__get_sys_errlist_ptr( void );
 _WCRTLINK extern int         *__get_sys_nerr_ptr( void );
 #ifdef __FUNCTION_DATA_ACCESS
@@ -516,7 +532,7 @@ _WCRTDATA extern unsigned      _WCDATA _amblksiz;   /*  mallocs done in multiple
 _WCRTDATA extern unsigned char _WCDATA _osmajor;    /*  O/S major version # */
 _WCRTDATA extern unsigned char _WCDATA _osminor;    /*  O/S minor version # */
 
-:segment DOS | RDOS
+:segment DOS
 #ifdef __NT__
  _WCRTLINK extern unsigned short *__get_osbuild_ptr( void );
  _WCRTLINK extern unsigned int   *__get_osver_ptr( void );
@@ -546,7 +562,7 @@ _WCRTDATA extern unsigned char _WCDATA _osminor;    /*  O/S minor version # */
 extern  int       __argc;       /* number of cmd line args */
 extern  char    **__argv;       /* vector of cmd line args */
 :: Wide character version
-:segment DOS | RDOS
+:segment DOS
 #if defined(__NT__) || ( defined(__OS2__) && !defined(_M_I86) )
 extern  int       __wargc;      /* number of wide cmd line args */
 extern  wchar_t **__wargv;      /* vector of wide cmd line args */
@@ -592,7 +608,7 @@ _WCRTLINK extern errno_t    wcstombs_s( size_t * __restrict __retval, char * __r
 
  _WCRTLINK extern errno_t   _get_pgmptr( char ** __p );
 :: Wide character version
-:segment DOS | RDOS
+:segment DOS
  #if defined(__NT__) || ( defined(__OS2__) && !defined(_M_I86) )
   _WCRTLINK extern errno_t  _get_wpgmptr( wchar_t ** __p );
  #endif

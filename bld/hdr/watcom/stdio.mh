@@ -150,9 +150,12 @@ using std::wscanf;
 
 :segment LINUX | QNX
 #define _NFILES         16          /*  minimum guaranteed open files       */
+:elsesegment DOS | RDOS
+#define _NFILES         20          /*  minimum guaranteed open files       */
+:endsegment
+:segment LINUX | QNX | RDOS
 #define BUFSIZ          4096        /*  Default buffer size                 */
-:elsesegment
-#define _NFILES         20          /* number of files that can be handled */
+:elsesegment DOS
 #ifdef _M_I86
  #define BUFSIZ         512         /*  Default buffer size                 */
 #else

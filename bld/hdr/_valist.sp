@@ -1,7 +1,8 @@
 #ifndef ___VA_LIST_DEFINED
 #define ___VA_LIST_DEFINED
+:segment DOS | LINUX
  #ifdef __PPC__
-:segment DOS | RDOS
+:segment DOS
   #ifdef __NT__
    typedef char  *__va_list;
   #else
@@ -13,7 +14,7 @@
        char  *__input_arg_area;
        char  *__reg_save_area;
    } __va_list;
-:segment DOS | RDOS
+:segment DOS
   #endif
 :endsegment
  #elif defined(__AXP__)
@@ -26,13 +27,18 @@
       char  *__base;
       int   __offset;
   } __va_list;
-:segment DOS | QNX | RDOS
- #elif defined(__HUGE__) || defined(__SW_ZU)
-:elsesegment
- #elif defined(__SW_ZU)
+ #elif defined(_M_IX86)
 :endsegment
-  typedef char _WCFAR *__va_list[1];
- #else
-  typedef char    *__va_list[1];
+:segment DOS | QNX
+  #if defined(__HUGE__) || defined(__SW_ZU)
+:elsesegment LINUX | RDOS
+  #if defined(__SW_ZU)
+:endsegment
+   typedef char _WCFAR *__va_list[1];
+  #else
+   typedef char    *__va_list[1];
+  #endif
+:segment DOS | LINUX
  #endif
+:endsegment
 #endif
