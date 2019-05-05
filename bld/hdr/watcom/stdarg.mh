@@ -38,9 +38,7 @@ using std::va_list;
 :endsegment
 :include _valist.sp
 
-:include nsstd.sp
-typedef __va_list va_list;
-:include nsstdepi.sp
+:include valist.sp
 
 #ifdef __AXP__
  #define _AXP_WORD_SIZE     8

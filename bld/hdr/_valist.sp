@@ -1,5 +1,5 @@
-#ifndef _VA_LIST_DEFINED
-#define _VA_LIST_DEFINED
+#ifndef ___VA_LIST_DEFINED
+#define ___VA_LIST_DEFINED
  #ifdef __PPC__
 :segment DOS | RDOS
   #ifdef __NT__
