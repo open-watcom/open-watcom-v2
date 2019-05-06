@@ -1,7 +1,9 @@
 #ifndef alloca
  _WCRTLINK extern unsigned stackavail( void );
  _WCRTLINK extern unsigned _stackavail( void );
+:segment DOS | LINUX
  #ifdef _M_IX86
+:endsegment
   _WCRTLINK extern void __based(__segname("_STACK")) *alloca(__w_size_t __size);
   _WCRTLINK extern void __based(__segname("_STACK")) *_alloca(__w_size_t __size);
   extern void __based(__segname("_STACK")) *__doalloca(__w_size_t __size);
@@ -42,6 +44,7 @@
 :segment DOS | QNX
   #endif
 :endsegment
+:segment DOS | LINUX
  #else
 :: All non-x86 platforms
   _WCRTLINK extern void *alloca(__w_size_t __size);
@@ -54,4 +57,5 @@
   #define alloca( s )   ((s<stackavail())?__alloca(s):(void *)0)
   #define _alloca( s )  ((s<stackavail())?__alloca(s):(void *)0)
  #endif
+:endsegment
 #endif

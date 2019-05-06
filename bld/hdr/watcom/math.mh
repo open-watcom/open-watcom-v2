@@ -325,7 +325,11 @@ _WCRTLINK extern int _fmsbintoieee( float *__x, float *__y );
 ::
 :include extepi.sp
 
+:segment DOS | LINUX
 #if !defined(__NO_MATH_OPS) && defined(_M_IX86)
+:elsesegment
+#if !defined(__NO_MATH_OPS)
+:endsegment
 /*
     Defining the __NO_MATH_OPS macro will stop the compiler from
     recognizing the following functions as intrinsic operators.

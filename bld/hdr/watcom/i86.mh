@@ -10,10 +10,12 @@
 
 :include readonly.sp
 
+:segment DOS | LINUX
 #ifndef _M_IX86
  #error i86.h is for use with Intel platforms
 #endif
 
+:endsegment
 :include owrtlink.sp
 
 :include cpluspro.sp

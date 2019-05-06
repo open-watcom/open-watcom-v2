@@ -1,9 +1,9 @@
 :: push packing used by C library
 :segment LINUX
 #pragma pack( __push, 8 )
-:elsesegment RDOS
+:elsesegment RDOS | QNX
 #pragma pack( __push, 1 )
-:elsesegment
+:elsesegment DOS
 #ifdef _M_IX86
  #pragma pack( __push, 1 )
 #else

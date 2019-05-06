@@ -21,6 +21,7 @@
 
 #undef va_start
 
+:segment DOS | LINUX
 #ifdef __PPC__
  extern void *__builtin_va_start(va_list *, ...);
  #pragma intrinsic(__builtin_va_start)
@@ -40,6 +41,7 @@
  #define va_dcl
  #define va_start(__ap) (__builtin_va_start(&__ap,__alist,0))
 #elif defined(_M_IX86)
+:endsegment
  #define va_alist       void *__alist, ...
  #define va_dcl
 :segment DOS | QNX
@@ -51,7 +53,9 @@
  #else
   #define va_start(__ap)    ((__ap)[0]=(char *)&__alist,(void)0)
  #endif
+:segment DOS | LINUX
 #endif
+:endsegment
 
 :include cplusepi.sp
 

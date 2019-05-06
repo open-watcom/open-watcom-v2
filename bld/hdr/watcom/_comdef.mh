@@ -67,7 +67,7 @@
  #endif
  #define _WRTLFCONV __declspec(__watcall)
  #define _WRTLDCONV __declspec(__watcall)
-:segment DOS | QNX | LINUX
+:segment DOS | LINUX
  #ifdef _M_IX86
 :endsegment
   #define _WCCALLBACK __watcall
@@ -88,14 +88,14 @@
    #define _WCI86HUGE
   #endif
 :endsegment
-:segment DOS | QNX | LINUX
+:segment DOS | LINUX
  #elif defined(__AXP__)
   #define _WCCALLBACK
   #define _WCNORETURN __declspec(aborts)
   #define _WCNEAR
   #define _WCFAR
   #define _WCHUGE
-:segment DOS | QNX
+:segment DOS
   #define _WCI86NEAR
   #define _WCI86FAR
   #define _WCI86HUGE
@@ -108,7 +108,7 @@
   #define _WCNEAR
   #define _WCFAR
   #define _WCHUGE
-:segment DOS | QNX
+:segment DOS
   #define _WCI86NEAR
   #define _WCI86FAR
   #define _WCI86HUGE
@@ -121,7 +121,7 @@
   #define _WCNEAR
   #define _WCFAR
   #define _WCHUGE
-:segment DOS | QNX
+:segment DOS
   #define _WCI86NEAR
   #define _WCI86FAR
   #define _WCI86HUGE
@@ -134,7 +134,7 @@
   #define _WCNEAR
   #define _WCFAR
   #define _WCHUGE
-:segment DOS | QNX
+:segment DOS
   #define _WCI86NEAR
   #define _WCI86FAR
   #define _WCI86HUGE
@@ -164,7 +164,7 @@
  #define _WCHANDLER __declspec(_WCCALLBACK)
 :elsesegment
  #ifdef __SW_BR
-:segment !RDOS
+:segment DOS
   #ifdef __NT__
    #define _WCRTLINK __declspec(dllimport) _WRTLFCONV
    #define _WCRTDATA __declspec(dllimport) _WRTLDCONV
@@ -182,7 +182,7 @@
    #define _WPRTLINK _WRTLFCONV
    #define _WPRTDATA _WRTLDCONV
    #define _WCHANDLER __declspec(_WCCALLBACK)
-:segment !RDOS
+:segment DOS
   #endif
 :endsegment
  #else
@@ -218,10 +218,10 @@
   #endif
  #endif
  #ifndef _WMIRTLINK
-:segment RDOS
+:segment RDOS | QNX
   #if defined(__NO_MATH_OPS)
 :elsesegment
-  #if defined(__NO_MATH_OPS) || defined(__AXP__) || defined(__PPC__)
+  #if defined(__NO_MATH_OPS) || defined(__AXP__) || defined(__PPC__) || defined(__MIPS__)
 :endsegment
    #define _WMIRTLINK _WMRTLINK
   #else

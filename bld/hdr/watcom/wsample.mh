@@ -11,7 +11,9 @@
 :include cpluspro.sp
 
 #ifdef _MARK_ON
+:segment DOS | LINUX
  #ifdef _M_IX86
+:endsegment
 :segment DOS | QNX
   #ifdef _M_I86
    extern void __mark( char __far * );
@@ -23,9 +25,11 @@
 :segment DOS | QNX
   #endif
 :endsegment
+:segment DOS | LINUX
  #else
   #error __mark not defined for this platform
  #endif
+:endsegment
  #define _MARK_( x )   __mark( x )
 #else
  #define _MARK_( x )

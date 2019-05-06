@@ -24,7 +24,9 @@ _WCRTLINK extern int getche(void);
 _WCRTLINK extern int _getche(void);
 _WCRTLINK extern int kbhit(void);
 _WCRTLINK extern int _kbhit(void);
+:segment DOS | LINUX
 #ifdef _M_IX86
+:endsegment
  _WCIRTLINK extern unsigned inp(unsigned __port);
  _WCIRTLINK extern unsigned inpw(unsigned __port);
  _WCIRTLINK extern unsigned outp(unsigned __port, unsigned __value);
@@ -37,13 +39,19 @@ _WCRTLINK extern int _kbhit(void);
 :segment DOS | QNX
  #endif
 :endsegment
+:segment DOS | LINUX
 #endif
+:endsegment
 _WCRTLINK extern int putch(int __c);
 _WCRTLINK extern int ungetch(int __c);
 _WCRTLINK extern int vcprintf( const char *__format, __va_list __arg );
 _WCRTLINK extern int vcscanf( const char *__format, __va_list __arg );
 
+:segment DOS | LINUX
 #if defined(__INLINE_FUNCTIONS__) && defined(_M_IX86)
+:elsesegment
+#if defined(__INLINE_FUNCTIONS__)
+:endsegment
  #pragma intrinsic(inp,inpw,outp,outpw)
 :segment DOS | QNX
  #ifndef _M_I86
@@ -54,14 +62,18 @@ _WCRTLINK extern int vcscanf( const char *__format, __va_list __arg );
 :endsegment
 #endif
 
+:segment DOS | LINUX
 #ifdef _M_IX86
+:endsegment
  #define _inp   inp
  #define _inpw  inpw
  #define _inpd  inpd
  #define _outp  outp
  #define _outpw outpw
  #define _outpd outpd
+:segment DOS | LINUX
 #endif
+:endsegment
 
 :include cplusepi.sp
 

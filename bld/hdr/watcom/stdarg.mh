@@ -114,6 +114,7 @@ using std::va_list;
  #define __va_copy(__dest,__src)    ((__dest)=(__src),(void)0)
 #else
 :endsegment
+:: _M_IX86 and __MIPS__
  #define __va_copy(__dest,__src)    ((__dest)[0]=(__src)[0],(void)0)
 :segment DOS | LINUX
 #endif
