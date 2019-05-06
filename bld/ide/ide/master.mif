@@ -18,12 +18,6 @@ additional_cleanup = $(ide_h_os2) $(ide_h_win) $(ide_h_nt)
 
 .SUFFIXES : .rc
 
-!ifdef __UNIX__
-to_os_path=\=/
-!else
-to_os_path=/=\
-!endif
-
 !include cproj.mif
 !include defrule.mif
 !include deftarg.mif
@@ -110,7 +104,7 @@ $(proj_name).res : ide.rc $(gui_dir)/h/gui.rc
 !ifdef ide_h_$(host_os)
 $(ide_h_$(host_os)): .ALWAYS
 curr_dir=$+$(%__CWD__)$-
-    @cd $(doc_path_$(host_os):$(to_os_path))
+    @cd $(doc_path_$(host_os))
     @wmake -h hbook=ide header=1
     @cd $(curr_dir)
 !endif
