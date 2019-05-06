@@ -4,7 +4,7 @@
 bld_ver       = $+$(%OWBLDVER)$-
 bld_ver_str   = $+$(%OWBLDVERSTR)$-
 bld_ver_tool  = $+$(%OWBLDVERTOOL)$-
-curr_year     =
+curr_year     = $+$(%OWCYEAR)$-
 !if $(__VERSION__) > 1290
 curr_year     = $+$(%__CYEAR__)$-
 !endif
