@@ -1,27 +1,10 @@
-:segment !DOS
-:keep NOT_DOS
-:endsegment
-::
-:segment !QNX
-:keep NOT_QNX
-:endsegment
-::
-:segment !RDOS
-:keep NOT_RDOS
-:endsegment
-::
-:segment !LINUX
-:keep NOT_LINUX
-:endsegment
-::
-:segment !NETWARE
-:keep NOT_NETWARE
-:endsegment
-::
-:segment !UNICODE
-:keep NOT_UNICODE
-:endsegment
-::
-:segment !NEC
-:keep NOT_NEC
+:segment DOS
+:keep BITS16
+:keep UNICODE
+:elsesegment LINUX
+:elsesegment QNX
+:keep INTEL_ONLY
+:keep BITS16
+:elsesegment RDOS
+:keep INTEL_ONLY
 :endsegment

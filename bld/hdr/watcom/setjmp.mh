@@ -16,7 +16,7 @@
 
 :include cpluspro.sp
 
-:segment DOS | LINUX
+:segment !INTEL_ONLY
 #ifdef __PPC__
  typedef unsigned int   jmp_buf[1];
 #elif defined(__AXP__)
@@ -26,7 +26,7 @@
 #elif defined(_M_IX86)
 :endsegment
  typedef unsigned int   jmp_buf[13];
-:segment DOS | LINUX
+:segment !INTEL_ONLY
 #endif
 :endsegment
 
@@ -37,10 +37,10 @@ _WCRTLINK _WCNORETURN extern void   longjmp( jmp_buf __env, int __val );
  #define setjmp(__env)  _setjmp(__env)
 #endif
 
-:segment DOS | LINUX
+:segment !INTEL_ONLY
 #ifdef _M_IX86
 :endsegment
-:segment DOS | QNX
+:segment BITS16
  #ifdef _M_I86
   #pragma aux _setjmp __modify [__8087]
  #else
@@ -50,10 +50,10 @@ _WCRTLINK _WCNORETURN extern void   longjmp( jmp_buf __env, int __val );
   #else
    #pragma aux _setjmp __parm __caller [__eax] __modify [__8087]
   #endif
-:segment DOS | QNX
+:segment BITS16
  #endif
 :endsegment
-:segment DOS | LINUX
+:segment !INTEL_ONLY
 #endif
 :endsegment
 

@@ -154,13 +154,13 @@ _WCIRTLINK extern long int labs( long int __j );
 #pragma aux labs __parm __nomemory __modify __nomemory
 #endif
 
-:segment DOS | QNX
+:segment BITS16
 #ifdef _M_I86
 _WCRTLINK extern ldiv_t  ldiv( long int __numer, long int __denom );
 #else
 :endsegment
 _WCIRTLINK extern ldiv_t  ldiv( long int __numer, long int __denom );
-:segment DOS | QNX
+:segment BITS16
 #endif
 :endsegment
 _WCRTLINK extern long long int llabs( long long int __j );
@@ -193,11 +193,11 @@ _WCRTLINK extern unsigned long long int strtoull( const char *__nptr, char **__e
 :include nsstd.sp
 #ifdef __INLINE_FUNCTIONS__
 #pragma intrinsic(abs,div,labs)
-:segment DOS | QNX
+:segment BITS16
 #ifndef _M_I86
 :endsegment
  #pragma intrinsic(ldiv)
-:segment DOS | QNX
+:segment BITS16
 #endif
 :endsegment
 #endif /* __INLINE_FUNCTIONS__ */
@@ -233,20 +233,20 @@ _WMRTLINK extern char    *gcvt( double __val, int __ndig, char *__buf );
 _WMRTLINK extern char    *_gcvt( double __val, int __ndig, char *__buf );
 _WCRTLINK extern char    *itoa( int __value, char *__buf, int __radix );
 _WCRTLINK extern char    *_itoa( int __value, char *__buf, int __radix );
-:segment DOS | QNX
+:segment BITS16
 #ifdef _M_I86
 _WCRTLINK extern unsigned long _lrotl( unsigned long __value, unsigned int __shift );
 #else
 :endsegment
 _WCIRTLINK extern unsigned long _lrotl( unsigned long __value, unsigned int __shift );
-:segment DOS | QNX
+:segment BITS16
 #endif
 #ifdef _M_I86
 _WCRTLINK extern unsigned long _lrotr( unsigned long __value, unsigned int __shift );
 #else
 :endsegment
 _WCIRTLINK extern unsigned long _lrotr( unsigned long __value, unsigned int __shift );
-:segment DOS | QNX
+:segment BITS16
 #endif
 :endsegment
 _WCRTLINK extern char    *ltoa( long int __value, char *__buf, int __radix );
@@ -341,11 +341,11 @@ _WCRTLINK extern unsigned __int64 _strtoui64( const char *__nptr, char **__endpt
 :segment !CNAME
 #ifdef __INLINE_FUNCTIONS__
  #pragma intrinsic(_rotl,_rotr)
-:segment DOS | QNX
+:segment BITS16
  #ifndef _M_I86
 :endsegment
   #pragma intrinsic(_lrotl,_lrotr)
-:segment DOS | QNX
+:segment BITS16
  #endif
 :endsegment
 #endif

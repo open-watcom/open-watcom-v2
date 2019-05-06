@@ -64,7 +64,7 @@
 :include ext.sp
 
 :: Thread symbols section.
-:segment DOS | QNX
+:segment BITS16
 #ifndef _M_I86
 :endsegment
  #define _threadid (__threadid())
@@ -76,7 +76,7 @@
 #else
  _WCRTDATA extern int _WCFAR *_threadid;   /* pointer to thread id */
 :endsegment
-:segment DOS | QNX
+:segment BITS16
 #endif
 :endsegment
 

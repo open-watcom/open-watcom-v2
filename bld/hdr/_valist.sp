@@ -1,6 +1,6 @@
 #ifndef ___VA_LIST_DEFINED
 #define ___VA_LIST_DEFINED
-:segment DOS | LINUX
+:segment !INTEL_ONLY
  #ifdef __PPC__
 :segment DOS
   #ifdef __NT__
@@ -29,16 +29,16 @@
   } __va_list;
  #elif defined(_M_IX86)
 :endsegment
-:segment DOS | QNX
+:segment BITS16
   #if defined(__HUGE__) || defined(__SW_ZU)
-:elsesegment LINUX | RDOS
+:elsesegment
   #if defined(__SW_ZU)
 :endsegment
    typedef char _WCFAR *__va_list[1];
   #else
    typedef char    *__va_list[1];
   #endif
-:segment DOS | LINUX
+:segment !INTEL_ONLY
  #endif
 :endsegment
 #endif

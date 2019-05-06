@@ -92,7 +92,7 @@ _WCRTLINK extern size_t   jstrspn( const JCHAR *__s1, const JCHAR *__s2 );
 _WCRTLINK extern JSTRING  jstrstr( const JCHAR *__s1, const JCHAR *__s2 );
 _WCRTLINK extern JSTRING  jstrtok( JCHAR *__targ, const JCHAR *__brk );
 _WCRTLINK extern JSTRING  jstrupr( JCHAR *__s );
-:segment DOS | QNX
+:segment BITS16
 /* ----------- memory model independent equivalents ----------- */
 _WCRTLINK extern size_t   _WCI86FAR _fbtom( const JCHAR _WCFAR *__s, size_t __nb );
 _WCRTLINK extern size_t   _WCI86FAR _fmtob( const JCHAR _WCFAR *__s, size_t __nm );

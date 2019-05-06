@@ -1,7 +1,7 @@
 #ifndef alloca
  _WCRTLINK extern unsigned stackavail( void );
  _WCRTLINK extern unsigned _stackavail( void );
-:segment DOS | LINUX
+:segment !INTEL_ONLY
  #ifdef _M_IX86
 :endsegment
   _WCRTLINK extern void __based(__segname("_STACK")) *alloca(__w_size_t __size);
@@ -27,7 +27,7 @@
   #endif
 :endsegment
 
-:segment DOS | QNX
+:segment BITS16
   #ifdef _M_I86
     #pragma aux __doalloca = \
             "sub sp,ax"     \
@@ -41,10 +41,10 @@
         __parm __nomemory [__eax] \
         __value [__esp] \
         __modify __exact __nomemory [__esp]
-:segment DOS | QNX
+:segment BITS16
   #endif
 :endsegment
-:segment DOS | LINUX
+:segment !INTEL_ONLY
  #else
 :: All non-x86 platforms
   _WCRTLINK extern void *alloca(__w_size_t __size);

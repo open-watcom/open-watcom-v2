@@ -9,7 +9,7 @@
 #ifndef _STDUINTPTR_T_DEFINED
 #define _STDUINTPTR_T_DEFINED
  namespace std {
-:segment DOS | QNX
+:segment BITS16
  #ifdef _M_I86
   #if defined(__SMALL__) || defined(__MEDIUM__)
    typedef unsigned int uintptr_t;
@@ -23,7 +23,7 @@
   #else
    typedef unsigned long uintptr_t;
   #endif
-:segment DOS | QNX
+:segment BITS16
  #endif
 :endsegment
  }
@@ -39,7 +39,7 @@
  #ifndef _STDUINTPTR_T_DEFINED
  #define _STDUINTPTR_T_DEFINED
   namespace std {
-:segment DOS | QNX
+:segment BITS16
  #ifdef _M_I86
   #if defined(__SMALL__) || defined(__MEDIUM__)
    typedef unsigned int uintptr_t;
@@ -53,7 +53,7 @@
   #else
    typedef unsigned long uintptr_t;
   #endif
-:segment DOS | QNX
+:segment BITS16
  #endif
 :endsegment
   }
@@ -70,7 +70,7 @@
 :segment !CPPONLY
  #ifndef _UINTPTR_T_DEFINED
  #define _UINTPTR_T_DEFINED
-:segment DOS | QNX
+:segment BITS16
  #ifdef _M_I86
   #if defined(__SMALL__) || defined(__MEDIUM__)
    typedef unsigned int uintptr_t;
@@ -84,7 +84,7 @@
   #else
    typedef unsigned long uintptr_t;
   #endif
-:segment DOS | QNX
+:segment BITS16
  #endif
 :endsegment
   typedef uintptr_t   __w_uintptr_t;
