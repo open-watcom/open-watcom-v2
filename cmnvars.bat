@@ -64,6 +64,8 @@ if not '%OS%' == 'Windows_NT' goto no_windows_nt
 if '%NTDOS%' == '1' goto no_windows_nt
 set COMSPEC=%WINDIR%\system32\cmd.exe
 set COPYCMD=/y
+set OWCYEAR=%date%
+set OWCYEAR=%OWCYEAR:~6,4%
 :no_windows_nt
 
 echo Open Watcom build environment (%OWTOOLS% version=%OWTOOLSVER%)
