@@ -77,6 +77,7 @@
     #define ENTRY_RDONLY(n,e)   (access( n, W_OK ) == -1 && errno == EACCES)
     #define PATH_SEP_CHAR       '/'
     #define PATH_SEP_STR        "/"
+    #define MKDIR(p)            mkdir( (p), S_IRWXU | S_IRWXG | S_IRWXO )
 #else
     #define MASK_ALL_ITEMS      "*.*"
     #define ENTRY_INVALID(n,e)  (IsDotOrDotDot(e->d_name) || fnmatch(n, e->d_name, FNM_PATHNAME | FNM_NOESCAPE | FNM_IGNORECASE) == FNM_NOMATCH)
@@ -84,6 +85,7 @@
     #define ENTRY_RDONLY(n,e)   (e->d_attr & _A_RDONLY)
     #define PATH_SEP_CHAR       '\\'
     #define PATH_SEP_STR        "\\"
+    #define MKDIR(p)            mkdir( (p) )
 #endif
 
 #define IS_PATH_SEP(p)          ((p)[0] == PATH_SEP_CHAR)
@@ -1674,6 +1676,126 @@ STATIC RET_T handleRM( char *cmd )
     return( rt );
 }
 
+STATIC RET_T handleMkdirSyntaxError( void )
+/*****************************************/
+{
+    PrtMsg( ERR | SYNTAX_ERROR_IN, dosInternals[COM_MKDIR] );
+    return( RET_ERROR );
+}
+
+STATIC bool processMkdir( char *path, bool mkparents )
+/****************************************************/
+{
+    struct stat sb;
+    char        *p;
+    char        save_char;
+
+    if( mkparents ) {
+        p = path;
+  #ifndef __UNIX__
+        /* special case for drive letters */
+        if( cisalpha( p[0] ) && p[1] == ':' ) {
+            p += 2;
+        }
+  #endif
+        /* find the next path component */
+        while( *p != NULLCHAR ) {
+            /* skip initial path separator if present */
+            SKIP_PATH_SEP( p );
+
+            while( *p != NULLCHAR && !IS_PATH_SEP( p ) )
+                ++p;
+            save_char = *p;
+            *p = NULLCHAR;
+
+            /* check if pathname exists */
+            if( stat( path, &sb ) == -1 ) {
+                if( MKDIR( path ) ) {
+                    /* Can not create directory */
+                    return( false );
+                }
+            } else if( !S_ISDIR( sb.st_mode ) ) {   /* make sure it really is a directory */
+                /* Can not create directory, file with the same name already exists */
+                return( false );
+            }
+            /* put back the path separator */
+            *p = save_char;
+        }
+        return( true );
+    } else {
+        return( MKDIR( path ) == 0 );
+    }
+}
+
+STATIC RET_T handleMkdir( char *cmd )
+/************************************
+ * MKDIR {ws}+ [-p {ws}+] <dir>
+ *
+ * -p   Recursive creation of missing directories in path.
+ */
+{
+    bool        mkparents;
+    char        *path;
+    char        *p;
+
+#ifdef DEVELOPMENT
+    PrtMsg( DBG | INF | INTERPRETING, dosInternals[COM_MKDIR] );
+#endif
+
+    if( Glob.noexec )
+        return( RET_SUCCESS );
+
+    mkparents = false;
+    /* find "-p" options after "MKDIR " */
+    p = SkipWS( cmd + 6 );
+    if( p[0] == '-' ) {
+        p++;
+        if( !cisalpha( p[0] ) || ctolower( p[0] ) != 'p' ) {
+            return( handleMkdirSyntaxError() );
+        }
+        mkparents = true;
+        p = SkipWS( p + 1 );
+    }
+    // handle LFN
+    p = CmdGetFileName( p, &path, true );
+    if( *p != NULLCHAR ) {
+        return( handleMkdirSyntaxError() );
+    }
+    if( !processMkdir( path, mkparents ) ) {
+        return( RET_ERROR );
+    }
+    return( RET_SUCCESS );
+}
+
+STATIC RET_T handleRmdir( char *cmd )
+/************************************
+ * RMDIR {ws}+ <dir>
+ */
+{
+    char        *path;
+    char        *p;
+
+#ifdef DEVELOPMENT
+    PrtMsg( DBG | INF | INTERPRETING, dosInternals[COM_RMDIR] );
+#endif
+
+    if( Glob.noexec )
+        return( RET_SUCCESS );
+
+    /* find argument after "RMDIR " */
+    p = SkipWS( cmd + 6 );
+    // handle LFN
+    p = CmdGetFileName( p, &path, true );
+    if( *p != NULLCHAR ) {
+        PrtMsg( ERR | SYNTAX_ERROR_IN, dosInternals[COM_RMDIR] );
+        return( RET_ERROR );
+    }
+    if( rmdir( path ) ) {
+        return( RET_ERROR );
+    }
+    return( RET_SUCCESS );
+}
+
 STATIC bool hasMetas( const char *cmd )
 /**************************************
  * determine whether a command line has meta characters in it or not
@@ -1897,6 +2019,8 @@ STATIC RET_T shellSpawn( char *cmd, shell_flags flags )
         case COM_FOR:   my_ret = handleFor( cmd );          break;
         case COM_IF:    my_ret = handleIf( cmd );           break;
         case COM_RM:    my_ret = handleRM( cmd );           break;
+        case COM_MKDIR: my_ret = handleMkdir( cmd );        break;
+        case COM_RMDIR: my_ret = handleRmdir( cmd );        break;
 #if defined( __OS2__ ) || defined( __NT__ ) || defined( __UNIX__ ) || defined( __RDOS__ )
         case COM_CD:
         case COM_CHDIR: my_ret = handleCD( cmd );           break;
