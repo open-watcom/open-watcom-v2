@@ -166,12 +166,9 @@ const char *procPath( const char *fullpath )
                 dirBuf[0] = '.';
                 dirBuf[1] = NULLCHAR;
             } else {
-                p = dirBuf;
-                while( *p != NULLCHAR ) {
-                    ++p;
-                }
-                if( *(p - 1) == '\\' ) {
-                    *(p - 1) = NULLCHAR;
+                p = dirBuf + strlen( dirBuf ) - 1;
+                if( cisdirc( *p ) && *p != ':' ) {
+                    *p = NULLCHAR;
                 }
             }
         }
