@@ -47,18 +47,17 @@
 #include "clibext.h"
 
 
+#define CLOWER(c)   (((c) < 'a') ? (c) - 'A' + 'a' : (c))
+
 #if defined( __DOS__ )
 /* DOS: down case all filenames, convert fwd-slash to back-slash */
-#define FIX_CHAR(c) (((c) == '/') ? '\\' : ((cisalpha( (c) ) && (c) < 'a') ? (c) - 'A' + 'a' : (c)))
+#define FIX_CHAR(c) (((c) == '/') ? '\\' : (cisalpha( (c) ) ? CLOWER(c) : (c)))
 #elif defined( __OS2__ ) || defined( __NT__ ) || defined( __RDOS__ )
 /* OS2, NT and RDOS: convert fwd-slash to back-slash */
 #define FIX_CHAR(c) (((c) == '/') ? '\\' : (c))
-#else
+#else   /* __UNIX__ */
+/* UNIX: no changes */
 #define FIX_CHAR(c) (c)
-#endif
-
-#if defined( __DOS__ )
-#define FIX_CHAR_OS(c)  (((c) == '/') ? '\\' : ((cisalpha( (c) ) && (c) >= 'a') ? (c) - 'a' + 'A' : (c)))
 #endif
 
 static ENV_TRACKER  *envList;
@@ -150,56 +149,6 @@ char *FixName( char *name )
 #else
     return( name );
 #endif
-}
-
-char *GetFixFNameLong( char *src, char **fname, bool osname )
-/***********************************************************/
-{
-    bool    string_open;
-    char    *dst;
-    char    t;
-
-#ifndef __DOS__
-    /* unused parameters */ (void)osname;
-#endif
-
-    string_open = false;
-    if( *src == '\"' ) {
-        string_open = true;
-        src++;
-    }
-    *fname = src;
-    for( dst = src; (t = *src) != NULLCHAR; src++ ) {
-        if( string_open ) {
-            if( t == '\"' ) {
-                src++;
-                *dst = NULLCHAR;
-                break;
-            } else if( t == '\\' ) {
-                src++;
-                t = *src;
-                if( t != '\"' && t != '\\' ) {
-                    *dst++ = '\\';
-                    if( t == NULLCHAR ) {
-                        *dst = t;
-                        break;
-                    }
-                }
-            }
-        } else if( cisws( t ) ) {
-            break;
-        }
-#ifdef __DOS__
-        if( osname ) {
-            *dst++ = FIX_CHAR_OS( t );
-        } else {
-            *dst++ = FIX_CHAR( t );
-        }
-#else
-        *dst++ = FIX_CHAR( t );
-#endif
-    }
-    return( src );
 }
 
 bool FNameEq( const char *a, const char *b )

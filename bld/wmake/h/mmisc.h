@@ -49,7 +49,6 @@ extern int          KWCompare( const void *p1, const void *p2 );
 extern char         *SkipWS( const char *p );
 extern char         *FindNextWS( const char *str );
 extern char         *FindNextWSorEqual( const char *str );
-extern char         *GetFixFNameLong( char *src, char **fname, bool osname );
 extern int          PutEnvSafe( ENV_TRACKER *env );
 #if !defined(NDEBUG) || defined(DEVELOPMENT)
 extern void         PutEnvFini( void );

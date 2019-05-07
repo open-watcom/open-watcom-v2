@@ -86,6 +86,17 @@
 #define SkipUntilRparent(p)     while( *p != NULLCHAR && *p != ')' ) ++p
 
 
+#define CLOWER(c)               (((c) < 'a') ? (c) - 'A' + 'a' : (c))
+#define CUPPER(c)               (((c) >= 'a') ? (c) - 'a' + 'A' : (c))
+
+#if defined( __DOS__ )
+    #define FIX_CHAR_OS(c,f)    (((c) == '/') ? '\\' : (cisalpha( (c) ) ? ((f) ? CUPPER(c) : CLOWER(c)) : (c)))
+#elif defined( __OS2__ ) || defined( __NT__ ) || defined( __RDOS__ )
+    #define FIX_CHAR_OS(c,f)    (((c) == '/') ? '\\' : (c))
+#else   /* __UNIX__ */
+    #define FIX_CHAR_OS(c,f)    (c)
+#endif
+
 typedef enum {
     FLAG_SHELL      = 0x01,
     FLAG_SILENT     = 0x02,
@@ -170,6 +181,48 @@ STATIC RET_T execLine( char *line );    /* called recursively in handleFor */
 STATIC NKLIST   *noKeepList;            /* contains the list of files that
                                            needs to be cleaned when wmake
                                            exits */
+
+STATIC char *GetFixFNameLong( char *src, char **fname, bool osname )
+/******************************************************************/
+{
+    bool    string_open;
+    char    *dst;
+    char    t;
+
+#ifndef __DOS__
+    /* unused parameters */ (void)osname;
+#endif
+
+    string_open = false;
+    if( *src == '\"' ) {
+        string_open = true;
+        src++;
+    }
+    *fname = src;
+    for( dst = src; (t = *src) != NULLCHAR; src++ ) {
+        if( string_open ) {
+            if( t == '\"' ) {
+                src++;
+                *dst = NULLCHAR;
+                break;
+            } else if( t == '\\' ) {
+                src++;
+                t = *src;
+                if( t != '\"' && t != '\\' ) {
+                    *dst++ = '\\';
+                    if( t == NULLCHAR ) {
+                        *dst = t;
+                        break;
+                    }
+                }
+            }
+        } else if( cisws( t ) ) {
+            break;
+        }
+        *dst++ = FIX_CHAR_OS( t, osname );
+    }
+    return( src );
+}
 
 STATIC bool KeywordEqualUcase( const char *kwd, const char *start, bool anyterm )
 /********************************************************************************
