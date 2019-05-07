@@ -28,7 +28,7 @@ libs = $(libdir)/posix.lib
 $(name).exe: $(objs) $(libs) $(__MAKEFILES__)
 !ifndef __WATCOM_TOOLS__
     @%make echo_link
-    $(cl) $(clflags) $(objs) $(libs:$(to_os_path)) $(ldflags)
+    $(cl) $(clflags) $(objs) $(libs) $(ldflags)
 !else
     $(noecho)%create $^&.lnk
     @%append $^&.lnk name $@
@@ -36,7 +36,7 @@ $(name).exe: $(objs) $(libs) $(__MAKEFILES__)
 !ifeq release 0 
     @%append $^&.lnk option symfile
 !endif
-    @%append $^&.lnk lib $(libs:$(to_os_path))
+    @%append $^&.lnk lib $(libs)
 !ifeq host_os os2
 !  ifeq host_cpu i86
     @%append $^&.lnk system os2 pmc

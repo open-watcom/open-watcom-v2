@@ -40,12 +40,6 @@ model=f
 memory_model_i86=$(model)
 memory_model_386=$(model)
 
-!ifdef __UNIX__
-to_os_path=\=/
-!else
-to_os_path=/=\
-!endif
-
 !include cproj.mif
 !include defrule.mif
 

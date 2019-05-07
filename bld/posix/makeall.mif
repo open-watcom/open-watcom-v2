@@ -32,12 +32,12 @@ all : lib $(commands) .symbolic
     @%null
 
 lib : .symbolic $(__MAKEFILES__)
-    @if not exist $(libdir) @mkdir $(libdir:$(to_os_path))
+    @if not exist $(libdir) @mkdir $(libdir)
     $(noecho)cd $(libdir)
     !@wmake -h $(mkfile)
 !ifdef alt_subdir_$(host_os)$(host_cpu)_$(model)
     $(noecho)cd $(curr_dir_all)
-    @if not exist $(altlibdir) @mkdir $(altlibdir:$(to_os_path))
+    @if not exist $(altlibdir) @mkdir $(altlibdir)
     $(noecho)cd $(altlibdir)
     !@wmake -h $(altmkfile)
 !endif
