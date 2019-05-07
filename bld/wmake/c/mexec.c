@@ -75,16 +75,22 @@
     #define ENTRY_INVALID(n,e)  (IsDotOrDotDot(e->d_name) || fnmatch(n, e->d_name, FNM_PATHNAME | FNM_NOESCAPE) == FNM_NOMATCH)
     #define ENTRY_SUBDIR(n,e)   chk_is_dir(n)
     #define ENTRY_RDONLY(n,e)   (access( n, W_OK ) == -1 && errno == EACCES)
+    #define PATH_SEP_CHAR       '/'
+    #define PATH_SEP_STR        "/"
 #else
     #define MASK_ALL_ITEMS      "*.*"
     #define ENTRY_INVALID(n,e)  (IsDotOrDotDot(e->d_name) || fnmatch(n, e->d_name, FNM_PATHNAME | FNM_NOESCAPE | FNM_IGNORECASE) == FNM_NOMATCH)
     #define ENTRY_SUBDIR(n,e)   (e->d_attr & _A_SUBDIR)
     #define ENTRY_RDONLY(n,e)   (e->d_attr & _A_RDONLY)
+    #define PATH_SEP_CHAR       '\\'
+    #define PATH_SEP_STR        "\\"
 #endif
+
+#define IS_PATH_SEP(p)          ((p)[0] == PATH_SEP_CHAR)
+#define SKIP_PATH_SEP(p)        if( IS_PATH_SEP(p) ) (p)++
 
 #define SkipUntilWSorEqual(p)   while( *p != NULLCHAR && !cisws( *p ) && *p != '=' ) ++p
 #define SkipUntilRparent(p)     while( *p != NULLCHAR && *p != ')' ) ++p
-
 
 #define CLOWER(c)               (((c) < 'a') ? (c) - 'A' + 'a' : (c))
 #define CUPPER(c)               (((c) >= 'a') ? (c) - 'a' + 'A' : (c))
@@ -182,8 +188,8 @@ STATIC NKLIST   *noKeepList;            /* contains the list of files that
                                            needs to be cleaned when wmake
                                            exits */
 
-STATIC char *GetFixFNameLong( char *src, char **fname, bool osname )
-/******************************************************************/
+STATIC char *CmdGetFileName( char *src, char **fname, bool osname )
+/*****************************************************************/
 {
     bool    string_open;
     char    *dst;
@@ -248,7 +254,7 @@ STATIC char *createTmpFileName( void )
     char    *tmpPath;
     char    fileName[_MAX_PATH];
 
-    tmpPath    = GetMacroValue( TEMPENVVAR );
+    tmpPath = GetMacroValue( TEMPENVVAR );
     if( tmpPath == NULL && !Glob.compat_nmake ) {
         tmpPath = getenv( TEMPENVVAR );
         if( tmpPath != NULL ) {
@@ -280,13 +286,9 @@ STATIC char *createTmpFileName( void )
             result = FinishVec( buf );
         } else {
             WriteVec( buf, tmpPath );
-            if( tmpPath[strlen( tmpPath ) - 1] != '\\' ) {
+            if( !IS_PATH_SEP( &tmpPath[strlen( tmpPath ) - 1] ) ) {
                 buf2 = StartVec();
-#if defined( __UNIX__ )
-                WriteVec( buf2, "/" );
-#else
-                WriteVec( buf2, "\\" );
-#endif
+                WriteVec( buf2, PATH_SEP_STR );
                 CatVec( buf, buf2 );
             }
             buf2 = StartVec();
@@ -668,7 +670,7 @@ STATIC RET_T percentWrite( char *arg, enum write_type type )
         return( RET_SUCCESS );
     }
     /* handle LFN */
-    p = GetFixFNameLong( arg, &fn, true );
+    p = CmdGetFileName( arg, &fn, true );
     if( *p != NULLCHAR ) {
         if( !cisws( *p ) ) {
             switch( type ) {
@@ -739,7 +741,7 @@ STATIC RET_T percentErase( char *arg )
     char    *p;
 
     /* handle LFN */
-    p = GetFixFNameLong( arg, &fn, true );
+    p = CmdGetFileName( arg, &fn, true );
     if( *p != NULLCHAR && !cisws( *p ) ) {
         PrtMsg( ERR | SYNTAX_ERROR_IN, percentCmds[PER_RENAME] );
         PrtMsg( INF | PRNTSTR, "File" );
@@ -766,7 +768,7 @@ STATIC RET_T percentRename( char *arg )
     }
 
     /* Get first LFN */
-    p = GetFixFNameLong( arg, &fn1, true );
+    p = CmdGetFileName( arg, &fn1, true );
     if( *p == NULLCHAR || !cisws( *p ) ) {
         PrtMsg( ERR | SYNTAX_ERROR_IN, percentCmds[PER_RENAME] );
         PrtMsg( INF | PRNTSTR, "First file" );
@@ -777,7 +779,7 @@ STATIC RET_T percentRename( char *arg )
     /* skip ws after first and before second file name */
     p = SkipWS( p );
     /* Get second LFN as well */
-    p = GetFixFNameLong( p, &fn2, true );
+    p = CmdGetFileName( p, &fn2, true );
     if( *p != NULLCHAR && !cisws( *p ) ) {
         PrtMsg( ERR | SYNTAX_ERROR_IN, percentCmds[PER_RENAME] );
         return( RET_ERROR );
@@ -1066,7 +1068,7 @@ STATIC RET_T handleIf( char *cmd )
             return( RET_ERROR );
         }
         // handle LFN
-        p = GetFixFNameLong( p, &tmp2, false );
+        p = CmdGetFileName( p, &tmp2, false );
         if( *p == NULLCHAR ) {
             PrtMsg( ERR | SYNTAX_ERROR_IN, dosInternals[COM_IF] );
             return( RET_ERROR );
@@ -1355,7 +1357,7 @@ STATIC RET_T handleCD( char *cmd )
     }
 
     // handle LFN
-    p = GetFixFNameLong( p, &path, true );
+    p = CmdGetFileName( p, &path, true );
     *p = NULLCHAR;      /* terminate path */
     if( chdir( path ) != 0 ) {         /* an error changing path */
         PrtMsg( ERR | CHANGING_DIR, path );
@@ -1400,7 +1402,7 @@ STATIC RET_T getRMArgs( char *line, rm_flags *flags, char **name )
  * returns RET_WARN when there are no more arguments
  */
 {
-    static char *p  = NULL;
+    static char *p = NULL;
 
     if( line != NULL ) {        /* first run? */
         flags->bForce   = false;
@@ -1518,11 +1520,7 @@ static bool doRM( const char *fullpath, const rm_flags *flags )
     /* if no path then use current directory */
     if( i == 0 ) {
         fpath[i++] = '.';
-#ifdef __UNIX__
-        fpath[i++] = '/';
-#else
-        fpath[i++] = '\\';
-#endif
+        fpath[i++] = PATH_SEP_CHAR;
     } else {
         memcpy( fpath, fullpath, i );
     }
@@ -1603,11 +1601,7 @@ static bool RecursiveRM( const char *dir, const rm_flags *flags )
 
     /* purge the files */
     strcpy( fname, dir );
-#ifdef __UNIX__
-    strcat( fname, "/" MASK_ALL_ITEMS );
-#else
-    strcat( fname, "\\" MASK_ALL_ITEMS );
-#endif
+    strcat( fname, PATH_SEP_STR MASK_ALL_ITEMS );
     rc = doRM( fname, flags );
     /* purge the directory */
     rc2 = remove_item( dir, flags, true );
@@ -1646,7 +1640,7 @@ STATIC bool processRM( const char *name, const rm_flags *flags )
 
 STATIC RET_T handleRM( char *cmd )
 /*********************************
- * RM [-f -r -v] <file>|<dir> ...
+ * RM {ws}+ [-f -r -v {ws}+] <file>|<dir> ...
  *
  * -f   Force deletion of read-only files.
  * -r   Recursive deletion of directories.
@@ -1667,7 +1661,7 @@ STATIC RET_T handleRM( char *cmd )
 
     for( rt = getRMArgs( cmd, &flags, &p ); rt == RET_SUCCESS; rt = getRMArgs( NULL, NULL, &p ) ) {
         // handle LFN
-        p = GetFixFNameLong( p, &name, true );
+        p = CmdGetFileName( p, &name, true );
         *p = NULLCHAR;      /* terminate file name */
         if( !processRM( name, &flags ) ) {
             return( RET_ERROR );
