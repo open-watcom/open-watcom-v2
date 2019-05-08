@@ -107,7 +107,7 @@ cn      BGInitCall(an node,type_def *tipe,aux_handle aux) {
     to hold the call and parially initializes it.
 */
 
-    cn                  new;
+    cn                  call;
     type_class_def      type_class;
     name                *mem;
 #if _TARGET & ( _TARG_80386 | _TARG_IAPX86 )
@@ -117,22 +117,22 @@ cn      BGInitCall(an node,type_def *tipe,aux_handle aux) {
     if( tipe->refno == TY_DEFAULT ) {
         tipe = TypeInteger;
     }
-    new = CGAlloc( sizeof( call_node ) );
-    new->state = CGAlloc( sizeof( call_state ) );
-    new->name = node;
-    new->tipe = tipe;
-    new->parms = NULL;
-    new->ins = NewIns( 3 );
+    call = CGAlloc( sizeof( call_node ) );
+    call->state = CGAlloc( sizeof( call_state ) );
+    call->name = node;
+    call->tipe = tipe;
+    call->parms = NULL;
+    call->ins = NewIns( 3 );
     if( node->format == NF_ADDR && node->class == CL_ADDR_GLOBAL ) {
-        new->ins->head.opcode = OP_CALL;
-        type_class = CallState( aux, tipe, new->state );
+        call->ins->head.opcode = OP_CALL;
+        type_class = CallState( aux, tipe, call->state );
         mem = node->u.n.name;
         mem = (name *)SAllocMemory( mem->v.symbol, mem->v.offset, mem->m.memory_type,
                             mem->n.type_class, mem->n.size );
         node->u.n.name = mem;
     } else {
-        new->ins->head.opcode = OP_CALL_INDIRECT;
-        type_class = CallState( aux, tipe, new->state );
+        call->ins->head.opcode = OP_CALL_INDIRECT;
+        type_class = CallState( aux, tipe, call->state );
 #if _TARGET & ( _TARG_80386 | _TARG_IAPX86 )
         cookie = FEAuxInfo( aux, VIRT_FUNC_REFERENCE );
         if( cookie != NULL )
@@ -141,8 +141,8 @@ cn      BGInitCall(an node,type_def *tipe,aux_handle aux) {
         CurrProc->targ.toc_clobbered = true;
 #endif
     }
-    new->ins->type_class = type_class;
-    return( new );
+    call->ins->type_class = type_class;
+    return( call );
 }
 
 

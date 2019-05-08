@@ -90,7 +90,7 @@ void    BGAddInlineParm( an addr )
 
 
 an      BGStopInline( call_handle call, type_def *tipe )
-/********************************************************/
+/******************************************************/
 {
     // works if we're in the middle of a conditional???
 

@@ -863,7 +863,7 @@ call_handle TGInitCall( tn left, type_def *tipe, cg_sym_handle sym )
     the call node.  TGCall finalizes the call node.
 */
 {
-    tn          node;
+    tn      node;
 
     node = TGNode( TN_PARM, O_NOP, left, (tn)sym, NULL );
     node = TGNode( TN_CALL, O_NOP, node, NULL, tipe );
@@ -2208,17 +2208,15 @@ static  an  TNQuestion( tn node )
 
 static  tn  NodesToZap;
 
-static  bool    FunctionModifiesSP( tn call_node )
-/*************************************************
+static  bool    FunctionModifiesSP( tn call )
+/********************************************
     does the given call modify sp?
 */
 {
-    tn              addr;
     hw_reg_set      *pregs;
     cg_sym_handle   sym;
 
-    addr = call_node->u.left;
-    sym = (cg_sym_handle)addr->u2.t.rite;
+    sym = (cg_sym_handle)call->u.left->u2.t.rite;
     pregs = FindAuxInfoSym( sym, SAVE_REGS );
     if( !HW_Ovlap( *pregs, StackReg() ) ) {
         return( true );
@@ -2253,7 +2251,7 @@ static  bool    ModifiesSP( tn node )
     case TN_UNARY:
         if( node->u2.t.op == O_STACK_ALLOC )
             return( true );
-    /* fall through */
+        /* fall through */
     default:
         if( node->u2.t.rite != NULL ) {
             if( ModifiesSP( node->u2.t.rite ) ) {
@@ -2321,13 +2319,14 @@ static  an  TNCall( tn callhandle, bool ignore_return )
     aux = FEAuxInfo( sym, AUX_LOOKUP );
     in_line = ( FEAuxInfo( aux, CALL_BYTES ) != NULL );
     cclass = *(call_class *)FEAuxInfo( aux, CALL_CLASS );
+    retv = TreeGen( addr->u.left );
     if( cclass & MAKE_CALL_INLINE ) {
-        BGDone( TreeGen( addr->u.left ) );
+        BGDone( retv );
         BGStartInline( sym );
     } else {
-        callnode = BGInitCall( TreeGen( addr->u.left ), callhandle->tipe, aux );
+        callnode = BGInitCall( retv, callhandle->tipe, aux );
     }
-    MakeSPSafe( scan = callhandle->u2.t.rite );
+    MakeSPSafe( callhandle->u2.t.rite );
     for( scan = callhandle->u2.t.rite; scan != NULL; scan = scan->u2.t.rite ) {
         base = TNFindBase( scan->u.left );
         parmtn = scan->u.left;
