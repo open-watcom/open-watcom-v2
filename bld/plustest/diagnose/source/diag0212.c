@@ -15,7 +15,7 @@ void while_loop( int x )
     goto ENTER_WHILE;
     while( i < x ) {
 ENTER_WHILE:
-	++i;
+        ++i;
     }
 }
 
@@ -26,7 +26,7 @@ void do_while_loop( int x )
     goto ENTER_DO_WHILE;
     do {
 ENTER_DO_WHILE:
-	++i;
+        ++i;
     } while( i < x );
 }
 
@@ -37,7 +37,7 @@ void for_loop( int x )
     goto ENTER_FOR;
     for( ; i < x; ) {
 ENTER_FOR:
-	++i;
+        ++i;
     }
 }
 
@@ -152,20 +152,3 @@ void x125() {
     if( !x120_x2 && x120_x2 );
     if( !x120_x3 && x120_x3 );
 }
-
-#pragma pack ( pop )
-#pragma pack ( pop );
-#pragma pack ( pop /
-#pragma pack ( push +
-#pragma pack ( push , *
-#pragma pack ( push , 3 -
-#pragma pack ( push , 3 )
-#pragma pack ( push , __WATCOMC__ $
-#pragma pack
-#pragma pack;
-#pragma pack()
-#pragma pack();
-#pragma pack(3)
-#pragma pack(3);
-#pragma pack(__WATCOMC__)
-#pragma pack(__WATCOMC__);
