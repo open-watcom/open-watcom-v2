@@ -4448,7 +4448,7 @@ internal shell command from the following list:
 .point md
 (make directory)
 .point mkdir
-(make directory)
+(make directory, intercepted by &makcmdup)
 .point path
 (set search path)
 .point pause
@@ -4460,7 +4460,7 @@ internal shell command from the following list:
 .point rename
 (rename files)
 .point rmdir
-(remove directory)
+(remove directory, intercepted by &makcmdup)
 .point rd
 (remove directory)
 .point rm
@@ -4627,10 +4627,13 @@ FILE keyboard.obj
 FILE mouse.obj
 .millust end
 .np
+The commands "rm", "mkdir" and "rmdir" are intercepted by &maksname.
+to handle file/directory names consistently with other &maksname.
+commands (LFN, forward/backward slashes). If you want to use host OS
+native versions then simply use '!' character in front of these commands.
+.np
 .ix 'rm' 'using &makname'
-The "rm" command is intercepted by &maksname..
-The reason for this is the need of being available on all supported platforms.
-The "rm" internal command is simplified implementation of the POSIX rm command. 
+The "rm" command is simplified implementation of the POSIX rm command. 
 It supports following options.
 .begpoint $compact
 .point -f 
@@ -4640,6 +4643,17 @@ deletion of directories
 .point -v 
 verbose operation
 .endpoint
+.np
+.ix 'mkdir' 'using &makname'
+The "mkdir" command is simplified implementation of the POSIX "mkdir" command. 
+It supports following options.
+.begpoint $compact
+.point -p 
+force creation of all parent directories
+.endpoint
+.np
+.ix 'rmdir' 'using &makname'
+The "rmdir" command is is simplified implementation of the POSIX "rmdir" command. 
 .np
 &maksname supports nine internal commands:
 .autopoint
