@@ -1004,13 +1004,13 @@ call_handle _CGAPI  CGInitCall( cg_name name, cg_type tipe, cg_sym_handle sym )
 /*****************************************************************************/
 {
 #ifndef NDEBUG
-    tn  retn;
+    call_handle call;
 
     EchoAPI( "CGInitCall( %n, %t, %s )", name, tipe, sym );
     hdlUseOnce( CG_NAMES, name );
-    retn = TGInitCall( name, TypeAddress( tipe ), sym );
+    call = TGInitCall( name, TypeAddress( tipe ), sym );
     hdlAddUnary( CG_NAMES, retn, name );
-    return EchoAPICallHandleReturn( retn );
+    return EchoAPICallHandleReturn( call );
 #else
     return( TGInitCall( name, TypeAddress( tipe ), sym ) );
 #endif
