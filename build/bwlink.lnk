@@ -494,6 +494,18 @@ system begin linux
     op norelocs
 end
 
+system begin linuxmips
+    option osname='Linux MIPS'
+    libpath %OWSRCDIR%/clib/library/linux.mps/_s
+    libpath %OWSRCDIR%/mathlib/library/linux.mps/_s
+    libpath %OWSRCDIR%/cpplib/library/linux.mps/_s
+    libpath %OWSRCDIR%/cpplib/complex/linux.mps/_s
+    format elf
+    runtime linux
+    op exportall
+    op norelocs
+end
+
 system begin win386
     option osname='Windows 32-bit'
     libpath %OWSRCDIR%/fpuemu/386/stub386
