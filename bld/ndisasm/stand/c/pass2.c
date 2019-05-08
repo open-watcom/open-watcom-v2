@@ -411,8 +411,7 @@ size_t HandleAReference( dis_value value, int ins_size, ref_flags flags,
 
 static void FmtSizedHexNum( char *buff, dis_dec_ins *ins, unsigned op_num )
 {
-    unsigned            size;
-    unsigned            len;
+    unsigned            prec;
     unsigned            i;
     dis_value           mask;
     dis_value           value;
@@ -424,13 +423,13 @@ static void FmtSizedHexNum( char *buff, dis_dec_ins *ins, unsigned op_num )
     case DRT_SPARC_BYTE:
     case DRT_X86_BYTE:
     case DRT_X64_BYTE:
-        size = 2;
+        prec = 2;
         mask.u._32[I64LO32] = 0x000000ff;
         break;
     case DRT_SPARC_HALF:
     case DRT_X86_WORD:
     case DRT_X64_WORD:
-        size = 4;
+        prec = 4;
         mask.u._32[I64LO32] = 0x0000ffff;
         break;
     case DRT_SPARC_WORD:
@@ -438,49 +437,45 @@ static void FmtSizedHexNum( char *buff, dis_dec_ins *ins, unsigned op_num )
     case DRT_X86_DWORD:
     case DRT_X86_DWORDF:
     case DRT_X64_DWORD:
-        size = 8;
+        prec = 8;
         mask.u._32[I64LO32] = 0xffffffff;
         break;
     case DRT_X64_QWORD:
     case DRT_SPARC_DWORD:
     case DRT_SPARC_DFLOAT:
-        size = 16;
+        prec = 16;
         mask.u._32[I64HI32] = 0xffffffff;
         mask.u._32[I64LO32] = 0xffffffff;
         break;
     default:
-        size = 0;
+        prec = 0;
         for( i = 0; i < ins->num_ops; i++ ) {
             switch( ins->op[i].ref_type ) {
             case DRT_X86_BYTE:
             case DRT_X64_BYTE:
-                len = 2;
-                if ( len > size ) {
-                    size = len;
+                if( prec < 2 ) {
+                    prec = 2;
                     mask.u._32[I64LO32] = 0x000000ff;
                 }
                 break;
             case DRT_X86_WORD:
             case DRT_X64_WORD:
-                len = 4;
-                if ( len > size ) {
-                    size = len;
+                if( prec < 4 ) {
+                    prec = 4;
                     mask.u._32[I64LO32] = 0x0000ffff;
                 }
                 break;
             case DRT_X86_DWORD:
             case DRT_X86_DWORDF:
             case DRT_X64_DWORD:
-                len = 8;
-                if ( len > size ) {
-                    size = len;
+                if( prec < 8 ) {
+                    prec = 8;
                     mask.u._32[I64LO32] = 0xffffffff;
                 }
                 break;
             case DRT_X64_QWORD:
-                len = 16;
-                if ( len > size ) {
-                    size = len;
+                if( prec < 16 ) {
+                    prec = 16;
                     mask.u._32[I64HI32] = 0xffffffff;
                     mask.u._32[I64LO32] = 0xffffffff;
                 }
@@ -489,15 +484,15 @@ static void FmtSizedHexNum( char *buff, dis_dec_ins *ins, unsigned op_num )
                 break;
             }
         }
-        if ( size == 0 ) {
-            size = 8;
+        if( prec == 0 ) {
+            prec = 8;
             mask.u._32[I64LO32] = 0xffffffff;
         }
         break;
     }
     value.u._32[I64HI32] &= mask.u._32[I64HI32];
     value.u._32[I64LO32] &= mask.u._32[I64LO32];
-    FmtHexNum( buff, size, value );
+    FmtHexNum( buff, prec, value );
 }
 
 size_t DisCliValueString( void *d, dis_dec_ins *ins, unsigned op_num, char *buff, size_t buff_len )
