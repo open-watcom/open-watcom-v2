@@ -46,7 +46,7 @@
 #include "typemap.h"
 
 
-patch *BGNewPatch( void )
+patch_handle    BGNewPatch( void )
 {
     patch_handle    patch;
 
