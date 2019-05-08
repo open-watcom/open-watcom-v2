@@ -379,7 +379,7 @@ patch_handle _CGAPI     BEPatch( void )
     patch = BGNewPatch();
     EchoAPI( " -> %P\n", patch );
     hdlAdd( PATCH_HANDLE, patch );
-    return retn;
+    return( patch );
 #else
     return( BGNewPatch() );
 #endif
