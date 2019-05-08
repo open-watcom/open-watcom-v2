@@ -401,11 +401,11 @@ cg_name CgSaveAsTemp(           // SAVE INTO A TEMPORARY
 
 
 static void addArgument(        // ADD AN ARGUMENT
-    call_handle handle,         // - handle for call
+    call_handle call,           // - handle for call
     cg_name expr,               // - expression for argument
     cg_type type )              // - argument type
 {
-    CGAddParm( handle, expr, type );
+    CGAddParm( call, expr, type );
 }
 
 
@@ -593,16 +593,16 @@ static call_handle initDtorCall( // INITIALIZE DTOR CALL
     SYMBOL dtor )                // - DTOR to be called
 {
     cg_name dtor_name;
-    call_handle h;
+    call_handle call;
 
     dtor_name = CgSymbol( dtor );
-    h = CGInitCall( dtor_name, CgFuncRetnType( dtor ), (cg_sym_handle)dtor );
-    return( h );
+    call = CGInitCall( dtor_name, CgFuncRetnType( dtor ), (cg_sym_handle)dtor );
+    return( call );
 }
 
 
 static void addDtorArgs(        // ADD DTOR ARGUMENTS
-    call_handle handle,         // - call handle
+    call_handle call,           // - call handle
     SYMBOL dtor,                // - destructor
     cg_name var,                // - destruction address
     unsigned cdtor )            // - CDTOR to be used
@@ -613,26 +613,26 @@ static void addDtorArgs(        // ADD DTOR ARGUMENTS
     switch( PcCallImpl( dtor->sym_type ) ) {
     case CALL_IMPL_REV_CPP :
     case CALL_IMPL_REV_C :
-        addArgument( handle, var, TY_POINTER );
-        addArgument( handle, expr, TY_UNSIGNED );
+        addArgument( call, var, TY_POINTER );
+        addArgument( call, expr, TY_UNSIGNED );
         break;
     default :
-        addArgument( handle, expr, TY_UNSIGNED );
-        addArgument( handle, var, TY_POINTER );
+        addArgument( call, expr, TY_UNSIGNED );
+        addArgument( call, var, TY_POINTER );
         break;
     }
 }
 
 
 static cg_name finiDtorCall(    // COMPLETE DTOR CALL
-    call_handle handle,         // - call handle
+    call_handle call,           // - call handle
     unsigned cdtor )            // - cdtor arg to use
 {
     cg_name n;
 
-    CgBackCallGened( handle );
-    n = CgFetchPtr( CGCall( handle ) );
-    CallStabCdArgSet( handle, cdtor );
+    CgBackCallGened( call );
+    n = CgFetchPtr( CGCall( call ) );
+    CallStabCdArgSet( call, cdtor );
     return( n );
 }
 
@@ -644,16 +644,16 @@ cg_name CgDestructSymOffset(    // CONSTRUCT DTOR CALL FOR SYMBOL+OFFSET
     target_offset_t offset,     // - offset from "sym"
     unsigned cdtor )            // - CDTOR to be used
 {
-    call_handle handle;         // - call handle
+    call_handle call;           // - call handle
     SYMBOL trans;               // - translated symbol
     SYMBOL bound;               // - bound reference
     target_offset_t bound_off;  // - bound offset
     bool inlined;               // - true ==> inlined dtor call
 
-    handle = initDtorCall( dtor );
+    call = initDtorCall( dtor );
     inlined = CgBackFuncInlined( dtor );
     if( inlined ) {
-        CallStackPush( dtor, handle, TY_POINTER );
+        CallStackPush( dtor, call, TY_POINTER );
         IbpAdd( sym, offset, fctl );
         IbpDefineIndex( 0 );
     }
@@ -661,11 +661,11 @@ cg_name CgDestructSymOffset(    // CONSTRUCT DTOR CALL FOR SYMBOL+OFFSET
         trans = bound;
         offset += bound_off;
     }
-    addDtorArgs( handle, dtor, CgSymbolPlusOffset( trans, offset ), cdtor );
+    addDtorArgs( call, dtor, CgSymbolPlusOffset( trans, offset ), cdtor );
     if( inlined ) {
         CallStackPop();
     }
-    return( finiDtorCall( handle, cdtor ) );
+    return( finiDtorCall( call, cdtor ) );
 }
 
 
@@ -674,11 +674,11 @@ cg_name CgDestructExpr(         // CONSTRUCT DTOR CALL FOR EXPRESSION
     cg_name var,                // - expression to be DTOR'ed
     unsigned cdtor )            // - CDTOR to be used
 {
-    call_handle handle;         // - call handle
+    call_handle call;           // - call handle
 
-    handle = initDtorCall( dtor );
-    addDtorArgs( handle, dtor, var, cdtor );
-    return( finiDtorCall( handle, cdtor ) );
+    call = initDtorCall( dtor );
+    addDtorArgs( call, dtor, var, cdtor );
+    return( finiDtorCall( call, cdtor ) );
 }
 
 
@@ -839,7 +839,7 @@ void CgRtCallInit(              // SET UP A R/T CALL
 
     sym = RunTimeCallSymbol( rt_code );
     def->type = CgTypeOutput( SymFuncReturnType( sym ) );
-    def->handle = CGInitCall( CgSymbol( sym )
+    def->call = CGInitCall( CgSymbol( sym )
                             , def->type
                             , (cg_sym_handle)sym );
 }
@@ -850,7 +850,7 @@ void CgRtParam(                 // SET UP A PARAMETER
     RT_DEF *def,                // - definition for call
     cg_type type )              // - argument type
 {
-    addArgument( def->handle, expr, type );
+    addArgument( def->call, expr, type );
 }
 
 
@@ -873,8 +873,8 @@ void CgRtParamAddrSym(          // SET UP PARAMETER: ADDR( SYMBOL )
 cg_name CgRtCallExec(           // EXECUTE R/T CALL
     RT_DEF *def )               // - definition for call
 {
-    CgBackCallGened( def->handle );
-    return( CgFetchType( CGCall( def->handle ), def->type ) );
+    CgBackCallGened( def->call );
+    return( CgFetchType( CGCall( def->call ), def->type ) );
 }
 
 

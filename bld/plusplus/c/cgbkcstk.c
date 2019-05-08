@@ -44,11 +44,11 @@
 
 typedef struct call_stk CALL_STK;
 struct call_stk                 // CALL_STK -- call stack
-{   call_handle handle;         // - handle for call
-    SYMBOL func;                // - NULL or symbol for scheduled inline call
+{   call_handle     call;       // - handle for call
+    SYMBOL          func;       // - NULL or symbol for scheduled inline call
     target_offset_t adj_this;   // - vfun: "this" adjustment
     target_offset_t adj_retn;   // - vfun: return adjustment
-    cg_type retn_type;          // - cg type of call
+    cg_type         retn_type;  // - cg type of call
 };
 
 static VSTK_CTL stack_calls;    // stack: calls (executed)
@@ -58,14 +58,14 @@ static SYMBOL ind_call_free;    // stack: indirect-calls (popped)
 
 void CallStackPush(             // PUSH CALL STACK
     SYMBOL func,                // - NULL, or inlined function
-    call_handle handle,         // - handle for call
+    call_handle call,           // - handle for call
     cg_type cg_retn )           // - cg type of call
 {
     CALL_STK* curr;             // - entry on call stack
 
     curr = VstkPush( &stack_calls );
     curr->func = func;
-    curr->handle = handle;
+    curr->call = call;
     curr->adj_this = 0;
     curr->adj_retn = 0;
     curr->retn_type = cg_retn;
@@ -75,7 +75,7 @@ void CallStackPush(             // PUSH CALL STACK
 call_handle CallStackPop(       // POP CALL STACK
     void )
 {
-    return( ((CALL_STK*)VstkPop( &stack_calls ))->handle );
+    return( ((CALL_STK*)VstkPop( &stack_calls ))->call );
 }
 
 
@@ -89,7 +89,7 @@ bool CallStackTopInlined(       // TEST IF TOP OF CALL STACK IS INLINED
 call_handle CallStackTopHandle( // GET HANDLE FOR TOP OF CALL STACK
     void )
 {
-    return( ((CALL_STK*)VstkTop( &stack_calls ))->handle );
+    return( ((CALL_STK*)VstkTop( &stack_calls ))->call );
 }
 
 

@@ -125,7 +125,7 @@ static void declareParameter(   // DEFINE A FUNCTION PARAMETER
                 SymbolicDebugGenSymbol( sym, true, cgtype == TY_POINTER );
             }
         }
-        IbpDefineSym( fctl->handle, sym );
+        IbpDefineSym( fctl->call, sym );
     }
 }
 

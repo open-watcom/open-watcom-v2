@@ -46,15 +46,15 @@
 typedef struct ibrp IBRP;
 
 struct ibrp                     // IBRP -- inline bound reference parameters
-{   IBRP *next;                 // - next in ring
-    cg_name handle;             // - handle of called function
-    SYMBOL func;                // - inline function called
-    SYMBOL refed;               // - referenced symbol (caller)
-    target_size_t offset;       // - offset added to reference arg
-    FN_CTL *source;             // - handle of generator of IBRPs
+{   IBRP            *next;      // - next in ring
+    call_handle     call;       // - handle of called function
+    SYMBOL          func;       // - inline function called
+    SYMBOL          refed;      // - referenced symbol (caller)
+    target_size_t   offset;     // - offset added to reference arg
+    FN_CTL          *source;    // - handle of generator of IBRPs
     union {
-        unsigned index;         // - argument # (before inlining)
-        SYMBOL parm;            // - symbol (after IC_FUNCTION_ARGS)
+        unsigned    index;      // - argument # (before inlining)
+        SYMBOL      parm;       // - symbol (after IC_FUNCTION_ARGS)
     } u;
 };
 
@@ -77,7 +77,7 @@ static unsigned parm_no;            // parm # being defined
         printf ( "[%p]%s\n    hdl=%p func=%p refed=%p off=%x parm=%p\n"
                , ibrp
                , text
-               , ibrp->handle
+               , ibrp->call
                , ibrp->func
                , ibrp->refed
                , ibrp->offset
@@ -153,7 +153,7 @@ void IbpAdd(                    // ADD AN IBRP ENTRY
         trans = SymTrans( binding );
     }
     ibrp = RingCarveAlloc( carveIBRP, &ibrps );
-    ibrp->handle = CallStackTopHandle();
+    ibrp->call = CallStackTopHandle();
     ibrp->func = CallStackTopFunction();
     ibrp->refed = trans;
     ibrp->offset = offset;
@@ -164,14 +164,14 @@ void IbpAdd(                    // ADD AN IBRP ENTRY
 
 
 void IbpDefineSym(              // DEFINE SYMBOL FOR BOUND PARAMETER
-    call_handle handle,         // - handle for call
+    call_handle call,           // - handle for call
     SYMBOL sym )                // - the symbol
 {
     IBRP *ibrp;                 // - current inline bound reference parameter
 
-    if( handle != NULL ) {
+    if( call != NULL ) {
         RingIterBeg( ibrps, ibrp ) {
-            if( ( handle == ibrp->handle )
+            if( ( call == ibrp->call )
               &&( parm_no == ibrp->u.index ) ) {
                 ibrp->u.parm = sym;
                 dump_ibrp( ibrp, "IBRP(defined parm)" );
@@ -240,7 +240,7 @@ bool IbpReference(              // LOCATE A BOUND REFERENCE
     ok = false;
     RingIterBeg( ibrps, ibrp ) {
         if( ( sym == ibrp->u.parm )
-          &&( fctl->handle == ibrp->handle ) ) {
+          &&( fctl->call == ibrp->call ) ) {
             *bound = ibrp->refed;
             *offset = ibrp->offset;
             dump_ibrp( ibrp, "IBRP(used)" );

@@ -50,7 +50,7 @@ static unsigned cond_flags_offset;  // offset to be added to conditional flags
 
 
 FN_CTL *FnCtlPush(              // PUSH FILE CONTROL
-    call_handle handle,         // - handle for IBRP substitution
+    call_handle call,           // - handle for IBRP substitution
     CGFILE *cgfile )            // - fn's CGFILE
 {
     FN_CTL *fctl;               // - file control
@@ -62,7 +62,7 @@ FN_CTL *FnCtlPush(              // PUSH FILE CONTROL
         has_cdtor = false;
     } else {
         cond_flags_offset += fctl->cond_flags;
-        has_cdtor = CallStabCdArgGet( handle, &cd_arg );
+        has_cdtor = CallStabCdArgGet( call, &cd_arg );
     }
     fctl = VstkPush( &stack_files );
     // CgBackFnCtlInit inits:
@@ -82,7 +82,7 @@ FN_CTL *FnCtlPush(              // PUSH FILE CONTROL
     fctl->return_label   = UNDEFINED_LABEL;
     fctl->cdarg_lab      = UNDEFINED_LABEL;
     fctl->try_label      = UNDEFINED_LABEL;
-    fctl->handle         = handle;
+    fctl->call           = call;
     fctl->prof_data      = NULL;
     fctl->state_table_bound = NULL;
     fctl->pre_init       = NULL;
@@ -254,7 +254,7 @@ void FnctlDump( void )          // DEBUGGING -- dump stack
               , fctl->return_symbol
               , fctl->this_sym
               , fctl->cdtor_sym
-              , fctl->handle
+              , fctl->call
               , fctl->state_table_bound
               , fctl->pre_init
               , fctl->cond_flags

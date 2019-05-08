@@ -112,7 +112,7 @@ struct throw_ro {                   // THROW_RO -- R/O blocks for thrown types
 typedef target_offset_t STATE_VAR;
 
 typedef struct {                    // RT_DEF -- definitions for a R/T call
-    call_handle handle;             // - call handle
+    call_handle call;               // - call handle
     cg_type     type;               // - type for R/T call
 } RT_DEF;
 
@@ -389,7 +389,7 @@ struct obj_init                     // OBJ_INIT - object being init'ed
 typedef struct call_stab CALL_STAB;
 struct call_stab                        // CALL_STAB - state-table info for call
 {   CALL_STAB       *next;              // - next in ring
-    call_handle     handle;             // - handle for a call
+    call_handle     call;               // - handle for a call
     SE              *se;                // - current state-table position
     unsigned        cd_arg;             // - integral CDTOR arg
     unsigned        has_cd_arg  : 1;    // - "cd_arg" has been defined
@@ -415,7 +415,7 @@ struct fn_ctl                               // FN_CTL -- for each active file in
     label_handle    return_label;           // - return label
     label_handle    cdarg_lab;              // - label for CDARG test
     label_handle    try_label;              // - label at top of try statement
-    call_handle     handle;                 // - handle for IBRP substitution
+    call_handle     call;                   // - handle for IBRP substitution
     back_handle     prof_data;              // - profiling data handle
     SE              *state_table_bound;     // - bounding entry in function state table
     SE              *pre_init;              // - pos'n before symbol initialization
@@ -447,7 +447,7 @@ struct fn_ctl                               // FN_CTL -- for each active file in
 };
 
 typedef struct                      // CTOR_FLAG_SET -- patch entry for ctor flag
-{   patch_handle    ph_clr;         // - handle for clr mask
+{   patch_handle    patch_clr;      // - handle for clr mask
     SE              *se;            // - state entry for CTOR
 } CTOR_FLAG_SET;
 
@@ -533,15 +533,15 @@ void CallIndirectVirtual(       // MARK INDIRECT CALL AS VIRTUAL
     target_offset_t adj_retn )  // - adjustment for return
 ;
 CALL_STAB *CallStabAlloc(       // ALLOCATE CALL_STAB
-    call_handle handle,         // - handle for call
+    call_handle call,           // - handle for call
     FN_CTL *fctl )              // - function hosting the call
 ;
 bool CallStabCdArgGet(          // GET CD-ARG FOR A CALL
-    call_handle handle,         // - handle for call
+    call_handle call,           // - handle for call
     unsigned *a_cd_arg )        // - addr[ value for CD-ARG ]
 ;
 unsigned CallStabCdArgSet(      // SET CD-ARG FOR A CALL
-    call_handle handle,         // - handle for call
+    call_handle call,           // - handle for call
     unsigned cd_arg )           // - value for CD-ARG
 ;
 void CallStabFree(              // FREE CALL_STAB
@@ -549,7 +549,7 @@ void CallStabFree(              // FREE CALL_STAB
     CALL_STAB *cstb )           // - call information
 ;
 SE *CallStabStateTablePosn(     // GET STATE-TABLE POSITION AT CALL POINT
-    call_handle handle )        // - handle for inline call
+    call_handle call )          // - handle for inline call
 ;
 bool CallStackTopInlined(       // TEST IF TOP OF CALL STACK IS INLINED
     void )
@@ -559,7 +559,7 @@ call_handle CallStackPop(       // POP CALL STACK
 ;
 void CallStackPush(             // PUSH CALL STACK
     SYMBOL func,                // - NULL, or inlined function
-    call_handle handle,         // - handle for call
+    call_handle call,           // - handle for call
     cg_type cg_retn )           // - cg type of call
 ;
 target_offset_t CallStackRetnAdj( // GET RETURN ADJUSTMENT FOR VIRTUAL CALL
@@ -595,7 +595,7 @@ cg_name CgAssignStateVar(       // ASSIGN STATE-VAR VALUE
     target_offset_t offset )    // - offset of state variable
 ;
 CALL_STAB *CgBackCallGened(     // SETUP FOR GENERATED CALL
-    call_handle handle )        // - call handle
+    call_handle call )          // - call handle
 ;
 FN_CTL *CgBackFnCtlFini(        // COMPLETE FN_CTL WITH CGBKMAIN INFO
     FN_CTL *fctl )              // - current file information
@@ -652,10 +652,10 @@ void CgCdArgDefine(             // DEFINE CDOPT VALUE
     unsigned value )            // - cdopt value
 ;
 void CgCdArgRemove(             // REMOVE CDTOR ENTRY FOR A CALL-HANDLE
-    call_handle handle )        // - handle for call
+    call_handle call )          // - handle for call
 ;
 void CgCdArgUsed(               // USE A CALL-HANDLE DIRECTLY
-    call_handle handle )        // - handle for call
+    call_handle call )          // - handle for call
 ;
 SYMBOL CgCmdArrayInit(          // GET SYMBOL FOR DTC_ARRAY_INIT COMMAND
     SE *se )                    // - state entry in state table
@@ -1110,7 +1110,7 @@ void FnCtlPop(                  // POP FILE CONTROL
     void )
 ;
 FN_CTL *FnCtlPush(              // PUSH FILE CONTROL
-    call_handle handle,         // - handle for IBRP substitution
+    call_handle call,           // - handle for IBRP substitution
     CGFILE *cgfile )            // - fn's CGFILE
 ;
 FN_CTL *FnCtlPrev(              // GET PREVIOUS FN_CTL ITEM
@@ -1157,7 +1157,7 @@ void FstabEmitStateVarExpr(     // EMIT EXPR'N TO SET STATE VARIABLE, IF REQ'D
     FN_CTL *fctl )              // - function being emitted
 ;
 cg_name FstabEmitStateVarPatch( // EMIT CODE TO PATCH STATE VARIABLE, IF REQ'D
-    patch_handle *a_handle,     // - addr[ handle ]
+    patch_handle *a_patch,      // - addr[ handle ]
     FN_CTL *fctl )              // - function being emitted
 ;
 #if _CPU == _AXP
@@ -1245,7 +1245,7 @@ void IbpDefineParms(            // START DEFINING PARAMETERS
     void )
 ;
 void IbpDefineSym(              // DEFINE SYMBOL FOR BOUND PARAMETER
-    call_handle handle,         // - handle for call
+    call_handle call,           // - handle for call
     SYMBOL sym )                // - the symbol
 ;
 bool IbpEmpty(                  // DEBUG -- verify empty

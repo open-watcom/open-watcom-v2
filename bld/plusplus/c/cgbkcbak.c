@@ -118,9 +118,9 @@ static bool ctorTestReqd(       // TEST IF CTOR-TEST REQUIRED
 
 
 static cg_name emitPatch(       // EMIT A PATCH EXPRESSION
-    patch_handle* a_handle )    // - addr[ patch handle ]
+    patch_handle* a_patch )     // - addr[ patch handle ]
 {
-    return( FstabEmitStateVarPatch( a_handle, FnCtlTop() ) );
+    return( FstabEmitStateVarPatch( a_patch, FnCtlTop() ) );
 }
 
 
@@ -147,7 +147,7 @@ cg_name CgCallBackRight(        // MAKE A RIGHT CALL-BACK
 static cg_name ctorFlagSet(     // SET/RESET CTOR FLAG
     FN_CTL* fctl,               // - function info
     cg_op opcode,               // - set/reset opcode
-    patch_handle* a_ph )        // - addr[ patch_handle ]
+    patch_handle* a_patch )     // - addr[ patch_handle ]
 {
     cg_name         op_flg;                         // - expression for code-gen
     unsigned        idx = FnCtlCondFlagCtor( fctl );// - offset of flag byte
@@ -155,10 +155,10 @@ static cg_name ctorFlagSet(     // SET/RESET CTOR FLAG
 //    unsigned char   bit_mask = BITARR_MASK( idx );  // - mask for byte
 
     op_flg = CgSymbolPlusOffset( FstabRw(), bit_offs + CgbkInfo.size_rw_base );
-    *a_ph = BEPatch();
+    *a_patch = BEPatch();
     op_flg = CGLVPreGets( opcode
                         , op_flg
-                        , CGPatchNode( *a_ph, TY_UINT_1 )
+                        , CGPatchNode( *a_patch, TY_UINT_1 )
                         , TY_UINT_1 );
     return( op_flg );
 }
@@ -174,11 +174,11 @@ static void callBackCtorFlag(   // CALL-BACK FOR CTOR-FLAG AFTER CTORING
         unsigned idx = FnCtlCondFlagCtor( fctl );
 //        size_t bit_offs = BITARR_OFFS( idx );
         unsigned char bit_mask = BITARR_MASK( idx );
-        BEPatchInteger( cfs->ph_clr, NOT_BITARR_MASK( bit_mask ) );
+        BEPatchInteger( cfs->patch_clr, NOT_BITARR_MASK( bit_mask ) );
     } else {
-        BEPatchInteger( cfs->ph_clr, -1 );
+        BEPatchInteger( cfs->patch_clr, -1 );
     }
-    BEFiniPatch( cfs->ph_clr );
+    BEFiniPatch( cfs->patch_clr );
     CarveFree( carve_ctor_flag, cfs );
 }
 
@@ -193,7 +193,7 @@ static cg_name genCtorFlagClr(  // CLEAR CTOR FLAGGING
     if( DtmTabular( fctl ) ) {
         cfs = CarveAlloc( carve_ctor_flag );
         cfs->se = se;
-        expr = CgComma( ctorFlagSet( fctl, O_AND, &cfs->ph_clr ), expr, type );
+        expr = CgComma( ctorFlagSet( fctl, O_AND, &cfs->patch_clr ), expr, type );
         expr = CgCallBackRight( expr, &callBackCtorFlag, cfs, type );
     }
     return( expr );
