@@ -564,9 +564,11 @@ STATIC int findInternal( const char *cmd )
 
     assert( cmd != NULL );
     /* test if of form x: */
-    if( cisalpha( *cmd ) && cmd[1] == ':' && cmd[2] == NULLCHAR ) {
+#ifndef __UNIX__
+    if( cisalpha( cmd[0] ) && cmd[1] == ':' && cmd[2] == NULLCHAR ) {
         return( CNUM );
     }
+#endif
     while( (key = bsearch( &cmd, dosInternals, CNUM, sizeof( char * ), KWCompare )) == NULL ) {
         len = strlen( cmd );
         // should work if buff == cmd (i.e., cd..)
@@ -671,7 +673,7 @@ STATIC RET_T percentWrite( char *arg, enum write_type type )
     if( Glob.noexec ) {
         return( RET_SUCCESS );
     }
-    /* handle LFN */
+    /* handle File name */
     p = CmdGetFileName( arg, &fn, true );
     if( *p != NULLCHAR ) {
         if( !cisws( *p ) ) {
@@ -742,7 +744,7 @@ STATIC RET_T percentErase( char *arg )
     char    *fn;
     char    *p;
 
-    /* handle LFN */
+    /* handle File name */
     p = CmdGetFileName( arg, &fn, true );
     if( *p != NULLCHAR && !cisws( *p ) ) {
         PrtMsg( ERR | SYNTAX_ERROR_IN, percentCmds[PER_RENAME] );
@@ -1069,7 +1071,7 @@ STATIC RET_T handleIf( char *cmd )
             PrtMsg( ERR | SYNTAX_ERROR_IN, dosInternals[COM_IF] );
             return( RET_ERROR );
         }
-        // handle LFN
+        /* handle File name */
         p = CmdGetFileName( p, &tmp2, false );
         if( *p == NULLCHAR ) {
             PrtMsg( ERR | SYNTAX_ERROR_IN, dosInternals[COM_IF] );
@@ -1352,13 +1354,15 @@ STATIC RET_T handleCD( char *cmd )
         return( mySystem( cmd, cmd ) );
     }
 
-    if( p[1] == ':' ) {             /* just a drive: arg, print the cd */
+#ifndef __UNIX__
+    if( cisalpha( p[0] ) && p[1] == ':' ) {             /* just a drive: arg, print the cd */
         if( *SkipWS( p + 2 ) == NULLCHAR ) {
             return( mySystem( cmd, cmd ) );
         }
     }
+#endif
 
-    // handle LFN
+    /* handle File name */
     p = CmdGetFileName( p, &path, true );
     *p = NULLCHAR;      /* terminate path */
     if( chdir( path ) != 0 ) {         /* an error changing path */
@@ -1662,7 +1666,7 @@ STATIC RET_T handleRM( char *cmd )
         return( RET_SUCCESS );
 
     for( rt = getRMArgs( cmd, &flags, &p ); rt == RET_SUCCESS; rt = getRMArgs( NULL, NULL, &p ) ) {
-        // handle LFN
+        /* handle File name */
         p = CmdGetFileName( p, &name, true );
         *p = NULLCHAR;      /* terminate file name */
         if( !processRM( name, &flags ) ) {
@@ -1686,18 +1690,17 @@ STATIC RET_T handleMkdirSyntaxError( void )
 STATIC bool processMkdir( char *path, bool mkparents )
 /****************************************************/
 {
-    struct stat sb;
     char        *p;
     char        save_char;
 
     if( mkparents ) {
         p = path;
-  #ifndef __UNIX__
+#ifndef __UNIX__
         /* special case for drive letters */
         if( cisalpha( p[0] ) && p[1] == ':' ) {
             p += 2;
         }
-  #endif
+#endif
         /* find the next path component */
         while( *p != NULLCHAR ) {
             /* skip initial path separator if present */
@@ -1708,15 +1711,13 @@ STATIC bool processMkdir( char *path, bool mkparents )
             save_char = *p;
             *p = NULLCHAR;
 
-            /* check if pathname exists */
-            if( stat( path, &sb ) == -1 ) {
-                if( MKDIR( path ) ) {
-                    /* Can not create directory */
+            /* create directory */
+            if( MKDIR( path ) ) {
+                /* if exist then continue to next level */
+                if( errno != EEXIST ) {
+                    /* Can not create directory for some reason */
                     return( false );
                 }
-            } else if( !S_ISDIR( sb.st_mode ) ) {   /* make sure it really is a directory */
-                /* Can not create directory, file with the same name already exists */
-                return( false );
             }
             /* put back the path separator */
             *p = save_char;
@@ -1756,7 +1757,7 @@ STATIC RET_T handleMkdir( char *cmd )
         mkparents = true;
         p = SkipWS( p + 1 );
     }
-    // handle LFN
+    /* handle File name */
     p = CmdGetFileName( p, &path, true );
     if( *p != NULLCHAR ) {
         return( handleMkdirSyntaxError() );
@@ -1784,7 +1785,7 @@ STATIC RET_T handleRmdir( char *cmd )
 
     /* find argument after "RMDIR " */
     p = SkipWS( cmd + 6 );
-    // handle LFN
+    /* handle File name */
     p = CmdGetFileName( p, &path, true );
     if( *p != NULLCHAR ) {
         PrtMsg( ERR | SYNTAX_ERROR_IN, dosInternals[COM_RMDIR] );
