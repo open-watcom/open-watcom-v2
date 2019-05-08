@@ -1225,8 +1225,8 @@ cg_type TGType( tn node )
 }
 
 
-tn  TGPatch( patch *hdl, type_def *tipe )
-/****************************************
+tn  TGPatch( patch_handle patch, type_def *tipe )
+/************************************************
     create a patch node for "hdl"
 */
 {
@@ -1236,7 +1236,7 @@ tn  TGPatch( patch *hdl, type_def *tipe )
     node->u2.t.base = NULL;
     node->u2.t.alignment = 0;
     node->u2.t.op = O_NOP;
-    node->u.handle = hdl;
+    node->u.handle = patch;
     node->u2.t.rite = NULL;
     node->kids = 0;
     node->tipe = tipe;

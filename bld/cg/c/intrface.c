@@ -373,52 +373,52 @@ patch_handle _CGAPI     BEPatch( void )
 /*************************************/
 {
 #ifndef NDEBUG
-    patch_handle retn;
+    patch_handle patch;
 
     EchoAPI( "BEPatch()" );
-    retn = BGNewPatch();
-    EchoAPI( " -> %P\n", retn );
-    hdlAdd( PATCH_HANDLE, retn );
+    patch = BGNewPatch();
+    EchoAPI( " -> %P\n", patch );
+    hdlAdd( PATCH_HANDLE, patch );
     return retn;
 #else
     return( BGNewPatch() );
 #endif
 }
 
-cg_name _CGAPI          CGPatchNode( patch_handle hdl, cg_type tipe )
-/*******************************************************************/
+cg_name _CGAPI          CGPatchNode( patch_handle patch, cg_type tipe )
+/*********************************************************************/
 {
 #ifndef NDEBUG
     cg_name retn;
-    EchoAPI( "CGPatchNode( %P, %t )", hdl, tipe );
-    hdlExists( PATCH_HANDLE, hdl );
-    retn = BGPatchNode( hdl, TypeAddress( tipe ) );
+    EchoAPI( "CGPatchNode( %P, %t )", patch, tipe );
+    hdlExists( PATCH_HANDLE, patch );
+    retn = BGPatchNode( patch, TypeAddress( tipe ) );
     hdlAdd( CG_NAMES, retn );
     return EchoAPICgnameReturn( retn );
 #else
-    return( BGPatchNode( hdl, TypeAddress( tipe ) ) );
+    return( BGPatchNode( patch, TypeAddress( tipe ) ) );
 #endif
 }
 
-void _CGAPI     BEPatchInteger( patch_handle hdl, signed_32 value )
-/*****************************************************************/
+void _CGAPI     BEPatchInteger( patch_handle patch, signed_32 value )
+/*******************************************************************/
 {
 #ifndef NDEBUG
-    EchoAPI( "BEPatchInteger( %P, %x )\n", hdl, value );
-    hdlExists( PATCH_HANDLE, hdl );
+    EchoAPI( "BEPatchInteger( %P, %x )\n", patch, value );
+    hdlExists( PATCH_HANDLE, patch );
 #endif
-    BGPatchInteger( hdl, value );
+    BGPatchInteger( patch, value );
 }
 
-void _CGAPI     BEFiniPatch( patch_handle hdl )
-/*********************************************/
+void _CGAPI     BEFiniPatch( patch_handle patch )
+/***********************************************/
 {
 #ifndef NDEBUG
-    EchoAPI( "BEFiniPatch( %P )\n", hdl );
-    hdlUseOnce( PATCH_HANDLE, hdl );
+    EchoAPI( "BEFiniPatch( %P )\n", patch );
+    hdlUseOnce( PATCH_HANDLE, patch );
 #endif
 
-    BGFiniPatch( hdl );
+    BGFiniPatch( patch );
 }
 
 

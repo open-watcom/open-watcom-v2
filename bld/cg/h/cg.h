@@ -87,7 +87,7 @@ typedef struct aux_info     *aux_handle;        /* first parm to FEAuxInfo (some
 typedef struct temp_name    *temp_handle;       /* first parm to FEAuxInfo (sometimes) */
 typedef struct cfloat       *float_handle;      /* for the BF... routines */
 typedef void                *callback_handle;   /* passed to rtn from callback node */
-typedef void                *patch_handle;      /* used to stuff patchable ints into tree */
+typedef struct patch_info   *patch_handle;      /* used to stuff patchable ints into tree */
 
 typedef void                (*cg_callback)( callback_handle );
 
