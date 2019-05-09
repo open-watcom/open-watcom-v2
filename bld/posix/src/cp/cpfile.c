@@ -68,9 +68,9 @@ extern long DosGetFullPath( char __FAR *org, char __FAR *real );
         "int 21h"       \
         "sbb  dx,dx"    \
         "pop  ds"       \
-    __parm      [dx ax] [es di] \
-    __value     [dx ax] \
-    __modify    [si]
+    __parm      [__dx __ax] [__es __di] \
+    __value     [__dx __ax] \
+    __modify    [__si]
 
 /*
  * dosSameFile - DOS specific same file test
