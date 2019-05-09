@@ -167,12 +167,12 @@ void    FCPrologue( void ) {
 static  void    GenTraceback( void ) {
 //==============================
 
-    call_handle         handle;
+    call_handle         call;
 
     if( Options & OPT_TRACE ) {
-        handle = InitCall( RT_SET_MODULE );
-        CGAddParm( handle, CGBackName( TraceEntry, TY_POINTER ), TY_POINTER );
-        CGDone( CGCall( handle ) );
+        call = InitCall( RT_SET_MODULE );
+        CGAddParm( call, CGBackName( TraceEntry, TY_POINTER ), TY_POINTER );
+        CGDone( CGCall( call ) );
     }
 }
 

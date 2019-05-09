@@ -95,19 +95,19 @@ static  void    Break( RTCODE routine ) {
 
 // Process PAUSE/STOP statement.
 
-    call_handle handle;
+    call_handle call;
     sym_id      lit;
     cg_name     arg;
 
-    handle = InitCall( routine );
+    call = InitCall( routine );
     lit = GetPtr();
     if( lit == NULL ) {
         arg = CGInteger( 0, TY_LOCAL_POINTER );
     } else {
         arg = CGBackName( ConstBack( lit ), TY_LOCAL_POINTER );
     }
-    CGAddParm( handle, arg, TY_LOCAL_POINTER );
-    CGDone( CGCall( handle ) );
+    CGAddParm( call, arg, TY_LOCAL_POINTER );
+    CGDone( CGCall( call ) );
 }
 
 

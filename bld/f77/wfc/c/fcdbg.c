@@ -66,13 +66,13 @@ void    FCSetLine( void ) {
 
 // Generate run-time call to ISN routine.
 
-    call_handle handle;
+    call_handle call;
     unsigned_16 line_num;
 
     line_num = GetU16();
     if( ( SubProgId->u.ns.flags & SY_SUBPROG_TYPE ) == SY_BLOCK_DATA )
         return;
-    handle = InitCall( RT_SET_LINE );
-    CGAddParm( handle, CGInteger( line_num, TY_INTEGER ), TY_INTEGER );
-    CGDone( CGCall( handle ) );
+    call = InitCall( RT_SET_LINE );
+    CGAddParm( call, CGInteger( line_num, TY_INTEGER ), TY_INTEGER );
+    CGDone( CGCall( call ) );
 }

@@ -82,7 +82,7 @@ static cg_name  getFlags( sym_id sym ) {
 void            FCAllocate( void ) {
 //============================
 
-    call_handle         handle;
+    call_handle         call;
     sym_id              arr;
     act_dim_list        *dim;
     uint                num;
@@ -122,53 +122,53 @@ void            FCAllocate( void ) {
             expr_stat = XPop();
         }
     }
-    handle = InitCall( RT_ALLOCATE );
+    call = InitCall( RT_ALLOCATE );
     for( ; (arr = SymPop()) != NULL; ) {
         if( arr->u.ns.flags & SY_SUBSCRIPTED ) {
             dim = arr->u.ns.si.va.u.dim_ext;
-            CGAddParm( handle, CGInteger( _SymSize( arr ), TY_INT_4 ), TY_INT_4 );
-            CGAddParm( handle, CGInteger( _DimCount( dim->dim_flags ), TY_INTEGER ), TY_INTEGER );
-            CGAddParm( handle, GetAdv( arr ), TY_LOCAL_POINTER );
+            CGAddParm( call, CGInteger( _SymSize( arr ), TY_INT_4 ), TY_INT_4 );
+            CGAddParm( call, CGInteger( _DimCount( dim->dim_flags ), TY_INTEGER ), TY_INTEGER );
+            CGAddParm( call, GetAdv( arr ), TY_LOCAL_POINTER );
         }
-        CGAddParm( handle, CGFEName( arr, TY_POINTER ), TY_POINTER );
-        CGAddParm( handle, getFlags( arr ), FLAG_PARM_TYPE );
+        CGAddParm( call, CGFEName( arr, TY_POINTER ), TY_POINTER );
+        CGAddParm( call, getFlags( arr ), FLAG_PARM_TYPE );
     }
     if( alloc_flags & ALLOC_NONE ) {
-        CGAddParm( handle, expr_loc, TY_POINTER );
+        CGAddParm( call, expr_loc, TY_POINTER );
     } else {
         if( alloc_flags & ALLOC_LOC ) {
-            CGAddParm( handle, expr_loc, TY_INT_4 );
+            CGAddParm( call, expr_loc, TY_INT_4 );
         }
         if( alloc_flags & ALLOC_STAT ) {
-            CGAddParm( handle, expr_stat, TY_POINTER );
+            CGAddParm( call, expr_stat, TY_POINTER );
         }
     }
-    CGAddParm( handle, CGInteger( num, TY_UNSIGNED ), TY_UNSIGNED );
-    CGAddParm( handle, CGInteger( alloc_flags, TY_UINT_2 ), FLAG_PARM_TYPE );
-    CGDone( CGCall( handle ) );
+    CGAddParm( call, CGInteger( num, TY_UNSIGNED ), TY_UNSIGNED );
+    CGAddParm( call, CGInteger( alloc_flags, TY_UINT_2 ), FLAG_PARM_TYPE );
+    CGDone( CGCall( call ) );
 }
 
 
 void            FCDeAllocate( void ) {
 //==============================
 
-    call_handle         handle;
+    call_handle         call;
     sym_id              arr;
     uint                num;
 
-    handle = InitCall( RT_DEALLOCATE );
+    call = InitCall( RT_DEALLOCATE );
     for( num = 0; (arr = GetPtr()) != NULL; ++num ) {
-        CGAddParm( handle, CGFEName( arr, TY_POINTER ), TY_POINTER );
-        CGAddParm( handle, getFlags( arr ), FLAG_PARM_TYPE );
+        CGAddParm( call, CGFEName( arr, TY_POINTER ), TY_POINTER );
+        CGAddParm( call, getFlags( arr ), FLAG_PARM_TYPE );
     }
-    CGAddParm( handle, CGInteger( num, TY_UNSIGNED ), TY_UNSIGNED );
+    CGAddParm( call, CGInteger( num, TY_UNSIGNED ), TY_UNSIGNED );
     if( GetU16() & ALLOC_STAT ) {
         FCodeSequence();
-        CGAddParm( handle, XPop(), TY_POINTER );
+        CGAddParm( call, XPop(), TY_POINTER );
     } else {
-        CGAddParm( handle, CGInteger( 0, TY_POINTER ), TY_POINTER );
+        CGAddParm( call, CGInteger( 0, TY_POINTER ), TY_POINTER );
     }
-    CGDone( CGCall( handle ) );
+    CGDone( CGCall( call ) );
 }
 
 

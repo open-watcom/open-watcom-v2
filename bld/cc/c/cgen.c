@@ -362,7 +362,7 @@ static void EndFinally( void )
     cg_name      name;
     cg_name      func;
     LABEL_HANDLE label_handle;
-    call_handle  call_list;
+    call_handle  call;
 
     label_handle = BENewLabel();
     name = TryFieldAddr( FLD_unwindflag );
@@ -370,8 +370,8 @@ static void EndFinally( void )
     name = CGCompare( O_EQ, name, CGInteger( 0, TY_UINT_1 ), TY_UINT_1 );
     CGControl( O_IF_TRUE, name, label_handle );
     func = CGFEName( (CGSYM_HANDLE)SymFinally, TY_CODE_PTR );
-    call_list = CGInitCall( func, TY_INTEGER, (CGSYM_HANDLE)SymFinally );
-    CGDone( CGCall( call_list ) );
+    call = CGInitCall( func, TY_INTEGER, (CGSYM_HANDLE)SymFinally );
+    CGDone( CGCall( call ) );
     CGControl( O_LABEL, NULL, label_handle );
     BEFiniLabel( label_handle );
 }
@@ -387,11 +387,11 @@ static cg_name TryAbnormalTermination( void )
 
 static void CallTryRtn( SYM_HANDLE try_rtn, cg_name parm )
 {
-    call_handle call_list;
+    call_handle call;
 
-    call_list = CGInitCall( CGFEName( (CGSYM_HANDLE)try_rtn, TY_POINTER ), TY_INTEGER, (CGSYM_HANDLE)try_rtn );
-    CGAddParm( call_list, parm, TY_POINTER );
-    CGDone( CGCall( call_list ) );
+    call = CGInitCall( CGFEName( (CGSYM_HANDLE)try_rtn, TY_POINTER ), TY_INTEGER, (CGSYM_HANDLE)try_rtn );
+    CGAddParm( call, parm, TY_POINTER );
+    CGDone( CGCall( call ) );
 }
 
 static void CallTryInit( void )
@@ -410,13 +410,13 @@ static void CallTryFini( void )
 
 static void CallTryUnwind( tryindex_t scope_index )
 {
-    call_handle call_list;
+    call_handle call;
     cg_name     parm;
 
-    call_list = CGInitCall( CGFEName( (CGSYM_HANDLE)SymTryUnwind, TY_POINTER ), TY_INTEGER, (CGSYM_HANDLE)SymTryUnwind );
+    call = CGInitCall( CGFEName( (CGSYM_HANDLE)SymTryUnwind, TY_POINTER ), TY_INTEGER, (CGSYM_HANDLE)SymTryUnwind );
     parm = CGInteger( scope_index, TY_UINT_1 );
-    CGAddParm( call_list, parm, TY_INTEGER );
-    CGDone( CGCall( call_list ) );
+    CGAddParm( call, parm, TY_INTEGER );
+    CGDone( CGCall( call ) );
 }
 #endif
 
@@ -782,7 +782,7 @@ static void EmitNodes( TREEPTR tree )
     cg_name     op1;
     cg_name     op2;
     cg_name     expr;
-    call_handle call_list;
+    call_handle call;
     int         index;
     OPNODE      *node;
 
@@ -1021,8 +1021,8 @@ static void EmitNodes( TREEPTR tree )
             PushCGName( InitIndFuncCall( node, op1 ) ); // - push call_handle
             break;
         case OPR_CALL:                  // function call
-            call_list = PopCGName();    // - get call_handle
-            op1 = CGCall( call_list );
+            call = PopCGName();         // - get call_handle
+            op1 = CGCall( call );
             if( node->flags & OPFLAG_RVALUE ) {
                 op1 = CGUnary( O_POINTS, op1, CGenType( node->u2.result_type ) );
             }
@@ -1030,9 +1030,9 @@ static void EmitNodes( TREEPTR tree )
             break;
         case OPR_PARM:                  // function parm
             op1 = PopCGName();          // - get parm
-            call_list = PopCGName();    // - get call_handle
-            CGAddParm( call_list, op1, CGenType( node->u2.result_type ) );
-            PushCGName( call_list );
+            call = PopCGName();         // - get call_handle
+            CGAddParm( call, op1, CGenType( node->u2.result_type ) );
+            PushCGName( call );
             break;
         case OPR_LABEL:                 // label
             CGControl( O_LABEL, NULL, CGLabelHandles[node->u2.label_index] );

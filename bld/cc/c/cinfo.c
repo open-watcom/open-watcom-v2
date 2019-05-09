@@ -228,12 +228,12 @@ static fe_attr FESymAttr( SYMPTR sym )
 }
 
 
-void    FEGenProc( CGSYM_HANDLE hdl, call_handle call_list )
-/**********************************************************/
+void    FEGenProc( CGSYM_HANDLE hdl, call_handle call )
+/*****************************************************/
 {
     SYM_HANDLE      sym_handle = (SYM_HANDLE)hdl;
 
-    /* unused parameters */ (void)call_list;
+    /* unused parameters */ (void)call;
 
     GenInLineFunc( sym_handle );
 }
