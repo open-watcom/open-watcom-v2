@@ -37,7 +37,7 @@ $(DLLNAME).dll : chart.obj $(DLLLNK)
     copy /b $(DLLNAME).dll+$(DLLNAME).sym
     del $(DLLNAME).sym
 !ifneq WIN386 1
-    erase $(DLLNAME).lib
+    %erase $(DLLNAME).lib
     wlib $(DLLNAME).lib +$(DLLNAME).dll
 !endif
 
