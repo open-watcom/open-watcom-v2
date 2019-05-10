@@ -501,6 +501,8 @@ prepare_wgml_opts : .PROCEDURE
 #
 !ifeq hbook c_readme
     @%append $(wgml_optfile) ( passes 3
+!else ifeq hbook cguide
+    @%append $(wgml_optfile) ( passes 3
 !else ifeq hbook cguideq
     @%append $(wgml_optfile) ( passes 3
 !else ifeq hbook guitool
