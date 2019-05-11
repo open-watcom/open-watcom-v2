@@ -35,7 +35,7 @@
 #include "watcom.h"
 #include "helpmem.h"
 #include "helpchar.h"
-#include "uidef.h"
+#include "stdui.h"
 #include "uivedit.h"
 #include "uiledit.h"
 #include "uidialog.h"

@@ -5,7 +5,7 @@ extern char IsWindows( void );
 #pragma aux IsWindows = \
         0xb8 0x00 0x16  /* mov ax,1600h */ \
         0xcd 0x2f       /* int 2f */ \
-        value [al];
+        __value [__al];
 
 main( void )
 {

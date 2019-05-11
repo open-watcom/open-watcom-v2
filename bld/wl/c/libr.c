@@ -48,7 +48,7 @@
 
 #include "clibext.h"
 
-typedef struct omf_dict_entry {
+typedef struct {
     void            **cache;        /* for extra memory store of dictionary */
     long            start;          /* recno of start of dictionary         */
     unsigned        pages;          /* number of pages in dictionary        */
@@ -56,7 +56,7 @@ typedef struct omf_dict_entry {
     unsigned_8      *buffer;
 } omf_dict_entry;
 
-typedef struct ar_dict_entry {
+typedef struct {
     unsigned_32         *filepostab;
     unsigned_16         *offsettab;
     char                **symbtab;
@@ -80,10 +80,10 @@ static  void            SetDict( file_list *, unsigned );
 static void BadLibrary( file_list *list )
 /***************************************/
 {
-    list->file->flags |= INSTAT_IOERR;
+    list->infile->status |= INSTAT_IOERR;
     _LnkFree( list->u.dict );
     list->u.dict = NULL;
-    Locator( list->file->name.u.ptr, NULL, 0 );
+    Locator( list->infile->name.u.ptr, NULL, 0 );
     LnkMsg( ERR+MSG_LIB_FILE_ATTR, NULL );
 }
 
@@ -106,7 +106,7 @@ static int ReadOMFDict( file_list *list, unsigned_8 *header, bool makedict )
         header += sizeof( unsigned_32 );
         omf_dict->pages = _ReadLittleEndian16UN( header );
         header += sizeof( unsigned_16 );
-        if( omf_dict->start == 0 || omf_dict->pages == 0 ) {
+        if( omf_dict->start == 0 || omf_dict->pages == 0 || ( omf_dict->start + omf_dict->pages * DIC_REC_SIZE ) > list->infile->len ) {
             BadLibrary( list );
             return( -1 );
         }
@@ -157,7 +157,7 @@ static void SortARDict( ar_dict_entry *ar_dict )
     }
     // Sort the index table using the corresponding symbol names
     // to determine the sort order (see ARCompI() for more info).
-    if( LinkFlags & CASE_FLAG ) {
+    if( LinkFlags & LF_CASE_FLAG ) {
         qsort( index_tab, d.num_entries, sizeof( index_type ), ARComp );
     } else {
         qsort( index_tab, d.num_entries, sizeof( index_type ), ARCompI );
@@ -327,13 +327,13 @@ static bool ReadARDict( file_list *list, unsigned long *loc, bool makedict )
     }
     if( makedict ) {
         if( numdicts == 0 ) {
-            Locator( list->file->name.u.ptr, NULL, 0 );
+            Locator( list->infile->name.u.ptr, NULL, 0 );
             LnkMsg( ERR+MSG_NO_DICT_FOUND, NULL );
             _LnkFree( list->u.dict );
             list->u.dict = NULL;
             return( false );
         }
-        if( (LinkFlags & CASE_FLAG) == 0 || numdicts == 1 ) {
+        if( (LinkFlags & LF_CASE_FLAG) == 0 || numdicts == 1 ) {
             SortARDict( &list->u.dict->a );
         }
     }
@@ -351,14 +351,14 @@ int CheckLibraryType( file_list *list, unsigned long *loc, bool makedict )
     if( header[0] == 0xf0 && header[1] == 0x01 ) {
         // COFF object for PPC
     } else if( header[0] == LIB_HEADER_REC ) {   // reading from a library
-        list->status |= STAT_OMF_LIB;
+        list->flags |= STAT_OMF_LIB;
         reclength = ReadOMFDict( list, header, makedict );
         if( reclength < 0 ) {
             return( -1 );
         }
         *loc += ROUND_UP( sizeof( lib_header ), reclength );
     } else if( memcmp( header, AR_IDENT, AR_IDENT_LEN ) == 0 ) {
-        list->status |= STAT_AR_LIB;
+        list->flags |= STAT_AR_LIB;
         reclength = 2;
         *loc += AR_IDENT_LEN;
         if( !ReadARDict( list, loc, makedict ) ) {
@@ -381,12 +381,12 @@ mod_entry *SearchLib( file_list *lib, const char *name )
     if( lib->u.dict == NULL ) {
         if( CheckLibraryType( lib, &pos, true ) == -1 )
             return( NULL );
-        if( (lib->status & STAT_IS_LIB) == 0 ) {
+        if( (lib->flags & STAT_IS_LIB) == 0 ) {
             BadLibrary( lib );
             return( NULL );
         }
     }
-    if( lib->status & STAT_OMF_LIB ) {
+    if( lib->flags & STAT_OMF_LIB ) {
         retval = OMFSearchExtLib( lib, name, &pos );
     } else {
         retval = ARSearchExtLib( lib, name, &pos );
@@ -401,8 +401,8 @@ mod_entry *SearchLib( file_list *lib, const char *name )
     obj->name.u.ptr = IdentifyObject( lib, &pos, &dummy );
     obj->location = pos;
     obj->f.source = lib;
-    obj->modtime = lib->file->modtime;
-    obj->modinfo = (lib->status & DBI_MASK) | (ObjFormat & FMT_OBJ_FMT_MASK);
+    obj->modtime = lib->infile->modtime;
+    obj->modinfo = (lib->flags & DBI_MASK) | (ObjFormat & FMT_OBJ_FMT_MASK);
     return( obj );
 }
 
@@ -457,8 +457,8 @@ static void SetDict( file_list *lib, unsigned dict_page )
     unsigned        num_buckets;
     unsigned        residue;
     unsigned        bucket;
-    long   off;
-    long   dictoff;
+    long            off;
+    long            dictoff;
     omf_dict_entry  *dict;
 
     dict = &lib->u.dict->o;
@@ -468,21 +468,21 @@ static void SetDict( file_list *lib, unsigned dict_page )
         residue = pages - num_buckets * PAGES_IN_CACHE;
         dict->cache = AllocDict( num_buckets, residue );
         if( dict->cache != NULL ) {
-            QSeek( lib->file->handle, dict->start, lib->file->name.u.ptr );
+            QSeek( lib->infile->handle, dict->start, lib->infile->name.u.ptr );
             for( bucket = 0; bucket < num_buckets; ++bucket ) {
-                QRead( lib->file->handle, dict->cache[ bucket ], DIC_REC_SIZE * PAGES_IN_CACHE, lib->file->name.u.ptr );
+                QRead( lib->infile->handle, dict->cache[ bucket ], DIC_REC_SIZE * PAGES_IN_CACHE, lib->infile->name.u.ptr );
             }
-            QRead( lib->file->handle, dict->cache[bucket], DIC_REC_SIZE * residue, lib->file->name.u.ptr );
-            lib->file->currpos = dict->start + DIC_REC_SIZE * ( residue + PAGES_IN_CACHE * num_buckets );
+            QRead( lib->infile->handle, dict->cache[bucket], DIC_REC_SIZE * residue, lib->infile->name.u.ptr );
+            lib->infile->currpos = dict->start + DIC_REC_SIZE * ( residue + PAGES_IN_CACHE * num_buckets );
         }
     }
     if( dict->cache == NULL ) {
         off = dict_page * DIC_REC_SIZE;
         dictoff = dict->start + off;
         dict->buffer = (unsigned_8 *)TokBuff;
-        QSeek( lib->file->handle, dictoff, lib->file->name.u.ptr );
-        QRead( lib->file->handle, dict->buffer, DIC_REC_SIZE, lib->file->name.u.ptr );
-        lib->file->currpos = dictoff + DIC_REC_SIZE;
+        QSeek( lib->infile->handle, dictoff, lib->infile->name.u.ptr );
+        QRead( lib->infile->handle, dict->buffer, DIC_REC_SIZE, lib->infile->name.u.ptr );
+        lib->infile->currpos = dictoff + DIC_REC_SIZE;
     } else {
         bucket = dict_page / PAGES_IN_CACHE;
         residue = dict_page - bucket * PAGES_IN_CACHE;
@@ -542,7 +542,7 @@ bool DiscardDicts( void )
     for( curr = ObjLibFiles; curr != NULL; curr = curr->next_file ) {
         if( curr->u.dict == NULL )
             continue;
-        if( curr->status & STAT_AR_LIB )
+        if( curr->flags & STAT_AR_LIB )
             continue;
         if( curr->u.dict->o.cache == NULL )
             continue;
@@ -564,14 +564,14 @@ void BurnLibs( void )
     dict_entry  *dict;
 
     for( temp = ObjLibFiles; temp != NULL; temp = temp->next_file ) {
-        if( temp->status & STAT_AR_LIB ) {
+        if( temp->flags & STAT_AR_LIB ) {
             CacheFree( temp, temp->strtab );
             temp->strtab = NULL;
         }
         dict = temp->u.dict;
         if( dict == NULL )
             continue;
-        if( temp->status & STAT_AR_LIB ) {
+        if( temp->flags & STAT_AR_LIB ) {
             CacheFree( temp, dict->a.filepostab - 1 );
             _LnkFree( dict->a.symbtab );
         } else {
@@ -598,7 +598,7 @@ static unsigned OMFCompName( const char *name, const unsigned_8 *buff, unsigned 
     off = buff[index];
     buff += off * 2;
     len = *buff++;
-    if( LinkFlags & CASE_FLAG ) {
+    if( LinkFlags & LF_CASE_FLAG ) {
         result = memcmp( buff, name, len );
     } else {
         result = memicmp( buff, name, len );
@@ -636,7 +636,7 @@ static bool ARSearchExtLib( file_list *lib, const char *name, unsigned long *off
     unsigned            tabidx;
 
     dict = &lib->u.dict->a;
-    if( LinkFlags & CASE_FLAG ) {
+    if( LinkFlags & LF_CASE_FLAG ) {
         result = bsearch( name, dict->symbtab, dict->num_entries, sizeof( char * ), ARCompName );
     } else {
         result = bsearch( name, dict->symbtab, dict->num_entries, sizeof( char * ), ARCompIName );

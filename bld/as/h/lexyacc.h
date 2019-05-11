@@ -29,6 +29,9 @@
 ****************************************************************************/
 
 
+#define T_EOF       0   /* value used by OW yacc YYEOFTOKEN */
+#define T_ERROR     2   /* value used by OW yacc YYERRTOKEN */
+
 #ifdef _STANDALONE_
 typedef struct {
     int         line;
@@ -36,12 +39,12 @@ typedef struct {
 } fileinfo;
 #endif
 
-extern int      yylex( void );
-extern void     yyerror( char * );
+extern unsigned short   yylex( void );
+extern void             yyerror( char * );
 
-extern int      yylineno;
+extern int              yylineno;
 #ifdef _STANDALONE_
-extern char     *yyfname;
-extern int      CurrLineno;
-extern char     *CurrFilename;
+extern char             *yyfname;
+extern int              CurrLineno;
+extern char             *CurrFilename;
 #endif

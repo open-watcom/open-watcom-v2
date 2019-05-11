@@ -62,7 +62,7 @@ typedef struct {
     char        str[1];
 } string;
 
-static void addCharToString( string **p, char ch )
+static void addCharToString( string **p, int ch )
 {
     string *s = *p;
     if( s->off == s->size ) {
@@ -70,7 +70,7 @@ static void addCharToString( string **p, char ch )
         s = MemRealloc( s, sizeof( string ) + s->size );
         *p = s;
     }
-    s->str[ s->off ] = ch;
+    s->str[ s->off ] = (char)ch;
     s->off++;
 
 }
@@ -142,6 +142,7 @@ static void tailFile( char *fname )
     if( h == -1 ) {
         Die( "Could not open file \"%s\"\n", fname );
     }
+    ch = '\0';
     line = 0;
     pos = lseek( h, -1L, SEEK_END );
     for(;;) {

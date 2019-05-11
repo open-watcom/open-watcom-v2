@@ -37,7 +37,6 @@
 #include "ftnstd.h"
 #include "ftnapi.h"
 
-#include <stddef.h>
 
 extern  int             _grow_handles(int);
 

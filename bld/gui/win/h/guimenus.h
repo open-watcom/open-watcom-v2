@@ -35,17 +35,18 @@
 
 extern void         GUIInitGUIMenuHint( void );
 extern void         GUISetMenu( gui_window *wnd, HMENU hmenu );
-extern bool         GUICreateMenus( gui_window *wnd, int, gui_menu_struct *menu, HMENU *hmenu );
-extern bool         GUIAddToSystemMenu( gui_window *wnd, HWND hwnd, int num_items, gui_menu_struct *menu, gui_create_styles style );
+extern bool         GUICreateMenus( gui_window *wnd, const gui_menu_items *menus, HMENU *hmenu );
+extern bool         GUIAddToSystemMenu( gui_window *wnd, HWND hwnd, const gui_menu_items *menus, gui_create_styles style );
+extern void         GUIAppendSystemMenuItem( HMENU hsysmenu, int menu_idx );
 extern char         *GUIAddCharacter( char *old, int index );
 extern void         GUICreateMenuFlags( gui_menu_styles style, unsigned *, unsigned * );
 extern WPI_MRESULT  GUIProcessMenuSelect( gui_window *wnd, HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, WPI_PARAM2 lparam );
 extern WPI_MRESULT  GUIProcessInitMenuPopup( gui_window *wnd, HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, WPI_PARAM2 lparam );
 extern void         GUISetGUIHint( gui_window *wnd );
-extern bool         GUIEnableSysMenuItem( gui_window *wnd, gui_ctl_id id, bool enable );
+extern bool         GUIEnableSystemMenuItem( gui_window *wnd, gui_ctl_id id, bool enable );
 extern HMENU        GUIGetHMENU( gui_window *wnd );
 extern void         GUIFreePopupList( gui_window *wnd );
-extern HMENU        GUICreateSubMenu( gui_window *wnd, int num, gui_menu_struct *menu, hint_type type );
+extern HMENU        GUICreateSubMenu( gui_window *wnd, const gui_menu_items *menus, hint_type type );
 extern void         GUIDeleteFloatingPopups( gui_window *wnd );
 
 #endif // _GUIMENUS_H_

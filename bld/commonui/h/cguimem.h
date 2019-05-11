@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -29,12 +30,11 @@
 ****************************************************************************/
 
 
-#ifndef _MEM_H_INCLUDED
-#define _MEM_H_INCLUDED
+#ifndef _CGUIMEM_H_INCLUDED
+#define _CGUIMEM_H_INCLUDED
 
 void    MemFree( void *ptr );
 void    *MemAlloc( size_t size );
-void    *MemReAlloc( void *ptr, size_t size );
-void    MemStart( void );
+void    *MemRealloc( void *ptr, size_t size );
 
-#endif /* _MEM_H_INCLUDED */
+#endif /* _CGUIMEM_H_INCLUDED */

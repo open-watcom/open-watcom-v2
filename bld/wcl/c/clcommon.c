@@ -246,7 +246,7 @@ char *MemStrLenDup( const char *str, size_t len )
 }
 #endif
 
-void  *MemReAlloc( void *p, size_t size )
+void  *MemRealloc( void *p, size_t size )
 /***************************************/
 {
     void        *ptr;

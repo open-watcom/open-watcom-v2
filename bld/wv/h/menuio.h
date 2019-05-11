@@ -30,9 +30,9 @@
 ****************************************************************************/
 
 
-MENU_ITEM( MENU_IO_MODIFY,      XModify_  )
-MENU_ITEM( MENU_IO_NEW_ADDRESS, XNew_ )
-MENU_ITEM( MENU_IO_DELETE,      XDelete )
-MENU_ITEM( MENU_IO_READ,        XRead  )
-MENU_ITEM( MENU_IO_WRITE,       XWrite  )
-MENU_CASCADE( MENU_IO_TYPE,     XType, DummyMenu  )
+MENU_ITEM( MENU_IO_MODIFY,          XModify_  )
+MENU_ITEM( MENU_IO_NEW_ADDRESS,     XNew_ )
+MENU_ITEM( MENU_IO_DELETE,          XDelete )
+MENU_ITEM( MENU_IO_READ,            XRead  )
+MENU_ITEM( MENU_IO_WRITE,           XWrite  )
+MENU_CASCADE_DUMMY( MENU_IO_TYPE,   XType  )

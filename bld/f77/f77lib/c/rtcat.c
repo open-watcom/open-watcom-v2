@@ -35,9 +35,8 @@
 //
 
 #include "ftnstd.h"
-#include "rtenv.h"
-
 #include <string.h>
+#include "rtenv.h"
 
 
 void    TCat( uint num_args, string *dest, ... ) {

@@ -60,15 +60,15 @@ additional_cleanup_sys = *.pdb
 ############################
 common_cppflags = -D__FLAT__
 
-common_cppflags_nt = -D__NT__
+common_cppflags_nt  = -D__NT__
 
-common_cppflags_386  = -D__386__
-common_cppflags_x64  =
+common_cppflags_386 = -D__386__
+common_cppflags_x64 =
 
 common_cppflags_nt_386  = -D__NT_386__
 common_cppflags_nt_x64  = -D__NT_X64__
 
-# common release/debug flags
+# common release/debug options
 !ifdef __INTEL_TOOLS__
 common_flags_rel = -Ox -Zi -fast
 common_flags_dbg = -Zi -fast
@@ -101,9 +101,13 @@ common_ldflags = $(common_ldflags_rel)
 common_ldflags = $(common_ldflags_dbg)
 !endif
 
-# Flags for building DLLs
+# Options for building DLLs
 common_cflags_lib_shared  = -LD
 common_clflags_lib_shared = -MT -LD
+
+# Target specific options
+target_cflags_386   =
+target_cflags_x64   =
 
 # DLL/shared library file extension
 ext_lib_shared = .dll
@@ -151,9 +155,9 @@ bld_cxx_flags = -EHsc
 bld_ldflags1 = $(common_ldflags) -Fm
 
 bld_ldflags  =  -link -nologo &
-    -INCREMENTAL:NO -DEFAULTLIB:user32.lib -DEFAULTLIB:ole32.lib -DEFAULTLIB:advapi32.lib &
-    -DEFAULTLIB:shell32.lib -DEFAULTLIB:gdi32.lib -DEFAULTLIB:comdlg32.lib $(bld_extra_ldflags) &
-    $(bld_ldflags_$(proj_type))
+    -MAPINFO:EXPORTS -INCREMENTAL:NO -DEFAULTLIB:user32.lib -DEFAULTLIB:ole32.lib &
+    -DEFAULTLIB:advapi32.lib -DEFAULTLIB:shell32.lib -DEFAULTLIB:gdi32.lib -DEFAULTLIB:comdlg32.lib &
+    $(bld_extra_ldflags) $(bld_ldflags_$(proj_type))
 
 # options for linking via cl
 bld_clflags  = $(bld_cppflags) $(common_cflags) $(common_flags) -Fe$@ $(cl_extra_libs_gen) $(bld_ldflags1)
@@ -183,8 +187,8 @@ cppflags_x64 = $(common_cppflags_x64) $(common_cppflags_$(host_os)_x64)
 c_flags   =
 cxx_flags = -EHsc
 
-cflags_gen  = $(bld_cc_sys) $(common_cflags) $(common_flags) -Fo$@
-cflags_dll  = $(bld_cc_sys) $(common_cflags) $(common_flags) $(common_cflags_lib_shared) -Fo$@
+cflags_gen  = $(bld_cc_sys) $(common_cflags) $(target_cflags_$(bld_cpu)) $(common_flags) -Fo$@
+cflags_dll  = $(bld_cc_sys) $(common_cflags) $(target_cflags_$(bld_cpu)) $(common_flags) $(common_cflags_lib_shared) -Fo$@
 cflags_wind = $(cflags_gen)
 
 # options for linking
@@ -278,7 +282,7 @@ common_cppflags_osx_x64     = -D__OSX_X64__
 common_cppflags_osx_ppc     =
 common_cppflags_osx_arm     = -D__OSX_ARM__
 
-# common release/debug flags
+# common release/debug options
 common_flags_rel = -O -g
 common_flags_dbg = -g
 !ifeq release 1
@@ -303,9 +307,16 @@ common_ldflags = $(common_ldflags_rel)
 common_ldflags = $(common_ldflags_dbg)
 !endif
 
-# Flags for building DLLs
+# Options for building DLLs
 common_cflags_lib_shared  = -fPIC
 common_clflags_lib_shared = -shared
+
+# Target specific options
+target_cflags_386   =
+target_cflags_x64   = -march=core2
+target_cflags_ppc   =
+target_cflags_mps   =
+target_cflags_arm   =
 
 # DLL/shared library file extension
 ext_lib_shared = .so
@@ -412,8 +423,8 @@ cppflags_arm    = $(common_cppflags_arm) $(common_cppflags_$(host_os)_arm)
 c_flags   =
 cxx_flags = -std=c++98
 
-cflags_gen  = $(bld_cc_sys) $(common_cflags) $(common_flags) -o $@
-cflags_dll  = $(bld_cc_sys) $(common_cflags) $(common_flags) $(common_cflags_lib_shared) -o $@
+cflags_gen  = $(bld_cc_sys) $(common_cflags) $(target_cflags_$(bld_cpu)) $(common_flags) -o $@
+cflags_dll  = $(bld_cc_sys) $(common_cflags) $(target_cflags_$(bld_cpu)) $(common_flags) $(common_cflags_lib_shared) -o $@
 cflags_wind = $(cflags_gen)
 
 # options for linking

@@ -72,7 +72,7 @@ global mad_radix        CurrRadix;
 
 global unsigned         InvCount;
 
-global update_list      UpdateFlags;
+global update_flags     UpdateFlags;
 
 global unsigned long    MemSize;
 

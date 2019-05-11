@@ -32,6 +32,7 @@
 #define NITER   50              /* 50 */
 #define SIZE    8190            /* 8190 */
 
+#ifdef __WATCOMC__
 extern void _test_486( void );
 #pragma aux _test_486 = \
         0xeb 0x04       /* jmp L1 */ \
@@ -39,6 +40,7 @@ extern void _test_486( void );
         0x0f 0x09       /* wbinvd */ \
                         /* L1: */ \
         parm caller;
+#endif
 
 void    set_false( int k );
 int     fetch( int argc, char **argv );

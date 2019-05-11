@@ -60,8 +60,7 @@ typedef unsigned char   bool;
 #define _min( x, y ) ( ( (x) > (y) ) ? (y) : (x) )
 
 extern void debugger_int( void );
-#pragma aux debugger_int = \
-    "int 3H";
+#pragma aux debugger_int = "int 3h"
 
 #endif
 

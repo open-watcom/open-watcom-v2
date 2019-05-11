@@ -37,13 +37,13 @@
 #include <string.h>
 #include "bool.h"
 #include "pmdbg.h"
-#include "const.h"
-#include "intdlg.h"
-#include "stat.h"
-#include "stackt.h"
-#include "drwatlog.h"
-#include "dmptask.h"
-#include "taskctl.h"
+#include "const.rh"
+#include "intdlg.rh"
+#include "stat.rh"
+#include "stackt.rh"
+#include "drwatlog.rh"
+#include "dmptask.rh"
+#include "taskctl.rh"
 #include "cguimem.h"
 #include "mythelp.h"
 #include "types.h"
@@ -54,7 +54,7 @@
 #include "di386cli.h"
 #include "rcstr.gh"
 #include "ldstr.h"
-#include "dbgopt.h"
+#include "dbgopt.rh"
 #include "rvalue.h"
 #include "listbox.h"
 
@@ -201,7 +201,7 @@ bool DoGlobalEntryModule( GLOBALENTRY *ge, HMODULE hmod, WORD seg );
 bool DoGlobalEntryHandle( GLOBALENTRY *ge, HANDLE hmem );
 
 /* winmain.c */
-#pragma aux Death aborts;
+#pragma aux Death __aborts;
 void Death( msg_id msgid, ... );
 
 /* winproc.c */

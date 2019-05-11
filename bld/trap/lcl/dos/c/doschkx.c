@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -24,7 +25,7 @@
 *
 *  ========================================================================
 *
-* Description:  Check DOS memory blocks for consistency.
+* Description:  DOS memory Swap handling
 *
 ****************************************************************************/
 
@@ -40,25 +41,22 @@
 
 #define CHECK_FILE          "___CHK.MEM"
 
-#define FILE_BLOCK_SIZE     0x8000
 #define TINY_HANDLE_NULL    ((tiny_handle_t)-1)
 
 static char                 *fullName = NULL;
-static tiny_handle_t        fileHandle = TINY_HANDLE_NULL;
 
-void XcleanUp( where_parm where )
+void XchkDeleteFile( void )
 {
-    TinyClose( fileHandle );
-    fileHandle = TINY_HANDLE_NULL;
     TinyDelete( fullName );
     fullName = NULL;
 }
 
-bool XchkOpen( where_parm where, char *f_buff )
+tiny_handle_t XchkOpenFile( char *f_buff )
 {
     tiny_ret_t      rc;
+    tiny_handle_t   filehandle;
 
-    fileHandle = TINY_HANDLE_NULL;
+    filehandle = TINY_HANDLE_NULL;
     if( f_buff != NULL ) {
         fullName = f_buff;
         *f_buff++ = TinyGetCurrDrive() + 'A';
@@ -76,50 +74,19 @@ bool XchkOpen( where_parm where, char *f_buff )
             memcpy( f_buff, CHECK_FILE, sizeof( CHECK_FILE ) );
             rc = TinyCreate( fullName, TIO_NORMAL );
             if( TINY_OK( rc ) ) {
-                fileHandle = TINY_INFO( rc );
+                filehandle = TINY_INFO( rc );
             }
         }
-        if( fileHandle == TINY_HANDLE_NULL ) {
+        if( filehandle == TINY_HANDLE_NULL ) {
             fullName = NULL;
         }
     } else {
         if( fullName != NULL ) {
             rc = TinyOpen( fullName, TIO_READ );
             if( TINY_OK( rc ) ) {
-                fileHandle = TINY_INFO( rc );
+                filehandle = TINY_INFO( rc );
             }
         }
     }
-    return( fileHandle != TINY_HANDLE_NULL );
-}
-
-void XchkClose( where_parm where )
-{
-    TinyClose( fileHandle );
-    fileHandle = TINY_HANDLE_NULL;
-}
-
-bool XchkWrite( where_parm where, __segment buff, unsigned *size )
-{
-    tiny_ret_t      rc;
-    unsigned        bytes;
-
-    if( *size >= 0x1000 ) {
-        *size = FILE_BLOCK_SIZE >> 4;
-    }
-    bytes = *size << 4;
-    rc = TinyFarWrite( fileHandle, MK_FP( buff, 0 ), bytes );
-    return( TINY_OK( rc ) && TINY_INFO( rc ) == bytes );
-}
-
-bool XchkRead( where_parm where, __segment *buff )
-{
-    tiny_ret_t      rc;
-
-    rc = TinyFarRead( fileHandle, MK_FP( *buff, 0 ), FILE_BLOCK_SIZE );
-    if( TINY_ERROR( rc ) || TINY_INFO( rc ) != FILE_BLOCK_SIZE ) {
-        return( false );
-    }
-    *buff += FILE_BLOCK_SIZE >> 4;
-    return( true );
+    return( filehandle );
 }

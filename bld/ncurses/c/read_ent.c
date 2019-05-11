@@ -63,6 +63,12 @@ MODULE_ID("$Id: read_entry.c,v 1.72 2000/12/10 02:55:08 tom Exp $")
 #define IS_NEG2(p)      ((BYTE(p,0) == 0376) && (BYTE(p,1) == 0377))
 #define LOW_MSB(p)      (BYTE(p,0) + 256*BYTE(p,1))
 
+#define IS_TIC_MAGIC(p) (LOW_MSB(p) == MAGIC || LOW_MSB(p) == MAGIC2)
+
+#define MAX_ENTRY_SIZE  MAX_ENTRY_SIZE1
+
+#define MAX_OF_TYPE(t)  (t)(((unsigned t)(~0))>>1)
+
 static bool have_tic_directory = false;
 static bool keep_tic_directory = false;
 
@@ -101,17 +107,43 @@ _nc_keep_tic_dir(const char *path)
 }
 
 static void
-convert_shorts(char *buf, short *Numbers, int count)
+convert_16bits(char *buf, short *Numbers, int count)
 {
     int i;
+
     for (i = 0; i < count; i++) {
-        if (IS_NEG1(buf + 2 * i))
+        Numbers[i] = (short) LOW_MSB(buf + 2 * i);
+        TR(TRACE_DATABASE, ("Numbers[%d]=%d", i, Numbers[i]));
+    }
+}
+
+static void
+convert_32bits(char *buf, short *Numbers, int count)
+{
+    int i;
+    int j;
+    unsigned char ch;
+
+    for (i = 0; i < count; i++) {
+#ifdef _M_I86
+        long value = 0;
+#else
+        int value = 0;
+#endif
+        for (j = 0; j < 4; ++j) {
+            ch = UChar(*buf++);
+            value |= (ch << (8 * j));
+        }
+        if( value == ABSENT_NUMERIC ) {
             Numbers[i] = ABSENT_NUMERIC;
-        else if (IS_NEG2(buf + 2 * i))
+        } else if( value == CANCELLED_NUMERIC ) {
             Numbers[i] = CANCELLED_NUMERIC;
-        else
-            Numbers[i] = LOW_MSB(buf + 2 * i);
-        TR(TRACE_DATABASE, ("get Numbers[%d]=%d", i, Numbers[i]));
+        } else if( value > MAX_OF_TYPE( short ) ) {
+            Numbers[i] = MAX_OF_TYPE( short );
+        } else {
+            Numbers[i] = value;
+        }
+        TR(TRACE_DATABASE, ("Numbers[%d]=%d", i, Numbers[i]));
     }
 }
 
@@ -147,6 +179,8 @@ convert_strings(char *buf, char **Strings, int count, int size, char *table)
 
 #define read_shorts(fd, buf, count) (read(fd, buf, (count)*2) == (count)*2)
 
+#define read_numbers(fd, buf, count) (read(fd, buf, (count)*(unsigned)size_of_numbers) == (count)*size_of_numbers)
+
 #define even_boundary(value) \
     if ((value) % 2 != 0) read(fd, buf, 1)
 
@@ -156,8 +190,12 @@ read_termtype(int fd, TERMTYPE * ptr)
 {
     int name_size, bool_count, num_count, str_count, str_size;
     int i;
-    char buf[MAX_ENTRY_SIZE];
+    char buf[MAX_ENTRY_SIZE + 2];
     unsigned read_size;
+    bool need_ints;
+    void (*convert_numbers) (char *, short *, int);
+    int size_of_numbers;
+    int max_entry_size;
 
     TR(TRACE_DATABASE, ("READ termtype header @%d", tell(fd)));
 
@@ -165,8 +203,18 @@ read_termtype(int fd, TERMTYPE * ptr)
 
     /* grab the header */
     if (!read_shorts(fd, buf, 6)
-        || LOW_MSB(buf) != MAGIC) {
+        || !IS_TIC_MAGIC(buf)) {
         return (0);
+    }
+
+    if (need_ints = (LOW_MSB(buf) == MAGIC2)) {
+        max_entry_size = MAX_ENTRY_SIZE;
+        size_of_numbers = 4;
+        convert_numbers = convert_32bits;
+    } else {
+        max_entry_size = MAX_ENTRY_SIZE1;
+        size_of_numbers = 2;
+        convert_numbers = convert_16bits;
     }
 
     _nc_free_termtype(ptr);
@@ -190,7 +238,7 @@ read_termtype(int fd, TERMTYPE * ptr)
 
     if (str_size) {
         /* try to allocate space for the string table */
-        if (str_count * 2 >= (int) sizeof(buf)
+        if (str_count * 2 >= max_entry_size
             || (ptr->str_table = typeMalloc(char, (unsigned) str_size)) == 0) {
             return (0);
         }
@@ -204,6 +252,7 @@ read_termtype(int fd, TERMTYPE * ptr)
         read_size = MAX_NAME_SIZE;
     read(fd, buf, read_size);
     buf[MAX_NAME_SIZE] = '\0';
+    TR(TRACE_DATABASE, ("TERMTYPE Name = %s", buf));
     ptr->term_names = typeCalloc(char, strlen(buf) + 1);
     if (ptr->term_names == NULL) {
         return (0);
@@ -216,7 +265,7 @@ read_termtype(int fd, TERMTYPE * ptr)
     i = bool_count;
     if( i < BOOLCOUNT )
         i = BOOLCOUNT;
-    if( (ptr->Booleans = typeCalloc( char, i )) == 0
+    if( (ptr->Booleans = typeCalloc( NCURSES_SBOOL, i )) == 0
         || read(fd, ptr->Booleans, (unsigned) bool_count) < bool_count) {
         return (0);
     }
@@ -234,10 +283,10 @@ read_termtype(int fd, TERMTYPE * ptr)
     if( i < NUMCOUNT )
         i = NUMCOUNT;
     if( (ptr->Numbers = typeCalloc( short, i )) == 0
-        || !read_shorts(fd, buf, num_count)) {
+        || !read_numbers(fd, buf, num_count)) {
         return (0);
     }
-    convert_shorts(buf, ptr->Numbers, num_count);
+    convert_numbers(buf, ptr->Numbers, num_count);
     i = str_count;
     if( i < STRCOUNT )
         i = STRCOUNT;
@@ -274,9 +323,9 @@ read_termtype(int fd, TERMTYPE * ptr)
         int need = (ext_bool_count + ext_num_count + ext_str_count);
         int base = 0;
 
-        if (need >= (int) sizeof(buf)
-            || ext_str_size >= (int) sizeof(buf)
-            || ext_str_limit >= (int) sizeof(buf)
+        if (need >= (max_entry_size / 2)
+            || ext_str_size >= max_entry_size
+            || ext_str_limit >= max_entry_size
             || ext_bool_count < 0
             || ext_num_count < 0
             || ext_str_count < 0
@@ -288,7 +337,7 @@ read_termtype(int fd, TERMTYPE * ptr)
         ptr->num_Numbers = NUMCOUNT + ext_num_count;
         ptr->num_Strings = STRCOUNT + ext_str_count;
 
-        ptr->Booleans = typeRealloc(char, ptr->num_Booleans, ptr->Booleans);
+        ptr->Booleans = typeRealloc(NCURSES_SBOOL, ptr->num_Booleans, ptr->Booleans);
         ptr->Numbers = typeRealloc(short, ptr->num_Numbers, ptr->Numbers);
         ptr->Strings = typeRealloc(char *, ptr->num_Strings, ptr->Strings);
 
@@ -308,13 +357,16 @@ read_termtype(int fd, TERMTYPE * ptr)
         TR(TRACE_DATABASE, ("READ %d extended-numbers @%d",
                             ext_num_count, tell(fd)));
         if ((ptr->ext_Numbers = ext_num_count) != 0) {
-            if (!read_shorts(fd, buf, ext_num_count))
+            if (!read_numbers(fd, buf, ext_num_count))
                 return (0);
             TR(TRACE_DATABASE, ("Before converting extended-numbers"));
-            convert_shorts(buf, ptr->Numbers + NUMCOUNT, ext_num_count);
+            convert_numbers(buf, ptr->Numbers + NUMCOUNT, ext_num_count);
         }
 
         TR(TRACE_DATABASE, ("READ extended-offsets @%d", tell(fd)));
+        if ((ext_str_count + need) >= (max_entry_size / 2)) {
+            return (0);
+        }
         if ((ext_str_count || need)
             && !read_shorts(fd, buf, ext_str_count + need))
             return (0);
@@ -350,6 +402,9 @@ read_termtype(int fd, TERMTYPE * ptr)
         }
 
         if (need) {
+            if (ext_str_count >= (max_entry_size / 2)) {
+                  return (0);
+            }
             if ((ptr->ext_Names = typeCalloc(char *, need)) == 0)
                   return (0);
             TR(TRACE_DATABASE,

@@ -36,12 +36,11 @@ using std::va_list;
 :include cpluspro.sp
 
 :endsegment
+:include _valist.sp
+
 :include valist.sp
 
-:include nsstd.sp
-typedef __va_list va_list;
-:include nsstdepi.sp
-
+:segment !INTEL_ONLY
 #ifdef __AXP__
  #define _AXP_WORD_SIZE     8
  #define _AXP_FLOAT_SIZE    8
@@ -58,7 +57,7 @@ typedef __va_list va_list;
              ((sizeof(__type)+_AXP_WORD_SIZE-1)&~(_AXP_WORD_SIZE-1))))))
  #define va_end(__ap)           ((void)0)
 #elif defined(__PPC__)
-:segment DOS | RDOS
+:segment DOS
  #ifdef __NT__
   #define _INTSIZEOF(__n)       ((sizeof(__n) + sizeof(int) - 1) & ~(sizeof(int) - 1))
   #define _ALIGNIT(__ap,__t)    ((((int)(__ap))+(sizeof(__t)<8?3:7)) & (sizeof(__t)<8?~3:~7))
@@ -71,7 +70,7 @@ typedef __va_list va_list;
   #pragma intrinsic(__builtin_va_start)
   #define va_start(__ap,__pn)   (__builtin_va_start(&__ap,__pn))
   #define va_arg(__ap,__type)   (__builtin_va_arg(&__ap,__type))
-:segment DOS | RDOS
+:segment DOS
  #endif
 :endsegment
 #elif defined(__MIPS__)
@@ -84,8 +83,9 @@ typedef __va_list va_list;
      (*(__type *)((__ap).__base+(__ap).__offset-\
        (((sizeof(__type)+_MIPS_WORD_SIZE-1)&~(_MIPS_WORD_SIZE-1))))))
  #define va_end(__ap)           ((void)0)
-#else
-:segment DOS | QNX | RDOS
+#elif defined(_M_IX86)
+:endsegment
+:segment BITS16
  #if defined(__HUGE__) || defined(__SW_ZU)
 :elsesegment
  #ifdef __SW_ZU
@@ -104,14 +104,21 @@ typedef __va_list va_list;
       (*(__type *)((__ap)[0]-((sizeof(__type)+sizeof(int)-1)&~(sizeof(int)-1)))))
   #define va_end(__ap)          ((__ap)[0]=0,(void)0)
  #endif
+:segment !INTEL_ONLY
 #endif
+:endsegment
 
+:segment !INTEL_ONLY
 :: define __va_copy even if -za is used
 #if defined(__PPC__) || defined(__AXP__)
  #define __va_copy(__dest,__src)    ((__dest)=(__src),(void)0)
 #else
+:endsegment
+:: _M_IX86 and __MIPS__
  #define __va_copy(__dest,__src)    ((__dest)[0]=(__src)[0],(void)0)
+:segment !INTEL_ONLY
 #endif
+:endsegment
 
 :: Extensions section (C99 va_copy definition)
 :include ext.sp

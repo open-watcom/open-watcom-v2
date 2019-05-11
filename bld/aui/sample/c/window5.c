@@ -92,8 +92,7 @@ static wnd_info W5Info = {
     NoNumRows,
     NoNextRow,
     NoNotify,
-    NULL,
-    0,
+    NoChkUpdate,
     NoPopUp
 };
 

@@ -11,5 +11,5 @@ target_os  = linux
 srv     = lcl
 which   = TRAP
 
-!include $(trap_dir)/lcl/linux/trap.mif
+!include $(trap_dir)/lcl/linux/linux.mif
 !include $(trap_dir)/master.mif

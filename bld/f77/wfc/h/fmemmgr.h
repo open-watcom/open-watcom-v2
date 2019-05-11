@@ -29,8 +29,6 @@
 ****************************************************************************/
 
 
-#include <stdlib.h>
-
 extern void     FMemInit( void );
 extern void     FMemFini( void );
 extern void     *FMemAlloc( size_t size );

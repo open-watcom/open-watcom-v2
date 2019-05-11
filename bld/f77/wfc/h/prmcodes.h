@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -35,14 +36,8 @@
 //
 
 typedef enum {
-  PC_CONST,             //  Non-modifiable argument. Passed by value.
-  PC_VARIABLE,          //  Simple variable name.
-  PC_ARRAY_ELT,         //  Array element.
-  PC_SS_ARRAY,          //  Substrung array element.
-  PC_ARRAY_NAME,        //  Array name.
-  PC_PROCEDURE,         //  Subprogram name. function/subroutine established
-  PC_FN_OR_SUB,         //  Subprogram name. could be function or subroutine
-  PC_STATEMENT,         //  Alternate return specifier.
-  PC_RESULT,            //  Expected result type of subprogram.
-  PC_PROC_FAR16 = 0x80
+    #define pick(en,text)  en,
+    #include "_prmcode.h"
+    #undef pick
+    PC_PROC_FAR16 = 0x80
 } PCODE;

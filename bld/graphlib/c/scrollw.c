@@ -31,7 +31,7 @@
 
 #include "gdefn.h"
 #if !defined( _DEFAULT_WINDOWS )
-#include <malloc.h>
+#include "walloca.h"
 #include "gbios.h"
 #include "stkavail.h"
 #include "picdef.h"

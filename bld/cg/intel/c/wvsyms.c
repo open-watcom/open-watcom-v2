@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -58,20 +58,20 @@ static  void    DumpDbgBlkStart( dbg_block *blk, offset lc ) {
 
     block_patch *bpatch;
     offset      off;
-    segment_id  old;
+    segment_id  old_segid;
 
-    old = SetOP( UNDEFSEG );
+    old_segid = AskOP();
     while( blk->patches != NULL ) {
         bpatch = blk->patches;
         blk->patches = bpatch->link;
-        SetOP( bpatch->patch.segment );
+        SetOP( bpatch->patch.segid );
         off = AskLocation();
         SetLocation( bpatch->patch.offset );
         DataShort( off );
         SetLocation( off );
         CGFree( bpatch );
     }
-    SetOP( old );
+    SetOP( old_segid );
     BuffOffset( blk->start - CodeOffset );
     BuffOffset( lc - blk->start );
 }
@@ -173,7 +173,7 @@ void    WVSetBase( void )
 
     if( _IsModel( DBG_LOCALS ) && NeedBaseSet() ) {
         bck = BENewBack( NULL );
-        bck->seg = AskOP();
+        bck->segid = AskOP();
         OutLabel( bck->lbl );
         CodeOffset = AskAddress( bck->lbl );
         BuffStart( &temp, NEW_BASE+SET_BASE );
@@ -232,12 +232,12 @@ void    WVRtnEnd( dbg_rtn *rtn, offset lc )
     cg_sym_handle       sym;
     dbg_type            tipe;
     offset              off;
-    segment_id          old;
+    segment_id          old_segid;
 
     off = 0;
     if( rtn->obj_type != DBG_NIL_TYPE ) {
         /* is a member function */
-        old = SetOP( DbgLocals );
+        old_segid = SetOP( DbgLocals );
         off = AskLocation();
         BuffStart( &temp, SYM_CODE + CODE_MEMBER_SCOPE );
         DumpParentPtr( rtn->blk );
@@ -247,7 +247,7 @@ void    WVRtnEnd( dbg_rtn *rtn, offset lc )
             LocDump( rtn->obj_loc );
         }
         BuffEnd( DbgLocals );
-        SetOP( old );
+        SetOP( old_segid );
     }
     sym = AskForLblSym( CurrProc->label );
     tipe = FEDbgType( sym );

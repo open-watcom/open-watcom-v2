@@ -44,7 +44,7 @@
 // section layout for OWL
 typedef struct section_def {
     struct section_def  *next;
-    segment_id          id;
+    segment_id          segid;
     owl_func_handle     func;
     int                 line;
     int                 start;
@@ -52,8 +52,8 @@ typedef struct section_def {
     int                 is_start;
 } section_def;
 
-extern section_def          *FindSection( segment_id id );
-extern section_def          *AddSection( segment_id id );
+extern section_def          *FindSection( segment_id segid );
+extern section_def          *AddSection( segment_id segid );
 extern owl_section_handle   DbgSectDefComdat( const char *str );
 extern segment_id           DbgSegDef( const char *sect_name );
 
@@ -63,7 +63,7 @@ extern void                 OutFuncEnd( offset end );
 extern void                 ObjBytes( const void *buffer, unsigned size );
 extern void                 AlignObject( unsigned align );
 extern void                 OutReloc( label_handle label, owl_reloc_type tipe, unsigned offset );
-extern void                 OutSegReloc( label_handle label, segment_id seg );
+extern void                 OutSegReloc( label_handle label, segment_id segid );
 extern void                 OutPDataRec( label_handle label, offset proc_size, offset pro_size );
 extern void                 ObjEmitSeq( byte_seq *code );
 extern byte_seq_reloc       *SortListReloc( byte_seq_reloc *relocs );

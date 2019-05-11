@@ -30,6 +30,7 @@
 
 
 #include "ftnstd.h"
+#include <string.h>
 #include "errcod.h"
 #include "opr.h"
 #include "opn.h"
@@ -44,8 +45,6 @@
 #include "utility.h"
 #include "aentry.h"
 #include "downscan.h"
-
-#include <string.h>
 
 
 void    AdvanceITPtr( void ) {

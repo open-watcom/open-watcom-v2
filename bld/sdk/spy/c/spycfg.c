@@ -34,6 +34,7 @@
 #include "watini.h"
 #include "inipath.h"
 #include "log.h"
+#include "walloca.h"
 
 
 static char spyApp[] = "WATCOMSpy";

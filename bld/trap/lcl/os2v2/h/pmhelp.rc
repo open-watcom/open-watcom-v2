@@ -1,5 +1,5 @@
 #include <os2.h>
-#include "wdpmhelp.h"
+#include "wdpmhelp.rh"
 
 MENU    ID_WINDOW PRELOAD
 BEGIN

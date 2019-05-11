@@ -35,10 +35,8 @@
 //
 
 #include "ftnstd.h"
-#include "ftnapi.h"
-
-#include <stddef.h>
 #include <dos.h>
+#include "ftnapi.h"
 
 
 #if defined( __386__ ) && !defined( __WINDOWS__ )

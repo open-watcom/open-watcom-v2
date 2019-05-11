@@ -31,7 +31,7 @@
 
 
 #include "wdeglbl.h"
-#include "wde_rc.h"
+#include "wde.rh"
 #include "wdestyle.h"
 
 typedef struct {

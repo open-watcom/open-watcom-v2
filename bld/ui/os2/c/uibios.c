@@ -34,8 +34,10 @@
 #include <stdio.h>
 #include "uidef.h"
 #include "doscall.h"
-#define HANDLE 0
+#include "uicurshk.h"
 
+
+#define HANDLE 0
 
 static MONITOR ui_data = {
     25,

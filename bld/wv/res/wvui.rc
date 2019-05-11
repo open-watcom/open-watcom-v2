@@ -1,6 +1,6 @@
 #include "wresdefn.h"
 #include "wdmsg.h"
-#include "wreslang.h"
+#include "wreslang.rh"
 #include "banner.h"
 #include "wv.rc"
 

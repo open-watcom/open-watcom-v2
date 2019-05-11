@@ -31,7 +31,7 @@
 
 
 #include "wglbl.h"
-#include "sys_rc.h"
+#include "sysall.rh"
 #include "wedit.h"
 #include "wmsg.h"
 #include "ldstr.h"
@@ -84,8 +84,8 @@ void WUnRegisterPrevClass( HINSTANCE inst )
 
 bool WResetPrevWindowMenu( WMenuEditInfo *einfo )
 {
-    HMENU       menu;
-    HMENU       omenu;
+    HMENU       hmenu;
+    HMENU       homenu;
     bool        ok;
 
     ok = (einfo != NULL && einfo->preview_window != (HWND)NULL);
@@ -95,16 +95,16 @@ bool WResetPrevWindowMenu( WMenuEditInfo *einfo )
     }
 
     if( ok ) {
-        menu = WCreatePreviewMenu( einfo );
-        ok = (menu != (HMENU)NULL);
+        hmenu = WCreatePreviewMenu( einfo );
+        ok = (hmenu != (HMENU)NULL);
     }
 
     if( ok ) {
-        omenu = GetMenu( einfo->preview_window );
-        if( omenu != (HMENU)NULL ) {
-            DestroyMenu( omenu );
+        homenu = GetMenu( einfo->preview_window );
+        if( homenu != (HMENU)NULL ) {
+            DestroyMenu( homenu );
         }
-        ok = SetMenu( einfo->preview_window, menu ) != 0;
+        ok = SetMenu( einfo->preview_window, hmenu ) != 0;
     }
 
     return( ok );
@@ -130,7 +130,7 @@ bool WCreatePrevWindow( HINSTANCE inst, WMenuEditInfo *einfo )
 {
     int         x, y, width, height, i;
     HWND        win;
-    HMENU       sys_menu;
+    HMENU       hsysmenu;
     RECT        rect;
     char        *title;
 
@@ -161,11 +161,11 @@ bool WCreatePrevWindow( HINSTANCE inst, WMenuEditInfo *einfo )
         return( FALSE );
     }
 
-    sys_menu = GetSystemMenu( einfo->preview_window, FALSE );
-    if( sys_menu != (HMENU)NULL ) {
-        i = GetMenuItemCount( sys_menu );
+    hsysmenu = GetSystemMenu( einfo->preview_window, FALSE );
+    if( hsysmenu != (HMENU)NULL ) {
+        i = GetMenuItemCount( hsysmenu );
         for( ; i >= 0; i-- ) {
-            DeleteMenu( sys_menu, i, MF_BYPOSITION );
+            DeleteMenu( hsysmenu, i, MF_BYPOSITION );
         }
     }
 
@@ -178,7 +178,7 @@ void WHandleMenuSelect( WMenuEditInfo *einfo, WPARAM wParam, LPARAM lParam )
 {
     WMenuEntry  *entry;
     HWND        lbox;
-    HMENU       popup;
+    HMENU       hpopup;
     WORD        flags;
     WORD        id;
     LRESULT     pos;
@@ -203,11 +203,11 @@ void WHandleMenuSelect( WMenuEditInfo *einfo, WPARAM wParam, LPARAM lParam )
             // we ignore WM_MENUSELECT for separators, for now...
         } else if( flags & MF_POPUP ) {
 #ifdef __NT__
-            popup = GetSubMenu( (HMENU)lParam, GET_WM_MENUSELECT_ITEM( wParam, lParam ) );
+            hpopup = GetSubMenu( (HMENU)lParam, GET_WM_MENUSELECT_ITEM( wParam, lParam ) );
 #else
-            popup = (HMENU)(pointer_int)GET_WM_MENUSELECT_ITEM( wParam, lParam );
+            hpopup = (HMENU)(pointer_int)GET_WM_MENUSELECT_ITEM( wParam, lParam );
 #endif
-            entry = WFindEntryFromPreviewPopup( einfo->menu->first_entry, popup );
+            entry = WFindEntryFromPreviewPopup( einfo->menu->first_entry, hpopup );
         } else {
             id = GET_WM_MENUSELECT_ITEM( wParam, lParam );
             entry = WFindEntryFromPreviewID( einfo->menu->first_entry, id );

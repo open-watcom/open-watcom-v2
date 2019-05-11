@@ -34,5 +34,5 @@ extern void     DoAbsPatch( abspatch_handle *handle, int len );
 extern void     DoFunnyRef( int segover );
 extern void     DoFESymRef( cg_sym_handle sym, cg_class class, offset val, fe_fixup_types fixup_type );
 extern void     DoSymRef( name *opnd, offset val, bool base );
-extern void     DoSegRef( segment_id seg );
-extern void     DoLblRef( label_handle lbl, segment_id seg, offset val, escape_class kind );
+extern void     DoSegRef( segment_id segid );
+extern void     DoLblRef( label_handle lbl, segment_id segid, offset val, escape_class kind );

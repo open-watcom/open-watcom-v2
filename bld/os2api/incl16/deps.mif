@@ -1,5 +1,6 @@
 mh_dir	    	= $(incl_dir_$(hdr_cpu))
-owhdr           = $(crwatcnt_sp) $(hdr_dir)/readonly.sp
+crwatcnt_sp     = $(hdr_dir)/crwatcnt.sp $(crwatpro_sp) $(hdr_dir)/crwatepi.sp
+owhdr           = $(crwatcnt_sp) $(hdr_dir)/readonly.sp #$(hdr_dir)/owrtlink.sp
 cplus	    	= $(hdr_dir)/cpluspro.sp $(hdr_dir)/cplusepi.sp
 
 bse.h : 	$(mh_dir)/bse.mh $(owhdr)

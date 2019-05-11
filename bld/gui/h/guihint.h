@@ -38,35 +38,38 @@ typedef enum hint_type {
     FLOAT_HINT,
     TOOL_HINT,
     GUI_HINT,
-    FIRST_HINT  = MENU_HINT,
-    LAST_HINT   = GUI_HINT
 } hint_type;
+
+#define FIRST_HINT  MENU_HINT
+#define LAST_HINT   GUI_HINT
 
 typedef struct gui_hint_struct {
     gui_ctl_id  id;
     const char  *hinttext;
 } gui_hint_struct;
 
-typedef struct hintinfo {
-    int                 menu_num_items;
-    gui_hint_struct     *menu;
-    int                 floating_num_items;
-    gui_hint_struct     *floating;
-    int                 tool_num_items;
-    gui_hint_struct     *tool;
-    int                 gui_num_items;
-    gui_hint_struct     *gui;
-} hintinfo;
+typedef struct gui_hint_items {
+    int                 num_items;
+    gui_hint_struct     *hint;
+} gui_hint_items;
+
+typedef struct hints_info {
+    gui_hint_items      menu;
+    gui_hint_items      floating;
+    gui_hint_items      tool;
+    gui_hint_items      gui;
+} hints_info;
 
 extern bool GUIDisplayHintText( gui_window *wnd_with_status, gui_window *wnd,
                                 gui_ctl_id id, hint_type type, gui_menu_styles style );
+extern bool GUISetHintText( gui_window *wnd, gui_ctl_id id, hint_type type, const char *text );
 extern bool GUIHasHintText( gui_window *wnd, gui_ctl_id id, hint_type type );
 extern bool GUIHasHintType( gui_window *wnd, hint_type type );
-extern void GUIInitHint( gui_window *wnd, int num_items, gui_menu_struct *menu, hint_type type );
+extern void GUIInitHint( gui_window *wnd, const gui_menu_items *menus, hint_type type );
 extern void GUIFiniHint( gui_window *wnd, hint_type type );
-extern void GUIInitToolbarHint( gui_window *wnd, int num_items, gui_toolbar_struct *toolinfo );
-extern bool GUIAppendHintText( gui_window *wnd, gui_menu_struct *menu, hint_type type );
-extern bool GUIDeleteHintText( gui_window *wnd, gui_ctl_id id );
+extern void GUIInitToolbarHint( gui_window *wnd, const gui_toolbar_items *toolinfo );
+extern bool GUIAppendHintText( gui_window *wnd, const gui_menu_struct *menu, hint_type type );
+extern bool GUIDeleteHintText( gui_window *wnd, gui_ctl_id id, hint_type type );
 extern void GUIFreeHint( gui_window *wnd );
 
 #endif

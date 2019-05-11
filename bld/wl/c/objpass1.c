@@ -220,7 +220,7 @@ static void AddCDatAltDef( segdata *sdata, symbol *sym, unsigned_8 *data,
     comdat_info     info;
     comdat_piece    piece;
 
-    if( LinkFlags & INC_LINK_FLAG ) {
+    if( LinkFlags & LF_INC_LINK_FLAG ) {
         info.sdata = sdata;
         info.sym = sym;
         info.flags = flags;
@@ -378,12 +378,12 @@ void Set64BitMode( void )
 /***********************/
 // make sure that the executable format is a 64-bit format.
 {
-    LinkState |= FMT_SEEN_64_BIT;
+    LinkState |= LS_FMT_SEEN_64_BIT;
     if( !HintFormat( MK_ALLOW_64 ) ) {
-        if( (ObjFormat & FMT_TOLD_XXBIT) == 0 ) {
-            ObjFormat |= FMT_TOLD_XXBIT;
+        if( (ObjFormat & FMT_TOLD_BITNESS) == 0 ) {
+            ObjFormat |= FMT_TOLD_BITNESS;
             LnkMsg( WRN+MSG_FOUND_XXBIT_OBJ, "sd",
-                        CurrMod->f.source->file->name.u.ptr, 64 );
+                        CurrMod->f.source->infile->name.u.ptr, 64 );
         }
     }
 }
@@ -392,12 +392,12 @@ void Set32BitMode( void )
 /***********************/
 // make sure that the executable format is a 32-bit format.
 {
-    LinkState |= FMT_SEEN_32_BIT;
+    LinkState |= LS_FMT_SEEN_32_BIT;
     if( !HintFormat( MK_ALLOW_32 ) ) {
-        if( (ObjFormat & FMT_TOLD_XXBIT) == 0 ) {
-            ObjFormat |= FMT_TOLD_XXBIT;
+        if( (ObjFormat & FMT_TOLD_BITNESS) == 0 ) {
+            ObjFormat |= FMT_TOLD_BITNESS;
             LnkMsg( WRN+MSG_FOUND_XXBIT_OBJ, "sd",
-                        CurrMod->f.source->file->name.u.ptr, 32 );
+                        CurrMod->f.source->infile->name.u.ptr, 32 );
         }
     }
 }
@@ -406,10 +406,10 @@ void Set16BitMode( void )
 /***********************/
 {
     if( !HintFormat( MK_ALLOW_16 ) ) {
-        if( (ObjFormat & FMT_TOLD_XXBIT) == 0 ) {
-            ObjFormat |= FMT_TOLD_XXBIT;
+        if( (ObjFormat & FMT_TOLD_BITNESS) == 0 ) {
+            ObjFormat |= FMT_TOLD_BITNESS;
             LnkMsg( WRN+MSG_FOUND_XXBIT_OBJ, "sd",
-                    CurrMod->f.source->file->name.u.ptr, 16 );
+                    CurrMod->f.source->infile->name.u.ptr, 16 );
         }
     }
 }
@@ -435,7 +435,7 @@ static void DoAllocateSegment( segdata *sdata, char *clname )
     }
     if( sdata->iscode ) {
         if( !sdata->is32bit ) {
-            LinkState |= HAVE_16BIT_CODE;
+            LinkState |= LS_HAVE_16BIT_CODE;
         }
     }
     sect = DBIGetSect( clname );
@@ -513,10 +513,10 @@ void AddSegment( segdata *sd, class_entry *class )
     if( !IS_DBG_INFO( leader ) ) {
         if( sd->is32bit ) {
             Set32BitMode();
-            CheckQNXSegMismatch( HAVE_16BIT_CODE );
+            CheckQNXSegMismatch( LS_HAVE_16BIT_CODE );
         } else {
             Set16BitMode();
-            CheckQNXSegMismatch( FMT_SEEN_32_BIT );
+            CheckQNXSegMismatch( LS_FMT_SEEN_32_BIT );
         }
     }
     if( DBISkip( leader ) ) {
@@ -530,22 +530,22 @@ void AddSegment( segdata *sd, class_entry *class )
     }
 }
 
-class_entry *DuplicateClass( class_entry *old )
-/*********************************************/
+class_entry *DuplicateClass( class_entry *class )
+/***********************************************/
 {
-    class_entry *new;
+    class_entry *newclass;
 
-    new = CarveAlloc( CarveClass );
-    memcpy( new, old, sizeof( class_entry ) );
-    new->name.u.ptr = AddBufferStringTable( &PermStrings, old->name.u.ptr, strlen( old->name.u.ptr ) + 1 );
-    old->next_class = new;
-    return( new );
+    newclass = CarveAlloc( CarveClass );
+    memcpy( newclass, class, sizeof( class_entry ) );
+    newclass->name.u.ptr = AddBufferStringTable( &PermStrings, class->name.u.ptr, strlen( class->name.u.ptr ) + 1 );
+    class->next_class = newclass;
+    return( newclass );
 }
 
 class_entry *FindClass( section *sect, const char *name, bool is32bit, bool iscode )
 /**********************************************************************************/
 {
-    class_entry     *currclass;
+    class_entry     *class;
     class_entry     *lastclass;
     size_t          namelen;
     class_status    cls_is32bit;
@@ -554,38 +554,38 @@ class_entry *FindClass( section *sect, const char *name, bool is32bit, bool isco
     if( is32bit )
         cls_is32bit = CLASS_32BIT;
     lastclass = sect->classlist;
-    for( currclass = sect->classlist; currclass != NULL; currclass = currclass->next_class ) {
-        if( stricmp( currclass->name.u.ptr, name ) == 0 && (currclass->flags & CLASS_32BIT) == cls_is32bit ) {
-            return( currclass );
+    for( class = sect->classlist; class != NULL; class = class->next_class ) {
+        if( stricmp( class->name.u.ptr, name ) == 0 && (class->flags & CLASS_32BIT) == cls_is32bit ) {
+            return( class );
         }
-        lastclass = currclass;
+        lastclass = class;
     }
     namelen = strlen( name );
-    currclass = CarveAlloc( CarveClass );
-    currclass->flags = 0;
-    currclass->name.u.ptr = AddBufferStringTable( &PermStrings, name, namelen + 1 );
-    currclass->segs = NULL;
-    currclass->section = sect;
-    currclass->next_class = NULL;
+    class = CarveAlloc( CarveClass );
+    class->flags = 0;
+    class->name.u.ptr = AddBufferStringTable( &PermStrings, name, namelen + 1 );
+    class->segs = NULL;
+    class->section = sect;
+    class->next_class = NULL;
     if( lastclass == NULL ) {
-        sect->classlist = currclass;
+        sect->classlist = class;
     } else {
-        lastclass->next_class = currclass;
+        lastclass->next_class = class;
     }
-    DBIColClass( currclass );
+    DBIColClass( class );
     if( is32bit ) {
-        currclass->flags |= CLASS_32BIT;
+        class->flags |= CLASS_32BIT;
     }
     if( iscode ) {
-        currclass->flags |= CLASS_CODE;
+        class->flags |= CLASS_CODE;
     }
     if( IsConstClass( name, namelen ) ) {
-        currclass->flags |= CLASS_READ_ONLY;
+        class->flags |= CLASS_READ_ONLY;
     }
     if( IsStackClass( name, namelen ) ) {
-        currclass->flags |= CLASS_STACK;
+        class->flags |= CLASS_STACK;
     }
-    return( currclass );
+    return( class );
 }
 
 static void CheckForLast( seg_leader *seg, class_entry *class )
@@ -789,12 +789,12 @@ void DefineSymbol( symbol *sym, segnode *seg, offset off, unsigned_16 frame )
         SetAddPubSym( sym, sym_type, CurrMod, off, frame );
         sym->info &= ~SYM_DISTRIB;
         if( seg != NULL ) {
-            if( LinkFlags & STRIP_CODE ) {
+            if( LinkFlags & LF_STRIP_CODE ) {
                 DefStripSym( sym, seg->entry );
             }
             if( seg->info & SEG_CODE ) {
                 if( (FmtData.type & MK_OVERLAYS) && FmtData.u.dos.distribute
-                    && (LinkState & SEARCHING_LIBRARIES) ) {
+                    && (LinkState & LS_SEARCHING_LIBRARIES) ) {
                     sym->info |= SYM_DISTRIB;
                 }
             }
@@ -803,7 +803,7 @@ void DefineSymbol( symbol *sym, segnode *seg, offset off, unsigned_16 frame )
                 sym->info |= SYM_ABSOLUTE;
             TryDefVector( sym );
         } else {
-            if( LinkFlags & STRIP_CODE ) {
+            if( LinkFlags & LF_STRIP_CODE ) {
                 CleanStripInfo( sym );
             }
             sym->info |= SYM_ABSOLUTE;
@@ -883,7 +883,7 @@ static void FarAllocCommunal( symbol *sym, unsigned size )
 void AllocCommunal( symbol *sym, offset size )
 /********************************************/
 {
-    if( LinkFlags & STRIP_CODE ) {
+    if( LinkFlags & LF_STRIP_CODE ) {
         CleanStripInfo( sym );
     }
     if( sym->info & SYM_FAR_COMMUNAL ) {
@@ -925,7 +925,7 @@ symbol *MakeCommunalSym( symbol *sym, offset size, bool isfar, bool is32bit )
             sym->p.seg->length = size;
         }
         altsym = AddAltDef( sym, symtype );
-        if( LinkFlags & INC_LINK_FLAG ) {
+        if( LinkFlags & LF_INC_LINK_FLAG ) {
             altsym->p.cdefsize = size;
         }
     }
@@ -956,7 +956,7 @@ void CheckComdatSym( symbol *sym, sym_info flags )
 void SetComdatSym( symbol *sym, segdata *sdata )
 /**********************************************/
 {
-    if( LinkFlags & STRIP_CODE ) {
+    if( LinkFlags & LF_STRIP_CODE ) {
         if( sdata->iscode ) {
             DefStripSym( sym, sdata );
         }
@@ -1024,7 +1024,7 @@ void DefineLazyExtdef( symbol *sym, symbol *def, bool isweak )
                 SET_SYM_TYPE( sym, SYM_LAZY_REF );
             }
             sym->e.def = def;
-            if( LinkFlags & STRIP_CODE ) {
+            if( LinkFlags & LF_STRIP_CODE ) {
                 DataRef( sym->e.def );  // default must not be removed
             }
         }
@@ -1058,7 +1058,7 @@ static symbol **GetVFList( symbol *defsym, symbol *mainsym, bool generate,
                 break;
             }
         }
-        if( (LinkFlags & STRIP_CODE) && mainsym != NULL ) {
+        if( (LinkFlags & LF_STRIP_CODE) && mainsym != NULL ) {
             AddSymEdge( condsym, mainsym );
         }
         count++;
@@ -1096,11 +1096,11 @@ static void DefineVirtualFunction( symbol *sym, symbol *defsym, bool ispure,
             SET_SYM_TYPE( sym, SYM_VF_REF );
         }
     } else {                    // might still need this if eliminated
-        if( (LinkFlags & STRIP_CODE) && (sym->info & SYM_EXPORTED) == 0 ) {
+        if( (LinkFlags & LF_STRIP_CODE) && (sym->info & SYM_EXPORTED) == 0 ) {
             sym->e.def = defsym;
         }
     }
-    if( LinkFlags & STRIP_CODE ) {
+    if( LinkFlags & LF_STRIP_CODE ) {
         DataRef( defsym );
     }
 }
@@ -1117,7 +1117,7 @@ void DefineVFTableRecord( symbol *sym, symbol *def, bool ispure,
     if( sym->info & SYM_DEFINED ) {
         /* if defined, still may have to keep track of conditional symbols
          * for dead code elimination */
-        if( (LinkFlags & STRIP_CODE)
+        if( (LinkFlags & LF_STRIP_CODE)
                         && (sym->info & (SYM_VF_REFS_DONE | SYM_EXPORTED)) == 0 ) {
             GetVFList( def, sym, false, rtns );
             sym->e.def = def;
@@ -1174,10 +1174,10 @@ void DefineReference( symbol *sym )
     if( FmtData.type & MK_OVERLAYS ) {
         TryRefVector( sym );
     }
-    if( (FmtData.type & MK_NOVELL) && (LinkState & SEARCHING_LIBRARIES)
+    if( (FmtData.type & MK_NOVELL) && (LinkState & LS_SEARCHING_LIBRARIES)
             && IS_SYM_IMPORTED( sym ) && (sym->info & SYM_CHECKED) ) {
         sym->info &= ~SYM_CHECKED;
-        LinkState |= LIBRARIES_ADDED;   // force another pass thru libs
+        LinkState |= LS_LIBRARIES_ADDED;   // force another pass thru libs
     }
 }
 
@@ -1222,7 +1222,7 @@ void SetCurrSeg( segdata *seg, offset obj_offset, unsigned_8 *data )
 bool SeenDLLRecord( void )
 /*******************************/
 {
-    LinkState |= FMT_SEEN_IMPORT_CMT;
+    LinkState |= LS_FMT_SEEN_IMPORT_CMT;
     if( !HintFormat( MK_OS2 | MK_PE | MK_ELF | MK_NOVELL ) ) {
         LnkMsg( LOC+WRN+MSG_DLL_WITH_386, NULL );
         return( false );    /* Not OK to process import/export records. */

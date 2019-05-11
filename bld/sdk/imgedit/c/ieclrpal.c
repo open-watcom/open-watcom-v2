@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,6 +34,7 @@
 #include "imgedit.h"
 #include "ieclrpal.h"
 #include "ieprofil.h"
+
 
 static HBRUSH hbrush;
 
@@ -66,7 +68,7 @@ static void paintPalette( HWND hwnd )
 #else
     hgraypen = _wpi_createpen( PS_SOLID, 0, DKGRAY );
 #endif
-    holdpen = _wpi_selectobject( hdc, hgraypen );
+    holdpen = _wpi_selectpen( hdc, hgraypen );
     pt.x = 2;
     pt.y = 50;
     _wpi_cvth_pt( &pt, height );
@@ -78,23 +80,23 @@ static void paintPalette( HWND hwnd )
     pt.x = 90;
     _wpi_lineto( hdc, &pt );
 
-    _wpi_selectobject( hdc, holdpen );
-    _wpi_deleteobject( hgraypen );
+    _wpi_getoldpen( hdc, holdpen );
+    _wpi_deletepen( hgraypen );
 
 #if defined( __NT__ )
     hwhitepen = _wpi_createpen( PS_SOLID, 0, GetSysColor( COLOR_BTNHIGHLIGHT ) );
 #else
     hwhitepen = _wpi_createpen( PS_SOLID, 0, WHITE );
 #endif
-    holdpen = _wpi_selectobject( hdc, hwhitepen );
+    holdpen = _wpi_selectpen( hdc, hwhitepen );
     pt.y = 50;
     _wpi_cvth_pt( &pt, height );
     _wpi_lineto( hdc, &pt );
     pt.x = 2;
     _wpi_lineto( hdc, &pt );
 
-    _wpi_selectobject( hdc, holdpen );
-    _wpi_deleteobject( hwhitepen );
+    _wpi_getoldpen( hdc, holdpen );
+    _wpi_deletepen( hwhitepen );
     _wpi_endpaint( hwnd, hdc, &rect );
 
 } /* paintPalette */
@@ -104,35 +106,35 @@ static void paintPalette( HWND hwnd )
  */
 WPI_MRESULT CALLBACK ColorPalWinProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 mp1, WPI_PARAM2 mp2 )
 {
-    HMENU               sysmenu;
+    HMENU               hsysmenu;
     WPI_RECT            rcpal;
     WPI_RECTDIM         left;
     WPI_RECTDIM         right;
     WPI_RECTDIM         top;
     WPI_RECTDIM         bottom;
-    static HMENU        menu;
+    static HMENU        hmenu;
     static HWND         hframe;
 
     switch( msg ) {
     case WM_CREATE:
         hframe = _wpi_getframe( hwnd );
-        sysmenu = _wpi_getcurrentsysmenu( hframe );
-        _wpi_deletemenu( sysmenu, SC_RESTORE, FALSE );
-        _wpi_deletemenu( sysmenu, SC_SIZE, FALSE );
-        _wpi_deletemenu( sysmenu, SC_MINIMIZE, FALSE );
-        _wpi_deletemenu( sysmenu, SC_MAXIMIZE, FALSE );
-        _wpi_deletemenu( sysmenu, SC_TASKLIST, FALSE );
+        hsysmenu = _wpi_getcurrentsysmenu( hframe );
+        _wpi_deletemenu( hsysmenu, SC_RESTORE, FALSE );
+        _wpi_deletemenu( hsysmenu, SC_SIZE, FALSE );
+        _wpi_deletemenu( hsysmenu, SC_MINIMIZE, FALSE );
+        _wpi_deletemenu( hsysmenu, SC_MAXIMIZE, FALSE );
+        _wpi_deletemenu( hsysmenu, SC_TASKLIST, FALSE );
 #ifdef __OS2_PM__
-        _wpi_deletemenu( sysmenu, SC_HIDE, FALSE );
+        _wpi_deletemenu( hsysmenu, SC_HIDE, FALSE );
 #endif
-        _wpi_deletesysmenupos( sysmenu, 1 );
-        _wpi_deletesysmenupos( sysmenu, 2 );
+        _wpi_deletesysmenupos( hsysmenu, 1 );
+        _wpi_deletesysmenupos( hsysmenu, 2 );
         hbrush = _wpi_createsolidbrush( LTGRAY );
-        menu = GetMenu( _wpi_getframe( HMainWindow ) );
+        hmenu = GetMenu( _wpi_getframe( HMainWindow ) );
         break;
 
     case WM_PAINT:
-        _wpi_deleteobject( hbrush );
+        _wpi_deletebrush( hbrush );
         SetBkColor( (HDC)mp1, GetSysColor( COLOR_BTNFACE ) );
         SetTextColor( (HDC)mp1, GetSysColor( COLOR_BTNTEXT ) );
         hbrush = _wpi_createsolidbrush( GetSysColor( COLOR_BTNFACE ) );
@@ -144,7 +146,7 @@ WPI_MRESULT CALLBACK ColorPalWinProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 mp1, WP
     case WM_SYSCOLORCHANGE:
     case WM_CTLCOLORSTATIC:
     case WM_CTLCOLORBTN:
-        _wpi_deleteobject( hbrush );
+        _wpi_deletebrush( hbrush );
         hbrush = _wpi_createsolidbrush( GetSysColor( COLOR_BTNFACE ) );
         SetBkColor( (HDC)mp1, GetSysColor( COLOR_BTNFACE ) );
         SetTextColor( (HDC)mp1, GetSysColor( COLOR_BTNTEXT ) );
@@ -168,11 +170,11 @@ WPI_MRESULT CALLBACK ColorPalWinProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 mp1, WP
         break;
 
     case WM_CLOSE:
-        CheckPaletteItem( menu );
+        CheckPaletteItem( hmenu );
         break;
 
     case WM_DESTROY:
-        _wpi_deleteobject( hbrush );
+        _wpi_deletebrush( hbrush );
         break;
 
     default:

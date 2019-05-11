@@ -1,6 +1,7 @@
 mh_dir	    	= $(incl_dir_$(hdr_cpu))
 readonly_sp	= $(hdr_dir)/readonly.sp
-owhdr		= $(crwatcnt_sp) $(readonly_sp)
+crwatcnt_sp     = $(hdr_dir)/crwatcnt.sp $(crwatpro_sp) $(hdr_dir)/crwatepi.sp
+owhdr           = $(crwatcnt_sp) $(readonly_sp) #$(hdr_dir)/owrtlink.sp
 cplus	    	= $(hdr_dir)/cpluspro.sp $(hdr_dir)/cplusepi.sp
 
 acb.h : 		$(mh_dir)/acb.mh $(owhdr) $(cplus)

@@ -37,7 +37,7 @@
 #include <sys/types.h>
 #include <sys/osinfo.h>
 #include "uivirts.h"
-#include "uiextrn.h"
+#include "uiintern.h"
 
 
 struct _timesel     __far *_SysTime;

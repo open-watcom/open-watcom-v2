@@ -15,5 +15,5 @@ builtin_trap = 1
 
 extra_ldflags = -lsocket
 
-!include $(trap_dir)/lcl/nto/trap.mif
+!include $(trap_dir)/lcl/nto/nto.mif
 !include $(trap_dir)/master.mif

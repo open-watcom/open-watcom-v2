@@ -34,51 +34,53 @@
 #include <stddef.h>
 
 
+#define macroSizeAlign(x)   _RoundUp( (x), sizeof( int ) )
+
+static MACADDR_T    MacroSegment;       /* segment for macro definitions */
+static size_t       MacroSegmentLimit;  /* remaining free bytes in MacroSegment */
+
 MEPTR CreateMEntry( const char *name, size_t len )
 {
     MEPTR   mentry;
+    size_t  size;
 
-    mentry = (MEPTR)CMemAlloc( sizeof( MEDEFN ) + len );
+    if( len == 0 ) {
+        len = strlen( name );
+    }
+    size = offsetof( MEDEFN, macro_name ) + len + 1;
+    MacroReallocOverflow( size, 0 );
+    mentry = (MEPTR)MacroOffset;
     memcpy( mentry->macro_name, name, len );
     mentry->macro_name[len] = '\0';
-    mentry->macro_len = sizeof( MEDEFN ) + len;
+    mentry->macro_len = size;
+    mentry->macro_defn = 0;
     mentry->parm_count = 0;
-    mentry->macro_defn = 0; /* indicate special macro */
+    mentry->src_loc.fno = 0;
+    mentry->src_loc.line = 0;
     return( mentry );
 }
 
-void FreeMEntry( MEPTR mentry )
+void *MacroAllocateInSeg( size_t size )
 {
-    CMemFree( mentry );
-}
+    void *retn;
 
-void MacroAdd( MEPTR mentry, const char *buf, size_t len, macro_flags mflags )
-{
-    size_t      size;
-
-    size = mentry->macro_len;
-    if( len != 0 ) {                // if not a special macro
-        mentry->macro_defn = size;
-    }
-    mentry->macro_len += len;
-    MacroOverflow( size + len, 0 );
-    MacroCopy( mentry, MacroOffset, size );
-    if( len != 0 ) {
-        MacroCopy( buf, MacroOffset + size, len );
-    }
-    MacLkAdd( mentry, size + len, mflags );
+    retn = MacroOffset;
+    size = macroSizeAlign( size );
+    MacroOffset += size;
+    MacroSegmentLimit -= size;
+    return( retn );
 }
 
 
-void AllocMacroSegment( size_t minimum )
+static void AllocMacroSegment( size_t minimum )
 {
     struct macro_seg_list *msl;
     size_t amount;
 
-    amount = _RoundUp( minimum, 0x8000 );
+    amount = _RoundUp( minimum + 2, 0x8000 );
     MacroSegment = FEmalloc( amount );
     MacroOffset = MacroSegment;
-    MacroLimit = MacroOffset + amount - 2;
+    MacroSegmentLimit = amount - 2;
     if( MacroSegment == NULL ) {
         CErr1( ERR_OUT_OF_MACRO_MEMORY );
         CSuicide();
@@ -108,15 +110,17 @@ void MacroCopy( const void *mptr, MACADDR_T offset, size_t amount )
 }
 
 
-void MacroOverflow( size_t amount_needed, size_t amount_used )
+void MacroReallocOverflow( size_t amount_needed, size_t amount_used )
 {
     MACADDR_T old_offset;
 
-    amount_needed = _RoundUp( amount_needed, sizeof( int ) );
-    if( MacroOffset + amount_needed > MacroLimit ) {
+    amount_needed = macroSizeAlign( amount_needed );
+    if( amount_needed > MacroSegmentLimit ) {
         old_offset = MacroOffset;
         AllocMacroSegment( amount_needed );
-        MacroCopy( old_offset, MacroOffset, amount_used );
+        if( amount_used > 0 ) {
+            MacroCopy( old_offset, MacroOffset, amount_used );
+        }
     }
 }
 
@@ -135,17 +139,22 @@ static MEPTR *MacroLkUp( const char *name, MEPTR *lnk )
     return( lnk );
 }
 
-
-void MacLkAdd( MEPTR mentry, size_t len, macro_flags mflags )
+MEPTR MacroDefine( size_t mlen, macro_flags mflags )
 {
-    MEPTR       old_mentry, *lnk;
+    MEPTR       old_mentry;
+    MEPTR       *lnk;
+    MEPTR       new_mentry;
     macro_flags old_mflags;
+    MEPTR       mentry;
+    const char  *mname;
 
-    MacroCopy( mentry, MacroOffset, offsetof(MEDEFN,macro_name) );
+    new_mentry = NULL;
     mentry = (MEPTR)MacroOffset;
-    CalcHash( mentry->macro_name, strlen( mentry->macro_name ) );
+    mentry->macro_len = mlen;
+    mname = mentry->macro_name;
+    CalcHash( mname, strlen( mname ) );
     lnk = &MacHash[MacHashValue];
-    lnk = MacroLkUp( mentry->macro_name, lnk );
+    lnk = MacroLkUp( mname, lnk );
     old_mentry = *lnk;
     if( old_mentry != NULL ) {
         old_mflags = old_mentry->macro_flags;
@@ -153,37 +162,33 @@ void MacLkAdd( MEPTR mentry, size_t len, macro_flags mflags )
             *lnk = old_mentry->next_macro;
             old_mentry = NULL;
         } else if( MacroCompare( mentry, old_mentry ) != 0 ) {
-            if( old_mentry->macro_defn ) {
+            if( !MacroIsSpecial( old_mentry ) ) {
                 SetDiagMacro( old_mentry );
             }
-            CErr2p( ERR_MACRO_DEFN_NOT_IDENTICAL, mentry->macro_name );
-            if( old_mentry->macro_defn ) {
+            CErr2p( ERR_MACRO_DEFN_NOT_IDENTICAL, mname );
+            if( !MacroIsSpecial( old_mentry ) ) {
                 SetDiagPop();
             }
         }
     }
     if( old_mentry == NULL ) {  //add new entry
         ++MacroCount;
-        mentry->next_macro = MacHash[MacHashValue];
-        MacHash[MacHashValue] = mentry;
-        MacroOffset += _RoundUp( len, sizeof( int ) );
-        mentry->macro_flags = InitialMacroFlag | mflags;
+        new_mentry = MacroAllocateInSeg( mlen );
+        new_mentry->macro_flags = InitialMacroFlags | mflags;
+        new_mentry->next_macro = MacHash[MacHashValue];
+        MacHash[MacHashValue] = new_mentry;
     }
+    return( new_mentry );
 }
 
-SYM_HASHPTR SymHashAlloc( size_t amount )
+void *PermMemAlloc( size_t amount )
 {
-    SYM_HASHPTR hsym;
-
-    amount = _RoundUp( amount, sizeof( int ) );
-    if( MacroOffset + amount > MacroLimit ) {
+    amount = macroSizeAlign( amount );
+    if( amount > MacroSegmentLimit ) {
         AllocMacroSegment( amount );
     }
-    hsym = (SYM_HASHPTR) MacroOffset;
-    MacroOffset += amount;
-    return( hsym );
+    return( MacroAllocateInSeg( amount ) );
 }
-
 
 int MacroCompare( MEPTR m1, MEPTR m2 )
 {

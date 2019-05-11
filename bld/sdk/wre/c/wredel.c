@@ -41,7 +41,7 @@
 #include "wreseted.h"
 #include "wrectl3d.h"
 #include "wredel.h"
-#include "wre_rc.h"
+#include "wre.rh"
 #include "wrdll.h"
 #include "wresall.h"
 #include "wredde.h"

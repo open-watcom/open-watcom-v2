@@ -30,6 +30,7 @@
 
 
 #include "ftnstd.h"
+#include <string.h>
 #include "iflookup.h"
 #include "errcod.h"
 #include "global.h"
@@ -40,8 +41,6 @@
 #include "ifused.h"
 #include "kwlookup.h"
 #include "rstsrch.h"
-
-#include <string.h>
 
 
 typedef struct iff_data {

@@ -43,24 +43,24 @@ static MOUSEORD OldMouseCol = OFF_SCREEN;
 static bool     mouseOn = false;
 static ATTR     OldAttr;
 
-static char *RegenPos( unsigned row, unsigned col )
-/*************************************************/
+static LP_PIXEL RegenPos( unsigned row, unsigned col )
+/****************************************************/
 {
-    char        *pos;
+    LP_PIXEL    pos;
 
-    pos = (char *)( UIData->screen.origin + row * UIData->screen.increment + col ) + 1;
+    pos = UIData->screen.origin + row * UIData->screen.increment + col;
     return( pos );
 }
 
 static void uisetmouseoff( void )
 /*******************************/
 {
-    char                *old;
-    SAREA               area;
+    LP_PIXEL        old;
+    SAREA           area;
 
     if( mouseOn ) {
         old = RegenPos( OldMouseRow, OldMouseCol );
-        *old = OldAttr;
+        old->attr = OldAttr;
         area.row = OldMouseRow;
         area.col = OldMouseCol;
         area.width = 1;
@@ -72,16 +72,16 @@ static void uisetmouseoff( void )
 static void uisetmouseon( MOUSEORD row, MOUSEORD col )
 /****************************************************/
 {
-    char                *new;
-    SAREA               area;
+    LP_PIXEL        new;
+    SAREA           area;
 
     if( mouseOn ) {
         new = RegenPos( row, col );
-        OldAttr = *new;
+        OldAttr = new->attr;
         if( UIData->colour == M_MONO ) {
-            *new = (OldAttr & 0x79) ^ 0x71;
+            new->attr = (OldAttr & 0x79) ^ 0x71;
         } else {
-            *new = (OldAttr & 0x7f) ^ 0x77;
+            new->attr = (OldAttr & 0x7f) ^ 0x77;
         }
         area.row = row;
         area.col = col;

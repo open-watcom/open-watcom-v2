@@ -30,34 +30,55 @@
 ****************************************************************************/
 
 
+#include <sys/types.h>
 #include "uidef.h"
+#include "uiintern.h"
 #include "uiextrn.h"
 #include "uivirts.h"
 
 
-        /* filedescriptor */
-int              UIConHandle = 0;
-        /* proxy for all events */
-pid_t            UIProxy;
-        /* remote proxy if nec.. */
-pid_t            UIRemProxy;
-        /* process group */
-pid_t            UIPGroup;
-        /* tell keyboard app wants to see shift, alt, ... keys... */
-bool             UIWantShiftChanges = true;
-        /* Disable checking on non console devices */
-bool             UIDisableShiftChanges = false;
-        /* Active virtual console functions */
-VirtDisplay      UIVirt;
+int     UIConHandle = -1;
+#ifndef __QNX__
+FILE    *UIConFile = NULL;
 
-#ifdef __QNX__
-        /* console number */
-int              UIConsole = 0;
-        /* proxy's incoming value (usually same as UIProxy */
-pid_t            UILocalProxy;
-        /* Node of console mgr */
-nid_t            UIConNid;
-#else
-        /* filedescriptor */
-FILE *           UIConFile;
+void    TermRefresh( SAREA *area )
+{
+    _physupdate( area );
+    if( area == NULL ) {
+        UserForcedTermRefresh = true;
+    }
+}
+
+bool    TermKeyboardHit( void )
+{
+    CATTR           cattr;
+    CURSOR_TYPE     ctype;
+    CURSORORD       crow;
+    CURSORORD       ccol;
+
+    _uigetcursor( &crow, &ccol, &ctype, &cattr );
+    _uisetcursor( crow, ccol, C_NORMAL, cattr );
+    _ui_refresh( 0 );
+    return( _uiwaitkeyb( 0, 0 ) != 0 );
+}
+
+void TermGetCursor( CURSORORD *crow, CURSORORD *ccol )
+{
+    CATTR           cattr;
+    CURSOR_TYPE     ctype;
+
+    _uigetcursor( crow, ccol, &ctype, &cattr );
+}
+
+void TermSetCursor( CURSORORD crow, CURSORORD ccol )
+{
+    CATTR           cattr;
+    CURSOR_TYPE     ctype;
+    CURSORORD       oldrow;
+    CURSORORD       oldcol;
+
+    _uigetcursor( &oldrow, &oldcol, &ctype, &cattr );
+    _uisetcursor( crow, ccol, ctype, cattr );
+}
+
 #endif

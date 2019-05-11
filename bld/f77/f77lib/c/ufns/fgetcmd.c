@@ -37,13 +37,10 @@
 */
 
 #include "ftnstd.h"
-#include "ftnapi.h"
-
-#include <stddef.h>
-#include <malloc.h>
 #include <string.h>
 #include <process.h>
-#include <pgmacc.h>
+#include "ftnapi.h"
+#include "pgmacc.h"
 
 
 intstar4        __fortran FGETCMD( string PGM *args ) {

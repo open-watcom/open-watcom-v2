@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,7 +34,7 @@
 #include "watcom.h"
 //#include "stdui.h"
 
-wnd_update_list WndFlags = 0;
+wnd_update_flags    WndUpdateFlags = 0;
 
 #if 0
 these are optional
@@ -65,7 +66,7 @@ void WndStartFreshAll()
 void WndEndFreshAll( void )
 {
     // hook called just after windows are all refreshed
-    WndFlags = 0;
+    WndUpdateFlags = 0;
 }
 
 typedef struct {
@@ -82,6 +83,8 @@ static gui_menu_struct PopTart[] = {
     { "Open &2", MENU_OPEN2, GUI_STYLE_MENU_ENABLED },
     { "Open &3", MENU_OPEN3, GUI_STYLE_MENU_ENABLED },
 };
+
+static gui_menu_items   menu_PopTart = GUI_MENU_ARRAY( PopTart );
 
 bool    WndProcMacro( a_window wnd, gui_key key )
 {
@@ -120,7 +123,7 @@ bool    WndProcMacro( a_window wnd, gui_key key )
     case GUI_KEY_CTRL_X:
     {
         static gui_ctl_id last_menu_pos = 0;
-        WndCreateFloatingPopup( wnd, NULL, ArraySize( PopTart ), PopTart, &last_menu_pos );
+        WndCreateFloatingPopup( wnd, NULL, &menu_PopTart, &last_menu_pos );
     }
 
     default:
@@ -202,8 +205,3 @@ void GUImain( void )
     WndSetIcon( WndMain, &MainIcon );
     WndMainMenuProc( WndMain, MENU_OPEN1 );
 } // returning starts the events rolling
-
-bool ChkFlags( wnd_update_list flags )
-{
-    return( flags & WndFlags );
-}

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -135,8 +136,6 @@ extern bool             SimSubFileIsNLM( int parm, int subfile );
 extern bool             SimSubFileIsDLL( int parm, int subfile );
 extern bool             SimSubFileReadOnly( int parm, int subfile );
 extern long             SimSubFileSize( int parm, int subfile );
-extern bool             SimFileSplit( int parm );
-extern bool             SimFileLastSplit( int parm );
 extern void             SaveState( void );
 extern long             SimInit( const VBUF *inf_name );
 extern void             SimSetTargTempDisk( int parm, char disk );
@@ -146,7 +145,6 @@ extern int              SimNumTargets( void );
 extern disk_ssize       SimTargetSpaceNeeded( int parm );
 extern void             SimTargetDir( int i, VBUF *buff );
 extern void             SimTargetDirName( int i, VBUF *buff );
-extern disk_size        SimMaxTmpFile( int i );
 extern int              SimNumDirs( void );
 extern void             SimDirNoEndSlash( int parm, VBUF *buff );
 extern bool             SimDirUsed( int parm );
@@ -157,26 +155,25 @@ extern int              SimNumFiles( void );
 extern void             SimGetFileDesc( int parm, VBUF *buff );
 extern void             SimGetFileName( int parm, VBUF *buff );
 extern long             SimFileSize( int parm );
-extern int              SimFileDisk( int parm, VBUF *buff );
-extern int              SimFileDiskNum( int parm );
 extern bool             SimFileOldDir( int parm, VBUF *buff );
 extern void             SimFileDir( int parm, VBUF *buff );
 extern int              SimFileDirNum( int parm );
 extern bool             SimCheckFileCondition( int parm );
 extern bool             SimCheckFileInitialCondition( int parm );
-extern void             SimGetPMGroupFileName( VBUF *buff );
-extern void             SimGetPMGroupIcon( VBUF *buff );
-extern void             SimGetPMGroup( VBUF *buff );
-extern int              SimGetPMProgsNum( void );
-extern int              SimGetPMProgName( int parm, VBUF *buff );
-extern bool             SimPMProgIsShadow( int parm );
-extern bool             SimPMProgIsGroup( int parm );
+extern void             SimGetPMApplGroupFile( VBUF *buff );
+extern void             SimGetPMApplGroupIconFile( VBUF *buff );
+extern void             SimGetPMApplGroupName( VBUF *buff );
+extern bool             SimIsPMApplGroupDefined( void );
+extern int              SimGetPMsNum( void );
+extern int              SimGetPMProgInfo( int parm, VBUF *buff );
+extern bool             SimPMIsShadow( int parm );
+extern bool             SimPMIsGroup( int parm );
 extern void             SimGetPMParms( int parm, VBUF *buff );
 extern void             SimGetPMDesc( int parm, VBUF *buff );
-extern int              SimGetPMIconInfo( int parm, VBUF *buff, int *icon_pos );
+extern int              SimGetPMIconInfo( int parm, VBUF *iconfile, int *iconindex );
 extern bool             SimCheckPMCondition( int parm );
 extern void             SimGetPMGroupName( int parm, VBUF *buff );
-extern void             SimGetPMGroupFName( int parm, VBUF *buff );
+extern void             SimGetPMGroupFile( int parm, VBUF *buff );
 extern int              SimGetPMGroupsNum( void );
 extern int              SimNumProfile( void );
 extern void             SimProfInfo( int parm, VBUF *app_name, VBUF *key_name, VBUF *value, VBUF *file_name, VBUF *hive_name );
@@ -193,10 +190,10 @@ extern append_mode      SimGetEnvironmentStrings( int parm, VBUF *new_var, VBUF 
 extern int              SimNumAssociations( void );
 extern void             SimGetAssociationExt( int parm, VBUF *buff );
 extern void             SimGetAssociationKeyName( int parm, VBUF *buff );
-extern void             SimGetAssociationProgram( int parm, VBUF *buff );
 extern void             SimGetAssociationDescription( int parm, VBUF *buff );
+extern void             SimGetAssociationProgram( int parm, VBUF *buff );
+extern void             SimGetAssociationIconFileName( int parm, VBUF *buff );
 extern int              SimGetAssociationIconIndex( int parm );
-extern int              SimGetAssociationNoOpen( int parm );
 extern bool             SimCheckAssociationCondition( int parm );
 extern int              SimNumLabels( void );
 extern void             SimGetLabelDir( int parm, VBUF *buff );
@@ -205,10 +202,7 @@ extern bool             SimCalcTargetSpaceNeeded( void );
 extern void             CheckDLLCount( const char * );
 extern void             SimCalcAddRemove( void );
 extern void             SimSetNeedGetDiskSizes( void );
-extern bool             PatchFiles( void );
 extern void             MsgPut( int resourceid, va_list arglist );
-extern void             PatchError( int format, ... );
-extern void             FilePatchError( int format, ... );
 extern void             FreeAllStructs( void );
 extern bool             EvalCondition( const char *str );
 extern bool             SimTargetNeedsUpdate( int parm );
@@ -217,7 +211,6 @@ extern int              SimNumSpawns( void );
 extern bool             SimGetSpawnCommand( int i, VBUF *buff );
 extern when_time        SimWhen( int i );
 extern bool             SimEvalSpawnCondition( int i );
-extern int              SimGetNumDisks( void );
 extern int              SimNumDeletes( void );
 extern const char       *SimDeleteName( int );
 extern bool             SimDeleteIsDialog( int );

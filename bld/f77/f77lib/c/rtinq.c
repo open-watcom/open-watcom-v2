@@ -31,6 +31,7 @@
 
 
 #include "ftnstd.h"
+#include <string.h>
 #include "undef.h"
 #include "rundat.h"
 #include "pgmacc.h"
@@ -39,7 +40,6 @@
 #include "sysinq.h"
 #include "rtinq.h"
 
-#include <string.h>
 
 /* Forward declarations */
 static  void    RTFill( void PGM *dest, int size );

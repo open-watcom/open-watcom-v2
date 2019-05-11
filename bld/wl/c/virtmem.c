@@ -120,7 +120,7 @@ the leaf id chooses which element of the branch is the correct seg_table.
 */
 
 // this structure is used for picking the high order word off a long
-typedef struct wordpick {
+typedef struct {
     unsigned_16 low;
     unsigned_16 high;
 } wordpick;

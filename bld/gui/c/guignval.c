@@ -168,7 +168,7 @@ gui_message_return GUIGetNewVal( const char *title, const char *old, char **new_
                          ( ( cols / 2 - BUTTON_WIDTH ) / 2 ) - BUTTON_WIDTH );
 
 
-    GUIDlgOpen( title, NUM_ROWS, cols, GetNew, ARRAY_SIZE( GetNew ), &GetNewValGUIEventProc, &info );
+    GUIDlgOpen( title, NUM_ROWS, cols, GetNew, GUI_ARRAY_SIZE( GetNew ), &GetNewValGUIEventProc, &info );
     *new_val = info.text;
     return( info.ret_val );
 }

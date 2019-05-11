@@ -180,7 +180,7 @@ enum eNameBufferType {
 };
 
 /* Turn packing for address structures. */
-#include <packon.h>
+#include <pshpack1.h>
 
 /* Transport driver interface NetBIOS address */
 typedef struct _TDI_ADDRESS_NETBIOS_UNICODE_EX_XP {
@@ -392,7 +392,7 @@ typedef struct _TA_ADDRESS_VNS {
 typedef TA_VNS_ADDRESS  *PTA_VNS_ADDRESS;
 
 /* Revert to default packing. */
-#include <packoff.h>
+#include <poppack.h>
 
 /* Transport driver interface request */
 typedef struct _TDI_REQUEST {

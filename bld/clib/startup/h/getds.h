@@ -30,10 +30,12 @@
 
 
 #ifdef _M_IX86
-#ifdef __NETWARE__
+#ifdef _M_I86
+extern void             _WCI86NEAR __GETDS( void );
+#elif defined( __NETWARE__ )
 extern unsigned short   __GETDS( void );
 #else
-extern void             _WCI86NEAR __GETDS( void );
+extern void             __GETDS( void );
 #endif
 #pragma aux __GETDS "*";
 #endif

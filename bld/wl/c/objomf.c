@@ -148,10 +148,10 @@ unsigned long OMFPass1( void )
     unsigned long retval;
 
     PermStartMod( CurrMod );
-    if( LinkState & (HAVE_MACHTYPE_MASK & ~HAVE_I86_CODE) ) {
-        LnkMsg( WRN+MSG_MACHTYPE_DIFFERENT, "s", CurrMod->f.source->file->name);
+    if( LinkState & (LS_HAVE_MACHTYPE_MASK & ~LS_HAVE_I86_CODE) ) {
+        LnkMsg( WRN+MSG_MACHTYPE_DIFFERENT, "s", CurrMod->f.source->infile->name);
     } else {
-        LinkState |= HAVE_I86_CODE;
+        LinkState |= LS_HAVE_I86_CODE;
     }
     CurrMod->omfdbg = OMF_DBG_CODEVIEW; // Assume MS style LINNUM records
     retval = ProcObj( CurrMod->f.source, CurrMod->location, &Pass1Cmd );
@@ -295,7 +295,7 @@ static void Pass1Cmd( byte cmd )
         LnkMsg( LOC_REC+WRN+MSG_REC_NOT_DONE, "x", cmd );
         break;
     default:
-        CurrMod->f.source->file->flags |= INSTAT_IOERR;
+        CurrMod->f.source->infile->status |= INSTAT_IOERR;
         LnkMsg( LOC_REC+ERR+MSG_BAD_REC_TYPE, "x", cmd );
         break;
     }
@@ -380,9 +380,9 @@ static void LinkDirective( void )
         ProcVFReference();
         break;
     case LDIR_PACKDATA:
-        if( (LinkFlags & PACKDATA_FLAG) == 0 ) {
+        if( (LinkFlags & LF_PACKDATA_FLAG) == 0 ) {
             PackDataLimit = _GetU32UN( ObjBuff );
-            LinkFlags |= PACKDATA_FLAG;
+            LinkFlags |= LF_PACKDATA_FLAG;
         }
         break;
     case LDIR_OPT_FAR_CALLS:
@@ -513,7 +513,7 @@ static void Comment( void )
             FmtData.cpu_type = proc;
         break;
     case CMT_DOSSEG:
-        LinkState |= DOSSEG_FLAG;
+        LinkState |= LS_DOSSEG_FLAG;
         break;
     case CMT_DEFAULT_LIBRARY:
         AddCommentLib( (char *)ObjBuff, EOObjRec - ObjBuff, LIB_PRIORITY_MAX - 2 );
@@ -596,13 +596,13 @@ static void ProcModuleEnd( void )
         switch( target ) {
         case TARGET_SEGWD:
             if( StartInfo.type != START_UNDEFED ) {
-                LnkMsg( LOC+MILD_ERR+MSG_MULT_START_ADDRS, "12", StartInfo.mod->f.source->file->name, StartInfo.mod->name );
+                LnkMsg( LOC+MILD_ERR+MSG_MULT_START_ADDRS, "12", StartInfo.mod->f.source->infile->name, StartInfo.mod->name );
                 return;                 // <-------- NOTE: premature return
             }
             seg = (segnode *)FindNode( SegNodes, targetidx );
             StartInfo.type = START_IS_SDATA;
             StartInfo.targ.sdata= seg->entry;
-            if( (seg->info & SEG_CODE) && (LinkFlags & STRIP_CODE) ) {
+            if( (seg->info & SEG_CODE) && (LinkFlags & LF_STRIP_CODE) ) {
                 RefSeg( (segdata *)seg->entry );
             }
             StartInfo.mod = CurrMod;
@@ -857,7 +857,7 @@ static void ProcVFTableRecord( bool ispure )
     symbol      *sym;
     vflistrtns  rtns;
 
-    if( (LinkFlags & VF_REMOVAL) == 0 )
+    if( (LinkFlags & LF_VF_REMOVAL) == 0 )
         return;
     ext = (extnode *) FindNode( ExtNodes, GetIdx() );
     sym = ext->entry;
@@ -880,7 +880,7 @@ static void ProcVFReference( void )
     list_of_names       *lname;
     unsigned            index;
 
-    if( (LinkFlags & VF_REMOVAL) == 0 )
+    if( (LinkFlags & LF_VF_REMOVAL) == 0 )
         return;
     index = GetIdx();
     if( index == 0 ) {
@@ -888,7 +888,7 @@ static void ProcVFReference( void )
         return;
     }
     ext = (extnode *) FindNode( ExtNodes, index );
-    if( LinkFlags & STRIP_CODE ) {
+    if( LinkFlags & LF_STRIP_CODE ) {
         if( *ObjBuff == 0 ) {   /* it is a comdat index */
             ObjBuff++;
             lname = FindName( GetIdx() );

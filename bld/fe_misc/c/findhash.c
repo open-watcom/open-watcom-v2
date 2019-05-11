@@ -389,10 +389,10 @@ void init_tokens( char **input_file )
                 fatal( "too many keywords" );
             }
             key_len = (unsigned)strlen( keyword );
-            if( key_len < min_len ) {
+            if( min_len > key_len ) {
                 min_len = key_len;
             }
-            if( key_len > max_len ) {
+            if( max_len < key_len ) {
                 max_len = key_len;
             }
             if( key_len >= ( CHAR_BIT * sizeof( len_mask ) ) ) {

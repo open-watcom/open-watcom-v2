@@ -103,7 +103,7 @@ int __cdecl main( int argc, char **argv )
 // and that main gets the _ in the right place by
 // using a pragma to do so.
 
-#pragma aux main "_*" parm [];
+#pragma aux main "_*" __parm [];
 
 // The compiler emits references to these symbols,
 // so make sure they get defined here to prevent

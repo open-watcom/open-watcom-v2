@@ -35,8 +35,8 @@
 // LEX       : lexical analyser
 //
 
-#include <string.h>
 #include "ftnstd.h"
+#include <string.h>
 #include "opr.h"
 #include "opn.h"
 #include "errcod.h"

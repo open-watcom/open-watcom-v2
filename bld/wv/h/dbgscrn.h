@@ -30,6 +30,10 @@
 ****************************************************************************/
 
 
+#ifdef __UNIX__
+extern int      DbgConHandle;   /* Debugger's console file handle */
+#endif
+
 extern void     Ring_Bell( void );
 extern void     SaveMainWindowPos( void );
 extern unsigned ConfigScreen( void );

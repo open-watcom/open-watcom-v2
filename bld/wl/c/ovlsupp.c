@@ -415,7 +415,7 @@ void TryRefVector( symbol *sym )
 {
     if( (FmtData.type & MK_OVERLAYS) == 0 )
         return;
-    if( (LinkState & SEARCHING_LIBRARIES) && FmtData.u.dos.distribute ) {
+    if( (LinkState & LS_SEARCHING_LIBRARIES) && FmtData.u.dos.distribute ) {
         RefDistribSym( sym );
     } else {
         OvlRefVector( sym );

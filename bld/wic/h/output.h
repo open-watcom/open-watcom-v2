@@ -131,13 +131,13 @@ typedef ExpandFuncParam *pExpandFuncParam;
 typedef struct {
     int numParams;
     union {
-        pExpandFunc  expandFunc;
-        pExpandFuncParam  expandFuncParam;
-    };
+        pExpandFunc         expandFunc;
+        pExpandFuncParam    expandFuncParam;
+    } u;
 } ExpandFuncEntry;
 
 typedef ExpandFuncEntry ExpandFuncTable[MAX_PRINT_TYPE];
-typedef ExpandFuncTable *pExpandFuncTable;
+typedef ExpandFuncEntry *pExpandFuncTable;
 
 void expandPushTree(int fileNum, void *tree);
 
@@ -146,11 +146,11 @@ typedef struct {
     char commentChar;
     char *extension[MAX_NUM_OF_OUT_FILES];
     pPrintCTreeTable printCTreeTable;
-    pExpandFuncTable printExpandTable;
+    ExpandFuncEntry *printExpandTable;
     char **keywordsTable;
     void (*outputCurrLine)(int fnum, int continueToNextLine);
     int lfInitFlags;
-    int substractFromLineLen;
+    unsigned substractFromLineLen;
 } TargetLangOpt;
 
 extern TargetLangOpt g_tlang;  // Output (target) language options, set in initOutputSystem()

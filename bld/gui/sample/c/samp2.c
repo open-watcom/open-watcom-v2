@@ -79,12 +79,12 @@ static gui_create_info DialogWnd = {
     GUI_NOSCROLL,
     GUI_VISIBLE,
     NULL,
-    { 0, NULL },                        // Menu array
-    { 0, NULL },                        // Colour attribute array
-    &GetNewGUIEventProc,                // GUI Event Callback function
+    GUI_NO_MENU,                    // Menu array
+    GUI_NO_COLOUR,                  // Colour attribute array
+    &GetNewGUIEventProc,            // GUI Event Callback function
     NULL,
     NULL,
-    NULL                                // Menu Resource
+    NULL                            // Menu Resource
 };
 
 static gui_rect Rect;
@@ -109,8 +109,8 @@ static gui_create_info StatusWnd = {
     GUI_NOSCROLL,
     GUI_VISIBLE | GUI_DIALOG_LOOK,
     NULL,
-    { 0, NULL },                            // Menu array
-    { GUI_NUM_ATTRS + 1, &StatusColours },  // Colour attribute array
+    GUI_NO_MENU,                            // Menu array
+    { GUI_NUM_ATTRS + 1, StatusColours },   // Colour attribute array
     &StatusGUIEventProc,                    // GUI Event Callback function
     NULL,
     NULL,
@@ -226,7 +226,7 @@ static bool StatusGUIEventProc( gui_window * gui, gui_event gui_ev, void * param
 
 void GUImain( void )
 {
-    GUIWndInit( 250, GUI_GMOUSE );
+    GUIWndInit( 250 /* ms */, GUI_GMOUSE );
     GUISetScale( &Scale );
     GUISetColour( &Colours );
     GUICreateDialog( &DialogWnd, NUM_CONTROLS, &GetNew );

@@ -123,7 +123,7 @@ inspect_type WndGetExprSPInspectType( address *paddr )
     return( INSP_RAW_DATA );
 }
 
-OVL_EXTERN void DoLValExpr( void )
+static void DoLValExpr( void )
 /********************************/
 {
     EvalLValExpr( 1 );

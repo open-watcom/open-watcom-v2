@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,16 +34,13 @@
 #include <string.h>
 #include <stddef.h>
 #include <stdlib.h>
-#include <malloc.h>
 #include <direct.h>
 #include <stdarg.h>
 #include <process.h>
 #include "wwindows.h"
 #include "dbgdefn.h"
 #include "dbgwind.h"
-#ifndef __NT__
 #include "tinyio.h"
-#endif
 #include "dbgmem.h"
 #include "autoenv.h"
 #include "strutil.h"
@@ -67,6 +65,8 @@ bool            ToldWinHandle = false;
 static BOOL     PASCAL GetCommandData( HWND );
 
 static char     *CmdData;
+
+#ifndef __NOUI__
 
 #if defined( GUI_IS_GUI )
 void TellWinHandle( void )
@@ -94,10 +94,11 @@ void GUImain( void )
 }
 
 
-int GUISysInit( int param )
+bool GUISysInit( init_mode install )
 {
-    param=param;
-    return( 1 );
+    /* unused parameters */ (void)install;
+
+    return( true );
 }
 
 void GUISysFini( void  )
@@ -110,6 +111,8 @@ void WndCleanUp( void )
     TrapTellHWND( (HWND)0 );
     FiniHookFunc();
 }
+
+#endif
 
 char *GetCmdArg( int num )
 {
@@ -126,14 +129,8 @@ void SetCmdArgStart( int num, char *ptr )
 
 void KillDebugger( int ret_code )
 {
-#ifdef __NT__
-    ret_code = ret_code;
-    ExitProcess( 0 );
-    // never return
-#else
     TinyExit( ret_code );
     // never return
-#endif
 }
 
 void GrabHandlers( void )

@@ -91,9 +91,9 @@ int WResLoadResource2( WResDir dir, PHANDLE_INFO hinfo, WResID *resource_type,
     return( retcode );
 }
 
-int WResLoadResource( PHANDLE_INFO hinfo, UINT idType, UINT idResource,
-                                        lpstr *lpszBuffer, size_t *bufferSize )
-/*****************************************************************************/
+int WResLoadResource( PHANDLE_INFO hinfo, unsigned int idType,
+                unsigned int idResource, lpstr *lpszBuffer, size_t *bufferSize )
+/******************************************************************************/
 {
     WResID              resource_type;
     WResID              resource_id;

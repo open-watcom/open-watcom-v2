@@ -39,7 +39,7 @@
 #include "wcopystr.h"
 #include "widn2str.h"
 #include "wnewitem.h"
-#include "sys_rc.h"
+#include "sysall.rh"
 
 /****************************************************************************/
 /* external function prototypes                                             */

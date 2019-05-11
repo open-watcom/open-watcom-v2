@@ -28,14 +28,14 @@
 *
 ****************************************************************************/
 
+
 #include "ftnstd.h"
+#include <string.h>
+#include <stdio.h>
 #include "ftnio.h"
 #include "rtutls.h"
 #include "fdutil.h"
 
-#include <string.h>
-#include <stdio.h>
-#include <stdlib.h>
 
 void    *LocFile( char *name ) {
 //==============================

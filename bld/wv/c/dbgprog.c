@@ -193,7 +193,7 @@ void FindLocalDebugInfo( const char *name )
     InsertRing( RingEnd( &LocalDebugInfo ), buff, strlen( buff ), false );
 }
 
-OVL_EXTERN void DoDownLoadCode( void )
+static void DoDownLoadCode( void )
 /************************************/
 {
     file_handle     fh;
@@ -270,7 +270,7 @@ address DefAddrSpaceForAddr( address addr )
     return( DefAddrSpaceForMod( mod ) );
 }
 
-OVL_EXTERN void MapAddrSystem( image_entry *image, addr_ptr *addr,
+static void MapAddrSystem( image_entry *image, addr_ptr *addr,
                         addr_off *lo_bound, addr_off *hi_bound )
 {
     RemoteMapAddr( addr, lo_bound, hi_bound, image->system_handle );
@@ -496,11 +496,13 @@ static bool CheckLoadDebugInfo( image_entry *image, file_handle fh, dip_priority
     image->dip_handle = NO_MOD;
     for( priority = start - 1; (priority = DIPPriority( priority )) != 0; ) {
         if( priority > end )
-            return( false );
+            break;
         DIPStatus = DS_OK;
         image->dip_handle = DIPLoadInfo( FH2FP( fh ), sizeof( image_entry * ), priority );
-        if( image->dip_handle != NO_MOD )
-            break;
+        if( image->dip_handle != NO_MOD ) {
+            *(image_entry **)DIPImageExtra( image->dip_handle ) = image;
+            return( true );
+        }
         if( DIPStatus & DS_ERR ) {
             symfile = image->symfile_name;
             if( symfile == NULL )
@@ -509,11 +511,10 @@ static bool CheckLoadDebugInfo( image_entry *image, file_handle fh, dip_priority
             *endstr++ = ' ';
             StrCopy( DIPMsgText( DIPStatus ), endstr );
             Warn( buff );
-            return( false );
+            break;
         }
     }
-    *(image_entry **)DIPImageExtra( image->dip_handle ) = image;
-    return( true );
+    return( false );
 }
 
 
@@ -623,17 +624,6 @@ void UnLoadImgSymInfo( image_entry *image, bool nofree )
         FClearOpenSourceCache();
     }
 }
-
-bool ReLoadImgSymInfo( image_entry *image )
-{
-    if( ProcImgSymInfo( image ) ) {
-        DIPMapInfo( image->dip_handle, image );
-        DbgUpdate( UP_SYMBOLS_ADDED );
-        return( true );
-    }
-    return( false );
-}
-
 
 remap_return ReMapImageAddress( mappable_addr *loc, image_entry *image )
 {
@@ -763,6 +753,18 @@ static void InitImageInfo( image_entry *image )
 }
 
 
+bool ReLoadImgSymInfo( image_entry *image )
+{
+    if( ProcImgSymInfo( image ) ) {
+        DIPMapInfo( image->dip_handle, image );
+        DbgUpdate( UP_SYMBOLS_ADDED );
+        InitImageInfo( image );
+        return( true );
+    }
+    return( false );
+}
+
+
 bool LoadDeferredSymbols( void )
 {
     image_entry *image;
@@ -774,7 +776,6 @@ bool LoadDeferredSymbols( void )
     for( image = DbgImageList; image != NULL; image = image->link ) {
         if( image->deferred_symbols ) {
             if( ReLoadImgSymInfo( image ) ) {
-                InitImageInfo( image );
                 image->deferred_symbols = false;
                 rc = true;
             }
@@ -811,9 +812,7 @@ bool AddLibInfo( bool already_stopping, bool *force_stop )
             image = CreateImage( TxtBuff, NULL );
             if( image != NULL ) {
                 image->system_handle = module;
-                if( ReLoadImgSymInfo( image ) ) {
-                    InitImageInfo( image );
-                }
+                ReLoadImgSymInfo( image );
                 DUIImageLoaded( image, true, already_stopping, force_stop );
             }
         }
@@ -962,7 +961,7 @@ void ReleaseProgOvlay( bool free_sym )
 
 
 
-OVL_EXTERN void BadNew( void )
+static void BadNew( void )
 {
     Error( ERR_LOC, LIT_ENG( ERR_BAD_OPTION ), "new" );
 }
@@ -1212,7 +1211,7 @@ static void DoReStart( bool have_parms, size_t clen, const char *start, size_t l
 }
 
 
-OVL_EXTERN void ResNew( void )
+static void ResNew( void )
 {
     const char          *start;
     size_t              len;
@@ -1263,7 +1262,7 @@ static const char NogoTab[] = {
 
 
 
-OVL_EXTERN void ProgNew( void )
+static void ProgNew( void )
 {
     const char  *start;
     char        *cmd;
@@ -1357,7 +1356,7 @@ static void EvalMapExpr( address *addr )
  * MapAddrUser - have the user supply address mapping information
  */
 
-OVL_EXTERN void MapAddrUser( image_entry *image, addr_ptr *addr,
+static void MapAddrUser( image_entry *image, addr_ptr *addr,
                         addr_off *lo_bound, addr_off *hi_bound )
 {
     address     mapped;
@@ -1398,7 +1397,7 @@ OVL_EXTERN void MapAddrUser( image_entry *image, addr_ptr *addr,
  * SymFileNew - process a new symbolic file request
  */
 
-OVL_EXTERN void SymFileNew( void )
+static void SymFileNew( void )
 {
     const char  *fname;
     size_t      fname_len;
@@ -1474,7 +1473,7 @@ OVL_EXTERN void SymFileNew( void )
  * MapAddrUsrMod - simple address mapping for user loaded modules
  */
 
-OVL_EXTERN void MapAddrUsrMod( image_entry *image, addr_ptr *addr,
+static void MapAddrUsrMod( image_entry *image, addr_ptr *addr,
                         addr_off *lo_bound, addr_off *hi_bound )
 {
     address     mapped;

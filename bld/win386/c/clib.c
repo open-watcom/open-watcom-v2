@@ -36,7 +36,6 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <dos.h>
-#include <malloc.h>
 #include <string.h>
 #include <time.h>
 #include "fints.h"

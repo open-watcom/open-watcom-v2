@@ -377,7 +377,7 @@ bool    AsmIsTracking( a_window wnd )
 }
 #endif
 
-OVL_EXTERN  void    AsmModify( a_window wnd, wnd_row row, wnd_piece piece )
+static  void    AsmModify( a_window wnd, wnd_row row, wnd_piece piece )
 {
     asm_window  *asw;
     address     addr;
@@ -397,7 +397,7 @@ OVL_EXTERN  void    AsmModify( a_window wnd, wnd_row row, wnd_piece piece )
 }
 
 
-OVL_EXTERN void AsmNotify( a_window wnd, wnd_row row, wnd_piece piece )
+static void AsmNotify( a_window wnd, wnd_row row, wnd_piece piece )
 {
     asm_window  *asw;
     address     addr;
@@ -433,7 +433,7 @@ bool AsmOpenGadget( a_window wnd, wnd_line_piece *line, mod_handle mod )
 }
 
 
-OVL_EXTERN void     AsmMenuItem( a_window wnd, gui_ctl_id id, wnd_row row, wnd_piece piece )
+static void     AsmMenuItem( a_window wnd, gui_ctl_id id, wnd_row row, wnd_piece piece )
 {
     address     addr;
     asm_window  *asw;
@@ -564,7 +564,7 @@ OVL_EXTERN void     AsmMenuItem( a_window wnd, gui_ctl_id id, wnd_row row, wnd_p
 }
 
 
-OVL_EXTERN int AsmScroll( a_window wnd, int lines )
+static int AsmScroll( a_window wnd, int lines )
 {
     address             addr;
     int                 moved;
@@ -613,7 +613,7 @@ OVL_EXTERN int AsmScroll( a_window wnd, int lines )
 }
 
 
-OVL_EXTERN  void    AsmBegPaint( a_window wnd, wnd_row row, int num )
+static  void    AsmBegPaint( a_window wnd, wnd_row row, int num )
 {
     asm_window  *asw;
 
@@ -624,7 +624,7 @@ OVL_EXTERN  void    AsmBegPaint( a_window wnd, wnd_row row, int num )
 }
 
 
-OVL_EXTERN  void    AsmEndPaint( a_window wnd, wnd_row row, int num )
+static  void    AsmEndPaint( a_window wnd, wnd_row row, int num )
 {
     /* unused parameters */ (void)wnd; (void)row; (void)num;
 
@@ -658,7 +658,7 @@ static void AsmNewSource( asm_window *asw, cue_handle *cueh )
     }
 }
 
-OVL_EXTERN  bool    AsmGetLine( a_window wnd, wnd_row row, wnd_piece piece, wnd_line_piece *line )
+static  bool    AsmGetLine( a_window wnd, wnd_row row, wnd_piece piece, wnd_line_piece *line )
 {
     address     addr;
     asm_window  *asw;
@@ -899,7 +899,7 @@ static  void    AsmNewIP( a_window wnd )
     }
 }
 
-OVL_EXTERN void     AsmRefresh( a_window wnd )
+static void     AsmRefresh( a_window wnd )
 {
     asm_window          *asw;
     unsigned            new_size;
@@ -994,7 +994,7 @@ static  void    AsmInit( a_window wnd )
     WndZapped( wnd );
 }
 
-OVL_EXTERN bool AsmWndEventProc( a_window wnd, gui_event gui_ev, void *parm )
+static bool AsmWndEventProc( a_window wnd, gui_event gui_ev, void *parm )
 {
     asm_window  *asw;
 
@@ -1017,7 +1017,7 @@ OVL_EXTERN bool AsmWndEventProc( a_window wnd, gui_event gui_ev, void *parm )
         AsmNewIP( wnd );
         DbgUpdate( UP_OPEN_CHANGE );
         asw->popup = WndAppendToggles( MADDisasmToggleList(), &asw->num_toggles, AsmMenu, ArraySize( AsmMenu ), MENU_ASM_TOGGLES );
-        WndSetPopUpMenu( wnd, asw->popup, ArraySize( AsmMenu ) + asw->num_toggles );
+        WndSetPopUpMenu( wnd, ArraySize( AsmMenu ) + asw->num_toggles, asw->popup );
         return( true );
     case GUI_DESTROY :
         SrcFreeAsm( asw->src );
@@ -1029,7 +1029,7 @@ OVL_EXTERN bool AsmWndEventProc( a_window wnd, gui_event gui_ev, void *parm )
     return( false );
 }
 
-OVL_EXTERN void DoAsmChangeOptions( a_window wnd )
+static void DoAsmChangeOptions( a_window wnd )
 {
     asm_window  *asw;
 
@@ -1045,6 +1045,12 @@ void AsmChangeOptions( void )
     WndForAllClass( WND_ASSEMBLY, DoAsmChangeOptions );
 }
 
+static bool ChkUpdate( void )
+{
+    return( UpdateFlags & (UP_MAD_CHANGE | UP_SYM_CHANGE | UP_NEW_PROGRAM | UP_NEW_SRC | UP_STACKPOS_CHANGE
+            | UP_CSIP_CHANGE | UP_BREAK_CHANGE | UP_RADIX_CHANGE | UP_ASM_RESIZE) );
+}
+
 wnd_info AsmInfo = {
     AsmWndEventProc,
     AsmRefresh,
@@ -1057,10 +1063,8 @@ wnd_info AsmInfo = {
     NoNumRows,
     NoNextRow,
     AsmNotify,
-    ChkFlags,
-    UP_MAD_CHANGE | UP_SYM_CHANGE | UP_NEW_PROGRAM | UP_NEW_SRC | UP_STACKPOS_CHANGE
-     | UP_CSIP_CHANGE | UP_BREAK_CHANGE | UP_RADIX_CHANGE | UP_ASM_RESIZE,
-    DefPopUp( AsmMenu )
+    ChkUpdate,
+    PopUp( AsmMenu )
 };
 
 

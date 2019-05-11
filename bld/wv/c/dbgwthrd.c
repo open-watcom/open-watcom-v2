@@ -76,7 +76,7 @@ static thread_state     *GetThreadRow( wnd_row row )
     return( thd );
 }
 
-OVL_EXTERN wnd_row TrdNumRows( a_window wnd )
+static wnd_row TrdNumRows( a_window wnd )
 {
     thread_state    *thd;
     wnd_row         num;
@@ -89,7 +89,7 @@ OVL_EXTERN wnd_row TrdNumRows( a_window wnd )
     return( num );
 }
 
-OVL_EXTERN void TrdMenuItem( a_window wnd, gui_ctl_id id, wnd_row row, wnd_piece piece )
+static void TrdMenuItem( a_window wnd, gui_ctl_id id, wnd_row row, wnd_piece piece )
 {
     thread_state        *thd = GetThreadRow( row );
 
@@ -139,7 +139,7 @@ OVL_EXTERN void TrdMenuItem( a_window wnd, gui_ctl_id id, wnd_row row, wnd_piece
 }
 
 
-OVL_EXTERN void TrdRefresh( a_window wnd )
+static void TrdRefresh( a_window wnd )
 {
     thread_state    *thd;
     wnd_row         row;
@@ -157,7 +157,7 @@ OVL_EXTERN void TrdRefresh( a_window wnd )
 }
 
 
-OVL_EXTERN bool    TrdGetLine( a_window wnd, wnd_row row, wnd_piece piece, wnd_line_piece *line )
+static bool    TrdGetLine( a_window wnd, wnd_row row, wnd_piece piece, wnd_line_piece *line )
 {
     thread_state        *thd = GetThreadRow( row );
 
@@ -246,6 +246,11 @@ OVL_EXTERN bool    TrdGetLine( a_window wnd, wnd_row row, wnd_piece piece, wnd_l
 }
 
 
+static bool ChkUpdate( void )
+{
+    return( UpdateFlags & UP_THREAD_STATE );
+}
+
 wnd_info TrdInfo = {
     NoWndEventProc,
     TrdRefresh,
@@ -258,9 +263,8 @@ wnd_info TrdInfo = {
     TrdNumRows,
     NoNextRow,
     NoNotify,
-    ChkFlags,
-    UP_THREAD_STATE,
-    DefPopUp( TrdMenu ),
+    ChkUpdate,
+    PopUp( TrdMenu ),
 };
 
 a_window WndTrdOpen( void )

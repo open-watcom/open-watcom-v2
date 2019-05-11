@@ -1,27 +1,29 @@
-:segment !DOS
-:keep NOT_DOS
-:endsegment
+:: Key word used by header source files
 ::
-:segment !QNX
-:keep NOT_QNX
-:endsegment
+:: BITS16       header file supports 16-bit target (now DOS and QNX)
 ::
-:segment !RDOS
-:keep NOT_RDOS
-:endsegment
+:: INTEL_ONLY   header file supports only Intel architecture (now RDOS and QNX)
 ::
-:segment !LINUX
-:keep NOT_LINUX
-:endsegment
+:: UNICODE      header file supports UNICODE (now DOS)
 ::
-:segment !NETWARE
-:keep NOT_NETWARE
-:endsegment
+:::::::::::::::::::::
+:segment DOS
 ::
-:segment !UNICODE
-:keep NOT_UNICODE
-:endsegment
+:keep BITS16
+:keep UNICODE
+:::::::::::::::::::::
+:elsesegment LINUX
 ::
-:segment !NEC
-:keep NOT_NEC
+:::::::::::::::::::::
+:elsesegment QNX
+::
+:keep INTEL_ONLY
+:keep BITS16
+::
+:::::::::::::::::::::
+:elsesegment RDOS
+::
+:keep INTEL_ONLY
+::
+:::::::::::::::::::::
 :endsegment

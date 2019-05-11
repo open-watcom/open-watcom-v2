@@ -82,7 +82,7 @@ static HWND *SetUpPushWindows( HWND hwnd, WORD type ) {
  */
 static void SetDisplayType( HWND hwnd, HWND **title, WORD type ) {
 
-    HMENU       mh;
+    HMENU       hmenu;
     char        buf[256];
     char        *typename;
 
@@ -92,33 +92,33 @@ static void SetDisplayType( HWND hwnd, HWND **title, WORD type ) {
                       HeapWalkName, MB_OK | MB_ICONEXCLAMATION );
         return;
     }
-    mh = GetMenu( hwnd );
+    hmenu = GetMenu( hwnd );
     if( type == HEAPMENU_DISPLAY_INIT ) {
         type = HeapType;
         HeapType = HEAPMENU_DISPLAY_INIT;
     } else {
-        CheckMenuItem( mh, HeapType, MF_UNCHECKED | MF_BYCOMMAND );
+        CheckMenuItem( hmenu, HeapType, MF_UNCHECKED | MF_BYCOMMAND );
     }
 
     /* undo anything done for the previous state */
     switch( HeapType ) {
     case HEAPMENU_DISPLAY_DPMI:
-        EnableMenuItem( mh, HEAPMENU_ADD, MF_BYCOMMAND | MF_ENABLED );
-        EnableMenuItem( mh, HEAPMENU_OBJECT_DISCARD,
+        EnableMenuItem( hmenu, HEAPMENU_ADD, MF_BYCOMMAND | MF_ENABLED );
+        EnableMenuItem( hmenu, HEAPMENU_OBJECT_DISCARD,
                         MF_BYCOMMAND | MF_ENABLED );
-        EnableMenuItem( mh, HEAPMENU_OBJECT_OLDEST,
+        EnableMenuItem( hmenu, HEAPMENU_OBJECT_OLDEST,
                         MF_BYCOMMAND | MF_ENABLED );
-        EnableMenuItem( mh, HEAPMENU_OBJECT_NEWEST,
+        EnableMenuItem( hmenu, HEAPMENU_OBJECT_NEWEST,
                         MF_BYCOMMAND | MF_ENABLED );
-        EnableMenuItem( mh, HEAPMENU_LOCAL_LOCALWALK,
+        EnableMenuItem( hmenu, HEAPMENU_LOCAL_LOCALWALK,
                         MF_BYCOMMAND | MF_ENABLED );
-        EnableMenuItem( mh, HEAPMENU_COMPACT_AND_LOCALWALK,
+        EnableMenuItem( hmenu, HEAPMENU_COMPACT_AND_LOCALWALK,
                         MF_BYCOMMAND | MF_ENABLED );
-        EnableMenuItem( mh, HEAPMENU_OBJECT_GET_SELECTOR,
+        EnableMenuItem( hmenu, HEAPMENU_OBJECT_GET_SELECTOR,
                         MF_BYCOMMAND | MF_ENABLED );
-        EnableMenuItem( mh, HEAPMENU_LOCAL_MONITOR,
+        EnableMenuItem( hmenu, HEAPMENU_LOCAL_MONITOR,
                         MF_BYCOMMAND | MF_ENABLED );
-        ModifyMenu( mh, 2, MF_BYPOSITION | MF_POPUP,
+        ModifyMenu( hmenu, 2, MF_BYPOSITION | MF_POPUP,
                     (UINT)LoadMenu( Instance, "SORTMENU" ),
                     HWGetRCString( STR_SORT ) );
         KillPushWin( *title );
@@ -127,13 +127,13 @@ static void SetDisplayType( HWND hwnd, HWND **title, WORD type ) {
             GSortType == HEAPMENU_SORT_DPL ) GSortType = HEAPMENU_SORT_HANDLE;
         break;
     case HEAPMENU_DISPLAY_LRU:
-        DeleteMenu( mh, HEAPMENU_SORT_LRU, MF_BYCOMMAND );
+        DeleteMenu( hmenu, HEAPMENU_SORT_LRU, MF_BYCOMMAND );
         if( GSortType == HEAPMENU_SORT_LRU ) GSortType = HEAPMENU_SORT_HANDLE;
         break;
     case HEAPMENU_DISPLAY_INIT:
         if( type != HEAPMENU_DISPLAY_DPMI ) {
             *title = SetUpPushWindows( hwnd, type );
-            ModifyMenu( mh, 2, MF_BYPOSITION | MF_POPUP,
+            ModifyMenu( hmenu, 2, MF_BYPOSITION | MF_POPUP,
                     (UINT)LoadMenu( Instance, "SORTMENU" ),
                     HWGetRCString( STR_SORT ) );
         } else {
@@ -144,27 +144,27 @@ static void SetDisplayType( HWND hwnd, HWND **title, WORD type ) {
     /* do things for the new state */
     switch( type ) {
     case HEAPMENU_DISPLAY_DPMI:
-        ModifyMenu( mh, 2, MF_BYPOSITION | MF_POPUP,
+        ModifyMenu( hmenu, 2, MF_BYPOSITION | MF_POPUP,
                     (UINT)LoadMenu( Instance, "SORTDPMIMENU" ),
                     HWGetRCString( STR_SORT ) );
-        EnableMenuItem( mh, HEAPMENU_ADD, MF_BYCOMMAND | MF_GRAYED );
-        EnableMenuItem( mh, HEAPMENU_OBJECT_DISCARD,
+        EnableMenuItem( hmenu, HEAPMENU_ADD, MF_BYCOMMAND | MF_GRAYED );
+        EnableMenuItem( hmenu, HEAPMENU_OBJECT_DISCARD,
                         MF_BYCOMMAND | MF_GRAYED );
-        EnableMenuItem( mh, HEAPMENU_OBJECT_OLDEST,
+        EnableMenuItem( hmenu, HEAPMENU_OBJECT_OLDEST,
                         MF_BYCOMMAND | MF_GRAYED );
-        EnableMenuItem( mh, HEAPMENU_OBJECT_NEWEST,
+        EnableMenuItem( hmenu, HEAPMENU_OBJECT_NEWEST,
                         MF_BYCOMMAND | MF_GRAYED );
-        EnableMenuItem( mh, HEAPMENU_LOCAL_LOCALWALK,
+        EnableMenuItem( hmenu, HEAPMENU_LOCAL_LOCALWALK,
                         MF_BYCOMMAND | MF_GRAYED );
-        EnableMenuItem( mh, HEAPMENU_COMPACT_AND_LOCALWALK,
+        EnableMenuItem( hmenu, HEAPMENU_COMPACT_AND_LOCALWALK,
                         MF_BYCOMMAND | MF_GRAYED );
-        EnableMenuItem( mh, HEAPMENU_OBJECT_GET_SELECTOR,
+        EnableMenuItem( hmenu, HEAPMENU_OBJECT_GET_SELECTOR,
                         MF_BYCOMMAND | MF_GRAYED );
-        EnableMenuItem( mh, HEAPMENU_LOCAL_MONITOR,
+        EnableMenuItem( hmenu, HEAPMENU_LOCAL_MONITOR,
                         MF_BYCOMMAND | MF_GRAYED );
         if( GSortType == HEAPMENU_SORT_MODULE ||
                 GSortType == HEAPMENU_SORT_TYPE ) {
-            CheckMenuItem( mh, GSortType, MF_UNCHECKED | MF_BYCOMMAND );
+            CheckMenuItem( hmenu, GSortType, MF_UNCHECKED | MF_BYCOMMAND );
             GSortType = HEAPMENU_SORT_ADDR;
         }
 //      SetTitle( HeapDPMITitles, title );
@@ -173,7 +173,7 @@ static void SetDisplayType( HWND hwnd, HWND **title, WORD type ) {
         typename = HWAllocRCString( STR_SELECTOR_LIST_ITEMS );
         break;
     case HEAPMENU_DISPLAY_LRU:
-        InsertMenu( mh, HEAPMENU_SORT_FLAG, MF_BYCOMMAND, HEAPMENU_SORT_LRU,
+        InsertMenu( hmenu, HEAPMENU_SORT_FLAG, MF_BYCOMMAND, HEAPMENU_SORT_LRU,
                    GetRCString( STR_BY_AGE ) );
         typename = HWAllocRCString( STR_LRU_ITEMS );
         break;
@@ -187,8 +187,8 @@ static void SetDisplayType( HWND hwnd, HWND **title, WORD type ) {
         typename = "";
         break;
     }
-    CheckMenuItem( mh, type, MF_CHECKED | MF_BYCOMMAND );
-    CheckMenuItem( mh, GSortType, MF_CHECKED | MF_BYCOMMAND );
+    CheckMenuItem( hmenu, type, MF_CHECKED | MF_BYCOMMAND );
+    CheckMenuItem( hmenu, GSortType, MF_CHECKED | MF_BYCOMMAND );
     DrawMenuBar( hwnd );
     sprintf( buf, "%s - %s", HeapWalkName, typename );
     HWFreeRCString( typename );
@@ -236,8 +236,8 @@ static DWORD CheckForLocalSelect( GblWndInfo *info ) {
  */
 BOOL FAR PASCAL HeapWalkProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
 {
-    HMENU       mh;
-    HMENU       mh2;
+    HMENU       hmenu1;
+    HMENU       hmenu2;
     HCURSOR     hourglass;
     HCURSOR     oldcursor;
     DLGPROC     dlgproc;
@@ -328,13 +328,13 @@ BOOL FAR PASCAL HeapWalkProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam 
         break;
     case WM_MENUSELECT:
         if( LOWORD( lparam & MF_POPUP ) ) {
-            mh = GetMenu( hwnd );
-            mh2 = GetSubMenu( mh, 6 );
-            if( (HMENU)wparam == mh2  ) {
+            hmenu1 = GetMenu( hwnd );
+            hmenu2 = GetSubMenu( hmenu1, 6 );
+            if( (HMENU)wparam == hmenu2  ) {
                 ShowWindow( info->alloc_dialog, SW_SHOWNOACTIVATE );
-            } else if( (HMENU)wparam != GetSubMenu( mh2, 3 ) &&
-                        (HMENU)wparam != GetSubMenu( mh2, 4 ) &&
-                        (HMENU)wparam != GetSubMenu( mh2, 5 ) ) {
+            } else if( (HMENU)wparam != GetSubMenu( hmenu2, 3 ) &&
+                        (HMENU)wparam != GetSubMenu( hmenu2, 4 ) &&
+                        (HMENU)wparam != GetSubMenu( hmenu2, 5 ) ) {
                 ShowWindow( info->alloc_dialog, SW_HIDE );
             }
         }
@@ -403,9 +403,9 @@ BOOL FAR PASCAL HeapWalkProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam 
         case HEAPMENU_SORT_DPL:
         case HEAPMENU_SORT_FLAG:
         case HEAPMENU_SORT_LRU:
-            mh = GetMenu( hwnd );
-            CheckMenuItem( mh, GSortType, MF_UNCHECKED | MF_BYCOMMAND );
-            CheckMenuItem( mh, wparam, MF_CHECKED | MF_BYCOMMAND );
+            hmenu1 = GetMenu( hwnd );
+            CheckMenuItem( hmenu1, GSortType, MF_UNCHECKED | MF_BYCOMMAND );
+            CheckMenuItem( hmenu1, wparam, MF_CHECKED | MF_BYCOMMAND );
             if( GSortType != wparam ) {
                 GSortType = wparam;
                 SortHeapList();

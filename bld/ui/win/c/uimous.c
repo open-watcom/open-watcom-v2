@@ -67,26 +67,24 @@ bool UIAPI initmouse( init_mode install )
     MouseInstalled = false;
     ScreenXFudge = (WORD)( (DWORD)GetSystemMetrics( SM_CXSCREEN ) / (DWORD)UIData->width );
     ScreenYFudge = (WORD)( (DWORD)GetSystemMetrics( SM_CYSCREEN ) / (DWORD)UIData->height );
-    if( install > INIT_MOUSELESS ) {
-        if( install > INIT_MOUSELESS ) {
-            dx = ( UIData->width - 1 ) * MOUSE_SCALE;
-            MouseDrvCall2( 7, 0, 0, dx );
-            dx = ( UIData->height - 1 ) * MOUSE_SCALE;
-            MouseDrvCall2( 8, 0, 0, dx );
+    if( install != INIT_MOUSELESS ) {
+        dx = ( UIData->width - 1 ) * MOUSE_SCALE;
+        MouseDrvCall2( 7, 0, 0, dx );
+        dx = ( UIData->height - 1 ) * MOUSE_SCALE;
+        MouseDrvCall2( 8, 0, 0, dx );
 
-            cx = ( UIData->colour == M_MONO ? 0x79ff : 0x7fff );
-            dx = ( UIData->colour == M_MONO ? 0x7100 : 0x7700 );
-            MouseDrvCall2( 0x0A, 0, cx, dx );
-            MouseDrvCall3( 0x10, 0, 0, 0, 0 );
+        cx = ( UIData->colour == M_MONO ? 0x79ff : 0x7fff );
+        dx = ( UIData->colour == M_MONO ? 0x7100 : 0x7700 );
+        MouseDrvCall2( 0x0A, 0, cx, dx );
+        MouseDrvCall3( 0x10, 0, 0, 0, 0 );
 
-            UIData->mouse_swapped = false;
-            UIData->mouse_xscale = 1;
-            UIData->mouse_yscale = 1;
-            uisetmouseposn( UIData->height / 2 - 1, UIData->width / 2 - 1 );
-            MouseInstalled = true;
-            MouseOn = false;
-            checkmouse( &MouseStatus, &MouseRow, &MouseCol, &MouseTime );
-        }
+        UIData->mouse_swapped = false;
+        UIData->mouse_xscale = 1;
+        UIData->mouse_yscale = 1;
+        uisetmouseposn( UIData->height / 2 - 1, UIData->width / 2 - 1 );
+        MouseInstalled = true;
+        MouseOn = false;
+        checkmouse( &MouseStatus, &MouseRow, &MouseCol, &MouseTime );
     }
     return( MouseInstalled );
 }

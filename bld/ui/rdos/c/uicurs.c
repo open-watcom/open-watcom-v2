@@ -32,27 +32,28 @@
 #include <rdos.h>
 #include "uidef.h"
 #include "uiattrs.h"
+#include "uicurshk.h"
 
 
 #define _swap(a,b)      {int i; i=a; a=b; b=i;}
 
-static ORD              OldCursorRow;
-static ORD              OldCursorCol;
+static CURSORORD        OldCursorRow;
+static CURSORORD        OldCursorCol;
 static CURSOR_TYPE      OldCursorType;
 
-void UIAPI uioffcursor( void )
+void UIHOOK uioffcursor( void )
 {
     UIData->cursor_on = false;
     UIData->cursor_type = C_OFF;
 }
 
-void UIAPI uioncursor( void )
+void UIHOOK uioncursor( void )
 {
     UIData->cursor_on = true;
 }
 
 
-static void newcursor( void )
+void intern newcursor( void )
 {
     if( UIData->cursor_type == C_OFF ) {
         uioffcursor();
@@ -71,53 +72,53 @@ static void swapcursor( void )
 }
 
 
-void UIAPI uigetcursor( ORD *row, ORD *col, CURSOR_TYPE *type, CATTR *attr )
+void UIHOOK uigetcursor( CURSORORD *crow, CURSORORD *ccol, CURSOR_TYPE *ctype, CATTR *cattr )
 {
-    *row = UIData->cursor_row;
-    *col = UIData->cursor_col;
-    *type = UIData->cursor_type;
-    *attr = 0;
+    *crow = UIData->cursor_row;
+    *ccol = UIData->cursor_col;
+    *ctype = UIData->cursor_type;
+    *cattr = CATTR_NONE;
 }
 
 
-void UIAPI uisetcursor( ORD row, ORD col, CURSOR_TYPE typ, CATTR attr )
+void UIHOOK uisetcursor( CURSORORD crow, CURSORORD ccol, CURSOR_TYPE ctype, CATTR cattr )
 {
-    if( ( typ != UIData->cursor_type ) ||
-        ( row != UIData->cursor_row ) ||
-        ( col != UIData->cursor_col ) ||
-        ( attr != UIData->cursor_attr ) ) {
-        UIData->cursor_type = typ;
-        UIData->cursor_row = row;
-        UIData->cursor_col = col;
-        if( attr != CATTR_OFF ) {
-            UIData->cursor_attr = attr;
+    if( ( ctype != UIData->cursor_type ) ||
+        ( crow != UIData->cursor_row ) ||
+        ( ccol != UIData->cursor_col ) ||
+        ( cattr != UIData->cursor_attr ) ) {
+        UIData->cursor_type = ctype;
+        UIData->cursor_row = crow;
+        UIData->cursor_col = ccol;
+        if( cattr != CATTR_OFF ) {
+            UIData->cursor_attr = cattr;
         }
         newcursor();
     }
 }
 
-void UIAPI uiswapcursor( void )
+void UIHOOK uiswapcursor( void )
 {
     swapcursor();
     newcursor();
 }
 
 
-void UIAPI uiinitcursor( void )
+void UIHOOK uiinitcursor( void )
 {
-    CATTR   tmp;
+    CATTR   cattr;
 
-    UIData->cursor_row = (ORD)-1;
-    UIData->cursor_col = (ORD)-1;
+    UIData->cursor_row = CURSOR_INVALID;
+    UIData->cursor_col = CURSOR_INVALID;
     UIData->cursor_type = C_OFF;
-    uigetcursor( &OldCursorRow, &OldCursorCol, &OldCursorType, &tmp );
+    uigetcursor( &OldCursorRow, &OldCursorCol, &OldCursorType, &cattr );
     UIData->cursor_on = true;
-    uisetcursor( OldCursorRow, OldCursorCol, OldCursorType, 0 );
+    uisetcursor( OldCursorRow, OldCursorCol, OldCursorType, CATTR_NONE );
     uioffcursor();
 }
 
 
-void UIAPI uifinicursor( void )
+void UIHOOK uifinicursor( void )
 {
     uioncursor();
 }

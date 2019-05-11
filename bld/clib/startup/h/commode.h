@@ -30,5 +30,9 @@
 
 
 /* see note in commode.c */
+#ifdef _M_I86
 _WCRTLINK extern void _WCI86FAR   __set_commode( void );
+#else
+_WCRTLINK extern void             __set_commode( void );
+#endif
 #pragma aux __set_commode "*_";

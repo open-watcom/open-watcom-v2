@@ -636,12 +636,12 @@ bool WResetPreviewIDs( WMenuEditInfo *einfo )
     return( WResetPreviewID( einfo, einfo->menu->first_entry ) );
 }
 
-static bool WAddItemAtPos( HMENU parent, int pos, WMenuEntry *entry )
+static bool WAddItemAtPos( HMENU hparent, int pos, WMenuEntry *entry )
 {
     MenuFlags   flags;
     bool        ok;
 
-    ok = (parent != (HMENU)NULL && entry != NULL);
+    ok = (hparent != (HMENU)NULL && entry != NULL);
 
     if( ok ) {
         flags = entry->item->Item.Normal.ItemFlags;
@@ -651,14 +651,14 @@ static bool WAddItemAtPos( HMENU parent, int pos, WMenuEntry *entry )
             if( entry->preview_popup == (HMENU)NULL ) {
                 return( FALSE );
             }
-            ok = InsertMenu( parent, pos, MF_BYPOSITION | flags,
+            ok = InsertMenu( hparent, pos, MF_BYPOSITION | flags,
                              (UINT)(pointer_int)entry->preview_popup,
                              entry->item->Item.Popup.ItemText ) != 0;
         } else if( flags & MENU_SEPARATOR ) {
-            ok = InsertMenu( parent, pos, MF_BYPOSITION | flags,
+            ok = InsertMenu( hparent, pos, MF_BYPOSITION | flags,
                              entry->preview_id, NULL ) != 0;
         } else {
-            ok = InsertMenu( parent, pos, MF_BYPOSITION | flags,
+            ok = InsertMenu( hparent, pos, MF_BYPOSITION | flags,
                              entry->preview_id,
                              entry->item->Item.Normal.ItemText ) != 0;
         }
@@ -667,24 +667,24 @@ static bool WAddItemAtPos( HMENU parent, int pos, WMenuEntry *entry )
     return( ok );
 }
 
-static bool WModifyItemAtPos( HMENU parent, int pos, WMenuEntry *entry )
+static bool WModifyItemAtPos( HMENU hparent, int pos, WMenuEntry *entry )
 {
     MenuFlags   flags;
     bool        ok;
 
-    ok = (parent != (HMENU)NULL && entry != NULL);
+    ok = (hparent != (HMENU)NULL && entry != NULL);
 
     if( ok ) {
         flags = entry->item->Item.Normal.ItemFlags;
         flags &= ~MENU_ENDMENU;
         if( flags & MENU_POPUP ) {
-            ok = ModifyMenu( parent, pos, MF_BYPOSITION | flags,
+            ok = ModifyMenu( hparent, pos, MF_BYPOSITION | flags,
                              (UINT_PTR)entry->preview_popup,
                              entry->item->Item.Popup.ItemText ) != 0;
         } else if( flags & MENU_SEPARATOR ) {
             // do nothing
         } else {
-            ok = ModifyMenu( parent, pos, MF_BYPOSITION | flags,
+            ok = ModifyMenu( hparent, pos, MF_BYPOSITION | flags,
                              entry->preview_id,
                              entry->item->Item.Normal.ItemText ) != 0;
         }
@@ -693,16 +693,16 @@ static bool WModifyItemAtPos( HMENU parent, int pos, WMenuEntry *entry )
     return( ok );
 }
 
-static bool WAddToPreviewMenu( HMENU parent, WMenuEntry *entry )
+static bool WAddToPreviewMenu( HMENU hparent, WMenuEntry *entry )
 {
     bool        ok;
     int         pos;
 
-    ok = (parent != (HMENU)NULL && entry != NULL);
+    ok = (hparent != (HMENU)NULL && entry != NULL);
 
     pos = 0;
     for( ; ok && entry != NULL; entry = entry->next ) {
-        ok = WAddItemAtPos( parent, pos, entry );
+        ok = WAddItemAtPos( hparent, pos, entry );
         if( ok && entry->item->IsPopup ) {
             if( entry->child != NULL ) {
                 ok = WAddToPreviewMenu( entry->preview_popup, entry->child );
@@ -716,20 +716,20 @@ static bool WAddToPreviewMenu( HMENU parent, WMenuEntry *entry )
 
 HMENU WCreatePreviewMenu( WMenuEditInfo *einfo )
 {
-    HMENU       menu;
+    HMENU       hmenu;
 
     if( einfo == NULL ) {
         return( FALSE );
     }
 
-    menu = CreateMenu();
-    if( menu == (HMENU)NULL ) {
+    hmenu = CreateMenu();
+    if( hmenu == (HMENU)NULL ) {
         return( FALSE );
     }
 
-    WAddToPreviewMenu( menu, einfo->menu->first_entry );
+    WAddToPreviewMenu( hmenu, einfo->menu->first_entry );
 
-    return( menu );
+    return( hmenu );
 }
 
 WMenuEntry *WFindEntryFromPreviewID( WMenuEntry *entry, WORD id )
@@ -751,16 +751,16 @@ WMenuEntry *WFindEntryFromPreviewID( WMenuEntry *entry, WORD id )
     return( NULL );
 }
 
-WMenuEntry *WFindEntryFromPreviewPopup( WMenuEntry *entry, HMENU popup )
+WMenuEntry *WFindEntryFromPreviewPopup( WMenuEntry *entry, HMENU hpopup )
 {
     WMenuEntry  *found;
 
     for( ; entry != NULL; entry = entry->next ) {
-        if( entry->preview_popup == popup ) {
+        if( entry->preview_popup == hpopup ) {
             return( entry );
         }
         if( entry->child != NULL ) {
-            found = WFindEntryFromPreviewPopup( entry->child, popup );
+            found = WFindEntryFromPreviewPopup( entry->child, hpopup );
             if( found != NULL ) {
                 return( found );
             }
@@ -790,7 +790,7 @@ bool WFindEntryLBPos( WMenuEntry *start, WMenuEntry *entry, LRESULT *pos )
 bool WInsertEntryIntoPreview( WMenuEditInfo *einfo, WMenuEntry *entry )
 {
     int         pos;
-    HMENU       menu;
+    HMENU       hmenu;
     WMenuEntry  *start;
 
     if( einfo == NULL || entry == NULL ) {
@@ -798,14 +798,14 @@ bool WInsertEntryIntoPreview( WMenuEditInfo *einfo, WMenuEntry *entry )
     }
 
     if( entry->parent != NULL ) {
-        menu = entry->parent->preview_popup;
+        hmenu = entry->parent->preview_popup;
         start = entry->parent->child;
     } else {
-        menu = GetMenu( einfo->preview_window );
+        hmenu = GetMenu( einfo->preview_window );
         start = einfo->menu->first_entry;
     }
 
-    if( menu == (HMENU)NULL ) {
+    if( hmenu == (HMENU)NULL ) {
         return( FALSE );
     }
 
@@ -827,7 +827,7 @@ bool WInsertEntryIntoPreview( WMenuEditInfo *einfo, WMenuEntry *entry )
         return( FALSE );
     }
 
-    if( !WAddItemAtPos( menu, pos, entry ) ) {
+    if( !WAddItemAtPos( hmenu, pos, entry ) ) {
         return( FALSE );
     }
 
@@ -841,7 +841,7 @@ bool WInsertEntryIntoPreview( WMenuEditInfo *einfo, WMenuEntry *entry )
 bool WModifyEntryInPreview( WMenuEditInfo *einfo, WMenuEntry *entry )
 {
     int         pos;
-    HMENU       menu;
+    HMENU       hmenu;
     WMenuEntry  *start;
 
     if( einfo == NULL || entry == NULL ) {
@@ -849,14 +849,14 @@ bool WModifyEntryInPreview( WMenuEditInfo *einfo, WMenuEntry *entry )
     }
 
     if( entry->parent != NULL ) {
-        menu = entry->parent->preview_popup;
+        hmenu = entry->parent->preview_popup;
         start = entry->parent->child;
     } else {
-        menu = GetMenu( einfo->preview_window );
+        hmenu = GetMenu( einfo->preview_window );
         start = einfo->menu->first_entry;
     }
 
-    if( menu == (HMENU)NULL ) {
+    if( hmenu == (HMENU)NULL ) {
         return( FALSE );
     }
 
@@ -872,7 +872,7 @@ bool WModifyEntryInPreview( WMenuEditInfo *einfo, WMenuEntry *entry )
         return( FALSE );
     }
 
-    if( !WModifyItemAtPos( menu, pos, entry ) ) {
+    if( !WModifyItemAtPos( hmenu, pos, entry ) ) {
         return( FALSE );
     }
 

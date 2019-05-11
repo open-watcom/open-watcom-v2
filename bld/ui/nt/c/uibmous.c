@@ -44,13 +44,12 @@ static bool     mouseOn = false;
 #if 0
 static ATTR     OldAttr;
 
-static LP_STRING RegenPos( unsigned row, unsigned col )
-/*****************************************************/
+static LP_PIXEL RegenPos( unsigned row, unsigned col )
+/****************************************************/
 {
-    LP_STRING   pos;
+    LP_PIXEL    pos;
 
-    pos = (LP_STRING)UIData->screen.origin
-          + ( row * UIData->screen.increment + col ) * sizeof( PIXEL ) + 1;
+    pos = UIData->screen.origin  + row * UIData->screen.increment + col;
     vertretrace();
     return( pos );
 }
@@ -59,12 +58,12 @@ static LP_STRING RegenPos( unsigned row, unsigned col )
 static void uisetmouseoff( void )
 /*******************************/
 {
-//    LP_STRING   old;
+//    LP_PIXEL    old;
 
     if( mouseOn ) {
 #if 0
         old = RegenPos( oldMouseRow, oldMouseCol );
-        *old = OldAttr;
+        old->attr = OldAttr;
         {
             SAREA       area;
             area.row = oldMouseRow;
@@ -80,16 +79,16 @@ static void uisetmouseoff( void )
 static void uisetmouseon( MOUSEORD row, MOUSEORD col )
 /****************************************************/
 {
-//    LP_STRING   new;
+//    LP_PIXEL    new;
 
     if( mouseOn ) {
 #if 0
         new = RegenPos( row, col );
-        OldAttr = *new;
+        OldAttr = new->attr;
         if( UIData->colour == M_MONO ) {
-            *new = (OldAttr & 0x79) ^ 0x71;
+            new->attr = (OldAttr & 0x79) ^ 0x71;
         } else {
-            *new = (OldAttr & 0x7f) ^ 0x77;
+            new->attr = (OldAttr & 0x7f) ^ 0x77;
         }
         {
             SAREA       area;

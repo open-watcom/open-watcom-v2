@@ -25,7 +25,7 @@
 *
 *  ========================================================================
 *
-* Description:  Implementation of inet_network() for RDOS.
+* Description:  Implementation of inet_network() for RDOS and Linux.
 *
 ****************************************************************************/
 

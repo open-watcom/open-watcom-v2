@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,8 +35,9 @@
 #include "uidef.h"
 #include "uidos.h"
 #include "uiattrs.h"
-#include "uidbg.h"
+#include "uicurshk.h"
 #include "biosui.h"
+
 
 // these functions get overridden by the OW Debugger if it's doing its own
 // hardware cursor on a monochrome screen, but the debugger needs
@@ -43,34 +45,37 @@
 // the original versions into _uixxx().  In a normal UI app, these stubs kick
 // in so the world is back to normal
 
-void UIAPI uioffcursor( void )
+void UIHOOK uioffcursor( void )
 {
     _uioffcursor();
 }
 
-void UIAPI uioncursor( void )
+void UIHOOK uioncursor( void )
 {
     _uioncursor();
 }
 
-void UIAPI uigetcursor( ORD *row, ORD *col, CURSOR_TYPE *type, CATTR *attr )
+void UIHOOK uigetcursor( CURSORORD *crow, CURSORORD *ccol, CURSOR_TYPE *ctype, CATTR *cattr )
 {
-    _uigetcursor( row, col, type, attr );
+    _uigetcursor( crow, ccol, ctype, cattr );
 }
 
-void UIAPI uisetcursor( ORD row, ORD col, CURSOR_TYPE typ, CATTR attr )
+void UIHOOK uisetcursor( CURSORORD crow, CURSORORD ccol, CURSOR_TYPE ctype, CATTR cattr )
 {
-    _uisetcursor( row, col, typ, attr );
+    _uisetcursor( crow, ccol, ctype, cattr );
 }
 
-void UIAPI uiswapcursor( void ) {
+void UIHOOK uiswapcursor( void )
+{
     _uiswapcursor();
 }
 
-void UIAPI uiinitcursor( void ) {
+void UIHOOK uiinitcursor( void )
+{
     _uiinitcursor();
 }
 
-void UIAPI uifinicursor( void ) {
+void UIHOOK uifinicursor( void )
+{
     _uifinicursor();
 }

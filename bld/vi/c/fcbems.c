@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -44,10 +45,10 @@
 #define EMS_IO_ERROR    ((size_t)-1)
 
 ems_struct              EMSCtrl;
-static unsigned long    *emsPtrs;
+static xhandle          *emsPtrs;
 
-static size_t   emsRead( long, void __far *, size_t );
-static size_t   emsWrite( long, void __far *, size_t );
+static size_t   emsRead( xhandle, void __far *, size_t );
+static size_t   emsWrite( xhandle, void __far *, size_t );
 
 vi_rc EMSBlockTest( unsigned short blocks )
 {
@@ -61,26 +62,27 @@ vi_rc EMSBlockTest( unsigned short blocks )
 
 } /* EMSBlockTest */
 
-void EMSBlockRead( long addr, void __far *buff, size_t len )
+void EMSBlockRead( xhandle addr, void __far *buff, size_t len )
 {
     emsRead( addr, buff, len );
 
 } /* EMSBlockRead */
 
-void EMSBlockWrite( long addr, void __far *buff, size_t len )
+void EMSBlockWrite( xhandle addr, void __far *buff, size_t len )
 {
     emsWrite( addr, buff, len );
 
 } /* EMSBlockWrite */
 
-vi_rc EMSGetBlock( long *addr )
+vi_rc EMSGetBlock( xhandle *addr )
 {
     vi_rc       rc;
-    long        found = 0;
+    xhandle     found;
     int         i;
 
     rc = EMSBlockTest( 1 );
     if( rc == ERR_NO_ERR ) {
+        found = 0;
         EMSBlocksInUse++;
         for( i = 0; i < TotalEMSBlocks; i++ ) {
             if( emsPtrs[i] != 0 ) {
@@ -102,8 +104,9 @@ vi_rc SwapToEMSMemory( fcb *fb )
 {
     vi_rc       rc;
     size_t      len;
-    long        found;
+    xhandle     found;
 
+    found = 0;
     rc = EMSGetBlock( &found );
     if( rc == ERR_NO_ERR ) {
         len = MakeWriteBlock( fb );
@@ -112,7 +115,7 @@ vi_rc SwapToEMSMemory( fcb *fb )
         /*
          * finish up
          */
-        fb->xmemaddr = found;
+        fb->xblock.handle = found;
         fb->in_ems_memory = true;
     }
     return( rc );
@@ -127,8 +130,8 @@ vi_rc SwapToMemoryFromEMSMemory( fcb *fb )
     size_t  len;
 
     len = FcbSize( fb );
-    emsRead( fb->xmemaddr, ReadBuffer, len );
-    GiveBackEMSBlock( fb->xmemaddr );
+    emsRead( fb->xblock.handle, ReadBuffer, len );
+    GiveBackEMSBlock( fb->xblock.handle );
     return( RestoreToNormalMemory( fb, len ) );
 
 } /* SwapToMemoryFromEMSMemory */
@@ -136,12 +139,12 @@ vi_rc SwapToMemoryFromEMSMemory( fcb *fb )
 /*
  * eMSAlloc - allocate some expanded memory
  */
-static long eMSAlloc( U_INT size )
+static xhandle eMSAlloc( unsigned size )
 {
     unsigned char       handle;
     ems_addr            h;
 
-    size = ( size + 1 ) & ~1;
+    size = ROUNDUP( size, 2 );
     if( size > EMS_MAX_PAGE_SIZE || EMSCtrl.exhausted ) {
         return( 0 );
     }
@@ -221,7 +224,7 @@ void EMSInit( void )
         EMSCtrl.physical[i].used = false;
     }
 
-    emsPtrs = _MemAllocArray( long, EditVars.MaxEMSBlocks );
+    emsPtrs = _MemAllocArray( xhandle, EditVars.MaxEMSBlocks );
 
     for( i = 0; i < EditVars.MaxEMSBlocks; i++ ) {
         emsPtrs[i] = eMSAlloc( MAX_IO_BUFFER );
@@ -231,7 +234,7 @@ void EMSInit( void )
         h.external = emsPtrs[i];
         TotalEMSBlocks++;
     }
-    emsPtrs = _MemReAllocArray( emsPtrs, long, TotalEMSBlocks );
+    emsPtrs = _MemReallocArray( emsPtrs, xhandle, TotalEMSBlocks );
 
     EMSCtrl.inuse = true;
 
@@ -243,7 +246,7 @@ void EMSInit( void )
  */
 void EMSFini( void )
 {
-    U_INT       curr;
+    unsigned    curr;
 
     if( !EMSCtrl.inuse ) {
         return;
@@ -291,7 +294,7 @@ static bool locatePhysicalPage( unsigned char h, unsigned char l, unsigned char 
 static void *emsAccess( ems_addr x )
 {
     unsigned char       handle, logical, physical;
-    U_INT               offset;
+    unsigned            offset;
 
     if( x.external == 0 ) {
         return( NULL );
@@ -334,7 +337,7 @@ static void emsRelease( ems_addr x )
 /*
  * emsRead - read some expanded memory
  */
-static size_t emsRead( long addr, void __far *buff, size_t size )
+static size_t emsRead( xhandle addr, void __far *buff, size_t size )
 {
     void        *ptr;
     ems_addr    h;
@@ -353,7 +356,7 @@ static size_t emsRead( long addr, void __far *buff, size_t size )
 /*
  * emsWrite - write expanded memory
  */
-static size_t emsWrite( long addr, void __far *buff, size_t size )
+static size_t emsWrite( xhandle addr, void __far *buff, size_t size )
 {
     void        *ptr;
     ems_addr    h;
@@ -372,7 +375,7 @@ static size_t emsWrite( long addr, void __far *buff, size_t size )
 /*
  * GiveBackEMSBlock - return an EMS block to the pool
  */
-void GiveBackEMSBlock( long addr )
+void GiveBackEMSBlock( xhandle addr )
 {
     int i;
 

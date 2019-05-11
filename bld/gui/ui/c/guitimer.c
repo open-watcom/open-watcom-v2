@@ -34,17 +34,24 @@
 #include <stdio.h>
 #include "guixutil.h"
 #include "guitimer.h"
+#include "stdui.h"
 
 
 #if defined( __RDOS__ )
 
+static void UICALLBACK uitimer( void )
+{
+    GUITimer();
+}
+
 void GUIStartTimer( gui_window *wnd, gui_timer_id id, int msec )
 {
-    rdos_uitimer( GUITimer, msec );
+    rdos_uitimer( uitimer, msec );
 }
 
 void GUIStopTimer( gui_window *wnd, gui_timer_id id )
 {
     rdos_uitimer( NULL, 0 );
 }
+
 #endif

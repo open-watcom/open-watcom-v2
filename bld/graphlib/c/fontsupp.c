@@ -138,7 +138,6 @@ static short            _YVecDir = 0;
   #include <dirent.h>
   #include <unistd.h>
   #include <fcntl.h>
-  #include <malloc.h>
   #if defined( _M_I86 )
     #include <sys/slib16.h>
   #endif

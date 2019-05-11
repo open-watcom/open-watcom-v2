@@ -34,6 +34,8 @@
 
 #if defined( USE_XTD )
 
+#include <i86.h>
+#include <dos.h>
 #include "dosx.h"
 #include "xmem.h"
 #include "fcbmem.h"

@@ -215,7 +215,7 @@ void ShowSwitch( bool on )
 }
 
 
-OVL_EXTERN void BadSet( void )
+static void BadSet( void )
 {
     Error( ERR_LOC, LIT_ENG( ERR_BAD_SUBCOMMAND ), GetCmdName( CMD_SET ) );
 }
@@ -249,12 +249,12 @@ void ConfigSet( void )
  * BellSet - set bell on/off processing
  */
 
-OVL_EXTERN void BellSet( void )
+static void BellSet( void )
 {
     _SwitchSet( SW_BELL, SwitchOnOff() );
 }
 
-OVL_EXTERN void BellConf( void )
+static void BellConf( void )
 {
     ShowSwitch( _IsOn( SW_BELL ) );
 }
@@ -264,12 +264,12 @@ OVL_EXTERN void BellConf( void )
  * AutoSet - set autoconfig on/off processing
  */
 
-OVL_EXTERN void AutoSet( void )
+static void AutoSet( void )
 {
     _SwitchSet( SW_AUTO_SAVE_CONFIG, SwitchOnOff() );
 }
 
-OVL_EXTERN void AutoConf( void )
+static void AutoConf( void )
 {
     ShowSwitch( _IsOn( SW_AUTO_SAVE_CONFIG ) );
 }
@@ -278,13 +278,13 @@ OVL_EXTERN void AutoConf( void )
  *  - set break on write option
  */
 
-OVL_EXTERN void BreakOnWriteSet( void )
+static void BreakOnWriteSet( void )
 {
     _SwitchSet( SW_BREAK_ON_WRITE, SwitchOnOff() );
     SetCapabilitiesExactBreakpointSupport( true, false );
 }
 
-OVL_EXTERN void BreakOnWriteConf( void )
+static void BreakOnWriteConf( void )
 {
     ShowSwitch( _IsOn( SW_BREAK_ON_WRITE ) );
 }
@@ -292,12 +292,12 @@ OVL_EXTERN void BreakOnWriteConf( void )
  *  - set hex expansion
  */
 
-OVL_EXTERN void DontExpandHexStringSet( void )
+static void DontExpandHexStringSet( void )
 {
     _SwitchSet( SW_DONT_EXPAND_HEX, SwitchOnOff() );
 }
 
-OVL_EXTERN void DontExpandHexStringConf( void )
+static void DontExpandHexStringConf( void )
 {
     ShowSwitch( _IsOn( SW_DONT_EXPAND_HEX ) );
 }
@@ -306,12 +306,12 @@ OVL_EXTERN void DontExpandHexStringConf( void )
  * RecursionSet - set recursion checking on/off processing
  */
 
-OVL_EXTERN void RecursionSet( void )
+static void RecursionSet( void )
 {
     _SwitchSet( SW_RECURSE_CHECK, SwitchOnOff() );
 }
 
-OVL_EXTERN void RecursionConf( void )
+static void RecursionConf( void )
 {
     ShowSwitch( _IsOn( SW_RECURSE_CHECK ) );
 }
@@ -367,7 +367,7 @@ void NewLang( const char *lang )
 }
 
 
-OVL_EXTERN void LangSet( void )
+static void LangSet( void )
 {
     const char  *start;
     size_t      len;
@@ -377,7 +377,7 @@ OVL_EXTERN void LangSet( void )
     NewLang( start );
 }
 
-OVL_EXTERN void LangConf( void )
+static void LangConf( void )
 {
     ConfigLine( Language );
 }
@@ -648,7 +648,7 @@ struct dump_toggles {
     char                        *p;
 };
 
-OVL_EXTERN walk_result DumpToggles( dig_arch arch, void *d )
+static walk_result DumpToggles( dig_arch arch, void *d )
 {
     struct dump_toggles         *td = d;
     const mad_toggle_strings    *toggles;
@@ -747,13 +747,13 @@ static window_toggle    AsmToggle[] = {
     { ASM_HEX, ASM_DECIMAL, SW_ASM_HEX },
 };
 
-OVL_EXTERN void AsmSet( void )
+static void AsmSet( void )
 {
     ToggleWindowSwitches( AsmToggle, ArraySize( AsmToggle ), AsmSettings, MWT_ASM );
     AsmChangeOptions();
 }
 
-OVL_EXTERN void AsmConf( void )
+static void AsmConf( void )
 {
     ConfWindowSwitches( AsmToggle, ArraySize( AsmToggle ), AsmSettings, MWT_ASM );
 }
@@ -762,13 +762,13 @@ OVL_EXTERN void AsmConf( void )
         FPU Window
 */
 
-OVL_EXTERN void FPUSet( void )
+static void FPUSet( void )
 {
     ToggleWindowSwitches( NULL, 0, NULL, MWT_FPU );
     FPUChangeOptions();
 }
 
-OVL_EXTERN void FPUConf( void )
+static void FPUConf( void )
 {
     ConfWindowSwitches( NULL, 0, NULL, MWT_FPU );
 }
@@ -826,13 +826,13 @@ static window_toggle VarToggle[] = {
     { VAR_STATIC, VAR_NOSTATIC, SW_VAR_SHOW_STATIC },
 };
 
-OVL_EXTERN void VarSet( void )
+static void VarSet( void )
 {
     ToggleWindowSwitches( VarToggle, ArraySize( VarToggle ), VarSettings, MWT_LAST );
     VarChangeOptions();
 }
 
-OVL_EXTERN void VarConf( void )
+static void VarConf( void )
 {
     ConfWindowSwitches( VarToggle, ArraySize( VarToggle ), VarSettings, MWT_LAST );
 }
@@ -852,13 +852,13 @@ static window_toggle FuncToggle[] = {
     { FUNC_TYPED, FUNC_ALL, SW_FUNC_D2_ONLY },
 };
 
-OVL_EXTERN void FuncSet( void )
+static void FuncSet( void )
 {
     ToggleWindowSwitches( FuncToggle, ArraySize( FuncToggle ), FuncSettings, MWT_LAST );
     FuncChangeOptions();
 }
 
-OVL_EXTERN void FuncConf( void )
+static void FuncConf( void )
 {
     ConfWindowSwitches( FuncToggle, ArraySize( FuncToggle ), FuncSettings, MWT_LAST );
 }
@@ -868,13 +868,13 @@ static window_toggle GlobToggle[] = {
     { FUNC_TYPED, FUNC_ALL, SW_GLOB_D2_ONLY },
 };
 
-OVL_EXTERN void GlobSet( void )
+static void GlobSet( void )
 {
     ToggleWindowSwitches( GlobToggle, ArraySize( GlobToggle ), FuncSettings, MWT_LAST );
     GlobChangeOptions();
 }
 
-OVL_EXTERN void GlobConf( void )
+static void GlobConf( void )
 {
     ConfWindowSwitches( GlobToggle, ArraySize( GlobToggle ), FuncSettings, MWT_LAST );
 }
@@ -884,49 +884,49 @@ static window_toggle ModToggle[] = {
     { FUNC_ALL, FUNC_TYPED, SW_MOD_ALL_MODULES },
 };
 
-OVL_EXTERN void ModSet( void )
+static void ModSet( void )
 {
     ToggleWindowSwitches( ModToggle, ArraySize( ModToggle ), FuncSettings, MWT_LAST );
     ModChangeOptions();
 }
 
-OVL_EXTERN void ModConf( void )
+static void ModConf( void )
 {
     ConfWindowSwitches( ModToggle, ArraySize( ModToggle ), FuncSettings, MWT_LAST );
 }
 
 
-OVL_EXTERN void RegSet( void )
+static void RegSet( void )
 {
     ToggleWindowSwitches( NULL, 0, NULL, MWT_REG );
     RegChangeOptions();
 }
 
-OVL_EXTERN void RegConf( void )
+static void RegConf( void )
 {
     ConfWindowSwitches( NULL, 0, NULL, MWT_REG );
 }
 
 
-OVL_EXTERN void MMXSet( void )
+static void MMXSet( void )
 {
     ToggleWindowSwitches( NULL, 0, NULL, MWT_MMX );
     MMXChangeOptions();
 }
 
-OVL_EXTERN void MMXConf( void )
+static void MMXConf( void )
 {
     ConfWindowSwitches( NULL, 0, NULL, MWT_MMX );
 }
 
 
-OVL_EXTERN void XMMSet( void )
+static void XMMSet( void )
 {
     ToggleWindowSwitches( NULL, 0, NULL, MWT_XMM );
     XMMChangeOptions();
 }
 
-OVL_EXTERN void XMMConf( void )
+static void XMMConf( void )
 {
     ConfWindowSwitches( NULL, 0, NULL, MWT_XMM );
 }
@@ -958,7 +958,7 @@ static bool IsInSupportNames( const char *name, size_t len )
     return( false );
 }
 
-OVL_EXTERN void SupportSet( void )
+static void SupportSet( void )
 {
     char_ring   *new;
     const char  *start;
@@ -983,7 +983,7 @@ OVL_EXTERN void SupportSet( void )
     }
 }
 
-OVL_EXTERN void SupportConf( void )
+static void SupportConf( void )
 {
     char_ring   *curr;
     char        *p;

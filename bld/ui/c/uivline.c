@@ -116,18 +116,18 @@ ui_event UIAPI uiveditevent( VSCREEN *vptr, VEDITLINE *editline, ui_event ui_ev 
 
 
     if( editline->update ) {
-        if( vptr->cursor == C_OFF ) {
-            vptr->cursor = C_NORMAL;
+        if( vptr->cursor_type == C_OFF ) {
+            vptr->cursor_type = C_NORMAL;
         }
         uipadblanks( editline->buffer, editline->length );
-        vptr->row = editline->row;
+        vptr->cursor_row = editline->row;
         scroll = editline->scroll;
         if( scroll > editline->index )
             scroll = editline->index;
         if( scroll < (int)( editline->index - editline->fldlen + 1 ) )
             scroll = editline->index - editline->fldlen + 1;
         editline->scroll = scroll;
-        vptr->col = editline->col + editline->index - editline->scroll;
+        vptr->cursor_col = editline->col + editline->index - editline->scroll;
         echoline( vptr, editline );
 //      uirefresh();                    not needed for QNX or DOS ??? jimg
         editline->update = false;
@@ -139,14 +139,14 @@ ui_event UIAPI uiveditevent( VSCREEN *vptr, VEDITLINE *editline, ui_event ui_ev 
             buffer.content = editline->buffer;
             buffer.length = editline->length;
             buffer.index = editline->index;
-            buffer.insert = ( vptr->cursor == C_INSERT );
+            buffer.insert = ( vptr->cursor_type == C_INSERT );
             buffer.dirty = false;
             buffer.auto_clear = editline->auto_clear;
             ui_ev = uieditevent( ui_ev, &buffer );
             editline->auto_clear = buffer.auto_clear;
             editline->dirty |= buffer.dirty;
             editline->index = buffer.index;
-            vptr->cursor = buffer.insert ? C_INSERT : C_NORMAL ;
+            vptr->cursor_type = ( buffer.insert ) ? C_INSERT : C_NORMAL ;
             if( scrollable ) {
                 scroll = editline->scroll;
                 if( scroll > editline->index )
@@ -157,7 +157,7 @@ ui_event UIAPI uiveditevent( VSCREEN *vptr, VEDITLINE *editline, ui_event ui_ev 
             } else {
                 scroll = 0;
             }
-            vptr->col = editline->col + editline->index - scroll;
+            vptr->cursor_col = editline->col + editline->index - scroll;
             if( ( scroll != editline->scroll ) || buffer.dirty ) {
                 editline->scroll = scroll;
                 echoline( vptr, editline );

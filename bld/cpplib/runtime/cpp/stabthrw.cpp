@@ -33,7 +33,6 @@
 #include "cpplib.h"
 #include <cstdlib>
 #include <cstring>
-#include <alloca.h>
 
 #ifdef __USE_PD
 #   include <setjmpex.h>

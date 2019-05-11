@@ -72,6 +72,7 @@
 #include "dlgfile.h"
 #include "wndmenu1.h"
 #include "dbgwset1.h"
+#include "dlgbreak.h"
 
 
 extern char             *CmdData;
@@ -84,14 +85,11 @@ bool DlgUpTheStack( void );
 bool DlgAreYouNuts( unsigned long mult );
 bool DlgBackInTime( bool warn );
 bool DlgIncompleteUndo( void );
-bool DlgBreak( address addr );
 void ProcAccel( void );
 void ProcDisplay( void );
 void ProcFont( void );
 void ProcHelp( void );
-#ifndef NDEBUG
 void ProcInternal( void );
-#endif
 void ProcPaint( void );
 void ProcView( void );
 void ProcConfigFile( void );
@@ -472,7 +470,8 @@ bool DUIInfoRelease( void )
     // used when we're low on memory
     return( false );
 }
-void DUIUpdate( update_list flags )
+
+void DUIUpdate( update_flags flags )
 {
     // flags indicates what conditions have changed.  They should be saved
     // until an appropriate time, then windows updated accordingly
@@ -611,13 +610,11 @@ void ProcHelp( void )
     FlushEOC();
 }
 
-#ifndef NDEBUG
 void ProcInternal( void )
 {
     // stub for old UI
     FlushEOC();
 }
-#endif
 
 void ProcPaint( void )
 {

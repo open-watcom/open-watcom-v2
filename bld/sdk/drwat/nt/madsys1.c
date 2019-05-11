@@ -133,9 +133,9 @@ void LoadMADRegisters(mad_registers *MadRegisters, HANDLE threadhdl )
 
     context.ContextFlags = CONTEXT_FULL;
     GetThreadContext( threadhdl, &context );
-    memcpy( &( MadRegisters->axp.r[AR_f0] ), &( context.FltF0 ), sizeof( axpreg ) * 32 );
-    memcpy( &( MadRegisters->axp.r[AR_v0] ), &( context.IntV0 ), sizeof( axpreg ) * 32 );
-    memcpy( &( MadRegisters->axp.r[AR_fpcr] ), &( context.Fpcr ), sizeof( axpreg ) );
+    memcpy( &( MadRegisters->axp.f0 ), &( context.FltF0 ), sizeof( axpreg ) * 32 );
+    memcpy( &( MadRegisters->axp.u0 ), &( context.IntV0 ), sizeof( axpreg ) * 32 );
+    memcpy( &( MadRegisters->axp.fpcr ), &( context.Fpcr ), sizeof( axpreg ) );
     memcpy( &( MadRegisters->axp.pal.nt.fir ), &( context.Fir ), sizeof( unsigned_64 ) );
     memcpy( &( MadRegisters->axp.pal.nt.softfpcr ), &( context.SoftFpcr ), sizeof( unsigned_64 ) );
     memcpy( &( MadRegisters->axp.pal.nt.psr ), &( context.Psr ), sizeof( unsigned_32 ) );
@@ -150,9 +150,9 @@ void StoreMADRegisters( mad_registers *MadRegisters, HANDLE threadhdl )
 
     MADRegistersTarget( MadRegisters );
     context.ContextFlags = CONTEXT_FULL;
-    memcpy( &( context.FltF0 ), &( MadRegisters->axp.r[AR_f0] ), sizeof( axpreg ) * 32 );
-    memcpy( &( context.IntV0 ), &( MadRegisters->axp.r[AR_v0] ), sizeof( axpreg ) * 32 );
-    memcpy( &( context.Fpcr ), &( MadRegisters->axp.r[AR_fpcr] ), sizeof( axpreg ) );
+    memcpy( &( context.FltF0 ), &( MadRegisters->axp.f0 ), sizeof( axpreg ) * 32 );
+    memcpy( &( context.IntV0 ), &( MadRegisters->axp.u0 ), sizeof( axpreg ) * 32 );
+    memcpy( &( context.Fpcr ), &( MadRegisters->axp.fpcr ), sizeof( axpreg ) );
     memcpy( &( context.Fir ), &( MadRegisters->axp.pal.nt.fir ), sizeof( unsigned_64 ) );
     memcpy( &( context.SoftFpcr ), &( MadRegisters->axp.pal.nt.softfpcr ), sizeof( unsigned_64 ) );
     memcpy( &( MadRegisters->axp.pal.nt.psr ), &( context.Psr ), sizeof( unsigned_32 ) );

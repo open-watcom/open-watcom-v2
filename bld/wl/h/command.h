@@ -67,7 +67,7 @@ typedef enum {
     ST_INVALID_ORDINAL
 } ord_state;
 
-typedef struct tok {
+typedef struct {
     char        *buff;
     size_t      len;
     char        *next;
@@ -81,29 +81,30 @@ typedef struct tok {
     unsigned_16 line;
 } tok;
 
-typedef enum commandflag {
-    CF_TO_STDOUT        = 0x00000001,
-    CF_SET_SECTION      = 0x00000002,   // used for LIB/FIXEDLIB directives
-    CF_NO_DEF_LIBS      = 0x00000004,
-    CF_FILES_BEFORE_DBI = 0x00000008,
-    CF_UNNAMED          = 0x00000010,
-    CF_AUTO_SEG_FLAG    = 0x00000020,   // used in CMDOS2
-    CF_MEMBER_ADDED     = 0x00000040,
-    CF_SEPARATE_SYM     = 0x00000080,
-    CF_AUTOSECTION      = 0x00000100,
-    CF_SECTION_THERE    = 0x00000200,
-    CF_HAVE_FILES       = 0x00000400,
-    CF_HAVE_REALBREAK   = 0x00000800,
-    CF_LANGUAGE_MASK    = 0x00003000,
-    CF_LANGUAGE_ENGLISH = 0x00000000,
-    CF_LANGUAGE_JAPANESE= 0x00001000,
-    CF_LANGUAGE_CHINESE = 0x00002000,
-    CF_LANGUAGE_KOREAN  = 0x00003000,
-    CF_ANON_EXPORT      = 0x00004000,
-    CF_AFTER_INC        = 0x00008000,  // option must be specd. after op inc
-    CF_DOING_OPTLIB     = 0x00010000,
-    CF_NO_EXTENSION     = 0x00020000    // don't put an extension on exe name
+typedef enum {
+    CF_TO_STDOUT            = CONSTU32( 0x00000001 ),
+    CF_SET_SECTION          = CONSTU32( 0x00000002 ),   // used for LIB/FIXEDLIB directives
+    CF_NO_DEF_LIBS          = CONSTU32( 0x00000004 ),
+    CF_FILES_BEFORE_DBI     = CONSTU32( 0x00000008 ),
+    CF_UNNAMED              = CONSTU32( 0x00000010 ),
+    CF_AUTO_SEG_FLAG        = CONSTU32( 0x00000020 ),   // used in CMDOS2
+    CF_MEMBER_ADDED         = CONSTU32( 0x00000040 ),
+    CF_SEPARATE_SYM         = CONSTU32( 0x00000080 ),
+    CF_AUTOSECTION          = CONSTU32( 0x00000100 ),
+    CF_SECTION_THERE        = CONSTU32( 0x00000200 ),
+    CF_HAVE_FILES           = CONSTU32( 0x00000400 ),
+    CF_HAVE_REALBREAK       = CONSTU32( 0x00000800 ),
+    CF_LANGUAGE_ENGLISH     = CONSTU32( 0x00000000 ),
+    CF_LANGUAGE_JAPANESE    = CONSTU32( 0x00001000 ),
+    CF_LANGUAGE_CHINESE     = CONSTU32( 0x00002000 ),
+    CF_LANGUAGE_KOREAN      = CONSTU32( 0x00003000 ),
+    CF_ANON_EXPORT          = CONSTU32( 0x00004000 ),
+    CF_AFTER_INC            = CONSTU32( 0x00008000 ),   // option must be specd. after op inc
+    CF_DOING_OPTLIB         = CONSTU32( 0x00010000 ),
+    CF_NO_EXTENSION         = CONSTU32( 0x00020000 ),   // don't put an extension on exe name
 } commandflag;
+
+#define CF_LANGUAGE_MASK    (CF_LANGUAGE_ENGLISH | CF_LANGUAGE_JAPANESE | CF_LANGUAGE_CHINESE | CF_LANGUAGE_KOREAN)
 
 typedef struct cmdfilelist {
     struct cmdfilelist *prev;
@@ -114,10 +115,10 @@ typedef struct cmdfilelist {
     tok                 token;
 } cmdfilelist;
 
-typedef struct parse_entry {
+typedef struct {
     char                *keyword;
     bool                (*rtn)( void );
-    enum exe_format     format;
+    exe_format          format;
     commandflag         flags;
 } parse_entry;
 

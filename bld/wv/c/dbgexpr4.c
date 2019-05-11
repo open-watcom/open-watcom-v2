@@ -703,7 +703,7 @@ typedef struct {
     bool                found;
 } find_context;
 
-OVL_EXTERN bool FindContext( call_chain_entry *entry, void *_info )
+static bool FindContext( call_chain_entry *entry, void *_info )
 {
     find_context *info = _info;
     unsigned    save_use;

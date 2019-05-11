@@ -45,7 +45,7 @@
 #include "wstrdup.h"
 #include "widn2str.h"
 #include "wclip.h"
-#include "sys_rc.h"
+#include "sysall.rh"
 #include "jdlg.h"
 #include "wclbproc.h"
 
@@ -87,8 +87,6 @@ int appHeight = -1;
 
 void WInitEditWindows( HINSTANCE inst )
 {
-    _wtouch( inst );
-
     WEditWinColor = GetSysColor( COLOR_BTNFACE );
     WEditWinBrush = CreateSolidBrush( WEditWinColor );
     WStringEditWinProc = MakeProcInstance_DLG( WStringEditDlgProc, inst );
@@ -877,8 +875,7 @@ WINEXPORT INT_PTR CALLBACK WTestDlgProc( HWND hDlg, UINT message, WPARAM wParam,
 {
     RECT        r;
 
-    _wtouch( wParam );
-    _wtouch( lParam );
+    /* unused parameters */ (void)wParam; (void)lParam;
 
     if( message == WM_INITDIALOG ) {
         GetWindowRect( hDlg, &r );

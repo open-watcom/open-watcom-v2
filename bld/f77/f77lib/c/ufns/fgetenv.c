@@ -36,13 +36,11 @@
 //
 
 #include "ftnstd.h"
-#include "ftnapi.h"
-
-#include <stddef.h>
-#include <malloc.h>
 #include <string.h>
 #include <process.h>
-#include <pgmacc.h>
+#include "pgmacc.h"
+#include "ftnapi.h"
+#include "walloca.h"
 
 
 intstar4        __fortran FGETENV( string PGM *env_var, string PGM *value ) {

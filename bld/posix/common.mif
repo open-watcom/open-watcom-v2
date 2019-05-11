@@ -40,12 +40,6 @@ model=f
 memory_model_i86=$(model)
 memory_model_386=$(model)
 
-!ifdef __UNIX__
-to_os_path=\=/
-!else
-to_os_path=/=\
-!endif
-
 !include cproj.mif
 !include defrule.mif
 
@@ -67,4 +61,4 @@ libdir=$(posix_dir)/misc/$(host_os)$(host_cpu)/$(subdir_$(host_cpu))
 #
 
 extra_cppflags_ntaxp = -DWIN32 -D_WIN32
-extra_cpp_flags      += -DSTANDALONE_RX $(extra_cppflags_$(host_os)$(host_cpu))
+extra_cpp_flags      = -DSTANDALONE_RX $(extra_cppflags_$(host_os)$(host_cpu)) $(extra_cppflags)

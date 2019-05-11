@@ -13,9 +13,10 @@ sys_windowed = 1
 
 !include $(commonui_dir)/client.mif
 !include $(wpi_dir)/client.mif
+!include trmem.mif
 
 objs =  dde.obj ddeproc.obj ddeglob.obj ddemsg.obj ddebox.obj ddetrack.obj &
-        ddeflter.obj ddecfg.obj ddemisc.obj ddetool.obj cguimem.obj
+        ddeflter.obj ddecfg.obj ddemisc.obj ddetool.obj ddemem.obj
 
 extra_cpp_flags_nt = -DNOUSE3D
 

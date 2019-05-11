@@ -31,12 +31,11 @@
 
 
 #include "ftnstd.h"
+#include <string.h>
 #include "rundat.h"
 #include "rtutls.h"
 #include "cctrl.h"
 #include "sdfile.h"
-
-#include <string.h>
 
 
 void            CheckCCtrl( void ) {

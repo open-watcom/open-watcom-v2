@@ -32,8 +32,10 @@
 #include <string.h>
 #include "sample.h"
 #include "dlgstat.h"
-#include "samprc.h"
+#include "samprc.rh"
 
+
+#define GUI_NO_ID   ((gui_ctl_id)-1)
 
 extern out_info Child1_Out;
 
@@ -41,7 +43,7 @@ bool            DialogScaled    = false;
 bool            ButtonsScaled   = false;
 bool            ControlsScaled  = false;
 char * ListBoxData[] = { "one", "two", "three" };
-int    NUM_LIST_BOX_DATA = ( sizeof( ListBoxData ) / sizeof( char * ) );
+int    NUM_LIST_BOX_DATA = GUI_ARRAY_SIZE( ListBoxData );
 
 static  const char  *LongText = "inserted_really_long_piece_of_text";
 
@@ -53,12 +55,12 @@ gui_create_info DlgWin = {
     GUI_SCROLL_BOTH,
     GUI_SCROLL_EVENTS | GUI_ALL,
     NULL,
-    { 0, NULL },                        // Menu array
-    { 0, NULL },                        // Colour attribute array
-    &Child1WndGUIEventProc,             // GUI Event Callback function
+    GUI_NO_MENU,                    // Menu array
+    GUI_NO_COLOUR,                  // Colour attribute array
+    &Child1WndGUIEventProc,         // GUI Event Callback function
     &Child1_Out,
     &DlgWinIcon,
-    NULL                                // Menu Resource
+    NULL                            // Menu Resource
 };
 
 gui_control_info Controls[] = {
@@ -82,7 +84,7 @@ gui_control_info Controls[] = {
     NULL,
     GUI_NOSCROLL,
     GUI_STYLE_CONTROL_AUTOMATIC,
-    -1},
+    GUI_NO_ID},
   { GUI_RADIO_BUTTON,
     "RA&DIO 1",
     { 25, 45, BUTTON_WIDTH, BUTTON_HEIGHT },
@@ -103,7 +105,7 @@ gui_control_info Controls[] = {
     NULL,
     GUI_NOSCROLL,
     GUI_STYLE_CONTROL_AUTOMATIC,
-    -1},
+    GUI_NO_ID},
   { GUI_CHECK_BOX,
     "&CHECK 1",
     { 25, 315, BUTTON_WIDTH + 20, BUTTON_HEIGHT },
@@ -156,17 +158,17 @@ gui_control_info Controls[] = {
 };
 
 static gui_create_info DialogControl = {
-    "Static Dialog Box",                // Title
-    { 100, 100, 700, 700 },             // Position
-    GUI_NOSCROLL,                       // Scroll Styles
-    GUI_VISIBLE | GUI_CLOSEABLE,        // Window Styles
-    NULL,                               // Parent
-    { 0, NULL },                        // Menu array
-    { 0, NULL },                        // Colour attribute array
-    &StaticDialogWndGUIEventProc,       // GUI Event Callback function
-    NULL,                               // Extra
-    NULL,                               // Icon
-    NULL                                // Menu Resource
+    "Static Dialog Box",            // Title
+    { 100, 100, 700, 700 },         // Position
+    GUI_NOSCROLL,                   // Scroll Styles
+    GUI_VISIBLE | GUI_CLOSEABLE,    // Window Styles
+    NULL,                           // Parent
+    GUI_NO_MENU,                    // Menu array
+    GUI_NO_COLOUR,                  // Colour attribute array
+    &StaticDialogWndGUIEventProc,   // GUI Event Callback function
+    NULL,                           // Extra
+    NULL,                           // Icon
+    NULL                            // Menu Resource
 };
 
 static const char *ListBoxFunc( const void *data_handle, int item )
@@ -227,7 +229,7 @@ bool StaticDialogWndGUIEventProc( gui_window *gui, gui_event gui_ev, void *param
 {
     gui_ctl_id  id;
     char        *new;
-    unsigned    i;
+    int         i;
     char        *text;
     int         sel;
     int         size;

@@ -35,7 +35,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include "bool.h"
-#include "about.h"
+#include "about.rh"
 #include "aboutdlg.h"
 #ifndef NOUSE3D
 #include "ctl3dcvr.h"

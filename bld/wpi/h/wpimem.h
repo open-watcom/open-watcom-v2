@@ -35,7 +35,7 @@
 #define WPIMEM_H
 
 extern void _wpi_free( void * ptr );
-extern void * _wpi_malloc( size_t size );
-extern void * _wpi_realloc( void *ptr, size_t size );
+extern void *_wpi_malloc( size_t size );
+extern void *_wpi_realloc( void *ptr, size_t size );
 
 #endif

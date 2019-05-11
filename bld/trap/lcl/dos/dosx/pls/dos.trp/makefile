@@ -8,7 +8,7 @@ target_os  = dos
 srv = pls
 which = TRAP
 
-extra_cpp_flags = -dPHARLAP
+extra_cppflags = -dPHARLAP
 
 !include $(trap_dir)/lcl/dos/dosx/dosx.mif
 !include $(trap_dir)/master.mif

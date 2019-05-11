@@ -212,7 +212,7 @@ typedef struct {
         struct {      // General info
             char* string;
             pDeclInfo pTypeDecl;  // This only points to a symbol table entry
-        };
+        } ginfo;
         struct {
             ConstType type: 6;
             RadixType radix: 2;

@@ -39,6 +39,7 @@
  #ifdef _WCHUGE
   #error The macro _WCHUGE is reserved for use by the runtime library.
  #endif
+:segment BITS16
  #ifdef _WCI86NEAR
   #error The macro _WCI86NEAR is reserved for use by the runtime library.
  #endif
@@ -48,6 +49,7 @@
  #ifdef _WCI86HUGE
   #error The macro _WCI86HUGE is reserved for use by the runtime library.
  #endif
+:endsegment
  #ifdef _WCINTERRUPT
   #error The macro _WCINTERRUPT is reserved for use by the runtime library.
  #endif
@@ -65,7 +67,9 @@
  #endif
  #define _WRTLFCONV __declspec(__watcall)
  #define _WRTLDCONV __declspec(__watcall)
+:segment !INTEL_ONLY
  #ifdef _M_IX86
+:endsegment
   #define _WCCALLBACK __watcall
   #define _WCNORETURN __declspec(aborts)
   #define _WCNEAR __near
@@ -73,28 +77,29 @@
   #define _WCHUGE __huge
   #define _WCINTERRUPT __interrupt
   #define _WCUNALIGNED
-:segment DOS | QNX | RDOS
+:segment BITS16
   #ifdef _M_I86
    #define _WCI86NEAR __near
    #define _WCI86FAR __far
    #define _WCI86HUGE __huge
   #else
-:endsegment
    #define _WCI86NEAR
    #define _WCI86FAR
    #define _WCI86HUGE
-:segment DOS | QNX | RDOS
   #endif
 :endsegment
+:segment !INTEL_ONLY
  #elif defined(__AXP__)
   #define _WCCALLBACK
   #define _WCNORETURN __declspec(aborts)
   #define _WCNEAR
   #define _WCFAR
   #define _WCHUGE
+:segment DOS
   #define _WCI86NEAR
   #define _WCI86FAR
   #define _WCI86HUGE
+:endsegment
   #define _WCINTERRUPT
   #define _WCUNALIGNED __unaligned
  #elif defined(__PPC__)
@@ -103,9 +108,11 @@
   #define _WCNEAR
   #define _WCFAR
   #define _WCHUGE
+:segment DOS
   #define _WCI86NEAR
   #define _WCI86FAR
   #define _WCI86HUGE
+:endsegment
   #define _WCINTERRUPT
   #define _WCUNALIGNED __unaligned
  #elif defined(__MIPS__)
@@ -114,9 +121,11 @@
   #define _WCNEAR
   #define _WCFAR
   #define _WCHUGE
+:segment DOS
   #define _WCI86NEAR
   #define _WCI86FAR
   #define _WCI86HUGE
+:endsegment
   #define _WCINTERRUPT
   #define _WCUNALIGNED __unaligned
  #else
@@ -125,13 +134,16 @@
   #define _WCNEAR
   #define _WCFAR
   #define _WCHUGE
+:segment DOS
   #define _WCI86NEAR
   #define _WCI86FAR
   #define _WCI86HUGE
+:endsegment
   #define _WCINTERRUPT
   #define _WCUNALIGNED
  #endif
-:segment DOS | QNX | RDOS
+:endsegment
+:segment BITS16
  #if defined( _M_I86 ) && defined( __HUGE__ )
   #define _WCDATA _WCFAR
  #elif defined(__SW_ND) || defined(__FUNCTION_DATA_ACCESS)
@@ -152,6 +164,7 @@
  #define _WCHANDLER __declspec(_WCCALLBACK)
 :elsesegment
  #ifdef __SW_BR
+:segment DOS
   #ifdef __NT__
    #define _WCRTLINK __declspec(dllimport) _WRTLFCONV
    #define _WCRTDATA __declspec(dllimport) _WRTLDCONV
@@ -161,6 +174,7 @@
    #define _WPRTDATA __declspec(dllimport) _WRTLDCONV
    #define _WCHANDLER __declspec(dllimport) __declspec(_WCCALLBACK)
   #else
+:endsegment
    #define _WCRTLINK _WRTLFCONV
    #define _WCRTDATA _WRTLDCONV
    #define _WMRTLINK _WRTLFCONV
@@ -168,7 +182,9 @@
    #define _WPRTLINK _WRTLFCONV
    #define _WPRTDATA _WRTLDCONV
    #define _WCHANDLER __declspec(_WCCALLBACK)
+:segment DOS
   #endif
+:endsegment
  #else
   #ifndef _WCRTLINK
    #define _WCRTLINK _WRTLFCONV
@@ -202,7 +218,11 @@
   #endif
  #endif
  #ifndef _WMIRTLINK
-  #if defined(__NO_MATH_OPS) || defined(__AXP__) || defined(__PPC__)
+:segment RDOS | QNX
+  #if defined(__NO_MATH_OPS)
+:elsesegment
+  #if defined(__NO_MATH_OPS) || defined(__AXP__) || defined(__PPC__) || defined(__MIPS__)
+:endsegment
    #define _WMIRTLINK _WMRTLINK
   #else
    #define _WMIRTLINK _WRTLFCONV

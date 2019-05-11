@@ -2,7 +2,7 @@
 #ifndef _RDOSDEV_H
 #define _RDOSDEV_H
 
-#pragma pack( push, 1 )
+#pragma pack( __push, 1 )
 
 #ifdef __cplusplus
 extern "C" {
@@ -22,7 +22,7 @@ extern "C" {
 
 // handle signatures
 
-#define ADC_HANDLE         0x15FC 
+#define ADC_HANDLE         0x15FC
 #define FM_INSTR_HANDLE    0x17DE
 #define DLL_HANDLE16       0x26CF
 #define DLL_HANDLE32       0x26DF
@@ -64,345 +64,345 @@ typedef void __far (__rdos_gate_callback)();
 typedef void __far (__rdos_swap_callback)(char level);
 
 #pragma aux __rdos_swap_callback "*" \
-                    parm caller [al] \
-                    value struct routine [eax] \
-                    modify [eax ebx ecx edx esi edi]
+                    __parm __caller [__al] \
+                    __value __struct __routine [__eax] \
+                    __modify [__eax __ebx __ecx __edx __esi __edi]
 
 typedef void __far (__rdos_thread_callback)(void *);
 
 #pragma aux __rdos_thread_callback "*" \
-                    parm caller [gs ebx] \
-                    value struct routine [eax] \
-                    modify [eax ebx ecx edx esi edi]
+                    __parm __caller [__gs __ebx] \
+                    __value __struct __routine [__eax] \
+                    __modify [__eax __ebx __ecx __edx __esi __edi]
 
 typedef void __far (__rdos_timer_callback)(int sel, unsigned long expire_msb, unsigned long expire_lsb);
 
 #pragma aux __rdos_timer_callback "*" \
-                    parm caller [ecx] [edx] [eax] \
-                    value struct routine [eax] \
-                    modify [eax ebx ecx edx esi edi]
+                    __parm __caller [__ecx] [__edx] [__eax] \
+                    __value __struct __routine [__eax] \
+                    __modify [__eax __ebx __ecx __edx __esi __edi]
 
 typedef void __far (__rdos_wait_callback)(int wait_obj);
 
 #pragma aux __rdos_wait_callback "*" \
-                    parm caller [es] \
-                    value struct routine [eax] \
-                    modify [eax ebx ecx edx esi edi]
+                    __parm __caller [__es] \
+                    __value __struct __routine [__eax] \
+                    __modify [__eax __ebx __ecx __edx __esi __edi]
 
 typedef void __far (__rdos_hook_callback)();
 
 #pragma aux __rdos_hook_callback "*" \
-                    parm caller \
-                    value struct routine [eax] \
-                    modify [eax ebx ecx edx esi edi]
+                    __parm __caller \
+                    __value __struct __routine [__eax] \
+                    __modify [__eax __ebx __ecx __edx __esi __edi]
 
 typedef void __far (__rdos_hook_state_callback)(int thread, char *buf);
 
 #pragma aux __rdos_hook_state_callback "*" \
-                    parm caller [ebx] [es edi] \
-                    value struct routine [eax] \
-                    modify [eax ebx ecx edx esi edi]
+                    __parm __caller [__ebx] [__es __edi] \
+                    __value __struct __routine [__eax] \
+                    __modify [__eax __ebx __ecx __edx __esi __edi]
 
 typedef void __far (__rdos_irq_callback)();
 
 #pragma aux __rdos_irq_callback "*" \
-                    parm caller \
-                    value struct routine [eax] \
-                    modify [eax ebx ecx edx esi edi]
+                    __parm __caller \
+                    __value __struct __routine [__eax] \
+                    __modify [__eax __ebx __ecx __edx __esi __edi]
 
 typedef void __far (__rdos_handle_delete_callback)(int handle);
 
 #pragma aux __rdos_handle_delete_callback "*" \
-                    parm caller [ebx] \
-                    value struct routine [eax] \
-                    modify [eax ebx ecx edx esi edi]
+                    __parm __caller [__ebx] \
+                    __value __struct __routine [__eax] \
+                    __modify [__eax __ebx __ecx __edx __esi __edi]
 
 typedef void __far (__rdos_net_prot_callback)(int size, short int packet_type, void *ads, int selector);
 
 #pragma aux __rdos_net_prot_callback "*" \
-                    parm caller [ecx] [dx] [ds esi] [es] \
-                    value struct routine [eax] \
-                    modify [eax ebx ecx edx esi edi]
+                    __parm __caller [__ecx] [__dx] [__ds __esi] [__es] \
+                    __value __struct __routine [__eax] \
+                    __modify [__eax __ebx __ecx __edx __esi __edi]
 
 typedef void __far (__rdos_net_preview_callback)();
 
 #pragma aux __rdos_net_preview_callback "*" \
-                    parm caller \
-                    value struct routine [eax] \
-                    modify [eax ebx ecx edx esi edi]
+                    __parm __caller \
+                    __value __struct __routine [__eax] \
+                    __modify [__eax __ebx __ecx __edx __esi __edi]
 
 typedef char* __far (__rdos_net_receive_callback)(int size, char *buf);
 
 #pragma aux __rdos_net_receive_callback "*" \
-                    parm caller [ecx] [es edi] \
-                    value struct routine [es edi] \
-                    modify [eax ebx ecx edx esi edi]
+                    __parm __caller [__ecx] [__es __edi] \
+                    __value __struct __routine [__es __edi] \
+                    __modify [__eax __ebx __ecx __edx __esi __edi]
 
 typedef void __far (__rdos_net_remove_callback)(int size);
 
 #pragma aux __rdos_net_remove_callback "*" \
-                    parm caller [ecx] \
-                    value struct routine [eax] \
-                    modify [eax ebx ecx edx esi edi]
+                    __parm __caller [__ecx] \
+                    __value __struct __routine [__eax] \
+                    __modify [__eax __ebx __ecx __edx __esi __edi]
 
 typedef char* __far (__rdos_net_get_buf_callback)(int size);
 
 #pragma aux __rdos_net_get_buf_callback "*" \
-                    parm caller [ecx] \
-                    value struct routine [es edi] \
-                    modify [eax ebx ecx edx esi edi]
+                    __parm __caller [__ecx] \
+                    __value __struct __routine [__es __edi] \
+                    __modify [__eax __ebx __ecx __edx __esi __edi]
 
 typedef void __far (__rdos_net_send_callback)(int size, short int packet_type, void *dest_ads, int buf_sel);
 
 #pragma aux __rdos_net_send_callback "*" \
-                    parm caller [ecx] [dx] [ds esi] [es] \
-                    value struct routine [eax] \
-                    modify [eax ebx ecx edx esi edi]
+                    __parm __caller [__ecx] [__dx] [__ds __esi] [__es] \
+                    __value __struct __routine [__eax] \
+                    __modify [__eax __ebx __ecx __edx __esi __edi]
 
 typedef char* __far (__rdos_net_address_callback)();
 
 #pragma aux __rdos_net_address_callback "*" \
-                    parm caller \
-                    value struct routine [es edi] \
-                    modify [eax ebx ecx edx esi edi]
+                    __parm __caller \
+                    __value __struct __routine [__es __edi] \
+                    __modify [__eax __ebx __ecx __edx __esi __edi]
 
 typedef void __far (__rdos_net_get_address_callback)(int buf_sel);
 
 #pragma aux __rdos_net_get_address_callback "*" \
-                    parm caller [es] \
-                    value struct routine [eax] \
-                    modify [eax ebx ecx edx esi edi]
+                    __parm __caller [__es] \
+                    __value __struct __routine [__eax] \
+                    __modify [__eax __ebx __ecx __edx __esi __edi]
 
 typedef void __far (__rdos_net_broadcast_callback)(int class_sel, int driver_handle);
 
 #pragma aux __rdos_net_broadcast_callback "*" \
-                    parm caller [ds] [fs] \
-                    value struct routine [eax] \
-                    modify [eax ebx ecx edx esi edi]
+                    __parm __caller [__ds] [__fs] \
+                    __value __struct __routine [__eax] \
+                    __modify [__eax __ebx __ecx __edx __esi __edi]
 
 typedef void __far (__rdos_ip_callback)(short int opt_size, int data_size, long source_ip, char *opt_data, char *ip_data);
 
 #pragma aux __rdos_ip_callback "*" \
-                    parm caller [ax] [ecx] [edx] [ds esi] [es edi] \
-                    value struct routine [eax] \
-                    modify [eax ebx ecx edx esi edi]
+                    __parm __caller [__ax] [__ecx] [__edx] [__ds __esi] [__es __edi] \
+                    __value __struct __routine [__eax] \
+                    __modify [__eax __ebx __ecx __edx __esi __edi]
 
 typedef void __far (__rdos_dhcp_option_callback)(int size, char *data);
 
 #pragma aux __rdos_dhcp_option_callback "*" \
-                    parm caller [ecx] [es edi] \
-                    value struct routine [eax] \
-                    modify [eax ebx ecx edx esi edi]
+                    __parm __caller [__ecx] [__es __edi] \
+                    __value __struct __routine [__eax] \
+                    __modify [__eax __ebx __ecx __edx __esi __edi]
 
 typedef void __far (__rdos_disc_assign_callback)();
 
 #pragma aux __rdos_disc_assign_callback "*" \
-                    parm caller \
-                    value struct routine [eax] \
-                    modify [eax ebx ecx edx esi edi]
+                    __parm __caller \
+                    __value __struct __routine [__eax] \
+                    __modify [__eax __ebx __ecx __edx __esi __edi]
 
 typedef void __far (__rdos_drive_assign_callback)(int disc_handle);
 
 #pragma aux __rdos_drive_assign_callback "*" \
-                    parm caller [ebx]  \
-                    value struct routine [eax] \
-                    modify [eax ebx ecx edx esi edi]
+                    __parm __caller [__ebx]  \
+                    __value __struct __routine [__eax] \
+                    __modify [__eax __ebx __ecx __edx __esi __edi]
 
 typedef void __far (__rdos_drive_mount_callback)(int disc_handle);
 
 #pragma aux __rdos_drive_mount_callback "*" \
-                    parm caller [ebx]  \
-                    value struct routine [eax] \
-                    modify [eax ebx ecx edx esi edi]
+                    __parm __caller [__ebx]  \
+                    __value __struct __routine [__eax] \
+                    __modify [__eax __ebx __ecx __edx __esi __edi]
 
 typedef void __far (__rdos_drive_erase_callback)(int disc_handle, int start_sector, int sector_count);
 
 #pragma aux __rdos_drive_erase_callback "*" \
-                    parm caller [ebx] [edx] [ecx]  \
-                    value struct routine [eax] \
-                    modify [eax ebx ecx edx esi edi]
+                    __parm __caller [__ebx] [__edx] [__ecx]  \
+                    __value __struct __routine [__eax] \
+                    __modify [__eax __ebx __ecx __edx __esi __edi]
 
 typedef void __far (__rdos_disc_change_callback)(int disc_sel);
 
 #pragma aux __rdos_disc_change_callback "*" \
-                    parm caller [fs]  \
-                    value struct routine [eax] \
-                    modify [eax ebx ecx edx esi edi]
+                    __parm __caller [__fs]  \
+                    __value __struct __routine [__eax] \
+                    __modify [__eax __ebx __ecx __edx __esi __edi]
 
 typedef void __far (__rdos_init_fs_callback)();
 
 #pragma aux __rdos_init_fs_callback "*" \
-                    parm caller  \
-                    value struct routine [eax] \
-                    modify [eax ebx ecx edx esi edi]
+                    __parm __caller  \
+                    __value __struct __routine [__eax] \
+                    __modify [__eax __ebx __ecx __edx __esi __edi]
 
 typedef void __far (__rdos_fs_format_callback)(void *drive_data, char *fs_name, int sectors);
 
 #pragma aux __rdos_fs_format_callback "*" \
-                    parm caller [fs edx] [es edi] [ecx]  \
-                    value struct routine [eax] \
-                    modify [eax ebx ecx edx esi edi]
+                    __parm __caller [__fs __edx] [__es __edi] [__ecx]  \
+                    __value __struct __routine [__eax] \
+                    __modify [__eax __ebx __ecx __edx __esi __edi]
 
 typedef void * __far (__rdos_fs_mount_callback)(void *drive_data);
 
 #pragma aux __rdos_fs_mount_callback "*" \
-                    parm caller [fs edx] \
-                    value struct routine [ds esi] \
-                    modify [eax ebx ecx edx esi edi]
+                    __parm __caller [__fs __edx] \
+                    __value __struct __routine [__ds __esi] \
+                    __modify [__eax __ebx __ecx __edx __esi __edi]
 
 typedef void __far (__rdos_fs_flush_callback)(void *fs_data);
 
 #pragma aux __rdos_fs_flush_callback "*" \
-                    parm caller [ds esi]  \
-                    value struct routine [eax] \
-                    modify [eax ebx ecx edx esi edi]
+                    __parm __caller [__ds __esi]  \
+                    __value __struct __routine [__eax] \
+                    __modify [__eax __ebx __ecx __edx __esi __edi]
 
 typedef void __far (__rdos_fs_dismount_callback)(void *fs_data);
 
 #pragma aux __rdos_fs_dismount_callback "*" \
-                    parm caller [ds esi]  \
-                    value struct routine [eax] \
-                    modify [eax ebx ecx edx esi edi]
+                    __parm __caller [__ds __esi]  \
+                    __value __struct __routine [__eax] \
+                    __modify [__eax __ebx __ecx __edx __esi __edi]
 
 typedef long __far (__rdos_fs_info_callback)(void *fs_data);
 
 #pragma aux __rdos_fs_info_callback "*" \
-                    parm caller [ds esi]  \
-                    value struct routine [eax] \
-                    modify [eax ebx ecx edx esi edi]
+                    __parm __caller [__ds __esi]  \
+                    __value __struct __routine [__eax] \
+                    __modify [__eax __ebx __ecx __edx __esi __edi]
 
 typedef int __far (__rdos_fs_allocate_dir_sel_callback)(void *fs_data, char drive, int parent_dir_sel, int parent_dir_entry);
 
 #pragma aux __rdos_fs_allocate_dir_sel_callback "*" \
-                    parm caller [ds esi] [al] [ebx] [edx]  \
-                    value struct routine [ebx] \
-                    modify [eax ebx ecx edx esi edi]
+                    __parm __caller [__ds __esi] [__al] [__ebx] [__edx]  \
+                    __value __struct __routine [__ebx] \
+                    __modify [__eax __ebx __ecx __edx __esi __edi]
 
 typedef void __far (__rdos_fs_free_dir_sel_callback)(void *fs_data, int dir_sel);
 
 #pragma aux __rdos_fs_free_dir_sel_callback "*" \
-                    parm caller [ds esi] [ebx]  \
-                    value struct routine [eax] \
-                    modify [eax ebx ecx edx esi edi]
+                    __parm __caller [__ds __esi] [__ebx]  \
+                    __value __struct __routine [__eax] \
+                    __modify [__eax __ebx __ecx __edx __esi __edi]
 
 typedef void __far (__rdos_fs_cache_dir_callback)(void *fs_data, int dir_sel, int dir_entry);
 
 #pragma aux __rdos_fs_cache_dir_callback "*" \
-                    parm caller [ds esi] [ebx] [edx]  \
-                    value struct routine [eax] \
-                    modify [eax ebx ecx edx esi edi]
+                    __parm __caller [__ds __esi] [__ebx] [__edx]  \
+                    __value __struct __routine [__eax] \
+                    __modify [__eax __ebx __ecx __edx __esi __edi]
 
 typedef void __far (__rdos_fs_update_dir_callback)(void *fs_data, int dir_dir_entry);
 
 #pragma aux __rdos_fs_update_dir_callback "*" \
-                    parm caller [ds esi] [edx]  \
-                    value struct routine [eax] \
-                    modify [eax ebx ecx edx esi edi]
+                    __parm __caller [__ds __esi] [__edx]  \
+                    __value __struct __routine [__eax] \
+                    __modify [__eax __ebx __ecx __edx __esi __edi]
 
 typedef void __far (__rdos_fs_update_file_callback)(void *fs_data, int dir_file_entry);
 
 #pragma aux __rdos_fs_update_file_callback "*" \
-                    parm caller [ds esi] [edx]  \
-                    value struct routine [eax] \
-                    modify [eax ebx ecx edx esi edi]
+                    __parm __caller [__ds __esi] [__edx]  \
+                    __value __struct __routine [__eax] \
+                    __modify [__eax __ebx __ecx __edx __esi __edi]
 
 typedef long __far (__rdos_fs_create_dir_callback)(void *fs_data, char *name, int dir_sel);
 
 #pragma aux __rdos_fs_create_dir_callback "*" \
-                    parm caller [ds esi] [es edi] [ebx]  \
-                    value struct routine [edx] \
-                    modify [eax ebx ecx edx esi edi]
+                    __parm __caller [__ds __esi] [__es __edi] [__ebx]  \
+                    __value __struct __routine [__edx] \
+                    __modify [__eax __ebx __ecx __edx __esi __edi]
 
 typedef void __far (__rdos_fs_delete_dir_callback)(void *fs_data, int dir_sel, int dir_entry);
 
 #pragma aux __rdos_fs_delete_dir_callback "*" \
-                    parm caller [ds esi] [ebx] [edx]  \
-                    value struct routine [eax] \
-                    modify [eax ebx ecx edx esi edi]
+                    __parm __caller [__ds __esi] [__ebx] [__edx]  \
+                    __value __struct __routine [__eax] \
+                    __modify [__eax __ebx __ecx __edx __esi __edi]
 
 typedef void __far (__rdos_fs_delete_file_callback)(void *fs_data, int dir_sel, int dir_entry);
 
 #pragma aux __rdos_fs_delete_file_callback "*" \
-                    parm caller [ds esi] [ebx] [edx]  \
-                    value struct routine [eax] \
-                    modify [eax ebx ecx edx esi edi]
+                    __parm __caller [__ds __esi] [__ebx] [__edx]  \
+                    __value __struct __routine [__eax] \
+                    __modify [__eax __ebx __ecx __edx __esi __edi]
 
 typedef void __far (__rdos_fs_rename_file_callback)(char *from, char *to);
 
 #pragma aux __rdos_fs_rename_file_callback "*" \
-                    parm caller [fs esi] [es edi]  \
-                    value struct routine [eax] \
-                    modify [eax ebx ecx edx esi edi]
+                    __parm __caller [__fs __esi] [__es __edi]  \
+                    __value __struct __routine [__eax] \
+                    __modify [__eax __ebx __ecx __edx __esi __edi]
 
 typedef int __far (__rdos_fs_create_file_callback)(void *fs_data, char *name, int dir_sel, int attrib);
 
 #pragma aux __rdos_fs_create_file_callback "*" \
-                    parm caller [ds esi] [es edi] [ebx] [ecx] \
-                    value struct routine [edx] \
-                    modify [eax ebx ecx edx esi edi]
+                    __parm __caller [__ds __esi] [__es __edi] [__ebx] [__ecx] \
+                    __value __struct __routine [__edx] \
+                    __modify [__eax __ebx __ecx __edx __esi __edi]
 
 typedef int __far (__rdos_fs_get_ioctl_callback)(void *fs_data, int file_sel);
 
 #pragma aux __rdos_fs_get_ioctrl_callback "*" \
-                    parm caller [ds esi] [ebx] \
-                    value struct routine [edx] \
-                    modify [eax ebx ecx edx esi edi]
+                    __parm __caller [__ds __esi] [__ebx] \
+                    __value __struct __routine [__edx] \
+                    __modify [__eax __ebx __ecx __edx __esi __edi]
 
 typedef void __far (__rdos_fs_set_file_size_callback)(void *fs_data, int file_sel, int size);
 
 #pragma aux __rdos_fs_set_file_size_callback "*" \
-                    parm caller [ds esi] [ebx] [edx] \
-                    value struct routine [eax] \
-                    modify [eax ebx ecx edx esi edi]
+                    __parm __caller [__ds __esi] [__ebx] [__edx] \
+                    __value __struct __routine [__eax] \
+                    __modify [__eax __ebx __ecx __edx __esi __edi]
 
 typedef int __far (__rdos_fs_read_file_callback)(void *fs_data, int file_sel, int start, int size, char *buf);
 
 #pragma aux __rdos_fs_read_file_callback "*" \
-                    parm caller [ds esi] [ebx] [edx] [ecx] [es edi] \
-                    value struct routine [eax] \
-                    modify [eax ebx ecx edx esi edi]
+                    __parm __caller [__ds __esi] [__ebx] [__edx] [__ecx] [__es __edi] \
+                    __value __struct __routine [__eax] \
+                    __modify [__eax __ebx __ecx __edx __esi __edi]
 
 typedef int __far (__rdos_fs_write_file_callback)(void *fs_data, int file_sel, int start, int size, char *buf);
 
 #pragma aux __rdos_fs_write_file_callback "*" \
-                    parm caller [ds esi] [ebx] [edx] [ecx] [es edi] \
-                    value struct routine [eax] \
-                    modify [eax ebx ecx edx esi edi]
+                    __parm __caller [__ds __esi] [__ebx] [__edx] [__ecx] [__es __edi] \
+                    __value __struct __routine [__eax] \
+                    __modify [__eax __ebx __ecx __edx __esi __edi]
 
 typedef int __far (__rdos_fs_allocate_file_list_callback)(void *fs_data, int file_sel);
 
 #pragma aux __rdos_fs_allocate_file_list_callback "*" \
-                    parm caller [ds esi] [ebx] \
-                    value struct routine [edi] \
-                    modify [eax ebx ecx edx esi edi]
+                    __parm __caller [__ds __esi] [__ebx] \
+                    __value __struct __routine [__edi] \
+                    __modify [__eax __ebx __ecx __edx __esi __edi]
 
 typedef void __far (__rdos_fs_free_file_list_callback)(void *fs_data, int file_list);
 
 #pragma aux __rdos_fs_free_file_list_callback "*" \
-                    parm caller [ds esi] [edi] \
-                    value struct routine [eax] \
-                    modify [eax ebx ecx edx esi edi]
+                    __parm __caller [__ds __esi] [__edi] \
+                    __value __struct __routine [__eax] \
+                    __modify [__eax __ebx __ecx __edx __esi __edi]
 
 typedef void __far (__rdos_fs_read_block_callback)(void *fs_data, int file_sel, int start, int size, int file_list);
 
 #pragma aux __rdos_fs_read_block_callback "*" \
-                    parm caller [ds esi] [ebx] [edx] [ecx] [edi] \
-                    value struct routine [eax] \
-                    modify [eax ebx ecx edx esi edi]
+                    __parm __caller [__ds __esi] [__ebx] [__edx] [__ecx] [__edi] \
+                    __value __struct __routine [__eax] \
+                    __modify [__eax __ebx __ecx __edx __esi __edi]
 
 typedef void __far (__rdos_fs_write_block_callback)(void *fs_data, int file_sel, int start, int size, int file_list);
 
 #pragma aux __rdos_fs_write_block_callback "*" \
-                    parm caller [ds esi] [ebx] [edx] [ecx] [edi] \
-                    value struct routine [eax] \
-                    modify [eax ebx ecx edx esi edi]
+                    __parm __caller [__ds __esi] [__ebx] [__edx] [__ecx] [__edi] \
+                    __value __struct __routine [__eax] \
+                    __modify [__eax __ebx __ecx __edx __esi __edi]
 
 typedef void __far (__rdos_usb_state_callback)(int controller, char device);
 
 #pragma aux __rdos_usb_state_callback "*" \
-                    parm caller [ebx] [al] \
-                    value struct routine [eax] \
-                    modify [eax ebx ecx edx esi edi]
+                    __parm __caller [__ebx] [__al] \
+                    __value __struct __routine [__eax] \
+                    __modify [__eax __ebx __ecx __edx __esi __edi]
 
 // structures
 
@@ -844,19 +844,19 @@ int RdosGetSignedHidOutput(int Sel, int Usage);
 
 #pragma aux RdosGetGateDs = \
     "mov eax,[ebp+16]" \
-    value [eax];
+    __value [__eax]
 
 #pragma aux RdosGetGateEs = \
     "mov eax,[ebp+12]" \
-    value [eax];
+    __value [__eax]
 
 #pragma aux RdosGetGateFs = \
     "mov eax,[ebp+8]" \
-    value [eax];
+    __value [__eax]
 
 #pragma aux RdosGetGateGs = \
     "mov eax,[ebp+4]" \
-    value [eax];
+    __value [__eax]
 
 #pragma aux RdosSetSuccess = \
     "clc";
@@ -891,8 +891,8 @@ int RdosGetSignedHidOutput(int Sel, int Usage);
 #pragma aux RdosIsValidOsGate = \
     OsGate_is_valid_osgate  \
     CarryToBool \
-    parm [eax] \
-    value [eax];
+    __parm [__eax] \
+    __value [__eax]
 
 #pragma aux RdosRegisterOsGate = \
     "push ds" \
@@ -900,7 +900,7 @@ int RdosGetSignedHidOutput(int Sel, int Usage);
     "pop ds" \
     OsGate_register_osgate  \
     "pop ds" \
-    parm [eax] [esi] [es edi];
+    __parm [__eax] [__esi] [__es __edi]
 
 #pragma aux RdosRegisterBimodalUserGate = \
     "push ds" \
@@ -909,7 +909,7 @@ int RdosGetSignedHidOutput(int Sel, int Usage);
     "xor dx,dx" \
     OsGate_register_bimodal_usergate  \
     "pop ds" \
-    parm [eax] [esi] [es edi];
+    __parm [__eax] [__esi] [__es __edi]
 
 #pragma aux RdosRegisterSegBimodalUserGate = \
     "push ds" \
@@ -917,7 +917,7 @@ int RdosGetSignedHidOutput(int Sel, int Usage);
     "pop ds" \
     OsGate_register_bimodal_usergate  \
     "pop ds" \
-    parm [eax] [edx] [esi] [es edi];
+    __parm [__eax] [__edx] [__esi] [__es __edi]
 
 #pragma aux RdosRegisterUserGate = \
     "push ds" \
@@ -926,7 +926,7 @@ int RdosGetSignedHidOutput(int Sel, int Usage);
     "xor dx,dx" \
     OsGate_register_usergate  \
     "pop ds" \
-    parm [eax] [ebx] [esi] [es edi];
+    __parm [__eax] [__ebx] [__esi] [__es __edi]
 
 #pragma aux RdosRegisterSegUserGate = \
     "push ds" \
@@ -934,7 +934,7 @@ int RdosGetSignedHidOutput(int Sel, int Usage);
     "pop ds" \
     OsGate_register_usergate  \
     "pop ds" \
-    parm [eax] [edx] [ebx] [esi] [es edi];
+    __parm [__eax] [__edx] [__ebx] [__esi] [__es __edi]
 
 #pragma aux RdosReturnOk = \
     "clc" ;
@@ -963,83 +963,83 @@ int RdosGetSignedHidOutput(int Sel, int Usage);
     "jne NoReloadGs" \
     "mov gs,eax" \
     "NoReloadGs: "\
-    parm [ebx] \
-    modify [eax];
+    __parm [__ebx] \
+    __modify [__eax]
 
 #pragma aux RdosSelectorToPointer = \
     "mov dx,bx" \
     "xor eax,eax" \
-    parm [ebx] \
-    value [dx eax];
+    __parm [__ebx] \
+    __value [__dx __eax]
 
 #pragma aux RdosSelectorOffsetToPointer = \
     "mov dx,bx" \
-    parm [ebx] [eax] \
-    value [dx eax];
+    __parm [__ebx] [__eax] \
+    __value [__dx __eax]
 
 #pragma aux RdosLinearToPointer = \
     "mov dx,0x20" \
-    parm [eax] \
-    value [dx eax];
+    __parm [__eax] \
+    __value [__dx __eax]
 
 #pragma aux RdosPointerToSelector = \
     "movzx ebx,dx" \
-    parm [edx eax] \
-    value [ebx];
+    __parm [__edx __eax] \
+    __value [__ebx]
 
 #pragma aux RdosPointerToOffset = \
-    parm [edx eax] \
-    value [eax];
+    __parm [__edx __eax] \
+    __value [__eax]
 
 #pragma aux RdosAllocateGdt = \
     OsGate_allocate_gdt  \
     "movzx ebx,bx" \
-    value [ebx];
+    __value [__ebx]
 
 #pragma aux RdosFreeGdt = \
     OsGate_free_gdt  \
-    parm [ebx];
+    __parm [__ebx]
 
 #pragma aux RdosAllocateLdt = \
     OsGate_allocate_ldt  \
     "movzx ebx,bx" \
-    value [ebx];
+    __value [__ebx]
 
 #pragma aux RdosFreeLdt = \
     OsGate_free_ldt  \
-    parm [ebx];
+    __parm [__ebx]
 
 #pragma aux RdosGetSelectorBaseSize = \
     OsGate_get_selector_base_size  \
     CarryToBool \
     "mov fs:[esi],edx" \
     "mov es:[edi],ecx" \
-    parm [ebx] [fs esi] [es edi] \
-    value [eax];
+    __parm [__ebx] [__fs __esi] [__es __edi] \
+    __value [__eax]
 
 #pragma aux RdosCreateDataSelector16 = \
     OsGate_create_data_sel16  \
-    parm [ebx] [edx] [ecx];
+    __parm [__ebx] [__edx] [__ecx]
 
 #pragma aux RdosCreateDataSelector32 = \
     OsGate_create_data_sel32  \
-    parm [ebx] [edx] [ecx];
+    __parm [__ebx] [__edx] [__ecx]
 
 #pragma aux RdosCreateCodeSelector16 = \
     OsGate_create_code_sel16  \
-    parm [ebx] [edx] [ecx];
+    __parm [__ebx] [__edx] [__ecx]
 
 #pragma aux RdosCreateCodeSelector32 = \
     OsGate_create_code_sel32  \
-    parm [ebx] [edx] [ecx];
+    __parm [__ebx] [__edx] [__ecx]
 
 #pragma aux RdosCreateConformSelector16 = \
     OsGate_create_conform_sel16  \
-    parm [ebx] [edx] [ecx];
+    __parm [__ebx] [__edx] [__ecx]
 
 #pragma aux RdosCreateConformSelector32 = \
     OsGate_create_conform_sel32  \
-    parm [ebx] [edx] [ecx];
+    __parm [__ebx] [__edx] [__ecx]
 
 #pragma aux RdosCreateCallGateSelector = \
     "push ds" \
@@ -1049,7 +1049,7 @@ int RdosGetSignedHidOutput(int Sel, int Usage);
     "pop eax" \
     OsGate_create_call_gate_sel32  \
     "pop ds" \
-    parm [ebx] [esi] [ecx];
+    __parm [__ebx] [__esi] [__ecx]
 
 #pragma aux RdosCreateIntGateSelector = \
     "push ds" \
@@ -1059,7 +1059,7 @@ int RdosGetSignedHidOutput(int Sel, int Usage);
     "pop eax" \
     OsGate_setup_int_gate  \
     "pop ds" \
-    parm [eax] [ebx] [esi];
+    __parm [__eax] [__ebx] [__esi]
 
 #pragma aux RdosCreateTrapGateSelector = \
     "push ds" \
@@ -1069,65 +1069,65 @@ int RdosGetSignedHidOutput(int Sel, int Usage);
     "pop eax" \
     OsGate_setup_trap_gate  \
     "pop ds" \
-    parm [eax] [ebx] [esi];
+    __parm [__eax] [__ebx] [__esi]
 
 #pragma aux RdosGetPageEntry = \
     OsGate_get_page_entry  \
-    parm [edx] \
-    value [ebx eax];
+    __parm [__edx] \
+    __value [__ebx __eax]
 
 #pragma aux RdosSetPageEntry = \
     OsGate_set_page_entry  \
-    parm [edx] [ebx eax];
+    __parm [__edx] [__ebx __eax]
 
 #pragma aux RdosGetThreadPageEntry = \
     OsGate_get_thread_page_entry  \
-    parm [ebx] [edx] \
-    value [eax];
+    __parm [__ebx] [__edx] \
+    __value [__eax]
 
 #pragma aux RdosSetThreadPageEntry = \
     OsGate_set_thread_page_entry  \
-    parm [ebx] [edx] [eax];
+    __parm [__ebx] [__edx] [__eax]
 
 #pragma aux RdosAllocateBigGlobalSelector = \
     "push es" \
     OsGate_allocate_global_mem  \
     "mov ebx,es" \
     "pop es" \
-    parm [eax]  \
-    value [ebx];
+    __parm [__eax]  \
+    __value [__ebx]
 
 #pragma aux RdosAllocateSmallGlobalSelector = \
     "push es" \
     OsGate_allocate_small_global_mem  \
     "mov ebx,es" \
     "pop es" \
-    parm [eax]  \
-    value [ebx];
+    __parm [__eax]  \
+    __value [__ebx]
 
 #pragma aux RdosAllocateBigLocalSelector = \
     "push es" \
     OsGate_allocate_big_mem  \
     "mov ebx,es" \
     "pop es" \
-    parm [eax]  \
-    value [ebx];
+    __parm [__eax]  \
+    __value [__ebx]
 
 #pragma aux RdosAllocateSmallLocalSelector = \
     "push es" \
     OsGate_allocate_small_mem  \
     "mov ebx,es" \
     "pop es" \
-    parm [eax]  \
-    value [ebx];
+    __parm [__eax]  \
+    __value [__ebx]
 
 #pragma aux RdosAllocateSmallKernelSelector = \
     "push es" \
     OsGate_allocate_small_kernel_mem  \
     "mov ebx,es" \
     "pop es" \
-    parm [eax]  \
-    value [ebx];
+    __parm [__eax]  \
+    __value [__ebx]
 
 #pragma aux RdosAllocateBigGlobalMem = \
     "push es" \
@@ -1135,8 +1135,8 @@ int RdosGetSignedHidOutput(int Sel, int Usage);
     "mov dx,es" \
     "xor eax,eax" \
     "pop es" \
-    parm [eax]  \
-    value [dx eax];
+    __parm [__eax]  \
+    __value [__dx __eax]
 
 #pragma aux RdosAllocateSmallGlobalMem = \
     "push es" \
@@ -1144,8 +1144,8 @@ int RdosGetSignedHidOutput(int Sel, int Usage);
     "mov dx,es" \
     "xor eax,eax" \
     "pop es" \
-    parm [eax]  \
-    value [dx eax];
+    __parm [__eax]  \
+    __value [__dx __eax]
 
 #pragma aux RdosAllocateBigLocalMem = \
     "push es" \
@@ -1153,8 +1153,8 @@ int RdosGetSignedHidOutput(int Sel, int Usage);
     "mov dx,es" \
     "xor eax,eax" \
     "pop es" \
-    parm [eax]  \
-    value [dx eax];
+    __parm [__eax]  \
+    __value [__dx __eax]
 
 #pragma aux RdosAllocateSmallLocalMem = \
     "push es" \
@@ -1162,8 +1162,8 @@ int RdosGetSignedHidOutput(int Sel, int Usage);
     "mov dx,es" \
     "xor eax,eax" \
     "pop es" \
-    parm [eax]  \
-    value [dx eax];
+    __parm [__eax]  \
+    __value [__dx __eax]
 
 #pragma aux RdosAllocateSmallKernelMem = \
     "push es" \
@@ -1171,8 +1171,8 @@ int RdosGetSignedHidOutput(int Sel, int Usage);
     "mov dx,es" \
     "xor eax,eax" \
     "pop es" \
-    parm [eax]  \
-    value [dx eax];
+    __parm [__eax]  \
+    __value [__dx __eax]
 
 #pragma aux RdosFreeMem = \
     "push eax" \
@@ -1186,50 +1186,50 @@ int RdosGetSignedHidOutput(int Sel, int Usage);
     "es_load: " \
     "mov es,eax" \
     "pop eax" \
-    parm [ebx];
+    __parm [__ebx]
 
 #pragma aux RdosAllocateBigGlobalLinear = \
     OsGate_allocate_big_linear  \
-    parm [eax]  \
-    value [edx];
+    __parm [__eax]  \
+    __value [__edx]
 
 #pragma aux RdosAllocateSmallGlobalLinear = \
     OsGate_allocate_small_linear  \
-    parm [eax]  \
-    value [edx];
+    __parm [__eax]  \
+    __value [__edx]
 
 #pragma aux RdosAllocateLocalLinear = \
     OsGate_allocate_local_linear  \
-    parm [eax]  \
-    value [edx];
+    __parm [__eax]  \
+    __value [__edx]
 
 #pragma aux RdosAllocateDebugLocalLinear = \
     OsGate_allocate_debug_local_linear  \
-    parm [eax]  \
-    value [edx];
+    __parm [__eax]  \
+    __value [__edx]
 
 #pragma aux RdosAllocateVmLinear = \
     OsGate_allocate_vm_linear  \
-    parm [eax]  \
-    value [edx];
+    __parm [__eax]  \
+    __value [__edx]
 
 #pragma aux RdosReserveLocalLinear = \
     OsGate_reserve_local_linear  \
     CarryToBool \
-    parm [edx] [eax] \
-    value [eax];
+    __parm [__edx] [__eax] \
+    __value [__eax]
 
 #pragma aux RdosFreeLinear = \
     OsGate_free_linear  \
-    parm [edx] [ecx];
+    __parm [__edx] [__ecx]
 
 #pragma aux RdosUsedBigGlobalMem = \
     OsGate_used_big_linear  \
-    value [eax];
+    __value [__eax]
 
 #pragma aux RdosUsedSmallGlobalMem = \
     OsGate_used_small_linear  \
-    value [eax];
+    __value [__eax]
 
 #pragma aux RdosAllocateFixedSystemMem = \
     "push es" \
@@ -1237,8 +1237,8 @@ int RdosGetSignedHidOutput(int Sel, int Usage);
     "mov dx,bx" \
     "xor eax,eax" \
     "pop es" \
-    parm [ebx] [eax]  \
-    value [dx eax];
+    __parm [__ebx] [__eax]  \
+    __value [__dx __eax]
 
 #pragma aux RdosAllocateFixedProcessMem = \
     "push es" \
@@ -1246,53 +1246,53 @@ int RdosGetSignedHidOutput(int Sel, int Usage);
     "mov dx,bx" \
     "xor eax,eax" \
     "pop es" \
-    parm [ebx] [eax]  \
-    value [dx eax];
+    __parm [__ebx] [__eax]  \
+    __value [__dx __eax]
 
 #pragma aux RdosAllocatePhysical32 = \
     OsGate_allocate_physical32  \
-    value [ebx eax];
+    __value [__ebx __eax]
 
 #pragma aux RdosAllocatePhysical64 = \
     OsGate_allocate_physical64  \
-    value [ebx eax];
+    __value [__ebx __eax]
 
 #pragma aux RdosAllocateMultiplePhysical32 = \
     OsGate_allocate_physical32  \
-    parm [ecx] \
-    value [ebx eax];
+    __parm [__ecx] \
+    __value [__ebx __eax]
 
 #pragma aux RdosAllocateMultiplePhysical64 = \
     OsGate_allocate_physical64  \
-    parm [ecx] \
-    value [ebx eax];
+    __parm [__ecx] \
+    __value [__ebx __eax]
 
 #pragma aux RdosFreePhysical = \
     OsGate_free_physical  \
-    parm [ebx eax];
+    __parm [__ebx __eax]
 
 #pragma aux RdosRegisterSwapProc = \
     OsGate_register_swap_proc  \
-    parm [es edi];
+    __parm [__es __edi]
 
 #pragma aux RdosStartTimer = \
     OsGate_start_timer  \
-    parm [ebx] [edx] [eax] [es edi] [ecx];
+    __parm [__ebx] [__edx] [__eax] [__es __edi] [__ecx]
 
 #pragma aux RdosStopTimer = \
     OsGate_stop_timer  \
-    parm [ebx];
+    __parm [__ebx]
 
 #pragma aux RdosGetApicId = \
     OsGate_get_apic_id  \
-    value [edx];
+    __value [__edx]
 
 #pragma aux RdosStartCore = \
     "push fs" \
     "mov fs,ebx" \
     OsGate_start_core  \
     "pop fs" \
-    parm [ebx];
+    __parm [__ebx]
 
 #pragma aux RdosEnterC3 = \
     OsGate_enter_c3;
@@ -1302,21 +1302,21 @@ int RdosGetSignedHidOutput(int Sel, int Usage);
 
 #pragma aux RdosUpdateFreq = \
     OsGate_update_freq  \
-    parm [eax];
+    __parm [__eax]
 
 #pragma aux RdosSendNmi = \
     "push fs" \
     "mov fs,ebx" \
     OsGate_send_nmi  \
     "pop fs" \
-    parm [ebx];
+    __parm [__ebx]
 
 #pragma aux RdosSendInt = \
     "push fs" \
     "mov fs,ebx" \
     OsGate_send_int  \
     "pop fs" \
-    parm [ebx] [eax];
+    __parm [__ebx] [__eax]
 
 #pragma aux RdosLockScheduler = \
     OsGate_lock_task;
@@ -1329,33 +1329,33 @@ int RdosGetSignedHidOutput(int Sel, int Usage);
 
 #pragma aux RdosSignal = \
     OsGate_signal \
-    parm [ebx];
+    __parm [__ebx]
 
 #pragma aux RdosWaitForSignal = \
     OsGate_wait_for_signal;
 
 #pragma aux RdosWaitForSignalWithTimeout = \
     OsGate_wait_for_signal_timeout \
-    parm [edx] [eax];
+    __parm [__edx] [__eax]
 
 #pragma aux RdosAddWait = \
     "push es" \
     OsGate_add_wait \
     "mov eax,es" \
     "pop es" \
-    parm [eax] [ebx] [es edi] \
-    value [eax];
+    __parm [__eax] [__ebx] [__es __edi] \
+    __value [__eax]
 
 #pragma aux RdosSignalWait = \
     "push es" \
     "mov es,eax" \
     OsGate_signal_wait \
     "pop es" \
-    parm [eax];
+    __parm [__eax]
 
 #pragma aux RdosInitSpinlock = \
     "mov word ptr es:[edi],0" \
-    parm [es edi];
+    __parm [__es __edi]
 
 #pragma aux RdosRequestSpinlock = \
     "pushf" \
@@ -1375,19 +1375,19 @@ int RdosGetSignedHidOutput(int Sel, int Usage);
     "jmp rs_lock" \
     "rs_done: "\
     "pop ax" \
-    parm [es edi] \
-    value [ax];
+    __parm [__es __edi] \
+    __value [__ax]
 
 #pragma aux RdosReleaseSpinlock = \
     "push ax" \
     "mov word ptr es:[edi],0" \
     "popf" \
-    parm [es edi] [ax];
+    __parm [__es __edi] [__ax]
 
 #pragma aux RdosInitKernelSection = \
     "mov dword ptr es:[edi],0" \
     "mov word ptr es:[edi+4],0" \
-    parm [es edi];
+    __parm [__es __edi]
 
 #pragma aux RdosEnterKernelSection = \
     " lock sub word ptr es:[edi],1" \
@@ -1401,7 +1401,7 @@ int RdosGetSignedHidOutput(int Sel, int Usage);
     " pop esi" \
     " pop ds" \
     "enter_done: " \
-    parm [es edi];
+    __parm [__es __edi]
 
 #pragma aux RdosLeaveKernelSection = \
     " lock add word ptr es:[edi],1" \
@@ -1415,7 +1415,7 @@ int RdosGetSignedHidOutput(int Sel, int Usage);
     " pop esi" \
     " pop ds" \
     "leave_done: " \
-    parm [es edi];
+    __parm [__es __edi]
 
 #pragma aux RdosCondEnterKernelSection = \
     " lock sub word ptr es:[edi],1" \
@@ -1434,8 +1434,8 @@ int RdosGetSignedHidOutput(int Sel, int Usage);
     "enter_ok: " \
     "mov eax,1" \
     "enter_leave: "\
-    parm [es edi] [eax] \
-    value [eax];
+    __parm [__es __edi] [__eax] \
+    __value [__eax]
 
 #pragma aux RdosCreateKernelThread = \
     "push ds" \
@@ -1444,8 +1444,8 @@ int RdosGetSignedHidOutput(int Sel, int Usage);
     "movzx eax,al" \
     UserGate_create_thread \
     "pop ds" \
-    parm [eax] [ecx] [fs esi] [es edi] [gs ebx] \
-    modify [edx];
+    __parm [__eax] [__ecx] [__fs __esi] [__es __edi] [__gs __ebx] \
+    __modify [__edx]
 
 #pragma aux RdosCreateKernelProcess = \
     "push ds" \
@@ -1454,46 +1454,46 @@ int RdosGetSignedHidOutput(int Sel, int Usage);
     "movzx eax,al" \
     OsGate_create_process \
     "pop ds" \
-    parm [eax] [ecx] [fs esi] [es edi] [gs ebx] \
-    modify [edx];
+    __parm [__eax] [__ecx] [__fs __esi] [__es __edi] [__gs __ebx] \
+    __modify [__edx]
 
 #pragma aux RdosThreadToSel = \
     OsGate_thread_to_sel \
     "movzx ebx,bx" \
-    parm [ebx] \
-    value [ebx];
+    __parm [__ebx] \
+    __value [__ebx]
 
 #pragma aux RdosHookInitTasking = \
     OsGate_hook_init_tasking \
-    parm [es edi];
+    __parm [__es __edi]
 
 #pragma aux RdosHookInitPci = \
     OsGate_hook_init_pci \
-    parm [es edi];
+    __parm [__es __edi]
 
 #pragma aux RdosHookCreateProcess = \
     OsGate_hook_create_process \
-    parm [es edi];
+    __parm [__es __edi]
 
 #pragma aux RdosHookCreateThread = \
     OsGate_hook_create_thread \
-    parm [es edi];
+    __parm [__es __edi]
 
 #pragma aux RdosHookTerminateThread = \
     OsGate_hook_terminate_thread \
-    parm [es edi];
+    __parm [__es __edi]
 
 #pragma aux RdosHookState = \
     OsGate_hook_state \
-    parm [es edi];
+    __parm [__es __edi]
 
 #pragma aux RdosSendEoi = \
     OsGate_send_eoi \
-    parm [eax];
+    __parm [__eax]
 
 #pragma aux RdosForceLevelIrq = \
     OsGate_force_level_irq \
-    parm [eax];
+    __parm [__eax]
 
 #pragma aux RdosRequestIrqHandler = \
     "push ds" \
@@ -1508,67 +1508,67 @@ int RdosGetSignedHidOutput(int Sel, int Usage);
     "mov ah,dl" \
     OsGate_request_irq_handler \
     "pop ds" \
-    parm [eax] [edx] [es edi];
+    __parm [__eax] [__edx] [__es __edi]
 
 #pragma aux RdosSetupIrqDetect = \
     OsGate_setup_irq_detect;
 
 #pragma aux RdosPollIrqDetect = \
     OsGate_setup_irq_detect \
-    value [eax];
+    __value [__eax]
 
 #pragma aux RdosGetApicId = \
     OsGate_get_apic_id \
-    value [edx];
+    __value [__edx]
 
 #pragma aux RdosGetCoreCount = \
     OsGate_get_core_count \
     "movzx ecx,cx" \
-    value [ecx];
+    __value [__ecx]
 
 #pragma aux RdosGetCore = \
     "push fs" \
     OsGate_get_core \
     "mov eax,fs" \
     "pop fs" \
-    value [eax];
+    __value [__eax]
 
 #pragma aux RdosGetCoreNum = \
     "push fs" \
     OsGate_get_core_num \
     "mov eax,fs" \
     "pop fs" \
-    parm [eax] \
-    value [eax];
+    __parm [__eax] \
+    __value [__eax]
 
 #pragma aux RdosSendNmi = \
     "push fs" \
     "mov fs,eax" \
     OsGate_send_nmi \
     "pop fs" \
-    parm [eax];
+    __parm [__eax]
 
 #pragma aux RdosSendInt = \
     "push fs" \
     "mov fs,edx" \
     OsGate_send_int \
     "pop fs" \
-    parm [edx] [eax];
+    __parm [__edx] [__eax]
 
 #pragma aux RdosAllocateHandle = \
     "push ds" \
     OsGate_allocate_handle \
     "mov dx,ds" \
     "pop ds" \
-    parm [ax] [ecx] \
-    value [dx ebx];
+    __parm [__ax] [__ecx] \
+    __value [__dx __ebx]
 
 #pragma aux RdosFreeHandle = \
     "push ds" \
     "mov ds,edx" \
     OsGate_free_handle \
     "pop ds" \
-    parm [dx ebx];
+    __parm [__dx __ebx]
 
 #pragma aux RdosDerefHandle = \
     "push ds" \
@@ -1581,23 +1581,23 @@ int RdosGetSignedHidOutput(int Sel, int Usage);
     "mov dx,ds" \
     "done: "\
     "pop ds" \
-    parm [ax] [ebx] \
-    value [dx ebx];
+    __parm [__ax] [__ebx] \
+    __value [__dx __ebx]
 
 #pragma aux RdosRegisterHandle = \
     OsGate_register_handle \
-    parm [ax] [es edi];
+    __parm [__ax] [__es __edi]
 
 #pragma aux RdosLockSysEnv = \
     OsGate_lock_sys_env \
-    value [ebx];
+    __value [__ebx]
 
 #pragma aux RdosUnlockSysEnv = \
     OsGate_unlock_sys_env;
 
 #pragma aux RdosLockProcEnv = \
     OsGate_lock_proc_env \
-    value [ebx];
+    __value [__ebx]
 
 #pragma aux RdosUnlockProcEnv = \
     OsGate_unlock_proc_env;
@@ -1605,102 +1605,102 @@ int RdosGetSignedHidOutput(int Sel, int Usage);
 #pragma aux RdosGetFocusThread = \
     OsGate_get_focus_thread \
     "movzx eax,ax" \
-    value [eax];
+    __value [__eax]
 
 #pragma aux RdosRegisterNetClass = \
     "push ds" \
     "mov ds,edx" \
     OsGate_register_net_class \
     "pop ds" \
-    parm [al] [ecx] [dx esi];
+    __parm [__al] [__ecx] [__dx __esi]
 
 #pragma aux RdosRegisterNetProtocol = \
     "push ds" \
     "mov ds,ebx" \
     OsGate_register_net_protocol \
     "pop ds" \
-    parm [ecx] [dx] [bx esi] [es edi] \
-    value [ebx];
+    __parm [__ecx] [__dx] [__bx __esi] [__es __edi] \
+    __value [__ebx]
 
 #pragma aux RdosRegisterNetDriver = \
     "push ds" \
     "mov ds,edx" \
     OsGate_register_net_protocol \
     "pop ds" \
-    parm [al] [ecx] [dx esi] [es edi] \
-    value [ebx];
+    __parm [__al] [__ecx] [__dx __esi] [__es __edi] \
+    __value [__ebx]
 
 #pragma aux RdosNetBroadcast = \
     OsGate_net_broadcast \
-    parm [es edi];
+    __parm [__es __edi]
 
 #pragma aux RdosNetReceived = \
     OsGate_net_received \
-    parm [ebx];
+    __parm [__ebx]
 
 #pragma aux RdosHookIp = \
     OsGate_hook_ip \
-    parm [al] [es edi];
+    __parm [__al] [__es __edi]
 
 #pragma aux RdosCreateIpHeader = \
     "push ds" \
     "mov ds,ebx" \
     OsGate_create_ip_header \
     "pop ds" \
-    parm [al] [ah] [ecx] [edx] [bx esi] \
-    value [es edi];
+    __parm [__al] [__ah] [__ecx] [__edx] [__bx __esi] \
+    __value [__es __edi]
 
 #pragma aux RdosSendIp = \
     OsGate_send_ip_data \
-    parm [es edi];
+    __parm [__es __edi]
 
 #pragma aux RdosCreateBroadcastIp = \
     "push ds" \
     "mov ds,ebx" \
     OsGate_create_broadcast_ip \
     "pop ds" \
-    parm [al] [ah] [ecx] [fs] [bx esi] \
-    value [es edi];
+    __parm [__al] [__ah] [__ecx] [__fs] [__bx __esi] \
+    __value [__es __edi]
 
 #pragma aux RdosSendBroadcastIp = \
     OsGate_send_broadcast_ip \
-    parm [es edi] [fs];
+    __parm [__es __edi] [__fs]
 
 #pragma aux RdosAddDhcpOption = \
     OsGate_add_dhcp_option \
-    parm [al] [es edi];
+    __parm [__al] [__es __edi]
 
 #pragma aux RdosGetIpCacheSel = \
     "push es" \
     OsGate_lookup_ip_cache \
     "mov eax,es" \
     "pop es" \
-    parm [edx] \
-    value [eax];
+    __parm [__edx] \
+    __value [__eax]
 
 #pragma aux RdosGetIpCacheHostName = \
     OsGate_lookup_ip_cache \
-    parm [edx] \
-    value [es edi];
+    __parm [__edx] \
+    __value [__es __edi]
 
 #pragma aux RdosGetHostTimeout = \
     "push ds" \
     "mov ds,ebx" \
     OsGate_get_host_timeout \
     "pop ds" \
-    parm [ebx] \
-    value [eax];
+    __parm [__ebx] \
+    __value [__eax]
 
 #pragma aux RdosUpdateRoundTripTime = \
     "push ds" \
     "mov ds,ebx" \
     OsGate_update_round_trip_time \
     "pop ds" \
-    parm [ebx] [eax];
+    __parm [__ebx] [__eax]
 
 #pragma aux RdosBroadcastDriverUdp = \
     OsGate_broadcast_driver_udp \
-    parm [si] [bx] [fs] [es edi] [ecx];
+    __parm [__si] [__bx] [__fs] [__es __edi] [__ecx]
 
 #pragma aux RdosSendDriverUdp = \
     "push ds" \
@@ -1710,104 +1710,104 @@ int RdosGetSignedHidOutput(int Sel, int Usage);
     "pop eax" \
     OsGate_send_driver_udp \
     "pop ds" \
-    parm [ax] [bx] [edx] [fs] [gs esi] [es edi] [ecx];
+    __parm [__ax] [__bx] [__edx] [__fs] [__gs __esi] [__es __edi] [__ecx]
 
 #pragma aux RdosQueryUdp = \
     OsGate_query_udp \
     "mov fs:[esi],edi" \
     "mov fs:[esi+04],es" \
     "movzx ecx,cx" \
-    parm [eax] [bx] [edx] [es edi] [ecx] [fs esi] \
-    value [ecx] \
-    modify [es esi];
+    __parm [__eax] [__bx] [__edx] [__es __edi] [__ecx] [__fs __esi] \
+    __value [__ecx] \
+    __modify [__es __esi]
 
 #pragma aux RdosHookInitDisc = \
     OsGate_hook_init_disc \
-    parm [es edi];
+    __parm [__es __edi]
 
 #pragma aux RdosInstallDisc = \
     OsGate_install_disc \
     "movzx eax,al" \
     "mov es:[edi],eax" \
     "movzx ebx,bx" \
-    parm [ebx] [ecx] [es edi] \
-    value [ebx] \
-    modify [eax];
+    __parm [__ebx] [__ecx] [__es __edi] \
+    __value [__ebx] \
+    __modify [__eax]
 
 #pragma aux RdosRegisterDiscChange = \
     OsGate_register_disc_change \
-    parm [es edi];
+    __parm [__es __edi]
 
 #pragma aux RdosStartDisc = \
     OsGate_start_disc \
-    parm [ebx];
+    __parm [__ebx]
 
 #pragma aux RdosStopDisc = \
     OsGate_stop_disc \
-    parm [ebx];
+    __parm [__ebx]
 
 #pragma aux RdosSetDiscParam = \
     OsGate_set_disc_param \
-    parm [ebx] [ecx] [eax] [edx] [esi] [edi];
+    __parm [__ebx] [__ecx] [__eax] [__edx] [__esi] [__edi]
 
 #pragma aux RdosWaitForDiscRequest = \
     OsGate_wait_for_disc_request \
-    parm [ebx];
+    __parm [__ebx]
 
 #pragma aux RdosGetDiscRequest = \
     OsGate_get_disc_request \
-    parm [ebx] \
-    value [edi];
+    __parm [__ebx] \
+    __value [__edi]
 
 #pragma aux RdosPollDiscRequest = \
     OsGate_poll_disc_request \
-    parm [ebx] \
-    value [edi];
+    __parm [__ebx] \
+    __value [__edi]
 
 #pragma aux RdosDiscRequestCompleted = \
     OsGate_disc_request_completed \
-    parm [ebx] [edi];
+    __parm [__ebx] [__edi]
 
 #pragma aux RdosNewDiscRequest = \
     OsGate_new_disc_request \
-    parm [ebx] [eax] [edx] \
-    value [edi];
+    __parm [__ebx] [__eax] [__edx] \
+    __value [__edi]
 
 #pragma aux RdosLockDiscRequest = \
     OsGate_lock_disc_request \
-    parm [ebx] [eax] [edx] \
-    value [edi];
+    __parm [__ebx] [__eax] [__edx] \
+    __value [__edi]
 
 #pragma aux RdosModifyDiscRequest = \
     OsGate_modify_disc_request \
-    parm [edi];
+    __parm [__edi]
 
 #pragma aux RdosUnlockDiscRequest = \
     OsGate_unlock_disc_request \
-    parm [edi];
+    __parm [__edi]
 
 #pragma aux RdosGetDiscRequestArray = \
     OsGate_get_disc_request_array \
     "mov es:[edi],esi" \
     "mov esi,0x20" \
     "mov es:[edi+4],esi" \
-    parm [ebx] [ecx] [es edi] \
-    value [ecx] \
-    modify [esi];
+    __parm [__ebx] [__ecx] [__es __edi] \
+    __value [__ecx] \
+    __modify [__esi]
 
 #pragma aux RdosOpenDrive = \
     "mov ah,bl" \
     OsGate_open_drive \
-    parm [eax] [ebx] [edx] [ecx] \
-    modify [eax];
+    __parm [__eax] [__ebx] [__edx] [__ecx] \
+    __modify [__eax]
 
 #pragma aux RdosCloseDrive = \
     OsGate_close_drive \
-    parm [eax];
+    __parm [__eax]
 
 #pragma aux RdosFlushDrive = \
     OsGate_flush_drive \
-    parm [eax];
+    __parm [__eax]
 
 #pragma aux RdosGetDriveParam = \
     "push edi" \
@@ -1820,134 +1820,134 @@ int RdosGetSignedHidOutput(int Sel, int Usage);
     "movzx eax,di" \
     "pop edi" \
     "mov es:[edi],eax" \
-    parm [eax] [gs edx] [fs esi] [es edi] \
-    value [ecx] \
-    modify [eax];
+    __parm [__eax] [__gs __edx] [__fs __esi] [__es __edi] \
+    __value [__ecx] \
+    __modify [__eax]
 
 #pragma aux RdosLockSector = \
     OsGate_lock_sector \
     "mov es:[edi],esi" \
     "mov esi,0x20" \
     "mov es:[edi+4],esi" \
-    parm [eax] [edx] [es edi] \
-    value [ebx] \
-    modify [esi];
+    __parm [__eax] [__edx] [__es __edi] \
+    __value [__ebx] \
+    __modify [__esi]
 
 #pragma aux RdosUnlockSector = \
     OsGate_unlock_sector \
-    parm [ebx];
+    __parm [__ebx]
 
 #pragma aux RdosModifySector = \
     OsGate_modify_sector \
-    parm [ebx];
+    __parm [__ebx]
 
 #pragma aux RdosFlushSector = \
     OsGate_flush_sector \
-    parm [ebx];
+    __parm [__ebx]
 
 #pragma aux RdosNewSector = \
     OsGate_new_sector \
     "mov es:[edi],esi" \
     "mov esi,0x20" \
     "mov es:[edi+4],esi" \
-    parm [eax] [edx] [es edi] \
-    value [ebx] \
-    modify [esi];
+    __parm [__eax] [__edx] [__es __edi] \
+    __value [__ebx] \
+    __modify [__esi]
 
 #pragma aux RdosReqSector = \
     OsGate_req_sector \
-    parm [eax] [edx] [es esi] \
-    value [ebx];
+    __parm [__eax] [__edx] [__es __esi] \
+    __value [__ebx]
 
 #pragma aux RdosDefineSector = \
     OsGate_define_sector \
-    parm [eax] [edx] [es esi] \
-    value [ebx];
+    __parm [__eax] [__edx] [__es __esi] \
+    __value [__ebx]
 
 #pragma aux RdosWaitForSector = \
     OsGate_wait_for_sector \
-    parm [edx];
+    __parm [__edx]
 
 #pragma aux RdosCreateDiscSeq = \
     OsGate_create_disc_seq \
     "movzx eax,ax" \
-    parm [ecx] \
-    value [eax];
+    __parm [__ecx] \
+    __value [__eax]
 
 #pragma aux RdosModifySeqSector = \
     OsGate_modify_seq_sector \
-    parm [eax] [ebx];
+    __parm [__eax] [__ebx]
 
 #pragma aux RdosPerformDiscSeq = \
     OsGate_perform_disc_seq \
-    parm [eax];
+    __parm [__eax]
 
 #pragma aux RdosEraseSectors = \
     OsGate_erase_sectors \
-    parm [eax] [edx] [ecx];
+    __parm [__eax] [__edx] [__ecx]
 
 #pragma aux RdosResetDrive = \
     OsGate_reset_drive \
-    parm [eax];
+    __parm [__eax]
 
 #pragma aux RdosHookInitFileSystem = \
     OsGate_hook_init_file_system \
-    parm [es edi];
+    __parm [__es __edi]
 
 #pragma aux RdosRegisterFileSystem = \
     "push ds" \
     "mov ds,edx" \
     OsGate_register_file_system \
     "pop ds" \
-    parm [dx esi] [es edi];
+    __parm [__dx __esi] [__es __edi]
 
 #pragma aux RdosInstallFileSystem = \
     OsGate_install_file_system \
-    parm [eax] [es edi];
+    __parm [__eax] [__es __edi]
 
 #pragma aux RdosDemandLoadFileSystem = \
     OsGate_demand_load_file_system \
-    parm [eax];
+    __parm [__eax]
 
 #pragma aux RdosIsFileSystemAvailable = \
     OsGate_is_file_system_available \
     CarryToBool \
-    parm [es edi] \
-    value [eax];
+    __parm [__es __edi] \
+    __value [__eax]
 
 #pragma aux RdosFormatFileSystem = \
     OsGate_format_file_system \
-    parm [eax] [es edi] [fs edx];
+    __parm [__eax] [__es __edi] [__fs __edx]
 
 #pragma aux RdosStartFileSystem = \
     OsGate_start_file_system \
-    parm [eax] [ecx] [fs edx];
+    __parm [__eax] [__ecx] [__fs __edx]
 
 #pragma aux RdosStopFileSystem = \
     OsGate_stop_file_system \
-    parm [eax];
+    __parm [__eax]
 
 #pragma aux RdosGetFileListEntry = \
     OsGate_get_file_list_entry \
-    parm [ebx] [edx] \
-    value [eax];
+    __parm [__ebx] [__edx] \
+    __value [__eax]
 
 #pragma aux RdosFreeFileListEntry = \
     OsGate_free_file_list_entry \
-    parm [ebx] [edi];
+    __parm [__ebx] [__edi]
 
 #pragma aux RdosCacheDir = \
     OsGate_cache_dir \
-    parm [ebx] [edx] \
-    value [ebx];
+    __parm [__ebx] [__edx] \
+    __value [__ebx]
 
 #pragma aux RdosInsertDirEntry = \
     OsGate_insert_dir_entry \
-    parm [ebx] [edx];
+    __parm [__ebx] [__edx]
 
 #pragma aux RdosInsertFileEntry = \
     OsGate_insert_file_entry \
-    parm [ebx] [edx];
+    __parm [__ebx] [__edx]
 
 #pragma aux RdosGetFileInfo = \
     OsGate_get_file_info \
@@ -1958,252 +1958,252 @@ int RdosGetSignedHidOutput(int Sel, int Usage);
     "pop ecx" \
     "movzx ecx,cx" \
     "mov gs:[edx],ecx" \
-    parm [ebx] [es edi] [fs esi] [gs edx] \
-    value [eax] \
-    modify [ecx];
+    __parm [__ebx] [__es __edi] [__fs __esi] [__gs __edx] \
+    __value [__eax] \
+    __modify [__ecx]
 
 #pragma aux RdosDuplFileInfo = \
     OsGate_dupl_file_info \
-    parm [cl] [ch] [eax] \
-    value [ebx];
+    __parm [__cl] [__ch] [__eax] \
+    __value [__ebx]
 
 #pragma aux RdosLockFile = \
     OsGate_lock_file \
     CarryToBool \
-    parm [eax] \
-    value [eax];
+    __parm [__eax] \
+    __value [__eax]
 
 #pragma aux RdosUnlockFile = \
     OsGate_unlock_file \
     CarryToBool \
-    parm [eax] \
-    value [eax];
+    __parm [__eax] \
+    __value [__eax]
 
 #pragma aux RdosOpenKernelFile = \
     OsGate_open_kernel_file \
     ValidateHandle  \
-    parm [es edi] [cx] \
-    value [ebx];
+    __parm [__es __edi] [__cx] \
+    __value [__ebx]
 
 #pragma aux RdosCloseCFile = \
     OsGate_close_c_file  \
-    parm [ebx];
+    __parm [__ebx]
 
 #pragma aux RdosGetCFileSize = \
     OsGate_get_c_file_size  \
     ValidateEax \
-    parm [ebx]  \
-    value [eax];
+    __parm [__ebx]  \
+    __value [__eax]
 
 #pragma aux RdosSetCFileSize = \
     OsGate_set_c_file_size  \
-    parm [ebx] [eax];
+    __parm [__ebx] [__eax]
 
 #pragma aux RdosReadCFile = \
     OsGate_read_c_file  \
     ValidateEax \
-    parm [ebx] [es edi] [ecx] [edx]  \
-    value [eax] \
-    modify [edx];
+    __parm [__ebx] [__es __edi] [__ecx] [__edx]  \
+    __value [__eax] \
+    __modify [__edx]
 
 #pragma aux RdosWriteCFile = \
     OsGate_write_c_file  \
     ValidateEax \
-    parm [ebx] [es edi] [ecx] [edx]  \
-    value [eax] \
-    modify [edx];
+    __parm [__ebx] [__es __edi] [__ecx] [__edx]  \
+    __value [__eax] \
+    __modify [__edx]
 
 #pragma aux RdosGetCFileTime = \
     OsGate_get_c_file_time  \
     "mov fs:[esi],edx" \
     "mov es:[edi],eax" \
-    parm [ebx] [fs esi] [es edi]  \
-    modify [eax edx];
+    __parm [__ebx] [__fs __esi] [__es __edi]  \
+    __modify [__eax __edx]
 
 #pragma aux RdosSetCFileTime = \
     OsGate_set_c_file_time  \
-    parm [ebx] [edx] [eax];
+    __parm [__ebx] [__edx] [__eax]
 
 #pragma aux RdosReadPciByte = \
     OsGate_read_pci_byte \
-    parm [bh] [bl] [ch] [cl] \
-    value [al];
+    __parm [__bh] [__bl] [__ch] [__cl] \
+    __value [__al]
 
 #pragma aux RdosReadPciWord = \
     OsGate_read_pci_word \
-    parm [bh] [bl] [ch] [cl] \
-    value [ax];
+    __parm [__bh] [__bl] [__ch] [__cl] \
+    __value [__ax]
 
 #pragma aux RdosReadPciDword = \
     OsGate_read_pci_dword \
-    parm [bh] [bl] [ch] [cl] \
-    value [eax];
+    __parm [__bh] [__bl] [__ch] [__cl] \
+    __value [__eax]
 
 #pragma aux RdosWritePciByte = \
     OsGate_write_pci_byte \
-    parm [bh] [bl] [ch] [cl] [al];
+    __parm [__bh] [__bl] [__ch] [__cl] [__al]
 
 #pragma aux RdosWritePciWord = \
     OsGate_write_pci_word \
-    parm [bh] [bl] [ch] [cl] [ax];
+    __parm [__bh] [__bl] [__ch] [__cl] [__ax]
 
 #pragma aux RdosWritePciDword = \
     OsGate_write_pci_dword \
-    parm [bh] [bl] [ch] [cl] [eax];
+    __parm [__bh] [__bl] [__ch] [__cl] [__eax]
 
 #pragma aux RdosInitMouse = \
     OsGate_init_mouse;
 
 #pragma aux RdosUpdateMouse = \
     OsGate_update_mouse \
-    parm [eax] [ecx] [edx];
+    __parm [__eax] [__ecx] [__edx]
 
 #pragma aux RdosInvertMouse = \
     OsGate_invert_mouse \
-    parm [ecx] [edx];
+    __parm [__ecx] [__edx]
 
 #pragma aux RdosSetMouse = \
     OsGate_set_mouse \
-    parm [eax] [ecx] [edx];
+    __parm [__eax] [__ecx] [__edx]
 
 #pragma aux RdosSetMouseLimit = \
     OsGate_set_mouse_limit \
-    parm [ecx] [edx];
+    __parm [__ecx] [__edx]
 
 #pragma aux RdosAddComPort = \
     "push ds" \
     "mov ds,ebx" \
     OsGate_add_com_port \
     "pop ds" \
-    parm [ebx] [eax] [edx];
+    __parm [__ebx] [__eax] [__edx]
 
 #pragma aux RdosReserveComLine = \
     OsGate_reserve_com_line \
-    parm [al];
+    __parm [__al]
 
 #pragma aux RdosDeviceSetDtr = \
     OsGate_device_set_dtr \
-    parm [al];
+    __parm [__al]
 
 #pragma aux RdosDeviceResetDtr = \
     OsGate_device_reset_dtr \
-    parm [al];
+    __parm [__al]
 
 #pragma aux RdosWaitForLineStateChange = \
     OsGate_wait_for_line_state \
-    parm [al] \
-    value [al];
+    __parm [__al] \
+    __value [__al]
 
 #pragma aux RdosGetLineState = \
     OsGate_get_line_state \
-    parm [al] \
-    value [al];
+    __parm [__al] \
+    __value [__al]
 
 #pragma aux RdosInitUsbDevice = \
     "push ds" \
     "mov ds,edx" \
     OsGate_init_usb_device \
     "pop ds" \
-    parm [edx];
+    __parm [__edx]
 
 #pragma aux RdosNotifyUsbDetach = \
     "push ds" \
     "mov ds,edx" \
     OsGate_notify_usb_detach \
     "pop ds" \
-    parm [edx] [al];
+    __parm [__edx] [__al]
 
 #pragma aux RdosHookUsbAttach = \
     OsGate_hook_usb_attach \
-    parm [es edi];
+    __parm [__es __edi]
 
 #pragma aux RdosHookUsbDetach = \
     OsGate_hook_usb_detach \
-    parm [es edi];
+    __parm [__es __edi]
 
 #pragma aux RdosCreateUsbReq = \
     OsGate_create_usb_req \
-    parm [ebx] \
-    value [ebx];
+    __parm [__ebx] \
+    __value [__ebx]
 
 #pragma aux RdosAddWriteUsbControlReq = \
     OsGate_add_write_usb_control_req \
-    parm [ebx] [ecx] [es];
+    __parm [__ebx] [__ecx] [__es]
 
 #pragma aux RdosAddWriteUsbDataReq = \
     OsGate_add_write_usb_data_req \
-    parm [ebx] [ecx] [es];
+    __parm [__ebx] [__ecx] [__es]
 
 #pragma aux RdosAddReadUsbDataReq = \
     OsGate_add_read_usb_data_req \
-    parm [ebx] [ecx] [es];
+    __parm [__ebx] [__ecx] [__es]
 
 #pragma aux RdosAddUsbStatusInReq = \
     OsGate_add_usb_status_in_req \
-    parm [ebx];
+    __parm [__ebx]
 
 #pragma aux RdosAddUsbStatusOutReq = \
     OsGate_add_usb_status_out_req \
-    parm [ebx];
+    __parm [__ebx]
 
 #pragma aux RdosStartUsbReq = \
     OsGate_start_usb_req \
-    parm [ebx] [eax] [ecx];
+    __parm [__ebx] [__eax] [__ecx]
 
 #pragma aux RdosStopUsbReq = \
     OsGate_stop_usb_req \
-    parm [ebx];
+    __parm [__ebx]
 
 #pragma aux RdosIsUsbReqStarted = \
     OsGate_is_usb_req_started \
     CarryToBool \
-    parm [ebx] \
-    value [eax];
+    __parm [__ebx] \
+    __value [__eax]
 
 #pragma aux RdosIsUsbReqReady = \
     OsGate_is_usb_req_ready \
     CarryToBool \
-    parm [ebx] \
-    value [eax];
+    __parm [__ebx] \
+    __value [__eax]
 
 #pragma aux RdosGetUsbReqData = \
     OsGate_get_usb_req_data \
     "movzx ecx,cx" \
-    parm [ebx] \
-    value [ecx];
+    __parm [__ebx] \
+    __value [__ecx]
 
 #pragma aux RdosCloseUsbReq = \
     OsGate_close_usb_req \
-    parm [ebx];
+    __parm [__ebx]
 
 #pragma aux RdosReadCodec = \
     OsGate_read_codec \
-    parm [ebx] \
-    value [ax];
+    __parm [__ebx] \
+    __value [__ax]
 
 #pragma aux RdosWriteCodec = \
     OsGate_write_codec \
-    parm [ebx] [ax];
+    __parm [__ebx] [__ax]
 
 #pragma aux RdosGetAudioDacRate = \
     OsGate_get_audio_dac_rate \
-    value [ax];
+    __value [__ax]
 
 #pragma aux RdosSetAudioDacRate = \
     OsGate_set_audio_dac_rate \
-    parm [ax];
+    __parm [__ax]
 
 #pragma aux RdosGetAudioAdcRate = \
     OsGate_get_audio_adc_rate \
-    value [ax];
+    __value [__ax]
 
 #pragma aux RdosSetAudioAdcRate = \
     OsGate_set_audio_adc_rate \
-    parm [ax];
+    __parm [__ax]
 
 #pragma aux RdosOpenAudioOut = \
     OsGate_open_audio_out \
-    parm [ax];
+    __parm [__ax]
 
 #pragma aux RdosCloseAudioOut = \
     OsGate_close_audio_out;
@@ -2216,12 +2216,12 @@ int RdosGetSignedHidOutput(int Sel, int Usage);
     OsGate_send_audio_out \
     "pop es" \
     "pop ds" \
-    parm [eax] [edx] [ecx];
+    __parm [__eax] [__edx] [__ecx]
 
 #ifdef __cplusplus
 }
 #endif
 
-#pragma pack( pop )
+#pragma pack( __pop )
 
 #endif

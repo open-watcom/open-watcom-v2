@@ -39,8 +39,8 @@
 #include "wrmsg.h"
 #include "wredit.h"
 #include "wrlist.h"
-#include "editsym.h"
-#include "addsym.h"
+#include "editsym.rh"
+#include "addsym.rh"
 #include "jdlg.h"
 #include "winexprt.h"
 #include "wresdefn.h"
@@ -519,7 +519,7 @@ bool WRAPI WRWriteSymbolsToFile( WRHashTable *table, const char *filename )
     qsort( tbl, count, sizeof( WRHashEntry * ), WRCompareHashEntry );
 
     for( i = 0; i < count; i++ ) {
-        fprintf( handle, "#define %-*s %ld\n", max_len + 2, tbl[i]->name, tbl[i]->value );
+        fprintf( handle, "#define %-*s %ld\n", (int)( max_len + 2 ), tbl[i]->name, tbl[i]->value );
     }
 
     if( fclose( handle ) != 0 ) {
@@ -1019,7 +1019,7 @@ static bool WRShowSelectedSymbol( HWND hDlg, WRHashTable *table )
     bool        standard_entry;
     bool        ok;
 
-    _wtouch( table );
+    /* unused parameters */ (void)table;
 
     standard_entry = FALSE;
     lbox = GetDlgItem( hDlg, IDB_SYM_LISTBOX );

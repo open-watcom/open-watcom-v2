@@ -14,7 +14,7 @@ srv     = lcl
 name    = core
 which   = TRAP
 
-extra_cpp_flags = -DELFCORE
+extra_cppflags = -DELFCORE
 extra_cflags = -bd
 
 extra_objs = &

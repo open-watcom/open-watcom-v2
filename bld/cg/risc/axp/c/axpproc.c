@@ -541,10 +541,10 @@ static  void    emitEpilog( stack_map *map )
 void    GenProlog( void )
 /***********************/
 {
-    segment_id          old;
+    segment_id          old_segid;
     label_handle        label;
 
-    old = SetOP( AskCodeSeg() );
+    old_segid = SetOP( AskCodeSeg() );
     label = CurrProc->label;
     if( _IsModel( DBG_NUMBERS ) ) {
         OutFileStart( HeadBlock->ins.hd.line_num );
@@ -565,22 +565,22 @@ void    GenProlog( void )
     EmitProEnd();
     SetupVarargsReg( &CurrProc->targ.stack_map );
     CurrProc->targ.frame_size = frameSize( &CurrProc->targ.stack_map );
-    SetOP( old );
+    SetOP( old_segid );
 }
 
 
 void    GenEpilog( void )
 /***********************/
 {
-    segment_id      old;
+    segment_id      old_segid;
 
-    old = SetOP( AskCodeSeg() );
+    old_segid = SetOP( AskCodeSeg() );
     EmitEpiBeg();
     emitEpilog( &CurrProc->targ.stack_map );
     GenRET();
     CurrProc->prolog_state |= GENERATED_EPILOG;
     EmitRtnEnd();
-    SetOP( old );
+    SetOP( old_segid );
 }
 
 

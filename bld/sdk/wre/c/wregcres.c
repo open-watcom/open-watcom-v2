@@ -40,7 +40,7 @@
 #include "wrefres.h"
 #include "wremsg.h"
 #include "wregcres.h"
-#include "wre_rc.h"
+#include "wre.rh"
 #include "wrdll.h"
 
 /****************************************************************************/

@@ -20,12 +20,6 @@ additional_cleanup = $(wbrw_h_os2) $(wbrw_h_win) $(wbrw_h_nt)
 
 sys_windowed = 1
 
-!ifdef __UNIX__
-to_os_path=\=/
-!else
-to_os_path=/=\
-!endif
-
 !include cproj.mif
 !include defrule.mif
 !include deftarg.mif
@@ -143,7 +137,7 @@ dbrmem.obj : brmem.cpp
 !ifdef wbrw_h_$(host_os)
 $(wbrw_h_$(host_os)): .ALWAYS
 curr_dir=$+$(%__CWD__)$-
-    @cd $(doc_path_$(host_os):$(to_os_path))
+    @cd $(doc_path_$(host_os))
     @wmake -h hbook=wbrw header=1
     @cd $(curr_dir)
 !endif

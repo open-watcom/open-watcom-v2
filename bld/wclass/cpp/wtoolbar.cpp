@@ -108,9 +108,14 @@ void WToolBar::attach( WWindow *win ) {
 /*************************************/
 
     bool rc;
+    gui_toolbar_items toolinfo;
     int num_tools = _children.count();
+
     _toolBarItems = new gui_toolbar_struct[num_tools];
+    toolinfo.toolbar = _toolBarItems;
+    toolinfo.num_items = 0;
     if( _toolBarItems != NULL ) {
+        toolinfo.num_items = num_tools;
         for( int i = 0; i < num_tools; ++i ) {
             _toolBarItems[i] = *(*(WToolBarItem *)_children[i]).toolBarInfo();
         }
@@ -121,14 +126,11 @@ void WToolBar::attach( WWindow *win ) {
             trect.y = _rect.y();
             trect.width = _rect.w();
             trect.height = _rect.h();
-            rc = GUICreateFloatToolBar( win->handle(), fixed, 0, num_tools,
-                              _toolBarItems, false, NULL, NULL, &trect );
+            rc = GUICreateFloatToolBar( win->handle(), fixed, 0, &toolinfo, false, NULL, NULL, &trect );
         } else if( _flags & WToolFlagsUseTips ) {
-            rc = GUICreateToolBarWithTips( win->handle(), fixed, 0, num_tools,
-                                          _toolBarItems, false, NULL, NULL );
+            rc = GUICreateToolBarWithTips( win->handle(), fixed, 0, &toolinfo, false, NULL, NULL );
         } else {
-            rc = GUICreateToolBar( win->handle(), fixed, 0, num_tools,
-                                  _toolBarItems, false, NULL, NULL );
+            rc = GUICreateToolBar( win->handle(), fixed, 0, &toolinfo, false, NULL, NULL );
         }
         if( rc ) {
             _parent = win;

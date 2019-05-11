@@ -778,40 +778,40 @@ extern  void    NodeFree( n *nd ) {
     *o = nd->n;
     CGFree( nd );
 }
-extern  segment_id      SetFile( segment_id seg ) {
+extern segment_id   SetFile( segment_id segid ) {
 //=================================================
 
-    segment_id  old;
+    segment_id  old_segid;
     int         i;
 
-    old = CurSeg;
-    CurSeg = seg;
-    if( seg > MAX_SEG || seg < MIN_SEG || !SegOk[seg] ) {
-        CGError( "BESetSeg - bad segment (%d)", seg );
+    old_segid = CurSeg;
+    CurSeg = segid;
+    if( segid > MAX_SEG || segid < MIN_SEG || !SegOk[segid] ) {
+        CGError( "BESetSeg - bad segment (%d)", segid );
     } else {
-        if( Files[seg].hdl == 0 ) {
+        if( Files[segid].hdl == 0 ) {
             if( FilesOpen > 10 ) {
                 for( i = 0; Files[i].hdl == 0; ++i );
                 FShut( Files[i].hdl );
                 --FilesOpen;
             }
-            if( Files[seg].exists ) {
-                Files[seg].hdl = open( Files[seg].name, O_RDWR );
-                lseek( Files[seg].hdl, 0, SEEK_END );
+            if( Files[segid].exists ) {
+                Files[segid].hdl = open( Files[segid].name, O_RDWR );
+                lseek( Files[segid].hdl, 0, SEEK_END );
                 ++FilesOpen;
             } else {
-                Files[seg].hdl = FCreate( Files[seg].name );
-                if( Files[seg].hdl != -1 ) {
-                    Files[seg].exists = true;
+                Files[segid].hdl = FCreate( Files[segid].name );
+                if( Files[segid].hdl != -1 ) {
+                    Files[segid].exists = true;
                     ++FilesOpen;
                 } else {
-                    Files[seg].hdl = 0;
+                    Files[segid].hdl = 0;
                 }
             }
         }
-        Out = Files[seg].hdl;
+        Out = Files[segid].hdl;
     }
-    return( old );
+    return( old_segid );
 }
 extern  void    NotDefault( cg_type  t ) {
 //========================================

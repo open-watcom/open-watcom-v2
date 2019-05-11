@@ -36,7 +36,7 @@
 #include "namelist.h"
 
 
-void    ScInitRegs( score *sc )
+void    ScInitRegs( score *scoreboard )
 /**************************************
     Add some register equality "truths" to the scoreboard "sc"
 */
@@ -44,18 +44,18 @@ void    ScInitRegs( score *sc )
     int xs;
     int ds;
 
-    ds = AllocRegName(HW_DS)->r.reg_index;
+    ds = AllocRegName( HW_DS )->r.reg_index;
     if( _IsntTargetModel( FLOATING_DS ) ) {
         if( _IsntTargetModel( FLOATING_ES ) ) {
-            xs = AllocRegName(HW_ES)->r.reg_index;
-            if( !RegsEqual( sc, xs, ds ) ) {
-                RegInsert( sc, xs, ds );
+            xs = AllocRegName( HW_ES )->r.reg_index;
+            if( !RegsEqual( scoreboard, xs, ds ) ) {
+                RegInsert( scoreboard, xs, ds );
             }
         }
         if( _IsntTargetModel( FLOATING_SS ) ) {
-            xs = AllocRegName(HW_SS)->r.reg_index;
-            if( !RegsEqual( sc, xs, ds ) ) {
-                RegInsert( sc, xs, ds );
+            xs = AllocRegName( HW_SS )->r.reg_index;
+            if( !RegsEqual( scoreboard, xs, ds ) ) {
+                RegInsert( scoreboard, xs, ds );
             }
         }
     }
@@ -74,12 +74,12 @@ void    AddRegs( void )
 }
 
 
-void    ScoreSegments( score *sc )
+void    ScoreSegments( score *scoreboard )
 /*****************************************
     Do special scoreboarding on segment registers.
 */
 {
-    /* unused parameters */ (void)sc;
+    /* unused parameters */ (void)scoreboard;
 }
 
 

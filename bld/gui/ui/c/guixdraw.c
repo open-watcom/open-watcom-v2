@@ -212,14 +212,14 @@ static void DrawFrame( gui_window *wnd )
     }
     inact = 0;
     if( ( wnd == GUICurrWnd ) || ( wnd->parent == NULL ) ) {
-        attr = wnd->colours[GUI_FRAME_ACTIVE];
+        attr = WNDATTR( wnd, GUI_FRAME_ACTIVE );
         title_attr = attr;
     } else {
         if( (GUIGetWindowStyles() & GUI_INACT_SAME) == 0 ) {
             inact = 1;
         }
-        attr = wnd->colours[GUI_FRAME_INACTIVE];
-        title_attr = wnd->colours[GUI_TITLE_INACTIVE];
+        attr = WNDATTR( wnd, GUI_FRAME_INACTIVE );
+        title_attr = WNDATTR( wnd, GUI_TITLE_INACTIVE );
     }
     inact_gadgets = GUIGetWindowStyles() & GUI_INACT_GADGETS;
     if( wnd->flags & FRAME_INVALID ) {
@@ -432,7 +432,7 @@ void GUIWndRfrshArea( gui_window *wnd, SAREA *area )
                                     wnd->dirty.row;
             }
         }
-        uivfill( &wnd->screen, wnd->dirty, wnd->colours[GUI_BACKGROUND],
+        uivfill( &wnd->screen, wnd->dirty, WNDATTR( wnd, GUI_BACKGROUND ),
                     wnd->background );
 
         if( GUI_WND_VISIBLE( wnd ) && (wnd->flags & DONT_SEND_PAINT) == 0 ) {

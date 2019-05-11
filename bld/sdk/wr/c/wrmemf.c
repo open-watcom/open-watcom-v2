@@ -34,7 +34,7 @@
 #include "wrglbl.h"
 #include "wrmaini.h"
 #include "wrdmsgi.h"
-#include "memflags.h"
+#include "memflags.rh"
 #include "jdlg.h"
 #include "winexprt.h"
 #include "wclbproc.h"

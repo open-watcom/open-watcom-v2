@@ -223,12 +223,12 @@ void    EmptyQueue( void )
 void    FlushQueue( void )
 /************************/
 {
-    segment_id      old;
+    segment_id      old_segid;
 
   optbegin
-    old = SetOP( AskCodeSeg() );
+    old_segid = SetOP( AskCodeSeg() );
     EmptyQueue();
-    SetOP( old );
+    SetOP( old_segid );
   optend
 }
 

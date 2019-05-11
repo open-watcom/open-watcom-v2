@@ -10,6 +10,9 @@ ncurses_autodepends = .AUTODEPEND
 # To work around duplicate inlined symbols, e.g. __sputc
 c_flags += -std=gnu89
 !endif
+!ifeq release 0
+c_flags += -DTRACE
+!endif
 
 .c: ../c
 
@@ -31,12 +34,27 @@ ncurses_objs = &
     lib_ttyf.obj &
     read_ent.obj
 
-inc_dirs        = -I"../h"
+!ifeq release 0
+ncurses_trace_objs = &
+    lib_data.obj &
+    lib_trce.obj &
+    lib_trcb.obj &
+    tracebuf.obj &
+    version.obj &
+    visbuf.obj
+!else
+ncurses_trace_objs = &
+    notrace.obj
+!endif
 
-ncurses.lib : $(ncurses_objs) $(__MAKEFILES__)
+objs = $(ncurses_objs) $(ncurses_trace_objs)
+
+inc_dirs = -I"../h"
+
+ncurses.lib : $(objs) $(__MAKEFILES__)
     @%make echo_lib
 !ifndef __WATCOM_TOOLS__
-    $(blib) $(bld_libflags) $(ncurses_objs)
+    $(blib) $(bld_libflags) $(objs)
 !else
-    $(librarian) $(libflags) $(ncurses_objs)
+    $(librarian) $(libflags) $(objs)
 !endif

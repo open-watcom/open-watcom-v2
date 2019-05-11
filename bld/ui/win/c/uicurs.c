@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,6 +33,7 @@
 
 #include <stdui.h>
 #include "biosui.h"
+#include "uicurshk.h"
 
 
 #define NoCur   0x2000      /* outside screen */
@@ -95,12 +96,13 @@ unsigned        VIDPort = VIDMONOINDXREG;
 static unsigned RegCur;
 static unsigned InsCur;
 
-static char         OldRow, OldCol;
-static CURSOR_TYPE  OldTyp;
+static CURSORORD    OldCursorRow;
+static CURSORORD    OldCursorCol;
+static CURSOR_TYPE  OldCursorTyp;
 
-void uiinitcursor( void )
+void UIHOOK uiinitcursor( void )
 {
-    OldTyp = C_OFF;
+    OldCursorTyp = C_OFF;
     if( UIData->height == 25 ) {
         RegCur = 0x0b0c;
     } else {
@@ -109,34 +111,34 @@ void uiinitcursor( void )
     InsCur = ( ((RegCur + 0x100) >> 1 & 0xFF00) + 0x100 ) | ( RegCur & 0x00FF );
 }
 
-void uisetcursor( ORD row, ORD col, CURSOR_TYPE typ, CATTR attr )
+void UIHOOK uisetcursor( CURSORORD crow, CURSORORD ccol, CURSOR_TYPE ctype, CATTR cattr )
 {
-    /* unused parameters */ (void)attr;
+    /* unused parameters */ (void)cattr;
 
-    if( typ == C_OFF ) {
+    if( ctype == C_OFF ) {
         uioffcursor();
     } else {
-        if( row == OldRow && col == OldCol && typ == OldTyp )
+        if( crow == OldCursorRow && ccol == OldCursorCol && ctype == OldCursorTyp )
             return;
-        OldTyp = typ;
-        OldRow = row;
-        OldCol = col;
-        VIDSetPos( VIDPort, row * UIData->width + col );
-        VIDSetCurTyp( VIDPort, typ == C_INSERT ? InsCur : RegCur );
+        OldCursorTyp = ctype;
+        OldCursorRow = crow;
+        OldCursorCol = ccol;
+        VIDSetPos( VIDPort, crow * UIData->width + ccol );
+        VIDSetCurTyp( VIDPort, ( ctype == C_INSERT ) ? InsCur : RegCur );
     }
 }
 
 
-void uioffcursor( void )
+void UIHOOK uioffcursor( void )
 {
-    OldTyp = C_OFF;
+    OldCursorTyp = C_OFF;
     VIDSetCurTyp( VIDPort, NoCur );
 }
 
-void uiswapcursor( void )
+void UIHOOK uiswapcursor( void )
 {
 }
 
-void uifinicursor( void )
+void UIHOOK uifinicursor( void )
 {
 }

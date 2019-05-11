@@ -30,6 +30,7 @@
 
 
 #include "ftnstd.h"
+#include <string.h>
 #include "global.h"
 #include "segsw.h"
 #include "stmtsw.h"
@@ -38,8 +39,6 @@
 #include "insert.h"
 #include "rstutils.h"
 #include "rststruc.h"
-
-#include <string.h>
 
 
 static  sym_id  AddStruct( char *name, uint length )

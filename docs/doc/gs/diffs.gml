@@ -2213,9 +2213,9 @@ The solution is either to recompile the functions or to define a
 "__cdecl_old" pragma that matches the old calling conventions.
 .millust begin
 #pragma aux __cdecl_old "_*" \
-            parm caller [] \
-            value struct float struct routine [eax] \
-            modify [eax ebx ecx edx];
+            __parm __caller [] \
+            __value __struct __float __struct __routine [eax] \
+            __modify [eax ebx ecx edx];
 
 #pragma aux (__cdecl_old) foo;
 

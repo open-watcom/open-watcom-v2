@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -125,13 +126,13 @@ void DgByte(                    // DATA GENERATE A BYTE
 void DgSymbolDefInit(           // DATA GENERATE SYMBOL (DEFAULT DATA)
     SYMBOL sym )                // - the symbol
 {
-    segment_id      old_seg;    // - old segment
-    segment_id      seg_id;     // - symbol segment
+    segment_id      old_segid;  // - old segment
+    segment_id      segid;      // - symbol segment
     target_size_t   size;       // - size of symbol
 
-    seg_id = FESegID( sym );
-    old_seg = BESetSeg( seg_id );
-    DgAlignSegment( seg_id, SegmentAlignment( sym->sym_type ) );
+    segid = FESegID( sym );
+    old_segid = BESetSeg( segid );
+    DgAlignSegment( segid, SegmentAlignment( sym->sym_type ) );
     CgBackGenLabel( sym );
     size = CgMemorySize( sym->sym_type );
     if( sym->segid == SEG_BSS ) {
@@ -139,7 +140,7 @@ void DgSymbolDefInit(           // DATA GENERATE SYMBOL (DEFAULT DATA)
     } else {
         DgInitBytes( size, 0 );
     }
-    BESetSeg( old_seg );
+    BESetSeg( old_segid );
 }
 
 
@@ -218,15 +219,6 @@ void CgBackGenLabelInternal(    // GENERATE A LABEL FOR INTERNAL STRUCTURE
     DGLabel( FEBack( sym ) );
 }
 
-segment_id DgCurrSeg( void )
-{
-    segment_id curr_seg;
-
-    curr_seg = BESetSeg( UNDEFSEG );
-    BESetSeg( curr_seg );
-    return( curr_seg );
-}
-
 segment_id DgSetSegSym( SYMBOL sym )
 {
     return( BESetSeg( FESegID( sym ) ) );
@@ -240,10 +232,10 @@ back_handle DgStringConst(          // STORE STRING CONSTANT WITH NULL
     back_handle     handle;         // - back handle for literal
     target_offset_t str_align;      // - string's alignment
     target_size_t   str_len;        // - string's length (in bytes)
-    segment_id      str_seg;        // - string's segment
-    segment_id      old_seg;        // - old segment
+    segment_id      str_segid;      // - string's segment
+    segment_id      old_segid;      // - old segment
 
-    str_seg = str->segid;
+    str_segid = str->segid;
     handle = str->cg_handle;
     if( control & DSC_CONST ) {
         if( handle == 0 ) {
@@ -256,28 +248,28 @@ back_handle DgStringConst(          // STORE STRING CONSTANT WITH NULL
                 str_align = TARGET_CHAR;
             }
 #if _CPU == _AXP
-            str_seg = SEG_CONST;
+            str_segid = SEG_CONST;
 #else
             if( CompFlags.strings_in_code_segment && ( control & DSC_CODE_OK ) != 0 ) {
                 if( IsBigData() ) {
-                    str_seg = SegmentAddStringCodeFar( str_len, str_align );
+                    str_segid = SegmentAddStringCodeFar( str_len, str_align );
                 } else {
                     if( IsFlat() ) {
-                        str_seg = SegmentAddStringCodeFar( str_len, str_align );
+                        str_segid = SegmentAddStringCodeFar( str_len, str_align );
                     } else {
-                        str_seg = SEG_CONST;
+                        str_segid = SEG_CONST;
                     }
                 }
             } else {
                 if( IsBigData() ) {
-                    str_seg = SegmentAddStringConstFar( str_len, str_align );
+                    str_segid = SegmentAddStringConstFar( str_len, str_align );
                 } else {
-                    str_seg = SEG_CONST;
+                    str_segid = SEG_CONST;
                 }
             }
 #endif
-            str->segid = str_seg;
-            old_seg = BESetSeg( str_seg );
+            str->segid = str_segid;
+            old_segid = BESetSeg( str_segid );
 #if _CPU == _AXP
             DGAlign( TARGET_INT );
 #else
@@ -289,17 +281,17 @@ back_handle DgStringConst(          // STORE STRING CONSTANT WITH NULL
 #if _CPU == _AXP
             DGAlign( TARGET_INT );
 #endif
-            BESetSeg( old_seg );
+            BESetSeg( old_segid );
         }
     } else {
         // char a[] = "asdf"; initialization (use current segment)
-        str_seg = DgCurrSeg();
-        str->segid = str_seg;
+        str_segid = BEGetSeg();
+        str->segid = str_segid;
         DGString( str->string, str->len );
         DgByte( 0 );
     }
     if( psegid != NULL ) {
-        *psegid = str_seg;
+        *psegid = str_segid;
     }
     return( handle );
 }
@@ -409,11 +401,11 @@ cg_name CgSaveAsTemp(           // SAVE INTO A TEMPORARY
 
 
 static void addArgument(        // ADD AN ARGUMENT
-    call_handle handle,         // - handle for call
+    call_handle call,           // - handle for call
     cg_name expr,               // - expression for argument
     cg_type type )              // - argument type
 {
-    CGAddParm( handle, expr, type );
+    CGAddParm( call, expr, type );
 }
 
 
@@ -601,16 +593,16 @@ static call_handle initDtorCall( // INITIALIZE DTOR CALL
     SYMBOL dtor )                // - DTOR to be called
 {
     cg_name dtor_name;
-    call_handle h;
+    call_handle call;
 
     dtor_name = CgSymbol( dtor );
-    h = CGInitCall( dtor_name, CgFuncRetnType( dtor ), (cg_sym_handle)dtor );
-    return( h );
+    call = CGInitCall( dtor_name, CgFuncRetnType( dtor ), (cg_sym_handle)dtor );
+    return( call );
 }
 
 
 static void addDtorArgs(        // ADD DTOR ARGUMENTS
-    call_handle handle,         // - call handle
+    call_handle call,           // - call handle
     SYMBOL dtor,                // - destructor
     cg_name var,                // - destruction address
     unsigned cdtor )            // - CDTOR to be used
@@ -621,26 +613,26 @@ static void addDtorArgs(        // ADD DTOR ARGUMENTS
     switch( PcCallImpl( dtor->sym_type ) ) {
     case CALL_IMPL_REV_CPP :
     case CALL_IMPL_REV_C :
-        addArgument( handle, var, TY_POINTER );
-        addArgument( handle, expr, TY_UNSIGNED );
+        addArgument( call, var, TY_POINTER );
+        addArgument( call, expr, TY_UNSIGNED );
         break;
     default :
-        addArgument( handle, expr, TY_UNSIGNED );
-        addArgument( handle, var, TY_POINTER );
+        addArgument( call, expr, TY_UNSIGNED );
+        addArgument( call, var, TY_POINTER );
         break;
     }
 }
 
 
 static cg_name finiDtorCall(    // COMPLETE DTOR CALL
-    call_handle handle,         // - call handle
+    call_handle call,           // - call handle
     unsigned cdtor )            // - cdtor arg to use
 {
     cg_name n;
 
-    CgBackCallGened( handle );
-    n = CgFetchPtr( CGCall( handle ) );
-    CallStabCdArgSet( handle, cdtor );
+    CgBackCallGened( call );
+    n = CgFetchPtr( CGCall( call ) );
+    CallStabCdArgSet( call, cdtor );
     return( n );
 }
 
@@ -652,16 +644,16 @@ cg_name CgDestructSymOffset(    // CONSTRUCT DTOR CALL FOR SYMBOL+OFFSET
     target_offset_t offset,     // - offset from "sym"
     unsigned cdtor )            // - CDTOR to be used
 {
-    call_handle handle;         // - call handle
+    call_handle call;           // - call handle
     SYMBOL trans;               // - translated symbol
     SYMBOL bound;               // - bound reference
     target_offset_t bound_off;  // - bound offset
     bool inlined;               // - true ==> inlined dtor call
 
-    handle = initDtorCall( dtor );
+    call = initDtorCall( dtor );
     inlined = CgBackFuncInlined( dtor );
     if( inlined ) {
-        CallStackPush( dtor, handle, TY_POINTER );
+        CallStackPush( dtor, call, TY_POINTER );
         IbpAdd( sym, offset, fctl );
         IbpDefineIndex( 0 );
     }
@@ -669,11 +661,11 @@ cg_name CgDestructSymOffset(    // CONSTRUCT DTOR CALL FOR SYMBOL+OFFSET
         trans = bound;
         offset += bound_off;
     }
-    addDtorArgs( handle, dtor, CgSymbolPlusOffset( trans, offset ), cdtor );
+    addDtorArgs( call, dtor, CgSymbolPlusOffset( trans, offset ), cdtor );
     if( inlined ) {
         CallStackPop();
     }
-    return( finiDtorCall( handle, cdtor ) );
+    return( finiDtorCall( call, cdtor ) );
 }
 
 
@@ -682,11 +674,11 @@ cg_name CgDestructExpr(         // CONSTRUCT DTOR CALL FOR EXPRESSION
     cg_name var,                // - expression to be DTOR'ed
     unsigned cdtor )            // - CDTOR to be used
 {
-    call_handle handle;         // - call handle
+    call_handle call;           // - call handle
 
-    handle = initDtorCall( dtor );
-    addDtorArgs( handle, dtor, var, cdtor );
-    return( finiDtorCall( handle, cdtor ) );
+    call = initDtorCall( dtor );
+    addDtorArgs( call, dtor, var, cdtor );
+    return( finiDtorCall( call, cdtor ) );
 }
 
 
@@ -847,7 +839,7 @@ void CgRtCallInit(              // SET UP A R/T CALL
 
     sym = RunTimeCallSymbol( rt_code );
     def->type = CgTypeOutput( SymFuncReturnType( sym ) );
-    def->handle = CGInitCall( CgSymbol( sym )
+    def->call = CGInitCall( CgSymbol( sym )
                             , def->type
                             , (cg_sym_handle)sym );
 }
@@ -858,7 +850,7 @@ void CgRtParam(                 // SET UP A PARAMETER
     RT_DEF *def,                // - definition for call
     cg_type type )              // - argument type
 {
-    addArgument( def->handle, expr, type );
+    addArgument( def->call, expr, type );
 }
 
 
@@ -881,8 +873,8 @@ void CgRtParamAddrSym(          // SET UP PARAMETER: ADDR( SYMBOL )
 cg_name CgRtCallExec(           // EXECUTE R/T CALL
     RT_DEF *def )               // - definition for call
 {
-    CgBackCallGened( def->handle );
-    return( CgFetchType( CGCall( def->handle ), def->type ) );
+    CgBackCallGened( def->call );
+    return( CgFetchType( CGCall( def->call ), def->type ) );
 }
 
 
@@ -916,7 +908,7 @@ cg_name CgDtorStatic(           // DTOR STATIC OBJECT
     STAB_DEFN dctl;             // - state-table definition
     RT_DEF def;                 // - control for run-time call
     SE* se;                     // - state entry
-    segment_id old_seg;         // - old segment
+    segment_id old_segid;       // - old segment
 
     StabCtlInit( &sctl, &dctl );
     StabDefnInit( &dctl, DTRG_STATIC_INITLS );
@@ -933,13 +925,13 @@ cg_name CgDtorStatic(           // DTOR STATIC OBJECT
     se->sym_static.dtor = RoDtorFind( sym );
     se = StateTableAdd( se, &sctl );
     StabGenerate( &sctl );
-    old_seg = DgSetSegSym( sctl.rw );
+    old_segid = DgSetSegSym( sctl.rw );
     CgBackGenLabelInternal( sctl.rw );
     DgInitBytes( CgbkInfo.size_data_ptr, 0 );
     DgPtrSymData( dctl.ro );
     DgOffset( 1 );
     DgPtrSymData( sym );
-    BESetSeg( old_seg );
+    BESetSeg( old_segid );
     CgRtCallInit( &def, RTF_REG_LCL );
     CgRtParamAddrSym( &def, sctl.rw );
     return( CgRtCallExec( &def ) );

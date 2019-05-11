@@ -30,17 +30,8 @@
 ****************************************************************************/
 
 
-#define DIALOG_LIST 3005
+#include "dlglist.rh"
 
-#define CTL_LIST_LIST 102
-#define CTL_LIST_EDIT 103
-#define CTL_LIST_OK 100
-#define CTL_LIST_ADD 104
-#define CTL_LIST_DELETE 105
-#define CTL_LIST_CANCEL 101
-#define CTL_LIST_BROWSE 106
 
-#ifndef RC
-    extern void DlgList( const char *title, void (*clear)(void), void (*add)(const char *,unsigned),
+extern void DlgList( const char *title, void (*clear)(void), void (*add)(const char *,unsigned),
                                char_ring *(*next)(char_ring *), char *(*name)(char_ring *) );
-#endif

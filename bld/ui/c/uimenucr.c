@@ -33,7 +33,7 @@
 #include "stdui.h"
 #include "uimenu.h"
 
-void uimenucurr( UIMENUITEM *menu )
+void UICALLBACK uimenucurr( UIMENUITEM *menu )
 {
     /* unused parameters */ (void)menu;
 }

@@ -43,7 +43,7 @@ extern void DeadBeef();
 #define PatchArea() Bytes_512 Bytes_256
 #endif
 
-typedef struct {
+typedef struct patch_info {
 #ifndef NDEBUG
     use_info    useinfo;
 #endif
@@ -53,11 +53,11 @@ typedef struct {
     } u;
     bool        in_tree;        // are we hanging in a tree somewhere?
     bool        patched;        // has someone made a node out of us yet?
-} patch;
+} patch_info;
 
-extern  patch   *BGNewPatch( void );
-extern  cg_name BGPatchNode( patch *hdl, type_def *tipe );
-extern  void    BGPatchInteger( patch *hdl, signed_32 value );
-extern  void    BGFiniPatch( patch *hdl );
-extern  an      TNPatch( tn node );
-extern  tn      TGPatch( patch *hdl, type_def *tipe );
+extern  patch_handle    BGNewPatch( void );
+extern  cg_name         BGPatchNode( patch_handle patch, type_def *tipe );
+extern  void            BGPatchInteger( patch_handle patch, signed_32 value );
+extern  void            BGFiniPatch( patch_handle patch );
+extern  an              TNPatch( tn node );
+extern  tn              TGPatch( patch_handle patch, type_def *tipe );

@@ -31,7 +31,6 @@
 
 
 #include "drwatcom.h"
-#include <alloca.h>
 #include <ctype.h>
 #include "mad.h"
 #include "regcrt.h"

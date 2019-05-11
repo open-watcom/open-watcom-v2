@@ -267,7 +267,7 @@ instruction     *rMAKECALL( instruction *ins )
                 ins->operands[1] = la_ins->result;
                 PrefixIns( ins, la_ins );
                 if( !SegIsSS( temp ) ) {
-                    new_ins = MakeMove( GetSegment( temp ), AllocRegName(HW_ES), U2 );
+                    new_ins = MakeMove( GetSegment( temp ), AllocRegName( HW_ES ), U2 );
                     HW_CTurnOn( all_regs, HW_ES );
                     PrefixIns( ins, new_ins );
                     ++rtindex;
@@ -280,11 +280,10 @@ instruction     *rMAKECALL( instruction *ins )
                 DelSeg( la_ins );
                 PrefixIns( ins, la_ins );
             } else if( ins->num_operands == 3 ) {
-                new_ins = MakeMove( ins->operands[2], AllocRegName(HW_ES), U2 );
+                new_ins = MakeMove( ins->operands[2], AllocRegName( HW_ES ), U2 );
                 ins->operands[2] = new_ins->result;
                 PrefixIns( ins, new_ins );
-                la_ins = MakeUnary( OP_CAREFUL_LA, temp,
-                                    AllocRegName( HW_SI ), U2 );
+                la_ins = MakeUnary( OP_CAREFUL_LA, temp, AllocRegName( HW_SI ), U2 );
                 also_used = temp;
                 ins->operands[1] = la_ins->result;
                 MoveSegOp( ins, la_ins, 0 );
@@ -353,7 +352,7 @@ instruction     *rMAKECALL( instruction *ins )
                 InMemory( conf );
             }
             break;
-        case N_INDEXED:            /* Dec-20-88*/
+        case N_INDEXED:
             also_used = reg_name;  /* - the index doesn't need an index register!*/
         default:
             break;
@@ -364,8 +363,8 @@ instruction     *rMAKECALL( instruction *ins )
     }
     new_ins->operands[CALL_OP_ADDR] = AllocMemory( lbl, 0, CG_LBL, ins->type_class );
     new_ins->result = NULL;
-    new_ins->num_operands = 2;         /* special case for OP_CALL*/
-    new_ins->zap = &AllocRegName( all_regs )->r;/* all parm regs could be zapped*/
+    new_ins->num_operands = 2;                      /* special case for OP_CALL*/
+    new_ins->zap = &AllocRegName( all_regs )->r;    /* all parm regs could be zapped*/
     last_ins = new_ins;
     if( ins->result != NULL ) {
         regs = FirstReg( info->result );

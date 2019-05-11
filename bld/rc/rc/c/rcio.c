@@ -33,7 +33,9 @@
 #include <stdarg.h>
 #include <assert.h>
 #include <time.h>
-#ifndef __UNIX__
+#ifdef __UNIX__
+    #include <sys/stat.h>
+#else
     #include <process.h>
 #endif
 #include "global.h"
@@ -582,8 +584,8 @@ bool RcPass1IoInit( void )
     return( true );
 }
 
-static bool ChangeTmpToOutFile( FILE *tmpfile, const char *out_name )
-/*******************************************************************/
+static bool CopyTmpToOutFile( FILE *tmpfile, const char *out_name )
+/*****************************************************************/
 {
     RcStatus    status;      /* error while deleting or renaming */
     FILE        *outfile;
@@ -610,7 +612,7 @@ static bool ChangeTmpToOutFile( FILE *tmpfile, const char *out_name )
     RESFREE( buffer );
     return( status == RS_OK );
 
-} /* ChangeTmpToOutFile */
+} /* CopyTmpToOutFile */
 
 static void WriteWINTables( void )
 /********************************/
@@ -664,7 +666,7 @@ static void Pass1ResFileShutdown( void )
                 }
             }
             if( !error ) {
-                ChangeTmpToOutFile( CurrResFile.fp, CmdLineParms.OutResFileName );
+                CopyTmpToOutFile( CurrResFile.fp, CmdLineParms.OutResFileName );
             }
         }
         if( CurrResFile.dir != NULL ) {
@@ -939,7 +941,17 @@ void RcPass2IoShutdown( bool noerror )
         Pass2Info.IoBuffer = NULL;
     }
     if( noerror ) {
-        ChangeTmpToOutFile( Pass2Info.TmpFile.fp, CmdLineParms.OutExeFileName );
+        CopyTmpToOutFile( Pass2Info.TmpFile.fp, CmdLineParms.OutExeFileName );
+#ifdef __UNIX__
+        {
+            struct stat     exe_stat;
+
+            /* copy attributes from input to output executable */
+            if( stat( CmdLineParms.InExeFileName, &exe_stat ) == 0 ) {
+                chmod( CmdLineParms.OutExeFileName, exe_stat.st_mode );
+            }
+        }
+#endif
     }
     ResCloseFile( Pass2Info.TmpFile.fp );
     Pass2Info.TmpFile.fp = NULL;

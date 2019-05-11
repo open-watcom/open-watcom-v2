@@ -10,25 +10,19 @@ idebatch_autodepend = .AUTODEPEND
 
 .c: ../os2;../c
 
-all: batserv.exe tst.exe .symbolic
+all: batserv.exe .symbolic
 
 batserv.exe : batserv.obj $(__MAKEFILES__)
     @%make echo_link
     $(linker) name $@ $(lflags) op stack=16k file {batserv.obj}
 
-batcli.obj : batcli.c
-    $(cc_i86) $(c_flags) -zq -w8-we -bt=dos -oaxt -fo=.obj -d1 $(inc_dirs_lang_osi) $<
-
-tst.exe : tst.c batcli.obj
-    $(cl_i86) $(c_flags) -zq -d2 -fm -bcl=dos $(inc_dirs_lang_osi) $<
-
 !else ifeq host_os nt
 
 .c: ../nt;../c
 
-all: batserv.exe tst.exe .symbolic
+all: batserv.exe tstnt.exe .symbolic
 
-inc_dirs = -I"../h"
+inc_dirs = -I"../nt" -I"../h"
 
 batserv.exe : batserv.obj batpipe.obj $(__MAKEFILES__)
     @%make echo_link
@@ -38,7 +32,7 @@ batserv.exe : batserv.obj batpipe.obj $(__MAKEFILES__)
     $(linker) name $@ $(lflags) op stack=32K file {batserv.obj batpipe.obj}
 !endif
 
-tst.exe : tst.obj batcli.obj batpipe.obj $(__MAKEFILES__)
+tstnt.exe : tst.obj batcli.obj batpipe.obj $(__MAKEFILES__)
     @%make echo_link
 !ifndef __WATCOM_TOOLS__
     $(cl) $(clflags) tst.obj batcli.obj batpipe.obj $(ldflags)
@@ -48,44 +42,60 @@ tst.exe : tst.obj batcli.obj batpipe.obj $(__MAKEFILES__)
 
 !else ifeq host_os dos
 
-.c: ../dos
+name = dosserv
+
+all: $(name).exe tstos2.exe .symbolic
+
+.c: ../dos;../c;../os2
 .asm: ../dos
 
-name = int
+objs = int.obj link.obj int21.obj
 
-objs = $(name).obj link.obj int21.obj
+tst_objs = tst.obj batcli.obj
+
+inc_dirs = -I"../dos" -I"../h" -I"../os2"
 
 $(name).exe : $(objs) $(__MAKEFILES__)
     @%make echo_link
     $(linker) name $@ $(lflags) op stack=1500 file {$(objs)}
 
+tstos2.exe : $(tst_objs) $(__MAKEFILES__)
+    @%make echo_link
+    $(linker) name $@ $(lflags) file {$(tst_objs)}
+
 !else ifeq host_os win
 
 name = winint
 
+__subdir__ = eobjs
+
+additional_cleanup_subdir = $(__subdir__)
+
+!include subdrule.mif
+
 .c: ../win;../dos
 
 objs = $(name).obj link.obj
-objse = $(name)e.obj link.obj
+eobjs = $(__subdir__)/$(name).obj link.obj
 lnk = $(name).lnk
 
 extra_cpp_flags = -DSERVER
+extra_cpp_eobjs_flags = -D__EDITOR__
 
 extra_c_flags = -zW -zu
 
 inc_dirs = -I"../win" -I"../dos"
 
 all : $(name).exe $(name)e.exe .SYMBOLIC
-    @%null
 
 $(name).exe : $(objs) $(lnk) $(name).res $(__MAKEFILES__)
     @%make echo_link
     $(linker) name $@ $(lflags) @$(lnk) file { $(objs) }
     @%make bind_res
 
-$(name)e.exe : $(objse) $(lnk) $(name)e.res $(__MAKEFILES__)
+$(name)e.exe : $(eobjs) $(lnk) $(name)e.res $(__MAKEFILES__)
     @%make echo_link
-    $(linker) name $@ $(lflags) @$(lnk) file { $(objse) }
+    $(linker) name $@ $(lflags) @$(lnk) file { $(eobjs) }
     @%make bind_res
 
 $(name).res $(name)e.res : ../$(name).rc
@@ -101,8 +111,5 @@ $(lnk) : makefile
     @%append $(lnk) segment CLASS 'BEGDATA' PRELOAD FIXED
     @%append $(lnk) segment CLASS 'DATA' PRELOAD FIXED
     @%append $(lnk) segment CLASS 'BSS' PRELOAD FIXED
-
-$(name)e.obj : $(name).c $(__MAKEFILES__) .AUTODEPEND
-    $(cc) $(cflags) $(c_flags) $(inc_path) -D__EDITOR__ -fo=$@ $[@
 
 !endif

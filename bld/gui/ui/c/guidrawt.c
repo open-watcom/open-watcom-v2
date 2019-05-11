@@ -135,7 +135,7 @@ void GUIXDrawText( gui_window *wnd, const char *text, size_t length, gui_coord *
                     p[0] = ' ';
                 }
                 uivtextput( &wnd->screen, my_pos.y - vscroll + frame_adjust,
-                            pos, wnd->colours[attr], cp, length );
+                            pos, WNDATTR( wnd, attr ), cp, length );
             } else {
                 length = 0;
             }
@@ -174,7 +174,7 @@ void GUIXDrawText( gui_window *wnd, const char *text, size_t length, gui_coord *
             }
             if( width > 0 )  {
                 area.width = width;
-                uivfill( &wnd->screen, area, wnd->colours[attr], ' ' );
+                uivfill( &wnd->screen, area, WNDATTR( wnd, attr ), ' ' );
             }
         }
     }

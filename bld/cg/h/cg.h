@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -73,8 +74,6 @@ typedef enum {
     EXTN_CALLBACKNAME,  /* return callback function name */
 } extn_request;
 
-#define UNDEFSEG        (segment_id)-1
-
 typedef char                *char_ptr;
 typedef const char          *cchar_ptr;
 
@@ -88,11 +87,17 @@ typedef struct aux_info     *aux_handle;        /* first parm to FEAuxInfo (some
 typedef struct temp_name    *temp_handle;       /* first parm to FEAuxInfo (sometimes) */
 typedef struct cfloat       *float_handle;      /* for the BF... routines */
 typedef void                *callback_handle;   /* passed to rtn from callback node */
-typedef void                *patch_handle;      /* used to stuff patchable ints into tree */
+typedef struct patch_info   *patch_handle;      /* used to stuff patchable ints into tree */
 
 typedef void                (*cg_callback)( callback_handle );
 
-typedef short               segment_id;         /* must be signed */
+/*
+ * segment_id must be signed
+ * id < 0 is virtual segment used for imported symbols
+ * id > 0 is real (allocated) segment
+ * id = 0 is used as special value by front end for unasigned segment value
+ */
+typedef short               segment_id;
 
 typedef int                 level_depth;
 

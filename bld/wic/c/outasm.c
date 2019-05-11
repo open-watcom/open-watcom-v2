@@ -169,7 +169,7 @@ static DeclType getDeclType(pDeclInfo decl) {
     }
 }
 
-char *getDeclIdName(pDeclInfo decl, DeclType type) {
+static char *getDeclIdName(pDeclInfo decl, DeclType type) {
     switch (type) {
     case DT_PTR:
     case DT_SIMPLE:
@@ -202,8 +202,8 @@ char *getDeclIdName(pDeclInfo decl, DeclType type) {
 }
 
 static int getDeclTypeSize(pDeclInfo decl, DeclType type) {
-    static int asmSclType[SCL_MAX][SIZE_MAX] = {
-                 /* SIZE_16      SIZE_32         SIZE_48*/
+    static int asmSclType[SCL_MAX][SIZETYPE_MAX] = {
+                 /* SIZETYPE_16  SIZETYPE_32     SIZETYPE_48*/
     /*NULL*/       {0,           0,              0},
     /*CHAR*/       {1,           1,              1},
     /*SCHAR*/      {1,           1,              1},
@@ -221,13 +221,13 @@ static int getDeclTypeSize(pDeclInfo decl, DeclType type) {
     /*VOID*/       {0,           0,              0},
     /*DOT_DOT_DOT*/{0,           0,              0}
     };
-    static int ptrStr[SIZE_MAX] =
+    static int ptrStr[SIZETYPE_MAX] =
         { 2,  4, 6 };
 
     switch (type) {
     case DT_PTR:
     {
-        SizeType temp;
+        SizeType temp = 0;
         switch (decl->dclr->ptr->memType) {
             case MT_NULL: temp = g_opt.ptrSize; break;
             case MT_NEAR: temp = g_opt.nearPtrSize; break;
@@ -261,7 +261,7 @@ static int getDeclTypeSize(pDeclInfo decl, DeclType type) {
     }
 }
 
-char* getAsmPragmaName(pDclr dclr) {
+static char *getAsmPragmaName(pDclr dclr) {
     if (dclr == NULL) {
         return NULL;
     }
@@ -278,7 +278,8 @@ char* getAsmPragmaName(pDclr dclr) {
     }
 }
 
-char* getFuncMemTypeAsmName(pDclr dclr) {
+static char *getFuncMemTypeAsmName(pDclr dclr)
+{
     char *memTypeTable[MT_MAX] = {
         "PROC",
         "NEAR",
@@ -290,7 +291,8 @@ char* getFuncMemTypeAsmName(pDclr dclr) {
     return memTypeTable[dclr->memType];
 }
 
-char* getStructName(pDeclInfo decl) {
+static char* getStructName(pDeclInfo decl)
+{
     return getTokenIdName(decl->repr.s->name);
 }
 
@@ -367,19 +369,18 @@ static void _expandPushDeclInfo(int fileNum, pDeclInfo decl,
 
     case DT_STRUCT_DEF:
     {
-        char *type;
+        char *type1 = NULL;
         pDeclStructBody body = decl->repr.s->body;
         pushPrintStack( fileNum, OUNIT,
             addOUnitPostfix(createOUnitTextId(name, body->endPos), "ENDS" ) );
         initExpandPushListParam(fileNum, DECL_INFO, body->declList, name);
         pushPrintStack( fileNum, OUNIT, createOUnitNewline());
         switch (decl->repr.s->type) {
-            case DSIT_STRUCT: type = "STRUC"; break;
-            case DSIT_UNION: type = "UNION"; break;
+            case DSIT_STRUCT: type1 = "STRUC"; break;
+            case DSIT_UNION: type1 = "UNION"; break;
             default: assert(0);
         }
-        pushPrintStack( fileNum, OUNIT,
-                    addOUnitPostfix(createOUnitTextId(name, typePos), type) );
+        pushPrintStack( fileNum, OUNIT, addOUnitPostfix(createOUnitTextId(name, typePos), type1) );
         break;
     }
 
@@ -441,7 +442,7 @@ static void _expandPushLogEntry(int fileNum, void *_logEntry) {
     pushPrintStack( fileNum, OUNIT, createOUnitNewline());
 }
 
-ExpandFuncTable printExpandAsmTable =
+ExpandFuncEntry printExpandAsmTable[MAX_PRINT_TYPE] =
 {
 //    Params    FuncName
       0,        NULL,                       //OUNIT

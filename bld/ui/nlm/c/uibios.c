@@ -38,6 +38,7 @@
 #include "uidef.h"
 #include "uimouse.h"
 #include "uinlm.h"
+#include "uicurshk.h"
 
 
 int     ScreenHandle;       // used by uikeyb.c and uicurs.c as well

@@ -15,7 +15,7 @@
 
 :include cpluspro.sp
 
-#pragma pack( push, 1 )
+#pragma pack( __push, 1 )
 
 /* DDEML callback calling convention */
 #define EXPENTRY    WINAPI
@@ -361,7 +361,7 @@ BOOL WINAPI         DdeUninitialize( DWORD );
 
 #endif /* RC_INVOKED */
 
-#pragma pack( pop )
+#pragma pack( __pop )
 
 :include cplusepi.sp
 

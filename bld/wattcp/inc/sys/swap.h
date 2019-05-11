@@ -62,14 +62,14 @@ __BEGIN_DECLS
               "xchg al, ah"  \
               "ror  eax, 16" \
               "xchg al, ah"  \
-              parm   [eax]   \
-              modify [eax];
+              __parm   [__eax]   \
+              __modify [__eax];
 
   extern unsigned short __ntohs (unsigned short x);
   #pragma aux __ntohs = \
               "xchg al, ah" \
-              parm   [ax]   \
-              modify [ax];
+              __parm   [__ax]   \
+              __modify [__ax];
 
 #elif defined(__WATCOMC__) && !defined(__FLAT__) /* Watcom 16-bit */
   #define intel(x)   __ntohl(x)
@@ -79,14 +79,14 @@ __BEGIN_DECLS
   #pragma aux  __ntohl =     \
               "xchg al, dh"  \
               "xchg ah, dl"  \
-              parm   [dx ax] \
-              modify [dx ax];
+              __parm   [__dx __ax] \
+              __modify [__dx __ax];
 
   extern unsigned short __ntohs (unsigned short x);
   #pragma aux __ntohs =     \
               "xchg al, ah" \
-              parm   [ax]   \
-              modify [ax];  
+              __parm   [__ax]   \
+              __modify [__ax];
 
 #else  /* no inlining possible */
   #define intel   W32_NAMESPACE (intel)

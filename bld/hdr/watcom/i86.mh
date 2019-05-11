@@ -10,27 +10,29 @@
 
 :include readonly.sp
 
+:segment !INTEL_ONLY
 #ifndef _M_IX86
  #error i86.h is for use with Intel platforms
 #endif
 
+:endsegment
 :include owrtlink.sp
 
 :include cpluspro.sp
 
 :include pshpackl.sp
 
-:segment DOS | QNX
+:segment BITS16
 #if defined(_M_I86) || defined(__WINDOWS_386__)
  #define __FILLER_I86(__a)
 #else
 :endsegment
  #define __FILLER_I86(__a)  unsigned short __a;
-:segment DOS | QNX
+:segment BITS16
 #endif
 :endsegment
 
-:segment DOS | QNX
+:segment BITS16
 #if !defined(_M_I86) && !defined(__WINDOWS_386__)
 
 :endsegment
@@ -46,7 +48,7 @@ struct DWORDREGS {
         unsigned int cflag;
 };
 
-:segment DOS | QNX
+:segment BITS16
 #endif
 
 :endsegment
@@ -59,13 +61,13 @@ struct WORDREGS {
         unsigned short dx;  __FILLER_I86(_4)
         unsigned short si;  __FILLER_I86(_5)
         unsigned short di;  __FILLER_I86(_6)
-:segment DOS | QNX
+:segment BITS16
 #ifdef __WINDOWS_386__
         unsigned short cflag;
 #else
 :endsegment
         unsigned int cflag;
-:segment DOS | QNX
+:segment BITS16
 #endif
 :endsegment
 };
@@ -84,13 +86,13 @@ struct BYTEREGS {
  */
 
 union REGS {
-:segment DOS | QNX
+:segment BITS16
 #if defined(_M_I86) || defined(__WINDOWS_386__)
         struct WORDREGS  x;
 #else
 :endsegment
         struct DWORDREGS x;
-:segment DOS | QNX
+:segment BITS16
 #endif
 :endsegment
         struct WORDREGS  w;
@@ -102,11 +104,11 @@ union REGS {
 
 struct SREGS {
         unsigned short es, cs, ss, ds;
-:segment DOS | QNX
+:segment BITS16
 #ifndef _M_I86
 :endsegment
         unsigned short fs, gs;
-:segment DOS | QNX
+:segment BITS16
 #endif
 :endsegment
 };
@@ -132,19 +134,19 @@ struct REGPACKW {
         unsigned short di;  __FILLER_I86(_7)
         unsigned short ds;
         unsigned short es;
-:segment DOS | QNX
+:segment BITS16
 #if !defined(_M_I86) && !defined(__WINDOWS_386__)
 :endsegment
         unsigned short fs;
         unsigned short gs;
-:segment DOS | QNX
+:segment BITS16
 #endif
 #ifdef __WINDOWS_386__
         unsigned short flags;
 #else
 :endsegment
         unsigned int flags;
-:segment DOS | QNX
+:segment BITS16
 #endif
 :endsegment
 };
@@ -158,13 +160,13 @@ struct REGPACKX {
 union REGPACK {
         struct REGPACKB h;
         struct REGPACKW w;
-:segment DOS | QNX
+:segment BITS16
 #if defined(_M_I86) || defined(__WINDOWS_386__)
         struct REGPACKW x;
 #else
 :endsegment
         struct REGPACKX x;
-:segment DOS | QNX
+:segment BITS16
 #endif
 :endsegment
 };
@@ -197,7 +199,7 @@ struct INTPACKW {
         unsigned flags;
 };
 struct INTPACKB {
-:segment DOS | QNX
+:segment BITS16
 #ifdef _M_I86
         unsigned /*gs*/:16,/*fs*/:16,
                  /*es*/:16,/*ds*/:16,
@@ -209,7 +211,7 @@ struct INTPACKB {
                  /*es*/ :32,/*ds*/ :32,
                  /*edi*/:32,/*esi*/:32,
                  /*ebp*/:32,/*esp*/:32;
-:segment DOS | QNX
+:segment BITS16
 #endif
 :endsegment
         unsigned char bl, bh; __FILLER_I86(_1)
@@ -220,13 +222,13 @@ struct INTPACKB {
 union  INTPACK {
         struct INTPACKB h;
         struct INTPACKW w;
-:segment DOS | QNX
+:segment BITS16
 #ifdef _M_I86
         struct INTPACKW x;
 #else
 :endsegment
         struct INTPACKX x;
-:segment DOS | QNX
+:segment BITS16
 #endif
 :endsegment
 };
@@ -253,7 +255,7 @@ _WCIRTLINK extern void _enable( void );
 #endif
 
 :include delay.sp
-:segment DOS | QNX
+:segment BITS16
 #if defined(_M_I86) || defined(__WINDOWS_386__)
 _WCRTLINK extern int     int86( int, union REGS *, union REGS * );
 _WCRTLINK extern int     int86x( int, union REGS *, union REGS *, struct SREGS * );
@@ -261,7 +263,7 @@ _WCRTLINK extern int     int86x( int, union REGS *, union REGS *, struct SREGS *
 :endsegment
 _WCRTLINK extern int     int386( int, union REGS *, union REGS * );
 _WCRTLINK extern int     int386x( int, union REGS *, union REGS *, struct SREGS * );
-:segment DOS | QNX
+:segment BITS16
 #endif
 :endsegment
 _WCRTLINK extern void    intr( int, union REGPACK * );
@@ -274,7 +276,7 @@ _WCRTLINK extern void    sound( unsigned __frequency );
 
 #define _FP_OFF(__p) ((unsigned)(__p))
 
-:segment DOS | QNX
+:segment BITS16
 #ifdef _M_I86
  #define _FP_SEG(__p) ((unsigned)((unsigned long)(void __far*)(__p) >> 16))
 #else
@@ -284,7 +286,7 @@ _WCRTLINK extern void    sound( unsigned __frequency );
     __parm __caller [__eax __dx] \
     __value [__dx] \
     __modify __exact []
-:segment DOS | QNX
+:segment BITS16
 #endif
 :endsegment
 

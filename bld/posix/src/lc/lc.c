@@ -328,9 +328,7 @@ void DoLC( char *dir )
  */
 void PrintFile( struct dirent *file )
 {
-
-    size_t      len;
-    size_t      num_columns;
+    int     num_columns;
 
 #ifndef __QNX__
     if( file->d_attr & _A_SUBDIR ) {
@@ -357,19 +355,18 @@ void PrintFile( struct dirent *file )
     }
 
     /* calculate how many columns it will take to print the filename */
-    len = strlen( file->d_name ) + ( GUTTER_WIDTH + COLUMN_WIDTH - 1 );
-    num_columns = len / COLUMN_WIDTH;
+    num_columns = (int)( ( strlen( file->d_name ) + ( GUTTER_WIDTH + COLUMN_WIDTH - 1 ) ) / COLUMN_WIDTH );
     if( num_columns + linecnt > maxwidth ) {
         printf( "\n" );
         linecnt = 0;
     }
-    printf("%-*s", COLUMN_WIDTH * num_columns - GUTTER_WIDTH, file->d_name );
+    printf("%-*s", (int)( COLUMN_WIDTH * num_columns - GUTTER_WIDTH ), file->d_name );
     linecnt += num_columns;
     if( linecnt >= maxwidth ) {
         printf("\n");
         linecnt = 0;
     } else {
-        printf( "%*s", GUTTER_WIDTH, "" );
+        printf( "%*s", (int)GUTTER_WIDTH, "" );
     }
 
 } /* PrintFile */

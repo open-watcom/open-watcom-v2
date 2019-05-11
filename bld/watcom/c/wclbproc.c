@@ -112,59 +112,31 @@ WNDPROC GetWndProc( WNDPROCx fn )
 
 void FreeProcInstance_DLG( DLGPROC fn )
 {
-#if defined( __WINDOWS__ ) && defined( _M_I86 )
     FreeProcInstance( (FARPROC)fn );
-#else
-    fn = fn;
-#endif
 }
 void FreeProcInstance_FONTENUM( FONTENUMPROC fn )
 {
-#if defined( __WINDOWS__ ) && defined( _M_I86 )
     FreeProcInstance( (FARPROC)fn );
-#else
-    fn = fn;
-#endif
 }
 void FreeProcInstance_OLDFONTENUM( OLDFONTENUMPROC fn )
 {
-#if defined( __WINDOWS__ ) && defined( _M_I86 )
     FreeProcInstance( (FARPROC)fn );
-#else
-    fn = fn;
-#endif
 }
 void FreeProcInstance_HOOK( HOOKPROC fn )
 {
-#if defined( __WINDOWS__ ) && defined( _M_I86 )
     FreeProcInstance( (FARPROC)fn );
-#else
-    fn = fn;
-#endif
 }
 void FreeProcInstance_OFNHOOK( LPOFNHOOKPROC fn )
 {
-#if defined( __WINDOWS__ ) && defined( _M_I86 )
     FreeProcInstance( (FARPROC)fn );
-#else
-    fn = fn;
-#endif
 }
 void FreeProcInstance_WNDENUM( WNDENUMPROC fn )
 {
-#if defined( __WINDOWS__ ) && defined( _M_I86 )
     FreeProcInstance( (FARPROC)fn );
-#else
-    fn = fn;
-#endif
 }
 void FreeProcInstance_WND( WNDPROC fn )
 {
-#if defined( __WINDOWS__ ) && defined( _M_I86 )
     FreeProcInstance( (FARPROC)fn );
-#else
-    fn = fn;
-#endif
 }
 
 #endif

@@ -28,6 +28,10 @@
 *
 ****************************************************************************/
 
+
+#include <stdlib.h>
+#include <stdio.h>
+#include <time.h>
 #include <string.h>
 #include <ctype.h>
 #ifdef __UNIX__
@@ -36,14 +40,35 @@
 #include <direct.h>
 #include <dos.h>
 #endif
-#include <stdlib.h>
-#include <stdio.h>
-#include <limits.h>
-#include "builder.h"
+
+
+#define BSIZE   256
+#define SCREEN  79
+
+static const char Equals[] = "========================================"\
+                             "========================================";
 
 static void LogDir( const char *dir )
 {
-    printf( "%s", LogDirEquals( dir ) );
+    char        tbuff[BSIZE];
+    size_t      equals;
+    size_t      bufflen;
+    const char  *eq;
+    struct tm   *tm;
+    time_t      ttime;
+
+    ttime = time( NULL );
+    tm = localtime( &ttime );
+    strftime( tbuff, BSIZE, "%H:%M:%S", tm );
+    strcat( tbuff, " " );
+    strcat( tbuff, dir );
+    bufflen = strlen( tbuff );
+    equals = ( SCREEN - 2 - bufflen ) / 2;
+    if( bufflen > SCREEN - 4 ) {
+        equals = 1;
+    }
+    eq = &Equals[ ( sizeof( Equals ) - 1 ) - equals];
+    printf( "%s %s %s%s\n", eq, tbuff, eq, ( bufflen & 1 ) ? "" : "=" );
 }
 
 static unsigned ChgDir( char *dir )
@@ -59,7 +84,7 @@ static unsigned ChgDir( char *dir )
 #ifdef __UNIX__
         *end = '\0';
 #else
-        if( len != 3 || dir[1] != ':' ) ) {
+        if( len != 3 || dir[1] != ':' ) {
             *end = '\0';
             --len;
         }

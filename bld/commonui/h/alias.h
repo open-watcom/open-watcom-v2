@@ -32,7 +32,7 @@
 #ifndef _ALIAS_H_INCLUDED
 #define _ALIAS_H_INCLUDED
 
-#include "aliasi.h"
+#include "alias.rh"
 
 typedef struct analias {
     ULONG_PTR           id;

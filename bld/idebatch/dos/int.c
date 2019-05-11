@@ -36,7 +36,7 @@
 #include <conio.h>
 #include <dos.h>
 #include <ctype.h>
-#include <malloc.h>
+#include <malloc.h>     /* necessary for _heapshrink */
 #include "link.h"
 #include "common.h"
 #include "osidle.h"

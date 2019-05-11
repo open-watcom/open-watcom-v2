@@ -36,7 +36,6 @@
 #include <string.h>
 #include <fcntl.h>
 #include <sys/stat.h>
-#include <malloc.h>
 #include <time.h>
 #include "watcom.h"
 #include "sample.h"

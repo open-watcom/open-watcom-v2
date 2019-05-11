@@ -34,7 +34,7 @@
 #include <stdlib.h>
 #include "servio.h"
 #include "options.h"
-#include "optionsi.h"
+
 
 extern int              NumPrinters(void);
 extern unsigned         PrnAddress(int);

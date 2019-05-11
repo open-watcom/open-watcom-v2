@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,6 +34,9 @@
 #define _STRUCT_INCLUDED
 
 #include <stdio.h>
+#if defined( __DOS__ )
+    #include "doschk.h"
+#endif
 
 typedef unsigned short  vi_ushort;
 
@@ -217,7 +220,12 @@ typedef struct fcb {
     linenum     start_line, end_line;       // starting/ending line number
     long        offset;                     // offset in swap file
     long        last_swap;                  // time fcb was last swapped
-    long        xmemaddr;                   // address of fcb in extended memory
+#if defined( __DOS__ )
+    union {
+        long    addr;
+        xhandle handle;
+    } xblock;                               // address of fcb in extended memory
+#endif
     short       byte_cnt;                   // number of bytes in lines
     bool        swapped             : 1;    // fcb is swapped
     bool        in_memory           : 1;    // fcb is in memory
@@ -618,6 +626,8 @@ typedef struct {
     bool                is_menu     : 1;    // is a menu we are showing
 } selectitem;
 
+typedef vi_rc checkres_fn( const char *, char *, int * );
+
 /*
  * SelectLineInFile data structure
  */
@@ -628,7 +638,7 @@ typedef struct {
     window_info         *wi;                    // info describing window to create
     list_linenum        sl;                     // selected line
     char                *title;                 // title of window
-    vi_rc (*checkres)(const char *, char *, int * ); // check if selected change is valid
+    checkres_fn         *checkres;              // check if selected change is valid
     int                 *allowrl;               // allow cursor right/left (for menu bar)
     hichar              *hi_list;               // chars to highlight
     const vi_key        *retevents;             // events that simulate pressing enter

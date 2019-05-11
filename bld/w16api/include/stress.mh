@@ -15,7 +15,7 @@
 
 :include cpluspro.sp
 
-#pragma pack( push, 1 )
+#pragma pack( __push, 1 )
 
 /* Partition identifiers */
 #define EDS_WIN     1
@@ -34,7 +34,7 @@ int WINAPI  GetFreeFileHandles( void );
 void WINAPI UnAllocDiskSpace( UINT );
 void WINAPI UnAllocFileHandles( void );
 
-#pragma pack( pop )
+#pragma pack( __pop )
 
 :include cplusepi.sp
 

@@ -46,13 +46,10 @@
 #include "dbgdefn.h"
 #include "dbgdata.h"
 #include "dbgerr.h"
+#include "dbgio.h"
+#include "dui.h"
 #ifdef TRMEM
-//    #include "wio.h"
-//    #include "trmem.h"
-    #include "dui.h"
 #else
-    #include "dbgio.h"
-    #include "dui.h"
     #define TRMemAlloc(x)          malloc(x)
     #define TRMemRealloc(p,x)      realloc(p,x)
     #define TRMemFree(p)           free(p)
@@ -77,7 +74,7 @@
 #endif
 
 
-#if defined( __DOS__ ) && defined( __386__ )
+#if defined( __DOS__ )
 #if !defined( __OSI__ )
 extern int _d16ReserveExt( int );
 #pragma aux _d16ReserveExt = \
@@ -270,9 +267,7 @@ void *ChkAlloc( size_t size, char *error )
     return( ret );
 }
 
-#define Heap_Corupt     "ERROR - Heap is corrupted - %s"
-
-#if !defined( _OVERLAYED_ )
+#if defined( __DOS__ ) || defined( __NOUI__ )
 
 #if defined( _M_I86 )
 #define MAX_BLOCK (60U * 1024)
@@ -282,7 +277,6 @@ void *ChkAlloc( size_t size, char *error )
 #define MAX_BLOCK (1U*1024*1024)
 #endif
 
-#if defined( __DOS__ ) && defined( __386__ ) || defined( __NOUI__ )
 static void MemExpand( void )
 {
     unsigned long   size;
@@ -313,7 +307,7 @@ static void MemExpand( void )
 
 void SysSetMemLimit( void )
 {
-#if defined( __DOS__ ) && defined( __386__ )
+#if defined( __DOS__ )
 #if !defined(__OSI__)
     _d16ReserveExt( MemSize + 1*1024UL*1024UL );
 #endif
@@ -323,8 +317,6 @@ void SysSetMemLimit( void )
     }
 #endif
 }
-
-#endif  /* !defined( _OVERLAYED_ ) */
 
 #if defined( __NOUI__ )
 
@@ -341,7 +333,7 @@ void MemFini( void )
 #ifdef TRMEM
     MemTrackFini();
 #elif defined( __WATCOMC__ )
-
+    static const char   Heap_Corupt[] = { "ERROR - Heap is corrupted - %s" };
     struct _heapinfo    h_info;
     int                 status;
     char                buf[50];
@@ -436,7 +428,7 @@ void GUIMemOpen( void )
 #endif
 }
 #if !defined( GUI_IS_GUI )
-void UIMemOpen( void ) {}
+void UIAPI UIMemOpen( void ) {}
 #endif
 
 void GUIMemClose( void )
@@ -451,7 +443,7 @@ void GUIMemClose( void )
 #endif
 }
 #if !defined( GUI_IS_GUI )
-void UIMemClose( void ) {}
+void UIAPI UIMemClose( void ) {}
 #endif
 
 
@@ -500,7 +492,7 @@ void *PMmalloc( size_t size )
 }
 #endif
 #else
-void *uimalloc( size_t size )
+void * UIAPI uimalloc( size_t size )
 {
 #ifdef TRMEM
     return( _trmem_alloc( size, _trmem_guess_who(), GUIMemHandle ) );
@@ -508,12 +500,12 @@ void *uimalloc( size_t size )
     return( malloc( size ) );
 #endif
 }
-LP_VOID uifaralloc( size_t size )
+LP_VOID UIAPI uifaralloc( size_t size )
 {
-#if defined( __DOS__ ) && defined( _M_I86 )
-    return( ExtraAlloc( size ) );
+#ifdef TRMEM
+    return( _trmem_alloc( size, _trmem_guess_who(), GUIMemHandle ) );
 #else
-    return( TRMemAlloc( size ) );
+    return( malloc( size ) );
 #endif
 }
 void *HelpMemAlloc( size_t size )
@@ -568,7 +560,7 @@ void PMfree( void *ptr )
 }
 #endif
 #else
-void uifree( void *ptr )
+void UIAPI uifree( void *ptr )
 {
 #ifdef TRMEM
     _trmem_free( ptr, _trmem_guess_who(), GUIMemHandle );
@@ -576,21 +568,20 @@ void uifree( void *ptr )
     free( ptr );
 #endif
 }
-void uifarfree( LP_VOID ptr )
-{
 #if defined( __DOS__ )
-#if defined( _M_I86 )
-    ExtraFree( ptr );
+#define MEM_NEAR_PTR(x)     (void *)FP_OFF( x )
 #else
-    if( ptr != NULL ) {
-        TRMemFree( (void *)FP_OFF( ptr ) );
-    }
+#define MEM_NEAR_PTR(x)     x
 #endif
+void UIAPI uifarfree( LP_VOID ptr )
+{
+    if( ptr != NULL ) {
+#ifdef TRMEM
+        _trmem_free( MEM_NEAR_PTR( ptr ), _trmem_guess_who(), GUIMemHandle );
 #else
-    if( ptr != NULL ) {
-        TRMemFree( ptr );
-    }
+        free( MEM_NEAR_PTR( ptr ) );
 #endif
+    }
 }
 void HelpMemFree( void *ptr )
 {
@@ -625,7 +616,7 @@ void * _wpi_realloc( void *ptr, size_t size )
     return( realloc( ptr, size ) );
 #endif
 }
-void *MemReAlloc( void *ptr, size_t size )
+void *MemRealloc( void *ptr, size_t size )
 {
 #ifdef TRMEM
     return( _trmem_realloc( ptr, size, _trmem_guess_who(), GUIMemHandle ) );
@@ -644,7 +635,7 @@ void *PMrealloc( void *ptr, size_t size )
 }
 #endif
 #else
-void *uirealloc( void *ptr, size_t size )
+void * UIAPI uirealloc( void *ptr, size_t size )
 {
 #ifdef TRMEM
     return( _trmem_realloc( ptr, size, _trmem_guess_who(), GUIMemHandle ) );

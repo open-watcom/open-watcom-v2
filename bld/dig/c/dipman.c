@@ -44,7 +44,6 @@
 #include "dipimp.h"
 #include "dipcli.h"
 #include "dipsys.h"
-#include "ovldefn.h"
 
 
 #define IMAGE_MAP_INIT  16
@@ -586,7 +585,7 @@ typedef struct {
     location_context    *lc;
 } walk_glue;
 
-OVL_EXTERN walk_result DIGCLIENT ModGlue( imp_image_handle *iih, imp_mod_handle imh, void *d )
+static walk_result DIGCLIENT ModGlue( imp_image_handle *iih, imp_mod_handle imh, void *d )
 {
     walk_glue           *wd = d;
     image_handle        *ih;
@@ -595,7 +594,7 @@ OVL_EXTERN walk_result DIGCLIENT ModGlue( imp_image_handle *iih, imp_mod_handle 
     return( wd->walk.m( MK_MH( ih->ii, imh ), wd->d ) );
 }
 
-OVL_EXTERN walk_result WalkOneModList( mod_handle mh, void *d )
+static walk_result WalkOneModList( mod_handle mh, void *d )
 {
     image_handle        *ih;
 
@@ -623,7 +622,7 @@ walk_result DIPWalkModList( mod_handle mh, DIP_MOD_WALKER *mw, void *d )
     }
 }
 
-OVL_EXTERN walk_result DIGCLIENT TypeGlue( imp_image_handle *iih, imp_type_handle *ith, void *d )
+static walk_result DIGCLIENT TypeGlue( imp_image_handle *iih, imp_type_handle *ith, void *d )
 {
     walk_glue   *wd = d;
 
@@ -652,7 +651,7 @@ walk_result DIPWalkTypeList( mod_handle mh, DIP_TYPE_WALKER *tw, void *d )
     return( wr );
 }
 
-OVL_EXTERN walk_result DIGCLIENT SymGlue( imp_image_handle *iih, sym_walk_info swi,
+static walk_result DIGCLIENT SymGlue( imp_image_handle *iih, sym_walk_info swi,
                                                     imp_sym_handle *ish, void *d )
 {
     walk_glue   *wd = d;
@@ -666,7 +665,7 @@ OVL_EXTERN walk_result DIGCLIENT SymGlue( imp_image_handle *iih, sym_walk_info s
 
 static walk_result DoWalkSymList( symbol_source, void *, walk_glue * );
 
-OVL_EXTERN walk_result GblSymWalk( mod_handle mh, void *d )
+static walk_result GblSymWalk( mod_handle mh, void *d )
 {
     return( DoWalkSymList( SS_MODULE, (void *)&mh, d ) );
 }
@@ -745,7 +744,7 @@ walk_result DIPWalkSymList( symbol_source ss, void *start, DIP_SYM_WALKER *sw, v
     return( DIPWalkSymListEx( ss, start, sw, NULL, d ) );
 }
 
-OVL_EXTERN walk_result DIGCLIENT CueGlue( imp_image_handle *iih, imp_cue_handle *icueh, void *d )
+static walk_result DIGCLIENT CueGlue( imp_image_handle *iih, imp_cue_handle *icueh, void *d )
 {
     walk_glue   *wd = d;
 

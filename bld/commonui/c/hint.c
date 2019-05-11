@@ -51,7 +51,7 @@ typedef struct {
  */
 static msg_id getItemMsg( statwnd *wnd, ctl_id menuid )
 {
-    int                 item;
+    int                 i;
     HWND                hint;
     HLOCAL              hinfo;
     HintWndInfo         *info;
@@ -64,9 +64,9 @@ static msg_id getItemMsg( statwnd *wnd, ctl_id menuid )
     hinttable = info->hints;
     msgid = HINT_EMPTY;
     if( hinttable != NULL ) {
-        for( item = 0; item < info->hint_num_items; item++ ) {
-            if( hinttable[item].menuid == menuid ) {
-                msgid = hinttable[item].msgid;
+        for( i = 0; i < info->hint_num_items; i++ ) {
+            if( hinttable[i].menuid == menuid ) {
+                msgid = hinttable[i].msgid;
                 break;
             }
         }
@@ -156,14 +156,14 @@ WORD SizeHintBar( statwnd *wnd )
  */
 void HintMenuSelect( statwnd *wnd, HWND hwnd, WPARAM wparam, LPARAM lparam )
 {
-    HMENU       menu;
+    HMENU       hmenu;
     WORD        flags;
     msg_id      msgid;
 
     if( MENU_CLOSED( wparam, lparam ) ) {
         updateHintText( wnd, HINT_EMPTY );
     } else {
-        menu = GetMenu( hwnd );
+        hmenu = GetMenu( hwnd );
         flags = GET_WM_MENUSELECT_FLAGS( wparam, lparam );
         if( flags & (MF_SYSMENU | MF_SEPARATOR) ) {
             updateHintText( wnd, HINT_EMPTY );

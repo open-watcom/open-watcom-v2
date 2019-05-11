@@ -30,13 +30,12 @@
 
 
 #include "ftnstd.h"
+#include <string.h>
 #include "global.h"
 #include "fmemmgr.h"
 #include "fhash.h"
 #include "rstconst.h"
 #include "rstmgr.h"
-
-#include <string.h>
 
 
 hash_entry              ConstHashTable[HASH_PRIME];

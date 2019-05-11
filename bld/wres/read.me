@@ -1,5 +1,5 @@
                     WATCOM  .RES  File Manipulation
-		    
+
 
 The files in this project allow mainipulation of the WATCOM  .RES  format files
 and Microsoft .RES format files, both on disk and in memory.
@@ -10,7 +10,7 @@ where ? is the model you are using.
 The layout of a WATCOM .RES file can be found in the file  filefmt.h.
 
 There are three layers to this project. Layer 0 is the low level I/O and memory
-allocation routines. By defualt these will be the Posix I/O routines and
+allocation routines. By defualt these will be the ISO C I/O routines and
 malloc/free. An application may replaces these routines with its own provided
 the routines supplied take the same parameters and return the same values as
 the defaults. Also the routines must perform trasparently as to their functions.

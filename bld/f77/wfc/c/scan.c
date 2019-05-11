@@ -30,6 +30,7 @@
 
 
 #include "ftnstd.h"
+#include <string.h>
 #include "errcod.h"
 #include "extnsw.h"
 #include "stmtsw.h"
@@ -40,9 +41,6 @@
 #include "comio.h"
 #include "scan.h"
 #include "charset.h"
-
-#include <string.h>
-#include <stdlib.h>
 
 
 #define COLUMNS 17

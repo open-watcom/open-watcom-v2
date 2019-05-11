@@ -29,7 +29,7 @@
 ****************************************************************************/
 
 
-#pragma pack(push, 1);
+#pragma pack(__push, 1);
 struct arcinfo {
     struct xycoord      centre;
     struct xycoord      start;
@@ -53,4 +53,4 @@ enum {
     ARC_BOTH_OUT,       // both vectors intersect, plot outside
     ARC_LINE            // vectors coincide, plot single point
 };
-#pragma pack (pop);
+#pragma pack (__pop);

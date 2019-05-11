@@ -94,7 +94,7 @@ static gui_menu_struct helpMenu[] = {
 };
 
 
-gui_menu_struct WndMainMenu[] = {
+static gui_menu_struct WPMainMenu[] = {
     { "&File",      MENU_FILE,      GUI_STYLE_MENU_ENABLED,                             "",                                         WndMenuFields( fileMenu ) },
     { "&Convert",   MENU_CONVERT,   GUI_STYLE_MENU_ENABLED,                             "Convert the data to an output format.",    WndMenuFields( convertMenu ) },
     { "&Windows",   MENU_WINDOWS,   GUI_STYLE_MENU_ENABLED + GUI_STYLE_MENU_MDIWINDOW,  "Select an active window." },
@@ -102,8 +102,7 @@ gui_menu_struct WndMainMenu[] = {
     { "&Help",      MENU_HELP,      GUI_STYLE_MENU_ENABLED,                             "Display Open Watcom Profiler help.",       WndMenuFields( helpMenu ) },
 };
 
-int WndNumMenus = ArraySize( WndMainMenu );
-
+gui_menu_items  WndMainMenu = { ArraySize( WPMainMenu ), WPMainMenu };
 
 bool WndMainMenuProc( a_window wnd, gui_ctl_id id )
 /*************************************************/

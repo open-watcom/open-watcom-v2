@@ -31,6 +31,7 @@
 
 
 #include "ftnstd.h"
+#include <string.h>
 #include "errcod.h"
 #include "cpopt.h"
 #include "progsw.h"
@@ -44,8 +45,6 @@
 #include "rstutils.h"
 #include "errrtns.h"
 #include "errutil.h"
-
-#include <string.h>
 
 
 static  void    ExtIssued( void )

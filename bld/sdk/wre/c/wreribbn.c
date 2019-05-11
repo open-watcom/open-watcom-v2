@@ -39,7 +39,7 @@
 #include "wremsg.h"
 #include "ldstr.h"
 #include "rcstr.gh"
-#include "wre_rc.h"
+#include "wre.rh"
 #include "wreribbn.h"
 
 /****************************************************************************/
@@ -153,7 +153,7 @@ bool WREResizeRibbon( RECT *prect )
     return( true );
 }
 
-void WREShowRibbon( HMENU menu )
+void WREShowRibbon( HMENU hmenu )
 {
     char        *mtext;
 
@@ -171,7 +171,7 @@ void WREShowRibbon( HMENU menu )
         mtext = AllocRCString( WRE_HIDETOOLBAR );
     }
 
-    ModifyMenu( menu, IDM_SHOW_RIBBON, MF_BYCOMMAND | MF_STRING,
+    ModifyMenu( hmenu, IDM_SHOW_RIBBON, MF_BYCOMMAND | MF_STRING,
                 IDM_SHOW_RIBBON, mtext );
 
     if( mtext != NULL ) {

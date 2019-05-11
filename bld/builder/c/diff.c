@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -119,8 +120,11 @@ INT             iflag = false;  /* Ignore case requested  */
 INT             tflag = false;  /* Test for enough memory flag */
 INT             xflag = 0;      /* Test for enough memory flag */
 INT             havediffs = false;
-char            text[1025];      /* Input line from file1  */
-char            textb[1025];     /* Input from file2 for check  */
+
+#define BUFSIZE     1025
+
+char            text[BUFSIZE];  /* Input line from file1  */
+char            textb[BUFSIZE]; /* Input from file2 for check  */
 
 char            *cmdusage =
 "usage:\n"
@@ -143,7 +147,7 @@ static ULONG   search( ULONG, ULONG, SLONG );
 static USHORT  hash( char * );
 static char    *myalloc( ULONG, char * );
 static char    *compact( char *, ULONG, char * );
-static char    *fgetss( char *, SLONG, FILE * );
+static char    *fgetss( char *, int, FILE * );
 static void    cant( char *, char *, SLONG );
 static void    input( SLONG );
 static void    squish( void );
@@ -159,7 +163,7 @@ static void    sort( LINE *vector, SLONG vecsize );
 static void    error( char *format, ... );
 static INT     check( char *fileAname, char *fileBname );
 static void    output( char *fileAname, char *fileBname );
-static INT     getinpline( FILE *fd, char *buffer );
+static INT     getinpline( FILE *fd, char *buffer, int max_len );
 static void    fetch( long *seekvec, SLONG start, SLONG end, SLONG trueend, FILE *fd, char *pfx );
 
 
@@ -301,31 +305,31 @@ INT main( int argc, char **argv )
     /*
      * Build equivalence classes.
      */
-    member = ( short * ) fileB;
+    member = (short *)fileB;
     equiv();
-    member = ( short * ) compact( ( char *) member, ( slenB + 2 ) * sizeof( SLONG ),
+    member = (short *)compact( (char *)member, ( slenB + 2 ) * sizeof( SLONG ),
                                  "squeezing member vector" );
-    fileB = ( LINE * ) member;
+    fileB = (LINE *)member;
 
     /*
      * Reorder equivalence classes into array class[]
      */
-    class = ( short * ) fileA;
+    class = (short *)fileA;
     unsort();
-    class = ( short * ) compact( ( char *) class, ( slenA + 2 ) * sizeof( SLONG ),
+    class = (short *)compact( (char *)class, ( slenA + 2 ) * sizeof( SLONG ),
                                 "compacting class vector" );
-    fileA = ( LINE * ) class;
+    fileA = (LINE *)class;
     /*
      * Find longest subsequences
      */
-    klist = ( SLONG * ) myalloc( ( slenA + 2 ) * sizeof( SLONG ), "klist" );
-    clist = ( CANDIDATE * ) myalloc( csize * sizeof( CANDIDATE ), "clist" );
+    klist = (SLONG *)myalloc( ( slenA + 2 ) * sizeof( SLONG ), "klist" );
+    clist = (CANDIDATE *)myalloc( csize * sizeof( CANDIDATE ), "clist" );
     i = subseq();
     myfree( &member );
     fileB = NULL;
     myfree( &class );
     fileA = NULL;
-    match = ( SLONG * ) myalloc( ( lenA + 2 ) * sizeof( SLONG ), "match" );
+    match = (SLONG *)myalloc( ( lenA + 2 ) * sizeof( SLONG ), "match" );
     unravel( klist[i] );
     myfree( &clist );
     myfree( &klist );
@@ -333,8 +337,8 @@ INT main( int argc, char **argv )
     /*
      * Check for fortuitous matches and output differences
      */
-    oldseek = ( long * ) myalloc( ( lenA + 2 ) * sizeof( *oldseek ), "oldseek" );
-    newseek = ( long * ) myalloc( ( lenB + 2 ) * sizeof( *newseek ), "newseek" );
+    oldseek = (long *)myalloc( ( lenA + 2 ) * sizeof( *oldseek ), "oldseek" );
+    newseek = (long *)myalloc( ( lenB + 2 ) * sizeof( *newseek ), "newseek" );
     if( check( argv[0], argv[1] ) ) {
 #ifdef DEBUG
         fprintf( stderr, "Spurious match, output is not optimal\n" );
@@ -368,12 +372,12 @@ void input( SLONG which )
 #define LSIZE_INC 200           /* # of line entries to alloc at once */
     SLONG               lsize = LSIZE_INC;
 
-    lentry = ( LINE * ) myalloc( sizeof( LINE )* ( lsize + 3 ), "line" );
+    lentry = (LINE *)myalloc( sizeof( LINE ) * ( lsize + 3 ), "line" );
     fd = infd[which];
-    while( !getinpline( fd, text ) ) {
+    while( !getinpline( fd, text, sizeof( text ) ) ) {
         if( ++linect >= lsize ) {
             lsize += 200;
-            lentry = ( LINE * ) compact( ( char *) lentry,
+            lentry = (LINE *)compact( (char *)lentry,
                                          ( lsize + 3 ) * sizeof( LINE ),
                                          "extending line vector" );
         }
@@ -582,7 +586,7 @@ void unsort( void )
     SLONG               i;
 #endif
 
-    temp = ( SLONG * ) myalloc( ( slenA + 1 ) * sizeof( SLONG ), "unsort scratch" );
+    temp = (SLONG *)myalloc( ( slenA + 1 ) * sizeof( SLONG ), "unsort scratch" );
     u.ap = &sfileA[1];
     evec = &sfileA[slenA];
     while( u.ap <= evec ) {
@@ -625,7 +629,7 @@ newcand(    SLONG a,        /* Line in fileA      */
     clength++;
     if( ++clength >= csize ) {
         csize += CSIZE_INC;
-        clist = ( CANDIDATE * ) compact( ( char *) clist,
+        clist = (CANDIDATE *)compact( (char *)clist,
                                          csize * sizeof( CANDIDATE ),
                                          "extending clist" );
     }
@@ -777,8 +781,8 @@ INT check( char *fileAname, char *fileBname )
     SLONG       b;          /* Current line in file B  */
     SLONG       jackpot;
 
-    fileAname= fileAname;
-    fileBname= fileBname;
+    fileAname = fileAname;
+    fileBname = fileBname;
     /*
      * The VAX C ftell() returns the address of the CURRENT record, not the
      * next one (as in DECUS C or, effectively, other C's).  Hence, the values
@@ -807,13 +811,13 @@ INT check( char *fileAname, char *fileBname )
         if( match[a] == 0 ) {
             /* Unique line in A */
             oldseek[a + OFFSET] = ftell( infd[0] );
-            getinpline( infd[0], text );
+            getinpline( infd[0], text, sizeof( text ) );
             continue;
         }
         while( b < match[a] ) {
             /* Skip over unique lines in B */
             newseek[b + OFFSET] = ftell( infd[1] );
-            getinpline( infd[1], textb );
+            getinpline( infd[1], textb, sizeof( textb ) );
             b++;
         }
 
@@ -827,8 +831,8 @@ INT check( char *fileAname, char *fileBname )
         oldseek[a + OFFSET] = ftell( infd[0] );
         newseek[b + OFFSET] = ftell( infd[1] );
         //      }
-        getinpline( infd[0], text );
-        getinpline( infd[1], textb );
+        getinpline( infd[0], text, sizeof( text ) );
+        getinpline( infd[1], textb, sizeof( textb ) );
         if( !streq( text, textb ) ) {
 #ifdef DEBUG
             fprintf( stderr, "Spurious match:\n" );
@@ -844,7 +848,7 @@ INT check( char *fileAname, char *fileBname )
     }
     for( ; b <= lenB; b++ ) {
         newseek[b + OFFSET] = ftell( infd[1] );
-        getinpline( infd[1], textb );
+        getinpline( infd[1], textb, sizeof( textb ) );
     }
     /*
      * The logical converse to the code up above, for NON-VMS systems, to
@@ -1045,7 +1049,7 @@ void fetch( long *seekvec, SLONG start, SLONG end, SLONG trueend, FILE *fd, char
             seekvec[first], ( fd == infd[0] ) ? 'A' : 'B' );
     } else {
         for( i = first; i <= last; i++ ) {
-            if( fgetss( text, sizeof text, fd ) == NULL ) {
+            if( fgetss( text, sizeof( text ), fd ) == NULL ) {
                 fatal( "** Unexpected end of file\n" );
                 break;
             }
@@ -1068,13 +1072,13 @@ void fetch( long *seekvec, SLONG start, SLONG end, SLONG trueend, FILE *fd, char
  * redirected input files.
  */
 
-INT getinpline( FILE *fd, char *buffer )
+INT getinpline( FILE *fd, char *buffer, int max_len )
 {
     char     *top;
     char     *fromp;
     char      c;
 
-    if( fgetss( buffer, sizeof text, fd ) == NULL ) {
+    if( fgetss( buffer, max_len, fd ) == NULL ) {
         *buffer = EOS;
         return( true );
     }
@@ -1156,8 +1160,8 @@ char *myalloc( ULONG amount, char *why )
 
 void myfree( void *what )
 {
-    free( *( char **) what );
-    *( char **) what = NULL;
+    free( *(char **)what );
+    *(char **)what = NULL;
 }
 
 char *compact( char *pointer, ULONG new_amount, char *why )
@@ -1198,7 +1202,7 @@ void noroom( char *why )
         printf( "d1 %ld\n", lenA );
         printf( "a1 %ld\n", lenB );
         fseek( infd[1], 0, 0 );
-        while( fgetss( text, sizeof text, infd[1] ) != NULL )
+        while( fgetss( text, sizeof( text ), infd[1] ) != NULL )
             printf( "%s\n", text );
         exit( xflag + DIFF_HAVE_DIFFS );
     } else {
@@ -1268,8 +1272,8 @@ void dumpklist( SLONG kmax, char *why )
     }
     for( i = 0; i <= kmax; i++ ) {
         count = -1;
-        for( cp = ( CANDIDATE * ) klist[i]; cp > &clist[0];
-             cp = ( CANDIDATE * ) & cp->link ) {
+        for( cp = (CANDIDATE *)klist[i]; cp > &clist[0];
+             cp = (CANDIDATE *)&cp->link ) {
             if( ++count >= 6 ) {
                 printf( "\n    " );
                 count = 0;
@@ -1303,7 +1307,7 @@ INT streq( char *s1, char *s2 )
 void cant( char *filename, char *what, SLONG fatalflag )
 {
     fprintf( stderr, "Can't open %s file \"%s\": ", what, filename );
-    perror( ( char *) NULL );
+    perror( NULL );
     if( fatalflag ) {
         exit( xflag + DIFF_NOT_COMPARED );
     }
@@ -1350,13 +1354,13 @@ void fputss( char *s, FILE *iop )
  * is removed.
  */
 
-char *fgetss( char *s, SLONG n, FILE *iop )
+char *fgetss( char *s, int max_len, FILE *iop )
 {
     char    *cs;
     size_t  len1;
 
-    if( fgets( s, n, iop ) == NULL )
-        return( ( char *) NULL );
+    if( fgets( s, max_len, iop ) == NULL )
+        return( NULL );
     len1 = strlen( s );
     cs = s + len1 - 1;
     if( *cs == '\n' ) {

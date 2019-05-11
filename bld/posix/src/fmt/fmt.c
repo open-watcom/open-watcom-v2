@@ -76,7 +76,7 @@ typedef struct wordlist {
     unsigned            size;           // Structure for some word text.
     unsigned            len;
     struct wordlist    *next;
-    char                buf[ 1 ];
+    char                buf[1];
 } wordlist;
 
 typedef struct word {                   // Structure for a single Word.
@@ -139,7 +139,7 @@ static void justifyParagraph( para *p, range *r, int lines, int err )
         }
         s = div( r[i].left, blanks );               // Divide spaces among the
         for( j = r[i].start; j < upper; j++ ) {     // inter-word blanks.
-            p->words[ j ].spc += s.quot;
+            p->words[j].spc += s.quot;
         }
         if( s.rem != 0 ) {                  // Distribute remaining spaces
             blanks /= s.rem;                // somewhat equally.
@@ -160,18 +160,19 @@ static void justifyParagraph( para *p, range *r, int lines, int err )
 
 static void outputParagraph( para *p, range *r, int lines )
 {
-    int         i, j;
+    int         i;
+    unsigned    j;
 
     fputspc( p->indent );
     for( i = 0; i < lines - 1; i++ ) {
         if( f_mode & FMT_CENTRE ) {
             fputspc( r[i].left / 2 );
         }
-        for( j = r[ i ].start; j < r[ i + 1 ].start - 1; j++ ) {
-            fputs( p->words[ j ].text, stdout );
-            fputspc( p->words[ j ].spc );
+        for( j = r[i].start; j < r[i + 1].start - 1; j++ ) {
+            fputs( p->words[j].text, stdout );
+            fputspc( p->words[j].spc );
         }
-        fputs( p->words[ j ].text, stdout );
+        fputs( p->words[j].text, stdout );
         fputchar( '\n' );
         fputspc( p->offset );
     }
@@ -179,40 +180,42 @@ static void outputParagraph( para *p, range *r, int lines )
         fputspc( r[lines - 1].left / 2 );
     }
     for( j = r[lines - 1].start; j < p->len - 1; j++ ) {
-        fputs( p->words[ j ].text, stdout );
-        fputspc( p->words[ j ].spc );
+        fputs( p->words[j].text, stdout );
+        fputspc( p->words[j].spc );
     }
-    fputs( p->words[ j ].text, stdout );
+    fputs( p->words[j].text, stdout );
     fputchar( '\n' );
 }
 
-static void formatParagraph( para *p, int width, int offset, int err )
+static void formatParagraph( para *p, unsigned width, unsigned offset, int err )
 {
-    range      *r;
-    int         i, j;
+    range       *r;
+    int         i;
+    unsigned    j;
+    unsigned    k;
     long        cost, tempcost;
 
-    unsigned    spcleft = 0;
-    unsigned    comp    = p->len - 1;
-    unsigned    start   = 0;
-    long        inicost = width;
-    long        length  = p->offset;
+    unsigned        spcleft = 0;
+    unsigned        comp    = p->len - 1;
+    unsigned        start   = 0;
+    unsigned long   inicost = width;
+    unsigned long   length  = p->offset;
 
-    r = (range *) malloc( p->len * sizeof( range ) );
+    r = (range *)malloc( p->len * sizeof( range ) );
 
     if( err ) {
         comp++;
     }
-    p->words[ 0 ].len += p->indent - p->offset;
+    p->words[0].len += p->indent - p->offset;
 
     for( j = 0; j < p->len; j++ ) {
         r[j].cost = LONG_MAX;
-        length += p->words[ j ].len;
+        length += p->words[j].len;
         tempcost = inicost - length;
         p->words[j].len += p->words[j].spc;
-        for( i = start; i <= j; i++ ) {
+        for( k = start; k <= j; k++ ) {
             cost = tempcost;
-            tempcost += p->words[i].len;
+            tempcost += p->words[k].len;
             if( cost >= 0 ) {
                 spcleft = cost;                 // spaces left on line
                 if( j < comp ) {
@@ -220,20 +223,20 @@ static void formatParagraph( para *p, int width, int offset, int err )
                 } else {
                     cost = 0;                   // so you can ignore last line
                 }
-                if( i != 0 ) {
-                    cost += r[i-1].cost;
+                if( k != 0 ) {
+                    cost += r[k - 1].cost;
                 }
                 if( cost < r[j].cost ) {
                     r[j].left  = spcleft;
                     r[j].cost  = cost;
-                    r[j].start = i;
+                    r[j].start = k;
                 }
             } else {
-                if( i == j ) {
+                if( k == j ) {
                     r[j].cost = 0;
-                    r[j].start = i;
+                    r[j].start = k;
                 }
-                length -= p->words[ start ].len;
+                length -= p->words[start].len;
                 start++;
             }
         }
@@ -284,11 +287,11 @@ static void freeWordlist( wordlist *list )
 
 static void resetParagraph( para *p )
 {
-    int         i;
+    unsigned    i;
 
     for( i = 0; i < p->len; i++ ) {     // Reset word lengths and
-        p->words[ i ].len = 0;          // space counts
-        p->words[ i ].spc = 0;
+        p->words[i].len = 0;          // space counts
+        p->words[i].spc = 0;
     }
 
     p->offset = 0;
@@ -424,7 +427,7 @@ static int getWord( FILE *fp, wordlist **list, word *w, unsigned *os )
                 break;
             } else {
                 *os += 1;
-                w_buff[ w->len ] = ch;
+                w_buff[w->len] = (char)ch;
                 w->len++;
             }
         }
@@ -442,7 +445,7 @@ static int getWord( FILE *fp, wordlist **list, word *w, unsigned *os )
         }
 
         if( w->len > 0 ) {
-            w_buff[ w->len ] = '\0';
+            w_buff[w->len] = '\0';
         }
         if( ch == EOF ) {
             *os = 0;
@@ -513,7 +516,7 @@ static int getParagraph( FILE *fp, para *p, wordlist **list )
             p->offset = curros;
         }
 
-        retval = getWord( fp, list, &p->words[ p->len ], &lineos );
+        retval = getWord( fp, list, &p->words[p->len], &lineos );
 
         if( retval & OUT_OF_MEM ) {
             return( OUT_OF_MEM );
@@ -525,13 +528,13 @@ static int getParagraph( FILE *fp, para *p, wordlist **list )
     }
 }
 
-static void formatFile( FILE *fp, int width, int offset )
+static void formatFile( FILE *fp, unsigned width, unsigned offset )
 {
     int         ret;
 
     para        p     = { NULL, 0, 0, 0, 0 };
-    int         oldos = 0;
-    int         erros = -1;
+    unsigned    oldos = 0;
+    unsigned    erros = (unsigned)-1;
     wordlist   *list  = NULL;
 
     expandParagraph( &p, DEF_PARA_LEN );
@@ -568,7 +571,7 @@ static void formatFile( FILE *fp, int width, int offset )
         if( ret & END_FILE ) {
             break;
         }
-        erros = -1;
+        erros = (unsigned)-1;
     }
     free( p.words );                    // free the paragraph space
     freeWordlist( list );               // free the text space
@@ -579,9 +582,10 @@ void main( int argc, char **argv )
     FILE       *fp;
     int         ch;
 
-    int         width  = DEF_LINE_LEN;
-    int         offset = 0;
+    unsigned    width  = DEF_LINE_LEN;
+    unsigned    offset = 0;
     int         regexp = 0;
+    int         value;
 
     argv = ExpandEnv( &argc, argv );
 
@@ -601,22 +605,23 @@ void main( int argc, char **argv )
                 f_mode |= FMT_NOSPACE;
                 break;
             case 'l':
-                width = atoi( OptArg );
+                value = atoi( OptArg );
+                if( value <= 0 ) {
+                    Die( "fmt: invalid line length\n" );
+                }
+                width = (unsigned)value;
                 break;
             case 'p':
-                offset = atoi( OptArg );
+                value = atoi( OptArg );
+                if( value < 0 ) {
+                    Die( "fmt: invalid page offset\n" );
+                }
+                offset = (unsigned)value;
                 break;
             case 'X':
                 regexp = 1;
                 break;
         }
-    }
-
-    if( width <= 0 ) {
-        Die( "fmt: invalid line length\n" );
-    }
-    if( offset < 0 ) {
-        Die( "fmt: invalid page offset\n" );
     }
 
     argv = ExpandArgv( &argc, argv, regexp );

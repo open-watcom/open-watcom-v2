@@ -30,16 +30,15 @@
 ****************************************************************************/
 
 #include "ftnstd.h"
+#include <string.h>
+#include <ctype.h>
+#include <stdio.h>
+#include <errno.h>
+#include <float.h>
 #include "intcnv.h"
 #include "fltcnv.h"
 #include "fmtcnvt.h"
 #include "intarith.h"
-#include <string.h>
-#include <ctype.h>
-#include <stdlib.h>
-#include <stdio.h>
-#include <errno.h>
-#include <float.h>
 
 
 static void AddDig( canon_form *canon, char ch )

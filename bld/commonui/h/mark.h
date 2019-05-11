@@ -32,16 +32,10 @@
 #ifndef _MARK_H_INCLUDED
 #define _MARK_H_INCLUDED
 
-#define MARK_LEN        100
+#include "mark.rh"
 
-/* Constants for mark dialog */
-#define MARK_CANCEL                     IDCANCEL
-#define MARK_OK                         IDOK
-#define MARK_EDIT                       103
-#define MARK_TEXT                       104
-#define MARK_PLAIN                      105
-#define MARK_BOXED                      106
-#define MARK_STYLE_GRP                  107
+
+#define MARK_LEN        100
 
 void    ProcessMark( HWND owner, HANDLE instance, void (*fn)( char * ) );
 

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -457,7 +458,7 @@ static void dump_files( char drive_name )
     techoutput( "\n------------%s-------------\n", filename );
     fp = fopen( filename, "r" );
     if( fp != NULL ) {
-        while( fgets( buffer, 256, fp ) != NULL ) {
+        while( fgets( buffer, sizeof( buffer ), fp ) != NULL ) {
             if( strlen( buffer ) > 80 ) LineCount++;
             techoutput( "%s", buffer );
         }
@@ -470,7 +471,7 @@ static void dump_files( char drive_name )
     techoutput( "\n------------%s-------------\n", filename );
     fp = fopen( filename, "r" );
     if( fp != NULL ) {
-        while( fgets( buffer, 256, fp ) != NULL ) {
+        while( fgets( buffer, sizeof( buffer ), fp ) != NULL ) {
             if( strlen( buffer ) > 80 ) LineCount++;
             techoutput( "%s", buffer );
         }

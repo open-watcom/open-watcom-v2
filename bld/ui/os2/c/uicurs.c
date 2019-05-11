@@ -34,19 +34,20 @@
 #include "uidef.h"
 #include "uiattrs.h"
 #include "doscall.h"
+#include "uicurshk.h"
 
 
 #define _swap(a,b)      {int i; i=a; a=b; b=i;}
 
 static CATTR            OldCursorAttr;
-static unsigned         OldCursorRow;
-static unsigned         OldCursorCol;
+static CURSORORD        OldCursorRow;
+static CURSORORD        OldCursorCol;
 static CURSOR_TYPE      OldCursorType;
 static USHORT           length;
-static USHORT           r;
-static USHORT           c;
+static USHORT           row;
+static USHORT           col;
 
-void UIAPI uioffcursor( void )
+void UIHOOK uioffcursor( void )
 /*****************************/
 {
     VIOCURSORINFO vioCursor;
@@ -63,7 +64,7 @@ void UIAPI uioffcursor( void )
 
 
 
-void UIAPI uioncursor( void )
+void UIHOOK uioncursor( void )
 /****************************/
 {
     CHAR                CharCellPair[2];
@@ -86,7 +87,7 @@ void UIAPI uioncursor( void )
 
     if( UIData->cursor_attr != CATTR_VOFF ) {
         /* get current character and attribute */
-        VioGetCurPos( &r, &c, 0 );
+        VioGetCurPos( &row, &col, 0 );
         length = sizeof( CharCellPair );
         VioReadCellStr( &CharCellPair[0], &length, UIData->cursor_row, UIData->cursor_col, 0 );
 
@@ -107,9 +108,9 @@ static void savecursor( void )
 
     /* read cursor position */
     VioGetCurType( &vioCursor, 0 );
-    VioGetCurPos( &r, &c, 0 );
-    OldCursorRow = r;
-    OldCursorCol = c;
+    VioGetCurPos( &row, &col, 0 );
+    OldCursorRow = row;
+    OldCursorCol = col;
     if( vioCursor.cEnd - vioCursor.yStart > 5 ) {
         OldCursorType = C_INSERT;
     } else {
@@ -121,12 +122,12 @@ static void savecursor( void )
     }
     /* read character and attribute */
     length = sizeof( CharCellPair );
-    VioReadCellStr( &CharCellPair[0], &length, r, c, 0 );
+    VioReadCellStr( &CharCellPair[0], &length, row, col, 0 );
     OldCursorAttr = CharCellPair[1];
 }
 
 
-static void newcursor( void )
+void intern newcursor( void )
 /***************************/
 {
     if( UIData->cursor_type == C_OFF ) {
@@ -148,8 +149,8 @@ static void swapcursor( void )
 }
 
 
-void UIAPI uigetcursor( ORD *row, ORD *col, CURSOR_TYPE *type, CATTR *attr )
-/**************************************************************************/
+void UIHOOK uigetcursor( CURSORORD *crow, CURSORORD *ccol, CURSOR_TYPE *ctype, CATTR *cattr )
+/*******************************************************************************************/
 {
 
     USHORT              length;
@@ -158,43 +159,43 @@ void UIAPI uigetcursor( ORD *row, ORD *col, CURSOR_TYPE *type, CATTR *attr )
 
     /* read cursor position */
     VioGetCurType( &vioCursor,0 );
-    VioGetCurPos( &r, &c, 0 );
-    *row = r;
-    *col = c;
+    VioGetCurPos( &row, &col, 0 );
+    *crow = row;
+    *ccol = col;
     if( vioCursor.cEnd - vioCursor.yStart > 5 ) {
-        *type = C_INSERT;
+        *ctype = C_INSERT;
     } else {
-        *type = C_NORMAL;
+        *ctype = C_NORMAL;
     }
     if( !UIData->cursor_on ) {
-        *type = C_OFF;
+        *ctype = C_OFF;
     }
     /* read character and attribute */
     length = sizeof( CharCellPair );
-    VioReadCellStr( &CharCellPair[0], &length, r, c, 0 );
-    *attr = CharCellPair[1];
+    VioReadCellStr( &CharCellPair[0], &length, row, col, 0 );
+    *cattr = CharCellPair[1];
 }
 
 
-void UIAPI uisetcursor( ORD row, ORD col, CURSOR_TYPE typ, CATTR attr )
-/*********************************************************************/
+void UIHOOK uisetcursor( CURSORORD crow, CURSORORD ccol, CURSOR_TYPE ctype, CATTR cattr )
+/***************************************************************************************/
 {
-    if( ( typ != UIData->cursor_type ) ||
-        ( row != UIData->cursor_row ) ||
-        ( col != UIData->cursor_col ) ||
-        ( attr != UIData->cursor_attr ) ) {
-        UIData->cursor_type = typ;
-        UIData->cursor_row = row;
-        UIData->cursor_col = col;
-        if( attr != CATTR_OFF ) {
-            UIData->cursor_attr = attr;
+    if( ( ctype != UIData->cursor_type ) ||
+        ( crow != UIData->cursor_row ) ||
+        ( ccol != UIData->cursor_col ) ||
+        ( cattr != UIData->cursor_attr ) ) {
+        UIData->cursor_type = ctype;
+        UIData->cursor_row = crow;
+        UIData->cursor_col = ccol;
+        if( cattr != CATTR_OFF ) {
+            UIData->cursor_attr = cattr;
         }
         newcursor();
     }
 }
 
 
-void UIAPI uiswapcursor( void )
+void UIHOOK uiswapcursor( void )
 /******************************/
 {
     swapcursor();
@@ -202,7 +203,7 @@ void UIAPI uiswapcursor( void )
 }
 
 
-void UIAPI uiinitcursor( void )
+void UIHOOK uiinitcursor( void )
 /******************************/
 {
     savecursor();
@@ -211,7 +212,7 @@ void UIAPI uiinitcursor( void )
 }
 
 
-void UIAPI uifinicursor( void )
+void UIHOOK uifinicursor( void )
 /******************************/
 {
     uioncursor();

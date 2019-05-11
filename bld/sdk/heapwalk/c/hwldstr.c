@@ -44,7 +44,7 @@ static DWORD    BytesLeft;
 
 static BOOL AllocNewBuf( void )
 {
-    MemBlocks = MemReAlloc( MemBlocks, ( MemBlocksCnt + 1 ) * sizeof( void * ) );
+    MemBlocks = MemRealloc( MemBlocks, ( MemBlocksCnt + 1 ) * sizeof( void * ) );
     if( MemBlocks == NULL )
         return( FALSE );
     MemBlocks[ MemBlocksCnt ] = MemAlloc( MEM_BLOCK_SIZE );

@@ -466,7 +466,7 @@
             { return( static_cast< size_t >( value ) ); }
     };
 
-:segment DOS | QNX
+:segment BITS16
 #ifdef _M_I86
 
     template< >
@@ -556,7 +556,7 @@
         }
     };
 
-:segment DOS | QNX
+:segment BITS16
 #endif
 :endsegment
 

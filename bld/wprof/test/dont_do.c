@@ -67,7 +67,7 @@ _MARK_( "start of blinking ..." );
 _MARK_( "... end of blinking" );
 }
 
-void up_and_up_has_an_extremely_long_and_verbose_function_name( unsigned num )
+static void up_and_up_has_an_extremely_long_and_verbose_function_name( unsigned num )
 {
         while( --num )
         {

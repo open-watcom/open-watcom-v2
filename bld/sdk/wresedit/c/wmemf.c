@@ -63,7 +63,7 @@ bool WChangeMemFlags( HWND parent, uint_16 *mflags, WResID *res_name,
     bool            ok;
     HELP_CALLBACK   hcb;
 
-    _wtouch( inst );
+    /* unused parameters */ (void)inst;
 
     name = NULL;
     hcb = NULL;

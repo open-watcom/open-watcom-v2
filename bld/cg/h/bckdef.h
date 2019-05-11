@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,7 +34,6 @@
 /* aligned */
 typedef int             import_handle;
 typedef pointer         abspatch_handle;
-#define BACKSEGS        (segment_id)32767
 
 #define ADDR_UNKNOWN    ((offset)(-1))
 #define NOT_IMPORTED    0
@@ -42,13 +42,13 @@ typedef struct bck_info {
         import_handle   imp;
         import_handle   imp_alt;
         label_handle    lbl;
-        segment_id      seg;
+        segment_id      segid;
 } bck_info;
 
 typedef struct segdef {
         struct segdef   *next;
         char            *str;
-        segment_id      id;
+        segment_id      segid;
         byte            align;
         seg_attr        attr;
 } segdef;

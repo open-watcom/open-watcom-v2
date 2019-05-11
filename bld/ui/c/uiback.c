@@ -55,7 +55,7 @@ static void backfill( SAREA area, void *dummy )
     /* unused parameters */ (void)dummy;
 
     for( row = area.row; row < area.row + area.height; ++row ) {
-        uibcopy( &UIData->blank.type.buffer, row, area.col,
+        uibcopy( &UIData->blank.buffer, row, area.col,
                &UIData->screen, row, area.col, area.width );
     }
 }
@@ -99,16 +99,16 @@ BUFFER * UIAPI uibackgroundbuffer( void )
 {
     bool    ok;
 
-    if( UIData->blank.type.buffer.origin != NULL ) {
+    if( UIData->blank.buffer.origin != NULL ) {
         ok = true;
     } else {
-        ok = balloc( &UIData->blank.type.buffer, UIData->height, UIData->width );
+        ok = balloc( &UIData->blank.buffer, UIData->height, UIData->width );
     }
     if( ok ) {
         UIData->blank.update_proc = backfill;
         UIData->blank.parm = (void *)0xbb;// NULL is reserved for CGUI screens!
         //UIData->blank.parm = NULL;       // ... just put in any old value
-        return( &UIData->blank.type.buffer );
+        return( &UIData->blank.buffer );
     }
     return( NULL );
 }
@@ -116,9 +116,9 @@ BUFFER * UIAPI uibackgroundbuffer( void )
 bool UIAPI uiremovebackground( void )
 /***********************************/
 {
-    if( UIData->blank.type.buffer.origin != NULL ) {
-        bfree( &UIData->blank.type.buffer );
-        UIData->blank.type.buffer.origin = NULL;
+    if( UIData->blank.buffer.origin != NULL ) {
+        bfree( &UIData->blank.buffer );
+        UIData->blank.buffer.origin = NULL;
     }
     UIData->blank.update_proc = backblank;
     UIData->blank.parm = &UIData->attrs[ATTR_NORMAL];

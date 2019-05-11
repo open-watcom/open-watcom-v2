@@ -252,7 +252,7 @@ char **GetModuleList( DWORD pid, DWORD *cnt ) {
     for( *cnt = 0; noerror && !memerr; *cnt += 1 ) {
         if( *cnt == allocsize ) {
             allocsize += RE_ALLOCSIZE;
-            ret = MemReAlloc( ret, allocsize * sizeof( char * ) );
+            ret = MemRealloc( ret, allocsize * sizeof( char * ) );
             if( ret == NULL ) {
                 memerr = FALSE;
                 break;

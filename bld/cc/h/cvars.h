@@ -72,6 +72,8 @@ typedef char        *SEGADDR_T; /* contains actual pointer to block of memory */
 #include "cmsg.h"
 #include "pragdefn.h"
 
+#define CArraySize(x)   (sizeof( x ) / sizeof( *x ))
+
 global char         *PCH_Start;         // start of precompiled memory block
 global char         *PCH_End;           // end of precompiled memory block
 global char         *PCH_Macros;        // macros loaded from pre-compiled header
@@ -175,7 +177,7 @@ global FIELDPTR     ErrSym;
 
 #if _CPU == 386
 global BACK_HANDLE  FunctionProfileBlock;   /* handle for profiling data block */
-global segment_id   FunctionProfileSegment; /* segment for profiling data block */
+global segment_id   FunctionProfileSegId;   /* segment for profiling data block */
 #endif
 
 global int          MacroDepth;
@@ -215,7 +217,7 @@ global ppctl_t      Pre_processing;
 global comp_flags   CompFlags;
 global global_comp_flags GlobalCompFlags;
 global segment_id   SegmentNum;         /* next PRIVATE segment number to use */
-global segment_id   FarStringSegment;
+global segment_id   FarStringSegId;
 
 global jmp_buf      *Environment;       /* var for Suicide() */
 
@@ -228,8 +230,6 @@ global token_class  Class[MAX_LEVEL];
 global expr_level_type ExprLevel;
 
 global segment_list *SegListHead;
-global segment_id   SegImport;          /* next segment # for import sym */
-global segment_id   SegData;            /* data segment # for -nd option */
 
 global TREEPTR      FirstStmt;          /* root of expression tree */
 
@@ -260,9 +260,7 @@ global struct macro_seg_list {
     MACADDR_T             macro_seg;
 } *MacSegList;                          /* pointer to list of macro segments */
 
-global MACADDR_T    MacroSegment;       /* segment for macro definitions */
 global MACADDR_T    MacroOffset;        /* first free byte in MacroSegment */
-global MACADDR_T    MacroLimit;         /* last  free byte in MacroSegment */
 
 global int          SwitchChar;         /* DOS switch character */
 global int          LoopDepth;          /* current nesting of loop constructs */
@@ -379,7 +377,7 @@ global segment_id   DefDataSegment;     /* #pragma data_seg("segname","class") *
 global textsegment  *DefCodeSegment;    /* #pragma code_seg("seg","c") */
 
 global unroll_type  UnrollCount;        /* #pragma unroll(#); */
-global macro_flags  InitialMacroFlag;
+global macro_flags  InitialMacroFlags;
 global unsigned char Stack87;
 global char         *ErrorFileName;
 
@@ -479,10 +477,6 @@ extern parm_list    *NewParm( TYPEPTR, parm_list * );
 extern TYPEPTR      *MakeParmList( parm_list *, bool );
 extern FIELDPTR     FieldCreate( const char *name );
 extern bool         LoopDecl( SYM_HANDLE *sym_head );
-
-/* cinfo.c */
-extern segment_id   SymSegId( SYMPTR sym );
-extern void         SetSegSymHandle( SYM_HANDLE sym_handle, segment_id segid );
 
 /* cdinit */
 extern void         InitDataQuads(void);
@@ -613,6 +607,10 @@ extern hw_reg_set   *SegPeggedReg(segment_id);
 extern void         SetSegment(SYMPTR);
 extern void         SetSegAlign(SYMPTR);
 extern void         AssignSeg(SYMPTR);
+extern segment_id   SymSegId( SYMPTR sym );
+extern void         SetSegSymHandle( SYM_HANDLE sym_handle, segment_id segid );
+extern void         ImportNearSegIdInit( void );
+extern void         ImportSegIdInit( void );
 
 /* cintmain.c */
 extern void         ConsErrMsg( cmsg_info  *info );
@@ -634,25 +632,27 @@ extern void         MacroPurge(void);
 extern void         GetMacroToken(void);
 extern TOKEN        SpecialMacro( MEPTR );
 extern void         DoMacroExpansion( MEPTR );
+extern void         InsertReScanPragmaTokens( char *pragma );
+extern void         InsertToken( TOKEN token, const char *str );
 
 /* cmac2.c */
 extern TOKEN        ChkControl(void);
 extern bool         MacroDel( const char *name );
 extern void         CppStackInit( void );
 extern void         CppStackFini(void);
+extern MEPTR        MacroScan( void );
+extern TOKEN        Process_Pragma( void );
 
 /* cmacadd.c */
-extern void         AllocMacroSegment(size_t);
+extern void         *PermMemAlloc( size_t amount );
 extern void         FreeMacroSegments(void);
+extern void         *MacroAllocateInSeg( size_t size );
 extern MEPTR        CreateMEntry(const char *, size_t len);
-extern void         FreeMEntry( MEPTR mentry );
-extern void         MacLkAdd( MEPTR mentry, size_t len, macro_flags flags );
-extern void         MacroAdd( MEPTR mentry, const char *buf, size_t len, macro_flags flags );
+extern MEPTR        MacroDefine( size_t len, macro_flags mflags );
 extern int          MacroCompare(MEPTR,MEPTR);
 extern void         MacroCopy(const void *,MACADDR_T,size_t);
 extern MEPTR        MacroLookup(const char *);
-extern void         MacroOverflow(size_t,size_t);
-extern SYM_HASHPTR  SymHashAlloc(size_t);
+extern void         MacroReallocOverflow(size_t,size_t);
 
 /* cmath.c */
 extern TREEPTR      AddOp(TREEPTR,TOKEN,TREEPTR);
@@ -715,7 +715,8 @@ extern void         PragmaAuxInit(void);
 extern void         PragInit(void);
 extern void         PragEnding(void);
 extern void         PragObjNameInfo(char **);
-extern bool         PragRecog(const char *);
+extern bool         PragRecogId(const char *);
+extern bool         PragRecogName(const char *);
 extern hw_reg_set   PragRegList(void);
 extern int          PragRegIndex(const char *,const char *,size_t,bool);
 extern int          PragRegNumIndex( const char *name, int max_reg );
@@ -734,7 +735,7 @@ extern void         SetPackAmount( unsigned amount );
 extern bool         GetPragAuxAliasInfo( void );
 extern aux_info     *SearchPragAuxAlias( const char *name );
 extern bool         GetPragAuxAlias( void );
-extern const char   *SkipUnderscorePrefix( const char *str, size_t *len );
+extern const char   *SkipUnderscorePrefix( const char *str, size_t *len, bool iso_compliant_names );
 
 /* cprag??? */
 extern void         AsmStmt(void);
@@ -757,7 +758,7 @@ extern void         SkipAhead( void );
 extern TOKEN        ScanToken( void );
 extern void         ReScanInit( const char * );
 extern bool         ReScanToken( void );
-extern char         *ReScanPos( void );
+extern const char   *ReScanPos( void );
 extern TOKEN        KwLookup( const char *, size_t );
 extern TOKEN        NextToken( void );
 extern TOKEN        PPNextToken( void );

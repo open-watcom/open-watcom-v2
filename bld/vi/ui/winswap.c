@@ -34,6 +34,7 @@
 #include <fcntl.h>
 #include "posix.h"
 #include "win.h"
+#include "tempio.h"
 
 #include "clibext.h"
 

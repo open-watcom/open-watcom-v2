@@ -24,7 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  Implementation of inet_lnaof() for RDOS.
+* Description:  Implementation of inet_lnaof() for RDOS and Linux.
 *
 ****************************************************************************/
 

@@ -34,17 +34,16 @@
 #define __DBGMEM_INCLUDED
 
 #include "walloca.h"
-#if defined( __CHAR__ ) && !defined( __NOUI__ ) && defined( __DOS__ ) && defined( _M_I86 )
-#include "stdui.h"
-#endif
 
 extern void     *DbgRealloc( void *, size_t );
 extern void     *ChkAlloc( size_t, char * );
 extern void     *DbgAlloc( size_t );
 extern void     *DbgMustAlloc( size_t );
 extern void     DbgFree( void * );
+#ifdef __NOUI__
 extern void     MemInit( void );
 extern void     MemFini( void );
+#endif
 
 #define _ChkAlloc( res, size, type )    res = ChkAlloc( size, type )
 #define _Realloc( res, size )           res = DbgRealloc( res, size )
@@ -53,9 +52,5 @@ extern void     MemFini( void );
 #define _Free( ptr )                    DbgFree( ptr )
 
 extern void SysSetMemLimit( void );
-#if defined( __CHAR__ ) && !defined( __NOUI__ ) && defined( __DOS__ ) && defined( _M_I86 )
-extern LP_VOID  ExtraAlloc( size_t size );
-extern void     ExtraFree( LP_VOID ptr );
-#endif
 
 #endif

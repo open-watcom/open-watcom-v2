@@ -31,7 +31,23 @@
 
 #include "uidef.h"
 
-#if defined( __NETWARE_386__ ) || defined( __UNIX__ ) || !defined( __WATCOMC__ )
+#if defined( UIDBCS ) && !defined( _WIN64 )
+
+#include <mbctype.h>
+
+int UIAPI uicharlen( int ch )
+/***************************/
+{
+    return( _ismbblead( ch ) ? 2 : 1 );
+}
+
+bool UIAPI uiisdbcs( void )
+/*************************/
+{
+    return( __IsDBCS != 0 );
+}
+
+#else
 
 int UIAPI uicharlen( int ch )
 /***************************/
@@ -45,22 +61,6 @@ bool UIAPI uiisdbcs( void )
 /*************************/
 {
     return( false );
-}
-
-#else
-
-#include <mbctype.h>
-
-int UIAPI uicharlen( int ch )
-/***************************/
-{
-    return( _mbislead( ch ) ? 2 : 1 );
-}
-
-bool UIAPI uiisdbcs( void )
-/*************************/
-{
-    return( __IsDBCS != 0 );
 }
 
 #endif

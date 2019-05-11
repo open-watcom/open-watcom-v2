@@ -63,8 +63,6 @@
 #define SKIP_SYMBOL(s)  while( isalpha( *s ) ) s++
 #define SKIP_TOEND(s)   while( *s != '\0' ) s++
 
-typedef unsigned int U_INT;
-
 extern int      FileSysNeedsCR( int handle );
 
 #endif

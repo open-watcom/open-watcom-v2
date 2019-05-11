@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -42,6 +43,7 @@ CGAPIDEF( BEMemAlloc,   pointer,        (uint) )
 CGAPIDEF( BEMemFree,    void,           (pointer) )
 CGAPIDEF( BEMemFini,    void,           (void) )
 CGAPIDEF( BEMoreMem,    bool,           (void) )
+CGAPIDEF( BEGetSeg,     segment_id,     (void) )
 CGAPIDEF( BESetSeg,     segment_id,     (segment_id) )
 CGAPIDEF( BEFlushSeg,   void,           (segment_id) )
 CGAPIDEF( BEDefSeg,     void,           (segment_id,seg_attr,cchar_ptr,uint) )

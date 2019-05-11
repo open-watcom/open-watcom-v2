@@ -181,7 +181,7 @@ static void setFinalTargetSystem( OPT_STORAGE *data, char *target_name )
     char buff[128];
 
     TargetSystem = TS_OTHER;
-    if( CompFlags.oldmacros_enabled ) {
+    if( CompFlags.non_iso_compliant_names_enabled ) {
 #if _CPU == 8086
         PreDefineStringMacro( "M_I86" );
 #else
@@ -237,7 +237,7 @@ static void setFinalTargetSystem( OPT_STORAGE *data, char *target_name )
     }
     if( 0 == strcmp( target_name, "DOS" ) ) {
         TargetSystem = TS_DOS;
-        if( CompFlags.oldmacros_enabled ) {
+        if( CompFlags.non_iso_compliant_names_enabled ) {
             PreDefineStringMacro( "MSDOS" );
         }
         PreDefineStringMacro( "__DOS__" );
@@ -330,7 +330,7 @@ static void setMemoryModel( OPT_STORAGE *data, mem_model_control control )
     }
 #endif
     bit = 0;
-    if( CompFlags.oldmacros_enabled ) {
+    if( CompFlags.non_iso_compliant_names_enabled ) {
         switch( data->mem_model ) {
         case OPT_mem_model_ms:
             PreDefineStringMacro( "M_" MM_ARCH "SM" );
@@ -922,7 +922,7 @@ static void macroDefs( void )
 #if _CPU == 386
     PreDefineStringMacro( "_STDCALL_SUPPORTED" );
 #endif
-    if( CompFlags.oldmacros_enabled ) {
+    if( CompFlags.non_iso_compliant_names_enabled ) {
 #if _CPU == 8086
         if( TargetSwitches & WINDOWS ) {
             PreDefineStringMacro( "SOMLINK=__cdecl" );

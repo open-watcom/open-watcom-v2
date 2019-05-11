@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -1333,7 +1334,7 @@ static void releaseProfilingData(
 
 static FN_CTL* emit_virtual_file(   // EMIT A VIRTUAL FILE
     CGFILE *file_ctl,               // - current file
-    call_handle handle )            // - handle for call when gen'ing inline fun.
+    call_handle call )              // - handle for call when gen'ing inline fun.
 {
     register CGVALUE ins_value;     // - value on intermediate-code instruction
     FN_CTL          *fctl;          // - file control pointer
@@ -1347,7 +1348,7 @@ static FN_CTL* emit_virtual_file(   // EMIT A VIRTUAL FILE
     cg_type         indexing_type;  // - type of array being indexed
     unsigned        ptr_offset;     // - offset set by IC_DATA_PTR_OFFSET
     unsigned        data_size;      // - size set by IC_DATA_SIZE
-    segment_id      curr_seg;       // - current segment
+    segment_id      curr_segid;     // - current segment
     cg_op           cg_opcode;      // - opcode for code generator
     SRCFILE         current_src;    // - current source file
     SYMBOL          vf_exact_ind;   // - exact function for indirect virt. call
@@ -1393,13 +1394,13 @@ static FN_CTL* emit_virtual_file(   // EMIT A VIRTUAL FILE
     SE *catch_se;                   // - catch SE                               IC_CATCH, IC_SET_CATCH_STATE
 
     CgioOpenInput( file_ctl );
-    fctl = FnCtlPush( handle, file_ctl );
+    fctl = FnCtlPush( call, file_ctl );
     vf_exact_ind = NULL;
     ic_sp = 0;
     dtor_kind = 0;
     dtor_last_reqd = NULL;
 
-    curr_seg = UNDEFSEG;
+    curr_segid = (segment_id)-1;
     lbl = NULL;
     exprn_type = TY_UNKNOWN;
     lvalue_type = TY_UNKNOWN;
@@ -1437,8 +1438,8 @@ static FN_CTL* emit_virtual_file(   // EMIT A VIRTUAL FILE
 //          CONTROL OPCODES
 //
         case IC_DEF_SEG :                   // SET THE CURRENT SEGMENT
-            curr_seg = (segment_id)ins_value.uvalue;
-            BESetSeg( curr_seg );
+            curr_segid = (segment_id)ins_value.uvalue;
+            BESetSeg( curr_segid );
             break;
 //
 //          LABELS
@@ -1778,9 +1779,9 @@ static FN_CTL* emit_virtual_file(   // EMIT A VIRTUAL FILE
           { cg_name ref;                    // - reference operand
             cg_type far_type;               // - type of pointer
             TYPE type;                      // - type of ref. variable
-            fe_seg_id seg_id;               // - PC Segment ID
-            seg_id = ((SYMBOL)ins_value.pvalue)->segid;
-            SegmentLabelGen( seg_id );
+            fe_seg_id segid;               // - PC Segment ID
+            segid = ((SYMBOL)ins_value.pvalue)->segid;
+            SegmentLabelGen( segid );
             type = ((SYMBOL)ins_value.pvalue)->sym_type;
             if( FunctionDeclarationType( type ) == NULL ) {
                 far_type = TY_LONG_POINTER;
@@ -1898,16 +1899,16 @@ static FN_CTL* emit_virtual_file(   // EMIT A VIRTUAL FILE
             }
           } break;
         case IC_CALL_EXEC :                 // EXECUTE FUNCTION CALL
-          { call_handle handle1;            // - handle for call
+          { call_handle call1;              // - handle for call
             cg_type retn_type;              // - return type
 //            CALL_STAB* call_entry;          // - entry for call
             retn_type = CallStackRetnType();
-            handle1 = CallStackPop();
-//            call_entry = CgBackCallGened( handle1 );
-            CgBackCallGened( handle1 );
+            call1 = CallStackPop();
+//            call_entry = CgBackCallGened( call1 );
+            CgBackCallGened( call1 );
             dtor_last_reqd = NULL;
             dtor_kind = 0;
-            CgExprPush( CgFetchType( CGCall( handle1 ), retn_type ), exprn_type );
+            CgExprPush( CgFetchType( CGCall( call1 ), retn_type ), exprn_type );
           } break;
         case IC_CALL_SETUP_IND :            // SETUP INDIRECT FUNCTION CALL
           { SYMBOL feedback;                // - feedback entry
@@ -1927,13 +1928,13 @@ static FN_CTL* emit_virtual_file(   // EMIT A VIRTUAL FILE
                          , exprn_type );
           } break;
         case IC_CALL_EXEC_IND :             // EXECUTE INDIRECT FUNCTION CALL
-          { call_handle handle1;            // - handle for call
+          { call_handle call1;              // - handle for call
             cg_type retn_type;              // - return type
             retn_type = CallStackRetnType();
-            handle1 = CallStackPop();
-            CgExprPush( CgFetchType( CGCall( handle1 ), retn_type ), exprn_type );
+            call1 = CallStackPop();
+            CgExprPush( CgFetchType( CGCall( call1 ), retn_type ), exprn_type );
             CallIndirectPop();
-            CgCdArgRemove( handle1 );
+            CgCdArgRemove( call1 );
           } break;
         case IC_CALL_PARM_FLT:              // SET float_used ...
             CompFlags.float_used = true;
@@ -1989,43 +1990,43 @@ static FN_CTL* emit_virtual_file(   // EMIT A VIRTUAL FILE
           } break;
         case IC_DATA_LABEL :                // PLANT A DATA LABEL
           { SYMBOL sym;
-            segment_id sym_seg;
+            segment_id sym_segid;
             sym = ins_value.pvalue;
-            sym_seg = FESegID( sym );
-            if( sym_seg > 0 ) {
-                curr_seg = sym_seg;
-                BESetSeg( curr_seg );
-                DgAlignSegment( curr_seg, SegmentAlignment( sym->sym_type ) );
+            sym_segid = FESegID( sym );
+            if( sym_segid > 0 ) {
+                curr_segid = sym_segid;
+                BESetSeg( curr_segid );
+                DgAlignSegment( curr_segid, SegmentAlignment( sym->sym_type ) );
                 CgBackGenLabel( sym );
-                if( curr_seg == SEG_BSS ) {
+                if( curr_segid == SEG_BSS ) {
                     DgUninitBytes( CgMemorySize( sym->sym_type ) );
                 }
             }
           } break;
         case IC_DATA_SEG :                  // INCREMENT THE CURRENT SEGMENT
-            if( curr_seg != SEG_BSS ) {
-                BESetSeg( ++curr_seg );     // new segment
+            if( curr_segid != SEG_BSS ) {
+                BESetSeg( ++curr_segid );     // new segment
             }
             break;
         case IC_DATA_PTR_OFFSET :           // SET OFFSET OF POINTER
             ptr_offset = ins_value.uvalue;
             break;
         case IC_DATA_PTR_SYM :              // GENERATE POINTER FOR SYMBOL
-            if( curr_seg != SEG_BSS ) {
+            if( curr_segid != SEG_BSS ) {
                 DGFEPtr( (cg_sym_handle)ins_value.pvalue, exprn_type, ptr_offset );
             }
             break;
         case IC_DATA_PTR_STR :              // DATA: STRING CONSTANT
-            if( curr_seg != SEG_BSS ) {
+            if( curr_segid != SEG_BSS ) {
                 back_handle handle1;        // - back handle for literal
                 uint_16 str_seg;            // - string segment
                 handle1 = DgStringConst( ins_value.pvalue, &str_seg, DSC_CONST );
-                BESetSeg( curr_seg );
+                BESetSeg( curr_segid );
                 DGBackPtr( handle1, str_seg, ptr_offset, exprn_type );
             }
             break;
         case IC_DATA_INT :                  // GENERATE INTEGER (1-32 BITS)
-            if( curr_seg != SEG_BSS ) {
+            if( curr_segid != SEG_BSS ) {
                 DGInteger( ins_value.uvalue, exprn_type );
             } else {
                 DbgVerify( ins_value.uvalue == 0
@@ -2036,7 +2037,7 @@ static FN_CTL* emit_virtual_file(   // EMIT A VIRTUAL FILE
           { POOL_CON *con;                  // - constant in pool
             con = ins_value.pvalue;
             DbgVerify( con->i64, "NON INT-64 CONSTANT" );
-            if( curr_seg != SEG_BSS ) {
+            if( curr_segid != SEG_BSS ) {
                 DGInteger64( con->u.int64_constant, exprn_type );
             } else {
                 DbgVerify( Zero64( &con->u.int64_constant ), "CGBACK - IC_DATA_INT64 non-zero in SEG_BSS" );
@@ -2046,7 +2047,7 @@ static FN_CTL* emit_virtual_file(   // EMIT A VIRTUAL FILE
           { POOL_CON *con;                  // - constant in pool
             con = ins_value.pvalue;
             DbgVerify( con->flt, "NON FLOAT CONSTANT" );
-            if( curr_seg != SEG_BSS ) {
+            if( curr_segid != SEG_BSS ) {
                 DGFloat( con->u.s.fp_constant, exprn_type );
             }
           } break;
@@ -2054,12 +2055,12 @@ static FN_CTL* emit_virtual_file(   // EMIT A VIRTUAL FILE
             data_size = ins_value.uvalue;
             break;
         case IC_DATA_TEXT :                 // GENERATE TRANSLATABLE TEXT
-            if( curr_seg != SEG_BSS ) {
+            if( curr_segid != SEG_BSS ) {
                 DgStringConst( ins_value.pvalue, NULL, DSC_NULL );
             }
             break;
         case IC_DATA_REPLICATE :            // REPLICATE BYTES
-            if( curr_seg != SEG_BSS ) {
+            if( curr_segid != SEG_BSS ) {
                 DgInitBytes( data_size, ins_value.uvalue );
             } else {
                 DbgVerify( ins_value.uvalue == 0
@@ -2067,7 +2068,7 @@ static FN_CTL* emit_virtual_file(   // EMIT A VIRTUAL FILE
             }
             break;
         case IC_DATA_UNDEF :                // GENERATE UNDEFINED BYTES
-            if( curr_seg != SEG_BSS ) {
+            if( curr_segid != SEG_BSS ) {
                 DgInitBytes( ins_value.uvalue, 0 );
             }
             break;
@@ -2537,15 +2538,15 @@ static FN_CTL* emit_virtual_file(   // EMIT A VIRTUAL FILE
 //          Virtual Function reference with inlined args
 //
         case IC_CALL_EXEC_VFUN :            // EXECUTE VIRTUAL FUNCTION CALL
-          { call_handle handle1;            // - handle for call
+          { call_handle call1;              // - handle for call
             target_offset_t retn_adj;       // - return adjustment
             cg_name expr;                   // - expression under construction
             cg_type retn_type;              // - return type
             retn_type = CallStackRetnType();
             retn_adj = CallStackRetnAdj();
-            handle1 = CallStackPop();
-            CgBackCallGened( handle1 );
-            expr = CgFetchType( CGCall( handle1 ), retn_type );
+            call1 = CallStackPop();
+            CgBackCallGened( call1 );
+            expr = CgFetchType( CGCall( call1 ), retn_type );
             if( retn_adj != 0 ) {
                 expr = CgOffsetExpr( expr, retn_adj, exprn_type );
             }
@@ -3206,7 +3207,7 @@ void CgBackEnd(                 // BACK-END CONTROLLER
 
 void FEGenProc(                 // INLINE SUPPORT
     cg_sym_handle _sym,         // - function to be in-lined
-    call_handle handle )        // - handle of called function
+    call_handle call )          // - handle of called function
 {
     CGFILE *file_ctl;           // - file control info
 //    FN_CTL* fctl;               // - file-gen info. for caller
@@ -3223,7 +3224,7 @@ void FEGenProc(                 // INLINE SUPPORT
     FnCtlTop();
     ExtraRptIncrementCtr( ctr_inlines );
 #ifndef NDEBUG
-    curr = CallStabStateTablePosn( handle );
+    curr = CallStabStateTablePosn( call );
     if( PragDbgToggle.callgraph || PragDbgToggle.dump_stab ) {
         VBUF vbuf;
         if( PragDbgToggle.dump_exec_ic )
@@ -3240,14 +3241,14 @@ void FEGenProc(                 // INLINE SUPPORT
         VbufFree( &vbuf );
     }
 #else
-    CallStabStateTablePosn( handle );
+    CallStabStateTablePosn( call );
 #endif
     SymTransNewBlock();
     ++ depth_inline;
     file_ctl = CgioLocateAnyFile( sym );
     buffering = file_ctl->buffer;
     cursor = file_ctl->cursor;
-    emit_virtual_file( file_ctl, handle );
+    emit_virtual_file( file_ctl, call );
 #ifndef NDEBUG
     if( PragDbgToggle.callgraph || PragDbgToggle.dump_stab ) {
         VBUF vbuf;
@@ -3286,9 +3287,9 @@ unsigned CgBackGetInlineDepth(  // GET MAXIMUM INLINE DEPTH
 
 
 CALL_STAB* CgBackCallGened(     // SETUP FOR GENERATED CALL
-    call_handle handle )        // - call handle
+    call_handle call )          // - call handle
 {
-    return( CallStabAlloc( handle, FnCtlTop() ) );
+    return( CallStabAlloc( call, FnCtlTop() ) );
 }
 
 

@@ -107,7 +107,7 @@ static int ORLSeek( FILE *fp, long pos, int where )
     } else if( where == SEEK_CUR ) {
         ORLPos += pos;
     } else {
-        ORLPos = FP2FL( fp )->file->len - ORLFilePos - pos;
+        ORLPos = FP2FL( fp )->infile->len - ORLFilePos - pos;
     }
     return( 0 );
 }
@@ -136,7 +136,7 @@ static long ORLFileSeek( file_list *list, long pos, int where )
     } else if( where == SEEK_CUR ) {
         ORLFilePos += pos;
     } else {
-        ORLFilePos = list->file->len - pos;
+        ORLFilePos = list->infile->len - pos;
     }
     return( ORLFilePos + ORLPos );
 }
@@ -229,31 +229,31 @@ static bool CheckFlags( orl_file_handle filehdl )
     machtype = ORLFileGetMachineType( filehdl );
     switch( machtype ) {
     case ORL_MACHINE_TYPE_I386:
-        typemask = HAVE_I86_CODE;
+        typemask = LS_HAVE_I86_CODE;
         break;
     case ORL_MACHINE_TYPE_AMD64:
-        typemask = HAVE_X64_CODE;
+        typemask = LS_HAVE_X64_CODE;
         break;
     case ORL_MACHINE_TYPE_ALPHA:
-        typemask = HAVE_ALPHA_CODE;
+        typemask = LS_HAVE_ALPHA_CODE;
         break;
     case ORL_MACHINE_TYPE_PPC601:
-        typemask = HAVE_PPC_CODE;
+        typemask = LS_HAVE_PPC_CODE;
         break;
     case ORL_MACHINE_TYPE_R3000:
-        typemask = HAVE_MIPS_CODE;
+        typemask = LS_HAVE_MIPS_CODE;
         break;
     case ORL_MACHINE_TYPE_NONE:
         typemask = 0;
         break;
     default:
-        typemask = HAVE_MACHTYPE_MASK;  // trigger the error
+        typemask = LS_HAVE_MACHTYPE_MASK;   // trigger the error
         break;
     }
-    test = (typemask | LinkState) & HAVE_MACHTYPE_MASK;
+    test = (typemask | LinkState) & LS_HAVE_MACHTYPE_MASK;
     test &= test - 1;           // turn off one bit
     if( test != 0 ) {   // multiple bits were turned on.
-        LnkMsg( WRN+MSG_MACHTYPE_DIFFERENT, "s", CurrMod->f.source->file->name.u.ptr );
+        LnkMsg( WRN+MSG_MACHTYPE_DIFFERENT, "s", CurrMod->f.source->infile->name.u.ptr );
     } else {
         LinkState |= typemask;
     }
@@ -921,20 +921,20 @@ unsigned long ORLPass1( void )
 {
     orl_file_handle     filehdl;
 
-    LinkState |= DOSSEG_FLAG;
+    LinkState |= LS_DOSSEG_FLAG;
     PermStartMod( CurrMod );
     filehdl = InitFile();
     if( filehdl == NULL ) {
-        LnkMsg( FTL+MSG_BAD_OBJECT, "s", CurrMod->f.source->file->name.u.ptr );
-        CurrMod->f.source->file->flags |= INSTAT_IOERR;
+        LnkMsg( FTL+MSG_BAD_OBJECT, "s", CurrMod->f.source->infile->name.u.ptr );
+        CurrMod->f.source->infile->status |= INSTAT_IOERR;
         return( (unsigned long)-1 );
     }
     if( CheckFlags( filehdl ) ) {
-        if( (LinkState & HAVE_PPC_CODE) && !FmtData.toc_initialized ) {
+        if( (LinkState & LS_HAVE_PPC_CODE) && !FmtData.toc_initialized ) {
             InitToc();
             FmtData.toc_initialized = true;
         }
-        if( LinkFlags & DWARF_DBI_FLAG ) {
+        if( LinkFlags & LF_DWARF_DBI_FLAG ) {
             CurrMod->modinfo |= MOD_FLATTEN_DBI;
         }
         CurrMod->modinfo |= MOD_NEED_PASS_2;

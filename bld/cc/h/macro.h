@@ -35,16 +35,21 @@
 #define MTOKPARM(p)     (*(mac_parm_count *)(p))
 #define MTOKPARMINC(p)  p += sizeof( mac_parm_count )
 
+#define GetMacroParmCount(m)    ((m)->parm_count - 1)
+#define MacroWithParenthesis(m) ((m)->parm_count > 0)
+#define MacroIsSpecial(m)       ((m)->macro_defn == 0)
+#define MacroHasVarArgs(m)      (((m)->macro_flags & MFLAG_HAS_VAR_ARGS) != 0)
+
 typedef enum special_macros {
-    MACRO_DATE,
-    MACRO_FILE,
-    MACRO_LINE,
-    MACRO_STDC,
-    MACRO_STDC_HOSTED,
-    MACRO_STDC_VERSION,
-    MACRO_TIME,
-    MACRO_FUNC,
+    #define pick(s,i,f)     i,
+    #include "specmac.h"
+    #undef pick
 } special_macros;
+
+#define MACRO_FIRST         MACRO_DATE
+#define MACRO_LAST          MACRO_TIME
+#define MACRO_COMP_FIRST    MACRO_FUNCTION
+#define MACRO_COMP_LAST     MACRO_FUNC
 
 typedef unsigned char   mac_parm_count;
 
@@ -60,7 +65,9 @@ typedef enum macro_flags {
     MFLAG_CAN_BE_REDEFINED              =   0x02,
     MFLAG_USER_DEFINED                  =   0x04,
     MFLAG_REFERENCED                    =   0x08,
-    MFLAG_VAR_ARGS                      =   0x10,   // macro has varargs.
+    MFLAG_HAS_VAR_ARGS                  =   0x10,   // macro has varargs.
+/* a special macro won't appear as a macro to the program (e.g. ifdef will return false) */
+    MFLAG_HIDDEN                        =   0x20,
 } macro_flags;
 
 typedef struct  macro_entry {

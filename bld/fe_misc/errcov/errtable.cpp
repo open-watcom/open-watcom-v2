@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -144,7 +145,8 @@ void ErrorTable::PrintUnmarked( FILE *out, int showInf )  {
 
 JavaErrorTable::JavaErrorTable(char *fileName): ErrorTable(fileName) { }
 
-void JavaErrorTable::ReadInTable() {
+void JavaErrorTable::ReadInTable()
+{
     // read the java input file.
     // scans for a ":MSGSYM" or "MSGGRP:" flag, and acts accordingly.
     char buffer[ MAX_LINE_LEN ];
@@ -164,7 +166,7 @@ void JavaErrorTable::ReadInTable() {
 
     while( ! feof( _inFile )  ) {
         // scan for next :MSGSYM symbol or :MSGGRP symbol.
-        fgets(buffer, MAX_LINE_LEN, _inFile);
+        fgets(buffer, sizeof( buffer ), _inFile);
         if( ! strncmp( buffer, ":MSGSYM.\0", 8) ) {
             // otherwise, we've found a new symbol.
             strncpy( symbol, &buffer[9], MAX_LINE_LEN );
@@ -189,7 +191,8 @@ void JavaErrorTable::ReadInTable() {
 /**********************************************************************************/
 CErrorTable::CErrorTable(char *fileName): ErrorTable(fileName)  { }
 
-void CErrorTable::ReadInTable() {
+void CErrorTable::ReadInTable()
+{
     /*/ read the C input file.
     // scans for a ":MSGSYM" tag, reads in the data it needs, then repeats until EOF */
     char buffer[ MAX_LINE_LEN ];
@@ -208,7 +211,7 @@ void CErrorTable::ReadInTable() {
     while( ! feof( _inFile )  ) {
         // scan for next :MSGSYM symbol
         while(( ! found ) && ( ! feof( _inFile ) )) {
-            fgets(buffer, MAX_LINE_LEN, _inFile);
+            fgets(buffer, sizeof( buffer ), _inFile);
             if( ! strncmp( buffer, ":MSGSYM.\0", 8) ) {
                 found = 1;
             }

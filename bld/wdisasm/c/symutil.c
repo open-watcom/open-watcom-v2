@@ -31,9 +31,9 @@
 
 
 
-#include <string.h>
 #include "disasm.h"
 #include "wdismsg.h"
+
 
 typedef struct fix_list {
     fixup               *fix;

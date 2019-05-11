@@ -251,16 +251,16 @@ cg_name FstabEmitStateVar(      // EMIT CODE TO SET STATE VARIABLE, IF REQ'D
 
 
 cg_name FstabEmitStateVarPatch( // EMIT CODE TO PATCH STATE VARIABLE, IF REQ'D
-    patch_handle* a_handle,     // - addr[ handle ]
+    patch_handle* a_patch,      // - addr[ handle ]
     FN_CTL* fctl )              // - function being emitted
 {
     cg_name expr;               // - emitted expression
 
     if( emitSv( fctl ) ) {
-        patch_handle handle = BEPatch();
+        patch_handle patch = BEPatch();
         cg_type type = CgTypeOffset();
-        *a_handle = handle;
-        expr = CGPatchNode( handle, type );
+        *a_patch = patch;
+        expr = CGPatchNode( patch, type );
         expr = CGLVAssign( CgSymbolPlusOffset( fstab.rw, offsetStateVar() )
                          , expr
                          , type );

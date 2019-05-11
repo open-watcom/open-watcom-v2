@@ -81,8 +81,9 @@ int ugetc(int f)
 
 void uprintf(int z, char * fmt, ... )
 {
-        char *          buf;
+        char        *buf;
         va_list     arg_list;
+        int         buflen;
 
         buf = malloc(UPRBUFSIZ);
         if (buf==NULL)
@@ -100,7 +101,8 @@ void uprintf(int z, char * fmt, ... )
                 exit(-1);
         }
 
-        if (write(z, buf, strlen(buf)) != strlen(buf))
+        buflen = (int)strlen(buf);
+        if (write(z, buf, buflen) != buflen)
         {
                 sprintf(buf, "uprintf: fd %d", z);
                 perror(buf);

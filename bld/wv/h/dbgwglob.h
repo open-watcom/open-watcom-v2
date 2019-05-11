@@ -38,4 +38,3 @@ extern void     GlobNewMod( a_window wnd, mod_handle mod );
 extern void     GlobRefresh( a_window wnd );
 extern a_window DoWndGlobOpen( mod_handle mod );
 extern a_window WndGlobOpen( void );
-extern bool     ChkFlags( wnd_update_list flags );

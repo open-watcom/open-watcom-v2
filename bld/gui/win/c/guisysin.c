@@ -31,8 +31,6 @@
 
 
 #include "guiwind.h"
-#include "initmode.h"
-#include "guisysin.h"
 
 
 bool GUISysInit( init_mode install )

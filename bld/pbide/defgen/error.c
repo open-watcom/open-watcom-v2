@@ -34,6 +34,8 @@
 #include <stdlib.h>
 #include <stdarg.h>
 #include "defgen.h"
+#include "semantic.h"
+
 
 char    *CurFile;
 char    *CurLine;

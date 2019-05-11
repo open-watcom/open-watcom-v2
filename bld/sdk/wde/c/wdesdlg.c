@@ -48,7 +48,7 @@
 #include "wdewait.h"
 #include "wdegoto.h"
 #include "wdectl3d.h"
-#include "wde_rc.h"
+#include "wde.rh"
 #include "wde_wres.h"
 #include "wdei2mem.h"
 #include "wdesdlg.h"

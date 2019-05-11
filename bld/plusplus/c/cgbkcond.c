@@ -49,8 +49,8 @@ static SYMBOL dtor_cond_sym;        // conditional flags, direct DTORing
 
 typedef struct {                // INFO FOR A CONDITION
     unsigned offset;            // - offset of conditional bit
-    patch_handle handle_set;    // - patch handle: set
-    patch_handle handle_clr;    // - patch handle: clr
+    patch_handle patch_set;     // - patch handle: set
+    patch_handle patch_clr;     // - patch handle: clr
     uint_8 mask_set;            // - mask used for setting
     uint_8 mask_clr;            // - mask used for clearing
     unsigned :0;                // - alignment
@@ -69,15 +69,15 @@ typedef struct {                // INFO FOR A CONDITION
         if( PragDbgToggle.dump_stab ) {
             printf( "COND_STK[%p]: flag(%d) %s\n"
                     "  last(%p) true(%p) false(%p)\n"
-                    "  handle_set(%p) handle_clr(%p) mask_set(%x) mask_clr(%x)\n"
+                    "  patch_set(%p) patch_clr(%p) mask_set(%x) mask_clr(%x)\n"
                   , cond
                   , cond->offset
                   , msg
                   , cond->posn_last
                   , cond->posn_true
                   , cond->posn_false
-                  , cond->handle_set
-                  , cond->handle_clr
+                  , cond->patch_set
+                  , cond->patch_clr
                   , cond->mask_set
                   , cond->mask_clr );
         }
@@ -125,20 +125,20 @@ static void callBackFalse(      // CALL-BACK: start of false block
 
 
 static void patchMask(          // PATCH A MASK
-    patch_handle handle,        // - NULL or handle
+    patch_handle patch,         // - NULL or handle
     uint_8 mask )               // - mask
 {
-    if( NULL != handle ) {
-        BEPatchInteger( handle, mask );
-        BEFiniPatch( handle );
+    if( NULL != patch ) {
+        BEPatchInteger( patch, mask );
+        BEFiniPatch( patch );
     }
 }
 
 static void callBackFini(       // COMPLETE CALL-BACK
     COND_STK* cond )            // - entry to be completed
 {
-    patchMask( cond->handle_set, cond->mask_set );
-    patchMask( cond->handle_clr, cond->mask_clr );
+    patchMask( cond->patch_set, cond->mask_set );
+    patchMask( cond->patch_clr, cond->mask_clr );
     CarveFree( carveInfo, cond );
 }
 
@@ -207,8 +207,8 @@ void CondInfoPush(              // PUSH COND_INFO STACK
 {
     COND_STK* stk = CarveAlloc( carveInfo );
     stk->offset = FnCtlCondFlagNext( fctl );
-    stk->handle_set = NULL;
-    stk->handle_clr = NULL;
+    stk->patch_set = NULL;
+    stk->patch_clr = NULL;
     stk->mask_set = 0;
     stk->mask_clr = NOT_BITARR_MASK( 0 );
     stk->posn_last = 0;
@@ -291,11 +291,11 @@ void CondInfoSetFlag(           // SET FLAG FOR CONDITIONAL DTOR BLOCK
     op_mask = CGPatchNode( patch, TY_UINT_1 );
     if( set_flag ) {
         stk->mask_set = cond.mask;
-        stk->handle_set = patch;
+        stk->patch_set = patch;
         opcode = O_OR;
     } else {
         stk->mask_clr = NOT_BITARR_MASK( cond.mask );
-        stk->handle_clr = patch;
+        stk->patch_clr = patch;
         opcode = O_AND;
     }
     op_flg = CgSymbolPlusOffset( cond.sym, cond.offset );

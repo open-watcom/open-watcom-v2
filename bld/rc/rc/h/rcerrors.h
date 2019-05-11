@@ -30,9 +30,7 @@
 ****************************************************************************/
 
 
-#include "rcmsg.gh"
-
-#define MSG_LANG_SPACING        1000
+#include "rcerrors.rh"
 
 enum {
     INTERR_UNKNOWN_RCSTATUS,

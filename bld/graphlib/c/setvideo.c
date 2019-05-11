@@ -256,7 +256,7 @@ _WCRTLINK short _WCI86FAR _CGRAPH _setvideomode( short req_mode )
     WPI_PRES            Win_DC;
     WPI_RECT            rect;
     WPI_TEXTMETRIC      fntinfo;
-    HMENU               menu;
+    HMENU               hmenu;
     HFONT               old_font;
     LPWDATA             w;
     char*               name = "\0";
@@ -409,10 +409,10 @@ _WCRTLINK short _WCI86FAR _CGRAPH _setvideomode( short req_mode )
 
   #if defined( __OS2__ )
     w->frame = frame;
-    menu = _GetWinMenuHandle();
+    hmenu = _GetWinMenuHandle();
   #else
     w->inst = Inst;
-    menu = _SubMenuWindows;
+    hmenu = _SubMenuWindows;
   #endif
 
     _wpi_getclientrect( _MainWindow, &rect );
@@ -457,10 +457,10 @@ _WCRTLINK short _WCI86FAR _CGRAPH _setvideomode( short req_mode )
     gphmenu.id = DID_WIND_STDIO + w->handles[0];
     gphmenu.hwndSubMenu = NULL;
     gphmenu.hItem = 0;
-    if ( (MRESULT)MIT_ERROR == WinSendMsg( menu, ( ULONG )MM_INSERTITEM, MPFROMP( &gphmenu ), MPFROMP( dest ) ) ) abort();
+    if ( (MRESULT)MIT_ERROR == WinSendMsg( hmenu, ( ULONG )MM_INSERTITEM, MPFROMP( &gphmenu ), MPFROMP( dest ) ) ) abort();
 
   #else
-    AppendMenu( menu, MF_ENABLED, MSG_WINDOWS+w->handles[0], dest );
+    AppendMenu( hmenu, MF_ENABLED, MSG_WINDOWS+w->handles[0], dest );
     MoveWindow( Win, x1, y1, x2, y2, TRUE );
     ShowWindow( Win, SW_NORMAL );
     ShowScrollBar( Win, SB_BOTH, TRUE );

@@ -35,7 +35,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
-#include <time.h>
 #include <io.h>
 #include <direct.h>
 #include "bool.h"
@@ -260,19 +259,20 @@ static void parseTD( char *arg, char pc, unsigned *a, unsigned *b, unsigned *c  
  */
 static void doneCP( void )
 {
-    time_t              secs,hunds;
+    unsigned long       secs, hunds;
 
     FlushMemoryBlocks();
     if( !sflag && DumpCnt > 1 ) {
         PrintALineThenDrop( "Total bytes copied:        %ld",TotalBytes );
-        PrintALineThenDrop( "Total files copied:        %u",TotalFiles );
+        PrintALineThenDrop( "Total files copied:        %u", TotalFiles );
         if( rflag ) {
             PrintALineThenDrop( "Total directories created: %u", TotalDirs );
         }
-        secs = (TotalTime/CLOCKS_PER_SEC);
-        hunds = TotalTime-secs*CLOCKS_PER_SEC;
-        PrintALineThenDrop( "Total time taken:          %ld.%02ld seconds",secs,hunds );
+        secs = (TotalTime / CLOCKS_PER_SEC);
+        hunds = TotalTime - secs * CLOCKS_PER_SEC;
+        PrintALineThenDrop( "Total time taken:          %lu.%02lu seconds", secs, hunds );
     }
+    EndPrint();
     MemFini();
 
 } /* doneCP */

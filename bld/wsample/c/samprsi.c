@@ -251,5 +251,5 @@ void SysParseOptions( char c, char **cmd )
 
 void OutputNL( void )
 {
-    Output( "\r\n" );
+    Output( "\n" );
 }

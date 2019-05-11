@@ -31,7 +31,7 @@
 
 
 extern bool InitResources2( struct WResDirHead **, PHANDLE_INFO hinfo );
-extern int  WResLoadString2( struct WResDirHead *, PHANDLE_INFO hinfo, UINT idResource, lpstr lpszBuffer, int nBufferMax );
+extern int  WResLoadString2( struct WResDirHead *, PHANDLE_INFO hinfo, unsigned int idResource, lpstr lpszBuffer, int nBufferMax );
 extern int  WResLoadResource2( struct WResDirHead *, PHANDLE_INFO hinfo, WResID *idType, WResID *idResource, lpstr *lpszBuffer, size_t *bufferSize );
 extern bool FiniResources2( struct WResDirHead *, PHANDLE_INFO hinfo );
 extern bool WResSeekResource2( WResDir dir, PHANDLE_INFO hinfo, WResID *resource_type, WResID *resource_id );

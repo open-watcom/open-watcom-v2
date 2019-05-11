@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -112,13 +113,13 @@ statement   dlg_hdr;
 statement   dlg_item;
 int         dialogs_cnt = 0;
 
-char *my_fgets( char *buf, int n, FILE *fp )
-/******************************************/
+char *my_fgets( char *buf, int max_len, FILE *fp )
+/************************************************/
 {
     char    *rc;
     size_t  i;
 
-    if( (rc = fgets( buf, n, fp )) != NULL ) {
+    if( (rc = fgets( buf, max_len, fp )) != NULL ) {
         for( i = strlen( buf ); i && isWSorCtrlZ( buf[ i - 1] ); --i ) {
             buf[ i - 1 ] = '\0';
         }
@@ -147,11 +148,11 @@ void process_f_option( char *fname )
     if(( fname != NULL ) && ( *fname != '\0' )) {
         if( (fp = fopen( fname, "r" )) != NULL ) {
             for( opt.flist_cnt = 0; !feof( fp ); ++opt.flist_cnt )
-                fgets( buff1, MAX_NAME_LEN, fp );
+                fgets( buff1, sizeof( buff1 ), fp );
             fseek( fp, 0, SEEK_SET );
             opt.flist_data = malloc( opt.flist_cnt * sizeof( char * ) );
             for( i = 0; i < opt.flist_cnt; ++i ) {
-                my_fgets( buff1, MAX_NAME_LEN, fp );
+                my_fgets( buff1, sizeof( buff1 ), fp );
                 opt.flist_data[ i ] = malloc( strlen( buff1 ) + 1 );
                 strcpy( opt.flist_data[ i ], buff1 );
             }
@@ -767,8 +768,8 @@ int process_statement( char *line, FILE *fo )
     return( 0 );
 }
 
-void process_dialog_declaration( FILE *fi, FILE *fo, char *line )
-/***************************************************************/
+void process_dialog_declaration( FILE *fi, FILE *fo, char *line, int max_len )
+/****************************************************************************/
 {
     long    font_size = 0;
     char    *font_name = NULL;
@@ -809,7 +810,7 @@ void process_dialog_declaration( FILE *fi, FILE *fo, char *line )
     dlg_hdr.y = 230 - dlg_hdr.y - dlg_hdr.dy;
     strcpy( dlg_hdr.text, "\"\"" );
     // process next lines
-    my_fgets( line, MAX_LINE_LEN, fi );
+    my_fgets( line, max_len, fi );
     while(( *line != '\0' ) && ( strstr( line, "BEGIN" ) == NULL )) {
         strcpy( buff1, line );
         strtok( buff1, separators );
@@ -819,7 +820,7 @@ void process_dialog_declaration( FILE *fi, FILE *fo, char *line )
             for( p = line + len - 1; len && isspace( *p ); --len )
                 *(p--) = '\0';
             if( *p == '|' ) {
-                my_fgets( line, MAX_LINE_LEN, fi );
+                my_fgets( line, max_len, fi );
                 strcpy( buff1, line );
                 p = strtok( buff1, separators );
                 while( p != NULL ) {
@@ -857,7 +858,7 @@ void process_dialog_declaration( FILE *fi, FILE *fo, char *line )
                 }
             }
         }
-        my_fgets( line, MAX_LINE_LEN, fi );
+        my_fgets( line, max_len, fi );
     }
     process_style( dlg_hdr.parms, "DIALOG" );
     if( font_set == 0 ) {
@@ -1026,7 +1027,7 @@ int main( int argc, char *argv[] )
             } else if( strstr( line, "DIALOG" ) != NULL ) {
                 p = malloc( MAX_LINE_LEN );
                 strcpy( p, line );
-                process_dialog_declaration( fi, fo, p );
+                process_dialog_declaration( fi, fo, p, MAX_LINE_LEN );
                 strcpy( line, p );
                 free( p );
             } else if( strstr( line, "BEGIN" ) != NULL ) {

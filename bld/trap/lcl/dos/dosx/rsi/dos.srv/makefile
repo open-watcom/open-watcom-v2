@@ -7,11 +7,6 @@ target_cpu = x86
 target_os  = rsi
 
 srv  = rsi
-!ifdef %OWUSE_FILENAME_VERSION
-name = rsihel$(bld_ver)
-!else
-name = rsihelp
-!endif
 which = SERVER
 
 !include $(rsilib_dir)/client.mif
@@ -19,10 +14,7 @@ which = SERVER
 extra_objs = rsiacc.obj
 extra_libs = $(rsilib_lib)
 
-extra_cpp_flags = -DDOS4G
-!ifdef %OWUSE_FILENAME_VERSION
-extra_cpp_flags += -DUSE_FILENAME_VERSION=$(bld_ver)
-!endif
+extra_cppflags = -DDOS4G
 extra_c_flags = -zu
 inc_dirs = $(rsilib_inc_dirs)
 

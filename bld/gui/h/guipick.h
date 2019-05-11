@@ -30,13 +30,11 @@
 ****************************************************************************/
 
 
+#include "guipick.rh"
+
 typedef struct {
     GUIPICKCALLBACK     *func;
     int                 choice;
 } dlg_pick;
-
-#define CTL_PICK_OK             100
-#define CTL_PICK_CANCEL         101
-#define CTL_PICK_LIST           102
 
 extern GUICALLBACK GUIPickGUIEventProc;

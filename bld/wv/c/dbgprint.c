@@ -675,7 +675,7 @@ typedef struct {
 } print_fld;
 
 
-OVL_EXTERN walk_result PrintDlgField( sym_walk_info swi, sym_handle *member_hdl, void *_d )
+static walk_result PrintDlgField( sym_walk_info swi, sym_handle *member_hdl, void *_d )
 {
     print_fld   *d = _d;
     char        *name;
@@ -766,7 +766,7 @@ struct val2name {
     bool                found;
 };
 
-OVL_EXTERN walk_result ExactMatch( sym_walk_info swi, sym_handle *sh, void *d )
+static walk_result ExactMatch( sym_walk_info swi, sym_handle *sh, void *d )
 {
     struct val2name     *vd = d;
     unsigned_64         val;
@@ -783,7 +783,7 @@ OVL_EXTERN walk_result ExactMatch( sym_walk_info swi, sym_handle *sh, void *d )
     return( WR_STOP );
 }
 
-OVL_EXTERN walk_result BestMatch( sym_walk_info swi, sym_handle *sh, void *d )
+static walk_result BestMatch( sym_walk_info swi, sym_handle *sh, void *d )
 {
     struct val2name     *vd = d;
     unsigned_64         val;

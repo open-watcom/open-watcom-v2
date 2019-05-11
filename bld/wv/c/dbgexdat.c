@@ -97,7 +97,7 @@ static void MemExam( mad_type_handle mth )
     WndMemInspect( addr, expr, len, mth );
 }
 
-OVL_EXTERN void TypeExam( void )
+static void TypeExam( void )
 {
     mad_type_handle     mth;
     mad_type_kind       tk;

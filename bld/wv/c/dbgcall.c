@@ -239,7 +239,7 @@ void CallConf( void )
  * CallResults -- print out result of user call
  */
 
-OVL_EXTERN void CallResults( void )
+static void CallResults( void )
 {
     if( CurrToken != T_DIV ) {
         DoPrintList( false );

@@ -35,10 +35,9 @@
 //
 
 #include "ftnstd.h"
+#include <time.h>
 #include "ftnapi.h"
 
-#include <stddef.h>
-#include <time.h>
 
 extern  uint            __getctime(struct tm *);
 

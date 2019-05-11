@@ -56,20 +56,20 @@
 #define ERR_WRITE   0x05
 
 
-typedef struct reloc_table {
+typedef struct {
     unsigned_16     num;        // number of relocations in reloc-table
     unsigned_16     lseg;       // load-address of exe-program (segment)
     unsigned_32     reloc[1];   // array  of relocations in reloc-table
 } reloc_table;
 
 
-typedef struct reloc_offset {   // a single reloc-entry as found in an exe
+typedef struct {    // a single reloc-entry as found in an exe
     unsigned_16     offset;
     unsigned_16     segment;
 } reloc_offset;
 
 
-typedef struct arguments {
+typedef struct {
     FILE            *ifile;
     FILE            *ofile;
     struct {

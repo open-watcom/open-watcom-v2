@@ -51,8 +51,9 @@ void SetRdosFmt( void )
 /*********************/
 // set up the structures needed to be able to process something in RDOS mode.
 {
-    if( LinkState & FMT_INITIALIZED ) return;
-    LinkState |= FMT_INITIALIZED;
+    if( LinkState & LS_FMT_INITIALIZED )
+        return;
+    LinkState |= LS_FMT_INITIALIZED;
     FmtData.u.rdos.code_seg = 0;
     FmtData.u.rdos.data_seg = 0;
     FmtData.u.rdos.code_sel = 0;
@@ -69,7 +70,7 @@ void FreeRdosFmt( void )
 extern bool ProcRdos( void )
 /*************************/
 {
-    LinkState |= MAKE_RELOCS | FMT_DECIDED;     // make relocations;
+    LinkState |= LS_MAKE_RELOCS | LS_FMT_DECIDED;   // make relocations;
     ProcOne( RdosOptions, SEP_NO, false );
     return( true );
 }

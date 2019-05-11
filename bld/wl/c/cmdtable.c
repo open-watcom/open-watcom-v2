@@ -244,6 +244,7 @@ parse_entry     MainOptions[] = {
     "SELstart",     &ProcSelStart,      MK_DOS16M, 0,
     "DATASize",     &ProcDataSize,      MK_DOS16M, 0,
     "EXTended",     &ProcExtended,      MK_DOS16M, 0,
+    "EXPName",      &ProcExpName,       MK_DOS16M, 0,
 #endif
 #ifdef _RDOS
     "CODESelector", &ProcRdosCodeSel,   MK_RDOS, 0,

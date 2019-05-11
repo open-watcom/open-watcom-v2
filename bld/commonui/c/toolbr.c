@@ -457,7 +457,7 @@ void ToolBarDestroy ( toolbar *bar )
             MemFree( curr );
         }
         if( bar->bgbrush != NULLHANDLE ) {
-            _wpi_deleteobject( bar->bgbrush );
+            _wpi_deletebrush( bar->bgbrush );
         }
         MemFree( bar );
     }
@@ -472,12 +472,12 @@ void ToolBarFini( toolbar *bar )
     ToolBarDestroy( bar );
 
     if( gdiObjectsCreated ) {
-        _wpi_deleteobject( blackPen );
-        _wpi_deleteobject( btnShadowPen );
-        _wpi_deleteobject( btnHighlightPen );
-        _wpi_deleteobject( btnFacePen );
-        _wpi_deleteobject( blackBrush );
-        _wpi_deleteobject( btnFaceBrush );
+        _wpi_deletepen( blackPen );
+        _wpi_deletepen( btnShadowPen );
+        _wpi_deletepen( btnHighlightPen );
+        _wpi_deletepen( btnFacePen );
+        _wpi_deletebrush( blackBrush );
+        _wpi_deletebrush( btnFaceBrush );
         gdiObjectsCreated = false;
     }
 
@@ -694,7 +694,7 @@ void ToolBarDisplay( toolbar *bar, TOOLDISPLAYINFO *disp )
     mouse_captured = false;
 
     if( bar->bgbrush != NULLHANDLE ) {
-        _wpi_deleteobject( bar->bgbrush );
+        _wpi_deletebrush( bar->bgbrush );
         bar->bgbrush = NULLHANDLE;
     }
 
@@ -868,7 +868,7 @@ static void drawTopLeftCorner( WPI_PRES pres, WPI_POINT size, int border, HPEN p
     HPEN        old_pen;
     WPI_POINT   pt;
 
-    old_pen = _wpi_selectobject( pres, pen );
+    old_pen = _wpi_selectpen( pres, pen );
     _wpi_setpoint( &pt, border, size.y - 2 * border );
     _wpi_cvth_pt( &pt, size.y );
     _wpi_movetoex( pres, &pt, NULL );
@@ -880,7 +880,7 @@ static void drawTopLeftCorner( WPI_PRES pres, WPI_POINT size, int border, HPEN p
     _wpi_setpoint( &pt, size.x - border, border );
     _wpi_cvth_pt( &pt, size.y );
     _wpi_lineto( pres, &pt );
-    _wpi_selectobject( pres, old_pen );
+    _wpi_getoldpen( pres, old_pen );
 
 } /* drawTopLeftCorner */
 
@@ -892,7 +892,7 @@ static void drawTopLeftInsideCorner( WPI_PRES pres, WPI_POINT size, int border, 
     HPEN        old_pen;
     WPI_POINT   pt;
 
-    old_pen = _wpi_selectobject( pres, pen );
+    old_pen = _wpi_selectpen( pres, pen );
     _wpi_setpoint( &pt, border * 2, size.y - 2 * border );
     _wpi_cvth_pt( &pt, size.y );
     _wpi_movetoex( pres, &pt, NULL );
@@ -903,7 +903,7 @@ static void drawTopLeftInsideCorner( WPI_PRES pres, WPI_POINT size, int border, 
 
     pt.x = size.x - border;
     _wpi_lineto( pres, &pt );
-    _wpi_selectobject( pres, old_pen );
+    _wpi_getoldpen( pres, old_pen );
 
 } /* drawTopLeftCorner */
 
@@ -919,7 +919,7 @@ static void drawBottomRightCorner( WPI_PRES pres, WPI_POINT size, int border, HP
     height = size.y;
     size.x -= 2 * border;
     size.y -= 2 * border;
-    old_pen = _wpi_selectobject( pres, pen );
+    old_pen = _wpi_selectpen( pres, pen );
     _wpi_setpoint( &pt, size.x, border );
     _wpi_cvth_pt( &pt, height );
     _wpi_movetoex( pres, &pt, NULL );
@@ -931,7 +931,7 @@ static void drawBottomRightCorner( WPI_PRES pres, WPI_POINT size, int border, HP
     _wpi_setpoint( &pt, border - 1, size.y );
     _wpi_cvth_pt( &pt, height );
     _wpi_lineto( pres, &pt );
-    _wpi_selectobject( pres, old_pen );
+    _wpi_getoldpen( pres, old_pen );
 
 } /* drawBottomRightCorner */
 
@@ -947,7 +947,7 @@ static void drawBottomRightInsideCorner( WPI_PRES pres, WPI_POINT size, int bord
     height = size.y;
     size.x -= 3 * border;
     size.y -= 3 * border;
-    old_pen = _wpi_selectobject( pres, pen );
+    old_pen = _wpi_selectpen( pres, pen );
     _wpi_setpoint( &pt, 2 * border, size.y );
     _wpi_cvth_pt( &pt, height );
     _wpi_movetoex( pres, &pt, NULL );
@@ -959,7 +959,7 @@ static void drawBottomRightInsideCorner( WPI_PRES pres, WPI_POINT size, int bord
     _wpi_setpoint( &pt, size.x, border );
     _wpi_cvth_pt( &pt, height );
     _wpi_lineto( pres, &pt );
-    _wpi_selectobject( pres, old_pen );
+    _wpi_getoldpen( pres, old_pen );
 
 } /* drawBottomRightInsideCorner */
 
@@ -976,8 +976,7 @@ static void drawBorder( WPI_PRES pres, WPI_POINT size, int border )
     y = _wpi_cvth_y( size.y - 1, size.y );
     x = size.x - 1;
 
-    old_pen = _wpi_selectobject( pres, blackPen );
-
+    old_pen = _wpi_selectpen( pres, blackPen );
     _wpi_setpoint( &pt, 0, _wpi_cvth_y( 0, size.y ) );
     _wpi_movetoex( pres, &pt, NULL );
 
@@ -989,8 +988,9 @@ static void drawBorder( WPI_PRES pres, WPI_POINT size, int border )
     _wpi_lineto( pres, &pt );
     pt.y = _wpi_cvth_y( 0, size.y );
     _wpi_lineto( pres, &pt );
+    _wpi_getoldpen( pres, old_pen );
 
-    _wpi_selectobject( pres, btnFacePen );
+    old_pen = _wpi_selectpen( pres, btnFacePen );
     _wpi_setpoint( &pt, 0, _wpi_cvth_y( 0, size.y ) );
     _wpi_movetoex( pres, &pt, NULL );
     pt.x = border;
@@ -1020,8 +1020,7 @@ static void drawBorder( WPI_PRES pres, WPI_POINT size, int border )
         pt.y -= 1;
     }
     _wpi_lineto( pres, &pt );
-
-    _wpi_selectobject( pres, old_pen );
+    _wpi_getoldpen( pres, old_pen );
 
 } /* drawBorder */
 
@@ -1065,13 +1064,13 @@ static void toolBarDrawBitmap( WPI_PRES pres, WPI_POINT dst_size, WPI_POINT dst_
      * this pissing off some users, but oh well.
      */
     if( _wpi_bitmapbitcount( &bm ) == 1 && _wpi_bitmapplanes( &bm ) == 1 ) {
-        old_brush = _wpi_selectobject( pres, blackBrush );
+        old_brush = _wpi_selectbrush( pres, blackBrush );
 
         _wpi_stretchblt( pres, dst_org.x, dst_org.y, dst_size.x, dst_size.y, mempres,
                          src_org.x, src_org.y, src_size.x, src_size.y, 0xB8074A );
 
         _wpi_getoldbitmap( mempres, old_bmp );
-        _wpi_selectobject( pres, old_brush );
+        _wpi_getoldbrush( pres, old_brush );
     } else {
         _wpi_stretchblt( pres, dst_org.x, dst_org.y, dst_size.x, dst_size.y, mempres,
                          src_org.x, src_org.y, src_size.x, src_size.y, SRCCOPY );

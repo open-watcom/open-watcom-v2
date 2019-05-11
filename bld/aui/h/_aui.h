@@ -37,7 +37,7 @@
 
 #define WNDEVENT( w, e, p )     (w)->info->event( w, e, p )
 
-#define ArraySize( x )          (sizeof( x ) / sizeof( (x)[0] ))
+#define ArraySize( x )          (sizeof( x ) / sizeof( *(x) ))
 
 #define UCHAR_VALUE( c )        (unsigned char)(c)
 
@@ -57,7 +57,7 @@ extern void             WndAdjustDirty( a_window wnd, int by );
 extern wnd_row          WndSelRow( a_window );
 extern bool             WndPieceHighlights( a_window, int, int );
 extern void             WndNullPopItem( a_window wnd );
-extern void             WndRowPopUp( a_window, gui_menu_struct *, wnd_row, wnd_piece );
+extern void             WndRowPopUp( a_window, const gui_menu_struct *, wnd_row, wnd_piece );
 extern void             WndKeyPopItem( a_window wnd, bool );
 extern void             WndSelPopItem( a_window wnd, void *, bool );
 extern bool             WndSetPoint( a_window, void *, bool, wnd_coord *, wnd_row, bool );
@@ -116,14 +116,14 @@ extern void             WndClick( a_window wnd, gui_ctl_id id );
 extern void             WndSetPopup( gui_ctl_id id );
 extern bool             WndMouseButtonIsDown( void );
 extern bool             WndValid(a_window);
-extern void             WndInvokePopUp( a_window wnd, gui_point *point, gui_menu_struct *menu );
+extern void             WndInvokePopUp( a_window wnd, gui_point *point, const gui_menu_struct *menu );
 extern const char       *WndPrevChar( const char *buff, const char *curr );
 extern wnd_colidx       WndPrevCharColIdx( const char *buff, wnd_colidx colidx );
 extern wnd_colidx       WndLastCharColIdx( wnd_line_piece *line );
 extern wnd_colidx       WndCharColIdx( const char *buff, wnd_colidx colidx );
 
 extern bool             WndDoingRefresh;
-extern gui_menu_struct  *WndMainMenuPtr;
+extern gui_menu_items   *WndMainMenuPtr;
 extern gui_menu_struct  *WndPopupMenuPtr;
 
 extern bool             WndHaveUserStatusText;

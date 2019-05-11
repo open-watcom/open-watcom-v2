@@ -32,7 +32,7 @@
 
 typedef struct global_seg {
     struct global_seg   *link;
-    segment_id          segment;
+    segment_id          segid;
     unsigned_32         size;
     bool                initialized;
 } global_seg;

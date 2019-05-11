@@ -40,8 +40,6 @@
 #include "ioinit.h"
 #include "rtspawn.h"
 
-#include <stdlib.h>
-
 
 static  char            IOSysInitialized = { 0 };
 

@@ -36,6 +36,7 @@
 //
 
 #include "ftnstd.h"
+#include <string.h>
 #include "rundat.h"
 #include "errcod.h"
 #include "pgmacc.h"
@@ -46,8 +47,6 @@
 #include "unfmtin.h"
 #include "rdutils.h"
 #include "unfmtutl.h"
-
-#include <string.h>
 
 
 /* Forward declarations */

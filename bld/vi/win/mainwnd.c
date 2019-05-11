@@ -31,7 +31,6 @@
 
 
 #include "vi.h"
-#include <malloc.h>
 #include "window.h"
 #include "win.h"
 #include "wclbproc.h"

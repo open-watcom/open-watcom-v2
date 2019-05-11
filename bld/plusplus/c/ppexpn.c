@@ -990,3 +990,57 @@ static bool CStart( void )
     }
     return( true );
 }
+
+static void stringize( char *s )
+{
+    char    *d;
+
+    d = s;
+    while( *s != '\0' ) {
+        if( s[0] == '\\' ) {
+            if( s[1] == '\\' || s[1] == '\"' ) {
+                s++;
+            }
+        }
+        *d++ = *s++;
+    }
+    *d = '\0';
+}
+
+TOKEN Process_Pragma( bool internal )
+{
+    PpNextToken();
+    if( CurToken == T_LEFT_PAREN ) {
+        PpNextToken();
+        if( CurToken == T_STRING ) {
+            char        *token_buf;
+
+            token_buf = CMemAlloc( strlen( Buffer ) + 1 );
+            strcpy( token_buf, Buffer );
+            PpNextToken();
+            if( CurToken == T_RIGHT_PAREN ) {
+                ppctl_t old_ppctl;
+
+                stringize( token_buf );
+                InsertReScanPragmaTokens( token_buf, internal );
+                // call CPragma()
+                old_ppctl = PPControl;
+                PPCTL_ENABLE_EOL();
+                CPragma();
+                PPControl = old_ppctl;
+            } else {
+                /* error, incorrect syntax of the operator _Pragma() */
+            }
+            CMemFree( (void *)token_buf );
+            PpNextToken();
+        } else {
+            /* error, incorrect syntax of the operator _Pragma() */
+        }
+    } else {
+        InsertToken( CurToken, Buffer, internal );
+        strcpy( Buffer, "_Pragma" );
+        TokenLen = strlen( Buffer );
+        CurToken = T_ID;
+    }
+    return( CurToken );
+}

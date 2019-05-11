@@ -32,7 +32,7 @@
 
 #include "drwatcom.h"
 #include <ctype.h>
-#include "menu.h"
+#include "menu.rh"
 
 #define PIPE_BUF_SIZE   1024
 

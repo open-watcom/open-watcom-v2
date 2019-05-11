@@ -1,5 +1,5 @@
 #include "asmrcmsg.h"
-#include "wreslang.h"
+#include "wreslang.rh"
 
 STRINGTABLE
 BEGIN

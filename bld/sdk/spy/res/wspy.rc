@@ -1,7 +1,7 @@
 #include <windows.h>
 #include "banner.h"
-#include "about.h"
-#include "spyrc.h"
+#include "about.rh"
+#include "spy.rh"
 
 
 #define FIRST_COPYRIGHT_YEAR 1993

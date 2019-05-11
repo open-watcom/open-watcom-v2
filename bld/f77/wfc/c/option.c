@@ -31,6 +31,9 @@
 
 
 #include "ftnstd.h"
+#include <ctype.h>
+#include <string.h>
+#include <stdio.h>
 #include "progsw.h"
 #include "errcod.h"
 #include "cpopt.h"
@@ -48,10 +51,6 @@
 #include "fmacros.h"
 #include "option.h"
 #include "boot77.h"
-#include <stdlib.h>
-#include <ctype.h>
-#include <string.h>
-#include <stdio.h>
 
 
 extern  void            ProcPragma( char * );

@@ -62,7 +62,7 @@ hw_reg_set      CalcSegment( cg_sym_handle sym, cg_class class ) {
 /*********************************************************************/
 
     fe_attr     attr;
-    segment_id  id;
+    segment_id  segid;
     hw_reg_set  *reg;
 
     if( class == CG_TBL || class == CG_VTB || class == CG_CLB ) {
@@ -75,8 +75,8 @@ hw_reg_set      CalcSegment( cg_sym_handle sym, cg_class class ) {
     } else {
         attr = EMPTY;
     }
-    id = AskSegID( sym, class );
-    reg = FEAuxInfo( (pointer)(pointer_int)id, PEGGED_REGISTER );
+    segid = AskSegID( sym, class );
+    reg = FEAuxInfo( (pointer)(pointer_int)segid, PEGGED_REGISTER );
     if( reg != NULL && !HW_CEqual( *reg, HW_EMPTY ) ) {
         if( HW_COvlap( *reg, HW_SEGS ) )
             return( *reg );
@@ -86,20 +86,20 @@ hw_reg_set      CalcSegment( cg_sym_handle sym, cg_class class ) {
 #if _TARGET & _TARG_80386
         if( _IsTargetModel( FLAT_MODEL ) )
             return( HW_CS ); /* all have same CS */
-        if( AskCodeSeg() == id ) {
+        if( AskCodeSeg() == segid ) {
             return( HW_CS );
         }
 #endif
     } else {
         if( _IsTargetModel(FLAT_MODEL) && _IsntTargetModel(FLOATING_DS) )
             return(HW_DS);
-        if( AskCodeSeg() == id ) {
+        if( AskCodeSeg() == segid ) {
             /* COMDAT's might be allocated by some other module */
             if( attr & FE_COMMON )
                 return( HW_EMPTY );
-            return( HW_CS ); /* 89-09-01 */
+            return( HW_CS );
         }
-        if( AskSegPrivate( id ) )
+        if( AskSegIsPrivate( segid ) )
             return( HW_EMPTY );
         if( _IsntTargetModel( FLOATING_DS ) )
             return( HW_DS );
@@ -111,8 +111,8 @@ hw_reg_set      CalcSegment( cg_sym_handle sym, cg_class class ) {
 }
 
 
-name    *AddrConst( name *value, segment_id seg, constant_type_class const_type )
-/*******************************************************************************/
+name    *AddrConst( name *value, segment_id segid, constant_type_class const_type )
+/*********************************************************************************/
 {
     hw_reg_set  reg;
 
@@ -123,14 +123,14 @@ name    *AddrConst( name *value, segment_id seg, constant_type_class const_type 
             reg = CalcSegment( value->v.symbol, value->m.memory_type );
         }
         if( HW_CEqual( reg, HW_EMPTY ) ) {
-            return( AllocAddrConst( value, seg, const_type, U2 ) );
+            return( AllocAddrConst( value, segid, const_type, U2 ) );
         } else {
             return( AllocRegName( reg ) );
         }
     case CONS_OFFSET:
-        return( AllocAddrConst( value, seg, const_type, WD ) );
+        return( AllocAddrConst( value, segid, const_type, WD ) );
     case CONS_ADDRESS:
-        return( AllocAddrConst( value, seg, const_type, CP ) );
+        return( AllocAddrConst( value, segid, const_type, CP ) );
     default:
         _Zoiks( ZOIKS_115 );
         return( NULL );
@@ -167,15 +167,15 @@ name    *GetSegment( name *op ) {
 /*****************************************/
 
     hw_reg_set  reg;
-    segment_id  seg;
+    segment_id  segid;
 
     reg = CalcSegment( op->v.symbol, op->m.memory_type );
     if( !HW_CEqual( reg, HW_EMPTY ) )
         return( AllocRegName( reg ) );
-    seg = AskSegID( op->v.symbol, op->m.memory_type );
-    if( AskSegNear( seg ) )
+    segid = AskSegID( op->v.symbol, op->m.memory_type );
+    if( AskSegIsNear( segid ) )
         return( AddrConst( NULL, AskBackSeg(), CONS_SEGMENT ) );
-    return( AddrConst( op, seg, CONS_SEGMENT ) );
+    return( AddrConst( op, segid, CONS_SEGMENT ) );
 }
 
 name    *NearSegment( void ) {
@@ -237,7 +237,7 @@ cg_type NamePtrType( name *op ) {
     if( op->n.class == N_MEMORY ) {
         if( op->m.memory_type == CG_FE || op->m.memory_type == CG_BACK ) {
             sym = op->v.symbol;
-            if( AskNameCode( sym, op->m.memory_type ) ) {
+            if( AskNameIsCode( sym, op->m.memory_type ) ) {
                 if( op->m.memory_type == CG_FE ) {
                     if( FEAttr( sym ) & FE_PROC ) {
                         if( *(call_class *)FindAuxInfoSym( sym, CALL_CLASS ) & FAR_CALL )
@@ -249,7 +249,7 @@ cg_type NamePtrType( name *op ) {
                 } else {
                     return( TY_HUGE_POINTER );
                 }
-            } else if( AskSegPrivate( AskSegID( sym, op->m.memory_type ) )
+            } else if( AskSegIsPrivate( AskSegID( sym, op->m.memory_type ) )
                         || _IsTargetModel( FLOATING_DS ) ) {
                 if( op->m.memory_type == CG_FE &&
                     ( FEAttr( sym ) & FE_ONESEG ) ) {
@@ -283,7 +283,7 @@ cg_type NamePtrType( name *op ) {
   bool    SegOver( name *op ) {
 /*************************************/
 
-    segment_id  id;
+    segment_id  segid;
 
     if( op->n.class == N_INDEXED ) {
         if( op->i.index->n.class != N_CONSTANT && op->i.index->n.size != WORD_SIZE )
@@ -298,11 +298,11 @@ cg_type NamePtrType( name *op ) {
         case CG_FE:
         case CG_BACK:
         case CG_LBL:
-            id = AskSegID( op->v.symbol, op->m.memory_type );
-            if( AskSegPrivate( id ) ) {
+            segid = AskSegID( op->v.symbol, op->m.memory_type );
+            if( AskSegIsPrivate( segid ) ) {
                 return( true );
             }
-            if( id == AskCodeSeg() && _IsntTargetModel( FLAT_MODEL ) ) {
+            if( segid == AskCodeSeg() && _IsntTargetModel( FLAT_MODEL ) ) {
                 return( true );
             }
             if( _IsTargetModel( FLOATING_SS ) && _IsTargetModel( FLOATING_DS ) ) {
@@ -322,7 +322,7 @@ cg_type NamePtrType( name *op ) {
 bool    LoadAToMove( instruction *ins ) {
 /***********************************************/
 
-    segment_id  seg;
+    segment_id  segid;
     name        *op;
 
     if( _IsTargetModel( INDEXED_GLOBALS ) )
@@ -333,14 +333,14 @@ bool    LoadAToMove( instruction *ins ) {
     if( op->n.class != N_MEMORY )
         return( false );
     ins->head.opcode = OP_MOV;
-    seg = AskSegID( op->v.symbol, op->m.memory_type );
-    if( AskSegNear( seg ) ) {
-        seg = AskBackSeg();
+    segid = AskSegID( op->v.symbol, op->m.memory_type );
+    if( AskSegIsNear( segid ) ) {
+        segid = AskBackSeg();
     }
     if( ins->type_class == WD || ins->type_class == SW ) {
-        ins->operands[0] = AddrConst( op, seg, CONS_OFFSET );
+        ins->operands[0] = AddrConst( op, segid, CONS_OFFSET );
     } else { /* must be a far pointer */
-        ins->operands[0] = AddrConst( op, seg, CONS_ADDRESS );
+        ins->operands[0] = AddrConst( op, segid, CONS_ADDRESS );
     }
     return( true );
 }

@@ -34,3 +34,4 @@ extern void DropPrintALine( const char *, ... );
 extern void DropALineDammit( void );
 extern void DropALine( void );
 extern void StartPrint( void );
+extern void EndPrint( void );

@@ -49,8 +49,10 @@
 #include <i86.h>
 #include "uidef.h"
 #include "uivirt.h"
+#include "uiintern.h"
 #include "uiextrn.h"
 #include "ctkeyb.h"
+#include "uicurshk.h"
 
 
 static MONITOR ui_data = {
@@ -291,7 +293,10 @@ static int cd_update( SAREA *area )
 {
     unsigned short  offset; /* pixel offset into buffer to begin update at */
     unsigned short  count;  /* number of pixels to update */
-    int     row, col, type, i;
+    int             row;
+    int             col;
+    int             type;
+    int             i;
 
     row = UIData->cursor_row;
     col = UIData->cursor_col;
@@ -323,28 +328,28 @@ static int cd_refresh( bool must )
     return( 0 );
 }
 
-static int cd_getcur( ORD *row, ORD *col, CURSOR_TYPE *type, CATTR *attr )
-/************************************************************************/
+static int UIHOOK cd_getcur( CURSORORD *crow, CURSORORD *ccol, CURSOR_TYPE *ctype, CATTR *cattr )
+/***********************************************************************************************/
 {
-    *row = UIData->cursor_row;
-    *col = UIData->cursor_col;
-    *type = UIData->cursor_type;
-    *attr = 0;
+    *crow = UIData->cursor_row;
+    *ccol = UIData->cursor_col;
+    *ctype = UIData->cursor_type;
+    *cattr = CATTR_NONE;
     return( 0 );
 }
 
 
-static int cd_setcur( ORD row, ORD col, CURSOR_TYPE typ, CATTR attr )
-/*******************************************************************/
+static int UIHOOK cd_setcur( CURSORORD crow, CURSORORD ccol, CURSOR_TYPE ctype, CATTR cattr )
+/*******************************************************************************************/
 {
-    /* unused parameters */ (void)attr;
+    /* unused parameters */ (void)cattr;
 
-    if( ( typ != UIData->cursor_type ) ||
-        ( row != UIData->cursor_row ) ||
-        ( col != UIData->cursor_col ) ) {
-        UIData->cursor_type = typ;
-        UIData->cursor_row = row;
-        UIData->cursor_col = col;
+    if( ( ctype != UIData->cursor_type ) ||
+        ( crow != UIData->cursor_row ) ||
+        ( ccol != UIData->cursor_col ) ) {
+        UIData->cursor_type = ctype;
+        UIData->cursor_row = crow;
+        UIData->cursor_col = ccol;
         newcursor();
         physupdate( NULL );
     }
@@ -369,21 +374,21 @@ static ui_event cd_event( void )
 }
 
 Display ConsDisplay = {
-        cd_init,
-        cd_fini,
-        cd_update,
-        cd_refresh,
-        cd_getcur,
-        cd_setcur,
-        cd_event,
+    cd_init,
+    cd_fini,
+    cd_update,
+    cd_refresh,
+    cd_getcur,
+    cd_setcur,
+    cd_event,
 };
 
 Display QnxWDisplay = {
-        cd_init,
-        cd_fini,
-        cd_update,
-        cd_refresh,
-        cd_getcur,
-        cd_setcur,
-        td_event,
+    cd_init,
+    cd_fini,
+    cd_update,
+    cd_refresh,
+    cd_getcur,
+    cd_setcur,
+    td_event,
 };

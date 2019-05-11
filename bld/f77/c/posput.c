@@ -31,6 +31,8 @@
 
 
 #include "ftnstd.h"
+#include <string.h>
+#include <limits.h>
 #include "fio.h"
 #include "posio.h"
 #include "sysbuff.h"
@@ -40,10 +42,6 @@
 #include "poserr.h"
 #include "posflush.h"
 #include "posdat.h"
-
-#include <stdlib.h>
-#include <string.h>
-#include <limits.h>
 
 #include "clibext.h"
 

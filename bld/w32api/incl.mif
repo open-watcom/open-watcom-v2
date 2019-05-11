@@ -8,7 +8,9 @@ w32api_distrib_lib  = 1
 !include cproj.mif
 !include defrule.mif
 
-crwatcnt_sp = crwatcnt.sp
+crwatpro_sp = crwatpro.sp
+
+additional_cleanup = $(crwatpro_sp) depends.dep
 
 incl_dir = $(w32api_dir)/include
 
@@ -485,5 +487,5 @@ $(dirs):
 
 clean: .SYMBOLIC
     rm -f *.h *.rh *.tmp *.lst *.err
-    rm -f *.sp depends.dep
+    rm -f $(additional_cleanup)
     rm -rf $(dirs)

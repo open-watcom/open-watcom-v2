@@ -82,7 +82,7 @@ static bool cgSegIdConst( SYMBOL sym, type_flag flags, SEGID_CONTROL control )
 
 static fe_seg_id cgSegIdBased( SYMBOL sym, type_flag flags )
 {
-    fe_seg_id       id;         // - segment id
+    fe_seg_id       segid;      // - segment id
     target_offset_t align;      // - alignment for symbol
     target_size_t   size;       // - size of symbol
     TYPE            base_mod;   // - __based modifier
@@ -99,12 +99,12 @@ static fe_seg_id cgSegIdBased( SYMBOL sym, type_flag flags )
 
     if( SymIsExtern( sym ) ) {
         // not defined in this compilation unit
-        id = SegmentImport();
+        segid = SegmentImport();
     } else {
-        id = SEG_NULL;
+        segid = SEG_NULL;
         switch( flags & TF1_BASED ) {
         case TF1_BASED_STRING:
-            id = SegmentFindBased( sym->sym_type );
+            segid = SegmentFindBased( sym->sym_type );
             break;
         case TF1_BASED_SELF:
         case TF1_BASED_VOID:
@@ -112,21 +112,21 @@ static fe_seg_id cgSegIdBased( SYMBOL sym, type_flag flags )
         case TF1_BASED_FETCH:
         case TF1_BASED_ADD:
             base_mod = BasedType( sym->sym_type );
-            id = CgSegIdData( (SYMBOL)base_mod->u.m.base, SI_DEFAULT );
+            segid = CgSegIdData( (SYMBOL)base_mod->u.m.base, SI_DEFAULT );
             break;
         DbgDefault( "invalid based cgsegid call" );
         }
-        if( id != SEG_NULL ) {
+        if( segid != SEG_NULL ) {
             align = cgSegIdAlign( sym, flags );
-            id = SegmentAddSym( sym, id, size, align );
+            segid = SegmentAddSym( sym, segid, size, align );
         }
     }
-    return( id );
+    return( segid );
 }
 
 static fe_seg_id cgSegIdThread( SYMBOL sym, type_flag flags )
 {
-    fe_seg_id       id;         // - segment id
+    fe_seg_id   segid;  // - segment id
 
     /* unused parameters */ (void)flags;
 
@@ -143,72 +143,72 @@ static fe_seg_id cgSegIdThread( SYMBOL sym, type_flag flags )
 
     if( SymIsExtern( sym ) ) {
         // not defined in this compilation unit
-        id = SegmentImport();
+        segid = SegmentImport();
     } else {
-        id = SEG_TLS;
+        segid = SEG_TLS;
     }
-    return( id );
+    return( segid );
 }
 
 static fe_seg_id cgSegIdNearVariable( SYMBOL sym, type_flag flags,
     target_size_t size,
     SEGID_CONTROL control )
 {
-    fe_seg_id id;
+    fe_seg_id segid;
     target_offset_t align;
 
     align = cgSegIdAlign( sym, flags );
     if( SymIsExtern( sym ) ) {
         // somewhere in DGROUP (SEG_BSS,SEG_DATA,SEG_CONST2,SEG_STACK)
         // decision about NEAR/FAR done in cgSegIdVariable
-        id = SegmentAddSym( sym, SEG_DATA, size, align );
+        segid = SegmentAddSym( sym, SEG_DATA, size, align );
     } else if( control & SI_ALL_ZERO ) {
         // defined to be zero in this compilation unit
-        id = SegmentAddSym( sym, SEG_BSS, size, align );
+        segid = SegmentAddSym( sym, SEG_BSS, size, align );
     } else if( !cgSegIdConst( sym, flags, control ) ) {
-        id = SegmentAddSym( sym, SEG_DATA, size, align );
+        segid = SegmentAddSym( sym, SEG_DATA, size, align );
     } else {
-        id = SegmentAddSym( sym, SEG_CONST2, size, align );
+        segid = SegmentAddSym( sym, SEG_CONST2, size, align );
     }
-    return( id );
+    return( segid );
 }
 
 static fe_seg_id cgSegIdFarVariable( SYMBOL sym, type_flag flags,
     target_size_t size, SEGID_CONTROL control )
 {
-    fe_seg_id id;
+    fe_seg_id segid;
     target_offset_t align;
 
     align = cgSegIdAlign( sym, flags );
     if( SymIsExtern( sym ) ) {
         // not defined in this compilation unit
-        id = SegmentImport();
+        segid = SegmentImport();
     } else if( !cgSegIdConst( sym, flags, control ) ) {
-        id = SegmentAddFar( size, align );
+        segid = SegmentAddFar( size, align );
     } else {
-        id = SegmentAddConstFar( size, align );
+        segid = SegmentAddConstFar( size, align );
     }
-    return( id );
+    return( segid );
 }
 
 static fe_seg_id cgSegIdHugeVariable( SYMBOL sym, type_flag flags,
     target_size_t size, SEGID_CONTROL control )
 {
-    fe_seg_id id;
+    fe_seg_id segid;
 
     if( SymIsExtern( sym ) ) {
-        id = SegmentImport();
+        segid = SegmentImport();
     } else if( cgSegIdConst( sym, flags, control ) ) {
-        id = SegmentAddConstHuge( size );
+        segid = SegmentAddConstHuge( size );
     } else {
-        id = SegmentAddHuge( size );
+        segid = SegmentAddHuge( size );
     }
-    return( id );
+    return( segid );
 }
 
 static fe_seg_id cgSegIdVariable( SYMBOL sym, type_flag flags, SEGID_CONTROL control )
 {
-    fe_seg_id id;
+    fe_seg_id segid;
     target_size_t size;
 
     size = CgMemorySize( sym->sym_type );
@@ -221,11 +221,11 @@ static fe_seg_id cgSegIdVariable( SYMBOL sym, type_flag flags, SEGID_CONTROL con
     }
 #endif
     if( flags & TF1_NEAR ) {
-        id = cgSegIdNearVariable( sym, flags, size, control );
+        segid = cgSegIdNearVariable( sym, flags, size, control );
     } else if( flags & TF1_HUGE ) {
-        id = cgSegIdHugeVariable( sym, flags, size, control );
+        segid = cgSegIdHugeVariable( sym, flags, size, control );
     } else if( flags & TF1_FAR ) {
-        id = cgSegIdFarVariable( sym, flags, size, control );
+        segid = cgSegIdFarVariable( sym, flags, size, control );
     } else {
         bool assume_near = true;
         if( IsBigData() ) {
@@ -241,82 +241,82 @@ static fe_seg_id cgSegIdVariable( SYMBOL sym, type_flag flags, SEGID_CONTROL con
             }
         }
         if( assume_near ) {
-            id = cgSegIdNearVariable( sym, flags, size, control );
+            segid = cgSegIdNearVariable( sym, flags, size, control );
         } else {
-            id = cgSegIdFarVariable( sym, flags, size, control );
+            segid = cgSegIdFarVariable( sym, flags, size, control );
         }
     }
-    return( id );
+    return( segid );
 }
 
 fe_seg_id CgSegIdFunction( SYMBOL sym )
 /*************************************/
 {
-    fe_seg_id id;
+    fe_seg_id segid;
     type_flag flags;
 
-    id = sym->segid;
-    if( id == SEG_NULL ) {
+    segid = sym->segid;
+    if( segid == SEG_NULL ) {
         if( SymIsInitialized( sym ) ) {
             // defined in this compilation unit
-            id = SegmentForDefinedFunc( sym );
+            segid = SegmentForDefinedFunc( sym );
         } else {
             TypeGetActualFlags( sym->sym_type, &flags );
             if( flags & TF1_FAR ) {
-                id = SegmentImport();
+                segid = SegmentImport();
             } else if( IsBigCode() ) {
-                id = SegmentImport();
+                segid = SegmentImport();
             } else {
-                id = SegmentDefaultCode();
+                segid = SegmentDefaultCode();
             }
         }
-        sym->segid = id;
+        sym->segid = segid;
     }
-    return( id );
+    return( segid );
 }
 
 static fe_seg_id cgSegIdAuto( SYMBOL sym )
 {
-    fe_seg_id id;
+    fe_seg_id segid;
 
-    id = sym->segid;
-    if( id == SEG_NULL ) {
-        id = SEG_STACK;
-        sym->segid = id;
+    segid = sym->segid;
+    if( segid == SEG_NULL ) {
+        segid = SEG_STACK;
+        sym->segid = segid;
     }
-    return( id );
+    return( segid );
 }
 
 fe_seg_id CgSegIdData( SYMBOL sym, SEGID_CONTROL control )
 /********************************************************/
 {
-    fe_seg_id id;
+    fe_seg_id segid;
     type_flag flags;
 
     if( SymIsAutomatic( sym ) ) {
-        id = cgSegIdAuto( sym );
+        segid = cgSegIdAuto( sym );
     } else if( SymIsFunction( sym ) ) {
-        id = CgSegIdFunction( sym );
+        segid = CgSegIdFunction( sym );
     } else {
-        id = sym->segid;
-        if( id == SEG_NULL ) {
+        segid = sym->segid;
+        if( segid == SEG_NULL ) {
             TypeGetActualFlags( sym->sym_type, &flags );
             if( flags & TF1_THREAD ) {
-                id = cgSegIdThread( sym, flags );
+                segid = cgSegIdThread( sym, flags );
             } else if( flags & TF1_BASED ) {
-                id = cgSegIdBased( sym, flags );
+                segid = cgSegIdBased( sym, flags );
 #if _CPU == _AXP || COMP_CFG_COFF == 1
             } else if( SymIsComdatData( sym ) ) {
-                id = SegmentAddComdatData( sym, control );
+                segid = SegmentAddComdatData( sym, control );
 #endif
             } else {
-                id = cgSegIdVariable( sym, flags, control );
+                segid = cgSegIdVariable( sym, flags, control );
             }
-            sym->segid = id;
+            sym->segid = segid;
         }
-        SegmentMarkUsed( id );
+        SegmentMarkUsed( segid );
     }
-    return( id );
+    return( segid );
 }
 
 fe_seg_id CgSegId( SYMBOL sym )

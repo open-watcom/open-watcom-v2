@@ -231,7 +231,7 @@ _WMRTLINK extern long double nanl(const char *__ignored);
 _WMRTLINK extern double nanl(const char *__ignored);
 #endif
 
-:segment DOS | QNX | RDOS
+:segment BITS16
 #ifdef _M_I86
  #define FP_ILOGBNAN  (-32767-1)
  #define FP_ILOGB0    32767
@@ -239,7 +239,7 @@ _WMRTLINK extern double nanl(const char *__ignored);
 :endsegment
  #define FP_ILOGBNAN  (-2147483647-1)
  #define FP_ILOGB0    2147483647
-:segment DOS | QNX | RDOS
+:segment BITS16
 #endif
 :endsegment
 
@@ -325,7 +325,11 @@ _WCRTLINK extern int _fmsbintoieee( float *__x, float *__y );
 ::
 :include extepi.sp
 
+:segment !INTEL_ONLY
 #if !defined(__NO_MATH_OPS) && defined(_M_IX86)
+:elsesegment
+#if !defined(__NO_MATH_OPS)
+:endsegment
 /*
     Defining the __NO_MATH_OPS macro will stop the compiler from
     recognizing the following functions as intrinsic operators.

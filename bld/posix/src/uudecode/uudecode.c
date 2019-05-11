@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -149,7 +150,7 @@ int main(int argc, char **argv)
         begin_flag = 1;
         /* search for header line */
         for(;;) {
-            if (fgets(buf, sizeof buf, in) == NULL) {
+            if (fgets(buf, sizeof( buf ), in) == NULL) {
                 if( begin_flag == 0 ) {
                     fprintf(stderr, "No begin line\n");
                     exit(3);
@@ -215,7 +216,7 @@ int main(int argc, char **argv)
 
         decode(in, out);
 
-        if( fgets(buf, sizeof buf, in) == NULL || strcmp(buf, "end\n") ) {
+        if( fgets(buf, sizeof( buf ), in) == NULL || strcmp(buf, "end\n") ) {
             fprintf(stderr, "No end line\n");
             exit(5);
         }
@@ -238,7 +239,7 @@ void decode( FILE *in, FILE *out ) {
     end_cut = 0;
     for(;;) {
         /* for each input line */
-        if (fgets(buf, sizeof buf, in) == NULL) {
+        if (fgets(buf, sizeof( buf ), in) == NULL) {
             printf("Short file\n");
             exit(10);
         }
@@ -256,7 +257,7 @@ void decode( FILE *in, FILE *out ) {
                 } else {
                     after_blank = 0;
                 }
-                if( fgets(buf, sizeof buf, in) == NULL) {
+                if( fgets(buf, sizeof( buf ), in) == NULL) {
                     printf("Short file\n");
                     exit(10);
                 }
@@ -285,7 +286,7 @@ void decode( FILE *in, FILE *out ) {
                     found_begin = 1;
                     break;
                 }
-                if( fgets(buf, sizeof buf, in) == NULL ) {
+                if( fgets(buf, sizeof( buf ), in) == NULL ) {
                     printf("Short file\n");
                     exit(10);
                 }

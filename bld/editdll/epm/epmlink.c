@@ -28,11 +28,9 @@
 *
 ****************************************************************************/
 
-#include <process.h>
 #include <string.h>
-#include <malloc.h>
 #include <stdlib.h>
-
+#include <process.h>
 #define INCL_WINDDE
 #define INCL_WINWINDOWMGR
 #define INCL_WININPUT

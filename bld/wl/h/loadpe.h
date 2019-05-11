@@ -31,12 +31,14 @@
 
 #include "exepe.h"
 
-#define PE_DEFAULT_BASE     (0x400000UL)
-#define PE_DEF_STACK_SIZE   (1024 * 1024UL)
-#define PE_DEF_STACK_COMMIT (64 * 1024UL)
-#define PE_DEF_HEAP_SIZE    (8 * 1024UL)
-#define PE_DEF_HEAP_COMMIT  (4 * 1024UL)
-#define DEF_VALUE           (0xFFFFFFFFUL)
+#define DEF_VALUE           CONSTU32( 0xFFFFFFFF )
+#define _1kB                CONSTU32( 1024 )
+
+#define PE_DEFAULT_BASE     CONSTU32( 0x400000 )
+#define PE_DEF_STACK_SIZE   (1024 * _1kB)
+#define PE_DEF_STACK_COMMIT (64 * _1kB)
+#define PE_DEF_HEAP_SIZE    (8 * _1kB)
+#define PE_DEF_HEAP_COMMIT  (4 * _1kB)
 
 extern void             DoAddResource( char * );
 extern void             FiniPELoadFile( void );

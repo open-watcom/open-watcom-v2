@@ -32,7 +32,7 @@
 
 
 #include "drwatcom.h"
-#include "memory.h"
+#include "memory.rh"
 #include "jdlg.h"
 
 

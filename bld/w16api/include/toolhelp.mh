@@ -15,7 +15,7 @@
 
 :include cpluspro.sp
 
-#pragma pack( push, 1 )
+#pragma pack( __push, 1 )
 
 /* Maximum sizes */
 #define MAX_DATA        11
@@ -370,7 +370,7 @@ BOOL WINAPI     TaskSwitch( HTASK, DWORD );
 void WINAPI     TerminateApp( HTASK, WORD );
 BOOL WINAPI     TimerCount( LPTIMERINFO );
 
-#pragma pack( pop )
+#pragma pack( __pop )
 
 :include cplusepi.sp
 

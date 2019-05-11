@@ -39,6 +39,7 @@
 #include "wterm.h"
 #include "uidef.h"
 #include "uishift.h"
+#include "uiintern.h"
 #include "uiextrn.h"
 #include "trie.h"
 #include "tixparse.h"
@@ -51,10 +52,6 @@
 #define NUM_ELTS( a )   (sizeof( a ) / sizeof( a[0] ))
 
 enum {
-    EV_STICKY_FUNC      = 0xff0,
-    EV_STICKY_SHIFT,
-    EV_STICKY_CTRL,
-    EV_STICKY_ALT,
     S_FUNC              = S_CAPS
 };
 
@@ -274,8 +271,8 @@ static void ck_arm( void )
 
 #define PUSHBACK_SIZE   32
 
-static char     UnreadBuffer[PUSHBACK_SIZE];
-static int      UnreadPos = sizeof( UnreadBuffer );
+static unsigned char    UnreadBuffer[PUSHBACK_SIZE];
+static int              UnreadPos = sizeof( UnreadBuffer );
 
 int nextc( int n )      // delay in 0.1 seconds -- not to exceed 9
 /****************/
@@ -357,17 +354,17 @@ ui_event ck_keyboardevent( void )
         real_shift |= S_ALT;
         break;
     case EV_SHIFT_RELEASE:
-        if( !(real_shift & S_SHIFT) )
+        if( (real_shift & S_SHIFT) == 0 )
             ui_ev = EV_NO_EVENT;
         real_shift &= ~S_SHIFT;
         break;
     case EV_CTRL_RELEASE:
-        if( !(real_shift & S_CTRL) )
+        if( (real_shift & S_CTRL) == 0 )
             ui_ev = EV_NO_EVENT;
         real_shift &= ~S_CTRL;
         break;
     case EV_ALT_RELEASE:
-        if( !(real_shift & S_ALT) )
+        if( (real_shift & S_ALT) == 0 )
             ui_ev = EV_NO_EVENT;
         real_shift &= ~S_ALT;
         break;
@@ -417,7 +414,7 @@ ui_event ck_keyboardevent( void )
             }
             sticky &= ~S_FUNC;
         }
-        if( !(real_shift & S_CTRL) ) {
+        if( (real_shift & S_CTRL) == 0 ) {
             /*
                 If the ctrl key isn't down (won't ever be on a terminal)
                 then we want to see certain CTRL-? combinations come back
@@ -461,13 +458,13 @@ ui_event ck_keyboardevent( void )
                 }
             }
         }
-        if( ui_ev ) {
+        if( ui_ev != EV_NO_EVENT ) {
             UIDebugPrintf1( "UI: Something read: %4.4X", ui_ev );
         }
         return( ui_ev );
     }
     shift_state = real_shift;
-    if( ui_ev ) {
+    if( ui_ev != EV_NO_EVENT ) {
         UIDebugPrintf1( "UI: Something read: %4.4X", ui_ev );
     }
     return( ui_ev );

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -29,15 +30,20 @@
 ****************************************************************************/
 
 
+#include "dosswpcf.h"
+
+
 typedef enum {
     IN_EMS,
     IN_XMS,
     ON_DISK
 } where_parm;
 
+typedef unsigned long   xhandle;
+
 extern bool CheckPointMem( where_parm where, unsigned max, char *f_buff );
 extern void CheckPointRestore( where_parm where );
 
-#if defined( USE_XMS ) || defined( USE_EMS )
-extern void XSwapInit( int count, long *handles, unsigned short *sizes );
+#if defined( USE_XMEM )
+extern void XSwapInit( int count, xhandle *handles, unsigned short *sizes );
 #endif

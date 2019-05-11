@@ -29,7 +29,6 @@
 ****************************************************************************/
 
 #include "ftnstd.h"
-#include <stdlib.h>
 #ifdef __WINDOWS__
   #include <windows.h>
 #elif defined( __NT__ )

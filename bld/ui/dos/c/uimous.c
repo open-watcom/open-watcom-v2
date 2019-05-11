@@ -145,13 +145,13 @@ bool UIAPI initmouse( init_mode install )
 /***************************************/
 {
     MouseInstalled = false;
-    if( install > INIT_MOUSELESS && mouse_installed() ) {
-        if( install > INIT_MOUSE ) {
+    if( install != INIT_MOUSELESS && mouse_installed() ) {
+        if( install == INIT_MOUSE_INITIALIZED ) {
             if( MouseDrvReset() != MOUSE_DRIVER_OK ) {
                 install = INIT_MOUSELESS;   /* mouse initialization failed */
             }
         }
-        if( install > INIT_MOUSELESS ) {
+        if( install != INIT_MOUSELESS ) {
             UIData->mouse_yscale = 1;
             UIData->mouse_xscale = 1;
             setupmouse();

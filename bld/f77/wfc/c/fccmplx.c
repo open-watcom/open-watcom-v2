@@ -104,7 +104,7 @@ static void DoCmplxOp( RTCODE rtn_id, cg_name a, cg_name b, cg_name c, cg_name d
 
 // Do a complex operation.
 
-    call_handle handle;
+    call_handle call;
     cg_type     typ;
     cg_type     r_typ;
 
@@ -118,12 +118,12 @@ static void DoCmplxOp( RTCODE rtn_id, cg_name a, cg_name b, cg_name c, cg_name d
     } else {
         r_typ = TY_COMPLEX;
     }
-    handle = InitCall( rtn_id );
-    CGAddParm( handle, a, typ );
-    CGAddParm( handle, b, typ );
-    CGAddParm( handle, c, typ );
-    CGAddParm( handle, d, typ );
-    SplitCmplx( CGCall( handle ), r_typ );
+    call = InitCall( rtn_id );
+    CGAddParm( call, a, typ );
+    CGAddParm( call, b, typ );
+    CGAddParm( call, c, typ );
+    CGAddParm( call, d, typ );
+    SplitCmplx( CGCall( call ), r_typ );
 }
 
 
@@ -545,7 +545,7 @@ static void    DoCmplxScalarOp( RTCODE rtn_id, cg_name a, cg_name b, cg_name s )
 
 // Do a complex operation.
 
-    call_handle handle;
+    call_handle call;
     cg_type     typ;
     cg_type     r_typ;
 
@@ -559,11 +559,11 @@ static void    DoCmplxScalarOp( RTCODE rtn_id, cg_name a, cg_name b, cg_name s )
     } else {
         r_typ = TY_COMPLEX;
     }
-    handle = InitCall( rtn_id );
-    CGAddParm( handle, a, typ );
-    CGAddParm( handle, b, typ );
-    CGAddParm( handle, s, PromoteIntType( CGType( s ) ) );
-    SplitCmplx( CGCall( handle ), r_typ );
+    call = InitCall( rtn_id );
+    CGAddParm( call, a, typ );
+    CGAddParm( call, b, typ );
+    CGAddParm( call, s, PromoteIntType( CGType( s ) ) );
+    SplitCmplx( CGCall( call ), r_typ );
 }
 
 

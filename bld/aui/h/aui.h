@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -46,8 +47,8 @@
 #define Say(x)              WndDisplayMessage( x, "Information", GUI_INFORMATION );
 #define Say2(y,x)           WndDisplayMessage( x, y, GUI_INFORMATION );
 
-#define MIN_DCLICK          100
-#define MAX_DCLICK          1500
+#define MIN_DCLICK          100 /* ms */
+#define MAX_DCLICK          1500 /* ms */
 #define MAX_MAGIC_STR       20
 #define WND_MAX_PIECE       UCHAR_MAX
 #define WND_NO_PIECE        UCHAR_MAX
@@ -118,9 +119,9 @@
 #define WndClrSwitches( w, x )      (w)->switches &= ~(x)
 #define WndSwitchOn( w, x )         (((w)->switches & (x)) != 0)
 #define WndSwitchOff( w, x )        (((w)->switches & (x)) == 0)
-#define WndNumPopups( w )           (w)->popup_num_items
-#define WndPopupMenu( w )           (w)->popupmenu
-#define WndSetPopUpMenu( w, x, n )  {(w)->popup_num_items = (n); (w)->popupmenu = (x);}
+#define WndNumPopups( w )           (w)->popup.num_items
+#define WndPopupMenu( w )           (w)->popup.menu
+#define WndSetPopUpMenu( w, n, x )  {(w)->popup.num_items = (n); (w)->popup.menu = (x);}
 
 typedef struct {
     unsigned char       area[SAVE_SIZE];
@@ -141,7 +142,6 @@ typedef int             wnd_colidx;
 typedef unsigned char   wnd_piece;
 
 typedef signed char     wnd_class;
-typedef unsigned long   wnd_update_list;
 
 typedef struct wnd_line_piece {
     const char  *text;                  // default ""
@@ -251,8 +251,7 @@ typedef struct _a_window {
     gui_ord                 mid_char_x;
     gui_ctl_id              last_popup;
     wnd_colidx              current_colidx;
-    int                     popup_num_items;
-    gui_menu_struct         *popupmenu;
+    gui_menu_items          popup;
     int                     dirtyrects;
     wnd_rect                dirty[1];
 } *a_window;
@@ -268,7 +267,7 @@ typedef bool        (WNDGETLINE)( a_window wnd, wnd_row row, wnd_piece piece, wn
 typedef void        (WNDNOTIFY)( a_window wnd, wnd_row row, wnd_piece piece );
 typedef void        (WNDBEGPAINT)( a_window wnd, wnd_row row, int num );
 typedef void        (WNDENDPAINT)( a_window wnd, wnd_row row, int num );
-typedef bool        (WNDCHKFLAGS)( wnd_update_list );
+typedef bool        (WNDCHKUPDATE)( void );
 typedef a_window    (WNDOPEN)( void );
 typedef a_window    (WNDCREATE)( char *, struct wnd_info *, wnd_class, void * );
 typedef void        (WNDCLOSE)( a_window );
@@ -287,10 +286,8 @@ typedef struct wnd_info {
     WNDNUMROWS              *numrows;
     WNDNEXTROW              *nextrow;
     WNDNOTIFY               *notify;
-    WNDCHKFLAGS             *chkflags;
-    wnd_update_list         flags;
-    int                     popup_num_items;
-    gui_menu_struct         *popupmenu;
+    WNDCHKUPDATE            *chkupdate;
+    gui_menu_items          popup;
 } wnd_info;
 
 typedef struct {
@@ -330,7 +327,7 @@ extern void                 *WndRealloc( void *, size_t );
 extern void                 WndFree( void * );
 extern void                 *WndMustAlloc( size_t );
 extern void                 *WndMustRealloc( void *, size_t );
-extern void                 WndCreateFloatingPopup( a_window, gui_point *, int, gui_menu_struct *, gui_ctl_id *id );
+extern void                 WndCreateFloatingPopup( a_window, gui_point *, const gui_menu_items *, gui_ctl_id *id );
 
 extern void                 WndFixedThumb( a_window );
 extern void                 WndSetThumbPos( a_window, int );
@@ -375,7 +372,6 @@ extern bool                 WndSearch( a_window, bool, int );
 extern void                 WndInitNumRows( a_window );
 extern void                 WndRXError( int );
 
-extern void                 WndFreshAll( void );
 extern a_window             WndNext( a_window );
 
 extern wnd_info             NoInfo;
@@ -391,6 +387,8 @@ extern WNDENDPAINT          NoEndPaint;
 extern WNDNOTIFY            NoNotify;
 extern WNDNUMROWS           NoNumRows;
 extern WNDNEXTROW           NoNextRow;
+
+#define NoChkUpdate         NULL
 
 extern WNDREFRESH           WndRefresh;
 extern WNDGETLINE           WndGetLine;
@@ -422,8 +420,6 @@ extern void                 Ring( void );
 
 extern void                 WndSysInit( void );
 extern void                 WndDoInput( void );
-extern void                 WndStartFreshAll( void );
-extern void                 WndEndFreshAll( void );
 extern void                 WndZapped( a_window );
 
 extern a_window             WndFindClass( a_window, wnd_class );
@@ -454,8 +450,8 @@ extern void                 WndCursorUp( a_window wnd );
 extern void                 WndScrollUp( a_window wnd );
 extern void                 WndSetVScrollRange( a_window wnd, wnd_row rows );
 extern void                 WndChooseNew( void );
-extern void                 WndKeyPopUp( a_window, gui_menu_struct * );
-extern void                 WndPopUp( a_window, gui_menu_struct * );
+extern void                 WndKeyPopUp( a_window, const gui_menu_struct * );
+extern void                 WndPopUp( a_window, const gui_menu_struct * );
 extern void                 WndMenuIgnoreAll( a_window wnd );
 extern void                 WndMenuRespectAll( a_window wnd );
 extern void                 WndMenuEnableAll( a_window wnd );
@@ -493,8 +489,8 @@ extern void                 WndGetRect( a_window wnd, gui_rect *rect );
 
 extern void                 WndStartChoose( a_window wnd );
 
-extern void                 WndCreateToolBar( gui_ord, bool, int, gui_toolbar_struct * );
-extern void                 WndCreateToolBarWithTips( gui_ord, bool, int, gui_toolbar_struct * );
+extern void                 WndCreateToolBar( gui_ord, bool, const gui_toolbar_items * );
+extern void                 WndCreateToolBarWithTips( gui_ord, bool, const gui_toolbar_items * );
 extern bool                 WndHaveToolBar( void );
 extern void                 WndCloseToolBar( void );
 extern gui_ord              WndToolHeight( void );
@@ -533,13 +529,13 @@ extern bool                 WndNextFromHistory( save_area *save, char *cmd );
 extern bool                 WndPrevFromHistory( save_area *save, char *cmd );
 extern void                 WndSaveToHistory( save_area *save, char *cmd );
 
-extern void                 WndSetDClick( int );
-extern int                  WndGetDClick( void );
+extern void                 WndSetDClick( unsigned dclick_ms );
+extern unsigned             WndGetDClick( void );
 
 extern char                 *WndLoadString( gui_res_id id );
-extern void                 NullPopupMenu( gui_menu_struct *menu );
+extern void                 NullPopupMenu( const gui_menu_struct *menu );
 
-extern void                 WndChangeMenuAll( gui_menu_struct *menu, int num_items, bool on, int bit );
+extern void                 WndChangeMenuAll( gui_menu_items *menus, bool on, int bit );
 extern gui_message_return   WndDisplayMessage( const char *msg, const char *cap, gui_message_type type );
 
 extern void                 WndRectToPos( gui_rect *rect, wnd_posn *posn, gui_coord *scale );
@@ -559,11 +555,17 @@ extern void                 WndGetGadgetSize( wnd_gadget_type type, gui_coord * 
 extern wnd_attr             WndMapTabAttr( wnd_attr );
 extern char                 WndBackgroundChar;
 
-#define DefPopUp( x )       (sizeof( x ) / sizeof( (x)[0] )), x
+#define PopUp( x )          (sizeof( x ) / sizeof( *(x) )), x
 #define NoPopUp             0, NULL
 
-#define WndMenuFields( x )  (sizeof( x ) / sizeof( (x)[0] )), x
-extern void                 WndSetMainMenu( gui_menu_struct *menu, int num_items );
+#define WndMenuFields( x )  (sizeof( x ) / sizeof( *(x) )), x
+extern void                 WndSetMainMenu( gui_menu_items *menus );
+
+/* following function are all window refresh hooks */
+/* may be defined in application otherwise default will be used */
+
+extern void                 WndStartFreshAll( void );
+extern void                 WndEndFreshAll( void );
 
 /* following function may be defined in application otherwise default will be used */
 
@@ -583,8 +585,7 @@ extern wnd_gadget_type      WndGadgetSecondary;
 
 /* following data must be defined in application */
 
-extern gui_menu_struct      WndMainMenu[];
-extern int                  WndNumMenus;
+extern gui_menu_items       WndMainMenu;
 
 /* following data may be defined in application otherwise default will be used */
 

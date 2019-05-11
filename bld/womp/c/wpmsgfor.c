@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -31,10 +32,11 @@
 
 #include "wpmsg.h"
 
-#pragma off(unreferenced)
+
 extern void MsgGet( int resourceid, char *buffer )
 /************************************************/
 {
+    /* unused parameters */ (void)resourceid;
+
     buffer[0] = '\0';
 }
-#pragma on(unreferenced)

@@ -98,16 +98,16 @@ void SetTrackWndDefault( void )
 void InitTrackWnd( HWND hwnd )
 {
     unsigned    i;
-    HMENU       mh;
+    HMENU       hmenu;
 
-    mh = GetMenu( hwnd );
+    hmenu = GetMenu( hwnd );
     for( i = 0; i < MAX_DDE_TRK; i++ ) {
         if( Tracking[i].visible ) {
             ShowWindow( Tracking[i].hwnd, SW_SHOWNORMAL );
-            CheckMenuItem( mh, DDE_TRK_FIRST + i, MF_BYCOMMAND | MF_CHECKED );
+            CheckMenuItem( hmenu, DDE_TRK_FIRST + i, MF_BYCOMMAND | MF_CHECKED );
         } else {
             ShowWindow( Tracking[i].hwnd, SW_HIDE );
-            CheckMenuItem( mh, DDE_TRK_FIRST + i, MF_BYCOMMAND | MF_UNCHECKED );
+            CheckMenuItem( hmenu, DDE_TRK_FIRST + i, MF_BYCOMMAND | MF_UNCHECKED );
         }
         DDESetStickyState( DDE_TRK_FIRST + i, Tracking[i].visible );
     }
@@ -199,8 +199,7 @@ static void *getNextPos( DDETrackInfo *listinfo )
         }
     }
     listinfo->cnt++;
-    listinfo->data = MemReAlloc( listinfo->data,
-                                 listinfo->cnt * sizeof( void * ) );
+    listinfo->data = MemRealloc( listinfo->data, listinfo->cnt * sizeof( void * ) );
     return( (void **)listinfo->data + listinfo->cnt - 1 );
 
 } /* getNextPos */
@@ -969,15 +968,15 @@ static bool doConvSort( WORD type, DDETrackInfo *info )
 void DisplayTracking( unsigned i )
 {
     int         action;
-    HMENU       mh;
+    HMENU       hmenu;
 
-    mh = GetMenu( DDEMainWnd );
+    hmenu = GetMenu( DDEMainWnd );
     Tracking[i].visible = !Tracking[i].visible;
     if( Tracking[i].visible ) {
-        CheckMenuItem( mh, DDE_TRK_FIRST + i, MF_BYCOMMAND | MF_CHECKED );
+        CheckMenuItem( hmenu, DDE_TRK_FIRST + i, MF_BYCOMMAND | MF_CHECKED );
         action = SW_SHOWNORMAL;
     } else {
-        CheckMenuItem( mh, DDE_TRK_FIRST + i, MF_BYCOMMAND | MF_UNCHECKED );
+        CheckMenuItem( hmenu, DDE_TRK_FIRST + i, MF_BYCOMMAND | MF_UNCHECKED );
         action = SW_HIDE;
     }
     DDESetStickyState( DDE_TRK_FIRST + i, Tracking[i].visible  );

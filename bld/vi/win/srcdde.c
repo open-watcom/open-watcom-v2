@@ -31,11 +31,11 @@
 
 
 #include "vi.h"
-#include <malloc.h>
 #include <setjmp.h>
 #include "ddedef.h"
 #include "expr.h"
 #include "srcwin.h"
+
 
 #define TIME_OUT        10 * 1000L
 

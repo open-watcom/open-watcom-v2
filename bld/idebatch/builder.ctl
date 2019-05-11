@@ -17,7 +17,7 @@ set PROJDIR=<CWD>
 #============================
     <CCCMD> os2386/batserv.exe  <OWRELROOT>/binp/
     <CCCMD> nt386/batserv.exe   <OWRELROOT>/binnt/
-    <CCCMD> dosi86/int.exe      <OWRELROOT>/binw/dosserv.exe
+    <CCCMD> dosi86/dosserv.exe  <OWRELROOT>/binw/
 # there is no makefile in the wini86 dir
     <CPCMD> win/batchbox.pif    <OWRELROOT>/binw/
     <CCCMD> ntaxp/batserv.exe   <OWRELROOT>/axpnt/

@@ -25,7 +25,7 @@
 *
 *  ========================================================================
 *
-* Description:  Open Watcom C/C++32 Alpha AXP DLL startup code.
+* Description:  Open Watcom C/C++32 Alpha AXP and Power PC DLL startup code.
 *
 ****************************************************************************/
 

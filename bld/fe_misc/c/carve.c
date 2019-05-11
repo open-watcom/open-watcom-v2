@@ -78,7 +78,7 @@ struct free_t {
 
 #define _ADD_TO_FREE( fl, p ) \
     { \
-        free_t *node = (free_t *) (p); \
+        free_t *node = (free_t *)(p); \
         node->next_free = (fl); \
         (fl) = node; \
     }
@@ -125,7 +125,8 @@ static void newBlk( cv_t *cv )
     blk_t *newblk;
     free_t *free_list;
 
-    DbgStmt( if( restoreFromZapped( cv ) ) return; );
+    DbgStmt( if( restoreFromZapped( cv ) ) \
+                 return; );
     elm_size = cv->elm_size;
     free_list = cv->free_list;
     newblk = _MemoryAllocate( sizeof( blk_t ) - 1 + cv->blk_top );
@@ -149,7 +150,7 @@ carve_t CarveCreate( unsigned elm_size, unsigned elm_count )
 {
     cv_t *cv;
 
-    elm_size = ( elm_size + (sizeof(int)-1) ) & ~(sizeof(int)-1);
+    elm_size = ( elm_size + ( sizeof( int ) - 1 ) ) & ~( sizeof( int ) - 1 );
     if( elm_size < sizeof( free_t ) ) {
         elm_size = sizeof( free_t );
     }
@@ -210,8 +211,8 @@ void *CarveZeroAlloc( carve_t cv )
     }
     _REMOVE_FROM_FREE( cv, v );
     p = v;
-    DbgAssert( ( cv->elm_size / sizeof(*p) ) <= 8 );
-    switch( cv->elm_size / sizeof(*p) ) {
+    DbgAssert( ( cv->elm_size / sizeof( *p ) ) <= 8 );
+    switch( cv->elm_size / sizeof( *p ) ) {
     case 8:
         p[7] = 0;
     case 7:
@@ -300,11 +301,16 @@ static void CarveDebugFree( carve_t cv, void *elm )
             continue;
         }
         for(;;) {
-            if( compare == start ) break;
+            if( compare == start )
+                break;
             compare -= esize;
-            if( elm == compare ) break;
+            if( elm == compare ) {
+                break;
+            }
         }
-        if( elm == compare ) break;
+        if( elm == compare ) {
+            break;
+        }
     }
     if( block == NULL ) {
         _FatalAbort( "carve: freed object was never allocated" );
@@ -347,7 +353,9 @@ void CarveVerifyAllGone( carve_t cv, char const *node_name )
             compare -= cv->elm_size;
             /* verify every block has been freed */
             for( check = cv->free_list; check != NULL; check = check->next_free ) {
-                if( compare == (void *) check ) break;
+                if( compare == (void *) check ) {
+                    break;
+                }
             }
             if( check == NULL ) {
                 if( ! some_unfreed ) {
@@ -885,7 +893,8 @@ pch_status PCHReadTest( void )
     CarveInitStart( carveMASTER, &data );
     for(;;) {
         mi = PCHReadCVIndex();
-        if( mi == CARVE_NULL_INDEX ) break;
+        if( mi == CARVE_NULL_INDEX )
+            break;
         m = CarveInitElement( &data, mi );
         PCHRead( m, sizeof( *m ) );
         m->next = CarveMapIndex( carveMASTER, m->next );
@@ -896,7 +905,8 @@ pch_status PCHReadTest( void )
     CarveInitStart( carveSLAVE1, &data );
     for(;;) {
         mi = PCHReadCVIndex();
-        if( mi == CARVE_NULL_INDEX ) break;
+        if( mi == CARVE_NULL_INDEX )
+            break;
         s1 = CarveInitElement( &data, mi );
         PCHRead( s1, sizeof( *s1 ) );
         s1->next = CarveMapIndex( carveSLAVE1, s1->next );
@@ -906,7 +916,8 @@ pch_status PCHReadTest( void )
     CarveInitStart( carveSLAVE2, &data );
     for(;;) {
         mi = PCHReadCVIndex();
-        if( mi == CARVE_NULL_INDEX ) break;
+        if( mi == CARVE_NULL_INDEX )
+            break;
         s2 = CarveInitElement( &data, mi );
         PCHRead( s2, sizeof( *s2 ) );
         s2->next = CarveMapIndex( carveSLAVE2, s2->next );

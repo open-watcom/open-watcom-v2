@@ -46,63 +46,63 @@
 #include "typemap.h"
 
 
-patch *BGNewPatch( void )
+patch_handle    BGNewPatch( void )
 {
-    patch   *p;
+    patch_handle    patch;
 
-    p = CGAlloc( sizeof( patch ) );
-    p->in_tree = false;
-    p->patched = false;
+    patch = CGAlloc( sizeof( patch_info ) );
+    patch->in_tree = false;
+    patch->patched = false;
 #ifndef NDEBUG
-    p->useinfo.hdltype = NO_HANDLE;
-    p->useinfo.used = false;
+    patch->useinfo.hdltype = NO_HANDLE;
+    patch->useinfo.used = false;
 #endif
-    return( p );
+    return( patch );
 }
 
 an      TNPatch( tn node )
 {
-    patch               *p;
+    patch_handle        patch;
     an                  addr;
     type_class_def      type_class;
 
-    p = (patch *)node->u.handle;
-    p->in_tree = false;
+    patch = (patch_handle)node->u.handle;
+    patch->in_tree = false;
     type_class = TypeClass( node->tipe );
     addr = AddrName( AllocTemp( type_class ), node->tipe );
-    p->u.ins = MakeMove( NULL, addr->u.n.name, type_class );
-    p->u.ins->num_operands = 0;
-    AddIns( p->u.ins );
+    patch->u.ins = MakeMove( NULL, addr->u.n.name, type_class );
+    patch->u.ins->num_operands = 0;
+    AddIns( patch->u.ins );
     return( addr );
 }
 
-cg_name BGPatchNode( patch *hdl, type_def *tipe )
+cg_name BGPatchNode( patch_handle patch, type_def *tipe )
 {
-    hdl->patched = true;
-    hdl->in_tree = true;
-    hdl->u.node = TGPatch( hdl, tipe );
-    return( hdl->u.node );
+    patch->patched = true;
+    patch->in_tree = true;
+    patch->u.node = TGPatch( patch, tipe );
+    return( patch->u.node );
 }
 
-void    BGPatchInteger( patch *hdl, signed_32 value )
+void    BGPatchInteger( patch_handle patch, signed_32 value )
 {
     tn                  node;
     name                *c;
 
-    if( hdl->patched ) {
+    if( patch->patched ) {
         c = AllocS32Const( value );
-        if( hdl->in_tree ) {
-            node = hdl->u.node;
+        if( patch->in_tree ) {
+            node = patch->u.node;
             node->class = TN_CONS;
             node->u.name = c;
         } else {
-            hdl->u.ins->operands[0] = c;
-            hdl->u.ins->num_operands = 1;
+            patch->u.ins->operands[0] = c;
+            patch->u.ins->num_operands = 1;
         }
     }
 }
 
-void    BGFiniPatch( patch *hdl )
+void    BGFiniPatch( patch_handle patch )
 {
-    CGFree( hdl );
+    CGFree( patch );
 }

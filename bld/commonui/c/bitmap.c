@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -28,11 +29,14 @@
 *
 ****************************************************************************/
 
+
 #include "commonui.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <malloc.h>
+#ifdef _M_I86
+    #include <malloc.h>
+#endif
 #include <dos.h>
 #include "bool.h"
 #include "palette.h"
@@ -74,7 +78,7 @@ static BITMAPINFO *readDIBInfo( FILE *fp )
         /* Bitmap has palette, read it */
         fseek( fp, START_OF_HEADER, SEEK_SET );
         bitmap_size = DIB_INFO_SIZE( header->biBitCount );
-        bm = MemReAlloc( header, bitmap_size );
+        bm = MemRealloc( header, bitmap_size );
         if( bm == NULL ) {
             return( NULL );
         }
@@ -105,7 +109,7 @@ static BITMAPCOREINFO *readCoreInfo( FILE *fp )
     fread( header, sizeof( BITMAPCOREHEADER ), 1, fp );
     fseek( fp, START_OF_HEADER, SEEK_SET );
     bitmap_size = CORE_INFO_SIZE( header->bcBitCount );
-    bm_core = MemReAlloc( header, bitmap_size );
+    bm_core = MemRealloc( header, bitmap_size );
     if( bm_core == NULL ) {
         return( NULL );
     }

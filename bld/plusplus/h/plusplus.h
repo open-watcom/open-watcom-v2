@@ -185,8 +185,8 @@ struct open_file {                      // ACTIVE FILE (BEING READ)
     LINE_NO             line;           // - current line
     COLUMN_NO           column;         // - current column
     int                 currc;          // - current character
-    unsigned char       *nextc;         // - addr[ next character ]
-    unsigned char       *lastc;         // - addr[ last character ]
+    const unsigned char *nextc;         // - addr[ next character ]
+    const unsigned char *lastc;         // - addr[ last character ]
     unsigned char       *buff;          // - buffer
     FILE                *fp;            // - file control block
     unsigned long       pos;            // - file offset to seek when reopened

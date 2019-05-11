@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,18 +36,18 @@
 #include <stdlib.h>
 #include <stddef.h>
 #include <sys/stat.h>
-#ifdef __UNIX__
+#if defined( __UNIX__ ) || defined( __WATCOMC__ )
     #include <utime.h>
-    #include <unistd.h>
-    #include <dirent.h>
     #include <fnmatch.h>
 #else
     #include <sys/utime.h>
+#endif
+#ifdef __UNIX__
+    #include <unistd.h>
+    #include <dirent.h>
+#else
     #include <direct.h>
     #include <dos.h>
-  #ifdef __WATCOMC__
-    #include <fnmatch.h>
-  #endif
 #endif
 #include "watcom.h"
 #include "builder.h"
@@ -118,9 +118,33 @@ static bool chk_is_archived( const char *name )
 }
 #endif
 
+#define BSIZE   256
+#define SCREEN  79
+
+static const char Equals[] = "========================================"\
+                             "========================================";
+
 static void LogDir( const char *dir )
 {
-    Log( false, "%s", LogDirEquals( dir ) );
+    char        tbuff[BSIZE];
+    size_t      equals;
+    size_t      bufflen;
+    const char  *eq;
+    struct tm   *tm;
+    time_t      ttime;
+
+    ttime = time( NULL );
+    tm = localtime( &ttime );
+    strftime( tbuff, BSIZE, "%H:%M:%S", tm );
+    strcat( tbuff, " " );
+    strcat( tbuff, dir );
+    bufflen = strlen( tbuff );
+    equals = ( SCREEN - 2 - bufflen ) / 2;
+    if( bufflen > SCREEN - 4 ) {
+        equals = 1;
+    }
+    eq = &Equals[ ( sizeof( Equals ) - 1 ) - equals];
+    Log( false, "%s %s %s%s\n", eq, tbuff, eq, ( bufflen & 1 ) ? "" : "=" );
 }
 
 static int ProcSet( char *cmd )

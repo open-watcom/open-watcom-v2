@@ -40,9 +40,9 @@
 #include "initdefs.h"
 
 typedef struct                  // cdtor_entry -- info for CDTOR value
-{   void* next;                 // - next in ring
-    unsigned value;             // - value of CDTOR
-    call_handle handle;         // - handle for call
+{   void        *next;          // - next in ring
+    unsigned    value;          // - value of CDTOR
+    call_handle call;           // - handle for call
 } cdtor_entry;
 
 static carve_t carver_cdtors;   // carver for CDTOR entries
@@ -82,13 +82,13 @@ void CgCdArgDefine(             // DEFINE CDOPT VALUE
     expr = CgOffset( value );
     cd_entry = RingCarveAlloc( carver_cdtors, &ring_cdtors );
     cd_entry->value = value;
-    cd_entry->handle = CallStackTopHandle();
+    cd_entry->call = CallStackTopHandle();
     CgExprPush( expr, type );
 }
 
 
 static void processCdtor(       // PROCESS A CDTOR ENTRY IF POSSIBLE
-    call_handle handle,         // - handle for call
+    call_handle call,           // - handle for call
     bool direct )               // - true ==> direct call
 {
     cdtor_entry* curr;          // - current entry
@@ -96,9 +96,9 @@ static void processCdtor(       // PROCESS A CDTOR ENTRY IF POSSIBLE
 
     prev = NULL;
     RingIterBeg( ring_cdtors, curr ) {
-        if( curr->handle == handle ) {
+        if( curr->call == call ) {
             if( direct ) {
-                CallStabCdArgSet( handle, curr->value );
+                CallStabCdArgSet( call, curr->value );
             }
             RingPruneWithPrev( &ring_cdtors, curr, prev );
             CarveFree( carver_cdtors, curr );
@@ -110,14 +110,14 @@ static void processCdtor(       // PROCESS A CDTOR ENTRY IF POSSIBLE
 
 
 void CgCdArgUsed(               // USE A CALL-HANDLE DIRECTLY
-    call_handle handle )        // - handle for call
+    call_handle call )          // - handle for call
 {
-    processCdtor( handle, true );
+    processCdtor( call, true );
 }
 
 
 void CgCdArgRemove(             // REMOVE CDTOR ENTRY FOR A CALL-HANDLE
-    call_handle handle )        // - handle for call
+    call_handle call )          // - handle for call
 {
-    processCdtor( handle, false );
+    processCdtor( call, false );
 }

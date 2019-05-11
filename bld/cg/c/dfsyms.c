@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -70,14 +70,14 @@ static void CLIWrite( dw_sectnum sect, const void *block, size_t size )
 /*********************************************************************/
 {
     sect_info           *curr;
-    segment_id          old;
+    segment_id          old_segid;
 //    long_offset         off;
 
     curr = &DwarfSegs[sect];
-    old = SetOP( curr->seg );
+    old_segid = SetOP( curr->segid );
 //    off = AskBigLocation();
     DataBytes( size, block );
-    SetOP( old );
+    SetOP( old_segid );
 }
 
 static dw_out_offset CLITell( dw_sectnum sect )
@@ -85,12 +85,12 @@ static dw_out_offset CLITell( dw_sectnum sect )
 {
     sect_info           *curr;
     long_offset         off;
-    segment_id          old;
+    segment_id          old_segid;
 
    curr = &DwarfSegs[sect];
-   old = SetOP( curr->seg );
+   old_segid = SetOP( curr->segid );
    off = AskBigLocation();
-   SetOP( old );
+   SetOP( old_segid );
    return( off );
 }
 
@@ -98,11 +98,11 @@ static void CLISeek( dw_sectnum sect, dw_out_offset offset, int type )
 /********************************************************************/
 {
     sect_info           *curr;
-    segment_id          old;
+    segment_id          old_segid;
     dw_out_offset       new_offset;
 
     curr = &DwarfSegs[sect];
-    old = SetOP( curr->seg );
+    old_segid = SetOP( curr->segid );
     new_offset = offset;
     switch( type ) {
     case DW_SEEK_CUR:
@@ -115,7 +115,7 @@ static void CLISeek( dw_sectnum sect, dw_out_offset offset, int type )
         break;
     }
     SetBigLocation( new_offset );
-    SetOP( old );
+    SetOP( old_segid );
 }
 
 static void DoReloc( dw_sym_handle sym, dw_addr_offset disp )
@@ -138,20 +138,20 @@ static void DoLblReloc( back_handle bck, int disp )
 /*************************************************/
 {
     type_def        *ptr_type;
-    segment_id      id;
+    segment_id      segid;
 
-    id = AskSegID( bck, CG_BACK );
+    segid = AskSegID( bck, CG_BACK );
     ptr_type = TypeAddress( TY_NEAR_POINTER );
-    BackPtr( bck, id, disp, ptr_type );
+    BackPtr( bck, segid, disp, ptr_type );
 }
 
 static void DoSegLblReloc( back_handle bck )
 /******************************************/
 {
-    segment_id      id;
+    segment_id      segid;
 
-    id = AskSegID( bck, CG_BACK );
-    BackPtrBase( bck, id );
+    segid = AskSegID( bck, CG_BACK );
+    BackPtrBase( bck, segid );
 }
 
 static void DoSectOffset( dw_sectnum sect )
@@ -159,17 +159,17 @@ static void DoSectOffset( dw_sectnum sect )
 {
     back_handle bck;
     long        pos;
-    segment_id  id;
+    segment_id  segid;
 
     pos = CLITell( sect );
     bck = DwarfSegs[sect].bck;
-    id = DwarfSegs[sect].seg;
-    BackPtrBigOffset( bck, id, pos );
+    segid = DwarfSegs[sect].segid;
+    BackPtrBigOffset( bck, segid, pos );
 
 }
 
 typedef struct {
-    segment_id  segment;
+    segment_id  segid;
     long_offset offset;
 } big_patch_handle;
 
@@ -191,12 +191,12 @@ static void CLIReloc( dw_sectnum sect, dw_reloc_type reloc_type, ... )
     loc_range               *high;
     dw_sectnum              sect_no;
     va_list                 args;
-    segment_id              old;
+    segment_id              old_segid;
 //    long_offset             off;
 
     va_start( args, reloc_type );
     curr = &DwarfSegs[sect];
-    old = SetOP( curr->seg );
+    old_segid = SetOP( curr->segid );
 //    off = AskBigLocation();
     switch( reloc_type ) {
     case DW_W_LOW_PC:
@@ -246,7 +246,7 @@ static void CLIReloc( dw_sectnum sect, dw_reloc_type reloc_type, ... )
 #endif
         break;
     case DW_W_UNIT_SIZE:
-        UnitSize->segment = curr->seg;
+        UnitSize->segid = curr->segid;
         UnitSize->offset =  AskBigLocation();
         DataBytes( sizeof( zero ), &zero );
         break;
@@ -268,7 +268,7 @@ static void CLIReloc( dw_sectnum sect, dw_reloc_type reloc_type, ... )
         Zoiks( ZOIKS_107 ); /* Unknown reloc */
         break;
     }
-    SetOP( old );
+    SetOP( old_segid );
     va_end( args );
 }
 
@@ -292,7 +292,7 @@ static back_handle  MakeLabel( void )
     back_handle bck;
 
     bck = BENewBack( NULL );
-    bck->seg = AskOP();
+    bck->segid = AskOP();
     return( bck );
 }
 
@@ -340,31 +340,32 @@ static  void    InitSegBck( void )
 /********************************/
 {
     dw_sectnum  i;
-    segment_id  old;
+    segment_id  old_segid;
     back_handle bck;
 
+    old_segid = AskOP();
     for( i = DW_DEBUG_INFO; i < DW_DEBUG_MAX; ++i ) {
-        old = SetOP( DwarfSegs[i].seg );
+        SetOP( DwarfSegs[i].segid );
         bck = MakeLabel();
-        bck->seg = DwarfSegs[i].seg;
+        bck->segid = DwarfSegs[i].segid;
         DwarfSegs[i].bck = bck;
         DataLabel( bck->lbl );
-        SetOP( old );
     }
+    SetOP( old_segid );
 }
 
 static  void    InitLineSegBck( void )
 /************************************/
 {
-    segment_id  old;
+    segment_id  old_segid;
     back_handle bck;
 
-    old = SetOP( DwarfSegs[DW_DEBUG_LINE].seg );
+    old_segid = SetOP( DwarfSegs[DW_DEBUG_LINE].segid );
     bck = MakeLabel();
-    bck->seg = DwarfSegs[DW_DEBUG_LINE].seg;
+    bck->segid = DwarfSegs[DW_DEBUG_LINE].segid;
     DwarfSegs[DW_DEBUG_LINE].bck = bck;
     DataLabel( bck->lbl );
-    SetOP( old );
+    SetOP( old_segid );
 }
 
 static  void    FiniSegBck( void )
@@ -462,18 +463,18 @@ void    DFSegRange( void )
     }
 }
 
-void    DFBegCCU( segment_id code, dw_sym_handle dbg_pch )
-/********************************************************/
+void    DFBegCCU( segment_id code_segid, dw_sym_handle dbg_pch )
+/**************************************************************/
 // Call when codeseg hase been defined
 {
     dw_cu_info      cu;
     back_handle     bck;
 #ifndef DWARF_CU_REC_NO_PCLO_PCHI
-    segment_id      old;
+    segment_id      old_segid;
 #endif
 
 #ifdef DWARF_CU_REC_NO_PCLO_PCHI
-    /* unused parameters */ (void *)code;
+    /* unused parameters */ (void *)code_segid;
 #endif
 
     if( _IsntModel( DBG_LOCALS | DBG_TYPES ) ) {
@@ -488,7 +489,7 @@ void    DFBegCCU( segment_id code, dw_sym_handle dbg_pch )
         bck = NULL;
         cu.flags = false;
 #else
-        old = SetOP( code );
+        old_segid = SetOP( code_segid );
     #if _TARGET & ( _TARG_IAPX86 | _TARG_80386 )
         if( _IsTargetModel( FLAT_MODEL ) ) {
             bck = MakeLabel();
@@ -516,7 +517,7 @@ void    DFBegCCU( segment_id code, dw_sym_handle dbg_pch )
         Pc_High = MakeLabel();
         cu.flags = true;
     #endif
-        SetOP( old );
+        SetOP( old_segid );
 #endif
         Comp_High = Pc_High;
         DWBeginCompileUnit( Client, &cu );
@@ -577,14 +578,14 @@ void    DFObjInitDbgInfo( void )
                 info.compiler_options |= DW_CM_ABBREV_PRE;
             } else {
                 back_handle bck;
-                segment_id  old;
+                segment_id  old_segid;
 
                 info.compiler_options |= DW_CM_ABBREV_GEN;
                 bck = FEBack( abbrev_sym ); // dump out export label
-                bck->seg = DwarfSegs[DW_DEBUG_ABBREV].seg;
-                old = SetOP( DwarfSegs[DW_DEBUG_ABBREV].seg );
+                bck->segid = DwarfSegs[DW_DEBUG_ABBREV].segid;
+                old_segid = SetOP( DwarfSegs[DW_DEBUG_ABBREV].segid );
                 DataLabel( bck->lbl );
-                SetOP( old );
+                SetOP( old_segid );
             }
         }
         debug_pch = FEAuxInfo( NULL, DBG_PCH_SYM );
@@ -592,13 +593,13 @@ void    DFObjInitDbgInfo( void )
             attr = FEAttr( debug_pch );
             if( (attr & FE_IMPORT) == 0 ) {
                 back_handle bck;
-                segment_id  old;
+                segment_id  old_segid;
 
                 bck = FEBack( debug_pch );
-                bck->seg = DwarfSegs[DW_DEBUG_INFO].seg;
-                old = SetOP( DwarfSegs[DW_DEBUG_INFO].seg );
+                bck->segid = DwarfSegs[DW_DEBUG_INFO].segid;
+                old_segid = SetOP( DwarfSegs[DW_DEBUG_INFO].segid );
                 DataLabel( bck->lbl );
-                SetOP( old );
+                SetOP( old_segid );
                 debug_pch = NULL;
             }
         }
@@ -688,27 +689,27 @@ void    DFFiniDbgInfo( void )
 void    DFObjFiniDbgInfo( offset codesize )
 /*****************************************/
 {
-    segment_id      old;
+    segment_id      old_segid;
     offset          here;
     back_handle     bck;
 
     if( _IsModel( DBG_LOCALS | DBG_TYPES ) ) {
         bck = Comp_High;
         if( bck != NULL ) {
-            old = SetOP( AskCodeSeg() );
+            old_segid = SetOP( AskCodeSeg() );
             OutLabel( bck->lbl );
-            SetOP( old );
+            SetOP( old_segid );
             BEFreeBack( bck );
             Comp_High = NULL;
         }
         DWEndCompileUnit( Client );
         DWFini( Client );
-        old = SetOP( UnitSize->segment );
+        old_segid = SetOP( UnitSize->segid );
         here = AskLocation();
         SetLocation( UnitSize->offset );
         DataLong( codesize );
         SetLocation( here );
-        SetOP( old );
+        SetOP( old_segid );
         FiniSegBck();
     }
 }
@@ -1119,9 +1120,9 @@ void    DFRtnEnd( dbg_rtn *rtn, offset lc )
     DWEndSubroutine( Client );
 }
 
-void    DFSetSection( dw_sectnum sect, back_handle bck, segment_id seg )
-/**********************************************************************/
+void    DFSetSection( dw_sectnum sect, back_handle bck, segment_id segid )
+/************************************************************************/
 {
-    DwarfSegs[sect].seg = seg;
+    DwarfSegs[sect].segid = segid;
     DwarfSegs[sect].bck = bck;
 }

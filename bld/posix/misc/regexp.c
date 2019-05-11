@@ -104,7 +104,7 @@ char    *MagicString = "()";
 
 #if !defined( ALLOC )
 #define ALLOC           malloc
-#include <malloc.h>
+#include <stdlib.h>
 #endif
 
 #ifdef STANDALONE_RX

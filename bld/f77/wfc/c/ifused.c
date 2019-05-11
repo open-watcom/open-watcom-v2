@@ -39,10 +39,9 @@
 //
 
 #include "ftnstd.h"
+#include <string.h>
 #include "global.h"
 #include "ifused.h"
-
-#include <string.h>
 
 
 void    IFInit(void) {

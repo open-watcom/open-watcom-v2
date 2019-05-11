@@ -9,7 +9,7 @@
 #ifndef _STDINTPTR_T_DEFINED
 #define _STDINTPTR_T_DEFINED
  namespace std {
-:segment DOS | QNX
+:segment BITS16
  #ifdef _M_I86
   #if defined(__SMALL__) || defined(__MEDIUM__)
    typedef int intptr_t;
@@ -23,7 +23,7 @@
   #else
    typedef long intptr_t;
   #endif
-:segment DOS | QNX
+:segment BITS16
  #endif
 :endsegment
  }
@@ -37,7 +37,7 @@
  #ifndef _STDINTPTR_T_DEFINED
  #define _STDINTPTR_T_DEFINED
   namespace std {
-:segment DOS | QNX
+:segment BITS16
  #ifdef _M_I86
   #if defined(__SMALL__) || defined(__MEDIUM__)
    typedef int intptr_t;
@@ -51,7 +51,7 @@
   #else
    typedef long intptr_t;
   #endif
-:segment DOS | QNX
+:segment BITS16
  #endif
 :endsegment
   }
@@ -68,7 +68,7 @@
 :segment !CPPONLY
  #ifndef _INTPTR_T_DEFINED
  #define _INTPTR_T_DEFINED
-:segment DOS | QNX
+:segment BITS16
  #ifdef _M_I86
   #if defined(__SMALL__) || defined(__MEDIUM__)
    typedef int intptr_t;
@@ -82,7 +82,7 @@
   #else
    typedef long intptr_t;
   #endif
-:segment DOS | QNX
+:segment BITS16
  #endif
 :endsegment
   typedef intptr_t  __w_intptr_t;

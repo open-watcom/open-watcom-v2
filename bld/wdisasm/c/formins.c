@@ -30,9 +30,8 @@
 ****************************************************************************/
 
 
-#include <string.h>
-#include <stdlib.h>
 #include "disasm.h"
+
 
 static  const ins_name        PrefixName[] = {
     I_LOCK,

@@ -34,7 +34,7 @@
 #include <sys/types.h>
 #include <time.h>
 #include "tinyio.h"
-#include <sys/utime.h>
+#include <utime.h>
 
 
 int utime( char const *fn, struct utimbuf const *times )

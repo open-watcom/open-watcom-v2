@@ -45,7 +45,7 @@ typedef unsigned long long      syscall_res;
 
 /* macros to access sys_call.. routines return/error value */
 
-#define __syscall_iserror( res )    (((res)>>32)
+#define __syscall_iserror( res )    ((res)>>32)
 #define __syscall_errno( res )      ((res)&0xFFFFFFFF)
 #define __syscall_val( type, res )  ((type)((res)&0xFFFFFFFF))
 
@@ -351,6 +351,7 @@ typedef unsigned long long      syscall_res;
 #define SYS_add_key                 4280
 #define SYS_request_key             4281
 #define SYS_keyctl                  4282
+#define SYS_set_thread_area         4283
 
 /*
  * internal sub-numbers for SYS_socketcall

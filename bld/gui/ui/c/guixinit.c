@@ -35,7 +35,6 @@
 #include "uiattrs.h"
 #include "guiscale.h"
 #include "guiclock.h"
-#include "guisysin.h"
 #include "guigmous.h"
 #include "uigchar.h"
 #include "guixinit.h"
@@ -53,21 +52,21 @@ gui_window_styles GUIGetWindowStyles( void )
  * GUIWndInit -- initialize display
  */
 
-bool GUIWndInit( unsigned DClickInterval, gui_window_styles style )
+bool GUIWndInit( unsigned dclick_ms, gui_window_styles style )
 {
     gui_colour_set      background = { GUI_WHITE, GUI_BLUE };
 
     GUIStyle = style;
     GUIInitGraphicsMouse( style );
-    if( !GUISysInit( INIT_MOUSE_INITIALIZED ) ) {
+    if( !GUISysInit( INIT_MOUSE_INITIALIZED ) ) {   /* user replaceable stub function */
         return( false );
     }
     uiattrs();
     UIData->f10menus = false;
-    UIData->mouse_clk_delay = uiclockdelay( DClickInterval );
-    UIData->tick_delay = uiclockdelay( TICK_DELAY );
+    UIData->mouse_clk_delay = uiclockdelay( dclick_ms );
+    UIData->tick_delay = uiclockdelay( TICK_DELAY /* ms */ );
     UIData->mouse_rpt_delay = 0;
-    UIData->mouse_acc_delay = uiclockdelay( 250 );
+    UIData->mouse_acc_delay = uiclockdelay( 250 /* ms */ );
     GUISetScreen( XMIN, YMIN, XMAX-XMIN, YMAX-YMIN );
     GUISetBackgroundColour( &background );
     GUIInitDrawingChars( uiisdbcs() );

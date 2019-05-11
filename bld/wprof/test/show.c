@@ -29,53 +29,65 @@
 ****************************************************************************/
 
 
+#include <stdlib.h>
 #include <stdio.h>
-#include <malloc.h>
-
+#ifdef __WATCOMC__
+    #include <malloc.h>
+#endif
 #include "pt.h"
 
-void f0( void )
+#ifdef __WATCOMC__
+    #define NMALLOC     _nmalloc
+    #define NFREE       _nfree
+    #define NEAR        __near
+#else
+    #define NMALLOC     malloc
+    #define NFREE       free
+    #define NEAR
+#endif
+
+static void f0( void )
 {
     void *p;
-    void __near *q;
+    void NEAR *q;
 
-    q = _nmalloc( 20 );
+    q = NMALLOC( 20 );
     p = malloc( 10 );
     free( p );
-    _nfree( q );
+    NFREE( q );
 }
-void f1( void )
+static void f1( void )
 {
 }
-void f2( void )
+static void f2( void )
 {
 }
-void f3( void )
+static void f3( void )
 {
 }
-void f4( void )
+static void f4( void )
 {
 }
-void f5( void )
+static void f5( void )
 {
     void *p;
-    void __near *q;
+    void NEAR *q;
 
-    q = _nmalloc( 20 );
+    q = NMALLOC( 20 );
     p = malloc( 10 );
     free( p );
-    _nfree( q );
+    NFREE( q );
 }
-void f6( void )
+static void f6( void )
 {
 }
-void f7( void )
+static void f7( void )
 {
 }
-void f8( void )
+static void f8( void )
 {
 }
-void f9( void )
+static void f9( void )
 {
 }
 

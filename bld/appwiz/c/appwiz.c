@@ -154,7 +154,7 @@ extern void GUImain( void )
     rect.width = 1000;
     rect.height = 1000;
     GUISetScale( &rect );
-    GUIWndInit( 300, GUI_GMOUSE );
+    GUIWndInit( 300 /* ms */, GUI_GMOUSE );
 
     if( !ReadProjectTypes() ) {
         FreeProjectTypes();

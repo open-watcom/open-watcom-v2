@@ -653,7 +653,7 @@ static void DumpTable( symbol **table, unsigned tabsize )
 static void DumpHashTable( void )
 /*******************************/
 {
-    if( LinkState & INTERNAL_DEBUG ) {
+    if( LinkState & LS_INTERNAL_DEBUG ) {
         DEBUG(( DBG_ALWAYS, "symbol table load" ));
         DumpTable( GlobalSymPtrs, GLOBAL_TABSIZE );
         DumpTable( StaticSymPtrs, STATIC_TABSIZE );
@@ -697,7 +697,7 @@ void CleanSym( void )
 #ifdef _INT_DEBUG
     DumpHashTable();
 #endif
-    if( (LinkFlags & INC_LINK_FLAG) == 0 ) {
+    if( (LinkFlags & LF_INC_LINK_FLAG) == 0 ) {
         for( sym = HeadSym; sym != NULL; sym = next ) {
             next = sym->link;
             FreeSymbol( sym );
@@ -760,7 +760,7 @@ void ClearHashPointers( void )
 void SetSymCase( void )
 /****************************/
 {
-    if( LinkFlags & CASE_FLAG ) {
+    if( LinkFlags & LF_CASE_FLAG ) {
         CmpRtn = memcmp;
     } else {
         CmpRtn = memicmp;
@@ -1085,11 +1085,11 @@ void ReportMultiple( symbol *sym, const char *name, size_t len )
 {
     unsigned    lev;
 
-    if( LinkFlags & REDEFS_OK ) {
+    if( LinkFlags & LF_REDEFS_OK ) {
         lev = WRN;
     } else {
         lev = MILD_ERR;
-        LinkState |= UNDEFED_SYM_ERROR;
+        LinkState |= LS_UNDEFED_SYM_ERROR;
     }
     if( CmpRtn( sym->name.u.ptr, name, len + 1 ) == 0 ) {
         LnkMsg( LOC+lev+MSG_MULT_DEF, "S", sym );
@@ -1108,11 +1108,11 @@ void ReportUndefined( void )
     for( sym = HeadSym; sym != NULL; sym = sym->link ) {
         sym->info &= ~SYM_CLEAR_ON_P2;
         if( (sym->info & (SYM_DEFINED | SYM_IS_ALTDEF)) == 0 )  {
-            if( LinkFlags & UNDEFS_ARE_OK ) {
+            if( LinkFlags & LF_UNDEFS_ARE_OK ) {
                 level = WRN;
             } else {
                 level = MILD_ERR;
-                LinkState |= UNDEFED_SYM_ERROR;
+                LinkState |= LS_UNDEFED_SYM_ERROR;
             }
             LnkMsg( level+MSG_UNDEF_REF, "S", sym );
         }
@@ -1182,7 +1182,7 @@ symbol *AddAltDef( symbol *sym, sym_info sym_type )
 {
     symbol *    altsym;
 
-    if( (LinkFlags & INC_LINK_FLAG) == 0 )
+    if( (LinkFlags & LF_INC_LINK_FLAG) == 0 )
         return sym;
     altsym = AddSym();
     SET_SYM_TYPE( altsym, sym_type );
@@ -1206,7 +1206,7 @@ symbol *HashReplace( symbol *sym )
     if( IS_SYM_COMMUNAL(sym) ) {
         sym->p.seg->isdead = true;
     }
-    if( (LinkFlags & INC_LINK_FLAG) == 0 )
+    if( (LinkFlags & LF_INC_LINK_FLAG) == 0 )
         return sym;
     newsym = AddSym();
     newsym->e.mainsym = sym;
@@ -1377,7 +1377,7 @@ void ConvertLazyRefs( void )
             }
             WeldSyms( sym, defsym );
             sym->info |= SYM_WAS_LAZY;
-            if( LinkFlags & SHOW_DEAD ) {
+            if( LinkFlags & LF_SHOW_DEAD ) {
                 LnkMsg( MAP+MSG_SYMBOL_DEAD, "S", sym );
             }
         }

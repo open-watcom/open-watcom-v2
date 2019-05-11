@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -186,7 +187,7 @@ void ProcessWJDFile(const char *wjdfile, int action)
     }
 
     while( !feof(list) ) {
-        fgets(Buffer, MAX_LINE_LEN, list);
+        fgets(Buffer, sizeof( Buffer ), list);
         if(strnicmp(Buffer,"S", 1) == 0)
         {
             if(FoundSource == 1) {

@@ -233,8 +233,7 @@ static void addMemListItem( ProcNode *pnode, MemListData *info,
 
     if( info->used >= info->allocated ) {
         info->allocated += MEM_ALLOC_INCR;
-        info->data = MemReAlloc( info->data,
-                                 info->allocated * sizeof( void * ) );
+        info->data = MemRealloc( info->data, info->allocated * sizeof( void * ) );
     }
     mnode = ModuleFromAddr( pnode, mbi->BaseAddress );
     if( mnode == NULL ) {

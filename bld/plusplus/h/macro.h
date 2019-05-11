@@ -32,12 +32,24 @@
 #ifndef MACRO_H
 #define MACRO_H
 
+
+#define GetMacroParmCount(m)    ((m)->parm_count - 1)
+#define MacroWithParenthesis(m) ((m)->parm_count > 0)
+#define MacroIsSpecial(m)       ((m)->macro_defn == 0)
+#define MacroHasVarArgs(m)      ((m)->macro_flags & MFLAG_HAS_VAR_ARGS)
+
+typedef unsigned char   mac_parm_count;
+
 typedef enum {
     #define pick( s, i, f )    i,
     #include "specmac.h"
     #undef pick
-    MACRO_MAX
 } special_macros;
+
+#define MACRO_FIRST         MACRO_LINE
+#define MACRO_LAST          MACRO_FUNC
+#define MACRO_ALT_FIRST     MACRO_ALT_AND
+#define MACRO_ALT_LAST      MACRO_ALT_COMPL
 
 typedef enum {                          // kind of macro scanning
     MSCAN_MANY          = 0x01,         // - many tokens to be scanned
@@ -62,7 +74,7 @@ typedef enum macro_flags {
     MFLAG_PCH_OVERRIDE                  = 0x40,
 // a special macro won't appear as a macro to the program (e.g. ifdef
 // will return false)
-    MFLAG_SPECIAL                       = 0x80,
+    MFLAG_HIDDEN                        = 0x80,
 // Following are used only in browsing, not in macro definitions
     MFLAG_BRINFO_UNDEF                  = 0x100,
 } macro_flags;
@@ -83,7 +95,7 @@ typedef struct macro_entry {
     uint_16             macro_defn;     /* offset to defn, 0 ==> special macro name*/
     uint_16             macro_len;      /* length of macro definition */
     macro_flags         macro_flags;    /* flags */
-    uint_8              parm_count;     /* special macro indicator if defn == 0 */
+    mac_parm_count      parm_count;     /* special macro indicator if defn == 0 */
     unsigned            : 0;            /* align macro_name to a DWORD boundary */
     char                macro_name[1];  /* name,parms, and macro definition */
 } MEDEFN, *MEPTR;

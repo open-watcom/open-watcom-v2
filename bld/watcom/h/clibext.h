@@ -56,7 +56,6 @@
 #include "clibint.h"
 
 #define _WCRTLINK
-#define _WCI86FAR
 #define _WCNEAR
 #define __near
 #define __based(x)

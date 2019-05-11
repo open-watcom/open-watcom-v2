@@ -33,20 +33,10 @@
 #include <windows.h>
 #include "dip.h"
 #include "exepe.h"
+#include "procctl.rh"
+
 
 #define MAX_PROC_NAME               50
-#define PROCCTL_ATTATCH             100
-#define PROCCTL_THREAD              101
-#define PROCCTL_TASKLIST            102
-#define PROCCTL_KILL                103
-#define PROCCTL_TASKNAME            107
-#define PROCCTL_PRIORITY            110
-#define PROCCTL_SET_PRIORITY        104
-#define PROCCTL_PID                 108
-#define PROCCTL_PATH                109
-#define PROCCTL_MEM                 201
-#define PROCCTL_REFRESH             202
-#define PROCCTL_VIEWMEM             203
 
 typedef struct {
     DWORD   segoff;

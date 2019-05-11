@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -37,29 +38,32 @@
 #include <time.h>
 #include <sys/types.h>
 #include <ctype.h>
+#if defined(__UNIX__) || defined( __WATCOMC__ )
+    #include <utime.h>
+#else
+    #include <sys/utime.h>
+#endif
 #include "wio.h"
 #include "watcom.h"
 #include "banner.h"
 #if defined( __OS2__ )
 #include <direct.h>
-#include <sys/utime.h>
 #define INCL_DOSNLS
 #include "os2.h"
 #elif defined( __NT__ )
 #include <direct.h>
-#include <sys/utime.h>
 #include <windows.h>
 #elif defined( __UNIX__ )
 #include <dirent.h>
-#include <utime.h>
 #else
 #include <direct.h>
-#include <sys/utime.h>
 #include "tinyio.h"
 #endif
 #include "bool.h"
 #include "touch.h"
 #include "wtmsg.h"
+#include "dtparse.h"
+
 
 static char * (*firstParse)( char * );
 static char * (*secondParse)( char * );
@@ -77,7 +81,7 @@ char *      dateFormat;
 
 extern void Error( int, char * );
 
-extern void DoDOption( char *date )
+void DoDOption( char *date )
 /*********************************/
 {
     date = firstParse( date );
@@ -105,7 +109,7 @@ static void badCharInTime( char c )
     Error( MSG_INV_TIME, cbuff );
 }
 
-extern void DoTOption( char *time )
+void DoTOption( char *time )
 /*********************************/
 {
     unsigned hours;
@@ -322,7 +326,7 @@ static char *parseDay( char *p )
     }
 }
 
-extern void WhereAmI( void )
+void WhereAmI( void )
 /**************************/
 {
     TouchFlags.time_24hr = 0;

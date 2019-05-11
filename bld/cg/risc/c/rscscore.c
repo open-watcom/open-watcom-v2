@@ -47,10 +47,10 @@ bool    MultiIns( instruction *ins )
 }
 #endif
 
-void    ScInitRegs( score *sc )
-/*****************************/
+void    ScInitRegs( score *scoreboard )
+/*************************************/
 {
-    /* unused parameters */ (void)sc;
+    /* unused parameters */ (void)scoreboard;
 }
 
 
@@ -60,10 +60,10 @@ void    AddRegs( void )
 }
 
 
-void    ScoreSegments( score *sc )
-/********************************/
+void    ScoreSegments( score *scoreboard )
+/****************************************/
 {
-    /* unused parameters */ (void)sc;
+    /* unused parameters */ (void)scoreboard;
 }
 
 

@@ -60,8 +60,8 @@ static HBITMAP makeBiggerBitmap( HBITMAP hbitmap, WPI_POINT *pt )
     _wpi_torgbmode( srcpres );
     _wpi_torgbmode( destpres );
 
-    olddestbmp = _wpi_selectobject( destpres, newbitmap );
-    oldsrcbmp = _wpi_selectobject( srcpres, hbitmap );
+    olddestbmp = _wpi_selectbitmap( destpres, newbitmap );
+    oldsrcbmp = _wpi_selectbitmap( srcpres, hbitmap );
 
     if( _wpi_getpixel( srcpres, pt->x, pt->y ) == BLACK ) {
         _wpi_patblt( destpres, 0, 0, bmwidth + 1, bmheight + 1, WHITENESS );
@@ -73,8 +73,8 @@ static HBITMAP makeBiggerBitmap( HBITMAP hbitmap, WPI_POINT *pt )
      * (bottom left for PM)
      */
     _wpi_bitblt( destpres, 0, 0, bmwidth, bmheight, srcpres, 0, 0, SRCCOPY );
-    _wpi_selectobject( destpres, olddestbmp );
-    _wpi_selectobject( srcpres, oldsrcbmp );
+    _wpi_getoldbitmap( destpres, olddestbmp );
+    _wpi_getoldbitmap( srcpres, oldsrcbmp );
     _wpi_deletecompatiblepres( destpres, destdc );
     _wpi_deletecompatiblepres( srcpres, srcdc );
 
@@ -106,9 +106,9 @@ static int getFillCase( fill_info_struct *fillinfo, img_node *node )
     _wpi_releasepres( HWND_DESKTOP, pres );
     _wpi_torgbmode( andpres );
 
-    oldbitmap = _wpi_selectobject( andpres, node->handbitmap );
+    oldbitmap = _wpi_selectbitmap( andpres, node->handbitmap );
     andpixel = _wpi_getpixel( andpres, fillinfo->pt.x, fillinfo->pt.y );
-    _wpi_selectobject( andpres, oldbitmap );
+    _wpi_getoldbitmap( andpres, oldbitmap );
     _wpi_deletecompatiblepres( andpres, anddc );
 
     if( andpixel == BLACK ) {
@@ -117,9 +117,9 @@ static int getFillCase( fill_info_struct *fillinfo, img_node *node )
         _wpi_releasepres( HWND_DESKTOP, pres );
         _wpi_torgbmode( xorpres );
 
-        oldbitmap = _wpi_selectobject( xorpres, node->hxorbitmap );
+        oldbitmap = _wpi_selectbitmap( xorpres, node->hxorbitmap );
         xorpixel = _wpi_getpixel( xorpres, fillinfo->pt.x, fillinfo->pt.y );
-        _wpi_selectobject( xorpres, oldbitmap );
+        _wpi_getoldbitmap( xorpres, oldbitmap );
         _wpi_deletecompatiblepres( xorpres, xordc );
         if( xorpixel == BLACK || xorpixel == WHITE ) {
             return( DIFFERENT_FILL );
@@ -167,22 +167,22 @@ static void fillNormal( fill_info_struct *fillinfo, img_node *node )
     _wpi_torgbmode( dupmempres );
     _wpi_torgbmode( xormempres );
     hbrush = _wpi_createsolidbrush( fillinfo->xorcolor );
-    oldbrush = _wpi_selectobject( dupmempres, hbrush );
-    oldbitmap = _wpi_selectobject( dupmempres, bigbitmap );
+    oldbrush = _wpi_selectbrush( dupmempres, hbrush );
+    oldbitmap = _wpi_selectbitmap( dupmempres, bigbitmap );
 
     _wpi_extfloodfill( dupmempres, fillinfo->pt.x, fillinfo->pt.y,
                        _wpi_getpixel( dupmempres, fillinfo->pt.x, fillinfo->pt.y ),
                        FLOODFILLSURFACE );
 
-    oldxorbmp = _wpi_selectobject( xormempres, node->hxorbitmap );
+    oldxorbmp = _wpi_selectbitmap( xormempres, node->hxorbitmap );
 
     _wpi_bitblt( xormempres, 0, 0, node->width, node->height, dupmempres, 0, 0, SRCCOPY );
 
-    _wpi_selectobject( dupmempres, oldbrush );
-    _wpi_deleteobject( hbrush );
-    _wpi_selectobject( xormempres, oldxorbmp );
+    _wpi_getoldbrush( dupmempres, oldbrush );
+    _wpi_deletebrush( hbrush );
+    _wpi_getoldbitmap( xormempres, oldxorbmp );
     _wpi_deletecompatiblepres( xormempres, xormemdc );
-    _wpi_selectobject( dupmempres, oldbitmap );
+    _wpi_getoldbitmap( dupmempres, oldbitmap );
     _wpi_deletecompatiblepres( dupmempres, dupmemdc );
     _wpi_deletebitmap( bigbitmap );
 
@@ -237,7 +237,7 @@ static void fillScreenFirst( fill_info_struct *fillinfo, img_node *node )
 
     _wpi_torgbmode( screenpres );
 
-    oldscreen = _wpi_selectobject( screenpres, bigbitmap );
+    oldscreen = _wpi_selectbitmap( screenpres, bigbitmap );
     if( _wpi_getpixel( screenpres, fillinfo->pt.x, fillinfo->pt.y ) == BLACK ) {
         fillcolor = WHITE;
     } else {
@@ -245,13 +245,13 @@ static void fillScreenFirst( fill_info_struct *fillinfo, img_node *node )
     }
 
     hbrush = _wpi_createsolidbrush( fillcolor );
-    oldbrush = _wpi_selectobject( screenpres, hbrush );
+    oldbrush = _wpi_selectbrush( screenpres, hbrush );
     _wpi_extfloodfill( screenpres, fillinfo->pt.x, fillinfo->pt.y,
                        _wpi_getpixel( screenpres, fillinfo->pt.x, fillinfo->pt.y ),
                        FLOODFILLSURFACE );
-    _wpi_selectobject( screenpres, oldbrush );
-    _wpi_deleteobject( hbrush );
-    _wpi_selectobject( screenpres, oldscreen );
+    _wpi_getoldbrush( screenpres, oldbrush );
+    _wpi_deletebrush( hbrush );
+    _wpi_getoldbitmap( screenpres, oldscreen );
     _wpi_deletecompatiblepres( screenpres, screendc );
 
     xorbits = GetTheBits( node->hxorbitmap );

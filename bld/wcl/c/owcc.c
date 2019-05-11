@@ -1002,7 +1002,7 @@ static  int  ParseArgs( int argc, char **argv )
             }
             if( strcmp( Word, "nclude" ) == 0 ) {
                 c = 'f';
-                Word = MemReAlloc( Word, strlen( argv[OptInd] ) + 6 );
+                Word = MemRealloc( Word, strlen( argv[OptInd] ) + 6 );
                 if( OptInd >= argc - 1 ) {
                     MemFree( cpp_linewrap );
                     MemFree( Word );
@@ -1030,7 +1030,7 @@ static  int  ParseArgs( int argc, char **argv )
                 /* translate to -adt=.o */
                 strcpy( Word, "dt=" OBJ_EXT );
             } else if( strcmp( Word, "F" ) == 0 ) {
-                Word = MemReAlloc( Word, strlen( argv[OptInd] ) + 6 );
+                Word = MemRealloc( Word, strlen( argv[OptInd] ) + 6 );
                 if( OptInd >= argc - 1 ) {
                     MemFree( cpp_linewrap );
                     MemFree( Word );
@@ -1041,7 +1041,7 @@ static  int  ParseArgs( int argc, char **argv )
                 strfcat( Word, argv[OptInd] );
                 argv[OptInd++][0] = '\0';
             } else if( strcmp( Word, "T" ) == 0 ) {
-                Word = MemReAlloc( Word, strlen( argv[OptInd] ) + 6 );
+                Word = MemRealloc( Word, strlen( argv[OptInd] ) + 6 );
                 if( OptInd >= argc - 1 ) {
                     MemFree( cpp_linewrap );
                     MemFree( Word );

@@ -38,10 +38,11 @@
     #include <direct.h>
 #endif
 #include "watcom.h"
-#include "uidef.h"
+#include "stdui.h"
 #include "help.h"
 #include "helpmem.h"
 #include "filelist.h"
+#include "initmode.h"
 
 #include "clibext.h"
 
@@ -140,9 +141,9 @@ int main( int argc, char *argv[] )
         return( EXIT_FAILURE );
     } else {
 #if defined( __OS2__ ) || defined( __NT__ )
-        initmouse( 2 );  /* the 0=mouseless,1=mouse,2=initialized mouse */
+        initmouse( INIT_MOUSE_INITIALIZED );
 #elif !defined __UNIX__
-        uiinitgmouse( 2 );  /* the 0=mouseless,1=mouse,2=initialized mouse */
+        uiinitgmouse( INIT_MOUSE_INITIALIZED );
         FlipCharacterMap();
 #endif
         if( helpinit( helpfiles, srchlist ) ) {

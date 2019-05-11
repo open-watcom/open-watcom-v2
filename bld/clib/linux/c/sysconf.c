@@ -2,8 +2,7 @@
 *
 *                            Open Watcom Project
 *
-*    Portions Copyright (c) 2015 Open Watcom contributors. 
-*    All Rights Reserved.
+* Copyright (c) 2015-2019 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -56,7 +55,7 @@ static int __sysconf_nprocessors( void )
     unsigned char mask[128];
     int ret;
     int i;
-    
+
     res = sys_call3( SYS_sched_getaffinity, (u_long)0, (u_long)(sizeof(mask)), (u_long)mask );
     ret = 0;
     for( i = 0; i < sizeof( mask ); i++ ) {
@@ -105,11 +104,11 @@ static int __sysconf_somaxconn( )
     FILE *fp;
     int ret;
     char line[16];
-    
+
     ret = 128;
     fp = fopen("/proc/sys/net/core/somaxconn", "r");
     if(fp != NULL) {
-        if(fgets(line, 16, fp) != NULL) {
+        if(fgets(line, sizeof( line ), fp) != NULL) {
             ret = atoi(line);
         }
         fclose(fp);

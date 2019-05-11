@@ -37,6 +37,7 @@
   #include "cgstd.h"
 #endif
 
+
 #define NULLCHAR        '\0'
 
 typedef unsigned        char    byte;

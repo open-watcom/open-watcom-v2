@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,14 +34,20 @@
 #ifndef WRDLL_INCLUDED
 #define WRDLL_INCLUDED
 
-#define WRAPI   WINAPI
-
 #ifdef WRDLL
     #define WRDLLENTRY    __declspec(dllexport)
 #elif defined( __NT__ )
     #define WRDLLENTRY    __declspec(dllimport)
 #else
     #define WRDLLENTRY
+#endif
+
+#if defined( __OS2__ )
+    #define WRAPI   APIENTRY
+    #define WORD    USHORT
+    #define DWORD   ULONG
+#else
+    #define WRAPI   WINAPI
 #endif
 
 #if defined( __OS2__ )

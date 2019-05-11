@@ -50,8 +50,6 @@
 #endif
 #define BORDER_AMOUNT   1 /* space outside row of buttons */
 
-extern  gui_menu_struct GUIHint[];
-
 /*
  * GUIXCloseToolBar -- close the tool bar and free memory.  Can be called by
  *                    app.  Gets called when parent window closed or floating
@@ -63,12 +61,12 @@ bool GUIXCloseToolBar( gui_window *wnd )
     toolbarinfo     *tbar;
     int             i;
 
-    tbar = wnd->tbinfo;
+    tbar = wnd->tbar;
     if( tbar != NULL ) {
-        wnd->tbinfo = NULL;
+        wnd->tbar = NULL;
         if( tbar->hdl != NULL ) {
             ToolBarFini( tbar->hdl );
-            for( i = 0; i < tbar->num; i++ ) {
+            for( i = 0; i < tbar->num_items; i++ ) {
                 _wpi_deletebitmap( tbar->bitmaps[i] );
             }
             GUIMemFree( tbar->bitmaps );
@@ -123,28 +121,22 @@ static bool guiToolBarProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, WPI_PARAM
 {
     gui_window              *wnd;
     toolbarinfo             *tbar;
-    HMENU                   hmenu;
+    HMENU                   hsysmenu;
     gui_ctl_id              id;
 
     wnd = GetToolWnd( hwnd );
     if( wnd == NULL ) {
         return( false );
     }
-    tbar = wnd->tbinfo;
+    tbar = wnd->tbar;
     if( tbar == NULL ) {
         return( false );
     }
     switch( msg ) {
     case WM_CREATE :
         hwnd = _wpi_getframe( hwnd );
-        hmenu = _wpi_getsystemmenu( hwnd );
-        if( hmenu != NULLHANDLE ) {
-            if( _wpi_appendmenu( hmenu, MF_SEPARATOR, 0, 0, NULLHANDLE, NULL ) ) {
-                _wpi_appendmenu( hmenu, MF_ENABLED|MF_SYSMENU, 0,
-                                 GUIHint[GUI_MENU_IDX( GUI_FIX_TOOLBAR )].id, NULLHANDLE,
-                                 GUIHint[GUI_MENU_IDX( GUI_FIX_TOOLBAR )].label );
-            }
-        }
+        hsysmenu = _wpi_getsystemmenu( hwnd );
+        GUIAppendSystemMenuItem( hsysmenu, GUI_MENU_IDX( GUI_FIX_TOOLBAR ) );
         break;
 #ifdef __OS2_PM__
     case WM_CHAR :
@@ -220,7 +212,7 @@ static bool guiToolBarProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, WPI_PARAM
  */
 
 bool GUIXCreateToolBarWithTips( gui_window *wnd, bool fixed, gui_ord height,
-                                int num_toolbar_items, gui_toolbar_struct *toolinfo,
+                                const gui_toolbar_items *toolinfo,
                                 bool excl, gui_colour_set *plain,
                                 gui_colour_set *standout, gui_rect *float_pos,
                                 bool use_tips )
@@ -241,34 +233,35 @@ bool GUIXCreateToolBarWithTips( gui_window *wnd, bool fixed, gui_ord height,
     int                 bm_w;
     GUI_RECTDIM         left, top, right, bottom;
     int                 h;
+    int                 num_items;
 
     excl = excl;
     plain = plain;
     standout = standout;
     fixed_height = 0;
     fixed_width = 0;
-    if( ( wnd == NULL ) || ( num_toolbar_items < 1 ) || ( toolinfo == NULL ) ||
-        ( wnd->hwnd == NULLHANDLE ) || ( wnd->root == NULLHANDLE ) ) {
+    if( ( wnd == NULL ) || ( wnd->hwnd == NULLHANDLE ) || ( wnd->root == NULLHANDLE ) ) {
         return( false );
     }
-    if( wnd->tbinfo != NULL ) {
+    if( wnd->tbar != NULL ) {
         GUICloseToolBar( wnd );
     }
-    tbar = wnd->tbinfo = (toolbarinfo *)GUIMemAlloc( sizeof( toolbarinfo ) );
+    tbar = wnd->tbar = (toolbarinfo *)GUIMemAlloc( sizeof( toolbarinfo ) );
     if( tbar == NULL ) {
         return( false );
     }
+    num_items = toolinfo->num_items;
     memset( tbar, 0, sizeof( toolbarinfo ) );
     parent = wnd->root;
     tbar->fixedrect = wnd->hwnd_client_rect;
-    tbar->bitmaps = (HBITMAP *)GUIMemAlloc( num_toolbar_items * sizeof( HBITMAP ) );
+    tbar->bitmaps = (HBITMAP *)GUIMemAlloc( num_items * sizeof( HBITMAP ) );
     if( tbar->bitmaps == NULL ) {
         GUIMemFree( tbar );
-        wnd->tbinfo = NULL;
+        wnd->tbar = NULL;
         return( false );
     }
-    for( i = 0; i < num_toolbar_items; i++ ) {
-        tbar->bitmaps[i] = _wpi_loadbitmap( GUIResHInst, MAKEINTRESOURCE( toolinfo[i].bitmap ) );
+    for( i = 0; i < num_items; i++ ) {
+        tbar->bitmaps[i] = _wpi_loadbitmap( GUIResHInst, MAKEINTRESOURCE( toolinfo->toolbar[i].bitmap ) );
         if( height == 0 ) {
             _wpi_getbitmapdim( tbar->bitmaps[i], &bm_w, &bm_h );
             if( bm_h > fixed_height ) {
@@ -311,8 +304,8 @@ bool GUIXCreateToolBarWithTips( gui_window *wnd, bool fixed, gui_ord height,
 #ifdef __OS2_PM__
     bottom -= 2;
 #endif
-    new_right = width * num_toolbar_items -
-                (num_toolbar_items - 1) * tbar->info.border_size.x +
+    new_right = width * num_items -
+                (num_items - 1) * tbar->info.border_size.x +
                 left + 2 * _wpi_getsystemmetrics( SM_CXFRAME ) +
                 BORDER_AMOUNT * 2;
     if( new_right < right ) {
@@ -340,7 +333,7 @@ bool GUIXCreateToolBarWithTips( gui_window *wnd, bool fixed, gui_ord height,
     tbar->info.helphook = guiToolBarHelp;
     tbar->info.background = 0;
     tbar->info.foreground = 0;
-    tbar->num = num_toolbar_items;
+    tbar->num_items = num_items;
     tbar->info.is_fixed = fixed;
     tbar->info.use_tips = use_tips;
 
@@ -350,17 +343,16 @@ bool GUIXCreateToolBarWithTips( gui_window *wnd, bool fixed, gui_ord height,
 
     GUIResizeBackground( wnd, true );
 
-    for( i = 0; i < num_toolbar_items; i++ ) {
+    for( i = 0; i < num_items; i++ ) {
         info.u.bmp = tbar->bitmaps[i];
-        info.id = toolinfo->id;
+        info.id = toolinfo->toolbar[i].id;
         info.flags = 0;
-        if( use_tips && toolinfo->tip != NULL ) {
-            strncpy( info.tip, toolinfo->tip, MAX_TIP );
+        if( use_tips && toolinfo->toolbar[i].tip != NULL ) {
+            strncpy( info.tip, toolinfo->toolbar[i].tip, MAX_TIP );
         } else {
             info.tip[0] = '\0';
         }
         ToolBarAddItem( tbar->hdl, &info );
-        toolinfo++;
     }
     toolhwnd = ToolBarWindow( tbar->hdl );
     _wpi_showwindow( toolhwnd, SW_SHOWNORMAL );
@@ -373,11 +365,11 @@ bool GUIXCreateToolBarWithTips( gui_window *wnd, bool fixed, gui_ord height,
  */
 
 bool GUIXCreateToolBar( gui_window *wnd, bool fixed, gui_ord height,
-                        int num_toolbar_items, gui_toolbar_struct *toolinfo,
+                        const gui_toolbar_items *toolinfo,
                         bool excl, gui_colour_set *plain,
                         gui_colour_set *standout, gui_rect *float_pos )
 {
-    return( GUIXCreateToolBarWithTips( wnd, fixed, height, num_toolbar_items, toolinfo,
+    return( GUIXCreateToolBarWithTips( wnd, fixed, height, toolinfo,
                                        excl, plain, standout, float_pos, false ) );
 }
 
@@ -394,7 +386,7 @@ void GUIResizeToolBar( gui_window *wnd )
     GUI_RECTDIM t, h;
     toolbarinfo *tbar;
 
-    tbar = wnd->tbinfo;
+    tbar = wnd->tbar;
     if( tbar != NULL ) {
         rect = wnd->root_client_rect;
         if( wnd->root == NULLHANDLE ) {
@@ -416,7 +408,7 @@ void GUIResizeToolBar( gui_window *wnd )
 
 bool GUIHasToolBar( gui_window *wnd )
 {
-    return( wnd->tbinfo != NULL );
+    return( wnd->tbar != NULL );
 }
 
 bool GUIChangeToolBar( gui_window *wnd )
@@ -427,7 +419,7 @@ bool GUIChangeToolBar( gui_window *wnd )
     int         t;
     GUI_RECTDIM left, top, right, bottom;
 
-    tbar = wnd->tbinfo;
+    tbar = wnd->tbar;
     if( !tbar->info.is_fixed ) {
         tbar->info.is_fixed = true;
         tbar->info.style = TOOLBAR_FIXED_STYLE;
@@ -462,7 +454,7 @@ bool GUIChangeToolBar( gui_window *wnd )
 bool GUIToolBarFixed( gui_window *wnd )
 {
     if( GUIHasToolBar( wnd ) ) {
-        return( wnd->tbinfo->info.is_fixed );
+        return( wnd->tbar->info.is_fixed );
     }
     return( false );
 }

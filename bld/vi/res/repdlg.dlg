@@ -1,4 +1,4 @@
-#include "repdlg.h"
+#include "repdlg.rh"
 
 REPDLG DIALOG 61, 22, 204, 169
 STYLE DS_MODALFRAME | WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU

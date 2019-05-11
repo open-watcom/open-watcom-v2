@@ -60,14 +60,14 @@ static const char * ComponentSignature = "\144\144\001WBRComp";
 
 #define COMP_HDR_SIG_LEN 7
 
-#pragma pack(push, 1);
+#pragma pack(__push, 1);
 
 struct ComponentHeader {
     char    signature[ COMP_HDR_SIG_LEN ];
     short   numItms;
 };
 
-#pragma pack(pop);
+#pragma pack(__pop);
 
 static ComponentFile * ComponentFile::createComponent( uint_32 t, bool en, const char * name )
 //--------------------------------------------------------------------------------------------

@@ -46,11 +46,16 @@
 #include "envlkup.h"
 #include "dbginit.h"
 #include "dbgcmdln.h"
+#ifndef __NOUI__
+#include "aui.h"
+#endif
 
 
 char            *CmdData;
 
 static volatile bool    BrkPending;
+
+#ifndef __NOUI__
 
 #ifdef _M_I86
 
@@ -100,10 +105,11 @@ void GUImain( void )
 #endif
 
 
-int GUISysInit( int param )
+bool GUISysInit( init_mode install )
 {
-    param = param;
-    return 1;
+    /* unused parameters */ (void)install;
+
+    return( true );
 }
 
 void GUISysFini( void )
@@ -114,6 +120,8 @@ void GUISysFini( void )
 void WndCleanUp( void )
 {
 }
+
+#endif
 
 char *GetCmdArg( int num )
 {

@@ -36,14 +36,13 @@
 //
 
 #include "ftnstd.h"
-#include "rundat.h"
-#include "ftnapi.h"
-#include "fio.h"
-
 #include <unistd.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
+#include "rundat.h"
+#include "ftnapi.h"
+#include "fio.h"
 
 
 intstar4        __fortran FILESIZE( intstar4 *unit ) {

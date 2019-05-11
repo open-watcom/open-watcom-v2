@@ -32,7 +32,7 @@
 #include <stdlib.h>
 #include <string.h>
 #if defined( __QNX__ )
- #include <dir.h>
+ #include <sys/dir.h>
 #else
  #include <direct.h>
 #endif

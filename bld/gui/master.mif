@@ -58,7 +58,9 @@ common_objs = &
     guiextnm.obj   &
     guifcrck.obj   &
     guitext.obj    &
-    guiclass.obj
+    guiclass.obj   &
+    guimenub.obj   &
+    guitoolb.obj
 
 mem_objs = &
     guimem.obj     &
@@ -71,6 +73,9 @@ libs = $(wpi_lib) $(commonui_lib)
 
 !ifeq sys_windowed 1
 extra_cpp_flags = -DGUI_IS_GUI
+!endif
+
+!ifeq sys_windowed 1
 extra_cpp_flags_os2 = -D__OS2_PM__
 !endif
 

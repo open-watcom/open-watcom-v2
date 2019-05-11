@@ -58,6 +58,8 @@
 
 #define MIN_GADGET_SIZE         2
 
+#define WNDATTR( wnd, attr )    (wnd)->attrs[attr]
+
 typedef enum {
     NONE                        = 0x0000,
     TITLE_INVALID               = 0x0001,
@@ -100,9 +102,8 @@ typedef struct gui_control gui_control;
 
 typedef struct toolbarinfo {
     bool                fixed;          // true if toolbar is fixed, false if floating)
-    int                 num_items;      // number of items in toolb bar
     gui_window          *floattoolbar;  // NULL if fixed
-    gui_toolbar_struct  *toolinfo;      // initialization information
+    gui_toolbar_items   toolinfo;       // initialization information
     bool                switching;      // set if between fixed and floating
     bool                excl;           // true if exclamation marks used for fixed
     bool                has_colours;    // true if plain and standout colour
@@ -120,7 +121,7 @@ struct gui_window {
     VSCREEN             screen;         /* must be first field - see call to uivopen */
     gui_create_styles   style;          // style window was created with
     int                 num_attrs;      // number of colours
-    ATTR                *colours;       // colours for window
+    ATTR                *attrs;         // colours for window
     SAREA               use;            // area inside the frame
     SAREA               prev_area;      // location for restore after max/min
     SAREA               dirty;          // area that is dirty
@@ -137,9 +138,9 @@ struct gui_window {
     UIMENUITEM          *menu;          // pulldown menu under closer
     VBARMENU            *vbarmenu;      // top level menu
     int                 min_pos;        // unused
-    toolbarinfo         *tbinfo;        // pointer to toolbar, if exists
+    toolbarinfo         *tbar;          // pointer to toolbar, if exists
     statusinfo          *status;        // pointer to status window, if exists
-    hintinfo            hint;           // hint text
+    hints_info          hintsinfo;      // hint texts
     char                background;     // character to use to draw background
     char                *icon_name;     // string to draw on icon
 };

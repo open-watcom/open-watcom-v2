@@ -52,6 +52,7 @@
 #include "trie.h"
 #include "qdebug.h"
 #include "uivirts.h"
+#include "uiintern.h"
 #include "uiextrn.h"
 #include "ctkeyb.h"
 
@@ -62,8 +63,16 @@
 
 #define ANSI_HDR        _ESC "["
 
+#define XT_MOUSE        _ESC "[M"
+
 #define XT_INIT         _ESC "[?1000h"
 #define XT_FINI         _ESC "[?1000l"
+
+#define XT_SAVE_MOUSE   _ESC "[?1001s"
+#define XT_REST_MOUSE   _ESC "[?1001r"
+
+#define XT_ENAB_MOUSE   _ESC "[?1003h"
+#define XT_DISA_MOUSE   _ESC "[?1003l"
 
 #ifdef __LINUX__
 static void             GPM_parse( void );
@@ -146,7 +155,7 @@ static int tm_stop( void )
     return 0;
 }
 
-static void TryOne( int type, char *test, char *init, const char *input )
+static void TryOne( int type, char *test, const char *init, const char *input )
 {
     MOUSEORD    row;
     MOUSEORD    col;
@@ -303,18 +312,19 @@ static bool gpm_tm_init( void )
 static bool tm_init( init_mode install )
 /**************************************/
 {
-    bool        kmous;                          // Does key_mouse exist?
-
     MouseInstalled  = false;
     MouseType       = M_NONE;
-    kmous           = ( key_mouse != NULL );
 
     if( install == INIT_MOUSELESS )
         return( false );
 
     if( strstr( GetTermType(), "xterm" ) != NULL ) {
-        if( kmous ) {
-            TryOne( M_XT, NULL, XT_INIT, key_mouse );
+        if( key_mouse != NULL ) {
+            /* save current xterm mouse state */
+            uiwritec( XT_SAVE_MOUSE );
+            TryOne( M_XT, NULL, XT_INIT, XT_MOUSE );
+            /* set xterm into full mouse tracking mode */
+            uiwritec( XT_ENAB_MOUSE );
         } else {
             TryOne( M_XT, NULL, XT_INIT, ANSI_HDR "M" );
         }
@@ -333,7 +343,15 @@ static bool tm_fini( void )
 {
     switch( MouseType ) {
     case M_XT:
-        uiwritec( XT_FINI );
+        if( key_mouse != NULL ) {
+            /* disable mouse tracking */
+            uiwritec( XT_DISA_MOUSE );
+            uiwritec( XT_FINI );
+            /* restore old xterm mouse state */
+            uiwritec( XT_REST_MOUSE );
+        } else {
+            uiwritec( XT_FINI );
+        }
         break;
 #ifdef __LINUX__
     case M_GPM:

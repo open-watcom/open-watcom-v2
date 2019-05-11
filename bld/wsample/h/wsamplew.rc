@@ -1,5 +1,6 @@
-#include "windows.h"
-#include "wsamprc.h"
+#include <windows.h>
+#include "wsample.rh"
+
 ApplIcon ICON wsamplew.ico
 
 #define pick2( e_string, j_string ) e_string

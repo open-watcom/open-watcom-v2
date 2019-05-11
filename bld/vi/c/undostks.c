@@ -59,7 +59,7 @@ static void shrinkUndoStack( undo_stack *stack )
     if( stack->current < 0 ) {
         MemFreePtr( (void **)&stack->stack );
     } else {
-        stack->stack = _MemReAllocArray( stack->stack, undo *, stack->current + 1 );
+        stack->stack = _MemReallocArray( stack->stack, undo *, stack->current + 1 );
     }
 
 } /* shrinkUndoStack */
@@ -142,7 +142,7 @@ void PushUndoStack( undo *item, undo_stack *stack )
 {
     void        *tmp;
 
-    tmp = MemReAllocUnsafe( stack->stack, (stack->current + 2) * sizeof( undo * ) );
+    tmp = MemReallocUnsafe( stack->stack, (stack->current + 2) * sizeof( undo * ) );
     if( tmp == NULL ) {
         dropUndoStackTop( stack );
     } else {

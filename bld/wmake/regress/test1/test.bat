@@ -13,9 +13,10 @@ set ERRLOG=%2
 set TEST=01
 call :header
 %PRG% -h -f create
+echo. >err%TEST%.ref
 echo. >err%TEST%.lst
 %PRG% -h -f maketst1 -l err%TEST%.lst > test%TEST%.lst
-diff -b err%TEST%.chk err%TEST%.lst
+diff -b err%TEST%.ref err%TEST%.lst
 call :result a
 diff -b test%TEST%.chk test%TEST%.lst > nul
 call :result b
@@ -27,6 +28,7 @@ del *.exe
 del main.*
 del foo*.c
 if not %ERRORS% == 0 goto end
+    del *.ref
     del *.lst
     del maketst1
 goto end

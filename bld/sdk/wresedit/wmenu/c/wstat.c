@@ -289,11 +289,7 @@ bool WSetStatusText( WStatBar *wsb, const char *s1, const char *s2 )
 
 bool WStatusWndProc( HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam )
 {
-    /* touch unused vars to get rid of warning */
-    _wtouch( hWnd );
-    _wtouch( wParam );
-    _wtouch( lParam );
-    _wtouch( msg );
+    /* unused parameters */ (void)hWnd; (void)wParam; (void)lParam; (void)msg;
 
     return( false );
 }

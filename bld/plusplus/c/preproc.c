@@ -85,7 +85,7 @@ void PpSetWidth(                // SET WIDTH FOR PREPROCESSING
 }
 
 #if 0
-static void emitPoundLine( LINE_NO line, char *fname, unsigned control )
+static void emitPoundLine( LINE_NO line, const char *fname, unsigned control )
 {
     if( CompFlags.cpp_line_wanted ) {
         if( CppPrinting() ) {
@@ -102,7 +102,7 @@ static void emitPoundLine( LINE_NO line, char *fname, unsigned control )
     }
 }
 #else
-static void emitPoundLine( LINE_NO line, char *fname, unsigned control )
+static void emitPoundLine( LINE_NO line, const char *fname, unsigned control )
 {
     if( CompFlags.cpp_line_wanted ) {
         if( CppPrinting() ) {
@@ -137,14 +137,14 @@ static void emitPoundLine( LINE_NO line, char *fname, unsigned control )
 
 void EmitLine(                  // EMIT #LINE DIRECTIVE, IF REQ'D
     LINE_NO line_num,           // - line number
-    char *filename )            // - file name
+    const char *filename )      // - file name
 {
     emitPoundLine( line_num, filename, EL_NULL );
 }
 
 void EmitLineNL(                // EMIT #LINE DIRECTIVE ON ITS OWN LINE, IF REQ'D
     LINE_NO line_num,           // - line number
-    char *filename )            // - file name
+    const char *filename )      // - file name
 {
     emitPoundLine( line_num, filename, EL_NEW_LINE );
 }

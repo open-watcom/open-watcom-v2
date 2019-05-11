@@ -695,7 +695,7 @@ static ssl_value MechDo( unsigned select, ssl_value parm )
 }
 
 
-OVL_EXTERN walk_result FindInternalMod( mod_handle mh, void *d )
+static walk_result FindInternalMod( mod_handle mh, void *d )
 {
     if( !IsInternalMod( mh ) )
         return( WR_CONTINUE );
@@ -927,7 +927,7 @@ typedef struct cue_find {
     }                   match;
 } cue_find;
 
-OVL_EXTERN walk_result sem_FindCue( cue_handle *cueh, void *d )
+static walk_result sem_FindCue( cue_handle *cueh, void *d )
 {
     cue_find    *cd = d;
     char        file[FILENAME_MAX];
@@ -955,7 +955,7 @@ OVL_EXTERN walk_result sem_FindCue( cue_handle *cueh, void *d )
     return( WR_CONTINUE );
 }
 
-OVL_EXTERN walk_result FindModCue( mod_handle mod, void *d )
+static walk_result FindModCue( mod_handle mod, void *d )
 {
     DIPHDL( cue, cueh );
     cue_find            *fd = d;

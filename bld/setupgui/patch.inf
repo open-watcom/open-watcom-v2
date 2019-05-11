@@ -125,7 +125,7 @@ IDS_COPYFILE=           "Copying Files..."
 
 [LicenseMessage]
 IDS_LICENSEMESSAGE=     "Name and Company name must be filled in"
-IDS_APPLYLICENSE=	"Applying License..."
+IDS_APPLYLICENSE=       "Applying License..."
 
 [Dirs]
 1=.,1,-1
@@ -134,32 +134,29 @@ IDS_APPLYLICENSE=	"Applying License..."
 # Patch Section Format
 #
 # (note:  Patch variable (in [Application] section) must be set to 1 
-#	  Directories can be referenced by an int or hardcoded into line
-#	  etc. dir could be 1, 2, or c:\wsql\h 
+#     Directories can be referenced by an int or hardcoded into line
+#     etc. dir could be 1, 2, or c:\wsql\h 
 #
 # patch, <source wpack file>, [ directory of file to be patched ], <destination file>
-#			- default behaviour ( no dir specified ) is to
-#			  first look in DSTDIR, then search the system 
-#                         path for the file.
+#           - default behaviour ( no dir specified ) is to
+#             first look in DSTDIR, then search the system 
+#             path for the file.
 #
 # copy, <source wpack file>, [ destination directory ] <destination file>
-#			- default destination directory is DSTDIR
-#			  
+#           - default destination directory is DSTDIR
+#
 # delete, <file to be deleted>, [ directory of file to be deleted ]
-#			- default directory is DSTDIR
+#               - default directory is DSTDIR
 # 
 
 # examples:
 # [Patch]
-# patch, dbsrvt, win32, dbsrv50.exe		
+# patch, dbsrvt, win32, dbsrv50.exe
 # copy, dbengt, win32, dbeng50.exe 
 # delete, dbstopw.exe, win32
 
 [Patch]
 delete, dbstopw.exe, win32
 copy, dbengt, win32, dbeng50.exe
-
-[Disks]
-1=Disk 1
 
 [End]

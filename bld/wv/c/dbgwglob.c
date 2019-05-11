@@ -153,13 +153,13 @@ void    GlobRefresh( a_window wnd )
 }
 
 
-OVL_EXTERN void GlobSetOptions( a_window wnd )
+static void GlobSetOptions( a_window wnd )
 {
     WndGlob( wnd )->d2_only = _IsOn( SW_GLOB_D2_ONLY );
     GlobInit( wnd );
 }
 
-OVL_EXTERN bool GlobWndEventProc( a_window wnd, gui_event gui_ev, void *parm )
+static bool GlobWndEventProc( a_window wnd, gui_event gui_ev, void *parm )
 {
     glob_window *glob = WndGlob( wnd );
 
@@ -183,6 +183,11 @@ void GlobChangeOptions( void )
     WndForAllClass( WND_GLOBALS, GlobSetOptions );
 }
 
+static bool ChkUpdate( void )
+{
+    return( UpdateFlags & UP_SYM_CHANGE );
+}
+
 wnd_info GlobInfo = {
     GlobWndEventProc,
     GlobRefresh,
@@ -195,9 +200,8 @@ wnd_info GlobInfo = {
     GlobNumRows,
     NoNextRow,
     NoNotify,
-    ChkFlags,
-    UP_SYM_CHANGE,
-    DefPopUp( GlobMenu )
+    ChkUpdate,
+    PopUp( GlobMenu )
 };
 
 a_window DoWndGlobOpen( mod_handle mod )
@@ -212,10 +216,4 @@ a_window DoWndGlobOpen( mod_handle mod )
 a_window WndGlobOpen( void )
 {
     return( DoWndGlobOpen( NO_MOD ) );
-}
-
-
-bool ChkFlags( wnd_update_list flags )
-{
-    return( flags & UpdateFlags );
 }

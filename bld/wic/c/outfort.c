@@ -139,26 +139,26 @@ static DeclInfoType getSimpleIntType(pDeclInfo decl, int *size, char **s ) {
         char *string;
         int size;
     };
-    static struct StringSize fortranSclType[SCL_MAX][SIZE_MAX] = {
-                    /* SIZE_16      SIZE_32         SIZE_48*/
-    /*NULL*/    {"NULL", 0,     "NULL", 0,      "NULL", 0 },
-    /*CHAR*/    {int1Str, 1,    int1Str, 1,     int1Str, 1},
-    /*SCHAR*/   {int1Str, 1,    int1Str, 1,     int1Str, 1},
-    /*UCHAR*/   {int1Str, 1,    int1Str, 1,     int1Str, 1},
-    /*WCHAR*/   {int4Str, 4,    int4Str, 4,     int4Str, 4},
-    /*SSHORT*/  {int2Str, 2,    int2Str, 2,     int2Str, 2},
-    /*USHORT*/  {int2Str, 2,    int2Str, 2,     int2Str, 2},
-    /*SINT*/    {int2Str, 2,    int4Str, 4,     int4Str, 4},
-    /*UINT*/    {int2Str, 2,    int4Str, 4,     int4Str, 4},
-    /*SLONG*/   {int4Str, 4,    int4Str, 4,     int6Str, 6},
-    /*ULONG*/   {int4Str, 4,    int4Str, 4,     int6Str, 6},
-    /*FLOAT*/   {"REAL*4", 4,   "REAL*4", 4,    "REAL*4", 4 },
-    /*DOUBLE*/  {"REAL*8", 8,   "REAL*8", 8,    "REAL*8", 8 },
-    /*LDOUBLE*/ {"REAL*8", 8,   "REAL*8", 8,    "REAL*8", 8 },
-    /*VOID*/    {"VOID",   0,   "VOID", 0,      "VOID", 0 },
-    /*DOT_DOT_DOT*/     {"...",    0,   "...", 0,       "...", 0 }
+    static struct StringSize fortranSclType[SCL_MAX][SIZETYPE_MAX] = {
+    /*                        SIZETYPE_16    SIZETYPE_32     SIZETYPE_48*/
+    /*NULL*/        {"NULL",  0,    "NULL",  0,     "NULL",  0},
+    /*CHAR*/        {int1Str, 1,    int1Str, 1,     int1Str, 1},
+    /*SCHAR*/       {int1Str, 1,    int1Str, 1,     int1Str, 1},
+    /*UCHAR*/       {int1Str, 1,    int1Str, 1,     int1Str, 1},
+    /*WCHAR*/       {int4Str, 4,    int4Str, 4,     int4Str, 4},
+    /*SSHORT*/      {int2Str, 2,    int2Str, 2,     int2Str, 2},
+    /*USHORT*/      {int2Str, 2,    int2Str, 2,     int2Str, 2},
+    /*SINT*/        {int2Str, 2,    int4Str, 4,     int4Str, 4},
+    /*UINT*/        {int2Str, 2,    int4Str, 4,     int4Str, 4},
+    /*SLONG*/       {int4Str, 4,    int4Str, 4,     int6Str, 6},
+    /*ULONG*/       {int4Str, 4,    int4Str, 4,     int6Str, 6},
+    /*FLOAT*/       {"REAL*4", 4,   "REAL*4", 4,    "REAL*4", 4},
+    /*DOUBLE*/      {"REAL*8", 8,   "REAL*8", 8,    "REAL*8", 8},
+    /*LDOUBLE*/     {"REAL*8", 8,   "REAL*8", 8,    "REAL*8", 8},
+    /*VOID*/        {"VOID",   0,   "VOID", 0,      "VOID", 0},
+    /*DOT_DOT_DOT*/ {"...",    0,   "...", 0,       "...", 0}
     };
-    static struct StringSize ptrStr[SIZE_MAX] =
+    static struct StringSize ptrStr[SIZETYPE_MAX] =
         { int2Str, 2,  int4Str, 4, int6Str, 6 };
 
     pDclr dclr = decl->dclr;
@@ -182,10 +182,8 @@ static DeclInfoType getSimpleIntType(pDeclInfo decl, int *size, char **s ) {
             case DIT_SCALAR:
                 assert(decl->repr.scalar.scalar <= SCL_MAX);
                 assert(decl->repr.scalar.scalar >= SCL_NULL);
-                *s = fortranSclType[decl->repr.scalar.scalar][g_opt.intSize]
-                            .string;
-                *size = fortranSclType[decl->repr.scalar.scalar][g_opt.intSize]
-                            .size;
+                *s = fortranSclType[decl->repr.scalar.scalar][g_opt.intSize].string;
+                *size = fortranSclType[decl->repr.scalar.scalar][g_opt.intSize].size;
                 break;
             case DIT_STRUCT_OR_UNION:
                 *size = 0;
@@ -463,7 +461,7 @@ static void _expandPushLogEntry(int fileNum, void *_logEntry) {
 
 /*-----------------------------------------------------------------------*/
 
-ExpandFuncTable printExpandFortTable =
+ExpandFuncEntry printExpandFortTable[MAX_PRINT_TYPE] =
 {
 //    Params    FuncName
         0,      NULL,                       //OUNIT

@@ -129,7 +129,7 @@ void InitGlobalVars( void )
 
 #if _CPU == 386
     FunctionProfileBlock    = NULL; /* handle for profiling data block */
-    FunctionProfileSegment  = SEG_UNKNOWN; /* segment for profiling data block */
+    FunctionProfileSegId    = SEG_UNKNOWN; /* segment for profiling data block */
 #endif
 
     MacroDepth              = 0;
@@ -155,7 +155,7 @@ void InitGlobalVars( void )
     LitPoolSize             = 0;
     MacroSize               = 0;
     SegmentNum              = 0;    /* next PRIVATE segment number to use */
-    FarStringSegment        = SEG_UNKNOWN;
+    FarStringSegId          = SEG_UNKNOWN;
 
     Environment             = NULL; /* var for Suicide() */
 
@@ -164,8 +164,6 @@ void InitGlobalVars( void )
     ExprLevel               = 0;
 
     SegListHead             = NULL;
-    SegImport               = SEG_UNKNOWN; /* next segment # for import sym */
-    SegData                 = SEG_UNKNOWN; /* data seg # for -nd option */
 
     ScopeStruct             = 0;
     ScopeUnion              = 0;
@@ -219,7 +217,7 @@ void InitGlobalVars( void )
     DefCodeSegment          = NULL; /* #pragma code_seg("seg","c") */
 
     UnrollCount             = 0;    /* #pragma unroll(#); */
-    InitialMacroFlag        = MFLAG_NONE;
+    InitialMacroFlags       = MFLAG_NONE;
     Stack87                 = 0;
     ErrorFileName           = NULL;
 

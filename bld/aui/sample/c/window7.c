@@ -74,8 +74,7 @@ static wnd_info W7Info = {
     W7NumRows,
     NoNextRow,
     NoNotify,
-    NULL,
-    0,
+    NoChkUpdate,
     NoPopUp
 };
 

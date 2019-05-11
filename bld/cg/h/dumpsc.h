@@ -29,4 +29,4 @@
 ****************************************************************************/
 
 
-extern void    DumpSc( score *sc );
+extern void    DumpSc( score *scoreboard );

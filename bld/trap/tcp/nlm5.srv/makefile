@@ -5,14 +5,15 @@ host_os  = nov
 target_cpu = x86
 target_os  = nlm
 
+target_sys = nlm_libc
+
 nlm_ver = 5
 srv = tcp
 which = SERVER
-nwlib = libc
 remote_link = 1
 builtin_trap = 1
 
 extra_objs = $(nlm_objs)
 
-!include $(trap_dir)/lcl/nlm/trap.mif
+!include $(trap_dir)/lcl/nlm/nlm.mif
 !include $(trap_dir)/master.mif

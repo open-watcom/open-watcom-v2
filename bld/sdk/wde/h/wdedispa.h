@@ -41,11 +41,11 @@ typedef bool                (CALLBACK *DISPATCHERPROCx)(ACTION_ID, OBJPTR, void 
 #if defined( __WINDOWS__ )
 extern DISPATCHERPROC       MakeProcInstance_DISPATCHER( DISPATCHERPROCx fn, HINSTANCE instance );
 #else
-#define MakeProcInstance_DISPATCHER(f,i)    f
+#define MakeProcInstance_DISPATCHER(f,i)    ((void)i,f)
 #endif
 
 #if defined( __WINDOWS__ ) && defined( _M_I86 )
 void FreeProcInstance_DISPATCHER( DISPATCHERPROC fn );
 #else
-#define FreeProcInstance_DISPATCHER(f)
+#define FreeProcInstance_DISPATCHER(f)      ((void)f)
 #endif

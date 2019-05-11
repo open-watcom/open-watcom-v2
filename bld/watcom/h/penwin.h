@@ -9,7 +9,7 @@
 extern "C" {
 #endif
 
-#pragma pack(push,1)
+#pragma pack(__push,1)
 
 #define RC_LDEFAULT     (0xFFFFFFFFL)
 #define MAXOEMDATAWORDS 6
@@ -113,7 +113,7 @@ BOOL    WINAPI CorrectWriting(HWND,LPSTR,UINT,LPRC,DWORD,DWORD);
 UINT    WINAPI EnumSymbols(LPSYG,WORD,ENUMPROC,LPVOID);
 BOOL    WINAPI DictionarySearch(LPRC,LPSYE,int,LPSYV,int);
 
-#pragma pack(pop)
+#pragma pack(__pop)
 
 #ifdef __cplusplus
 }

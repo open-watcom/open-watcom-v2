@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,12 +35,12 @@
 
 #if defined( USE_XTD )
 
+#include <i86.h>
 #include "dosx.h"
 #include "xmem.h"
 #include "fcbmem.h"
 #include "pragmas.h"
 
-extern void __interrupt XMemIntHandler( void );
 
 static descriptor GDT[] = {
     { 0, 0, 0 },    /* dummy segment */
@@ -52,8 +53,8 @@ static descriptor GDT[] = {
 
 xtd_struct XMemCtrl;
 
-static void xmemWrite( long , void *, size_t );
-static void xmemRead( long , void *, size_t );
+static void xmemWrite( long, void *, size_t );
+static void xmemRead( long, void *, size_t );
 static bool checkVDISK( flat_address * );
 
 /*
@@ -82,7 +83,7 @@ vi_rc SwapToExtendedMemory( fcb *fb )
     /*
      * finish up
      */
-    fb->xmemaddr = addr;
+    fb->xblock.addr = addr;
     fb->in_extended_memory = true;
     return( ERR_NO_ERR );
 
@@ -96,8 +97,8 @@ vi_rc SwapToMemoryFromExtendedMemory( fcb *fb )
     size_t  len;
 
     len = FcbSize( fb );
-    xmemRead( fb->xmemaddr, ReadBuffer, len );
-    GiveBackXMemBlock( fb->xmemaddr );
+    xmemRead( fb->xblock.addr, ReadBuffer, len );
+    GiveBackXMemBlock( fb->xblock.addr );
     return( RestoreToNormalMemory( fb, len ) );
 
 } /* SwapToMemoryFromExtendedMemory */
@@ -109,7 +110,7 @@ void XMemInit( void )
 {
     long        blocks, rc;
     int         j, i, extra;
-    U_INT       amount;
+    unsigned    amount;
 
     /*
      * init
@@ -140,7 +141,7 @@ void XMemInit( void )
     }
 
     XMemCtrl.xtd_vector = DosGetVect( XMEM_INTERRUPT );
-    DosSetVect( XMEM_INTERRUPT, XMemIntHandler );
+    DosSetVect( XMEM_INTERRUPT, (void (__interrupt *)( void ))XMemIntHandler );
     XMemCtrl.inuse = true;
 
     /*
@@ -202,7 +203,7 @@ static void xmemRead( long addr, void *buff, size_t size )
 {
     flat_address        source, target;
 
-    size = (size + 1) & ~1;
+    size = ROUNDUP( size, 2 );
     source = addr;
     GDT[GDT_SOURCE].address = GDT_RW_DATA | source;
     GDT[GDT_SOURCE].length = size;
@@ -221,7 +222,7 @@ static void xmemWrite( long addr, void *buff, size_t size )
 {
     flat_address        source, target;
 
-    size = (size + 1) & ~1;
+    size = ROUNDUP( size, 2 );
     target = addr;
     GDT[GDT_TARGET].address = GDT_RW_DATA | target;
     GDT[GDT_TARGET].length = size;

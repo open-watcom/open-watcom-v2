@@ -1174,8 +1174,8 @@
 
 :option. zam
 :target. any
-:usage. disable all predefined non-ISO extension macros
-:jusage. disable all predefined non-ISO extension macros
+:usage. disable all compiler non-ISO compliant names (macros, symbols)
+:jusage. disable all compiler non-ISO compliant names (macros, symbols)
 
 :option. zat
 :target. any

@@ -43,6 +43,9 @@
 #include "dbginit.h"
 #include "dbgio.h"
 #include "dbgerr.h"
+#ifndef __NOUI__
+#include "aui.h"
+#endif
 
 
 #define _NBPARAS( bytes )       ((bytes + 15UL) / 16)
@@ -136,6 +139,8 @@ void KillDebugger( int rc )
     _exit( rc );
 }
 
+#ifndef __NOUI__
+
 void GUImain( void )
 {
 #if defined(__OSI__)
@@ -169,10 +174,11 @@ void GUImain( void )
 }
 
 
-int GUISysInit( int param )
+bool GUISysInit( init_mode install )
 {
-    param=param;
-    return( 1 );
+    /* unused parameters */ (void)install;
+
+    return( true );
 }
 
 void GUISysFini( void  )
@@ -185,10 +191,7 @@ void WndCleanUp( void )
 {
 }
 
-bool SysGUI( void )
-{
-    return( false );
-}
+#endif
 
 void PopErrBox( const char *buff )
 {

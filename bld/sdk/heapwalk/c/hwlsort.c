@@ -58,11 +58,11 @@ static int SortByHandle( LOCALENTRY **t1, LOCALENTRY **t2 ) {
 void SortLocalHeapList( HWND hwnd, WORD type ) {
 
     void        *fn;
-    HMENU       mh;
+    HMENU       hmenu;
 
-    mh = GetMenu( hwnd );
-    CheckMenuItem( mh, LSortType, MF_UNCHECKED | MF_BYCOMMAND );
-    CheckMenuItem( mh, type, MF_CHECKED | MF_BYCOMMAND );
+    hmenu = GetMenu( hwnd );
+    CheckMenuItem( hmenu, LSortType, MF_UNCHECKED | MF_BYCOMMAND );
+    CheckMenuItem( hmenu, type, MF_CHECKED | MF_BYCOMMAND );
     LSortType = type;
     switch( type ) {
     case HEAPMENU_SORT_ADDR:

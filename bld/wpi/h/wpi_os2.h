@@ -339,8 +339,8 @@ extern void _wpi_getpaintrect( PAINTSTRUCT *ps, WPI_RECT *rect );
     #define _wpi_setmintracksize(info,width,height) \
         info->ptlMinTrackSize.x = width; info->ptlMinTrackSize.y = height
 
-    #define _wpi_setdoubleclicktime( rate ) \
-                            WinSetSysValue( HWND_DESKTOP, SV_DBLCLKTIME, rate )
+    #define _wpi_setdoubleclicktime( dclick_ms ) \
+                            WinSetSysValue( HWND_DESKTOP, SV_DBLCLKTIME, dclick_ms )
 
     #define _wpi_iswindowenabled( hwnd ) WinIsWindowEnabled( hwnd )
 
@@ -1385,11 +1385,8 @@ extern HWND _wpi_getparent( HWND hwnd );
     #define _wpi_getkeystate( vkey ) \
         WinGetKeyState( HWND_DESKTOP, (int)(vkey) )
 
-extern WPI_HANDLE __wpi_selectobject( WPI_PRES pres, WPI_HANDLE v_obj, void *v_old_obj );
-#pragma aux __wpi_selectobject __parm [];
-    #define _wpi_selectobject( pres, obj ) \
-        __wpi_selectobject( pres, obj, alloca( sizeof(WPI_OBJECT) ) )
-
+extern WPI_HANDLE _wpi_selectobject( WPI_PRES pres, WPI_HANDLE v_obj );
+extern void _wpi_getoldobject( WPI_PRES pres, WPI_HANDLE v_obj );
 extern void _wpi_deleteobject( WPI_HANDLE object );
 extern char *_wpi_menutext2pm( const char *text );
 extern void _wpi_menutext2win( char *text );

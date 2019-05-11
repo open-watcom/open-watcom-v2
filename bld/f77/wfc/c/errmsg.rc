@@ -1,5 +1,5 @@
 #include "macro.h"
-#include "wreslang.h"
+#include "wreslang.rh"
 
 #define MSG_LANG_BASE 0
 #include "errmsg.grc"

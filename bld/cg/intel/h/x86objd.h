@@ -92,27 +92,27 @@ typedef unsigned_16     omf_idx;
 typedef enum {
 /*  order is important -- see documentation */
 /*  on fixups */
-        BASE_SEG,
-        BASE_GRP,
-        BASE_IMP,
-        BASE_ABS
+    BASE_SEG,
+    BASE_GRP,
+    BASE_IMP,
+    BASE_ABS
 } base_type;
 
 #include "pushpck1.h"
 typedef struct fixup {
-        byte                    locatof;
-        byte                    fset;
-        byte                    fixdat;
+    byte                    locatof;
+    byte                    fset;
+    byte                    fixdat;
 } fixup;
 #include "poppck.h"
 
 /* Data Structures used internally in object file generation */
 
 typedef struct hassle_note {
-        struct hassle_note      *link;
-        cg_sym_handle           sym;
-        long_offset             where;
-        objhandle               hdl;
+    struct hassle_note      *link;
+    cg_sym_handle           sym;
+    long_offset             where;
+    objhandle               hdl;
 } hassle_note;
 
 enum {
@@ -123,34 +123,34 @@ enum {
 };
 
 typedef struct index_rec {
-        struct object           *obj;
-        long_offset             location;
-        long_offset             max_written;
-        long_offset             max_size;
-        omf_idx                 base;   /*  base for relocs */
-        omf_idx                 sidx;   /*  index for segment */
-        omf_idx                 nidx;   /*  name index for segment */
-        omf_idx                 cidx;   /*  class name index */
-        unsigned                big                     : 1;
-        unsigned                need_base_set           : 1;
-        unsigned                rom                     : 1;
-        unsigned                data_in_code            : 1;
-        unsigned                data_ptr_in_code        : 1;
-        unsigned                private                 : 1;
-        unsigned                exec                    : 1;
-        unsigned                start_data_in_code      : 1;
-        unsigned                prefix_comdat_state     : 2;
-        segment_id              seg;    /*  front-end i.d. */
-        base_type               btype;
-        byte                    attr;
-        byte                    data_prefix_size;
-        unsigned_32             comdat_size;
-        unsigned_32             total_comdat_size;
-        cg_sym_handle           comdat_symbol;
-        label_handle            comdat_label;
-        omf_idx                 comdat_nidx;
-        void                    *virt_func_refs;
-        omf_idx                 comdat_prefix_import;
+    struct object           *obj;
+    long_offset             location;
+    long_offset             max_written;
+    long_offset             max_size;
+    omf_idx                 base;       /* base for relocs */
+    omf_idx                 sidx;       /* index for segment */
+    omf_idx                 nidx;       /* name index for segment */
+    omf_idx                 cidx;       /* class name index */
+    unsigned                big                     : 1;
+    unsigned                need_base_set           : 1;
+    unsigned                rom                     : 1;
+    unsigned                data_in_code            : 1;
+    unsigned                data_ptr_in_code        : 1;
+    unsigned                private                 : 1;
+    unsigned                exec                    : 1;
+    unsigned                start_data_in_code      : 1;
+    unsigned                prefix_comdat_state     : 2;
+    segment_id              segid;      /* front-end i.d. */
+    base_type               btype;
+    byte                    attr;
+    byte                    data_prefix_size;
+    unsigned_32             comdat_size;
+    unsigned_32             total_comdat_size;
+    cg_sym_handle           comdat_symbol;
+    label_handle            comdat_label;
+    omf_idx                 comdat_nidx;
+    void                    *virt_func_refs;
+    omf_idx                 comdat_prefix_import;
 } index_rec;
 
 typedef enum {
@@ -168,14 +168,14 @@ typedef enum {
 #define F_CLASS(c)  (c & F_MASK)
 
 typedef enum {
-        AP_HAVE_VALUE           = 0x01,
-        AP_HAVE_OFFSET          = 0x02
+    AP_HAVE_VALUE           = 0x01,
+    AP_HAVE_OFFSET          = 0x02
 } abspatch_flags;
 
 typedef struct abspatch {
-        struct abspatch         *link;
-        object                  *obj;
-        obj_patch               pat;
-        long_offset             value;
-        abspatch_flags          flags;
+    struct abspatch         *link;
+    object                  *obj;
+    obj_patch               pat;
+    long_offset             value;
+    abspatch_flags          flags;
 } abspatch;

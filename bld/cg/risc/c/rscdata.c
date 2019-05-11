@@ -52,7 +52,7 @@ void    DataAlign( unsigned_32 align )
     curr_loc = AskLocation();
     modulus = curr_loc % align;
     if( modulus != 0 ) {
-        if( !AskSegBlank( AskOP() ) ) {
+        if( !AskSegIsBlank( AskOP() ) ) {
             IterBytes( (offset)( align - modulus ), 0 );
         } else {
             IncLocation( align - modulus );
@@ -106,10 +106,10 @@ void    IterBytes( offset len, byte pat )
     TellByPassOver();
 }
 
-void    BackPtr( back_handle bck, segment_id seg, offset plus, type_def *tipe )
-/*****************************************************************************/
+void    BackPtr( back_handle bck, segment_id segid, offset plus, type_def *tipe )
+/*******************************************************************************/
 {
-    /* unused parameters */ (void)seg; (void)tipe;
+    /* unused parameters */ (void)segid; (void)tipe;
 
     assert( tipe->length == 4 );
     TellOptimizerByPassed();
@@ -118,10 +118,10 @@ void    BackPtr( back_handle bck, segment_id seg, offset plus, type_def *tipe )
     TellByPassOver();
 }
 
-void    BackPtrBigOffset( back_handle bck, segment_id seg, offset plus )
-/**********************************************************************/
+void    BackPtrBigOffset( back_handle bck, segment_id segid, offset plus )
+/************************************************************************/
 {
-    /* unused parameters */ (void)seg;
+    /* unused parameters */ (void)segid;
 
     TellOptimizerByPassed();
     OutReloc( bck->lbl, OWL_RELOC_WORD, 0 );
@@ -129,11 +129,11 @@ void    BackPtrBigOffset( back_handle bck, segment_id seg, offset plus )
     TellByPassOver();
 }
 
-void    BackPtrBase( back_handle bck, segment_id seg )
-/****************************************************/
+void    BackPtrBase( back_handle bck, segment_id segid )
+/******************************************************/
 {
     TellOptimizerByPassed();
-    OutSegReloc( bck->lbl, seg );
+    OutSegReloc( bck->lbl, segid );
     ObjBytes( "\0\0", 2 );
     TellByPassOver();
 }
@@ -154,14 +154,14 @@ void    FEPtrBaseOffset( cg_sym_handle sym,  offset plus )
 /********************************************************/
 {
     back_handle     bck;
-//    segment_id          seg;
+//    segment_id          segid;
 
     TellOptimizerByPassed();
     bck = FEBack( sym );
-//    seg = FESegID( sym );
+//    segid = FESegID( sym );
     OutReloc( bck->lbl, OWL_RELOC_SECTION_INDEX, 0 );
     ObjBytes( &plus, 4 );
-//    OutSegReloc( bck->lbl, seg );
+//    OutSegReloc( bck->lbl, segid );
     OutReloc( bck->lbl, OWL_RELOC_SECTION_OFFSET, 0 );
     ObjBytes( "\0\0", 2 );
     TellByPassOver();
@@ -170,11 +170,11 @@ void    FEPtrBaseOffset( cg_sym_handle sym,  offset plus )
 void    FEPtrBase( cg_sym_handle sym )
 /************************************/
 {
-    segment_id          seg;
+    segment_id          segid;
 
     TellOptimizerByPassed();
-    seg = FESegID( sym );
-    OutSegReloc( FEBack( sym )->lbl, seg );
+    segid = FESegID( sym );
+    OutSegReloc( FEBack( sym )->lbl, segid );
     ObjBytes( "\0\0", 2 );
     TellByPassOver();
 }
@@ -206,7 +206,7 @@ name    *GenFloat( name *cons, type_class_def type_class )
 /********************************************************/
 {
     constant_defn       *defn;
-    segment_id          old;
+    segment_id          old_segid;
     name                *result;
 
     TellOptimizerByPassed();
@@ -217,12 +217,12 @@ name    *GenFloat( name *cons, type_class_def type_class )
     }
     if( defn->label == NULL ) {
         defn->label = AskForLabel( NULL );
-        old = SetOP( AskBackSeg() );
+        old_segid = SetOP( AskBackSeg() );
         AlignObject( 8 );
         assert( ( AskLocation() & 0x07 ) == 0 );
         OutLabel( defn->label );
         DataBytes( TypeClassSize[type_class], &defn->value );
-        SetOP( old );
+        SetOP( old_segid );
 
     }
     result = AllocMemory( defn->label, 0, CG_LBL, type_class );

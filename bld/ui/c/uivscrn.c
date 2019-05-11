@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -32,6 +32,7 @@
 
 
 #include "uidef.h"
+#include "uicurshk.h"
 
 
 VSCREEN* intern findvscreen( ORD row, ORD col )
@@ -72,13 +73,13 @@ void UIAPI uivsetactive( VSCREEN *vptr )
 void UIAPI uivsetcursor( VSCREEN *vptr )
 /**************************************/
 {
-    ORD             row;
-    ORD             col;
+    CURSORORD       crow;
+    CURSORORD       ccol;
 
     if( vptr != NULL ) {
-        row = vptr->area.row + vptr->row;
-        col = vptr->area.col + vptr->col;
-        uisetcursor( row, col, vptr->cursor, CATTR_VOFF );
+        crow = vptr->area.row + vptr->cursor_row;
+        ccol = vptr->area.col + vptr->cursor_col;
+        uisetcursor( crow, ccol, vptr->cursor_type, CATTR_VOFF );
     } else {
         uioffcursor();
     }

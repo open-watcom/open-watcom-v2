@@ -33,15 +33,14 @@
 
 #include "drwatcom.h"
 #include <errno.h>
-#include <alloca.h>
 #include "wclbproc.h"
 #include "regstr.h"
 #include "mad.h"
-#include "regcmbo.h"
+#include "regcmbo.rh"
 #include "jdlg.h"
 #include "bitman.h"
 #include "madcli.h"
-#include "regedit.h"
+#include "regedit.rh"
 #include "reglist.h"
 #include "strcnv.h"
 

@@ -1,6 +1,6 @@
 #include "gui.rc"
-#include "dlgrx.h"
-#include "dlgsrch.h"
+#include "dlgrx.rh"
+#include "dlgsrch.rh"
 #include "auistr.rc"
 #ifdef JAPANESE
 #include "japrx.gdl"

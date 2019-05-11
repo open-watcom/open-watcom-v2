@@ -1,11 +1,9 @@
 /*************************************************************************/
 /*                          WLINK RESOURCE FILE                          */
 /*************************************************************************/
-#ifndef MSG_BASE
-#define MSG_BASE        0
-#endif
-#include "wlmsgs.h"
-#include "wreslang.h"
+
+#include "wlnkmsg.rh"
+#include "wreslang.rh"
 #include "rcmsg.gh"
 
 STRINGTABLE

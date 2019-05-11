@@ -39,7 +39,7 @@
 #include "wdesdup.h"
 #include "wresall.h"
 #include "wdecctl.h"
-#include "wde_rc.h"
+#include "wde.rh"
 #include "wde_wres.h"
 #include "wrdll.h"
 
@@ -466,15 +466,15 @@ static bool WdeSetMemFlagsText( uint_16 flags, char **text )
         if( flags & MEMFLAG_PRELOAD ) {
             strcat( *text, "PRELOAD " );
         }
-    
+
         if( !(flags & MEMFLAG_MOVEABLE) ) {
             strcat( *text, "FIXED " );
         }
-    
+
         if( flags & MEMFLAG_DISCARDABLE ) {
             strcat( *text, "DISCARDABLE " );
         }
-    
+
         if( !(flags & MEMFLAG_PURE) ) {
             strcat( *text, "IMPURE " );
         }

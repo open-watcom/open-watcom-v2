@@ -52,6 +52,7 @@
 #include "uidef.h"
 #include "uishift.h"
 #include "uivirts.h"
+#include "uiintern.h"
 #include "uiextrn.h"
 #include "qdebug.h"
 #include "ctkeyb.h"
@@ -65,11 +66,6 @@
 #define BUFF2CODE( __b )    (*(unsigned char *)__b + (*(unsigned char *)(__b + 1) << 8 ))
 
 enum {
-    EV_STICKY_FUNC      = 0xff0,
-    EV_STICKY_SHIFT,
-    EV_STICKY_CTRL,
-    EV_STICKY_ALT,
-    EV_STICKY_INTRO     = 0xfff,
     S_FUNC              = S_CAPS,
     S_INTRO             = S_KANJI_LOCK
 };
@@ -320,8 +316,8 @@ static void ck_arm( void )
 
 #define PUSHBACK_SIZE   32
 
-static char     UnreadBuffer[PUSHBACK_SIZE];
-static int      UnreadPos = sizeof( UnreadBuffer );
+static unsigned char    UnreadBuffer[PUSHBACK_SIZE];
+static int              UnreadPos = sizeof( UnreadBuffer );
 
 int nextc( int n )
 /****************/

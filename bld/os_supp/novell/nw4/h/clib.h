@@ -6,7 +6,7 @@
 *                            Open Watcom Project
 *
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
-*    Portions Copyright (c) 1989-2002 Novell, Inc.  All Rights Reserved.                      
+*    Portions Copyright (c) 1989-2002 Novell, Inc.  All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -31,9 +31,9 @@
 *   This header file was generated for the OpenWatcom project by Carl Young
 *       carl.young@keycomm.co.uk
 *   Any problems or updates required, please either contact the author or
-*   the OpenWatcom contributors forums. 
+*   the OpenWatcom contributors forums.
 *       http://www.openwatcom.com/
-*   
+*
 * Description:  Defines NetWare 4.0 CLIB structures such as thread control
 *               structures for use in the debugging of NetWare.
 *
@@ -41,8 +41,8 @@
 
 #include <miniproc.h>
 
-#define	TGCSSignature	TGCSSignature4
-#define NCSSignature	NCSSignature4
+#define TGCSSignature   TGCSSignature4
+#define NCSSignature    NCSSignature4
 
 #define NW_TCS4         struct NW_TCS4          /* 4.1 TCS */
 #define NW_TGCS4        struct NW_TGCS4
@@ -50,18 +50,18 @@
 #define NW_NCS4         struct NW_NCS4
 #define NW_OSS4         struct NW_OSS4
 
-#pragma pack (push, 1)
+#pragma pack (__push, 1)
 
 typedef NW_TCS4
 {
-    NW_TCS4 *           TCSLink;			/*	0x00	*/
-	LONG				__Undefined00;
-    NW_TGCS4 *          TCSTGCSp;			/*	0x08	*/
-	LONG				__Undefined01[5];	
-    LONG                TCSSuspendOrStop;   /*	0x20	*/
-	/*
-	//	rest of struct undefined
-	*/
+    NW_TCS4 *           TCSLink;                        /*      0x00    */
+        LONG                            __Undefined00;
+    NW_TGCS4 *          TCSTGCSp;                       /*      0x08    */
+        LONG                            __Undefined01[5];
+    LONG                TCSSuspendOrStop;   /*  0x20    */
+        /*
+        //      rest of struct undefined
+        */
 }T_ThreadStruct4, T_ThreadStruct;
 
 /*
@@ -73,21 +73,21 @@ typedef NW_TGCS4
     LONG                TGCSStructID;   /* should be TGCSSignature                  */
     NW_NCS4 *           TGCSNCSp;       /* pointer to NCS                           */
     NW_TCS4 *           TGCSTCSLHead;   /* link to first TCS                        */
-	/*
-	//	rest of struct undefined
-	*/
+        /*
+        //      rest of struct undefined
+        */
 }T_ThreadGroupStruct4, T_ThreadGroupStruct;
 
 #define __THREAD_NAME_SIZE  18
 typedef NW_PCB4
 {
-	LONG				__Undefined00[5];
-    LONG                UniquePCBID;						/*	0x14	*/
-	LONG				__Undefined01[3];
-    BYTE                ProcessName[__THREAD_NAME_SIZE];	/*	0x1E	*/
-	/*
-	//	rest of struct undefined
-	*/
+        LONG                            __Undefined00[5];
+    LONG                UniquePCBID;                                            /*      0x14    */
+        LONG                            __Undefined01[3];
+    BYTE                ProcessName[__THREAD_NAME_SIZE];        /*      0x1E    */
+        /*
+        //      rest of struct undefined
+        */
 }T_PCBStruct4, T_PCBStruct;
 
 /*
@@ -95,18 +95,18 @@ typedef NW_PCB4
 */
 typedef NW_NCS4
 {
-    struct LoadDefinitionStructure *    NCSNLMHandle;		/* +00                                      */
-    LONG								NCSStructID;		/* +04 Should be NCSSignature               */
-    LONG								__Undefined00[2];
-    NW_TGCS4 *							NCSTGCSLHead;		/* +10 link to TGCS list                    */
-    NW_OSS4 *							NCSOSSLHead;		/* +14 link to open screens                 */
-    LONG								__Undefined01[25];	/* +18 */
-    LONG								NCSExitCount;		/* +7C */
-    LONG								__Undefined02;		/* +80 */
-    LONG								NCSUnloadFunc;		/* +84 */
-	/*
-	//	rest of struct undefined
-	*/
+    struct LoadDefinitionStructure *    NCSNLMHandle;           /* +00                                      */
+    LONG                                                                NCSStructID;            /* +04 Should be NCSSignature               */
+    LONG                                                                __Undefined00[2];
+    NW_TGCS4 *                                                  NCSTGCSLHead;           /* +10 link to TGCS list                    */
+    NW_OSS4 *                                                   NCSOSSLHead;            /* +14 link to open screens                 */
+    LONG                                                                __Undefined01[25];      /* +18 */
+    LONG                                                                NCSExitCount;           /* +7C */
+    LONG                                                                __Undefined02;          /* +80 */
+    LONG                                                                NCSUnloadFunc;          /* +84 */
+        /*
+        //      rest of struct undefined
+        */
 }T_NLMStruct4, T_NLMStruct;
 
 /*
@@ -114,45 +114,45 @@ typedef NW_NCS4
 */
 typedef NW_OSS4
 {
-    NW_OSS4 *           OSSLink;					/* +00 */
-    LONG                OSSStructID;				/* +04  OSS_SIGNATURE				*/
-	struct ScreenStruct *OSSScreenID;				/* +08	ptr to NW386 ScreenStruct	*/
-	int                 OSSGetchFlag;				/* +0C	// for special keys			*/
-	LONG                OSSCursorShape;				/* +10	valid if HAS_CUSTOM_CURSOR	*/
-	LONG                OSSSavedCursorShape;		/* +14	valid if HAS_CUSTOM_CURSOR	*/
-	LONG                OSSActivateEventHandle;		/* +18 */
-	LONG                OSSDeactivateEventHandle;	/* +1C */
-	BYTE                OSSAttributes;				/* +20 */
+    NW_OSS4 *           OSSLink;                                        /* +00 */
+    LONG                OSSStructID;                            /* +04  OSS_SIGNATURE                           */
+        struct ScreenStruct *OSSScreenID;                               /* +08  ptr to NW386 ScreenStruct       */
+        int                 OSSGetchFlag;                               /* +0C  // for special keys                     */
+        LONG                OSSCursorShape;                             /* +10  valid if HAS_CUSTOM_CURSOR      */
+        LONG                OSSSavedCursorShape;                /* +14  valid if HAS_CUSTOM_CURSOR      */
+        LONG                OSSActivateEventHandle;             /* +18 */
+        LONG                OSSDeactivateEventHandle;   /* +1C */
+        BYTE                OSSAttributes;                              /* +20 */
 }T_OpenScreenStruct4, T_OpenScreenStruct;
 
-#pragma pack (pop)
+#pragma pack (__pop)
 
 
 CPP_START
 
-int	ReserveABreakpointRTag(
-	/* IN */	LONG					/* struct RTAG *						*/
-	);
+int     ReserveABreakpointRTag(
+        /* IN */        LONG                                    /* struct RTAG *                                                */
+        );
 
-LONG RegisterDebuggerRTag( 
-	/* IN */	struct debuggerStructure *,	/*	alternateDebugger,				*/
-    /* IN */	int						/*	position							*/
-	); 
+LONG RegisterDebuggerRTag(
+        /* IN */        struct debuggerStructure *,     /*      alternateDebugger,                              */
+    /* IN */    int                                             /*      position                                                        */
+        );
 
-LONG UnRegisterDebugger( 
-	/* IN */	struct debuggerStructure *	/*	alternateDebugger,				*/
-	); 
+LONG UnRegisterDebugger(
+        /* IN */        struct debuggerStructure *      /*      alternateDebugger,                              */
+        );
 
 extern LONG GetFileServerMajorVersionNumber(
-	void
+        void
 );
 
 extern LONG GetFileServerMinorVersionNumber(
-	void
+        void
 );
 
 extern LONG GetFileServerRevisionNumber(
-	void
+        void
 );
 
 CPP_END

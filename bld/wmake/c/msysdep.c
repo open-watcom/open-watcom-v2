@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,15 +37,15 @@
 #include "mrcmsg.h"
 #include "msg.h"
 #include "mupdate.h"
+#if defined(__UNIX__) || defined( __WATCOMC__ )
+    #include <utime.h>
+#else
+    #include <sys/utime.h>
+#endif
 #if defined( __DOS__ )
     #include <dos.h>
     #include "tinyio.h"
 #else
-  #if defined(__UNIX__) || defined( __WATCOMC__ )
-    #include <utime.h>
-  #else
-    #include <sys/utime.h>
-  #endif
   #if defined( __OS2__ )
     #define INCL_DOSMISC
     #include <os2.h>
@@ -55,7 +56,6 @@
 
 #if defined( __DOS__ )
 
-//extern char             DOSSwitchChar(void);
 extern char DOSSwitchChar( void );
 #pragma aux DOSSwitchChar = \
         "mov ax,3700h"  \
@@ -65,10 +65,9 @@ extern char DOSSwitchChar( void );
     __modify        [__ax __dx]
 
 #if defined ( _M_I86 )
-/* see page 90-91 of "Undocumented DOS" */
 
-//extern void __far *       _DOS_list_of_lists( void );
-void __far *_DOS_list_of_lists( void );
+/* see page 90-91 of "Undocumented DOS" */
+extern void __far *_DOS_list_of_lists( void );
 #pragma aux _DOS_list_of_lists = \
         "mov ax,5200h"  \
         "int 21h"       \

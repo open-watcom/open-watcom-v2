@@ -269,8 +269,7 @@ WINEXPORT UINT_PTR CALLBACK WOpenOFNHookProc( HWND hwnd, UINT msg, WPARAM wparam
 {
     char    *title;
 
-    _wtouch( wparam );
-    _wtouch( lparam );
+    /* unused parameters */ (void)wparam; (void)lparam;
 
     switch( msg ) {
     case WM_INITDIALOG:

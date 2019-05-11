@@ -7,12 +7,6 @@
 # the DOS version or the OS/2 version
 #
 
-!ifdef __UNIX__
-RENCMD=mv
-!else
-RENCMD=ren
-!endif
-
 gendev_cmdl_params = $[@
 
 !include wgmlcmd.mif
@@ -93,115 +87,115 @@ pssdrv.cop : pssdrv.pcd $(drv_common) $(drv_page)
 
 test01.cop : test01.pcd $(dev_common) $(dev_core)
         @%make gencop
-        @$(RENCMD) TEST01.COP $@
+        @%ren TEST01.COP $@
 
 test02.cop : test02.pcd $(dev_common) $(dev_core)
         @%make gencop
-        @$(RENCMD) TEST02.COP $@
+        @%ren TEST02.COP $@
 
 pstest.cop : pstest.pcd $(dev_common) $(dev_core)
         @%make gencop
-        @$(RENCMD) PSTEST.COP $@
+        @%ren PSTEST.COP $@
 
 psspec.cop : psspec.pcd $(dev_common)
         @%make gencop
-        @$(RENCMD) PSSPEC.COP $@
+        @%ren PSSPEC.COP $@
 
 tdrv01.cop : tdrv01.pcd $(drv_common) $(drv_core)
         @%make gencop
-        @$(RENCMD) TDRV01.COP $@
+        @%ren TDRV01.COP $@
 
 tdrv02.cop : tdrv02.pcd $(drv_common) $(drv_core) $(drv_page)
         @%make gencop
-        @$(RENCMD) TDRV02.COP $@
+        @%ren TDRV02.COP $@
 
 pstdrv.cop : pstdrv.pcd $(drv_common) $(drv_core) $(drv_page)
         @%make gencop
-        @$(RENCMD) PSTDRV.COP $@
+        @%ren PSTDRV.COP $@
 
 pssdrv.cop : pssdrv.pcd $(drv_common) $(drv_page)
         @%make gencop
-        @$(RENCMD) PSSDRV.COP $@
+        @%ren PSSDRV.COP $@
 
 pssfon00.cop : pssfon00.fon
         @%make gencop
-        @$(RENCMD) PSSFON00.COP $@
+        @%ren PSSFON00.COP $@
 
 pssfon01.cop : pssfon01.fon
         @%make gencop
-        @$(RENCMD) PSSFON01.COP $@
+        @%ren PSSFON01.COP $@
 
 pssfon02.cop : pssfon02.fon
         @%make gencop
-        @$(RENCMD) PSSFON02.COP $@
+        @%ren PSSFON02.COP $@
 
 pssfon03.cop : pssfon03.fon
         @%make gencop
-        @$(RENCMD) PSSFON03.COP $@
+        @%ren PSSFON03.COP $@
 
 pssfon04.cop : pssfon04.fon
         @%make gencop
-        @$(RENCMD) PSSFON04.COP $@
+        @%ren PSSFON04.COP $@
 
 pssfon05.cop : pssfon05.fon
         @%make gencop
-        @$(RENCMD) PSSFON05.COP $@
+        @%ren PSSFON05.COP $@
 
 pssfon06.cop : pssfon06.fon
         @%make gencop
-        @$(RENCMD) PSSFON06.COP $@
+        @%ren PSSFON06.COP $@
 
 pssfon07.cop : pssfon07.fon
         @%make gencop
-        @$(RENCMD) PSSFON07.COP $@
+        @%ren PSSFON07.COP $@
 
 pssfon08.cop : pssfon08.fon
         @%make gencop
-        @$(RENCMD) PSSFON08.COP $@
+        @%ren PSSFON08.COP $@
 
 pssfon09.cop : pssfon09.fon
         @%make gencop
-        @$(RENCMD) PSSFON09.COP $@
+        @%ren PSSFON09.COP $@
 
 tfon00.cop : tfon00.fon
         @%make gencop
-        @$(RENCMD) TFON00.COP $@
+        @%ren TFON00.COP $@
 
 tfon01.cop : tfon01.fon
         @%make gencop
-        @$(RENCMD) TFON01.COP $@
+        @%ren TFON01.COP $@
 
 tfon02.cop : tfon02.fon
         @%make gencop
-        @$(RENCMD) TFON02.COP $@
+        @%ren TFON02.COP $@
 
 tfon03.cop : tfon03.fon
         @%make gencop
-        @$(RENCMD) TFON03.COP $@
+        @%ren TFON03.COP $@
 
 tfon04.cop : tfon04.fon
         @%make gencop
-        @$(RENCMD) TFON04.COP $@
+        @%ren TFON04.COP $@
 
 tfon05.cop : tfon05.fon
         @%make gencop
-        @$(RENCMD) TFON05.COP $@
+        @%ren TFON05.COP $@
 
 tfon06.cop : tfon06.fon
         @%make gencop
-        @$(RENCMD) TFON06.COP $@
+        @%ren TFON06.COP $@
 
 tfon07.cop : tfon07.fon
         @%make gencop
-        @$(RENCMD) TFON07.COP $@
+        @%ren TFON07.COP $@
 
 tfon08.cop : tfon08.fon
         @%make gencop
-        @$(RENCMD) TFON08.COP $@
+        @%ren TFON08.COP $@
 
 tfon09.cop : tfon09.fon
         @%make gencop
-        @$(RENCMD) TFON09.COP $@
+        @%ren TFON09.COP $@
 
 !endif
 

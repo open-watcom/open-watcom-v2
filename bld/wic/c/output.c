@@ -61,7 +61,7 @@ static struct {
     char lastChar[MAX_NUM_OF_OUT_FILES];  // Last char written
     char line[MAX_NUM_OF_OUT_FILES][MAX_OUT_LINE_LEN];
     char lineComment[MAX_OUT_LINE_LEN];
-    char lineLen[MAX_NUM_OF_OUT_FILES];
+    unsigned char lineLen[MAX_NUM_OF_OUT_FILES];
     enum {
         LF_NONE = 0x0,
         LF_CONT = 0x1,
@@ -233,7 +233,7 @@ static void fprintfCheckNULL(FILE *fp, const char *format, ...) {
     }
 }
 
-void _outputCurrAsmLine(int fnum, int continueToNextLine) {
+static void _outputCurrAsmLine(int fnum, int continueToNextLine) {
     char *line = CURR_LINE(fnum);
     FILE *output = CURR_OUTPUT(fnum);
     int len = CURR_LINE_LEN(fnum);
@@ -271,7 +271,7 @@ void _outputCurrAsmLine(int fnum, int continueToNextLine) {
     CURR_LAST_CHAR(fnum) = '\n';
 }
 
-void _outputCurrFortLine(int fnum, int continueToNextLine) {
+static void _outputCurrFortLine(int fnum, int continueToNextLine) {
     char *line = CURR_LINE(fnum);
     int len = CURR_LINE_LEN(fnum);
     FILE *output = CURR_OUTPUT(fnum);
@@ -336,7 +336,7 @@ void _outputCurrFortLine(int fnum, int continueToNextLine) {
     fprintfCheckNULL(output, "%s", prependString);
     fprintfCheckNULL(output, "%*s", spacesBegLine, "");
     if (continueToNextLine) {
-        int i = len-1;
+        int i = len - 1;
         int class1, class2;
         if (! (flags & LF_DIRECTIVE)) {
             i -= 6;  // Take into account the 6 spaces at the beginning of line
@@ -396,8 +396,8 @@ void _outputCurrFortLine(int fnum, int continueToNextLine) {
 }
 
 static void _outputChar(int fnum, char ch) {
-    int substract = g_tlang.substractFromLineLen;
-    if (CURR_LINE_LEN(fnum) >= g_opt.outLineLen-substract) {
+    unsigned substract = g_tlang.substractFromLineLen;
+    if (CURR_LINE_LEN( fnum ) + substract >= g_opt.outLineLen ) {
         g_tlang.outputCurrLine(fnum, 1);
     }
     CURR_LINE(fnum)[CURR_LINE_LEN(fnum)++] = ch;
@@ -429,20 +429,20 @@ static void _outputString(int fnum, char *s, int stringIsId) {
 
     if (stringIsId) {
         if (findHTableElem(keywordsTable, s) != NULL) {
-            char *s;
-            for (s = g_opt.conflictPrefix; *s != 0; s++) {
-                _outputChar(fnum, *s);
+            char *s1;
+            for (s1 = g_opt.conflictPrefix; *s1 != 0; s1++) {
+                _outputChar(fnum, *s1);
             }
         }
     }
 
-    for (i = 0; s[i] != NULL; i++) {
+    for (i = 0; s[i] != '\0'; i++) {
         _outputChar(fnum, s[i]);
     }
     CURR_LAST_CHAR(fnum) = lastChar;
 }
 
-void _outputContinueLine(fileNum) {
+void _outputContinueLine( int fileNum ) {
     g_tlang.outputCurrLine(fileNum, 1);
 }
 
@@ -735,7 +735,7 @@ static void _convertConstant(pTokData t, TargetLangType lang, char *s,
         break;
 
     case CONSTT_STRING_CONST:
-        sprintf(s, "\"%.*s\"", spaceLeft, t->repr.string);
+        sprintf(s, "\"%.*s\"", spaceLeft, t->repr.ginfo.string);
         break;
 
     case CONSTT_INT_CONST:
@@ -944,7 +944,7 @@ char *getTokDataStr(pTokData t, int useTargetLang, char *s, int spaceLeft) {
 
         case Y_PRE_COMMENT:
             sprintf(s, "%c%.*s", g_tlang.commentChar,
-                    spaceLeft-1, t->repr.string);
+                    spaceLeft-1, t->repr.ginfo.string);
             break;
 
         case Y_STRING:
@@ -974,7 +974,7 @@ char *getTokDataStr(pTokData t, int useTargetLang, char *s, int spaceLeft) {
 
         default:
             {
-                pTokTab elem = tabLookup(t->repr.string);
+                pTokTab elem = tabLookup(t->repr.ginfo.string);
                 char *tokStr;
                 if (elem == NULL) {
                     printf("DEBUG: t->code = %d", t->code);
@@ -1105,7 +1105,7 @@ void expandPushTree(int fileNum, void *_tree) {
     }
 }
 
-pOUnit getNextCTreeOUnit(PrintStackType stack) {
+static pOUnit getNextCTreeOUnit(PrintStackType stack) {
     pOUnit oUnit;
     void *data;
     void *param;
@@ -1140,14 +1140,13 @@ pOUnit getNextCTreeOUnit(PrintStackType stack) {
 
             default:
             {
-                ExpandFuncEntry entry =
-                            (*g_tlang.printExpandTable)[type];
+                ExpandFuncEntry *entry = g_tlang.printExpandTable;
 
-                assert(entry.expandFunc != NULL);
-                if (entry.numParams == 0) {
-                    entry.expandFunc(fileNum, data);
+                assert(entry[type].u.expandFunc != NULL);
+                if (entry[type].numParams == 0) {
+                    entry[type].u.expandFunc(fileNum, data);
                 } else {
-                    entry.expandFuncParam(fileNum, data, param);
+                    entry[type].u.expandFuncParam(fileNum, data, param);
                 }
                 break;
             }
@@ -1242,7 +1241,8 @@ void expandPushListParam(int fileNum,
     }
 }
 
-int cmpTokPos(pTokPos p1, pTokPos p2) {
+static int cmpTokPos(pTokPos p1, pTokPos p2)
+{
     if (p1 == NULL) {
         if (p2 == NULL) {
             return 0;
@@ -1435,7 +1435,7 @@ void zapPrinting(void) {
     zapOUnit(currOUnit);
 }
 
-void printAll(pDeclList codeList, pSLList dirList,
+static void printAll(pDeclList codeList, pSLList dirList,
               pSLList commentList, pLogList logList){
     int fileNum;
     int i;

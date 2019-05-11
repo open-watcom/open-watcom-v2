@@ -1,13 +1,13 @@
 #include <windows.h>
-#include "sys_rc.h"
+#include "sysall.rh"
 #include "rcstr.gh"
 #include "uistr.gh"
-#include "about.h"
+#include "about.rh"
 #include "banner.h"
 
 #define FIRST_COPYRIGHT_YEAR 2002
 
-#include "w.rc"
+#include "sysindep.rc"
 
 "WMenuAccelTable" ACCELERATORS
 BEGIN
@@ -57,5 +57,5 @@ END
 #include "wmenu.men"
 #undef sp
 
-#include "menedit.dlg"
+#include "menuedit.dlg"
 #include "about.dlg"

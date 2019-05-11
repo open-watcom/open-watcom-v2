@@ -31,7 +31,7 @@
 
 #include "dbgdefn.h"
 #include "dbgwind.h"
-#include "rcdef.h"
+#include "rcdef.rh"
 #include "dbgwtool.h"
 #include "dbginit.h"
 #include "menudef.h"
@@ -53,6 +53,8 @@ static gui_toolbar_struct ToolBar[] = {
       MENU_LIT( TIP_RXewind_Stack ) },
     { "",  BITMAP_HOME, MENU_TOOL_HOME, MENU_LIT( HELP_XHome ), MENU_LIT( TIP_XHome ) }
 };
+
+static gui_toolbar_items tb_ToolBar = GUI_TOOLBAR_ARRAY( ToolBar );
 
 void    InitToolBar( void )
 {
@@ -76,14 +78,14 @@ void    FiniToolBar( void )
 
 void    WndToolOpen( gui_ord height, bool fixed )
 {
-    if( SysGUI() ) {
-        WndCreateToolBarWithTips( height, fixed, ArraySize(ToolBar), ToolBar );
+    if( GUIIsGUI() ) {
+        WndCreateToolBarWithTips( height, fixed, &tb_ToolBar );
     }
 }
 
 void    WndToolClose( void )
 {
-    if( SysGUI() ) {
+    if( GUIIsGUI() ) {
         WndCloseToolBar();
     }
 }

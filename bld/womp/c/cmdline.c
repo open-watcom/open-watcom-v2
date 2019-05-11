@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,8 +37,10 @@
 #include <process.h>
 #include <io.h>
 #include <fcntl.h>
-#include <stdio.h>      /* for SEEK_SET */
-#include <malloc.h>     /* for _fheapshrink/_nheapshrink */
+#include <stdio.h>          /* for SEEK_SET */
+#if defined( __WATCOMC__ )
+    #include <malloc.h>     /* for _fheapshrink/_nheapshrink */
+#endif
 #include <conio.h>
 #include "banner.h"
 #include "womp.h"
@@ -52,6 +55,9 @@
 #include "genphar.h"
 #include "turbodbg.h"
 #include "deflib.h"
+
+#include "clibext.h"
+
 
 /*
     THIS MODULE NEEDS A REWRITE!
@@ -162,7 +168,9 @@ static void waitForKey( void ) {
     c = getch();
 }
 
+#ifdef __WATCOMC__
 #pragma aux usage __aborts
+#endif
 STATIC void usage( void ) {
 
     char        msgbuff[MAX_RESOURCE_SIZE];
@@ -257,7 +265,9 @@ STATIC char *getFile( const char ** pstr ) {
     return( copy );
 }
 
+#ifdef __WATCOMC__
 #pragma aux unrecognized __aborts
+#endif
 STATIC void unrecognized( char opt ) {
     char        msgbuff[MAX_RESOURCE_SIZE];
 
@@ -427,7 +437,6 @@ STATIC const char *doComment( const char *str ) {
     The next three functions (openIncludeFile, readIncludeFile, doInclude)
     require stack checking.
 */
-#pragma on( check_stack );
 STATIC int openIncludeFile( const char * file_name ) {
 
     char        buffer[ _MAX_PATH2 ];
@@ -549,7 +558,6 @@ STATIC const char *doInclude( const char *str ) {
     }
     return( str );
 }
-#pragma off( check_stack );
 
 STATIC void parseString( const char *str ) {
 
@@ -833,10 +841,12 @@ void ActionRename( cmdline_t *cmd, const char *in, const char *out,
         } else {
             char pbuf[ sizeof( size_t ) * 3 ];
             StrDec( pbuf, page_size );
-#ifdef _M_I86
+#ifdef __WATCOMC__
+    #ifdef _M_I86
             _fheapshrink();
-#endif
+    #endif
             _nheapshrink();
+#endif
             rc = (int)spawnlp(P_WAIT,"wlib","wlib",buf,"/b/n/p=",pbuf,"+",out,NULL);
             if( rc < 0 ) {
                 Fatal( MSG_DISK_ERROR, "spawnlp( , \"wlib\", ... )" );

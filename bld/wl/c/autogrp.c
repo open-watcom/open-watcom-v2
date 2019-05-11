@@ -82,11 +82,11 @@ static offset SetSegType( seg_leader *seg )
     if( seg == NULL )
         return( 0xFFFF );
     if( seg->info & SEG_CODE ) {
-        if( LinkFlags & PACKCODE_FLAG ) {
+        if( LinkFlags & LF_PACKCODE_FLAG ) {
             return( PackCodeLimit );
         }
     } else {
-        if( LinkFlags & PACKDATA_FLAG ) {
+        if( LinkFlags & LF_PACKDATA_FLAG ) {
             return( PackDataLimit );
         }
     }

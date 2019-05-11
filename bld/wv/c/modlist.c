@@ -59,7 +59,7 @@ bool    ModHasSourceInfo( mod_handle handle )
 }
 
 
-OVL_EXTERN walk_result CheckAnyMod( mod_handle mh, void *d )
+static walk_result CheckAnyMod( mod_handle mh, void *d )
 {
     module_list *list = d;
 
@@ -78,7 +78,7 @@ OVL_EXTERN walk_result CheckAnyMod( mod_handle mh, void *d )
     return( WR_CONTINUE );
 }
 
-OVL_EXTERN walk_result CheckMod( mod_handle mh, void *d )
+static walk_result CheckMod( mod_handle mh, void *d )
 {
     if( !ModHasSourceInfo( mh ) )
         return( WR_CONTINUE );
@@ -99,7 +99,7 @@ int ModCompare( mod_handle const *a, mod_handle const *b )
     return( stricmp( namea, nameb ) );
 }
 
-OVL_EXTERN int ModOrder( const void *ap, const void *bp )
+static int ModOrder( const void *ap, const void *bp )
 {
     image_entry *ia;
     image_entry *ib;

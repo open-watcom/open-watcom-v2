@@ -31,6 +31,9 @@
 
 
 #include "ftnstd.h"
+#include <ctype.h>
+#include <limits.h>
+#include <string.h>
 #include "rundat.h"
 #include "errcod.h"
 #include "fmtdef.h"
@@ -53,10 +56,6 @@
 #include "rfmtlog.h"
 #include "rdutils.h"
 #include "fltconst.h"
-#include <stdlib.h>
-#include <ctype.h>
-#include <limits.h>
-#include <string.h>
 
 
 /* Forward declarations */

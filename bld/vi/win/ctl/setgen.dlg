@@ -1,4 +1,5 @@
-#include "setgen.h"
+#include "setgen.rh"
+
 SETGEN DIALOG 3, 17, 305, 170
 STYLE DS_MODALFRAME | WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
 CAPTION "General Options"

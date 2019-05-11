@@ -687,6 +687,7 @@ extern NCURSES_EXPORT_VAR(SCREEN *) _nc_screen_chain;
 #define returnVoid       T((T_RETURN(""))); return
 #define returnWin(code)  TRACE_RETURN(code,win)
 
+extern NCURSES_EXPORT(bool)             _nc_retrace_bool (int);
 extern NCURSES_EXPORT(SCREEN *)         _nc_retrace_sp (SCREEN *);
 extern NCURSES_EXPORT(WINDOW *)         _nc_retrace_win (WINDOW *);
 extern NCURSES_EXPORT(attr_t)           _nc_retrace_attr_t (attr_t);
@@ -994,21 +995,10 @@ extern NCURSES_EXPORT_VAR(int *) _nc_oldnums;
 
 #define NC_OUTPUT stdout
 
-/*
- * On systems with a broken linker, define 'SP' as a function to force the
- * linker to pull in the data-only module with 'SP'.
- */
-#if BROKEN_LINKER
-#define SP _nc_screen()
-extern NCURSES_EXPORT(SCREEN *) _nc_screen (void);
-extern NCURSES_EXPORT(int) _nc_alloc_screen (void);
-extern NCURSES_EXPORT(void) _nc_set_screen (SCREEN *);
-#else
 /* current screen is private data; avoid possible linking conflicts too */
 extern NCURSES_EXPORT_VAR(SCREEN *) SP;
 #define _nc_alloc_screen() ((SP = typeCalloc(SCREEN, 1)) != 0)
 #define _nc_set_screen(sp) SP = sp
-#endif
 
 /*
  * We don't want to use the lines or columns capabilities internally, because

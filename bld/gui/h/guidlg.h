@@ -30,6 +30,8 @@
 ****************************************************************************/
 
 
+#define GUI_NO_ID   ((gui_ctl_id)-1)
+
 enum {
     DLG_ROW_0 = 30000,
     DLG_ROW_n = DLG_ROW_0 + 100,
@@ -55,7 +57,7 @@ enum {
       NULL, \
       GUI_NOSCROLL, \
       GUI_STYLE_CONTROL_AUTOMATIC, \
-      (gui_ctl_id)-1 }
+      GUI_NO_ID }
 
 #define DLG_DYNSTRING( s, id, x1, y1, x2 ) \
     { GUI_STATIC, s, \
@@ -66,7 +68,7 @@ enum {
       id }
 
 #define DLG_STRING( s, x1, y1, x2 ) \
-    DLG_DYNSTRING( s, (gui_ctl_id)-1, x1, y1, x2 )
+    DLG_DYNSTRING( s, GUI_NO_ID, x1, y1, x2 )
 
 #define DLG_DOBUTTON( g, s, id, x1, y1, x2 ) \
     { g, s, \

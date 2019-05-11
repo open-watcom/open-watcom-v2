@@ -59,7 +59,7 @@ static struct tri_graph TriGraphs[] = {
     { '\0','\0'}
 };
 
-static unsigned char    notFilled[] = { '\n', '\0' };
+static const unsigned char  notFilled[] = { '\n', '\0' };
 
 static int      LastChar;
 static int      Blank1Count;
@@ -85,7 +85,7 @@ static bool ReadBuffer( FCB *srcfcb )
     }
     if( srcfcb->src_end == notFilled + 1 ) {
         if( srcfcb->typ == FT_HEADER_FORCED ) {
-            InitialMacroFlag = MFLAG_NONE;
+            InitialMacroFlags = MFLAG_NONE;
             if( PCH_FileName != NULL && CompFlags.make_precompiled_header == 0 ) {
                 if( CompFlags.ok_to_use_precompiled_hdr ) {
                     CompFlags.use_precompiled_header = true;
@@ -127,16 +127,16 @@ static bool ReadBuffer( FCB *srcfcb )
             return( true );
         }
     }
-    if( read_amount != 0 ) {
-        srcfcb->src_end += read_amount;
-        last_char = *( srcfcb->src_end - 1 );
+    if( read_amount > 0 ) {
+        last_char = srcfcb->src_buf[read_amount - 1];
     }
     if( ( read_amount < SRC_BUF_SIZE ) && ( last_char != '\n' ) ) {
-        srcfcb->no_eol = true;          // emit warning later so line # is right
-        *srcfcb->src_end++ = '\n';      // mark end of buffer
+        srcfcb->no_eol = true;                  // emit warning later so line # is right
+        srcfcb->src_buf[read_amount++] = '\n';  // mark end of buffer
     }
-    *srcfcb->src_end = '\0';            // mark end of buffer
-    return( false );                    // indicate CurrChar does not contain a character
+    srcfcb->src_buf[read_amount] = '\0';
+    srcfcb->src_end += read_amount;             // mark end of buffer
+    return( false );                            // indicate CurrChar does not contain a character
 }
 
 

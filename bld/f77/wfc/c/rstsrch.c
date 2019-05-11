@@ -30,11 +30,11 @@
 
 
 #include "ftnstd.h"
+#include <string.h>
 #include "symbol.h"
 #include "fhash.h"
 #include "rstsrch.h"
 
-#include <string.h>
 
 unsigned                HashValue;
 hash_entry              HashTable[HASH_PRIME];

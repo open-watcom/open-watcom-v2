@@ -12,7 +12,7 @@ srv     = lcl
 name    = elf
 which   = TRAP
 
-extra_cpp_flags = -DELFCORE
+extra_cppflags = -DELFCORE
 extra_cflags = -bd
 
 extra_objs = &

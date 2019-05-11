@@ -30,7 +30,6 @@
 ****************************************************************************/
 
 #include "ftnstd.h"
-#include <stdlib.h>
 #if defined( __NT__ )
     #include <windows.h>
 #elif defined( __OS2__ )
@@ -128,7 +127,7 @@ unsigned        RTSysInit( void ) {
 
         DosGetInfoBlocks( &ptib, &ppib );
         if( ppib->pib_ultype == 3 ) {
-            if( _WindowsStdout == 0 ) {
+            if( _WindowsStdout == NULL ) {
                 __FAppType = FAPP_GUI;
             } else {
                 __FAppType = FAPP_DEFAULT_GUI;
@@ -137,7 +136,7 @@ unsigned        RTSysInit( void ) {
     }
 #elif defined( __NT__ )
     {
-        if( _WindowsStdout != 0 ) {
+        if( _WindowsStdout != NULL ) {
             __FAppType = FAPP_DEFAULT_GUI;
         }
     }

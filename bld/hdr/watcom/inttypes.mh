@@ -1,5 +1,5 @@
 /***************************************************************************
- * FILE: inttypes.h (Format conversion of integer types)
+ * FILE: inttypes.h/cinttypes (Format conversion of integer types)
  *
 :include crwatqnx.sp
  *
@@ -220,7 +220,7 @@ using std::wcstoumax;
 #define SCNxMAX     "llx"
 #define SCNXMAX     "llX"
 
-:segment DOS | QNX | RDOS
+:segment BITS16
 #ifdef _M_I86
 ::
 #if defined(__SMALL__) || defined(__MEDIUM__)
@@ -290,7 +290,7 @@ using std::wcstoumax;
 #define SCNXPTR     "lX"
 #endif
 ::
-:segment DOS | QNX | RDOS
+:segment BITS16
 #endif
 :endsegment
 

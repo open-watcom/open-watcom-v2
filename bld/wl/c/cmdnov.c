@@ -654,7 +654,7 @@ bool ProcNovDBIReferenced( void )
 bool ProcNovDBI( void )
 /*********************/
 {
-    LinkFlags |= NOVELL_DBI_FLAG;
+    LinkFlags |= LF_NOVELL_DBI_FLAG;
     if( ProcOne( NovDBIOptions, SEP_NO, false ) ) {
         while( ProcOne( NovDBIOptions, SEP_COMMA, false ) ) {
             ; /*null loop*/

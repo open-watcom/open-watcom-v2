@@ -46,10 +46,10 @@
 #include "dipinter.h"
 #include "dbgreg.h"
 #include "addarith.h"
+#include "dlgbreak.h"
 
 
 extern address          FindLclBlock( address addr );
-extern bool             DlgBreak(address);
 extern unsigned         LineNumLkup(address);
 
 #define MODEST_CALL_LEVEL       20
@@ -78,7 +78,7 @@ static void FreeChainInfo( traceback *curr, int start, int end )
 }
 
 
-static bool ReAllocChain( traceback *curr, int new_size )
+static bool ReallocChain( traceback *curr, int new_size )
 {
     call_chain  *new_chain;
     call_chain  *chain;
@@ -115,7 +115,7 @@ static bool EarlyOut( cached_traceback *tb, address execution, address frame )
             continue;
         new_size = curr->current_depth + prev->total_depth - i;
         if( new_size > curr->allocated_size ) {
-            if( !ReAllocChain( curr, new_size ) ) {
+            if( !ReallocChain( curr, new_size ) ) {
                 return( false );
             }
         }
@@ -134,7 +134,7 @@ static bool EarlyOut( cached_traceback *tb, address execution, address frame )
 }
 
 
-OVL_EXTERN bool RecordTraceBackInfo( call_chain_entry *entry, void *_tb )
+static bool RecordTraceBackInfo( call_chain_entry *entry, void *_tb )
 {
     address     prev_ins;
     address     execution;
@@ -147,7 +147,7 @@ OVL_EXTERN bool RecordTraceBackInfo( call_chain_entry *entry, void *_tb )
     execution = entry->lc.execution;
     curr = tb->curr;
     if( curr->current_depth >= curr->allocated_size ) {
-        if( !ReAllocChain( curr, curr->allocated_size + MODEST_INCREMENT ) ) {
+        if( !ReallocChain( curr, curr->allocated_size + MODEST_INCREMENT ) ) {
             return( false );
         }
     }

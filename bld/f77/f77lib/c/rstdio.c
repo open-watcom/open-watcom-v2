@@ -30,19 +30,18 @@
 
 
 #include "ftnstd.h"
-#include "fapptype.h"
-#include "posio.h"
-#include "rstdio.h"
-
 #include <string.h>
 #include <errno.h>
-
 #if defined( __OS2__ ) && defined( __386__ )
   #define INCL_WINDIALOGS
   #include <wos2.h>
 #elif defined( __WINDOWS__ ) || defined( __NT__ )
   #include <windows.h>
 #endif
+#include "fapptype.h"
+#include "posio.h"
+#include "rstdio.h"
+
 
 #if defined( __UNIX__ )
 static  char            NLSequence[] = { "\n" };
@@ -77,7 +76,7 @@ void    StdWrite( char *buff, int len ) {
 
 // Write to STDOUT_FILENO.
     int         rc;
-    static int  console_flag;
+    static int  console_flag = 0;
 
 #if defined( __IS_WINDOWED__ )
     if( BuffCursor ) {
@@ -92,18 +91,18 @@ void    StdWrite( char *buff, int len ) {
         *BuffCursor = NULLCHAR;
     } else {
         if( __FAppType == FAPP_GUI ) {
-#if defined( __OS2__ ) && defined( __386__ )
+  #if defined( __OS2__ ) && defined( __386__ )
             WinMessageBox( HWND_DESKTOP, NULLHANDLE, Buffer, "", 0, MB_SYSTEMMODAL | MB_OK );
-#elif defined( __WINDOWS__ ) || defined( __NT__ )
+  #elif defined( __WINDOWS__ ) || defined( __NT__ )
             MessageBox( (HWND)NULL, Buffer,"", MB_SYSTEMMODAL | MB_OK );
-#endif
+  #endif
         } else {
 #endif
 #if !defined( __UNIX__ )
             setmode( fileno( stdout ), O_BINARY );
 #endif
             rc = write( fileno( stdout ), buff, len );
-            if( ( rc < 0 ) && !console_flag) {
+            if( ( rc < 0 ) && console_flag == 0 ) {
 #ifdef __NT__
                 // Since we could not write to stdout the first time
                 // we guess that this is a NT GUI

@@ -29,8 +29,10 @@
 ****************************************************************************/
 
 
+#include <stddef.h>
 #include "fmemmgr.h"
 #include "asalloc.h"
+
 
 void    *AsmAlloc( size_t amount ) {
 //====================================

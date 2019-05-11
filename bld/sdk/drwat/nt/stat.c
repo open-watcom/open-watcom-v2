@@ -35,7 +35,7 @@
 #include <ctype.h>
 #include <dos.h>
 #include "wclbproc.h"
-#include "segmap.h"
+#include "segmap.rh"
 #include "jdlg.h"
 #include "srchmsg.h"
 #include "madrtn.h"

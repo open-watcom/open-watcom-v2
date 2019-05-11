@@ -53,7 +53,6 @@
 #include "uishift.h"
 #include "uivirts.h"
 #include "ctkeyb.h"
-#include "uiextrn.h"
 #include "trie.h"
 
 
@@ -72,15 +71,15 @@
 typedef struct eTrie eTrie;
 
 typedef struct eNode{
-    eTrie       *trie;          // the child sub-trie
-    char        c;              // the character associated with it
-    ui_event    ui_ev;          // the event associated with the string
+    eTrie           *trie;      // the child sub-trie
+    unsigned char   c;          // the character associated with it
+    ui_event        ui_ev;      // the event associated with the string
 } eNode;
 
 struct eTrie{
-    eNode       *child;         // array of childeren
-    int         num_child;      // number of children in array
-    int         alc_child;      // allocated size of array
+    eNode           *child;     // array of childeren
+    int             num_child;  // number of children in array
+    int             alc_child;  // allocated size of array
 };
 
 int             KeyTrieDepth = 1;
@@ -130,7 +129,7 @@ void TrieFini( void )
  * this is only used in initialization. Bsearch *is* used during
  * actual key parsing.
  */
-static int child_search( char key, eTrie *trie )
+static int child_search( unsigned char key, eTrie *trie )
 {
     int         num;
     int         x;
@@ -141,7 +140,7 @@ static int child_search( char key, eTrie *trie )
         return( 0 );
 
     ary = trie->child;
-    if( key>ary[num - 1].c )
+    if( key > ary[num - 1].c )
         return( num );
 
     for( x = 0; x < num; x++ ) {
@@ -168,9 +167,9 @@ bool TrieAdd( ui_event ui_ev, const char *str )
         return( true );
 
     for( ;; ) {
-        i = child_search( *str, trie );
+        i = child_search( *(unsigned char *)str, trie );
 
-        if( i == trie->num_child || trie->child[i].c != *str ) {
+        if( i == trie->num_child || trie->child[i].c != *(unsigned char *)str ) {
             // the char's not in the list, so we'd better add it
 
             trie->num_child++;
@@ -190,7 +189,7 @@ bool TrieAdd( ui_event ui_ev, const char *str )
             if( i < ( trie->num_child - 1 ) ) {
                 // We're in the middle of the list, so clear a spot
                 memmove( &(trie->child[i + 1]), &(trie->child[i]),
-                                (trie->num_child-i-1)*sizeof(eNode) );
+                                ( trie->num_child - i - 1 ) * sizeof( eNode ) );
             }
 
             trie->child[i].c = *str;
@@ -228,9 +227,9 @@ bool TrieAdd( ui_event ui_ev, const char *str )
     }
 }
 
-static int child_comp( const int *pkey, const eNode *pbase )
+static int child_comp( const void *pkey, const void *pbase )
 {
-    return( *pkey - pbase->c );
+    return( *(const int *)pkey - ((const eNode *)pbase)->c );
 }
 
 ui_event TrieRead( void )
@@ -261,8 +260,7 @@ ui_event TrieRead( void )
 
         if( trie->num_child == 0 )
             break;
-        node = bsearch( &c, trie->child, trie->num_child, sizeof( eNode ),
-                            (int (*)(const void *, const void *))child_comp );
+        node = bsearch( &c, trie->child, trie->num_child, sizeof( eNode ), child_comp );
         if( node == NULL )
             break;
         if( node->ui_ev != EV_UNUSED ) {

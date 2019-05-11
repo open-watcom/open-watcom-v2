@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -32,6 +33,19 @@
 
 #define NORMAL_FILL     1
 #define DIFFERENT_FILL  2
+
+typedef enum {
+    UNDEF_IMG   = 0,
+    BITMAP_IMG  = 1,
+    ICON_IMG    = 2,
+    CURSOR_IMG  = 3
+} wie_imgtype;
+
+typedef enum {
+    NORMAL_CLR  = 0,
+    INVERSE_CLR = 1,
+    SCREEN_CLR  = 2
+} wie_clrtype;
 
 typedef struct {
     wie_imgtype img_type;

@@ -30,14 +30,13 @@
 
 
 #include "ftnstd.h"
+#include <string.h>
 #include "errcod.h"
 #include "global.h"
 #include "fmemmgr.h"
 #include "chain.h"
 #include "rstutils.h"
 #include "rstalloc.h"
-
-#include <string.h>
 
 
 /* Forward declarations */

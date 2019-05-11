@@ -383,8 +383,8 @@ static void DoLS( char *path, char *name )
             if( files[filecnt] == NULL ) {
                 break;
             }
-            fname_len = strlen( nextdirentry->d_name );
-            if( fname_len > max_fname_len ) {
+            fname_len = (unsigned)strlen( nextdirentry->d_name );
+            if( max_fname_len < fname_len ) {
                 max_fname_len = fname_len;
             }
             memcpy( files[filecnt++], nextdirentry, sizeof( struct dirent ) );
@@ -476,25 +476,22 @@ static void PrintFile( char *drive, char *dir, DIR *file )
         "May", "Jun", "Jul", "Aug", "Sep",
         "Oct", "Nov", "Dec"
     };
-    char name[_MAX_PATH + 1];
-    char buff[80 + _MAX_PATH];
-    long size;
-    unsigned    len;
-    int         extra_char;
+    char    name[_MAX_PATH + 1];
+    char    buff[80 + _MAX_PATH];
+    long    size;
+    size_t  len;
+    int     extra_char;
 
     strcpy( name, file->d_name );
     len = strlen( name );
-
     extra_char = 0;
     if( Fflag ) {
         if( file->d_attr & _A_SUBDIR ) {
-            name[len] = '/';
-            ++len;
+            name[len++] = '/';
             name[len] = 0;
             ++extra_char;
         } else if( IsX( file->d_name ) ) {
-            name[len] = '*';
-            ++len;
+            name[len++] = '*';
             name[len] = 0;
             ++extra_char;
         }

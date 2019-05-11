@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -78,11 +78,13 @@
 #include "qdebug.h"
 
 #include "uivirt.h"
+#include "uiintern.h"
 #include "uiextrn.h"
 #include "ctkeyb.h"
 #include "tixparse.h"
 #include "tixsupp.h"
 #include "doparse.h"
+#include "uicurshk.h"
 #include "tdisp.h"
 
 
@@ -96,8 +98,8 @@
 #if defined(HP) && ( OSVER >= 1100 )
     struct __bool_struct        _hp_cur_bools;
     struct __bool_struct        *__cur_bools     = &_hp_cur_bools;
-    //struct __num_struct         _hp_cur_nums;
-    //struct __num_struct         *__cur_nums      = &_hp_cur_nums;
+//    struct __num_struct         _hp_cur_nums;
+//    struct __num_struct         *__cur_nums      = &_hp_cur_nums;
     struct __str_struct         _hp_cur_strs;
     struct __str_struct         *__cur_strs      = &_hp_cur_strs;
 #endif
@@ -106,27 +108,11 @@
 // current terminal
 #define _capable_of( sequence )         ( (sequence) != NULL )
 
-#define __flush_con()   {fflush( UIConFile );}
-#if defined( SUN )
-#define __putp( str )   {tputs( str, 1, (int (*)(char))_con_putchar );}
-#elif defined( HP ) && ( OSVER >= 1100 ) && !defined( __GNUC__ )
-#define __putp( str )   {tputs( str, 1, _con_putchar );}
-#elif defined( HP )
-#define __putp( str )   {tputs( str, 1, (void (*)(int))_con_putchar );}
-#elif defined( AIX )
-#define __putp( str )   {tputs( str, 1, _con_putchar );}
-#else
-#define __putp( str )   {tputs( str, 1, _con_putchar );}
-#endif
-#define __putc( c )     {fputc( c, UIConFile );}
+#define ostream_flush()       {fflush( UIConFile );}
+#define ostream_putc( c )     {fputc( c, UIConFile );}
+#define ostream_putp( str )   {tputs( str, 1, ostream_putchar );}
 
 bool    UserForcedTermRefresh = false;
-
-static int _con_putchar( int ch )
-{
-    fputc( ch, UIConFile );
-    return( 0 );
-}
 
 #if defined( SUN ) && defined( UNIX64 )
 
@@ -147,6 +133,25 @@ static int _con_putchar( int ch )
 
 #endif
 
+#if defined( SUN )
+static int     ostream_putchar( char ch )
+{
+    fputc( (unsigned char)ch, UIConFile );
+    return( 0 );
+}
+#elif defined( HP ) && ( ( OSVER < 1100 ) || defined( __GNUC__ ) )
+static void    ostream_putchar( int ch )
+{
+    fputc( ch, UIConFile );
+}
+#else
+static int     ostream_putchar( int ch )
+{
+    fputc( ch, UIConFile );
+    return( 0 );
+}
+#endif
+
 bool TInfCheck( void )
 /********************/
 {
@@ -158,16 +163,12 @@ bool TInfCheck( void )
     return( false );
 }
 
-/*-
- * set initial mode of term
- */
-
-
 // Whether to use code-changing optimizations in ti
 static bool OptimizeTerminfo = true;
 
-/* TermInfo terminal codes
-*/
+/*
+ * TermInfo terminal codes
+ */
 
 static void TI_SETATTR( void );
 
@@ -183,93 +184,93 @@ static bool TI_FillColourSet = false;
 
 // Macros for various terminfo capabilities
 #define TI_CURSOR_OFF()         if( _capable_of( cursor_invisible ) ) { \
-                                    __putp( cursor_invisible );         \
+                                    ostream_putp( cursor_invisible );   \
                                 }
 #define TI_CURSOR_NORMAL()      if( _capable_of( cursor_normal ) ) {    \
-                                    __putp( cursor_normal );            \
+                                    ostream_putp( cursor_normal );      \
                                 }
 #define TI_CURSOR_BOLD()        if( _capable_of( cursor_visible ) ) {   \
-                                    __putp( cursor_visible );           \
+                                    ostream_putp( cursor_visible );     \
                                 } else {                                \
                                     TI_CURSOR_NORMAL();                 \
                                 }
-#define TI_BOLD()       { TIABold= 1; __putp( enter_bold_mode ); }
+#define TI_BOLD()       { TIABold= 1; ostream_putp( enter_bold_mode ); }
 #define TI_NOBOLD()     { TIABold= 0; TI_SETATTR(); }
 #define TI_REVERSE()    { TIARev= 1; TI_SETATTR(); }
 #define TI_NOREVERSE()  { TIARev= 0; TI_SETATTR(); }
-#define TI_BLINK()      { TIABlink= 1; __putp( enter_blink_mode ); }
+#define TI_BLINK()      { TIABlink= 1; ostream_putp( enter_blink_mode ); }
 #define TI_NOBLINK()    { TIABlink= 0; TI_SETATTR(); }
-#define TI_ULINE()      { TIAULine= 1; __putp( enter_underline_mode ); }
-#define TI_NOULINE()    { TIAULine= 0; __putp( exit_underline_mode ); }
-#define TI_ACS_ON()     { TIAACS= 1; __putp( enter_alt_charset_mode ); }
+#define TI_ULINE()      { TIAULine= 1; ostream_putp( enter_underline_mode ); }
+#define TI_NOULINE()    { TIAULine= 0; ostream_putp( exit_underline_mode ); }
+#define TI_ACS_ON()     { TIAACS= 1; ostream_putp( enter_alt_charset_mode ); }
 #define TI_ACS_OFF()    { TIAACS= 0;                                        \
                             if( _capable_of( exit_alt_charset_mode ) ) {    \
-                                __putp( exit_alt_charset_mode );            \
+                                ostream_putp( exit_alt_charset_mode );      \
                             } else {                                        \
                                 TI_SETATTR();                               \
                             }                                               \
                         }
-#define TI_WRAP()               if( _capable_of( enter_am_mode ) ) {    \
-                                    __putp( enter_am_mode );            \
+#define TI_WRAP()               if( _capable_of( enter_am_mode ) ) {        \
+                                    ostream_putp( enter_am_mode );          \
                                 }
-#define TI_NOWRAP()             if( _capable_of( exit_am_mode ) ) {     \
-                                    __putp( exit_am_mode );             \
+#define TI_NOWRAP()             if( _capable_of( exit_am_mode ) ) {         \
+                                    ostream_putp( exit_am_mode );           \
                                 }
-#define TI_CA_ENABLE()          if( _capable_of( enter_ca_mode ) ) {    \
-                                    __putp( enter_ca_mode );            \
+#define TI_CA_ENABLE()          if( _capable_of( enter_ca_mode ) ) {        \
+                                    ostream_putp( enter_ca_mode );          \
                                 }
-#define TI_CA_DISABLE()         if( _capable_of( exit_ca_mode ) ) {     \
-                                    __putp( exit_ca_mode );             \
+#define TI_CA_DISABLE()         if( _capable_of( exit_ca_mode ) ) {         \
+                                    ostream_putp( exit_ca_mode );           \
                                 }
-#define TI_KP_ENABLE()          if( _capable_of( keypad_xmit ) ) {      \
-                                    __putp( keypad_xmit );              \
+#define TI_KP_ENABLE()          if( _capable_of( keypad_xmit ) ) {          \
+                                    ostream_putp( keypad_xmit );            \
                                 }
-#define TI_KP_DISABLE()         if( _capable_of( keypad_local ) ) {     \
-                                    __putp( keypad_local );             \
+#define TI_KP_DISABLE()         if( _capable_of( keypad_local ) ) {         \
+                                    ostream_putp( keypad_local );           \
                                 }
 
 #define TI_RESTORE_ATTR()                       \
 {                                               \
     TIAACS= TIABold= TIABlink= TIAULine= 0;     \
-    __putp( exit_attribute_mode );              \
+    ostream_putp( exit_attribute_mode );        \
 }
 
 #define TI_RESTORE_COLOUR()                     \
 {                                               \
     if( _capable_of( orig_pair ) ) {            \
-        __putp( orig_pair );                    \
+        ostream_putp( orig_pair );              \
     } else if( _capable_of( orig_colors ) ) {   \
-        __putp( orig_colors );                  \
+        ostream_putp( orig_colors );            \
     }                                           \
 }
 
 #define TI_ENABLE_ACS()         if( _capable_of( ena_acs ) ) {  \
-                                    __putp( ena_acs );          \
+                                    ostream_putp( ena_acs );    \
                                 }
 
 #define TI_HOME()               TI_CURSOR_MOVE( 0, 0 )
 
 // This weird "do...while" thing is so that TI_CLS acts like a statement
 
-#define TI_CLS()                do {                                      \
-                                    if( _capable_of( clear_screen ) ) {   \
-                                        __putp( clear_screen );           \
-                                        OldRow = OldCol = 0;              \
-                                    } else if( _capable_of( clr_eos ) ) { \
-                                        TI_HOME();                        \
-                                        __putp( clr_eos );                \
-                                    }                                     \
+#define TI_CLS()                do {                                        \
+                                    if( _capable_of( clear_screen ) ) {     \
+                                        ostream_putp( clear_screen );       \
+                                        OldRow = OldCol = 0;                \
+                                    } else if( _capable_of( clr_eos ) ) {   \
+                                        TI_HOME();                          \
+                                        ostream_putp( clr_eos );            \
+                                    }                                       \
                                 } while( 0 )
 
-#define TI_INIT1_STRING()       __putp( init_1string )
-#define TI_INIT2_STRING()       __putp( init_2string )
-#define TI_INIT3_STRING()       __putp( init_3string )
+#define TI_INIT1_STRING()       ostream_putp( init_1string )
+#define TI_INIT2_STRING()       ostream_putp( init_2string )
+#define TI_INIT3_STRING()       ostream_putp( init_3string )
 
-#define TI_RESET1_STRING()      __putp( reset_1string )
-#define TI_RESET2_STRING()      __putp( reset_2string )
-#define TI_RESET3_STRING()      __putp( reset_3string )
+#define TI_RESET1_STRING()      ostream_putp( reset_1string )
+#define TI_RESET2_STRING()      ostream_putp( reset_2string )
+#define TI_RESET3_STRING()      ostream_putp( reset_3string )
 
-#define TI_CLEAR_MARGINS()      __putp( clear_margins )
+#define TI_CLEAR_MARGINS()      ostream_putp( clear_margins )
 
 /* Terminal Capabilities
 */
@@ -294,7 +295,7 @@ static void TI_SETATTR( void )
 {
     // we have to reset attributes as some terminals can't turn off
     // attributes with "set_attribues"
-    __putp( exit_attribute_mode );
+    ostream_putp( exit_attribute_mode );
 
     if( _capable_of( set_attributes ) ) {
         char    *x;
@@ -309,11 +310,11 @@ static void TI_SETATTR( void )
         // invisible
         // protected
         // alt. char set
-        x = UNIX_TPARM( set_attributes, 0, \
-                        TIAULine, TIARev, \
-                        TIABlink, 0, TIABold, \
+        x = UNIX_TPARM( set_attributes, 0,
+                        TIAULine, TIARev,
+                        TIABlink, 0, TIABold,
                         0, 0, TIAACS );
-        __putp( x );
+        ostream_putp( x );
 
         UIDebugPrintf0( "\n[******]" );
         UIDebugPrintf1( "%s", set_attributes );
@@ -321,30 +322,30 @@ static void TI_SETATTR( void )
         UIDebugPrintf0( "[~~~~~~]\n" );
     } else {
 /*
-        fprintf(stderr, "Doing attributes %s %s %s %s %s\n", \
-                TIAULine ? "Underline" : "", \
-                TIARev ? "Reverse" : "", \
-                TIABlink ? "Blink" : "", \
-                TIABold ? "Bold" : "", \
+        fprintf(stderr, "Doing attributes %s %s %s %s %s\n",
+                TIAULine ? "Underline" : "",
+                TIARev ? "Reverse" : "",
+                TIABlink ? "Blink" : "",
+                TIABold ? "Bold" : "",
                 TIAACS ? "Alternate CS" : "");
 */
 
         // Believe it or not, some terminals don't have the set_attributes
         // code in the database, so we have to simulate it occasionally
         if( TIAULine && _capable_of( enter_underline_mode ) )
-            __putp( enter_underline_mode );
+            ostream_putp( enter_underline_mode );
 
         if( TIARev && _capable_of( enter_reverse_mode ) )
-            __putp( enter_reverse_mode );
+            ostream_putp( enter_reverse_mode );
 
         if( TIABlink && _capable_of( enter_blink_mode ) )
-            __putp( enter_blink_mode );
+            ostream_putp( enter_blink_mode );
 
         if( TIABold && _capable_of( enter_bold_mode ) )
-            __putp( enter_bold_mode );
+            ostream_putp( enter_bold_mode );
 
         if( TIAACS && _capable_of( enter_alt_charset_mode ) ) {
-            __putp( enter_alt_charset_mode );
+            ostream_putp( enter_alt_charset_mode );
         }
     }
 }
@@ -387,25 +388,25 @@ static void TI_REPEAT_CHAR( char c, int n, bool a, ORD x )
       && _capable_of( clr_eol )
       && ( len = strlen( clr_eol ) ) > 0
       && n > len ) {
-        __putp( clr_eol );
+        ostream_putp( clr_eol );
     } else if( blank
       && x == 0
       && _capable_of( clr_bol )
       && _capable_of( parm_right_cursor )
       && n > (len = ( strlen( cparm_right = UNIX_TPARM2( parm_right_cursor, n ) ) + strlen( clr_bol ) ))
       && len > 0 ) {
-        __putp( cparm_right );
-        __putp( clr_bol );
+        ostream_putp( cparm_right );
+        ostream_putp( clr_bol );
     } else {
         if( a ) {
             TI_ACS_ON();
         }
 
         if( n >= TI_repeat_cutoff && _capable_of( repeat_char ) ) {
-            __putp( UNIX_TPARM3( repeat_char, c, n ) );
+            ostream_putp( UNIX_TPARM3( repeat_char, c, n ) );
         } else {
             for( ; n > 0; n-- ) {
-                fputc( c, UIConFile );
+                ostream_putc( c );
             }
         }
 
@@ -415,8 +416,8 @@ static void TI_REPEAT_CHAR( char c, int n, bool a, ORD x )
     }
 }
 
-int     OldCol = -1,
-        OldRow = -1;
+int   OldCol = -1;
+int   OldRow = -1;
 
 // This macro will pick method "x" for axis "a" if method "x" is faster
 // and usable (ie: less chars, but not zero chars)
@@ -473,20 +474,20 @@ static void TI_CURSOR_MOVE( int c, int r )
     // cursor_down and cursor_left.
     if( !OptimizeTerminfo ) {
         if( _capable_of( cursor_address ) ) {
-            __putp( UNIX_TPARM3( cursor_address, r, c ) );
+            ostream_putp( UNIX_TPARM3( cursor_address, r, c ) );
         } else if( _capable_of( cursor_home )
           && _capable_of( cursor_down )
           && _capable_of( cursor_right ) ) {
-            __putp( cursor_home );
+            ostream_putp( cursor_home );
             for( row = 0; row < r; row++ ) {
-                __putp( cursor_down );
+                ostream_putp( cursor_down );
             }
             for( col = 0; col < c; col++ ) {
-                __putp( cursor_right );
+                ostream_putp( cursor_right );
             }
         }
-        OldRow= r;
-        OldCol= c;
+        OldRow = r;
+        OldCol = c;
         return;
     }
 
@@ -571,22 +572,22 @@ static void TI_CURSOR_MOVE( int c, int r )
         case none:
             break;
         case absolute:
-            __putp( UNIX_TPARM2( column_address, c ) );
+            ostream_putp( UNIX_TPARM2( column_address, c ) );
             break;
         case rel_parm_plus:
-            __putp( UNIX_TPARM2( parm_right_cursor, c - OldCol ) );
+            ostream_putp( UNIX_TPARM2( parm_right_cursor, c - OldCol ) );
             break;
         case relative_plus:
             for( i = 0; i < c - OldCol; i++ ) {
-                __putp( cursor_right );
+                ostream_putp( cursor_right );
             }
             break;
         case rel_parm_minus:
-            __putp( UNIX_TPARM2( parm_left_cursor, OldCol - c ) );
+            ostream_putp( UNIX_TPARM2( parm_left_cursor, OldCol - c ) );
             break;
         case relative_minus:
             for( i = 0; i < OldCol - c; i++ ) {
-                __putp( cursor_left );
+                ostream_putp( cursor_left );
             }
             break;
         }
@@ -595,22 +596,22 @@ static void TI_CURSOR_MOVE( int c, int r )
         case none:
             break;
         case absolute:
-            __putp( UNIX_TPARM2( row_address, r ) );
+            ostream_putp( UNIX_TPARM2( row_address, r ) );
             break;
         case rel_parm_plus:
-            __putp( UNIX_TPARM2( parm_down_cursor, r - OldRow ) );
+            ostream_putp( UNIX_TPARM2( parm_down_cursor, r - OldRow ) );
             break;
         case relative_plus:
             for( i = 0; i < r - OldRow; i++ ) {
-                __putp( cursor_down );
+                ostream_putp( cursor_down );
             }
             break;
         case rel_parm_minus:
-            __putp( UNIX_TPARM2( parm_up_cursor, OldRow - r ) );
+            ostream_putp( UNIX_TPARM2( parm_up_cursor, OldRow - r ) );
             break;
         case relative_minus:
             for( i = 0; i < OldRow - r; i++ ) {
-                __putp( cursor_up );
+                ostream_putp( cursor_up );
             }
             break;
         }
@@ -619,9 +620,9 @@ static void TI_CURSOR_MOVE( int c, int r )
       && _capable_of( cursor_home )
       && _capable_of( cursor_address )
       && strlen( cursor_home ) <= strlen( UNIX_TPARM3( cursor_address, r, c ) ) ) {
-        __putp( cursor_home );
+        ostream_putp( cursor_home );
     } else if( _capable_of( cursor_address ) ) {
-        __putp( UNIX_TPARM3( cursor_address, r, c ) );
+        ostream_putp( UNIX_TPARM3( cursor_address, r, c ) );
     }
 
     OldCol = c;
@@ -657,13 +658,13 @@ static void TI_SETCOLOUR( int f, int b )
         TI_FillColourSet = ( b == 0 ) || back_color_erase;
         // If we can set a colour pair then do so
         if( _capable_of( set_a_foreground ) && _capable_of( set_a_background ) ) {
-            __putp( UNIX_TPARM2( set_a_foreground, colorans[f] ) );
-            __putp( UNIX_TPARM2( set_a_background, colorans[b] ) );
+            ostream_putp( UNIX_TPARM2( set_a_foreground, colorans[f] ) );
+            ostream_putp( UNIX_TPARM2( set_a_background, colorans[b] ) );
         } else if( _capable_of( set_foreground ) && _capable_of( set_background ) ) {
-            __putp( UNIX_TPARM2( set_foreground, colorans[f] ) );
-            __putp( UNIX_TPARM2( set_background, colorans[b] ) );
+            ostream_putp( UNIX_TPARM2( set_foreground, colorans[f] ) );
+            ostream_putp( UNIX_TPARM2( set_background, colorans[b] ) );
         } else if( _capable_of( set_color_pair ) ) {
-            __putp( UNIX_TPARM2( set_color_pair, colorans[f] * 10 + colorans[b] ) );
+            ostream_putp( UNIX_TPARM2( set_color_pair, colorans[f] * 10 + colorans[b] ) );
         }
     }
 }
@@ -801,7 +802,8 @@ static bool setupscrnbuff( uisize srows, uisize scols )
     scrn = uirealloc( scrn, size );
     if( scrn == NULL )
         return( false );
-    if( (shadow = uirealloc( shadow, size )) == NULL ) {
+    shadow = uirealloc( shadow, size );
+    if( shadow == NULL ) {
         uifree( scrn );
         return( false );
     }
@@ -874,7 +876,7 @@ static bool ti_initconsole( void )
     TI_NOBOLD();
     TI_NOBLINK();
 
-    __flush_con();
+    ostream_flush();
 
     return( true );
 }
@@ -1004,7 +1006,7 @@ static bool ti_fini( void )
     TI_KP_DISABLE();
 
     TI_PUT_FILE( reset_file );
-    __flush_con();
+    ostream_flush();
 
     finikeyboard();
     uifinicursor();
@@ -1070,7 +1072,7 @@ static int ti_hwcursor( void )
         TI_CURSOR_MOVE( UIData->cursor_col, UIData->cursor_row );
     }
 
-    __flush_con();
+    ostream_flush();
     return( 0 );
 }
 
@@ -1105,7 +1107,7 @@ static void update_shadow( void )
 
     // make sure cursor is back where it belongs
     ti_hwcursor();
-    __flush_con();
+    ostream_flush();
 
     // copy buffer to shadow buffer
     bufp = UIData->screen.origin;
@@ -1151,7 +1153,7 @@ static int ti_refresh( bool must )
     // Move the cursor & return if dirty box contains no chars
     if( dirty_area.row0 == dirty_area.row1 && dirty_area.col0 == dirty_area.col1 ) {
         ti_hwcursor();
-        __flush_con();
+        ostream_flush();
         return( 0 );
     }
 
@@ -1316,7 +1318,7 @@ static int ti_refresh( bool must )
             if( i == cls ) {
                 TI_RESTORE_COLOUR();
                 TI_CURSOR_MOVE( 0, i );
-                __putp( clr_eos );
+                ostream_putp( clr_eos );
                 ca_valid = true;
                 //assert( dirty_area.col0==0 && dirty_area.col1==UIData->width );
             }
@@ -1352,7 +1354,7 @@ static int ti_refresh( bool must )
                     if( TI_FillColourSet ) {
                         // Dump before blank to end of screen...
                         TI_DUMPCHARS();
-                        __putp( clr_eos );
+                        ostream_putp( clr_eos );
                         update_shadow();
                         return( 0 );
                     } else {
@@ -1386,27 +1388,27 @@ static int ti_refresh( bool must )
     return( 0 );
 }
 
-static int td_getcur( ORD *row, ORD *col, CURSOR_TYPE *type, CATTR *attr )
-/************************************************************************/
+static int UIHOOK td_getcur( CURSORORD *crow, CURSORORD *ccol, CURSOR_TYPE *ctype, CATTR *cattr )
+/***********************************************************************************************/
 {
-    *row = UIData->cursor_row;
-    *col = UIData->cursor_col;
-    *type = UIData->cursor_type;
-    *attr = 0;
+    *crow = UIData->cursor_row;
+    *ccol = UIData->cursor_col;
+    *ctype = UIData->cursor_type;
+    *cattr = CATTR_NONE;
     return( 0 );
 }
 
-static int td_setcur( ORD row, ORD col, CURSOR_TYPE typ, CATTR attr )
-/*******************************************************************/
+static int UIHOOK td_setcur( CURSORORD crow, CURSORORD ccol, CURSOR_TYPE ctype, CATTR cattr )
+/*******************************************************************************************/
 {
-    /* unused parameters */ (void)attr;
+    /* unused parameters */ (void)cattr;
 
-    if( ( typ != UIData->cursor_type ) ||
-        ( row != UIData->cursor_row ) ||
-        ( col != UIData->cursor_col ) ) {
-        UIData->cursor_type = typ;
-        UIData->cursor_row = row;
-        UIData->cursor_col = col;
+    if( ( ctype != UIData->cursor_type ) ||
+        ( crow != UIData->cursor_row ) ||
+        ( ccol != UIData->cursor_col ) ) {
+        UIData->cursor_type = ctype;
+        UIData->cursor_row = crow;
+        UIData->cursor_col = ccol;
         newcursor();
         ti_hwcursor();
     }

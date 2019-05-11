@@ -54,7 +54,7 @@ typedef struct sym_block {
 
 #define ALLOC_SIZE  (sizeof( sym_block )-1)
 
-typedef struct block_data {
+typedef struct {
     sym_block *     list;
     size_t          currbrk;
 } block_data;
@@ -87,7 +87,7 @@ static bool ShrinkBlock( block_data *block )
         return( false );
     if( block->currbrk >= block->list->size )
         return( false );
-    _LnkReAlloc( new, block->list, block->currbrk + ALLOC_SIZE );
+    _LnkRealloc( new, block->list, block->currbrk + ALLOC_SIZE );
     new->size = block->currbrk;
     /* assuming that a shrinkage will not move the block */
 #ifdef _DEVELOPMENT
@@ -159,30 +159,15 @@ static void GetNewBlock( block_data *block, size_t size )
 static void *AllocBlock( size_t size, block_data *block )
 /*******************************************************/
 {
-    void                *ptr;
-    unsigned long       newbrk;
+    void            *ptr;
+    size_t          newbrk;
 
-#define ROUND (sizeof(int)-1)
-
-    size = (size + ROUND) & ~ROUND;
-    newbrk = (unsigned long)block->currbrk + size;
+    size = ROUND_UP( size, sizeof( int ) );
+    newbrk = block->currbrk + size;
     if( block->list == NULL ) {
         GetNewBlock( block, size );
     } else if( newbrk > block->list->size ) {
-#ifdef __WATCOMC__
-        ptr = NULL;
-        if( newbrk < UINT_MAX - ALLOC_SIZE  ) {
-            /* try to expand block without moving it */
-            _LnkExpand( ptr, block->list, ALLOC_SIZE + newbrk );
-        }
-        if( ptr != NULL ) {
-            block->list->size = newbrk;
-        } else {
-            GetNewBlock( block, size );
-        }
-#else
         GetNewBlock( block, size );
-#endif
     }
     ptr = block->list->block + block->currbrk;
     block->currbrk += size;

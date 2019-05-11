@@ -34,7 +34,7 @@
 #include "mrcmsg.h"
 #include "msg.h"
 #if defined( __WATCOMC__ )
-    #include <malloc.h>
+    #include <malloc.h>         /* necessary for heap checking functions */
 #endif
 #ifdef TRMEM
 #include <sys/types.h>

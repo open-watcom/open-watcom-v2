@@ -44,7 +44,7 @@
 #include "rcstr.gh"
 #include "wdestat.h"
 #include "wdedebug.h"
-#include "wde_rc.h"
+#include "wde.rh"
 #include "jdlg.h"
 #include "wrdll.h"
 #include "wresdefn.h"

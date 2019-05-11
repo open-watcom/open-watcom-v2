@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -71,16 +72,18 @@
 #include <ctype.h>
 #include <limits.h>
 #include <sys/stat.h>
-#ifdef __UNIX__
-#include <utime.h>
+#if defined( __UNIX__ ) || defined( __WATCOMC__ )
+    #include <utime.h>
 #else
-#include <sys/utime.h>
+    #include <sys/utime.h>
 #endif
 #include "bool.h"
 #include "watcom.h"
 
 #include "clibext.h"
 
+
+#define MAX_DEPS    50
 
 // wsplice expression operators definition
 #define OP_OR       '|'
@@ -203,6 +206,8 @@ static IPATHLST     *IncPathList;           // - list of include paths
 static bool         RestoreTime = false;    // - set tgt-file timestamp to src-file
 static char         OutBuffer[1024];        // - output buffer
 static unsigned     OutBufferLen;           // - output buffer current len
+static char         *DepFileName[MAX_DEPS];
+static int          DepCount = 0;
 
 static FILE         *fp_depdump = NULL;
 
@@ -287,14 +292,34 @@ static void AddDepTarg( const char *name )
 
 static void AddDepDep( const char *name )
 {
+    int     i;
+
     if( name != NULL && fp_depdump != NULL ) {
-        fprintf( fp_depdump, " %s", name );
+        for( i = 0; i < DepCount; i++ ) {
+            if( strcmp( DepFileName[i], name ) == 0 ) {
+                return;
+            }
+        }
+        if( i + 1 < MAX_DEPS ) {
+            DepFileName[i] = malloc( strlen( name ) + 1 );
+            strcpy( DepFileName[i], name );
+            DepCount = i + 1;
+        }
     }
 }
 
 static void AddDepClose( void )
 {
+    int     i;
+    char    *p;
+
     if( fp_depdump != NULL ) {
+        for( i = 0; i < DepCount; i++ ) {
+            p = DepFileName[i];
+            fprintf( fp_depdump, " %s", p );
+            free( p );
+        }
+        DepCount = 0;
         fprintf( fp_depdump, "\n" );
         fclose( fp_depdump );
         fp_depdump = NULL;

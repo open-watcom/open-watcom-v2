@@ -1,5 +1,5 @@
 #include <os2.h>
-#include "pmdbg.h"
+#include "pmdbg.rh"
 
 ICON    ID_WINDOW pmdbg.ico
 

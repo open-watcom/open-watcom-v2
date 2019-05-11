@@ -30,20 +30,15 @@
 ****************************************************************************/
 
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <unistd.h>
 #include <process.h>
-
-#include "watcom.h"
+#include "disasm.h"
 #include "wdismsg.h"
 #include "wressetr.h"
 #include "wreslang.h"
-#include "disasm.h"
 
 #include "clibext.h"
 

@@ -149,16 +149,16 @@ static dialog_node *GetDialog( a_dialog *ui_dlg_info )
 
 static bool GetIndexOfField( a_dialog *ui_dlg_info, VFIELD *field, int *index )
 {
-    int     item;
+    int     i;
     VFIELD  *fields;
 
-    item = 0;
+    i = 0;
     for( fields = ui_dlg_info->fields; fields->typ != FLD_NONE; fields++ ) {
         if( fields == field ) {
-            *index = item;
+            *index = i;
             return( true );
         }
-        item++;
+        i++;
     }
     return( false );
 }

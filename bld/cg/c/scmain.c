@@ -88,7 +88,7 @@ static  void    ScoreSeed( block *blk, block *son, byte index )
     }
     if( which != index )
         return;
-    ScoreMakeEqual( son->cc, cmp->operands[0], cmp->operands[1] );
+    ScoreMakeEqual( son->u1.scoreboard, cmp->operands[0], cmp->operands[1] );
 }
 
 
@@ -120,26 +120,26 @@ static  void    CopyList( score *frm, score *to,
 }
 
 
-static  void    ScoreCopy( score *other_sc, score *sc )
-/*****************************************************/
+static  void    ScoreCopy( score *other_scoreboard, score *scoreboard )
+/*********************************************************************/
 {
     list_head   **sc_heads;
     int         i;
 
-    FreeScoreBoard( sc );
-    sc_heads = (list_head **)&sc[ScoreCount];
+    FreeScoreBoard( scoreboard );
+    sc_heads = (list_head **)&scoreboard[ScoreCount];
     for( i = ScoreCount; i-- > 0; ) {
-        sc[i].next_reg = &sc[other_sc[i].next_reg->index];
-        sc[i].prev_reg = &sc[other_sc[i].prev_reg->index];
-        sc[i].generation = other_sc[i].generation;
-        sc[i].list = NULL;
+        scoreboard[i].next_reg = &scoreboard[other_scoreboard[i].next_reg->index];
+        scoreboard[i].prev_reg = &scoreboard[other_scoreboard[i].prev_reg->index];
+        scoreboard[i].generation = other_scoreboard[i].generation;
+        scoreboard[i].list = NULL;
         *sc_heads = (list_head *)sc_heads + 1;
         ++sc_heads;
     }
     *sc_heads = NULL;
-    sc_heads = (list_head **)&sc[ScoreCount];
+    sc_heads = (list_head **)&scoreboard[ScoreCount];
     for( i = ScoreCount; i-- > 0; ) {
-        CopyList( other_sc, sc, sc_heads, i );
+        CopyList( other_scoreboard, scoreboard, sc_heads, i );
     }
 }
 
@@ -154,10 +154,10 @@ static  void *ScoreDescendants( block *blk )
     for( i = blk->targets; i-- > 0; ) {
         son = blk->edge[i].destination.u.blk;
         if( ( son->inputs == 1 ) && !_IsBlkVisited( son ) ) {
-            son->cc = ScAlloc( ScoreCount * ( sizeof( score ) + sizeof( list_head ) ) + sizeof( list_head ) );
-            ScoreClear( son->cc );
+            son->u1.scoreboard = ScAlloc( ScoreCount * sizeof( score ) + ( ScoreCount + 1 ) * sizeof( list_head ) );
+            ScoreClear( son->u1.scoreboard );
             for( ;; ) {
-                ScoreCopy( blk->cc, son->cc );
+                ScoreCopy( blk->u1.scoreboard, son->u1.scoreboard );
                 ScoreSeed( blk, son, i );
                 if( !DoScore( son ) )
                     break;
@@ -166,9 +166,9 @@ static  void *ScoreDescendants( block *blk )
             _MarkBlkVisited( son );
             _MarkBlkMarked( son );
             SafeRecurseCG( (func_sr)ScoreDescendants, son );
-            FreeScoreBoard( son->cc );
-            ScFree( son->cc );
-            son->cc = NULL;
+            FreeScoreBoard( son->u1.scoreboard );
+            ScFree( son->u1.scoreboard );
+            son->u1.scoreboard = NULL;
         }
     }
     HW_CAsgn( regs, HW_EMPTY );
@@ -213,20 +213,20 @@ static  void    ScoreRoutine( void )
 //        change = false;
         for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
             if( !_IsBlkVisited( blk ) ) {
-                blk->cc = ScAlloc( ScoreCount * ( sizeof( score ) + sizeof( list_head ) ) + sizeof( list_head ) );
-                ScoreClear( blk->cc );
+                blk->u1.scoreboard = ScAlloc( ScoreCount * sizeof( score ) + ( ScoreCount + 1 ) * sizeof( list_head ) );
+                ScoreClear( blk->u1.scoreboard );
                 for( ;; ) {
-                    FreeScoreBoard( blk->cc );
-                    ScInitRegs( blk->cc );
+                    FreeScoreBoard( blk->u1.scoreboard );
+                    ScInitRegs( blk->u1.scoreboard );
                     if( !DoScore( blk ) )
                         break;
                     UpdateLive( blk->ins.hd.next, blk->ins.hd.prev );
                 }
                 _MarkBlkVisited( blk );
                 ScoreDescendants( blk );
-                FreeScoreBoard( blk->cc );
-                ScFree( blk->cc );
-                blk->cc = NULL;
+                FreeScoreBoard( blk->u1.scoreboard );
+                ScFree( blk->u1.scoreboard );
+                blk->u1.scoreboard = NULL;
             }
         }
     }
@@ -239,9 +239,9 @@ static  void    CleanUp( void )
     block       *blk;
 
     for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
-        FreeScoreBoard( blk->cc );
-        ScFree( blk->cc );
-        blk->cc = NULL;
+        FreeScoreBoard( blk->u1.scoreboard );
+        ScFree( blk->u1.scoreboard );
+        blk->u1.scoreboard = NULL;
     }
     ScFree( ScoreList );
     ScFree( ScZero );
@@ -276,7 +276,7 @@ void    Score( void )
     ScZero = NULL;               /* in case of Suicide*/
     ScoreList = NULL;
     for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
-        blk->cc = NULL;
+        blk->u1.scoreboard = NULL;
     }
     if( Spawn( &ScoreRoutine ) != 0 ) {
         ProcMessage( MSG_SCOREBOARD_DIED );

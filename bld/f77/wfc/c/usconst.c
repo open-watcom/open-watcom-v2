@@ -30,6 +30,7 @@
 
 
 #include "ftnstd.h"
+#include <string.h>
 #include "opr.h"
 #include "optr.h"
 #include "astype.h"
@@ -44,8 +45,6 @@
 #include "ferror.h"
 #include "upscan.h"
 #include "usconst.h"
-
-#include <string.h>
 
 
 #define UAR_TAB_ROWS    9

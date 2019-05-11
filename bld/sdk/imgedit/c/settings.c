@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -31,9 +32,8 @@
 
 
 #include "imgedit.h"
-#include "settings.h"
+#include "settings.rh"
 #include "ieprofil.h"
-#include "iemem.h"
 
 
 /* Local Window callback functions prototypes */

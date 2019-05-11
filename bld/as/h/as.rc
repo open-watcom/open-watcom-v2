@@ -1,5 +1,5 @@
-#include "msg.h"
-#include "wreslang.h"
+#include "msg.rh"
+#include "wreslang.rh"
 
 STRINGTABLE
 BEGIN

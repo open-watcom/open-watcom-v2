@@ -39,7 +39,6 @@
 #include "bool.h"
 #include "watcom.h"
 #include "log.h"
-#include "logi.h"
 #include "cguimem.h"
 #ifndef NOUSE3D
     #include "ctl3dcvr.h"

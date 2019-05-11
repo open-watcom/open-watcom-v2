@@ -414,7 +414,7 @@ pch_status PCHReadMacros( void )
 
     macroStorageRestart( &old_seglist, &old_hashtab );
     for( ; (mlen = PCHReadUInt()) != 0; ) {
-        MacroOverflow( mlen, 0 );
+        MacroReallocOverflow( mlen, 0 );
         new_mac = macroAllocateInSeg( mlen );
         PCHRead( new_mac, mlen );
         hash = PCHGetUInt( new_mac->next_macro );
@@ -494,7 +494,7 @@ static MEPTR macroFind(         // LOOK UP A HASHED MACRO
 }
 
 
-void MacroOverflow(             // OVERFLOW SEGMENT IF REQUIRED
+void MacroReallocOverflow(      // OVERFLOW SEGMENT IF REQUIRED
     size_t amount_needed,       // - amount for macro
     size_t amount_used )        // - amount used in segment
 {
@@ -505,7 +505,7 @@ void MacroOverflow(             // OVERFLOW SEGMENT IF REQUIRED
     if( macroSegmentLimit < amount_needed ) {
         old_offset = MacroOffset;
         macroAllocSegment( amount_needed );
-        if( amount_used != 0 ) {
+        if( amount_used > 0 ) {
             ExtraRptSpaceSubtract( macro_space, amount_used );
             memcpy( MacroOffset, old_offset, amount_used );
         }
@@ -516,7 +516,7 @@ static void unlinkMacroFromTable( MEPTR mentry, unsigned hash )
 {
     ++undefCount;
     RingPrune( &macroHashTable[hash], mentry );
-    if(( InitialMacroFlag & MFLAG_DEFINED_BEFORE_FIRST_INCLUDE ) == 0 ) {
+    if(( InitialMacroFlags & MFLAG_DEFINED_BEFORE_FIRST_INCLUDE ) == 0 ) {
         // make sure we only do this *after* the first include has started
         // processing otherwise the PCH is created in such a way that
         // the #undef'd macro must be defined before the #include 98/07/13
@@ -528,14 +528,15 @@ static void unlinkMacroFromTable( MEPTR mentry, unsigned hash )
 
 MEPTR MacroDefine(              // DEFINE A NEW MACRO
     MEPTR mentry,               // - scanned macro
-    unsigned len,               // - length of entry
-    size_t name_len )           // - name of macro name
+    size_t mlen,                // - length of entry
+    macro_flags mflags )        // - macro flags
 {
     MEPTR new_mentry;           // - new entry for macro
     MEPTR old_mentry;           // - old entry for macro
     char *mac_name;             // - name for macro
     unsigned hash;              // - hash bucket for macro
     msg_status_t msg_st;        // - error message status
+    size_t name_len;
 
     DbgAssert( mentry == (MEPTR)MacroOffset );
     new_mentry = NULL;
@@ -543,6 +544,7 @@ MEPTR MacroDefine(              // DEFINE A NEW MACRO
     if( magicPredefined( mac_name ) ) {
         CErr2p( ERR_DEFINE_IMPOSSIBLE, mac_name );
     } else {
+        name_len = strlen( mac_name );
         old_mentry = macroFind( mac_name, name_len, &hash );
         if( old_mentry != NULL ) {
             if( old_mentry->macro_flags & MFLAG_CAN_BE_REDEFINED ) {
@@ -550,7 +552,7 @@ MEPTR MacroDefine(              // DEFINE A NEW MACRO
                 old_mentry = NULL;
             } else {
                 if( macroCompare( mentry, old_mentry ) != 0 ) {
-                    if( old_mentry->macro_defn == 0 ) {
+                    if( MacroIsSpecial( old_mentry ) ) {
                         CErr2p( ERR_DEFINE_IMPOSSIBLE, mac_name );
                         InfMacroDecl( old_mentry );
                     } else {
@@ -568,13 +570,13 @@ MEPTR MacroDefine(              // DEFINE A NEW MACRO
             }
         }
         if( old_mentry == NULL ) {
-            mentry->macro_flags = InitialMacroFlag;
-            new_mentry = macroAllocateInSeg( len );
+            mentry->macro_flags = InitialMacroFlags | mflags;
+            new_mentry = macroAllocateInSeg( mlen );
             DbgAssert( new_mentry == mentry );
             RingAppend( &macroHashTable[hash], new_mentry );
             ExtraRptIncrementCtr( macros_defined );
 #ifdef XTRA_RPT
-            if( mentry->parm_count != 0 ) {
+            if( MacroWithParenthesis( mentry ) ) {
                 ExtraRptIncrementCtr( macros_defined_with_parms );
             }
 #endif
@@ -585,9 +587,9 @@ MEPTR MacroDefine(              // DEFINE A NEW MACRO
 
 
 MEPTR MacroSpecialAdd(          // ADD A SPECIAL MACRO
-    char *name,                 // - macro name
+    const char *name,           // - macro name
     special_macros value,       // - value for special macro
-    macro_flags flags )         // - macro flags
+    macro_flags mflags )        // - macro flags
 {
     size_t len;
     size_t reqd;
@@ -595,18 +597,14 @@ MEPTR MacroSpecialAdd(          // ADD A SPECIAL MACRO
 
     len = strlen( name );
     reqd = offsetof( MEDEFN, macro_name ) + 1 + len;
-    MacroOverflow( reqd, 0 );
+    MacroReallocOverflow( reqd, 0 );
     mentry = (MEPTR)MacroOffset;
     TokenLocnClear( mentry->defn );
     mentry->macro_defn = 0;     /* indicate special macro */
     mentry->macro_len = reqd;
     mentry->parm_count = value;
     memcpy( mentry->macro_name, name, len + 1 );
-
-    mentry = MacroDefine( mentry, reqd, len );
-    if( mentry != NULL ) {
-        mentry->macro_flags |= flags;
-    }
+    mentry = MacroDefine( mentry, reqd, mflags );
     return( mentry );
 }
 
@@ -632,7 +630,7 @@ bool MacroExists(           // TEST IF MACRO EXISTS
     mac = macroFind( macname, len, &hash );
     if( mac != NULL ) {
         mac->macro_flags |= MFLAG_REFERENCED;
-        exists = ( (mac->macro_flags & MFLAG_SPECIAL ) == 0 );
+        exists = ( (mac->macro_flags & MFLAG_HIDDEN) == 0 );
     } else {
         exists = false;
     }
@@ -665,7 +663,7 @@ static void doMacroUndef( char *name, size_t len, bool quiet )
     } else {
         mentry = macroFind( name, len, &hash );
         if( mentry != NULL ) {
-            if( mentry->macro_defn == 0 ) {
+            if( MacroIsSpecial( mentry ) ) {
                 if( !quiet ) {
                     CErr2p( ERR_UNDEF_IMPOSSIBLE, name );
                 }

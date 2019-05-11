@@ -30,7 +30,7 @@
 ****************************************************************************/
 
 
-#include "rcdef.h"
+#include "rcdef.rh"
 #ifdef DEFINE_ICONS
 #define DEFICON( x, y, z ) gui_resource x = { y, z };
 #else

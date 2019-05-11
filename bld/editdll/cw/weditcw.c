@@ -68,8 +68,8 @@ static void FreeProcInstance_WNDENUM( WNDENUMPROC fn )
 
 #else
 
-#define MakeProcInstance_WNDENUM(f,i)   f
-#define FreeProcInstance_WNDENUM(f)
+#define MakeProcInstance_WNDENUM(f,i)       ((void)i,f)
+#define FreeProcInstance_WNDENUM(f)         ((void)f)
 
 #endif
 

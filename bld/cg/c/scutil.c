@@ -85,8 +85,8 @@ void    ScoreCalcList( void )
             ++ScoreCount;
         }
     }
-    if( ScoreCount != 0 ) {
-        ScoreList = ScAlloc( ScoreCount * ( sizeof( pointer ) + sizeof( score_reg ) ) );
+    if( ScoreCount > 0 ) {
+        ScoreList = ScAlloc( ScoreCount * sizeof( score_reg * ) + ScoreCount * sizeof( score_reg ) );
         curr = (score_reg *)&ScoreList[ScoreCount];
         i = 0;
         for( reg_name = Names[N_REGISTER]; reg_name != NULL; reg_name = reg_name->n.next_name ) {
@@ -111,7 +111,7 @@ void    ScoreCalcList( void )
             if( !HW_CEqual( reg, HW_EMPTY ) ) {
                 reg_name = AllocRegName( reg );
                 if( !ScRealRegister( reg_name )
-                 || reg_name->r.reg_index == NO_INDEX ) {
+                  || reg_name->r.reg_index == NO_INDEX ) {
                     curr->high = NO_INDEX;
                 } else {
                     curr->high = reg_name->r.reg_index;
@@ -124,7 +124,7 @@ void    ScoreCalcList( void )
             if( !HW_CEqual( reg, HW_EMPTY ) ) {
                 reg_name = AllocRegName( reg );
                 if( !ScRealRegister( reg_name )
-                 || reg_name->r.reg_index == NO_INDEX ) {
+                  || reg_name->r.reg_index == NO_INDEX ) {
                     curr->low = NO_INDEX;
                 } else {
                     curr->low = reg_name->r.reg_index;
@@ -138,23 +138,23 @@ void    ScoreCalcList( void )
 }
 
 
-void    ScoreClear( score *p )
-/****************************/
+void    ScoreClear( score *scoreboard )
+/*************************************/
 {
     int         i;
     list_head   *list_heads;
 
-    list_heads = (list_head *)&p[ScoreCount];
+    list_heads = (list_head *)&scoreboard[ScoreCount];
     *list_heads = NULL;  /* initialize free list*/
     for( i = 0; i < ScoreCount; ++i ) {
         ++list_heads;
-        p->list = list_heads;
+        scoreboard->list = list_heads;
         *list_heads = NULL;
-        p->next_reg = p;
-        p->prev_reg = p;
-        p->index = i;
-        p->generation = 0;
-        ++p;
+        scoreboard->next_reg = scoreboard;
+        scoreboard->prev_reg = scoreboard;
+        scoreboard->index = i;
+        scoreboard->generation = 0;
+        ++scoreboard;
     }
 }
 
@@ -166,52 +166,47 @@ void    FreeScListEntry( score_list *list )
 }
 
 
-void    ScoreFreeList( score *p )
-/*******************************/
+void    ScoreFreeList( score *scoreitem )
+/***************************************/
 {
     score_list  *curr;
     score_list  *next;
 
-    if( p->list != NULL ) {
-        for( curr = *p->list; curr != NULL; curr = next ) {
+    if( scoreitem->list != NULL ) {
+        for( curr = *scoreitem->list; curr != NULL; curr = next ) {
             next = curr->next;
             FreeScListEntry( curr );
         }
-        *p->list = NULL;
+        *scoreitem->list = NULL;
     }
 }
 
 
-void    FreeScoreBoard( score *p )
-/********************************/
+void    FreeScoreBoard( score *scoreboard )
+/*****************************************/
 {
     int         i;
     list_head   *list_heads;
-    score       *q;
 
-    if( p != NULL ) {
-        q = p;
-        for( i = ScoreCount; i > 0; --i ) {
-            ScoreFreeList( q );
-            ++q;
+    if( scoreboard != NULL ) {
+        for( i = 0; i < ScoreCount; i++ ) {
+            ScoreFreeList( &scoreboard[i] );
         }
-        list_heads = (list_head *)&p[ScoreCount];
+        list_heads = (list_head *)&scoreboard[ScoreCount];
         *list_heads = NULL;  /* initialize free list*/
-        for( i = ScoreCount; i > 0; --i ) {
-            ++list_heads;
-            p->list = list_heads;
+        for( i = 0; i < ScoreCount; i++ ) {
+            scoreboard[i].list = ++list_heads;
+            scoreboard[i].next_reg = &scoreboard[i];
+            scoreboard[i].prev_reg = &scoreboard[i];
+            scoreboard[i].generation = 0;
             *list_heads = NULL;
-            p->next_reg = p;
-            p->prev_reg = p;
-            p->generation = 0;
-            ++p;
         }
     }
 }
 
 
-void    MemChanged( score *p, bool statics_too )
-/**********************************************/
+void    MemChanged( score *scoreboard, bool statics_too )
+/*******************************************************/
 {
     int         i;
     score_list  **owner;
@@ -219,8 +214,8 @@ void    MemChanged( score *p, bool statics_too )
     bool        changed;
 
     for( i = ScoreCount; i > 0; --i ) {
-        if( p->list != NULL ) {
-            for( owner = p->list; (curr = *owner) != NULL; ) {
+        if( scoreboard->list != NULL ) {
+            for( owner = scoreboard->list; (curr = *owner) != NULL; ) {
                 changed = false;
                 switch( curr->info.class ) {
                 case SC_N_CONSTANT:
@@ -258,7 +253,7 @@ void    MemChanged( score *p, bool statics_too )
                 }
             }
         }
-        ++p;
+        ++scoreboard;
     }
 }
 

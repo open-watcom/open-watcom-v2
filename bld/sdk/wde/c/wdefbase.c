@@ -50,7 +50,7 @@
 #include "wdelist.h"
 #include "wdealign.h"
 #include "wdeopts.h"
-#include "wde_rc.h"
+#include "wde.rh"
 #include "wdedebug.h"
 #include "wdefbase.h"
 #include "wdedispa.h"

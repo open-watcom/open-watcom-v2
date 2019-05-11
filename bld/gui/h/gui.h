@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2018-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -32,11 +32,14 @@
 
 #include "bool.h"
 #include "guimem.h"
+#include "initmode.h"
 
 
-#define GUI_LAST_INTERNAL_MSG 255
+#define GUI_LAST_INTERNAL_MSG   255
 
-#define GUI_LAST_MENU_ID 10000
+#define GUI_LAST_MENU_ID        10000
+
+#define GUI_ARRAY_SIZE( x )     (sizeof( x ) / sizeof( *x ))
 
 typedef enum {
     GUI_NO_EVENT,
@@ -422,17 +425,28 @@ typedef struct gui_toolbar_struct {
     const char              *tip;
 } gui_toolbar_struct;
 
-typedef struct gui_menu_root {
+typedef struct gui_toolbar_items {
+    int                     num_items;
+    gui_toolbar_struct      *toolbar;
+} gui_toolbar_items;
+
+#define GUI_NO_TOOLBAR          {0, NULL}
+#define GUI_TOOLBAR_ARRAY(x)    {sizeof( x ) / sizeof( *x ), x}
+
+typedef struct gui_menu_items {
     int                     num_items;
     gui_menu_struct         *menu;
-} gui_menu_root;
+} gui_menu_items;
+
+#define GUI_NO_MENU         {0, NULL}
+#define GUI_MENU_ARRAY(x)   {sizeof( x ) / sizeof( *x ), x}
 
 typedef struct gui_menu_struct {
     const char              *label;
     gui_ctl_id              id;
     gui_menu_styles         style;
     const char              *hinttext;
-    gui_menu_root           child;
+    gui_menu_items          child;
 } gui_menu_struct;
 
 typedef struct gui_colour_set {
@@ -440,10 +454,13 @@ typedef struct gui_colour_set {
     gui_colour              back;
 } gui_colour_set;
 
-typedef struct gui_colour_root {
+typedef struct gui_colour_items {
     int                     num_items;
-    gui_colour_set          *colours;
-} gui_colour_root;
+    gui_colour_set          *colour;
+} gui_colour_items;
+
+#define GUI_NO_COLOUR       {0, NULL}
+#define GUI_COLOUR_ARRAY(x) {sizeof( x ) / sizeof( *x ), x}
 
 typedef unsigned long       gui_rgb;
 
@@ -484,8 +501,8 @@ typedef struct gui_create_info {
     gui_scroll_styles   scroll;
     gui_create_styles   style;
     gui_window          *parent;
-    gui_menu_root       menu;
-    gui_colour_root     colours;
+    gui_menu_items      menus;
+    gui_colour_items    colours;
     GUICALLBACK         *gui_call_back;
     void                *extra;
     gui_resource        *icon;
@@ -593,7 +610,7 @@ typedef struct gui_timer_event {
 
 /* Initialization Functions */
 
-extern bool GUIWndInit( unsigned rate, gui_window_styles style );
+extern bool GUIWndInit( unsigned dclick_ms, gui_window_styles style );
 extern void GUIGMouseOn( void );
 extern void GUIGMouseOff( void );
 extern void GUIMDIInit( void );
@@ -605,7 +622,7 @@ extern void GUIGetRoundScale( gui_coord *scale );
 extern void GUISetScale( gui_rect *screen );
 extern void GUIGetScale( gui_rect *screen );
 extern void GUIGetScreen( gui_rect *rect );
-extern void GUISetDClickRate( unsigned rate );
+extern void GUISetDClickRate( unsigned dclick_ms );
 extern void GUISetCharacter( gui_draw_char draw_char, int new_char );
 extern int  GUIGetCharacter( gui_draw_char draw_char );
 extern bool GUIIsInit( void );
@@ -758,44 +775,47 @@ extern void GUIGetPoint( gui_window *wnd, gui_ord extent, gui_ord row,
 
 /* Menu Functions */
 
+extern const gui_menu_items     NoMenu;
+
 extern bool GUICreateFloatingPopup( gui_window *wnd, gui_point *location,
-                                    int num_items, gui_menu_struct *menu,
+                                    const gui_menu_items *menus,
                                     gui_mouse_track track, gui_ctl_id *curr_id );
 extern bool GUITrackFloatingPopup( gui_window *wnd, gui_point *location,
                                gui_mouse_track track, gui_ctl_id *curr_id );
 extern bool GUIEnableMenuItem( gui_window *wnd, gui_ctl_id id, bool enabled, bool floating );
 extern bool GUICheckMenuItem( gui_window *wnd, gui_ctl_id id, bool check, bool floating );
 extern bool GUISetMenuText( gui_window *wnd, gui_ctl_id id, const char *text, bool floating );
-extern bool GUISetHintText( gui_window *wnd, gui_ctl_id id, const char *hinttext );
+extern bool GUISetMenuHintText( gui_window *wnd, gui_ctl_id id, const char *hinttext );
 
 extern bool GUIEnableMDIMenus( bool enable );
 extern bool GUIEnableMenus( gui_window *wnd, bool enable ); // NYI
 extern bool GUIDeleteMenuItem( gui_window *wnd, gui_ctl_id id, bool floating );
 
-extern bool GUIResetMenus( gui_window *wnd, int num_items, gui_menu_struct *menu );
+extern bool GUIResetMenus( gui_window *wnd, const gui_menu_items *menus );
 
-extern int GUIGetMenuPopupCount( gui_window *wnd, gui_ctl_id id );
+extern int  GUIGetMenuPopupCount( gui_window *wnd, gui_ctl_id id );
 
-extern bool GUIInsertMenuByIdx( gui_window *wnd, int position, gui_menu_struct *menu, bool floating );
-extern bool GUIInsertMenuByID( gui_window *wnd, gui_ctl_id id, gui_menu_struct *menu );
-extern bool GUIAppendMenu( gui_window *wnd, gui_menu_struct *menu, bool floating );
-extern bool GUIAppendMenuByIdx( gui_window *wnd, int position, gui_menu_struct *menu );
-extern bool GUIAppendMenuToPopup( gui_window *wnd, gui_ctl_id id, gui_menu_struct *menu, bool floating );
-extern bool GUIInsertMenuToPopup( gui_window *wnd, gui_ctl_id id, int position, gui_menu_struct *menu, bool floating );
+extern bool GUIInsertMenuByIdx( gui_window *wnd, int position, const gui_menu_struct *menu, bool floating );
+extern bool GUIInsertMenuByID( gui_window *wnd, gui_ctl_id id, const gui_menu_struct *menu );
+extern bool GUIAppendMenu( gui_window *wnd, const gui_menu_struct *menu, bool floating );
+extern bool GUIAppendMenuByIdx( gui_window *wnd, int position, const gui_menu_struct *menu );
+extern bool GUIAppendMenuToPopup( gui_window *wnd, gui_ctl_id id, const gui_menu_struct *menu, bool floating );
+extern bool GUIInsertMenuToPopup( gui_window *wnd, gui_ctl_id id, int position, const gui_menu_struct *menu, bool floating );
 
 /* Toolbar Functions */
 
-extern bool GUICreateFloatToolBar( gui_window *wnd, bool fixed,
-                                   gui_ord height, int num_items,
-                                   gui_toolbar_struct *toolinfo, bool excl,
-                                   gui_colour_set *plain,
-                                   gui_colour_set *standout, gui_rect *rect );
+extern const gui_toolbar_items  NoToolbar;
+
+extern bool GUICreateFloatToolBar( gui_window *wnd, bool fixed, gui_ord height,
+                                    const gui_toolbar_items *toolinfo,
+                                    bool excl, gui_colour_set *plain,
+                                    gui_colour_set *standout, gui_rect *rect );
 extern bool GUICreateToolBar( gui_window *wnd, bool fixed, gui_ord height,
-                              int num_items, gui_toolbar_struct *toolinfo,
+                              const gui_toolbar_items *toolinfo,
                               bool excl, gui_colour_set *plain,
                               gui_colour_set *standout );
 extern bool GUICreateToolBarWithTips( gui_window *wnd, bool fixed, gui_ord height,
-                                      int num_items, gui_toolbar_struct *toolinfo,
+                                      const gui_toolbar_items *toolinfo,
                                       bool excl, gui_colour_set *plain,
                                       gui_colour_set *standout );
 extern bool GUICloseToolBar( gui_window *wnd );
@@ -990,3 +1010,6 @@ extern bool GUIFirstCrack( void );
 extern bool GUIDead( void );
 extern bool GUIDeath( void );
 extern char *GUIGetWindowClassName( void );
+
+extern bool GUISysInit( init_mode install );
+extern void GUISysFini( void  );

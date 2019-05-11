@@ -424,7 +424,7 @@ static void ProcStatus( void )
 }
 
 
-OVL_EXTERN bool DoneRefresh( inp_data_handle dummy, inp_rtn_action action )
+static bool DoneRefresh( inp_data_handle dummy, inp_rtn_action action )
 {
     /* unused parameters */ (void)dummy;
 

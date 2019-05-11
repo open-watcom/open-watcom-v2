@@ -1,4 +1,10 @@
-:include crwat.sp
+:include crwatpro.sp
+:include crwatwat.sp
 :segment QNX
-:include crqnx.sp
+:segment CPP_HDR
+// Copyright by QNX Software Systems Limited 1990-1996. All rights reserved.
+:elsesegment
+ * Copyright by QNX Software Systems Limited 1990-1996. All rights reserved.
 :endsegment
+:endsegment
+:include crwatepi.sp

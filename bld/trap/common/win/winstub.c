@@ -46,7 +46,7 @@ void TRAPENTRY InfoFunction( HWND hwnd )
     hwnd = hwnd;
 }
 
-void TRAPENTRY InputHook( hook_fn *ptr )
+void TRAPENTRY InputHook( event_hook_fn *ptr )
 {
     ptr = ptr;
 }

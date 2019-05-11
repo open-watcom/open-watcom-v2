@@ -159,9 +159,7 @@ static int parseList( char *list, node *head )
     char        *p, *op, *arg;
     int          low, high;
 
-    op = list;
-
-    while( p != NULL ) {
+    for( op = list; op != NULL; op = p + 1 ) {
         p = strchr( op, ',' );
         if( p != NULL ) {
             *p = '\0';
@@ -182,7 +180,6 @@ static int parseList( char *list, node *head )
             return( 1 );
         }
         treeInsert( head, low, high );          // Stuff data into tree.
-        op = p + 1;
     }
     return( 0 );
 }
@@ -268,9 +265,9 @@ static void getChars( line *ln, node *list )
 {
     unsigned    low = 0, high, len;
 
-    len = strlen( ln->buff );
+    len = (unsigned)strlen( ln->buff );
 
-    for( ; list->right != NULL  &&  low < len; list = list->right ) {
+    for( ; list->right != NULL && low < len; list = list->right ) {
         low  = list->left->v - 1;
         high = list->right->v - 1;
 

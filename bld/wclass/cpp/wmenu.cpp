@@ -163,7 +163,7 @@ void WMenu::detachMenu() {
     // Calling WWindow::close() destroys the window before
     // the destructor for WWindow is invoked.
     if( owner()->handle() != NULL ) {
-        GUIResetMenus( owner()->handle(), 0, NULL );
+        GUIResetMenus( owner()->handle(), &NoMenu );
     }
     setOwner( NULL );
 }

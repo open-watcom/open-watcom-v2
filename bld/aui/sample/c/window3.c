@@ -320,9 +320,8 @@ static wnd_info W3Info = {
     W3NumRows,
     NoNextRow,
     NoNotify,
-    NULL,
-    0,
-    DefPopUp( W3PopUp )
+    NoChkUpdate,
+    PopUp( W3PopUp )
 };
 
 a_window W3Open( void )

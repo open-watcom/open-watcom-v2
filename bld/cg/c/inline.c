@@ -89,8 +89,8 @@ void    BGAddInlineParm( an addr )
 }
 
 
-an      BGStopInline( call_handle handle, type_def *tipe )
-/********************************************************/
+an      BGStopInline( call_handle call, type_def *tipe )
+/******************************************************/
 {
     // works if we're in the middle of a conditional???
 
@@ -107,7 +107,7 @@ an      BGStopInline( call_handle handle, type_def *tipe )
     AddTarget( lbl, false );
     EnLink( lbl, true );
     InlineStack->tipe = tipe;
-    FEGenProc( InlineStack->proc_sym, handle );
+    FEGenProc( InlineStack->proc_sym, call );
     retv = InlineStack->addr;
     junk = InlineStack;
     InlineStack = InlineStack->next;

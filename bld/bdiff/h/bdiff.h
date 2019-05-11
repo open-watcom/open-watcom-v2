@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -30,18 +31,18 @@
 
 
 #ifndef __UNIX__
-#include <conio.h>
-#include <process.h>
+    #include <conio.h>
+    #include <process.h>
 #endif
 #include <ctype.h>
 #include <stdarg.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#if defined( __WATCOMC__ ) || defined( __QNX__ )
-#include <utime.h>
+#if defined( __UNIX__ ) || defined( __WATCOMC__ )
+    #include <utime.h>
 #else
-#include <sys/utime.h>
+    #include <sys/utime.h>
 #endif
 #include "bool.h"
 #include "wio.h"
@@ -49,6 +50,7 @@
 #include "banner.h"
 #include "machtype.h"
 #include "patchsig.h"
+
 
 typedef unsigned_32     foff;
 typedef signed_32       foff_diff;

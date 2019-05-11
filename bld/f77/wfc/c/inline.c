@@ -36,6 +36,7 @@
 //
 
 #include "ftnstd.h"
+#include <string.h>
 #include "global.h"
 #include "cgdefs.h"
 #include "cg.h"
@@ -53,7 +54,6 @@
 #include "cgswitch.h"
 #include "cgprotos.h"
 #include "fcgmain.h"
-#include <string.h>
 
 
 extern  void            DoPragma(char *);

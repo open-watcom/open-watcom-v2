@@ -295,7 +295,7 @@ static pTokData _dupTokData(pTokData elem) {
         newElem->repr.s.s = wicMalloc(elem->repr.s.strLen);
         memcpy(newElem->repr.s.s, elem->repr.s.s, elem->repr.s.strLen);
     } else {
-        registerString(elem->repr.string, !FREE_STRING);
+        registerString(elem->repr.ginfo.string, !FREE_STRING);
     }
     return newElem;
 }
@@ -585,7 +585,7 @@ static void _zapTokData(pTokData elem) {
     } else if (elem->code == Y_STRING) {
         wicFree(elem->repr.s.s);
     } else {
-        zapString(elem->repr.string);
+        zapString(elem->repr.ginfo.string);
     }
     wicFree(elem);
 }

@@ -111,6 +111,7 @@ Done:
 #include "dlgfile.h"
 #include "wndmenu1.h"
 #include "dbgwset1.h"
+#include "dlgbreak.h"
 
 
 /**************************************************/
@@ -194,14 +195,11 @@ bool DlgUpTheStack( void );
 bool DlgAreYouNuts( unsigned long mult );
 bool DlgBackInTime( bool warn );
 bool DlgIncompleteUndo( void );
-bool DlgBreak( address addr );
 void ProcAccel( void );
 void ProcDisplay( void );
 void ProcFont( void );
 void ProcHelp( void );
-#ifndef NDEBUG
 void ProcInternal( void );
-#endif
 void ProcPaint( void );
 void ProcView( void );
 void ProcConfigFile( void );
@@ -227,8 +225,6 @@ extern void             ProcCall( void );
 extern void             ShowCalls( void );
 extern void             ShowVarDisplay( void );
 //extern var_node         *VarGetDisplayPiece( var_info *i, int row, wnd_piece piece, int *pdepth, int *pinherit );
-
-volatile bool           BrkPending;
 
 static char             *CmdData;
 static bool             Done;
@@ -1616,7 +1612,7 @@ bool DUIInfoRelease( void )
     // used when we're low on memory
     return( false );
 }
-void DUIUpdate( update_list flags )
+void DUIUpdate( update_flags flags )
 {
     // flags indicates what conditions have changed.  They should be saved
     // until an appropriate time, then windows updated accordingly
@@ -1636,7 +1632,7 @@ void DUIInit( void )
 void DUIFreshAll( void )
 {
     // refresh all screens - initialization has been done
-//    UpdateFlags = 0;
+    UpdateFlags = 0;
 }
 bool DUIStopRefresh( bool stop )
 {
@@ -1730,13 +1726,11 @@ void ProcHelp( void )
     // stub for old UI
     FlushEOC();
 }
-#ifndef NDEBUG
 void ProcInternal( void )
 {
     // stub for old UI
     FlushEOC();
 }
-#endif
 void ProcPaint( void )
 {
     // stub for old UI

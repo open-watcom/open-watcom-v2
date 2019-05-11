@@ -37,7 +37,7 @@
 #include "wstat.h"
 #include "whints.h"
 #include "wmsg.h"
-#include "sys_rc.h"
+#include "sysall.rh"
 #include "wribbon.h"
 #include "ldstr.h"
 #include "rcstr.gh"
@@ -196,11 +196,11 @@ bool WResizeRibbon( WStringEditInfo *einfo, RECT *prect )
     return( true );
 }
 
-void WShowRibbon( WStringEditInfo *einfo, HMENU menu )
+void WShowRibbon( WStringEditInfo *einfo, HMENU hmenu )
 {
     char        *mtext;
 
-    if( einfo == NULL && menu == NULL ) {
+    if( einfo == NULL && hmenu == NULL ) {
         return;
     }
 
@@ -218,7 +218,7 @@ void WShowRibbon( WStringEditInfo *einfo, HMENU menu )
 
     einfo->show_ribbon = !einfo->show_ribbon;
     WResizeWindows( einfo );
-    ModifyMenu( menu, IDM_STR_SHOWRIBBON, MF_BYCOMMAND | MF_STRING,
+    ModifyMenu( hmenu, IDM_STR_SHOWRIBBON, MF_BYCOMMAND | MF_STRING,
                 IDM_STR_SHOWRIBBON, mtext );
 
     if( mtext != NULL ) {
@@ -237,7 +237,7 @@ void WDestroyRibbon( WStringEditInfo *einfo )
 
 static void wRibbonHelpHook( HWND hwnd, ctl_id id, bool pressed )
 {
-    _wtouch( hwnd );
+    /* unused parameters */ (void)hwnd;
     if( !pressed ) {
         WSetStatusText( NULL, NULL, "" );
     } else {
@@ -250,9 +250,7 @@ static bool wRibbonHook( HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam )
     bool            ret;
     WStringEditInfo *einfo;
 
-    _wtouch( hwnd );
-    _wtouch( wParam );
-    _wtouch( lParam );
+    /* unused parameters */ (void)hwnd; (void)wParam; (void)lParam;
 
     einfo = WGetCurrentEditInfo();
 

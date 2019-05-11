@@ -34,9 +34,8 @@
 // CNVD2S       : format floating point number to string representation
 //
 
-#include <stdio.h>
-
 #include "ftnstd.h"
+#include <stdio.h>
 #include "target.h"
 #include "cnvd2s.h"
 

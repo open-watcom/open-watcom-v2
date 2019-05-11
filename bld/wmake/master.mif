@@ -55,6 +55,7 @@ extra_cpp_flags += -DDLLS_IMPLEMENTED
 !ifdef cachestat
 extra_cpp_flags += -DCACHE_STATS
 !endif
+
 !ifdef wmake_causeway
 extra_cpp_flags_dos_386 = -DCAUSEWAY
 !endif

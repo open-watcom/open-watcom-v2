@@ -59,7 +59,7 @@ inc_dirs = -I. -I"../h" -I"$(trap_dir)/h" -I"$(os2api_dir)/os2286/h" -I"$(os2api
 
 extra_a_flags = -2 -bt=os2 -fo=.obj -mc
 
-wdpmhelp.res: ../h/pmhelp.rc ../h/wdpmhelp.h
+wdpmhelp.res: ../h/pmhelp.rc ../h/wdpmhelp.rh
     @%make echo_rc
     $(rc) $(rc_flags) $(inc_path) $[@ -fo=$@
 

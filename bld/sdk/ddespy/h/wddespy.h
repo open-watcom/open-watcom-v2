@@ -52,7 +52,7 @@
 #include "uistr.gh"
 #include "ldstr.h"
 #include "hint.h"
-#include "ddemenu.h"
+#include "ddemenu.rh"
 
 #define RCSTR_MAX_LEN   500
 #define DDE_HELP_FILE   "ddespy.hlp"

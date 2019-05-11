@@ -40,9 +40,6 @@
 #include "guipaint.h"
 #include "guixwind.h"
 #include "guimapky.h"
-#include "initmode.h"
-#include "guisysin.h"
-#include "guisysfi.h"
 #include "guitool.h"
 #include "guiscrol.h"
 #include "guiwinlp.h"
@@ -170,7 +167,7 @@ void GUIDestroyWnd( gui_window *wnd )
             }
         }
     } else {
-        if ( GUIIsOpen( wnd ) ) {
+        if( GUIIsOpen( wnd ) ) {
             /* this will make a new window be chosen as current if this
              * window was current */
             hwnd = GUIGetParentFrameHWND( wnd );
@@ -228,7 +225,7 @@ void GUICleanup( void )
     GUIFreeStatus();
     GUI3DDialogFini();
     GUIFiniDialog();
-    GUISysFini();
+    GUISysFini();               /* user replaceable stub function */
     GUIFiniInternalStringTable();
     GUILoadStrFini();
 }
@@ -372,11 +369,11 @@ void GUIShowWindowNA( gui_window *wnd )
  * GUIWndInit -- initialize display windows
  */
 
-bool GUIWndInit( unsigned DClickInterval, gui_window_styles style )
+bool GUIWndInit( unsigned dclick_ms, gui_window_styles style )
 {
     Style = style;
-    GUISysInit( INIT_MOUSE_INITIALIZED );
-    _wpi_setdoubleclicktime( DClickInterval );
+    GUISysInit( INIT_MOUSE_INITIALIZED );       /* user replaceable stub function */
+    _wpi_setdoubleclicktime( dclick_ms );
     GUISetScreen( 0, 0, _wpi_getsystemmetrics( SM_CXSCREEN ), _wpi_getsystemmetrics( SM_CYSCREEN ) );
     GUIInitDialog();
     return( true );
@@ -511,7 +508,7 @@ bool GUIXCreateWindow( gui_window *wnd, gui_create_info *dlg_info, gui_window *p
     }
 
     wnd->font = GUIGetSystemFont();
-    GUIInitHint( wnd, dlg_info->menu.num_items, dlg_info->menu.menu, MENU_HINT );
+    GUIInitHint( wnd, &dlg_info->menus, MENU_HINT );
     GUISetGUIHint( wnd );
     wmcreateinfo.size = sizeof(wmcreate_info);
     wmcreateinfo.wnd  = wnd;
@@ -547,7 +544,7 @@ bool GUIXCreateWindow( gui_window *wnd, gui_create_info *dlg_info, gui_window *p
         flags |= FCF_SIZEBORDER;
     }
     if( parent_hwnd == HWND_DESKTOP ) {
-        if( dlg_info->menu.num_items > 0 ) {
+        if( dlg_info->menus.num_items > 0 ) {
             //flags |= FCF_MENU;
         }
     }
@@ -677,8 +674,8 @@ void GUIResizeBackground( gui_window *wnd, bool force_msg )
     t_height = 0;
     s_height = 0;
 
-    if( ( wnd->tbinfo != NULL ) && ( wnd->tbinfo->info.is_fixed ) ) {
-        t_height = _wpi_getheightrect( wnd->tbinfo->fixedrect );
+    if( ( wnd->tbar != NULL ) && ( wnd->tbar->info.is_fixed ) ) {
+        t_height = _wpi_getheightrect( wnd->tbar->fixedrect );
     }
 
     if( wnd->status != NULLHANDLE ) {
@@ -741,7 +738,7 @@ void GUIDoResize( gui_window *wnd, HWND hwnd, gui_coord *size )
 {
     hwnd = hwnd;
     if( wnd->style & GUI_CHANGEABLE_FONT ) {
-        GUIEnableSysMenuItem( wnd, GUI_CHANGE_FONT, true );
+        GUIEnableSystemMenuItem( wnd, GUI_CHANGE_FONT, true );
     }
     if( wnd->hwnd != NULLHANDLE ) {
         GUIResizeStatus( wnd );
@@ -810,8 +807,8 @@ static bool IsToolBarCommand( gui_window *wnd, WPI_PARAM1 wparam, WPI_PARAM2 lpa
 {
 #ifdef __NT__
     wparam=wparam; //lparam=lparam;
-    return( wnd != NULL && wnd->tbinfo != NULL && wnd->tbinfo->hdl != NULL &&
-            GET_WM_COMMAND_HWND( wparam, lparam ) == ToolBarWindow( wnd->tbinfo->hdl ) );
+    return( wnd != NULL && wnd->tbar != NULL && wnd->tbar->hdl != NULL &&
+            GET_WM_COMMAND_HWND( wparam, lparam ) == ToolBarWindow( wnd->tbar->hdl ) );
 #else
     wnd=wnd; wparam=wparam; lparam=lparam;
     return( false );
@@ -931,11 +928,11 @@ WPI_MRESULT CALLBACK GUIWindowProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, W
         NumWindows++; // even if -1 is returned, window will get WM_DESTROY
         win = GUIGetParentFrameHWND( wnd );
         if( ( wnd->root_frame != NULLHANDLE ) || (dlg_info->style & GUI_POPUP) ) {
-            if( !GUIAddToSystemMenu( wnd, win, 0, NULL, dlg_info->style ) ) {
+            if( !GUIAddToSystemMenu( wnd, win, &NoMenu, dlg_info->style ) ) {
                 return( (WPI_MRESULT)WPI_ERROR_ON_CREATE );
             }
         } else {
-            if( !GUIAddToSystemMenu( wnd, win, dlg_info->menu.num_items, dlg_info->menu.menu, dlg_info->style ) ) {
+            if( !GUIAddToSystemMenu( wnd, win, &dlg_info->menus, dlg_info->style ) ) {
                 return( (WPI_MRESULT)WPI_ERROR_ON_CREATE );
             }
         }
@@ -1128,7 +1125,7 @@ WPI_MRESULT CALLBACK GUIWindowProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, W
             if( _wpi_isiconic( _wpi_getframe( hwnd ) ) ) {
                 wnd->flags |= IS_MINIMIZED;
                 if( wnd->style & GUI_CHANGEABLE_FONT ) {
-                    GUIEnableSysMenuItem( wnd, GUI_CHANGE_FONT, false );
+                    GUIEnableSystemMenuItem( wnd, GUI_CHANGE_FONT, false );
                 }
                 GUIEVENT( wnd, GUI_ICONIFIED, NULL );
                 if( GUIMDI ) {

@@ -50,8 +50,8 @@
 extern bool ProcRaw( void )
 /*************************/
 {
-    FmtData.base = 0;                           // Default offset
-    LinkState |= MAKE_RELOCS | FMT_DECIDED;     // Make relocations;
+    FmtData.base = 0;                               // Default offset
+    LinkState |= LS_MAKE_RELOCS | LS_FMT_DECIDED;   // Make relocations;
     ProcOne( RawOptions, SEP_NO, true );
     return( true );
 }

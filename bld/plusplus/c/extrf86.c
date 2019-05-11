@@ -433,8 +433,8 @@ static void extrefFini(         // COMPLETION
 // there are allocated memory blocks by virtualListBuild
 // which are not freed
 //
-    DbgStmt( CarveVerifyAllGone( carveOVFN, "OVFN" ) );
-    DbgStmt( CarveVerifyAllGone( carveRingHead, "OVFN* ring heads" ) );
+//    DbgStmt( CarveVerifyAllGone( carveOVFN, "OVFN" ) );
+//    DbgStmt( CarveVerifyAllGone( carveRingHead, "OVFN* ring heads" ) );
     CarveDestroy( carveOVFN );
     CarveDestroy( carveRingHead );
 }

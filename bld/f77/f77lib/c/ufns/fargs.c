@@ -36,9 +36,9 @@
 //
 
 #include "ftnstd.h"
+#include <string.h>
 #include "ftnapi.h"
 
-#include <string.h>
 
 extern  int             ___Argc;        // argument count
 extern  char            **___Argv;      // argument vector

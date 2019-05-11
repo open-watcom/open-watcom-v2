@@ -30,7 +30,10 @@
 
 
 #include "commonui.h"
+#include <stdio.h>
+#include "bool.h"
 #include "sdkasm.h"
+
 
 static DisAsmRtns       *CurRtns;
 

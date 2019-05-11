@@ -92,7 +92,11 @@ extern void __init_80x87( void );
 #endif
 
 /* 0 => no x87; 1 => 8087; 2 => 80287; 3 => 80387 */
+#if defined( _M_I86 )
 extern unsigned char _WCI86NEAR __x87id( void );
+#else
+extern unsigned char            __x87id( void );
+#endif
 #pragma aux __x87id "*"
 
 #if defined( _M_IX86 ) && !defined( __UNIX__ ) && !defined( __OS2_386__ )

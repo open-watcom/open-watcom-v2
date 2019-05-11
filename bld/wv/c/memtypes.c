@@ -42,7 +42,7 @@
 #include "madcli.h"
 
 
-OVL_EXTERN walk_result MadMemTypeWalk( mad_type_handle mth, void *d )
+static walk_result MadMemTypeWalk( mad_type_handle mth, void *d )
 {
     mem_type_walk_data  *data = d;
     mad_type_info       mti;

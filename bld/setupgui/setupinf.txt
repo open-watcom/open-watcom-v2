@@ -37,7 +37,7 @@ Variables
    IsDos
    IsOS2
    IsOS2DosBox
-   IsWin
+   IsWin16
    IsWin32
    IsWin64
    IsWin32s
@@ -100,6 +100,19 @@ Sections
   <var>=<value>
    Set variable <var> to value <value>, create the variable if needed.
 
+[Associations]
+  <ext>=<key>,<descr>,<prog>,<iconfile>,<iconidx>,<cond>
+    used only by Windows 32/64-bit
+
+   <ext>        file extension, which is associated with program/icon
+   <key>        name of registry key for file extension
+   <desc>       description for file extension
+   <prog>       program name used for open files with file extension
+   <iconfile>   icon file, if not specified then program file is used
+   <iconidx>    icon index in icon file
+   <cond>       a condition is a variable name which is true or false. The 
+                condition can be negated by following the name with a space
+                and an exclamation mark '!'
 
 [Autoexec]
    This section defines modifications to be made to autoexec.bat file only.
@@ -118,7 +131,7 @@ Sections
    Defines conditional variables, with a variable name and a condition.
    Example:
 
-   tools16=IsDos IsOS2 IsWin | |
+   tools16=IsDos IsOS2 IsWin16 | |
 
 
 [Config]
@@ -133,10 +146,10 @@ Sections
    the value is appended to the end of any existing variable. 
    If the variable is preceded by a '++' sign, the value is appended to 
    the begin of any existing variable, else the variable is simply set.
-   
+
    Example:
 
-   FILES=20,IsDOS IsWin |
+   FILES=20,IsDOS IsWin16 |
 
    The Config section is very similar to the Autoexec section.
 
@@ -188,14 +201,12 @@ Sections
       append to the end of each control specification.
 
   static_text="<text>"[,<cond>[,<visib.cond>]]
+  static_text="@filename"[,<cond>[,<visib.cond>]]
      Add a static text control to the dialog. If no text is following the '='
      sign, and empty line is added, which is useful to add padding in
      dialogs. The character '@' in static text is replaced by the name of
      the installtion program (e.g. 'SETUP' or 'INSTALL'). Note that the text
      must be enclosed in quotes.
-
-  dialog_text="<text>"[,<cond>[,<visib.cond>]]
-  dialog_text="@filename"[,<cond>[,<visib.cond>]]
 
   dynamic_text=FormattedDiskInfo,""[,<cond>[,<visib.cond>]]
 
@@ -260,17 +271,12 @@ Sections
 
    binp\dll,1,8
 
-   The first value is the directory name, the second is the target (??),
-   the third is the parent. This parent is the number of the directory
-   under which this particular directory resides. In the example, "binp"
-   would have been the 8th directory line. If the parent is "-1", then ??
-
-
-[Disks]
-   This section defines the names of the disks on which the software is
-   supplied. Each line names one disk, e.g. "Disk 1". Used primarily for
-   floppy installs.
-
+   The first value is the directory name, the second is the target index, 
+   the third is the parent index. 
+   The target is number of target directory in Targets section. 
+   The parent is the number of the directory under which this particular 
+   directory resides. In the example, "binp" would have been the 8th directory
+   line. If the parent is "-1", then this is root of target tree
 
 [End]
    This is the final section which terminates the install script.
@@ -360,19 +366,15 @@ Sections
 
    Following is the trailing part of an archive entry. Example:
 
-   6,-1,4,.,wnttarg
+   6,-1,wnttarg
 
    The first field is the base-36 index of the directory into which the
    file(s) should be placed. The second field is the base-36 "old directory"
    index: It is used when a file moved from one directory to another between
    releases; value of -1 indicates there is no previous directory. The third
-   field is the base-36 disk index. The fourth field is the file type, which
-   can be '1', 'm' or '$' (?? possibly to do with if a file is split over
-   multiple diskettes, where '1' is the first part, 'm' is an intermediate
-   part and '$' is the last part). If not specified, it is a single-part file.
-   This is used to calculate file sizes. The fifth field (string) specifies a
-   condition (in a format described above in the 'Conditions' section). This
-   condition must be true for an archive to be processed.
+   field (string) specifies a condition (in a format described above in the
+   'Conditions' section). This condition must be true for an archive to be
+   processed.
 
 
 [ForceDLLInstall]
@@ -448,8 +450,8 @@ Sections
 [Profile]
    Defines profile information. 3 examples are given.
 
-  386Enh, *device, %DstDir%\binw\wdebug.386, system.ini, , IsWin IsWin95 | ?%DstDir%\binw\wdebug.386
-  boot, +drivers, winmm16.dll, system.ini, , IsWin UnInstall ! win32s
+  386Enh, *device, %DstDir%\binw\wdebug.386, system.ini, , IsWin16 IsWin95 | ?%DstDir%\binw\wdebug.386
+  boot, +drivers, winmm16.dll, system.ini, , IsWin16 UnInstall ! win32s
   Help,LocalHelp1,%HDir%\binnt,Software\Microsoft\MFC 3.0 Help,current_user,IsWin32 UnInstall !
 
      The first parameter is the application name.

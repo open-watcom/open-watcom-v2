@@ -8,7 +8,7 @@ about 32-bit Windows application development.
 The following topics are discussed in this chapter:
 .begbull $compact
 .bull
-Can you call 16-bit code from a 32-bit Windows application?
+Can you call 16-bit code from a 32-bit code?
 .if '&lang' eq 'C' or '&lang' eq 'C/C++' .do begin
 .bull
 Can I WinExec another Windows application?
@@ -16,7 +16,7 @@ Can I WinExec another Windows application?
 .bull
 How do I add my Windows resources?
 .bull
-All function pointers passed to Windows must be 16-bit far pointers, correct?
+What size of function pointers passed to Windows?
 .bull
 Why are 32-bit callback routines FAR?
 .bull
@@ -37,7 +37,7 @@ What is the difference between AllocAlias16 and MK_FP16?
 .do end
 .endbull
 .*
-.section Can you call 16-bit code from a 32-bit Windows application?
+.section Can you call 16-bit code from a 32-bit code?
 .*
 .np
 .ix 'Windows 3.x extender' 'calling 16-bit code'
@@ -115,7 +115,7 @@ option of
 .kw WBIND
 .ct .li .
 .*
-.section All function pointers passed to Windows must be 16-bit far pointers, correct?
+.section What size of function pointers passed to Windows?
 .*
 .np
 .ix 'Windows 3.x extender' 'function pointers'

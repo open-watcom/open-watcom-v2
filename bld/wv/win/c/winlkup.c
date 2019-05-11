@@ -37,7 +37,6 @@
 #include "envlkup.h"
 
 
-#ifndef __NT__
 static const char *DOSEnvFind( const char *name )
 {
     const char  *env;
@@ -56,7 +55,6 @@ static const char *DOSEnvFind( const char *name )
     } while( *env != NULLCHAR );
     return( NULL );
 }
-#endif
 
 /*
  * EnvLkup -- lookup up string in environment area
@@ -64,9 +62,6 @@ static const char *DOSEnvFind( const char *name )
 
 size_t EnvLkup( const char *name, char *buff, size_t buff_len )
 {
-#ifdef __NT__
-    return( GetEnvironmentVariable( name, buff, buff_len ) );
-#else
     size_t      len;
     const char  *env;
     bool        output;
@@ -93,5 +88,4 @@ size_t EnvLkup( const char *name, char *buff, size_t buff_len )
         buff[len] = NULLCHAR;
     }
     return( len );
-#endif
 }

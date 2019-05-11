@@ -33,7 +33,6 @@
 #include <wwindows.h>
 #include "servio.h"
 #include "options.h"
-#include "optionsi.h"
 
 
 WINEXPORT INT_PTR CALLBACK OptionsDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )

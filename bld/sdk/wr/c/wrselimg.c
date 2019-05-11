@@ -34,7 +34,7 @@
 #include "wrmsg.h"
 #include "wrmaini.h"
 #include "wrdmsgi.h"
-#include "selimage.h"
+#include "selimage.rh"
 #include "jdlg.h"
 #include "winexprt.h"
 #include "wresdefn.h"

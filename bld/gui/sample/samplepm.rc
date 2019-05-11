@@ -1,6 +1,6 @@
 #include <os2.h>
 
-#include "samprc.h"
+#include "samprc.rh"
 #include "gui.rc"
 
 STRINGTABLE

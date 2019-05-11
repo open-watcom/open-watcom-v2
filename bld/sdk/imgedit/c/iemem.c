@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -24,49 +25,120 @@
 *
 *  ========================================================================
 *
-* Description:  Functions to replace those in mem.c in commonui.
+* Description:  Memory allocator with optional tracking.
 *
 ****************************************************************************/
 
 
 #include "imgedit.h"
 #include "iemem.h"
+#ifdef TRMEM
+    #include "trmem.h"
+#endif
 
-/*
- * MemAlloc
- */
-void *MemAlloc( size_t size )
+
+#ifdef TRMEM
+static _trmem_hdl  MemHandle;
+
+static FILE *MemFP = NULL;   /* stream to put output on */
+
+static void MemPrintLine( void *parm, const char *buff, size_t len )
+/******************************************************************/
 {
-    void *p;
+    /* unused parameters */ (void)parm;
 
-    p = WRMemAlloc( size );
-
-    if( p != NULL ) {
-        memset( p, 0, size );
+    if( MemFP != NULL ) {
+        fwrite( buff, 1, len, MemFP );
     }
+}
+#endif
 
-    return( p );
-
-} /* MemAlloc */
-
-/*
- * MemReAlloc
- */
-void *MemReAlloc( void *ptr, size_t size )
+void MemOpen( void )
+/******************/
 {
-    void *p;
+#ifdef TRMEM
+    char    *tmpdir;
 
-    p = WRMemRealloc( ptr, size );
+    MemHandle = _trmem_open( malloc, free, realloc, NULL,
+        NULL, MemPrintLine,
+        _TRMEM_ALLOC_SIZE_0 | _TRMEM_REALLOC_SIZE_0 |
+        _TRMEM_OUT_OF_MEMORY | _TRMEM_CLOSE_CHECK_FREE );
 
-    return( p );
+    tmpdir = getenv( "TRMEMFILE" );
+    if( tmpdir != NULL ) {
+        MemFP = fopen( tmpdir, "w" );
+    }
+#endif
+}
 
-} /* MemReAlloc */
+void MemClose( void )
+/*******************/
+{
+#ifdef TRMEM
+    _trmem_prt_list( MemHandle );
+    _trmem_close( MemHandle );
+    if( MemFP != NULL ) {
+        fclose( MemFP );
+    }
+#endif
+}
 
-/*
- * MemFree
- */
+void *MemAlloc( size_t size )
+/***************************/
+{
+    void        *ptr;
+
+#ifdef TRMEM
+    ptr = _trmem_alloc( size, _trmem_guess_who(), MemHandle );
+#else
+    ptr = malloc( size );
+    memset( ptr, 0, size );
+#endif
+    return( ptr );
+}
+#if 0
+void * _wpi_malloc( size_t size )
+/*******************************/
+{
+    void        *ptr;
+
+#ifdef TRMEM
+    ptr = _trmem_alloc( size, _trmem_guess_who(), MemHandle );
+#else
+    ptr = malloc( size );
+    memset( ptr, 0, size );
+#endif
+    return( ptr );
+}
+#endif
+
+void *MemRealloc( void *ptr, size_t size )
+/****************************************/
+{
+#ifdef TRMEM
+    return( _trmem_realloc( ptr, size, _trmem_guess_who(), MemHandle ) );
+#else
+    return( realloc( ptr, size ) );
+#endif
+}
+
 void MemFree( void *ptr )
+/***********************/
 {
-    WRMemFree( ptr );
-
-} /* MemFree */
+#ifdef TRMEM
+    _trmem_free( ptr, _trmem_guess_who(), MemHandle );
+#else
+    free( ptr );
+#endif
+}
+#if 0
+void _wpi_free( void *ptr )
+/*************************/
+{
+#ifdef TRMEM
+    _trmem_free( ptr, _trmem_guess_who(), MemHandle );
+#else
+    free( ptr );
+#endif
+}
+#endif

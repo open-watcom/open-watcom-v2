@@ -56,7 +56,7 @@ void CaptureError( void )
     CaptureOk = false;
 }
 
-OVL_EXTERN bool DoneCapture( inp_data_handle _cmds, inp_rtn_action action )
+static bool DoneCapture( inp_data_handle _cmds, inp_rtn_action action )
 {
     cmd_list        *cmds = _cmds;
     const char      *old;

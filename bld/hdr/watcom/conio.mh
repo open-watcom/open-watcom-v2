@@ -12,7 +12,7 @@
 
 :include cpluspro.sp
 
-:include valist.sp
+:include _valist.sp
 
 _WCRTLINK extern char *cgets(char *__buf);
 _WCRTLINK extern int cputs(const char *__buf);
@@ -24,44 +24,56 @@ _WCRTLINK extern int getche(void);
 _WCRTLINK extern int _getche(void);
 _WCRTLINK extern int kbhit(void);
 _WCRTLINK extern int _kbhit(void);
+:segment !INTEL_ONLY
 #ifdef _M_IX86
+:endsegment
  _WCIRTLINK extern unsigned inp(unsigned __port);
  _WCIRTLINK extern unsigned inpw(unsigned __port);
  _WCIRTLINK extern unsigned outp(unsigned __port, unsigned __value);
  _WCIRTLINK extern unsigned outpw(unsigned __port,unsigned __value);
-:segment DOS | QNX | RDOS
+:segment BITS16
  #ifndef _M_I86
 :endsegment
   _WCIRTLINK extern unsigned inpd(unsigned __port);
   _WCIRTLINK extern unsigned outpd(unsigned __port, unsigned __value);
-:segment DOS | QNX | RDOS
+:segment BITS16
  #endif
 :endsegment
+:segment !INTEL_ONLY
 #endif
+:endsegment
 _WCRTLINK extern int putch(int __c);
 _WCRTLINK extern int ungetch(int __c);
 _WCRTLINK extern int vcprintf( const char *__format, __va_list __arg );
 _WCRTLINK extern int vcscanf( const char *__format, __va_list __arg );
 
+:segment !INTEL_ONLY
 #if defined(__INLINE_FUNCTIONS__) && defined(_M_IX86)
+:elsesegment
+#if defined(__INLINE_FUNCTIONS__)
+:endsegment
  #pragma intrinsic(inp,inpw,outp,outpw)
-:segment DOS | QNX | RDOS
+:segment BITS16
  #ifndef _M_I86
 :endsegment
   #pragma intrinsic(inpd,outpd)
-:segment DOS | QNX | RDOS
+:segment BITS16
  #endif
 :endsegment
 #endif
 
+:segment !INTEL_ONLY
 #ifdef _M_IX86
+:endsegment
  #define _inp   inp
  #define _inpw  inpw
  #define _inpd  inpd
  #define _outp  outp
  #define _outpw outpw
  #define _outpd outpd
+:segment !INTEL_ONLY
 #endif
+:endsegment
 
 :include cplusepi.sp
 

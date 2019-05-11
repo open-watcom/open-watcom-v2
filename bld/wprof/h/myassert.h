@@ -35,13 +35,13 @@
 
 #undef  myassert
 #ifdef NDEBUG
-#define myassert(ignore)
+    #define myassert(ignore)
 #else
-extern void AssertionFailed( char *, unsigned int );
-#ifndef __AXP__
-#pragma aux AssertionFailed __aborts
-#endif
-#define myassert(expr)    if(!(expr)) AssertionFailed(__FILE__,__LINE__)
+    extern void AssertionFailed( char *, unsigned int );
+  #if defined( __WATCOMC__ )
+    #pragma aux AssertionFailed __aborts
+  #endif
+    #define myassert(expr)    if(!(expr)) AssertionFailed(__FILE__,__LINE__)
 #endif
 
 #endif

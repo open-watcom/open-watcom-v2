@@ -88,7 +88,7 @@ static void setFinalTargetSystem( OPT_STORAGE *data, char *target_name )
     char buff[128];
 
     TargetSystem = TS_OTHER;
-    if( CompFlags.oldmacros_enabled ) {
+    if( CompFlags.non_iso_compliant_names_enabled ) {
         PreDefineStringMacro( "M_ALPHA" );
     }
     PreDefineStringMacro( "_M_ALPHA" );

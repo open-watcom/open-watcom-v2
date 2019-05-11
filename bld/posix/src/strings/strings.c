@@ -75,7 +75,7 @@ STATIC void doStrings( FILE *fp ) {
             ++offset;
             if( ch == EOF ) break;
             if( isprint( ch ) ) {
-                thresholdBuf[ amt_printable ] = ch;
+                thresholdBuf[ amt_printable ] = (char)ch;
                 ++amt_printable;
                 if( amt_printable == threshold ) break;
             } else {

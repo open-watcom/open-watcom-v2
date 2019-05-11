@@ -31,12 +31,12 @@
 ****************************************************************************/
 
 
-#include <malloc.h>
 #include <dos.h>
 #include "uidef.h"
 #include "uishift.h"
 #include "uimouse.h"
 #include <windows.h>
+#include "uiintern.h"
 
 
 typedef struct {
@@ -46,8 +46,6 @@ typedef struct {
     WORD ctrl;
     WORD alt;
 } map;
-
-extern HANDLE       InputHandle;
 
 static ORD          currMouseRow;
 static ORD          currMouseCol;

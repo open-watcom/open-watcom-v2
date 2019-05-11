@@ -119,7 +119,7 @@ typedef ICMP_ECHO_REPLY *PICMP_ECHO_REPLY;
 
 /* IPv6 address (extended version) */
 #if (NTDDI_VERSION >= 0x05010000)
-#include <packon.h>
+#include <pshpack1.h>
 typedef struct _IPV6_ADDRESS_EX {
     USHORT  sin6_port;
     ULONG   sin6_flowinfo;
@@ -127,7 +127,7 @@ typedef struct _IPV6_ADDRESS_EX {
     ULONG   sin6_scope_id;
 } IPV6_ADDRESS_EX;
 typedef IPV6_ADDRESS_EX *PIPV6_ADDRESS_EX;
-#include <packoff.h>
+#include <poppack.h>
 #endif
 
 /* ICMPv6 echo reply */

@@ -43,7 +43,7 @@
 #include "trpld.h"
 #include "trperr.h"
 #include "packet.h"
-#include "servname.h"
+#include "servname.rh"
 #include "tcerr.h"
 #include "servio.h"
 #include "nothing.h"

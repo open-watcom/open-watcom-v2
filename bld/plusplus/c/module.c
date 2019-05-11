@@ -262,50 +262,50 @@ static void genInitFiniReference( // GENERATE INIT/FINI REFERENCE TO FUNCTION
     SYMBOL func,                // - function to be called
     unsigned priority,          // - priority
     NAME name,                  // - name for reference
-    fe_seg_id tgt_seg )         // - segment # of target segment
+    fe_seg_id segid )           // - segment # of target segment
 {
     SYMBOL init_ref;            // - reference to mod-init. function
     TYPE type;                  // - used to build type
 
-    SegmentMarkUsed( tgt_seg );
+    SegmentMarkUsed( segid );
     type = MakePointerTo( func->sym_type );
     init_ref = SymCreateFileScope( type
                                  , SC_STATIC
                                  , SF_INITIALIZED | SF_REFERENCED
                                  , name );
-    init_ref->segid = tgt_seg;
-    if( tgt_seg == SEG_INIT_REF ) {
+    init_ref->segid = segid;
+    if( segid == SEG_INIT_REF ) {
         CgFrontInitRef();
     } else {
         CgFrontFiniRef();
     }
     CgFrontDataPtr( IC_DATA_LABEL, init_ref );
-    #if _INTEL_CPU
-        CgFrontDataPtr( IC_SET_TYPE, GetBasicType( TYP_UCHAR ) );
-        if( IsBigCode() ) {
-            CgFrontDataInt( IC_DATA_INT, 1 );
-        } else {
-            CgFrontDataInt( IC_DATA_INT, 0 );
-        }
-        CgFrontDataInt( IC_DATA_INT, priority );
-    #elif _CPU == _AXP
-        CgFrontDataPtr( IC_SET_TYPE, GetBasicType( TYP_UINT ) );
+#if _INTEL_CPU
+    CgFrontDataPtr( IC_SET_TYPE, GetBasicType( TYP_UCHAR ) );
+    if( IsBigCode() ) {
+        CgFrontDataInt( IC_DATA_INT, 1 );
+    } else {
         CgFrontDataInt( IC_DATA_INT, 0 );
-        CgFrontDataInt( IC_DATA_INT, priority );
-    #else
-        #error BAD _CPU
-    #endif
+    }
+    CgFrontDataInt( IC_DATA_INT, priority );
+#elif _CPU == _AXP
+    CgFrontDataPtr( IC_SET_TYPE, GetBasicType( TYP_UINT ) );
+    CgFrontDataInt( IC_DATA_INT, 0 );
+    CgFrontDataInt( IC_DATA_INT, priority );
+#else
+    #error BAD _CPU
+#endif
     CgFrontDataPtr( IC_SET_TYPE, type );
     CgFrontDataInt( IC_DATA_PTR_OFFSET, 0 );
     CgFrontDataPtr( IC_DATA_PTR_SYM, func );
-    #if _CPU == 8086
-        if( !IsBigCode() ) {
-            CgFrontDataInt( IC_DATA_INT, 0 );
-        }
-    #elif COMP_CFG_COFF == 1
-        CgFrontDataPtr( IC_SET_TYPE, GetBasicType( TYP_USHORT ) );
+#if _CPU == 8086
+    if( !IsBigCode() ) {
         CgFrontDataInt( IC_DATA_INT, 0 );
-    #endif
+    }
+#elif COMP_CFG_COFF == 1
+    CgFrontDataPtr( IC_SET_TYPE, GetBasicType( TYP_USHORT ) );
+    CgFrontDataInt( IC_DATA_INT, 0 );
+#endif
 }
 
 

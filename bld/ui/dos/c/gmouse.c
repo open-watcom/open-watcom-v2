@@ -163,7 +163,7 @@ static void PlotEgaVgaCursor( plot_func action )
     }
 }
 
-static void DrawEgaVgaCursor( void )
+static void intern DrawEgaVgaCursor( void )
 {
     unsigned short  off;
     unsigned short  shift;
@@ -297,7 +297,7 @@ static void MouDeinit( void )
     */
 }
 
-static void EraseEgaVgaCursor( void )
+static void intern EraseEgaVgaCursor( void )
 {
     PlotEgaVgaCursor( ERASE );
 }
@@ -319,8 +319,8 @@ static bool CheckEgaVga( void )
 bool UIAPI uiinitgmouse( init_mode install )
 {
     MouseInstalled = false;
-    if( install > INIT_MOUSELESS && mouse_installed() ) {
-        if( install > INIT_MOUSE ) {
+    if( install != INIT_MOUSELESS && mouse_installed() ) {
+        if( install == INIT_MOUSE_INITIALIZED ) {
             if( CheckEgaVga() ) {
                 if( MouInit() ) {
                     UIData->mouse_yscale = BIOSData( BIOS_POINT_HEIGHT, unsigned char );
@@ -332,7 +332,7 @@ bool UIAPI uiinitgmouse( init_mode install )
                 install = INIT_MOUSELESS;
             }
         }
-        if( install > INIT_MOUSELESS ) {
+        if( install != INIT_MOUSELESS ) {
             setupmouse();
         }
     }

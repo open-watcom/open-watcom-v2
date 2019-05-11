@@ -96,12 +96,12 @@ static  void    ScanComment( void );
 
 void ReScanInit( const char *ptr )
 {
-    rescan_tmp_file.src_ptr = (unsigned char *)ptr;
+    rescan_tmp_file.src_ptr = (const unsigned char *)ptr;
 }
 
-char *ReScanPos( void )
+const char *ReScanPos( void )
 {
-    return( (char *)rescan_tmp_file.src_ptr );
+    return( (const char *)rescan_tmp_file.src_ptr );
 }
 
 static int reScanGetNextChar( void )
@@ -125,7 +125,7 @@ static void reScanGetNextCharUndo( int c )
 {
     /* unused parameters */ (void)c;
 
-    --SrcFile->src_ptr;
+    SrcFile->src_ptr--;
     CompFlags.rescan_buffer_done = false;
 }
 
@@ -191,31 +191,31 @@ id_hash_idx CalcHash( const char *id, size_t len )
 TOKEN KwLookup( const char *buf, size_t len )
 {
     char        *keyword;
-    TOKEN       hash;
+    TOKEN       token;
 
-    hash = keyword_hash( buf, TokValue, len ) + FIRST_KEYWORD;
+    token = keyword_hash( buf, TokValue, len ) + FIRST_KEYWORD;
 
     /* look up id in keyword table */
     if( !CompFlags.c99_extensions ) {
-        switch( hash ) {
+        switch( token ) {
         case T_INLINE:
+        case T__PRAGMA:
             if( !CompFlags.extensions_enabled )
-                hash = T_ID;
+                return( T_ID );
             break;
         case T_RESTRICT:
         case T__COMPLEX:
         case T__IMAGINARY:
         case T__BOOL:
         case T___OW_IMAGINARY_UNIT:
-            hash = T_ID;
-            break;
+            return( T_ID );
         }
     }
 
-    keyword = Tokens[hash];
+    keyword = Tokens[token];
     if( *keyword == buf[0] ) {
         if( memcmp( keyword, buf, len + 1 ) == 0 ) {
-            return( hash );
+            return( token );
         }
     }
 
@@ -257,37 +257,47 @@ static TOKEN doScanName( void )
     if( Pre_processing & PPCTL_NO_EXPAND )
         return( T_ID );
     mentry = MacroLookup( Buffer );
-    if( mentry == NULL )
-        return( KwLookup( Buffer, TokenLen ) );
-    /* this is a macro */
-    if( mentry->macro_defn == 0 ) {
-        return( SpecialMacro( mentry ) );
-    }
-    mentry->macro_flags |= MFLAG_REFERENCED;
-    /* if macro requires parameters and next char is not a '('
-    then this is not a macro */
-    if( mentry->parm_count != 0 ) {
-        SkipAhead();
-        if( CurrChar != '(' ) {
-            if( CompFlags.cpp_output ) {
-                Buffer[TokenLen++] = ' ';
-                Buffer[TokenLen] = '\0';
-                return( T_ID );
-            }
-            return( KwLookup( Buffer, TokenLen ) );
+    if( mentry == NULL ) {
+        token = KwLookup( Buffer, TokenLen );
+        if( token == T__PRAGMA ) {
+            token = Process_Pragma();
         }
-    }
-    DoMacroExpansion( mentry );             /* start macro expansion */
-    GetMacroToken();
-    token = CurToken;
+    } else {
+        /* this is a macro */
+        if( MacroIsSpecial( mentry ) ) {
+            return( SpecialMacro( mentry ) );
+        }
+        mentry->macro_flags |= MFLAG_REFERENCED;
+        /* if macro requires parameters and next char is not a '('
+        then this is not a macro */
+        if( MacroWithParenthesis( mentry ) ) {
+            SkipAhead();
+            if( CurrChar != '(' ) {
+                if( CompFlags.cpp_output ) {
+                    Buffer[TokenLen++] = ' ';
+                    Buffer[TokenLen] = '\0';
+                    token = T_ID;
+                } else {
+                    token = KwLookup( Buffer, TokenLen );
+                    if( token == T__PRAGMA ) {
+                        token = Process_Pragma();
+                    }
+                }
+                return( token );
+            }
+        }
+        DoMacroExpansion( mentry );             /* start macro expansion */
+        GetMacroToken();
+        token = CurToken;
 #if 0
-    if( MacroPtr != NULL ) {
-        SavedCurrChar = CurrChar;
-        CurrChar = MACRO_CHAR;
-    }
+        if( MacroPtr != NULL ) {
+            SavedCurrChar = CurrChar;
+            CurrChar = MACRO_CHAR;
+        }
 #endif
-    if( token == T_NULL ) {
-        token = T_WHITE_SPACE;
+        if( token == T_NULL ) {
+            token = T_WHITE_SPACE;
+        }
     }
     return( token );
 }
@@ -1644,16 +1654,16 @@ bool ReScanToken( void )
     NextChar = reScanGetNextChar;
     UnGetChar = reScanGetNextCharUndo;
     GetCharCheck = reScanGetCharCheck;
-    CurrChar = NextChar();
-
     CompFlags.rescan_buffer_done = false;
+
+    CurrChar = NextChar();
     CompFlags.doing_macro_expansion = true;     // return macros as ID's
     CurToken = ScanToken();
     CompFlags.doing_macro_expansion = false;
     if( CurToken == T_STRING && CompFlags.wide_char_string ) {
         CurToken = T_LSTRING;
     }
-    --SrcFile->src_ptr;
+    SrcFile->src_ptr--;
 
     SrcFile = oldSrcFile;
     CurrChar = saved_currchar;

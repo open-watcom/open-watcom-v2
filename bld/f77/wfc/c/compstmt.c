@@ -31,6 +31,8 @@
 
 
 #include "ftnstd.h"
+#include <string.h>
+#include <ctype.h>
 #include "progsw.h"
 #include "stmtsw.h"
 #include "errcod.h"
@@ -61,8 +63,6 @@
 #include "kwlist.h"
 #include "proctbl.h"
 #include "cftable.h"
-#include <string.h>
-#include <ctype.h>
 
 
 /* forward declarations */

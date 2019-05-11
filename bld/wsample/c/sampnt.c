@@ -35,7 +35,6 @@
 #include <ctype.h>
 #include <string.h>
 #include <i86.h>
-#include <malloc.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include "sample.h"

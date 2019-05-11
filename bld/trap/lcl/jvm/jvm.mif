@@ -1,17 +1,17 @@
 !include $(trap_dir)/lcl/lcl.mif
 
+jvmx_link_objs = jvmxlink.obj packet.obj
+
 jvmx_trap_objs = &
         $(std_objs) &
-        jvmxlink.obj &
+        $(jvmx_link_objs) &
         jvmxremo.obj &
-        core.obj &
-        packet.obj
+        core.obj
 
 jvmx_serv_objs = &
-        jvmxlink.obj &
+        $(jvmx_link_objs) &
         jvmxserv.obj &
         jvmxtrio.obj &
         jvmxstub.obj &
         core.obj &
-        supp.obj &
-        packet.obj &
+        supp.obj

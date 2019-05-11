@@ -32,7 +32,7 @@
 
 #include "drwatcom.h"
 #include "wclbproc.h"
-#include "notelog.h"
+#include "notelog.rh"
 #include "jdlg.h"
 
 

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -119,6 +120,7 @@ static void addname( char *name );
  */
 int main( int argc, char **argv )
 {
+        read_error_flag = false;
 
         /*
          * Uncomment this message in particularly buggy versions...
@@ -142,43 +144,37 @@ int main( int argc, char **argv )
                 "/dev/tty"
 #endif
                 );
-                exit(EX_SYSTEM);
+                exit( EX_SYSTEM );
         }
 
-        options(argc, argv);
-
-        name_init(argc, argv);
+        options( argc, argv );
+        name_init( argc, argv );
 
 #if defined(MSDOS) && !defined(__NO_PHYS__)
-        if (f_phys) {
-                uprintf(ftty,"tar: archive on %dK drive %c\n",
-                        devsize/2, 'A' +  physdrv);
-                uprintf(ftty,"tar: insert %s disk in drive '%c' and press [Enter]: ",
-                        f_create? "formatted" : "first",
-                        'A' + physdrv);
-                while (ugetc(ftty)!='\n') ;
+        if( f_phys ) {
+            uprintf( ftty, "tar: archive on %dK drive %c\n", devsize / 2, 'A' +  physdrv );
+            uprintf( ftty, "tar: insert %s disk in drive '%c' and press [Enter]: ",
+                    f_create ? "formatted" : "first", 'A' + physdrv );
+            while( ugetc( ftty ) != '\n' ) {
+                ;
+            }
         }
 #endif
 
-        if (f_create) {
-                if (f_extract || f_list)
-                        goto dupflags;
-                create_archive();
-        } else if (f_extract) {
-                if (f_list)
-                        goto dupflags;
-                read_and(extract_archive);
-        } else if (f_list) {
-                read_and(list_archive);
+        if( f_create && !f_extract && !f_list ) {
+            create_archive();
+        } else if( !f_create && f_extract && !f_list ) {
+            read_and( extract_archive );
+        } else if( !f_create && !f_extract && f_list ) {
+            read_and( list_archive );
         } else {
-dupflags:
-                fprintf(stderr,
-                        "tar: you must specify exactly one of the c, t, or x options\n");
-                describe();
-                exit(EX_ARGSBAD);
+            fprintf( stderr,
+                    "tar: you must specify exactly one of the c, t, or x options\n" );
+            describe();
+            exit( EX_ARGSBAD );
         }
-        putchar('\n');
-        fflush(stdout);
+        putchar( '\n' );
+        fflush( stdout );
 #ifndef MSDOS
         sync(); /* insure all floppy buffers are written out */
 #endif
@@ -193,133 +189,109 @@ dupflags:
  */
 void options( int argc, char **argv )
 {
-        int    c;                      /* Option letter */
+    int    c;                           /* Option letter */
 
-        /* Set default option values */
-        blocking = DEFBLOCKING;         /* From Makefile */
-        ar_file = Str( DEF_AR_FILE );   /* From Makefile */
+    /* Set default option values */
+    blocking = DEFBLOCKING;             /* From Makefile */
+    ar_file = Str( DEF_AR_FILE );       /* From Makefile */
 
-        /* Parse options */
-        while ((c = getoldopt(argc, argv, "b:BcdDf:hikmopsS:tT:u:vV:xzZ")
-                ) != EOF)
-        {
-                switch (c)
-                {
-
-                case 'b':
-                        blocking = intconv(optarg);
-                        break;
-
-                case 'B':
-                        f_reblock++;            /* For reading 4.2BSD pipes */
-                        break;
-
-                case 'c':
-                        f_create++;
-                        break;
-
-                case 'd':
-                        f_debug++;                      /* Debugging code */
-                        break;                          /* Yes, even with dbx */
-
-                case 'D':
-                        f_sayblock++;           /* Print block #s for debug */
-                        break;                          /* of bad tar archives */
-
-                case 'f':
-                        ar_file = optarg;
-                        break;
-
-                case 'h':
-                        f_follow_links++;       /* follow symbolic links */
-                        break;
-
-                case 'i':
-                        f_ignorez++;            /* Ignore zero records (eofs) */
-
-                        /*
-                         * This can't be the default, because Unix tar writes two records
-                         * of zeros, then pads out the block with garbage.
-                         */
-                        break;
-
-                case 'k':                               /* Don't overwrite files */
-                        f_keep++;
-                        break;
-
-                case 'm':
-                        f_modified++;
-                        break;
-
-                case 'o':                               /* Generate old archive */
-                        f_oldarch++;
-                        break;
-
-                case 'p':
-                        f_use_protection++;
-                        (void) umask(0);        /* Turn off kernel "help" */
-                        break;
-
-                case 's':
-                        f_sorted_names++;       /* Names to extr are sorted */
-                        break;
+    /* Parse options */
+    while( (c = getoldopt( argc, argv, "b:BcdDf:hikmopsS:tT:u:vV:xzZ" ) ) != EOF ) {
+        switch( c ) {
+        case 'b':
+            blocking = intconv( optarg );
+            break;
+        case 'B':
+            f_reblock = true;           /* For reading 4.2BSD pipes */
+            break;
+        case 'c':
+            f_create = true;
+            break;
+        case 'd':
+            f_debug = true;             /* Debugging code */
+            break;                      /* Yes, even with dbx */
+        case 'D':
+            f_sayblock = true;          /* Print block #s for debug */
+            break;                      /* of bad tar archives */
+        case 'f':
+            ar_file = optarg;
+            break;
+        case 'h':
+            f_follow_links = true;      /* follow symbolic links */
+            break;
+        case 'i':
+            f_ignorez = true;           /* Ignore zero records (eofs) */
+            /*
+             * This can't be the default, because Unix tar writes two records
+             * of zeros, then pads out the block with garbage.
+             */
+            break;
+        case 'k':                       /* Don't overwrite files */
+            f_keep = true;
+            break;
+        case 'm':
+            f_modified = true;
+            break;
+        case 'o':                       /* Generate old archive */
+            f_oldarch = true;
+            break;
+        case 'p':
+            f_use_protection = true;
+            (void)umask( 0 );           /* Turn off kernel "help" */
+            break;
+        case 's':
+            f_sorted_names = true;      /* Names to extr are sorted */
+            break;
 #ifdef MSDOS
-                case 'S':
-                        devsize = atoi(optarg); /* size of DOS disk drive */
-                        devsize <<= 1;          /* convert K to blocks */
-                        break;
+        case 'S':
+            devsize = atoi( optarg );   /* size of DOS disk drive */
+            devsize <<= 1;              /* convert K to blocks */
+            break;
 #endif
-                case 't':
-                        f_list++;
-                        break;
-
-                case 'T':
-                        name_file = optarg;
-                        f_namefile++;
-                        break;
+        case 't':
+            f_list = true;
+            break;
+        case 'T':
+            name_file = optarg;
+            f_namefile = true;
+            break;
 #ifdef MSDOS
-                case 'u':
-                        addbinext(optarg);
-                        break;
+        case 'u':
+            addbinext( optarg );
+            break;
 #endif
-                case 'v':
-                        f_verbose++;
-                        break;
-#if defined(MSDOS) && !defined(__NO_PHYS__)
-                case 'V':
-                        f_phys++;
-                        physdrv = toupper(*optarg) - 'A';
-                        if (physdrv > 4 || physdrv < 0)
-                        {
-                                fprintf(stderr, "tar: drive letter for -V must be A-D\n");
-                                exit(EX_ARGSBAD);
-                        }
-                        break;
+        case 'v':
+            f_verbose = true;
+            break;
+#if defined( MSDOS ) && !defined( __NO_PHYS__ )
+        case 'V':
+            f_phys = true;
+            physdrv = toupper( *optarg ) - 'A';
+            if( physdrv > 4 || physdrv < 0 ) {
+                fprintf( stderr, "tar: drive letter for -V must be A-D\n" );
+                exit( EX_ARGSBAD );
+            }
+            break;
 #endif /* MSDOS */
-
-                case 'x':
-                        f_extract++;
-                        break;
-
-                case 'z':                               /* Easy to type */
-                case 'Z':                               /* Like the filename extension .Z */
+        case 'x':
+            f_extract = true;
+            break;
+        case 'z':                   /* Easy to type */
+        case 'Z':                   /* Like the filename extension .Z */
 #ifndef MSDOS
-                        f_compress++;
+            f_compress = true;
 #else
-                        fprintf(stderr, "Running compress as a subprocess is not supported under DOS.\n");
-                        fprintf(stderr, "Run compress separately instead, for same effect.\n");
+            fprintf( stderr, "Running compress as a subprocess is not supported under DOS.\n" );
+            fprintf( stderr, "Run compress separately instead, for same effect.\n" );
 #endif
-                        break;
-
-                default:
-                case '?':
-                        describe();
-                        exit(EX_ARGSBAD);
-
-                }
+            break;
+        default:
+        case '?':
+            describe();
+            exit( EX_ARGSBAD );
         }
-
-        blocksize = blocking * RECORDSIZE;
+    }
+    blocksize = blocking * RECORDSIZE;
 }
 
 
@@ -327,42 +299,44 @@ void options( int argc, char **argv )
 void describe( void )
 {
 
-        fputs("tar: valid options:\n\
--b N    blocking factor N (block size = Nx512 bytes)\n\
--B      reblock as we read (for reading 4.2BSD pipes)\n\
--c      create an archive\n\
--D      dump record number within archive with each message\n\
--f F    read/write archive from file or device F\n", stderr);
-        fputs("-h       don't dump symbolic links; dump the files they point to\n\
--i      ignore blocks of zeros in the archive, which normally mean EOF\n\
--k      keep existing files, don't overwrite them from the archive\n\
--m      don't extract file modified time\n\
--o      write an old V7 format archive, rather than ANSI [draft 6] format\n\
--p      do extract all protection information\n", stderr);
+    fputs( "tar: valid options:\n"
+"-b N    blocking factor N (block size = Nx512 bytes)\n"
+"-B      reblock as we read (for reading 4.2BSD pipes)\n"
+"-c      create an archive\n"
+"-D      dump record number within archive with each message\n"
+"-f F    read/write archive from file or device F\n", stderr );
+    fputs(
+"-h      don't dump symbolic links; dump the files they point to\n"
+"-i      ignore blocks of zeros in the archive, which normally mean EOF\n"
+"-k      keep existing files, don't overwrite them from the archive\n"
+"-m      don't extract file modified time\n"
+"-o      write an old V7 format archive, rather than ANSI [draft 6] format\n"
+"-p      do extract all protection information\n", stderr );
 #ifdef MSDOS
-        fputs("-S X     device for -V option is X Kbyte drive\n", stderr);
+    fputs(
+"-S X     device for -V option is X Kbyte drive\n", stderr );
 #endif
-        fputs("-s       list of names to extract is sorted to match the archive\n\
--t      list a table of contents of an archive\n\
--T F    get names to extract or create from file F\n", stderr);
+    fputs(
+"-s       list of names to extract is sorted to match the archive\n"
+"-t      list a table of contents of an archive\n"
+"-T F    get names to extract or create from file F\n", stderr );
 #ifdef MSDOS
-        fputs("\
--u X    add X to list of file extensions to be opened in BINARY mode\n\
-        (use '.' to denote 'files with no extension')\n\
--V X    use drive X (X=A..D) in multivolume mode; ignore -f if present\n",
-                stderr);
+    fputs(
+"-u X    add X to list of file extensions to be opened in BINARY mode\n"
+"        (use '.' to denote 'files with no extension')\n"
+"-V X    use drive X (X=A..D) in multivolume mode; ignore -f if present\n",
+        stderr);
 #endif
-        fputs("\
--v      verbosely list what files we process\n\
--x      extract files from an archive\n", stderr);
+    fputs(
+"-v      verbosely list what files we process\n"
+"-x      extract files from an archive\n", stderr);
 #ifndef MSDOS
-
-        /*
-         * regrettably, DOS doesn't have real pipes, just artificial shell-level
-         * ones.  It is better to just use those.
-         */
-        fputs("\
--z or Z run the archive through compress(1)\n", stderr);
+    /*
+     * regrettably, DOS doesn't have real pipes, just artificial shell-level
+     * ones.  It is better to just use those.
+     */
+    fputs(
+"-z or Z run the archive through compress(1)\n", stderr );
 #endif
 }
 
@@ -511,7 +485,7 @@ char* fixname( char *s )
              * prompt user for valid name, & check file existence, only if doing
              * an "extract" operation with stdin not redirected.
              */
-            if( f_extract && !access(buf, 0) ) {
+            if( f_extract && !access( buf, 0 ) ) {
                 uprintf( ftty, "tar: %s already exists\n", buf );
                 name_cnt = 3;
                 if( prd == 0 ) {
@@ -628,27 +602,25 @@ static void addbinext( char *s )
  */
 char *name_next( void )
 {
-        static char     buffer[NAMSIZ + 2];     /* Holding pattern */
-        char  *p;
-        char  *q;
+    static char     buffer[NAMSIZ + 2];     /* Holding pattern */
+    char            *p;
+    char            *q;
 
-        if (namef == NULL)
-        {
-                /* Names come from argv, after options */
-                if (optind < n_argc)
-                {
-                        return fixname(n_argv[optind++]);
-                }
-                return (char *) NULL;
+    if( namef == NULL ) {
+        /* Names come from argv, after options */
+        if( optind < n_argc ) {
+            return( fixname( n_argv[optind++] ) );
         }
-        p = fgets(buffer, NAMSIZ + 1 /* nl */ , namef);
-        if (p == NULL)
-                return p;                               /* End of file */
-        q = p + strlen(p) - 1;          /* Find the newline */
-        *q-- = '\0';                            /* Zap the newline */
-        while (*q == '/')
-                *q-- = '\0';                    /* Zap trailing slashes too */
-        return fixname(p);
+        return( NULL );
+    }
+    p = fgets( buffer, sizeof( buffer ) - 1 /* nl */, namef );
+    if( p == NULL )
+        return( p );                        /* End of file */
+    q = p + strlen( p ) - 1;                /* Find the newline */
+    *q-- = '\0';                            /* Zap the newline */
+    while( *q == '/' )
+        *q-- = '\0';                        /* Zap trailing slashes too */
+    return( fixname( p ) );
 }
 
 
@@ -658,9 +630,9 @@ char *name_next( void )
  */
 void name_close( void )
 {
-
-        if (namef != NULL && namef != stdin)
-                fclose(namef);
+    if( namef != NULL && namef != stdin ) {
+        fclose( namef );
+    }
 }
 
 
@@ -677,36 +649,30 @@ void name_close( void )
  */
 void name_gather( void )
 {
-        char  *p;
-        static struct name namebuff[1];         /* One-name buffer */
-        struct name *namebuf = namebuff;
+    char                *p;
+    static struct name  namebuff[1];         /* One-name buffer */
+    struct name         *namebuf = namebuff;
 
-        if (f_sorted_names)
-        {
-                p = name_next();
-                if (p)
-                {
-                        namebuf->length = strlen(p);
-                        if (namebuf->length >= sizeof namebuf->name)
-                        {
-                                fprintf(stderr, "Argument name too long: %s\n",
-                                        p);
-                                namebuf->length = (sizeof namebuf->name) - 1;
-                        }
-                        strncpy(namebuf->name, p, namebuf->length);
-                        namebuf->next = (struct name *) NULL;
-                        namebuf->found = 0;
-                        namelist = namebuf;
-                        namelast = namelist;
-                }
-                return;
+    if( f_sorted_names ) {
+        p = name_next();
+        if( p != NULL ) {
+            namebuf->length = strlen( p );
+            if( namebuf->length >= NAMSIZ ) {
+                fprintf( stderr, "Argument name too long: %s\n", p );
+                namebuf->length = NAMSIZ - 1;
+            }
+            strncpy( namebuf->name, p, namebuf->length );
+            namebuf->next = NULL;
+            namebuf->found = 0;
+            namelist = namebuf;
+            namelast = namelist;
         }
-
+    } else {
         /* Non sorted names -- read them all in */
-        while (NULL != (p = name_next()))
-        {
-                addname(p);
+        while( NULL != (p = name_next()) ) {
+            addname(p);
         }
+    }
 }
 
 
@@ -715,23 +681,23 @@ void name_gather( void )
  */
 static void addname( char *name )
 {
-        int    i;                      /* Length of string */
-        struct name *p;        /* Current struct pointer */
+    size_t          len;            /* Length of string */
+    struct name     *p;             /* Current struct pointer */
 
-        i = strlen(name);
-        /* NOSTRICT */
-        p = (struct name *)
-                malloc((unsigned) (i + sizeof(struct name) - NAMSIZ));
-        p->next = (struct name *) NULL;
-        p->length = i;
-        p->found = 0;
-        strncpy(p->name, name, i);
-        p->name[i] = '\0';                      /* Null term */
-        if (namelast)
-                namelast->next = p;
-        namelast = p;
-        if (!namelist)
-                namelist = p;
+    len = strlen( name );
+    /* NOSTRICT */
+    p = (struct name *)malloc( len + sizeof( struct name ) - NAMSIZ );
+    p->next = (struct name *)NULL;
+    p->length = len;
+    p->found = 0;
+    strncpy( p->name, name, len );
+    p->name[len] = '\0';        /* Null term */
+    if( namelast )
+        namelast->next = p;
+    namelast = p;
+    if( !namelist ) {
+        namelist = p;
+    }
 }
 
 
@@ -742,24 +708,21 @@ static void addname( char *name )
  */
 int name_match( char *p )
 {
-        struct name *nlp;
-        int    len;
+    struct name     *nlp;
+    size_t          len;
 
-again:
-        if (0 == (nlp = namelist))      /* Empty namelist is easy */
-                return 1;
-        len = strlen(p);
-        for (; nlp != 0; nlp = nlp->next)
-        {
-                if (nlp->name[0] == p[0]/* First chars match */
-                        && nlp->length <= len           /* Archive len >= specified */
-                        && (p[nlp->length] == '\0' || p[nlp->length] == '/')
-                /* Full match on file/dirname */
-                        && strncmp(p, nlp->name, nlp->length) == 0)     /* Name compare */
-                {
-                        nlp->found = 1;         /* Remember it matched */
-                        return 1;                       /* We got a match */
-                }
+    len = strlen( p );
+    for( ; namelist != NULL; ) {
+        for( nlp = namelist; nlp != 0; nlp = nlp->next ) {
+            if( nlp->name[0] == p[0]        /* First chars match */
+                && nlp->length <= len       /* Archive len >= specified */
+                && ( p[nlp->length] == '\0' || p[nlp->length] == '/' )
+            /* Full match on file/dirname */
+                && strncmp( p, nlp->name, nlp->length ) == 0 )     /* Name compare */
+            {
+                nlp->found = 1;             /* Remember it matched */
+                return 1;                   /* We got a match */
+            }
         }
 
         /*
@@ -768,13 +731,14 @@ again:
          * compare it. If this was the last name, namelist->found will remain on.
          * If not, we loop to compare the newly read name.
          */
-        if (f_sorted_names && namelist->found)
-        {
-                name_gather();                  /* Read one more */
-                if (!namelist->found)
-                        goto again;
+        if( !f_sorted_names || namelist->found == 0 )
+            return 0;
+        name_gather();                  /* Read one more */
+        if( namelist->found ) {
+            return 0;
         }
-        return 0;
+    }
+    return 1;
 }
 
 
@@ -783,33 +747,30 @@ again:
  */
 void names_notfound( void )
 {
-        struct name *nlp;
-        char  *p;
+    struct name *nlp;
+    char        *p;
 
-        for (nlp = namelist; nlp != 0; nlp = nlp->next)
-        {
-                if (!nlp->found)
-                {
-                        fprintf(stderr, "tar: %s not found in archive\n",
-                                nlp->name);
-                }
-
-                /*
-                 * We could free() the list, but the process is about to die anyway,
-                 * so save some CPU time.  Amigas and other similarly broken software
-                 * will need to waste the time, though.
-                 */
-#ifndef unix
-                if (!f_sorted_names)
-                        free(nlp);
+    for( nlp = namelist; nlp != 0; nlp = nlp->next ) {
+        if( !nlp->found ) {
+            fprintf( stderr, "tar: %s not found in archive\n", nlp->name );
+        }
+        /*
+         * We could free() the list, but the process is about to die anyway,
+         * so save some CPU time.  Amigas and other similarly broken software
+         * will need to waste the time, though.
+         */
+#if !defined( unix )
+        if( !f_sorted_names ) {
+            free( nlp );
+        }
 #endif /* unix */
-        }
-        namelist = (struct name *) NULL;
-        namelast = (struct name *) NULL;
+    }
+    namelist = (struct name *)NULL;
+    namelast = (struct name *)NULL;
 
-        if (f_sorted_names)
-        {
-                while (0 != (p = name_next()))
-                        fprintf(stderr, "tar: %s not found in archive\n", p);
+    if( f_sorted_names ) {
+        while( 0 != (p = name_next()) ) {
+            fprintf( stderr, "tar: %s not found in archive\n", p );
         }
+    }
 }

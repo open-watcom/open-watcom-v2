@@ -36,6 +36,7 @@
 //
 
 #include "ftnstd.h"
+#include <string.h>
 #include "rundat.h"
 #include "target.h"
 #include "expchk.h"
@@ -45,9 +46,6 @@
 #include "rfmtutil.h"
 #include "rfmtlog.h"
 #include "undefcg.h"
-
-#include <stdlib.h>
-#include <string.h>
 
 
 static  void    FmtFloat( char *buff, extended value, int digits, char ch ) {

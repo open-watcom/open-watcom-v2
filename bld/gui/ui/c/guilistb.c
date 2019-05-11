@@ -66,7 +66,7 @@ bool GUIListBoxDeleteItem( a_list *list, int choice )
     int         num_items;
     lb_data     old_data;
     lb_data     new_data;
-    int         item;
+    int         i;
 
     num_items = GUIListSize( list );
     if( choice >= num_items ) {
@@ -77,12 +77,12 @@ bool GUIListBoxDeleteItem( a_list *list, int choice )
         return( false );
     }
     old_data = (lb_data)list->data_handle;
-    for( item = 0; item < choice; item++ ) {
-        new_data[item] = old_data[item];
+    for( i = 0; i < choice; i++ ) {
+        new_data[i] = old_data[i];
     }
     GUIMemFree( (void *)old_data[choice] );
-    for( item = choice; item < num_items; item++ ) {
-        new_data[item] = old_data[item + 1];
+    for( i = choice; i < num_items; i++ ) {
+        new_data[i] = old_data[i + 1];
     }
     GUIMemFree( (void *)old_data );
     list->data_handle = (const void *)new_data;
@@ -96,13 +96,13 @@ bool GUIListBoxDeleteItem( a_list *list, int choice )
 void GUIFreeList( a_list *list, bool free_list )
 {
     int         num_items;
-    int         item;
+    int         i;
     lb_data     data;
 
     num_items = GUIListSize( list );
     data = (lb_data)list->data_handle;
-    for( item = 0; item < num_items; item++ ) {
-        GUIMemFree( (void *)data[item] );
+    for( i = 0; i < num_items; i++ ) {
+        GUIMemFree( (void *)data[i] );
     }
     GUIMemFree( (void *)data );
     list->choice = 0;
@@ -248,7 +248,7 @@ bool GUIListBoxAddText( a_list *list, const char *text, int choice )
 
 bool GUIListBoxAddTextList( a_list *list, int num_items, const void *data_handle, GUIPICKGETTEXT *getstring )
 {
-    int         item;
+    int         i;
     lb_data     old_data;
     lb_data     new_data;
     int         choice;
@@ -259,8 +259,8 @@ bool GUIListBoxAddTextList( a_list *list, int num_items, const void *data_handle
     if( new_data == NULL ) {
         return( false );
     }
-    for( item = 0; item < num_items; ++item ) {
-        if( !AddString( new_data, getstring( data_handle, item ), choice + item ) ) {
+    for( i = 0; i < num_items; i++ ) {
+        if( !AddString( new_data, getstring( data_handle, i ), choice + i ) ) {
             return( false );
         }
     }

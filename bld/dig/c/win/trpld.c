@@ -179,7 +179,7 @@ bool TrapTellHWND( HWND hwnd )
     return( false );
 }
 
-void TrapInputHook( hook_fn *hookfn )
+void TrapInputHook( event_hook_fn *hookfn )
 {
     TRAPENTRY_PTR_NAME( InputHook )( hookfn );
 }

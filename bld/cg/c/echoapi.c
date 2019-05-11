@@ -361,10 +361,10 @@ cg_name EchoAPICgnameReturn     // EchoAPI cg_name RETURN VALUE
 }
 
 call_handle EchoAPICallHandleReturn // EchoAPI call_handle RETURN VALUE
-    ( call_handle retn )            // - call_handle value
+    ( call_handle call )            // - call_handle value
 {
-    EchoAPI( " -> %C\n", retn );
-    return( retn );
+    EchoAPI( " -> %C\n", call );
+    return( call );
 }
 
 cg_type EchoAPICgtypeReturn     // EchoAPI cg_type RETURN VALUE

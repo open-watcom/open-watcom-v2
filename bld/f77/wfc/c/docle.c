@@ -35,7 +35,6 @@
 //
 
 #include "ftnstd.h"
-#include <stdlib.h>
 #include <string.h>
 #include <time.h>
 #include "global.h"

@@ -222,18 +222,18 @@ LRESULT CALLBACK SpyWindowProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
     bool        pausestate;
     bool        spyallstate;
     about_info  ai;
-    HMENU       mh;
+    HMENU       hmenu;
 
     switch( msg ) {
     case WM_CREATE:
         GetClientRect( hwnd, &area );
-        mh = GetMenu( hwnd );
+        hmenu = GetMenu( hwnd );
         area.top = area.bottom - statusHite;
         StatusHdl = HintWndCreate( hwnd, &area, Instance, NULL );
         statusHite = SizeHintBar( StatusHdl );
         SetHintsText( StatusHdl, menuHints, sizeof( menuHints ) / sizeof( MenuItemHint ) );
         if( SpyMainWndInfo.show_hints ) {
-            CheckMenuItem( mh, SPY_SHOW_HELP, MF_CHECKED | MF_BYCOMMAND );
+            CheckMenuItem( hmenu, SPY_SHOW_HELP, MF_CHECKED | MF_BYCOMMAND );
         } else {
             hinthwnd = GetHintHwnd( StatusHdl );
             ShowWindow( hinthwnd, SW_HIDE );
@@ -242,14 +242,14 @@ LRESULT CALLBACK SpyWindowProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
         SET_WNDINFO( hwnd, (LONG_PTR)SpyListBox );
         CreateSpyTool( hwnd );
         ShowSpyTool( SpyMainWndInfo.show_toolbar );
-        CheckMenuItem( mh, SPY_SHOW_TOOLBAR, MF_BYCOMMAND | (( SpyMainWndInfo.show_toolbar ) ? MF_CHECKED : MF_UNCHECKED) );
+        CheckMenuItem( hmenu, SPY_SHOW_TOOLBAR, MF_BYCOMMAND | (( SpyMainWndInfo.show_toolbar ) ? MF_CHECKED : MF_UNCHECKED) );
         LogInit( hwnd, Instance, LogSpyBoxHeader );
         CheckMenuItem( SpyMenu, SPY_AUTO_SCROLL, MF_CHECKED );
         EnableMenuItem( SpyMenu, SPY_ADD_WINDOW, MF_GRAYED );
         EnableMenuItem( SpyMenu, SPY_STOP, MF_GRAYED );
         EnableMenuItem( SpyMenu, SPY_OFFON, MF_GRAYED );
         if( SpyMainWndInfo.on_top ) {
-            CheckMenuItem( mh, SPY_TOP, MF_CHECKED | MF_BYCOMMAND );
+            CheckMenuItem( hmenu, SPY_TOP, MF_CHECKED | MF_BYCOMMAND );
             SetWindowPos( hwnd, HWND_TOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE );
         }
         break;
@@ -292,13 +292,13 @@ LRESULT CALLBACK SpyWindowProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
         switch( cmdid ) {
         case SPY_SHOW_HELP:
             SpyMainWndInfo.show_hints = !SpyMainWndInfo.show_hints;
-            mh = GetMenu( hwnd );
+            hmenu = GetMenu( hwnd );
             hinthwnd = GetHintHwnd( StatusHdl );
             if( SpyMainWndInfo.show_hints ) {
-                CheckMenuItem( mh, SPY_SHOW_HELP, MF_CHECKED | MF_BYCOMMAND );
+                CheckMenuItem( hmenu, SPY_SHOW_HELP, MF_CHECKED | MF_BYCOMMAND );
                 showHintBar( hwnd );
             } else {
-                CheckMenuItem( mh, SPY_SHOW_HELP, MF_UNCHECKED | MF_BYCOMMAND );
+                CheckMenuItem( hmenu, SPY_SHOW_HELP, MF_UNCHECKED | MF_BYCOMMAND );
                 ShowWindow( hinthwnd, SW_HIDE );
             }
             GetClientRect( hwnd, &area );
@@ -306,21 +306,21 @@ LRESULT CALLBACK SpyWindowProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
             break;
         case SPY_SHOW_TOOLBAR:
             SpyMainWndInfo.show_toolbar = !SpyMainWndInfo.show_toolbar;
-            mh = GetMenu( hwnd );
+            hmenu = GetMenu( hwnd );
             ShowSpyTool( SpyMainWndInfo.show_toolbar );
-            CheckMenuItem( mh, SPY_SHOW_TOOLBAR, MF_BYCOMMAND | (( SpyMainWndInfo.show_toolbar ) ? MF_CHECKED : MF_UNCHECKED) );
+            CheckMenuItem( hmenu, SPY_SHOW_TOOLBAR, MF_BYCOMMAND | (( SpyMainWndInfo.show_toolbar ) ? MF_CHECKED : MF_UNCHECKED) );
             GetClientRect( hwnd, &area );
             ResizeSpyBox( area.right - area.left, area.bottom - area.top );
             break;
         case SPY_TOP:
             SpyMainWndInfo.on_top = !SpyMainWndInfo.on_top;
-            mh = GetMenu( hwnd );
+            hmenu = GetMenu( hwnd );
             if( SpyMainWndInfo.on_top ) {
-                CheckMenuItem( mh, SPY_TOP, MF_CHECKED | MF_BYCOMMAND );
+                CheckMenuItem( hmenu, SPY_TOP, MF_CHECKED | MF_BYCOMMAND );
                 SetWindowPos( hwnd, HWND_TOPMOST, 0, 0, 0, 0,
                               SWP_NOMOVE | SWP_NOSIZE );
             } else {
-                CheckMenuItem( mh, SPY_TOP, MF_UNCHECKED | MF_BYCOMMAND );
+                CheckMenuItem( hmenu, SPY_TOP, MF_UNCHECKED | MF_BYCOMMAND );
                 SetWindowPos( hwnd, HWND_NOTOPMOST, 0, 0, 0, 0,
                               SWP_NOMOVE | SWP_NOSIZE );
             }

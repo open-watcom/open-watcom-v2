@@ -566,7 +566,7 @@ static bool SPRValidate( int_32 spr ) {
 
     if( (spr & 0x3ff) != spr )
         return( false );
-    n = sizeof( SPRChkList ) / sizeof( SPRChkList[0] );
+    n = ArraySize( SPRChkList );
     for( ctr = 0; !status && ctr < n; ++ctr ) {
         status = ( spr == SPRChkList[ ctr ] );
     }

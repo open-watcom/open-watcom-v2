@@ -30,12 +30,6 @@
 ****************************************************************************/
 
 
-#define DIALOG_AYN 3003
+#include "dlgayn.rh"
 
-#define CTL_AYN_NO_WAY 102
-#define CTL_AYN_YES 100
-#define CTL_AYN_NO 101
-
-#ifndef RC
 extern bool DlgAreYouNuts( unsigned long mult );
-#endif

@@ -40,8 +40,6 @@
 #include "guixwind.h"
 
 
-static int init_rgb = 0;
-
 WPI_COLOUR GUIColours[] = {
 #ifdef __OS2_PM__
 //      R G B
@@ -140,8 +138,8 @@ bool GUIGetWndColour( gui_window *wnd, gui_attr attr, gui_colour_set *colour_set
         return( false );
     }
     if( attr < wnd->num_attrs ) {
-        colour_set->fore = wnd->colours[attr].fore;
-        colour_set->back = wnd->colours[attr].back;
+        colour_set->fore = WNDATTRFG( wnd, attr );
+        colour_set->back = WNDATTRBG( wnd, attr );
         return( true );
     }
     return( false );
@@ -149,12 +147,14 @@ bool GUIGetWndColour( gui_window *wnd, gui_attr attr, gui_colour_set *colour_set
 
 static void SetBKBrush( gui_window *wnd )
 {
-    if( !init_rgb ) {
+    static bool sys_rgb_initialized = false;
+
+    if( !sys_rgb_initialized ) {
         InitSystemRGB();
-        init_rgb = 1;
+        sys_rgb_initialized = true;
     }
 
-    GUIGetRGB( wnd->colours[GUI_BACKGROUND].back, &wnd->bk_rgb );
+    GUIGetRGB( WNDATTRBG( wnd, GUI_BACKGROUND ), &wnd->bk_rgb );
     wnd->bk_brush = _wpi_createsolidbrush(GUIGetBack( wnd, GUI_BACKGROUND ));
 }
 
@@ -196,8 +196,8 @@ bool GUISetWndColour( gui_window *wnd, gui_attr attr, gui_colour_set *colour_set
         return( false );
     }
     if( attr < wnd->num_attrs ) {
-        wnd->colours[attr].fore = colour_set->fore;
-        wnd->colours[attr].back = colour_set->back;
+        WNDATTRFG( wnd, attr ) = colour_set->fore;
+        WNDATTRBG( wnd, attr ) = colour_set->back;
         if( attr == GUI_BACKGROUND ) {
             ChangeBKBrush( wnd );
         }
@@ -209,8 +209,8 @@ bool GUISetWndColour( gui_window *wnd, gui_attr attr, gui_colour_set *colour_set
 bool GUIGetRGBFromUser( gui_rgb init_rgb, gui_rgb *new_rgb )
 {
 #ifdef __OS2_PM__
-    init_rgb = init_rgb;
-    new_rgb = new_rgb;
+    /* unused parameters */ (void)init_rgb; (void)new_rgb;
+
     return( false );
 #else
     CHOOSECOLOR     choose;
@@ -260,6 +260,7 @@ bool GUIGetRGBFromUser( gui_rgb init_rgb, gui_rgb *new_rgb )
     if( guiColoursAlias != 0 ) {
         FreeAlias16( guiColoursAlias );
     }
+    FreeIndirectFunctionHandle( hIndir );
   #else
     ret = ((BOOL(WINAPI *)(LPCHOOSECOLOR))func)( &choose ) != 0;
   #endif
@@ -285,7 +286,7 @@ bool GUIXSetColours( gui_window *wnd, int num_attrs, gui_colour_set *colours )
         size = sizeof( gui_colour_set ) * num_attrs;
         attrs = (gui_colour_set *)GUIMemAlloc( size );
         if( attrs != NULL ) {
-            wnd->colours = attrs;
+            wnd->attrs = attrs;
             wnd->num_attrs = num_attrs;
             memcpy( attrs, colours, size );
             SetBKBrush( wnd );
@@ -297,7 +298,7 @@ bool GUIXSetColours( gui_window *wnd, int num_attrs, gui_colour_set *colours )
 
 void GUIXGetWindowColours( gui_window *wnd, gui_colour_set *colours )
 {
-    memcpy( colours, wnd->colours, sizeof( gui_colour_set ) * wnd->num_attrs );
+    memcpy( colours, wnd->attrs, sizeof( gui_colour_set ) * wnd->num_attrs );
 }
 
 HBRUSH GUIFreeBKBrush( gui_window * wnd )
@@ -329,10 +330,10 @@ void GUISetWindowColours( gui_window *wnd, int num_colours,
 
 WPI_COLOUR GUIGetFore( gui_window *wnd, gui_attr attr )
 {
-    return( GUIColours[wnd->colours[attr].fore] );
+    return( GUIColours[WNDATTRFG( wnd, attr )] );
 }
 
 WPI_COLOUR GUIGetBack( gui_window *wnd, gui_attr attr )
 {
-    return( GUIColours[wnd->colours[attr].back] );
+    return( GUIColours[WNDATTRBG( wnd, attr )] );
 }

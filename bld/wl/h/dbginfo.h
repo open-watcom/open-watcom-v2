@@ -43,7 +43,7 @@ typedef struct {
 } dbi_section;
 
 
-typedef struct debug_info {
+typedef struct {
     dbi_section     locallinks;
     dbi_section     local;
     dbi_section     typelinks;
@@ -59,7 +59,7 @@ typedef struct debug_info {
     class_entry     *TypeClass;
 } debug_info;
 
-typedef struct lineseg {
+typedef struct {
     unsigned_32         segment;
     unsigned_16         num;
 } lineseg;

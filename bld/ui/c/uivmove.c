@@ -40,7 +40,7 @@ void UIAPI uivmoveblock( VSCREEN *vptr, SAREA area, int drow, int dcol )
     ORD             row;
 
     okopen( vptr );
-    bptr = &(vptr->window.type.buffer);
+    bptr = &(vptr->window.buffer);
     if( area.row + drow < 0 ) {
         area.height += area.row + drow;
         area.row = -drow;

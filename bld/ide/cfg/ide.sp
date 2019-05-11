@@ -1408,9 +1408,17 @@ Tool ESQLP "ESQL/C++ compiler"
 Tool IMAGEEDIT "Image Editor"
   Family ImageEditor
     CSwitch 0, o????, " run", iconedit, ON
+:segment FOR_X64
+    CSwitch 0, ????n, " run", "$(%watcom)\\binnt64\\wimgedit /n", ON
+:elsesegment
     CSwitch 0, ????n, " run", "$(%watcom)\\binnt\\wimgedit /n", ON
+:endsegment
     CSwitch 0, ????a, " run", "$(%watcom)\\axpnt\\wimgedit /n", ON
+:segment FOR_X64
+    CSwitch 0, ????9, " run", "$(%watcom)\\binnt64\\wimgedit /n", ON
+:elsesegment
     CSwitch 0, ????9, " run", "$(%watcom)\\binnt\\wimgedit /n", ON
+:endsegment
     CSwitch 0, ?????, " run", "$(%watcom)\\binw\\wimgedit /n", ON
 ::
 :segment !C_FOR_PB

@@ -308,7 +308,7 @@ setupterm( NCURSES_CONST char *tname, int Filedes, int *errret )
     START_TRACE();
     T((T_CALLED("setupterm(%s,%d,%p)"), _nc_visbuf(tname), Filedes, errret));
 
-    if( tname == NULL ) {
+    if( tname == NULL || *tname == '\0' ) {
         tname = getenv( "TERM" );
         if( tname == NULL || *tname == '\0' ) {
             ret_error0( -1, "TERM environment variable not set.\n" );

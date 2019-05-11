@@ -72,7 +72,7 @@ typedef unsigned_32     db_handle;
 
 typedef union vi {
     struct com_eq       *ec_ext;        // common/equivalence extension
-    segment_id          seg_id;         //   variables not in common/equivalence
+    segment_id          segid;          //   variables not in common/equivalence
     void                *alt_scb;       // SCB for character arguments
     unsigned short      cg_typ;         // cg-type for local character
 } vi;
@@ -89,15 +89,15 @@ typedef struct var {
 // ===========================================
 
 typedef struct common_block {
-    sym_id      first;                  // first symbol in common list
-    segment_id  seg_id;                 // segment id of common block
+    sym_id              first;          // first symbol in common list
+    segment_id          segid;          // segment id of common block
 } common_block;
 
 // symbol table information for parameter constants:
 // =================================================
 
 typedef struct p_constant {
-    sym_id       value;                 // point to value (constant or literal)
+    sym_id              value;          // point to value (constant or literal)
 } p_constant;
 
 // symbol table information for subprograms:
@@ -106,7 +106,7 @@ typedef struct p_constant {
 typedef struct subprog {
     union {
         label_id        entry;          // entry label
-        segment_id      imp_segid;      // segment id for external subprograms
+        segment_id      segid;          // segment id for external subprograms
     } u;
     void                *alt_scb;       // SCB for character*(*) functions
 } subprog;
@@ -118,7 +118,7 @@ typedef struct i_function {
     IFF                 index;          // intrinsic function index
     union {
         int             num_args;       // number of arguments
-        segment_id      imp_segid;      // segment id for intrinsic function
+        segment_id      segid;          // segment id for intrinsic function
     } u;
 } i_function;
 

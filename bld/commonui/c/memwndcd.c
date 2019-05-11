@@ -31,6 +31,7 @@
 
 
 #include "commonui.h"
+#include <stdio.h>
 #include <string.h>
 #include <io.h>
 #include <ctype.h>

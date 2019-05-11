@@ -978,7 +978,7 @@ extern void DirInit( void )
     sym_handle  sym;
     int         i, n;
 
-    n = sizeof( asm_directives ) / sizeof( asm_directives[0] );
+    n = ArraySize( asm_directives );
     for( i = 0; i < n; i++ ) {
         curr = &asm_directives[i];
         sym = SymAdd( curr->name, SYM_DIRECTIVE );

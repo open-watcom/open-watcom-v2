@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
+* Copyright (c) 2019-2019 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -24,12 +24,13 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Memory allocator with optional tracking.
 *
 ****************************************************************************/
 
 
-void MemFree( void *ptr );
-void *MemAlloc( size_t size );
-void *MemReAlloc( void *ptr, size_t size );
+#include "cguimem.h"
+
+
+extern void     MemOpen( void );
+extern void     MemClose( void );

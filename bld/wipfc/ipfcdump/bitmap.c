@@ -2,7 +2,6 @@
 
 #include <ctype.h>
 #include <string.h>
-#include <stdlib.h>
 #include "ipfcdump.h"
 
 #define FILEBITMAP

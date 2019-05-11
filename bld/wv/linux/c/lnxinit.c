@@ -43,18 +43,21 @@
 #include "dbgmain.h"
 #include "dbginit.h"
 #include "dbgcmdln.h"
+#include "dbgscrn.h"
+#ifndef __NOUI__
+#include "aui.h"
+#endif
 
 #ifdef __WATCOMC__
 #include "clibint.h"
 #endif
+
 
 #ifdef __WATCOMC__
 unsigned char   _8087 = 0;
 unsigned char   _real87 = 0;
 #endif
 
-
-extern int      DbgConHandle; /* Debugger console file handle */
 extern char     **_argv;
 extern int      _argc;
 
@@ -72,6 +75,8 @@ extern  void    __sigabort( void );
 /* following are to stop the C library from hauling in stuff we don't want */
 void (*__abort)(void);
 void __sigabort( void ) {}
+
+#ifndef __NOUI__
 
 static void BrkHandler( int signo )
 {
@@ -101,11 +106,11 @@ void GUImain( void )
 }
 
 
-int GUISysInit( int param )
+bool GUISysInit( init_mode install )
 {
-    /* unused parameters */ (void)param;
+    /* unused parameters */ (void)install;
 
-    return( 1 );
+    return( true );
 }
 
 void GUISysFini( void  )
@@ -116,6 +121,8 @@ void GUISysFini( void  )
 void WndCleanUp( void )
 {
 }
+
+#endif
 
 char *GetCmdArg( int num )
 {
@@ -187,6 +194,7 @@ long _fork( const char *cmd, size_t len )
         dup2( DbgConHandle, 1 );
         dup2( DbgConHandle, 2 );
         close( DbgConHandle );
+        DbgConHandle = -1;
         setsid();
 #if defined( __UNIX__ ) && !defined( __WATCOMC__ )
         execve( shell, (char * const *)argv, (char * const *)environ );
@@ -195,16 +203,11 @@ long _fork( const char *cmd, size_t len )
 #endif
         exit( 1 );
     } else {
-        fcntl( DbgConHandle, F_SETFD, (int)FD_CLOEXEC );
+        fcntl( DbgConHandle, F_SETFD, FD_CLOEXEC );
         if( pid == -1 )
             return( 0xffff0000 | errno );
         do {
         } while( waitpid( pid, NULL, 0 ) == -1 && errno == EINTR );
     }
     return 0;
-}
-
-bool SysGUI( void )
-{
-    return( false );
 }

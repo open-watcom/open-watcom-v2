@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -24,7 +25,7 @@
 *
 *  ========================================================================
 *
-* Description:  Tool for changing LNAMES entries and modify 
+* Description:  Tool for changing LNAMES entries and modify
 *               EXTDEF/PUBDEF based on a pattern.
 *
 ****************************************************************************/
@@ -500,7 +501,7 @@ static int process_symbol_file( char *filename )
 
     if( filename != NULL ) {
         fp = fopen( filename, "rt" );
-        while( fgets( line, MAX_LINE_LEN , fp ) != NULL ) {
+        while( fgets( line, sizeof( line ), fp ) != NULL ) {
             p = line + strlen( line );
             while( p >= line ) {
                 if( ( *p == '\0' )

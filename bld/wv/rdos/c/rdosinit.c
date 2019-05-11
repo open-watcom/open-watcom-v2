@@ -32,7 +32,6 @@
 #include <process.h>
 #include <stddef.h>
 #include <stdlib.h>
-#include <malloc.h>
 #include <direct.h>
 #include <stdarg.h>
 #include "rdos.h"
@@ -49,6 +48,8 @@
 #include "clibint.h"
 
 static char       CmdData[256];
+
+#ifndef __NOUI__
 
 void GUImain( void )
 {
@@ -70,10 +71,11 @@ void GUImain( void )
 }
 
 
-int GUISysInit( int param )
+bool GUISysInit( init_mode install )
 {
-    param=param;
-    return( 1 );
+    /* unused parameters */ (void)install;
+
+    return( true );
 }
 
 void GUISysFini( void  )
@@ -84,6 +86,8 @@ void GUISysFini( void  )
 void WndCleanUp( void )
 {
 }
+
+#endif
 
 char *GetCmdArg( int num )
 {

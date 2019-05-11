@@ -3200,3 +3200,15 @@ objs_wipfc = &
 ../doc/wipfc/userdoc.gml &
 ../doc/wipfc/warning.gml &
 ../doc/wipfc/xmp.gml
+
+# wpidoc sub-directory
+incs_wpidoc = ../../bld/wpi/doc
+objs_wpidoc = &
+../../bld/wpi/doc/wpidoc.gml &
+../../bld/wpi/doc/wpi.gml
+
+# fmedidoc sub-directory
+incs_fmedidoc = ../../bld/sdk/fmedit/doc
+objs_fmedidoc = &
+../../bld/sdk/fmedit/doc/fmedidoc.gml &
+../../bld/sdk/fmedit/doc/fmedit.gml

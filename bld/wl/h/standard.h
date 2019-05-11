@@ -36,8 +36,14 @@
 #include "bool.h"
 #include "iopath.h"
 
-#define NLCHAR         '\n'
-#define CTRLZ          '\32'
+#define NLCHAR          '\n'
+#define CTRLZ           '\32'
+
+#ifdef _M_I86
+#define CONSTU32(x)     x ## UL
+#else
+#define CONSTU32(x)     x ## U
+#endif
 
 /* round up by a power of 2 */
 #define ROUND_UP( x, r )        (((x)+((r)-1))&~((r)-1))

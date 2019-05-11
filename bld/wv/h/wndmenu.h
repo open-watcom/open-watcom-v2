@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,11 +33,12 @@
 #include "wndmenu1.h"
 
 
+extern gui_menu_items   WndMainMenuMacro;
 extern wnd_info         *WndInfoTab[];
 extern const char       MainTab[];
 
 extern void             PlayDead( bool dead );
-extern char             *GetMenuLabel( int num_items, gui_menu_struct *menu, gui_ctl_id id, char *buff, bool strip_amp );
+extern char             *GetMenuLabel( const gui_menu_items *menus, gui_ctl_id id, char *buff, bool strip_amp );
 #ifdef DEADCODE
 extern int              FindMenuLen( gui_menu_struct *child );
 #endif

@@ -39,6 +39,8 @@
 #include "cmd16m.h"
 #include "wlnkmsg.h"
 
+#include "clibext.h"
+
 
 extern bool ProcMemory16M( void )
 /*******************************/
@@ -99,7 +101,7 @@ extern bool ProcTData( void )
         LnkMsg( LOC+LINE+WRN+MSG_TRANS_RELOCS_NEEDED, NULL );
     }
     FmtData.u.d16m.flags |= TRANS_DATA;
-    LinkState |= MAKE_RELOCS;
+    LinkState |= LS_MAKE_RELOCS;
     return( true );
 }
 
@@ -161,7 +163,7 @@ extern bool ProcAuto( void )
         LnkMsg( LOC+LINE+WRN+MSG_BOTH_RELOC_OPTIONS, NULL );
     }
     FmtData.u.d16m.options |= OPT_AUTO;
-    LinkState |= MAKE_RELOCS;
+    LinkState |= LS_MAKE_RELOCS;
     return( true );
 }
 
@@ -205,14 +207,14 @@ extern bool ProcRelocs( void )
     if( FmtData.u.d16m.flags & FORCE_NO_RELOCS ) {
         LnkMsg( LOC+LINE+WRN+MSG_BOTH_RELOC_OPTIONS, NULL );
     }
-    LinkState |= MAKE_RELOCS;
+    LinkState |= LS_MAKE_RELOCS;
     return( true );
 }
 
 extern bool Proc16MNoRelocs( void )
 /*********************************/
 {
-    if( LinkState & MAKE_RELOCS ) {
+    if( LinkState & LS_MAKE_RELOCS ) {
         LnkMsg( LOC+LINE+WRN+MSG_BOTH_RELOC_OPTIONS, NULL );
     } else {
         FmtData.u.d16m.flags |= FORCE_NO_RELOCS;
@@ -255,6 +257,19 @@ extern bool ProcExtended( void )
     return( true );
 }
 
+extern bool ProcExpName( void )
+/*****************************/
+{
+    if( !HaveEquals( TOK_INCLUDE_DOT | TOK_IS_FILENAME ) )
+        return( false );
+    if( FmtData.u.d16m.exp_name != NULL ) {
+        _LnkFree( FmtData.u.d16m.exp_name );
+    }
+    FmtData.u.d16m.exp_name = FileName( Token.this, Token.len, E_PROTECT, true );     // just keep the name around for now.
+    strupr( FmtData.u.d16m.exp_name );
+    return( true );
+}
+
 extern bool ProcDataSize( void )
 /******************************/
 {
@@ -274,7 +289,7 @@ extern bool ProcDataSize( void )
 extern void SetD16MFmt( void )
 /****************************/
 {
-    LinkState &= ~MAKE_RELOCS;              // assume none being produced.
+    LinkState &= ~LS_MAKE_RELOCS;           // assume none being produced.
     Extension = E_PROTECT;
     FmtData.u.d16m.options = 0;
     FmtData.u.d16m.flags = 0;
@@ -284,12 +299,14 @@ extern void SetD16MFmt( void )
     FmtData.u.d16m.selstart = D16M_USER_SEL;
     FmtData.u.d16m.extended = 0x7FFF;
     FmtData.u.d16m.datasize = 0x1000;
+    FmtData.u.d16m.exp_name = NULL;
     FmtData.u.d16m.stub = NULL;
 }
 
 extern void FreeD16MFmt( void )
 /*****************************/
 {
+    _LnkFree( FmtData.u.d16m.exp_name );
     _LnkFree( FmtData.u.d16m.stub );
 }
 

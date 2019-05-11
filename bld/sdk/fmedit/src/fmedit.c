@@ -39,7 +39,7 @@
 /* imports */
 
 #include "fmedit.def"
-#include "fmdlgs.h"
+#include "fmdlgs.rh"
 #include "state.def"
 #include "paint.def"
 #include "mouse.def"
@@ -358,8 +358,6 @@ int WINAPI LibMain( HINSTANCE inst, WORD dataseg, WORD heapsize, LPSTR cmdline )
     dataseg = dataseg;              /* ref'd to avoid warnings */
     heapsize = heapsize;            /* ref'd to avoid warnings */
     cmdline = cmdline;              /* ref'd to avoid warnings */
-    __win_alloc_flags = GMEM_MOVEABLE | GMEM_SHARE;
-    __win_realloc_flags = GMEM_MOVEABLE | GMEM_SHARE;
 
     SetInst( inst );
     InitClipboard();

@@ -28,13 +28,13 @@
 *
 ****************************************************************************/
 
-#include "ftnstd.h"
-#include "blderr.h"
 
-#include <stdlib.h>
+#include "ftnstd.h"
 #include <stdio.h>
 #include <string.h>
 #include <ctype.h>
+#include "blderr.h"
+
 
 #define MAX_SUBSTITUTABLE_ARGS  8
 

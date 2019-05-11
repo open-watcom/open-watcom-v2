@@ -109,7 +109,7 @@ zip_open(const char *fn, int flags, int *zep)
     clearerr(fp);
     fseek(fp, 0, SEEK_END);
     len = ftell(fp);
-    i = fseek(fp, -(len < CDBUFSIZE ? len : CDBUFSIZE), SEEK_END);
+    i = fseek(fp, -(long)(len < CDBUFSIZE ? len : CDBUFSIZE), SEEK_END);
     if (i == -1 && errno != EFBIG) {
 	/* seek before start of file on my machine */
 	set_error(zep, NULL, ZIP_ER_SEEK);
@@ -297,7 +297,7 @@ _zip_readcdir(FILE *fp, unsigned char *buf, unsigned char *eocd, int buflen,
 	/* go to start of cdir and read it entry by entry */
 	bufp = NULL;
 	clearerr(fp);
-	fseek(fp, -(cd->size+cd->comment_len+EOCDLEN), SEEK_END);
+	fseek(fp, -(long)(cd->size+cd->comment_len+EOCDLEN), SEEK_END);
 	if (ferror(fp) || (ftell(fp) != cd->offset)) {
 	    /* seek error or offset of cdir wrong */
 	    if (ferror(fp))

@@ -33,6 +33,7 @@
 #ifndef MISC_H_INCLUDED
 #define MISC_H_INCLUDED
 
+void    Error( const char *str, ... );
 void    Quit( const char *usage_msg[], const char *msg, ... );
 void    Die( const char *str, ... );
 #if defined( __WATCOMC__ ) && !defined( __AXP__ )

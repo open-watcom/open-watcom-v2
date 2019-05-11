@@ -31,7 +31,7 @@
 
 
 #include <stddef.h>
-#include <malloc.h>
+#include <stdlib.h>
 #include <limits.h>
 #include <dos.h>
 #include "dbgdefn.h"

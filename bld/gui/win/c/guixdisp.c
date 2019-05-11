@@ -72,7 +72,7 @@ gui_message_return GUIDisplayMessage( gui_window *wnd,
         return( GUI_RET_ABORT );
     }
     style = 0;
-    for( i = 0; i < ARRAY_SIZE( Types ); i++ ) {
+    for( i = 0; i < GUI_ARRAY_SIZE( Types ); i++ ) {
         if( type & Types[i].type ) {
             style |= Types[i].style;
         }

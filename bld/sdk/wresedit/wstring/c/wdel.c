@@ -34,7 +34,7 @@
 #include <ctype.h>
 #include "wedit.h"
 #include "wdel.h"
-#include "sys_rc.h"
+#include "sysall.rh"
 
 /****************************************************************************/
 /* macro definitions                                                        */

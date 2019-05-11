@@ -31,11 +31,11 @@
 
 
 #include "ftnstd.h"
+#include <string.h>
+#include <errno.h>
 #include "fio.h"
 #include "posio.h"
 #include "poserr.h"
-#include <string.h>
-#include <errno.h>
 
 
 static  byte    Stat = { IO_OK };

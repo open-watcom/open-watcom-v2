@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -31,7 +31,7 @@
 
 
 #include "vi.h"
-#include "setfs.h"
+#include "setfs.rh"
 #include "stddef.h"
 #include "ctltype.h"
 #include "dyntpl.h"
@@ -578,7 +578,7 @@ static long insertFT( HWND hwndDlg )
     // make memory space for new FT entry if necessary
     if( dlgDataArray_count + 1 > dlgDataArray_size ) {
         dlgDataArray_size++;
-        dlgDataArray = _MemReAllocArray( dlgDataArray, dlg_data, dlgDataArray_size );
+        dlgDataArray = _MemReallocArray( dlgDataArray, dlg_data, dlgDataArray_size );
     }
     // for now, always insert at top of list
     index = 0;

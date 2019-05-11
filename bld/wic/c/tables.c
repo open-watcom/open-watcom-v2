@@ -72,7 +72,7 @@ pSymTabEntry findSymbol(char *name) {
     return SymFind(symTab, &nameEntry);
 }
 
-int zapSymbolTableElem(void *_entry, void *dummy) {
+static int zapSymbolTableElem(void *_entry, void *dummy) {
     pSymTabEntry entry = _entry;
 
     dummy = dummy;
@@ -272,6 +272,7 @@ unsigned stringiHashFunc(char *s, unsigned size) {
     return key;
 }
 
+#if 0
 unsigned computeKey(char *s, unsigned size) {
     enum { b = 101 };
     unsigned long key = 0;
@@ -285,4 +286,4 @@ unsigned computeKey(char *s, unsigned size) {
 
     return key;
 }
-
+#endif

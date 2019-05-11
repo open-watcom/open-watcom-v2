@@ -177,7 +177,7 @@ static void genTypeSig(         // GENERATE A TYPE_SIG
     TYPE_SIG *ts )              // - to be gen'ed
 {
     THROBJ thr;                 // - category of object
-    segment_id old_seg;         // - old segment
+    segment_id old_segid;       // - old segment
 
     if( !ts->cgref )
         return;
@@ -209,7 +209,7 @@ static void genTypeSig(         // GENERATE A TYPE_SIG
               , thr );
     }
 #endif
-    old_seg = BESetSeg( ts->sym->segid );
+    old_segid = BESetSeg( ts->sym->segid );
     CgBackGenLabel( ts->sym );
     switch( thr ) {
     case THROBJ_PTR_SCALAR :
@@ -263,7 +263,7 @@ static void genTypeSig(         // GENERATE A TYPE_SIG
       } break;
     DbgDefault( "\ngenTypeSig -- invalid throw category" );
     }
-    BESetSeg( old_seg );
+    BESetSeg( old_segid );
 }
 
 

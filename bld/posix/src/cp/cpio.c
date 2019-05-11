@@ -31,14 +31,16 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <malloc.h>
 #include <string.h>
 #include <ctype.h>
 #include <fcntl.h>
 #include <io.h>
-#include <time.h>
 #include <sys/stat.h>
-#include <sys/utime.h>
+#if defined( __UNIX__ ) || defined( __WATCOMC__ )
+  #include <utime.h>
+#else
+  #include <sys/utime.h>
+#endif
 #include <dos.h>
 #if defined( __OS2__ ) && defined( __386__ )
 #define  INCL_DOSFILEMGR
@@ -377,7 +379,7 @@ void FlushMemoryBlocks()
     long                total=0;
     unsigned            bytes;
     unsigned long       timetaken;
-    time_t              secs,hunds;
+    unsigned long       secs, hunds;
 
     curr = CBHead;
     if( curr == NULL ) {
@@ -438,16 +440,16 @@ void FlushMemoryBlocks()
 
         DumpCnt++;
 
-        timetaken = clock() - StartTime;
+        timetaken = (unsigned long)( clock() - StartTime );
         StartTime = clock();
-        secs = (timetaken/CLOCKS_PER_SEC);
-        hunds = timetaken-secs*CLOCKS_PER_SEC;
+        secs = ( timetaken / CLOCKS_PER_SEC );
+        hunds = timetaken - secs * CLOCKS_PER_SEC;
 
         if( rflag ) {
-            PrintALineThenDrop( "%ld bytes, %u files written, %u dirs created in %ld.%ld seconds (dump %u)",
+            PrintALineThenDrop( "%ld bytes, %u files written, %u dirs created in %lu.%lu seconds (dump %u)",
                             total, FileCnt, DirCnt, secs, hunds, DumpCnt );
         } else {
-            PrintALineThenDrop( "%ld bytes, %u files written in %ld.%02ld seconds (dump %u)",
+            PrintALineThenDrop( "%ld bytes, %u files written in %lu.%02lu seconds (dump %u)",
                             total, FileCnt, secs, hunds, DumpCnt );
         }
         TotalBytes += total;

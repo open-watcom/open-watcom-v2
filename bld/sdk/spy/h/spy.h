@@ -37,7 +37,7 @@
 #include <string.h>
 #include "bool.h"
 #include "watcom.h"
-#include "spyrc.h"
+#include "spy.rh"
 
 #include "ldstr.h"
 #include "hint.h"

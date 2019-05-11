@@ -129,21 +129,24 @@
 *            05-08-89  Dal  Ported to Minix-ST                              *
 *************************************************************************@R*/
 
-#include <stdio.h>
-#include "bool.h"
 
-#define MAIN        /* header has defining instances of globals */
-#include "compress.h" /* contains the rest of the include file declarations */
+#include <stdio.h>
+#include <stdlib.h>
+#include "bool.h"
+#define MAIN            /* header has defining instances of globals */
+#include "compress.h"   /* contains the rest of the include file declarations */
+
 
 #define ARGVAL() (*++(*argv) || (--argc && *++argv))
 char suffix[] = SUFFIX ;          /* only used in this file */
 
-void main( argc, argv )
-register int argc; char **argv;
+int main( int argc, char **argv )
 {
     char **filelist, **fileptr,*temp;
     struct stat statbuf;
 
+    ifname[0] = '\0';
+    ofname[0] = '\0';
 #ifndef NOSIGNAL
     if ( (bgnd_flag = signal ( SIGINT, SIG_IGN )) != SIG_IGN ) {
         /* ANSI/SYS V compatible */
@@ -206,13 +209,13 @@ register int argc; char **argv;
                         nomagic = true;
                         break;
                     case 'C':
-                        block_compress = false;
+                        block_compress = 0;
                         break;
                     case 'b': case 'B':
                         if (!ARGVAL()) {
                             fprintf(stderr, "Missing maxbits\n");
                             Usage(1);
-                            exit(ERROR);
+                            return( ERROR );
                         }
                         maxbits = atoi(*argv);
                         goto nextarg;
@@ -220,7 +223,7 @@ register int argc; char **argv;
                         if (!ARGVAL()) {
                             fprintf(stderr, "Missing in_path name\n");
                             Usage(1);
-                            exit(ERROR);
+                            return( ERROR );
                         }
                         strcpy(inpath,*argv);
                         temp = &inpath[strlen(inpath)-1];
@@ -235,7 +238,7 @@ register int argc; char **argv;
                         if (!ARGVAL()){
                             fprintf(stderr, "Missing out_path name\n");
                             Usage(1);
-                            exit(ERROR);
+                            return( ERROR );
                         }
                         strcpy(outpath,*argv);
                         temp = &outpath[strlen(outpath)-1];
@@ -257,15 +260,14 @@ register int argc; char **argv;
                         break;
                     case '?':case 'h':case 'H':
                         Usage(0);
-                        exit(NORMAL);
-                        break;
+                        return( NORMAL );
                     case 'q':
                         quiet = true;
                         break;
                     default:
                         fprintf(stderr, "%s : Unknown flag: '%c'\n",prog_name, **argv);
                         Usage(1);
-                        exit(ERROR);
+                        return( ERROR );
                 } /* end switch */
             } /* end while processing this argument */
         }  /* end if option parameter */
@@ -279,7 +281,7 @@ nextarg:        continue;                          /* process nextarg */
     /* adjust for possible errors or conflicts */
     if(maxbits < MINBITS || maxbits > MAXBITS){
         fprintf(stderr,"\n%s: illegal bit value, range = %d to %d\n",prog_name,MINBITS,MAXBITS);
-        exit(NORMAL);
+        return( NORMAL );
     }
     if (zcat_flg && *outpath)         /* can't have an out path and zcat */
         *outpath = '\0';
@@ -404,7 +406,7 @@ nextarg:        continue;                          /* process nextarg */
                 check_error();
             }
             if(!zcat_flg) {
-                copystat(ifname, ofname); /* Copy stats */
+                copystat(); /* Copy stats */
                 if((exit_stat ) || (!quiet))
                     putc('\n', stderr);
             }       /* end if zcat */
@@ -423,31 +425,32 @@ nextarg:        continue;                          /* process nextarg */
         /* check if input is unredirected */
         if ( isatty(fileno(stdin)) ){
             Usage(1);
-            exit(NORMAL);
+            return( NORMAL );
         }
 #endif
         /* filter */
         if (do_decomp){
             setvbuf(stdin,zbuf,_IOFBF,ZBUFSIZE);  /* make the buffers larger */
             setvbuf(stdout,xbuf,_IOFBF,XBUFSIZE);
-        }
-        else{
+        } else {
             setvbuf(stdin,xbuf,_IOFBF,XBUFSIZE);  /* make the buffers larger */
             setvbuf(stdout,zbuf,_IOFBF,ZBUFSIZE);
         }
-        if (!do_decomp) {   /* compress stdin to stdout */
+        if (!do_decomp) {
+            /* compress stdin to stdout */
             compress();
             check_error();
             if(!quiet)
                 putc('\n', stderr);
-        } /* end compress stdio */
-        else {   /* decompress stdin to stdout */
+            /* end compress stdio */
+        } else {
+            /* decompress stdin to stdout */
             /* Check the magic number */
             if (!nomagic) {
                 if ((getchar()!=(magic_header[0] & 0xFF))
                  || (getchar()!=(magic_header[1] & 0xFF))) {
                     fprintf(stderr, "stdin: not in compressed format\n");
-                    exit(ERROR);
+                    return( ERROR );
                 }
                 maxbits = getchar();    /* set -b from file */
                 block_compress = maxbits & BLOCK_MASK;
@@ -456,18 +459,17 @@ nextarg:        continue;                          /* process nextarg */
                     fprintf(stderr,
                     "stdin: compressed with %d bits, can only handle %d bits\n",
                     maxbits, MAXBITS);
-                    exit(ERROR);
+                    return( ERROR );
                 }
             }
             decompress();
             check_error();
         } /* end else decomp stdio */
     } /* end else standard input */
-    exit(exit_stat);
+    return( exit_stat );
 }
 
-void Usage(flag)
-int flag;
+void Usage(int flag)
 {
 static char *keep2 =  "keep";
 static char *keep3 =  "kill (erase)";
@@ -509,43 +511,43 @@ static char *off = "off";
     fprintf(stderr,"     -? -h => help usage.\n");
 }
 
-char get_one()
+char get_one( void )
 /*
  * get a single character, with echo.
  */
 {
-        char tmp[2];
-        int fd;
+    char tmp[2];
+    int fd;
 
 #ifdef SOZOBON
-        return(0x7F & getche());
-#endif
-#ifdef MSC
-        return(getche());
-#endif
-/*
- * All previous #ifdef'ed code should return() a value.
- * If no other option is available, the following is the original code.
- * It not only reads from stderr (not a defined operation)
- * but it does so via an explicit read() call on file descriptor 2!
- * So much for portability.                    -Dal
- */
-#ifdef MINIX
-        fd = open("/dev/tty", 0);       /* open the tty directly */
+    return(0x7F & getche());
+#elif defined( MSC ) || defined( MSC )
+    return(getche());
 #else
-        fd = 2;                         /* read from stderr */
+    /*
+     * All previous #ifdef'ed code should return() a value.
+     * If no other option is available, the following is the original code.
+     * It not only reads from stderr (not a defined operation)
+     * but it does so via an explicit read() call on file descriptor 2!
+     * So much for portability.                    -Dal
+     */
+#ifdef MINIX
+    fd = open("/dev/tty", 0);       /* open the tty directly */
+#else
+    fd = 2;                         /* read from stderr */
 #endif
-        read(fd, tmp, 2);
-        while (tmp[1] != '\n') {
-                if (read(fd, tmp+1, 1) < 0) {   /* Ack! */
-                        perror("stderr");
-                        break;
-                }
+    read(fd, tmp, 2);
+    while (tmp[1] != '\n') {
+        if (read(fd, tmp+1, 1) < 0) {   /* Ack! */
+            perror("stderr");
+            break;
         }
-        return(tmp[0]);
+    }
+    return(tmp[0]);
+#endif
 }
 
-void writeerr()
+void writeerr( void )
 {
     perror ( ofname );
     if (!zcat_flg && !keep_error){
@@ -560,7 +562,7 @@ void writeerr()
  * This routine returns 1 if we are running in the foreground and stderr
  * is a tty.
  */
-int foreground()
+int foreground( void )
 {
     if(bgnd_flag) { /* background? */
         return(0);
@@ -575,9 +577,7 @@ int foreground()
 }
 #endif
 
-void prratio(stream, num, den)
-FILE *stream;
-long int num, den;
+void prratio(FILE *stream, long int num, long int den)
 {
     register int q;         /* Doesn't need to be long */
 
@@ -595,54 +595,53 @@ long int num, den;
 }
 
 
-int check_error()     /* returning OK continues with processing next file */
+int check_error( void )     /* returning OK continues with processing next file */
 {
     switch(exit_stat) {
-  case OK:
-    return (OK);
-  case NOMEM:
-    if (do_decomp)
-        fprintf(stderr,"%s: not enough memory to decompress '%s'.\n", prog_name, ifname);
-    else
-        fprintf(stderr,"%s: not enough memory to compress '%s'.\n", prog_name, ifname);
-    return(OK);
-  case SIGNAL_ERROR:
-    fprintf(stderr,"%s: error setting signal interupt.\n",prog_name);
-    exit(ERROR);
-    break;
-  case READERR:
-    fprintf(stderr,"%s: read error on input '%s'.\n", prog_name, ifname);
-    break;
-  case WRITEERR:
-    fprintf(stderr,"%s: write error on output '%s'.\n", prog_name, ofname);
-    break;
-   case TOKTOOBIG:
-    fprintf(stderr,"%s: token too long in '%s'.\n", prog_name, ifname);
-    break;
-  case INFILEBAD:
-    fprintf(stderr, "%s: '%s' in unknown compressed format.\n", prog_name, ifname);
-    break;
- case CODEBAD:
-    fprintf(stderr,"%s: file token bad in '%s'.\n", prog_name,ifname);
-    break;
- case TABLEBAD:
-    fprintf(stderr,"%s: internal error -- tables corrupted.\n", prog_name);
-    break;
-  case NOTOPENED:
-    fprintf(stderr,"%s: could not open output file %s\n",prog_name,ofname);
-    exit(ERROR);
-    break;
-  case NOSAVING:
-    if (force)
-        exit_stat = OK;
-    return (OK);
-  default:
-    fprintf(stderr,"%s: internal error -- illegal return value = %d.\n", prog_name,exit_stat);
-  }
-  if (!zcat_flg && !keep_error){
+    case OK:
+        return (OK);
+    case NOMEM:
+        if (do_decomp)
+            fprintf(stderr,"%s: not enough memory to decompress '%s'.\n", prog_name, ifname);
+        else
+            fprintf(stderr,"%s: not enough memory to compress '%s'.\n", prog_name, ifname);
+        return(OK);
+    case SIGNAL_ERROR:
+        fprintf(stderr,"%s: error setting signal interupt.\n",prog_name);
+        exit(ERROR);
+        break;
+    case READERR:
+        fprintf(stderr,"%s: read error on input '%s'.\n", prog_name, ifname);
+        break;
+    case WRITEERR:
+        fprintf(stderr,"%s: write error on output '%s'.\n", prog_name, ofname);
+        break;
+    case TOKTOOBIG:
+        fprintf(stderr,"%s: token too long in '%s'.\n", prog_name, ifname);
+        break;
+    case INFILEBAD:
+        fprintf(stderr, "%s: '%s' in unknown compressed format.\n", prog_name, ifname);
+        break;
+    case CODEBAD:
+        fprintf(stderr,"%s: file token bad in '%s'.\n", prog_name,ifname);
+        break;
+    case TABLEBAD:
+        fprintf(stderr,"%s: internal error -- tables corrupted.\n", prog_name);
+        break;
+    case NOTOPENED:
+        fprintf(stderr,"%s: could not open output file %s\n",prog_name,ofname);
+        exit(ERROR);
+        break;
+    case NOSAVING:
+        if (force)
+            exit_stat = OK;
+        return (OK);
+    default:
+        fprintf(stderr,"%s: internal error -- illegal return value = %d.\n", prog_name,exit_stat);
+    }
+    if (!zcat_flg && !keep_error){
         fclose(stdout);         /* won't get here without an error */
         unlink ( ofname );
     }
-  exit(exit_stat);
-  return(ERROR);
+    return(exit_stat);
 }

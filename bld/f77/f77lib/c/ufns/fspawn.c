@@ -36,13 +36,11 @@
 //
 
 #include "ftnstd.h"
-#include "ftnapi.h"
-
-#include <malloc.h>
-#include <stddef.h>
 #include <string.h>
 #include <process.h>
-#include <pgmacc.h>
+#include "walloca.h"
+#include "ftnapi.h"
+#include "pgmacc.h"
 
 
 intstar4        __fortran FSPAWN( string PGM *cmd, string PGM *args )

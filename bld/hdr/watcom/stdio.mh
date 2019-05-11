@@ -150,9 +150,12 @@ using std::wscanf;
 
 :segment LINUX | QNX
 #define _NFILES         16          /*  minimum guaranteed open files       */
+:elsesegment DOS | RDOS
+#define _NFILES         20          /*  minimum guaranteed open files       */
+:endsegment
+:segment LINUX | QNX | RDOS
 #define BUFSIZ          4096        /*  Default buffer size                 */
-:elsesegment
-#define _NFILES         20          /* number of files that can be handled */
+:elsesegment DOS
 #ifdef _M_I86
  #define BUFSIZ         512         /*  Default buffer size                 */
 #else
@@ -243,7 +246,7 @@ using std::wscanf;
 
 :include ssize_t.sp
 
-:include valist.sp
+:include _valist.sp
 
 :keep DECLARE_STRUCT
 :include file.sp
@@ -284,7 +287,7 @@ _WCRTDATA extern __w_FILE  _WCDATA __iob[];
 #define stdin   ((__w_FILE *)&__iob[0])     /* standard input file  */
 #define stdout  ((__w_FILE *)&__iob[1])     /* standard output file */
 #define stderr  ((__w_FILE *)&__iob[2])     /* standard error file  */
-:segment DOS | RDOS
+:segment DOS
 :include ext.sp
 #if defined(__DOS__) || defined(__WINDOWS__) || defined(__OSI__)
 #define stdaux  ((__w_FILE *)&__iob[3])     /* standard auxiliary file  */
@@ -298,7 +301,7 @@ _WCRTDATA extern __w_FILE  _WCDATA __iob[];
 #define stdin   (__get_std_file(0))     /* standard input file  */
 #define stdout  (__get_std_file(1))     /* standard output file */
 #define stderr  (__get_std_file(2))     /* standard error file  */
-:segment DOS | RDOS
+:segment DOS
 :include ext.sp
 #if defined(__DOS__) || defined(__WINDOWS__)
 #define stdaux  (__get_std_file(3))     /* standard auxiliary file  */

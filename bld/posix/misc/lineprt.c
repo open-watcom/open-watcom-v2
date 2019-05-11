@@ -40,12 +40,10 @@
 #include <stdio.h>
 #include <stdarg.h>
 #include <string.h>
-#include <malloc.h>
 #include "lineprt.h"
 #include "bool.h"
+#include "misc.h"
 
-
-extern void Die( char *str );
 
 static bool     _dropped = true;
 static size_t   _lastlinelen = 0;
@@ -133,8 +131,12 @@ void DropALine( void )
 void StartPrint( void )
 {
 
-    buffer = malloc( BUFSIZ );
-    if( buffer == NULL )
-        Die( "Out of memory!" );
+    buffer = MemAlloc( BUFSIZ );
     setvbuf( stdout, buffer, _IONBF, BUFSIZ );
+}
+
+/* EndPrint - deallocate buffer for unbufferd io */
+void EndPrint( void )
+{
+    MemFree( buffer );
 }

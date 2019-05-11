@@ -35,7 +35,6 @@
 #include <string.h>
 #include "bool.h"
 #include "watcom.h"
-#include "heapwlk.h"
 #include "hwbiglb.h"
 #include "segmem.h"
 #include "mythelp.h"
@@ -47,142 +46,21 @@
 #include "srchmsg.h"
 #include "pushwin.h"
 #include "ctl3dcvr.h"
-#include "memman.h"
-#include "heapinfo.h"
-#include "lclinfo.h"
-#include "rcstr.gh"
-#include "uistr.gh"
 #include "ldstr.h"
-#include "config.h"
-#include "menu.h"
-#include "add.h"
-#include "alloc.h"
-#include "freen.h"
-#include "code.h"
 
-#define INT_PTR int
-
-#define RCSTR_MAX_LEN                   128
-
-#define HEAPMENU_DISPLAY_ENTIRE         300
-#define HEAPMENU_DISPLAY_LRU            301
-#define HEAPMENU_DISPLAY_FREE           302
-#define HEAPMENU_DISPLAY_DPMI           303
-#define HEAPMENU_DISPLAY_INIT           304
-
-#define HEAPMENU_SORT_ADDR              310
-#define HEAPMENU_SORT_HANDLE            311
-#define HEAPMENU_SORT_MODULE            312
-#define HEAPMENU_SORT_SIZE              313
-#define HEAPMENU_SORT_TYPE              314
-#define HEAPMENU_SORT_GRAN              315
-#define HEAPMENU_SORT_DPL               316
-#define HEAPMENU_SORT_EXTEND            317
-#define HEAPMENU_SORT_FLAG              318
-#define HEAPMENU_SORT_LRU               319
-
-#define HEAPMENU_ABOUT                  320
-#define HEAPMENU_HELP_CONTENTS          321
-#define HEAPMENU_HELP_SRCH              322
-#define HEAPMENU_HELP_ON_HELP           323
-
-#define HEAPMENU_OBJECT_SHOW            330
-#define HEAPMENU_OBJECT_DISCARD         331
-#define HEAPMENU_OBJECT_OLDEST          332
-#define HEAPMENU_OBJECT_NEWEST          333
-#define HEAPMENU_ADD                    334
-#define HEAPMENU_OBJECT_GET_SELECTOR    335
-
-#define HEAPMENU_LOCAL_LOCALWALK        340
-#define HEAPMENU_COMPACT_AND_LOCALWALK  341
-#define HEAPMENU_GDI_LOCALWALK          342
-#define HEAPMENU_USER_LOCALWALK         343
-#define HEAPMENU_LOCAL_MONITOR          344
-
-#define HEAPMENU_GLOBAL_COMPACT         350
-#define HEAPMENU_GLOBAL_COMP_DISC       351
-#define HEAPMENU_GLOBAL_MEMORYINFO      352
-#define HEAPMENU_GLOBAL_HEAPINFO        353
-#define HEAPMENU_GLOBAL_CODE_SIZE       354
-#define HEAPMENU_GLOBAL_REFRESH         355
-
-#define HEAPMENU_EXIT                   360
-#define HEAPMENU_FILE_SAVE              361
-#define HEAPMENU_FILE_SAVE_TO           362
-#define HEAPMENU_CONFIGURE              363
-#define HEAPMENU_SAVE_CONFIG            364
-#define HEAPMENU_FONT                   365
-
-#define HW_INFO_REFRESH                 5000
-/*
- * Notice the grouping of the alloc menu constants within
- * HEAPMENU_*_FIRST and HEAPMENU_*_LAST.  Please respect it !!!
- */
-#define HEAPMENU_ALLOCMENU_FIRST        HEAPMENU_ALLOC_ALL
-#define HEAPMENU_ALLOC_ALL              370
-#define HEAPMENU_FREE_ALL               371
-
-#define HEAPMENU_FREE_FIRST             HEAPMENU_FREE_1K
-#define HEAPMENU_FREE_1K                381
-#define HEAPMENU_FREE_2K                382
-#define HEAPMENU_FREE_5K                383
-#define HEAPMENU_FREE_10K               384
-#define HEAPMENU_FREE_25K               385
-#define HEAPMENU_FREE_50K               386
-#define HEAPMENU_FREE_NK                387
-#define HEAPMENU_FREE_LAST              HEAPMENU_FREE_NK
-
-#define HEAPMENU_ALLOC_FIRST            HEAPMENU_ALLOC_1K
-#define HEAPMENU_ALLOC_1K               391
-#define HEAPMENU_ALLOC_2K               392
-#define HEAPMENU_ALLOC_5K               393
-#define HEAPMENU_ALLOC_10K              394
-#define HEAPMENU_ALLOC_25K              395
-#define HEAPMENU_ALLOC_50K              396
-#define HEAPMENU_ALLOC_NK               397
-#define HEAPMENU_ALLOC_LAST             HEAPMENU_ALLOC_NK
-
-#define HEAPMENU_ALLOC_BUT_FIRST        HEAPMENU_ALLOC_BUT_1K
-#define HEAPMENU_ALLOC_BUT_1K           401
-#define HEAPMENU_ALLOC_BUT_2K           402
-#define HEAPMENU_ALLOC_BUT_5K           403
-#define HEAPMENU_ALLOC_BUT_10K          404
-#define HEAPMENU_ALLOC_BUT_25K          405
-#define HEAPMENU_ALLOC_BUT_50K          406
-#define HEAPMENU_ALLOC_BUT_NK           407
-#define HEAPMENU_ALLOC_BUT_LAST         HEAPMENU_ALLOC_BUT_NK
-#define HEAPMENU_ALLOCMENU_LAST         HEAPMENU_ALLOC_BUT_LAST
+#include "heapwalk.rh"
 
 
-#define         SAVE_NAME_SIZE          _MAX_PATH
-#define         MAX_RES                 100
+#define INT_PTR                 int
 
-#define ITEM_DISPLAY_CLASS              "watitemdisplayclass"
-#define LOCAL_DISPLAY_CLASS             "watlocaldisplayclass"
-#define LOCAL_MONITOR_CLASS             "watlocalmonitorclass"
+#define RCSTR_MAX_LEN           128
 
+#define SAVE_NAME_SIZE          _MAX_PATH
+#define MAX_RES                 100
 
-/* Constants for Extended Sort Dialog */
-/* SORT_BT_* and SORT_FLD_* constants should remain consecutive */
-
-#define SORT_DONT_CARE          101
-#define SORT_BT_1               110
-#define SORT_BT_2               111
-#define SORT_BT_3               112
-#define SORT_BT_4               113
-#define SORT_BT_5               114
-#define SORT_BT_6               115
-#define SORT_BT_LAST            SORT_BT_6
-#define SORT_OK                 120
-#define SORT_CANCEL             IDCANCEL
-#define SORT_FLD_1              130
-#define SORT_FLD_2              131
-#define SORT_FLD_3              132
-#define SORT_FLD_4              133
-#define SORT_FLD_5              134
-#define SORT_FLD_6              135
-#define SORT_FLD_7              136
-#define SORT_FLD_LAST           SORT_FLD_7
+#define ITEM_DISPLAY_CLASS      "watitemdisplayclass"
+#define LOCAL_DISPLAY_CLASS     "watlocaldisplayclass"
+#define LOCAL_MONITOR_CLASS     "watlocalmonitorclass"
 
 #define LOCAL_LB                1001
 #define GLOBAL_LB               1002

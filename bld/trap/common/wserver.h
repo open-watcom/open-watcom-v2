@@ -30,7 +30,7 @@
 ****************************************************************************/
 
 
-#include "wserveri.h"
+#include "wserver.rh"
 
 WINEXPORT extern INT_PTR CALLBACK AboutDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
 WINEXPORT extern LRESULT CALLBACK WindowProc( HWND, UINT, WPARAM, LPARAM );

@@ -45,8 +45,8 @@
 #include "genvbl.h"
 #include "utils.h"
 #if !defined( GUI_IS_GUI )
-  #include "stdui.h"
-  #include "uigchar.h"
+    #include "stdui.h"
+    #include "uigchar.h"
 #endif
 #include "guistat.h"
 
@@ -63,13 +63,6 @@
 #define CANNERY_ROW     6
 #define STATUS_ROW      4
 #define BAR_INDENT      4
-
-extern gui_colour_set   StatusColours[];
-extern gui_colour_set   StatusBackground;
-extern gui_window       *MainWnd;
-extern int              IsPatch;
-extern gui_ord          BitMapBottom;
-extern gui_coord        GUIScale;
 
 int                     MsgLine0 = STAT_BLANK;
 bool                    CancelSetup = false;
@@ -95,6 +88,60 @@ static const char *Messages[] = {
 
 static gui_control_info Cancel = {
     GUI_DEFPUSH_BUTTON, NULL, {0, 0, 0, 0}, NULL, GUI_NOSCROLL, GUI_STYLE_CONTROL_TAB_GROUP | GUI_STYLE_CONTROL_AUTOMATIC, CTL_CANCEL
+};
+
+static gui_colour_set StatusColours[] = {
+#if !defined( GUI_IS_GUI )
+    /* Fore              Back        */
+    { GUI_WHITE,        GUI_BLACK },            /* GUI_MENU_PLAIN    */
+    { GUI_BLUE,         GUI_BRIGHT_WHITE },     /* GUI_MENU_STANDOUT */
+    { GUI_GREY,         GUI_BLACK },            /* GUI_MENU_GRAYED */
+    { GUI_BRIGHT_YELLOW,GUI_BLACK },            /* GUI_MENU_ACTIVE */
+    { GUI_BRIGHT_YELLOW,GUI_BRIGHT_WHITE },     /* GUI_MENU_ACTIVE_STANDOUT */
+    { GUI_BRIGHT_WHITE, GUI_BLUE },             /* GUI_BACKGROUND */
+    { GUI_BRIGHT_WHITE, GUI_BLUE },             /* GUI_MENU_FRAME    */
+    { GUI_GREY,         GUI_BLUE },             /* GUI_TITLE_INACTIVE    */
+    { GUI_BLUE,         GUI_CYAN },             /* GUI_FRAME_ACTIVE    */
+    { GUI_GREY,         GUI_BLACK },            /* GUI_FRAME_INACTIVE    */
+    { GUI_BRIGHT_WHITE, GUI_RED },              /* GUI_ICON    */
+    { GUI_GREY,         GUI_BRIGHT_WHITE },     /* GUI_MENU_GRAYED_ACTIVE    */
+    { GUI_GREY,         GUI_BRIGHT_WHITE },     /* GUI_FRAME_RESIZE    */
+    { GUI_BLUE,         GUI_WHITE },            /* GUI_CONTROL_BACKGROUND */
+
+    { GUI_GREEN,        GUI_BLACK },            /* WND_PLAIN    */
+    { GUI_BLACK,        GUI_GREEN },            /* WND_TABSTOP   */
+    { GUI_BLUE,         GUI_BRIGHT_WHITE },     /* WND_SELECTED */
+    { GUI_BLACK,        GUI_RED },              /* WND_HOTSPOT */
+    { GUI_GREY,         GUI_BLACK },            /* WND_CENSORED */
+    { GUI_BLACK,        GUI_WHITE },            /* WND_STATUS_BAR */
+    { GUI_WHITE,        GUI_BLUE },             /* WND_STATUS_TEXT */
+    { GUI_WHITE,        GUI_BLUE },             /* WND_STATUS_FRAME */
+#else                   // win or winnt or OS/2
+    /* Fore              Back        */
+    { GUI_BRIGHT_WHITE, GUI_BLACK },            /* GUI_MENU_PLAIN    */
+    { GUI_BLACK,        GUI_BRIGHT_WHITE },     /* GUI_MENU_STANDOUT */
+    { GUI_GREY,         GUI_BLACK },            /* GUI_MENU_GRAYED */
+    { GUI_BRIGHT_YELLOW,GUI_BLACK },            /* GUI_MENU_ACTIVE */
+    { GUI_BRIGHT_YELLOW,GUI_BRIGHT_WHITE },     /* GUI_MENU_ACTIVE_STANDOUT */
+    { GUI_BLACK,        GUIEX_DLG_BKGRND },     /* GUI_BACKGROUND */
+    { GUI_BRIGHT_WHITE, GUI_BLUE },             /* GUI_MENU_FRAME    */
+    { GUI_GREY,         GUI_BLACK },            /* GUI_TITLE_INACTIVE    */
+    { GUI_BLUE,         GUI_CYAN },             /* GUI_FRAME_ACTIVE    */
+    { GUI_GREY,         GUI_BLACK },            /* GUI_FRAME_INACTIVE    */
+    { GUI_BRIGHT_WHITE, GUI_RED },              /* GUI_ICON    */
+    { GUI_GREY,         GUI_BRIGHT_WHITE },     /* GUI_MENU_GRAYED_ACTIVE    */
+    { GUI_GREY,         GUI_BRIGHT_WHITE },     /* GUI_FRAME_RESIZE    */
+    { GUI_BLACK,        GUIEX_WND_BKGRND },     /* GUI_CONTROL_BACKGROUND */
+
+    { GUI_GREEN,        GUI_BLACK },            /* WND_PLAIN    */
+    { GUI_BLACK,        GUI_GREEN },            /* WND_TABSTOP   */
+    { GUI_BLACK,        GUI_BRIGHT_WHITE },     /* WND_SELECTED */
+    { GUI_BLACK,        GUI_RED },              /* WND_HOTSPOT */
+    { GUI_GREY,         GUI_BLACK },            /* WND_CENSORED */
+    { GUIEX_DLG_BKGRND, GUI_BLACK },            /* WND_STATUS_BAR */
+    { GUI_BLACK,        GUIEX_DLG_BKGRND },     /* WND_STATUS_TEXT */
+    { GUI_BLACK,        GUIEX_DLG_BKGRND }      /* WND_STATUS_FRAME */
+#endif
 };
 
 static bool StatusGUIEventProc( gui_window *gui, gui_event gui_ev, void *parm )
@@ -281,32 +328,13 @@ static bool StatusGUIEventProc( gui_window *gui, gui_event gui_ev, void *parm )
     return( false );
 }
 
-static gui_create_info StatusInfo = {
-    NULL,                                   // Title
-    { 1500, 2500, 6500, 6000 },             // Position
-    GUI_NOSCROLL,                           // Scroll Styles
-    GUI_VISIBLE                             // Window Styles
-//  | GUI_CLOSEABLE
-    | GUI_SYSTEM_MENU
-/*  | GUI_RESIZEABLE
-    | GUI_MAXIMIZE
-    | GUI_MINIMIZE
-    | GUI_DIALOG_LOOK */,
-    NULL,                                   // Parent
-    { 0, NULL },                            // Menu array
-    { WND_NUMBER_OF_COLORS, StatusColours },// Colour attribute array
-    &StatusGUIEventProc,                    // GUI Event Callback function
-    NULL,                                   // Extra
-    NULL,                                   // Icon
-    NULL                                    // Menu Resource
-};
-
 static bool OpenStatusWindow( const char *title )
 /***********************************************/
 {
     gui_text_metrics    metrics;
 //    int                 i;
     gui_rect            rect;
+    gui_create_info     init;
 
 //    for( i = STAT_BLANK; i < sizeof( Messages ) / sizeof( Messages[0] ); ++i ) {
 //      Messages[i] = GetVariableStrVal( Messages[i] );
@@ -316,24 +344,30 @@ static bool OpenStatusWindow( const char *title )
     CharSize.y = 5 * metrics.avg.y / 4;
     GUITruncToPixel( &CharSize );
 
-    StatusInfo.parent = MainWnd;
-    StatusInfo.title = GUIStrDup( title, NULL );
-    StatusInfo.rect.width = STATUS_WIDTH * CharSize.x;
-    StatusInfo.rect.height = STATUS_HEIGHT * CharSize.y;
+    memset( &init, 0, sizeof( init ) );
+    init.title = title;
+    init.rect.width = STATUS_WIDTH * CharSize.x;
+    init.rect.height = STATUS_HEIGHT * CharSize.y;
     GUIGetClientRect( MainWnd, &rect );
     if( GUIIsGUI() ) {
-        StatusInfo.rect.y = BitMapBottom;
+        init.rect.y = BitMapBottom;
     } else {
-        StatusInfo.rect.y = (GUIScale.y - StatusInfo.rect.height) / 2;
+        init.rect.y = (GUIScale.y - init.rect.height) / 2;
     }
-    if( StatusInfo.rect.y > rect.height - StatusInfo.rect.height ) {
-        StatusInfo.rect.y = rect.height - StatusInfo.rect.height;
+    if( init.rect.y > rect.height - init.rect.height ) {
+        init.rect.y = rect.height - init.rect.height;
     }
-    StatusInfo.rect.x = (GUIScale.x - StatusInfo.rect.width) / 2;
+    init.rect.x = (GUIScale.x - init.rect.width) / 2;
+    init.scroll = GUI_NOSCROLL;
+    init.style = GUI_VISIBLE | GUI_SYSTEM_MENU;
+    init.parent = MainWnd;
+    init.colours.num_items = GUI_ARRAY_SIZE( StatusColours );
+    init.colours.colour = StatusColours;
+    init.gui_call_back = StatusGUIEventProc;
 
     StatusBarLen = 0;
 
-    StatusWnd = GUICreateWindow( &StatusInfo );
+    StatusWnd = GUICreateWindow( &init );
 
     GUIGetClientRect( StatusWnd, &StatusRect );
 
@@ -397,11 +431,7 @@ void StatusLines( int msg0, const char *message1 )
 void BumpStatus( long by )
 /************************/
 {
-    if( !IsPatch ) {
-        // if a patch, don't change status because denominator of status
-        // fraction is the number of operations, not a number of bytes
-        StatusAmount( Parts_Complete + by, Parts_Injob );
-    }
+    StatusAmount( Parts_Complete + by, Parts_Injob );
 }
 
 void StatusAmount( long parts_complete, long parts_injob )
@@ -432,12 +462,14 @@ void StatusAmount( long parts_complete, long parts_injob )
             Percent = 100;
         }
     }
-    if( old_percent == Percent ) return;
+    if( old_percent == Percent )
+        return;
     if( Percent != 0 && Percent < old_percent ) {
         Percent = old_percent;
         return;
     }
-    if( StatusWnd == NULL ) return;
+    if( StatusWnd == NULL )
+        return;
 #if !defined( GUI_IS_GUI )
     GUIWndDirty( StatusWnd );
 #else
@@ -508,9 +540,6 @@ void StatusFini( void )
 /*********************/
 {
     if( StatusWnd != NULL ){
-        if( StatusInfo.title != NULL ) {
-            GUIMemFree( (void *)StatusInfo.title );
-        }
         GUIDestroyWnd( StatusWnd );
         StatusWnd = NULL;
     }

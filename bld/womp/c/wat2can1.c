@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -29,9 +30,9 @@
 ****************************************************************************/
 
 
-#include <malloc.h>
 #include <string.h>
 #include "watcom.h"
+#include "walloca.h"
 #include "womp.h"
 #include "genutil.h"
 #include "watdbg.h"
@@ -45,8 +46,8 @@
 #include "canmisc.h"
 #include "array.h"
 #ifndef NDEBUG
-#include <io.h>
-#include <fcntl.h>
+    #include <io.h>
+    #include <fcntl.h>
 #endif
 
 /*
@@ -867,10 +868,10 @@ STATIC const register_type watRegMap[] = {
 /*WAT_REG_GS    */  CANS_REG_GS
 };
 
-STATIC register_type watReg2CanReg( uint_8 wat ) {
+STATIC register_type watReg2CanReg( uint_8 wat1 ) {
 
-/**/myassert( wat <= WAT_REG_GS );
-    return( watRegMap[ wat ] );
+/**/myassert( wat1 <= WAT_REG_GS );
+    return( watRegMap[wat1] );
 }
 
 STATIC symb_handle hdlLocation( void ) {

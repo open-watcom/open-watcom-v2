@@ -16,3 +16,5 @@ objdossize = &
 
 extraobjs = $(objdossize)
 extraobjsroot = $(objdostimeroot) $(objdossizeroot)
+
+inc_dirs_dos += -I"$(vi_dir)/dos"

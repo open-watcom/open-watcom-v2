@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -187,11 +188,11 @@ const char *GetCurrentFileName( void )
 /*
  * GetString - get a string from the input file.
  */
-bool GetString( char *buff, int maxbuff )
+bool GetString( char *buff, int max_len )
 {
     currentLineNumber++;
     currentLinePos = ftell( inputFile );
-    if( fgets( buff, maxbuff, inputFile ) == NULL ) {
+    if( fgets( buff, max_len, inputFile ) == NULL ) {
         return( false );
     }
     return( true );

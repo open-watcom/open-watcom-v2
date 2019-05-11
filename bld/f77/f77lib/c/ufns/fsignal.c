@@ -36,7 +36,6 @@
 
 #include "ftnstd.h"
 #include <signal.h>
-#include <stddef.h>
 #include <float.h>
 #include "fptraps.h"
 #include "fsignal.h"

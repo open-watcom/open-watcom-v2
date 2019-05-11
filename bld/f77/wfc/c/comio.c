@@ -31,6 +31,8 @@
 
 
 #include "ftnstd.h"
+#include <string.h>
+#include <stdio.h>
 #include "progsw.h"
 #include "extnsw.h"
 #include "errcod.h"
@@ -46,10 +48,6 @@
 #include "fmacros.h"
 #include "option.h"
 #include "boot77.h"
-
-#include <string.h>
-#include <stdlib.h>
-#include <stdio.h>
 
 
 static void Comment( void )

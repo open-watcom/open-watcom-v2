@@ -34,23 +34,23 @@
 #define EOF_CHAR                256
 #define MACRO_CHAR              257
 
-typedef struct fcb_struct {             /* file control block structure */
-    char                *src_name;      /* pointer to file name (alias) */
-    source_loc          src_loc;        /* source file current location (alias) */
-    FNAMEPTR            src_flist;      /* pointer to flist_name struct */
-    unsigned            src_line_cnt;   /* source file line counter */
-    FILE                *src_fp;        /* pointer to FILE struct */
-    struct fcb_struct   *prev_file;     /* pointer to previous fcb */
-    int                 prev_currchar;  /* value of CurrChar */
-    unsigned char       *src_ptr;       /* pointer to next character in buffer */
-    unsigned char       *src_end;       /* pointer to end of buffer */
-    unsigned char       *src_buf;       /* source buffer */
+typedef struct fcb_struct {                 /* file control block structure */
+    char                    *src_name;      /* pointer to file name (alias) */
+    source_loc              src_loc;        /* source file current location (alias) */
+    FNAMEPTR                src_flist;      /* pointer to flist_name struct */
+    unsigned                src_line_cnt;   /* source file line counter */
+    FILE                    *src_fp;        /* pointer to FILE struct */
+    struct fcb_struct       *prev_file;     /* pointer to previous fcb */
+    int                     prev_currchar;  /* value of CurrChar */
+    const unsigned char     *src_ptr;       /* pointer to next character in buffer */
+    const unsigned char     *src_end;       /* pointer to end of buffer */
+    unsigned char           *src_buf;       /* source buffer */
 #if   _CPU ==  370  // just use for 370
-    unsigned            colum;          /* start reading at colum  */
-    unsigned            trunc;          /* stop  reading at trunc  */
-    unsigned            prevcount;      /* leftovers from prev read */
+    unsigned                colum;          /* start reading at colum  */
+    unsigned                trunc;          /* stop  reading at trunc  */
+    unsigned                prevcount;      /* leftovers from prev read */
 #endif
-    long                rseekpos;       /* if closed because of too many files reopen */
-    src_file_type       typ;            /* source file type */
-    bool                no_eol;         /* set if no EOL before EOF */
+    long                    rseekpos;       /* if closed because of too many files reopen */
+    src_file_type           typ;            /* source file type */
+    bool                    no_eol;         /* set if no EOL before EOF */
 } FCB;

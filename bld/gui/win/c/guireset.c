@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -41,23 +41,23 @@
 static void FreeSystemMenu( gui_window *wnd )
 {
     int             num_items;
-    int             item;
-    HMENU           system;
+    int             i;
+    HMENU           hsysmenu;
     HWND            frame;
 
     frame = GUIGetParentFrameHWND( wnd );
     if( ( _wpi_getparent( frame ) != HWND_DESKTOP ) && (wnd->style & GUI_SYSTEM_MENU) ) {
-        system = _wpi_getsystemmenu( frame );
-        if( system != NULLHANDLE ) {
-            num_items = _wpi_getmenuitemcount( system );
-            for( item = num_items; item >= NUM_SYSTEM_MENUS; item-- ) {
-                _wpi_deletemenu( system, item, TRUE );
+        hsysmenu = _wpi_getsystemmenu( frame );
+        if( hsysmenu != NULLHANDLE ) {
+            num_items = _wpi_getmenuitemcount( hsysmenu );
+            for( i = num_items; i >= NUM_SYSTEM_MENUS; i-- ) {
+                _wpi_deletemenu( hsysmenu, i, TRUE );
             }
         }
     }
 }
 
-bool GUIResetMenus( gui_window *wnd, int num_items, gui_menu_struct *menu )
+bool GUIResetMenus( gui_window *wnd, const gui_menu_items *menus )
 {
     HMENU       hmenu;
     bool        success;
@@ -69,23 +69,23 @@ bool GUIResetMenus( gui_window *wnd, int num_items, gui_menu_struct *menu )
     frame = GUIGetParentFrameHWND( wnd );
     parent = _wpi_getparent( frame );
     if( ( parent == HWND_DESKTOP ) || (wnd->style & GUI_POPUP) ) {
-        if( menu == NULL ) {
-            GUISetMenu( wnd, NULLHANDLE );
-            GUIFreePopupList( wnd );
-        } else {
-            if( GUICreateMenus( wnd, num_items, menu, &hmenu ) ) {
+        if( menus->num_items > 0 ) {
+            if( GUICreateMenus( wnd, menus, &hmenu ) ) {
                 GUISetMenu( wnd, hmenu );
                 _wpi_drawmenubar( frame );
                 success = true;
             }
+        } else {
+            GUISetMenu( wnd, NULLHANDLE );
+            GUIFreePopupList( wnd );
         }
     } else {
         FreeSystemMenu( wnd );
-        success = GUIAddToSystemMenu( wnd, frame, num_items, menu, wnd->style );
+        success = GUIAddToSystemMenu( wnd, frame, menus, wnd->style );
     }
     if( success ) {
-        GUIMDIResetMenus( wnd, wnd->parent, num_items, menu );
-        GUIInitHint( wnd, num_items, menu, MENU_HINT );
+        GUIMDIResetMenus( wnd, wnd->parent, menus );
+        GUIInitHint( wnd, menus, MENU_HINT );
     }
     return( success );
 }

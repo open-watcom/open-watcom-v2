@@ -123,7 +123,7 @@ static bool DlgHistoryKey( gui_window *gui, void *param, int edit, int list )
     }
 }
 
-OVL_EXTERN bool CmdGUIEventProc( gui_window *gui, gui_event gui_ev, void *param )
+static bool CmdGUIEventProc( gui_window *gui, gui_event gui_ev, void *param )
 {
     dlg_command *dlg;
     char        *text;

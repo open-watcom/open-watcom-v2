@@ -31,6 +31,7 @@
 
 
 #include "ftnstd.h"
+#include <string.h>
 #include "rundat.h"
 #include "errcod.h"
 #include "ifile.h"
@@ -39,8 +40,6 @@
 #include "ioerr.h"
 #include "rdwr.h"
 #include "rdutils.h"
-
-#include <string.h>
 
 
 void    NextRec( void )

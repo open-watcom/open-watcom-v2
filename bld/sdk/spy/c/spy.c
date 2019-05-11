@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2017-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,6 +33,7 @@
 #include "spy.h"
 #include "spydll.h"
 #include "log.h"
+#include "spymem.h"
 
 
 #ifdef __WATCOMC__
@@ -60,7 +61,6 @@ static bool spyInit( HANDLE currinst, HANDLE previnst, int cmdshow )
 #ifdef __WATCOMC__
     _STACKLOW = 0;
 #endif
-    MemStart();
 
 #ifdef __WINDOWS__
     HandleMessageInst = (message_func *)MakeProcInstance( (FARPROC)HandleMessage, Instance );
@@ -159,12 +159,16 @@ void SpyFini( void )
 int WINMAINENTRY WinMain( HINSTANCE currinst, HINSTANCE previnst, LPSTR cmdline, int cmdshow )
 {
     MSG         msg;
+    int         rc;
 #ifdef __NT__
     HWND        prev_hwnd;
     const char  *errstr;
 #endif
 
-    cmdline = cmdline;
+    /* unused parameters */ (void)cmdline;
+
+    rc = 1;
+    MemOpen();
     SetInstance( currinst );
 #ifdef __NT__
 
@@ -181,19 +185,21 @@ int WINMAINENTRY WinMain( HINSTANCE currinst, HINSTANCE previnst, LPSTR cmdline,
 
         SetWindowPos( prev_hwnd, HWND_TOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE );
         SetWindowPos( prev_hwnd, HWND_NOTOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE );
-        exit( 0 );
+        rc = 0;
     }
 #endif
-    if( !spyInit( currinst, previnst, cmdshow ) ) {
-        exit( 0 );
+    if( rc && !spyInit( currinst, previnst, cmdshow ) ) {
+        rc = 0;
     }
-
-    while( GetMessage( &msg, (HWND)NULL, 0, 0 ) ) {
-        TranslateMessage( &msg );
-        DispatchMessage( &msg );
+    if( rc ) {
+        while( GetMessage( &msg, (HWND)NULL, 0, 0 ) ) {
+            TranslateMessage( &msg );
+            DispatchMessage( &msg );
+        }
+        SpyFini();
     }
-    SpyFini();
-    return( 1 );
+    MemClose();
+    return( rc );
 
 } /* WinMain */
 

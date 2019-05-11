@@ -71,7 +71,6 @@ void StartIDE( HANDLE instance, BOOL dospawn )
     WNDENUMPROC wndenumproc;
 
     found = FALSE;
-    instance = instance;
     wndenumproc = MakeProcInstance_WNDENUM( FindWatIDEHwnd, instance );
     EnumWindows( wndenumproc, (LPARAM)&found );
     FreeProcInstance_WNDENUM( wndenumproc );

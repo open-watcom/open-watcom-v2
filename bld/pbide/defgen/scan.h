@@ -35,6 +35,6 @@ typedef union {
     long        val;
 } ScanValue;
 
-BOOL ScanInit( char *fname );
-int Scan( ScanValue *val );
-void ScanFini( void );
+extern BOOL     ScanInit( char *fname );
+extern int      Scan( ScanValue *val );
+extern void     ScanFini( void );

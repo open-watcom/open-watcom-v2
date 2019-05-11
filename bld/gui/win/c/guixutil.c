@@ -147,7 +147,7 @@ void GUICalcLocation( gui_rect *rect, gui_coord *pos, gui_coord *size,
 
 bool GUISetupStruct( gui_window *wnd, gui_create_info *dlg_info,
                       gui_coord *pos, gui_coord *size, HWND parent,
-                      HMENU *menu )
+                      HMENU *hmenu )
 {
     GUICalcLocation( &dlg_info->rect, pos, size, parent );
     if( wnd != NULL ) {
@@ -155,16 +155,16 @@ bool GUISetupStruct( gui_window *wnd, gui_create_info *dlg_info,
             wnd->style = dlg_info->style;
             wnd->scroll = dlg_info->scroll;
         }
-        if( !GUISetColours( wnd, dlg_info->colours.num_items, dlg_info->colours.colours ) ) {
+        if( !GUISetColours( wnd, dlg_info->colours.num_items, dlg_info->colours.colour ) ) {
             return( false );
         }
     }
 
-    if( ( ( parent == HWND_DESKTOP ) || (dlg_info->style & GUI_POPUP) ) && ( menu != NULL ) ) {
+    if( ( ( parent == HWND_DESKTOP ) || (dlg_info->style & GUI_POPUP) ) && ( hmenu != NULL ) ) {
         if( dlg_info->resource_menu != NULL ) {
-            *menu =  _wpi_loadmenu( GUIResHInst, dlg_info->resource_menu );
+            *hmenu = _wpi_loadmenu( GUIResHInst, dlg_info->resource_menu );
         } else {
-            return( GUICreateMenus( wnd, dlg_info->menu.num_items, dlg_info->menu.menu, menu ) );
+            return( GUICreateMenus( wnd, &dlg_info->menus, hmenu ) );
         }
     }
 

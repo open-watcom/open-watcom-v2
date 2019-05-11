@@ -58,7 +58,7 @@ static void insertVar( char **env, char *var )
 {
     char        *p;
     char         ch;
-    unsigned     len;
+    size_t       len;
     char         del = 0;
 
     p = strchr( var, '=' ) + 1;

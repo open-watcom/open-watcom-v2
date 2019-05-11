@@ -2,32 +2,32 @@
 #==================================================================================================
 !inject btom.obj     d16 d32             nt nta ntp         o16 o32 q16 q32 w16 w32 osi l32 rdu rdk
 !inject chkctype.obj d16 d32             nt nta ntp         o16 o32 q16 q32 w16 w32 osi l32 rdu rdk
-!inject fbtom.obj    d16 d32             nt nta ntp         o16 o32 q16 q32 w16 w32 osi l32 rdu rdk
-!inject fjgetmoj.obj d16 d32             nt                 o16 o32 q16 q32 w16 w32 osi l32 rdu rdk
-!inject fjputmoj.obj d16 d32             nt                 o16 o32 q16 q32 w16 w32 osi l32 rdu rdk
-!inject fjstradv.obj d16 d32             nt                 o16 o32         w16 w32 osi     rdu rdk
-!inject fjstrcat.obj d16 d32             nt                 o16 o32         w16 w32 osi     rdu rdk
-!inject fjstrchr.obj d16 d32             nt                 o16 o32         w16 w32 osi     rdu rdk
-!inject fjstrcmp.obj d16 d32             nt                 o16 o32         w16 w32 osi     rdu rdk
-!inject fjstrcsp.obj d16 d32             nt                 o16 o32         w16 w32 osi     rdu rdk
-!inject fjstricm.obj d16 d32             nt                 o16 o32         w16 w32 osi     rdu rdk
-!inject fjstrlen.obj d16 d32             nt                 o16 o32         w16 w32 osi     rdu rdk
-!inject fjstrlwr.obj d16 d32             nt                 o16 o32         w16 w32 osi     rdu rdk
-!inject fjstrmat.obj d16 d32             nt                 o16 o32         w16 w32 osi     rdu rdk
-!inject fjstrncm.obj d16 d32             nt                 o16 o32         w16 w32 osi     rdu rdk
-!inject fjstrncp.obj d16 d32             nt                 o16 o32         w16 w32 osi     rdu rdk
-!inject fjstrnic.obj d16 d32             nt                 o16 o32         w16 w32 osi     rdu rdk
-!inject fjstrnse.obj d16 d32             nt                 o16 o32         w16 w32 osi     rdu rdk
-!inject fjstrrch.obj d16 d32             nt                 o16 o32         w16 w32 osi     rdu rdk
-!inject fjstrrev.obj d16 d32             nt                 o16 o32         w16 w32 osi     rdu rdk
-!inject fjstrset.obj d16 d32             nt                 o16 o32         w16 w32 osi     rdu rdk
-!inject fjstrski.obj d16 d32             nt                 o16 o32         w16 w32 osi     rdu rdk
-!inject fjstrspn.obj d16 d32             nt                 o16 o32         w16 w32 osi     rdu rdk
-!inject fjstrstr.obj d16 d32             nt                 o16 o32         w16 w32 osi     rdu rdk
-!inject fjstrtok.obj d16 d32             nt                 o16 o32         w16 w32 osi     rdu rdk
-!inject fjstrupr.obj d16 d32             nt                 o16 o32         w16 w32 osi     rdu rdk
-!inject fmtob.obj    d16 d32             nt                 o16 o32 q16 q32 w16 w32 osi l32 rdu rdk
-!inject fnthctyp.obj d16 d32             nt                 o16 o32 q16 q32 w16 w32 osi l32 rdu rdk
+!inject fbtom.obj    d16 d32             nt nta ntp         o16 o32 q16 q32 w16 w32 osi
+!inject fjgetmoj.obj d16 d32             nt                 o16 o32 q16 q32 w16 w32 osi
+!inject fjputmoj.obj d16 d32             nt                 o16 o32 q16 q32 w16 w32 osi
+!inject fjstradv.obj d16 d32             nt                 o16 o32         w16 w32 osi
+!inject fjstrcat.obj d16 d32             nt                 o16 o32         w16 w32 osi
+!inject fjstrchr.obj d16 d32             nt                 o16 o32         w16 w32 osi
+!inject fjstrcmp.obj d16 d32             nt                 o16 o32         w16 w32 osi
+!inject fjstrcsp.obj d16 d32             nt                 o16 o32         w16 w32 osi
+!inject fjstricm.obj d16 d32             nt                 o16 o32         w16 w32 osi
+!inject fjstrlen.obj d16 d32             nt                 o16 o32         w16 w32 osi
+!inject fjstrlwr.obj d16 d32             nt                 o16 o32         w16 w32 osi
+!inject fjstrmat.obj d16 d32             nt                 o16 o32         w16 w32 osi
+!inject fjstrncm.obj d16 d32             nt                 o16 o32         w16 w32 osi
+!inject fjstrncp.obj d16 d32             nt                 o16 o32         w16 w32 osi
+!inject fjstrnic.obj d16 d32             nt                 o16 o32         w16 w32 osi
+!inject fjstrnse.obj d16 d32             nt                 o16 o32         w16 w32 osi
+!inject fjstrrch.obj d16 d32             nt                 o16 o32         w16 w32 osi
+!inject fjstrrev.obj d16 d32             nt                 o16 o32         w16 w32 osi
+!inject fjstrset.obj d16 d32             nt                 o16 o32         w16 w32 osi
+!inject fjstrski.obj d16 d32             nt                 o16 o32         w16 w32 osi
+!inject fjstrspn.obj d16 d32             nt                 o16 o32         w16 w32 osi
+!inject fjstrstr.obj d16 d32             nt                 o16 o32         w16 w32 osi
+!inject fjstrtok.obj d16 d32             nt                 o16 o32         w16 w32 osi
+!inject fjstrupr.obj d16 d32             nt                 o16 o32         w16 w32 osi
+!inject fmtob.obj    d16 d32             nt                 o16 o32 q16 q32 w16 w32 osi
+!inject fnthctyp.obj d16 d32             nt                 o16 o32 q16 q32 w16 w32 osi
 !inject hantozen.obj d16 d32             nt nta ntp         o16 o32 q16 q32 w16 w32 osi l32 rdu rdk
 !inject hanzentb.obj d16 d32             nt nta ntp         o16 o32 q16 q32 w16 w32 osi l32 rdu rdk
 !inject isktable.obj d16 d32             nt nta ntp         o16 o32 q16 q32 w16 w32 osi l32 rdu rdk

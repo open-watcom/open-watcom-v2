@@ -194,8 +194,8 @@ static void ProcFile( FILE *fp )
     free( RecBuff );
 }
 
-int process_file_pubdef( char *filename )
-/***************************************/
+static int process_file_pubdef( char *filename )
+/**********************************************/
 {
     FILE    *fp;
 

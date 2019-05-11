@@ -5,10 +5,6 @@
 #ifndef NC_DEFINE_H
 #define NC_DEFINE_H 1
 
-#ifndef BROKEN_LINKER
-#define BROKEN_LINKER 0
-#endif
-
 #ifndef BSD_TPUTS
 #define BSD_TPUTS 0
 #endif

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2017-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -29,9 +29,13 @@
 *
 ****************************************************************************/
 
+
 #include <stdarg.h>
 #include <string.h>
-#include <malloc.h>
+#include <stdlib.h>
+#ifdef _M_I86
+    #include <malloc.h>
+#endif
 #include "_defwin.h"
 /*
  * Define the _MBCS macro to compile defwin stuff with multibyte support.
@@ -40,10 +44,11 @@
 #include "mbdefwin.h"
 
 #if defined( __OS2__ )
-  #include "pmdlg.h"
+    #include "pmdlg.h"
 #else
-  #include "windlg.h"
+    #include "windlg.h"
 #endif
+
 
 #ifdef __OS2__
 typedef int         HANDLE;

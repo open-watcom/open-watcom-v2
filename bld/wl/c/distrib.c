@@ -116,7 +116,7 @@ void InitArcBuffer( mod_entry * mod )
 /******************************************/
 /* set up the mod_entry arcdata field for dead code elimination */
 {
-    if( !( (FmtData.type & MK_OVERLAYS) && FmtData.u.dos.distribute && (LinkState & SEARCHING_LIBRARIES) ) ) {
+    if( !( (FmtData.type & MK_OVERLAYS) && FmtData.u.dos.distribute && (LinkState & LS_SEARCHING_LIBRARIES) ) ) {
         _PermAlloc( mod->x.arclist, sizeof(arcdata) - DIST_ONLY_SIZE );
     }
 }
@@ -164,7 +164,7 @@ static void KillUnrefedSyms( void *_sym )
         } else {
             sym->info |= SYM_DEAD;
         }
-        if( LinkFlags & SHOW_DEAD ) {
+        if( LinkFlags & LF_SHOW_DEAD ) {
             LnkMsg( MAP+MSG_SYMBOL_DEAD, "S", sym );
         }
     }
@@ -186,15 +186,15 @@ void SetSegments( void )
     if( FmtData.type & MK_DOS16M ) {
         MakeDos16PM();
     }
-    if( (LinkFlags & STRIP_CODE) == 0 )
+    if( (LinkFlags & LF_STRIP_CODE) == 0 )
         return;
-    LinkState &= ~CAN_REMOVE_SEGMENTS;
+    LinkState &= ~LS_CAN_REMOVE_SEGMENTS;
     ObjFormat |= FMT_DEBUG_COMENT;
     if( (FmtData.type & MK_OVERLAYS) && FmtData.u.dos.distribute ) {
         _LnkFree( ArcBuffer );
         ArcBuffer = NULL;
     }
-    if( LinkFlags & STRIP_CODE ) {
+    if( LinkFlags & LF_STRIP_CODE ) {
         WalkMods( DefineOvlSegments );
     }
 #if 0           // NYI: distributing libraries completely broken.

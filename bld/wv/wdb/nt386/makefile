@@ -5,7 +5,7 @@ host_cpu = 386
 
 wv_rtdll = 1
 
-.c : ../../win/c
+.c : ../../nt/c
 
 all : wdb.exe .SYMBOLIC
 

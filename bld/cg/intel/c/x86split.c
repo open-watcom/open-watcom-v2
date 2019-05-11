@@ -82,7 +82,7 @@ instruction      *rSAVEFACE( instruction *ins )
 
     // we have a EDX:EAX op 1 or DX:AX op 1 here which the constant
     // folder was not able to catch, because of the weird regs
-    new_ins = MakeMove( AllocRegName( _AX ), ins->result, ins->type_class );
+    new_ins = MakeMove( AllocRegName( HW_xAX ), ins->result, ins->type_class );
     ReplIns( ins, new_ins );
     return( new_ins );
 }
@@ -94,7 +94,7 @@ instruction      *rMULSAVEFACE( instruction *ins )
 
     // we have a r1 mul 1 -> DX:AX here which the constant
     // folder was not able to catch, because of the weird regs
-    new_ins = MakeMove( ins->operands[0], AllocRegName( _AX ), ins->type_class );
+    new_ins = MakeMove( ins->operands[0], AllocRegName( HW_xAX ), ins->type_class );
     ReplIns( ins, new_ins );
     return( new_ins );
 }
@@ -242,9 +242,7 @@ instruction      *rHIGHLOWMOVE( instruction *ins )
     instruction         *new_ins;
 
 /* for moving constants such as 0xabcdabcd*/
-    new_ins = MakeMove( LowPart( ins->result, U2 ),
-                            HighPart( ins->result, U2 ),
-                                    U2 );
+    new_ins = MakeMove( LowPart( ins->result, U2 ), HighPart( ins->result, U2 ), U2 );
     ins->result = LowPart( ins->result, U2 );
     ChangeType( ins, U2 );
     DupSegRes( ins, new_ins );
@@ -253,24 +251,12 @@ instruction      *rHIGHLOWMOVE( instruction *ins )
 }
 
 #if _TARGET & _TARG_IAPX86
-    #define     CX              HW_CX
-    #define     DI              HW_DI
-    #define     ES_DI           HW_ES_DI
-    #define     SI              HW_SI
-    #define     DS_SI           HW_DS_SI
     #define     LP              PT
     #define     MOV_SIZE        3
 #else
-    #define     CX              HW_ECX
-    #define     DI              HW_EDI
-    #define     ES_DI           HW_ES_EDI
-    #define     SI              HW_ESI
-    #define     DS_SI           HW_DS_ESI
     #define     LP              CP
     #define     MOV_SIZE        5
 #endif
-
-#define hw( x ) x
 
 bool UseRepForm( unsigned size )
 /*************************************
@@ -330,12 +316,12 @@ static  bool    CanLoadStringOps( instruction *ins ) {
     hw_reg_set  needs;
 
     if( UseRepForm( ins->operands[0]->n.size ) ) {
-        needs = CX;
+        needs = HW_xCX;
     } else {
         HW_CAsgn( needs, HW_EMPTY );
     }
-    HW_CAsgn( needs, hw( SI ) );
-    HW_CTurnOn( needs, hw( DI ) );
+    HW_CAsgn( needs, HW_xSI );
+    HW_CTurnOn( needs, HW_xDI );
     if( _IsTargetModel( FLOATING_DS ) ) {
         HW_CTurnOn( needs, HW_DS );
     }
@@ -398,20 +384,20 @@ static  instruction     *LoadStringOps( instruction *ins,
     } else {
         if( ( (*op1)->n.size & (WORD_SIZE - 1) ) == 0
           || ( OptForSize <= 50 && ins->head.opcode == OP_MOV ) ) {
-            load_len = MoveConst( (*op1)->n.size / WORD_SIZE, AllocRegName( CX ), WD );
+            load_len = MoveConst( (*op1)->n.size / WORD_SIZE, AllocRegName( HW_xCX ), WD );
             PrefixIns( ins, load_len );
         } else {
-            load_len = MoveConst( (*op1)->n.size, AllocRegName( CX ), WD );
+            load_len = MoveConst( (*op1)->n.size, AllocRegName( HW_xCX ), WD );
             PrefixIns( ins, load_len );
         }
-        new_op1 = CX;
+        new_op1 = HW_xCX;
     }
     /* careful here. Make sure we load DS last*/
     if( ins->num_operands > OpcodeNumOperands( ins ) ) {
         if( (*op1)->n.class == N_INDEXED || (*op1)->n.class == N_MEMORY ) {
-            load_op1 = MakeUnary( OP_LA, *op2, AllocRegName(ES_DI), LP );
+            load_op1 = MakeUnary( OP_LA, *op2, AllocRegName( HW_ES_xDI ), LP );
             PrefixIns( ins, load_op1 );
-            load_op2 = MakeUnary( OP_LA, *op1, AllocRegName( SI ), WD );
+            load_op2 = MakeUnary( OP_LA, *op1, AllocRegName( HW_xSI ), WD );
             PrefixIns( ins, load_op2 );
             load_op2 = MakeMove( ins->operands[ins->num_operands - 1], AllocRegName( HW_DS ), U2 );
             PrefixIns( ins, load_op2 );
@@ -420,25 +406,24 @@ static  instruction     *LoadStringOps( instruction *ins,
         } else {
             load_op1 = MakeMove( ins->operands[ins->num_operands - 1], AllocRegName( HW_ES ), U2 );
             PrefixIns( ins, load_op1 );
-            load_op2 = MakeUnary( OP_LA, *op2, AllocRegName( DI ), WD );
+            load_op2 = MakeUnary( OP_LA, *op2, AllocRegName( HW_xDI ), WD );
             PrefixIns( ins, load_op2 );
-            load_op2 = MakeUnary( OP_LA, *op1, AllocRegName(DS_SI), LP );
+            load_op2 = MakeUnary( OP_LA, *op1, AllocRegName( HW_DS_xSI ), LP );
             PrefixIns( ins, load_op2 );
             ds_needs_save = SegmentFloats( *op1 );
             es_needs_save = true;
         }
         DelSeg( ins );
-    } else if( _IsTargetModel( FLAT_MODEL ) &&
-               !SegmentFloats( *op1 ) && !SegmentFloats( *op2 ) ) {
-        load_op1 = MakeUnary( OP_LA, *op2, AllocRegName( DI ), WD );
+    } else if( _IsTargetModel( FLAT_MODEL ) && !SegmentFloats( *op1 ) && !SegmentFloats( *op2 ) ) {
+        load_op1 = MakeUnary( OP_LA, *op2, AllocRegName( HW_xDI ), WD );
         PrefixIns( ins, load_op1 );
-        load_op2 = MakeUnary( OP_LA, *op1, AllocRegName( SI ), WD );
+        load_op2 = MakeUnary( OP_LA, *op1, AllocRegName( HW_xSI ), WD );
         PrefixIns( ins, load_op2 );
         ds_needs_save = es_needs_save = false;
     } else {
-        load_op1 = MakeUnary( OP_LA, *op2, AllocRegName( ES_DI ), LP );
+        load_op1 = MakeUnary( OP_LA, *op2, AllocRegName( HW_ES_xDI ), LP );
         PrefixIns( ins, load_op1 );
-        load_op2 = MakeUnary( OP_LA, *op1, AllocRegName( DS_SI ), LP );
+        load_op2 = MakeUnary( OP_LA, *op1, AllocRegName( HW_DS_xSI ), LP );
         PrefixIns( ins, load_op2 );
         ds_needs_save = SegmentFloats( *op1 );
         es_needs_save = SegmentFloats( *op2 );
@@ -458,8 +443,8 @@ static  instruction     *LoadStringOps( instruction *ins,
         PrefixIns( load_op1, MakeUnary( OP_PUSH, es_reg, NULL, U2 ) );
         load_op1 = load_op1->head.prev;
     }
-    HW_CTurnOn( new_op1, hw( DS_SI ) );
-    HW_CTurnOn( new_op1, hw( ES_DI ) );
+    HW_CTurnOn( new_op1, HW_DS_xSI );
+    HW_CTurnOn( new_op1, HW_ES_xDI );
     ins->table = GetString();
     ins->head.state = INS_NEEDS_WORK;
     *op1 = FakeIndex( ins->operands[0], new_op1 );
@@ -470,7 +455,7 @@ static  instruction     *LoadStringOps( instruction *ins,
     HW_CTurnOff( new_op1, HW_DS );
     ins->zap = &AllocRegName( new_op1 )->r;
     if( ins->head.opcode == OP_MOV ) {
-        ins->result = FakeIndex( ins->result, ES_DI );
+        ins->result = FakeIndex( ins->result, HW_ES_xDI );
     } else {
         ins->result = NULL;
     }
@@ -816,7 +801,7 @@ instruction     *rDOLONGPUSH( instruction *ins )
         ins = LoadStringOps( move, &move->operands[0], &move->result );
         /*% mov CX,const will be the first if it's there so try for SUB SP,CX*/
         sub_sp = MakeBinary( OP_SUB, sp, AllocIntConst( _RoundUp( size, WORD_SIZE ) ), sp, WD );
-        if( ins->result != NULL && HW_CEqual( ins->result->r.reg, hw( CX ) ) ) {
+        if( ins->result != NULL && HW_CEqual( ins->result->r.reg, HW_xCX ) ) {
             SuffixIns( ins, sub_sp );
         } else {
             PrefixIns( ins, sub_sp );

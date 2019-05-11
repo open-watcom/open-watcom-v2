@@ -60,10 +60,10 @@ typedef struct veditline {
     extern "C" {
 #endif
 
-extern ui_event uiveditevent( VSCREEN *, VEDITLINE *, ui_event );
-extern ui_event uiveditline( VSCREEN *, VEDITLINE * );
-extern bool     uiveditinit( VSCREEN *, VEDITLINE *, char *, unsigned, ORD, ORD, unsigned );
-extern bool     uiveditfini( VSCREEN *, VEDITLINE * );
+extern ui_event     UIAPI uiveditevent( VSCREEN *, VEDITLINE *, ui_event );
+extern ui_event     UIAPI uiveditline( VSCREEN *, VEDITLINE * );
+extern bool         UIAPI uiveditinit( VSCREEN *, VEDITLINE *, char *, unsigned, ORD, ORD, unsigned );
+extern bool         UIAPI uiveditfini( VSCREEN *, VEDITLINE * );
 
 #ifdef __cplusplus
 }

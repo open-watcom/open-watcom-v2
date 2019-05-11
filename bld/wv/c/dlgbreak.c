@@ -213,7 +213,7 @@ static bool DlgEditField( gui_ctl_id id )
 }
 
 
-OVL_EXTERN bool BrkGUIEventProc( gui_window *gui, gui_event gui_ev, void *param )
+static bool BrkGUIEventProc( gui_window *gui, gui_event gui_ev, void *param )
 {
     gui_ctl_id  id;
     gui_ctl_id  from;

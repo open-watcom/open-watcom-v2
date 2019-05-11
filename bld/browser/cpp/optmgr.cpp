@@ -79,7 +79,7 @@ static const char * DefaultEditorParms = "%f";
     static bool DefaultEditorIsDLL = true;
     static const char * DefaultEditor = "epmlink";
 #else
-#pragma initialize before program
+#pragma initialize __before __program
     static bool DefaultEditorIsDLL = !__IsDBCS;
     static const char * DefaultEditor =
         ( __IsDBCS ? "notepad.exe" : "weditviw.dll" );

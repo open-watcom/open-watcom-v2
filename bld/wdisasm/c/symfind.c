@@ -30,8 +30,6 @@
 ****************************************************************************/
 
 
-#include <stdlib.h>
-#include <string.h>
 #include <limits.h>
 #include "disasm.h"
 #include "wdismsg.h"

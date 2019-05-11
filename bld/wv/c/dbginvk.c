@@ -218,7 +218,7 @@ static void Conclude( invokes *inv )
 }
 
 
-OVL_EXTERN bool DoneInvLine( inp_data_handle _inv, inp_rtn_action action )
+static bool DoneInvLine( inp_data_handle _inv, inp_rtn_action action )
 {
     invokes *inv = _inv;
 

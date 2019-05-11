@@ -170,14 +170,14 @@ system begin pharlap
     libpath %OWSRCDIR%/clib/doslfn/library/msdos.386/ms_r
     libpath %OWSRCDIR%/mathlib/library/msdos.386/ms_r
     libpath %OWSRCDIR%/mathlib/library/msdos.387/ms_r
-    format phar ^
+    format pharlap ^
 end
 
 system begin pharlap_linux
     option osname='Linux x86 PharLap'
     libpath %OWSRCDIR%/clib/library/linux.386/mf_r
     libpath %OWSRCDIR%/mathlib/library/linux.386/ms_r
-    format phar ^
+    format pharlap ^
 end
 
 system begin pharlap_qnx
@@ -375,6 +375,16 @@ system begin ntaxp
     runtime console=4.0
 end
 
+system begin ntaxp_win
+    option osname='Windows NT(AXP) windowed'
+    libpath %OWSRCDIR%/clib/library/winnt.axp/_s
+    libpath %OWSRCDIR%/mathlib/library/winnt.axp/_s
+    libpath %OWSRCDIR%/w32api/ntaxp
+    library kernel32,user32,gdi32,advapi32,comdlg32,ole32,oleaut32,winspool,shell32,uuid,comctl32
+    format windows nt ^
+    runtime windows=4.0
+end
+
 system begin pe_linux
     option osname='Linux x86 PE'
     libpath %OWSRCDIR%/clib/library/linux.386/mf_r
@@ -484,6 +494,18 @@ system begin linux
     op norelocs
 end
 
+system begin linuxmips
+    option osname='Linux MIPS'
+    libpath %OWSRCDIR%/clib/library/linux.mps/_s
+    libpath %OWSRCDIR%/mathlib/library/linux.mps/_s
+    libpath %OWSRCDIR%/cpplib/library/linux.mps/_s
+    libpath %OWSRCDIR%/cpplib/complex/linux.mps/_s
+    format elf
+    runtime linux
+    op exportall
+    op norelocs
+end
+
 system begin win386
     option osname='Windows 32-bit'
     libpath %OWSRCDIR%/fpuemu/386/stub386
@@ -494,7 +516,7 @@ system begin win386
     libpath %OWSRCDIR%/mathlib/library/msdos.386/ms_s
     libpath %OWSRCDIR%/mathlib/library/msdos.387/ms_s
     libpath %OWSRCDIR%/win386/conv/win386
-    format phar rex ^
+    format pharlap rex ^
 end
 
 system begin win_vxd
@@ -568,7 +590,7 @@ system begin ads
     libpath %OWSRCDIR%/clib/doslfn/library/msdos.386/ms_s
     libpath %OWSRCDIR%/mathlib/library/msdos.386/ms_s
     libfile %OWSRCDIR%/clib/startup/library/msdos.386/ms_s/adsstart.obj
-    format phar ext ^
+    format pharlap ext ^
 end
 
 system begin tnt

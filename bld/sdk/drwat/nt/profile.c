@@ -31,7 +31,7 @@
 
 #include "drwatcom.h"
 #include "font.h"
-#include "intdlg.h"
+#include "intdlg.rh"
 #include "inipath.h"
 #include "watini.h"
 

@@ -61,47 +61,36 @@
 #include "hash.h"
 #include "loadpe.h"
 
-static bool             EndOfLib( file_list *, unsigned long );
-static void             IncLoadObjFiles( void );
-static void             DoPass1( mod_entry *next, file_list *list );
-static void             SkipFile( file_list *list, unsigned long *loc );
 
-void ProcObjFiles( void )
-/******************************/
-/* Perform Pass 1 on all object files */
+static void BadSkip( file_list *list, unsigned long *loc )
+/********************************************************/
 {
-    CurrMod = NULL;
-    if( LinkFlags & INC_LINK_FLAG ) {
-        if( (LinkFlags & DWARF_DBI_FLAG) == 0 && (LinkFlags & ANY_DBI_FLAG) ) {
-            LnkMsg( FTL+MSG_INC_ONLY_SUPPORTS_DWARF, NULL );
-        }
-        if( LinkFlags & STRIP_CODE ) {
-            LnkMsg( FTL+MSG_INC_AND_DCE_NOT_ALLOWED, NULL );
-        }
-        if( LinkFlags & VF_REMOVAL ) {
-            LnkMsg( FTL+MSG_INC_AND_VFR_NOT_ALLOWED, NULL );
-        }
-    }
-    LnkMsg( INF+MSG_LOADING_OBJECT, NULL );
-    if( LinkFlags & STRIP_CODE ) {
-        LinkState |= CAN_REMOVE_SEGMENTS;
-    }
-    if( LinkState & GOT_PREV_STRUCTS ) {
-        IncLoadObjFiles();
-    } else {
-        LoadObjFiles( Root );
-        if( FmtData.type & MK_OVERLAYS ) {
-            OvlPass1();
-        }
-    }
+    /* unused parameters */ (void)list; (void)loc;
+
+    BadObjFormat();
 }
+
+static struct {
+    void (*SkipObj)( file_list *, unsigned long * );
+    unsigned long (*Pass1)( void );
+} Process[] = {
+    /* SkipObj       Pass1                                                                  */
+    { BadSkip,      BadObjFormat },     /* FMT_PE_XFER      .obj is PE xfer code segment    */
+    { OMFSkipObj,   OMFPass1 },         /* FMT_OMF          .obj is an OMF object file      */
+    { ORLSkipObj,   ORLPass1 },         /* FMT_COFF         .obj is a COFF object file      */
+    { ORLSkipObj,   ORLPass1 },         /* FMT_ELF          .obj is an ELF object file      */
+    { BadSkip,      IncPass1 },         /* FMT_INCREMENTAL  .obj is saved inc. linking info */
+    { BadSkip,      BadObjFormat },     /* unused                                           */
+    { BadSkip,      BadObjFormat },     /* unused                                           */
+    { BadSkip,      BadObjFormat }      /* unused                                           */
+};
 
 void SetupFakeModule( void )
 /*********************************/
 {
     if( FmtData.type & MK_PE ) {
         FakeModule = NewModEntry();
-        FakeModule->modinfo = DBI_ALL|MOD_LAST_SEG|MOD_NEED_PASS_2|FMT_PE_XFER;
+        FakeModule->modinfo = DBI_ALL | MOD_LAST_SEG | MOD_NEED_PASS_2 | FMT_PE_XFER;
         FakeModule->name.u.ptr = AddStringStringTable( &PermStrings, LinkerModule );
         DBIInitModule( FakeModule );
     }
@@ -123,13 +112,13 @@ static void CheckNewFile( mod_entry *mod, file_list *list,
 {
     time_t      modtime;
 
-    if( (LinkFlags & GOT_CHGD_FILES) == 0 || AlwaysCheckUsingDate ) {
-        if( QModTime( list->file->name.u.ptr, &modtime ) || modtime > mod->modtime ) {
-            list->status |= STAT_HAS_CHANGED;
+    if( (LinkFlags & LF_GOT_CHGD_FILES) == 0 || AlwaysCheckUsingDate ) {
+        if( QModTime( list->infile->name.u.ptr, &modtime ) || modtime > mod->modtime ) {
+            list->flags |= STAT_HAS_CHANGED;
         }
     } else {
-        if( FindHTableElem( Root->modFilesHashed, list->file->name.u.ptr ) ) {
-            list->status |= STAT_HAS_CHANGED;
+        if( FindHTableElem( Root->modFilesHashed, list->infile->name.u.ptr ) ) {
+            list->flags |= STAT_HAS_CHANGED;
         }
     }
 }
@@ -144,7 +133,7 @@ static void SetStartAddr( void )
     mod = StartInfo.mod;
     if( mod == NULL )
         return;
-    if( (mod->modinfo & MOD_KILL) || (mod->f.source->status & STAT_HAS_CHANGED) ) {
+    if( (mod->modinfo & MOD_KILL) || (mod->f.source->flags & STAT_HAS_CHANGED) ) {
         ClearStartAddr();
     }
 }
@@ -186,16 +175,16 @@ static libnamelist *CalcLibBlacklist( void )
 /* figure out if the user has changed any of the specified libraries, and
  * torch anything after a changed library */
 {
-    infilelist          *userlibs;
+    infilelist          *userlibs_infile;
     libnamelist         *oldlibs;
 
-    userlibs = CachedLibFiles;
+    userlibs_infile = CachedLibFiles;
     for( oldlibs = SavedUserLibs; oldlibs != NULL; oldlibs = oldlibs->next ) {
-        if( userlibs == NULL )
+        if( userlibs_infile == NULL )
             return( oldlibs );
-        if( FNAMECMPSTR( userlibs->name.u.ptr, oldlibs->name ) != 0 )
+        if( FNAMECMPSTR( userlibs_infile->name.u.ptr, oldlibs->name ) != 0 )
             return( oldlibs );
-        userlibs = userlibs->next;
+        userlibs_infile = userlibs_infile->next;
     }
     return( NULL );
 }
@@ -207,15 +196,15 @@ static void CheckBlacklist( file_list *list, libnamelist *blacklist )
     size_t      length_b;
     size_t      delta;
 
-    if( list->status & STAT_HAS_CHANGED )
+    if( list->flags & STAT_HAS_CHANGED )
         return;
-    length = strlen( list->file->name.u.ptr );
+    length = strlen( list->infile->name.u.ptr );
     for( ; blacklist != NULL; blacklist = blacklist->next ) {
         length_b = strlen( blacklist->name );
         if( length >= length_b ) {
             delta = length - length_b;
-            if( FNAMECMPSTR( blacklist->name, list->file->name.u.ptr + delta ) == 0 ) {
-                list->status |= STAT_HAS_CHANGED;
+            if( FNAMECMPSTR( blacklist->name, list->infile->name.u.ptr + delta ) == 0 ) {
+                list->flags |= STAT_HAS_CHANGED;
                 return;
             }
         }
@@ -232,10 +221,10 @@ static void PrepareModList( void )
 
     mod = Root->mods;
     for( list = Root->files; list != NULL && mod != NULL; list = list->next_file ) {
-        if( strcmp( list->file->name.u.ptr, mod->f.fname.u.ptr ) == 0 ) {
+        if( strcmp( list->infile->name.u.ptr, mod->f.fname.u.ptr ) == 0 ) {
             SetupModule( &mod, list );
         } else if( mod->n.next_mod != NULL ) {
-            if( FNAMECMPSTR( list->file->name.u.ptr, mod->n.next_mod->f.fname.u.ptr ) == 0 ) {
+            if( FNAMECMPSTR( list->infile->name.u.ptr, mod->n.next_mod->f.fname.u.ptr ) == 0 ) {
                 mod->modinfo |= MOD_KILL;
                 mod = mod->n.next_mod;
                 SetupModule( &mod, list );
@@ -324,7 +313,7 @@ static void IncIterateMods( mod_entry *mod, void (*proc_fn)(mod_entry *), bool d
     bool haschanged;
 
     for( ; mod != NULL; mod = mod->n.next_mod ) {
-        haschanged = (mod->modinfo & MOD_KILL) || (mod->f.source->status & STAT_HAS_CHANGED);
+        haschanged = (mod->modinfo & MOD_KILL) || (mod->f.source->flags & STAT_HAS_CHANGED);
         if( haschanged == dochanged ) {
             proc_fn( mod );
         }
@@ -353,94 +342,11 @@ static void SavedPass1( mod_entry *mod )
     ObjPass1();
 }
 
-static void ProcessMods( void )
-/*****************************/
-{
-    mod_entry   *mod;
-    mod_entry   *next;
-    mod_entry   *savemod;
-    file_list   *list;
-
-    mod = Root->mods;
-    Root->mods = NULL;
-    for( list = Root->files; list != NULL && mod != NULL; list = list->next_file ) {
-        for( ; mod != NULL; mod = next ) {
-            next = mod->n.next_mod;
-            if( mod->modinfo & MOD_KILL ) {
-                FreeModEntry( mod );
-            } else if( mod->f.source != list ) {
-                DoPass1( NULL, list );
-                break;
-            } else {
-                if( list->status & STAT_HAS_CHANGED ) {
-                    memset( mod, 0, sizeof( mod_entry ) );
-                    DoPass1( mod, list );
-                } else {
-                    SavedPass1( mod );
-                }
-            }
-        }
-    }
-    for( ; mod != NULL; mod = next ) {
-        next = mod->n.next_mod;
-        FreeModEntry( mod );
-    }
-    for( ; list != NULL; list = list->next_file ) {
-        DoPass1( NULL, list );
-    }
-    savemod = Root->mods;       // pass1 routines will add new mods to this
-    Root->mods = NULL;
-    CurrMod = NULL;
-    for( mod = LibModules; mod != NULL; mod = next ) {
-        next = mod->n.next_mod;
-        if( (mod->modinfo & MOD_KILL)
-                || mod->f.source != NULL && (mod->f.source->status & STAT_HAS_CHANGED) ) {
-            FreeModEntry( mod );
-        } else {
-            SavedPass1( mod );
-        }
-    }
-    LibModules = Root->mods;
-    Root->mods = savemod;
-}
-
 static void FreeModSegments( mod_entry *mod )
 /*******************************************/
 {
     mod->publist = NULL;
     Ring2CarveFree( CarveSegData, &mod->segs );
-}
-
-static void IncLoadObjFiles( void )
-/*********************************/
-{
-    PrepareModList();
-    SetStartAddr();
-    MarkDefaultSyms();
-    IncIterateMods( Root->mods, MarkRelocs, false );
-    IncIterateMods( LibModules, MarkRelocs, false );
-    IncIterateMods( Root->mods, FixModAltDefs, false );
-    IncIterateMods( LibModules, FixModAltDefs, false );
-    IncIterateMods( Root->mods, KillSyms, true );
-    IncIterateMods( LibModules, KillSyms, true );
-    PurgeSymbols();
-    IncIterateMods( Root->mods, FreeModSegments, true );
-    IncIterateMods( LibModules, FreeModSegments, true );
-    ProcessMods();
-    DoIncGroupDefs();
-    DoIncLibDefs();
-}
-
-void LoadObjFiles( section *sect )
-/********************************/
-{
-    file_list   *list;
-
-    CurrSect = sect;
-    CurrMod = NULL;
-    for( list = sect->files; list != NULL; list = list->next_file ) {
-        DoPass1( NULL, list );
-    }
 }
 
 static member_list *FindMember( file_list *list, char *name )
@@ -459,6 +365,19 @@ static member_list *FindMember( file_list *list, char *name )
         }
     }
     return( foundmemb );
+}
+
+static bool EndOfLib( file_list *list, unsigned long loc )
+/********************************************************/
+{
+    unsigned_8 *id;
+
+    if( list->flags & STAT_OMF_LIB ) {
+        id = CacheRead( list, loc, sizeof( unsigned_8 ) );
+        return( *id == LIB_TRAILER_REC );
+    } else {
+        return( false );
+    }
 }
 
 static void DoPass1( mod_entry *next, file_list *list )
@@ -483,8 +402,8 @@ static void DoPass1( mod_entry *next, file_list *list )
             if( EndOfLib( list, loc ) )
                 break;
             membname = IdentifyObject( list, &loc, &size );
-            if( list->status & STAT_IS_LIB ) {
-                if( (list->status & STAT_HAS_MEMBER) && list->u.member != NULL ) {
+            if( list->flags & STAT_IS_LIB ) {
+                if( (list->flags & STAT_HAS_MEMBER) && list->u.member != NULL ) {
                     member = FindMember( list, membname );
                     if( member == NULL ) {
                         ignoreobj = true;
@@ -498,7 +417,7 @@ static void DoPass1( mod_entry *next, file_list *list )
                 if( size != 0 ) {
                     loc += size;
                 } else {
-                    SkipFile( list, &loc );
+                    Process[GET_FMT_IDX( ObjFormat )].SkipObj( list, &loc );
                 }
             } else {
                 if( next == NULL ) {
@@ -506,32 +425,32 @@ static void DoPass1( mod_entry *next, file_list *list )
                 }
                 next->n.next_mod = NULL;
                 next->f.source = list;
-                next->modtime = next->f.source->file->modtime;
+                next->modtime = next->f.source->infile->modtime;
                 next->modinfo |= ObjFormat & FMT_OBJ_FMT_MASK;
                 if( member != NULL ) {
                     next->modinfo |= member->flags;
                     _LnkFree( member );
                 }
-                if( (list->status & STAT_HAS_MEMBER) == 0 ) {
-                    next->modinfo |= list->status & DBI_MASK;
-                    if( list->status & STAT_LAST_SEG ) {
+                if( (list->flags & STAT_HAS_MEMBER) == 0 ) {
+                    next->modinfo |= list->flags & DBI_MASK;
+                    if( list->flags & STAT_LAST_SEG ) {
                         next->modinfo |= MOD_LAST_SEG;
                     }
                 }
                 AddToModList( next );
                 next->location = loc;
                 if( membname == NULL ) {
-                    membname = ChkStrDup( list->file->name.u.ptr );
+                    membname = ChkStrDup( list->infile->name.u.ptr );
                 }
                 next->name.u.ptr = membname;
                 loc = ObjPass1();
-                if( list->status & STAT_TRACE_SYMS ) {
+                if( list->flags & STAT_TRACE_SYMS ) {
                     TraceSymList( CurrMod->publist );
                 }
                 next = NULL;
             }
             ObjFormat = 0;
-            if( list->status & STAT_IS_LIB ) {      // skip library padding.
+            if( list->flags & STAT_IS_LIB ) {      // skip library padding.
                 unsigned_16 modulus;
 
                 modulus = (unsigned_16)( loc % reclength );
@@ -546,11 +465,124 @@ static void DoPass1( mod_entry *next, file_list *list )
             }
         }
         if( list->u.member != NULL ) {
-            LnkMsg( ERR+MSG_CANT_FIND_MEMBER, "12", list->file->name.u.ptr, list->u.member->name );
+            LnkMsg( ERR+MSG_CANT_FIND_MEMBER, "12", list->infile->name.u.ptr, list->u.member->name );
         }
         CacheClose( list, 1 );
     }
     CheckStop();
+}
+
+static void ProcessMods( void )
+/*****************************/
+{
+    mod_entry   *mod;
+    mod_entry   *next;
+    mod_entry   *savemod;
+    file_list   *list;
+
+    mod = Root->mods;
+    Root->mods = NULL;
+    for( list = Root->files; list != NULL && mod != NULL; list = list->next_file ) {
+        for( ; mod != NULL; mod = next ) {
+            next = mod->n.next_mod;
+            if( mod->modinfo & MOD_KILL ) {
+                FreeModEntry( mod );
+            } else if( mod->f.source != list ) {
+                DoPass1( NULL, list );
+                break;
+            } else {
+                if( list->flags & STAT_HAS_CHANGED ) {
+                    memset( mod, 0, sizeof( mod_entry ) );
+                    DoPass1( mod, list );
+                } else {
+                    SavedPass1( mod );
+                }
+            }
+        }
+    }
+    for( ; mod != NULL; mod = next ) {
+        next = mod->n.next_mod;
+        FreeModEntry( mod );
+    }
+    for( ; list != NULL; list = list->next_file ) {
+        DoPass1( NULL, list );
+    }
+    savemod = Root->mods;       // pass1 routines will add new mods to this
+    Root->mods = NULL;
+    CurrMod = NULL;
+    for( mod = LibModules; mod != NULL; mod = next ) {
+        next = mod->n.next_mod;
+        if( (mod->modinfo & MOD_KILL)
+                || mod->f.source != NULL && (mod->f.source->flags & STAT_HAS_CHANGED) ) {
+            FreeModEntry( mod );
+        } else {
+            SavedPass1( mod );
+        }
+    }
+    LibModules = Root->mods;
+    Root->mods = savemod;
+}
+
+static void IncLoadObjFiles( void )
+/*********************************/
+{
+    PrepareModList();
+    SetStartAddr();
+    MarkDefaultSyms();
+    IncIterateMods( Root->mods, MarkRelocs, false );
+    IncIterateMods( LibModules, MarkRelocs, false );
+    IncIterateMods( Root->mods, FixModAltDefs, false );
+    IncIterateMods( LibModules, FixModAltDefs, false );
+    IncIterateMods( Root->mods, KillSyms, true );
+    IncIterateMods( LibModules, KillSyms, true );
+    PurgeSymbols();
+    IncIterateMods( Root->mods, FreeModSegments, true );
+    IncIterateMods( LibModules, FreeModSegments, true );
+    ProcessMods();
+    DoIncGroupDefs();
+    DoIncLibDefs();
+}
+
+void ProcObjFiles( void )
+/******************************/
+/* Perform Pass 1 on all object files */
+{
+    CurrMod = NULL;
+    if( LinkFlags & LF_INC_LINK_FLAG ) {
+        if( (LinkFlags & LF_DWARF_DBI_FLAG) == 0 && (LinkFlags & LF_ANY_DBI_FLAG) ) {
+            LnkMsg( FTL+MSG_INC_ONLY_SUPPORTS_DWARF, NULL );
+        }
+        if( LinkFlags & LF_STRIP_CODE ) {
+            LnkMsg( FTL+MSG_INC_AND_DCE_NOT_ALLOWED, NULL );
+        }
+        if( LinkFlags & LF_VF_REMOVAL ) {
+            LnkMsg( FTL+MSG_INC_AND_VFR_NOT_ALLOWED, NULL );
+        }
+    }
+    LnkMsg( INF+MSG_LOADING_OBJECT, NULL );
+    if( LinkFlags & LF_STRIP_CODE ) {
+        LinkState |= LS_CAN_REMOVE_SEGMENTS;
+    }
+    if( LinkState & LS_GOT_PREV_STRUCTS ) {
+        IncLoadObjFiles();
+    } else {
+        LoadObjFiles( Root );
+        if( FmtData.type & MK_OVERLAYS ) {
+            OvlPass1();
+        }
+    }
+}
+
+void LoadObjFiles( section *sect )
+/********************************/
+{
+    file_list   *list;
+
+    CurrSect = sect;
+    CurrMod = NULL;
+    for( list = sect->files; list != NULL; list = list->next_file ) {
+        DoPass1( NULL, list );
+    }
 }
 
 char *IdentifyObject( file_list *list, unsigned long *loc, unsigned long *size )
@@ -563,7 +595,7 @@ char *IdentifyObject( file_list *list, unsigned long *loc, unsigned long *size )
     name = NULL;
     *size = 0;
     ar_loc = 0;
-    if( list->status & STAT_AR_LIB ) {
+    if( list->flags & STAT_AR_LIB ) {
         ar_loc = MAKE_EVEN( *loc );     /* AR headers are word aligned. */
         ar_hdr = CacheRead( list, ar_loc, sizeof( ar_header ) );
         ar_loc += sizeof( ar_header );
@@ -575,62 +607,13 @@ char *IdentifyObject( file_list *list, unsigned long *loc, unsigned long *size )
         if( IsOMF( list, *loc ) ) {
             ObjFormat |= FMT_OMF;
             name = GetOMFName( list, loc );
-            if( list->status & STAT_AR_LIB ) {
+            if( list->flags & STAT_AR_LIB ) {
                 *loc = ar_loc;          /* Restore the location. */
             }
         }
     }
     return( name );
 }
-
-static void BadSkip( file_list *list, unsigned long *loc )
-/********************************************************/
-{
-    /* unused parameters */ (void)list; (void)loc;
-
-    BadObjFormat();
-}
-
-static void (*SkipObjFile[])( file_list *, unsigned long * ) = {
-    BadSkip,
-    OMFSkipObj,
-    ORLSkipObj,
-    ORLSkipObj,
-    BadSkip,
-    BadSkip,
-    BadSkip,
-    BadSkip
-};
-
-static void SkipFile( file_list *list, unsigned long *loc )
-/*********************************************************/
-{
-    SkipObjFile[ GET_FMT_IDX( ObjFormat ) ]( list, loc );
-}
-
-static bool EndOfLib( file_list *list, unsigned long loc )
-/********************************************************/
-{
-    unsigned_8 *id;
-
-    if( list->status & STAT_OMF_LIB ) {
-        id = CacheRead( list, loc, sizeof( unsigned_8 ) );
-        return( *id == LIB_TRAILER_REC );
-    } else {
-        return( false );
-    }
-}
-
-static unsigned long (*CallPass1[])( void ) = {
-    BadObjFormat,
-    OMFPass1,
-    ORLPass1,
-    ORLPass1,
-    IncPass1,
-    BadObjFormat,
-    BadObjFormat,
-    BadObjFormat
-};
 
 unsigned long ObjPass1( void )
 /****************************/
@@ -639,13 +622,13 @@ unsigned long ObjPass1( void )
     unsigned long loc;
     char          *savename;
 
-    DEBUG(( DBG_BASE, "1 : file = %s, module = %s", CurrMod->f.source->file->name.u.ptr, CurrMod->name.u.ptr ));
+    DEBUG(( DBG_BASE, "1 : file = %s, module = %s", CurrMod->f.source->infile->name.u.ptr, CurrMod->name.u.ptr ));
     CurrMod->modinfo |= MOD_DONE_PASS_1;
     SymModStart();
     DBIInitModule( CurrMod );
     RelocStartMod();
     P1Start();
-    loc = CallPass1[ GET_FMT_IDX( ObjFormat ) ]();
+    loc = Process[GET_FMT_IDX( ObjFormat )].Pass1();
     CollapseLazyExtdefs();
     SymModEnd();
     if( (CurrMod->modinfo & MOD_GOT_NAME) == 0 ) {
@@ -688,18 +671,18 @@ void ResolveUndefined( void )
 
     LnkMsg( INF+MSG_SEARCHING_LIBS, NULL );
     if( (FmtData.type & MK_OVERLAYS) && FmtData.u.dos.distribute ) {
-        LinkState |= CAN_REMOVE_SEGMENTS;
+        LinkState |= LS_CAN_REMOVE_SEGMENTS;
         InitModTable();
     }
     CurrSect = Root;
     ResolveVFExtdefs();
     do {
-        LinkState &= ~LIBRARIES_ADDED;
+        LinkState &= ~LS_LIBRARIES_ADDED;
         for( lib = ObjLibFiles; lib != NULL; lib = lib->next_file ) {
-            if( lib->status & STAT_SEEN_LIB ) {
-                lib->status |= STAT_OLD_LIB;
+            if( lib->flags & STAT_SEEN_LIB ) {
+                lib->flags |= STAT_OLD_LIB;
             } else {
-                lib->status |= STAT_SEEN_LIB;
+                lib->flags |= STAT_SEEN_LIB;
             }
         }
         for( sym = HeadSym; sym != NULL; sym = sym->link ) {
@@ -712,7 +695,7 @@ void ResolveUndefined( void )
             sym->info |= SYM_CHECKED;
         }
         keepgoing = ResolveVFExtdefs();
-    } while( keepgoing || LinkState & LIBRARIES_ADDED );
+    } while( keepgoing || (LinkState & LS_LIBRARIES_ADDED) );
 
     BurnLibs();
     PrintBadTraces();

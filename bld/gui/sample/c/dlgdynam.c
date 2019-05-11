@@ -39,17 +39,17 @@ static GUICALLBACK DynamicDialogWndGUIEventProc;
 static  const char  *LongText = "inserted_really_long_piece_of_text";
 
 static gui_create_info DialogControl = {
-    "Dynamic Dialog Box",               // Title
-    { 150, 250, 700, 700 },             // Position
-    GUI_NOSCROLL,                       // Scroll Styles
-    GUI_VISIBLE | GUI_CLOSEABLE,        // Window Styles
-    NULL,                               // Parent
-    { 0, NULL },                        // Menu array
-    { 0, NULL },                        // Colour attribute array
-    &DynamicDialogWndGUIEventProc,      // GUI Event Callback function
-    NULL,                               // Extra
-    NULL,                               // Icon
-    NULL                                // Menu Resource
+    "Dynamic Dialog Box",           // Title
+    { 150, 250, 700, 700 },         // Position
+    GUI_NOSCROLL,                   // Scroll Styles
+    GUI_VISIBLE | GUI_CLOSEABLE,    // Window Styles
+    NULL,                           // Parent
+    GUI_NO_MENU,                    // Menu array
+    GUI_NO_COLOUR,                  // Colour attribute array
+    &DynamicDialogWndGUIEventProc,  // GUI Event Callback function
+    NULL,                           // Extra
+    NULL,                           // Icon
+    NULL                            // Menu Resource
 };
 
 static const char *ListBoxFunc( const void *data_handle, int item )
@@ -115,7 +115,8 @@ static bool DynamicDialogWndGUIEventProc( gui_window *gui, gui_event gui_ev, voi
 {
     gui_ctl_id  id;
     char        *new;
-    unsigned    i;
+    unsigned    j;
+    int         i;
     char        *text;
     int         sel;
     int         size;
@@ -129,16 +130,16 @@ static bool DynamicDialogWndGUIEventProc( gui_window *gui, gui_event gui_ev, voi
         GUIGetClientRect( gui, &rect );
         InitDialog( gui );
         CheckNumControls( gui, NUM_CONTROLS );
-        for( i = RADIOBUTTON_CONTROL1_IDX; i <= RADIOBUTTON_CONTROL2_IDX; i++ ) {
-            if( (Controls[i].style & GUI_STYLE_CONTROL_CHECKED)
-              && (Controls[i].style & GUI_STYLE_CONTROL_AUTOMATIC) == 0 ) {
-                GUISetChecked( gui, Controls[i].id, GUI_CHECKED );
+        for( j = RADIOBUTTON_CONTROL1_IDX; j <= RADIOBUTTON_CONTROL2_IDX; j++ ) {
+            if( (Controls[j].style & GUI_STYLE_CONTROL_CHECKED)
+              && (Controls[j].style & GUI_STYLE_CONTROL_AUTOMATIC) == 0 ) {
+                GUISetChecked( gui, Controls[j].id, GUI_CHECKED );
             }
         }
-        for( i = CHECKBOX_CONTROL1_IDX; i <= CHECKBOX_CONTROL2_IDX; i++ ) {
-            if( (Controls[i].style & GUI_STYLE_CONTROL_CHECKED)
-              && (Controls[i].style & GUI_STYLE_CONTROL_AUTOMATIC) == 0 ) {
-                GUISetChecked( gui, Controls[i].id, GUI_CHECKED );
+        for( j = CHECKBOX_CONTROL1_IDX; j <= CHECKBOX_CONTROL2_IDX; j++ ) {
+            if( (Controls[j].style & GUI_STYLE_CONTROL_CHECKED)
+              && (Controls[j].style & GUI_STYLE_CONTROL_AUTOMATIC) == 0 ) {
+                GUISetChecked( gui, Controls[j].id, GUI_CHECKED );
             }
         }
 

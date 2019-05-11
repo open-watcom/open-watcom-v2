@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -30,7 +31,6 @@
 ****************************************************************************/
 
 
-#ifndef NDEBUG
 #include <ctype.h>
 #include "dbgdefn.h"
 #include "dbgdata.h"
@@ -50,14 +50,16 @@
 #include "dbgwintr.h"
 
 
+#ifndef NDEBUG
 extern void         WndUserAdd(char *,unsigned int );
+#endif
 
 static void BadCmd( void )
 {
     Error( ERR_LOC, LIT_ENG( ERR_BAD_SUBCOMMAND ), GetCmdName( CMD_WINDOW ) );
 }
 
-
+#ifndef NDEBUG
 static void MenuCopy( char *dst, const char *from, char *to )
 {
     char        ampchar;
@@ -95,38 +97,37 @@ static void MenuCopy( char *dst, const char *from, char *to )
 }
 
 
-static void MenuDump( int indent, int popup_num_items, gui_menu_struct *child )
+static void MenuDump( int indent, const gui_menu_items *menus )
 {
     char        *p;
     int         i;
+    int         j;
 
-    while( --popup_num_items >= 0 ) {
+    for( i = 0; i < menus->num_items; ++i ) {
         p = TxtBuff;
-        i = indent;
-        while( i-- > 0 )
+        j = indent;
+        while( j-- > 0 )
             *p++ = ' ';
-        if( child->style & GUI_STYLE_MENU_SEPARATOR ) {
+        if( menus->menu[i].style & GUI_STYLE_MENU_SEPARATOR ) {
             StrCopy( "---------", p );
         } else {
-            MenuCopy( TxtBuff, child->label, p );
+            MenuCopy( TxtBuff, menus->menu[i].label, p );
         }
         WndDlgTxt( TxtBuff );
-        if( child->hinttext != NULL && child->hinttext[0] != NULLCHAR ) {
+        if( menus->menu[i].hinttext != NULL && menus->menu[i].hinttext[0] != NULLCHAR ) {
             p = TxtBuff;
-            for( i = indent; i > 0; --i )
+            j = indent;
+            while( j-- > 0 )
                 *p++ = ' ';
             p = StrCopy( "- ", p );
-            p = StrCopy( child->hinttext, p );
+            p = StrCopy( menus->menu[i].hinttext, p );
             WndDlgTxt( TxtBuff );
         }
-        if( child->child.num_items > 0 ) {
-            MenuDump( indent + 4, child->child.num_items, child->child.menu );
-        }
-        ++child;
+        MenuDump( indent + 4, &menus->menu[i].child );
     }
 }
 
-OVL_EXTERN void XDumpMenus( void )
+static void XDumpMenus( void )
 {
     wnd_class_wv    wndclass;
     char            *p;
@@ -137,13 +138,13 @@ OVL_EXTERN void XDumpMenus( void )
         p = GetCmdEntry( WndNameTab, wndclass, p );
         p = StrCopy( " Window", p );
         WndDlgTxt( TxtBuff );
-        MenuDump( 4, WndInfoTab[wndclass]->popup_num_items, WndInfoTab[wndclass]->popupmenu );
+        MenuDump( 4, &WndInfoTab[wndclass]->popup );
     }
     WndDlgTxt( "The main menu" );
-    MenuDump( 4, WndNumMenus, WndMainMenu );
+    MenuDump( 4, &WndMainMenu );
 }
 
-OVL_EXTERN void XTimeSymComp( void )
+static void XTimeSymComp( void )
 {
     int         i, num;
 
@@ -166,9 +167,11 @@ static void (*InternalJmpTab[])() =
     &XDumpMenus,
     &XTimeSymComp,
 };
+#endif
 
 void ProcInternal( void )
 {
+#ifndef NDEBUG
     int     cmd;
 
     cmd = ScanCmd( InternalNameTab );
@@ -177,6 +180,8 @@ void ProcInternal( void )
     } else {
         InternalJmpTab[cmd]();
     }
+#else
+    BadCmd();
+#endif
 }
 
-#endif

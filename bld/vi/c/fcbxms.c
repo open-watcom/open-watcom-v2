@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,6 +35,7 @@
 
 #if defined( USE_XMS )
 
+#include <i86.h>
 #include "dosx.h"
 #include "xmem.h"
 #include "fcbmem.h"
@@ -42,10 +44,10 @@
 #define XMS_IO_ERROR    ((size_t)-1)
 
 xms_struct              XMSCtrl;
-static unsigned long    *xmsPtrs;
+static xhandle          *xmsPtrs;
 
-static size_t   xmsRead( long, void __far *, size_t );
-static size_t   xmsWrite( long, void __far *, size_t );
+static size_t   xmsRead( xhandle, void __far *, size_t );
+static size_t   xmsWrite( xhandle, void __far *, size_t );
 
 vi_rc XMSBlockTest( unsigned short blocks )
 {
@@ -59,26 +61,28 @@ vi_rc XMSBlockTest( unsigned short blocks )
 
 } /* XMSBlockTest */
 
-void XMSBlockRead( long addr, void __far *buff, size_t len )
+void XMSBlockRead( xhandle addr, void __far *buff, size_t len )
 {
     xmsRead( addr, buff, len );
 
 } /* XMSBlockRead */
 
-void XMSBlockWrite( long addr, void __far *buff, size_t len )
+void XMSBlockWrite( xhandle addr, void __far *buff, size_t len )
 {
     xmsWrite( addr, buff, len );
 
 } /* XMSBlockWrite */
 
-vi_rc XMSGetBlock( long *addr )
+vi_rc XMSGetBlock( xhandle *addr )
 {
     vi_rc       rc;
-    long        found = 0;
+    xhandle     found;
+    int         i;
 
     rc = XMSBlockTest( 1 );
     if( rc == ERR_NO_ERR ) {
         XMSBlocksInUse++;
+        found = 0;
         for( i = 0; i < TotalXMSBlocks; i++ ) {
             if( xmsPtrs[i] != 0 ) {
                 found = xmsPtrs[i];
@@ -99,8 +103,9 @@ vi_rc SwapToXMSMemory( fcb *fb )
 {
     vi_rc       rc;
     size_t      len;
-    long        found = 0;
+    xhandle     found;
 
+    found = 0;
     rc = XMSGetBlock( &found );
     if( rc == ERR_NO_ERR ) {
         len = MakeWriteBlock( fb );
@@ -109,7 +114,7 @@ vi_rc SwapToXMSMemory( fcb *fb )
         /*
          * finish up
          */
-        fb->xmemaddr = found;
+        fb->xblock.handle = found;
         fb->in_xms_memory = true;
     }
     return( rc );
@@ -124,8 +129,8 @@ vi_rc SwapToMemoryFromXMSMemory( fcb *fb )
     size_t  len;
 
     len = FcbSize( fb );
-    xmsRead( fb->xmemaddr, ReadBuffer, len );
-    GiveBackXMSBlock( fb->xmemaddr );
+    xmsRead( fb->xblock.handle, ReadBuffer, len );
+    GiveBackXMSBlock( fb->xblock.handle );
     return( RestoreToNormalMemory( fb, len ) );
 
 } /* SwapToMemoryFromXMSMemory */
@@ -135,24 +140,24 @@ static void *xmsControl;
 /*
  * xmsAlloc - allocate some xms memory
  */
-static unsigned long xmsAlloc( int size )
+static xhandle xmsAlloc( int size )
 {
     xms_addr            h;
-    U_INT               handle, new_size, page_request;
+    unsigned            handle, new_size, page_request;
     unsigned long       offset;
 
-    size = (size + 0x03) & ~0x03;
     if( XMSCtrl.exhausted ) {
         return( 0 );
     }
 
+    size = ROUNDUP( size, 4 );
     if( XMSCtrl.offset + size > XMSCtrl.size ) {
         if( XMSCtrl.small_block ) {
             return( 0 );
         }
 
         /* align offset to 1k boundary */
-        offset = (XMSCtrl.offset + 0x03ff) & ~0x03ff;
+        offset = ROUNDUP( XMSCtrl.offset, 0x400 );
         if( offset < XMSCtrl.size ) {
             /* reallocate the block to eliminate internal fragmentation */
             new_size = offset / 0x0400;
@@ -194,7 +199,7 @@ static unsigned long xmsAlloc( int size )
  */
 void XMSInit( void )
 {
-    U_INT       size;
+    unsigned    size;
     int         i;
     xms_addr    h;
 
@@ -232,9 +237,9 @@ void XMSInit( void )
         XMSCtrl.size = XMS_MAX_BLOCK_SIZE;
     }
 
-    xmsPtrs = _MemAllocArray( long, MaxXMSBlocks );
+    xmsPtrs = _MemAllocArray( xhandle, EditVars.MaxXMSBlocks );
 
-    for( i = 0; i < MaxXMSBlocks; i++ ) {
+    for( i = 0; i < EditVars.MaxXMSBlocks; i++ ) {
         xmsPtrs[i] = xmsAlloc( MAX_IO_BUFFER );
         if( xmsPtrs[i] == 0 ) {
             break;
@@ -242,7 +247,7 @@ void XMSInit( void )
         h.external = xmsPtrs[i];
         TotalXMSBlocks++;
     }
-    xmsPtrs = realloc( xmsPtrs, TotalXMSBlocks * sizeof( long ) );
+    xmsPtrs = realloc( xmsPtrs, TotalXMSBlocks * sizeof( xhandle ) );
     if( xmsPtrs == NULL ) {
         return;
     }
@@ -256,7 +261,7 @@ void XMSInit( void )
  */
 void XMSFini( void )
 {
-    U_INT       handle;
+    unsigned    handle;
 
     if( !XMSCtrl.inuse ) {
         return;
@@ -280,17 +285,17 @@ void XMSFini( void )
 /*
  * xmsRead - read from XMS memory
  */
-static size_t xmsRead( long addr, void __far *buff, size_t size )
+static size_t xmsRead( xhandle addr, void __far *buff, size_t size )
 {
     xms_addr            h;
-    U_INT               offset;
+    unsigned            offset;
     xms_move_descriptor control;
     void                *dest;
 
-    if( addr == NULL ) {
+    if( addr == 0 ) {
         return( XMS_IO_ERROR );
     }
-    size = (size + 1) & ~1;
+    size = ROUNDUP( size, 2 );
 
     h.external = addr;
     offset = h.internal.offset << 2;
@@ -321,17 +326,17 @@ static size_t xmsRead( long addr, void __far *buff, size_t size )
 /*
  * xmsWrite - write some XMS memory
  */
-static size_t xmsWrite( long addr, void __far *buff, size_t size )
+static size_t xmsWrite( xhandle addr, void __far *buff, size_t size )
 {
     xms_addr            h;
     xms_move_descriptor control;
-    U_INT               offset;
+    unsigned            offset;
     void                *dest;
 
-    if( addr == NULL ) {
+    if( addr == 0 ) {
         return( XMS_IO_ERROR );
     }
-    size = (size + 1) & ~1;
+    size = ROUNDUP( size, 2 );
     h.external = addr;
     offset = h.internal.offset << 2;
     if( h.internal.handle == XMS_HMA_HANDLE ) {
@@ -364,7 +369,7 @@ static size_t xmsWrite( long addr, void __far *buff, size_t size )
 /*
  * GiveBackXMSBlock - return an XMS block to the pool
  */
-void GiveBackXMSBlock( long addr )
+void GiveBackXMSBlock( xhandle addr )
 {
     int i;
 
@@ -386,8 +391,8 @@ void XMSBlockInit( int i )
     if( XMSCtrl.inuse ) {
         return;
     }
-    MaxXMSBlocks = i;
-    MaxXMSBlocks /= (MAX_IO_BUFFER / 1024);
+    EditVars.MaxXMSBlocks = i;
+    EditVars.MaxXMSBlocks /= (MAX_IO_BUFFER / 1024);
 
 } /* XMSBlockInit */
 

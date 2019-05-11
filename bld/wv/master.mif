@@ -46,11 +46,7 @@ cdir   = $(wv_dir)/c
 hdir   = $(wv_dir)/h
 rdir   = ../../res
 
-!ifeq host_os nt
-sysdir = win
-!else
 sysdir = $(host_os)
-!endif
 
 !ifndef syscdir
 syscdir = ../c
@@ -75,9 +71,12 @@ extra_cpp_flags += -DUSE_FILENAME_VERSION=$(bld_ver)
 !endif
 !ifeq sys_windowed 1
 extra_cpp_flags += -DGUI_IS_GUI -DUI_GUI
-extra_cpp_flags_os2 += -D__OS2_PM__
 !endif
-extra_cpp_flags_nt += -DENABLE_TRAP_LOGGING
+
+!ifeq sys_windowed 1
+extra_cpp_flags_os2 = -D__OS2_PM__
+!endif
+extra_cpp_flags_nt = -DENABLE_TRAP_LOGGING
 
 extra_c_flags = -s
 
@@ -88,7 +87,6 @@ extra_c_flags_os2_i86 = -zc -zu
 !else
 extra_c_flags_os2_i86 = -zc
 !endif
-extra_c_flags_dos_i86 = -wo -of -D_OVERLAYED_
 
 extra_c_flags_trmem = $(trmem_cflags)
 extra_c_flags_dynmem = $(trmem_cover_cflags)
@@ -108,19 +106,11 @@ inc_dirs += -I"$(gui_dir)/ui/h"
 !endif
 !if "$(host_os)" == "linux" || "$(host_os)" == "bsd" || "$(host_os)" == "osx" || "$(host_os)" == "haiku"
 inc_dirs += -I"$(ncurses_dir)/h"
-!else ifeq host_os dos
-!ifeq host_cpu i86
-inc_dirs += -I"$(clib_dir)/heap/h"
-!endif
 !endif
 
 # libs
 ###########
 libs = $(aui_lib) $(gui_lib) $(ui_lib) $(wres_lib)
-
-!ifdef ovl_dos
-endsect=end
-!endif
 
 lnk = wv.lnk
 lnk2 = wv2.lnk
@@ -138,10 +128,8 @@ extra_l_flags_win_i86 = op stack=12K, heap=15K import DEATH GDI.121 import RESUR
 extra_l_flags_win_i86 = op stack=15K, heap=10K, align=512
 !endif
 extra_l_flags_win = $(extra_l_flags_win_$(host_cpu))
-extra_l_flags_dos_i86 = op stack=12k, area=0
 # NB: DOS4GOPTIONS export is disabled due to incompatibility with DOS/4G 2.x
-extra_l_flags_dos_386 = op stack=12k #export DOS4GOPTIONS=_DOS4GOPTIONS
-extra_l_flags_dos = $(extra_l_flags_dos_$(host_cpu))
+extra_l_flags_dos = op stack=12k #export DOS4GOPTIONS=_DOS4GOPTIONS
 !ifeq sys_windowed 1
 extra_l_flags_os2_i86 = op stack=19k, newfile
 extra_l_flags_os2_386 = imp WinThreadAssocQueue PMMERGE.5398
@@ -206,26 +194,12 @@ $(name).exe : $(extra_link_res_$(host_os)) litdef.gh $(objs) fingmsg.obj $(libs)
     $(cl) $(clflags) $(objs) fingmsg.obj $(libs) $(ldflags)
 !else
     $(noecho)%create $^&.lnk
-!ifdef ovl_dos
-    @%append $^&.lnk option verbose,nocache
-!endif
     @for %i in ($(libs))    do @%append $^&.lnk library %i
     @for %i in ($(sysobjs)) do @%append $^&.lnk file %i
     @%append $^&.lnk file fingmsg.obj
-!ifdef ovl_dos
-    @%append $^&.lnk begin autosection
-!endif
     @for %i in ($(objs)) do @%append $^&.lnk file %i
     @%make echo_link
     $(linker) name $^@ $(lflags) @$^&.lnk $(endsect)
-!if 0
-!ifdef ovl_dos
-    copy $^&.map $(lnk2)
-    vi -d -q -s ..\mapfix.vi $(lnk2)
-    @%make echo_link
-    $(linker) name $^@ $(lflags) @$(lnk) @$(lnk2) $(endsect)
-!endif
-!endif
 !endif
 !ifeq sys_windowed 1
     @%make bind_res_add_version_exe
@@ -409,18 +383,18 @@ rcfiles = &
     $(rdir)/dialogs.rc &
     $(rdir)/strings.rc &
     litdef.gh &
-    $(hdir)/dlgamb.h &
-    $(hdir)/dlgayn.h &
-    $(hdir)/dlgstk.h &
-    $(hdir)/dlgbrk.h &
-    $(hdir)/dlgcmd.h &
-    $(hdir)/dlglist.h &
-    $(hdir)/dlgnewp.h &
-    $(hdir)/dlgoptn.h &
-    $(hdir)/dlgvarx.h &
-    $(hdir)/dlgwind.h &
-    $(hdir)/dlgstk.h &
-    $(hdir)/dlgasync.h &
+    $(hdir)/dlgamb.rh &
+    $(hdir)/dlgayn.rh &
+    $(hdir)/dlgstk.rh &
+    $(hdir)/dlgbrk.rh &
+    $(hdir)/dlgcmd.rh &
+    $(hdir)/dlglist.rh &
+    $(hdir)/dlgnewp.rh &
+    $(hdir)/dlgoptn.rh &
+    $(hdir)/dlgvarx.rh &
+    $(hdir)/dlgwind.rh &
+    $(hdir)/dlgstk.rh &
+    $(hdir)/dlgasync.rh &
     $(wv_dialogs)
 
 

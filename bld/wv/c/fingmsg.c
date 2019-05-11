@@ -53,7 +53,7 @@ const char * const AboutMessage[] = {
     "** For internal WATCOM use only **",
     "Created " __DATE__ ", " __TIME__,
 #endif
-#if defined(__CHAR__)
+#if !defined( GUI_IS_GUI )
 #define BOLT_SIZE 11
 "",
 "             ________             ",

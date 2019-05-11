@@ -38,7 +38,7 @@ void UIAPI uivattribute( VSCREEN *vptr, SAREA area, ATTR attr )
 {
     okopen( vptr );
     oksubarea( area, vptr->area );
-    battribute( &(vptr->window.type.buffer), area.row, area.col, area.height, area.width, attr );
+    battribute( &(vptr->window.buffer), area.row, area.col, area.height, area.width, attr );
     uivdirty( vptr, area );
 }
 
@@ -48,6 +48,6 @@ void UIAPI uivattrflip( VSCREEN *vptr, SAREA area )
 {
     okopen( vptr );
     oksubarea( area, vptr->area );
-    battrflip( &(vptr->window.type.buffer), area.row, area.col, area.height, area.width );
+    battrflip( &(vptr->window.buffer), area.row, area.col, area.height, area.width );
     uivdirty( vptr, area );
 }

@@ -56,7 +56,7 @@
 #include "feprotos.h"
 
 
-static void     DoRelocRef( cg_sym_handle sym, cg_class class, segment_id seg, offset val, escape_class kind );
+static void     DoRelocRef( cg_sym_handle sym, cg_class class, segment_id segid, offset val, escape_class kind );
 static void     OutShortDisp( label_handle lbl );
 static void     OutCodeDisp( label_handle lbl, fix_class f, bool rel, oc_class class );
 
@@ -174,18 +174,18 @@ void    DoSymRef( name *opnd, offset val, bool base )
 }
 
 
-void    DoSegRef( segment_id seg )
-/********************************/
+void    DoSegRef( segment_id segid )
+/**********************************/
 {
     EmitByte( ESC );
     EmitByte( REL | BASE | OFST );
-    EmitSegId( seg );
+    EmitSegId( segid );
     EmitOffset( 0 );
 }
 
-static  void    DoRelocRef( cg_sym_handle sym, cg_class class,
-                    segment_id seg, offset val, escape_class kind )
-/*****************************************************************/
+static void     DoRelocRef( cg_sym_handle sym, cg_class class,
+                    segment_id segid, offset val, escape_class kind )
+/*******************************************************************/
 {
     offset              addr;
     label_handle        lbl;
@@ -193,7 +193,7 @@ static  void    DoRelocRef( cg_sym_handle sym, cg_class class,
     if( kind & BASE ) {                       /* don't need offset*/
         EmitByte( ESC );
         EmitByte( REL | kind | OFST );
-        EmitSegId( seg );
+        EmitSegId( segid );
         EmitOffset( 0 );
     } else {
         lbl = AskForSymLabel( sym, class );
@@ -201,7 +201,7 @@ static  void    DoRelocRef( cg_sym_handle sym, cg_class class,
         if( (addr != ADDR_UNKNOWN) && !AskIfCommonLabel( lbl ) ) {
             EmitByte( ESC );
             EmitByte( REL | kind | OFST );
-            EmitSegId( seg );
+            EmitSegId( segid );
             val += addr;
             EmitOffset( val );
         } else if( class == CG_FE ) {
@@ -212,18 +212,18 @@ static  void    DoRelocRef( cg_sym_handle sym, cg_class class,
                 EmitOffset( val );
             }
         } else {
-            DoLblRef( lbl, seg, val, kind );
+            DoLblRef( lbl, segid, val, kind );
         }
     }
 }
 
-void    DoLblRef( label_handle lbl, segment_id seg,
+void    DoLblRef( label_handle lbl, segment_id segid,
                     offset val, escape_class kind )
-/*************************************************/
+/***************************************************/
 {
     EmitByte( ESC );
     EmitByte( LBL | kind );
-    EmitSegId( seg );
+    EmitSegId( segid );
     EmitPtr( lbl );
     if( kind & OFST ) {
         EmitOffset( val );
@@ -407,7 +407,7 @@ static  label_handle ExpandObj( byte *cur, int explen ) {
     label_handle        lbl;
     cg_sym_handle       sym;
     offset              val = 0;
-    segment_id          seg;
+    segment_id          segid;
     fix_class           class;
     bool                rel;
     unsigned            len;
@@ -449,9 +449,9 @@ static  label_handle ExpandObj( byte *cur, int explen ) {
         }
         switch( key & ~MASK ) {
         case REL:
-            seg = *(segment_id *)cur;
+            segid = *(segment_id *)cur;
             cur += sizeof( segment_id );
-            OutReloc( seg, class, rel );
+            OutReloc( segid, class, rel );
             val = 0;
             break;
         case SYM:          /* never BASE*/
@@ -470,7 +470,7 @@ static  label_handle ExpandObj( byte *cur, int explen ) {
             OutReloc( AskSegID( sym, CG_FE ), class, rel );
             break;
         case LBL:          /* never BASE*/
-            seg = *(segment_id *)cur;
+            segid = *(segment_id *)cur;
             cur += sizeof( segment_id );
             lbl = *(pointer *)cur;
             cur += sizeof( pointer );
@@ -481,7 +481,7 @@ static  label_handle ExpandObj( byte *cur, int explen ) {
                 if( AskIfCommonLabel( lbl ) ) {
                     OutSpecialCommon( SYM2IMPHDL( AskForLblSym( lbl ) ), class, rel );
                 } else {
-                    OutReloc( seg, class, rel );
+                    OutReloc( segid, class, rel );
                 }
                 val = AskAddress( lbl );
                 if( val == ADDR_UNKNOWN ) {

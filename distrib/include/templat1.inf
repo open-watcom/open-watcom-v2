@@ -1,23 +1,23 @@
 name=InsertDisk
 static_text=\
     //1"@ needs the following diskette:"\
-    //2"@ ‚ÍˆÈ‰º‚ÌƒfƒBƒXƒPƒbƒg‚ğ•K—v‚Æ‚µ‚Ü‚·B"\
+    //2"@ ‚Í?È‰º‚Ì?f?B?X?P?b?g‚ğ•K—v‚Æ‚µ‚Ü‚·?B"\
     //0
 dynamic_text=DiskDesc,""
 static_text=
 static_text=\
     //1"Please insert or specify new path"\
-    //2"ƒfƒBƒXƒN‚ğ“ü‚ê‚é‚©V‚µ‚¢ƒpƒX‚ğw’è‚µ‚Ä‚­‚¾‚³‚¢"\
+    //2"?f?B?X?N‚ğ“ü‚ê‚é‚©?V‚µ‚¢?p?X‚ğw’è‚µ‚Ä‚­‚¾‚³‚¢"\
     //0
 edit_control=SrcDir,,\
     //1"Source Directory:"\
-    //2"ƒRƒs[Œ³ƒfƒBƒŒƒNƒgƒŠ:"\
+    //2"?R?s?[Œ³?f?B?Œ?N?g?Š:"\
     //0
 static_text=
 push_button=+"&OK"
 push_button=^\
     //1"&Cancel"\
-    //2"ƒLƒƒƒ“ƒZƒ‹(&C)"\
+    //2"?L???“?Z?‹(&C)"\
     //0
 
 [Dialog]
@@ -31,17 +31,17 @@ static_text=\
     //0
 radio_button=ModNow,1,\
     //1"&Make all the modifications for you"\
-    //2"‚·‚×‚Ä‚ÌC³‚ğs‚¢‚Ü‚· (&M)"\
+    //2"‚·‚×‚Ä‚ÌC?³‚ğs‚¢‚Ü‚· (&M)"\
     //0
 radio_button=ModLater,0,\
     //1"&Let you make the modifications later"\
-    //2"Œã‚Åƒ†[ƒU[©g‚ÅC³‚µ‚Ü‚· (&L)"\
+    //2"Œã‚Å?†?[?U?[©?g‚ÅC?³‚µ‚Ü‚· (&L)"\
     //0
 static_text=
 push_button=+"&OK"
 push_button=^\
     //1"&Cancel"\
-    //2"ƒLƒƒƒ“ƒZƒ‹(&C)"\
+    //2"?L???“?Z?‹(&C)"\
     //0
 
 [Dialog]
@@ -49,7 +49,7 @@ name=ModifyEnvironment
 static_text=
 static_text=\
     //1"@ needs to modify environment variables in the registry."\
-    //2"@ ‚ÍƒŒƒWƒXƒgƒŠ‚ÉŠÂ‹«•Ï”‚ğİ’è‚·‚é•K—v‚ª‚ ‚è‚Ü‚·B"\
+    //2"@ ‚Í?Œ?W?X?g?Š‚ÉŠÂ‹«•Ï?”‚ğ?İ’è‚·‚é•K—v‚ª‚ ‚è‚Ü‚·?B"\
     //0
 static_text=
 static_text=\
@@ -58,25 +58,25 @@ static_text=\
     //0
 radio_button=ModUser,0,\
     //1="Modify current &user environment variables"\
-    //2="ƒJƒŒƒ“ƒgEƒ†[ƒUŠÂ‹«•Ï”‚Æ‚µ‚ÄXV(&U)"\
+    //2="?J?Œ?“?g?E?†?[?UŠÂ‹«•Ï?”‚Æ‚µ‚ÄX?V(&U)"\
     //0
 radio_button=ModMachine,1,\
     //1="Modify local &machine environment variables"\
-    //2="ƒ[ƒJƒ‹Eƒ}ƒVƒ“ŠÂ‹«•Ï”‚Æ‚µ‚ÄXV(&M)"\
+    //2="??[?J?‹?E?}?V?“ŠÂ‹«•Ï?”‚Æ‚µ‚ÄX?V(&M)"\
     //0
 radio_button=ModLater,0,\
     //1="&Let you make the modifications later"\
-    //2"Œã‚Åƒ†[ƒU[©g‚ÅC³‚µ‚Ü‚· (&L)"\
+    //2"Œã‚Å?†?[?U?[©?g‚ÅC?³‚µ‚Ü‚· (&L)"\
     //0
 static_text=
 push_button=+"&OK"
 push_button=?\
     //1"&Help"\
-    //2"ƒwƒ‹ƒv(&H)"\
+    //2"?w?‹?v(&H)"\
     //0
 push_button=^\
     //1"&Cancel"\
-    //2"ƒLƒƒƒ“ƒZƒ‹(&C)"\
+    //2"?L???“?Z?‹(&C)"\
     //0
 
 [Dialog]
@@ -86,9 +86,9 @@ static_text=\
     //1"Components of this application can be run as an NT service. \
         If you wish to run this application as a service, or you are not \
         sure, choose the 'modify local machine' option."\
-    //2"‚±‚ÌƒAƒvƒŠƒP[ƒVƒ‡ƒ“‚ÌƒRƒ“ƒ|[ƒlƒ“ƒg‚Í NT ƒT[ƒrƒX‚Æ‚µ‚Ä“®ì‚·‚é‚±‚Æ‚ª‚Å\
-        ‚«‚Ü‚·BƒT[ƒrƒX‚Æ‚µ‚Ä‚±‚ÌƒAƒvƒŠƒP[ƒVƒ‡ƒ“‚ğ“®ì‚³‚¹‚é‚©A‚Ü‚½‚ÍA‚»‚¤‚Å\
-        ‚È‚¯‚ê‚Î 'ƒ[ƒJƒ‹Eƒ}ƒVƒ“‚ÌXV' ƒIƒvƒVƒ‡ƒ“‚ğ‘I‘ğ‚µ‚Ä‰º‚³‚¢B"\
+    //2"‚±‚Ì?A?v?Š?P?[?V?‡?“‚Ì?R?“?|?[?l?“?g‚Í NT ?T?[?r?X‚Æ‚µ‚Ä“®ì‚·‚é‚±‚Æ‚ª‚Å\
+        ‚«‚Ü‚·?B?T?[?r?X‚Æ‚µ‚Ä‚±‚Ì?A?v?Š?P?[?V?‡?“‚ğ“®ì‚³‚¹‚é‚©?A‚Ü‚½‚Í?A‚»‚¤‚Å\
+        ‚È‚¯‚ê‚Î '??[?J?‹?E?}?V?“‚ÌX?V' ?I?v?V?‡?“‚ğ‘I‘ğ‚µ‚Ä‰º‚³‚¢?B"\
     //0
 static_text=
 push_button=+"&OK"
@@ -125,7 +125,7 @@ push_button=+"&OK"
 name=DLLInstall
 static_text=\
     //1"@ attempted to install the file:"\
-    //2"@ ‚ÍˆÈ‰º‚Ìƒtƒ@ƒCƒ‹‚ğƒCƒ“ƒXƒg[ƒ‹‚µ‚æ‚¤‚Æ‚µ‚Ü‚µ‚½B"\
+    //2"@ ‚Í?È‰º‚Ì?t?@?C?‹‚ğ?C?“?X?g?[?‹‚µ‚æ‚¤‚Æ‚µ‚Ü‚µ‚½?B"\
     //0
 dynamic_text=FileDesc,\
     //1"    "\
@@ -133,7 +133,7 @@ dynamic_text=FileDesc,\
     //0
 static_text=\
     //1"in this directory:"\
-    //2"ƒfƒBƒŒƒNƒgƒŠ:"\
+    //2"?f?B?Œ?N?g?Š:"\
     //0
 dynamic_text=DLLDir,\
     //1"    "\
@@ -141,7 +141,7 @@ dynamic_text=DLLDir,\
     //0
 static_text=\
     //1"but, it currently exists in"\
-    //2"“¯‚¶ƒtƒ@ƒCƒ‹‚ªˆÈ‰º‚ÌƒfƒBƒŒƒNƒgƒŠ‚É‚ ‚è‚Ü‚·"\
+    //2"“¯‚¶?t?@?C?‹‚ª?È‰º‚Ì?f?B?Œ?N?g?Š‚É‚ ‚è‚Ü‚·"\
     //0
 dynamic_text=OtherDLLDir,\
     //1"    "\
@@ -150,37 +150,37 @@ dynamic_text=OtherDLLDir,\
 static_text=
 radio_button=DLL_Delete_Old,,\
     //1"Install the new file and &delete the existing file"\
-    //2"V‚µ‚¢ƒtƒ@ƒCƒ‹‚ğƒCƒ“ƒXƒg[ƒ‹‚µAŠù‘¶ƒtƒ@ƒCƒ‹‚ğíœ‚µ‚Ü‚· (&D)"\
+    //2"?V‚µ‚¢?t?@?C?‹‚ğ?C?“?X?g?[?‹‚µ?AŠù‘¶?t?@?C?‹‚ğíœ‚µ‚Ü‚· (&D)"\
     //0
 radio_button=DLL_Keep_Both,,\
     //1"Install the new file and &keep the existing file"\
-    //2"V‚µ‚¢ƒtƒ@ƒCƒ‹‚ğƒCƒ“ƒXƒg[ƒ‹‚µAŠù‘¶ƒtƒ@ƒCƒ‹‚ğc‚µ‚Ü‚· (&K)"\
+    //2"?V‚µ‚¢?t?@?C?‹‚ğ?C?“?X?g?[?‹‚µ?AŠù‘¶?t?@?C?‹‚ğc‚µ‚Ü‚· (&K)"\
     //0
 radio_button=DLL_Replace_Old,,\
     //1"&Replace the existing file with the new file"\
-    //2"Šù‘¶ƒtƒ@ƒCƒ‹‚ğV‚µ‚¢ƒtƒ@ƒCƒ‹‚Å’u‚«Š·‚¦‚Ü‚· (&R)"\
+    //2"Šù‘¶?t?@?C?‹‚ğ?V‚µ‚¢?t?@?C?‹‚Å’u‚«Š·‚¦‚Ü‚· (&R)"\
     //0
 radio_button=DLL_Dont_Install,,\
     //1"Do &not install the new file"\
-    //2"V‚µ‚¢ƒtƒ@ƒCƒ‹‚ğƒCƒ“ƒXƒg[ƒ‹‚µ‚Ü‚¹‚ñ (&N)"\
+    //2"?V‚µ‚¢?t?@?C?‹‚ğ?C?“?X?g?[?‹‚µ‚Ü‚¹‚ñ (&N)"\
     //0
 static_text=
 check_box=DLL_Skip_Dialog,0,\
     //1"&Use the current choice for all subsequent DLLs"\
-    //2"ˆÈ~‚Ì‘S‚Ä‚ÌDLL‚É‘Î‚µ‚ÄA¡‰ñ‚Æ“¯‚¶‘I‘ğ‚ğ‚µ‚Ü‚· (&U)"\
+    //2"?È~‚Ì‘S‚Ä‚ÌDLL‚É‘Î‚µ‚Ä?A¡‰ñ‚Æ“¯‚¶‘I‘ğ‚ğ‚µ‚Ü‚· (&U)"\
     //0
 static_text=
 push_button=+"&OK"
 push_button=^\
     //1"&Cancel"\
-    //2"ƒLƒƒƒ“ƒZƒ‹(&C)"\
+    //2"?L???“?Z?‹(&C)"\
     //0
 
 [Dialog]
 name=ReadOnlyFile
 static_text=\
     //1"@ attempted to install the file:"\
-    //2"@ ‚ÍˆÈ‰º‚Ìƒtƒ@ƒCƒ‹‚ğƒCƒ“ƒXƒg[ƒ‹‚µ‚æ‚¤‚Æ‚µ‚Ü‚µ‚½B"\
+    //2"@ ‚Í?È‰º‚Ì?t?@?C?‹‚ğ?C?“?X?g?[?‹‚µ‚æ‚¤‚Æ‚µ‚Ü‚µ‚½?B"\
     //0
 dynamic_text=FileDesc,\
     //1"    "\
@@ -188,34 +188,34 @@ dynamic_text=FileDesc,\
     //0
 static_text=\
     //1"but found it marked read-only"\
-    //2"‚µ‚©‚µA‚»‚Ìƒtƒ@ƒCƒ‹‚Í‘‚«‚İ‹Ö~‚É‚È‚Á‚Ä‚¢‚Ü‚·"\
+    //2"‚µ‚©‚µ?A‚»‚Ì?t?@?C?‹‚Í‘‚«‚İ‹Ö~‚É‚È‚Á‚Ä‚¢‚Ü‚·"\
     //0
 static_text=
 radio_button=RO_Replace_Old,,\
     //1"&Install the file anyway"\
-    //2"‚±‚Ìƒtƒ@ƒCƒ‹‚ğƒCƒ“ƒXƒg[ƒ‹‚µ‚Ü‚· (&I)"\
+    //2"‚±‚Ì?t?@?C?‹‚ğ?C?“?X?g?[?‹‚µ‚Ü‚· (&I)"\
     //0
 radio_button=RO_Dont_Install,,\
     //1"&Do not install this file"\
-    //2"‚±‚Ìƒtƒ@ƒCƒ‹‚ğƒCƒ“ƒXƒg[ƒ‹‚µ‚Ü‚¹‚ñ (&D)"\
+    //2"‚±‚Ì?t?@?C?‹‚ğ?C?“?X?g?[?‹‚µ‚Ü‚¹‚ñ (&D)"\
     //0
 static_text=
 check_box=RO_Skip_Dialog,0,\
     //1"&Use the current choice for all read-only files"\
-    //2"‘S‚Ä‚Ì‘‚«‚İ‹Ö‚µƒtƒ@ƒCƒ‹‚É‘Î‚µ‚ÄA¡‰ñ‚Æ“¯‚¶‘I‘ğ‚ğ‚µ‚Ü‚· (&U)"\
+    //2"‘S‚Ä‚Ì‘‚«‚İ‹Ö‚µ?t?@?C?‹‚É‘Î‚µ‚Ä?A¡‰ñ‚Æ“¯‚¶‘I‘ğ‚ğ‚µ‚Ü‚· (&U)"\
     //0
 static_text=
 push_button=+"&OK"
 push_button=^\
     //1"&Cancel"\
-    //2"ƒLƒƒƒ“ƒZƒ‹(&C)"\
+    //2"?L???“?Z?‹(&C)"\
     //0
 
 [Dialog]
 name=DeleteReadOnlyFile
 static_text=\
     //1"@ attempted to remove the file:"\
-    //2"@ ‚ÍAˆÈ‰º‚Ìƒtƒ@ƒCƒ‹‚ğíœ‚µ‚Ü‚·B"\
+    //2"@ ‚Í?A?È‰º‚Ì?t?@?C?‹‚ğíœ‚µ‚Ü‚·?B"\
     //0
 dynamic_text=FileDesc,\
     //1"    "\
@@ -223,27 +223,27 @@ dynamic_text=FileDesc,\
     //0
 static_text=\
     //1"but found it marked read-only"\
-    //2"‚µ‚©‚µA‚»‚Ìƒtƒ@ƒCƒ‹‚Í‘‚«‚İ‹Ö~‚É‚È‚Á‚Ä‚¢‚Ü‚·"\
+    //2"‚µ‚©‚µ?A‚»‚Ì?t?@?C?‹‚Í‘‚«‚İ‹Ö~‚É‚È‚Á‚Ä‚¢‚Ü‚·"\
     //0
 static_text=
 radio_button=RO_Remove_Old,,\
     //1"&Remove the file anyway"\
-    //2"‹­§“I‚Éƒtƒ@ƒCƒ‹‚ğíœ(&R)"\
+    //2"‹­?§“I‚É?t?@?C?‹‚ğíœ(&R)"\
     //0
 radio_button=RO_Dont_Remove,,\
     //1"&Do not remove this file"\
-    //2"‚±‚Ìƒtƒ@ƒCƒ‹‚ğíœ‚µ‚È‚¢(&D)"\
+    //2"‚±‚Ì?t?@?C?‹‚ğíœ‚µ‚È‚¢(&D)"\
     //0
 static_text=
 check_box=RO_Skip_Remove,0,\
     //1"&Use the current choice for all read-only files"\
-    //2"‘S‚Ä‚Ì‘‚«‚İ‹Ö~ƒtƒ@ƒCƒ‹‚É‘Î‚µ‚ÄA¡‰ñ‚Æ“¯‚¶‘I‘ğ‚ğ‚µ‚Ü‚· (&U)"\
+    //2"‘S‚Ä‚Ì‘‚«‚İ‹Ö~?t?@?C?‹‚É‘Î‚µ‚Ä?A¡‰ñ‚Æ“¯‚¶‘I‘ğ‚ğ‚µ‚Ü‚· (&U)"\
     //0
 static_text=
 push_button=+"&OK"
 push_button=^\
     //1"&Cancel"\
-    //2"ƒLƒƒƒ“ƒZƒ‹(&C)"\
+    //2"?L???“?Z?‹(&C)"\
     //0
 
 [Dialog]
@@ -256,7 +256,7 @@ dynamic_text=OpenError,\
 static_text=
 static_text=\
     //1"@ will now stop."\
-    //2"@ ‚Í¡’â~‚µ‚Ü‚·B"\
+    //2"@ ‚Í¡’â~‚µ‚Ü‚·?B"\
     //0
 push_button=*"&OK"
 
@@ -265,7 +265,7 @@ push_button=*"&OK"
 name=NewerFile
 static_text=\
     //1"@ attempted to install the file:"\
-    //2"@ ‚ÍˆÈ‰º‚Ìƒtƒ@ƒCƒ‹‚ğƒCƒ“ƒXƒg[ƒ‹‚µ‚æ‚¤‚Æ‚µ‚Ü‚µ‚½B"\
+    //2"@ ‚Í?È‰º‚Ì?t?@?C?‹‚ğ?C?“?X?g?[?‹‚µ‚æ‚¤‚Æ‚µ‚Ü‚µ‚½?B"\
     //0
 dynamic_text=FileDesc,\
     //1"    "\
@@ -273,55 +273,55 @@ dynamic_text=FileDesc,\
     //0
 static_text=\
     //1"but found a newer version already existed"\
-    //2"‚µ‚©‚µAV‚µ‚¢ƒo[ƒWƒ‡ƒ“‚ªŠù‚É‚ ‚é‚±‚Æ‚ª‚í‚©‚è‚Ü‚µ‚½"\
+    //2"‚µ‚©‚µ?A?V‚µ‚¢?o?[?W?‡?“‚ªŠù‚É‚ ‚é‚±‚Æ‚ª‚í‚©‚è‚Ü‚µ‚½"\
     //0
 static_text=
 radio_button=Newer_Replace_Old,,\
     //1"&Install the file anyway"\
-    //2"‚±‚Ìƒtƒ@ƒCƒ‹‚ğƒCƒ“ƒXƒg[ƒ‹‚·‚é (&I)"\
+    //2"‚±‚Ì?t?@?C?‹‚ğ?C?“?X?g?[?‹‚·‚é (&I)"\
     //0
 radio_button=Newer_Dont_Install,,\
     //1"&Do not install this file"\
-    //2"‚±‚Ìƒtƒ@ƒCƒ‹‚ğƒCƒ“ƒXƒg[ƒ‹‚µ‚È‚¢ (&D)"\
+    //2"‚±‚Ì?t?@?C?‹‚ğ?C?“?X?g?[?‹‚µ‚È‚¢ (&D)"\
     //0
 static_text=
 check_box=Newer_Skip_Dialog,0,\
     //1"&Use the current choice for all newer files"\
-    //2"ˆÈ~‚Ìƒtƒ@ƒCƒ‹‚É‘Î‚µ‚ÄA“¯—l‚È‘I‘ğ‚ğ‚µ‚Ü‚· (&U)"\
+    //2"?È~‚Ì?t?@?C?‹‚É‘Î‚µ‚Ä?A“¯—l‚È‘I‘ğ‚ğ‚µ‚Ü‚· (&U)"\
     //0
 static_text=
 push_button=+"&OK"
 push_button=^\
     //1"&Cancel"\
-    //2"ƒLƒƒƒ“ƒZƒ‹(&C)"\
+    //2"?L???“?Z?‹(&C)"\
     //0
 
 [Dialog]
 name=LocCfg
 static_text=\
     //1"@ Can not find the following file:"\
-    //2"@‚ÍAˆÈ‰º‚Ìƒtƒ@ƒCƒ‹‚ªŒ©‚Â‚¯‚ç‚ê‚Ü‚¹‚ñB"\
+    //2"@‚Í?A?È‰º‚Ì?t?@?C?‹‚ªŒ©‚Â‚¯‚ç‚ê‚Ü‚¹‚ñ?B"\
     //0
 dynamic_text=FileToFind,""
 static_text=
 check_box=CfgFileCreate,1,\
     //1"&Create the file"\
-    //2"&ƒtƒ@ƒCƒ‹‚ğì¬‚µ‚Ü‚·"\
+    //2"&?t?@?C?‹‚ğì?¬‚µ‚Ü‚·"\
     //0
 static_text=
 static_text=\
     //1"Otherwise, specify a new drive:"\
-    //2"‚à‚µ‚­‚ÍV‚µ‚¢ƒhƒ‰ƒCƒu–¼‚ğw’è:"\
+    //2"‚à‚µ‚­‚Í?V‚µ‚¢?h?‰?C?u–¼‚ğw’è:"\
     //0
 edit_control=CfgDir,,\
     //1"Drive Letter:"\
-    //2"ƒhƒ‰ƒCƒu–¼:"\
+    //2"?h?‰?C?u–¼:"\
     //0
 static_text=
 push_button=+"&OK"
 push_button=^\
     //1"&Cancel"\
-    //2"ƒLƒƒƒ“ƒZƒ‹(&C)"\
+    //2"?L???“?Z?‹(&C)"\
     //0
 
 [ErrorMessage]
@@ -331,87 +331,83 @@ IDS_ERROR=\
     //0
 IDS_NODISKFOROPTION=\
     //1"This diskette set does not contain the requried option."\
-    //2"‚±‚ÌƒfƒBƒXƒPƒbƒgEƒZƒbƒg‚É‚ÍA•K—v‚ÈƒIƒvƒVƒ‡ƒ“‚ª“ü‚Á‚Ä‚¢‚Ü‚¹‚ñB"\
+    //2"‚±‚Ì?f?B?X?P?b?g?E?Z?b?g‚É‚Í?A•K—v‚È?I?v?V?‡?“‚ª“ü‚Á‚Ä‚¢‚Ü‚¹‚ñ?B"\
     //0
 IDS_BADCRC=\
     //1"Internal error unpacking: '%s' - bad CRC."\
-    //2"“à•”ƒGƒ‰[ ƒAƒ“ƒpƒbƒLƒ“ƒO: '%s' - CRC‚Ì•sˆê’v"\
+    //2"“à•”?G?‰?[ ?A?“?p?b?L?“?O: '%s' - CRC‚Ì•s?ê’v"\
     //0
 IDS_NOMEMORY=\
     //1"Insufficient memory to run @.&\n Close an application and try again."\
-    //2"ƒƒ‚ƒŠ•s‘«‚ª”­¶‚µ‚Ü‚µ‚½ @.&\n ƒAƒvƒŠƒP[ƒVƒ‡ƒ“‚ğI—¹‚µ‚ÄAÄ“xA‹N“®‚µ‚Ä‚­‚¾‚³‚¢B"\
+    //2"???‚?Š•s‘«‚ª”­?¶‚µ‚Ü‚µ‚½ @.&\n ?A?v?Š?P?[?V?‡?“‚ğI—¹‚µ‚Ä?AÄ“x?A‹N“®‚µ‚Ä‚­‚¾‚³‚¢?B"\
     //0
 IDS_NOSETUPINFOFILE=\
     //1"The %s file cannot be found.\nPlease verify the distribution diskette."\
-    //2"ƒtƒ@ƒCƒ‹ %s ‚ªŒ©‚Â‚©‚è‚Ü‚¹‚ñB\nƒfƒBƒXƒPƒbƒg‚ğŠm”F‚µ‚Ä‚­‚¾‚³‚¢B"\
-    //0
-ID_NOTEMPSPACE=\
-    //1"A drive could not be found with at least %ldK free to write a temporary file needed by @."\
-    //2"@ ‚ª•K—v‚Æ‚µ‚Ä‚¢‚éƒeƒ“ƒ|ƒ‰ƒŠEƒtƒ@ƒCƒ‹‚ğ‘‚«o‚·‚½‚ß‚ÌÅ’á %ldK ‚ÌƒtƒŠ[ƒXƒy[ƒX‚ªƒhƒ‰ƒCƒu‚É‚ ‚è‚Ü‚¹‚ñB"\
+    //2"?t?@?C?‹ %s ‚ªŒ©‚Â‚©‚è‚Ü‚¹‚ñ?B\n?f?B?X?P?b?g‚ğŠm”F‚µ‚Ä‚­‚¾‚³‚¢?B"\
     //0
 IDS_NODISKSPACE=\
     //1"Drive %c: contains %ldK of free disk space.\n@ requires a minimum of %ldK.&\n\nThe installation may fail. Do you want to proceed anyway?"\
-    //2"ƒhƒ‰ƒCƒu %c: ‚É‚Í %ldK ‚ÌƒtƒŠ[‚ÈƒfƒBƒXƒNƒXƒy[ƒX‚ª‚ ‚è‚Ü‚·B\n@ ‚ÍÅ’á %ldK •K—v‚Å‚·B&\n\nƒCƒ“ƒXƒg[ƒ‹‚Í¸”s‚·‚é‚©‚à‚µ‚ê‚Ü‚¹‚ñ‚ªA‘±‚¯‚Ü‚·‚©?"\
+    //2"?h?‰?C?u %c: ‚É‚Í %ldK ‚Ì?t?Š?[‚È?f?B?X?N?X?y?[?X‚ª‚ ‚è‚Ü‚·?B\n@ ‚ÍÅ’á %ldK •K—v‚Å‚·?B&\n\n?C?“?X?g?[?‹‚Í¸”s‚·‚é‚©‚à‚µ‚ê‚Ü‚¹‚ñ‚ª?A‘±‚¯‚Ü‚·‚©?"\
     //0
 IDS_NODISKSPACE_UNC=\
     //1"'%s' contains %ldK of free disk space.\n@ requires a minimum of %ldK.&\n\nThe installation may fail. Do you want to proceed anyway?"\
-    //2"'%s' ‚É‚Í  %ldK ‚ÌƒtƒŠ[‚ÈƒfƒBƒXƒNƒXƒy[ƒX‚ª‚ ‚è‚Ü‚·B\n@ ‚ÍÅ’á %ldK •K—v‚Å‚·B&\n\nƒCƒ“ƒXƒg[ƒ‹‚Í¸”s‚·‚é‚©‚à‚µ‚ê‚Ü‚¹‚ñ‚ªA‘±‚¯‚Ü‚·‚©?"\
+    //2"'%s' ‚É‚Í  %ldK ‚Ì?t?Š?[‚È?f?B?X?N?X?y?[?X‚ª‚ ‚è‚Ü‚·?B\n@ ‚ÍÅ’á %ldK •K—v‚Å‚·?B&\n\n?C?“?X?g?[?‹‚Í¸”s‚·‚é‚©‚à‚µ‚ê‚Ü‚¹‚ñ‚ª?A‘±‚¯‚Ü‚·‚©?"\
     //0
 IDS_UNCPATH_NOTEXIST=\
     //1"Error: Drive '%s' does not exist.\nTry another drive."\
-    //2"ƒGƒ‰[: ƒhƒ‰ƒCƒu '%s' ‚ª‚ ‚è‚Ü‚¹‚ñB\n‘¼‚Ìƒhƒ‰ƒCƒu‚ğw’è‚µ‚Ä‚­‚¾‚³‚¢B"\
+    //2"?G?‰?[: ?h?‰?C?u '%s' ‚ª‚ ‚è‚Ü‚¹‚ñ?B\n‘¼‚Ì?h?‰?C?u‚ğw’è‚µ‚Ä‚­‚¾‚³‚¢?B"\
     //0
 IDS_UNCPATH_NOTWRITABLE=\
     //1"Error: Drive '%s' is not writable.\nTry another drive."\
-    //2"ƒGƒ‰[: ƒhƒ‰ƒCƒu '%s' ‚É‚Í‘‚«‚ß‚Ü‚¹‚ñB\n‘¼‚Ìƒhƒ‰ƒCƒu‚ğw’è‚µ‚Ä‚­‚¾‚³‚¢B"\
+    //2"?G?‰?[: ?h?‰?C?u '%s' ‚É‚Í‘‚«‚ß‚Ü‚¹‚ñ?B\n‘¼‚Ì?h?‰?C?u‚ğw’è‚µ‚Ä‚­‚¾‚³‚¢?B"\
     //0
 IDS_ASSUME_ENOUGHSPACE=\
     //1"Cannot determine how much free disk space is on '%s'.\nAssume there is enough space and continue?"\
-    //2"'%s' ‚ÉƒtƒŠ[‚ÈƒfƒBƒXƒNƒXƒy[ƒX‚ª‚Ç‚ê‚®‚ç‚¢‚ ‚é‚©‚í‚©‚è‚Ü‚¹‚ñB\n\•ª‚ÈƒXƒy[ƒX‚ª‚ ‚é‚à‚Ì‚Æ‚µ‚Ä‘±‚¯‚Ü‚·‚©?"\
+    //2"'%s' ‚É?t?Š?[‚È?f?B?X?N?X?y?[?X‚ª‚Ç‚ê‚®‚ç‚¢‚ ‚é‚©‚í‚©‚è‚Ü‚¹‚ñ?B\n\•ª‚È?X?y?[?X‚ª‚ ‚é‚à‚Ì‚Æ‚µ‚Ä‘±‚¯‚Ü‚·‚©?"\
     //0
 IDS_CANTMAKEDIR=\
     //1"The %s directory cannot be created.&\nEnter another directory or try another drive."\
-    //2"ƒfƒBƒŒƒNƒgƒŠ %s ‚ğì¬‚·‚é‚±‚Æ‚ª‚Å‚«‚Ü‚¹‚ñB&\n‘¼‚ÌƒfƒBƒŒƒNƒgƒŠ‚Ü‚½‚Íƒhƒ‰ƒCƒu‚ğw’è‚µ‚Ä‚­‚¾‚³‚¢B"\
+    //2"?f?B?Œ?N?g?Š %s ‚ğì?¬‚·‚é‚±‚Æ‚ª‚Å‚«‚Ü‚¹‚ñ?B&\n‘¼‚Ì?f?B?Œ?N?g?Š‚Ü‚½‚Í?h?‰?C?u‚ğw’è‚µ‚Ä‚­‚¾‚³‚¢?B"\
     //0
 IDS_QUERYABORT=\
     //1"@ has not completed installing the software.\nAre you sure you want to stop installation?"\
-    //2"@ ‚Íƒ\ƒtƒgƒEƒFƒA‚ÌƒCƒ“ƒXƒg[ƒ‹‚ğŠ®—¹‚µ‚Ä‚¢‚Ü‚¹‚ñB\n–{“–‚ÉƒCƒ“ƒXƒg[ƒ‹‚ğ’†~‚µ‚Ü‚·‚©?"\
+    //2"@ ‚Í?\?t?g?E?F?A‚Ì?C?“?X?g?[?‹‚ğŠ®—¹‚µ‚Ä‚¢‚Ü‚¹‚ñ?B\n–{“–‚É?C?“?X?g?[?‹‚ğ’†~‚µ‚Ü‚·‚©?"\
     //0
 IDS_SETUPNOGOOD=\
     //1"The software has not been successfully installed!\nYou must run @ again before using the software."\
-    //2"ƒ\ƒtƒgƒEƒFƒA‚ÌƒCƒ“ƒXƒg[ƒ‹‚Í¬Œ÷‚µ‚Ü‚¹‚ñ‚Å‚µ‚½!\nƒ\ƒtƒgƒEƒFƒA‚ğg—p‚·‚é‘O‚ÉAÄ“x @ ‚ğÀs‚µ‚È‚¯‚ê‚Î‚È‚è‚Ü‚¹‚ñB"\
+    //2"?\?t?g?E?F?A‚Ì?C?“?X?g?[?‹‚Í?¬Œ÷‚µ‚Ü‚¹‚ñ‚Å‚µ‚½!\n?\?t?g?E?F?A‚ğg—p‚·‚é‘O‚É?AÄ“x @ ‚ğÀs‚µ‚È‚¯‚ê‚Î‚È‚è‚Ü‚¹‚ñ?B"\
     //0
 IDS_UNSETUPNOGOOD=\
     //1"The software has not been successfully uninstalled!\nYou must run @ again to completely remove the software."\
-    //2"ƒ\ƒtƒgƒEƒFƒA‚ÍA³‚µ‚­íœ‚³‚ê‚Ä‚¢‚Ü‚¹‚ñB\n‚à‚¤ˆê“x @ ‚ğÀs‚µ‚Äƒ\ƒtƒgƒEƒFƒA‚ğŠ®‘S‚Éíœ‚µ‚Ä‚­‚¾‚³‚¢B"\
+    //2"?\?t?g?E?F?A‚Í?A?³‚µ‚­íœ‚³‚ê‚Ä‚¢‚Ü‚¹‚ñ?B\n‚à‚¤?ê“x @ ‚ğÀs‚µ‚Ä?\?t?g?E?F?A‚ğŠ®‘S‚Éíœ‚µ‚Ä‚­‚¾‚³‚¢?B"\
     //0
 IDS_PMADDNOGOOD=\
     //1"@ could not add the application(s) to the Program Manager.&\nDo you wish to ignore this problem and continue?"\
-    //2"@ ‚ÍƒvƒƒOƒ‰ƒ€Eƒ}ƒl[ƒWƒƒ‚ÖƒAƒvƒŠƒP[ƒVƒ‡ƒ“‚ğ’Ç‰Á‚Å‚«‚Ü‚¹‚ñB&\n‚±‚Ì–â‘è‚ğ–³‹‚µ‚Ä‘±‚¯‚Ü‚·‚©?"\
+    //2"@ ‚Í?v??O?‰?€?E?}?l?[?W??‚Ö?A?v?Š?P?[?V?‡?“‚ğ’Ç‰Á‚Å‚«‚Ü‚¹‚ñ?B&\n‚±‚Ì–â‘è‚ğ–³‹‚µ‚Ä‘±‚¯‚Ü‚·‚©?"\
     //0
 IDS_PMREMNOGOOD=\
     //1"@ could not remove application(s) from the Program Manager.&\nDo you wish to ignore this problem and continue?"\
-    //2"@ ‚ÍƒvƒƒOƒ‰ƒ€Eƒ}ƒl[ƒWƒƒ‚©‚çƒAƒvƒŠƒP[ƒVƒ‡ƒ“‚ğíœ‚Å‚«‚Ü‚¹‚ñB&\n‚±‚Ì–â‘è‚ğ–³‹‚µ‚Ä‘±‚¯‚Ü‚·‚©?"\
+    //2"@ ‚Í?v??O?‰?€?E?}?l?[?W??‚©‚ç?A?v?Š?P?[?V?‡?“‚ğíœ‚Å‚«‚Ü‚¹‚ñ?B&\n‚±‚Ì–â‘è‚ğ–³‹‚µ‚Ä‘±‚¯‚Ü‚·‚©?"\
     //0
 IDS_UNSETUPCOMPLETE=\
     //1"@ has completed successfully."\
-    //2"@ ‚Íƒ\ƒtƒgƒEƒFƒA‚ÌƒCƒ“ƒXƒg[ƒ‹‚ğŠ®—¹‚µ‚Ü‚µ‚½B"\
+    //2"@ ‚Í?\?t?g?E?F?A‚Ì?C?“?X?g?[?‹‚ğŠ®—¹‚µ‚Ü‚µ‚½?B"\
     //0
 IDS_COMPLETE=\
     //1"@ has completed successfully."\
-    //2"@ ‚Íƒ\ƒtƒgƒEƒFƒA‚ÌƒCƒ“ƒXƒg[ƒ‹‚ğŠ®—¹‚µ‚Ü‚µ‚½B"\
+    //2"@ ‚Í?\?t?g?E?F?A‚Ì?C?“?X?g?[?‹‚ğŠ®—¹‚µ‚Ü‚µ‚½?B"\
     //0
 IDS_NOMEMORYCOPY=\
     //1"Insufficient memory to copy file.&\nTry again or cancel @."\
-    //2"ƒƒ‚ƒŠ•s‘«‚ÅƒRƒs[‚ª¸”s‚µ‚Ü‚µ‚½B&\nÄ“xAÀs‚·‚é‚©ƒLƒƒƒ“ƒZƒ‹‚µ‚Ä‚­‚¾‚³‚¢ @"\
+    //2"???‚?Š•s‘«‚Å?R?s?[‚ª¸”s‚µ‚Ü‚µ‚½?B&\nÄ“x?AÀs‚·‚é‚©?L???“?Z?‹‚µ‚Ä‚­‚¾‚³‚¢ @"\
     //0
 IDS_CANTOPENDST=\
     //1"Cannot create destination file:\n %s.&\nTry again or cancel @."\
-    //2"Ÿ‚Ìƒtƒ@ƒCƒ‹‚ªì¬‚Å‚«‚Ü‚¹‚ñB:\n %s.&\nÄ“xAÀs‚·‚é‚©ƒLƒƒƒ“ƒZƒ‹‚µ‚Ä‚­‚¾‚³‚¢ @"\
+    //2"Ÿ‚Ì?t?@?C?‹‚ªì?¬‚Å‚«‚Ü‚¹‚ñ?B:\n %s.&\nÄ“x?AÀs‚·‚é‚©?L???“?Z?‹‚µ‚Ä‚­‚¾‚³‚¢ @"\
     //0
 IDS_CANTOPENDST_NONAME=\
     //1"Cannot create destination file.&\nTry again or cancel @."\
-    //2"‘—Mæƒtƒ@ƒCƒ‹‚ªì¬‚Å‚«‚Ü‚¹‚ñB&\nÄ“xAÀs‚·‚é‚©ƒLƒƒƒ“ƒZƒ‹‚µ‚Ä‚­‚¾‚³‚¢ @"\
+    //2"‘—?M?æ?t?@?C?‹‚ªì?¬‚Å‚«‚Ü‚¹‚ñ?B&\nÄ“x?AÀs‚·‚é‚©?L???“?Z?‹‚µ‚Ä‚­‚¾‚³‚¢ @"\
     //0
 IDS_CANTFINDAUTOEXEC=\
     //1"@ cannot find the original AUTOEXEC.BAT file"\
@@ -423,63 +419,63 @@ IDS_CANTFINDCONFIGSYS=\
     //0
 IDS_COPYAUTOEXEC=\
     //1"@ will place the contents of your original\nAUTOEXEC.BAT and CONFIG.SYS files\n in the following backup files:\n\n    %s\n    %s"\
-    //2"@ ‚ÍAUTOEXEC.BAT ‚Æ\n CONFIG.SYS ‚ÌŒ³‚Ì“à—e\n‚ğˆÈ‰º‚ÌƒoƒbƒNƒAƒbƒvEƒtƒ@ƒCƒ‹‚É“ü‚ê‚Ü‚·B\n\n    %s\n    %s"\
+    //2"@ ‚ÍAUTOEXEC.BAT ‚Æ\n CONFIG.SYS ‚ÌŒ³‚Ì“à—e\n‚ğ?È‰º‚Ì?o?b?N?A?b?v?E?t?@?C?‹‚É“ü‚ê‚Ü‚·?B\n\n    %s\n    %s"\
     //0
 IDS_COPYCONFIGSYS=\
     //1"@ will place the contents of your original CONFIG.SYS file in the following backup file: \n\n    %s\n"\
-    //2"@ ‚ÍŒ³‚Ì CONFIG.SYS ‚Ì“à—e‚ğˆÈ‰º‚ÌƒoƒbƒNƒAƒbƒvEƒtƒ@ƒCƒ‹‚É“ü‚ê‚Ü‚·B \n\n    %s\n"\
+    //2"@ ‚ÍŒ³‚Ì CONFIG.SYS ‚Ì“à—e‚ğ?È‰º‚Ì?o?b?N?A?b?v?E?t?@?C?‹‚É“ü‚ê‚Ü‚·?B \n\n    %s\n"\
     //0
 IDS_NEWAUTOEXEC=\
     //1"@ will save the changes it would make to\nyour AUTOEXEC.BAT and CONFIG.SYS files\nin the following backup files:\n\n    %s\n    %s"\
-    //2"@ ‚ªˆÈ‰º‚Ìƒtƒ@ƒCƒ‹\nAUTOEXEC.BAT ‚Æ CONFIG.SYS files\n‚És‚¨‚¤‚Æ‚µ‚½•ÏX‚ğˆÈ‰º‚ÌƒoƒbƒNƒAƒbƒvEƒtƒ@ƒCƒ‹‚É•Û‘¶‚µ‚Ü‚·B\n\n    %s\n    %s"\
+    //2"@ ‚ª?È‰º‚Ì?t?@?C?‹\nAUTOEXEC.BAT ‚Æ CONFIG.SYS files\n‚És‚¨‚¤‚Æ‚µ‚½•ÏX‚ğ?È‰º‚Ì?o?b?N?A?b?v?E?t?@?C?‹‚É•Û‘¶‚µ‚Ü‚·?B\n\n    %s\n    %s"\
     //0
 IDS_NEWCONFIGSYS=\
     //1"@ will save the changes it would make to your CONFIG.SYS file in the following backup file:\n\n    %s\n"\
-    //2"@ ‚ª CONFIG.SYS ‚És‚¨‚¤‚Æ‚µ‚½•ÏX‚ğAˆÈ‰º‚ÌƒoƒbƒNƒAƒbƒvEƒtƒ@ƒCƒ‹‚É•Û‘¶‚µ‚Ü‚·B\n\n    %s\n"\
+    //2"@ ‚ª CONFIG.SYS ‚És‚¨‚¤‚Æ‚µ‚½•ÏX‚ğ?A?È‰º‚Ì?o?b?N?A?b?v?E?t?@?C?‹‚É•Û‘¶‚µ‚Ü‚·?B\n\n    %s\n"\
     //0
 IDS_ERRORBACKAUTO=\
     //1"An error occurred trying to create the backup\ncopy of your AUTOEXEC.BAT file"\
-    //2"Œ³‚Ì AUTOEXEC.BAT ‚ÌƒoƒbƒNƒAƒbƒv‚ğì¬‚·‚é‚Æ‚«‚É\nƒGƒ‰[‚ª‹N‚«‚Ü‚µ‚½"\
+    //2"Œ³‚Ì AUTOEXEC.BAT ‚Ì?o?b?N?A?b?v‚ğì?¬‚·‚é‚Æ‚«‚É\n?G?‰?[‚ª‹N‚«‚Ü‚µ‚½"\
     //0
 IDS_ERRORBACKCONFIG=\
     //1"An error occurred trying to create the backup\ncopy of your CONFIG.SYS file"\
-    //2"Œ³‚Ì CONFIG.SYS ‚ÌƒoƒbƒNƒAƒbƒv‚ğì¬‚·‚é‚Æ‚«‚É\nƒGƒ‰[‚ª‹N‚«‚Ü‚µ‚½"\
+    //2"Œ³‚Ì CONFIG.SYS ‚Ì?o?b?N?A?b?v‚ğì?¬‚·‚é‚Æ‚«‚É\n?G?‰?[‚ª‹N‚«‚Ü‚µ‚½"\
     //0
 IDS_CHANGES=\
     //1"@ will save the changes it would make to\nyour Environment in the following file:\n\n    %s"\
-    //2"@ ‚ªŠÂ‹«‚É‘Î‚µ‚Äs‚¨‚¤‚Æ‚µ‚½•ÏX‚ğ\nˆÈ‰º‚Ìƒtƒ@ƒCƒ‹‚É•Û‘¶‚µ‚Ü‚·B\n\n    %s"\
+    //2"@ ‚ªŠÂ‹«‚É‘Î‚µ‚Äs‚¨‚¤‚Æ‚µ‚½•ÏX‚ğ\n?È‰º‚Ì?t?@?C?‹‚É•Û‘¶‚µ‚Ü‚·?B\n\n    %s"\
     //0
 IDS_OS2CONFIGSYS=\
     //1"The changes to the CONFIG.SYS file are required to run the software.  Please shutdown your system and restart to allow the changes to take effect.\n"\
-    //2"CONFIG.SYS ‚Ö‚Ì•ÏX‚Íƒ\ƒtƒgƒEƒFƒA‚ÌÀs‚É•K—v‚Å‚·BƒVƒXƒeƒ€‚ğƒVƒƒƒbƒgƒ_ƒEƒ“‚µAÄ‹N“®‚µ‚Ä•ÏX‚ğ—LŒø‚É‚µ‚Ä‚­‚¾‚³‚¢B\n"\
+    //2"CONFIG.SYS ‚Ö‚Ì•ÏX‚Í?\?t?g?E?F?A‚ÌÀs‚É•K—v‚Å‚·?B?V?X?e?€‚ğ?V???b?g?_?E?“‚µ?AÄ‹N“®‚µ‚Ä•ÏX‚ğ—LŒø‚É‚µ‚Ä‚­‚¾‚³‚¢?B\n"\
     //0
 IDS_NT_REBOOT=\
     //1"@ has completed installing the software.&\n\nYou should reboot your computer so\nthat the changes to your system setup\nwill take effect."\
-    //2"@ : ƒCƒ“ƒXƒg[ƒ‹‚ğŠ®—¹‚µ‚Ü‚µ‚½B&\n\n•ÏX‚µ‚½İ’è‚ğ—LŒø‚É‚·‚é‚É‚ÍA\nƒRƒ“ƒsƒ…[ƒ^‚ğÄ‹N“®‚·‚é•K—v\n‚ª‚ ‚è‚Ü‚·B"\
+    //2"@ : ?C?“?X?g?[?‹‚ğŠ®—¹‚µ‚Ü‚µ‚½?B&\n\n•ÏX‚µ‚½?İ’è‚ğ—LŒø‚É‚·‚é‚É‚Í?A\n?R?“?s?…?[?^‚ğÄ‹N“®‚·‚é•K—v\n‚ª‚ ‚è‚Ü‚·?B"\
     //0
 IDS_OS2_REBOOT=\
     //1"@ has completed installing the software.&\n\nYou should reboot your computer so\nthat the changes to your CONFIG.SYS\nwill take effect."\
-    //2"@ : ƒCƒ“ƒXƒg[ƒ‹‚ğŠ®—¹‚µ‚Ü‚µ‚½B&\n\nCONFIG.SYS‚Ìİ’è‚Ì•ÏX‚ğ—LŒø‚É‚·‚é\n‚É‚ÍAƒRƒ“ƒsƒ…[ƒ^‚ğÄ‹N“®‚·‚é•K—v\n‚ª‚ ‚è‚Ü‚·B"\
+    //2"@ : ?C?“?X?g?[?‹‚ğŠ®—¹‚µ‚Ü‚µ‚½?B&\n\nCONFIG.SYS‚Ì?İ’è‚Ì•ÏX‚ğ—LŒø‚É‚·‚é\n‚É‚Í?A?R?“?s?…?[?^‚ğÄ‹N“®‚·‚é•K—v\n‚ª‚ ‚è‚Ü‚·?B"\
     //0
 IDS_WINDOWS_REBOOT=\
     //1"@ has completed installing the software.&\n\nYou should reboot your computer so\nthat the changes to your AUTOEXEC.BAT,\nCONFIG.SYS and Windows .INI files will take effect."\
-    //2"@ : ƒCƒ“ƒXƒg[ƒ‹‚ğŠ®—¹‚µ‚Ü‚µ‚½B&\n\nAUTOEXEC.BATACONFIG.SYS ‚Æ\nWindows.INI ‚Ìİ’è‚Ì•ÏX‚ğ—LŒø‚É‚·‚é\n‚É‚ÍAƒRƒ“ƒsƒ…[ƒ^‚ğÄ‹N“®‚·‚é•K—v‚ª‚ ‚è‚Ü‚·B"\
+    //2"@ : ?C?“?X?g?[?‹‚ğŠ®—¹‚µ‚Ü‚µ‚½?B&\n\nAUTOEXEC.BAT?ACONFIG.SYS ‚Æ\nWindows.INI ‚Ì?İ’è‚Ì•ÏX‚ğ—LŒø‚É‚·‚é\n‚É‚Í?A?R?“?s?…?[?^‚ğÄ‹N“®‚·‚é•K—v‚ª‚ ‚è‚Ü‚·?B"\
     //0
 IDS_DOS_REBOOT=\
     //1"@ has completed installing the software.&\n\nYou should reboot your computer so\nthat the changes to your AUTOEXEC.BAT\nand CONFIG.SYS will take effect."\
-    //2"@ : ƒCƒ“ƒXƒg[ƒ‹‚ğŠ®—¹‚µ‚Ü‚µ‚½B&\n\nAUTOEXEC.BAT ‚Æ CONFIG.SYS ‚Ìİ’è\n‚Ì•ÏX‚ğ—LŒø‚É‚·‚é‚É‚ÍAƒRƒ“ƒsƒ…[ƒ^\n‚ğÄ‹N“®‚·‚é•K—v‚ª‚ ‚è‚Ü‚·B"\
+    //2"@ : ?C?“?X?g?[?‹‚ğŠ®—¹‚µ‚Ü‚µ‚½?B&\n\nAUTOEXEC.BAT ‚Æ CONFIG.SYS ‚Ì?İ’è\n‚Ì•ÏX‚ğ—LŒø‚É‚·‚é‚É‚Í?A?R?“?s?…?[?^\n‚ğÄ‹N“®‚·‚é•K—v‚ª‚ ‚è‚Ü‚·?B"\
     //0
 IDS_ERROR_WRITING=\
     //1"An I/O error occurred while writing to the file '%s'"\
-    //2"‘‚«‚İ’†‚É I/O ƒGƒ‰[”­¶Aƒtƒ@ƒCƒ‹ '%s'"\
+    //2"‘‚«‚İ’†‚É I/O ?G?‰?[”­?¶?A?t?@?C?‹ '%s'"\
     //0
 IDS_ERROR_OPENING=\
     //1"An I/O error occurred while opening the file '%s'"\
-    //2"ƒI[ƒvƒ“’†‚É I/O ƒGƒ‰[”­¶Aƒtƒ@ƒCƒ‹ '%s'"\
+    //2"?I?[?v?“’†‚É I/O ?G?‰?[”­?¶?A?t?@?C?‹ '%s'"\
     //0
 IDS_ERROR_CLOSING=\
     //1"An I/O error occurred while closing the file '%s'"\
-    //2"ƒNƒ[ƒY’†‚É I/O ƒGƒ‰[”­¶Aƒtƒ@ƒCƒ‹ '%s'"\
+    //2"?N??[?Y’†‚É I/O ?G?‰?[”­?¶?A?t?@?C?‹ '%s'"\
     //0
 IDS_FIRST=\
     //1"%s"\
@@ -487,264 +483,160 @@ IDS_FIRST=\
     //0
 IDS_UNKNOWNERROR=\
     //1"Unknown error"\
-    //2"–¢’m‚ÌƒGƒ‰["\
-    //0
-IDS_RENAMEERROR=\
-    //1"Cannot rename to %s.&\nContinue with PATCH process?"\
-    //2"%s ‚ğƒŠƒl[ƒ€‚Å‚«‚Ü‚¹‚ñB&\nƒpƒbƒ`‚Ì“K—p‚ğ‘±‚¯‚Ü‚·‚©?"\
-    //0
-IDS_PATCHFILEERROR=\
-    //1"Cannot apply patch file %s.&\nContinue with PATCH process?"\
-    //2"ƒpƒbƒ`ƒtƒ@ƒCƒ‹ %s ‚ğ“K—p‚Å‚«‚Ü‚¹‚ñB&\nƒpƒbƒ`‚Ì“K—p‚ğ‘±‚¯‚Ü‚·‚©?"\
-    //0
-IDS_COPYFILEERROR =\
-    //1"Cannot copy file %s.&\nContinue with PATCH process?"\
-    //2"%s ‚ğƒRƒs[‚Å‚«‚Ü‚¹‚ñB&\nƒpƒbƒ`‚Ì“K—p‚ğ‘±‚¯‚Ü‚·‚©?"\
-    //0
-IDS_DELETEFILEERROR =\
-    //1"Cannot delete file %s.&\nContinue with PATCH Process?"\
-    //2"%s ‚ğíœ‚Å‚«‚Ü‚¹‚ñB&\nƒpƒbƒ`‚Ì“K—p‚ğ‘±‚¯‚Ü‚·‚©?"\
-    //0
-IDS_CREATEDIRERROR=\
-    //1"Cannot create directory %s.&\nContinue with PATCH Process?"\
-    //2"ƒfƒBƒŒƒNƒgƒŠ %s ‚ğì¬‚Å‚«‚Ü‚¹‚ñB&\nƒpƒbƒ`ˆ—‚ğ‘±‚¯‚Ü‚·‚©?"\
-    //0
-IDS_NOTPATCHFILE=\
-    //1"%s is not a patch file."\
-    //2"%s ‚Íƒpƒbƒ`Eƒtƒ@ƒCƒ‹‚Å‚Í‚ ‚è‚Ü‚¹‚ñB"\
-    //0
-IDS_CANTFINDOUTPUT=\
-    //1"Cannot find output file (to be patched) %s."\
-    //2"(ƒpƒbƒ`‚³‚ê‚é)o—Íƒtƒ@ƒCƒ‹ %s ‚ªŒ©‚Â‚©‚è‚Ü‚¹‚ñB"\
-    //0
-IDS_NOATTRIBUTES=\
-    //1"Cannot find file attributes of %s."\
-    //2"%s ‚Ìƒtƒ@ƒCƒ‹‘®«‚ªŒ©‚Â‚©‚è‚Ü‚¹‚ñB"\
-    //0
-IDS_CANTWRITE=\
-    //1"Cannot write to file %s."\
-    //2"ƒtƒ@ƒCƒ‹ %s ‚É‘‚«‚ß‚Ü‚¹‚ñB"\
-    //0
-IDS_BADLENGTH=\
-    //1"File length Error"\
-    //2"ƒtƒ@ƒCƒ‹’·ƒGƒ‰["\
-    //0
-IDS_WRONGCHECKSUM=\
-    //1"Invalid Checksum Error"\
-    //2"•s³‚Èƒ`ƒFƒbƒNƒTƒ€EƒGƒ‰[Invalid Checksum Error"\
+    //2"–¢’m‚Ì?G?‰?["\
     //0
 IDS_CANTCREATEFILE=\
     //1"Cannot create file %s."\
-    //2"ƒtƒ@ƒCƒ‹ %s ‚ğì¬‚Å‚«‚Ü‚¹‚ñB"\
+    //2"?t?@?C?‹ %s ‚ğì?¬‚Å‚«‚Ü‚¹‚ñ?B"\
     //0
 IDS_CANTDELETEFILE=\
     //1"Cannot delete file %s."\
-    //2"ƒtƒ@ƒCƒ‹ %s ‚ğíœ‚Å‚«‚Ü‚¹‚ñB"\
+    //2"?t?@?C?‹ %s ‚ğíœ‚Å‚«‚Ü‚¹‚ñ?B"\
     //0
 IDS_CANTOPENSRC=\
     //1"Cannot open source file:\n%s."\
-    //2"ƒ\[ƒXƒtƒ@ƒCƒ‹ %s ƒI[ƒvƒ“‚Å‚«‚Ü‚¹‚ñB"\
-    //0
-IDS_CANTRENAME=\
-    //1"Cannot rename %s to %s."\
-    //2"%s ‚ğ %s ‚Éƒtƒ@ƒCƒ‹–¼•ÏX‚Å‚«‚Ü‚¹‚ñB"\
-    //0
-IDS_PATCHABORT=\
-    //1"Patch Process Aborted."\
-    //2"ƒpƒbƒ`EƒvƒƒZƒX‚Í’†’f‚µ‚Ü‚µ‚½B"\
+    //2"?\?[?X?t?@?C?‹ %s ?I?[?v?“‚Å‚«‚Ü‚¹‚ñ?B"\
     //0
 IDS_ENV_CHANGES=\
     //1"Required changes to environment:"\
-    //2"ŠÂ‹«‚Ì•ÏX‚ğ—v‹‚µ‚Ü‚µ‚½B"\
+    //2"ŠÂ‹«‚Ì•ÏX‚ğ—v‹?‚µ‚Ü‚µ‚½?B"\
     //0
 IDS_ADD_TO_VAR=\
     //1"add the following to the '%s' variable"\
-    //2"'%s'•Ï”‚ÉˆÈ‰º‚ğ’Ç‰Á "\
+    //2"'%s'•Ï?”‚É?È‰º‚ğ’Ç‰Á "\
     //0
 IDS_SET_VAR_TO=\
     //1"set variable '%s' to"\
-    //2"'%s'•Ï”‚Ìİ’è"\
+    //2"'%s'•Ï?”‚Ì?İ’è"\
     //0
 IDS_DISKETTES_NEEDED=\
     //1"You will need %d diskettes"\
-    //2"%d ƒfƒBƒXƒPƒbƒg‚ª•K—v‚Å‚·"\
+    //2"%d ?f?B?X?P?b?g‚ª•K—v‚Å‚·"\
     //0
 IDS_DRIVE_SPEC=\
     //1"Drive %c: "\
-    //2"ƒhƒ‰ƒCƒu %c:"\
+    //2"?h?‰?C?u %c:"\
     //0
 IDS_DRIVE_SPEC_UNC=\
     //1"Drive '%s' "\
-    //2"ƒhƒ‰ƒCƒu '%s' "\
+    //2"?h?‰?C?u '%s' "\
     //0
 IDS_DRIVE_FREED=\
     //1" will be freed."\
-    //2"ŠJ•ú‚³‚ê‚Ü‚·B"\
+    //2"ŠJ•ú‚³‚ê‚Ü‚·?B"\
     //0
 IDS_DRIVE_REQUIRED=\
     //1" required,  "\
-    //2"—v‹‚µ‚Ü‚µ‚½"\
+    //2"—v‹?‚µ‚Ü‚µ‚½"\
     //0
 IDS_DRIVE_AVAILABLE=\
     //1" available."\
-    //2"g—p‰Â”\‚Å‚·B"\
+    //2"g—p‰Â”\‚Å‚·?B"\
     //0
 IDS_MODIFY_AUTOEXEC=\
     //1"@ needs to modify AUTOEXEC.BAT and CONFIG.SYS."\
-    //2"@ AUTOEXEC.BAT ‚Æ CONFIG.SYS ‚ğXV‚·‚é•K—v‚ª‚ ‚è‚Ü‚·B"\
+    //2"@ AUTOEXEC.BAT ‚Æ CONFIG.SYS ‚ğX?V‚·‚é•K—v‚ª‚ ‚è‚Ü‚·?B"\
     //0
 IDS_MODIFY_CONFIG=\
     //1"@ needs to modify CONFIG.SYS."\
-    //2"@ CONFIG.SYS ‚ğXV‚·‚é•K—v‚ª‚ ‚è‚Ü‚·B"\
+    //2"@ CONFIG.SYS ‚ğX?V‚·‚é•K—v‚ª‚ ‚è‚Ü‚·?B"\
     //0
 IDS_MODIFY_ENVIRONMENT=\
     //1"@ needs to modify environment variables in the registry."\
-    //2"@ ‚ÍƒŒƒWƒXƒgƒŠ‚ÌŠÂ‹«•Ï”‚ğXV‚·‚é•K—v‚ª‚ ‚è‚Ü‚·B"\
+    //2"@ ‚Í?Œ?W?X?g?Š‚ÌŠÂ‹«•Ï?”‚ğX?V‚·‚é•K—v‚ª‚ ‚è‚Ü‚·?B"\
     //0
 IDS_INCONSISTENT=\
     //1"@ has determined that you are installing over a previous version of the software, or have manually added or removed files.  Do you wish to install all missing files?"\
-    //2"@ ‚ÍAƒ†[ƒU[‚ªƒCƒ“ƒXƒg[ƒ‰‚ğg‚í‚¸‚Éƒtƒ@ƒCƒ‹‚ğíœ‚µ‚½‚©Aè“®‚ÅƒTƒuƒZƒbƒg‚ğƒCƒ“ƒXƒg[ƒ‹‚µ‚½‚Æ”»’f‚µ‚Ü‚µ‚½B‚·‚×‚Ä‚Ì•s‘«‚µ‚Ä‚¢‚éƒtƒ@ƒCƒ‹‚ğƒCƒ“ƒXƒg[ƒ‹‚µ‚Ü‚·‚©?"\
-    //0
-IDS_NO_FILES_PATCHED=\
-    //1"No files were patched"\
-    //2"ƒtƒ@ƒCƒ‹‚Íƒpƒbƒ`‚³‚ê‚Ä‚¢‚Ü‚¹‚ñB"\
+    //2"@ ‚Í?A?†?[?U?[‚ª?C?“?X?g?[?‰‚ğg‚í‚¸‚É?t?@?C?‹‚ğíœ‚µ‚½‚©?Aè“®‚Å?T?u?Z?b?g‚ğ?C?“?X?g?[?‹‚µ‚½‚Æ”»’f‚µ‚Ü‚µ‚½?B‚·‚×‚Ä‚Ì•s‘«‚µ‚Ä‚¢‚é?t?@?C?‹‚ğ?C?“?X?g?[?‹‚µ‚Ü‚·‚©?"\
     //0
 IDS_REMOVE_ODBC=\
     //1"@ has determined that after this uninstall, the ODBC core components will no longer be used. Should these files be deleted?"\
-    //2"@ ‚ÍA‚±‚ÌíœŒã‚É‚ÍAODBC ‚ÌƒRƒAEƒRƒ“ƒ|[ƒlƒ“ƒg‚Íg—p‚³‚ê‚È‚¢‚±‚Æ‚ğŒˆ’è‚µ‚Ä‚¢‚Ü‚·B‚±‚ê‚ç‚Ìƒtƒ@ƒCƒ‹‚ğíœ‚µ‚Ü‚·‚©?"\
+    //2"@ ‚Í?A‚±‚ÌíœŒã‚É‚Í?AODBC ‚Ì?R?A?E?R?“?|?[?l?“?g‚Íg—p‚³‚ê‚È‚¢‚±‚Æ‚ğŒ?’è‚µ‚Ä‚¢‚Ü‚·?B‚±‚ê‚ç‚Ì?t?@?C?‹‚ğíœ‚µ‚Ü‚·‚©?"\
     //0
 IDS_REMOVE_DLL=\
     //1"@ has determined that after this uninstall, the file %s will no longer be used. Should this file be deleted?"\
-    //2"@ ‚ÍA‚±‚ÌíœŒã‚É‚ÍAƒtƒ@ƒCƒ‹ %s ‚Íg—p‚³‚ê‚È‚¢‚±‚Æ‚ğŒˆ’è‚µ‚Ä‚¢‚Ü‚·B‚±‚Ìƒtƒ@ƒCƒ‹‚ğíœ‚µ‚Ü‚·‚©?"\
+    //2"@ ‚Í?A‚±‚ÌíœŒã‚É‚Í?A?t?@?C?‹ %s ‚Íg—p‚³‚ê‚È‚¢‚±‚Æ‚ğŒ?’è‚µ‚Ä‚¢‚Ü‚·?B‚±‚Ì?t?@?C?‹‚ğíœ‚µ‚Ü‚·‚©?"\
     //0
 
 IDS_ERASE_OK=\
     //1"All files on drive '%c' will be erased.\nProceed anyway?"\
-    //2"ƒhƒ‰ƒCƒu '%c' ‚Ì‚·‚×‚Ä‚Ìƒtƒ@ƒCƒ‹‚Ííœ‚³‚ê‚Ü‚·B\n‘±‚¯‚Ü‚·‚©?"\
+    //2"?h?‰?C?u '%c' ‚Ì‚·‚×‚Ä‚Ì?t?@?C?‹‚Ííœ‚³‚ê‚Ü‚·?B\n‘±‚¯‚Ü‚·‚©?"\
     //0
 IDS_ERASE_ARE_YOU_SURE=\
     //1"Are you sure you want to erase all files on drive '%c'?"\
-    //2"ƒhƒ‰ƒCƒu '%c' ‚Ì‚·‚×‚Ä‚Ìƒtƒ@ƒCƒ‹‚ğíœ‚µ‚Ä‚à‚æ‚¢‚Å‚·‚©?"\
+    //2"?h?‰?C?u '%c' ‚Ì‚·‚×‚Ä‚Ì?t?@?C?‹‚ğíœ‚µ‚Ä‚à‚æ‚¢‚Å‚·‚©?"\
     //0
 IDS_INVALID_DISKETTE_SPEC=\
     //1"'%s' is not a valid diskette drive name.\n"\
-    //2"'%s' ‚ÍA³‚µ‚¢ƒfƒBƒXƒPƒbƒgEƒhƒ‰ƒCƒu–¼‚Å‚Í‚ ‚è‚Ü‚¹‚ñB\n"\
-    //0
-IDS_LOGFILE_EXISTS=\
-    //1"Requested log file: %s exists already.&\nReplace it?\n(If you choose 'NO', this program will abort.)"\
-    //2"ƒƒOEƒtƒ@ƒCƒ‹‚ğ—v‹‚µ‚Ü‚µ‚½: %s ‚Í‚·‚Å‚É‘¶İ‚µ‚Ä‚¢‚Ü‚·B\n’u‚«Š·‚¦‚Ü‚·‚©?\n('‚¢‚¢‚¦'‚ğ‘I‚ñ‚¾ê‡, ‚±‚ÌƒvƒƒOƒ‰ƒ€‚ğƒAƒ{[ƒg‚µ‚Ü‚·B)"\
-    //0
-IDS_CANT_OPEN_LOGFILE=\
-    //1"Requested log file: %s could not be opened."\
-    //2"ƒƒOEƒtƒ@ƒCƒ‹‚ğ—v‹‚µ‚Ü‚µ‚½: %s ‚ğƒI[ƒvƒ“‚·‚é‚±‚Æ‚ª‚Å‚«‚Ü‚¹‚ñB"\
-    //0
-IDS_CANT_WRITE_LOGFILE=\
-    //1"%s could not be written."\
-    //2"%s ‚É‘‚«‚Ş‚±‚Æ‚ª‚Å‚«‚Ü‚¹‚ñB"\
-    //0
-IDS_UNPACKING=\
-    //1"Unpacking %s... "\
-    //2"ƒAƒ“ƒpƒbƒLƒ“ƒO %s"\
-    //0
-IDS_DELETING=\
-    //1"Deleting %s... "\
-    //2"íœ %s"\
-    //0
-IDS_CREATINGDIR=\
-    //1"Creating directory %s... "\
-    //2"ƒfƒBƒŒƒNƒgƒŠ %s ‚ğì¬‚µ‚Ä‚¢‚Ü‚·B"\
-    //0
-IDS_SUCCESS=\
-    //1"Successful"\
-    //2"¬Œ÷"\
-    //0
-IDS_FAILED_UNPACKING=\
-    //1"Failed unpacking"\
-    //2"ƒAƒ“ƒpƒbƒLƒ“ƒO¸”s"\
-    //0
-IDS_INVALID_EXE=\
-    //1"Existing executable is invalid"\
-    //2"Àsƒ‚ƒWƒ…[ƒ‹‚ª‘¶İ‚·‚é‚±‚Æ‚ª•s“–‚Å‚·"\
-    //0
-IDS_FAILED_PATCHING=\
-    //1"Failed patching new file"\
-    //2"V‚µ‚¢ƒtƒ@ƒCƒ‹‚Ìƒpƒbƒ`‚É¸”s‚µ‚Ü‚µ‚½"\
-    //0
-IDS_FAILED_DELETING=\
-    //1"Failed deleting."\
-    //2"íœ‚É¸”s‚µ‚Ü‚µ‚½B"\
-    //0
-IDS_FAILED_CREATINGDIR=\
-    //1"Failed creating directory"\
-    //2"ƒfƒBƒŒƒNƒgƒŠ‚Ìì¬‚É¸”s‚µ‚Ü‚µ‚½B"\
+    //2"'%s' ‚Í?A?³‚µ‚¢?f?B?X?P?b?g?E?h?‰?C?u–¼‚Å‚Í‚ ‚è‚Ü‚¹‚ñ?B\n"\
     //0
 IDS_CANTREPLACE=\
     //1"Cannot replace the file %s.&\nContinue with the install?"\
-    //2"ƒtƒ@ƒCƒ‹ %s ‚ğ’u‚«Š·‚¦‚é‚±‚Æ‚ª‚Å‚«‚Ü‚¹‚ñB&\nƒCƒ“ƒXƒg[ƒ‹‚ğ‘±‚¯‚Ü‚·‚©?"\
+    //2"?t?@?C?‹ %s ‚ğ’u‚«Š·‚¦‚é‚±‚Æ‚ª‚Å‚«‚Ü‚¹‚ñ?B&\n?C?“?X?g?[?‹‚ğ‘±‚¯‚Ü‚·‚©?"\
     //0
 IDS_NOSPACE_AFTER_DELETING=\
     //1"The package will require about %ldK of space in the path '%s', yet even after the current contents of this path are deleted, only %ldK will be free.\nYou need %ld bytes (%ldK) more space.\nDo you wish to proceed and create a package even though this may fail?"\
-    //2"‚±‚ÌƒpƒbƒP[ƒW‚ÍAƒpƒX '%s' ‚É‚¨‚¢‚Ä–ñ %ldK ‚ÌƒXƒy[ƒX‚ğ•K—v‚Æ‚µ‚Ä‚¢‚Ü‚·B‚±‚ÌƒpƒX‚ªíœ‚³‚ê‚½Œã‚ÌŒ»İ‚Ì“à—e‚ÍA %ldK ‚¾‚¯ƒtƒŠ[‚É‚È‚è‚Ü‚·B\n‚ ‚Æ %ld ƒoƒCƒg (%ldK) •K—v‚Æ‚È‚è‚Ü‚·B¸”s‚·‚é‚©‚à‚µ‚ê‚È‚¢‚µ‚ê‚Ü‚¹‚ñ‚ªA‘±‚¯‚ÄƒpƒbƒP[ƒW‚ğì¬‚µ‚Ü‚·‚©?"\
+    //2"‚±‚Ì?p?b?P?[?W‚Í?A?p?X '%s' ‚É‚¨‚¢‚Ä–ñ %ldK ‚Ì?X?y?[?X‚ğ•K—v‚Æ‚µ‚Ä‚¢‚Ü‚·?B‚±‚Ì?p?X‚ªíœ‚³‚ê‚½Œã‚ÌŒ»İ‚Ì“à—e‚Í?A %ldK ‚¾‚¯?t?Š?[‚É‚È‚è‚Ü‚·?B\n‚ ‚Æ %ld ?o?C?g (%ldK) •K—v‚Æ‚È‚è‚Ü‚·?B¸”s‚·‚é‚©‚à‚µ‚ê‚È‚¢‚µ‚ê‚Ü‚¹‚ñ‚ª?A‘±‚¯‚Ä?p?b?P?[?W‚ğì?¬‚µ‚Ü‚·‚©?"\
     //0
 IDS_NOTENOUGHSPACE=\
     //1"The package will require about %ldK of space in the path '%s', yet %ldK is free.\nYou need %ld bytes (%ldK) more space.\nDo you wish to proceed and create a package even though this may fail?"\
-    //2"‚±‚ÌƒpƒbƒP[ƒW‚ÍAƒpƒX '%s' ‚É‚¨‚¢‚Ä–ñ %ldK ‚ÌƒXƒy[ƒX‚ğ•K—v‚Æ‚µ‚Ä‚¢‚Ü‚·B \n‚Ü‚¾ %ldK ƒtƒŠ[‚Å‚·B‚ ‚Æ %ld ƒoƒCƒg (%ldK) •K—v‚Æ‚È‚è‚Ü‚·B¸”s‚·‚é‚©‚à‚µ‚ê‚È‚¢‚µ‚ê‚Ü‚¹‚ñ‚ªA‘±‚¯‚ÄƒpƒbƒP[ƒW‚ğì¬‚µ‚Ü‚·‚©?"\
+    //2"‚±‚Ì?p?b?P?[?W‚Í?A?p?X '%s' ‚É‚¨‚¢‚Ä–ñ %ldK ‚Ì?X?y?[?X‚ğ•K—v‚Æ‚µ‚Ä‚¢‚Ü‚·?B \n‚Ü‚¾ %ldK ?t?Š?[‚Å‚·?B‚ ‚Æ %ld ?o?C?g (%ldK) •K—v‚Æ‚È‚è‚Ü‚·?B¸”s‚·‚é‚©‚à‚µ‚ê‚È‚¢‚µ‚ê‚Ü‚¹‚ñ‚ª?A‘±‚¯‚Ä?p?b?P?[?W‚ğì?¬‚µ‚Ü‚·‚©?"\
     //0
 IDS_BAD_PATH=\
     //1"The path: '%s' that you entered is either inaccessible, not valid, or cannot be made.\nCheck the path and run this program again."\
-    //2"“ü—Í‚µ‚½ƒpƒX '%s' ‚ÍAƒAƒNƒZƒX‚Å‚«‚È‚¢‚©A•s“–‚©A‚Ü‚½‚Íì¬‚Å‚«‚Ü‚¹‚ñB\nƒpƒX‚ğŠm”F‚µA‚±‚ÌƒvƒƒOƒ‰ƒ€‚ğƒTƒCƒhÀs‚µ‚Ä‚­‚¾‚³‚¢B"\
+    //2"“ü—Í‚µ‚½?p?X '%s' ‚Í?A?A?N?Z?X‚Å‚«‚È‚¢‚©?A•s“–‚©?A‚Ü‚½‚Íì?¬‚Å‚«‚Ü‚¹‚ñ?B\n?p?X‚ğŠm”F‚µ?A‚±‚Ì?v??O?‰?€‚ğ?T?C?hÀs‚µ‚Ä‚­‚¾‚³‚¢?B"\
     //0
 IDS_EMPTY_DIR=\
     //1"WARNING: Before copying files, this program will attempt to delete the contents of the existing directory: '%s'.\nAre you sure you wish to proceed?\n"\
-    //2"Œx:ƒtƒ@ƒCƒ‹‚ğƒRƒs[‚·‚é‘O‚ÉA‚±‚ÌƒvƒƒOƒ‰ƒ€‚ÍA‘¶İ‚·‚éƒfƒBƒŒƒNƒgƒŠ '%s' ‚Ì“à—e‚ğíœ‚µ‚æ‚¤‚Æ‚µ‚Ü‚·B\n‘±‚¯‚ÄÀs‚µ‚Ü‚·‚©?\n"\
+    //2"Œx?:?t?@?C?‹‚ğ?R?s?[‚·‚é‘O‚É?A‚±‚Ì?v??O?‰?€‚Í?A‘¶İ‚·‚é?f?B?Œ?N?g?Š '%s' ‚Ì“à—e‚ğíœ‚µ‚æ‚¤‚Æ‚µ‚Ü‚·?B\n‘±‚¯‚ÄÀs‚µ‚Ü‚·‚©?\n"\
     //0
 IDS_FAILED_COPYING=\
     //1"Error: The package could not be successfully copied to the directory: '%s'."\
-    //2"ƒGƒ‰[: ƒpƒbƒP[ƒW‚ÍAƒfƒBƒŒƒNƒgƒŠ '%s' ‚Ö‚ÌƒRƒs[‚É¬Œ÷‚µ‚Ü‚¹‚ñ‚Å‚µ‚½B"\
+    //2"?G?‰?[: ?p?b?P?[?W‚Í?A?f?B?Œ?N?g?Š '%s' ‚Ö‚Ì?R?s?[‚É?¬Œ÷‚µ‚Ü‚¹‚ñ‚Å‚µ‚½?B"\
     //0
 IDS_PDF_FAILED=\
     //1"Error: Failed to create the .pdf file for this package successfully."\
-    //2"ƒGƒ‰[: ‚±‚ÌƒpƒbƒP[ƒW‚Ì‚½‚ß‚Ì .pdf ƒtƒ@ƒCƒ‹‚ğì¬‚·‚é‚Ì‚É¸”s‚µ‚Ü‚µ‚½B"\
+    //2"?G?‰?[: ‚±‚Ì?p?b?P?[?W‚Ì‚½‚ß‚Ì .pdf ?t?@?C?‹‚ğì?¬‚·‚é‚Ì‚É¸”s‚µ‚Ü‚µ‚½?B"\
     //0
 IDS_NO_LICENSEINFO=\
     //1"Could not apply the license because a user name and company were not found in c:\sms.ini."\
-    //2"c:\sms.ini ‚Éƒ†[ƒU–¼‚Æ‰ïĞ‚ª‚È‚©‚Á‚½‚½‚ßAƒ‰ƒCƒZƒ“ƒX‚Ì“K—p‚ª‚Å‚«‚Ü‚¹‚ñ‚Å‚µ‚½B"\
+    //2"c:\sms.ini ‚É?†?[?U–¼‚Æ‰ïĞ‚ª‚È‚©‚Á‚½‚½‚ß?A?‰?C?Z?“?X‚Ì“K—p‚ª‚Å‚«‚Ü‚¹‚ñ‚Å‚µ‚½?B"\
     //0
 IDS_PACKAGE_CREATED=\
     //1"A package for Microsoft BackOffice has been successfully created in the directory: '%s'.\nThe package definition file: '%s' can also be found in the same directory."\
-    //2"Microsoft BackOffice ‚ÌƒpƒbƒP[ƒW‚Ìì¬‚ªAƒfƒBƒŒƒNƒgƒŠ '%s' ‚É¬Œ÷‚µ‚Ü‚µ‚½B\nƒpƒbƒP[ƒW’è‹`ƒtƒ@ƒCƒ‹ '%s' ‚ÍA“¯ˆê‚ÌƒfƒBƒŒƒNƒgƒŠ‚É‚ ‚è‚Ü‚·B"\
+    //2"Microsoft BackOffice ‚Ì?p?b?P?[?W‚Ìì?¬‚ª?A?f?B?Œ?N?g?Š '%s' ‚É?¬Œ÷‚µ‚Ü‚µ‚½?B\n?p?b?P?[?W’è‹`?t?@?C?‹ '%s' ‚Í?A“¯?ê‚Ì?f?B?Œ?N?g?Š‚É‚ ‚è‚Ü‚·?B"\
     //0
 IDS_CANTOPENFILE=\
     //1"Cannot open file '%s'."\
-    //2"ƒtƒ@ƒCƒ‹ '%s' ‚ğƒI[ƒvƒ“‚Å‚«‚Ü‚¹‚ñB"\
+    //2"?t?@?C?‹ '%s' ‚ğ?I?[?v?“‚Å‚«‚Ü‚¹‚ñ?B"\
     //0
 IDS_CANTALLOCATEMEMORY=\
     //1"Could not allocate memory."\
-    //2"ƒƒ‚ƒŠ‚ğŠ„‚è“–‚Ä‚Å‚«‚Ü‚¹‚ñB"\
+    //2"???‚?Š‚ğŠ„‚è“–‚Ä‚Å‚«‚Ü‚¹‚ñ?B"\
     //0
 IDS_ERROREDITING=\
     //1"Error editing the file '%s'."\
-    //2"ƒtƒ@ƒCƒ‹ '%s' ‚ğ•ÏX‚Å‚«‚Ü‚¹‚ñB"\
+    //2"?t?@?C?‹ '%s' ‚ğ•ÏX‚Å‚«‚Ü‚¹‚ñ?B"\
     //0
 IDS_REGERROR=\
     //1"An error occurred while attempting to modify the registry."\
-    //2"ƒŒƒWƒXƒgƒŠ‚ğ•ÏX’†‚ÉƒGƒ‰[‚ª”­¶‚µ‚Ü‚µ‚½B"\
+    //2"?Œ?W?X?g?Š‚ğ•ÏX’†‚É?G?‰?[‚ª”­?¶‚µ‚Ü‚µ‚½?B"\
     //0
 IDS_REG_ODBC_ERROR=\
     //1"Information about ODBC was expected in the registry, but not found."\
-    //2"ƒŒƒWƒXƒgƒŠ‚©‚ç ODBC ‚Ìî•ñ‚ğæ“¾‚µ‚æ‚¤‚Æ‚µ‚Ü‚µ‚½‚ªA‚İ‚Â‚©‚è‚Ü‚¹‚ñ‚Å‚µ‚½B"\
+    //2"?Œ?W?X?g?Š‚©‚ç ODBC ‚Ìî•ñ‚ğæ“¾‚µ‚æ‚¤‚Æ‚µ‚Ü‚µ‚½‚ª?A‚İ‚Â‚©‚è‚Ü‚¹‚ñ‚Å‚µ‚½?B"\
     //0     
 IDS_FAILED_MODIFYING_FILE=\
     //1"Could not modify the configuration file:\n%s&\nDo you wish to continue?"\
-    //2"İ’èƒtƒ@ƒCƒ‹ '%s' ‚ğXV‚Å‚«‚Ü‚¹‚ñB\nˆ—‚ğ‘±‚¯‚Ü‚·‚©?\
+    //2"?İ’è?t?@?C?‹ '%s' ‚ğX?V‚Å‚«‚Ü‚¹‚ñ?B\n?—‚ğ‘±‚¯‚Ü‚·‚©?\
     //0
 IDS_HELP_BUTTON=\
     //1"?&Help"\
-    //2"?ƒwƒ‹ƒv(&H)"\
+    //2"??w?‹?v(&H)"\
     //0
 IDS_CANCEL_BUTTON=\
     //1"^&Cancel"\
-    //2"^ƒLƒƒƒ“ƒZƒ‹(&C)"\
+    //2"^?L???“?Z?‹(&C)"\
     //0
 IDS_OK_BUTTON=\
     //1".+&OK"\
@@ -752,31 +644,31 @@ IDS_OK_BUTTON=\
     //0
 IDS_FAILEDBACKUP=\
     //1"The file '%s' could not be copied to '%s'.&\n\nDo you wish to continue without a backup?"\
-    //2"ƒtƒ@ƒCƒ‹ '%s' ‚ğ '%s' ‚ÖƒRƒs[‚Å‚«‚Ü‚¹‚ñB&\n\nƒoƒbƒNƒAƒbƒv‚¹‚¸‚É‘±‚¯‚Ü‚·‚©?"\
+    //2"?t?@?C?‹ '%s' ‚ğ '%s' ‚Ö?R?s?[‚Å‚«‚Ü‚¹‚ñ?B&\n\n?o?b?N?A?b?v‚¹‚¸‚É‘±‚¯‚Ü‚·‚©?"\
     //0
 IDS_INVALID_DIR=\
     //1"'%s' is not a valid directory."\
-    //2"'%s' ‚Í—LŒø‚ÈƒfƒBƒŒƒNƒgƒŠ‚Å‚Í‚ ‚è‚Ü‚¹‚ñB"\
+    //2"'%s' ‚Í—LŒø‚È?f?B?Œ?N?g?Š‚Å‚Í‚ ‚è‚Ü‚¹‚ñ?B"\
     //0
 IDS_NODIR=\
     //1"The directory '%s' does not exist.&  Do you want to create it?\n\n(Choose YES to create the directory, or NO to enter a different directory.)"\
-    //2"ƒfƒBƒŒƒNƒgƒŠ '%s' ‚ª‚ ‚è‚Ü‚¹‚ñB&  ì¬‚µ‚Ü‚·‚©?\n\nì¬‚µ‚È‚¢ê‡‚Í‘¼‚ÌƒfƒBƒŒƒNƒgƒŠ‚ğ“ü—Í‚µ‚Ä‚­‚¾‚³‚¢B"\
+    //2"?f?B?Œ?N?g?Š '%s' ‚ª‚ ‚è‚Ü‚¹‚ñ?B&  ì?¬‚µ‚Ü‚·‚©?\n\nì?¬‚µ‚È‚¢ê‡‚Í‘¼‚Ì?f?B?Œ?N?g?Š‚ğ“ü—Í‚µ‚Ä‚­‚¾‚³‚¢?B"\
     //0
 IDS_ALIAS_EXISTS=\
     //1"The alias '%s' exists already.&  Do you wish to enter a different alias?\n\n(Choose YES to go back and enter a different alias, or NO to overwrite the the existing alias.)"\
-    //2"ƒGƒCƒŠƒAƒX '%s' ‚Í‚·‚Å‚É‘¶İ‚µ‚Ä‚Ü‚·B&  V‚µ‚¢ƒGƒCƒŠƒAƒX‚ğ“ü—Í‚µ‚Ü‚·‚©?\n\n“ü—Í‚µ‚È‚¢ê‡‚Í’u‚«Š·‚¦‚Ü‚·B"\
+    //2"?G?C?Š?A?X '%s' ‚Í‚·‚Å‚É‘¶İ‚µ‚Ä‚Ü‚·?B&  ?V‚µ‚¢?G?C?Š?A?X‚ğ“ü—Í‚µ‚Ü‚·‚©?\n\n“ü—Í‚µ‚È‚¢ê‡‚Í’u‚«Š·‚¦‚Ü‚·?B"\
     //0
 IDS_NODESTINFO=\
     //1"Disk space information from the destination path: '%s' could not be found.  An estimate is that about %ldK of space is needed.&\n\nDo you wish to continue anyway?"\
-    //2"‘—MæƒpƒX‚©‚ç‚ÌƒfƒBƒXƒNEƒXƒy[ƒXî•ñ : '%s' ‚Í‚ ‚è‚Ü‚¹‚ñB estimate ‚É‚Í–ñ %ldK ‚ÌƒXƒy[ƒX‚ª•K—v‚Å‚·B&\n\‚±‚Ì‚Ü‚Ü‘±‚¯‚Ü‚·‚©?"\
+    //2"‘—?M?æ?p?X‚©‚ç‚Ì?f?B?X?N?E?X?y?[?Xî•ñ : '%s' ‚Í‚ ‚è‚Ü‚¹‚ñ?B estimate ‚É‚Í–ñ %ldK ‚Ì?X?y?[?X‚ª•K—v‚Å‚·?B&\n\‚±‚Ì‚Ü‚Ü‘±‚¯‚Ü‚·‚©?"\
     //0
 IDS_NOSRCINFO=\
     //1"Disk space information for the source path: '%s' could not be found.&\n\nDo you wish to continue anyway?"\
-    //2"ƒ\[ƒXƒpƒX‚©‚ç‚ÌƒfƒBƒXƒNEƒXƒy[ƒXî•ñ : '%s' ‚Í‚ ‚è‚Ü‚¹‚ñB&\n\n‘±‚¯‚Ü‚·‚©?"\
+    //2"?\?[?X?p?X‚©‚ç‚Ì?f?B?X?N?E?X?y?[?Xî•ñ : '%s' ‚Í‚ ‚è‚Ü‚¹‚ñ?B&\n\n‘±‚¯‚Ü‚·‚©?"\
     //0
 IDS_NOFREESPACEINFO=\
     //1"The amount of free space on '%s' cannot be determined.  About %ldK free space is needed.&\n\nDo you wish to continue anyway?"\
-    //2"'%s' ‚ÌƒtƒŠ[‚ÈƒfƒBƒXƒNƒXƒy[ƒX‚ÌƒTƒCƒY‚ª‚í‚©‚è‚Ü‚¹‚ñB–ñ %ldK ‚ÌƒtƒŠ[‚ÈƒXƒy[ƒX‚ª•K—v‚Å‚·B&\n\n‘±‚¯‚Ü‚·‚©?"\
+    //2"'%s' ‚Ì?t?Š?[‚È?f?B?X?N?X?y?[?X‚Ì?T?C?Y‚ª‚í‚©‚è‚Ü‚¹‚ñ?B–ñ %ldK ‚Ì?t?Š?[‚È?X?y?[?X‚ª•K—v‚Å‚·?B&\n\n‘±‚¯‚Ü‚·‚©?"\
     //0
 IDS_NSCONFIG_1=\
     //1"Netscape Server was found in:"\
@@ -784,99 +676,99 @@ IDS_NSCONFIG_1=\
     //0
 IDS_NSCONFIG_2=\
     //1"This dialog lets you choose how to configure Netscape Server for NetImpact Dynamo."\
-    //2"‚±‚±‚Å‚Í‚Ç‚Ì‚æ‚¤‚É NetImpact Dynamo ‚É‘Î‚·‚é Netscape Server ‚Ìİ’è‚ğ‚·‚é‚©‘I‚ñ‚Å‚­‚¾‚³‚¢B"\
+    //2"‚±‚±‚Å‚Í‚Ç‚Ì‚æ‚¤‚É NetImpact Dynamo ‚É‘Î‚·‚é Netscape Server ‚Ì?İ’è‚ğ‚·‚é‚©‘I‚ñ‚Å‚­‚¾‚³‚¢?B"\
     //0
 IDS_NSCONFIG_3=\
     //1"Select where to place the NetImpact Dynamo NSAPI DLLs for use by Netscape Server:"\
-    //2"Netscape ƒT[ƒo‚É‚æ‚Á‚Äg—p‚·‚é NetImpact Dynamo NSAPI DLL‚ğ‚Ç‚±‚É’u‚­‚©‘I‘ğ‚µ‚Ä‚­‚¾‚³‚¢:"\
+    //2"Netscape ?T?[?o‚É‚æ‚Á‚Äg—p‚·‚é NetImpact Dynamo NSAPI DLL‚ğ‚Ç‚±‚É’u‚­‚©‘I‘ğ‚µ‚Ä‚­‚¾‚³‚¢:"\
     //0
 IDS_NSCONFIG_4=\
     //1"Use the path: %s (&recommended)"\
-    //2"ƒpƒX %s ‚ğg—p‚·‚é‚±‚Æ‚ğ‚¨‚·‚·‚ß‚µ‚Ü‚·(&R)"\
+    //2"?p?X %s ‚ğg—p‚·‚é‚±‚Æ‚ğ‚¨‚·‚·‚ß‚µ‚Ü‚·(&R)"\
     //0
 IDS_NSCONFIG_5=\
     //1"Use the &path: %s"\
-    //2"ƒpƒX %s ‚ğg—p(&P)"\
+    //2"?p?X %s ‚ğg—p(&P)"\
     //0
 IDS_NSCONFIG_6=\
     //1"&Enter a path."\
-    //2"ƒpƒX‚Ì“ü—Í(&E)"\
+    //2"?p?X‚Ì“ü—Í(&E)"\
     //0
 IDS_NSCONFIG_7=\
     //1"NSAPI DLL path:"\
-    //2"NSAPI DLL ƒpƒX:"\
+    //2"NSAPI DLL ?p?X:"\
     //0
 IDS_NSCONFIG_8=\
     //1"@ can modify the '%s' file for each Web server under this install of Netscape Server that you want to work with NetImpact Dynamo."\
-    //2"@ ‚Í‚±‚ÌƒCƒ“ƒXƒg[ƒ‹‰º‚ÌŠe Web ƒT[ƒo‚ğ NetImpact Dynamo‚Å“®‚©‚µ‚½‚¢ Netscape Server ‚É‘Î‚µ‚Ä '%s' ƒtƒ@ƒCƒ‹‚ğC³‚·‚é‚±‚Æ‚ª‚Å‚«‚é‚Ü‚·B"\
+    //2"@ ‚Í‚±‚Ì?C?“?X?g?[?‹‰º‚ÌŠe Web ?T?[?o‚ğ NetImpact Dynamo‚Å“®‚©‚µ‚½‚¢ Netscape Server ‚É‘Î‚µ‚Ä '%s' ?t?@?C?‹‚ğC?³‚·‚é‚±‚Æ‚ª‚Å‚«‚é‚Ü‚·?B"\
     //0
 IDS_NSCONFIG_9=\
     //1"&List selected file(s)..."\
-    //2"‘I‘ğ‚³‚ê‚½ƒtƒ@ƒCƒ‹EƒŠƒXƒg(&L)"\
+    //2"‘I‘ğ‚³‚ê‚½?t?@?C?‹?E?Š?X?g(&L)"\
     //0
 IDS_NSCONFIG_10=\
     //1"Modify the '%s' file(s)."\
-    //2"ƒtƒ@ƒCƒ‹ '%s' ‚ğXV‚µ‚Ü‚·B"\
+    //2"?t?@?C?‹ '%s' ‚ğX?V‚µ‚Ü‚·?B"\
     //0
 IDS_NSCONFIG_11=\
     //1"Below is a list of the %s file(s) for Netscape Web Servers found under this install of Netscape Server.  Select the %s file(s) you want @ to configure for NetImpact Dynamo:"\
-    //2"‚±‚ÌƒCƒ“ƒXƒg[ƒ‹‰º‚Å‚İ‚Â‚©‚Á‚½ Netscape Server ‚Ì Netscape Web Servers ‚É‘Î‚·‚é %s ƒtƒ@ƒCƒ‹‚ÌƒŠƒXƒg‚Å‚·BNetImpact Dynamo ‚É‘Î‚µ‚Äİ’è‚·‚é‚½‚ß‚É @ ‚µ‚½‚¢ %s ƒtƒ@ƒCƒ‹‚ğ‘I‘ğ‚µ‚Ä‚­‚¾‚³‚¢:"\
+    //2"‚±‚Ì?C?“?X?g?[?‹‰º‚Å‚İ‚Â‚©‚Á‚½ Netscape Server ‚Ì Netscape Web Servers ‚É‘Î‚·‚é %s ?t?@?C?‹‚Ì?Š?X?g‚Å‚·?BNetImpact Dynamo ‚É‘Î‚µ‚Ä?İ’è‚·‚é‚½‚ß‚É @ ‚µ‚½‚¢ %s ?t?@?C?‹‚ğ‘I‘ğ‚µ‚Ä‚­‚¾‚³‚¢:"\
     //0
 IDS_NSCONFIG_12=\
     //1"Before modifying the %s file(s) do you want to copy the original to a backup with the extension %s in the same directory?"\
-    //2"ƒtƒ@ƒCƒ‹ %s ‚ğXV‚·‚é‘O‚ÉƒIƒŠƒWƒiƒ‹‚ğ“¯‚¶ƒfƒBƒŒƒNƒgƒŠ‚ÌŠg’£q %s ‚ÅƒoƒbƒNƒAƒbƒv‚Ì‚½‚ß‚ÉƒRƒs[‚µ‚Ü‚·‚©?"\
+    //2"?t?@?C?‹ %s ‚ğX?V‚·‚é‘O‚É?I?Š?W?i?‹‚ğ“¯‚¶?f?B?Œ?N?g?Š‚ÌŠg’£q %s ‚Å?o?b?N?A?b?v‚Ì‚½‚ß‚É?R?s?[‚µ‚Ü‚·‚©?"\
     //0
 IDS_NSCONFIG_13=\
     //1"Yes, backup the %s file(s)."\
-    //2"‚Í‚¢Aƒtƒ@ƒCƒ‹ %s ‚ğƒoƒbƒNƒAƒbƒv‚·‚éB"\
+    //2"‚Í‚¢?A?t?@?C?‹ %s ‚ğ?o?b?N?A?b?v‚·‚é?B"\
     //0
 IDS_IISCONFIG_1=\
     //1"'%s' was found on this machine."\
-    //2"'%s' ‚ª‚±‚Ìƒ}ƒVƒ“‚É‚ÍŒ©‚Â‚©‚è‚Ü‚¹‚ñB"\
+    //2"'%s' ‚ª‚±‚Ì?}?V?“‚É‚ÍŒ©‚Â‚©‚è‚Ü‚¹‚ñ?B"\
     //0
 IDS_IISCONFIG_2=\
     //1"Location: %s"\
-    //2"ƒƒP[ƒVƒ‡ƒ“: %s"\
+    //2"??P?[?V?‡?“: %s"\
     //0
 IDS_IISCONFIG_3=\
     //1"This dialog lets you choose how to configure the Web server for NetImpact Dynamo."\
-    //2"‚±‚±‚Å‚Í NetImpact Dynamo ‚Ì Web ƒT[ƒo‚ğ‚Ç‚Ì‚æ‚¤‚Éİ’è‚·‚é‚©‚ğ‘I‚Ô‚±‚Æ‚ª‚Å‚«‚Ü‚·B."\
+    //2"‚±‚±‚Å‚Í NetImpact Dynamo ‚Ì Web ?T?[?o‚ğ‚Ç‚Ì‚æ‚¤‚É?İ’è‚·‚é‚©‚ğ‘I‚Ô‚±‚Æ‚ª‚Å‚«‚Ü‚·?B."\
     //0
 IDS_IISCONFIG_4=\
     //1"Select where to place the NetImpact Dynamo ISAPI DLLs for use by the Web server:"\
-    //2"Web ƒT[ƒo‚É‚æ‚Á‚Äg—p‚·‚é NetImpact Dynamo ISAPI DLL‚ğ‚Ç‚±‚É’u‚­‚©‘I‘ğ‚µ‚Ä‚­‚¾‚³‚¢:"\
+    //2"Web ?T?[?o‚É‚æ‚Á‚Äg—p‚·‚é NetImpact Dynamo ISAPI DLL‚ğ‚Ç‚±‚É’u‚­‚©‘I‘ğ‚µ‚Ä‚­‚¾‚³‚¢:"\
     //0
 IDS_IISCONFIG_5=\
     //1"Use the path: %s (&recommended)"\
-    //2"ƒpƒX %s ‚ğg—p‚·‚é‚±‚Æ‚ğ‚¨‚·‚·‚ß‚µ‚Ü‚·(&R)"\
+    //2"?p?X %s ‚ğg—p‚·‚é‚±‚Æ‚ğ‚¨‚·‚·‚ß‚µ‚Ü‚·(&R)"\
     //0
 IDS_IISCONFIG_6=\
     //1"Use the &path: %s"\
-    //2"ƒpƒX %s ‚ğg—p(&P)"\
+    //2"?p?X %s ‚ğg—p(&P)"\
     //0
 IDS_IISCONFIG_7=\
     //1"&Enter a path."\
-    //2"ƒpƒX‚Ì“ü—Í(&E)"\
+    //2"?p?X‚Ì“ü—Í(&E)"\
     //0
 IDS_IISCONFIG_8=\
     //1"ISAPI DLL path:"\
-    //2"ISAPI DLL ƒpƒX:"\
+    //2"ISAPI DLL ?p?X:"\
     //0
 IDS_IISCONFIG_9=\
     //1"You must enter a virtual alias for this path (e.g. '/Sybase' )."\
-    //2"‚±‚ÌƒpƒX‚É‘Î‚·‚é‰¼‘zƒGƒCƒŠƒAƒX‚ğ“ü—Í‚µ‚Ä‚­‚¾‚³‚¢ ( —á '\\Sybase' )."\
+    //2"‚±‚Ì?p?X‚É‘Î‚·‚é‰¼‘z?G?C?Š?A?X‚ğ“ü—Í‚µ‚Ä‚­‚¾‚³‚¢ ( —á '\\Sybase' )."\
     //0
 IDS_IISCONFIG_10=\
     //1"Virtual alias:"\
-    //2"‰¼‘zƒGƒCƒŠƒAƒX:"\
+    //2"‰¼‘z?G?C?Š?A?X:"\
     //0
 IDS_NID_NS=\
     //1"Netscape Server"\
-    //2"Netscape ƒT[ƒo"\
+    //2"Netscape ?T?[?o"\
     //0
 IDS_NID_IIS=\
     //1"Microsoft Web servers"\
-    //2"Microsoft Web ƒT[ƒo"\
+    //2"Microsoft Web ?T?[?o"\
     //0
 IDS_NID_CGI=\
     //1"CGI"\
@@ -888,49 +780,49 @@ IDS_NID_WINCGI=\
     //0
 IDS_NID_IS_CGI_PRESENT=\
     //1"Do you have a CGI / Win-CGI Web Server on this machine?"\
-    //2"‚±‚Ìƒ}ƒVƒ“‚É‚Í CGI / Win-CGI Web Server ‚ª‚ ‚è‚Ü‚·‚©?"\
+    //2"‚±‚Ì?}?V?“‚É‚Í CGI / Win-CGI Web Server ‚ª‚ ‚è‚Ü‚·‚©?"\
     //0
 IDS_NID_LOOKFORSERVERS=\
     //1"@ will attempt to detect Microsoft and/or Netscape Web servers on this machine.\n\nIf a Web server is found, @ will offer to do some of the configuration needed for the Web server work with NetImpact Dynamo.\n\nNote that NetImpact Dynamo must already be installed, and your Web server(s) should not be currently running for this to work."\
-    //2"@ ‚Í‚±‚Ìƒ}ƒVƒ“‚É Microsoft ‚Ü‚½‚Í Netscape Web ƒT[ƒo‚ÌŒŸo‚ğs‚¢‚Ü‚·BWeb ƒT[ƒo‚ª‚ ‚Á‚½ê‡A@ ‚Í NetImpact Dynamo ‚ª“®ì‚·‚é‚·‚é‚½‚ß‚É•K—v‚Èİ’è‚ğs‚¢‚Ü‚·B\n\n‚±‚ê‚ª“®ì‚·‚é‚½‚ß‚É‚ÍANetImpact Dynamo ‚Í‚·‚Å‚ÉƒCƒ“ƒXƒg[ƒ‹‚³‚ê‚Ä‚¢‚È‚¯‚ê‚Î‚È‚ç‚È‚¢‚±‚Æ‚É’ˆÓ‚µ‚Ä‚­‚¾‚³‚¢B"\
+    //2"@ ‚Í‚±‚Ì?}?V?“‚É Microsoft ‚Ü‚½‚Í Netscape Web ?T?[?o‚ÌŒŸo‚ğs‚¢‚Ü‚·?BWeb ?T?[?o‚ª‚ ‚Á‚½ê‡?A@ ‚Í NetImpact Dynamo ‚ª“®ì‚·‚é‚·‚é‚½‚ß‚É•K—v‚È?İ’è‚ğs‚¢‚Ü‚·?B\n\n‚±‚ê‚ª“®ì‚·‚é‚½‚ß‚É‚Í?ANetImpact Dynamo ‚Í‚·‚Å‚É?C?“?X?g?[?‹‚³‚ê‚Ä‚¢‚È‚¯‚ê‚Î‚È‚ç‚È‚¢‚±‚Æ‚É’?Ó‚µ‚Ä‚­‚¾‚³‚¢?B"\
     //0
 IDS_NID_QUERY_LOOKFORSERVERS=\
     //1"Do you want @ to attempt to detect Microsoft and/or Netscape Web servers on this machine?\n\n(If a Web server is found, @ will offer to do some of the configuration needed for the Web Server to work with NetImpact Dynamo.  Note that your Web server(s) should not be currently running for this to work.)"\
-    //2"@ ‚Í‚±‚Ìƒ}ƒVƒ“ã‚Ì Microsoft ‚Ü‚½‚Í Netscape Web ƒT[ƒo‚ÌŒŸo‚ğs‚¢‚Ü‚·i Web ƒT[ƒo‚ªŒ©‚Â‚©‚Á‚½ê‡A@ ‚Í Web Server ‚ª NetImpact Dynamo ‚Å“®ì‚·‚é‚½‚ß‚É•K—v‚Èİ’è‚ğ•ÏX‚µ‚Ü‚·)B"\
+    //2"@ ‚Í‚±‚Ì?}?V?“ã‚Ì Microsoft ‚Ü‚½‚Í Netscape Web ?T?[?o‚ÌŒŸo‚ğs‚¢‚Ü‚·?i Web ?T?[?o‚ªŒ©‚Â‚©‚Á‚½ê‡?A@ ‚Í Web Server ‚ª NetImpact Dynamo ‚Å“®ì‚·‚é‚½‚ß‚É•K—v‚È?İ’è‚ğ•ÏX‚µ‚Ü‚·)?B"\
     //0
 IDS_NID_NOSERVERSFOUND=\
     //1"@ could not detect Microsoft or Netscape Web servers on this machine.  If a web server is installed but was not detected, consult the NetImpact Dynamo documentation to set up your web server manually."\
-    //2"@ ‚Í ‚±‚Ìƒ}ƒVƒ“ã‚É Microsoft ‚Ü‚½‚Í Netscape Web ƒT[ƒo‚ğŒŸo‚µ‚Ü‚¹‚ñ‚Å‚µ‚½BƒT[ƒo‚ªƒCƒ“ƒXƒg[ƒ‹‚³‚ê‚ÄAŒŸo‚³‚ê‚È‚©‚Á‚½ê‡ANetImpact Dynamo ƒhƒLƒ…ƒƒ“ƒg‚Ì web ƒT[ƒo‚Ìè“®ƒZƒbƒgƒAƒbƒv‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢B"\
+    //2"@ ‚Í ‚±‚Ì?}?V?“ã‚É Microsoft ‚Ü‚½‚Í Netscape Web ?T?[?o‚ğŒŸo‚µ‚Ü‚¹‚ñ‚Å‚µ‚½?B?T?[?o‚ª?C?“?X?g?[?‹‚³‚ê‚Ä?AŒŸo‚³‚ê‚È‚©‚Á‚½ê‡?ANetImpact Dynamo ?h?L?…???“?g‚Ì web ?T?[?o‚Ìè“®?Z?b?g?A?b?v‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢?B"\
     //0
 IDS_NID_CANTSETUPSERVERS=\
     //1"Note: @ will not try to detect %s on your machine because one or more of the following NetImpact Dynamo files used by this Web server was not found:\n\n%s&\nReinstall NetImpact Dynamo if you want to detect and configure this Web server."\
-    //2"’ˆÓ: @ ‚Í•¡”‚ÌˆÈ‰º‚Ì NetImpact Dynamo ƒtƒ@ƒCƒ‹‚Í‚İ‚Â‚©‚ç‚È‚©‚Á‚½‚±‚Ì Web ƒT[ƒo‚É‚æ‚Á‚Äg‚í‚ê‚Ä‚¢‚é‚Ì‚ÅA‚±‚Ìƒ}ƒVƒ“ã‚É %s ‚ğŒŸo‚µ‚È‚¢‚Å‚µ‚å‚¤B:\n\n%s&\nŒŸo‚Æ‚±‚Ì Web server ‚Ìİ’è‚ğ‚·‚éê‡ANetImpact Dynamo ‚ğÄƒCƒ“ƒXƒg[ƒ‹‚µ‚Ä‚­‚¾‚³‚¢B"\
+    //2"’?Ó: @ ‚Í•¡?”‚Ì?È‰º‚Ì NetImpact Dynamo ?t?@?C?‹‚Í‚İ‚Â‚©‚ç‚È‚©‚Á‚½‚±‚Ì Web ?T?[?o‚É‚æ‚Á‚Äg‚í‚ê‚Ä‚¢‚é‚Ì‚Å?A‚±‚Ì?}?V?“ã‚É %s ‚ğŒŸo‚µ‚È‚¢‚Å‚µ‚å‚¤?B:\n\n%s&\nŒŸo‚Æ‚±‚Ì Web server ‚Ì?İ’è‚ğ‚·‚éê‡?ANetImpact Dynamo ‚ğÄ?C?“?X?g?[?‹‚µ‚Ä‚­‚¾‚³‚¢?B"\
     //0
 IDS_NID_CANTSETUPCGI=\
     //1"Note: One or more of the following files that make up the NetImpact Dynamo Application Server for %s Web servers was not found:\n\n%s\nReinstall NetImpact Dynamo if you want to use these files."\
-    //2"’ˆÓ: %s Web ƒT[ƒo‚É‘Î‚·‚é NetImpact Dynamo Application ƒT[ƒo‚ªƒƒCƒNƒAƒbƒv‚µ‚½ˆÈ‰º‚Ìƒtƒ@ƒCƒ‹‚ª‚İ‚Â‚©‚è‚Ü‚¹‚ñ:\n\n%s\n‚±‚ê‚ç‚Ìƒtƒ@ƒCƒ‹‚ğg—p‚·‚éê‡A NetImpact Dynamo ‚ğÄƒCƒ“ƒXƒg[ƒ‹‚µ‚Ä‚­‚¾‚³‚¢B"\
+    //2"’?Ó: %s Web ?T?[?o‚É‘Î‚·‚é NetImpact Dynamo Application ?T?[?o‚ª???C?N?A?b?v‚µ‚½?È‰º‚Ì?t?@?C?‹‚ª‚İ‚Â‚©‚è‚Ü‚¹‚ñ:\n\n%s\n‚±‚ê‚ç‚Ì?t?@?C?‹‚ğg—p‚·‚éê‡?A NetImpact Dynamo ‚ğÄ?C?“?X?g?[?‹‚µ‚Ä‚­‚¾‚³‚¢?B"\
     //0
 IDS_NID_OPTIMAFILESMISSING=\
     //1"@ cannot set up the Web server(s) on this machine because one or more of the following NetImpact Dynamo files was not found in '%s' as expected:\n\n%s&\nTry reinstalling NetImpact Dynamo."\
-    //2"@ ‚Í ˆÈ‰º‚Ì NetImpact Dynamo ƒtƒ@ƒCƒ‹‚ª '%s' ‚É‚İ‚Â‚©‚ç‚È‚¢‚Ì‚ÅA‚±‚Ìƒ}ƒVƒ“ã‚Ì Web ƒT[ƒo‚ğƒZƒbƒgƒAƒbƒv‚Å‚«‚Ü‚¹‚ñB:\n\n%s&\nNetImpact Dynamo ‚ğÄƒCƒ“ƒXƒg[ƒ‹‚µ‚Ä‚­‚¾‚³‚¢B"\
+    //2"@ ‚Í ?È‰º‚Ì NetImpact Dynamo ?t?@?C?‹‚ª '%s' ‚É‚İ‚Â‚©‚ç‚È‚¢‚Ì‚Å?A‚±‚Ì?}?V?“ã‚Ì Web ?T?[?o‚ğ?Z?b?g?A?b?v‚Å‚«‚Ü‚¹‚ñ?B:\n\n%s&\nNetImpact Dynamo ‚ğÄ?C?“?X?g?[?‹‚µ‚Ä‚­‚¾‚³‚¢?B"\
     //0
 IDS_NID_SUCCESS=\
     //1"Web server configuration completed successfully."\
-    //2"Web ƒT[ƒo‚Ìİ’è‚ª³í‚ÉŠ®—¹‚µ‚Ü‚µ‚½B"\
+    //2"Web ?T?[?o‚Ì?İ’è‚ª?³í‚ÉŠ®—¹‚µ‚Ü‚µ‚½?B"\
     //0
 IDS_NID_FAILED=\
     //1"Web server configuration was aborted or did not complete successfully."\
-    //2"Web ƒT[ƒo‚Ìİ’è‚ª¸”s‚Ü‚½‚Í³í‚ÉI—¹‚µ‚Ü‚¹‚ñ‚Å‚µ‚½B"\
+    //2"Web ?T?[?o‚Ì?İ’è‚ª¸”s‚Ü‚½‚Í?³í‚ÉI—¹‚µ‚Ü‚¹‚ñ‚Å‚µ‚½?B"\
     //0
 IDS_NID_ACCESSDENIED=\
     //1"The destination file '%s' exists already and cannot be written to.\nThe file is probably being used by another application right now.\nMake sure that no applications that could use this file are running (like your Web server), and try this program again."\
-    //2"‘—Mæƒtƒ@ƒCƒ‹ '%s' ‚ÍA‚·‚Å‚É‘¶İ‚µA‘‚Ş‚±‚Æ‚ª‚Å‚«‚Ü‚¹‚ñB\n‚±‚Ìƒtƒ@ƒCƒ‹‚ÍA•Ê‚ÌƒAƒvƒŠƒP[ƒVƒ‡ƒ“‚ªg—p‚µ‚Ä‚¢‚Ü‚·B‚±‚Ìƒtƒ@ƒCƒ‹‚ğg—p‚µ‚Ä‚¢‚éƒAƒvƒŠƒP[ƒVƒ‡ƒ“( Web Server ‚È‚Ç )‚ğI—¹‚µ‚ÄAÄ“x‚±‚ÌƒvƒƒOƒ‰ƒ€‚ğÀs‚µ‚Ä‚­‚¾‚³‚¢B"\
+    //2"‘—?M?æ?t?@?C?‹ '%s' ‚Í?A‚·‚Å‚É‘¶İ‚µ?A‘‚Ş‚±‚Æ‚ª‚Å‚«‚Ü‚¹‚ñ?B\n‚±‚Ì?t?@?C?‹‚Í?A•Ê‚Ì?A?v?Š?P?[?V?‡?“‚ªg—p‚µ‚Ä‚¢‚Ü‚·?B‚±‚Ì?t?@?C?‹‚ğg—p‚µ‚Ä‚¢‚é?A?v?Š?P?[?V?‡?“( Web Server ‚È‚Ç )‚ğI—¹‚µ‚Ä?AÄ“x‚±‚Ì?v??O?‰?€‚ğÀs‚µ‚Ä‚­‚¾‚³‚¢?B"\
     //0
         
 [SetupErrorMessage]
 IDS_WRITEERROR=\
     //1"Error writing to destination file"\
-    //2"ƒRƒs[æƒtƒ@ƒCƒ‹‚Ö‚Ì‘‚«‚İƒGƒ‰["\
+    //2"?R?s?[?æ?t?@?C?‹‚Ö‚Ì‘‚«‚İ?G?‰?["\
     //0
 IDS_NULLSTRING=\
     //1"NULL String"\
@@ -938,111 +830,107 @@ IDS_NULLSTRING=\
     //0
 IDS_HEAPOK=\
     //1"Heap OK"\
-    //2"ƒq[ƒv OK"\
+    //2"?q?[?v OK"\
     //0
 IDS_HEAPEND=\
     //1"End of Heap"\
-    //2"ƒq[ƒv‚ÌI’["\
+    //2"?q?[?v‚ÌI’["\
     //0
 IDS_HEAPEMPTY=\
     //1"Heap is Empty"\
-    //2"ƒq[ƒv‚Í‹ó‚Å‚·"\
+    //2"?q?[?v‚Í‹ó‚Å‚·"\
     //0
 IDS_HEAPDAMAGE=\
     //1"Head is Damaged"\
-    //2"ƒq[ƒv‚Í‰ó‚ê‚Ä‚¢‚Ü‚·"\
+    //2"?q?[?v‚Í‰ó‚ê‚Ä‚¢‚Ü‚·"\
     //0
 IDS_CONTROLERROR=\
     //1"Error creating control"\
-    //2"ƒRƒ“ƒgƒ[ƒ‹ì¬ƒGƒ‰["\
+    //2"?R?“?g??[?‹ì?¬?G?‰?["\
     //0
 IDS_CONTROLCLASSERROR=\
     //1"Invalid control class"\
-    //2"•s³‚ÈƒRƒ“ƒgƒ[ƒ‹ƒNƒ‰ƒX"\
+    //2"•s?³‚È?R?“?g??[?‹?N?‰?X"\
     //0
 IDS_QUERYFSERROR=\
     //1"DosQueryFSInfo error: return code = %ld"\
-    //2"DosQueryFSInfo ƒGƒ‰[: –ß‚è’l = %ld"\
+    //2"DosQueryFSInfo ?G?‰?[: –ß‚è’l = %ld"\
     //0
 
 [StatusLineMessage]
 IDS_CHECKING=\
     //1"Checking directory for existing components ..."\
-    //2"Šù‘¶ƒRƒ“ƒ|[ƒlƒ“ƒg‚Ì‚½‚ß‚ÌƒfƒBƒŒƒNƒgƒŠEƒ`ƒFƒbƒN..."\
+    //2"Šù‘¶?R?“?|?[?l?“?g‚Ì‚½‚ß‚Ì?f?B?Œ?N?g?Š?E?`?F?b?N..."\
     //0
 IDS_CREATEPROGRAMFOLDER=\
     //1"Creating Program Folder"\
-    //2"ƒvƒƒOƒ‰ƒ€EƒtƒHƒ‹ƒ_‚Ìì¬"\
+    //2"?v??O?‰?€?E?t?H?‹?_‚Ìì?¬"\
     //0
 IDS_CREATEDIRECTORY=\
     //1"Creating Directories..."\
-    //2"ƒfƒBƒŒƒNƒgƒŠì¬..."\
+    //2"?f?B?Œ?N?g?Šì?¬..."\
     //0
 IDS_RELOCATING=\
     //1"Relocating Files..."\
-    //2"ƒtƒ@ƒCƒ‹‚ÌÄ”z’u..."\
+    //2"?t?@?C?‹‚ÌÄ”z’u..."\
     //0
 IDS_COPYFILE=\
     //1"Installing Files..."\
-    //2"ƒtƒ@ƒCƒ‹‚ÌƒCƒ“ƒXƒg[ƒ‹..."\
+    //2"?t?@?C?‹‚Ì?C?“?X?g?[?‹..."\
     //0
 IDS_COPYINGFILE=\
     //1"Copying Files..."\
-    //2"ƒtƒ@ƒCƒ‹‚ÌƒRƒs[..."\
+    //2"?t?@?C?‹‚Ì?R?s?[..."\
     //0
 IDS_REMOVING=\
     //1"Removing Files..."\
-    //2"ƒtƒ@ƒCƒ‹‚Ìíœ..."\
+    //2"?t?@?C?‹‚Ìíœ..."\
     //0
 IDS_CREATEFILE=\
     //1"Copying New File"\
-    //2"V‚µ‚¢ƒtƒ@ƒCƒ‹‚ÌƒRƒs["\
+    //2"?V‚µ‚¢?t?@?C?‹‚Ì?R?s?["\
     //0
 IDS_DELETEFILE=\
     //1"Deleting File"\
-    //2"ƒtƒ@ƒCƒ‹‚Ìíœ(delete)"\
-    //0
-IDS_PATCHFILE=\
-    //1"Applying Patch File"\
-    //2"ƒpƒbƒ`ƒtƒ@ƒCƒ‹‚Ì“K—p"\
+    //2"?t?@?C?‹‚Ìíœ(delete)"\
     //0
 IDS_DISK_NOT_WRITEABLE=\
     //1"Diskette cannot be written!"\
-    //2"ƒfƒBƒXƒPƒbƒg‚Í‘‚«‚ß‚Ü‚¹‚ñ!"\
+    //2"?f?B?X?P?b?g‚Í‘‚«‚ß‚Ü‚¹‚ñ!"\
     //0
 IDS_DISK_NOT_ENOUGH_FREE=\
     //1"Diskette does not have enough free space!"\
-    //2"ƒfƒBƒXƒPƒbƒg‚É‚Í\•ª‚È‹ó‚«—e—Ê‚ª‚ ‚è‚Ü‚¹‚ñ!"\
+    //2"?f?B?X?P?b?g‚É‚Í\•ª‚È‹ó‚«—e—Ê‚ª‚ ‚è‚Ü‚¹‚ñ!"\
     //0
 IDS_CREATESERVICE=\
     //1"Creating Windows NT Service..."\
-    //2"Windows NT ƒT[ƒrƒX‚Ìì¬"\
+    //2"Windows NT ?T?[?r?X‚Ìì?¬"\
     //0
 IDS_CREATING_FILE=\
     //1"Creating File..."\
-    //2"ƒtƒ@ƒCƒ‹‚Ìì¬"\
+    //2"?t?@?C?‹‚Ìì?¬"\
     //0
 IDS_DELETEFILES=\
     //1"Deleting Files..."\
-    //2"ƒtƒ@ƒCƒ‹‚Ìíœ"\
+    //2"?t?@?C?‹‚Ìíœ"\
     //0
 IDS_CHECKINGPATH=\
     //1"Checking destination path..."\
-    //2"ƒpƒX‚ğƒ`ƒFƒbƒN‚µ‚Ä‚Ü‚·"\
+    //2"?p?X‚ğ?`?F?b?N‚µ‚Ä‚Ü‚·"\
     //0
 IDS_EMBEDDED=\
     //1"Renaming files for embedded application..."\
-    //2"‘g‚Ü‚ê‚½ƒAƒvƒŠƒP[ƒVƒ‡ƒ“‚Ìƒtƒ@ƒCƒ‹‚ÌƒŠƒl[ƒ€"\
+    //2"‘g‚Ü‚ê‚½?A?v?Š?P?[?V?‡?“‚Ì?t?@?C?‹‚Ì?Š?l?[?€"\
     //0
 
 [LicenseMessage]
 IDS_LICENSEMESSAGE=\
     //1"Name and Company name must be filled in"\
-    //2"–¼‘O‚Æ‰ïĞ/‘gD–¼‚Í“ü—Í‚µ‚È‚¯‚ê‚Î‚È‚è‚Ü‚¹‚ñ"\
+    //2"–¼‘O‚Æ‰ïĞ/‘g?D–¼‚Í“ü—Í‚µ‚È‚¯‚ê‚Î‚È‚è‚Ü‚¹‚ñ"\
     //0
 IDS_APPLYLICENSE=\
     //1"Applying License..."\
-    //2"ƒ‰ƒCƒZƒ“ƒX‚Ì“K—p..."\
+    //2"?‰?C?Z?“?X‚Ì“K—p..."\
     //0
 
 [Application]

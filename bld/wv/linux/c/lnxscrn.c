@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -51,8 +51,7 @@
 #include "dbgdata.h"
 #include "dbgio.h"
 #include "dbgmem.h"
-#include "uidef.h"
-#include "uivirts.h"
+#include "stdui.h"
 #include "uiextrn.h"
 #include "dbgscrn.h"
 #include "strutil.h"
@@ -64,15 +63,15 @@
 #include "dbglkup.h"
 #include "dbgerr.h"
 
+#include "clibext.h"
 
-extern bool     UserForcedTermRefresh;
 
 char            XConfig[2048];
 char            *DbgTerminal;
 unsigned        DbgConsole;
 unsigned        PrevConsole;
 unsigned        InitConsole = -1;
-int             DbgConHandle;
+int             DbgConHandle = -1;
 int             DbgLines;
 int             DbgColumns;
 int             PrevLines;
@@ -145,10 +144,16 @@ static bool TryXWindows( void )
     char        buf;
     int         res;
     struct termios termio;
+    char        xsh_name[_MAX_PATH];
 
     /* we're in the X (or helper)environment */
     if( getenv( "DISPLAY" ) == NULL )
         return( false );
+    xsh_name[0] = NULLCHAR;
+    _searchenv( "xterm", "PATH", xsh_name );
+    if( xsh_name[0] == NULLCHAR ) {
+        StartupErr( "xterm executable not in PATH" );
+    }
     masterfd = open( "/dev/ptmx", O_RDWR );
     if( masterfd < 0 )
         return( false );
@@ -181,7 +186,7 @@ static bool TryXWindows( void )
     end = p;
     _AllocA( argv, ( argc + 16 ) * sizeof( *argv ) );
 
-    argv[0] = "xterm";
+    argv[0] = xsh_name;
     argv[1] = "-title";
     argv[2] = "Open Watcom Debugger";
     argv[3] = "-ut";
@@ -244,6 +249,7 @@ static bool TryVC( void )
     struct vt_sizes vt_sizes;
     char            tty_name[20];
     int             len;
+    int             rc;
 
     len = readlink( "/proc/self/fd/0", tty_name, sizeof( tty_name ) - 1 );
     if( len < 0 )
@@ -253,11 +259,12 @@ static bool TryVC( void )
         DbgConHandle = open( tty_name, O_RDWR );
         if( DbgConHandle == -1 )
             return( false );
-        if( ioctl( DbgConHandle, VT_OPENQRY, &DbgConsole ) ) {
-            close( DbgConHandle );
+        rc = ioctl( DbgConHandle, VT_OPENQRY, &DbgConsole );
+        close( DbgConHandle );
+        DbgConHandle = -1;
+        if( rc ) {
             return( false );
         }
-        close( DbgConHandle );
     }
     ptr = &tty_name[len];
     for( ;; ) {
@@ -272,6 +279,7 @@ static bool TryVC( void )
         return( false );
     if( ioctl( DbgConHandle, VT_GETSTATE, &vt_state ) ) {
         close( DbgConHandle );
+        DbgConHandle = -1;
         return( false );
     }
     InitConsole = vt_state.v_active;
@@ -329,7 +337,7 @@ void InitScreen( void )
     _Free( DbgTerminal );
     DbgTerminal = NULL;
     if( DbgConHandle != -1 ) {
-        fcntl( DbgConHandle, F_SETFD, (int)FD_CLOEXEC );
+        fcntl( DbgConHandle, F_SETFD, FD_CLOEXEC );
         UIConFile = fdopen( DbgConHandle, "w+" );
         UIConHandle = DbgConHandle;
     }
@@ -381,8 +389,7 @@ bool DebugScreen( void )
     case C_TTY:
         return( true );
     case C_CURTTY:
-        _physupdate( NULL );
-        UserForcedTermRefresh = true;
+        TermRefresh( NULL );
         tputs( enter_ca_mode, 1, DebugPutc );
         break;
     case C_VC:

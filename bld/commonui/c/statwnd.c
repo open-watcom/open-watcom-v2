@@ -208,20 +208,19 @@ static void outlineRect( statwnd *sw, WPI_PRES pres, WPI_RECT *r )
     _wpi_cvth_pt( &pt, sw->wndHeight );
     _wpi_movetoex( pres, &pt, NULL );
 
-    oldpen = _wpi_selectobject( pres, penLight );
+    oldpen = _wpi_selectpen( pres, penLight );
     pt.x = right - 1;
     _wpi_lineto( pres, &pt );
     pt.y = _wpi_cvth_y( top, sw->wndHeight );
     _wpi_lineto( pres, &pt );
+    _wpi_getoldpen( pres, oldpen );
 
-    _wpi_selectobject( pres, penShade );
-
+    oldpen = _wpi_selectpen( pres, penShade );
     pt.x = left;
     _wpi_lineto( pres, &pt );
     pt.y = _wpi_cvth_y( bottom - 1, sw->wndHeight );
     _wpi_lineto( pres, &pt );
-
-    _wpi_selectobject( pres, oldpen );
+    _wpi_getoldpen( pres, oldpen );
 
 } /* outlineRect */
 
@@ -270,9 +269,9 @@ WPI_MRESULT CALLBACK StatusWndCallback( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wpara
         if( colorButtonFace != GetSysColor( COLOR_BTNFACE ) ) {
             RECT rs;
             if( hasGDIObjects ) {
-                _wpi_deleteobject( penLight );
-                _wpi_deleteobject( penShade );
-                _wpi_deleteobject( brushButtonFace );
+                _wpi_deletepen( penLight );
+                _wpi_deletepen( penShade );
+                _wpi_deletebrush( brushButtonFace );
             }
             colorButtonFace = GetSysColor( COLOR_BTNFACE );
             _wpi_setbackcolour( pres, colorButtonFace );
@@ -437,9 +436,9 @@ void StatusWndChangeSysColors( COLORREF btnFace, COLORREF btnText,
     if( !IsCommCtrlLoaded() ) {
 #endif
         if( hasGDIObjects ) {
-            _wpi_deleteobject( penLight );
-            _wpi_deleteobject( penShade );
-            _wpi_deleteobject( brushButtonFace );
+            _wpi_deletepen( penLight );
+            _wpi_deletepen( penShade );
+            _wpi_deletebrush( brushButtonFace );
         }
 
         colorButtonFace = btnFace;
@@ -575,14 +574,14 @@ void StatusWndDraw3DBox( statwnd *sw, WPI_PRES pres )
     int         i;
     WPI_RECT    r;
 
-    old_pen = _wpi_selectobject( pres, penLight );
+    old_pen = _wpi_selectpen( pres, penLight );
     for( i = 0; i <= sw->numSections; i++ ) {
         getRect( sw, &r, i );
         outlineRect( sw, pres, &r );
         makeInsideRect( &r );
         _wpi_fillrect( pres, &r, colorButtonFace, brushButtonFace );
     }
-    _wpi_selectobject( pres, old_pen );
+    _wpi_getoldpen( pres, old_pen );
 
 } /* StatusWndDraw3DBox */
 
@@ -775,13 +774,13 @@ void StatusWndDrawLine( statwnd *sw, WPI_PRES pres, WPI_FONT hfont, const char *
  */
 void StatusWndSetSeparators( statwnd *sw, int num_items, status_block_desc *list )
 {
-    int     item;
+    int     i;
 
     if( num_items > MAX_SECTIONS ) {
         num_items = MAX_SECTIONS;
     }
-    for( item = 0; item < num_items; item++ ) {
-        sw->sectionDesc[item] = list[item];
+    for( i = 0; i < num_items; i++ ) {
+        sw->sectionDesc[i] = list[i];
     }
     sw->numSections = num_items;
 
@@ -832,9 +831,9 @@ void StatusWndDestroy( statwnd *sw )
 void StatusWndFini( void )
 {
     if( hasGDIObjects ) {
-        _wpi_deleteobject( penLight );
-        _wpi_deleteobject( penShade );
-        _wpi_deleteobject( brushButtonFace );
+        _wpi_deletepen( penLight );
+        _wpi_deletepen( penShade );
+        _wpi_deletebrush( brushButtonFace );
         hasGDIObjects = false;
     }
     if( classRegistered ) {

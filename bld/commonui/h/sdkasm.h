@@ -32,7 +32,6 @@
 #ifndef _SDKASM_H_INCLUDED
 #define _SDKASM_H_INCLUDED
 
-#include "standard.h"
 #include "deasm.h"
 
 typedef struct disasmrtns {

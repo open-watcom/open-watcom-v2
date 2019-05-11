@@ -1085,7 +1085,7 @@ CGPOINTER FEAuxInfo( CGPOINTER req_handle, int request )
     case P5_PROF_DATA:
         return( (CGPOINTER)FunctionProfileBlock );
     case P5_PROF_SEG:
-        return( (CGPOINTER)(pointer_int)FunctionProfileSegment );
+        return( (CGPOINTER)(pointer_int)FunctionProfileSegId );
   #endif
     case SOURCE_NAME:
         if( SrcFName == ModuleName ) {

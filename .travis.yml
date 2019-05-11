@@ -322,9 +322,9 @@ jobs:
       cache: false
       script: 
         - git config remote.origin.pushurl https://${GITHUB_TOKEN}@github.com/${TRAVIS_REPO_SLUG}.git
-        - git remote add ${OWBRANCH}
-        - git checkout ${OWBRANCH}
-        - git push origin ${OWBRANCH}:${OWBRANCH_DOCS}
+        - git pull origin $OWBRANCH
+        - git checkout -B $OWBRANCH
+        - git push origin $OWBRANCH:$OWBRANCH_DOCS
     #################################
     - stage: Documentation
       name: "OW Documentation build Linux"
@@ -351,9 +351,9 @@ jobs:
       cache: false
       script: 
         - git config remote.origin.pushurl https://${GITHUB_TOKEN}@github.com/${TRAVIS_REPO_SLUG}.git
-        - git remote add ${OWBRANCH}
-        - git checkout ${OWBRANCH}
-        - git push origin ${OWBRANCH}:${OWBRANCH_COVERITY}
+        - git pull origin $OWBRANCH
+        - git checkout -B $OWBRANCH
+        - git push origin $OWBRANCH:$OWBRANCH_COVERITY
     #################################
     - stage: Coverity
       name: "Initiate Coverity Scan Linux"
@@ -368,6 +368,7 @@ jobs:
       install:
         # install DOS Emulator
         - sudo apt-get install -y dosemu
+        - sudo apt-get install -y curl
         - . ./cmnvars.sh
       script: 
         - travis/covscan.sh

@@ -76,15 +76,15 @@ static unsigned         TabInterval = 8;
 
 void DClickSet( void )
 {
-    unsigned    value;
+    unsigned    dclick_ms;
     mad_radix   old_radix;
 
     old_radix = SetCurrRadix( 10 );
-    value = ReqExpr();
+    dclick_ms = ReqExpr();
     ReqEOC();
-    if( value < MIN_DCLICK || value > MAX_DCLICK )
+    if( dclick_ms < MIN_DCLICK || dclick_ms > MAX_DCLICK )
         Error( ERR_NONE, LIT_DUI( ERR_BAD_DCLICK ) );
-    WndSetDClick( value );
+    WndSetDClick( dclick_ms );
     SetCurrRadix( old_radix );
 }
 

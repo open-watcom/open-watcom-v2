@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -353,7 +354,7 @@ int Test_File_Reads( TestFile *cur_test, char *cur_mode, char test1, char *cur_s
         INTERNAL( TestFile_ReOpen( cur_test, cur_mode ) );
         VERIFY( fseek( cur_test->fp, 0, SEEK_SET ) == 0 );
         VERIFY( fgetc( cur_test->fp ) == test1 );
-        VERIFY( fgets( buff, MAX_FILE_SIZE + 1, cur_test->fp ) != NULL );
+        VERIFY( fgets( buff, sizeof( buff ), cur_test->fp ) != NULL );
         EXPECT( strcmp( cur_string, buff ) == 0 );
     }
 

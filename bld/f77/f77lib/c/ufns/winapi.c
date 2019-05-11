@@ -37,8 +37,6 @@
 #include "ftnstd.h"
 #include "winapi.h"
 
-#include <stddef.h>
-
 
 HANDLE          GlobalDiscard( HANDLE h ) {
 //=========================================

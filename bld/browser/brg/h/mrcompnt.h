@@ -36,7 +36,7 @@
 #include "brmerge.h"
 #include "mrdie.h"
 
-#pragma pack(push, 1);
+#pragma pack(__push, 1);
 
 class MergeCompunitHdr {
 public:
@@ -53,6 +53,6 @@ public:
     char *              _producer;
 };
 
-#pragma pack(pop);
+#pragma pack(__pop);
 
 #endif

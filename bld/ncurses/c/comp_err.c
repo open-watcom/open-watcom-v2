@@ -126,14 +126,5 @@ _nc_syserr_abort(const char *const fmt,...)
     fprintf(stderr, "\n");
     va_end(argp);
 
-    /* If we're debugging, try to show where the problem occurred - this
-     * will dump core.
-     */
-#if defined(TRACE) || !defined(NDEBUG)
-    abort();
-#else
-    /* Dumping core in production code is not a good idea.
-     */
     exit(EXIT_FAILURE);
-#endif
 }

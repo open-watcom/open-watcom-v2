@@ -30,10 +30,8 @@
 
 
 #include "vi.h"
-#ifndef __OS2V2__
-    #include <malloc.h>
-#endif
 #include "stack.h"
+
 
 /*
  * getEXEName - look up full path to exe

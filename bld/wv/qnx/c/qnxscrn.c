@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -49,8 +50,7 @@
 #include "dbgdata.h"
 #include "dbgio.h"
 #include "dbgmem.h"
-#include "uidef.h"
-#include "uivirt.h"
+#include "stdui.h"
 #include "uiextrn.h"
 #include "dbgscrn.h"
 #include "strutil.h"
@@ -68,7 +68,7 @@ char                *DbgTerminal;
 int                 DbgConsole;
 int                 PrevConsole;
 int                 InitConsole;
-int                 DbgConHandle;
+int                 DbgConHandle = -1;
 int                 DbgLines;
 int                 DbgColumns;
 int                 PrevLines;
@@ -110,7 +110,7 @@ static void HupHandler( int signo )
 
 static bool TryXWindows( void )
 {
-    char        xqsh_name[CMD_LEN];
+    char        xqsh_name[_MAX_PATH];
     int         pip[2];
     char        buff[64];
     char        **argv;
@@ -123,7 +123,7 @@ static bool TryXWindows( void )
     if( pipe( pip ) != 0 ) {
         StartupErr( "unable to create console control channel" );
     }
-    fcntl( pip[0], F_SETFD, (int)FD_CLOEXEC );
+    fcntl( pip[0], F_SETFD, FD_CLOEXEC );
     searchenv( "qnxterm", "PATH", xqsh_name );
     if( xqsh_name[0] == NULLCHAR ) {
         StartupErr( "qnxterm executable not in PATH" );
@@ -215,8 +215,8 @@ static bool TryQConsole( void )
         }
     }
     if( DbgConsole != 0 ) {
-        ptr[1] = '0' + DbgConsole / 10;
-        ptr[2] = '0' + DbgConsole % 10;
+        ptr[1] = '0' + ( DbgConsole / 10 );
+        ptr[2] = '0' + ( DbgConsole % 10 );
         ptr += 2;
     }
     ptr[1] = NULLCHAR;
@@ -234,6 +234,7 @@ static bool TryQConsole( void )
     ConCtrl = console_open( DbgConHandle, O_WRONLY );
     if( ConCtrl == NULL ) {
         close( DbgConHandle );
+        DbgConHandle = -1;
         return( false );
     }
     if( dev_info( DbgConHandle, &dev ) == -1 ) {
@@ -288,7 +289,7 @@ void InitScreen( void )
     }
     _Free( DbgTerminal );
     DbgTerminal = NULL;
-    fcntl( DbgConHandle, F_SETFD, (int)FD_CLOEXEC );
+    fcntl( DbgConHandle, F_SETFD, FD_CLOEXEC );
     UIConHandle = DbgConHandle;
     if( !uistart() ) {
         StartupErr( "unable to initialize user interface" );

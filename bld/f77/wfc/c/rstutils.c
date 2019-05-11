@@ -30,6 +30,7 @@
 
 
 #include "ftnstd.h"
+#include <string.h>
 #include "segsw.h"
 #include "global.h"
 #include "cpopt.h"
@@ -38,8 +39,6 @@
 #include "insert.h"
 #include "chain.h"
 #include "rstutils.h"
-
-#include <string.h>
 
 
 char    *STExtractName( sym_id sym, char *buff ) {

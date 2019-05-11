@@ -104,8 +104,8 @@ static void SetKbdMoveGrid( void )
 /********************************/
 {
     OBJPTR      curr;
-    unsigned    hinc;
-    unsigned    vinc;
+    int         hinc;
+    int         vinc;
     POINT       pt;
 
     hinc = 0;
@@ -114,10 +114,12 @@ static void SetKbdMoveGrid( void )
         if( ResizeIncrements( curr, &pt ) ) {
             if( hinc < pt.x )
                 hinc = pt.x;
-            vinc = max( vinc, pt.y );
+            if( vinc < pt.y ) {
+                vinc = pt.y;
+            }
         }
     }
-    if( hinc != 0 && vinc != 0 ) {
+    if( hinc > 0 && vinc > 0 ) {
         SetResizeGrid( hinc, vinc );
     }
 }

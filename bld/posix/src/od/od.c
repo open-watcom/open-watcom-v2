@@ -97,8 +97,7 @@ typedef struct format {
  * Local functions.
  */
 
-static void printBinary( char *ptr, unsigned size, int mode, char *fmtstr,
-                            char *print_os )
+static void printBinary( char *ptr, int size, int mode, char *fmtstr, char *print_os )
 {
     long        val;                        // temp to hold dump values
     int         i;
@@ -110,28 +109,28 @@ static void printBinary( char *ptr, unsigned size, int mode, char *fmtstr,
     }
 
     if( mode == M_BYTES ) {
-        for( i = 0; i < size; i++, ptr++ ) {
-            fprintf( stdout, fmtstr, *ptr );
+        for( i = 0; i < size; i++ ) {
+            fprintf( stdout, fmtstr, (long)(unsigned char)ptr[i] );
         }
     } else if( mode == M_WORDS ) {
-        for( i = 0; i < size; i += 2, ptr += 2 ) {
-            val  = (long) *(ptr + 1) << 8L;
-            val += (long) *ptr;
+        for( i = 0; i < size; i += 2 ) {
+            val  = (long)(unsigned char)ptr[i + 1] << 8L;
+            val += (long)(unsigned char)ptr[i + 0];
             fprintf( stdout, fmtstr, val );
         }
     } else if( mode == M_DWORDS ) {
-        for( i = 0; i < size; i += 4, ptr += 4 ) {
-            val  = (long) *(ptr + 3) << 24L;
-            val += (long) *(ptr + 2) << 16L;
-            val += (long) *(ptr + 1) << 8L;
-            val += (long) *ptr;
+        for( i = 0; i < size; i += 4 ) {
+            val  = (long)(unsigned char)ptr[i + 3] << 24L;
+            val += (long)(unsigned char)ptr[i + 2] << 16L;
+            val += (long)(unsigned char)ptr[i + 1] << 8L;
+            val += (long)(unsigned char)ptr[i + 0];
             fprintf( stdout, fmtstr, val );
         }
     }
     fprintf( stdout, "\n" );                    // go to new line.
 }
 
-static void printText( char *data, unsigned size, char *print_os )
+static void printText( char *data, int size, char *print_os )
 {
     int     i;
 
@@ -141,38 +140,38 @@ static void printText( char *data, unsigned size, char *print_os )
         *print_os = 0;
     }
 
-    for( i = 0; i < MAX_BYTES  &&  i < size; i++ ) {
+    for( i = 0; i < MAX_BYTES && i < size; i++ ) {
         switch( data[i] ) {
-            case '\0':
-                fprintf( stdout, "  \\0" );
-                break;
-            case '\f':
-                fprintf( stdout, "  \\f" );
-                break;
-            case '\n':
-                fprintf( stdout, "  \\n" );
-                break;
-            case '\r':
-                fprintf( stdout, "  \\r" );
-                break;
-            case '\t':
-                fprintf( stdout, "  \\t" );
-                break;
-            case '\b':
-                fprintf( stdout, "  \\b" );
-                break;
-            default:
-                if( isascii( data[i] )  &&  isprint( data[i] ) ) {
-                    fprintf( stdout, " %3c", data[i] );
-                } else {
-                    fprintf( stdout, " %03o", (unsigned) data[i] );
-                }
+        case '\0':
+            fprintf( stdout, "  \\0" );
+            break;
+        case '\f':
+            fprintf( stdout, "  \\f" );
+            break;
+        case '\n':
+            fprintf( stdout, "  \\n" );
+            break;
+        case '\r':
+            fprintf( stdout, "  \\r" );
+            break;
+        case '\t':
+            fprintf( stdout, "  \\t" );
+            break;
+        case '\b':
+            fprintf( stdout, "  \\b" );
+            break;
+        default:
+            if( isascii( data[i] ) && isprint( data[i] ) ) {
+                fprintf( stdout, " %3c", data[i] );
+            } else {
+                fprintf( stdout, " %03o", data[i] );
+            }
         }
     }
     fprintf( stdout, "\n" );
 }
 
-static void flushLine( char *data, unsigned size, format *fmt )
+static void flushLine( char *data, int size, format *fmt )
 {
     char         print_os;
 
@@ -230,10 +229,10 @@ static void dumpFile( FILE *fp, format *fmt )
     char       *prv;
 
     int         repeat = 0;
-    short int   sz     = 0;
+    int         size   = 0;
 
-    buf = (char *) malloc( MAX_BYTES );
-    prv = (char *) malloc( MAX_BYTES );
+    buf = (char *)malloc( MAX_BYTES );
+    prv = (char *)malloc( MAX_BYTES );
 
     fseek( fp, fmt->offset, SEEK_SET );
 
@@ -241,22 +240,21 @@ static void dumpFile( FILE *fp, format *fmt )
         ch  = fgetc( fp );
 
         if( ch != EOF ) {
-            buf[ sz ] = (char) ch;
+            buf[size] = (char)ch;
         } else {
-            flushLine( buf, sz, fmt );
+            flushLine( buf, size, fmt );
             break;
         }
+        size++;
 
-        sz++;
-
-        if( isatty( fileno( fp ) )  &&  ch == '\n' ) {
-            flushLine( buf, sz, fmt );
+        if( isatty( fileno( fp ) ) && ch == '\n' ) {
+            flushLine( buf, size, fmt );
             repeat = 0;
-            fmt->offset += (long int) sz;
-            sz = 0;
+            fmt->offset += size;
+            size = 0;
             memset( buf, 0, MAX_BYTES );
-        } else if( sz >= MAX_BYTES ) {
-            if( repeat != 0  &&  memcmp( buf, prv, MAX_BYTES ) == 0 ) {
+        } else if( size >= MAX_BYTES ) {
+            if( repeat != 0 && memcmp( buf, prv, MAX_BYTES ) == 0 ) {
                 if( repeat != 2 ) {
                     fprintf( stdout, "*\n" );
                     repeat = 2;
@@ -266,13 +264,13 @@ static void dumpFile( FILE *fp, format *fmt )
                 memcpy( prv, buf, MAX_BYTES );
                 repeat = 1;
             }
-            fmt->offset += (long int) MAX_BYTES;
-            sz = 0;
+            fmt->offset += MAX_BYTES;
+            size = 0;
             memset( buf, 0, MAX_BYTES );
         }
     }
 
-    fmt->offset += (long int) sz;
+    fmt->offset += size;
 
     if( fmt->osfmt == DEC_OFFSET ) {
         fprintf( stdout, "%010ld\n", fmt->offset );
@@ -330,39 +328,39 @@ void main( int argc, char **argv )
         if( strchr( "bcdDhoOsSxX", ch ) != NULL ) {
             fmtset = 1;
             switch( ch ) {                      // switch to set format type
-                case 'h':
-                    fmt.b_hex = 1;
-                    break;
-                case 'b':
-                    fmt.b_oct = 1;
-                    break;
-                case 'c':
-                    fmt.b_asc = 1;
-                    break;
-                case 'd':
-                    fmt.w_dec = 1;
-                    break;
-                case 'D':
-                    fmt.dw_dec = 1;
-                    break;
-                case 'o':
-                    fmt.w_oct = 1;
-                    break;
-                case 'O':
-                    fmt.dw_oct = 1;
-                    break;
-                case 's':
-                    fmt.w_sgn = 1;
-                    break;
-                case 'S':
-                    fmt.dw_sgn = 1;
-                    break;
-                case 'x':
-                    fmt.w_hex = 1;
-                    break;
-                case 'X':
-                    fmt.dw_hex = 1;
-                    break;
+            case 'h':
+                fmt.b_hex = 1;
+                break;
+            case 'b':
+                fmt.b_oct = 1;
+                break;
+            case 'c':
+                fmt.b_asc = 1;
+                break;
+            case 'd':
+                fmt.w_dec = 1;
+                break;
+            case 'D':
+                fmt.dw_dec = 1;
+                break;
+            case 'o':
+                fmt.w_oct = 1;
+                break;
+            case 'O':
+                fmt.dw_oct = 1;
+                break;
+            case 's':
+                fmt.w_sgn = 1;
+                break;
+            case 'S':
+                fmt.dw_sgn = 1;
+                break;
+            case 'x':
+                fmt.w_hex = 1;
+                break;
+            case 'X':
+                fmt.dw_hex = 1;
+                break;
             }
         }
     }

@@ -32,7 +32,7 @@
 
 #include "drwatcom.h"
 #include <process.h>
-#include "menu.h"
+#include "menu.rh"
 
 static DWORD    *noGetList;
 static DWORD    noGetUsedSize;
@@ -71,7 +71,7 @@ static void addDontAttatch( DWORD pid ) {
     noGetUsedSize ++;
     if( noGetUsedSize >= noGetAllocSize ) {
         noGetAllocSize += NO_ATTATCH_ALLOC_INCREMENT;
-        noGetList = MemReAlloc( noGetList, noGetAllocSize * sizeof( DWORD ) );
+        noGetList = MemRealloc( noGetList, noGetAllocSize * sizeof( DWORD ) );
     }
     if( i < noGetUsedSize - 1 ) {
         memmove( noGetList + i + 1, noGetList + i,

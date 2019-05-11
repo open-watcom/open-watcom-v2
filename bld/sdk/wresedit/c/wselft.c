@@ -66,7 +66,8 @@ WRFileType WSelectFileType( HWND parent, char *name,
     WRFileType          file_type;
     HELP_CALLBACK       hcb;
 
-    _wtouch( inst );
+    /* unused parameters */ (void)inst;
+
     hcb = (HELP_CALLBACK)MakeProcInstance( (FARPROC)help_callback, inst );
     file_type = WRSelectFileType( parent, name, is32bit, use_wres, hcb );
     FreeProcInstance( (FARPROC)hcb );

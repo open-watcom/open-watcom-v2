@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -57,22 +57,22 @@ typedef struct {
 bool GUIMDI = false;
 
 static gui_menu_struct MDIFirstSepMenu = {
-    NULL, GUI_MDI_FIRST_SEPARATOR,  GUI_STYLE_MENU_SEPARATOR, NULL
+    NULL, GUI_MDI_FIRST_SEPARATOR,  GUI_STYLE_MENU_SEPARATOR,   NULL,   GUI_NO_MENU
 };
 
 static gui_menu_struct MDISecondSepMenu = {
-    NULL, GUI_MDI_SECOND_SEPARATOR, GUI_STYLE_MENU_SEPARATOR, NULL
+    NULL, GUI_MDI_SECOND_SEPARATOR, GUI_STYLE_MENU_SEPARATOR,   NULL,   GUI_NO_MENU
 };
 
 static gui_menu_struct MDIMoreMenu = {
-    NULL, GUI_MDI_MORE_WINDOWS,     GUI_STYLE_MENU_ENABLED,   NULL
+    NULL, GUI_MDI_MORE_WINDOWS,     GUI_STYLE_MENU_ENABLED,     NULL,   GUI_NO_MENU
 };
 
 static gui_menu_struct MDIMenu[] = {
-    {  NULL,    GUI_MDI_CASCADE,        GUI_STYLE_MENU_GRAYED,     NULL    },
-    {  NULL,    GUI_MDI_TILE_HORZ,      GUI_STYLE_MENU_GRAYED,     NULL    },
-    {  NULL,    GUI_MDI_TILE_VERT,      GUI_STYLE_MENU_GRAYED,     NULL    },
-    {  NULL,    GUI_MDI_ARRANGE_ICONS,  GUI_STYLE_MENU_GRAYED,     NULL    },
+    {  NULL,    GUI_MDI_CASCADE,        GUI_STYLE_MENU_GRAYED,     NULL,    GUI_NO_MENU },
+    {  NULL,    GUI_MDI_TILE_HORZ,      GUI_STYLE_MENU_GRAYED,     NULL,    GUI_NO_MENU },
+    {  NULL,    GUI_MDI_TILE_VERT,      GUI_STYLE_MENU_GRAYED,     NULL,    GUI_NO_MENU },
+    {  NULL,    GUI_MDI_ARRANGE_ICONS,  GUI_STYLE_MENU_GRAYED,     NULL,    GUI_NO_MENU },
 };
 
 static  char MenuHint[MAX_NUM_MDI_WINDOWS][MAX_LENGTH];
@@ -95,11 +95,11 @@ gui_window *GUIGetRoot( void )
 
 static int MDIGetWndIndex( gui_window *wnd )
 {
-    int     item;
+    int     i;
 
-    for( item = 0; item < MAX_NUM_MDI_WINDOWS; item++ ) {
-        if( MDIWindows[item] == wnd ) {
-            return( item );
+    for( i = 0; i < MAX_NUM_MDI_WINDOWS; i++ ) {
+        if( MDIWindows[i] == wnd ) {
+            return( i );
         }
     }
     return( -1 );
@@ -119,9 +119,9 @@ static void EnableMDIMenus( gui_window *root, bool enable )
     }
 }
 
-static bool AddMenu( gui_window *wnd, gui_window *parent, int num_items, gui_menu_struct *menu )
+static bool MDIAddMenu( gui_window *wnd, gui_window *parent, const gui_menu_items *menus )
 {
-    int         item;
+    int         i;
     bool        has_items;
     bool        found_flag;
     gui_window  *root;
@@ -129,11 +129,11 @@ static bool AddMenu( gui_window *wnd, gui_window *parent, int num_items, gui_men
     if( GUIMDI && ( parent == NULL ) ) {
         found_flag = false;
         has_items = false;
-        for( item = 0; item < num_items; item++ ) {
-            if( menu[item].style & GUI_STYLE_MENU_MDIWINDOW ) {
-                GUIMDIMenuID = menu[item].id;
+        for( i = 0; i < menus->num_items; i++ ) {
+            if( menus->menu[i].style & GUI_STYLE_MENU_MDIWINDOW ) {
+                GUIMDIMenuID = menus->menu[i].id;
                 found_flag = true;
-                has_items = ( menu[item].child.num_items > 0 );
+                has_items = ( menus->menu[i].child.num_items > 0 );
                 break;
             }
         }
@@ -175,14 +175,13 @@ static void InsertMenuForWindow( gui_window *root, int index, int position )
     gui_menu_struct     menu;
 
     MakeLabel( index, name, label );
+    menu.child = NoMenu;
     menu.label = label;
     menu.id = MDIWIN2ID( index );
     menu.style = GUI_STYLE_MENU_ENABLED;
     if( index == CurrMDIWindow ) {
         menu.style |= GUI_STYLE_MENU_CHECKED;
     }
-    menu.child.num_items = 0;
-    menu.child.menu = NULL;
     MakeHintText( index, name );
     menu.hinttext = MenuHint[index];
     if( GUIMDIMenuID != 0 ) {
@@ -197,21 +196,21 @@ void MDIDeleteMenu( gui_ctl_id id )
     }
 }
 
-void MDIResetMenus( gui_window *wnd, gui_window *parent, int num_items, gui_menu_struct *menu )
+void MDIResetMenus( gui_window *wnd, gui_window *parent, const gui_menu_items *menus )
 {
     gui_window  *root;
-    int         item;
+    int         i;
     int         num_mdi_items;
 
-    if( !AddMenu( wnd, parent, num_items, menu ) ) {
+    if( !MDIAddMenu( wnd, parent, menus ) ) {
         return;
     }
     root = GUIGetRootWindow();
     num_mdi_items = NumMDIWindows;
     if( num_mdi_items > MAX_NUM_MDI_WINDOWS )
         num_mdi_items = MAX_NUM_MDI_WINDOWS;
-    for( item = 0; item < num_mdi_items; item++ ) {
-        InsertMenuForWindow( root, item, -1 );
+    for( i = 0; i < num_mdi_items; i++ ) {
+        InsertMenuForWindow( root, i, -1 );
     }
     if( NumMDIWindows > MAX_NUM_MDI_WINDOWS ) {
         MDIMoreMenu.label = LIT( XMore_Windows );
@@ -222,7 +221,7 @@ void MDIResetMenus( gui_window *wnd, gui_window *parent, int num_items, gui_menu
 
 bool GUIEnableMDIMenus( bool enable )
 {
-    int         item;
+    int         i;
     gui_window  *root;
     int         num_mdi_items;
 
@@ -235,8 +234,8 @@ bool GUIEnableMDIMenus( bool enable )
         if( NumMDIWindows > MAX_NUM_MDI_WINDOWS ) {
             GUIEnableMenuItem( root, GUI_MDI_MORE_WINDOWS, enable, false );
         }
-        for( item = 0; item < num_mdi_items; item++ ) {
-            GUIEnableMenuItem( root, MDIWIN2ID( item ), enable, false );
+        for( i = 0; i < num_mdi_items; i++ ) {
+            GUIEnableMenuItem( root, MDIWIN2ID( i ), enable, false );
         }
         return( true );
     }
@@ -248,7 +247,7 @@ void InitMDI( gui_window *wnd, gui_create_info *dlg_info )
     gui_window  *root;
 
     root = GUIGetRootWindow();
-    AddMenu( wnd, dlg_info->parent, dlg_info->menu.num_items, dlg_info->menu.menu );
+    MDIAddMenu( wnd, dlg_info->parent, &dlg_info->menus );
     if( GUIXInitMDI( wnd ) ) {
         if( dlg_info->parent && ( GUIGetParentWindow( dlg_info->parent ) != NULL ) ) {
             return;
@@ -357,7 +356,7 @@ void MDIDelete( gui_window *wnd )
     gui_window  *root;
     int         deleted_item;
     int         position;
-    int         item;
+    int         i;
     int         num_mdi_items;
 
     if( wnd == Root ) {
@@ -389,9 +388,9 @@ void MDIDelete( gui_window *wnd )
             num_mdi_items = NumMDIWindows;
             if( num_mdi_items > MAX_NUM_MDI_WINDOWS - 1 )
                 num_mdi_items = MAX_NUM_MDI_WINDOWS - 1;
-            for( item = deleted_item; item < num_mdi_items; item++ ) {
-                GUIDeleteMenuItem( root, MDIWIN2ID( item ), false );
-                MDIWindows[item] = MDIWindows[item + 1];
+            for( i = deleted_item; i < num_mdi_items; i++ ) {
+                GUIDeleteMenuItem( root, MDIWIN2ID( i ), false );
+                MDIWindows[i] = MDIWindows[i + 1];
             }
             GUIDeleteMenuItem( root, MDIWIN2ID( num_mdi_items ), false );
             MDIWindows[num_mdi_items] = NULL;
@@ -401,9 +400,9 @@ void MDIDelete( gui_window *wnd )
             if( NumMDIWindows > MAX_NUM_MDI_WINDOWS ) {
                 position--;
             }
-            for( item = deleted_item; item < num_mdi_items; item++ ) {
-                InsertMenuForWindow( root, item, position + ( item - deleted_item ) );
-                if( CurrMDIWindow == item ) {
+            for( i = deleted_item; i < num_mdi_items; i++ ) {
+                InsertMenuForWindow( root, i, position + ( i - deleted_item ) );
+                if( CurrMDIWindow == i ) {
                     CurrMDIWindow--;
                     if( CurrMDIWindow < 0 ) {
                         CurrMDIWindow = -1;
@@ -580,7 +579,7 @@ void AddMDIActions( bool has_items, gui_window *wnd )
         GUIAppendMenuToPopup( wnd, GUIMDIMenuID, &MDIFirstSepMenu, false );
     }
 
-    for( i = 0; i < ARRAY_SIZE( MDIMenu ); i++ ) {
+    for( i = 0; i < GUI_ARRAY_SIZE( MDIMenu ); i++ ) {
         GUIAppendMenuToPopup( wnd, GUIMDIMenuID, &MDIMenu[i], false );
     }
 }

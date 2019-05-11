@@ -80,13 +80,14 @@ static const char   *alt = "qwertyuiop\0\0\0\0asdfghjkl\0\0\0\0\0zxcvbnm";
 
 static bool         InitMenuPopupPending = false;
 
-void uisetbetweentitles( unsigned between )
+void UIAPI uisetbetweentitles( unsigned between )
+/***********************************************/
 {
     BetweenTitles = between;
 }
 
-char uialtchar( ui_event ui_ev )
-/******************************/
+char UIAPI uialtchar( ui_event ui_ev )
+/************************************/
 {
     if( ( ui_ev >= EV_ALT_Q ) && ( ui_ev <= EV_ALT_M ) ) {
         return( alt[ui_ev - EV_ALT_Q] );
@@ -301,13 +302,13 @@ void UIAPI uidisplaymenuitem( UIMENUITEM *menuitem, DESCMENU *desc, int item, bo
 
 void uidrawmenu( UIMENUITEM *menuitems, DESCMENU *desc, int curritem )
 {
-    int         item;
+    int         i;
 
     forbid_refresh();
     if( desc->area.height > 0 ) {
         drawbox( &UIData->screen, desc->area, SBOX_CHARS(), UIData->attrs[ATTR_MENU], false );
-        for( item = 0; item < desc->area.height - 2; item++ ) {
-            uidisplaymenuitem( &menuitems[item], desc, item, item == curritem );
+        for( i = 0; i < desc->area.height - 2; i++ ) {
+            uidisplaymenuitem( &menuitems[i], desc, i, ( i == curritem ) );
         }
     }
     permit_refresh();
@@ -330,7 +331,7 @@ void UIAPI uiopenpopup( DESCMENU *desc, UI_WINDOW *window )
 
 static bool process_menuchar( int ch, int *pmenu )
 {
-    int                 item;
+    int                 i;
     UIMENUITEM          *menuitem;
     bool                handled;
     int                 hotchar;
@@ -338,11 +339,11 @@ static bool process_menuchar( int ch, int *pmenu )
     ch = tolower( ch );
     handled = false;
     menuitem = Menu->titles;
-    for( item = 0; item < NumMenus; item++ ) {
+    for( i = 0; i < NumMenus; i++ ) {
         if( !MENUSEPARATOR( *menuitem ) && !MENUGRAYED( *menuitem ) ) {
             hotchar = menuitem->name[CHAROFFSET( *menuitem )];
             if( tolower( hotchar ) == ch ) {
-                *pmenu = item;
+                *pmenu = i;
                 Menu->popuppending = true;
                 handled = true;
                 break;
@@ -406,7 +407,7 @@ static ui_event createpopup( DESCMENU *desc, ui_event *new_ui_ev )
 static ui_event process_menuevent( VSCREEN *vptr, ui_event ui_ev )
 /****************************************************************/
 {
-    int         item;
+    int         i;
     int         oldmenu = NO_SELECT;
     ui_event    itemevent;
     ui_event    new_ui_ev;
@@ -469,12 +470,12 @@ static ui_event process_menuevent( VSCREEN *vptr, ui_event ui_ev )
                 }
                 menu = NO_SELECT;
                 desc = Describe;
-                for( item = 0; item < NumMenus; item++ ) {
+                for( i = 0; i < NumMenus; i++ ) {
                     if( ( MENU_GET_ROW( desc ) == mouserow ) && ( desc->titlecol <= mousecol )
                       && ( mousecol < desc->titlecol + desc->titlewidth + 2 ) ) {
                         Menu->draginmenu = true;
                         Menu->popuppending = true;
-                        menu = item;
+                        menu = i;
                         break;
                     }
                     desc++;
@@ -615,12 +616,12 @@ static ui_event process_menuevent( VSCREEN *vptr, ui_event ui_ev )
 ui_event uigeteventfrompos( ORD row, ORD col )
 /********************************************/
 {
-    int                 item;
+    int                 i;
     DESCMENU*           desc;
 
     if( row < uimenuheight() ) {
-        for( item = 0; item < NumMenus; item++ ) {
-            desc = &Describe[item];
+        for( i = 0; i < NumMenus; i++ ) {
+            desc = &Describe[i];
             if( ( MENU_GET_ROW( desc ) == row ) &&
                 ( desc->titlecol <= col ) &&
                 ( col < desc->titlecol + desc->titlewidth + 2 ) ) {
@@ -690,7 +691,7 @@ ui_event intern menuevent( VSCREEN *vptr )
 void UIAPI uidescmenu( UIMENUITEM *menuitems, DESCMENU *desc )
 /************************************************************/
 {
-    int                 item;
+    int                 i;
     uisize              len;
     char*               tab_loc;
     uisize              tab_loc_len;
@@ -700,10 +701,10 @@ void UIAPI uidescmenu( UIMENUITEM *menuitems, DESCMENU *desc )
     if( menuitems != NULL ) {
         desc->area.width = 0;
         tab_loc_len = 0;
-        for( item = 0; !MENUENDMARKER( menuitems[item] ); item++ ) {
-            if( !MENUSEPARATOR( menuitems[item] ) ) {
-                len = strlen( menuitems[item].name );
-                tab_loc = strchr( menuitems[item].name, TABCHAR );
+        for( i = 0; !MENUENDMARKER( menuitems[i] ); i++ ) {
+            if( !MENUSEPARATOR( menuitems[i] ) ) {
+                len = strlen( menuitems[i].name );
+                tab_loc = strchr( menuitems[i].name, TABCHAR );
                 if( tab_loc != NULL ) {
                     desc->flags |= MENU_HAS_TAB;
                     tab_loc++;
@@ -714,10 +715,10 @@ void UIAPI uidescmenu( UIMENUITEM *menuitems, DESCMENU *desc )
                     }
                     len--;  /* for TABCHAR */
                 }
-                if( menuitems[item].flags & ITEM_CHECKED ) {
+                if( menuitems[i].flags & ITEM_CHECKED ) {
                     desc->flags |= MENU_HAS_CHECK;
                 }
-                if( menuitems[item].popup != NULL ) {
+                if( menuitems[i].popup != NULL ) {
                     desc->flags |= MENU_HAS_POPUP;
                 }
                 if( desc->area.width < len ) {
@@ -740,7 +741,7 @@ void UIAPI uidescmenu( UIMENUITEM *menuitems, DESCMENU *desc )
             desc->area.width = UIData->width - to_add;
         MENU_SET_TAB_OFFSET( desc, desc->area.width + 1 );
         desc->area.width += to_add;
-        desc->area.height = item + 2;
+        desc->area.height = i + 2;
         if( desc->area.col + desc->area.width >= UIData->width ) {
             desc->area.col = UIData->width - desc->area.width;
         }
@@ -749,13 +750,14 @@ void UIAPI uidescmenu( UIMENUITEM *menuitems, DESCMENU *desc )
     }
 }
 
-void uimenutitlebar( void )
+void UIAPI uimenutitlebar( void )
+/*******************************/
 {
-    int         item;
+    int         i;
 
     forbid_refresh();
-    for( item = 0; item < NumMenus; item++ ) {
-        menutitle( item, item == Menu->currmenu );
+    for( i = 0; i < NumMenus; i++ ) {
+        menutitle( i, ( i == Menu->currmenu ) );
     }
     permit_refresh();
 }
@@ -773,8 +775,8 @@ static void drawbar( SAREA area, void *dummy )
     permit_refresh();
 }
 
-bool uienablepopupitem( int menuitem, int popupitem, bool enable )
-/****************************************************************/
+bool UIAPI uienablepopupitem( int menuitem, int popupitem, bool enable )
+/**********************************************************************/
 {
     bool        prev;
     UIMENUITEM  *pitem;
@@ -801,7 +803,7 @@ void UIAPI uisetmenudesc( void )
  * this code facilitates the updating of menu's without constant redrawing
  */
 {
-    int                     item;
+    int                     i;
     uisize                  col_start;
     uisize                  col_end;
     uisize                  row;
@@ -813,8 +815,8 @@ void UIAPI uisetmenudesc( void )
         col_end = col_start = 0;
         desc = Describe;
         menuitem = Menu->titles;
-        for( item = 0; item < NumMenus; item++ ) {
-            if( item > 0 ) {
+        for( i = 0; i < NumMenus; i++ ) {
+            if( i > 0 ) {
                 col_start = col_end;
                 col_end += desc->titlewidth + BetweenTitles;
                 if( col_end >= UIData->width ) {
@@ -940,13 +942,13 @@ void UIAPI uinomenus( void )
 void UIAPI uimenus( UIMENUITEM *menuitems, UIMENUITEM **popupitems, ui_event hot )
 /********************************************************************************/
 {
-    int             item;
+    int             i;
 
     /* unused parameters */ (void)hot;
 
     uimenubar( NULL );
-    for( item = 0; !MENUENDMARKER( menuitems[item] ); item++ ) {
-        menuitems[item].popup = popupitems[item];
+    for( i = 0; !MENUENDMARKER( menuitems[i] ); i++ ) {
+        menuitems[i].popup = popupitems[i];
     }
     MenuList.titles = menuitems;
     MenuList.currmenu = 0;

@@ -443,13 +443,13 @@ static bool addToList( const char ***list, int num_items, const char *data, size
  */
 static void freeStringList( const char ***list )
 {
-    int         item;
+    int         i;
 
     if( *list == NULL ) {
         return;
     }
-    for( item = 0; (*list)[item] != NULL; item++ ) {
-        GUIMemFree( (void *)(*list)[item] );
+    for( i = 0; (*list)[i] != NULL; i++ ) {
+        GUIMemFree( (void *)(*list)[i] );
     }
     GUIMemFree( (void *)*list );
     *list = NULL;
@@ -706,7 +706,7 @@ static bool setFileList( gui_window *gui, const char *ext )
     const char          **list;
     int                 num_items;
     char                ext1[_MAX_PATH];
-    int                 item;
+    int                 i;
     dlg_info            *dlg = GUIGetExtra( gui );
     bool                ok;
 
@@ -753,8 +753,8 @@ static bool setFileList( gui_window *gui, const char *ext )
     if( num_items > 0 ) {
         if( ok ) {
             qsort( (void *)list, num_items, sizeof( char * ), Compare );
-            for( item = 0; item < num_items; item++ ) {
-                GUIAddText( gui, CTL_FILE_LIST, list[item] );
+            for( i = 0; i < num_items; i++ ) {
+                GUIAddText( gui, CTL_FILE_LIST, list[i] );
             }
         }
         freeStringList( &list );
@@ -779,7 +779,7 @@ static bool setDirList( gui_window *gui )
 #if !defined( __UNIX__ ) && !defined( __NETWARE__ )
     const char          **drvlist;
 #endif
-    int                 item;
+    int                 i;
     size_t              len;
     int                 selected_item;
     int                 num_items;
@@ -809,9 +809,9 @@ static bool setDirList( gui_window *gui )
     drive[0] = OPENED_DIR_CHAR;
 #if !defined( __UNIX__ ) && !defined( __NETWARE__ )
     drvlist = GetDriveTextList();
-    for( item = 0; drvlist[item] != NULL; item++ ) {
-        if( drvlist[item][0] == drive[1] ) {
-            GUISetCurrSelect( gui, CTL_DRIVES, item );
+    for( i = 0; drvlist[i] != NULL; i++ ) {
+        if( drvlist[i][0] == drive[1] ) {
+            GUISetCurrSelect( gui, CTL_DRIVES, i );
             break;
         }
     }
@@ -866,8 +866,8 @@ static bool setDirList( gui_window *gui )
                 closedir( directory );
                 if( ok ) {
                     qsort( (void *)list, num_items, sizeof( char * ), Compare );
-                    for( item = 0; item < num_items; item++ ) {
-                        GUIAddText( gui, CTL_DIR_LIST, list[item] );
+                    for( i = 0; i < num_items; i++ ) {
+                        GUIAddText( gui, CTL_DIR_LIST, list[i] );
                     }
                     GUISetCurrSelect( gui, CTL_DIR_LIST, selected_item - 1 );
                 }
@@ -1237,7 +1237,7 @@ int GUIGetFileName( gui_window *gui, open_file_name *ofn )
         goToDir( gui, ofn->initial_dir );
 
         GUIModalDlgOpen( gui, ofn->title, DLG_FILE_ROWS, DLG_FILE_COLS,
-                    dlgControls, ARRAY_SIZE( dlgControls ), &GetFileNameGUIEventProc, &dlg );
+                    dlgControls, GUI_ARRAY_SIZE( dlgControls ), &GetFileNameGUIEventProc, &dlg );
 
         if( (ofn->flags & FN_CHANGEDIR) == 0 ) {
             goToDir( gui, olddir );

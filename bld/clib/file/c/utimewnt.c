@@ -37,7 +37,7 @@
 #include <dos.h>
 #include <sys/stat.h>
 #include <direct.h>
-#include <sys/utime.h>
+#include <utime.h>
 #ifdef __WIDECHAR__
     #include <mbstring.h>
 #endif

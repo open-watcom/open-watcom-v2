@@ -31,6 +31,7 @@
 
 
 #include "ftnstd.h"
+#include <string.h>
 #include "rundat.h"
 #include "errcod.h"
 #include "rtsysutl.h"
@@ -38,8 +39,6 @@
 #include "ioerr.h"
 #include "rdwr.h"
 #include "sdfile.h"
-
-#include <string.h>
 
 
 void    DoOpen( void ) {

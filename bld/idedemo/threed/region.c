@@ -1209,10 +1209,10 @@ static void remove_mark(
 #endif
         _wpi_setanchorblock( dc, inst );
         mem_dc = _wpi_createcompatiblepres( dc, inst, &t_dc );
-        old_bmp = _wpi_selectobject( mem_dc, mark->bmp );
+        old_bmp = _wpi_selectbitmap( mem_dc, mark->bmp );
         _wpi_bitblt( dc, mark->pt.x - MARK_SIZE, mark->pt.y - MARK_SIZE,
                 width, width, mem_dc, 0, 0, SRCCOPY );
-        _wpi_selectobject( mem_dc, old_bmp );
+        _wpi_getoldbitmap( mem_dc, old_bmp );
         _wpi_deletecompatiblepres( mem_dc, t_dc );
     }
 }
@@ -1240,10 +1240,10 @@ static void mark_point(
         _wpi_setanchorblock( dc, inst );
         mem_dc = _wpi_createcompatiblepres( dc, inst, &t_dc );
         bitmap = _wpi_createcompatiblebitmap( dc, width, width );
-        old_bmp = _wpi_selectobject( mem_dc, bitmap );
+        old_bmp = _wpi_selectbitmap( mem_dc, bitmap );
         _wpi_bitblt( mem_dc, 0, 0, width+1, width+1, dc, x - MARK_SIZE, y - MARK_SIZE, SRCCOPY );
         _wpi_bitblt( mem_dc, 0, 0, width, width, dc, x - MARK_SIZE, y - MARK_SIZE, SRCCOPY );
-        _wpi_selectobject( mem_dc, old_bmp );
+        _wpi_getoldbitmap( mem_dc, old_bmp );
         _wpi_deletecompatiblepres( mem_dc, t_dc );
         slot->pt.x = x;
         slot->pt.y = y;

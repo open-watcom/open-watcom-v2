@@ -857,13 +857,13 @@ tn  TGUnary( cg_op op, tn left, type_def *tipe )
     return( new );
 }
 
-tn  TGInitCall( tn left, type_def *tipe, cg_sym_handle sym )
+call_handle TGInitCall( tn left, type_def *tipe, cg_sym_handle sym )
 /********************************************************************
     Return a tree node for a call to "left".  TGAddParm may add parms to
     the call node.  TGCall finalizes the call node.
 */
 {
-    tn          node;
+    tn      node;
 
     node = TGNode( TN_PARM, O_NOP, left, (tn)sym, NULL );
     node = TGNode( TN_CALL, O_NOP, node, NULL, tipe );
@@ -877,8 +877,8 @@ tn  TGInitCall( tn left, type_def *tipe, cg_sym_handle sym )
 }
 
 
-tn  TGAddParm( tn to, tn parm, type_def *tipe )
-/**********************************************
+tn  TGAddParm( call_handle call, tn parm, type_def *tipe )
+/*********************************************************
     see TGInitCall ^
 */
 {
@@ -893,25 +893,25 @@ tn  TGAddParm( tn to, tn parm, type_def *tipe )
     }
     parm = TGConvert( parm, tipe );
     new = TGNode( TN_PARM, O_NOP, parm, NULL, tipe );
-    if( to->flags & TF_REVERSE ) {
-        new->u2.t.rite = to->u2.t.rite;
-        to->u2.t.rite = new;
+    if( call->flags & TF_REVERSE ) {
+        new->u2.t.rite = call->u2.t.rite;
+        call->u2.t.rite = new;
     } else {
-        for( scan = to; scan->u2.t.rite != NULL; ) {
+        for( scan = call; scan->u2.t.rite != NULL; ) {
             scan = scan->u2.t.rite;
         }
         scan->u2.t.rite = new;
     }
-    return( to );
+    return( call );
 }
 
 
-tn  TGCall( tn what )
-/********************
+tn  TGCall( call_handle call )
+/*****************************
     see TGInitCall ^
 */
 {
-    return( what );
+    return( call );
 }
 
 
@@ -1225,8 +1225,8 @@ cg_type TGType( tn node )
 }
 
 
-tn  TGPatch( patch *hdl, type_def *tipe )
-/****************************************
+tn  TGPatch( patch_handle patch, type_def *tipe )
+/************************************************
     create a patch node for "hdl"
 */
 {
@@ -1236,7 +1236,7 @@ tn  TGPatch( patch *hdl, type_def *tipe )
     node->u2.t.base = NULL;
     node->u2.t.alignment = 0;
     node->u2.t.op = O_NOP;
-    node->u.handle = hdl;
+    node->u.handle = patch;
     node->u2.t.rite = NULL;
     node->kids = 0;
     node->tipe = tipe;
@@ -2208,17 +2208,15 @@ static  an  TNQuestion( tn node )
 
 static  tn  NodesToZap;
 
-static  bool    FunctionModifiesSP( tn call_node )
-/*************************************************
+static  bool    FunctionModifiesSP( tn call )
+/********************************************
     does the given call modify sp?
 */
 {
-    tn              addr;
     hw_reg_set      *pregs;
     cg_sym_handle   sym;
 
-    addr = call_node->u.left;
-    sym = (cg_sym_handle)addr->u2.t.rite;
+    sym = (cg_sym_handle)call->u.left->u2.t.rite;
     pregs = FindAuxInfoSym( sym, SAVE_REGS );
     if( !HW_Ovlap( *pregs, StackReg() ) ) {
         return( true );
@@ -2253,7 +2251,7 @@ static  bool    ModifiesSP( tn node )
     case TN_UNARY:
         if( node->u2.t.op == O_STACK_ALLOC )
             return( true );
-    /* fall through */
+        /* fall through */
     default:
         if( node->u2.t.rite != NULL ) {
             if( ModifiesSP( node->u2.t.rite ) ) {
@@ -2294,8 +2292,8 @@ static  void    MakeSPSafe( tn scan )
     }
 }
 
-static  an  TNCall( tn what, bool ignore_return )
-/************************************************
+static  an  TNCall( tn callhandle, bool ignore_return )
+/******************************************************
     generate block for a TN_CALL node
 */
 {
@@ -2303,7 +2301,7 @@ static  an  TNCall( tn what, bool ignore_return )
     tn              addr;
     an              temp;
     tn              parmtn;
-    cn              call;
+    cn              callnode;
     an              retv;
     an              parman;
     type_def        *tipe;
@@ -2315,20 +2313,21 @@ static  an  TNCall( tn what, bool ignore_return )
 
     /* unused parameters */ (void)ignore_return;
 
-    call = NULL;
-    addr = what->u.left; /* address to call*/
+    callnode = NULL;
+    addr = callhandle->u.left; /* address to call*/
     sym = (cg_sym_handle)addr->u2.t.rite;
     aux = FEAuxInfo( sym, AUX_LOOKUP );
     in_line = ( FEAuxInfo( aux, CALL_BYTES ) != NULL );
     cclass = *(call_class *)FEAuxInfo( aux, CALL_CLASS );
+    retv = TreeGen( addr->u.left );
     if( cclass & MAKE_CALL_INLINE ) {
-        BGDone( TreeGen( addr->u.left ) );
+        BGDone( retv );
         BGStartInline( sym );
     } else {
-        call = BGInitCall( TreeGen( addr->u.left ), what->tipe, aux );
+        callnode = BGInitCall( retv, callhandle->tipe, aux );
     }
-    MakeSPSafe( scan = what->u2.t.rite );
-    for( scan = what->u2.t.rite; scan != NULL; scan = scan->u2.t.rite ) {
+    MakeSPSafe( callhandle->u2.t.rite );
+    for( scan = callhandle->u2.t.rite; scan != NULL; scan = scan->u2.t.rite ) {
         base = TNFindBase( scan->u.left );
         parmtn = scan->u.left;
         scan->u.name = base;
@@ -2376,19 +2375,19 @@ static  an  TNCall( tn what, bool ignore_return )
         if( cclass & MAKE_CALL_INLINE ) {
             BGAddInlineParm( parman );
         } else {
-            BGAddParm( call, parman );
+            BGAddParm( callnode, parman );
         }
     }
     FreeTreeNode( addr );
     if( cclass & MAKE_CALL_INLINE ) {
-        retv = BGStopInline( what, what->tipe );
-        NodesToZap = what->u2.t.rite;
+        retv = BGStopInline( callhandle, callhandle->tipe );
+        NodesToZap = callhandle->u2.t.rite;
         TNZapParms();
     } else {
-        NodesToZap = what->u2.t.rite;
-        retv = BGCall( call, ( what->flags & TF_USED ) != 0, in_line );
+        NodesToZap = callhandle->u2.t.rite;
+        retv = BGCall( callnode, ( callhandle->flags & TF_USED ) != 0, in_line );
         retv->flags |= FL_STACKABLE;
-        BGFiniCall( call );
+        BGFiniCall( callnode );
     }
     return( retv );
 }

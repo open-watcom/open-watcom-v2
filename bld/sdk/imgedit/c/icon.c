@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -31,7 +32,7 @@
 
 
 #include "imgedit.h"
-#include "iemem.h"
+
 
 #define ICON_FILE_TYPE      1
 #define CURSOR_FILE_TYPE    2
@@ -63,7 +64,7 @@ an_img_file *ImageOpen( FILE *fp )
 
     if( img_file->count > 1 ) {
         size = sizeof( an_img_file ) + sizeof( an_img_resource ) * (img_file->count - 1);
-        img_file = MemReAlloc( img_file, size );
+        img_file = MemRealloc( img_file, size );
         fseek( fp, 0L, SEEK_SET );
         fread( img_file, (long)size, 1, fp );
     }
@@ -94,7 +95,7 @@ an_img_file *ImageOpenData( BYTE *data, unsigned *pos )
 
     if( img_file->count > 1 ) {
         size = sizeof( an_img_file ) + sizeof( an_img_resource ) * (img_file->count - 1);
-        img_file = MemReAlloc( img_file, size );
+        img_file = MemRealloc( img_file, size );
         memcpy( img_file, data, size );
     }
 
@@ -122,7 +123,7 @@ static BITMAPINFO *readImgBitmap( FILE *fp )
     fread( header, sizeof( BITMAPINFOHEADER ), 1, fp );
     fseek( fp, DIB_offset, SEEK_SET );
     bitmap_size = BITMAP_SIZE( header );
-    bm = MemReAlloc( header, bitmap_size );
+    bm = MemRealloc( header, bitmap_size );
     if( bm == NULL ) {
         return( NULL );
     }

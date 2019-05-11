@@ -43,6 +43,7 @@
 #include "dbgio.h"
 #include "strutil.h"
 #include "filelcl.h"
+#include "dbgscrn.h"
 
 
 #define READONLY    0
@@ -54,8 +55,6 @@
 #define LH2SYSH(sh,lh)  (sh).u._32[0]=lh;(sh).u._32[1]=0
 
 typedef long   dosret;
-
-extern int              DbgConHandle; /* Debugger's console file handle */
 
 const file_components   LclFile = { '.', NULLCHAR,{ '/' }, { '\n' } };
 const char              LclPathSep = { ':' };
@@ -90,7 +89,7 @@ sys_handle LocalOpen( const char *name, obj_attrs oattrs )
         SET_SYSHANDLE_NULL( sh );
         return( sh );
     }
-    fcntl( ret, F_SETFD, (int)FD_CLOEXEC );
+    fcntl( ret, F_SETFD, FD_CLOEXEC );
     LH2SYSH( sh, ret );
     return( sh );
 }

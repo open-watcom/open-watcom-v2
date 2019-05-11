@@ -46,10 +46,6 @@
 
     extern debug_classes        DebugClasses;
 
-    #ifndef static
-        #define static
-    #endif
-
     #define _DBG_THREAD( x ) if( DebugClasses & D_THREAD ) { ConsolePrintf x; }
     #define _DBG_DR( x ) if( DebugClasses & D_DR ) { ConsolePrintf x; }
     #define _DBG_EVENT( x ) if( DebugClasses & D_EVENT ) { ConsolePrintf x; }

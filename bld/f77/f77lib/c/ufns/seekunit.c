@@ -40,8 +40,6 @@
 #include "ftnapi.h"
 #include "posseek.h"
 
-#include <stddef.h>
-
 
 intstar4        __fortran SEEKUNIT( intstar4 *unit, intstar4 *offset, intstar4 *origin ) {
 //====================================================

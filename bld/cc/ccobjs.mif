@@ -63,6 +63,7 @@ common_objs = &
     $(_subdir_)watcom.obj &
     $(_subdir_)cgetch.obj &
     $(_subdir_)cmacadd.obj &
+    $(_subdir_)cmacsupp.obj &
     $(_subdir_)asmalloc.obj &
     $(_subdir_)asmmsg.obj &
     $(_subdir_)jis2unic.obj &

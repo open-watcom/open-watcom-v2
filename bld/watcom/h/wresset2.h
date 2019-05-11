@@ -32,11 +32,6 @@
 #ifndef WRESSET2_INCLUDED
 #define WRESSET2_INCLUDED
 
-#ifdef WIN_GUI
-# include <windows.h>
-#endif
-
-
 #define NO_RES_MESSAGE          "Error: could not open message resource file.\n"
 #define NO_RES_MESSAGE_PREFIX   "Error: could not open message resource file ("
 #define NO_RES_MESSAGE_SUFFIX   ").\n"
@@ -44,14 +39,7 @@
 typedef struct handle_info {
     FILE        *fp;
     int         status;
-#ifdef WIN_GUI
-    HINSTANCE   inst;
-#endif
 } HANDLE_INFO, *PHANDLE_INFO;
-
-#ifndef WIN_GUI
-typedef unsigned int    UINT;
-#endif
 
 #ifdef _M_I86
 typedef char        __far *lpstr;
@@ -72,8 +60,8 @@ extern bool         FindResources( PHANDLE_INFO hinfo );
 extern bool         FindResourcesX( PHANDLE_INFO hinfo, bool res_file );
 extern bool         InitResources( PHANDLE_INFO hinfo );
 extern bool         FiniResources( PHANDLE_INFO hinfo );
-extern int          WResLoadString( PHANDLE_INFO hinfo, UINT idResource, lpstr lpszBuffer, int nBufferMax );
-extern int          WResLoadResource( PHANDLE_INFO hinfo, UINT idType, UINT idResource, lpstr *lpszBuffer, size_t *bufferSize );
+extern int          WResLoadString( PHANDLE_INFO hinfo, unsigned int idResource, lpstr lpszBuffer, int nBufferMax );
+extern int          WResLoadResource( PHANDLE_INFO hinfo, unsigned int idType, unsigned int idResource, lpstr *lpszBuffer, size_t *bufferSize );
 extern int          WResLoadResourceX( PHANDLE_INFO hinfo, lpcstr idType, lpcstr idResource, lpstr *lpszBuffer, size_t *bufferSize );
 
 #if defined( __cplusplus )

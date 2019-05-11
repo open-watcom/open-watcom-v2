@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -73,13 +74,13 @@ char *my_strlwr( char *string )
     return( string );
 }
 
-static char *get_line( char *buf, FILE *file )
-/********************************************/
+static char *get_line( char *buf, int max_len, FILE *file )
+/*********************************************************/
 {
     char    *ret;
     size_t  i;
 
-    while( (ret = fgets( buf, MAX_LINE_LEN, file )) != NULL ) {
+    while( (ret = fgets( buf, max_len, file )) != NULL ) {
         for( i = strlen( buf ); i > 0 && isWSorCtrlZ( buf[i - 1] ); --i ) {
             buf[i - 1] = '\0';
         }
@@ -147,7 +148,7 @@ int main( int argc, char *argv[] )
     fputs( "    int            num_ctls;\n", out );
 
     elt = 0;
-    while( (line = get_line( buf, in )) != NULL ) {
+    while( (line = get_line( buf, sizeof( buf ), in )) != NULL ) {
         end = strpbrk( line, White_space );
         if( end == NULL ) {
             printf( "No control on line %d\n", Line );
@@ -156,7 +157,7 @@ int main( int argc, char *argv[] )
         *end = '\0';
         strcpy( type, line );
 
-        line = get_line( buf, in );     // skip over data
+        line = get_line( buf, sizeof( buf ), in );     // skip over data
         if( line == NULL ) {
             printf( "No data at line %d\n", Line );
             goto error;
@@ -169,7 +170,7 @@ int main( int argc, char *argv[] )
         fputs( "        void (* get)( void *ptr, struct ctl_elt *elt, void *data );\n", out );
         fputs( "        void (* set)( void *ptr, struct ctl_elt *elt, void *data );\n", out );
         fputs( "        union {\n", out );
-        line = get_line( buf, in );     // skip over data
+        line = get_line( buf, sizeof( buf ), in );     // skip over data
         if( line == NULL ) {
             printf( "No data at line %d\n", Line );
             goto error;
@@ -188,19 +189,19 @@ int main( int argc, char *argv[] )
     fprintf( out, "%d,\n", elt );
 
     in = fopen( argv[1], "r" );
-    while( (line = get_line( buf, in )) != NULL ) {
+    while( (line = get_line( buf, sizeof( buf ), in )) != NULL ) {
         end = strpbrk( line, White_space );
         if( end != NULL ) {
             *end++ = '\0';
             fprintf( out, "{ %s, %s, false,", my_strupr( line ), end );
         }
 
-        line = get_line( buf, in );
+        line = get_line( buf, sizeof( buf ), in );
         if( line == NULL )
             break;
         fprintf( out, " %s", line );
 
-        line = get_line( buf, in );
+        line = get_line( buf, sizeof( buf ), in );
         if( empty_data( line ) ) {
             fputs( " },\n", out );
         } else {

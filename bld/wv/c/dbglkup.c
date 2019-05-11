@@ -301,7 +301,7 @@ struct mod_lkup {
     mod_handle  mh;
 };
 
-OVL_EXTERN walk_result CheckModName( mod_handle mh, void *d )
+static walk_result CheckModName( mod_handle mh, void *d )
 {
     struct mod_lkup     *md = d;
     char                name[NAM_LEN];
@@ -340,7 +340,7 @@ mod_handle LookupModName( mod_handle search, const char *start, unsigned len )
 }
 
 
-OVL_EXTERN walk_result CheckImageName( mod_handle mh, void *d )
+static walk_result CheckImageName( mod_handle mh, void *d )
 {
     struct mod_lkup     *md = d;
     image_entry         *image;

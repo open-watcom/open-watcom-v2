@@ -66,8 +66,8 @@ bool WResSeekResource2( WResDir dir, PHANDLE_INFO hinfo, WResID *resource_type, 
     return( false );
 }
 
-bool WResSeekResource( PHANDLE_INFO hinfo, UINT idType, UINT idResource )
-/***********************************************************************/
+bool WResSeekResource( PHANDLE_INFO hinfo, unsigned int idType, unsigned int idResource )
+/***************************************************************************************/
 {
     WResID              resource_type;
     WResID              resource_id;

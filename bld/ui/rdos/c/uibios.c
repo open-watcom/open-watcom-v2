@@ -34,6 +34,8 @@
 #include <conio.h>
 #include <stdio.h>
 #include "uidef.h"
+#include "uicurshk.h"
+
 
 static MONITOR ui_data = {
     25,
@@ -106,16 +108,4 @@ void intern physupdate( SAREA *area )
         bufptr = (short int *)UIData->screen.origin + pos;
         RdosWriteAttributeString( i + area->row, area->col, bufptr, area->width );
     }
-}
-
-bool UIAPI uiisdbcs( void )
-{
-    return( false );
-}
-
-int UIAPI uicharlen( int ch )
-{
-    /* unused parameters */ (void)ch;
-
-    return( 1 );
 }

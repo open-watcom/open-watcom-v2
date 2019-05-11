@@ -43,8 +43,6 @@
 extern void set_carry(void);
 #pragma aux set_carry = 0xf9;
 
-extern void FAR PASCAL SetEventHook( void __far * );
-
 volatile bool HaveKey;
 int _info;
 
@@ -55,7 +53,9 @@ int _info;
  * to the proper value (ie. no multiple instances - but it may not be possible
  * to register multiple event hooks anyway). See Undocumented Windows.
  */
-#pragma aux DebuggerHookRtn __far __parm [__ax] [__cx] __modify __exact []
+
+static event_hook_fn    DebuggerHookRtn;
+
 static void __far __loadds DebuggerHookRtn( unsigned event, unsigned info )
 {
     if( event == WM_KEYDOWN ) {

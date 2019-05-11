@@ -50,7 +50,7 @@ objsize = &
     word.obj hide.obj &
     editins.obj getautoi.obj &
     replace.obj dir.obj select.obj &
-    io.obj clread.obj cledit.obj misc.obj &
+    io.obj tempio.obj clread.obj cledit.obj misc.obj &
     tags.obj alias.obj bnddata.obj abandon.obj &
     filter.obj ex.obj exappend.obj &
     wingen.obj printf.obj getspcmd.obj &

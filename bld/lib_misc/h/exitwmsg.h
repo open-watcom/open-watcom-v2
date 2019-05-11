@@ -40,8 +40,13 @@
 // - tracks normal calling convention
 // - this is the funtion that is called from ASM and from C, C++
 // - note there is no #pragma aborts so that debugger can trace out
+#if defined(_M_I86)
 extern _WCRTLINK _WCNORETURN void __exit_with_msg( char _WCI86FAR *, unsigned );
 extern _WCRTLINK _WCNORETURN void __fatal_runtime_error( char _WCI86FAR *, unsigned );
+#else
+extern _WCRTLINK _WCNORETURN void __exit_with_msg( char *, unsigned );
+extern _WCRTLINK _WCNORETURN void __fatal_runtime_error( char *, unsigned );
+#endif
 extern _WCRTLINK _WCNORETURN void __exit( unsigned );
 
 // WVIDEO interface

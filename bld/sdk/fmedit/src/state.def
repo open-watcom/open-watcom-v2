@@ -72,9 +72,9 @@ extern void       ReportPending( void );
 extern void       LoadAccel( int );
 extern HWND       InheritState( HWND );
 extern void       MouseAction( RECT * );
-extern void       SetResizeGrid( unsigned, unsigned );
-extern unsigned   GetResizeVInc( void );
-extern unsigned   GetResizeHInc( void );
+extern void       SetResizeGrid( int, int );
+extern int        GetResizeVInc( void );
+extern int        GetResizeHInc( void );
 extern bool       GetShowEatoms( void );
 extern void       SetShowEatoms( bool show );
 

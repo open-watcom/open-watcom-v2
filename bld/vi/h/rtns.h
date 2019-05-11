@@ -465,8 +465,6 @@ void    GetFromEnv( const char *, char * );
 void    FileLower( char *str );
 bool    FileTemplateMatch( const char *, const char * );
 char    *StripPath( const char * );
-void    VerifyTmpDir( void );
-char    *MakeTmpPath( char *out, const char *in );
 
 /* key.c */
 vi_key  GetVIKey( unsigned code, unsigned scan, bool shift );
@@ -596,8 +594,8 @@ void    *MemAllocUnsafe( size_t );
 void    MemFree( void * );
 void    MemFreePtr( void ** );
 void    MemFreeList( list_linenum, char ** );
-void    *MemReAlloc( void *, size_t );
-void    *MemReAllocUnsafe( void *ptr, size_t size );
+void    *MemRealloc( void *, size_t );
+void    *MemReallocUnsafe( void *ptr, size_t size );
 void    *StaticAlloc( void );
 void    StaticFree( char * );
 void    StaticStart( void );
@@ -607,9 +605,9 @@ void    InitMem( void );
 void    FiniMem( void );
 
 #define _MemAllocArray(t,c)     (t *)MemAlloc( (c) * sizeof( t ) )
-#define _MemReAllocArray(p,t,c) (t *)MemReAlloc( p, (c) * sizeof( t ) )
+#define _MemReallocArray(p,t,c) (t *)MemRealloc( p, (c) * sizeof( t ) )
 #define _MemAllocList(c)        (char **)MemAlloc( (c) * sizeof( char * ) )
-#define _MemReAllocList(p,c)    (char **)MemReAlloc( p, (c) * sizeof( char * ) )
+#define _MemReallocList(p,c)    (char **)MemRealloc( p, (c) * sizeof( char * ) )
 
 /* misc.c */
 long    ExecCmd( const char *, const char *, const char * );
@@ -710,7 +708,7 @@ void    FiniSavebufs( void );
 
 /* select.c */
 vi_rc   SelectItem( selectitem *si );
-vi_rc   SelectItemAndValue( window_info *, char *, char **, list_linenum, vi_rc (*)(const char *, char *, int * ), size_t, char **, int );
+vi_rc   SelectItemAndValue( window_info *, char *, char **, list_linenum, checkres_fn *, size_t, char **, int );
 
 /* selrgn.c */
 void    UpdateDrag( window_id, int, int );

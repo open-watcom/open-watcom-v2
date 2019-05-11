@@ -128,8 +128,6 @@ static MEMHEADER    *HeadTab[] = {
 
 static gui_menu_struct *MemTypeMenu = NULL;
 
-static gui_menu_struct DummyMenu[1];
-
 static gui_menu_struct MemMenu[] = {
     #include "menumem.h"
 };
@@ -172,7 +170,7 @@ static unsigned MemCurrOffset( a_window wnd )
     return( ( curr_row * mem->items_per_line + curr_piece ) * mem->item_size );
 }
 
-OVL_EXTERN gui_ord MemHeader( a_window wnd, wnd_piece piece )
+static gui_ord MemHeader( a_window wnd, wnd_piece piece )
 {
     address     addr;
     mem_window  *mem;
@@ -207,7 +205,7 @@ OVL_EXTERN gui_ord MemHeader( a_window wnd, wnd_piece piece )
 }
 
 
-OVL_EXTERN gui_ord BinHeader( a_window wnd, wnd_piece piece )
+static gui_ord BinHeader( a_window wnd, wnd_piece piece )
 {
     mem_window  *mem;
 
@@ -269,7 +267,7 @@ static void MemSetStartAddr( a_window wnd, address addr, bool new_home )
     MemGetContents( wnd, false );
 }
 
-OVL_EXTERN  void MemRefresh( a_window wnd )
+static  void MemRefresh( a_window wnd )
 {
     mem_window  *mem;
 
@@ -408,7 +406,7 @@ static  void    MemUpdateCursor( a_window wnd )
 }
 
 
-OVL_EXTERN  void    MemModify( a_window wnd, wnd_row row, wnd_piece piece )
+static  void    MemModify( a_window wnd, wnd_row row, wnd_piece piece )
 {
     address     addr;
     union {
@@ -634,7 +632,7 @@ static bool GetBuff( mem_window *mem, unsigned long offset, char *buff, size_t s
     }
 }
 
-OVL_EXTERN  bool    MemGetLine( a_window wnd, wnd_row row, wnd_piece piece, wnd_line_piece *line )
+static  bool    MemGetLine( a_window wnd, wnd_row row, wnd_piece piece, wnd_line_piece *line )
 {
     char            buff[16];
     unsigned long   offset;
@@ -778,7 +776,7 @@ static void MemResize( a_window wnd )
     MemRefresh( wnd );
 }
 
-OVL_EXTERN void     MemMenuItem( a_window wnd, gui_ctl_id id, wnd_row row, wnd_piece piece )
+static void     MemMenuItem( a_window wnd, gui_ctl_id id, wnd_row row, wnd_piece piece )
 {
     mem_window  *mem;
 
@@ -866,14 +864,14 @@ OVL_EXTERN void     MemMenuItem( a_window wnd, gui_ctl_id id, wnd_row row, wnd_p
     }
 }
 
-OVL_EXTERN  void StkRefresh( a_window wnd )
+static  void StkRefresh( a_window wnd )
 {
     MemSetStartAddr( wnd, Context.stack, true );
     WndZapped( wnd );
 }
 
 
-OVL_EXTERN  int     MemScroll( a_window wnd, int lines )
+static  int     MemScroll( a_window wnd, int lines )
 {
     int             tomove;
     unsigned long   offset;
@@ -922,8 +920,7 @@ void InitMemWindow( void )
         MemTypeMenu[i].style = GUI_STYLE_MENU_ENABLED | WND_MENU_ALLOCATED;
         MemTypeMenu[i].label = DupStr( MemData.labels[i] );
         MemTypeMenu[i].hinttext = DupStr( LIT_ENG( Empty ) );
-        MemTypeMenu[i].child.num_items = 0;
-        MemTypeMenu[i].child.menu = NULL;
+        MemTypeMenu[i].child = NoMenu;
     }
     for( i = 0; i < ArraySize( MemMenu ); ++i ) {
         if( MemMenu[i].id == MENU_MEMORY_TYPE ) {
@@ -948,7 +945,7 @@ void FiniMemWindow( void )
     MemFiniTypes( &MemData );
 }
 
-OVL_EXTERN bool MemWndEventProc( a_window wnd, gui_event gui_ev, void *parm )
+static bool MemWndEventProc( a_window wnd, gui_event gui_ev, void *parm )
 {
     mem_window      *mem;
     int             i;
@@ -1011,6 +1008,21 @@ OVL_EXTERN bool MemWndEventProc( a_window wnd, gui_event gui_ev, void *parm )
     return( false );
 }
 
+static bool ChkUpdateBin( void )
+{
+    return( UpdateFlags & UP_RADIX_CHANGE );
+}
+
+static bool ChkUpdateMem( void )
+{
+    return( UpdateFlags & (UP_RADIX_CHANGE | UP_MEM_CHANGE | UP_SYM_CHANGE | UP_NEW_PROGRAM) );
+}
+
+static bool ChkUpdateStk( void )
+{
+    return( UpdateFlags & (UP_RADIX_CHANGE | UP_MEM_CHANGE | UP_STACKPOS_CHANGE | UP_REG_CHANGE | UP_SYM_CHANGE | UP_NEW_PROGRAM) );
+}
+
 wnd_info BinInfo = {
     MemWndEventProc,
     MemRefresh,
@@ -1023,9 +1035,8 @@ wnd_info BinInfo = {
     NoNumRows,
     NoNextRow,
     NoNotify,
-    ChkFlags,
-    UP_RADIX_CHANGE,
-    DefPopUp( MemMenu )
+    ChkUpdateBin,
+    PopUp( MemMenu )
 };
 
 wnd_info MemInfo = {
@@ -1040,9 +1051,8 @@ wnd_info MemInfo = {
     NoNumRows,
     NoNextRow,
     NoNotify,
-    ChkFlags,
-    UP_RADIX_CHANGE | UP_MEM_CHANGE | UP_SYM_CHANGE | UP_NEW_PROGRAM,
-    DefPopUp( MemMenu )
+    ChkUpdateMem,
+    PopUp( MemMenu )
 };
 
 wnd_info StkInfo = {
@@ -1057,9 +1067,8 @@ wnd_info StkInfo = {
     NoNumRows,
     NoNextRow,
     NoNotify,
-    ChkFlags,
-    UP_RADIX_CHANGE | UP_MEM_CHANGE | UP_STACKPOS_CHANGE | UP_REG_CHANGE | UP_SYM_CHANGE | UP_NEW_PROGRAM,
-    DefPopUp( MemMenu )
+    ChkUpdateStk,
+    PopUp( MemMenu )
 };
 
 a_window        DoWndMemOpen( address addr, mad_type_handle mth )

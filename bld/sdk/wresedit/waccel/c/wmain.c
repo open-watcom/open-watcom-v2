@@ -47,7 +47,7 @@
 #include "whints.h"
 #include "wopts.h"
 #include "whndl.h"
-#include "sys_rc.h"
+#include "sysall.rh"
 #include "wctl3d.h"
 #include "wsvobj.h"
 #include "wsetedit.h"
@@ -124,7 +124,7 @@ BOOL WINAPI DllMain( HINSTANCE inst, DWORD dwReason, LPVOID lpReserved )
 {
     int ret;
 
-    _wtouch( lpReserved );
+    /* unused parameters */ (void)lpReserved;
 
     ret = TRUE;
 
@@ -148,12 +148,8 @@ BOOL WINAPI DllMain( HINSTANCE inst, DWORD dwReason, LPVOID lpReserved )
 
 int WINAPI LibMain( HINSTANCE inst, WORD dataseg, WORD heapsize, LPSTR cmdline )
 {
-    _wtouch( dataseg );
-    _wtouch( heapsize );
-    _wtouch( cmdline );
+    /* unused parameters */ (void)dataseg; (void)heapsize; (void)cmdline;
 
-    __win_alloc_flags = GMEM_MOVEABLE | GMEM_SHARE;
-    __win_realloc_flags = GMEM_MOVEABLE | GMEM_SHARE;
     ref_count = 0;
     WSetEditInstance( inst );
 
@@ -162,7 +158,7 @@ int WINAPI LibMain( HINSTANCE inst, WORD dataseg, WORD heapsize, LPSTR cmdline )
 
 int WINAPI WEP( int parm )
 {
-    _wtouch( parm );
+    /* unused parameters */ (void)parm;
 
     return( TRUE );
 }
@@ -488,8 +484,8 @@ bool WCreateEditWindow( HINSTANCE inst, WAccelEditInfo *einfo )
 {
     int         x, y, width, height;
     char        *title;
-    HMENU       hmenu;
-    HMENU       menu;
+    HMENU       hmenu2;
+    HMENU       hmenu1;
     bool        is_rc;
     RECT        rect;
 
@@ -524,14 +520,14 @@ bool WCreateEditWindow( HINSTANCE inst, WAccelEditInfo *einfo )
         is_rc = TRUE;
     }
 
-    menu = (HMENU)NULL;
+    hmenu1 = (HMENU)NULL;
     if( einfo->info->stand_alone ) {
-        menu = LoadMenu( inst, WMainSOMenuName );
+        hmenu1 = LoadMenu( inst, WMainSOMenuName );
     }
 
     einfo->win = CreateWindow( WMainClass, title, WS_OVERLAPPEDWINDOW,
                                x, y, width, height, einfo->info->parent,
-                               menu, inst, einfo );
+                               hmenu1, inst, einfo );
 
     if( title != NULL ) {
         if( is_rc ) {
@@ -558,10 +554,10 @@ bool WCreateEditWindow( HINSTANCE inst, WAccelEditInfo *einfo )
         return( FALSE );
     }
 
-    hmenu = GetMenu( einfo->win );
-    if( hmenu != (HMENU)NULL ) {
-        EnableMenuItem( hmenu, IDM_ACC_CUT, MF_GRAYED );
-        EnableMenuItem( hmenu, IDM_ACC_COPY, MF_GRAYED );
+    hmenu2 = GetMenu( einfo->win );
+    if( hmenu2 != (HMENU)NULL ) {
+        EnableMenuItem( hmenu2, IDM_ACC_CUT, MF_GRAYED );
+        EnableMenuItem( hmenu2, IDM_ACC_COPY, MF_GRAYED );
     }
 
     if( WGetOption( WOptScreenMax ) ) {
@@ -673,7 +669,7 @@ static void setLastMenuSelect( WAccelEditInfo *einfo, WPARAM wParam, LPARAM lPar
 
 WINEXPORT LRESULT CALLBACK WMainWndProc( HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam )
 {
-    HMENU           menu;
+    HMENU           hmenu;
 #if 0
     HWND            win;
 #endif
@@ -739,8 +735,8 @@ WINEXPORT LRESULT CALLBACK WMainWndProc( HWND hWnd, UINT message, WPARAM wParam,
 
     case WM_MENUSELECT:
         if( einfo != NULL ) {
-            menu = WGetMenuHandle( einfo );
-            WHandleMenuSelect( einfo->wsb, menu, wParam, lParam );
+            hmenu = WGetMenuHandle( einfo );
+            WHandleMenuSelect( einfo->wsb, hmenu, wParam, lParam );
             setLastMenuSelect( einfo, wParam, lParam );
         }
         break;
@@ -873,8 +869,8 @@ WINEXPORT LRESULT CALLBACK WMainWndProc( HWND hWnd, UINT message, WPARAM wParam,
             break;
 
         case IDM_ACC_SHOWRIBBON:
-            menu = WGetMenuHandle( einfo );
-            WShowRibbon( einfo, menu );
+            hmenu = WGetMenuHandle( einfo );
+            WShowRibbon( einfo, hmenu );
             pass_to_def = FALSE;
             break;
 

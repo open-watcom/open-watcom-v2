@@ -75,6 +75,6 @@ typedef struct vfieldedit {
 /*       setting the cursor flag                                           */
 /*                                                                         */
 
-extern ui_event     uivfieldedit( VSCREEN *, VFIELDEDIT * );
+extern ui_event     UIAPI uivfieldedit( VSCREEN *, VFIELDEDIT * );
 
 #endif

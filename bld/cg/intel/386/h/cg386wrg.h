@@ -30,9 +30,11 @@
 ****************************************************************************/
 
 
-#define _AX     HW_EAX
-#define _BX     HW_EBX
-#define _CX     HW_ECX
-#define _DX     HW_EDX
-#define _SI     HW_ESI
-#define _DI     HW_EDI
+#define HW_xAX      HW_EAX
+#define HW_xBX      HW_EBX
+#define HW_xCX      HW_ECX
+#define HW_xDX      HW_EDX
+#define HW_xSI      HW_ESI
+#define HW_xDI      HW_EDI
+#define HW_DS_xSI   HW_DS_ESI
+#define HW_ES_xDI   HW_ES_EDI

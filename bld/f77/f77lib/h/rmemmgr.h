@@ -28,7 +28,6 @@
 *
 ****************************************************************************/
 
-#include <stdlib.h>
 
 extern void     *RMemAlloc( size_t size );
 extern void     RMemFree( void *ptr );

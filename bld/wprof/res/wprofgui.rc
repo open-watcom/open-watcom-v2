@@ -4,7 +4,7 @@
 #include <windows.h>
 #endif
 
-#include "rcdef.h"
+#include "rcdef.rh"
 #include "wprof.rc"
 
 #ifdef __NT__

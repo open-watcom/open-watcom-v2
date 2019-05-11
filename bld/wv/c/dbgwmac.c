@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -71,8 +71,7 @@ enum {
 typedef struct {
     unsigned            last_id;
     wnd_row             change_row;
-    int                 num_items;
-    gui_menu_struct     *menu;
+    gui_menu_items      menus;
     wnd_macro           *mac;
     bool                press_key : 1;
     bool                creating  : 1;
@@ -106,7 +105,7 @@ static gui_menu_struct MacMenu[] = {
     #include "menumac.h"
 };
 
-OVL_EXTERN const char *WndGetName( const void *data_handle, int item )
+static const char *WndGetName( const void *data_handle, int item )
 {
     return( *((const char ***)data_handle)[item] );
 }
@@ -169,7 +168,7 @@ static void MacChangeMac( a_window wnd, wnd_macro *mac, gui_key key, wnd_class_w
     WndNewCurrent( wnd, i, PIECE_KEY );
 }
 
-OVL_EXTERN void     MacModify( a_window wnd, wnd_row row, wnd_piece piece );
+static void     MacModify( a_window wnd, wnd_row row, wnd_piece piece );
 
 static bool MacModWhat( a_window wnd, wnd_row row )
 {
@@ -244,7 +243,7 @@ bool MacKeyHit( a_window wnd, gui_key key )
     }
 }
 
-OVL_EXTERN bool MacPopupClicked( a_window wnd, gui_ctl_id id )
+static bool MacPopupClicked( a_window wnd, gui_ctl_id id )
 {
     char                *p;
     gui_ctl_id          main_id;
@@ -262,16 +261,16 @@ OVL_EXTERN bool MacPopupClicked( a_window wnd, gui_ctl_id id )
     if( wndmac->mac->type == MACRO_MAIN_MENU ) {
         p = GetCmdEntry( MainTab, 0, p );
         *p++ = ' ';
-        main_id = id - id % MAIN_MENU_MULT;
+        main_id = MAIN_MENU_ID( id );
         *p++ = '{';
-        p = GetMenuLabel( wndmac->num_items, wndmac->menu, main_id, p, false );
+        p = GetMenuLabel( &wndmac->menus, main_id, p, false );
         *p++ = '}';
         *p++ = ' ';
         *p++ = '{';
-        p = GetMenuLabel( wndmac->num_items, wndmac->menu, id, p, false );
+        p = GetMenuLabel( &wndmac->menus, id, p, false );
     } else {
         *p++ = '{';
-        p = GetMenuLabel( wndmac->num_items, wndmac->menu, id, p, false );
+        p = GetMenuLabel( &wndmac->menus, id, p, false );
     }
     if( p != NULL ) {
         *p++ = '}';
@@ -296,20 +295,15 @@ static void MacModMenu( a_window wnd, wnd_row row )
     info = WndInfoTab[mac->wndclass];
     WndCurrToGUIPoint( wnd, &point );
     WndInstallClickHook( MacPopupClicked );
+    wndmac->last_id = 0;
+    wndmac->mac = mac;
     if( mac->type == MACRO_MAIN_MENU ) {
-        wndmac->last_id = 0;
-        wndmac->menu = WndMainMenu;
-        wndmac->num_items = WndNumMenus - 2;
-        wndmac->mac = mac;
-        WndCreateFloatingPopup( wnd, &point, wndmac->num_items, wndmac->menu, &dummy );
+        wndmac->menus = WndMainMenuMacro;
     } else {
-        wndmac->last_id = 0;
-        wndmac->menu = info->popupmenu;
-        wndmac->num_items = info->popup_num_items;
-        wndmac->mac = mac;
-        WndChangeMenuAll( info->popupmenu, info->popup_num_items, false, GUI_STYLE_MENU_GRAYED );
-        WndCreateFloatingPopup( wnd, &point, wndmac->num_items, wndmac->menu, &dummy );
+        wndmac->menus = info->popup;
+        WndChangeMenuAll( &info->popup, false, GUI_STYLE_MENU_GRAYED );
     }
+    WndCreateFloatingPopup( wnd, &point, &wndmac->menus, &dummy );
 }
 
 static void MacModWhere( a_window wnd, wnd_row row )
@@ -357,7 +351,7 @@ static void MacModCmd( a_window wnd, wnd_row row )
 }
 
 
-OVL_EXTERN void     MacModify( a_window wnd, wnd_row row, wnd_piece piece )
+static void     MacModify( a_window wnd, wnd_row row, wnd_piece piece )
 {
     wnd_macro   *mac;
 
@@ -387,7 +381,7 @@ OVL_EXTERN void     MacModify( a_window wnd, wnd_row row, wnd_piece piece )
 #define TDDBG "tdkeys.dbg"
 #define WDDBG "wdkeys.dbg"
 
-OVL_EXTERN void     MacMenuItem( a_window wnd, gui_ctl_id id, wnd_row row, wnd_piece piece )
+static void     MacMenuItem( a_window wnd, gui_ctl_id id, wnd_row row, wnd_piece piece )
 {
     wnd_macro           *mac;
     mac_window          *wndmac;
@@ -442,7 +436,7 @@ OVL_EXTERN void     MacMenuItem( a_window wnd, gui_ctl_id id, wnd_row row, wnd_p
     }
 }
 
-OVL_EXTERN wnd_row MacNumRows( a_window wnd )
+static wnd_row MacNumRows( a_window wnd )
 {
     wnd_macro   *mac;
     wnd_row     count;
@@ -456,7 +450,7 @@ OVL_EXTERN wnd_row MacNumRows( a_window wnd )
     return( count );
 }
 
-OVL_EXTERN  bool MacGetLine( a_window wnd, wnd_row row, wnd_piece piece, wnd_line_piece *line )
+static  bool MacGetLine( a_window wnd, wnd_row row, wnd_piece piece, wnd_line_piece *line )
 {
     wnd_macro           *mac;
     cmd_list            *cmds;
@@ -531,8 +525,8 @@ OVL_EXTERN  bool MacGetLine( a_window wnd, wnd_row row, wnd_piece piece, wnd_lin
                 break;
             case MACRO_MAIN_MENU:
                 if( mac->menu != NULL ) {
-                    main_id = mac->menu->id - mac->menu->id % MAIN_MENU_MULT;
-                    p = GetMenuLabel( WndNumMenus, WndMainMenu, main_id, TxtBuff, true );
+                    main_id = MAIN_MENU_ID( mac->menu->id );
+                    p = GetMenuLabel( &WndMainMenu, main_id, TxtBuff, true );
                     *p++ = '/';
                 }
                 /* fall through */
@@ -540,8 +534,12 @@ OVL_EXTERN  bool MacGetLine( a_window wnd, wnd_row row, wnd_piece piece, wnd_lin
                 if( mac->menu == NULL ) {
                     line->text = LIT_ENG( Quest_Marks );
                 } else {
+                    gui_menu_items  menus;
+
+                    menus.num_items = 1;
+                    menus.menu = mac->menu;
                     line->text = TxtBuff;
-                    p = GetMenuLabel( 1, mac->menu, mac->menu->id, p, true );
+                    p = GetMenuLabel( &menus, mac->menu->id, p, true );
                 }
             }
             return( true );
@@ -551,7 +549,7 @@ OVL_EXTERN  bool MacGetLine( a_window wnd, wnd_row row, wnd_piece piece, wnd_lin
 }
 
 
-OVL_EXTERN int MacCompare( void *pa, void *pb )
+static int MacCompare( void *pa, void *pb )
 {
     if( (*(wnd_macro **)pa)->key < (*(wnd_macro **)pb)->key )
         return( -1 );
@@ -598,14 +596,14 @@ static void MacReSize( a_window wnd )
     Indents[PIECE_TEXT] = Indents[PIECE_WHAT] + max_size[PIECE_WHAT] + 2 * WndAvgCharX( wnd );
 }
 
-OVL_EXTERN void     MacRefresh( a_window wnd )
+static void     MacRefresh( a_window wnd )
 {
     MacReSize( wnd );
     WndNoSelect( wnd );
     WndSetRepaint( wnd );
 }
 
-OVL_EXTERN bool MacWndEventProc( a_window wnd, gui_event gui_ev, void *parm )
+static bool MacWndEventProc( a_window wnd, gui_event gui_ev, void *parm )
 {
     mac_window  *wndmac = WndMac( wnd );
 
@@ -630,6 +628,11 @@ OVL_EXTERN bool MacWndEventProc( a_window wnd, gui_event gui_ev, void *parm )
     return( false );
 }
 
+static bool ChkUpdate( void )
+{
+    return( UpdateFlags & UP_MACRO_CHANGE );
+}
+
 wnd_info MacInfo = {
     MacWndEventProc,
     MacRefresh,
@@ -642,9 +645,8 @@ wnd_info MacInfo = {
     MacNumRows,
     NoNextRow,
     NoNotify,
-    ChkFlags,
-    UP_MACRO_CHANGE,
-    DefPopUp( MacMenu )
+    ChkUpdate,
+    PopUp( MacMenu )
 };
 
 a_window WndMacOpen( void )

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -79,7 +79,7 @@ extern long _XtdGetSize( void );
         "mov ah,88h" \
         "int 15h"    \
         "sbb dx,dx"  \
-    __parm caller       [] \
+    __parm __caller     [] \
     __value             [__dx __ax] \
     __modify __exact    [__ax __dx]
 
@@ -108,7 +108,7 @@ typedef struct {
 } physical_descriptor;
 
 typedef union {
-    long external;
+    xhandle             external;
     struct {
         unsigned short  offset;
         unsigned char   logical;
@@ -192,7 +192,7 @@ extern unsigned char _EMSReleaseMemory( unsigned short );
 #define XMS_MAX_HANDLES                 256
 
 typedef union {
-    long    external;
+    xhandle             external;
     struct {
         unsigned short  handle;
         unsigned short  offset  : 14;

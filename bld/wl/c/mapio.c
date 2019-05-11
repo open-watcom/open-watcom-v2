@@ -55,6 +55,7 @@
 
 #include "clibext.h"
 
+
 typedef struct {
     unsigned_32         address;
     unsigned            file;
@@ -255,7 +256,7 @@ static void WriteNonAbsSeg( void *_seg )
     }
 }
 
-typedef struct seg_info {
+typedef struct {
     unsigned    idx;
     seg_leader  *seg;
 } seg_info;
@@ -275,7 +276,7 @@ void WriteSegs( section *sect )
 /*******************************************/
 /* write segment info into mapfile */
 {
-    class_entry     *cl;
+    class_entry     *class;
     size_t          count;
     size_t          i;
     seg_leader      *seg;
@@ -287,17 +288,17 @@ void WriteSegs( section *sect )
         Msg_Write_Map( MSG_MAP_TITLE_SEGMENTS_1 );
         WriteMapNL( 1 );
         count = 0;
-        for( cl = sect->classlist; cl != NULL; cl = cl->next_class ) {
-            if( (cl->flags & CLASS_DEBUG_INFO) == 0 ) {
-                count += RingCount( cl->segs );
+        for( class = sect->classlist; class != NULL; class = class->next_class ) {
+            if( (class->flags & CLASS_DEBUG_INFO) == 0 ) {
+                count += RingCount( class->segs );
             }
         }
         _ChkAlloc( segs, count * sizeof( seg_info ) );
         count = 0;
-        for( cl = sect->classlist; cl != NULL; cl = cl->next_class ) {
-            if( (cl->flags & CLASS_DEBUG_INFO) == 0 ) {
+        for( class = sect->classlist; class != NULL; class = class->next_class ) {
+            if( (class->flags & CLASS_DEBUG_INFO) == 0 ) {
                 seg = NULL;
-                while( (seg = RingStep( cl->segs, seg )) != NULL ) {
+                while( (seg = RingStep( class->segs, seg )) != NULL ) {
                     segs[count].idx = count;
                     segs[count].seg = seg;
                     count++;
@@ -344,7 +345,7 @@ void WritePubModHead( void )
     if ( CurrMod->f.source == NULL ) {
         strcpy( full_name, CurrMod->name.u.ptr );
     } else {
-        MakeFileName( CurrMod->f.source->file, full_name );
+        MakeFileName( CurrMod->f.source->infile, full_name );
     }
     Msg_Write_Map( MSG_MAP_DEFINING_MODULE, full_name, CurrMod->name.u.ptr );
 }
@@ -767,8 +768,8 @@ static void AddSymRecList( symbol *sym, symrecinfo **head )
 void ProcUndefined( symbol *sym )
 /***************************************/
 {
-    if( (LinkFlags & UNDEFS_ARE_OK) == 0 )
-        LinkState |= LINK_ERROR;
+    if( (LinkFlags & LF_UNDEFS_ARE_OK) == 0 )
+        LinkState |= LS_LINK_ERROR;
     AddSymRecList( sym, &UndefList );
 }
 
@@ -787,10 +788,10 @@ static void PrintUndefined( void *_info )
     mod_entry   *mod;
 
     mod = info->mod;
-    LnkMsg( YELL+MSG_UNDEF_SYM, "12S", mod->f.source->file->name, mod->name,
+    LnkMsg( YELL+MSG_UNDEF_SYM, "12S", mod->f.source->infile->name, mod->name,
                                        info->sym );
     WriteFormat( 0, "%S", info->sym );
-    WriteFormat( 32, "%s(%s)", mod->f.source->file->name, mod->name );
+    WriteFormat( 32, "%s(%s)", mod->f.source->infile->name, mod->name );
     WriteMapNL( 1 );
 }
 
@@ -817,8 +818,8 @@ void WriteUndefined( void )
         WriteMapNL( 1 );
         RingWalk( UndefList, PrintUndefined );
     }
-    if( LinkState & UNDEFED_SYM_ERROR ) {
-        LinkState |= LINK_ERROR;
+    if( LinkState & LS_UNDEFED_SYM_ERROR ) {
+        LinkState |= LS_LINK_ERROR;
     }
 }
 
@@ -848,15 +849,15 @@ void WriteLibsUsed( void )
     file_list   *lib;
     char        new_name[PATH_MAX];
 
-    if( LinkState & GENERATE_LIB_LIST ) {
+    if( LinkState & LS_GENERATE_LIB_LIST ) {
         WriteBox( MSG_MAP_BOX_LIB_USED );
         for( lib = ObjLibFiles; lib != NULL; lib = lib->next_file ) {
-            if( lib->status & STAT_LIB_USED ) {
-                MakeFileName( lib->file, new_name );
+            if( lib->flags & STAT_LIB_USED ) {
+                MakeFileName( lib->infile, new_name );
                 WriteMap( "%s", new_name );
             }
         }
-        LinkState &= ~GENERATE_LIB_LIST;
+        LinkState &= ~LS_GENERATE_LIB_LIST;
     }
 }
 

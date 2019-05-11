@@ -30,12 +30,11 @@
 ****************************************************************************/
 
 
-#include <stdlib.h>
-#include <string.h>
-#include "wdismsg.h"
 #include "disasm.h"
+#include "wdismsg.h"
 #include "orl.h"
 #include "hashtabl.h"
+
 
 #define SYMBOL_TO_TARGET_TABLE_SIZE             53
 #define SYMBOL_TO_EXPORT_TABLE_SIZE             53

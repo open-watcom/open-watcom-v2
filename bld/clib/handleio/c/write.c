@@ -32,11 +32,11 @@
 
 #include "variety.h"
 #include <stdio.h>
-#include <io.h>
-#include <fcntl.h>
-#include <alloca.h>
+#include <stdlib.h>
 #include <stddef.h>
 #include <string.h>
+#include <io.h>
+#include <fcntl.h>
 #if defined(__NT__)
     #include <windows.h>
 #elif defined( __OS2__ )

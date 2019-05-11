@@ -456,11 +456,11 @@ static  void    emitEpilog( stack_map *map )
 void    GenProlog( void )
 /***********************/
 {
-    segment_id          old;
+    segment_id          old_segid;
     label_handle        label;
     offset              lc;
 
-    old = SetOP( AskCodeSeg() );
+    old_segid = SetOP( AskCodeSeg() );
     lc = AskLocation();
     CurrProc->targ.proc_start = lc;
     label = CurrProc->label;
@@ -490,17 +490,17 @@ void    GenProlog( void )
   //                    - ret_size );
         DbgProEnd( CurrProc->targ.debug, lc );
     }
-    SetOP( old );
+    SetOP( old_segid );
 }
 
 
 void    GenEpilog( void )
 /***********************/
 {
-    segment_id          old;
+    segment_id          old_segid;
     offset              lc;
 
-    old = SetOP( AskCodeSeg() );
+    old_segid = SetOP( AskCodeSeg() );
     if( _IsModel( DBG_LOCALS ) ){  // d1+ or d2
         lc = AskLocation();
         DbgEpiBeg( CurrProc->targ.debug, lc );
@@ -517,7 +517,7 @@ void    GenEpilog( void )
         OutFuncEnd( lc );
     }
     OutPDataRec( CurrProc->label, CurrProc->targ.pro_size, lc );
-    SetOP( old );
+    SetOP( old_segid );
 }
 
 

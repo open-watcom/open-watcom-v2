@@ -36,7 +36,7 @@
 #include <windows.h>
 #include "packet.h"
 #include "winserv.h"
-#include "servname.h"
+#include "servname.rh"
 #include "trperr.h"
 #include "parlink.h"
 

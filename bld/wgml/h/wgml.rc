@@ -1,7 +1,7 @@
 #define         MSG_BASE        0
 
 #include "wgmlmsgs.gh"
-#include "wreslang.h"
+#include "wreslang.rh"
 
 STRINGTABLE
 BEGIN

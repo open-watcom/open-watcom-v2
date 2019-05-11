@@ -38,7 +38,7 @@
 #include "guidlg.h"
 #include "guistr.h"
 #include "setupinf.h"
-#include "resource.h"
+#include "resource.rh"
 #include "banner.h"
 #include "genvbl.h"
 #include "utils.h"
@@ -47,9 +47,6 @@
 #include "clibext.h"
 
 
-extern gui_colour_set   MainColours[];
-extern void             GUISetJapanese();
-extern bool             Invisible;
 gui_window              *MainWnd = NULL;
 int                     NominalButtonWidth = 11;
 
@@ -88,6 +85,59 @@ gui_resource WndGadgetArray[] = {
 gui_ord     BitMapBottom;
 gui_coord   BitMapSize;
 
+static gui_colour_set MainColours[] = {
+#if !defined( GUI_IS_GUI )
+    /* Fore              Back        */
+    { GUI_WHITE,        GUI_BLACK },            /* GUI_MENU_PLAIN    */
+    { GUI_BLUE,         GUI_BRIGHT_WHITE },     /* GUI_MENU_STANDOUT */
+    { GUI_GREY,         GUI_BLACK },            /* GUI_MENU_GRAYED */
+    { GUI_BRIGHT_YELLOW,GUI_BLACK },            /* GUI_MENU_ACTIVE */
+    { GUI_BRIGHT_YELLOW,GUI_BRIGHT_WHITE },     /* GUI_MENU_ACTIVE_STANDOUT */
+    { GUI_BRIGHT_WHITE, GUI_BLUE },             /* GUI_BACKGROUND */
+    { GUI_BRIGHT_WHITE, GUI_BLUE },             /* GUI_MENU_FRAME    */
+    { GUI_GREY,         GUI_BLUE },             /* GUI_TITLE_INACTIVE    */
+
+    { GUI_BLUE,         GUI_CYAN },             /* GUI_FRAME_ACTIVE    */
+    { GUI_GREY,         GUI_BLACK },            /* GUI_FRAME_INACTIVE    */
+    { GUI_BRIGHT_WHITE, GUI_RED },              /* GUI_ICON    */
+    { GUI_GREY,         GUI_BRIGHT_WHITE },     /* GUI_MENU_GRAYED_ACTIVE    */
+    { GUI_GREY,         GUI_BRIGHT_WHITE },     /* GUI_FRAME_RESIZE    */
+    { GUI_BLUE,         GUI_WHITE },            /* GUI_CONTROL_BACKGROUND */
+    { GUI_GREEN,        GUI_BLACK },            /* WND_PLAIN    */
+    { GUI_BLACK,        GUI_GREEN },            /* WND_TABSTOP   */
+    { GUI_BLUE,         GUI_BRIGHT_WHITE },     /* WND_SELECTED */
+    { GUI_BLACK,        GUI_RED },              /* WND_HOTSPOT */
+    { GUI_GREY,         GUI_BLACK },            /* WND_CENSORED */
+    { GUI_BLACK,        GUI_WHITE },            /* WND_STATUS_BAR */
+    { GUI_WHITE,        GUI_BLUE },             /* WND_STATUS_TEXT */
+    { GUI_WHITE,        GUI_BLUE },             /* WND_STATUS_FRAME */
+#else                   // win or winnt or OS/2
+    /* Fore              Back        */
+    { GUI_BRIGHT_WHITE, GUI_BLACK },            /* GUI_MENU_PLAIN    */
+    { GUI_BLACK,        GUI_BRIGHT_WHITE },     /* GUI_MENU_STANDOUT */
+    { GUI_GREY,         GUI_BLACK },            /* GUI_MENU_GRAYED */
+    { GUI_BRIGHT_YELLOW,GUI_BLACK },            /* GUI_MENU_ACTIVE */
+    { GUI_BRIGHT_YELLOW,GUI_BRIGHT_WHITE },     /* GUI_MENU_ACTIVE_STANDOUT */
+    { GUI_BRIGHT_BLUE,  GUI_BRIGHT_BLUE },      /* GUI_BACKGROUND */
+    { GUI_BRIGHT_WHITE, GUI_BLUE },             /* GUI_MENU_FRAME    */
+    { GUI_GREY,         GUI_BLACK },            /* GUI_TITLE_INACTIVE    */
+
+    { GUI_BLUE,         GUI_CYAN },             /* GUI_FRAME_ACTIVE    */
+    { GUI_GREY,         GUI_BLACK },            /* GUI_FRAME_INACTIVE    */
+    { GUI_BRIGHT_WHITE, GUI_RED },              /* GUI_ICON    */
+    { GUI_GREY,         GUI_BRIGHT_WHITE },     /* GUI_MENU_GRAYED_ACTIVE    */
+    { GUI_GREY,         GUI_BRIGHT_WHITE },     /* GUI_FRAME_RESIZE    */
+    { GUI_BLACK,        GUIEX_WND_BKGRND },     /* GUI_CONTROL_BACKGROUND */
+    { GUI_GREEN,        GUI_BLACK },            /* WND_PLAIN    */
+    { GUI_BLACK,        GUI_GREEN },            /* WND_TABSTOP   */
+    { GUI_BLACK,        GUI_BRIGHT_WHITE },     /* WND_SELECTED */
+    { GUI_BLACK,        GUI_RED },              /* WND_HOTSPOT */
+    { GUI_GREY,         GUI_BLACK },            /* WND_CENSORED */
+    { GUI_BRIGHT_WHITE, GUI_BLACK },            /* WND_STATUS_BAR */
+    { GUI_BLACK,        GUI_BRIGHT_WHITE },     /* WND_STATUS_TEXT */
+    { GUI_BLACK,        GUI_BRIGHT_WHITE },     /* WND_STATUS_FRAME */
+#endif
+};
 
 static bool MainSetupWndGUIEventProc( gui_window *gui, gui_event gui_ev, void *parm )
 {
@@ -269,7 +319,7 @@ bool SetupPreInit( int argc, char **argv )
     NominalButtonWidth = strlen( LIT( Cancel ) ) + 5;
 
     /* Initialize enough of the GUI lib to let us show message boxes etc. */
-    GUIWndInit( 300, GUI_PLAIN ); // 300 uS mouse dbl click rate, no char remapping
+    GUIWndInit( 300 /* ms */, GUI_PLAIN ); // 300 uS mouse dbl click rate, no char remapping
     GUISetCharacter( GUI_SCROLL_SLIDER, 177 );
     GUISetBetweenTitles( 2 );
     GUIScale.x = WND_APPROX_SIZE;
@@ -305,10 +355,9 @@ bool SetupInit( void )
     init.style |= GUI_NOFRAME;
 #endif
     init.parent = NULL;
-    init.menu.num_items = 0;
-    init.menu.menu = NULL;
-    init.colours.num_items = WND_NUMBER_OF_COLORS;
-    init.colours.colours = MainColours;
+    init.menus = NoMenu;
+    init.colours.num_items = GUI_ARRAY_SIZE( MainColours );
+    init.colours.colour = MainColours;
     init.gui_call_back = MainSetupWndGUIEventProc;
     init.extra = NULL;
 

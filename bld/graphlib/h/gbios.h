@@ -30,7 +30,7 @@
 
 
 /* BIOS Variable Locations */
-#pragma pack(push, 1);
+#pragma pack(__push, 1);
 
 #define _BIOS_data( p, t ) *(t __far *)MK_FP( _BiosSeg, _BiosOff + p )
 
@@ -92,4 +92,4 @@ extern short VideoInt_cx( short, short, short, short );
 #define GetVideoMode()  ( VideoInt( _BIOS_GET_MODE, 0, 0, 0 ) & 0x7f )
 #define EGA_Memory()    ( VideoInt_bx( 0x1200, 0x0010, 0, 0 ) )
 
-#pragma pack (pop);
+#pragma pack (__pop);

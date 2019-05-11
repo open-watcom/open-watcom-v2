@@ -51,6 +51,7 @@
 #include "wterm.h"
 #include "uidef.h"
 #include "uivirts.h"
+#include "uiintern.h"
 #include "uiextrn.h"
 #include "qdebug.h"
 #include "uiproxy.h"
@@ -113,11 +114,11 @@ bool intern initbios( void )
     if( qnx_psinfo( PROC_PID, my_pid, &psinfo, 0, 0 ) != my_pid )
         return( false );
     UIPGroup = psinfo.pid_group;
-    if( UIConHandle == 0 ) {
+    if( UIConHandle == -1 ) {
         UIConHandle = open( "/dev/tty", O_RDWR );
         if( UIConHandle == -1 )
             return( false );
-        fcntl( UIConHandle, F_SETFD, (int)FD_CLOEXEC );
+        fcntl( UIConHandle, F_SETFD, FD_CLOEXEC );
     }
     if( dev_info( UIConHandle, &dev ) == -1 )
         return( false );
@@ -158,12 +159,12 @@ void intern finibios( void )
 
 static unsigned RefreshForbid = 0;
 
-void forbid_refresh( void )
+void intern forbid_refresh( void )
 {
     RefreshForbid++;
 }
 
-void permit_refresh( void )
+void intern permit_refresh( void )
 {
     if( RefreshForbid ) {
         RefreshForbid--;

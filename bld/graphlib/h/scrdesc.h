@@ -30,7 +30,7 @@
 ****************************************************************************/
 
 
-#pragma pack(push, 1);
+#pragma pack(__push, 1);
 typedef struct screen_description
 {
     char __far    *mem;
@@ -38,4 +38,4 @@ typedef struct screen_description
     short       mask;
     short       bit_pos;
 } SCREEN_DESC;
-#pragma pack (pop);
+#pragma pack (__pop);

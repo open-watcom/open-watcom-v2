@@ -57,7 +57,7 @@
 #include "wreimage.h"
 #include "wreftype.h"
 #include "wresym.h"
-#include "wre_rc.h"
+#include "wre.rh"
 #include "wrdll.h"
 #include "jdlg.h"
 #include "wreres.h"

@@ -33,8 +33,7 @@
 
 /*
  * $Id: tic.h,v 1.42 2002/10/12 15:46:15 tom Exp $
- *	tic.h - Global variables and structures for the terminfo
- *			compiler.
+ *  tic.h - Global variables and structures for the terminfo compiler.
  */
 
 #ifndef __TIC_H
@@ -44,44 +43,46 @@
 extern "C" {
 #endif
 
-#include <curses.h>	/* for the _tracef() prototype, ERR/OK, bool defs */
+#include <curses.h>     /* for the _tracef() prototype, ERR/OK, bool defs */
 
 /*
 ** The format of compiled terminfo files is as follows:
 **
-**		Header (12 bytes), containing information given below
-**		Names Section, containing the names of the terminal
-**		Boolean Section, containing the values of all of the
-**				boolean capabilities
-**				A null byte may be inserted here to make
-**				sure that the Number Section begins on an
-**				even word boundary.
-**		Number Section, containing the values of all of the numeric
-**				capabilities, each as a short integer
-**		String Section, containing short integer offsets into the
-**				String Table, one per string capability
-**		String Table, containing the actual characters of the string
-**				capabilities.
+**  Header (12 bytes), containing information given below
+**      Names Section, containing the names of the terminal
+**      Boolean Section, containing the values of all of the
+**                      boolean capabilities
+**                      A null byte may be inserted here to make
+**                      sure that the Number Section begins on an
+**                      even word boundary.
+**      Number Section, containing the values of all of the numeric
+**                      capabilities, each as a short integer
+**      String Section, containing short integer offsets into the
+**                      String Table, one per string capability
+**      String Table, containing the actual characters of the string
+**                      capabilities.
 **
-**	NOTE that all short integers in the file are stored using VAX/PDP-style
-**	byte-order, i.e., least-significant byte first.
+**  NOTE that all short integers in the file are stored using VAX/PDP-style
+**  byte-order, i.e., least-significant byte first.
 **
-**	There is no structure definition here because it would only confuse
-**	matters.  Terminfo format is a raw byte layout, not a structure
-**	dump.  If you happen to be on a little-endian machine with 16-bit
-**	shorts that requires no padding between short members in a struct,
-**	then there is a natural C structure that captures the header, but
-**	not very helpfully.
+**  There is no structure definition here because it would only confuse
+**  matters.  Terminfo format is a raw byte layout, not a structure
+**  dump.  If you happen to be on a little-endian machine with 16-bit
+**  shorts that requires no padding between short members in a struct,
+**  then there is a natural C structure that captures the header, but
+**  not very helpfully.
 */
 
-#define MAGIC		0432	/* first two bytes of a compiled entry */
+#define MAGIC           0432    /* first two bytes of a compiled entry */
+#define MAGIC2          01036   /* first two bytes of a compiled 32-bit entry */
 
 /*
  * The "maximum" here is misleading; XSI guarantees minimum values, which a
  * given implementation may exceed.
  */
-#define MAX_NAME_SIZE	512	/* maximum legal name field size (XSI:127) */
-#define MAX_ENTRY_SIZE	4096	/* maximum legal entry size */
+#define MAX_NAME_SIZE   512     /* maximum legal name field size (XSI:127) */
+#define MAX_ENTRY_SIZE1 4096    /* maximum legal entry size (SVr2) */
+#define MAX_ENTRY_SIZE2 32768   /* maximum legal entry size (ncurses6.1) */
 
 /* The maximum size of individual name or alias is guaranteed in XSI to
  * be 14, since that corresponds to the older filename lengths.  Newer
@@ -89,13 +90,13 @@ extern "C" {
  * are written to use them.
  */
 #if HAVE_LONG_FILE_NAMES
-#define MAX_ALIAS	32	/* POSIX minimum for PATH_MAX */
+#define MAX_ALIAS       32      /* POSIX minimum for PATH_MAX */
 #else
-#define MAX_ALIAS	14	/* SVr3 filename length */
+#define MAX_ALIAS       14      /* SVr3 filename length */
 #endif
 
 /* location of user's personal info directory */
-#define PRIVATE_INFO	"%s/.terminfo"	/* plug getenv("HOME") into %s */
+#define PRIVATE_INFO    "%s/.terminfo"  /* plug getenv("HOME") into %s */
 
 /*
  * Some traces are designed to be used via tic's verbose option (and similar in
@@ -104,20 +105,20 @@ extern "C" {
  */
 
 #define MAX_DEBUG_LEVEL 15
-#define DEBUG_LEVEL(n)	((n) << TRACE_SHIFT)
+#define DEBUG_LEVEL(n)  ((n) << TRACE_SHIFT)
 
 #define set_trace_level(n) \
- 	_nc_tracing &= DEBUG_LEVEL(MAX_DEBUG_LEVEL), \
-	_nc_tracing |= DEBUG_LEVEL(n)
+        _nc_tracing &= DEBUG_LEVEL(MAX_DEBUG_LEVEL), \
+        _nc_tracing |= DEBUG_LEVEL(n)
 
 #ifdef TRACE
-#define DEBUG(n, a)	if (_nc_tracing >= DEBUG_LEVEL(n)) _tracef a
+#define DEBUG(n, a)     if (_nc_tracing >= DEBUG_LEVEL(n)) _tracef a
 #else
-#define DEBUG(n, a)	/*nothing*/
+#define DEBUG(n, a)     /*nothing*/
 #endif
 
 extern NCURSES_EXPORT_VAR(unsigned) _nc_tracing;
-extern NCURSES_EXPORT(void) _nc_tracef (char *, ...) GCC_PRINTFLIKE(1,2);
+extern NCURSES_EXPORT(void)         _nc_tracef (char *, ...) GCC_PRINTFLIKE(1,2);
 extern NCURSES_EXPORT(const char *) _nc_visbuf (const char *);
 extern NCURSES_EXPORT(const char *) _nc_visbuf2 (int, const char *);
 
@@ -128,82 +129,73 @@ extern NCURSES_EXPORT(const char *) _nc_visbuf2 (int, const char *);
  * structure curr_token.
  */
 
-#define BOOLEAN 0		/* Boolean capability */
-#define NUMBER 1		/* Numeric capability */
-#define STRING 2		/* String-valued capability */
-#define CANCEL 3		/* Capability to be cancelled in following tc's */
-#define NAMES  4		/* The names for a terminal type */
-#define UNDEF  5		/* Undefined */
+#define BOOLEAN 0               /* Boolean capability */
+#define NUMBER 1                /* Numeric capability */
+#define STRING 2                /* String-valued capability */
+#define CANCEL 3                /* Capability to be cancelled in following tc's */
+#define NAMES  4                /* The names for a terminal type */
+#define UNDEF  5                /* Undefined */
 
-#define NO_PUSHBACK	-1	/* used in pushtype to indicate no pushback */
+#define NO_PUSHBACK     -1      /* used in pushtype to indicate no pushback */
 
-	/*
-	 *	The global structure in which the specific parts of a
-	 *	scanned token are returned.
-	 *
-	 */
+/*
+ * The global structure in which the specific parts of a
+ * scanned token are returned.
+ *
+ */
 
 struct token
 {
-	char	*tk_name;		/* name of capability */
-	int	tk_valnumber;	/* value of capability (if a number) */
-	char	*tk_valstring;	/* value of capability (if a string) */
+    char        *tk_name;       /* name of capability */
+    int         tk_valnumber;   /* value of capability (if a number) */
+    char        *tk_valstring;  /* value of capability (if a string) */
 };
 
-extern NCURSES_EXPORT_VAR(struct token)	_nc_curr_token;
+extern NCURSES_EXPORT_VAR(struct token) _nc_curr_token;
 
-	/*
-	 * List of keynames with their corresponding code.
-	 */
+/*
+ * List of keynames with their corresponding code.
+ */
 struct kn {
-	const char *name;
-	int code;
+    const char  *name;
+    int         code;
 };
 
 extern NCURSES_EXPORT_VAR(const struct kn) _nc_key_names[];
 
-	/*
-	 * Offsets to string capabilities, with the corresponding functionkey
-	 * codes.
-	 */
+/*
+ * Offsets to string capabilities, with the corresponding functionkey
+ * codes.
+ */
 struct tinfo_fkeys {
-	unsigned offset;
-	chtype code;
-	};
-
-#if	BROKEN_LINKER
-
-#define	_nc_tinfo_fkeys	_nc_tinfo_fkeysf()
-extern NCURSES_EXPORT(struct tinfo_fkeys *) _nc_tinfo_fkeysf (void);
-
-#else
+    unsigned offset;
+    chtype code;
+};
 
 extern NCURSES_EXPORT_VAR(struct tinfo_fkeys) _nc_tinfo_fkeys[];
 
-#endif
-
-	/*
-	 * The file comp_captab.c contains an array of these structures, one
-	 * per possible capability.  These are indexed by a hash table array of
-	 * pointers to the same structures for use by the parser.
-	 */
+/*
+ * The file comp_captab.c contains an array of these structures, one
+ * per possible capability.  These are indexed by a hash table array of
+ * pointers to the same structures for use by the parser.
+ */
 
 struct name_table_entry
 {
-	const char *nte_name;	/* name to hash on */
-	int	nte_type;	/* BOOLEAN, NUMBER or STRING */
-	short	nte_index;	/* index of associated variable in its array */
-	short	nte_link;	/* index in table of next hash, or -1 */
+    const char  *nte_name;      /* name to hash on */
+    int         nte_type;       /* BOOLEAN, NUMBER or STRING */
+    short       nte_index;      /* index of associated variable in its array */
+    short       nte_link;       /* index in table of next hash, or -1 */
 };
 
 struct alias
 {
-	const char	*from;
-	const char	*to;
-	const char	*source;
+    const char  *from;
+    const char  *to;
+    const char  *source;
 };
 
-extern NCURSES_EXPORT_VAR(int) _nc_tparm_err;
+extern NCURSES_EXPORT_VAR(int)  _nc_tparm_err;
 
 extern NCURSES_EXPORT_VAR(const struct name_table_entry * const) _nc_info_hash_table[];
 extern NCURSES_EXPORT_VAR(const struct name_table_entry * const) _nc_cap_hash_table[];
@@ -214,78 +206,78 @@ extern NCURSES_EXPORT_VAR(const struct alias) _nc_infoalias_table[];
 extern NCURSES_EXPORT(const struct name_table_entry *) _nc_get_table (bool);
 extern NCURSES_EXPORT(const struct name_table_entry * const *) _nc_get_hash_table (bool);
 
-#define NOTFOUND	((struct name_table_entry *) 0)
+#define NOTFOUND                ((struct name_table_entry *)0)
 
 /* out-of-band values for representing absent capabilities */
-#define ABSENT_BOOLEAN		(-1)		/* 255 */
-#define ABSENT_NUMERIC		(-1)
-#define ABSENT_STRING		(char *)0
+#define ABSENT_BOOLEAN          ((signed char)-1)   /* 255 */
+#define ABSENT_NUMERIC          (-1)
+#define ABSENT_STRING           (char *)0
 
 /* out-of-band values for representing cancels */
-#define CANCELLED_BOOLEAN	(char)(-2)	/* 254 */
-#define CANCELLED_NUMERIC	(-2)
-#define CANCELLED_STRING	(char *)(-1)
+#define CANCELLED_BOOLEAN       ((signed char)-2)  /* 254 */
+#define CANCELLED_NUMERIC       (-2)
+#define CANCELLED_STRING        (char *)(-1)
 
-#define VALID_BOOLEAN(s) ((unsigned char)(s) <= 1) /* reject "-1" */
-#define VALID_NUMERIC(s) ((s) >= 0)
-#define VALID_STRING(s) ((s) != CANCELLED_STRING && (s) != ABSENT_STRING)
+#define VALID_BOOLEAN(s)        ((unsigned char)(s) <= 1) /* reject "-1" */
+#define VALID_NUMERIC(s)        ((s) >= 0)
+#define VALID_STRING(s)         ((s) != CANCELLED_STRING && (s) != ABSENT_STRING)
 
 /* termcap entries longer than this may break old binaries */
-#define MAX_TERMCAP_LENGTH	1023
+#define MAX_TERMCAP_LENGTH      1023
 
 /* this is a documented limitation of terminfo */
-#define MAX_TERMINFO_LENGTH	4096
+#define MAX_TERMINFO_LENGTH     4096
 
 #ifndef TERMINFO
 #define TERMINFO "/usr/share/terminfo"
 #endif
 
 /* access.c */
-extern NCURSES_EXPORT(char *) _nc_basename (char *);
-extern NCURSES_EXPORT(char *) _nc_rootname (char *);
+extern NCURSES_EXPORT(char *)   _nc_basename (char *);
+extern NCURSES_EXPORT(char *)   _nc_rootname (char *);
 
 /* comp_hash.c: name lookup */
 extern NCURSES_EXPORT(struct name_table_entry const *) _nc_find_entry
-	(const char *, const struct name_table_entry *const *);
+        (const char *, const struct name_table_entry *const *);
 extern NCURSES_EXPORT(struct name_table_entry const *) _nc_find_type_entry
-	(const char *, int, const struct name_table_entry *);
+        (const char *, int, const struct name_table_entry *);
 
 /* comp_scan.c: lexical analysis */
-extern NCURSES_EXPORT(int)  _nc_get_token (bool);
-extern NCURSES_EXPORT(void) _nc_panic_mode (char);
-extern NCURSES_EXPORT(void) _nc_push_token (int);
-extern NCURSES_EXPORT(void) _nc_reset_input (FILE *, char *);
-extern NCURSES_EXPORT_VAR(int) _nc_curr_col;
-extern NCURSES_EXPORT_VAR(int) _nc_curr_line;
-extern NCURSES_EXPORT_VAR(int) _nc_syntax;
+extern NCURSES_EXPORT(int)      _nc_get_token (bool);
+extern NCURSES_EXPORT(void)     _nc_panic_mode (char);
+extern NCURSES_EXPORT(void)     _nc_push_token (int);
+extern NCURSES_EXPORT(void)     _nc_reset_input (FILE *, char *);
+extern NCURSES_EXPORT_VAR(int)  _nc_curr_col;
+extern NCURSES_EXPORT_VAR(int)  _nc_curr_line;
+extern NCURSES_EXPORT_VAR(int)  _nc_syntax;
 extern NCURSES_EXPORT_VAR(long) _nc_comment_end;
 extern NCURSES_EXPORT_VAR(long) _nc_comment_start;
 extern NCURSES_EXPORT_VAR(long) _nc_curr_file_pos;
 extern NCURSES_EXPORT_VAR(long) _nc_start_line;
-#define SYN_TERMINFO	0
-#define SYN_TERMCAP	1
+#define SYN_TERMINFO    0
+#define SYN_TERMCAP     1
 
 /* comp_error.c: warning & abort messages */
-extern NCURSES_EXPORT(void) _nc_set_source (const char *const name);
-extern NCURSES_EXPORT(void) _nc_get_type (char *name);
-extern NCURSES_EXPORT(void) _nc_set_type (const char *const name);
-extern NCURSES_EXPORT(void) _nc_syserr_abort (const char *const,...) GCC_PRINTFLIKE(1,2) GCC_NORETURN;
-extern NCURSES_EXPORT(void) _nc_err_abort (const char *const,...) GCC_PRINTFLIKE(1,2) GCC_NORETURN;
-extern NCURSES_EXPORT(void) _nc_warning (const char *const,...) GCC_PRINTFLIKE(1,2);
+extern NCURSES_EXPORT(void)     _nc_set_source (const char *const name);
+extern NCURSES_EXPORT(void)     _nc_get_type (char *name);
+extern NCURSES_EXPORT(void)     _nc_set_type (const char *const name);
+extern NCURSES_EXPORT(void)     _nc_syserr_abort (const char *const,...) GCC_PRINTFLIKE(1,2) GCC_NORETURN;
+extern NCURSES_EXPORT(void)     _nc_err_abort (const char *const,...) GCC_PRINTFLIKE(1,2) GCC_NORETURN;
+extern NCURSES_EXPORT(void)     _nc_warning (const char *const,...) GCC_PRINTFLIKE(1,2);
 extern NCURSES_EXPORT_VAR(bool) _nc_suppress_warnings;
 
 /* comp_expand.c: expand string into readable form */
-extern NCURSES_EXPORT(char *) _nc_tic_expand (const char *, bool, int);
+extern NCURSES_EXPORT(char *)   _nc_tic_expand (const char *, bool, int);
 
 /* comp_scan.c: decode string from readable form */
-extern NCURSES_EXPORT(char) _nc_trans_string (char *, char *);
+extern NCURSES_EXPORT(char)     _nc_trans_string (char *, char *);
 
 /* captoinfo.c: capability conversion */
-extern NCURSES_EXPORT(char *) _nc_captoinfo (const char *, const char *, int const);
-extern NCURSES_EXPORT(char *) _nc_infotocap (const char *, const char *, int const);
+extern NCURSES_EXPORT(char *)   _nc_captoinfo (const char *, const char *, int const);
+extern NCURSES_EXPORT(char *)   _nc_infotocap (const char *, const char *, int const);
 
 /* lib_tputs.c */
-extern NCURSES_EXPORT_VAR(int) _nc_nulls_sent;		/* Add one for every null sent */
+extern NCURSES_EXPORT_VAR(int)  _nc_nulls_sent;          /* Add one for every null sent */
 
 /* comp_main.c: compiler main */
 extern const char * _nc_progname;

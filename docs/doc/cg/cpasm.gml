@@ -66,8 +66,8 @@ extern unsigned short far *dbcs_table( void );
 #pragma aux dbcs_table = \
         "mov ax,6300h"   \
         "int 21h"        \
-        value   [ds si]  \
-        modify  [ax];
+        __value  [ds si] \
+        __modify [ax];
 .exam end
 .np
 To set up the DOS call, the AH register must contain the hexadecimal
@@ -97,8 +97,8 @@ extern unsigned short far *dbcs_table( void );
 #pragma aux dbcs_table = \
         "mov ax,6300h"   \
         "int 21h"        \
-        value   [ds si]  \
-        modify  [ax];
+        __value  [ds si] \
+        __modify [ax];
 .exam break
 
 void main()
@@ -160,8 +160,8 @@ extern unsigned short far *dbcs_table( void );
         "int 21h"        \
         "mov di,ds"      \
         "pop ds"         \
-        value   [di si]  \
-        modify  [ax];
+        __value  [di si] \
+        __modify [ax];
 .millust end
 .np
 If we compile and run this example with a 16-bit compiler, it
@@ -223,8 +223,8 @@ extern unsigned short far *dbcs_table( void );
         "int 21h"        \
         "mov di,ds"      \
         "pop ds"         \
-        value   [di si]  \
-        modify  [ax];
+        __value  [di si] \
+        __modify [ax];
 .tinyexam break
 #else
 
@@ -328,8 +328,8 @@ extern void BIOSSetCurPos( unsigned short __rowcol,
         "mov ah,2"              \
         "int 10h"               \
         "pop bp"                \
-        parm   [dx] [bh]        \
-        modify [ah];
+        __parm   [dx] [bh]      \
+        __modify [ah];
 .exam end
 .np
 The "parm" attribute specifies the list of registers into which values
@@ -361,8 +361,8 @@ extern void BIOSSetCurPos( unsigned short __rowcol,
         "mov ah,2"              \
         "int 10h"               \
         "pop bp"                \
-        parm   [dx] [bh]        \
-        modify [ah];
+        __parm   [dx] [bh]      \
+        __modify [ah];
 .exam break
 
 void main()
@@ -429,8 +429,8 @@ extern void _disable_video( unsigned );
         "out dx,al"             \
         "mov al,0"              \
         "out dx,al"             \
-        parm [dx]               \
-        modify [al dx];
+        __parm [dx]             \
+        __modify [al dx];
 .exam end
 .*
 .section Variables in In-line Assembly Code
@@ -457,7 +457,7 @@ extern void BIOSSetCurPos( void );
         "mov ah,2"              \
         "int 10h"               \
         "pop bp"                \
-        modify [ah bx dx];
+        __modify [ah bx dx];
 
 .exam break
 void main()
@@ -514,7 +514,7 @@ void main()
         "mov ah,2"              \
         "int 10h"               \
         "pop bp"                \
-        modify [ah bx dx];
+        __modify [ah bx dx];
 .exam break
 
     _rowcol = (5 << 8) | 20;

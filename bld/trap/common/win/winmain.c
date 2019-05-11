@@ -35,7 +35,7 @@
 #include "trpimp.h"
 #include "trperr.h"
 #include "winserv.h"
-#include "servname.h"
+#include "servname.rh"
 #include "packet.h"
 
 extern void OpeningStatement( void );

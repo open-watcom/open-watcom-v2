@@ -30,14 +30,7 @@
 ****************************************************************************/
 
 
-#define DIALOG_NEW_PROG 3006
+#include "dlgnewp.rh"
 
-#define CTL_NEWP_PROG 102
-#define CTL_NEWP_BROWSE 104
-#define CTL_NEWP_ARGS 103
-#define CTL_NEWP_OK 100
-#define CTL_NEWP_CANCEL 101
 
-#ifndef RC
 extern  void    DlgNewProg( void );
-#endif

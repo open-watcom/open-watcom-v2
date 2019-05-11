@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -60,14 +61,6 @@
     #define ENV_NAME        "%%%s%%"
     #define ENV_NAME1       "%%"
     #define ENV_NAME2       "%%"
-#endif
-
-#if defined( __UNIX__ )
-    #define BATCHEXT        ".sh"
-#elif defined( __OS2__ )
-    #define BATCHEXT        ".cmd"
-#else
-    #define BATCHEXT        ".bat"
 #endif
 
 typedef enum {
@@ -487,7 +480,7 @@ static void FinishEnvironmentLines( FILE *fp, int num_env, bool *found_env, bool
             }
             if( VbufLen( &val_after ) > 0 ) {
                 VbufSetStr( &tmp, "ENDLIBPATH" );
-                if( output_line( &vbuf, VAR_SETENV_ASSIGN, &tmp, &val_before ) ) {
+                if( output_line( &vbuf, VAR_SETENV_ASSIGN, &tmp, &val_after ) ) {
                     fputs_vbuf( &vbuf, fp );
                     fputc( '\n', fp );
                 }
@@ -555,7 +548,7 @@ static bool ModFile( const VBUF *orig, const VBUF *new,
         }
         memset( found_env, false, num_env * sizeof( bool ) );
     }
-    while( fgets( envbuf, MAXENVVAR, fp1 ) != NULL ) {
+    while( fgets( envbuf, sizeof( envbuf ) - 1, fp1 ) != NULL ) {
         line = strchr( envbuf, '\n' );
         if( line != NULL ) {
             *line = '\0';
@@ -1092,13 +1085,7 @@ bool ModifyAutoExec( bool uninstall )
                 }
             }
         } else {    // handle "ModLater" case
-#if defined( __OS2__ )
-            VbufConcStr( &new_ext, "OS2" );
-#elif defined( __NT__ )
-            VbufConcStr( &new_ext, "W95" );
-#else
-            VbufConcStr( &new_ext, "DOS" );
-#endif
+            VbufConcStr( &new_ext, BATCH_EXT_SAVED );
             // place modifications in AUTOEXEC.NEW and CONFIG.NEW
 #ifndef __OS2__
             GetOldConfigFileDir( &newauto, &OrigAutoExec, uninstall );
@@ -1161,8 +1148,7 @@ void ReplaceVars( VBUF *dst, const char *src )
         if( *p == '%' ) {
             len = p - VbufString( dst );
             VbufSetStr( &tmp, p + 1 );
-            VbufSetLen( dst, len );
-            VbufConcVbuf( dst, &tmp );
+            VbufSetVbufAt( dst, &tmp, len );
             p = VbufString( dst ) + len;
             continue;
         }
@@ -1195,13 +1181,12 @@ void ReplaceVars( VBUF *dst, const char *src )
             }
             varname = colon;
         }
-        VbufSetStr( &tmp, e + 1 );
         len = p - 1 - VbufString( dst );
-        VbufSetLen( dst, len );
+        VbufSetStr( &tmp, e + 1 );
         if( varval != NULL ) {
-            VbufConcStr( dst, varval );
+            VbufPrepStr( &tmp, varval );
         }
-        VbufConcVbuf( dst, &tmp );
+        VbufSetVbufAt( dst, &tmp, len );
         p = VbufString( dst ) + len;
     }
     VbufFree( &tmp );
@@ -1727,7 +1712,6 @@ bool ModifyRegAssoc( bool uninstall )
     VBUF    temp;
     VBUF    ext;
     VBUF    keyname;
-    VBUF    program;
     int     num;
     int     i;
 
@@ -1741,7 +1725,6 @@ bool ModifyRegAssoc( bool uninstall )
         VbufInit( &temp );
         VbufInit( &ext );
         VbufInit( &keyname );
-        VbufInit( &program );
         num = SimNumAssociations();
         for( i = 0; i < num; i++ ) {
             if( !SimCheckAssociationCondition( i ) )
@@ -1756,21 +1739,29 @@ bool ModifyRegAssoc( bool uninstall )
             RegCreateKey( HKEY_CLASSES_ROOT, VbufString( &keyname ), &hkey );
             SimGetAssociationDescription( i, &temp );
             RegSetValue( hkey, NULL, REG_SZ, VbufString( &temp ), (DWORD)VbufLen( &temp ) );
-            SimGetAssociationProgram( i, &program );
-            if( SimGetAssociationNoOpen( i ) != 1 ) {
-                VbufSetVbuf( &temp, &program );
+            /* process program definition */
+            SimGetAssociationProgram( i, &temp );
+            if( VbufLen( &temp ) > 0 ) {
                 VbufConcStr( &temp, " %%1" );
-                ReplaceVars( &temp, NULL );
+                ReplaceVars1( &temp );
                 RegSetValue( hkey, "shell\\open\\command", REG_SZ, VbufString( &temp ), (DWORD)VbufLen( &temp ) );
             }
-            VbufSetVbuf( &temp, &program );
+            /* process icon definition */
+            if( VbufLen( &temp ) > 0 ) {
+                SimGetAssociationIconFileName( i, &temp );
+                if( VbufLen( &temp ) == 0 ) {
+                    /* if icon file not defined then use program name */
+                    SimGetAssociationProgram( i, &temp );
+                }
+            } else {
+                SimGetAssociationIconFileName( i, &temp );
+            }
             VbufConcChr( &temp, ',' );
             VbufConcInteger( &temp, SimGetAssociationIconIndex( i ), 0 );
-            ReplaceVars( &temp, NULL );
+            ReplaceVars1( &temp );
             RegSetValue( hkey, "DefaultIcon", REG_SZ, VbufString( &temp ), (DWORD)VbufLen( &temp ) );
             RegCloseKey( hkey );
         }
-        VbufFree( &program );
         VbufFree( &keyname );
         VbufFree( &ext );
         VbufFree( &temp );

@@ -53,13 +53,20 @@
 
 #include "clibext.h"
 
-static void         *LastFile;
+
+static struct {
+    union {
+        file_list   *file;
+        member_list *module;
+    } u;
+} LastFile;
+
 static file_list    **LastLibFile;
 
 void ResetCmdAll( void )
 /**********************/
 {
-    LastFile = NULL;
+    LastFile.u.file = NULL;
     LastLibFile = NULL;
     UsrLibPath = NULL;
 }
@@ -68,7 +75,7 @@ bool ProcDosSeg( void )
 /****************************/
 /* process DOSSEG option */
 {
-    LinkState |= DOSSEG_FLAG;
+    LinkState |= LS_DOSSEG_FLAG;
     DEBUG(( DBG_OLD, "dosseg" ));
     return( true );
 }
@@ -89,10 +96,10 @@ bool ProcName( void )
 bool ProcFormat( void )
 /****************************/
 {
-    if( LinkState & FMT_SPECIFIED ) {
+    if( LinkState & LS_FMT_SPECIFIED ) {
         LnkMsg( LOC+LINE+FTL + MSG_MULTIPLE_MODES_FOUND, NULL );
     }
-    LinkState |= FMT_SPECIFIED;
+    LinkState |= LS_FMT_SPECIFIED;
     return( ProcOne( Models, SEP_NO, true ) );
 }
 
@@ -137,41 +144,41 @@ bool ProcDebug( void )
 bool ProcDwarfDBI( void )
 /******************************/
 {
-    if( LinkFlags & (ANY_DBI_FLAG & ~DWARF_DBI_FLAG) ) {
+    if( LinkFlags & (LF_ANY_DBI_FLAG & ~LF_DWARF_DBI_FLAG) ) {
         LnkMsg( LOC+LINE+WRN+MSG_MULT_DBI_FORMATS, NULL );
         return( true );
     }
-    LinkFlags |= DWARF_DBI_FLAG;
+    LinkFlags |= LF_DWARF_DBI_FLAG;
     return( true );
 }
 
 bool ProcWatcomDBI( void )
 /*******************************/
 {
-    if( LinkFlags & (ANY_DBI_FLAG & ~OLD_DBI_FLAG) ) {
+    if( LinkFlags & (LF_ANY_DBI_FLAG & ~LF_OLD_DBI_FLAG) ) {
         LnkMsg( LOC+LINE+WRN+MSG_MULT_DBI_FORMATS, NULL );
         return( true );
     }
-    LinkFlags |= OLD_DBI_FLAG;
+    LinkFlags |= LF_OLD_DBI_FLAG;
     return( true );
 }
 
 bool ProcCodeviewDBI( void )
 /*********************************/
 {
-    if( LinkFlags & (ANY_DBI_FLAG & ~CV_DBI_FLAG) ) {
+    if( LinkFlags & (LF_ANY_DBI_FLAG & ~LF_CV_DBI_FLAG) ) {
         LnkMsg( LOC+LINE+WRN+MSG_MULT_DBI_FORMATS, NULL );
         return( true );
     }
-    LinkFlags |= CV_DBI_FLAG;
+    LinkFlags |= LF_CV_DBI_FLAG;
     return( true );
 }
 
 bool ProcLine( void )
 /**************************/
 {
-    if( (LinkFlags & ANY_DBI_FLAG) == 0 ) {
-        LinkFlags |= DWARF_DBI_FLAG;
+    if( (LinkFlags & LF_ANY_DBI_FLAG) == 0 ) {
+        LinkFlags |= LF_DWARF_DBI_FLAG;
     }
     DBIFlag |= DBI_LINE;
     return( true );
@@ -181,8 +188,8 @@ bool ProcLine( void )
 bool ProcDBIStatic( void )
 /*******************************/
 {
-    if( (LinkFlags & ANY_DBI_FLAG) == 0 ) {
-        LinkFlags |= DWARF_DBI_FLAG;
+    if( (LinkFlags & LF_ANY_DBI_FLAG) == 0 ) {
+        LinkFlags |= LF_DWARF_DBI_FLAG;
     }
     DBIFlag |= DBI_STATICS;
     return( true );
@@ -192,8 +199,8 @@ bool ProcDBIStatic( void )
 bool ProcType( void )
 /**************************/
 {
-    if( (LinkFlags & ANY_DBI_FLAG) == 0 ) {
-        LinkFlags |= DWARF_DBI_FLAG;
+    if( (LinkFlags & LF_ANY_DBI_FLAG) == 0 ) {
+        LinkFlags |= LF_DWARF_DBI_FLAG;
     }
     DBIFlag |= DBI_TYPE;
     return( true );
@@ -202,8 +209,8 @@ bool ProcType( void )
 bool ProcLocal( void )
 /***************************/
 {
-    if( (LinkFlags & ANY_DBI_FLAG) == 0 ) {
-        LinkFlags |= DWARF_DBI_FLAG;
+    if( (LinkFlags & LF_ANY_DBI_FLAG) == 0 ) {
+        LinkFlags |= LF_DWARF_DBI_FLAG;
     }
     DBIFlag |= DBI_LOCAL;
     return( true );
@@ -212,8 +219,8 @@ bool ProcLocal( void )
 bool ProcAll( void )
 /*************************/
 {
-    if( (LinkFlags & ANY_DBI_FLAG) == 0 ) {
-        LinkFlags |= DWARF_DBI_FLAG;
+    if( (LinkFlags & LF_ANY_DBI_FLAG) == 0 ) {
+        LinkFlags |= LF_DWARF_DBI_FLAG;
     }
     DBIFlag |= DBI_ALL;
     return( true );
@@ -274,7 +281,7 @@ bool ProcEliminate( void )
 /*******************************/
 /* turn on dead code elimination */
 {
-    LinkFlags |= STRIP_CODE;
+    LinkFlags |= LF_STRIP_CODE;
     return( true );
 }
 
@@ -284,7 +291,7 @@ bool ProcMaxErrors( void )
 {
     if( !GetLong( &MaxErrors ) )
         return( false );
-    LinkFlags |= MAX_ERRORS_FLAG;
+    LinkFlags |= LF_MAX_ERRORS_FLAG;
     return( true );
 }
 
@@ -307,11 +314,11 @@ static file_list *AllocNewFile( member_list *member )
 
     _PermAlloc( new_entry, sizeof(file_list) );
     new_entry->next_file = NULL;
-    new_entry->status = DBIFlag;
+    new_entry->flags = DBIFlag;
     new_entry->strtab = NULL;
     new_entry->u.member = member;
     if( member != NULL ) {
-        new_entry->status |= STAT_HAS_MEMBER;
+        new_entry->flags |= STAT_HAS_MEMBER;
     }
     return( new_entry );
 }
@@ -330,7 +337,7 @@ static void *AddObjFile( const char *name, char *member, file_list **filelist )
         new_member->next = NULL;
         _LnkFree( member );
         for( new_entry = CurrSect->files; new_entry != NULL; new_entry = new_entry->next_file ) {
-            if( FNAMECMPSTR( new_entry->file->name.u.ptr, name ) == 0 ) {
+            if( FNAMECMPSTR( new_entry->infile->name.u.ptr, name ) == 0 ) {
                 CmdFlags |= CF_MEMBER_ADDED;
                 if( new_entry->u.member != NULL ) {
                     LinkList( &new_entry->u.member, new_member );
@@ -344,10 +351,10 @@ static void *AddObjFile( const char *name, char *member, file_list **filelist )
     }
     new_entry = AllocNewFile( new_member );
     if( new_member != NULL ) {
-        new_entry->file = AllocUniqueFileEntry( name, UsrLibPath );
-        new_entry->file->flags |= INSTAT_LIBRARY;
+        new_entry->infile = AllocUniqueFileEntry( name, UsrLibPath );
+        new_entry->infile->status |= INSTAT_LIBRARY;
     } else {
-        new_entry->file = AllocFileEntry( name, ObjPath );
+        new_entry->infile = AllocFileEntry( name, ObjPath );
     }
     *filelist = new_entry;
     return( new_entry );
@@ -367,14 +374,14 @@ file_list *AddObjLib( const char *name, lib_priority priority )
         if( lib->priority < priority )
             break;
         /* end search if library already exists with same or a higher priority */
-        if( FNAMECMPSTR( lib->file->name.u.ptr, name ) == 0 ) {
+        if( FNAMECMPSTR( lib->infile->name.u.ptr, name ) == 0 ) {
             return( lib );
         }
     }
     new_owner = owner;
     /* search for library definition with a lower priority */
     for( ; (lib = *owner) != NULL; owner = &lib->next_file ) {
-        if( FNAMECMPSTR( lib->file->name.u.ptr, name ) == 0 ) {
+        if( FNAMECMPSTR( lib->infile->name.u.ptr, name ) == 0 ) {
             /* remove library entry from linked list */
             *owner = lib->next_file;
             break;
@@ -383,9 +390,9 @@ file_list *AddObjLib( const char *name, lib_priority priority )
     /* if we need to add one */
     if( lib == NULL ) {
         lib = AllocNewFile( NULL );
-        lib->file = AllocUniqueFileEntry( name, UsrLibPath );
-        lib->file->flags |= INSTAT_LIBRARY | INSTAT_OPEN_WARNING;
-        LinkState |= LIBRARIES_ADDED;
+        lib->infile = AllocUniqueFileEntry( name, UsrLibPath );
+        lib->infile->status |= INSTAT_LIBRARY | INSTAT_OPEN_WARNING;
+        LinkState |= LS_LIBRARIES_ADDED;
     }
     /* put it to new position and setup priority */
     lib->next_file = *new_owner;
@@ -411,14 +418,14 @@ static bool AddLibFile( void )
         return( true );
     }
     entry = AllocNewFile( NULL );
-    entry->file = AllocFileEntry( ptr, UsrLibPath );
+    entry->infile = AllocFileEntry( ptr, UsrLibPath );
     entry->next_file = *LastLibFile;
     *LastLibFile = entry;
     LastLibFile = &entry->next_file;
     if( *LastLibFile == NULL ) {        // no file directives found yet
         CurrFList = LastLibFile;
     }
-    entry->file->flags |= INSTAT_USE_LIBPATH;
+    entry->infile->status |= INSTAT_USE_LIBPATH;
     _LnkFree( ptr );
     return( true );
 }
@@ -427,7 +434,7 @@ bool ProcLibFile( void )
 /*****************************/
 /* process FILE command */
 {
-    if( (LinkFlags & (DWARF_DBI_FLAG |OLD_DBI_FLAG | NOVELL_DBI_FLAG)) == 0 ) {
+    if( (LinkFlags & (LF_DWARF_DBI_FLAG | LF_OLD_DBI_FLAG | LF_NOVELL_DBI_FLAG)) == 0 ) {
         CmdFlags |= CF_FILES_BEFORE_DBI;
     }
     if( LastLibFile == NULL ) {
@@ -444,7 +451,7 @@ static bool AddModFile( void )
 
     ptr = GetFileName( &membname, false );
     AddHTableElem( Root->modFilesHashed, ptr );
-    LinkFlags |= GOT_CHGD_FILES;
+    LinkFlags |= LF_GOT_CHGD_FILES;
     if( membname != NULL ) {
         _LnkFree( membname );
     }
@@ -471,11 +478,11 @@ static bool AddFile( void )
     if( *CurrFList != NULL ) {
         CurrFList = &(*CurrFList)->next_file;
     }
-    LastFile = AddObjFile( ptr, membname, CurrFList );
+    LastFile.u.file = AddObjFile( ptr, membname, CurrFList );
     if( CmdFlags & CF_MEMBER_ADDED ) {
         CurrFList = temp;   // go back to previous entry.
     } else if( membname != NULL ) {     // 1st member added
-        LastFile = ((file_list *)LastFile)->u.member;
+        LastFile.u.module = LastFile.u.file->u.member;
         CmdFlags |= CF_MEMBER_ADDED;
     }
     _LnkFree( ptr );
@@ -486,7 +493,7 @@ bool ProcFiles( void )
 /***************************/
 /* process FILE command */
 {
-    if( (LinkFlags & (DWARF_DBI_FLAG|OLD_DBI_FLAG | NOVELL_DBI_FLAG)) == 0 ) {
+    if( (LinkFlags & (LF_DWARF_DBI_FLAG | LF_OLD_DBI_FLAG | LF_NOVELL_DBI_FLAG)) == 0 ) {
         CmdFlags |= CF_FILES_BEFORE_DBI;
     }
     return( ProcArgList( &AddFile, TOK_INCLUDE_DOT | TOK_IS_FILENAME ) );
@@ -507,9 +514,9 @@ static bool AddLib( void )
 
     ptr = FileName( Token.this, Token.len, E_LIBRARY, false );
     result = AddObjLib( ptr, LIB_PRIORITY_MAX );
-    result->status |= STAT_USER_SPECD;
+    result->flags |= STAT_USER_SPECD;
     if( CmdFlags & CF_SET_SECTION ) {
-        result->status |= STAT_LIB_FIXED;
+        result->flags |= STAT_LIB_FIXED;
         if( OvlLevel == 0 ) {
             result->ovlref = 0;
         } else {
@@ -517,7 +524,7 @@ static bool AddLib( void )
         }
     }
     if( CmdFlags & CF_DOING_OPTLIB ) {
-        result->file->flags |= INSTAT_NO_WARNING;
+        result->infile->status |= INSTAT_NO_WARNING;
     }
     DEBUG(( DBG_BASE, "library: %s", ptr ));
     _LnkFree( ptr );
@@ -528,7 +535,7 @@ bool ProcLibrary( void )
 /*****************************/
 /* process LIB command */
 {
-    if( (LinkFlags & (DWARF_DBI_FLAG|OLD_DBI_FLAG | NOVELL_DBI_FLAG)) == 0
+    if( (LinkFlags & (LF_DWARF_DBI_FLAG | LF_OLD_DBI_FLAG | LF_NOVELL_DBI_FLAG)) == 0
         && !IsSystemBlock() ) {
         CmdFlags |= CF_FILES_BEFORE_DBI;
     }
@@ -614,7 +621,7 @@ bool ProcStack( void )
     unsigned_32     value;
     bool            ret;
 
-    LinkFlags |= STK_SIZE_FLAG;
+    LinkFlags |= LF_STK_SIZE_FLAG;
     ret = GetLong( &value );
     if( ret ) {
         StackSize = value;
@@ -644,7 +651,7 @@ bool ProcCase( void )
 /**************************/
 /* process CASE option */
 {
-    LinkFlags |= CASE_FLAG;
+    LinkFlags |= LF_CASE_FLAG;
     SetSymCase();
     DEBUG(( DBG_OLD, "case" ));
     return( true );
@@ -654,7 +661,7 @@ bool ProcNoCaseExact( void )
 /*********************************/
 /* process nocaseexact option */
 {
-    LinkFlags &= ~CASE_FLAG;
+    LinkFlags &= ~LF_CASE_FLAG;
     SetSymCase();
     DEBUG(( DBG_OLD, "nocase" ));
     return( true );
@@ -670,16 +677,16 @@ bool ProcNoExtension( void )
 bool ProcNoCache( void )
 /*****************************/
 {
-    LinkFlags &= ~CACHE_FLAG;
-    LinkFlags |= NOCACHE_FLAG;
+    LinkFlags &= ~LF_CACHE_FLAG;
+    LinkFlags |= LF_NOCACHE_FLAG;
     return( true );
 }
 
 bool ProcCache( void )
 /***************************/
 {
-    LinkFlags &= ~NOCACHE_FLAG;
-    LinkFlags |= CACHE_FLAG;
+    LinkFlags &= ~LF_NOCACHE_FLAG;
+    LinkFlags |= LF_CACHE_FLAG;
     return( true );
 }
 
@@ -726,7 +733,7 @@ bool ProcVerbose( void )
 bool ProcUndefsOK( void )
 /******************************/
 {
-    LinkFlags |= UNDEFS_ARE_OK;
+    LinkFlags |= LF_UNDEFS_ARE_OK;
     DEBUG(( DBG_OLD, "undefined symbols are OK" ));
     return( true );
 }
@@ -734,28 +741,28 @@ bool ProcUndefsOK( void )
 bool ProcNoUndefsOK( void )
 /********************************/
 {
-    LinkFlags &= ~UNDEFS_ARE_OK;
+    LinkFlags &= ~LF_UNDEFS_ARE_OK;
     return( true );
 }
 
 bool ProcRedefsOK( void )
 /******************************/
 {
-    LinkFlags |= REDEFS_OK;
+    LinkFlags |= LF_REDEFS_OK;
     return( true );
 }
 
 bool ProcNoRedefs( void )
 /******************************/
 {
-    LinkFlags &= ~REDEFS_OK;
+    LinkFlags &= ~LF_REDEFS_OK;
     return( true );
 }
 
 bool ProcCVPack( void )
 /****************************/
 {
-    LinkFlags |= CVPACK_FLAG;
+    LinkFlags |= LF_CVPACK_FLAG;
     return( true );
 }
 
@@ -768,7 +775,7 @@ bool ProcIncremental( void )
     if( CmdFlags & CF_AFTER_INC ) {
         LnkMsg( LOC+LINE+ERR+MSG_INC_NEAR_START, NULL );
     }
-    LinkFlags |= INC_LINK_FLAG;
+    LinkFlags |= LF_INC_LINK_FLAG;
     if( GetToken( SEP_EQUALS, TOK_INCLUDE_DOT | TOK_IS_FILENAME ) ) {
         IncFileName = FileName( Token.this, Token.len, E_ILK, false );
     } else if( Name != NULL ) {
@@ -784,14 +791,14 @@ bool ProcIncremental( void )
 bool ProcQuiet( void )
 /***************************/
 {
-    LinkFlags |= QUIET_FLAG;
+    LinkFlags |= LF_QUIET_FLAG;
     return( true );
 }
 
 bool ProcMangledNames( void )
 /**********************************/
 {
-    LinkFlags |= DONT_UNMANGLE;
+    LinkFlags |= LF_DONT_UNMANGLE;
     return( true );
 }
 
@@ -878,14 +885,14 @@ bool ProcKorean( void )
 bool ProcShowDead( void )
 /******************************/
 {
-    LinkFlags |= SHOW_DEAD;
+    LinkFlags |= LF_SHOW_DEAD;
     return( true );
 }
 
 bool ProcVFRemoval( void )
 /*******************************/
 {
-    LinkFlags |= VF_REMOVAL;
+    LinkFlags |= LF_VF_REMOVAL;
     return( true );
 }
 
@@ -926,7 +933,7 @@ bool ProcPackcode( void )
 
     if( GetPackValue( &value, "packcode" ) ) {
         PackCodeLimit = value;
-        LinkFlags |= PACKCODE_FLAG;
+        LinkFlags |= LF_PACKCODE_FLAG;
         return( true );
     }
     return( false );
@@ -939,7 +946,7 @@ bool ProcPackdata( void )
 
     if( GetPackValue( &value, "packdata" ) ) {
         PackDataLimit = value;
-        LinkFlags |= PACKDATA_FLAG;
+        LinkFlags |= LF_PACKDATA_FLAG;
         return( true );
     }
     return( false );
@@ -949,13 +956,13 @@ bool ProcNewSegment( void )
 /********************************/
 // force the start of a new auto-group after the previous object file.
 {
-    if( LastFile == NULL ) {
+    if( LastFile.u.file == NULL ) {
         LnkMsg( LOC+LINE+WRN+MSG_NEWSEG_BEFORE_OBJ, NULL );
     } else {
         if( CmdFlags & CF_MEMBER_ADDED ) {
-            ((member_list *)LastFile)->flags |= MOD_LAST_SEG;
+            LastFile.u.module->flags |= MOD_LAST_SEG;
         } else {
-            ((file_list *)LastFile)->status |= STAT_LAST_SEG;
+            LastFile.u.file->flags |= STAT_LAST_SEG;
         }
     }
     return( true );
@@ -1253,7 +1260,7 @@ static bool AddSymTrace( void )
 bool ProcSymTrace( void )
 /******************************/
 {
-    LinkFlags |= TRACE_FLAG;
+    LinkFlags |= LF_TRACE_FLAG;
     return( ProcArgList( &AddSymTrace, TOK_INCLUDE_DOT ) );
 }
 
@@ -1277,14 +1284,14 @@ static bool AddModTrace( void )
 bool ProcModTrace( void )
 /******************************/
 {
-    LinkFlags |= TRACE_FLAG;
+    LinkFlags |= LF_TRACE_FLAG;
     return( ProcArgList( &AddModTrace, TOK_INCLUDE_DOT | TOK_IS_FILENAME ) );
 }
 
 bool ProcFarCalls( void )
 /*********************************/
 {
-    LinkFlags |= FAR_CALLS_FLAG;
+    LinkFlags |= LF_FAR_CALLS_FLAG;
     DEBUG(( DBG_OLD, "Far Calls optimization" ));
     return( true );
 }
@@ -1292,7 +1299,7 @@ bool ProcFarCalls( void )
 bool ProcNoFarCalls( void )
 /***********************************/
 {
-    LinkFlags &= ~FAR_CALLS_FLAG ;
+    LinkFlags &= ~LF_FAR_CALLS_FLAG ;
     DEBUG(( DBG_OLD, "No Far Calls optimization" ));
     return( true );
 }
@@ -1438,7 +1445,7 @@ bool ProcOrdClass( void )
     if( !GetToken( SEP_NO, TOK_INCLUDE_DOT ) ) {
         return( false );
     }
-    LinkState |= SPEC_ORDER_FLAG;
+    LinkState |= LS_SPEC_ORDER_FLAG;
     LastOClass = CurrOClass;
     _ChkAlloc( CurrOClass, sizeof(ORDER_CLASS));
     if(LastOClass == NULL) {

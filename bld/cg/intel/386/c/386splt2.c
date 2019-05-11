@@ -90,7 +90,7 @@ name    *LowPart( name *tosplit, type_class_def type_class )
                 new = AllocConst( CFCnvU32F( _TargetLongInt( *(unsigned_32 *)( floatval->value + 0 ) ) ) );
             }
         } else if( tosplit->c.const_type == CONS_ADDRESS ) {
-            new = AddrConst( tosplit->c.value, tosplit->c.lo.int_value, CONS_OFFSET );
+            new = AddrConst( tosplit->c.value, (segment_id)tosplit->c.lo.int_value, CONS_OFFSET );
         } else {
             _Zoiks( ZOIKS_044 );
         }
@@ -140,7 +140,7 @@ name    *OffsetPart( name *tosplit )
         if( tosplit->c.const_type == CONS_ABSOLUTE ) {
             return( tosplit );
         } else if( tosplit->c.const_type == CONS_ADDRESS ) {
-            return( AddrConst( tosplit->c.value, tosplit->c.lo.int_value, CONS_OFFSET ) );
+            return( AddrConst( tosplit->c.value, (segment_id)tosplit->c.lo.int_value, CONS_OFFSET ) );
         } else {
             _Zoiks( ZOIKS_044 );
             return( tosplit );
@@ -172,7 +172,7 @@ name    *SegmentPart( name *tosplit )
         if( tosplit->c.const_type == CONS_ABSOLUTE ) {
             return( AllocIntConst( 0 ) );
         } else if( tosplit->c.const_type == CONS_ADDRESS ) {
-            return( AddrConst( tosplit->c.value, tosplit->c.lo.int_value, CONS_SEGMENT ) );
+            return( AddrConst( tosplit->c.value, (segment_id)tosplit->c.lo.int_value, CONS_SEGMENT ) );
         } else {
             _Zoiks( ZOIKS_044 );
             return( NULL );
@@ -243,7 +243,7 @@ name    *HighPart( name *tosplit, type_class_def type_class )
                 new = AllocConst( CFCnvU32F( _TargetLongInt( *(unsigned_32 *)( floatval->value + 2 ) ) ) );
             }
         } else if( tosplit->c.const_type == CONS_ADDRESS ) {
-            new = AddrConst( tosplit->c.value, tosplit->c.lo.int_value, CONS_SEGMENT );
+            new = AddrConst( tosplit->c.value, (segment_id)tosplit->c.lo.int_value, CONS_SEGMENT );
         } else {
             _Zoiks( ZOIKS_044 );
         }

@@ -31,6 +31,8 @@
 
 
 #include "ftnstd.h"
+#include <stdio.h>
+#include <string.h>
 #include "units.h"
 #include "rundat.h"
 #include "runmain.h"
@@ -39,9 +41,6 @@
 #include "fstdio.h"
 #include "posdat.h"
 #include "sdfile.h"
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
 
 
 static ftnfile *_GetFtnFile( int unit, int mode, void *fp, char *fname ) {

@@ -34,7 +34,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <malloc.h>
 #include <ctype.h>
 #include <stdarg.h>
 #include <assert.h>
@@ -51,6 +50,7 @@
 #include "error.h"
 #include "list.h"
 #include "filelist.h"
+
 
 static sru_file         SRU;
 static BOOL             inSubPgm;

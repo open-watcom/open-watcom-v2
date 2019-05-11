@@ -43,7 +43,7 @@
 
 static name_list *SortedNames;
 
-OVL_EXTERN const char *SymGetName( const void *data_handle, int item )
+static const char *SymGetName( const void *data_handle, int item )
 {
     item += *(const int *)data_handle;
     if( item >= NameListNumRows( SortedNames ) )

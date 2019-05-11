@@ -30,16 +30,7 @@
 ****************************************************************************/
 
 
-#define DLG_OPTIONS 4001
+#include "dlgoptn.rh"
 
-#define CTL_OPT_AUTO 103
-#define CTL_OPT_BELL 104
-#define CTL_OPT_IMPLICIT 105
-#define CTL_OPT_RECURSE 106
-#define CTL_OPT_FLIP 107
-#define CTL_OPT_CASE 108
-#define CTL_OPT_OK 100
-#define CTL_OPT_DEFAULTS 102
-#define CTL_OPT_CANCEL 101
 
 extern bool    DlgOptions( void );

@@ -55,7 +55,7 @@ char *ftoa( FLOATVAL *flt )
         return( buf );
     }
     if( *mant != '0' )
-        --cvt.decimal_place;
+        cvt.decimal_place--;
     sprintf( buf, "%c%c.%sE%+1d", ( cvt.sign ) ? '-' : '+', *mant, mant + 1, cvt.decimal_place );
 #else
     sprintf( buf, "%.19e", flt->ld.u.value );

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -41,7 +41,7 @@
 #include "winscrn.h"
 #include "swap.h"
 #include "dbgscrn.h"
-#include "uidbg.h"
+#include "uirefrhk.h"
 #include "guigmous.h"
 #include "dbgcmdln.h"
 #include "dbglkup.h"
@@ -50,12 +50,12 @@
 #include "trpsys.h"
 #include "dbginit.h"
 #include "wininit.h"
+#include "setevent.h"
+#include "uiwinhk.h"
 
 
 #define TstMono()       ChkCntrlr( VIDMONOINDXREG )
 #define TstColour()     ChkCntrlr( VIDCOLRINDXREG )
-
-extern volatile bool    BrkPending;
 
 static bool             WantFast;
 static int              ScrnLines = 25;
@@ -283,16 +283,11 @@ unsigned ConfigScreen( void )
  *                                                                           *
 \*****************************************************************************/
 
-void uirefresh( void )
+void UIAPI uirefresh( void )
 {
     if( ScrnState & DBG_SCRN_ACTIVE ) {
         _uirefresh();
     }
-}
-
-bool SysGUI( void )
-{
-    return( false );
 }
 
 int SwapScrnLines( void )

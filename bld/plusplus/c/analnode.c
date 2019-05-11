@@ -1836,10 +1836,10 @@ PTREE NodeBasedStr(             // BUILD EXPRESSION FOR TF1_BASED_STRING TYPE
     TYPE expr_type )            // - TF1_BASED_STRING type
 {
     PTREE node;                 // - new node
-    CGVALUE segid;              // - segment id
+    CGVALUE segop;              // - segment id
 
-    segid.uvalue = SegmentFindBased( expr_type );
-    node = PTreeIc( IC_SEGOP_SEG, segid );
+    segop.uvalue = SegmentFindBased( expr_type );
+    node = PTreeIc( IC_SEGOP_SEG, segop );
     node->type = TypeSegmentShort();
     return( node );
 }

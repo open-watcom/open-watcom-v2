@@ -53,7 +53,7 @@
 #include "whotpbox.hpp"
 
 #include "objautod.h"
-#include "rcdefs.h"
+#include "rcdefs.rh"
 #include "autodep.h"
 
 #include "clibext.h"

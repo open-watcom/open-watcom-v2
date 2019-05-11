@@ -39,7 +39,6 @@ objs = &
     guistat.obj     &
     dlggen.obj      &
     guiutils.obj    &
-    guicolor.obj    &
     guictrl.obj     &
     genvbl.obj      &
     dynarray.obj    &
@@ -49,24 +48,13 @@ objs = &
     strvbuf.obj     &
     utils.obj
 
-!ifdef patch
-objs +=             &
-    exetype.obj     &
-    oldfile.obj     &
-    bpatch.obj      &
-    patchio.obj     &
-    myio.obj        &
-    dopatch.obj
-!endif
-
 mem_objs = &
     setupmem.obj     &
     $(trmem_objs)
 
-#                     i_dos i_linux i_nt i_os2 i_win i_wini86 i_win386 i_osx
+#                     i_dos i_linux i_nt i_os2 i_win i_osx
 #===========================================================================
-!inject setupio.obj   i_dos i_linux i_nt i_os2                i_win386 i_osx
-!inject setupiod.obj                                 i_wini86
+!inject setupio.obj   i_dos i_linux i_nt i_os2 i_win i_osx
 !inject os2util.obj                      i_os2
 !inject winutil.obj                 i_nt i_os2 i_win
 !inject winddeml.obj                i_nt       i_win
@@ -130,11 +118,12 @@ extra_deps += $(manifest_$(host_os)_$(host_cpu)) wresui.res
 
 # cflags
 #########
-!ifdef patch
-extra_cpp_flags += -DPATCH -DINSTALL_PROGRAM
-!endif
+extra_cpp_flags =
 !ifeq sys_windowed 1
 extra_cpp_flags += -DGUI_IS_GUI
+!endif
+
+!ifeq sys_windowed 1
 extra_cpp_flags_os2 = -D__OS2_PM__
 !endif
 
@@ -178,11 +167,7 @@ dep_res1 = ../h/setup.h setup.ico disk.ico gui.rc
 # where to find objects
 ########################
 
-.c : ../c
-!ifdef patch
-.c : $(bdiff_dir)/c;$(wpack_dir)/c
-!endif
-.c : $(trmem_dir)
+.c : ../c;$(trmem_dir)
 .rc : ../res;$(res_dir);$(gui_dir)/h
 .ico : $(res_dir)
 
@@ -190,9 +175,6 @@ res_inc_dirs = -I"$(res_dir)" -I"../res" $(gui_inc_dirs) $(inc_dirs_sys)
 
 inc_dirs  = -I"../h" $(ui_inc_dirs) $(wpi_inc_dirs) $(gui_inc_dirs) $(commonui_inc_dirs) $(wpi_inc_dirs) $(hlpview_inc_dirs)
 inc_dirs += -I"$(trmem_dir)" -I"$(libzip_dir)/lib"
-!ifdef patch
-inc_dirs += -I"$(bdiff_dir)/h" -I"$(wpack_dir)/h"
-!endif
 
 # explicit rules
 ##################

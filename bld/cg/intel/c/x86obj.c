@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -57,6 +57,7 @@
 #include "x86obj.h"
 #include "i87data.h"
 #include "dostimet.h"
+#include "cgsegids.h"
 #include "feprotos.h"
 
 
@@ -101,6 +102,7 @@
 #define _ARRAYOF( what, type )  ((type *)(what)->array)
 #define _CHGTYPE( what, type )  (*(type *)&(what))
 
+#define altCodeSegId    codeSegId
 
 typedef enum {
     OFC_LOBYTE              = 0,    /* not used */
@@ -135,7 +137,7 @@ typedef struct virt_func_ref_list {
 } virt_func_ref_list;
 
 typedef struct dbg_seg_info {
-    segment_id  *id;
+    segment_id  *segid;
     char        *seg_name;
     char        *class_name;
 } dbg_seg_info;
@@ -149,8 +151,8 @@ static  omf_idx         ImportHdl;
 static  array_control   *Imports;
 static  array_control   *SegInfo;
 static  abspatch        *AbsPatches;
-static  segment_id      CodeSeg = BACKSEGS;
-static  segment_id      BackSeg;
+static  segment_id      codeSegId = BACKSEGS;
+static  segment_id      dataSegId;
 static  segdef          *SegDefs;
 static  long_offset     CodeSize;
 static  long_offset     DataSize;
@@ -167,9 +169,9 @@ static  char            CodeGroup[80];
 static  char            DataGroup[80];
 static  offset          SelStart;
 static  omf_idx         selIdx;
-static  segment_id      BackSegIdx = BACKSEGS;
+static  segment_id      backSegId = BACKSEGS;
 static  omf_idx         FPPatchImp[FPP_NUMBER_OF_TYPES];
-static  segment_id      SegsDefd;
+static  int             segmentCount;
 static  bool            NoDGroup;
 static  short           CurrFNo;
 #ifdef _OMF_32
@@ -183,15 +185,15 @@ static  lname_cache     *NameCache;
 static  lname_cache     *NameCacheDumped;
 
 static char *FPPatchName[] = {
-#define pick_fp(enum,name,alt_name) name,
-#include "fppatche.h"
-#undef pick_fp
+    #define pick_fp(enum,name,alt_name) name,
+    #include "fppatche.h"
+    #undef pick_fp
 };
 
 static char *FPPatchAltName[] = {
-#define pick_fp(enum,name,alt_name) alt_name,
-#include "fppatche.h"
-#undef pick_fp
+    #define pick_fp(enum,name,alt_name) alt_name,
+    #include "fppatche.h"
+    #undef pick_fp
 };
 
 static struct dbg_seg_info DbgSegs[] = {
@@ -213,9 +215,9 @@ void    InitSegDefs( void )
 #ifdef _OMF_32
     FlatGIndex = 0;
 #endif
-    SegsDefd = 0;
-    CodeSeg = BACKSEGS; /* just so it doesn't match a FE seg_id */
-    BackSegIdx = BACKSEGS;
+    segmentCount = 0;
+    codeSegId = BACKSEGS; /* just so it doesn't match a FE seg_id */
+    backSegId = BACKSEGS;
 }
 
 static omf_idx GetNameIdx( const char *name, const char *suff, bool alloc )
@@ -294,15 +296,15 @@ bool FreeObjCache( void )
 }
 
 
-static  index_rec   *AskSegIndex( segment_id seg )
-/************************************************/
+static  index_rec   *AskSegIndex( segment_id segid )
+/**************************************************/
 {
     index_rec   *rec;
     unsigned    i;
 
     rec = SegInfo->array;
     for( i = 0; i < SegInfo->used; ++i ) {
-        if( rec->seg == seg ) {
+        if( rec->segid == segid ) {
             return( rec );
         }
         ++rec;
@@ -385,7 +387,7 @@ static  void    SegmentClass( index_rec *rec )
 {
     char        *class_name;
 
-    class_name = FEAuxInfo( (pointer)(pointer_int)rec->seg, CLASS_NAME );
+    class_name = FEAuxInfo( (pointer)(pointer_int)rec->segid, CLASS_NAME );
     if( class_name != NULL ) {
         rec->cidx = GetNameIdx( class_name, "", true );
     }
@@ -561,7 +563,7 @@ static  void    DoASegDef( index_rec *rec, bool use_16 )
 #endif
     FlushNames();
     obj->segfix = AskObjHandle();
-    if( ++SegsDefd > 32000 ) {
+    if( ++segmentCount > 32000 ) {
         FatalError( "too many segments" );
     }
 #ifdef _OMF_32
@@ -611,11 +613,11 @@ static  index_rec   *AllocNewSegRec( void )
 /*****************************************/
 {
     index_rec   *rec;
-    segment_id  old = 0;
+    segment_id  old_segid = 0;
     unsigned    need;
 
     if( CurrSeg != NULL ) {
-        old = CurrSeg->seg;
+        old_segid = CurrSeg->segid;
     }
     need = SegInfo->used + 1;
     if( need > SegInfo->alloc ) {
@@ -624,7 +626,7 @@ static  index_rec   *AllocNewSegRec( void )
     rec = &_ARRAYOF( SegInfo, index_rec )[SegInfo->used++];
     if( CurrSeg != NULL ) {
         // CurrSeg might have moved on us
-        CurrSeg = AskSegIndex( old );
+        CurrSeg = AskSegIndex( old_segid );
     }
     return( rec );
 }
@@ -634,7 +636,7 @@ static void DoSegment( segdef *seg, array_control *dgroup_def, array_control *tg
 {
     index_rec   *rec;
 
-    rec = AskSegIndex( seg->id );
+    rec = AskSegIndex( seg->segid );
     if( rec == NULL ) {
         rec = AllocNewSegRec();
     }
@@ -661,7 +663,7 @@ static void DoSegment( segdef *seg, array_control *dgroup_def, array_control *tg
     rec->data_prefix_size = 0;
     rec->comdat_prefix_import = NOT_IMPORTED;
     rec->sidx = ++SegmentIndex;
-    rec->seg = seg->id;
+    rec->segid = seg->segid;
     rec->attr = SegmentAttr( seg->align, seg->attr, use_16 );
     if( seg->attr & EXEC ) {
         rec->exec = true;
@@ -740,15 +742,15 @@ static void DoSegment( segdef *seg, array_control *dgroup_def, array_control *tg
 }
 
 
-void    DefSegment( segment_id id, seg_attr attr, const char *str, uint align, bool use_16 )
-/******************************************************************************************/
+void    DefSegment( segment_id segid, seg_attr attr, const char *str, uint align, bool use_16 )
+/*********************************************************************************************/
 {
     segdef              *new;
     segdef              **owner;
-    segment_id          first_code;
+    segment_id          first_code_segid;
 
     new = CGAlloc( sizeof( segdef ) );
-    new->id = id;
+    new->segid = segid;
     new->attr = attr;
     new->align = align;
     new->str = CGAlloc( Length( str ) + 1 );
@@ -756,27 +758,27 @@ void    DefSegment( segment_id id, seg_attr attr, const char *str, uint align, b
     for( owner = &SegDefs; *owner != NULL; ) {
         owner = &(*owner)->next;
     }
-    first_code = BACKSEGS;
+    first_code_segid = BACKSEGS;
     *owner = new;
     new->next = NULL;
     if( attr & EXEC ) {
-        if( CodeSeg == BACKSEGS ) {
-            CodeSeg = id;
-            first_code = id;
+        if( codeSegId == BACKSEGS ) {
+            codeSegId = segid;
+            first_code_segid = segid;
         }
         if( OptForSize == 0 && new->align < 16 ) {
             new->align = 16;
         }
     }
     if( attr & BACK ) {
-        BackSeg = id;
+        dataSegId = segid;
     }
     if( NameIndex != 0 ) {    /* already dumped out segments*/
         DoSegment( new, NULL, NULL, use_16 ); /* don't allow DGROUP after BEStart */
         SegDefs = NULL;
     }
-    if( first_code != BACKSEGS && _IsModel( DBG_DF ) ) {
-        DFBegCCU( first_code, NULL );
+    if( first_code_segid != BACKSEGS && _IsModel( DBG_DF ) ) {
+        DFBegCCU( first_code_segid, NULL );
     }
 }
 
@@ -911,14 +913,14 @@ segment_id DbgSegDef( const char *seg_name, const char *seg_class, int seg_modif
     rec->comdat_nidx = 0;
     rec->comdat_size = 0;
     rec->virt_func_refs = NULL;
-    rec->seg = --BackSegIdx;
+    rec->segid = --backSegId;
     rec->attr = SEG_ALGN_BYTE | seg_modifier;
     rec->data_prefix_size = 0;
     rec->comdat_prefix_import = NOT_IMPORTED;
     rec->base = rec->sidx;
     rec->btype = BASE_SEG;
     DoASegDef( rec, true );
-    return( rec->seg );
+    return( rec->segid );
 }
 
 static  void    DoSegGrpNames( array_control *dgroup_def, array_control *tgroup_def )
@@ -1092,7 +1094,7 @@ void    ObjInit( void )
     }
 #endif
     KillArray( dgroup_def );
-    CurrSeg = AskSegIndex( CodeSeg );
+    CurrSeg = AskSegIndex( codeSegId );
     ImportHdl = IMPORT_BASE;
     Imports = NULL;
     GenStaticImports = false;
@@ -1113,22 +1115,36 @@ void    ObjInit( void )
 }
 
 
-segment_id  SetOP( segment_id seg )
-/*********************************/
+segment_id  AskOP( void )
+/***********************/
 {
-    segment_id  old;
+    segment_id  segid;
 
     if( CurrSeg == NULL ) {
-        old = UNDEFSEG;
+        segid = UNDEFSEG;
     } else {
-        old = CurrSeg->seg;
+        segid = CurrSeg->segid;
     }
-    if( seg == UNDEFSEG ) {
+    return( segid );
+}
+
+
+segment_id  SetOP( segment_id segid )
+/***********************************/
+{
+    segment_id  old_segid;
+
+    if( CurrSeg == NULL ) {
+        old_segid = UNDEFSEG;
+    } else {
+        old_segid = CurrSeg->segid;
+    }
+    if( segid == UNDEFSEG ) {
         CurrSeg = NULL;
     } else {
-        CurrSeg = AskSegIndex( seg );
+        CurrSeg = AskSegIndex( segid );
     }
-    return( old );
+    return( old_segid );
 }
 
 offset  AskLocation( void )
@@ -1141,21 +1157,21 @@ void ChkDbgSegSize( offset max, bool typing )
 /*******************************************/
 {
     dbg_seg_info    *info;
-    segment_id      old;
+    segment_id      old_segid;
     long_offset     curr;
 
     info = DbgSegs;
     if( typing )
         info++;
-    old = SetOP( *info->id );
+    old_segid = SetOP( *info->segid );
     curr = (offset)CurrSeg->location;
     if( curr >= max ) {
         if( typing ) {
             DbgTypeSize += curr;
         }
-        *info->id = DbgSegDef( info->seg_name, info->class_name, SEG_COMB_PRIVATE );
+        *info->segid = DbgSegDef( info->seg_name, info->class_name, SEG_COMB_PRIVATE );
     }
-    SetOP( old );
+    SetOP( old_segid );
 }
 
 
@@ -1171,14 +1187,14 @@ bool    UseImportForm( fe_attr attr )
 
 
 
-bool    AskSegNear( segment_id id )
-/*********************************/
+bool    AskSegIsNear( segment_id segid )
+/**************************************/
 {
     index_rec   *rec;
 
-    if( id < 0 )
+    if( segid < 0 )
         return( false );
-    rec = AskSegIndex( id );
+    rec = AskSegIndex( segid );
     if( rec->btype != BASE_GRP )
         return( false );
     if( rec->base > CodeGroupGIdx )
@@ -1187,38 +1203,38 @@ bool    AskSegNear( segment_id id )
 }
 
 
-bool    AskSegBlank( segment_id id )
-/**********************************/
+bool    AskSegIsBlank( segment_id segid )
+/***************************************/
 {
     index_rec *rec;
 
-    if( id < 0 )
+    if( segid < 0 )
         return( true );
-    rec = AskSegIndex( id );
+    rec = AskSegIndex( segid );
     return( rec->cidx == _NIDX_BSS );
 }
 
 
-bool    AskSegPrivate( segment_id id )
-/************************************/
+bool    AskSegIsPrivate( segment_id segid )
+/*****************************************/
 {
     index_rec   *rec;
 
-    if( id < 0 )
+    if( segid < 0 )
         return( true );
-    rec = AskSegIndex( id );
+    rec = AskSegIndex( segid );
     return( rec->private || rec->exec );
 }
 
 
-bool    AskSegROM( segment_id id )
-/********************************/
+bool    AskSegIsROM( segment_id segid )
+/*************************************/
 {
     index_rec   *rec;
 
-    if( id < 0 )
+    if( segid < 0 )
         return( false );
-    rec = AskSegIndex( id );
+    rec = AskSegIndex( segid );
     return( rec->rom != 0 );
 }
 
@@ -1226,37 +1242,37 @@ bool    AskSegROM( segment_id id )
 segment_id  AskBackSeg( void )
 /****************************/
 {
-    return( BackSeg );
+    return( dataSegId );
 }
 
 
 segment_id  AskCodeSeg( void )
 /****************************/
 {
-    return( CodeSeg );
+    return( codeSegId );
 }
 
 
 bool    HaveCodeSeg( void )
 /*************************/
 {
-    return( CodeSeg != BACKSEGS );
+    return( codeSegId != BACKSEGS );
 }
 
 
 segment_id  AskAltCodeSeg( void )
 /*******************************/
 {
-    return( CodeSeg );
+    return( altCodeSegId );
 }
-
-static  segment_id  Code16Seg = 0;
 
 segment_id  AskCode16Seg( void )
 /******************************/
 {
-    if( Code16Seg == 0 ) {
-        Code16Seg = --BackSegIdx;
+    static segment_id   Code16Seg = BACKSEGS;
+
+    if( Code16Seg == BACKSEGS ) {
+        Code16Seg = --backSegId;
         DefSegment( Code16Seg, EXEC | GIVEN_NAME, "_TEXT16", 16, true );
     }
     return( Code16Seg );
@@ -1730,19 +1746,19 @@ static  void    FiniTarg( void )
     CGFree( obj );
 }
 
-void    FlushOP( segment_id id )
-/******************************/
+void    FlushOP( segment_id segid )
+/*********************************/
 {
-    segment_id  old;
+    segment_id  old_segid;
     index_rec   *rec;
 
-    old = SetOP( id );
-    if( id == CodeSeg ) {
+    old_segid = SetOP( segid );
+    if( segid == codeSegId ) {
         DoEmptyQueue();
     }
     if( _IsModel( DBG_DF ) ) {
         rec = CurrSeg;
-        if( rec->exec || rec->cidx == _NIDX_DATA ||rec->cidx == _NIDX_BSS ) {
+        if( rec->exec || rec->cidx == _NIDX_DATA || rec->cidx == _NIDX_BSS ) {
             if( rec->max_size != 0 ) {
                 DFSegRange();
             }
@@ -1750,25 +1766,25 @@ void    FlushOP( segment_id id )
     }
     FiniTarg();
     CurrSeg->obj = NULL;
-    SetOP( old );
+    SetOP( old_segid );
 }
 
 static void FiniWVTypes( void )
 /*****************************/
 {
-    segment_id   old;
+    segment_id   old_segid;
     long_offset  curr;
     dbg_seg_info *info;
 
     WVTypesEof();
     info = &DbgSegs[1];
-    old = SetOP( *info->id );
+    old_segid = SetOP( *info->segid );
     curr = (offset)CurrSeg->location;
     curr += DbgTypeSize;
-    *info->id = DbgSegDef( info->seg_name, info->class_name, SEG_COMB_PRIVATE );
-    SetOP( *info->id );
+    *info->segid = DbgSegDef( info->seg_name, info->class_name, SEG_COMB_PRIVATE );
+    SetOP( *info->segid );
     WVDmpCueInfo( curr );
-    SetOP( old );
+    SetOP( old_segid );
 }
 
 static void FlushSelect( void )
@@ -1807,17 +1823,17 @@ static  void    NormalData( void )
 static void DoSegARange( offset *codesize, index_rec *rec )
 /*********************************************************/
 {
-    segment_id  old;
+    segment_id  old_segid;
 
     if( rec->exec || rec->cidx == _NIDX_DATA ||rec->cidx == _NIDX_BSS ) {
         if( rec->max_size != 0 ) {
-            old = SetOP( rec->seg );
+            old_segid = SetOP( rec->segid );
             if( CurrSeg->comdat_symbol != NULL ) {
                 DFSymRange( rec->comdat_symbol, (offset)rec->comdat_size );
             }
             NormalData();
             DFSegRange();
-            SetOP( old );
+            SetOP( old_segid );
         }
         if( rec->exec ) {
             *codesize += rec->max_size + rec->total_comdat_size;
@@ -2842,12 +2858,12 @@ static void DumpImportResolve( cg_sym_handle sym, omf_idx idx )
 }
 
 
-void    OutReloc( segment_id seg, fix_class class, bool rel )
-/***********************************************************/
+void    OutReloc( segment_id segid, fix_class class, bool rel )
+/*************************************************************/
 {
     index_rec   *rec;
 
-    rec = AskSegIndex( seg );
+    rec = AskSegIndex( segid );
     if( F_CLASS( class ) == F_BIG_OFFSET ) {
         CheckLEDataSize( 3 * sizeof( long_offset ), true );
     } else {
@@ -2992,11 +3008,10 @@ void    OutLineNum( cg_linenum  line, bool label_line )
 
 unsigned        SavePendingLine( unsigned new )
 /**********************************************
-
-        We're about to dump some alignment bytes. Save and restore
-        the pending_line_number field so the that line number info
-        offset is after the alignment.
-*/
+ * We're about to dump some alignment bytes. Save and restore
+ * the pending_line_number field so the that line number info
+ * offset is after the alignment.
+ */
 {
     unsigned    old;
 
@@ -3110,12 +3125,6 @@ void    OutIBytes( byte pat, offset len )
 }
 
 
-segment_id  AskOP( void )
-/***********************/
-{
-    return( CurrSeg->seg );
-}
-
 bool    NeedBaseSet( void )
 /*************************/
 {
@@ -3152,7 +3161,7 @@ void    TellObjNewLabel( cg_sym_handle lbl )
         return;
     if( CurrSeg == NULL )
         return;
-    if( CodeSeg != CurrSeg->seg )
+    if( codeSegId != CurrSeg->segid )
         return;
 
     /*
@@ -3180,13 +3189,13 @@ void    TellObjNewLabel( cg_sym_handle lbl )
 void    TellObjNewProc( cg_sym_handle proc )
 /******************************************/
 {
-    segment_id  old;
-    segment_id  proc_id;
+    segment_id  old_segid;
+    segment_id  proc_segid;
 
 
-    old = SetOP( CodeSeg );
-    proc_id = FESegID( proc );
-    if( CodeSeg != proc_id ) {
+    old_segid = SetOP( codeSegId );
+    proc_segid = FESegID( proc );
+    if( codeSegId != proc_segid ) {
         if( _IsModel( DBG_DF ) ) {
             if( CurrSeg->comdat_symbol != NULL ) {
                 DFSymRange( CurrSeg->comdat_symbol, (offset)CurrSeg->comdat_size );
@@ -3196,8 +3205,8 @@ void    TellObjNewProc( cg_sym_handle proc )
             DoEmptyQueue();
             FlushObject();
         }
-        CodeSeg = proc_id;
-        SetOP( CodeSeg );
+        codeSegId = proc_segid;
+        SetOP( codeSegId );
         CurrSeg->need_base_set = true;
         if( !CurrSeg->exec ) {
             Zoiks( ZOIKS_088 );
@@ -3222,25 +3231,25 @@ void    TellObjNewProc( cg_sym_handle proc )
         }
         NormalData();
     }
-    SetOP( old );
+    SetOP( old_segid );
 }
 
 void     TellObjVirtFuncRef( void *cookie )
 /*****************************************/
 {
-    segment_id          old;
+    segment_id          old_segid;
     virt_func_ref_list  *new;
 
-    old = SetOP( CodeSeg );
+    old_segid = SetOP( codeSegId );
     new = CGAlloc( sizeof( virt_func_ref_list ) );
     new->cookie = cookie;
     new->next = CurrSeg->virt_func_refs;
     CurrSeg->virt_func_refs = new;
-    SetOP( old );
+    SetOP( old_segid );
 }
 
-static  bool            InlineFunction( cg_sym_handle sym )
-/******************************************************/
+static bool     InlineFunction( cg_sym_handle sym )
+/*************************************************/
 {
     if( FEAttr( sym ) & FE_PROC ) {
         if( FindAuxInfoSym( sym, CALL_BYTES ) != NULL )
@@ -3258,23 +3267,23 @@ segment_id      AskSegID( pointer hdl, cg_class class )
     switch( class ) {
     case CG_FE:
         if( InlineFunction( (cg_sym_handle)hdl ) ) {
-            return( AskCodeSeg() );
+            return( codeSegId );    // AskCodeSeg()
         }
         return( FESegID( (cg_sym_handle)hdl ) );
     case CG_BACK:
-        return( ((back_handle)hdl)->seg );
+        return( ((back_handle)hdl)->segid );
     case CG_TBL:
     case CG_VTB:
-        return( AskCodeSeg() );
+        return( codeSegId );        // AskCodeSeg()
     case CG_CLB:
-        return( AskAltCodeSeg() );
+        return( altCodeSegId );     // AskAltCodeSeg()
     default:
-        return( AskBackSeg() );
+        return( dataSegId );        // AskBackSeg()
     }
 }
 
-bool            AskNameCode( pointer hdl, cg_class class )
-/********************************************************/
+bool    AskNameIsCode( pointer hdl, cg_class class )
+/**************************************************/
 {
     switch( class ) {
     case CG_FE:
@@ -3289,8 +3298,8 @@ bool            AskNameCode( pointer hdl, cg_class class )
     return( false );
 }
 
-bool    AskNameROM( pointer hdl, cg_class class )
-/***********************************************/
+bool    AskNameIsROM( pointer hdl, cg_class class )
+/*************************************************/
 {
-    return( AskSegROM( AskSegID( hdl, class ) ) );
+    return( AskSegIsROM( AskSegID( hdl, class ) ) );
 }

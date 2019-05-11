@@ -148,10 +148,11 @@ typedef struct {
 
 #define _WINSTALL 0
 
-extern void             SetupTextTable();
-extern int              InitIO();
+extern void             SetupTextTable( void );
+extern int              InitIO( void );
 extern int              Decode( arccmd * );
 extern int              Encode( arccmd * );
+extern void             PackExit( void );
 
 #ifdef __WATCOMC__
 #pragma pack();

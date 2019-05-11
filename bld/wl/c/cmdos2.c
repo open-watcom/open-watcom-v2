@@ -439,7 +439,7 @@ bool ProcMixed1632( void )
 // Sometimes it's useful to mix 16-bit and 32-bit code/data into one segment
 // specially for OS/2 Device Drivers
 {
-    LinkFlags &= ~FAR_CALLS_FLAG ; // must be turned off for mixed code
+    LinkFlags &= ~LF_FAR_CALLS_FLAG ; // must be turned off for mixed code
     FmtData.u.os2.mixed1632 = true;
     return( true );
 }
@@ -447,7 +447,7 @@ bool ProcMixed1632( void )
 bool ProcPENoRelocs( void )
 /*********************************/
 {
-    LinkState &= ~MAKE_RELOCS;
+    LinkState &= ~LS_MAKE_RELOCS;
     return( true );
 }
 
@@ -539,9 +539,9 @@ void SetOS2Fmt( void )
 /*********************/
 // set up the structures needed to be able to process something in OS/2 mode.
 {
-    if( LinkState & FMT_INITIALIZED )
+    if( LinkState & LS_FMT_INITIALIZED )
         return;
-    LinkState |= FMT_INITIALIZED;
+    LinkState |= LS_FMT_INITIALIZED;
     FmtData.u.os2.flags = MULTIPLE_AUTO_DATA;
     FmtData.u.os2.heapsize = 0;
     FmtData.u.os2.segment_shift = 0;

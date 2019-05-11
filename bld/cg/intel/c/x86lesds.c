@@ -115,7 +115,7 @@ static bool     OptMemMove( instruction *ins, instruction *next )
     unsigned_32         shift;
     unsigned_32         lo;
     unsigned_32         hi;
-    type_class_def      result_type_class = 0;
+    type_class_def      result_type_class;
     unsigned_32         result_const;
     name                *result;
 
@@ -134,6 +134,7 @@ static bool     OptMemMove( instruction *ins, instruction *next )
 #if _TARGET & _TARG_IAPX86
                 if( ! _CPULevel( CPU_386 ) ) {
                     shift = 0;
+                    result_type_class = 0;
                     break;
                 }
 #endif

@@ -552,7 +552,7 @@ instruction      *rCLRHI_R( instruction *ins )
         high = res->r.reg;
         HW_TurnOff( high, ins->result->r.reg );
         new_ins = MakeNop();
-        new_ins->zap = (register_name *) AllocRegName( high );
+        new_ins->zap = (register_name *)AllocRegName( high );
         SuffixIns( ins, new_ins ); // don't cause high part to be live on entry
 
         and_ins = MakeBinary( OP_AND, res, AllocS32Const( value ), res, ins->type_class );

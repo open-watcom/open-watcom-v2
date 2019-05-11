@@ -30,8 +30,10 @@
 ****************************************************************************/
 
 
-#include <malloc.h>
 #include <stdio.h>
+#if defined( __WATCOMC__ )
+    #include <malloc.h>
+#endif
 #include "bool.h"
 #include "dumpmem.h"
 
@@ -48,9 +50,10 @@
  * WalkMem - walk through the memory locations.   For the PC version only.
  */
 
-int WalkMem( void ) 
+int WalkMem( void )
 /*****************/
 {
+#if defined( __WATCOMC__ )
     char                    * str;
     int                     heap_status;
     struct _heapinfo        h_info;
@@ -72,6 +75,7 @@ int WalkMem( void )
             return( false );
         }
     }
+#endif
     return( true );
 }
 
@@ -83,6 +87,7 @@ int WalkMem( void )
 void DumpMem( void )
 /******************/
 {
+#if defined( __WATCOMC__ )
     unsigned int            curr_addr;
     unsigned int            total;
     unsigned int            start_size;
@@ -134,4 +139,5 @@ void DumpMem( void )
     printf( "\n\nStarting size   = %u\n", start_size );
     printf( "New allocations = %u\n", total );
     printf( "Ending address  = %u\n", start_size+total );
+#endif
 }

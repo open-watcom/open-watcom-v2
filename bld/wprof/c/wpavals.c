@@ -73,5 +73,4 @@ wnd_attr            WndSelectedAttr = WPA_SELECTED;
 wnd_attr            WndCursorAttr = WPA_SELECTED;
 wnd_attr            WndStatusColour = WPA_STATUS_LINE;
 
-wnd_update_list     WndFlags = 0;
 gui_window_styles   WndStyle = GUI_PLAIN+GUI_GMOUSE;

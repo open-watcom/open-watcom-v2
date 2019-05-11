@@ -31,10 +31,10 @@
 
 
 #include "ftnstd.h"
+#include <string.h>
 #include "rundat.h"
 #include "errcod.h"
 #include "pgmacc.h"
-#include <string.h>
 #include "iotype.h"
 #include "rtutls.h"
 #include "ioerr.h"

@@ -32,7 +32,6 @@
 
 
 #include "vi.h"
-#include <malloc.h>
 #include <i86.h>
 #include "fcbmem.h"
 #include "getspcmd.h"

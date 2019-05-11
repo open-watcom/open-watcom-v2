@@ -131,7 +131,7 @@ extern bool                     InSoftMode;
 extern WORD                     CSAlias;
 extern WORD                     SegmentToAccess;
 extern BOOL                     PendingTrap;
-extern hook_fn                  *HookRtn;
+extern event_hook_fn            *HookRtn;
 extern BOOL                     IsRFX;
 extern char                     OutBuff[MAX_STR];
 extern int                      OutPos;

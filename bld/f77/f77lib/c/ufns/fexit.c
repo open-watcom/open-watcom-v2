@@ -35,7 +35,6 @@
 //
 
 #include "ftnstd.h"
-#include <stdlib.h>
 #include "xfflags.h"
 #include "rundat.h"
 #include "ftnapi.h"

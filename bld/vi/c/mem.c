@@ -285,7 +285,7 @@ void MemFreeList( list_linenum count, char **ptr )
 /*
  * doMemReallocUnsafe - reallocate a block, return NULL if it fails
  */
-static void *doMemReAllocUnsafe( void *ptr, size_t size, WHO_PTR who )
+static void *doMemReallocUnsafe( void *ptr, size_t size, WHO_PTR who )
 {
     void        *tmp;
 
@@ -338,43 +338,43 @@ static void *doMemReAllocUnsafe( void *ptr, size_t size, WHO_PTR who )
     }
     return( tmp );
 
-} /* doMemReAllocUnsafe */
+} /* doMemReallocUnsafe */
 
-void *MemReAllocUnsafe( void *ptr, size_t size )
+void *MemReallocUnsafe( void *ptr, size_t size )
 {
 #ifdef TRMEM
 #ifndef __WATCOMC__
-    return( doMemReAllocUnsafe( ptr, size, (WHO_PTR)6 ) );
+    return( doMemReallocUnsafe( ptr, size, (WHO_PTR)6 ) );
 #else
-    return( doMemReAllocUnsafe( ptr, size, _trmem_guess_who() ) );
+    return( doMemReallocUnsafe( ptr, size, _trmem_guess_who() ) );
 #endif
 #else
-    return( doMemReAllocUnsafe( ptr, size, (WHO_PTR)0 ) );
+    return( doMemReallocUnsafe( ptr, size, (WHO_PTR)0 ) );
 #endif
 }
 
 /*
- * MemReAlloc - reallocate a block, and it will succeed.
+ * MemRealloc - reallocate a block, and it will succeed.
  */
-void *MemReAlloc( void *ptr, size_t size )
+void *MemRealloc( void *ptr, size_t size )
 {
     void        *tmp;
 
 #ifdef TRMEM
 #ifndef __WATCOMC__
-    tmp = doMemReAllocUnsafe( ptr, size, (WHO_PTR)7 );
+    tmp = doMemReallocUnsafe( ptr, size, (WHO_PTR)7 );
 #else
-    tmp = doMemReAllocUnsafe( ptr, size, _trmem_guess_who() );
+    tmp = doMemReallocUnsafe( ptr, size, _trmem_guess_who() );
 #endif
 #else
-    tmp = doMemReAllocUnsafe( ptr, size, (WHO_PTR)0 );
+    tmp = doMemReallocUnsafe( ptr, size, (WHO_PTR)0 );
 #endif
     if( tmp == NULL ) {
         AbandonHopeAllYeWhoEnterHere( ERR_NO_MEMORY );
     }
     return( tmp );
 
-} /* MemReAlloc */
+} /* MemRealloc */
 
 static char *staticBuffs[MAX_STATIC_BUFFERS];
 static bool staticUse[MAX_STATIC_BUFFERS];
@@ -462,11 +462,11 @@ char *MemStrDup( const char *string )
 }
 
 #if defined( __LINUX__ )
-void UIMemOpen( void ) {}
+void UIAPI UIMemOpen( void ) {}
 
-void UIMemClose( void ) {}
+void UIAPI UIMemClose( void ) {}
 
-void *uimalloc( size_t size )
+void * UIAPI uimalloc( size_t size )
 {
     void        *tmp;
 
@@ -485,18 +485,18 @@ void *uimalloc( size_t size )
     return( tmp );
 }
 
-void *uirealloc( void *ptr, size_t size )
+void * UIAPI uirealloc( void *ptr, size_t size )
 {
     void        *tmp;
 
 #ifdef TRMEM
 #ifndef __WATCOMC__
-    tmp = doMemReAllocUnsafe( ptr, size, (WHO_PTR)10 );
+    tmp = doMemReallocUnsafe( ptr, size, (WHO_PTR)10 );
 #else
-    tmp = doMemReAllocUnsafe( ptr, size, _trmem_guess_who() );
+    tmp = doMemReallocUnsafe( ptr, size, _trmem_guess_who() );
 #endif
 #else
-    tmp = doMemReAllocUnsafe( ptr, size, (WHO_PTR)0 );
+    tmp = doMemReallocUnsafe( ptr, size, (WHO_PTR)0 );
 #endif
     if( tmp == NULL ) {
         AbandonHopeAllYeWhoEnterHere( ERR_NO_MEMORY );
@@ -504,7 +504,7 @@ void *uirealloc( void *ptr, size_t size )
     return( tmp );
 }
 
-void uifree( void *ptr )
+void UIAPI uifree( void *ptr )
 {
 #ifdef TRMEM
 #ifndef __WATCOMC__

@@ -39,10 +39,10 @@ typedef enum {
 } TargetLangType;
 
 typedef enum {
-    SIZE_16,              // 2 bytes
-    SIZE_32,              // 4 bytes
-    SIZE_48,              // 6 bytes
-    SIZE_MAX
+    SIZETYPE_16,              // 2 bytes
+    SIZETYPE_32,              // 4 bytes
+    SIZETYPE_48,              // 6 bytes
+    SIZETYPE_MAX
 } SizeType;
 
 struct Opt {

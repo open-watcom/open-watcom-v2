@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -30,7 +31,7 @@
 ****************************************************************************/
 
 
-#include <malloc.h>
+//#include <malloc.h>
 #include <stdlib.h>
 #include "watcom.h"
 #include "womp.h"
@@ -38,7 +39,7 @@
 #include "memutil.h"
 
 #ifdef  TRACK
-#include <malloc.h>
+//#include <malloc.h>
 #include <io.h>
 #include <sys/types.h>
 #include <sys/stat.h>

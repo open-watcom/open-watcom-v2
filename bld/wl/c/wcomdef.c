@@ -252,7 +252,7 @@ void ProcLinsym( void )
 static void DoAltDef( comdat_info *info )
 /***************************************/
 {
-    if( (LinkFlags & INC_LINK_FLAG) == 0 ) {
+    if( (LinkFlags & LF_INC_LINK_FLAG) == 0 ) {
         FreeSegData( info->sdata );
     } else {
         Ring2Append( &CurrMod->segs, info->sdata );
@@ -525,7 +525,7 @@ void ProcComdat( void )
             info->flags &= ~SYM_DEAD;
         }
     }
-    if( (info->flags & SYM_DEAD) && (LinkFlags & INC_LINK_FLAG) == 0 ) {
+    if( (info->flags & SYM_DEAD) && (LinkFlags & LF_INC_LINK_FLAG) == 0 ) {
         ObjFormat |= FMT_IGNORE_FIXUPP;
     } else {
         ObjFormat &= ~(FMT_IGNORE_FIXUPP | FMT_IS_LIDATA);

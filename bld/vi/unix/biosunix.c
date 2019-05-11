@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -31,12 +32,12 @@
 
 #include "vi.h"
 #include "win.h"
-#include "uidef.h"
-#include "uivirt.h"
+#include "stdui.h"
+#include "uiextrn.h"
 #include "vibios.h"
 
+
 extern int      PageCnt;
-extern bool     UserForcedTermRefresh;
 
 void    BIOSGetColorPalette( void *a ) {}
 uint_32 BIOSGetColorRegister( unsigned short a ) { return( 0 ); }
@@ -46,26 +47,20 @@ void    BIOSSetColorRegister( unsigned short reg, unsigned char r, unsigned char
 
 void    BIOSSetCursor( unsigned char page, unsigned char row, unsigned char col )
 {
-    int             attr;
-    CURSOR_TYPE     type;
-    unsigned char   oldrow, oldcol;
-
     /* unused parameters */ (void)page;
 
-    _uigetcursor( &oldrow, &oldcol, &type, &attr );
-    _uisetcursor( row, col, type, attr );
+    TermSetCursor( row, col );
 }
 
 unsigned short BIOSGetCursor( unsigned char page )
 {
-    unsigned char   row, col;
-    int             attr;
-    CURSOR_TYPE     type;
+    CURSORORD   row;
+    CURSORORD   col;
 
     /* unused parameters */ (void)page;
 
-    _uigetcursor( &row, &col, &type, &attr );
-    return( ( row << 8 ) | col );
+    TermGetCursor( &row, &col );
+    return( ( (row & 0xFF) << 8 ) | (col & 0xFF) );
 }
 
 static unsigned short vi_keys[EV_FIRST_UNUSED];
@@ -231,14 +226,7 @@ unsigned BIOSGetKeyboard( unsigned *scan )
  */
 bool BIOSKeyboardHit( void )
 {
-    int             attr;
-    CURSOR_TYPE     type;
-    unsigned char   row, col;
-
-    _uigetcursor( &row, &col, &type, &attr );
-    _uisetcursor( row, col, C_NORMAL, attr );
-    _ui_refresh( 0 );
-    return( _uiwaitkeyb( 0, 0 ) != 0 );
+    return( TermKeyboardHit() );
 
 } /* BIOSKeyboardHit */
 
@@ -254,16 +242,13 @@ void  BIOSUpdateScreen( size_t offset, unsigned nchars )
     }
 
     if( nchars == EditVars.WindMaxWidth * EditVars.WindMaxHeight ) {
-        _physupdate( NULL );
-        UserForcedTermRefresh = true;
-        return;
+        TermRefresh( NULL );
+    } else {
+        area.row = offset / EditVars.WindMaxWidth;
+        area.col = offset % EditVars.WindMaxWidth;
+        area.width = nchars;
+        area.height = 1;
+        TermRefresh( &area );
     }
-
-    area.row = offset / EditVars.WindMaxWidth;
-    area.col = offset % EditVars.WindMaxWidth;
-    area.width = nchars;
-    area.height = 1;
-
-    _physupdate(&area);
 
 } /* BIOSUpdateScreen */

@@ -31,6 +31,8 @@
 
 
 #include "ftnstd.h"
+#include <string.h>
+#include <ctype.h>
 #include "rundat.h"
 #include "pgmacc.h"
 #include "errcod.h"
@@ -49,8 +51,6 @@
 #include "freeout.h"
 #include "rdutils.h"
 #include "unfmtutl.h"
-#include <string.h>
-#include <ctype.h>
 
 
 static  uint_32         NmlInCount;

@@ -34,6 +34,7 @@
 #include "uidef.h"
 #include "uiattrs.h"
 #include "uinlm.h"
+#include "uicurshk.h"
 
 
 #define _swap(a,b)      {int i; i=a; a=b; b=i;}
@@ -46,12 +47,12 @@
 #define END_NORMAL_CURSOR   14
 
 static CATTR            OldCursorAttr;
-static WORD             OldCursorRow;
-static WORD             OldCursorCol;
+static CURSORORD        OldCursorRow;
+static CURSORORD        OldCursorCol;
 static CURSOR_TYPE      OldCursorType;
 
-void UIAPI uioffcursor( void )
-/****************************/
+void UIHOOK uioffcursor( void )
+/*****************************/
 {
     if( UIData->cursor_on ) {
         HideInputCursor();
@@ -60,8 +61,8 @@ void UIAPI uioffcursor( void )
     UIData->cursor_type = C_OFF;
 }
 
-void UIAPI uioncursor( void )
-/***************************/
+void UIHOOK uioncursor( void )
+/****************************/
 {
     BYTE startline;     /* first cursor scan line */
     BYTE endline;       /* last cursor scan line  */
@@ -89,7 +90,7 @@ void UIAPI uioncursor( void )
     UIData->cursor_on = true;
 }
 
-static void newcursor( void )
+void intern newcursor( void )
 /***************************/
 {
     if( UIData->cursor_type == C_OFF ) {
@@ -99,48 +100,43 @@ static void newcursor( void )
     }
 }
 
-void UIAPI uigetcursor( ORD *row, ORD *col, CURSOR_TYPE *type, CATTR *attr )
-/**************************************************************************/
+void UIHOOK uigetcursor( CURSORORD *crow, CURSORORD *ccol, CURSOR_TYPE *ctype, CATTR *cattr )
+/*******************************************************************************************/
 {
     BYTE startline;
     BYTE endline;
 
-    WORD roww, colw;
+    /* unused parameters */ (void)cattr;
 
-    /* unused parameters */ (void)attr;
-
-    colw = wherex();
-    roww = wherey();
-
-    *row = roww;
-    *col = colw;
+    *crow = wherey();
+    *ccol = wherex();
 
     GetCursorShape( &startline, &endline );
 
     if( endline == END_INSERT_CURSOR && startline == START_INSERT_CURSOR ) {
-        *type = C_INSERT;
+        *ctype = C_INSERT;
     } else {
-        *type = C_NORMAL;
+        *ctype = C_NORMAL;
     }
 
     if( !UIData->cursor_on ) {
-        *type = C_OFF;
+        *ctype = C_OFF;
     }
 
     //NYI:  Read the attribute
 }
 
-void UIAPI uisetcursor( ORD row, ORD col, CURSOR_TYPE typ, CATTR attr )
-/*********************************************************************/
+void UIHOOK uisetcursor( CURSORORD crow, CURSORORD ccol, CURSOR_TYPE ctype, CATTR cattr )
+/***************************************************************************************/
 {
-    if( ( typ != UIData->cursor_type ) || ( row != UIData->cursor_row ) ||
-        ( col != UIData->cursor_col ) || ( attr != UIData->cursor_attr ) ) {
+    if( ( ctype != UIData->cursor_type ) || ( crow != UIData->cursor_row ) ||
+        ( ccol != UIData->cursor_col ) || ( cattr != UIData->cursor_attr ) ) {
 
-        UIData->cursor_type = typ;
-        UIData->cursor_row = row;
-        UIData->cursor_col = col;
-        if( attr != CATTR_OFF ) {
-            UIData->cursor_attr = attr;
+        UIData->cursor_type = ctype;
+        UIData->cursor_row = crow;
+        UIData->cursor_col = ccol;
+        if( cattr != CATTR_OFF ) {
+            UIData->cursor_attr = cattr;
         }
         newcursor();
     }
@@ -183,23 +179,23 @@ static void swapcursor( void )
     UIData->cursor_on = true;
 }
 
-void UIAPI uiswapcursor( void )
-/*****************************/
+void UIHOOK uiswapcursor( void )
+/******************************/
 {
     swapcursor();
     newcursor();
 }
 
-void UIAPI uiinitcursor( void )
-/*****************************/
+void UIHOOK uiinitcursor( void )
+/******************************/
 {
     savecursor();
     uisetcursor( OldCursorRow, OldCursorCol, OldCursorType, OldCursorAttr );
     uioffcursor();
 }
 
-void UIAPI uifinicursor( void )
-/*****************************/
+void UIHOOK uifinicursor( void )
+/******************************/
 {
     uioncursor();
 }

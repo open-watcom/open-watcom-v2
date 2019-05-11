@@ -1,5 +1,5 @@
-#include "windows.h"
-#include "winint.h"
+#include <windows.h>
+#include "winint.rh"
 
 DemoIcon ICON demo.ico
 

@@ -30,19 +30,20 @@
 
 
 #include "ftnstd.h"
-#include "rterr.h"
-#include "rtenv.h"
-#include "errcod.h"
-#include "falloc.h"
-
-#include <malloc.h>
 #include <limits.h>
 #if defined( _M_IX86 )
   #include <i86.h>
+  #if defined( _M_I86 )
+    #include <malloc.h>
+  #endif
   #if defined( __WINDOWS_386__ )
     #include <win386.h>
   #endif
 #endif
+#include "rterr.h"
+#include "rtenv.h"
+#include "errcod.h"
+#include "falloc.h"
 
 
 #define STAT_OK                 0

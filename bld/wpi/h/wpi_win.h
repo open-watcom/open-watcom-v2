@@ -103,7 +103,7 @@ extern void _wpi_getpaintrect( PAINTSTRUCT *ps, WPI_RECT *rect );
     #define _wpi_setmintracksize(info,width,height) \
         info->ptMinTrackSize.x = width; info->ptMinTrackSize.y = height
 
-    #define _wpi_setdoubleclicktime( rate ) SetDoubleClickTime( rate )
+    #define _wpi_setdoubleclicktime( dclick_ms ) SetDoubleClickTime( dclick_ms )
 
     #define _wpi_iswindowenabled( hwnd ) IsWindowEnabled( hwnd )
 
@@ -885,6 +885,8 @@ extern void _wpi_setbmphdrvalues( WPI_BITMAPINFOHEADER *bmih, ULONG size,
     #define _wpi_getoldbrush( pres, oldbrush ) SelectObject( pres, oldbrush )
 
     #define _wpi_selectobject( pres, obj ) SelectObject( pres, obj )
+
+    #define _wpi_getoldobject( pres, oldobj ) SelectObject( pres, oldobj )
 
     #define _wpi_deleteobject( obj ) DeleteObject( obj )
 

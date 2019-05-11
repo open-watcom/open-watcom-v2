@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -31,7 +32,7 @@
 
 
 // Include all the string id's.
-#include "msg.h"
+#include "msg.rh"
 
 extern bool AsMsgInit( void );
 extern bool AsMsgGet( int resourceid, char *buffer );

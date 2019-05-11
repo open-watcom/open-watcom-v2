@@ -35,7 +35,7 @@
 #include "fmedit.def"
 #include "state.def"
 #include "object.h"
-#include "fmdlgs.h"
+#include "fmdlgs.rh"
 #include "scroll.def"
 
 /* this constant must correspond to the index of the object menu item */
@@ -50,50 +50,50 @@ static INT_CREATE_RTN *InternalCreate[] = {
     #undef pick
 };
 
-void FMEDITAPI AddFMEditMenus( HMENU submenu, int bitmap )
-/********************************************************/
+void FMEDITAPI AddFMEditMenus( HMENU hsubmenu, int bitmap )
+/*********************************************************/
 {
     /* insert the editor specific things into the edit menu */
     HBITMAP     hbitmap;
-    HMENU       alignmenu;
+    HMENU       halignmenu;
 
-    InsertMenu( submenu, -1, MF_BYPOSITION | MF_SEPARATOR, 0, NULL );
+    InsertMenu( hsubmenu, -1, MF_BYPOSITION | MF_SEPARATOR, 0, NULL );
     if( bitmap & MENU_CUT ) {
-        InsertMenu( submenu, -1, MF_BYPOSITION | MF_STRING, IDM_CUTOBJECT, "Cu&t\tShift+Del" );
+        InsertMenu( hsubmenu, -1, MF_BYPOSITION | MF_STRING, IDM_CUTOBJECT, "Cu&t\tShift+Del" );
     }
     if( bitmap & MENU_COPY ) {
-        InsertMenu( submenu, -1, MF_BYPOSITION | MF_STRING, IDM_COPYOBJECT, "&Copy\tCtrl+Ins" );
+        InsertMenu( hsubmenu, -1, MF_BYPOSITION | MF_STRING, IDM_COPYOBJECT, "&Copy\tCtrl+Ins" );
     }
     if( bitmap & MENU_PASTE ) {
-        InsertMenu( submenu, -1, MF_BYPOSITION | MF_STRING, IDM_PASTEOBJECT, "&Paste\tShift+Ins" );
+        InsertMenu( hsubmenu, -1, MF_BYPOSITION | MF_STRING, IDM_PASTEOBJECT, "&Paste\tShift+Ins" );
     }
     if( bitmap & MENU_DELETE ) {
-        InsertMenu( submenu, -1, MF_BYPOSITION | MF_STRING, IDM_DELETEOBJECT, "&Delete\tDel" );
+        InsertMenu( hsubmenu, -1, MF_BYPOSITION | MF_STRING, IDM_DELETEOBJECT, "&Delete\tDel" );
     }
     LoadAccel( bitmap );
     if( bitmap & MENU_ALIGN ) {
-        alignmenu = CreateMenu();
+        halignmenu = CreateMenu();
         if( (bitmap & EDIT_MENU_FLAGS) != MENU_ALIGN ) {
-            AppendMenu( submenu, MF_SEPARATOR, 0, NULL );
+            AppendMenu( hsubmenu, MF_SEPARATOR, 0, NULL );
         }
-        AppendMenu( submenu, MF_POPUP, (UINT_PTR)alignmenu, "Group &Align" );
+        AppendMenu( hsubmenu, MF_POPUP, (UINT_PTR)halignmenu, "Group &Align" );
         hbitmap = LoadBitmap( GetInst(), "LEFT" );
-        AppendMenu( alignmenu, MF_BITMAP, IDM_FMLEFT, (LPSTR) hbitmap );
-        AppendMenu( alignmenu, MF_SEPARATOR, 0, NULL );
+        AppendMenu( halignmenu, MF_BITMAP, IDM_FMLEFT, (LPSTR) hbitmap );
+        AppendMenu( halignmenu, MF_SEPARATOR, 0, NULL );
         hbitmap = LoadBitmap( GetInst(), "HCENTRE" );
-        AppendMenu( alignmenu, MF_BITMAP, IDM_FMHCENTRE, (LPSTR) hbitmap );
-        AppendMenu( alignmenu, MF_SEPARATOR, 0, NULL );
+        AppendMenu( halignmenu, MF_BITMAP, IDM_FMHCENTRE, (LPSTR) hbitmap );
+        AppendMenu( halignmenu, MF_SEPARATOR, 0, NULL );
         hbitmap = LoadBitmap( GetInst(), "RIGHT" );
-        AppendMenu( alignmenu, MF_BITMAP, IDM_FMRIGHT, (LPSTR) hbitmap );
-        AppendMenu( alignmenu, MF_SEPARATOR, 0, NULL );
+        AppendMenu( halignmenu, MF_BITMAP, IDM_FMRIGHT, (LPSTR) hbitmap );
+        AppendMenu( halignmenu, MF_SEPARATOR, 0, NULL );
         hbitmap = LoadBitmap( GetInst(), "TOP" );
-        AppendMenu( alignmenu, MF_BITMAP, IDM_FMTOP, (LPSTR) hbitmap );
-        AppendMenu( alignmenu, MF_SEPARATOR, 0, NULL );
+        AppendMenu( halignmenu, MF_BITMAP, IDM_FMTOP, (LPSTR) hbitmap );
+        AppendMenu( halignmenu, MF_SEPARATOR, 0, NULL );
         hbitmap = LoadBitmap( GetInst(), "VCENTRE" );
-        AppendMenu( alignmenu, MF_BITMAP, IDM_FMVCENTRE, (LPSTR) hbitmap );
-        AppendMenu( alignmenu, MF_SEPARATOR, 0, NULL );
+        AppendMenu( halignmenu, MF_BITMAP, IDM_FMVCENTRE, (LPSTR) hbitmap );
+        AppendMenu( halignmenu, MF_SEPARATOR, 0, NULL );
         hbitmap = LoadBitmap( GetInst(), "BOTTOM" );
-        AppendMenu( alignmenu, MF_BITMAP, IDM_FMBOTTOM, (LPSTR) hbitmap );
+        AppendMenu( halignmenu, MF_BITMAP, IDM_FMBOTTOM, (LPSTR) hbitmap );
     }
 }
 
@@ -116,40 +116,40 @@ static void FixMenuName( char *name, int len )
 void InitEditMenu( HWND wnd, int bitmap )
 /***************************************/
 {
-    HMENU       submenu;
+    HMENU       hsubmenu;
     int         nummenus;
     char        menuname[MAX_MENU + 1];
     int         i;
     bool        editfound;
     int         len;
-    HMENU       mainmenu;
+    HMENU       hmenu;
 
     if( bitmap != MENU_NONE ) {
-        mainmenu = GetMenu( wnd );
-        if( mainmenu == NULL ) {
+        hmenu = GetMenu( wnd );
+        if( hmenu == NULL ) {
             return;
         }
-        nummenus = GetMenuItemCount( mainmenu );
+        nummenus = GetMenuItemCount( hmenu );
         if( bitmap & EDIT_MENU_FLAGS ) {
             editfound = false;
             for( i = 0; i < nummenus; ++i ) {
-                len = GetMenuString( mainmenu, i, menuname, MAX_MENU, MF_BYPOSITION );
+                len = GetMenuString( hmenu, i, menuname, MAX_MENU, MF_BYPOSITION );
                 FixMenuName( menuname, len );
                 if( !editfound && stricmp( menuname, "EDIT" ) == 0 ) {
                     editfound = true;
-                    AddFMEditMenus( GetSubMenu( mainmenu, i ), bitmap );
+                    AddFMEditMenus( GetSubMenu( hmenu, i ), bitmap );
                 }
             }
             if( !editfound ) {
-                submenu = CreatePopupMenu();
-                AddFMEditMenus( submenu, bitmap );
-                InsertMenu( mainmenu, nummenus - 1, MF_BYPOSITION | MF_POPUP, (UINT_PTR)submenu, "&Edit" );
+                hsubmenu = CreatePopupMenu();
+                AddFMEditMenus( hsubmenu, bitmap );
+                InsertMenu( hmenu, nummenus - 1, MF_BYPOSITION | MF_POPUP, (UINT_PTR)hsubmenu, "&Edit" );
                 ++nummenus;
             }
         }
         if( bitmap & MENU_SETUP ) {
-            submenu = LoadMenu( GetInst(), "SetupMenu" );
-            InsertMenu( mainmenu, nummenus - 1, MF_BYPOSITION | MF_POPUP, (UINT_PTR)submenu, "&Setup" );
+            hsubmenu = LoadMenu( GetInst(), "SetupMenu" );
+            InsertMenu( hmenu, nummenus - 1, MF_BYPOSITION | MF_POPUP, (UINT_PTR)hsubmenu, "&Setup" );
             DrawMenuBar( GetAppWnd() );
         }
     }

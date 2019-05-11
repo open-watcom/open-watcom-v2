@@ -199,12 +199,12 @@ static BOOL readInBitmapFile( const char *fullname )
                                                                         NULL );
             _wpi_preparemono( destpres, BLACK, WHITE );
 
-            oldbmp1 = _wpi_selectobject( srcpres, hbitmap );
-            oldbmp2 = _wpi_selectobject( destpres, node.hxorbitmap );
+            oldbmp1 = _wpi_selectbitmap( srcpres, hbitmap );
+            oldbmp2 = _wpi_selectbitmap( destpres, node.hxorbitmap );
             _wpi_bitblt( destpres, 0, 0, node.width, node.height, srcpres,
                                         0, 0, SRCCOPY );
-            _wpi_selectobject( srcpres, oldbmp1 );
-            _wpi_selectobject( destpres, oldbmp2 );
+            _wpi_selectbitmap( srcpres, oldbmp1 );
+            _wpi_selectbitmap( destpres, oldbmp2 );
             _wpi_deletecompatiblepres( srcpres, srcdc );
             _wpi_deletecompatiblepres( destpres, destdc );
             _wpi_deletebitmap( hbitmap );

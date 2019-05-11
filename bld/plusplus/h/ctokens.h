@@ -37,4 +37,9 @@ typedef enum TOKEN {
     T_LAST_TOKEN
 } TOKEN;
 
+/* extra virtual tokens, used to simplify tokens processing */
+#define T_UNEXPANDABLE_ID   T_LAST_TOKEN
+#define T_REWRITE_MODS      T_LAST_TOKEN
+#define T_PRAGMA_END        (T_LAST_TOKEN + 1)
+
 extern  const char  *Tokens[];

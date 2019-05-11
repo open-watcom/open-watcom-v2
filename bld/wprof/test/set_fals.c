@@ -30,14 +30,15 @@
 
 
 #include <stdio.h>
-
+#include "bool.h"
 #include "pt.h"
+
 
 extern bool flags[SIZE+1];
 extern int count, niter, iter;
 
 
-void set_false( k )
+void set_false( int k )
 {
     int f;
 

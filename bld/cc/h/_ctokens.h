@@ -130,6 +130,5 @@ pick( T_UNROLL,                 "unroll",               TC_XX,            OPR_NO
 pick( T_UNWIND,                 "unwind",               TC_XX,            OPR_NOP )
 pick( T_VA_START,               "va_start",             TC_XX,            OPR_NOP )
 pick( T_ALLOCA,                 "alloca",               TC_XX,            OPR_NOP )
-pick( T_LAST_TOKEN,             " ",                    TC_XX,            OPR_NOP )
 
 #endif

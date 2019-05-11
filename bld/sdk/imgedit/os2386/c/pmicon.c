@@ -217,7 +217,7 @@ a_pm_image_file *OpenPMImage( FILE *fp, int type, int *retcode )
     img_file = MemAlloc( size );
     while( TRUE ) {
         size += sizeof( pm_image_info );
-        img_file = MemReAlloc( img_file, size );
+        img_file = MemRealloc( img_file, size );
         img_file->resources[i].xhotspot = bafh->bfh2.xHotspot;
         img_file->resources[i].yhotspot = bafh->bfh2.yHotspot;
 
@@ -290,7 +290,7 @@ a_pm_image *GetPMImageBits( a_pm_image_file *img_file, FILE *fp, int img_num )
         image = MemAlloc( sizeof(a_pm_image) );
         image->and_size = 0;
         image->xor_size = BITS_TO_BYTES( bm->cx * bm->cBitCount, bm->cy );
-        image = MemReAlloc( image, sizeof(a_pm_image) + image->xor_size );
+        image = MemRealloc( image, sizeof(a_pm_image) + image->xor_size );
         image->and_mask = NULL;
     }
 

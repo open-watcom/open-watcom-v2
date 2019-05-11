@@ -35,7 +35,7 @@
 #include <ctype.h>
 #include <dos.h>
 #include "wdebug.h"
-#include "segmap.h"
+#include "segmap.rh"
 #include "jdlg.h"
 
 

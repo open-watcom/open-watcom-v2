@@ -504,19 +504,19 @@ void ShowNewColor( int index, COLORREF newcolor, BOOL repaint )
         _wpi_torgbmode( mempres );
 
         brush = _wpi_createsolidbrush( newcolor );
-        oldbrush = _wpi_selectobject( mempres, brush );
+        oldbrush = _wpi_selectbrush( mempres, brush );
         blackpen = _wpi_createpen( PS_SOLID, 0, BLACK );
-        oldpen = _wpi_selectobject( mempres, blackpen );
+        oldpen = _wpi_selectpen( mempres, blackpen );
         oldbitmap = _wpi_selectbitmap( mempres, hColorBitmap );
 
         _wpi_cvth_pt( &topleft, colorsHeight );
         _wpi_cvth_pt( &bottomright, colorsHeight );
 
         _wpi_rectangle( mempres, topleft.x, topleft.y, bottomright.x, bottomright.y );
-        _wpi_selectobject( mempres, oldpen );
-        _wpi_selectobject( mempres, oldbrush );
-        _wpi_deleteobject( blackpen );
-        _wpi_deleteobject( brush );
+        _wpi_getoldpen( mempres, oldpen );
+        _wpi_getoldbrush( mempres, oldbrush );
+        _wpi_deletepen( blackpen );
+        _wpi_deletebrush( brush );
         _wpi_getoldbitmap( mempres, oldbitmap );
         _wpi_deletecompatiblepres( mempres, hdc );
     }

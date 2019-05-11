@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -93,10 +94,11 @@ char *InitSys( void )
     char            deviceFileName[64];
     COMMTIMEOUTS    timeouts = { MAXDWORD, MAXDWORD, 1, 0, 0 };
 
-    if( comPortNumber )
+    if( comPortNumber ) {
         sprintf( deviceFileName, "\\\\.\\COM%d", comPortNumber );
-    else
+    } else {
         strncpy( deviceFileName, comPortName, sizeof( deviceFileName ) );
+    }
 
     Trace( "InitSys: '%s'\n", deviceFileName );
 
@@ -128,16 +130,16 @@ char *InitSys( void )
             hSerial = INVALID_HANDLE_VALUE;
             return NULL;
         }
-        
+
         // Configure the serial port
         GetCommState(hSerial, &devCon);
-        
+
         devCon.BaudRate = 9600;
         devCon.ByteSize = 8;
         devCon.Parity = NOPARITY;
         devCon.StopBits = ONESTOPBIT;
         devCon.fParity = FALSE;
-        
+
         devCon.fDsrSensitivity = FALSE;
         devCon.fDtrControl = FALSE;
         devCon.fRtsControl = RTS_CONTROL_DISABLE;
@@ -146,9 +148,9 @@ char *InitSys( void )
         devCon.fInX = FALSE;
         devCon.fOutX = FALSE;
         SetCommState(hSerial, &devCon);
-        
+
         SetCommTimeouts(hSerial, &timeouts);
-        
+
         EscapeCommFunction(hSerial, SETDTR);
         EscapeCommFunction(hSerial, SETRTS);
     }
@@ -225,7 +227,7 @@ int GetByte( void )
             }
         }
     }
-    return -1;
+    return SDATA_NO_DATA;
 }
 
 
@@ -269,7 +271,8 @@ bool Baud( int index )
         return( TRUE );
     }
 
-    if( index == currentBaudRateIndex ) return( TRUE );
+    if( index == currentBaudRateIndex )
+        return( TRUE );
 
     GetCommState(hSerial, &devCon);
     devCon.BaudRate = 115200 / Divisor[index];
@@ -299,8 +302,9 @@ char *ParsePortSpec( const char **spec )
                 *d++ = *(*spec)++;
             ch = '\0';
         }
-        if( ch != '\0' && ch != '.' )
+        if( ch != '\0' && ch != '.' ) {
             return( TRP_ERR_invalid_serial_port_number );
+        }
     }
     return( NULL );
 }

@@ -378,8 +378,7 @@ static void WindowsWriteProfile( const VBUF *app_name, const VBUF *key_name,
 
                 VbufInit( &tmp );
                 VbufConcStr( &tmp, substr + len );
-                VbufSetLen( &vbuf, substr - VbufString( &vbuf ) );
-                VbufConcVbuf( &vbuf, &tmp );
+                VbufSetVbufAt( &vbuf, &tmp, substr - VbufString( &vbuf ) );
                 VbufFree( &tmp );
             }
         } else {
@@ -507,8 +506,8 @@ void WriteProfileStrings( bool uninstall )
     VbufInit( &file_name );
     for( ; i != end; i += sign ) {
         SimProfInfo( i, &app_name, &key_name, &value, &file_name, &hive_name );
-        ReplaceVars( &value, NULL );
-        ReplaceVars( &file_name, NULL );
+        ReplaceVars1( &value );
+        ReplaceVars1( &file_name );
         if( !uninstall ) {
             add = SimCheckProfCondition( i );
             if( !add ) {

@@ -37,7 +37,7 @@ extern void             AddToTemp( byte b );
 extern void             InsertByte( byte b );
 extern void             EmitByte( byte b );
 extern void             EmitPtr( pointer p );
-extern void             EmitSegId( segment_id seg );
+extern void             EmitSegId( segment_id segid );
 extern void             EmitOffset( offset i );
 extern void             LayOpbyte( gen_opcode op );
 extern void             LayOpword( gen_opcode op );

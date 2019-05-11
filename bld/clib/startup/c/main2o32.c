@@ -35,7 +35,6 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
-#include <malloc.h>
 #define INCL_DOSPROCESS
 #define INCL_DOSEXCEPTIONS
 #include <os2.h>

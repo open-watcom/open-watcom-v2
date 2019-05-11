@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -37,6 +38,8 @@
 #include "biosui.h"
 #include "uiwin.h"
 #include <windows.h>
+#include "setevent.h"
+#include "uiwinhk.h"
 
 
 #define PICK_ONE(x) PickOne( EV_ALT_##x, EV_CTRL_##x, EV_SHIFT_##x, EV_##x )
@@ -267,21 +270,6 @@ static void MyHookRtn( unsigned event, unsigned info )
     }
 }
 
-/*
- * The handler installed by SetEventHook uses non-standard calling convention.
- * Arguments are passed in ax and cx, and setting carry flag before exit
- * may cause the message to be discarded. Also, the routine has to set ds
- * to the proper value (ie. no multiple instances - but it may not be possible
- * to register multiple event hooks anyway). See Undocumented Windows.
- *
- * Note - this keyboard input method looks like a really ugly hack.
- */
-void __far __loadds win_uihookrtn( unsigned event, unsigned info )
-{
-    MyHookRtn( event, info );
-    set_carry();
-}
-
 static shiftkey_event   ShiftkeyEvents[] = {
     EV_SHIFT_PRESS,     EV_SHIFT_RELEASE,
     EV_SHIFT_PRESS,     EV_SHIFT_RELEASE,
@@ -345,12 +333,27 @@ void HookOutQueue( void )
 }
 #endif
 
-extern void __far __pascal SetEventHook( LPVOID );
+/*
+ * The handler installed by SetEventHook uses non-standard calling convention.
+ * Arguments are passed in ax and cx, and setting carry flag before exit
+ * may cause the message to be discarded. Also, the routine has to set ds
+ * to the proper value (ie. no multiple instances - but it may not be possible
+ * to register multiple event hooks anyway). See Undocumented Windows.
+ *
+ * Note - this keyboard input method looks like a really ugly hack.
+ */
+
+void __far __loadds win_uihookrtn( unsigned event, unsigned info )
+/****************************************************************/
+{
+    MyHookRtn( event, info );
+    set_carry();
+}
 
 bool intern initkeyboard( void )
 /******************************/
 {
-    SetEventHook( &win_uihookrtn );
+    SetEventHook( win_uihookrtn );
     return( false );
 }
 

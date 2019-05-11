@@ -30,17 +30,17 @@
 ****************************************************************************/
 
 
-typedef struct nodearray        NODEARRAY;
+typedef struct nodearray        nodearray;
 
 extern void             InitNodes( void );
-extern void             *FindNode( NODEARRAY *, unsigned );
-extern unsigned         GetNumNodes( NODEARRAY * );
-extern void             *AllocNode( NODEARRAY * );
-extern void             *AllocNodeIdx( NODEARRAY *, unsigned );
+extern void             *FindNode( nodearray *, unsigned );
+extern unsigned         GetNumNodes( nodearray * );
+extern void             *AllocNode( nodearray * );
+extern void             *AllocNodeIdx( nodearray *, unsigned );
 extern mod_entry        *NewModEntry( void );
 extern void             FreeModEntry( mod_entry * );
-extern void             FreeNodes( NODEARRAY * );
-extern void             IterateNodelist( NODEARRAY *, void (*)(void *,void *), void *);
+extern void             FreeNodes( nodearray * );
+extern void             IterateNodelist( nodearray *, void (*)(void *,void *), void *);
 extern void             BurnNodes( void );
 extern void             ReleaseNames( void );
 extern void             CollapseLazyExtdefs( void );
@@ -51,7 +51,7 @@ extern void             FreeSegData( void * );
 extern list_of_names    *MakeListName( char *, size_t );
 extern unsigned long    BadObjFormat( void );
 
-extern NODEARRAY        *ExtNodes;           // ptr to obj file import list
-extern NODEARRAY        *SegNodes;           // ptr to obj file segment list
-extern NODEARRAY        *GrpNodes;           // ptr to obj file group list
-extern NODEARRAY        *NameNodes;          // ptr to obj file lname list
+extern nodearray        *ExtNodes;           // ptr to obj file import list
+extern nodearray        *SegNodes;           // ptr to obj file segment list
+extern nodearray        *GrpNodes;           // ptr to obj file group list
+extern nodearray        *NameNodes;          // ptr to obj file lname list

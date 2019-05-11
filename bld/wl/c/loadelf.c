@@ -84,7 +84,7 @@ static ElfSymTable *    ElfSymTab;
 /* Put debugging info into section WITHIN the file instead of appending a
  * separate elf file at the end */
 
-#define INJECT_DEBUG ( SymFileName == NULL && (LinkFlags & DWARF_DBI_FLAG) )
+#define INJECT_DEBUG ( SymFileName == NULL && (LinkFlags & LF_DWARF_DBI_FLAG) )
 
 static void InitSections( ElfHdr *hdr)
 /************************************/
@@ -143,11 +143,11 @@ static void SetHeaders( ElfHdr *hdr )
     hdr->eh.e_ident[EI_ABIVERSION] = FmtData.u.elf.abiversion;
     memset( &hdr->eh.e_ident[EI_PAD], 0, EI_NIDENT - EI_PAD );
     hdr->eh.e_type = ET_EXEC;
-    if( LinkState & HAVE_PPC_CODE ) {
+    if( LinkState & LS_HAVE_PPC_CODE ) {
         hdr->eh.e_machine = EM_PPC;
-    } else if( LinkState & HAVE_MIPS_CODE ) {
+    } else if( LinkState & LS_HAVE_MIPS_CODE ) {
         hdr->eh.e_machine = EM_MIPS;
-    } else if( LinkState & HAVE_X64_CODE ) {
+    } else if( LinkState & LS_HAVE_X64_CODE ) {
         hdr->eh.e_machine = EM_X86_64;
     } else {
         hdr->eh.e_machine = EM_386;
@@ -356,7 +356,7 @@ void FiniELFLoadFile( void )
 
     SetHeaders( &hdr );
 #if 0
-    if( (LinkState & HAVE_PPC_CODE) && (FmtData.type & MK_OS2) ) {
+    if( (LinkState & LS_HAVE_PPC_CODE) && (FmtData.type & MK_OS2) ) {
         // Development temporarly on hold
         // BuildOS2Imports(); // Build .got section
     }

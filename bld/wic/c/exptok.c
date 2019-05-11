@@ -327,7 +327,7 @@ pToken getExpandToken(ExpOpType expandOp, int *expandResult) {
                     continueFlag = *expandResult;
                 } else if (symbol->type == SYMT_TYPEDEF) {
                     token->data->code = Y_TYPEDEF_NAME;
-                    token->data->repr.pTypeDecl = symbol->repr.typeCode;
+                    token->data->repr.ginfo.pTypeDecl = symbol->repr.typeCode;
                 }
             }
         }

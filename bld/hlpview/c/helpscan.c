@@ -32,7 +32,7 @@
 #include <stdio.h>
 #include <string.h>
 #include "watcom.h"
-#include "uidef.h"
+#include "stdui.h"
 #include "help.h"
 #include "helpscan.h"
 #include "helpchar.h"

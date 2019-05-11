@@ -30,9 +30,7 @@
 ****************************************************************************/
 
 
-#define metaware cdecl
-
-#pragma aux metaware "*" \
+#pragma aux (__cdecl) metaware "*" \
     __parm __caller [] \
     __value __struct __float __struct __routine [__eax] \
     __modify [__eax __ebx __ecx __edx]

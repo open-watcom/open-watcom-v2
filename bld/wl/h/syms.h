@@ -74,38 +74,32 @@ typedef enum {
 
 // Here is all other values except the first four bits of the info field.
 
-    SYM_DEAD            = 0x00000010, // symbol has been eliminated.
-    SYM_FREE_ALIAS      = 0x00000010, // used for aliases only.
-    SYM_OLDHAT          = 0x00000020, // symbol referenced in a previous obj
-    SYM_REFERENCED      = 0x00000040, // used to mark unref'd symbols in map
-    SYM_CHECKED         = 0x00000080, // symbol has been checked by FindUndefined
-    SYM_MAP_GLOBAL      = 0x00000080, // put sym in global map symbol list
-    SYM_STATIC          = 0x00000100, // non-global symbol
-    SYM_LOCAL_REF       = 0x00000200, // symbol referenced locally.
-    SYM_TRACE           = 0x00000400, // keep track of references to this symbol
-    SYM_IN_CURRENT      = 0x00000800, // symbol seen in current module
-    SYM_WAS_LAZY        = 0x00000800, // used for aliases only
-    SYM_DEFINED         = 0x00001000, // symbol defined.
-    SYM_ABSOLUTE        = 0x00002000, // symbol is absolute
-    SYM_EXPORTED        = 0x00008000, // symbol has been exported
-    SYM_CDAT_SEL_NODUP  = 0x00000000, // do not allow duplicates
-    SYM_CDAT_SEL_ANY    = 0x00010000,
-    SYM_CDAT_SEL_SIZE   = 0x00020000,
-    SYM_CDAT_SEL_EXACT  = 0x00030000,
-    SYM_CDAT_SEL_MASK   = 0x00030000,
-    SYM_CDAT_SEL_SHIFT  = 16,
-    SYM_RELOC_REFD      = 0x00040000, // symbol referenced by a stored reloc
-    SYM_KILL            = 0x00080000, // remove symbol
-    SYM_IS_ALTDEF       = 0x00100000, // symbol is an altdef symbol.
-    SYM_FAR_COMMUNAL    = 0x00200000, // is a far communal symbol
-    SYM_LINK_GEN        = 0x00400000, // is a linker generated symbol
-    SYM_HAS_DATA        = 0x00800000, // only used for altdefs
-    SYM_NAME_XLATED     = 0x01000000, // only used during permdata writing
-    SYM_IS_FREE         = 0x10000000, // only used during permdata writing.
-
-    SYM_CLEAR_ON_P2     = 0xE00000A0, // bits to clear before pass 2 starts.
-    SYM_CLEAR_ON_INC    = 0x010404F0, //
-    SYM_CLEAR_ON_ALT    = 0x00980010, //
+    SYM_DEAD            = CONSTU32( 0x00000010 ),   // symbol has been eliminated.
+    SYM_FREE_ALIAS      = CONSTU32( 0x00000010 ),   // used for aliases only.
+    SYM_OLDHAT          = CONSTU32( 0x00000020 ),   // symbol referenced in a previous obj
+    SYM_REFERENCED      = CONSTU32( 0x00000040 ),   // used to mark unref'd symbols in map
+    SYM_CHECKED         = CONSTU32( 0x00000080 ),   // symbol has been checked by FindUndefined
+    SYM_MAP_GLOBAL      = CONSTU32( 0x00000080 ),   // put sym in global map symbol list
+    SYM_STATIC          = CONSTU32( 0x00000100 ),   // non-global symbol
+    SYM_LOCAL_REF       = CONSTU32( 0x00000200 ),   // symbol referenced locally.
+    SYM_TRACE           = CONSTU32( 0x00000400 ),   // keep track of references to this symbol
+    SYM_IN_CURRENT      = CONSTU32( 0x00000800 ),   // symbol seen in current module
+    SYM_WAS_LAZY        = CONSTU32( 0x00000800 ),   // used for aliases only
+    SYM_DEFINED         = CONSTU32( 0x00001000 ),   // symbol defined.
+    SYM_ABSOLUTE        = CONSTU32( 0x00002000 ),   // symbol is absolute
+    SYM_EXPORTED        = CONSTU32( 0x00008000 ),   // symbol has been exported
+    SYM_CDAT_SEL_NODUP  = CONSTU32( 0x00000000 ),   // do not allow duplicates
+    SYM_CDAT_SEL_ANY    = CONSTU32( 0x00010000 ),
+    SYM_CDAT_SEL_SIZE   = CONSTU32( 0x00020000 ),
+    SYM_CDAT_SEL_EXACT  = CONSTU32( 0x00030000 ),
+    SYM_RELOC_REFD      = CONSTU32( 0x00040000 ),   // symbol referenced by a stored reloc
+    SYM_KILL            = CONSTU32( 0x00080000 ),   // remove symbol
+    SYM_IS_ALTDEF       = CONSTU32( 0x00100000 ),   // symbol is an altdef symbol.
+    SYM_FAR_COMMUNAL    = CONSTU32( 0x00200000 ),   // is a far communal symbol
+    SYM_LINK_GEN        = CONSTU32( 0x00400000 ),   // is a linker generated symbol
+    SYM_HAS_DATA        = CONSTU32( 0x00800000 ),   // only used for altdefs
+    SYM_NAME_XLATED     = CONSTU32( 0x01000000 ),   // only used during permdata writing
+    SYM_IS_FREE         = CONSTU32( 0x10000000 ),   // only used during permdata writing.
 
 // the top three bits are used for the floating point fixup type during pass 2
 // SYM_DCE_REF, SYM_VF_REFS_DONE and SYM_VF_MARKED are only needed during
@@ -114,11 +108,23 @@ typedef enum {
 // SYM_DISTRIB is only set when SYM_DEFINED is on, and SYM_VF_MARKED is only
 // needed when the symbol is not defined.
 
-    SYM_DISTRIB         = 0x20000000, // DOS ONLY: symbol is in a distrib. lib.
-    SYM_VF_MARKED       = 0x20000000, // vf reference record seen for this sym.
-    SYM_DCE_REF         = 0x40000000, // referenced for the purposes of dead code
-    SYM_VF_REFS_DONE    = 0x80000000  // ALL: vf refs added to call graph
+    SYM_DISTRIB         = CONSTU32( 0x20000000 ),   // DOS ONLY: symbol is in a distrib. lib.
+    SYM_VF_MARKED       = CONSTU32( 0x20000000 ),   // vf reference record seen for this sym.
+    SYM_DCE_REF         = CONSTU32( 0x40000000 ),   // referenced for the purposes of dead code
+    SYM_VF_REFS_DONE    = CONSTU32( 0x80000000 ),   // ALL: vf refs added to call graph
 } sym_info;
+
+#define SYM_CDAT_SEL_MASK   (SYM_CDAT_SEL_NODUP | SYM_CDAT_SEL_ANY | SYM_CDAT_SEL_SIZE | SYM_CDAT_SEL_EXACT)
+#define SYM_CDAT_SEL_SHIFT  16
+
+#define SYM_FFIX        (SYM_VF_MARKED | SYM_DCE_REF | SYM_VF_REFS_DONE)
+
+#define SYM_CLEAR_ON_P2  /* 0xE00000A0 flags to clear before pass 2 starts. */ \
+    (SYM_OLDHAT | SYM_CHECKED | SYM_MAP_GLOBAL | SYM_FFIX)
+#define SYM_CLEAR_ON_INC /* 0x010404F0 flags to clear when incremental linking. */ \
+    (SYM_DEAD | SYM_FREE_ALIAS | SYM_OLDHAT | SYM_REFERENCED | SYM_CHECKED | SYM_MAP_GLOBAL | SYM_TRACE | SYM_RELOC_REFD | SYM_NAME_XLATED)
+#define SYM_CLEAR_ON_ALT /* 0x00980010 */ \
+    (SYM_DEAD | SYM_FREE_ALIAS | SYM_KILL | SYM_IS_ALTDEF | SYM_HAS_DATA)
 
 // values used to keep track of the special floating point symbols.
 typedef enum {

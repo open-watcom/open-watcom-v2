@@ -29,7 +29,7 @@
 ****************************************************************************/
 
 
-#include "uidef.h"
+#include "stdui.h"
 #include "uidialog.h"
 #include "msgbox.h"
 

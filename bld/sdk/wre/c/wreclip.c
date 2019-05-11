@@ -52,7 +52,7 @@
 #include "wrenew.h"
 #include "wreres.h"
 #include "wreclip.h"
-#include "wre_rc.h"
+#include "wre.rh"
 #include "wrdll.h"
 #include "wrbitmap.h"
 #include "jdlg.h"

@@ -101,11 +101,11 @@ static  void    IOCall( RTCODE rtn ) {
 
 // Call i/o run-time routine with one argument.
 
-    call_handle handle;
+    call_handle call;
 
-    handle = InitCall( rtn );
-    CGAddParm( handle, XPop(), TY_POINTER );
-    CGDone( CGCall( handle ) );
+    call = InitCall( rtn );
+    CGAddParm( call, XPop(), TY_POINTER );
+    CGDone( CGCall( call ) );
 }
 
 
@@ -114,11 +114,11 @@ static  void    IOCallValue( RTCODE rtn ) {
 
 // Call i/o run-time routine with one argument.
 
-    call_handle handle;
+    call_handle call;
 
-    handle = InitCall( rtn );
-    CGAddParm( handle, GetTypedValue(), TY_INT_4 );
-    CGDone( CGCall( handle ) );
+    call = InitCall( rtn );
+    CGAddParm( call, GetTypedValue(), TY_INT_4 );
+    CGDone( CGCall( call ) );
 }
 
 
@@ -208,11 +208,11 @@ static  void    Output( RTCODE rtn, cg_type arg_type ) {
 
 // Call runtime routine to output elemental types value.
 
-    call_handle handle;
+    call_handle call;
 
-    handle = InitCall( rtn );
-    CGAddParm( handle, XPopValue( arg_type ), PromoteToBaseType( arg_type ) );
-    CGDone( CGCall( handle ) );
+    call = InitCall( rtn );
+    CGAddParm( call, XPopValue( arg_type ), PromoteToBaseType( arg_type ) );
+    CGDone( CGCall( call ) );
 }
 
 
@@ -221,11 +221,11 @@ static  void    Input( RTCODE rtn ) {
 
 // Common input routine.
 
-    call_handle handle;
+    call_handle call;
 
-    handle = InitCall( rtn );
-    CGAddParm( handle, XPop(), TY_POINTER );
-    CGDone( CGCall( handle ) );
+    call = InitCall( rtn );
+    CGAddParm( call, XPop(), TY_POINTER );
+    CGDone( CGCall( call ) );
 }
 
 
@@ -402,15 +402,15 @@ static  void    OutCplx( RTCODE rtn, cg_type typ ) {
 
 // Call runtime routine to input COMPLEX value.
 
-    call_handle handle;
+    call_handle call;
     cg_cmplx    z;
 
-    handle = InitCall( rtn );
+    call = InitCall( rtn );
     XPopCmplx( &z, typ );
     typ = CmplxBaseType( typ );
-    CGAddParm( handle, z.imagpart, typ );
-    CGAddParm( handle, z.realpart, typ );
-    CGDone( CGCall( handle ) );
+    CGAddParm( call, z.imagpart, typ );
+    CGAddParm( call, z.realpart, typ );
+    CGDone( CGCall( call ) );
 }
 
 
@@ -446,23 +446,23 @@ void    FCOutCHAR( void ) {
 
 // Call runtime routine to output CHARACTER*n value.
 
-    call_handle handle;
+    call_handle call;
 
-    handle = InitCall( RT_OUT_CHAR );
-    CGAddParm( handle, XPop(), TY_POINTER );
-    CGDone( CGCall( handle ) );
+    call = InitCall( RT_OUT_CHAR );
+    CGAddParm( call, XPop(), TY_POINTER );
+    CGDone( CGCall( call ) );
 }
 
 
 static  void    IOString( RTCODE rtn ) {
 //======================================
 
-    call_handle handle;
+    call_handle call;
 
-    handle = InitCall( rtn );
-    CGAddParm( handle, XPop(), TY_INTEGER );
-    CGAddParm( handle, XPop(), TY_POINTER );
-    CGDone( CGCall( handle ) );
+    call = InitCall( rtn );
+    CGAddParm( call, XPop(), TY_INTEGER );
+    CGAddParm( call, XPop(), TY_POINTER );
+    CGDone( CGCall( call ) );
 }
 
 
@@ -777,22 +777,22 @@ void    FCSetNml( void ) {
 
 // Set NAMELIST format.
 
-    call_handle handle;
+    call_handle call;
     sym_id      nl;
     grp_entry   *ge;
 
     NmlSpecified = true;
-    handle = InitCall( RT_SET_NML );
+    call = InitCall( RT_SET_NML );
     nl = GetPtr();
     ReverseList( (void **)&nl->u.nl.group_list );
     ge = nl->u.nl.group_list;
     while( ge != NULL ) {
-        CGAddParm( handle, SymAddr( ge->sym ), TY_POINTER );
+        CGAddParm( call, SymAddr( ge->sym ), TY_POINTER );
         ge = ge->link;
     }
     ReverseList( (void **)&nl->u.nl.group_list );
-    CGAddParm( handle, CGBackName( nl->u.nl.address, TY_POINTER ), TY_POINTER );
-    CGDone( CGCall( handle ) );
+    CGAddParm( call, CGBackName( nl->u.nl.address, TY_POINTER ), TY_POINTER );
+    CGDone( CGCall( call ) );
 }
 
 
@@ -801,11 +801,11 @@ void    FCSetFmt( void ) {
 
 // Set format string from FORMAT statement.
 
-    call_handle handle;
+    call_handle call;
 
-    handle = InitCall( RT_SET_FMT );
-    CGAddParm( handle, CGBackName( (back_handle)GetStmtLabel( GetPtr() ), TY_POINTER ), TY_POINTER );
-    CGDone( CGCall( handle ) );
+    call = InitCall( RT_SET_FMT );
+    CGAddParm( call, CGBackName( (back_handle)GetStmtLabel( GetPtr() ), TY_POINTER ), TY_POINTER );
+    CGDone( CGCall( call ) );
 }
 
 
@@ -814,11 +814,11 @@ void    FCPassLabel( void ) {
 
 // Pass label to run-time routine.
 
-    call_handle handle;
+    call_handle call;
 
-    handle = InitCall( GetU16() );
-    CGAddParm( handle, CGBackName( (back_handle)GetLabel( GetU16() ), TY_POINTER ), TY_POINTER );
-    CGDone( CGCall( handle ) );
+    call = InitCall( GetU16() );
+    CGAddParm( call, CGBackName( (back_handle)GetLabel( GetU16() ), TY_POINTER ), TY_POINTER );
+    CGDone( CGCall( call ) );
 }
 
 
@@ -830,11 +830,11 @@ void    FCFmtAssign( void ) {
 //       PRINT I, ...
 // 10    FORMAT( ... )
 
-    call_handle handle;
+    call_handle call;
 
-    handle = InitCall( RT_SET_FMT );
-    CGAddParm( handle, CGUnary( O_POINTS, SymAddr( GetPtr() ), TY_POINTER ), TY_POINTER );
-    CGDone( CGCall( handle ) );
+    call = InitCall( RT_SET_FMT );
+    CGAddParm( call, CGUnary( O_POINTS, SymAddr( GetPtr() ), TY_POINTER ), TY_POINTER );
+    CGDone( CGCall( call ) );
 }
 
 
@@ -898,12 +898,12 @@ void    FCFmtScan( void ) {
 // Call runtime routine to scan a format specification from a character
 // expression.
 
-    call_handle handle;
+    call_handle call;
 
-    handle = InitCall( RT_FMT_SCAN );
-    CGAddParm( handle, CGInteger( GetU16(), TY_UNSIGNED ), TY_UNSIGNED );
-    CGAddParm( handle, XPop(), TY_POINTER );
-    CGDone( CGCall( handle ) );
+    call = InitCall( RT_FMT_SCAN );
+    CGAddParm( call, CGInteger( GetU16(), TY_UNSIGNED ), TY_UNSIGNED );
+    CGAddParm( call, XPop(), TY_POINTER );
+    CGDone( CGCall( call ) );
 }
 
 
@@ -913,16 +913,16 @@ void    FCFmtArrScan( void ) {
 // Call runtime routine to scan a format specification from a character
 // array.
 
-    call_handle handle;
+    call_handle call;
     sym_id      sym;
 
     sym = GetPtr();
-    handle = InitCall( RT_FMT_ARR_SCAN );
-    CGAddParm( handle, CGInteger( GetU16(), TY_UNSIGNED ), TY_UNSIGNED );
-    CGAddParm( handle, ArrayEltSize( sym ), TY_UNSIGNED );
-    CGAddParm( handle, ArrayNumElts( sym ), TY_INT_4 );
-    CGAddParm( handle, SymAddr( sym ), TY_POINTER );
-    CGDone( CGCall( handle ) );
+    call = InitCall( RT_FMT_ARR_SCAN );
+    CGAddParm( call, CGInteger( GetU16(), TY_UNSIGNED ), TY_UNSIGNED );
+    CGAddParm( call, ArrayEltSize( sym ), TY_UNSIGNED );
+    CGAddParm( call, ArrayNumElts( sym ), TY_INT_4 );
+    CGAddParm( call, SymAddr( sym ), TY_POINTER );
+    CGDone( CGCall( call ) );
 }
 
 
@@ -931,7 +931,7 @@ void    FCIntlArrSet( void ) {
 
 // Call runtime routine to set internal file to character array.
 
-    call_handle handle;
+    call_handle call;
     sym_id      sym;
     sym_id      scb;
 
@@ -941,10 +941,10 @@ void    FCIntlArrSet( void ) {
                        ArrayEltSize( sym ), TY_INTEGER ) );
     CGTrash( CGAssign( SCBPtrAddr( CGFEName( scb, TY_POINTER ) ),
                        SymAddr( sym ), TY_POINTER ) );
-    handle = InitCall( RT_SET_INTL );
-    CGAddParm( handle, ArrayNumElts( sym ), TY_INT_4 );
-    CGAddParm( handle, CGFEName( scb, TY_POINTER ), TY_POINTER );
-    CGDone( CGCall( handle ) );
+    call = InitCall( RT_SET_INTL );
+    CGAddParm( call, ArrayNumElts( sym ), TY_INT_4 );
+    CGAddParm( call, CGFEName( scb, TY_POINTER ), TY_POINTER );
+    CGDone( CGCall( call ) );
 }
 
 
@@ -953,12 +953,12 @@ void    FCSetIntl( void ) {
 
 // Call runtime routine to set internal file to character item (not array).
 
-    call_handle handle;
+    call_handle call;
 
-    handle = InitCall( RT_SET_INTL );
-    CGAddParm( handle, CGInteger( 1, TY_INT_4 ), TY_INT_4 );
-    CGAddParm( handle, XPop(), TY_POINTER );
-    CGDone( CGCall( handle ) );
+    call = InitCall( RT_SET_INTL );
+    CGAddParm( call, CGInteger( 1, TY_INT_4 ), TY_INT_4 );
+    CGAddParm( call, XPop(), TY_POINTER );
+    CGDone( CGCall( call ) );
 }
 
 

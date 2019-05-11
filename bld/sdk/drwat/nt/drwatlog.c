@@ -36,11 +36,10 @@
 #include <io.h>
 #include <ctype.h>
 #include <sys/stat.h>
-#include <alloca.h>
 #include "srchmsg.h"
-#include "intdlg.h"
-#include "drwatlog.h"
-#include "memdmp.h"
+#include "intdlg.rh"
+#include "drwatlog.rh"
+#include "memdmp.rh"
 #include "jdlg.h"
 #include "regcrt.h"
 #include "mad.h"

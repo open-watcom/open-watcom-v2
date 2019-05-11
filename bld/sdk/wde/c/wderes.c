@@ -60,7 +60,7 @@
 #include "wdefbase.h"
 #include "wdedde.h"
 #include "wdefont.h"
-#include "wde_rc.h"
+#include "wde.rh"
 #include "wrdll.h"
 
 /****************************************************************************/
@@ -747,7 +747,7 @@ bool WdeCreateResourceWindow( WdeResInfo *res_info, size_t fn_offset, char *titl
     bool                old;
     DWORD               style;
     RECT                r;
-    HMENU               sys_menu;
+    HMENU               hsysmenu;
     char                *win_title;
     int                 win_title_len;
 
@@ -817,9 +817,9 @@ bool WdeCreateResourceWindow( WdeResInfo *res_info, size_t fn_offset, char *titl
     }
 
     if( WdeIsDDE() ) {
-        sys_menu = GetSystemMenu( win, FALSE );
-        if( sys_menu != (HMENU)NULL ) {
-            EnableMenuItem( sys_menu, SC_CLOSE, MF_GRAYED );
+        hsysmenu = GetSystemMenu( win, FALSE );
+        if( hsysmenu != (HMENU)NULL ) {
+            EnableMenuItem( hsysmenu, SC_CLOSE, MF_GRAYED );
         }
     }
 

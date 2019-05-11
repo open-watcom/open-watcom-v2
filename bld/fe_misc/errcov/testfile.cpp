@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -58,13 +59,14 @@ void TestFile::GetNextError(char *ErrCode)  {
 
 
 
-void TestFile::_getNextToken() {
+void TestFile::_getNextToken()
+{
     char Line[MAXLINELENGTH];
     char *token;
     int found=0;
 
     while( ( !found ) && ( !feof(_inFile) ) ) {
-        fgets(Line,MAXLINELENGTH,_inFile);
+        fgets(Line,sizeof( Line ),_inFile);
         token=strtok(Line," :!");
         token=strtok(NULL," :!");
         // check if the token equals either "Error" or "Warning"

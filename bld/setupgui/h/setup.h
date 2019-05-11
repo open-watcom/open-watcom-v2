@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -67,13 +68,6 @@
 #include "bool.h"
 #include "vhandle.h"
 #include "guitypes.h"
-#if defined( __WINDOWS__ )
-    #include "setupdlg.h"
-#elif defined( __NT__ )
-    #include "setupdlg.h"
-#elif defined( __OS2__ )
-    #include "setupdlg.h"
-#endif
 #include "gui.h"
 #include "strvbuf.h"
 
@@ -87,6 +81,26 @@
 #define UCHAR_VALUE( c )    (unsigned char)(c)
 
 // Defines used by the SETUP program.
+
+#if defined( __UNIX__ )
+    #define BATCHEXT        ".sh"
+#elif defined( __OS2__ )
+    #define BATCHEXT        ".cmd"
+#else
+    #define BATCHEXT        ".bat"
+#endif
+
+#if defined( __OS2__ )
+    #define BATCH_EXT_SAVED "OS2"
+#elif defined( __NT__ )
+    #define BATCH_EXT_SAVED "W95"
+#elif defined( __DOS__ ) || defined( __WINDOWS__ )
+    #define BATCH_EXT_SAVED "DOS"
+#else
+    // not used
+#endif
+
+#define IS_VALID_DIR(p)     ((p)->d_name[0] != '.' || (p)->d_name[1] != '\0' && ((p)->d_name[1] != '.' || (p)->d_name[2] != '\0'))
 
 typedef enum {
     CFE_NOERROR,
@@ -128,12 +142,18 @@ enum {
     #undef pick
 };
 
-#define MAX_DRIVES 10
-
 extern bool             ConfigModified;
 extern gui_window       *MainWnd;
+extern bool             CancelSetup;
+extern bool             SkipDialogs;
+extern bool             Invisible;
+extern gui_coord        GUIScale;
+extern char             *VariablesFile;
+extern bool             VisibilityCondition;
+extern gui_ord          BitMapBottom;
 
 extern void             ReplaceVars( VBUF *dst, const char *src );
+#define ReplaceVars1(d) ReplaceVars(d, NULL)
 extern bool             CheckInstallDLL( const VBUF *, vhandle );
 extern bool             CheckInstallNLM( const VBUF *, vhandle );
 extern bool             CreatePMInfo( bool );

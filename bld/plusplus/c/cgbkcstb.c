@@ -53,7 +53,7 @@ static void __dump( const char* text, CALL_STAB* cstb )
         printf( "CALL_STAB[%p] %s handle(%p) se(%p) has_cd_arg(%d) cd_arg(%x)\n"
               , cstb
               , text
-              , cstb->handle
+              , cstb->call
               , cstb->se
               , cstb->has_cd_arg
               , cstb->cd_arg );
@@ -68,34 +68,34 @@ static void __dump( const char* text, CALL_STAB* cstb )
 
 
 CALL_STAB* CallStabAlloc(       // ALLOCATE CALL_STAB
-    call_handle handle,         // - handle for call
+    call_handle call,           // - handle for call
     FN_CTL* fctl )              // - function hosting the call
 {
     CALL_STAB* cstb;            // - call information
 
     cstb = RingCarveAlloc( carve_call_stab, &fctl->expr_calls );
-    cstb->handle = handle;
+    cstb->call = call;
     cstb->se = FstabMarkedPosn();
     cstb->has_cd_arg = false;
     cstb->cd_arg = 0;
-    CgCdArgUsed( handle );
+    CgCdArgUsed( call );
     __dump( "allocate", cstb );
     return( cstb );
 }
 
 
 static CALL_STAB* callStabEntry(// GET CALL_STAB FOR A HANDLE
-    call_handle handle )        // - handle for call
+    call_handle call )          // - handle for call
 {
     FN_CTL* fctl;               // - top function information
     CALL_STAB* curr;            // - call information (current)
     CALL_STAB* retn;            // - call information (returned)
 
     retn = NULL;
-    if( 0 != handle ) {
+    if( 0 != call ) {
         fctl = FnCtlTop();
         RingIterBeg( fctl->expr_calls, curr ) {
-            if( curr->handle == handle ) {
+            if( curr->call == call ) {
                 retn = curr;
                 break;
             }
@@ -106,13 +106,13 @@ static CALL_STAB* callStabEntry(// GET CALL_STAB FOR A HANDLE
 
 
 bool CallStabCdArgGet(          // GET CD-ARG FOR A CALL
-    call_handle handle,         // - handle for call
+    call_handle call,           // - handle for call
     unsigned *a_cd_arg )        // - addr[ value for CD-ARG ]
 {
     CALL_STAB* cstb;            // - call information
     bool ok;                    // - true ==> have CDTOR arg.
 
-    cstb = callStabEntry( handle );
+    cstb = callStabEntry( call );
     if( cstb != NULL && cstb->has_cd_arg ) {
         *a_cd_arg = cstb->cd_arg;
         ok = true;
@@ -124,12 +124,12 @@ bool CallStabCdArgGet(          // GET CD-ARG FOR A CALL
 
 
 unsigned CallStabCdArgSet(      // SET CD-ARG FOR A CALL
-    call_handle handle,         // - handle for call
+    call_handle call,           // - handle for call
     unsigned cd_arg )           // - value for CD-ARG
 {
     CALL_STAB* cstb;            // - call information
 
-    cstb = callStabEntry( handle );
+    cstb = callStabEntry( call );
     if( cstb != NULL ) {
         cstb->has_cd_arg = true;
         cstb->cd_arg = cd_arg;
@@ -148,11 +148,11 @@ void CallStabFree(              // FREE CALL_STAB
 
 
 SE* CallStabStateTablePosn(     // GET STATE-TABLE POSITION AT CALL POINT
-    call_handle handle )        // - handle for inline call
+    call_handle call )          // - handle for inline call
 {
     CALL_STAB* curr;            // - current CALL_STAB entry
 
-    curr = callStabEntry( handle );
+    curr = callStabEntry( call );
     DbgVerify( curr, "CallStabStateTablePosn -- no active call" );
     __dump( "inline", curr );
     return( curr->se );

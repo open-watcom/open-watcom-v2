@@ -35,7 +35,7 @@
 #endif
 
 LP_VOID UIAPI uifaralloc( size_t size )
-/*******************************************/
+/*************************************/
 {
     void        *ptr;
 
@@ -50,7 +50,7 @@ LP_VOID UIAPI uifaralloc( size_t size )
 
 
 void UIAPI uifarfree( LP_VOID ptr )
-/**************************************/
+/*********************************/
 {
 #if defined( HAVE_FAR ) && defined( __386__ )
     /* On extended DOS, we are throwing away the segment part. However,

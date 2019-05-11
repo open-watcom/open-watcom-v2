@@ -33,10 +33,11 @@
 #include <stdarg.h>
 #include <stdlib.h>
 #include <string.h>
-#include <malloc.h>
+#include <malloc.h>     /* necessary for various heap memory function */
 #include <conio.h>
 #include <sys/types.h>
 #include "wic.h"
+#include "wio.h"
 #include "wressetr.h"
 #include "wresset2.h"
 #include "wreslang.h"
@@ -50,8 +51,6 @@
 
 static int      _fileNum = 0;
 static unsigned MsgShift = 0;
-
-static void reportBadHeap( int retval );
 
 /*Forward declarations */
 void incDebugCount(void);
@@ -112,7 +111,7 @@ void zapErrorFile(void)
     errorFile = NULL;
 }
 
-void logError(char *s)
+static void logError(char *s)
 {
     FILE *output = errorFile;
     if (errorFile == NULL) {
@@ -231,7 +230,8 @@ static void _printLine( void *parm, const char *buf, size_t len )
 
 #endif
 
-void printMemUsage( void )
+#if 0
+static void printMemUsage( void )
 {
 #ifdef TRMEM
     int save = _memOutput;
@@ -242,6 +242,7 @@ void printMemUsage( void )
     printf( "Memory used: %d.\n", g_memUsed );
 #endif
 }
+#endif
 
 void outOfMemory( void )
 {
@@ -252,7 +253,7 @@ void outOfMemory( void )
 void *_debugVar = 0;
 #endif
 
-void *BasicAlloc(size_t size)
+static void *BasicAlloc(size_t size)
 {
     void *temp;
 #ifdef TRMEM
@@ -315,21 +316,6 @@ static void GetOffset(void)
                      // warning message of not being referenced.
 }
 
-void initMemory(void)
-{
-    reportBadHeap(_heapset(0));
-#ifdef TRMEM
-    TrHdl = _trmem_open( malloc, free, NULL, NULL, NULL, _printLine,
-            _TRMEM_ALLOC_SIZE_0 | _TRMEM_REALLOC_SIZE_0 |
-            _TRMEM_OUT_OF_MEMORY | _TRMEM_CLOSE_CHECK_FREE );
-    if (TrHdl == NULL) {
-        printf("Memory initialization failed.\n");
-        exit(1);
-    }
-#endif
-    InitFMem(BasicAlloc, BasicFree, NULL, 0);
-}
-
 void zapMemory(void)
 {
     int check = FMEM_NO_CHECK;
@@ -347,6 +333,7 @@ void zapMemory(void)
 
 static int numCallsToCheckMemory = 0;
 
+#ifdef __WATCOMC__
 static void reportBadHeap(int retval)
 {
     switch(retval) {
@@ -362,9 +349,28 @@ static void reportBadHeap(int retval)
         reportError(FATAL_INTERNAL, "In checkMemory: Memory corruption");
     }
 }
+#endif
+
+void initMemory(void)
+{
+#ifdef __WATCOMC__
+    reportBadHeap(_heapset(0));
+#endif
+#ifdef TRMEM
+    TrHdl = _trmem_open( malloc, free, NULL, NULL, NULL, _printLine,
+            _TRMEM_ALLOC_SIZE_0 | _TRMEM_REALLOC_SIZE_0 |
+            _TRMEM_OUT_OF_MEMORY | _TRMEM_CLOSE_CHECK_FREE );
+    if (TrHdl == NULL) {
+        printf("Memory initialization failed.\n");
+        exit(1);
+    }
+#endif
+    InitFMem(BasicAlloc, BasicFree, NULL, 0);
+}
 
 void checkMemory(void)
 {
+#ifdef __WATCOMC__
     struct _heapinfo h_info;
     int ret;
 
@@ -378,6 +384,7 @@ void checkMemory(void)
         }
         reportBadHeap(ret);
     }
+#endif
 }
 
 /*------------------------ Exit -----------------------------------*/
@@ -407,7 +414,7 @@ void printUsageAndExit( void )
 
 /*--------------------- Debugging ----------------------------------*/
 
-long _debugSize = 1029204;
+unsigned long _debugSize = 1029204;
 int _modifyMe = 1;
 
 void incDebugCount(void)

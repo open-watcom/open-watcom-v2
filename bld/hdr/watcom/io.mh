@@ -10,8 +10,10 @@
 
 :include owrtlink.sp
 
+:segment DOS
 :include lfndos.sp
 
+:endsegment
 :include systypes.sp
 
 #ifndef _SYS_STAT_H_INCLUDED
@@ -26,6 +28,7 @@
  *  ISO C types
  */
 :include time_t.sp
+
 :include wchar_t.sp
 :include intptr_t.sp
 
@@ -47,14 +50,15 @@
 #define STDIN_FILENO    0
 #define STDOUT_FILENO   1
 #define STDERR_FILENO   2
-
+:segment DOS
 :include ext.sp
-#if ! defined(__NT__)
+#if !defined(__NT__)
 #define STDAUX_FILENO   3
 #define STDPRN_FILENO   4
 #endif
 :include extepi.sp
 
+:endsegment
 typedef unsigned long   _fsize_t;
 
 struct _finddata_t {

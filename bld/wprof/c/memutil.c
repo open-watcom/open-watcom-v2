@@ -43,10 +43,11 @@
     #include "cguimem.h"
     #include "wpimem.h"
 #else
-    #include "uimem.h"
+    #include "stdui.h"
     #include "helpmem.h"
 #endif
 #include "memutil.h"
+#include "dumpmem.h"
 #ifdef TRMEM
     #include "trmem.h"
 #endif
@@ -65,10 +66,12 @@ static void WPMemPrintLine( void *parm, const char *buff, size_t len )
 
     fwrite( buff, 1, len, WPMemFP );
 }
+#if 0
 static void GUIMemPrintLine( void *parm, const char *buff, size_t len )
 {
     /* unused parameters */ (void)parm; (void)buff; (void)len;
 }
+#endif
 #endif
 
 void GUIMemRedirect( FILE *fp )
@@ -113,7 +116,7 @@ void GUIMemOpen( void )
 #endif
 }
 #if !defined( GUI_IS_GUI )
-void UIMemOpen( void ) {}
+void UIAPI UIMemOpen( void ) {}
 #endif
 
 
@@ -130,11 +133,11 @@ void GUIMemClose( void )
 #endif
 }
 #if !defined( GUI_IS_GUI )
-void UIMemClose( void ) {}
+void UIAPI UIMemClose( void ) {}
 #endif
 
 #ifdef TRMEM
-STATIC void profMemCheck( char *msg )
+static void profMemCheck( char *msg )
 /***********************************/
 {
     if( !WalkMem() ) {
@@ -269,7 +272,7 @@ void * _wpi_malloc( size_t size )
     return( mem );
 }
 #else
-void *uimalloc( size_t size )
+void * UIAPI uimalloc( size_t size )
 {
     void    *mem;
 
@@ -373,7 +376,7 @@ void _wpi_free( void *ptr )
 #endif
 }
 #else
-void uifree( void *ptr )
+void UIAPI uifree( void *ptr )
 {
 #ifdef TRMEM
     profMemCheck( "ProfFree" );
@@ -491,7 +494,7 @@ void * _wpi_realloc( void *ptr, size_t new_size )
     }
     return( new );
 }
-void *MemReAlloc( void *ptr, size_t new_size )
+void *MemRealloc( void *ptr, size_t new_size )
 {
     void    *new;
 
@@ -514,7 +517,7 @@ void *MemReAlloc( void *ptr, size_t new_size )
     return( new );
 }
 #else
-void *uirealloc( void *ptr, size_t new_size )
+void * UIAPI uirealloc( void *ptr, size_t new_size )
 {
     void    *new;
 

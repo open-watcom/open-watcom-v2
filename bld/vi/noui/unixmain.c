@@ -31,9 +31,9 @@
 
 #include "vi.h"
 #ifdef __WATCOMC__
-    #include <malloc.h>
     #include <process.h>
 #endif
+
 
 void main( int argc, char *argv[] )
 {
@@ -43,10 +43,15 @@ void main( int argc, char *argv[] )
     _argc = argc;
     _argv = argv;
 #endif
+
+    InitMem();
+
     EXEName = _cmdname( buffer );
     VarAddGlobalStr( "OS", "unix" );
     Comspec = getenv( "SHELL" );
     InitializeEditor();
     EditMain();
+
+    FiniMem();
 
 } /* main */

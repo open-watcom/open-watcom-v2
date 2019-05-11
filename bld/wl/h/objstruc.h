@@ -99,19 +99,20 @@ typedef struct outfilelist {
     unsigned long       origin;
 } outfilelist;
 
-enum infile_flags {
-    INSTAT_USE_LIBPATH  = 0x0001,       // use libpath for this file.
-    INSTAT_LIBRARY      = 0x0002,       // file is a library
-    INSTAT_IOERR        = 0x0004,       // problem reading this file
-    INSTAT_IN_USE       = 0x0008,       // file in use.
-    INSTAT_OPEN_WARNING = 0x0010,       // only give a warning if can't open
-    INSTAT_FULL_CACHE   = 0x0020,       // read entire file.
-    INSTAT_PAGE_CACHE   = 0x0040,       // read in "paged"
+typedef enum {
+    INSTAT_USE_LIBPATH  = 0x0001,   // use libpath for this file.
+    INSTAT_LIBRARY      = 0x0002,   // file is a library
+    INSTAT_IOERR        = 0x0004,   // problem reading this file
+    INSTAT_IN_USE       = 0x0008,   // file in use.
+    INSTAT_OPEN_WARNING = 0x0010,   // only give a warning if can't open
+    INSTAT_FULL_CACHE   = 0x0020,   // read entire file.
+    INSTAT_PAGE_CACHE   = 0x0040,   // read in "paged"
     INSTAT_GOT_MODTIME  = 0x0080,
     INSTAT_NO_WARNING   = 0x0100
-};
+} infile_status;
 
 #define INSTAT_SET_CACHE (INSTAT_FULL_CACHE | INSTAT_PAGE_CACHE)
+#define INSTAT_LIB_SEARCH (INSTAT_USE_LIBPATH | INSTAT_LIBRARY)
 
 typedef struct infilelist {
     INFILELIST          *next;
@@ -123,30 +124,38 @@ typedef struct infilelist {
     f_handle            handle;
     time_t              modtime;
     name_strtab         name;
-    enum infile_flags   flags;
+    infile_status       status;
 } infilelist;
 
-enum file_status {
-    DBI_LINE            = 0x00000001,    /*  values for DBIFlag */
-    DBI_TYPE            = 0x00000002,
-    DBI_LOCAL           = 0x00000004,
-    DBI_ONLY_EXPORTS    = 0x00000008,
-    DBI_STATICS         = 0x00000010,
-    DBI_ALL             = ( DBI_LINE | DBI_TYPE | DBI_LOCAL | DBI_STATICS ),
-    DBI_MASK            = ( DBI_ALL | DBI_ONLY_EXPORTS ),
-    STAT_HAS_CHANGED    = 0x00000040,
-    STAT_OMF_LIB        = 0x00000080,
-    STAT_AR_LIB         = 0x00000100,
-    STAT_IS_LIB         = ( STAT_AR_LIB | STAT_OMF_LIB ),
-    STAT_LAST_SEG       = 0x00000200,    // set by newsegment option
-    STAT_TRACE_SYMS     = 0x00000400,
-    STAT_LIB_FIXED      = 0x00000800,
-    STAT_OLD_LIB        = 0x00001000,
-    STAT_LIB_USED       = 0x00002000,
-    STAT_SEEN_LIB       = 0x00004000,
-    STAT_HAS_MEMBER     = 0x00008000,
-    STAT_USER_SPECD     = 0x00010000
-};
+typedef enum {
+    /* bits 0..4 reserved for DBI_xxxx symbols */
+    DBI_LINE            = 0x0001,
+    DBI_TYPE            = 0x0002,
+    DBI_LOCAL           = 0x0004,
+    DBI_ONLY_EXPORTS    = 0x0008,
+    DBI_STATICS         = 0x0010,
+} dbi_flags;
+
+#define DBI_ALL         (DBI_LINE | DBI_TYPE | DBI_LOCAL | DBI_STATICS)
+#define DBI_MASK        (DBI_ALL | DBI_ONLY_EXPORTS)
+
+typedef enum {
+    /* bits 0..4 reserved for DBI_xxxx symbols are also stored here */
+    /* bits 5..max available (bits 5..7 reserved for FMT_xxxx symbols, not used here) */
+    STAT_HAS_CHANGED    = 0x0020,
+    STAT_OMF_LIB        = 0x0040,
+    STAT_AR_LIB         = 0x0080,
+    STAT_LAST_SEG       = 0x0100,    // set by newsegment option
+    STAT_TRACE_SYMS     = 0x0200,
+    STAT_LIB_FIXED      = 0x0400,
+    STAT_OLD_LIB        = 0x0800,
+    STAT_LIB_USED       = 0x1000,
+    STAT_SEEN_LIB       = 0x2000,
+    STAT_HAS_MEMBER     = 0x4000,
+    STAT_USER_SPECD     = 0x8000
+} file_flags;
+
+#define STAT_IS_LIB     (STAT_AR_LIB | STAT_OMF_LIB)
 
 /*
  * overlay manager library priority         0
@@ -155,7 +164,7 @@ enum file_status {
  * compiler user specified library priority 9
  * WLINK user specified library priority    10
  */
-typedef enum lib_priorities {
+typedef enum {
     LIB_PRIORITY_MIN    = 0,
     LIB_PRIORITY_MID    = 5,
     LIB_PRIORITY_MAX    = 10
@@ -163,13 +172,13 @@ typedef enum lib_priorities {
 
 typedef struct file_list {
     FILE_LIST           *next_file;
-    infilelist          *file;
+    infilelist          *infile;
     union {
         union dict_entry    *dict;
         MEMBER_LIST         *member;
     } u;
     char                *strtab; /* for AR format */
-    enum file_status    status;
+    file_flags          flags;
     lib_priority        priority;       /* for libraries */
     unsigned            ovlref   : 16;  /* for fixed libraries */
     unsigned                     : 0;
@@ -186,21 +195,24 @@ typedef struct trace_info {
 } trace_info;
 
 typedef enum {
-    // DBI_xxxx symbols are also stored here.
-    // FMT_xxxx symbols (for deciding .obj format) are also stored here
-    MOD_DBI_SEEN        = 0x00000800, // true if dbi segment seen in this mod.
-    MOD_FIXED           = 0x00001000, // true if mod must stay in spec'd section
-    MOD_VISITED         = 0x00002000, // true if visited in call graph analysis.
-    MOD_NEED_PASS_2     = 0x00004000, // true if pass 2 needed for this module.
-    MOD_LAST_SEG        = 0x00008000, // true if this module should end a group
-    MOD_GOT_NAME        = 0x00010000, // true if already got a source file name
-    MOD_IMPORT_LIB      = 0x00020000, // ORL: true if this is an import lib.
-    MOD_KILL            = 0x00040000, // module should be removed from list
-    MOD_FLATTEN_DBI     = 0x00080000, // flatten DBI found in this mod.
-    MOD_DONE_PASS_1     = 0x00100000, // module been through pass 1 already.
-    MOD_IS_FREE         = 0x80000000, // used for marking carve free blocks
-    MOD_CLEAR_ON_INC    = 0x00100000  // flags to clear when inc. linking.
+    /* bits 0..4 reserved for DBI_xxxx symbols are also stored here */
+    /* bits 5..7 reserved for FMT_xxxx symbols are also stored here */
+    /* bits 8..max available */
+    MOD_DBI_SEEN        = CONSTU32( 0x00000100 ),   // true if dbi segment seen in this mod.
+    MOD_FIXED           = CONSTU32( 0x00000200 ),   // true if mod must stay in spec'd section
+    MOD_VISITED         = CONSTU32( 0x00000400 ),   // true if visited in call graph analysis.
+    MOD_NEED_PASS_2     = CONSTU32( 0x00000800 ),   // true if pass 2 needed for this module.
+    MOD_LAST_SEG        = CONSTU32( 0x00001000 ),   // true if this module should end a group
+    MOD_GOT_NAME        = CONSTU32( 0x00002000 ),   // true if already got a source file name
+    MOD_IMPORT_LIB      = CONSTU32( 0x00004000 ),   // ORL: true if this is an import lib.
+    MOD_KILL            = CONSTU32( 0x00008000 ),   // module should be removed from list
+    MOD_FLATTEN_DBI     = CONSTU32( 0x00010000 ),   // flatten DBI found in this mod.
+    MOD_DONE_PASS_1     = CONSTU32( 0x00020000 ),   // module been through pass 1 already.
+    MOD_IS_FREE         = CONSTU32( 0x80000000 ),   // used for marking carve free blocks
 } module_flags;
+
+#define MOD_CLEAR_ON_INC    /* flags to clear when incremental linking. */ \
+    (MOD_DONE_PASS_1)
 
 typedef struct member_list {
     MEMBER_LIST         *next;
@@ -226,7 +238,7 @@ typedef union {
 // fields used only in distributing libs are marked dist:
 // remember to change DIST_ONLY_SIZE if you remove or add a "dist" field!
 
-typedef struct arcdata {
+typedef struct {
     unsigned_16         ovlref;     // dist: # of the module
     unsigned_16         numarcs;    // dist: of arcs in the list
     dist_arc            arcs[1];    // dist: the actual arcs.
@@ -283,24 +295,24 @@ typedef struct mod_entry {
 } mod_entry;
 
 typedef enum {
-    CLASS_32BIT         = 0x00000001,
-    CLASS_TRANSFER      = 0x00000002,     /* used for PE import transfer code */
-    CLASS_MS_TYPE       = 0x00000004,
-    CLASS_MS_LOCAL      = 0x00000008,
-    CLASS_DWARF         = 0x0000000C,
-    CLASS_DEBUG_INFO    = (CLASS_MS_TYPE | CLASS_MS_LOCAL | CLASS_DWARF),
-    CLASS_CODE          = 0x00000010,
-    CLASS_LXDATA_SEEN   = 0x00000020,
-    CLASS_READ_ONLY     = 0x00000040,
-    CLASS_STACK         = 0x00000080,
-    CLASS_IDATA         = 0x00000100,
-    CLASS_FIXED         = 0x00001000,   // Class should load at specified address
-    CLASS_COPY          = 0x00002000,   // Class should use data from DupClass
-    CLASS_NOEMIT        = 0x00004000,   // Class should not generate output
-    CLASS_IS_FREE       = 0x80000000,   // not used, but guarantees 4 byte enum
+    CLASS_32BIT         = 0x0001,
+    CLASS_TRANSFER      = 0x0002,   /* used for PE import transfer code */
+    CLASS_MS_TYPE       = 0x0004,
+    CLASS_MS_LOCAL      = 0x0008,
+    CLASS_DWARF         = 0x000C,
+    CLASS_CODE          = 0x0010,
+    CLASS_LXDATA_SEEN   = 0x0020,
+    CLASS_READ_ONLY     = 0x0040,
+    CLASS_STACK         = 0x0080,
+    CLASS_IDATA         = 0x0100,
+    CLASS_FIXED         = 0x1000,   // Class should load at specified address
+    CLASS_COPY          = 0x2000,   // Class should use data from DupClass
+    CLASS_NOEMIT        = 0x4000,   // Class should not generate output
 } class_status;
 
-#define EMIT_CLASS(c)   (((c)->flags & CLASS_NOEMIT) == 0)
+#define CLASS_DEBUG_INFO    (CLASS_MS_TYPE | CLASS_MS_LOCAL | CLASS_DWARF)
+
+#define EMIT_CLASS(c)       (((c)->flags & CLASS_NOEMIT) == 0)
 
 typedef struct class_entry {
     CLASS_ENTRY         *next_class;
@@ -409,9 +421,9 @@ enum {
     USE_32              = 0x0400,   /* segment uses 32 bit addresses      */
     LAST_SEGMENT        = 0x0800,   /* force last segment in a code group */
     SEG_LXDATA_SEEN     = 0x8000,   /* LxDATA rec. seen for this segment */
-    SEG_FIXED           = 0x1000,   // Segment should start at seg_addr, not next addr
-    SEG_NOEMIT          = 0x2000,   // Segment should not generate output
-    SEG_BOTH_MASK       = 0x8641    /* flags common to both structures */
+    SEG_FIXED           = 0x1000,   /* Segment should start at seg_addr, not next addr */
+    SEG_NOEMIT          = 0x2000,   /* Segment should not generate output */
+    SEG_BOTH_MASK       = 0x8641,   /* flags common to both structures */
 };
 
 #define EMIT_SEG(s)     (((s)->segflags & SEG_NOEMIT) == 0)
@@ -486,7 +498,7 @@ typedef struct segdata {
     bool                hascdatsym : 1; // true if comdat and has a symbol defd
 } segdata;
 
-typedef struct node {
+typedef struct {
     void                *next;
     void                *entry;
 } node;
@@ -495,7 +507,7 @@ typedef struct node {
 
 typedef signed_32       ordinal_t;
 
-typedef struct dll_sym_info {
+typedef struct {
     union {
         obj_name_list   *modnum;        /* # of DLL in imported names table */
         name_strtab     modname;
@@ -525,7 +537,7 @@ typedef struct seg_flags {
     segflag_type        type;
 } seg_flags;
 
-typedef struct extnode {
+typedef struct {
     symbol              *entry;
     orl_symbol_handle   handle;         // ORL: handle for the symbol
     unsigned            ovlref  : 12;
@@ -533,11 +545,11 @@ typedef struct extnode {
     unsigned            isdefd  : 1;    // used in ORL
 } extnode;
 
-typedef struct grpnode {
+typedef struct {
     GROUP_ENTRY         *entry;
 } grpnode;
 
-typedef struct segnode {
+typedef struct {
     SEGDATA             *entry;
     orl_sec_handle      handle;     // ORL: handle for the segment.
     unsigned_8          *contents;  // ORL: pointer to contents of segment.
@@ -549,7 +561,7 @@ typedef struct list_of_names {
     char                name[ 1 ];
 } list_of_names;
 
-typedef struct lobject_data {
+typedef struct {
     segdata             *seg;
     offset              obj_offset; // pass 1: delta for fixup offsets
     targ_addr           addr;

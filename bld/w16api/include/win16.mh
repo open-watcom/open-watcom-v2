@@ -10,7 +10,7 @@
 :include readonly.sp
 
 #ifndef RC_INVOKED
-    #pragma pack( push, 1 )
+    #pragma pack( __push, 1 )
 #endif
 
 :include cpluspro.sp
@@ -4842,7 +4842,7 @@ int WINAPI          WaitSoundState( int );
 #endif /* NOUSER */
 
 #ifndef RC_INVOKED
-    #pragma pack( pop )
+    #pragma pack( __pop )
 #endif
 
 :include cplusepi.sp

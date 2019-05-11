@@ -737,7 +737,7 @@ char **GetModuleList( DWORD pid, DWORD *cnt )
                 *cnt += 1;
                 if( *cnt == allocsize ) {
                     allocsize += 10;
-                    ret = MemReAlloc( ret, allocsize * sizeof( char * ) );
+                    ret = MemRealloc( ret, allocsize * sizeof( char * ) );
                     if( ret == NULL ) {
                         error = TRUE;
                         break;

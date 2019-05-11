@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////
-// FILE: streambu/streambu.h (streambuf support)
+// FILE: streambuf/streambuf.h (streambuf support)
 //
 :keep CPP_HDR
 :include crwat.sp

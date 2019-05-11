@@ -91,17 +91,21 @@ _WCRTDATA extern int __p_overlay;
 #define _P_OVERLAY  __p_overlay
 #define _P_NOWAITO  3
 #define _OLD_P_OVERLAY  _P_OVERLAY
+:segment DOS
 #ifdef __NT__
 #define _P_DETACH   4
 #endif
+:endsegment
 
 #define P_WAIT      _P_WAIT
 #define P_NOWAIT    _P_NOWAIT
 #define P_OVERLAY   _P_OVERLAY
 #define P_NOWAITO   _P_NOWAITO
+:segment DOS
 #ifdef __NT__
 #define P_DETACH    _P_DETACH
 #endif
+:endsegment
 
 /*
  *  Prototypes for non-POSIX functions
@@ -227,6 +231,7 @@ _WCRTLINK extern int    _wspawnvpe( int __mode, const wchar_t *__path, const wch
 _WCRTLINK extern int    _wsystem( const wchar_t *__cmd );
 
 :segment DOS | RDOS
+:segment DOS
 #ifdef __NT__
  // For use when access to the DLL startup is required.
  // this function pointer will be called after the C library startup
@@ -234,9 +239,12 @@ _WCRTLINK extern int    _wsystem( const wchar_t *__cmd );
  #ifdef _WINDOWS_
   extern BOOL (WINAPI   *_pRawDllMain)( HANDLE, DWORD, LPVOID );
  #else
+:endsegment
   extern int (__stdcall *_pRawDllMain)( void *, unsigned, void * );
+:segment DOS
  #endif
 #endif
+:endsegment
 
 :endsegment
 _WCRTLINK extern pid_t  getpid( void );

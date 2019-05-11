@@ -114,7 +114,7 @@ static void PutBackChar( void ) {
     CurPos--;
 }
 
-int MyComp( const void *p1, const void *p2 ) {
+static int MyComp( const void *p1, const void *p2 ) {
 
     KeyWord     *ptr;
 

@@ -33,9 +33,9 @@
 #ifndef _GUIMKEY_H_
 #define _GUIMKEY_H_
 
-#define CHK_KS_SHIFT    ( (KeyState & GUI_KS_CTRL) != 0 )
-#define CHK_KS_ALT      ( (KeyState & GUI_KS_SHIFT) != 0 )
-#define CHK_KS_CTRL     ( (KeyState & GUI_KS_ALT) != 0 )
+#define CHK_KS_CTRL     ( (KeyState & GUI_KS_CTRL) != 0 )
+#define CHK_KS_SHIFT    ( (KeyState & GUI_KS_SHIFT) != 0 )
+#define CHK_KS_ALT      ( (KeyState & GUI_KS_ALT) != 0 )
 
 #define SET_KS_CTRL     ( KeyState |= GUI_KS_CTRL )
 #define SET_KS_SHIFT    ( KeyState |= GUI_KS_SHIFT )

@@ -32,7 +32,7 @@
 
 #include "gdefn.h"
 #if !defined( _DEFAULT_WINDOWS )
-#include <malloc.h>
+#include "walloca.h"
 #include "stkavail.h"
 
 

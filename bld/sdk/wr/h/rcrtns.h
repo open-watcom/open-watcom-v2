@@ -33,7 +33,7 @@
 #ifndef RCRTNS_INLCUDED
 #define RCRTNS_INLCUDED
 
-#include "wrmemi.h"
+#include "cguimem.h"
 
 #define RESOPEN         res_open
 #define RESCLOSE        res_close

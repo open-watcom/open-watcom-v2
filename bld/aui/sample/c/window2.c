@@ -147,11 +147,9 @@ static void     W2MenuItem( a_window wnd, gui_ctl_id id, wnd_row row, wnd_piece 
         if( row < 0 )
             break;
         if( row & 1 ) {
-            WndSetPopUpMenu( wnd, W2PopUp, 1 );
-//            WndSetPopUp( wnd, W2PopUp );
+            WndSetPopUpMenu( wnd, ArraySize( W2PopUp ), W2PopUp );
         } else {
-            WndSetPopUpMenu( wnd, W2AltPopUp, 1 );
-//            WndSetPopUp( wnd, W2AltPopUp );
+            WndSetPopUpMenu( wnd, ArraySize( W2AltPopUp ), W2AltPopUp );
         }
         break;
     case MENU_W2_SAY:
@@ -247,6 +245,11 @@ static bool W2WndEventProc( a_window wnd, gui_event gui_ev, void *parm )
     return( false );
 }
 
+static bool ChkUpdate( void )
+{
+    return( WndUpdateFlags & EV_UPDATE_2 );
+}
+
 static wnd_info W2Info = {
     W2WndEventProc,
     W2Refresh,
@@ -259,9 +262,8 @@ static wnd_info W2Info = {
     NoNumRows,
     W2NextRow,
     NoNotify,
-    ChkFlags,
-    EV_UPDATE_2,
-    DefPopUp( W2PopUp )
+    ChkUpdate,
+    PopUp( W2PopUp )
 };
 
 a_window W2Open( void )

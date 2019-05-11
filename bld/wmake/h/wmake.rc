@@ -17,8 +17,8 @@
  *  %x  : hex number (2 or 4 digits)
  */
 
-#include "mrcmsg.h"
-#include "wreslang.h"
+#include "mrcmsg.rh"
+#include "wreslang.rh"
 
 STRINGTABLE
 BEGIN

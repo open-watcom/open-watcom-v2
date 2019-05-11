@@ -63,7 +63,7 @@ static void SetDlgStatus( dlg_var_expand *varx, gui_window *gui )
 }
 
 
-OVL_EXTERN bool VarGUIEventProc( gui_window *gui, gui_event gui_ev, void *param )
+static bool VarGUIEventProc( gui_window *gui, gui_event gui_ev, void *param )
 {
     gui_ctl_id      id;
     dlg_var_expand  *varx;

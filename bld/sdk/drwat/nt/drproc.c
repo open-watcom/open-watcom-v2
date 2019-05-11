@@ -32,11 +32,11 @@
 
 #include "drwatcom.h"
 #include <time.h>
-#include "menu.h"
+#include "menu.rh"
 #include "aboutdlg.h"
 #include "savelbox.h"
 #include "mark.h"
-#include "end.h"
+#include "end.rh"
 #include "wwinhelp.h"
 #include "jdlg.h"
 
@@ -146,19 +146,19 @@ static bool QueryEnd( HWND owner ) {
 }
 
 static void setupSystemMenu( HWND hwnd ) {
-    HMENU       smh;
-    HMENU       mh;
+    HMENU       hsysmenu;
+    HMENU       hmenu;
     char        menuname[256];
 
-    smh = GetSystemMenu( hwnd, FALSE );
-    mh = GetMenu( hwnd );
-    AppendMenu( smh, MF_SEPARATOR, 0,NULL );
-    GetMenuString( mh, MENU_LOG_CURRENT_STATE, menuname, sizeof( menuname ), MF_BYCOMMAND );
-    AppendMenu( smh, MF_ENABLED, MENU_LOG_CURRENT_STATE, menuname );
-    GetMenuString( mh, MENU_LOG_OPTIONS, menuname, sizeof( menuname ), MF_BYCOMMAND );
-    AppendMenu( smh, MF_ENABLED, MENU_LOG_OPTIONS, menuname );
-    GetMenuString( mh, MENU_TASK_CTL, menuname, sizeof( menuname ), MF_BYCOMMAND );
-    AppendMenu( smh, MF_ENABLED, MENU_TASK_CTL, menuname );
+    hsysmenu = GetSystemMenu( hwnd, FALSE );
+    hmenu = GetMenu( hwnd );
+    AppendMenu( hsysmenu, MF_SEPARATOR, 0,NULL );
+    GetMenuString( hmenu, MENU_LOG_CURRENT_STATE, menuname, sizeof( menuname ), MF_BYCOMMAND );
+    AppendMenu( hsysmenu, MF_ENABLED, MENU_LOG_CURRENT_STATE, menuname );
+    GetMenuString( hmenu, MENU_LOG_OPTIONS, menuname, sizeof( menuname ), MF_BYCOMMAND );
+    AppendMenu( hsysmenu, MF_ENABLED, MENU_LOG_OPTIONS, menuname );
+    GetMenuString( hmenu, MENU_TASK_CTL, menuname, sizeof( menuname ), MF_BYCOMMAND );
+    AppendMenu( hsysmenu, MF_ENABLED, MENU_TASK_CTL, menuname );
 }
 
 /*
@@ -168,19 +168,19 @@ LONG CALLBACK MainWindowProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam 
 {
     WORD                        cmd;
     about_info                  ai;
-    HMENU                       mh;
+    HMENU                       hmenu;
     CommunicationBuffer         *dbginfo;
 
     switch ( msg ) {
     case WM_CREATE:
         setupSystemMenu( hwnd );
         MainLBox = CreateListBox( hwnd );
-        mh = GetMenu( hwnd );
+        hmenu = GetMenu( hwnd );
         if( ConfigData.auto_attatch ) {
-            CheckMenuItem( mh, MENU_AUTO_ATTATCH, MF_BYCOMMAND | MF_CHECKED );
+            CheckMenuItem( hmenu, MENU_AUTO_ATTATCH, MF_BYCOMMAND | MF_CHECKED );
         }
         if( ConfigData.continue_exception ) {
-            CheckMenuItem( mh, MENU_EXCEPTION_CONTINUE, MF_BYCOMMAND | MF_CHECKED );
+            CheckMenuItem( hmenu, MENU_EXCEPTION_CONTINUE, MF_BYCOMMAND | MF_CHECKED );
         }
         LBPrintf( MainLBox, STR_DRNT_STARTED, AppName );
         break;
@@ -206,13 +206,11 @@ LONG CALLBACK MainWindowProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam 
             break;
         case MENU_EXCEPTION_CONTINUE:
             ConfigData.continue_exception = !ConfigData.continue_exception;
-            mh = GetMenu( hwnd );
+            hmenu = GetMenu( hwnd );
             if( ConfigData.continue_exception ) {
-                CheckMenuItem( mh, MENU_EXCEPTION_CONTINUE,
-                                   MF_BYCOMMAND | MF_CHECKED );
+                CheckMenuItem( hmenu, MENU_EXCEPTION_CONTINUE, MF_BYCOMMAND | MF_CHECKED );
             } else {
-                CheckMenuItem( mh, MENU_EXCEPTION_CONTINUE,
-                                   MF_BYCOMMAND | MF_UNCHECKED );
+                CheckMenuItem( hmenu, MENU_EXCEPTION_CONTINUE, MF_BYCOMMAND | MF_UNCHECKED );
             }
             break;
         case MENU_LOG_VIEW:
@@ -223,13 +221,11 @@ LONG CALLBACK MainWindowProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam 
             break;
         case MENU_AUTO_ATTATCH:
             ConfigData.auto_attatch = ! ConfigData.auto_attatch;
-            mh = GetMenu( hwnd );
+            hmenu = GetMenu( hwnd );
             if( ConfigData.auto_attatch ) {
-                CheckMenuItem( mh, MENU_AUTO_ATTATCH,
-                               MF_BYCOMMAND | MF_CHECKED );
+                CheckMenuItem( hmenu, MENU_AUTO_ATTATCH, MF_BYCOMMAND | MF_CHECKED );
             } else {
-                CheckMenuItem( mh, MENU_AUTO_ATTATCH,
-                               MF_BYCOMMAND | MF_UNCHECKED );
+                CheckMenuItem( hmenu, MENU_AUTO_ATTATCH, MF_BYCOMMAND | MF_UNCHECKED );
             }
             break;
         case MENU_SHOW_DIP_STATUS:

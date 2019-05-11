@@ -1,6 +1,5 @@
 // Dump the global names table
 
-#include <malloc.h>
 #include "ipfcdump.h"
 
 void readGNames( FILE *in, FILE *out )

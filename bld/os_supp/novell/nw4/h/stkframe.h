@@ -5,7 +5,7 @@
 *                            Open Watcom Project
 *
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
-*    Portions Copyright (c) 1989-2002 Novell, Inc.  All Rights Reserved.                      
+*    Portions Copyright (c) 1989-2002 Novell, Inc.  All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -30,7 +30,7 @@
 *   This header file was generated for the OpenWatcom project by Carl Young
 *       carl.young@keycomm.co.uk
 *   Any problems or updates required, please either contact the author or
-*   the OpenWatcom contributors forums. 
+*   the OpenWatcom contributors forums.
 *       http://www.openwatcom.com/
 *
 * Description:  Details some of the NetWare 4.x structures that will be
@@ -42,67 +42,67 @@
 #include <ownwsupp.h>
 
 /*
-//	This info is from docs from Doug Thompson
+//      This info is from docs from Doug Thompson
 */
 
-#pragma pack (push, 1)
+#pragma pack (__push, 1)
 
 typedef struct tagStackFrame /* V4.00 */
-{ 
-	/* Reserved fields are undefined */ 
-	LONG						ExceptionReserved[7]; 
-	LONG *						ExceptionCR3; 
-	LONG						ExceptionEIP; 
-	LONG						ExceptionSystemFlags; 
-	LONG						ExceptionEAX; 
-	LONG						ExceptionECX; 
-	LONG						ExceptionEDX; 
-	LONG						ExceptionEBX; 
-	LONG						ExceptionESP; 
-	LONG						ExceptionEBP; 
-	LONG						ExceptionESI; 
-	LONG						ExceptionEDI; 
-	WORD						ExceptionES[2]; 
-	WORD						ExceptionCS[2]; 
-	WORD						ExceptionSS[2]; 
-	WORD						ExceptionDS[2]; 
-	WORD						ExceptionFS[2]; 
-	WORD						ExceptionGS[2];
-	WORD						ExceptionLDT[2]; 
-	WORD						ExceptionSpecial[2]; 
-	LONG						ExceptionNumber; 
-	BYTE *						ExceptionDescription; 
-	LONG						ExceptionFlags; 
-	LONG						ExceptionErrorCode; 
-	LONG						ExceptionChainIO; 
-	LONG						ExceptionChainMS; 
-	LONG						ExceptionHistogram; 
-	struct ProcessorStructure *	ExceptionProcessorID;
-}T_TSS_StackFrame; 
+{
+        /* Reserved fields are undefined */
+        LONG                                            ExceptionReserved[7];
+        LONG *                                          ExceptionCR3;
+        LONG                                            ExceptionEIP;
+        LONG                                            ExceptionSystemFlags;
+        LONG                                            ExceptionEAX;
+        LONG                                            ExceptionECX;
+        LONG                                            ExceptionEDX;
+        LONG                                            ExceptionEBX;
+        LONG                                            ExceptionESP;
+        LONG                                            ExceptionEBP;
+        LONG                                            ExceptionESI;
+        LONG                                            ExceptionEDI;
+        WORD                                            ExceptionES[2];
+        WORD                                            ExceptionCS[2];
+        WORD                                            ExceptionSS[2];
+        WORD                                            ExceptionDS[2];
+        WORD                                            ExceptionFS[2];
+        WORD                                            ExceptionGS[2];
+        WORD                                            ExceptionLDT[2];
+        WORD                                            ExceptionSpecial[2];
+        LONG                                            ExceptionNumber;
+        BYTE *                                          ExceptionDescription;
+        LONG                                            ExceptionFlags;
+        LONG                                            ExceptionErrorCode;
+        LONG                                            ExceptionChainIO;
+        LONG                                            ExceptionChainMS;
+        LONG                                            ExceptionHistogram;
+        struct ProcessorStructure *     ExceptionProcessorID;
+}T_TSS_StackFrame;
 
-struct ProcessorStructure  /* V4.00 */ 
-{ 
-	LONG						Reserved0; 
-	struct ResourceTagStructure *MPRTag; 
-	LONG						(*MPMainControlEntry)(LONG Function, ...); 
-	LONG						(*MPNewControlEntry)(LONG Function, ...); 
-	LONG						Reserved1[2]; 
-	T_TSS_StackFrame *			MPStackFrame;
-}; 
+struct ProcessorStructure  /* V4.00 */
+{
+        LONG                                            Reserved0;
+        struct ResourceTagStructure *MPRTag;
+        LONG                                            (*MPMainControlEntry)(LONG Function, ...);
+        LONG                                            (*MPNewControlEntry)(LONG Function, ...);
+        LONG                                            Reserved1[2];
+        T_TSS_StackFrame *                      MPStackFrame;
+};
 
-typedef T_TSS_StackFrame		StackFrame;
+typedef T_TSS_StackFrame                StackFrame;
 
 
 struct debuggerStructure
 {
-	struct debuggerStructure *		DDSlink;
-	struct ResourceTagStructure *	DDSResourceTag;	/* 'DBUG' */
-	LONG							(*DDSdebuggerEntry)(StackFrame *stackFrame);
-	signed char						DDSPosition;/* changed from int for backwards compatibility*/
-	BYTE							DDSFlags;
-	BYTE							DDSReserved[2];
+        struct debuggerStructure *              DDSlink;
+        struct ResourceTagStructure *   DDSResourceTag; /* 'DBUG' */
+        LONG                                                    (*DDSdebuggerEntry)(StackFrame *stackFrame);
+        signed char                                             DDSPosition;/* changed from int for backwards compatibility*/
+        BYTE                                                    DDSFlags;
+        BYTE                                                    DDSReserved[2];
 };
 
-#pragma pack (pop)
+#pragma pack (__pop)
 
 #endif /* _STKFRAME_H_F39997A6_88FC_434B_B339_554BE343B3E8 */

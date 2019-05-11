@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,9 +34,8 @@
 #ifndef _WRESLANG_H
 #define _WRESLANG_H
 
-/* must be done as #defines so WRC has access to them */
-#define RLE_ENGLISH     0
-#define RLE_JAPANESE    1
+#include "wreslang.rh"
+
 typedef unsigned char res_language_enumeration;
 
 #ifdef __WATCOMC__

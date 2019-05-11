@@ -62,8 +62,8 @@ void    FreeJunk( block *blk )
     }
 }
 
-static bool StupidMove( score *sc, instruction *ins )
-/***************************************************/
+static bool StupidMove( score *scoreboard, instruction *ins )
+/***********************************************************/
 {
     score_info  info;
     int         dst_index;
@@ -74,12 +74,12 @@ static bool StupidMove( score *sc, instruction *ins )
         return( false );
     dst_index = ins->result->r.reg_index;
     if( ins->operands[0]->n.class == N_REGISTER ) {
-        if( !RegsEqual( sc, ins->operands[0]->r.reg_index, dst_index )  ) {
+        if( !RegsEqual( scoreboard, ins->operands[0]->r.reg_index, dst_index )  ) {
             return( false );
         }
     } else {
         ScoreInfo( &info, ins->operands[0] );
-        if( !ScoreEqual( sc, dst_index, &info ) ) {
+        if( !ScoreEqual( scoreboard, dst_index, &info ) ) {
             return( false );
         }
     }
@@ -154,7 +154,7 @@ bool    DoScore( block *blk )
             break;
         change = true;
     }
-    scoreboard = blk->cc;
+    scoreboard = blk->u1.scoreboard;
     had_condition = false;
     for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = next ) {
         ScoreSegments( scoreboard );
@@ -241,7 +241,7 @@ bool    DoScore( block *blk )
 }
 
 
-byte    HasZero( score *sc, name *n )
+byte    HasZero( score *scoreboard, name *n )
 /********************************************
     given a scoreboard "sc", determine if name "n" is equal to
     zero or has any portions which are equal to zero. This is recursive
@@ -276,16 +276,16 @@ byte    HasZero( score *sc, name *n )
         }
     } else if( n->n.class == N_REGISTER ) {
         i  = n->r.reg_index;
-        if( ScoreLookup( &sc[i], ScZero ) ) {
+        if( ScoreLookup( &scoreboard[i], ScZero ) ) {
             bits |= LO_HALF | HI_HALF;
         } else {
             hi = ScoreList[i]->high;
             lo = ScoreList[i]->low;
             if( hi != NO_INDEX && lo != NO_INDEX ) {
-                if( _IsZero( HasZero( sc, ScoreList[lo]->reg_name ) ) ) {
+                if( _IsZero( HasZero( scoreboard, ScoreList[lo]->reg_name ) ) ) {
                     bits |= LO_HALF;
                 }
-                if( _IsZero( HasZero( sc, ScoreList[hi]->reg_name ) ) ) {
+                if( _IsZero( HasZero( scoreboard, ScoreList[hi]->reg_name ) ) ) {
                     bits |= HI_HALF;
                 }
             }

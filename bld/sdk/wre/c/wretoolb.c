@@ -76,7 +76,7 @@ WREToolBar *WRECreateToolBar( WREToolBarInfo *info, HWND parent )
 {
     WREToolBar  *tbar;
     int         i;
-    HMENU       sys_menu;
+    HMENU       hsysmenu;
     char        *text;
 
     if( info == NULL ) {
@@ -101,23 +101,23 @@ WREToolBar *WRECreateToolBar( WREToolBarInfo *info, HWND parent )
     tbar->win = ToolBarWindow( tbar->tbar );
 
     if( (info->dinfo.style & TOOLBAR_FLOAT_STYLE) == TOOLBAR_FLOAT_STYLE ) {
-        sys_menu = GetSystemMenu( tbar->win, FALSE );
-        i = GetMenuItemCount( sys_menu );
+        hsysmenu = GetSystemMenu( tbar->win, FALSE );
+        i = GetMenuItemCount( hsysmenu );
         for( ; i > 0; i-- ) {
-            DeleteMenu( sys_menu, i, MF_BYPOSITION );
+            DeleteMenu( hsysmenu, i, MF_BYPOSITION );
         }
         text = AllocRCString( WRE_SYSMENUMOVE );
-        AppendMenu( sys_menu, MF_STRING, SC_MOVE, text != NULL ? text : "Move" );
+        AppendMenu( hsysmenu, MF_STRING, SC_MOVE, text != NULL ? text : "Move" );
         if( text != NULL ) {
             FreeRCString( text );
         }
         text = AllocRCString( WRE_SYSMENUSIZE );
-        AppendMenu( sys_menu, MF_STRING, SC_SIZE, text != NULL ? text : "Size" );
+        AppendMenu( hsysmenu, MF_STRING, SC_SIZE, text != NULL ? text : "Size" );
         if( text != NULL ) {
             FreeRCString( text );
         }
         text = AllocRCString( WRE_SYSMENUHIDE );
-        AppendMenu( sys_menu, MF_STRING, SC_CLOSE, text != NULL ? text : "Hide" );
+        AppendMenu( hsysmenu, MF_STRING, SC_CLOSE, text != NULL ? text : "Hide" );
         if( text != NULL ) {
             FreeRCString( text );
         }

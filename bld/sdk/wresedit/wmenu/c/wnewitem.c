@@ -38,7 +38,7 @@
 #include "wedit.h"
 #include "wstrdup.h"
 #include "wnewitem.h"
-#include "sys_rc.h"
+#include "sysall.rh"
 
 /****************************************************************************/
 /* macro definitions                                                        */

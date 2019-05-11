@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -45,13 +46,21 @@ static unsigned keyword_hash( const char *name, const unsigned char *weights, si
     } else {
         c = name[len - 1];
     }
+#ifdef IGNORE_CASE
+    hash += weights[tolower( c )] * FIRST_SCALE;
+#else
     hash += weights[c] * FIRST_SCALE;
+#endif
     if( len > LAST_INDEX ) {
         c = name[len - ( LAST_INDEX + 1 )];
     } else {
         c = name[0];
     }
+#ifdef IGNORE_CASE
+    hash += weights[tolower( c )] * LAST_SCALE;
+#else
     hash += weights[c] * LAST_SCALE;
+#endif
 #ifdef KEYWORD_HASH_MASK
     hash &= KEYWORD_HASH_MASK;
   #ifdef KEYWORD_HASH_EXTRA

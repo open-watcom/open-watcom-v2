@@ -37,7 +37,7 @@
 #include "wedit.h"
 #include "wvk2str.h"
 #include "wnewitem.h"
-#include "sys_rc.h"
+#include "sysall.rh"
 #include "rcstr.gh"
 
 /****************************************************************************/

@@ -43,7 +43,7 @@
 #define __SMALL__ 0            // To avoid warnings in MKS yacc
 #endif
 
-#pragma disable_message(118)
+//#pragma disable_message(118)
 #define Y_EOF   300
 #define Y_EXCLAMATION   301
 #define Y_NE    302
@@ -164,7 +164,7 @@ static pToken savedToken;
 /* Forward declarations */
 int cparse( void );
 
-int cerror(char *str) {
+static int cerror(char *str) {
     str = str;
     return 0;
 }
@@ -1081,7 +1081,7 @@ case Cr89: {    /* type-spec :  enum-spec */
 } break;
 
 case Cr90: {    /* typedef-name :  Y_TYPEDEF_NAME */
- cval.dinfo = dupDeclInfo(cpvt[0].token->data->repr.pTypeDecl, cpvt[0].token->pos); zapToken(cpvt[0].token);
+ cval.dinfo = dupDeclInfo(cpvt[0].token->data->repr.ginfo.pTypeDecl, cpvt[0].token->pos); zapToken(cpvt[0].token);
 } break;
 
 case Cr93: {    /* maybe-type-decl-specs :  maybe-type-decl-specs non-type-decl-spec */
@@ -1504,14 +1504,14 @@ L02:
 #endif
         cstate = ~(ci == *--cp? CQCP: *cq);
         goto cStack;
-
+#if 0
 cerrlabel:      ;               /* come here from CERROR        */
 /*
 #pragma used cerrlabel
  */
         cerrflag = 1;
         cps--, cpv--;
-
+#endif
 cError:
         switch (cerrflag) {
 

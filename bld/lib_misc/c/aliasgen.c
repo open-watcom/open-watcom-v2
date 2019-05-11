@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -473,7 +474,7 @@ static int do_line( FILE *infile, FILE *miffile, char *outdir )
     int                 rc;
 
     /*** Prepare the next line ***/
-    p = fgets( line, 1024, infile );
+    p = fgets( line, sizeof( line ), infile );
     if( p == NULL ) {
         if( ferror( infile ) ) {
             FatalError( "Error reading line %d", curline );

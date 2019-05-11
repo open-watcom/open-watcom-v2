@@ -44,16 +44,16 @@ public:
 private:
     Bitmap( const Bitmap& rhs );            //no copy
     Bitmap& operator=( const Bitmap& rhs ); //no assignment
-#pragma pack(push,1)
     struct BitmapFileHeader {
-        byte    type[ 2 ];       //'BM' for input, 'bM' for output
-        dword   size;            //including this header, before lzw compression
+        byte    type[2];        //'BM' for input, 'bM' for output
+        dword   size;           //including this header, before lzw compression
         sword   xHotspot;
         sword   yHotspot;
-        dword   bitsOffset;      //offset to bitmap data
-        dword   bmihSize;        //size of BitmapInfoHeader16 + this entry
+        dword   bitsOffset;     //offset to bitmap data
+        dword   bmihSize;       //size of BitmapInfoHeader16 + this entry
         void read( std::FILE* bmfpi );
         void write( std::FILE* bmfpo ) const;
+        static unsigned SIZE() { return( 2 * sizeof( byte ) + sizeof( dword ) + 2 * sizeof( sword ) + 2 * sizeof( dword ) ); };
         //followed by BitmapInfoHeaderXX
     };
     // win16 or os/2 1.x
@@ -65,6 +65,7 @@ private:
         word    bitsPerPixel;
         void read( std::FILE* bmfpi );
         void write( std::FILE* bmfpo ) const;
+        static unsigned SIZE() { return( 4 * sizeof( word ) ); };
         //followed by rgb triples if <= 8bpp
     };
     struct RGBA {
@@ -73,6 +74,7 @@ private:
         byte    red;
         byte    reserved;
         void read( std::FILE* bmfpi );
+        static unsigned SIZE() { return( 4 * sizeof( byte ) ); };
     };
     struct RGB {
         byte    blue;
@@ -83,8 +85,8 @@ private:
         RGB& operator=( RGBA& rhs ) { blue = rhs.blue; green = rhs.green; red = rhs.red; return *this; };
         void read( std::FILE* bmfpi );
         void write( std::FILE* bmfpo ) const;
+        static unsigned SIZE() { return( 3 * sizeof( byte ) ); };
     };
-#pragma pack(pop)
     void readHeader16( std::FILE* bmfpi );
     void readHeaderW32( std::FILE* bmfpi );
     void readHeaderOS2( std::FILE* bmfpi );
@@ -95,6 +97,8 @@ private:
     BitmapFileHeader            _bmfh;          //read BitmapFileHeader
     BitmapInfoHeader16          _bmih;
     std::vector< RGB >          _rgb;
+    typedef std::vector< RGB >::iterator RGBIter;
+    typedef std::vector< RGB >::const_iterator ConstRGBIter;
     dword                       _bytesPerRow;
     dword                       _dataSize;      //size of the compressed data
     word                        _blockSize;     //including this word

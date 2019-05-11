@@ -83,6 +83,7 @@
  OpenFileUsingSearchPath,
  OpenScreen,
  OutputToScreen,
+ OutputToScreenWithPointer,
  Pause,
  PositionInputCursor,
  PositionOutputCursor,

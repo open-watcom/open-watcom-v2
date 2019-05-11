@@ -242,7 +242,12 @@ int main( int argc, char *argv[] )
     // --- fixup offsets ---
 
     // find end of central directory
-    fseek( ftarget, -((length < BUFFER_SIZE) ? length : BUFFER_SIZE), SEEK_END );
+    if( length < BUFFER_SIZE ) {
+        pos = length;
+    } else {
+        pos = BUFFER_SIZE;
+    }
+    fseek( ftarget, -pos, SEEK_END );
     n = fread( buffer, 1, BUFFER_SIZE, ftarget );
 
     if( n == 0 ) {
@@ -267,8 +272,11 @@ int main( int argc, char *argv[] )
             ZIP_END_OF_CENTRAL_DIRECTORY    eocd;
             long                            off;
 
-            off  = -((length < BUFFER_SIZE) ? length : BUFFER_SIZE);
-            off += pos;
+            if( length < BUFFER_SIZE ) {
+                off  = pos - length;
+            } else {
+                off  = pos - BUFFER_SIZE;
+            }
 
             fseek( ftarget, off, SEEK_END );
 

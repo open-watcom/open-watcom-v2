@@ -49,7 +49,7 @@
 #include "wdefordr.h"
 #include "wdecctl.h"
 #include "wdectool.h"
-#include "wde_rc.h"
+#include "wde.rh"
 
 /****************************************************************************/
 /* macro definitions                                                        */
@@ -136,7 +136,7 @@ static WdeControlBit WdeControlBits[] = {
 
 int WdeGetCToolID( void )
 {
-    HMENU       menu;
+    HMENU       hmenu;
     UINT        state;
     int         i;
 
@@ -144,11 +144,11 @@ int WdeGetCToolID( void )
         return( 0 );
     }
 
-    menu = WdeGetResMenuHandle();
+    hmenu = WdeGetResMenuHandle();
 
     for( i = 0; i < NUM_TOOLS; i++ ) {
         if( WdeControlBits[i].obj_id != -1 ) {
-            state = GetMenuState( menu, WdeControlBits[i].id, MF_BYCOMMAND );
+            state = GetMenuState( hmenu, WdeControlBits[i].id, MF_BYCOMMAND );
             if( state != -1 && (state & MF_CHECKED) ) {
                 return( WdeControlBits[i].id );
             }
@@ -209,14 +209,14 @@ bool WdeControlsToolBarExists( void )
 
 bool WdeSetStickyMode( bool mode )
 {
-    HMENU   menu;
+    HMENU   hmenu;
     bool    old_mode;
 
     if( WdeGetNumRes() == 0 ) {
         return( false );
     }
 
-    menu = WdeGetResMenuHandle();
+    hmenu = WdeGetResMenuHandle();
 
     old_mode = WdeStickyMode;
 
@@ -224,10 +224,10 @@ bool WdeSetStickyMode( bool mode )
 
     if( WdeStickyMode ) {
         WdeSetToolBarItemState( WdeControls, IDM_STICKY_TOOLS, BUTTON_DOWN );
-        CheckMenuItem( menu, IDM_STICKY_TOOLS, MF_BYCOMMAND | MF_CHECKED );
+        CheckMenuItem( hmenu, IDM_STICKY_TOOLS, MF_BYCOMMAND | MF_CHECKED );
     } else {
         WdeSetToolBarItemState( WdeControls, IDM_STICKY_TOOLS, BUTTON_UP );
-        CheckMenuItem( menu, IDM_STICKY_TOOLS, MF_BYCOMMAND | MF_UNCHECKED );
+        CheckMenuItem( hmenu, IDM_STICKY_TOOLS, MF_BYCOMMAND | MF_UNCHECKED );
     }
 
     WdeSetStatusText( NULL, "", true );
@@ -237,7 +237,7 @@ bool WdeSetStickyMode( bool mode )
 
 void WdeSetBaseObject( int menu_selection )
 {
-    HMENU               menu;
+    HMENU               hmenu;
     OBJ_ID              obj_id;
     int                 id;
     WdeToolBar          *tbar;
@@ -247,12 +247,12 @@ void WdeSetBaseObject( int menu_selection )
     }
 
     tbar = WdeControls;
-    menu = WdeGetResMenuHandle();
+    hmenu = WdeGetResMenuHandle();
     id = WdeGetCToolID();
     obj_id = -1;
 
     if( id != -1 && id != menu_selection ) {
-        CheckMenuItem( menu, id, MF_BYCOMMAND | MF_UNCHECKED );
+        CheckMenuItem( hmenu, id, MF_BYCOMMAND | MF_UNCHECKED );
         WdeSetToolBarItemState( tbar, id, BUTTON_UP );
     }
 
@@ -260,7 +260,7 @@ void WdeSetBaseObject( int menu_selection )
         obj_id = WdeGetOBJIDFromMenu( menu_selection );
         if( obj_id != -1 ) {
             SetBaseObjType( obj_id );
-            CheckMenuItem( menu, menu_selection, MF_BYCOMMAND | MF_CHECKED );
+            CheckMenuItem( hmenu, menu_selection, MF_BYCOMMAND | MF_CHECKED );
             WdeSetToolBarItemState( tbar, menu_selection, BUTTON_DOWN );
             WdeSetStatusText( NULL, "", true );
         }

@@ -42,7 +42,7 @@
 #include <string.h>
 #include <io.h>
 #include <fcntl.h>
-#include <malloc.h>
+//#include <malloc.h>
 #include <direct.h>
 
 #include "common.h"
@@ -108,26 +108,26 @@ void check( int b )
 
 void main( int argc, char **argv )
 {
-    samp_header header;
-    samp_code_load code_load;
-    samp_block_prefix prefix;
-    unsigned adjust;
-    unsigned len;
-    fpos_t header_position;
-    fpos_t curr_position;
-    fpos_t last_position;
-    fpos_t start_position;
-    fpos_t end_position;
-    struct stat file_status;
-    int st;
-    long bias=0;
-    int num_samps;
-    int samp_count;
-    samp_address sample;
-    uint_16 thread_id;
+    samp_header         header;
+    samp_code_load      code_load;
+    samp_block_prefix   prefix;
+    unsigned            adjust;
+    size_t              len;
+    fpos_t              header_position;
+    fpos_t              curr_position;
+    fpos_t              last_position;
+    fpos_t              start_position;
+    fpos_t              end_position;
+    struct stat         file_status;
+    int                 st;
+    long                bias;
+    int                 num_samps;
+    int                 samp_count;
+    samp_address        sample;
+    uint_16             thread_id;
 
-    if( argc == 4 && ( argv[1][0] == '-' || argv[1][0] == '/' )
-                 && argv[1][1] == 'b' ) {
+    bias = 0;
+    if( argc == 4 && ( argv[1][0] == '-' || argv[1][0] == '/' ) && argv[1][1] == 'b' ) {
         sscanf( &argv[1][2], "%lx", &bias ); /* read in bias offset */
         makeName( argv[2], ".SMP", sample_file );
         makeName( argv[3], ".EXE", exe_file );
@@ -162,8 +162,7 @@ void main( int argc, char **argv )
     check( st == 0 );
     st = fgetpos( sfp, &header_position );
     check( st == 0 );
-    st = fread( &header, sizeof( header ), 1, sfp );
-    check( st == 1 );
+    check( fread( &header, sizeof( header ), 1, sfp ) == 1 );
     if( header.signature != SAMP_SIGNATURE ) {
         quit( "invalid sample file" );
     }
@@ -179,10 +178,9 @@ void main( int argc, char **argv )
 
     do {
         last_position = curr_position;
-        st = fread( &prefix, sizeof( prefix ), 1, sfp );
+        check( fread( &prefix, sizeof( prefix ), 1, sfp ) == 1 );
         if( prefix.kind == SAMP_MAIN_LOAD ) {
-            st = fread( &code_load, sizeof( code_load ) - 1, 1, sfp );
-            check( st == 1 );
+            check( fread( &code_load, sizeof( code_load ) - 1, 1, sfp ) == 1 );
             adjust = sizeof( prefix ) + ( sizeof( code_load ) - 1 );
             st = fseek( sfp, prefix.length - adjust, SEEK_CUR );
             check( st == 0 );
@@ -190,47 +188,35 @@ void main( int argc, char **argv )
             check( st == 0 );
             st = stat( exe_file, &file_status );
             check( st == 0 );
-            code_load.time_stamp = file_status.st_mtime;
+            code_load.time_stamp = (unsigned long)file_status.st_mtime;
             len = strlen( exe_file ) + 1;
-            prefix.length = len + sizeof( prefix ) + (sizeof( code_load ) - 1);
-            st = fwrite( &prefix, sizeof( prefix ), 1, tfp );
-            check( st == 1 );
-            st = fwrite( &code_load, sizeof( code_load ) - 1, 1, tfp );
-            check( st == 1 );
-            st = fwrite( exe_file, len, 1, tfp );
-            check( st == 1 );
+            prefix.length = (uint_16)( len + sizeof( prefix ) + ( sizeof( code_load ) - 1 ) );
+            check( fwrite( &prefix, sizeof( prefix ), 1, tfp ) == 1 );
+            check( fwrite( &code_load, sizeof( code_load ) - 1, 1, tfp ) == 1 );
+            check( fwrite( exe_file, len, 1, tfp ) == 1 );
         } else if( prefix.kind == SAMP_SAMPLES ) {
             /* write prefix & thread_id: they're unchanged */
-            st = fwrite( &prefix, sizeof( prefix ), 1, tfp );
-            check( st == 1 );
-            st = fread( &thread_id, sizeof( thread_id ), 1, sfp );
-            check( st == 1 );
-            st = fwrite( &thread_id, sizeof( thread_id ), 1, tfp );
-            check( st == 1 );
+            check( fwrite( &prefix, sizeof( prefix ), 1, tfp ) == 1 );
+            check( fread( &thread_id, sizeof( thread_id ), 1, sfp ) == 1 );
+            check( fwrite( &thread_id, sizeof( thread_id ), 1, tfp ) == 1 );
             /* compute number of samples to modify */
-            num_samps = ( prefix.length - sizeof(prefix) - sizeof(uint_16) ) /
-                          sizeof( samp_address );
+            num_samps = ( prefix.length - sizeof( prefix ) - sizeof( uint_16 ) ) / sizeof( samp_address );
             for( samp_count = 0; samp_count < num_samps; samp_count++ ) {
                 /* modify sample addresses according to given bias */
-                st = fread( &sample, sizeof( samp_address ), 1, sfp );
-                check( st == 1 );
+                check( fread( &sample, sizeof( samp_address ), 1, sfp ) == 1 );
                 sample.offset += bias;
-                st = fwrite( &sample, sizeof( samp_address ), 1, tfp );
-                check( st == 1 );
+                check( fwrite( &sample, sizeof( samp_address ), 1, tfp ) == 1 );
             }
             /* reset curr_position */
             st = fgetpos( sfp, &curr_position );
             check( st == 0 );
         } else if( prefix.kind == SAMP_MARK ) {
             /* write prefix: it's unchanged */
-            st = fwrite( &prefix, sizeof( prefix ), 1, tfp );
-            check( st == 1 );
+            check( fwrite( &prefix, sizeof( prefix ), 1, tfp ) == 1 );
             /* modify mark address according to given bias */
-            st = fread( &sample, sizeof( samp_address ), 1, sfp );
-            check( st == 1 );
+            check( fread( &sample, sizeof( samp_address ), 1, sfp ) == 1 );
             sample.offset += bias;
-            st = fwrite( &sample, sizeof( samp_address ), 1, tfp );
-            check( st == 1 );
+            check( fwrite( &sample, sizeof( samp_address ), 1, tfp ) == 1 );
             /* copy over remaining information & update curr_position */
             st = fseek( sfp, prefix.length - sizeof( samp_block_prefix ) - sizeof( samp_address ), SEEK_CUR );
             check( st == 0 );
@@ -239,22 +225,17 @@ void main( int argc, char **argv )
             transferUpTo( last_position, curr_position );
         } else if( prefix.kind == SAMP_ADDR_MAP ) {
             /* write prefix: it's unchanged */
-            st = fwrite( &prefix, sizeof( prefix ), 1, tfp );
-            check( st == 1 );
+            check( fwrite( &prefix, sizeof( prefix ), 1, tfp ) == 1 );
             /* compute number of sample addresses to modify */
             num_samps = ( prefix.length - sizeof(prefix) ) / sizeof(mapping);
             for( samp_count = 0; samp_count < num_samps; samp_count++ ) {
                 /* skip over mapped address ... */
-                st = fread( &sample, sizeof( samp_address ), 1, sfp );
-                check( st == 1 );
-                st = fwrite( &sample, sizeof( samp_address ), 1, tfp );
-                check( st == 1 );
+                check( fread( &sample, sizeof( samp_address ), 1, sfp ) == 1 );
+                check( fwrite( &sample, sizeof( samp_address ), 1, tfp ) == 1 );
                 /* ... and modify actual address */
-                st = fread( &sample, sizeof( samp_address ), 1, sfp );
-                check( st == 1 );
+                check( fread( &sample, sizeof( samp_address ), 1, sfp ) == 1 );
                 sample.offset += bias;
-                st = fwrite( &sample, sizeof( samp_address ), 1, tfp );
-                check( st == 1 );
+                check( fwrite( &sample, sizeof( samp_address ), 1, tfp ) == 1 );
             }
             /* reset curr_position */
             st = fgetpos( sfp, &curr_position );

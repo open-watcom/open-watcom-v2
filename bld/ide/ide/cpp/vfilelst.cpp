@@ -44,7 +44,7 @@
 #include <commdlg.h>
 #endif
 #include "getfile.h"
-#include "malloc.h"
+#include "walloca.h"
 #include "wstring.hpp"
 #include "wstrlist.hpp"
 #include "wfilenam.hpp"
@@ -592,7 +592,7 @@ static BOOL fileSelectDlg( HINSTANCE hinst, HWND parent, GetFilesInfo *info,
   #if !defined( _WIN64 )
     if( LOBYTE( LOWORD( GetVersion() ) ) >= 4 ) {
   #endif
-        return( info->ret_code );
+        rc = info->ret_code;
   #if !defined( _WIN64 )
     }
   #endif

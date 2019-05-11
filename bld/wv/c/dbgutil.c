@@ -518,7 +518,7 @@ void CopyInpFlags( void )
 }
 
 
-OVL_EXTERN bool DoneCmdList( inp_data_handle _cmds, inp_rtn_action action )
+static bool DoneCmdList( inp_data_handle _cmds, inp_rtn_action action )
 {
     cmd_list    *cmds = _cmds;
 
@@ -548,7 +548,7 @@ void PushCmdList( cmd_list *cmds )
 
 
 #ifdef DEADCODE
-OVL_EXTERN bool DoneCmdText( inp_data_handle cmds, inp_rtn_action action )
+static bool DoneCmdText( inp_data_handle cmds, inp_rtn_action action )
 {
     switch( action ) {
     case INP_RTN_INIT:
@@ -590,7 +590,7 @@ bool PurgeInpStack( void )
     return( true );
 }
 
-OVL_EXTERN bool DoneNull( inp_data_handle buff, inp_rtn_action action )
+static bool DoneNull( inp_data_handle buff, inp_rtn_action action )
 {
     switch( action ) {
     case INP_RTN_INIT:
@@ -633,7 +633,7 @@ const char *ModImageName( mod_handle handle )
     }
 }
 
-OVL_EXTERN walk_result RegWalkList( const mad_reg_set_data *data, void *pdata )
+static walk_result RegWalkList( const mad_reg_set_data *data, void *pdata )
 {
     *((const mad_reg_set_data **)pdata) = data;
     return( WR_STOP );

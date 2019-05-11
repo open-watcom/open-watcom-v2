@@ -130,7 +130,7 @@ int main( void )
     }
     printf( "static char *printname[%d] = {\n", SIZE );
     i = 0;
-    while( fgets( buf, sizeof buf, fp ) != NULL ) {
+    while( fgets( buf, sizeof( buf ), fp ) != NULL ) {
         n = sscanf(buf, "%1c %s %s %10s", &c, def, name, numstr);
         if( n != 4 )
             continue;

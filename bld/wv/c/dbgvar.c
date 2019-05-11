@@ -600,7 +600,7 @@ typedef struct {
 
 extern int              TargRow;
 
-OVL_EXTERN walk_result CheckOneField( sym_walk_info swi, sym_handle *sh, void *_d )
+static walk_result CheckOneField( sym_walk_info swi, sym_handle *sh, void *_d )
 {
     find_field_info *d = _d;
     switch( swi ) {
@@ -625,7 +625,7 @@ OVL_EXTERN walk_result CheckOneField( sym_walk_info swi, sym_handle *sh, void *_
     return( WR_CONTINUE );
 }
 
-OVL_EXTERN walk_result DoPushFirstField( sym_walk_info swi, sym_handle *sh, void *pdone )
+static walk_result DoPushFirstField( sym_walk_info swi, sym_handle *sh, void *pdone )
 {
     if( swi == SWI_SYMBOL ) {
         PushField( sh );
@@ -635,7 +635,7 @@ OVL_EXTERN walk_result DoPushFirstField( sym_walk_info swi, sym_handle *sh, void
     return( WR_CONTINUE );
 }
 
-OVL_EXTERN void     PushFirstField( void *th )
+static void     PushFirstField( void *th )
 {
     bool        done;
 
@@ -651,7 +651,7 @@ typedef struct {
     char        *name;
 } dot_named_field_info;
 
-OVL_EXTERN walk_result DoDotNamedField( sym_walk_info swi, sym_handle *sh, void *_info )
+static walk_result DoDotNamedField( sym_walk_info swi, sym_handle *sh, void *_info )
 {
     dot_named_field_info *info = _info;
 
@@ -666,7 +666,7 @@ OVL_EXTERN walk_result DoDotNamedField( sym_walk_info swi, sym_handle *sh, void 
     return( WR_STOP );
 }
 
-OVL_EXTERN void     DotNamedField( void *th, void *name )
+static void     DotNamedField( void *th, void *name )
 /*******************************************************/
 {
     dot_named_field_info        info;
@@ -698,7 +698,7 @@ static void     PointStack( void )
 }
 
 
-OVL_EXTERN void     PushPointStackFirstField( void )
+static void     PushPointStackFirstField( void )
 {
     DupStack();
     DoPoints( TK_NONE );
@@ -711,7 +711,7 @@ OVL_EXTERN void     PushPointStackFirstField( void )
 }
 
 
-OVL_EXTERN void     PushPoints( void )
+static void     PushPoints( void )
 {
     DupStack();
     PointStack();
@@ -850,7 +850,7 @@ typedef struct {
     var_node    *inherit;
 } alloc_field_info;
 
-OVL_EXTERN walk_result AllocOneField( sym_walk_info swi, sym_handle *sh, void *_d )
+static walk_result AllocOneField( sym_walk_info swi, sym_handle *sh, void *_d )
 {
     var_node            *new;
     int                 len;
@@ -1188,7 +1188,7 @@ var_node *VarNextVisibleSibling( var_info *i, var_node *v )
     return( v );
 }
 
-OVL_EXTERN void     VarScanForward( void *_v )
+static void     VarScanForward( void *_v )
 /*
     Scan forward through our data structure, evaluating the expressions
     as we go until we reach the desired row. This will often be the
@@ -2279,7 +2279,7 @@ typedef struct add_new_var_info {
     var_info    *i;
 } add_new_var_info;
 
-OVL_EXTERN walk_result AddNewVar( sym_walk_info swi, sym_handle *sym, void *_d )
+static walk_result AddNewVar( sym_walk_info swi, sym_handle *sym, void *_d )
 {
     add_new_var_info    *d = _d;
     var_node            *new;

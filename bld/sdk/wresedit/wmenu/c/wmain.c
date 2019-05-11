@@ -46,7 +46,7 @@
 #include "whints.h"
 #include "wopts.h"
 #include "whndl.h"
-#include "sys_rc.h"
+#include "sysall.rh"
 #include "wctl3d.h"
 #include "wsvobj.h"
 #include "wprev.h"
@@ -132,7 +132,7 @@ BOOL WINAPI DllMain( HINSTANCE inst, DWORD dwReason, LPVOID lpReserved )
 {
     int ret;
 
-    _wtouch( lpReserved );
+    /* unused parameters */ (void)lpReserved;
 
     ret = TRUE;
 
@@ -156,12 +156,8 @@ BOOL WINAPI DllMain( HINSTANCE inst, DWORD dwReason, LPVOID lpReserved )
 
 int WINAPI LibMain( HINSTANCE inst, WORD dataseg, WORD heapsize, LPSTR cmdline )
 {
-    _wtouch( dataseg );
-    _wtouch( heapsize );
-    _wtouch( cmdline );
+    /* unused parameters */ (void)dataseg; (void)heapsize; (void)cmdline;
 
-    __win_alloc_flags = GMEM_MOVEABLE | GMEM_SHARE;
-    __win_realloc_flags = GMEM_MOVEABLE | GMEM_SHARE;
     ref_count = 0;
     WSetEditInstance( inst );
 
@@ -170,7 +166,7 @@ int WINAPI LibMain( HINSTANCE inst, WORD dataseg, WORD heapsize, LPSTR cmdline )
 
 int WINAPI WEP( int parm )
 {
-    _wtouch( parm );
+    /* unused parameters */ (void)parm;
 
     return( TRUE );
 }
@@ -541,8 +537,8 @@ bool WCreateEditWindow( HINSTANCE inst, WMenuEditInfo *einfo )
 {
     int         x, y, width, height;
     char        *title;
-    HMENU       hmenu;
-    HMENU       menu;
+    HMENU       hmenu2;
+    HMENU       hmenu1;
     bool        is_rc;
     RECT        rect;
 
@@ -577,14 +573,14 @@ bool WCreateEditWindow( HINSTANCE inst, WMenuEditInfo *einfo )
         is_rc = TRUE;
     }
 
-    menu = (HMENU)NULL;
+    hmenu1 = (HMENU)NULL;
     if( einfo->info->stand_alone ) {
-        menu = LoadMenu( inst, WMainSOMenuName );
+        hmenu1 = LoadMenu( inst, WMainSOMenuName );
     }
 
     einfo->win = CreateWindow( WMainClass, title, WS_OVERLAPPEDWINDOW,
                                x, y, width, height, einfo->info->parent,
-                               menu, inst, einfo );
+                               hmenu1, inst, einfo );
 
     if( title != NULL ) {
         if( is_rc ) {
@@ -611,14 +607,14 @@ bool WCreateEditWindow( HINSTANCE inst, WMenuEditInfo *einfo )
     einfo->insert_before = FALSE;
     einfo->first_preview_id = FIRST_PREVIEW_ID;
 
-    hmenu = GetMenu( einfo->win );
-    if( hmenu != (HMENU)NULL ) {
-        EnableMenuItem( hmenu, IDM_MENU_CUT, MF_GRAYED );
-        EnableMenuItem( hmenu, IDM_MENU_COPY, MF_GRAYED );
+    hmenu2 = GetMenu( einfo->win );
+    if( hmenu2 != (HMENU)NULL ) {
+        EnableMenuItem( hmenu2, IDM_MENU_CUT, MF_GRAYED );
+        EnableMenuItem( hmenu2, IDM_MENU_COPY, MF_GRAYED );
     }
 
-    CheckMenuItem( hmenu, IDM_MENU_INSERTSUBITEMS, MF_UNCHECKED );
-    CheckMenuItem( hmenu, IDM_MENU_INSERTAFTER, MF_CHECKED );
+    CheckMenuItem( hmenu2, IDM_MENU_INSERTSUBITEMS, MF_UNCHECKED );
+    CheckMenuItem( hmenu2, IDM_MENU_INSERTAFTER, MF_CHECKED );
 
     if( !WCreateMenuEditWindow( einfo, inst ) ) {
         return( FALSE );
@@ -714,7 +710,7 @@ static void handleLoadSymbols( WMenuEditInfo *einfo )
 
 WINEXPORT LRESULT CALLBACK WMainWndProc( HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam )
 {
-    HMENU               menu;
+    HMENU               hmenu;
 #if 0
     HWND                win;
 #endif
@@ -770,8 +766,8 @@ WINEXPORT LRESULT CALLBACK WMainWndProc( HWND hWnd, UINT message, WPARAM wParam,
 
     case WM_MENUSELECT:
         if( einfo != NULL ) {
-            menu = WGetMenuHandle( einfo );
-            WHandleMenuSelect( einfo->wsb, menu, wParam, lParam );
+            hmenu = WGetMenuHandle( einfo );
+            WHandleMenuSelect( einfo->wsb, hmenu, wParam, lParam );
         }
         break;
 
@@ -956,8 +952,8 @@ WINEXPORT LRESULT CALLBACK WMainWndProc( HWND hWnd, UINT message, WPARAM wParam,
             break;
 
         case IDM_MENU_SHOWRIBBON:
-            menu = WGetMenuHandle( einfo );
-            WShowRibbon( einfo, menu );
+            hmenu = WGetMenuHandle( einfo );
+            WShowRibbon( einfo, hmenu );
             pass_to_def = FALSE;
             break;
 
@@ -1027,7 +1023,7 @@ WINEXPORT LRESULT CALLBACK WMainWndProc( HWND hWnd, UINT message, WPARAM wParam,
 
 void WToggleInsertSubitems( WMenuEditInfo *einfo )
 {
-    HMENU       menu;
+    HMENU       hmenu;
 
     einfo->insert_subitems = !einfo->insert_subitems;
 
@@ -1037,21 +1033,21 @@ void WToggleInsertSubitems( WMenuEditInfo *einfo )
         ChangeToolButtonBitmap( einfo->ribbon->tbar, IDM_MENU_INSERTSUBITEMS, InsertNoSub );
     }
 
-    menu = WGetMenuHandle( einfo );
-    if( menu == (HMENU)NULL ) {
+    hmenu = WGetMenuHandle( einfo );
+    if( hmenu == (HMENU)NULL ) {
         return;
     }
 
     if( einfo->insert_subitems ) {
-        CheckMenuItem( menu, IDM_MENU_INSERTSUBITEMS, MF_CHECKED );
+        CheckMenuItem( hmenu, IDM_MENU_INSERTSUBITEMS, MF_CHECKED );
     } else {
-        CheckMenuItem( menu, IDM_MENU_INSERTSUBITEMS, MF_UNCHECKED );
+        CheckMenuItem( hmenu, IDM_MENU_INSERTSUBITEMS, MF_UNCHECKED );
     }
 }
 
 void WToggleInsertBitmap( WMenuEditInfo *einfo )
 {
-    HMENU       menu;
+    HMENU       hmenu;
 
     einfo->insert_before = !einfo->insert_before;
 
@@ -1061,17 +1057,17 @@ void WToggleInsertBitmap( WMenuEditInfo *einfo )
         ChangeToolButtonBitmap( einfo->ribbon->tbar, IDM_MENU_INSERTTOGGLE, InsertAfter );
     }
 
-    menu = WGetMenuHandle( einfo );
-    if( menu == (HMENU)NULL ) {
+    hmenu = WGetMenuHandle( einfo );
+    if( hmenu == (HMENU)NULL ) {
         return;
     }
 
     if( einfo->insert_before ) {
-        CheckMenuItem( menu, IDM_MENU_INSERTBEFORE, MF_CHECKED );
-        CheckMenuItem( menu, IDM_MENU_INSERTAFTER, MF_UNCHECKED );
+        CheckMenuItem( hmenu, IDM_MENU_INSERTBEFORE, MF_CHECKED );
+        CheckMenuItem( hmenu, IDM_MENU_INSERTAFTER, MF_UNCHECKED );
     } else {
-        CheckMenuItem( menu, IDM_MENU_INSERTBEFORE, MF_UNCHECKED );
-        CheckMenuItem( menu, IDM_MENU_INSERTAFTER, MF_CHECKED );
+        CheckMenuItem( hmenu, IDM_MENU_INSERTBEFORE, MF_UNCHECKED );
+        CheckMenuItem( hmenu, IDM_MENU_INSERTAFTER, MF_CHECKED );
     }
 }
 

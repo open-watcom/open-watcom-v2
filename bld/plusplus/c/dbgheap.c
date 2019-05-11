@@ -34,7 +34,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #ifdef __WATCOMC__
-#include <malloc.h>
+    #include <malloc.h>     /* necessary for heap check routines */
 #include <process.h>
 #endif
 #include "bool.h"

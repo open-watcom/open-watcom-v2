@@ -1,9 +1,8 @@
 name=DstDir
-static_text=
-dynamic_text=dstdir_1,"%AppName% ‚ÌƒCƒ“ƒXƒg[ƒ‹æ‚ğw’è‚µ‚Ä‰º‚³‚¢:",IsJapanese
-edit_control=DstDir,@WATCOM,\
+dynamic_text=dstdir_1,\
         //1"Install %AppName% in:"\
-        //2""\
+        //2"%AppName% ‚Ì?C?“?X?g?[?‹?æ‚ğw’è‚µ‚Ä‰º‚³‚¢:"\
         //0
+edit_control=DstDir,@WATCOM
 static_text=
 include=onc.dlg

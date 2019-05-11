@@ -31,6 +31,7 @@
 
 
 #include "ftnstd.h"
+#include <string.h>
 #include "rtenv.h"
 #include "ftnio.h"
 #include "fthread.h"
@@ -38,8 +39,6 @@
 #include "rterr.h"
 #include "rtsysutl.h"
 #include "rstdio.h"
-
-#include <string.h>
 
 
 // this is used by the load and go debugger in _SA_LIBRARY

@@ -34,8 +34,8 @@
 
 
 extern bool         UseImportForm( fe_attr attr );
-extern bool         AskSegPrivate( segment_id id );
-extern bool         AskSegROM( segment_id id );
+extern bool         AskSegIsPrivate( segment_id segid );
+extern bool         AskSegIsROM( segment_id segid );
 extern segment_id   AskCode16Seg( void );
 extern void         OutSelect( bool starts );
 extern void         SetUpObj( bool is_data );
@@ -47,7 +47,7 @@ extern void         OutDataByte( byte value );
 extern void         OutDataShort( unsigned_16 value );
 extern void         OutDataLong( unsigned_32 value );
 extern void         OutAbsPatch( abspatch *patch, patch_attr attr );
-extern void         OutReloc( segment_id seg, fix_class class, bool rel );
+extern void         OutReloc( segment_id segid, fix_class class, bool rel );
 extern void         OutSpecialCommon( import_handle imphdl, fix_class class, bool rel );
 extern void         OutImport( cg_sym_handle sym, fix_class class, bool rel );
 extern void         OutRTImportRel( rt_class rtindex, fix_class class, bool rel );
@@ -58,7 +58,7 @@ extern unsigned     SavePendingLine( unsigned new );
 extern void         OutDBytes( unsigned len, const byte *src );
 extern void         OutIBytes( byte pat, offset len );
 extern void         TellObjVirtFuncRef( void *cookie );
-extern bool         AskNameCode( pointer hdl, cg_class class );
+extern bool         AskNameIsCode( pointer hdl, cg_class class );
 extern segment_id   DbgSegDef( const char *seg_name, const char *seg_class, int seg_modifier );
 
 extern bool         UseRepForm( unsigned size );

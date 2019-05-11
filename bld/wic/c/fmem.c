@@ -46,10 +46,10 @@ static struct {
 } fmem;
 
 typedef struct {
-    #ifndef NDEBUG
-        size_t bigSize;
-        char check;
-    #endif
+#ifndef NDEBUG
+    size_t bigSize;
+    unsigned char check;
+#endif
     CarverElemPrefix smallSize;
     char data[1];
 } FMemBigElem, *pFMemBigElem;
@@ -63,7 +63,7 @@ typedef enum {
     FMEM_ALLOC_0
 } FMemMsgType;
 
-void FMemMsg(FMemMsgType type, pFMemBigElem bigElem) {
+static void FMemMsg(FMemMsgType type, pFMemBigElem bigElem) {
     static char errStr[150];
     switch (type) {
     case FMEM_BIG_UNFREED:
@@ -130,7 +130,7 @@ void FiniFMem(int checkMem) {
 }
 
 
-int adjustSize( size_t size )
+static int adjustSize( size_t size )
 {
     if( size > MAX_ELEM_SIZE_INTO_CARVER ) {
         return( -1 );
@@ -173,10 +173,10 @@ void *FAlloc(size_t size) {
     } else {
         pFMemBigElem bigElem = fmem.allocFunc(sizeof *bigElem - 1 + size );
         bigElem->smallSize.size = 0;
-        #ifndef NDEBUG
-            bigElem->bigSize = size;
-            bigElem->check = 0xa5;
-        #endif
+#ifndef NDEBUG
+        bigElem->bigSize = size;
+        bigElem->check = 0xa5;
+#endif
         retVal = bigElem->data;
         fmem.numBigElems++;
     }
@@ -195,16 +195,15 @@ void FFree(void *elem) {
     if (size != 0) {
         FreeCarverElem(fmem.carver[size], elem);
     } else {
-        pFMemBigElem bigElem = (pFMemBigElem)
-                            ((char*) elem - BIG_ELEM_PREFIX_SIZE);
+        pFMemBigElem bigElem = (pFMemBigElem)((char*) elem - BIG_ELEM_PREFIX_SIZE);
 
-        #ifndef NDEBUG
+#ifndef NDEBUG
         if (bigElem->check != 0xa5 || adjustSize(bigElem->bigSize) != -1) {
             FMemMsg(FMEM_BIG_CORRUPTED, bigElem);
             return;
         }
         bigElem->check = 0;
-        #endif
+#endif
         fmem.freeFunc(bigElem);
         fmem.numBigElems--;
     }

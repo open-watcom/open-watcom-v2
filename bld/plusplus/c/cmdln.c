@@ -267,7 +267,7 @@ void MiscMacroDefs(             // PREDEFINE MISCELLANEOUS MACROS
     if( !CompFlags.extensions_enabled ) {
         defineStringMacro( "NO_EXT_KEYS" );
     }
-    if( CompFlags.oldmacros_enabled ) {
+    if( CompFlags.non_iso_compliant_names_enabled ) {
         defineKeywordMacros();
     }
     defineStringMacro( "_WCHAR_T_DEFINED" );
@@ -314,7 +314,7 @@ void InitModInfo(               // INITIALIZE MODULE INFORMATION
     WngLevel = WLEVEL_DEFAULT;
     /* set CompFlags defaults */
     CompFlags.extensions_enabled = true;
-    CompFlags.oldmacros_enabled = true;
+    CompFlags.non_iso_compliant_names_enabled = true;
     CompFlags.emit_library_names = true;
     CompFlags.emit_dependencies = true;
     CompFlags.emit_targimp_symbols = true;

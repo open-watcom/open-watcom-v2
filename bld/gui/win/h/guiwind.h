@@ -84,6 +84,9 @@ typedef enum flags {
 
 #define GUI_IS_DIALOG( wnd )    ( (wnd->flags & IS_DIALOG) != 0 )
 
+#define WNDATTRFG( wnd, attr )  (wnd)->attrs[attr].fore
+#define WNDATTRBG( wnd, attr )  (wnd)->attrs[attr].back
+
 typedef struct wnd_colour {
     WPI_COLOUR fore;
     WPI_COLOUR back;
@@ -94,7 +97,7 @@ typedef struct toolbarinfo {
     TOOLDISPLAYINFO     info;
     WPI_RECT            floatrect;
     WPI_RECT            fixedrect;
-    int                 num;
+    int                 num_items;
     HBITMAP             *bitmaps;
 } toolbarinfo;
 
@@ -122,7 +125,7 @@ typedef struct control_item {
 } control_item;
 
 typedef struct popup_info {
-    HMENU               popup;
+    HMENU               hpopup;
     gui_ctl_id          id;
     bool                floating;
     hint_type           type;
@@ -140,12 +143,12 @@ struct gui_window {
     HBRUSH              bk_brush;
     WPI_PRES            hdc;
     PAINTSTRUCT         *ps;
-    toolbarinfo         *tbinfo;
+    toolbarinfo         *tbar;
     gui_create_styles   style;
     gui_scroll_styles   scroll;
     gui_flags           flags;
     int                 num_attrs;
-    gui_colour_set      *colours;
+    gui_colour_set      *attrs;
     gui_ord             num_rows;
     gui_ord             old_rows;
     gui_ord             num_cols;
@@ -156,7 +159,7 @@ struct gui_window {
     HWND                status;
     int                 num_items;
     gui_menu_struct     *menu;
-    hintinfo            hint;
+    hints_info          hintsinfo;
     int                 hrange;
     int                 vrange;
     int                 hpos;

@@ -34,7 +34,7 @@
 #include "fmedit.def"
 #include "state.def"
 #include "grid.def"
-#include "fmdlgs.h"
+#include "fmdlgs.rh"
 
 bool SnapRectToGrid( RECT *rec )
 /******************************/
@@ -69,8 +69,8 @@ bool SnapRectToGrid( RECT *rec )
 }
 
 
-static void DoPointSnap( POINT *pt, unsigned vinc, unsigned hinc )
-/****************************************************************/
+static void DoPointSnap( POINT *pt, int vinc, int hinc )
+/******************************************************/
 {
     pt->y = ((pt->y + (vinc >> 1)) / vinc) * vinc;
     pt->x = ((pt->x + (hinc >> 1)) / hinc) * hinc;

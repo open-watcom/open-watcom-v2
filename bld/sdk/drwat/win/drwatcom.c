@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,6 +37,8 @@
 #include "wdebug.h"
 #include "jdlg.h"
 #include "memwnd.h"
+#include "drwatmem.h"
+
 
 static char     className[] = "drwatcom";
 static FARPROC  faultFN, notifyFN;
@@ -62,15 +65,16 @@ int PASCAL WinMain( HINSTANCE currinst, HINSTANCE previnst, LPSTR cmdline, int c
 {
     WNDCLASS    wc;
     MSG         msg;
-    HMENU       smh;
+    HMENU       hsysmenu;
     const char  *menuname;
+    int         rc;
+
+    /* unused parameters */ (void)cmdline; (void)cmdshow;
 
     /*
      * don't let two of us run!
      */
     GlobalPageLock( (HGLOBAL)FP_SEG( IntHandler ) );
-    cmdline = cmdline;
-    cmdshow = cmdshow;
     _STACKLOW = 0;
     SetInstance( currinst );
     if( previnst ) {
@@ -84,7 +88,8 @@ int PASCAL WinMain( HINSTANCE currinst, HINSTANCE previnst, LPSTR cmdline, int c
      * initialize
      */
     Instance = currinst;
-    MemStart();
+    rc = 1;
+    MemOpen();
     JDialogInit();
     AppName = AllocRCString( STR_APP_NAME );
     ProgramTask = GetCurrentTask();
@@ -102,74 +107,77 @@ int PASCAL WinMain( HINSTANCE currinst, HINSTANCE previnst, LPSTR cmdline, int c
     wc.lpszMenuName = "APPLMENU";
     wc.lpszClassName = className;
     if( !RegisterClass( &wc ) ) {
-        return( FALSE );
+        rc = 0;
     }
-    if( !RegMemWndClass( Instance ) ) {
-        return( FALSE );
+    if( rc && !RegMemWndClass( Instance ) ) {
+        rc = 0;
     }
-    if( !InitSymbols() ) {
-        return( FALSE );
+    if( rc && !InitSymbols() ) {
+        rc = 0;
     }
-    setUpMemWnd();
-    RegDrWatcomDisasmRtns();
+    if( rc ) {
+        setUpMemWnd();
+        RegDrWatcomDisasmRtns();
 
-    /*
-     * now make the main window
-     */
-    MainWindow = CreateWindow(
-        className,          /* Window class name */
-        AppName,            /* Window caption */
-        WS_OVERLAPPEDWINDOW,/* Window style */
-        CW_USEDEFAULT,      /* Initial X position */
-        0,                  /* Initial Y position */
-        CW_USEDEFAULT,      /* Initial X size */
-        0,                  /* Initial Y size */
-        NULL,               /* Parent window handle */
-        NULL,               /* Window menu handle */
-        Instance,           /* Program instance handle */
-        NULL);              /* Create parameters */
+        /*
+         * now make the main window
+         */
+        MainWindow = CreateWindow(
+            className,          /* Window class name */
+            AppName,            /* Window caption */
+            WS_OVERLAPPEDWINDOW,/* Window style */
+            CW_USEDEFAULT,      /* Initial X position */
+            0,                  /* Initial Y position */
+            CW_USEDEFAULT,      /* Initial X size */
+            0,                  /* Initial Y size */
+            NULL,               /* Parent window handle */
+            NULL,               /* Window menu handle */
+            Instance,           /* Program instance handle */
+            NULL);              /* Create parameters */
 
-    ShowWindow( MainWindow, SW_SHOWMINIMIZED );
-    UpdateWindow( MainWindow );
-    smh = GetSystemMenu( MainWindow, FALSE );
-//    EnableMenuItem( smh, SC_CLOSE, MF_GRAYED );
-    AppendMenu( smh, MF_SEPARATOR, 0,NULL );
-    menuname = GetRCString( STR_CLEAR_ALERT );
-    AppendMenu( smh, MF_ENABLED, MENU_CLEAR_ALERT, menuname );
-    menuname = GetRCString( STR_LOG_CUR_STATE );
-    AppendMenu( smh, MF_ENABLED, MENU_LOG_CURRENT_STATE, menuname );
-    menuname = GetRCString( STR_LOG_OPTIONS );
-    AppendMenu( smh, MF_ENABLED, MENU_LOG_OPTIONS, menuname );
-    menuname = GetRCString( STR_TASK_CONTROL );
-    AppendMenu( smh, MF_ENABLED, MENU_DUMP_A_TASK, menuname );
+        ShowWindow( MainWindow, SW_SHOWMINIMIZED );
+        UpdateWindow( MainWindow );
+        hsysmenu = GetSystemMenu( MainWindow, FALSE );
+    //    EnableMenuItem( hsysmenu, SC_CLOSE, MF_GRAYED );
+        AppendMenu( hsysmenu, MF_SEPARATOR, 0,NULL );
+        menuname = GetRCString( STR_CLEAR_ALERT );
+        AppendMenu( hsysmenu, MF_ENABLED, MENU_CLEAR_ALERT, menuname );
+        menuname = GetRCString( STR_LOG_CUR_STATE );
+        AppendMenu( hsysmenu, MF_ENABLED, MENU_LOG_CURRENT_STATE, menuname );
+        menuname = GetRCString( STR_LOG_OPTIONS );
+        AppendMenu( hsysmenu, MF_ENABLED, MENU_LOG_OPTIONS, menuname );
+        menuname = GetRCString( STR_TASK_CONTROL );
+        AppendMenu( hsysmenu, MF_ENABLED, MENU_DUMP_A_TASK, menuname );
 
-    /*
-     * set up handlers
-     */
-    faultFN = MakeProcInstance( (FARPROC)IntHandler, Instance );
-    notifyFN = MakeProcInstance( (FARPROC)NotifyHandler, Instance );
-    if( !InterruptRegister( NULL, faultFN ) ) {
-        Death( STR_CANT_HOOK_INTER );
-    }
-    if( !NotifyRegister( NULL, (LPFNNOTIFYCALLBACK)notifyFN, NF_NORMAL | NF_RIP ) ) {
-        InterruptUnRegister( NULL );
-        Death( STR_CANT_HOOK_NOTIF );
-    }
+        /*
+         * set up handlers
+         */
+        faultFN = MakeProcInstance( (FARPROC)IntHandler, Instance );
+        notifyFN = MakeProcInstance( (FARPROC)NotifyHandler, Instance );
+        if( !InterruptRegister( NULL, faultFN ) ) {
+            Death( STR_CANT_HOOK_INTER );
+        }
+        if( !NotifyRegister( NULL, (LPFNNOTIFYCALLBACK)notifyFN, NF_NORMAL | NF_RIP ) ) {
+            InterruptUnRegister( NULL );
+            Death( STR_CANT_HOOK_NOTIF );
+        }
 
-    /*
-     * get 32-bit support
-     */
-    Start386Debug();
-    if( WDebug386 ) {
-        LBPrintf( ListBox, STR_WILL_USE_WDEBUG_386 );
-    }
+        /*
+         * get 32-bit support
+         */
+        Start386Debug();
+        if( WDebug386 ) {
+            LBPrintf( ListBox, STR_WILL_USE_WDEBUG_386 );
+        }
 
-    while( GetMessage( &msg, NULL, 0, 0 ) ) {
-        TranslateMessage(&msg);
-        DispatchMessage(&msg);
+        while( GetMessage( &msg, NULL, 0, 0 ) ) {
+            TranslateMessage(&msg);
+            DispatchMessage(&msg);
+        }
+        Death( STR_DEATH_NO_MSG );
     }
-    Death( STR_DEATH_NO_MSG );
-    return( 0 );
+    MemClose();
+    return( rc );
 
 }  /* WinMain */
 

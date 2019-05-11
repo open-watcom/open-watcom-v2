@@ -1,5 +1,5 @@
-#include "taskctl.h"
-#include "windows.h"
+#include <windows.h>
+#include "taskctl.rh"
 
 TASKCTL DIALOG 45, 23, 242, 146
 STYLE DS_MODALFRAME | WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU

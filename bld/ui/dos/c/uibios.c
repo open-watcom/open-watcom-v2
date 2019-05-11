@@ -41,6 +41,7 @@
 #include "uigchar.h"
 #include "getltdos.h"
 #include "osidle.h"
+#include "uicurshk.h"
 
 
 typedef struct {
@@ -152,59 +153,6 @@ LP_PIXEL UIAPI dos_uishadowbuffer( LP_PIXEL vbuff )
     }
     return( vbuff );
 #endif
-}
-
-
-typedef struct {
-    unsigned char       start_range;
-    unsigned char       end_range;
-} dbcs_pair;
-
-static dbcs_pair        Pairs[5];       // safe enough for now
-static bool             Init = false;
-
-static void initdbcs( void )
-{
-    dbcs_pair           *p;
-    dbcs_pair           __far *s;
-
-    p = Pairs;
-    if( UIData->colour != M_MONO ) {
-        s = (dbcs_pair __far *)dos_get_dbcs_lead_table();
-        if( s != NULL ) {
-            while( s->start_range != 0 ) {
-                p->start_range = s->start_range;
-                p->end_range = s->end_range;
-                ++p;
-                ++s;
-            }
-        }
-    }
-    p->start_range = 0;
-    p->end_range = 0;
-    Init = true;
-}
-
-bool UIAPI uiisdbcs( void )
-{
-    if( !Init )
-        initdbcs();
-    return( Pairs[0].start_range != 0 );
-}
-
-int UIAPI uicharlen( int ch )
-{
-    dbcs_pair           *p;
-
-
-    if( !Init )
-        initdbcs();
-    for( p = Pairs; p->start_range != 0; ++p ) {
-        if( ch >= p->start_range && ch <= p->end_range ) {
-            return( 2 );
-        }
-    }
-    return( 1 );
 }
 
 #define ALPHA_SMALL_BW  0
@@ -401,8 +349,8 @@ extern void _desqview_update( LP_PIXEL, unsigned );
 #pragma aux _desqview_update = \
         "mov  ah,0ffh"      \
         _INT_10             \
-    __parm      [] \
     __parm      [__es __di] [__cx] \
+    __value     \
     __modify    [__ah]
 #endif
 

@@ -82,7 +82,7 @@ trap_retval ReqFile_open( void )
     }
     handle = open( name, mode, access );
     if( handle != -1 ) {
-        fcntl( handle, F_SETFD, (int)FD_CLOEXEC );
+        fcntl( handle, F_SETFD, FD_CLOEXEC );
         errno = 0;
         ret->err = 0;
         LH2TRPH( ret, handle );

@@ -34,12 +34,12 @@
 
 #include "pushpck1.h"
 
-typedef struct ln_off_286 {
+typedef struct {
     unsigned_16         linnum;
     unsigned_16         off;
 } ln_off_286;
 
-typedef struct ln_off_386 {
+typedef struct {
     unsigned_16         linnum;
     unsigned_32         off;
 } ln_off_386;

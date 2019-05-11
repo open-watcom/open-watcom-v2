@@ -86,8 +86,8 @@
         "mov esi, [esp+12]" \
         "mov [esi], eax"    \
         "add esp, 16"       \
-        parm [esi] [eax] [ebx] [ecx] [edx] \
-        modify [esi eax ebx ecx edx];
+        __parm [__esi] [__eax] [__ebx] [__ecx] [__edx] \
+        __modify [__esi __eax __ebx __ecx __edx];
 
   extern uint64 get_rdtsc (void);
   #pragma aux get_rdtsc = \
@@ -98,7 +98,7 @@
           "nop"           \
           "nop"           \
           "nop"           \
-          modify [eax edx];
+          __modify [__eax __edx];
 #endif
 
 #endif /* __PROFILE_H */

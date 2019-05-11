@@ -42,7 +42,7 @@ static type_style errStyle = DEF_TEXT_STYLE;
 #endif
 
 #if defined( __WATCOMC__ ) && !defined( NDEBUG )
-#include "malloc.h"
+#include <malloc.h>
 
 static void HeapMsg( int msg )
 {
@@ -108,6 +108,7 @@ vi_rc FcbDump( void )
     window_id   wid;
     fcb         *cfcb;
     vi_rc       rc;
+    long        xblockaddr;
 
     rc = NewFullWindow( &wid, 1, LIGHT_GREEN, BLACK, &errStyle );
     if( rc != ERR_NO_ERR ) {
@@ -118,12 +119,16 @@ vi_rc FcbDump( void )
     WPrintfLine( wid, 3, "File handle: %d,  current position: %l", CurrentFile->handle, CurrentFile->curr_pos );
     WPrintfLine( wid, 4, "Bytes_pending: %d", (int)CurrentFile->bytes_pending );
     WPrintfLine( wid, 5, "Modified: %d", (int)CurrentFile->modified );
+    xblockaddr = 0;
     lc = 7;
     for( cfcb = CurrentFile->fcbs.head; cfcb != NULL; cfcb = cfcb->next ) {
         fcbcnt++;
+#ifdef __DOS__
+        xblockaddr = cfcb->xblock.addr;
+#endif
         WPrintfLine( wid, lc++, "%d) %W - (%l,%l) bytes:%d offset:%l lstswp:%l xaddr:%W", fcbcnt,
             cfcb, cfcb->start_line, cfcb->end_line, cfcb->byte_cnt, cfcb->offset,
-            cfcb->last_swap, cfcb->xmemaddr );
+            cfcb->last_swap, xblockaddr );
         WPrintfLine( wid, lc++, "    swp:%d in:%d dsp:%d ded:%d nswp:%d xmem:%d xms:%d.",
             (int)cfcb->swapped, (int)cfcb->in_memory, (int)cfcb->on_display,
             (int)cfcb->dead, (int)cfcb->non_swappable, (int)cfcb->in_extended_memory,

@@ -36,6 +36,7 @@
 //
 
 #include "ftnstd.h"
+#include <string.h>
 #include "opn.h"
 #include "opr.h"
 #include "errcod.h"
@@ -61,7 +62,6 @@
 #include "declare.h"
 #include "implicit.h"
 #include "kwlist.h"
-#include <string.h>
 
 
 #define ERR_MASK                (SY_DATA_INIT | SY_CLASS | SY_USAGE)

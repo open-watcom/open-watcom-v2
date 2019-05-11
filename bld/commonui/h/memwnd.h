@@ -35,24 +35,8 @@
 
 #include <stdlib.h>
 #include "wresid.h"
-#include "selinfo.h"
-#include "hdlinfo.h"
+#include "memwnd.rh"
 
-#define OFF_OFFSET                      101
-
-#define MEMINFO_SAVE                    400
-#define MEMINFO_SAVE_TO                 401
-#define MEMINFO_SHOW                    403
-#define MEMINFO_AUTO_POS                404
-#define MEMINFO_EXIT                    405
-
-#define MEMINFO_BYTE                    410
-#define MEMINFO_WORD                    411
-#define MEMINFO_DWORD                   412
-#define MEMINFO_CODE_16                 413
-#define MEMINFO_CODE_32                 414
-
-#define MEMINFO_OFFSET                  420
 
 #define MEM_DISPLAY_CLASS               "watmemdisplayclass"
 #define MEM_DUMP_LIST                   100

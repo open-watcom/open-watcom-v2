@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -45,18 +46,6 @@
 #else
     #define _FAR
     #define _NEAR
-#endif
-
-#if defined( __DOS__ ) && defined( _M_IX86 )
-  #if _M_IX86 == 200
-    #define USE_XMS
-    #define USE_EMS
-    #define USE_XTD
-  #elif _M_IX86 < 200
-    #define USE_EMS
-  #endif
-#elif defined( __DOS__ ) && defined( _M_I86 )
-    #define USE_EMS
 #endif
 
 #ifndef __WIN__

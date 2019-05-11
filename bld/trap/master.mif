@@ -53,14 +53,8 @@ memory_model_i86 = c
 !endif
 !endif
 
-!ifeq nwlib libc
-os_prefix = libc
-!else ifeq target_os linux
-os_prefix = lnx
-!else ifeq target_os os2v2
-os_prefix = os22
-!else
-os_prefix = $(target_os)
+!ifndef target_sys
+target_sys = $(target_os)
 !endif
 
 fpu_flags_dos_i86   = -fpc
@@ -76,28 +70,64 @@ fpu_flags_win_i86   = -fpc
 
 additional_cleanup = *.d32 *.trp
 
-!ifndef name
 !ifeq srv lcl
 name = std
+! ifndef test
+!  ifdef %OWUSE_FILENAME_VERSION
+name = std$(bld_ver)
+!  endif
+! endif
 !else ifeq which SERVER
-name = $(srv)serv
-!ifeq target_os win
-name+=w
-!endif
+! ifdef remote_link
+!  ifeq target_os win
+name = $(srv)servw$(nlm_ver)
+!  else
+name = $(srv)serv$(nlm_ver)
+!  endif
+! else
+name = $(srv)help
+!  ifndef test
+!   ifdef %OWUSE_FILENAME_VERSION
+name = $(srv)hel$(bld_ver)
+!   endif
+!  endif
+! endif
 !else
 name = $(srv)
+! ifndef test
+!  ifdef %OWUSE_FILENAME_VERSION
+name = $(srv)$(bld_ver)
+!  endif
+! endif
 !endif
+
+!ifdef test
+xname = z$(name)
+!else
+xname = $(name)
+!endif
+
+!ifeq target_sys nlm_libc
+os_prefix = libc
+!else ifeq target_os linux
+os_prefix = lnx
+!else ifeq target_os os2v2
+os_prefix = os22
+!else
+os_prefix = $(target_os)
+!endif
+
+!ifeq target_sys nlm_libc
+srv_prefix = nlm
+!else ifeq srv ped
+srv_prefix = pls
+!else
+srv_prefix = $(srv)
 !endif
 
 !include cproj.mif
 !include defrule.mif
 !include deftarg.mif
-
-!ifdef test
-xname=z$(name)
-!else
-xname=$(name)
-!endif
 
 !ifeq which SERVER
 !include $(trap_dir)/serv.mif
@@ -107,50 +137,66 @@ xname=$(name)
 
 # cflags stuff
 ###############
-extra_cpp_flags += -D$(which) -DMD_$(target_cpu) $(extra_cppflags)
+extra_cpp_flags = -D$(which) -DMD_$(target_cpu) $(extra_cppflags)
 !ifdef %OWUSE_FILENAME_VERSION
 extra_cpp_flags += -DUSE_FILENAME_VERSION=$(bld_ver)
 !endif
-
 !ifndef test
 !ifdef builtin_trap
 extra_cpp_flags += -DBUILTIN_TRAP_FILE
 !endif
 !endif
+!ifeq target_os ads
+extra_cpp_flags += -DACAD
+!endif
 !ifdef japanese
 extra_cpp_flags += -DJAPANESE
+!endif
+
+extra_cppflags_nlm5 = -D__NW50__ -D_USE_NEW_KERNEL
+extra_cppflags_nlm4 = -D__NW40__
+extra_cppflags_nlm3 = -D__NW30__
+extra_cpp_flags_nov = $(extra_cppflags_nlm$(nlm_ver))
+!ifeq release 0
+extra_cpp_flags_nov += -DDEBUG_ME
+!endif
+!ifeq target_sys nlm_libc
+extra_cpp_flags_nov += -D__NETWARE_LIBC__
 !endif
 
 extra_c_flags += -s $(extra_cflags)
 !ifeq which TRAP
 extra_c_flags += -zlf
 !endif
-
-!ifeq host_os nov
-extra_c_flags_386 += -3s
-!else ifeq target_os ads
-extra_c_flags_386 += -3s
+!ifeq target_os ads
+extra_c_flags += -3s
 !endif
+
+extra_c_flags_nov = -3s
 
 !ifeq which TRAP
-extra_c_flags_i86 += -zu
-!ifeq host_cpu i86
+extra_c_flags_i86 = -zu
 !ifndef test
-extra_c_flags_win += -bd
-!endif
+extra_c_flags_win_i86 = -bd
 !endif
 !endif
 
 # aflags stuff
 ###############
-
 extra_a_flags += $(model_switch_$(host_cpu))
+!ifeq target_os ads
+extra_a_flags += -3s -DACAD
+!endif
 
 extra_a_flags_misc7086 = -fpi87
 extra_a_flags_misc7386 = -fpi87
 
 # lflags stuff
 ###############
+extra_lflags_nlm5 = module libc
+extra_lflags_nlm4 = module clib
+extra_lflags_nlm3 =
+extra_l_flags_nov = debug all debug Novell $(extra_lflags_nlm$(nlm_ver))
 
 trperr_h = _err.gh
 jtrperr_h = _jerr.gh
@@ -186,7 +232,7 @@ dbg_libs_dos = dbgstr.lib
 remote_objs = &
     $($(which)_remote_objs) &
     packet.obj &
-    $(srv)link.obj &
+    $(srv_prefix)link.obj &
 !endif
 
 !ifeq release 1
@@ -206,7 +252,7 @@ $(target) : $(extra_link_res_$(host_os)) $(objs) $(libs) $(resource_file) $(extr
     @%append $^&.lnk $(mode_lflags)
     @%append $^&.lnk op map, elim
     @%append $^&.lnk name $^@
-    @%append $^&.lnk $(sys_$(target_cpu)_$(target_os))
+    @%append $^&.lnk $(sys_$(target_cpu)_$(target_sys))
 !ifeq which TRAP
     @%append $^&.lnk op dosseg
 !endif
@@ -253,6 +299,6 @@ rc_inc_dirs = -I"$(trap_dir)/common"
     @%make echo_rc
     $(rc) $(rc_flags) $(rc_inc_path) $[@ -fo=$^@
 
-usage.u : ../$(srv).sp $(__MAKEFILES__)
+usage.u : ../$(srv_prefix).sp $(__MAKEFILES__)
     @%make echo_wsplice
     $(wsplice) -u $< $@

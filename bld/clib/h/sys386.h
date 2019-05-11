@@ -361,8 +361,8 @@ typedef unsigned long       syscall_res;
 syscall_res sys_call0( u_long func );
 #pragma aux sys_call0 = \
         "int    0x80"   \
-    __parm [eax] \
-    __value [eax]
+    __parm [__eax] \
+    __value [__eax]
 
 syscall_res sys_call1( u_long func, u_long r_ebx );
 #pragma aux sys_call1 = \

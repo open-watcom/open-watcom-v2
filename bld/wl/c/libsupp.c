@@ -62,9 +62,9 @@ static bool SearchAndProcLibFile( file_list *lib, const char *name )
         CacheClose( lib, 1 );
         return( false );
     }
-    lib->status |= STAT_LIB_USED;
+    lib->flags |= STAT_LIB_USED;
     if( (FmtData.type & MK_OVERLAYS) && FmtData.u.dos.distribute ) {
-        if( lib->status & STAT_LIB_FIXED ) {
+        if( lib->flags & STAT_LIB_FIXED ) {
             lp->modinfo |= MOD_FIXED;
         }
         AddModTable( lp, lib->ovlref );
@@ -98,9 +98,9 @@ bool LibFind( const char *name, bool old_sym )
     DEBUG(( DBG_OLD, "LibFind( %s )", name ));
     isimpsym = (FmtData.type & MK_PE) && memcmp( name, ImportSymPrefix, PREFIX_LEN ) == 0;
     for( lib = ObjLibFiles; lib != NULL; lib = lib->next_file ) {
-        if( lib->file->flags & INSTAT_IOERR )
+        if( lib->infile->status & INSTAT_IOERR )
             continue;
-        if( old_sym && (lib->status & STAT_OLD_LIB) )
+        if( old_sym && (lib->flags & STAT_OLD_LIB) )
             continue;
         if( SearchAndProcLibFile( lib, name ) )
             return( true );

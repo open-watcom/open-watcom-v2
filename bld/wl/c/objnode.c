@@ -157,7 +157,7 @@ mod_entry *NewModEntry( void )
     mod_entry           *entry;
 
     entry = CarveZeroAlloc( CarveModEntry );
-    if( LinkFlags & STRIP_CODE ) {
+    if( LinkFlags & LF_STRIP_CODE ) {
         InitArcBuffer( entry );
     }
     return( entry );
@@ -235,9 +235,9 @@ static void CollapseLazy( void *node, void *dummy )
     if( IS_SYM_A_REF( curr->entry ) && !curr->isweak ) {
         ClearSymUnion( curr->entry );
         SET_SYM_TYPE( curr->entry, SYM_REGULAR );
-        if( LinkState & SEARCHING_LIBRARIES ) {
+        if( LinkState & LS_SEARCHING_LIBRARIES ) {
             curr->entry->info &= ~SYM_CHECKED;
-            LinkState |= LIBRARIES_ADDED;       // force another pass thru libs
+            LinkState |= LS_LIBRARIES_ADDED;    // force another pass thru libs
         }
     }
 }
@@ -325,7 +325,7 @@ list_of_names *MakeListName( char *name, size_t len )
 unsigned long BadObjFormat( void )
 /***************************************/
 {
-    LnkMsg( FTL+MSG_BAD_OBJECT, "s", CurrMod->f.source->file->name );
+    LnkMsg( FTL+MSG_BAD_OBJECT, "s", CurrMod->f.source->infile->name );
     return( 0 );
 }
 

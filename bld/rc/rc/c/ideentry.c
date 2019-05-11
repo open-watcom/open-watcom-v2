@@ -33,7 +33,7 @@
 #include <stdio.h>
 #include <stdarg.h>
 #if defined( __WATCOMC__ ) || !defined( __UNIX__ )
-#include <malloc.h>
+	#include <malloc.h>            /* necessary for _heapshrink() */
 #include <process.h>
 #endif
 #include "global.h"

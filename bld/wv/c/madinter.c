@@ -348,7 +348,7 @@ struct find_handle {
     mad_type_handle     mth;
 };
 
-OVL_EXTERN walk_result CheckOneHandle( mad_type_handle mth, void *d )
+static walk_result CheckOneHandle( mad_type_handle mth, void *d )
 {
     struct find_handle  *fd = d;
     mad_type_info       mti;
@@ -376,7 +376,7 @@ struct find_mad {
     dig_arch        arch;
 };
 
-OVL_EXTERN walk_result FindTheMad( dig_arch arch, void *d )
+static walk_result FindTheMad( dig_arch arch, void *d )
 {
     struct find_mad     *fd = d;
     char                buff[80];

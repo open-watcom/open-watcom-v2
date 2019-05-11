@@ -31,6 +31,7 @@
 
 
 #include "ftnstd.h"
+#include <string.h>
 #include "opr.h"
 #include "opn.h"
 #include "astype.h"
@@ -52,8 +53,6 @@
 #include "symtab.h"
 #include "rstmgr.h"
 #include "brseinfo.h"
-
-#include <string.h>
 
 
 /* Forward declarations */

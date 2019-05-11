@@ -100,7 +100,7 @@ cg_type SymPtrType( sym_id sym ) {
     signed_32   offset;
     com_eq      *ce_ext;
     unsigned_32 item_size;
-    segment_id  leader_seg;
+    segment_id  leader_segid;
     unsigned_16 flags;
 
     flags = sym->u.ns.flags;
@@ -149,10 +149,10 @@ cg_type SymPtrType( sym_id sym ) {
                 if( flags & SY_SUBSCRIPTED ) {
                     item_size *= sym->u.ns.si.va.u.dim_ext->num_elts;
                 }
-                leader_seg = GetGlobalSeg( ce_ext->offset );
+                leader_segid = GetGlobalSegId( ce_ext->offset );
                 offset += ce_ext->offset;
-                if( ( GetGlobalSeg( offset ) == leader_seg ) &&
-                    ( GetGlobalSeg( offset + item_size ) == leader_seg ) ) {
+                if( ( GetGlobalSegId( offset ) == leader_segid ) &&
+                    ( GetGlobalSegId( offset + item_size ) == leader_segid ) ) {
                     // the entire item is in the same segment as the leader
                     p_type = TY_GLOBAL_POINTER;
                 } else {

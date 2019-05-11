@@ -592,10 +592,10 @@ void    GenLeaSP( int offset )
 pointer GenFar16Thunk( pointer label, unsigned_16 parms_size, bool remove_parms )
 /*******************************************************************************/
 {
-    segment_id  old;
+    segment_id  old_segid;
     pointer     code_32;
 
-    old = SetOP( AskCode16Seg() );
+    old_segid = SetOP( AskCode16Seg() );
     // CodeLabel( label, DepthAlign( PROC_ALIGN ) );
     code_32 = AskForNewLabel();
     TellOptimizerByPassed();
@@ -620,7 +620,7 @@ pointer GenFar16Thunk( pointer label, unsigned_16 parms_size, bool remove_parms 
     OutReloc( AskCodeSeg(), F_OFFSET, false );
     OutLblPatch( code_32, F_OFFSET, 0 );
     TellByPassOver();
-    SetOP( old );
+    SetOP( old_segid );
     return( code_32 );
 }
 
@@ -633,7 +633,7 @@ static void    doProfilingCode( char *fe_name, label_handle *data, bool prolog )
     _Code;
     LayOpbyte( 0x68 );
     ILen += 4;
-    DoLblRef( *data, (segment_id)(pointer_int)FEAuxInfo( NULL, P5_PROF_SEG ), 0, OFST);
+    DoLblRef( *data, (segment_id)(pointer_int)FEAuxInfo( NULL, P5_PROF_SEG ), 0, OFST );
     _Emit;
     DoRTCall( prolog ? RT_PROFILE_ON : RT_PROFILE_OFF, true );
 }
@@ -647,24 +647,24 @@ static  void    doProfilingPrologEpilog( label_handle label, bool prolog )
     } else {
         back_handle     bck;
         label_handle    data_lbl;
-        segment_id      data_seg;
+        segment_id      data_segid;
 
         bck = (back_handle)FEAuxInfo( AskForLblSym( label ), P5_PROF_DATA );
         if( bck == NULL )
             return;
         data_lbl = bck->lbl;
-        data_seg = (segment_id)(pointer_int)FEAuxInfo( NULL, P5_PROF_SEG );
+        data_segid = (segment_id)(pointer_int)FEAuxInfo( NULL, P5_PROF_SEG );
         TellKeepLabel( data_lbl );
         _Code;
         if( prolog ) {
             LayOpword( 0x05ff );
             ILen += 4;
-            DoLblRef( data_lbl, data_seg, offsetof( P5_timing_info, count ), OFST);
+            DoLblRef( data_lbl, data_segid, offsetof( P5_timing_info, count ), OFST);
             _Next;
         }
         LayOpword( prolog ? 0x05ff : 0x0dff );          // inc L1 / dec L1
         ILen += 4;
-        DoLblRef( data_lbl, data_seg, offsetof( P5_timing_info, semaphore ), OFST );
+        DoLblRef( data_lbl, data_segid, offsetof( P5_timing_info, semaphore ), OFST );
         _Next;
         if( _IsTargetModel( P5_PROFILING_CTR0 ) ) {
             LayOpword( prolog ? 0x1675 : 0x167d );              // jne skip / jge skip
@@ -692,13 +692,13 @@ static  void    doProfilingPrologEpilog( label_handle label, bool prolog )
         }
         LayOpword( prolog ? 0x0529 : 0x0501 );          // sub L1+4,eax / add L1+4,eax
         ILen += 4;
-        DoLblRef( data_lbl, data_seg, offsetof( P5_timing_info, lo_cycle ), OFST );
+        DoLblRef( data_lbl, data_segid, offsetof( P5_timing_info, lo_cycle ), OFST );
         _Next;
         LayOpbyte( 0x58 );                                      // pop eax
         _Next;
         LayOpword( prolog ? 0x1519 : 0x1511 );          // sbb L1+8,edx / adc L1+8,edx
         ILen += 4;
-        DoLblRef( data_lbl, data_seg, offsetof( P5_timing_info, hi_cycle ), OFST );
+        DoLblRef( data_lbl, data_segid, offsetof( P5_timing_info, hi_cycle ), OFST );
         _Next;
         LayOpbyte( 0x5a );                                      // pop edx
         _Next;
@@ -725,10 +725,10 @@ segment_id GenProfileData( char *fe_name, label_handle *data, label_handle *stac
 /* generate P5 profiler code                                                     */
 /*********************************************************************************/
 {
-    segment_id      old;
-    segment_id      data_seg = (segment_id)(pointer_int)FEAuxInfo( NULL, P5_PROF_SEG );
+    segment_id      old_segid;
+    segment_id      data_segid = (segment_id)(pointer_int)FEAuxInfo( NULL, P5_PROF_SEG );
 
-    old = SetOP( data_seg );
+    old_segid = SetOP( data_segid );
     TellOptimizerByPassed();
     SetUpObj( true );
     *data = AskForNewLabel();
@@ -741,7 +741,7 @@ segment_id GenProfileData( char *fe_name, label_handle *data, label_handle *stac
     if( stack == NULL ) {
         OutDataLong( 0 );                       //stack
     } else {
-        OutReloc( data_seg, F_OFFSET, false );  //caller
+        OutReloc( data_segid, F_OFFSET, false );  //caller
         OutLblPatch( *stack, F_OFFSET, 0 );
     }
     OutDataLong( 0 );                           //esp
@@ -757,8 +757,8 @@ segment_id GenProfileData( char *fe_name, label_handle *data, label_handle *stac
     OutDataLong( 0 );                           //call_ins
     OutDataLong( 0 );                           //callee
     TellByPassOver();
-    SetOP( old );
-    return( data_seg );
+    SetOP( old_segid );
+    return( data_segid );
 }
 
 
@@ -908,19 +908,19 @@ void    Do4CXShift( instruction *ins, void (*rtn)(instruction *) )
 void StartBlockProfiling( block *blk )
 /************************************/
 {
-    segment_id          old;
-    segment_id          data_seg;
+    segment_id          old_segid;
+    segment_id          data_segid;
     label_handle        data;
 
     if( _IsntTargetModel( NEW_P5_PROFILING ) )
         return;
     if( _IsntTargetModel( STATEMENT_COUNTING ) )
         return;
-    data_seg = (segment_id)(pointer_int)FEAuxInfo( NULL, P5_PROF_SEG );
+    data_segid = (segment_id)(pointer_int)FEAuxInfo( NULL, P5_PROF_SEG );
     if( blk->label == NULL )
         return;
     TellKeepLabel( blk->label );
-    old = SetOP( data_seg );
+    old_segid = SetOP( data_segid );
     TellOptimizerByPassed();
     SetUpObj( true );
     data = AskForNewLabel();
@@ -937,16 +937,16 @@ void StartBlockProfiling( block *blk )
     OutReloc( AskCodeSeg(), F_OFFSET, false );  //function
     OutLblPatch( CurrProc->label, F_OFFSET, 0 );
     TellByPassOver();
-    SetOP( old );
+    SetOP( old_segid );
     _Code;
     LayOpword( 0x0583 );                // sub L1+4,eax / add L1+4,eax
     ILen += 4;
-    DoLblRef( data, data_seg, offsetof( block_count_info, lo_count ), OFST );
+    DoLblRef( data, data_segid, offsetof( block_count_info, lo_count ), OFST );
     AddByte( 1 );
     _Next;
     LayOpword( 0x1583 );                // sub L1+4,eax / add L1+4,eax
     ILen += 4;
-    DoLblRef( data, data_seg, offsetof( block_count_info, hi_count ), OFST );
+    DoLblRef( data, data_segid, offsetof( block_count_info, hi_count ), OFST );
     AddByte( 0 );
     _Emit;
 }

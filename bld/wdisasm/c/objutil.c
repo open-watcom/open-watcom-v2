@@ -31,10 +31,7 @@
 
 
 #include <ctype.h>
-#include <stdlib.h>
-#include <string.h>
 #include "disasm.h"
-
 
 
 char  *ToStr( uint_32 value, uint_16 length, uint_32 ins_offset )

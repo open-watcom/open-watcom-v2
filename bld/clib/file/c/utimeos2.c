@@ -39,7 +39,7 @@
 #include <dos.h>
 #include <sys/stat.h>
 #include <direct.h>
-#include <sys/utime.h>
+#include <utime.h>
 #include <wos2.h>
 #include "rterrno.h"
 #include "openmode.h"

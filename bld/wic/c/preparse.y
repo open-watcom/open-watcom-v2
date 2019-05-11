@@ -546,7 +546,7 @@ type-spec
 
 typedef-name
     : Y_TYPEDEF_NAME
-        { $$ = dupDeclInfo($1->data->repr.pTypeDecl, $1->pos); zapToken($1); }
+        { $$ = dupDeclInfo($1->data->repr.ginfo.pTypeDecl, $1->pos); zapToken($1); }
     ;
 
 

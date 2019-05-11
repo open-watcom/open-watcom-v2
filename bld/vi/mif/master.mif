@@ -21,6 +21,11 @@ additional_cleanup = *.rex *.gdh *.gch $(bind_compiled)
 !include deftarg.mif
 !include win386.mif
 
+!include $(commonui_dir)/client.mif
+!include $(wpi_dir)/client.mif
+!include $(ui_dir)/client.mif
+!include trmem.mif
+
 !include ../mif/rcsdll.mif
 !include ../mif/include.mif
 !include ../mif/objects.mif
@@ -28,11 +33,6 @@ additional_cleanup = *.rex *.gdh *.gch $(bind_compiled)
 !include ../mif/special.mif
 !include ../mif/link.mif
 !include ../mif/bind.mif
-
-!include $(commonui_dir)/client.mif
-!include $(wpi_dir)/client.mif
-!include $(ui_dir)/client.mif
-!include trmem.mif
 
 .h : $(vi_dir)/h
 .dat : $(vi_dir)/dat

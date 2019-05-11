@@ -36,7 +36,7 @@
 #include "dbgerr.h"
 #include "guidlg.h"
 #include "guipick.h"
-#include "dlgamb.h"
+#include "dlgamb.rh"
 #include "dui.h"
 #include "strutil.h"
 #include "dbgutil.h"
@@ -44,7 +44,7 @@
 #include "dbglkup.h"
 
 
-OVL_EXTERN bool SymPick( const char *text, GUIPICKCALLBACK *pick_call_back, int *choice )
+static bool SymPick( const char *text, GUIPICKCALLBACK *pick_call_back, int *choice )
 {
     dlg_pick    dlg;
 
@@ -59,7 +59,7 @@ OVL_EXTERN bool SymPick( const char *text, GUIPICKCALLBACK *pick_call_back, int 
     return( true );
 }
 
-OVL_EXTERN const char *SymPickText( const void *data_handle, int item )
+static const char *SymPickText( const void *data_handle, int item )
 {
     sym_list            *sym;
     unsigned            len;

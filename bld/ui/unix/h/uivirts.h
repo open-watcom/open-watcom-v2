@@ -50,8 +50,8 @@ typedef struct Display {
     int         (*update)(SAREA *area);     /* change screen */
     int         (*refresh)(bool noopt);     /* force redraw of screen */
     /*- cursor */
-    int         (*getcur)(ORD *row, ORD *col, CURSOR_TYPE *type, CATTR *attr);
-    int         (*setcur)(ORD row, ORD col, CURSOR_TYPE type, CATTR attr);
+    int         UIHOOK (*getcur)(CURSORORD *crow, CURSORORD *ccol, CURSOR_TYPE *ctype, CATTR *cattr);
+    int         UIHOOK (*setcur)(CURSORORD crow, CURSORORD ccol, CURSOR_TYPE ctype, CATTR cattr);
     ui_event    (*event)( void );
 } Display;
 
@@ -90,6 +90,8 @@ typedef struct {
 } PossibleDisplay;
 
 extern VirtDisplay      UIVirt;
+
+#define UIVIRTS
 
 /*-
  * convenient naming, and easier changes later...

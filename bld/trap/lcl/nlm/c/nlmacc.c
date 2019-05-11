@@ -490,7 +490,7 @@ static unsigned_8 NPX( void )
 
 
 #ifdef DEBUG_ME
-void DumpRegs( msb *m, char *str )
+static void DumpRegs( msb *m, char *str )
 {
     if( DebugClasses & (D_THREAD|D_ERROR) ) {
         ConsolePrintf( "EAX:%8.8x EBX:%8.8x ECX:%8.8x EDX:%8.8x ESI:%8.8x ESI:%8.8x\r\n",

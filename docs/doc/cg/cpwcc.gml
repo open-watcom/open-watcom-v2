@@ -2000,8 +2000,8 @@ Here is a simplified example showing usage and syntax.
 .exam begin
 #pragma aux fast_mul = \
     "imul eax,edx" \
-    parm caller [eax] [edx] \
-    value struct;
+    __parm __caller [eax] [edx] \
+    __value __struct;
 
 struct fixed {
     unsigned v;
@@ -2748,9 +2748,9 @@ by the pragma identified by "string".
 #include <stdio.h>
 
 #pragma aux my_stdcall "_*" \
-        parm routine [] \
-        value struct struct caller [] \
-        modify [eax ecx edx];
+        __parm __routine [] \
+        __value __struct __struct __caller [] \
+        __modify [eax ecx edx];
 
 struct list {
     struct list *next;
@@ -2790,9 +2790,9 @@ It is also possible to modify the calling convention of all methods of a class
 or just an individual method.
 .exam begin
 #pragma aux my_thiscall "_*" \
-        parm routine [ecx] \
-        value struct struct caller [] \
-        modify [eax ecx edx];
+        __parm __routine [ecx] \
+        __value __struct __struct __caller [] \
+        __modify [eax ecx edx];
 
 #define THISCALL __declspec( __pragma("my_thiscall") )
 
@@ -2813,9 +2813,9 @@ It is also possible to forward define the class with modifiers for occasions whe
 you do not want to change original source code.
 .exam begin
 #pragma aux my_thiscall "_*" \
-        parm routine [ecx] \
-        value struct struct caller [] \
-        modify [eax ecx edx];
+        __parm __routine [ecx] \
+        __value __struct __struct __caller [] \
+        __modify [eax ecx edx];
 
 #define THISCALL __declspec( __pragma("my_thiscall") )
 class THISCALL IWatcom;

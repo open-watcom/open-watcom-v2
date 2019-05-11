@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,7 +37,8 @@
 #define BUFF_SIZE 1024
 
 
-int CheckForError(char const *fileName, char const *errCode) {
+int CheckForError(char const *fileName, char const *errCode)
+{
     FILE *in;
     char buffer[BUFF_SIZE];
     char *token;
@@ -46,7 +48,7 @@ int CheckForError(char const *fileName, char const *errCode) {
     if( in == NULL ) return( 0 );
 
     while(1) {
-        if( 0 == fgets(buffer, BUFF_SIZE, in) ) {
+        if( 0 == fgets(buffer, sizeof( buffer ), in) ) {
             break; // we didn't find it.
         } else {
             token=strtok(buffer," :!");

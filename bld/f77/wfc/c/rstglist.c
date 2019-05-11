@@ -30,6 +30,7 @@
 
 
 #include "ftnstd.h"
+#include <string.h>
 #include "ecflags.h"
 #include "errcod.h"
 #include "undef.h"
@@ -45,8 +46,6 @@
 #include "rstutils.h"
 #include "rstglist.h"
 #include "rstmgr.h"
-
-#include <string.h>
 
 
 // Local variables are only added to the GList for relocation purposes.

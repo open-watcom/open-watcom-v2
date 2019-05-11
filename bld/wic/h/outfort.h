@@ -31,7 +31,7 @@
 
 
 /* Function table */
-extern ExpandFuncTable printExpandFortTable;
+extern ExpandFuncEntry printExpandFortTable[MAX_PRINT_TYPE];
 
 /* CTree print table */
 extern PrintCTreeTable printCTreeFortTable[LABCT_MAX];

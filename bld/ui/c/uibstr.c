@@ -45,11 +45,11 @@ void intern bstring( BUFFER *bptr, int row, int col, ATTR attr, LPC_STRING strin
 }
 
 
-void intern braw( BUFFER *bptr, int row, int col, PIXEL *pixels, uisize len )
-/***************************************************************************/
+void intern braw( BUFFER *bptr, int row, int col, LP_PIXEL pixels, uisize len )
+/*****************************************************************************/
 {
     LP_PIXEL    dst;
 
     dst = bptr->origin + row * bptr->increment + col;
-    farcopy( (LP_PIXEL)pixels, dst, len, issnow( bptr ) );
+    farcopy( pixels, dst, len, issnow( bptr ) );
 }

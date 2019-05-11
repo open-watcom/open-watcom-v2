@@ -88,19 +88,6 @@ eng_objs = &
     $(_subdir_)dbgcapt.obj &
     $(_subdir_)autoenv.obj
 
-eng_objs_dosi86 = &
-    $(_subdir_)fork.obj &
-    $(_subdir_)dosinit.obj &
-    $(_subdir_)doschk.obj &
-    $(_subdir_)doschkx.obj &
-    $(_subdir_)doscmd.obj &
-    $(_subdir_)dosfilio.obj &
-    $(_subdir_)doslkup.obj &
-    $(_subdir_)dosmem.obj &
-    $(_subdir_)dosgrow.obj &
-    $(_subdir_)dosalloc.obj &
-#    $(_subdir_)dostrap.obj
-
 eng_objs_dos386 = &
     $(_subdir_)dsxfork.obj &
     $(_subdir_)dsxinit.obj &
@@ -138,7 +125,7 @@ eng_objs_nt = &
     $(_subdir_)ntfilio.obj &
     $(_subdir_)ntfinfo.obj &
     $(_subdir_)ntcmd.obj &
-    $(_subdir_)winlkup.obj
+    $(_subdir_)ntlkup.obj
 
 eng_objs_wini86 = &
     $(_subdir_)wininit.obj &
@@ -206,7 +193,6 @@ dui_objs = &
     wndmenu.obj &
     wndsys.obj
 
-dui_objs_dosi86   = dosscrn.obj helpio.obj
 dui_objs_dos386   = dsxscrn.obj helpio.obj
 dui_objs_linux    = lnxscrn.obj helpio.obj
 dui_objs_qnx386   = qnxscrn.obj helpio.obj
@@ -223,7 +209,6 @@ dui_objs_nt       = ntscrn.obj helpio.obj ntdbgpb.obj
 dui_objs_win      = winscrn.obj helpio.obj
 !endif
 
-sys_objs_dosi86   = 
 sys_objs_dos386   = 
 sys_objs_linux    = 
 sys_objs_qnx386   = 

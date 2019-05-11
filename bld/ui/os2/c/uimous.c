@@ -31,7 +31,6 @@
 
 
 #include <dos.h>
-#include <malloc.h>
 #include "uidef.h"
 #include "doscall.h"
 #include "uimouse.h"
@@ -182,13 +181,13 @@ static void DOS_initmouse( init_mode install )
     int             cx,dx;
     MOUSETIME       time;
 
-    if( install > INIT_MOUSELESS && mouse_installed() ) {
-        if( install > INIT_MOUSE ) {
+    if( install != INIT_MOUSELESS && mouse_installed() ) {
+        if( install == INIT_MOUSE_INITIALIZED ) {
             if( MouseDrvReset() != MOUSE_DRIVER_OK ) {
                 install = INIT_MOUSELESS;   /* mouse initialization failed */
             }
         }
-        if( install > INIT_MOUSELESS ) {
+        if( install != INIT_MOUSELESS ) {
             dx = ( UIData->width - 1 ) * MOUSE_SCALE;
             MouseDrvCall2( 7, 0, 0, dx );
             dx = ( UIData->height - 1 ) * MOUSE_SCALE;
@@ -218,7 +217,7 @@ static void OS2_initmouse( init_mode install )
     USHORT          mouevents;
     USHORT          num_buttons;
 
-    if( install > INIT_MOUSELESS && ( MouOpen( 0L, &MouHandle ) == 0 ) ) {
+    if( install != INIT_MOUSELESS && ( MouOpen( 0L, &MouHandle ) == 0 ) ) {
         if( MouGetNumButtons( &num_buttons, MouHandle ) == 0 ) {
             if( num_buttons == 2 ) {
                 TwoButtonMouse = true;

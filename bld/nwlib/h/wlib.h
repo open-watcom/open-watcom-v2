@@ -56,7 +56,7 @@
 #include "cmdline.h"
 #include "orlrtns.h"
 #include "error.h"
-#include "errnum.h"
+#include "errnum.rh"
 #include "ext.h"
 #include "proclib.h"
 #include "filetab.h"

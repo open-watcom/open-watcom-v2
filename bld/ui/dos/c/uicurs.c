@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,8 +35,9 @@
 #include "uidef.h"
 #include "uidos.h"
 #include "uiattrs.h"
-#include "uidbg.h"
+#include "uicurshk.h"
 #include "biosui.h"
+#include "uicurshk.h"
 
 
 #define _swap(a,b)      {int i; i=a; a=b; b=i;}
@@ -49,12 +51,12 @@
 #endif
 
 static CATTR            OldCursorAttr;
-static ORD              OldCursorRow;
-static ORD              OldCursorCol;
+static CURSORORD        OldCursorRow;
+static CURSORORD        OldCursorCol;
 static CURSOR_TYPE      OldCursorType;
 
-void UIDBG _uioffcursor( void )
-/*****************************/
+void UIHOOK _uioffcursor( void )
+/******************************/
 {
     union REGS      r;
 
@@ -70,8 +72,8 @@ void UIDBG _uioffcursor( void )
 }
 
 
-void UIDBG _uioncursor( void )
-/****************************/
+void UIHOOK _uioncursor( void )
+/*****************************/
 {
     union REGS      r;
 
@@ -141,7 +143,7 @@ static void savecursor( void )
 }
 
 
-static void newcursor( void )
+void intern newcursor( void )
 /***************************/
 {
     if( UIData->cursor_type == C_OFF ) {
@@ -163,8 +165,8 @@ static void swapcursor( void )
 }
 
 
-void UIDBG _uigetcursor( ORD *row, ORD *col, CURSOR_TYPE *type, CATTR *attr )
-/***************************************************************************/
+void UIHOOK _uigetcursor( CURSORORD *crow, CURSORORD *ccol, CURSOR_TYPE *ctype, CATTR *cattr )
+/********************************************************************************************/
 {
     union REGS      r;
 
@@ -174,51 +176,51 @@ void UIDBG _uigetcursor( ORD *row, ORD *col, CURSOR_TYPE *type, CATTR *attr )
     /* read OldCursor position */
     r.h.ah = 3;
     intx86( BIOS_VIDEO, &r, &r );
-    *row = r.h.dh;
-    *col = r.h.dl;
+    *crow = r.h.dh;
+    *ccol = r.h.dl;
     if( r.h.cl > r.h.ch + 1 ) {
-        *type = C_INSERT;
+        *ctype = C_INSERT;
     } else {
-        *type = C_NORMAL;
+        *ctype = C_NORMAL;
     }
     if( !UIData->cursor_on ) {
-        *type = C_OFF;
+        *ctype = C_OFF;
     }
     /* read character and attribute */
     r.h.ah = 8;
     intx86( BIOS_VIDEO, &r, &r );
-    *attr = r.h.ah;
+    *cattr = r.h.ah;
 }
 
 
-void UIDBG _uisetcursor( ORD row, ORD col, CURSOR_TYPE typ, CATTR attr )
-/**********************************************************************/
+void UIHOOK _uisetcursor( CURSORORD crow, CURSORORD ccol, CURSOR_TYPE ctyp, CATTR cattr )
+/***************************************************************************************/
 {
-    if( ( typ != UIData->cursor_type ) ||
-        ( row != UIData->cursor_row ) ||
-        ( col != UIData->cursor_col ) ||
-        ( attr != UIData->cursor_attr ) ) {
-        UIData->cursor_type = typ;
-        UIData->cursor_row = row;
-        UIData->cursor_col = col;
-        if( attr != CATTR_OFF ) {
-            UIData->cursor_attr = attr;
+    if( ( ctyp != UIData->cursor_type ) ||
+        ( crow != UIData->cursor_row ) ||
+        ( ccol != UIData->cursor_col ) ||
+        ( cattr != UIData->cursor_attr ) ) {
+        UIData->cursor_type = ctyp;
+        UIData->cursor_row = crow;
+        UIData->cursor_col = ccol;
+        if( cattr != CATTR_OFF ) {
+            UIData->cursor_attr = cattr;
         }
         newcursor();
     }
 }
 
 
-void UIDBG _uiswapcursor( void )
-/******************************/
+void UIHOOK _uiswapcursor( void )
+/*******************************/
 {
     swapcursor();
     newcursor();
 }
 
 
-void UIDBG _uiinitcursor( void )
-/******************************/
+void UIHOOK _uiinitcursor( void )
+/*******************************/
 {
     savecursor();
     uisetcursor( OldCursorRow, OldCursorCol, OldCursorType, OldCursorAttr );
@@ -226,8 +228,8 @@ void UIDBG _uiinitcursor( void )
 }
 
 
-void UIDBG _uifinicursor( void )
-/******************************/
+void UIHOOK _uifinicursor( void )
+/*******************************/
 {
     _uioncursor();
 }

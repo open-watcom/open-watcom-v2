@@ -208,7 +208,7 @@ static drive_type doGetDriveType( int drv )
     char        path[4];
     DWORD       type;
 
-    path[0] = drv;
+    path[0] = (char)drv;
     path[1] = ':';
     path[2] = '\\';
     path[3] = 0;
@@ -234,9 +234,9 @@ static void doDF( int drive )
 {
     struct diskfree_t   df;
     unsigned long long  cl_bytes;
-    long                total;
-    long                avail;
-    long                used;
+    unsigned long long  total;
+    unsigned long long  avail;
+    unsigned long long  used;
     drive_type          dt;
 
     dt = doGetDriveType( drive );
@@ -247,12 +247,12 @@ static void doDF( int drive )
         return;
     }
     if( _dos_getdiskfree( toupper( drive ) - 'A' +1, &df ) == 0 ) {
-        cl_bytes = (long)df.sectors_per_cluster * (long)df.bytes_per_sector;
-        total = (long)df.total_clusters * cl_bytes / 1024L;
-        avail = (long)df.avail_clusters * cl_bytes / 1024L;
-        used = total-avail;
-        printf( " %c   %10ld  %10ld  %10ld    %2d%%\n",
-            toupper( drive ), total, used, avail, (100L*used)/total );
+        cl_bytes = (unsigned long long)df.sectors_per_cluster * (unsigned long long)df.bytes_per_sector;
+        total = ( df.total_clusters * cl_bytes ) / 1024;
+        avail = ( df.avail_clusters * cl_bytes ) / 1024;
+        used = total - avail;
+        printf( " %c   %10lld  %10lld  %10lld    %2d%%\n",
+            toupper( drive ), total, used, avail, (int)( ( 100 * used ) / total ) );
     }
 
 } /* doDF */

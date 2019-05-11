@@ -58,7 +58,7 @@
 static void             nextMacroToken( void );
 static token_source_fn  *tokenSource;
 
-static char             *ReScanPtr;
+static const char       *ReScanPtr;
 
 ExtraRptCtr( nextTokenCalls );
 ExtraRptCtr( nextTokenSavedId );
@@ -129,15 +129,15 @@ static unsigned_64 uintMax  = I64Val( 0x00000000, 0xffffffff );
 #define diagnose_lex_error( e ) \
         (!(e) && ( SkipLevel == NestLevel ) && (PPControl & PPCTL_NO_LEX_ERRORS) == 0 )
 
-void ReScanInit( char *ptr )
-/**************************/
+void ReScanInit( const char *ptr )
+/********************************/
 {
     ReScanPtr = ptr;
 }
 
 static int rescanBuffer( void )
 {
-    CurrChar = *(unsigned char *)ReScanPtr++;
+    CurrChar = *(const unsigned char *)ReScanPtr++;
     if( CurrChar == '\0' ) {
         CompFlags.rescan_buffer_done = true;
     }
@@ -785,31 +785,41 @@ static TOKEN doScanName( int c, bool expanding )
     }
 
     mentry = MacroLookup( Buffer, TokenLen );
-    if( mentry == NULL )
-        return( KwLookup( TokenLen ) );
-    prt_char( ' ' );
-    if( mentry->macro_defn == 0 ) {
-        return( SpecialMacro( mentry ) );
-    }
-    mentry->macro_flags |= MFLAG_REFERENCED;
-    /* if macro requires parameters and next char is not a '('
-    then this is not a macro */
-    if( mentry->parm_count != 0 ) {
-        SkipAhead();
-        if( CurrChar != '(' ) {
-            if( CompFlags.cpp_output ) {
-                Buffer[TokenLen++] = ' ';
-                Buffer[TokenLen] = '\0';
-                return( T_ID );
-            }
-            return( KwLookup( TokenLen ) );
+    if( mentry == NULL ) {
+        CurToken = KwLookup( TokenLen );
+        if( CurToken == T__PRAGMA ) {
+            CurToken = Process_Pragma( false );
         }
-    }
-    DoMacroExpansion( mentry );
-    DbgAssert( _BufferOverrun == BUFFER_OVERRUN_CHECK );
-    GetMacroToken( false );
-    if( CurToken == T_NULL ) {
-        CurToken = T_WHITE_SPACE;
+    } else {
+        prt_char( ' ' );
+        if( MacroIsSpecial( mentry ) ) {
+            return( SpecialMacro( mentry ) );
+        }
+        mentry->macro_flags |= MFLAG_REFERENCED;
+        /* if macro requires parameters and next char is not a '('
+        then this is not a macro */
+        if( MacroWithParenthesis( mentry ) ) {
+            SkipAhead();
+            if( CurrChar != '(' ) {
+                if( CompFlags.cpp_output ) {
+                    Buffer[TokenLen++] = ' ';
+                    Buffer[TokenLen] = '\0';
+                    CurToken = T_ID;
+                } else {
+                    CurToken = KwLookup( TokenLen );
+                    if( CurToken == T__PRAGMA ) {
+                        CurToken = Process_Pragma( false );
+                    }
+                }
+                return( CurToken );
+            }
+        }
+        DoMacroExpansion( mentry );
+        DbgAssert( _BufferOverrun == BUFFER_OVERRUN_CHECK );
+        GetMacroToken( false );
+        if( CurToken == T_NULL ) {
+            CurToken = T_WHITE_SPACE;
+        }
     }
     return( CurToken );
 }

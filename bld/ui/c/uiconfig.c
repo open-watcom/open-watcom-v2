@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -79,7 +79,7 @@ bool uiconfig( char *fn, char **envvars )
     if( fn != NULL && fn[0] != '\0' ) {
         config = fopen( fn, "r" );
         if( config != NULL ) {
-            while( fgets( buffer, _MAX_PATH+ATTR_LAST*4, config ) != NULL ) {
+            while( fgets( buffer, sizeof( buffer ), config ) != NULL ) {
                 blen = strlen( buffer );
                 if( blen > slen && memicmp( colour, buffer, slen ) == 0 ) {
                     s = &buffer[slen];

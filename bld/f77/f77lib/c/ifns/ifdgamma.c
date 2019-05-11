@@ -34,10 +34,9 @@
 // IFDGAMMA     : gamma function for DOUBLE PRECISION argument
 //
 
-#include "fmath.h"
-#include <float.h>
-
 #include "ftnstd.h"
+#include <float.h>
+#include "fmath.h"
 #include "ifenv.h"
 #include "ifqgamma.h"
 

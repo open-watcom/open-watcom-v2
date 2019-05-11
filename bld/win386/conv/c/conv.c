@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -318,7 +319,7 @@ static void ProcessDefFile( FILE *f )
     char        *plist;         // parameter list
     fcn         *tmpf;
 
-    while( fgets( buff, MAX_BUFF, f ) != NULL ) {
+    while( fgets( buff, sizeof( buff ), f ) != NULL ) {
 
         if( buff[0] == '#' ) {
             continue;
@@ -1769,7 +1770,7 @@ int main( int argc, char *argv[] )
         exit( 1 );
     }
 
-    while( fgets( fname, 50, pf ) != NULL ) {
+    while( fgets( fname, sizeof( fname ), pf ) != NULL ) {
         for( i = strlen( fname ); i && isspace( fname[ --i ] );  )
             fname[ i ] = '\0';
 #ifdef __UNIX__

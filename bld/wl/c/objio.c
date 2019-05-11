@@ -48,12 +48,6 @@
 #include "clibext.h"
 
 
-typedef struct {
-    void            *buffer;
-    unsigned long   pos;
-    infilelist      *currfile;
-} bufferedfile;
-
 infilelist      *CachedLibFiles;
 infilelist      *CachedFiles;
 
@@ -67,64 +61,64 @@ void ResetObjIO( void )
 static infilelist *AllocEntry( const char *name, const path_entry *path )
 /***********************************************************************/
 {
-    infilelist  *entry;
+    infilelist  *infile;
 
-    _PermAlloc( entry, sizeof( infilelist ) );
-    entry->name.u.ptr = AddStringStringTable( &PermStrings, name );
-    entry->path_list = path;
-    entry->prefix = NULL;
-    entry->handle = NIL_FHANDLE;
-    entry->cache = NULL;
-    entry->len = 0;
-    entry->flags = 0;
-    return( entry );
+    _PermAlloc( infile, sizeof( infilelist ) );
+    infile->name.u.ptr = AddStringStringTable( &PermStrings, name );
+    infile->path_list = path;
+    infile->prefix = NULL;
+    infile->handle = NIL_FHANDLE;
+    infile->cache = NULL;
+    infile->len = 0;
+    infile->status = 0;
+    return( infile );
 }
 
 infilelist *AllocFileEntry( const char *name, const path_entry *path )
 /********************************************************************/
 {
-    infilelist  *entry;
+    infilelist  *infile;
 
-    entry = AllocEntry( name, path );
-    entry->next = CachedFiles;
-    CachedFiles = entry;
-    return( entry );
+    infile = AllocEntry( name, path );
+    infile->next = CachedFiles;
+    CachedFiles = infile;
+    return( infile );
 }
 
 infilelist *AllocUniqueFileEntry( const char *name, const path_entry *path )
 /**************************************************************************/
 {
-    infilelist  *entry;
+    infilelist  *infile;
 
-    for( entry = CachedLibFiles; entry != NULL; entry = entry->next ) {
-        if( FNAMECMPSTR( entry->name.u.ptr, name ) == 0 ) {
-            return( entry );    // we found 1 with the same name.
+    for( infile = CachedLibFiles; infile != NULL; infile = infile->next ) {
+        if( FNAMECMPSTR( infile->name.u.ptr, name ) == 0 ) {
+            return( infile );    // we found 1 with the same name.
         }
     }
-    entry = AllocEntry( name, path );   // didn't find one, so allocate a new 1
+    infile = AllocEntry( name, path );   // didn't find one, so allocate a new 1
     if( CachedLibFiles == NULL ) {      // add libraries to the end of the
-        CachedLibFiles = entry;         // regular cached files list.
-        LinkList( &CachedFiles, entry );
+        CachedLibFiles = infile;         // regular cached files list.
+        LinkList( &CachedFiles, infile );
     } else {
-        LinkList( &CachedLibFiles, entry );
+        LinkList( &CachedLibFiles, infile );
     }
-    return( entry );
+    return( infile );
 }
 
 bool CleanCachedHandles( void )
 /************************************/
 {
-    infilelist *list;
+    infilelist *infile;
 
-    for( list = CachedFiles; list != NULL; list = list->next ) {
-        if( (list->flags & INSTAT_IN_USE) == 0 && list->handle != NIL_FHANDLE ) {
+    for( infile = CachedFiles; infile != NULL; infile = infile->next ) {
+        if( (infile->status & INSTAT_IN_USE) == 0 && infile->handle != NIL_FHANDLE ) {
             break;
         }
     }
-    if( list == NULL )
+    if( infile == NULL )
         return( false );
-    QClose( list->handle, list->name.u.ptr );
-    list->handle = NIL_FHANDLE;
+    QClose( infile->handle, infile->name.u.ptr );
+    infile->handle = NIL_FHANDLE;
     return( true );
 }
 
@@ -151,12 +145,12 @@ char *MakePath( char *fullname, const char **path_list )
     return( p );
 }
 
-char *MakeFileName( infilelist *file, char *fullname )
-/****************************************************/
+char *MakeFileName( infilelist *infile, char *fullname )
+/******************************************************/
 {
-    const char  *path = file->prefix;
+    const char  *path = infile->prefix;
 
-    strcpy( MakePath( fullname, &path ), file->name.u.ptr );
+    strcpy( MakePath( fullname, &path ), infile->name.u.ptr );
     return( (char *)path );
 }
 
@@ -170,18 +164,16 @@ bool MakeFileNameFromList( const char **path_list, char *name, char *fullname )
     return( false );
 }
 
-#define LIB_SEARCH (INSTAT_USE_LIBPATH | INSTAT_LIBRARY)
-
-static f_handle PathObjOpen( const char *path_ptr, char *name, char *new_name, infilelist *file )
-/***********************************************************************************************/
+static f_handle PathObjOpen( const char *path_ptr, char *name, char *new_name, infilelist *infile )
+/*************************************************************************************************/
 {
     f_handle    fp;
 
     fp = NIL_FHANDLE;
     for( ;; ) {
-        file->prefix = path_ptr;
+        infile->prefix = path_ptr;
         if( !MakeFileNameFromList( &path_ptr, name, new_name ) ) {
-            file->prefix = NULL;
+            infile->prefix = NULL;
             break;
         }
         fp = QObjOpen( new_name );
@@ -192,8 +184,8 @@ static f_handle PathObjOpen( const char *path_ptr, char *name, char *new_name, i
     return( fp );
 }
 
-bool DoObjOpen( infilelist *file )
-/********************************/
+bool DoObjOpen( infilelist *infile )
+/**********************************/
 {
     char                *name;
     f_handle            fp;
@@ -201,47 +193,47 @@ bool DoObjOpen( infilelist *file )
     char                new_name[ PATH_MAX ];
     const path_entry    *searchpath;
 
-    name = file->name.u.ptr;
-    if( file->handle != NIL_FHANDLE )
+    name = infile->name.u.ptr;
+    if( infile->handle != NIL_FHANDLE )
         return( true );
-    file->currpos = 0;
+    infile->currpos = 0;
     if( HAS_PATH( name ) ) {   // has path defined
-        file->path_list = NULL;
+        infile->path_list = NULL;
         fp = QObjOpen( name );
-    } else if( file->prefix != NULL ) {     // already searched path
-        MakeFileName( file, new_name );
+    } else if( infile->prefix != NULL ) {     // already searched path
+        MakeFileName( infile, new_name );
         fp = QObjOpen( new_name );
     } else {                                // new, no searched path
         fp = NIL_FHANDLE;
-        if( (file->flags & LIB_SEARCH) || file->path_list == NULL ) {
+        if( (infile->status & INSTAT_LIB_SEARCH) || infile->path_list == NULL ) {
             /* try in current directory */
             fp = QObjOpen( name );
         }
         if( fp == NIL_FHANDLE ) {
-            for( searchpath = file->path_list; searchpath != NULL; searchpath = searchpath->next ) {
-                fp = PathObjOpen( searchpath->name, name, new_name, file );
+            for( searchpath = infile->path_list; searchpath != NULL; searchpath = searchpath->next ) {
+                fp = PathObjOpen( searchpath->name, name, new_name, infile );
                 if( fp != NIL_FHANDLE ) {
                     break;
                 }
             }
-            if( fp == NIL_FHANDLE && (file->flags & INSTAT_USE_LIBPATH) ) {
+            if( fp == NIL_FHANDLE && (infile->status & INSTAT_USE_LIBPATH) ) {
                 if( LibPath != NULL ) {
-                    fp = PathObjOpen( LibPath, name, new_name, file );
+                    fp = PathObjOpen( LibPath, name, new_name, infile );
                 }
             }
         }
     }
     if( fp != NIL_FHANDLE ) {
-        if( (file->flags & INSTAT_GOT_MODTIME) == 0 ) {
-            file->modtime = QFModTime( fp );
+        if( (infile->status & INSTAT_GOT_MODTIME) == 0 ) {
+            infile->modtime = QFModTime( fp );
         }
-        file->handle = fp;
+        infile->handle = fp;
         return( true );
-    } else if( (file->flags & INSTAT_NO_WARNING) == 0 ) {
-        err = ( file->flags & INSTAT_OPEN_WARNING ) ? WRN+MSG_CANT_OPEN : ERR+MSG_CANT_OPEN;
+    } else if( (infile->status & INSTAT_NO_WARNING) == 0 ) {
+        err = ( infile->status & INSTAT_OPEN_WARNING ) ? WRN+MSG_CANT_OPEN : ERR+MSG_CANT_OPEN;
         PrintIOError( err, "12", name );
-        file->prefix = NULL;
-        file->handle = NIL_FHANDLE;
+        infile->prefix = NULL;
+        infile->handle = NIL_FHANDLE;
     }
     return( false );
 }
@@ -265,14 +257,14 @@ void FreeTokBuffs( void )
 void BadObject( void )
 /***************************/
 {
-    CurrMod->f.source->file->flags |= INSTAT_IOERR;
+    CurrMod->f.source->infile->status |= INSTAT_IOERR;
     LnkMsg( LOC+ERR+MSG_OBJ_FILE_ATTR, NULL );
 }
 
 void EarlyEOF( void )
 /**************************/
 {
-    CurrMod->f.source->file->flags |= INSTAT_IOERR;
-    Locator( CurrMod->f.source->file->name.u.ptr, NULL, 0 );
+    CurrMod->f.source->infile->status |= INSTAT_IOERR;
+    Locator( CurrMod->f.source->infile->name.u.ptr, NULL, 0 );
     LnkMsg( ERR+MSG_EARLY_EOF, NULL );
 }

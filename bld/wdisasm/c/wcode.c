@@ -29,13 +29,13 @@
 ****************************************************************************/
 
 
-#include <string.h>
 #include "disasm.h"
 
 #define DO_ENUM
 #include "wcode.h"
 #undef  DO_ENUM
 #include "wcode.h"
+
 
 uint_32         WtkAddr;
 char            WTLBASEStr[] = "WTLBASE";

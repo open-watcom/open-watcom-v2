@@ -142,7 +142,7 @@ static bool WndDlgTxtAttr( const char *buff, wnd_attr_wv wndattr )
 }
 
 
-OVL_EXTERN wnd_row DlgNumRows( a_window wnd )
+static wnd_row DlgNumRows( a_window wnd )
 {
     /* unused parameters */ (void)wnd;
 
@@ -150,7 +150,7 @@ OVL_EXTERN wnd_row DlgNumRows( a_window wnd )
 }
 
 
-OVL_EXTERN void DlgRefresh( a_window wnd )
+static void DlgRefresh( a_window wnd )
 {
     if( DlgLines > 0 )
         WndMoveCurrent( wnd, DlgLines - 1, 0 );
@@ -165,7 +165,7 @@ bool WndDlgTxt( const char *buff )
 }
 
 
-OVL_EXTERN  bool    DlgGetLine( a_window wnd, wnd_row row, wnd_piece piece, wnd_line_piece *line )
+static  bool    DlgGetLine( a_window wnd, wnd_row row, wnd_piece piece, wnd_line_piece *line )
 {
     int         i;
     dlg_entry   *curr;
@@ -199,7 +199,7 @@ void WndDlgFini( void )
     }
 }
 
-OVL_EXTERN bool DlgWndEventProc( a_window wnd, gui_event gui_ev, void *parm )
+static bool DlgWndEventProc( a_window wnd, gui_event gui_ev, void *parm )
 {
     /* unused parameters */ (void)parm;
 
@@ -222,6 +222,11 @@ OVL_EXTERN bool DlgWndEventProc( a_window wnd, gui_event gui_ev, void *parm )
     return( false );
 }
 
+static bool ChkUpdate( void )
+{
+    return( UpdateFlags & UP_DLG_WRITTEN );
+}
+
 wnd_info LogInfo = {
     DlgWndEventProc,
     DlgRefresh,
@@ -234,8 +239,7 @@ wnd_info LogInfo = {
     DlgNumRows,
     NoNextRow,
     NoNotify,
-    ChkFlags,
-    UP_DLG_WRITTEN,
+    ChkUpdate,
     NoPopUp
 };
 

@@ -34,8 +34,8 @@
 #include "uidef.h"
 #include "uimenu.h"
 
-VSCREEN intern *uiopen( SAREA *area, const char *title, screen_flags flags )
-/**************************************************************************/
+VSCREEN * intern uiopen( SAREA *area, const char *title, screen_flags flags )
+/***************************************************************************/
 {
     VSCREEN             *s;
 
@@ -46,9 +46,9 @@ VSCREEN intern *uiopen( SAREA *area, const char *title, screen_flags flags )
     s->event = EV_NO_EVENT;
     s->area = *area;
     s->flags = flags;
-    s->col = 0;
-    s->row = 0;
-    s->cursor = C_OFF;
+    s->cursor_col = 0;
+    s->cursor_row = 0;
+    s->cursor_type = C_OFF;
     s->title = NULL;
     s->dynamic_title = false;
     if( title != NULL ) {
@@ -94,13 +94,13 @@ void uicntrtext( VSCREEN *vs, SAREA *area, ATTR attr, unsigned field_len, const 
 void uinocursor( VSCREEN *vs )
 /****************************/
 {
-    vs->cursor = C_OFF;
+    vs->cursor_type = C_OFF;
 }
 
-void uicursor( VSCREEN *vs, ORD row, ORD col, CURSOR_TYPE type )
-/**************************************************************/
+void uicursor( VSCREEN *vs, CURSORORD crow, CURSORORD ccol, CURSOR_TYPE ctype )
+/*****************************************************************************/
 {
-    vs->cursor = type;
-    vs->row = row;
-    vs->col = col;
+    vs->cursor_type = ctype;
+    vs->cursor_row = crow;
+    vs->cursor_col = ccol;
 }

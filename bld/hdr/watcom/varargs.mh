@@ -21,6 +21,7 @@
 
 #undef va_start
 
+:segment !INTEL_ONLY
 #ifdef __PPC__
  extern void *__builtin_va_start(va_list *, ...);
  #pragma intrinsic(__builtin_va_start)
@@ -33,10 +34,17 @@
  #define va_alist       void *__alist, ...
  #define va_dcl
  #define va_start(__ap) (__builtin_va_start(&__ap,__alist,0))
-#else
+#elif defined(__MIPS__)
+ extern void *__builtin_va_start(va_list *, ...);
+ #pragma intrinsic(__builtin_va_start)
  #define va_alist       void *__alist, ...
  #define va_dcl
-:segment DOS | QNX | RDOS
+ #define va_start(__ap) (__builtin_va_start(&__ap,__alist,0))
+#elif defined(_M_IX86)
+:endsegment
+ #define va_alist       void *__alist, ...
+ #define va_dcl
+:segment BITS16
  #if defined(__HUGE__) || defined(__SW_ZU)
 :elsesegment
  #ifdef __SW_ZU
@@ -45,7 +53,9 @@
  #else
   #define va_start(__ap)    ((__ap)[0]=(char *)&__alist,(void)0)
  #endif
+:segment !INTEL_ONLY
 #endif
+:endsegment
 
 :include cplusepi.sp
 

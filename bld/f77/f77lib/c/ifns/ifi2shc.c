@@ -42,15 +42,15 @@
 unsigned short  _srotl(unsigned short,char);
 #pragma aux _srotl = \
         "rol  ax,cl"    \
-    __parm      [ax] [cl] \
-    __value     [ax] \
+    __parm      [__ax] [__cl] \
+    __value     [__ax] \
     __modify    []
 
 unsigned short  _srotr(unsigned short,char);
 #pragma aux _srotr = \
         "ror  ax,cl"    \
-    __parm      [ax] [cl] \
-    __value     [ax] \
+    __parm      [__ax] [__cl] \
+    __value     [__ax] \
     __modify    []
 
 #else

@@ -30,24 +30,10 @@
 ****************************************************************************/
 
 
-#define MSG_ABOUT       100
-#define MSG_EXIT        101
-#define MSG_PORT        102
-#define MSG_SWITCHTOPGM 103
-#define MSG_CLEAR       104
-#define RADIO_1         200
-#define RADIO_2         201
-#define RADIO_3         202
-#define RADIO_4         203
-#define EDIT_1          300
-#define SELECT_1        301
-#define MAX_BAUD        5
-#define BAUD_1200       401
-#define BAUD_2400       402
-#define BAUD_4800       403
-#define BAUD_9600       404
-#define BAUD_19200      405
+#include "winserv.rh"
 
+
+#define MAX_BAUD        5
 #define MAX_PPORTS      3
 #define MAX_SERVER_NAME 80
 

@@ -30,113 +30,104 @@
 ****************************************************************************/
 
 
+typedef enum {
+    LF_DWARF_DBI_FLAG       = CONSTU32( 0x00000001 ),   // set if making DWARF debug info
+    LF_STK_SIZE_FLAG        = CONSTU32( 0x00000002 ),
+    LF_GOT_CHGD_FILES       = CONSTU32( 0x00000004 ),
+    LF_TRACE_FLAG           = CONSTU32( 0x00000008 ),
+    LF_CV_DBI_FLAG          = CONSTU32( 0x00000010 ),
+    LF_UNDEFS_ARE_OK        = CONSTU32( 0x00000020 ),
+    LF_REDEFS_OK            = CONSTU32( 0x00000040 ),
+    LF_QUIET_FLAG           = CONSTU32( 0x00000080 ),
+    LF_PACKCODE_FLAG        = CONSTU32( 0x00000100 ),   // set if packcode specified
+    LF_VF_REMOVAL           = CONSTU32( 0x00000200 ),
+    LF_NOVELL_DBI_FLAG      = CONSTU32( 0x00000400 ),   // set if generating novell debug info
+    LF_PACKDATA_FLAG        = CONSTU32( 0x00000800 ),
+    LF_CASE_FLAG            = CONSTU32( 0x00001000 ),   // set for case sensitive operation
+    LF_OLD_DBI_FLAG         = CONSTU32( 0x00002000 ),   // set if making WATCOM debug info
+    LF_SHOW_DEAD            = CONSTU32( 0x00004000 ),
+    LF_STRIP_CODE           = CONSTU32( 0x00008000 ),   // strip dead code.
+    LF_CVPACK_FLAG          = CONSTU32( 0x00010000 ),
+    LF_MAX_ERRORS_FLAG      = CONSTU32( 0x00020000 ),   // there is a max. number of errors.
+    LF_DONT_UNMANGLE        = CONSTU32( 0x00040000 ),   // don't unmangle the names
+    LF_INC_LINK_FLAG        = CONSTU32( 0x00080000 ),
+    LF_NOCACHE_FLAG         = CONSTU32( 0x00100000 ),
+    LF_CACHE_FLAG           = CONSTU32( 0x00200000 ),
+    LF_FAR_CALLS_FLAG       = CONSTU32( 0x00400000 ),   // optimize far calls
+} linkflag;
 
-typedef unsigned long linkflag;
+// Novell treated differently, as it can be generated at the same time as the others.
 
-#define DWARF_DBI_FLAG  0x00000001UL    // set if making DWARF debug info
-#define STK_SIZE_FLAG   0x00000002UL
-#define GOT_CHGD_FILES  0x00000004UL
-#define TRACE_FLAG      0x00000008UL
-#define __UNUSED_FLAG_0 0x00000010UL
-#define CV_DBI_FLAG     0x00000020UL
-#define UNDEFS_ARE_OK   0x00000040UL
-#define REDEFS_OK       0x00000080UL
-#define QUIET_FLAG      0x00000100UL
-#define PACKCODE_FLAG   0x00000200UL    // set if packcode specified
-#define VF_REMOVAL      0x00000400UL
-#define NOVELL_DBI_FLAG 0x00000800UL    // set if generating novell debug info
-#define PACKDATA_FLAG   0x00001000UL
-#define CASE_FLAG       0x00002000UL    // set for case sensitive operation
-#define OLD_DBI_FLAG    0x00004000UL    // set if making WATCOM debug info
-#define SHOW_DEAD       0x00008000UL
-#define STRIP_CODE      0x00010000UL    // strip dead code.
-#define CVPACK_FLAG     0x00020000UL
-#define MAX_ERRORS_FLAG 0x00040000UL    // there is a max. number of errors.
-#define DONT_UNMANGLE   0x00080000UL    // don't unmangle the names
-#define INC_LINK_FLAG   0x00100000UL
-#define NOCACHE_FLAG    0x00200000UL
-#define CACHE_FLAG      0x00400000UL
-#define FAR_CALLS_FLAG  0x00800000UL    // optimize far calls
-#define __UNUSED_FLAG_8 0x01000000UL
-#define __UNUSED_FLAG_7 0x02000000UL
-#define __UNUSED_FLAG_6 0x04000000UL
-#define __UNUSED_FLAG_5 0x08000000UL
-#define __UNUSED_FLAG_4 0x10000000UL
-#define __UNUSED_FLAG_3 0x20000000UL
-#define __UNUSED_FLAG_2 0x40000000UL
-#define __UNUSED_FLAG_1 0x80000000UL
+#define LF_ANY_DBI_FLAG     (LF_DWARF_DBI_FLAG | LF_CV_DBI_FLAG | LF_OLD_DBI_FLAG)
 
-// Novell treated differently, as it can be generated at the same time as the
-// others.
-
-#define ANY_DBI_FLAG    (DWARF_DBI_FLAG | CV_DBI_FLAG | OLD_DBI_FLAG)
-
-typedef enum mapflag {
-    MAP_FLAG            = 0x0001,
-    MAP_STATICS         = 0x0002,       // put statics in the map file
-    MAP_ARTIFICIAL      = 0x0004,       // put artificial syms in the map file
-    MAP_SORT            = 0x0008,       // sort symbols in the map file
-    MAP_ALPHA           = 0x0010,       // sort symbols in alphabetical order
-    MAP_GLOBAL          = 0x0020,       // sort symbols globally.
-    MAP_VERBOSE         = 0x0040,       // verbose mode
-    MAP_LINES           = 0x0080        // put line numbers in map file
+typedef enum {
+    MAP_FLAG                = 0x0001,
+    MAP_STATICS             = 0x0002,       // put statics in the map file
+    MAP_ARTIFICIAL          = 0x0004,       // put artificial syms in the map file
+    MAP_SORT                = 0x0008,       // sort symbols in the map file
+    MAP_ALPHA               = 0x0010,       // sort symbols in alphabetical order
+    MAP_GLOBAL              = 0x0020,       // sort symbols globally.
+    MAP_VERBOSE             = 0x0040,       // verbose mode
+    MAP_LINES               = 0x0080        // put line numbers in map file
 } mapflag;
 
-typedef unsigned long stateflag;
 
-#define MAKE_RELOCS             0x00000001
-#define SEARCHING_LIBRARIES     0x00000002
-#define LIBRARIES_ADDED         0x00000004
-#define LINK_ERROR              0x00000008
-#define FMT_SPECIFIED           0x00000010
-#define FMT_DECIDED             0x00000020
-#define FMT_SEEN_32_BIT         0x00000040
-#define FMT_SEEN_IMPORT_CMT     0x00000080
-#define PROC_LIBS_ADDED         0x00000100
-#define FMT_INITIALIZED         0x00000200
-#define UNDEFED_SYM_ERROR       0x00000400
-#define GENERATE_LIB_LIST       0x00000800
-#define HAVE_16BIT_CODE         0x00001000      // true if we have 16 bit code.
-#define HAVE_ALPHA_CODE         0x00002000
-#define HAVE_PPC_CODE           0x00004000
-#define HAVE_I86_CODE           0x00008000
-#define HAVE_MIPS_CODE          0x00010000
-#define HAVE_X64_CODE           0x00020000
-#define CAN_REMOVE_SEGMENTS     0x00040000
-#define STOP_WORKING            0x00080000      // IDE wants us to stop now
-#define INTERNAL_DEBUG          0x00100000
-#define GOT_PREV_STRUCTS        0x00200000
-#define DOSSEG_FLAG             0x00400000
-#define SPEC_ORDER_FLAG         0x00800000
-#define FMT_SEEN_64_BIT         0x01000000
+typedef enum {
+    LS_MAKE_RELOCS          = CONSTU32( 0x00000001 ),
+    LS_SEARCHING_LIBRARIES  = CONSTU32( 0x00000002 ),
+    LS_LIBRARIES_ADDED      = CONSTU32( 0x00000004 ),
+    LS_LINK_ERROR           = CONSTU32( 0x00000008 ),
+    LS_FMT_SPECIFIED        = CONSTU32( 0x00000010 ),
+    LS_FMT_DECIDED          = CONSTU32( 0x00000020 ),
+    LS_FMT_SEEN_32_BIT      = CONSTU32( 0x00000040 ),
+    LS_FMT_SEEN_IMPORT_CMT  = CONSTU32( 0x00000080 ),
+    LS_PROC_LIBS_ADDED      = CONSTU32( 0x00000100 ),
+    LS_FMT_INITIALIZED      = CONSTU32( 0x00000200 ),
+    LS_UNDEFED_SYM_ERROR    = CONSTU32( 0x00000400 ),
+    LS_GENERATE_LIB_LIST    = CONSTU32( 0x00000800 ),
+    LS_HAVE_16BIT_CODE      = CONSTU32( 0x00001000 ),   // true if we have 16 bit code.
+    LS_HAVE_ALPHA_CODE      = CONSTU32( 0x00002000 ),
+    LS_HAVE_PPC_CODE        = CONSTU32( 0x00004000 ),
+    LS_HAVE_I86_CODE        = CONSTU32( 0x00008000 ),
+    LS_HAVE_MIPS_CODE       = CONSTU32( 0x00010000 ),
+    LS_HAVE_X64_CODE        = CONSTU32( 0x00020000 ),
+    LS_CAN_REMOVE_SEGMENTS  = CONSTU32( 0x00040000 ),
+    LS_STOP_WORKING         = CONSTU32( 0x00080000 ),   // IDE wants us to stop now
+    LS_INTERNAL_DEBUG       = CONSTU32( 0x00100000 ),
+    LS_GOT_PREV_STRUCTS     = CONSTU32( 0x00200000 ),
+    LS_DOSSEG_FLAG          = CONSTU32( 0x00400000 ),
+    LS_SPEC_ORDER_FLAG      = CONSTU32( 0x00800000 ),
+    LS_FMT_SEEN_64_BIT      = CONSTU32( 0x01000000 ),
+} stateflag;
 
-#define HAVE_MACHTYPE_MASK      (HAVE_I86_CODE | HAVE_X64_CODE | HAVE_ALPHA_CODE | HAVE_PPC_CODE | HAVE_MIPS_CODE)
-#define CLEAR_ON_INC    (STOP_WORKING | INTERNAL_DEBUG | GOT_PREV_STRUCTS | MAKE_RELOCS | FMT_SPECIFIED | FMT_DECIDED | FMT_INITIALIZED)
-#define ORDER_FLAG_MASK (DOSSEG_FLAG | SPEC_ORDER_FLAG)
+#define LS_HAVE_MACHTYPE_MASK   (LS_HAVE_I86_CODE | LS_HAVE_X64_CODE | LS_HAVE_ALPHA_CODE | LS_HAVE_PPC_CODE | LS_HAVE_MIPS_CODE)
+#define LS_ORDER_FLAG_MASK      (LS_DOSSEG_FLAG | LS_SPEC_ORDER_FLAG)
+
+#define LS_CLEAR_ON_INC     /* flags to clear when incremental linking. */ \
+    (LS_STOP_WORKING | LS_INTERNAL_DEBUG | LS_GOT_PREV_STRUCTS | LS_MAKE_RELOCS | LS_FMT_SPECIFIED | LS_FMT_DECIDED | LS_FMT_INITIALIZED)
 
 // this used for ID splits.
 
-#define CODE_SEGMENT    1
-#define DATA_SEGMENT    2
+#define CODE_SEGMENT        1
+#define DATA_SEGMENT        2
 
 /*  Object file formats & flags */
-typedef enum obj_format {
-    FMT_EASY_OMF        = 0x0001,
-    FMT_MS_386          = 0x0002,
-    FMT_UNUSED_3        = 0x0004,
-    FMT_IS_LIDATA       = 0x0008,   // true if last data was lidata
-    FMT_TOLD_XXBIT      = 0x0010,   // already said object was xx-bit
-    FMT_IGNORE_FIXUPP   = 0x0020,   // don't process a fixup record
-    FMT_UNSAFE_FIXUPP   = 0x0040,   // don't optimize calls in current fixupp
-    FMT_UNUSED_1        = 0x0080,
-    FMT_PE_XFER         = 0x0000,   // .obj is PE xfer code segment(see note)
-    FMT_OMF             = 0x0100,   // .obj is an OMF object file (see note)
-    FMT_COFF            = 0x0200,   // .obj is a COFF object file (see note)
-    FMT_ELF             = 0x0300,   // .obj is an ELF object file (see note)
-    FMT_INCREMENTAL     = 0x0400,   // .obj is saved inc. linking info
-    FMT_OBJ_FMT_MASK    = 0x0700,
-    FMT_UNUSED_2        = 0x0800,
-    FMT_DEBUG_COMENT    = 0x1000,   // saw an object debug coment.
+typedef enum {
+    /* bits 0..4 available (bits 0..4 reserved for DBI_xxxx symbols, not used here) */
+    FMT_EASY_OMF            = 0x0001,
+    FMT_MS_386              = 0x0002,
+    FMT_IS_LIDATA           = 0x0004,   // true if last data was lidata
+    FMT_TOLD_BITNESS        = 0x0008,   // already said object was 16/32/64-bit
+    FMT_DEBUG_COMENT        = 0x0010,   // saw an object debug coment.
+    /* bits 5..7 reserved for FMT_xxxx symbols (for deciding .obj format) */
+    FMT_PE_XFER             = 0x0000,   // .obj is PE xfer code segment(see note)
+    FMT_OMF                 = 0x0020,   // .obj is an OMF object file (see note)
+    FMT_COFF                = 0x0040,   // .obj is a COFF object file (see note)
+    FMT_ELF                 = 0x0060,   // .obj is an ELF object file (see note)
+    FMT_INCREMENTAL         = 0x0080,   // .obj is saved inc. linking info
+    /* bits 8..max available */
+    FMT_IGNORE_FIXUPP       = 0x0100,   // don't process a fixup record
+    FMT_UNSAFE_FIXUPP       = 0x0200,   // don't optimize calls in current fixupp
 } obj_format;
 
 /* NOTE:  these are also stored into the
@@ -145,9 +136,10 @@ typedef enum obj_format {
 */
 
 #define FMT_32BIT_REC           (FMT_EASY_OMF | FMT_MS_386)
-#define FMT_IDX_SHIFT           8
-#define FMT_IDX_BITS            (FMT_OBJ_FMT_MASK >> FMT_IDX_SHIFT)
-#define GET_FMT_IDX(x)          (((x) >> FMT_IDX_SHIFT) & FMT_IDX_BITS)
+
+#define FMT_OBJ_FMT_MASK        (FMT_PE_XFER | FMT_OMF | FMT_COFF | FMT_ELF | FMT_INCREMENTAL)
+#define FMT_IDX_SHIFT           5
+#define GET_FMT_IDX(x)          (((x) & FMT_OBJ_FMT_MASK) >> FMT_IDX_SHIFT)
 #define IS_FMT_ORL(x)           (((x) & FMT_OBJ_FMT_MASK) >= FMT_COFF)
 #define IS_FMT_OMF(x)           (((x) & FMT_OBJ_FMT_MASK) == FMT_OMF)
 #define IS_FMT_ELF(x)           (((x) & FMT_OBJ_FMT_MASK) == FMT_ELF)
@@ -157,7 +149,7 @@ typedef enum obj_format {
 
 /* Default File Extension Enumeration, see ldefext.h */
 
-typedef enum file_defext {
+typedef enum {
     #define pick1(enum,text) enum,
     #include "ldefext.h"
     #undef pick1
@@ -165,8 +157,8 @@ typedef enum file_defext {
 
 
 /*  Generic constants */
-#define MAX_REC             1024
-#define UNDEFINED           ((segment)0xffff)           /* undefined segment */
+#define MAX_REC                 1024
+#define UNDEFINED               ((segment)0xffff)           /* undefined segment */
 
 #define SET_ADDR_UNDEFINED(a)   (a).seg=UNDEFINED;(a).off=0
 #define IS_ADDR_UNDEFINED(a)    ((a).seg==UNDEFINED)

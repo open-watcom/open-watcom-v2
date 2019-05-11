@@ -40,6 +40,7 @@
 #include "wterm.h"
 #include "uidef.h"
 #include "uivirts.h"
+#include "uiintern.h"
 #include "uiextrn.h"
 #include "ctkeyb.h"
 #include "qdebug.h"
@@ -90,6 +91,7 @@ bool intern initbios( void )
 {
     PossibleDisplay     *curr;
 
+    UIPGroup = getpgrp();
     if( UIConFile == NULL ) {
         const char  *tty;
 
@@ -101,7 +103,7 @@ bool intern initbios( void )
         if( UIConFile == NULL )
             return( false );
         UIConHandle = fileno( UIConFile );
-        fcntl( UIConHandle, F_SETFD, 1 );
+        fcntl( UIConHandle, F_SETFD, FD_CLOEXEC );
     }
     setupterm( GetTermType(), UIConHandle, NULL );
 
@@ -135,12 +137,12 @@ void intern finibios( void )
 
 static unsigned RefreshForbid = 0;
 
-void forbid_refresh( void )
+void intern forbid_refresh( void )
 {
     RefreshForbid++;
 }
 
-void permit_refresh( void )
+void intern permit_refresh( void )
 {
     if( RefreshForbid ) {
         RefreshForbid--;

@@ -1,6 +1,6 @@
 #include "windows.h"
-#include "wserveri.h"
-#include "servname.h"
+#include "wserver.rh"
+#include "servname.rh"
 #include "banner.h"
 
 // Use low-color icons for Windows 3.x.
@@ -38,5 +38,5 @@ BEGIN
     DEFPUSHBUTTON "OK", IDOK, 74, 45, 32, 14, WS_GROUP
 END
 
-#include "optionsi.h"
+#include "options.rh"
 #include "options.dlg"

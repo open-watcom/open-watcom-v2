@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2017-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -57,11 +57,13 @@
 #include "uiattrs.h"
 #include "qdebug.h"
 #include "uivirt.h"
+#include "uiintern.h"
 #include "uiextrn.h"
 #include "ctkeyb.h"
 #include "tixparse.h"
 #include "tixsupp.h"
 #include "doparse.h"
+#include "uicurshk.h"
 #include "tdisp.h"
 
 
@@ -145,10 +147,10 @@ static bool ostream_init( int f )
     _con_out.fd   = f;
     return( true );
 }
-#define __putchar(_c) ((_con_out.curp < _con_out.ebuf) ? \
-                        (*_con_out.curp++ = (_c)) : __oflush(_c))
+#define ostream_putc(_c) ((_con_out.curp < _con_out.ebuf) ? \
+                        (*_con_out.curp++ = (_c)) : ostream_flush_putc(_c))
 
-static void __flush_con( void )
+static void ostream_flush( void )
 {
     int     len;
     int     offs;
@@ -165,21 +167,21 @@ static void __flush_con( void )
     _con_out.curp = _con_out.sbuf;
 }
 
-static int __oflush( int c )
+static int ostream_flush_putc( int c )
 {
-    __flush_con();
+    ostream_flush();
     //assert( _con_out.curp < _con_out.ebuf );
-    return( __putchar( c ) );
+    return( ostream_putc( c ) );
 }
 
-static void __puts( char *s )
+static void ostream_puts( char *s )
 {
     int     c;
 
     if( s == NULL )
         return;
     while( (c = (unsigned char)*s++) != '\0' ) {
-        __putchar( c );
+        ostream_putc( c );
     }
 }
 
@@ -189,23 +191,23 @@ static void __puts( char *s )
  * Qnx terminal codes
  */
 
-#define QNX_CURSOR_OFF()        __puts(_ESC "y0")
-#define QNX_CURSOR_NORMAL()     __puts(_ESC "y1")
-#define QNX_CURSOR_BOLD()       __puts(_ESC "y2")
+#define QNX_CURSOR_OFF()        ostream_puts(_ESC "y0")
+#define QNX_CURSOR_NORMAL()     ostream_puts(_ESC "y1")
+#define QNX_CURSOR_BOLD()       ostream_puts(_ESC "y2")
 
-#define QNX_BOLD()              __puts(_ESC "<")
-#define QNX_NOBOLD()            __puts(_ESC ">")
-#define QNX_BLINK()             __puts(_ESC "{")
-#define QNX_NOBLINK()           __puts(_ESC "}")
-#define QNX_ULINE()             __puts(_ESC "[")
-#define QNX_WRAP()              __puts(_ESC "h")
-#define QNX_NOWRAP()            __puts(_ESC "i")
+#define QNX_BOLD()              ostream_puts(_ESC "<")
+#define QNX_NOBOLD()            ostream_puts(_ESC ">")
+#define QNX_BLINK()             ostream_puts(_ESC "{")
+#define QNX_NOBLINK()           ostream_puts(_ESC "}")
+#define QNX_ULINE()             ostream_puts(_ESC "[")
+#define QNX_WRAP()              ostream_puts(_ESC "h")
+#define QNX_NOWRAP()            ostream_puts(_ESC "i")
 
-#define QNX_RESTORE_ATTR()      __puts(_ESC "R")
+#define QNX_RESTORE_ATTR()      ostream_puts(_ESC "R")
 
-#define QNX_NOULINE()           __puts(_ESC "]")
-#define QNX_HOME()              __puts(_ESC "H")
-#define QNX_CLS()               __puts("\f")
+#define QNX_NOULINE()           ostream_puts(_ESC "]")
+#define QNX_HOME()              ostream_puts(_ESC "H")
+#define QNX_CLS()               ostream_puts("\f")
 
 /*-
  * set initial mode of term
@@ -214,25 +216,25 @@ static void __puts( char *s )
 
 static void QNX_CURSOR_MOVE( int c, int r )
 {
-    __putchar( _ESC_CHAR );
-    __putchar( '=' );
-    __putchar( r + ' ' );
-    __putchar( c + ' ' );
+    ostream_putc( _ESC_CHAR );
+    ostream_putc( '=' );
+    ostream_putc( r + ' ' );
+    ostream_putc( c + ' ' );
 }
 
 static void QNX_SETCOLOUR( int f, int b )
 {
-    __putchar( _ESC_CHAR );
-    __putchar( '@' );
-    __putchar( '0' + f );
-    __putchar( '0' + b );
+    ostream_putc( _ESC_CHAR );
+    ostream_putc( '@' );
+    ostream_putc( '0' + f );
+    ostream_putc( '0' + b );
 }
 
 
 
 // This is basically a rewrite of the putp that's supposed to appear in
 // term.h, except it uses our "mini buffered IO code" from above
-static void _putp( char *s )
+static void ostream_putp( char *s )
 {
     int         c;
     int         pad;
@@ -280,16 +282,16 @@ static void _putp( char *s )
                 if( !xon_xoff || mand ) {
                     mand = false;
                     for( i = 0; i < pad; i++ ) {
-                        __putchar( (unsigned char)pad_char[0] );
+                        ostream_putc( (unsigned char)pad_char[0] );
                     }
                 }
             } else {
-                __putchar( '$' );
-                __puts( bbuf );
+                ostream_putc( '$' );
+                ostream_puts( bbuf );
                 return;
             }
         } else {
-            __putchar( c );
+            ostream_putc( c );
         }
     }
 }
@@ -311,57 +313,57 @@ static bool TIAACS =    false;  // alternate character set
 static bool TI_FillColourSet = false;
 
 // Macros for various terminfo capabilities
-#define TI_CURSOR_OFF()         _putp( cursor_invisible )
-#define TI_CURSOR_NORMAL()      _putp( cursor_normal )
-#define TI_CURSOR_BOLD()        _putp( cursor_visible )
+#define TI_CURSOR_OFF()         ostream_putp( cursor_invisible )
+#define TI_CURSOR_NORMAL()      ostream_putp( cursor_normal )
+#define TI_CURSOR_BOLD()        ostream_putp( cursor_visible )
 
-#define TI_BOLD()               ( TIABold = 1, _putp( enter_bold_mode ) )
+#define TI_BOLD()               ( TIABold = 1, ostream_putp( enter_bold_mode ) )
 #define TI_NOBOLD()             ( TIABold = 0, TI_SETATTR() )
 #define TI_REVERSE()            ( TIARev = 1, TI_SETATTR() )
 #define TI_NOREVERSE()          ( TIARev = 0, TI_SETATTR() )
-#define TI_BLINK()              ( TIABlink = 1, _putp( enter_blink_mode ) )
+#define TI_BLINK()              ( TIABlink = 1, ostream_putp( enter_blink_mode ) )
 #define TI_NOBLINK()            ( TIABlink = 0, TI_SETATTR() )
-#define TI_ULINE()              ( TIAULine = 1, _putp( enter_underline_mode ) )
-#define TI_NOULINE()            ( TIAULine = 0, _putp( exit_underline_mode ) )
-#define TI_ACS_ON()             ( TIAACS = 1, _putp( enter_alt_charset_mode ) )
+#define TI_ULINE()              ( TIAULine = 1, ostream_putp( enter_underline_mode ) )
+#define TI_NOULINE()            ( TIAULine = 0, ostream_putp( exit_underline_mode ) )
+#define TI_ACS_ON()             ( TIAACS = 1, ostream_putp( enter_alt_charset_mode ) )
 #define TI_ACS_OFF()            ( TIAACS = 0, \
                                     ((exit_alt_charset_mode[0] != '\0')\
-                                    ?(void)( _putp( exit_alt_charset_mode ) )\
+                                    ?(void)( ostream_putp( exit_alt_charset_mode ) )\
                                     :(void)(TI_SETATTR()) ))
-#define TI_WRAP()               _putp( enter_am_mode )
-#define TI_NOWRAP()             _putp( exit_am_mode )
-#define TI_CA_ENABLE()          _putp( enter_ca_mode )
-#define TI_CA_DISABLE()         _putp( exit_ca_mode )
+#define TI_WRAP()               ostream_putp( enter_am_mode )
+#define TI_NOWRAP()             ostream_putp( exit_am_mode )
+#define TI_CA_ENABLE()          ostream_putp( enter_ca_mode )
+#define TI_CA_DISABLE()         ostream_putp( exit_ca_mode )
 
 #define TI_RESTORE_ATTR()       ( TIAACS = TIABold = TIABlink = TIAULine = 0, \
-                                                _putp( exit_attribute_mode ) )
-#define TI_RESTORE_COLOUR()     ( _putp( ( orig_pair[0] == '\0' )\
+                                                ostream_putp( exit_attribute_mode ) )
+#define TI_RESTORE_COLOUR()     ( ostream_putp( ( orig_pair[0] == '\0' )\
                                         ? orig_colors : orig_pair ) )
 
-#define TI_ENABLE_ACS()         _putp( ena_acs )
+#define TI_ENABLE_ACS()         ostream_putp( ena_acs )
 
 #define TI_HOME()               TI_CURSOR_MOVE( 0, 0 );
 // This weird "do...while" thing is so that TI_CLS acts like a statement
-#define TI_CLS()                        \
-    do {                                \
-        if( clear_screen[0] != '\0' ) { \
-            _putp( clear_screen );       \
-            OldRow = OldCol = 0;        \
-        } else {                        \
-            TI_HOME();                  \
-            _putp( clr_eos );            \
-        }                               \
+#define TI_CLS()                            \
+    do {                                    \
+        if( clear_screen[0] != '\0' ) {     \
+            ostream_putp( clear_screen );   \
+            OldRow = OldCol = 0;            \
+        } else {                            \
+            TI_HOME();                      \
+            ostream_putp( clr_eos );        \
+        }                                   \
     } while( 0 )
 
-#define TI_INIT1_STRING()       _putp( init_1string )
-#define TI_INIT2_STRING()       _putp( init_2string )
-#define TI_INIT3_STRING()       _putp( init_3string )
+#define TI_INIT1_STRING()       ostream_putp( init_1string )
+#define TI_INIT2_STRING()       ostream_putp( init_2string )
+#define TI_INIT3_STRING()       ostream_putp( init_3string )
 
-#define TI_RESET1_STRING()      _putp( reset_1string )
-#define TI_RESET2_STRING()      _putp( reset_2string )
-#define TI_RESET3_STRING()      _putp( reset_3string )
+#define TI_RESET1_STRING()      ostream_putp( reset_1string )
+#define TI_RESET2_STRING()      ostream_putp( reset_2string )
+#define TI_RESET3_STRING()      ostream_putp( reset_3string )
 
-#define TI_CLEAR_MARGINS()      _putp( clear_margins )
+#define TI_CLEAR_MARGINS()      ostream_putp( clear_margins )
 
 /* Terminal Capabilities
 */
@@ -412,24 +414,24 @@ static void TI_REPEAT_CHAR( char c, int n, bool a, ORD x )
       && x == ( UIData->width - n )
       && (len = strlen( clr_eol )) > 0
       && n > len ) {
-        _putp( clr_eol );
+        ostream_putp( clr_eol );
     } else if( blank
       && x == 0
       && clr_bol[0] != '\0'
       && n > (len = (strlen( cparm_right = tparm( parm_right_cursor, n )) + strlen( clr_bol ) ))
       && len > 0 ) {
-        _putp( cparm_right );
-        _putp( clr_bol );
+        ostream_putp( cparm_right );
+        ostream_putp( clr_bol );
     } else {
         if( a ) {
             TI_ACS_ON();
         }
 
         if( n >= TI_repeat_cutoff ) {
-            _putp( tparm( repeat_char, c, n ) );
+            ostream_putp( tparm( repeat_char, c, n ) );
         } else {
             for( ; n > 0; n-- ) {
-                __putchar( c );
+                ostream_putc( c );
             }
         }
 
@@ -439,8 +441,8 @@ static void TI_REPEAT_CHAR( char c, int n, bool a, ORD x )
     }
 }
 
-int     OldCol= -1,
-        OldRow= -1;
+int   OldCol = -1;
+int   OldRow = -1;
 
 // This macro will pick method "x" for axis "a" if method "x" is faster
 // and usable (ie: less chars, but not zero chars)
@@ -476,7 +478,7 @@ static void TI_CURSOR_MOVE( int c, int r )
 
     // Just use cursor_address if we're not supposed to optimize
     if( !OptimizeTerminfo ) {
-        _putp( tparm( cursor_address, r, c ) );
+        ostream_putp( tparm( cursor_address, r, c ) );
         OldRow = r;
         OldCol = c;
         return;
@@ -536,22 +538,22 @@ static void TI_CURSOR_MOVE( int c, int r )
         case none:
             break;
         case absolute:
-            _putp( tparm( column_address, c ) );
+            ostream_putp( tparm( column_address, c ) );
             break;
         case rel_parm_plus:
-            _putp( tparm( parm_right_cursor, c - OldCol ) );
+            ostream_putp( tparm( parm_right_cursor, c - OldCol ) );
             break;
         case relative_plus:
             for( i = 0; i < c - OldCol; i++ ) {
-                _putp( cursor_right );
+                ostream_putp( cursor_right );
             }
             break;
         case rel_parm_minus:
-            _putp( tparm( parm_left_cursor, OldCol - c ));
+            ostream_putp( tparm( parm_left_cursor, OldCol - c ));
             break;
         case relative_minus:
             for( i = 0; i < OldCol - c; i++ ) {
-                _putp( cursor_left );
+                ostream_putp( cursor_left );
             }
             break;
         }
@@ -560,31 +562,31 @@ static void TI_CURSOR_MOVE( int c, int r )
         case none:
             break;
         case absolute:
-            _putp( tparm( row_address, r ) );
+            ostream_putp( tparm( row_address, r ) );
             break;
         case rel_parm_plus:
-            _putp( tparm( parm_down_cursor, r - OldRow ) );
+            ostream_putp( tparm( parm_down_cursor, r - OldRow ) );
             break;
         case relative_plus:
             for( i = 0; i < r - OldRow; i++ ) {
-                _putp( cursor_down );
+                ostream_putp( cursor_down );
             }
             break;
         case rel_parm_minus:
-            _putp( tparm( parm_up_cursor, OldRow - r ) );
+            ostream_putp( tparm( parm_up_cursor, OldRow - r ) );
             break;
         case relative_minus:
             for( i = 0; i < OldRow - r; i++ ) {
-                _putp( cursor_up );
+                ostream_putp( cursor_up );
             }
             break;
         }
     } else if( r == 0 && c == 0
       && cursor_home[0] != '\0'
       && strlen( cursor_home ) <= strlen( tparm( cursor_address, r, c ) ) ) {
-        _putp( cursor_home );
+        ostream_putp( cursor_home );
     } else {
-        _putp( tparm( cursor_address, r, c ) );
+        ostream_putp( tparm( cursor_address, r, c ) );
     }
 
     OldCol = c;
@@ -615,11 +617,11 @@ QNXDebugPrintf0( "[<enter_reverse_mode-^^^^^^^^^^^^>]" );
         TI_FillColourSet = ( b == 0 ) || back_color_erase;
         // If we can set a colour pair then do so
         if( set_color_pair[0] != '\0' ) {
-            _putp( tparm( set_color_pair, f * 10 + b ) );
+            ostream_putp( tparm( set_color_pair, f * 10 + b ) );
         } else {
             // else try to set colors individually
-            _putp( tparm( set_background, b ) );
-            _putp( tparm( set_foreground, f ) );
+            ostream_putp( tparm( set_background, b ) );
+            ostream_putp( tparm( set_foreground, f ) );
         }
     }
 }
@@ -628,12 +630,12 @@ static void TI_SETATTR( void )
 {
     // we have to reset attributes as some terminals can't turn off
     // attributes with "set_attribues"
-    _putp( exit_attribute_mode );
+    ostream_putp( exit_attribute_mode );
 
     if( set_attributes[0] != '\0' ) {
         char    *x;
 
-        _putp( x = tparm( set_attributes,
+        ostream_putp( x = tparm( set_attributes,
                 0,              // standout
                 TIAULine,       // underline
                 TIARev,         // reverse
@@ -651,15 +653,15 @@ QNXDebugPrintf0("[~~~~~~]\n");
         // Believe it or not, some terminals don't have the set_attributes
         // code in the database, so we have to simulate it occasionally
         if( TIAULine )
-            _putp( enter_underline_mode );
+            ostream_putp( enter_underline_mode );
         if( TIARev )
-            _putp( enter_reverse_mode );
+            ostream_putp( enter_reverse_mode );
         if( TIABlink )
-            _putp( enter_blink_mode );
+            ostream_putp( enter_blink_mode );
         if( TIABold )
-            _putp( enter_bold_mode );
+            ostream_putp( enter_bold_mode );
         if( TIAACS ) {
-            _putp( enter_alt_charset_mode );
+            ostream_putp( enter_alt_charset_mode );
         }
     }
 }
@@ -681,7 +683,7 @@ static int TI_PUT_FILE( char *fnam )
 
         // output file to terminal
         while( (c = fgetc( fil )) != EOF ) {
-            __putchar( c );
+            ostream_putc( c );
         }
         fclose( fil );
     }
@@ -878,7 +880,7 @@ static bool td_initconsole( void )
     QNX_NOWRAP();
     QNX_NOBOLD();
     QNX_NOBLINK();
-    __flush_con();
+    ostream_flush();
     return( true );
 }
 #endif
@@ -911,7 +913,7 @@ QNXDebugPrintf1( "IgnoreLowerRight=%d", TI_ignore_bottom_right );
     TI_NOBOLD();
     TI_NOBLINK();
 
-    __flush_con();
+    ostream_flush();
 
     return( true );
 }
@@ -1020,7 +1022,7 @@ static bool td_fini( void )
     QNX_HOME();
     QNX_CLS();
     QNX_CURSOR_NORMAL();
-    __flush_con();
+    ostream_flush();
     finikeyboard();
     uifinicursor();
     return( false );
@@ -1040,7 +1042,7 @@ static bool td_fini( void )
     TI_RESET2_STRING();
     TI_PUT_FILE( reset_file );
     TI_RESET3_STRING();
-    __flush_con();
+    ostream_flush();
 
     finikeyboard();
     uifinicursor();
@@ -1098,7 +1100,7 @@ static void td_hwcursor( void )
         break;
     }
     QNX_CURSOR_MOVE( UIData->cursor_col, UIData->cursor_row );
-    __flush_con();
+    ostream_flush();
 }
 
 static void ti_hwcursor( void )
@@ -1125,7 +1127,7 @@ static void ti_hwcursor( void )
         TI_CURSOR_MOVE( UIData->cursor_col, UIData->cursor_row );
     }
 
-    __flush_con();
+    ostream_flush();
 }
 
 
@@ -1141,7 +1143,7 @@ static int td_refresh( bool must )
 
     if( dirty_area.row0 == dirty_area.row1 && dirty_area.col0 == dirty_area.col1 ) {
         td_hwcursor();
-        __flush_con();
+        ostream_flush();
         return( 0 );
     }
 
@@ -1180,8 +1182,8 @@ QNXDebugPrintf2("cursor address %d,%d\n",j,i);
                 lastattr = new_attr( bufp[j].attr, lastattr );
             }
             if( bufp[j].ch < 0x20 )
-                __putchar( _ESC_CHAR );
-            __putchar( bufp[j].ch );
+                ostream_putc( _ESC_CHAR );
+            ostream_putc( bufp[j].ch );
             sbufp[j] = bufp[j];
         }
         bufp += incr;
@@ -1191,7 +1193,7 @@ QNXDebugPrintf2("cursor address %d,%d\n",j,i);
     dirty_area.col0 = dirty_area.col1 = 0;
 
     td_hwcursor();
-    __flush_con();
+    ostream_flush();
 
     return( 0 );
 }
@@ -1228,7 +1230,7 @@ static void update_shadow( void )
 
     // make sure cursor is back where it belongs
     ti_hwcursor();
-    __flush_con();
+    ostream_flush();
 
     // copy buffer to shadow buffer
     bufp = UIData->screen.origin;
@@ -1273,7 +1275,7 @@ static int ti_refresh( bool must )
     // Move the cursor & return if dirty box contains no chars
     if( dirty_area.row0 == dirty_area.row1 && dirty_area.col0 == dirty_area.col1 ) {
         ti_hwcursor();
-        __flush_con();
+        ostream_flush();
         return( 0 );
     }
 
@@ -1442,7 +1444,7 @@ QNXDebugPrintf4( "ti_refresh( %d, %d )->( %d, %d )", dirty_area.row0, dirty_area
             if( i == cls ) {
                 TI_RESTORE_COLOUR();
                 TI_CURSOR_MOVE( 0, i );
-                _putp( clr_eos );
+                ostream_putp( clr_eos );
                 ca_valid = true;
                 //assert( dirty_area.col0==0 && dirty_area.col1==UIData->width );
             }
@@ -1477,7 +1479,7 @@ QNXDebugPrintf2( "cursor address %d, %d\n", j, i );
                     if( TI_FillColourSet ) {
                         // Dump before blank to end of screen...
                         TI_DUMPCHARS();
-                        _putp( clr_eos );
+                        ostream_putp( clr_eos );
                         update_shadow();
                         return( 0 );
                     } else {
@@ -1560,27 +1562,27 @@ QNXDebugPrintf2( "colour[%d, %d]\n", _attr_fore( nval ), _attr_back( nval ) );
     return( nattr );
 }
 
-static int td_getcur( ORD *row, ORD *col, CURSOR_TYPE *type, CATTR *attr )
-/************************************************************************/
+static int UIHOOK td_getcur( CURSORORD *crow, CURSORORD *ccol, CURSOR_TYPE *ctype, CATTR *cattr )
+/***********************************************************************************************/
 {
-    *row = UIData->cursor_row;
-    *col = UIData->cursor_col;
-    *type = UIData->cursor_type;
-    *attr = 0;
+    *crow = UIData->cursor_row;
+    *ccol = UIData->cursor_col;
+    *ctype = UIData->cursor_type;
+    *cattr = CATTR_NONE;
     return( 0 );
 }
 
-static int td_setcur( ORD row, ORD col, CURSOR_TYPE typ, CATTR attr )
-/*******************************************************************/
+static int UIHOOK td_setcur( CURSORORD crow, CURSORORD ccol, CURSOR_TYPE ctype, CATTR cattr )
+/*******************************************************************************************/
 {
-    /* unused parameters */ (void)attr;
+    /* unused parameters */ (void)cattr;
 
-    if( ( typ != UIData->cursor_type ) ||
-        ( row != UIData->cursor_row ) ||
-        ( col != UIData->cursor_col ) ) {
-        UIData->cursor_type = typ;
-        UIData->cursor_row = row;
-        UIData->cursor_col = col;
+    if( ( ctype != UIData->cursor_type ) ||
+        ( crow != UIData->cursor_row ) ||
+        ( ccol != UIData->cursor_col ) ) {
+        UIData->cursor_type = ctype;
+        UIData->cursor_row = crow;
+        UIData->cursor_col = ccol;
         newcursor();
         if( TermIsQNXTerm ) {
             td_hwcursor();

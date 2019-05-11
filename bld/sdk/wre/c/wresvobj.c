@@ -42,7 +42,7 @@
 #include "wregcres.h"
 #include "wredde.h"
 #include "wreimage.h"
-#include "wre_rc.h"
+#include "wre.rh"
 #include "wresvobj.h"
 
 /****************************************************************************/

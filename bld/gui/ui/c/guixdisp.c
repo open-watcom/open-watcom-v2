@@ -122,7 +122,7 @@ static void InitMessageControls( void )
 {
     int j;
 
-    for( j = 0; j < ARRAY_SIZE( MessageControls ); j++ ) {
+    for( j = 0; j < GUI_ARRAY_SIZE( MessageControls ); j++ ) {
         switch( MessageControls[j].type ) {
         case ABORT:
             MessageControls[j].ctl_info.text = LIT( XAbort );
@@ -346,7 +346,7 @@ static int AdjustVert( int *cols, control_types controls_to_use,
 
     i = num_string_controls;
     num_buttons = 0;
-    for( j = 0; j < ARRAY_SIZE( MessageControls ); j++ ) {
+    for( j = 0; j < GUI_ARRAY_SIZE( MessageControls ); j++ ) {
         if( ( i < num_controls ) && ( controls_to_use & MessageControls[j].type ) ) {
             memcpy( &controls_info[i], &MessageControls[j].ctl_info, sizeof( gui_control_info ) );
             switch( controls_info[i].control_class ) {
@@ -435,7 +435,7 @@ gui_message_return GUIDisplayMessage( gui_window *wnd, const char *message,
     /* figure out the number of icon and button controls and which ones */
     num_controls = 0;
     controls_to_use = 0;
-    for( i = 0; i < ARRAY_SIZE( ControlsNeeded ); i++ ) {
+    for( i = 0; i < GUI_ARRAY_SIZE( ControlsNeeded ); i++ ) {
         if( type & ControlsNeeded[i].type ) {
             num_controls += ControlsNeeded[i].num_controls;
             controls_to_use |= ControlsNeeded[i].controls;

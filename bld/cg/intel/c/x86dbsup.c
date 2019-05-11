@@ -64,10 +64,10 @@ void    BuffStart( temp_buff *temp, uint def )
 
 
 
-void    BuffEnd( segment_id seg )
-/*******************************/
+void    BuffEnd( segment_id segid )
+/*********************************/
 {
-    segment_id          old;
+    segment_id          old_segid;
     byte                *buff;
     type_def            *ptr_type;
     dbg_patch           *save;
@@ -76,7 +76,7 @@ void    BuffEnd( segment_id seg )
     uint                size;
 
     ptr_type = TypeAddress( TY_LONG_POINTER );
-    old = SetOP( seg );
+    old_segid = SetOP( segid );
     CurrBuff->buff[0] = CurrBuff->index;
     buff = CurrBuff->buff;
     last = 0;
@@ -98,13 +98,13 @@ void    BuffEnd( segment_id seg )
             break;
         case FIX_FORWARD:
             save = CurrBuff->fix[i].p;
-            save->segment = seg;
+            save->segid = segid;
             save->offset = AskLocation();
             break;
         }
     }
     DataBytes( CurrBuff->index - last, buff );
-    SetOP( old );
+    SetOP( old_segid );
 }
 
 

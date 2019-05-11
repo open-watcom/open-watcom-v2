@@ -58,7 +58,6 @@
 
 
 #include "uidef.h"
-#include "uiextrn.h"
 #include "tixparse.h"
 #include "tixsupp.h"
 #include "trie.h"
@@ -189,23 +188,23 @@ static int do_default( void )
     for( i = 0; i < sizeof( alt_keys ); i++ ) {
         if( alt_keys[i] ) {
             esc_str[1] = alt_keys[i];
-            TrieAdd( 0x110 + i, esc_str );
+            TrieAdd( EV_ALT_Q + i, esc_str );
             if( alt_keys[i] >= 'A' && alt_keys[i] <= 'Z' ) {
                 esc_str[1] += 0x20;
-                TrieAdd( 0x110 + i, esc_str );
+                TrieAdd( EV_ALT_Q + i, esc_str );
             }
         }
     }
     for( i = 0; i < sizeof( alt_num_keys ); i++ ) {
         if( alt_num_keys[i] ) {
             esc_str[1] = alt_num_keys[i];
-            TrieAdd( 0x178 + i, esc_str );
+            TrieAdd( EV_ALT_1 + i, esc_str );
         }
     }
     /* sticky function key ^F */
-    TrieAdd( 0xff0, "\6");
+    TrieAdd( EV_STICKY_FUNC, "\6");
     /* sticky ALT ^A */
-    TrieAdd( 0xff3, "\1");
+    TrieAdd( EV_STICKY_ALT, "\1");
     return( 1 );
 }
 

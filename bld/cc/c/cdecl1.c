@@ -156,7 +156,7 @@ enum main_names {
 static struct {
     char const      *name;
     unsigned char   len;
-} MainNames[MAIN_NUM] = {
+} MainNames[] = {
     #define pick(e,n) { NAMELIT( n ) }
     MAIN_NAMES
     #undef pick

@@ -54,7 +54,7 @@ template <class Type> class WCPtrOrderedVector;
 class CheckedFile;
 class CheckedBufferedFile;
 
-#pragma pack(push, 1);
+#pragma pack(__push, 1);
 
 struct ComponentFile {
     time_t          time;           /* time last modified */
@@ -69,7 +69,7 @@ struct ComponentFile {
     static void             freeComponent( ComponentFile * );
 };
 
-#pragma pack(pop);
+#pragma pack(__pop);
 
 struct SectHdr : public Elf32_Shdr {
     bool    operator== ( const SectHdr& other ) const {

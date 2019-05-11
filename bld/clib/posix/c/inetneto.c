@@ -24,7 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  Implementation of inet_netof() for RDOS.
+* Description:  Implementation of inet_netof() for RDOS and Linux.
 *
 ****************************************************************************/
 

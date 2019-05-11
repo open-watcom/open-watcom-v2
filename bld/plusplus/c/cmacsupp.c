@@ -35,56 +35,56 @@
 
 
 
-void MacroOffsetAddChar(            // MacroOffset: ADD A CHARACTER
-    size_t *mlen,                   // - length of MacroOffset
+void MacroSegmentAddChar(           // MacroSegment: ADD A CHARACTER
+    size_t *mlen,                   // - data length
     char chr )                      // - character to insert
 {
     size_t  clen;
 
     clen = *mlen;
-    MacroOverflow( clen + 1, clen );
+    MacroReallocOverflow( clen + 1, clen );
     MacroOffset[clen] = chr;
     *mlen = clen + 1;
 }
 
 
-void MacroOffsetAddToken(           // MacroOffset: ADD A TOKEN
-    size_t *mlen,                   // - Macro Offset Length
+void MacroSegmentAddToken(          // MacroSegment: ADD A TOKEN
+    size_t *mlen,                   // - data length
     TOKEN token )                   // - token to be added
 {
     size_t  clen;
 
     clen = *mlen;
-    MacroOverflow( clen + sizeof( TOKEN ), clen );
+    MacroReallocOverflow( clen + sizeof( TOKEN ), clen );
     *(TOKEN *)( MacroOffset + clen ) = token;
     *mlen = clen + sizeof( TOKEN );
 }
 
 
-void MacroOffsetAddMemNoCopy(       // MacroOffset: ADD A SEQUENCE OF BYTES
-    size_t *mlen,                   // - Macro Offset Length
+void MacroSegmentAddMemNoCopy(      // MacroSegment: ADD A SEQUENCE OF BYTES
+    size_t *mlen,                   // - data length
     const char *buff,               // - bytes to be added
     size_t len )                    // - number of bytes
 {
     size_t  clen;
 
     clen = *mlen;
-    MacroOverflow( clen + len, 0 );
+    MacroReallocOverflow( clen + len, 0 );
     memset( MacroOffset, 0, clen );
     memcpy( MacroOffset + clen, buff, len );
     *mlen += len;
 }
 
 
-void MacroOffsetAddMem(             // MacroOffset: ADD A SEQUENCE OF BYTES
-    size_t *mlen,                   // - Macro Offset Length
+void MacroSegmentAddMem(            // MacroSegment: ADD A SEQUENCE OF BYTES
+    size_t *mlen,                   // - data length
     const char *buff,               // - bytes to be added
     size_t len )                    // - number of bytes
 {
     size_t  clen;
 
     clen = *mlen;
-    MacroOverflow( clen + len, clen );
+    MacroReallocOverflow( clen + len, clen );
     memcpy( MacroOffset + clen, buff, len );
     *mlen += len;
 }

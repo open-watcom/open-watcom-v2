@@ -40,7 +40,7 @@
 #include "winst.h"
 #include "wnewitem.h"
 #include "wkey.h"
-#include "sys_rc.h"
+#include "sysall.rh"
 #include "wresall.h"
 #include "ldstr.h"
 #include "rcstr.gh"

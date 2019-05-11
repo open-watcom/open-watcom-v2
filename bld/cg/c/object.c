@@ -77,12 +77,12 @@ void    GenObject( void )
     source_line_number  last_line;
     block_num           targets;
     block_num           i;
-    segment_id          old;
+    segment_id          old_segid;
     label_handle        lbl;
     unsigned            align;
     fe_attr             attr;
 
-    old = SetOP( AskCodeSeg() );
+    old_segid = SetOP( AskCodeSeg() );
     InitZeroPage();
     last_line = 0;
     attr = FEAttr( AskForLblSym( CurrProc->label ) );
@@ -169,7 +169,7 @@ void    GenObject( void )
     }
     HeadBlock = blk;
     BlockList = blk;
-    SetOP( old );
+    SetOP( old_segid );
 }
 
 

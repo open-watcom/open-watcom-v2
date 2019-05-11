@@ -14,11 +14,11 @@
 :segment !CNAME
 #ifdef __cplusplus
 :endsegment
-:segment DOS | QNX | RDOS
+:segment BITS16
  #if !defined(_M_I86) || defined(__SMALL__) || defined(__MEDIUM__)
 :endsegment
   #define NULL 0
-:segment DOS | QNX | RDOS
+:segment BITS16
  #else
   #define NULL 0L
  #endif

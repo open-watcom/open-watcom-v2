@@ -31,6 +31,7 @@
 
 
 #include "ftnstd.h"
+#include <ctype.h>
 #include "rundat.h"
 #include "errcod.h"
 #include "intcnv.h"
@@ -44,8 +45,6 @@
 #include "arrayio.h"
 #include "freein.h"
 #include "rdutils.h"
-
-#include <ctype.h>
 
 
 /* Forward declarations */

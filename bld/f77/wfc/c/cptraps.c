@@ -30,7 +30,6 @@
 
 
 #include "ftnstd.h"
-#include <stddef.h>
 #include <signal.h>
 #include <float.h>
 #include "frtdata.h"

@@ -31,7 +31,7 @@
 
 #include "gdefn.h"
 #if !defined( _DEFAULT_WINDOWS )
-#include <malloc.h>
+#include "walloca.h"
 #include "stkavail.h"
 
 // Visit code is used to get around a bug in the floodfill algorithm.
@@ -377,7 +377,7 @@ static short PaintRight( short x, short y, grcolor stop_color, short border_flag
     by one to the right before plotting. Return the new left pixel. */
 
 {
-    short               xright;    
+    short               xright;
     scan_fn             *scan;  /* pointer to scan function */
     gr_device _FARD     *dev_ptr;
     short               len;

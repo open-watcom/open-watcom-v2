@@ -267,7 +267,7 @@ void    BGProcDecl( cg_sym_handle sym, type_def *tipe )
     hw_reg_set          reg;
     name                *temp;
     type_class_def      type_class;
-    segment_id          old;
+    segment_id          old_segid;
     label_handle        lbl;
 
     SaveTargetModel = TargetModel;
@@ -275,12 +275,12 @@ void    BGProcDecl( cg_sym_handle sym, type_def *tipe )
     if( tipe != TypeNone ) {
         if( type_class == XX ) {
             if( CurrProc->state.attr & ROUTINE_ALLOCS_RETURN ) {
-                old = SetOP( AskBackSeg() );
+                old_segid = SetOP( AskBackSeg() );
                 lbl = AskForNewLabel();
                 DataLabel( lbl );
                 DGUBytes( tipe->length );
                 CurrProc->targ.return_points = (name *)SAllocMemory( lbl, 0, CG_LBL, TypeClass( tipe ), tipe->length );
-                SetOP( old );
+                SetOP( old_segid );
             } else {
                 reg = CurrProc->state.return_reg;
                 if( HW_CEqual( reg, HW_EMPTY ) ) {

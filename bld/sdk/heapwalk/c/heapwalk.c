@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,9 +37,10 @@
 #include <io.h>
 #include "wdebug.h"
 #include "jdlg.h"
+#include "hwmem.h"
+
 
 static char className[] = "watheapwalk";
-
 
 /*
  * heapWalkInit - initialization
@@ -56,7 +58,6 @@ static BOOL heapWalkInit( HANDLE currinst, HANDLE previnst, int cmdshow )
     CvrCtl3DInit( Instance );
     CvrCtl3dRegister( Instance );
     CvrCtl3dAutoSubclass( Instance );
-    MemStart();
     JDialogInit();
     if( CheckWin386Debug() == WGOD_VERSION ) {
         WDebug386 = true;
@@ -160,17 +161,23 @@ static BOOL heapWalkInit( HANDLE currinst, HANDLE previnst, int cmdshow )
 int PASCAL WinMain( HINSTANCE currinst, HINSTANCE previnst, LPSTR cmdline, int cmdshow)
 {
     MSG         msg;
+    int         rc;
 
-    cmdline = cmdline;
+    /* unused parameters */ (void)cmdline;
+
+    rc = 1;
+    MemOpen();
     if( !heapWalkInit( currinst, previnst, cmdshow ) ) {
-        return( 0 );
+        rc = 0;
     }
-
-    while( GetMessage( &msg, NULL, 0, 0 ) ) {
-        TranslateMessage(&msg);
-        DispatchMessage(&msg);
+    if( rc ) {
+        while( GetMessage( &msg, NULL, 0, 0 ) ) {
+            TranslateMessage(&msg);
+            DispatchMessage(&msg);
+        }
+        JDialogFini();
     }
-    JDialogFini();
-    return( 1 );
+    MemClose();
+    return( rc );
 
 } /* WinMain */

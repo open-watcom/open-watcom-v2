@@ -41,7 +41,11 @@ _WCRTLINK int (raise)( int sig )
     return( kill( getpid(), sig ) );
 }
 
+#ifdef _M_I86
 _WCRTLINK void _WCI86FAR __sigfpe_handler( int sig )
+#else
+_WCRTLINK void __sigfpe_handler( int sig )
+#endif
 {
     raise( SIGFPE );
 }

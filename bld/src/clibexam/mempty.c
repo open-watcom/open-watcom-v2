@@ -8,7 +8,7 @@ long featureflags( void );
     "mov eax,1"     \
     "cpuid"         \
     "mov eax,edx"   \
-    modify [eax ebx ecx edx]
+    __modify [__eax __ebx __ecx __edx]
 
 #define MM_EXTENSION 0x00800000
 

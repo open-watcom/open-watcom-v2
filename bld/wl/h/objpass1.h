@@ -60,7 +60,7 @@ extern void             Set32BitMode( void );
 extern void             Set16BitMode( void );
 extern void             AllocateSegment( segnode *, char *clname );
 extern void             AddSegment( segdata *, class_entry * );
-extern class_entry      *DuplicateClass( class_entry *old );
+extern class_entry      *DuplicateClass( class_entry *class );
 extern class_entry      *FindClass( section *, const char *, bool, bool );
 extern seg_leader       *InitLeader( const char * );
 extern void             FreeLeader( void * );

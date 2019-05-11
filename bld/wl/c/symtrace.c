@@ -72,7 +72,7 @@ void CheckTraces( void )
             _LnkFree( info );
         } else {
             for( lib = ObjLibFiles; lib != NULL; lib = lib->next_file ) {
-                if( FNAMECMPSTR( lib->file->name.u.ptr, info->u.name ) == 0 ) {
+                if( FNAMECMPSTR( lib->infile->name.u.ptr, info->u.name ) == 0 ) {
                     info->found = true;
                     _LnkFree( info->u.name );
                     info->u.lib = lib;
@@ -94,10 +94,10 @@ static void CheckFileTrace( section *sect )
     if( CurrTrace->found )
         return;
     for( list = sect->files; list != NULL; list = list->next_file ) {
-        if( FNAMECMPSTR( list->file->name.u.ptr, CurrTrace->u.name ) == 0 ) {
+        if( FNAMECMPSTR( list->infile->name.u.ptr, CurrTrace->u.name ) == 0 ) {
             CurrTrace->found = true;
             _LnkFree( CurrTrace->u.name );
-            list->status |= STAT_TRACE_SYMS;
+            list->flags |= STAT_TRACE_SYMS;
             return;
         }
     }
@@ -110,7 +110,7 @@ void CheckLibTrace( file_list *lib )
 
     for( info = TraceList; info != NULL; info = info->next ) {
         if( !info->found ) {
-            if( FNAMECMPSTR( info->u.name, lib->file->name.u.ptr ) == 0 ) {
+            if( FNAMECMPSTR( info->u.name, lib->infile->name.u.ptr ) == 0 ) {
                 info->found = true;
                 _LnkFree( info->u.name );
                 info->u.lib = lib;
@@ -148,7 +148,7 @@ void PrintBadTraces( void )
 
     for( info = TraceList; info != NULL; info = info->next ) {
         if( info->found ) {
-            LnkMsg( WRN+MSG_TRACE_LIB_NOT_FOUND, "12", info->u.lib->file->name.u.ptr, info->member );
+            LnkMsg( WRN+MSG_TRACE_LIB_NOT_FOUND, "12", info->u.lib->infile->name.u.ptr, info->member );
         } else {
             LnkMsg( WRN+MSG_TRACE_LIB_NOT_FOUND, "12", info->u.name, info->member );
         }

@@ -30,10 +30,9 @@
 ****************************************************************************/
 
 
-#include <stdlib.h>
-#include <string.h>
 #include "disasm.h"
 #include "wdismsg.h"
+
 
 void                    **NameTab;
 uint_16                 NameIndex;

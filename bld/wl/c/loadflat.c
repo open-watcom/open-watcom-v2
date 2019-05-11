@@ -522,7 +522,7 @@ void FiniOS2FlatLoadFile( void )
                 exe_head.flags |= OSF_PM_COMPATIBLE;
             }
         }
-        if( LinkState & LINK_ERROR ) {
+        if( LinkState & LS_LINK_ERROR ) {
             exe_head.flags |= OSF_LINK_ERROR;
         }
         if( (FmtData.type & MK_OS2_LX)

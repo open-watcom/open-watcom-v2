@@ -91,14 +91,14 @@ extern bool GUIXCreateDialog( gui_create_info *dlg_info, gui_window *wnd, int,
 extern void GUIFreeWindowMemory( gui_window *, bool from_parent, bool dialog );
 
 extern bool GUIXCreateFloatingPopup( gui_window *wnd, gui_point *location,
-                                     int num_items, gui_menu_struct *menu,
+                                     const gui_menu_items *menus,
                                      gui_mouse_track track, gui_ctl_id *curr_id );
 extern bool GUIXCreateToolBar( gui_window *wnd, bool fixed, gui_ord height,
-                       int num_toolbar_items, gui_toolbar_struct *toolinfo,
+                       const gui_toolbar_items *toolinfo,
                        bool excl, gui_colour_set *plain, gui_colour_set *standout,
                        gui_rect *rect );
 extern bool GUIXCreateToolBarWithTips( gui_window *wnd, bool fixed, gui_ord height,
-                       int num_toolbar_items, gui_toolbar_struct *toolinfo,
+                       const gui_toolbar_items *toolinfo,
                        bool excl, gui_colour_set *plain, gui_colour_set *standout,
                        gui_rect *rect, bool use_tips );
 

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -270,7 +271,7 @@ static void process_except_file( char *filename )
 
     if( filename != NULL ) {
         fp = fopen( filename, "rt" );
-        while( fgets( line, MAX_LINE_LEN , fp ) != NULL ) {
+        while( fgets( line, sizeof( line ), fp ) != NULL ) {
             p = line + strlen( line );
             while( p >= line ) {
                 if( ( *p == '\0' )
@@ -286,7 +287,7 @@ static void process_except_file( char *filename )
         }
         fclose( fp );
     }
-}        
+}
 
 static int process_file_pubdef( char *filename )
 /**********************************************/

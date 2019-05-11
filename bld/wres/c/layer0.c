@@ -38,8 +38,8 @@
 
 #if 0
 
+#include <stdlib.h>
 #include "wio.h"
-#include <malloc.h>
 #include "posixfp.h"
 #include "layer0.h"
 
