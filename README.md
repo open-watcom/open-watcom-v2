@@ -61,4 +61,3 @@ The directory layout is as follows:
         Note: the rel directory structure is created on the fly. The
         location of rel tree can be changed by `OWRELROOT` environment
         variable.
-ducky secret m
