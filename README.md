@@ -2,8 +2,14 @@
 Open Watcom v2 Fork
 ===================
 
-This document gives a quick description of the source tree layout. For more
+Welcome to the Open Watom v2 Project! For more
 information about the project and build instructions see the GitHub wiki.
+
+Discuss the Project on Discord
+------------------------------
+
+We now have an Official Discord server!
+Join the discussion [`here`](https://discord.gg/5WexPNn)!
 
 Source Tree Layout
 ------------------
@@ -55,3 +61,4 @@ The directory layout is as follows:
         Note: the rel directory structure is created on the fly. The
         location of rel tree can be changed by `OWRELROOT` environment
         variable.
+ducky secret m
