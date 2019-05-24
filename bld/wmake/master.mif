@@ -80,7 +80,7 @@ extra_l_flags_dos_i86 = opt stack=16k
 !else ifdef COMPACT
 extra_l_flags_dos_i86 = opt stack=16k
 !else
-extra_l_flags_dos_i86 = opt stack=4k
+extra_l_flags_dos_i86 = opt stack=8k
 !endif
 !ifdef wmake_causeway
 extra_l_flags_dos_386 = opt stack=96k lib cwdll.lib
