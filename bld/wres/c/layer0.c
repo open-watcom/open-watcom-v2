@@ -83,7 +83,7 @@ static long wres_tell( FILE *fp )
     return( tell( FP2POSIX( fp ) ) );
 }
 
-static bool res_ioerr( FILE *fp, size_t rc )
+static bool wres_ioerr( FILE *fp, size_t rc )
 {
     /* unused parameters */ (void)fp;
 
