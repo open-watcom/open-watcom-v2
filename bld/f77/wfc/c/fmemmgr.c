@@ -41,10 +41,12 @@
 #include "fmeminit.h"
 #include "utility.h"
 #include "cspawn.h"
+#include "wresmem.h"
 
 #if defined( TRMEM )
 #include "trmemcvr.h"
 #endif
+
 
 void    FMemInit( void ) {
 //========================
@@ -114,6 +116,15 @@ void    *FMemAlloc( size_t size ) {
     return( p );
 }
 
+void    *wres_alloc( size_t size )
+//================================
+{
+#if defined( TRMEM )
+    return( TRMemAlloc( size ) );
+#else
+    return( malloc( size ) );
+#endif
+}
 
 void    FMemFree( void *p ) {
 //===========================
@@ -124,4 +135,14 @@ void    FMemFree( void *p ) {
     free( p );
 #endif
     UnFreeMem--;
+}
+
+void    wres_free( void *p )
+//==========================
+{
+#if defined( TRMEM )
+    TRMemFree( p );
+#else
+    free( p );
+#endif
 }

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -24,78 +24,15 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Client memory routines prototypes for wres library.
 *
 ****************************************************************************/
 
 
-#include "as.h"
-#ifdef _STANDALONE_
-#include "trmem.h"
-#include "trmemcvr.h"
-#include "wresmem.h"
-#else
-#include "asalloc.h"
-#endif
+#ifndef WRESMEM_INCLUDED
+#define WRESMEM_INCLUDED
 
-#ifdef _STANDALONE_
-void MemInit( void ) {
-//**************
+extern void *wres_alloc( size_t );      /* malloc */
+extern void wres_free( void * );        /* free */
 
-    TRMemOpen();
-}
-#endif
-
-pointer MemAlloc( size_t size ) {
-//*********************************
-
-#ifdef _STANDALONE_
-    return( TRMemAlloc( size ) );
-#else
-    return( AsmAlloc( size ) );
-#endif
-}
-
-#ifdef _STANDALONE_
-void *wres_alloc( size_t size )
-{
-    return( TRMemAlloc( size ) );
-}
-#endif
-
-#ifdef _STANDALONE_
-pointer MemRealloc( pointer ptr, size_t size ) {
-//**********************************************
-
-    return( TRMemRealloc( ptr, size ) );
-}
-#endif
-
-void MemFree( pointer ptr ) {
-//*************************
-
-#ifdef _STANDALONE_
-    TRMemFree( ptr );
-#else
-    AsmFree( ptr );
-#endif
-}
-
-#ifdef _STANDALONE_
-void wres_free( void *ptr )
-{
-    TRMemFree( ptr );
-}
-#endif
-
-#ifdef _STANDALONE_
-void MemFini( void ) {
-//**************
-
-#ifdef TRMEM
-    TRMemPrtList();
-#endif
-    TRMemClose();
-}
 #endif

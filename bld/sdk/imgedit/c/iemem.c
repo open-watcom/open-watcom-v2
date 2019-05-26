@@ -32,6 +32,7 @@
 
 #include "imgedit.h"
 #include "iemem.h"
+#include "wresmem.h"
 #ifdef TRMEM
     #include "trmem.h"
 #endif
@@ -111,6 +112,15 @@ void * _wpi_malloc( size_t size )
     return( ptr );
 }
 #endif
+/* function for wres.lib */
+void *wres_alloc( size_t size )
+{
+#ifdef TRMEM
+    return( _trmem_alloc( size, _trmem_guess_who(), MemHandle ) );
+#else
+    return( malloc( size ) );
+#endif
+}
 
 void *MemRealloc( void *ptr, size_t size )
 /****************************************/
@@ -142,3 +152,12 @@ void _wpi_free( void *ptr )
 #endif
 }
 #endif
+/* function for wres.lib */
+void wres_free( void *ptr )
+{
+#ifdef TRMEM
+    _trmem_free( ptr, _trmem_guess_who(), MemHandle );
+#else
+    free( ptr );
+#endif
+}

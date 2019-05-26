@@ -40,6 +40,7 @@
 #include <sys/types.h>
 #include "trmem.h"
 #endif
+#include "wresmem.h"
 
 
 #ifdef USE_FAR
@@ -321,6 +322,17 @@ STATIC void *doAlloc( size_t size )
     return( ptr );
 }
 
+#ifndef BOOTSTRAP
+void *wres_alloc( size_t size )
+{
+#ifdef TRMEM
+    return( _trmem_alloc( size, _trmem_guess_who(), Handle ) );
+#else
+    return( malloc( size ) );
+#endif
+}
+#endif
+
 
 void *MallocUnSafe( size_t size )
 /**************************************/
@@ -399,6 +411,16 @@ void FreeSafe( void *ptr )
 #endif
 }
 
+#ifndef BOOTSTRAP
+void wres_free( void *ptr )
+{
+#ifdef TRMEM
+    _trmem_free( ptr, _trmem_guess_who(), Handle );
+#else
+    free( ptr );
+#endif
+}
+#endif
 
 char *StrDupSafe( const char *str )
 /*****************************************

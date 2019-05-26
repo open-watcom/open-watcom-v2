@@ -33,6 +33,7 @@
 #include "wio.h"
 #include "trmem.h"
 #include "memfuncs.h"
+#include "wresmem.h"
 
 #include "clibext.h"
 
@@ -70,6 +71,15 @@ void *MemAlloc( size_t size )
 #endif
 }
 
+void *wres_alloc( size_t size )
+{
+#ifdef TRMEM
+    return( _trmem_alloc( size, _trmem_guess_who(), TRMemHandle ) );
+#else
+    return( malloc( size ) );
+#endif
+}
+
 void *MemRealloc( void *ptr, size_t size )
 {
 #ifdef TRMEM
@@ -80,6 +90,15 @@ void *MemRealloc( void *ptr, size_t size )
 }
 
 void MemFree( void *ptr )
+{
+#ifdef TRMEM
+    _trmem_free( ptr, _trmem_guess_who(), TRMemHandle );
+#else
+    free( ptr );
+#endif
+}
+
+void wres_free( void *ptr )
 {
 #ifdef TRMEM
     _trmem_free( ptr, _trmem_guess_who(), TRMemHandle );
