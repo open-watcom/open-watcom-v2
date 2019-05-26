@@ -31,7 +31,6 @@
 
 
 #include "wlib.h"
-#include "wresmem.h"
 #ifdef TRMEM
 #include "trmem.h"
 #endif
@@ -86,15 +85,6 @@ void *MemAlloc( size_t size )
     }
     memPtr = ptr;
     return( ptr + 1 );
-}
-
-void *wres_alloc( size_t size )
-{
-#ifdef TRMEM
-    return( _trmem_alloc( size, _trmem_guess_who(), TRMemHandle ) );
-#else
-    return( malloc( size ) );
-#endif
 }
 
 void *MemRealloc( void *ptr, size_t size )
@@ -155,15 +145,6 @@ void MemFree( void *ptr )
     _trmem_free( mptr, _trmem_guess_who(), TRMemHandle );
 #else
     free( mptr );
-#endif
-}
-
-void wres_free( void *ptr )
-{
-#ifdef TRMEM
-    _trmem_free( ptr, _trmem_guess_who(), TRMemHandle );
-#else
-    free( ptr );
 #endif
 }
 

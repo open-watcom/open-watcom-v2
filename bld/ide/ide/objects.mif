@@ -17,7 +17,6 @@ objs = &
         batcli.obj &
         objautod.obj &
         vrcscli.obj &
-        idemem.obj &
         autoenv.obj
 
 !ifneq host_os os2

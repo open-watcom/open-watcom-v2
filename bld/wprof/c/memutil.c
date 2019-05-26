@@ -51,7 +51,6 @@
 #ifdef TRMEM
     #include "trmem.h"
 #endif
-#include "wresmem.h"
 
 
 #ifdef TRMEM
@@ -320,29 +319,7 @@ void *HelpMemAlloc( size_t size )
     return( mem );
 }
 #endif
-void *wres_alloc( size_t size )
-{
-    void    *mem;
 
-    for( ;; ) {
-#ifdef TRMEM
-        profMemCheck( "ProfTryAlloc" );
-        mem = _trmem_alloc( size, _trmem_guess_who(), WPMemHandle );
-#else
-        mem = malloc( size );
-#endif
-        if( mem != NULL )
-            break;
-        if( DIPMoreMem( size ) == DS_FAIL ) {
-            break;
-        }
-    }
-
-    if( mem == NULL ) {
-        fatal( LIT( Memfull ) );
-    }
-    return( mem );
-}
 
 /*
  *  Free functions
@@ -418,15 +395,6 @@ void HelpMemFree( void *ptr )
 #endif
 }
 #endif
-void wres_free( void *ptr )
-{
-#ifdef TRMEM
-    profMemCheck( "ProfFree" );
-    _trmem_free( ptr, _trmem_guess_who(), WPMemHandle );
-#else
-    free( ptr );
-#endif
-}
 
 
 /*

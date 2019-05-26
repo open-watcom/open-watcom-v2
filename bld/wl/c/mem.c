@@ -46,7 +46,6 @@
 #include "reloc.h"
 #include "objcache.h"
 #include "alloc.h"
-#include "wresmem.h"
 #if defined( __QNX__ )
     #include <sys/seginfo.h>
 
@@ -166,15 +165,6 @@ void *ChkLAlloc( size_t size )
     return( ptr );
 }
 
-void *wres_alloc( size_t size )
-{
-#ifdef TRMEM
-        return( _trmem_alloc( size, _trmem_guess_who(), TrHdl ) );
-#else
-        return( malloc( size ) );
-#endif
-}
-
 
 void LFree( void *p )
 /**************************/
@@ -187,15 +177,6 @@ void LFree( void *p )
 #endif
 #ifdef _INT_DEBUG
     --Chunks;
-#endif
-}
-
-void wres_free( void *ptr )
-{
-#ifdef TRMEM
-    _trmem_free( ptr, _trmem_guess_who(), TrHdl );
-#else
-    free( ptr );
 #endif
 }
 

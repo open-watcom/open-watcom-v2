@@ -34,7 +34,6 @@
 #ifdef _STANDALONE_
 #include "trmem.h"
 #include "trmemcvr.h"
-#include "wresmem.h"
 #else
 #include "asalloc.h"
 #endif
@@ -58,36 +57,22 @@ pointer MemAlloc( size_t size ) {
 }
 
 #ifdef _STANDALONE_
-void *wres_alloc( size_t size )
-{
-    return( TRMemAlloc( size ) );
-}
-#endif
-
-#ifdef _STANDALONE_
-pointer MemRealloc( pointer ptr, size_t size ) {
+pointer MemRealloc( pointer p, size_t size ) {
 //**********************************************
 
-    return( TRMemRealloc( ptr, size ) );
+    return( TRMemRealloc( p, size ) );
 }
 #endif
 
-void MemFree( pointer ptr ) {
+void MemFree( pointer p ) {
 //*************************
 
 #ifdef _STANDALONE_
-    TRMemFree( ptr );
+    TRMemFree( p );
 #else
-    AsmFree( ptr );
+    AsmFree( p );
 #endif
 }
-
-#ifdef _STANDALONE_
-void wres_free( void *ptr )
-{
-    TRMemFree( ptr );
-}
-#endif
 
 #ifdef _STANDALONE_
 void MemFini( void ) {

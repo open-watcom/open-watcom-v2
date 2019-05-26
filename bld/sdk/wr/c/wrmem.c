@@ -32,7 +32,6 @@
 
 #include "wrglbl.h"
 #include "wrmemi.h"
-#include "wresmem.h"
 
 #ifdef TRMEM
 
@@ -135,8 +134,7 @@ void WRAPI WRMemPrtUsage( void )
 #endif
 }
 
-/* function to replace this in mem.c in commonui */
-
+/* functions to replace those in mem.c in commonui */
 void *MemAlloc( size_t size )
 {
     void *p;
@@ -154,19 +152,6 @@ void *MemAlloc( size_t size )
     return( p );
 }
 
-/* function for wres.lib */
-
-void *wres_alloc( size_t size )
-{
-#ifdef TRMEM
-    return( _trmem_alloc( size, _trmem_guess_who(), TRMemHandle ) );
-#else
-    return( malloc( size ) );
-#endif
-}
-
-/* function to replace this in mem.c in commonui */
-
 void *MemRealloc( void *ptr, size_t size )
 {
     void *p;
@@ -180,20 +165,7 @@ void *MemRealloc( void *ptr, size_t size )
     return( p );
 }
 
-/* function to replace this in mem.c in commonui */
-
 void MemFree( void *ptr )
-{
-#ifdef TRMEM
-    _trmem_free( ptr, _trmem_guess_who(), TRMemHandle );
-#else
-    free( ptr );
-#endif
-}
-
-/* function for wres.lib */
-
-void wres_free( void *ptr )
 {
 #ifdef TRMEM
     _trmem_free( ptr, _trmem_guess_who(), TRMemHandle );

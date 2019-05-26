@@ -89,6 +89,6 @@ static bool res_ioerr( FILE *fp, size_t rc )
     return( rc == (size_t)-1 );
 }
 
-WResSetRtns( wres_open, wres_close, wres_read, wres_write, wres_seek, wres_tell, wres_ioerr, wres_alloc, wres_free );
+WResSetRtns( wres_open, wres_close, wres_read, wres_write, wres_seek, wres_tell, wres_ioerr, malloc, free );
 
 #endif

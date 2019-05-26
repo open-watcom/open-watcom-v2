@@ -39,7 +39,6 @@
 #include <string.h>
 #include "asmalloc.h"
 #include "fatal.h"
-#include "wresmem.h"
 
 #ifdef TRMEM
 #include "trmem.h"
@@ -147,15 +146,6 @@ void *MemAlloc( size_t size )
     return( ptr );
 }
 
-void *wres_alloc( size_t size )
-{
-#ifdef TRMEM
-    return( _trmem_alloc( size, _trmem_guess_who(), memHandle ) );
-#else
-    return( malloc( size ) );
-#endif
-}
-
 void MemFree( void *ptr )
 {
     if( ptr != NULL ) {
@@ -165,13 +155,4 @@ void MemFree( void *ptr )
         free( ptr );
 #endif
     }
-}
-
-void wres_free( void *ptr )
-{
-#ifdef TRMEM
-    _trmem_free( ptr, _trmem_guess_who(), memHandle );
-#else
-    free( ptr );
-#endif
 }

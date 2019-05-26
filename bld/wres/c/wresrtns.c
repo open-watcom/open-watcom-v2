@@ -33,7 +33,6 @@
 #include <stdio.h>
 #include "bool.h"
 #include "wressetr.h"
-#include "wresmem.h"
 #include "reserr.h"
 
 
@@ -85,4 +84,4 @@ static bool res_ioerr( FILE *fp, size_t rc )
     return( ferror( fp ) != 0 );
 }
 
-WResSetRtns( res_open, res_close, res_read, res_write, res_seek, res_tell, res_ioerr, wres_alloc, wres_free );
+WResSetRtns( res_open, res_close, res_read, res_write, res_seek, res_tell, res_ioerr, malloc, free );

@@ -47,7 +47,6 @@
 #ifdef TRMEM
     #include "trmem.h"
 #endif
-#include "wresmem.h"
 
 
 #ifdef TRMEM
@@ -205,14 +204,7 @@ void *HelpMemAlloc( size_t size )
 #endif
 }
 #endif
-void *wres_alloc( size_t size )
-{
-#ifdef TRMEM
-    return( _trmem_alloc( size, _trmem_guess_who(), GUIMemHandle ) );
-#else
-    return( malloc( size ) );
-#endif
-}
+
 
 /*
  * Free functions
@@ -272,14 +264,6 @@ void HelpMemFree( void *ptr )
 #endif
 }
 #endif
-void wres_free( void *ptr )
-{
-#ifdef TRMEM
-    _trmem_free( ptr, _trmem_guess_who(), GUIMemHandle );
-#else
-    free( ptr );
-#endif
-}
 
 
 /*
