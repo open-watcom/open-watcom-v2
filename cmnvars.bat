@@ -70,4 +70,4 @@ set COPYCMD=/y
 set OWCYEAR=%OWCYEAR:~8,4%
 :no_windows_nt
 
-echo Open Watcom build environment (%OWTOOLS% version=%OWTOOLSVER%)
+echo Open Watcom build environment (%OWTOOLS% version=%OWTOOLSVER%, CYEAR=%OWCYEAR%)
