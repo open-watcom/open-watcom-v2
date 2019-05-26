@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2004-2013 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2004-2019 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -29,7 +29,10 @@
 *
 ****************************************************************************/
 
+
 #include "wgml.h"
+#include "wresmem.h"
+
 
 #ifdef TRMEM
 
@@ -156,6 +159,15 @@ void *mem_alloc( size_t size )
     return( p );
 }
 
+void *wres_alloc( size_t size )
+{
+#ifdef TRMEM
+    return( _trmem_alloc( size, _trmem_guess_who(), handle ) );
+#else
+    return( malloc( size ) );
+#endif
+}
+
 /***************************************************************************/
 /*  Re-allocate some storage                                               */
 /***************************************************************************/
@@ -190,4 +202,13 @@ void mem_free( void * p )
     free( p );
 #endif
     p = NULL;
+}
+
+void wres_free( void *ptr )
+{
+#ifdef TRMEM
+    _trmem_free( ptr, _trmem_guess_who(), handle );
+#else
+    free( ptr );
+#endif
 }

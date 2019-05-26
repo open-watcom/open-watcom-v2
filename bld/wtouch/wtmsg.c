@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -42,6 +43,7 @@
 #include "wressetr.h"
 #include "wresset2.h"
 #include "wreslang.h"
+#include "wresmem.h"
 
 #include "clibext.h"
 
@@ -65,6 +67,16 @@ bool MsgInit( void )
     CloseResFile( &hInstance );
     printf( NO_RES_MESSAGE );
     return( false );
+}
+
+void *wres_alloc( size_t size )
+{
+    return( malloc( size ) );
+}
+
+void wres_free( void *ptr )
+{
+    free( ptr );
 }
 
 bool MsgGet( int resourceid, char *buffer )

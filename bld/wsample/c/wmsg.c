@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -45,6 +46,7 @@
     #include "bool.h"
     #include "wressetr.h"
     #include "wresset2.h"
+    #include "wresmem.h"
 #endif
 #include "sample.h"
 #include "smpstuff.h"
@@ -58,6 +60,16 @@ char    FAR_PTR         *MsgArray[ERR_LAST_MESSAGE - ERR_FIRST_MESSAGE + 1];
 
 #if !defined(__WINDOWS__)
 static HANDLE_INFO      hInstance = { 0 };
+
+void *wres_alloc( size_t size )
+{
+    return( malloc( size ) );
+}
+
+void wres_free( void *ptr )
+{
+    free( ptr );
+}
 #endif
 
 #if defined(__WINDOWS__)

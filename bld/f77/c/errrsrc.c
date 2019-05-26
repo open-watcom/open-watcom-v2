@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,6 +36,9 @@
 #include "wressetr.h"
 #include "wresset2.h"
 #include "wreslang.h"
+#if defined( __RT__ ) || defined( __WFL__ )
+    #include "wresmem.h"
+#endif
 #include "errrsrc.h"
 #include "blderr.h"
 #include "errrtns.h"
@@ -45,6 +48,21 @@
 
 static  HANDLE_INFO     hInstance = { 0 };
 static  unsigned        MsgShift;
+
+
+#if defined( __RT__ ) || defined( __WFL__ )
+void    *wres_alloc( size_t size )
+//================================
+{
+    return( malloc( size ) );
+}
+
+void    wres_free( void *p )
+//==========================
+{
+    free( p );
+}
+#endif
 
 static bool LoadMsg( unsigned int msg, char *buffer, int buff_size )
 // Load a message into the specified buffer.  This function is called

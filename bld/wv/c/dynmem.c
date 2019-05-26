@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -48,12 +48,6 @@
 #include "dbgerr.h"
 #include "dbgio.h"
 #include "dui.h"
-#ifdef TRMEM
-#else
-    #define TRMemAlloc(x)          malloc(x)
-    #define TRMemRealloc(p,x)      realloc(p,x)
-    #define TRMemFree(p)           free(p)
-#endif
 #include "dip.h"
 #include "strutil.h"
 #include "dbginit.h"
@@ -72,6 +66,7 @@
 #ifdef TRMEM
     #include "trmem.h"
 #endif
+#include "wresmem.h"
 
 
 #if defined( __DOS__ )
@@ -145,25 +140,6 @@ static void TRMemClose( void )
     _trmem_close( TRMemHandle );
 }
 
-static void * TRMemAlloc( size_t size )
-/*************************************/
-{
-    return( _trmem_alloc( size, _trmem_guess_who(), TRMemHandle ) );
-}
-
-static void TRMemFree( void * ptr )
-/*********************************/
-{
-    _trmem_free( ptr, _trmem_guess_who(), TRMemHandle );
-}
-
-static void * TRMemRealloc( void * ptr, size_t size )
-/***************************************************/
-{
-    return( _trmem_realloc( ptr, size, _trmem_guess_who(), TRMemHandle ) );
-}
-
-
 void TRMemPrtUsage( void )
 /************************/
 {
@@ -231,7 +207,11 @@ static void MemTrackFini( void )
 
 void *DbgAlloc( size_t size )
 {
-    return( TRMemAlloc( size ) );
+#ifdef TRMEM
+    return( _trmem_alloc( size, _trmem_guess_who(), TRMemHandle ) );
+#else
+    return( malloc( size ) );
+#endif
 }
 
 void *DbgMustAlloc( size_t size )
@@ -247,13 +227,21 @@ void *DbgMustAlloc( size_t size )
 
 void *DbgRealloc( void *chunk, size_t size )
 {
-    return( TRMemRealloc( chunk, size ) );
+#ifdef TRMEM
+    return( _trmem_realloc( chunk, size, _trmem_guess_who(), TRMemHandle ) );
+#else
+    return( realloc( chunk, size ) );
+#endif
 }
 
 void DbgFree( void *ptr )
 {
     if( ptr != NULL ) {
-        TRMemFree( ptr );
+#ifdef TRMEM
+        _trmem_free( ptr, _trmem_guess_who(), TRMemHandle );
+#else
+        free( ptr );
+#endif
     }
 }
 
@@ -261,7 +249,11 @@ void *ChkAlloc( size_t size, char *error )
 {
     void *ret;
 
-    ret = TRMemAlloc( size );
+#ifdef TRMEM
+    ret = _trmem_alloc( size, _trmem_guess_who(), TRMemHandle );
+#else
+    ret = malloc( size );
+#endif
     if( ret == NULL )
         Error( ERR_NONE, error );
     return( ret );
@@ -291,7 +283,11 @@ static void MemExpand( void )
     for( size = MemSize; size > 0; size -= alloced ) {
         if( size < MAX_BLOCK )
             alloced = size;
-        p = TRMemAlloc( alloced );
+#ifdef TRMEM
+        p = _trmem_alloc( alloced, _trmem_guess_who(), TRMemHandle );
+#else
+        p = malloc( alloced );
+#endif
         if( p != NULL ) {
             *p = link;
             link = p;
@@ -299,7 +295,11 @@ static void MemExpand( void )
     }
     while( link != NULL ) {
         p = *link;
-        TRMemFree( link );
+#ifdef TRMEM
+        _trmem_free( link, _trmem_guess_who(), TRMemHandle );
+#else
+        free( link );
+#endif
         link = p;
     }
 }
@@ -517,6 +517,14 @@ void *HelpMemAlloc( size_t size )
 #endif
 }
 #endif
+void *wres_alloc( size_t size )
+{
+#ifdef TRMEM
+    return( _trmem_alloc( size, _trmem_guess_who(), GUIMemHandle ) );
+#else
+    return( malloc( size ) );
+#endif
+}
 
 
 /*
@@ -592,6 +600,14 @@ void HelpMemFree( void *ptr )
 #endif
 }
 #endif
+void wres_free( void *ptr )
+{
+#ifdef TRMEM
+    _trmem_free( ptr, _trmem_guess_who(), GUIMemHandle );
+#else
+    free( ptr );
+#endif
+}
 
 
 /*

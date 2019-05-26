@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -46,6 +47,7 @@
 #include "reloc.h"
 #include "objcache.h"
 #include "alloc.h"
+#include "wresmem.h"
 #if defined( __QNX__ )
     #include <sys/seginfo.h>
 
@@ -165,6 +167,15 @@ void *ChkLAlloc( size_t size )
     return( ptr );
 }
 
+void *wres_alloc( size_t size )
+{
+#ifdef TRMEM
+        return( _trmem_alloc( size, _trmem_guess_who(), TrHdl ) );
+#else
+        return( malloc( size ) );
+#endif
+}
+
 
 void LFree( void *p )
 /**************************/
@@ -177,6 +188,15 @@ void LFree( void *p )
 #endif
 #ifdef _INT_DEBUG
     --Chunks;
+#endif
+}
+
+void wres_free( void *ptr )
+{
+#ifdef TRMEM
+    _trmem_free( ptr, _trmem_guess_who(), TrHdl );
+#else
+    free( ptr );
 #endif
 }
 
