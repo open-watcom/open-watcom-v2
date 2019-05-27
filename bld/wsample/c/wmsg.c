@@ -46,7 +46,6 @@
     #include "bool.h"
     #include "wressetr.h"
     #include "wresset2.h"
-    #include "wresmem.h"
 #endif
 #include "sample.h"
 #include "smpstuff.h"
@@ -60,16 +59,6 @@ char    FAR_PTR         *MsgArray[ERR_LAST_MESSAGE - ERR_FIRST_MESSAGE + 1];
 
 #if !defined(__WINDOWS__)
 static HANDLE_INFO      hInstance = { 0 };
-
-void *wres_alloc( size_t size )
-{
-    return( malloc( size ) );
-}
-
-void wres_free( void *ptr )
-{
-    free( ptr );
-}
 #endif
 
 #if defined(__WINDOWS__)

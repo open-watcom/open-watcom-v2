@@ -37,7 +37,6 @@
 #include "wressetr.h"
 #include "wresset2.h"
 #include "wreslang.h"
-#include "wresmem.h"
 #include "msg.h"
 
 #include "clibext.h"
@@ -45,16 +44,6 @@
 
 static  HANDLE_INFO     hInstance = { 0 };
 static  unsigned        MsgShift;
-
-void *wres_alloc( size_t size )
-{
-    return( malloc( size ) );
-}
-
-void wres_free( void *ptr )
-{
-    free( ptr );
-}
 
 bool GetMsg( char *buffer, int resourceid )
 {

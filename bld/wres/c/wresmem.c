@@ -2,7 +2,6 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -25,63 +24,22 @@
 *
 *  ========================================================================
 *
-* Description:  for error messages in resource files
+* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
+*               DESCRIBE IT HERE!
 *
 ****************************************************************************/
 
 
-#include "ftnstd.h"
-#include <stdio.h>
-#include "cioconst.h"
-#include "wressetr.h"
-#include "wresset2.h"
-#include "wreslang.h"
-#include "errrsrc.h"
-#include "blderr.h"
-#include "errrtns.h"
-
-#include "clibext.h"
+#include <stdlib.h>
+#include "wresmem.h"
 
 
-static  HANDLE_INFO     hInstance = { 0 };
-static  unsigned        MsgShift;
-
-static bool LoadMsg( unsigned int msg, char *buffer, int buff_size )
-// Load a message into the specified buffer.  This function is called
-// by WLINK when linked with 16-bit version of WATFOR-77.
+void *wres_alloc( size_t size )
 {
-    return( hInstance.status && ( WResLoadString( &hInstance, msg + MsgShift, buffer, buff_size ) > 0 ) );
+    return( malloc( size ) );
 }
 
-
-static void BldErrMsg( unsigned int err, char *buffer, va_list args )
-// Build error message.
+void wres_free( void *ptr )
 {
-    *buffer = NULLCHAR;
-    if( LoadMsg( err, &buffer[1], ERR_BUFF_SIZE - 1 ) ) {
-        buffer[0] = ' ';
-        Substitute( buffer, buffer, args );
-    }
-}
-
-static void ErrorInit( const char *pgm_name )
-{
-    hInstance.status = 0;
-    if( OpenResFile( &hInstance, pgm_name ) ) {
-        MsgShift = _WResLanguage() * MSG_LANG_SPACING;
-        return;
-    }
-    CloseResFile( &hInstance );
-}
-
-static void ErrorFini( void )
-{
-    CloseResFile( &hInstance );
-}
-
-void __InitResource( void )
-{
-    __ErrorInit = &ErrorInit;
-    __ErrorFini = &ErrorFini;
-    __BldErrMsg = &BldErrMsg;
+    free( ptr );
 }

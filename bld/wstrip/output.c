@@ -74,21 +74,10 @@ bool Msg_Fini( void )
 #include "wressetr.h"
 #include "wresset2.h"
 #include "wreslang.h"
-#include "wresmem.h"
 
 
 static  HANDLE_INFO     hInstance = { 0 };
 static  unsigned        MsgShift;
-
-void *wres_alloc( size_t size )
-{
-    return( malloc( size ) );
-}
-
-void wres_free( void *ptr )
-{
-    free( ptr );
-}
 
 static bool Msg_Get( int resourceid, char *buffer )
 {
