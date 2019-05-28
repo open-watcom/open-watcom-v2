@@ -34,6 +34,7 @@
 #include <stdlib.h>
 #include "bool.h"
 
+
     /* foreign language support */
 #define islang(__c)     ( ( (__c) >= 0x80 && (__c) <= 0xa7 ) || \
                         ( (__c) >= 0xe0 && (__c) <= 0xee ) )
@@ -71,31 +72,41 @@
 
     /* this macro is used to make coding easier below */
 #define BAR( stuff )    {                   \
-    if( noneyet )   printf( #stuff );       \
-    else            printf( " | " #stuff ); \
+    if( noneyet )   fprintf( fo, #stuff );       \
+    else            fprintf( fo, " | " #stuff ); \
     noneyet = false;                        \
 }
 
 
-int main( void )
-/***************/
+int main( int argc, char *argv[] )
+/********************************/
 {
     int     i;
     bool    noneyet;
+    FILE    *fo;
 
-    /*printf( "extern UINT8 IsArray[] = {\n" );*/
-    printf( "/*STRM_MAGIC*/  0,\n" );
-    printf( "/*STRM_END  */  0,\n" );
+
+    if( argc > 0 ) {
+        fo = fopen( argv[1], "w" );
+    }
+    if( fo == NULL ) {
+        fo = stdout;
+    }
+    /*fprintf( fo, "extern UINT8 IsArray[] = {\n" );*/
+    fprintf( fo, "/*STRM_TMP_LEX_START*/  0,\n" );
+    fprintf( fo, "/*   STRM_TMP_EOL   */  0,\n" );
+    fprintf( fo, "/*    STRM_MAGIC    */  0,\n" );
+    fprintf( fo, "/*     STRM_END     */  0,\n" );
 
     for( i = 0; i <= 255; i++ ) {
         noneyet = true;
 
         if( i > 0 )
-            printf( ",\n" );
+            fprintf( fo, ",\n" );
         if( isprint( i ) ) {
-            printf( "/*   '%c'    */  ", i );
+            fprintf( fo, "/*       '%c'        */  ", i );
         } else {
-            printf( "/*   0x%02x   */  ", i );
+            fprintf( fo, "/*       0x%02x       */  ", i );
         }
 
         if( isws( i ) ) {
@@ -124,10 +135,11 @@ int main( void )
         }
 
         if( noneyet ) {
-            printf( "0" );
+            fprintf( fo, "0" );
         }
     }
-    /*printf("};\n");*/
-    printf( "\n" );
+    /*fprintf( fo, "};\n" );*/
+    fprintf( fo, "\n" );
+    fclose( fo );
     return( 0 );
 }
