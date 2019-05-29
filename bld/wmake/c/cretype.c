@@ -85,7 +85,7 @@ int main( int argc, char *argv[] )
     bool    noneyet;
     FILE    *fo;
 
-
+    fo = NULL;
     if( argc > 0 ) {
         fo = fopen( argv[1], "w" );
     }
