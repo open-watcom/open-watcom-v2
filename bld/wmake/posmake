@@ -84,7 +84,7 @@ cretype.exe : ../c/cretype.c
 	$(CC) -I../../watcom/h -o $@ $?
 
 isarray.gh : cretype.exe
-	./cretype.exe > $@
+	./cretype.exe $@
 
 $(OWBINDIR)/wmake: wmake.exe
 	cp wmake.exe $@

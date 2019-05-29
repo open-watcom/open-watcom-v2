@@ -128,7 +128,7 @@ usagej.gh : ../h/usage.sp $(__MAKEFILES__)
 
 isarray.gh : ./cretype.exe $(__MAKEFILES__)
     @%make echo_execute
-    $(noecho)$[@ > $@
+    $(noecho)$[@ $@
 
 ./cretype.exe : cretype.c $(__MAKEFILES__)
     @%make echo_bldcl
