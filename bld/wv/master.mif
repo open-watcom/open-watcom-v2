@@ -60,7 +60,7 @@ sysadir = ../asm
 
 # cflags
 #########
-!ifeq sys_rtdll 1
+!ifdef wv_engine_noui
 extra_cpp_flags += -D__NOUI__
 !endif
 !ifeq release 0

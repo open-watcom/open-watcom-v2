@@ -6,7 +6,7 @@
 host_os  = os2
 host_cpu = 386
 
-wv_rtdll = 1
+wv_engine_noui = 1
 
 all : dve.exe .SYMBOLIC
 
