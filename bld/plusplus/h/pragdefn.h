@@ -177,16 +177,21 @@ int PragRegIndex(               // GET PRAGMA REGISTER INDEX
 ;
 int PragRegNumIndex(            // GET PRAGMA REGISTER NUMBER INDEX (RISC CPU)
     const char *str,
+    size_t len,
     int max_reg )
+;
+void PragRegNameErr(
+    const char *regname,
+    size_t regnamelen )
 ;
 hw_reg_set PragRegList(         // GET PRAGMA REGISTER SET
     void )
 ;
 hw_reg_set PragRegName(         // GET REGISTER NAME
-    const char *str,            // - register name
-    size_t len )                // - register name len
+    const char *regname,        // - register name
+    size_t regnamelen )         // - register name len
 ;
-bool ReverseParms(           // ASK IF PRAGMA REQUIRES REVERSED PARMS
+bool ReverseParms(              // ASK IF PRAGMA REQUIRES REVERSED PARMS
     AUX_INFO * pragma )         // - pragma
 ;
 void SetCurrInfo(               // SET CURRENT INFO. STRUCTURE

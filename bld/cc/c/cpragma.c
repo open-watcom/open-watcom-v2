@@ -130,8 +130,8 @@ static void endOfPragma( bool check_end )
     if( check_end ) {
         if( CurToken == T_SEMI_COLON )
             PPNextToken();
-    	if( CurToken == T_PRAGMA_END )
-        	return;
+        if( CurToken == T_PRAGMA_END )
+            return;
         ExpectingToken( T_NULL );
         while( CurToken != T_NULL && CurToken != T_EOF ) {
             PPNextToken();
@@ -156,8 +156,10 @@ const char *SkipUnderscorePrefix( const char *str, size_t *len, bool iso_complia
         if( str[0] == '_' && str[1] == '_' ) {
             str += 2;
         } else {
-            start = "";
-            str = start;
+            if( len != NULL ) {
+                *len = 0;
+            }
+            return( "" );
         }
     }
     if( len != NULL ) {
@@ -523,32 +525,39 @@ int PragRegIndex( const char *registers, const char *name, size_t len, bool igno
     return( -1 );
 }
 
-int PragRegNumIndex( const char *str, int max_reg )
-/*************************************************/
+int PragRegNumIndex( const char *str, size_t len, int max_reg )
+/*************************************************************/
 {
     int             index;
 
-    /* decode regular register index */
-    if( isdigit( (unsigned char)*str ) ) {
-        index = atoi( str );
-        if( index < max_reg ) {
-            if( str[1] == '\0' ) {
-                /* 0....9 */
-                if(( index > 0 )
-                  || ( index == 0 ) && ( str[0] == '0' )) {
-                    return( index );
-                }
-            } else if( str[2] == '\0' ) {
-                /* 10....max_reg-1 */
-                if( index > 9 ) {
-                    return( index );
-                }
+    /* decode regular register index, max 2 digit */
+    if( len > 0 && isdigit( (unsigned char)str[0] ) ) {
+        if( len == 1 ) {
+            index = str[0] - '0';
+            if( index < max_reg ) {
+                return( index );
+            }
+        } else if( len == 2 && isdigit( (unsigned char)str[1] ) ) {
+            index = ( str[1] - '0' ) * 10 + ( str[0] - '0' );
+            if( index < max_reg ) {
+                return( index );
             }
         }
     }
     return( -1 );
 }
 
+void PragRegNameErr( const char *regname, size_t regnamelen )
+/***********************************************************/
+{
+    char            buffer[20];
+
+    if( regnamelen > sizeof( buffer ) - 1 )
+        regnamelen = sizeof( buffer ) - 1;
+    memcpy( buffer, regname, regnamelen );
+    buffer[regnamelen] = '\0';
+    CErr2p( ERR_BAD_REGISTER_NAME, buffer );
+}
 
 hw_reg_set PragRegList( void )
 /****************************/
