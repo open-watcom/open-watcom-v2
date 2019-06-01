@@ -10,7 +10,7 @@ wv_autodepends = .AUTODEPEND
 
 additional_cleanup = *.u *.gdl
 
-#wv_trmem = 1
+wv_trmem = 1
 
 !ifeq sys_windowed 1
 !ifeq host_os os2

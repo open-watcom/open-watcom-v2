@@ -116,97 +116,6 @@ int __saveregs  xmemneed( size_t size )
 #endif
 
 
-#ifdef TRMEM
-
-/* extern to avoid problems with taking address and overlays */
-static bool Closing = false;
-
-static void TRPrintLine( void *parm, const char *buff, size_t len )
-/*****************************************************************/
-{
-    /* unused parameters */ (void)parm;
-
-    if( !Closing )
-        PopErrBox( buff );
-    fwrite( buff, 1, len, TrackFile );
-}
-
-static void TRMemOpen( void )
-/***************************/
-{
-    DbgMemHandle = _trmem_open( malloc, free, realloc, NULL,
-            NULL, TRPrintLine,
-            _TRMEM_ALLOC_SIZE_0 | _TRMEM_REALLOC_SIZE_0 |
-            _TRMEM_OUT_OF_MEMORY | _TRMEM_CLOSE_CHECK_FREE );
-}
-
-static void TRMemClose( void )
-/****************************/
-{
-    _trmem_close( DbgMemHandle );
-}
-
-void TRMemPrtUsage( void )
-/************************/
-{
-    _trmem_prt_usage( DbgMemHandle );
-}
-
-static unsigned TRMemPrtList( void )
-/**********************************/
-{
-    return( _trmem_prt_list( DbgMemHandle ) );
-}
-
-int TRMemValidate( void * ptr )
-/*****************************/
-{
-    return( _trmem_validate( ptr, _trmem_guess_who(), DbgMemHandle ) );
-}
-
-void TRMemCheck( void )
-/*********************/
-{
-    _trmem_validate_all( DbgMemHandle );
-}
-
-int TRMemChkRange( void * start, size_t len )
-/*******************************************/
-{
-    return( _trmem_chk_range( start, len, _trmem_guess_who(), DbgMemHandle ) );
-}
-
-static void MemTrackInit( void )
-{
-    char        name[FILENAME_MAX];
-
-    TrackFile = stderr;
-    if( DUIEnvLkup( "TRMEMFILE", name, sizeof( name ) ) ) {
-        TrackFile = fopen( name, "w" );
-    }
-    TRMemOpen();
-}
-
-static const char UnFreed[] = { "Memory UnFreed" };
-static const char TrackErr[] = { "Memory Tracker Errors Detected" };
-
-static void MemTrackFini( void )
-{
-    Closing = true;
-    if( TrackFile != stderr ) {
-        fseek( TrackFile, 0, SEEK_END );
-        if( ftell( TrackFile ) != 0 ) {
-            PopErrBox( TrackErr );
-        } else if( TRMemPrtList() != 0 ) {
-            PopErrBox( UnFreed );
-        }
-        fclose( TrackFile );
-    }
-    TRMemClose();
-}
-#endif
-
-
 /*
  * Dynamic Memory management routines
  */
@@ -325,6 +234,70 @@ void SysSetMemLimit( void )
 }
 
 #if defined( __NOUI__ )
+
+static const char UnFreed[] = { "Memory UnFreed" };
+static const char TrackErr[] = { "Memory Tracker Errors Detected" };
+
+/* extern to avoid problems with taking address and overlays */
+static bool Closing = false;
+
+static void DbgMemPrintLine( void *parm, const char *buff, size_t len )
+/*********************************************************************/
+{
+    /* unused parameters */ (void)parm;
+
+    if( !Closing )
+        PopErrBox( buff );
+    fwrite( buff, 1, len, TrackFile );
+}
+
+static unsigned DbgMemPrtList( void )
+/**********************************/
+{
+    return( _trmem_prt_list( DbgMemHandle ) );
+}
+
+static void DbgMemOpen( void )
+/****************************/
+{
+    DbgMemHandle = _trmem_open( malloc, free, realloc, NULL,
+            NULL, DbgMemPrintLine,
+            _TRMEM_ALLOC_SIZE_0 | _TRMEM_REALLOC_SIZE_0 |
+            _TRMEM_OUT_OF_MEMORY | _TRMEM_CLOSE_CHECK_FREE );
+}
+
+static void DbgMemClose( void )
+/*****************************/
+{
+    _trmem_prt_list( DbgMemHandle );
+    _trmem_close( DbgMemHandle );
+}
+
+static void MemTrackInit( void )
+{
+    char        name[FILENAME_MAX];
+
+    TrackFile = stderr;
+    if( DUIEnvLkup( "TRMEMFILE", name, sizeof( name ) ) ) {
+        TrackFile = fopen( name, "w" );
+    }
+    DbgMemOpen();
+}
+
+static void MemTrackFini( void )
+{
+    Closing = true;
+    if( TrackFile != stderr ) {
+        fseek( TrackFile, 0, SEEK_END );
+        if( ftell( TrackFile ) != 0 ) {
+            PopErrBox( TrackErr );
+        } else if( DbgMemPrtList() != 0 ) {
+            PopErrBox( UnFreed );
+        }
+        fclose( TrackFile );
+    }
+    DbgMemClose();
+}
 
 void MemInit( void )
 {
@@ -477,6 +450,7 @@ void *MemAlloc( size_t size )
     memset( ptr, 0, size );
     return( ptr );
 }
+#ifdef __OS2__
 void * _wpi_malloc( size_t size )
 {
 #ifdef TRMEM
@@ -485,7 +459,6 @@ void * _wpi_malloc( size_t size )
     return( malloc( size ) );
 #endif
 }
-#ifdef __OS2__
 void *PMmalloc( size_t size )
 {
 #ifdef TRMEM
@@ -520,7 +493,6 @@ void *HelpMemAlloc( size_t size )
     return( malloc( size ) );
 #endif
 }
-#endif
 void *wres_alloc( size_t size )
 {
 #ifdef TRMEM
@@ -529,6 +501,7 @@ void *wres_alloc( size_t size )
     return( malloc( size ) );
 #endif
 }
+#endif
 
 
 /*
@@ -553,6 +526,7 @@ void MemFree( void *ptr )
     free( ptr );
 #endif
 }
+#ifdef __OS2__
 void _wpi_free( void *ptr )
 {
 #ifdef TRMEM
@@ -561,7 +535,6 @@ void _wpi_free( void *ptr )
     free( ptr );
 #endif
 }
-#ifdef __OS2__
 void PMfree( void *ptr )
 {
 #ifdef TRMEM
@@ -603,7 +576,6 @@ void HelpMemFree( void *ptr )
     free( ptr );
 #endif
 }
-#endif
 void wres_free( void *ptr )
 {
 #ifdef TRMEM
@@ -612,6 +584,7 @@ void wres_free( void *ptr )
     free( ptr );
 #endif
 }
+#endif
 
 
 /*
@@ -628,14 +601,6 @@ void *GUIMemRealloc( void *ptr, size_t size )
 #endif
 }
 #if defined( GUI_IS_GUI )
-void * _wpi_realloc( void *ptr, size_t size )
-{
-#ifdef TRMEM
-    return( _trmem_realloc( ptr, size, _trmem_guess_who(), DbgMemHandle ) );
-#else
-    return( realloc( ptr, size ) );
-#endif
-}
 void *MemRealloc( void *ptr, size_t size )
 {
 #ifdef TRMEM
@@ -645,6 +610,14 @@ void *MemRealloc( void *ptr, size_t size )
 #endif
 }
 #ifdef __OS2__
+void * _wpi_realloc( void *ptr, size_t size )
+{
+#ifdef TRMEM
+    return( _trmem_realloc( ptr, size, _trmem_guess_who(), DbgMemHandle ) );
+#else
+    return( realloc( ptr, size ) );
+#endif
+}
 void *PMrealloc( void *ptr, size_t size )
 {
 #ifdef TRMEM
