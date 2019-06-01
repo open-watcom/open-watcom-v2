@@ -235,11 +235,11 @@ void SysSetMemLimit( void )
 
 #if defined( __NOUI__ )
 
-static const char UnFreed[] = { "Memory UnFreed" };
-static const char TrackErr[] = { "Memory Tracker Errors Detected" };
+#ifdef TRMEM
 
-/* extern to avoid problems with taking address and overlays */
-static bool Closing = false;
+static const char   UnFreed[] = { "Memory UnFreed" };
+static const char   TrackErr[] = { "Memory Tracker Errors Detected" };
+static bool         Closing = false;
 
 static void DbgMemPrintLine( void *parm, const char *buff, size_t len )
 /*********************************************************************/
@@ -298,6 +298,8 @@ static void MemTrackFini( void )
     }
     DbgMemClose();
 }
+
+#endif
 
 void MemInit( void )
 {
