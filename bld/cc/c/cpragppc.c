@@ -140,7 +140,7 @@ hw_reg_set PragRegName( const char *regname, size_t regnamelen )
                 }
             }
         } else if( len > 0 && ( *str == 'r' || *str == 'R' ) ) {
-            // decode regular register name
+            // decode regular register name [rR]nn
             str++;
             len--;
             if( len > 0 ) {
