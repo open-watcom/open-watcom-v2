@@ -51,27 +51,35 @@
 #include "dip.h"
 #include "strutil.h"
 #include "dbginit.h"
-
-#include "guimem.h"
-#if defined( GUI_IS_GUI )
-    #include "cguimem.h"
-    #include "wpimem.h"
-    #ifdef __OS2__
-        #include "os2mem.h"
+#ifndef __NOUI__
+    #include "aui.h"
+    #include "guimem.h"
+    #include "wresmem.h"
+    #if defined( GUI_IS_GUI )
+        #include "cguimem.h"
+        #include "wpimem.h"
+        #ifdef __OS2__
+            #include "os2mem.h"
+        #endif
+    #else
+        #include "stdui.h"
+        #include "helpmem.h"
     #endif
-#else
-    #include "stdui.h"
-    #include "helpmem.h"
 #endif
 #ifdef TRMEM
     #include "trmem.h"
 #endif
-#include "wresmem.h"
 
 
 #define _60kB   (60UL * 1024UL)
 #define _1MB    (1024UL * 1024UL)
 #define _4MB    (4UL * 1024UL * 1024UL)
+
+#if defined( __DOS__ )
+#define MEM_NEAR_PTR(x)     (void *)FP_OFF( x )
+#else
+#define MEM_NEAR_PTR(x)     x
+#endif
 
 #if defined( __DOS__ )
 #if !defined( __OSI__ )
@@ -133,7 +141,11 @@ void *DbgMustAlloc( size_t size )
 {
     void        *ptr;
 
-    ptr = DbgAlloc( size );
+#ifdef TRMEM
+    ptr = _trmem_alloc( size, _trmem_guess_who(), DbgMemHandle );
+#else
+    ptr = malloc( size );
+#endif
     if( ptr == NULL ) {
         Error( ERR_NONE, LIT_ENG( ERR_NO_MEMORY ) );
     }
@@ -151,16 +163,14 @@ void *DbgRealloc( void *chunk, size_t size )
 
 void DbgFree( void *ptr )
 {
-    if( ptr != NULL ) {
 #ifdef TRMEM
-        _trmem_free( ptr, _trmem_guess_who(), DbgMemHandle );
+    _trmem_free( ptr, _trmem_guess_who(), DbgMemHandle );
 #else
-        free( ptr );
+    free( ptr );
 #endif
-    }
 }
 
-void *ChkAlloc( size_t size, char *error )
+void *DbgChkAlloc( size_t size, char *error )
 {
     void *ret;
 
@@ -324,13 +334,13 @@ void MemFini( void )
         return;
     h_info._pentry = NULL;
     while( (status = _heapwalk( &h_info )) == _HEAPOK ) {
-#ifndef NDEBUG
+  #ifndef NDEBUG
         if( h_info._useflag == _USEDENTRY ) {
             end = Format( buf, "%s block",
                 h_info._useflag == _USEDENTRY ? "Used" : "Free" );
             WriteText( STD_OUT, buf, end - buf );
         }
-#endif
+  #endif
     }
     switch( status ) {
     case _HEAPBADBEGIN:
@@ -366,6 +376,11 @@ static void GUIMemPrintLine( void *parm, const char *buff, size_t len )
 }
 
 #endif
+
+void WndNoMemory( void )
+{
+    Error( ERR_NONE, LIT_ENG( ERR_NO_MEMORY_FOR_WINDOW ) );
+}
 
 void GUIMemPrtUsage( void )
 /*************************/
@@ -432,6 +447,14 @@ void UIAPI UIMemClose( void ) {}
 
 void *GUIMemAlloc( size_t size )
 /******************************/
+{
+#ifdef TRMEM
+    return( _trmem_alloc( size, _trmem_guess_who(), DbgMemHandle ) );
+#else
+    return( malloc( size ) );
+#endif
+}
+void *WndAlloc( size_t size )
 {
 #ifdef TRMEM
     return( _trmem_alloc( size, _trmem_guess_who(), DbgMemHandle ) );
@@ -519,6 +542,14 @@ void GUIMemFree( void *ptr )
     free( ptr );
 #endif
 }
+void WndFree( void *ptr )
+{
+#ifdef TRMEM
+    _trmem_free( ptr, _trmem_guess_who(), DbgMemHandle );
+#else
+    free( ptr );
+#endif
+}
 #if defined( GUI_IS_GUI )
 void MemFree( void *ptr )
 {
@@ -555,11 +586,6 @@ void UIAPI uifree( void *ptr )
     free( ptr );
 #endif
 }
-#if defined( __DOS__ )
-#define MEM_NEAR_PTR(x)     (void *)FP_OFF( x )
-#else
-#define MEM_NEAR_PTR(x)     x
-#endif
 void UIAPI uifarfree( LP_VOID ptr )
 {
     if( ptr != NULL ) {
@@ -595,6 +621,14 @@ void wres_free( void *ptr )
 
 void *GUIMemRealloc( void *ptr, size_t size )
 /*******************************************/
+{
+#ifdef TRMEM
+    return( _trmem_realloc( ptr, size, _trmem_guess_who(), DbgMemHandle ) );
+#else
+    return( realloc( ptr, size ) );
+#endif
+}
+void *WndRealloc( void *ptr, size_t size )
 {
 #ifdef TRMEM
     return( _trmem_realloc( ptr, size, _trmem_guess_who(), DbgMemHandle ) );

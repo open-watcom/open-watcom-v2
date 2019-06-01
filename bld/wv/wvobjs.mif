@@ -187,7 +187,6 @@ dui_objs = &
     dui.obj &
     litwddui.obj &
     modcomp.obj &
-    wndalloc.obj &
     wnddump.obj &
     wndhelp.obj &
     wndmenu.obj &

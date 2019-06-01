@@ -33,12 +33,12 @@
 #include "wnoret.h"
 
 
-typedef unsigned_8 dbg_err_flags; enum {
+typedef enum {
     ERR_NONE    = 0x00,
     ERR_LOC     = 0x01,
     ERR_INTERNAL= 0x02,
     ERR_SILENT  = 0x04,
-};
+} dbg_err_flags;
 
 /* this function never return to the caller */
 NO_RETURN( extern void Error( dbg_err_flags, char *, ... ) );

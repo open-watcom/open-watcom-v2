@@ -36,7 +36,7 @@
 #include "walloca.h"
 
 extern void     *DbgRealloc( void *, size_t );
-extern void     *ChkAlloc( size_t, char * );
+extern void     *DbgChkAlloc( size_t, char * );
 extern void     *DbgAlloc( size_t );
 extern void     *DbgMustAlloc( size_t );
 extern void     DbgFree( void * );
@@ -45,7 +45,7 @@ extern void     MemInit( void );
 extern void     MemFini( void );
 #endif
 
-#define _ChkAlloc( res, size, type )    res = ChkAlloc( size, type )
+#define _ChkAlloc( res, size, type )    res = DbgChkAlloc( size, type )
 #define _Realloc( res, size )           res = DbgRealloc( res, size )
 #define _Alloc( res, size )             res = DbgAlloc( size )
 #define _AllocA( res, size )            res = walloca( size )
