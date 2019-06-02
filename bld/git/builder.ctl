@@ -1,5 +1,5 @@
-# WATCOM CRTL extension libraries Builder Control file
-# ====================================================
+# WATCOM GIT filter driver Builder Control file
+# ==============================================
 
 set PROJNAME=git
 

@@ -8,11 +8,11 @@ name = $(proj_name)
 !include defrule.mif
 !include deftarg.mif
 
-objs = $(proj_name).obj
+objs = $(name).obj
 
 .c: ../c
 
-$(proj_name).exe : $(objs) $(__MAKEFILES__)
+$(name).exe : $(objs) $(__MAKEFILES__)
 !ifndef __WATCOM_TOOLS__
         $(cl) $(clflags) $(objs) $(ldflags)
 !else
