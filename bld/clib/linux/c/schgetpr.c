@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2019 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -29,9 +29,11 @@
 *
 ****************************************************************************/
 
+
 #include "variety.h"
 #include <sched.h>
 #include "linuxsys.h"
+
 
 _WCRTLINK int sched_get_priority_max( int policy )
 {

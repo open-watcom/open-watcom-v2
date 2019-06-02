@@ -2,8 +2,7 @@
 *
 *                            Open Watcom Project
 *
-*    Portions Copyright (c) 2016 Open Watcom contributors. 
-*    All Rights Reserved.
+* Copyright (c) 2016-2019 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -31,6 +30,7 @@
 *
 ****************************************************************************/
 
+
 #include "variety.h"
 #include <stddef.h>
 #include <sys/ioctl.h>
@@ -40,27 +40,27 @@
 
 _WCRTLINK int tcsetattr( int fd, int actions, const struct termios *t )
 {
-int cmd;
+    int cmd;
 
-    if(t == NULL) {
+    if( t == NULL ) {
         _RWD_errno = EINVAL;
         return( -1 );
     }
-    
-    switch(actions) {
-        case TCSANOW:
-            cmd = TCSETS;
-            break;
-        case TCSADRAIN:
-            cmd = TCSETSW;
-            break;
-        case TCSAFLUSH:
-            cmd = TCSETSF;
-            break;
-        default:
-            _RWD_errno = EINVAL;
-            return( -1 );
+
+    switch( actions ) {
+    case TCSANOW:
+        cmd = TCSETS;
+        break;
+    case TCSADRAIN:
+        cmd = TCSETSW;
+        break;
+    case TCSAFLUSH:
+        cmd = TCSETSF;
+        break;
+    default:
+        _RWD_errno = EINVAL;
+        return( -1 );
     }
 
-    return( ioctl(fd, cmd, t) );
+    return( ioctl( fd, cmd, t ) );
 }

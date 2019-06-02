@@ -2,8 +2,7 @@
 *
 *                            Open Watcom Project
 *
-*    Portions Copyright (c) 2015 Open Watcom contributors. 
-*    All Rights Reserved.
+* Copyright (c) 2015-2019 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -31,9 +30,11 @@
 *
 ****************************************************************************/
 
+
 #include "variety.h"
 #include "linuxsys.h"
 #include <sys/mman.h>
+
 
 _WCRTLINK int mlock( const void *__addr, size_t __len )
 {

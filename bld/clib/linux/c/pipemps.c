@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -32,6 +33,7 @@
 #include "variety.h"
 #include <unistd.h>
 #include "linuxsys.h"
+
 
 /* The MIPS pipe system call note - the two descriptors are returned
  * in $v0 and $v1 instead of being written to wherever __fildes points to.

@@ -2,8 +2,7 @@
 *
 *                            Open Watcom Project
 *
-*    Portions Copyright (c) 2016 Open Watcom Contributors. 
-*    All Rights Reserved.
+* Copyright (c) 2016-2019 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -52,7 +51,7 @@ int value;
     return( 0 );
 }
 
-_WCRTLINK int sem_wait( sem_t *sem ) 
+_WCRTLINK int sem_wait( sem_t *sem )
 {
 int res;
 struct timespec timer;
@@ -66,19 +65,19 @@ struct timespec timer;
     timer.tv_nsec = 1E+5;
 
     while( !__decrement_if_positive( &sem->value ) ) {
-        
+
         if(sem->value <= 0)
             res = __futex( &sem->futex, FUTEX_WAIT_PRIVATE, 1, &timer, 0 );
-        else 
+        else
             res = 0;
     }
-    
+
     if(sem->value == 0) __atomic_compare_and_swap(&sem->futex, 0, 1);
 
     return( 0 );
 }
 
-_WCRTLINK int sem_timedwait( sem_t *sem, const struct timespec *abstime ) 
+_WCRTLINK int sem_timedwait( sem_t *sem, const struct timespec *abstime )
 {
     int             ret;
     struct timespec reltime;
@@ -87,7 +86,7 @@ _WCRTLINK int sem_timedwait( sem_t *sem, const struct timespec *abstime )
         _RWD_errno = EINVAL;
         return( -1 );
     }
-    
+
     while( !__decrement_if_positive( &sem->value ) ) {
 
         clock_gettime( CLOCK_MONOTONIC, &reltime );
@@ -102,20 +101,20 @@ _WCRTLINK int sem_timedwait( sem_t *sem, const struct timespec *abstime )
             ret = __futex( &sem->futex, FUTEX_WAIT_PRIVATE, 1, &reltime, 0 );
         else
             ret = 0;
-            
+
         if(ret == -ETIMEDOUT) {
             _RWD_errno = ETIMEDOUT;
             return( -1 );
         }
-         
+
     }
-    
+
     if(sem->value == 0) __atomic_compare_and_swap(&sem->futex, 0, 1);
-    
+
     return( 0 );
 }
 
-_WCRTLINK int sem_trywait( sem_t *sem ) 
+_WCRTLINK int sem_trywait( sem_t *sem )
 {
     struct timespec timer;
     int             ret;
@@ -130,22 +129,22 @@ _WCRTLINK int sem_trywait( sem_t *sem )
     ret = 0;
 
     if( !__decrement_if_positive( &sem->value ) ) {
-        
+
         if(sem->value <= 0)
             ret = __futex( &sem->futex, FUTEX_WAIT_PRIVATE, 1, &timer, 0 );
-        else 
+        else
             ret = 0;
-            
+
     } else {
-    
+
         if(sem->value == 0) __atomic_compare_and_swap(&sem->futex, 0, 1);
         return( 0 );
-        
+
     }
-    
+
     if( __decrement_if_positive( &sem->value ) )
         return( 0 );
-    
+
     _RWD_errno = EAGAIN;
     return( -1 );
 }

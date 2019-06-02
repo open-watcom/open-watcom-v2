@@ -2,8 +2,7 @@
 *
 *                            Open Watcom Project
 *
-*    Portions Copyright (c) 2016 Open Watcom contributors. 
-*    All Rights Reserved.
+* Copyright (c) 2016-2019 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -31,12 +30,14 @@
 *
 ****************************************************************************/
 
+
 #include "variety.h"
 #include "linuxsys.h"
 #include <sys/ioctl.h>
 #include <termios.h>
 
+
 _WCRTLINK int tcsendbreak( int fd, int duration )
 {
-    return ioctl(fd, TCSBRKP, duration);
+    return( ioctl( fd, TCSBRKP, duration ) );
 }

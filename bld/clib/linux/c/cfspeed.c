@@ -2,8 +2,7 @@
 *
 *                            Open Watcom Project
 *
-*    Portions Copyright (c) 2015 Open Watcom contributors. 
-*    All Rights Reserved.
+* Copyright (c) 2015-2019 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -30,6 +29,7 @@
 * Author: J. Armstrong
 *
 ****************************************************************************/
+
 
 #include "variety.h"
 #include <stddef.h>
@@ -73,7 +73,7 @@ _WCRTLINK int cfsetispeed(struct termios *tios, speed_t speed)
     if(tios == NULL || !__valid_speed( speed )) {
         _RWD_errno = EINVAL;
         return( -1 );
-    } 
+    }
 
     tios->c_ispeed = speed;
 
@@ -85,7 +85,7 @@ _WCRTLINK int cfsetospeed(struct termios *tios, speed_t speed)
     if(tios == NULL || !__valid_speed( speed )) {
         _RWD_errno = EINVAL;
         return( -1 );
-    } 
+    }
 
     tios->c_ospeed = speed;
 

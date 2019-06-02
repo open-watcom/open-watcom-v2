@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2019 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -28,11 +28,13 @@
 *
 ****************************************************************************/
 
+
 #include "variety.h"
 #include <sched.h>
 #include <time.h>
 #include <sys/types.h>
 #include "linuxsys.h"
+
 
 _WCRTLINK int sched_rr_get_interval( pid_t pid, struct timespec *ts )
 {

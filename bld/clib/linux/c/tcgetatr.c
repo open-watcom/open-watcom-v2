@@ -2,8 +2,7 @@
 *
 *                            Open Watcom Project
 *
-*    Portions Copyright (c) 2016 Open Watcom contributors. 
-*    All Rights Reserved.
+* Copyright (c) 2016-2019 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -31,6 +30,7 @@
 *
 ****************************************************************************/
 
+
 #include "variety.h"
 #include <stddef.h>
 #include <sys/ioctl.h>
@@ -40,9 +40,9 @@
 
 _WCRTLINK int tcgetattr( int fd, struct termios *t )
 {
-syscall_res res;
+    syscall_res res;
 
-    if(t == NULL) {
+    if( t == NULL ) {
         _RWD_errno = EINVAL;
         return( -1 );
     }

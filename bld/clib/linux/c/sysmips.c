@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,6 +34,7 @@
 #include <stdlib.h>
 #include <sys/sysmips.h>
 #include "linuxsys.h"
+
 
 _WCRTLINK int sysmips( const int cmd, const int arg1, const int arg2, const int arg3 )
 {

@@ -2,8 +2,7 @@
 *
 *                            Open Watcom Project
 *
-*    Portions Copyright (c) 2016, 2017 Open Watcom Contributors. 
-*    All Rights Reserved.
+* Copyright (c) 2016-2019 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -42,19 +41,19 @@
 #include "thread.h"
 
 
-_WCRTLINK int sem_post( sem_t *sem ) 
+_WCRTLINK int sem_post( sem_t *sem )
 {
     if( sem == NULL ) {
         _RWD_errno = EINVAL;
         return( -1 );
     }
-    
+
     while(sem->value < 0) __atomic_increment( &sem->value );
-    
+
     __atomic_increment( &sem->value );
 
     __futex( &sem->futex, FUTEX_WAKE_PRIVATE, INT_MAX, NULL, 0 );
-    
+
     __atomic_compare_and_swap(&sem->futex, 1, 0);
 
     return( 0 );

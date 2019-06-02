@@ -2,8 +2,7 @@
 *
 *                            Open Watcom Project
 *
-*    Portions Copyright (c) 2016 Open Watcom Contributors. 
-*    All Rights Reserved.
+* Copyright (c) 2016-2019 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -29,8 +28,10 @@
 *
 ****************************************************************************/
 
+
 #ifndef _FUTEX_H_INCLUDED
 #define _FUTEX_H_INCLUDED
+
 
 /* Futex Syscall flags */
 #define FUTEX_WAIT              0
@@ -67,6 +68,6 @@
 #define FUTEX_CMP_REQUEUE_PI_PRIVATE    (FUTEX_CMP_REQUEUE_PI | \
                                          FUTEX_PRIVATE_FLAG)
 
-extern int __futex( volatile int *__address, int __operation, int __value, void *__timeout, int id);
+extern int __futex( volatile int *__address, int __operation, int __value, void *__timeout, int id );
 
 #endif /* _FUTEX_H_INCLUDED */

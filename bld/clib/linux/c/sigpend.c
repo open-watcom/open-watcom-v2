@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2016 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2016-2019 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -32,6 +32,7 @@
 #include "variety.h"
 #include <signal.h>
 #include "linuxsys.h"
+
 
 _WCRTLINK int sigpending( sigset_t *__set )
 {

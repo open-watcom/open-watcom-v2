@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -32,6 +33,7 @@
 #include "variety.h"
 #include <signal.h>
 #include "linuxsys.h"
+
 
 _WCRTLINK __sig_func signal( int signum, __sig_func sighandler )
 {

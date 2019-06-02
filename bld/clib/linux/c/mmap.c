@@ -2,8 +2,7 @@
 *
 *                            Open Watcom Project
 *
-*    Portions Copyright (c) 2015 Open Watcom contributors. 
-*    All Rights Reserved.
+* Copyright (c) 2015-2019 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -31,10 +30,12 @@
 *
 ****************************************************************************/
 
+
 #include "variety.h"
 #include "linuxsys.h"
 #include <stdint.h>
 #include <sys/mman.h>
+
 
 struct mmap_arg_struct {
         u_long address;
@@ -45,15 +46,14 @@ struct mmap_arg_struct {
         u_long offset;
 };
 
-_WCRTLINK void *mmap(void *__address, size_t __len, int __prot, 
-                     int __flags, int __fd, off_t __offset)
+_WCRTLINK void *mmap( void *__address, size_t __len, int __prot, int __flags, int __fd, off_t __offset )
 {
-syscall_res res;
-struct mmap_arg_struct arg;
-    
+    syscall_res res;
+    struct mmap_arg_struct arg;
+
     arg.address = (u_long)__address;
     arg.len =     (u_long)__len;
-    arg.prot =    (u_long)__prot; 
+    arg.prot =    (u_long)__prot;
     arg.flags =   (u_long)__flags;
     arg.fd =      (u_long)__fd;
     arg.offset =  (u_long)__offset;
@@ -64,7 +64,7 @@ struct mmap_arg_struct arg;
     __syscall_return( void *, res );
 }
 
-_WCRTLINK int munmap(void *__address, size_t __len)
+_WCRTLINK int munmap( void *__address, size_t __len )
 {
     syscall_res res = sys_call2( SYS_munmap, (u_long)__address, (u_long)__len );
 

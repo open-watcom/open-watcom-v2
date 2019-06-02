@@ -2,8 +2,7 @@
 *
 *                            Open Watcom Project
 *
-*    Portions Copyright (c) 2015 Open Watcom Contributors.
-*    All Rights Reserved.
+* Copyright (c) 2015-2019 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -31,9 +30,11 @@
 *
 ****************************************************************************/
 
+
 #include "variety.h"
 #include <time.h>
 #include "linuxsys.h"
+
 
 _WCRTLINK int clock_gettime( clockid_t __clk, struct timespec *__ts)
 {
