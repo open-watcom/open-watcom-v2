@@ -33,6 +33,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <time.h>
+#include "bool.h"
 
 
 static char     cpyright[] = "* Copyright (c) 2002-xxxx The Open Watcom Contributors. All Rights Reserved.\n";
@@ -40,6 +41,8 @@ static size_t   line = 1;
 static size_t   size = 0;
 static int      status = 0;
 static char     *buffer = NULL;
+static FILE     *fi = NULL;
+static FILE     *fo = NULL;
 
 static void output_buffer( void )
 {
@@ -52,7 +55,7 @@ static void output_buffer( void )
     } else if( line == 5 ) {
         if( status == 1 ) {
             if( strstr( buffer, "-2002 Sybase, Inc. All Rights Reserved." ) != NULL ) {
-                fputs( cpyright, stdout );
+                fputs( cpyright, fo );
                 status = 2;
             } else if( strstr( buffer, cpyright + 25 ) != NULL ) {
                 memcpy( buffer + 21, cpyright + 21, 4 );
@@ -60,10 +63,32 @@ static void output_buffer( void )
             }
         }
     }
-    fputs( buffer, stdout );
+    fputs( buffer, fo );
 }
 
-int main( void )
+static bool filecopy( void )
+{
+    size_t      bufflen;
+    bool        ok;
+
+    ok = true;
+    while( (bufflen = fread( buffer, 1, size, fi )) == size ) {
+        if( fwrite( buffer, 1, size, fo ) != size ) {
+            ok = false;
+        }
+    }
+    if( ferror( fi ) ) {
+        ok = false;
+    }
+    if( bufflen > 0 ) {
+        if( fwrite( buffer, 1, bufflen, fo ) != bufflen ) {
+            ok = false;
+        }
+    }
+    return( ok );
+}
+
+int main( int argc, char *argv[] )
 {
     size_t          len;
     char            cyear[6];
@@ -75,8 +100,26 @@ int main( void )
     t = localtime( &ltime );
     sprintf( cyear, "%4.4d", 1900 + t->tm_year );
     memcpy( cpyright + 21, cyear, 4 );
+    if( argc > 2 ) {
+        fi = fopen( argv[1], "rt" );
+    } else if( argc == 2 ) {
+        fi = fopen( argv[1], "rt" );
+    } else {
+        fi = stdin;
+    }
+    if( fi == NULL )
+        return( 1 );
+    if( argc > 2 ) {
+        fo = fopen( argv[2], "wt" );
+    } else if( argc == 2 ) {
+        fo = tmpfile();
+    } else {
+        fo = stdout;
+    }
+    if( fo == NULL )
+        return( 1 );
     len = 0;
-    while( (c = fgetc( stdin )) != EOF ) {
+    while( (c = fgetc( fi )) != EOF ) {
         if( len + 2 > size ) {
             size += 512;
             buffer = realloc( buffer, size );
@@ -96,6 +139,20 @@ int main( void )
         buffer[len] = '\0';
         output_buffer();
     }
-    fflush( stdout );
+    fflush( fo );
+    if( fo != stdout ) {
+        if( argc > 2 ) {
+            fclose( fo );
+        } else if( argc == 2 ) {
+            rewind( fo );
+            fi = fo;
+            fo = fopen( argv[1], "wt" );
+            if( fo == NULL )
+                return( 1 );
+            filecopy();
+            fflush( fo );
+            fclose( fo );
+        }
+    }
     return( 0 );
 }
