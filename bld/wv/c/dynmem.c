@@ -55,7 +55,7 @@
     #include "aui.h"
     #include "guimem.h"
     #include "wresmem.h"
-    #if defined( GUI_IS_GUI )
+    #ifdef GUI_IS_GUI
         #include "cguimem.h"
         #include "wpimem.h"
         #ifdef __OS2__
@@ -75,14 +75,14 @@
 #define _1MB    (1024UL * 1024UL)
 #define _4MB    (4UL * 1024UL * 1024UL)
 
-#if defined( __DOS__ )
-#define MEM_NEAR_PTR(x)     (void *)FP_OFF( x )
+#ifdef __DOS__
+    #define MEM_NEAR_PTR(x)     (void *)FP_OFF( x )
 #else
-#define MEM_NEAR_PTR(x)     x
+    #define MEM_NEAR_PTR(x)     x
 #endif
 
-#if defined( __DOS__ )
-#if !defined( __OSI__ )
+#ifdef __DOS__
+  #ifndef __OSI__
 extern int _d16ReserveExt( int );
 #pragma aux _d16ReserveExt = \
         "mov cx,ax" \
@@ -97,7 +97,7 @@ extern int _d16ReserveExt( int );
     __parm      [__eax] \
     __value     [__eax] \
     __modify    [__ebx __ecx __edx]
-#endif
+  #endif
 #endif
 
 #ifdef TRMEM
@@ -106,11 +106,11 @@ static _trmem_hdl       DbgMemHandle;
 #endif
 
 #ifdef __WATCOMC__
-#ifdef _M_I86
+  #ifdef _M_I86
     #define xmemneed    __fmemneed
-#else
+  #else
     #define xmemneed    __nmemneed
-#endif
+  #endif
 extern int __saveregs   xmemneed( size_t size );
 
 int __saveregs  xmemneed( size_t size )
@@ -187,11 +187,11 @@ void *DbgChkAlloc( size_t size, char *error )
 #if defined( __DOS__ ) || defined( __NOUI__ )
 
 #if defined( _M_I86 )
-#define MAX_BLOCK   _60kB
+    #define MAX_BLOCK   _60kB
 #elif defined( __DOS__ )
-#define MAX_BLOCK   _4MB
+    #define MAX_BLOCK   _4MB
 #else
-#define MAX_BLOCK   _1MB
+    #define MAX_BLOCK   _1MB
 #endif
 
 static void MemExpand( void )
@@ -228,14 +228,15 @@ static void MemExpand( void )
         link = p;
     }
 }
-#endif
+
+#endif  /* defined( __DOS__ ) || defined( __NOUI__ ) */
 
 void SysSetMemLimit( void )
 {
-#if defined( __DOS__ )
-#if !defined(__OSI__)
+#ifdef  __DOS__
+  #ifndef __OSI__
     _d16ReserveExt( MemSize + _1MB );
-#endif
+  #endif
     MemExpand();
     if( _IsOff( SW_REMOTE_LINK ) && _IsOff( SW_KEEP_HEAP_ENABLED ) ) {
         _heapenable( 0 );
@@ -243,7 +244,7 @@ void SysSetMemLimit( void )
 #endif
 }
 
-#if defined( __NOUI__ )
+#ifdef __NOUI__
 
 #ifdef TRMEM
 
@@ -262,7 +263,7 @@ static void DbgMemPrintLine( void *parm, const char *buff, size_t len )
 }
 
 static unsigned DbgMemPrtList( void )
-/**********************************/
+/***********************************/
 {
     return( _trmem_prt_list( DbgMemHandle ) );
 }
@@ -309,7 +310,7 @@ static void MemTrackFini( void )
     DbgMemClose();
 }
 
-#endif
+#endif  /* TRMEM */
 
 void MemInit( void )
 {
@@ -375,7 +376,7 @@ static void GUIMemPrintLine( void *parm, const char *buff, size_t len )
     fwrite( buff, 1, len, TrackFile );
 }
 
-#endif
+#endif  /* TRMEM */
 
 void WndNoMemory( void )
 {
@@ -421,7 +422,7 @@ void GUIMemOpen( void )
     }
 #endif
 }
-#if !defined( GUI_IS_GUI )
+#ifndef GUI_IS_GUI
 void UIAPI UIMemOpen( void ) {}
 #endif
 
@@ -436,7 +437,7 @@ void GUIMemClose( void )
     }
 #endif
 }
-#if !defined( GUI_IS_GUI )
+#ifndef GUI_IS_GUI
 void UIAPI UIMemClose( void ) {}
 #endif
 
@@ -462,7 +463,9 @@ void *WndAlloc( size_t size )
     return( malloc( size ) );
 #endif
 }
-#if defined( GUI_IS_GUI )
+
+#ifdef GUI_IS_GUI
+
 void *MemAlloc( size_t size )
 {
     void        *ptr;
@@ -475,7 +478,9 @@ void *MemAlloc( size_t size )
     memset( ptr, 0, size );
     return( ptr );
 }
+
 #ifdef __OS2__
+
 void * _wpi_malloc( size_t size )
 {
 #ifdef TRMEM
@@ -492,8 +497,11 @@ void *PMmalloc( size_t size )
     return( malloc( size ) );
 #endif
 }
-#endif
-#else
+
+#endif  /* __OS2__ */
+
+#else   /* GUI_IS_GUI */
+
 void * UIAPI uimalloc( size_t size )
 {
 #ifdef TRMEM
@@ -526,7 +534,8 @@ void *wres_alloc( size_t size )
     return( malloc( size ) );
 #endif
 }
-#endif
+
+#endif  /* ! GUI_IS_GUI */
 
 
 /*
@@ -550,7 +559,9 @@ void WndFree( void *ptr )
     free( ptr );
 #endif
 }
-#if defined( GUI_IS_GUI )
+
+#ifdef GUI_IS_GUI
+
 void MemFree( void *ptr )
 {
 #ifdef TRMEM
@@ -559,7 +570,9 @@ void MemFree( void *ptr )
     free( ptr );
 #endif
 }
+
 #ifdef __OS2__
+
 void _wpi_free( void *ptr )
 {
 #ifdef TRMEM
@@ -576,8 +589,11 @@ void PMfree( void *ptr )
     free( ptr );
 #endif
 }
-#endif
-#else
+
+#endif  /* __OS2__ */
+
+#else   /* GUI_IS_GUI */
+
 void UIAPI uifree( void *ptr )
 {
 #ifdef TRMEM
@@ -612,7 +628,8 @@ void wres_free( void *ptr )
     free( ptr );
 #endif
 }
-#endif
+
+#endif  /* ! GUI_IS_GUI */
 
 
 /*
@@ -636,7 +653,9 @@ void *WndRealloc( void *ptr, size_t size )
     return( realloc( ptr, size ) );
 #endif
 }
-#if defined( GUI_IS_GUI )
+
+#ifdef GUI_IS_GUI
+
 void *MemRealloc( void *ptr, size_t size )
 {
 #ifdef TRMEM
@@ -645,7 +664,9 @@ void *MemRealloc( void *ptr, size_t size )
     return( realloc( ptr, size ) );
 #endif
 }
+
 #ifdef __OS2__
+
 void * _wpi_realloc( void *ptr, size_t size )
 {
 #ifdef TRMEM
@@ -662,8 +683,11 @@ void *PMrealloc( void *ptr, size_t size )
     return( realloc( ptr, size ) );
 #endif
 }
-#endif
-#else
+
+#endif  /* __OS2__ */
+
+#else   /* GUI_IS_GUI */
+
 void * UIAPI uirealloc( void *ptr, size_t size )
 {
 #ifdef TRMEM
@@ -680,6 +704,7 @@ void *HelpMemRealloc( void *ptr, size_t size )
     return( realloc( ptr, size ) );
 #endif
 }
-#endif
 
-#endif  /* !defined( __NOUI__ ) */
+#endif  /* ! GUI_IS_GUI */
+
+#endif  /* ! __NOUI__ */
