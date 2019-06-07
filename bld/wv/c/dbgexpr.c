@@ -448,7 +448,7 @@ void CombineEntries( stack_entry *dest, stack_entry *l, stack_entry *r )
     dest->flags |= f & SF_CONST;
     if( l != dest )
         DeleteEntry( l );
-    if( r != dest ) {
+    if( r != NULL && r != dest ) {
         DeleteEntry( r );
     }
 }
