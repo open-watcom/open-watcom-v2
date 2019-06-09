@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -207,24 +208,26 @@ void DoDU( char *dir, unsigned long * tcsum, unsigned long * tssum )
     _makepath( filename, drive, directory, name, extin );
 
     d = opendir( filename );
-    if( d == NULL ) return;
+    if( d == NULL )
+        return;
 
     /*
      * run until carry is set (no more matches)
      */
     while( (nd = readdir( d )) != NULL ) {
 
-        if( !((nd->d_attr & _A_SUBDIR ) && IsDotOrDotDot( nd->d_name ) ) ) {
-            if( (temp = malloc( sizeof( dfs ) )) == NULL ) break;
-            temp->df = *nd;
-            temp->next = NULL;
-            FNameLower( temp->df.d_name );
-            if( head == NULL ) {
-                head = tail = temp;
-            } else {
-                tail->next = temp;
-                tail = temp;
-            }
+        if( (nd->d_attr & _A_SUBDIR) && IsDotOrDotDot( nd->d_name ) )
+            continue;               // skip special directory entries
+        if( (temp = malloc( sizeof( dfs ) )) == NULL )
+            break;
+        temp->df = *nd;
+        temp->next = NULL;
+        FNameLower( temp->df.d_name );
+        if( head == NULL ) {
+            head = tail = temp;
+        } else {
+            tail->next = temp;
+            tail = temp;
         }
 
     }

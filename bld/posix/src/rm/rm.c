@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -113,7 +114,7 @@ int main( int argc, char *argv[] )
             else {
                 d = FileNameWild( argv[i], rxflag ) ? NULL : opendir( argv[i] );
                 if( d != NULL ) {
-                    if( !( d->d_attr & _A_SUBDIR ) ) {
+                    if( (d->d_attr & _A_SUBDIR) == 0 ) {
                         closedir( d );
                         if( fflag ) {
                             DoRM( argv[i] );
@@ -195,14 +196,16 @@ void DoRM( const char *f )
     }
 
     k = ( int ) strlen( fpath );
-    while( ( nd = readdir( d ) ) != NULL ) {
+    while( (nd = readdir( d )) != NULL ) {
         FNameLower( nd->d_name );
         if( rxflag ) {
-            if( !FileMatch( crx, nd->d_name ) )
+            if( !FileMatch( crx, nd->d_name ) ) {
                 continue;
+            }
         } else {
-            if( !FileMatchNoRx( nd->d_name, wild ) )
+            if( !FileMatchNoRx( nd->d_name, wild ) ) {
                 continue;
+            }
         }
         /* set up file name, then try to delete it */
         l = ( int ) strlen( nd->d_name );
@@ -213,25 +216,26 @@ void DoRM( const char *f )
             *bo++ = nd->d_name[i];
         *bo = 0;
         if( nd->d_attr & _A_SUBDIR ) {
+            if( IsDotOrDotDot( nd->d_name ) ) {
+                continue;
+            }
             /* process a directory */
-            if( !IsDotOrDotDot( nd->d_name ) ) {
-                if( rflag ) {
-                    /* build directory list */
-                    len = strlen( tmppath );
-                    tmp = MemAlloc( sizeof( iolist ) + len );
-                    if( dtail == NULL )
-                        dhead = tmp;
-                    else
-                        dtail->next = tmp;
-                    dtail = tmp;
-                    memcpy( tmp->name, tmppath, len + 1 );
-                } else {
-                    PrintALineThenDrop( "%s is a directory, use -r", tmppath );
-                    error_occured = 1;
-                }
+            if( rflag ) {
+                /* build directory list */
+                len = strlen( tmppath );
+                tmp = MemAlloc( sizeof( iolist ) + len );
+                if( dtail == NULL )
+                    dhead = tmp;
+                else
+                    dtail->next = tmp;
+                dtail = tmp;
+                memcpy( tmp->name, tmppath, len + 1 );
+            } else {
+                PrintALineThenDrop( "%s is a directory, use -r", tmppath );
+                error_occured = 1;
             }
 
-        } else if( ( nd->d_attr & _A_RDONLY ) && !fflag ) {
+        } else if( (nd->d_attr & _A_RDONLY) && !fflag ) {
             PrintALineThenDrop( "%s is read-only, use -f", tmppath );
             error_occured = 1;
         } else {
@@ -311,8 +315,9 @@ static void DoRMdir( const char *dir )
     if( rc == -1 ) {
         PrintALineThenDrop( "Unable to delete directory %s", dir );
         error_occured = 1;
-    } else if( !sflag )
+    } else if( !sflag ) {
         PrintALine( "Deleting directory %s", dir );
+    }
 }
 
 /* RecursiveRM - do an RM recursively on all files */
@@ -332,8 +337,10 @@ void RecursiveRM( const char *dir )
         while( ( i = tolower( getch() ) ) != 'y' && i != 'n' )
             ;
         DropALine();
-    } else
+    } else {
         i = 'y';
-    if( i == 'y' )
+    }
+    if( i == 'y' ) {
         DoRMdir( dir );
+    }
 }

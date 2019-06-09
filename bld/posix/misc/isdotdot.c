@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -41,13 +42,5 @@ int IsDotOrDotDot( const char *fname )
 {
     /* return 1 if fname is "." or "..", 0 otherwise */
 
-    if( fname[0] != '.' )
-        return( 0 );
-    if( fname[1] == 0 )
-        return( 1 );
-    if( fname[1] != '.' )
-        return( 0 );
-    if( fname[2] == 0 )
-        return( 1 );
-    return( 0 );
+    return( fname[0] == '.' && ( fname[1] == '\0' || fname[1] == '.' && fname[2] == '\0' ) );
 }

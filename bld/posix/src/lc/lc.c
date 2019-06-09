@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -206,13 +207,15 @@ void DoLC( char *dir )
     while( (nd = readdir( d )) != NULL ) {
 
 #ifndef __QNX__
-        if( files_only && nd->d_attr & _A_SUBDIR ) {
+        if( files_only && (nd->d_attr & _A_SUBDIR) ) {
             continue;
         }
-        if( directories_only && !( nd->d_attr & _A_SUBDIR ) ) {
+        if( directories_only && (nd->d_attr & _A_SUBDIR) == 0 ) {
             continue;
         }
-        if( !((nd->d_attr & _A_SUBDIR ) && IsDotOrDotDot( nd->d_name ))) {
+        if( (nd->d_attr & _A_SUBDIR) && IsDotOrDotDot( nd->d_name ) ) {
+            continue;
+        }
 #else
         if( files_only && S_ISDIR( nd->d_stat.st_mode ) ) {
             continue;
@@ -220,28 +223,29 @@ void DoLC( char *dir )
         if( directories_only && !S_ISDIR( nd->d_stat.st_mode ) ) {
             continue;
         }
-        if( !((S_ISDIR( nd->d_stat.st_mode) && IsDotOrDotDot( nd->d_name ) ))) {
-#endif
-            files = realloc( files, ( filecnt+1 )*sizeof( struct dirent * ) );
-            if( files == NULL ) {
-                printf( "Out of memory!\n" );
-                exit( 1 );
-            }
-            files[ filecnt ] = malloc( sizeof( struct dirent ) );
-            if( files[ filecnt ] == NULL ) {
-                break;
-            }
-#ifndef __QNX__
-            FNameLower( nd->d_name );
-#else
-            if( !(nd->d_stat.st_status & _FILE_USED ) ) {
-                _splitpath( nd->d_name, NULL, NULL, name, ext );
-                _makepath( tmpname, drive, directory, name, ext );
-                stat( tmpname, &nd->d_stat );
-            }
-#endif
-            memcpy( files[filecnt++],nd,sizeof( struct dirent ) );
+        if( S_ISDIR( nd->d_stat.st_mode) && IsDotOrDotDot( nd->d_name ) ) {
+            continue;
         }
+#endif
+        files = realloc( files, ( filecnt+1 )*sizeof( struct dirent * ) );
+        if( files == NULL ) {
+            printf( "Out of memory!\n" );
+            exit( 1 );
+        }
+        files[ filecnt ] = malloc( sizeof( struct dirent ) );
+        if( files[ filecnt ] == NULL ) {
+            break;
+        }
+#ifndef __QNX__
+        FNameLower( nd->d_name );
+#else
+        if( !(nd->d_stat.st_status & _FILE_USED ) ) {
+            _splitpath( nd->d_name, NULL, NULL, name, ext );
+            _makepath( tmpname, drive, directory, name, ext );
+            stat( tmpname, &nd->d_stat );
+        }
+#endif
+        memcpy( files[filecnt++],nd,sizeof( struct dirent ) );
 
     }
     closedir( d );
@@ -262,7 +266,7 @@ void DoLC( char *dir )
 #ifndef __QNX__
         if( files[i]->d_attr & _A_SUBDIR ) {
             dirflag = true;
-        } else if( separate_read_only && files[i]->d_attr & _A_RDONLY ) {
+        } else if( separate_read_only && (files[i]->d_attr & _A_RDONLY) ) {
             read_only_flag = true;
         } else {
             fileflag = true;
@@ -340,7 +344,7 @@ void PrintFile( struct dirent *file )
         }
     } else {
 #ifndef __QNX__
-        if( separate_read_only && file->d_attr & _A_RDONLY ) {
+        if( separate_read_only && (file->d_attr & _A_RDONLY) ) {
             if( pass != READ_ONLY_PASS ) {
                 return;
             }
