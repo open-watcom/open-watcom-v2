@@ -42,23 +42,33 @@
 #include "rfx.h"
 #include "rfxacc.h"
 
-extern char *TxtBuff;
-
-trap_shandle    SuppRFXId;
 
 #define SUPP_RFX_SERVICE( in, request )         \
         in.supp.core_req        = REQ_PERFORM_SUPPLEMENTARY_SERVICE;    \
         in.supp.id              = SuppRFXId;    \
         in.req                  = request;
 
+#ifdef __NT__
+system_config           SysConfig;
+#endif
+
+static trap_shandle     SuppRFXId;
+
 bool InitRFXSupp( void )
 {
+#ifdef __NT__
+    get_sys_config_req  acc;
+
+#endif
     SuppRFXId = GetSuppId( RFX_SUPP_NAME );
     if( SuppRFXId == 0 )
         return( false );
+#ifdef __NT__
+    acc.req = REQ_GET_SYS_CONFIG;
+    TrapSimpAccess( sizeof( acc ), &acc, sizeof( SysConfig ), &SysConfig );
+#endif
     return( true );
 }
-
 
 error_handle RemoteRename( const char * from, const char *to )
 {
