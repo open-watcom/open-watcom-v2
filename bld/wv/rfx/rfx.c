@@ -577,15 +577,14 @@ static bool Option( const char * str, char opt )
 
 static void CopyCmd( const char *src, char *dst )
 {
-    for( ;; ) {
-        if( *src == '/' ) {
-            *dst++ = ' ';
-        }
-        *dst = *src;
-        if( *dst == NULLCHAR )
-            break;
-        ++src; ++dst;
+    char    c;
+
+    while( (c = *src++) != NULLCHAR ) {
+        if( c == '/' )
+            c = ' ';
+        *dst++ = c;
     }
+    *dst = NULLCHAR;
 }
 
 /**************************************************************************/
@@ -713,7 +712,7 @@ static void    Replace( const char *from, const char *to, char *into )
     *into = NULLCHAR;
 }
 
-static void    FinishName( const char *fn, file_parse *parse, object_loc loc, int addext )
+static void    FinishName( const char *fn, file_parse *parse, object_loc loc, bool addext )
 {
     char        *endptr;
     long        rc;
@@ -1024,13 +1023,13 @@ static void    RRecurse( const char *f1, const char *f2, object_loc f1loc, objec
     trap_dta        info;
 
     f1 = _FileParse( f1, &Parse1 );
-    FinishName( f1, &Parse1, f1loc, 1 );
+    FinishName( f1, &Parse1, f1loc, true );
     Copy( &Parse1, &Parse3, sizeof( file_parse ) );
     CopyStr( "*", Parse3.name );
     CopyStr( ".*", Parse3.ext );
     endpath = Squish( &Parse3, Name1 );
     f2 = _FileParse( f2, &Parse2 );
-    FinishName( f2, &Parse2, f2loc, 1 );
+    FinishName( f2, &Parse2, f2loc, true );
     errh = FindFirst( Name1, f1loc, IO_SUBDIRECTORY, &info );
     if( errh == 0 ) {
         endpath = Squish( &Parse1, Name1 );
@@ -1076,9 +1075,9 @@ static error_handle   CopyASpec( const char *f1, const char *f2, object_loc f1lo
     trap_dta        info;
 
     f1 = _FileParse( f1, &Parse1 );
-    FinishName( f1, &Parse1, f1loc, 1 );
+    FinishName( f1, &Parse1, f1loc, true );
     f2 = _FileParse( f2, &Parse2 );
-    FinishName( f2, &Parse2, f2loc, 1 );
+    FinishName( f2, &Parse2, f2loc, true );
     Copy( &Parse1, &Parse3, sizeof( file_parse ) );
     if( Parse2.name[0] == NULLCHAR )
         return( StashErrCode( IO_FILE_NOT_FOUND, OP_LOCAL ) );
@@ -1568,7 +1567,7 @@ static error_handle   Scratchf( const char *fn, object_loc fnloc )
     trap_dta        info;
 
     fn = _FileParse( fn, &Parse1 );
-    FinishName( fn, &Parse1, fnloc, 0 );
+    FinishName( fn, &Parse1, fnloc, false );
     Squish( &Parse1, Name1 );
     errh = FindFirst( Name1, fnloc, IO_NORMAL, &info );
     if( errh != 0 ) {
@@ -1967,7 +1966,7 @@ static void Interactive( void )
 
 int main( int argc, char **argv )
 {
-
+    InitDbgSwitches();
     TxtBuff = DbgAlloc( 512 );
     SysFileInit();
     if( argc < 2 || argv[1][0] == '?' ) {
