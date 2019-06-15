@@ -30,6 +30,7 @@ objs = rfx.obj        &
        remfile.obj    &
        doserr.obj     &
        dbgfile.obj    &
+       dbgtoggl.obj   &
        local$(host_os).obj &
        $(trap_objs)
 

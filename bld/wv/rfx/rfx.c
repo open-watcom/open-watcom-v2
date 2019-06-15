@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -119,7 +119,6 @@ extern void             Replace( const char *frum, const char *to, char *into );
 extern void             FinishName( const char *fn, file_parse *parse, object_loc loc, int addext );
 extern int              GetFreeSpace( dir_handle *dh, object_loc loc );
 
-dbg_switches            DbgSwitches;
 char                    *TxtBuff;
 char                    Buff[BUFF_LEN];
 const char              NullStr[] = { NULLCHAR };

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2015 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2019 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -33,5 +33,4 @@
 #include "dbgtoggl.h"
 #include "trpcore.h"
 
-extern dbg_switches     DbgSwitches;
 extern system_config    SysConfig;

@@ -3,7 +3,6 @@
 *                            Open Watcom Project
 *
 * Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
-*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -31,29 +30,14 @@
 ****************************************************************************/
 
 
-#include "dbgdefn.h"
-#include "rdos.h"
-#include "dbgcmdln.h"
+#include <string.h>
+#include "bool.h"
+#include "dbgtoggl.h"
 
-bool OptDelim( char ch )
+
+dbg_switches    DbgSwitches;
+
+void InitDbgSwitches( void )
 {
-    return( ch == '/' || ch == '-' );
-}
-
-/*
- * ProcSysOption -- process system option
- */
-
-bool ProcSysOption( const char *start, unsigned len, int pass )
-{
-    return( false );
-}
-
-
-/*
- * ProcSysOptInit -- initial system options
- */
-
-void ProcSysOptInit( void )
-{
+    memset( &DbgSwitches, 0, sizeof( DbgSwitches ) );
 }
