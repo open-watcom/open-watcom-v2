@@ -64,9 +64,9 @@ void GUImain( void )
             cmdline++;
 
         strcpy( CmdData, cmdline );
-    } else
+    } else {
         CmdData[0] = 0;
-
+    }
     DebugMain();
 }
 
