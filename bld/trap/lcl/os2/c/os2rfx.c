@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -297,16 +298,16 @@ trap_retval ReqRfx_getcwd( void )
     return( sizeof( *ret ) + len );
 }
 
-static void MoveDirInfo( FILEFINDBUF *os2, trap_dta FAR *dos )
+static void MoveDirInfo( FILEFINDBUF *os2, rfx_find FAR *find_info )
 {
-    dos->dos.dir_entry_num = *(USHORT *)&os2->fdateLastWrite;
-    dos->dos.cluster = *(USHORT __far *)&os2->ftimeLastWrite;
-    dos->attr = os2->attrFile;
-    dos->time = *(USHORT __far *)&os2->ftimeLastWrite;
-    dos->date = *(USHORT __far *)&os2->fdateLastWrite;
-    dos->size = os2->cbFile;
-    strncpy( dos->name, os2->achName, TRAP_DTA_NAME_MAX - 1 );
-    dos->name[TRAP_DTA_NAME_MAX - 1] = '\0';
+    find_info->dta.dir_entry_num = *(USHORT *)&os2->fdateLastWrite;
+    find_info->dta.cluster = *(USHORT __far *)&os2->ftimeLastWrite;
+    find_info->attr = os2->attrFile;
+    find_info->time = *(USHORT __far *)&os2->ftimeLastWrite;
+    find_info->date = *(USHORT __far *)&os2->fdateLastWrite;
+    find_info->size = os2->cbFile;
+    strncpy( find_info->name, os2->achName, RFX_FIND_NAME_MAX - 1 );
+    find_info->name[RFX_FIND_NAME_MAX - 1] = '\0';
 }
 
 trap_retval ReqRfx_findfirst( void )
@@ -325,9 +326,9 @@ trap_retval ReqRfx_findfirst( void )
     rc = DosFindFirst( filename, &hdl, acc->attrib, &info,
                        sizeof( info ), &count, 0 );
     if( rc == 0 ) {
-        MoveDirInfo( &info, (trap_dta *)GetOutPtr( sizeof(*ret) ) );
+        MoveDirInfo( &info, (rfx_find *)GetOutPtr( sizeof(*ret) ) );
         ret->err = 0;
-        return( sizeof( *ret ) + sizeof( trap_dta ) );
+        return( sizeof( *ret ) + sizeof( rfx_find ) );
     } else {
         ret->err = rc;
         return( sizeof( *ret ) );
@@ -344,9 +345,9 @@ trap_retval ReqRfx_findnext( void )
     ret = GetOutPtr( 0 );
     rc = DosFindNext( 1, &info, sizeof( info ), &count );
     if( rc == 0 ) {
-        MoveDirInfo( &info, (trap_dta *)GetOutPtr( sizeof(*ret) ) );
+        MoveDirInfo( &info, (rfx_find *)GetOutPtr( sizeof(*ret) ) );
         ret->err = 0;
-        return( sizeof( *ret ) + sizeof( trap_dta ) );
+        return( sizeof( *ret ) + sizeof( rfx_find ) );
     } else {
         ret->err = rc;
         return( sizeof( *ret ) );

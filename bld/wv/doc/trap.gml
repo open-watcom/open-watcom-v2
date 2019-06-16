@@ -2116,26 +2116,26 @@ Return message:
 :XMP.
 trap_error      err
 -----------------------
-dta             info
+rfx_find        info
 :eXMP.
 :PC.
 If found, the :F.err:eF. field will be zero. The location and
 information of about the first file will be in the structure :F.info.:eF. Definition
-of the structure :F.dta:eF. is as follows:
+of the structure :F.rfx_find:eF. is as follows:
 :XMP.
-typedef struct dta {
+typedef struct rfx_find {
     struct {
         unsigned_8          spare1[13];
         unsigned_16         dir_entry_num;
         unsigned_16         cluster;
         unsigned_8          spare2[4];
-    } dos;
+    } dta;
     unsigned_8          attr;
     unsigned_16         time;
     unsigned_16         date;
     unsigned_32         size;
     unsigned_8          name[14];
-} dta;
+} rfx_find;
 :eXMP.
 .section REQ_RFX_FINDNEXT (14)
 .np
@@ -2146,17 +2146,17 @@ Request message:
 :XMP.
 access_req      req
 --------------------
-dta             info
+rfx_find        info
 :eXMP.
 :PC.
 The :F.req:eF. field contains the request. The :F.info:eF. field contains
-the dta returned from the previous REQ_FIND_NEXT or REQ_FIND_FIRST.
+the rfx_find structure returned from the previous REQ_FIND_NEXT or REQ_FIND_FIRST.
 :P.
 Return message:
 :XMP.
 trap_error      err
 -----------------------
-dta             info
+rfx_find        info
 :eXMP.
 :PC.
 The :F.info:eF. field is the same as in REQ_FIND_FIRST.

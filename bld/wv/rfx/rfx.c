@@ -101,7 +101,7 @@ typedef struct copyspec {
 } COPYSPEC, *COPYPTR;
 
 typedef struct dir_handle {
-    trap_dta    dta;
+    rfx_find    find_info;
     char        path[64];
     long        free;
     object_loc  location;
@@ -491,23 +491,23 @@ static int IsDevice( const char *name, object_loc loc )
 }
 
 
-static error_handle FindFirst( const char *name, object_loc loc, int attr, trap_dta *info )
-/*****************************************************************************************/
+static error_handle FindFirst( const char *name, object_loc loc, int attr, rfx_find *find_info )
+/**********************************************************************************************/
 {
     if( loc == LOC_REMOTE ) {
-        return( RemoteFindFirst( name, info, sizeof( *info ), attr ) );
+        return( RemoteFindFirst( name, find_info, sizeof( *find_info ), attr ) );
     } else {
-        return( LocalFindFirst( name, info, sizeof( *info ), attr ) );
+        return( LocalFindFirst( name, find_info, sizeof( *find_info ), attr ) );
     }
 }
 
-static int FindNext( object_loc loc, trap_dta *info )
-/****************************************************/
+static int FindNext( object_loc loc, rfx_find *find_info )
+/********************************************************/
 {
     if( loc == LOC_REMOTE ) {
-        return( RemoteFindNext( info, sizeof( *info ) ) );
+        return( RemoteFindNext( find_info, sizeof( *find_info ) ) );
     } else {
-        return( LocalFindNext( info, sizeof( *info ) ) );
+        return( LocalFindNext( find_info, sizeof( *find_info ) ) );
     }
 }
 
@@ -775,7 +775,7 @@ static error_handle   Renamef( const char *fn1, object_loc f1loc, const char *fn
 {
     error_handle    errh;
     char            *endpath;
-    trap_dta        info;
+    rfx_find        find_info;
 
     fn1 = _FileParse( fn1, &Parse1 );
     fn2 = _FileParse( fn2, &Parse2 );
@@ -803,7 +803,7 @@ static error_handle   Renamef( const char *fn1, object_loc f1loc, const char *fn
         return( 0 );
     }
     endpath = Squish( &Parse1, Name1 );
-    errh = FindFirst( Name1, f1loc, IO_NORMAL, &info );
+    errh = FindFirst( Name1, f1loc, IO_NORMAL, &find_info );
     if( errh != 0 ) {
         SysSetLclErr( IO_FILE_NOT_FOUND );
         return( errh );
@@ -813,7 +813,7 @@ static error_handle   Renamef( const char *fn1, object_loc f1loc, const char *fn
             errh = SysSetLclErr( IO_INTERRUPT );
             break;
         }
-        CopyStr( info.name, endpath );
+        CopyStr( find_info.name, endpath );
         _FileParse( Name1, &Parse3 );
         Replace( Parse1.name, Parse2.name, Parse3.name );
         Replace( Parse1.ext, Parse2.ext, Parse3.ext );
@@ -828,7 +828,7 @@ static error_handle   Renamef( const char *fn1, object_loc f1loc, const char *fn
             }
             break;
         }
-        if( FindNext( f1loc, &info ) ) {
+        if( FindNext( f1loc, &find_info ) ) {
             break;
         }
     }
@@ -1020,7 +1020,7 @@ static void    RRecurse( const char *f1, const char *f2, object_loc f1loc, objec
     char            *endptr;
     char            *endpath;
     char            ch;
-    trap_dta        info;
+    rfx_find        find_info;
 
     f1 = _FileParse( f1, &Parse1 );
     FinishName( f1, &Parse1, f1loc, true );
@@ -1030,17 +1030,17 @@ static void    RRecurse( const char *f1, const char *f2, object_loc f1loc, objec
     endpath = Squish( &Parse3, Name1 );
     f2 = _FileParse( f2, &Parse2 );
     FinishName( f2, &Parse2, f2loc, true );
-    errh = FindFirst( Name1, f1loc, IO_SUBDIRECTORY, &info );
+    errh = FindFirst( Name1, f1loc, IO_SUBDIRECTORY, &find_info );
     if( errh == 0 ) {
         endpath = Squish( &Parse1, Name1 );
         for(;;) {
-            if( info.attr & IO_SUBDIRECTORY ) {
-                if( info.name[0] != '.' ) {
+            if( find_info.attr & IO_SUBDIRECTORY ) {
+                if( find_info.name[0] != '.' ) {
                     CopyStr( endpath, Name3 );
-                    CopyStr( Name3, CopyStr( "\\", CopyStr( info.name, endpath ) ) );
+                    CopyStr( Name3, CopyStr( "\\", CopyStr( find_info.name, endpath ) ) );
                     endpath = Squish( &Parse2, Name2 );
                     CopyStr( endpath, Name3 );
-                    endptr = CopyStr( info.name, endpath );
+                    endptr = CopyStr( find_info.name, endpath );
                     CopyStr( Name3, CopyStr( "\\", endptr ) );
                     ch = *endptr;
                     *endptr = NULLCHAR;
@@ -1058,7 +1058,7 @@ static void    RRecurse( const char *f1, const char *f2, object_loc f1loc, objec
                     endpath = Squish( &Parse1, Name1 );
                 }
             }
-            if( FindNext( f1loc, &info ) ) {
+            if( FindNext( f1loc, &find_info ) ) {
                 break;
             }
         }
@@ -1072,7 +1072,7 @@ static error_handle   CopyASpec( const char *f1, const char *f2, object_loc f1lo
     char            *endpath;
     unsigned        dst_cluster;
     unsigned        src_cluster;
-    trap_dta        info;
+    rfx_find        find_info;
 
     f1 = _FileParse( f1, &Parse1 );
     FinishName( f1, &Parse1, f1loc, true );
@@ -1084,27 +1084,27 @@ static error_handle   CopyASpec( const char *f1, const char *f2, object_loc f1lo
     dst_cluster = 0xFFFF;
     if( ( f1loc == f2loc ) && ( Parse1.drive[0] == Parse2.drive[0] ) ) {
         Squish( &Parse2, Name2 );
-        errh = FindFirst( Name2, f2loc, IO_SUBDIRECTORY, &info );
+        errh = FindFirst( Name2, f2loc, IO_SUBDIRECTORY, &find_info );
         if( errh == 0 ) {
 #ifdef __NT__
             dst_cluster = 0;
 #else
-            dst_cluster = info.dos.cluster;
+            dst_cluster = find_info.dta.cluster;
 #endif
         }
     }
     endpath = Squish( &Parse1, Name1 );
     Squish( &Parse2, Name2 );
     WrtCopy( Name1, Name2, f1loc, f2loc );
-    errh = FindFirst( Name1, f1loc, IO_NORMAL, &info );
+    errh = FindFirst( Name1, f1loc, IO_NORMAL, &find_info );
     if( errh == 0 ) {
 #ifdef __NT__
         src_cluster = 0;
 #else
-        src_cluster = info.dos.cluster;
+        src_cluster = find_info.dta.cluster;
 #endif
         for(;;) {
-            CopyStr( info.name, endpath );
+            CopyStr( find_info.name, endpath );
             if( Parse2.device ) {
                 Squish( &Parse2, Name2 );
                 errh = DoCopy( Name1, Name2, f1loc, f2loc );
@@ -1123,7 +1123,7 @@ static error_handle   CopyASpec( const char *f1, const char *f2, object_loc f1lo
             }
             if( errh != 0 )
                 break;
-            if( FindNext( f1loc, &info ) ) {
+            if( FindNext( f1loc, &find_info ) ) {
                 break;
             }
         }
@@ -1321,7 +1321,7 @@ static dir_handle      *DirOpenf( const char *fspec, object_loc fnloc )
     }
     Squish( &parse, dh->path );
     if( GetFreeSpace( dh, fnloc ) ) {
-        errh = FindFirst( dh->path, dh->location, IO_SUBDIRECTORY, &dh->dta );
+        errh = FindFirst( dh->path, dh->location, IO_SUBDIRECTORY, &dh->find_info );
         if( errh != 0 ) {
             SysSetLclErr( IO_FIND_ERROR );
             DirClosef( dh );
@@ -1336,7 +1336,7 @@ static dir_handle      *DirOpenf( const char *fspec, object_loc fnloc )
     }
 }
 
-static void     FormatDTA( char *buff, const trap_dta *dta, bool wide )
+static void     FormatDTA( char *buff, const rfx_find *find_info, bool wide )
 {
     char                *d;
     const char          *src;
@@ -1346,8 +1346,8 @@ static void     FormatDTA( char *buff, const trap_dta *dta, bool wide )
 
     Fill( buff, 39, ' ' );
     buff[39] = NULLCHAR;
-    if( dta->attr & IO_SUBDIRECTORY ) {
-        *CopyStr( dta->name, buff ) = ' ';
+    if( find_info->attr & IO_SUBDIRECTORY ) {
+        *CopyStr( find_info->name, buff ) = ' ';
         if( wide ) {                    /* 11-jun-90 */
             Copy( "     ", buff + 13, 5 );
         } else {
@@ -1355,7 +1355,7 @@ static void     FormatDTA( char *buff, const trap_dta *dta, bool wide )
         }
     } else {
         d = buff;
-        src = dta->name;
+        src = find_info->name;
         while( *src != '.' && *src != NULLCHAR ) {
             *d++ = *src++;
         }
@@ -1367,19 +1367,19 @@ static void     FormatDTA( char *buff, const trap_dta *dta, bool wide )
             }
         }
         d = buff + 20;
-        if( dta->size == 0 ) {
+        if( find_info->size == 0 ) {
             *d = '0';
         } else {
-            DItoD( dta->size, d );
+            DItoD( find_info->size, d );
         }
     }
-    date = dta->date;
+    date = find_info->date;
     ItoD( ( date >> 5 ) & 0x000F, buff + 23 ); /* month */
     ItoD( date & 0x0001F, buff + 26 );         /* day */
     ItoD( ( date >> 9 ) + 1980, buff + 29 );
     buff[28] = '-';
     buff[25] = '-';
-    time = dta->time;
+    time = find_info->time;
     hour = time >> 11;
     if( hour <= 11 ) {
         buff[38] = 'a';
@@ -1399,8 +1399,8 @@ static void    DirReadf( dir_handle *dh, char *buff, bool wide )
     if( dh->status == RFX_EOF ) {
         *buff = NULLCHAR;
     } else {
-        FormatDTA( buff, &dh->dta, wide );
-        if( FindNext( dh->location, &dh->dta ) ) {
+        FormatDTA( buff, &dh->find_info, wide );
+        if( FindNext( dh->location, &dh->find_info ) ) {
             dh->status = RFX_EOF;
         }
     }
@@ -1564,12 +1564,12 @@ static error_handle   Scratchf( const char *fn, object_loc fnloc )
 {
     error_handle    errh;
     char            *endptr;
-    trap_dta        info;
+    rfx_find        find_info;
 
     fn = _FileParse( fn, &Parse1 );
     FinishName( fn, &Parse1, fnloc, false );
     Squish( &Parse1, Name1 );
-    errh = FindFirst( Name1, fnloc, IO_NORMAL, &info );
+    errh = FindFirst( Name1, fnloc, IO_NORMAL, &find_info );
     if( errh != 0 ) {
         SysSetLclErr( IO_FILE_NOT_FOUND );
     } else {
@@ -1579,13 +1579,13 @@ static error_handle   Scratchf( const char *fn, object_loc fnloc )
         }
         endptr = CopyStr( Parse1.path, endptr );
         for(;;) {
-            CopyStr( info.name, endptr );
+            CopyStr( find_info.name, endptr );
             errh = Erase( Parse1.drive, fnloc );
             if( errh != 0 ) {
                 TransSetErr( errh );
                 return( errh );
             }
-            if( FindNext( fnloc, &info ) ) {
+            if( FindNext( fnloc, &find_info ) ) {
                 break;
             }
         }

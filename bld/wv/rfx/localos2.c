@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -257,17 +257,17 @@ error_handle LocalGetCwd( int drive, char *where )
 #endif
 }
 
-static void makeDOSDTA( FINDBUF *findbuf, trap_dta *dta )
-/*******************************************************/
+static void makeDOSDTA( FINDBUF *findbuf, rfx_find *find_info )
+/*************************************************************/
 {
-    dta->dos.dir_entry_num = *(USHORT *)&findbuf->fdateLastWrite;
-    dta->dos.cluster = *(USHORT *)&findbuf->ftimeLastWrite;
-    dta->attr = findbuf->attrFile;
-    dta->time = *(USHORT *)&findbuf->ftimeLastWrite;
-    dta->date = *(USHORT *)&findbuf->fdateLastWrite;
-    dta->size = findbuf->cbFile;
-    strncpy( dta->name, findbuf->achName, TRAP_DTA_NAME_MAX - 1 );
-    dta->name[TRAP_DTA_NAME_MAX - 1] = '\0';
+    find_info->dta.dir_entry_num = *(USHORT *)&findbuf->fdateLastWrite;
+    find_info->dta.cluster = *(USHORT *)&findbuf->ftimeLastWrite;
+    find_info->attr = findbuf->attrFile;
+    find_info->time = *(USHORT *)&findbuf->ftimeLastWrite;
+    find_info->date = *(USHORT *)&findbuf->fdateLastWrite;
+    find_info->size = findbuf->cbFile;
+    strncpy( find_info->name, findbuf->achName, RFX_FIND_NAME_MAX - 1 );
+    find_info->name[RFX_FIND_NAME_MAX - 1] = '\0';
 }
 
 error_handle LocalFindFirst( const char *pattern, void *info, unsigned info_len, int attrib )

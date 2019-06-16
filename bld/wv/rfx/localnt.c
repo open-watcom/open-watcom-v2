@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -272,14 +272,14 @@ static bool __NTFindNextFileWithAttr( HANDLE h, unsigned attr, LPWIN32_FIND_DATA
     }
 }
 
-static void makeDOSDTA( LPWIN32_FIND_DATA ffb, trap_dta *trp )
-/************************************************************/
+static void makeDOSDTA( LPWIN32_FIND_DATA ffb, rfx_find *find_info )
+/******************************************************************/
 {
-    trp->attr = ffb->dwFileAttributes;
-    __MakeDOSDT( &ffb->ftLastWriteTime, &trp->date, &trp->time );
-    trp->size = ffb->nFileSizeLow;
-    strncpy( trp->name, ffb->cFileName, TRAP_DTA_NAME_MAX - 1 );
-    trp->name[TRAP_DTA_NAME_MAX - 1] = 0;
+    find_info->attr = ffb->dwFileAttributes;
+    __MakeDOSDT( &ffb->ftLastWriteTime, &find_info->date, &find_info->time );
+    find_info->size = ffb->nFileSizeLow;
+    strncpy( find_info->name, ffb->cFileName, RFX_FIND_NAME_MAX - 1 );
+    find_info->name[RFX_FIND_NAME_MAX - 1] = 0;
 }
 
 error_handle LocalFindFirst( const char *pattern, void *info, unsigned info_len, int attrib )

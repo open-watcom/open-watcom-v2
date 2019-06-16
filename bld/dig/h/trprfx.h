@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -181,20 +182,20 @@ typedef struct {
 } rfx_nametocannonical_ret;
 
 /*============================ RFX_FIND_FIRST ===============*/
-#define TRAP_DTA_NAME_MAX   13
+#define RFX_FIND_NAME_MAX   13
 typedef struct {
     struct {
         unsigned_8      spare1[13];
         unsigned_16     dir_entry_num;
         unsigned_16     cluster;
         unsigned_8      spare2[4];
-    }           dos;
+    }           dta;
     unsigned_8  attr;
     unsigned_16 time;
     unsigned_16 date;
     unsigned_32 size;
-    char        name[TRAP_DTA_NAME_MAX + 1];
-} _WCUNALIGNED trap_dta;
+    char        name[RFX_FIND_NAME_MAX + 1];
+} _WCUNALIGNED rfx_find;
 
 typedef struct {
     supp_prefix         supp;
@@ -205,18 +206,18 @@ typedef struct {
 
 typedef struct {
     trap_error          err;
-    /* followed by a trap_dta */
+    /* followed by a rfx_find */
 } rfx_findfirst_ret;
 
 typedef struct {
     supp_prefix         supp;
     access_req          req;
-    /* followed by a trap_dta */
+    /* followed by a rfx_find */
 } rfx_findnext_req;
 
 typedef struct {
     trap_error          err;
-    /* followed by a trap_dta */
+    /* followed by a rfx_find */
 } rfx_findnext_ret;
 
 typedef struct {
@@ -226,7 +227,7 @@ typedef struct {
 
 typedef struct {
     trap_error          err;
-    /* followed by a trap_dta */
+    /* followed by a rfx_find */
 } rfx_findclose_ret;
 
 #include "poppck.h"
