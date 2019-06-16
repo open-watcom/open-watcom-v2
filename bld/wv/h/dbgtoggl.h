@@ -32,10 +32,11 @@
 
 
 typedef struct {
-    bool     SW_SSL_CASE_SENSITIVE          : 1; // used by SSL - use SW_CASE_IGNORE
-    bool     SW_REMOTE_FILES                : 1;
-    bool     SW_TOUCH_SCREEN_BUFF           : 1;
     bool     SW_REMOTE_LINK                 : 1;
+    bool     SW_REMOTE_FILES                : 1;
+#if !defined( BUILD_RFX )
+    bool     SW_SSL_CASE_SENSITIVE          : 1; // used by SSL - use SW_CASE_IGNORE
+    bool     SW_TOUCH_SCREEN_BUFF           : 1;
     bool     SW_TASK_RUNNING                : 1;
     bool     SW_HAVE_TASK                   : 1;
     bool     SW_MIGHT_HAVE_LOST_DISPLAY     : 1;
@@ -106,6 +107,7 @@ typedef struct {
     bool     SW_BREAK_ON_WRITE              : 1;
     bool     SW_DONT_EXPAND_HEX             : 1;    /* If set, display hex in shortest form - 0xf rather than 0x000f, etc */
     bool     SW_NOSNOW                      : 1;
+#endif
 } dbg_switches;
 
 
