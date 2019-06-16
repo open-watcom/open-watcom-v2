@@ -581,7 +581,7 @@ static void CopyCmd( const char *src, char *dst )
 
     while( (c = *src++) != NULLCHAR ) {
         if( c == '/' )
-            c = ' ';
+            *dst++ = ' ';
         *dst++ = c;
     }
     *dst = NULLCHAR;
