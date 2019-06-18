@@ -382,9 +382,6 @@ static void addcclongopt( const char *option, const char *tail )
     char    *op;
     size_t  len;
 
-    if( option == NULL || *option == '\0' )
-        return;
-
     /* Calculate our necessary memory here for readability */
     len = strlen( option ) + 2;
     if( tail != NULL && *tail != '\0' )
@@ -668,7 +665,7 @@ static  int  ParseArgs( int argc, char **argv )
     char        c;
     int         i;
     list        *new_item;
-    char        pelc[6];
+    char        pelc[5];
 
     initialize_Flags();
     DebugFlag          = DBG_LINES;
@@ -1074,15 +1071,15 @@ static  int  ParseArgs( int argc, char **argv )
             MemFree( Obj_Name );           /* preprocess to stdout by default */
             Obj_Name = NULL;
         }
-        pelc[0] = 'p';
-        pelc[1] = '\0';
-
+        p = pelc;
+        *p++ = 'p';
         if( cpp_encrypt_names )
-            strcat( pelc, "e" );
+            *p++ = 'e';
         if( cpp_want_lines )
-            strcat( pelc, "l" );
+            *p++ = 'l';
         if( cpp_keep_comments )
-            strcat( pelc, "c" );
+            *p++ = 'c';
+        *p = '\0';
 
         /* cpp_linewrap may be NULL, and that's fine */
         addcclongopt( pelc, cpp_linewrap );
@@ -1146,10 +1143,10 @@ static  int  ParseArgs( int argc, char **argv )
         O_Name = NULL;
     }
     if( Obj_Name != NULL ) {
-        addcclongopt("fo=", Obj_Name );
+        addcclongopt( "fo=", Obj_Name );
     }
     if( !Flags.want_errfile ) {
-        addcclongopt("fr", NULL );
+        addcclongopt( "fr", NULL );
     }
     for( i = 1; i < argc ; i++ ) {
         Word = argv[i];
