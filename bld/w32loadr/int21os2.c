@@ -31,7 +31,7 @@
 
 
 #include <dos.h>
-#include <dosfunc.h>
+#include "dosfuncx.h"
 #include <fcntl.h>
 #include <share.h>
 #include <string.h>
@@ -46,8 +46,6 @@
 #include "tinyio.h"
 #include "loader.h"
 
-
-#define DOS_FULLPATH 0x60
 
 #define SH_MASK (SH_COMPAT | SH_DENYRW | SH_DENYWR | SH_DENYRD | SH_DENYNO)
 
@@ -307,7 +305,7 @@ unsigned __Int21C( union REGS *r )
     case DOS_FILE_DATE:
         rc = __filedate( r );
         break;
-    case DOS_FULLPATH:
+    case DOS_TRUENAME:
         rc = DosQueryPathInfo( (PSZ)r->x.edx, FIL_QUERYFULLNAME,
                                 (char *)r->x.ebx, r->x.ecx );
         break;

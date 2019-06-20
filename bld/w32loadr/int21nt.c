@@ -43,8 +43,6 @@
 #include "loader.h"
 
 
-#define DOS_FULLPATH 0x60
-
 #define SH_MASK (SH_COMPAT | SH_DENYRW | SH_DENYWR | SH_DENYRD | SH_DENYNO)
 
 #define CARRY_CLEAR     0
@@ -453,7 +451,7 @@ unsigned __Int21C( union REGS *r )
     case DOS_FILE_DATE:
         rc = __filedate( r );
         break;
-    case DOS_FULLPATH:
+    case DOS_TRUENAME:
         rc = __fullpath( r );
         break;
     case DOS_EXIT:
