@@ -293,12 +293,12 @@ error_handle LocalFindFirst( const char *pattern, void *info, unsigned info_len,
 
     h = FindFirstFile( (LPTSTR)pattern, &ffb );
     if( h == INVALID_HANDLE_VALUE ) {
-        DTAXXX_HANDLE_OF( info ) = BAD_HANDLE;
+        DTAXXX_HANDLE_OF( info ) = DTAXXX_INVALID_HANDLE;
         return( StashErrCode( -1, OP_LOCAL ) );
     }
     if( !__NTFindNextFileWithAttr( h, attrib, &ffb ) ) {
         error = GetLastError();
-        DTAXXX_HANDLE_OF( info ) = BAD_HANDLE;
+        DTAXXX_HANDLE_OF( info ) = DTAXXX_INVALID_HANDLE;
         FindClose( h );
         return( StashErrCode( -1, OP_LOCAL ) );
     }
@@ -316,13 +316,13 @@ int LocalFindNext( void *info, unsigned info_len )
     (void)info_len;
 
     if( !FindNextFile( DTAXXX_HANDLE_OF( info ), &ffb ) ) {
-        if( DTAXXX_HANDLE_OF( info ) != BAD_HANDLE ) {
+        if( DTAXXX_HANDLE_OF( info ) != DTAXXX_INVALID_HANDLE ) {
             FindClose( DTAXXX_HANDLE_OF( info ) );
         }
         return( -1 );
     }
     if( !__NTFindNextFileWithAttr( DTAXXX_HANDLE_OF( info ), DTAXXX_ATTR_OF( info ), &ffb ) ) {
-        if( DTAXXX_HANDLE_OF( info ) != BAD_HANDLE ) {
+        if( DTAXXX_HANDLE_OF( info ) != DTAXXX_INVALID_HANDLE ) {
             FindClose( DTAXXX_HANDLE_OF( info ) );
         }
         return( -1 );

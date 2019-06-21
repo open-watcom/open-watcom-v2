@@ -78,7 +78,7 @@ _WCRTLINK unsigned _dos_findfirst( const char *path, unsigned attr,
 #endif
         APIRET      rc;
         FF_BUFFER   dir_buff;
-        HDIR        handle = BAD_HANDLE;
+        HDIR        handle = DTAXXX_INVALID_HANDLE;
         OS_UINT     searchcount;
 
         searchcount = 1;        /* only one at a time */
@@ -86,7 +86,7 @@ _WCRTLINK unsigned _dos_findfirst( const char *path, unsigned attr,
                 (PVOID)&dir_buff, sizeof( dir_buff ), &searchcount, FF_LEVEL );
 
         if( rc != 0 && rc != ERROR_EAS_DIDNT_FIT ) {
-            DTAXXX_HANDLE_OF( buf->reserved ) = BAD_HANDLE;
+            DTAXXX_HANDLE_OF( buf->reserved ) = DTAXXX_INVALID_HANDLE;
             return( __set_errno_dos_reterr( rc ) );
         }
         DTAXXX_HANDLE_OF( buf->reserved ) = handle;
@@ -153,7 +153,7 @@ _WCRTLINK unsigned _dos_findclose( struct find_t *buf ) {
 #if defined(__OS2_286__)
     if( _RWD_osmode == OS2_MODE ) {        /* protected mode */
 #endif
-        if( DTAXXX_HANDLE_OF( buf->reserved ) != BAD_HANDLE ) {
+        if( DTAXXX_HANDLE_OF( buf->reserved ) != DTAXXX_INVALID_HANDLE ) {
             rc = DosFindClose( DTAXXX_HANDLE_OF( buf->reserved ) );
             if( rc != 0 ) {
                 return( __set_errno_dos_reterr( rc ) );
