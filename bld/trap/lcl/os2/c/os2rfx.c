@@ -42,25 +42,9 @@
 #include "trpimp.h"
 #include "trpcomm.h"
 
-#if 0
-typedef struct {
-    struct {
-        char                i_dunno[13];
-        unsigned int        dir_entry_num;
-        unsigned int        cluster;
-        char                i_still_dunno[4];
-    } dos;
-    char                attr;
-    unsigned int        time;
-    unsigned int        date;
-    long                size;
-    char                name[14];
-} dos_dta;
-#endif
 
 #define NIL_DOS_HANDLE  ((HFILE)0xFFFF)
 #define BUFF_SIZE       256
-
 
 trap_retval ReqRfx_rename( void )
 {
