@@ -2124,12 +2124,7 @@ information of about the first file will be in the structure :F.info.:eF. Defini
 of the structure :F.rfx_find:eF. is as follows:
 :XMP.
 typedef struct rfx_find {
-    struct {
-        unsigned_8          spare1[13];
-        unsigned_16         dir_entry_num;
-        unsigned_16         cluster;
-        unsigned_8          spare2[4];
-    } dta;
+    unsigned_8          reserved[21];
     unsigned_8          attr;
     unsigned_16         time;
     unsigned_16         date;
