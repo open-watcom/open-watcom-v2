@@ -77,6 +77,52 @@ static void __FromDOSDT( unsigned short d, unsigned short t, FILETIME *NT_stamp 
     LocalFileTimeToFileTime( &local_ft, NT_stamp );
 }
 
+static char __NT2DOSAttr( unsigned nt_attribs )
+{
+    char        dos_attribs;
+
+    dos_attribs = 0;
+    if( nt_attribs & FILE_ATTRIBUTE_SYSTEM ) {
+        dos_attribs |= _A_SYSTEM;
+    }
+    if( nt_attribs & FILE_ATTRIBUTE_HIDDEN ) {
+        dos_attribs |= _A_HIDDEN;
+    }
+    if( nt_attribs & FILE_ATTRIBUTE_READONLY ) {
+        dos_attribs |= _A_RDONLY;
+    }
+    if( nt_attribs & FILE_ATTRIBUTE_DIRECTORY ) {
+        dos_attribs |= _A_SUBDIR;
+    }
+    if( nt_attribs & FILE_ATTRIBUTE_ARCHIVE ) {
+        dos_attribs |= _A_ARCH;
+    }
+    return( dos_attribs );
+}
+
+static unsigned __DOS2NTAttr( unsigned dos_attribs )
+{
+    unsigned    nt_attribs;
+
+    nt_attribs = FILE_ATTRIBUTE_NORMAL;
+    if( dos_attribs & _A_SYSTEM ) {
+        nt_attribs |= FILE_ATTRIBUTE_SYSTEM;
+    }
+    if( dos_attribs & _A_HIDDEN ) {
+        nt_attribs |= FILE_ATTRIBUTE_HIDDEN;
+    }
+    if( dos_attribs & _A_RDONLY ) {
+        nt_attribs |= FILE_ATTRIBUTE_READONLY;
+    }
+    if( dos_attribs & _A_SUBDIR ) {
+        nt_attribs |= FILE_ATTRIBUTE_DIRECTORY;
+    }
+    if( dos_attribs & _A_ARCH ) {
+        nt_attribs |= FILE_ATTRIBUTE_ARCHIVE;
+    }
+    return( nt_attribs );
+}
+
 static BOOL __open_file( union REGS *r,
                   DWORD access,
                   DWORD share,
@@ -219,29 +265,27 @@ static BOOL __fullpath( union REGS *r )
 static void __GetNTDirInfo( struct find_t *dirp, WIN32_FIND_DATA *ffd )
 {
     __MakeDOSDT( &ffd->ftLastWriteTime, &dirp->wr_date, &dirp->wr_time );
-    dirp->attrib = ffd->dwFileAttributes;
+    dirp->attrib = __NT2DOSAttr( ffd->dwFileAttributes );
     dirp->size   = ffd->nFileSizeLow;
     strncpy( dirp->name, ffd->cFileName, NAME_MAX );
-//    dirp->name[NAME_MAX] = '\0';
+    dirp->name[NAME_MAX] = '\0';
 }
 
-static BOOL __NTFindNextFileWithAttr( HANDLE h, DWORD attr, WIN32_FIND_DATA *ffd )
+#define ATTRIBUTES_MASK     (FILE_ATTRIBUTE_SYSTEM | FILE_ATTRIBUTE_HIDDEN | FILE_ATTRIBUTE_DIRECTORY)
+
+static BOOL __NTFindNextFileWithAttr( HANDLE h, DWORD nt_attribs, WIN32_FIND_DATA *ffd )
 {
-    // include normal files unless we are searching for volume ids
-    attr |= ( FILE_ATTRIBUTE_NORMAL
-            | FILE_ATTRIBUTE_ARCHIVE
-            | FILE_ATTRIBUTE_READONLY );
-    if( attr & _A_VOLID ) {
-        attr &= ~_A_VOLID;
-    }
     for(;;) {
         if( ffd->dwFileAttributes == 0 ) {
             // Win95 seems to return 0 for the attributes sometimes?
             // In that case, treat as a normal file
-            return( TRUE );
+            ffd->dwFileAttributes = FILE_ATTRIBUTE_NORMAL;
         }
-        if( attr & ffd->dwFileAttributes ) return( TRUE );
-        if( !FindNextFile( h, ffd ) ) return( FALSE );
+        if( (nt_attribs | !ffd->dwFileAttributes) & ATTRIBUTES_MASK ) 
+            return( TRUE );
+        if( !FindNextFile( h, ffd ) ) {
+            return( FALSE );
+        }
     }
 }
 
@@ -252,12 +296,14 @@ static BOOL __findfirst( union REGS *r )
     struct find_t       *buf;
     WIN32_FIND_DATA     ffd;
     char                *p;
+    unsigned            nt_attribs;
 
     buf = (struct find_t *)r->x.ebx;
     handle = FindFirstFile( (LPTSTR)r->x.edx, &ffd );
     if( handle == INVALID_HANDLE_VALUE ) {
-        HANDLE_OF( buf ) = handle;
+        DTAXXX_HANDLE_OF( buf ) = handle;
     } else {
+        nt_attribs = __DOS2NTAttr( r->x.ecx );
         // 02-aug-95: Another problem: this time compressed files on NT3.51
         // file was backed up so that it doesn't have the archive bit on
         // file is compressed, so it doesn't have the normal bit on
@@ -268,14 +314,14 @@ static BOOL __findfirst( union REGS *r )
         p = (char *)r->x.edx;
         while( *p != '\0' ) {
             if( *p == '*' || *p == '?' ) {      // if wildcard character
-                rc = __NTFindNextFileWithAttr( handle, r->x.ecx, &ffd );
+                rc = __NTFindNextFileWithAttr( handle, nt_attribs, &ffd );
                 break;
             }
             ++p;
         }
         if( rc == TRUE ) {
-            HANDLE_OF( buf ) = handle;
-            ATTR_OF( buf ) = r->x.ecx;
+            DTAXXX_HANDLE_OF( buf ) = handle;
+            DTAXXX_ATTR_OF( buf ) = nt_attribs;
             __GetNTDirInfo( buf, &ffd );
         }
     }
@@ -290,11 +336,11 @@ static BOOL __findnext( union REGS *r )
     WIN32_FIND_DATA     ffd;
 
     buf = (struct find_t *)r->x.edx;
-    handle = HANDLE_OF( buf );
+    handle = DTAXXX_HANDLE_OF( buf );
     if( handle != INVALID_HANDLE_VALUE ) {
         if( r->h.al == 0 ) {            /* if FIND_NEXT function */
             if( FindNextFile( handle, &ffd ) ) {
-                if( __NTFindNextFileWithAttr( handle, ATTR_OF(buf), &ffd ) ) {
+                if( __NTFindNextFileWithAttr( handle, DTAXXX_ATTR_OF(buf), &ffd ) ) {
                     __GetNTDirInfo( buf, &ffd );
                     rc = TRUE;
                 }
