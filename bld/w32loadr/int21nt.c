@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -340,7 +341,7 @@ static BOOL __findnext( union REGS *r )
     if( handle != INVALID_HANDLE_VALUE ) {
         if( r->h.al == 0 ) {            /* if FIND_NEXT function */
             if( FindNextFile( handle, &ffd ) ) {
-                if( __NTFindNextFileWithAttr( handle, DTAXXX_ATTR_OF(buf), &ffd ) ) {
+                if( __NTFindNextFileWithAttr( handle, DTAXXX_ATTR_OF( buf ), &ffd ) ) {
                     __GetNTDirInfo( buf, &ffd );
                     rc = TRUE;
                 }
