@@ -48,9 +48,9 @@
 
 trap_retval ReqRfx_rename( void )
 {
-    char           *old_name;
-    char           *new_name;
-    rfx_rename_ret      *ret;
+    char                    *old_name;
+    char                    *new_name;
+    rfx_rename_ret          *ret;
 
     old_name = GetInPtr( sizeof( rfx_rename_req ) );
     new_name = GetInPtr( sizeof( rfx_rename_req ) + strlen( old_name ) + 1 );
@@ -62,8 +62,8 @@ trap_retval ReqRfx_rename( void )
 
 trap_retval ReqRfx_mkdir( void )
 {
-    char             *name;
-    rfx_mkdir_ret       *ret;
+    char                    *name;
+    rfx_mkdir_ret           *ret;
 
     name = GetInPtr( sizeof( rfx_mkdir_req ) );
     ret = GetOutPtr( 0 );
@@ -74,8 +74,8 @@ trap_retval ReqRfx_mkdir( void )
 
 trap_retval ReqRfx_rmdir( void )
 {
-    char             *name;
-    rfx_rmdir_ret       *ret;
+    char                    *name;
+    rfx_rmdir_ret           *ret;
 
     name = GetInPtr( sizeof( rfx_rmdir_req ) );
     ret = GetOutPtr( 0 );
@@ -86,8 +86,8 @@ trap_retval ReqRfx_rmdir( void )
 
 trap_retval ReqRfx_setdrive( void )
 {
-    rfx_setdrive_req    *acc;
-    rfx_setdrive_ret    *ret;
+    rfx_setdrive_req        *acc;
+    rfx_setdrive_ret        *ret;
 
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
@@ -98,13 +98,13 @@ trap_retval ReqRfx_setdrive( void )
 
 trap_retval ReqRfx_getdrive( void )
 {
-    USHORT             drive;
-    ULONG              map;
-    rfx_getdrive_ret    *ret;
+    USHORT                  drive;
+    ULONG                   map;
+    rfx_getdrive_ret        *ret;
 
     ret = GetOutPtr( 0 );
     if( DosQCurDisk( &drive, &map ) == 0 ) {
-        ret->drive = drive-1;
+        ret->drive = drive - 1;
     } else {
         ret->drive = 0;
     }
@@ -114,8 +114,8 @@ trap_retval ReqRfx_getdrive( void )
 
 trap_retval ReqRfx_setcwd( void )
 {
-    char              *name;
-    rfx_setcwd_ret      *ret;
+    char                    *name;
+    rfx_setcwd_ret          *ret;
 
     name = GetInPtr( sizeof( rfx_setcwd_req ) );
     ret = GetOutPtr( 0 );
@@ -126,10 +126,10 @@ trap_retval ReqRfx_setcwd( void )
 
 trap_retval ReqRfx_getfileattr( void )
 {
-    USHORT             attrib;
-    USHORT             ret_code;
-    char               *name;
-    rfx_getfileattr_ret *ret;
+    USHORT                  attrib;
+    USHORT                  ret_code;
+    char                    *name;
+    rfx_getfileattr_ret     *ret;
 
     name = GetInPtr( sizeof( rfx_getfileattr_req ) );
     ret = GetOutPtr( 0 );
@@ -141,9 +141,9 @@ trap_retval ReqRfx_getfileattr( void )
 
 trap_retval ReqRfx_setfileattr( void )
 {
-    char               *name;
-    rfx_setfileattr_req *acc;
-    rfx_setfileattr_ret *ret;
+    char                    *name;
+    rfx_setfileattr_req     *acc;
+    rfx_setfileattr_ret     *ret;
 
     // Not tested, and not used right now
     acc = GetInPtr( 0 );
@@ -155,16 +155,14 @@ trap_retval ReqRfx_setfileattr( void )
 
 trap_retval ReqRfx_getfreespace( void )
 {
-    FSALLOCATE      info;
-    rfx_getfreespace_req        *acc;
-    rfx_getfreespace_ret        *ret;
+    FSALLOCATE              info;
+    rfx_getfreespace_req    *acc;
+    rfx_getfreespace_ret    *ret;
 
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
     DosQFSInfo( acc->drive, 1, (PBYTE)&info, sizeof( info ) );
-    ret->size = (long)info.cbSector
-                 * (long)info.cSectorUnit
-                 * (long)info.cUnitAvail;
+    ret->size = (long)info.cbSector * (long)info.cSectorUnit * (long)info.cUnitAvail;
     return( sizeof( *ret ) );
 }
 
@@ -211,10 +209,10 @@ static void mylocaltime( unsigned long date_time, unsigned *time, unsigned *date
 
 trap_retval ReqRfx_setdatetime( void )
 {
-    FILESTATUS          info;
-    unsigned            time;
-    unsigned            date;
-    rfx_setdatetime_req *acc;
+    FILESTATUS              info;
+    unsigned                time;
+    unsigned                date;
+    rfx_setdatetime_req     *acc;
 
     acc = GetInPtr( 0 );
     mylocaltime( acc->time, &time, &date );
@@ -259,9 +257,9 @@ static unsigned long mymktime( unsigned time, unsigned date )
 
 trap_retval ReqRfx_getdatetime( void )
 {
-    rfx_getdatetime_req *acc;
-    rfx_getdatetime_ret *ret;
-    FILESTATUS         info;
+    rfx_getdatetime_req     *acc;
+    rfx_getdatetime_ret     *ret;
+    FILESTATUS              info;
 
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
@@ -272,9 +270,9 @@ trap_retval ReqRfx_getdatetime( void )
 
 trap_retval ReqRfx_getcwd( void )
 {
-    USHORT              len = BUFF_SIZE;
-    rfx_getcwd_req      *acc;
-    rfx_getcwd_ret      *ret;
+    USHORT                  len = BUFF_SIZE;
+    rfx_getcwd_req          *acc;
+    rfx_getcwd_ret          *ret;
 
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
@@ -294,13 +292,13 @@ static void MoveDirInfo( FILEFINDBUF *os2, rfx_find FAR *find_info )
 
 trap_retval ReqRfx_findfirst( void )
 {
-    FILEFINDBUF          info;
-    USHORT               rc;
-    HDIR                 hdl = 1;
-    USHORT               count = 1;
-    rfx_findfirst_req   *acc;
-    rfx_findfirst_ret   *ret;
-    char                 *filename;
+    FILEFINDBUF             info;
+    USHORT                  rc;
+    HDIR                    hdl = 1;
+    USHORT                  count = 1;
+    rfx_findfirst_req       *acc;
+    rfx_findfirst_ret       *ret;
+    char                    *filename;
 
     acc = GetInPtr( 0 );
     filename = GetInPtr( sizeof( *acc ) );
@@ -319,10 +317,10 @@ trap_retval ReqRfx_findfirst( void )
 
 trap_retval ReqRfx_findnext( void )
 {
-    FILEFINDBUF         info;
-    USHORT              rc;
-    USHORT              count = 1;
-    rfx_findnext_ret    *ret;
+    FILEFINDBUF             info;
+    USHORT                  rc;
+    USHORT                  count = 1;
+    rfx_findnext_ret        *ret;
 
     ret = GetOutPtr( 0 );
     rc = DosFindNext( 1, &info, sizeof( info ), &count );
@@ -338,7 +336,7 @@ trap_retval ReqRfx_findnext( void )
 
 trap_retval ReqRfx_findclose( void )
 {
-    rfx_findclose_ret    *ret;
+    rfx_findclose_ret       *ret;
 
     ret = GetOutPtr( 0 );
     ret->err = 0;
@@ -348,13 +346,13 @@ trap_retval ReqRfx_findclose( void )
 trap_retval ReqRfx_nametocannonical( void )
 {
     rfx_nametocannonical_ret    *ret;
-    char                  *name;
-    char                  *fullname;
-    char                  *p;
-    int                   level = 0;
-    USHORT                drive;
-    ULONG                 map;
-    USHORT                len = BUFF_SIZE;
+    char                        *name;
+    char                        *fullname;
+    char                        *p;
+    int                         level = 0;
+    USHORT                      drive;
+    ULONG                       map;
+    USHORT                      len = BUFF_SIZE;
 
     // Not tested, and not used right now
     name = GetInPtr( sizeof( rfx_nametocannonical_req ) );
