@@ -280,8 +280,8 @@ static void makeDOSDTA( LPWIN32_FIND_DATA ffb, rfx_find *find_info )
     DTARFX_DATE_OF( find_info->reserved ) = find_info->date;
     find_info->attr = ffb->dwFileAttributes;
     find_info->size = ffb->nFileSizeLow;
-    strncpy( find_info->name, ffb->cFileName, RFX_FIND_NAME_MAX );
-    find_info->name[RFX_FIND_NAME_MAX] = 0;
+    strncpy( find_info->name, ffb->cFileName, RFX_NAME_MAX );
+    find_info->name[RFX_NAME_MAX] = 0;
 }
 
 error_handle LocalFindFirst( const char *pattern, void *info, unsigned info_len, int attrib )

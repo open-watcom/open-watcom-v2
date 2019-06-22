@@ -264,8 +264,8 @@ static void makeDOSDTA( FINDBUF *findbuf, rfx_find *find_info )
     find_info->date = DTARFX_DATE_OF( find_info->reserved ) = *(USHORT FAR *)&findbuf->fdateLastWrite;
     find_info->attr = findbuf->attrFile;
     find_info->size = findbuf->cbFile;
-    strncpy( find_info->name, findbuf->achName, RFX_FIND_NAME_MAX );
-    find_info->name[RFX_FIND_NAME_MAX] = '\0';
+    strncpy( find_info->name, findbuf->achName, RFX_NAME_MAX );
+    find_info->name[RFX_NAME_MAX] = '\0';
 }
 
 error_handle LocalFindFirst( const char *pattern, void *info, unsigned info_len, int attrib )

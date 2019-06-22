@@ -38,6 +38,8 @@
 
 #define RFX_SUPP_NAME           "RFX"
 
+#define RFX_NAME_MAX            259
+
 enum {
     REQ_RFX_RENAME,             /* 00 */
     REQ_RFX_MKDIR,              /* 01 */
@@ -185,7 +187,13 @@ typedef struct {
 
 /*============================ RFX_FIND_FIRST ===============*/
 typedef struct __rfx_dta {  /* total size 21 bytes */
-    unsigned_8      reserved1[13];
+    union {
+        unsigned_8      reserved1[13];
+        struct {
+            long long       handle;
+            unsigned_16     attrib;
+        }               s;
+    }               u1;
     union {
         struct {
             unsigned_16     dir_entry_num;
@@ -200,20 +208,21 @@ typedef struct __rfx_dta {  /* total size 21 bytes */
 //    unsigned_8      reserved2[4];
 } __rfx_dta;
 
+#define DTARFX_HANDLE_OF(x)     (((__rfx_dta *)(x))->u1.s.handle)
+#define DTARFX_ATTRIB_OF(x)     (((__rfx_dta *)(x))->u1.s.attrib)
 #define DTARFX_DIR_NUM_OF(x)    (((__rfx_dta *)(x))->u.dos.dir_entry_num)
 #define DTARFX_CLUSTER_OF(x)    (((__rfx_dta *)(x))->u.dos.cluster)
 #define DTARFX_TIME_OF(x)       (((__rfx_dta *)(x))->u.stamp.time)
 #define DTARFX_DATE_OF(x)       (((__rfx_dta *)(x))->u.stamp.date)
 #define DTARFX_ID_OF(x)         (((__rfx_dta *)(x))->u.id)
 
-#define RFX_FIND_NAME_MAX       12
 typedef struct {
     unsigned_8          reserved[21];
     unsigned_8          attr;
     unsigned_16         time;
     unsigned_16         date;
     unsigned_32         size;
-    char                name[RFX_FIND_NAME_MAX + 1 + 1];
+    char                name[RFX_NAME_MAX + 1];
 } _WCUNALIGNED rfx_find;
 
 typedef struct {
@@ -242,13 +251,14 @@ typedef struct {
 typedef struct {
     supp_prefix         supp;
     access_req          req;
+    /* followed by a rfx_find */
 } rfx_findclose_req;
 
 typedef struct {
     trap_error          err;
-    /* followed by a rfx_find */
 } rfx_findclose_ret;
 
 #include "poppck.h"
 
 #endif
+

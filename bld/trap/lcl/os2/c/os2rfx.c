@@ -286,8 +286,8 @@ static void MoveDirInfo( FILEFINDBUF *os2, rfx_find FAR *find_info )
     find_info->date = DTARFX_DATE_OF( find_info->reserved ) = *(USHORT __far *)&os2->fdateLastWrite;
     find_info->attr = os2->attrFile;
     find_info->size = os2->cbFile;
-    strncpy( find_info->name, os2->achName, RFX_FIND_NAME_MAX );
-    find_info->name[RFX_FIND_NAME_MAX] = '\0';
+    strncpy( find_info->name, os2->achName, RFX_NAME_MAX );
+    find_info->name[RFX_NAME_MAX] = '\0';
 }
 
 trap_retval ReqRfx_findfirst( void )
