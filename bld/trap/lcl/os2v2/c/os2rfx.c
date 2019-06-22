@@ -295,14 +295,12 @@ trap_retval ReqRfx_getcwd( void )
 
 static void MoveDirInfo( FILEFINDBUF3 *os2, rfx_find *find_info )
 {
-    find_info->dta.dir_entry_num = *(USHORT *)&os2->fdateLastWrite;
-    find_info->dta.cluster = *(USHORT *)&os2->ftimeLastWrite;
+    find_info->time = DTARFX_TIME_OF( find_info->reserved ) = *(USHORT *)&os2->ftimeLastWrite;
+    find_info->date = DTARFX_DATE_OF( find_info->reserved ) = *(USHORT *)&os2->fdateLastWrite;
     find_info->attr = os2->attrFile;
-    find_info->time = *(USHORT *)&os2->ftimeLastWrite;
-    find_info->date = *(USHORT *)&os2->fdateLastWrite;
     find_info->size = os2->cbFile;
-    strncpy( find_info->name, os2->achName, RFX_FIND_NAME_MAX - 1 );
-    find_info->name[RFX_FIND_NAME_MAX - 1] = '\0';
+    strncpy( find_info->name, os2->achName, RFX_FIND_NAME_MAX );
+    find_info->name[RFX_FIND_NAME_MAX] = '\0';
 }
 
 trap_retval ReqRfx_findfirst( void )

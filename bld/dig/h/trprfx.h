@@ -31,10 +31,10 @@
 
 
 #ifndef TRPRFX_H
+#define TRPRFX_H
 
 #include "trpfile.h"
 
-#include "pushpck1.h"
 
 #define RFX_SUPP_NAME           "RFX"
 
@@ -56,6 +56,8 @@ enum {
     REQ_RFX_FINDNEXT,           /* 14 */
     REQ_RFX_FINDCLOSE           /* 15 */
 };
+
+#include "pushpck1.h"
 
 typedef struct {
     supp_prefix         supp;
@@ -182,19 +184,36 @@ typedef struct {
 } rfx_nametocannonical_ret;
 
 /*============================ RFX_FIND_FIRST ===============*/
-#define RFX_FIND_NAME_MAX   13
+typedef struct __rfx_dta {  /* total size 21 bytes */
+    unsigned_8      reserved1[13];
+    union {
+        struct {
+            unsigned_16     dir_entry_num;
+            unsigned_16     cluster;
+        }               dos;
+        struct {
+            unsigned_16     time;
+            unsigned_16     date;
+        }               stamp;
+        unsigned_32     id;
+    }               u;
+//    unsigned_8      reserved2[4];
+} __rfx_dta;
+
+#define DTARFX_DIR_NUM_OF(x)    (((__rfx_dta *)(x))->u.dos.dir_entry_num)
+#define DTARFX_CLUSTER_OF(x)    (((__rfx_dta *)(x))->u.dos.cluster)
+#define DTARFX_TIME_OF(x)       (((__rfx_dta *)(x))->u.stamp.time)
+#define DTARFX_DATE_OF(x)       (((__rfx_dta *)(x))->u.stamp.date)
+#define DTARFX_ID_OF(x)         (((__rfx_dta *)(x))->u.id)
+
+#define RFX_FIND_NAME_MAX       12
 typedef struct {
-    struct {
-        unsigned_8      spare1[13];
-        unsigned_16     dir_entry_num;
-        unsigned_16     cluster;
-        unsigned_8      spare2[4];
-    }           dta;
-    unsigned_8  attr;
-    unsigned_16 time;
-    unsigned_16 date;
-    unsigned_32 size;
-    char        name[RFX_FIND_NAME_MAX + 1];
+    unsigned_8          reserved[21];
+    unsigned_8          attr;
+    unsigned_16         time;
+    unsigned_16         date;
+    unsigned_32         size;
+    char                name[RFX_FIND_NAME_MAX + 1 + 1];
 } _WCUNALIGNED rfx_find;
 
 typedef struct {
@@ -231,7 +250,5 @@ typedef struct {
 } rfx_findclose_ret;
 
 #include "poppck.h"
-
-#define TRPRFX_H
 
 #endif

@@ -260,14 +260,12 @@ error_handle LocalGetCwd( int drive, char *where )
 static void makeDOSDTA( FINDBUF *findbuf, rfx_find *find_info )
 /*************************************************************/
 {
-    find_info->dta.dir_entry_num = *(USHORT *)&findbuf->fdateLastWrite;
-    find_info->dta.cluster = *(USHORT *)&findbuf->ftimeLastWrite;
+    find_info->time = DTARFX_TIME_OF( find_info->reserved ) = *(USHORT FAR *)&findbuf->ftimeLastWrite;
+    find_info->date = DTARFX_DATE_OF( find_info->reserved ) = *(USHORT FAR *)&findbuf->fdateLastWrite;
     find_info->attr = findbuf->attrFile;
-    find_info->time = *(USHORT *)&findbuf->ftimeLastWrite;
-    find_info->date = *(USHORT *)&findbuf->fdateLastWrite;
     find_info->size = findbuf->cbFile;
-    strncpy( find_info->name, findbuf->achName, RFX_FIND_NAME_MAX - 1 );
-    find_info->name[RFX_FIND_NAME_MAX - 1] = '\0';
+    strncpy( find_info->name, findbuf->achName, RFX_FIND_NAME_MAX );
+    find_info->name[RFX_FIND_NAME_MAX] = '\0';
 }
 
 error_handle LocalFindFirst( const char *pattern, void *info, unsigned info_len, int attrib )
