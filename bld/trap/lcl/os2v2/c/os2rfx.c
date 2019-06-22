@@ -294,8 +294,9 @@ trap_retval ReqRfx_getcwd( void )
     return( sizeof( *ret ) + len );
 }
 
-static void MoveDirInfo( FILEFINDBUF3 *os2, rfx_find *find_info )
+static void MoveDirInfo( FILEFINDBUF3 *os2, rfx_find *find_info, HDIR hdl )
 {
+    DTARFX_HANDLE_OF( find_info->reserved ) = hdl;
     find_info->time = DTARFX_TIME_OF( find_info->reserved ) = *(USHORT *)&os2->ftimeLastWrite;
     find_info->date = DTARFX_DATE_OF( find_info->reserved ) = *(USHORT *)&os2->fdateLastWrite;
     find_info->attr = os2->attrFile;
@@ -306,25 +307,25 @@ static void MoveDirInfo( FILEFINDBUF3 *os2, rfx_find *find_info )
 
 trap_retval ReqRfx_findfirst( void )
 {
-    FILEFINDBUF3         info;
-    APIRET               rc;
-    HDIR                 hdl = 1;
-    ULONG                count = 1;
-    rfx_findfirst_req    *acc;
-    rfx_findfirst_ret    *ret;
-    char                 *filename;
+    FILEFINDBUF3        info;
+    APIRET              rc;
+    HDIR                hdl;
+    ULONG               count = 1;
+    rfx_findfirst_req   *acc;
+    rfx_findfirst_ret   *ret;
+    char                *filename;
+    rfx_find            *find_info;
 
     acc = GetInPtr( 0 );
     filename = GetInPtr( sizeof( *acc ) );
     ret = GetOutPtr( 0 );
-    rc = DosFindFirst( filename, &hdl, acc->attrib, &info,
-                      sizeof( info ), &count, FIL_STANDARD );
+    hdl = HDIR_CREATE;
+    ret->err = rc = DosFindFirst( filename, &hdl, acc->attrib, &info, sizeof( info ), &count, FIL_STANDARD );
     if( rc == 0 ) {
-        MoveDirInfo( &info, (rfx_find *)GetOutPtr( sizeof( *ret ) ) );
-        ret->err = 0;
-        return( sizeof( *ret ) + sizeof( rfx_find ) );
+        find_info = (rfx_find *)GetOutPtr( sizeof( *ret ) );
+        MoveDirInfo( &info, find_info, hdl );
+        return( sizeof( *ret ) + offsetof( rfx_find, name ) + strlen( find_info->name ) + 1 );
     } else {
-        ret->err = rc;
         return( sizeof( *ret ) );
     }
 }
@@ -335,25 +336,32 @@ trap_retval ReqRfx_findnext( void )
     APIRET              rc;
     ULONG               count = 1;
     rfx_findnext_ret    *ret;
+    HDIR                hdl;
+    rfx_find            *find_info;
 
+    find_info = GetInPtr( sizeof( rfx_findnext_req ) );
+    hdl = DTARFX_HANDLE_OF( find_info->reserved );
     ret = GetOutPtr( 0 );
-    rc = DosFindNext( 1, &info, sizeof( info ), &count );
+    ret->err = rc = DosFindNext( hdl, &info, sizeof( info ), &count );
     if( rc == 0 ) {
-        MoveDirInfo( &info, (rfx_find *)GetOutPtr( sizeof( *ret ) ) );
-        ret->err = 0;
-        return( sizeof( *ret ) + sizeof( rfx_find ) );
+    	find_info = (rfx_find *)GetOutPtr( sizeof( *ret ) );
+        MoveDirInfo( &info, find_info, hdl );
+        return( sizeof( *ret ) + offsetof( rfx_find, name ) + strlen( find_info->name ) + 1 );
     } else {
-        ret->err = rc;
         return( sizeof( *ret ) );
     }
 }
 
 trap_retval ReqRfx_findclose( void )
 {
-    rfx_findclose_ret    *ret;
+    rfx_findclose_ret   *ret;
+    HDIR                hdl;
+    rfx_find            *find_info;
 
+    find_info = GetInPtr( sizeof( rfx_findclose_req ) );
+    hdl = DTARFX_HANDLE_OF( find_info->reserved );
     ret = GetOutPtr( 0 );
-    ret->err = 0;
+    ret->err = DosFindClose( hdl );
     return( sizeof( *ret ) );
 }
 
