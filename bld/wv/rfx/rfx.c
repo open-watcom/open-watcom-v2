@@ -723,7 +723,6 @@ static bool IsDir( const char *src, object_loc src_loc )
 static void    FinishName( const char *fn, file_parse *parse, object_loc loc, bool addext )
 {
     char        *endptr;
-    long        rc;
 
     endptr = parse->path + strlen( parse->path );
     parse->device = 0;
@@ -1263,7 +1262,6 @@ static dir_handle      *DirOpenf( const char *fspec, object_loc fnloc )
 {
     dir_handle      *dh;
     error_handle    errh;
-    long            retl;
     file_parse      parse;
 
     dh = (dir_handle *)DbgAlloc( sizeof( dir_handle ) );
