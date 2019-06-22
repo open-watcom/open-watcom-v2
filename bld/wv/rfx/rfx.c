@@ -476,7 +476,7 @@ static long GetAttrs( const char *name, object_loc loc )
     }
 }
 
-static int IsDevice( const char *name, object_loc loc )
+static bool IsDevice( const char *name, object_loc loc )
 /******************************************************/
 {
     file_handle     fh;
@@ -712,6 +712,14 @@ static void    Replace( const char *from, const char *to, char *into )
     *into = NULLCHAR;
 }
 
+static bool IsDir( const char *src, object_loc src_loc )
+{
+    long attr;
+
+    attr = GetAttrs( src, src_loc );
+    return( attr != RFX_INVALID_FILE_ATTRIBUTES && (attr & IO_SUBDIRECTORY) );
+}
+
 static void    FinishName( const char *fn, file_parse *parse, object_loc loc, bool addext )
 {
     char        *endptr;
@@ -736,17 +744,14 @@ static void    FinishName( const char *fn, file_parse *parse, object_loc loc, bo
         }
     } else if( IsDevice( fn, loc ) ) {
         parse->device = 1;
-    } else {
-        rc = GetAttrs( fn, loc );
-        if( rc != RFX_INVALID_FILE_ATTRIBUTES && ( rc & IO_SUBDIRECTORY ) != 0 ) {
-            endptr = CopyStr( parse->name, endptr );
-            endptr = CopyStr( parse->ext, endptr );
-            endptr = CopyStr( "\\", endptr );
-            CopyStr( "*", parse->name );
-            CopyStr( ".*", parse->ext );
-        } else if( ( parse->ext[0] == NULLCHAR ) && addext ) {
-            CopyStr( ".*", parse->ext );
-        }
+    } else if( IsDir( fn, loc ) ) {
+        endptr = CopyStr( parse->name, endptr );
+        endptr = CopyStr( parse->ext, endptr );
+        endptr = CopyStr( "\\", endptr );
+        CopyStr( "*", parse->name );
+        CopyStr( ".*", parse->ext );
+    } else if( ( parse->ext[0] == NULLCHAR ) && addext ) {
+        CopyStr( ".*", parse->ext );
     }
     if( !parse->device && parse->drive[0] == NULLCHAR ) {
         parse->drive[0] = GetDrv( loc );
@@ -905,18 +910,6 @@ static bool HasWildCards( const char * src )
     if( strchr( src, '*' ) != NULL )
         return( true );
     return( false );
-}
-
-
-static bool IsDir( const char *src, object_loc src_loc )
-{
-    long rc;
-
-    rc = GetAttrs( src, src_loc );
-    if( rc == RFX_INVALID_FILE_ATTRIBUTES ) {
-        return( false );
-    }
-    return( (rc & IO_SUBDIRECTORY) != 0 );
 }
 
 
@@ -1292,20 +1285,17 @@ static dir_handle      *DirOpenf( const char *fspec, object_loc fnloc )
                 CopyStr( "\\", parse.path + strlen( parse.path ) );
             }
         }
-    } else {
-        retl = GetAttrs( fspec, fnloc );
-        if( retl != RFX_INVALID_FILE_ATTRIBUTES && ( retl & IO_SUBDIRECTORY ) != 0 ) {
-            CopyStr( "\\", CopyStr( parse.ext, CopyStr( parse.name, parse.path + strlen( parse.path ) ) ) );
-            parse.name[0] = '*';
-            parse.name[1] = NULLCHAR;
-            parse.ext[0] = '.';
-            parse.ext[1] = '*';
-            parse.ext[2] = NULLCHAR;
-        } else if( parse.ext[0] == NULLCHAR ) {
-            parse.ext[0] = '.';
-            parse.ext[1] = '*';
-            parse.ext[2] = NULLCHAR;
-        }
+    } else if( IsDir( fspec, fnloc ) ) {
+        CopyStr( "\\", CopyStr( parse.ext, CopyStr( parse.name, parse.path + strlen( parse.path ) ) ) );
+        parse.name[0] = '*';
+        parse.name[1] = NULLCHAR;
+        parse.ext[0] = '.';
+        parse.ext[1] = '*';
+        parse.ext[2] = NULLCHAR;
+    } else if( parse.ext[0] == NULLCHAR ) {
+        parse.ext[0] = '.';
+        parse.ext[1] = '*';
+        parse.ext[2] = NULLCHAR;
     }
     Squish( &parse, dh->path );
     if( GetFreeSpace( dh, fnloc ) ) {
