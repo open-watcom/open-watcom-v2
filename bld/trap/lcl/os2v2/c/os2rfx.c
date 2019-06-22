@@ -281,7 +281,7 @@ trap_retval ReqRfx_getdatetime( void )
 
 trap_retval ReqRfx_getcwd( void )
 {
-    ULONG               len = BUFF_SIZE;
+    ULONG               len;
     rfx_getcwd_req      *acc;
     rfx_getcwd_ret      *ret;
     char                *buff;
@@ -289,6 +289,7 @@ trap_retval ReqRfx_getcwd( void )
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
     buff = GetOutPtr( sizeof( *ret ) );
+    len = RFX_NAME_MAX + 1;
     ret->err = DosQueryCurrentDir( acc->drive, (PBYTE)buff, &len );
     return( sizeof( *ret ) + len );
 }
@@ -365,7 +366,7 @@ trap_retval ReqRfx_nametocannonical( void )
     int                         level = 0;
     ULONG                       drive;
     ULONG                       map;
-    ULONG                       len = BUFF_SIZE;
+    ULONG                       len;
 
     // Not tested, and not used right now
     name = GetInPtr( sizeof( rfx_nametocannonical_req ) );
@@ -381,6 +382,7 @@ trap_retval ReqRfx_nametocannonical( void )
     } else {
         DosQueryCurrentDisk( &drive, &map );
     }
+    len = RFX_NAME_MAX + 1;
     if( *name != '\\' ) {
         *fullname++ = '\\';
         // DOS : TinyGetCWDir( fullname, TinyGetCurrDrive() + 1 );

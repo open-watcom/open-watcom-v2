@@ -44,7 +44,6 @@
 
 
 #define NIL_DOS_HANDLE  ((HFILE)0xFFFF)
-#define BUFF_SIZE       256
 
 trap_retval ReqRfx_rename( void )
 {
@@ -270,12 +269,13 @@ trap_retval ReqRfx_getdatetime( void )
 
 trap_retval ReqRfx_getcwd( void )
 {
-    USHORT                  len = BUFF_SIZE;
+    USHORT                  len;
     rfx_getcwd_req          *acc;
     rfx_getcwd_ret          *ret;
 
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
+    len = RFX_NAME_MAX + 1;
     ret->err = DosQCurDir( acc->drive, GetOutPtr( sizeof( *ret ) ), &len );
     return( sizeof( *ret ) + len );
 }
@@ -352,7 +352,7 @@ trap_retval ReqRfx_nametocannonical( void )
     int                         level = 0;
     USHORT                      drive;
     ULONG                       map;
-    USHORT                      len = BUFF_SIZE;
+    USHORT                      len;
 
     // Not tested, and not used right now
     name = GetInPtr( sizeof( rfx_nametocannonical_req ) );
@@ -368,6 +368,7 @@ trap_retval ReqRfx_nametocannonical( void )
     } else {
         DosQCurDisk( &drive, &map );
     }
+    len = RFX_NAME_MAX + 1;
     if( *name != '\\' ) {
         *fullname++ = '\\';
         // DOS : TinyGetCWDir( fullname, TinyGetCurrDrive() + 1 );
