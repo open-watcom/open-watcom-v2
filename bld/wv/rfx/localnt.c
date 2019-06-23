@@ -42,7 +42,6 @@
 #include "trprfx.h"
 #include "local.h"
 #include "rfx.h"
-#include "_dtaxxx.h"
 
 #include "clibext.h"
 
@@ -314,15 +313,15 @@ static bool __NTFindNextFileWithAttr( HANDLE h, unsigned nt_attribs, LPWIN32_FIN
     }
 }
 
-static void makeDTARFX( LPWIN32_FIND_DATA ffb, rfx_find *info, HANDLE h, unsigned attr )
+static void makeDTARFX( rfx_find *info, LPWIN32_FIND_DATA ffb, HANDLE h, unsigned attr )
 /**************************************************************************************/
 {
-    DTARFX_HANDLE_OF( info->reserved ) = (pointer_int)h;
-    DTARFX_ATTRIB_OF( info->reserved ) = attr;
+    DTARFX_HANDLE_OF( info ) = (pointer_int)h;
+    DTARFX_ATTRIB_OF( info ) = attr;
     info->attr = __NT2DOSAttr( ffb->dwFileAttributes );
     __MakeDOSDT( &ffb->ftLastWriteTime, &info->date, &info->time );
-    DTARFX_TIME_OF( info->reserved ) = info->time;
-    DTARFX_DATE_OF( info->reserved ) = info->date;
+    DTARFX_TIME_OF( info ) = info->time;
+    DTARFX_DATE_OF( info ) = info->date;
     info->size = ffb->nFileSizeLow;
     strncpy( info->name, ffb->cFileName, RFX_NAME_MAX );
     info->name[RFX_NAME_MAX] = 0;
@@ -340,17 +339,18 @@ error_handle LocalFindFirst( const char *pattern, rfx_find *info, unsigned info_
 
     h = FindFirstFile( (LPTSTR)pattern, &ffb );
     if( h == INVALID_HANDLE_VALUE ) {
-        DTAXXX_HANDLE_OF( info ) = DTAXXX_INVALID_HANDLE;
+        error = GetLastError();
+        DTARFX_HANDLE_OF( info ) = DTARFX_INVALID_HANDLE;
         return( StashErrCode( -1, OP_LOCAL ) );
     }
     nt_attribs = __DOS2NTAtrr( dos_attribs );
     if( !__NTFindNextFileWithAttr( h, nt_attribs, &ffb ) ) {
         error = GetLastError();
-        DTAXXX_HANDLE_OF( info ) = DTAXXX_INVALID_HANDLE;
         FindClose( h );
+        DTARFX_HANDLE_OF( info ) = DTARFX_INVALID_HANDLE;
         return( StashErrCode( -1, OP_LOCAL ) );
     }
-    makeDTARFX( &ffb, info, h, nt_attribs );
+    makeDTARFX( info, &ffb, h, nt_attribs );
     return( 0 );
 }
 
@@ -363,34 +363,28 @@ int LocalFindNext( rfx_find *info, unsigned info_len )
 
     /* unused parameters */ (void)info_len;
 
-    h = DTAXXX_HANDLE_OF( info );
-    if( !FindNextFile( h, &ffb ) ) {
-        if( h != DTAXXX_INVALID_HANDLE ) {
-            FindClose( h );
-        }
+    if( DTARFX_HANDLE_OF( info ) == DTARFX_INVALID_HANDLE ) {
         return( -1 );
     }
-    nt_attribs = DTAXXX_ATTR_OF( info );
-    if( !__NTFindNextFileWithAttr( h, nt_attribs, &ffb ) ) {
-        if( h != DTAXXX_INVALID_HANDLE ) {
-            FindClose( h );
-        }
+    h = (HANDLE)DTARFX_HANDLE_OF( info );
+    nt_attribs = DTARFX_ATTRIB_OF( info );
+    if( !FindNextFile( h, &ffb ) || !__NTFindNextFileWithAttr( h, nt_attribs, &ffb ) ) {
+        FindClose( h );
+        DTARFX_HANDLE_OF( info ) = DTARFX_INVALID_HANDLE;
         return( -1 );
     }
-    makeDTARFX( &ffb, info, h, nt_attribs );
+    makeDTARFX( info, &ffb, h, nt_attribs );
     return( 0 );
 }
 
 error_handle LocalFindClose( rfx_find *info, unsigned info_len )
 /**************************************************************/
 {
-    HANDLE              h;
-
     /* unused parameters */ (void)info_len;
 
-    h = DTAXXX_HANDLE_OF( info );
-    if( h != DTAXXX_INVALID_HANDLE ) {
-        FindClose( h );
+    if( DTARFX_HANDLE_OF( info ) != DTARFX_INVALID_HANDLE ) {
+        FindClose( (HANDLE)DTARFX_HANDLE_OF( info ) );
+        DTARFX_HANDLE_OF( info ) = DTARFX_INVALID_HANDLE;
     }
     return( 0 );
 }

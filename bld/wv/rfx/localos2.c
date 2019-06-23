@@ -259,16 +259,16 @@ error_handle LocalGetCwd( int drive, char *where, unsigned len )
 #endif
 }
 
-static void makeDTARFX( FINDBUF *findbuf, rfx_find *info, HDIR h )
+static void makeDTARFX( rfx_find *info, FINDBUF *findbuf, HDIR h )
 /****************************************************************/
 {
-    DTARFX_HANDLE_OF( info->reserved ) = h;
-    info->time = DTARFX_TIME_OF( info->reserved ) = *(USHORT FAR *)&findbuf->ftimeLastWrite;
-    info->date = DTARFX_DATE_OF( info->reserved ) = *(USHORT FAR *)&findbuf->fdateLastWrite;
+    DTARFX_HANDLE_OF( info ) = h;
+    info->time = DTARFX_TIME_OF( info ) = *(USHORT FAR *)&findbuf->ftimeLastWrite;
+    info->date = DTARFX_DATE_OF( info ) = *(USHORT FAR *)&findbuf->fdateLastWrite;
     info->attr = findbuf->attrFile;
     info->size = findbuf->cbFile;
-    strncpy( info->name, findbuf->achName, RFX_NAME_MAX );
-    info->name[RFX_NAME_MAX] = '\0';
+    strncpy( info->name, findbuf->achName, CCHMAXPATHCOMP );
+    info->name[CCHMAXPATHCOMP] = '\0';
 }
 
 error_handle LocalFindFirst( const char *pattern, rfx_find *info, unsigned info_len, int attrib )
@@ -289,9 +289,12 @@ error_handle LocalFindFirst( const char *pattern, rfx_find *info, unsigned info_
 #else
     err = DosFindFirst( pattern, &h, attrib, &findbuf, sizeof( findbuf ), &count, FIL_STANDARD );
 #endif
-    if( err == 0 )
-        makeDTARFX( &findbuf, info, h );
-    return( StashErrCode( err, OP_LOCAL ) );
+    if( err ) {
+        DTARFX_HANDLE_OF( info ) = DTARFX_INVALID_HANDLE;
+        return( StashErrCode( err, OP_LOCAL ) );
+    }
+    makeDTARFX( info, &findbuf, h );
+    return( 0 );
 }
 
 int LocalFindNext( rfx_find *info, unsigned info_len )
@@ -304,29 +307,30 @@ int LocalFindNext( rfx_find *info, unsigned info_len )
 
     /* unused parameters */ (void)info_len;
 
-    h = DTARFX_HANDLE_OF( info->reserved );
-    rc = DosFindNext( h, &findbuf, sizeof( findbuf ), &count );
-    if( rc != 0 )
-        return( -1 );
-    if( count == 0 ) {
-        DosFindClose( h );
+    if( DTARFX_HANDLE_OF( info ) == DTARFX_INVALID_HANDLE ) {
         return( -1 );
     }
-    makeDTARFX( &findbuf, info, h );
+    h = DTARFX_HANDLE_OF( info );
+    rc = DosFindNext( h, &findbuf, sizeof( findbuf ), &count );
+    if( rc || count == 0 ) {
+        DosFindClose( h );
+        DTARFX_HANDLE_OF( info ) = DTARFX_INVALID_HANDLE;
+        return( -1 );
+    }
+    makeDTARFX( info, &findbuf, h );
     return( 0 );
 }
 
 error_handle LocalFindClose( rfx_find *info, unsigned info_len )
 /**************************************************************/
 {
-    HDIR        h;
-    APIRET      err;
-
     /* unused parameters */ (void)info_len;
 
-    h = DTARFX_HANDLE_OF( info->reserved );
-    err = DosFindClose( h );
-    return( StashErrCode( err, OP_LOCAL ) );
+    if( DTARFX_HANDLE_OF( info ) != DTARFX_INVALID_HANDLE ) {
+        DosFindClose( DTARFX_HANDLE_OF( info ) );
+        DTARFX_HANDLE_OF( info ) = DTARFX_INVALID_HANDLE;
+    }
+    return( 0 );
 }
 
 /*

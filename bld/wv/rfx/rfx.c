@@ -1082,12 +1082,13 @@ static error_handle   CopyASpec( const char *f1, const char *f2, object_loc f1lo
     Copy( &Parse1, &Parse3, sizeof( file_parse ) );
     if( Parse2.name[0] == NULLCHAR )
         return( StashErrCode( IO_FILE_NOT_FOUND, OP_LOCAL ) );
-    dst_entryid = (unsigned_32)-1;
+    dst_entryid = DTARFX_INVALID_ID;
     if( ( f1loc == f2loc ) && ( Parse1.drive[0] == Parse2.drive[0] ) ) {
         Squish( &Parse2, Name2 );
         errh = _FindFirst( Name2, f2loc, IO_SUBDIRECTORY, &info, sizeof( info ) );
         if( errh == 0 ) {
-            dst_entryid = DTARFX_ID_OF( info.reserved );
+            dst_entryid = DTARFX_ID_OF( &info );
+            _FindClose( f2loc, &info, sizeof( info ) );
         }
     }
     endpath = Squish( &Parse1, Name1 );
@@ -1107,7 +1108,7 @@ static error_handle   CopyASpec( const char *f1, const char *f2, object_loc f1lo
                 CopyStr( Parse2.path, Parse3.path );
                 CopyStr( Parse2.drive, Parse3.drive );
                 endptr = Squish( &Parse3, Name2 );
-                if( DTARFX_ID_OF( info.reserved ) == dst_entryid && strcmp( endptr, endpath ) == 0 ) {
+                if( DTARFX_ID_OF( &info ) == dst_entryid && strcmp( endptr, endpath ) == 0 ) {
                     errh = StashErrCode( IO_CANT_COPY_TO_SELF, OP_LOCAL );
                 } else {
                     errh = DoCopy( Name1, Name2, f1loc, f2loc );

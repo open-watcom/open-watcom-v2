@@ -280,72 +280,80 @@ trap_retval ReqRfx_getcwd( void )
     return( sizeof( *ret ) + len );
 }
 
-static void MoveDirInfo( FILEFINDBUF *os2, rfx_find FAR *find_info, HDIR hdl )
+static void makeDTARFX( rfx_find FAR *info, FILEFINDBUF *findbuf, HDIR h )
 {
-    DTARFX_HANDLE_OF( find_info->reserved ) = hdl;
-    find_info->time = DTARFX_TIME_OF( find_info->reserved ) = *(USHORT __far *)&os2->ftimeLastWrite;
-    find_info->date = DTARFX_DATE_OF( find_info->reserved ) = *(USHORT __far *)&os2->fdateLastWrite;
-    find_info->attr = os2->attrFile;
-    find_info->size = os2->cbFile;
-    strncpy( find_info->name, os2->achName, RFX_NAME_MAX );
-    find_info->name[RFX_NAME_MAX] = '\0';
+    DTARFX_HANDLE_OF( info ) = h;
+    info->time = DTARFX_TIME_OF( info ) = *(USHORT __far *)&findbuf->ftimeLastWrite;
+    info->date = DTARFX_DATE_OF( info ) = *(USHORT __far *)&findbuf->fdateLastWrite;
+    info->attr = findbuf->attrFile;
+    info->size = findbuf->cbFile;
+    strncpy( info->name, findbuf->achName, CCHMAXPATHCOMP );
+    info->name[CCHMAXPATHCOMP] = '\0';
 }
 
 trap_retval ReqRfx_findfirst( void )
 {
-    FILEFINDBUF             info;
+    FILEFINDBUF             findbuf;
     USHORT                  rc;
-    HDIR                    hdl;
+    HDIR                    h;
     USHORT                  count = 1;
     rfx_findfirst_req       *acc;
     rfx_findfirst_ret       *ret;
-    rfx_find                *find_info;
+    rfx_find                *info;
 
     acc = GetInPtr( 0 );
+    h = HDIR_CREATE;
     ret = GetOutPtr( 0 );
-    hdl = HDIR_CREATE;
-    ret->err = rc = DosFindFirst( GetInPtr( sizeof( *acc ) ), &hdl, acc->attrib, &info, sizeof( info ), &count, 0 );
-    if( rc == 0 ) {
-        find_info = (rfx_find *)GetOutPtr( sizeof( *ret ) );
-        MoveDirInfo( &info, find_info, hdl );
-        return( sizeof( *ret ) + offsetof( rfx_find, name ) + strlen( find_info->name ) + 1 );
-    } else {
-        return( sizeof( *ret ) );
+    ret->err = rc = DosFindFirst( GetInPtr( sizeof( *acc ) ), &h, acc->attrib, &findbuf, sizeof( findbuf ), &count, 0 );
+    info = GetOutPtr( sizeof( *ret ) );
+    if( rc ) {
+        DTARFX_HANDLE_OF( info ) = DTARFX_INVALID_HANDLE;
+        return( sizeof( *ret ) + offsetof( rfx_find, name ) );
     }
+    makeDTARFX( info, &findbuf, h );
+    return( sizeof( *ret ) + offsetof( rfx_find, name ) + strlen( info->name ) + 1 );
 }
 
 trap_retval ReqRfx_findnext( void )
 {
-    FILEFINDBUF             info;
+    FILEFINDBUF             findbuf;
     USHORT                  rc;
     USHORT                  count = 1;
     rfx_findnext_ret        *ret;
-    HDIR                    hdl;
-    rfx_find                *find_info;
+    HDIR                    h;
+    rfx_find                *info;
 
-    find_info = GetInPtr( sizeof( rfx_findnext_req ) );
-    hdl = DTARFX_HANDLE_OF( find_info->reserved );
+    info = GetInPtr( sizeof( rfx_findnext_req ) );
     ret = GetOutPtr( 0 );
-    ret->err = rc = DosFindNext( hdl, &info, sizeof( info ), &count );
-    if( rc == 0 ) {
-        find_info = (rfx_find *)GetOutPtr( sizeof(*ret) );
-        MoveDirInfo( &info, find_info, hdl );
-        return( sizeof( *ret ) + offsetof( rfx_find, name ) + strlen( find_info->name ) + 1 );
-    } else {
+    if( DTARFX_HANDLE_OF( info ) == DTARFX_INVALID_HANDLE ) {
+        ret->err = -1;
         return( sizeof( *ret ) );
     }
+    h = DTARFX_HANDLE_OF( info );
+    ret->err = rc = DosFindNext( h, &findbuf, sizeof( findbuf ), &count );
+    info = GetOutPtr( sizeof(*ret) );
+    if( rc ) {
+        DosFindClose( h );
+        DTARFX_HANDLE_OF( info ) = DTARFX_INVALID_HANDLE;
+        return( sizeof( *ret ) + offsetof( rfx_find, name ) );
+    }
+    makeDTARFX( info, &findbuf, h );
+    return( sizeof( *ret ) + offsetof( rfx_find, name ) + strlen( info->name ) + 1 );
 }
 
 trap_retval ReqRfx_findclose( void )
 {
     rfx_findclose_ret       *ret;
-    HDIR                    hdl;
-    rfx_find                *find_info;
+    HDIR                    h;
+    rfx_find                *info;
 
-    find_info = GetInPtr( sizeof( rfx_findclose_req ) );
-    hdl = DTARFX_HANDLE_OF( find_info->reserved );
+    info = GetInPtr( sizeof( rfx_findclose_req ) );
     ret = GetOutPtr( 0 );
-    ret->err = DosFindClose( hdl );
+    ret->err = 0;
+    if( DTARFX_HANDLE_OF( info ) != DTARFX_INVALID_HANDLE ) {
+        h = DTARFX_HANDLE_OF( info );
+        DosFindClose( h );
+    }
     return( sizeof( *ret ) );
 }
 
@@ -425,5 +433,5 @@ trap_retval ReqRfx_nametocannonical( void )
         }
     }
 done:
-    return( sizeof( *ret ) + strlen( GetOutPtr( sizeof(*ret) ) ) + 1 );
+    return( sizeof( *ret ) + strlen( GetOutPtr( sizeof( *ret ) ) ) + 1 );
 }

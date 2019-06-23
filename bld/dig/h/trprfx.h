@@ -208,13 +208,13 @@ typedef struct __rfx_dta {  /* total size 21 bytes */
 //    unsigned_8      reserved2[4];
 } __rfx_dta;
 
-#define DTARFX_HANDLE_OF(x)     (((__rfx_dta *)(x))->u1.s.handle)
-#define DTARFX_ATTRIB_OF(x)     (((__rfx_dta *)(x))->u1.s.attrib)
-#define DTARFX_DIR_NUM_OF(x)    (((__rfx_dta *)(x))->u.dos.dir_entry_num)
-#define DTARFX_CLUSTER_OF(x)    (((__rfx_dta *)(x))->u.dos.cluster)
-#define DTARFX_TIME_OF(x)       (((__rfx_dta *)(x))->u.stamp.time)
-#define DTARFX_DATE_OF(x)       (((__rfx_dta *)(x))->u.stamp.date)
-#define DTARFX_ID_OF(x)         (((__rfx_dta *)(x))->u.id)
+#define DTARFX_HANDLE_OF(x)     (((__rfx_dta *)(x)->reserved)->u1.s.handle)
+#define DTARFX_ATTRIB_OF(x)     (((__rfx_dta *)(x)->reserved)->u1.s.attrib)
+#define DTARFX_DIR_NUM_OF(x)    (((__rfx_dta *)(x)->reserved)->u.dos.dir_entry_num)
+#define DTARFX_CLUSTER_OF(x)    (((__rfx_dta *)(x)->reserved)->u.dos.cluster)
+#define DTARFX_TIME_OF(x)       (((__rfx_dta *)(x)->reserved)->u.stamp.time)
+#define DTARFX_DATE_OF(x)       (((__rfx_dta *)(x)->reserved)->u.stamp.date)
+#define DTARFX_ID_OF(x)         (((__rfx_dta *)(x)->reserved)->u.id)
 
 #define DTARFX_INVALID_HANDLE   ((long long)~0)
 #define DTARFX_INVALID_ID       ((unsigned_32)~0)
@@ -264,4 +264,3 @@ typedef struct {
 #include "poppck.h"
 
 #endif
-
