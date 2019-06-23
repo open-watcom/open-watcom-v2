@@ -216,6 +216,9 @@ typedef struct __rfx_dta {  /* total size 21 bytes */
 #define DTARFX_DATE_OF(x)       (((__rfx_dta *)(x))->u.stamp.date)
 #define DTARFX_ID_OF(x)         (((__rfx_dta *)(x))->u.id)
 
+#define DTARFX_INVALID_HANDLE   ((long long)~0)
+#define DTARFX_INVALID_ID       ((unsigned_32)~0)
+
 typedef struct {
     unsigned_8          reserved[21];
     unsigned_8          attr;
