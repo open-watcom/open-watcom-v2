@@ -29,18 +29,19 @@
 ****************************************************************************/
 
 
+#include <ctype.h>
 #include <stdlib.h>
 #if defined( __WATCOMC__ ) || !defined( __UNIX__ )
-#include <process.h>
+    #include <process.h>
 #endif
 #include "wio.h"
 #include "dbgdefn.h"
 #if !defined( BUILD_RFX )
-#include "dbgdata.h"
-#include "dbglit.h"
-#include "dui.h"
+    #include "dbgdata.h"
+    #include "dbglit.h"
+    #include "dui.h"
 #else
-#include "rfxdata.h"
+    #include "rfxdata.h"
 #endif
 #include "dbgmem.h"
 #include "dbgio.h"
