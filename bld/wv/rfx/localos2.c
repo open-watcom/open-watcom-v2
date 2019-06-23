@@ -53,6 +53,7 @@
 #define LH2SYSH(sh,lh)  (sh).u._32[0]=lh;(sh).u._32[1]=0
 
 void LocalTime( int *hour, int *min, int *sec, int *hundredths )
+/**************************************************************/
 {
     struct _DATETIME datetime;
 
@@ -64,6 +65,7 @@ void LocalTime( int *hour, int *min, int *sec, int *hundredths )
 }
 
 void LocalDate( int *year, int *month, int *day, int *weekday )
+/*************************************************************/
 {
     struct _DATETIME datetime;
 
@@ -257,36 +259,38 @@ error_handle LocalGetCwd( int drive, char *where, unsigned len )
 #endif
 }
 
-static void makeDOSDTA( FINDBUF *findbuf, rfx_find *find_info, HDIR hdl )
-/***********************************************************************/
+static void makeDTARFX( FINDBUF *findbuf, rfx_find *info, HDIR h )
+/****************************************************************/
 {
-    DTARFX_HANDLE_OF( find_info->reserved ) = hdl;
-    find_info->time = DTARFX_TIME_OF( find_info->reserved ) = *(USHORT FAR *)&findbuf->ftimeLastWrite;
-    find_info->date = DTARFX_DATE_OF( find_info->reserved ) = *(USHORT FAR *)&findbuf->fdateLastWrite;
-    find_info->attr = findbuf->attrFile;
-    find_info->size = findbuf->cbFile;
-    strncpy( find_info->name, findbuf->achName, RFX_NAME_MAX );
-    find_info->name[RFX_NAME_MAX] = '\0';
+    DTARFX_HANDLE_OF( info->reserved ) = h;
+    info->time = DTARFX_TIME_OF( info->reserved ) = *(USHORT FAR *)&findbuf->ftimeLastWrite;
+    info->date = DTARFX_DATE_OF( info->reserved ) = *(USHORT FAR *)&findbuf->fdateLastWrite;
+    info->attr = findbuf->attrFile;
+    info->size = findbuf->cbFile;
+    strncpy( info->name, findbuf->achName, RFX_NAME_MAX );
+    info->name[RFX_NAME_MAX] = '\0';
 }
 
 error_handle LocalFindFirst( const char *pattern, rfx_find *info, unsigned info_len, int attrib )
 /***********************************************************************************************/
 {
     FINDBUF     findbuf;
-    HDIR        hdl;
+    HDIR        h;
     APIRET      count = 1;
     APIRET      err;
 
+    /* unused parameters */ (void)info_len;
+
     (void)info_len;
 
-    hdl = HDIR_CREATE;
+    h = HDIR_CREATE;
 #ifdef _M_I86
-    err = DosFindFirst( (char *)pattern, &hdl, attrib, &findbuf, sizeof( findbuf ), &count, 0 );
+    err = DosFindFirst( (char *)pattern, &h, attrib, &findbuf, sizeof( findbuf ), &count, 0 );
 #else
-    err = DosFindFirst( pattern, &hdl, attrib, &findbuf, sizeof( findbuf ), &count, FIL_STANDARD );
+    err = DosFindFirst( pattern, &h, attrib, &findbuf, sizeof( findbuf ), &count, FIL_STANDARD );
 #endif
     if( err == 0 )
-        makeDOSDTA( &findbuf, info, hdl );
+        makeDTARFX( &findbuf, info, h );
     return( StashErrCode( err, OP_LOCAL ) );
 }
 
@@ -296,32 +300,32 @@ int LocalFindNext( rfx_find *info, unsigned info_len )
     FINDBUF     findbuf;
     APIRET      count = 1;
     APIRET      rc;
-    HDIR        hdl;
+    HDIR        h;
 
-    (void)info_len;
+    /* unused parameters */ (void)info_len;
 
-    hdl = DTARFX_HANDLE_OF( info->reserved );
-    rc = DosFindNext( hdl, &findbuf, sizeof( findbuf ), &count );
+    h = DTARFX_HANDLE_OF( info->reserved );
+    rc = DosFindNext( h, &findbuf, sizeof( findbuf ), &count );
     if( rc != 0 )
         return( -1 );
     if( count == 0 ) {
-        DosFindClose( 1 );
+        DosFindClose( h );
         return( -1 );
     }
-    makeDOSDTA( &findbuf, info, hdl );
+    makeDTARFX( &findbuf, info, h );
     return( 0 );
 }
 
 error_handle LocalFindClose( rfx_find *info, unsigned info_len )
 /**************************************************************/
 {
-    HDIR        hdl;
+    HDIR        h;
     APIRET      err;
 
-    (void)info_len;
+    /* unused parameters */ (void)info_len;
 
-    hdl = DTARFX_HANDLE_OF( info->reserved );
-    err = DosFindClose( hdl );
+    h = DTARFX_HANDLE_OF( info->reserved );
+    err = DosFindClose( h );
     return( StashErrCode( err, OP_LOCAL ) );
 }
 
@@ -340,12 +344,10 @@ static void __pascal __far doInterrupt( USHORT signal_argument, USHORT signal_nu
     interruptOccurred = true;
     switch( signal_num ) {
     case SIG_CTRLBREAK:
-        DosSetSigHandler( doInterrupt, &handler, &action,
-                          SIGA_ACKNOWLEDGE, SIG_CTRLBREAK );
+        DosSetSigHandler( doInterrupt, &handler, &action, SIGA_ACKNOWLEDGE, SIG_CTRLBREAK );
         break;
     case SIG_CTRLC:
-        DosSetSigHandler( doInterrupt, &handler, &action,
-                          SIGA_ACKNOWLEDGE, SIG_CTRLC );
+        DosSetSigHandler( doInterrupt, &handler, &action, SIGA_ACKNOWLEDGE, SIG_CTRLC );
         break;
     }
 }
@@ -360,8 +362,8 @@ void InitInt( void )
 
     interruptOccurred = false;
 #ifdef _M_I86
-    DosSetSigHandler( doInterrupt, &handler, &action,SIGA_ACCEPT,SIG_CTRLC);
-    DosSetSigHandler( doInterrupt, &handler, &action,SIGA_ACCEPT,SIG_CTRLBREAK);
+    DosSetSigHandler( doInterrupt, &handler, &action, SIGA_ACCEPT, SIG_CTRLC );
+    DosSetSigHandler( doInterrupt, &handler, &action, SIGA_ACCEPT, SIG_CTRLBREAK );
 #endif
     DosError( 0x0002 ); /* disable hard-error processing */
 }

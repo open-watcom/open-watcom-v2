@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -198,30 +199,30 @@ error_handle LocalDateTime( sys_handle sh, int *time, int *date, int set )
         *ptime = file_stamp->time;
         *pdate = file_stamp->date;
     }
-    return( DOSErrCode( rc) );
+    return( DOSErrCode( rc ) );
 }
 
 error_handle LocalGetCwd( int drv, char *where, unsigned len )
 /************************************************************/
 {
-    (void)len;
+    /* unused parameters */ (void)len;
 
-    return( DOSErrCode( TinyGetCWDir( where, drv )) );
+    return( DOSErrCode( TinyGetCWDir( where, drv ) ) );
 }
 
 error_handle LocalFindFirst( const char *pattern, rfx_find *info, unsigned info_len, int attrib )
 /***********************************************************************************************/
 {
-    (void)info_len;
+    /* unused parameters */ (void)info_len;
 
     TinySetDTA( info );
-    return( DOSErrCode( TinyFindFirst( pattern, attrib )) );
+    return( DOSErrCode( TinyFindFirst( pattern, attrib ) ) );
 }
 
 int LocalFindNext( rfx_find *info, unsigned info_len )
 /****************************************************/
 {
-    (void)info_len;
+    /* unused parameters */ (void)info_len;
 
     TinySetDTA( info );
     return( TinyFindNext() );
@@ -230,7 +231,7 @@ int LocalFindNext( rfx_find *info, unsigned info_len )
 error_handle LocalFindClose( rfx_find *info, unsigned info_len )
 /**************************************************************/
 {
-    (void)info; (void)info_len;
+    /* unused parameters */ (void)info; (void)info_len;
 
     return( DOSErrCode( 0 ) );
 }
@@ -238,5 +239,5 @@ error_handle LocalFindClose( rfx_find *info, unsigned info_len )
 error_handle LocalSetFileAttr( const char *name, long attr )
 /**********************************************************/
 {
-    return( DOSErrCode( TinySetFileAttr( name, attr )) );
+    return( DOSErrCode( TinySetFileAttr( name, attr ) ) );
 }

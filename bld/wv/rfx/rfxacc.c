@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -43,10 +44,10 @@
 #include "rfxacc.h"
 
 
-#define SUPP_RFX_SERVICE( in, request )         \
-        in.supp.core_req        = REQ_PERFORM_SUPPLEMENTARY_SERVICE;    \
-        in.supp.id              = SuppRFXId;    \
-        in.req                  = request;
+#define SUPP_RFX_SERVICE( in, request ) \
+    in.supp.core_req    = REQ_PERFORM_SUPPLEMENTARY_SERVICE; \
+    in.supp.id          = SuppRFXId;    \
+    in.req              = request;
 
 #ifdef __NT__
 system_config           SysConfig;
@@ -57,7 +58,7 @@ static trap_shandle     SuppRFXId;
 bool InitRFXSupp( void )
 {
 #ifdef __NT__
-    get_sys_config_req  acc;
+    get_sys_config_req      acc;
 
 #endif
     SuppRFXId = GetSuppId( RFX_SUPP_NAME );
@@ -70,12 +71,12 @@ bool InitRFXSupp( void )
     return( true );
 }
 
-error_handle RemoteRename( const char * from, const char *to )
+error_handle RemoteRename( const char *from, const char *to )
 {
-    in_mx_entry         in[3];
-    mx_entry            out[1];
-    rfx_rename_req      acc;
-    rfx_rename_ret      ret;
+    in_mx_entry             in[3];
+    mx_entry                out[1];
+    rfx_rename_req          acc;
+    rfx_rename_ret          ret;
 
     SUPP_RFX_SERVICE( acc, REQ_RFX_RENAME );
     in[0].ptr = &acc;
@@ -92,10 +93,10 @@ error_handle RemoteRename( const char * from, const char *to )
 
 error_handle RemoteMkDir( const char *name )
 {
-    in_mx_entry         in[2];
-    mx_entry            out[1];
-    rfx_mkdir_req       acc;
-    rfx_mkdir_ret       ret;
+    in_mx_entry             in[2];
+    mx_entry                out[1];
+    rfx_mkdir_req           acc;
+    rfx_mkdir_ret           ret;
 
     SUPP_RFX_SERVICE( acc, REQ_RFX_MKDIR );
     in[0].ptr = &acc;
@@ -110,10 +111,10 @@ error_handle RemoteMkDir( const char *name )
 
 error_handle RemoteRmDir( const char *name )
 {
-    in_mx_entry         in[2];
-    mx_entry            out[1];
-    rfx_rmdir_req       acc;
-    rfx_rmdir_ret       ret;
+    in_mx_entry             in[2];
+    mx_entry                out[1];
+    rfx_rmdir_req           acc;
+    rfx_rmdir_ret           ret;
 
     SUPP_RFX_SERVICE( acc, REQ_RFX_RMDIR );
     in[0].ptr = &acc;
@@ -128,8 +129,8 @@ error_handle RemoteRmDir( const char *name )
 
 error_handle RemoteSetDrv( int drv )
 {
-    rfx_setdrive_req    acc;
-    rfx_setdrive_ret    ret;
+    rfx_setdrive_req        acc;
+    rfx_setdrive_ret        ret;
 
     SUPP_RFX_SERVICE( acc, REQ_RFX_SETDRIVE );
     acc.drive = drv;
@@ -139,8 +140,8 @@ error_handle RemoteSetDrv( int drv )
 
 int RemoteGetDrv( void )
 {
-    rfx_getdrive_req    acc;
-    rfx_getdrive_ret    ret;
+    rfx_getdrive_req        acc;
+    rfx_getdrive_ret        ret;
 
     SUPP_RFX_SERVICE( acc, REQ_RFX_GETDRIVE );
     TrapSimpAccess( sizeof( acc ), &acc, sizeof( ret ), &ret );
@@ -149,10 +150,10 @@ int RemoteGetDrv( void )
 
 error_handle RemoteSetCWD( const char *name )
 {
-    in_mx_entry         in[2];
-    mx_entry            out[1];
-    rfx_setcwd_req      acc;
-    rfx_setcwd_ret      ret;
+    in_mx_entry             in[2];
+    mx_entry                out[1];
+    rfx_setcwd_req          acc;
+    rfx_setcwd_ret          ret;
 
     SUPP_RFX_SERVICE( acc, REQ_RFX_SETCWD );
     in[0].ptr = &acc;
@@ -165,12 +166,12 @@ error_handle RemoteSetCWD( const char *name )
     return( StashErrCode( ret.err, OP_REMOTE ) );
 }
 
-long RemoteGetFileAttr( const char * name )
+long RemoteGetFileAttr( const char *name )
 {
-    in_mx_entry         in[2];
-    mx_entry            out[1];
-    rfx_getfileattr_req acc;
-    rfx_getfileattr_ret ret;
+    in_mx_entry             in[2];
+    mx_entry                out[1];
+    rfx_getfileattr_req     acc;
+    rfx_getfileattr_ret     ret;
 
     SUPP_RFX_SERVICE( acc, REQ_RFX_GETFILEATTR );
     in[0].ptr = &acc;
@@ -187,12 +188,12 @@ long RemoteGetFileAttr( const char * name )
     return( ret.attribute );
 }
 
-error_handle RemoteSetFileAttr( const char * name, long attrib )
+error_handle RemoteSetFileAttr( const char *name, long attrib )
 {
-    in_mx_entry         in[2];
-    mx_entry            out[1];
-    rfx_setfileattr_req acc;
-    rfx_setfileattr_ret ret;
+    in_mx_entry             in[2];
+    mx_entry                out[1];
+    rfx_setfileattr_req     acc;
+    rfx_setfileattr_ret     ret;
 
     SUPP_RFX_SERVICE( acc, REQ_RFX_SETFILEATTR );
     acc.attribute = attrib;
@@ -231,8 +232,7 @@ static void mylocaltime( unsigned long date_time, int *time, int *date )
     num_yr_since_1970 = date_time / 31622400UL;
     num_leap_since_1970 = ( num_yr_since_1970 - 2 ) / 4;
     date_time -= ( ( num_leap_since_1970 * 366 +
-                   ( num_yr_since_1970 - num_leap_since_1970 ) * 365 )
-                   * 86400 );
+                   ( num_yr_since_1970 - num_leap_since_1970 ) * 365 ) * 86400 );
     day = ( date_time / 86400 ) + 1;   // Start from Jan 1, not Jan 0
     if( ( ( num_yr_since_1970 - 2 ) % 4 ) == 0 ) {
         //leap
@@ -294,8 +294,8 @@ static unsigned long mymktime( unsigned time, unsigned date )
     }
     day += ( num_leap_since_1980 * 366
              + ( num_yr_since_1980 - num_leap_since_1980 ) * 365
-             + day_since_jan[month-1] - 1 );
-    return( NM_SEC_1970_1980 + day*86400 + hour*3600 + min*60 + sec );
+             + day_since_jan[month - 1] - 1 );
+    return( NM_SEC_1970_1980 + day * 86400 + hour * 3600 + min * 60 + sec );
 }
 
 error_handle RemoteDateTime( sys_handle sh, int *time, int *date, int set )
@@ -327,10 +327,10 @@ error_handle RemoteDateTime( sys_handle sh, int *time, int *date, int set )
 
 error_handle RemoteGetCwd( int drv, char *where, trap_elen len )
 {
-    in_mx_entry         in[1];
-    mx_entry            out[2];
-    rfx_getcwd_req      acc;
-    rfx_getcwd_ret      ret;
+    in_mx_entry             in[1];
+    mx_entry                out[2];
+    rfx_getcwd_req          acc;
+    rfx_getcwd_ret          ret;
 
     SUPP_RFX_SERVICE( acc, REQ_RFX_GETCWD );
     acc.drive = drv;
@@ -346,10 +346,10 @@ error_handle RemoteGetCwd( int drv, char *where, trap_elen len )
 
 error_handle RemoteFindFirst( const char *pattern, rfx_find *info, trap_elen info_len, int attrib )
 {
-    in_mx_entry          in[2];
-    mx_entry             out[2];
-    rfx_findfirst_req   acc;
-    rfx_findfirst_ret   ret;
+    in_mx_entry             in[2];
+    mx_entry                out[2];
+    rfx_findfirst_req       acc;
+    rfx_findfirst_ret       ret;
 
     SUPP_RFX_SERVICE( acc, REQ_RFX_FINDFIRST );
     acc.attrib = attrib;
@@ -368,10 +368,10 @@ error_handle RemoteFindFirst( const char *pattern, rfx_find *info, trap_elen inf
 
 int RemoteFindNext( rfx_find *info, trap_elen info_len )
 {
-    in_mx_entry         in[2];
-    mx_entry            out[2];
-    rfx_findnext_req    acc;
-    rfx_findnext_ret    ret;
+    in_mx_entry             in[2];
+    mx_entry                out[2];
+    rfx_findnext_req        acc;
+    rfx_findnext_ret        ret;
 
     SUPP_RFX_SERVICE( acc, REQ_RFX_FINDNEXT );
     in[0].ptr = &acc;
@@ -388,10 +388,10 @@ int RemoteFindNext( rfx_find *info, trap_elen info_len )
 
 error_handle RemoteFindClose( rfx_find *info, trap_elen info_len )
 {
-    in_mx_entry         in[2];
-    mx_entry            out[1];
-    rfx_findclose_req   acc;
-    rfx_findclose_ret   ret;
+    in_mx_entry             in[2];
+    mx_entry                out[1];
+    rfx_findclose_req       acc;
+    rfx_findclose_ret       ret;
 
     SUPP_RFX_SERVICE( acc, REQ_RFX_FINDCLOSE );
     in[0].ptr = &acc;
@@ -406,8 +406,8 @@ error_handle RemoteFindClose( rfx_find *info, trap_elen info_len )
 
 size_t RenameNameToCannonical( char *name, char *fullname, trap_elen fullname_len )
 {
-    in_mx_entry           in[2];
-    mx_entry              out[2];
+    in_mx_entry                 in[2];
+    mx_entry                    out[2];
     rfx_nametocannonical_req    acc;
     rfx_nametocannonical_ret    ret;
 
