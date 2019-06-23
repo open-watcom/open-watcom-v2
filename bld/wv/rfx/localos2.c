@@ -244,22 +244,23 @@ error_handle LocalDateTime( sys_handle sh, int *time, int *date, int set )
     return( 0 );
 }
 
-error_handle LocalGetCwd( int drive, char *where )
-/************************************************/
+error_handle LocalGetCwd( int drive, char *where, unsigned len )
+/**************************************************************/
 {
-    APIRET len;
+    APIRET xlen;
 
-    len = 256;
+    xlen = len;
 #ifdef _M_I86
-    return( StashErrCode( DosQCurDir( drive, (PBYTE)where, &len ), OP_LOCAL ) );
+    return( StashErrCode( DosQCurDir( drive, (PBYTE)where, &xlen ), OP_LOCAL ) );
 #else
-    return( StashErrCode( DosQueryCurrentDir( drive, (PBYTE)where, &len ), OP_LOCAL ) );
+    return( StashErrCode( DosQueryCurrentDir( drive, (PBYTE)where, &xlen ), OP_LOCAL ) );
 #endif
 }
 
-static void makeDOSDTA( FINDBUF *findbuf, rfx_find *find_info )
-/*************************************************************/
+static void makeDOSDTA( FINDBUF *findbuf, rfx_find *find_info, HDIR hdl )
+/***********************************************************************/
 {
+    DTARFX_HANDLE_OF( find_info->reserved ) = hdl;
     find_info->time = DTARFX_TIME_OF( find_info->reserved ) = *(USHORT FAR *)&findbuf->ftimeLastWrite;
     find_info->date = DTARFX_DATE_OF( find_info->reserved ) = *(USHORT FAR *)&findbuf->fdateLastWrite;
     find_info->attr = findbuf->attrFile;
@@ -268,43 +269,60 @@ static void makeDOSDTA( FINDBUF *findbuf, rfx_find *find_info )
     find_info->name[RFX_NAME_MAX] = '\0';
 }
 
-error_handle LocalFindFirst( const char *pattern, void *info, unsigned info_len, int attrib )
-/*******************************************************************************************/
+error_handle LocalFindFirst( const char *pattern, rfx_find *info, unsigned info_len, int attrib )
+/***********************************************************************************************/
 {
     FINDBUF     findbuf;
-    HDIR        handle = 1;
+    HDIR        hdl;
     APIRET      count = 1;
     APIRET      err;
 
     (void)info_len;
 
+    hdl = HDIR_CREATE;
 #ifdef _M_I86
-    err = DosFindFirst( (char *)pattern, &handle, attrib, &findbuf, sizeof( findbuf ), &count, 0 );
+    err = DosFindFirst( (char *)pattern, &hdl, attrib, &findbuf, sizeof( findbuf ), &count, 0 );
 #else
-    err = DosFindFirst( pattern, &handle, attrib, &findbuf, sizeof( findbuf ), &count, FIL_STANDARD );
+    err = DosFindFirst( pattern, &hdl, attrib, &findbuf, sizeof( findbuf ), &count, FIL_STANDARD );
 #endif
     if( err == 0 )
-        makeDOSDTA( &findbuf, info );
+        makeDOSDTA( &findbuf, info, hdl );
     return( StashErrCode( err, OP_LOCAL ) );
 }
 
-int LocalFindNext( void *info, unsigned info_len )
-/************************************************/
+int LocalFindNext( rfx_find *info, unsigned info_len )
+/****************************************************/
 {
     FINDBUF     findbuf;
     APIRET      count = 1;
     APIRET      rc;
+    HDIR        hdl;
 
-    info_len = info_len;
-    rc = DosFindNext( 1, &findbuf, sizeof( findbuf ), &count );
+    (void)info_len;
+
+    hdl = DTARFX_HANDLE_OF( info->reserved );
+    rc = DosFindNext( hdl, &findbuf, sizeof( findbuf ), &count );
     if( rc != 0 )
         return( -1 );
     if( count == 0 ) {
         DosFindClose( 1 );
         return( -1 );
     }
-    makeDOSDTA( &findbuf, info );
+    makeDOSDTA( &findbuf, info, hdl );
     return( 0 );
+}
+
+error_handle LocalFindClose( rfx_find *info, unsigned info_len )
+/**************************************************************/
+{
+    HDIR        hdl;
+    APIRET      err;
+
+    (void)info_len;
+
+    hdl = DTARFX_HANDLE_OF( info->reserved );
+    err = DosFindClose( hdl );
+    return( StashErrCode( err, OP_LOCAL ) );
 }
 
 /*

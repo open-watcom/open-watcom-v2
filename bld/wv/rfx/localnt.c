@@ -157,12 +157,10 @@ int LocalGetDrv( void )
     return( -1 );
 }
 
-error_handle LocalGetCwd( int drive, char *where )
-/************************************************/
+error_handle LocalGetCwd( int drive, char *where, unsigned len )
+/**************************************************************/
 {
-    (void)drive;
-
-    return( StashErrCode( getcwd( where, 256 ) == NULL, OP_LOCAL ) );
+    return( StashErrCode( _getdcwd( drive, where, len ) == NULL, OP_LOCAL ) );
 }
 
 error_handle LocalSetCWD( const char *name )
@@ -284,8 +282,8 @@ static void makeDOSDTA( LPWIN32_FIND_DATA ffb, rfx_find *find_info )
     find_info->name[RFX_NAME_MAX] = 0;
 }
 
-error_handle LocalFindFirst( const char *pattern, void *info, unsigned info_len, int attrib )
-/*******************************************************************************************/
+error_handle LocalFindFirst( const char *pattern, rfx_find *info, unsigned info_len, int attrib )
+/***********************************************************************************************/
 {
     HANDLE              h;
     int                 error;
@@ -310,8 +308,8 @@ error_handle LocalFindFirst( const char *pattern, void *info, unsigned info_len,
     return( 0 );
 }
 
-int LocalFindNext( void *info, unsigned info_len )
-/************************************************/
+int LocalFindNext( rfx_find *info, unsigned info_len )
+/****************************************************/
 {
     WIN32_FIND_DATA     ffb;
 
@@ -330,6 +328,17 @@ int LocalFindNext( void *info, unsigned info_len )
         return( -1 );
     }
     makeDOSDTA( &ffb, info );
+    return( 0 );
+}
+
+error_handle LocalFindClose( rfx_find *info, unsigned info_len )
+/**************************************************************/
+{
+    (void)info_len;
+
+    if( DTAXXX_HANDLE_OF( info ) != DTAXXX_INVALID_HANDLE ) {
+        FindClose( DTAXXX_HANDLE_OF( info ) );
+    }
     return( 0 );
 }
 

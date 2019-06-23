@@ -38,6 +38,7 @@
 #include "rfxdata.h"
 #include "dbgio.h"
 #include "tinyio.h"
+#include "trprfx.h"
 #include "local.h"
 #include "rfx.h"
 
@@ -200,26 +201,38 @@ error_handle LocalDateTime( sys_handle sh, int *time, int *date, int set )
     return( DOSErrCode( rc) );
 }
 
-error_handle LocalGetCwd( int drv, char *where )
-/**********************************************/
+error_handle LocalGetCwd( int drv, char *where, unsigned len )
+/************************************************************/
 {
+    (void)len;
+
     return( DOSErrCode( TinyGetCWDir( where, drv )) );
 }
 
-error_handle LocalFindFirst( const char *pattern, void *info, unsigned info_len, int attrib )
-/*******************************************************************************************/
+error_handle LocalFindFirst( const char *pattern, rfx_find *info, unsigned info_len, int attrib )
+/***********************************************************************************************/
 {
-    info_len = info_len;
+    (void)info_len;
+
     TinySetDTA( info );
     return( DOSErrCode( TinyFindFirst( pattern, attrib )) );
 }
 
-int LocalFindNext( void *info, unsigned info_len )
-/************************************************/
+int LocalFindNext( rfx_find *info, unsigned info_len )
+/****************************************************/
 {
-    info_len = info_len;
+    (void)info_len;
+
     TinySetDTA( info );
     return( TinyFindNext() );
+}
+
+error_handle LocalFindClose( rfx_find *info, unsigned info_len )
+/**************************************************************/
+{
+    (void)info; (void)info_len;
+
+    return( DOSErrCode( 0 ) );
 }
 
 error_handle LocalSetFileAttr( const char *name, long attr )

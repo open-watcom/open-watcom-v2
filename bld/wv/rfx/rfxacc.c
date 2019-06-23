@@ -325,7 +325,7 @@ error_handle RemoteDateTime( sys_handle sh, int *time, int *date, int set )
 //NYI: Assume max cwd lenght is 80
 #define MAX_STRING_LEN  80
 
-error_handle RemoteGetCwd( int drv, char *where )
+error_handle RemoteGetCwd( int drv, char *where, trap_elen len )
 {
     in_mx_entry         in[1];
     mx_entry            out[2];
@@ -339,12 +339,12 @@ error_handle RemoteGetCwd( int drv, char *where )
     out[0].ptr = &ret;
     out[0].len = sizeof( ret );
     out[1].ptr = where;
-    out[1].len = MAX_STRING_LEN;
+    out[1].len = len;
     TrapAccess( 1, in, 2, out );
     return( StashErrCode( ret.err, OP_REMOTE ) );
 }
 
-error_handle RemoteFindFirst( const char *pattern, void *info, trap_elen info_len, int attrib )
+error_handle RemoteFindFirst( const char *pattern, rfx_find *info, trap_elen info_len, int attrib )
 {
     in_mx_entry          in[2];
     mx_entry             out[2];
@@ -366,10 +366,10 @@ error_handle RemoteFindFirst( const char *pattern, void *info, trap_elen info_le
 }
 
 
-int RemoteFindNext( void *info, trap_elen info_len )
+int RemoteFindNext( rfx_find *info, trap_elen info_len )
 {
-    in_mx_entry          in[2];
-    mx_entry             out[2];
+    in_mx_entry         in[2];
+    mx_entry            out[2];
     rfx_findnext_req    acc;
     rfx_findnext_ret    ret;
 
@@ -386,13 +386,21 @@ int RemoteFindNext( void *info, trap_elen info_len )
     return( ret.err );
 }
 
-error_handle RemoteFindClose( void )
+error_handle RemoteFindClose( rfx_find *info, trap_elen info_len )
 {
+    in_mx_entry         in[2];
+    mx_entry            out[1];
     rfx_findclose_req   acc;
     rfx_findclose_ret   ret;
 
     SUPP_RFX_SERVICE( acc, REQ_RFX_FINDCLOSE );
-    TrapSimpAccess( sizeof( acc ), &acc, sizeof( ret ), &ret );
+    in[0].ptr = &acc;
+    in[0].len = sizeof( acc );
+    in[1].ptr = info;
+    in[1].len = info_len;
+    out[0].ptr = &ret;
+    out[0].len = sizeof( ret );
+    TrapAccess( 2, in, 1, out );
     return( StashErrCode( ret.err, OP_REMOTE ) );
 }
 
