@@ -63,8 +63,6 @@
 
 #define CHECK_PATH_ABS(p,i) (CHK_DIR_SEP((p)[0],i) || (p)[0] != NULLCHAR && CHK_DRV_SEP((p)[1],i) && CHK_DIR_SEP((p)[2],i))
 
-static char_ring *LclPath;
-
 #define LOC_ESCAPE      '@'
 #define REMOTE_LOC      'r'
 #define LOCAL_LOC       'l'
@@ -77,6 +75,8 @@ static char_ring *LclPath;
 #define ISREMOTE(x)     ((x & REMOTE_IND) != 0)
 #define SETREMOTE(x)    x |= REMOTE_IND
 
+static char_ring        *LclPath;
+
 static sys_handle       SysHandles[MAX_OPENS];
 static sys_error        SysErrors[MAX_ERRORS];
 static error_handle     ErrRover;
@@ -86,10 +86,10 @@ const char  *RealFName( char const *name, obj_attrs *oattrs )
 {
     *oattrs &= ~(OP_REMOTE | OP_LOCAL);
     if( name[0] == LOC_ESCAPE ) {
-        if( (name[1] | 0x20) == REMOTE_LOC ) {
+        if( tolower( name[1] ) == REMOTE_LOC ) {
             *oattrs |= OP_REMOTE;
             name += 2;
-        } else if( (name[1] | 0x20) == LOCAL_LOC ) {
+        } else if( tolower( name[1] ) == LOCAL_LOC ) {
             *oattrs |= OP_LOCAL;
             name += 2;
         } else if( name[1] == LOC_ESCAPE ) {
