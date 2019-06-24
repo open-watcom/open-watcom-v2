@@ -1907,7 +1907,8 @@ access_req      req
 unsigned_8      drive
 :eXMP.
 :PC.
-The :F.drive:eF field contains the drive number to be set on the target system.
+The :F.drive:eF field contains the drive number to be set on the target system
+(0=A,1=B,...).
 :P.
 Return message:
 :XMP.
@@ -1932,7 +1933,8 @@ Return message:
 unsigned_8      drive
 :eXMP.
 :PC.
-The :F.drive:eF field returns the current drive number on the target system.
+The :F.drive:eF field returns the current drive number on the target system
+(0=A,1=B,...).
 .section REQ_RFX_SETCWD (5)
 .np
 Request to set a directory on the target system.
@@ -1963,7 +1965,8 @@ access_req      req
 unsigned_8      drive
 :eXMP.
 :PC.
-The :F.drive:eF field contains the target drive number.
+The :F.drive:eF field contains the target drive number
+(0=current drive,1=A,2=B,...).
 :P.
 Return message:
 :XMP.
@@ -1972,8 +1975,8 @@ trap_error      err
 string          dir_name
 :eXMP.
 :PC.
-The :F.dir_name:eF field contains the name of the directory to be set. If error
-has occurred, the :F.err:eF. field will return the error code number.
+The :F.dir_name:eF field contains the name of the directory to be set.
+If error has occurred, the :F.err:eF. field will return the error code number.
 .section REQ_RFX_SETDATETIME (7)
 .np
 Request to set a file's date and time information on the target system.
@@ -2022,7 +2025,8 @@ access_req      req
 unsigned_8      drive
 :eXMP.
 :PC.
-The :F.drive:eF field contains the target drive number.
+The :F.drive:eF field contains the target drive number
+(0=current drive,1=A,2=B,...).
 :P.
 Return message:
 :XMP.
@@ -2129,7 +2133,7 @@ typedef struct rfx_find {
     unsigned_16         time;
     unsigned_16         date;
     unsigned_32         size;
-    unsigned_8          name[14];
+    unsigned_8          name[260];
 } rfx_find;
 :eXMP.
 .section REQ_RFX_FINDNEXT (14)
