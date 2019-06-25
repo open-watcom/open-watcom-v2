@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -318,7 +318,7 @@ trap_retval ReqProg_load( void )
     } else {
         if( TINY_OK( rc ) ) {
             while( *src++ != '\0' ) {}
-            len = GetTotalSize() - ( src - name ) - sizeof( prog_load_req );
+            len = GetTotalSizeIn() - ( src - name ) - sizeof( prog_load_req );
             dst = (char *)buffer;
             while( *dst++ != '\0' ) {};
             memcpy( dst, src, len );

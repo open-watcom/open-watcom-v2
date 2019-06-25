@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -182,7 +183,7 @@ trap_retval ReqWrite_mem( void )
     CONV_LE_32( acc->mem_addr.offset );
     CONV_LE_16( acc->mem_addr.segment );
     ret = GetOutPtr( 0 );
-    len = GetTotalSize() - sizeof( *acc );
+    len = GetTotalSizeIn() - sizeof( *acc );
     ret->len = 0;
     if( ProcInfo.pid && !ProcInfo.at_end ) {
 #ifdef DEBUG_MEM
@@ -218,7 +219,7 @@ trap_retval ReqWrite_io( void )
 // TODO: implement I/O port writes (if possible)
     acc  = GetInPtr( 0 );
     data = GetInPtr( sizeof( *acc ) );
-    len  = GetTotalSize() - sizeof( *acc );
+    len  = GetTotalSizeIn() - sizeof( *acc );
     ret  = GetOutPtr( 0 );
     ret->len = 0;
     return( sizeof( *ret ) );
@@ -550,7 +551,7 @@ trap_retval ReqProg_load( void )
     ProcInfo.dynsec_va = 0;
     parms = (char *)GetInPtr( sizeof( *acc ) );
     parm_start = parms;
-    len = GetTotalSize() - sizeof( *acc );
+    len = GetTotalSizeIn() - sizeof( *acc );
     if( acc->true_argv ) {
         i = 1;
         for( ;; ) {
@@ -563,7 +564,7 @@ trap_retval ReqProg_load( void )
         }
         args = alloca( i * sizeof( *args ) );
         parms = parm_start;
-        len = GetTotalSize() - sizeof( *acc );
+        len = GetTotalSizeIn() - sizeof( *acc );
         i = 1;
         for( ;; ) {
             if( len == 0 ) break;

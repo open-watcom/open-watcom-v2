@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -156,6 +157,7 @@ trap_retval ReqGet_lib_name( void )
     get_lib_name_req    *acc;
     get_lib_name_ret    *ret;
     char                *name;
+    size_t              max_len;
 
     acc = GetInPtr(0);
     ret = GetOutPtr(0);
@@ -169,12 +171,14 @@ trap_retval ReqGet_lib_name( void )
         Out(( OUT_MAP,"Past end of list" ));
         return( sizeof( *ret ) );
     }
+    Out(( OUT_MAP,"ModuleTop=%d CurrentModule=%d id=%d", ModuleTop, CurrentModule, moduleIDs[ CurrentModule ] ));
     name = GetOutPtr( sizeof( *ret ) );
     *name = '\0';
     me.dwSize = sizeof( me );
-    Out(( OUT_MAP,"ModuleTop=%d CurrentModule=%d id=%d", ModuleTop, CurrentModule, moduleIDs[ CurrentModule ] ));
     if( ModuleFindHandle( &me, moduleIDs[ CurrentModule ] ) ) {
-        strcpy( name, me.szExePath );
+        max_len = GetTotalSizeOut() - 1 - sizeof( *ret );
+        strncpy( name, me.szExePath, max_len );
+        name[max_len] = '\0';
     }
     ret->mod_handle = CurrentModule;
     Out(( OUT_MAP,"handle=%ld, name=\"%s\"", ret->mod_handle, name ));

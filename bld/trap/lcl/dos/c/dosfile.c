@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -137,7 +138,7 @@ trap_retval ReqFile_write( void )
 
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
-    rc = TinyWrite( TRPH2LH( acc ), GetInPtr( sizeof( *acc ) ), ( GetTotalSize() - sizeof( *acc ) ) );
+    rc = TinyWrite( TRPH2LH( acc ), GetInPtr( sizeof( *acc ) ), ( GetTotalSizeIn() - sizeof( *acc ) ) );
     ret->len = TINY_INFO( rc );
     ret->err = TINY_ERROR( rc ) ? TINY_INFO( rc ) : 0;
     return( sizeof( *ret ) );
@@ -149,7 +150,7 @@ trap_retval ReqFile_write_console( void )
     file_write_console_ret  *ret;
 
     ret = GetOutPtr( 0 );
-    rc = TinyWrite( TINY_ERR, GetInPtr( sizeof( file_write_console_req ) ), ( GetTotalSize() - sizeof( file_write_console_req ) ) );
+    rc = TinyWrite( TINY_ERR, GetInPtr( sizeof( file_write_console_req ) ), ( GetTotalSizeIn() - sizeof( file_write_console_req ) ) );
     ret->len = TINY_INFO( rc );
     ret->err = TINY_ERROR( rc ) ? TINY_INFO( rc ) : 0;
     return( sizeof( *ret ) );
@@ -302,7 +303,7 @@ trap_retval ReqFile_run_cmd( void )
     tiny_ret_t          rc;
 
     acc = GetInPtr( 0 );
-    len = GetTotalSize() - sizeof( *acc );
+    len = GetTotalSizeIn() - sizeof( *acc );
     ret = GetOutPtr( 0 );
 
     chk = CheckPointMem( ON_DISK, acc->chk_size, buff );

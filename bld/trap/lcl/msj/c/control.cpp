@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -333,28 +334,29 @@ void AddCueInfo( int idx )
     }
 }
 
-unsigned GetLibName( unsigned handle, char *name )
-/************************************************/
+unsigned GetLibName( unsigned handle, char *name, size_t max_len )
+/****************************************************************/
 {
     int         i;
 
     for( i = 0; i < ImageMapTop; ++i ) {
         if( ImageMap[i].newly_unloaded ) {
-            name[0] = '\0';
+            *name = '\0';
             ImageMap[i].newly_unloaded = FALSE;
-            return( i+1 );
+            return( i + 1 );
         } else if( ImageMap[i].newly_loaded ) {
-            strcpy( name, ImageMap[i].className );
+            strncpy( name, ImageMap[i].className, max_len );
+            name[max_len] = '\0';
             ImageMap[i].newly_loaded = FALSE;
             LastNameGiven = i;
-            return( i+1 );
+            return( i + 1 );
         }
     }
     return( 0 );
 }
 
-void InitImageMap()
-/*****************/
+void InitImageMap( void )
+/***********************/
 {
     ImageEntry  *image;
     int i,j;
@@ -411,8 +413,8 @@ void *GetMethodPointer( addr48_off *poff )
 }
 
 
-int GrowImageMap()
-/****************/
+int GrowImageMap( void )
+/**********************/
 {
     int i = ImageMapTop;
     if( ++ImageMapTop >= ImageMapSize ) {

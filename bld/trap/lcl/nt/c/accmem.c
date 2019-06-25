@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -213,7 +214,7 @@ trap_retval ReqWrite_mem( void )
 
     seg = acc->mem_addr.segment;
     offset = acc->mem_addr.offset;
-    length = GetTotalSize() - sizeof( *acc );
+    length = GetTotalSizeIn() - sizeof( *acc );
     data = ( LPSTR ) GetInPtr( sizeof( *acc ) );
 
     ret->len = WriteMem( seg, offset, data, length );

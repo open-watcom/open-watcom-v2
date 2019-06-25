@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -522,7 +522,7 @@ trap_retval ReqSplit_cmd( void )
     unsigned        len;
 
     cmd = GetInPtr( sizeof( split_cmd_req ) );
-    len = GetTotalSize() - sizeof( split_cmd_req );
+    len = GetTotalSizeIn() - sizeof( split_cmd_req );
     start = cmd;
     ret = GetOutPtr( 0 );
     ret->parm_start = 0;

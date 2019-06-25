@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -127,7 +128,7 @@ trap_retval ReqWrite_mem( void )
     CONV_LE_32( acc->mem_addr.offset );
     CONV_LE_16( acc->mem_addr.segment );
     ret = GetOutPtr( 0 );
-    len = GetTotalSize() - sizeof( *acc );
+    len = GetTotalSizeIn() - sizeof( *acc );
     ret->len = WriteMem( pid, GetInPtr( sizeof( *acc ) ), acc->mem_addr.offset, len );
     CONV_LE_16( ret->len );
     return( sizeof( *ret ) );
@@ -211,7 +212,7 @@ trap_retval ReqProg_load( void )
     at_end = false;
     parms = (char *)GetInPtr( sizeof( *acc ) );
     parm_start = parms;
-    len = GetTotalSize() - sizeof( *acc );
+    len = GetTotalSizeIn() - sizeof( *acc );
     if( acc->true_argv ) {
         i = 1;
         for( ;; ) {
@@ -224,7 +225,7 @@ trap_retval ReqProg_load( void )
         }
         args = alloca( i * sizeof( *args ) );
         parms = parm_start;
-        len = GetTotalSize() - sizeof( *acc );
+        len = GetTotalSizeIn() - sizeof( *acc );
         i = 1;
         for( ;; ) {
             if( len == 0 ) break;

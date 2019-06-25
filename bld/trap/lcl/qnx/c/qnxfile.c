@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -91,7 +92,7 @@ trap_retval ReqFile_run_cmd( void )
     if( shell == NULL )
         shell = "/bin/sh";
     ret = GetOutPtr( 0 );
-    len = GetTotalSize() - sizeof( file_run_cmd_req );
+    len = GetTotalSizeIn() - sizeof( file_run_cmd_req );
     argv[0] = shell;
     if( len != 0 ) {
         argv[1] = "-c";
@@ -223,7 +224,7 @@ trap_retval ReqFile_write( void )
 
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
-    ret->len = DoWrite( TRPH2LH( acc ), GetInPtr( sizeof( *acc ) ), GetTotalSize() - sizeof( *acc ) );
+    ret->len = DoWrite( TRPH2LH( acc ), GetInPtr( sizeof( *acc ) ), GetTotalSizeIn() - sizeof( *acc ) );
     ret->err = errno;
     return( sizeof( *ret ) );
 }
@@ -233,7 +234,7 @@ trap_retval ReqFile_write_console( void )
     file_write_console_ret      *ret;
 
     ret = GetOutPtr( 0 );
-    ret->len = DoWrite( 2, GetInPtr( sizeof( file_write_console_req ) ), GetTotalSize() - sizeof( file_write_console_req ) );
+    ret->len = DoWrite( 2, GetInPtr( sizeof( file_write_console_req ) ), GetTotalSizeIn() - sizeof( file_write_console_req ) );
     ret->err = errno;
     return( sizeof( *ret ) );
 }

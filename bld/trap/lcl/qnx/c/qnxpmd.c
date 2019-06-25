@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -751,30 +752,33 @@ trap_retval ReqGet_lib_name( void )
     ret->mod_handle = 0;
     if( PmdInfo.read_gdts == 0 )
         return( sizeof( *ret ) );
-    name = GetOutPtr( sizeof( *ret ) );
     switch( acc->mod_handle ) {
     case MH_NONE:
     case MH_DEBUGGEE:
         ret->mod_handle = MH_SLIB;
         if( PmdInfo.dbg32 ) {
-            strcpy( name, "/boot/sys/Slib32" );
+            p = "/boot/sys/Slib32";
         } else {
-            strcpy( name, "/boot/sys/Slib16" );
+            p = "/boot/sys/Slib16";
         }
         break;
     case MH_SLIB:
         ret->mod_handle = MH_PROC;
         if( PmdInfo.hdr.osdata.sflags & _PSF_32BIT ) {
-            strcpy( name, "/boot/sys/Proc32" );
+            p = "/boot/sys/Proc32";
         } else {
-            strcpy( name, "/boot/sys/Proc16" );
+            p = "/boot/sys/Proc16";
         }
         break;
     default:
         return( sizeof( *ret ) );
     }
+    max_len = GetTotalSizeOut() - 1 - sizeof( *ret );
+    name = GetOutPtr( sizeof( *ret ) );
+    strncpy( name, p, max_len );
+    name[max_len] = '\0';
     PmdInfo.mapping_shared = true;
-    return( sizeof( *ret ) + 1 + strlen( name ) );
+    return( sizeof( *ret ) + strlen( name ) + 1 );
 }
 
 trap_retval ReqThread_get_next( void )

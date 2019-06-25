@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -1002,7 +1003,7 @@ trap_retval ReqWrite_mem( void )
     acc = GetInPtr(0);
     ret = GetOutPtr(0);
 
-    len = GetTotalSize() - sizeof(*acc);
+    len = GetTotalSizeIn() - sizeof(*acc);
 
     addr.offset = acc->mem_addr.offset;
     addr.segment = acc->mem_addr.segment;
@@ -1039,7 +1040,7 @@ trap_retval ReqWrite_io( void )
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
     data = GetInPtr( sizeof( *acc ) );
-    len = GetTotalSize() - sizeof( *acc );
+    len = GetTotalSizeIn() - sizeof( *acc );
     if( len == 1 ) {
         out_b( acc->IO_offset, *( (byte *)data ) );
     } else if( len == 2 ) {
@@ -1252,7 +1253,7 @@ trap_retval ReqProg_load( void )
     LoadedListHandle    nlm;
 
     LoadName = (char *)GetInPtr( sizeof( prog_load_req ) );
-    LoadLen = GetTotalSize() - sizeof( prog_load_req );
+    LoadLen = GetTotalSizeIn() - sizeof( prog_load_req );
     ret = GetOutPtr( 0 );
     LoadRet = ret;
     // scheduling priority, code address, stack top, stack len, process name, resource tag
@@ -1790,6 +1791,7 @@ trap_retval ReqGet_lib_name( void )
     get_lib_name_ret    *ret;
     char                *name;
     nlm_entry           *curr;
+    size_t              max_len;
 
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
@@ -1805,9 +1807,12 @@ trap_retval ReqGet_lib_name( void )
         ret->mod_handle = 0;
         return( sizeof( *ret ) );
     }
-    name = GetOutPtr( sizeof( *ret ) );
     ret->mod_handle = (unsigned_32)curr;
     len = curr->ld.LDFileName[0];
+    max_len = GetTotalSizeOut() - 1 - sizeof( *ret );
+    if( len > max_len )
+        len = max_len;
+    name = GetOutPtr( sizeof( *ret ) );
     memcpy( name, &curr->ld.LDFileName[1], len );
     name[len] = '\0';
     if( curr->is_load ) {
@@ -1874,7 +1879,7 @@ trap_retval ReqSplit_cmd( void )
     start = cmd;
     ret = GetOutPtr( 0 );
     ret->parm_start = 0;
-    len = GetTotalSize() - sizeof( split_cmd_req );
+    len = GetTotalSizeIn() - sizeof( split_cmd_req );
     while( len == 0 ) {
         switch( *cmd ) {
         case ' ':

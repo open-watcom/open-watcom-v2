@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -162,7 +162,7 @@ trap_retval ReqFile_write( void )
     buff = GetInPtr( sizeof( *acc ) );
     ret = GetOutPtr( 0 );
 
-    len = GetTotalSize() - sizeof( *acc );
+    len = GetTotalSizeIn() - sizeof( *acc );
 
     rc = WriteFile( TRPH2LH( acc ), buff, len, &bytes, NULL );
     if( !rc ) {
@@ -188,7 +188,7 @@ trap_retval ReqFile_write_console( void )
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
     buff = GetInPtr( sizeof( *acc ) );
-    len = GetTotalSize() - sizeof( *acc );
+    len = GetTotalSizeIn() - sizeof( *acc );
 
     h = GetStdHandle( STD_ERROR_HANDLE );
     if( DebugeePid ) {

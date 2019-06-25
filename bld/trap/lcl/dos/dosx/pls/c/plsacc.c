@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -415,9 +415,7 @@ trap_retval ReqWrite_mem( void )
     ret = GetOutPtr( 0 );
     addr.offset = acc->mem_addr.offset;
     addr.selector = acc->mem_addr.segment;
-    ret->len = WriteMemory( &addr,
-                          GetInPtr( sizeof( *acc ) ),
-                          GetTotalSize() - sizeof( *acc ) );
+    ret->len = WriteMemory( &addr, GetInPtr( sizeof( *acc ) ), GetTotalSizeIn() - sizeof( *acc ) );
     return( sizeof( *ret ) );
 }
 
@@ -464,7 +462,7 @@ trap_retval ReqWrite_io( void )
     _DBG(("WritePort\r\n"));
     acc = GetInPtr(0);
     data = GetInPtr( sizeof( *acc ) );
-    len = GetTotalSize() - sizeof( *acc );
+    len = GetTotalSizeIn() - sizeof( *acc );
     ret = GetOutPtr(0);
     switch( len ) {
     case 1:
@@ -632,7 +630,7 @@ trap_retval ReqProg_load( void )
     ret = GetOutPtr( 0 );
     while( *src++ != '\0' )
         {}
-    len = GetTotalSize() - ( src - name ) - sizeof( prog_load_req );
+    len = GetTotalSizeIn() - ( src - name ) - sizeof( prog_load_req );
     if( len > 126 )
         len = 126;
     for( ; len > 0; -- len ) {

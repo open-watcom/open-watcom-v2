@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -643,26 +644,31 @@ trap_retval ReqGet_lib_name( void )
     get_lib_name_req    *acc;
     get_lib_name_ret    *ret;
     char                *name;
+    char                *p;
+    size_t              max_len;
 
     // TODO: we could probably figure out what shared libs were loaded
     acc = GetInPtr(0);
     ret = GetOutPtr( 0 );
-    name = GetOutPtr( sizeof( *ret ) );
     switch( acc->mod_handle ) {
     case MH_NONE:
     case MH_DEBUGGEE:
         ret->mod_handle = MH_SLIB;
-        strcpy( name, "/boot/sys/Slib32" );
+        p = "/boot/sys/Slib32";
         break;
     case MH_SLIB:
         ret->mod_handle = MH_PROC;
-        strcpy( name, "/boot/sys/Proc32" );
+        p = "/boot/sys/Proc32";
         break;
     default:
         ret->mod_handle = 0;
         return( sizeof( *ret ) );
     }
-    return( sizeof( *ret ) + 1 + strlen( name ) );
+    max_len = GetTotalSizeOut() - 1 - sizeof( *ret );
+    name = GetOutPtr( sizeof( *ret ) );
+    strncpy( name, p, max_len );
+    name[max_len] = '\0';
+    return( sizeof( *ret ) + strlen( name ) + 1 );
 }
 
 #if 0

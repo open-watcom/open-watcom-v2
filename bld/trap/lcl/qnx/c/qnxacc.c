@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -489,7 +490,7 @@ trap_retval ReqWrite_mem( void )
     acc = GetInPtr(0);
     ret = GetOutPtr(0);
 
-    len = GetTotalSize() - sizeof(*acc);
+    len = GetTotalSizeIn() - sizeof(*acc);
 
     ret->len = WriteBuffer( GetInPtr(sizeof(*acc)),
                             acc->mem_addr.segment, acc->mem_addr.offset, len );
@@ -537,7 +538,7 @@ trap_retval ReqWrite_io( void )
 
     acc = GetInPtr(0);
     data = GetInPtr( sizeof( *acc ) );
-    len = GetTotalSize() - sizeof( *acc );
+    len = GetTotalSizeIn() - sizeof( *acc );
     ret = GetOutPtr(0);
     switch( len ) {
     case 1:
@@ -818,7 +819,7 @@ trap_retval ReqProg_load( void )
     memset( ProcInfo.thread, 0, sizeof( ProcInfo.thread[0] ) * ProcInfo.max_threads );
     parms = (char *)GetInPtr( sizeof( *acc ) );
     parm_start = parms;
-    len = GetTotalSize() - sizeof( *acc );
+    len = GetTotalSizeIn() - sizeof( *acc );
     if( acc->true_argv ) {
         i = 1;
         for( ;; ) {
@@ -831,7 +832,7 @@ trap_retval ReqProg_load( void )
         }
         args = walloca( i * sizeof( *args ) );
         parms = parm_start;
-        len = GetTotalSize() - sizeof( *acc );
+        len = GetTotalSizeIn() - sizeof( *acc );
         i = 1;
         for( ;; ) {
             if( len == 0 ) break;
@@ -1546,42 +1547,42 @@ trap_retval ReqMachine_data( void )
 
 trap_retval ReqGet_lib_name( void )
 {
-#if 0
     get_lib_name_req    *acc;
     get_lib_name_ret    *ret;
     char                *name;
+    char                *p;
+    size_t              max_len;
 
+#if 0
     acc = GetInPtr(0);
     ret = GetOutPtr( 0 );
-    name = GetOutPtr( sizeof( *ret ) );
     switch( acc->mod_handle ) {
     case MH_NONE:
     case MH_DEBUGGEE:
         ret->mod_handle = MH_SLIB;
         if( ProcInfo.dbg32 ) {
-            strcpy( name, "/boot/sys/Slib32" );
+            p = "/boot/sys/Slib32";
         } else {
-            strcpy( name, "/boot/sys/Slib16" );
+            p = "/boot/sys/Slib16";
         }
         break;
     case MH_SLIB:
         ret->mod_handle = MH_PROC;
         if( ProcInfo.proc32 ) {
-            strcpy( name, "/boot/sys/Proc32" );
+            p = "/boot/sys/Proc32";
         } else {
-            strcpy( name, "/boot/sys/Proc16" );
+            p = "/boot/sys/Proc16";
         }
         break;
     default:
-        ret->mod_handle = MH_NONE;
-        name[0] = '\0';
-        break;
+        ret->mod_handle = 0;
+        return( sizeof( *ret ) );
     }
+    max_len = GetTotalSizeOut() - 1 - sizeof( *ret );
+    name = GetOutPtr( sizeof( *ret ) );
+    strncpy( name, p, max_len );
+    name[max_len] = '\0';
 #else
-    get_lib_name_req    *acc;
-    get_lib_name_ret    *ret;
-    char                *name;
-    char                *p;
     pid_t               pid, vid, proc;
     struct _psinfo      info;
 
@@ -1625,24 +1626,31 @@ trap_retval ReqGet_lib_name( void )
         } else {
             p = "sys/Proc16";
         }
+        break;
     default:
         ret->mod_handle = 0;
         return( sizeof( *ret ) );
     }
     name = GetOutPtr( sizeof( *ret ) );
-    if( p == NULL ) {
-        *name = '\0';
-    } else if( p[0] == '/' ) {
-        if( p[1] == '/' ) {
-            for( p += 2; *p >= '0' && *p <= '9'; p++ );
+    *name = '\0';
+    if( p != NULL ) {
+        max_len = GetTotalSizeOut() - 1 - sizeof( *ret );
+        if( p[0] == '/' ) {
+            if( p[1] == '/' ) {
+                for( p += 2; *p >= '0' && *p <= '9'; p++ ) {
+                    ;
+                }
+            }
+            strncpy( name, p, max_len );
+        } else {
+            strncpy( name, "/boot/", max_len );
+            name[max_len] = '\0';
+            strncat( name, p, max_len - strlen( name ) );
         }
-        strcpy( name, p );
-    } else {
-        strcpy( name, "/boot/" );
-        strcat( name, p );
+        name[max_len] = '\0';
     }
 #endif
-    return( sizeof( *ret ) + 1 + strlen( name ) );
+    return( sizeof( *ret ) + strlen( name ) + 1 );
 }
 
 trap_retval ReqThread_get_next( void )
