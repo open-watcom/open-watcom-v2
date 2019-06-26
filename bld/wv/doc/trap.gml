@@ -2076,7 +2076,7 @@ unsigned_32     attribute
 :eXMP.
 :PC.
 The :F.attribute:eF. field returns the attribute of the file.
-.section REQ_RFX_NAMETOCANNONICAL (12)
+.section REQ_RFX_NAMETOCANONICAL (12)
 .np
 Request to convert a file name to its canonical form.
 :P.

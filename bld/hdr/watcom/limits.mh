@@ -128,7 +128,7 @@
                                     /*  processes per real user ID.         */
 #define _POSIX_LINK_MAX     8       /*  Max. links per file                 */
 #define _POSIX_MAX_CANON    255     /*  No. bytes in terminal               */
-                                    /*  cannonical input queue.             */
+                                    /*  canonical input queue.              */
 #define _POSIX_MAX_INPUT    255     /*  Size of terminal input queue buffer */
 #define _POSIX_NAME_MAX     14      /*  Max bytes in a filename             */
 #define _POSIX_NGROUPS_MAX  0       /*  Num. simultaneous supplementary     */

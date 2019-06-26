@@ -53,7 +53,7 @@ enum {
     REQ_RFX_GETFREESPACE,       /* 09 */
     REQ_RFX_SETFILEATTR,        /* 10 */
     REQ_RFX_GETFILEATTR,        /* 11 */
-    REQ_RFX_NAMETOCANNONICAL,   /* 12 */
+    REQ_RFX_NAMETOCANONICAL,    /* 12 */
     REQ_RFX_FINDFIRST,          /* 13 */
     REQ_RFX_FINDNEXT,           /* 14 */
     REQ_RFX_FINDCLOSE           /* 15 */
@@ -178,12 +178,12 @@ typedef struct {
     supp_prefix         supp;
     access_req          req;
     /* followed by file name string */
-} rfx_nametocannonical_req;
+} rfx_nametocanonical_req;
 
 typedef struct {
     trap_error          err;
-    /* followed by cannonical file name string */
-} rfx_nametocannonical_ret;
+    /* followed by canonical file name string */
+} rfx_nametocanonical_ret;
 
 /*============================ RFX_FIND_FIRST ===============*/
 typedef struct __rfx_dta {  /* total size 21 bytes */

@@ -357,9 +357,9 @@ trap_retval ReqRfx_findclose( void )
     return( sizeof( *ret ) );
 }
 
-trap_retval ReqRfx_nametocannonical( void )
+trap_retval ReqRfx_nametocanonical( void )
 {
-    rfx_nametocannonical_ret    *ret;
+    rfx_nametocanonical_ret     *ret;
     char                        *name;
     char                        *fullname;
     char                        *p;
@@ -369,7 +369,7 @@ trap_retval ReqRfx_nametocannonical( void )
     USHORT                      len;
 
     // Not tested, and not used right now
-    name = GetInPtr( sizeof( rfx_nametocannonical_req ) );
+    name = GetInPtr( sizeof( rfx_nametocanonical_req ) );
     ret = GetOutPtr( 0 );
     fullname = GetOutPtr( sizeof( *ret ) );
     ret->err = 1;

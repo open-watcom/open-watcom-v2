@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -144,7 +145,7 @@ extern trap_retval ReqRfx_getdatetime(void);
 extern trap_retval ReqRfx_getfreespace(void);
 extern trap_retval ReqRfx_setfileattr(void);
 extern trap_retval ReqRfx_getfileattr(void);
-extern trap_retval ReqRfx_nametocannonical(void);
+extern trap_retval ReqRfx_nametocanonical(void);
 extern trap_retval ReqRfx_findfirst(void);
 extern trap_retval ReqRfx_findnext(void);
 extern trap_retval ReqRfx_findclose(void);

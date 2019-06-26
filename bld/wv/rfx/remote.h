@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2015 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2019 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -40,7 +40,7 @@ extern error_handle     RemoteSetFileAttr( const char * , long );
 extern long             RemoteGetFreeSpace( int );
 extern error_handle     RemoteDateTime( sys_handle , int *, int *, int );
 extern error_handle     RemoteGetCwd( int, char *, trap_elen );
-extern size_t           RemoteNameToCannonical( char *name, char *fullname, trap_elen fullname_len );
+extern size_t           RemoteNameToCanonical( char *name, char *fullname, trap_elen fullname_len );
 extern error_handle     RemoteFindFirst( const char *, rfx_find *, trap_elen , int );
 extern int              RemoteFindNext( rfx_find *, trap_elen );
 extern error_handle     RemoteFindClose( rfx_find *, trap_elen );
