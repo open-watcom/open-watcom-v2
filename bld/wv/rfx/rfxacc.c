@@ -401,7 +401,7 @@ error_handle RemoteFindClose( rfx_find *info, trap_elen info_len )
     return( StashErrCode( ret.err, OP_REMOTE ) );
 }
 
-trap_elen RemoteNameToCanonical( char *name, char *fullname, trap_elen fullname_len )
+unsigned RemoteNameToCanonical( char *name, char *fullname, trap_elen fullname_len )
 {
     in_mx_entry                 in[2];
     mx_entry                    out[2];
