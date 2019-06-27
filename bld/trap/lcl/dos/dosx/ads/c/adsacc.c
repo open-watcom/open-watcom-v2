@@ -78,7 +78,6 @@ bool                    AtEnd;
 bool                    DoneAutoCAD;
 
 static unsigned_8       RealNPXType;
-#define BUFF_SIZE       256
 char                    UtilBuff[BUFF_SIZE];
 #define ADSSTACK_SIZE      4096
 char                    ADSStack[ADSSTACK_SIZE];

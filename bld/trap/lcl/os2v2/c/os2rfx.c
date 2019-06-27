@@ -43,7 +43,6 @@
 
 
 #define NIL_DOS_HANDLE  ((HFILE)0xFFFF)
-#define BUFF_SIZE       256
 
 #define TRPH2LH(th)     (HFILE)((th)->handle.u._32[0])
 #define LH2TRPH(th,lh)  (th)->handle.u._32[0]=(unsigned_32)lh;(th)->handle.u._32[1]=0

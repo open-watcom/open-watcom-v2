@@ -87,7 +87,6 @@ static bool             AtEnd;
 static unsigned         NumObjects;
 static unsigned_8       RealNPXType;
 
-#define BUFF_SIZE       256
 static char             UtilBuff[BUFF_SIZE];
 
 #define MAX_WP 32

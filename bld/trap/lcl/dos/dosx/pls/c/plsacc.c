@@ -115,7 +115,6 @@ short                   InitialCS;
 
 static unsigned         SaveMSW;
 static unsigned_8       RealNPXType;
-#define BUFF_SIZE       256
 char                    UtilBuff[BUFF_SIZE];
 static MSB              Mach;
 static SEL_REMAP        SelBlk;

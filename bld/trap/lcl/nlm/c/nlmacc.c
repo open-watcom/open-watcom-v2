@@ -138,7 +138,6 @@ typedef struct nlm_entry {
 static unsigned_8                       RealNPXType;
 
 nlmstate                                NLMState;
-#define BUFF_SIZE                       256
 char                                    CmdLine[BUFF_SIZE];
 char                                    NLMName[14];
 char                                    UtilBuff[BUFF_SIZE];

@@ -68,8 +68,6 @@
 typedef unsigned short  USHORT;
 typedef unsigned long   ULONG;
 
-#define BUFF_SIZE       256
-
 static pid_t            MID;
 static pid_t            OrigPGrp;
 static char             UtilBuff[BUFF_SIZE];
