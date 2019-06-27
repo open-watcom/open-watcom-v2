@@ -17,9 +17,10 @@ extra_objs += &
         peread.obj &
         supp.obj &
         dbgthrd.obj &
+        ntrfx.obj &
         core.obj
 
-inc_dirs += -I"$(trap_dir)/lcl/dos/h" -I"$(lib_misc_dir)/h"
+inc_dirs += -I"$(trap_dir)/lcl/dos/h" -I"$(lib_misc_dir)/h" -I"$(clib_dir)/h"
 
 extra_cppflags = -DWOW
 
