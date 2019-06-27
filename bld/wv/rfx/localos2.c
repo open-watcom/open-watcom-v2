@@ -267,8 +267,13 @@ static void makeDTARFX( rfx_find *info, FINDBUF *findbuf, HDIR h )
     info->date = DTARFX_DATE_OF( info ) = *(USHORT FAR *)&findbuf->fdateLastWrite;
     info->attr = findbuf->attrFile;
     info->size = findbuf->cbFile;
+#if RFX_NAME_MAX < CCHMAXPATHCOMP
+    strncpy( info->name, findbuf->achName, RFX_NAME_MAX );
+    info->name[RFX_NAME_MAX] = '\0';
+#else
     strncpy( info->name, findbuf->achName, CCHMAXPATHCOMP );
     info->name[CCHMAXPATHCOMP] = '\0';
+#endif
 }
 
 error_handle LocalFindFirst( const char *pattern, rfx_find *info, unsigned info_len, int attrib )

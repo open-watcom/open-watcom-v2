@@ -287,8 +287,13 @@ static void makeDTARFX( rfx_find FAR *info, FILEFINDBUF *findbuf, HDIR h )
     info->date = DTARFX_DATE_OF( info ) = *(USHORT __far *)&findbuf->fdateLastWrite;
     info->attr = findbuf->attrFile;
     info->size = findbuf->cbFile;
+#if RFX_NAME_MAX < CCHMAXPATHCOMP
+    strncpy( info->name, findbuf->achName, RFX_NAME_MAX );
+    info->name[RFX_NAME_MAX] = '\0';
+#else
     strncpy( info->name, findbuf->achName, CCHMAXPATHCOMP );
     info->name[CCHMAXPATHCOMP] = '\0';
+#endif
 }
 
 trap_retval ReqRfx_findfirst( void )
