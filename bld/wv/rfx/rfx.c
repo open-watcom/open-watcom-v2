@@ -101,11 +101,11 @@ typedef struct copyspec {
 } COPYSPEC, *COPYPTR;
 
 typedef struct dir_handle {
-    rfx_find    info;
-    char        path[64];
-    long        free;
-    object_loc  location;
-    char        status;
+    rfx_find        info;
+    char            path[64];
+    long            free;
+    object_loc      location;
+    char            status;
 } dir_handle;
 
 extern bool             InitTrap( const char * );
@@ -390,7 +390,6 @@ static void ItoD( unsigned int i, char *b ) {
     b[0] = ( i % 10 ) + '0';
 }
 
-
 /**************************************************************************/
 /* ACTUAL OS CALLS                                                        */
 /**************************************************************************/
@@ -464,7 +463,6 @@ static error_handle MakeDir( const char *name, object_loc loc )
         return( LocalMkDir( name ) );
     }
 }
-
 
 static long GetAttrs( const char *name, object_loc loc )
 /*******************************************************/
@@ -820,33 +818,33 @@ static error_handle   Renamef( const char *fn1, object_loc f1loc, const char *fn
     errh = _FindFirst( Name1, f1loc, IO_NORMAL, &info, sizeof( info ) );
     if( errh != 0 ) {
         SysSetLclErr( IO_FILE_NOT_FOUND );
-        return( errh );
-    }
-    for( ;; ) {
-        if( CtrlCHit() ) {
-            errh = SysSetLclErr( IO_INTERRUPT );
-            break;
-        }
-        CopyStr( info.name, endpath );
-        _FileParse( Name1, &Parse3 );
-        Replace( Parse1.name, Parse2.name, Parse3.name );
-        Replace( Parse1.ext, Parse2.ext, Parse3.ext );
-        CopyStr( Parse2.path, Parse3.path );
-        Squish( &Parse3, Name2 );
-        errh = Rename( Name1, Name2, f1loc );
-        if( errh != 0 ) {
-            if( REAL_CODE( errh ) == IO_FILE_NOT_FOUND ) {
-                SysSetLclErr( IO_DUP_OR_NOT_FOUND );
-            } else {
-                TransSetErr( errh );
+    } else {
+        for( ;; ) {
+            if( CtrlCHit() ) {
+                errh = SysSetLclErr( IO_INTERRUPT );
+                break;
             }
-            break;
+            CopyStr( info.name, endpath );
+            _FileParse( Name1, &Parse3 );
+            Replace( Parse1.name, Parse2.name, Parse3.name );
+            Replace( Parse1.ext, Parse2.ext, Parse3.ext );
+            CopyStr( Parse2.path, Parse3.path );
+            Squish( &Parse3, Name2 );
+            errh = Rename( Name1, Name2, f1loc );
+            if( errh != 0 ) {
+                if( REAL_CODE( errh ) == IO_FILE_NOT_FOUND ) {
+                    SysSetLclErr( IO_DUP_OR_NOT_FOUND );
+                } else {
+                    TransSetErr( errh );
+                }
+                break;
+            }
+            if( _FindNext( f1loc, &info, sizeof( info ) ) ) {
+                break;
+            }
         }
-        if( _FindNext( f1loc, &info, sizeof( info ) ) ) {
-            break;
-        }
+        _FindClose( f1loc, &info, sizeof( info ) );
     }
-    _FindClose( f1loc, &info, sizeof( info ) );
     return( errh );
 }
 
@@ -1051,7 +1049,7 @@ static void    RRecurse( const char *f1, const char *f2, object_loc f1loc, objec
                         if( errh != 0 ) {
                             Error( "Unable to make directory" );
                             SysSetLclErr( IO_NO_ACCESS );
-                            return;
+                            break;
                         }
                         ++DirectoriesMade;
                     }
@@ -1108,7 +1106,7 @@ static error_handle   CopyASpec( const char *f1, const char *f2, object_loc f1lo
                 CopyStr( Parse2.path, Parse3.path );
                 CopyStr( Parse2.drive, Parse3.drive );
                 endptr = Squish( &Parse3, Name2 );
-                if( DTARFX_ID_OF( &info ) == dst_entryid && strcmp( endptr, endpath ) == 0 ) {
+                if( f1loc == f2loc && DTARFX_ID_OF( &info ) == dst_entryid && strcmp( endptr, endpath ) == 0 ) {
                     errh = StashErrCode( IO_CANT_COPY_TO_SELF, OP_LOCAL );
                 } else {
                     errh = DoCopy( Name1, Name2, f1loc, f2loc );
