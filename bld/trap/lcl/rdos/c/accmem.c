@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -46,9 +47,9 @@ trap_retval ReqRead_mem( void )
 
     obj = GetCurrentDebug();
     if (obj)
-        return( ReadMem(    obj, 
-                            acc->mem_addr.segment, 
-                            acc->mem_addr.offset, 
+        return( ReadMem(    obj,
+                            acc->mem_addr.segment,
+                            acc->mem_addr.offset,
                             data,
                             acc->len ) );
     else
@@ -65,16 +66,16 @@ trap_retval ReqWrite_mem( void )
 
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
-    len = GetTotalSize() - sizeof( *acc );
+    len = GetTotalSizeIn() - sizeof( *acc );
     data = ( void * ) GetInPtr( sizeof( *acc ) );
 
     ret->len = 0;
 
     obj = GetCurrentDebug();
     if (obj)
-        ret->len = WriteMem(obj, 
-                            acc->mem_addr.segment, 
-                            acc->mem_addr.offset, 
+        ret->len = WriteMem(obj,
+                            acc->mem_addr.segment,
+                            acc->mem_addr.offset,
                             data,
                             len );
 

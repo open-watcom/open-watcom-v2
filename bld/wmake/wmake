@@ -39,7 +39,7 @@ usage.gh : ../h/usage.sp ./wsplice.exe
         $]@ @usage.tmp
 
 isarray.gh : ./cretype.exe
-        $]@ > $@
+        $]@ $@
 
 wmk.exe: usage.gh isarray.gh $(objs)
         *wlink name $@ op q, map sys $(link_sys) file {$(objs)}

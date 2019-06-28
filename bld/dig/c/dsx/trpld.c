@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -411,7 +412,7 @@ static char *ReadInTrap( FILE *fp )
         return( TC_ERR_OUT_OF_DOS_MEMORY );
     }
     DIGLoader( Seek )( fp, hdrsize, DIG_ORG );
-    if( DIGLoader( Read )( fp, (void *)DPMIGetSegmentBaseAddress( TrapMem.pm ), imagesize )) {
+    if( DIGLoader( Read )( fp, (void *)DPMIGetSegmentBaseAddress( TrapMem.pm ), imagesize ) ) {
         return( TC_ERR_CANT_LOAD_TRAP );
     }
     DIGLoader( Seek )( fp, hdr.reloc_offset, DIG_ORG );

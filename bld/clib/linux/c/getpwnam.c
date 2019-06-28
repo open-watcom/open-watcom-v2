@@ -2,8 +2,7 @@
 *
 *                            Open Watcom Project
 *
-*    Portions Copyright (c) 2015 Open Watcom contributors. 
-*    All Rights Reserved.
+* Copyright (c) 2015-2019 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -30,13 +29,15 @@
 * Author: J. Armstrong
 ****************************************************************************/
 
+
 #include "variety.h"
 #include <string.h>
 #include <pwd.h>
 #include "rterrno.h"
 #include "thread.h"
 
-_WCRTLINK struct passwd *getpwnam(const char *name)
+
+_WCRTLINK struct passwd *getpwnam( const char *name )
 {
     struct passwd *res = NULL;
 
@@ -47,7 +48,7 @@ _WCRTLINK struct passwd *getpwnam(const char *name)
     setpwent();
     res = getpwent();
     while( res != NULL ) {
-        if( strcmp( res->pw_name, name ) == 0 ) 
+        if( strcmp( res->pw_name, name ) == 0 )
             break;
         res = getpwent();
     }

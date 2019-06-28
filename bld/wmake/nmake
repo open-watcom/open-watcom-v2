@@ -33,7 +33,7 @@ cretype.exe : ..\c\cretype.c
         $(CC) -nologo -I..\..\watcom\h -Fe$@ $** $(LFLAGS)
 
 isarray.gh : cretype.exe
-        cretype.exe > $@
+        cretype.exe $@
 
 $(OWBINDIR)\wmake.exe: wmake.exe
         copy wmake.exe $@

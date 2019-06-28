@@ -2,8 +2,7 @@
 *
 *                            Open Watcom Project
 *
-*    Portions Copyright (c) 2016 Open Watcom contributors. 
-*    All Rights Reserved.
+* Copyright (c) 2016-2019 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -31,15 +30,15 @@
 *
 ****************************************************************************/
 
+
 #include "variety.h"
 #include "linuxsys.h"
 #include <sys/ioctl.h>
 #include <termios.h>
 
+
 _WCRTLINK int tcflow( int fd, int action )
 {
-syscall_res res;
-
-    res = sys_call3( SYS_ioctl, (u_long)fd, (u_long)TCXONC, (u_long)action);
+    syscall_res res = sys_call3( SYS_ioctl, (u_long)fd, (u_long)TCXONC, (u_long)action);
     __syscall_return( int, res );
 }

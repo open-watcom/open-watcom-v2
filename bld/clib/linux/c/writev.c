@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-*    Copyright (c) 2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2018-2019 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -30,10 +30,12 @@
 *
 ****************************************************************************/
 
+
 #include "variety.h"
 #include <sys/types.h>
 #include <sys/uio.h>
 #include "linuxsys.h"
+
 
 _WCRTLINK ssize_t writev( int __fd, const struct iovec *__v, int __vcnt )
 {

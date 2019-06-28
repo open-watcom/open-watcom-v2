@@ -73,7 +73,7 @@ typedef struct __nt_dta {
 #define DTAXXX_TSTAMP_OF(x)     (((__nt_dta *)(x))->tstamp)
 #define DTAXXX_ATTR_OF(x)       (((__nt_dta *)(x))->attr)
 
-#define BAD_HANDLE              ((HANDLE)(~0))
+#define DTAXXX_INVALID_HANDLE   ((void *)(~0))
 
 #elif defined( __OS2__ )
 
@@ -85,6 +85,6 @@ typedef struct __os2_dta {
 
 #define DTAXXX_HANDLE_OF(x)     (((__os2_dta *)(x))->hndl)
 
-#define BAD_HANDLE              ((HDIR)(~0))
+#define DTAXXX_INVALID_HANDLE   ((unsigned)(~0))
 
 #endif

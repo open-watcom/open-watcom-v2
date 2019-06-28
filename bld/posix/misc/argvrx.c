@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -100,7 +101,7 @@ char **ExpandArgv( int *oargc, char *oargv[], int isrx )
 #if defined( __QNX__ )
             if( S_ISREG( nextdirentry->d_stat.st_mode ) ) {
 #else
-            if( !( nextdirentry->d_attr & _A_SUBDIR ) ) {
+            if( (nextdirentry->d_attr & _A_SUBDIR) == 0 ) {
 #endif
                 _makepath( path, drive, dir, nextdirentry->d_name, NULL );
                 argv = MemRealloc( argv, ( argc + 2 ) * sizeof( char * ) );

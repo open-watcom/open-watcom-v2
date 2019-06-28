@@ -10,7 +10,7 @@ wv_autodepends = .AUTODEPEND
 
 additional_cleanup = *.u *.gdl
 
-#wv_trmem = 1
+wv_trmem = 1
 
 !ifeq sys_windowed 1
 !ifeq host_os os2
@@ -60,7 +60,7 @@ sysadir = ../asm
 
 # cflags
 #########
-!ifeq sys_rtdll 1
+!ifdef wv_engine_noui
 extra_cpp_flags += -D__NOUI__
 !endif
 !ifeq release 0

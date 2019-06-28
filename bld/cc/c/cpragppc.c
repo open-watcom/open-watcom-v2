@@ -113,45 +113,44 @@ bool GetPragAuxAlias( void )
     return( true );
 }
 
-hw_reg_set PragRegName( const char *strreg, size_t len )
-/******************************************************/
+hw_reg_set PragRegName( const char *regname, size_t regnamelen )
+/**************************************************************/
 {
     int             index;
-    char            *str;
+    const char      *str;
     hw_reg_set      name;
-    char            buffer[20];
+    size_t          len;
 
-    if( len != 0 ) {
-        strreg = SkipUnderscorePrefix( strreg, &len, false );
-        if( len > ( sizeof( buffer ) - 1 ) )
-            len = sizeof( buffer ) - 1;
-        str = memcpy( buffer, strreg, len );
-        str[len] = '\0';
-        if( *str == '$' ) {
-            ++str;
-            --len;
-            // search register or alias name
-            index = PragRegIndex( Registers, str, len, false );
-            if( index != -1 ) {
-                return( RegBits[RegMap[index]] );
+    if( regnamelen > 0 ) {
+        len = regnamelen;
+        str = SkipUnderscorePrefix( regname, &len, false );
+        if( len > 0 && *str == '$' ) {
+            str++;
+            len--;
+            if( len > 0 ) {
+                // search register or alias name
+                index = PragRegIndex( Registers, str, len, false );
+                if( index != -1 ) {
+                    return( RegBits[RegMap[index]] );
+                }
+                // decode regular register index
+                index = PragRegNumIndex( str, len, 32 );
+                if( index != -1 ) {
+                    return( RegBits[index] );
+                }
             }
-            --str;
-            ++len;
+        } else if( len > 0 && ( *str == 'r' || *str == 'R' ) ) {
+            // decode regular register name [rR]nn
+            str++;
+            len--;
+            if( len > 0 ) {
+                index = PragRegNumIndex( str, len, 32 );
+                if( index != -1 ) {
+                    return( RegBits[index] );
+                }
+            }
         }
-        // decode regular register name
-        if( *str == 'r' || *str == 'R' ) {
-            ++str;
-            --len;
-        }
-        // decode regular register index
-        index = PragRegNumIndex( str, 32 );
-        if( index != -1 ) {
-            return( RegBits[index] );
-        }
-        if( *(str - 1) == 'r' || *(str - 1) == 'R' ) {
-            --str;
-        }
-        CErr2p( ERR_BAD_REGISTER_NAME, str );
+        PragRegNameErr( regname, regnamelen );
     }
     HW_CAsgn( name, HW_EMPTY );
     return( name );

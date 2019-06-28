@@ -49,7 +49,7 @@ _WCRTLINK unsigned _dos_findfirst( const char *path, unsigned attr, struct find_
 
     h = FindFirstFile( (LPTSTR)path, &ffb );
     if( h == INVALID_HANDLE_VALUE ) {
-        DTAXXX_HANDLE_OF( buf->reserved ) = BAD_HANDLE;
+        DTAXXX_HANDLE_OF( buf->reserved ) = DTAXXX_INVALID_HANDLE;
         return( __set_errno_nt_reterr() );
     }
 //  if( attr == _A_NORMAL ) {
@@ -57,7 +57,7 @@ _WCRTLINK unsigned _dos_findfirst( const char *path, unsigned attr, struct find_
 //  }
     if( !__NTFindNextFileWithAttr( h, attr, &ffb ) ) {
         error = GetLastError();
-        DTAXXX_HANDLE_OF( buf->reserved ) = BAD_HANDLE;
+        DTAXXX_HANDLE_OF( buf->reserved ) = DTAXXX_INVALID_HANDLE;
         FindClose( h );
         return( __set_errno_dos_reterr( error ) );
     }
@@ -85,7 +85,7 @@ _WCRTLINK unsigned _dos_findnext( struct find_t *buf )
 
 _WCRTLINK unsigned _dos_findclose( struct find_t *buf )
 {
-    if( DTAXXX_HANDLE_OF( buf->reserved ) != BAD_HANDLE ) {
+    if( DTAXXX_HANDLE_OF( buf->reserved ) != DTAXXX_INVALID_HANDLE ) {
         if( !FindClose( DTAXXX_HANDLE_OF( buf->reserved ) ) ) {
             return( __set_errno_nt_reterr() );
         }

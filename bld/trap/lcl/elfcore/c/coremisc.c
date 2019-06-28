@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -194,7 +195,7 @@ trap_retval ReqFile_write( void )
     acc = GetInPtr( 0 );
     CONV_LE_64( acc->handle );
     ret = GetOutPtr( 0 );
-    ret->len = DoWrite( acc->handle, GetInPtr( sizeof( *acc ) ), GetTotalSize() - sizeof( *acc ) );
+    ret->len = DoWrite( acc->handle, GetInPtr( sizeof( *acc ) ), GetTotalSizeIn() - sizeof( *acc ) );
     ret->err = errno;
     CONV_LE_32( ret->err );
     CONV_LE_16( ret->len );
@@ -207,7 +208,7 @@ trap_retval ReqFile_write_console( void )
 
     ret = GetOutPtr( 0 );
     ret->len = DoWrite( 2, GetInPtr( sizeof( file_write_console_req ) ),
-                        GetTotalSize() - sizeof( file_write_console_req ) );
+                        GetTotalSizeIn() - sizeof( file_write_console_req ) );
     ret->err = errno;
     CONV_LE_32( ret->err );
     CONV_LE_16( ret->len );
@@ -333,7 +334,7 @@ trap_retval ReqSplit_cmd( void )
     ret = GetOutPtr( 0 );
     ret->parm_start = 0;
     start = cmd;
-    len = GetTotalSize() - sizeof( split_cmd_req );
+    len = GetTotalSizeIn() - sizeof( split_cmd_req );
     while( len != 0 ) {
         switch( *cmd ) {
         case '\0':

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,6 +35,7 @@
 #ifdef _STANDALONE_
 #include "trmem.h"
 #include "trmemcvr.h"
+#include "wresmem.h"
 #else
 #include "asalloc.h"
 #endif
@@ -57,22 +59,36 @@ pointer MemAlloc( size_t size ) {
 }
 
 #ifdef _STANDALONE_
-pointer MemRealloc( pointer p, size_t size ) {
-//**********************************************
-
-    return( TRMemRealloc( p, size ) );
+void *wres_alloc( size_t size )
+{
+    return( TRMemAlloc( size ) );
 }
 #endif
 
-void MemFree( pointer p ) {
+#ifdef _STANDALONE_
+pointer MemRealloc( pointer ptr, size_t size ) {
+//**********************************************
+
+    return( TRMemRealloc( ptr, size ) );
+}
+#endif
+
+void MemFree( pointer ptr ) {
 //*************************
 
 #ifdef _STANDALONE_
-    TRMemFree( p );
+    TRMemFree( ptr );
 #else
-    AsmFree( p );
+    AsmFree( ptr );
 #endif
 }
+
+#ifdef _STANDALONE_
+void wres_free( void *ptr )
+{
+    TRMemFree( ptr );
+}
+#endif
 
 #ifdef _STANDALONE_
 void MemFini( void ) {

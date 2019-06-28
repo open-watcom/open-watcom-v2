@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -82,13 +83,13 @@ static long wres_tell( FILE *fp )
     return( tell( FP2POSIX( fp ) ) );
 }
 
-static bool res_ioerr( FILE *fp, size_t rc )
+static bool wres_ioerr( FILE *fp, size_t rc )
 {
     /* unused parameters */ (void)fp;
 
     return( rc == (size_t)-1 );
 }
 
-WResSetRtns( wres_open, wres_close, wres_read, wres_write, wres_seek, wres_tell, wres_ioerr, malloc, free );
+WResSetRtns( wres_open, wres_close, wres_read, wres_write, wres_seek, wres_tell, wres_ioerr, wres_alloc, wres_free );
 
 #endif

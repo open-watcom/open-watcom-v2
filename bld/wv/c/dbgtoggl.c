@@ -2,8 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
-*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -32,44 +31,13 @@
 
 
 #include <string.h>
-#include "dbgdefn.h"
-#include "dbgwind.h"
-#include "dbgerr.h"
-#include "dbgmem.h"
+#include "bool.h"
+#include "dbgtoggl.h"
 
 
-void    WndNoMemory( void )
+dbg_switches    DbgSwitches;
+
+void InitDbgSwitches( void )
 {
-    Error( ERR_NONE, LIT_ENG( ERR_NO_MEMORY_FOR_WINDOW ) );
-}
-
-
-void *   WndAlloc( size_t size )
-{
-    void        *chunk;
-
-    _Alloc( chunk, size );
-    return( chunk );
-}
-
-
-void *   WndRealloc( void *chunk, size_t size )
-{
-    _Realloc( chunk, size );
-    return( chunk );
-}
-
-
-void    WndFree( void *chunk )
-{
-    _Free( chunk );
-}
-
-
-void WndMemFini( void )
-{
-}
-
-void WndMemInit( void )
-{
+    memset( &DbgSwitches, 0, sizeof( DbgSwitches ) );
 }

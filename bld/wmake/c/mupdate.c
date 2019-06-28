@@ -947,8 +947,7 @@ RET_T Update( TARGET *targ )
         }
     }
 
-    if( (targ->attr.symbolic || Glob.noexec || Glob.query)
-        && startcount != cListCount ) {
+    if( (targ->attr.symbolic || Glob.noexec || Glob.query) && startcount != cListCount ) {
         targ->existing = true;
         targ->touched = true;
         targ->executed = false;

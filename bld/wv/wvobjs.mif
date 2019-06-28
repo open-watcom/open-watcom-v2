@@ -77,6 +77,7 @@ eng_objs = &
     $(_subdir_)dbglit.obj &
     $(_subdir_)dbginsty.obj &
     $(_subdir_)dbgdata.obj &
+    $(_subdir_)dbgtoggl.obj &
     $(_subdir_)dbgevent.obj &
     $(_subdir_)dbgdll.obj &
     $(_subdir_)dlgscan.obj &
@@ -187,7 +188,6 @@ dui_objs = &
     dui.obj &
     litwddui.obj &
     modcomp.obj &
-    wndalloc.obj &
     wnddump.obj &
     wndhelp.obj &
     wndmenu.obj &

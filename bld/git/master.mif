@@ -1,0 +1,20 @@
+proj_name = cpyright
+
+watcom_autodepends = .autodepend
+
+name = $(proj_name)
+
+!include cproj.mif
+!include defrule.mif
+!include deftarg.mif
+
+objs = $(name).obj
+
+.c: ../c
+
+$(name).exe : $(objs) $(__MAKEFILES__)
+!ifndef __WATCOM_TOOLS__
+        $(cl) $(clflags) $(objs) $(ldflags)
+!else
+        $(linker) name $@ $(lflags) file {$(objs)}
+!endif

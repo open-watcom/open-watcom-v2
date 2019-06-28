@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -196,7 +197,7 @@ trap_retval ReqWrite_mem( void )
     ret->len = 0;
     if( TaskLoaded ) {
         acc = GetInPtr(0);
-        length = GetTotalSize() - sizeof(*acc);
+        length = GetTotalSizeIn() - sizeof(*acc);
         data = GetInPtr( sizeof(*acc) );
         switch( acc->mem_addr.segment ) {
         case JVM_DIP_READMEM_SELECTOR:
@@ -300,7 +301,7 @@ trap_retval ReqProg_load( void )
     while( *src != 0 ) {
         ++src;
     }
-    len = &parm[ GetTotalSize() - sizeof( *acc ) ] - src;
+    len = &parm[ GetTotalSizeIn() - sizeof( *acc ) ] - src;
     for( ;; ) {
         if( len == 0 ) break;
         ch = *src;
@@ -428,11 +429,15 @@ trap_retval ReqGet_lib_name( void )
     get_lib_name_req    *acc;
     get_lib_name_ret    *ret;
     char                *name;
+    size_t              max_len;
 
-    acc = GetInPtr(0);
-    ret = GetOutPtr(0);
+    acc = GetInPtr( 0 );
+    ret = GetOutPtr( 0 );
     name = GetOutPtr( sizeof( *ret ) );
-    ret->mod_handle = GetLibName( acc->mod_handle, name );
+    max_len = GetTotalSizeOut() - 1 - sizeof( *ret );
+    ret->mod_handle = GetLibName( acc->mod_handle, name, max_len );
+    if( ret->mod_handle )
+        return( sizeof( *ret ) + strlen( name ) + 1 );
     return( sizeof( *ret ) );
 }
 
@@ -517,7 +522,7 @@ trap_retval ReqSplit_cmd( void )
     ret = GetOutPtr( 0 );
     ret->parm_start = 0;
     start = cmd;
-    len = GetTotalSize() - sizeof( split_cmd_req );
+    len = GetTotalSizeIn() - sizeof( split_cmd_req );
     while( len != 0 ) {
         switch( *cmd ) {
         case '\0':

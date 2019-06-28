@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -30,12 +31,14 @@
 
 
 #ifndef TRPRFX_H
+#define TRPRFX_H
 
 #include "trpfile.h"
 
-#include "pushpck1.h"
 
 #define RFX_SUPP_NAME           "RFX"
+
+#define RFX_NAME_MAX            259
 
 enum {
     REQ_RFX_RENAME,             /* 00 */
@@ -50,11 +53,13 @@ enum {
     REQ_RFX_GETFREESPACE,       /* 09 */
     REQ_RFX_SETFILEATTR,        /* 10 */
     REQ_RFX_GETFILEATTR,        /* 11 */
-    REQ_RFX_NAMETOCANNONICAL,   /* 12 */
+    REQ_RFX_NAMETOCANONICAL,    /* 12 */
     REQ_RFX_FINDFIRST,          /* 13 */
     REQ_RFX_FINDNEXT,           /* 14 */
     REQ_RFX_FINDCLOSE           /* 15 */
 };
+
+#include "pushpck1.h"
 
 typedef struct {
     supp_prefix         supp;
@@ -173,28 +178,55 @@ typedef struct {
     supp_prefix         supp;
     access_req          req;
     /* followed by file name string */
-} rfx_nametocannonical_req;
+} rfx_nametocanonical_req;
 
 typedef struct {
     trap_error          err;
-    /* followed by cannonical file name string */
-} rfx_nametocannonical_ret;
+    /* followed by canonical file name string */
+} rfx_nametocanonical_ret;
 
 /*============================ RFX_FIND_FIRST ===============*/
-#define TRAP_DTA_NAME_MAX   13
+typedef struct __rfx_dta {  /* total size 21 bytes */
+    union {
+        unsigned_8      reserved1[13];
+        struct {
+            long long       handle;
+            unsigned_16     attrib;
+        }               s;
+    }               u1;
+    union {
+        struct {
+            unsigned_16     dir_entry_num;
+            unsigned_16     cluster;
+        }               dos;
+        struct {
+            unsigned_16     time;
+            unsigned_16     date;
+        }               stamp;
+        unsigned_32     id;
+    }               u;
+//    unsigned_8      reserved2[4];
+} __rfx_dta;
+
+#define DTARFX_HANDLE_OF(x)     (((__rfx_dta *)(x)->reserved)->u1.s.handle)
+#define DTARFX_ATTRIB_OF(x)     (((__rfx_dta *)(x)->reserved)->u1.s.attrib)
+#define DTARFX_DIR_NUM_OF(x)    (((__rfx_dta *)(x)->reserved)->u.dos.dir_entry_num)
+#define DTARFX_CLUSTER_OF(x)    (((__rfx_dta *)(x)->reserved)->u.dos.cluster)
+#define DTARFX_TIME_OF(x)       (((__rfx_dta *)(x)->reserved)->u.stamp.time)
+#define DTARFX_DATE_OF(x)       (((__rfx_dta *)(x)->reserved)->u.stamp.date)
+#define DTARFX_ID_OF(x)         (((__rfx_dta *)(x)->reserved)->u.id)
+
+#define DTARFX_INVALID_HANDLE   ((long long)~0)
+#define DTARFX_INVALID_ID       ((unsigned_32)~0)
+
 typedef struct {
-    struct {
-        unsigned_8      spare1[13];
-        unsigned_16     dir_entry_num;
-        unsigned_16     cluster;
-        unsigned_8      spare2[4];
-    }           dos;
-    unsigned_8  attr;
-    unsigned_16 time;
-    unsigned_16 date;
-    unsigned_32 size;
-    char        name[TRAP_DTA_NAME_MAX + 1];
-} _WCUNALIGNED trap_dta;
+    unsigned_8          reserved[21];
+    unsigned_8          attr;
+    unsigned_16         time;
+    unsigned_16         date;
+    unsigned_32         size;
+    char                name[RFX_NAME_MAX + 1];
+} _WCUNALIGNED rfx_find;
 
 typedef struct {
     supp_prefix         supp;
@@ -205,32 +237,30 @@ typedef struct {
 
 typedef struct {
     trap_error          err;
-    /* followed by a trap_dta */
+    /* followed by a rfx_find */
 } rfx_findfirst_ret;
 
 typedef struct {
     supp_prefix         supp;
     access_req          req;
-    /* followed by a trap_dta */
+    /* followed by a rfx_find */
 } rfx_findnext_req;
 
 typedef struct {
     trap_error          err;
-    /* followed by a trap_dta */
+    /* followed by a rfx_find */
 } rfx_findnext_ret;
 
 typedef struct {
     supp_prefix         supp;
     access_req          req;
+    /* followed by a rfx_find */
 } rfx_findclose_req;
 
 typedef struct {
     trap_error          err;
-    /* followed by a trap_dta */
 } rfx_findclose_ret;
 
 #include "poppck.h"
-
-#define TRPRFX_H
 
 #endif

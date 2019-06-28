@@ -31,7 +31,7 @@
 
 
 #include <dos.h>
-#include <dosfunc.h>
+#include "dosfuncx.h"
 #include <fcntl.h>
 #include <share.h>
 #include <string.h>
@@ -45,16 +45,15 @@
 #include <wos2.h>
 #include "tinyio.h"
 #include "loader.h"
+#include "_dtaxxx.h"
 
-
-#define DOS_FULLPATH 0x60
 
 #define SH_MASK (SH_COMPAT | SH_DENYRW | SH_DENYWR | SH_DENYRD | SH_DENYNO)
 
 #define CARRY_CLEAR     0
 #define CARRY_SET       0x0100          /* carry bit in AH */
 
-extern unsigned __Int21C( union REGS *r );
+extern unsigned         __Int21C( union REGS *r );
 
 static char             _cbyte2;
 static unsigned long    __DTA;
@@ -87,7 +86,7 @@ static APIRET __filedate( union REGS *r )
             *(FTIME *)&r->w.cx = info.ftimeLastWrite;
             *(FDATE *)&r->w.dx = info.fdateLastWrite;
         }
-    } else if( r->h.al == 1 ) {                 /* 01-jun-95 */
+    } else if( r->h.al == 1 ) {
         rc = DosQueryFileInfo( r->w.bx, 1, &info, sizeof( FILESTATUS ) );
         if( rc == 0 ) {
             info.ftimeLastWrite = *(FTIME *)&r->w.cx;
@@ -107,7 +106,6 @@ static APIRET __filedate( union REGS *r )
 
 #define FF_LEVEL        1
 #define FF_BUFFER       FILEFINDBUF3
-#define HANDLE_OF( __find )     ( *( HDIR * )( &(__find)->reserved[0] ) )
 
 static void copydir( struct find_t *buf, FF_BUFFER *dir_buff )
 {
@@ -132,10 +130,10 @@ static APIRET __findfirst( union REGS *r )
 
     buf = (struct find_t *)r->x.ebx;
     if( rc != 0  &&  rc != ERROR_EAS_DIDNT_FIT ) {
-        HANDLE_OF( buf ) = ~0;                  /* 15-feb-94 */
+        DTAXXX_HANDLE_OF( buf ) = ~0;
         return( rc );
     }
-    HANDLE_OF( buf ) = handle;
+    DTAXXX_HANDLE_OF( buf ) = handle;
     copydir( buf, &dir_buff );  /* copy in other fields */
     return( 0 );
 }
@@ -149,7 +147,7 @@ static APIRET __findnext( union REGS *r )
     struct find_t *buf;
 
     buf = (struct find_t *)r->x.edx;
-    handle = HANDLE_OF( buf );
+    handle = DTAXXX_HANDLE_OF( buf );
     if( handle != ~0 ) {
         if( r->h.al == 0 ) {            /* if FIND_NEXT function */
             searchcount = 1;            /* only one at a time */
@@ -193,10 +191,10 @@ unsigned __Int21C( union REGS *r )
     DATETIME    DateTime;
 
     switch( r->h.ah ) {
-    case 6:
+    case DOS_OUTPUT_CHAR:
         rc = DosWrite( 1, &r->h.dl, 1, (PULONG)&len );
         break;
-    case 8:
+    case DOS_GET_CHAR_NO_ECHO_CHECK:
         rc = __getch( r );
         break;
     case DOS_CUR_DISK:
@@ -307,7 +305,7 @@ unsigned __Int21C( union REGS *r )
     case DOS_FILE_DATE:
         rc = __filedate( r );
         break;
-    case DOS_FULLPATH:
+    case DOS_TRUENAME:
         rc = DosQueryPathInfo( (PSZ)r->x.edx, FIL_QUERYFULLNAME,
                                 (char *)r->x.ebx, r->x.ecx );
         break;

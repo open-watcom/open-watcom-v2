@@ -30,16 +30,16 @@
 ****************************************************************************/
 
 
+#include <stdlib.h>
+#include "wresmem.h"
 
 
-#ifndef stdqnx_h
-#define stdqnx_h
+void *wres_alloc( size_t size )
+{
+    return( malloc( size ) );
+}
 
-#if defined DEBUGGING
-#define debug_printf (void)
-#else
-extern int debug_printf(char *fmt, ...);
-#endif
-
-
-#endif
+void wres_free( void *ptr )
+{
+    free( ptr );
+}

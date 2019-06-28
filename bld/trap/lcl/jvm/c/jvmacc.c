@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -521,7 +522,7 @@ trap_retval ReqWrite_mem( void )
 
     ret->len = 0;
     offset = acc->mem_addr.offset;
-    len = length = GetTotalSize() - sizeof( *acc );
+    len = length = GetTotalSizeIn() - sizeof( *acc );
     data = (LPSTR) GetInPtr( sizeof( *acc ) );
     switch( acc->mem_addr.segment ) {
     case MAD_JVM_FINDLINECUE_SELECTOR:
@@ -765,7 +766,7 @@ stack_item *LoadCallBack( stack_item *p, ExecEnv *ee )
     parm = GetInPtr( sizeof( *acc ) );
     parms = (char *)GetInPtr( sizeof( *acc ) );
     parm_start = parms;
-    len = GetTotalSize() - sizeof( *acc );
+    len = GetTotalSizeIn() - sizeof( *acc );
     if( acc->true_argv ) {
         i = 1;
         for( ;; ) {
@@ -778,7 +779,7 @@ stack_item *LoadCallBack( stack_item *p, ExecEnv *ee )
         }
         args = walloca( i * sizeof( *args ) );
         parms = parm_start;
-        len = GetTotalSize() - sizeof( *acc );
+        len = GetTotalSizeIn() - sizeof( *acc );
         i = 1;
         for( ;; ) {
             if( len == 0 ) break;
@@ -992,7 +993,7 @@ trap_retval ReqRedirect_stdout( void )
 }
 
 trap_retval ReqGet_next_alias( void )
-/********************************/
+/***********************************/
 {
     get_next_alias_ret  *ret;
 
@@ -1003,7 +1004,7 @@ trap_retval ReqGet_next_alias( void )
 }
 
 trap_retval ReqGet_err_text( void )
-/******************************/
+/*********************************/
 {
 
     // never called
@@ -1011,7 +1012,7 @@ trap_retval ReqGet_err_text( void )
 }
 
 trap_retval ReqGet_lib_name( void )
-/******************************/
+/*********************************/
 {
     get_lib_name_req    *acc;
     get_lib_name_ret    *ret;
@@ -1020,6 +1021,7 @@ trap_retval ReqGet_lib_name( void )
     ClassClass          *cb;
     int                 nbinclasses = get_nbinclasses();
     ClassClass          **binclasses = get_binclasses();
+    size_t              max_len;
 
     acc = GetInPtr(0);
     ret = GetOutPtr(0);
@@ -1035,25 +1037,29 @@ trap_retval ReqGet_lib_name( void )
         first = acc->mod_handle;
     }
 
-    if( first >= nbinclasses ) return( sizeof( *ret ) );
+    if( first >= nbinclasses )
+        return( sizeof( *ret ) );
 
     cb = binclasses[ first ];
     if( cb == CbMain ) {
         ++first;
-        if( first >= nbinclasses ) return( sizeof( *ret ) );
+        if( first >= nbinclasses )
+            return( sizeof( *ret ) );
         cb = binclasses[ first ];
     }
 
+    max_len = GetTotalSizeOut() - 1 - sizeof( *ret );
     name = GetOutPtr( sizeof( *ret ) );
-    strcpy( name, JAVAPREFIX );
-    strcat( name, cb->name );
-
+    strncpy( name, JAVAPREFIX, max_len );
+    name[max_len] = '\0';
+    strcat( name, cb->name, max_len - strlen( name ) );
+    name[max_len] = '\0';
     ret->mod_handle = LastClassGiven = first + 1;
     return( sizeof( *ret ) + strlen( name ) + 1 );
 }
 
 trap_retval ReqGet_message_text( void )
-/**********************************/
+/*************************************/
 {
 #if 0
     // we only need to implement this if we return COND_MESSAGE

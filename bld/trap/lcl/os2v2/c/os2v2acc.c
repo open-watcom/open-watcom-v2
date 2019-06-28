@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -763,7 +763,7 @@ trap_retval ReqWrite_mem( void )
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
 
-    len = GetTotalSize() - sizeof( *acc );
+    len = GetTotalSizeIn() - sizeof( *acc );
 
     ret->len = WriteBuffer( GetInPtr( sizeof( *acc ) ), acc->mem_addr.segment, acc->mem_addr.offset, len );
     return( sizeof( *ret ) );
@@ -864,6 +864,7 @@ trap_retval ReqGet_lib_name( void )
     get_lib_name_req    *acc;
     get_lib_name_ret    *ret;
     char                *name;
+    size_t              max_len;
 
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
@@ -874,9 +875,11 @@ trap_retval ReqGet_lib_name( void )
         ret->mod_handle = 0;
         return( sizeof( *ret ) );
     }
-    name = GetOutPtr( sizeof( *ret ) );
     Buff.Value = ModHandles[CurrModHandle];
-    DosQueryModuleName( ModHandles[CurrModHandle], 128, name );
+    max_len = GetTotalSizeOut() - 1 - sizeof( *ret );
+    name = GetOutPtr( sizeof( *ret ) );
+    DosQueryModuleName( ModHandles[CurrModHandle], max_len + 1, name );
+    name[max_len] = '\0';
     ret->mod_handle = CurrModHandle;
     return( sizeof( *ret ) + strlen( name ) + 1 );
 }
@@ -1102,7 +1105,7 @@ trap_retval ReqProg_load( void )
         while( *prog != '\0' )
             ++prog;
         ++prog;
-        end = (char *)GetInPtr( GetTotalSize() - 1 ) + 1;
+        end = (char *)GetInPtr( GetTotalSizeIn() - 1 ) + 1;
         MergeArgvArray( prog, parms, end - prog );
         ret->err = StartProcess( exe_name, parms );
     } else {
@@ -1525,7 +1528,7 @@ trap_retval ReqFile_write_console( void )
     file_write_console_ret      *ret;
 
     ptr = GetInPtr( sizeof( file_write_console_req ) );
-    len = GetTotalSize() - sizeof( file_write_console_req );
+    len = GetTotalSizeIn() - sizeof( file_write_console_req );
     ret = GetOutPtr( 0 );
     if( CanExecTask ) {
         /* print/program request */

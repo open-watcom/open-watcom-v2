@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2019 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -28,10 +28,12 @@
 *
 ****************************************************************************/
 
+
 #include "variety.h"
 #include <sched.h>
 #include <sys/types.h>
 #include "linuxsys.h"
+
 
 _WCRTLINK int sched_getparam( pid_t pid, struct sched_param *sp )
 {
@@ -39,8 +41,7 @@ _WCRTLINK int sched_getparam( pid_t pid, struct sched_param *sp )
     __syscall_return( int, res );
 }
 
-_WCRTLINK int sched_setparam( pid_t pid,
-                              const struct sched_param *sp )
+_WCRTLINK int sched_setparam( pid_t pid, const struct sched_param *sp )
 {
     syscall_res res = sys_call2( SYS_sched_setparam, pid, (u_long)sp );
     __syscall_return( int, res );

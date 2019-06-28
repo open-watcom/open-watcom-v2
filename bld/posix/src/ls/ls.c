@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -196,7 +197,7 @@ int main( int argc, char *argv[] )
         } else {
             d = opendir( argv[i] );
         }
-        if( d != NULL && ( d->d_attr & _A_SUBDIR ) ) {
+        if( d != NULL && (d->d_attr & _A_SUBDIR) ) {
             printf( "%s:\n", argv[i] );
             if( rxflag ) {
                 DoLS( argv[i], "*" );
@@ -368,27 +369,27 @@ static void DoLS( char *path, char *name )
             }
         }
         if( hflag ) {
-            if( nextdirentry->d_attr & (_A_HIDDEN|_A_SYSTEM) ) {
+            if( nextdirentry->d_attr & (_A_HIDDEN | _A_SYSTEM) ) {
                 continue;
             }
         }
-        if( !( ( nextdirentry->d_attr & _A_SUBDIR )
-             && IsDotOrDotDot( nextdirentry->d_name ) ) ) {
-            files = realloc( files, ( filecnt+1 )*sizeof( struct dirent * ) );
-            if( files == NULL ) {
-                printf( "Out of memory!\n" );
-                exit( 1 );
-            }
-            files[ filecnt ] = malloc( sizeof( struct dirent ) );
-            if( files[filecnt] == NULL ) {
-                break;
-            }
-            fname_len = (unsigned)strlen( nextdirentry->d_name );
-            if( max_fname_len < fname_len ) {
-                max_fname_len = fname_len;
-            }
-            memcpy( files[filecnt++], nextdirentry, sizeof( struct dirent ) );
+        if( (nextdirentry->d_attr & _A_SUBDIR) && IsDotOrDotDot( nextdirentry->d_name ) ) {
+            continue;
         }
+        files = realloc( files, ( filecnt + 1 ) * sizeof( struct dirent * ) );
+        if( files == NULL ) {
+            printf( "Out of memory!\n" );
+            exit( 1 );
+        }
+        files[ filecnt ] = malloc( sizeof( struct dirent ) );
+        if( files[filecnt] == NULL ) {
+            break;
+        }
+        fname_len = (unsigned)strlen( nextdirentry->d_name );
+        if( max_fname_len < fname_len ) {
+            max_fname_len = fname_len;
+        }
+        memcpy( files[filecnt++], nextdirentry, sizeof( struct dirent ) );
 
     }
     closedir( directory );

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -662,7 +663,7 @@ static CGPOINTER NextAlias( int index, aux_class request )
     if( request == NEXT_ALIAS )
         ++index;
 
-    for( i = 1, aliaslist = AliasHead; aliaslist; aliaslist = aliaslist->next, ++i ) {
+    for( i = 1, aliaslist = AliasHead; aliaslist != NULL; aliaslist = aliaslist->next, ++i ) {
         alias_name = aliaslist->name;
         alias_sym = aliaslist->a_sym;
         subst_name = aliaslist->subst;

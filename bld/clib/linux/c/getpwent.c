@@ -2,8 +2,7 @@
 *
 *                            Open Watcom Project
 *
-*    Portions Copyright (c) 2015 Open Watcom contributors. 
-*    All Rights Reserved.
+* Copyright (c) 2015-2019 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -30,11 +29,13 @@
 * Author: J. Armstrong
 ****************************************************************************/
 
+
 #include "variety.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <pwd.h>
+
 
 static FILE *__pwfp;
 
@@ -61,59 +62,59 @@ _WCRTLINK struct passwd *getpwent()
         __pwfp = fopen("/etc/passwd", "r");
     if(!__pwfp)
         goto getpwent_fail;
-    
+
     while(1) {
         line_length = getline(&line, &linesize, __pwfp);
         if(line_length < 0)
             goto getpwent_fail;
-            
+
         ret.pw_name = line;
-        ptr = strchr(line, ':');    
+        ptr = strchr(line, ':');
         if(ptr == NULL) continue;
         *ptr++ = '\0';
-        
+
         ret.pw_passwd = ptr;
-        ptr = strchr(ptr, ':');    
+        ptr = strchr(ptr, ':');
         if(ptr == NULL) continue;
         *ptr++ = '\0';
-        
+
         numptr = ptr;
-        ptr = strchr(ptr, ':');    
+        ptr = strchr(ptr, ':');
         if(ptr == NULL) continue;
         *ptr++ = '\0';
         ret.pw_uid = (uid_t)strtol(numptr, &lignore, 10);
-        
+
         numptr = ptr;
-        ptr = strchr(ptr, ':');    
+        ptr = strchr(ptr, ':');
         if(ptr == NULL) continue;
         *ptr++ = '\0';
         ret.pw_gid = (gid_t)strtol(numptr, &lignore, 10);
-        
+
         ret.pw_gecos = ptr;
-        ptr = strchr(ptr, ':');    
+        ptr = strchr(ptr, ':');
         if(ptr == NULL) continue;
         *ptr++ = '\0';
-        
+
         ret.pw_dir = ptr;
-        ptr = strchr(ptr, ':');    
+        ptr = strchr(ptr, ':');
         if(ptr == NULL) continue;
         *ptr++ = '\0';
-        
+
         ret.pw_shell = ptr;
         ptr = strchr(line, '\n');
         if(ptr != NULL)
             *ptr = '\0';
-        
+
         break;
     }
-    
+
     return &ret;
-    
+
 getpwent_fail:
-    if(line != NULL) 
+    if(line != NULL)
         free(line);
-        
+
     linesize = 0;
-    
+
     return NULL;
 }

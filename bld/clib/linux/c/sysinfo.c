@@ -2,8 +2,7 @@
 *
 *                            Open Watcom Project
 *
-*    Portions Copyright (c) 2015 Open Watcom contributors. 
-*    All Rights Reserved.
+* Copyright (c) 2015-2019 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -30,9 +29,11 @@
 * Author: J. Armstrong
 ****************************************************************************/
 
+
 #include "variety.h"
 #include <sys/sysinfo.h>
 #include "linuxsys.h"
+
 
 _WCRTLINK int sysinfo( struct sysinfo *__info )
 {

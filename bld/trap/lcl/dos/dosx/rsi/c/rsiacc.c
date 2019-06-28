@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -87,7 +87,6 @@ static bool             AtEnd;
 static unsigned         NumObjects;
 static unsigned_8       RealNPXType;
 
-#define BUFF_SIZE       256
 static char             UtilBuff[BUFF_SIZE];
 
 #define MAX_WP 32
@@ -320,7 +319,7 @@ trap_retval ReqWrite_mem( void )
     _DBG_Writeln( "WriteMem" );
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
-    ret->len = WriteMemory( (addr48_ptr *)&acc->mem_addr, GetInPtr( sizeof( *acc ) ), GetTotalSize() - sizeof( *acc ) );
+    ret->len = WriteMemory( (addr48_ptr *)&acc->mem_addr, GetInPtr( sizeof( *acc ) ), GetTotalSizeIn() - sizeof( *acc ) );
     return( sizeof( *ret ) );
 }
 
@@ -350,7 +349,7 @@ trap_retval ReqWrite_io( void )
 
     acc = GetInPtr(0);
     data = GetInPtr( sizeof( *acc ) );
-    len = GetTotalSize() - sizeof( *acc );
+    len = GetTotalSizeIn() - sizeof( *acc );
     ret = GetOutPtr(0);
     if( len == 1 ) {
         Out_b( acc->IO_offset, *(byte *)data );
@@ -514,7 +513,7 @@ trap_retval ReqProg_load( void )
     src = name = GetInPtr( sizeof( prog_load_req ) );
     ret = GetOutPtr( 0 );
     while( *src++ != '\0' ) {};
-    len = GetTotalSize() - (src - name) - sizeof( prog_load_req );
+    len = GetTotalSizeIn() - (src - name) - sizeof( prog_load_req );
     if( len > 126 )
         len = 126;
     for( ; len > 0; --len ) {

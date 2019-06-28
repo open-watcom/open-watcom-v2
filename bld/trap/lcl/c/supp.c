@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -115,7 +116,7 @@ static service_func * const RFXRequests[] = {
     ReqRfx_getfreespace,
     ReqRfx_setfileattr,
     ReqRfx_getfileattr,
-    ReqRfx_nametocannonical,
+    ReqRfx_nametocanonical,
     ReqRfx_findfirst,
     ReqRfx_findnext,
     ReqRfx_findclose,

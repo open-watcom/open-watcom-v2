@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -310,15 +311,14 @@ trap_retval ReqGet_lib_name( void )
     char                *name;
     unsigned            i;
     trap_elen           ret_len;
+    size_t              max_len;
 
     acc = GetInPtr( 0 );
     CONV_LE_32( acc->mod_handle );
     ret = GetOutPtr( 0 );
     name = GetOutPtr( sizeof( *ret ) );
-
     ret->mod_handle = 0;
     ret_len = sizeof( *ret );
-
     for( i = 0; i < ModuleTop; ++i ) {
         if( moduleInfo[i].newly_unloaded ) {
             Out( "(newly unloaded) " );
@@ -330,7 +330,9 @@ trap_retval ReqGet_lib_name( void )
         } else if( moduleInfo[i].newly_loaded ) {
             Out( "(newly loaded) " );
             ret->mod_handle = i;
-            strcpy( name, moduleInfo[i].filename );
+            max_len = GetTotalSizeOut() - 1 - sizeof( *ret );
+            strncpy( name, moduleInfo[i].filename, max_len );
+            name[max_len] = '\0';
             moduleInfo[i].newly_loaded = false;
             ret_len += strlen( name ) + 1;
             break;

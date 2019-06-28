@@ -2,8 +2,23 @@
 Open Watcom v2 Fork
 ===================
 
-This document gives a quick description of the source tree layout. For more
-information about the project and build instructions see the GitHub wiki.
+Welcome to the Open Watom v2 Project! 
+
+For more information about the project and build instructions see the GitHub wiki.
+
+Discuss the Project on Discord, Reddit, GitHub, SourceForge or News Groups.
+----------------------------------------------------------------------------
+
+We now have an Official Discord server!
+Join the discussion [`here`](https://discord.gg/5WexPNn)!
+
+Reddit Server, join the discussion [`Open Watcom on Reddit`](https://www.reddit.com/r/OpenWatcom/)
+
+SourceForge, join the discussion [`Open Watcom on SourceForge`](https://sourceforge.net/p/openwatcom/discussion/)
+
+GitHub, join the discussion [`Open Watcom on GitHub`](https://github.com/open-watcom/open-watcom-v2/issues)
+
+Open Watcom News Groups, join the discussion [`Open Watcom News Groups`](news.openwatcom.org)
 
 Source Tree Layout
 ------------------

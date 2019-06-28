@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -129,6 +130,7 @@ trap_retval ReqGet_lib_name( void )
     char                *name;
     struct TDebug       *obj;
     struct TDebugModule *mod;
+    size_t              max_len;
 
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
@@ -138,11 +140,12 @@ trap_retval ReqGet_lib_name( void )
         ret->mod_handle = GetNextModule( obj, acc->mod_handle );
         if( ret->mod_handle != 0 ) {
             name = GetOutPtr( sizeof( *ret ) );
+            *name = '\0';
             mod = LockModule( obj, ret->mod_handle );
             if( mod != NULL ) {
-                strcpy( name, mod->ModuleName );
-            } else {
-                *name = '\0';
+                max_len = GetTotalSizeOut() - 1 - sizeof( *ret );
+                strncpy( name, mod->ModuleName, max_len );
+                name[max_len] = '\0';
             }
             UnlockModule( obj );
             return( sizeof( *ret ) + strlen( name ) + 1 );

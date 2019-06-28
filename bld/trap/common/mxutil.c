@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -70,7 +71,7 @@ void *GetOutPtr( trap_elen pos )    /* Absolute position */
     return( (unsigned_8 *)entry->ptr + pos );
 }
 
-trap_elen GetTotalSize( void )
+trap_elen GetTotalSizeIn( void )
 {
     trap_elen       i;
     trap_elen       len;
@@ -78,6 +79,18 @@ trap_elen GetTotalSize( void )
     len = 0;
     for( i = 0; i < In_Mx_Num; i++ ) {
          len += In_Mx_Ptr[i].len;
+    }
+    return( len );
+}
+
+trap_elen GetTotalSizeOut( void )
+{
+    trap_elen       i;
+    trap_elen       len;
+
+    len = 0;
+    for( i = 0; i < Out_Mx_Num; i++ ) {
+         len += Out_Mx_Ptr[i].len;
     }
     return( len );
 }

@@ -27,7 +27,7 @@ $(OWOBJDIR)/cretype.exe : cretype.c
 	$(CC) -I../watcom/h -o $@ $<
 
 $(OWOBJDIR)/isarray.gh : $(OWOBJDIR)/cretype.exe
-	$< > $@
+	$< $@
 
 $(OWBINDIR)/wmake: $(OWOBJDIR)/wmake.exe
 	cp $< $@

@@ -2,8 +2,7 @@
 *
 *                            Open Watcom Project
 *
-*    Portions Copyright (c) 2015 Open Watcom Contributors.
-*    All Rights Reserved.
+* Copyright (c) 2015-2019 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -31,11 +30,13 @@
 *
 ****************************************************************************/
 
+
 #include "variety.h"
 #include <time.h>
 #include "linuxsys.h"
 
-_WCRTLINK int clock_settime( clockid_t __clk, const struct timespec *__ts)
+
+_WCRTLINK int clock_settime( clockid_t __clk, const struct timespec *__ts )
 {
     syscall_res res = sys_call2( SYS_clock_settime, (u_long)__clk, (u_long)__ts );
     __syscall_return( int, res );

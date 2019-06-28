@@ -31,4 +31,3 @@
 
 
 extern bool         InitRFXSupp( void );
-extern size_t       RenameNameToCannonical( char *name, char *fullname, trap_elen fullname_len );

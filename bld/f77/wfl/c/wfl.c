@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -102,7 +103,7 @@
   #define ISVALIDENTRY(e)   (1)
   #define FNMATCH_FLAGS     (FNM_PATHNAME | FNM_NOESCAPE)
 #else
-  #define ISVALIDENTRY(e)   ((e->d_attr & (_A_HIDDEN + _A_SYSTEM + _A_VOLID + _A_SUBDIR)) == 0 )
+  #define ISVALIDENTRY(e)   ((e->d_attr & (_A_HIDDEN | _A_SYSTEM | _A_VOLID | _A_SUBDIR)) == 0 )
   #define FNMATCH_FLAGS     (FNM_PATHNAME | FNM_NOESCAPE | FNM_IGNORECASE)
 #endif
 

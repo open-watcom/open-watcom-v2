@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -41,31 +42,14 @@
 #include "trpimp.h"
 #include "trpcomm.h"
 
-#if 0
-typedef struct {
-    struct {
-        char                i_dunno[13];
-        unsigned int        dir_entry_num;
-        unsigned int        cluster;
-        char                i_still_dunno[4];
-    } dos;
-    char                attr;
-    unsigned int        time;
-    unsigned int        date;
-    long                size;
-    char                name[14];
-} dos_dta;
-#endif
 
 #define NIL_DOS_HANDLE  ((HFILE)0xFFFF)
-#define BUFF_SIZE       256
-
 
 trap_retval ReqRfx_rename( void )
 {
-    char           *old_name;
-    char           *new_name;
-    rfx_rename_ret      *ret;
+    char                    *old_name;
+    char                    *new_name;
+    rfx_rename_ret          *ret;
 
     old_name = GetInPtr( sizeof( rfx_rename_req ) );
     new_name = GetInPtr( sizeof( rfx_rename_req ) + strlen( old_name ) + 1 );
@@ -77,8 +61,8 @@ trap_retval ReqRfx_rename( void )
 
 trap_retval ReqRfx_mkdir( void )
 {
-    char             *name;
-    rfx_mkdir_ret       *ret;
+    char                    *name;
+    rfx_mkdir_ret           *ret;
 
     name = GetInPtr( sizeof( rfx_mkdir_req ) );
     ret = GetOutPtr( 0 );
@@ -89,8 +73,8 @@ trap_retval ReqRfx_mkdir( void )
 
 trap_retval ReqRfx_rmdir( void )
 {
-    char             *name;
-    rfx_rmdir_ret       *ret;
+    char                    *name;
+    rfx_rmdir_ret           *ret;
 
     name = GetInPtr( sizeof( rfx_rmdir_req ) );
     ret = GetOutPtr( 0 );
@@ -101,8 +85,8 @@ trap_retval ReqRfx_rmdir( void )
 
 trap_retval ReqRfx_setdrive( void )
 {
-    rfx_setdrive_req    *acc;
-    rfx_setdrive_ret    *ret;
+    rfx_setdrive_req        *acc;
+    rfx_setdrive_ret        *ret;
 
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
@@ -113,13 +97,13 @@ trap_retval ReqRfx_setdrive( void )
 
 trap_retval ReqRfx_getdrive( void )
 {
-    USHORT             drive;
-    ULONG              map;
-    rfx_getdrive_ret    *ret;
+    USHORT                  drive;
+    ULONG                   map;
+    rfx_getdrive_ret        *ret;
 
     ret = GetOutPtr( 0 );
     if( DosQCurDisk( &drive, &map ) == 0 ) {
-        ret->drive = drive-1;
+        ret->drive = drive - 1;
     } else {
         ret->drive = 0;
     }
@@ -129,8 +113,8 @@ trap_retval ReqRfx_getdrive( void )
 
 trap_retval ReqRfx_setcwd( void )
 {
-    char              *name;
-    rfx_setcwd_ret      *ret;
+    char                    *name;
+    rfx_setcwd_ret          *ret;
 
     name = GetInPtr( sizeof( rfx_setcwd_req ) );
     ret = GetOutPtr( 0 );
@@ -141,10 +125,10 @@ trap_retval ReqRfx_setcwd( void )
 
 trap_retval ReqRfx_getfileattr( void )
 {
-    USHORT             attrib;
-    USHORT             ret_code;
-    char               *name;
-    rfx_getfileattr_ret *ret;
+    USHORT                  attrib;
+    USHORT                  ret_code;
+    char                    *name;
+    rfx_getfileattr_ret     *ret;
 
     name = GetInPtr( sizeof( rfx_getfileattr_req ) );
     ret = GetOutPtr( 0 );
@@ -156,9 +140,9 @@ trap_retval ReqRfx_getfileattr( void )
 
 trap_retval ReqRfx_setfileattr( void )
 {
-    char               *name;
-    rfx_setfileattr_req *acc;
-    rfx_setfileattr_ret *ret;
+    char                    *name;
+    rfx_setfileattr_req     *acc;
+    rfx_setfileattr_ret     *ret;
 
     // Not tested, and not used right now
     acc = GetInPtr( 0 );
@@ -170,16 +154,14 @@ trap_retval ReqRfx_setfileattr( void )
 
 trap_retval ReqRfx_getfreespace( void )
 {
-    FSALLOCATE      info;
-    rfx_getfreespace_req        *acc;
-    rfx_getfreespace_ret        *ret;
+    FSALLOCATE              info;
+    rfx_getfreespace_req    *acc;
+    rfx_getfreespace_ret    *ret;
 
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
     DosQFSInfo( acc->drive, 1, (PBYTE)&info, sizeof( info ) );
-    ret->size = (long)info.cbSector
-                 * (long)info.cSectorUnit
-                 * (long)info.cUnitAvail;
+    ret->size = (long)info.cbSector * (long)info.cSectorUnit * (long)info.cUnitAvail;
     return( sizeof( *ret ) );
 }
 
@@ -226,10 +208,10 @@ static void mylocaltime( unsigned long date_time, unsigned *time, unsigned *date
 
 trap_retval ReqRfx_setdatetime( void )
 {
-    FILESTATUS          info;
-    unsigned            time;
-    unsigned            date;
-    rfx_setdatetime_req *acc;
+    FILESTATUS              info;
+    unsigned                time;
+    unsigned                date;
+    rfx_setdatetime_req     *acc;
 
     acc = GetInPtr( 0 );
     mylocaltime( acc->time, &time, &date );
@@ -274,9 +256,9 @@ static unsigned long mymktime( unsigned time, unsigned date )
 
 trap_retval ReqRfx_getdatetime( void )
 {
-    rfx_getdatetime_req *acc;
-    rfx_getdatetime_ret *ret;
-    FILESTATUS         info;
+    rfx_getdatetime_req     *acc;
+    rfx_getdatetime_ret     *ret;
+    FILESTATUS              info;
 
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
@@ -287,94 +269,112 @@ trap_retval ReqRfx_getdatetime( void )
 
 trap_retval ReqRfx_getcwd( void )
 {
-    USHORT              len = BUFF_SIZE;
-    rfx_getcwd_req      *acc;
-    rfx_getcwd_ret      *ret;
+    USHORT                  len;
+    rfx_getcwd_req          *acc;
+    rfx_getcwd_ret          *ret;
 
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
+    len = RFX_NAME_MAX + 1;
     ret->err = DosQCurDir( acc->drive, GetOutPtr( sizeof( *ret ) ), &len );
     return( sizeof( *ret ) + len );
 }
 
-static void MoveDirInfo( FILEFINDBUF *os2, trap_dta FAR *dos )
+static void makeDTARFX( rfx_find FAR *info, FILEFINDBUF *findbuf, HDIR h )
 {
-    dos->dos.dir_entry_num = *(USHORT *)&os2->fdateLastWrite;
-    dos->dos.cluster = *(USHORT __far *)&os2->ftimeLastWrite;
-    dos->attr = os2->attrFile;
-    dos->time = *(USHORT __far *)&os2->ftimeLastWrite;
-    dos->date = *(USHORT __far *)&os2->fdateLastWrite;
-    dos->size = os2->cbFile;
-    strncpy( dos->name, os2->achName, TRAP_DTA_NAME_MAX - 1 );
-    dos->name[TRAP_DTA_NAME_MAX - 1] = '\0';
+    DTARFX_HANDLE_OF( info ) = h;
+    info->time = DTARFX_TIME_OF( info ) = *(USHORT __far *)&findbuf->ftimeLastWrite;
+    info->date = DTARFX_DATE_OF( info ) = *(USHORT __far *)&findbuf->fdateLastWrite;
+    info->attr = findbuf->attrFile;
+    info->size = findbuf->cbFile;
+#if RFX_NAME_MAX < CCHMAXPATHCOMP
+    strncpy( info->name, findbuf->achName, RFX_NAME_MAX );
+    info->name[RFX_NAME_MAX] = '\0';
+#else
+    strncpy( info->name, findbuf->achName, CCHMAXPATHCOMP );
+    info->name[CCHMAXPATHCOMP] = '\0';
+#endif
 }
 
 trap_retval ReqRfx_findfirst( void )
 {
-    FILEFINDBUF          info;
-    USHORT               rc;
-    HDIR                 hdl = 1;
-    USHORT               count = 1;
-    rfx_findfirst_req   *acc;
-    rfx_findfirst_ret   *ret;
-    char                 *filename;
+    FILEFINDBUF             findbuf;
+    USHORT                  rc;
+    HDIR                    h;
+    USHORT                  count = 1;
+    rfx_findfirst_req       *acc;
+    rfx_findfirst_ret       *ret;
+    rfx_find                *info;
 
     acc = GetInPtr( 0 );
-    filename = GetInPtr( sizeof( *acc ) );
+    h = HDIR_CREATE;
     ret = GetOutPtr( 0 );
-    rc = DosFindFirst( filename, &hdl, acc->attrib, &info,
-                       sizeof( info ), &count, 0 );
-    if( rc == 0 ) {
-        MoveDirInfo( &info, (trap_dta *)GetOutPtr( sizeof(*ret) ) );
-        ret->err = 0;
-        return( sizeof( *ret ) + sizeof( trap_dta ) );
-    } else {
-        ret->err = rc;
-        return( sizeof( *ret ) );
+    ret->err = rc = DosFindFirst( GetInPtr( sizeof( *acc ) ), &h, acc->attrib, &findbuf, sizeof( findbuf ), &count, 0 );
+    info = GetOutPtr( sizeof( *ret ) );
+    if( rc ) {
+        DTARFX_HANDLE_OF( info ) = DTARFX_INVALID_HANDLE;
+        return( sizeof( *ret ) + offsetof( rfx_find, name ) );
     }
+    makeDTARFX( info, &findbuf, h );
+    return( sizeof( *ret ) + offsetof( rfx_find, name ) + strlen( info->name ) + 1 );
 }
 
 trap_retval ReqRfx_findnext( void )
 {
-    FILEFINDBUF         info;
-    USHORT              rc;
-    USHORT              count = 1;
-    rfx_findnext_ret    *ret;
+    FILEFINDBUF             findbuf;
+    USHORT                  rc;
+    USHORT                  count = 1;
+    rfx_findnext_ret        *ret;
+    HDIR                    h;
+    rfx_find                *info;
 
+    info = GetInPtr( sizeof( rfx_findnext_req ) );
     ret = GetOutPtr( 0 );
-    rc = DosFindNext( 1, &info, sizeof( info ), &count );
-    if( rc == 0 ) {
-        MoveDirInfo( &info, (trap_dta *)GetOutPtr( sizeof(*ret) ) );
-        ret->err = 0;
-        return( sizeof( *ret ) + sizeof( trap_dta ) );
-    } else {
-        ret->err = rc;
+    if( DTARFX_HANDLE_OF( info ) == DTARFX_INVALID_HANDLE ) {
+        ret->err = -1;
         return( sizeof( *ret ) );
     }
+    h = DTARFX_HANDLE_OF( info );
+    ret->err = rc = DosFindNext( h, &findbuf, sizeof( findbuf ), &count );
+    info = GetOutPtr( sizeof(*ret) );
+    if( rc ) {
+        DosFindClose( h );
+        DTARFX_HANDLE_OF( info ) = DTARFX_INVALID_HANDLE;
+        return( sizeof( *ret ) + offsetof( rfx_find, name ) );
+    }
+    makeDTARFX( info, &findbuf, h );
+    return( sizeof( *ret ) + offsetof( rfx_find, name ) + strlen( info->name ) + 1 );
 }
 
 trap_retval ReqRfx_findclose( void )
 {
-    rfx_findclose_ret    *ret;
+    rfx_findclose_ret       *ret;
+    HDIR                    h;
+    rfx_find                *info;
 
+    info = GetInPtr( sizeof( rfx_findclose_req ) );
     ret = GetOutPtr( 0 );
     ret->err = 0;
+    if( DTARFX_HANDLE_OF( info ) != DTARFX_INVALID_HANDLE ) {
+        h = DTARFX_HANDLE_OF( info );
+        DosFindClose( h );
+    }
     return( sizeof( *ret ) );
 }
 
-trap_retval ReqRfx_nametocannonical( void )
+trap_retval ReqRfx_nametocanonical( void )
 {
-    rfx_nametocannonical_ret    *ret;
-    char                  *name;
-    char                  *fullname;
-    char                  *p;
-    int                   level = 0;
-    USHORT                drive;
-    ULONG                 map;
-    USHORT                len = BUFF_SIZE;
+    rfx_nametocanonical_ret     *ret;
+    char                        *name;
+    char                        *fullname;
+    char                        *p;
+    int                         level = 0;
+    USHORT                      drive;
+    ULONG                       map;
+    USHORT                      len;
 
     // Not tested, and not used right now
-    name = GetInPtr( sizeof( rfx_nametocannonical_req ) );
+    name = GetInPtr( sizeof( rfx_nametocanonical_req ) );
     ret = GetOutPtr( 0 );
     fullname = GetOutPtr( sizeof( *ret ) );
     ret->err = 1;
@@ -387,6 +387,7 @@ trap_retval ReqRfx_nametocannonical( void )
     } else {
         DosQCurDisk( &drive, &map );
     }
+    len = RFX_NAME_MAX + 1;
     if( *name != '\\' ) {
         *fullname++ = '\\';
         // DOS : TinyGetCWDir( fullname, TinyGetCurrDrive() + 1 );
@@ -437,5 +438,5 @@ trap_retval ReqRfx_nametocannonical( void )
         }
     }
 done:
-    return( sizeof( *ret ) + strlen( GetOutPtr( sizeof(*ret) ) ) + 1 );
+    return( sizeof( *ret ) + strlen( GetOutPtr( sizeof( *ret ) ) ) + 1 );
 }

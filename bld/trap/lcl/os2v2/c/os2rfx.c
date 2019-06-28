@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -42,26 +43,9 @@
 
 
 #define NIL_DOS_HANDLE  ((HFILE)0xFFFF)
-#define BUFF_SIZE       256
 
 #define TRPH2LH(th)     (HFILE)((th)->handle.u._32[0])
 #define LH2TRPH(th,lh)  (th)->handle.u._32[0]=(unsigned_32)lh;(th)->handle.u._32[1]=0
-
-#if 0
-typedef struct {
-    struct {
-        char                i_dunno[13];
-        unsigned int        dir_entry_num;
-        unsigned int        cluster;
-        char                i_still_dunno[4];
-    } dos;
-    char                attr;
-    unsigned int        time;
-    unsigned int        date;
-    long                size;
-    char                name[14];
-} dos_dta;
-#endif
 
 trap_retval ReqRfx_rename( void )
 {
@@ -167,10 +151,10 @@ trap_retval ReqRfx_setfileattr( void )
     name = GetInPtr( sizeof( *acc ) );
     ret = GetOutPtr( 0 );
     ret->err = DosQueryPathInfo( name, FIL_STANDARD, &info, sizeof( info ) );
-    if (ret->err == 0) {
+    if( ret->err == 0 ) {
         info.attrFile = acc->attribute;
         ret->err = DosSetPathInfo( name, FIL_STANDARD, &info, sizeof( info ), 0 );
-        }
+    }
     return( sizeof( *ret ) );
 }
 
@@ -183,9 +167,7 @@ trap_retval ReqRfx_getfreespace( void )
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
     DosQueryFSInfo( acc->drive, 1, (PBYTE)&info, sizeof( info ) );
-    ret->size = (long)info.cbSector
-                 * (long)info.cSectorUnit
-                 * (long)info.cUnitAvail;
+    ret->size = (long)info.cbSector * (long)info.cSectorUnit * (long)info.cUnitAvail;
     return( sizeof( *ret ) );
 }
 
@@ -199,8 +181,7 @@ static void mylocaltime( ULONG date_time, USHORT *time, USHORT *date )
     num_yr_since_1970 = date_time / 31622400UL;
     num_leap_since_1970 = (num_yr_since_1970 - 2) / 4;
     date_time -= ((num_leap_since_1970 * 366 +
-                  (num_yr_since_1970 - num_leap_since_1970) * 365)
-                   * 86400 );
+                  (num_yr_since_1970 - num_leap_since_1970) * 365) * 86400 );
     day = (date_time / 86400) + 1;   // Start from Jan 1, not Jan 0
     if( ((num_yr_since_1970 - 2) % 4) == 0 ) {
         //leap
@@ -215,8 +196,9 @@ static void mylocaltime( ULONG date_time, USHORT *time, USHORT *date )
         }
     }
     if( (( num_yr_since_1970 - 2) % 4) == 0 ) {
-        for( month = 2; month <= 12; ++day_since_jan[month], ++month )
+        for( month = 2; month <= 12; ++day_since_jan[month], ++month ) {
             ;
+        }
     }
     year = num_yr_since_1970 - 10;
     for( month = 1; (day > day_since_jan[month] && month <= 12); month++ )
@@ -277,7 +259,7 @@ static unsigned long mymktime( unsigned time, unsigned date )
     day += (num_leap_since_1980 * 366
              + (num_yr_since_1980 - num_leap_since_1980) * 365
              + day_since_jan[month - 1] - 1);
-    return( NM_SEC_1970_1980 + day*86400 + hour*3600 + min*60 + sec );
+    return( NM_SEC_1970_1980 + day * 86400 + hour * 3600 + min * 60 + sec );
 }
 
 trap_retval ReqRfx_getdatetime( void )
@@ -289,14 +271,13 @@ trap_retval ReqRfx_getdatetime( void )
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
     DosQueryFileInfo( TRPH2LH( acc ), FIL_STANDARD, (char *)&info, sizeof( info ) );
-    ret->time = mymktime( *(USHORT *)&info.ftimeLastWrite,
-                          *(USHORT *)&info.fdateLastWrite );
+    ret->time = mymktime( *(USHORT *)&info.ftimeLastWrite, *(USHORT *)&info.fdateLastWrite );
     return( sizeof( *ret ) );
 }
 
 trap_retval ReqRfx_getcwd( void )
 {
-    ULONG               len = BUFF_SIZE;
+    ULONG               len;
     rfx_getcwd_req      *acc;
     rfx_getcwd_ret      *ret;
     char                *buff;
@@ -304,88 +285,108 @@ trap_retval ReqRfx_getcwd( void )
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
     buff = GetOutPtr( sizeof( *ret ) );
+    len = RFX_NAME_MAX + 1;
     ret->err = DosQueryCurrentDir( acc->drive, (PBYTE)buff, &len );
     return( sizeof( *ret ) + len );
 }
 
-static void MoveDirInfo( FILEFINDBUF3 *os2, trap_dta *dos )
+static void makeDTARFX( rfx_find *info, FILEFINDBUF3 *findbuf, HDIR h )
 {
-    dos->dos.dir_entry_num = *(USHORT *)&os2->fdateLastWrite;
-    dos->dos.cluster = *(USHORT *)&os2->ftimeLastWrite;
-    dos->attr = os2->attrFile;
-    dos->time = *(USHORT *)&os2->ftimeLastWrite;
-    dos->date = *(USHORT *)&os2->fdateLastWrite;
-    dos->size = os2->cbFile;
-    strncpy( dos->name, os2->achName, TRAP_DTA_NAME_MAX - 1 );
-    dos->name[TRAP_DTA_NAME_MAX - 1] = '\0';
+    DTARFX_HANDLE_OF( info ) = h;
+    info->time = DTARFX_TIME_OF( info ) = *(USHORT *)&findbuf->ftimeLastWrite;
+    info->date = DTARFX_DATE_OF( info ) = *(USHORT *)&findbuf->fdateLastWrite;
+    info->attr = findbuf->attrFile;
+    info->size = findbuf->cbFile;
+#if RFX_NAME_MAX < CCHMAXPATHCOMP
+    strncpy( info->name, findbuf->achName, RFX_NAME_MAX );
+    info->name[RFX_NAME_MAX] = '\0';
+#else
+    strncpy( info->name, findbuf->achName, CCHMAXPATHCOMP );
+    info->name[CCHMAXPATHCOMP] = '\0';
+#endif
 }
 
 trap_retval ReqRfx_findfirst( void )
 {
-    FILEFINDBUF3         info;
-    APIRET               rc;
-    HDIR                 hdl = 1;
-    ULONG                count = 1;
-    rfx_findfirst_req    *acc;
-    rfx_findfirst_ret    *ret;
-    char                 *filename;
+    FILEFINDBUF3        findbuf;
+    APIRET              rc;
+    HDIR                h;
+    ULONG               count = 1;
+    rfx_findfirst_req   *acc;
+    rfx_findfirst_ret   *ret;
+    char                *filename;
+    rfx_find            *info;
 
     acc = GetInPtr( 0 );
     filename = GetInPtr( sizeof( *acc ) );
+    h = HDIR_CREATE;
     ret = GetOutPtr( 0 );
-    rc = DosFindFirst( filename, &hdl, acc->attrib, &info,
-                      sizeof( info ), &count, FIL_STANDARD );
-    if( rc == 0 ) {
-        MoveDirInfo( &info, (trap_dta *)GetOutPtr( sizeof( *ret ) ) );
-        ret->err = 0;
-        return( sizeof( *ret ) + sizeof( trap_dta ) );
-    } else {
-        ret->err = rc;
-        return( sizeof( *ret ) );
+    ret->err = rc = DosFindFirst( filename, &h, acc->attrib, &findbuf, sizeof( findbuf ), &count, FIL_STANDARD );
+    info = GetOutPtr( sizeof( *ret ) );
+    if( rc ) {
+        DTARFX_HANDLE_OF( info ) = DTARFX_INVALID_HANDLE;
+        return( sizeof( *ret ) + offsetof( rfx_find, name ) );
     }
+    makeDTARFX( info, &findbuf, h );
+    return( sizeof( *ret ) + offsetof( rfx_find, name ) + strlen( info->name ) + 1 );
 }
 
 trap_retval ReqRfx_findnext( void )
 {
-    FILEFINDBUF3        info;
+    FILEFINDBUF3        findbuf;
     APIRET              rc;
     ULONG               count = 1;
     rfx_findnext_ret    *ret;
+    HDIR                h;
+    rfx_find            *info;
 
+    info = GetInPtr( sizeof( rfx_findnext_req ) );
     ret = GetOutPtr( 0 );
-    rc = DosFindNext( 1, &info, sizeof( info ), &count );
-    if( rc == 0 ) {
-        MoveDirInfo( &info, (trap_dta *)GetOutPtr( sizeof( *ret ) ) );
-        ret->err = 0;
-        return( sizeof( *ret ) + sizeof( trap_dta ) );
-    } else {
-        ret->err = rc;
+    if( DTARFX_HANDLE_OF( info ) == DTARFX_INVALID_HANDLE ) {
+        ret->err = -1;
         return( sizeof( *ret ) );
     }
+    h = DTARFX_HANDLE_OF( info );
+    ret->err = rc = DosFindNext( h, &findbuf, sizeof( findbuf ), &count );
+    info = GetOutPtr( sizeof( *ret ) );
+    if( rc ) {
+        DosFindClose( h );
+        DTARFX_HANDLE_OF( info ) = DTARFX_INVALID_HANDLE;
+        return( sizeof( *ret ) + offsetof( rfx_find, name ) );
+    }
+    makeDTARFX( info, &findbuf, h );
+    return( sizeof( *ret ) + offsetof( rfx_find, name ) + strlen( info->name ) + 1 );
 }
 
 trap_retval ReqRfx_findclose( void )
 {
-    rfx_findclose_ret    *ret;
+    rfx_findclose_ret   *ret;
+    HDIR                h;
+    rfx_find            *info;
 
+    info = GetInPtr( sizeof( rfx_findclose_req ) );
     ret = GetOutPtr( 0 );
     ret->err = 0;
+    if( DTARFX_HANDLE_OF( info ) != DTARFX_INVALID_HANDLE ) {
+        h = DTARFX_HANDLE_OF( info );
+        DosFindClose( h );
+    }
     return( sizeof( *ret ) );
 }
 
-trap_retval ReqRfx_nametocannonical( void )
+trap_retval ReqRfx_nametocanonical( void )
 {
-    rfx_nametocannonical_ret    *ret;
+    rfx_nametocanonical_ret     *ret;
     char                        *name;
     char                        *fullname;
     char                        *p;
     int                         level = 0;
     ULONG                       drive;
     ULONG                       map;
-    ULONG                       len = BUFF_SIZE;
+    ULONG                       len;
 
     // Not tested, and not used right now
-    name = GetInPtr( sizeof( rfx_nametocannonical_req ) );
+    name = GetInPtr( sizeof( rfx_nametocanonical_req ) );
     ret = GetOutPtr( 0 );
     fullname = GetOutPtr( sizeof( *ret ) );
     ret->err = 1;
@@ -398,6 +399,7 @@ trap_retval ReqRfx_nametocannonical( void )
     } else {
         DosQueryCurrentDisk( &drive, &map );
     }
+    len = RFX_NAME_MAX + 1;
     if( *name != '\\' ) {
         *fullname++ = '\\';
         // DOS : TinyGetCWDir( fullname, TinyGetCurrDrive() + 1 );

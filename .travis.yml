@@ -46,7 +46,6 @@ after_success:
 
 jobs:
   allow_failures:
-    - os: osx
     - os: windows
   include:
     #################################

@@ -2,8 +2,7 @@
 *
 *                            Open Watcom Project
 *
-*    Portions Copyright (c) 2015 Open Watcom Contributors.
-*    All Rights Reserved.
+* Copyright (c) 2015-2019 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -40,6 +39,7 @@
 #include <time.h>
 #include "linuxsys.h"
 
+
 /* Incomplete kernel sigevent type that provides "just enough"
  * to properly create a timer
  */
@@ -73,9 +73,9 @@ _WCRTLINK int timer_create( clockid_t __clk, struct sigevent *__sevp, timer_t *_
         ksev.sigev_signo = SIGALRM;
     }
 
-    res = sys_call3( SYS_timer_create, 
-                      (u_long)__clk, 
-                      (u_long)&ksev, 
+    res = sys_call3( SYS_timer_create,
+                      (u_long)__clk,
+                      (u_long)&ksev,
                       (u_long)&id );
     if( !__syscall_iserror( res ) ) {
         *__tmr = id;

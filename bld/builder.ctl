@@ -17,6 +17,8 @@ cdsay .
 # At the beginning, we only have wmake and builder/pmake
 # If necessary, build clibext library
 [ INCLUDE <OWSRCDIR>/watcom/builder.ctl ]
+# GIT related stuff
+[ INCLUDE <OWSRCDIR>/git/builder.ctl ]
 # If necessary, build POSIX tools (awk, sed, cp, ...)
 [ IFDEF <BLD_HOST> OS2 NT DOS ]
 [ INCLUDE <OWSRCDIR>/posix/builder.ctl ]

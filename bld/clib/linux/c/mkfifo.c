@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2013 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -31,6 +31,7 @@
 
 #include "variety.h"
 #include <sys/stat.h>
+
 
 _WCRTLINK int mkfifo( const char *__path, mode_t __mode )
 {

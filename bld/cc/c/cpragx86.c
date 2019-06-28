@@ -701,14 +701,17 @@ static bool GetByteSeq( byte_seq **code )
 }
 
 
-hw_reg_set PragRegName( const char *str, size_t len )
-/***************************************************/
+hw_reg_set PragRegName( const char *regname, size_t regnamelen )
+/**************************************************************/
 {
     int             index;
+    const char      *str;
     hw_reg_set      name;
+    size_t          len;
 
-    if( len != 0 ) {
-        str = SkipUnderscorePrefix( str, &len, true );
+    if( regnamelen > 0 ) {
+        len = regnamelen;
+        str = SkipUnderscorePrefix( regname, &len, true );
         // search register or alias name
         index = PragRegIndex( Registers, str, len, true );
         if( index != -1 ) {
@@ -718,7 +721,7 @@ hw_reg_set PragRegName( const char *str, size_t len )
             HW_CAsgn( name, HW_FLTS );
             return( name );
         }
-        CErr2p( ERR_BAD_REGISTER_NAME, str );
+        PragRegNameErr( regname, regnamelen );
     }
     HW_CAsgn( name, HW_EMPTY );
     return( name );

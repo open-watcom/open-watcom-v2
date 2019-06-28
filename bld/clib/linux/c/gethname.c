@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2013 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -33,6 +33,7 @@
 #include <unistd.h>
 #include <string.h>
 #include <sys/utsname.h>
+
 
 _WCRTLINK int gethostname( char *__name, size_t __len )
 {

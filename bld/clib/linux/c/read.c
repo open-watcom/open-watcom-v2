@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -32,6 +33,7 @@
 #include "variety.h"
 #include <unistd.h>
 #include "linuxsys.h"
+
 
 _WCRTLINK ssize_t read( int __fildes, void *__buf, size_t __len )
 {

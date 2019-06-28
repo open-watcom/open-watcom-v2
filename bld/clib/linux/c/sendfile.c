@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-*    Copyright (c) 2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2018-2019 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -33,6 +33,7 @@
 #include <sys/types.h>
 #include <sys/sendfile.h>
 #include "linuxsys.h"
+
 
 _WCRTLINK ssize_t sendfile( int to_fd, int from_fd, off_t *offset, size_t bytes )
 {

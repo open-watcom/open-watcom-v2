@@ -59,6 +59,8 @@
 
 #define READ_ERROR              ((size_t)-1)
 
+#define IsDotOrDotdot(p)        ((p)[0] == '.' && ((p)[1] == '\0' || (p)[1] == '.' && (p)[2] == '\0'))
+
 typedef struct dirstack {
     struct dirstack     *prev;
     char                 name[_MAX_PATH];
@@ -802,7 +804,7 @@ static void processDirectory( void )
                 if( dp == NULL )
                     break;
 #if defined( __WATCOMC__ ) && !defined( __UNIX__ )
-                if( !( dp->d_attr & _A_SUBDIR ) ) {
+                if( (dp->d_attr & _A_SUBDIR) == 0 ) {
                     continue;
                 }
 #else
@@ -816,10 +818,8 @@ static void processDirectory( void )
                     }
                 }
 #endif
-                if( dp->d_name[0] == '.' ) {
-                    if( dp->d_name[1] == '.' || dp->d_name[1] == '\0' ) {
-                        continue;
-                    }
+                if( IsDotOrDotdot( dp->d_name ) ) {
+                    continue;
                 }
                 if( DoneFlag )
                     break;

@@ -2,8 +2,7 @@
 *
 *                            Open Watcom Project
 *
-*    Portions Copyright (c) 2016 Open Watcom Contributors. 
-*    All Rights Reserved.
+* Copyright (c) 2016-2019 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -38,10 +37,9 @@
 
 int __tgkill( pid_t __tgid, pid_t __tid, int __signal )
 {
-syscall_res res;
+    syscall_res res;
 
-    res = sys_call3( SYS_tgkill, (u_long)__tgid, (u_long)__tid, 
-                     (u_long)__signal );
+    res = sys_call3( SYS_tgkill, (u_long)__tgid, (u_long)__tid, (u_long)__signal );
 
     __syscall_return( int, res );
 }

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -32,6 +33,7 @@
 
 #include "wglbl.h"
 #include "wrdll.h"
+#include "wresmem.h"
 
 /****************************************************************************/
 /* macro definitions                                                        */
@@ -53,7 +55,7 @@
 /* static variables                                                         */
 /****************************************************************************/
 
-/* functions to replace those in mem.c in SDK/MISC */
+/* function to replace this in mem.c in commonui */
 
 void *MemAlloc( size_t size )
 {
@@ -68,7 +70,23 @@ void *MemAlloc( size_t size )
     return( p );
 }
 
+/* function for wres.lib */
+
+void *wres_alloc( size_t size )
+{
+    return( WRMemAlloc( size ) );
+}
+
+/* function to replace this in mem.c in commonui */
+
 void MemFree( void *ptr )
+{
+    WRMemFree( ptr );
+}
+
+/* function for wres.lib */
+
+void wres_free( void *ptr )
 {
     WRMemFree( ptr );
 }

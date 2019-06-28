@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,13 +34,12 @@
 #include <signal.h>
 #include "linuxsys.h"
 
-_WCRTLINK int sigaction( int __signum, const struct sigaction *__act,
-                            struct sigaction *__oldact )
+
+_WCRTLINK int sigaction( int __signum, const struct sigaction *__act, struct sigaction *__oldact )
 {
     /* given the sigaction layout we must use rt_sigaction
        this requires Linux kernel 2.2 or higher (probably not
        a big deal nowadays) */
-    syscall_res res = sys_call4( SYS_rt_sigaction, __signum, (u_long)__act,
-                           (u_long)__oldact, sizeof( sigset_t ) );
+    syscall_res res = sys_call4( SYS_rt_sigaction, __signum, (u_long)__act, (u_long)__oldact, sizeof( sigset_t ) );
     __syscall_return( int, res );
 }

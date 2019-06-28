@@ -2,8 +2,7 @@
 *
 *                            Open Watcom Project
 *
-*    Portions Copyright (c) 2016 Open Watcom contributors. 
-*    All Rights Reserved.
+* Copyright (c) 2016-2019 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -31,20 +30,22 @@
 *
 ****************************************************************************/
 
+
 #include "variety.h"
 #include "linuxsys.h"
 #include <sys/ioctl.h>
 #include <termios.h>
 #include <sys/types.h>
 
+
 _WCRTLINK pid_t tcgetsid( int fd )
 {
-int res;
-pid_t ret;
+    int res;
+    pid_t ret;
 
     res = ioctl(fd, TIOCGSID, &ret);
-    if(res < 0)
+    if( res < 0 )
         return( -1 );
-        
+
     return( ret );
 }

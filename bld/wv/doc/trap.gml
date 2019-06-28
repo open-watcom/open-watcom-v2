@@ -1907,7 +1907,8 @@ access_req      req
 unsigned_8      drive
 :eXMP.
 :PC.
-The :F.drive:eF field contains the drive number to be set on the target system.
+The :F.drive:eF field contains the drive number to be set on the target system
+(0=A,1=B,...).
 :P.
 Return message:
 :XMP.
@@ -1932,7 +1933,8 @@ Return message:
 unsigned_8      drive
 :eXMP.
 :PC.
-The :F.drive:eF field returns the current drive number on the target system.
+The :F.drive:eF field returns the current drive number on the target system
+(0=A,1=B,...).
 .section REQ_RFX_SETCWD (5)
 .np
 Request to set a directory on the target system.
@@ -1963,7 +1965,8 @@ access_req      req
 unsigned_8      drive
 :eXMP.
 :PC.
-The :F.drive:eF field contains the target drive number.
+The :F.drive:eF field contains the target drive number
+(0=current drive,1=A,2=B,...).
 :P.
 Return message:
 :XMP.
@@ -1972,8 +1975,8 @@ trap_error      err
 string          dir_name
 :eXMP.
 :PC.
-The :F.dir_name:eF field contains the name of the directory to be set. If error
-has occurred, the :F.err:eF. field will return the error code number.
+The :F.dir_name:eF field contains the name of the directory to be set.
+If error has occurred, the :F.err:eF. field will return the error code number.
 .section REQ_RFX_SETDATETIME (7)
 .np
 Request to set a file's date and time information on the target system.
@@ -2022,7 +2025,8 @@ access_req      req
 unsigned_8      drive
 :eXMP.
 :PC.
-The :F.drive:eF field contains the target drive number.
+The :F.drive:eF field contains the target drive number
+(0=current drive,1=A,2=B,...).
 :P.
 Return message:
 :XMP.
@@ -2072,7 +2076,7 @@ unsigned_32     attribute
 :eXMP.
 :PC.
 The :F.attribute:eF. field returns the attribute of the file.
-.section REQ_RFX_NAMETOCANNONICAL (12)
+.section REQ_RFX_NAMETOCANONICAL (12)
 .np
 Request to convert a file name to its canonical form.
 :P.
@@ -2116,26 +2120,21 @@ Return message:
 :XMP.
 trap_error      err
 -----------------------
-dta             info
+rfx_find        info
 :eXMP.
 :PC.
 If found, the :F.err:eF. field will be zero. The location and
 information of about the first file will be in the structure :F.info.:eF. Definition
-of the structure :F.dta:eF. is as follows:
+of the structure :F.rfx_find:eF. is as follows:
 :XMP.
-typedef struct dta {
-    struct {
-        unsigned_8          spare1[13];
-        unsigned_16         dir_entry_num;
-        unsigned_16         cluster;
-        unsigned_8          spare2[4];
-    } dos;
+typedef struct rfx_find {
+    unsigned_8          reserved[21];
     unsigned_8          attr;
     unsigned_16         time;
     unsigned_16         date;
     unsigned_32         size;
-    unsigned_8          name[14];
-} dta;
+    unsigned_8          name[260];
+} rfx_find;
 :eXMP.
 .section REQ_RFX_FINDNEXT (14)
 .np
@@ -2146,17 +2145,17 @@ Request message:
 :XMP.
 access_req      req
 --------------------
-dta             info
+rfx_find        info
 :eXMP.
 :PC.
 The :F.req:eF. field contains the request. The :F.info:eF. field contains
-the dta returned from the previous REQ_FIND_NEXT or REQ_FIND_FIRST.
+the rfx_find structure returned from the previous REQ_FIND_NEXT or REQ_FIND_FIRST.
 :P.
 Return message:
 :XMP.
 trap_error      err
 -----------------------
-dta             info
+rfx_find        info
 :eXMP.
 :PC.
 The :F.info:eF. field is the same as in REQ_FIND_FIRST.

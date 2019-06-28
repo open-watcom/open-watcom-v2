@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -479,7 +479,7 @@ trap_retval ReqWrite_mem( void )
     acc = GetInPtr(0);
     ret = GetOutPtr(0);
 
-    len = GetTotalSize() - sizeof( *acc );
+    len = GetTotalSizeIn() - sizeof( *acc );
 
     ret->len = WriteBuffer( GetInPtr( sizeof( *ret ) ), acc->mem_addr.segment, acc->mem_addr.offset, len );
     return( sizeof( *ret ) );
@@ -771,7 +771,7 @@ trap_retval ReqProg_load( void )
     parms = AddDriveAndPath( exe_name, UtilBuff );
     while( *prog != '\0' ) ++prog;
     ++prog;
-    end = (char *)GetInPtr( GetTotalSize()-1 ) + 1;
+    end = (char *)GetInPtr( GetTotalSizeIn() - 1 ) + 1;
     MergeArgvArray( prog, parms, end - prog );
     CanExecTask = TRUE;
     if( !GetExeInfo( &startCS, &startIP, &exe_type, UtilBuff ) ) {
@@ -1082,7 +1082,7 @@ trap_retval ReqFile_write_console( void )
     file_write_console_ret      *ret;
 
     ptr = GetInPtr( sizeof( file_write_console_req ) );
-    len = GetTotalSize() - sizeof( file_write_console_req );
+    len = GetTotalSizeIn() - sizeof( file_write_console_req );
     ret = GetOutPtr( 0 );
     if( CanExecTask ) {
         ret->len = len;

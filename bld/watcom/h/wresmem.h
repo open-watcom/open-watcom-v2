@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -24,22 +24,15 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Client memory routines prototypes for wres library.
 *
 ****************************************************************************/
 
 
+#ifndef WRESMEM_INCLUDED
+#define WRESMEM_INCLUDED
 
-
-#ifndef stdqnx_h
-#define stdqnx_h
-
-#if defined DEBUGGING
-#define debug_printf (void)
-#else
-extern int debug_printf(char *fmt, ...);
-#endif
-
+extern void *wres_alloc( size_t );      /* malloc */
+extern void wres_free( void * );        /* free */
 
 #endif

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -227,8 +228,11 @@ static void recursiveCp( char *source_head, char *source_tail,
         new_dest_tail = pathCopy( dest_head, dest_tail, nextdirentry->d_name );
 
         if( nextdirentry->d_attr & _A_SUBDIR ) {
+            if( IsDotOrDotDot( nextdirentry->d_name ) ) {
+                continue;
+            }
 
-            if( !IsDotOrDotDot( nextdirentry->d_name ) && rflag ) {
+            if( rflag ) {
                 int     rc;
 
                 rc = mkdir( dest_head );

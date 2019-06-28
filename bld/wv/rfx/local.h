@@ -30,12 +30,13 @@
 
 extern error_handle  LocalMkDir( const char * );
 extern error_handle  LocalRmDir( const char * );
-extern error_handle  LocalGetCwd( int, char * );
+extern error_handle  LocalGetCwd( int, char *, unsigned );
 extern error_handle  LocalSetCWD( const char * );
 extern int           LocalGetDrv( void );
 extern error_handle  LocalSetDrv( int );
-extern error_handle  LocalFindFirst( const char *, void *, unsigned, int );
-extern int           LocalFindNext( void *, unsigned );
+extern error_handle  LocalFindFirst( const char *, rfx_find *, unsigned, int );
+extern int           LocalFindNext( rfx_find *, unsigned );
+extern error_handle  LocalFindClose( rfx_find *, unsigned );
 extern long          LocalGetFileAttr( const char * );
 extern error_handle  LocalSetFileAttr( const char *, long );
 extern long          LocalGetFreeSpace( int );

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -311,12 +312,14 @@ trap_retval ReqGet_lib_name( void )
     char                *name;
     unsigned            i;
     unsigned            ret_len;
+    size_t              max_len;
+#ifdef DEBUG_OUT
+    char                *p = "";
+#endif
 
     acc = GetInPtr( 0 );
     CONV_LE_32( acc->mod_handle );
     ret  = GetOutPtr( 0 );
-    name = GetOutPtr( sizeof( *ret ) );
-
     ret->mod_handle = 0;    /* debugger won't look for more if handle is zero */
     ret_len = sizeof( *ret );
 
@@ -328,23 +331,29 @@ trap_retval ReqGet_lib_name( void )
     for( i = acc->mod_handle + 1; i < ModuleTop; ++i ) {
         if( moduleInfo[i].newly_unloaded ) {
             /* Indicate that lib is gone */
-            *name = '\0';
             dbg_print(( "(lib unloaded, '%s')\n", moduleInfo[i].filename ));
             moduleInfo[i].newly_unloaded = FALSE;
             ret->mod_handle = i;
+            *(char *)GetOutPtr( sizeof( *ret ) ) = '\0';
             ++ret_len;
             break;
         } else if( moduleInfo[i].newly_loaded ) {
-            strcpy( name, moduleInfo[i].filename );
             dbg_print(( "(lib loaded, '%s')\n", name ));
             moduleInfo[i].newly_loaded = FALSE;
             ret->mod_handle = i;
+            max_len = GetTotalSizeOut() - 1 - sizeof( *ret );
+            name = GetOutPtr( sizeof( *ret ) );
+            strncpy( name, moduleInfo[i].filename, max_len );
+            name[max_len] = '\0';
             ret_len += strlen( name ) + 1;
+#ifdef DEBUG_OUT
+            p = name;
+#endif
             break;
         }
     }
     dbg_print(( "ReqGet_lib_name: in handle %ld, out handle %ld, name '%s'\n",
-               acc->mod_handle, ret->mod_handle, name ));
+               acc->mod_handle, ret->mod_handle, p ));
     CONV_LE_32( ret->mod_handle );
     return( ret_len );
 }

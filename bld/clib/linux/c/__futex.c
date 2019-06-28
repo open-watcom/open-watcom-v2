@@ -2,8 +2,7 @@
 *
 *                            Open Watcom Project
 *
-*    Portions Copyright (c) 2016 Open Watcom Contributors. 
-*    All Rights Reserved.
+* Copyright (c) 2016-2019 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -34,13 +33,12 @@
 #include "futex.h"
 #include "linuxsys.h"
 
-_WCRTLINK int __futex(volatile int *__address, int __operation, 
-                      int __value, void *__timeout, int id)
-{
-syscall_res res;
 
-    res = sys_call4( SYS_futex, (u_long)__address, (u_long)__operation, 
-                     (u_long)__value, (u_long)__timeout );
+_WCRTLINK int __futex( volatile int *__address, int __operation, int __value, void *__timeout, int id )
+{
+    syscall_res res;
+
+    res = sys_call4( SYS_futex, (u_long)__address, (u_long)__operation, (u_long)__value, (u_long)__timeout );
 
     __syscall_return( int, res );
 }

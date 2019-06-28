@@ -102,7 +102,7 @@
         #undef  WANT_OVL
         #define WANT_THREAD
         #undef  WANT_RUN_THREAD
-        #undef  WANT_RFX
+        #define WANT_RFX
     #elif defined(MSJXTRAP)
         #define WANT_FILE_INFO
         #define WANT_ENV
@@ -111,7 +111,7 @@
         #undef  WANT_OVL
         #define WANT_THREAD
         #undef  WANT_RUN_THREAD
-        #undef  WANT_RFX
+        #define WANT_RFX
     #elif defined(ELFCORE)
         #undef  WANT_FILE_INFO
         #undef  WANT_ENV
@@ -120,7 +120,7 @@
         #undef  WANT_OVL
         #undef  WANT_THREAD
         #undef  WANT_RUN_THREAD
-        #undef  WANT_RFX
+        #define WANT_RFX
     #else
         #define WANT_FILE_INFO
         #define WANT_ENV
@@ -129,7 +129,7 @@
         #undef  WANT_OVL
         #define WANT_THREAD
         #undef  WANT_RUN_THREAD
-        #undef  WANT_RFX
+        #define WANT_RFX
         #if defined( _M_IX86 ) || defined( _M_X64 )
             #define WANT_CAPABILITIES
         #endif

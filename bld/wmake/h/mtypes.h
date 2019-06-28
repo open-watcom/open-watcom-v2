@@ -78,16 +78,16 @@ enum {
 
 #define sisascii(__s)       ((__s) >= CHAR_MIN && (__s) <= CHAR_MAX)
 
-extern const UINT8 IsArray[258];
+extern const UINT8 IsArray[256 + 4];
 
-#define sisws(__s)          (IsArray[(__s)+2] & IS_WS)
-#define sisprint(__s)       (IsArray[(__s)+2] & IS_PRINT)
-#define sisalpha(__s)       (IsArray[(__s)+2] & IS_ALPHA)
-#define sisextc(__s)        (IsArray[(__s)+2] & IS_EXTC)
-#define sisdirc(__s)        (IsArray[(__s)+2] & IS_DIRC)
-#define sisfilec(__s)       (IsArray[(__s)+2] & IS_FILEC)
-#define sismacc(__s)        (IsArray[(__s)+2] & IS_MACC)
-#define sisbarf(__s)        (IsArray[(__s)+2] & IS_BARF)
+#define sisws(__s)          (IsArray[(__s)+4] & IS_WS)
+#define sisprint(__s)       (IsArray[(__s)+4] & IS_PRINT)
+#define sisalpha(__s)       (IsArray[(__s)+4] & IS_ALPHA)
+#define sisextc(__s)        (IsArray[(__s)+4] & IS_EXTC)
+#define sisdirc(__s)        (IsArray[(__s)+4] & IS_DIRC)
+#define sisfilec(__s)       (IsArray[(__s)+4] & IS_FILEC)
+#define sismacc(__s)        (IsArray[(__s)+4] & IS_MACC)
+#define sisbarf(__s)        (IsArray[(__s)+4] & IS_BARF)
 
 #define cisws(__c)          sisws((byte)(__c))
 #define cisprint(__c)       sisprint((byte)(__c))

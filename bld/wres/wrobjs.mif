@@ -23,6 +23,7 @@ wres_core_objs = &
     wmemicmp.obj &
     wraddres.obj &
     wrerror.obj &
+    wresmem.obj &
     wrfindrs.obj &
     wrfirres.obj &
     wrfree.obj &

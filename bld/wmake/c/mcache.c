@@ -155,6 +155,27 @@ STATIC void freeDirectList( DHEADPTR dhead )
 #endif
 }
 
+static time_t get_direntry_timestamp( struct dirent *entry )
+{
+#if defined( __UNIX__ )
+    return( YOUNGEST_DATE );
+#elif defined( __WATCOMC__ ) && __WATCOMC__ < 1300
+    /*
+     * OW1.x bootstrap compiler workaround
+     */
+    return( _dos2timet( entry->d_date * 0x10000L + entry->d_time ) );
+#elif defined( __NT__ )
+    return( DTAXXX_TSTAMP_OF( entry->d_dta ) );
+#elif defined( __RDOS__ )
+    unsigned short date;
+    unsigned short time;
+
+    RdosTicsToDosTimeDate(entry->d_msb_time, entry->d_lsb_time, &date, &time);
+    return( _dos2timet( date * 0x10000L + time ) );
+#else
+    return( _dos2timet( entry->d_date * 0x10000L + entry->d_time ) );
+#endif
+}
 
 STATIC enum cacheRet cacheDir( DHEADPTR *pdhead, char *path )
 /************************************************************
@@ -233,32 +254,8 @@ STATIC enum cacheRet cacheDir( DHEADPTR *pdhead, char *path )
         bytes += sizeof( *cnew );
         ++files;
 #endif
-
-#if defined( __WATCOMC__ ) && __WATCOMC__ < 1300
-        /*
-         * OW1.x bootstrap compiler workaround
-         */
-    #if defined( __UNIX__ )
-        cnew->ce_tt = (time_t)-1L;
-    #else
-        cnew->ce_tt = _dos2timet( entry->d_date * 0x10000L + entry->d_time );
-    #endif
-#else
-    #if defined( __UNIX__ )
-        cnew->ce_tt = (time_t)-1L;
-    #elif defined( __NT__ )
-        cnew->ce_tt = DTAXXX_TSTAMP_OF( entry->d_dta );
-    #elif defined( __RDOS__ )
-        unsigned short date;
-        unsigned short time;
-        RdosTicsToDosTimeDate(entry->d_msb_time, entry->d_lsb_time, &date, &time);
-        cnew->ce_tt = _dos2timet( date * 0x10000L + time );
-    #else
-        cnew->ce_tt = _dos2timet( entry->d_date * 0x10000L + entry->d_time );
-    #endif
-#endif
+        cnew->ce_tt = get_direntry_timestamp( entry );
         ConstMemCpy( cnew->ce_name, entry->d_name, NAME_MAX + 1 );
-
         cnew->ce_next = (*pdhead)->dh_table[h];
         (*pdhead)->dh_table[h] = cnew;
 #ifdef CACHE_STATS
@@ -458,7 +455,7 @@ RET_T CacheTime( const char *fullpath, time_t *ptime )
 #endif
         switch( maybeCache( fullpath, &centry ) ) {
         case CACHE_OK:
-            if( centry->ce_tt == (time_t)-1L ) {
+            if( centry->ce_tt == YOUNGEST_DATE ) {
                 if( stat( fullpath, &buf ) == 0 ) {
                     centry->ce_tt = buf.st_mtime;
                 }

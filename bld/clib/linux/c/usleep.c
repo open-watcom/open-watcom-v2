@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2013 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -32,6 +32,7 @@
 #include "variety.h"
 #include <unistd.h>
 #include <time.h>
+
 
 _WCRTLINK int usleep( unsigned long __usec )
 {

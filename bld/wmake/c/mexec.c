@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -747,7 +748,7 @@ STATIC RET_T percentErase( char *arg )
     /* handle File name */
     p = CmdGetFileName( arg, &fn, true );
     if( *p != NULLCHAR && !cisws( *p ) ) {
-        PrtMsg( ERR | SYNTAX_ERROR_IN, percentCmds[PER_RENAME] );
+        PrtMsg( ERR | SYNTAX_ERROR_IN, percentCmds[PER_ERASE] );
         PrtMsg( INF | PRNTSTR, "File" );
         PrtMsg( INF | PRNTSTR, fn );
         return( RET_ERROR );

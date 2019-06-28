@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,8 +34,8 @@
 #include <time.h>
 #include "linuxsys.h"
 
-_WCRTLINK int nanosleep( const struct timespec *__rqtp,
-                         struct timespec *__rmtp )
+
+_WCRTLINK int nanosleep( const struct timespec *__rqtp, struct timespec *__rmtp )
 {
     syscall_res res = sys_call2( SYS_nanosleep, (u_long)__rqtp, (u_long)__rmtp );
     __syscall_return( int, res );

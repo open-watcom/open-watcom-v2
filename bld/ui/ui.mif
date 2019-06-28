@@ -14,7 +14,6 @@ ui_autodepends = .autodepend
 !include trmem.mif
 
 .c: ../c;../../c;$(extra_cdir);$(trmem_dir)
-.h: ../h;../../h;$(extra_hdir)
 
 inc_dirs = -I"../h" $(ui_inc_dirs)
 inc_dirs_dos = -I"$(clib_dir)/mbyte/h"

@@ -56,4 +56,4 @@ if [ -f ./getversi.sh ]; then
 fi
 export OWCYEAR=`date +'%Y'`
 
-echo "Open Watcom build environment (${OWTOOLS} version=${OWTOOLSVER})"
+echo "Open Watcom build environment (${OWTOOLS} version=${OWTOOLSVER}, CYEAR=${OWCYEAR})"

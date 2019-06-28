@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -40,4 +41,5 @@ extern mx_entry_p       Out_Mx_Ptr;
 
 extern void             *GetInPtr( trap_elen );
 extern void             *GetOutPtr( trap_elen );
-extern trap_elen        GetTotalSize( void );
+extern trap_elen        GetTotalSizeIn( void );
+extern trap_elen        GetTotalSizeOut( void );

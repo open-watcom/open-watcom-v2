@@ -2,8 +2,7 @@
 *
 *                            Open Watcom Project
 *
-*    Portions Copyright (c) 2015 Open Watcom contributors. 
-*    All Rights Reserved.
+* Copyright (c) 2015-2019 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -31,10 +30,12 @@
 *
 ****************************************************************************/
 
+
 #include "variety.h"
 #include "linuxsys.h"
 #include <sys/ioctl.h>
 #include <termios.h>
+
 
 _WCRTLINK int tcdrain( int fd )
 {
@@ -43,10 +44,10 @@ syscall_res res;
     /* Send SYS_ioctl to the kernel.  We're passing a "1" as an
      * argument, but the kernel is actually ignoring it.
      *
-     * See tty_io.c#L2856 where the kernel calls: 
+     * See tty_io.c#L2856 where the kernel calls:
      *    tty_wait_until_sent(tty, 0);
      */
     res = sys_call3( SYS_ioctl, (u_long)fd, (u_long)TCSBRK, (u_long)1 );
-    
+
     __syscall_return( int, res );
 }

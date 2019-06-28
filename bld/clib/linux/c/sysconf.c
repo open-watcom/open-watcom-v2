@@ -30,6 +30,7 @@
 * Author: J. Armstrong
 ****************************************************************************/
 
+
 #include "variety.h"
 #include <stdio.h>
 #include <stdlib.h>
@@ -38,6 +39,7 @@
 #include <sys/resource.h>
 #include <sys/sysinfo.h>
 #include "linuxsys.h"
+
 
 #ifndef PAGE_SIZE
   #if defined( _M_IX86 )

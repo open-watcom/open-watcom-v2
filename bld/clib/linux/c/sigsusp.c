@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2013 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -32,6 +32,7 @@
 #include "variety.h"
 #include <signal.h>
 #include "linuxsys.h"
+
 
 /* NOTE: this only supports the first 32 signals in the mask */
 

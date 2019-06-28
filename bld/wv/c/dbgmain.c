@@ -305,6 +305,8 @@ void DebugMain( void )
 {
     bool        save;
 
+    InitDbgSwitches();
+
     GrabHandlers();
     SysFileInit();
     InitLiterals();

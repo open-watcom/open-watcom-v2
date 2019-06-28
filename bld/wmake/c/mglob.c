@@ -338,5 +338,5 @@ const char FAR POSIXBuiltIn[] = {
  * The program 'cretype.exe' is used to rebuild this table.
  */
 const UINT8 IsArray[] = {
-#include "isarray.gh"
+    #include "isarray.gh"
 };

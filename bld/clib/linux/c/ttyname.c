@@ -2,8 +2,7 @@
 *
 *                            Open Watcom Project
 *
-*    Portions Copyright (c) 2015 Open Watcom Contributors.
-*    All Rights Reserved.
+* Copyright (c) 2015-2019 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -31,6 +30,7 @@
 *
 ****************************************************************************/
 
+
 #include "variety.h"
 #include <unistd.h>
 #include <stdio.h>
@@ -40,10 +40,10 @@
 #include "thread.h"
 
 
-#define MAX_TTY_NAME    PATH_MAX   
+#define MAX_TTY_NAME    PATH_MAX
 #define BASE_LINK       "/proc/self/fd/"
 
-_WCRTLINK int ttyname_r(int fd, char *buf, size_t buflen)
+_WCRTLINK int ttyname_r( int fd, char *buf, size_t buflen )
 {
     char linkpath[MAX_TTY_NAME];
 
@@ -60,7 +60,7 @@ _WCRTLINK int ttyname_r(int fd, char *buf, size_t buflen)
     return( 0 );
 }
 
-_WCRTLINK char *ttyname(int fd)
+_WCRTLINK char *ttyname( int fd )
 {
     static char linkpath[MAX_TTY_NAME];
 
