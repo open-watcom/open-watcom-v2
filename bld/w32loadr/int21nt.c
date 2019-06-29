@@ -282,7 +282,7 @@ static BOOL __NTFindNextFileWithAttr( HANDLE h, DWORD nt_attribs, WIN32_FIND_DAT
             // In that case, treat as a normal file
             ffd->dwFileAttributes = FILE_ATTRIBUTE_NORMAL;
         }
-        if( (nt_attribs | !ffd->dwFileAttributes) & ATTRIBUTES_MASK ) 
+        if( (nt_attribs | !ffd->dwFileAttributes) & ATTRIBUTES_MASK )
             return( TRUE );
         if( !FindNextFile( h, ffd ) ) {
             return( FALSE );
@@ -292,7 +292,7 @@ static BOOL __NTFindNextFileWithAttr( HANDLE h, DWORD nt_attribs, WIN32_FIND_DAT
 
 static BOOL __findfirst( union REGS *r )
 {
-    BOOL                rc = FALSE;
+    BOOL                rc;
     HANDLE              handle;
     struct find_t       *buf;
     WIN32_FIND_DATA     ffd;
@@ -302,7 +302,8 @@ static BOOL __findfirst( union REGS *r )
     buf = (struct find_t *)r->x.ebx;
     handle = FindFirstFile( (LPTSTR)r->x.edx, &ffd );
     if( handle == INVALID_HANDLE_VALUE ) {
-        DTAXXX_HANDLE_OF( buf ) = handle;
+        rc = FALSE;
+        DTAXXX_HANDLE_OF( buf ) = DTAXXX_INVALID_HANDLE;
     } else {
         nt_attribs = __DOS2NTAttr( r->x.ecx );
         // 02-aug-95: Another problem: this time compressed files on NT3.51
@@ -312,13 +313,11 @@ static BOOL __findfirst( union REGS *r )
         // scan the name to see if it contains any wildcard characters
         // if and only if it contains wildcard chars, check attr
         rc = TRUE;
-        p = (char *)r->x.edx;
-        while( *p != '\0' ) {
+        for( p = (char *)r->x.edx; *p != '\0'; p++ ) {
             if( *p == '*' || *p == '?' ) {      // if wildcard character
                 rc = __NTFindNextFileWithAttr( handle, nt_attribs, &ffd );
                 break;
             }
-            ++p;
         }
         if( rc == TRUE ) {
             DTAXXX_HANDLE_OF( buf ) = handle;
@@ -331,14 +330,15 @@ static BOOL __findfirst( union REGS *r )
 
 static BOOL __findnext( union REGS *r )
 {
-    BOOL                rc = FALSE;
+    BOOL                rc;
     HANDLE              handle;
     struct find_t       *buf;
     WIN32_FIND_DATA     ffd;
 
     buf = (struct find_t *)r->x.edx;
-    handle = DTAXXX_HANDLE_OF( buf );
-    if( handle != INVALID_HANDLE_VALUE ) {
+    rc = FALSE;
+    if( DTAXXX_HANDLE_OF( buf ) != DTAXXX_INVALID_HANDLE ) {
+        handle = DTAXXX_HANDLE_OF( buf );
         if( r->h.al == 0 ) {            /* if FIND_NEXT function */
             if( FindNextFile( handle, &ffd ) ) {
                 if( __NTFindNextFileWithAttr( handle, DTAXXX_ATTR_OF( buf ), &ffd ) ) {
@@ -347,6 +347,7 @@ static BOOL __findnext( union REGS *r )
                 }
             }
         } else {                        /* FIND_CLOSE function */
+            DTAXXX_HANDLE_OF( buf ) = DTAXXX_INVALID_HANDLE;
             rc = FindClose( handle );
         }
     }
@@ -359,7 +360,7 @@ static BOOL __chmod( union REGS *r )
     LONG        attr;
 
     if( r->h.al == 0 ) {                // get file attributes
-        attr = GetFileAttributes( (LPTSTR) r->x.edx );
+        attr = GetFileAttributes( (LPTSTR)r->x.edx );
         if( attr != -1 ) {
             r->h.cl = attr;
             rc = TRUE;
@@ -468,8 +469,7 @@ unsigned __Int21C( union REGS *r )
             r->x.eax = 0;                               /* 07-apr-94 */
             rc = SetEndOfFile( h );
         } else {
-            rc = WriteFile( h, (void *)r->x.edx, r->x.ecx,
-                                (LPDWORD)&r->x.eax, NULL );
+            rc = WriteFile( h, (void *)r->x.edx, r->x.ecx, (LPDWORD)&r->x.eax, NULL );
         }
         break;
     case DOS_UNLINK:                    // delete a file
