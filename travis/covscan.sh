@@ -34,7 +34,7 @@ coverity_upload_proc()
     tar czf $RESULTS_ARCHIVE cov-int
     SHA=`git rev-parse --short HEAD`
 
-    response=$(curl --cacert l1k.crt \
+    response=$(curl -v --cacert l1k.crt \
       --write-out "\n%{http_code}\n" \
       --form project=$TRAVIS_REPO_SLUG \
       --form token=$COVERITY_SCAN_TOKEN \
