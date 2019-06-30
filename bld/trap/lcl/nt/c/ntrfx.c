@@ -344,7 +344,7 @@ trap_retval ReqRfx_getcwd( void )
     return( sizeof( *ret ) + strlen( buff ) + 1 );
 }
 
-#define NT_ATTRIBUTES_MASK (FILE_ATTRIBUTE_HIDDEN | FILE_ATTRIBUTE_SYSTEM | FILE_ATTRIBUTE_DIRECTORY)
+#define NT_FIND_ATTRIBUTES_MASK (FILE_ATTRIBUTE_HIDDEN | FILE_ATTRIBUTE_SYSTEM | FILE_ATTRIBUTE_DIRECTORY)
 
 static bool __NTFindNextFileWithAttr( HANDLE h, unsigned nt_attribs, LPWIN32_FIND_DATA ffb )
 /******************************************************************************************/
@@ -355,7 +355,7 @@ static bool __NTFindNextFileWithAttr( HANDLE h, unsigned nt_attribs, LPWIN32_FIN
             // In that case, treat as a normal file
             ffb->dwFileAttributes = FILE_ATTRIBUTE_NORMAL;
         }
-        if( (nt_attribs | !ffb->dwFileAttributes) & NT_ATTRIBUTES_MASK ) {
+        if( (nt_attribs | ~ffb->dwFileAttributes) & NT_FIND_ATTRIBUTES_MASK ) {
             return( true );
         }
         if( !FindNextFile( h, ffb ) ) {

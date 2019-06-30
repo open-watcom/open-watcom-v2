@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -68,7 +69,7 @@ _WCRTLINK unsigned _dos_findfirst( const char *path, unsigned dos_attrib, struct
     }
     DTAXXX_HANDLE_OF( buf->reserved ) = h;
     DTAXXX_ATTR_OF( buf->reserved ) = nt_attrib;
-    __GetNTDirInfo( (struct dirent *) buf, &ffb );
+    __GetNTDirInfo( (struct dirent *)buf, &ffb );
 
     return( 0 );
 }
@@ -83,7 +84,7 @@ _WCRTLINK unsigned _dos_findnext( struct find_t *buf )
     if( !__NTFindNextFileWithAttr( DTAXXX_HANDLE_OF( buf->reserved ), DTAXXX_ATTR_OF( buf->reserved ), &ffd ) ) {
         return( __set_errno_nt_reterr() );
     }
-    __GetNTDirInfo( (struct dirent *) buf, &ffd );
+    __GetNTDirInfo( (struct dirent *)buf, &ffd );
 
     return( 0 );
 }

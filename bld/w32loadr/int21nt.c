@@ -272,7 +272,7 @@ static void __GetNTDirInfo( struct find_t *dirp, WIN32_FIND_DATA *ffd )
     dirp->name[NAME_MAX] = '\0';
 }
 
-#define ATTRIBUTES_MASK     (FILE_ATTRIBUTE_SYSTEM | FILE_ATTRIBUTE_HIDDEN | FILE_ATTRIBUTE_DIRECTORY)
+#define NT_FIND_ATTRIBUTES_MASK     (FILE_ATTRIBUTE_SYSTEM | FILE_ATTRIBUTE_HIDDEN | FILE_ATTRIBUTE_DIRECTORY)
 
 static BOOL __NTFindNextFileWithAttr( HANDLE h, DWORD nt_attribs, WIN32_FIND_DATA *ffd )
 {
@@ -282,7 +282,7 @@ static BOOL __NTFindNextFileWithAttr( HANDLE h, DWORD nt_attribs, WIN32_FIND_DAT
             // In that case, treat as a normal file
             ffd->dwFileAttributes = FILE_ATTRIBUTE_NORMAL;
         }
-        if( (nt_attribs | !ffd->dwFileAttributes) & ATTRIBUTES_MASK )
+        if( (nt_attribs | ~ffd->dwFileAttributes) & NT_FIND_ATTRIBUTES_MASK )
             return( TRUE );
         if( !FindNextFile( h, ffd ) ) {
             return( FALSE );

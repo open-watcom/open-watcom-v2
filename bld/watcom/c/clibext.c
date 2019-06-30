@@ -2331,10 +2331,12 @@ unsigned _dos_write( HANDLE h, void const *buffer, unsigned count, unsigned *byt
     return( 0 );
 }
 
+#define NT_FIND_ATTRIBUTES_MASK (FILE_ATTRIBUTE_HIDDEN | FILE_ATTRIBUTE_SYSTEM | FILE_ATTRIBUTE_DIRECTORY)
+
 static BOOL __NTFindNextFileWithAttr( HANDLE h, DWORD nt_attrib, LPWIN32_FIND_DATA ffd )
 {
     for(;;) {
-        if( (nt_attrib | !ffd->dwFileAttributes) & (FILE_ATTRIBUTE_HIDDEN | FILE_ATTRIBUTE_SYSTEM | FILE_ATTRIBUTE_DIRECTORY) )  {
+        if( (nt_attrib | ~ffd->dwFileAttributes) & NT_FIND_ATTRIBUTES_MASK )  {
             return ( TRUE );
         }
         if( !FindNextFileA( h, ffd ) ) {

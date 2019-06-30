@@ -193,6 +193,24 @@ long LocalGetFileAttr( const char *name )
 #endif
 }
 
+error_handle LocalSetFileAttr( const char *name, long attr )
+/**********************************************************/
+{
+#ifdef _M_I86
+    return( StashErrCode( DosSetFileMode( (char *)name, attr, 0 ), OP_LOCAL ) );
+#else
+    FILESTATUS3 fileinfo;
+    APIRET      rc;
+
+    rc = DosQueryPathInfo( name, FIL_STANDARD, &fileinfo, sizeof( fileinfo ) );
+    if( rc == 0 ) {
+        fileinfo.attrFile = attr;
+        rc = DosSetPathInfo( name, FIL_STANDARD, &fileinfo, sizeof( fileinfo ), 0 );
+    }
+    return( StashErrCode( rc, OP_LOCAL ) );
+#endif
+}
+
 long LocalGetFreeSpace( int drv )
 /*******************************/
 {
@@ -395,23 +413,4 @@ bool CtrlCHit( void )
 #endif
 
     return( hit );
-}
-
-
-error_handle LocalSetFileAttr( const char *name, long attr )
-/**********************************************************/
-{
-#ifdef _M_I86
-    return( StashErrCode( DosSetFileMode( (char *)name, attr, 0 ), OP_LOCAL ) );
-#else
-    FILESTATUS3 fileinfo;
-    APIRET      rc;
-
-    rc = DosQueryPathInfo( name, FIL_STANDARD, &fileinfo, sizeof( fileinfo ) );
-    if( rc == 0 ) {
-        fileinfo.attrFile = attr;
-        rc = DosSetPathInfo( name, FIL_STANDARD, &fileinfo, sizeof( fileinfo ), 0 );
-    }
-    return( StashErrCode( rc, OP_LOCAL ) );
-#endif
 }
