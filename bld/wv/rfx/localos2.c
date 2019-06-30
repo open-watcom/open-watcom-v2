@@ -304,8 +304,6 @@ error_handle LocalFindFirst( const char *pattern, rfx_find *info, unsigned info_
 
     /* unused parameters */ (void)info_len;
 
-    (void)info_len;
-
     h = HDIR_CREATE;
 #ifdef _M_I86
     err = DosFindFirst( (char *)pattern, &h, attrib, &findbuf, sizeof( findbuf ), &count, 0 );
