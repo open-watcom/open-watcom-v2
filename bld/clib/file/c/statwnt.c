@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -194,7 +195,7 @@ static DWORD at2mode( DWORD attr, CHAR_TYPE *fname, CHAR_TYPE const *orig_path )
 
         memset( &ffb, 0, sizeof( ffb ) );
         d = t = md = mt = 0;
-        ffb.dwFileAttributes = _A_SUBDIR;
+        ffb.dwFileAttributes = FILE_ATTRIBUTE_DIRECTORY;
     } else {
         h = __lib_FindFirstFile( path, &ffb );
         if( h == INVALID_HANDLE_VALUE ) {
