@@ -42,6 +42,21 @@
 extern DWORD    __fixed_GetFileAttributesA( LPCSTR lpFileName );
 extern DWORD    __fixed_GetFileAttributesW( LPCWSTR lpFileName );
 
+extern HANDLE   __fixed_FindFirstFileA( LPCSTR lpFileName, LPWIN32_FIND_DATAA lpFindFileData );
+extern HANDLE   __fixed_FindFirstFileW( LPCWSTR lpFileName, LPWIN32_FIND_DATAW lpFindFileData );
+
+extern BOOL     __fixed_FindNextFileA( HANDLE hFindFile, LPWIN32_FIND_DATAA lpFindFileData );
+extern BOOL     __fixed_FindNextFileW( HANDLE hFindFile, LPWIN32_FIND_DATAW lpFindFileData );
+
+#ifdef __WIDECHAR__
+    #define __fixed_GetFileAttributes           __fixed_GetFileAttributesW
+    #define __fixed_FindFirstFile               __fixed_FindFirstFileW
+    #define __fixed_FindNextFile                __fixed_FindNextFileW
+#else
+    #define __fixed_GetFileAttributes           __fixed_GetFileAttributesA
+    #define __fixed_FindFirstFile               __fixed_FindFirstFileA
+    #define __fixed_FindNextFile                __fixed_FindNextFileA
+#endif
 
 /*
  * On AXP and PPC machines, we don't have to worry about Win95's crippled
@@ -140,8 +155,8 @@ extern BOOL     __lib_SetFileAttributesW( LPCWSTR lpFileName,
 #define __lib_CreateDirectoryA                  CreateDirectoryA
 #define __lib_CreateFileA                       CreateFileA
 #define __lib_DeleteFileA                       DeleteFileA
-#define __lib_FindFirstFileA                    FindFirstFileA
-#define __lib_FindNextFileA                     FindNextFileA
+#define __lib_FindFirstFileA                    __fixed_FindFirstFileA
+#define __lib_FindNextFileA                     __fixed_FindNextFileA
 #define __lib_GetCurrentDirectoryA              GetCurrentDirectoryA
 #define __lib_GetDriveTypeA                     GetDriveTypeA
 #define __lib_GetFileAttributesA                __fixed_GetFileAttributesA

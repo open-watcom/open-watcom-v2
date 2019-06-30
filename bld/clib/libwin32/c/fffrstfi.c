@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
+* Copyright (c) 2019-2019 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -36,45 +36,18 @@
 #include <windows.h>
 #include "libwin32.h"
 #include "osver.h"
-#include "rtdata.h"
 
-/*
- * Apparently GetFileAttributes 3.51 sometimes gets confused when the
- * file in question is on a FAT drive.  Since FindFirstFile seems to
- * work, use it instead.
- *
- * Implementation with FindFirstFile / FindNextFile
- * has bug for root of drive due to they can not work
- * with it.
- * Now (2009-01-31) this code is not used for Windows NT >= 4
- * it call native GetFileAttributes
- * We hold this problematic code for compatibility with 3.51 even if
- * nowdays it is very archaic system.
- */
 
-DWORD __fixed_GetFileAttributes( LPCTSTR lpFileName )
-/***************************************************/
+HANDLE __fixed_FindFirstFile( LPCTSTR lpFileName, LPWIN32_FIND_DATA lpFindFileData )
+/**********************************************************************************/
 {
-    HANDLE              handle;
-    WIN32_FIND_DATA     finddata;
+    HANDLE              h;
 
-    if( WIN32_IS_NT4 ) {    /* >= NT4.0 */
-        return( GetFileAttributes( lpFileName ) );
+    h = FindFirstFile( lpFileName, lpFindFileData );
+    if( !WIN32_IS_NT ) {    /* Win95 or Win32s */
+        if( h != INVALID_HANDLE_VALUE && lpFindFileData->dwFileAttributes == 0 ) {
+            lpFindFileData->dwFileAttributes = FILE_ATTRIBUTE_NORMAL;
+        }
     }
-    /* NT3.x or Win95 or Win32s */
-
-    /*** Fail if the filename contains a wildcard ***/
-    if( __F_NAME(strchr,wcschr)( lpFileName, STRING( '*' ) ) != NULL ||
-        __F_NAME(strchr,wcschr)( lpFileName, STRING( '?' ) ) != NULL ) {
-        return( INVALID_FILE_ATTRIBUTES );
-    }
-
-    /*** Ok, use FindFirstFile to get the file attribute ***/
-    handle = __lib_FindFirstFile( lpFileName, &finddata );
-    if( handle == INVALID_HANDLE_VALUE ) {
-        return( INVALID_FILE_ATTRIBUTES );
-    } else {
-        FindClose( handle );
-    }
-    return( finddata.dwFileAttributes );
+    return( h );
 }

@@ -40,6 +40,8 @@
 #include "ntext.h"
 #include "_dtaxxx.h"
 #include "seterrno.h"
+#include "libwin32.h"
+
 
 _WCRTLINK unsigned _dos_findfirst( const char *path, unsigned attr, struct find_t *buf )
 {
@@ -47,7 +49,7 @@ _WCRTLINK unsigned _dos_findfirst( const char *path, unsigned attr, struct find_
     int                 error;
     WIN32_FIND_DATA     ffb;
 
-    h = FindFirstFile( (LPTSTR)path, &ffb );
+    h = __fixed_FindFirstFile( (LPTSTR)path, &ffb );
     if( h == INVALID_HANDLE_VALUE ) {
         DTAXXX_HANDLE_OF( buf->reserved ) = DTAXXX_INVALID_HANDLE;
         return( __set_errno_nt_reterr() );
@@ -72,7 +74,7 @@ _WCRTLINK unsigned _dos_findnext( struct find_t *buf )
 {
     WIN32_FIND_DATA     ffd;
 
-    if( !FindNextFile( DTAXXX_HANDLE_OF( buf->reserved ), &ffd ) ) {
+    if( !__fixed_FindNextFile( DTAXXX_HANDLE_OF( buf->reserved ), &ffd ) ) {
         return( __set_errno_nt_reterr() );
     }
     if( !__NTFindNextFileWithAttr( DTAXXX_HANDLE_OF( buf->reserved ), DTAXXX_ATTR_OF( buf->reserved ), &ffd ) ) {
