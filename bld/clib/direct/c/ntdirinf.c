@@ -44,6 +44,8 @@
 #include "ntattrib.h"
 
 
+#define NT_FIND_ATTRIBUTES_MASK (FILE_ATTRIBUTE_HIDDEN | FILE_ATTRIBUTE_SYSTEM | FILE_ATTRIBUTE_DIRECTORY)
+
 void __GetNTDirInfo( DIR_TYPE *dirp, LPWIN32_FIND_DATA ffb )
 {
     DTAXXX_TSTAMP_OF( dirp->d_dta ) = __NT_filetime_to_timet( &ffb->ftLastWriteTime );
@@ -54,20 +56,11 @@ void __GetNTDirInfo( DIR_TYPE *dirp, LPWIN32_FIND_DATA ffb )
     dirp->d_name[NAME_MAX] = 0;
 }
 
-BOOL __NTFindNextFileWithAttr( HANDLE h, unsigned attr, LPWIN32_FIND_DATA ffb )
+BOOL __NTFindNextFileWithAttr( HANDLE h, unsigned nt_attrib, LPWIN32_FIND_DATA ffb )
 {
     for(;;) {
-        if( ffb->dwFileAttributes == 0 ) {
-            // Win95 seems to return 0 for the attributes sometimes?
-            // In that case, treat as a normal file
-            ffb->dwFileAttributes = FILE_ATTRIBUTE_NORMAL;
-        }
-        if( (attr & _A_HIDDEN) || (ffb->dwFileAttributes & FILE_ATTRIBUTE_HIDDEN) == 0 ) {
-            if( (attr & _A_SYSTEM) || (ffb->dwFileAttributes & FILE_ATTRIBUTE_SYSTEM) == 0 ) {
-                if( (attr & _A_SUBDIR) || (ffb->dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) == 0 )  {
-                    return ( TRUE );
-                }
-            }
+        if( (nt_attrib | ~ffb->dwFileAttributes) & NT_FIND_ATTRIBUTES_MASK ) {
+            return ( TRUE );
         }
         if( !__lib_FindNextFile( h, ffb ) ) {
             return( FALSE );

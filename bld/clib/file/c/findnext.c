@@ -72,7 +72,7 @@
     if( rc == FALSE ) {
         return( __set_errno_nt() );
     }
-    if( !__NTFindNextFileWithAttr( (HANDLE)handle, FIND_ATTR, &ffb ) ) {
+    if( !__NTFindNextFileWithAttr( (HANDLE)handle, NT_FIND_ATTR, &ffb ) ) {
         return( __set_errno_dos( ERROR_FILE_NOT_FOUND ) );
     }
     /*** Got one! ***/

@@ -39,6 +39,10 @@
 
 #if defined( __NT__ )
 
+    #define NT_FIND_ATTR (FILE_ATTRIBUTE_NORMAL | FILE_ATTRIBUTE_DIRECTORY \
+                          | FILE_ATTRIBUTE_ARCHIVE | FILE_ATTRIBUTE_HIDDEN \
+                          | FILE_ATTRIBUTE_READONLY | FILE_ATTRIBUTE_SYSTEM)
+
     extern void     __nt_finddata_cvt( WIN32_FIND_DATA *ffb,
                                        struct _finddata_t *fileinfo );
     extern void     __nt_wfinddata_cvt( WIN32_FIND_DATA *ffb,

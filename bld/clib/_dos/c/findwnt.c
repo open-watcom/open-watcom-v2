@@ -41,30 +41,33 @@
 #include "_dtaxxx.h"
 #include "seterrno.h"
 #include "libwin32.h"
+#include "ntattrib.h"
 
 
-_WCRTLINK unsigned _dos_findfirst( const char *path, unsigned attr, struct find_t *buf )
+_WCRTLINK unsigned _dos_findfirst( const char *path, unsigned dos_attrib, struct find_t *buf )
 {
     HANDLE              h;
     int                 error;
     WIN32_FIND_DATA     ffb;
+    unsigned            nt_attrib;
 
     h = __fixed_FindFirstFile( (LPTSTR)path, &ffb );
+//  if( dos_attrib == _A_NORMAL ) {
+//      dos_attrib = ~(_A_SUBDIR|_A_VOLID);
+//  }
+    nt_attrib = DOS2NTATTR( dos_attrib );
     if( h == INVALID_HANDLE_VALUE ) {
         DTAXXX_HANDLE_OF( buf->reserved ) = DTAXXX_INVALID_HANDLE;
         return( __set_errno_nt_reterr() );
     }
-//  if( attr == _A_NORMAL ) {
-//      attr = ~(_A_SUBDIR|_A_VOLID);
-//  }
-    if( !__NTFindNextFileWithAttr( h, attr, &ffb ) ) {
+    if( !__NTFindNextFileWithAttr( h, nt_attrib, &ffb ) ) {
         error = GetLastError();
         DTAXXX_HANDLE_OF( buf->reserved ) = DTAXXX_INVALID_HANDLE;
         FindClose( h );
         return( __set_errno_dos_reterr( error ) );
     }
     DTAXXX_HANDLE_OF( buf->reserved ) = h;
-    DTAXXX_ATTR_OF( buf->reserved ) = attr;
+    DTAXXX_ATTR_OF( buf->reserved ) = nt_attrib;
     __GetNTDirInfo( (struct dirent *) buf, &ffb );
 
     return( 0 );
