@@ -33,18 +33,20 @@
 #include "variety.h"
 #include <windows.h>
 #include <dos.h>
+#include "ntattrib.h"
 #include "seterrno.h"
 
-_WCRTLINK unsigned _dos_getfileattr( const char *path, unsigned *attribute )
+
+_WCRTLINK unsigned _dos_getfileattr( const char *path, unsigned *dos_attrib )
 {
     HANDLE              h;
     WIN32_FIND_DATA     ffb;
 
-    h = FindFirstFile( (LPTSTR)path, &ffb );
+    h = FindFirstFile( path, &ffb );
     if( h == INVALID_HANDLE_VALUE ) {
         return( __set_errno_nt_reterr() );
     }
-    *attribute = ffb.dwFileAttributes;
+    *dos_attrib = NT2DOSATTR( ffb.dwFileAttributes );
     FindClose( h );
     return( 0 );
 }
