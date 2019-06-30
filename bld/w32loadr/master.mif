@@ -48,7 +48,7 @@ all: .SYMBOLIC cwsrun.exe #d4grun.exe x32run.exe tntrun.exe
 extra_a_flags_cstrtwnt = -I"$(clib_dir)/startup/h"
 
 extra_c_flags_loader  = -D__NT -D__CALL21__ -DW32RUN -s
-extra_c_flags_int21nt = -s
+extra_c_flags_int21nt = -s -I"$(clib_dir)/h"
 
 all : w32run.exe .SYMBOLIC
 
