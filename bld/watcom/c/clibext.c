@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -50,6 +50,7 @@
     #include <windows.h>
     #include <mbstring.h>
     #include "_dtaxxx.h"
+    #include "ntattrib.h"
   #endif
 #endif
 #include "wio.h"
@@ -1958,26 +1959,23 @@ int unsetenv( const char *name )
     return( 0 );
 }
 
-unsigned _dos_getfileattr( const char *path, unsigned *attribute )
+unsigned _dos_getfileattr( const char *path, unsigned *dos_attrib )
 {
     HANDLE              h;
     WIN32_FIND_DATA     ffd;
 
-    h = FindFirstFile( (LPTSTR)path, &ffd );
+    h = FindFirstFile( path, &ffd );
     if( h == INVALID_HANDLE_VALUE ) {
         return( __set_errno( ENOENT ) );
     }
-    *attribute = ffd.dwFileAttributes;
+    *dos_attrib = NT2DOSATTR( ffd.dwFileAttributes );
     FindClose( h );
     return( 0 );
 }
 
-unsigned _dos_setfileattr( const char *path, unsigned attribute )
+unsigned _dos_setfileattr( const char *path, unsigned dos_attrib )
 {
-    if( attribute == 0 )
-        attribute = FILE_ATTRIBUTE_NORMAL;
-
-    if( !SetFileAttributes( (LPTSTR) path, attribute ) ) {
+    if( !SetFileAttributes( path, DOS2NTATTR( dos_attrib ) ) ) {
         __set_errno( ENOENT );
     }
     return( 0 );
@@ -2014,34 +2012,34 @@ static time_t __NT_filetime_to_timet( const FILETIME *ft )
     return( ulint.QuadPart / WINDOWS_TICK - SEC_TO_UNIX_EPOCH );
 }
 
-static void __GetNTCreateAttr( unsigned attr, LPDWORD desired_access, LPDWORD nt_attr )
+static void __GetNTCreateAttr( unsigned dos_attrib, LPDWORD desired_access, LPDWORD nt_attrib )
 {
-    if( attr & _A_RDONLY ) {
+    if( dos_attrib & _A_RDONLY ) {
         *desired_access = GENERIC_READ;
-        *nt_attr = FILE_ATTRIBUTE_READONLY;
+        *nt_attrib = FILE_ATTRIBUTE_READONLY;
     } else {
         *desired_access = GENERIC_READ | GENERIC_WRITE;
-        *nt_attr = FILE_ATTRIBUTE_NORMAL;
+        *nt_attrib = FILE_ATTRIBUTE_NORMAL;
     }
-    if( attr & _A_HIDDEN ) {
-        *nt_attr |= FILE_ATTRIBUTE_HIDDEN;
+    if( dos_attrib & _A_HIDDEN ) {
+        *nt_attrib |= FILE_ATTRIBUTE_HIDDEN;
     }
-    if( attr & _A_SYSTEM ) {
-        *nt_attr |= FILE_ATTRIBUTE_SYSTEM;
+    if( dos_attrib & _A_SYSTEM ) {
+        *nt_attrib |= FILE_ATTRIBUTE_SYSTEM;
     }
 }
 
-void __GetNTAccessAttr( unsigned rwmode, LPDWORD desired_access, LPDWORD nt_attr )
+void __GetNTAccessAttr( unsigned rwmode, LPDWORD desired_access, LPDWORD nt_attrib )
 {
     if( rwmode == O_RDWR ) {
         *desired_access = GENERIC_READ | GENERIC_WRITE;
-        *nt_attr = FILE_ATTRIBUTE_NORMAL;
+        *nt_attrib = FILE_ATTRIBUTE_NORMAL;
     } else if( rwmode == O_WRONLY ) {
         *desired_access = GENERIC_WRITE;
-        *nt_attr = FILE_ATTRIBUTE_NORMAL;
+        *nt_attrib = FILE_ATTRIBUTE_NORMAL;
     } else {
         *desired_access = GENERIC_READ;
-        *nt_attr = FILE_ATTRIBUTE_READONLY;
+        *nt_attrib = FILE_ATTRIBUTE_READONLY;
     }
 }
 
@@ -2137,7 +2135,7 @@ static void __GetNTDirInfo( struct dirent *dirp, LPWIN32_FIND_DATA ffd )
 {
     DTAXXX_TSTAMP_OF( dirp->d_dta ) = __NT_filetime_to_timet( &ffd->ftLastWriteTime );
     __MakeDOSDT( &ffd->ftLastWriteTime, &dirp->d_date, &dirp->d_time );
-    dirp->d_attr = (char)ffd->dwFileAttributes;
+    dirp->d_attr = NT2DOSATTR( ffd->dwFileAttributes );
     dirp->d_size = ffd->nFileSizeLow;
     strncpy( dirp->d_name, ffd->cFileName, NAME_MAX );
     dirp->d_name[NAME_MAX] = 0;
@@ -2153,7 +2151,7 @@ static DIR *__opendir( const char *dirname, DIR *dirp )
         FindClose( DTAXXX_HANDLE_OF( dirp->d_dta ) );
         dirp->d_first = _DIR_CLOSED;
     }
-    h = FindFirstFileA( dirname, &ffd );
+    h = FindFirstFile( dirname, &ffd );
     if( h == INVALID_HANDLE_VALUE ) {
         __set_errno( ENOENT );
         return( NULL );
@@ -2246,13 +2244,13 @@ unsigned _dos_open( const char *name, unsigned mode, HANDLE *h )
 {
     HANDLE      handle;
     DWORD       rwmode, share_mode;
-    DWORD       desired_access, attr;
+    DWORD       desired_access, nt_attrib;
 
     rwmode = mode & OPENMODE_ACCESS_MASK;
 
-    __GetNTAccessAttr( rwmode, &desired_access, &attr );
+    __GetNTAccessAttr( rwmode, &desired_access, &nt_attrib );
     __GetNTShareAttr( mode & (OPENMODE_SHARE_MASK|OPENMODE_ACCESS_MASK), &share_mode );
-    handle = CreateFile( (LPTSTR) name, desired_access, share_mode, 0, OPEN_EXISTING, attr, NULL );
+    handle = CreateFile( name, desired_access, share_mode, 0, OPEN_EXISTING, nt_attrib, NULL );
     if( handle == INVALID_HANDLE_VALUE ) {
         __set_errno( ENOENT );
         return( (unsigned)-1 );
@@ -2261,14 +2259,14 @@ unsigned _dos_open( const char *name, unsigned mode, HANDLE *h )
     return( 0 );
 }
 
-unsigned _dos_creat( const char *name, unsigned attr, HANDLE *h )
+unsigned _dos_creat( const char *name, unsigned dos_attrib, HANDLE *h )
 {
     HANDLE      handle;
     DWORD       desired_access;
-    DWORD       nt_attr;
+    DWORD       nt_attrib;
 
-    __GetNTCreateAttr( attr, &desired_access, &nt_attr );
-    handle = CreateFile( (LPTSTR) name, desired_access, 0, 0, CREATE_ALWAYS, nt_attr, NULL );
+    __GetNTCreateAttr( dos_attrib, &desired_access, &nt_attrib );
+    handle = CreateFile( name, desired_access, 0, 0, CREATE_ALWAYS, nt_attrib, NULL );
     if( handle == INVALID_HANDLE_VALUE ) {
         __set_errno( ENOENT );
         return( (unsigned)-1 );
@@ -2333,20 +2331,11 @@ unsigned _dos_write( HANDLE h, void const *buffer, unsigned count, unsigned *byt
     return( 0 );
 }
 
-static BOOL __NTFindNextFileWithAttr( HANDLE h, DWORD attr, LPWIN32_FIND_DATA ffd )
+static BOOL __NTFindNextFileWithAttr( HANDLE h, DWORD nt_attrib, LPWIN32_FIND_DATA ffd )
 {
     for(;;) {
-        if( ffd->dwFileAttributes == 0 ) {
-            // Win95 seems to return 0 for the attributes sometimes?
-            // In that case, treat as a normal file
-            ffd->dwFileAttributes = FILE_ATTRIBUTE_NORMAL;
-        }
-        if( (attr & _A_HIDDEN) || (ffd->dwFileAttributes & FILE_ATTRIBUTE_HIDDEN) == 0 ) {
-            if( (attr & _A_SYSTEM) || (ffd->dwFileAttributes & FILE_ATTRIBUTE_SYSTEM) == 0 ) {
-                if( (attr & _A_SUBDIR) || (ffd->dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) == 0 )  {
-                    return ( TRUE );
-                }
-            }
+        if( (nt_attrib | !ffd->dwFileAttributes) & (FILE_ATTRIBUTE_HIDDEN | FILE_ATTRIBUTE_SYSTEM | FILE_ATTRIBUTE_DIRECTORY) )  {
+            return ( TRUE );
         }
         if( !FindNextFileA( h, ffd ) ) {
             return( FALSE );

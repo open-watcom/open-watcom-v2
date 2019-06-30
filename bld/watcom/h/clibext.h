@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -185,8 +185,8 @@ typedef long    ssize_t;
 #endif
 typedef int     mode_t;
 
-extern unsigned _dos_getfileattr( const char *path, unsigned *attribute );
-extern unsigned _dos_setfileattr( const char *path, unsigned attribute );
+extern unsigned _dos_getfileattr( const char *path, unsigned *dos_attrib );
+extern unsigned _dos_setfileattr( const char *path, unsigned dos_attrib );
 extern int      setenv( const char *name, const char *newvalue, int overwrite );
 extern int      unsetenv( const char *name );
 extern DIR      *opendir( const char *dirname );
