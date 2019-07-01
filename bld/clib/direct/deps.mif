@@ -16,8 +16,6 @@ urmdrwnt.obj : ../../../c/urmdrwnt.c ../../../c/rmdirwnt.c
 urmdros2.obj : ../../../c/urmdros2.c ../../../c/rmdiros2.c
 urmdr.obj    : ../../../c/urmdr.c    ../../../c/rmdir.c
 
-untdrinf.obj : ../../../c/untdrinf.c ../../../c/ntdirinf.c
-
 udirwnt.obj  : ../../../c/udirwnt.c  ../../../c/dirwnt.c
 udiros2.obj  : ../../../c/udiros2.c  ../../../c/diros2.c
 udir.obj     : ../../../c/udir.c     ../../../c/dir.c

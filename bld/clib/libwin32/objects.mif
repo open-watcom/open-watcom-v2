@@ -15,6 +15,7 @@
 !inject getmodfn.obj                     nt
 !inject getfulpn.obj                     nt
 !inject movefile.obj                     nt
+!inject ntdirinf.obj                     nt nta ntp
 !inject removdir.obj                     nt
 !inject setcdir.obj                      nt
 !inject setenvar.obj                     nt
@@ -22,5 +23,6 @@
 !inject ufffrstf.obj                     nt
 !inject uffnextf.obj                     nt
 !inject ufgtattr.obj                     nt nta ntp
+!inject untdrinf.obj                     nt nta ntp
 
 !include ../../../../objlist.mif

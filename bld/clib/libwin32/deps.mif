@@ -1,0 +1,5 @@
+ufffrstf.obj : ../../../c/ufffrstf.c ../../../c/fffrstfi.c
+uffnextf.obj : ../../../c/uffnextf.c ../../../c/uffnextf.c
+ufgtattr.obj : ../../../c/ufgtattr.c ../../../c/fgtattr.c
+
+untdrinf.obj : ../../../c/untdrinf.c ../../../c/ntdirinf.c
