@@ -39,14 +39,18 @@ extern void     __GetNTShareAttr( unsigned share, LPDWORD share_mode );
 
 extern void     __GetNTDirInfoA( struct dirent *dirp, LPWIN32_FIND_DATAA ffb );
 extern void     __GetNTDirInfoW( struct _wdirent *dirp, LPWIN32_FIND_DATAW ffb );
+extern void     __GetNTFindInfoA( struct find_t *findt, LPWIN32_FIND_DATAA ffb );
+extern void     __GetNTFindInfoW( struct _wfind_t *findt, LPWIN32_FIND_DATAW ffb );
 extern BOOL     __NTFindNextFileWithAttrA( HANDLE h, unsigned nt_attribs, LPWIN32_FIND_DATAA ffb );
 extern BOOL     __NTFindNextFileWithAttrW( HANDLE h, unsigned nt_attribs, LPWIN32_FIND_DATAW ffb );
 
 #ifdef __WIDECHAR__
 #define __GetNTDirInfo              __GetNTDirInfoW
+#define __GetNTFindInfo             __GetNTFindInfoW
 #define __NTFindNextFileWithAttr    __NTFindNextFileWithAttrW
 #else
 #define __GetNTDirInfo              __GetNTDirInfoA
+#define __GetNTFindInfo             __GetNTFindInfoA
 #define __NTFindNextFileWithAttr    __NTFindNextFileWithAttrA
 #endif
 
