@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2017-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2017-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -64,22 +64,22 @@
 #endif
 {
 #ifdef __NT__
-    WIN32_FIND_DATA ffb;
+    WIN32_FIND_DATA ffd;
     BOOL            rc;
 
     /*** Try to find another matching file ***/
-    rc = __lib_FindNextFile( (HANDLE)handle, &ffb );
+    rc = __lib_FindNextFile( (HANDLE)handle, &ffd );
     if( rc == FALSE ) {
         return( __set_errno_nt() );
     }
-    if( !__NTFindNextFileWithAttr( (HANDLE)handle, NT_FIND_ATTR, &ffb ) ) {
+    if( !__NTFindNextFileWithAttr( (HANDLE)handle, NT_FIND_ATTR, &ffd ) ) {
         return( __set_errno_dos( ERROR_FILE_NOT_FOUND ) );
     }
     /*** Got one! ***/
   #ifdef __INT64__
-    __F_NAME(__nt_finddatai64_cvt,__nt_wfinddatai64_cvt)( &ffb, fileinfo );
+    __F_NAME(__nt_finddatai64_cvt,__nt_wfinddatai64_cvt)( &ffd, fileinfo );
   #else
-    __F_NAME(__nt_finddata_cvt,__nt_wfinddata_cvt)( &ffb, fileinfo );
+    __F_NAME(__nt_finddata_cvt,__nt_wfinddata_cvt)( &ffd, fileinfo );
   #endif
 #elif defined( __OS2__ )
     APIRET          rc;

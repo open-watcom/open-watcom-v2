@@ -150,7 +150,7 @@ static DWORD at2mode( DWORD attr, CHAR_TYPE *fname, CHAR_TYPE const *orig_path )
   _WCRTLINK int __F_NAME(stat,_wstat)( const CHAR_TYPE *path, struct stat *buf )
  #endif
 {
-    WIN32_FIND_DATA     ffb;
+    WIN32_FIND_DATA     ffd;
     const CHAR_TYPE     *ptr;
     CHAR_TYPE           cwd[_MAX_PATH];
     WORD                d,t;
@@ -193,11 +193,11 @@ static DWORD at2mode( DWORD attr, CHAR_TYPE *fname, CHAR_TYPE const *orig_path )
             return( -1 );
         }
 
-        memset( &ffb, 0, sizeof( ffb ) );
+        memset( &ffd, 0, sizeof( ffd ) );
         d = t = md = mt = 0;
-        ffb.dwFileAttributes = FILE_ATTRIBUTE_DIRECTORY;
+        ffd.dwFileAttributes = FILE_ATTRIBUTE_DIRECTORY;
     } else {
-        h = __lib_FindFirstFile( path, &ffb );
+        h = __lib_FindFirstFile( path, &ffd );
         if( h == INVALID_HANDLE_VALUE ) {
             return( __set_errno_nt() );
         }
@@ -220,20 +220,20 @@ static DWORD at2mode( DWORD attr, CHAR_TYPE *fname, CHAR_TYPE const *orig_path )
     {
         INT_TYPE        tmp;
 
-        MAKE_INT64(tmp,ffb.nFileSizeHigh,ffb.nFileSizeLow);
+        MAKE_INT64( tmp, ffd.nFileSizeHigh, ffd.nFileSizeLow );
         buf->st_size = GET_REALINT64(tmp);
     }
 #else
-    buf->st_size = ffb.nFileSizeLow;
+    buf->st_size = ffd.nFileSizeLow;
 #endif
-    buf->st_mode = at2mode( ffb.dwFileAttributes, ffb.cFileName, path );
-    buf->st_mtime = __NT_filetime_to_timet( &ffb.ftLastWriteTime );
-    buf->st_ctime = __NT_filetime_to_timet( &ffb.ftCreationTime );
-    buf->st_atime = __NT_filetime_to_timet( &ffb.ftLastAccessTime );
+    buf->st_mode = at2mode( ffd.dwFileAttributes, ffd.cFileName, path );
+    buf->st_mtime = __NT_filetime_to_timet( &ffd.ftLastWriteTime );
+    buf->st_ctime = __NT_filetime_to_timet( &ffd.ftCreationTime );
+    buf->st_atime = __NT_filetime_to_timet( &ffd.ftLastAccessTime );
     buf->st_nlink = 1;
     buf->st_ino = buf->st_uid = buf->st_gid = 0;
 
-    buf->st_attr = ffb.dwFileAttributes;
+    buf->st_attr = ffd.dwFileAttributes;
     buf->st_archivedID = 0;
     buf->st_updatedID = 0;
     buf->st_inheritedRightsMask = 0;

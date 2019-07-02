@@ -49,10 +49,10 @@ _WCRTLINK unsigned _dos_findfirst( const char *path, unsigned dos_attrib, struct
 {
     HANDLE              h;
     int                 error;
-    WIN32_FIND_DATA     ffb;
+    WIN32_FIND_DATA     ffd;
     unsigned            nt_attrib;
 
-    h = __fixed_FindFirstFile( (LPTSTR)path, &ffb );
+    h = __fixed_FindFirstFile( (LPTSTR)path, &ffd );
 //  if( dos_attrib == _A_NORMAL ) {
 //      dos_attrib = ~(_A_SUBDIR|_A_VOLID);
 //  }
@@ -61,7 +61,7 @@ _WCRTLINK unsigned _dos_findfirst( const char *path, unsigned dos_attrib, struct
         DTAXXX_HANDLE_OF( findt->reserved ) = DTAXXX_INVALID_HANDLE;
         return( __set_errno_nt_reterr() );
     }
-    if( !__NTFindNextFileWithAttr( h, nt_attrib, &ffb ) ) {
+    if( !__NTFindNextFileWithAttr( h, nt_attrib, &ffd ) ) {
         error = GetLastError();
         DTAXXX_HANDLE_OF( findt->reserved ) = DTAXXX_INVALID_HANDLE;
         FindClose( h );
@@ -69,7 +69,7 @@ _WCRTLINK unsigned _dos_findfirst( const char *path, unsigned dos_attrib, struct
     }
     DTAXXX_HANDLE_OF( findt->reserved ) = h;
     DTAXXX_ATTR_OF( findt->reserved ) = nt_attrib;
-    __GetNTFindInfo( findt, &ffb );
+    __GetNTFindInfo( findt, &ffd );
 
     return( 0 );
 }

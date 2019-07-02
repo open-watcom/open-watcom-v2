@@ -43,12 +43,12 @@
 #include "ntattrib.h"
 
 
-void __GetNTDirInfo( DIR_TYPE *dirp, LPWIN32_FIND_DATA ffb )
+void __GetNTDirInfo( DIR_TYPE *dirp, LPWIN32_FIND_DATA ffd )
 {
-    DTAXXX_TSTAMP_OF( dirp->d_dta ) = __NT_filetime_to_timet( &ffb->ftLastWriteTime );
-    __MakeDOSDT( &ffb->ftLastWriteTime, &dirp->d_date, &dirp->d_time );
-    dirp->d_attr = NT2DOSATTR( ffb->dwFileAttributes );
-    dirp->d_size = ffb->nFileSizeLow;
-    __F_NAME(strncpy,wcsncpy)( dirp->d_name, ffb->cFileName, NAME_MAX );
+    DTAXXX_TSTAMP_OF( dirp->d_dta ) = __NT_filetime_to_timet( &ffd->ftLastWriteTime );
+    __MakeDOSDT( &ffd->ftLastWriteTime, &dirp->d_date, &dirp->d_time );
+    dirp->d_attr = NT2DOSATTR( ffd->dwFileAttributes );
+    dirp->d_size = ffd->nFileSizeLow;
+    __F_NAME(strncpy,wcsncpy)( dirp->d_name, ffd->cFileName, NAME_MAX );
     dirp->d_name[NAME_MAX] = 0;
 }

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2017-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2017-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -43,13 +43,13 @@
                           | FILE_ATTRIBUTE_ARCHIVE | FILE_ATTRIBUTE_HIDDEN \
                           | FILE_ATTRIBUTE_READONLY | FILE_ATTRIBUTE_SYSTEM)
 
-    extern void     __nt_finddata_cvt( WIN32_FIND_DATA *ffb,
+    extern void     __nt_finddata_cvt( WIN32_FIND_DATA *ffd,
                                        struct _finddata_t *fileinfo );
-    extern void     __nt_wfinddata_cvt( WIN32_FIND_DATA *ffb,
+    extern void     __nt_wfinddata_cvt( WIN32_FIND_DATA *ffd,
                                         struct _wfinddata_t *fileinfo );
-    extern void     __nt_finddatai64_cvt( WIN32_FIND_DATA *ffb,
+    extern void     __nt_finddatai64_cvt( WIN32_FIND_DATA *ffd,
                                           struct _finddatai64_t *fileinfo );
-    extern void     __nt_wfinddatai64_cvt( WIN32_FIND_DATA *ffb,
+    extern void     __nt_wfinddatai64_cvt( WIN32_FIND_DATA *ffd,
                                            struct _wfinddatai64_t *fileinfo );
 
 #elif defined( __OS2__ )

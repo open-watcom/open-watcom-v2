@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2017-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2017-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -85,26 +85,26 @@
 /******************************************************************************/
 {
 #if defined( __NT__ )
-    WIN32_FIND_DATA ffb;
+    WIN32_FIND_DATA ffd;
     HANDLE          h;
 
     /*** Initialize the find ***/
-    h = __lib_FindFirstFile( filespec, &ffb );
+    h = __lib_FindFirstFile( filespec, &ffd );
     if( h == INVALID_HANDLE_VALUE ) {
         return( __set_errno_nt() );
     }
 
     /*** Look for the first file ***/
-    if( !__NTFindNextFileWithAttr( h, NT_FIND_ATTR, &ffb ) ) {
+    if( !__NTFindNextFileWithAttr( h, NT_FIND_ATTR, &ffd ) ) {
         FindClose( h );
         return( __set_errno_dos( ERROR_FILE_NOT_FOUND ) );
     }
 
     /*** Got one! ***/
   #ifdef __INT64__
-    __F_NAME(__nt_finddatai64_cvt,__nt_wfinddatai64_cvt)( &ffb, fileinfo );
+    __F_NAME(__nt_finddatai64_cvt,__nt_wfinddatai64_cvt)( &ffd, fileinfo );
   #else
-    __F_NAME(__nt_finddata_cvt,__nt_wfinddata_cvt)( &ffb, fileinfo );
+    __F_NAME(__nt_finddata_cvt,__nt_wfinddata_cvt)( &ffd, fileinfo );
   #endif
     return( (intptr_t)h );
 #elif defined( __OS2__ )
@@ -177,36 +177,36 @@
 
  #ifdef __WIDECHAR__
   #ifdef __INT64__
-   void __nt_wfinddatai64_cvt( WIN32_FIND_DATA *ffb, struct _wfinddatai64_t *fileinfo )
+   void __nt_wfinddatai64_cvt( WIN32_FIND_DATA *ffd, struct _wfinddatai64_t *fileinfo )
   #else
-   void __nt_wfinddata_cvt( WIN32_FIND_DATA *ffb, struct _wfinddata_t *fileinfo )
+   void __nt_wfinddata_cvt( WIN32_FIND_DATA *ffd, struct _wfinddata_t *fileinfo )
   #endif
  #else
   #ifdef __INT64__
-   void __nt_finddatai64_cvt( WIN32_FIND_DATA *ffb, struct _finddatai64_t *fileinfo )
+   void __nt_finddatai64_cvt( WIN32_FIND_DATA *ffd, struct _finddatai64_t *fileinfo )
   #else
-   void __nt_finddata_cvt( WIN32_FIND_DATA *ffb, struct _finddata_t *fileinfo )
+   void __nt_finddata_cvt( WIN32_FIND_DATA *ffd, struct _finddata_t *fileinfo )
   #endif
  #endif
 /******************************************************************************/
 {
     /*** Convert attributes ***/
-    fileinfo->attrib = NT2DOSATTR( ffb->dwFileAttributes );
+    fileinfo->attrib = NT2DOSATTR( ffd->dwFileAttributes );
 
     /*** Handle the timestamps ***/
-    fileinfo->time_create = __NT_filetime_to_timet( &ffb->ftCreationTime );
-    fileinfo->time_access = __NT_filetime_to_timet( &ffb->ftLastAccessTime );
-    fileinfo->time_write = __NT_filetime_to_timet( &ffb->ftLastWriteTime );
+    fileinfo->time_create = __NT_filetime_to_timet( &ffd->ftCreationTime );
+    fileinfo->time_access = __NT_filetime_to_timet( &ffd->ftLastAccessTime );
+    fileinfo->time_write = __NT_filetime_to_timet( &ffd->ftLastWriteTime );
 
     /*** Handle the file size ***/
   #ifdef __INT64__
-    U64Set( (unsigned_64 *)&fileinfo->size, ffb->nFileSizeLow, ffb->nFileSizeHigh );
+    U64Set( (unsigned_64 *)&fileinfo->size, ffd->nFileSizeLow, ffd->nFileSizeHigh );
   #else
-    fileinfo->size = ffb->nFileSizeLow;
+    fileinfo->size = ffd->nFileSizeLow;
   #endif
 
     /*** Handle the file name ***/
-    __F_NAME(strcpy,wcscpy)( fileinfo->name, ffb->cFileName );
+    __F_NAME(strcpy,wcscpy)( fileinfo->name, ffd->cFileName );
 }
 
 #elif defined( __OS2__ )

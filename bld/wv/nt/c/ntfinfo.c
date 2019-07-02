@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -40,16 +41,16 @@
 long LocalGetFileDate( const char *name )
 /***************************************/
 {
-    WIN32_FIND_DATA     ffb;
+    WIN32_FIND_DATA     ffd;
     HANDLE              h;
     WORD                md,mt;
 
-    h = FindFirstFile( name, &ffb );
+    h = FindFirstFile( name, &ffd );
     if( h == INVALID_HANDLE_VALUE ) {
         return( -1 );
     }
     FindClose( h );
-    FileTimeToDosDateTime( &ffb.ftLastWriteTime, &md, &mt );
+    FileTimeToDosDateTime( &ffd.ftLastWriteTime, &md, &mt );
     return( ( md << 16 ) + mt );
 }
 

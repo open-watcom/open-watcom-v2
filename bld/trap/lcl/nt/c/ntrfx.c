@@ -153,15 +153,15 @@ trap_retval ReqRfx_setcwd( void )
 trap_retval ReqRfx_getfileattr( void )
 {
     HANDLE              h;
-    WIN32_FIND_DATA     ffb;
+    WIN32_FIND_DATA     ffd;
     rfx_getfileattr_ret *ret;
 
     ret = GetOutPtr( 0 );
-    h = __fixed_FindFirstFile( GetInPtr( sizeof( rfx_getfileattr_req ) ), &ffb );
+    h = __fixed_FindFirstFile( GetInPtr( sizeof( rfx_getfileattr_req ) ), &ffd );
     if( h == INVALID_HANDLE_VALUE ) {
         ret->attribute = (0xffff0000 | GetLastError());
     } else {
-        ret->attribute = NT2DOSATTR( ffb.dwFileAttributes );
+        ret->attribute = NT2DOSATTR( ffd.dwFileAttributes );
         FindClose( h );
     }
     return( sizeof( *ret ) );
@@ -284,34 +284,34 @@ trap_retval ReqRfx_getcwd( void )
 
 #define NT_FIND_ATTRIBUTES_MASK (FILE_ATTRIBUTE_HIDDEN | FILE_ATTRIBUTE_SYSTEM | FILE_ATTRIBUTE_DIRECTORY)
 
-static bool __NTFindNextFileWithAttr( HANDLE h, unsigned nt_attribs, LPWIN32_FIND_DATA ffb )
+static bool __NTFindNextFileWithAttr( HANDLE h, unsigned nt_attribs, LPWIN32_FIND_DATA ffd )
 /******************************************************************************************/
 {
     for( ;; ) {
-        if( (nt_attribs | ~ffb->dwFileAttributes) & NT_FIND_ATTRIBUTES_MASK ) {
+        if( (nt_attribs | ~ffd->dwFileAttributes) & NT_FIND_ATTRIBUTES_MASK ) {
             return( true );
         }
-        if( !__fixed_FindNextFile( h, ffb ) ) {
+        if( !__fixed_FindNextFile( h, ffd ) ) {
             return( false );
         }
     }
 }
 
-static void makeDTARFX( LPWIN32_FIND_DATA ffb, rfx_find *info, HANDLE h, unsigned nt_attribs )
+static void makeDTARFX( LPWIN32_FIND_DATA ffd, rfx_find *info, HANDLE h, unsigned nt_attribs )
 /********************************************************************************************/
 {
     DTARFX_HANDLE_OF( info ) = (pointer_int)h;
     DTARFX_ATTRIB_OF( info ) = nt_attribs;
-    info->attr = NT2DOSATTR( ffb->dwFileAttributes );
-    __MakeDOSDT( &ffb->ftLastWriteTime, &info->date, &info->time );
+    info->attr = NT2DOSATTR( ffd->dwFileAttributes );
+    __MakeDOSDT( &ffd->ftLastWriteTime, &info->date, &info->time );
     DTARFX_TIME_OF( info ) = info->time;
     DTARFX_DATE_OF( info ) = info->date;
-    info->size = ffb->nFileSizeLow;
+    info->size = ffd->nFileSizeLow;
 #if RFX_NAME_MAX < MAX_PATH
-    strncpy( info->name, ffb->cFileName, RFX_NAME_MAX );
+    strncpy( info->name, ffd->cFileName, RFX_NAME_MAX );
     info->name[RFX_NAME_MAX] = '\0';
 #else
-    strncpy( info->name, ffb->cFileName, MAX_PATH - 1 );
+    strncpy( info->name, ffd->cFileName, MAX_PATH - 1 );
     info->name[MAX_PATH - 1] = '\0';
 #endif
 }
@@ -321,7 +321,7 @@ trap_retval ReqRfx_findfirst( void )
     rfx_findfirst_req   *acc;
     rfx_findfirst_ret   *ret;
     HANDLE              h;
-    WIN32_FIND_DATA     ffb;
+    WIN32_FIND_DATA     ffd;
     rfx_find            *info;
     unsigned            nt_attribs;
 
@@ -330,8 +330,8 @@ trap_retval ReqRfx_findfirst( void )
     ret = GetOutPtr( 0 );
     ret->err = 0;
     info = GetOutPtr( sizeof( *ret ) );
-    h = __fixed_FindFirstFile( GetInPtr( sizeof( *acc ) ), &ffb );
-    if( h == INVALID_HANDLE_VALUE || !__NTFindNextFileWithAttr( h, nt_attribs, &ffb ) ) {
+    h = __fixed_FindFirstFile( GetInPtr( sizeof( *acc ) ), &ffd );
+    if( h == INVALID_HANDLE_VALUE || !__NTFindNextFileWithAttr( h, nt_attribs, &ffd ) ) {
         ret->err = GetLastError();
         if( h != INVALID_HANDLE_VALUE ) {
             FindClose( h );
@@ -339,13 +339,13 @@ trap_retval ReqRfx_findfirst( void )
         DTARFX_HANDLE_OF( info ) = DTARFX_INVALID_HANDLE;
         return( sizeof( *ret ) );
     }
-    makeDTARFX( &ffb, info, h, nt_attribs );
+    makeDTARFX( &ffd, info, h, nt_attribs );
     return( sizeof( *ret ) + offsetof( rfx_find, name ) + strlen( info->name ) + 1 );
 }
 
 trap_retval ReqRfx_findnext( void )
 {
-    WIN32_FIND_DATA     ffb;
+    WIN32_FIND_DATA     ffd;
     rfx_findnext_ret    *ret;
     rfx_find            *info;
     HANDLE              h;
@@ -360,14 +360,14 @@ trap_retval ReqRfx_findnext( void )
     h = (HANDLE)DTARFX_HANDLE_OF( info );
     nt_attribs = DTARFX_ATTRIB_OF( info );
     info = GetOutPtr( sizeof( *ret ) );
-    if( !__fixed_FindNextFile( h, &ffb ) || !__NTFindNextFileWithAttr( h, nt_attribs, &ffb ) ) {
+    if( !__fixed_FindNextFile( h, &ffd ) || !__NTFindNextFileWithAttr( h, nt_attribs, &ffd ) ) {
         ret->err = GetLastError();
         FindClose( h );
         DTARFX_HANDLE_OF( info ) = DTARFX_INVALID_HANDLE;
         return( sizeof( *ret ) );
     }
     ret->err = 0;
-    makeDTARFX( &ffb, info, h, nt_attribs );
+    makeDTARFX( &ffd, info, h, nt_attribs );
     return( sizeof( *ret ) + offsetof( rfx_find, name ) + strlen( info->name ) + 1 );
 }
 

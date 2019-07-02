@@ -44,12 +44,12 @@
 #include "ntattrib.h"
 
 
-void __GetNTFindInfo( FINDT_TYPE *findt, LPWIN32_FIND_DATA ffb )
+void __GetNTFindInfo( FINDT_TYPE *findt, LPWIN32_FIND_DATA ffd )
 {
-    DTAXXX_TSTAMP_OF( findt->reserved ) = __NT_filetime_to_timet( &ffb->ftLastWriteTime );
-    __MakeDOSDT( &ffb->ftLastWriteTime, &findt->wr_date, &findt->wr_time );
-    findt->attrib = NT2DOSATTR( ffb->dwFileAttributes );
-    findt->size = ffb->nFileSizeLow;
-    __F_NAME(strncpy,wcsncpy)( findt->name, ffb->cFileName, NAME_MAX );
+    DTAXXX_TSTAMP_OF( findt->reserved ) = __NT_filetime_to_timet( &ffd->ftLastWriteTime );
+    __MakeDOSDT( &ffd->ftLastWriteTime, &findt->wr_date, &findt->wr_time );
+    findt->attrib = NT2DOSATTR( ffd->dwFileAttributes );
+    findt->size = ffd->nFileSizeLow;
+    __F_NAME(strncpy,wcsncpy)( findt->name, ffd->cFileName, NAME_MAX );
     findt->name[NAME_MAX] = 0;
 }
