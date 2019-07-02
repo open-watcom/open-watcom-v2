@@ -209,17 +209,17 @@ static BOOL __findfirst( union REGS *r )
 {
     BOOL                rc;
     HANDLE              handle;
-    struct find_t       *buf;
+    struct find_t       *findt;
     WIN32_FIND_DATA     ffd;
     const char          *name;
     unsigned            nt_attribs;
 
-    buf = (struct find_t *)r->x.ebx;
+    findt = (struct find_t *)r->x.ebx;
     name = (const char *)r->x.edx;
     handle = __fixed_FindFirstFile( name, &ffd );
     if( handle == INVALID_HANDLE_VALUE ) {
         rc = FALSE;
-        DTAXXX_HANDLE_OF( buf ) = DTAXXX_INVALID_HANDLE;
+        DTAXXX_HANDLE_OF( findt->reserved ) = DTAXXX_INVALID_HANDLE;
     } else {
         nt_attribs = DOS2NTATTR( r->x.ecx );
         // 02-aug-95: Another problem: this time compressed files on NT3.51
@@ -236,9 +236,9 @@ static BOOL __findfirst( union REGS *r )
             }
         }
         if( rc == TRUE ) {
-            DTAXXX_HANDLE_OF( buf ) = handle;
-            DTAXXX_ATTR_OF( buf ) = nt_attribs;
-            __GetNTDirInfo( buf, &ffd );
+            DTAXXX_HANDLE_OF( findt->reserved ) = handle;
+            DTAXXX_ATTR_OF( findt->reserved ) = nt_attribs;
+            __GetNTFindInfo( findt, &ffd );
         }
     }
     return( rc );
@@ -248,22 +248,22 @@ static BOOL __findnext( union REGS *r )
 {
     BOOL                rc;
     HANDLE              handle;
-    struct find_t       *buf;
+    struct find_t       *findt;
     WIN32_FIND_DATA     ffd;
 
-    buf = (struct find_t *)r->x.edx;
+    findt = (struct find_t *)r->x.edx;
     rc = FALSE;
-    if( DTAXXX_HANDLE_OF( buf ) != DTAXXX_INVALID_HANDLE ) {
-        handle = DTAXXX_HANDLE_OF( buf );
+    if( DTAXXX_HANDLE_OF( findt->reserved ) != DTAXXX_INVALID_HANDLE ) {
+        handle = DTAXXX_HANDLE_OF( findt->reserved );
         if( r->h.al == 0 ) {            /* if FIND_NEXT function */
             if( __fixed_FindNextFile( handle, &ffd ) ) {
-                if( __NTFindNextFileWithAttr( handle, DTAXXX_ATTR_OF( buf ), &ffd ) ) {
-                    __GetNTDirInfo( buf, &ffd );
+                if( __NTFindNextFileWithAttr( handle, DTAXXX_ATTR_OF( findt->reserved ), &ffd ) ) {
+                    __GetNTFindInfo( findt, &ffd );
                     rc = TRUE;
                 }
             }
         } else {                        /* FIND_CLOSE function */
-            DTAXXX_HANDLE_OF( buf ) = DTAXXX_INVALID_HANDLE;
+            DTAXXX_HANDLE_OF( findt->reserved ) = DTAXXX_INVALID_HANDLE;
             rc = FindClose( handle );
         }
     }
