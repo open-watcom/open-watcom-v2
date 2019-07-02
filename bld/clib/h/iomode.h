@@ -35,8 +35,7 @@
 
 #if defined(__NT__)
 
-#define NULL_HANDLE  (HANDLE)-1
-#define DUMMY_HANDLE (HANDLE)-2
+#define DUMMY_HANDLE ((HANDLE)(LONG_PTR)-2)
 
 extern  void        __initPOSIXHandles( void );
 extern  unsigned    __growPOSIXHandles( unsigned num );
@@ -45,6 +44,8 @@ extern  void        __freePOSIXHandle( int hid );
 extern  HANDLE      __getOSHandle( int hid );
 extern  int         __setOSHandle( unsigned hid, HANDLE hdl );
 extern  HANDLE      __NTGetFakeHandle( void );
+
+#define __allocPOSIXHandleDummy()   __allocPOSIXHandle( DUMMY_HANDLE )
 
 #define NT_STDIN_FILENO  (GetStdHandle( STD_INPUT_HANDLE ))
 #define NT_STDOUT_FILENO (GetStdHandle( STD_OUTPUT_HANDLE ))

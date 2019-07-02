@@ -84,7 +84,7 @@ unsigned __growPOSIXHandles( unsigned num )
             num = __NHandles;
         } else {
             for( i = __NHandles; i < num; i++ ) {
-                new2[ i ] = NULL_HANDLE;
+                new2[ i ] = INVALID_HANDLE_VALUE;
             }
             __OSHandles = new2;
             __NHandles = num;
@@ -100,7 +100,9 @@ int __allocPOSIXHandle( HANDLE hdl )
 
     _AccessFList();
     for( i = 0; i < __NHandles; i++ ) {
-        if( __OSHandles[i] == NULL_HANDLE ) break;
+        if( __OSHandles[i] == INVALID_HANDLE_VALUE ) {
+            break;
+        }
     }
     if( i >= __NHandles ) {
                                 // 20 -> (20+10+1) -> 31
@@ -108,9 +110,12 @@ int __allocPOSIXHandle( HANDLE hdl )
                                 // 47 -> (47+23+1) -> 71
         __growPOSIXHandles( i + (i >> 1) + 1 );
         // keep iomode array in sync
-        if( __NHandles > __NFiles ) __grow_iomode( __NHandles );
+        if( __NHandles > __NFiles )
+            __grow_iomode( __NHandles );
         for( ; i < __NHandles; i++ ) {
-            if( __OSHandles[i] == NULL_HANDLE ) break;
+            if( __OSHandles[i] == INVALID_HANDLE_VALUE ) {
+                break;
+            }
         }
     }
     if( i >= __NHandles ) {
@@ -124,7 +129,7 @@ int __allocPOSIXHandle( HANDLE hdl )
 
 void __freePOSIXHandle( int hid )
 {
-    __OSHandles[ hid ] = NULL_HANDLE;
+    __OSHandles[ hid ] = INVALID_HANDLE_VALUE;
 }
 
 
@@ -186,17 +191,17 @@ void __initPOSIXHandles( void )
 
     __growPOSIXHandles( __NFiles );
     h = GetStdHandle( STD_INPUT_HANDLE );
-    if( h == 0 || h == INVALID_HANDLE_VALUE ) {
+    if( h == NULL || h == INVALID_HANDLE_VALUE ) {
         h = __NTGetFakeHandle();
     }
     __allocPOSIXHandle( h );        // should return 0==STDIN_FILENO
     h = GetStdHandle( STD_OUTPUT_HANDLE );
-    if( h == 0 || h == INVALID_HANDLE_VALUE ) {
+    if( h == NULL || h == INVALID_HANDLE_VALUE ) {
         h = __NTGetFakeHandle();
     }
     __allocPOSIXHandle( h );        // should return 1==STDOUT_FILENO
     h = GetStdHandle( STD_ERROR_HANDLE );
-    if( h == 0 || h == INVALID_HANDLE_VALUE ) {
+    if( h == NULL || h == INVALID_HANDLE_VALUE ) {
         h = __NTGetFakeHandle();
     }
     __allocPOSIXHandle( h );        // should return 3==STDERR_FILENO

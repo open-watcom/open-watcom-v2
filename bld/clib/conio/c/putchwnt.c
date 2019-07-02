@@ -66,7 +66,9 @@ _WCRTLINK int putch( int c )
         if( h != INVALID_HANDLE_VALUE ) {
             WriteConsole( h, &ch, 1, &written, NULL );
         }
-        if( written == 0 ) return( -1 );
+        if( written == 0 ) {
+            return( -1 );
+        }
 #ifdef DEFAULT_WINDOWING
     }
 #endif

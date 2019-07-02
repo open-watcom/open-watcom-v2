@@ -59,8 +59,8 @@ _WCRTLINK unsigned _dos_open( const char *name, unsigned mode, int *posix_handle
     int         hid;
 
     // First try to get the required slot.
-    // No point in creating a file only to not use it.  JBS 99/11/01
-    hid = __allocPOSIXHandle( DUMMY_HANDLE );
+    // No point in creating a file only to not use it.
+    hid = __allocPOSIXHandleDummy();
     if( hid == -1 ) {
         return( __set_errno_dos_reterr( ERROR_NOT_ENOUGH_MEMORY ) );
     }
@@ -68,16 +68,14 @@ _WCRTLINK unsigned _dos_open( const char *name, unsigned mode, int *posix_handle
     rwmode = mode & OPENMODE_ACCESS_MASK;
 
     __GetNTAccessAttr( rwmode, &desired_access, &os_attr );
-    __GetNTShareAttr( mode & (OPENMODE_SHARE_MASK|OPENMODE_ACCESS_MASK),
-                      &share_mode );
-    handle = CreateFile( (LPTSTR) name, desired_access, share_mode, 0,
-                        OPEN_EXISTING, os_attr, NULL );
-    if( handle == (HANDLE)-1 ) {
+    __GetNTShareAttr( mode & (OPENMODE_SHARE_MASK | OPENMODE_ACCESS_MASK), &share_mode );
+    handle = CreateFile( name, desired_access, share_mode, 0, OPEN_EXISTING, os_attr, NULL );
+    if( handle == INVALID_HANDLE_VALUE ) {
         __freePOSIXHandle( hid );
         return( __set_errno_nt_reterr() );
     }
     // Now use the slot we got.
-    __setOSHandle( hid, handle );   // JBS 99/11/01
+    __setOSHandle( hid, handle );
 
     *posix_handle = hid;
     iomode_flags = 0;

@@ -38,8 +38,8 @@
 #include "rtdata.h"
 #include "fileacc.h"
 
-static HANDLE console_in = (HANDLE)-1;
-static HANDLE console_out = (HANDLE)-1;
+static HANDLE console_in = INVALID_HANDLE_VALUE;
+static HANDLE console_out = INVALID_HANDLE_VALUE;
 
 int __NTRealKey( INPUT_RECORD *k )
 {
@@ -60,12 +60,12 @@ int __NTRealKey( INPUT_RECORD *k )
 static void initConsoleHandles( void )
 {
     _AccessFileH( STDIN_FILENO );
-    if( console_in == (HANDLE)-1 ) {
+    if( console_in == INVALID_HANDLE_VALUE ) {
         console_in = CreateFile( "conin$",
                                  GENERIC_READ, FILE_SHARE_READ, NULL,
                                  OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, 0 );
     }
-    if( console_out == (HANDLE)-1 ) {
+    if( console_out == INVALID_HANDLE_VALUE ) {
         console_out = CreateFile( "conout$",
                                   GENERIC_WRITE, FILE_SHARE_WRITE, NULL,
                                   OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, 0 );

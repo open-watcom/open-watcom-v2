@@ -60,7 +60,7 @@ _WCRTLINK int __F_NAME(utime,_wutime)( CHAR_TYPE const *fn, struct utimbuf const
     FILETIME            fwtime;
 
     h = __lib_CreateFile( fn, GENERIC_READ | GENERIC_WRITE, 0, NULL, OPEN_EXISTING, 0, NULL );
-    if( h == (HANDLE)-1 ) {
+    if( h == INVALID_HANDLE_VALUE ) {
         return( __set_errno_nt() );
     }
     if( !GetFileTime( h, &fctime, &fatime, &fwtime ) ) {

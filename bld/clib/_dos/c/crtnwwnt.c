@@ -53,15 +53,14 @@ _WCRTLINK unsigned _dos_creatnew( const char *name, unsigned attr, int *posix_ha
 
     // First try to get the required slot.
     // No point in creating a file only to not use it.  JBS 99/11/01
-    hid = __allocPOSIXHandle( DUMMY_HANDLE );
+    hid = __allocPOSIXHandleDummy();
     if( hid == -1 ) {
         return( __set_errno_dos_reterr( ERROR_NOT_ENOUGH_MEMORY ) );
     }
 
     __GetNTCreateAttr( attr, &desired_access, &os_attr );
-    handle = CreateFile( (LPTSTR) name, desired_access, 0, 0, CREATE_NEW,
-                    os_attr, NULL );
-    if( handle == (HANDLE)-1 ) {
+    handle = CreateFile( (LPTSTR) name, desired_access, 0, 0, CREATE_NEW, os_attr, NULL );
+    if( handle == INVALID_HANDLE_VALUE ) {
         __freePOSIXHandle( hid );
         return( __set_errno_nt_reterr() );
     }
