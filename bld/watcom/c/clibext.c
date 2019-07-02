@@ -52,6 +52,7 @@
     #include "_dtaxxx.h"
     #include "ntattrib.h"
     #include "dosftwnt.h"
+    #include "ntext.h"
   #endif
 #endif
 #include "wio.h"
@@ -2131,8 +2132,8 @@ static int is_directory( const char *name )
     return( -1 );
 }
 
-static void __GetNTDirInfo( struct dirent *dirp, LPWIN32_FIND_DATA ffd )
-/**********************************************************************/
+void __GetNTDirInfo( struct dirent *dirp, LPWIN32_FIND_DATA ffd )
+/***************************************************************/
 {
     DTAXXX_TSTAMP_OF( dirp->d_dta ) = __NT_filetime_to_timet( &ffd->ftLastWriteTime );
     __MakeDOSDT( &ffd->ftLastWriteTime, &dirp->d_date, &dirp->d_time );
