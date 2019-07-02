@@ -39,6 +39,19 @@
  * a consistent interface.
  */
 
+#ifdef _WIN64
+
+#define __fixed_GetFileAttributesA              GetFileAttributesA
+#define __fixed_GetFileAttributesW              GetFileAttributesW
+
+#define __fixed_FindFirstFileA                  FindFirstFileA
+#define __fixed_FindNextFileA                   FindNextFileA
+
+#define __fixed_FindFirstFileW                  FindFirstFileW
+#define __fixed_FindNextFileW                   FindNextFileW
+
+#else
+
 extern DWORD    __fixed_GetFileAttributesA( LPCSTR lpFileName );
 extern DWORD    __fixed_GetFileAttributesW( LPCWSTR lpFileName );
 
@@ -47,6 +60,8 @@ extern HANDLE   __fixed_FindFirstFileW( LPCWSTR lpFileName, LPWIN32_FIND_DATAW l
 
 extern BOOL     __fixed_FindNextFileA( HANDLE hFindFile, LPWIN32_FIND_DATAA lpFindFileData );
 extern BOOL     __fixed_FindNextFileW( HANDLE hFindFile, LPWIN32_FIND_DATAW lpFindFileData );
+
+#endif
 
 #ifdef __WIDECHAR__
     #define __fixed_GetFileAttributes           __fixed_GetFileAttributesW
