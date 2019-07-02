@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -30,9 +31,24 @@
 ****************************************************************************/
 
 
-// this file should remain an indirected file
-// it is done this way to support the reuse of the source file
-#define __WIDECHAR__
-#define UNICODE
-#undef __INLINE_FUNCTIONS__
-#include "ntdirinf.c"
+#include "variety.h"
+#include "widechar.h"
+#include <string.h>
+#include <direct.h>
+#include <windows.h>
+#include "ntext.h"
+#include "_dtaxxx.h"
+#include "timetwnt.h"
+#include "dosftwnt.h"
+#include "ntattrib.h"
+
+
+void __GetNTDirInfo( DIR_TYPE *dirp, LPWIN32_FIND_DATA ffb )
+{
+    DTAXXX_TSTAMP_OF( dirp->d_dta ) = __NT_filetime_to_timet( &ffb->ftLastWriteTime );
+    __MakeDOSDT( &ffb->ftLastWriteTime, &dirp->d_date, &dirp->d_time );
+    dirp->d_attr = NT2DOSATTR( ffb->dwFileAttributes );
+    dirp->d_size = ffb->nFileSizeLow;
+    __F_NAME(strncpy,wcsncpy)( dirp->d_name, ffb->cFileName, NAME_MAX );
+    dirp->d_name[NAME_MAX] = 0;
+}

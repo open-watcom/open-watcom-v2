@@ -10,11 +10,13 @@
 !inject fnextfil.obj                     nt
 !inject fgtattr.obj                      nt nta ntp
 !inject fnextatt.obj                     nt nta ntp
+!inject gdirinfo.obj                     nt nta ntp
 !inject getcdir.obj                      nt
 !inject getdtype.obj                     nt
 !inject getfattr.obj                     nt
 !inject getmodfn.obj                     nt
 !inject getfulpn.obj                     nt
+!inject gfindinf.obj                     nt nta ntp
 !inject movefile.obj                     nt
 !inject removdir.obj                     nt
 !inject setcdir.obj                      nt
@@ -24,5 +26,7 @@
 !inject uffnextf.obj                     nt
 !inject ufgtattr.obj                     nt nta ntp
 !inject ufnextat.obj                     nt nta ntp
+!inject ugdirinf.obj                     nt nta ntp
+!inject ugfindin.obj                     nt nta ntp
 
 !include ../../../../objlist.mif

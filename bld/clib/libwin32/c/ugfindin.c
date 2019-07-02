@@ -31,30 +31,9 @@
 ****************************************************************************/
 
 
-#include "variety.h"
-#include "widechar.h"
-#include <stdio.h>
-#include <string.h>
-#include <direct.h>
-#include <windows.h>
-#include "libwin32.h"
-#include "ntext.h"
-#include "_dtaxxx.h"
-#include "timetwnt.h"
-#include "dosftwnt.h"
-#include "ntattrib.h"
-
-
-#define NT_FIND_ATTRIBUTES_MASK (FILE_ATTRIBUTE_HIDDEN | FILE_ATTRIBUTE_SYSTEM | FILE_ATTRIBUTE_DIRECTORY)
-
-BOOL __NTFindNextFileWithAttr( HANDLE h, unsigned nt_attrib, LPWIN32_FIND_DATA ffb )
-{
-    for(;;) {
-        if( (nt_attrib | ~ffb->dwFileAttributes) & NT_FIND_ATTRIBUTES_MASK ) {
-            return ( TRUE );
-        }
-        if( !__lib_FindNextFile( h, ffb ) ) {
-            return( FALSE );
-        }
-    }
-}
+// this file should remain an indirected file
+// it is done this way to support the reuse of the source file
+#define __WIDECHAR__
+#define UNICODE
+#undef __INLINE_FUNCTIONS__
+#include "gfindinf.c"
