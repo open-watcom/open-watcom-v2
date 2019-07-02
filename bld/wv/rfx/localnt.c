@@ -176,11 +176,7 @@ long LocalGetFileAttr( const char *name )
     HANDLE              h;
     WIN32_FIND_DATA     ffb;
 
-#ifdef _WIN64
-    h = FindFirstFile( name, &ffb );
-#else
     h = __fixed_FindFirstFile( name, &ffb );
-#endif
     if( h == INVALID_HANDLE_VALUE ) {
         return( RFX_INVALID_FILE_ATTRIBUTES );
     }
@@ -259,11 +255,7 @@ static bool __NTFindNextFileWithAttr( HANDLE h, unsigned nt_attrib, LPWIN32_FIND
         if( (nt_attrib | ~ffb->dwFileAttributes) & NT_FIND_ATTRIBUTES_MASK ) {
             return( true );
         }
-#ifdef _WIN64
-        if( !FindNextFile( h, ffb ) ) {
-#else
         if( !__fixed_FindNextFile( h, ffb ) ) {
-#endif
             return( false );
         }
     }
@@ -299,11 +291,7 @@ error_handle LocalFindFirst( const char *pattern, rfx_find *info, unsigned info_
     /* unused parameters */ (void)info_len;
 
     nt_attrib = DOS2NTATTR( dos_attrib );
-#ifdef _WIN64
-    h = FindFirstFile( pattern, &ffb );
-#else
     h = __fixed_FindFirstFile( pattern, &ffb );
-#endif
     if( h == INVALID_HANDLE_VALUE || !__NTFindNextFileWithAttr( h, nt_attrib, &ffb ) ) {
         error = GetLastError();
         if( h != INVALID_HANDLE_VALUE ) {
@@ -330,11 +318,7 @@ int LocalFindNext( rfx_find *info, unsigned info_len )
     }
     h = (HANDLE)DTARFX_HANDLE_OF( info );
     nt_attrib = DTARFX_ATTRIB_OF( info );
-#ifdef _WIN64
-    if( !FindNextFile( h, &ffb ) || !__NTFindNextFileWithAttr( h, nt_attrib, &ffb ) ) {
-#else
     if( !__fixed_FindNextFile( h, &ffb ) || !__NTFindNextFileWithAttr( h, nt_attrib, &ffb ) ) {
-#endif
         FindClose( h );
         DTARFX_HANDLE_OF( info ) = DTARFX_INVALID_HANDLE;
         return( -1 );
