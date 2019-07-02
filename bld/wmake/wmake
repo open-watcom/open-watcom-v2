@@ -25,7 +25,7 @@ $(%OWBINDIR)\wmake.exe : wmk.exe
 !endif
 
 .c.obj : .AUTODEPEND
-        *wcc386 -zq -w8 -we -oaxt -j -fpc -zc -bt=$(bld_os) -DBOOTSTRAP -D_BLDVER=$(bld_ver_tool) -D_CYEAR=$(curr_year) -I. -I"../h" -I"../../watcom/h" -I"../../lib_misc/h" -fo=$@ $<
+        *wcc386 -zq -w8 -we -oaxt -j -fpc -zc -bt=$(bld_os) -DBOOTSTRAP -D_BLDVER=$(bld_ver_tool) -D_CYEAR=$(curr_year) -I. -I"../h" -I"../../lib_misc/h" -I"../../watcom/h" -fo=$@ $<
 
 ./wsplice.exe : wsplice.obj
         *wlink name $@ op q, map sys $(link_sys) file {$<}
