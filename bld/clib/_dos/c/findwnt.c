@@ -45,7 +45,7 @@
 #include "ntattrib.h"
 
 
-_WCRTLINK unsigned _dos_findfirst( const char *path, unsigned dos_attrib, struct find_t *buf )
+_WCRTLINK unsigned _dos_findfirst( const char *path, unsigned dos_attrib, struct find_t *findt )
 {
     HANDLE              h;
     int                 error;
@@ -58,41 +58,41 @@ _WCRTLINK unsigned _dos_findfirst( const char *path, unsigned dos_attrib, struct
 //  }
     nt_attrib = DOS2NTATTR( dos_attrib );
     if( h == INVALID_HANDLE_VALUE ) {
-        DTAXXX_HANDLE_OF( buf->reserved ) = DTAXXX_INVALID_HANDLE;
+        DTAXXX_HANDLE_OF( findt->reserved ) = DTAXXX_INVALID_HANDLE;
         return( __set_errno_nt_reterr() );
     }
     if( !__NTFindNextFileWithAttr( h, nt_attrib, &ffb ) ) {
         error = GetLastError();
-        DTAXXX_HANDLE_OF( buf->reserved ) = DTAXXX_INVALID_HANDLE;
+        DTAXXX_HANDLE_OF( findt->reserved ) = DTAXXX_INVALID_HANDLE;
         FindClose( h );
         return( __set_errno_dos_reterr( error ) );
     }
-    DTAXXX_HANDLE_OF( buf->reserved ) = h;
-    DTAXXX_ATTR_OF( buf->reserved ) = nt_attrib;
-    __GetNTDirInfo( (struct dirent *)buf, &ffb );
+    DTAXXX_HANDLE_OF( findt->reserved ) = h;
+    DTAXXX_ATTR_OF( findt->reserved ) = nt_attrib;
+    __GetNTFindInfo( findt, &ffb );
 
     return( 0 );
 }
 
-_WCRTLINK unsigned _dos_findnext( struct find_t *buf )
+_WCRTLINK unsigned _dos_findnext( struct find_t *findt )
 {
     WIN32_FIND_DATA     ffd;
 
-    if( !__fixed_FindNextFile( DTAXXX_HANDLE_OF( buf->reserved ), &ffd ) ) {
+    if( !__fixed_FindNextFile( DTAXXX_HANDLE_OF( findt->reserved ), &ffd ) ) {
         return( __set_errno_nt_reterr() );
     }
-    if( !__NTFindNextFileWithAttr( DTAXXX_HANDLE_OF( buf->reserved ), DTAXXX_ATTR_OF( buf->reserved ), &ffd ) ) {
+    if( !__NTFindNextFileWithAttr( DTAXXX_HANDLE_OF( findt->reserved ), DTAXXX_ATTR_OF( findt->reserved ), &ffd ) ) {
         return( __set_errno_nt_reterr() );
     }
-    __GetNTDirInfo( (struct dirent *)buf, &ffd );
+    __GetNTFindInfo( findt, &ffd );
 
     return( 0 );
 }
 
-_WCRTLINK unsigned _dos_findclose( struct find_t *buf )
+_WCRTLINK unsigned _dos_findclose( struct find_t *findt )
 {
-    if( DTAXXX_HANDLE_OF( buf->reserved ) != DTAXXX_INVALID_HANDLE ) {
-        if( !FindClose( DTAXXX_HANDLE_OF( buf->reserved ) ) ) {
+    if( DTAXXX_HANDLE_OF( findt->reserved ) != DTAXXX_INVALID_HANDLE ) {
+        if( !FindClose( DTAXXX_HANDLE_OF( findt->reserved ) ) ) {
             return( __set_errno_nt_reterr() );
         }
     }
