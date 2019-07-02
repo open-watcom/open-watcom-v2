@@ -7,9 +7,9 @@
 !inject fffrstfi.obj                     nt
 !inject ffnextfi.obj                     nt
 !inject ffrstfil.obj                     nt
-!inject fnextfil.obj                     nt
 !inject fgtattr.obj                      nt nta ntp
 !inject fnextatt.obj                     nt nta ntp
+!inject fnextfil.obj                     nt
 !inject gdirinfo.obj                     nt nta ntp
 !inject getcdir.obj                      nt
 !inject getdtype.obj                     nt

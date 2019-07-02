@@ -59,13 +59,13 @@
 #include "thread.h"
 
 
-#undef __getOSHandle
-
 unsigned    __NHandles = 0;
 
 #if defined(__NT__)
 
-HANDLE *__OSHandles = NULL;
+static HANDLE   *__FakeHandles = NULL;
+static HANDLE   *__OSHandles = NULL;
+static int      __topFakeHandle = 0;
 
 unsigned __growPOSIXHandles( unsigned num )
 {
@@ -155,22 +155,19 @@ int __setOSHandle( unsigned hid, HANDLE hdl )
     return( hid );
 }
 
-HANDLE *__FakeHandles = 0;
-static int __topFakeHandle = 0;
-
 HANDLE __NTGetFakeHandle( void )
 {
-    HANDLE os_handle;
+    static DWORD    fakeHandle = 0x80000000L;
+    HANDLE          os_handle;
 
     _AccessFList();
     os_handle = CreateEvent( 0, 0, 0, 0 );
     if( os_handle == NULL ) {
         // win32s does not support event handles
-        static DWORD fakeHandle = 0x80000000L;
         fakeHandle++;
         os_handle = (HANDLE)fakeHandle;
     } else {
-        __FakeHandles = lib_realloc( __FakeHandles, (__topFakeHandle+1) * sizeof( HANDLE ) );
+        __FakeHandles = lib_realloc( __FakeHandles, ( __topFakeHandle + 1 ) * sizeof( HANDLE ) );
         __FakeHandles[ __topFakeHandle ] = os_handle;
         __topFakeHandle++;
     }
@@ -190,17 +187,17 @@ void __initPOSIXHandles( void )
     __growPOSIXHandles( __NFiles );
     h = GetStdHandle( STD_INPUT_HANDLE );
     if( h == 0 || h == INVALID_HANDLE_VALUE ) {
-        h = (HANDLE)__NTGetFakeHandle();
+        h = __NTGetFakeHandle();
     }
     __allocPOSIXHandle( h );        // should return 0==STDIN_FILENO
     h = GetStdHandle( STD_OUTPUT_HANDLE );
     if( h == 0 || h == INVALID_HANDLE_VALUE ) {
-        h = (HANDLE)__NTGetFakeHandle();
+        h = __NTGetFakeHandle();
     }
     __allocPOSIXHandle( h );        // should return 1==STDOUT_FILENO
     h = GetStdHandle( STD_ERROR_HANDLE );
     if( h == 0 || h == INVALID_HANDLE_VALUE ) {
-        h = (HANDLE)__NTGetFakeHandle();
+        h = __NTGetFakeHandle();
     }
     __allocPOSIXHandle( h );        // should return 3==STDERR_FILENO
 }
@@ -217,7 +214,7 @@ static void __finiPOSIXHandles( void )
             CloseHandle( __FakeHandles[i] );
         }
         lib_free( __FakeHandles );
-        __FakeHandles = 0;
+        __FakeHandles = NULL;
     }
 }
 
@@ -234,7 +231,7 @@ void __set_handles( int num )
 _WCRTLINK int _grow_handles( int num )
 {
     if( num > __NHandles ) {
-    #if defined(__DOS__)
+#if defined(__DOS__)
         /* increase the number of file handles beyond 20 */
         if( _RWD_osmajor > 3 || ( _RWD_osmajor == 3 && _RWD_osminor >= 30 ) ) {
             tiny_ret_t  rc;
@@ -272,7 +269,7 @@ _WCRTLINK int _grow_handles( int num )
                 _enable();
             }
         }
-    #elif defined( __OS2_286__ )
+#elif defined( __OS2_286__ )
         {
             int     rc;
 
@@ -299,7 +296,7 @@ _WCRTLINK int _grow_handles( int num )
                 }
             }
         }
-    #elif defined( __WARP__ )
+#elif defined( __WARP__ )
         {
             LONG    req_count;
             ULONG   curr_max_fh;
@@ -309,23 +306,23 @@ _WCRTLINK int _grow_handles( int num )
             rc = DosSetRelMaxFH( &req_count, &curr_max_fh );
             num = curr_max_fh;
         }
-    #elif defined(__WINDOWS__)
+#elif defined(__WINDOWS__)
         {
             num = SetHandleCount( num );
         }
-    #elif defined(__NT__)
+#elif defined(__NT__)
         {
             num = __growPOSIXHandles( num );
         }
-    #elif defined(__NETWARE__)
+#elif defined(__NETWARE__)
         {
             #error NO HANDLE MANAGER UNDER NETWARE
         }
-    #else
+#else
         {
             // nothing to do
         }
-    #endif
+#endif
 #if defined(__UNIX__) && !defined(__QNX__)
         {
             struct rlimit   rl;

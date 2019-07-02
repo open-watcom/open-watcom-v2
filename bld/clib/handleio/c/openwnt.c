@@ -83,7 +83,7 @@ static int __F_NAME(__sopen,__wsopen)( const CHAR_TYPE *name, unsigned mode, uns
 #ifdef DEFAULT_WINDOWING
     if( _WindowsNewWindow != NULL && !__F_NAME(stricmp,_wcsicmp)( name, CHAR_CONST( "con" ) ) )
     {
-        handle = (HANDLE) __NTGetFakeHandle();
+        handle = __NTGetFakeHandle();
 
         // Now use the slot we got.
         __setOSHandle( hid, handle );   // JBS 99/11/01
