@@ -157,11 +157,7 @@ trap_retval ReqRfx_getfileattr( void )
     rfx_getfileattr_ret *ret;
 
     ret = GetOutPtr( 0 );
-#ifdef _WIN64
-    h = FindFirstFile( GetInPtr( sizeof( rfx_getfileattr_req ) ), &ffb );
-#else
     h = __fixed_FindFirstFile( GetInPtr( sizeof( rfx_getfileattr_req ) ), &ffb );
-#endif
     if( h == INVALID_HANDLE_VALUE ) {
         ret->attribute = (0xffff0000 | GetLastError());
     } else {
@@ -295,11 +291,7 @@ static bool __NTFindNextFileWithAttr( HANDLE h, unsigned nt_attribs, LPWIN32_FIN
         if( (nt_attribs | ~ffb->dwFileAttributes) & NT_FIND_ATTRIBUTES_MASK ) {
             return( true );
         }
-#ifdef _WIN64
-        if( !FindNextFile( h, ffb ) ) {
-#else
         if( !__fixed_FindNextFile( h, ffb ) ) {
-#endif
             return( false );
         }
     }
@@ -338,11 +330,7 @@ trap_retval ReqRfx_findfirst( void )
     ret = GetOutPtr( 0 );
     ret->err = 0;
     info = GetOutPtr( sizeof( *ret ) );
-#ifdef _WIN64
-    h = FindFirstFile( GetInPtr( sizeof( *acc ) ), &ffb );
-#else
     h = __fixed_FindFirstFile( GetInPtr( sizeof( *acc ) ), &ffb );
-#endif
     if( h == INVALID_HANDLE_VALUE || !__NTFindNextFileWithAttr( h, nt_attribs, &ffb ) ) {
         ret->err = GetLastError();
         if( h != INVALID_HANDLE_VALUE ) {
@@ -372,11 +360,7 @@ trap_retval ReqRfx_findnext( void )
     h = (HANDLE)DTARFX_HANDLE_OF( info );
     nt_attribs = DTARFX_ATTRIB_OF( info );
     info = GetOutPtr( sizeof( *ret ) );
-#ifdef _WIN64
-    if( !FindNextFile( h, &ffb ) || !__NTFindNextFileWithAttr( h, nt_attribs, &ffb ) ) {
-#else
     if( !__fixed_FindNextFile( h, &ffb ) || !__NTFindNextFileWithAttr( h, nt_attribs, &ffb ) ) {
-#endif
         ret->err = GetLastError();
         FindClose( h );
         DTARFX_HANDLE_OF( info ) = DTARFX_INVALID_HANDLE;
