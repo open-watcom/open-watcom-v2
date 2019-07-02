@@ -52,13 +52,15 @@
     #include "_dtaxxx.h"
     #include "ntattrib.h"
     #include "dosftwnt.h"
-    #include "ntext.h"
   #endif
 #endif
 #include "wio.h"
 #include "wreslang.h"
 
 #include "clibext.h"
+#if defined(__NT__)
+#include "ntext.h"
+#endif
 
 
 #define __set_errno( err ) errno = (err)

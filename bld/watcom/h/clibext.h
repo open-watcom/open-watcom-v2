@@ -200,8 +200,6 @@ extern unsigned _dos_setftime( void *h, unsigned date, unsigned time );
 extern unsigned _dos_read( void *h, void *buffer, unsigned count, unsigned *bytes );
 extern unsigned _dos_write( void *h, void const *buffer, unsigned count, unsigned *bytes );
 extern unsigned sleep( unsigned );
-extern void __GetNTAccessAttr( unsigned rwmode, unsigned long *desired_access, unsigned long *attr );
-extern void __GetNTShareAttr( int mode, unsigned long *share_mode );
 
 extern int      getopt( int argc, char * const argv[], const char *optstring );
 /* Globals used and set by getopt() */
