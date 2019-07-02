@@ -40,6 +40,7 @@
 
     #define DIR_TYPE            WDIR
     #define DIRENT_TYPE         struct _wdirent
+    #define FINDT_TYPE          struct _wfind_t
     #define CHAR_TYPE           wchar_t
     #define UCHAR_TYPE          wchar_t
     #define INTCHAR_TYPE        wint_t
@@ -56,6 +57,7 @@
 #else
     #define DIR_TYPE            DIR
     #define DIRENT_TYPE         struct dirent
+    #define FINDT_TYPE          struct find_t
     #define CHAR_TYPE           char
     #define UCHAR_TYPE          unsigned char
     #define INTCHAR_TYPE        int
