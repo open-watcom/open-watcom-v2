@@ -311,7 +311,7 @@ static void addAllFiles95( HWND hwnd )
     SendMessage( GetParent( hwnd ), CDM_GETFOLDERPATH, _MAX_PATH, (LPARAM)folder );
     _makepath( path, NULL, folder, ext, NULL );
     find_handle = FindFirstFile( path, &wfd );
-    if( find_handle != NULL ) {
+    if( find_handle != INVALID_HANDLE_VALUE ) {
         while( found ) {
             if( !(wfd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) ) {
                 fname = strrchr( wfd.cFileName, '\\' );
