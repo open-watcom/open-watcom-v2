@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -211,8 +211,7 @@ static int _make_argv( TCHAR *p, TCHAR ***argv )
                     if( dirent == NULL ) {
                         break;
                     }
-                    if( dirent->d_attr &
-                      (_A_HIDDEN+_A_SYSTEM+_A_VOLID+_A_SUBDIR) ) {
+                    if( dirent->d_attr & (_A_HIDDEN | _A_SYSTEM | _A_VOLID | _A_SUBDIR) ) {
                         continue;
                     }
                     _tsplitpath( dirent->d_name, NULL, NULL, name, extin );

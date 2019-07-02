@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -72,12 +73,12 @@ static int __F_NAME(__sopen,__wsopen)( const CHAR_TYPE *name, unsigned mode, uns
 
     rwmode = mode & OPENMODE_ACCESS_MASK;
     __GetNTAccessAttr( rwmode, &desired_access, &os_attr );
-    __GetNTShareAttr( share|rwmode, &share_mode );
+    __GetNTShareAttr( share | rwmode, &share_mode );
     fileattr = FILE_ATTRIBUTE_NORMAL;
 
     security.nLength = sizeof( SECURITY_ATTRIBUTES );
     security.lpSecurityDescriptor = NULL;
-    security.bInheritHandle = mode&O_NOINHERIT ? FALSE : TRUE;
+    security.bInheritHandle = ( mode & O_NOINHERIT ) ? FALSE : TRUE;
 
 #ifdef DEFAULT_WINDOWING
     if( _WindowsNewWindow != NULL && !__F_NAME(stricmp,_wcsicmp)( name, CHAR_CONST( "con" ) ) )
