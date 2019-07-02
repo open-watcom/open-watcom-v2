@@ -2014,7 +2014,7 @@ static time_t __NT_filetime_to_timet( const FILETIME *ft )
     return( ulint.QuadPart / WINDOWS_TICK - SEC_TO_UNIX_EPOCH );
 }
 
-static void __GetNTCreateAttr( unsigned dos_attrib, LPDWORD desired_access, LPDWORD nt_attrib )
+void __GetNTCreateAttr( unsigned dos_attrib, LPDWORD desired_access, LPDWORD nt_attrib )
 {
     if( dos_attrib & _A_RDONLY ) {
         *desired_access = GENERIC_READ;
@@ -2045,10 +2045,10 @@ void __GetNTAccessAttr( unsigned rwmode, LPDWORD desired_access, LPDWORD nt_attr
     }
 }
 
-void __GetNTShareAttr( int mode, LPDWORD share_mode )
+void __GetNTShareAttr( unsigned mode, LPDWORD share_mode )
 {
-    int share;
-    int rwmode;
+    unsigned share;
+    unsigned rwmode;
 
     share  = mode & OPENMODE_SHARE_MASK;
     rwmode = mode & OPENMODE_ACCESS_MASK;
