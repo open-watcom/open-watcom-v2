@@ -53,8 +53,8 @@ STATIC TLIST    *firstTarget;   /* first set of targets parsed this invocation *
 
 static const TATTR FalseAttr = { false, false, false, false, false, false, false, false };
 
-STATIC void ignoring( TOKEN_T t, bool freelex )
-/**********************************************
+STATIC void ignoring( MTOKEN_T t, bool freelex )
+/***********************************************
  * print message saying ignoring token, and if freelex then LexMaybeFree( t )
  */
 {
@@ -91,8 +91,8 @@ STATIC void ignoring( TOKEN_T t, bool freelex )
 }
 
 
-STATIC TOKEN_T buildTargs( TLIST **dest, TOKEN_T t )
-/***************************************************
+STATIC MTOKEN_T buildTargs( TLIST **dest, MTOKEN_T t )
+/*****************************************************
  * Parse the input, building a TLIST on dest.  Accept TOK_FILENAME,
  * TOK_SUFSUF and TOK_DOTNAME( if IsDotWithCmds() ).  Terminate on
  * TOK_EOL, TOK_END, TOK_SCOLON, or TOK_DCOLON.  Ignore all other tokens.
@@ -253,9 +253,9 @@ STATIC DEPEND *buildDepend( TATTR *pattr )
  * accordingly.  Always returns non-null DEPEND *.
  */
 {
-    DEPEND  *dep;
-    TLIST   **list;
-    TOKEN_T t;
+    DEPEND      *dep;
+    TLIST       **list;
+    MTOKEN_T    t;
 
     dep = NewDepend();
     *pattr = FalseAttr;
@@ -388,8 +388,8 @@ STATIC void parseTargWarning( const TLIST *walk )
 }
 
 
-STATIC void parseTargDep( TOKEN_T t, TLIST **btlist )
-/****************************************************
+STATIC void parseTargDep( MTOKEN_T t, TLIST **btlist )
+/*****************************************************
  * parse a line of form {target}+ (scolon||dcolon) {depend}*
  *                  or  {target}+
  * where:   target ::= TOK_FILENAME || TOK_SUFSUF || TOK_DOTNAME(with cmds)
@@ -438,7 +438,7 @@ STATIC void parseExtensions( void )
  *                  or .EXTENSIONS: {ext}+
  */
 {
-    TOKEN_T     t;
+    MTOKEN_T    t;
     bool        any;
 
     for( ;; ) {
@@ -481,8 +481,8 @@ STATIC void parseExtensions( void )
 }
 
 
-STATIC void parseDotName( TOKEN_T t, TLIST **btlist )
-/****************************************************
+STATIC void parseDotName( MTOKEN_T t, TLIST **btlist )
+/*****************************************************
  * parse any of the dotnames
  */
 {
@@ -617,10 +617,10 @@ STATIC void parseSuf( void )
  *   or  {TOK_SUF}+
  */
 {
-    TOKEN_T t;
-    char    *path;
-    NODE    *head;
-    NODE    *cur;
+    MTOKEN_T    t;
+    char        *path;
+    NODE        *head;
+    NODE        *cur;
 
     head = NULL;
 
@@ -902,12 +902,12 @@ TLIST *Parse( void )
  * Call LexToken, and dispatch to appropriate routine
  */
 {
-    TOKEN_T t;
-    CLIST   *newclist;
-    CLIST   *bclist;
-    TLIST   *btlist;
-    bool    clist_warning_given;
-    bool    token_filename;
+    MTOKEN_T    t;
+    CLIST       *newclist;
+    CLIST       *bclist;
+    TLIST       *btlist;
+    bool        clist_warning_given;
+    bool        token_filename;
 
     firstTarget = NULL;
 

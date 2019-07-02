@@ -101,7 +101,7 @@ STATIC void multExpr  ( DATAVALUE *leftVal );
 STATIC void unaryExpr ( DATAVALUE *leftVal );
 
 STATIC char         *currentPtr;    // Pointer to current start in string
-STATIC TOKEN_TYPE   currentToken;   // Contains information for current token
+STATIC MTOKEN_TYPE  currentToken;   // Contains information for current token
 
 
 /*
@@ -1171,8 +1171,8 @@ STRM_T PreGetCHR( void )
 }
 
 
-STATIC void makeToken( TOKEN_O type, TOKEN_TYPE *current, size_t *index )
-/***********************************************************************/
+STATIC void makeToken( MTOKEN_O type, MTOKEN_TYPE *current, size_t *index )
+/*******************************************66****************************/
 {
     switch( type ) {
     case OP_COMPLEMENT:
@@ -1239,8 +1239,8 @@ STATIC INT32 makeHexNumber( const char *inString, size_t *stringLength )
 }
 
 
-STATIC void makeNumberToken( const char *inString, TOKEN_TYPE *current, size_t *index )
-/*************************************************************************************/
+STATIC void makeNumberToken( const char *inString, MTOKEN_TYPE *current, size_t *index )
+/**************************************************************************************/
 {
     INT32       value;
     const char  *pChar;
@@ -1279,8 +1279,8 @@ STATIC void makeNumberToken( const char *inString, TOKEN_TYPE *current, size_t *
 }
 
 
-STATIC void makeStringToken( const char *inString, TOKEN_TYPE *current, size_t *index )
-/*************************************************************************************/
+STATIC void makeStringToken( const char *inString, MTOKEN_TYPE *current, size_t *index )
+/**************************************************************************************/
 {
     size_t  inIndex;
     size_t  currentIndex;
@@ -1320,8 +1320,8 @@ STATIC void makeStringToken( const char *inString, TOKEN_TYPE *current, size_t *
     *index = inIndex;
 }
 
-STATIC void makeAlphaToken( const char *inString, TOKEN_TYPE *current, size_t *index )
-/************************************************************************************/
+STATIC void makeAlphaToken( const char *inString, MTOKEN_TYPE *current, size_t *index )
+/*************************************************************************************/
 {
     char const  *r;
     char        *pwrite;
@@ -1368,7 +1368,7 @@ STATIC bool IsMacro( char const *name )
 }
 
 
-STATIC bool name2function( TOKEN_TYPE const *current, char const *criterion,
+STATIC bool name2function( MTOKEN_TYPE const *current, char const *criterion,
     bool (*action)(const char *), bool (**pquestion)(const char *) )
 /*****************************************************************************/
 {
@@ -1379,8 +1379,8 @@ STATIC bool name2function( TOKEN_TYPE const *current, char const *criterion,
     return( true );
 }
 
-STATIC void makeFuncToken( const char *inString, TOKEN_TYPE *current, size_t *index )
-/************************************************************************************
+STATIC void makeFuncToken( const char *inString, MTOKEN_TYPE *current, size_t *index )
+/*************************************************************************************
  * parses only to get alphanumeric characters for special functions
  * ie. EXIST, defined.  if special characters are needed enclose in quotes
  */
@@ -1424,8 +1424,8 @@ STATIC void makeFuncToken( const char *inString, TOKEN_TYPE *current, size_t *in
     }
 }
 
-STATIC void makeCmdToken( const char *inString, TOKEN_TYPE *current, size_t *index )
-/***********************************************************************************
+STATIC void makeCmdToken( const char *inString, MTOKEN_TYPE *current, size_t *index )
+/************************************************************************************
  * get a command token enclosed in square brackets; very basic - a right
  * square bracket terminates command regardless of quoting
  */
@@ -1468,8 +1468,8 @@ STATIC void makeCmdToken( const char *inString, TOKEN_TYPE *current, size_t *ind
     *index = inIndex;
 }
 
-STATIC size_t ScanToken( const char *inString, TOKEN_TYPE *current )
-/******************************************************************/
+STATIC size_t ScanToken( const char *inString, MTOKEN_TYPE *current )
+/*******************************************************************/
 {
     const char  *pString;
     size_t      index = 0;

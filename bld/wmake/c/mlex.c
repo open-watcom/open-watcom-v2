@@ -72,13 +72,13 @@ void LexInit( void )
 }
 
 
-TOKEN_T LexToken( enum LexMode mode )
+MTOKEN_T LexToken( enum LexMode mode )
 /*******************************************
  * returns: next token of input
  */
 {
-    STRM_T s;
-    TOKEN_T t = TOK_NULL;
+    STRM_T      s;
+    MTOKEN_T    t = TOK_NULL;
 
     s = PreGetCHR();
 
@@ -94,7 +94,7 @@ TOKEN_T LexToken( enum LexMode mode )
 }
 
 
-void LexMaybeFree( TOKEN_T tok )
+void LexMaybeFree( MTOKEN_T tok )
 /**************************************
  * remarks: Some tokens set CurAttr.u.ptr to a memory region.  This routine
  *          FreeSafes the region if tok is one of these token types.

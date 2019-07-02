@@ -41,8 +41,8 @@
 #include "mvecstr.h"
 
 
-STATIC TOKEN_T lexFormQualifier( TOKEN_T tok )
-/*********************************************
+STATIC MTOKEN_T lexFormQualifier( MTOKEN_T tok )
+/***********************************************
  * pre:     $<file_specifier> read already; passed in tok
  * post:    1 character of input may be read
  * returns: tok; CurAttr.u.form contains enum FormQualifiers
@@ -137,7 +137,7 @@ STATIC char *CatModifier( char *inString, bool destroy )
     }
 }
 
-TOKEN_T LexMSDollar( STRM_T s )
+MTOKEN_T LexMSDollar( STRM_T s )
 /*************************************
  *  If it is PartDeMacro then we have to put back the tokens as if it were a
  *  MAC_NAME so that it can be DeMacroed fully later
@@ -200,15 +200,15 @@ TOKEN_T LexMSDollar( STRM_T s )
 }
 
 
-STATIC TOKEN_T lexDollar( void )
-/*******************************
+STATIC MTOKEN_T lexDollar( void )
+/********************************
  * pre:     $ read off input
  * post:    0 or more characters of token read
  * returns: MAC token type
  */
 {
-    STRM_T  s;
-    TOKEN_T t;
+    STRM_T      s;
+    MTOKEN_T    t;
 
     s = PreGetCHR();
 
@@ -240,12 +240,12 @@ STATIC TOKEN_T lexDollar( void )
 #ifdef __WATCOMC__
 #pragma on (check_stack);
 #endif
-STATIC TOKEN_T lexSubString( STRM_T s )
+STATIC MTOKEN_T lexSubString( STRM_T s )
 /**************************************/
 {
     char        text[MAX_TOK_SIZE];     /* temporary storage                */
     unsigned    pos;                    /* position in text                 */
-    TOKEN_T     state;                  /* what are we collecting           */
+    MTOKEN_T    state;                  /* what are we collecting           */
     bool        done;                   /* are we done collecting ?         */
     VECSTR      vec;                    /* build string here                */
 
@@ -301,7 +301,7 @@ STATIC TOKEN_T lexSubString( STRM_T s )
 #endif
 
 
-TOKEN_T LexMacSubst( STRM_T s )
+MTOKEN_T LexMacSubst( STRM_T s )
 /**************************************
  * returns: next macro substitution type token of input
  */
@@ -327,7 +327,7 @@ TOKEN_T LexMacSubst( STRM_T s )
 #ifdef __WATCOMC__
 #pragma on (check_stack);
 #endif
-TOKEN_T LexMacDef( STRM_T s )
+MTOKEN_T LexMacDef( STRM_T s )
 /************************************
  * returns: MAC_TEXT, or MAC_WS up to EOL or $+
  */

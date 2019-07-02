@@ -185,8 +185,8 @@ const char *procPath( const char *fullpath )
 }
 
 
-STATIC const char *specialValue( TOKEN_T t )
-/*******************************************
+STATIC const char *specialValue( MTOKEN_T t )
+/********************************************
  * process the special macro t
  * returns: pointer to a static buffer
  */
@@ -680,11 +680,11 @@ char *DeMacroSpecial( const char *InString )
  * assumed to imply MAC_WS as well.  This is used in mpreproc.c to find the
  * end of a macro name for things such as !ifdef, !undef, etc.
  */
-STATIC char *deMacroText( int depth, TOKEN_T end1, TOKEN_T end2 );
+STATIC char *deMacroText( int depth, MTOKEN_T end1, MTOKEN_T end2 );
 
 
-STATIC char *ProcessToken( int depth, TOKEN_T end1, TOKEN_T end2, TOKEN_T t )
-/****************************************************************************
+STATIC char *ProcessToken( int depth, MTOKEN_T end1, MTOKEN_T end2, MTOKEN_T t )
+/*******************************************************************************
  * Processes the tokens returned from lexToken in deMacroToEnd
  */
 {
@@ -820,16 +820,16 @@ STATIC char *ProcessToken( int depth, TOKEN_T end1, TOKEN_T end2, TOKEN_T t )
 }
 
 
-STATIC char *deMacroToEnd( int depth, TOKEN_T end1, TOKEN_T end2 )
-/*****************************************************************
+STATIC char *deMacroToEnd( int depth, MTOKEN_T end1, MTOKEN_T end2 )
+/*******************************************************************
  * post:    0 or more characters removed from input; next character of
  *          input is STRM_END || STRM_MAGIC || EOL || end1 || end2
  * returns: pointer to demacro'd string (caller must FreeSafe)
  */
 {
-    TOKEN_T t;
-    VECSTR  vec;            /* we build expansion here  */
-    char    *p;             /* temp str */
+    MTOKEN_T    t;
+    VECSTR      vec;        /* we build expansion here  */
+    char        *p;         /* temp str */
 
     assert(     end1 == TOK_EOL
             ||  end1 == MAC_PUNC
@@ -896,8 +896,8 @@ STATIC char *deMacroToEnd( int depth, TOKEN_T end1, TOKEN_T end2 )
 }
 
 
-STATIC char *deMacroText( int depth, TOKEN_T end1, TOKEN_T end2 )
-/****************************************************************
+STATIC char *deMacroText( int depth, MTOKEN_T end1, MTOKEN_T end2 )
+/******************************************************************
  * post:    same as deMacroToEnd
  * returns: same as deMacroToEnd
  */
@@ -1037,7 +1037,7 @@ char *ignoreWSDeMacro( bool partDeMacro, bool forceDeMacro )
 }
 
 
-char *DeMacro( TOKEN_T end1 )
+char *DeMacro( MTOKEN_T end1 )
 /***********************************
  * same as deMacroText
  */
@@ -1052,11 +1052,11 @@ STATIC char *PartDeMacroProcess( void )
  * $+$- delimited sequences.  Removes leading and trailing ws.
  */
 {
-    VECSTR  vec;               /* vector for macro defn                */
-    VECSTR  wsvec = NULL;      /* vector to hold ws                    */
-    bool    leadingws;         /* still trimming leading ws            */
-    TOKEN_T t;
-    char    *text;
+    VECSTR      vec;            /* vector for macro defn                */
+    VECSTR      wsvec = NULL;   /* vector to hold ws                    */
+    bool        leadingws;      /* still trimming leading ws            */
+    MTOKEN_T    t;
+    char        *text;
 
     vec = StartVec();
 
