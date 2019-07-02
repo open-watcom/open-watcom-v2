@@ -44,6 +44,7 @@
 #include "rfx.h"
 #include "ntattrib.h"
 #include "libwin32.h"
+#include "dosftwnt.h"
 
 #include "clibext.h"
 
@@ -235,15 +236,6 @@ error_handle LocalDateTime( sys_handle sh, int *time, int *date, int set )
     (void)sh; (void)time; (void)date; (void)set;
     return 0;
 #endif
-}
-
-static void __MakeDOSDT( FILETIME *NT_stamp, unsigned short *d, unsigned short *t )
-/*********************************************************************************/
-{
-    FILETIME local_ft;
-
-    FileTimeToLocalFileTime( NT_stamp, &local_ft );
-    FileTimeToDosDateTime( &local_ft, d, t );
 }
 
 #define NT_FIND_ATTRIBUTES_MASK (FILE_ATTRIBUTE_HIDDEN | FILE_ATTRIBUTE_SYSTEM | FILE_ATTRIBUTE_DIRECTORY)
