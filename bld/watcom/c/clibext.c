@@ -51,6 +51,7 @@
     #include <mbstring.h>
     #include "_dtaxxx.h"
     #include "ntattrib.h"
+    #include "dosftwnt.h"
   #endif
 #endif
 #include "wio.h"
@@ -2079,8 +2080,8 @@ void __GetNTShareAttr( int mode, LPDWORD share_mode )
     }
 }
 
-static void __FromDOSDT( unsigned short d, unsigned short t, FILETIME *NT_stamp )
-/*******************************************************************************/
+void __FromDOSDT( unsigned short d, unsigned short t, FILETIME *NT_stamp )
+/************************************************************************/
 {
     FILETIME local_ft;
 
@@ -2088,8 +2089,8 @@ static void __FromDOSDT( unsigned short d, unsigned short t, FILETIME *NT_stamp 
     LocalFileTimeToFileTime( &local_ft, NT_stamp );
 }
 
-static void __MakeDOSDT( FILETIME *NT_stamp, unsigned short *d, unsigned short *t )
-/*********************************************************************************/
+void __MakeDOSDT( FILETIME *NT_stamp, unsigned short *d, unsigned short *t )
+/**************************************************************************/
 {
     FILETIME local_ft;
 
@@ -2243,8 +2244,10 @@ int closedir( DIR *dirp )
 unsigned _dos_open( const char *name, unsigned mode, HANDLE *h )
 {
     HANDLE      handle;
-    DWORD       rwmode, share_mode;
-    DWORD       desired_access, nt_attrib;
+    DWORD       rwmode;
+    DWORD       share_mode;
+    DWORD       desired_access;
+    DWORD       nt_attrib;
 
     rwmode = mode & OPENMODE_ACCESS_MASK;
 
@@ -2329,20 +2332,6 @@ unsigned _dos_write( HANDLE h, void const *buffer, unsigned count, unsigned *byt
         return( (unsigned)-1 );
     }
     return( 0 );
-}
-
-#define NT_FIND_ATTRIBUTES_MASK (FILE_ATTRIBUTE_HIDDEN | FILE_ATTRIBUTE_SYSTEM | FILE_ATTRIBUTE_DIRECTORY)
-
-static BOOL __NTFindNextFileWithAttr( HANDLE h, DWORD nt_attrib, LPWIN32_FIND_DATA ffd )
-{
-    for(;;) {
-        if( (nt_attrib | ~ffd->dwFileAttributes) & NT_FIND_ATTRIBUTES_MASK )  {
-            return ( TRUE );
-        }
-        if( !FindNextFileA( h, ffd ) ) {
-            return( FALSE );
-        }
-    }
 }
 
 char        *optarg;            // pointer to option argument
