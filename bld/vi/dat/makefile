@@ -19,7 +19,7 @@ lastdef.tim : exetest.tim $(VIS) edbind.dat
     @wtouch lastdef.tim
 
 exetest.tim : $(vicc)
-    @erase *._vi
+    @%erase *._vi
     @wtouch exetest.tim
     @%null
 
@@ -28,7 +28,7 @@ touch : .SYMBOLIC
     @wtouch exetest.tim
 
 clean: .SYMBOLIC
-    erase *._vi
+    %erase *._vi
 
 .vi._vi :
     $(vicc) -d -q -k ":comp $[*.vi\n:quit\n"
