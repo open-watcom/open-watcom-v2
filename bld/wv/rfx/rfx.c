@@ -437,14 +437,14 @@ static error_handle SetDir( const char *name, object_loc loc )
     }
 }
 
-static error_handle GetDir( int drive, char *name, unsigned len, object_loc loc )
-/*******************************************************************************/
+static error_handle GetDir( int drive, char *name, unsigned max_len, object_loc loc )
+/***********************************************************************************/
 {
     /* drive=0 means current drive A:=1, B:=2, etc. */
     if( loc == LOC_REMOTE ) {
-        return( RemoteGetCwd( drive, name, len ) );
+        return( RemoteGetCwd( drive, name, max_len ) );
     } else {
-        return( LocalGetCwd( drive, name, len ) );
+        return( LocalGetCwd( drive, name, max_len ) );
     }
 }
 
