@@ -32,6 +32,7 @@
 #include "variety.h"
 #include "widechar.h"
 #include <stdlib.h>
+#include <time.h>
 #include <process.h>
 #include <string.h>
 #include <dos.h>

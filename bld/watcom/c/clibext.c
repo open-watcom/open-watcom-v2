@@ -50,8 +50,6 @@
     #include <windows.h>
     #include <mbstring.h>
     #include "_dtaxxx.h"
-    #include "ntattrib.h"
-    #include "dosftwnt.h"
   #endif
 #endif
 #include "wio.h"
@@ -60,7 +58,6 @@
 #include "clibext.h"
 #if defined(__NT__)
     #include "ntext.h"
-    #include "timetwnt.h"
 #endif
 
 

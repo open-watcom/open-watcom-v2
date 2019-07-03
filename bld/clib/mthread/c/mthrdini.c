@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2017-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2017-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -42,6 +42,7 @@
     #define INCL_DOSPROCESS
     #include <wos2.h>
 #elif defined( __NT__ )
+    #include <time.h>
     #define WIN32_LEAN_AND_MEAN
     #include <windows.h>
     #include "ntext.h"

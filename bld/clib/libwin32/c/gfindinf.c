@@ -39,9 +39,6 @@
 #include <windows.h>
 #include "ntext.h"
 #include "_dtaxxx.h"
-#include "timetwnt.h"
-#include "dosftwnt.h"
-#include "ntattrib.h"
 
 
 void __GetNTFindInfo( FINDT_TYPE *findt, LPWIN32_FIND_DATA ffd )

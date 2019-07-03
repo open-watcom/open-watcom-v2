@@ -40,9 +40,6 @@
 #include "libwin32.h"
 #include "ntext.h"
 #include "_dtaxxx.h"
-#include "timetwnt.h"
-#include "dosftwnt.h"
-#include "ntattrib.h"
 
 
 #define NT_FIND_ATTRIBUTES_MASK (FILE_ATTRIBUTE_HIDDEN | FILE_ATTRIBUTE_SYSTEM | FILE_ATTRIBUTE_DIRECTORY)

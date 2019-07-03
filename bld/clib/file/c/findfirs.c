@@ -52,8 +52,6 @@
 #ifdef __NT__
     #include "libwin32.h"
     #include "ntext.h"
-    #include "timetwnt.h"
-    #include "ntattrib.h"
 #elif defined( __OS2__ )
     #include "d2ttime.h"
 #elif defined( __RDOS__ )

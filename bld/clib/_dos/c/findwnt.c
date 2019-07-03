@@ -42,7 +42,6 @@
 #include "_dtaxxx.h"
 #include "seterrno.h"
 #include "libwin32.h"
-#include "ntattrib.h"
 
 
 _WCRTLINK unsigned _dos_findfirst( const char *path, unsigned dos_attrib, struct find_t *findt )

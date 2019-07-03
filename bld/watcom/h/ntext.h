@@ -33,6 +33,10 @@
 #ifndef __NTEXT_INCLUDED__
 #define __NTEXT_INCLUDED__
 
+#include "timetwnt.h"
+#include "dosftwnt.h"
+#include "ntattrib.h"
+
 extern void     __GetNTCreateAttr( unsigned dos_attrib, LPDWORD desired_access, LPDWORD nt_attrib );
 extern void     __GetNTAccessAttr( unsigned rwmode, LPDWORD desired_access, LPDWORD nt_attrib );
 extern void     __GetNTShareAttr( unsigned share, LPDWORD share_mode );

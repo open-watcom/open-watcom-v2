@@ -34,10 +34,11 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <stddef.h>
-#include <io.h>
 #include <ctype.h>
 #include <wctype.h>
 #include <string.h>
+#include <time.h>
+#include <io.h>
 #ifdef _M_IX86
  #include <i86.h>
 #endif

@@ -31,9 +31,10 @@
 
 
 #include "variety.h"
+#include <time.h>
 #include <dos.h>
 #include <windows.h>
-#include "ntattrib.h"
+#include "ntext.h"
 #include "seterrno.h"
 
 

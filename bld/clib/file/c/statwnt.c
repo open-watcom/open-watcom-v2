@@ -53,7 +53,6 @@
 #include "ntext.h"
 #include "osver.h"
 #include "seterrno.h"
-#include "timetwnt.h"
 #include "thread.h"
 #include "pathmac.h"
 

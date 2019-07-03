@@ -42,9 +42,7 @@
 #include "trprfx.h"
 #include "local.h"
 #include "rfx.h"
-#include "ntattrib.h"
 #include "libwin32.h"
-#include "dosftwnt.h"
 #include "ntext.h"
 
 #include "clibext.h"

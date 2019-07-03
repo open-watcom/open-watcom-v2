@@ -43,10 +43,8 @@
 #include "tinyio.h"
 #include "loader.h"
 #include "_dtaxxx.h"
-#include "ntattrib.h"
 #include "libwin32.h"
 #include "ntext.h"
-#include "dosftwnt.h"
 
 
 #define SH_MASK (SH_COMPAT | SH_DENYRW | SH_DENYWR | SH_DENYRD | SH_DENYNO)

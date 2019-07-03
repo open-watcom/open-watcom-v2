@@ -32,9 +32,10 @@
 
 
 #include "variety.h"
+#include <time.h>
 #include <windows.h>
 #include <dos.h>
-#include "ntattrib.h"
+#include "ntext.h"
 #include "seterrno.h"
 #include "libwin32.h"
 

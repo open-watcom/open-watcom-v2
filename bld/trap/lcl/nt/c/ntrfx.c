@@ -37,9 +37,6 @@
 #include <windows.h>
 #include "trpimp.h"
 #include "trpcomm.h"
-#include "timetwnt.h"
-#include "dosftwnt.h"
-#include "ntattrib.h"
 #include "libwin32.h"
 #include "ntext.h"
 
