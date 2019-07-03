@@ -45,6 +45,7 @@
 #include "ntattrib.h"
 #include "libwin32.h"
 #include "dosftwnt.h"
+#include "ntext.h"
 
 #include "clibext.h"
 
@@ -236,21 +237,6 @@ error_handle LocalDateTime( sys_handle sh, int *time, int *date, int set )
     (void)sh; (void)time; (void)date; (void)set;
     return 0;
 #endif
-}
-
-#define NT_FIND_ATTRIBUTES_MASK (FILE_ATTRIBUTE_HIDDEN | FILE_ATTRIBUTE_SYSTEM | FILE_ATTRIBUTE_DIRECTORY)
-
-static bool __NTFindNextFileWithAttr( HANDLE h, unsigned nt_attrib, LPWIN32_FIND_DATA ffd )
-/*****************************************************************************************/
-{
-    for( ;; ) {
-        if( (nt_attrib | ~ffd->dwFileAttributes) & NT_FIND_ATTRIBUTES_MASK ) {
-            return( true );
-        }
-        if( !__fixed_FindNextFile( h, ffd ) ) {
-            return( false );
-        }
-    }
 }
 
 static void makeDTARFX( rfx_find *info, LPWIN32_FIND_DATA ffd, HANDLE h, unsigned nt_attrib )

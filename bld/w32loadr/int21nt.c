@@ -358,8 +358,8 @@ unsigned __Int21C( union REGS *r )
         r->h.dl = DateTime.wMilliseconds / 10;
         rc = TRUE;
         break;
-    case DOS_CHDIR:                                     /* 17-may-94 */
-        rc = SetCurrentDirectory( (LPCSTR) r->x.edx );
+    case DOS_CHDIR:
+        rc = SetCurrentDirectory( (LPCSTR)r->x.edx );
         break;
     case DOS_CREAT:
         rc = __create( r );
@@ -382,7 +382,7 @@ unsigned __Int21C( union REGS *r )
     case DOS_WRITE:
         h = __FileHandleIDs[ r->w.bx ];
         if( r->x.ecx == 0 ) {
-            r->x.eax = 0;                               /* 07-apr-94 */
+            r->x.eax = 0;
             rc = SetEndOfFile( h );
         } else {
             rc = WriteFile( h, (void *)r->x.edx, r->x.ecx, (LPDWORD)&r->x.eax, NULL );

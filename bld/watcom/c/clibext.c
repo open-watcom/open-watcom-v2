@@ -2101,6 +2101,21 @@ void __MakeDOSDT( FILETIME *NT_stamp, unsigned short *d, unsigned short *t )
     FileTimeToDosDateTime( &local_ft, d, t );
 }
 
+#define NT_FIND_ATTRIBUTES_MASK (FILE_ATTRIBUTE_HIDDEN | FILE_ATTRIBUTE_SYSTEM | FILE_ATTRIBUTE_DIRECTORY)
+
+bool __NTFindNextFileWithAttr( HANDLE h, unsigned nt_attrib, LPWIN32_FIND_DATA ffd )
+/**********************************************************************************/
+{
+    for( ;; ) {
+        if( (nt_attrib | ~ffd->dwFileAttributes) & NT_FIND_ATTRIBUTES_MASK ) {
+            return( true );
+        }
+        if( !FindNextFile( h, ffd ) ) {
+            return( false );
+        }
+    }
+}
+
 static int is_directory( const char *name )
 /*****************************************/
 {

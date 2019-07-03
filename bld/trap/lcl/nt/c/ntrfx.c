@@ -41,6 +41,7 @@
 #include "dosftwnt.h"
 #include "ntattrib.h"
 #include "libwin32.h"
+#include "ntext.h"
 
 
 #define TRPH2LH(th)     (HANDLE)((th)->handle.u._32[0])
@@ -280,21 +281,6 @@ trap_retval ReqRfx_getcwd( void )
     max_len = GetTotalSizeOut() - 1 - sizeof( *ret );
     nt_getdcwd( acc->drive, buff, max_len );
     return( sizeof( *ret ) + strlen( buff ) + 1 );
-}
-
-#define NT_FIND_ATTRIBUTES_MASK (FILE_ATTRIBUTE_HIDDEN | FILE_ATTRIBUTE_SYSTEM | FILE_ATTRIBUTE_DIRECTORY)
-
-static bool __NTFindNextFileWithAttr( HANDLE h, unsigned nt_attribs, LPWIN32_FIND_DATA ffd )
-/******************************************************************************************/
-{
-    for( ;; ) {
-        if( (nt_attribs | ~ffd->dwFileAttributes) & NT_FIND_ATTRIBUTES_MASK ) {
-            return( true );
-        }
-        if( !__fixed_FindNextFile( h, ffd ) ) {
-            return( false );
-        }
-    }
 }
 
 static void makeDTARFX( LPWIN32_FIND_DATA ffd, rfx_find *info, HANDLE h, unsigned nt_attribs )
