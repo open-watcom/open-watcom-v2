@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2004-2013 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2004-2019 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -191,7 +191,7 @@ extern condcode     getnum( getnum_block * gn );
 
 
 /* gindexut.c                           */
-extern ix_e_blk *   fill_ix_e_blk( ix_e_blk * * anchor, ix_h_blk * ref, ereftyp ptyp, char * text, size_t text_len );
+extern  ix_e_blk *  fill_ix_e_blk( ix_e_blk * * anchor, ix_h_blk * ref, ereftyp ptyp, char * text, size_t text_len );
 extern  void        free_index_dict( ix_h_blk ** dict );
 extern  void        free_ix_e_index_dict( ix_h_blk ** dict );
 extern  void        gen_index( void );
@@ -199,16 +199,15 @@ extern  void        ixdump( ix_h_blk * dict );
 
 
 /* glayutil.c                           */
-extern void         eat_lay_sub_tag( void );
-extern condcode     get_lay_sub_and_value( struct att_args * l_args );
-
+extern  void        eat_lay_sub_tag( void );
+extern  condcode    get_lay_sub_and_value( struct att_args * l_args );
 
 /* glbanner.c                           */
-extern void         lay_banner_end_prepare( void );
+extern  void        lay_banner_end_prepare( void );
 
 
 /* glbandef.c                           */
-extern void         banner_defaults( void );
+extern  void        banner_defaults( void );
 
 
 /* gmacdict.c                           */
@@ -489,7 +488,7 @@ extern  void    show_include_stack( void );
 #undef pick
 
 /*          for output via :convert tag     */
-#define pick( name, funci, funco, restype ) extern  void    funco( FILE * f, lay_att attr, restype * in );
+#define pick( name, funci, funco, restype ) extern  void    funco( FILE * f, lay_att attr, const restype * in );
 #include "glayutil.h"
 #undef pick
 

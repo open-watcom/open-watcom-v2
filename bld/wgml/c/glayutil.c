@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2004-2013 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2004-2019 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -229,7 +229,7 @@ condcode    get_lay_sub_and_value( att_args * args )
 /***************************************************************************/
 /*  case                                                                   */
 /***************************************************************************/
-bool    i_case( char * p, lay_att curr, case_t * tm )
+bool    i_case( char * p, lay_att curr, case_t * data )
 {
     bool        cvterr;
 
@@ -237,11 +237,11 @@ bool    i_case( char * p, lay_att curr, case_t * tm )
 
     cvterr = false;
     if( !strnicmp( "mixed", p, 5 ) ) {
-        *tm = case_mixed;
+        *data = case_mixed;
     } else if( !strnicmp( "lower", p, 5 ) ) {
-        *tm = case_lower;
+        *data = case_lower;
     } else if( !strnicmp( "upper", p, 5 ) ) {
-        *tm = case_upper;
+        *data = case_upper;
     } else {
         err_count++;
         g_err( err_att_val_inv );
@@ -251,15 +251,15 @@ bool    i_case( char * p, lay_att curr, case_t * tm )
     return( cvterr );
 }
 
-void    o_case( FILE * f, lay_att curr, case_t * tm )
+void    o_case( FILE * f, lay_att curr, const case_t * data )
 {
     char    * p;
 
-    if( *tm == case_mixed ) {
+    if( *data == case_mixed ) {
         p = "mixed";
-    } else if( *tm == case_lower ) {
+    } else if( *data == case_lower ) {
         p = "lower";
-    } else if( *tm == case_upper ) {
+    } else if( *data == case_upper ) {
         p = "upper";
     } else {
         p = "???";
@@ -272,21 +272,21 @@ void    o_case( FILE * f, lay_att curr, case_t * tm )
 /***************************************************************************/
 /*  single character                                                       */
 /***************************************************************************/
-bool    i_char( char * p, lay_att curr, char * tm )
+bool    i_char( char * p, lay_att curr, char * data )
 {
     /* unused parameters */ (void)curr;
 
     if( is_quote_char( *p ) && (*p == *(p + 2)) ) {
-        *tm = *(p + 1);                 // 2. char if quoted
+        *data = *(p + 1);                 // 2. char if quoted
     } else {
-        *tm = *p;                       // else 1.
+        *data = *p;                       // else 1.
     }
     return( false );
 }
 
-void    o_char( FILE * f, lay_att curr, char * tm )
+void    o_char( FILE * f, lay_att curr, const char * data )
 {
-    fprintf( f, "        %s = '%c'\n", att_names[curr], *tm );
+    fprintf( f, "        %s = '%c'\n", att_names[curr], *data );
     return;
 }
 
@@ -294,7 +294,7 @@ void    o_char( FILE * f, lay_att curr, char * tm )
 /***************************************************************************/
 /*  contents for banregion    only unquoted                                */
 /***************************************************************************/
-bool    i_content( char * p, lay_att curr, content * tm )
+bool    i_content( char * p, lay_att curr, content * data )
 {
     bool        cvterr;
     int         k;
@@ -302,11 +302,11 @@ bool    i_content( char * p, lay_att curr, content * tm )
     /* unused parameters */ (void)curr;
 
     cvterr = false;
-    tm->content_type = no_content;
+    data->content_type = no_content;
     for( k = no_content; k < max_content; ++k ) {
         if( !strnicmp( content_text[k].name, p, content_text[k].len ) ) {
-            tm->content_type = k;
-            strcpy( tm->string, content_text[k].name );
+            data->content_type = k;
+            strcpy( data->string, content_text[k].name );
             break;
         }
     }
@@ -319,14 +319,14 @@ bool    i_content( char * p, lay_att curr, content * tm )
     return( cvterr );
 }
 
-void    o_content( FILE * f, lay_att curr, content * tm )
+void    o_content( FILE * f, lay_att curr, const content * data )
 {
     const   char    * p;
     char            c   = '\0';
 
-    if( tm->content_type >= no_content && tm->content_type < max_content) {
-        p = tm->string;
-        if( tm->content_type == string_content ) { // user string with quotes
+    if( data->content_type >= no_content && data->content_type < max_content) {
+        p = data->string;
+        if( data->content_type == string_content ) { // user string with quotes
             fprintf( f, "        %s = '", att_names[curr] );
             while( (c = *p++) != '\0' ) {
                 if( c == '&' ) {
@@ -350,20 +350,20 @@ void    o_content( FILE * f, lay_att curr, content * tm )
 /***************************************************************************/
 /*  default frame                                                          */
 /***************************************************************************/
-bool    i_default_frame( char * p, lay_att curr, def_frame * tm )
+bool    i_default_frame( char * p, lay_att curr, def_frame * data )
 {
     bool        cvterr;
-    int         len;
+    size_t      len;
 
     /* unused parameters */ (void)curr;
 
     cvterr = false;
     if( !strnicmp( "none", p, 4 ) ) {
-        tm->type = none;
+        data->type = none;
     } else if( !strnicmp( "rule", p, 4 ) ) {
-        tm->type = rule_frame;
+        data->type = rule_frame;
     } else if( !strnicmp( "box", p, 3 ) ) {
-        tm->type = box_frame;
+        data->type = box_frame;
     } else if( !is_quote_char( *p ) ) {
         cvterr = true;
     } else {
@@ -371,10 +371,10 @@ bool    i_default_frame( char * p, lay_att curr, def_frame * tm )
         if( *p != *(p + len - 1) ) {
             cvterr = true;  // string not terminated
         } else {
-            if( sizeof( tm->string ) > len - 2 ) {
+            if( sizeof( data->string ) > len - 2 ) {
                 *(p + len - 1 ) = '\0';
-                strcpy( tm->string, p + 1 );
-                tm->type = char_frame;
+                strcpy( data->string, p + 1 );
+                data->type = char_frame;
             } else {
                 cvterr = true; // string too long;
             }
@@ -389,10 +389,10 @@ bool    i_default_frame( char * p, lay_att curr, def_frame * tm )
 
 }
 
-void    o_default_frame( FILE * f, lay_att curr, def_frame * tm )
+void    o_default_frame( FILE * f, lay_att curr, const def_frame * data )
 {
 
-    switch( tm->type ) {
+    switch( data->type ) {
     case   none:
         fprintf( f, "        %s = none\n", att_names[curr] );
         break;
@@ -403,7 +403,7 @@ void    o_default_frame( FILE * f, lay_att curr, def_frame * tm )
         fprintf( f, "        %s = box\n", att_names[curr] );
         break;
     case   char_frame:
-        fprintf( f, "        %s = '%s'\n", att_names[curr], tm->string );
+        fprintf( f, "        %s = '%s'\n", att_names[curr], data->string );
         break;
     default:
         fprintf( f, "        %s = ???\n", att_names[curr] );
@@ -418,7 +418,7 @@ void    o_default_frame( FILE * f, lay_att curr, def_frame * tm )
 /***************************************************************************/
 /*  docsect  refdoc                                                        */
 /***************************************************************************/
-bool    i_docsect( char * p, lay_att curr, ban_docsect * tm )
+bool    i_docsect( char * p, lay_att curr, ban_docsect * data )
 {
     bool        cvterr;
     int         k;
@@ -426,14 +426,14 @@ bool    i_docsect( char * p, lay_att curr, ban_docsect * tm )
     /* unused parameters */ (void)curr;
 
     cvterr = false;
-    *tm = no_ban;
+    *data = no_ban;
     for( k = no_ban; k < max_ban; ++k ) {
         if( !strnicmp( doc_sections[k].name, p, doc_sections[k].len ) ) {
-            *tm = doc_sections[k].type;
+            *data = doc_sections[k].type;
             break;
         }
     }
-    if( *tm == no_ban ) {
+    if( *data == no_ban ) {
         err_count++;
         g_err( err_att_val_inv );
         file_mac_info();
@@ -442,12 +442,12 @@ bool    i_docsect( char * p, lay_att curr, ban_docsect * tm )
     return( cvterr );
 }
 
-void    o_docsect( FILE * f, lay_att curr, ban_docsect * tm )
+void    o_docsect( FILE * f, lay_att curr, const ban_docsect * data )
 {
     const   char    * p;
 
-    if( *tm >= no_ban && *tm < max_ban) {
-        p = doc_sections[*tm].name;
+    if( *data >= no_ban && *data < max_ban) {
+        p = doc_sections[*data].name;
     } else {
         p = "???";
     }
@@ -459,7 +459,7 @@ void    o_docsect( FILE * f, lay_att curr, ban_docsect * tm )
 /***************************************************************************/
 /*  frame  rule or none                                                    */
 /***************************************************************************/
-bool    i_frame( char * p, lay_att curr, bool * tm )
+bool    i_frame( char * p, lay_att curr, bool * data )
 {
     bool        cvterr;
 
@@ -467,9 +467,9 @@ bool    i_frame( char * p, lay_att curr, bool * tm )
 
     cvterr = false;
     if( !strnicmp( "none", p, 4 ) ) {
-        *tm = false;
+        *data = false;
     } else if( !strnicmp( "rule", p, 4 ) ) {
-        *tm = true;
+        *data = true;
     } else {
         err_count++;
         g_err( err_att_val_inv );
@@ -480,11 +480,11 @@ bool    i_frame( char * p, lay_att curr, bool * tm )
 
 }
 
-void    o_frame( FILE * f, lay_att curr, bool * tm )
+void    o_frame( FILE * f, lay_att curr, const bool * data )
 {
     char    * p;
 
-    if( *tm ) {
+    if( *data ) {
         p = "rule";
     } else {
         p = "none";
@@ -498,23 +498,22 @@ void    o_frame( FILE * f, lay_att curr, bool * tm )
 /*  integer routines                                                       */
 /***************************************************************************/
 #if 0
-bool    i_int32( char * p, lay_att curr, int32_t * tm )
+bool    i_int32( char * p, lay_att curr, int32_t * data )
 {
     /* unused parameters */ (void)curr;
 
-    *tm = strtol( p, NULL, 10 );
+    *data = strtol( p, NULL, 10 );
     return( false );
 }
 
-void    o_int32( FILE * f, lay_att curr, int32_t * tm )
+void    o_int32( FILE * f, lay_att curr, const int32_t * data )
 {
 
-    fprintf( f, "        %s = %ld\n", att_names[curr], (long)*tm );
+    fprintf( f, "        %s = %ld\n", att_names[curr], (long)*data );
     return;
 }
 #endif
-
-bool    i_int8( char * p, lay_att curr, int8_t * tm )
+bool    i_int8( char * p, lay_att curr, int8_t * data )
 {
     int32_t     wk;
 
@@ -524,22 +523,22 @@ bool    i_int8( char * p, lay_att curr, int8_t * tm )
     if( abs( wk ) > 255 ) {
         return( true );
     }
-    *tm = wk;
+    *data = wk;
     return( false );
 }
 
-void    o_int8( FILE * f, lay_att curr, int8_t * tm )
+void    o_int8( FILE * f, lay_att curr, const int8_t * data )
 {
-    int     wk = *tm;
+    int     wk = *data;
 
     fprintf( f, "        %s = %d\n", att_names[curr], wk );
     return;
 }
 
 
-bool    i_uint8( char *p, lay_att curr, uint8_t *tm )
+bool    i_uint8( char *p, lay_att curr, uint8_t *data )
 {
-    int wk;
+    long wk;
 
     /* unused parameters */ (void)curr;
 
@@ -547,13 +546,13 @@ bool    i_uint8( char *p, lay_att curr, uint8_t *tm )
     if( wk < 0 || wk > 255 ) {
         return( true );
     }
-    *tm = wk;
+    *data = wk;
     return( false );
 }
 
-void    o_uint8( FILE * f, lay_att curr, uint8_t *tm )
+void    o_uint8( FILE * f, lay_att curr, const uint8_t *data )
 {
-    unsigned wk = *tm;
+    unsigned wk = *data;
 
     fprintf( f, "        %s = %u\n", att_names[curr], wk );
     return;
@@ -563,21 +562,21 @@ void    o_uint8( FILE * f, lay_att curr, uint8_t *tm )
 /***************************************************************************/
 /*  font number                                                            */
 /***************************************************************************/
-bool    i_font_number( char *p, lay_att curr, font_number *tm )
+bool    i_font_number( char *p, lay_att curr, font_number *data )
 {
-    return( i_uint8( p, curr, tm ) );
+    return( i_uint8( p, curr, data ) );
 }
 
-void    o_font_number( FILE * f, lay_att curr, font_number *tm )
+void    o_font_number( FILE * f, lay_att curr, const font_number *data )
 {
-    o_uint8( f, curr, tm );
+    o_uint8( f, curr, data );
 }
 
 
 /***************************************************************************/
 /*  number form                                                            */
 /***************************************************************************/
-bool    i_number_form( char * p, lay_att curr, num_form * tm )
+bool    i_number_form( char * p, lay_att curr, num_form * data )
 {
     bool        cvterr;
 
@@ -585,11 +584,11 @@ bool    i_number_form( char * p, lay_att curr, num_form * tm )
 
     cvterr = false;
     if( !strnicmp( "none", p, 4 ) ) {
-        *tm = num_none;
+        *data = num_none;
     } else if( !strnicmp( "prop", p, 4 ) ) {
-        *tm = num_prop;
+        *data = num_prop;
     } else if( !strnicmp( "new", p, 3 ) ) {
-        *tm = num_new;
+        *data = num_new;
     } else {
         err_count++;
         g_err( err_att_val_inv );
@@ -599,15 +598,15 @@ bool    i_number_form( char * p, lay_att curr, num_form * tm )
     return( cvterr );
 }
 
-void    o_number_form( FILE * f, lay_att curr, num_form * tm )
+void    o_number_form( FILE * f, lay_att curr, const num_form * data )
 {
     char    * p;
 
-    if( *tm == num_none ) {
+    if( *data == num_none ) {
         p = "none";
-    } else if( *tm == num_prop ) {
+    } else if( *data == num_prop ) {
         p = "prop";
-    } else if( *tm == num_new ) {
+    } else if( *data == num_new ) {
         p = "new";
     } else {
         p = "???";
@@ -620,11 +619,11 @@ void    o_number_form( FILE * f, lay_att curr, num_form * tm )
 /***************************************************************************/
 /*  number style                                                           */
 /***************************************************************************/
-bool    i_number_style( char * p, lay_att curr, num_style * tm )
+bool    i_number_style( char * p, lay_att curr, num_style * data )
 {
     bool        cvterr;
     num_style   wk = 0;
-    char        c;
+    int         c;
 
     /* unused parameters */ (void)curr;
 
@@ -683,7 +682,7 @@ bool    i_number_style( char * p, lay_att curr, num_style * tm )
         }
     }
     if( !cvterr ) {
-        *tm = wk;
+        *data = wk;
     } else {
         err_count++;
         g_err( err_att_val_inv );
@@ -692,42 +691,42 @@ bool    i_number_style( char * p, lay_att curr, num_style * tm )
     return( cvterr );
 }
 
-void    o_number_style( FILE * f, lay_att curr, num_style * tm )
+void    o_number_style( FILE * f, lay_att curr, const num_style * data )
 {
     char        str[4];
     char    *    p;
 
     p = str;
-    if( *tm & h_style ) {
+    if( *data & h_style ) {
         *p = 'h';
         p++;
-    } else if( *tm & a_style ) {
+    } else if( *data & a_style ) {
         *p = 'a';
         p++;
-    } else if( *tm & b_style ) {
+    } else if( *data & b_style ) {
         *p = 'b';
         p++;
-    } else if( *tm & c_style ) {
+    } else if( *data & c_style ) {
         *p = 'c';
         p++;
-    } else if( *tm & r_style ) {
+    } else if( *data & r_style ) {
         *p = 'r';
         p++;
     }
     *p = '\0';
 
-    if( *tm & xd_style ) {
+    if( *data & xd_style ) {
         *p = 'd';
         p++;
-    } else if( (*tm & xp_style) == xp_style) {
+    } else if( (*data & xp_style) == xp_style) {
         *p = 'p';
         p++;
-    } else if( *tm & xpa_style ) {
+    } else if( *data & xpa_style ) {
         *p = 'p';
         p++;
         *p = 'a';
         p++;
-    } else if( *tm & xpb_style ) {
+    } else if( *data & xpb_style ) {
         *p = 'p';
         p++;
         *p = 'b';
@@ -742,7 +741,7 @@ void    o_number_style( FILE * f, lay_att curr, num_style * tm )
 /***************************************************************************/
 /*  page eject                                                             */
 /***************************************************************************/
-bool    i_page_eject( char * p, lay_att curr, page_ej * tm )
+bool    i_page_eject( char * p, lay_att curr, page_ej * data )
 {
     bool        cvterr;
 
@@ -750,13 +749,13 @@ bool    i_page_eject( char * p, lay_att curr, page_ej * tm )
 
     cvterr = false;
     if( !strnicmp( strno, p, 2 ) ) {
-        *tm = ej_no;
+        *data = ej_no;
     } else if( !strnicmp( stryes, p, 3 ) ) {
-        *tm = ej_yes;
+        *data = ej_yes;
     } else if( !strnicmp( "odd", p, 3 ) ) {
-        *tm = ej_odd;
+        *data = ej_odd;
     } else if( !strnicmp( "even", p, 4 ) ) {
-        *tm = ej_even;
+        *data = ej_even;
     } else {
         err_count++;
         g_err( err_att_val_inv );
@@ -766,17 +765,17 @@ bool    i_page_eject( char * p, lay_att curr, page_ej * tm )
     return( cvterr );
 }
 
-void    o_page_eject( FILE * f, lay_att curr, page_ej * tm )
+void    o_page_eject( FILE * f, lay_att curr, const page_ej * data )
 {
     const   char    *   p;
 
-    if( *tm == ej_no ) {
+    if( *data == ej_no ) {
         p = strno;
-    } else if( *tm == ej_yes ) {
+    } else if( *data == ej_yes ) {
         p = stryes;
-    } else if( *tm == ej_odd ) {
+    } else if( *data == ej_odd ) {
         p = "odd";
-    } else if( *tm == ej_even ) {
+    } else if( *data == ej_even ) {
         p = "even";
     } else {
         p = "???";
@@ -789,7 +788,7 @@ void    o_page_eject( FILE * f, lay_att curr, page_ej * tm )
 /***************************************************************************/
 /*  page position                                                          */
 /***************************************************************************/
-bool    i_page_position( char * p, lay_att curr, page_pos * tm )
+bool    i_page_position( char * p, lay_att curr, page_pos * data )
 {
     bool        cvterr;
 
@@ -797,11 +796,11 @@ bool    i_page_position( char * p, lay_att curr, page_pos * tm )
 
     cvterr = false;
     if( !strnicmp( "left", p, 4 ) ) {
-        *tm = pos_left;
+        *data = pos_left;
     } else if( !strnicmp( "right", p, 5 ) ) {
-        *tm = pos_right;
+        *data = pos_right;
     } else if( !(strnicmp( "centre", p, 6 ) && strnicmp( "center", p, 6 )) ) {
-        *tm = pos_center;
+        *data = pos_center;
     } else {
         err_count++;
         g_err( err_att_val_inv );
@@ -811,15 +810,15 @@ bool    i_page_position( char * p, lay_att curr, page_pos * tm )
     return( cvterr );
 }
 
-void    o_page_position( FILE * f, lay_att curr, page_pos * tm )
+void    o_page_position( FILE * f, lay_att curr, const page_pos * data )
 {
     char    * p;
 
-    if( *tm == pos_left ) {
+    if( *data == pos_left ) {
         p = "left";
-    } else if( *tm == pos_right ) {
+    } else if( *data == pos_right ) {
         p = "right";
-    } else if( *tm == pos_centre ) {
+    } else if( *data == pos_centre ) {
         p = "centre";
     } else {
         p = "???";
@@ -832,7 +831,7 @@ void    o_page_position( FILE * f, lay_att curr, page_pos * tm )
 /***************************************************************************/
 /*  place                                                                  */
 /***************************************************************************/
-bool    i_place( char * p, lay_att curr, bf_place * tm )
+bool    i_place( char * p, lay_att curr, bf_place * data )
 {
     bool        cvterr;
 
@@ -840,19 +839,19 @@ bool    i_place( char * p, lay_att curr, bf_place * tm )
 
     cvterr = false;
     if( !strnicmp( "topeven", p, 7 ) ) {
-        *tm = topeven_place;
+        *data = topeven_place;
     } else if( !strnicmp( "bottom", p, 6 ) ) {
-        *tm = bottom_place;
+        *data = bottom_place;
     } else if( !strnicmp( "inline", p, 6 ) ) {
-        *tm = inline_place;
+        *data = inline_place;
     } else if( !strnicmp( "topodd", p, 6 ) ) {
-        *tm = topodd_place;
+        *data = topodd_place;
     } else if( !strnicmp( "top", p, 3 ) ) {// check for top later than topXXX
-        *tm = top_place;
+        *data = top_place;
     } else if( !strnicmp( "botodd", p, 6 ) ) {
-        *tm = botodd_place;
+        *data = botodd_place;
     } else if( !strnicmp( "boteven", p, 7 ) ) {
-        *tm = boteven_place;
+        *data = boteven_place;
     } else {
         err_count++;
         g_err( err_att_val_inv );
@@ -862,23 +861,23 @@ bool    i_place( char * p, lay_att curr, bf_place * tm )
     return( cvterr );
 }
 
-void    o_place( FILE * f, lay_att curr, bf_place * tm )
+void    o_place( FILE * f, lay_att curr, const bf_place * data )
 {
     char    * p;
 
-    if( *tm == top_place ) {
+    if( *data == top_place ) {
         p = "top";
-    } else if( *tm == bottom_place ) {
+    } else if( *data == bottom_place ) {
         p = "bottom";
-    } else if( *tm == inline_place ) {
+    } else if( *data == inline_place ) {
         p = "inline";
-    } else if( *tm == topodd_place ) {
+    } else if( *data == topodd_place ) {
         p = "topodd";
-    } else if( *tm == topeven_place ) {
+    } else if( *data == topeven_place ) {
         p = "topeven";
-    } else if( *tm == botodd_place ) {
+    } else if( *data == botodd_place ) {
         p = "botodd";
-    } else if( *tm == boteven_place ) {
+    } else if( *data == boteven_place ) {
         p = "boteven";
     } else {
         p = "???";
@@ -891,7 +890,7 @@ void    o_place( FILE * f, lay_att curr, bf_place * tm )
 /***************************************************************************/
 /*  pouring                                                                */
 /***************************************************************************/
-bool    i_pouring( char * p, lay_att curr, reg_pour * tm )
+bool    i_pouring( char * p, lay_att curr, reg_pour * data )
 {
     bool        cvterr;
 
@@ -899,23 +898,23 @@ bool    i_pouring( char * p, lay_att curr, reg_pour * tm )
 
     cvterr = false;
     if( !strnicmp( "none", p, 4 ) ) {
-        *tm = no_pour;
+        *data = no_pour;
     } else if( !strnicmp( "last", p, 4 ) ) {
-        *tm = last_pour;
+        *data = last_pour;
     } else if( !strnicmp( "head0", p, 5 ) ) {
-        *tm = head0_pour;
+        *data = head0_pour;
     } else if( !strnicmp( "head1", p, 5 ) ) {
-        *tm = head1_pour;
+        *data = head1_pour;
     } else if( !strnicmp( "head2", p, 5 ) ) {
-        *tm = head2_pour;
+        *data = head2_pour;
     } else if( !strnicmp( "head3", p, 5 ) ) {
-        *tm = head3_pour;
+        *data = head3_pour;
     } else if( !strnicmp( "head4", p, 5 ) ) {
-        *tm = head4_pour;
+        *data = head4_pour;
     } else if( !strnicmp( "head5", p, 5 ) ) {
-        *tm = head5_pour;
+        *data = head5_pour;
     } else if( !strnicmp( "head6", p, 5 ) ) {
-        *tm = head6_pour;
+        *data = head6_pour;
     } else {
         err_count++;
         g_err( err_att_val_inv );
@@ -925,27 +924,27 @@ bool    i_pouring( char * p, lay_att curr, reg_pour * tm )
     return( cvterr );
 }
 
-void    o_pouring( FILE * f, lay_att curr, reg_pour * tm )
+void    o_pouring( FILE * f, lay_att curr, const reg_pour * data )
 {
     char    * p;
 
-    if( *tm == no_pour ) {
+    if( *data == no_pour ) {
         p = "none";
-    } else if( *tm == last_pour ) {
+    } else if( *data == last_pour ) {
         p = "last";
-    } else if( *tm == head0_pour) {
+    } else if( *data == head0_pour) {
         p = "head0";
-    } else if( *tm == head1_pour) {
+    } else if( *data == head1_pour) {
         p = "head1";
-    } else if( *tm == head2_pour) {
+    } else if( *data == head2_pour) {
         p = "head2";
-    } else if( *tm == head3_pour) {
+    } else if( *data == head3_pour) {
         p = "head3";
-    } else if( *tm == head4_pour) {
+    } else if( *data == head4_pour) {
         p = "head4";
-    } else if( *tm == head5_pour) {
+    } else if( *data == head5_pour) {
         p = "head5";
-    } else if( *tm == head6_pour) {
+    } else if( *data == head6_pour) {
         p = "head6";
     } else {
         p = "???";
@@ -958,21 +957,21 @@ void    o_pouring( FILE * f, lay_att curr, reg_pour * tm )
 /***************************************************************************/
 /*  Space unit                                                             */
 /***************************************************************************/
-bool    i_space_unit( char * p, lay_att curr, su * tm )
+bool    i_space_unit( char * p, lay_att curr, su * data )
 {
     /* unused parameters */ (void)p; (void)curr;
 
-    return( att_val_to_su( tm, true ) );    // no negative values allowed TBD
+    return( att_val_to_su( data, true ) );    // no negative values allowed TBD
 }
 
-void    o_space_unit( FILE * f, lay_att curr, su * tm )
+void    o_space_unit( FILE * f, lay_att curr, const su * data )
 {
 
-    if( tm->su_u == SU_chars_lines || tm->su_u == SU_undefined ||
-        tm->su_u >= SU_lay_left ) {
-        fprintf( f, "        %s = %s\n", att_names[curr], tm->su_txt );
+    if( data->su_u == SU_chars_lines || data->su_u == SU_undefined ||
+        data->su_u >= SU_lay_left ) {
+        fprintf( f, "        %s = %s\n", att_names[curr], data->su_txt );
     } else {
-        fprintf( f, "        %s = '%s'\n", att_names[curr], tm->su_txt );
+        fprintf( f, "        %s = '%s'\n", att_names[curr], data->su_txt );
     }
     return;
 }
@@ -983,7 +982,7 @@ void    o_space_unit( FILE * f, lay_att curr, su * tm )
 /*                                                                         */
 /*                                                                         */
 /***************************************************************************/
-bool    i_xx_string( char * p, lay_att curr, xx_str * tm )
+bool    i_xx_string( char * p, lay_att curr, xx_str * data )
 {
     bool        cvterr;
 
@@ -991,38 +990,38 @@ bool    i_xx_string( char * p, lay_att curr, xx_str * tm )
 
     cvterr = false;
     if( (val_start != NULL) && (val_len < str_size) ) {
-        memcpy( tm, val_start, val_len );
-        tm[val_len] = '\0';
+        memcpy( data, val_start, val_len );
+        data[val_len] = '\0';
     } else {
         cvterr = true;
     }
     return( cvterr );
 }
 
-void    o_xx_string( FILE * f, lay_att curr, xx_str * tm )
+void    o_xx_string( FILE * f, lay_att curr, const xx_str * data )
 {
 
-    fprintf( f, "        %s = \"%s\"\n", att_names[curr], tm );
+    fprintf( f, "        %s = \"%s\"\n", att_names[curr], data );
     return;
 }
 
 /***************************************************************************/
 /*  date_form      stored as string perhaps better other type    TBD       */
 /***************************************************************************/
-bool    i_date_form( char * p, lay_att curr, xx_str * tm )
+bool    i_date_form( char * p, lay_att curr, xx_str * data )
 {
-    return( i_xx_string( p, curr, tm ) );
+    return( i_xx_string( p, curr, data ) );
 }
 
-void    o_date_form( FILE * f, lay_att curr, xx_str * tm )
+void    o_date_form( FILE * f, lay_att curr, const xx_str * data )
 {
-    o_xx_string( f, curr, tm );
+    o_xx_string( f, curr, data );
 }
 
 /***************************************************************************/
 /*  Yes or No  as bool result                                              */
 /***************************************************************************/
-bool    i_yes_no( char * p, lay_att curr, bool * tm )
+bool    i_yes_no( char * p, lay_att curr, bool * data )
 {
     bool        cvterr;
 
@@ -1030,9 +1029,9 @@ bool    i_yes_no( char * p, lay_att curr, bool * tm )
 
     cvterr = false;
     if( !strnicmp( strno, p, 2 ) ) {
-        *tm = false;
+        *data = false;
     } else if( !strnicmp( stryes, p, 3 ) ) {
-        *tm = true;
+        *data = true;
     } else {
         err_count++;
         g_err( err_att_val_inv );
@@ -1042,11 +1041,11 @@ bool    i_yes_no( char * p, lay_att curr, bool * tm )
     return( cvterr );
 }
 
-void    o_yes_no( FILE * f, lay_att curr, bool * tm )
+void    o_yes_no( FILE * f, lay_att curr, const bool * data )
 {
     char    const   *   p;
 
-    if( *tm == 0 ) {
+    if( *data == 0 ) {
         p = strno;
     } else {
         p = stryes;
