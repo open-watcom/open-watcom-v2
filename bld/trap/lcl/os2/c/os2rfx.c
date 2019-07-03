@@ -275,7 +275,7 @@ trap_retval ReqRfx_getcwd( void )
 
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
-    len = RFX_NAME_MAX + 1;
+    len = GetTotalSizeOut() - sizeof( *ret );
     ret->err = DosQCurDir( acc->drive, GetOutPtr( sizeof( *ret ) ), &len );
     return( sizeof( *ret ) + len );
 }

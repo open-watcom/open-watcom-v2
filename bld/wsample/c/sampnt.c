@@ -570,7 +570,7 @@ void StartProg( const char *cmd, const char *prog, char *full_args, char *dos_ar
     tid = debugEvent.dwThreadId;
 
     tth = CreateThread( NULL, 1024, TimerThread, NULL, 0, &ttid );
-    if( !tth ) {
+    if( tth == NULL ) {
         internalErrorMsg( MSG_SAMPLE_3 );
     }
     /* attempt to ensure that we can get all of our samples in one shot */
