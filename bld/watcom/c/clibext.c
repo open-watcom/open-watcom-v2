@@ -59,7 +59,8 @@
 
 #include "clibext.h"
 #if defined(__NT__)
-#include "ntext.h"
+    #include "ntext.h"
+    #include "timetwnt.h"
 #endif
 
 
@@ -2003,11 +2004,7 @@ unsigned _dos_setfileattr( const char *path, unsigned dos_attrib )
 #define OPENMODE_DENY_READ      0x0030
 #define OPENMODE_DENY_NONE      0x0040
 
-#define WINDOWS_TICK            10000000LL
-#define SEC_TO_UNIX_EPOCH       11644473600LL
-
-
-static time_t __NT_filetime_to_timet( const FILETIME *ft )
+time_t __NT_filetime_to_timet( const FILETIME *ft )
 {
     ULARGE_INTEGER  ulint;
 
