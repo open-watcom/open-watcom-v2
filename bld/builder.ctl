@@ -170,16 +170,16 @@ cdsay .
 [ INCLUDE <OWSRCDIR>/wl/builder.ctl ]
 [ INCLUDE <OWSRCDIR>/wmake/builder.ctl ]
 [ INCLUDE <OWSRCDIR>/wtouch/builder.ctl ]
-# On to the compilers
-[ INCLUDE <OWSRCDIR>/cg/builder.ctl ]
-[ INCLUDE <OWSRCDIR>/cc/builder.ctl ]
-[ INCLUDE <OWSRCDIR>/plusplus/builder.ctl ]
 
 [ BLOCK <1> clean build rel cprel clean2 build2 cprel2 passclean pass ]
 #======================================================================
 # Build all of Open Watcom using freshly built tools.
 # part 2
 #
+# On to the compilers
+[ INCLUDE <OWSRCDIR>/cg/builder.ctl ]
+[ INCLUDE <OWSRCDIR>/cc/builder.ctl ]
+[ INCLUDE <OWSRCDIR>/plusplus/builder.ctl ]
 [ INCLUDE <OWSRCDIR>/f77/wfc/builder.ctl ]
 # Resource tools, first Resource compiler
 [ INCLUDE <OWSRCDIR>/rc/builder.ctl ]
