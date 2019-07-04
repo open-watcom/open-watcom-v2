@@ -43,18 +43,18 @@
 
 /* buttons and icons that can be in the dialog */
 typedef enum {
-    NO_CONTROL  = 0x000,
-    ABORT       = 0x001,
-    CANCEL      = 0x002,
-    IGNORE      = 0x004,
-    NO          = 0x008,
-    OK          = 0x010,
-    RETRY       = 0x020,
-    YES         = 0x040,
-    EXCLAMATION = NO_CONTROL,
-    QUESTION    = NO_CONTROL,
-    INFORMATION = NO_CONTROL,
-    STOP        = NO_CONTROL
+    CTLT_NO_CONTROL  = 0x000,
+    CTLT_ABORT       = 0x001,
+    CTLT_CANCEL      = 0x002,
+    CTLT_IGNORE      = 0x004,
+    CTLT_NO          = 0x008,
+    CTLT_OK          = 0x010,
+    CTLT_RETRY       = 0x020,
+    CTLT_YES         = 0x040,
+    CTLT_EXCLAMATION = CTLT_NO_CONTROL,
+    CTLT_QUESTION    = CTLT_NO_CONTROL,
+    CTLT_INFORMATION = CTLT_NO_CONTROL,
+    CTLT_STOP        = CTLT_NO_CONTROL
 } control_types;
 
 /* information about the controls needed for each gui_message_type */
@@ -85,17 +85,17 @@ typedef struct string_info {
 
 /* control definition for each control that can be in the dialog */
 static control_pairs MessageControls[] = {
- {  DLG_BUTTON( NULL,           GUI_RET_ABORT,  0, 0, BUTTON_WIDTH ),   ABORT       },
- {  DLG_BUTTON( NULL,           GUI_RET_CANCEL, 0, 0, BUTTON_WIDTH ),   CANCEL      },
- {  DLG_BUTTON( NULL,           GUI_RET_IGNORE, 0, 0, BUTTON_WIDTH ),   IGNORE      },
- {  DLG_BUTTON( NULL,           GUI_RET_NO,     0, 0, BUTTON_WIDTH ),   NO          },
- {  DLG_DEFBUTTON( NULL,        GUI_RET_OK,     0, 0, BUTTON_WIDTH ),   OK          },
- {  DLG_BUTTON( NULL,           GUI_RET_RETRY,  0, 0, BUTTON_WIDTH ),   RETRY       },
- {  DLG_BUTTON( NULL,           GUI_RET_YES,    0, 0, BUTTON_WIDTH ),   YES         },
- {  DLG_STRING( "!",                            0, 0, 1 ),              EXCLAMATION },
- {  DLG_STRING( "?",                            0, 0, 1 ),              QUESTION    },
- {  DLG_STRING( "i",                            0, 0, 1 ),              INFORMATION },
- {  DLG_STRING( NULL,                           0, 0, 5 ),              STOP        }
+ {  DLG_BUTTON( NULL,           GUI_RET_ABORT,  0, 0, BUTTON_WIDTH ),   CTLT_ABORT       },
+ {  DLG_BUTTON( NULL,           GUI_RET_CANCEL, 0, 0, BUTTON_WIDTH ),   CTLT_CANCEL      },
+ {  DLG_BUTTON( NULL,           GUI_RET_IGNORE, 0, 0, BUTTON_WIDTH ),   CTLT_IGNORE      },
+ {  DLG_BUTTON( NULL,           GUI_RET_NO,     0, 0, BUTTON_WIDTH ),   CTLT_NO          },
+ {  DLG_DEFBUTTON( NULL,        GUI_RET_OK,     0, 0, BUTTON_WIDTH ),   CTLT_OK          },
+ {  DLG_BUTTON( NULL,           GUI_RET_RETRY,  0, 0, BUTTON_WIDTH ),   CTLT_RETRY       },
+ {  DLG_BUTTON( NULL,           GUI_RET_YES,    0, 0, BUTTON_WIDTH ),   CTLT_YES         },
+ {  DLG_STRING( "!",                            0, 0, 1 ),              CTLT_EXCLAMATION },
+ {  DLG_STRING( "?",                            0, 0, 1 ),              CTLT_QUESTION    },
+ {  DLG_STRING( "i",                            0, 0, 1 ),              CTLT_INFORMATION },
+ {  DLG_STRING( NULL,                           0, 0, 5 ),              CTLT_STOP        }
 };
 
 /* static text controls used for displaying message */
@@ -103,17 +103,17 @@ static gui_control_info StaticMessage = DLG_STRING( NULL, TEXT_START_COL, TEXT_R
 
 /* information about the controls needed for each gui_message_type */
 static message_types ControlsNeeded[] = {
-  { GUI_ABORT_RETRY_IGNORE,     3,      ABORT | IGNORE | RETRY  },
-  { GUI_EXCLAMATION,            1,      EXCLAMATION | OK        },
-  { GUI_INFORMATION,            1,      INFORMATION | OK        },
-  { GUI_QUESTION,               1,      QUESTION | OK           },
-  { GUI_STOP,                   1,      STOP | OK               },
-  { GUI_OK,                     1,      OK                      },
-  { GUI_OK_CANCEL,              2,      OK | CANCEL             },
-  { GUI_RETRY_CANCEL,           2,      RETRY | CANCEL          },
-  { GUI_YES_NO,                 2,      YES | NO                },
-  { GUI_YES_NO_CANCEL,          3,      YES | NO | CANCEL       },
-  { GUI_SYSTEMMODAL,            0,      NO_CONTROL                      }
+  { GUI_ABORT_RETRY_IGNORE,     3,      CTLT_ABORT | CTLT_IGNORE | CTLT_RETRY   },
+  { GUI_EXCLAMATION,            1,      CTLT_EXCLAMATION | CTLT_OK              },
+  { GUI_INFORMATION,            1,      CTLT_INFORMATION | CTLT_OK              },
+  { GUI_QUESTION,               1,      CTLT_QUESTION | CTLT_OK                 },
+  { GUI_STOP,                   1,      CTLT_STOP | CTLT_OK                     },
+  { GUI_OK,                     1,      CTLT_OK                                 },
+  { GUI_OK_CANCEL,              2,      CTLT_OK | CTLT_CANCEL                   },
+  { GUI_RETRY_CANCEL,           2,      CTLT_RETRY | CTLT_CANCEL                },
+  { GUI_YES_NO,                 2,      CTLT_YES | CTLT_NO                      },
+  { GUI_YES_NO_CANCEL,          3,      CTLT_YES | CTLT_NO | CTLT_CANCEL        },
+  { GUI_SYSTEMMODAL,            0,      CTLT_NO_CONTROL                         }
 };
 
 static bool MessagesInitialized = false;
@@ -124,28 +124,28 @@ static void InitMessageControls( void )
 
     for( j = 0; j < GUI_ARRAY_SIZE( MessageControls ); j++ ) {
         switch( MessageControls[j].type ) {
-        case ABORT:
+        case CTLT_ABORT:
             MessageControls[j].ctl_info.text = LIT( XAbort );
             break;
-        case CANCEL:
+        case CTLT_CANCEL:
             MessageControls[j].ctl_info.text = LIT( Cancel );
             break;
-        case IGNORE:
+        case CTLT_IGNORE:
             MessageControls[j].ctl_info.text = LIT( XIgnore );
             break;
-        case NO:
+        case CTLT_NO:
             MessageControls[j].ctl_info.text = LIT( XNo );
             break;
-        case OK:
+        case CTLT_OK:
             MessageControls[j].ctl_info.text = LIT( OK );
             break;
-        case RETRY:
+        case CTLT_RETRY:
             MessageControls[j].ctl_info.text = LIT( XRetry );
             break;
-        case YES:
+        case CTLT_YES:
             MessageControls[j].ctl_info.text = LIT( XYes );
             break;
-        case STOP:
+        case CTLT_STOP:
             MessageControls[j].ctl_info.text = LIT( Stop_Bang );
             break;
         default :
