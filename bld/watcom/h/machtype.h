@@ -47,6 +47,7 @@
 
 #include "pushpck1.h"
 
+typedef uint_64         qword;
 typedef unsigned_32     dword;
 typedef unsigned_16     word;
 typedef unsigned_8      byte;
@@ -54,6 +55,7 @@ typedef unsigned_8      byte;
 typedef word            addr32_off;
 typedef dword           addr48_off;
 typedef word            addr_seg;
+typedef qword           addr64_off;
 
 typedef struct {
     byte                mantissa[2];
