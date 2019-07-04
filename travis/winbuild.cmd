@@ -53,4 +53,15 @@ if "%OWTRAVISJOB%" == "BUILD-2" (
         )
     )
 )
+if "%OWTRAVISJOB%" == "BUILD-3" (
+    if "%TRAVIS_EVENT_TYPE%" == "pull_request" (
+        builder build3
+    ) else (
+        builder -q build3
+    	if not errorlevel == 1 (
+            set OWRELROOT=%OWROOT%\test
+            builder -q cprel3
+        )
+    )
+)
 echo ERRORLEVEL=%ERRORLEVEL%

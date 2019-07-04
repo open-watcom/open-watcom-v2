@@ -156,6 +156,12 @@ cdsay .
 [ INCLUDE <OWSRCDIR>/win386/builder.ctl ]
 # Continue with OSI extenders stubs.
 [ INCLUDE <OWSRCDIR>/w32loadr/builder.ctl ]
+
+[ BLOCK <1> clean build rel cprel clean2 build2 cprel2 passclean pass ]
+#======================================================================
+# Build all of Open Watcom using freshly built tools.
+# part 2
+#
 # Now we have enough to start cross building everything else
 # Start with the libs used by various tools
 [ INCLUDE <OWSRCDIR>/wres/builder.ctl ]
@@ -163,12 +169,6 @@ cdsay .
 [ INCLUDE <OWSRCDIR>/owl/builder.ctl ]
 [ INCLUDE <OWSRCDIR>/dwarf/builder.ctl ]
 [ INCLUDE <OWSRCDIR>/cfloat/builder.ctl ]
-
-[ BLOCK <1> clean build rel cprel clean2 build2 cprel2 passclean pass ]
-#======================================================================
-# Build all of Open Watcom using freshly built tools.
-# part 2
-#
 # Continue with the assemblers/librarian/linker/make
 [ INCLUDE <OWSRCDIR>/wasm/builder.ctl ]
 [ INCLUDE <OWSRCDIR>/as/builder.ctl ]
@@ -202,6 +202,12 @@ cdsay .
 # The vi(w) editor
 [ INCLUDE <OWSRCDIR>/rcsdll/builder.ctl ]
 [ INCLUDE <OWSRCDIR>/vi/builder.ctl ]
+
+[ BLOCK <1> clean build rel cprel clean3 build3 cprel3 passclean pass ]
+#======================================================================
+# Build all of Open Watcom using freshly built tools.
+# part 3
+#
 # Build the debugger and sampler
 [ INCLUDE <OWSRCDIR>/dip/builder.ctl ]
 [ INCLUDE <OWSRCDIR>/mad/builder.ctl ]

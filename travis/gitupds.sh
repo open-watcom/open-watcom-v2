@@ -25,7 +25,7 @@ gitupds_proc()
                 case "$OWTRAVISJOB" in
                     "BOOTSTRAP")
                         ;;
-                    "BUILD" | "BUILD-1" | "BUILD-2" | "DOCTRAVIS")
+                    "BUILD" | "BUILD-1" | "BUILD-2" | "BUILD-3" | "DOCTRAVIS")
                         #
                         # clone GitHub repository
                         #
@@ -44,6 +44,9 @@ gitupds_proc()
                                 ;;
                             "BUILD-2")
                                 builder cprel2
+                                ;;
+                            "BUILD-3")
+                                builder cprel3
                                 ;;
                             "DOCTRAVIS")
                                 builder cpdoctrav
@@ -65,6 +68,9 @@ gitupds_proc()
                                 ;;
                             "BUILD-2")
                                 git commit $GITVERBOSE1 -m "Travis CI build $TRAVIS_JOB_NUMBER - OW distribution 2"
+                                ;;
+                            "BUILD-3")
+                                git commit $GITVERBOSE1 -m "Travis CI build $TRAVIS_JOB_NUMBER - OW distribution 3"
                                 ;;
                             "DOCTRAVIS")
                                 git commit $GITVERBOSE1 -m "Travis CI build $TRAVIS_JOB_NUMBER - Documentation"

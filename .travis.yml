@@ -214,6 +214,45 @@ jobs:
         - cp -Rn build-1/* $OWSRCDIR; true
         - cmd.exe /c "travis\winbuild.cmd"
     #################################
+    - stage: Build3
+      name: "OW tools build-3 OSX"
+      if: branch = env(OWBRANCH) AND (type = cron OR (type = push AND env(OWTRAVIS_ALL) = 1))
+      os: osx
+      compiler: clang
+      before_install:
+        # stop unwanted services
+        - travis/services.sh
+        # set environmet variable
+        - export OWTOOLS=CLANG
+        - export OWTRAVISJOB=BUILD-3
+        - export OWDOSBOX=dosbox
+      install:
+        # install DOS Emulator
+        - brew install dosbox
+        - . ./cmnvars.sh
+      script: 
+        # load build-1 from cache
+        - cp -Rn build-1/* $OWSRCDIR; true
+        - travis/build.sh
+    - # ...
+      name: "OW tools build-3 Windows"
+      if: branch = env(OWBRANCH) AND (type = cron OR (type = push AND env(OWTRAVIS_ALL) = 1))
+      os: windows
+      before_install:
+        - test -n $CC && unset CC
+        # stop unwanted services
+        - travis/services.sh
+        # set environmet variable
+        - export OWTOOLS=VISUALC
+        - export OWTRAVISJOB=BUILD-3
+        - export OWDOSBOX=dosbox
+      install:
+#        - install dosbox
+      script: 
+        # load build-1 from cache
+        - cp -Rn build-1/* $OWSRCDIR; true
+        - cmd.exe /c "travis\winbuild.cmd"
+    #################################
     - stage: Tests
       name: "Test wasm assembler"
       if: branch = env(OWBRANCH) AND (type = cron OR (type = push AND env(OWTRAVIS_ALL) = 1))

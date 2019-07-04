@@ -106,6 +106,20 @@ build_proc()
                 fi
             fi
             ;;
+        "BUILD-3")
+            cd $OWSRCDIR
+            if [ "$TRAVIS_EVENT_TYPE" = "pull_request" ]; then
+                builder build3
+                RC=$?
+            else
+                builder -q build3
+                RC=$?
+                if [ $RC -eq 0 ]; then
+                    export OWRELROOT=$OWROOT/test
+                    builder -q cprel3
+                fi
+            fi
+            ;;
         *)
             return 0
             ;;
