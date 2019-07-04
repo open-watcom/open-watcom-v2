@@ -30,23 +30,23 @@
 ****************************************************************************/
 
 
-#define DIALOG_BREAK 3002
+#define DIALOG_BREAK            3002
 
-#define CTL_BRK_ADDRESS 104
-#define CTL_BRK_CONDITION 105
-#define CTL_BRK_EXECUTE 113
-#define CTL_BRK_BYTE 114
-#define CTL_BRK_WORD 115
-#define CTL_BRK_DWORD 116
-#define CTL_BRK_QWORD 118
-#define CTL_BRK_COUNTDOWN 106
-#define CTL_BRK_TOTAL 107
-#define CTL_BRK_RESET 103
-#define CTL_BRK_CMD_LIST 111
-#define CTL_BRK_RESUME 109
-#define CTL_BRK_ACTIVE 110
-#define CTL_BRK_WHATIS 112
-#define CTL_BRK_OK 100
-#define CTL_BRK_CLEAR 102
-#define CTL_BRK_SYMBOL 117
-#define CTL_BRK_CANCEL 101
+#define CTL_BRK_ADDRESS         104
+#define CTL_BRK_CONDITION       105
+#define CTL_BRK_EXECUTE         113
+#define CTL_BRK_BYTE            114
+#define CTL_BRK_WORD            115
+#define CTL_BRK_DWORD           116
+#define CTL_BRK_QWORD           118
+#define CTL_BRK_COUNTDOWN       106
+#define CTL_BRK_TOTAL           107
+#define CTL_BRK_RESET           103
+#define CTL_BRK_CMD_LIST        111
+#define CTL_BRK_RESUME          109
+#define CTL_BRK_ACTIVE          110
+#define CTL_BRK_WHATIS          112
+#define CTL_BRK_OK              100
+#define CTL_BRK_CLEAR           102
+#define CTL_BRK_SYMBOL          117
+#define CTL_BRK_CANCEL          101

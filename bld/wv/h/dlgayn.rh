@@ -30,8 +30,8 @@
 ****************************************************************************/
 
 
-#define DIALOG_AYN 3003
+#define DIALOG_AYN              3003
 
-#define CTL_AYN_NO_WAY 102
-#define CTL_AYN_YES 100
-#define CTL_AYN_NO 101
+#define CTL_AYN_NO_WAY          102
+#define CTL_AYN_YES             100
+#define CTL_AYN_NO              101

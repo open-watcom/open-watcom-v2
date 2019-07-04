@@ -30,12 +30,12 @@
 ****************************************************************************/
 
 
-#define DIALOG_LIST 3005
+#define DIALOG_LIST             3005
 
-#define CTL_LIST_LIST 102
-#define CTL_LIST_EDIT 103
-#define CTL_LIST_OK 100
-#define CTL_LIST_ADD 104
-#define CTL_LIST_DELETE 105
-#define CTL_LIST_CANCEL 101
-#define CTL_LIST_BROWSE 106
+#define CTL_LIST_LIST           102
+#define CTL_LIST_EDIT           103
+#define CTL_LIST_OK             100
+#define CTL_LIST_ADD            104
+#define CTL_LIST_DELETE         105
+#define CTL_LIST_CANCEL         101
+#define CTL_LIST_BROWSE         106
