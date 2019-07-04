@@ -163,6 +163,12 @@ cdsay .
 [ INCLUDE <OWSRCDIR>/owl/builder.ctl ]
 [ INCLUDE <OWSRCDIR>/dwarf/builder.ctl ]
 [ INCLUDE <OWSRCDIR>/cfloat/builder.ctl ]
+
+[ BLOCK <1> clean build rel cprel clean2 build2 cprel2 passclean pass ]
+#======================================================================
+# Build all of Open Watcom using freshly built tools.
+# part 2
+#
 # Continue with the assemblers/librarian/linker/make
 [ INCLUDE <OWSRCDIR>/wasm/builder.ctl ]
 [ INCLUDE <OWSRCDIR>/as/builder.ctl ]
@@ -170,12 +176,6 @@ cdsay .
 [ INCLUDE <OWSRCDIR>/wl/builder.ctl ]
 [ INCLUDE <OWSRCDIR>/wmake/builder.ctl ]
 [ INCLUDE <OWSRCDIR>/wtouch/builder.ctl ]
-
-[ BLOCK <1> clean build rel cprel clean2 build2 cprel2 passclean pass ]
-#======================================================================
-# Build all of Open Watcom using freshly built tools.
-# part 2
-#
 # On to the compilers
 [ INCLUDE <OWSRCDIR>/cg/builder.ctl ]
 [ INCLUDE <OWSRCDIR>/cc/builder.ctl ]
