@@ -32,7 +32,6 @@
 
 #include "variety.h"
 #include "widechar.h"
-#include <string.h>
 #include <windows.h>
 #include "libwin32.h"
 #include "osver.h"

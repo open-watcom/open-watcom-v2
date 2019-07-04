@@ -277,10 +277,9 @@ error_handle LocalGetCwd( int drive, char *where, unsigned len )
 #endif
 }
 
-static void makeDTARFX( rfx_find *info, FINDBUF *findbuf, HDIR h )
-/****************************************************************/
+static void makeDTARFX( rfx_find *info, FINDBUF *findbuf )
+/********************************************************/
 {
-    DTARFX_HANDLE_OF( info ) = h;
     info->time = DTARFX_TIME_OF( info ) = *(USHORT FAR *)&findbuf->ftimeLastWrite;
     info->date = DTARFX_DATE_OF( info ) = *(USHORT FAR *)&findbuf->fdateLastWrite;
     info->attr = findbuf->attrFile;
@@ -314,7 +313,8 @@ error_handle LocalFindFirst( const char *pattern, rfx_find *info, unsigned info_
         DTARFX_HANDLE_OF( info ) = DTARFX_INVALID_HANDLE;
         return( StashErrCode( err, OP_LOCAL ) );
     }
-    makeDTARFX( info, &findbuf, h );
+    DTARFX_HANDLE_OF( info ) = h;
+    makeDTARFX( info, &findbuf );
     return( 0 );
 }
 
@@ -338,7 +338,7 @@ int LocalFindNext( rfx_find *info, unsigned info_len )
         DTARFX_HANDLE_OF( info ) = DTARFX_INVALID_HANDLE;
         return( -1 );
     }
-    makeDTARFX( info, &findbuf, h );
+    makeDTARFX( info, &findbuf );
     return( 0 );
 }
 

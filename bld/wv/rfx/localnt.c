@@ -237,11 +237,9 @@ error_handle LocalDateTime( sys_handle sh, int *time, int *date, int set )
 #endif
 }
 
-static void makeDTARFX( rfx_find *info, LPWIN32_FIND_DATA ffd, HANDLE h, unsigned nt_attrib )
-/*******************************************************************************************/
+static void makeDTARFX( rfx_find *info, LPWIN32_FIND_DATA ffd )
+/*************************************************************/
 {
-    DTARFX_HANDLE_OF( info ) = (pointer_int)h;
-    DTARFX_ATTRIB_OF( info ) = nt_attrib;
     info->attr = NT2DOSATTR( ffd->dwFileAttributes );
     __MakeDOSDT( &ffd->ftLastWriteTime, &info->date, &info->time );
     DTARFX_TIME_OF( info ) = info->time;
@@ -276,7 +274,9 @@ error_handle LocalFindFirst( const char *pattern, rfx_find *info, unsigned info_
         DTARFX_HANDLE_OF( info ) = DTARFX_INVALID_HANDLE;
         return( StashErrCode( -1, OP_LOCAL ) );
     }
-    makeDTARFX( info, &ffd, h, nt_attrib );
+    DTARFX_HANDLE_OF( info ) = (pointer_int)h;
+    DTARFX_ATTRIB_OF( info ) = nt_attrib;
+    makeDTARFX( info, &ffd );
     return( 0 );
 }
 
@@ -299,7 +299,7 @@ int LocalFindNext( rfx_find *info, unsigned info_len )
         DTARFX_HANDLE_OF( info ) = DTARFX_INVALID_HANDLE;
         return( -1 );
     }
-    makeDTARFX( info, &ffd, h, nt_attrib );
+    makeDTARFX( info, &ffd );
     return( 0 );
 }
 

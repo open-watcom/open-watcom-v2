@@ -33,13 +33,10 @@
 
 #include "variety.h"
 #include "widechar.h"
-#include <stdio.h>
-#include <string.h>
-#include <direct.h>
+#include <time.h>
 #include <windows.h>
 #include "libwin32.h"
 #include "ntext.h"
-#include "_dtaxxx.h"
 
 
 #define NT_FIND_ATTRIBUTES_MASK (FILE_ATTRIBUTE_HIDDEN | FILE_ATTRIBUTE_SYSTEM | FILE_ATTRIBUTE_DIRECTORY)
