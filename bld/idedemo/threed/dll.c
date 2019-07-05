@@ -65,7 +65,7 @@ int WINAPI WEP( int parm )
 
 #elif defined(__OS2__)
 
-int main()
+int main( void )
 {
     return( 1 );
 }

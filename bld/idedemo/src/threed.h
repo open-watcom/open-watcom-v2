@@ -56,8 +56,8 @@ typedef int three_d_handle;
     #endif
 #endif
 
-void ENTRYPOINT three_d_init();
-void ENTRYPOINT three_d_fini();
+void ENTRYPOINT three_d_init( void );
+void ENTRYPOINT three_d_fini( void );
 three_d_handle ENTRYPOINT three_d_begin( WPI_PRES dc, RECTL * draw_area );
 void ENTRYPOINT three_d_box( three_d_handle handle,
                   float x1, float x2, float y1, float y2, float z1, float z2,

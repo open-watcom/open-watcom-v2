@@ -55,7 +55,7 @@ extern void * gmem_realloc( void *, unsigned int );
 
 /* functions to open and close the tracker */
 extern void         tr_mem_open( WPI_INST, char *rpt_title );
-extern void         tr_mem_close( void);
+extern void         tr_mem_close( void );
 
 /* alloc, free, and realloc functions */
 extern void near *  tr_lmem_alloc( unsigned int );
@@ -66,7 +66,7 @@ extern void         tr_gmem_free( void * );
 extern void *       tr_gmem_realloc( void *, unsigned int );
 
 /* debugging routines */
-extern void         tr_mem_report();
+extern void         tr_mem_report( void );
 extern void         tr_mem_check( void );
 
 #define _new( ptr, size ) ( ptr = tr_lmem_alloc( sizeof( *(ptr) ) * (size) ) )

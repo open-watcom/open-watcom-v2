@@ -60,13 +60,13 @@ static void init_3d( three_d_op * three_d )
     three_d->resolution = SURFACE_RES_MED;      // LOW, MED or HIGH
 }
 
-void ENTRYPOINT three_d_init()
+void ENTRYPOINT three_d_init( void )
 {
     tr_mem_open( hInstDLL, "THREE_D" );
     init_3d( &Three_d );
 }
 
-void ENTRYPOINT three_d_fini()
+void ENTRYPOINT three_d_fini( void )
 {
     tr_mem_close();
 }

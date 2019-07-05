@@ -61,7 +61,7 @@ static FARPROC three_d_end_Proc = NULL;
 static FARPROC three_d_get_Proc = NULL;
 static FARPROC three_d_set_Proc = NULL;
 
-void ENTRYPOINT three_d_init()
+void ENTRYPOINT three_d_init( void )
 // Use the DLL initialization entry point to load the DLL and get the
 // address of the entry points
 {
@@ -83,7 +83,7 @@ void ENTRYPOINT three_d_init()
     _Call16( three_d_init_Proc, "" );
 }
 
-void ENTRYPOINT three_d_fini()
+void ENTRYPOINT three_d_fini( void )
 // Use the DLL finish routine to free up the DLL
 {
     if( hThreedDLL == NULL ) return;
