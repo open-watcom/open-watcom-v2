@@ -13,10 +13,14 @@ REM setup DOSBOX
 REM
 set OWDOSBOX=%OWROOT%\travis\dosbox\dosbox.exe
 REM ...
-if "%OWTRAVIS_DEBUG%" == "1" (
-    echo INCLUDE="%INCLUDE%"
-    echo LIB="%LIB%"
-    echo LIBPATH="%LIBPATH%"
+if "%OWTRAVIS_ENV_DEBUG%" = "1" (
+    set
+) else {
+    if "%OWTRAVIS_DEBUG%" == "1" (
+        echo INCLUDE="%INCLUDE%"
+        echo LIB="%LIB%"
+        echo LIBPATH="%LIBPATH%"
+    )
 )
 REM ...
 cd %OWSRCDIR%
