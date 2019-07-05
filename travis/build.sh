@@ -51,6 +51,7 @@ bootutil_proc()
 
 build_proc()
 {
+    RC=0
     case "$OWTRAVISJOB" in
         "BOOTSTRAP")
             bootutil_proc
@@ -62,69 +63,52 @@ build_proc()
                     builder -q boot
                 fi
                 RC=$?
+                cd $TRAVIS_BUILD_DIR
             fi
             ;;
         "BUILD")
             cd $OWSRCDIR
             if [ "$TRAVIS_EVENT_TYPE" = "pull_request" ]; then
                 builder build
-                RC=$?
             else
                 builder -q build
-                RC=$?
-                if [ $RC -eq 0 ]; then
-                    export OWRELROOT=$OWROOT/test
-                    builder -q cprel
-                fi
             fi
+            RC=$?
+            cd $TRAVIS_BUILD_DIR
             ;;
         "BUILD-1")
             cd $OWSRCDIR
             if [ "$TRAVIS_EVENT_TYPE" = "pull_request" ]; then
                 builder build1
-                RC=$?
             else
                 builder -q build1
-                RC=$?
-                if [ $RC -eq 0 ]; then
-                    export OWRELROOT=$OWROOT/test
-                    builder -q cprel1
-                fi
             fi
+            RC=$?
+            cd $TRAVIS_BUILD_DIR
             ;;
         "BUILD-2")
             cd $OWSRCDIR
             if [ "$TRAVIS_EVENT_TYPE" = "pull_request" ]; then
                 builder build2
-                RC=$?
             else
                 builder -q build2
-                RC=$?
-                if [ $RC -eq 0 ]; then
-                    export OWRELROOT=$OWROOT/test
-                    builder -q cprel2
-                fi
             fi
+            RC=$?
+            cd $TRAVIS_BUILD_DIR
             ;;
         "BUILD-3")
             cd $OWSRCDIR
             if [ "$TRAVIS_EVENT_TYPE" = "pull_request" ]; then
                 builder build3
-                RC=$?
             else
                 builder -q build3
-                RC=$?
-                if [ $RC -eq 0 ]; then
-                    export OWRELROOT=$OWROOT/test
-                    builder -q cprel3
-                fi
             fi
+            RC=$?
+            cd $TRAVIS_BUILD_DIR
             ;;
         *)
-            return 0
             ;;
     esac
-    cd $TRAVIS_BUILD_DIR
     return $RC
 }
 

@@ -29,10 +29,6 @@ if "%OWTRAVISJOB%" == "BUILD" (
         builder build
     ) else (
         builder -q build
-    	if not errorlevel == 1 (
-            set OWRELROOT=%OWROOT%\test
-            builder -q cprel
-        )
     )
 )
 if "%OWTRAVISJOB%" == "BUILD-1" (
@@ -40,10 +36,6 @@ if "%OWTRAVISJOB%" == "BUILD-1" (
         builder build1
     ) else (
         builder -q build1
-    	if not errorlevel == 1 (
-            set OWRELROOT=%OWROOT%\test
-            builder -q cprel1
-        )
     )
 )
 if "%OWTRAVISJOB%" == "BUILD-2" (
@@ -51,10 +43,6 @@ if "%OWTRAVISJOB%" == "BUILD-2" (
         builder build2
     ) else (
         builder -q build2
-    	if not errorlevel == 1 (
-            set OWRELROOT=%OWROOT%\test
-            builder -q cprel2
-        )
     )
 )
 if "%OWTRAVISJOB%" == "BUILD-3" (
@@ -62,10 +50,6 @@ if "%OWTRAVISJOB%" == "BUILD-3" (
         builder build3
     ) else (
         builder -q build3
-    	if not errorlevel == 1 (
-            set OWRELROOT=%OWROOT%\test
-            builder -q cprel3
-        )
     )
 )
 echo ERRORLEVEL=%ERRORLEVEL%

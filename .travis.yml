@@ -42,7 +42,7 @@ after_failure:
 after_success:
  # after success transfer OW build to GitHub repository
  - travis/cacheinf.sh
- - travis/gitupds.sh
+# - travis/gitupds.sh
 
 jobs:
   allow_failures:
@@ -141,6 +141,8 @@ jobs:
         - . ./cmnvars.sh
       script: 
         - travis/build.sh
+#        - cp -Rfu $OWSRCDIR/* buildx
+        - travis/cprel.sh
     - # ...
       name: "OW tools build-1 OSX"
       if: branch = env(OWBRANCH) AND (type = cron OR (type = push AND env(OWTRAVIS_ALL) = 1))
@@ -157,7 +159,8 @@ jobs:
       script: 
         - travis/build.sh
         # save build to cache (buildx)
-        - cp -Rf $OWSRCDIR/* buildx
+        - cp -Rn $OWSRCDIR/* buildx
+        - travis/cprel.sh
     - # ...
       name: "OW tools build-1 Windows"
       if: branch = env(OWBRANCH) AND (type = cron OR (type = push AND env(OWTRAVIS_ALL) = 1))
@@ -175,7 +178,8 @@ jobs:
       script: 
         - cmd.exe /c "travis\winbuild.cmd"
         # save build to cache (buildx)
-        - cp -Rf $OWSRCDIR/* buildx
+        - cp -Rfu $OWSRCDIR/* buildx
+        - travis/cprel.sh
     #################################
     - stage: Build2
       name: "OW tools build-2 OSX"
@@ -199,7 +203,8 @@ jobs:
         # run script
         - travis/build.sh
         # save build to cache (buildx)
-        - cp -Rf $OWSRCDIR/* buildx
+        - cp -Rn $OWSRCDIR/* buildx
+        - travis/cprel.sh
     - # ...
       name: "OW tools build-2 Windows"
       if: branch = env(OWBRANCH) AND (type = cron OR (type = push AND env(OWTRAVIS_ALL) = 1))
@@ -216,11 +221,12 @@ jobs:
 #        - install dosbox
       script: 
         # load build from cache (buildx)
-        - cp -Rn buildx/* $OWSRCDIR; true
+        - cp -Rfu buildx/* $OWSRCDIR; true
         # run script
         - cmd.exe /c "travis\winbuild.cmd"
         # save build to cache (buildx)
-        - cp -Rf $OWSRCDIR/* buildx
+        - cp -Rfu $OWSRCDIR/* buildx
+        - travis/cprel.sh
     #################################
     - stage: Build3
       name: "OW tools build-3 OSX"
@@ -243,6 +249,9 @@ jobs:
         - cp -Rn buildx/* $OWSRCDIR; true
         # run script
         - travis/build.sh
+        # save build to cache (buildx)
+#        - cp -Rn $OWSRCDIR/* buildx
+        - travis/cprel.sh
     - # ...
       name: "OW tools build-3 Windows"
       if: branch = env(OWBRANCH) AND (type = cron OR (type = push AND env(OWTRAVIS_ALL) = 1))
@@ -259,9 +268,23 @@ jobs:
 #        - install dosbox
       script: 
         # load build from cache (buildx)
-        - cp -Rn buildx/* $OWSRCDIR; true
+        - cp -Rfu buildx/* $OWSRCDIR; true
         # run script
         - cmd.exe /c "travis\winbuild.cmd"
+        # save build to cache (buildx)
+#        - cp -Rfu $OWSRCDIR/* buildx
+        - travis/cprel.sh
+    #################################
+#    - stage: InitTests
+#      name: "Initialze Tests Environment"
+#      if: branch = env(OWBRANCH) AND (type = cron OR (type = push AND env(OWTRAVIS_ALL) = 1))
+#      before_install:
+#        # stop unwanted services
+#        - travis/services.sh
+#      install:
+#        - export WATCOM=$TRAVIS_BUILD_DIR/test
+#      script: 
+#        - cp -Rfu buildx/* $WATCOM
     #################################
     - stage: Tests
       name: "Test wasm assembler"
