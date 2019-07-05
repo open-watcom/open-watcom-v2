@@ -141,8 +141,8 @@ jobs:
         - . ./cmnvars.sh
       script: 
         - travis/build.sh
-#        - cp -Rfu $OWSRCDIR/* buildx
-        - travis/cprel.sh
+        - cp -Rfu $OWSRCDIR/* buildx
+#        - travis/cprel.sh
     - # ...
       name: "OW tools build-1 OSX"
       if: branch = env(OWBRANCH) AND (type = cron OR (type = push AND env(OWTRAVIS_ALL) = 1))
@@ -160,7 +160,7 @@ jobs:
         - travis/build.sh
         # save build to cache (buildx)
         - cp -Rn $OWSRCDIR/* buildx
-        - travis/cprel.sh
+#        - travis/cprel.sh
     - # ...
       name: "OW tools build-1 Windows"
       if: branch = env(OWBRANCH) AND (type = cron OR (type = push AND env(OWTRAVIS_ALL) = 1))
@@ -173,13 +173,15 @@ jobs:
         - export OWTOOLS=VISUALC
         - export OWTRAVISJOB=BUILD-1
         - export OWSRCDIR=$OWROOT/bld
+        - export ECHO_OFF=off
+        - if [ "$OWTRAVIS_DEBUG" = "1" ]; then export ECHO_OFF=on;
       install:
 #        - install dosbox
-      script: 
+      script:
         - cmd.exe /c "travis\winbuild.cmd"
         # save build to cache (buildx)
         - cp -Rfu $OWSRCDIR/* buildx
-        - travis/cprel.sh
+#        - travis/cprel.sh
     #################################
     - stage: Build2
       name: "OW tools build-2 OSX"
@@ -204,7 +206,7 @@ jobs:
         - travis/build.sh
         # save build to cache (buildx)
         - cp -Rn $OWSRCDIR/* buildx
-        - travis/cprel.sh
+#        - travis/cprel.sh
     - # ...
       name: "OW tools build-2 Windows"
       if: branch = env(OWBRANCH) AND (type = cron OR (type = push AND env(OWTRAVIS_ALL) = 1))
@@ -217,6 +219,8 @@ jobs:
         - export OWTOOLS=VISUALC
         - export OWTRAVISJOB=BUILD-2
         - export OWSRCDIR=$OWROOT/bld
+        - export ECHO_OFF=off
+        - if [ "$OWTRAVIS_DEBUG" = "1" ]; then export ECHO_OFF=on;
       install:
 #        - install dosbox
       script: 
@@ -226,7 +230,7 @@ jobs:
         - cmd.exe /c "travis\winbuild.cmd"
         # save build to cache (buildx)
         - cp -Rfu $OWSRCDIR/* buildx
-        - travis/cprel.sh
+#        - travis/cprel.sh
     #################################
     - stage: Build3
       name: "OW tools build-3 OSX"
@@ -250,8 +254,8 @@ jobs:
         # run script
         - travis/build.sh
         # save build to cache (buildx)
-#        - cp -Rn $OWSRCDIR/* buildx
-        - travis/cprel.sh
+        - cp -Rn $OWSRCDIR/* buildx
+#        - travis/cprel.sh
     - # ...
       name: "OW tools build-3 Windows"
       if: branch = env(OWBRANCH) AND (type = cron OR (type = push AND env(OWTRAVIS_ALL) = 1))
@@ -264,6 +268,8 @@ jobs:
         - export OWTOOLS=VISUALC
         - export OWTRAVISJOB=BUILD-3
         - export OWSRCDIR=$OWROOT/bld
+        - export ECHO_OFF=off
+        - if [ "$OWTRAVIS_DEBUG" = "1" ]; then export ECHO_OFF=on;
       install:
 #        - install dosbox
       script: 
@@ -272,8 +278,41 @@ jobs:
         # run script
         - cmd.exe /c "travis\winbuild.cmd"
         # save build to cache (buildx)
-#        - cp -Rfu $OWSRCDIR/* buildx
-        - travis/cprel.sh
+        - cp -Rfu $OWSRCDIR/* buildx
+#        - travis/cprel.sh
+    #################################
+    - stage: UpdateBuild
+      name: "Update Build Linux"
+      os: linux
+      if: branch = env(OWBRANCH) AND (type = cron OR (type = push AND env(OWTRAVIS_ALL) = 1))
+      before_install:
+        # stop unwanted services
+        - travis/services.sh
+        # set environmet variable
+        - export OWTOOLS=GCC
+        - export OWTRAVISJOB=CPREL
+        - export OWSRCDIR=buildx
+      install:
+        - export WATCOM=$TRAVIS_BUILD_DIR/test
+      script: 
+#        - cp -Rfu buildx/* $WATCOM
+        - travis/gitupds.sh
+    - # ...
+      name: "Update Build Windows"
+      os: windows
+      if: branch = env(OWBRANCH) AND (type = cron OR (type = push AND env(OWTRAVIS_ALL) = 1))
+      before_install:
+        # stop unwanted services
+        - travis/services.sh
+        # set environmet variable
+        - export OWTOOLS=VISUALC
+        - export OWTRAVISJOB=CPREL
+        - export OWSRCDIR=buildx
+      install:
+        - export WATCOM=$TRAVIS_BUILD_DIR/test
+      script: 
+#        - cp -Rfu buildx/* $WATCOM
+        - travis/gitupds.sh
     #################################
 #    - stage: InitTests
 #      name: "Initialze Tests Environment"
