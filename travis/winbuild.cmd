@@ -7,13 +7,17 @@ set OWROOT=%CD%
 REM ...
 call "C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\vcvarsall.bat" amd64
 REM ...
+@echo %ECHO_OFF%
+REM ...
 call cmnvars.bat
+REM ...
+@echo %ECHO_OFF%
 REM
 REM setup DOSBOX
 REM
 set OWDOSBOX=%OWROOT%\travis\dosbox\dosbox.exe
 REM ...
-if "%OWTRAVIS_ENV_DEBUG%" = "1" (
+if "%OWTRAVIS_ENV_DEBUG%" == "1" (
     set
 ) else {
     if "%OWTRAVIS_DEBUG%" == "1" (

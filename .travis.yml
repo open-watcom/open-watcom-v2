@@ -141,8 +141,10 @@ jobs:
         - . ./cmnvars.sh
       script: 
         - travis/build.sh
-        - cp -Rfu $OWSRCDIR/. buildx
 #        - travis/cprel.sh
+      before_cache:
+        # save build to cache (buildx)
+        - cp -Rfu $OWSRCDIR/. buildx
     - # ...
       name: "OW tools build-1 OSX"
       if: branch = env(OWBRANCH) AND (type = cron OR (type = push AND env(OWTRAVIS_ALL) = 1))
@@ -158,9 +160,10 @@ jobs:
         - . ./cmnvars.sh
       script: 
         - travis/build.sh
+#        - travis/cprel.sh
+      before_cache:
         # save build to cache (buildx)
         - cp -Rn $OWSRCDIR/ buildx/
-#        - travis/cprel.sh
     - # ...
       name: "OW tools build-1 Windows"
       if: branch = env(OWBRANCH) AND (type = cron OR (type = push AND env(OWTRAVIS_ALL) = 1))
@@ -177,6 +180,7 @@ jobs:
 #        - install dosbox
       script: 
         - cmd.exe /c "travis\winbuild.cmd"
+      before_cache:
         # save build to cache (buildx)
         - cp -Rfu $OWSRCDIR/. buildx
 #        - travis/cprel.sh
@@ -202,9 +206,10 @@ jobs:
         - cp -Rn buildx/ $OWSRCDIR/; true
         # run script
         - travis/build.sh
+#        - travis/cprel.sh
+      before_cache:
         # save build to cache (buildx)
         - cp -Rn $OWSRCDIR/ buildx/
-#        - travis/cprel.sh
     - # ...
       name: "OW tools build-2 Windows"
       if: branch = env(OWBRANCH) AND (type = cron OR (type = push AND env(OWTRAVIS_ALL) = 1))
@@ -224,9 +229,10 @@ jobs:
         - cp -Rfu buildx/. $OWSRCDIR; true
         # run script
         - cmd.exe /c "travis\winbuild.cmd"
+#        - travis/cprel.sh
+      before_cache:
         # save build to cache (buildx)
         - cp -Rfu $OWSRCDIR/. buildx
-#        - travis/cprel.sh
     #################################
     - stage: Build3
       name: "OW tools build-3 OSX"
@@ -249,9 +255,10 @@ jobs:
         - cp -Rn buildx/ $OWSRCDIR/; true
         # run script
         - travis/build.sh
+#        - travis/cprel.sh
+      before_cache:
         # save build to cache (buildx)
         - cp -Rn $OWSRCDIR/ buildx/
-#        - travis/cprel.sh
     - # ...
       name: "OW tools build-3 Windows"
       if: branch = env(OWBRANCH) AND (type = cron OR (type = push AND env(OWTRAVIS_ALL) = 1))
@@ -271,9 +278,10 @@ jobs:
         - cp -Rfu buildx/. $OWSRCDIR; true
         # run script
         - cmd.exe /c "travis\winbuild.cmd"
+#        - travis/cprel.sh
+      before_cache:
         # save build to cache (buildx)
         - cp -Rfu $OWSRCDIR/. buildx
-#        - travis/cprel.sh
     #################################
     - stage: UpdateBuild
       name: "Update Build Linux"

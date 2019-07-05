@@ -1,4 +1,4 @@
-@echo off
+@echo %ECHO_OFF%
 SETLOCAL EnableExtensions
 REM Script to build the Open Watcom bootstrap tools
 REM By Microsoft Visual Studio
@@ -7,7 +7,11 @@ set OWROOT=%CD%
 REM ...
 call "C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\vcvarsall.bat" amd64
 REM ...
+@echo %ECHO_OFF%
+REM ...
 call cmnvars.bat
+REM ...
+@echo %ECHO_OFF%
 REM ...
 if "%OWTRAVIS_DEBUG%" == "1" (
     echo INCLUDE="%INCLUDE%"
