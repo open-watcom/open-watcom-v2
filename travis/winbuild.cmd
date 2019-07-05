@@ -19,7 +19,7 @@ set OWDOSBOX=%OWROOT%\travis\dosbox\dosbox.exe
 REM ...
 if "%OWTRAVIS_ENV_DEBUG%" == "1" (
     set
-) else {
+) else (
     if "%OWTRAVIS_DEBUG%" == "1" (
         echo INCLUDE="%INCLUDE%"
         echo LIB="%LIB%"

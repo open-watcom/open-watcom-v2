@@ -58,7 +58,7 @@ jobs:
       before_install:
         # stop unwanted services
         - travis/services.sh
-      script: 
+      script:
         # update SF mirror
         - travis/gitusf.sh
         # update GitHub repository if necessary
@@ -81,7 +81,7 @@ jobs:
         - rm -rf buildx/*
       install:
         - . ./cmnvars.sh
-      script: 
+      script:
         - travis/build.sh
     - # ...
       name: "Build minimal set of build tools OSX"
@@ -102,7 +102,7 @@ jobs:
         - rm -rf buildx/*
       install:
         - . ./cmnvars.sh
-      script: 
+      script:
         - travis/build.sh
     - # ...
       name: "Build minimal set of build tools Windows"
@@ -123,7 +123,9 @@ jobs:
         - rm -rf test/*
         - rm -rf buildx/*
       install:
-      script: 
+        - export ECHO_OFF=off
+        - if [ "$OWTRAVIS_DEBUG" = "1" ]; then export ECHO_OFF=on;
+      script:
         - cmd.exe /c "travis\winboot.cmd"
     #################################
     - stage: Build
@@ -139,7 +141,7 @@ jobs:
         # install DOS Emulator
         - sudo apt-get install -y dosemu
         - . ./cmnvars.sh
-      script: 
+      script:
         - travis/build.sh
 #        - travis/cprel.sh
       before_cache:
@@ -158,7 +160,7 @@ jobs:
         - export OWTRAVISJOB=BUILD-1
       install:
         - . ./cmnvars.sh
-      script: 
+      script:
         - travis/build.sh
 #        - travis/cprel.sh
       before_cache:
@@ -178,7 +180,9 @@ jobs:
         - export OWSRCDIR=$OWROOT/bld
       install:
 #        - install dosbox
-      script: 
+        - export ECHO_OFF=off
+        - if [ "$OWTRAVIS_DEBUG" = "1" ]; then export ECHO_OFF=on;
+      script:
         - cmd.exe /c "travis\winbuild.cmd"
       before_cache:
         # save build to cache (buildx)
@@ -201,7 +205,7 @@ jobs:
         # install DOS Emulator
         - brew install dosbox
         - . ./cmnvars.sh
-      script: 
+      script:
         # load build from cache (buildx)
         - cp -Rn buildx/ $OWSRCDIR/; true
         # run script
@@ -224,7 +228,9 @@ jobs:
         - export OWSRCDIR=$OWROOT/bld
       install:
 #        - install dosbox
-      script: 
+        - export ECHO_OFF=off
+        - if [ "$OWTRAVIS_DEBUG" = "1" ]; then export ECHO_OFF=on;
+      script:
         # load build from cache (buildx)
         - cp -Rfu buildx/. $OWSRCDIR; true
         # run script
@@ -250,7 +256,7 @@ jobs:
         # install DOS Emulator
         - brew install dosbox
         - . ./cmnvars.sh
-      script: 
+      script:
         # load build from cache (buildx)
         - cp -Rn buildx/ $OWSRCDIR/; true
         # run script
@@ -273,7 +279,9 @@ jobs:
         - export OWSRCDIR=$OWROOT/bld
       install:
 #        - install dosbox
-      script: 
+        - export ECHO_OFF=off
+        - if [ "$OWTRAVIS_DEBUG" = "1" ]; then export ECHO_OFF=on;
+      script:
         # load build from cache (buildx)
         - cp -Rfu buildx/. $OWSRCDIR; true
         # run script
@@ -296,7 +304,7 @@ jobs:
       install:
 #        - export WATCOM=$TRAVIS_BUILD_DIR/test
         - . ./cmnvars.sh
-      script: 
+      script:
 #        - cp -Rfu buildx/. $WATCOM
         - travis/gitupds.sh
     - # ...
@@ -313,7 +321,7 @@ jobs:
       install:
         - export WATCOM=$TRAVIS_BUILD_DIR/test
         - export PATH=$OWROOT/build/$OWOBJDIR;$OWROOT/build;$PATH
-      script: 
+      script:
 #        - cp -Rfu buildx/. $WATCOM
         - travis/gitupds.sh
     #################################
@@ -325,7 +333,7 @@ jobs:
 #        - travis/services.sh
 #      install:
 #        - export WATCOM=$TRAVIS_BUILD_DIR/test
-#      script: 
+#      script:
 #        - cp -Rfu buildx/. $WATCOM
     #################################
     - stage: Tests
@@ -344,7 +352,7 @@ jobs:
         - export INCLUDE=$WATCOM/lh
         - unset LIB
         - . ./cmnvars.sh
-      script: 
+      script:
         - travis/test.sh
     - # ...
       name: "Test C compiler"
@@ -362,7 +370,7 @@ jobs:
         - export INCLUDE=$WATCOM/lh
         - unset LIB
         - . ./cmnvars.sh
-      script: 
+      script:
         - travis/test.sh
     - # ...
       name: "Test FORTRAN 77 compiler"
@@ -380,7 +388,7 @@ jobs:
         - export INCLUDE=$WATCOM/lh
         - unset LIB
         - . ./cmnvars.sh
-      script: 
+      script:
         - travis/test.sh
     - # ...
       name: "Test C++ compiler"
@@ -398,7 +406,7 @@ jobs:
         - export INCLUDE=$WATCOM/lh
         - unset LIB
         - . ./cmnvars.sh
-      script: 
+      script:
         - travis/test.sh
     - # ...
       name: "Test C run-time library"
@@ -414,13 +422,13 @@ jobs:
         - export INCLUDE=$WATCOM/lh
         - unset LIB
         - . ./cmnvars.sh
-      script: 
+      script:
         - travis/test.sh
     #################################
     - stage: Finalize
       name: "Clean build cache Linux"
       if: branch = env(OWBRANCH)
-      script: 
+      script:
         # clear cache
         - rm -rf build/$OWOBJDIR/*
         - rm -rf bld/watcom/$OWOBJDIR/*
@@ -431,7 +439,7 @@ jobs:
       if: branch = env(OWBRANCH) AND (type = cron OR (type = push AND env(OWTRAVIS_ALL) = 1))
       os: osx
       compiler: clang
-      script: 
+      script:
         # clear cache
         - rm -rf build/$OWOBJDIR/*
         - rm -rf bld/watcom/$OWOBJDIR/*
@@ -441,7 +449,7 @@ jobs:
       name: "Clean build cache Windows"
       if: branch = env(OWBRANCH) AND (type = cron OR (type = push AND env(OWTRAVIS_ALL) = 1))
       os: windows
-      script: 
+      script:
         # clear cache
         - rm -rf build/$OWOBJDIR/*
         - rm -rf bld/watcom/$OWOBJDIR/*
@@ -453,7 +461,7 @@ jobs:
       name: "Initiate Documentation build by Cron"
       if: branch = env(OWBRANCH_DOCS) AND type = cron
       cache: false
-      script: 
+      script:
         - git config remote.origin.pushurl https://${GITHUB_TOKEN}@github.com/${TRAVIS_REPO_SLUG}.git
         - git pull origin $OWBRANCH
         - git checkout -B $OWBRANCH
@@ -475,14 +483,14 @@ jobs:
         - sudo apt-get install -y dosemu ghostscript
         - export OWGHOSTSCRIPTPATH=$PATH
         - . ./cmnvars.sh
-      script: 
+      script:
         - travis/builddoc.sh
     #################################
     - stage: InitCoverity
       name: "Initiate Coverity Scan by Cron Linux"
       if: branch = env(OWBRANCH_COVERITY) AND type = cron
       cache: false
-      script: 
+      script:
         - git config remote.origin.pushurl https://${GITHUB_TOKEN}@github.com/${TRAVIS_REPO_SLUG}.git
         - git pull origin $OWBRANCH
         - git checkout -B $OWBRANCH
@@ -503,7 +511,7 @@ jobs:
         - sudo apt-get install -y dosemu
         - sudo apt-get install -y curl
         - . ./cmnvars.sh
-      script: 
+      script:
         - travis/covscan.sh
 
 #  coverity_scan:
