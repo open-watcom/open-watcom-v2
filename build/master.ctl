@@ -52,8 +52,8 @@ set BLDRULE=
     set LOGFNAME=btclean
     echo **** BOOTCLEAN rule
 
-[ BLOCK <1> build build1 build2 ]
-#================================
+[ BLOCK <1> build build1 build2 build3 ]
+#=======================================
     set BLDRULE=build
     set LOGFNAME=<1>
     echo **** BUILD rule
@@ -64,14 +64,14 @@ set BLDRULE=
     set LOGFNAME=<1>
     echo **** REL rule
 
-[ BLOCK <1> clean clean1 clean2 passclean ]
-#==========================================
+[ BLOCK <1> clean clean1 clean2 clean3 passclean ]
+#=================================================
     set BLDRULE=clean
     set LOGFNAME=<1>
     echo **** CLEAN rule
 
-[ BLOCK <1> cprel cprel1 cprel2 ]
-#================================
+[ BLOCK <1> cprel cprel1 cprel2 cprel3 ]
+#=======================================
     set BLDRULE=cprel
     set LOGFNAME=<1>
     # with 'cprel', we want to force the copy to occur

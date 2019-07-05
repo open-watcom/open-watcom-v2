@@ -116,6 +116,7 @@ jobs:
         - export OWTOOLS=VISUALC
         - export OWTRAVISJOB=BOOTSTRAP
         - export OWVERBOSE=1
+        - export OWSRCDIR=$OWROOT/bld
         # clear cache
         - rm -rf build/$OWOBJDIR/*
         - rm -rf bld/watcom/$OWOBJDIR/*
@@ -168,12 +169,13 @@ jobs:
         # set environmet variable
         - export OWTOOLS=VISUALC
         - export OWTRAVISJOB=BUILD-1
+        - export OWSRCDIR=$OWROOT/bld
       install:
 #        - install dosbox
       script: 
         - cmd.exe /c "travis\winbuild.cmd"
         # save build to cache (buildx)
-#        - cp -Rf $OWSRCDIR/* buildx
+        - cp -Rf $OWSRCDIR/* buildx
     #################################
     - stage: Build2
       name: "OW tools build-2 OSX"
@@ -209,15 +211,16 @@ jobs:
         # set environmet variable
         - export OWTOOLS=VISUALC
         - export OWTRAVISJOB=BUILD-2
+        - export OWSRCDIR=$OWROOT/bld
       install:
 #        - install dosbox
       script: 
         # load build from cache (buildx)
-#        - cp -Rn buildx/* $OWSRCDIR; true
+        - cp -Rn buildx/* $OWSRCDIR; true
         # run script
         - cmd.exe /c "travis\winbuild.cmd"
         # save build to cache (buildx)
-#        - cp -Rf $OWSRCDIR/* buildx
+        - cp -Rf $OWSRCDIR/* buildx
     #################################
     - stage: Build3
       name: "OW tools build-3 OSX"
@@ -251,11 +254,12 @@ jobs:
         # set environmet variable
         - export OWTOOLS=VISUALC
         - export OWTRAVISJOB=BUILD-3
+        - export OWSRCDIR=$OWROOT/bld
       install:
 #        - install dosbox
       script: 
         # load build from cache (buildx)
-#        - cp -Rn buildx/* $OWSRCDIR; true
+        - cp -Rn buildx/* $OWSRCDIR; true
         # run script
         - cmd.exe /c "travis\winbuild.cmd"
     #################################
