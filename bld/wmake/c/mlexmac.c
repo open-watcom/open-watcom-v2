@@ -286,6 +286,7 @@ STATIC MTOKEN_T lexSubString( STRM_T s )
             case MAC_NAME:  done = !sismacc( s );               break;
             case MAC_WS:    done = !sisws( s );                 break;
             case MAC_PUNC:  done = sismacc( s ) || sisws( s );  break;
+            default:    break;
             }
         }
     }

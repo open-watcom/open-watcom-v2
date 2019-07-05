@@ -200,6 +200,7 @@ STATIC const char *specialValue( MTOKEN_T t )
     case MAC_CUR:       dirBufGot = GetCurTarg();  break;
     case MAC_FIRST:     dirBufGot = GetFirstDep(); break;
     case MAC_LAST:      dirBufGot = GetLastDep();  break;
+    default:    break;
     }
     return( procPath( dirBufGot ) );
 }
@@ -889,6 +890,8 @@ STATIC char *deMacroToEnd( int depth, MTOKEN_T end1, MTOKEN_T end2 )
         break;
     case TOK_MAGIC:
         UnGetCHR( STRM_MAGIC );
+        break;
+    default:
         break;
     }
 

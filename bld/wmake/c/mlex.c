@@ -112,5 +112,7 @@ void LexMaybeFree( MTOKEN_T tok )
     case MAC_TEXT:
         FreeSafe( CurAttr.u.ptr );
         break;
+    default:
+        break;
     }
 }
