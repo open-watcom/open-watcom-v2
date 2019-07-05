@@ -123,8 +123,11 @@ jobs:
         - rm -rf test/*
         - rm -rf buildx/*
       install:
-        - export ECHO_OFF=off
-        - if [ "$OWTRAVIS_DEBUG" = "1" ]; then export ECHO_OFF=on;
+        - if [ "$OWTRAVIS_DEBUG" = "1" ]; then 
+        -   export ECHO_OFF=on;
+        - else
+        -   export ECHO_OFF=off
+        - fi
       script:
         - cmd.exe /c "travis\winboot.cmd"
     #################################
@@ -180,8 +183,11 @@ jobs:
         - export OWSRCDIR=$OWROOT/bld
       install:
 #        - install dosbox
-        - export ECHO_OFF=off
-        - if [ "$OWTRAVIS_DEBUG" = "1" ]; then export ECHO_OFF=on;
+        - if [ "$OWTRAVIS_DEBUG" = "1" ]; then 
+        -   export ECHO_OFF=on;
+        - else
+        -   export ECHO_OFF=off
+        - fi
       script:
         - cmd.exe /c "travis\winbuild.cmd"
       before_cache:
@@ -228,8 +234,11 @@ jobs:
         - export OWSRCDIR=$OWROOT/bld
       install:
 #        - install dosbox
-        - export ECHO_OFF=off
-        - if [ "$OWTRAVIS_DEBUG" = "1" ]; then export ECHO_OFF=on;
+        - if [ "$OWTRAVIS_DEBUG" = "1" ]; then 
+        -   export ECHO_OFF=on;
+        - else
+        -   export ECHO_OFF=off
+        - fi
       script:
         # load build from cache (buildx)
         - cp -Rfu buildx/. $OWSRCDIR; true
@@ -279,8 +288,11 @@ jobs:
         - export OWSRCDIR=$OWROOT/bld
       install:
 #        - install dosbox
-        - export ECHO_OFF=off
-        - if [ "$OWTRAVIS_DEBUG" = "1" ]; then export ECHO_OFF=on;
+        - if [ "$OWTRAVIS_DEBUG" = "1" ]; then 
+        -   export ECHO_OFF=on;
+        - else
+        -   export ECHO_OFF=off
+        - fi
       script:
         # load build from cache (buildx)
         - cp -Rfu buildx/. $OWSRCDIR; true
