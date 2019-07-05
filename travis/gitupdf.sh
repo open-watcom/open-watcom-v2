@@ -20,7 +20,7 @@ gitupdf_proc()
     echo_msg="gitupdf.sh - skipped"
 
     if [ "$TRAVIS_BRANCH" = "$OWBRANCH" ] || [ "$TRAVIS_BRANCH" = "$OWBRANCH_DOCS" ]; then
-        if [ "$TRAVIS_EVENT_TYPE" = "push" ]; then
+        if [ "$TRAVIS_EVENT_TYPE" = "push" ] || [ "$TRAVIS_EVENT_TYPE" = "cron" ]; then
             case "$OWTRAVISJOB" in
                 "BOOTSTRAP" | "BUILD" | "BUILD-1" | "BUILD-2" | "BUILD-3" | "DOCTRAVIS")
                     #
