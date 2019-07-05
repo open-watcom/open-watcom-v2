@@ -141,7 +141,7 @@ jobs:
         - . ./cmnvars.sh
       script: 
         - travis/build.sh
-        - cp -Rfu $OWSRCDIR/* buildx
+        - cp -Rfu $OWSRCDIR/. buildx
 #        - travis/cprel.sh
     - # ...
       name: "OW tools build-1 OSX"
@@ -159,7 +159,7 @@ jobs:
       script: 
         - travis/build.sh
         # save build to cache (buildx)
-        - cp -Rn $OWSRCDIR/* buildx
+        - cp -Rn $OWSRCDIR/ buildx/
 #        - travis/cprel.sh
     - # ...
       name: "OW tools build-1 Windows"
@@ -173,14 +173,12 @@ jobs:
         - export OWTOOLS=VISUALC
         - export OWTRAVISJOB=BUILD-1
         - export OWSRCDIR=$OWROOT/bld
-        - export ECHO_OFF=off
-        - if [ "$OWTRAVIS_DEBUG" = "1" ]; then export ECHO_OFF=on;
       install:
 #        - install dosbox
-      script:
+      script: 
         - cmd.exe /c "travis\winbuild.cmd"
         # save build to cache (buildx)
-        - cp -Rfu $OWSRCDIR/* buildx
+        - cp -Rfu $OWSRCDIR/. buildx
 #        - travis/cprel.sh
     #################################
     - stage: Build2
@@ -201,11 +199,11 @@ jobs:
         - . ./cmnvars.sh
       script: 
         # load build from cache (buildx)
-        - cp -Rn buildx/* $OWSRCDIR; true
+        - cp -Rn buildx/ $OWSRCDIR/; true
         # run script
         - travis/build.sh
         # save build to cache (buildx)
-        - cp -Rn $OWSRCDIR/* buildx
+        - cp -Rn $OWSRCDIR/ buildx/
 #        - travis/cprel.sh
     - # ...
       name: "OW tools build-2 Windows"
@@ -219,17 +217,15 @@ jobs:
         - export OWTOOLS=VISUALC
         - export OWTRAVISJOB=BUILD-2
         - export OWSRCDIR=$OWROOT/bld
-        - export ECHO_OFF=off
-        - if [ "$OWTRAVIS_DEBUG" = "1" ]; then export ECHO_OFF=on;
       install:
 #        - install dosbox
       script: 
         # load build from cache (buildx)
-        - cp -Rfu buildx/* $OWSRCDIR; true
+        - cp -Rfu buildx/. $OWSRCDIR; true
         # run script
         - cmd.exe /c "travis\winbuild.cmd"
         # save build to cache (buildx)
-        - cp -Rfu $OWSRCDIR/* buildx
+        - cp -Rfu $OWSRCDIR/. buildx
 #        - travis/cprel.sh
     #################################
     - stage: Build3
@@ -250,11 +246,11 @@ jobs:
         - . ./cmnvars.sh
       script: 
         # load build from cache (buildx)
-        - cp -Rn buildx/* $OWSRCDIR; true
+        - cp -Rn buildx/ $OWSRCDIR/; true
         # run script
         - travis/build.sh
         # save build to cache (buildx)
-        - cp -Rn $OWSRCDIR/* buildx
+        - cp -Rn $OWSRCDIR/ buildx/
 #        - travis/cprel.sh
     - # ...
       name: "OW tools build-3 Windows"
@@ -268,23 +264,20 @@ jobs:
         - export OWTOOLS=VISUALC
         - export OWTRAVISJOB=BUILD-3
         - export OWSRCDIR=$OWROOT/bld
-        - export ECHO_OFF=off
-        - if [ "$OWTRAVIS_DEBUG" = "1" ]; then export ECHO_OFF=on;
       install:
 #        - install dosbox
       script: 
         # load build from cache (buildx)
-        - cp -Rfu buildx/* $OWSRCDIR; true
+        - cp -Rfu buildx/. $OWSRCDIR; true
         # run script
         - cmd.exe /c "travis\winbuild.cmd"
         # save build to cache (buildx)
-        - cp -Rfu $OWSRCDIR/* buildx
+        - cp -Rfu $OWSRCDIR/. buildx
 #        - travis/cprel.sh
     #################################
     - stage: UpdateBuild
       name: "Update Build Linux"
-      os: linux
-      if: branch = env(OWBRANCH) AND (type = cron OR (type = push AND env(OWTRAVIS_ALL) = 1))
+      if: branch = env(OWBRANCH) AND (type = cron OR type = push)
       before_install:
         # stop unwanted services
         - travis/services.sh
@@ -293,14 +286,15 @@ jobs:
         - export OWTRAVISJOB=CPREL
         - export OWSRCDIR=buildx
       install:
-        - export WATCOM=$TRAVIS_BUILD_DIR/test
+#        - export WATCOM=$TRAVIS_BUILD_DIR/test
+        - . ./cmnvars.sh
       script: 
-#        - cp -Rfu buildx/* $WATCOM
+#        - cp -Rfu buildx/. $WATCOM
         - travis/gitupds.sh
     - # ...
       name: "Update Build Windows"
-      os: windows
       if: branch = env(OWBRANCH) AND (type = cron OR (type = push AND env(OWTRAVIS_ALL) = 1))
+      os: windows
       before_install:
         # stop unwanted services
         - travis/services.sh
@@ -310,8 +304,9 @@ jobs:
         - export OWSRCDIR=buildx
       install:
         - export WATCOM=$TRAVIS_BUILD_DIR/test
+        - export PATH=$OWROOT/build/$OWOBJDIR;$OWROOT/build;$PATH
       script: 
-#        - cp -Rfu buildx/* $WATCOM
+#        - cp -Rfu buildx/. $WATCOM
         - travis/gitupds.sh
     #################################
 #    - stage: InitTests
@@ -323,7 +318,7 @@ jobs:
 #      install:
 #        - export WATCOM=$TRAVIS_BUILD_DIR/test
 #      script: 
-#        - cp -Rfu buildx/* $WATCOM
+#        - cp -Rfu buildx/. $WATCOM
     #################################
     - stage: Tests
       name: "Test wasm assembler"
