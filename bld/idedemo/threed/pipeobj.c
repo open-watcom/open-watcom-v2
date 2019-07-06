@@ -53,7 +53,7 @@ typedef struct face_pts {       // used for calculating normal of a face
 } face_pts;
 
 
-extern rend_obj * rend_obj_new_poly(
+rend_obj * rend_obj_new_poly(
 /**********************************/
     void
 ) {
@@ -96,7 +96,7 @@ static index_elt * identity_index(
     return( index );
 }
 
-extern rend_obj * rend_obj_create_poly(
+rend_obj * rend_obj_create_poly(
 /*************************************/
     int             num_pts,
     point *         pts,
@@ -125,7 +125,7 @@ extern rend_obj * rend_obj_create_poly(
     return( new );
 }
 
-extern rend_obj * rend_obj_create_line(
+rend_obj * rend_obj_create_line(
 /*************************************/
     point           start,
     point           end,
@@ -301,7 +301,7 @@ static void add_solid_to_list(
     }
 }
 
-extern rend_obj * rend_obj_dup(
+rend_obj * rend_obj_dup(
 /*****************************/
 /* duplicates obj into pipe_mem memory */
     rend_obj *  obj
@@ -330,7 +330,7 @@ extern rend_obj * rend_obj_dup(
 }
 
 
-extern void rend_obj_add_to_list(
+void rend_obj_add_to_list(
 /*******************************/
     rend_obj *      obj,
     rend_list *     list
@@ -346,7 +346,7 @@ extern void rend_obj_add_to_list(
     }
 }
 
-extern void rend_obj_lfree(
+void rend_obj_lfree(
 /*************************/
 /* free a rend_obj from local memory */
 /* NOTE: do not call this function for rend_obj's that have been added */
@@ -420,7 +420,7 @@ static void compute_solid_vis_info(
     }
 }
 
-extern void rend_obj_compute_vis_info(
+void rend_obj_compute_vis_info(
 /************************************/
     rend_obj *      obj
 ) {
@@ -445,7 +445,7 @@ extern void rend_obj_compute_vis_info(
 
 #if 0
 /* macroed */
-extern visible_info * rend_obj_get_vis(
+visible_info * rend_obj_get_vis(
 /*************************************/
     rend_obj *      obj
 ) {
@@ -453,7 +453,7 @@ extern visible_info * rend_obj_get_vis(
 }
 #endif
 
-extern vector rend_obj_get_norm(
+vector rend_obj_get_norm(
 /******************************/
     rend_obj *  obj
 ) {
@@ -471,7 +471,7 @@ extern vector rend_obj_get_norm(
     return( norm );
 }
 
-extern int rend_obj_get_num_pts(
+int rend_obj_get_num_pts(
 /******************************/
     rend_obj *  obj
 ) {
@@ -494,7 +494,7 @@ extern int rend_obj_get_num_pts(
     }
 }
 
-extern point rend_obj_get_pt(
+point rend_obj_get_pt(
 /***************************/
     rend_obj *  obj,
     int         pt_num
@@ -544,7 +544,7 @@ extern point rend_obj_get_pt(
     return( pt );
 }
 
-extern polygon * rend_obj_get_poly(
+polygon * rend_obj_get_poly(
 /*********************************/
     rend_obj *  obj
 ) {
@@ -555,7 +555,7 @@ extern polygon * rend_obj_get_poly(
     }
 }
 
-extern line * rend_obj_get_line(
+line * rend_obj_get_line(
 /******************************/
     rend_obj * obj
 ) {
@@ -568,7 +568,7 @@ extern line * rend_obj_get_line(
 
 #if 0
 /* macroed */
-extern rend_type rend_obj_get_type(
+rend_type rend_obj_get_type(
 /*********************************/
     rend_obj *  obj
 ) {
@@ -626,7 +626,7 @@ static void calc_norm_solid(
     }
 }
 
-extern void rend_obj_calculate_normal(
+void rend_obj_calculate_normal(
 /************************************/
     rend_obj *  obj
 ) {
@@ -792,7 +792,7 @@ static bool clip_3d_line(
     return (!(start_in || end_in));
 }
 
-extern rend_obj * rend_obj_clip(
+rend_obj * rend_obj_clip(
 /******************************/
 /* Clip obj by the plane defined by norm and put the result in memory */
 /* allocated by alloc and return a pointer to it */
@@ -988,7 +988,7 @@ static void set_line(
 
 #endif
 
-extern rend_obj * rend_obj_create_sweep(
+rend_obj * rend_obj_create_sweep(
 /**************************************/
     rend_obj_add    *add
 /*
@@ -1041,7 +1041,7 @@ convention the faces of the solid are constructed as follows:
     return( new_obj );
 }
 
-extern void rend_obj_add_sweep(
+void rend_obj_add_sweep(
 /*****************************/
     rend_obj_add    *add
 ) {
@@ -1079,7 +1079,7 @@ static void transform_solid(
     }
 }
 
-extern void rend_obj_transform(
+void rend_obj_transform(
 /*****************************/
 /* apply the transformation matrix to the points of obj */
     rend_obj *  obj,
@@ -1102,7 +1102,7 @@ extern void rend_obj_transform(
     }
 }
 
-extern void point_homo_to_3d(
+void point_homo_to_3d(
 /***************************/
     point *     pt
 ) {
@@ -1139,7 +1139,7 @@ static void homo_to_3d_solid(
     }
 }
 
-extern void rend_obj_homo_to_3d(
+void rend_obj_homo_to_3d(
 /******************************/
 /* Change the points of obj from homogenous coordinates to 3d coordinates */
 /* by deviding by W */
@@ -1162,7 +1162,7 @@ extern void rend_obj_homo_to_3d(
     }
 }
 
-extern hls_colour rend_obj_get_base_colour(
+hls_colour rend_obj_get_base_colour(
 /*****************************************/
     rend_obj    *obj
 ) {
@@ -1171,7 +1171,7 @@ extern hls_colour rend_obj_get_base_colour(
 
 #if 0
 /* macroed */
-extern bool polygon_edge_hilight(
+bool polygon_edge_hilight(
 /*******************************/
     rend_obj    *obj,           // must be a polygon type
     int         edge_num
@@ -1188,7 +1188,7 @@ extern bool polygon_edge_hilight(
 }
 #endif
 
-extern void rend_obj_region_begin(
+void rend_obj_region_begin(
 /********************************/
     rend_obj *  obj
 ) {
@@ -1206,7 +1206,7 @@ extern void rend_obj_region_begin(
     }
 }
 
-extern void rend_obj_region_end(
+void rend_obj_region_end(
 /******************************/
     rend_obj *  obj
 ) {
@@ -1226,7 +1226,7 @@ extern void rend_obj_region_end(
 /* DEBUG ROUTINES */
 #include <stdio.h>
 
-extern void dbg_print_pt(
+void dbg_print_pt(
 /***********************/
     FILE    *fp,
     point   pt,
@@ -1237,7 +1237,7 @@ extern void dbg_print_pt(
                     (double) pt.p[2], (double) pt.p[3] );
 }
 
-extern void dbg_print_vect(
+void dbg_print_vect(
 /*************************/
     FILE    *fp,
     vector  vect,
@@ -1248,7 +1248,7 @@ extern void dbg_print_vect(
                     (double) vect.v[2], (double) vect.v[3] );
 }
 
-extern void dbg_print_vertex_list(
+void dbg_print_vertex_list(
 /********************************/
     FILE        *fp,
     vertex_list *list
@@ -1261,7 +1261,7 @@ extern void dbg_print_vertex_list(
     }
 }
 
-extern void dbg_print_index(
+void dbg_print_index(
 /**************************/
     FILE        *fp,
     int         num_pts,
@@ -1285,7 +1285,7 @@ extern void dbg_print_index(
     fputc( '\n', fp );
 }
 
-extern void dbg_print_poly(
+void dbg_print_poly(
 /*************************/
     FILE    *fp,
     polygon *poly
@@ -1298,7 +1298,7 @@ extern void dbg_print_poly(
     dbg_print_vertex_list( fp, poly->pts );
 }
 
-extern void dbg_print_face(
+void dbg_print_face(
 /*************************/
     FILE *      fp,
     face *      side
@@ -1309,7 +1309,7 @@ extern void dbg_print_face(
     dbg_print_index( fp, side->num_pts, side->index, "\n\t    " );
 }
 
-extern void dbg_print_solid(
+void dbg_print_solid(
 /**************************/
     FILE        *fp,
     polyhedron  *solid
@@ -1366,7 +1366,7 @@ static void dbg_print_common_obj(
     dbg_print_region_info( fp, obj->rgn, "\tregion:" );
 }
 
-extern void dbg_print_one_obj(
+void dbg_print_one_obj(
 /****************************/
     FILE        *fp,
     rend_obj    *obj,
@@ -1406,7 +1406,7 @@ extern void dbg_print_one_obj(
     }
 }
 
-extern void dbg_get_filename(
+void dbg_get_filename(
 /***************************/
 /* path should be a buffer of size _MAX_PATH */
     char *  path
@@ -1421,7 +1421,7 @@ extern void dbg_get_filename(
 }
 
 
-extern void dbg_print_obj(
+void dbg_print_obj(
 /************************/
     rend_obj *  obj
 ) {

@@ -271,7 +271,7 @@ the light source will be placed, is at (.5, .5, .5).
     pipe->pt_intensity = contrast * brightness;
 }
 
-extern void _w3init(
+void _w3init(
 /******************/
     three_d_op *    view,
     float           base_zoom,
@@ -291,21 +291,21 @@ extern void _w3init(
     _free( pview );
 }
 
-extern void _w3shutdown(
+void _w3shutdown(
 /**********************/
     void
 ) {
     pipe3d_shutdown();
 }
 
-extern void _w3display_all(
+void _w3display_all(
 /*************************/
     void
 ) {
     pipe3d_display();
 }
 
-extern void _w3get_view_dir(
+void _w3get_view_dir(
 /**************************/
 /* Gets the viewing direction based on the angles given in view */
 /* NOTE: The assumtion made in this routine are valid for the restricted */
@@ -326,21 +326,21 @@ extern void _w3get_view_dir(
     dir->zcoord = - vpn.v[2] / len;
 }
 
-extern void _w3setcolour(
+void _w3setcolour(
 /***********************/
     COLORREF    rgb
 ) {
     rgb_to_hls( rgb, &Curr_colour );
 }
 
-extern void _w3setlinestyle(
+void _w3setlinestyle(
 /**************************/
     line_style  style
 ) {
     Curr_line_style = style;
 }
 
-extern void _w3setblackedges(
+void _w3setblackedges(
 /***************************/
     bool    black_edges
 ) {
@@ -373,7 +373,7 @@ static void polar_to_rect(
     *y = r * sin( omega );
 }
 
-extern void ellipse_pt(
+void ellipse_pt(
 /*********************/
 /* Calculated the point on the ellipse at angle alpha */
     float       h_sqr,              // horizontal axis squared
@@ -509,7 +509,7 @@ static pt_edge * pie_to_poly(
     return( pts );
 }
 
-extern void _w3pie(
+void _w3pie(
 /*****************/
 /* This function adds a pie wedge to the 3d pipeline. The wedge will be in */
 /* the 0-1 cube and will range from y=.5 - height/2 to y=.5 + height/2 */
@@ -652,7 +652,7 @@ static void add_zero_bar(
     pipe3d_add( new_obj, NULL, FALSE );
 }
 
-extern void _w3bar(
+void _w3bar(
 /*****************/
 /* Adds a bar to the 3d pipeline whose front face is the rect with corners */
 /* pt1 and pt2, and which has top and bottom edges parallel to the x axis */
@@ -691,14 +691,14 @@ extern void _w3bar(
     _free( new_obj.pts );
 }
 
-extern void _w3moveto(
+void _w3moveto(
 /********************/
     w3coord     pt
 ) {
     Curr_line_pt = pt;
 }
 
-extern void _w3lineto(
+void _w3lineto(
 /********************/
     w3coord     pt,
     bool        disp_now
@@ -723,7 +723,7 @@ extern void _w3lineto(
     Curr_line_pt = pt;
 }
 
-extern void _w3transformpoint(
+void _w3transformpoint(
 /****************************/
     const w3coord *     pt_3d,
     wcoord *            pt_2d
@@ -739,7 +739,7 @@ extern void _w3transformpoint(
     project_pt( homo_pt, &(pt_2d->xcoord), &(pt_2d->ycoord) );
 }
 
-extern void _w3rgnon(
+void _w3rgnon(
 /*******************/
     int         major_id,
     int         minor_id,
@@ -760,14 +760,14 @@ extern void _w3rgnon(
     Region.set_num = set_num;
 }
 
-extern void _w3rgnoff(
+void _w3rgnoff(
 /********************/
     void
 ) {
     Region.use_info = USE_RGN_NONE;
 }
 
-extern void _w3rgnsetadd(
+void _w3rgnsetadd(
 /***********************/
 /* Adds the projection of a point to the current manual set, if there is one */
     w3coord *   pt_3
@@ -782,7 +782,7 @@ extern void _w3rgnsetadd(
     }
 }
 
-extern void _w3polygon(
+void _w3polygon(
 /*********************/
     int         num_pts,
     w3coord *   pts,
@@ -806,7 +806,7 @@ extern void _w3polygon(
     }
 }
 
-extern void _w3area(
+void _w3area(
 /*******************/
 /*
 The points are assumed to be in counter clockwise order as seen from

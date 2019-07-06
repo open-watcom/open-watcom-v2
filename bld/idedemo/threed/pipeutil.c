@@ -71,7 +71,7 @@ static void check_list_size(
     }
 }
 
-extern bool rend_list_init(
+bool rend_list_init(
 /*************************/
     rend_list *     list
 ) {
@@ -89,7 +89,7 @@ extern bool rend_list_init(
 
 #if 0
 /* macroed */
-extern bool rend_list_is_empty(
+bool rend_list_is_empty(
 /*****************************/
     rend_list *     list
 ) {
@@ -97,7 +97,7 @@ extern bool rend_list_is_empty(
 }
 #endif
 
-extern void rend_list_add(
+void rend_list_add(
 /************************/
     rend_list *     list,
     rend_obj *      obj
@@ -108,14 +108,14 @@ extern void rend_list_add(
     list->list[ list->last ] = obj;
 }
 
-extern void rend_list_free(
+void rend_list_free(
 /*************************/
     rend_list *     list
 ) {
     _gfree( list->list );
 }
 
-extern void rend_list_sort(
+void rend_list_sort(
 /*************************/
     rend_list *     list,
     int             (*compare) (const rend_obj **, const rend_obj **)
@@ -123,7 +123,7 @@ extern void rend_list_sort(
     qsort( list->list, list->last + 1, sizeof(rend_obj *), (int (*)(const void *, const void *))compare );
 }
 
-extern void rend_list_bin_insert(
+void rend_list_bin_insert(
 /*******************************/
 /* Uses a binary search to insert obj into a sublist of list. The sublist is */
 /* given by start and end. */
@@ -163,7 +163,7 @@ extern void rend_list_bin_insert(
 }
 
 
-extern void rend_list_insert(
+void rend_list_insert(
 /***************************/
     rend_list *     list,
     rend_list_ref * ref,
@@ -186,7 +186,7 @@ extern void rend_list_insert(
     list->list[ *ref ] = obj;
 }
 
-extern void rend_list_delete(
+void rend_list_delete(
 /***************************/
     rend_list *     list,
     rend_list_ref * ref
@@ -201,7 +201,7 @@ extern void rend_list_delete(
 
 #if 0
 /* macroed */
-extern rend_obj * rend_list_get_obj(
+rend_obj * rend_list_get_obj(
 /**********************************/
     rend_list *     list,
     rend_list_ref   ref
@@ -212,7 +212,7 @@ extern rend_obj * rend_list_get_obj(
 
 #if 0
 /* macroed */
-extern void rend_list_set_obj(
+void rend_list_set_obj(
 /****************************/
     rend_list *     list,
     rend_list_ref   ref,
@@ -224,7 +224,7 @@ extern void rend_list_set_obj(
 
 #if 0
 /* macroed */
-extern bool rend_list_next(
+bool rend_list_next(
 /*************************/
     rend_list *     list,
     rend_list_ref * ref
@@ -236,7 +236,7 @@ extern bool rend_list_next(
 
 #if 0
 /* macroed */
-extern bool rend_list_prev(
+bool rend_list_prev(
 /*************************/
     rend_list *     list,
     rend_list_ref * ref
@@ -250,7 +250,7 @@ extern bool rend_list_prev(
 
 #if 0
 /* macroed */
-extern bool rend_list_is_before_first(
+bool rend_list_is_before_first(
 /************************************/
     rend_list *     list,
     rend_list_ref   ref
@@ -263,7 +263,7 @@ extern bool rend_list_is_before_first(
 
 #if 0
 /* macroed */
-extern bool rend_list_is_after_last(
+bool rend_list_is_after_last(
 /**********************************/
     rend_list *     list,
     rend_list_ref   ref
@@ -274,7 +274,7 @@ extern bool rend_list_is_after_last(
 
 #if 0
 /* macroed */
-extern void rend_list_first(
+void rend_list_first(
 /**************************/
     rend_list *     list,
     rend_list_ref * ref
@@ -287,7 +287,7 @@ extern void rend_list_first(
 
 #if 0
 /* macroed */
-extern void rend_list_last(
+void rend_list_last(
 /*************************/
     rend_list *     list,
     rend_list_ref * ref
@@ -298,7 +298,7 @@ extern void rend_list_last(
 
 
 /* vector manipulation routines */
-extern vector cross_prod(
+vector cross_prod(
 /***********************/
     vector  v,
     vector  w
@@ -312,7 +312,7 @@ extern vector cross_prod(
     return( r );
 }
 
-extern float norm(
+float norm(
 /****************/
 /* This function computes the norm of a vector. Don't confuse this with */
 /* the normal vector (of a plane) which is sometime called norm in this code */
@@ -323,7 +323,7 @@ extern float norm(
 
 #if 0
 /* macroed */
-extern float dot_prod_vp(
+float dot_prod_vp(
 /***********************/
 /* Dot product of a vector and a point. Used to evaluate plane equations */
     vector  vect,
@@ -333,7 +333,7 @@ extern float dot_prod_vp(
                 pt.p[3]*vect.v[3] );
 }
 
-extern float dot_prod_vv(
+float dot_prod_vv(
 /***********************/
 /* Dot product of two vectors */
 /* bound. */
@@ -345,7 +345,7 @@ extern float dot_prod_vv(
 }
 #endif
 
-extern vector calculate_normal_vector(
+vector calculate_normal_vector(
 /************************************/
 /* This uses the techniques describe in "Computer Graphics" by Foley et. al. */
 /* section 11.1.3, pp. 476, 477 */
@@ -393,7 +393,7 @@ extern vector calculate_normal_vector(
     return( normal );
 }
 
-extern vector point_diff(
+vector point_diff(
 /***********************/
     point   pt1,
     point   pt2
@@ -410,7 +410,7 @@ extern vector point_diff(
 
 
 /* matrix manipulation routines */
-extern point mult_matrix_pt(
+point mult_matrix_pt(
 /**************************/
     float   matrix[4][4],
     point   in
@@ -469,7 +469,7 @@ static bool line_intersection(
     }
 }
 
-extern bool proj_line_intersection(
+bool proj_line_intersection(
 /*********************************/
 /* Determine if the projection of line1 and line2 into the x-y plane intersect*/
 /* Returns true if the line segments line1 and line2 intersect. */
@@ -500,7 +500,7 @@ extern bool proj_line_intersection(
 
 
 /* RGB to/from HLS conversions */
-extern void rgb_to_hls(
+void rgb_to_hls(
 /*********************/
 /* This is base on the procedure given in "Computer Graphics" by Foley et. */
 /* al. p. 595 */
@@ -576,7 +576,7 @@ static float value(
     }
 }
 
-extern void hls_to_rgb(
+void hls_to_rgb(
 /*********************/
     COLORREF    *rgb,
     hls_colour  hls
@@ -643,7 +643,7 @@ static bool ray_line_inter(
     }
 }
 
-extern bool rect_ray_inter(
+bool rect_ray_inter(
 /*************************/
     wcoord      rect[2],
     wcoord      ray_start,
@@ -698,7 +698,7 @@ extern bool rect_ray_inter(
 /* DEBUG ROUTINES */
 #include <stdio.h>
 
-extern void dbg_print_list(
+void dbg_print_list(
 /*************************/
     rend_list *     list
 ) {
@@ -724,7 +724,7 @@ extern void dbg_print_list(
     fclose( fp );
 }
 
-extern void dbg_print_list_long(
+void dbg_print_list_long(
 /******************************/
     rend_list *     list
 ) {

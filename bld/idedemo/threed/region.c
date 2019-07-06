@@ -322,7 +322,7 @@ void rgn_end_set(
     }
 }
 
-extern int rgn_man_group_new(
+int rgn_man_group_new(
 /***************************/
     void
 ) {
@@ -340,7 +340,7 @@ extern int rgn_man_group_new(
     return( group_num );
 }
 
-extern void rgn_man_group_begin(
+void rgn_man_group_begin(
 /******************************/
     int     group_num
 ) {
@@ -352,7 +352,7 @@ extern void rgn_man_group_begin(
     }
 }
 
-extern void rgn_man_group_end(
+void rgn_man_group_end(
 /****************************/
     void
 ) {
@@ -361,7 +361,7 @@ extern void rgn_man_group_end(
     }
 }
 
-extern int rgn_man_set_new(
+int rgn_man_set_new(
 /*************************/
     void
 ) {
@@ -379,7 +379,7 @@ extern int rgn_man_set_new(
     return( group_num );
 }
 
-extern void rgn_man_set_begin(
+void rgn_man_set_begin(
 /****************************/
     int     set_num
 ) {
@@ -391,7 +391,7 @@ extern void rgn_man_set_begin(
     }
 }
 
-extern void rgn_man_set_end(
+void rgn_man_set_end(
 /**************************/
     void
 ) {
@@ -1712,7 +1712,7 @@ static HANDLE do_group_set_markers(
     }
 }
 
-extern void get_rgn_rect(
+void get_rgn_rect(
 /***********************/
     void far            *rgn_ptr,
     WPI_RECT            *rect
@@ -1725,7 +1725,7 @@ extern void get_rgn_rect(
     }
 }
 
-extern int get_line_point(
+int get_line_point(
 /************************/
     void far            *rgn_ptr,
     int                 pos_x,
@@ -1753,7 +1753,7 @@ extern int get_line_point(
     return( 0 );
 }
 
-extern void get_rgn_line(
+void get_rgn_line(
 /***********************/
     void far            *rgn_ptr,
     WPI_POINT           *p1,

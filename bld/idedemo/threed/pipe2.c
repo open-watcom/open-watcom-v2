@@ -82,7 +82,7 @@ static pipe_illum Illum_param;
 static bool All_poly_convex = TRUE;
 
 /* 2D display */
-extern void project_pt(
+void project_pt(
 /*********************/
 /*to project a point take its x and y coords and map them from [-1,1] to [0,1]*/
     point   pt,             // 3d point
@@ -265,7 +265,7 @@ static hls_colour illuminate_poly(
     return( final_col );
 }
 
-extern void draw_illuminated_obj(
+void draw_illuminated_obj(
 /*******************************/
     rend_obj    *obj
 ) {
@@ -287,14 +287,14 @@ extern void draw_illuminated_obj(
     draw_projected_obj( obj, edge, illum );
 }
 
-extern void set_poly_convex_info(
+void set_poly_convex_info(
 /*******************************/
     bool        all_poly_convex
 ) {
     All_poly_convex = all_poly_convex;
 }
 
-extern void set_illumination(
+void set_illumination(
 /***************************/
     pipe_illum  *illum
 ) {
@@ -1151,7 +1151,7 @@ static void display_visible_surfaces(
     }
 }
 
-extern void pipe3d_display(
+void pipe3d_display(
 /*************************/
     void
 ) {

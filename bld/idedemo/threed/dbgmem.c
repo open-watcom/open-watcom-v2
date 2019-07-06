@@ -76,8 +76,6 @@ typedef struct {
 
 #define _mk_dbg( x ) (dbg_mem DFAR *)( (char DFAR *)x - sizeof( dbg_mem ) + 1 )
 
-extern int dbg_mem_check( dbg_list DFAR *mem_ctl );
-
 static int dbg_error(
 /*******************/
 /* always returns false */

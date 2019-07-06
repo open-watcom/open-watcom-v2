@@ -85,7 +85,7 @@ static void calc_text_pt(
 }
 
 
-extern void pipe3d_add(
+void pipe3d_add(
 /*********************/
 /* perform the operations of the first half of the pipeline on obj then add */
 /* it to the list of objects */
@@ -116,7 +116,7 @@ extern void pipe3d_add(
     rend_obj_lfree( obj );
 }
 
-extern void pipe3d_trans_pt(
+void pipe3d_trans_pt(
 /**************************/
     point *     pt
 ) {
@@ -358,7 +358,7 @@ static void set_view_trans_mat(
     _free( mat3 );
 }
 
-extern void pipe3d_init(
+void pipe3d_init(
 /**********************/
     pipe_view   *view,
     pipe_illum  *illum,
@@ -372,7 +372,7 @@ extern void pipe3d_init(
     rend_list_init( Pipe3dList );
 }
 
-extern void pipe3d_shutdown(
+void pipe3d_shutdown(
 /**************************/
     void
 ) {

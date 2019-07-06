@@ -72,7 +72,7 @@ static void add_new_mem_block(
     PipeMemHeader = new_block;
 }
 
-extern void * pipe_alloc(
+void * pipe_alloc(
 /***********************/
     size_t          size
 ) {
@@ -96,7 +96,7 @@ extern void * pipe_alloc(
     return( mem );
 }
 
-extern void pipe_free_all(
+void pipe_free_all(
 /************************/
     void
 ) {
