@@ -167,7 +167,7 @@ jobs:
         - pwd
         - echo $OWSRCDIR
         # save build to cache (buildx)
-        - cp $CP_OPTS $OWSRCDIR/ buildx/
+        - cp $CP_OPTS $OWSRCDIR/. buildx/
     - # ...
       name: "OW tools build-1 Windows"
       if: branch = env(OWBRANCH) AND (type = cron OR (type = push AND env(OWTRAVIS_ALL) = 1))
@@ -208,14 +208,14 @@ jobs:
         - . ./cmnvars.sh
       script:
         # load build from cache (buildx)
-        - cp $CP_OPTS buildx/ $OWSRCDIR/; true
+        - cp $CP_OPTS buildx/. $OWSRCDIR/; true
         # run script
         - travis/build.sh
       before_cache:
         - pwd
         - echo $OWSRCDIR
         # save build to cache (buildx)
-        - cp $CP_OPTS $OWSRCDIR/ buildx/
+        - cp $CP_OPTS $OWSRCDIR/. buildx/
     - # ...
       name: "OW tools build-2 Windows"
       if: branch = env(OWBRANCH) AND (type = cron OR (type = push AND env(OWTRAVIS_ALL) = 1))
@@ -261,14 +261,14 @@ jobs:
         - . ./cmnvars.sh
       script:
         # load build from cache (buildx)
-        - cp $CP_OPTS buildx/ $OWSRCDIR/; true
+        - cp $CP_OPTS buildx/. $OWSRCDIR/; true
         # run script
         - travis/build.sh
       before_cache:
         - pwd
         - echo $OWSRCDIR
         # save build to cache (buildx)
-        - cp $CP_OPTS $OWSRCDIR/ buildx/
+        - cp $CP_OPTS $OWSRCDIR/. buildx/
     - # ...
       name: "OW tools build-3 Windows"
       if: branch = env(OWBRANCH) AND (type = cron OR (type = push AND env(OWTRAVIS_ALL) = 1))
