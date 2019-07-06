@@ -39,6 +39,8 @@ gitupds_proc()
                         if [ "$TRAVIS_OS_NAME" = "linux" ]; then
                             export OWRELROOT=$OWTRAVIS_BUILD_DIR
                             builder cprel
+                        elif [ "$OWTRAVIS_DEBUG" = "1" ]; then
+                            cp -Rfv $OWRELROOT/binnt64 $OWTRAVIS_BUILD_DIR/binnt64
                         else
                             cp -Rf $OWRELROOT/binnt64 $OWTRAVIS_BUILD_DIR/binnt64
                         fi
