@@ -123,12 +123,8 @@ jobs:
         - rm -rf test/*
         - rm -rf buildx/*
       install:
-        - if [ "$OWTRAVIS_DEBUG" = "1" ]; then 
-            export ECHO_OFF=on;
-          else
-            export ECHO_OFF=off;
-          fi
       script:
+        - if [ "$OWTRAVIS_DEBUG" = "1" ]; then export ECHO_OFF=on; else export ECHO_OFF=off; fi
         - cmd.exe /c "travis\winboot.cmd"
     #################################
     - stage: Build
@@ -146,8 +142,9 @@ jobs:
         - . ./cmnvars.sh
       script:
         - travis/build.sh
-#        - travis/cprel.sh
       before_cache:
+        - pwd
+        - echo $OWSRCDIR
         # save build to cache (buildx)
         - cp -Rfu $OWSRCDIR/. buildx
     - # ...
@@ -165,8 +162,9 @@ jobs:
         - . ./cmnvars.sh
       script:
         - travis/build.sh
-#        - travis/cprel.sh
       before_cache:
+        - pwd
+        - echo $OWSRCDIR
         # save build to cache (buildx)
         - cp -Rn $OWSRCDIR/ buildx/
     - # ...
@@ -183,17 +181,14 @@ jobs:
         - export OWSRCDIR=$OWROOT/bld
       install:
 #        - install dosbox
-        - if [ "$OWTRAVIS_DEBUG" = "1" ]; then 
-            export ECHO_OFF=on;
-          else
-            export ECHO_OFF=off;
-          fi
       script:
+        - if [ "$OWTRAVIS_DEBUG" = "1" ]; then export ECHO_OFF=on; else export ECHO_OFF=off; fi
         - cmd.exe /c "travis\winbuild.cmd"
       before_cache:
+        - pwd
+        - echo $OWSRCDIR
         # save build to cache (buildx)
         - cp -Rfu $OWSRCDIR/. buildx
-#        - travis/cprel.sh
     #################################
     - stage: Build2
       name: "OW tools build-2 OSX"
@@ -216,8 +211,9 @@ jobs:
         - cp -Rn buildx/ $OWSRCDIR/; true
         # run script
         - travis/build.sh
-#        - travis/cprel.sh
       before_cache:
+        - pwd
+        - echo $OWSRCDIR
         # save build to cache (buildx)
         - cp -Rn $OWSRCDIR/ buildx/
     - # ...
@@ -234,18 +230,17 @@ jobs:
         - export OWSRCDIR=$OWROOT/bld
       install:
 #        - install dosbox
-        - if [ "$OWTRAVIS_DEBUG" = "1" ]; then 
-            export ECHO_OFF=on;
-          else
-            export ECHO_OFF=off;
-          fi
       script:
+        - pwd
+        - echo $OWSRCDIR
         # load build from cache (buildx)
         - cp -Rfu buildx/. $OWSRCDIR; true
         # run script
+        - if [ "$OWTRAVIS_DEBUG" = "1" ]; then export ECHO_OFF=on; else export ECHO_OFF=off; fi
         - cmd.exe /c "travis\winbuild.cmd"
-#        - travis/cprel.sh
       before_cache:
+        - pwd
+        - echo $OWSRCDIR
         # save build to cache (buildx)
         - cp -Rfu $OWSRCDIR/. buildx
     #################################
@@ -270,8 +265,9 @@ jobs:
         - cp -Rn buildx/ $OWSRCDIR/; true
         # run script
         - travis/build.sh
-#        - travis/cprel.sh
       before_cache:
+        - pwd
+        - echo $OWSRCDIR
         # save build to cache (buildx)
         - cp -Rn $OWSRCDIR/ buildx/
     - # ...
@@ -288,18 +284,17 @@ jobs:
         - export OWSRCDIR=$OWROOT/bld
       install:
 #        - install dosbox
-        - if [ "$OWTRAVIS_DEBUG" = "1" ]; then 
-            export ECHO_OFF=on;
-          else
-            export ECHO_OFF=off;
-          fi
       script:
+        - pwd
+        - echo $OWSRCDIR
         # load build from cache (buildx)
         - cp -Rfu buildx/. $OWSRCDIR; true
         # run script
+        - if [ "$OWTRAVIS_DEBUG" = "1" ]; then export ECHO_OFF=on; else export ECHO_OFF=off; fi
         - cmd.exe /c "travis\winbuild.cmd"
-#        - travis/cprel.sh
       before_cache:
+        - pwd
+        - echo $OWSRCDIR
         # save build to cache (buildx)
         - cp -Rfu $OWSRCDIR/. buildx
     #################################

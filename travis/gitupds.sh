@@ -47,11 +47,11 @@ gitupds_proc()
                         #
                         cd $OWTRAVIS_BUILD_DIR
                         git add $GITVERBOSE2 -f .
-                        if [ "$TRAVIS_OS_NAME" = "linux" ]; then
+#                        if [ "$TRAVIS_OS_NAME" = "linux" ]; then
 #                            git commit $GITVERBOSE1 -m "Travis CI build $TRAVIS_JOB_NUMBER - OW distribution (linux)"
-                        else
+#                        else
 #                            git commit $GITVERBOSE1 -m "Travis CI build $TRAVIS_JOB_NUMBER - OW distribution (windows)"
-                        fi
+#                        fi
                         git push $GITVERBOSE1 -f origin
                         cd $TRAVIS_BUILD_DIR
                         echo_msg="gitupds.sh - done"
