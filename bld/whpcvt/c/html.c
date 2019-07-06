@@ -88,8 +88,8 @@ static void draw_line( section_def *section, allocsize *alloc_size )
     trans_add_str( "<HR>\n", section, alloc_size );
 }
 
-static size_t translate_char_html( int ch, int next_ch, char *buf )
-/*****************************************************************/
+static size_t translate_char_html( char ch, char next_ch, char *buf )
+/*******************************************************************/
 {
     switch( ch ) {
     case '<':
@@ -118,17 +118,17 @@ static size_t translate_char_html( int ch, int next_ch, char *buf )
     return( strlen( buf ) );
 }
 
-static char *translate_str_html( char *str )
-/******************************************/
+static char *translate_str_html( const char *str )
+/************************************************/
 {
-    unsigned char   *t_str;
+    const char      *t_str;
     size_t          len;
     char            buf[IPF_TRANS_LEN];
     char            *ptr;
 
     len = 1;
-    for( t_str = (unsigned char *)str; *t_str != '\0'; ++t_str ) {
-        len += translate_char_html( *t_str, *(t_str + 1), buf );
+    for( t_str = str; *t_str != '\0'; ++t_str ) {
+        len += translate_char_html( t_str[0], t_str[1], buf );
     }
     if( len > Trans_len ) {
         if( Trans_str != NULL ) {
@@ -138,8 +138,8 @@ static char *translate_str_html( char *str )
         Trans_len = len;
     }
     ptr = Trans_str;
-    for( t_str = (unsigned char *)str; *t_str != '\0'; ++t_str ) {
-        len = translate_char_html( *t_str, *(t_str + 1), buf );
+    for( t_str = str; *t_str != '\0'; ++t_str ) {
+        len = translate_char_html( t_str[0], t_str[1], buf );
         strcpy( ptr, buf );
         ptr += len;
     }
@@ -147,8 +147,8 @@ static char *translate_str_html( char *str )
     return( Trans_str );
 }
 
-static size_t trans_add_char_html( int ch, int next_ch, section_def *section, allocsize *alloc_size )
-/***************************************************************************************************/
+static size_t trans_add_char_html( char ch, char next_ch, section_def *section, allocsize *alloc_size )
+/*****************************************************************************************************/
 {
     char        buf[IPF_TRANS_LEN];
 
@@ -156,14 +156,14 @@ static size_t trans_add_char_html( int ch, int next_ch, section_def *section, al
     return( trans_add_str( buf, section, alloc_size ) );
 }
 
-static size_t trans_add_str_html( char *str, section_def *section, allocsize *alloc_size )
-/****************************************************************************************/
+static size_t trans_add_str_html( const char *str, section_def *section, allocsize *alloc_size )
+/**********************************************************************************************/
 {
     size_t      len;
 
     len = 0;
     for( ; *str != '\0'; ++str ) {
-        len += trans_add_char_html( *(unsigned char *)str, *(unsigned char *)(str + 1), section, alloc_size );
+        len += trans_add_char_html( str[0], str[1], section, alloc_size );
     }
     return( len );
 }
@@ -234,7 +234,7 @@ allocsize html_trans_line( section_def *section, allocsize alloc_size )
 {
     char                *ptr;
     char                *end;
-    int                 ch;
+    char                ch;
     char                *ctx_name;
     char                *ctx_text;
     char                buf[500];
@@ -247,7 +247,7 @@ allocsize html_trans_line( section_def *section, allocsize alloc_size )
 
     /* check for special column 0 stuff first */
     ptr = Line_buf;
-    ch = *(unsigned char *)ptr;
+    ch = *ptr;
     ch_len = 0;
     line_len = 0;
 
@@ -357,7 +357,7 @@ allocsize html_trans_line( section_def *section, allocsize alloc_size )
 
     Blank_line_sfx = true;
 
-    ch = *(unsigned char *)ptr;
+    ch = *ptr;
     if( ch != CH_LIST_ITEM && ch != CH_DLIST_TERM && ch != CH_DLIST_DESC && !Tab_xmp ) {
         /* a .br in front of li and dt would generate extra spaces */
         line_len += trans_add_str( "<BR>", section, &alloc_size );
@@ -365,7 +365,7 @@ allocsize html_trans_line( section_def *section, allocsize alloc_size )
 
     term_fix = false;
     for( ;; ) {
-        ch = *(unsigned char *)ptr;
+        ch = *ptr;
         if( ch == '\0' ) {
             if( term_fix ) {
 //              trans_add_str( "</hp2>", section, &alloc_size );
@@ -436,8 +436,9 @@ allocsize html_trans_line( section_def *section, allocsize alloc_size )
             Blank_line_sfx = false;
         } else if( ch == CH_CTX_KW ) {
             end = strchr( ptr + 1, CH_CTX_KW );
-            memcpy( buf, ptr + 1, end - ptr - 1 );
-            buf[end - ptr - 1] = '\0';
+            len = end - ptr - 1;
+            memcpy( buf, ptr + 1, len );
+            buf[len] = '\0';
             add_ctx_keyword( Curr_ctx, buf );
             ptr = end + 1;
             if( *ptr == ' ' ) {
@@ -452,7 +453,7 @@ allocsize html_trans_line( section_def *section, allocsize alloc_size )
         } else if( ch == CH_BMP ) {
             Curr_ctx->empty = false;
             ++ptr;
-            ch = *(unsigned char *)ptr;
+            ch = *ptr;
             ptr += 2;
             end = strchr( ptr, CH_BMP );
             *end = '\0';
@@ -537,7 +538,7 @@ allocsize html_trans_line( section_def *section, allocsize alloc_size )
                     ptr++;
                 }
             } else {
-                line_len += trans_add_char_html( ch, *(unsigned char *)ptr, section, &alloc_size );
+                line_len += trans_add_char_html( ch, *ptr, section, &alloc_size );
                 ++ch_len;
             }
         }
@@ -550,8 +551,8 @@ static void output_hdr( void )
 /****************************/
 {
     whp_fprintf( Out_file, "<HEAD>\n" );
-    if( Ipf_title != NULL && Ipf_title[0] != '\0' ) {
-        whp_fprintf( Out_file, "<TITLE> %s </TITLE>\n", Ipf_title );
+    if( Ipf_or_Html_title != NULL && Ipf_or_Html_title[0] != '\0' ) {
+        whp_fprintf( Out_file, "<TITLE> %s </TITLE>\n", Ipf_or_Html_title );
     }
     whp_fprintf( Out_file, "</HEAD>\n" );
     whp_fprintf( Out_file, "<BODY>\n" );
@@ -620,7 +621,7 @@ static void output_ctx_hdr( ctx_def *ctx )
     }
 #endif
 
-    if( Real_ipf_font ) {
+    if( Ipf_or_Html_Real_font ) {
         /* The default font is system, which wouldn't be right */
         whp_fprintf( Out_file, "<font facename=Helv size=10x10>\n" );
     }
@@ -654,7 +655,7 @@ void html_output_file( void )
     output_hdr();
     for( ctx = Ctx_list; ctx != NULL; ctx = ctx->next ) {
         if( !Remove_empty || !ctx->empty || ctx->req_by_link ) {
-            if( !Exclude_special || !is_special_topic( ctx, false ) ) {
+            if( !Exclude_special_topics || !is_special_topic( ctx, false ) ) {
                 output_ctx_hdr( ctx );
                 output_ctx_sections( ctx );
             }

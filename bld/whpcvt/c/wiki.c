@@ -89,8 +89,8 @@ static void draw_line( section_def *section, allocsize *alloc_size )
     trans_add_str( "----\n", section, alloc_size );
 }
 
-static size_t translate_char_wiki( int ch, int next_ch, char *buf )
-/*****************************************************************/
+static size_t translate_char_wiki( char ch, char next_ch, char *buf )
+/*******************************************************************/
 {
     switch( ch ) {
 #if 0
@@ -121,17 +121,17 @@ static size_t translate_char_wiki( int ch, int next_ch, char *buf )
     return( strlen( buf ) );
 }
 
-static char *translate_str_wiki( char *str )
-/******************************************/
+static char *translate_str_wiki( const char *str )
+/************************************************/
 {
-    unsigned char       *t_str;
-    size_t              len;
-    char                buf[WIKI_TRANS_LEN];
-    char                *ptr;
+    const char      *t_str;
+    size_t          len;
+    char            buf[WIKI_TRANS_LEN];
+    char            *ptr;
 
     len = 1;
-    for( t_str = (unsigned char *)str; *t_str != '\0'; ++t_str ) {
-        len += translate_char_wiki( *t_str, *(t_str+1), buf );
+    for( t_str = str; *t_str != '\0'; ++t_str ) {
+        len += translate_char_wiki( t_str[0], t_str[1], buf );
     }
     if( len > Trans_len ) {
         if( Trans_str != NULL ) {
@@ -141,8 +141,8 @@ static char *translate_str_wiki( char *str )
         Trans_len = len;
     }
     ptr = Trans_str;
-    for( t_str = (unsigned char *)str; *t_str != '\0'; ++t_str ) {
-        len = translate_char_wiki( *t_str, *(t_str+1), buf );
+    for( t_str = str; *t_str != '\0'; ++t_str ) {
+        len = translate_char_wiki( t_str[0], t_str[1], buf );
         strcpy( ptr, buf );
         ptr += len;
     }
@@ -151,8 +151,8 @@ static char *translate_str_wiki( char *str )
     return( Trans_str );
 }
 
-static size_t trans_add_char_wiki( int ch, int next_ch, section_def *section, allocsize *alloc_size )
-/***************************************************************************************************/
+static size_t trans_add_char_wiki( char ch, char next_ch, section_def *section, allocsize *alloc_size )
+/*****************************************************************************************************/
 {
     char            buf[WIKI_TRANS_LEN];
 
@@ -160,15 +160,15 @@ static size_t trans_add_char_wiki( int ch, int next_ch, section_def *section, al
     return( trans_add_str( buf, section, alloc_size ) );
 }
 
-static size_t trans_add_str_wiki( char *str, section_def *section, allocsize *alloc_size )
-/****************************************************************************************/
+static size_t trans_add_str_wiki( const char *str, section_def *section, allocsize *alloc_size )
+/**********************************************************************************************/
 {
     size_t          len;
-    unsigned char   *ptr;
+    const char      *ptr;
 
     len = 0;
-    for( ptr = (unsigned char *)str; *ptr != '\0'; ++ptr ) {
-        len += trans_add_char_wiki( *ptr, *(ptr+1), section, alloc_size );
+    for( ptr = str; *ptr != '\0'; ++ptr ) {
+        len += trans_add_char_wiki( ptr[0], ptr[1], section, alloc_size );
     }
     return( len );
 }
@@ -239,7 +239,7 @@ allocsize wiki_trans_line( section_def *section, allocsize alloc_size )
 {
     char                *ptr;
     char                *end;
-    int                 ch;
+    char                ch;
     char                *ctx_name;
     char                *ctx_text;
     char                buf[500];
@@ -252,7 +252,7 @@ allocsize wiki_trans_line( section_def *section, allocsize alloc_size )
 
     /* check for special column 0 stuff first */
     ptr = Line_buf;
-    ch = *(unsigned char *)ptr;
+    ch = *ptr;
     ch_len = 0;
     line_len = 0;
 
@@ -369,7 +369,7 @@ allocsize wiki_trans_line( section_def *section, allocsize alloc_size )
 
     term_fix = false;
     for( ;; ) {
-        ch = *(unsigned char *)ptr;
+        ch = *ptr;
         if( ch == '\0' ) {
             if( term_fix ) {
 //              trans_add_str( "</hp2>", section, &alloc_size );
@@ -456,7 +456,7 @@ allocsize wiki_trans_line( section_def *section, allocsize alloc_size )
         } else if( ch == CH_BMP ) {
             Curr_ctx->empty = false;
             ++ptr;
-            ch = *(unsigned char *)ptr;
+            ch = *ptr;
             ptr += 2;
             end = strchr( ptr, CH_BMP );
             *end = '\0';
@@ -541,7 +541,7 @@ allocsize wiki_trans_line( section_def *section, allocsize alloc_size )
                     ptr++;
                 }
             } else {
-                line_len += trans_add_char_wiki( ch, *(unsigned char *)ptr, section, &alloc_size );
+                line_len += trans_add_char_wiki( ch, *ptr, section, &alloc_size );
                 ++ch_len;
             }
         }
@@ -618,7 +618,7 @@ void wiki_output_file( void )
 
     for( ctx = Ctx_list; ctx != NULL; ctx = ctx->next ) {
         if( !Remove_empty || !ctx->empty || ctx->req_by_link ) {
-            if( !Exclude_special || !is_special_topic( ctx, false ) ) {
+            if( !Exclude_special_topics || !is_special_topic( ctx, false ) ) {
                 output_ctx_hdr( ctx );
                 output_ctx_sections( ctx );
             }

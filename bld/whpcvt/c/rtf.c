@@ -121,7 +121,7 @@ static void set_compact( char *line )
     }
 }
 
-static size_t translate_char_rtf( int ch, char *buf, bool do_quotes )
+static size_t translate_char_rtf( char ch, char *buf, bool do_quotes )
 /*******************************************************************/
 {
     switch( ch ) {
@@ -148,17 +148,17 @@ static size_t translate_char_rtf( int ch, char *buf, bool do_quotes )
     return( strlen( buf ) );
 }
 
-static char *translate_str_rtf( char *str, bool do_quotes )
-/*********************************************************/
+static char *translate_str_rtf( const char *str, bool do_quotes )
+/***************************************************************/
 {
-    char                *t_str;
+    const char          *t_str;
     size_t              len;
     char                buf[RTF_TRANS_LEN];
     char                *ptr;
 
     len = 1;
     for( t_str = str; *t_str != '\0'; ++t_str ) {
-        len += translate_char_rtf( *(unsigned char *)t_str, buf, do_quotes );
+        len += translate_char_rtf( *t_str, buf, do_quotes );
     }
     if( len > Trans_len ) {
         if( Trans_str != NULL ) {
@@ -169,7 +169,7 @@ static char *translate_str_rtf( char *str, bool do_quotes )
     }
     ptr = Trans_str;
     for( t_str = str; *t_str != '\0'; ++t_str ) {
-        len = translate_char_rtf( *(unsigned char *)t_str, buf, do_quotes );
+        len = translate_char_rtf( *t_str, buf, do_quotes );
         strcpy( ptr, buf );
         ptr += len;
     }
@@ -178,8 +178,8 @@ static char *translate_str_rtf( char *str, bool do_quotes )
     return( Trans_str );
 }
 
-static size_t trans_add_char_rtf( int ch, section_def *section, allocsize *alloc_size )
-/*************************************************************************************/
+static size_t trans_add_char_rtf( char ch, section_def *section, allocsize *alloc_size )
+/**************************************************************************************/
 {
     char        buf[RTF_TRANS_LEN];
 
@@ -242,16 +242,17 @@ allocsize rtf_trans_line( section_def *section, allocsize alloc_size )
 {
     char                *ptr;
     char                *end;
-    int                 ch;
+    char                ch;
     char                *ctx_name;
     char                *ctx_text;
     char                buf[100];
     int                 indent;
     char                *file_name;
+    size_t              len;
 
     /* check for special pre-processing stuff first */
     ptr = Line_buf;
-    ch = *(unsigned char *)ptr;
+    ch = *ptr;
 
     if( Blank_line && ( ch != CH_LIST_ITEM || Curr_list->compact != LIST_SPACE_COMPACT ) ) {
         Blank_line = false;
@@ -381,7 +382,7 @@ allocsize rtf_trans_line( section_def *section, allocsize alloc_size )
 
     Blank_line = true;
     for( ;; ) {
-        ch = *(unsigned char *)ptr;
+        ch = *ptr;
         if( ch != '\0' && ch != ' ' && ch != '\t' ) {
             Blank_line = false;
         }
@@ -415,7 +416,7 @@ allocsize rtf_trans_line( section_def *section, allocsize alloc_size )
             add_link( ctx_name );
             if( ch == CH_HLINK ) {
                 trans_add_str( "{\\f2\\uldb ", section, &alloc_size );
-                trans_add_nobreak_str( translate_str_rtf( ctx_text, false ), section, &alloc_size );
+                trans_add_str_nobreak( translate_str_rtf( ctx_text, false ), section, &alloc_size );
                 trans_add_str( "\\v\\f2\\uldb ", section, &alloc_size );
                 trans_add_str( ctx_name, section, &alloc_size );
                 trans_add_str( "\\v0 ", section, &alloc_size );
@@ -423,7 +424,7 @@ allocsize rtf_trans_line( section_def *section, allocsize alloc_size )
                 trans_add_str( "}", section, &alloc_size );
             } else if( ch == CH_DFN ) {
                 trans_add_str( "{\\f2\\ul ", section, &alloc_size );
-                trans_add_nobreak_str( translate_str_rtf( ctx_text, false ), section, &alloc_size );
+                trans_add_str_nobreak( translate_str_rtf( ctx_text, false ), section, &alloc_size );
                 trans_add_str( "\\v\\f2\\ul ", section, &alloc_size );
                 trans_add_str( ctx_name, section, &alloc_size );
                 trans_add_str( "\\v0 ", section, &alloc_size );
@@ -452,7 +453,7 @@ allocsize rtf_trans_line( section_def *section, allocsize alloc_size )
             *file_name = '\0';
             file_name = ptr + 1;
             trans_add_str( "{\\f2\\uldb ", section, &alloc_size );
-            trans_add_nobreak_str( translate_str_rtf( ctx_text, false ), section, &alloc_size );
+            trans_add_str_nobreak( translate_str_rtf( ctx_text, false ), section, &alloc_size );
             trans_add_str( "\\v\\f2\\uldb !JumpKeyword( \"", section, &alloc_size );
             trans_add_str( file_name, section, &alloc_size );
             trans_add_str( ".hlp\", \"", section, &alloc_size );
@@ -487,8 +488,9 @@ allocsize rtf_trans_line( section_def *section, allocsize alloc_size )
             Eat_blanks = true;
         } else if( ch == CH_CTX_KW ) {
             end = strchr( ptr + 1, CH_CTX_KW );
-            memcpy( buf, ptr + 1, end - ptr - 1 );
-            buf[end - ptr - 1] = '\0';
+            len = end - ptr - 1;
+            memcpy( buf, ptr + 1, len );
+            buf[len] = '\0';
             add_ctx_keyword( Curr_ctx, buf );
             ptr = end + 1;
             if( *ptr == ' ' ) {
@@ -503,7 +505,7 @@ allocsize rtf_trans_line( section_def *section, allocsize alloc_size )
         } else if( ch == CH_BMP ) {
             Curr_ctx->empty = false;
             ++ptr;
-            ch = *(unsigned char *)ptr;
+            ch = *ptr;
             ptr += 2;
             end = strchr( ptr, CH_BMP );
             *end = '\0';
