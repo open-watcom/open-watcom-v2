@@ -640,6 +640,7 @@ static int ProcessCtlFile( const char *name )
                 LogFlush();
             } else if( logit && ( VerbLevel > 1 ) ) {
                 Log( false, "---<%s>---\n", p );
+                LogFlush();
             }
         }
     }
