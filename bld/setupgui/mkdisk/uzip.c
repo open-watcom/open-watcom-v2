@@ -32,8 +32,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#if !defined( __UNIX__ )
-#include <direct.h>
+#if defined( __UNIX__ )
+    #include <unistd.h>
+#else
+    #include <direct.h>
 #endif
 #include "zip.h"
 
