@@ -124,7 +124,7 @@ jobs:
         - rm -rf buildx/*
       install:
         - if [ "$OWTRAVIS_DEBUG" = "1" ]; then 
-            export ECHO_OFF=on;
+            export ECHO_OFF=on
           else
             export ECHO_OFF=off
           fi
@@ -184,7 +184,7 @@ jobs:
       install:
 #        - install dosbox
         - if [ "$OWTRAVIS_DEBUG" = "1" ]; then 
-            export ECHO_OFF=on;
+            export ECHO_OFF=on
           else
             export ECHO_OFF=off
           fi
@@ -235,7 +235,7 @@ jobs:
       install:
 #        - install dosbox
         - if [ "$OWTRAVIS_DEBUG" = "1" ]; then 
-            export ECHO_OFF=on;
+            export ECHO_OFF=on
           else
             export ECHO_OFF=off
           fi
@@ -289,7 +289,7 @@ jobs:
       install:
 #        - install dosbox
         - if [ "$OWTRAVIS_DEBUG" = "1" ]; then 
-            export ECHO_OFF=on;
+            export ECHO_OFF=on
           else
             export ECHO_OFF=off
           fi
