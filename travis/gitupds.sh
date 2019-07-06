@@ -40,7 +40,7 @@ gitupds_proc()
                             export OWRELROOT=$OWTRAVIS_BUILD_DIR
                             builder cprel
                         else
-                            cp -Rfu $OWRELROOT/binnt64 $OWTRAVIS_BUILD_DIR/binnt64
+                            cp -Rf $OWRELROOT/binnt64 $OWTRAVIS_BUILD_DIR/binnt64
                         fi
                         #
                         # commit updated files to GitHub repository

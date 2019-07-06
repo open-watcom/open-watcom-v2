@@ -6,7 +6,7 @@
 
 cacheinf_proc()
 {
-    if [ "$OWTRAVIS_DEBUG" = "1" ]; then
+    if [ "$OWTRAVIS_CACHE_DEBUG" = "1" ]; then
         echo "****** CACHE INFO ******"
         echo "`date`"
         echo "************************"

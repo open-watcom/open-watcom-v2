@@ -1,4 +1,6 @@
-@echo %ECHO_OFF%
+@set OWECHO_OFF=off
+@if "$OWTRAVIS_DEBUG" == "1" set OWECHO_OFF=on
+@echo %OWECHO_OFF%
 SETLOCAL EnableExtensions
 REM Script to build the Open Watcom bootstrap tools
 REM By Microsoft Visual Studio
@@ -7,11 +9,11 @@ set OWROOT=%CD%
 REM ...
 call "C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\vcvarsall.bat" amd64
 REM ...
-@echo %ECHO_OFF%
+@echo %OWECHO_OFF%
 REM ...
 call cmnvars.bat
 REM ...
-@echo %ECHO_OFF%
+@echo %OWECHO_OFF%
 REM
 REM setup DOSBOX
 REM
