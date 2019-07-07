@@ -43,20 +43,25 @@ if "%OWTRAVISJOB%" == "BUILD-1" (
     ) else (
         builder -q build1
     )
+    xcopy /Y /S /H /R /D %OWSRCDIR% %OWROOT%\buildx\
 )
 if "%OWTRAVISJOB%" == "BUILD-2" (
+    xcopy /Y /S /H /R /D %OWROOT%\buildx %OWSRCDIR%\
     if "%TRAVIS_EVENT_TYPE%" == "pull_request" (
         builder build2
     ) else (
         builder -q build2
     )
+    xcopy /Y /S /H /R /D %OWSRCDIR% %OWROOT%\buildx\
 )
 if "%OWTRAVISJOB%" == "BUILD-3" (
+    xcopy /Y /S /H /R /D %OWROOT%\buildx %OWSRCDIR%\
     if "%TRAVIS_EVENT_TYPE%" == "pull_request" (
         builder build3
     ) else (
         builder -q build3
     )
+    xcopy /Y /S /H /R /D %OWSRCDIR% %OWROOT%\buildx\
 )
 echo ERRORLEVEL=%ERRORLEVEL%
 exit %ERRORLEVEL%
