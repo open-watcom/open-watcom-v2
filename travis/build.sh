@@ -69,9 +69,9 @@ build_proc()
         "BUILD")
             cd $OWSRCDIR
             if [ "$TRAVIS_EVENT_TYPE" = "pull_request" ]; then
-                builder build
+                builder rel
             else
-                builder -q build
+                builder -q rel
             fi
             RC=$?
             cd $TRAVIS_BUILD_DIR
@@ -79,9 +79,9 @@ build_proc()
         "BUILD-1")
             cd $OWSRCDIR
             if [ "$TRAVIS_EVENT_TYPE" = "pull_request" ]; then
-                builder build1
+                builder rel1
             else
-                builder -q build1
+                builder -q rel1
             fi
             RC=$?
             cd $TRAVIS_BUILD_DIR
@@ -89,9 +89,9 @@ build_proc()
         "BUILD-2")
             cd $OWSRCDIR
             if [ "$TRAVIS_EVENT_TYPE" = "pull_request" ]; then
-                builder build2
+                builder rel2
             else
-                builder -q build2
+                builder -q rel2
             fi
             RC=$?
             cd $TRAVIS_BUILD_DIR
@@ -99,9 +99,9 @@ build_proc()
         "BUILD-3")
             cd $OWSRCDIR
             if [ "$TRAVIS_EVENT_TYPE" = "pull_request" ]; then
-                builder build3
+                builder rel3
             else
-                builder -q build3
+                builder -q rel3
             fi
             RC=$?
             cd $TRAVIS_BUILD_DIR

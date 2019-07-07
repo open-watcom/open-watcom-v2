@@ -33,7 +33,6 @@ gitupds_proc()
                         #
                         # copy OW build to git tree
                         #
-                        export OWRELROOT=$OWROOT/test
                         cd $OWSRCDIR
                         builder cprel
                         if [ "$TRAVIS_OS_NAME" = "linux" ]; then

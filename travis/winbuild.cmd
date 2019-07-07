@@ -32,36 +32,31 @@ REM ...
 cd %OWSRCDIR%
 if "%OWTRAVISJOB%" == "BUILD" (
     if "%TRAVIS_EVENT_TYPE%" == "pull_request" (
-        builder build
+        builder rel
     ) else (
-        builder -q build
+        builder -q rel
     )
 )
 if "%OWTRAVISJOB%" == "BUILD-1" (
     if "%TRAVIS_EVENT_TYPE%" == "pull_request" (
-        builder build1
+        builder rel1
     ) else (
-        builder -q build1
+        builder -q rel1
     )
-    xcopy /Y /S /H /R /D %OWSRCDIR% %OWROOT%\buildx\
 )
 if "%OWTRAVISJOB%" == "BUILD-2" (
-    xcopy /Y /S /H /R /D %OWROOT%\buildx %OWSRCDIR%\
     if "%TRAVIS_EVENT_TYPE%" == "pull_request" (
-        builder build2
+        builder rel2
     ) else (
-        builder -q build2
+        builder -q rel2
     )
-    xcopy /Y /S /H /R /D %OWSRCDIR% %OWROOT%\buildx\
 )
 if "%OWTRAVISJOB%" == "BUILD-3" (
-    xcopy /Y /S /H /R /D %OWROOT%\buildx %OWSRCDIR%\
     if "%TRAVIS_EVENT_TYPE%" == "pull_request" (
-        builder build3
+        builder rel3
     ) else (
-        builder -q build3
+        builder -q rel3
     )
-    xcopy /Y /S /H /R /D %OWSRCDIR% %OWROOT%\buildx\
 )
 echo ERRORLEVEL=%ERRORLEVEL%
 exit %ERRORLEVEL%

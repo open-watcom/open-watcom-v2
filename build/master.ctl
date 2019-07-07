@@ -58,8 +58,8 @@ set BLDRULE=
     set LOGFNAME=<1>
     echo **** BUILD rule
 
-[ BLOCK <1> rel pass ]
-#=====================
+[ BLOCK <1> rel rel1 rel2 rel3 pass ]
+#====================================
     set BLDRULE=rel
     set LOGFNAME=<1>
     echo **** REL rule
