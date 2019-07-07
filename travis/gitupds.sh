@@ -33,11 +33,11 @@ gitupds_proc()
                         #
                         pwd
                         if [ "$TRAVIS_OS_NAME" = "linux" ]; then
-                            cp -Rfv $OWRELROOT/. $OWTRAVIS_BUILD_DIR/
+                            cp -Rf $OWRELROOT/. $OWTRAVIS_BUILD_DIR/
                         elif [ "$OWTRAVIS_DEBUG" = "1" ]; then
-                            cp -Rfv $OWRELROOT/binnt64 $OWTRAVIS_BUILD_DIR/binnt64
+                            cp -Rfv $OWRELROOT/binnt64/. $OWTRAVIS_BUILD_DIR/binnt64/
                         else
-                            cp -Rf $OWRELROOT/binnt64 $OWTRAVIS_BUILD_DIR/binnt64
+                            cp -Rf $OWRELROOT/binnt64/. $OWTRAVIS_BUILD_DIR/binnt64/
                         fi
                         #
                         # commit updated files to GitHub repository
@@ -45,11 +45,11 @@ gitupds_proc()
                         cd $OWTRAVIS_BUILD_DIR
                         pwd
                         git add $GITVERBOSE2 -f .
-#                        if [ "$TRAVIS_OS_NAME" = "linux" ]; then
-#                            git commit $GITVERBOSE1 -m "Travis CI build $TRAVIS_JOB_NUMBER - OW distribution (linux)"
-#                        else
-#                            git commit $GITVERBOSE1 -m "Travis CI build $TRAVIS_JOB_NUMBER - OW distribution (windows)"
-#                        fi
+                        if [ "$TRAVIS_OS_NAME" = "linux" ]; then
+                            git commit $GITVERBOSE1 -m "Travis CI build $TRAVIS_JOB_NUMBER - OW distribution"
+                        else
+                            git commit $GITVERBOSE1 -m "Travis CI build $TRAVIS_JOB_NUMBER - OW distribution (Windows 64-bit only)"
+                        fi
                         git push $GITVERBOSE1 -f origin
                         cd $TRAVIS_BUILD_DIR
                         pwd
@@ -73,7 +73,7 @@ gitupds_proc()
                         #
                         cd $OWTRAVIS_BUILD_DIR
                         git add $GITVERBOSE2 -f .
-#                        git commit $GITVERBOSE1 -m "Travis CI build $TRAVIS_JOB_NUMBER - Documentation"
+                        git commit $GITVERBOSE1 -m "Travis CI build $TRAVIS_JOB_NUMBER - Documentation"
                         git push $GITVERBOSE1 -f origin
                         cd $TRAVIS_BUILD_DIR
                         echo_msg="gitupds.sh - done"
