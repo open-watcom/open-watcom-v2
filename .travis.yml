@@ -45,7 +45,7 @@ after_failure:
 after_success:
  # after success transfer OW build to GitHub repository
  - travis/cacheinf.sh
-# - travis/gitupds.sh
+ - travis/gitupds.sh
 
 jobs:
   allow_failures:
@@ -289,7 +289,7 @@ jobs:
         - . ./cmnvars.sh
       script:
 #        - cp $CP_OPTS buildx/. $WATCOM
-        - travis/gitupds.sh
+        - true
     - # ...
       name: "Update Build Windows"
       if: branch = env(OWBRANCH) AND (type = cron OR (type = push AND env(OWTRAVIS_ALL) = 1))
@@ -305,7 +305,7 @@ jobs:
         - export WATCOM=$TRAVIS_BUILD_DIR/test
       script:
 #        - cp $CP_OPTS buildx/. $WATCOM
-        - travis/gitupds.sh
+        - true
     #################################
 #    - stage: InitTests
 #      name: "Initialze Tests Environment"

@@ -22,8 +22,6 @@ gitupds_proc()
     if [ "$TRAVIS_BRANCH" = "$OWBRANCH" ] || [ "$TRAVIS_BRANCH" = "$OWBRANCH_DOCS" ]; then
         if [ "$TRAVIS_EVENT_TYPE" = "push" ] || [ "$TRAVIS_EVENT_TYPE" = "cron" ]; then
             case "$OWTRAVISJOB" in
-                "BOOTSTRAP")
-                    ;;
                 "CPREL")
                     if [ "$TRAVIS_OS_NAME" = "linux" ] || [ "$TRAVIS_OS_NAME" = "windows" ]; then
                         #
@@ -33,11 +31,9 @@ gitupds_proc()
                         #
                         # copy OW build to git tree
                         #
-                        cd $OWSRCDIR
-                        builder cprel
+                        pwd
                         if [ "$TRAVIS_OS_NAME" = "linux" ]; then
-                            export OWRELROOT=$OWTRAVIS_BUILD_DIR
-                            builder cprel
+                            cp -Rfv $OWRELROOT/. $OWTRAVIS_BUILD_DIR/
                         elif [ "$OWTRAVIS_DEBUG" = "1" ]; then
                             cp -Rfv $OWRELROOT/binnt64 $OWTRAVIS_BUILD_DIR/binnt64
                         else
@@ -47,6 +43,7 @@ gitupds_proc()
                         # commit updated files to GitHub repository
                         #
                         cd $OWTRAVIS_BUILD_DIR
+                        pwd
                         git add $GITVERBOSE2 -f .
 #                        if [ "$TRAVIS_OS_NAME" = "linux" ]; then
 #                            git commit $GITVERBOSE1 -m "Travis CI build $TRAVIS_JOB_NUMBER - OW distribution (linux)"
@@ -55,6 +52,7 @@ gitupds_proc()
 #                        fi
                         git push $GITVERBOSE1 -f origin
                         cd $TRAVIS_BUILD_DIR
+                        pwd
                         echo_msg="gitupds.sh - done"
                     fi
                     ;;
