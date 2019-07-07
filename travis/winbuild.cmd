@@ -58,5 +58,7 @@ if "%OWTRAVISJOB%" == "BUILD-3" (
         builder -q rel3
     )
 )
-echo ERRORLEVEL=%ERRORLEVEL%
-exit %ERRORLEVEL%
+set RC=%ERRORLEVEL%
+timeout 15 >NUL
+echo ERRORLEVEL=%RC%
+exit %RC%

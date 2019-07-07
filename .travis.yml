@@ -128,7 +128,6 @@ jobs:
       install:
       script:
         - cmd.exe /c "travis\winboot.cmd"
-        - sleep 15
     #################################
     - stage: Build
       name: "OW tools build Linux"
@@ -179,7 +178,6 @@ jobs:
 #        - install dosbox
       script:
         - cmd.exe /c "travis\winbuild.cmd"
-        - sleep 15
       before_cache:
         # save build to cache (buildx)
         - travis/cache1.sh
@@ -227,7 +225,6 @@ jobs:
         - cp $CP_OPTS buildx/. $OWSRCDIR/; true
         # run script
         - cmd.exe /c "travis\winbuild.cmd"
-        - sleep 15
       before_cache:
         # save build to cache (buildx)
         - travis/cache2.sh
@@ -272,7 +269,6 @@ jobs:
         - cp $CP_OPTS buildx/. $OWSRCDIR/; true
         # run script
         - cmd.exe /c "travis\winbuild.cmd"
-        - sleep 15
     #################################
     - stage: UpdateBuild
       name: "Update Build Linux"
