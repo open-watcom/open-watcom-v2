@@ -29,8 +29,8 @@
 ****************************************************************************/
 
 
-#include <string.h>
 #include <windows.h>
+#include <string.h>
 #include "drawmenu.h"
 #include "button.h"
 #include "room.h"
@@ -132,8 +132,7 @@ int ENTRYPOINT three_d_get( three_d_handle handle, three_d_attr attr )
     return( (short) _Call16( three_d_get_Proc, "ww", handle, attr ) );
 }
 
-void ENTRYPOINT three_d_set( three_d_handle handle, three_d_attr attr,
-                int new_val )
+void ENTRYPOINT three_d_set( three_d_handle handle, three_d_attr attr, int new_val )
 {
     if( hThreedDLL == NULL ) return;
     _Call16( three_d_set_Proc, "www", handle, attr, new_val );
@@ -235,12 +234,8 @@ static void make_buttons( HWND hwnd )
     Draw_area.top += max_height + 2;
 }
 
-LRESULT CALLBACK main_proc(
-    HWND                hwnd,
-    UINT                msg,
-    WPARAM              wparam,
-    LPARAM              lparam
-) {
+LRESULT CALLBACK main_proc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
+{
     WORD                cmd;
 
     switch( msg ) {
@@ -386,8 +381,8 @@ static BOOL init_instance( HANDLE inst, int show )
         CW_USEDEFAULT,                  /* Default vertical position.         */
         CW_USEDEFAULT,                  /* Default width.                     */
         CW_USEDEFAULT,                  /* Default height.                    */
-        NULL,                           /* Overlapped windows have no parent. */
-        NULL,                           /* Use the window class menu.         */
+        (HWND)0,                        /* Overlapped windows have no parent. */
+        (HMENU)0,                       /* Use the window class menu.         */
         inst,                           /* This instance owns this window.    */
         NULL                            /* Pointer not needed.                */
     );
@@ -418,7 +413,7 @@ BOOL init_app( HANDLE inst )
     wc.cbClsExtra = 0;
     wc.cbWndExtra = 0;
     wc.hInstance = inst;
-    wc.hIcon = LoadIcon(NULL, "DrawIcon" );
+    wc.hIcon = LoadIcon(NULL, "DrawIcon");
     wc.hCursor = LoadCursor(NULL, IDC_ARROW);
     wc.hbrBackground = GetStockObject(WHITE_BRUSH);
     wc.lpszMenuName = "DrawMenu";
@@ -430,13 +425,9 @@ BOOL init_app( HANDLE inst )
 
 }
 
-int PASCAL WinMain(
-/*****************/
-    HINSTANCE           inst,
-    HINSTANCE           prev_inst,
-    LPSTR               cmd_line,
-    int                 show
-) {
+int PASCAL WinMain( HINSTANCE inst, HINSTANCE prev_inst, LPSTR cmd_line, int show )
+/*********************************************************************************/
+{
     MSG                 msg;
 
     while( *cmd_line == ' ' ) ++ cmd_line;

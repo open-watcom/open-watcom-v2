@@ -234,12 +234,8 @@ static void make_buttons( HWND hwnd )
     Button_height = max_height + 4;
 }
 
-MRESULT EXPENTRY main_proc(
-    HWND                hwnd,
-    ULONG               msg,
-    MPARAM              mp1,
-    MPARAM              mp2
-) {
+MRESULT EXPENTRY main_proc( HWND hwnd, ULONG msg, MPARAM mp1, MPARAM mp2 )
+{
     if( msg == WM_CREATE ) {
 
         PCREATESTRUCT   pcreate;
@@ -424,10 +420,9 @@ BOOL init_app( HAB hab )
     return( WinRegisterClass( hab, "DrawDemo", (PFNWP)main_proc, 0, 0 ) );
 }
 
-int main(
-/*******/
-    void
-) {
+int main( void )
+/**************/
+{
     QMSG                qmsg;
 
     Main_hab = WinInitialize( 0 );

@@ -104,35 +104,30 @@ static int                          Data_col;
 #define sqr( xxx )      ((long)(xxx) * (long)(xxx))
 #define sgn( xxx )      (((xxx) == 0) ? 0 : (xxx) / abs( xxx ))
 
-static BOOL is_pt_in_rect(
-/************************/
-    WPI_RECT            *rect,
-    WPI_POINT           pt
-) {
+static BOOL is_pt_in_rect( WPI_RECT *rect, WPI_POINT pt )
+/*******************************************************/
+{
     int                 left, right, top, bottom;
 
     _wpi_getintrectvalues( *rect, &left, &top, &right, &bottom );
     return( pt.x >= left && pt.x <= right && pt.y >= top && pt.y <= bottom  );
 }
 
-void rgn_off(
-/***********/
-    void
-) {
+void rgn_off( void )
+/******************/
+{
     Curr_state = RGN_STATE_OFF;
 }
 
-void rgn_on(
-/**********/
-    void
-) {
+void rgn_on( void )
+/*****************/
+{
     Curr_state = RGN_STATE_ON;
 }
 
-int rgn_disable(
-/**************/
-    void
-) {
+int rgn_disable( void )
+/*********************/
+{
     int         old_state;
 
     old_state = Curr_state;
@@ -143,20 +138,17 @@ int rgn_disable(
     return( old_state );
 }
 
-void rgn_enable(
-/**************/
-
-    int                 state
-) {
+void rgn_enable( int state )
+/**************************/
+{
     if( Curr_state != RGN_STATE_OFF ) {
         Curr_state = state;
     }
 }
 
-static int get_new_rgn_set(
-/*************************/
-    void
-) {
+static int get_new_rgn_set( void )
+/********************************/
+{
     rgn_set_def **  old_sets;
     int             set_num;
 
@@ -189,10 +181,9 @@ static int get_new_rgn_set(
     return( Set_coll.num_used - 1 );
 }
 
-static rgn_set_def * get_rgn_set_ptr(
-/***********************************/
-    int             set_num
-) {
+static rgn_set_def * get_rgn_set_ptr( int set_num )
+/*************************************************/
+{
     rgn_set_def **  coll;
 
     if( set_num < Set_coll.num_used ) {
@@ -211,21 +202,17 @@ static rgn_set_def * get_rgn_set_ptr(
     }
 }
 
-static void set_rgn_set_ptr(
-/**************************/
-    int                 set_num,
-    rgn_set_def *       curr
-) {
+static void set_rgn_set_ptr( int set_num, rgn_set_def *curr )
+/***********************************************************/
+{
     if( set_num < Set_coll.num_used ) {
         Set_coll.coll[ set_num ] = curr;
     }
 }
 
-static void add_rgn_def(
-/**********************/
-    int                 set_num,
-    rgn_set_list_def *  new_def
-) {
+static void add_rgn_def( int set_num, rgn_set_list_def *new_def )
+/***************************************************************/
+{
     rgn_set_def *       curr;
 
     curr = get_rgn_set_ptr( set_num );
@@ -243,10 +230,9 @@ static void add_rgn_def(
     }
 }
 
-void rgn_begin_group(
-/******************/
-    void
-) {
+void rgn_begin_group( void )
+/**************************/
+{
     rgn_set_def far        *curr;
 
     if ((Curr_state == RGN_STATE_ON) && (Set_state == RGN_REGULAR)) {
@@ -262,29 +248,26 @@ void rgn_begin_group(
     }
 }
 
-static void rgn_group_add(
-/************************/
-    void
-) {
+static void rgn_group_add( void )
+/*******************************/
+{
     rgn_set_list_def    curr;
 
     curr.offset = Region_used_size;
     add_rgn_def( Set_curr, &curr );
 }
 
-void rgn_end_group(
-/*****************/
-    void
-) {
+void rgn_end_group( void )
+/************************/
+{
     if ((Curr_state == RGN_STATE_ON) && (Set_state == RGN_GROUP)) {
         Set_state = RGN_REGULAR;
     }
 }
 
-void rgn_begin_set(
-/*****************/
-    void
-) {
+void rgn_begin_set( void )
+/************************/
+{
     rgn_set_def far        *curr;
 
     if ((Curr_state == RGN_STATE_ON) && (Set_state == RGN_REGULAR)) {
@@ -300,10 +283,9 @@ void rgn_begin_set(
     }
 }
 
-void rgn_set_add(
-/***************/
-    WPI_POINT               *pt
-) {
+void rgn_set_add( WPI_POINT *pt )
+/*******************************/
+{
     rgn_set_list_def        curr;
 
     if ((Curr_state == RGN_STATE_ON) &&
@@ -313,19 +295,17 @@ void rgn_set_add(
     }
 }
 
-void rgn_end_set(
-/***************/
-    void
-) {
+void rgn_end_set( void )
+/**********************/
+{
     if ((Curr_state == RGN_STATE_ON) && (Set_state == RGN_SET)) {
         Set_state = RGN_REGULAR;
     }
 }
 
-int rgn_man_group_new(
+int rgn_man_group_new( void )
 /***************************/
-    void
-) {
+{
     int                 group_num;
     rgn_set_def far     *curr;
 
@@ -340,10 +320,9 @@ int rgn_man_group_new(
     return( group_num );
 }
 
-void rgn_man_group_begin(
-/******************************/
-    int     group_num
-) {
+void rgn_man_group_begin( int group_num )
+/***************************************/
+{
     if( (Curr_state == RGN_STATE_ON) && (Set_state == RGN_REGULAR) ) {
         if( 0 <= group_num && group_num < Set_coll.num_used ) {
             Set_state = RGN_MAN_GROUP;
@@ -352,19 +331,17 @@ void rgn_man_group_begin(
     }
 }
 
-void rgn_man_group_end(
+void rgn_man_group_end( void )
 /****************************/
-    void
-) {
+{
     if( (Curr_state == RGN_STATE_ON) && (Set_state == RGN_MAN_GROUP) ) {
         Set_state = RGN_REGULAR;
     }
 }
 
-int rgn_man_set_new(
+int rgn_man_set_new( void )
 /*************************/
-    void
-) {
+{
     int                 group_num;
     rgn_set_def far     *curr;
 
@@ -379,10 +356,9 @@ int rgn_man_set_new(
     return( group_num );
 }
 
-void rgn_man_set_begin(
-/****************************/
-    int     set_num
-) {
+void rgn_man_set_begin( int set_num )
+/***********************************/
+{
     if( (Curr_state == RGN_STATE_ON) && (Set_state == RGN_REGULAR) ) {
         if( 0 <= set_num && set_num < Set_coll.num_used ) {
             Set_state = RGN_MAN_SET;
@@ -391,19 +367,17 @@ void rgn_man_set_begin(
     }
 }
 
-void rgn_man_set_end(
+void rgn_man_set_end( void )
 /**************************/
-    void
-) {
+{
     if( (Curr_state == RGN_STATE_ON) && (Set_state == RGN_MAN_SET) ) {
         Set_state = RGN_REGULAR;
     }
 }
 
-void rgn_begin(
-/*************/
-    void
-) {
+void rgn_begin( void )
+/********************/
+{
     if( Curr_state != RGN_STATE_OFF ) {
         Region_size = 0;
         Region_used_size = 0;
@@ -417,10 +391,9 @@ void rgn_begin(
     }
 }
 
-static long get_set_coll_size(
-/****************************/
-    void
-) {
+static long get_set_coll_size( void )
+/***********************************/
+{
     long            size;
     rgn_set_def **  curr_set;
 
@@ -436,10 +409,9 @@ static long get_set_coll_size(
     return( size );
 }
 
-static char * copy_set_coll(
-/**************************/
-    char *          ptr
-) {
+static char * copy_set_coll( char *ptr )
+/**************************************/
+{
     rgn_set_index * index;
     rgn_set_def *   curr_set;
     int             set_num;
@@ -461,10 +433,9 @@ static char * copy_set_coll(
     return( ptr );
 }
 
-static void free_set_coll(
-/************************/
-    void
-) {
+static void free_set_coll( void )
+/*******************************/
+{
     rgn_set_def **      curr_set;
 
     if( Set_coll.coll != NULL ) {
@@ -483,10 +454,9 @@ static void free_set_coll(
 }
 
 
-HANDLE rgn_end(
-/*************/
-    void
-) {
+HANDLE rgn_end( void )
+/********************/
+{
     HANDLE          hld;
     HANDLE          rgn_hld;
     rgn_tag_def *   tag;
@@ -526,10 +496,9 @@ HANDLE rgn_end(
     return( hld );
 }
 
-static rgn_def far * get_rgn_list_ptr(
-/************************************/
-    int                 size
-) {
+static rgn_def far * get_rgn_list_ptr( int size )
+/***********************************************/
+{
     HANDLE                  hld;
     rgn_def far            *ret;
     rgn_def far            *src;
@@ -565,33 +534,24 @@ static rgn_def far * get_rgn_list_ptr(
     return( ret );
 }
 
-BOOL rgn_is_on(
-/*************/
-    void
-) {
+BOOL rgn_is_on( void )
+/********************/
+{
     return( Curr_state == RGN_STATE_ON );
 }
 
-void rgn_set_ids(
-/***************/
-
-    int                 major_id,
-    int                 minor_id,
-    int                 data_row,
-    int                 data_col
-) {
+void rgn_set_ids( int major_id, int minor_id, int data_row, int data_col )
+/************************************************************************/
+{
     Major_id = major_id;
     Minor_id = minor_id;
     Data_row = data_row;
     Data_col = data_col;
 }
 
-static void get_rect(
-/*******************/
-    WPI_POINT far       *pts,
-    int                 num_pts,
-    WPI_RECT far        *rect
-) {
+static void get_rect( WPI_POINT far *pts, int num_pts, WPI_RECT far *rect )
+/*************************************************************************/
+{
     int                 count;
     int                 left, right, top, bottom;
 
@@ -622,14 +582,9 @@ static void get_rect(
     }
 }
 
-void rgn_rectangle(
-/*****************/
-
-    int                 x1,
-    int                 y1,
-    int                 x2,
-    int                 y2
-) {
+void rgn_rectangle( int x1, int y1, int x2, int y2 )
+/**************************************************/
+{
     rgn_def far         *curr;
     WPI_POINT           pts[2];
     unsigned short      size;
@@ -661,14 +616,9 @@ void rgn_rectangle(
     }
 }
 
-void rgn_ellipse_set(
-/*******************/
-    int                 x1,
-    int                 y1,
-    int                 x2,
-    int                 y2,
-    rgn_type            type_ellipse
-) {
+void rgn_ellipse_set( int x1, int y1, int x2, int y2, rgn_type type_ellipse )
+/***************************************************************************/
+{
     rgn_def far         *curr;
     WPI_POINT           pts[2];
     unsigned short      size;
@@ -700,35 +650,22 @@ void rgn_ellipse_set(
     }
 }
 
-void rgn_ellipse(
-/***************/
-    int                 x1,
-    int                 y1,
-    int                 x2,
-    int                 y2
-) {
+void rgn_ellipse( int x1, int y1, int x2, int y2 )
+/************************************************/
+{
     rgn_ellipse_set( x1, y1, x2, y2, CGR_RGN_ELLIPSE );
 }
 
-void rgn_ellipse_border(
-/**********************/
-    int                 x1,
-    int                 y1,
-    int                 x2,
-    int                 y2
-) {
+void rgn_ellipse_border( int x1, int y1, int x2, int y2 )
+/*******************************************************/
+{
     rgn_ellipse_set( x1, y1, x2, y2, CGR_RGN_ELLIPSE_BORDER );
 }
 
 
-void rgn_line(
-/************/
-
-    int                 x1,
-    int                 y1,
-    int                 x2,
-    int                 y2
-) {
+void rgn_line( int x1, int y1, int x2, int y2 )
+/*********************************************/
+{
     rgn_def far        *curr;
     unsigned short      size;
 
@@ -758,12 +695,9 @@ void rgn_line(
     }
 }
 
-void rgn_polygon(
-/***************/
-
-    WPI_POINT far       *pts,
-    int                 num_pts
-) {
+void rgn_polygon( WPI_POINT far *pts, int num_pts )
+/*************************************************/
+{
     int                 count;
     rgn_def far         *curr;
     unsigned short      size;
@@ -795,18 +729,9 @@ void rgn_polygon(
     }
 }
 
-void rgn_pie(
-/***********/
-
-    int                 x1,
-    int                 y1,
-    int                 x2,
-    int                 y2,
-    int                 x3,
-    int                 y3,
-    int                 x4,
-    int                 y4
-) {
+void rgn_pie( int x1, int y1, int x2, int y2, int x3, int y3, int x4, int y4 )
+/****************************************************************************/
+{
     rgn_def far        *curr;
     unsigned short      size;
 
@@ -840,14 +765,9 @@ void rgn_pie(
     }
 }
 
-void rgn_line_boxes(
-/******************/
-
-    int                 x1,
-    int                 y1,
-    int                 x2,
-    int                 y2
-) {
+void rgn_line_boxes( int x1, int y1, int x2, int y2 )
+/***************************************************/
+{
     rgn_def far        *curr;
     unsigned short      size;
 
@@ -877,12 +797,9 @@ void rgn_line_boxes(
     }
 }
 
-static BOOL check_in_ellipse(
-/***************************/
-    WPI_RECT far    *rect,
-    int             x,
-    int             y
-) {
+static BOOL check_in_ellipse( WPI_RECT far *rect, int x, int y )
+/**************************************************************/
+{
     WPI_POINT       cen;
     long            a_sqr;
     long            b_sqr;
@@ -899,12 +816,9 @@ static BOOL check_in_ellipse(
                                     a_sqr * sqr( y - cen.y ) );
 }
 
-static BOOL check_in_line(
-/************************/
-    rgn_line_def far       *line,
-    int                     x,
-    int                     y
-) {
+static BOOL check_in_line( rgn_line_def far *line, int x, int y )
+/***************************************************************/
+{
     WPI_POINT               pt;
     WPI_POINT               rot_pt;
     int                     rad;
@@ -929,12 +843,9 @@ static BOOL check_in_line(
     return( FALSE );
 }
 
-static int next_idx(
-/******************/
-
-    int                 idx,
-    int                 size
-) {
+static int next_idx( int idx, int size )
+/**************************************/
+{
     ++idx;
     if( idx == size ) {
         idx = 0;
@@ -943,14 +854,9 @@ static int next_idx(
     return( idx );
 }
 
-static BOOL check_in_polygon(
-/***************************/
-
-    int                 num_pts,
-    WPI_POINT far      *pts,
-    int                 in_x,
-    int                 in_y
-) {
+static BOOL check_in_polygon( int num_pts, WPI_POINT far *pts, int in_x, int in_y )
+/*********************************************************************************/
+{
     int                 i;
     WPI_POINT far       *pt;
     int                 end;
@@ -1042,23 +948,16 @@ static BOOL check_in_polygon(
     return( count & 1 );
 }
 
-static BOOL check_above_line(
-/***************************/
-    WPI_POINT far          *pt1,
-    WPI_POINT far          *pt2,
-    int                     x,
-    int                     y
-) {
+static BOOL check_above_line( WPI_POINT far *pt1, WPI_POINT far *pt2, int x, int y )
+/**********************************************************************************/
+{
     return( (WPI_VERT_MULT * ((pt1->x - pt2->x) * (y - pt2->y) -
                                     (pt1->y - pt2->y) * (x - pt2->x))) < 0 );
 }
 
-static BOOL check_inside_pie(
-/***************************/
-    WPI_POINT far           *pie,
-    int                     x,
-    int                     y
-) {
+static BOOL check_inside_pie( WPI_POINT far *pie, int x, int y )
+/**************************************************************/
+{
     WPI_POINT               cen;
 
     cen.x = (pie[0].x + pie[1].x) / 2;
@@ -1078,14 +977,10 @@ static BOOL check_inside_pie(
     return( FALSE );
 }
 
-void far *rgn_find(
-/*****************/
+void far *rgn_find( void far *rgn_ptr, int x, int y )
+/***************************************************/
 /* find the first region section which this point is in. Return NULL if none */
-
-    void far            *rgn_ptr,
-    int                 x,
-    int                 y
-) {
+{
     rgn_tag_def far    *rgn_list;
     rgn_def far         *curr;
     WPI_RECT            tmp_rect;
@@ -1195,11 +1090,9 @@ void far *rgn_find(
     return( NULL );
 }
 
-static void remove_mark(
-/**********************/
-    WPI_PRES            dc,
-    rgn_marker_def      *mark
-) {
+static void remove_mark( WPI_PRES dc, rgn_marker_def *mark )
+/**********************************************************/
+{
     WPI_PRES            mem_dc;
     WPI_HANDLE          old_bmp;
     short               width;
@@ -1222,13 +1115,9 @@ static void remove_mark(
     }
 }
 
-static void mark_point(
+static void mark_point( WPI_PRES dc, int x, int y, rgn_marker_def *slot )
 /*********************/
-    WPI_PRES            dc,
-    int                 x,
-    int                 y,
-    rgn_marker_def      *slot
-) {
+{
     WPI_PRES            mem_dc;
     WPI_HANDLE          old_bmp;
     HBITMAP             bitmap;
@@ -1259,13 +1148,9 @@ static void mark_point(
                                         x + MARK_SIZE, y + MARK_SIZE );
 }
 
-static HANDLE mark_rect(
-/**********************/
-    WPI_PRES        dc,
-    WPI_RECT far    *rect,
-    HANDLE          bmps_hld,
-    short           start
-) {
+static HANDLE mark_rect( WPI_PRES dc, WPI_RECT far *rect, HANDLE bmps_hld, short start )
+/**************************************************************************************/
+{
     rgn_mark_def   *bmps;
     int             left, right, top, bottom;
 
@@ -1288,13 +1173,9 @@ static HANDLE mark_rect(
     return( bmps_hld );
 }
 
-static HANDLE mark_ellipse(
-/*************************/
-    WPI_PRES        dc,
-    WPI_RECT far    *rect,
-    HANDLE          bmps_hld,
-    short           start
-) {
+static HANDLE mark_ellipse( WPI_PRES dc, WPI_RECT far *rect, HANDLE bmps_hld, short start )
+/*****************************************************************************************/
+{
     rgn_mark_def   *bmps;
     int             x;
     int             y;
@@ -1322,14 +1203,9 @@ static HANDLE mark_ellipse(
     return( bmps_hld );
 }
 
-static HANDLE mark_line(
-/**********************/
-    WPI_PRES            dc,
-    WPI_POINT           p1,
-    WPI_POINT           p2,
-    HANDLE              bmps_hld,
-    short               start
-) {
+static HANDLE mark_line( WPI_PRES dc, WPI_POINT p1, WPI_POINT p2, HANDLE bmps_hld, short start )
+/**********************************************************************************************/
+{
     rgn_mark_def   *bmps;
 
     if( bmps_hld ) {
@@ -1346,14 +1222,9 @@ static HANDLE mark_line(
     return( bmps_hld );
 }
 
-static HANDLE mark_poly(
-/**********************/
-    WPI_PRES            dc,
-    int                 num_pts,
-    WPI_POINT far       *pts,
-    HANDLE              bmps_hld,
-    short               start
-) {
+static HANDLE mark_poly( WPI_PRES dc, int num_pts, WPI_POINT far *pts, HANDLE bmps_hld, short start )
+/***************************************************************************************************/
+{
     rgn_mark_def       *bmps;
     short               count;
 
@@ -1374,14 +1245,9 @@ static HANDLE mark_poly(
     return( bmps_hld );
 }
 
-static void get_pie_pt(
-/*********************/
-    WPI_POINT far      *point,
-    long                a_sqr,
-    long                b_sqr,
-    WPI_POINT          *cen,
-    WPI_POINT          *mark
-) {
+static void get_pie_pt( WPI_POINT far *point, long a_sqr, long b_sqr, WPI_POINT *cen, WPI_POINT *mark )
+/*****************************************************************************************************/
+{
     WPI_POINT           vec;
     float               val;
     float               ratio;
@@ -1404,12 +1270,9 @@ static void get_pie_pt(
     }
 }
 
-static void get_mid_pt(
-/*********************/
-    WPI_POINT far      *pts,
-    WPI_POINT far      *pie,
-    WPI_POINT          *mid_pt
-) {
+static void get_mid_pt( WPI_POINT far *pts, WPI_POINT far *pie, WPI_POINT *mid_pt )
+/*********************************************************************************/
+{
     float           theta;
     short           x;
     short           y;
@@ -1468,13 +1331,9 @@ static void get_mid_pt(
     }
 }
 
-static HANDLE mark_pie(
-/*********************/
-    WPI_PRES            dc,
-    WPI_POINT far       *pie,
-    HANDLE              bmps_hld,
-    short               start
-) {
+static HANDLE mark_pie( WPI_PRES dc, WPI_POINT far *pie, HANDLE bmps_hld, short start )
+/*************************************************************************************/
+{
     short               count;
     rgn_mark_def       *bmps;
     WPI_POINT           mid_pt;
@@ -1508,12 +1367,9 @@ static HANDLE mark_pie(
     return( bmps_hld );
 }
 
-static HANDLE mark_set(
-/*********************/
-    rgn_set_def far    *set,
-    WPI_PRES            dc,
-    BOOL                bitmaps
-) {
+static HANDLE mark_set( rgn_set_def far *set, WPI_PRES dc, BOOL bitmaps )
+/***********************************************************************/
+{
     HANDLE              bmps_hld;
     rgn_mark_def *      bmps;
     rgn_set_list_def *  list;
@@ -1544,13 +1400,9 @@ static HANDLE mark_set(
     return( bmps_hld );
 }
 
-static HANDLE mark_group(
-/***********************/
-    rgn_tag_def far    *list,
-    rgn_set_def far    *set,
-    WPI_PRES            dc,
-    BOOL                bitmaps
-) {
+static HANDLE mark_group( rgn_tag_def far *list, rgn_set_def far *set, WPI_PRES dc, BOOL bitmaps )
+/************************************************************************************************/
+{
     rgn_def far        *rgn;
     short               count;
     HANDLE              bmps_hld;
@@ -1645,12 +1497,10 @@ static HANDLE mark_group(
     return( bmps_hld );
 }
 
-void rgn_mark_free(
-/*****************/
+void rgn_mark_free( HANDLE bitmaps )
+/**********************************/
 /* delete the mark bitmaps and array. */
-
-    HANDLE              bitmaps
-) {
+{
     short               count;
     rgn_mark_def       *bmps;
 
@@ -1665,14 +1515,10 @@ void rgn_mark_free(
     LocalFree( bitmaps );
 }
 
-void rgn_unmark(
-/**************/
+void rgn_unmark( void far *rgn_ptr, WPI_PRES dc, HANDLE bmps_hld )
+/****************************************************************/
 /* undraw the markers on the corners of this region */
-
-    void far            *rgn_ptr,
-    WPI_PRES            dc,
-    HANDLE              bmps_hld
-) {
+{
     short               count;
     rgn_mark_def        *bmps;
     rgn_def far         *rgn;
@@ -1689,13 +1535,9 @@ void rgn_unmark(
     }
 }
 
-static HANDLE do_group_set_markers(
-/*********************************/
-    rgn_tag_def far    *list,
-    short               num,
-    WPI_PRES            dc,
-    BOOL                bitmaps
-) {
+static HANDLE do_group_set_markers( rgn_tag_def far *list, short num, WPI_PRES dc, BOOL bitmaps )
+/***********************************************************************************************/
+{
     rgn_set_def far    *set;
     rgn_set_index *     index;
 
@@ -1712,11 +1554,9 @@ static HANDLE do_group_set_markers(
     }
 }
 
-void get_rgn_rect(
-/***********************/
-    void far            *rgn_ptr,
-    WPI_RECT            *rect
-) {
+void get_rgn_rect( void far *rgn_ptr, WPI_RECT *rect )
+/****************************************************/
+{
     rgn_def far         *rgn;
 
     rgn = rgn_ptr;
@@ -1725,12 +1565,9 @@ void get_rgn_rect(
     }
 }
 
-int get_line_point(
-/************************/
-    void far            *rgn_ptr,
-    int                 pos_x,
-    int                 pos_y
-) {
+int get_line_point( void far *rgn_ptr, int pos_x, int pos_y )
+/***********************************************************/
+{
     rgn_def far         *rgn;
 
     rgn = rgn_ptr;
@@ -1753,12 +1590,9 @@ int get_line_point(
     return( 0 );
 }
 
-void get_rgn_line(
-/***********************/
-    void far            *rgn_ptr,
-    WPI_POINT           *p1,
-    WPI_POINT           *p2
-) {
+void get_rgn_line( void far *rgn_ptr, WPI_POINT *p1, WPI_POINT *p2 )
+/******************************************************************/
+{
     rgn_def far         *rgn;
 
     rgn = rgn_ptr;
@@ -1768,15 +1602,10 @@ void get_rgn_line(
     }
 }
 
-HANDLE rgn_mark(
-/**************/
+HANDLE rgn_mark( void far *list_ptr, void far *rgn_ptr, WPI_PRES dc, BOOL bitmaps, BOOL is_moveable )
+/***************************************************************************************************/
 /* draw markers on the corners of this region */
-    void far            *list_ptr,
-    void far            *rgn_ptr,
-    WPI_PRES            dc,
-    BOOL                bitmaps,
-    BOOL                is_moveable
-) {
+{
     HANDLE              bmps_hld;
     HBRUSH              brush;
     HBRUSH              old_brush;
@@ -1870,15 +1699,10 @@ HANDLE rgn_mark(
     return( bmps_hld );
 }
 
-int rgn_ids(
-/**********/
+int rgn_ids( void far *rgn, int far *minor_id, int far *data_row, int far *data_col )
+/***********************************************************************************/
 /* return the region ids for a region. Return major, set minor. */
-
-    void far            *rgn,
-    int far             *minor_id,
-    int far             *data_row,
-    int far             *data_col
-) {
+{
     rgn_info_def far    *rgn_info;
 
     if( rgn != NULL ) {

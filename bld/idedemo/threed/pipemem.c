@@ -59,10 +59,9 @@ mem_block_ptr  PipeMemHeader = NULL;
 
 
 /* routines to allocate chunks of memory and to free it all */
-static void add_new_mem_block(
-/****************************/
-    void
-) {
+static void add_new_mem_block( void )
+/***********************************/
+{
     mem_block_ptr   new_block;
 
     _gnew( new_block, 1 );
@@ -72,10 +71,9 @@ static void add_new_mem_block(
     PipeMemHeader = new_block;
 }
 
-void * pipe_alloc(
-/***********************/
-    size_t          size
-) {
+void * pipe_alloc( size_t size )
+/******************************/
+{
     void *          mem;
 
     if (size > PIPE_MEM_BLOCK_SIZE) {
@@ -96,10 +94,9 @@ void * pipe_alloc(
     return( mem );
 }
 
-void pipe_free_all(
+void pipe_free_all( void )
 /************************/
-    void
-) {
+{
     mem_block_ptr   old_block;
     mem_block_ptr   curr_block;
 

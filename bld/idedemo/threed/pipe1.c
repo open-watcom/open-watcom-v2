@@ -58,10 +58,9 @@ typedef struct matrix4 {
     float   m[4][4];
 } matrix4;
 
-static void calc_text_pt(
-/***********************/
-    text_info *     text
-) {
+static void calc_text_pt( text_info *text )
+/*****************************************/
+{
     point *         use_pt;
     text_pt *       tx_pt;
     wcoord          cen;
@@ -85,14 +84,11 @@ static void calc_text_pt(
 }
 
 
-void pipe3d_add(
-/*********************/
+void pipe3d_add( rend_obj *obj, text_info *text, bool disp_now )
+/**************************************************************/
 /* perform the operations of the first half of the pipeline on obj then add */
 /* it to the list of objects */
-    rend_obj *  obj,
-    text_info * text,
-    bool        disp_now
-) {
+{
     if( obj == NULL ) {
         return;
     }
@@ -116,10 +112,9 @@ void pipe3d_add(
     rend_obj_lfree( obj );
 }
 
-void pipe3d_trans_pt(
-/**************************/
-    point *     pt
-) {
+void pipe3d_trans_pt( point *pt )
+/*******************************/
+{
     *pt = mult_matrix_pt( ViewTrans, *pt );
     point_homo_to_3d( pt );
 }
@@ -128,10 +123,9 @@ void pipe3d_trans_pt(
 #define KronikerDelta( i, j ) ((i)==(j)) ? 1.0 : 0.0
 
 /* Routines to fill in the various type of matricies */
-static void identity_matrix(
-/**************************/
-    float   m[4][4]
-) {
+static void identity_matrix( float m[4][4] )
+/******************************************/
+{
     int     i;
     int     j;
 
@@ -142,13 +136,9 @@ static void identity_matrix(
     }
 }
 
-static float * trans_matrix(
-/**************************/
-    float   m[4][4],
-    float   dx,
-    float   dy,
-    float   dz
-) {
+static float * trans_matrix( float m[4][4], float dx, float dy, float dz )
+/************************************************************************/
+{
     identity_matrix( m );
     m[0][3] = dx;
     m[1][3] = dy;
@@ -157,13 +147,9 @@ static float * trans_matrix(
     return( m );
 }
 
-static float * scale_matrix(
-/**************************/
-    float   m[4][4],
-    float   sx,
-    float   sy,
-    float   sz
-) {
+static float * scale_matrix( float m[4][4], float sx, float sy, float sz )
+/************************************************************************/
+{
     identity_matrix( m );
     m[0][0] = sx;
     m[1][1] = sy;
@@ -172,12 +158,9 @@ static float * scale_matrix(
     return( m );
 }
 
-static float * shear_xy_matrix(
-/*****************************/
-    float   m[4][4],
-    float   shx,
-    float   shy
-) {
+static float * shear_xy_matrix( float m[4][4], float shx, float shy )
+/*******************************************************************/
+{
     identity_matrix( m );
     m[0][2] = shx;
     m[1][2] = shy;
@@ -185,12 +168,9 @@ static float * shear_xy_matrix(
     return( m );
 }
 
-static void matrix_mult(
-/**********************/
-    float   m[4][4],
-    float   n[4][4],
-    float   ans[4][4]
-) {
+static void matrix_mult( float m[4][4], float n[4][4], float ans[4][4] )
+/**********************************************************************/
+{
     int     i;
     int     j;
     int     k;
@@ -205,11 +185,10 @@ static void matrix_mult(
     }
 }
 
-static vector normalize(
-/**********************/
+static vector normalize( vector in )
+/**********************************/
 /* returns a normalized version of the input vector */
-    vector      in
-) {
+{
     vector      out;
     float       len;        /* norm of input vecotr */
 
@@ -222,11 +201,9 @@ static vector normalize(
     return( out );
 }
 
-static vector cross_prod(
-/***********************/
-    vector      v,
-    vector      w
-) {
+static vector cross_prod( vector v, vector w )
+/********************************************/
+{
     vector      prod;
 
     prod.v[0] = v.v[1]*w.v[2] - v.v[2]*w.v[1];
@@ -237,12 +214,11 @@ static vector cross_prod(
     return( prod );
 }
 
-static void form_rotation_matrix(
-/*******************************/
-    float       r[4][4],
-    vector      vpn,            /* View plane normal */
-    vector      vup             /* VUp vector */
-) {
+static void form_rotation_matrix( float r[4][4], vector vpn, vector vup )
+/***********************************************************************/
+/*  vector  vpn,    View plane normal */
+/*  vector  vup     VUp vector */
+{
     vector      *rvects;        /* 3 vectors */
     int         i, j;
 
@@ -264,11 +240,9 @@ static void form_rotation_matrix(
     _free( rvects );
 }
 
-static void persp_trans_matrix(
-/*****************************/
-    float       p[4][4],
-    float       zmin
-) {
+static void persp_trans_matrix( float p[4][4], float zmin )
+/*********************************************************/
+{
     identity_matrix( p );
     p[2][2] = 1. / (1. + zmin);
     p[2][3] = - zmin / (1+zmin);
@@ -276,14 +250,13 @@ static void persp_trans_matrix(
     p[3][3] = 0.;
 }
 
-static void set_view_trans_mat(
-/*****************************/
+static void set_view_trans_mat( pipe_view *view )
+/***********************************************/
 /* This function examines the values in view and fills in  the ViewTrans */
 /* matrix. This will be either the Nper' or Npar matrix described in */
 /* sections 6.5.1 and 6.5.2. The Nper' matrix include the perspective  */
 /* transformation matrix. */
-    pipe_view   *view
-) {
+{
     matrix4     *mat1,*mat2,*mat3;  /* temporary matricies */
     vector      dop;                /* direction of projection after */
                                     /* trans and rotation */
@@ -358,12 +331,9 @@ static void set_view_trans_mat(
     _free( mat3 );
 }
 
-void pipe3d_init(
-/**********************/
-    pipe_view   *view,
-    pipe_illum  *illum,
-    bool        all_poly_convex
-) {
+void pipe3d_init( pipe_view *view, pipe_illum *illum, bool all_poly_convex )
+/**************************************************************************/
+{
     set_view_trans_mat( view );
     set_illumination( illum );
     set_poly_convex_info( all_poly_convex );
@@ -372,10 +342,9 @@ void pipe3d_init(
     rend_list_init( Pipe3dList );
 }
 
-void pipe3d_shutdown(
+void pipe3d_shutdown( void )
 /**************************/
-    void
-) {
+{
     rend_list_free( Pipe3dList );
     _free( Pipe3dList );
 

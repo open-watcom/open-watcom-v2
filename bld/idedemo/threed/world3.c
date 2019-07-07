@@ -56,14 +56,10 @@ static region_info  Region = { USE_RGN_NONE };
 #define REAL_PERSP_MIN  0.5
 #define REAL_PERSP_MAX  40.
 
-static void set_vpn_vup(
-/**********************/
+static void set_vpn_vup( int h_angle, int v_angle, vector *vpn, vector *vup )
+/***************************************************************************/
 /* set the vecotors ViewPlNorm and VUp based on h_angle and v_angle */
-    int         h_angle,
-    int         v_angle,
-    vector *    vpn,
-    vector *    vup
-) {
+{
     float       sintheta, costheta;     /* h_angle values */
     float       sinphi, cosphi;         /* v_angle values */
 
@@ -97,10 +93,9 @@ static void set_vpn_vup(
     }
 }
 
-static float calculate_real_perspective(
-/**************************************/
-    int     simp_persp
-) {
+static float calculate_real_perspective( int simp_persp )
+/*******************************************************/
+{
     float   x;
 
     /* set x to be simp_persp capped to SIMP_PERSP_MIN/MAX */
@@ -129,12 +124,9 @@ static float calculate_real_perspective(
     return( x );
 }
 
-static void simple_to_pipe_view(
-/******************************/
-    view_3d *   simp,
-    pipe_view * view,
-    float       base_zoom
-) {
+static void simple_to_pipe_view( view_3d *simp, pipe_view *view, float base_zoom )
+/********************************************************************************/
+{
     float       zoom;
 
     /* calculate the view plane normal and vup */
@@ -170,13 +162,9 @@ static void simple_to_pipe_view(
     view->type = simp->type;
 }
 
-static void set_light_dir(
-/************************/
-    vector *            dir,
-    light_vert_pos      vert,
-    light_horz_pos      horz,
-    light_depth_pos     depth
-) {
+static void set_light_dir( vector *dir, light_vert_pos vert, light_horz_pos horz, light_depth_pos depth )
+/*******************************************************************************************************/
+{
     float               len;
     int                 i;
 
@@ -228,8 +216,8 @@ static void set_light_dir(
     }
 }
 
-static void simple_to_pipe_illum(
-/*******************************/
+static void simple_to_pipe_illum( light_3d *simp, pipe_illum *pipe, float distance, light_vert_pos auto_pos )
+/***********************************************************************************************************/
 /*
 NOTE: that since the lighting model is applied after the viewing
 transformation has been performed the fact that h_angle and v_angle are
@@ -237,11 +225,7 @@ relitive to the viewing parameters is taken care of automagiclly.
 NOTE: the centre of attention for the illumination model, relitive to which
 the light source will be placed, is at (.5, .5, .5).
 */
-    light_3d *      simp,
-    pipe_illum *    pipe,
-    float           distance,
-    light_vert_pos  auto_pos
-) {
+{
     vector          dir;
     float           contrast;
     float           brightness;
@@ -271,14 +255,10 @@ the light source will be placed, is at (.5, .5, .5).
     pipe->pt_intensity = contrast * brightness;
 }
 
-void _w3init(
-/******************/
-    three_d_op *    view,
-    float           base_zoom,
-    float           light_distance,         // if 0 light is at infinity
-    light_vert_pos  auto_pos,
-    bool            all_poly_convex
-) {
+void _w3init( three_d_op *view, float base_zoom, float light_distance,
+                        light_vert_pos auto_pos, bool all_poly_convex )
+/*********************************************************************/
+{
     pipe_view *     pview;
     pipe_illum *    pillum;
 
@@ -291,29 +271,25 @@ void _w3init(
     _free( pview );
 }
 
-void _w3shutdown(
+void _w3shutdown( void )
 /**********************/
-    void
-) {
+{
     pipe3d_shutdown();
 }
 
-void _w3display_all(
+void _w3display_all( void )
 /*************************/
-    void
-) {
+{
     pipe3d_display();
 }
 
-void _w3get_view_dir(
-/**************************/
+void _w3get_view_dir( view_3d *view, w3coord *dir )
+/*************************************************/
 /* Gets the viewing direction based on the angles given in view */
 /* NOTE: The assumtion made in this routine are valid for the restricted */
 /* viewing system employed in cgr but are not valid for the complete system */
 /* as described in "Computer Graphics" by Foley et. al. */
-    view_3d *   view,
-    w3coord *   dir
-) {
+{
     vector      vpn;
     vector      dummy;
     float       len;
@@ -326,34 +302,27 @@ void _w3get_view_dir(
     dir->zcoord = - vpn.v[2] / len;
 }
 
-void _w3setcolour(
-/***********************/
-    COLORREF    rgb
-) {
+void _w3setcolour( COLORREF rgb )
+/*******************************/
+{
     rgb_to_hls( rgb, &Curr_colour );
 }
 
-void _w3setlinestyle(
-/**************************/
-    line_style  style
-) {
+void _w3setlinestyle( line_style style )
+/************************************p*/
+{
     Curr_line_style = style;
 }
 
-void _w3setblackedges(
-/***************************/
-    bool    black_edges
-) {
+void _w3setblackedges( bool black_edges )
+/***************************************/
+{
     Black_edges = black_edges;
 }
 
-static void rect_to_polar(
-/************************/
-    float       x,
-    float       y,
-    float       *r,
-    float       *omega
-) {
+static void rect_to_polar( float x, float y, float *r, float *omega )
+/*******************************************************************/
+{
     *r = sqrt( x*x + y*y );
     if (*r == 0.) {
         *omega = 0.;        // this value is arbitrary
@@ -362,28 +331,21 @@ static void rect_to_polar(
     }
 }
 
-static void polar_to_rect(
-/************************/
-    float       r,
-    float       omega,
-    float       *x,
-    float       *y
-) {
+static void polar_to_rect( float r, float omega, float *x, float *y )
+/*******************************************************************/
+{
     *x = r * cos( omega );
     *y = r * sin( omega );
 }
 
-void ellipse_pt(
-/*********************/
-/* Calculated the point on the ellipse at angle alpha */
-    float       h_sqr,              // horizontal axis squared
-    float       v_sqr,              // vertical axis squared
-    float       cx,                 // centre
-    float       cy,
-    float       alpha,
-    float *     x,
-    float *     y
-) {
+void ellipse_pt( float h_sqr, float v_sqr, float cx, float cy, float alpha, float *x, float *y )
+/**********************************************************************************************/
+/* Calculated the point on the ellipse at angle alpha
+    float       h_sqr       horizontal axis squared
+    float       v_sqr       vertical axis squared
+    float       cx, cy      centre
+*/
+{
     float       calpha;
     float       salpha;
     float       r;
@@ -397,26 +359,14 @@ void ellipse_pt(
     *y += cy;
 }
 
-static pt_edge * pie_to_poly(
-/***************************/
+static pt_edge * pie_to_poly( float x1, float z1, float x2, float z2, float x3, float z3, float x4,
+                    float z4, float y, int resolution, int *num_pts, text_info *text, bool all_pie )
+/**************************************************************************************************/
 /* returns a polynomial approximation to the pie wedge given */
 /* The points in the polygon approximation are layed out in counter clockwise */
 /* order as seen from below so that the sweep by height will put the solid in */
 /* the 0-1 cube */
-    float       x1,
-    float       z1,
-    float       x2,
-    float       z2,
-    float       x3,
-    float       z3,
-    float       x4,
-    float       z4,
-    float       y,
-    int         resolution,
-    int *       num_pts,
-    text_info * text,
-    bool        all_pie
-) {
+{
     pt_edge     *pts;           // polygon that will approximate the pie
     int         num_regions;    // number of regions to devide the pie into
     float       cx, cz;         // centre of ellipse
@@ -509,26 +459,14 @@ static pt_edge * pie_to_poly(
     return( pts );
 }
 
-void _w3pie(
-/*****************/
+void _w3pie( float x1, float z1, float x2, float z2, float x3, float z3, float x4, float z4,
+                float height, text_pt *text, bool above_view, int resolution, bool all_pie )
+/******************************************************************************************/
 /* This function adds a pie wedge to the 3d pipeline. The wedge will be in */
 /* the 0-1 cube and will range from y=.5 - height/2 to y=.5 + height/2 */
 /* NOTE: The bottom of the pie is layed out in new_obj.pts but */
 /* rend_obj_add_sweep calls its input points the "top". */
-    float           x1,
-    float           z1,
-    float           x2,
-    float           z2,
-    float           x3,
-    float           z3,
-    float           x4,
-    float           z4,
-    float           height,
-    text_pt *       text,
-    bool            above_view,
-    int             resolution,
-    bool            all_pie
-) {
+{
     rend_obj_add    new_obj;
     float           y_bottom;
     text_info       calc_text;      // info for calculation text position
@@ -569,15 +507,12 @@ void _w3pie(
     _free( new_obj.pts );
 }
 
-static pt_edge * rect_to_poly(
-/****************************/
+static pt_edge * rect_to_poly( w3coord pt1, w3coord pt2, bool black1, bool black2 )
+/*********************************************************************************/
 /* Note: The points are layed out in counter clockwise order as seen from */
 /* the positive z axis */
-    w3coord     pt1,
-    w3coord     pt2,
-    bool        black1,         // plane parallel to x-z at pt1.y black?
-    bool        black2
-) {
+/*    bool  black1         plane parallel to x-z at pt1.y black? */
+{
     pt_edge *   pts;
 
     _new( pts, 4 );
@@ -618,12 +553,9 @@ static pt_edge * rect_to_poly(
     return( pts );
 }
 
-static void add_zero_bar(
-/***********************/
-    w3coord     pt1,
-    w3coord     pt2,
-    float       depth
-) {
+static void add_zero_bar( w3coord pt1, w3coord pt2, float depth )
+/***************************************************************/
+{
     point *     pts;
     rend_obj *  new_obj;
 
@@ -652,16 +584,12 @@ static void add_zero_bar(
     pipe3d_add( new_obj, NULL, FALSE );
 }
 
-void _w3bar(
-/*****************/
+void _w3bar( w3coord pt1, w3coord pt2, float depth, bool black1, bool black2 )
+/****************************************************************************/
 /* Adds a bar to the 3d pipeline whose front face is the rect with corners */
 /* pt1 and pt2, and which has top and bottom edges parallel to the x axis */
-    w3coord     pt1,
-    w3coord     pt2,
-    float       depth,
-    bool        black1,         // plane parallel to x-z at pt1.y black?
-    bool        black2
-) {
+/*    bool  black1      plane parallel to x-z at pt1.y black? */
+{
     rend_obj_add    new_obj;
 
     if( fabs( pt1.ycoord - pt2.ycoord ) < FUZZY_ZERO ) {
@@ -691,18 +619,15 @@ void _w3bar(
     _free( new_obj.pts );
 }
 
-void _w3moveto(
-/********************/
-    w3coord     pt
-) {
+void _w3moveto( w3coord pt )
+/**************************/
+{
     Curr_line_pt = pt;
 }
 
-void _w3lineto(
-/********************/
-    w3coord     pt,
-    bool        disp_now
-) {
+void _w3lineto( w3coord pt, bool disp_now )
+/*****************************************/
+{
     point       start;
     point       end;
     rend_obj *  new_obj;
@@ -723,11 +648,9 @@ void _w3lineto(
     Curr_line_pt = pt;
 }
 
-void _w3transformpoint(
-/****************************/
-    const w3coord *     pt_3d,
-    wcoord *            pt_2d
-) {
+void _w3transformpoint( const w3coord *pt_3d, wcoord *pt_2d )
+/***********************************************************/
+{
     point               homo_pt;
 
     homo_pt.p[0] = pt_3d->xcoord;
@@ -739,15 +662,9 @@ void _w3transformpoint(
     project_pt( homo_pt, &(pt_2d->xcoord), &(pt_2d->ycoord) );
 }
 
-void _w3rgnon(
-/*******************/
-    int         major_id,
-    int         minor_id,
-    int         data_row,
-    int         data_col,
-    int         set_num,
-    bool        use_group
-) {
+void _w3rgnon( int major_id, int minor_id, int data_row, int data_col, int set_num, bool use_group )
+/**************************************************************************************************/
+{
     if( use_group ) {
         Region.use_info = USE_RGN_GROUP;
     } else {
@@ -760,18 +677,16 @@ void _w3rgnon(
     Region.set_num = set_num;
 }
 
-void _w3rgnoff(
+void _w3rgnoff( void )
 /********************/
-    void
-) {
+{
     Region.use_info = USE_RGN_NONE;
 }
 
-void _w3rgnsetadd(
-/***********************/
+void _w3rgnsetadd( w3coord *pt_3 )
+/********************************/
 /* Adds the projection of a point to the current manual set, if there is one */
-    w3coord *   pt_3
-) {
+{
     wcoord      pt_2;
 
     if( Region.use_info == USE_RGN_SET ) {
@@ -782,12 +697,9 @@ void _w3rgnsetadd(
     }
 }
 
-void _w3polygon(
-/*********************/
-    int         num_pts,
-    w3coord *   pts,
-    bool *      edges
-) {
+void _w3polygon( int num_pts, w3coord *pts, bool *edges )
+/*******************************************************/
+{
     point *     h_pts;      // homogenous points
     int         pt_num;
     rend_obj *  new_obj;
@@ -806,8 +718,8 @@ void _w3polygon(
     }
 }
 
-void _w3area(
-/*******************/
+void _w3area( int num_pts, const w3coord *pts, float height, int black_face )
+/***************************************************************************/
 /*
 The points are assumed to be in counter clockwise order as seen from
 the outside of the solid.
@@ -815,12 +727,10 @@ NOTE: This routine requires some conditions on the points:
         1. The points are not co-linear.
         2. The points are co-plannar (within numerical limits).
         3. The points define a simple polygon (doesn't cross itself).
+
+    int black_face      -1 for no black face
 */
-    int                 num_pts,
-    const w3coord *     pts,
-    float               height,
-    int                 black_face      // -1 for no black face
-) {
+{
     rend_obj_add        add;
     int                 curr_pt;
 

@@ -53,10 +53,9 @@ typedef struct face_pts {       // used for calculating normal of a face
 } face_pts;
 
 
-rend_obj * rend_obj_new_poly(
+rend_obj * rend_obj_new_poly( void )
 /**********************************/
-    void
-) {
+{
     rend_obj *  new;
     polygon *   poly;
 
@@ -72,11 +71,9 @@ rend_obj * rend_obj_new_poly(
     return( new );
 }
 
-static index_elt * identity_index(
-/********************************/
-    int         num_elt,
-    bool *      edges
-) {
+static index_elt * identity_index( int num_elt, bool *edges )
+/***********************************************************/
+{
     index_elt * index;
     int         curr_elt;
 
@@ -96,16 +93,10 @@ static index_elt * identity_index(
     return( index );
 }
 
-rend_obj * rend_obj_create_poly(
-/*************************************/
-    int             num_pts,
-    point *         pts,
-    hls_colour      base,
-    bool            black_edges,
-    region_info *   rgn,
-    bool *          edges,
-    int             rgn_pt_iter
-) {
+rend_obj * rend_obj_create_poly( int num_pts, point *pts, hls_colour base,
+            bool black_edges, region_info *rgn, bool *edges, int rgn_pt_iter )
+/****************************************************************************/
+{
     rend_obj *      new;
     polygon *       poly;
 
@@ -125,14 +116,10 @@ rend_obj * rend_obj_create_poly(
     return( new );
 }
 
-rend_obj * rend_obj_create_line(
-/*************************************/
-    point           start,
-    point           end,
-    hls_colour      colour,
-    line_style      style,
-    region_info *   rgn
-) {
+rend_obj * rend_obj_create_line( point start, point end, hls_colour colour,
+                                        line_style style, region_info *rgn )
+/**************************************************************************/
+{
     rend_obj *  obj;
 
     _new( obj, 1 );
@@ -149,10 +136,9 @@ rend_obj * rend_obj_create_line(
     return( obj );
 }
 
-static vertex_list * dup_vertex_list(
-/***********************************/
-    vertex_list *   old
-) {
+static vertex_list * dup_vertex_list( vertex_list *old )
+/******************************************************/
+{
     vertex_list *   new;
 
     _pipenew( new, 1 );
@@ -163,11 +149,9 @@ static vertex_list * dup_vertex_list(
     return( new );
 }
 
-static index_elt * dup_index(
-/***************************/
-    index_elt * old,
-    int         num_entries
-) {
+static index_elt * dup_index( index_elt *old, int num_entries )
+/*************************************************************/
+{
     index_elt * new;
 
     _pipenew( new, num_entries );
@@ -176,47 +160,36 @@ static index_elt * dup_index(
     return( new );
 }
 
-static void copy_poly(
-/********************/
-    polygon *   old,
-    polygon *   new
-) {
+static void copy_poly( polygon *old, polygon *new )
+/*************************************************/
+{
     new->normal = old->normal;
     new->num_pts = old->num_pts;
     new->index = dup_index( old->index, old->num_pts );
     new->pts = dup_vertex_list( old->pts );
 }
 
-static void point_min(
-/********************/
-    point       pt1,
-    point       pt2,
-    point *     min
-) {
+static void point_min( point pt1, point pt2, point *min )
+/*******************************************************/
+{
     min->p[0] = _min( pt1.p[0], pt2.p[0] );
     min->p[1] = _min( pt1.p[1], pt2.p[1] );
     min->p[2] = _min( pt1.p[2], pt2.p[2] );
     min->p[3] = _min( pt1.p[3], pt2.p[3] );
 }
 
-static void point_max(
-/********************/
-    point       pt1,
-    point       pt2,
-    point *     max
-) {
+static void point_max( point pt1, point pt2, point *max )
+/*******************************************************/
+{
     max->p[0] = _max( pt1.p[0], pt2.p[0] );
     max->p[1] = _max( pt1.p[1], pt2.p[1] );
     max->p[2] = _max( pt1.p[2], pt2.p[2] );
     max->p[3] = _max( pt1.p[3], pt2.p[3] );
 }
 
-static bool face_visible(
-/***********************/
-    face *          curr_face,
-    vertex_list *   pts_list,
-    visible_info *  vis
-) {
+static bool face_visible( face *curr_face, vertex_list *pts_list, visible_info *vis )
+/***********************************************************************************/
+{
     point *         min;
     point *         max;
     float           x1, y1;
@@ -248,8 +221,8 @@ static bool face_visible(
     return( _wrectvisible( x1, y1, x2, y2 ) );
 }
 
-static void add_solid_to_list(
-/****************************/
+static void add_solid_to_list( rend_obj *obj, rend_list *list )
+/*************************************************************/
 /* solids are not added to the list directly, instead they are broken up */
 /* into their component faces and these are added as polygons */
 /* NOTE: The memory that is occupied by the points list of the polygon becomes*/
@@ -258,9 +231,7 @@ static void add_solid_to_list(
 /* memory manager is being used then either a reference count would have to */
 /* be maintained or each polygon could get a copy of the points that they */
 /* reference. */
-    rend_obj *      obj,
-    rend_list *     list
-) {
+{
     rend_obj *      new;
     polygon *       new_poly;
     vertex_list *   pts;
@@ -301,11 +272,10 @@ static void add_solid_to_list(
     }
 }
 
-rend_obj * rend_obj_dup(
-/*****************************/
+rend_obj * rend_obj_dup( rend_obj *obj )
+/**************************************/
 /* duplicates obj into pipe_mem memory */
-    rend_obj *  obj
-) {
+{
     rend_obj *  new_obj;
 
     switch (obj->type) {
@@ -330,11 +300,9 @@ rend_obj * rend_obj_dup(
 }
 
 
-void rend_obj_add_to_list(
-/*******************************/
-    rend_obj *      obj,
-    rend_list *     list
-) {
+void rend_obj_add_to_list( rend_obj *obj, rend_list *list )
+/*********************************************************/
+{
     rend_obj *      new_obj;
 
     if (obj->type == REND_OBJ_SOLID) {
@@ -346,14 +314,13 @@ void rend_obj_add_to_list(
     }
 }
 
-void rend_obj_lfree(
-/*************************/
+void rend_obj_lfree( rend_obj *obj )
+/**********************************/
 /* free a rend_obj from local memory */
 /* NOTE: do not call this function for rend_obj's that have been added */
 /* to the rend_list via a rend_obj_add_to_list call; they are not in */
 /* local memory. */
-    rend_obj *      obj
-) {
+{
     polygon *       poly;
     vertex_list *   pts;
     face_list *     faces;
@@ -383,11 +350,9 @@ void rend_obj_lfree(
     _free( obj );
 }
 
-static void compute_poly_vis_info(
-/********************************/
-    polygon *       poly,
-    visible_info *  ext
-) {
+static void compute_poly_vis_info( polygon *poly, visible_info *ext )
+/*******************************************************************/
+{
     int             curr_pt;
 
     ext->min = _polygon_get_pt( *poly, 0 );
@@ -399,13 +364,11 @@ static void compute_poly_vis_info(
     }
 }
 
-static void compute_solid_vis_info(
-/*********************************/
+static void compute_solid_vis_info( polyhedron *solid, visible_info *ext )
+/************************************************************************/
 /* assume that all points mentioned in the vertex_list are reference by at */
 /* at least one face */
-    polyhedron *    solid,
-    visible_info *  ext
-) {
+{
     point *         pt;
 
     pt = solid->pts.pts;
@@ -420,10 +383,9 @@ static void compute_solid_vis_info(
     }
 }
 
-void rend_obj_compute_vis_info(
-/************************************/
-    rend_obj *      obj
-) {
+void rend_obj_compute_vis_info( rend_obj *obj )
+/*********************************************/
+{
     switch (obj->type) {
     case REND_OBJ_PT:
         obj->vis.min = obj->obj.pt;
@@ -445,18 +407,16 @@ void rend_obj_compute_vis_info(
 
 #if 0
 /* macroed */
-visible_info * rend_obj_get_vis(
-/*************************************/
-    rend_obj *      obj
-) {
+visible_info * rend_obj_get_vis( rend_obj *obj )
+/**********************************************/
+{
     return( &(obj->vis) );
 }
 #endif
 
-vector rend_obj_get_norm(
-/******************************/
-    rend_obj *  obj
-) {
+vector rend_obj_get_norm( rend_obj *obj )
+/***************************************/
+{
     vector      norm;
 
     if (obj->type == REND_OBJ_POLY) {
@@ -471,10 +431,9 @@ vector rend_obj_get_norm(
     return( norm );
 }
 
-int rend_obj_get_num_pts(
-/******************************/
-    rend_obj *  obj
-) {
+int rend_obj_get_num_pts( rend_obj *obj )
+/***************************************/
+{
     switch (obj->type) {
     case REND_OBJ_SOLID:
         return( obj->obj.solid.pts.num_pts );
@@ -494,11 +453,9 @@ int rend_obj_get_num_pts(
     }
 }
 
-point rend_obj_get_pt(
-/***************************/
-    rend_obj *  obj,
-    int         pt_num
-) {
+point rend_obj_get_pt( rend_obj *obj, int pt_num )
+/************************************************/
+{
     point       pt;
 
     switch (obj->type) {
@@ -544,10 +501,9 @@ point rend_obj_get_pt(
     return( pt );
 }
 
-polygon * rend_obj_get_poly(
-/*********************************/
-    rend_obj *  obj
-) {
+polygon * rend_obj_get_poly( rend_obj *obj )
+/******************************************/
+{
     if (obj->type == REND_OBJ_POLY) {
         return( &obj->obj.poly );
     } else {
@@ -555,10 +511,9 @@ polygon * rend_obj_get_poly(
     }
 }
 
-line * rend_obj_get_line(
-/******************************/
-    rend_obj * obj
-) {
+line * rend_obj_get_line( rend_obj *obj )
+/***************************************/
+{
     if( obj->type == REND_OBJ_LINE ) {
         return( &obj->obj.line );
     } else {
@@ -568,26 +523,22 @@ line * rend_obj_get_line(
 
 #if 0
 /* macroed */
-rend_type rend_obj_get_type(
-/*********************************/
-    rend_obj *  obj
-) {
+rend_type rend_obj_get_type( rend_obj *obj )
+/******************************************/
+{
     return( obj->type );
 }
 #endif
 
-static point polygon_get_pt(
-/**************************/
-    polygon *   poly,
-    int         pt_num
-) {
+static point polygon_get_pt( polygon *poly, int pt_num )
+/******************************************************/
+{
     return( _polygon_get_pt( *poly, pt_num ) );
 }
 
-static void calc_norm_poly(
-/*************************/
-    polygon *   poly
-) {
+static void calc_norm_poly( polygon *poly )
+/*****************************************/
+{
     int         i;
 
     poly->normal = calculate_normal_vector( poly->num_pts,
@@ -601,18 +552,15 @@ static void calc_norm_poly(
     }
 }
 
-static point face_get_pt(
-/***********************/
-    face_pts *  side,
-    int         pt_num
-) {
+static point face_get_pt( face_pts *side, int pt_num )
+/****************************************************/
+{
     return( side->pts[ side->side->index[ pt_num ].pt_num ] );
 }
 
-static void calc_norm_solid(
-/**************************/
-    polyhedron *    solid
-) {
+static void calc_norm_solid( polyhedron *solid )
+/**********************************************/
+{
     face *          curr_face;
     face_pts        side;
 
@@ -626,10 +574,9 @@ static void calc_norm_solid(
     }
 }
 
-void rend_obj_calculate_normal(
-/************************************/
-    rend_obj *  obj
-) {
+void rend_obj_calculate_normal( rend_obj *obj )
+/*********************************************/
+{
     switch (obj->type) {
     case REND_OBJ_PT:
     case REND_OBJ_LINE:
@@ -643,11 +590,9 @@ void rend_obj_calculate_normal(
     }
 }
 
-static bool inside(
-/*****************/
-    point   pt,
-    vector  norm
-) {
+static bool inside( point pt, vector norm )
+/*****************************************/
+{
     float   result;
 
     result = _dot_prod_vp( norm, pt );
@@ -655,13 +600,9 @@ static bool inside(
     return( result < FUZZY_ZERO );
 }
 
-static void output(
-/*****************/
-    point           pt,
-    polygon *       poly,
-    bool            edge,
-    bool            force_pt
-) {
+static void output( point pt, polygon *poly, bool edge, bool force_pt )
+/*********************************************************************/
+{
     vertex_list *   pts;
 
     pts = poly->pts;
@@ -677,16 +618,12 @@ static void output(
     poly->index[ poly->num_pts - 1 ].force_rgn_pt = force_pt;
 }
 
-static bool intersect(
-/********************/
+static bool intersect( point first, point second, vector normal, point *inter )
+/*****************************************************************************/
 /* The point of intersection between the line first to second and the plane */
 /* defined by normal is place in inter. See Log Notes p. 1 */
 /* Returns TRUE if the intersection point falls between first and second. */
-    point   first,
-    point   second,
-    vector  normal,
-    point * inter
-) {
+{
     float   t;
     float   denom;
     vector  p;
@@ -715,8 +652,8 @@ static bool intersect(
     return( 0. <= t && t <= 1. );
 }
 
-static bool clip_3d_poly(
-/***********************/
+static bool clip_3d_poly( polygon *poly, polygon *new_poly, vector normal )
+/*************************************************************************/
 /*
 clip the polygon defined by 'obj' against the bounding plane defined by
 'normal' and return the resulting rend_obj in local memory. See
@@ -724,10 +661,7 @@ clip the polygon defined by 'obj' against the bounding plane defined by
 be outward pointing.
 Returns TRUE if the polygon is outside the clip plane.
 */
-    polygon *   poly,
-    polygon *   new_poly,
-    vector      normal
-) {
+{
     point       s;          // starting point of current edge
     point       p;          // ending point
     point       i;          // intersection point of edge with plane
@@ -766,12 +700,9 @@ Returns TRUE if the polygon is outside the clip plane.
     return( new_poly->num_pts == 0 );
 }
 
-static bool clip_3d_line(
-/***********************/
-    line *      in,
-    line *      out,
-    vector      normal
-) {
+static bool clip_3d_line( line *in, line *out, vector normal )
+/************************************************************/
+{
     bool        start_in;
     bool        end_in;
 
@@ -792,14 +723,12 @@ static bool clip_3d_line(
     return (!(start_in || end_in));
 }
 
-rend_obj * rend_obj_clip(
-/******************************/
+rend_obj * rend_obj_clip( rend_obj *obj, vector norm )
+/****************************************************/
 /* Clip obj by the plane defined by norm and put the result in memory */
 /* allocated by alloc and return a pointer to it */
 /* NOTE: points are not handled by this algorithm as they can't be clipped */
-    rend_obj *  obj,
-    vector      norm
-) {
+{
     rend_obj *  new_obj;
 
     switch (obj->type) {
@@ -826,24 +755,19 @@ rend_obj * rend_obj_clip(
     return( new_obj );
 }
 
-static point get_pt_from_array(
-/*****************************/
-    point   *array,
-    int     pt_num
-) {
+static point get_pt_from_array( point *array, int pt_num )
+/********************************************************/
+{
     return( array[ pt_num ] );
 }
 
-static point * create_points_array(
-/*********************************/
+static point * create_points_array( pt_edge *in_pts, int num_pts, float height,
+                                                text_info *text, bool on_bottom )
+/*******************************************************************************/
 /* See rend_obj_create_sweep for details of how this works. */
 /* This routine double the number of points. */
-    pt_edge         *in_pts,
-    int             num_pts,
-    float           height,
-    text_info *     text,
-    bool            on_bottom       // is the text on bottom
-) {
+/*  bool on_bottom      is the text on bottom */
+{
     point           *out_pts;
     vector          normal;
     int             curr_pt;
@@ -894,14 +818,12 @@ static point * create_points_array(
 #define _get_top_pt( pt_num, num_pts ) (pt_num) % (num_pts)
 #define _get_bottom_pt( pt_num, num_pts) (pt_num) % (num_pts) + (num_pts)
 
-static void layout_faces(
-/***********************/
+static void layout_faces( face_list *list, rend_obj_add *add )
+/************************************************************/
 /* See rend_obj_create_sweep for how this routine works */
 /* NOTE: This routine is sensitive to change. Make sure the side faces are */
 /* set properly. */
-    face_list *     list,
-    rend_obj_add *  add
-) {
+{
     int             num_faces;
     int             curr_pt;
     int             curr_face;
@@ -971,26 +893,19 @@ static void layout_faces(
 #undef _get_bottom_pt
 
 #if 0
-
-static void set_line(
-/*******************/
+static void set_line( rend_obj *obj, point start, point end, hls_colour colour )
+/******************************************************************************/
 /* Fills in obj to be a line from start to end */
-    rend_obj        *obj,
-    point           start,
-    point           end,
-    hls_colour      colour
-) {
+{
     obj->type = REND_OBJ_LINE;
     obj->base_colour = colour;
     obj->obj.line.start = start;
     obj->obj.line.end = end;
 }
-
 #endif
 
-rend_obj * rend_obj_create_sweep(
-/**************************************/
-    rend_obj_add    *add
+rend_obj * rend_obj_create_sweep( rend_obj_add *add )
+/***************************************************/
 /*
 Creates a solid object by performing a transitional sweep of the polygon
 defined by pts downwards for a distance of height. See "Computer Graphics" by
@@ -1013,7 +928,7 @@ convention the faces of the solid are constructed as follows:
             side face n: points n,n',1',1
     5. Add the bottom face with points n',(n-1)',...,3',2',1'
 */
-) {
+{
     rend_obj *      new_obj;
     point *         pts;
 
@@ -1041,10 +956,9 @@ convention the faces of the solid are constructed as follows:
     return( new_obj );
 }
 
-void rend_obj_add_sweep(
-/*****************************/
-    rend_obj_add    *add
-) {
+void rend_obj_add_sweep( rend_obj_add *add )
+/******************************************/
+{
     rend_obj        *new_obj;       // array of line and solid objects to add
 
     new_obj = rend_obj_create_sweep( add );
@@ -1052,11 +966,9 @@ void rend_obj_add_sweep(
     pipe3d_add( new_obj, add->text, FALSE );
 }
 
-static void transform_poly(
-/*************************/
-    polygon *   poly,
-    float       matrix[4][4]
-) {
+static void transform_poly( polygon *poly, float matrix[4][4] )
+/*************************************************************/
+{
    int          curr_pt;
 
    for (curr_pt = 0; curr_pt < poly->num_pts; curr_pt++) {
@@ -1065,12 +977,10 @@ static void transform_poly(
    }
 }
 
-static void transform_solid(
-/**************************/
+static void transform_solid( polyhedron *solid, float matrix[4][4] )
+/******************************************************************/
 /* transform a solid by transforming all of the points in the vertex list */
-    polyhedron *    solid,
-    float           matrix[4][4]
-) {
+{
     int             curr_pt;
 
     for (curr_pt = 0; curr_pt < solid->pts.num_pts; curr_pt++) {
@@ -1079,12 +989,10 @@ static void transform_solid(
     }
 }
 
-void rend_obj_transform(
-/*****************************/
+void rend_obj_transform( rend_obj *obj, float matrix[4][4] )
+/**********************************************************/
 /* apply the transformation matrix to the points of obj */
-    rend_obj *  obj,
-    float       matrix[4][4]
-) {
+{
     switch (obj->type) {
     case REND_OBJ_PT:
         obj->obj.pt = mult_matrix_pt( matrix, obj->obj.pt );
@@ -1102,10 +1010,9 @@ void rend_obj_transform(
     }
 }
 
-void point_homo_to_3d(
-/***************************/
-    point *     pt
-) {
+void point_homo_to_3d( point *pt )
+/********************************/
+{
     float       w;
     int         i;
 
@@ -1117,10 +1024,9 @@ void point_homo_to_3d(
     }
 }
 
-static void homo_to_3d_poly(
-/**************************/
-    polygon *   poly
-) {
+static void homo_to_3d_poly( polygon *poly )
+/******************************************/
+{
     int         curr_pt;
 
     for (curr_pt = 0; curr_pt < poly->num_pts; curr_pt++) {
@@ -1128,10 +1034,9 @@ static void homo_to_3d_poly(
     }
 }
 
-static void homo_to_3d_solid(
-/***************************/
-    polyhedron *    solid
-) {
+static void homo_to_3d_solid( polyhedron *solid )
+/***********************************************/
+{
     int             curr_pt;
 
     for (curr_pt = 0; curr_pt < solid->pts.num_pts; curr_pt++) {
@@ -1139,12 +1044,11 @@ static void homo_to_3d_solid(
     }
 }
 
-void rend_obj_homo_to_3d(
-/******************************/
+void rend_obj_homo_to_3d( rend_obj *obj )
+/***************************************/
 /* Change the points of obj from homogenous coordinates to 3d coordinates */
 /* by deviding by W */
-    rend_obj *  obj
-) {
+{
     switch (obj->type) {
     case REND_OBJ_PT:
         point_homo_to_3d( &(obj->obj.pt) );
@@ -1162,20 +1066,18 @@ void rend_obj_homo_to_3d(
     }
 }
 
-hls_colour rend_obj_get_base_colour(
-/*****************************************/
-    rend_obj    *obj
-) {
+hls_colour rend_obj_get_base_colour( rend_obj *obj )
+/**************************************************/
+{
     return( obj->base_colour );
 }
 
 #if 0
 /* macroed */
-bool polygon_edge_hilight(
-/*******************************/
-    rend_obj    *obj,           // must be a polygon type
-    int         edge_num
-) {
+bool polygon_edge_hilight( rend_obj *obj, int edge_num )
+/******************************************************/
+/*  rend_obj *obj       must be a polygon type */
+{
     if (obj->type == REND_OBJ_POLY) {
         if (0 <= edge_num && edge_num < obj->obj.poly.num_pts) {
             return( obj->obj.poly.index[ edge_num ].hilight_edge );
@@ -1188,10 +1090,9 @@ bool polygon_edge_hilight(
 }
 #endif
 
-void rend_obj_region_begin(
-/********************************/
-    rend_obj *  obj
-) {
+void rend_obj_region_begin( rend_obj *obj )
+/*****************************************/
+{
     switch( obj->rgn.use_info ) {
     case USE_RGN_GROUP:
         rgn_man_group_begin( obj->rgn.set_num );
@@ -1206,10 +1107,9 @@ void rend_obj_region_begin(
     }
 }
 
-void rend_obj_region_end(
-/******************************/
-    rend_obj *  obj
-) {
+void rend_obj_region_end( rend_obj *obj )
+/***************************************/
+{
     switch( obj->rgn.use_info ) {
     case USE_RGN_GROUP:
         rgn_man_group_end();
@@ -1226,33 +1126,25 @@ void rend_obj_region_end(
 /* DEBUG ROUTINES */
 #include <stdio.h>
 
-void dbg_print_pt(
-/***********************/
-    FILE    *fp,
-    point   pt,
-    char    *prefix
-) {
+void dbg_print_pt( FILE *fp, point pt, char *prefix )
+/***************************************************/
+{
     fprintf( fp, "%s % 12.5g % 12.5g % 12.5g % 12.5g\n", prefix,
                     (double) pt.p[0], (double) pt.p[1],
                     (double) pt.p[2], (double) pt.p[3] );
 }
 
-void dbg_print_vect(
-/*************************/
-    FILE    *fp,
-    vector  vect,
-    char    *prefix
-) {
+void dbg_print_vect( FILE *fp, vector vect, char *prefix )
+/********************************************************/
+{
     fprintf( fp, "%s % 12.5g % 12.5g % 12.5g % 12.5g\n", prefix,
                     (double) vect.v[0], (double) vect.v[1],
                     (double) vect.v[2], (double) vect.v[3] );
 }
 
-void dbg_print_vertex_list(
-/********************************/
-    FILE        *fp,
-    vertex_list *list
-) {
+void dbg_print_vertex_list( FILE *fp, vertex_list *list )
+/*******************************************************/
+{
     int         curr_pt;
 
     fprintf( fp, "\tVertex list: num_pts = %d\n", list->num_pts );
@@ -1261,13 +1153,9 @@ void dbg_print_vertex_list(
     }
 }
 
-void dbg_print_index(
-/**************************/
-    FILE        *fp,
-    int         num_pts,
-    index_elt   *index,
-    char        *prefix
-) {
+void dbg_print_index( FILE *fp, int num_pts, index_elt *index, char *prefix )
+/***************************************************************************/
+{
     int         curr_pt;
     char *      hilight_string;
 
@@ -1285,11 +1173,9 @@ void dbg_print_index(
     fputc( '\n', fp );
 }
 
-void dbg_print_poly(
-/*************************/
-    FILE    *fp,
-    polygon *poly
-) {
+void dbg_print_poly( FILE *fp, polygon *poly )
+/********************************************/
+{
     dbg_print_vect( fp, poly->normal, "\tNormal: " );
 
     fprintf( fp, "\tIndex: num_pts= %d", poly->num_pts );
@@ -1298,22 +1184,18 @@ void dbg_print_poly(
     dbg_print_vertex_list( fp, poly->pts );
 }
 
-void dbg_print_face(
-/*************************/
-    FILE *      fp,
-    face *      side
-) {
+void dbg_print_face( FILE *fp, face *side )
+/*****************************************/
+{
     dbg_print_vect( fp, side->normal, "\tNormal: " );
 
     fprintf( fp, "\tIndex: num_pts= %d", side->num_pts );
     dbg_print_index( fp, side->num_pts, side->index, "\n\t    " );
 }
 
-void dbg_print_solid(
-/**************************/
-    FILE        *fp,
-    polyhedron  *solid
-) {
+void dbg_print_solid( FILE *fp, polyhedron *solid )
+/*************************************************/
+{
     int         curr_face;
 
     dbg_print_vertex_list( fp, &(solid->pts) );
@@ -1324,22 +1206,16 @@ void dbg_print_solid(
     }
 }
 
-static void dbg_print_hls_colour(
-/*******************************/
-    FILE *      fp,
-    hls_colour  hls,
-    char *      prefix
-) {
+static void dbg_print_hls_colour( FILE *fp, hls_colour hls, char *prefix )
+/************************************************************************/
+{
     fprintf( fp, "%s  h: % 12.5g  l: % 12.5g  s: % 12.5g\n", prefix,
                 (double) hls.h, (double) hls.l, (double) hls.s );
 }
 
-static void dbg_print_region_info(
-/********************************/
-    FILE *      fp,
-    region_info rgn,
-    char *      prefix
-) {
+static void dbg_print_region_info( FILE *fp, region_info rgn, char *prefix )
+/**************************************************************************/
+{
     if( rgn.use_info ) {
         fprintf( fp, "%s  major: %5d  minor: %5d  set: %5d\n", prefix,
                     rgn.major_id, rgn.minor_id, rgn.set_num );
@@ -1348,12 +1224,9 @@ static void dbg_print_region_info(
     }
 }
 
-static void dbg_print_common_obj(
-/*******************************/
-    FILE *      fp,
-    rend_obj *  obj,
-    bool        contents
-) {
+static void dbg_print_common_obj( FILE *fp, rend_obj *obj, bool contents )
+/************************************************************************/
+{
     if (contents) {
         fprintf( fp, "Visible surface info:\n" );
     }
@@ -1366,12 +1239,9 @@ static void dbg_print_common_obj(
     dbg_print_region_info( fp, obj->rgn, "\tregion:" );
 }
 
-void dbg_print_one_obj(
-/****************************/
-    FILE        *fp,
-    rend_obj    *obj,
-    bool        contents
-) {
+void dbg_print_one_obj( FILE *fp, rend_obj *obj, bool contents )
+/**************************************************************/
+{
     dbg_print_common_obj( fp, obj, contents );
 
     switch (obj->type) {
@@ -1406,11 +1276,10 @@ void dbg_print_one_obj(
     }
 }
 
-void dbg_get_filename(
-/***************************/
+void dbg_get_filename( char *path )
+/*********************************/
 /* path should be a buffer of size _MAX_PATH */
-    char *  path
-) {
+{
     char *  tmp_dir;
 
     tmp_dir = getenv( "TMP" );
@@ -1421,10 +1290,9 @@ void dbg_get_filename(
 }
 
 
-void dbg_print_obj(
-/************************/
-    rend_obj *  obj
-) {
+void dbg_print_obj( rend_obj *obj )
+/*********************************/
+{
     FILE *      fp;
     char        path[ _MAX_PATH ];
 

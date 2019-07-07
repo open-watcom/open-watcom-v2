@@ -50,11 +50,9 @@
 #include "wpi.h"
 
 
-void near *lmem_alloc(
-/********************/
-
-    unsigned            size
-) {
+void near *lmem_alloc( unsigned size )
+/************************************/
+{
 #ifdef PLAT_OS2
     return( malloc( (size_t) size ) );
 #else
@@ -74,12 +72,9 @@ void near *lmem_alloc(
 #endif
 }
 
-void near *lmem_realloc(
-/**********************/
-
-    void                *mem,
-    unsigned            size
-) {
+void near *lmem_realloc( void *mem, unsigned size )
+/*************************************************/
+{
 #ifdef PLAT_OS2
     return( realloc( mem, (size_t) size ) );
 #else
@@ -106,11 +101,9 @@ void near *lmem_realloc(
 }
 
 
-void lmem_free(
-/*************/
-
-    void                *mem
-) {
+void lmem_free( void *mem )
+/*************************/
+{
 #ifdef PLAT_OS2
     free( mem );
 #else

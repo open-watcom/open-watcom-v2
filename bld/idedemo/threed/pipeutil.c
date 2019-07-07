@@ -61,20 +61,18 @@
 
 
 /* rend_list manipulation routines */
-static void check_list_size(
-/**************************/
-    rend_list *     list
-) {
+static void check_list_size( rend_list *list )
+/********************************************/
+{
     if (list->last + 1 >= list->size) {
         list->size += REND_LIST_GROW_SIZE;
         _grenew( list->list, list->size );
     }
 }
 
-bool rend_list_init(
-/*************************/
-    rend_list *     list
-) {
+bool rend_list_init( rend_list *list )
+/************************************/
+{
     _gnew( list->list, REND_LIST_GROW_SIZE );
     list->last = -1;        // no entries in use
 
@@ -89,51 +87,41 @@ bool rend_list_init(
 
 #if 0
 /* macroed */
-bool rend_list_is_empty(
-/*****************************/
-    rend_list *     list
-) {
+bool rend_list_is_empty( rend_list *list )
+/****************************************/
+{
     return( list->last < 0 );
 }
 #endif
 
-void rend_list_add(
-/************************/
-    rend_list *     list,
-    rend_obj *      obj
-) {
+void rend_list_add( rend_list *list, rend_obj *obj )
+/**************************************************/
+{
     check_list_size( list );
 
     list->last += 1;
     list->list[ list->last ] = obj;
 }
 
-void rend_list_free(
-/*************************/
-    rend_list *     list
-) {
+void rend_list_free( rend_list *list )
+/************************************/
+{
     _gfree( list->list );
 }
 
-void rend_list_sort(
-/*************************/
-    rend_list *     list,
-    int             (*compare) (const rend_obj **, const rend_obj **)
-) {
+void rend_list_sort( rend_list *list, rend_cmp_fn *compare )
+/**********************************************************/
+{
     qsort( list->list, list->last + 1, sizeof(rend_obj *), (int (*)(const void *, const void *))compare );
 }
 
-void rend_list_bin_insert(
-/*******************************/
+void rend_list_bin_insert( rend_list *list, rend_list_ref start, rend_list_ref end,
+    rend_obj **obj, rend_cmp_fn *compare )
+/*********************************************************************************/
 /* Uses a binary search to insert obj into a sublist of list. The sublist is */
 /* given by start and end. */
 /* NOTE: if start > end obj is inserted after end */
-    rend_list *     list,
-    rend_list_ref   start,
-    rend_list_ref   end,
-    rend_obj **     obj,
-    int             (*compare) (const rend_obj **, const rend_obj **)
-) {
+{
     int             high;
     int             low;
     int             mid;
@@ -163,13 +151,9 @@ void rend_list_bin_insert(
 }
 
 
-void rend_list_insert(
-/***************************/
-    rend_list *     list,
-    rend_list_ref * ref,
-    rend_obj *      obj,
-    bool            before
-) {
+void rend_list_insert( rend_list *list, rend_list_ref *ref, rend_obj *obj, bool before )
+/**************************************************************************************/
+{
     check_list_size( list );
 
     list->last += 1;
@@ -186,11 +170,9 @@ void rend_list_insert(
     list->list[ *ref ] = obj;
 }
 
-void rend_list_delete(
-/***************************/
-    rend_list *     list,
-    rend_list_ref * ref
-) {
+void rend_list_delete( rend_list *list, rend_list_ref *ref )
+/**********************************************************/
+{
     memmove( &(list->list[ *ref ]), &(list->list[ *ref + 1 ]),
             (list->last - *ref) * sizeof(rend_obj *) );
     list->last -= 1;
@@ -201,34 +183,27 @@ void rend_list_delete(
 
 #if 0
 /* macroed */
-rend_obj * rend_list_get_obj(
-/**********************************/
-    rend_list *     list,
-    rend_list_ref   ref
-) {
+rend_obj * rend_list_get_obj( rend_list *list, rend_list_ref ref )
+/****************************************************************/
+{
     return( list->list[ ref ] );
 }
 #endif
 
 #if 0
 /* macroed */
-void rend_list_set_obj(
-/****************************/
-    rend_list *     list,
-    rend_list_ref   ref,
-    rend_obj *      obj
-) {
+void rend_list_set_obj( rend_list *list, rend_list_ref ref, rend_obj *obj )
+/*************************************************************************/
+{
     list->list[ ref ] = obj;
 }
 #endif
 
 #if 0
 /* macroed */
-bool rend_list_next(
-/*************************/
-    rend_list *     list,
-    rend_list_ref * ref
-) {
+bool rend_list_next( rend_list *list, rend_list_ref *ref )
+/********************************************************/
+{
     *ref += 1;
     return( *ref > list->last );
 }
@@ -236,11 +211,9 @@ bool rend_list_next(
 
 #if 0
 /* macroed */
-bool rend_list_prev(
-/*************************/
-    rend_list *     list,
-    rend_list_ref * ref
-) {
+bool rend_list_prev( rend_list *list, rend_list_ref *ref )
+/********************************************************/
+{
     list = list;        // other representaions of rend_list may need list
 
     *ref -= 1;
@@ -250,11 +223,9 @@ bool rend_list_prev(
 
 #if 0
 /* macroed */
-bool rend_list_is_before_first(
-/************************************/
-    rend_list *     list,
-    rend_list_ref   ref
-) {
+bool rend_list_is_before_first( rend_list *list, rend_list_ref ref )
+/******************************************************************/
+{
     list = list;        // other representations of rend_list may need list
 
     return( ref < 0 );
@@ -263,22 +234,18 @@ bool rend_list_is_before_first(
 
 #if 0
 /* macroed */
-bool rend_list_is_after_last(
-/**********************************/
-    rend_list *     list,
-    rend_list_ref   ref
-) {
+bool rend_list_is_after_last( rend_list *list, rend_list_ref ref )
+/****************************************************************/
+{
     return( ref > list->last );
 }
 #endif
 
 #if 0
 /* macroed */
-void rend_list_first(
-/**************************/
-    rend_list *     list,
-    rend_list_ref * ref
-) {
+void rend_list_first( rend_list *list, rend_list_ref *ref )
+/*********************************************************/
+{
     list = list;        // other representations of rend_list may need list
 
     *ref = 0;
@@ -287,22 +254,18 @@ void rend_list_first(
 
 #if 0
 /* macroed */
-void rend_list_last(
-/*************************/
-    rend_list *     list,
-    rend_list_ref * ref
-) {
+void rend_list_last( rend_list *list, rend_list_ref *ref )
+/********************************************************/
+{
     *ref = list->last;
 }
 #endif
 
 
 /* vector manipulation routines */
-vector cross_prod(
-/***********************/
-    vector  v,
-    vector  w
-) {
+vector cross_prod( vector v, vector w )
+/********************************ppp**/
+{
     vector  r;
 
     r.v[0] = v.v[1]*w.v[2] - v.v[2]*w.v[1];
@@ -312,47 +275,40 @@ vector cross_prod(
     return( r );
 }
 
-float norm(
-/****************/
+float norm( vector v )
+/********************/
 /* This function computes the norm of a vector. Don't confuse this with */
 /* the normal vector (of a plane) which is sometime called norm in this code */
-    vector  v
-) {
+{
     return( sqrt(v.v[0]*v.v[0] + v.v[1]*v.v[1] + v.v[2]*v.v[2]) );
 }
 
 #if 0
 /* macroed */
-float dot_prod_vp(
-/***********************/
+float dot_prod_vp( vector vect, point pt )
+/****************************************/
 /* Dot product of a vector and a point. Used to evaluate plane equations */
-    vector  vect,
-    point   pt
-) {
+{
     return( pt.p[0]*vect.v[0] + pt.p[1]*vect.v[1] + pt.p[2]*vect.v[2] +
                 pt.p[3]*vect.v[3] );
 }
 
-float dot_prod_vv(
-/***********************/
+float dot_prod_vv( vector vect1, vector vect2 )
+/*********************************************/
 /* Dot product of two vectors */
 /* bound. */
-    vector  vect1,
-    vector  vect2
-) {
+{
     return( vect1.v[0]*vect2.v[0] + vect1.v[1]*vect2.v[1] +
             vect1.v[2]*vect2.v[2] + vect1.v[3]*vect2.v[3] );
 }
 #endif
 
-vector calculate_normal_vector(
-/************************************/
+vector calculate_normal_vector( int num_pts, void *data, point (*get_pt)(void *, int point_num) )
+/***********************************************************************************************/
 /* This uses the techniques describe in "Computer Graphics" by Foley et. al. */
 /* section 11.1.3, pp. 476, 477 */
-    int     num_pts,
-    void    *data,          // passed to get_next_pt only
-    point   (* get_pt) ( void *, int point_num )
-) {
+/*    void    *data     passed to get_next_pt only */
+{
     vector  normal;
     float   len;            // norm of normal
     int     count;
@@ -393,11 +349,9 @@ vector calculate_normal_vector(
     return( normal );
 }
 
-vector point_diff(
-/***********************/
-    point   pt1,
-    point   pt2
-) {
+vector point_diff( point pt1, point pt2 )
+/***************************************/
+{
     vector  v;
     int     i;
 
@@ -410,11 +364,9 @@ vector point_diff(
 
 
 /* matrix manipulation routines */
-point mult_matrix_pt(
-/**************************/
-    float   matrix[4][4],
-    point   in
-) {
+point mult_matrix_pt( float matrix[4][4], point in )
+/**************************************************/
+{
     point   out;
     int     i;
     int     j;
@@ -430,17 +382,13 @@ point mult_matrix_pt(
 }
 
 /* line intersection */
-static bool line_intersection(
-/****************************/
+static bool line_intersection( wcoord line1[2], wcoord line2[2], float *t, float *k )
+/***********************************************************************************/
 /* Sets the param where the lines (as infinite lines) intersect. Returns FALSE*/
 /* if the lines are parallel */
 /* See Log Notes, set 5 */
 /* NOTE: this is a 2d algorithm used for the projection of lines */
-    wcoord  line1[2],
-    wcoord  line2[2],
-    float   *t,
-    float   *k
-) {
+{
     wcoord  v1;         /* vector between the two points */
     wcoord  v2;
     float   d;
@@ -469,13 +417,11 @@ static bool line_intersection(
     }
 }
 
-bool proj_line_intersection(
-/*********************************/
+bool proj_line_intersection( point line1[2], point line2[2] )
+/***********************************************************/
 /* Determine if the projection of line1 and line2 into the x-y plane intersect*/
 /* Returns true if the line segments line1 and line2 intersect. */
-    point   line1[2],
-    point   line2[2]
-) {
+{
     wcoord  ln1[2];
     wcoord  ln2[2];
     float   t,k;
@@ -500,13 +446,11 @@ bool proj_line_intersection(
 
 
 /* RGB to/from HLS conversions */
-void rgb_to_hls(
-/*********************/
+void rgb_to_hls( COLORREF rgb, hls_colour *hls )
+/**********************************************/
 /* This is base on the procedure given in "Computer Graphics" by Foley et. */
 /* al. p. 595 */
-    COLORREF    rgb,
-    hls_colour  *hls
-) {
+{
     float       r, g, b;
     float       max, min;
     float       delta;
@@ -553,12 +497,9 @@ void rgb_to_hls(
     }
 }
 
-static float value(
-/****************/
-    float   n1,
-    float   n2,
-    float   hue
-) {
+static float value( float n1, float n2, float hue )
+/*************************************************/
+{
     if (hue > 360.) {
         hue -= 360.;
     } else if (hue < 0.) {
@@ -576,11 +517,9 @@ static float value(
     }
 }
 
-void hls_to_rgb(
-/*********************/
-    COLORREF    *rgb,
-    hls_colour  hls
-) {
+void hls_to_rgb( COLORREF *rgb, hls_colour hls )
+/**********************************************/
+{
     float       r, g, b;
     float       m1, m2;
 
@@ -606,16 +545,10 @@ void hls_to_rgb(
 
 
 /* rectangle, ray intersection */
-static bool ray_line_inter(
-/*************************/
-    float       x1,             // point 1 of the line
-    float       y1,
-    float       x2,             // point 2
-    float       y2,
-    wcoord      ray_start,
-    wcoord      ray_dir,
-    wcoord      *inter
-) {
+static bool ray_line_inter( float x1, float y1, float x2, float y2,
+                    wcoord ray_start, wcoord ray_dir, wcoord *inter )
+/*******************************************************************/
+{
     wcoord      ln1[2];
     wcoord      ln2[2];
     float       t,k;
@@ -643,13 +576,9 @@ static bool ray_line_inter(
     }
 }
 
-bool rect_ray_inter(
-/*************************/
-    wcoord      rect[2],
-    wcoord      ray_start,
-    wcoord      ray_dir,
-    wcoord      *inter
-) {
+bool rect_ray_inter( wcoord rect[2], wcoord ray_start, wcoord ray_dir, wcoord *inter )
+/************************************************************************************/
+{
     float       len;
 
     /* normalize ray_dir */
@@ -698,10 +627,9 @@ bool rect_ray_inter(
 /* DEBUG ROUTINES */
 #include <stdio.h>
 
-void dbg_print_list(
-/*************************/
-    rend_list *     list
-) {
+void dbg_print_list( rend_list *list )
+/************************************/
+{
     FILE *          fp;
     int             curr_obj;
     char            path[ _MAX_PATH ];
@@ -724,10 +652,9 @@ void dbg_print_list(
     fclose( fp );
 }
 
-void dbg_print_list_long(
-/******************************/
-    rend_list *     list
-) {
+void dbg_print_list_long( rend_list *list )
+/*****************************************/
+{
     FILE *          fp;
     int             curr_obj;
     char            path[ _MAX_PATH ];

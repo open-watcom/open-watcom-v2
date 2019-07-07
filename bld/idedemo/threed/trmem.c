@@ -67,114 +67,84 @@ static void * DFAR      Gmem;
 
 static WPI_INST         Inst;
 
-static char Dbg_file_env[]="DBGFILE";
+static char Dbg_file_env[] = "DBGFILE";
 
-static void DFAR *local_lmem_alloc(
-/*********************************/
-
-    unsigned long       size
-) {
+static void DFAR *local_lmem_alloc( unsigned long size )
+/******************************************************/
+{
     return( lmem_alloc( size ) );
 }
 
-static void local_lmem_free(
-/**************************/
-
-    void DFAR           *mem
-) {
+static void local_lmem_free( void DFAR *mem )
+/*******************************************/
+{
     lmem_free( (void *)( mem ) );
 }
 
-static void DFAR * local_lmem_realloc(
-/************************************/
-
-    void DFAR           *mem,
-    unsigned long       size
-) {
+static void DFAR * local_lmem_realloc( void DFAR *mem, unsigned long size )
+/*************************************************************************/
+{
     return( lmem_realloc( (void *)mem, size ) );
 }
 
-void near * tr_lmem_alloc(
-/************************/
-
-    unsigned int        size
-) {
+void near * tr_lmem_alloc( unsigned int size )
+/********************************************/
+{
     return( (void near *)dbg_mem_alloc( Lmem, size ) );
 }
 
-void tr_lmem_free(
-/****************/
-
-    void                *mem
-) {
+void tr_lmem_free( void *mem )
+/****************************/
+{
     dbg_mem_free( Lmem, ((void near *)mem == NULL ) ? NULL : mem );
 }
 
-void near *tr_lmem_realloc(
-/*************************/
-
-    void                *mem,
-    unsigned int        size
-) {
+void near *tr_lmem_realloc( void *mem, unsigned int size )
+/********************************************************/
+{
     return( (void near *)dbg_mem_realloc( Lmem,
                 ((void near *)mem == NULL ) ? NULL : mem, size ) );
 }
 
-static void DFAR *local_gmem_alloc(
-/*********************************/
-
-    unsigned long       size
-) {
+static void DFAR *local_gmem_alloc( unsigned long size )
+/******************************************************/
+{
     return( gmem_alloc( size ) );
 }
 
-static void local_gmem_free(
-/**************************/
-
-    void DFAR           *mem
-) {
+static void local_gmem_free( void DFAR *mem )
+/*******************************************/
+{
     gmem_free( mem );
 }
 
-static void DFAR * local_gmem_realloc(
-/************************************/
-
-    void DFAR           *mem,
-    unsigned long       size
-) {
+static void DFAR * local_gmem_realloc( void DFAR *mem, unsigned long size )
+/*************************************************************************/
+{
     return( gmem_realloc( mem, size ) );
 }
 
-void *tr_gmem_alloc(
-/*******************/
-
-    unsigned int        size
-) {
+void *tr_gmem_alloc( unsigned int size )
+/**************************************/
+{
     return( dbg_mem_alloc( Gmem, size ) );
 }
 
-void tr_gmem_free(
-/****************/
-
-    void                *mem
-) {
+void tr_gmem_free( void *mem )
+/****************************/
+{
     dbg_mem_free( Gmem, mem );
 }
 
-void *tr_gmem_realloc(
-/********************/
-
-    void                *mem,
-    unsigned int        size
-) {
+void *tr_gmem_realloc( void *mem, unsigned int size )
+/***************************************************/
+{
     return( dbg_mem_realloc( Gmem, mem, size ) );
 }
 
-static dbg_level get_level(
-/*************************/
-
-    void
-) {
+static dbg_level get_level( void )
+/********************************/
+{
     char                *env;
     dbg_level           level;
 
@@ -192,13 +162,9 @@ static dbg_level get_level(
     return( level );
 }
 
-static void print_to_file(
-/************************/
-
-    char                *prefix,
-    char                *line,
-    int                 error
-) {
+static void print_to_file( char *prefix, char *line, int error )
+/**************************************************************/
+{
     char                *env;
     FILE                *f;
 
@@ -214,11 +180,9 @@ static void print_to_file(
     }
 }
 
-static void clear_file(
-/*********************/
-
-    void
-) {
+static void clear_file( void )
+/****************************/
+{
     char                *env;
     FILE                *f;
 
@@ -229,12 +193,9 @@ static void clear_file(
     }
 }
 
-static void lmem_print_line(
-/**************************/
-
-    char                *line,
-    int                 error
-) {
+static void lmem_print_line( char *line, int error )
+/**************************************************/
+{
     int                 ret;
 
     print_to_file( NULL, line, error );
@@ -254,12 +215,9 @@ static void lmem_print_line(
     }
 }
 
-static void gmem_print_line(
-/**************************/
-
-    char                *line,
-    int                 error
-) {
+static void gmem_print_line( char *line, int error )
+/**************************************************/
+{
     int                 ret;
 
     print_to_file( NULL, line, error );
@@ -279,12 +237,9 @@ static void gmem_print_line(
     }
 }
 
-void tr_mem_open(
-/***************/
-
-    WPI_INST            inst,
-    char                *title
-) {
+void tr_mem_open( WPI_INST inst, char *title )
+/********************************************/
+{
     dbg_info            info;
 
     Inst = inst;
@@ -308,11 +263,9 @@ void tr_mem_open(
     clear_file();
 }
 
-void tr_mem_close(
-/****************/
-
-    void
-) {
+void tr_mem_close( void )
+/***********************/
+{
     if( dbg_mem_report( Lmem ) > 0 ) {
         dbg_mem_line( Lmem, "Unfreed chunks. See the report file", TRUE );
     }
@@ -325,20 +278,16 @@ void tr_mem_close(
     dbg_mem_close( Gmem );
 }
 
-void tr_mem_report(
-/*****************/
-
-    void
-) {
+void tr_mem_report( void )
+/************************/
+{
     dbg_mem_report( Lmem );
     dbg_mem_report( Gmem );
 }
 
-void tr_mem_check(
-/****************/
-
-    void
-) {
+void tr_mem_check( void )
+/***********************/
+{
     dbg_mem_check( Lmem );
     dbg_mem_check( Gmem );
 }

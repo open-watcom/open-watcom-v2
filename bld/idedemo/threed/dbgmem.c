@@ -76,14 +76,10 @@ typedef struct {
 
 #define _mk_dbg( x ) (dbg_mem DFAR *)( (char DFAR *)x - sizeof( dbg_mem ) + 1 )
 
-static int dbg_error(
-/*******************/
+static int dbg_error( dbg_list DFAR *mem_ctl, char *msg, dbg_mem DFAR *dbg )
+/**************************************************************************/
 /* always returns false */
-
-    dbg_list DFAR       *mem_ctl,
-    char                *msg,
-    dbg_mem DFAR        *dbg
-) {
+{
     char                buf[200];
 
     sprintf( buf, "*ERROR* in %s: %s (memory ptr: %p)",
@@ -94,13 +90,10 @@ static int dbg_error(
 }
 
 
-static dbg_mem DFAR * DFAR *dbg_find(
-/***********************************/
+static dbg_mem DFAR * DFAR *dbg_find( dbg_list DFAR *mem_ctl, dbg_mem *dbg )
+/**************************************************************************/
 /* find forward ptr to this block. report error if not found */
-
-    dbg_list DFAR       *mem_ctl,
-    dbg_mem             *dbg
-) {
+{
     dbg_mem DFAR        * DFAR *ptr;
     int                 i;
 
@@ -123,12 +116,9 @@ static dbg_mem DFAR * DFAR *dbg_find(
     return( ptr );
 }
 
-static void dbg_do_free(
-/**********************/
-
-    dbg_list DFAR       *mem_ctl,
-    dbg_mem DFAR        *dbg
-) {
+static void dbg_do_free( dbg_list DFAR *mem_ctl, dbg_mem DFAR *dbg )
+/******************************************************************/
+{
     dbg_mem DFAR        * DFAR *ptr;
 
     memset( dbg->mem, FREE_FILL, dbg->size );
@@ -144,12 +134,9 @@ static void dbg_do_free(
     --mem_ctl->curr_num_blocks;
 }
 
-static void DFAR *dbg_do_alloc(
-/*****************************/
-
-    dbg_list DFAR       *mem_ctl,
-    unsigned long       size
-) {
+static void DFAR *dbg_do_alloc( dbg_list DFAR *mem_ctl, unsigned long size )
+/**************************************************************************/
+{
     dbg_mem DFAR        *dbg;
 
     if( size == 0 ) {
@@ -173,13 +160,10 @@ static void DFAR *dbg_do_alloc(
     return( dbg->mem );
 }
 
-static int dbg_check_block(
-/*************************/
+static int dbg_check_block( dbg_list DFAR *mem_ctl, dbg_mem DFAR *dbg )
+/*********************************************************************/
 /* check a particular (alloced) block to make sure its ok */
-
-    dbg_list DFAR       *mem_ctl,
-    dbg_mem DFAR        *dbg
-) {
+{
     char                tag;
 
     if( mem_ctl->info.level >= DBG_MEM_2 ) {
@@ -201,11 +185,9 @@ static int dbg_check_block(
     return( true );
 }
 
-static int do_check(
-/******************/
-
-    dbg_list DFAR       *mem_ctl
-) {
+static int do_check( dbg_list DFAR *mem_ctl )
+/*******************************************/
+{
     if( mem_ctl->info.level >= DBG_MEM_3 ) {
         return( dbg_mem_check( mem_ctl ) >= 0 );
     }
@@ -215,13 +197,9 @@ static int do_check(
 
 /***** external routines *****/
 
-void dbg_mem_line(
-/****************/
-
-    dbg_list DFAR       *mem_ctl,
-    char                *msg,
-    int                 err
-) {
+void dbg_mem_line( dbg_list DFAR *mem_ctl, char *msg, int err )
+/*************************************************************/
+{
     char                buf[200];
 
     sprintf( buf, "*NOTE* (%s): %s", mem_ctl->info.rpt_title, msg );
@@ -229,12 +207,10 @@ void dbg_mem_line(
 }
 
 
-int dbg_mem_check(
-/****************/
+int dbg_mem_check( dbg_list DFAR *mem_ctl )
+/*****************************************/
 /* check to make sure memory management is in good shape. Errors reported */
-
-    dbg_list DFAR       *mem_ctl
-) {
+{
     dbg_mem DFAR        *ptr;
     int                 num;
     int                 ret;
@@ -271,11 +247,9 @@ done:
     return( ret );
 }
 
-int dbg_mem_report(
-/*****************/
-
-    dbg_list DFAR       *mem_ctl
-) {
+int dbg_mem_report( dbg_list DFAR *mem_ctl )
+/******************************************/
+{
     dbg_mem DFAR        *dbg;
     char                buf[200];
     char                str[11];
@@ -332,11 +306,9 @@ int dbg_mem_report(
     return( mem_ctl->curr_num_blocks );
 }
 
-void DFAR *dbg_mem_init(
-/**********************/
-
-    dbg_info            *info
-) {
+void DFAR *dbg_mem_init( dbg_info *info )
+/***************************************/
+{
     dbg_list DFAR       *mem_ctl;
 
     mem_ctl = (*info->alloc)( sizeof( dbg_list ) );
@@ -348,29 +320,21 @@ void DFAR *dbg_mem_init(
     return( mem_ctl );
 }
 
-void dbg_mem_close(
-/*****************/
-
-    dbg_list DFAR       *mem_ctl
-) {
+void dbg_mem_close( dbg_list DFAR *mem_ctl )
+/******************************************/
+{
     (((dbg_list DFAR *)mem_ctl)->info.free)( mem_ctl );
 }
 
-void dbg_mem_set_level(
-/*********************/
-
-    dbg_list DFAR       *mem_ctl,
-    dbg_level           level
-) {
+void dbg_mem_set_level( dbg_list DFAR *mem_ctl, dbg_level level )
+/***************************************************************/
+{
     ((dbg_list DFAR *)mem_ctl)->info.level = level;
 }
 
-void DFAR *dbg_mem_alloc(
-/***********************/
-
-    dbg_list DFAR       *mem_ctl,
-    unsigned long       size
-) {
+void DFAR *dbg_mem_alloc( dbg_list DFAR *mem_ctl, unsigned long size )
+/********************************************************************/
+{
     if( mem_ctl->info.level == DBG_MEM_0 ) {
         return( (mem_ctl->info.alloc)( size ) );
     }
@@ -382,12 +346,9 @@ void DFAR *dbg_mem_alloc(
     return( NULL );
 }
 
-void dbg_mem_free(
-/****************/
-
-    dbg_list DFAR       *mem_ctl,
-    void DFAR           *mem
-) {
+void dbg_mem_free( dbg_list DFAR *mem_ctl, void DFAR *mem )
+/*********************************************************/
+{
     dbg_mem DFAR        *dbg;
 
     if( mem_ctl->info.level == DBG_MEM_0 ) {
@@ -406,13 +367,9 @@ void dbg_mem_free(
     }
 }
 
-void DFAR *dbg_mem_realloc(
-/*************************/
-
-    dbg_list DFAR       *mem_ctl,
-    void DFAR           *mem,
-    unsigned long       size
-) {
+void DFAR *dbg_mem_realloc( dbg_list DFAR *mem_ctl, void DFAR *mem, unsigned long size )
+/**************************************************************************************/
+{
     dbg_mem             *dbg;
     dbg_mem             **ptr;
 
