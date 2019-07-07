@@ -126,8 +126,8 @@ cdsay .
 #[ INCLUDE <OWSRCDIR>/wprof/builder.ctl ]
 #[ ENDIF ]
 
-[ BLOCK <1> clean build rel cprel clean1 build1 cprel1 passclean pass ]
-#======================================================================
+[ BLOCK <1> clean build rel cprel clean1 build1 rel1 cprel1 passclean pass ]
+#===========================================================================
 # Build all of Open Watcom using freshly built tools.
 # part 1
 #
@@ -144,8 +144,8 @@ cdsay .
 [ INCLUDE <OWSRCDIR>/mathlib/builder.ctl ]
 [ INCLUDE <OWSRCDIR>/cpplib/builder.ctl ]
 
-[ BLOCK <1> clean build rel cprel clean2 build2 cprel2 passclean pass ]
-#======================================================================
+[ BLOCK <1> clean build rel cprel clean2 build2 rel2 cprel2 passclean pass ]
+#===========================================================================
 # Build all of Open Watcom using freshly built tools.
 # part 2
 #
@@ -195,8 +195,8 @@ cdsay .
 [ INCLUDE <OWSRCDIR>/f77/wfl/builder.ctl ]
 [ INCLUDE <OWSRCDIR>/wstrip/builder.ctl ]
 
-[ BLOCK <1> clean build rel cprel clean3 build3 cprel3 passclean pass ]
-#======================================================================
+[ BLOCK <1> clean build rel cprel clean3 build3 rel3 cprel3 passclean pass ]
+#===========================================================================
 # Build all of Open Watcom using freshly built tools.
 # part 3
 #
