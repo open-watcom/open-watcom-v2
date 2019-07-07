@@ -98,7 +98,6 @@ WPI_COLOUR get_palette_color( int index )
     if( index >= Palette_size ) {
         index = Palette_size - 1;
     }
-
     return( Curr_palette[index] );
 }
 
@@ -755,18 +754,25 @@ static void get_obj_settings( int fill_type, HPEN *pen, HBRUSH *brush )
         Old_pen = _wpi_selectpen( Win_dc, *pen );
         Old_brush = _wpi_selectbrush( Win_dc, *brush );
         break;
+
+    default:
+        Old_pen = (HPEN)NULL;
+        Old_brush = (HBRUSH)NULL;
+        break;
     }
 }
 
 static void del_obj_settings( int fill_type, HPEN pen, HBRUSH brush )
 /*******************************************************************/
 {
-    if (Old_pen) {
+    if( Old_pen != (HPEN)NULL ) {
         _wpi_getoldpen( Win_dc, Old_pen );
+        Old_pen = (HPEN)NULL;
     }
 
-    if (Old_brush) {
+    if( Old_brush != (HBRUSH)NULL ) {
         _wpi_getoldbrush( Win_dc, Old_brush );
+        Old_brush = (HBRUSH)NULL;
     }
 
     switch( fill_type ) {
@@ -867,7 +873,6 @@ void _wline( int px, int py, BOOL fill_last, BOOL rgn_on, BOOL line_with_two_box
         pt.y = py;
         _wpi_lineto( Win_dc, &pt );
     }
-
 #endif
 
 #ifdef PLAT_WIN

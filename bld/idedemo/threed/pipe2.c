@@ -84,7 +84,7 @@ static bool All_poly_convex = TRUE;
 /* 2D display */
 void project_pt( point pt, float *x, float *y )
 /*********************************************/
-/*to project a point take its x and y coords and map them from [-1,1] to [0,1]
+/* to project a point take its x and y coords and map them from [-1,1] to [0,1]
     point   pt          3d point
     float   *x          2d point  */
 {
@@ -139,7 +139,7 @@ static void draw_projected_poly( rend_obj *obj, hls_colour edge_colour )
 
 static void draw_projected_obj( rend_obj *obj, hls_colour base, hls_colour illum )
 /********************************************************************************/
-/*    hls_colour  base      colour on which illum is based */
+/*  hls_colour  base      colour on which illum is based */
 {
     point       pt1;
     point       pt2;
@@ -171,7 +171,7 @@ static void draw_projected_obj( rend_obj *obj, hls_colour base, hls_colour illum
         _wlineto( x2, y2, FALSE );
         break;
     case REND_OBJ_POLY:
-        draw_projected_poly( obj, base );
+        draw_projected_poly( obj, base );   // colour on which illum is based
         break;
     }
 
@@ -252,7 +252,6 @@ static hls_colour illuminate_poly( rend_obj *obj, hls_colour base )
     } else if (final_col.l > 1.) {
         final_col.l = 1.;
     }
-
 
     return( final_col );
 }
@@ -354,7 +353,7 @@ static bool extent_overlap( visible_info *vis1, visible_info *vis2, int componen
 
 static vector calc_pt_norm( rend_obj *obj, rend_obj *other )
 /**********************************************************/
-/*    rend_obj *obj         obj is a point object */
+/*  rend_obj *obj         obj is a point object */
 {
     vector      norm;
     vector      a;
