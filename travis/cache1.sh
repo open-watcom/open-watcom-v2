@@ -1,3 +1,8 @@
+#!/bin/sh
+#
+# Script to fill Travis build cache
+#
+
 cp $CP_OPTS $OWSRCDIR/hdr/dos/. buildx/hdr/dos/
 cp $CP_OPTS $OWSRCDIR/hdr/rdos/. buildx/hdr/rdos/
 cp $CP_OPTS $OWSRCDIR/hdr/linux/. buildx/hdr/linux/

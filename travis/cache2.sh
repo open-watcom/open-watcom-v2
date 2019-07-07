@@ -1,3 +1,8 @@
+#!/bin/sh
+#
+# Script to fill Travis build cache
+#
+
 cp $CP_OPTS $OWSRCDIR/fpuemu/i86/stubi86/*.lib buildx/fpuemu/i86/stubi86/
 cp $CP_OPTS $OWSRCDIR/fpuemu/i86/dosi86/*.lib buildx/fpuemu/i86/dosi86/
 cp $CP_OPTS $OWSRCDIR/fpuemu/i86/os2i86/*.lib buildx/fpuemu/i86/os2i86/
