@@ -32,7 +32,7 @@ before_script:
  - git config --global user.name "Travis CI"
  - git config --global push.default simple
  # setup cp options
- - if [ "$OWTRAVIS_CACHE_DEBUG" = "1" ]; then export CP_OPTS=-Rnv; else export CP_OPTS=-Rn; fi
+ - if [ "$OWTRAVIS_CACHE_DEBUG" = "1" ]; then export CP_OPTS=-Rnv; else export CP_OPTS=-Rnv; fi
  # get environment/cache info if debug is active
  - travis/envinfo.sh
  - travis/cacheinf.sh
@@ -174,6 +174,7 @@ jobs:
         - export OWTOOLS=VISUALC
         - export OWTRAVISJOB=BUILD-1
         - export OWSRCDIR=$OWROOT/bld
+        - export OWBINDIR=$OWROOT/build/$OWOBJDIR
       install:
 #        - install dosbox
       script:
@@ -200,7 +201,8 @@ jobs:
         - . ./cmnvars.sh
       script:
         # load build from cache (buildx)
-        - cp $CP_OPTS buildx/. $OWSRCDIR/; true
+        - echo "load cache1" >>$OWBINDIR/cache1.log
+        - cp $CP_OPTS buildx/. $OWSRCDIR/ >>$OWBINDIR/cache1.log
         # run script
         - travis/build.sh
       before_cache:
@@ -218,11 +220,13 @@ jobs:
         - export OWTOOLS=VISUALC
         - export OWTRAVISJOB=BUILD-2
         - export OWSRCDIR=$OWROOT/bld
+        - export OWBINDIR=$OWROOT/build/$OWOBJDIR
       install:
 #        - install dosbox
       script:
         # load build from cache (buildx)
-        - cp $CP_OPTS buildx/. $OWSRCDIR/; true
+        - echo "load cache1" >>$OWBINDIR/cache1.log
+        - cp $CP_OPTS buildx/. $OWSRCDIR/ >>$OWBINDIR/cache1.log
         # run script
         - cmd.exe /c "travis\winbuild.cmd"
       before_cache:
@@ -247,7 +251,8 @@ jobs:
         - . ./cmnvars.sh
       script:
         # load build from cache (buildx)
-        - cp $CP_OPTS buildx/. $OWSRCDIR/; true
+        - echo "load cache2" >>$OWBINDIR/cache2.log
+        - cp $CP_OPTS buildx/. $OWSRCDIR/ >>$OWBINDIR/cache2.log
         # run script
         - travis/build.sh
     - # ...
@@ -266,7 +271,8 @@ jobs:
 #        - install dosbox
       script:
         # load build from cache (buildx)
-        - cp $CP_OPTS buildx/. $OWSRCDIR/; true
+        - echo "load cache2" >>$OWBINDIR/cache2.log
+        - cp $CP_OPTS buildx/. $OWSRCDIR/ >>$OWBINDIR/cache2.log
         # run script
         - cmd.exe /c "travis\winbuild.cmd"
     #################################
