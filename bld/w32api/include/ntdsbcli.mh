@@ -63,7 +63,7 @@ typedef void    *HBC;
 #define BFT_CHECKPOINT_DIR  (BFT)(TEXT('\x03') | BFT_DIRECTORY)
 #define BFT_NTDS_DATABASE   (BFT)(TEXT('\x04') | BFT_DATABASE_DIRECTORY)
 #define BFT_PATCH_FILE      (BFT)(TEXT('\x05') | BFT_LOG_DIRECTORY)
-#define BFT_UNKNOWN         (BFT)(TEXT( \x0F'))
+#define BFT_UNKNOWN         (BFT)(TEXT('\x0F'))
 
 /* Restore map */
 typedef struct tagEDB_RSTMAPA {
