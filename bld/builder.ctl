@@ -143,6 +143,7 @@ cdsay .
 [ INCLUDE <OWSRCDIR>/clib/builder.ctl ]
 [ INCLUDE <OWSRCDIR>/mathlib/builder.ctl ]
 [ INCLUDE <OWSRCDIR>/cpplib/builder.ctl ]
+[ INCLUDE <OWSRCDIR>/rtdll/builder.ctl ]
 
 [ BLOCK <1> clean build rel cprel clean2 build2 rel2 cprel2 passclean pass ]
 #===========================================================================
@@ -150,7 +151,6 @@ cdsay .
 # part 2
 #
 [ INCLUDE <OWSRCDIR>/f77/f77lib/builder.ctl ]
-[ INCLUDE <OWSRCDIR>/rtdll/builder.ctl ]
 [ INCLUDE <OWSRCDIR>/fpuemu/builder.ctl ]
 [ INCLUDE <OWSRCDIR>/omftools/builder.ctl ]
 [ INCLUDE <OWSRCDIR>/graphlib/builder.ctl ]
