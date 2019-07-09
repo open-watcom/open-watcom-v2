@@ -23,21 +23,18 @@ cp $CP_OPTS $OWSRCDIR/os2api/os2286/lib/*.lib $OWROOT/buildx/os2api/os2286/lib/ 
 mkdir -p $OWROOT/buildx/os2api/os2386/lib >>$OWBINDIR/cache1.log
 cp $CP_OPTS $OWSRCDIR/os2api/os2386/lib/*.lib $OWROOT/buildx/os2api/os2386/lib/ >>$OWBINDIR/cache1.log
 mkdir -p $OWROOT/buildx/w32api/nt386 >>$OWBINDIR/cache1.log
-cp $CP_OPTS $OWSRCDIR/w32api/nt386/*.lib $OWROOT/buildx/w32api/nt386/ >>$OWBINDIR/cache1.log
+cp $CP_OPTS $OWSRCDIR/w32api/nt386/. $OWROOT/buildx/w32api/nt386/ >>$OWBINDIR/cache1.log
 #mkdir -p $OWROOT/buildx/w32api/ntaxp >>$OWBINDIR/cache1.log
-#cp $CP_OPTS $OWSRCDIR/w32api/ntaxp/*.lib $OWROOT/buildx/w32api/ntaxp/ >>$OWBINDIR/cache1.log
+#cp $CP_OPTS $OWSRCDIR/w32api/ntaxp/. $OWROOT/buildx/w32api/ntaxp/ >>$OWBINDIR/cache1.log
 mkdir -p $OWROOT/buildx/clib/library >>$OWBINDIR/cache1.log
-cp $CP_OPTS $OWSRCDIR/clib/library/*.lib $OWROOT/buildx/clib/library/ >>$OWBINDIR/cache1.log
-mkdir -p $OWROOT/buildx/clib/rtdll >>$OWBINDIR/cache1.log
-cp $CP_OPTS $OWSRCDIR/clib/rtdll/*.dll $OWROOT/buildx/clib/rtdll/ >>$OWBINDIR/cache1.log
-cp $CP_OPTS $OWSRCDIR/clib/rtdll/*.lib $OWROOT/buildx/clib/rtdll/ >>$OWBINDIR/cache1.log
+cp $CP_OPTS $OWSRCDIR/clib/library/. $OWROOT/buildx/clib/library/ >>$OWBINDIR/cache1.log
 mkdir -p $OWROOT/buildx/cpplib/library >>$OWBINDIR/cache1.log
-cp $CP_OPTS $OWSRCDIR/cpplib/library/*.lib $OWROOT/buildx/cpplib/library/ >>$OWBINDIR/cache1.log
-mkdir -p $OWROOT/buildx/cpplib/rtdll >>$OWBINDIR/cache1.log
-cp $CP_OPTS $OWSRCDIR/cpplib/rtdll/*.dll $OWROOT/buildx/cpplib/rtdll/ >>$OWBINDIR/cache1.log
-cp $CP_OPTS $OWSRCDIR/cpplib/rtdll/*.lib $OWROOT/buildx/cpplib/rtdll/ >>$OWBINDIR/cache1.log
+cp $CP_OPTS $OWSRCDIR/cpplib/library/. $OWROOT/buildx/cpplib/library/ >>$OWBINDIR/cache1.log
 mkdir -p $OWROOT/buildx/mathlib/library >>$OWBINDIR/cache1.log
-cp $CP_OPTS $OWSRCDIR/mathlib/library/*.lib $OWROOT/buildx/mathlib/library/ >>$OWBINDIR/cache1.log
+cp $CP_OPTS $OWSRCDIR/mathlib/library/. $OWROOT/buildx/mathlib/library/ >>$OWBINDIR/cache1.log
+mkdir -p $OWROOT/buildx/clib/rtdll >>$OWBINDIR/cache1.log
+cp $CP_OPTS $OWSRCDIR/clib/rtdll/. $OWROOT/buildx/clib/rtdll/ >>$OWBINDIR/cache1.log
+mkdir -p $OWROOT/buildx/cpplib/rtdll >>$OWBINDIR/cache1.log
+cp $CP_OPTS $OWSRCDIR/cpplib/rtdll/. $OWROOT/buildx/cpplib/rtdll/ >>$OWBINDIR/cache1.log
 mkdir -p $OWROOT/buildx/mathlib/rtdll >>$OWBINDIR/cache1.log
-cp $CP_OPTS $OWSRCDIR/mathlib/rtdll/*.dll $OWROOT/buildx/mathlib/rtdll/ >>$OWBINDIR/cache1.log
-cp $CP_OPTS $OWSRCDIR/mathlib/rtdll/*.lib $OWROOT/buildx/mathlib/rtdll/ >>$OWBINDIR/cache1.log
+cp $CP_OPTS $OWSRCDIR/mathlib/rtdll/. $OWROOT/buildx/mathlib/rtdll/ >>$OWBINDIR/cache1.log
