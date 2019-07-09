@@ -33,6 +33,10 @@ mkdir -p $OWROOT/buildx/clib/startup/library >>$OWBINDIR/cache1.log
 cp $CP_OPTS $OWSRCDIR/clib/startup/library/. $OWROOT/buildx/clib/startup/library/ >>$OWBINDIR/cache1.log
 mkdir -p $OWROOT/buildx/cpplib/library >>$OWBINDIR/cache1.log
 cp $CP_OPTS $OWSRCDIR/cpplib/library/. $OWROOT/buildx/cpplib/library/ >>$OWBINDIR/cache1.log
+mkdir -p $OWROOT/buildx/cpplib/runtime >>$OWBINDIR/cache1.log
+cp $CP_OPTS $OWSRCDIR/cpplib/runtime/. $OWROOT/buildx/cpplib/runtime/ >>$OWBINDIR/cache1.log
+mkdir -p $OWROOT/buildx/cpplib/iostream >>$OWBINDIR/cache1.log
+cp $CP_OPTS $OWSRCDIR/cpplib/iostream/. $OWROOT/buildx/cpplib/iostream/ >>$OWBINDIR/cache1.log
 mkdir -p $OWROOT/buildx/mathlib/library >>$OWBINDIR/cache1.log
 cp $CP_OPTS $OWSRCDIR/mathlib/library/. $OWROOT/buildx/mathlib/library/ >>$OWBINDIR/cache1.log
 mkdir -p $OWROOT/buildx/clib/rtdll >>$OWBINDIR/cache1.log
