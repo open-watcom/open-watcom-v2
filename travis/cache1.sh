@@ -38,3 +38,5 @@ mkdir -p $OWROOT/buildx/cpplib/rtdll >>$OWBINDIR/cache1.log
 cp $CP_OPTS $OWSRCDIR/cpplib/rtdll/. $OWROOT/buildx/cpplib/rtdll/ >>$OWBINDIR/cache1.log
 mkdir -p $OWROOT/buildx/mathlib/rtdll >>$OWBINDIR/cache1.log
 cp $CP_OPTS $OWSRCDIR/mathlib/rtdll/. $OWROOT/buildx/mathlib/rtdll/ >>$OWBINDIR/cache1.log
+mkdir -p $OWROOT/buildx/clib/startup/library >>$OWBINDIR/cache1.log
+cp $CP_OPTS $OWSRCDIR/clib/startup/library/. $OWROOT/buildx/clib/startup/library/ >>$OWBINDIR/cache1.log
