@@ -44,7 +44,7 @@ enum {
 
 // We use the escape char a lot...
 #define STR_ESCAPE              "\x1B"
-#define CHR_ESCAPE              '\x1B'
+#define CHR_ESCAPE              (char)'\x1B'
 
 // these are for the map_char_ib function
 typedef enum {
@@ -54,21 +54,21 @@ typedef enum {
 } map_char_type;
 
 // internal hyperlink symbol. Gets filtered out at output time
-#define CHR_TEMP_HLINK          '\x7F'
+#define CHR_TEMP_HLINK          (char)'\x7F'
 
 // this symbol separates the hyper-link label and topic. Other hyper-link
 // related symbols are in whpcvt.h
-#define CHR_HLINK               '\xE0'
-#define CHR_HLINK_BREAK         '\xE8'
+#define CHR_HLINK               (char)'\xE0'
+#define CHR_HLINK_BREAK         (char)'\xE8'
 
 // Some characters we use for graphics
-#define CHR_BULLET              '\x07'
-#define BOX_VBAR                '\xB3'
+#define CHR_BULLET              (char)'\x07'
+#define BOX_VBAR                (char)'\xB3'
 #define BOX_HBAR                CH_BOX_HBAR
-#define BOX_CORNER_TOP_LEFT     '\xDA'
-#define BOX_CORNER_TOP_RIGHT    '\xBF'
-#define BOX_CORNER_BOTOM_LEFT   '\xC0'
-#define BOX_CORNER_BOTOM_RIGHT  '\xD9'
+#define BOX_CORNER_TOP_LEFT     (char)'\xDA'
+#define BOX_CORNER_TOP_RIGHT    (char)'\xBF'
+#define BOX_CORNER_BOTOM_LEFT   (char)'\xC0'
+#define BOX_CORNER_BOTOM_RIGHT  (char)'\xD9'
 
 // InfoBench style codes
 #define STR_BOLD_ON             STR_ESCAPE "b"

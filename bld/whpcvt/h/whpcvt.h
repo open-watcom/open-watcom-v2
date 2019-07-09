@@ -53,46 +53,46 @@
 #define _realloc( ptr, size )   check_realloc( ptr, size )
 
 /**** special characters *****/
-#define CH_EXCLUDE_ON           '\xC3'  // 195
-#define CH_EXCLUDE_OFF          '\xB4'  // 180
-#define CH_CTX_DEF              '\xF7'  // 247
-#define CH_HLINK                '\x7F'  // 127
-#define CH_DFN                  '\xEA'  // 234
-#define CH_TOPIC                '\xEE'  // 238
-#define CH_LIST_START           '\xD2'  // 210
-#define CH_LIST_ITEM            '\xD3'  // 211
-#define CH_DLIST_DESC           '\xB9'  // 185
-#define CH_LIST_END             '\xD4'  // 212
-#define CH_OLIST_START          '\xC8'  // 200
-#define CH_OLIST_END            '\xC9'  // 201
-#define CH_DLIST_START          '\xCA'  // 202
-#define CH_DLIST_END            '\xCB'  // 203
-#define CH_DLIST_TERM           '\xCC'  // 204
-#define CH_CTX_KW               '\xEC'  // 236
-#define CH_SLIST_START          '\xD5'  // 213
-#define CH_SLIST_END            '\xD6'  // 214
-#define CH_TOPIC_LN             '\xA7'  // 167
-#define CH_TOPIC_NOLN           '\xF8'  // 248
-#define CH_PAR_RESET            '\x9E'  // 158
-#define CH_EXCLUDE_OFF_BLANK    '\x9F'  // 159
-#define CH_UP_TOPIC             '\xA0'  // 160
-#define CH_BMP                  '\xB0'  // 176
-#define CH_BOX_ON               '\xDB'  // 219
-#define CH_BOX_OFF              '\xFE'  // 254
-#define CH_FONTSTYLE_START      '\xEF'  // 239
-#define CH_FONTSTYLE_END        '\xF0'  // 240
-#define CH_FONTTYPE             '\x9D'  // 157
-#define CH_TABXMP               '\xAA'  // 170
-#define CH_FLINK                '\xE8'  // 232
-#define CH_BOX_HBAR             '\xC4'  // 196
-#define CH_SPACE_NOBREAK        '\xFF'  // 255
+#define CH_EXCLUDE_ON           (char)'\xC3'  // 195
+#define CH_EXCLUDE_OFF          (char)'\xB4'  // 180
+#define CH_CTX_DEF              (char)'\xF7'  // 247
+#define CH_HLINK                (char)'\x7F'  // 127
+#define CH_DFN                  (char)'\xEA'  // 234
+#define CH_TOPIC                (char)'\xEE'  // 238
+#define CH_LIST_START           (char)'\xD2'  // 210
+#define CH_LIST_ITEM            (char)'\xD3'  // 211
+#define CH_DLIST_DESC           (char)'\xB9'  // 185
+#define CH_LIST_END             (char)'\xD4'  // 212
+#define CH_OLIST_START          (char)'\xC8'  // 200
+#define CH_OLIST_END            (char)'\xC9'  // 201
+#define CH_DLIST_START          (char)'\xCA'  // 202
+#define CH_DLIST_END            (char)'\xCB'  // 203
+#define CH_DLIST_TERM           (char)'\xCC'  // 204
+#define CH_CTX_KW               (char)'\xEC'  // 236
+#define CH_SLIST_START          (char)'\xD5'  // 213
+#define CH_SLIST_END            (char)'\xD6'  // 214
+#define CH_TOPIC_LN             (char)'\xA7'  // 167
+#define CH_TOPIC_NOLN           (char)'\xF8'  // 248
+#define CH_PAR_RESET            (char)'\x9E'  // 158
+#define CH_EXCLUDE_OFF_BLANK    (char)'\x9F'  // 159
+#define CH_UP_TOPIC             (char)'\xA0'  // 160
+#define CH_BMP                  (char)'\xB0'  // 176
+#define CH_BOX_ON               (char)'\xDB'  // 219
+#define CH_BOX_OFF              (char)'\xFE'  // 254
+#define CH_FONTSTYLE_START      (char)'\xEF'  // 239
+#define CH_FONTSTYLE_END        (char)'\xF0'  // 240
+#define CH_FONTTYPE             (char)'\x9D'  // 157
+#define CH_TABXMP               (char)'\xAA'  // 170
+#define CH_FLINK                (char)'\xE8'  // 232
+#define CH_BOX_HBAR             (char)'\xC4'  // 196
+#define CH_SPACE_NOBREAK        (char)'\xFF'  // 255
 
 /**** a few InfoBench specific chars ****/
 //(defined here 'cause WHPCVT.C needs to know about them )
-#define IB_HLINK_L_CHAR         '\xE0'  // 224
-#define IB_HLINK_R_CHAR         '\xE0'  // 224
-#define IB_BRACE_L_CHAR         '<'
-#define IB_BRACE_R_CHAR         '>'
+#define IB_HLINK_L_CHAR         (char)'\xE0'  // 224
+#define IB_HLINK_R_CHAR         (char)'\xE0'  // 224
+#define IB_BRACE_L_CHAR         (char)'<'
+#define IB_BRACE_R_CHAR         (char)'>'
 
 /**** various file extensions ****/
 #define EXT_INPUT_FILE          ".whp"
