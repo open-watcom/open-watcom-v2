@@ -202,7 +202,7 @@ jobs:
       script:
         # load build from cache (buildx)
         - echo "load cache1" >>$OWBINDIR/cache1.log
-        - cp $CP_OPTS $OWROOT/buildx/. $OWSRCDIR/ >>$OWBINDIR/cache1.log
+        - cp $CP_OPTS $OWROOT/buildx/. $OWSRCDIR/ >>$OWBINDIR/cache1.log; true
         # run script
         - travis/build.sh
       before_cache:

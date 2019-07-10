@@ -187,6 +187,12 @@ cdsay .
 [ INCLUDE <OWSRCDIR>/wpi/builder.ctl ]
 [ INCLUDE <OWSRCDIR>/commonui/builder.ctl ]
 [ INCLUDE <OWSRCDIR>/sdk/builder.ctl ]
+
+[ BLOCK <1> clean build rel cprel clean3 build3 rel3 cprel3 passclean pass ]
+#===========================================================================
+# Build all of Open Watcom using freshly built tools.
+# part 3
+#
 # Now miscellaneous command line tools
 [ INCLUDE <OWSRCDIR>/ndisasm/builder.ctl ]
 [ INCLUDE <OWSRCDIR>/exedump/builder.ctl ]
@@ -194,12 +200,6 @@ cdsay .
 [ INCLUDE <OWSRCDIR>/wcl/builder.ctl ]
 [ INCLUDE <OWSRCDIR>/f77/wfl/builder.ctl ]
 [ INCLUDE <OWSRCDIR>/wstrip/builder.ctl ]
-
-[ BLOCK <1> clean build rel cprel clean3 build3 rel3 cprel3 passclean pass ]
-#===========================================================================
-# Build all of Open Watcom using freshly built tools.
-# part 3
-#
 # User interface libs
 [ INCLUDE <OWSRCDIR>/ncurses/builder.ctl ]
 [ INCLUDE <OWSRCDIR>/ui/builder.ctl ]
