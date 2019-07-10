@@ -29,8 +29,8 @@ cp $CP_OPTS $OWSRCDIR/w32api/nt386/. $OWROOT/buildx/w32api/nt386/ >>$OWBINDIR/ca
 
 mkdir -p $OWROOT/buildx/clib/library >>$OWBINDIR/cache1.log
 cp $CP_OPTS $OWSRCDIR/clib/library/. $OWROOT/buildx/clib/library/ >>$OWBINDIR/cache1.log
-#mkdir -p $OWROOT/buildx/clib/startup/library >>$OWBINDIR/cache1.log
-#cp $CP_OPTS $OWSRCDIR/clib/startup/library/. $OWROOT/buildx/clib/startup/library/ >>$OWBINDIR/cache1.log
+mkdir -p $OWROOT/buildx/clib/startup/library >>$OWBINDIR/cache1.log
+cp $CP_OPTS $OWSRCDIR/clib/startup/library/. $OWROOT/buildx/clib/startup/library/ >>$OWBINDIR/cache1.log
 mkdir -p $OWROOT/buildx/cpplib/library >>$OWBINDIR/cache1.log
 cp $CP_OPTS $OWSRCDIR/cpplib/library/. $OWROOT/buildx/cpplib/library/ >>$OWBINDIR/cache1.log
 #mkdir -p $OWROOT/buildx/cpplib/runtime >>$OWBINDIR/cache1.log
