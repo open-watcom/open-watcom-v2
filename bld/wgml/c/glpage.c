@@ -89,13 +89,13 @@ void    lay_page( lay_tag ltag )
     p = scan_start;
     cvterr = false;
 
-    if( !GlobalFlags.firstpass ) {
+    if( !WgmlGlobFlags.firstpass ) {
         scan_start = scan_stop;
         eat_lay_sub_tag();
         return;                         // process during first pass only
     }
-    if( ProcFlags.lay_xxx != el_page ) {
-        ProcFlags.lay_xxx = el_page;
+    if( WgmlProcFlags.lay_xxx != el_page ) {
+        WgmlProcFlags.lay_xxx = el_page;
     }
     cc = get_lay_sub_and_value( &l_args );  // get one with value
     while( cc == pos ) {

@@ -46,7 +46,7 @@ static void gml_hp_sf_common( gml_tag gtag, int level )
 
 // keep any existing post_space, even if CT follows -- TBD
     if( (input_cbs->fmflags & II_sol) ) {
-        ProcFlags.fsp = true;
+        WgmlProcFlags.fsp = true;
         if( post_space == 0 ) {
             post_space = wgml_fonts[g_curr_font].spc_width; // TBD
         }
@@ -68,7 +68,7 @@ static void gml_hp_sf_common( gml_tag gtag, int level )
     if( *p ) {
         process_text( p, g_curr_font );
     }
-    if( !ProcFlags.concat && (input_cbs->fmflags & II_eol) ) {
+    if( !WgmlProcFlags.concat && (input_cbs->fmflags & II_eol) ) {
         scr_process_break();            // ensure line is output
     }
     scan_start = scan_stop;
@@ -139,7 +139,7 @@ static  void    gml_ehp_esf_common( gml_tag egtag )
         if( *p ) {
             process_text( p, g_curr_font );
         }
-        if( !ProcFlags.concat && (input_cbs->fmflags & II_eol) ) {
+        if( !WgmlProcFlags.concat && (input_cbs->fmflags & II_eol) ) {
             scr_process_break();        // ensure line is output
         }
     }

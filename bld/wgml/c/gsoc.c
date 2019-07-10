@@ -66,7 +66,7 @@ void    scr_oc( void )
 {
     char        *   p;
 
-    if( GlobalFlags.lastpass ) {
+    if( WgmlGlobFlags.lastpass ) {
         p = scan_start;                 // next char after .oc
         if( *p ) {                      // line operand specified
             p++;                        // over space

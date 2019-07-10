@@ -57,13 +57,13 @@ void    lay_tocpgnum( lay_tag ltag )
     p = scan_start;
     cvterr = false;
 
-    if( !GlobalFlags.firstpass ) {
+    if( !WgmlGlobFlags.firstpass ) {
         scan_start = scan_stop;
         eat_lay_sub_tag();
         return;                         // process during first pass only
     }
-    if( ProcFlags.lay_xxx != el_tocpgnum ) {
-        ProcFlags.lay_xxx = el_tocpgnum;
+    if( WgmlProcFlags.lay_xxx != el_tocpgnum ) {
+        WgmlProcFlags.lay_xxx = el_tocpgnum;
     }
     cc = get_lay_sub_and_value( &l_args );  // get att with value
     while( cc == pos ) {

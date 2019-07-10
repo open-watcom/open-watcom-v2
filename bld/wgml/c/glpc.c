@@ -155,13 +155,13 @@ void    lay_p( lay_tag ltag )
 
     /* unused parameters */ (void)ltag;
 
-    if( !GlobalFlags.firstpass ) {
+    if( !WgmlGlobFlags.firstpass ) {
         scan_start = scan_stop;
         eat_lay_sub_tag();
         return;                         // process during first pass only
     }
-    if( ProcFlags.lay_xxx != el_p ) {
-        ProcFlags.lay_xxx = el_p;
+    if( WgmlProcFlags.lay_xxx != el_p ) {
+        WgmlProcFlags.lay_xxx = el_p;
     }
     cc = get_lay_sub_and_value( &l_args );  // get attribute and value
     while( cc == pos ) {
@@ -186,13 +186,13 @@ void    lay_pc( lay_tag ltag )
 
     /* unused parameters */ (void)ltag;
 
-    if( !GlobalFlags.firstpass ) {
+    if( !WgmlGlobFlags.firstpass ) {
         scan_start = scan_stop;
         eat_lay_sub_tag();
         return;                         // process during first pass only
     }
-    if( ProcFlags.lay_xxx != el_pc ) {
-        ProcFlags.lay_xxx = el_pc;
+    if( WgmlProcFlags.lay_xxx != el_pc ) {
+        WgmlProcFlags.lay_xxx = el_pc;
     }
     cc = get_lay_sub_and_value( &l_args );  // get attribute and value
     while( cc == pos ) {

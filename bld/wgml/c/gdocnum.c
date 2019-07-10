@@ -96,18 +96,18 @@ void    gml_docnum( gml_tag gtag )
     symsub      *   docnumval;
 
 
-    if( !((ProcFlags.doc_sect == doc_sect_titlep) ||
-          (ProcFlags.doc_sect_nxt == doc_sect_titlep)) ) {
+    if( !((WgmlProcFlags.doc_sect == doc_sect_titlep) ||
+          (WgmlProcFlags.doc_sect_nxt == doc_sect_titlep)) ) {
         g_err( err_tag_wrong_sect, gml_tagname( gtag ), ":TITLEP section" );
         err_count++;
         show_include_stack();
     }
 
-    if( ProcFlags.docnum_tag_seen ) {   // only one DOCNUM tag allowed
+    if( WgmlProcFlags.docnum_tag_seen ) {   // only one DOCNUM tag allowed
         xx_line_err( err_2nd_docnum, buff2 );
     }
 
-    ProcFlags.docnum_tag_seen = true;
+    WgmlProcFlags.docnum_tag_seen = true;
     p = scan_start;
     if( *p && *p == '.' ) p++;          // over . to docnum
 
@@ -144,11 +144,11 @@ void    gml_docnum( gml_tag gtag )
     cur_el->depth = p_line->line_height + g_spacing;
     cur_el->subs_skip = g_subs_skip;
     cur_el->top_skip = g_top_skip;
-    cur_el->element.text.overprint = ProcFlags.overprint;
-    ProcFlags.overprint = false;
+    cur_el->element.text.overprint = WgmlProcFlags.overprint;
+    WgmlProcFlags.overprint = false;
     cur_el->element.text.spacing = g_spacing;
     cur_el->element.text.first = p_line;
-    ProcFlags.skips_valid = false;
+    WgmlProcFlags.skips_valid = false;
     p_line = NULL;
     insert_col_main( cur_el );
 

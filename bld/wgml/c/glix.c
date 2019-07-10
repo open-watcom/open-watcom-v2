@@ -128,7 +128,7 @@ void    lay_ix( lay_tag ltag )
 
     p = scan_start;
 
-    if( !GlobalFlags.firstpass ) {
+    if( !WgmlGlobFlags.firstpass ) {
         scan_start = scan_stop;
         eat_lay_sub_tag();
         return;                         // process during first pass only
@@ -149,8 +149,8 @@ void    lay_ix( lay_tag ltag )
         err_count++;
         break;
     }
-    if( ProcFlags.lay_xxx != ix_l ) {
-        ProcFlags.lay_xxx = ix_l;
+    if( WgmlProcFlags.lay_xxx != ix_l ) {
+        WgmlProcFlags.lay_xxx = ix_l;
     }
     ix = ix_l - el_i1;      // construct Ix level  0 - 2
 

@@ -152,7 +152,7 @@ void    scr_sk( void )
 #if 0
         if( toupper( *p ) == 'C' ) {
             if( skip > 0 ) {
-                ProcFlags.sk_cond = true;   // conditional skip
+                WgmlProcFlags.sk_cond = true;   // conditional skip
             }
         }
 #endif
@@ -164,12 +164,12 @@ void    scr_sk( void )
     }
     skip = skip * spacing_ln;           // apply spacing
     if( skip <= -1 ) {
-        ProcFlags.overprint = true;     // enable overprint
+        WgmlProcFlags.overprint = true;     // enable overprint
     } else {
         if( g_skip > skip ) {           // merge with existing value
             skip = g_skip;
         }
-        ProcFlags.overprint = false;    // disable overprint
+        WgmlProcFlags.overprint = false;    // disable overprint
     }
 
     scr_process_break();

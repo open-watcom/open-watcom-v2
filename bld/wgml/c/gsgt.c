@@ -388,7 +388,7 @@ void    scr_gt( void )
             return;
         }
         savetag = '*';         // remember for possible global delete / print
-        if( GlobalFlags.firstpass && input_cbs->fmflags & II_research ) {
+        if( WgmlGlobFlags.firstpass && input_cbs->fmflags & II_research ) {
             if( tag_entry != NULL ) {
                 out_msg("  using tagname %s %s\n", tagname, tag_entry->name );
             }

@@ -150,17 +150,17 @@ static void process_co_ju( bool both , char *cwcurr )
     switch( len ) {
     case 0 :                            // omitted means ON
         if( both ) {
-            ProcFlags.concat = true;
+            WgmlProcFlags.concat = true;
         }
-        ProcFlags.justify = ju_on;
+        WgmlProcFlags.justify = ju_on;
         scan_restart = p;
         break;
     case 2 :                            // only ON valid
         if( !strnicmp( "ON", pa, 2 ) ) {
             if( both ) {
-                ProcFlags.concat = true;
+                WgmlProcFlags.concat = true;
             }
-            ProcFlags.justify = ju_on;
+            WgmlProcFlags.justify = ju_on;
             scan_restart = pa + len;
         } else {
             xx_opt_err( cwcurr, pa );
@@ -169,9 +169,9 @@ static void process_co_ju( bool both , char *cwcurr )
     case 3 :                            // only OFF valid
         if( !strnicmp( "OFF", pa, 3 ) ) {
             if( both ) {
-                ProcFlags.concat = false;
+                WgmlProcFlags.concat = false;
             }
-            ProcFlags.justify = ju_off;
+            WgmlProcFlags.justify = ju_off;
             scan_restart = pa + len;
         } else {
             xx_opt_err( cwcurr, pa );
@@ -180,21 +180,21 @@ static void process_co_ju( bool both , char *cwcurr )
     case 4 :                            // Left or half valid
         if( !strnicmp( "LEFT", pa, 4 ) ) {
             if( both ) {
-                ProcFlags.concat = true;
+                WgmlProcFlags.concat = true;
             }
 
             /***************************************************************/
             /*  .ju left is treated as .ju off by wgml4.0                  */
             /*  system variable &SYSJU is set to OFF                       */
             /***************************************************************/
-            ProcFlags.justify = ju_off; // left is like off for wgml 4.0
+            WgmlProcFlags.justify = ju_off; // left is like off for wgml 4.0
             scan_restart = pa + len;
         } else {
             if( !strnicmp( "HALF", pa, 4 ) ) {
                 if( both ) {
-                    ProcFlags.concat = true;
+                    WgmlProcFlags.concat = true;
                 }
-                ProcFlags.justify = ju_half;
+                WgmlProcFlags.justify = ju_half;
                 scan_restart = pa + len;
             } else {
                 xx_opt_err( cwcurr, pa );
@@ -204,9 +204,9 @@ static void process_co_ju( bool both , char *cwcurr )
     case 5 :                            // only Right valid
         if( !strnicmp( "RIGHT", pa, 5 ) ) {
             if( both ) {
-                ProcFlags.concat = true;
+                WgmlProcFlags.concat = true;
             }
-            ProcFlags.justify = ju_right;
+            WgmlProcFlags.justify = ju_right;
             scan_restart = pa + len;
         } else {
             xx_opt_err( cwcurr, pa );
@@ -215,16 +215,16 @@ static void process_co_ju( bool both , char *cwcurr )
     case 6 :                            // center or inside valid
         if( !strnicmp( "CENTER", pa, 6 ) || !strnicmp( "CENTRE", pa, 6 ) ) {
             if( both ) {
-                ProcFlags.concat = true;
+                WgmlProcFlags.concat = true;
             }
-            ProcFlags.justify = ju_centre;
+            WgmlProcFlags.justify = ju_centre;
             scan_restart = pa + len;
         } else {
             if( !strnicmp( "INSIDE", pa, 6 ) ) {
                 if( both ) {
-                    ProcFlags.concat = true;
+                    WgmlProcFlags.concat = true;
                 }
-                ProcFlags.justify = ju_inside;
+                WgmlProcFlags.justify = ju_inside;
                 scan_restart = pa + len;
             } else {
                 xx_opt_err( cwcurr, pa );
@@ -234,9 +234,9 @@ static void process_co_ju( bool both , char *cwcurr )
     case 7 :                            // only outside valid
         if( !strnicmp( "OUTSIDE", pa, 7 ) ) {
             if( both ) {
-                ProcFlags.concat = true;
+                WgmlProcFlags.concat = true;
             }
-            ProcFlags.justify = ju_outside;
+            WgmlProcFlags.justify = ju_outside;
             scan_restart = pa + len;
         } else {
             xx_opt_err( cwcurr, pa );
@@ -275,12 +275,12 @@ void    scr_co( void )
     len = p - pa;
     switch( len ) {
     case 0 :                            // omitted means ON
-        ProcFlags.concat = true;
+        WgmlProcFlags.concat = true;
         scan_restart = pa;
         break;
     case 2 :                            // only ON valid
         if( !strnicmp( "ON", pa, 2 ) ) {
-            ProcFlags.concat = true;
+            WgmlProcFlags.concat = true;
             scan_restart = pa + len;
         } else {
             xx_opt_err( cwcurr, pa );
@@ -288,7 +288,7 @@ void    scr_co( void )
         break;
     case 3 :                            // only OFF valid
         if( !strnicmp( "OFF", pa, 3 ) ) {
-            ProcFlags.concat = false;
+            WgmlProcFlags.concat = false;
             scan_restart = pa + len;
         } else {
             xx_opt_err( cwcurr, pa );

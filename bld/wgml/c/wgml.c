@@ -133,12 +133,12 @@ static  void    free_filenames( void )
     int32_t cnt;
 
     wk = fn_stack;
-    if( GlobalFlags.statistics ) {
+    if( WgmlGlobFlags.statistics ) {
         cnt = 0;
         out_msg( "\nInput filenames:\n" );
     }
     while( wk != NULL ) {
-        if( GlobalFlags.statistics ) {
+        if( WgmlGlobFlags.statistics ) {
             out_msg( "    %s\n", wk->fn );
             cnt++;
         }
@@ -146,7 +146,7 @@ static  void    free_filenames( void )
         mem_free( wk );
         wk = wk1;
     }
-    if( GlobalFlags.statistics ) {
+    if( WgmlGlobFlags.statistics ) {
         out_msg( "Total files: %ld\n\n", cnt );
     }
     fn_stack = NULL;
@@ -263,7 +263,7 @@ static  void    del_input_cb_entry( void )
             fclose( wk->s.f->fp );
         }
         lw = wk->s.f->label_cb;
-        if( GlobalFlags.research ) {
+        if( WgmlGlobFlags.research ) {
             print_labels( lw, wk->s.f->filename );  // print labels
         }
         while( lw != NULL ) {
@@ -308,7 +308,7 @@ static void remove_indentation( void )
             memset( pb, '\0', offset ); // clear rest
         }
 //        buff2_lg = strlen( buff2 );
-//        if( GlobalFlags.research && GlobalFlags.firstpass ) {
+//        if( WgmlGlobFlags.research && WgmlGlobFlags.firstpass ) {
 //            g_info( INF_INDENT_REM, buff2 );
 //        }
     }
@@ -318,7 +318,7 @@ static void remove_indentation( void )
 /***************************************************************************/
 /*  test_macro_xxxx test for  special processing within false branch of    */
 /* .if control word                                                        */
-/*  ProcFlags.in_macro_define is abused as switch as no                    */
+/*  WgmlProcFlags.in_macro_define is abused as switch as no                    */
 /*  'real' macro definition is possible in this case                       */
 /*                                                                         */
 /* .dm macname begin                                                       */
@@ -390,10 +390,10 @@ static  bool    test_comment( void )
             if( (*(buff2 + 4) == ' ') ||
                 (*(buff2 + 4) == '.')  ) {
 
-                if( ProcFlags.literal ) {   // special
+                if( WgmlProcFlags.literal ) {   // special
                     if( li_cnt < LONG_MAX ) {// we decrement, do not wait for .li OFF
                         if( li_cnt-- <= 0 ) {
-                            ProcFlags.literal = false;
+                            WgmlProcFlags.literal = false;
                         }
                     }
                 }
@@ -417,12 +417,12 @@ static  void    proc_input( char * filename )
     ifcb            ic_work;
     condcode        cc;
 
-    ProcFlags.newLevelFile = 1;
+    WgmlProcFlags.newLevelFile = 1;
     strcpy( token_buf, filename );
 
     for( ; ; ) {                        // as long as there is input
-        if( ProcFlags.newLevelFile ) {
-            ProcFlags.newLevelFile = 0; // start a new include FILE level
+        if( WgmlProcFlags.newLevelFile ) {
+            WgmlProcFlags.newLevelFile = 0; // start a new include FILE level
 
             /***************************************************************/
             /*  split off attribute  (f:xxxx)                              */
@@ -461,7 +461,7 @@ static  void    proc_input( char * filename )
             } else {
                 cb->fileattr[0] = '\0';
             }
-            if( GlobalFlags.inclist ) {
+            if( WgmlGlobFlags.inclist ) {
                 g_info_lm( inf_curr_input, "file", cb->filename );
             }
 
@@ -476,7 +476,7 @@ static  void    proc_input( char * filename )
                 strcpy( token_buf, lay_files->layfn );
                 lay_files = curr_lay_file->next;
                 mem_free( curr_lay_file );
-                ProcFlags.newLevelFile = 1; // start a new include FILE level
+                WgmlProcFlags.newLevelFile = 1; // start a new include FILE level
                 continue;               // with cmdline    layout option file
             }
         } // new include FILE processing
@@ -494,15 +494,15 @@ static  void    proc_input( char * filename )
 
             ic = input_cbs->if_cb;      // .if .th .el controlblock
 
-            if( GlobalFlags.firstpass && input_cbs->fmflags & II_research ) {
+            if( WgmlGlobFlags.firstpass && input_cbs->fmflags & II_research ) {
                 show_ifcb( "procin 1", ic );
             }
 
             if( !get_line( true ) ) {
-                if( ProcFlags.goto_active ) {   // goto active at EOF
+                if( WgmlProcFlags.goto_active ) {   // goto active at EOF
                     char    linestr[MAX_L_AS_STR];
 
-                    ProcFlags.goto_active = false;
+                    WgmlProcFlags.goto_active = false;
                     err_count++;
                     if( input_cbs->fmflags & II_tag_mac ) {
                         if( gotargetno > 0 ) {
@@ -521,32 +521,32 @@ static  void    proc_input( char * filename )
                 break;                  // EOF
             }
 #if 0
-            if( (buff2_lg < 1) && !ProcFlags.concat) {
-                ProcFlags.empty_doc_el = true;
+            if( (buff2_lg < 1) && !WgmlProcFlags.concat) {
+                WgmlProcFlags.empty_doc_el = true;
                 scr_process_break();
                 continue;               // minimal processing for empty line
             }
 #endif
             remove_indentation();       // ".  .  .  .cw"  becomes ".cw"
 
-            if( ProcFlags.goto_active ) {
+            if( WgmlProcFlags.goto_active ) {
                 if( !gotarget_reached() ) {
                     continue;           // skip processing
                 }
-                ProcFlags.goto_active = false;
+                WgmlProcFlags.goto_active = false;
             }
 
             if( test_comment() ) {      // minimal processing for comment
                 continue;
             }
-            if( !ProcFlags.keep_ifstate ) {
+            if( !WgmlProcFlags.keep_ifstate ) {
                 if( ic->if_level > 0 ) {// if .if active
                     if( ic->if_flags[ic->if_level].ifelse // after else
                         && !ic->if_flags[ic->if_level].ifdo ) {// no do group
 
                         ic->if_level--; // pop .if stack one level
 
-                        if( GlobalFlags.firstpass &&
+                        if( WgmlGlobFlags.firstpass &&
                             input_cbs->fmflags & II_research ) {
                             show_ifcb( "procin -1", ic );
                         }
@@ -557,13 +557,13 @@ static  void    proc_input( char * filename )
                     ic->if_flags[ic->if_level].ifthen = false;// not in then
                     ic->if_flags[ic->if_level].ifelse = false;// not in else
 
-                    if( GlobalFlags.firstpass &&
+                    if( WgmlGlobFlags.firstpass &&
                         input_cbs->fmflags & II_research ) {
                         show_ifcb( "procin 2", ic );
                     }
                 }
             } else {
-                ProcFlags.keep_ifstate = false;
+                WgmlProcFlags.keep_ifstate = false;
             }
 
             /***************************************************************/
@@ -573,16 +573,16 @@ static  void    proc_input( char * filename )
             /*  (ignore all up to .dm end)                                 */
             /***************************************************************/
 
-            if( !ProcFlags.literal ) {
+            if( !WgmlProcFlags.literal ) {
                 ic_work = *ic;          // create a copy of if control block
 
-                if( ProcFlags.in_macro_define ) {
+                if( WgmlProcFlags.in_macro_define ) {
                     if( test_macro_xxxx( "end" ) ) {
-                        ProcFlags.in_macro_define = false;
+                        WgmlProcFlags.in_macro_define = false;
                     }
                 }
-                if( ProcFlags.in_macro_define ) {
-                    if( input_cbs->fmflags & II_research && GlobalFlags.firstpass ) {
+                if( WgmlProcFlags.in_macro_define ) {
+                    if( input_cbs->fmflags & II_research && WgmlGlobFlags.firstpass ) {
                         g_info_lm( inf_skip_line );
                     }
                     continue;           // skip processing
@@ -592,10 +592,10 @@ static  void    proc_input( char * filename )
                 cc = test_process( &ic_work );
                 if( cc != pos ) {
                     if( test_macro_xxxx( "begin" ) ) {
-                        ProcFlags.in_macro_define = true;
+                        WgmlProcFlags.in_macro_define = true;
                     }
                     if( input_cbs->fmflags & II_research &&
-                        GlobalFlags.firstpass ) {
+                        WgmlGlobFlags.firstpass ) {
                         g_info_lm( inf_skip_line );
                     }
                     set_if_then_do( ic );
@@ -608,11 +608,11 @@ static  void    proc_input( char * filename )
             process_line();             // substitute variables + functions
             scan_line();
 
-            if( ProcFlags.newLevelFile ) {
+            if( WgmlProcFlags.newLevelFile ) {
                 break;            // imbed and friends found, start new level
             }
         }
-        if( ProcFlags.newLevelFile ) {  // include / imbed new file
+        if( WgmlProcFlags.newLevelFile ) {  // include / imbed new file
             continue;
         }
 
@@ -635,11 +635,11 @@ static  void    proc_input( char * filename )
             strcpy( token_buf, lay_files->layfn );
             lay_files = curr_lay_file->next;
             mem_free( curr_lay_file );
-            ProcFlags.newLevelFile = 1; // start a new include file level
+            WgmlProcFlags.newLevelFile = 1; // start a new include file level
             continue;                   // with cmdline layout option file
         }
         if( input_cbs->fmflags & II_file ) {
-            if( GlobalFlags.inclist ) {
+            if( WgmlGlobFlags.inclist ) {
                 char    linestr[MAX_L_AS_STR];
 
                 cb = input_cbs->s.f;
@@ -647,7 +647,7 @@ static  void    proc_input( char * filename )
                 g_info_lm( inf_curr_line, cb->filename, linestr );
             }
         } else {
-            if( GlobalFlags.inclist ) {
+            if( WgmlGlobFlags.inclist ) {
                 g_info_lm( inf_curr_input, "macro", input_cbs->s.m->mac->name );
             }
         }
@@ -713,15 +713,15 @@ static  void    init_pass( void )
 
     init_pass_data();                   // (re)set processing flags + vars
 
-    if( GlobalFlags.research && (research_to > 0) ) {
+    if( WgmlGlobFlags.research && (research_to > 0) ) {
         if( research_file_name[0] == '\0' ) {
             strcpy( research_file_name, master_fname );
         }
-        ProcFlags.researchfile = true;
+        WgmlProcFlags.researchfile = true;
     }
 
     if( pass > 1 ) {
-        GlobalFlags.firstpass = 0;
+        WgmlGlobFlags.firstpass = 0;
 
 /*
  * design question: free dictionaries or not                            TBD
@@ -735,12 +735,12 @@ static  void    init_pass( void )
         free_tag_dict( &tag_dict );
         init_nest_cb( false );
     } else {
-        GlobalFlags.firstpass = 1;
+        WgmlGlobFlags.firstpass = 1;
     }
     if( pass < passes ) {
-        GlobalFlags.lastpass = 0;
+        WgmlGlobFlags.lastpass = 0;
     } else {
-        GlobalFlags.lastpass = 1;
+        WgmlGlobFlags.lastpass = 1;
     }
 
     line_from   = 1;                  // processing line range Masterdocument
@@ -821,8 +821,8 @@ int main( int argc, char * argv[] )
 
         fb_start();                     // START :PAUSE & :INIT processing.
 
-        if( (GlobalFlags.inclist || GlobalFlags.statistics ||
-             GlobalFlags.research ) && (lay_files != NULL) ) {
+        if( (WgmlGlobFlags.inclist || WgmlGlobFlags.statistics ||
+             WgmlGlobFlags.research ) && (lay_files != NULL) ) {
 
             laystack *lwk = lay_files;
 
@@ -839,8 +839,8 @@ int main( int argc, char * argv[] )
             utoa( pass, passnoval->value, 10 ); // fill current passno
 
             g_info_lm( INF_PASS_1, passnoval->value, passofval->value,
-                    GlobalFlags.research ? "research" : "normal" );
-//          if( GlobalFlags.research ) {
+                    WgmlGlobFlags.research ? "research" : "normal" );
+//          if( WgmlGlobFlags.research ) {
 //              mem_prt_curr_usage();
 //          }
 
@@ -852,18 +852,18 @@ int main( int argc, char * argv[] )
                 add_tag_cb_to_pool( nest_cb );
                 nest_cb = cb;
             }
-            if( GlobalFlags.research && (pass < passes) ) {
+            if( WgmlGlobFlags.research && (pass < passes) ) {
                 print_sym_dict( global_dict );
             }
             msg_indent = 0;
             g_info_lm( INF_PASS_2, passnoval->value, passofval->value,
-                    GlobalFlags.research ? "research" : "normal" );
+                    WgmlGlobFlags.research ? "research" : "normal" );
 
-//          if( GlobalFlags.research && (pass < passes) ) {
+//          if( WgmlGlobFlags.research && (pass < passes) ) {
 //              mem_prt_curr_usage();
 //          }
             passcount = pass;
-            if( !GlobalFlags.lastpass && (err_count > 0) ) {
+            if( !WgmlGlobFlags.lastpass && (err_count > 0) ) {
                 g_info_lm( inf_error_stop, passes - pass > 1 ? "es" : "" );
 
                 ixdump( index_dict );   // test show unformatted index TBD
@@ -879,7 +879,7 @@ int main( int argc, char * argv[] )
         err_count++;
         usage();
     }
-    if( GlobalFlags.research ) {
+    if( WgmlGlobFlags.research ) {
         print_GML_tags_research();
         free_GML_tags_research();
 

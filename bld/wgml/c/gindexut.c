@@ -216,7 +216,7 @@ ix_e_blk *  fill_ix_e_blk( ix_e_blk * * anchor, ix_h_blk * ref, ereftyp ptyp,
         strcpy( ixewk->u.page_text, text );
     } else {
         ixewk->u.page_text = NULL;
-//      if( ProcFlags.page_started ) {
+//      if( WgmlProcFlags.page_started ) {
 //          ixewk->u.page_no = page;
 //      } else {
             ixewk->u.page_no = page + 1;  // + 1 ??  TBD

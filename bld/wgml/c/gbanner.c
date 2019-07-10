@@ -183,11 +183,11 @@ static char * subst_1var( char * pout, char * pvar, size_t len )
 
     /* unused parameters */ (void)len;
 
-    ProcFlags.suppress_msg = true;
+    WgmlProcFlags.suppress_msg = true;
     scan_err = false;
 
     pchar = scan_sym( pvar, &symvar_entry, &var_ind );
-    ProcFlags.suppress_msg = false;
+    WgmlProcFlags.suppress_msg = false;
     if( !scan_err ) {
         if( symvar_entry.flags & local_var ) {  // lookup var in dict
             rc = find_symvar_l( &input_cbs->local_dict, symvar_entry.name,

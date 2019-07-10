@@ -446,9 +446,9 @@ global  char            research_file_name[48]; // filename for research
 global  line_number     research_from;  // line no start for research output
 global  line_number     research_to;    // line no end   for research output
 
-global  global_flags    GlobalFlags;    // Global flags
+global  global_flags    WgmlGlobFlags;  // Global flags
 
-global  proc_flags      ProcFlags;      // processing flags
+global  proc_flags      WgmlProcFlags;  // processing flags
 
 global  size_t          buf_size;       // default buffer size
 global  char        *   token_buf;

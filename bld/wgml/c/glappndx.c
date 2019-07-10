@@ -221,13 +221,13 @@ void    lay_appendix( lay_tag ltag )
     p = scan_start;
     cvterr = false;
 
-    if( !GlobalFlags.firstpass ) {
+    if( !WgmlGlobFlags.firstpass ) {
         scan_start = scan_stop;
         eat_lay_sub_tag();
         return;                         // process during first pass only
     }
-    if( ProcFlags.lay_xxx != el_appendix ) {
-        ProcFlags.lay_xxx = el_appendix;
+    if( WgmlProcFlags.lay_xxx != el_appendix ) {
+        WgmlProcFlags.lay_xxx = el_appendix;
     }
     cc = get_lay_sub_and_value( &l_args );  // get att with value
     while( cc == pos ) {

@@ -115,7 +115,7 @@ void    eat_lay_sub_tag( void )
 {
      while( get_line( false ) ) {
          if( *buff2 == ':' ) {
-             ProcFlags.reprocess_line = true;
+             WgmlProcFlags.reprocess_line = true;
              break;
          }
      }
@@ -211,7 +211,7 @@ condcode    get_lay_sub_and_value( att_args * args )
     }
 
     if( *p == '.' ) {
-        ProcFlags.tag_end_found = true;
+        WgmlProcFlags.tag_end_found = true;
         p++;
     }
 

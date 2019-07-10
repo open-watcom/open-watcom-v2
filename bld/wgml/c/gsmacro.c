@@ -139,13 +139,13 @@ void    add_macro_parms( char * p )
                 c          = *scan_save; // prepare value end
                 *scan_save = '\0';      // terminate string
                 scan_start = tok_start; // rescan for variable
-                ProcFlags.suppress_msg = true;  // no errmsg please
-                ProcFlags.blanks_allowed = 0;   // no blanks please
+                WgmlProcFlags.suppress_msg = true;  // no errmsg please
+                WgmlProcFlags.blanks_allowed = 0;   // no blanks please
 
                 scr_se();               // try to set variable and value
 
-                ProcFlags.suppress_msg = false; // reenable err msg
-                ProcFlags.blanks_allowed = 1;   // blanks again
+                WgmlProcFlags.suppress_msg = false; // reenable err msg
+                WgmlProcFlags.blanks_allowed = 1;   // blanks again
                 *scan_save = c;        // restore original char at string end
                 scan_start = scan_save; // restore scan address
                 if( scan_err ) {        // not variable=value format
@@ -178,7 +178,7 @@ void    add_macro_parms( char * p )
                     no_subscript, local_var );
     }
 
-    if( input_cbs->fmflags & II_research && GlobalFlags.firstpass ) {
+    if( input_cbs->fmflags & II_research && WgmlGlobFlags.firstpass ) {
         print_sym_dict( input_cbs->local_dict );
     }
 }
@@ -334,14 +334,14 @@ void    scr_dm( void )
         if( cc == quotes ) {
             tok_start--;    // for single line .dm /yy/xxy/.. back to sepchar
         }
-        if( ProcFlags.in_macro_define ) {
+        if( WgmlProcFlags.in_macro_define ) {
             err_count++;
             g_err( err_mac_def_nest, tok_start );
             ultoa( cb->s.f->lineno, linestr, 10 );
             g_info( inf_file_line, linestr, cb->s.f->filename );
             return;
         }
-        ProcFlags.in_macro_define = 1;
+        WgmlProcFlags.in_macro_define = 1;
 
         *p   = save;
         lineno_start = cb->s.f->lineno;
@@ -371,7 +371,7 @@ void    scr_dm( void )
         compend = 1;                    // so the end processing will happen
     }                                   // BEGIN or END not found
 
-    if( compend && !(ProcFlags.in_macro_define) ) {
+    if( compend && !(WgmlProcFlags.in_macro_define) ) {
         err_count++;
         // SC--003: A macro is not being defined
         g_err( err_mac_def_end, macname );
@@ -379,7 +379,7 @@ void    scr_dm( void )
         g_info( inf_file_line, linestr, cb->s.f->filename );
         return;
     }
-    if( compbegin && (ProcFlags.in_macro_define) ) {
+    if( compbegin && (WgmlProcFlags.in_macro_define) ) {
         err_count++;
         // SC--002 The control word parameter '%s' is invalid
         g_err( err_mac_def_nest, macname );
@@ -389,7 +389,7 @@ void    scr_dm( void )
     *p  = save;
     if( compbegin ) {                   // start new macro define
 
-        ProcFlags.in_macro_define = 1;
+        WgmlProcFlags.in_macro_define = 1;
         lineno_start = cb->s.f->lineno;
 
         while( !(cb->s.f->flags & FF_eof) ) {  // process all macro lines
@@ -487,7 +487,7 @@ void    scr_dm( void )
             free_macro_entry( &macro_dict, me );
         }
 
-        ProcFlags.in_macro_define = 0;
+        WgmlProcFlags.in_macro_define = 0;
 
         me  = mem_alloc( sizeof( mac_entry ) );
         me->next = NULL;
@@ -499,12 +499,12 @@ void    scr_dm( void )
 
         add_macro_entry( &macro_dict, me );
 
-        if( cb->fmflags & II_research && GlobalFlags.firstpass ) {
+        if( cb->fmflags & II_research && WgmlGlobFlags.firstpass ) {
             utoa( macro_line_count, linestr, 10 );
             g_info( inf_mac_defined, macname, linestr );
         }
     } else {
-        ProcFlags.in_macro_define = 0;
+        WgmlProcFlags.in_macro_define = 0;
         err_count++;
         g_err( err_mac_def_logic, macname );
         free_lines( head );
@@ -575,7 +575,7 @@ void    scr_me( void )
     input_cbs->fmflags |= II_eof;       // set eof
 
     input_cbs->if_cb->if_level = 0;     // terminate
-    ProcFlags.keep_ifstate = false;     // ... all .if controls
+    WgmlProcFlags.keep_ifstate = false;     // ... all .if controls
     scan_restart = scan_stop;
     return;
 }

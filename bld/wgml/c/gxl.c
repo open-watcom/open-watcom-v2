@@ -68,7 +68,7 @@ static void gml_xl_lp_common( gml_tag gtag )
     if( *p == '.' ) p++;                    // possible tag end
     if( gtag != GML_TAG_LP ) {                       // text only allowed for :LP
         if( gtag != GML_TAG_DL && gtag != GML_TAG_GL ) {      // DL/GL don't require LI/LP
-            ProcFlags.need_li_lp = true;    // :LI or :LP  next
+            WgmlProcFlags.need_li_lp = true;    // :LI or :LP  next
         }
         start_doc_sect();                   // if not already done
         scr_process_break();
@@ -232,7 +232,7 @@ void    gml_ol( gml_tag gtag )
     } else {
         compact = false;
     }
-    if( ProcFlags.need_li_lp ) {
+    if( WgmlProcFlags.need_li_lp ) {
         xx_nest_err( err_no_li_lp );
     }
     gml_xl_lp_common( gtag );
@@ -281,7 +281,7 @@ void    gml_sl( gml_tag gtag )
         compact = true;
         scan_start = p + 7;
     }
-    if( ProcFlags.need_li_lp ) {
+    if( WgmlProcFlags.need_li_lp ) {
         xx_nest_err( err_no_li_lp );
     }
     gml_xl_lp_common( gtag );
@@ -332,7 +332,7 @@ void    gml_ul( gml_tag gtag )
         compact = true;
         scan_start = p + 7;
     }
-    if( ProcFlags.need_li_lp ) {
+    if( WgmlProcFlags.need_li_lp ) {
         xx_nest_err( err_no_li_lp );
     }
     gml_xl_lp_common( gtag );
@@ -379,7 +379,7 @@ static void    gml_exl_common( gml_tag egtag )
         }
     }
 
-    ProcFlags.need_li_lp = false;        // :LI or :LP no longer needed
+    WgmlProcFlags.need_li_lp = false;        // :LI or :LP no longer needed
     scan_start = scan_stop;
 }
 
@@ -508,7 +508,7 @@ static  void    gml_li_ol( gml_tag gtag )
 
     g_curr_font = ((ol_lay_tag *)(nest_cb->lay_tag))->number_font;
 
-    if( ProcFlags.need_li_lp ) {        // first :li for this list
+    if( WgmlProcFlags.need_li_lp ) {        // first :li for this list
         set_skip_vars( &((ol_lay_tag *)(nest_cb->lay_tag))->pre_skip, NULL, NULL, 1, g_curr_font );
     } else if( !nest_cb->compact ) {
         set_skip_vars( &((ol_lay_tag *)(nest_cb->lay_tag))->skip, NULL, NULL, 1, g_curr_font );
@@ -522,7 +522,7 @@ static  void    gml_li_ol( gml_tag gtag )
     g_cur_h_start = g_cur_left;
     g_page_right = nest_cb->rm - nest_cb->right_indent;
 
-    ProcFlags.keep_left_margin = true;  // keep special Note indent
+    WgmlProcFlags.keep_left_margin = true;  // keep special Note indent
 
     start_line_with_string( charnumber, g_curr_font, true );
     g_cur_h_start = g_cur_left + conv_hor_unit( &(((ol_lay_tag *)(nest_cb->lay_tag))->align) );
@@ -543,7 +543,7 @@ static  void    gml_li_ol( gml_tag gtag )
     g_curr_font = ((ol_lay_tag *)(nest_cb->lay_tag))->font;
     if( *p == '.' ) p++;                // over '.'
     while( *p == ' ' ) p++;             // skip initial spaces
-    ProcFlags.need_li_lp = false;       // 1. item in list processed
+    WgmlProcFlags.need_li_lp = false;       // 1. item in list processed
     if( *p ) {
         process_text( p, g_curr_font ); // if text follows
     }
@@ -574,7 +574,7 @@ static  void    gml_li_sl( gml_tag gtag )
 
     scr_process_break();
 
-    if( ProcFlags.need_li_lp ) {        // first :li for this list
+    if( WgmlProcFlags.need_li_lp ) {        // first :li for this list
         set_skip_vars( &((sl_lay_tag *)(nest_cb->lay_tag))->pre_skip, NULL, NULL, 1, g_curr_font );
     } else if( !nest_cb->compact ) {
         set_skip_vars( &((sl_lay_tag *)(nest_cb->lay_tag))->skip, NULL, NULL, 1, g_curr_font );
@@ -582,7 +582,7 @@ static  void    gml_li_sl( gml_tag gtag )
         set_skip_vars( NULL, NULL, NULL, 1, g_curr_font );
     }
 
-    ProcFlags.keep_left_margin = true;  // keep special Note indent
+    WgmlProcFlags.keep_left_margin = true;  // keep special Note indent
 
     g_cur_left = nest_cb->lm + nest_cb->left_indent;
     g_cur_h_start = g_cur_left;
@@ -596,7 +596,7 @@ static  void    gml_li_sl( gml_tag gtag )
     g_curr_font = ((sl_lay_tag *)(nest_cb->lay_tag))->font;
     if( *p == '.' ) p++;                // over '.'
     while( *p == ' ' ) p++;             // skip initial spaces
-    ProcFlags.need_li_lp = false;
+    WgmlProcFlags.need_li_lp = false;
     if( *p ) {
         process_text( p, g_curr_font ); // if text follows
     }
@@ -637,7 +637,7 @@ static  void    gml_li_ul( gml_tag gtag )
 
     scr_process_break();
 
-    if( ProcFlags.need_li_lp ) {        // first :li for this list
+    if( WgmlProcFlags.need_li_lp ) {        // first :li for this list
         set_skip_vars( &((ul_lay_tag *)(nest_cb->lay_tag))->pre_skip, NULL, NULL, 1, g_curr_font );
     } else if( !nest_cb->compact ) {
         set_skip_vars( &((ul_lay_tag *)(nest_cb->lay_tag))->skip, NULL, NULL, 1, g_curr_font );
@@ -654,7 +654,7 @@ static  void    gml_li_ul( gml_tag gtag )
     g_cur_h_start = g_cur_left;
     g_page_right = nest_cb->rm - nest_cb->right_indent;
 
-    ProcFlags.keep_left_margin = true;  // keep special Note indent
+    WgmlProcFlags.keep_left_margin = true;  // keep special Note indent
 
     start_line_with_string( bullet, g_curr_font, true );
     g_cur_h_start = g_cur_left + conv_hor_unit( &(((ul_lay_tag *)(nest_cb->lay_tag))->align) );
@@ -675,7 +675,7 @@ static  void    gml_li_ul( gml_tag gtag )
     g_curr_font = ((ul_lay_tag *)(nest_cb->lay_tag))->font;
     if( *p == '.' ) p++;                // over '.'
     while( *p == ' ' ) p++;             // skip initial spaces
-    ProcFlags.need_li_lp = false;
+    WgmlProcFlags.need_li_lp = false;
     if( *p ) {
         process_text( p, g_curr_font ); // if text fullows
     }
@@ -786,10 +786,10 @@ void    gml_lp( gml_tag gtag )
 
     g_spacing_ln = ((lp_lay_tag *)(nest_cb->lay_tag))->spacing;
 
-    ProcFlags.keep_left_margin = true;  // keep special Note indent
+    WgmlProcFlags.keep_left_margin = true;  // keep special Note indent
     post_space = 0;
 
-    if( ProcFlags.need_li_lp ) {        // :LP first tag in list
+    if( WgmlProcFlags.need_li_lp ) {        // :LP first tag in list
         pre_skip_su = greater_su( lp_skip_su, list_skip_su, g_spacing_ln );
     } else {
         pre_skip_su = &((lp_lay_tag *)(nest_cb->lay_tag))->pre_skip;
@@ -808,7 +808,7 @@ void    gml_lp( gml_tag gtag )
 
     if( *p == '.' ) p++;                // over '.'
     while( *p == ' ' ) p++;             // skip initial spaces
-    ProcFlags.need_li_lp = false;       // :LI or :LP seen
+    WgmlProcFlags.need_li_lp = false;       // :LI or :LP seen
     if( *p ) {
         process_text( p, g_curr_font ); // if text follows
     }

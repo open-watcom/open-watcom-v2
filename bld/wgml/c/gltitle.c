@@ -58,13 +58,13 @@ void    lay_title( lay_tag ltag )
     p = scan_start;
     cvterr = false;
 
-    if( !GlobalFlags.firstpass ) {
+    if( !WgmlGlobFlags.firstpass ) {
         scan_start = scan_stop;
         eat_lay_sub_tag();
         return;                         // process during first pass only
     }
-    if( ProcFlags.lay_xxx != el_title ) {
-        ProcFlags.lay_xxx = el_title;
+    if( WgmlProcFlags.lay_xxx != el_title ) {
+        WgmlProcFlags.lay_xxx = el_title;
     }
     cc = get_lay_sub_and_value( &l_args );  // get att with value
     while( cc == pos ) {

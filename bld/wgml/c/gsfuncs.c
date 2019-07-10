@@ -257,7 +257,7 @@ char  * scr_multi_funcs( char * in, char * end, char ** result, int32_t valsize 
     // test for valid functionname
     for( funcind = 0; funcind < SCR_FUNCMAX; ++funcind ) {
         if( fnlen == scr_functions[funcind].length && !memcmp( fn, scr_functions[funcind].fname, fnlen ) ) {
-            if( input_cbs->fmflags & II_research && GlobalFlags.firstpass ) {
+            if( input_cbs->fmflags & II_research && WgmlGlobFlags.firstpass ) {
                 out_msg( " Function %s found\n", scr_functions[funcind].fname );
                 add_multi_func_research( fn );
             }
@@ -293,14 +293,14 @@ char  * scr_multi_funcs( char * in, char * end, char ** result, int32_t valsize 
             *ps = '\0';
             parms[k].stop = ps;
             parms[k].start = resbuf;
-            if( input_cbs->fmflags & II_research && GlobalFlags.firstpass ) {
+            if( input_cbs->fmflags & II_research && WgmlGlobFlags.firstpass ) {
                 out_msg( " Function %s parm %s found\n", scr_functions[funcind].fname, resbuf );
             }
 
             resolve_symvar_functions( resbuf );
 
             parms[k].stop = resbuf + strlen( resbuf );
-            if( input_cbs->fmflags & II_research && GlobalFlags.firstpass ) {
+            if( input_cbs->fmflags & II_research && WgmlGlobFlags.firstpass ) {
                 out_msg( " Function      parm %s return\n", resbuf );
             }
         } else {
@@ -344,7 +344,7 @@ char  * scr_multi_funcs( char * in, char * end, char ** result, int32_t valsize 
 
                 parms[m + k].stop = ps;
                 parms[m + k].start = resbuf;
-                if( input_cbs->fmflags & II_research && GlobalFlags.firstpass ) {
+                if( input_cbs->fmflags & II_research && WgmlGlobFlags.firstpass ) {
                     out_msg( " Function %s parm %s found\n",
                              scr_functions[funcind].fname, resbuf );
                 }
@@ -352,7 +352,7 @@ char  * scr_multi_funcs( char * in, char * end, char ** result, int32_t valsize 
                 resolve_symvar_functions( resbuf );
 
                 parms[m + k].stop = resbuf + strlen( resbuf );
-                if( input_cbs->fmflags & II_research && GlobalFlags.firstpass ) {
+                if( input_cbs->fmflags & II_research && WgmlGlobFlags.firstpass ) {
                     out_msg( " Function      parm %s return\n", resbuf );
                 }
             } else {
@@ -375,11 +375,11 @@ char  * scr_multi_funcs( char * in, char * end, char ** result, int32_t valsize 
         return( in + 1 );               // avoid endless loop
     }
 
-    ProcFlags.suppress_msg = multiletter_function;
+    WgmlProcFlags.suppress_msg = multiletter_function;
 
     cc = scr_functions[funcind].fun( parms, parmcount, result, valsize );
 
-    ProcFlags.suppress_msg = false;
+    WgmlProcFlags.suppress_msg = false;
 
     free_lines( in_wk );
 
@@ -388,12 +388,12 @@ char  * scr_multi_funcs( char * in, char * end, char ** result, int32_t valsize 
         *result += 1;
         **result = '\0';
 
-        ProcFlags.unresolved = true;
+        WgmlProcFlags.unresolved = true;
 
         return( in + 1 );
     }
 
-    ProcFlags.substituted = true;
+    WgmlProcFlags.substituted = true;
     return( pchar + 1 );                // all OK new scan position
 }
 

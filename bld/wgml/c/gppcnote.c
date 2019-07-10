@@ -40,7 +40,7 @@ void    proc_p_pc( p_lay_tag * p_pc )
     scan_err = false;
     p = scan_start;
 
-    ProcFlags.keep_left_margin = true;  //    special Note indent
+    WgmlProcFlags.keep_left_margin = true;  //    special Note indent
     start_doc_sect();                   // if not already done
 
     scr_process_break();
@@ -72,7 +72,7 @@ extern  void    gml_p( gml_tag gtag )
     /* unused parameters */ (void)gtag;
 
     proc_p_pc( &layout_work.p );
-    ProcFlags.empty_doc_el = true;  // for next break, not this tag's break
+    WgmlProcFlags.empty_doc_el = true;  // for next break, not this tag's break
 }
 
 /***************************************************************************/
@@ -115,7 +115,7 @@ extern  void    gml_note( gml_tag gtag )
         g_cur_left += conv_hor_unit( &layout_work.note.left_indent );
     }
     g_cur_h_start = g_cur_left;
-    ProcFlags.keep_left_margin = true;  // keep special Note indent
+    WgmlProcFlags.keep_left_margin = true;  // keep special Note indent
 
     start_line_with_string( layout_work.note.string, layout_work.note.font, false );
 
@@ -140,7 +140,7 @@ extern  void    gml_note( gml_tag gtag )
     if( *p ) {                          // if text follows
         post_space = 0;
         process_text( p, g_curr_font );
-    } else if( !ProcFlags.concat && ProcFlags.has_aa_block &&
+    } else if( !WgmlProcFlags.concat && WgmlProcFlags.has_aa_block &&
                (t_line != NULL) && (post_space > 0) ) {
 
         /* only create marker if line not empty,                            */

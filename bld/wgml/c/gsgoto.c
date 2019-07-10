@@ -350,7 +350,7 @@ void    scr_go( void )
     int             k;
 
     input_cbs->if_cb->if_level = 0;     // .go terminates
-    ProcFlags.keep_ifstate = false;     // ... all .if controls
+    WgmlProcFlags.keep_ifstate = false;     // ... all .if controls
 
     garginit();
 
@@ -432,7 +432,7 @@ void    scr_go( void )
     free_lines( input_cbs->hidden_head );   // delete split line
     input_cbs->hidden_head = NULL;
     input_cbs->hidden_tail = NULL;
-    ProcFlags.goto_active = true;       // special goto processing
+    WgmlProcFlags.goto_active = true;       // special goto processing
     scan_restart = scan_stop;
 
 }

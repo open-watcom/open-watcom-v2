@@ -93,9 +93,9 @@ void    scr_li( void )
     }
     len = p - pa;
     if( len == 0 ) {                    // omitted means 1 = next line
-        if( !ProcFlags.literal ) {
+        if( !WgmlProcFlags.literal ) {
             li_cnt = 1;
-            ProcFlags.literal = true;
+            WgmlProcFlags.literal = true;
             scan_restart = pa;
         }
     } else {
@@ -108,15 +108,15 @@ void    scr_li( void )
             switch( len ) {
             case 2 :
                 if( !strnicmp( "ON", pa, 2 ) ) {
-                    if( !ProcFlags.literal ) {
+                    if( !WgmlProcFlags.literal ) {
                         li_cnt = LONG_MAX;
-                        ProcFlags.literal = true;
+                        WgmlProcFlags.literal = true;
                         scan_restart = pa + 2;
                     }
                 } else {
-                    if( !ProcFlags.literal ) {
+                    if( !WgmlProcFlags.literal ) {
                         li_cnt = 1;
-                        ProcFlags.literal = true;
+                        WgmlProcFlags.literal = true;
                         split_input( scan_start, pa, false );
                         scan_restart = pa;
                     }
@@ -124,31 +124,31 @@ void    scr_li( void )
                 break;
             case 3 :
                 if( !strnicmp( "OFF", pa, 3 ) ) {
-                    ProcFlags.literal = false;
+                    WgmlProcFlags.literal = false;
                     scan_restart = pa + 3;
                 } else {
-                    if( !ProcFlags.literal ) {
+                    if( !WgmlProcFlags.literal ) {
                         li_cnt = 1;
-                        ProcFlags.literal = true;
+                        WgmlProcFlags.literal = true;
                         split_input( scan_start, pa, false );
                         scan_restart = pa;
                     }
                 }
                 break;
             default:
-                if( !ProcFlags.literal ) {
+                if( !WgmlProcFlags.literal ) {
                     li_cnt = 1;
-                    ProcFlags.literal = true;
+                    WgmlProcFlags.literal = true;
                     split_input( scan_start, pa, false );
                     scan_restart = pa;
                 }
                 break;
             }
         } else {                        // .li 1234
-            if( !ProcFlags.literal ) {
+            if( !WgmlProcFlags.literal ) {
                 if( gn.result > 0 ) {
                     li_cnt = gn.result;
-                    ProcFlags.literal = true;
+                    WgmlProcFlags.literal = true;
                     scan_restart = gn.argstart;
                 }
             } else {

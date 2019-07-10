@@ -539,13 +539,13 @@ void    lay_dl( lay_tag ltag )
     p = scan_start;
     cvterr = false;
 
-    if( !GlobalFlags.firstpass ) {
+    if( !WgmlGlobFlags.firstpass ) {
         scan_start = scan_stop;
         eat_lay_sub_tag();
         return;                         // process during first pass only
     }
-    if( ProcFlags.lay_xxx != el_dl ) {
-        ProcFlags.lay_xxx = el_dl;
+    if( WgmlProcFlags.lay_xxx != el_dl ) {
+        WgmlProcFlags.lay_xxx = el_dl;
     }
     cc = get_lay_sub_and_value( &l_args );  // get att with value
     while( cc == pos ) {
@@ -635,13 +635,13 @@ void    lay_gl( lay_tag ltag )
     p = scan_start;
     cvterr = false;
 
-    if( !GlobalFlags.firstpass ) {
+    if( !WgmlGlobFlags.firstpass ) {
         scan_start = scan_stop;
         eat_lay_sub_tag();
         return;                         // process during first pass only
     }
-    if( ProcFlags.lay_xxx != el_gl ) {
-        ProcFlags.lay_xxx = el_gl;
+    if( WgmlProcFlags.lay_xxx != el_gl ) {
+        WgmlProcFlags.lay_xxx = el_gl;
     }
     cc = get_lay_sub_and_value( &l_args );  // get att with value
     while( cc == pos ) {
@@ -727,13 +727,13 @@ void    lay_ol( lay_tag ltag )
     p = scan_start;
     cvterr = false;
 
-    if( !GlobalFlags.firstpass ) {
+    if( !WgmlGlobFlags.firstpass ) {
         scan_start = scan_stop;
         eat_lay_sub_tag();
         return;                         // process during first pass only
     }
-    if( ProcFlags.lay_xxx != el_ol ) {
-        ProcFlags.lay_xxx = el_ol;
+    if( WgmlProcFlags.lay_xxx != el_ol ) {
+        WgmlProcFlags.lay_xxx = el_ol;
     }
     cc = get_lay_sub_and_value( &l_args );  // get att with value
     while( cc == pos ) {
@@ -832,13 +832,13 @@ void    lay_sl( lay_tag ltag )
     p = scan_start;
     cvterr = false;
 
-    if( !GlobalFlags.firstpass ) {
+    if( !WgmlGlobFlags.firstpass ) {
         scan_start = scan_stop;
         eat_lay_sub_tag();
         return;                         // process during first pass only
     }
-    if( ProcFlags.lay_xxx != el_sl ) {
-        ProcFlags.lay_xxx = el_sl;
+    if( WgmlProcFlags.lay_xxx != el_sl ) {
+        WgmlProcFlags.lay_xxx = el_sl;
     }
     cc = get_lay_sub_and_value( &l_args );  // get att with value
     while( cc == pos ) {
@@ -924,13 +924,13 @@ void    lay_ul( lay_tag ltag )
     p = scan_start;
     cvterr = false;
 
-    if( !GlobalFlags.firstpass ) {
+    if( !WgmlGlobFlags.firstpass ) {
         scan_start = scan_stop;
         eat_lay_sub_tag();
         return;                         // process during first pass only
     }
-    if( ProcFlags.lay_xxx != el_ul ) {
-        ProcFlags.lay_xxx = el_ul;
+    if( WgmlProcFlags.lay_xxx != el_ul ) {
+        WgmlProcFlags.lay_xxx = el_ul;
     }
     cc = get_lay_sub_and_value( &l_args );  // get att with value
     while( cc == pos ) {

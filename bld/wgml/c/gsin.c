@@ -164,7 +164,7 @@ void    scr_in( void )
     g_indentr = newindentr;
 
     g_page_right = g_page_right_org + g_indentr;
-    ProcFlags.keep_left_margin = false;
+    WgmlProcFlags.keep_left_margin = false;
     set_h_start();                      // apply new values
     scan_restart = p;
     return;

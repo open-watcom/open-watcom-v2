@@ -1993,7 +1993,7 @@ static  void    put_layout( char * in_name, layout_data * lay )
     }
 
     fprintf( layfile, ":LAYOUT\n" );
-//  if( GlobalFlags.research ) {
+//  if( WgmlGlobFlags.research ) {
         find_symvar( &global_dict, "$version", no_subscript, &sversion );
         fprintf( layfile, ":cmt. Created with %s\n", sversion->value );
 //  }
@@ -2072,8 +2072,8 @@ void    lay_convert( lay_tag ltag )
     p = scan_start;
     scan_start = scan_stop;
 
-    if( !GlobalFlags.firstpass ) {
-        ProcFlags.layout = true;
+    if( !WgmlGlobFlags.firstpass ) {
+        WgmlProcFlags.layout = true;
         return;                         // process during first pass only
     }
     while( *p == ' ' ) {

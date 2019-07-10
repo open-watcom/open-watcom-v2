@@ -55,8 +55,8 @@ void    gml_graphic( gml_tag gtag )
     int32_t         yoff                    = 0;
     size_t          len;
 
-    if( (ProcFlags.doc_sect < doc_sect_gdoc) ) {
-        if( (ProcFlags.doc_sect_nxt < doc_sect_gdoc) ) {
+    if( (WgmlProcFlags.doc_sect < doc_sect_gdoc) ) {
+        if( (WgmlProcFlags.doc_sect_nxt < doc_sect_gdoc) ) {
             xx_tag_err( err_tag_before_gdoc, gml_tagname( gtag ) );
             scan_start = scan_stop;
             return;
@@ -76,7 +76,7 @@ void    gml_graphic( gml_tag gtag )
                     process_line();
                     if( (*scan_start == SCR_char) ||    // cw found: end-of-tag
                         (*scan_start == GML_char) ) {   // tag found: end-of-tag
-                        ProcFlags.tag_end_found = true;
+                        WgmlProcFlags.tag_end_found = true;
                         break;
                     } else {
                         p = scan_start; // new line is part of current tag
@@ -101,7 +101,7 @@ void    gml_graphic( gml_tag gtag )
             if( (rt_buff[0] != '\0') ) {
                 xx_warn( wng_rec_type_graphic );
             }
-            if( ProcFlags.tag_end_found ) {
+            if( WgmlProcFlags.tag_end_found ) {
                 break;
             }
         } else if( !strnicmp( "depth", p, 5 ) ) {
@@ -121,7 +121,7 @@ void    gml_graphic( gml_tag gtag )
                 scan_start = scan_stop;
                 return;
             }
-            if( ProcFlags.tag_end_found ) {
+            if( WgmlProcFlags.tag_end_found ) {
                 break;
             }
         } else if( !strnicmp( "width", p, 5 ) ) {
@@ -147,7 +147,7 @@ void    gml_graphic( gml_tag gtag )
                 }
                 /* there should be a check somewhere for width > page width */
             }
-            if( ProcFlags.tag_end_found ) {
+            if( WgmlProcFlags.tag_end_found ) {
                 break;
             }
         } else if( !strnicmp( "scale", p, 5 ) ) {
@@ -180,7 +180,7 @@ void    gml_graphic( gml_tag gtag )
                 scan_start = scan_stop;
                 return;
             }
-            if( ProcFlags.tag_end_found ) {
+            if( WgmlProcFlags.tag_end_found ) {
                 break;
             }
         } else if( !strnicmp( "xoff", p, 4 ) ) {
@@ -193,7 +193,7 @@ void    gml_graphic( gml_tag gtag )
                 return;
             }
             xoff = conv_hor_unit( &cur_su );
-            if( ProcFlags.tag_end_found ) {
+            if( WgmlProcFlags.tag_end_found ) {
                 break;
             }
         } else if( !strnicmp( "yoff", p, 4 ) ) {
@@ -206,11 +206,11 @@ void    gml_graphic( gml_tag gtag )
                 return;
             }
             yoff = conv_vert_unit( &cur_su, g_spacing_ln );
-            if( ProcFlags.tag_end_found ) {
+            if( WgmlProcFlags.tag_end_found ) {
                 break;
             }
         } else {    // no match = end-of-tag in wgml 4.0
-            ProcFlags.tag_end_found = true;
+            WgmlProcFlags.tag_end_found = true;
             break;
         }
     }
@@ -225,7 +225,7 @@ void    gml_graphic( gml_tag gtag )
 
     cur_el = alloc_doc_el( el_graph );
     cur_el->depth = depth;              // always used with GRAPHIC
-    if( !ProcFlags.ps_device ) {        // character devices ignore SK & post_skip
+    if( !WgmlProcFlags.ps_device ) {        // character devices ignore SK & post_skip
         g_skip = 0;
         g_post_skip = 0;
     }
@@ -242,7 +242,7 @@ void    gml_graphic( gml_tag gtag )
     cur_el->element.graph.width = width;
     cur_el->element.graph.xoff = xoff;
     cur_el->element.graph.yoff = yoff;
-    ProcFlags.skips_valid = false;
+    WgmlProcFlags.skips_valid = false;
     memcpy( cur_el->element.graph.file, file, len + 1 );
     insert_col_main( cur_el );
 

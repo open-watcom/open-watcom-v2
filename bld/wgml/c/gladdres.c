@@ -120,13 +120,13 @@ void    lay_address( lay_tag ltag )
     p = scan_start;
     cvterr = false;
 
-    if( !GlobalFlags.firstpass ) {
+    if( !WgmlGlobFlags.firstpass ) {
         scan_start = scan_stop;
         eat_lay_sub_tag();
         return;                         // process during first pass only
     }
-    if( ProcFlags.lay_xxx != el_address ) {
-        ProcFlags.lay_xxx = el_address;
+    if( WgmlProcFlags.lay_xxx != el_address ) {
+        WgmlProcFlags.lay_xxx = el_address;
     }
     cc = get_lay_sub_and_value( &l_args );  // get att with value
     while( cc == pos ) {
@@ -200,13 +200,13 @@ void    lay_aline( lay_tag ltag )
     p = scan_start;
     cvterr = false;
 
-    if( !GlobalFlags.firstpass ) {
+    if( !WgmlGlobFlags.firstpass ) {
         scan_start = scan_stop;
         eat_lay_sub_tag();
         return;                         // process during first pass only
     }
-    if( ProcFlags.lay_xxx != el_aline ) {
-        ProcFlags.lay_xxx = el_aline;
+    if( WgmlProcFlags.lay_xxx != el_aline ) {
+        WgmlProcFlags.lay_xxx = el_aline;
     }
     cc = get_lay_sub_and_value( &l_args );  // get att with value
     while( cc == pos ) {

@@ -203,7 +203,7 @@ void init_ref_entry( ref_entry * re, char * id, size_t len )
         re->lineno = input_cbs->s.f->lineno;
     }
     re->u.info.number = 0;
-    if( ProcFlags.page_started ) {
+    if( WgmlProcFlags.page_started ) {
         re->u.info.pageno = page;
     } else {
         re->u.info.pageno = page + 1;

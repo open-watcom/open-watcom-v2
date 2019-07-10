@@ -123,7 +123,7 @@ void    lay_tochx( lay_tag ltag )
 
     p = scan_start;
 
-    if( !GlobalFlags.firstpass ) {
+    if( !WgmlGlobFlags.firstpass ) {
         scan_start = scan_stop;
         eat_lay_sub_tag();
         return;                         // process during first pass only
@@ -156,8 +156,8 @@ void    lay_tochx( lay_tag ltag )
         err_count++;
         break;
     }
-    if( ProcFlags.lay_xxx != hx_l ) {
-        ProcFlags.lay_xxx = hx_l;
+    if( WgmlProcFlags.lay_xxx != hx_l ) {
+        WgmlProcFlags.lay_xxx = hx_l;
     }
 
     hx = hx_l - el_toch0;     // construct TOCHx level

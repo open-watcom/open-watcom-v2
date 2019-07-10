@@ -887,7 +887,7 @@ char * get_att_value( char * p )
 {
     char        quote;
 
-    ProcFlags.tag_end_found = false;
+    WgmlProcFlags.tag_end_found = false;
     quote_char = '\0';
     val_start = NULL;
     val_len = 0;
@@ -901,7 +901,7 @@ char * get_att_value( char * p )
         }
     } else {
         if( *p == '.' ) {
-            ProcFlags.tag_end_found = true;
+            WgmlProcFlags.tag_end_found = true;
         }
         xx_line_err( err_eq_missing, p );
         scan_start = scan_stop;
@@ -909,7 +909,7 @@ char * get_att_value( char * p )
     }
     if( (*p == '\0') || (*p == '.') ) { // value is missing
         if( *p == '.' ) {
-            ProcFlags.tag_end_found = true;
+            WgmlProcFlags.tag_end_found = true;
         }
         xx_line_err( err_att_val_missing, p );
         scan_start = scan_stop;
@@ -954,7 +954,7 @@ char * get_att_value( char * p )
         val_len = p - val_start;
     }
     if( *p == '.' ) {
-        ProcFlags.tag_end_found = true;
+        WgmlProcFlags.tag_end_found = true;
     }
     return( p );
 }
@@ -1079,7 +1079,7 @@ void    start_line_with_string( const char *text, font_number font, bool leave_1
     /***********************************************************/
 
     if( n_char->x_address + n_char->width > g_page_right ) {
-        process_line_full( t_line, ProcFlags.concat );
+        process_line_full( t_line, WgmlProcFlags.concat );
         t_line = alloc_text_line();
         n_char->x_address = g_cur_h_start;
     }
@@ -1092,7 +1092,7 @@ void    start_line_with_string( const char *text, font_number font, bool leave_1
         t_line->first = n_char;
         t_line->line_height = wgml_fonts[font].line_height;
         ju_x_start = n_char->x_address;
-        ProcFlags.line_started = true;
+        WgmlProcFlags.line_started = true;
     } else {
         t_line->last->next = n_char;
         n_char->prev = t_line->last;

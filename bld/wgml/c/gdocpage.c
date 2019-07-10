@@ -77,36 +77,36 @@ static void do_el_list_out( doc_element * array, unsigned char count )
             if( i == 0 ) {      // restrict output to first column, for now
                 switch( cur_el->type ) {
                 case el_binc :
-                    if( GlobalFlags.lastpass ) {
+                    if( WgmlGlobFlags.lastpass ) {
                         ob_binclude( &cur_el->element.binc );
                     }
                     break;
                 case el_dbox :  // should only be found if DBOX block exists
-                    if( GlobalFlags.lastpass ) {
+                    if( WgmlGlobFlags.lastpass ) {
                         fb_dbox( &cur_el->element.dbox );
                     }
                     break;
                 case el_graph :
-                    if( GlobalFlags.lastpass ) {
-                        if( ProcFlags.ps_device ) {   // only available to PS device
+                    if( WgmlGlobFlags.lastpass ) {
+                        if( WgmlProcFlags.ps_device ) {   // only available to PS device
                             ob_graphic( &cur_el->element.graph );
                         }
                     }
                     break;
                 case el_hline :  // should only be found if HLINE block exists
-                    if( GlobalFlags.lastpass ) {
+                    if( WgmlGlobFlags.lastpass ) {
                         fb_hline( &cur_el->element.hline );
                     }
                     break;
                 case el_text :
-                    if( GlobalFlags.lastpass ) {
+                    if( WgmlGlobFlags.lastpass ) {
                         for( cur_line = cur_el->element.text.first; cur_line != NULL; cur_line = cur_line ->next ) {
                             fb_output_textline( cur_line );
                         }
                     }
                     break;
                 case el_vline :  // should only be found if VLINE block exists
-                    if( GlobalFlags.lastpass ) {
+                    if( WgmlGlobFlags.lastpass ) {
                         fb_vline( &cur_el->element.vline );
                     }
                     break;
@@ -142,20 +142,20 @@ static void set_v_positions( doc_element * list, spacing_bu v_start )
         if( cur_el->type == el_text ) {
             cur_spacing += cur_el->element.text.spacing;
         }
-        if( !ProcFlags.page_started ) {
+        if( !WgmlProcFlags.page_started ) {
             if( cur_el->blank_lines > 0 ) {
                 cur_spacing = cur_el->blank_lines + cur_el->subs_skip;
             } else {
                 cur_spacing = cur_el->top_skip;
             }
-            ProcFlags.page_started = true;
+            WgmlProcFlags.page_started = true;
         } else {
             cur_spacing += cur_el->subs_skip;
         }
 
         switch( cur_el->type ) {
         case el_binc :
-            cur_el->element.binc.at_top = !ProcFlags.page_started &&
+            cur_el->element.binc.at_top = !WgmlProcFlags.page_started &&
                                           (t_page.top_banner == NULL);
             if( bin_driver->y_positive == 0x00 ) {
                 g_cur_v_start -= cur_spacing;
@@ -183,7 +183,7 @@ static void set_v_positions( doc_element * list, spacing_bu v_start )
             }
             break;
         case el_graph :
-            cur_el->element.graph.at_top = !ProcFlags.page_started &&
+            cur_el->element.graph.at_top = !WgmlProcFlags.page_started &&
                                           (t_page.top_banner == NULL);
             if( bin_driver->y_positive == 0x00 ) {
                 g_cur_v_start -= cur_spacing;
@@ -214,7 +214,7 @@ static void set_v_positions( doc_element * list, spacing_bu v_start )
             for( cur_line = cur_el->element.text.first; cur_line != NULL;
                                                 cur_line = cur_line->next ) {
                 cur_spacing += cur_line->line_height;
-                if( ProcFlags.page_started ) {          // not first element
+                if( WgmlProcFlags.page_started ) {          // not first element
                     if( cur_el->element.text.overprint ) {
                         cur_spacing -= cur_line->line_height;   // overprint
                         cur_el->element.text.overprint = false;
@@ -478,7 +478,7 @@ static void update_t_page( void )
             if( (t_page.cur_depth + cur_el->blank_lines) >= t_page.max_depth ) {
                 cur_el->blank_lines -= (t_page.max_depth - t_page.cur_depth);
                 break;
-            } else if( !ProcFlags.page_started
+            } else if( !WgmlProcFlags.page_started
               && ((t_page.cur_depth + cur_el->blank_lines + cur_el->top_skip) >= t_page.max_depth) ) {
                 cur_el->top_skip -= (t_page.max_depth - t_page.cur_depth);
                 cur_el->top_skip += cur_el->blank_lines;
@@ -490,13 +490,13 @@ static void update_t_page( void )
             }
         }
 
-        if( !ProcFlags.page_started ) {
+        if( !WgmlProcFlags.page_started ) {
             if( cur_el->blank_lines > 0 ) {
                 depth += cur_el->blank_lines + cur_el->subs_skip;
             } else {
                 depth += cur_el->top_skip;
             }
-            ProcFlags.page_started = true;
+            WgmlProcFlags.page_started = true;
         } else {
             depth += cur_el->blank_lines + cur_el->subs_skip;
         }
@@ -614,7 +614,7 @@ void do_page_out( void )
 
     /* Set up for the new page */
 
-    if( apage && GlobalFlags.lastpass ) {   // don't do before first page
+    if( apage && WgmlGlobFlags.lastpass ) {   // don't do before first page
        fb_document_page();                  // NEWPAGE is interpreted here
     }
     apage++;
@@ -623,7 +623,7 @@ void do_page_out( void )
     /* Get the banner text into the proper sections */
 
 // this was document_top_banner()
-    if( ProcFlags.keep_left_margin ) {
+    if( WgmlProcFlags.keep_left_margin ) {
         hs = g_cur_h_start;
         hl = g_cur_left;
     }
@@ -634,7 +634,7 @@ void do_page_out( void )
         out_ban_top();
     }
 
-    if( ProcFlags.keep_left_margin ) {
+    if( WgmlProcFlags.keep_left_margin ) {
         g_cur_h_start = hs;
         g_cur_left = hl;
     }
@@ -646,7 +646,7 @@ void do_page_out( void )
 
     /* Output the page section by section */
 
-    ProcFlags.page_started = false;
+    WgmlProcFlags.page_started = false;
     if( t_page.top_ban != NULL ) {
         do_ban_column_out( t_page.top_ban, g_page_top_org );
         add_ban_col_to_pool( t_page.top_ban );
@@ -708,7 +708,7 @@ void insert_col_bot( doc_element * a_element )
     /*  if no space exists, append a_element to n_page.last_col_bot     */
     /*  note: "entrainment" of BOTTOM FIG by TOP FIG is ignored         */
 
-    if( !ProcFlags.page_started ) {
+    if( !WgmlProcFlags.page_started ) {
         depth = a_element->top_skip;
     } else {
         depth = a_element->subs_skip;
@@ -775,7 +775,7 @@ void insert_col_fn( doc_element * a_element )
     /*  if no space exists, append a_element to n_page.last_col_fn      */
     /*  note: "entrainment" of FN by FIG is ignored                     */
 
-    if( !ProcFlags.page_started ) { // first element ignores pre_skip TBD
+    if( !WgmlProcFlags.page_started ) { // first element ignores pre_skip TBD
         depth = a_element->top_skip;
     } else {
         depth = a_element->subs_skip;
@@ -841,7 +841,7 @@ void insert_col_main( doc_element * a_element )
     /*  used currenlty by ADDRESS/eADDRESS                          */
     /****************************************************************/
 
-    if( ProcFlags.group_elements ) {
+    if( WgmlProcFlags.group_elements ) {
         if( t_doc_el_group.first == NULL ) {
             t_doc_el_group.first = a_element;
             t_doc_el_group.last = t_doc_el_group.first;
@@ -872,7 +872,7 @@ void insert_col_main( doc_element * a_element )
         if( (t_page.cur_depth + a_element->blank_lines) >= t_page.max_depth ) {
             a_element->blank_lines -= (t_page.max_depth - t_page.cur_depth);
             page_full = true;
-        } else if( !ProcFlags.page_started
+        } else if( !WgmlProcFlags.page_started
           && ((t_page.cur_depth + a_element->blank_lines + a_element->top_skip) >= t_page.max_depth) ) {
             a_element->top_skip -= (t_page.max_depth - t_page.cur_depth);
             a_element->top_skip += a_element->blank_lines;
@@ -882,7 +882,7 @@ void insert_col_main( doc_element * a_element )
             a_element->blank_lines = 0;
             page_full = true;
         }
-    } else if( !ProcFlags.page_started ) {
+    } else if( !WgmlProcFlags.page_started ) {
         if( a_element->top_skip >= t_page.max_depth ) {
             a_element->top_skip -= t_page.max_depth;
             page_full = true;
@@ -897,13 +897,13 @@ void insert_col_main( doc_element * a_element )
         /*  may still fill the page                                     */
         /****************************************************************/
 
-        if( !ProcFlags.page_started ) {
+        if( !WgmlProcFlags.page_started ) {
             if( a_element->blank_lines > 0 ) {
                 cur_skip = a_element->blank_lines + a_element->subs_skip;
             } else {
                 cur_skip = a_element->top_skip;
             }
-            ProcFlags.page_started = true;
+            WgmlProcFlags.page_started = true;
         } else {
             cur_skip = a_element->blank_lines + a_element->subs_skip;
         }
@@ -997,9 +997,9 @@ void insert_page_width( doc_element * a_element )
 
     /* depth is used to update t_page.cur_depth and so must be kept separate */
 
-    if( !ProcFlags.page_started ) {
+    if( !WgmlProcFlags.page_started ) {
         depth = a_element->top_skip;
-        ProcFlags.page_started = true;
+        WgmlProcFlags.page_started = true;
     } else {
         depth = a_element->subs_skip;
     }
@@ -1094,7 +1094,7 @@ void reset_t_page( void )
     t_page.last_col_main = NULL;
     t_page.last_col_bot = NULL;
     t_page.last_col_fn = NULL;
-    ProcFlags.page_started = false;
+    WgmlProcFlags.page_started = false;
 }
 
 
@@ -1152,7 +1152,7 @@ void set_skip_vars( const su *pre_skip, const su *pre_top_skip, const su *post_s
     g_blank_lines = g_blank_lines_ln * wgml_fonts[font].line_height;
     g_blank_lines_ln = 0;
     g_spacing = ( spacing_ln - 1 ) * wgml_fonts[font].line_height;
-    ProcFlags.skips_valid = true;
+    WgmlProcFlags.skips_valid = true;
 
     return;
 }

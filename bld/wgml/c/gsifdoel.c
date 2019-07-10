@@ -83,7 +83,7 @@ void    show_ifcb( char * txt, ifcb * cb ) {
              cb->if_flags[cb->if_level].ifcwif,
              cb->if_flags[cb->if_level].ifcwte,
              cb->if_flags[cb->if_level].ifcwdo,
-             ProcFlags.keep_ifstate
+             WgmlProcFlags.keep_ifstate
           );
     }
 }
@@ -531,7 +531,7 @@ void    scr_if( void )
             }
         }
     }
-    if( input_cbs->fmflags & II_research && GlobalFlags.firstpass ) {
+    if( input_cbs->fmflags & II_research && WgmlGlobFlags.firstpass ) {
           show_ifcb( "if", cb );
 #if 0
           out_msg( "\t.if is %s Level %d\n"
@@ -611,8 +611,8 @@ void    scr_th( void )
     }
     cb->if_flags[cb->if_level].iflast = false;
     cb->if_flags[cb->if_level].ifthen = true;
-    ProcFlags.keep_ifstate = true;
-    if( input_cbs->fmflags & II_research && GlobalFlags.firstpass ) {
+    WgmlProcFlags.keep_ifstate = true;
+    if( input_cbs->fmflags & II_research && WgmlGlobFlags.firstpass ) {
         show_ifcb( "then", cb );
     }
 
@@ -679,8 +679,8 @@ void    scr_el( void )
         return;
     }
     cb->if_flags[cb->if_level].ifelse = true;
-    ProcFlags.keep_ifstate = true;
-    if( input_cbs->fmflags & II_research && GlobalFlags.firstpass ) {
+    WgmlProcFlags.keep_ifstate = true;
+    if( input_cbs->fmflags & II_research && WgmlGlobFlags.firstpass ) {
         show_ifcb( "else", cb );
     }
     garginit();                         // find end of control word
@@ -742,14 +742,14 @@ void    scr_do( void )
             return;
         }
         cb->if_flags[cb->if_level].ifdo = true;
-        if( input_cbs->fmflags & II_research && GlobalFlags.firstpass ) {
+        if( input_cbs->fmflags & II_research && WgmlGlobFlags.firstpass ) {
             show_ifcb( "dobegin", cb );
         }
         scan_restart = scan_stop;
         return;
     } else {
         if( !strnicmp( tok_start, "end", 3 )) {
-            if( input_cbs->fmflags & II_research && GlobalFlags.firstpass ) {
+            if( input_cbs->fmflags & II_research && WgmlGlobFlags.firstpass ) {
                 show_ifcb( "doend", cb );
             }
             do {                            // loop for last active .do begin
@@ -758,7 +758,7 @@ void    scr_do( void )
 
                     cb->if_flags[cb->if_level].ifdo = false;
                     if( input_cbs->fmflags & II_research &&
-                        GlobalFlags.firstpass ) {
+                        WgmlGlobFlags.firstpass ) {
                         show_ifcb( "doend", cb );
                     }
                     scan_restart = scan_stop;
@@ -780,7 +780,7 @@ void    scr_do( void )
 
             } while( cb->if_level-- > 0 );
 #if 0
-            if( input_cbs->fmflags & II_research && GlobalFlags.firstpass ) {
+            if( input_cbs->fmflags & II_research && WgmlGlobFlags.firstpass ) {
                 out_msg( "\t.do end Level %d\n"
                          "\t.ifcb iftrue %d, iffalse %d\n",
                          cb->if_level,
@@ -797,7 +797,7 @@ void    scr_do( void )
             return;
         }
     }
-    if( input_cbs->fmflags & II_research && GlobalFlags.firstpass ) {
+    if( input_cbs->fmflags & II_research && WgmlGlobFlags.firstpass ) {
         show_ifcb( "do xx", cb );
     }
     scan_restart = scan_stop;

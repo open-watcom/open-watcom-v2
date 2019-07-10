@@ -98,8 +98,8 @@ void  scr_process_break( void )
     if( t_line != NULL ) {
         if( t_line->first != NULL ) {
             /* the last line is not justified, but is right-aligned or centered */
-            process_line_full( t_line, ((ProcFlags.justify != ju_off) &&
-                (ProcFlags.justify != ju_on) && (ProcFlags.justify != ju_half)) );
+            process_line_full( t_line, ((WgmlProcFlags.justify != ju_off) &&
+                (WgmlProcFlags.justify != ju_on) && (WgmlProcFlags.justify != ju_half)) );
             t_line = NULL;
         }
     }
@@ -107,7 +107,7 @@ void  scr_process_break( void )
         insert_col_main( t_element );
         t_element = NULL;
         t_el_last = NULL;
-    } else if( ProcFlags.empty_doc_el ) {   // empty element needed?
+    } else if( WgmlProcFlags.empty_doc_el ) {   // empty element needed?
 
         t_element = alloc_doc_el( el_text );
         t_element->depth = wgml_fonts[g_curr_font].line_height + g_spacing;
@@ -115,13 +115,13 @@ void  scr_process_break( void )
         g_blank_lines = 0;
         t_element->subs_skip = g_subs_skip;
         t_element->top_skip = g_top_skip;
-        t_element->element.text.overprint = ProcFlags.overprint;
-        ProcFlags.overprint = false;
+        t_element->element.text.overprint = WgmlProcFlags.overprint;
+        WgmlProcFlags.overprint = false;
         t_element->element.text.first = alloc_text_line();
         t_element->element.text.first->line_height = wgml_fonts[g_curr_font].line_height;
         t_element->element.text.first->first = NULL;
         t_element->element.text.spacing = g_spacing;
-        ProcFlags.skips_valid = false;
+        WgmlProcFlags.skips_valid = false;
         insert_col_main( t_element );
 
         t_element = NULL;
@@ -134,20 +134,20 @@ void  scr_process_break( void )
         g_blank_lines = 0;
         t_element->subs_skip = g_subs_skip;
         t_element->top_skip = g_top_skip;
-        t_element->element.text.overprint = ProcFlags.overprint;
-        ProcFlags.overprint = false;
+        t_element->element.text.overprint = WgmlProcFlags.overprint;
+        WgmlProcFlags.overprint = false;
         t_element->element.text.first = alloc_text_line();
         t_element->element.text.first->line_height = wgml_fonts[g_curr_font].line_height;
         t_element->element.text.first->first = NULL;
         t_element->element.text.spacing = g_spacing;
-        ProcFlags.skips_valid = false;
+        WgmlProcFlags.skips_valid = false;
         insert_col_main( t_element );
 
         t_element = NULL;
         t_el_last = NULL;
 
     }
-    ProcFlags.empty_doc_el = false;
+    WgmlProcFlags.empty_doc_el = false;
     c_stop = NULL;
 
     return;

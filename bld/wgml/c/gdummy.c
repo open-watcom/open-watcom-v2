@@ -78,7 +78,7 @@ void    lay_dummy( lay_tag ltag )
 
     scan_start = scan_stop;
 
-    if( GlobalFlags.firstpass ) {       // layout msg only in pass 1
+    if( WgmlGlobFlags.firstpass ) {       // layout msg only in pass 1
         g_warn( wng_unsupp_lay, lay_tagname( ltag ) );
         wng_count++;
         show_include_stack();
