@@ -4,14 +4,13 @@
 #
 
 copy_tree()
+{
   for x in $2/*; do
     if [ -d "$x" ]; then
       copy_tree $1 "$x" $3
-    else 
-      if [ -f "$x" ] && [ "$x" == $3 ]; then
-        mkdir -p `dirname $1/$x`
-        cp $CP_OPTS "$x" "$1/$x" >>$OWBINDIR/cache1.log
-      fi
+    elif [ -f "$x" ] && [ "$x" == $3 ]; then
+      mkdir -p `dirname $1/$x`
+      cp $CP_OPTS "$x" "$1/$x" >>$OWBINDIR/cache1.log
     fi
   done
 }
