@@ -7,48 +7,43 @@ set -x
 copy_tree2()
 {
   for x in $1/*; do
-    if [ -d "$x" ]; then
-      copy_tree2 "$x" $2 $3
-    elif [ -f "$x" ] && [ "$x" == "$3" ]; then
-      f = $2/$x
-      d = `dirname "$f"`
-      if [ ! -d "$d" ]; then
-        mkdir -p "$d" >>$OWBINDIR/cache2.log
+    if [ -f "$x" ]; then
+      if [ "$x" == "$3" ]; then
+        f = $2/$x
+        d = `dirname "$f"`
+        if [ ! -d "$d" ]; then
+          mkdir -p "$d" >>$OWBINDIR/cache2.log
+        fi
+        cp $CP_OPTS "$x" "$f" >>$OWBINDIR/cache2.log
       fi
-      cp $CP_OPTS "$x" "$f" >>$OWBINDIR/cache2.log
+    elif [ -d "$x" ]; then
+      copy_tree2 "$x" $2 $3
     fi
   done
 }
 
 copy_tree2_lib()
 {
-  copy_tree2 . $1 "*.lib"
+  cd $OWSRCDIR/$1
+  copy_tree2 . $OWROOT/buildx/$1 *.lib
 }
 
 echo "save cache2" >$OWBINDIR/cache2.log
 #
-cd $OWSRCDIR/fpuemu
-copy_tree2 $OWROOT/buildx/fpuemu
+copy_tree2_lib fpuemu
 #
-cd $OWSRCDIR/wres
-copy_tree2 $OWROOT/buildx/wres
+copy_tree2_lib wres
 #
-cd $OWSRCDIR/orl
-copy_tree2 $OWROOT/buildx/orl
+copy_tree2_lib orl
 #
-cd $OWSRCDIR/owl
-copy_tree2 $OWROOT/buildx/owl
+copy_tree2_lib owl
 #
-cd $OWSRCDIR/dwarf
-copy_tree2 $OWROOT/buildx/dwarf
+copy_tree2_lib dwarf
 #
-cd $OWSRCDIR/cfloat
-copy_tree2 $OWROOT/buildx/cfloat
+copy_tree2_lib cfloat
 #
-cd $OWSRCDIR/commonui
-copy_tree2 $OWROOT/buildx/commonui
+copy_tree2_lib commonui
 #
-cd $OWSRCDIR/wpi
-copy_tree2 $OWROOT/buildx/wpi
+copy_tree2_lib wpi
 #
 cd $TRAVIS_BUILD_DIR
