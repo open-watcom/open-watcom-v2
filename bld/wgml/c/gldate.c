@@ -119,13 +119,13 @@ void    lay_date( lay_tag ltag )
     p = scan_start;
     cvterr = false;
 
-    if( !WgmlGlobFlags.firstpass ) {
+    if( !FlagsGlob.firstpass ) {
         scan_start = scan_stop;
         eat_lay_sub_tag();
         return;                         // process during first pass only
     }
-    if( WgmlProcFlags.lay_xxx != el_date ) {
-        WgmlProcFlags.lay_xxx = el_date;
+    if( FlagsProc.lay_xxx != el_date ) {
+        FlagsProc.lay_xxx = el_date;
     }
     cc = get_lay_sub_and_value( &l_args );  // get att with value
     while( cc == pos ) {

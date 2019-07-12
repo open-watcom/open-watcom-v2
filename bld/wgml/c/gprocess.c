@@ -139,7 +139,7 @@ static void split_at_GML_tag( void )
                 (*p2 == GML_char) ) ) { // 'good' tag end
 
             c = *p2;
-            if( WgmlProcFlags.layout && (c == '\t') ) {
+            if( FlagsProc.layout && (c == '\t') ) {
                 c = ' ';                // replace tab with space in layout
             }
             *p2 = '\0';                 // null terminate string
@@ -157,7 +157,7 @@ static void split_at_GML_tag( void )
                 if( input_cbs->fmflags & II_sol ) {
                 // remove spaces before tags at sol in restricted sections
                 // in or just before LAYOUT tag
-                    layoutsw = WgmlProcFlags.layout;
+                    layoutsw = FlagsProc.layout;
                     if( !layoutsw && (strncmp( "LAYOUT", pchar + 1, 6 ) == 0 ) ) {
                         layoutsw = true;
                     }
@@ -175,7 +175,7 @@ static void split_at_GML_tag( void )
                     }
                 }
                 split_input( buff2, pchar, false );// split line
-                if( WgmlProcFlags.literal ) {   // if literal active
+                if( FlagsProc.literal ) {   // if literal active
                     if( li_cnt < LONG_MAX ) {// we decrement, adjust for split line
                         li_cnt++;
                     }
@@ -244,7 +244,7 @@ static  bool    split_input_buffer( void )
     /*  look for GML tag start character and split line at GML tag         */
     /*  special for script control line: possibly split at CW_sep_char     */
     /***********************************************************************/
-    if( !WgmlProcFlags.literal && (*buff2 == SCR_char) ) {
+    if( !FlagsProc.literal && (*buff2 == SCR_char) ) {
         pchar = strchr( buff2 + 1, CW_sep_char );
         p2 = strchr( buff2 + 1, GML_char );
         if( pchar && (p2 > pchar) ) {// GML_char follows CW_sepchar in buffer
@@ -264,7 +264,7 @@ static  bool    split_input_buffer( void )
     }
     split_at_GML_tag();
 
-    if( !WgmlProcFlags.literal ) {
+    if( !FlagsProc.literal ) {
 
         /*******************************************************************/
         /* for :cmt. minimal processing                                    */
@@ -304,9 +304,9 @@ static  bool    split_input_buffer( void )
             /*  or if control word separator is 0x00                       */
             /***************************************************************/
             if( (*p2 == '\'') || (CW_sep_char == '\0') ) {
-                WgmlProcFlags.CW_sep_ignore = true;
+                FlagsProc.CW_sep_ignore = true;
             } else {
-                WgmlProcFlags.CW_sep_ignore = false;
+                FlagsProc.CW_sep_ignore = false;
 
                 split_at_CW_sep_char( NULL );
             }
@@ -345,8 +345,8 @@ bool    resolve_symvar_functions( char * buf )
     char            *   var_unresolved; // ptr for resume search
     char            *   var_unresolved2;// ptr for resume search
 
-    WgmlProcFlags.substituted = false;
-    WgmlProcFlags.unresolved  = false;
+    FlagsProc.substituted = false;
+    FlagsProc.unresolved  = false;
 
     if( NULL == strchr( buf, ampchar ) ) {  // look for & in buffer
         return( false );              // no ampchar found, nothing to resolve
@@ -374,8 +374,8 @@ bool    resolve_symvar_functions( char * buf )
         }
         varstart = NULL;
 
-        anything_substituted |= WgmlProcFlags.substituted;
-        WgmlProcFlags.substituted = false;
+        anything_substituted |= FlagsProc.substituted;
+        FlagsProc.substituted = false;
 
         pchar = strchr( workb, ampchar ); // look for & in buffer
         while( pchar != NULL ) {        // & found
@@ -410,7 +410,7 @@ bool    resolve_symvar_functions( char * buf )
                 /*                                                         */
                 /***********************************************************/
 
-                if( WgmlGlobFlags.firstpass && input_cbs->fmflags & II_research ) {
+                if( FlagsGlob.firstpass && input_cbs->fmflags & II_research ) {
                     add_single_func_research( pchar + 1 );
                 }
 
@@ -469,19 +469,19 @@ bool    resolve_symvar_functions( char * buf )
 
             varstart = pw;              // remember start of var
             pw++;                       // over &
-            WgmlProcFlags.suppress_msg = true;
+            FlagsProc.suppress_msg = true;
             scan_err = false;
 
             pchar = scan_sym( pw, &symvar_entry, &var_ind );
             if( scan_err && *pchar == '(' ) {   // problem with subscript
 
                 if( var_unresolved == NULL ) {
-                    WgmlProcFlags.unresolved  = true;
+                    FlagsProc.unresolved  = true;
                     var_unresolved = varstart;
                     var_unresolved2 = p2;
                 } else {
                     if( var_unresolved != varstart ) {
-                        WgmlProcFlags.unresolved  = true;
+                        FlagsProc.unresolved  = true;
                     }
                 }
                 p2 += pchar - varstart;
@@ -491,7 +491,7 @@ bool    resolve_symvar_functions( char * buf )
                 continue;
             }
 
-            WgmlProcFlags.suppress_msg = false;
+            FlagsProc.suppress_msg = false;
 
             if( symvar_entry.flags & local_var ) {  // lookup var in dict
                 rc = find_symvar_l( &input_cbs->local_dict, symvar_entry.name,
@@ -501,8 +501,8 @@ bool    resolve_symvar_functions( char * buf )
                                   &symsubval );
             }
             if( rc == 2 ) {             // variable found + resolved
-                WgmlProcFlags.substituted = true;
-                if( !WgmlProcFlags.CW_sep_ignore &&
+                FlagsProc.substituted = true;
+                if( !FlagsProc.CW_sep_ignore &&
                     symsubval->value[0] == CW_sep_char &&
                     symsubval->value[1] != CW_sep_char ) {
 
@@ -548,12 +548,12 @@ bool    resolve_symvar_functions( char * buf )
                                                 // followed by another var
 
                         if( var_unresolved == NULL ) {
-                            WgmlProcFlags.unresolved  = true;
+                            FlagsProc.unresolved  = true;
                             var_unresolved = varstart;
                             var_unresolved2 = p2;
                         } else {
                             if( var_unresolved != varstart ) {
-                                WgmlProcFlags.unresolved  = true;
+                                FlagsProc.unresolved  = true;
                             }
                         }
                         pw = varstart;
@@ -564,7 +564,7 @@ bool    resolve_symvar_functions( char * buf )
                         continue;       // pchar points already to next &
 
                     } else {     // replace not found local var by nullstring
-                        WgmlProcFlags.substituted = true;
+                        FlagsProc.substituted = true;
                         if( *pchar == '.' ) {
                             pchar++;    // skip optional terminating dot
                         }
@@ -592,12 +592,12 @@ bool    resolve_symvar_functions( char * buf )
                     /*******************************************************/
 
                     if( var_unresolved == NULL ) {
-                        WgmlProcFlags.unresolved  = true;
+                        FlagsProc.unresolved  = true;
                         var_unresolved = varstart;
                         var_unresolved2 = p2;
                     } else {
                         if( var_unresolved != varstart ) {
-                            WgmlProcFlags.unresolved  = true;
+                            FlagsProc.unresolved  = true;
                         }
                     }
 
@@ -618,9 +618,9 @@ bool    resolve_symvar_functions( char * buf )
         }
         *p2 = 0;                        // terminate string
 
-    } while( WgmlProcFlags.unresolved && WgmlProcFlags.substituted );
+    } while( FlagsProc.unresolved && FlagsProc.substituted );
 
-    anything_substituted |= WgmlProcFlags.substituted;
+    anything_substituted |= FlagsProc.substituted;
 
     mem_free( in_wk );                  // free workbuffer
     return( anything_substituted );
@@ -635,14 +635,14 @@ bool    resolve_symvar_functions( char * buf )
 void    classify_record( char c )
 {
     if( c == GML_char ) {               // classify input
-        WgmlProcFlags.gml_tag = true;
-        WgmlProcFlags.scr_cw = false;
+        FlagsProc.gml_tag = true;
+        FlagsProc.scr_cw = false;
     } else {
-        WgmlProcFlags.gml_tag = false;
+        FlagsProc.gml_tag = false;
         if( c == SCR_char ) {
-           WgmlProcFlags.scr_cw = true;
+           FlagsProc.scr_cw = true;
         } else {
-           WgmlProcFlags.scr_cw = false;
+           FlagsProc.scr_cw = false;
         }
     }
 }
@@ -660,7 +660,7 @@ static  bool    remove_leading_space( void )
     char    * p2;
     bool    removed = false;
 
-    if( WgmlProcFlags.literal ) {           // .li active
+    if( FlagsProc.literal ) {           // .li active
         return( false );                // don't change input
     }
     p = buff2;
@@ -702,7 +702,7 @@ void        process_line( void )
     } else {
         anything_substituted |= resolve_symvar_functions( buff2 );
 
-        if( input_cbs->fmflags & II_research && WgmlGlobFlags.firstpass &&
+        if( input_cbs->fmflags & II_research && FlagsGlob.firstpass &&
             anything_substituted ) {
             g_info_lm( inf_subst_line, buff2 ); // show line with substitution(s)
         }

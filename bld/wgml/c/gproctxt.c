@@ -101,7 +101,7 @@ static  void    puncadj( text_line * line, int32_t * delta0, int32_t rem,
         return;                         // only 1 text_chars no justify
     }
 
-    if( WgmlProcFlags.has_aa_block ) {
+    if( FlagsProc.has_aa_block ) {
         space /= 2;                     // TBD
 //      space -= 3;                     // TBD
     }
@@ -110,7 +110,7 @@ static  void    puncadj( text_line * line, int32_t * delta0, int32_t rem,
     delta = *delta0;
     loop_cnt = 3;                       // 3 passes
     while( loop_cnt > 2 && delta >= space ) {   // only 1 pass TBD
-        if( WgmlProcFlags.has_aa_block ) {
+        if( FlagsProc.has_aa_block ) {
             space = wgml_fonts[0].spc_width / 2;// TBD
 //          space += loop_cnt - 1;      // TBD
         }
@@ -942,7 +942,7 @@ void    do_justify( uint32_t lm, uint32_t rm, text_line * line )
     ju_enum         just;
     symsub  *       symjusub;         // for debug output string value of .ju
 
-    if( WgmlProcFlags.justify == ju_off || WgmlProcFlags.literal || line == NULL
+    if( FlagsProc.justify == ju_off || FlagsProc.literal || line == NULL
         || line->first == NULL) {
         return;
     }
@@ -954,7 +954,7 @@ void    do_justify( uint32_t lm, uint32_t rm, text_line * line )
     /***********************************************************************/
     /*  for PS device remainder decrement is treated differently      TBD  */
     /***********************************************************************/
-    if( WgmlProcFlags.has_aa_block ) {
+    if( FlagsProc.has_aa_block ) {
         deltarem = 1;                   // TBD was 2
     } else {
         deltarem = 1;
@@ -991,11 +991,11 @@ void    do_justify( uint32_t lm, uint32_t rm, text_line * line )
 
     /* both here and below, it is not clear if this should be rounded up */
     /* when delta0 is odd                                                */
-    if( WgmlProcFlags.justify == ju_half ) {
+    if( FlagsProc.justify == ju_half ) {
         delta0 /= 2;
     }
 
-    if( WgmlProcFlags.justify == ju_on ) {
+    if( FlagsProc.justify == ju_on ) {
         if( cnt < 2 ) {                 // one text_chars only, no full justify possible
             return;
         }
@@ -1008,7 +1008,7 @@ void    do_justify( uint32_t lm, uint32_t rm, text_line * line )
         rem   = delta0 % (cnt - 1);
     }
 
-    if( input_cbs->fmflags & II_research && WgmlGlobFlags.lastpass ) {
+    if( input_cbs->fmflags & II_research && FlagsGlob.lastpass ) {
         find_symvar( &sys_dict, "$ju", no_subscript, &symjusub);// .ju as string
 #if 0
         out_msg( "\n ju_%s lm:%d %d rm:%d sum_w:%d hor_end:%d"
@@ -1022,7 +1022,7 @@ void    do_justify( uint32_t lm, uint32_t rm, text_line * line )
     if( delta < 1 && rem < 1 ) {        // nothing to distribute
         return;
     }
-    switch( WgmlProcFlags.justify ) {       // convert inside / outside to left / right
+    switch( FlagsProc.justify ) {       // convert inside / outside to left / right
     case ju_inside :                    // depending on odd / even page
         if( page & 1 ) {
             just = ju_right;
@@ -1038,7 +1038,7 @@ void    do_justify( uint32_t lm, uint32_t rm, text_line * line )
         }
         break;
     default :
-        just = WgmlProcFlags.justify;
+        just = FlagsProc.justify;
         break;
     }
 
@@ -1064,7 +1064,7 @@ void    do_justify( uint32_t lm, uint32_t rm, text_line * line )
         delta0 = rm - hor_end;          // TBD
 
         /* if delta0 is recomputed, then it must also be re-halved */
-        if( WgmlProcFlags.justify == ju_half ) {
+        if( FlagsProc.justify == ju_half ) {
             delta0 /= 2;
         }
 
@@ -1076,7 +1076,7 @@ void    do_justify( uint32_t lm, uint32_t rm, text_line * line )
             rem   = delta0 % (cnt - 1);
         }
 
-        if( input_cbs->fmflags & II_research && WgmlGlobFlags.lastpass ) {
+        if( input_cbs->fmflags & II_research && FlagsGlob.lastpass ) {
             test_out_t_line( line );
 #if 0
             out_msg( "\n ju_%s lm:%d %d rm:%d sum_w:%d hor_end:%d"
@@ -1100,7 +1100,7 @@ void    do_justify( uint32_t lm, uint32_t rm, text_line * line )
             if( rem > 0 ) {             // distribute remainder, too
                 tw->x_address += delta + deltarem;
                 delta += delta1 + deltarem;
-//              if( !WgmlProcFlags.has_aa_block ) {      // TBD
+//              if( !FlagsProc.has_aa_block ) {      // TBD
                     rem -= deltarem;
 //              }
             } else {
@@ -1161,7 +1161,7 @@ size_t intrans( char *data, size_t len, font_number font )
     char    *pt;                        // target ptr
     size_t  k;
 
-    if( WgmlProcFlags.in_trans ) {
+    if( FlagsProc.in_trans ) {
         ps = data;
         pt = data;
         for( k = 0; k <= len; k++ ) {
@@ -1190,7 +1190,7 @@ size_t intrans( char *data, size_t len, font_number font )
 
 void set_h_start( void )
 {
-    if( !WgmlProcFlags.keep_left_margin ) {
+    if( !FlagsProc.keep_left_margin ) {
         g_cur_left = g_page_left + g_indent;
     }
     g_cur_h_start = g_cur_left;
@@ -1207,19 +1207,19 @@ void    process_line_full( text_line * a_line, bool justify )
     if( (a_line == NULL) || (a_line->first == NULL) ) { // why are we called?
         return;
     }
-    if( !WgmlProcFlags.start_section ) {
+    if( !FlagsProc.start_section ) {
         start_doc_sect();
     }
 
-    if( justify && WgmlGlobFlags.lastpass && !WgmlProcFlags.literal
-                                         && WgmlProcFlags.justify > ju_off ) {
+    if( justify && FlagsGlob.lastpass && !FlagsProc.literal
+                                         && FlagsProc.justify > ju_off ) {
         do_justify( ju_x_start, g_page_right, a_line );
     }
 
     if( t_element == NULL ) {
         t_element = alloc_doc_el( el_text );
 
-        if( !WgmlProcFlags.skips_valid) {
+        if( !FlagsProc.skips_valid) {
             set_skip_vars( NULL, NULL, NULL, 1, g_curr_font );
         }
         t_element->blank_lines = g_blank_lines;
@@ -1227,20 +1227,20 @@ void    process_line_full( text_line * a_line, bool justify )
         t_element->subs_skip = g_subs_skip;
         t_element->top_skip = g_top_skip;
         t_element->depth = a_line->line_height + g_spacing;
-        t_element->element.text.overprint = WgmlProcFlags.overprint;
-        WgmlProcFlags.overprint = false;
+        t_element->element.text.overprint = FlagsProc.overprint;
+        FlagsProc.overprint = false;
         t_element->element.text.spacing = g_spacing;
         t_element->element.text.first = a_line;
         t_el_last = t_element->element.text.first;
-        WgmlProcFlags.skips_valid = false;
+        FlagsProc.skips_valid = false;
     } else {
         t_element->depth += a_line->line_height + t_element->element.text.spacing;
         t_el_last->next = a_line;
         t_el_last = t_el_last->next;
     }
 
-    WgmlProcFlags.line_started = false;     // line is now empty
-    WgmlProcFlags.just_override = true;     // justify for following lines
+    FlagsProc.line_started = false;     // line is now empty
+    FlagsProc.just_override = true;     // justify for following lines
     tabbing = false;                    // tabbing ends when line committed
 
     set_h_start();
@@ -1257,7 +1257,7 @@ text_chars *process_word( const char *pword, size_t count, font_number font )
 
     n_char = alloc_text_chars( pword, count, font );
     // remove end-of-line spaces if .co off before input translation
-    if( !WgmlProcFlags.concat && (input_cbs->fmflags & II_eol) ) {
+    if( !FlagsProc.concat && (input_cbs->fmflags & II_eol) ) {
         if( n_char->text[n_char->count - 1] == ' ' ) {
             while( n_char->text[n_char->count - 1] == ' ' ) {
                 n_char->count--;
@@ -1304,10 +1304,10 @@ void    process_text( const char *text, font_number font )
 
     /********************************************************************/
     /*  we need a started section for text output                       */
-    /*  note: WgmlProcFlags.doc_sect will be doc_sect_body                  */
+    /*  note: FlagsProc.doc_sect will be doc_sect_body                  */
     /********************************************************************/
 
-    if( !WgmlProcFlags.start_section ) {
+    if( !FlagsProc.start_section ) {
         start_doc_sect();
     }
 
@@ -1316,8 +1316,8 @@ void    process_text( const char *text, font_number font )
     /*  :BODY, :APPENDIX, or :BACKM except between :TITLEP and :eTITLEP */
     /********************************************************************/
 
-    if( WgmlProcFlags.doc_sect < doc_sect_abstract ) {
-        if( WgmlProcFlags.doc_sect != doc_sect_titlep ) {
+    if( FlagsProc.doc_sect < doc_sect_abstract ) {
+        if( FlagsProc.doc_sect != doc_sect_titlep ) {
             xx_line_err( err_doc_sec_expected_2, text );
             return;
         }
@@ -1342,7 +1342,7 @@ void    process_text( const char *text, font_number font )
     p = text;                               // restore p to start of text
 
     phrase_start = true;
-    if( !WgmlProcFlags.ct ) {                   // not if text follows CT
+    if( !FlagsProc.ct ) {                   // not if text follows CT
         if( count != strlen( p ) ) {        // tab character found in input text
             if( user_tabs.current > 0 ) {   // user tabs exist
                 if( input_cbs->fmflags & II_sol ) {   // at start of input line
@@ -1369,7 +1369,7 @@ void    process_text( const char *text, font_number font )
     if( t_line->first == NULL ) {    // first phrase in paragraph
         post_space = 0;
         tab_space = 0;
-        if( WgmlProcFlags.concat && !WgmlProcFlags.xmp_active ) {    // ".co on": skip initial spaces
+        if( FlagsProc.concat && !FlagsProc.xmp_active ) {    // ".co on": skip initial spaces
             while( *p == ' ' ) {
                 p++;
                 tab_space++;
@@ -1383,17 +1383,17 @@ void    process_text( const char *text, font_number font )
         }
         ju_x_start = g_cur_h_start; // g_cur_h_start appears correct on entry
     } else {                        // subsequent phrase in paragraph
-        if( WgmlProcFlags.concat && !WgmlProcFlags.xmp_active ) {    // ".co on"
+        if( FlagsProc.concat && !FlagsProc.xmp_active ) {    // ".co on"
             if( post_space == 0 ) {
                 // compute initial spacing if needed; .ct and some user tags affect this
                 if( (*p == ' ')
-                    || ((input_cbs->fmflags & II_tag) && !WgmlProcFlags.utc)
+                    || ((input_cbs->fmflags & II_tag) && !FlagsProc.utc)
                     || (((input_cbs->fmflags & II_sol)
                             || (input_cbs->fmflags & II_macro))
-                        && !WgmlProcFlags.ct
+                        && !FlagsProc.ct
                         && (ju_x_start <= t_line->last->x_address)) ) {
                     post_space = wgml_fonts[font].spc_width;
-                    if( is_stop_char( t_line->last->text[t_line->last->count - 1] ) && !WgmlProcFlags.xmp_active ) {
+                    if( is_stop_char( t_line->last->text[t_line->last->count - 1] ) && !FlagsProc.xmp_active ) {
                         post_space += wgml_fonts[font].spc_width;
                     }
                     if( (c_stop != NULL) && (t_line->last->width == 0) ) {
@@ -1471,14 +1471,14 @@ void    process_text( const char *text, font_number font )
                 if( *p != ' ' ) {       // no space no word end
                     continue;
                 }
-                if( WgmlProcFlags.in_trans && (*(p - 1) == in_esc) ) {
+                if( FlagsProc.in_trans && (*(p - 1) == in_esc) ) {
                     if( ((p - 2) >= pword) && (*(p - 2) == in_esc) ) {
                         // two in_esc in a row do not guard a space
                     } else {
                         continue;           // guarded space no word end
                     }
                 }
-                if( !WgmlProcFlags.concat && !WgmlProcFlags.xmp_active ) { // .co off: include internal spaces
+                if( !FlagsProc.concat && !FlagsProc.xmp_active ) { // .co off: include internal spaces
                     continue;
                 }
             }
@@ -1497,7 +1497,7 @@ void    process_text( const char *text, font_number font )
         n_char->x_address = g_cur_h_start;
         o_count = n_char->count;        // catches special case below
 
-        if( WgmlProcFlags.concat || WgmlProcFlags.xmp_active ) {
+        if( FlagsProc.concat || FlagsProc.xmp_active ) {
 
             /***********************************************************/
             /* test if word exceeds right margin                       */
@@ -1585,7 +1585,7 @@ void    process_text( const char *text, font_number font )
                 }
 
                 if( t_line->first != NULL ) { // t_line is ready for output
-                    process_line_full( t_line, WgmlProcFlags.concat && (WgmlProcFlags.justify > ju_off) );
+                    process_line_full( t_line, FlagsProc.concat && (FlagsProc.justify > ju_off) );
                     t_line = NULL;
                     n_char->x_address = g_cur_h_start;
                 }
@@ -1637,7 +1637,7 @@ void    process_text( const char *text, font_number font )
                         t_line->y_address = g_cur_v_start;
                         t_line->line_height = wgml_fonts[font].line_height;
                         ju_x_start = n_char->x_address;
-                        WgmlProcFlags.line_started = true;
+                        FlagsProc.line_started = true;
                     } else {
                         t_line->last->next = n_char;
                         n_char->prev = t_line->last;
@@ -1667,7 +1667,7 @@ void    process_text( const char *text, font_number font )
             t_line->first = n_char;
             t_line->line_height = wgml_fonts[font].line_height;
             ju_x_start = n_char->x_address;
-            WgmlProcFlags.line_started = true;
+            FlagsProc.line_started = true;
         } else {
             t_line->last->next = n_char;
             n_char->prev = t_line->last;
@@ -1686,10 +1686,10 @@ void    process_text( const char *text, font_number font )
         if( ((input_cbs->fmflags & II_eol) && !*p) || (*p == ' ' ) ) {
             pword = p;
             post_space = wgml_fonts[font].spc_width;
-            if( is_stop_char( t_line->last->text[t_line->last->count - 1] ) && !WgmlProcFlags.xmp_active ) {
+            if( is_stop_char( t_line->last->text[t_line->last->count - 1] ) && !FlagsProc.xmp_active ) {
                 post_space += wgml_fonts[font].spc_width;
             }
-            if( WgmlProcFlags.concat ) {// ignore multiple blanks in concat mode
+            if( FlagsProc.concat ) {// ignore multiple blanks in concat mode
                 if( *p == ' ' ) {
                     while( *p == ' ' ) {
                         p++;
@@ -1711,24 +1711,24 @@ void    process_text( const char *text, font_number font )
     /*  ensure an empty output line as wgml 4.0 does                       */
     /***********************************************************************/
 
-    if( !WgmlProcFlags.concat && (post_space > 0) && (t_line->first == NULL) ) {
+    if( !FlagsProc.concat && (post_space > 0) && (t_line->first == NULL) ) {
         g_blank_lines_ln++;
     }
 
     if( t_line->first != NULL ) {           // something in the line
-        if( WgmlProcFlags.need_li_lp ) {        // no text allowed!
+        if( FlagsProc.need_li_lp ) {        // no text allowed!
             xx_err( err_tag_not_text );
         }
 
-        if( !WgmlProcFlags.concat ) {
+        if( !FlagsProc.concat ) {
             if( input_cbs->fmflags & II_eol ) {
                 process_line_full( t_line, false );
                 t_line = NULL;
             }
         }
     }
-    WgmlProcFlags.ct = false;               // experimental TBD
-    WgmlProcFlags.fsp = false;              // experimental TBD
-    WgmlProcFlags.utc = false;              // experimental TBD
+    FlagsProc.ct = false;               // experimental TBD
+    FlagsProc.fsp = false;              // experimental TBD
+    FlagsProc.utc = false;              // experimental TBD
 }
 

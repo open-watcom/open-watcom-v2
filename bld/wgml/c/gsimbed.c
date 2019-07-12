@@ -192,7 +192,7 @@ void    scr_im( void )
     }
 
     scan_restart = scan_stop;
-    WgmlProcFlags.newLevelFile = 1;
+    FlagsProc.newLevelFile = 1;
     line_from = LINEFROM_DEFAULT;
     line_to   = LINETO_DEFAULT;
 

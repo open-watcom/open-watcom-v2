@@ -68,7 +68,7 @@ char    *scr_single_func_e( char * in, char * end, char * * result )
     if( *pchar == '.' ) {
         pchar++;                    // skip optional terminating dot
     }
-    WgmlProcFlags.substituted = true;       // something changed
+    FlagsProc.substituted = true;       // something changed
     return( pchar );
 }
 
@@ -117,7 +117,7 @@ char    *scr_single_func_l( char * in, char * end, char * * result )
     if( *pchar == '.' ) {
         pchar++;                    // skip optional terminating dot
     }
-    WgmlProcFlags.substituted = true;       // something changed
+    FlagsProc.substituted = true;       // something changed
     return( pchar );
 }
 
@@ -178,7 +178,7 @@ static char    *scr_single_func_sS( char * in, char * end, char * * result, char
     if( *pchar == '.' ) {
         pchar++;                    // skip optional terminating dot
     }
-    WgmlProcFlags.substituted = true;       // something changed
+    FlagsProc.substituted = true;       // something changed
     return( pchar );
 }
 
@@ -230,7 +230,7 @@ char    *scr_single_func_u( char * in, char * end, char * * result )
     if( *pchar == '.' ) {
         pchar++;                    // skip optional terminating dot
     }
-    WgmlProcFlags.substituted = true;       // something changed
+    FlagsProc.substituted = true;       // something changed
     return( pchar );
 }
 
@@ -297,7 +297,7 @@ char    *scr_single_func_w( char * in, char * end, char * * result )
     if( *pchar == '.' ) {
         pchar++;                    // skip optional terminating dot
     }
-    WgmlProcFlags.substituted = true;       // something changed
+    FlagsProc.substituted = true;       // something changed
     return( pchar );
 }
 
@@ -377,7 +377,7 @@ char    *scr_single_funcs( char * in, char * end, char * * result )
         err_count++;
         g_suicide();
     }
-    WgmlProcFlags.substituted = true;
+    FlagsProc.substituted = true;
     return( pw );
 }
 

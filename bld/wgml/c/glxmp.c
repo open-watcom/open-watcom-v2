@@ -111,13 +111,13 @@ void    lay_xmp( lay_tag ltag )
 
     p = scan_start;
 
-    if( !WgmlGlobFlags.firstpass ) {
+    if( !FlagsGlob.firstpass ) {
         scan_start = scan_stop;
         eat_lay_sub_tag();
         return;                         // process during first pass only
     }
-    if( WgmlProcFlags.lay_xxx != el_xmp ) {
-        WgmlProcFlags.lay_xxx = el_xmp;
+    if( FlagsProc.lay_xxx != el_xmp ) {
+        FlagsProc.lay_xxx = el_xmp;
     }
     cc = get_lay_sub_and_value( &l_args );  // get one with value
     while( cc == pos ) {

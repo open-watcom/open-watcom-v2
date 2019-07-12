@@ -212,14 +212,14 @@ void    lay_banner( lay_tag ltag )
     p = scan_start;
     cvterr = false;
 
-    if( !WgmlGlobFlags.firstpass ) {
+    if( !FlagsGlob.firstpass ) {
         scan_start = scan_stop;
         eat_lay_sub_tag();
         return;                         // process during first pass only
     }
-    if( WgmlProcFlags.lay_xxx != el_banner ) {
-        WgmlProcFlags.lay_xxx = el_banner;
-        WgmlProcFlags.banner = true;
+    if( FlagsProc.lay_xxx != el_banner ) {
+        FlagsProc.lay_xxx = el_banner;
+        FlagsProc.banner = true;
         init_banner_wk( &wk );
     } else {
         if( !strnicmp( ":banner", buff2, sizeof( ":banner" ) ) ) {
@@ -227,10 +227,10 @@ void    lay_banner( lay_tag ltag )
             g_err( err_nested_tag, lay_tagname( ltag ) );
             file_mac_info();
 
-            while( !WgmlProcFlags.reprocess_line  ) {
+            while( !FlagsProc.reprocess_line  ) {
                 eat_lay_sub_tag();
                 if( strnicmp( ":ebanner", buff2, sizeof( ":ebanner" ) ) ) {
-                    WgmlProcFlags.reprocess_line = false;  // not :ebanner, go on
+                    FlagsProc.reprocess_line = false;  // not :ebanner, go on
                 }
             }
             return;
@@ -393,15 +393,15 @@ void    lay_ebanner( lay_tag ltag )
     banner_lay_tag  *   banwk;
     region_lay_tag  *   reg;
 
-    WgmlProcFlags.lay_xxx = el_zero;        // banner no longer active
+    FlagsProc.lay_xxx = el_zero;        // banner no longer active
 
-    if( !WgmlGlobFlags.firstpass ) {
+    if( !FlagsGlob.firstpass ) {
         scan_start = scan_stop;
         eat_lay_sub_tag();
         return;                         // process during first pass only
     }
-    if( WgmlProcFlags.banner ) {            // are we inside banner
-        WgmlProcFlags.banner = false;
+    if( FlagsProc.banner ) {            // are we inside banner
+        FlagsProc.banner = false;
 
         lay_banner_end_prepare();       // if not yet done
         if( banner_delete_req ) {       // delete request

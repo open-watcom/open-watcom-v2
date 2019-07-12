@@ -81,7 +81,7 @@ char    *scan_sym( char * p, symvar * sym, sub_index * subscript )
         } else {
             if( !scan_err ) {
                 scan_err = true;
-                if( !WgmlProcFlags.suppress_msg ) {
+                if( !FlagsProc.suppress_msg ) {
                     // SC--074 For the symbol '%s'
                     //     The length of a symbol cannot exceed ten characters
 
@@ -103,7 +103,7 @@ char    *scan_sym( char * p, symvar * sym, sub_index * subscript )
                 strcpy( sym->name, MAC_STAR_NAME );
             } else {
                 scan_err = true;
-                if( !WgmlProcFlags.suppress_msg ) {
+                if( !FlagsProc.suppress_msg ) {
                     g_err( err_missing_name, sym_start );
                     err_count++;
                     show_include_stack();
@@ -159,7 +159,7 @@ char    *scan_sym( char * p, symvar * sym, sub_index * subscript )
                     p++;
                 }
             } else {
-                if( !scan_err && !WgmlProcFlags.suppress_msg ) {
+                if( !scan_err && !FlagsProc.suppress_msg ) {
                     g_err( err_sub_invalid, psave );
                     err_count++;
                     show_include_stack();
@@ -214,13 +214,13 @@ void    scr_se( void )
         working_dict = &global_dict;
     }
 
-    if( WgmlProcFlags.blanks_allowed ) {
+    if( FlagsProc.blanks_allowed ) {
         while( *p && *p == ' ' ) {      // skip over spaces
             p++;
         }
     }
     if( *p == '\0' ) {
-        if( !WgmlProcFlags.suppress_msg ) {
+        if( !FlagsProc.suppress_msg ) {
             g_warn( err_missing_value, sym.name );
             show_include_stack();
             wng_count++;
@@ -232,7 +232,7 @@ void    scr_se( void )
             if( *p == '=' ) {
                 p++;                    // over =
             }
-            if( WgmlProcFlags.blanks_allowed ) {
+            if( FlagsProc.blanks_allowed ) {
                 while( *p && *p == ' ' ) {  // skip over spaces
                     p++;
                 }
@@ -281,7 +281,7 @@ void    scr_se( void )
                     symsubval->base->flags |= deleted;
                 }
             } else {
-                if( !WgmlProcFlags.suppress_msg ) {
+                if( !FlagsProc.suppress_msg ) {
                     wng_count++;
                     g_err( wng_miss_inv_value, sym.name, p );
                     g_info_inp_pos();

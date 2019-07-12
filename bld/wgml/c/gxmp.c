@@ -34,7 +34,7 @@
 
 #include "clibext.h"
 
-static  ju_enum     justify_save;           // for WgmlProcFlags.justify
+static  ju_enum     justify_save;           // for FlagsProc.justify
 static  bool        first_xline;            // special for first xmp LINE
 static  font_number font_save;              // save for font
 
@@ -93,7 +93,7 @@ extern  void    gml_xmp( gml_tag gtag )
            }
         }
     }
-    if( WgmlProcFlags.xmp_active ) {        // nested :XMP tag not supported
+    if( FlagsProc.xmp_active ) {        // nested :XMP tag not supported
         g_err_tag_nest( gtag );
         scan_start = scan_stop;
         return;
@@ -102,17 +102,17 @@ extern  void    gml_xmp( gml_tag gtag )
     /******************************************************************/
     /*  test for XMP within  :ADDRESS, :FIG , :FN                     */
     /******************************************************************/
-    if( WgmlProcFlags.address_active ) {
+    if( FlagsProc.address_active ) {
         g_err_tag_x_in_y( "XMP", "ADDRESS" );
         scan_start = scan_stop;
         return;
     } else {
-        if( WgmlProcFlags.fig_active ) {
+        if( FlagsProc.fig_active ) {
             g_err_tag_x_in_y( "XMP", "FIG" );
             scan_start = scan_stop;
             return;
         } else {
-            if( WgmlProcFlags.fn_active ) {
+            if( FlagsProc.fn_active ) {
                 g_err_tag_x_in_y( "XMP", "FN" );
                 scan_start = scan_stop;
                 return;
@@ -120,7 +120,7 @@ extern  void    gml_xmp( gml_tag gtag )
         }
     }
 
-    WgmlProcFlags.xmp_active = true;
+    FlagsProc.xmp_active = true;
     first_xline = true;
     font_save = g_curr_font;
     g_curr_font = layout_work.xmp.font;
@@ -131,7 +131,7 @@ extern  void    gml_xmp( gml_tag gtag )
         g_cur_left += conv_hor_unit( &layout_work.xmp.left_indent );
     }
     g_cur_h_start = g_cur_left;
-    WgmlProcFlags.keep_left_margin = true;  // keep special indent
+    FlagsProc.keep_left_margin = true;  // keep special indent
 
     init_nest_cb( true );
 
@@ -141,10 +141,10 @@ extern  void    gml_xmp( gml_tag gtag )
 
     set_skip_vars( NULL, &layout_work.xmp.pre_skip, NULL, g_spacing_ln, g_curr_font );
 
-    WgmlProcFlags.group_elements = true;
+    FlagsProc.group_elements = true;
 
-    justify_save = WgmlProcFlags.justify;
-    WgmlProcFlags.justify = ju_off;         // TBD
+    justify_save = FlagsProc.justify;
+    FlagsProc.justify = ju_off;         // TBD
 
     if( *p == '.' ) p++;                // possible tag end
     if( *p ) {
@@ -170,21 +170,21 @@ void    gml_exmp( gml_tag gtag )
     /* unused parameters */ (void)gtag;
 
     scr_process_break();
-    if( !WgmlProcFlags.xmp_active ) {       // no preceding :XMP tag
+    if( !FlagsProc.xmp_active ) {       // no preceding :XMP tag
         g_err_tag_prec( "XMP" );
         scan_start = scan_stop;
         return;
     }
     g_curr_font = font_save;
-    WgmlProcFlags.xmp_active = false;
-    WgmlProcFlags.justify = justify_save;
+    FlagsProc.xmp_active = false;
+    FlagsProc.justify = justify_save;
     wk = nest_cb;
     nest_cb = nest_cb->prev;
     add_tag_cb_to_pool( wk );
 
     /*  place the accumulated xlines on the proper page */
 
-    WgmlProcFlags.group_elements = false;
+    FlagsProc.group_elements = false;
     if( t_doc_el_group.first != NULL ) {
         t_doc_el_group.depth += (t_doc_el_group.first->blank_lines + t_doc_el_group.first->subs_skip);
     }

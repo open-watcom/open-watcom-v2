@@ -64,13 +64,13 @@ void    lay_widow( lay_tag ltag )
 
     p = scan_start;
 
-    if( !WgmlGlobFlags.firstpass ) {
+    if( !FlagsGlob.firstpass ) {
         scan_start = scan_stop;
         eat_lay_sub_tag();
         return;                         // process during first pass only
     }
-    if( WgmlProcFlags.lay_xxx != el_widow ) {
-        WgmlProcFlags.lay_xxx = el_widow;
+    if( FlagsProc.lay_xxx != el_widow ) {
+        FlagsProc.lay_xxx = el_widow;
     }
     cc = get_lay_sub_and_value( &l_args );  // get one with value
     while( cc == pos ) {

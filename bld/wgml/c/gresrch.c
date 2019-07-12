@@ -72,7 +72,7 @@ void add_GML_tag_research( char * tag )
     taglist *   wk;
     taglist *   new;
 
-    if( WgmlProcFlags.layout ) {
+    if( FlagsProc.layout ) {
         wk = r_lay_tags;
     } else {
         wk = r_gml_tags;
@@ -89,7 +89,7 @@ void add_GML_tag_research( char * tag )
     new = mem_alloc( sizeof( taglist ) );
     if( wk == NULL ) {
         wk = new;
-        if( WgmlProcFlags.layout ) {
+        if( FlagsProc.layout ) {
             r_lay_tags = new;
         } else {
             r_gml_tags = new;

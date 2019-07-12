@@ -150,7 +150,7 @@ void    gml_hdref( gml_tag gtag )
                     strcpy( idp + 1, re->u.info.text_cap );
                     strcat( idp, "\"" );
                 } else {
-                    if( WgmlGlobFlags.lastpass ) {
+                    if( FlagsGlob.lastpass ) {
                         g_warn( wng_id_xxx, pa );
                         g_info( inf_id_unknown );
                         file_mac_info();
@@ -176,9 +176,9 @@ void    gml_hdref( gml_tag gtag )
         p++;
     }
     if( idseen ) {                      // id attribute was specified
-        bool concatsave = WgmlProcFlags.concat;
+        bool concatsave = FlagsProc.concat;
 
-        WgmlProcFlags.concat = true;        // make process_text add to line
+        FlagsProc.concat = true;        // make process_text add to line
         if( re == NULL ) {              // undefined refid
             process_text( undefid, g_curr_font );
         } else {
@@ -189,7 +189,7 @@ void    gml_hdref( gml_tag gtag )
             }
             mem_free( idp );
         }
-        WgmlProcFlags.concat = concatsave;
+        FlagsProc.concat = concatsave;
     } else {
         g_err( err_att_missing );       // id attribute missing
         file_mac_info();

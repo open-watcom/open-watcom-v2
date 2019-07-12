@@ -76,7 +76,7 @@ static  void    free_macro_entry_short( mac_entry * me )
 
     if( me != NULL ) {
         cb = me->label_cb;
-        if( WgmlGlobFlags.research ) {
+        if( FlagsGlob.research ) {
             print_labels( cb, me->name );   // print label info
         }
         while( cb != NULL ) {
@@ -108,7 +108,7 @@ void    free_macro_entry( mac_entry * * dict, mac_entry * me )
 
     if( me != NULL ) {
         cb = me->label_cb;
-        if( WgmlGlobFlags.research ) {
+        if( FlagsGlob.research ) {
             print_labels( cb, me->name );// print label info
         }
         while( cb != NULL ) {

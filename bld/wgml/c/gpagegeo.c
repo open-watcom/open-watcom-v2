@@ -194,8 +194,8 @@ void    init_page_geometry( void )
                 // This is what wgml 4 does, even if in multi column mode TBD
 #endif
 
-//  if( WgmlGlobFlags.firstpass && WgmlGlobFlags.research ) {  // show values TBD
-    if( WgmlGlobFlags.firstpass                         ) {
+//  if( FlagsGlob.firstpass && FlagsGlob.research ) {  // show values TBD
+    if( FlagsGlob.firstpass                         ) {
         out_msg( "\ntm:%d lm:%d rm:%d top margin:%d depth:%d\n\n", tm, lm, rm,
                  top_margin, g_page_depth );
 
@@ -315,7 +315,7 @@ void    do_layout_end_processing( void )
     /*  function is similarly restricted to the first pass.                */
     /***********************************************************************/
 
-    if( WgmlGlobFlags.firstpass == 1) {
+    if( FlagsGlob.firstpass == 1) {
 
         /*******************************************************************/
         /*  init_page_geometry must be called first since many items used  */
@@ -337,7 +337,7 @@ void    do_layout_end_processing( void )
         out_msg( "Formatting document\n" );
 
         fb_document();                 // DOCUMENT :PAUSE & :INIT processing.
-        WgmlProcFlags.fb_document_done = true;
+        FlagsProc.fb_document_done = true;
 
         set_banners();                  // prepare banners for selection
     }

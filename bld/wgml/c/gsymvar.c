@@ -86,8 +86,8 @@ static void print_sym_entry( symvar * wk, int * symcnt, int * symsubcnt )
     bool                saveflag;
     static const char   fill[11] = "          ";
 
-    saveflag    = WgmlProcFlags.no_var_impl_err;
-    WgmlProcFlags.no_var_impl_err = true;   // suppress err msg
+    saveflag    = FlagsProc.no_var_impl_err;
+    FlagsProc.no_var_impl_err = true;   // suppress err msg
 
     len = strlen( wk->name );
     if( wk->subscript_used > 0 ) {
@@ -134,7 +134,7 @@ static void print_sym_entry( symvar * wk, int * symcnt, int * symsubcnt )
             ws = ws->next;
         }
     }
-    WgmlProcFlags.no_var_impl_err = saveflag;
+    FlagsProc.no_var_impl_err = saveflag;
 }
 
 
@@ -459,7 +459,7 @@ int add_symvar_addr( symvar * * dict, char * name, char * val,
             if( !ok ) {
                 rc = 3;
             } else {
-                if( WgmlGlobFlags.firstpass && input_cbs->fmflags & II_research ) {
+                if( FlagsGlob.firstpass && input_cbs->fmflags & II_research ) {
                     if( rc < 3 ) {
                         print_sym_entry( new, &dummyi, &dummyi );
                     }
@@ -472,7 +472,7 @@ int add_symvar_addr( symvar * * dict, char * name, char * val,
             if( !ok ) {
                 rc = 3;
             } else {
-                if( WgmlGlobFlags.firstpass && input_cbs->fmflags & II_research ) {
+                if( FlagsGlob.firstpass && input_cbs->fmflags & II_research ) {
                     if( rc < 3 ) {
                         print_sym_entry( new, &dummyi, &dummyi );
                     }
@@ -485,7 +485,7 @@ int add_symvar_addr( symvar * * dict, char * name, char * val,
             if( !ok ) {
                 rc = 3;
             } else {
-                if( WgmlGlobFlags.firstpass && input_cbs->fmflags & II_research ) {
+                if( FlagsGlob.firstpass && input_cbs->fmflags & II_research ) {
                     if( rc < 3 ) {
                         print_sym_entry( newsub->base, &dummyi, &dummyi );
                     }
@@ -503,7 +503,7 @@ int add_symvar_addr( symvar * * dict, char * name, char * val,
                 strcpy( newsub->value, val );
             }
             *sub = newsub;
-            if( WgmlGlobFlags.firstpass && input_cbs->fmflags & II_research ) {
+            if( FlagsGlob.firstpass && input_cbs->fmflags & II_research ) {
                 if( rc < 3 ) {
                     print_sym_entry( newsub->base, &dummyi, &dummyi );
                 }

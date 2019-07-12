@@ -107,13 +107,13 @@ void    lay_author( lay_tag ltag )
     p = scan_start;
     cvterr = false;
 
-    if( !WgmlGlobFlags.firstpass ) {
+    if( !FlagsGlob.firstpass ) {
         scan_start = scan_stop;
         eat_lay_sub_tag();
         return;                         // process during first pass only
     }
-    if( WgmlProcFlags.lay_xxx != el_author ) {
-        WgmlProcFlags.lay_xxx = el_author;
+    if( FlagsProc.lay_xxx != el_author ) {
+        FlagsProc.lay_xxx = el_author;
     }
     cc = get_lay_sub_and_value( &l_args );  // get att with value
     while( cc == pos ) {

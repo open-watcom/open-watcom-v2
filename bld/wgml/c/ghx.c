@@ -196,11 +196,11 @@ static  void    hx_header( int hx_lvl, const char *hnumstr, const char *txt )
     cur_el->depth = hd_line->line_height;
     cur_el->subs_skip = g_subs_skip;
     cur_el->top_skip = g_top_skip;
-    cur_el->element.text.overprint = WgmlProcFlags.overprint;
-    WgmlProcFlags.overprint = false;
+    cur_el->element.text.overprint = FlagsProc.overprint;
+    FlagsProc.overprint = false;
     cur_el->element.text.spacing = g_spacing;
     cur_el->element.text.first = hd_line;
-    WgmlProcFlags.skips_valid = false;
+    FlagsProc.skips_valid = false;
     hd_line = NULL;
 
     if( layout_work.hx[hx_lvl].page_eject == ej_no ) {
@@ -240,8 +240,8 @@ static  void    gml_hx_common( gml_tag gtag, int hx_lvl )
 
     switch( hx_lvl ) {
     case   0:
-        if( !((WgmlProcFlags.doc_sect == doc_sect_body) ||
-            (WgmlProcFlags.doc_sect_nxt == doc_sect_body)) ) {
+        if( !((FlagsProc.doc_sect == doc_sect_body) ||
+            (FlagsProc.doc_sect_nxt == doc_sect_body)) ) {
 
             g_err( err_tag_wrong_sect, hxstr, ":BODY section" );
             err_count++;
@@ -249,8 +249,8 @@ static  void    gml_hx_common( gml_tag gtag, int hx_lvl )
         }
         break;
     case  1:
-        if( !((WgmlProcFlags.doc_sect >= doc_sect_body) ||
-            (WgmlProcFlags.doc_sect_nxt >= doc_sect_body)) ) {
+        if( !((FlagsProc.doc_sect >= doc_sect_body) ||
+            (FlagsProc.doc_sect_nxt >= doc_sect_body)) ) {
 
             g_err( err_tag_wrong_sect, hxstr, ":BODY :APPENDIX :BACKM sections" );
             err_count++;
@@ -258,8 +258,8 @@ static  void    gml_hx_common( gml_tag gtag, int hx_lvl )
         }
         break;
     default:
-        if( !((WgmlProcFlags.doc_sect >= doc_sect_abstract) ||
-            (WgmlProcFlags.doc_sect_nxt >= doc_sect_abstract)) ) {
+        if( !((FlagsProc.doc_sect >= doc_sect_abstract) ||
+            (FlagsProc.doc_sect_nxt >= doc_sect_abstract)) ) {
 
             g_err( err_tag_wrong_sect, hxstr, ":ABSTRACT section or later" );
             err_count++;
@@ -303,7 +303,7 @@ static  void    gml_hx_common( gml_tag gtag, int hx_lvl )
             p = get_att_value( p );
 
             scan_start = p;
-            if( !WgmlProcFlags.tag_end_found ) {
+            if( !FlagsProc.tag_end_found ) {
                 continue;
             }
             break;
@@ -330,7 +330,7 @@ static  void    gml_hx_common( gml_tag gtag, int hx_lvl )
                 }
             }
             scan_start = p;
-            if( !WgmlProcFlags.tag_end_found ) {
+            if( !FlagsProc.tag_end_found ) {
                 continue;
             }
             break;
@@ -429,12 +429,12 @@ static  void    gml_hx_common( gml_tag gtag, int hx_lvl )
     /***********************************************************************/
     if( layout_work.hx[hx_lvl].page_eject != ej_no ) {
 
-        if( WgmlProcFlags.page_started ) {
+        if( FlagsProc.page_started ) {
             do_page_out();
             reset_t_page();
         }
 
-        if( !WgmlProcFlags.start_section ) {
+        if( !FlagsProc.start_section ) {
             start_doc_sect();
         }
         set_headx_banners( hx_lvl );        // set possible banners

@@ -140,7 +140,7 @@ void    lay_abspref( lay_tag ltag )
     p = scan_start;
     cvterr = false;
 
-    if( !WgmlGlobFlags.firstpass ) {
+    if( !FlagsGlob.firstpass ) {
         scan_start = scan_stop;
         eat_lay_sub_tag();
         return;                         // process during first pass only
@@ -160,8 +160,8 @@ void    lay_abspref( lay_tag ltag )
         err_count++;
         break;
     }
-    if( WgmlProcFlags.lay_xxx != x_tag ) {
-        WgmlProcFlags.lay_xxx = x_tag;
+    if( FlagsProc.lay_xxx != x_tag ) {
+        FlagsProc.lay_xxx = x_tag;
     }
     cc = get_lay_sub_and_value( &l_args );  // get att with value
     while( cc == pos ) {

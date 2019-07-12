@@ -132,7 +132,7 @@ void set_section_banners( doc_section ds )
 
 static  void    new_section( doc_section ds )
 {
-    WgmlProcFlags.doc_sect = ds;
+    FlagsProc.doc_sect = ds;
     set_section_banners( ds );
 
     g_spacing_ln = layout_work.defaults.spacing;
@@ -201,11 +201,11 @@ static  void    doc_header( su *p_sk, su *top_sk, xx_str *h_string,
     cur_el->depth = hd_line->line_height;
     cur_el->subs_skip = g_subs_skip;
     cur_el->top_skip = g_top_skip;
-    cur_el->element.text.overprint = WgmlProcFlags.overprint;
-    WgmlProcFlags.overprint = false;
+    cur_el->element.text.overprint = FlagsProc.overprint;
+    FlagsProc.overprint = false;
     cur_el->element.text.spacing = g_spacing;
     cur_el->element.text.first = hd_line;
-    WgmlProcFlags.skips_valid = false;
+    FlagsProc.skips_valid = false;
     hd_line = NULL;
 
     if( no_eject ) {
@@ -248,12 +248,12 @@ static void document_new_position( void )
     }
     g_cur_h_start = g_page_left_org;
 
-    if( WgmlGlobFlags.lastpass ) {
-        if( WgmlProcFlags.fb_position_done ) {
+    if( FlagsGlob.lastpass ) {
+        if( FlagsProc.fb_position_done ) {
             fb_new_section( g_cur_v_start );
         } else {
             fb_position( g_cur_h_start, g_cur_v_start );
-            WgmlProcFlags.fb_position_done = true;
+            FlagsProc.fb_position_done = true;
         }
     }
     g_cur_v_start = top_pos; // reset so first line positioning is correct
@@ -279,21 +279,21 @@ void    start_doc_sect( void )
     uint32_t        ind;
     xx_str          *h_string;
 
-    if( WgmlProcFlags.start_section ) {
+    if( FlagsProc.start_section ) {
         return;                         // once is enough
     }
-    if( !WgmlProcFlags.fb_document_done ) { // the very first section/page
+    if( !FlagsProc.fb_document_done ) { // the very first section/page
         do_layout_end_processing();
     }
 
-    first_section = (WgmlProcFlags.doc_sect == doc_sect_none);
+    first_section = (FlagsProc.doc_sect == doc_sect_none);
 
     header = false;                 // no header string (ABSTRACT, ... )  output
     page_r = false;                 // no page number reset
     page_e = ej_no;                 // no page eject
-    WgmlProcFlags.start_section = true;
-    WgmlProcFlags.keep_left_margin = false;
-    ds = WgmlProcFlags.doc_sect_nxt;        // new section
+    FlagsProc.start_section = true;
+    FlagsProc.keep_left_margin = false;
+    ds = FlagsProc.doc_sect_nxt;        // new section
 
     if( ds == doc_sect_none ) {
         ds = doc_sect_body;      // if text without section start assume body
@@ -455,7 +455,7 @@ void    start_doc_sect( void )
     if( header ) {
         doc_header( p_sk, top_sk, h_string, font, spacing_ln, page_e == ej_no );
     }
-    WgmlProcFlags.doc_sect = ds;
+    FlagsProc.doc_sect = ds;
 }
 
 
@@ -465,11 +465,11 @@ void    start_doc_sect( void )
 static  void    gml_doc_xxx( doc_section ds )
 {
 
-    if( WgmlProcFlags.doc_sect >= ds ) {    // wrong sequence of sections
+    if( FlagsProc.doc_sect >= ds ) {    // wrong sequence of sections
         g_err_doc_sect( ds );
     }
-    WgmlProcFlags.doc_sect_nxt = ds;        // remember new section
-    WgmlProcFlags.start_section = false;    // do real section start later
+    FlagsProc.doc_sect_nxt = ds;        // remember new section
+    FlagsProc.start_section = false;    // do real section start later
 
     scan_start = scan_stop;
     return;
@@ -498,11 +498,11 @@ void    gml_abstract( gml_tag gtag )
 {
     /* unused parameters */ (void)gtag;
 
-    if( WgmlProcFlags.doc_sect_nxt == doc_sect_egdoc ) {
+    if( FlagsProc.doc_sect_nxt == doc_sect_egdoc ) {
         xx_line_err( err_eof_expected, tok_start );
         return;
     }
-    if( !WgmlProcFlags.frontm_seen ) {
+    if( !FlagsProc.frontm_seen ) {
         xx_line_err( err_doc_sec_expected_1, tok_start );
         return;
     }
@@ -527,8 +527,8 @@ void    gml_appendix( gml_tag gtag )
     scr_process_break();
     gml_doc_xxx( doc_sect_appendix );
     g_spacing_ln = layout_work.appendix.spacing;
-    WgmlProcFlags.frontm_seen = false;  // no longer in FRONTM section
-    if( !WgmlProcFlags.fb_document_done ) { // the very first section/page
+    FlagsProc.frontm_seen = false;  // no longer in FRONTM section
+    if( !FlagsProc.fb_document_done ) { // the very first section/page
         do_layout_end_processing();
     }
 }
@@ -542,8 +542,8 @@ void    gml_backm( gml_tag gtag )
     }
     scr_process_break();
     gml_doc_xxx( doc_sect_backm );
-    WgmlProcFlags.frontm_seen = false;  // no longer in FRONTM section
-    if( !WgmlProcFlags.fb_document_done ) { // the very first section/page
+    FlagsProc.frontm_seen = false;  // no longer in FRONTM section
+    if( !FlagsProc.fb_document_done ) { // the very first section/page
         do_layout_end_processing();
     }
 }
@@ -558,13 +558,13 @@ void    gml_body( gml_tag gtag )
     scr_process_break();
     gml_doc_xxx( doc_sect_body );
 
-    WgmlProcFlags.just_override = true;     // justify for first line ?? TBD
+    FlagsProc.just_override = true;     // justify for first line ?? TBD
     g_cur_left = g_page_left;
     g_cur_h_start = g_page_left
                     + conv_hor_unit( &layout_work.p.line_indent );
 
-    WgmlProcFlags.frontm_seen = false;      // no longer in FRONTM section
-    if( !WgmlProcFlags.fb_document_done ) { // the very first section/page
+    FlagsProc.frontm_seen = false;      // no longer in FRONTM section
+    if( !FlagsProc.fb_document_done ) { // the very first section/page
         do_layout_end_processing();
     }
 }
@@ -583,10 +583,10 @@ void    gml_frontm( gml_tag gtag )
 
     gml_doc_xxx( doc_sect_frontm );
     g_spacing_ln = layout_work.defaults.spacing;
-    if( !WgmlProcFlags.fb_document_done ) { // the very first section/page
+    if( !FlagsProc.fb_document_done ) { // the very first section/page
         do_layout_end_processing();
     }
-    WgmlProcFlags.frontm_seen = true;
+    FlagsProc.frontm_seen = true;
 }
 
 
@@ -598,23 +598,23 @@ void    gml_index( gml_tag gtag )
 {
     /* unused parameters */ (void)gtag;
 
-    if( WgmlProcFlags.doc_sect_nxt == doc_sect_egdoc ) {
+    if( FlagsProc.doc_sect_nxt == doc_sect_egdoc ) {
         xx_line_err( err_eof_expected, tok_start );
         return;
     }
 
-    if( WgmlProcFlags.doc_sect_nxt == doc_sect_index ) {// duplicate :INDEX tag
+    if( FlagsProc.doc_sect_nxt == doc_sect_index ) {// duplicate :INDEX tag
 
         scan_start = scan_stop;         // ignore this call
         return;                         // wgml4 OS/2 crashes with page fault
     }
 
-    if( !((WgmlProcFlags.doc_sect == doc_sect_backm) ||
-          (WgmlProcFlags.doc_sect_nxt == doc_sect_backm)) ) {
+    if( !((FlagsProc.doc_sect == doc_sect_backm) ||
+          (FlagsProc.doc_sect_nxt == doc_sect_backm)) ) {
         xx_line_err( err_doc_sec_expected_1, tok_start );
         return;
     }
-    if( !WgmlGlobFlags.index ) {          // index option not active
+    if( !FlagsGlob.index ) {          // index option not active
         g_err( wng_index_opt );         // give hint to activate index
         scan_start = scan_stop;
         return;
@@ -629,11 +629,11 @@ void    gml_preface( gml_tag gtag )
 {
     /* unused parameters */ (void)gtag;
 
-    if( WgmlProcFlags.doc_sect_nxt == doc_sect_egdoc ) {
+    if( FlagsProc.doc_sect_nxt == doc_sect_egdoc ) {
         xx_line_err( err_eof_expected, tok_start );
         return;
     }
-    if( !WgmlProcFlags.frontm_seen ) {
+    if( !FlagsProc.frontm_seen ) {
         xx_line_err( err_doc_sec_expected_1, tok_start );
         return;
     }
@@ -649,11 +649,11 @@ void    gml_titlep( gml_tag gtag )
 {
     /* unused parameters */ (void)gtag;
 
-    if( WgmlProcFlags.doc_sect_nxt == doc_sect_egdoc ) {
+    if( FlagsProc.doc_sect_nxt == doc_sect_egdoc ) {
         xx_line_err( err_eof_expected, tok_start );
         return;
     }
-    if( !WgmlProcFlags.frontm_seen ) {
+    if( !FlagsProc.frontm_seen ) {
         xx_line_err( err_doc_sec_expected_1, tok_start );
         return;
     }
@@ -706,7 +706,7 @@ void    gml_egdoc( gml_tag gtag )
         set_skip_vars( NULL, NULL, NULL, 0, 0 );    // set g_blank_lines
     }
     scr_process_break();                // outputs last element in file
-    if( !WgmlProcFlags.start_section ) {
+    if( !FlagsProc.start_section ) {
         start_doc_sect();               // if not already done
     }
     gml_doc_xxx( doc_sect_egdoc );
@@ -763,7 +763,7 @@ void    gml_gdoc( gml_tag gtag )
     }
 
     gml_doc_xxx( doc_sect_gdoc );
-    if( !WgmlProcFlags.fb_document_done ) { // the very first section/page
+    if( !FlagsProc.fb_document_done ) { // the very first section/page
         do_layout_end_processing();
     }
     return;

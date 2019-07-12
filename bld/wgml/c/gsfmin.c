@@ -82,7 +82,7 @@ condcode    scr_min( parm parms[MAX_FUN_PARMS], size_t parmcount, char * * resul
         gn.argstop  = pend;
         cc = getnum( &gn );
         if( !(cc == pos  || cc == neg) ) {
-            if( !WgmlProcFlags.suppress_msg ) {
+            if( !FlagsProc.suppress_msg ) {
                 g_err( err_func_parm, "" );
                 g_info_inp_pos();
                 err_count++;

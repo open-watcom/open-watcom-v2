@@ -92,7 +92,7 @@ condcode    scr_strip( parm parms[MAX_FUN_PARMS], size_t parmcount, char * * res
                 // type value is valid do nothing
                 break;
             default:
-                if( !WgmlProcFlags.suppress_msg ) {
+                if( !FlagsProc.suppress_msg ) {
                     g_err( err_func_parm, "2 (type)" );
                     g_info_inp_pos();
                     err_count++;

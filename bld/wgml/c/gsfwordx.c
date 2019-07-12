@@ -102,7 +102,7 @@ static  condcode    scr_xx_word( parm parms[MAX_FUN_PARMS], size_t parmcount,
         gn.argstop  = parms[1].stop;
         cc = getnum( &gn );
         if( (cc != pos) || (gn.result > len) ) {
-            if( !WgmlProcFlags.suppress_msg ) {
+            if( !FlagsProc.suppress_msg ) {
                 g_err( err_func_parm, "2 (startword)" );
                 g_info_inp_pos();
                 err_count++;
@@ -124,7 +124,7 @@ static  condcode    scr_xx_word( parm parms[MAX_FUN_PARMS], size_t parmcount,
                 gn.argstop  = parms[2].stop;
                 cc = getnum( &gn );
                 if( (cc != pos) || (gn.result == 0) ) {
-                    if( !WgmlProcFlags.suppress_msg ) {
+                    if( !FlagsProc.suppress_msg ) {
                         g_err( err_func_parm, "3 (length)" );
                         g_info_inp_pos();
                         err_count++;
@@ -343,7 +343,7 @@ condcode    scr_wordpos( parm parms[MAX_FUN_PARMS], size_t parmcount, char * * r
             gn.argstop  = parms[2].stop;
             cc = getnum( &gn );
             if( (cc != pos) || (gn.result == 0) ) {
-                if( !WgmlProcFlags.suppress_msg ) {
+                if( !FlagsProc.suppress_msg ) {
                     g_err( err_func_parm, "3 (startword)" );
                     g_info_inp_pos();
                     err_count++;

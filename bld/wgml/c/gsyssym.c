@@ -170,7 +170,7 @@ void    add_to_sysdir( char * name, char char_val )
 
 static void var_wng( char * varname, symvar *e )
 {
-    if( !WgmlProcFlags.no_var_impl_err ) {  // for full dict print no err msg
+    if( !FlagsProc.no_var_impl_err ) {  // for full dict print no err msg
         e->varfunc = NULL;              // deactivate after first warning
         wng_count++;
         g_warn( err_var_not_impl, varname );
@@ -292,7 +292,7 @@ static void syscofun( symvar *e )      // .co status
 {
     /* unused parameters */ (void)e;
 
-    if( WgmlProcFlags.concat ) {
+    if( FlagsProc.concat ) {
         sysco0.value = str[ju_on];
     } else {
         sysco0.value = str[ju_off];
@@ -586,7 +586,7 @@ static void sysjufun( symvar *e )      // .ju status
 {
     /* unused parameters */ (void)e;
 
-    sysju0.value = str[WgmlProcFlags.justify];
+    sysju0.value = str[FlagsProc.justify];
     return;
 };
 
@@ -594,7 +594,7 @@ static void syslayoutfun( symvar *e ) // LAYOUT cmdline option or :LAYOUT tag se
 {
     /* unused parameters */ (void)e;
 
-    if( WgmlProcFlags.lay_specified ) {
+    if( FlagsProc.lay_specified ) {
         syslayout0.value = str[ju_on];
     } else {
         syslayout0.value = str[ju_off];

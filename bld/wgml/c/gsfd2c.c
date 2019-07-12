@@ -84,7 +84,7 @@ condcode    scr_d2c( parm parms[MAX_FUN_PARMS], size_t parmcount, char **result,
         gn.argstop  = pend;
         cc = getnum( &gn );
         if( (cc != pos) ) {
-            if( !WgmlProcFlags.suppress_msg ) {
+            if( !FlagsProc.suppress_msg ) {
                 g_err( err_func_parm, "1 (number)" );
                 g_info_inp_pos();
                 err_count++;

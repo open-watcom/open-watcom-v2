@@ -443,7 +443,7 @@ static void box_draw_vlines( box_col_set * hline, spacing_bu subs_skip,
              || ((cur_col_type == bx_v_out) && (cur_op == bx_eop))
              ) {  // ascender needed
 
-            WgmlProcFlags.vline_done = true;
+            FlagsProc.vline_done = true;
 
             /* Create the doc_element to hold the VLINE */
 
@@ -477,7 +477,7 @@ static void box_draw_vlines( box_col_set * hline, spacing_bu subs_skip,
                 first_done = true;
             } else if( ((stub == st_none) && (cur_depth == 0) && (cur_op != bx_on))
                      || ((stub == st_none) && (cur_depth == 0) && (cur_op == bx_on
-                        && WgmlProcFlags.top_line))
+                        && FlagsProc.top_line))
                      || ((stub == st_ext)
                         && (v_line_el->element.vline.v_len == cur_depth)) ) {
                 v_line_el->element.vline.twice = false;
@@ -508,7 +508,7 @@ static void draw_box_lines( doc_element * h_line_el )
         cur_hline = box_line->first;
         while( cur_hline != NULL ) {    // iterate over all horizontal lines
             box_draw_vlines( cur_hline, el_skip, el_skip, st_none );
-            if( WgmlProcFlags.vline_done) {
+            if( FlagsProc.vline_done) {
                 el_skip = 0;            // skip used
             }
             cur_hline = cur_hline->next;
@@ -519,14 +519,14 @@ static void draw_box_lines( doc_element * h_line_el )
         }
         cur_hline = box_line->first;
         while( cur_hline != NULL ) {    // iterate over all horizontal lines
-            if( WgmlProcFlags.in_bx_box ) {
+            if( FlagsProc.in_bx_box ) {
                 box_draw_vlines( cur_hline, el_skip - hl_depth, el_skip, st_none );
-                if( WgmlProcFlags.vline_done) {
+                if( FlagsProc.vline_done) {
                     el_skip = 0;            // skip used
                 }
             } else {
                 box_draw_vlines( cur_hline, box_skip - hl_depth, box_skip, st_none );
-                if( WgmlProcFlags.vline_done) {
+                if( FlagsProc.vline_done) {
                     box_skip = 0;            // skip used
                 }
             }
@@ -546,12 +546,12 @@ static void draw_box_lines( doc_element * h_line_el )
         sav_blank_lines = h_line_el->blank_lines;
         sav_subs_skip = h_line_el->subs_skip;
         sav_top_skip = h_line_el->top_skip;
-        if( WgmlProcFlags.top_line ) {
+        if( FlagsProc.top_line ) {
             off_stub = st_ext;
             sav_top_skip += v_offset;   // position for HLINE
         }
 
-        if( !WgmlProcFlags.in_bx_box ) {    // first BX line: start of box
+        if( !FlagsProc.in_bx_box ) {    // first BX line: start of box
             cur_el = h_line_el;
             cur_hline = box_line->first;
             switch( cur_op ) {
@@ -571,7 +571,7 @@ static void draw_box_lines( doc_element * h_line_el )
                     } else {
                         add_doc_el_to_pool( cur_el );
                         box_draw_vlines( cur_hline, sav_subs_skip + sav_blank_lines, sav_top_skip, off_stub );
-                        if( WgmlProcFlags.vline_done ) {
+                        if( FlagsProc.vline_done ) {
                             sav_blank_lines = 0;        // skips used, zero saved skips
                             sav_subs_skip = 0;
                             sav_top_skip = 0;
@@ -605,12 +605,12 @@ static void draw_box_lines( doc_element * h_line_el )
             switch( cur_op ) {
             case bx_none:               // VLINEs, HLINEs + stubs
             case bx_on:
-                if( WgmlProcFlags.draw_v_line ) {
+                if( FlagsProc.draw_v_line ) {
                     cur_hline = box_line->first;
                     while( cur_hline != NULL ) {
                         box_draw_vlines( cur_hline, sav_subs_skip + sav_blank_lines,
                                                         sav_top_skip, st_none );
-                        if( WgmlProcFlags.vline_done ) {
+                        if( FlagsProc.vline_done ) {
                             sav_blank_lines = 0;        // skips used, zero saved skips
                             sav_subs_skip = 0;
                             sav_top_skip = 0;
@@ -635,7 +635,7 @@ static void draw_box_lines( doc_element * h_line_el )
                     } else {
                         add_doc_el_to_pool( cur_el );
                     }
-                    if( WgmlProcFlags.draw_v_line ) {
+                    if( FlagsProc.draw_v_line ) {
                         box_draw_vlines( cur_hline, 0, 0, st_up );  // draw stubs
                     }
                     cur_el = h_line_el;
@@ -661,7 +661,7 @@ static void draw_box_lines( doc_element * h_line_el )
                         add_doc_el_to_pool( cur_el );
                         box_draw_vlines( cur_hline, sav_subs_skip + sav_blank_lines,
                                                         sav_top_skip, off_stub );
-                        if( WgmlProcFlags.vline_done ) {
+                        if( FlagsProc.vline_done ) {
                             sav_blank_lines = 0;        // skips used, zero saved skips
                             sav_subs_skip = 0;
                             sav_top_skip = 0;
@@ -702,12 +702,12 @@ static void draw_box_lines( doc_element * h_line_el )
                     cur_el = h_line_el;
                     cur_hline = cur_hline->next;
                 }
-                if( WgmlProcFlags.draw_v_line ) {           // VLINEs will be drawn second
+                if( FlagsProc.draw_v_line ) {           // VLINEs will be drawn second
                     cur_hline = box_line->first;
                     while( cur_hline != NULL ) {
                         box_draw_vlines( cur_hline, sav_subs_skip + sav_blank_lines,
                                                         sav_top_skip, st_none );
-                        if( WgmlProcFlags.vline_done ) {
+                        if( FlagsProc.vline_done ) {
                             sav_blank_lines = 0;    // skips used, zero saved skips
                             sav_subs_skip = 0;
                             sav_top_skip = 0;
@@ -747,7 +747,7 @@ static void  box_line_element( void )
 
     cur_el = t_doc_el_group.first;
 
-    if( WgmlProcFlags.page_started ) {      // text line not at top of page
+    if( FlagsProc.page_started ) {      // text line not at top of page
         box_depth += cur_el->blank_lines + cur_el->subs_skip + cur_el->depth;
         if( box_skip == 0 ) {
             cur_el->subs_skip += el_skip;   // add el_skip to both cur_el & box_depth
@@ -760,7 +760,7 @@ static void  box_line_element( void )
     } else {                            // top of page
         box_skip = 0;                   // box_skip no longer relevant
         box_depth += cur_el->top_skip + cur_el->depth - v_offset;
-        WgmlProcFlags.page_started = true;
+        FlagsProc.page_started = true;
     }
 
     switch( cur_el->type ) {
@@ -806,13 +806,13 @@ static void  do_char_device( void )
         if( t_doc_el_group.depth <= g_max_depth ) { // doc_elements will all fit
             cur_el = t_doc_el_group.first;
             while( cur_el != NULL ) {
-                if( WgmlProcFlags.page_started ) {
+                if( FlagsProc.page_started ) {
                     skippage = cur_el->blank_lines + cur_el->subs_skip;
                     cur_el->subs_skip = 0;
                 } else {
                     skippage = cur_el->blank_lines + cur_el->top_skip;
                     cur_el->top_skip = 0;
-                    WgmlProcFlags.page_started = true;
+                    FlagsProc.page_started = true;
                 }
                 cur_el->blank_lines = 0;
                 if( skippage > 0 ) {
@@ -846,8 +846,8 @@ static void  do_char_device( void )
             box_el->element.text.overprint = true;  // force overprint
             box_el->element.text.force_op = true;   // even at top of page
         } else {
-            box_el->element.text.overprint = WgmlProcFlags.overprint;
-            WgmlProcFlags.overprint = false;
+            box_el->element.text.overprint = FlagsProc.overprint;
+            FlagsProc.overprint = false;
         }
         box_el->element.text.spacing = g_spacing;
 
@@ -958,7 +958,7 @@ static void  do_char_device( void )
             }
         }
 
-        if( WgmlProcFlags.in_bx_box ) {                                       // not first BX line
+        if( FlagsProc.in_bx_box ) {                                       // not first BX line
             if( t_page.cur_depth == t_page.max_depth ) {
                 skippage = box_el->blank_lines + box_el->top_skip;
             } else {
@@ -977,7 +977,7 @@ static void  do_char_device( void )
 
         insert_col_main( box_el );  // insert the box line
     }
-    WgmlProcFlags.in_bx_box = true; // box has started
+    FlagsProc.in_bx_box = true; // box has started
 
     return;
 }
@@ -1040,7 +1040,7 @@ static void do_line_device( void )
 
     /* Now deal with the HLINEs and associated VLINEs */
 
-    WgmlProcFlags.top_line = !WgmlProcFlags.page_started && (t_doc_el_group.first == NULL);
+    FlagsProc.top_line = !FlagsProc.page_started && (t_doc_el_group.first == NULL);
 
     if( (box_line->first == NULL) || (cur_op == bx_can) || (cur_op == bx_set) ||
             (!box_line->had_cols && (box_line->next != NULL) && (cur_op == bx_off)) ) {
@@ -1049,11 +1049,11 @@ static void do_line_device( void )
 
         h_line_el = NULL;
 
-        if( WgmlProcFlags.in_bx_box ) {     //  not on first line of box
+        if( FlagsProc.in_bx_box ) {     //  not on first line of box
 
             /* Update box_depth and el_skip directly since there are no HLINEs */
 
-            if( WgmlProcFlags.top_line ) {
+            if( FlagsProc.top_line ) {
                 box_depth += g_top_skip;
                 el_skip += g_top_skip;
             } else {
@@ -1065,7 +1065,7 @@ static void do_line_device( void )
 
             /* Update box_skip directly since there are no HLINEs */
 
-            if( WgmlProcFlags.top_line ) {
+            if( FlagsProc.top_line ) {
                 box_skip += g_top_skip;
             } else {
                 box_skip += g_subs_skip + g_blank_lines;
@@ -1085,7 +1085,7 @@ static void do_line_device( void )
         while( cur_hline != NULL ) {  // iterate over all horizontal lines
             if( cur_el == NULL ) {
                 cur_el = alloc_doc_el( el_hline );
-                if( WgmlProcFlags.in_bx_box ) {
+                if( FlagsProc.in_bx_box ) {
                     cur_el->subs_skip = g_subs_skip + el_skip + v_offset;
                 } else {
                     cur_el->subs_skip = g_subs_skip + box_skip + v_offset;
@@ -1120,8 +1120,8 @@ static void do_line_device( void )
             }
             cur_hline = cur_hline->next;
         }
-        if( WgmlProcFlags.in_bx_box ) {     // adjust el_skip for HLINE skips
-            if( WgmlProcFlags.top_line ) {
+        if( FlagsProc.in_bx_box ) {     // adjust el_skip for HLINE skips
+            if( FlagsProc.top_line ) {
                 el_skip += h_line_el->top_skip;
             } else {
                 el_skip += h_line_el->subs_skip + h_line_el->blank_lines;
@@ -1147,13 +1147,13 @@ static void do_line_device( void )
     /* these criteria may be expanded in the future         */
     /********************************************************/
 
-    WgmlProcFlags.draw_v_line = ((box_line->first != NULL) && (box_line->first->current > 0)
-                                && WgmlProcFlags.box_cols_cur && WgmlProcFlags.in_bx_box)
+    FlagsProc.draw_v_line = ((box_line->first != NULL) && (box_line->first->current > 0)
+                                && FlagsProc.box_cols_cur && FlagsProc.in_bx_box)
                             || (cur_op == bx_on)
                             || (((cur_op == bx_can ) || (cur_op == bx_off))
                                 && (box_line->next != NULL));
 
-    WgmlProcFlags.vline_done = false;   // will be set true if actually drawn
+    FlagsProc.vline_done = false;   // will be set true if actually drawn
 
  /// this is probably not entirely accurate
     /****************************************************************/
@@ -1161,7 +1161,7 @@ static void do_line_device( void )
     /*   1. if there is not enough room on the page, move to the    */
     /*      next page (draws VLINEs and resets el_skip/box_depth    */
     /*   2. if there is an HLINE to draw, invoke draw_box_lines()   */
-    /*      (WgmlProcFlags.draw_v_line determines if VLINEs are to be   */
+    /*      (FlagsProc.draw_v_line determines if VLINEs are to be   */
     /*      drawn, or just HLINEs)                                  */
     /*   3. if BX CAN (or BX DEL) is closing the outermost box,     */
     /*      invoke draw_box_lines() (VLINEs will be drawn)          */
@@ -1174,38 +1174,38 @@ static void do_line_device( void )
     /****************************************************************/
 
     g_max_depth = t_page.max_depth - t_page.cur_depth;          // reset value
-    if( !WgmlProcFlags.in_bx_box ) {                                // outermost box starts
+    if( !FlagsProc.in_bx_box ) {                                // outermost box starts
         if( cur_op == bx_set ) {
             if( g_max_depth < (box_skip + (v_offset - 1)) ) {   // to top of next page
                 do_page_out();
                 reset_t_page();
-                WgmlProcFlags.top_line = !WgmlProcFlags.page_started;   // reset for new page
+                FlagsProc.top_line = !FlagsProc.page_started;   // reset for new page
             }
         } else {
             if( g_max_depth < (h_line_el->subs_skip + (v_offset - 1) + def_height) ) {        // to top of next page
                 do_page_out();
                 reset_t_page();
-                WgmlProcFlags.top_line = !WgmlProcFlags.page_started;   // reset for new page
+                FlagsProc.top_line = !FlagsProc.page_started;   // reset for new page
             }
         }
         box_depth = 0;                              // top line of box
         draw_box_lines( h_line_el );
-        if( (cur_op == bx_set) && !WgmlProcFlags.page_started ) { // first box line at top of page
+        if( (cur_op == bx_set) && !FlagsProc.page_started ) { // first box line at top of page
             box_depth = def_height;
-            WgmlProcFlags.in_bx_box = true;             // box has started
+            FlagsProc.in_bx_box = true;             // box has started
         } else if( cur_op != bx_off ) {
             box_depth = hl_depth;
-            WgmlProcFlags.in_bx_box = true;             // box has started
+            FlagsProc.in_bx_box = true;             // box has started
         }
     } else {                                        // inside outermost box
 /// needs to be verified again; at least box_skip shouldn't matter!
         if( g_max_depth < (el_skip + hl_depth + def_height) ) {    // HLINE to top of page
             do_page_out();
             reset_t_page();
-            WgmlProcFlags.top_line = !WgmlProcFlags.page_started;     // reset for new page
+            FlagsProc.top_line = !FlagsProc.page_started;     // reset for new page
         }
-        if( (h_line_el != NULL) && WgmlProcFlags.in_bx_box ) {     // adjust for HLINE skips
-            if( WgmlProcFlags.top_line ) {
+        if( (h_line_el != NULL) && FlagsProc.in_bx_box ) {     // adjust for HLINE skips
+            if( FlagsProc.top_line ) {
                 box_depth += h_line_el->top_skip;
             } else {
                 box_depth += h_line_el->subs_skip + h_line_el->blank_lines;
@@ -1224,7 +1224,7 @@ static void do_line_device( void )
             box_depth = 0;
             el_skip = 0;
         } else if( h_line_el != NULL ) {                // only if HLINE was drawn
-            if( !WgmlProcFlags.vline_done ) {               // if VLINEs not drawn
+            if( !FlagsProc.vline_done ) {               // if VLINEs not drawn
                 box_depth += hl_depth;                  // increment box_depth
             } else {                                    // otherwise
                 box_depth = hl_depth;                   // initialize box_depth
@@ -1243,7 +1243,7 @@ static void do_line_device( void )
     /************************************************************/
 
     if( (t_page.last_col_main != NULL) && (cur_op != bx_can)
-            && !WgmlProcFlags.no_bx_hline ) {      // HLINEs, VLINEs, or both drawn, presumably
+            && !FlagsProc.no_bx_hline ) {      // HLINEs, VLINEs, or both drawn, presumably
         t_page.last_col_main->depth = hl_depth;
         t_page.cur_depth += hl_depth;
     }
@@ -1256,7 +1256,7 @@ static void do_line_device( void )
     /*     of the page, so it does not do this -- so far        */
     /************************************************************/
 
-    if( ((cur_op == bx_off) || ((cur_op == bx_on) && !WgmlProcFlags.box_cols_cur)) &&
+    if( ((cur_op == bx_off) || ((cur_op == bx_on) && !FlagsProc.box_cols_cur)) &&
             (t_page.max_depth == t_page.cur_depth) ) {
         do_page_out();
         reset_t_page();
@@ -1280,13 +1280,13 @@ static void eop_char_device( void ) {
 
     cur_el = t_doc_el_group.first;
     while( cur_el != NULL ) {
-        if( WgmlProcFlags.page_started ) {
+        if( FlagsProc.page_started ) {
             cur_skip = cur_el->subs_skip;
             cur_el->subs_skip = 0;
         } else {
             cur_skip = cur_el->top_skip;
             cur_el->top_skip = 0;
-            WgmlProcFlags.page_started = true;
+            FlagsProc.page_started = true;
         }
         skippage = cur_el->blank_lines + cur_skip;
         if( (t_page.cur_depth + skippage + cur_el->depth) <= t_page.max_depth ) {
@@ -1354,11 +1354,11 @@ static void eop_line_device( void ) {
     /* process any accumulated doc_elements */
 
     while( t_doc_el_group.first != NULL ) {
-        if( WgmlProcFlags.page_started ) {      // text line not at top of page
+        if( FlagsProc.page_started ) {      // text line not at top of page
             cur_skip = t_doc_el_group.first->subs_skip;
         } else {
             cur_skip = t_doc_el_group.first->top_skip;
-            WgmlProcFlags.page_started = true;
+            FlagsProc.page_started = true;
         }
         g_max_depth = t_page.max_depth - t_page.cur_depth;    // reset value
         skippage = t_doc_el_group.first->blank_lines + cur_skip;
@@ -1809,9 +1809,9 @@ void eop_bx_box( void ) {
 
     sav_cur_op = cur_op;
     cur_op = bx_eop;                    // do eop processing
-    sav_group_elements = WgmlProcFlags.group_elements;
-    WgmlProcFlags.group_elements = false;   // processed doc_elements go direct to page
-    WgmlProcFlags.page_started = (t_page.last_col_main != NULL);
+    sav_group_elements = FlagsProc.group_elements;
+    FlagsProc.group_elements = false;   // processed doc_elements go direct to page
+    FlagsProc.page_started = (t_page.last_col_main != NULL);
 
     g_max_depth = t_page.max_depth - t_page.cur_depth;
 
@@ -1826,7 +1826,7 @@ void eop_bx_box( void ) {
     }
 
     cur_op = sav_cur_op;                            // restore value on entry
-    WgmlProcFlags.group_elements = sav_group_elements;  // restore value on entry
+    FlagsProc.group_elements = sav_group_elements;  // restore value on entry
 
     return;
 }
@@ -1866,9 +1866,9 @@ void scr_bx( void )
     su                  boxcolwork;
     uint32_t            prev_col;   // previous value across horizontal splits
 
-    WgmlProcFlags.box_cols_cur = false;     // new BX line: no box column list yet
-    WgmlProcFlags.group_elements = false;   // stop accumulating doc_elements
-    WgmlProcFlags.no_bx_hline = false;      // emit horizontal line by default
+    FlagsProc.box_cols_cur = false;     // new BX line: no box column list yet
+    FlagsProc.group_elements = false;   // stop accumulating doc_elements
+    FlagsProc.no_bx_hline = false;      // emit horizontal line by default
 
     p = scan_start;
     while( *p == ' ' ) {
@@ -1908,7 +1908,7 @@ void scr_bx( void )
         p++;
     }
 
-    if( !WgmlProcFlags.in_bx_box && !*p ) {     // if not in a box, box columns must be given
+    if( !FlagsProc.in_bx_box && !*p ) {     // if not in a box, box columns must be given
         scan_restart = scan_stop;
         return;
     }
@@ -1922,7 +1922,7 @@ void scr_bx( void )
     /* Now for the box column list, if any */
 
     if( *p ) {
-        WgmlProcFlags.box_cols_cur = true;      // box column list found
+        FlagsProc.box_cols_cur = true;      // box column list found
         cur_temp = alloc_box_col_set();
         cur_line = cur_temp;
         first_col = true;                   // first column not yet found
@@ -2020,7 +2020,7 @@ void scr_bx( void )
         stack_temp = alloc_box_col_stack();
         stack_temp->next = box_line;
         box_line = stack_temp;
-        box_line->had_cols = WgmlProcFlags.box_cols_cur;    // drop through to merge_lines()
+        box_line->had_cols = FlagsProc.box_cols_cur;    // drop through to merge_lines()
     case bx_none :
     case bx_can :
     case bx_off :
@@ -2032,18 +2032,18 @@ void scr_bx( void )
         break;
     }
 
-    /* set the WgmlProcFlags specific to BX */
+    /* set the FlagsProc specific to BX */
 
-    WgmlProcFlags.page_started = (t_page.last_col_main != NULL);
-    WgmlProcFlags.no_bx_hline = (cur_op == bx_set) ||
-                            ((cur_op == bx_new) && !WgmlProcFlags.box_cols_cur);
+    FlagsProc.page_started = (t_page.last_col_main != NULL);
+    FlagsProc.no_bx_hline = (cur_op == bx_set) ||
+                            ((cur_op == bx_new) && !FlagsProc.box_cols_cur);
 
     /* set the basic layout values for BX */
 
     def_height = wgml_fonts[g_curr_font].line_height;       // normal box line height
     g_max_depth = t_page.max_depth - t_page.cur_depth;        // maximum depth available
 
-    if( !WgmlProcFlags.no_bx_hline || (cur_op == bx_set) ) {
+    if( !FlagsProc.no_bx_hline || (cur_op == bx_set) ) {
         set_skip_vars( NULL, NULL, NULL, g_spacing_ln, bin_device->box.font );
 
         /************************************************************/
@@ -2070,7 +2070,7 @@ void scr_bx( void )
     }
 
     if( (cur_op == bx_off) || (cur_op == bx_can)
-            || ((cur_op == bx_on) && !WgmlProcFlags.box_cols_cur) ) {
+            || ((cur_op == bx_on) && !FlagsProc.box_cols_cur) ) {
 
         /****************************************************/
         /* Propagate depth increments to prior stack entry  */
@@ -2124,15 +2124,15 @@ void scr_bx( void )
         /* If the stack is empty, the entire box has ended */
 
         if( box_line == NULL ) {
-            WgmlProcFlags.in_bx_box = false;
+            FlagsProc.in_bx_box = false;
             box_depth = 0;
             el_skip = 0;
             cur_op = bx_none;
         } else {
-            WgmlProcFlags.group_elements = true;    // start accumulating doc_elements
+            FlagsProc.group_elements = true;    // start accumulating doc_elements
         }
     } else {
-        WgmlProcFlags.group_elements = true;    // start accumulating doc_elements
+        FlagsProc.group_elements = true;    // start accumulating doc_elements
     }
 
     if( box_line != NULL ) {
@@ -2168,15 +2168,15 @@ void scr_bx( void )
         /*      -- the BX line had operator SET                             */
         /********************************************************************/
 
-        if( ((cur_op == bx_none) && !WgmlProcFlags.box_cols_cur)
+        if( ((cur_op == bx_none) && !FlagsProc.box_cols_cur)
 //                || (((cur_op == bx_new) || (cur_op == bx_on) || (cur_op == bx_set))
                 || (((cur_op == bx_new) || (cur_op == bx_set))
-                    && WgmlProcFlags.box_cols_cur)
+                    && FlagsProc.box_cols_cur)
                 || ((cur_op == bx_off) || (cur_op == bx_can)) ) {
             prev_line = box_line->first;
             box_line->first = NULL;
         } else if( (cur_op == bx_off) || (cur_op == bx_can)
-                || (!WgmlProcFlags.box_cols_cur
+                || (!FlagsProc.box_cols_cur
                     && ((cur_op == bx_new) || (cur_op == bx_on) || (cur_op == bx_set)))
                 ) {
             prev_line = NULL;
@@ -2222,7 +2222,7 @@ if( mem_validate() ) {
     out_msg( ">>> heap NOT valid\n" );
 }
 
-    WgmlProcFlags.skips_valid = false;          // ensures following text will use correct skips
+    FlagsProc.skips_valid = false;          // ensures following text will use correct skips
     set_h_start();                          // pick up any indents
 
     scan_restart = scan_stop;

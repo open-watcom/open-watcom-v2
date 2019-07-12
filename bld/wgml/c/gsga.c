@@ -509,7 +509,7 @@ void    scr_ga( void )
             return;
         }
         savetag = '*';                  // remember for possible quick access
-        if( WgmlGlobFlags.firstpass && input_cbs->fmflags & II_research ) {
+        if( FlagsGlob.firstpass && input_cbs->fmflags & II_research ) {
             out_msg("  using tagname %s\n", tagname );
         }
     } else {
@@ -565,7 +565,7 @@ void    scr_ga( void )
             return;
         }
         saveatt = '*';                  // remember for possible quick access
-        if( WgmlGlobFlags.firstpass && input_cbs->fmflags & II_research ) {
+        if( FlagsGlob.firstpass && input_cbs->fmflags & II_research ) {
             out_msg("  using attname %s\n", attname );
         }
         att_flags = att_entry->attflags;

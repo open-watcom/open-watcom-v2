@@ -156,13 +156,13 @@ void    lay_fn( lay_tag ltag )
     p = scan_start;
     cvterr = false;
 
-    if( !WgmlGlobFlags.firstpass ) {
+    if( !FlagsGlob.firstpass ) {
         scan_start = scan_stop;
         eat_lay_sub_tag();
         return;                         // process during first pass only
     }
-    if( WgmlProcFlags.lay_xxx != el_fn ) {
-        WgmlProcFlags.lay_xxx = el_fn;
+    if( FlagsProc.lay_xxx != el_fn ) {
+        FlagsProc.lay_xxx = el_fn;
     }
     cc = get_lay_sub_and_value( &l_args );  // get one with value
     while( cc == pos ) {
@@ -244,13 +244,13 @@ void    lay_fnref( lay_tag ltag )
     p = scan_start;
     cvterr = false;
 
-    if( !WgmlGlobFlags.firstpass ) {
+    if( !FlagsGlob.firstpass ) {
         scan_start = scan_stop;
         eat_lay_sub_tag();
         return;                         // process during first pass only
     }
-    if( WgmlProcFlags.lay_xxx != el_fnref ) {
-        WgmlProcFlags.lay_xxx = el_fnref;
+    if( FlagsProc.lay_xxx != el_fnref ) {
+        FlagsProc.lay_xxx = el_fnref;
     }
     cc = get_lay_sub_and_value( &l_args );  // get att with value
     while( cc == pos ) {

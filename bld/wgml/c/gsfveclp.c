@@ -126,8 +126,8 @@ static  condcode    scr_veclp( parm parms[MAX_FUN_PARMS], size_t parmcount,
     if( (hay_len > 0) ||                // not null string
         (needle_len > 0) ) {            // needle not null
 
-        suppress_msg = WgmlProcFlags.suppress_msg;
-        WgmlProcFlags.suppress_msg = true;
+        suppress_msg = FlagsProc.suppress_msg;
+        FlagsProc.suppress_msg = true;
         scan_err = false;
         c = *phayend;
         *phayend = '\0';
@@ -135,7 +135,7 @@ static  condcode    scr_veclp( parm parms[MAX_FUN_PARMS], size_t parmcount,
         scan_sym( phay, &symvar_entry, &var_ind );
 
         *phayend = c;
-        WgmlProcFlags.suppress_msg = suppress_msg;;
+        FlagsProc.suppress_msg = suppress_msg;;
 
         if( !scan_err ) {
 

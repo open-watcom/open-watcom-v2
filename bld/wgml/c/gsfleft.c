@@ -79,7 +79,7 @@ condcode    scr_left( parm parms[MAX_FUN_PARMS], size_t parmcount, char * * resu
         gn.argstop  = parms[1].stop;
         cc = getnum( &gn );
         if( cc != pos ) {
-            if( !WgmlProcFlags.suppress_msg ) {
+            if( !FlagsProc.suppress_msg ) {
                 g_err( err_func_parm, "2 (length)" );
                 g_info_inp_pos();
                 err_count++;

@@ -44,7 +44,7 @@ static  char    str_buf[MAX_ERR_LEN + 2];
 void g_suicide( void )
 {
     out_msg( "\n\nWGML suicide\n\n" );
-    if( WgmlGlobFlags.research ) {        // TBD
+    if( FlagsGlob.research ) {        // TBD
 
         print_macro_dict( macro_dict, true );
 

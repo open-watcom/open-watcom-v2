@@ -92,7 +92,7 @@ extern  void    gml_include( gml_tag gtag )
 #if defined( __UNIX__ )
         strlwr( token_buf );
 #endif
-        WgmlProcFlags.newLevelFile = 1;     // start new include level
+        FlagsProc.newLevelFile = 1;     // start new include level
         scan_start = scan_stop;         // .. and ignore remaining line
     }
     return;

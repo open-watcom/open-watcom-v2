@@ -1061,7 +1061,7 @@ static void set_to( option * opt )
 
 static void set_inclist( option * opt )
 {
-    WgmlGlobFlags.inclist = opt->value;
+    FlagsGlob.inclist = opt->value;
 }
 
 /***************************************************************************/
@@ -1070,7 +1070,7 @@ static void set_inclist( option * opt )
 
 static void set_index( option * opt )
 {
-    WgmlGlobFlags.index = opt->value;
+    FlagsGlob.index = opt->value;
 }
 
 /***************************************************************************/
@@ -1079,7 +1079,7 @@ static void set_index( option * opt )
 
 static void set_stats( option * opt )
 {
-    WgmlGlobFlags.statistics = opt->value;
+    FlagsGlob.statistics = opt->value;
 }
 
 
@@ -1171,7 +1171,7 @@ static void set_OPTFile( option * opt )
 
 static void set_quiet( option * opt )
 {
-    WgmlGlobFlags.quiet = opt->value;
+    FlagsGlob.quiet = opt->value;
     add_symvar( &global_dict, "$quiet", opt->value ? "ON" : "OFF", no_subscript,
                 predefined );
 
@@ -1190,7 +1190,7 @@ static void set_research( option * opt )
     char        str[256];
 
 
-    WgmlGlobFlags.research = opt->value;
+    FlagsGlob.research = opt->value;
 
     if( IS_OPTION_END1( tokennext ) ) {
         str[0] = '\0';
@@ -1201,7 +1201,7 @@ static void set_research( option * opt )
         } else {
             strcpy( str, "too long " );
         }
-        WgmlProcFlags.researchfile = true;  // only one file
+        FlagsProc.researchfile = true;  // only one file
         research_from = 1;
         research_to = LINENO_MAX;
 
@@ -1251,7 +1251,7 @@ static void set_research( option * opt )
 #if 0                  // always set (w)script option, don't allow to disable
 static void set_wscript( option * opt )
 {
-    WgmlGlobFlags.wscript = opt->value;
+    FlagsGlob.wscript = opt->value;
 };
 #endif
 

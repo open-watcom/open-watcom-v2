@@ -166,7 +166,7 @@ static  void    gml_ixxx_common( gml_tag gtag, int hx_lvl )
     char          hxstring[TAG_NAME_LENGTH +1];
     char          lvlc;
 
-    if( !WgmlGlobFlags.index ) {          // index option not active
+    if( !FlagsGlob.index ) {          // index option not active
         scan_start = scan_stop;         // ignore tag
         return;
     }
@@ -175,8 +175,8 @@ static  void    gml_ixxx_common( gml_tag gtag, int hx_lvl )
     strcpy( hxstring + 1, gml_tagname( gtag ) );
 
     if( (hxstring[2] == lvlc) &&        // :Ix tags not allowed before :GDOC
-        !((WgmlProcFlags.doc_sect >= doc_sect_gdoc) ||
-        (WgmlProcFlags.doc_sect_nxt >= doc_sect_gdoc)) ) {
+        !((FlagsProc.doc_sect >= doc_sect_gdoc) ||
+        (FlagsProc.doc_sect_nxt >= doc_sect_gdoc)) ) {
 
         g_err( err_tag_before_gdoc, hxstring );
         err_count++;
@@ -212,7 +212,7 @@ static  void    gml_ixxx_common( gml_tag gtag, int hx_lvl )
 
     wkpage    = page + 1;
     p         = scan_start;
-    WgmlProcFlags.tag_end_found = false;
+    FlagsProc.tag_end_found = false;
 
     /***********************************************************************/
     /*  Scan attributes  for :Ix  :IHx :IREF                               */
@@ -226,14 +226,14 @@ static  void    gml_ixxx_common( gml_tag gtag, int hx_lvl )
     /***********************************************************************/
 
     for( ;; ) {
-        if( WgmlProcFlags.tag_end_found ) {
+        if( FlagsProc.tag_end_found ) {
             break;
         }
         while( is_space_tab_char( *p ) ) {
             p++;
         }
         if( *p == '.'  ) {
-            WgmlProcFlags.tag_end_found = true;
+            FlagsProc.tag_end_found = true;
             break;
         }
         if( *p == '\0' ) {
@@ -287,7 +287,7 @@ static  void    gml_ixxx_common( gml_tag gtag, int hx_lvl )
                     refidseen = true;   // refid attribute found
                     refwk = find_refid( iref_dict, refid.id );
                     if( refwk == NULL ) {   // refid not in dict
-                        if( WgmlGlobFlags.lastpass ) {// this is an error
+                        if( FlagsGlob.lastpass ) {// this is an error
                             g_err( inf_id_unknown );// during lastpass
                             err_count++;
                             file_mac_info();
@@ -407,7 +407,7 @@ static  void    gml_ixxx_common( gml_tag gtag, int hx_lvl )
                     fill_id( &reseeid, val_start, val_len );// copy lower id
                     rswk = find_refid( iref_dict, reseeid.id );
                     if( rswk == NULL ) {// not in dict, this is an error
-                        if( WgmlGlobFlags.lastpass ) {  // during lastpass
+                        if( FlagsGlob.lastpass ) {  // during lastpass
                             g_err( inf_id_unknown );
                             err_count++;
                             file_mac_info();
@@ -434,7 +434,7 @@ static  void    gml_ixxx_common( gml_tag gtag, int hx_lvl )
         break;
     }
 
-    if( WgmlProcFlags.tag_end_found ) {     // tag end ?
+    if( FlagsProc.tag_end_found ) {     // tag end ?
         p++;
         if( hx_lvl > 0 ) {              // we need a text line for :Ix :IHx
             if( !*p ) {
@@ -468,7 +468,7 @@ static  void    gml_ixxx_common( gml_tag gtag, int hx_lvl )
             scan_start = scan_stop;
             return;
         }
-        if( WgmlGlobFlags.lastpass ) {
+        if( FlagsGlob.lastpass ) {
             if( refidseen && (refwk != NULL) ) {
                 ixhwk = refwk->u.refb.hblk;
             } else {

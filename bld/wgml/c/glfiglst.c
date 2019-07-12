@@ -96,13 +96,13 @@ void    lay_figlist( lay_tag ltag )
 
     p = scan_start;
 
-    if( !WgmlGlobFlags.firstpass ) {
+    if( !FlagsGlob.firstpass ) {
         scan_start = scan_stop;
         eat_lay_sub_tag();
         return;                         // process during first pass only
     }
-    if( WgmlProcFlags.lay_xxx != el_figlist ) {
-        WgmlProcFlags.lay_xxx = el_figlist;
+    if( FlagsProc.lay_xxx != el_figlist ) {
+        FlagsProc.lay_xxx = el_figlist;
     }
 
 

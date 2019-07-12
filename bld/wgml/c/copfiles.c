@@ -222,7 +222,7 @@ static void compute_metrics( wgml_font * in_font )
      * fields are already correct for a non-PS device.
      */
 
-    if( WgmlProcFlags.ps_device ) {
+    if( FlagsProc.ps_device ) {
 
         /* The formula is: (font height * 3) / 10, rounded down.
          * The font height is in vertical base units, computed as above.
@@ -730,8 +730,8 @@ void cop_setup( void )
 
     bin_device = NULL;
     bin_driver = NULL;
-    WgmlProcFlags.has_aa_block = false;
-    WgmlProcFlags.ps_device = false;
+    FlagsProc.has_aa_block = false;
+    FlagsProc.ps_device = false;
     wgml_font_cnt = 0;
     wgml_fonts = NULL;
 
@@ -807,18 +807,18 @@ void cop_setup( void )
         }
     }
 
-    /* Set WgmlProcFlags.has_aa_block to "true" if the driver defines the
+    /* Set FlagsProc.has_aa_block to "true" if the driver defines the
      * ABSOLUTEADDRESS block.
      */
 
     if( bin_driver->absoluteaddress.text != NULL ) {
-        WgmlProcFlags.has_aa_block = true;
+        FlagsProc.has_aa_block = true;
     }
 
-    /* Set WgmlProcFlags.ps_device to "true" if the driver name begins with "ps" or "PS". */
+    /* Set FlagsProc.ps_device to "true" if the driver name begins with "ps" or "PS". */
 
     if( !strnicmp( bin_device->driver_name, "ps", 2 ) ) {
-        WgmlProcFlags.ps_device = true;
+        FlagsProc.ps_device = true;
     }
 
     /* Get the highest font number and reduce it by one so it contains the
@@ -850,7 +850,7 @@ void cop_setup( void )
      * But not if the device is PS: for PS, such fonts are never created.
      */
 
-    if( !WgmlProcFlags.ps_device ) {
+    if( !FlagsProc.ps_device ) {
         if( bin_device->box.font_name == NULL ) {
             if( bin_device->underscore.specified_font && (bin_device->underscore.font_name != NULL) ) {
                 gen_cnt++;
@@ -1351,13 +1351,13 @@ void cop_ti_table( const char *p )
                     }
                     len = p - pa;
                     if( len == 0 ) {    // no set char: set to ' '
-                        WgmlProcFlags.in_trans = false;
+                        FlagsProc.in_trans = false;
                         in_esc = ' ';
                     } else if( len > 1 ) { // hex digits are not allowed here
                         xx_line_err_len( err_char_only, pa, len );
                         return;
                     } else {
-                        WgmlProcFlags.in_trans = true;
+                        FlagsProc.in_trans = true;
                         in_esc = *pa;
                     }
 

@@ -42,15 +42,15 @@ static  font_number     font_save;      // save for font
 
 extern  void    gml_address( gml_tag gtag )
 {
-    if( !((WgmlProcFlags.doc_sect == doc_sect_titlep) ||
-          (WgmlProcFlags.doc_sect_nxt == doc_sect_titlep)) ) {
+    if( !((FlagsProc.doc_sect == doc_sect_titlep) ||
+          (FlagsProc.doc_sect_nxt == doc_sect_titlep)) ) {
         g_err( err_tag_wrong_sect, gml_tagname( gtag ), ":TITLEP section" );
         err_count++;
         show_include_stack();
         scan_start = scan_stop;
         return;
     }
-    WgmlProcFlags.address_active = true;
+    FlagsProc.address_active = true;
     first_aline = true;
     font_save = g_curr_font;
     g_curr_font = layout_work.address.font;
@@ -70,7 +70,7 @@ extern  void    gml_address( gml_tag gtag )
 
     set_skip_vars( NULL, &layout_work.address.pre_skip, NULL, g_spacing_ln, g_curr_font );
 
-    WgmlProcFlags.group_elements = true;
+    FlagsProc.group_elements = true;
 
     scan_start = scan_stop;
     return;
@@ -85,13 +85,13 @@ extern  void    gml_eaddress( gml_tag gtag )
 {
     tag_cb  *   wk;
 
-    if( !WgmlProcFlags.address_active ) {   // no preceding :ADDRESS tag
+    if( !FlagsProc.address_active ) {   // no preceding :ADDRESS tag
         g_err_tag_prec( gml_tagname( gtag ) );
         scan_start = scan_stop;
         return;
     }
     g_curr_font = font_save;
-    WgmlProcFlags.address_active = false;
+    FlagsProc.address_active = false;
     rs_loc = titlep_tag;
     wk = nest_cb;
     nest_cb = nest_cb->prev;
@@ -99,7 +99,7 @@ extern  void    gml_eaddress( gml_tag gtag )
 
     /*  place the accumulated ALINES on the proper page */
 
-    WgmlProcFlags.group_elements = false;
+    FlagsProc.group_elements = false;
     if( t_doc_el_group.first != NULL ) {
         t_doc_el_group.depth += (t_doc_el_group.first->blank_lines + t_doc_el_group.first->subs_skip);
     }
@@ -175,13 +175,13 @@ void    gml_aline( gml_tag gtag )
     doc_element *   cur_el;
     text_line   *   ad_line;
 
-    if( !((WgmlProcFlags.doc_sect == doc_sect_titlep) ||
-          (WgmlProcFlags.doc_sect_nxt == doc_sect_titlep)) ) {
+    if( !((FlagsProc.doc_sect == doc_sect_titlep) ||
+          (FlagsProc.doc_sect_nxt == doc_sect_titlep)) ) {
         g_err( err_tag_wrong_sect, gml_tagname( gtag ), ":TITLEP section" );
         err_count++;
         show_include_stack();
     }
-    if( !WgmlProcFlags.address_active ) {   // no preceding :ADDRESS tag
+    if( !FlagsProc.address_active ) {   // no preceding :ADDRESS tag
         g_err_tag_prec( "ADDRESS" );
     }
     p = scan_start;
@@ -214,11 +214,11 @@ void    gml_aline( gml_tag gtag )
     cur_el->depth = ad_line->line_height + g_spacing;
     cur_el->subs_skip = g_subs_skip;
     cur_el->top_skip = g_top_skip;
-    cur_el->element.text.overprint = WgmlProcFlags.overprint;
-    WgmlProcFlags.overprint = false;
+    cur_el->element.text.overprint = FlagsProc.overprint;
+    FlagsProc.overprint = false;
     cur_el->element.text.spacing = g_spacing;
     cur_el->element.text.first = ad_line;
-    WgmlProcFlags.skips_valid = false;
+    FlagsProc.skips_valid = false;
     ad_line = NULL;
     insert_col_main( cur_el );
 

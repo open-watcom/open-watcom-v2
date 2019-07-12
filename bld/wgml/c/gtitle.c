@@ -89,8 +89,8 @@ void    gml_title( gml_tag gtag )
     spacing_line    spacing_ln;
     font_number     font_save;
 
-    if( !((WgmlProcFlags.doc_sect == doc_sect_titlep) ||
-          (WgmlProcFlags.doc_sect_nxt == doc_sect_titlep)) ) {
+    if( !((FlagsProc.doc_sect == doc_sect_titlep) ||
+          (FlagsProc.doc_sect_nxt == doc_sect_titlep)) ) {
         g_err( err_tag_wrong_sect, gml_tagname( gtag ), ":TITLEP section" );
         err_count++;
         show_include_stack();
@@ -128,15 +128,15 @@ void    gml_title( gml_tag gtag )
             ++p;
         }
         *p = '\0';
-        if( !WgmlProcFlags.stitle_seen ) {  // first stitle goes into dictionary
+        if( !FlagsProc.stitle_seen ) {  // first stitle goes into dictionary
             add_symvar( &global_dict, "$stitle", valstart, no_subscript, 0 );
-            WgmlProcFlags.stitle_seen = true;
+            FlagsProc.stitle_seen = true;
         }
         p++;
     }
 
     if( *p == '.' ) p++;                // over '.'
-    if( !WgmlProcFlags.title_text_seen ) {
+    if( !FlagsProc.title_text_seen ) {
         if( *p ) {                      // first title goes into dictionary
             add_symvar( &global_dict, "$title", p, no_subscript, 0 );
         }
@@ -147,9 +147,9 @@ void    gml_title( gml_tag gtag )
     font_save = g_curr_font;
     g_curr_font = layout_work.title.font;
     spacing_ln = layout_work.titlep.spacing;
-    if( !WgmlProcFlags.title_tag_top ) {
+    if( !FlagsProc.title_tag_top ) {
         set_skip_vars( NULL, &layout_work.title.pre_top_skip, NULL, spacing_ln, g_curr_font );
-        WgmlProcFlags.title_tag_top = true;
+        FlagsProc.title_tag_top = true;
     } else {
         set_skip_vars( &layout_work.title.skip, NULL, NULL, spacing_ln, g_curr_font );
     }
@@ -165,11 +165,11 @@ void    gml_title( gml_tag gtag )
     cur_el->depth = p_line->line_height + g_spacing;
     cur_el->subs_skip = g_subs_skip;
     cur_el->top_skip = g_top_skip;
-    cur_el->element.text.overprint = WgmlProcFlags.overprint;
-    WgmlProcFlags.overprint = false;
+    cur_el->element.text.overprint = FlagsProc.overprint;
+    FlagsProc.overprint = false;
     cur_el->element.text.spacing = g_spacing;
     cur_el->element.text.first = p_line;
-    WgmlProcFlags.skips_valid = false;
+    FlagsProc.skips_valid = false;
     p_line = NULL;
     insert_col_main( cur_el );
 

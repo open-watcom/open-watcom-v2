@@ -99,13 +99,13 @@ void    lay_toc( lay_tag ltag )
 
     p = scan_start;
 
-    if( !WgmlGlobFlags.firstpass ) {
+    if( !FlagsGlob.firstpass ) {
         scan_start = scan_stop;
         eat_lay_sub_tag();
         return;                         // process during first pass only
     }
-    if( WgmlProcFlags.lay_xxx != el_toc ) {
-        WgmlProcFlags.lay_xxx = el_toc;
+    if( FlagsProc.lay_xxx != el_toc ) {
+        FlagsProc.lay_xxx = el_toc;
     }
 
 

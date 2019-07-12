@@ -76,10 +76,10 @@ void    scr_ct( void )
     if( *p ) {                          // line operand specified
         p++;                            // over space
         if( *p ) {
-            if( !WgmlProcFlags.fsp ) {      // preserved forced space
+            if( !FlagsProc.fsp ) {      // preserved forced space
                 post_space = 0;
             }
-            WgmlProcFlags.ct = true;
+            FlagsProc.ct = true;
             if( (*p == SCR_char) ||     // script control word follows
                 (*p == GML_char) ) {    // GML tag follows
                 split_input( scan_start, p, false ); // TBD, fixes problem with macro
