@@ -8,7 +8,7 @@ copy_tree1()
 {
   for x in $1/*; do
     if [ -f "$x" ]; then
-      if [ "$x" == "$3" ]; then
+      if [ "$x" == "$1/$3" ]; then
         f = $2/$x
         d = `dirname "$f"`
         if [ ! -d "$d" ]; then
