@@ -2,6 +2,7 @@
 #
 # Script to fill Travis build cache
 #
+set -x
 
 copy_tree1_obj()
 {
