@@ -186,13 +186,13 @@ cdsay .
 # Continue with SDK tools
 [ INCLUDE <OWSRCDIR>/wpi/builder.ctl ]
 [ INCLUDE <OWSRCDIR>/commonui/builder.ctl ]
-[ INCLUDE <OWSRCDIR>/sdk/builder.ctl ]
 
 [ BLOCK <1> clean build rel cprel clean3 build3 rel3 cprel3 passclean pass ]
 #===========================================================================
 # Build all of Open Watcom using freshly built tools.
 # part 3
 #
+[ INCLUDE <OWSRCDIR>/sdk/builder.ctl ]
 # Now miscellaneous command line tools
 [ INCLUDE <OWSRCDIR>/ndisasm/builder.ctl ]
 [ INCLUDE <OWSRCDIR>/exedump/builder.ctl ]
