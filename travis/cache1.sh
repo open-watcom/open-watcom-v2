@@ -6,17 +6,18 @@ set -x
 
 copy_tree1()
 {
-  for x in $1/*; do
+  for x in "$1/$3"; do
     if [ -f "$x" ]; then
-      if [ "$x" == "$1/$3" ]; then
-        f = $2/$x
-        d = `dirname "$f"`
-        if [ ! -d "$d" ]; then
-          mkdir -p "$d" >>$OWBINDIR/cache1.log
-        fi
-        cp $CP_OPTS "$x" "$f" >>$OWBINDIR/cache1.log
+      f = "$2/$x"
+      d = `dirname "$f"`
+      if [ ! -d "$d" ]; then
+        mkdir -p "$d" >>$OWBINDIR/cache1.log
       fi
-    elif [ -d "$x" ]; then
+      cp $CP_OPTS "$x" "$f" >>$OWBINDIR/cache1.log
+    fi
+  done
+  for x in "$1/*"; do
+    if [ -d "$x" ]; then
       copy_tree1 "$x" $2 $3
     fi
   done
