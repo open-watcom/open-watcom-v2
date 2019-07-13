@@ -1,4 +1,4 @@
-inc_dirs = -I. -I"$(vi_dir)/h" -I"$(rcsdll_dir)" $(ui_inc_dirs) $(ui_extra_inc_dirs) -I"$(posix_dir)/h"
+inc_dirs = -I. -I"$(vi_dir)/h" $(rcsdll_inc_dirs) $(ui_inc_dirs) $(ui_extra_inc_dirs) -I"$(posix_dir)/h"
 
 !ifdef curses
 inc_dirs_dos = -I"$(curses_dir)/h"
