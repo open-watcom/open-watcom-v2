@@ -30,7 +30,7 @@ REM Subdirectory containing documentation sources
 set OWDOCSDIR=%OWROOT%\docs
 
 REM Set environment variables
-set PATH=%OWBINDIR%;%OWROOT%\build;%OWDEFPATH%
+set PATH=%OWBINDIR%;%OWROOT%\build;%OWDEFPATH%;%OWGHOSTSCRIPTPATH%
 set INCLUDE=%OWDEFINCLUDE%
 set WATCOM=%OWDEFWATCOM%
 

@@ -37,7 +37,7 @@ export OWDOCBUILD=0
 ##################################
 
 # Change this to the PATH required by GhostScript for PDF creation on used host OS (optional)
-# export OWGHOSTSCRIPTPATH=$PATH
+# export OWGHOSTSCRIPTPATH=:
 
 # Set appropriate variables to point to Windows help compilers which you 
 # have installed

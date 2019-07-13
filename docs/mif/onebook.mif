@@ -293,15 +293,7 @@ $(hbook).chm : $(hbook).htm $(hbook).h
 .EXTENSIONS: .pdf
 
 $(hbook).pdf : $(hbook).ps
-    $(noecho)set OWDOCS_OLD_PATH=$(%PATH)
-!ifdef __UNIX__
-    $(noecho)set PATH=$(%OWGHOSTSCRIPTPATH):$(%PATH)
-!else
-    $(noecho)set PATH=$(%OWGHOSTSCRIPTPATH);$(%PATH)
-!endif
-    !$(hc_pdf) -r600 $[@ $(hbook).pdf
-    $(noecho)set PATH=$(%OWDOCS_OLD_PATH)
-    $(noecho)set OWDOCS_OLD_PATH=
+    $(hc_pdf) -r600 $[@ $(hbook).pdf
 
 ####################################################
 #
