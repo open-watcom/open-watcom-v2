@@ -330,7 +330,7 @@ bool GetSetGenDialog( void )
     bool        rc;
 
     dlgproc = MakeProcInstance_DLG( SetGenDlgProc, InstanceHandle );
-    rc = DialogBox( InstanceHandle, "SETGEN", root_window_id, dlgproc );
+    rc = ( DialogBox( InstanceHandle, "SETGEN", root_window_id, dlgproc ) != 0 );
     FreeProcInstance_DLG( dlgproc );
 
     // redisplay all files to ensure screen completely correct

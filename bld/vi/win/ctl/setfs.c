@@ -429,7 +429,7 @@ static void updateDialogSettings( HWND hwndDlg, bool title )
     HWND    hwndCB;
     int     index;
     char    *template;
-    int     totallen;
+    size_t  totallen;
 
     hwndCB = GetDlgItem( hwndDlg, SETFS_FILETYPE );
     index = (int)SendMessage( hwndCB, CB_GETCURSEL, 0, 0L );
@@ -484,7 +484,7 @@ static void writeSettings( HWND hwndDlg )
     int     dlgDataArray_count;
     int     index;
     char    *template;
-    int     len;
+    size_t  len;
 
     FTSFini();
     FTSInit();
@@ -510,7 +510,8 @@ static void writeSettings( HWND hwndDlg )
 static long deleteSelectedFT( HWND hwndDlg )
 {
     HWND    hwndCB;
-    int     len, rc;
+    size_t  len;
+    int     rc;
     int     index;
     char    *template;
     int     dlgDataArray_count;
@@ -661,7 +662,7 @@ bool GetSetFSDialog( void )
     bool        rc;
 
     dlgproc = MakeProcInstance_DLG( SetFSDlgProc, InstanceHandle );
-    rc = DialogBox( InstanceHandle, "SETFS", root_window_id, dlgproc );
+    rc = ( DialogBox( InstanceHandle, "SETFS", root_window_id, dlgproc ) != 0 );
     FreeProcInstance_DLG( dlgproc );
 
     // redisplay all files to ensure screen completely correct
