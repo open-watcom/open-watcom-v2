@@ -6,45 +6,32 @@ set -x
 
 copy_tree2()
 {
-  for x in "$1/$3"; do
-    if [ -f "$x" ]; then
-      f = "$2/$x"
-      d = `dirname "$f"`
-      if [ ! -d "$d" ]; then
-        mkdir -p "$d" >>$OWBINDIR/cache2.log
-      fi
-      cp $CP_OPTS "$x" "$f" >>$OWBINDIR/cache2.log
-    fi
-  done
-  for x in "$1/*"; do
-    if [ -d "$x" ]; then
-      copy_tree2 "$x" $2 $3
-    fi
-  done
-}
-
-copy_tree2_lib()
-{
   cd $OWSRCDIR/$1
-  copy_tree2 . $OWROOT/buildx/$1 *.lib
+  for x in `find . -name "$2" -type f`; do
+      dirn=$OWROOT/buildx/$1/`dirname "$x"`
+      if [ ! -d "$dirn" ]; then
+        mkdir -p "$dirn" >>$OWBINDIR/cache2.log
+      fi
+      cp $CP_OPTS "$x" "$OWROOT/buildx/$1/$x" >>$OWBINDIR/cache2.log
+  done
 }
 
 echo "save cache2" >$OWBINDIR/cache2.log
 #
-copy_tree2_lib fpuemu
+copy_tree2  fpuemu "*.lib"
 #
-copy_tree2_lib wres
+copy_tree2  wres "*.lib"
 #
-copy_tree2_lib orl
+copy_tree2  orl "*.lib"
 #
-copy_tree2_lib owl
+copy_tree2  owl "*.lib"
 #
-copy_tree2_lib dwarf
+copy_tree2  dwarf "*.lib"
 #
-copy_tree2_lib cfloat
+copy_tree2  cfloat "*.lib"
 #
-copy_tree2_lib commonui
+copy_tree2  commonui "*.lib"
 #
-copy_tree2_lib wpi
+copy_tree2  wpi "*.lib"
 #
 cd $TRAVIS_BUILD_DIR
