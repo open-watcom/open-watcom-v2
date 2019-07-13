@@ -109,7 +109,6 @@ build_proc()
         *)
             ;;
     esac
-    sleep 15
     return $RC
 }
 
