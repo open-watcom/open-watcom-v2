@@ -89,6 +89,7 @@
 !/docs/
 !/travis/
 !/travis/dosbox/*
+!/travis/gs927w64/*
 
 !/contrib/**
 
