@@ -201,7 +201,7 @@ jobs:
         - . ./cmnvars.sh
       script:
         # load build from cache (buildx)
-        - echo "load cache1" >>$OWBINDIR/cache1.log
+        - echo "load cache" >>$OWBINDIR/cache1.log
         - cp $CP_OPTS $OWROOT/buildx/. $OWSRCDIR/ >>$OWBINDIR/cache1.log; true
         # run script
         - travis/build.sh
@@ -225,7 +225,7 @@ jobs:
 #        - install dosbox
       script:
         # load build from cache (buildx)
-        - echo "load cache1" >>$OWBINDIR/cache1.log
+        - echo "load cache" >>$OWBINDIR/cache1.log
         - cp $CP_OPTS $OWROOT/buildx/. $OWSRCDIR/ >>$OWBINDIR/cache1.log
         # run script
         - cmd.exe /c "travis\winbuild.cmd"
@@ -251,7 +251,7 @@ jobs:
         - . ./cmnvars.sh
       script:
         # load build from cache (buildx)
-        - echo "load cache2" >>$OWBINDIR/cache2.log
+        - echo "load cache" >>$OWBINDIR/cache2.log
         - cp $CP_OPTS $OWROOT/buildx/. $OWSRCDIR/ >>$OWBINDIR/cache2.log; true
         # run script
         - travis/build.sh
@@ -271,7 +271,7 @@ jobs:
 #        - install dosbox
       script:
         # load build from cache (buildx)
-        - echo "load cache2" >>$OWBINDIR/cache2.log
+        - echo "load cache" >>$OWBINDIR/cache2.log
         - cp $CP_OPTS $OWROOT/buildx/. $OWSRCDIR/ >>$OWBINDIR/cache2.log
         # run script
         - cmd.exe /c "travis\winbuild.cmd"
