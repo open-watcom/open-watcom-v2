@@ -18,6 +18,7 @@ env:
     - OWTRAVIS_REPO_SLUG=open-watcom/travis-ci-ow-builds
     - OWTRAVIS_BUILD_DIR=${HOME}/build/$OWTRAVIS_REPO_SLUG
     - OWRELROOT=$TRAVIS_BUILD_DIR/test
+    - OWTRAVISBIN=$TRAVIS_BUILD_DIR/travis
 
 cache:
   directories:
@@ -415,10 +416,10 @@ jobs:
       if: branch = env(OWBRANCH) AND (type = cron)
       before_install:
         - regsvr32 /u /s itcc.dll
-        - regsvr32 /s $TRAVIS_BUILD_DIR/travis/hhc/itcc.dll
-        - export OWGHOSTSCRIPTPATH=$TRAVIS_BUILD_DIR/travis/gs927w64
-        - export OWWIN95HC=$TRAVIS_BUILD_DIR/travis/hcw/hcrtf.exe
-        - export OWHHC=$TRAVIS_BUILD_DIR/travis/hhc/hhc.exe
+        - regsvr32 /s $OWTRAVISBIN/hhc/itcc.dll
+        - export OWGHOSTSCRIPTPATH=$OWTRAVISBIN/gs927w64
+        - export OWWIN95HC=$OWTRAVISBIN/hcw/hcrtf.exe
+        - export OWHHC=$OWTRAVISBIN/hhc/hhc.exe
       install:
         - . ./cmnvars.sh
       script:
