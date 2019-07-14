@@ -204,8 +204,8 @@ static map_char_type map_char_ib( char ch )
 /* This function will do proper escaping or character substitution for
  * characters special to InfoBench and add them to the section text.
  */
-static size_t trans_add_char_ib( char ch, section_def *section, allocsize *alloc_size )
-/*************************************************************************************/
+static size_t trans_add_char_ib( char ch, section_def *section, size_t *size )
+/****************************************************************************/
 {
     size_t          len = 0;
     map_char_type   esc;
@@ -214,9 +214,9 @@ static size_t trans_add_char_ib( char ch, section_def *section, allocsize *alloc
     if( esc == MAP_REMOVE ) {
         return( 0 );
     } else if( esc == MAP_ESCAPE ) {
-        len += trans_add_char( CHR_ESCAPE, section, alloc_size );
+        len += trans_add_char( CHR_ESCAPE, section, size );
     }
-    len += trans_add_char( ch, section, alloc_size );
+    len += trans_add_char( ch, section, size );
     return( len );
 }
 
@@ -242,8 +242,8 @@ static void str_out_ib( FILE *f, const char *str )
 }
 
 // The following two functions handle word-wrapping
-static size_t trans_add_char_wrap( char ch, section_def *section, allocsize *alloc_size )
-/***************************************************************************************/
+static size_t trans_add_char_wrap( char ch, section_def *section, size_t *size )
+/******************************************************************************/
 {
     size_t              ctr;            // misc. counter
     size_t              wrap_amount;    // amount of wrapped text
@@ -265,21 +265,21 @@ static size_t trans_add_char_wrap( char ch, section_def *section, allocsize *all
         if( Box_Mode ) {
             // Add left side if necessary:
             for( ; Cursor_X < indent; Cursor_X++ ) {
-                trans_add_char( ' ', section, alloc_size );
+                trans_add_char( ' ', section, size );
             }
             if( Cursor_X == indent ) {
-                trans_add_char( BOX_VBAR, section, alloc_size );
+                trans_add_char( BOX_VBAR, section, size );
                 Cursor_X++;
             }
 
             // Now add right side:
             // the "- 1" is for the BOX_VBAR
             for( ; Cursor_X < Right_Margin - 1; Cursor_X++ ) {
-                trans_add_char( ' ', section, alloc_size );
+                trans_add_char( ' ', section, size );
             }
             // Now add vertical bar if room (there should be...)
             if( Cursor_X == Right_Margin - 1 ) {
-                trans_add_char( BOX_VBAR, section, alloc_size );
+                trans_add_char( BOX_VBAR, section, size );
             }
         }
         R_Chars = 0;
@@ -292,7 +292,7 @@ static size_t trans_add_char_wrap( char ch, section_def *section, allocsize *all
     }
 
     // now we actually add the character to our buffer
-    len = trans_add_char_ib( ch, section, alloc_size );
+    len = trans_add_char_ib( ch, section, size );
 
     // adjust the nearest safe break point if the char we got was a space and
     // is not preceded by a space
@@ -350,7 +350,7 @@ static size_t trans_add_char_wrap( char ch, section_def *section, allocsize *all
         if( shift > 0 ) {
             // add some padding so we can shift the chars over
             for( ctr = 1; ctr <= shift; ctr++ ) {
-                trans_add_char( 'X', section, alloc_size );
+                trans_add_char( 'X', section, size );
             }
         } else {
             // we have to decrease the section size accordingly
@@ -396,13 +396,13 @@ static size_t trans_add_char_wrap( char ch, section_def *section, allocsize *all
     return( len );
 }
 
-static size_t trans_add_str_wrap( const char *str, section_def *section, allocsize *alloc_size )
-/**********************************************************************************************/
+static size_t trans_add_str_wrap( const char *str, section_def *section, size_t *size )
+/*************************************************************************************/
 {
     size_t      len = 0;
 
     for( ; *str != '\0'; ++str ) {
-        len += trans_add_char_wrap( *str, section, alloc_size );
+        len += trans_add_char_wrap( *str, section, size );
     }
     return( len );
 }
@@ -448,8 +448,8 @@ static void read_tabs( char *tab_line )
     }
 }
 
-static size_t tab_align( size_t ch_len, section_def *section, allocsize *alloc_size )
-/***********************************************************************************/
+static size_t tab_align( size_t ch_len, section_def *section, size_t *size )
+/**************************************************************************/
 {
     int         i;
     size_t      len;
@@ -464,7 +464,7 @@ static size_t tab_align( size_t ch_len, section_def *section, allocsize *alloc_s
         }
     }
     for( j = len; j > 0; j-- ) {
-        trans_add_char_wrap( ' ', section, alloc_size );
+        trans_add_char_wrap( ' ', section, size );
     }
     return( len );
 }
@@ -474,8 +474,8 @@ void ib_topic_init( void )
 {
 }
 
-allocsize ib_trans_line( section_def *section, allocsize alloc_size )
-/*******************************************************************/
+size_t ib_trans_line( section_def *section, size_t size )
+/*******************************************************/
 {
     char                *ptr;
     char                *end;
@@ -508,38 +508,38 @@ allocsize ib_trans_line( section_def *section, allocsize alloc_size )
             read_tabs( ptr + 1 );
             Tab_xmp = true;
         }
-        return( alloc_size );
+        return( size );
     case CH_BOX_ON:     // Box-mode start
         // indent properly
         for( ctr = 0; ctr < Curr_indent; ctr++ ) {
-            trans_add_char( ' ', section, &alloc_size);
+            trans_add_char( ' ', section, &size);
         }
         // draw the top line of the box
-        trans_add_char( BOX_CORNER_TOP_LEFT, section, &alloc_size );
+        trans_add_char( BOX_CORNER_TOP_LEFT, section, &size );
         for( ctr = 1; ctr <= Right_Margin - Curr_indent - 2; ctr++ ) {
-            trans_add_char( BOX_HBAR, section, &alloc_size );
+            trans_add_char( BOX_HBAR, section, &size );
         }
-        trans_add_char( BOX_CORNER_TOP_RIGHT, section, &alloc_size );
-        trans_add_char_wrap( '\n', section, &alloc_size);
+        trans_add_char( BOX_CORNER_TOP_RIGHT, section, &size );
+        trans_add_char_wrap( '\n', section, &size);
         Box_Mode = true;
-        return( alloc_size );
+        return( size );
     case CH_BOX_OFF:    // Box-mode end
         for( ctr = 0; ctr < Curr_indent; ctr++ ) {
-            trans_add_char( ' ', section, &alloc_size);
+            trans_add_char( ' ', section, &size);
         }
-        trans_add_char( BOX_CORNER_BOTOM_LEFT, section, &alloc_size );
+        trans_add_char( BOX_CORNER_BOTOM_LEFT, section, &size );
         for( ctr = 1; ctr <= Right_Margin - Curr_indent - 2; ctr++ ) {
-            trans_add_char( BOX_HBAR, section, &alloc_size );
+            trans_add_char( BOX_HBAR, section, &size );
         }
-        trans_add_char( BOX_CORNER_BOTOM_RIGHT, section, &alloc_size );
+        trans_add_char( BOX_CORNER_BOTOM_RIGHT, section, &size );
         Box_Mode = false;
-        trans_add_char_wrap( '\n', section, &alloc_size );
-        return( alloc_size );
+        trans_add_char_wrap( '\n', section, &size );
+        return( size );
     case CH_OLIST_START:
         new_list( LIST_TYPE_ORDERED );
         set_compact( ptr );
         Curr_indent += Text_Indent;
-        return( alloc_size );
+        return( size );
     case CH_LIST_START:
     case CH_DLIST_START:
         new_list( ( ch == CH_LIST_START ) ? LIST_TYPE_UNORDERED : LIST_TYPE_DEFN );
@@ -554,7 +554,7 @@ allocsize ib_trans_line( section_def *section, allocsize alloc_size )
                 break;
             }
         }
-        return( alloc_size );
+        return( size );
     case CH_DLIST_TERM:
         Curr_indent -= Text_Indent;
         break;
@@ -567,32 +567,32 @@ allocsize ib_trans_line( section_def *section, allocsize alloc_size )
         new_list( LIST_TYPE_SIMPLE );
         set_compact( ptr );
         Curr_indent += indent;
-        return( alloc_size );
+        return( size );
     case CH_SLIST_END:
     case CH_OLIST_END:
     case CH_LIST_END:
     case CH_DLIST_END:
         pop_list();
-        return( alloc_size );
+        return( size );
     case CH_DLIST_DESC:
         Curr_indent += Text_Indent;
         if( *skip_blank( ptr + 1 ) == '\0' ) {
             /* no description on this line. Ignore it so that no
                blank line gets generated */
-            return( alloc_size );
+            return( size );
         }
         break;
     case CH_CTX_KW:
         ptr = whole_keyword_line( ptr );
         if( ptr == NULL ) {
-            return( alloc_size );
+            return( size );
         }
         break;
     }
 
     // skip preceding blank lines
     if( *skip_blank( ptr ) == '\0' && Curr_ctx->empty ) {
-        return( alloc_size );
+        return( size );
     }
 
     // remove '\n' on the end
@@ -604,12 +604,12 @@ allocsize ib_trans_line( section_def *section, allocsize alloc_size )
     if( ch != '\0' && ch != ' ' && ch != '\t') {
         ctr = ( ch == CH_LIST_ITEM && !Box_Mode && Curr_list->type != LIST_TYPE_SIMPLE ) ? Text_Indent : 0;
         for( ; ctr < Curr_indent; ctr++ ) {
-            trans_add_char_wrap( ' ', section, &alloc_size);
+            trans_add_char_wrap( ' ', section, &size);
         }
 
         if( Box_Mode ) {
-            trans_add_char_wrap( BOX_VBAR, section, &alloc_size);
-            trans_add_char_wrap( ' ', section, &alloc_size);
+            trans_add_char_wrap( BOX_VBAR, section, &size);
+            trans_add_char_wrap( ' ', section, &size);
         }
     }
 
@@ -623,9 +623,9 @@ allocsize ib_trans_line( section_def *section, allocsize alloc_size )
             // this just shuts off bolding after a def. list term
             if( Line_postfix == LPOSTFIX_TERM ) {
                 Line_postfix = LPOSTFIX_NONE;
-                trans_add_str( STR_BOLD_OFF, section, &alloc_size );
+                trans_add_str( STR_BOLD_OFF, section, &size );
             }
-            trans_add_char_wrap( '\n', section, &alloc_size );
+            trans_add_char_wrap( '\n', section, &size );
             break;
         } else if( ch == CH_HLINK || ch == CH_DFN || ch == CH_FLINK ) {
             Curr_ctx->empty = false;
@@ -660,11 +660,11 @@ allocsize ib_trans_line( section_def *section, allocsize alloc_size )
             ptr = ctx_text + strlen( ctx_text ) + 1;
 
             // Definition pop-up's are converted to hyper-links in InfoBench
-            trans_add_char( CHR_TEMP_HLINK , section, &alloc_size );
+            trans_add_char( CHR_TEMP_HLINK , section, &size );
 
             // Add line number to hyperlink so we can give meaningful errors
-            trans_add_str( itoa( Line_num, buf, 10 ), section, &alloc_size );
-            trans_add_char( CHR_TEMP_HLINK, section, &alloc_size );
+            trans_add_str( itoa( Line_num, buf, 10 ), section, &size );
+            trans_add_char( CHR_TEMP_HLINK, section, &size );
 
             // We don't want links to break as IB doesn't like this...
             to_nobreak( ctx_text );
@@ -684,16 +684,16 @@ allocsize ib_trans_line( section_def *section, allocsize alloc_size )
              * They're stripped off when it comes time to write the file.
              */
             if( IB_Hyper_Brace_L == '<' ) {
-                trans_add_str_wrap( "XX", section, &alloc_size );
+                trans_add_str_wrap( "XX", section, &size );
             }
-            trans_add_str_wrap( ctx_text, section, &alloc_size );
-            trans_add_char( CHR_HLINK_BREAK , section, &alloc_size );
-            trans_add_str( ctx_name, section, &alloc_size );
+            trans_add_str_wrap( ctx_text, section, &size );
+            trans_add_char( CHR_HLINK_BREAK , section, &size );
+            trans_add_str( ctx_name, section, &size );
             if( ch == CH_FLINK ) {
-                trans_add_char( CHR_HLINK_BREAK, section, &alloc_size );
-                trans_add_str( file_name, section, &alloc_size );
+                trans_add_char( CHR_HLINK_BREAK, section, &size );
+                trans_add_str( file_name, section, &size );
             }
-            trans_add_char( CHR_TEMP_HLINK , section, &alloc_size );
+            trans_add_char( CHR_TEMP_HLINK , section, &size );
         } else if( ch == CH_LIST_ITEM ) {
             if( Curr_list->type != LIST_TYPE_SIMPLE ) {
                 buf[0] = '\0';
@@ -708,7 +708,7 @@ allocsize ib_trans_line( section_def *section, allocsize alloc_size )
                     sprintf( buf, "%*d. ", Text_Indent - 2, Curr_list->number );
                     ++Curr_list->number;
                 }
-                trans_add_str_wrap( buf, section, &alloc_size );
+                trans_add_str_wrap( buf, section, &size );
             }
             Eat_blanks = true;
             ptr = skip_blank( ptr + 1 );
@@ -716,7 +716,7 @@ allocsize ib_trans_line( section_def *section, allocsize alloc_size )
             ptr = skip_blank( ptr + 1 );
         } else if( ch == CH_DLIST_TERM ) {
             /* definition list term */
-            trans_add_str( STR_BOLD_ON, section, &alloc_size );
+            trans_add_str( STR_BOLD_ON, section, &size );
             Line_postfix = LPOSTFIX_TERM;
             ptr = skip_blank( ptr + 1 );
             Eat_blanks = true;
@@ -747,19 +747,19 @@ allocsize ib_trans_line( section_def *section, allocsize alloc_size )
                 // bold and italic map to bold
                 case 'b':
                 case 'i':
-                    trans_add_str( STR_BOLD_ON, section, &alloc_size );
+                    trans_add_str( STR_BOLD_ON, section, &size );
                     break;
                 // underline and underscore map to underline
                 case 'u':
                 case 's':
-                    trans_add_str( STR_UNDERLINE_ON, section, &alloc_size );
+                    trans_add_str( STR_UNDERLINE_ON, section, &size );
                     break;
                 }
             }
             ++ptr;
         } else if( ch == CH_FONTSTYLE_END ) {
             // reset style (bold off, underline off)
-            trans_add_str( Reset_Style, section, &alloc_size );
+            trans_add_str( Reset_Style, section, &size );
             ++ptr;
         } else if( ch == CH_FONTTYPE ) {
             // we basically ignore font type changes
@@ -774,17 +774,17 @@ allocsize ib_trans_line( section_def *section, allocsize alloc_size )
                     indent = ( Curr_indent < 0 ) ? 0 : Curr_indent;
                     // find out how close we are to "col 0" for the current indent
                     ch_len = Cursor_X - indent - ( Box_Mode ? 2 : 0 );
-                    tab_align( ch_len, section, &alloc_size );
+                    tab_align( ch_len, section, &size );
                     ptr = skip_blank( ptr );
                 } else {
-                    trans_add_char_wrap( ch, section, &alloc_size );
+                    trans_add_char_wrap( ch, section, &size );
                 }
                 Eat_blanks = false;
             }
         }
     }
 
-    return( alloc_size );
+    return( size );
 }
 
 static void find_browse_pair( ctx_def *ctx, ctx_def **prev, ctx_def **next )

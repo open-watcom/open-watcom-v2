@@ -139,8 +139,6 @@ enum {
 
 /**** Typedefs for converter ****/
 
-typedef size_t          allocsize;
-
 typedef struct browse_ctx {
     struct browse_ctx   *next;
     struct ctx_def      *ctx;
@@ -157,7 +155,7 @@ typedef struct section_def {
     bool                blank_order;
     int                 order_num;
     char                *section_text;
-    allocsize           section_size;
+    size_t              section_size;
 } section_def;
 
 typedef struct keyword_def {
@@ -267,9 +265,9 @@ extern void         *check_realloc( void *ptr, size_t size );
 extern void         whp_fprintf( FILE *file, const char *fmt, ... );
 extern void         whp_fwrite( const char *buf, size_t el_size, size_t num_el, FILE *f );
 extern bool         read_line( void );
-extern size_t       trans_add_char( char ch, section_def *section, allocsize *alloc_size );
-extern size_t       trans_add_str( const char *str, section_def *section, allocsize *alloc_size );
-extern size_t       trans_add_str_nobreak( const char *str, section_def *section, allocsize *alloc_size );
+extern size_t       trans_add_char( char ch, section_def *section, size_t *size );
+extern size_t       trans_add_str( const char *str, section_def *section, size_t *size );
+extern size_t       trans_add_str_nobreak( const char *str, section_def *section, size_t *size );
 extern bool         find_keyword( ctx_def *ctx, const char *keyword );
 extern keyword_def  *find_keyword_all( const char *keyword );
 extern void         add_ctx_keyword( ctx_def *ctx, const char *keyword );
@@ -279,19 +277,19 @@ extern ctx_def      *find_ctx( const char *ctx_name );
 extern char         *whole_keyword_line( char *ptr );
 extern bool         is_special_topic( ctx_def *ctx, bool dump_popup );
 
-extern allocsize    rtf_trans_line( section_def *section, allocsize alloc_size );
+extern size_t       rtf_trans_line( section_def *section, size_t size );
 extern void         rtf_output_file( void );
 extern void         rtf_topic_init( void );
-extern allocsize    ipf_trans_line( section_def *section, allocsize alloc_size );
+extern size_t       ipf_trans_line( section_def *section, size_t size );
 extern void         ipf_output_file( void );
 extern void         ipf_topic_init( void );
-extern allocsize    ib_trans_line( section_def *section, allocsize alloc_size );
+extern size_t       ib_trans_line( section_def *section, size_t size );
 extern void         ib_output_file( void );
 extern void         ib_topic_init( void );
-extern allocsize    html_trans_line( section_def *section, allocsize alloc_size );
+extern size_t       html_trans_line( section_def *section, size_t size );
 extern void         html_output_file( void );
 extern void         html_topic_init( void );
-extern allocsize    wiki_trans_line( section_def *section, allocsize alloc_size );
+extern size_t       wiki_trans_line( section_def *section, size_t size );
 extern void         wiki_output_file( void );
 extern void         wiki_topic_init( void );
 

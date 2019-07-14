@@ -840,49 +840,49 @@ char *whole_keyword_line( char *ptr )
     return( ptr );
 }
 
-size_t trans_add_char( char ch, section_def *section, allocsize *alloc_size )
-/***************************************************************************/
+size_t trans_add_char( char ch, section_def *section, size_t *size )
+/******************************************************************/
 {
     section->section_size++;
-    if( section->section_size > *alloc_size ) {
-        *alloc_size += 1024;    // grow by a good, big amount
-        _renew( section->section_text, *alloc_size );
+    if( section->section_size > *size ) {
+        *size += 1024;    // grow by a good, big amount
+        _renew( section->section_text, *size );
     }
     section->section_text[section->section_size - 1] = ch;
     return( 1 );
 }
 
-size_t trans_add_str( const char *str, section_def *section, allocsize *alloc_size )
-/**********************************************************************************/
+size_t trans_add_str( const char *str, section_def *section, size_t *size )
+/*************************************************************************/
 {
     size_t      len;
 
     len = 0;
     for( ; *str != '\0'; ++str ) {
-        trans_add_char( *str, section, alloc_size );
+        trans_add_char( *str, section, size );
         ++len;
     }
 
     return( len );
 }
 
-size_t trans_add_str_nobreak( const char *str, section_def *section, allocsize *alloc_size )
-/******************************************************************************************/
+size_t trans_add_str_nobreak( const char *str, section_def *section, size_t *size )
+/*********************************************************************************/
 {
     size_t      len;
 
     len = 0;
     for( ; *str != '\0'; ++str ) {
         if( *str != ' ' || Break_link ) {
-            len = trans_add_char( *str, section, alloc_size );
+            len = trans_add_char( *str, section, size );
         } else {
             /* non-breaking space */
             if( Output_type == OUT_RTF ) {
-                len = trans_add_char( '\\', section, alloc_size );
-                len += trans_add_char( '~', section, alloc_size );
+                len = trans_add_char( '\\', section, size );
+                len += trans_add_char( '~', section, size );
             } else {
                 /* IPF and InfoBench do not break alternate spaces */
-                len = trans_add_char( CH_SPACE_NOBREAK, section, alloc_size );
+                len = trans_add_char( CH_SPACE_NOBREAK, section, size );
             }
         }
     }
@@ -983,20 +983,20 @@ void add_ctx_keyword( ctx_def *ctx, const char *keyword )
 }
 
 
-static allocsize trans_line( section_def *section, allocsize alloc_size )
-/***********************************************************************/
+static size_t trans_line( section_def *section, size_t size )
+/***********************************************************/
 {
     switch( Output_type ) {
     case OUT_RTF:
-        return( rtf_trans_line( section, alloc_size ) );
+        return( rtf_trans_line( section, size ) );
     case OUT_IPF:
-        return( ipf_trans_line( section, alloc_size ) );
+        return( ipf_trans_line( section, size ) );
     case OUT_IB:
-        return( ib_trans_line( section, alloc_size ) );
+        return( ib_trans_line( section, size ) );
     case OUT_HTML:
-        return( html_trans_line( section, alloc_size ) );
+        return( html_trans_line( section, size ) );
     case OUT_WIKI:
-        return( wiki_trans_line( section, alloc_size ) );
+        return( wiki_trans_line( section, size ) );
     }
     return( 0 );
 }
@@ -1031,10 +1031,10 @@ static bool read_topic_text( ctx_def *ctx, bool is_blank, int order_num )
     bool                more_to_do;
     section_def         *section;
     section_def         **ins_section;
-    allocsize           sect_alloc_size;
+    size_t              sect_size;
 
     section = NULL;
-    sect_alloc_size = 0;
+    sect_size = 0;
     topic_init();
     for( ;; ) {
         more_to_do = read_line();
@@ -1048,9 +1048,9 @@ static bool read_topic_text( ctx_def *ctx, bool is_blank, int order_num )
             _new( section, 1 );
             section->section_text = NULL;
             section->section_size = 0;
-            sect_alloc_size = 0;
+            sect_size = 0;
         }
-        sect_alloc_size = trans_line( section, sect_alloc_size );
+        sect_size = trans_line( section, sect_size );
     }
 
     if( section != NULL ) {
