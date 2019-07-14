@@ -124,8 +124,8 @@ static int              Curr_indent = 0;
 static bool             Eat_blanks = false;
 
 // The following are for word-wrapping and indentation support
-static size_t           Cursor_X = 0;   // column number
-static size_t           R_Chars = 0;    // visible chars since Wrap_Safe
+static int              Cursor_X = 0;   // column number
+static int              R_Chars = 0;    // visible chars since Wrap_Safe
 static size_t           Wrap_Safe = 0;  // index of break candidate
 static int              NL_Group = 0;   // Number of contiguous newlines
 
@@ -152,7 +152,7 @@ static void set_compact( char *line )
 }
 
 // this function will change all of the spaces in a string into non-breaking
-// spaces (character 255 ). It's currently only used for the labels on
+// spaces (character 0xFF ). It's currently only used for the labels on
 // hyper-links to ensure that they do not get broken across lines as
 // this is not allowed by the InfoBench grammar.
 static void to_nobreak( char *str )
@@ -296,8 +296,7 @@ static size_t trans_add_char_wrap( char ch, section_def *section, size_t *size )
 
     // adjust the nearest safe break point if the char we got was a space and
     // is not preceded by a space
-    if( ch == ' ' && section->section_size > 2 &&
-                section->section_text[section->section_size - 2] != ' ' ) {
+    if( ch == ' ' && section->section_size > 2 && section->section_text[section->section_size - 2] != ' ' ) {
         Wrap_Safe = section->section_size;
         R_Chars = 0;
     }
@@ -418,14 +417,14 @@ static void new_list( char chtype )
     }
     Curr_list = &Lists[List_level];
     switch( chtype ) {
-    case CH_OLIST_START:
-        type = LIST_TYPE_ORDERED;
-        break;
     case CH_LIST_START:
         type = LIST_TYPE_UNORDERED;
         break;
     case CH_DLIST_START:
         type = LIST_TYPE_DEFN;
+        break;
+    case CH_OLIST_START:
+        type = LIST_TYPE_ORDERED;
         break;
     case CH_SLIST_START:
         type = LIST_TYPE_SIMPLE;
@@ -580,8 +579,8 @@ size_t ib_trans_line( section_def *section, size_t size )
         return( size );
     case CH_LIST_END:
     case CH_DLIST_END:
-    case CH_SLIST_END:
     case CH_OLIST_END:
+    case CH_SLIST_END:
         pop_list();
         return( size );
     case CH_DLIST_TERM:
