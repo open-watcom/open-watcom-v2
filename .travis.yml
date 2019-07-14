@@ -414,8 +414,8 @@ jobs:
       os: windows
       if: branch = env(OWBRANCH) AND (type = cron)
       before_install:
-        - regsvr32 /u itcc.dll
-        - regsvr32 $TRAVIS_BUILD_DIR/travis/hhc/itcc.dll
+        - regsvr32 /u /s itcc.dll
+        - regsvr32 /s $TRAVIS_BUILD_DIR/travis/hhc/itcc.dll
         - export OWGHOSTSCRIPTPATH=$TRAVIS_BUILD_DIR/travis/gs927w64
         - export OWWIN95HC=$TRAVIS_BUILD_DIR/travis/hcw/hcrtf.exe
         - export OWHHC=$TRAVIS_BUILD_DIR/travis/hhc/hhc.exe
