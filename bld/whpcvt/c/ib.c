@@ -245,11 +245,11 @@ static void str_out_ib( FILE *f, const char *str )
 static size_t trans_add_char_wrap( char ch, section_def *section, size_t *size )
 /******************************************************************************/
 {
-    size_t              ctr;            // misc. counter
+    int                 ctr;            // misc. counter
     size_t              wrap_amount;    // amount of wrapped text
-    size_t              shift;          // amount we need to shift text
+    int                 shift;          // amount we need to shift text
     int                 delta;          // amount of whitespace we ignore
-    size_t              indent;         // actual indent
+    int                 indent;         // actual indent
     size_t              len = 0;        // number of chars we just added
 
     // the "1" is because a character is allowed to appear on the right margin
@@ -503,7 +503,7 @@ size_t ib_trans_line( section_def *section, size_t size )
     char                *ctx_text;
     char                buf[100];
     int                 indent = 0;
-    size_t              ctr;
+    int                 ctr;
     char                *file_name;
     size_t              len;
 

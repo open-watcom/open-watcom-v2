@@ -231,8 +231,8 @@ WHPCVT_GBL bool         Remove_empty;
 WHPCVT_GBL bool         Keep_link_topics;
 WHPCVT_GBL bool         Exclude_special_topics;
 
-WHPCVT_GBL unsigned     Right_Margin;
-WHPCVT_GBL unsigned     Text_Indent;
+WHPCVT_GBL int          Right_Margin;
+WHPCVT_GBL int          Text_Indent;
 WHPCVT_GBL bool         Do_browse;
 WHPCVT_GBL bool         Do_tc_button;
 WHPCVT_GBL bool         Do_idx_button;

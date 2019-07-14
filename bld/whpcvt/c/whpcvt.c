@@ -521,16 +521,16 @@ static int process_args( int argc, char *argv[] )
                 break;
             case ARG_RM:
                 start_arg++;
-                if( start_arg < argc ) {
-                    Right_Margin = atoi( argv[start_arg] );
+                if( start_arg < argc && (i = atoi( argv[start_arg] )) >= 0 ) {
+                    Right_Margin = i;
                 } else {
                     error( ERR_BAD_ARGS, false );
                 }
                 break;
             case ARG_TAB:
                 start_arg++;
-                if( start_arg < argc ) {
-                    Text_Indent = atoi( argv[start_arg] );
+                if( start_arg < argc && (i = atoi( argv[start_arg] )) >= 0  ) {
+                    Text_Indent = i;
                 } else {
                     error( ERR_BAD_ARGS, false );
                 }
