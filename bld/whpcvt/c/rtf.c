@@ -39,7 +39,7 @@
 
 #define RTF_TRANS_LEN   50
 
-enum {
+typedef enum {
     LPREFIX_NONE        = 0,
     LPREFIX_S_LIST      = 0x01,
     LPREFIX_FIX_FI      = 0x02,
@@ -47,42 +47,42 @@ enum {
     LPREFIX_PAR_RESET   = 0x08,
     LPREFIX_LEFTALIGN   = 0x10,
     LPREFIX_BOX_ON      = 0x20,
-};
+} line_prefix;
 
-enum {
+typedef enum {
     LPOSTFIX_NONE,
     LPOSTFIX_TERM,
-};
+} line_postfix;
 
-enum {
+typedef enum {
     LIST_SPACE_COMPACT,
     LIST_SPACE_STANDARD,
-};
+} list_space;
 
-enum {
+typedef enum {
     LIST_TYPE_NONE,
     LIST_TYPE_UNORDERED,
     LIST_TYPE_ORDERED,
     LIST_TYPE_SIMPLE,
     LIST_TYPE_DEFN
-};
+} list_type;
 
 typedef struct {
-    int                 type;
+    list_type           type;
     int                 number;
     int                 prev_indent;
-    int                 compact;
+    list_space          compact;
 } list_def;
 
-static unsigned long    Line_prefix = LPREFIX_NONE;
-static int              Line_postfix = LPOSTFIX_NONE;
+static line_prefix      Line_prefix = LPREFIX_NONE;
+static line_postfix     Line_postfix = LPOSTFIX_NONE;
 
 static char             Reset_font_str[] = "\\plain\\f2\\fs20";
 static char             Rtf_ctl_prefix[] = "{\\footnote \\pard\\plain \\sl240 \\fs20 ";
 
 
 static list_def         Lists[MAX_LISTS] = {
-    { LIST_TYPE_NONE,   0,      0 },            // list base
+    { LIST_TYPE_NONE,   0,      0,  LIST_SPACE_COMPACT }            // list base
 };
 static int              List_level = 0;
 static list_def         *Curr_list = &Lists[0];
@@ -187,14 +187,33 @@ static size_t trans_add_char_rtf( char ch, section_def *section, size_t *size )
     return( trans_add_str( buf, section, size ) );
 }
 
-static void new_list( int type )
-/******************************/
+static void new_list( char chtype )
+/*********************************/
 {
+    list_type   type;
+
     ++List_level;
     if( List_level == MAX_LISTS ) {
         error( ERR_MAX_LISTS, true );
     }
     Curr_list = &Lists[List_level];
+    switch( chtype ) {
+    case CH_OLIST_START:
+        type = LIST_TYPE_ORDERED;
+        break;
+    case CH_LIST_START:
+        type = LIST_TYPE_UNORDERED;
+        break;
+    case CH_DLIST_START:
+        type = LIST_TYPE_DEFN;
+        break;
+    case CH_SLIST_START:
+        type = LIST_TYPE_SIMPLE;
+        break;
+    default:
+        type = LIST_TYPE_NONE;
+        break;
+    }
     Curr_list->type = type;
     Curr_list->number = 1;
     Curr_list->prev_indent = Curr_indent;
@@ -274,14 +293,14 @@ size_t rtf_trans_line( section_def *section, size_t size )
         Line_prefix |= LPREFIX_PAR_RESET;
         return( size );
     case CH_OLIST_START:
-        new_list( LIST_TYPE_ORDERED );
+        new_list( ch );
         set_compact( ptr );
         Line_prefix |= LPREFIX_S_LIST;
         Curr_indent += INDENT_INC + Start_inc_ol;
         return( size );
     case CH_LIST_START:
     case CH_DLIST_START:
-        new_list( ( ch == CH_LIST_START ) ? LIST_TYPE_UNORDERED : LIST_TYPE_DEFN );
+        new_list( ch );
         set_compact( ptr );
         Line_prefix |= LPREFIX_S_LIST;
         Curr_indent += INDENT_INC + ((ch == CH_LIST_START) ? Start_inc_ul : Start_inc_dl);
@@ -302,7 +321,7 @@ size_t rtf_trans_line( section_def *section, size_t size )
                indent */
             indent = INDENT_INC;
         }
-        new_list( LIST_TYPE_SIMPLE );
+        new_list( ch );
         set_compact( ptr );
         Curr_indent += indent;
         if( indent != 0 ) {

@@ -37,10 +37,10 @@
 
 #define MAX_LISTS       20
 
-enum {
+typedef enum {
     LPOSTFIX_NONE,
     LPOSTFIX_TERM,
-};
+} line_postfix;
 
 // We use the escape char a lot...
 #define STR_ESCAPE              "\x1B"
@@ -87,24 +87,24 @@ typedef enum {
 // Some stuff for tab examples:
 #define MAX_TABS                100     // up to 100 tab stops
 
-enum {
+typedef enum {
     LIST_SPACE_COMPACT,
     LIST_SPACE_STANDARD,
-};
+} list_space;
 
-enum {
+typedef enum {
     LIST_TYPE_NONE,
     LIST_TYPE_UNORDERED,
     LIST_TYPE_ORDERED,
     LIST_TYPE_SIMPLE,
     LIST_TYPE_DEFN
-};
+} list_type;
 
 typedef struct {
-    int                 type;
+    list_type           type;
     int                 number;
     int                 prev_indent;
-    int                 compact;
+    list_space          compact;
 } list_def;
 
 static unsigned         Tab_list[MAX_TABS];
@@ -114,7 +114,7 @@ static int              tabs_num = 0;
 static char Reset_Style[] = STR_BOLD_OFF STR_UNDERLINE_OFF;
 
 static list_def         Lists[MAX_LISTS] = {
-    { LIST_TYPE_NONE,   0,      0 },            // list base
+    { LIST_TYPE_NONE,   0,      0,  LIST_SPACE_COMPACT },       // list base
 };
 static int              List_level = 0;
 static list_def         *Curr_list = &Lists[0];
@@ -131,7 +131,7 @@ static int              NL_Group = 0;   // Number of contiguous newlines
 
 static bool             Box_Mode = false;
 
-static int              Line_postfix = LPOSTFIX_NONE;
+static line_postfix     Line_postfix = LPOSTFIX_NONE;
 
 static void warning( char *msg, unsigned int line )
 /*************************************************/
@@ -174,7 +174,7 @@ static void to_nobreak( char *str )
 static map_char_type map_char_ib( char ch )
 /*****************************************/
 {
-    map_char_type   res;
+    map_char_type   map_type;
 
     switch( ch ) {
     // The following characters should be preceded by an ESC character
@@ -185,20 +185,20 @@ static map_char_type map_char_ib( char ch )
     case '<':
     case '>':
     case '"':
-        res = MAP_ESCAPE;
+        map_type = MAP_ESCAPE;
         break;
     // The following characters are special to InfoBench, and there is no
     // way to represent them with the current grammar
     case CHR_HLINK:
     case CHR_HLINK_BREAK:
     case CHR_ESCAPE:
-        res = MAP_REMOVE;
+        map_type = MAP_REMOVE;
         break;
     default:
-        res = MAP_NONE;
+        map_type = MAP_NONE;
         break;
     }
-    return( res );
+    return( map_type );
 }
 
 /* This function will do proper escaping or character substitution for
@@ -208,12 +208,12 @@ static size_t trans_add_char_ib( char ch, section_def *section, size_t *size )
 /****************************************************************************/
 {
     size_t          len = 0;
-    map_char_type   esc;
+    map_char_type   map_type;
 
-    esc = map_char_ib( ch );
-    if( esc == MAP_REMOVE ) {
+    map_type = map_char_ib( ch );
+    if( map_type == MAP_REMOVE ) {
         return( 0 );
-    } else if( esc == MAP_ESCAPE ) {
+    } else if( map_type == MAP_ESCAPE ) {
         len += trans_add_char( CHR_ESCAPE, section, size );
     }
     len += trans_add_char( ch, section, size );
@@ -226,14 +226,14 @@ static size_t trans_add_char_ib( char ch, section_def *section, size_t *size )
 static void str_out_ib( FILE *f, const char *str )
 /************************************************/
 {
-    map_char_type   esc;
+    map_char_type   map_type;
 
     if( str != NULL ) {
         for( ; *str != '\0'; ++str ) {
-            esc = map_char_ib( *str );
-            if( esc == MAP_REMOVE )
+            map_type = map_char_ib( *str );
+            if( map_type == MAP_REMOVE )
                 continue;
-            if( esc == MAP_ESCAPE ) {
+            if( map_type == MAP_ESCAPE ) {
                 whp_fprintf( f, "%c", CHR_ESCAPE );
             }
             whp_fwrite( str, 1, 1, f );
@@ -407,14 +407,33 @@ static size_t trans_add_str_wrap( const char *str, section_def *section, size_t 
     return( len );
 }
 
-static void new_list( int type )
-/******************************/
+static void new_list( char chtype )
+/*********************************/
 {
+    list_type   type;
+
     ++List_level;
     if( List_level == MAX_LISTS ) {
         error( ERR_MAX_LISTS, true );
     }
     Curr_list = &Lists[List_level];
+    switch( chtype ) {
+    case CH_OLIST_START:
+        type = LIST_TYPE_ORDERED;
+        break;
+    case CH_LIST_START:
+        type = LIST_TYPE_UNORDERED;
+        break;
+    case CH_DLIST_START:
+        type = LIST_TYPE_DEFN;
+        break;
+    case CH_SLIST_START:
+        type = LIST_TYPE_SIMPLE;
+        break;
+    default:
+        type = LIST_TYPE_NONE;
+        break;
+    }
     Curr_list->type = type;
     Curr_list->number = 1;
     Curr_list->prev_indent = Curr_indent;
@@ -536,13 +555,13 @@ size_t ib_trans_line( section_def *section, size_t size )
         trans_add_char_wrap( '\n', section, &size );
         return( size );
     case CH_OLIST_START:
-        new_list( LIST_TYPE_ORDERED );
+        new_list( ch );
         set_compact( ptr );
         Curr_indent += Text_Indent;
         return( size );
     case CH_LIST_START:
     case CH_DLIST_START:
-        new_list( ( ch == CH_LIST_START ) ? LIST_TYPE_UNORDERED : LIST_TYPE_DEFN );
+        new_list( ch );
         set_compact( ptr );
         Curr_indent += Text_Indent;
         if( ch == CH_DLIST_START ) {
@@ -564,7 +583,7 @@ size_t ib_trans_line( section_def *section, size_t size )
             /* nested simple lists, with no pre-indent. Force an indent */
             indent = Text_Indent;
         }
-        new_list( LIST_TYPE_SIMPLE );
+        new_list( ch );
         set_compact( ptr );
         Curr_indent += indent;
         return( size );
