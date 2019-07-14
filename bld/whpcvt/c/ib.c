@@ -349,7 +349,7 @@ static size_t trans_add_char_wrap( char ch, section_def *section, size_t *size )
         // figure out which way the text has to move, and tweak the section
         if( shift > 0 ) {
             // add some padding so we can shift the chars over
-            for( ctr = 1; ctr <= shift; ctr++ ) {
+            for( ctr = 0; ctr < shift; ctr++ ) {
                 trans_add_char( 'X', section, size );
             }
         } else {
@@ -535,7 +535,7 @@ size_t ib_trans_line( section_def *section, size_t size )
         }
         // draw the top line of the box
         trans_add_char( BOX_CORNER_TOP_LEFT, section, &size );
-        for( ctr = 1; ctr <= Right_Margin - Curr_indent - 2; ctr++ ) {
+        for( ctr = 0; ctr < Right_Margin - Curr_indent - 2; ctr++ ) {
             trans_add_char( BOX_HBAR, section, &size );
         }
         trans_add_char( BOX_CORNER_TOP_RIGHT, section, &size );
@@ -547,23 +547,27 @@ size_t ib_trans_line( section_def *section, size_t size )
             trans_add_char( ' ', section, &size);
         }
         trans_add_char( BOX_CORNER_BOTOM_LEFT, section, &size );
-        for( ctr = 1; ctr <= Right_Margin - Curr_indent - 2; ctr++ ) {
+        for( ctr = 0; ctr < Right_Margin - Curr_indent - 2; ctr++ ) {
             trans_add_char( BOX_HBAR, section, &size );
         }
         trans_add_char( BOX_CORNER_BOTOM_RIGHT, section, &size );
         Box_Mode = false;
         trans_add_char_wrap( '\n', section, &size );
         return( size );
-    case CH_OLIST_START:
-        new_list( ch );
-        set_compact( ptr );
-        Curr_indent += Text_Indent;
-        return( size );
     case CH_LIST_START:
     case CH_DLIST_START:
+    case CH_OLIST_START:
+    case CH_SLIST_START:
+        indent = Text_Indent;
+        if( ch == CH_SLIST_START ) {
+            /* nested simple lists, with no pre-indent. Force an indent */
+            if( Curr_list->type != LIST_TYPE_SIMPLE ) {
+                indent = 0;
+            }
+        }
         new_list( ch );
         set_compact( ptr );
-        Curr_indent += Text_Indent;
+        Curr_indent += indent;
         if( ch == CH_DLIST_START ) {
             ptr = skip_blank( ptr + 1 );
             if( *ptr != '\0' ) {
@@ -574,25 +578,15 @@ size_t ib_trans_line( section_def *section, size_t size )
             }
         }
         return( size );
+    case CH_LIST_END:
+    case CH_DLIST_END:
+    case CH_SLIST_END:
+    case CH_OLIST_END:
+        pop_list();
+        return( size );
     case CH_DLIST_TERM:
         Curr_indent -= Text_Indent;
         break;
-    case CH_SLIST_START:
-        indent = 0;
-        if( Curr_list->type == LIST_TYPE_SIMPLE ) {
-            /* nested simple lists, with no pre-indent. Force an indent */
-            indent = Text_Indent;
-        }
-        new_list( ch );
-        set_compact( ptr );
-        Curr_indent += indent;
-        return( size );
-    case CH_SLIST_END:
-    case CH_OLIST_END:
-    case CH_LIST_END:
-    case CH_DLIST_END:
-        pop_list();
-        return( size );
     case CH_DLIST_DESC:
         Curr_indent += Text_Indent;
         if( *skip_blank( ptr + 1 ) == '\0' ) {
@@ -718,7 +712,7 @@ size_t ib_trans_line( section_def *section, size_t size )
                 buf[0] = '\0';
                 if( Curr_list->type == LIST_TYPE_UNORDERED ) {
                     // generate a bullet, correctly spaced for tab size
-                    for( ctr = 1; ctr <= Text_Indent; ctr++ ) {
+                    for( ctr = 0; ctr < Text_Indent; ctr++ ) {
                         strcat( buf, " " );
                     }
                     buf[Text_Indent / 2 - 1] = CHR_BULLET;

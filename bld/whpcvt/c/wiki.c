@@ -209,7 +209,7 @@ static void read_tabs( char *tab_line )
 }
 
 static size_t tab_align( size_t ch_len, section_def *section, size_t *size )
-/***********************************************************************************/
+/**************************************************************************/
 {
     int         i;
     size_t      len;

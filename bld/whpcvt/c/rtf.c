@@ -198,14 +198,14 @@ static void new_list( char chtype )
     }
     Curr_list = &Lists[List_level];
     switch( chtype ) {
-    case CH_OLIST_START:
-        type = LIST_TYPE_ORDERED;
-        break;
     case CH_LIST_START:
         type = LIST_TYPE_UNORDERED;
         break;
     case CH_DLIST_START:
         type = LIST_TYPE_DEFN;
+        break;
+    case CH_OLIST_START:
+        type = LIST_TYPE_ORDERED;
         break;
     case CH_SLIST_START:
         type = LIST_TYPE_SIMPLE;
@@ -292,18 +292,34 @@ size_t rtf_trans_line( section_def *section, size_t size )
     case CH_BOX_OFF:
         Line_prefix |= LPREFIX_PAR_RESET;
         return( size );
-    case CH_OLIST_START:
-        new_list( ch );
-        set_compact( ptr );
-        Line_prefix |= LPREFIX_S_LIST;
-        Curr_indent += INDENT_INC + Start_inc_ol;
-        return( size );
     case CH_LIST_START:
     case CH_DLIST_START:
+    case CH_OLIST_START:
+    case CH_SLIST_START:
+        switch( ch ) {
+        case CH_LIST_START:
+            indent = INDENT_INC + Start_inc_ul;
+            break;
+        case CH_DLIST_START:
+            indent = INDENT_INC + Start_inc_dl;
+            break;
+        case CH_OLIST_START:
+            indent = INDENT_INC + Start_inc_ol;
+            break;
+        case CH_SLIST_START:
+            indent = Start_inc_sl;
+            if( indent == 0 && Curr_list->type == LIST_TYPE_SIMPLE ) {
+                /* nested simple lists, with no pre-indent. Force an indent */
+                indent = INDENT_INC;
+            }
+            break;
+        }
         new_list( ch );
         set_compact( ptr );
-        Line_prefix |= LPREFIX_S_LIST;
-        Curr_indent += INDENT_INC + ((ch == CH_LIST_START) ? Start_inc_ul : Start_inc_dl);
+        Curr_indent += indent;
+        if( ch != CH_SLIST_START || indent != 0 ) {
+            Line_prefix |= LPREFIX_S_LIST;
+        }
         if( ch == CH_DLIST_START ) {
             ptr = skip_blank( ptr + 1 );
             if( *ptr != '\0' ) {
@@ -314,37 +330,14 @@ size_t rtf_trans_line( section_def *section, size_t size )
             }
         }
         return( size );
-    case CH_SLIST_START:
-        indent = Start_inc_sl;
-        if( indent == 0 && Curr_list->type == LIST_TYPE_SIMPLE ) {
-            /* nested simple lists, with no pre-indent. Force an
-               indent */
-            indent = INDENT_INC;
-        }
-        new_list( ch );
-        set_compact( ptr );
-        Curr_indent += indent;
-        if( indent != 0 ) {
-            Line_prefix |= LPREFIX_S_LIST;
-        }
-        return( size );
+    case CH_LIST_END:
+    case CH_DLIST_END:
+    case CH_OLIST_END:
     case CH_SLIST_END:
-        if( Curr_list->prev_indent != Curr_indent ) {
+        if( ch != CH_SLIST_END || Curr_list->prev_indent != Curr_indent ) {
             Line_prefix |= LPREFIX_E_LIST;
         }
         pop_list();
-        return( size );
-    case CH_OLIST_END:
-        pop_list();
-        Line_prefix |= LPREFIX_E_LIST;
-        return( size );
-    case CH_LIST_END:
-        pop_list();
-        Line_prefix |= LPREFIX_E_LIST;
-        return( size );
-    case CH_DLIST_END:
-        pop_list();
-        Line_prefix |= LPREFIX_E_LIST;
         return( size );
     case CH_DLIST_DESC:
         if( *skip_blank( ptr + 1 ) == '\0' ) {
