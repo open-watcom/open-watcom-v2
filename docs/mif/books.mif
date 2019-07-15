@@ -405,7 +405,6 @@ book_title=$(company) $(bld_ver_str) OWSTL developer guide
 book_objs=$(objs_owstldev)
 book_incs=$(incs_owstldev)
 book_src=owstl
-#book_bmroot=$(bmroot_owstldev)
 
 !else ifeq hbook pguide
 # pguide
@@ -522,7 +521,6 @@ book_title=$(company) $(bld_ver_str) Trap Developers Guide
 book_objs=$(objs_trap)
 book_objs_ps=$(objs_trap_ps)
 book_incs=$(incs_trap)
-book_bmroot=$(bmroot_trap)
 book_src=wtrap
 book_multi_chapter=1
 !define book_os2_help
@@ -626,7 +624,6 @@ book_title=WGML Reference Manual
 book_objs=$(objs_wgmlref)
 book_objs_ps=$(objs_wgmlref_ps)
 book_incs=$(incs_wgmlref)
-book_bmroot=$(bmroot_wgmlref)
 book_src=rfman
 book_multi_chapter=1
 

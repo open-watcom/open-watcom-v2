@@ -81,6 +81,7 @@ set PMAKEKEY=txt
         <CCCMD> html/vi.htm         <OWRELROOT>/webdocs/vi.html
         <CCCMD> html/wd.htm         <OWRELROOT>/webdocs/wd.html
         <CCCMD> html/wddoc.htm      <OWRELROOT>/webdocs/wddoc.html
+        <CCCMD> html/wgmlref.htm    <OWRELROOT>/webdocs/wgmlref.html
         <CCCMD> html/wipfc.htm      <OWRELROOT>/webdocs/wipfc.html
     [ ENDIF ]
     <CCCMD> txt/*.txt       <OWRELROOT>/

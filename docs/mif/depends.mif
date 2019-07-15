@@ -2295,7 +2295,6 @@ objs_lr3 = &
 ../doc/lr/gr/grsyms.gml
 
 # owstl
-#bmroot_owstldev = ../doc/owstl
 incs_owstldev = ../doc/owstl
 objs_owstldev = &
 ../doc/owstl/algorith.gml &
@@ -2482,7 +2481,6 @@ dlgsrch.ps &
 dlgwopt.ps &
 
 # trap sub-directory
-bmroot_trap = ../doc/trap
 incs_trap = ../doc/trap
 objs_trap = &
 ../doc/trap/wtrap.gml &
@@ -2780,7 +2778,6 @@ vi030.ps &
 vi031.ps
 
 # wgmlref sub-directory
-bmroot_wgmlref = ../doc/wgmlref/screens
 incs_wgmlref = ../doc/wgmlref;../doc/wgmlref/screens
 objs_wgmlref = &
 ../doc/wgmlref/rfman.gml &
