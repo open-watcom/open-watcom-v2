@@ -7,6 +7,7 @@
 #   - POSIX tools
 #   - correct setup for all OW build environment variables
 #
+set -x
 
 bootutil_proc()
 {
@@ -102,6 +103,16 @@ build_proc()
                 builder rel3
             else
                 builder -q rel3
+            fi
+            RC=$?
+            cd $TRAVIS_BUILD_DIR
+            ;;
+        "DOCS")
+            cd $OWDOCSDIR
+            if [ "$TRAVIS_EVENT_TYPE" = "pull_request" ]; then
+                builder rel
+            else
+                builder -q rel
             fi
             RC=$?
             cd $TRAVIS_BUILD_DIR

@@ -415,15 +415,21 @@ jobs:
       os: windows
       if: branch = env(OWBRANCH) AND (type = cron)
       before_install:
-        - regsvr32 -u -s itcc.dll; true
-        - regsvr32 -s $OWTRAVISBIN/hhc/itcc.dll; true
+        - test -n $CC && unset CC
+        # set environmet variable
         - export OWGHOSTSCRIPTPATH=$OWTRAVISBIN/gs927w64
         - export OWWIN95HC=$OWTRAVISBIN/hcw/hcrtf.exe
         - export OWHHC=$OWTRAVISBIN/hhc/hhc.exe
+        - export OWTOOLS=VISUALC
+        - export OWTRAVISJOB=DOCS
+        - export OWDOSBOX=$OWTRAVISBIN/dosbox/dosbox.exe
+        # register all DLL's
+        - travis/regdlls.sh
       install:
         - . ./cmnvars.sh
       script:
-        - travis/alldocs.sh
+        # run script
+        - travis/build.sh
     #################################
     - stage: Release
       name: "Create all Installers"
@@ -431,7 +437,7 @@ jobs:
       before_install:
         - true
       install:
-        - true
+        - . ./cmnvars.sh
       script:
         - cd distrib/ow
         - builder
