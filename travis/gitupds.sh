@@ -56,7 +56,7 @@ gitupds_proc()
                         echo_msg="gitupds.sh - done"
                     fi
                     ;;
-                "DOCTRAVIS")
+                "WEBDOCS")
                     if [ "$TRAVIS_OS_NAME" = "linux" ]; then
                         #
                         # clone GitHub repository
