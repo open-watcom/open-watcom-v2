@@ -56,32 +56,32 @@ set PMAKEKEY=txt
 [ BLOCK <BLDRULE> cpdoctrav ]
 #============================
     [ IFDEF <PMAKEKEY> build ]
-        <CCCMD> pdf/*.pdf           <OWRELROOT>/docs/
-        <CCCMD> html/*.bmp          <OWRELROOT>/docs/
-        <CCCMD> html/c_readme.htm   <OWRELROOT>/docs/c_readme.html
-        <CCCMD> html/cgdoc.htm      <OWRELROOT>/docs/cgdoc.html
-        <CCCMD> html/cguide.htm     <OWRELROOT>/docs/cguide.html
-        <CCCMD> html/clib.htm       <OWRELROOT>/docs/clib.html
-        <CCCMD> html/clr.htm        <OWRELROOT>/docs/clr.html
-        <CCCMD> html/cpplib.htm     <OWRELROOT>/docs/cpplib.html
-        <CCCMD> html/ctools.htm     <OWRELROOT>/docs/ctools.html
-        <CCCMD> html/cw.htm         <OWRELROOT>/docs/cw.html
-        <CCCMD> html/devguide.htm   <OWRELROOT>/docs/devguide.html
-        <CCCMD> html/dwdoc.htm      <OWRELROOT>/docs/dwdoc.html
-        <CCCMD> html/f_readme.htm   <OWRELROOT>/docs/f_readme.html
-        <CCCMD> html/f77graph.htm   <OWRELROOT>/docs/f77graph.html
-        <CCCMD> html/f77lr.htm      <OWRELROOT>/docs/f77lr.html
-        <CCCMD> html/fpguide.htm    <OWRELROOT>/docs/fpguide.html
-        <CCCMD> html/ftools.htm     <OWRELROOT>/docs/ftools.html
-        <CCCMD> html/fuguide.htm    <OWRELROOT>/docs/fuguide.html
-        <CCCMD> html/guitool.htm    <OWRELROOT>/docs/guitool.html
-        <CCCMD> html/lguide.htm     <OWRELROOT>/docs/lguide.html
-        <CCCMD> html/owstl.htm      <OWRELROOT>/docs/owstl.html
-        <CCCMD> html/pguide.htm     <OWRELROOT>/docs/pguide.html
-        <CCCMD> html/vi.htm         <OWRELROOT>/docs/vi.html
-        <CCCMD> html/wd.htm         <OWRELROOT>/docs/wd.html
-        <CCCMD> html/wddoc.htm      <OWRELROOT>/docs/wddoc.html
-        <CCCMD> html/wipfc.htm      <OWRELROOT>/docs/wipfc.html
+        <CCCMD> pdf/*.pdf           <OWRELROOT>/webdocs/
+        <CCCMD> html/*.bmp          <OWRELROOT>/webdocs/
+        <CCCMD> html/c_readme.htm   <OWRELROOT>/webdocs/c_readme.html
+        <CCCMD> html/cgdoc.htm      <OWRELROOT>/webdocs/cgdoc.html
+        <CCCMD> html/cguide.htm     <OWRELROOT>/webdocs/cguide.html
+        <CCCMD> html/clib.htm       <OWRELROOT>/webdocs/clib.html
+        <CCCMD> html/clr.htm        <OWRELROOT>/webdocs/clr.html
+        <CCCMD> html/cpplib.htm     <OWRELROOT>/webdocs/cpplib.html
+        <CCCMD> html/ctools.htm     <OWRELROOT>/webdocs/ctools.html
+        <CCCMD> html/cw.htm         <OWRELROOT>/webdocs/cw.html
+        <CCCMD> html/devguide.htm   <OWRELROOT>/webdocs/devguide.html
+        <CCCMD> html/dwdoc.htm      <OWRELROOT>/webdocs/dwdoc.html
+        <CCCMD> html/f_readme.htm   <OWRELROOT>/webdocs/f_readme.html
+        <CCCMD> html/f77graph.htm   <OWRELROOT>/webdocs/f77graph.html
+        <CCCMD> html/f77lr.htm      <OWRELROOT>/webdocs/f77lr.html
+        <CCCMD> html/fpguide.htm    <OWRELROOT>/webdocs/fpguide.html
+        <CCCMD> html/ftools.htm     <OWRELROOT>/webdocs/ftools.html
+        <CCCMD> html/fuguide.htm    <OWRELROOT>/webdocs/fuguide.html
+        <CCCMD> html/guitool.htm    <OWRELROOT>/webdocs/guitool.html
+        <CCCMD> html/lguide.htm     <OWRELROOT>/webdocs/lguide.html
+        <CCCMD> html/owstl.htm      <OWRELROOT>/webdocs/owstl.html
+        <CCCMD> html/pguide.htm     <OWRELROOT>/webdocs/pguide.html
+        <CCCMD> html/vi.htm         <OWRELROOT>/webdocs/vi.html
+        <CCCMD> html/wd.htm         <OWRELROOT>/webdocs/wd.html
+        <CCCMD> html/wddoc.htm      <OWRELROOT>/webdocs/wddoc.html
+        <CCCMD> html/wipfc.htm      <OWRELROOT>/webdocs/wipfc.html
     [ ENDIF ]
     <CCCMD> txt/*.txt       <OWRELROOT>/
     <CPCMD> areadme.txt     <OWRELROOT>/areadme.txt
