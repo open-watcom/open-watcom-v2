@@ -22,7 +22,7 @@ gitupdf_proc()
     if [ "$TRAVIS_BRANCH" = "$OWBRANCH" ] || [ "$TRAVIS_BRANCH" = "$OWBRANCH_DOCS" ]; then
         if [ "$TRAVIS_EVENT_TYPE" = "push" ] || [ "$TRAVIS_EVENT_TYPE" = "cron" ]; then
             case "$OWTRAVISJOB" in
-                "BOOTSTRAP" | "BUILD" | "BUILD-1" | "BUILD-2" | "BUILD-3" | "DOCS" | "DOCTRAVIS")
+                "BOOTSTRAP" | "BUILD" | "BUILD-1" | "BUILD-2" | "BUILD-3" | "DOCS" | "INST" | "DOCTRAVIS")
                     #
                     # clone GitHub repository
                     #
@@ -31,15 +31,16 @@ gitupdf_proc()
                     # copy build log files to git repository tree
                     #
                     if [ "$TRAVIS_OS_NAME" = "osx" ]; then
-                        test -d $OWTRAVIS_BUILD_DIR/logs/osx || mkdir -p $OWTRAVIS_BUILD_DIR/logs/osx
-                        cp $TRAVIS_BUILD_DIR/build/$OWOBJDIR/*.log $OWTRAVIS_BUILD_DIR/logs/osx/
+                        OWLOGDIR = $OWTRAVIS_BUILD_DIR/logs/osx
                     elif [ "$TRAVIS_OS_NAME" = "windows" ]; then
-                        test -d $OWTRAVIS_BUILD_DIR/logs/windows || mkdir -p $OWTRAVIS_BUILD_DIR/logs/windows
-                        cp $TRAVIS_BUILD_DIR/build/$OWOBJDIR/*.log $OWTRAVIS_BUILD_DIR/logs/windows/
+                        OWLOGDIR = $OWTRAVIS_BUILD_DIR/logs/windows
                     else
-                        test -d $OWTRAVIS_BUILD_DIR/logs/linux || mkdir -p $OWTRAVIS_BUILD_DIR/logs/linux
-                        cp $TRAVIS_BUILD_DIR/build/$OWOBJDIR/*.log $OWTRAVIS_BUILD_DIR/logs/linux/
+                        OWLOGDIR = $OWTRAVIS_BUILD_DIR/logs/linux
                     fi
+                    test -d $OWLOGDIR || mkdir -p $OWLOGDIR
+                    cp $OWBINDIR/*.log $OWLOGDIR
+                    cp $OWDOCSDIR/*.log $OWLOGDIR
+                    cp $OWDISTRDIR/*.log $OWLOGDIR
                     #
                     # commit new log files to GitHub repository
                     #

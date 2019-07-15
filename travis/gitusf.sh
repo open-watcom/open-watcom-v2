@@ -21,8 +21,8 @@ gitusf_proc1()
     ssh-keyscan git.code.sf.net >> ~/.ssh/known_hosts
     export DISPLAY=:0
     export SSH_PASSWORD=${SF_TOKEN2}
-    export SSH_ASKPASS=$OWTRAVISBIN/askpass.sh
-    export GIT_ASKPASS=$OWTRAVISBIN/askpass.sh
+    export SSH_ASKPASS=$OWTRAVISDIR/askpass.sh
+    export GIT_ASKPASS=$OWTRAVISDIR/askpass.sh
     export GIT_SSH_COMMAND="setsid ssh"
     #
     git config remote.origin.pushurl ssh://${SF_TOKEN1}@git.code.sf.net/p/openwatcom/open-watcom-v2

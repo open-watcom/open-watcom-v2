@@ -18,7 +18,8 @@ env:
     - OWTRAVIS_REPO_SLUG=open-watcom/travis-ci-ow-builds
     - OWTRAVIS_BUILD_DIR=${HOME}/build/$OWTRAVIS_REPO_SLUG
     - OWRELROOT=$TRAVIS_BUILD_DIR/test
-    - OWTRAVISBIN=$TRAVIS_BUILD_DIR/travis
+    - OWTRAVISDIR=$TRAVIS_BUILD_DIR/travis
+    - OWDISTRDIR=$TRAVIS_BUILD_DIR/distrib/ow
 
 cache:
   directories:
@@ -417,12 +418,12 @@ jobs:
       before_install:
         - test -n $CC && unset CC
         # set environmet variable
-        - export OWGHOSTSCRIPTPATH=$OWTRAVISBIN/gs927w64
-        - export OWWIN95HC=$OWTRAVISBIN/hcw/hcrtf.exe
-        - export OWHHC=$OWTRAVISBIN/hhc/hhc.exe
+        - export OWGHOSTSCRIPTPATH=$OWTRAVISDIR/gs927w64
+        - export OWWIN95HC=$OWTRAVISDIR/hcw/hcrtf.exe
+        - export OWHHC=$OWTRAVISDIR/hhc/hhc.exe
         - export OWTOOLS=VISUALC
         - export OWTRAVISJOB=DOCS
-        - export OWDOSBOX=$OWTRAVISBIN/dosbox/dosbox.exe
+        - export OWDOSBOX=$OWTRAVISDIR/dosbox/dosbox.exe
         # register all DLL's
         - travis/regdlls.sh
       install:
@@ -432,16 +433,26 @@ jobs:
         - travis/build.sh
     #################################
     - stage: Release
-      name: "Create all Installers"
+      name: "Create all Installers Linux"
       if: branch = env(OWBRANCH) AND (type = cron)
       before_install:
-        - true
+        - export OWTRAVISJOB=INST
+        - export OWTOOLS=GCC
       install:
         - . ./cmnvars.sh
       script:
-        - cd distrib/ow
-        - builder
-        - cd ../..
+        - travis/build.sh
+    - # ...
+      name: "Create Installer 64-bit Windows"
+      if: branch = env(OWBRANCH) AND (type = cron)
+      os: windows
+      before_install:
+        - export OWTRAVISJOB=INST
+        - export OWTOOLS=VISUALC
+      install:
+        - . ./cmnvars.sh
+      script:
+        - travis/build.sh
     #################################
     - stage: Finalize
       name: "Clean build cache Linux"
@@ -475,7 +486,7 @@ jobs:
         - rm -rf buildx/*
 
     #################################
-    - stage: InitDocumentation
+    - stage: InitWEBDocumentation
       name: "Initiate Documentation build by Cron"
       if: branch = env(OWBRANCH_DOCS) AND type = cron
       cache: false
@@ -485,8 +496,8 @@ jobs:
         - git checkout -B $OWBRANCH
         - git push origin $OWBRANCH:$OWBRANCH_DOCS
     #################################
-    - stage: Documentation
-      name: "OW Documentation build Linux"
+    - stage: WEBDocumentation
+      name: "OW Documentation for WEB build Linux"
       if: branch = env(OWBRANCH_DOCS) AND type = push
       cache: false
       before_install:
@@ -502,7 +513,7 @@ jobs:
         - export OWGHOSTSCRIPTPATH=$PATH
         - . ./cmnvars.sh
       script:
-        - travis/builddoc.sh
+        - travis/webdocs.sh
     #################################
     - stage: InitCoverity
       name: "Initiate Coverity Scan by Cron Linux"

@@ -107,13 +107,33 @@ build_proc()
             cd $TRAVIS_BUILD_DIR
             ;;
         "DOCS")
-            export $OWVERBOSE=1
+            export OWVERBOSE=1
 set -x
             cd $OWDOCSDIR
             if [ "$TRAVIS_EVENT_TYPE" = "pull_request" ]; then
                 builder rel
             else
                 builder -q rel
+            fi
+            RC=$?
+            cd $TRAVIS_BUILD_DIR
+            ;;
+        "INST")
+            export OWVERBOSE=1
+set -x
+            cd $OWDISTRDIR
+            if [ "$TRAVIS_OS_NAME" = "windows" ]; then
+                if [ "$TRAVIS_EVENT_TYPE" = "pull_request" ]; then
+                    builder build os_nt cpu_x64
+                else
+                    builder -q build os_nt cpu_x64
+                fi
+            else
+                if [ "$TRAVIS_EVENT_TYPE" = "pull_request" ]; then
+                    builder build
+                else
+                    builder -q build
+                fi
             fi
             RC=$?
             cd $TRAVIS_BUILD_DIR

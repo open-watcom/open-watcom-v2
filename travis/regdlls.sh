@@ -5,5 +5,15 @@
 #
 set -x
 
-regsvr32 -u -s itcc.dll; true
-regsvr32 -s $OWTRAVISBIN/hhc/itcc.dll; true
+reg_proc()
+{
+    regsvr32 -u -s itcc.dll; true
+    regsvr32 -s $OWTRAVISDIR/hhc/itcc.dll; true
+    RC=$?
+
+# sleep 3
+    ping -n 3 127.0.0.1 >NUL
+    return $RC
+}
+
+reg_proc $*
