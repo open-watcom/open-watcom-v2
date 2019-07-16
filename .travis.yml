@@ -80,10 +80,7 @@ jobs:
         - export OWTRAVISJOB=BOOTSTRAP
         - export OWVERBOSE=1
         # clear cache
-        - rm -rf build/$OWOBJDIR/*
-        - rm -rf bld/watcom/$OWOBJDIR/*
-        - rm -rf test/*
-        - rm -rf buildx/*
+        - travis/cacheclr.sh
       install:
         - . ./cmnvars.sh
       script:
@@ -101,10 +98,7 @@ jobs:
         - export OWTRAVISJOB=BOOTSTRAP
         - export OWVERBOSE=1
         # clear cache
-        - rm -rf build/$OWOBJDIR/*
-        - rm -rf bld/watcom/$OWOBJDIR/*
-        - rm -rf test/*
-        - rm -rf buildx/*
+        - travis/cacheclr.sh
       install:
         - . ./cmnvars.sh
       script:
@@ -121,15 +115,13 @@ jobs:
         - export OWTOOLS=VISUALC
         - export OWTRAVISJOB=BOOTSTRAP
         - export OWVERBOSE=1
-        - export OWSRCDIR=$OWROOT/bld
         # clear cache
-        - rm -rf build/$OWOBJDIR/*
-        - rm -rf bld/watcom/$OWOBJDIR/*
-        - rm -rf test/*
-        - rm -rf buildx/*
+        - travis/cacheclr.sh
       install:
+        - export OWSRCDIR=$OWROOT/bld
+        - export OWBINDIR=$OWROOT/build/$OWOBJDIR
       script:
-        - cmd.exe /c "travis\winboot.cmd"
+        - travis/build.sh
     #################################
     - stage: Build
       name: "OW tools build Linux"
@@ -162,8 +154,7 @@ jobs:
       script:
         - travis/build.sh
       before_cache:
-        # save build to cache (buildx)
-        - travis/cache1.sh
+        - travis/cache1.sh save
     - # ...
       name: "OW tools build-1 Windows"
       if: branch = env(OWBRANCH) AND (type = cron)
@@ -175,15 +166,13 @@ jobs:
         # set environmet variable
         - export OWTOOLS=VISUALC
         - export OWTRAVISJOB=BUILD-1
+      install:
         - export OWSRCDIR=$OWROOT/bld
         - export OWBINDIR=$OWROOT/build/$OWOBJDIR
-      install:
-#        - install dosbox
       script:
-        - cmd.exe /c "travis\winbuild.cmd"
+        - travis/build.sh
       before_cache:
-        # save build to cache (buildx)
-        - travis/cache1.sh
+        - travis/cache1.sh save
     #################################
     - stage: Build2
       name: "OW tools build-2 OSX"
@@ -202,14 +191,10 @@ jobs:
         - brew install dosbox
         - . ./cmnvars.sh
       script:
-        # load build from cache (buildx)
-        - echo "load cache" >>$OWBINDIR/cache1.log
-        - cp $CP_OPTS $OWROOT/buildx/. $OWSRCDIR/ >>$OWBINDIR/cache1.log; true
-        # run script
+        - travis/cache1.sh load
         - travis/build.sh
       before_cache:
-        # save build to cache (buildx)
-        - travis/cache2.sh
+        - travis/cache2.sh save
     - # ...
       name: "OW tools build-2 Windows"
       if: branch = env(OWBRANCH) AND (type = cron)
@@ -221,19 +206,14 @@ jobs:
         # set environmet variable
         - export OWTOOLS=VISUALC
         - export OWTRAVISJOB=BUILD-2
+      install:
         - export OWSRCDIR=$OWROOT/bld
         - export OWBINDIR=$OWROOT/build/$OWOBJDIR
-      install:
-#        - install dosbox
       script:
-        # load build from cache (buildx)
-        - echo "load cache" >>$OWBINDIR/cache1.log
-        - cp $CP_OPTS $OWROOT/buildx/. $OWSRCDIR/ >>$OWBINDIR/cache1.log
-        # run script
-        - cmd.exe /c "travis\winbuild.cmd"
+        - travis/cache1.sh load
+        - travis/build.sh
       before_cache:
-        # save build to cache (buildx)
-        - travis/cache2.sh
+        - travis/cache2.sh save
     #################################
     - stage: Build3
       name: "OW tools build-3 OSX"
@@ -252,10 +232,7 @@ jobs:
         - brew install dosbox
         - . ./cmnvars.sh
       script:
-        # load build from cache (buildx)
-        - echo "load cache" >>$OWBINDIR/cache2.log
-        - cp $CP_OPTS $OWROOT/buildx/. $OWSRCDIR/ >>$OWBINDIR/cache2.log; true
-        # run script
+        - travis/cache2.sh load
         - travis/build.sh
     - # ...
       name: "OW tools build-3 Windows"
@@ -268,15 +245,12 @@ jobs:
         # set environmet variable
         - export OWTOOLS=VISUALC
         - export OWTRAVISJOB=BUILD-3
-        - export OWSRCDIR=$OWROOT/bld
       install:
-#        - install dosbox
+        - export OWSRCDIR=$OWROOT/bld
+        - export OWBINDIR=$OWROOT/build/$OWOBJDIR
       script:
-        # load build from cache (buildx)
-        - echo "load cache" >>$OWBINDIR/cache2.log
-        - cp $CP_OPTS $OWROOT/buildx/. $OWSRCDIR/ >>$OWBINDIR/cache2.log
-        # run script
-        - cmd.exe /c "travis\winbuild.cmd"
+        - travis/cache2.sh load
+        - travis/build.sh
     #################################
     - stage: UpdateBuild
       name: "Update Build Linux"
@@ -287,7 +261,6 @@ jobs:
         # set environmet variable
         - export OWTOOLS=GCC
         - export OWTRAVISJOB=CPREL
-        - export OWSRCDIR=buildx
       install:
 #        - export WATCOM=$TRAVIS_BUILD_DIR/test
         - . ./cmnvars.sh
@@ -304,8 +277,9 @@ jobs:
         # set environmet variable
         - export OWTOOLS=VISUALC
         - export OWTRAVISJOB=CPREL
-        - export OWSRCDIR=buildx
       install:
+        - export OWSRCDIR=$OWROOT/bld
+        - export OWBINDIR=$OWROOT/build/$OWOBJDIR
         - export WATCOM=$TRAVIS_BUILD_DIR/test
       script:
 #        - cp $CP_OPTS $OWROOT/buildx/ $WATCOM
@@ -418,26 +392,26 @@ jobs:
       before_install:
         - test -n $CC && unset CC
         # set environmet variable
+        - export OWTOOLS=VISUALC
+        - export OWTRAVISJOB=DOCS
+      install:
+        - export OWSRCDIR=$OWROOT/bld
+        - export OWBINDIR=$OWROOT/build/$OWOBJDIR
+        # Help compilers related variables
         - export OWGHOSTSCRIPTPATH=$OWTRAVISDIR/gs927w64
         - export OWWIN95HC=$OWTRAVISDIR/hcw/hcrtf.exe
         - export OWHHC=$OWTRAVISDIR/hhc/hhc.exe
-        - export OWTOOLS=VISUALC
-        - export OWTRAVISJOB=DOCS
-        - export OWDOSBOX=$OWTRAVISDIR/dosbox/dosbox.exe
-        # register all DLL's
+        # register all Help Compilers DLL's
         - travis/regdlls.sh
-      install:
-#        - . ./cmnvars.sh
       script:
-        # run script
-        - cmd.exe /c "travis\winbuild.cmd"
+        - travis/build.sh
     #################################
     - stage: Release
       name: "Create all Installers Linux"
       if: branch = env(OWBRANCH) AND (type = cron)
       before_install:
-        - export OWTRAVISJOB=INST
         - export OWTOOLS=GCC
+        - export OWTRAVISJOB=INST
       install:
         - . ./cmnvars.sh
       script:
@@ -447,43 +421,32 @@ jobs:
       if: branch = env(OWBRANCH) AND (type = cron)
       os: windows
       before_install:
-        - export OWTRAVISJOB=INST
         - export OWTOOLS=VISUALC
+        - export OWTRAVISJOB=INST
       install:
-#        - . ./cmnvars.sh
+        - export OWSRCDIR=$OWROOT/bld
+        - export OWBINDIR=$OWROOT/build/$OWOBJDIR
       script:
-        - cmd.exe /c "travis\winbuild.cmd"
+        - travis/build.sh
     #################################
     - stage: Finalize
-      name: "Clean build cache Linux"
+      name: "Delete build cache Linux"
       if: branch = env(OWBRANCH)
       script:
-        # clear cache
-        - rm -rf build/$OWOBJDIR/*
-        - rm -rf bld/watcom/$OWOBJDIR/*
-        - rm -rf test/*
-        - rm -rf buildx/*
+        - travis/cacheclr.sh
     - # ...
-      name: "Clean build cache OSX"
+      name: "Delete build cache OSX"
       if: branch = env(OWBRANCH) AND (type = cron)
       os: osx
       compiler: clang
       script:
-        # clear cache
-        - rm -rf build/$OWOBJDIR/*
-        - rm -rf bld/watcom/$OWOBJDIR/*
-        - rm -rf test/*
-        - rm -rf buildx/*
+        - travis/cacheclr.sh
     - # ...
-      name: "Clean build cache Windows"
+      name: "Delete build cache Windows"
       if: branch = env(OWBRANCH) AND (type = cron)
       os: windows
       script:
-        # clear cache
-        - rm -rf build/$OWOBJDIR/*
-        - rm -rf bld/watcom/$OWOBJDIR/*
-        - rm -rf test/*
-        - rm -rf buildx/*
+        - travis/cacheclr.sh
 
     #################################
     - stage: InitWEBDocumentation
