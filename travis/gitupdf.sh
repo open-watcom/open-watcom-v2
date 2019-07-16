@@ -37,10 +37,12 @@ gitupdf_proc()
                     else
                         OWLOGDIR = $OWTRAVIS_BUILD_DIR/logs/linux
                     fi
-                    test -d $OWLOGDIR || mkdir -p $OWLOGDIR
-                    cp $OWBINDIR/*.log $OWLOGDIR
-                    cp $OWDOCSDIR/*.log $OWLOGDIR
-                    cp $OWDISTRDIR/*.log $OWLOGDIR
+                    if [ ! -d $OWLOGDIR ]; then 
+                        mkdir -p $OWLOGDIR; 
+                    fi
+                    cp $OWBINDIR/*.log $OWLOGDIR/
+                    cp $OWDOCSDIR/*.log $OWLOGDIR/
+                    cp $OWDISTRDIR/*.log $OWLOGDIR/
                     #
                     # commit new log files to GitHub repository
                     #
