@@ -58,6 +58,22 @@ if "%OWTRAVISJOB%" == "BUILD-3" (
         builder -q rel3
     )
 )
+if "%OWTRAVISJOB%" == "DOCS" (
+    cd %OWDOCSDIR%
+    if "%TRAVIS_EVENT_TYPE%" == "pull_request" (
+        builder rel
+    ) else (
+        builder -q rel
+    )
+)
+if "%OWTRAVISJOB%" == "INST" (
+    cd %OWDISTRDIR%
+    if "%TRAVIS_EVENT_TYPE%" == "pull_request" (
+        builder build os_nt cpu_x64
+    ) else (
+        builder -q build os_nt cpu_x64
+    )
+)
 set RC=%ERRORLEVEL%
 REM sleep 3
 ping -n 3 127.0.0.1 >NUL

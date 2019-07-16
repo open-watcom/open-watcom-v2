@@ -427,10 +427,10 @@ jobs:
         # register all DLL's
         - travis/regdlls.sh
       install:
-        - . ./cmnvars.sh
+#        - . ./cmnvars.sh
       script:
         # run script
-        - travis/build.sh
+        - cmd.exe /c "travis\winbuild.cmd"
     #################################
     - stage: Release
       name: "Create all Installers Linux"
@@ -450,9 +450,9 @@ jobs:
         - export OWTRAVISJOB=INST
         - export OWTOOLS=VISUALC
       install:
-        - . ./cmnvars.sh
+#        - . ./cmnvars.sh
       script:
-        - travis/build.sh
+        - cmd.exe /c "travis\winbuild.cmd"
     #################################
     - stage: Finalize
       name: "Clean build cache Linux"
