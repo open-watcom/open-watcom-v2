@@ -31,11 +31,11 @@ gitupdf_proc()
                     # copy build log files to git repository tree
                     #
                     if [ "$TRAVIS_OS_NAME" = "osx" ]; then
-                        OWLOGDIR = $OWTRAVIS_BUILD_DIR/logs/osx
+                        OWLOGDIR=$OWTRAVIS_BUILD_DIR/logs/osx
                     elif [ "$TRAVIS_OS_NAME" = "windows" ]; then
-                        OWLOGDIR = $OWTRAVIS_BUILD_DIR/logs/windows
+                        OWLOGDIR=$OWTRAVIS_BUILD_DIR/logs/windows
                     else
-                        OWLOGDIR = $OWTRAVIS_BUILD_DIR/logs/linux
+                        OWLOGDIR=$OWTRAVIS_BUILD_DIR/logs/linux
                     fi
                     if [ ! -d $OWLOGDIR ]; then 
                         mkdir -p $OWLOGDIR; 
