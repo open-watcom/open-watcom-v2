@@ -227,6 +227,8 @@ jobs:
         - export OWTOOLS=CLANG
         - export OWTRAVISJOB=BUILD-3
         - export OWDOSBOX=dosbox
+        - export OWDOCQUIET=0
+        - export OWVERBOSE=1
       install:
         # install DOS Emulator
         - brew install dosbox
@@ -245,6 +247,8 @@ jobs:
         # set environmet variable
         - export OWTOOLS=VISUALC
         - export OWTRAVISJOB=BUILD-3
+        - export OWDOCQUIET=0
+        - export OWVERBOSE=1
       install:
         - export OWSRCDIR=$OWROOT/bld
         - export OWBINDIR=$OWROOT/build/$OWOBJDIR
