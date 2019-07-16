@@ -19,21 +19,16 @@ bootutil_proc()
     mkdir $OWOBJDIR
     cd $OWOBJDIR
     rm -f $OWBINDIR/wmake
-    if [ "$TRAVIS_OS_NAME" = "windows" ]; then
-        nmake -f ../nmake clean
-        nmake -f ../nmake
-    else
-        case `uname` in
-            Darwin)
-                make -f ../posmake clean
-                make -f ../posmake TARGETDEF=-D__OSX__
-                ;;
-            *)
-                make -f ../posmake clean
-                make -f ../posmake TARGETDEF=-D__LINUX__
-                ;;
-        esac
-    fi
+    case `uname` in
+        Darwin)
+            make -f ../posmake clean
+            make -f ../posmake TARGETDEF=-D__OSX__
+            ;;
+        *)
+            make -f ../posmake clean
+            make -f ../posmake TARGETDEF=-D__LINUX__
+            ;;
+    esac
     RC=$?
     if [ $RC -eq 0 ]; then
         #
@@ -122,18 +117,10 @@ set -x
             export OWVERBOSE=1
 set -x
             cd $OWDISTRDIR
-            if [ "$TRAVIS_OS_NAME" = "windows" ]; then
-                if [ "$TRAVIS_EVENT_TYPE" = "pull_request" ]; then
-                    builder build os_nt cpu_x64
-                else
-                    builder -q build os_nt cpu_x64
-                fi
+            if [ "$TRAVIS_EVENT_TYPE" = "pull_request" ]; then
+                builder build
             else
-                if [ "$TRAVIS_EVENT_TYPE" = "pull_request" ]; then
-                    builder build
-                else
-                    builder -q build
-                fi
+                builder -q build
             fi
             RC=$?
             cd $TRAVIS_BUILD_DIR
@@ -144,4 +131,12 @@ set -x
     return $RC
 }
 
-build_proc $*
+if [ "$TRAVIS_OS_NAME" = "windows" ]; then
+    if [ "$OWTRAVISJOB" = "BOOTSTRAP" ]; then
+        cmd.exe /c "travis\winboot.cmd"
+    else
+        cmd.exe /c "travis\winbuild.cmd"
+    fi
+else
+    build_proc $*
+fi

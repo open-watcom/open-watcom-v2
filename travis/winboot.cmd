@@ -1,6 +1,6 @@
-@set OWECHO_OFF=off
-@if "$OWTRAVIS_DEBUG" == "1" set OWECHO_OFF=on
-@echo %OWECHO_OFF%
+@set OWECHO=off
+@if "$OWTRAVIS_DEBUG" == "1" set OWECHO=on
+@echo %OWECHO%
 SETLOCAL EnableExtensions
 REM Script to build the Open Watcom bootstrap tools
 REM By Microsoft Visual Studio
@@ -9,11 +9,11 @@ set OWROOT=%CD%
 REM ...
 call "C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\vcvarsall.bat" amd64
 REM ...
-@echo %OWECHO_OFF%
+@echo %OWECHO%
 REM ...
 call cmnvars.bat
 REM ...
-@echo %OWECHO_OFF%
+@echo %OWECHO%
 REM ...
 if "%OWTRAVIS_ENV_DEBUG%" == "1" (
     set
@@ -45,5 +45,7 @@ if not errorlevel == 1 (
         )
     )
 )
-echo ERRORLEVEL=%ERRORLEVEL%
-exit %ERRORLEVEL%
+set RC=%ERRORLEVEL%
+REM sleep 3
+ping -n 3 127.0.0.1 >NUL
+exit %RC%
