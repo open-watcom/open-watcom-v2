@@ -17,9 +17,12 @@ env:
     - OWBRANCH_SF=sourceforge
     - OWTRAVIS_REPO_SLUG=open-watcom/travis-ci-ow-builds
     - OWTRAVIS_BUILD_DIR=${HOME}/build/$OWTRAVIS_REPO_SLUG
-    - OWRELROOT=$TRAVIS_BUILD_DIR/test
-    - OWTRAVISDIR=$TRAVIS_BUILD_DIR/travis
-    - OWDISTRDIR=$TRAVIS_BUILD_DIR/distrib/ow
+    - OWRELROOT=$OWROOT/test
+    - OWTRAVISDIR=$OWROOT/travis
+    - OWDISTRDIR=$OWROOT/distrib/ow
+    - OWSRCDIR=$OWROOT/bld
+    - OWBINDIR=$OWROOT/build/$OWOBJDIR
+    - OWDOCSDIR=$OWROOT/docs
 
 cache:
   directories:
@@ -118,8 +121,6 @@ jobs:
         # clear cache
         - travis/cacheclr.sh
       install:
-        - export OWSRCDIR=$OWROOT/bld
-        - export OWBINDIR=$OWROOT/build/$OWOBJDIR
       script:
         - travis/build.sh
     #################################
@@ -167,8 +168,6 @@ jobs:
         - export OWTOOLS=VISUALC
         - export OWTRAVISJOB=BUILD-1
       install:
-        - export OWSRCDIR=$OWROOT/bld
-        - export OWBINDIR=$OWROOT/build/$OWOBJDIR
       script:
         - travis/build.sh
       before_cache:
@@ -207,8 +206,6 @@ jobs:
         - export OWTOOLS=VISUALC
         - export OWTRAVISJOB=BUILD-2
       install:
-        - export OWSRCDIR=$OWROOT/bld
-        - export OWBINDIR=$OWROOT/build/$OWOBJDIR
       script:
         - travis/cache1.sh load
         - travis/build.sh
@@ -250,8 +247,6 @@ jobs:
         - export OWDOCQUIET=0
         - export OWVERBOSE=1
       install:
-        - export OWSRCDIR=$OWROOT/bld
-        - export OWBINDIR=$OWROOT/build/$OWOBJDIR
       script:
         - travis/cache2.sh load
         - travis/build.sh
@@ -266,7 +261,7 @@ jobs:
         - export OWTOOLS=GCC
         - export OWTRAVISJOB=CPREL
       install:
-#        - export WATCOM=$TRAVIS_BUILD_DIR/test
+#        - export WATCOM=$OWROOT/test
         - . ./cmnvars.sh
       script:
 #        - cp $CP_OPTS $OWROOT/buildx/ $WATCOM/
@@ -282,9 +277,7 @@ jobs:
         - export OWTOOLS=VISUALC
         - export OWTRAVISJOB=CPREL
       install:
-        - export OWSRCDIR=$OWROOT/bld
-        - export OWBINDIR=$OWROOT/build/$OWOBJDIR
-        - export WATCOM=$TRAVIS_BUILD_DIR/test
+        - export WATCOM=$OWROOT/test
       script:
 #        - cp $CP_OPTS $OWROOT/buildx/ $WATCOM
         - true
@@ -296,7 +289,7 @@ jobs:
 #        # stop unwanted services
 #        - travis/services.sh
 #      install:
-#        - export WATCOM=$TRAVIS_BUILD_DIR/test
+#        - export WATCOM=$OWROOT/test
 #      script:
 #        - cp $CP_OPTS $OWROOT/buildx/ $WATCOM/
     #################################
@@ -311,7 +304,7 @@ jobs:
         - export OWTRAVISJOB=TEST
         - export OWTRAVISTEST=WASM
       install:
-        - export WATCOM=$TRAVIS_BUILD_DIR/test
+        - export WATCOM=$OWROOT/test
         - export PATH=$WATCOM/binl:$PATH
         - export INCLUDE=$WATCOM/lh
         - unset LIB
@@ -329,7 +322,7 @@ jobs:
         - export OWTRAVISJOB=TEST
         - export OWTRAVISTEST=C
       install:
-        - export WATCOM=$TRAVIS_BUILD_DIR/test
+        - export WATCOM=$OWROOT/test
         - export PATH=$WATCOM/binl:$PATH
         - export INCLUDE=$WATCOM/lh
         - unset LIB
@@ -347,7 +340,7 @@ jobs:
         - export OWTRAVISJOB=TEST
         - export OWTRAVISTEST=F77
       install:
-        - export WATCOM=$TRAVIS_BUILD_DIR/test
+        - export WATCOM=$OWROOT/test
         - export PATH=$WATCOM/binl:$PATH
         - export INCLUDE=$WATCOM/lh
         - unset LIB
@@ -365,7 +358,7 @@ jobs:
         - export OWTRAVISJOB=TEST
         - export OWTRAVISTEST=CXX
       install:
-        - export WATCOM=$TRAVIS_BUILD_DIR/test
+        - export WATCOM=$OWROOT/test
         - export PATH=$WATCOM/binl:$PATH
         - export INCLUDE=$WATCOM/lh
         - unset LIB
@@ -381,7 +374,7 @@ jobs:
         - export OWTRAVISJOB=TEST
         - export OWTRAVISTEST=CRTL
       install:
-        - export WATCOM=$TRAVIS_BUILD_DIR/test
+        - export WATCOM=$OWROOT/test
         - export PATH=$WATCOM/binl:$PATH
         - export INCLUDE=$WATCOM/lh
         - unset LIB
@@ -399,8 +392,6 @@ jobs:
         - export OWTOOLS=VISUALC
         - export OWTRAVISJOB=DOCS
       install:
-        - export OWSRCDIR=$OWROOT/bld
-        - export OWBINDIR=$OWROOT/build/$OWOBJDIR
         # Help compilers related variables
         - export OWGHOSTSCRIPTPATH=$OWTRAVISDIR/gs927w64
         - export OWWIN95HC=$OWTRAVISDIR/hcw/hcrtf.exe
@@ -428,8 +419,6 @@ jobs:
         - export OWTOOLS=VISUALC
         - export OWTRAVISJOB=INST
       install:
-        - export OWSRCDIR=$OWROOT/bld
-        - export OWBINDIR=$OWROOT/build/$OWOBJDIR
       script:
         - travis/build.sh
     #################################
