@@ -30,9 +30,9 @@
 ****************************************************************************/
 
 
-#define CR      0x0d
-#define LF      0x0a
-#define NC      0x00
+#define CHAR_CR     0x0d
+#define CHAR_LF     0x0a
+#define CHAR_NULL   0x00
 
 #include "wfile.hpp"
 
@@ -139,7 +139,7 @@ WString& WEXPORT WFile::getLine( WString& str )
 {
     for(;!_eof;) {
         char ch = getch();
-        if( ch == CR || ch == LF ) {
+        if( ch == CHAR_CR || ch == CHAR_LF ) {
             break;
         }
         str.concat( ch );
@@ -151,7 +151,7 @@ WString& WEXPORT WFile::gets( WString& str )
 {
     for(;!_eof;) {
         char ch = getch();
-        if( ch == CR || ch == LF || ch == NC ) {
+        if( ch == CHAR_CR || ch == CHAR_LF || ch == CHAR_NULL ) {
             ungetch( ch );
             break;
         }
@@ -166,7 +166,7 @@ void WEXPORT WFile::gets( char* str, size_t len )
 
     for( i=0; !_eof && i<len; i++ ) {
         str[i] = getch();
-        if( str[i] == CR || str[i] == LF || str[i] == NC ) {
+        if( str[i] == CHAR_CR || str[i] == CHAR_LF || str[i] == CHAR_NULL ) {
             ungetch( str[i] );
             break;
         }
@@ -181,7 +181,7 @@ void WEXPORT WFile::gets_exact( char* str, size_t len )
     // read exactly len bytes -- don't stop for separator characters ( CR/LF )
     for( i=0; !_eof && i<len; i++ ) {
         str[i] = getch();
-        if( str[i] == NC ) {
+        if( str[i] == CHAR_NULL ) {
             ungetch( str[i] );
             break;
         }
@@ -198,7 +198,7 @@ char WEXPORT WFile::getch()
     } else {
         chr = getByte();
     }
-    if( chr == LF ) {
+    if( chr == CHAR_LF ) {
         _lineCount++;
     }
     return( chr );
@@ -208,7 +208,7 @@ void WEXPORT WFile::ungetch( char chr )
 {
     _chsaved = true;
     _chsave = chr;
-    if( chr == LF ) {
+    if( chr == CHAR_LF ) {
         _lineCount--;
     }
 }
