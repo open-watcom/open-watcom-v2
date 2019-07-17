@@ -741,7 +741,7 @@ static void clearline( void )
     helpOutBuf[0] = '\0';
 }
 
-static void scanCallBack( TokenType type, Info *info, void *_myinfo )
+static void scanCallBack( HelpTokenType type, Info *info, void *_myinfo )
 {
     TextInfoBlock       *block;
     bool                goofy;

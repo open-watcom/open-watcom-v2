@@ -36,7 +36,7 @@ typedef enum {
     TK_TEXT,
     TK_PLAIN_LINK,
     TK_GOOFY_LINK,
-} TokenType;
+} HelpTokenType;
 
 typedef enum {
     TT_PLAIN,
@@ -45,14 +45,14 @@ typedef enum {
     TT_LEFT_ARROW,
     TT_RIGHT_ARROW,
     TT_END_OF_LINE
-} TextType;
+} HelpTextType;
 
 #include "pushpck1.h"
 
 typedef struct {
-    TextType    type;
-    char        *str;
-    unsigned    len;
+    HelpTextType    type;
+    char            *str;
+    unsigned        len;
 } TextInfo;
 
 typedef struct TextInfoBlock {
@@ -78,6 +78,6 @@ typedef struct Info {
 
 #include "poppck.h"
 
-typedef void ScanCBfunc(TokenType, Info *, void *);
+typedef void ScanCBfunc(HelpTokenType, Info *, void *);
 
 extern bool ScanLine( char *, ScanCBfunc *, void * );
