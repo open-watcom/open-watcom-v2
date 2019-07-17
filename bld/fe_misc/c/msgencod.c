@@ -129,8 +129,8 @@ unsigned langTextCount[LANG_MAX];
 
 typedef struct msggroup MSGGROUP;
 typedef struct msgsym MSGSYM;
-typedef struct word WORD;
-typedef struct wordref WORDREF;
+typedef struct word MSGWORD;
+typedef struct wordref MSGWORDREF;
 
 struct msggroup {
     MSGGROUP    *next;
@@ -153,14 +153,14 @@ struct msgsym {
     unsigned    level;
     unsigned    style : 1;
     MSGGROUP    *grp;
-    WORDREF     *words;
+    MSGWORDREF  *words;
     char        name[1];
 };
 
 struct word {
-    WORD        *sortedByName[2];
-    WORD        *sortedByRef[2];
-    WORD        *all;
+    MSGWORD     *sortedByName[2];
+    MSGWORD     *sortedByRef[2];
+    MSGWORD     *all;
     unsigned    len;
     unsigned    index;
     unsigned    references;
@@ -168,8 +168,8 @@ struct word {
 };
 
 struct wordref {
-    WORDREF     *next;
-    WORD        *word;
+    MSGWORDREF  *next;
+    MSGWORD     *word;
 };
 
 #define LINE_SIZE       (512)
@@ -204,9 +204,9 @@ static FILE *o_msgc;
 static FILE *o_msgh;
 static FILE *o_levh;
 
-static WORD *allWords;
-static WORD *nameWords;
-static WORD *refWords;
+static MSGWORD *allWords;
+static MSGWORD *nameWords;
+static MSGWORD *refWords;
 static MSGSYM *messageSyms;
 static MSGSYM **currMSGSYM = &messageSyms;
 static MSGSYM *sortedSyms;
@@ -246,7 +246,7 @@ static size_t totalBytes;
 static void outputNum (FILE *fp, unsigned n);
 
 // encoding
-#define MAX_WORD_LEN    31
+#define MAX_MSGWORD_LEN 31
 #define ENC_BIT         0x80
 #define LARGE_BIT       0x40
 #define USE_SMALL_ENC   0x3f
@@ -965,11 +965,11 @@ static void readGML( void )
     maxMsgLen = ( ( maxMsgLen + 16 ) + 0x0f ) & ~ 0x0f;
 }
 
-static WORD *addWord( MSGSYM *m )
+static MSGWORD *addWord( MSGSYM *m )
 {
     int s;
-    WORD **h;
-    WORD *c;
+    MSGWORD **h;
+    MSGWORD *c;
     size_t len;
 
     h = &nameWords;
@@ -990,7 +990,7 @@ static WORD *addWord( MSGSYM *m )
     if( len > maxWordLen ) {
         maxWordLen = len;
     }
-    if( len > MAX_WORD_LEN ) {
+    if( len > MAX_MSGWORD_LEN ) {
         errorLocn( m->fname, m->line, "MSGSYM %s: word '%s' is too long\n", m->name, word );
     }
     ++uniqueWords;
@@ -1005,7 +1005,7 @@ static WORD *addWord( MSGSYM *m )
     return( c );
 }
 
-static int cmpRef( WORD *l, WORD *r )
+static int cmpRef( MSGWORD *l, MSGWORD *r )
 {
     int s;
 
@@ -1029,10 +1029,10 @@ static int cmpRef( WORD *l, WORD *r )
     return( s );
 }
 
-static void addRef( WORD *w )
+static void addRef( MSGWORD *w )
 {
-    WORD **h;
-    WORD *c;
+    MSGWORD **h;
+    MSGWORD *c;
     int s;
 
     if( w->references > 1 ) {
@@ -1060,16 +1060,16 @@ static void addRef( WORD *w )
 
 static void sortByRefs( void )
 {
-    WORD *w;
+    MSGWORD *w;
 
     for( w = allWords; w != NULL; w = w->all ) {
         addRef( w );
     }
 }
 
-static void traverseHiToLoRefs( WORD *w, void (*t)( WORD *, void * ), void *data )
+static void traverseHiToLoRefs( MSGWORD *w, void (*t)( MSGWORD *, void * ), void *data )
 {
-    WORD *r;
+    MSGWORD *r;
 
     while( w != NULL ) {
         r = w->sortedByRef[1];
@@ -1084,9 +1084,9 @@ static void traverseHiToLoRefs( WORD *w, void (*t)( WORD *, void * ), void *data
 static void splitIntoWords( void )
 {
     MSGSYM *m;
-    WORD *w;
-    WORDREF *r;
-    WORDREF **a;
+    MSGWORD *w;
+    MSGWORDREF *r;
+    MSGWORDREF **a;
     char *p;
 
     for( m = messageSyms; m != NULL; m = m->next ) {
@@ -1111,7 +1111,7 @@ static void splitIntoWords( void )
 }
 
 #if 0
-static void doDumpWORD( WORD *w, void *d )
+static void doDumpWORD( MSGWORD *w, void *d )
 {
     d = d;
     printf( "%6u %s\n", w->references, w->name );
@@ -1293,11 +1293,11 @@ static void outputTableName( FILE *fp, const char *type, const char *name )
 typedef struct {
     unsigned    current_base;
     unsigned    *word_base;
-    WORD        **keep_base;
+    MSGWORD     **keep_base;
     unsigned    current_text;
 } data_word_tables;
 
-static void doEncodeWORD( WORD *w, void *d )
+static void doEncodeWORD( MSGWORD *w, void *d )
 {
     data_word_tables *data = d;
     char *p;
@@ -1317,13 +1317,13 @@ static void doEncodeWORD( WORD *w, void *d )
 
 static void writeWordTable( void )
 {
-    WORD *w;
+    MSGWORD *w;
     unsigned i;
     auto data_word_tables data_w;
 
     data_w.current_base = 0;
     data_w.word_base = malloc( ( multiRefWords + 1 ) * sizeof( unsigned ) );
-    data_w.keep_base = malloc( ( multiRefWords + 1 ) * sizeof( WORD * ) );
+    data_w.keep_base = malloc( ( multiRefWords + 1 ) * sizeof( MSGWORD * ) );
     data_w.current_text = 0;
     outputTableName( o_msgc, "char const", "word_text" );
     traverseHiToLoRefs( refWords, doEncodeWORD, &data_w );
@@ -1363,8 +1363,8 @@ static void writeMsgTable( void )
     unsigned current_base;
     unsigned current_text;
     unsigned i;
-    WORDREF *r;
-    WORD *w;
+    MSGWORDREF *r;
+    MSGWORD *w;
     char *p;
 
     current_text = 0;
