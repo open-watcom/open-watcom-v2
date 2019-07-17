@@ -49,7 +49,7 @@ void DgSymbol( SYMBOL sym )
     if( sym->id == SC_NULL || sym->id == SC_EXTERN ) {
         sym->id = SC_PUBLIC;
     } else if( SymIsStaticMember( sym ) ) {
-        sym->flag |= SF_INITIALIZED;
+        sym->flag |= SYMF_INITIALIZED;
     }
 }
 
@@ -180,14 +180,14 @@ void DgStoreConstScalar( PTREE expr, TYPE type, SYMBOL sym )
     switch( expr->op ) {
     case PT_INT_CONSTANT:
         sym = SymBindConstant( sym, expr->u.int64_constant );
-        sym->flag |= SF_CONSTANT_INT | SF_INITIALIZED;
+        sym->flag |= SYMF_CONSTANT_INT | SYMF_INITIALIZED;
 #if 0
         if( NULL == Integral64Type( type ) ) {
             sym->u.sval = expr->u.int_constant;
-            added = SF_CONSTANT_INT | SF_INITIALIZED;
+            added = SYMF_CONSTANT_INT | SYMF_INITIALIZED;
         } else {
             sym->u.pval = ConPoolInt64Add( expr->u.int64_constant );
-            added = SF_CONSTANT_INT64 | SF_CONSTANT_INT | SF_INITIALIZED;
+            added = SYMF_CONSTANT_INT64 | SYMF_CONSTANT_INT | SYMF_INITIALIZED;
         }
         sym->flag |= added;
 #endif

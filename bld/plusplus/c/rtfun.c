@@ -104,7 +104,7 @@ static SYMBOL rtSymbolCreate(   // CREATE NEW RUN-TIME SYMBOL
     TYPE sym_type;              // - symbol's type
     symbol_flag flags;          // - symbol's flags
 
-    flags = SF_REFERENCED;
+    flags = SYMF_REFERENCED;
     if( rt_type & RTS_FUNCTION ) {
         if( rt_type & RTS_POINTER ) {
             sym_type = TypePtrVoidFunOfVoid();
@@ -117,14 +117,14 @@ static SYMBOL rtSymbolCreate(   // CREATE NEW RUN-TIME SYMBOL
             sym_type = AddFunctionFlag( sym_type, TF1_INTRINSIC );
         }
         if( rt_type & RTS_CAN_THROW ) {
-            flags |= SF_LONGJUMP;
+            flags |= SYMF_LONGJUMP;
         } else if( rt_type & RTS_NO_THROW ) {
-            flags |= SF_NO_LONGJUMP;
+            flags |= SYMF_NO_LONGJUMP;
         } else if( rt_type & RTS_IGN_THROW ) {
             RepoFunAdd( name, RFFLAG_IGN_LONGJUMP );
         }
         if( rt_type & RTS_IS_THROW ) {
-            flags |= SF_IS_THROW;
+            flags |= SYMF_IS_THROW;
         }
     } else if( rt_type & RTS_BASE_VOID ) {
         if( rt_type & RTS_POINTER ) {
@@ -144,7 +144,7 @@ static SYMBOL rtSymbolCreate(   // CREATE NEW RUN-TIME SYMBOL
 bool RunTimeIsThrow(            // TEST IF FUNCTION IS A C++ THROW
     SYMBOL func )               // - function symbol
 {
-    return( GetInternalScope() == SymScope( func ) && ( func->flag & SF_IS_THROW ) != 0 );
+    return( GetInternalScope() == SymScope( func ) && ( func->flag & SYMF_IS_THROW ) != 0 );
 }
 
 

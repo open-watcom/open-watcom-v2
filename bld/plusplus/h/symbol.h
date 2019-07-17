@@ -38,21 +38,21 @@
 
 #include "intsupp.h"
 
-#define SymAddrTaken(s)     (((s)->flag & SF_ADDR_TAKEN) != 0)
-#define SymDbgAddrTaken(s)  (((s)->flag & SF_DBG_ADDR_TAKEN) != 0)
-#define SymIsAnError(s)     (((s)->flag & SF_ERROR) != 0)
-#define SymIsConstantInt(s) (((s)->flag & SF_CONSTANT_INT) != 0)
-#define SymIsConstantNoCode(s) (((s)->flag & SF_CONST_NO_CODE) != 0)
-#define SymIsInitialized(s) (((s)->flag & SF_INITIALIZED) != 0)
-#define SymIsReferenced(s)  (((s)->flag & SF_REFERENCED) != 0)
-#define SymInVft(s)         (((s)->flag & SF_IN_VFT) != 0)
-#define SymIsAnonymousMember(s) (((s)->flag & SF_ANONYMOUS) != 0)
-#define SymIsUninlineable(s)    (((s)->flag & SF_DONT_INLINE) != 0)
-#define SymIsMustGen(s)     (((s)->flag & SF_MUST_GEN) != 0)
-#define SymIsFnTemplateMatchable(s) (((s)->flag & SF_TEMPLATE_FN) != 0)
+#define SymAddrTaken(s)     (((s)->flag & SYMF_ADDR_TAKEN) != 0)
+#define SymDbgAddrTaken(s)  (((s)->flag & SYMF_DBG_ADDR_TAKEN) != 0)
+#define SymIsAnError(s)     (((s)->flag & SYMF_ERROR) != 0)
+#define SymIsConstantInt(s) (((s)->flag & SYMF_CONSTANT_INT) != 0)
+#define SymIsConstantNoCode(s) (((s)->flag & SYMF_CONST_NO_CODE) != 0)
+#define SymIsInitialized(s) (((s)->flag & SYMF_INITIALIZED) != 0)
+#define SymIsReferenced(s)  (((s)->flag & SYMF_REFERENCED) != 0)
+#define SymInVft(s)         (((s)->flag & SYMF_IN_VFT) != 0)
+#define SymIsAnonymousMember(s) (((s)->flag & SYMF_ANONYMOUS) != 0)
+#define SymIsUninlineable(s)    (((s)->flag & SYMF_DONT_INLINE) != 0)
+#define SymIsMustGen(s)     (((s)->flag & SYMF_MUST_GEN) != 0)
+#define SymIsFnTemplateMatchable(s) (((s)->flag & SYMF_TEMPLATE_FN) != 0)
 
-#define SymIsAlias(s)       (((s)->flag & SF_ALIAS) != 0)
-#define SymIsCatchAlias(s)  ( (s)->id == SC_AUTO && ( (s)->flag & SF_CATCH_ALIAS ))
+#define SymIsAlias(s)       (((s)->flag & SYMF_ALIAS) != 0)
+#define SymIsCatchAlias(s)  ( (s)->id == SC_AUTO && ( (s)->flag & SYMF_CATCH_ALIAS ))
 
 #define SymIsTypedef(s)     ( (s)->id == SC_TYPEDEF )
 #define SymIsDefArg(s)      ( (s)->id == SC_DEFAULT )
@@ -150,7 +150,7 @@ SYMBOL SymCreateTempScope(      // CREATE NEW TEMP-SCOPE SYMBOL
 SYMBOL SymDefaultBase(          // REMOVE DEFAULT ARGUMENTS TO GET BASE SYMBOL
     SYMBOL sym )                // - the symbol
 ;
-SYMBOL SymDeriveThrowBits(      // DERIVE SF_.._LONGJUMP BITS FROM SOURCE
+SYMBOL SymDeriveThrowBits(      // DERIVE SYMF_.._LONGJUMP BITS FROM SOURCE
     SYMBOL tgt,                 // - target symbol
     SYMBOL src )                // - source symbol
 ;

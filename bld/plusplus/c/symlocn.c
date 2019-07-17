@@ -95,14 +95,14 @@ void SymbolLocnDefine(          // DEFINE LOCATION SYMBOL
     if( sym_locn != NULL && sym_locn->src_file != NULL ) {
         locn = SymbolLocnAlloc( &sym->locn );
         locn->tl = *sym_locn;
-        sym->flag2 |= SF2_TOKEN_LOCN;
+        sym->flag2 |= SYMF2_TOKEN_LOCN;
     } else {
         DbgVerify( sym_locn == NULL
                  , "SymbolLocnDefine -- bad location" );
         if( SrcFilesOpen() ) {
             locn = SymbolLocnAlloc( &sym->locn );
             SrcFileGetTokenLocn( &locn->tl );
-            sym->flag2 |= SF2_TOKEN_LOCN;
+            sym->flag2 |= SYMF2_TOKEN_LOCN;
         }
     }
 }

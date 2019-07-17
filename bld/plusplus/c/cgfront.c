@@ -664,7 +664,7 @@ void CgFrontModInitFini(        // PROCESS MODULE-INIT. AFTER FRONT-END
     if( SymIsReferenced( mod ) && ErrCount == 0 ) {
         ModuleInitConnect();
     } else {
-        mod->flag |= SF_REFERENCED;
+        mod->flag |= SYMF_REFERENCED;
         fp = CgioLocateFile( mod );
         CgioFreeFile( fp );
     }
@@ -769,7 +769,7 @@ void CgFrontScopeCall(          // GENERATE IC_SCOPE_CALL, IF REQ'D
         DbgDefault( "CgFrontScopeCall -- bad DTORING_KIND" );
         }
     }
-    if( fun != NULL && ( fun->flag & SF_NO_LONGJUMP ) ) {
+    if( fun != NULL && ( fun->flag & SYMF_NO_LONGJUMP ) ) {
         fun = NULL;
     }
     if( fun != NULL || dtor != NULL ) {

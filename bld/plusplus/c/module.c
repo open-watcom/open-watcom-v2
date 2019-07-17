@@ -64,7 +64,7 @@ SYMBOL StaticInitSymbol(        // CREATE STATIC INITIALIZATION SYMBOL
     }
     return SymCreateTempScope( type
                              , SC_STATIC
-                             , SF_REFERENCED
+                             , SYMF_REFERENCED
                              , CppStaticInitName( sym ) );
 }
 
@@ -74,7 +74,7 @@ static SYMBOL staticInitFuncVar(// DEFINE VARIABLE FOR INITIALIZATION FLAGS
 {
     return SymCreateTempScope( MakeExpandableType( TYP_UCHAR )
                              , SC_STATIC
-                             , SF_REFERENCED
+                             , SYMF_REFERENCED
                              , CppStaticOnceOnlyName() );
 }
 
@@ -214,7 +214,7 @@ void ModuleInitUsed(            // FLAG MODULE-INITIALIZATION FUNCTION AS USED
     void )
 {
     module_init_func->id = SC_STATIC;
-    module_init_func->flag |= SF_INITIALIZED | SF_REFERENCED;
+    module_init_func->flag |= SYMF_INITIALIZED | SYMF_REFERENCED;
 }
 
 
@@ -271,7 +271,7 @@ static void genInitFiniReference( // GENERATE INIT/FINI REFERENCE TO FUNCTION
     type = MakePointerTo( func->sym_type );
     init_ref = SymCreateFileScope( type
                                  , SC_STATIC
-                                 , SF_INITIALIZED | SF_REFERENCED
+                                 , SYMF_INITIALIZED | SYMF_REFERENCED
                                  , name );
     init_ref->segid = segid;
     if( segid == SEG_INIT_REF ) {

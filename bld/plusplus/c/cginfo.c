@@ -323,7 +323,7 @@ fe_attr FEAttr(                 // GET SYMBOL ATTRIBUTES
         }
     }
     // don't export addressability thunks
-    if( (sym->flag & SF_ADDR_THUNK) == 0 ) {
+    if( (sym->flag & SYMF_ADDR_THUNK) == 0 ) {
         if( mod_flags & (TF1_DLLEXPORT|TF1_DLLIMPORT) ) {
             if( SymIsInitialized( sym ) ) {
                 if( mod_flags & TF1_DLLEXPORT ) {
@@ -339,8 +339,8 @@ fe_attr FEAttr(                 // GET SYMBOL ATTRIBUTES
             }
         }
     }
-    // change to this: if( sym->flag & SF_CG_ADDR_TAKEN ) {
-    if( sym->flag & SF_CG_ADDR_TAKEN ) {
+    // change to this: if( sym->flag & SYMF_CG_ADDR_TAKEN ) {
+    if( sym->flag & SYMF_CG_ADDR_TAKEN ) {
         attr |= FE_ADDR_TAKEN;
     }
     if( SymIsClassMember( sym ) ) {
@@ -351,7 +351,7 @@ fe_attr FEAttr(                 // GET SYMBOL ATTRIBUTES
             attr |= FE_STATIC;
             /* only set FE_GLOBAL if it's not an in-class
          * initialization of a const static member */
-            if( (sym->flag & SF_IN_CLASS_INIT) == 0 ) {
+            if( (sym->flag & SYMF_IN_CLASS_INIT) == 0 ) {
                 attr |= FE_GLOBAL;
             }
         } else {
@@ -749,7 +749,7 @@ static bool makeFileScopeStaticNear( SYMBOL sym )
     if( ScopeId( SymScope( sym ) ) != SCOPE_FILE ) {
         return( false );
     }
-    if( (sym->flag & SF_ADDR_TAKEN) != 0 ) {
+    if( (sym->flag & SYMF_ADDR_TAKEN) != 0 ) {
         // function may be called as a FAR function through a pointer
         return( false );
     }
@@ -833,7 +833,7 @@ static call_class getCallClass( // GET CLASS OF CALL
             }
 #if _INTEL_CPU
             // don't export addressability thunks
-            if( (sym->flag & SF_ADDR_THUNK) == 0 ) {
+            if( (sym->flag & SYMF_ADDR_THUNK) == 0 ) {
                 if( flags & TF1_DLLEXPORT ) {
                     if( fn_flags & TF1_INLINE ) {
                         // may be COMDATed so make sure the calling convention
@@ -867,7 +867,7 @@ static call_class getCallClass( // GET CLASS OF CALL
             }
 #endif
 #if _INTEL_CPU
-            if( sym->flag & SF_FAR16_CALLER ) {
+            if( sym->flag & SYMF_FAR16_CALLER ) {
                 value |= THUNK_PROLOG;
             }
 #endif
@@ -904,9 +904,9 @@ static sym_access getSymAccess( // GET access flag of symbol
 {
     sym_access access;
 
-    if( sym->flag & SF_PRIVATE ) {
+    if( sym->flag & SYMF_PRIVATE ) {
         access = SYM_ACC_PRIVATE;
-    } else if( sym->flag & SF_PROTECTED ) {
+    } else if( sym->flag & SYMF_PROTECTED ) {
         access = SYM_ACC_PROTECTED;
     } else {
         access = SYM_ACC_PUBLIC;

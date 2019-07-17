@@ -151,7 +151,7 @@ dbg_loc SymbolicDebugSetDataSegment( dbg_loc dl )
 {
     if( !IsBigData() ) {
         dl = symbolicDebugSetSegment( dl, DefaultDataSymbol );
-        DefaultDataSymbol->flag |= SF_REFERENCED;
+        DefaultDataSymbol->flag |= SYMF_REFERENCED;
     }
     return( dl );
 }
@@ -209,9 +209,9 @@ static dbg_type symWVDebugClassType( TYPE type )
             uint    attribute;
             byte    offset = 0;
             byte    length = 0;
-            if( curr->flag & SF_PRIVATE ) {
+            if( curr->flag & SYMF_PRIVATE ) {
                 attribute = FIELD_ATTR_PRIVATE;
-            } else if( curr->flag & SF_PROTECTED ) {
+            } else if( curr->flag & SYMF_PROTECTED ) {
                 attribute = FIELD_ATTR_PROTECTED;
             } else {
                 attribute = FIELD_ATTR_PUBLIC;
@@ -282,9 +282,9 @@ static dbg_type symWVDebugClassType( TYPE type )
                 SymbolicDebugType( curr->sym_type, SD_DEFAULT );
             } else {
                 uint    attribute;
-                if( curr->flag & SF_PRIVATE ) {
+                if( curr->flag & SYMF_PRIVATE ) {
                     attribute = FIELD_ATTR_PRIVATE;
-                } else if( curr->flag & SF_PROTECTED ) {
+                } else if( curr->flag & SYMF_PROTECTED ) {
                     attribute = FIELD_ATTR_PROTECTED;
                 } else {
                     attribute = FIELD_ATTR_PUBLIC;
@@ -508,9 +508,9 @@ static dbg_type symCVDebugClassType( TYPE type )
         } else if( SymIsStaticDataMember( curr ) ) {
             uint    attribute;
 
-            if( curr->flag & SF_PRIVATE ) {
+            if( curr->flag & SYMF_PRIVATE ) {
                 attribute = FIELD_ATTR_PRIVATE;
-            } else if( curr->flag & SF_PROTECTED ) {
+            } else if( curr->flag & SYMF_PROTECTED ) {
                 attribute = FIELD_ATTR_PROTECTED;
             } else {
                 attribute = FIELD_ATTR_PUBLIC;
@@ -536,9 +536,9 @@ static dbg_type symCVDebugClassType( TYPE type )
             byte    offset = 0;
             byte    length = 0;
 
-            if( curr->flag & SF_PRIVATE ) {
+            if( curr->flag & SYMF_PRIVATE ) {
                 attribute = FIELD_ATTR_PRIVATE;
-            } else if( curr->flag & SF_PROTECTED ) {
+            } else if( curr->flag & SYMF_PROTECTED ) {
                 attribute = FIELD_ATTR_PROTECTED;
             } else {
                 attribute = FIELD_ATTR_PUBLIC;
@@ -582,9 +582,9 @@ static dbg_type symCVDebugClassType( TYPE type )
                 uint    kind;
 
                 kind = METHOD_VANILLA;
-                if( curr->flag & SF_PRIVATE ) {
+                if( curr->flag & SYMF_PRIVATE ) {
                     attribute = FIELD_ATTR_PRIVATE;
-                } else if( curr->flag & SF_PROTECTED ) {
+                } else if( curr->flag & SYMF_PROTECTED ) {
                     attribute = FIELD_ATTR_PROTECTED;
                 } else {
                     attribute = FIELD_ATTR_PUBLIC;
@@ -1105,7 +1105,7 @@ static void symbolicDebugSymbol( void )
     for( curr = NULL; (curr = ScopeOrderedNext( stop, curr )) != NULL; ) {
         if( ! SymIsFunctionTemplateModel( curr ) &&
             ! SymIsClassTemplateModel( curr ) &&
-            ( curr->flag & (SF_INITIALIZED | SF_REFERENCED) ) &&
+            ( curr->flag & (SYMF_INITIALIZED | SYMF_REFERENCED) ) &&
             SymIsData( curr ) &&
             !SymIsEnumeration( curr) &&
             !SymIsTemporary( curr ) &&

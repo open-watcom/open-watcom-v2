@@ -2792,7 +2792,7 @@ static FN_CTL* emit_virtual_file(   // EMIT A VIRTUAL FILE
             FstabSetSvSe( try_se_l );
           } break;
         case IC_EXCEPT_SPEC :               // FUNCTION EXCEPTION SPEC.
-            if( (fctl->func->flag & SF_NO_LONGJUMP) == 0 ) {
+            if( (fctl->func->flag & SYMF_NO_LONGJUMP) == 0 ) {
                 SE* fn_exc;
                 if( fctl->has_fn_exc ) {
                     fn_exc = BlkPosnCurr();
@@ -2949,7 +2949,7 @@ static FN_CTL* emit_virtual_file(   // EMIT A VIRTUAL FILE
         case IC_VFT_BEG :                   // VFT: START
           { SYMBOL vft;
             vft = ins_value.pvalue;
-            if( 0 == ( vft->flag & SF_REFERENCED ) ) {
+            if( 0 == ( vft->flag & SYMF_REFERENCED ) ) {
                 flushOverInitialization( file_ctl );
             }
           } break;

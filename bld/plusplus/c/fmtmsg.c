@@ -195,7 +195,7 @@ SYMBOL FormatMsg( VBUF *pbuf, char *fmt, va_list arg )
                         VbufConcVbuf( pbuf, &prefix );
                         VbufFree( &prefix );
                     }
-                    if( sym->flag2 & SF2_TOKEN_LOCN ) {
+                    if( sym->flag2 & SYMF2_TOKEN_LOCN ) {
                         DbgVerify( retn_symbol == NULL, "too many symbols" );
                         retn_symbol = sym;
                     }
@@ -238,7 +238,7 @@ SYMBOL FormatMsg( VBUF *pbuf, char *fmt, va_list arg )
                 FormatTemplateInfo( tinfo, &prefix );
                 VbufConcVbuf( pbuf, &prefix );
                 VbufFree( &prefix );
-                if( sym->flag2 & SF2_TOKEN_LOCN ) {
+                if( sym->flag2 & SYMF2_TOKEN_LOCN ) {
                     DbgVerify( retn_symbol == NULL, "too many symbols" );
                     retn_symbol = sym;
                 }

@@ -195,7 +195,7 @@ static PTREE defaultArgSymError( MSG_NUM msg, PTREE expr, SYMBOL sym )
     PTreeSetErrLoc( expr );
     if( sym != NULL ) {
         CErr2p( msg, sym );
-        sym->flag |= SF_ERROR;
+        sym->flag |= SYMF_ERROR;
     } else {
         CErr1( msg );
     }
@@ -314,7 +314,7 @@ bool AddDefaultArgs(            // ADD DEFAULT ARGUMENTS, AS REQ'D
             defarg_expr = NodeArg( defarg_expr );
             *args = defarg_expr;
             args = &defarg_expr->u.subtree[0]; // used if more than one defarg
-            func->flag |= SF_REFERENCED;
+            func->flag |= SYMF_REFERENCED;
             func = func->thread;
         } while( func->id == SC_DEFAULT );
         SymSetNvReferenced( func );

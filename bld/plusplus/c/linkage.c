@@ -244,7 +244,7 @@ void LinkageSet( SYMBOL sym, char *language )
         linkage = CppLinkage;
         break;
     default:
-        if( sym->flag & SF_TEMPLATE_FN ) {
+        if( sym->flag & SYMF_TEMPLATE_FN ) {
             linkage = CppLinkage;
         } else {
             linkage = CurrLinkage;
@@ -254,9 +254,9 @@ void LinkageSet( SYMBOL sym, char *language )
         }
     }
     if( linkage == CppLinkage ) {
-        sym->flag |= SF_PLUSPLUS;
+        sym->flag |= SYMF_PLUSPLUS;
     } else {
-        sym->flag &= ~SF_PLUSPLUS;
+        sym->flag &= ~SYMF_PLUSPLUS;
     }
 }
 
@@ -264,14 +264,14 @@ bool LinkageIsCpp( SYMBOL sym )
 /*****************************/
 {
     verifyFileScopeSym( sym );
-    return(( sym->flag & SF_PLUSPLUS ) != 0 );
+    return(( sym->flag & SYMF_PLUSPLUS ) != 0 );
 }
 
 bool LinkageIsC( SYMBOL sym )
 /***************************/
 {
     verifyFileScopeSym( sym );
-    return(( sym->flag & SF_PLUSPLUS ) == 0 );
+    return(( sym->flag & SYMF_PLUSPLUS ) == 0 );
 }
 
 bool LinkageIsCurr( SYMBOL sym )
@@ -279,9 +279,9 @@ bool LinkageIsCurr( SYMBOL sym )
 {
     verifyFileScopeSym( sym );
     if( CurrLinkage == CppLinkage ) {
-        return(( sym->flag & SF_PLUSPLUS ) != 0 );
+        return(( sym->flag & SYMF_PLUSPLUS ) != 0 );
     }
-    return(( sym->flag & SF_PLUSPLUS ) == 0 );
+    return(( sym->flag & SYMF_PLUSPLUS ) == 0 );
 }
 
 bool LinkageSpecified( void )

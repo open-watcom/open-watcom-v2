@@ -333,7 +333,7 @@ static CALLNODE* addNode(       // ADD A CALL NODE
         node->inline_fun = true;
         if( funcInlineable( sym ) ) {
             node->inlineable = true;
-            sym->flag |= SF_CG_INLINEABLE;
+            sym->flag |= SYMF_CG_INLINEABLE;
         }
         break;
     case TCF_OTHER_FUNC :
@@ -343,7 +343,7 @@ static CALLNODE* addNode(       // ADD A CALL NODE
             if( oe_size > 0 ) {
                 node->inlineable_oe = canBeOeInlined( node );
                 if( node->inlineable_oe ) {
-                    sym->flag |= SF_CG_INLINEABLE;
+                    sym->flag |= SYMF_CG_INLINEABLE;
                 }
             }
         }
@@ -399,7 +399,7 @@ static TCF addAddrOf(           // ADD ADDRESS-OF IF REQUIRED
         case TCF_NOT_FUNC :
             break;
         default :
-            callee->flag |= SF_ADDR_TAKEN;
+            callee->flag |= SYMF_ADDR_TAKEN;
         }
         return( tcf );
     }
@@ -520,7 +520,7 @@ static void scanFunctionBody(   // SCAN FUNCTION FOR CALLS
     _DUMP_CGRF( "scan function body: %s\n", sc.file_ctl->symbol );
     func = sc.file_ctl->symbol;
     if( NULL != func ) {
-        func->flag &= ~SF_ADDR_TAKEN;
+        func->flag &= ~SYMF_ADDR_TAKEN;
         _printScanInt( "-- function flags: %x\n", func->flag );
     }
     opcodes = 0;
@@ -739,7 +739,7 @@ static void scanFunctionBody(   // SCAN FUNCTION FOR CALLS
             pvft = RingCarveAlloc( carve_vft, &vft_defs );
             sym1 = ins->value.pvalue;
             pvft->vft = sym1;
-            sym1->flag &= ~SF_REFERENCED;
+            sym1->flag &= ~SYMF_REFERENCED;
             pvft->cgfile = sc.file_ctl;
             pvft->location = CgioLastRead( sc.file_ctl );
             CgioReadICUntilOpcode( sc.file_ctl, IC_INIT_DONE );
@@ -788,7 +788,7 @@ static void scanVftDefn(        // SCAN VFT DEFINITION
     ExtraRptIncrementCtr( ctr_vfts_genned );
     _DUMP_CGRF( "scan VFT body: %s\n", vft );
     pvft = NULL;
-    vft->flag |= SF_REFERENCED;
+    vft->flag |= SYMF_REFERENCED;
     RingIterBeg( vft_defs, srch ) {
         if( srch->vft == vft ) {
             pvft = srch;
@@ -816,7 +816,7 @@ static void scanVftDefn(        // SCAN VFT DEFINITION
             break;
         case IC_DATA_PTR_SYM:
             sym = ins->value.pvalue;
-            sym->flag |= SF_IN_VFT;
+            sym->flag |= SYMF_IN_VFT;
             addAddrOf( cnode, sym );
             continue;
         default:
@@ -1154,7 +1154,7 @@ static void removeCodeFile(     // REMOVE CODE FILE FOR FUNCTION
 #endif
         CgioFreeFile( cgfile );
         // inlines that aren't going to be generated aren't really referenced
-        func->flag &= ~SF_REFERENCED;
+        func->flag &= ~SYMF_REFERENCED;
     } else if ( SymIsRegularStaticFunc( func ) ) {
 #ifndef NDEBUG
         if( PragDbgToggle.dump_emit_ic || PragDbgToggle.callgraph ) {
@@ -1186,7 +1186,7 @@ static bool procFunction(       // POST-PROCESS FUNCTION IN CALL GRAPH
     func = node->base.object;
     if( node->addrs > 0 ) {
         if( func != NULL ) {
-            func->flag |= SF_ADDR_TAKEN;
+            func->flag |= SYMF_ADDR_TAKEN;
         }
         markAsGen( node );
     } else if( !CompFlags.inline_functions ) {
@@ -1200,10 +1200,10 @@ static bool procFunction(       // POST-PROCESS FUNCTION IN CALL GRAPH
         cgfile->u.s.stab_gen = node->stab_gen;
         cgfile->cond_flags = node->cond_flags;
         if( cgfile->u.s.oe_inl ) {
-            func->flag |= SF_CG_INLINEABLE;
+            func->flag |= SYMF_CG_INLINEABLE;
         }
         if( cgfile->u.s.not_inline ) {
-            func->flag &= ~SF_CG_INLINEABLE;
+            func->flag &= ~SYMF_CG_INLINEABLE;
         }
     }
     return( false );
@@ -1465,7 +1465,7 @@ void CgBackSetOeSize(           // SET SIZE FOR INLINING STATICS
 bool CgBackFuncInlined(         // DETERMINE IF FUNCTION INVOCATION INLINED
     SYMBOL sym )                // - function symbol
 {
-    return ( sym->flag & SF_CG_INLINEABLE )
+    return ( sym->flag & SYMF_CG_INLINEABLE )
         && shouldBeInlined( sym );
 }
 
@@ -1499,7 +1499,7 @@ CALLNODE* CgrfDtorCall(         // DTOR CALL HAS BEEN ESTABLISHED
     CALLNODE* owner,            // - owner
     SYMBOL dtor )               // - dtor called
 {
-    dtor->flag |= SF_REFERENCED;
+    dtor->flag |= SYMF_REFERENCED;
     addCalleeFuncToGen( owner, dtor );
     return( owner );
 }
@@ -1509,7 +1509,7 @@ CALLNODE* CgrfDtorAddr(         // DTOR ADDR-OF HAS BEEN ESTABLISHED
     CALLNODE* owner,            // - owner
     SYMBOL dtor )               // - dtor called
 {
-    dtor->flag |= SF_REFERENCED | SF_ADDR_TAKEN;
+    dtor->flag |= SYMF_REFERENCED | SYMF_ADDR_TAKEN;
     addAddrOf( owner, dtor );
     return( owner );
 }

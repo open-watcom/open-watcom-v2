@@ -285,7 +285,7 @@ void TypeidRef( SYMBOL sym )
 /**************************/
 {
     if( sym != NULL ) {
-        sym->flag |= SF_REFERENCED;
+        sym->flag |= SYMF_REFERENCED;
         CgSegId( sym );
         SegmentMarkUsed( sym->segid );
     }

@@ -228,7 +228,7 @@ static void adjustFnAddr        // SET FUNCTION ADDR
     if( SymIsThisFuncMember( sym ) ) {
         errForFunc( func, ERR_ADDR_NONSTAT_MEMBER_FUNC, ctl );
     } else {
-        sym->flag |= SF_ADDR_TAKEN;
+        sym->flag |= SYMF_ADDR_TAKEN;
         SymMarkRefed( sym );                                // ok?
         argument = makeRefPtrFunc( ctl, func->type );
         setFunType( addrof, argument );
@@ -247,7 +247,7 @@ static void adjustFnMembPtr     // SET MEMB-PTR TYPE
 //  func = NodeActualNonOverloaded( func );
     sym = func->u.symcg.symbol;
     if( SymIsThisFuncMember( sym ) ) {
-        sym->flag |= SF_ADDR_TAKEN;
+        sym->flag |= SYMF_ADDR_TAKEN;
 //      SymMarkRefed( sym );
         argument = MakeMemberPointerTo( SymClass( sym ), sym->sym_type );
 //      ctl->expr->u.subtree[1]->type = argument;
@@ -1361,7 +1361,7 @@ CNV_RETN CastPtrToPtr           // IMPLICIT/EXPLICIT CAST PTR -> PTR
 
     expr = *NodeReturnSrc( &ctl->expr, &dtor );
     if( expr->op == PT_SYMBOL ) {
-        expr->u.symcg.symbol->flag |= SF_ADDR_TAKEN;
+        expr->u.symcg.symbol->flag |= SYMF_ADDR_TAKEN;
     }
     expr = NodeSetType( ctl->expr, ctl->tgt.orig, PTF_LV_CHECKED );
     if( ctl->converts ) {

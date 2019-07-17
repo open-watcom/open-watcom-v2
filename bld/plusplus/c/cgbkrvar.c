@@ -74,10 +74,10 @@ SYMBOL CgVarRw(                 // MAKE R/W CODEGEN VARIABLE
 
     type = MakeInternalType( size );
     if( id == SC_AUTO ) {
-        flags = SF_CG_ADDR_TAKEN | SF_ADDR_TAKEN | SF_REFERENCED;
+        flags = SYMF_CG_ADDR_TAKEN | SYMF_ADDR_TAKEN | SYMF_REFERENCED;
     } else {
         type = MakeCompilerReadWriteData( type );
-        flags = SF_ADDR_TAKEN | SF_REFERENCED;
+        flags = SYMF_ADDR_TAKEN | SYMF_REFERENCED;
     }
     return( makeCgVar( type, id, NULL, flags ) );
 }
@@ -89,7 +89,7 @@ SYMBOL CgVarTemp(               // MAKE R/W AUTO TEMPORARY
     TYPE type;
 
     type = MakeInternalType( size );
-    return( makeCgVar( type, SC_AUTO, NULL, SF_REFERENCED ) );
+    return( makeCgVar( type, SC_AUTO, NULL, SYMF_REFERENCED ) );
 }
 
 
@@ -99,7 +99,7 @@ SYMBOL CgVarTempTyped(          // MAKE R/W AUTO TEMPORARY, FOR cg_type
     TYPE type;
 
     type = TypeFromCgType( cgtype );
-    return( makeCgVar( type, SC_AUTO, NULL, SF_REFERENCED ) );
+    return( makeCgVar( type, SC_AUTO, NULL, SYMF_REFERENCED ) );
 }
 
 
@@ -116,5 +116,5 @@ SYMBOL CgVarRo(                 // MAKE R/O CODEGEN VARIABLE
     } else {
         type = MakeCompilerConstCommonData( type );
     }
-    return( makeCgVar( type, id, name, SF_ADDR_TAKEN | SF_REFERENCED ) );
+    return( makeCgVar( type, id, name, SYMF_ADDR_TAKEN | SYMF_REFERENCED ) );
 }

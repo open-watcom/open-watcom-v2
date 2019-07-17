@@ -320,7 +320,7 @@ static void initClassFunction(  // START GENERATION OF CLASS FUNCTION
             alist = fn_type->u.f.args;
             arg = AllocTypedSymbol( alist->type_list[0] );
             arg->id = SC_AUTO;
-            arg->flag |= SF_REFERENCED;
+            arg->flag |= SYMF_REFERENCED;
             // this special parm name is used by CtorPrologue to identify the
             // special case of compiler-generated copy constructors
             // (this is the only case in a constructor where copy ctors are used
@@ -564,7 +564,7 @@ static void emitOpeqCall(       // EMIT AN ASSIGNMENT FOR DEFAULT OP=
             } else {
                 CDtorScheduleArgRemap( assop );
                 assop = ClassFunMakeAddressable( assop );
-                assop->flag |= SF_ADDR_TAKEN;
+                assop->flag |= SYMF_ADDR_TAKEN;
                 expr = NodeArguments( MakeNodeSymbol( assop )
                                     , NodeOffset( CgMemorySize( cltype ) )
                                     , NULL );
@@ -1359,7 +1359,7 @@ static SYMBOL createArrayDtorSymbol( // CREATE ARRAY DTOR SYMBOL
     fn_type = MakeCommonCodeData( fn_type );
     sym = AllocTypedSymbol( fn_type );
     sym->id = SC_MEMBER;
-    sym->flag |= SF_INITIALIZED;
+    sym->flag |= SYMF_INITIALIZED;
     return( ScopeInsert( TypeScope( cl_type ), sym, name ) );
 }
 
@@ -1572,7 +1572,7 @@ static SYMBOL RoDtorFindTypeLocn       // FIND DTOR FOR USE WITH R/O BLOCKS
         dtor = findOrDefineArrayDtor( type, false, NULL, err_locn, false );
     }
     dtor = ClassFunMakeAddressable( dtor );
-    dtor->flag |= SF_ADDR_TAKEN;
+    dtor->flag |= SYMF_ADDR_TAKEN;
     return( SymMarkRefed( dtor ) );
 }
 
@@ -2131,7 +2131,7 @@ static void genVBTable( SCOPE scope, SYMBOL vbtable, CLASS_VBTABLE *table )
 
     if( !SymIsInitialized( vbtable ) ) {
         DgSymbolLabel( vbtable );
-        vbtable->flag |= SF_INITIALIZED;
+        vbtable->flag |= SYMF_INITIALIZED;
         emitOffset( table->h.exact_delta );
         for( curr = table->data; *curr != NULL; ++curr ) {
             base = ScopeFindVBase( scope, *curr );
@@ -2208,7 +2208,7 @@ static void emitRttiRef( SYMBOL sym, target_offset_t offset )
 
     CgFrontDataPtr( IC_RTTI_REF, sym );
     if( sym != NULL ) {
-        sym->flag |= SF_ADDR_TAKEN;
+        sym->flag |= SYMF_ADDR_TAKEN;
         expr = MakeNodeSymbol( sym );
     } else {
         expr = NodeZero();
@@ -2224,7 +2224,7 @@ static void emitVFNPointer( SYMBOL sym )
     PTREE expr;
 
     if( sym != NULL ) {
-        sym->flag |= SF_ADDR_TAKEN;
+        sym->flag |= SYMF_ADDR_TAKEN;
         if( SymIsDtor( sym ) ) {
             sym = SymMarkRefed( sym );
         }
@@ -2253,7 +2253,7 @@ static void genVFPtrCode( SCOPE scope, SYMBOL ctor, CLASS_VFTABLE *table )
         emitThunks( table, ctor );
         CgFrontDataPtr( IC_VFT_BEG, sym );
         DgSymbolLabel( sym );
-        sym->flag |= SF_INITIALIZED;
+        sym->flag |= SYMF_INITIALIZED;
         rtti_sym = RttiBuild( scope, &(table->h), &offset );
         emitRttiRef( rtti_sym, offset );
         for( thunk = table->data; ; ++thunk ) {
@@ -2441,7 +2441,7 @@ static void dtorSubObject(      // PROCESS DTOR FOR SUB-OBJECT
 {
     SymMarkRefed( sub_dtor );
     CgFrontScopeCall( NULL, sub_dtor, DTORING_SCOPE );
-    if( (sub_dtor->flag & SF_NO_LONGJUMP) == 0 ) {
+    if( (sub_dtor->flag & SYMF_NO_LONGJUMP) == 0 ) {
         FunctionMightThrow();
     }
 }

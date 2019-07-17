@@ -214,7 +214,7 @@ static bool isReposSym          // TEST IF REPOSITORY SYMBOL
 {
     return CompFlags.extra_stats_wanted
         && ! SymIsTemporary( sym )
-        && ( SF2_TOKEN_LOCN & sym->flag2 );
+        && ( SYMF2_TOKEN_LOCN & sym->flag2 );
 }
 
 
@@ -247,7 +247,7 @@ static void reportOnType        // SET UP TYPE REFERENCE
     , TYPE type                 // - a type
     , SYMBOL sym )              // - symbol for type
 {
-    if( NULL != sym && ( SF2_TOKEN_LOCN & sym->flag2 ) ) {
+    if( NULL != sym && ( SYMF2_TOKEN_LOCN & sym->flag2 ) ) {
         SRCFILE refed = sym->locn->tl.src_file;
         if( curr != refed ) {
             REPO_STAT *repo = reposStat( curr );

@@ -59,7 +59,7 @@
         ( 1 << SC_ACCESS )
 
 #define symIsDataFunction( s )  ( \
-        ( ((s)->flag & SF_ERROR) == 0 ) && \
+        ( ((s)->flag & SYMF_ERROR) == 0 ) && \
         ( ! stgClassInSet( sym, SCM_NOT_DATA_OR_FUNC ) ) \
         )
 
@@ -556,7 +556,7 @@ SYMBOL SymFunctionReturn(       // GET SYMBOL FOR RETURN
         if( ( result->scope == fun_scope )
           ||( result->scope->enclosing == fun_scope ) ) {
             retn = result->sym_name->name_syms;
-            retn->flag |= SF_REFERENCED;
+            retn->flag |= SYMF_REFERENCED;
         } else {
             retn = NULL;
         }
@@ -572,7 +572,7 @@ SYMBOL SymAllocReturn(          // ALLOCATE A RETURN SYMBOL
 {
     return SymCreate( type
                     , SC_AUTO
-                    , SF_REFERENCED
+                    , SYMF_REFERENCED
                     , CppSpecialName( SPECIAL_NAME_RETURN_VALUE )
                     , scope );
 }
@@ -1086,8 +1086,8 @@ bool SymIsThunk(                // DETERMINE IF FUNCTION IS THUNK
             }
         }
     }
-    // we should be able to use SF_ADDR_THUNK; so we test this...
-    DbgAssert( func == NULL || ( (func->flag & SF_ADDR_THUNK) != 0 ) == ok );
+    // we should be able to use SYMF_ADDR_THUNK; so we test this...
+    DbgAssert( func == NULL || ( (func->flag & SYMF_ADDR_THUNK) != 0 ) == ok );
     return( ok );
 }
 
@@ -1124,10 +1124,10 @@ SYMBOL SymMarkRefed(            // MARK SYMBOL AS REFERENCED
         }
         if( SymIsThunk( base ) ) {
             orig = base->u.thunk_calls;
-            orig->flag |= SF_REFERENCED;
+            orig->flag |= SYMF_REFERENCED;
         }
     }
-    base->flag |= SF_REFERENCED;
+    base->flag |= SYMF_REFERENCED;
     // callers depend on original symbol coming back
     return( sym );
 }
@@ -1204,7 +1204,7 @@ SYMBOL SymCreateTempScope(      // CREATE NEW TEMP-SCOPE SYMBOL
 }
 
 
-SYMBOL SymDeriveThrowBits(      // DERIVE SF_.._LONGJUMP BITS FROM SOURCE
+SYMBOL SymDeriveThrowBits(      // DERIVE SYMF_.._LONGJUMP BITS FROM SOURCE
     SYMBOL tgt,                 // - target symbol
     SYMBOL src )                // - source symbol
 {
@@ -1212,12 +1212,12 @@ SYMBOL SymDeriveThrowBits(      // DERIVE SF_.._LONGJUMP BITS FROM SOURCE
         = SymThrowFlags( src );
 
 #ifndef NDEBUG
-    if( src_flag & SF_LONGJUMP ) {
-        DbgVerify( (tgt->flag & SF_NO_LONGJUMP) == 0
-                 , "SymDeriveThrowBits -- target has SF_NO_LONGJUMP" );
-    } else if( src_flag & SF_NO_LONGJUMP ) {
-        DbgVerify( (tgt->flag & SF_LONGJUMP) == 0
-                 , "SymDeriveThrowBits -- target has SF_LONGJUMP" );
+    if( src_flag & SYMF_LONGJUMP ) {
+        DbgVerify( (tgt->flag & SYMF_NO_LONGJUMP) == 0
+                 , "SymDeriveThrowBits -- target has SYMF_NO_LONGJUMP" );
+    } else if( src_flag & SYMF_NO_LONGJUMP ) {
+        DbgVerify( (tgt->flag & SYMF_LONGJUMP) == 0
+                 , "SymDeriveThrowBits -- target has SYMF_LONGJUMP" );
     }
 #endif
 
@@ -1231,8 +1231,8 @@ symbol_flag SymThrowFlags(      // GET SYMBOL'S THROW BITS
 {
     symbol_flag flags;          // - symbol's flags
 
-    flags = ( sym->flag & SF_LONGJUMP ) | ( sym->flag & SF_NO_LONGJUMP );
-    DbgVerify( flags != ( SF_LONGJUMP | SF_NO_LONGJUMP )
+    flags = ( sym->flag & SYMF_LONGJUMP ) | ( sym->flag & SYMF_NO_LONGJUMP );
+    DbgVerify( flags != ( SYMF_LONGJUMP | SYMF_NO_LONGJUMP )
              , "SymThrowFlags -- both throw bits computed" );
     return( flags );
 }
@@ -1309,8 +1309,8 @@ SYMBOL SymMakeAlias(            // DECLARE AN ALIAS IN CURRSCOPE
     SYMBOL check;
 
     aliasee = SymDeAlias( aliasee );
-    sym = symAllocate( aliasee->sym_type, aliasee->id, aliasee->flag | SF_REFERENCED );
-    sym->flag |= SF_ALIAS;
+    sym = symAllocate( aliasee->sym_type, aliasee->id, aliasee->flag | SYMF_REFERENCED );
+    sym->flag |= SYMF_ALIAS;
     sym->u.alias = aliasee;
     SymbolLocnDefine( locn, sym );
     check = ScopeInsert( GetCurrScope(), sym, aliasee->name->name );
@@ -1345,7 +1345,7 @@ SYMBOL SymBindConstant              // BIND A CONSTANT TO A SYMBOL
             sym->u.sval = con.u._32[I64LO32];
         } else {
             sym->u.pval = ConPoolInt64Add( con );
-            sym->flag |= SF_CONSTANT_INT64;
+            sym->flag |= SYMF_CONSTANT_INT64;
         }
     }
     return( sym );
@@ -1357,9 +1357,9 @@ SYMBOL SymConstantValue             // GET CONSTANT VALUE FOR SYMBOL
     , INT_CONSTANT* pval )          // - addr[ value ]
 {
     pval->type = sym->sym_type;
-    if( sym->flag & SF_CONSTANT_INT64 ) {
+    if( sym->flag & SYMF_CONSTANT_INT64 ) {
         pval->u.value = sym->u.pval->u.int64_constant;
-    } else if( sym->flag & SF_ENUM_UINT ) {
+    } else if( sym->flag & SYMF_ENUM_UINT ) {
         Int64FromU32( sym->u.sval, &pval->u.value );
     } else {
         Int64From32( sym->sym_type, sym->u.sval, &pval->u.value );

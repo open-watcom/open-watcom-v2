@@ -57,7 +57,7 @@ static SYMBOL push_inline_sym(  // PUSH AN INLINE SYMBOL
     sym = VstkPush( &stack_inline_args );
     *sym = *model;
     if( model->locn != NULL ) {
-        sym->flag2 &= ~SF2_CG_HANDLE;
+        sym->flag2 &= ~SYMF2_CG_HANDLE;
         sym->locn = NULL;
         locn = SymbolLocnAlloc( &sym->locn );
         locn->tl = model->locn->tl;
@@ -231,7 +231,7 @@ void CgDeclSym(                 // PROCESS SYMBOL IN BLOCK-OPEN SCOPE
     sym = inlineSymbol( sym );
     fctl = FnCtlTop();
     if( CgRetnOptIsOptVar( fctl, orig ) ) {
-        sym->flag |= SF_RETN_OPT;
+        sym->flag |= SYMF_RETN_OPT;
         return;
     }
     switch( sym->id ) {

@@ -249,7 +249,7 @@ static void generateOffsetFunc( // GENERATE CODE FOR OFFSET FUNCTION
 
     refed = node->u.symcg.symbol;
     previous_func = CgFrontCurrentFunction();
-    func->flag |= SF_INITIALIZED;
+    func->flag |= SYMF_INITIALIZED;
     stashed_scope = GetCurrScope();
     scope_class = SymScope( func );
     SetCurrScope(scope_class);
@@ -322,7 +322,7 @@ static SYMBOL membPtrOffsetFunc(// GET OFFSET FUNCTION FOR MEMBER
     if( result == NULL ) {
         tgt = SymCreate( dereferenceFnType( TypeReferenced( src->sym_type ) )
                        , SC_MEMBER
-                       , SF_REFERENCED
+                       , SYMF_REFERENCED
                        , name
                        , scope );
         generateOffsetFunc( tgt, node );

@@ -537,7 +537,7 @@ void TemplateUsingDecl( SYMBOL sym, TOKEN_LOCN *locn )
     DbgAssert( sym->id == SC_CLASS_TEMPLATE );
     new_sym = SymCreateAtLocn( sym->sym_type
                              , SC_CLASS_TEMPLATE
-                             , SF_NULL
+                             , SYMF_NULL
                              , sym->name->name
                              , GetCurrScope()
                              , locn );
@@ -1085,8 +1085,8 @@ static SYMBOL dupTemplateParm( SYMBOL old_parm )
     sym->flag = old_parm->flag;
     switch( old_parm->id ) {
     case SC_STATIC:
-        if( old_parm->flag & SF_CONSTANT_INT64 ) {
-            sym->flag |= SF_CONSTANT_INT64;
+        if( old_parm->flag & SYMF_CONSTANT_INT64 ) {
+            sym->flag |= SYMF_CONSTANT_INT64;
             sym->u.pval = old_parm->u.pval;
         } else {
             sym->u.uval = old_parm->u.uval;
@@ -1540,10 +1540,10 @@ static SYMBOL buildTemplateFn( TYPE bound_type, SYMBOL sym, DECL_INFO *dinfo,
     symbol_class new_class;
 
     if( ScopeType( SymScope( sym ), SCOPE_CLASS ) ) {
-        new_flags = ( sym->flag & SF_ACCESS );
+        new_flags = ( sym->flag & SYMF_ACCESS );
         new_class = SC_MEMBER;
     } else {
-        new_flags = ( sym->flag & SF_PLUSPLUS );
+        new_flags = ( sym->flag & SYMF_PLUSPLUS );
         new_class = SC_PUBLIC;
     }
     if( SymIsStatic( sym ) ) {
@@ -1556,7 +1556,7 @@ static SYMBOL buildTemplateFn( TYPE bound_type, SYMBOL sym, DECL_INFO *dinfo,
 
     new_sym = SymCreateAtLocn( bound_type
                              , new_class
-                             , new_flags | SF_TEMPLATE_FN
+                             , new_flags | SYMF_TEMPLATE_FN
                              , sym->name->name
                              , inst_scope
                              , locn );
@@ -2618,7 +2618,7 @@ static PTREE fakeUpParm( SYMBOL sym )
     parm = NULL;
     switch( sym->id ) {
     case SC_STATIC:
-        if( sym->flag & SF_CONSTANT_INT64 ) {
+        if( sym->flag & SYMF_CONSTANT_INT64 ) {
             parm = PTreeInt64Constant( sym->u.pval->u.int64_constant,
                                        sym->sym_type->id );
         } else {
@@ -3036,7 +3036,7 @@ static void templateFunctionInstantiate( FN_TEMPLATE *fn_templ,
     }
 #endif
 
-    bound_sym->flag |= SF_TEMPLATE_FN;
+    bound_sym->flag |= SYMF_TEMPLATE_FN;
     bound_sym->u.alias = fn_sym;
     save_fn = templateData.translate_fn;
     templateData.translate_fn = bound_sym;
@@ -3070,7 +3070,7 @@ static void processFunctionTemplateInstantiations( void )
         RingIterBeg( curr_defn->instantiations, curr_inst ) {
             sym = SymDefArgBase( curr_inst->bound_sym );
 
-            if( ! curr_inst->processed && ( sym->flag & SF_REFERENCED ) ) {
+            if( ! curr_inst->processed && ( sym->flag & SYMF_REFERENCED ) ) {
                 templateData.keep_going = true;
                 curr_inst->processed = true;
                 templateFunctionInstantiate( curr_defn, curr_inst );
@@ -3145,7 +3145,7 @@ static void processInstantiationMembers( CLASS_INST *instance )
         sym = SymDefArgBase( dinfo->sym );
 
         if( instance->must_process
-         || ( sym->flag & SF_REFERENCED )
+         || ( sym->flag & SYMF_REFERENCED )
          || ( sym->sym_type->flag & TF1_VIRTUAL ) ) {
 
 #ifndef NDEBUG

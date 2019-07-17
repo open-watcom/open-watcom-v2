@@ -262,7 +262,7 @@ static bool labelMarkDtorSym(   // MARK A SYMBOL FOR DTORing
         }
         if( TypeExactDtorable( sym->sym_type ) ) {
             dtor = RoDtorFind( sym );
-            dtor->flag |= SF_ADDR_TAKEN;
+            dtor->flag |= SYMF_ADDR_TAKEN;
             if( ! SymIsModuleDtorable( sym ) ) {
                 blk->sym_dtored = sym;
                 blk->scope->u.s.dtor_reqd = true;

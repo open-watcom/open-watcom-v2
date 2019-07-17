@@ -726,81 +726,81 @@ typedef enum {
 
 typedef enum                            // flags for symbol.flag
                                         // general flags
-{   SF_REFERENCED       = 0x00000001    // - symbol has been referenced
-,   SF_INITIALIZED      = 0x00000002    // - storage for symbol is initialized
-,   SF_CONSTANT_INT     = 0x00000004    // - constant value in symbol
-,   SF_ADDR_TAKEN       = 0x00000008    // - address of symbol has been taken
-,   SF_NO_REF_WARN      = 0x00000010    // - don't warn if unreferenced
-,   SF_FAR16_CALLER     = 0x00000020    // - function called a far16 function
-,   SF_ADDR_THUNK       = 0x00000040    // - addressability thunk (u.thunk_calls is set)
-,   SF_DBG_ADDR_TAKEN   = 0x00000080    // - addr of sym taken in debug info
+{   SYMF_REFERENCED     = 0x00000001    // - symbol has been referenced
+,   SYMF_INITIALIZED    = 0x00000002    // - storage for symbol is initialized
+,   SYMF_CONSTANT_INT   = 0x00000004    // - constant value in symbol
+,   SYMF_ADDR_TAKEN     = 0x00000008    // - address of symbol has been taken
+,   SYMF_NO_REF_WARN    = 0x00000010    // - don't warn if unreferenced
+,   SYMF_FAR16_CALLER   = 0x00000020    // - function called a far16 function
+,   SYMF_ADDR_THUNK     = 0x00000040    // - addressability thunk (u.thunk_calls is set)
+,   SYMF_DBG_ADDR_TAKEN = 0x00000080    // - addr of sym taken in debug info
 
                                         // if neither set, it is undecided
                                         //  what function does
-,   SF_LONGJUMP         = 0x00000100    // - function: has longjump, throw
-,   SF_NO_LONGJUMP      = 0x00000200    // - function: no longjump, throw
+,   SYMF_LONGJUMP       = 0x00000100    // - function: has longjump, throw
+,   SYMF_NO_LONGJUMP    = 0x00000200    // - function: no longjump, throw
 
-,   SF_ERROR            = 0x00000400    // - symbol is erroneous
-,   SF_CONST_NO_CODE    = 0x00000800    // - symbol is const & doesn't need code
+,   SYMF_ERROR          = 0x00000400    // - symbol is erroneous
+,   SYMF_CONST_NO_CODE  = 0x00000800    // - symbol is const & doesn't need code
                                         //   to initialize it (const double d=1;)
-,   SF_TEMPLATE_FN      = 0x00001000    // - generated from a fn template
+,   SYMF_TEMPLATE_FN    = 0x00001000    // - generated from a fn template
                                         //   - u.alias is fn template symbol
                                         //     (if it is known)
-,   SF_CONSTANT_INT64   = 0x00002000    // - constant int-64 value in symbol
-,   SF_ALIAS            = 0x00004000    // - sym is a true alias of another sym
-,   SF_CG_ADDR_TAKEN    = 0x00008000    // - address is known outside generated code
-,   SF_ENUM_UINT        = 0x00010000    // - constant unsigned value in symbol
+,   SYMF_CONSTANT_INT64 = 0x00002000    // - constant int-64 value in symbol
+,   SYMF_ALIAS          = 0x00004000    // - sym is a true alias of another sym
+,   SYMF_CG_ADDR_TAKEN  = 0x00008000    // - address is known outside generated code
+,   SYMF_ENUM_UINT      = 0x00010000    // - constant unsigned value in symbol
 
                                         // specific flags:
 
                                         // SCOPE_CLASS
-,   SF_PROTECTED        = 0x80000000    // - symbol is protected
-,   SF_PRIVATE          = 0x40000000    // - symbol is private
-,   SF_IN_VFT           = 0x20000000    // - function in gen'ed VFT
+,   SYMF_PROTECTED      = 0x80000000    // - symbol is protected
+,   SYMF_PRIVATE        = 0x40000000    // - symbol is private
+,   SYMF_IN_VFT         = 0x20000000    // - function in gen'ed VFT
 
                                         // SCOPE_FILE
-,   SF_PLUSPLUS         = 0x80000000    // - symbol is extern "C++"
-,   SF_IS_THROW         = 0x40000000    // - R/T call is a C++ throw
+,   SYMF_PLUSPLUS       = 0x80000000    // - symbol is extern "C++"
+,   SYMF_IS_THROW       = 0x40000000    // - R/T call is a C++ throw
 
                                         // - variable
-,   SF_ANONYMOUS        = 0x08000000    // - - member of an anonymous union
-,   SF_RETN_OPT         = 0x04000000    // - - optimized away by return opt.
-,   SF_CATCH_ALIAS      = 0x02000000    // - - catch variable alias
-,   SF_IN_CLASS_INIT    = 0x01000000    // - - in-class initialization
+,   SYMF_ANONYMOUS      = 0x08000000    // - - member of an anonymous union
+,   SYMF_RETN_OPT       = 0x04000000    // - - optimized away by return opt.
+,   SYMF_CATCH_ALIAS    = 0x02000000    // - - catch variable alias
+,   SYMF_IN_CLASS_INIT  = 0x01000000    // - - in-class initialization
                                         //     of const static integral
                                         //     member
 
                                         // - function
-,   SF_DONT_INLINE      = 0x08000000    // - - don't inline this function!
-,   SF_MUST_GEN         = 0x04000000    // - - function must be generated
+,   SYMF_DONT_INLINE    = 0x08000000    // - - don't inline this function!
+,   SYMF_MUST_GEN       = 0x04000000    // - - function must be generated
 
                                         // - function, during back-end
-,   SF_CG_INLINEABLE    = 0x02000000    // - - function could be inlined
+,   SYMF_CG_INLINEABLE  = 0x02000000    // - - function could be inlined
 
     /* multi-bit constants */
-,   SF_ACCESS           = ( SF_PRIVATE  // - - access for member
-                          | SF_PROTECTED )
-,   SF_FN_LONGJUMP      = ( SF_LONGJUMP // - - decidable if function can
-                          | SF_NO_LONGJUMP ) //throw, longjump, etc
+,   SYMF_ACCESS         = ( SYMF_PRIVATE  // - - access for member
+                          | SYMF_PROTECTED )
+,   SYMF_FN_LONGJUMP    = ( SYMF_LONGJUMP // - - decidable if function can
+                          | SYMF_NO_LONGJUMP ) //throw, longjump, etc
 
-,   SF_NULL             = 0x00000000
+,   SYMF_NULL           = 0x00000000
 } symbol_flag;
 
 typedef enum                            // flags for symbol.flags2
                                         // hdl control flags
-{   SF2_TOKEN_LOCN       = 0x01         // - has token location
-,   SF2_CG_HANDLE        = 0x02         // - has code-gen handle
-,   SF2_DW_HANDLE_FWD    = 0x04         // - has forward dwarf handle
-,   SF2_DW_HANDLE_DEF    = 0x08         // - has defined dwarf handle
-,   SF2_SYMDBG           = 0x10         // - has defined symdbg handle
+{   SYMF2_TOKEN_LOCN    = 0x01          // - has token location
+,   SYMF2_CG_HANDLE     = 0x02          // - has code-gen handle
+,   SYMF2_DW_HANDLE_FWD = 0x04          // - has forward dwarf handle
+,   SYMF2_DW_HANDLE_DEF = 0x08          // - has defined dwarf handle
+,   SYMF2_SYMDBG        = 0x10          // - has defined symdbg handle
 
     /* multi-bit constants */
-,   SF2_DW_HANDLE        = ( SF2_DW_HANDLE_FWD
-                           | SF2_DW_HANDLE_DEF )
-,   SF2_HDL_MASK         = ( SF2_DW_HANDLE  // - - 'handles' union value
-                           | SF2_CG_HANDLE )
+,   SYMF2_DW_HANDLE     = ( SYMF2_DW_HANDLE_FWD
+                           | SYMF2_DW_HANDLE_DEF )
+,   SYMF2_HDL_MASK      = ( SYMF2_DW_HANDLE  // - - 'handles' union value
+                           | SYMF2_CG_HANDLE )
 
-,   SF2_NULL             = 0x00
+,   SYMF2_NULL          = 0x00
 } symbol_flag2;
 
 PCH_struct symbol {                     // SYMBOL in symbol table
@@ -826,7 +826,7 @@ PCH_struct symbol {                     // SYMBOL in symbol table
                                         //     next is defarg expr
                                         //     scope for temporaries (or NULL)
         TYPE            udc_type;       // - SC_ACCESS -- extra info for UDCs
-        SYMBOL          alias;          // - SF_ALIAS -- aliased symbol
+        SYMBOL          alias;          // - SYMF_ALIAS -- aliased symbol
         SYMBOL          virt_fun;       // - SC_VIRTUAL_FUNCTION -- virt. func.
         unsigned        scalar_order;   // - SC_FUNCTION -- used in dummy scalars
         SYMBOL          thunk_calls;    // - SC_FUNCTION -- when thunk, orig. function

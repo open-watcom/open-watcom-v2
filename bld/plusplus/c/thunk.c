@@ -114,7 +114,7 @@ static SYMBOL addrThunkSymbol(  // GET THUNK SYMBOL FROM ORIGINAL
         thunk_type = MakeThunkFunction( sym->sym_type );
         new_sym = AllocTypedSymbol( thunk_type );
         new_sym->id = thunk_class;
-        new_sym->flag |= SF_ADDR_THUNK;
+        new_sym->flag |= SYMF_ADDR_THUNK;
         new_sym = ScopeInsert( scope, new_sym, name );
         SymDeriveThrowBits( new_sym, sym );
     }
@@ -161,7 +161,7 @@ static SCOPE thunkPrologue(     // PROLOGUE FOR A SCOPE
     SCOPE arg_scope;            // - scope for arguments
 
     orig = thunk_sym->u.thunk_calls;
-    thunk_sym->flag |= SF_INITIALIZED;
+    thunk_sym->flag |= SYMF_INITIALIZED;
     SetCurrScope (SymScope( thunk_sym ));
     ScopeBeginFunction( thunk_sym );
     arg_scope = GetCurrScope();
@@ -258,11 +258,11 @@ void RtnGenCallBackGenThunk(    // GENERATE THUNK CODE
     PTREE this_arg;             // - "this" argument
     specname classification;    // - classification of thunk
     CGFILE* cgfile;             // - CGFILE for thunk
-    symbol_flag orig_ref;       // - keep original SF_REFERENCED setting
+    symbol_flag orig_ref;       // - keep original SYMF_REFERENCED setting
 
     orig_sym = thunk_sym->u.thunk_calls;
-    if( thunk_sym->flag & SF_REFERENCED ) {
-        orig_sym->flag |= SF_REFERENCED;
+    if( thunk_sym->flag & SYMF_REFERENCED ) {
+        orig_sym->flag |= SYMF_REFERENCED;
     }
     if( SymIsInitialized( thunk_sym ) ) {
         return;
@@ -273,10 +273,10 @@ void RtnGenCallBackGenThunk(    // GENERATE THUNK CODE
     fn_scope = thunkPrologue( thunk_sym, &func_data );
     return_type = SymFuncReturnType( thunk_sym );
     args = thunkArgList( fn_scope );
-    orig_ref = orig_sym->flag & SF_REFERENCED;
+    orig_ref = orig_sym->flag & SYMF_REFERENCED;
     stmt = NodeMakeCall( orig_sym, return_type, args );
     if( ! orig_ref ) {
-        orig_sym->flag &= ~SF_REFERENCED;
+        orig_sym->flag &= ~SYMF_REFERENCED;
     }
     if( !AddDefaultArgs( orig_sym, stmt ) ) {
         return_sym = NULL;

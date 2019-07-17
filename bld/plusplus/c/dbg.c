@@ -469,7 +469,7 @@ void DumpSymbol(                // DUMP SYMBOL ENTRY
               , sym->thread
               , sym->sym_type
               , sym->name
-              , ( sym->flag2 & SF2_TOKEN_LOCN ) ? sym->locn->u.cg_handle : 0
+              , ( sym->flag2 & SYMF2_TOKEN_LOCN ) ? sym->locn->u.cg_handle : 0
               , sym->u.tinfo
               , ids[sym->id]
               , sym->flag
@@ -481,7 +481,7 @@ void DumpSymbol(                // DUMP SYMBOL ENTRY
             DumpFullType( sym->sym_type );
         }
         VbufFree( &vbuf );
-        if( sym->flag2 & SF2_TOKEN_LOCN ) {
+        if( sym->flag2 & SYMF2_TOKEN_LOCN ) {
             dumpLocation( &sym->locn->tl );
         }
         switch( sym->id ) {
@@ -1460,7 +1460,7 @@ void DbgGenned(                 // INDICATE SYMBOL GENERATED
         VBUF vbuf;
         printf( "Generated: %s\n"
               , DbgSymNameFull( sym, &vbuf ) );
-        if( sym->flag2 & SF2_TOKEN_LOCN ) {
+        if( sym->flag2 & SYMF2_TOKEN_LOCN ) {
             dumpLocation( &sym->locn->tl );
         }
         VbufFree( &vbuf );

@@ -67,7 +67,7 @@ static void defineOptSym(       // DEFINE SYMBOL FOR THREAD_CTL
 
     var = SymCreateFileScope( TypePtrToVoid()
                             , SC_EXTERN
-                            , SF_REFERENCED
+                            , SYMF_REFERENCED
                             , optName( odef ) );
     odef->sym = var;
     LinkageSet( var, "C" );

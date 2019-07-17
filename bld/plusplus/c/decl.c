@@ -149,7 +149,7 @@ bool DeclNoInit( DECL_INFO *dinfo )
         /* "int C::a;" instead of "static int a;" in "class C" */
         CompFlags.external_defn_found = true;
         if( SymIsInitialized( sym ) ) {
-            if( (sym->flag & SF_IN_CLASS_INIT) == 0 ) {
+            if( (sym->flag & SYMF_IN_CLASS_INIT) == 0 ) {
                 if( ! TemplateMemberCanBeIgnored() ) {
                     CErr2p( ERR_CANNOT_INIT_AGAIN, sym );
                 }
@@ -157,7 +157,7 @@ bool DeclNoInit( DECL_INFO *dinfo )
             } else {
                 /* reset in-class initialization flag to get the
                  * symbol exported */
-                sym->flag &= ~SF_IN_CLASS_INIT;
+                sym->flag &= ~SYMF_IN_CLASS_INIT;
             }
         }
         if( ! TypeDefined( type ) ) {
