@@ -1,4 +1,4 @@
-#pmake: build docs pdf docpdf
+#pmake: build docs pdf docpdf webdocs
 
 dotarget=pdf
 

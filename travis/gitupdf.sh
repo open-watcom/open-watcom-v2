@@ -26,7 +26,7 @@ gitupdf_proc()
                     #
                     # clone GitHub repository
                     #
-                    git clone $GITVERBOSE1 --branch=$OWBRANCH https://${GITHUB_TOKEN}@github.com/${OWTRAVIS_REPO_SLUG}.git $OWTRAVIS_BUILD_DIR
+                    git clone $GITVERBOSE1 --branch=master https://${GITHUB_TOKEN}@github.com/${OWTRAVIS_REPO_SLUG}.git $OWTRAVIS_BUILD_DIR
                     #
                     # copy build log files to git repository tree
                     #
@@ -63,7 +63,7 @@ gitupdf_proc()
                     #
                     # clone GitHub repository
                     #
-                    git clone $GITVERBOSE1 --branch=$OWBRANCH https://${GITHUB_TOKEN}@github.com/${OWTRAVIS_REPO_SLUG}.git $OWTRAVIS_BUILD_DIR
+                    git clone $GITVERBOSE1 --branch=master https://${GITHUB_TOKEN}@github.com/${OWTRAVIS_REPO_SLUG}.git $OWTRAVIS_BUILD_DIR
                     #
                     # copy build log files to git repository tree
                     #

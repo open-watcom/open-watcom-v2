@@ -27,7 +27,7 @@ gitupds_proc()
                         #
                         # clone GitHub repository
                         #
-                        git clone $GITVERBOSE1 --branch=$OWBRANCH https://${GITHUB_TOKEN}@github.com/${OWTRAVIS_REPO_SLUG}.git $OWTRAVIS_BUILD_DIR
+                        git clone $GITVERBOSE1 --branch=master https://${GITHUB_TOKEN}@github.com/${OWTRAVIS_REPO_SLUG}.git $OWTRAVIS_BUILD_DIR
                         #
                         # copy OW build to git tree
                         #
@@ -61,13 +61,13 @@ gitupds_proc()
                         #
                         # clone GitHub repository
                         #
-                        git clone $GITVERBOSE1 --branch=$OWBRANCH https://${GITHUB_TOKEN}@github.com/${OWTRAVIS_REPO_SLUG}.git $OWTRAVIS_BUILD_DIR
+                        git clone $GITVERBOSE1 --branch=master https://${GITHUB_TOKEN}@github.com/${OWTRAVIS_REPO_SLUG}.git $OWTRAVIS_BUILD_DIR
                         #
                         # copy OW build to git tree
                         #
                         export OWRELROOT=$OWTRAVIS_BUILD_DIR
                         cd $OWSRCDIR
-                        builder cpdoctrav
+                        builder cpwebdocs
                         #
                         # commit updated files to GitHub repository
                         #

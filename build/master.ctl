@@ -115,20 +115,20 @@ set BLDRULE=
     set LOGFNAME=doc
     echo **** DOC rule
 
-[ BLOCK <1> doctrav ]
+[ BLOCK <1> webdocs ]
 #======================
-    set BLDRULE=doctrav
-    set LOGFNAME=doctrav
-    echo **** DOCTRAV rule
+    set BLDRULE=webdocs
+    set LOGFNAME=webdocs
+    echo **** WEBDOCS rule
 
-[ BLOCK <1> cpdoctrav ]
+[ BLOCK <1> cpwebdocs ]
 #======================
-    set BLDRULE=cpdoctrav
-    set LOGFNAME=cpdoctrv
-    # with 'cpdoctrav', we want to force the copy to occur
+    set BLDRULE=cpwebdocs
+    set LOGFNAME=cpwebdoc
+    # with 'cpwebdocs', we want to force the copy to occur
     set CPCMD=copy
     set CCCMD=ccopy
-    echo **** CPDOCTRAV rule
+    echo **** CPWEBDOCS rule
 
 [ BLOCK <1> docsclean ]
 #======================

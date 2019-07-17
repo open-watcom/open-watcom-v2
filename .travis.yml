@@ -139,6 +139,8 @@ jobs:
         - . ./cmnvars.sh
       script:
         - travis/build.sh
+      before_cache:
+        - travis/cache3.sh save
     - # ...
       name: "OW tools build-1 OSX"
       if: branch = env(OWBRANCH) AND (type = cron)
@@ -233,6 +235,8 @@ jobs:
       script:
         - travis/cache2.sh load
         - travis/build.sh
+      before_cache:
+        - travis/cache3.sh save
     - # ...
       name: "OW tools build-3 Windows"
       if: branch = env(OWBRANCH) AND (type = cron)
@@ -250,6 +254,8 @@ jobs:
       script:
         - travis/cache2.sh load
         - travis/build.sh
+      before_cache:
+        - travis/cache3.sh save
     #################################
     - stage: UpdateBuild
       name: "Update Build Linux"
@@ -409,6 +415,7 @@ jobs:
         - export OWTRAVISJOB=INST
       install:
         - . ./cmnvars.sh
+        - travis/cache3.sh load
       script:
         - travis/build.sh
     - # ...
@@ -419,6 +426,7 @@ jobs:
         - export OWTOOLS=VISUALC
         - export OWTRAVISJOB=INST
       install:
+        - travis/cache3.sh load
       script:
         - travis/build.sh
     #################################

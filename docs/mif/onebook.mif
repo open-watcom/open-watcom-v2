@@ -345,6 +345,7 @@ $(hbook).ps : $(book_objs) $(book_objs_ps) $(proj_objs)
     @echo wgml $@
 !endif
     -$(WGMLCMD:$(to_os_path))
+    $(noecho)echo "WGMLCMD finished"
     @if exist $@ @%erase $@
     @%ren $(wgml_tmpfile) $@
 
@@ -580,6 +581,7 @@ compile_gml_to_xxx : .PROCEDURE
     @echo wgml $@
 !endif
     -$(WGMLCMD:$(to_os_path))
+    $(noecho)echo "WGMLCMD finished"
     @if exist $*.ptf @%erase $*.ptf
     @%ren $(wgml_tmpfile) $*.ptf
     @%make prepare_whpcvt_opts
@@ -589,6 +591,7 @@ compile_gml_to_xxx : .PROCEDURE
     @echo wgml $@
 !endif
     -$(WGMLCMD:$(to_os_path))
+    $(noecho)echo "WGMLCMD finished"
     @if exist $*.ptf @%erase $*.ptf
     @%ren $(wgml_tmpfile) $*.ptf
     @if exist $*.mix @%erase $*.mix

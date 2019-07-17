@@ -106,9 +106,9 @@ build_proc()
 set -x
             cd $OWDOCSDIR
             if [ "$TRAVIS_EVENT_TYPE" = "pull_request" ]; then
-                builder rel
+                builder docs
             else
-                builder -q rel
+                builder -q docs
             fi
             RC=$?
             cd $TRAVIS_BUILD_DIR
@@ -132,11 +132,7 @@ set -x
 }
 
 if [ "$TRAVIS_OS_NAME" = "windows" ]; then
-    if [ "$OWTRAVISJOB" = "BOOTSTRAP" ]; then
-        cmd.exe /c "travis\winboot.cmd"
-    else
-        cmd.exe /c "travis\winbuild.cmd"
-    fi
+    cmd.exe /c "travis\winbuild.cmd $*"
 else
     build_proc $*
 fi

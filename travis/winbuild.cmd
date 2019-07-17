@@ -30,6 +30,28 @@ if "%OWTRAVIS_ENV_DEBUG%" == "1" (
 )
 REM ...
 cd %OWSRCDIR%
+if "%OWTRAVISJOB%" == "BOOTSTRAP" (
+    cd wmake
+    mkdir %OWOBJDIR%
+    cd %OWOBJDIR%
+    nmake -f ..\nmake clean
+    nmake -f ..\nmake
+    if not errorlevel == 1 (
+	cd %OWSRCDIR%\builder
+	mkdir %OWOBJDIR%
+	cd %OWOBJDIR%
+	%OWBINDIR%\wmake -f ..\binmake clean
+	%OWBINDIR%\wmake -f ..\binmake bootstrap=1 builder.exe
+	if not errorlevel == 1 (
+	    cd %OWSRCDIR%
+	    if "%TRAVIS_EVENT_TYPE%" == "pull_request" (
+		builder boot
+	    ) else (
+		builder -q boot
+	    )
+	)
+    )
+)
 if "%OWTRAVISJOB%" == "BUILD" (
     if "%TRAVIS_EVENT_TYPE%" == "pull_request" (
         builder rel
@@ -61,9 +83,9 @@ if "%OWTRAVISJOB%" == "BUILD-3" (
 if "%OWTRAVISJOB%" == "DOCS" (
     cd %OWDOCSDIR%
     if "%TRAVIS_EVENT_TYPE%" == "pull_request" (
-        builder rel
+        builder docs
     ) else (
-        builder -q rel
+        builder -q docs
     )
 )
 if "%OWTRAVISJOB%" == "INST" (
