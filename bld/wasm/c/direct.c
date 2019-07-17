@@ -58,6 +58,8 @@
 #define INIT_MEMORY     0x10
 #define INIT_STACK      0x20
 
+#define TOK_INVALID     -1
+
 typedef struct {
     char            *string;    // the token string
     uint            value;      // value connected to this token
@@ -1069,7 +1071,7 @@ bool CheckForLang( token_idx i, int *lang )
         } else {
             lang_idx = token_cmp( &token, TOK_LANG_BASIC, TOK_LANG_SYSCALL );
         }
-        if( lang_idx != ERROR ) {
+        if( lang_idx != TOK_INVALID ) {
             *lang = TypeInfo[lang_idx].value;
             return( RC_OK );
         }
@@ -1118,8 +1120,7 @@ bool ExtDef( token_idx i, bool glob_def )
 
         typetoken = AsmBuffer[i].string_ptr;
         type = token_cmp( &typetoken, TOK_EXT_NEAR, TOK_EXT_ABS );
-
-        if( type == ERROR ) {
+        if( type == TOK_INVALID ) {
             if( glob_def || !IsLabelStruct( AsmBuffer[i].string_ptr ) ) {
                 AsmError( INVALID_QUALIFIED_TYPE );
                 return( RC_ERROR );
@@ -1395,7 +1396,7 @@ static int token_cmp( char **token, int start, int end )
             return( i );
         }
     }
-    return( ERROR );        // No type is found
+    return( TOK_INVALID );      // No type is found
 }
 
 static seg_type ClassNameType( char *name )
@@ -1474,7 +1475,7 @@ bool SegDef( token_idx i )
     char                *token;
     seg_info            *new;
     seg_info            *old;
-    uint                type;       // type of option
+    int                 type;       // type of option
     uint                initstate;  // to show if a field is initialized
     dir_node            *seg;
     char                *name;
@@ -1577,7 +1578,7 @@ bool SegDef( token_idx i )
 
             // look up the type of token
             type = token_cmp( &token, TOK_READONLY, TOK_AT );
-            if( type == ERROR ) {
+            if( type == TOK_INVALID ) {
                 AsmError( UNDEFINED_SEGMENT_OPTION );
                 goto error;
             }
@@ -2211,7 +2212,7 @@ bool Model( token_idx i )
 {
     char        *token;
     int         initstate = 0;
-    uint        type;           // type of option
+    int         type;           // type of option
 
     if( Parse_Pass != PASS_1 ) {
         ModelAssumeInit();
@@ -2230,7 +2231,7 @@ bool Model( token_idx i )
         token = AsmBuffer[i + 1].string_ptr;
         wipe_space( token );
         type = token_cmp( &token, TOK_USE16, TOK_USE32 );
-        if( type != ERROR ) {
+        if( type != TOK_INVALID ) {
             SetUse32Def( TypeInfo[type].value != 0 );
             i++;
         }
@@ -2244,15 +2245,15 @@ bool Model( token_idx i )
 
         // look up the type of token
         type = token_cmp( &token, TOK_TINY, TOK_FARSTACK );
-        if( type == ERROR ) {
+        if( type == TOK_INVALID ) {
             if( Options.mode & MODE_TASM ) {
                 type = token_cmp( &token, TOK_LANG_NOLANG, TOK_LANG_SYSCALL );
             } else {
                 type = token_cmp( &token, TOK_LANG_BASIC, TOK_LANG_SYSCALL );
             }
-            if( type == ERROR ) {
+            if( type == TOK_INVALID ) {
                 type = token_cmp( &token, TOK_OS_OS2, TOK_OS_DOS );
-                if( type == ERROR ) {
+                if( type == TOK_INVALID ) {
                     AsmError( UNDEFINED_MODEL_OPTION );
                     return( RC_ERROR );
                 }
@@ -2377,7 +2378,7 @@ bool SetAssume( token_idx i )
 
         token = AsmBuffer[i].string_ptr;
         wipe_space( token );
-        if( token_cmp( &token, TOK_NOTHING, TOK_NOTHING ) != ERROR ) {
+        if( token_cmp( &token, TOK_NOTHING, TOK_NOTHING ) != TOK_INVALID ) {
             AssumeInit();
             continue;
         }
@@ -2405,7 +2406,7 @@ bool SetAssume( token_idx i )
         /*---- Now store the information ----*/
 
         reg = token_cmp( &token, TOK_DS, TOK_CS );
-        if( reg == ERROR ) {
+        if( reg == TOK_INVALID ) {
             AsmError( INVALID_REGISTER );
             return( RC_ERROR );
         }
@@ -2417,16 +2418,16 @@ bool SetAssume( token_idx i )
 
         info = &(AssumeTable[TypeInfo[reg].value]);
 
-        if( token_cmp( &segloc, TOK_ERROR, TOK_ERROR ) != ERROR ) {
+        if( token_cmp( &segloc, TOK_ERROR, TOK_ERROR ) != TOK_INVALID ) {
             info->error = true;
             info->flat = false;
             info->symbol = NULL;
-        } else if( token_cmp( &segloc, TOK_FLAT, TOK_FLAT ) != ERROR ) {
+        } else if( token_cmp( &segloc, TOK_FLAT, TOK_FLAT ) != TOK_INVALID ) {
             DefFlatGroup();
             info->flat = true;
             info->error = false;
             info->symbol = NULL;
-        } else if( token_cmp( &segloc, TOK_NOTHING, TOK_NOTHING ) != ERROR ) {
+        } else if( token_cmp( &segloc, TOK_NOTHING, TOK_NOTHING ) != TOK_INVALID ) {
             info->flat = false;
             info->error = false;
             info->symbol = NULL;
@@ -2731,7 +2732,7 @@ static int find_size( int type )
     case TOK_PROC_VARARG:
         return( 0 );
     default:
-        return( ERROR );
+        return( -1 );
     }
 }
 
@@ -2879,9 +2880,8 @@ bool LocalDef( token_idx i )
             }
             i++;
 
-            type = token_cmp( &(AsmBuffer[i].string_ptr), TOK_EXT_BYTE,
-                              TOK_EXT_TBYTE );
-            if( type == ERROR ) {
+            type = token_cmp( &(AsmBuffer[i].string_ptr), TOK_EXT_BYTE, TOK_EXT_TBYTE );
+            if( type == TOK_INVALID ) {
                 tmp = AsmGetSymbol( AsmBuffer[i].string_ptr );
                 if( tmp != NULL ) {
                     if( tmp->state == SYM_STRUCT ) {
@@ -2890,7 +2890,7 @@ bool LocalDef( token_idx i )
                     }
                 }
             }
-            if( type == ERROR ) {
+            if( type == TOK_INVALID ) {
                 AsmError( INVALID_QUALIFIED_TYPE );
                 return( RC_ERROR );
             }
@@ -3003,7 +3003,7 @@ bool ArgDef( token_idx i )
 
         type = token_cmp( &typetoken, TOK_EXT_BYTE, TOK_EXT_TBYTE );
 
-        if( ( type == ERROR ) && (Options.mode & MODE_IDEAL) ) {
+        if( ( type == TOK_INVALID ) && (Options.mode & MODE_IDEAL) ) {
             tmp = AsmGetSymbol( AsmBuffer[i].string_ptr );
             if( tmp != NULL ) {
                 if( tmp->state == SYM_STRUCT ) {
@@ -3011,9 +3011,9 @@ bool ArgDef( token_idx i )
                 }
             }
         }
-        if( type == ERROR ) {
+        if( type == TOK_INVALID ) {
             type = token_cmp( &typetoken, TOK_PROC_VARARG, TOK_PROC_VARARG );
-            if( type == ERROR ) {
+            if( type == TOK_INVALID ) {
                 AsmError( INVALID_QUALIFIED_TYPE );
                 return( RC_ERROR );
             } else {
@@ -3318,7 +3318,7 @@ static bool proc_exam( dir_node *proc, token_idx i )
         }
 
         type = token_cmp( &token, TOK_PROC_FAR, TOK_PROC_USES );
-        if( type == ERROR )
+        if( type == TOK_INVALID )
             break;
         if( type < minimum ) {
             AsmError( SYNTAX_ERROR );
@@ -3421,10 +3421,9 @@ parms:
         typetoken = AsmBuffer[i].string_ptr;
 
         type = token_cmp( &typetoken, TOK_EXT_BYTE, TOK_EXT_TBYTE );
-
-        if( type == ERROR ) {
+        if( type == TOK_INVALID ) {
             type = token_cmp( &typetoken, TOK_PROC_VARARG, TOK_PROC_VARARG );
-            if( type == ERROR ) {
+            if( type == TOK_INVALID ) {
                 AsmError( INVALID_QUALIFIED_TYPE );
                 return( RC_ERROR );
             } else {
@@ -4146,7 +4145,7 @@ bool CommDef( token_idx i )
         typetoken = AsmBuffer[i].string_ptr;
         distance = token_cmp( &typetoken, TOK_EXT_NEAR, TOK_EXT_FAR );
 
-        if( distance != ERROR ) {
+        if( distance != TOK_INVALID ) {
             /* otherwise, there is no distance specified */
             i++;
         } else {
@@ -4168,7 +4167,7 @@ bool CommDef( token_idx i )
         typetoken = AsmBuffer[i].string_ptr;
         type = token_cmp( &typetoken, TOK_EXT_BYTE, TOK_EXT_TBYTE );
 
-        if( type == ERROR ) {
+        if( type == TOK_INVALID ) {
             AsmError( INVALID_QUALIFIED_TYPE );
             return( RC_ERROR );
         }

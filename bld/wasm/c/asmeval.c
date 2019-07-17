@@ -215,7 +215,7 @@ static int get_precedence( token_idx i )
         /**/myassert( 0 );
         break;
     }
-    return( ERROR );
+    return( -1 );
 }
 
 static bool get_operand( expr_list *new, token_idx *start, token_idx end, bool (*is_expr)(token_idx) )
