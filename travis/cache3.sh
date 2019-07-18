@@ -2,7 +2,7 @@
 #
 # Script to fill Travis build cache2
 #
-#set -x
+set -x
 
 copy_tree3()
 {

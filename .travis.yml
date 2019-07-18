@@ -23,6 +23,7 @@ env:
     - OWSRCDIR=$OWROOT/bld
     - OWBINDIR=$OWROOT/build/$OWOBJDIR
     - OWDOCSDIR=$OWROOT/docs
+    - CP_OPTS=-Rnv
 
 cache:
   directories:
@@ -36,8 +37,6 @@ before_script:
  - git config --global user.email "travis@travis-ci.org"
  - git config --global user.name "Travis CI"
  - git config --global push.default simple
- # setup cp options
- - if [ "$OWTRAVIS_CACHE_DEBUG" = "1" ]; then export CP_OPTS=-Rnv; else export CP_OPTS=-Rnv; fi
  # get environment/cache info if debug is active
  - travis/envinfo.sh
  - travis/cacheinf.sh
