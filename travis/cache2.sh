@@ -24,20 +24,21 @@ fi
 if [ "$1" = "save" ]; then
     echo "save cache2" >$OWBINDIR/cache2.log
     #
-    copy_tree2  fpuemu      "*.lib"
-    copy_tree2  wres        "*.lib"
-    copy_tree2  orl         "*.lib"
-    copy_tree2  owl         "*.lib"
-    copy_tree2  dwarf       "*.lib"
-    copy_tree2  cfloat      "*.lib"
-    copy_tree2  commonui    "*.lib"
-    copy_tree2  commonui    "*.gh"
-    copy_tree2  rcsdll      "*.lib"
-    copy_tree2  ui          "*.lib"
-    copy_tree2  ui          "*.gh"
-    copy_tree2  wpi         "*.lib"
-    copy_tree2  win386/conv "*.lib"
-    copy_tree2  win386/ext  "*.ext"
+    copy_tree2  fpuemu          "*.lib"
+    copy_tree2  wres            "*.lib"
+    copy_tree2  orl             "*.lib"
+    copy_tree2  owl             "*.lib"
+    copy_tree2  dwarf           "*.lib"
+    copy_tree2  cfloat          "*.lib"
+    copy_tree2  commonui        "*.lib"
+    copy_tree2  commonui        "*.gh"
+    copy_tree2  rcsdll          "*.lib"
+    copy_tree2  ui              "*.lib"
+    copy_tree2  ui              "*.gh"
+    copy_tree2  wpi             "*.lib"
+    copy_tree2  win386/conv     "*.lib"
+    copy_tree2  win386/ext      "*.ext"
+    copy_tree2  wstuba/dos386   "*.exe"
     #
     cd $TRAVIS_BUILD_DIR
 fi
