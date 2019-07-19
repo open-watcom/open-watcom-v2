@@ -1,5 +1,5 @@
 @set OWECHO=off
-@if "$OWTRAVIS_DEBUG" == "1" set OWECHO=on
+@if "%OWTRAVIS_DEBUG%" == "1" set OWECHO=on
 @echo %OWECHO%
 SETLOCAL EnableExtensions
 REM Script to build the Open Watcom bootstrap tools
@@ -18,6 +18,7 @@ REM
 REM setup DOSBOX
 REM
 set OWDOSBOX=%OWROOT%\travis\dosbox\dosbox.exe
+dir %OWROOT%\travis\dosbox
 REM ...
 if "%OWTRAVIS_ENV_DEBUG%" == "1" (
     set
@@ -34,14 +35,14 @@ if "%OWTRAVISJOB%" == "BOOTSTRAP" (
     cd wmake
     mkdir %OWOBJDIR%
     cd %OWOBJDIR%
-    nmake -f ..\nmake clean
-    nmake -f ..\nmake
+    nmake -f ..\nmake clean >>%OWBINDIR%\bootx.log 2>&1
+    nmake -f ..\nmake >>%OWBINDIR%\bootx.log 2>&1
     if not errorlevel == 1 (
 	cd %OWSRCDIR%\builder
 	mkdir %OWOBJDIR%
 	cd %OWOBJDIR%
-	%OWBINDIR%\wmake -f ..\binmake clean
-	%OWBINDIR%\wmake -f ..\binmake bootstrap=1 builder.exe
+	%OWBINDIR%\wmake -f ..\binmake clean >>%OWBINDIR%\bootx.log 2>&1
+	%OWBINDIR%\wmake -f ..\binmake bootstrap=1 builder.exe >>%OWBINDIR%\bootx.log 2>&1
 	if not errorlevel == 1 (
 	    cd %OWSRCDIR%
 	    if "%TRAVIS_EVENT_TYPE%" == "pull_request" (
