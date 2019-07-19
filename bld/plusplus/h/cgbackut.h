@@ -961,12 +961,12 @@ void CgTrash(                   // COMPLETE TRASH OF EXPRESSION
 ;
 SYMBOL CgVarRo(                 // MAKE R/O CODEGEN VARIABLE
     target_size_t size,         // - size of variable
-    symbol_class id,            // - SC_...
+    symbol_class id,            // - SYMC_...
     NAME name )                 // - name or NULL
 ;
 SYMBOL CgVarRw(                 // MAKE R/W CODEGEN VARIABLE
     target_size_t size,         // - size
-    symbol_class id )           // - SC_...
+    symbol_class id )           // - SYMC_...
 ;
 SYMBOL CgVarTemp(               // MAKE R/W AUTO TEMPORARY
     target_size_t size )        // - size of temp

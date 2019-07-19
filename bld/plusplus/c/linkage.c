@@ -236,11 +236,11 @@ void LinkageSet( SYMBOL sym, char *language )
 
     verifyFileScopeSym( sym );
     switch( sym->id ) {
-    case SC_DEFAULT:
+    case SYMC_DEFAULT:
         return;
-    case SC_FUNCTION_TEMPLATE:
-    case SC_EXTERN_FUNCTION_TEMPLATE:
-    case SC_STATIC_FUNCTION_TEMPLATE:
+    case SYMC_FUNCTION_TEMPLATE:
+    case SYMC_EXTERN_FUNCTION_TEMPLATE:
+    case SYMC_STATIC_FUNCTION_TEMPLATE:
         linkage = CppLinkage;
         break;
     default:

@@ -92,18 +92,18 @@ static SYMBOL addrThunkSymbol(  // GET THUNK SYMBOL FROM ORIGINAL
     SYMBOL new_sym;             // - the new symbol
     SCOPE scope;                // - scope for new symbol
     NAME name;                  // - name of new symbol
-    symbol_class thunk_class;   // - SC_.. for thunk
+    symbol_class thunk_class;   // - SYMC_.. for thunk
 
-    thunk_class = SC_NULL;
+    thunk_class = SYMC_NULL;
     switch( classification ) {
     case SPECIAL_NAME_OP_DEL_THUNK :
     case SPECIAL_NAME_OP_DELAR_THUNK :
-        thunk_class = SC_STATIC;
+        thunk_class = SYMC_STATIC;
         break;
     case SPECIAL_NAME_DTOR_THUNK :
     case SPECIAL_NAME_COPY_THUNK :
     case SPECIAL_NAME_CTOR_THUNK :
-        thunk_class = SC_MEMBER;
+        thunk_class = SYMC_MEMBER;
         break;
     DbgDefault( "addrThunkSymbol -- bad classification" );
     }
@@ -221,7 +221,7 @@ SYMBOL ClassFunMakeAddressable( // MAKE SURE THE FUNCTION CAN BE ADDRESSED
     if( orig_sym == NULL ) {
         return( orig_sym );
     }
-    if( ( orig_sym->id != SC_DEFAULT ) && !TypeHasPragma( orig_sym->sym_type ) ) {
+    if( ( orig_sym->id != SYMC_DEFAULT ) && !TypeHasPragma( orig_sym->sym_type ) ) {
         type_flag flags;
         TypeModFlags( orig_sym->sym_type, &flags );
         if( (flags & TF1_DLLIMPORT) == 0 ) {

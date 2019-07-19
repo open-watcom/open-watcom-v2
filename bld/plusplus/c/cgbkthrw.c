@@ -78,7 +78,7 @@ static THROW_RO *throwRoGet(    // GET THROW R/O BLOCK
         ro->sig = BeTypeSignature( type );
         ro->emitted = false;
         sym = CgVarRo( CgbkInfo.size_offset + sizeOfThrowCnv() * ThrowCnvInit( &ctl, type ),
-                     SC_PUBLIC, CppNameThrowRo( type ) );
+                     SYMC_PUBLIC, CppNameThrowRo( type ) );
         ro->sym = sym;
         for( ; ; ) {
             type = ThrowCnvType( &ctl, &offset );

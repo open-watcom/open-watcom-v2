@@ -517,7 +517,7 @@ static bool handleAccessDeclaration( PTREE id_tree )
     if( verifyNoChangePerm( data, perm, name ) ) {
         return( true );
     }
-    access_sym = SymCreateAtLocn( type, SC_ACCESS, SYMF_NULL, name, GetCurrScope(), &name_locn );
+    access_sym = SymCreateAtLocn( type, SYMC_ACCESS, SYMF_NULL, name, GetCurrScope(), &name_locn );
     if( access_sym != NULL ) {
         access_sym->u.udc_type = udc_return_type;
     }
@@ -604,7 +604,7 @@ static bool handleAccessTypeDeclaration( DECL_SPEC *dspec, TOKEN_LOCN *locn )
     if( verifyNoChangePerm( data, perm, name ) ) {
         return( true );
     }
-    SymCreateAtLocn( type, SC_TYPEDEF, SYMF_NULL, name, GetCurrScope(), locn );
+    SymCreateAtLocn( type, SYMC_TYPEDEF, SYMF_NULL, name, GetCurrScope(), locn );
     return( false );
 }
 
@@ -772,7 +772,7 @@ static SYMBOL getClassSym( CLASS_DATA *data )
     SYMBOL sym;
 
     sym = AllocSymbol();
-    sym->id = SC_TYPEDEF;
+    sym->id = SYMC_TYPEDEF;
     sym->sym_type = data->type;
     return( sym );
 }
@@ -783,7 +783,7 @@ static void injectClassName( NAME name, TYPE type, TOKEN_LOCN *locn )
     SYMBOL sym = AllocSymbol();
     SYMBOL_NAME sym_name = AllocSymbolName( name, scope->enclosing );
 
-    sym->id = SC_TYPEDEF;
+    sym->id = SYMC_TYPEDEF;
     sym->sym_type = type;
     sym_name->name_type = sym;
 
@@ -875,7 +875,7 @@ TYPE ClassPreDefined( NAME name, TOKEN_LOCN *locn )
     ClassInitState( TF1_NULL, CLINIT_NULL, NULL );
     std_sym_name = ScopeYYMember( GetFileScope(), CppSpecialName( SPECIAL_NAME_STD ) );
     std_sym = ( std_sym_name != NULL ) ? std_sym_name->name_type : NULL;
-    if( ( std_sym != NULL ) && ( std_sym->id == SC_NAMESPACE ) ) {
+    if( ( std_sym != NULL ) && ( std_sym->id == SYMC_NAMESPACE ) ) {
         sym_name = ScopeYYMember( std_sym->u.ns->scope, name );
         if( sym_name != NULL ) {
             id = PTreeId( name );
@@ -1258,7 +1258,7 @@ static void checkClassStatus( CLASS_DATA *data )
 
         if( sym_name != NULL ) {
             RingIterBeg( sym_name->name_syms, sym ) {
-                if( sym->id == SC_MEMBER ) {
+                if( sym->id == SYMC_MEMBER ) {
                     CErr2p( ERR_MEMBER_SAME_NAME_AS_CLASS, sym );
                 }
             } RingIterEnd( sym )
@@ -1279,7 +1279,7 @@ static SYMBOL insertDefaultFunc( SCOPE scope, TYPE fn_type, NAME name )
     // SYMF_INITIALIZED prevents the user from defining the class
     // themselves (see FNBODY check for GeneratedDefaultFunction check)
     return SymCreateAtLocn( MakeCommonCodeData( fn_type )
-                          , SC_MEMBER
+                          , SYMC_MEMBER
                           , SYMF_INITIALIZED
                           , name
                           , scope
@@ -2053,7 +2053,7 @@ static void verifyCtor( CLASS_DATA *data, SYMBOL sym )
             CErr1( ERR_CTOR_BAD_ARG_LIST );
             info->corrupted = true;
         } else {
-            if( sym->id == SC_DEFAULT ) {
+            if( sym->id == SYMC_DEFAULT ) {
                 base_sym = SymDefaultBase( sym );
                 if( hasNonRefArg( base_sym, class_type ) ) {
                     CErr1( ERR_CTOR_BAD_ARG_LIST );
@@ -2134,7 +2134,7 @@ static void handleFunctionMember( CLASS_DATA *data, SYMBOL sym, NAME name )
     }
     info = data->info;
     info->has_fn = true;
-    if( sym->id == SC_DEFAULT ) {
+    if( sym->id == SYMC_DEFAULT ) {
         /* most checks can be performed on the base symbol */
         if( name == CppConstructorName() ) {
             verifyCtor( data, sym );
@@ -2357,7 +2357,7 @@ void ClassMember( SCOPE scope, SYMBOL sym )
     data = findClassData( scope );
     if( data == NULL ) {
         /* member is being injected after the class is defined */
-        if( sym->id == SC_DEFAULT ) {
+        if( sym->id == SYMC_DEFAULT ) {
             base_sym = SymDefaultBase( sym );
             CErr2p( WARN_DEFAULT_ARG_ADDED_TO_MEMBER_FN, base_sym );
         }
@@ -2384,14 +2384,14 @@ void ClassMember( SCOPE scope, SYMBOL sym )
     flags.static_member = false;
     flags.zero_sized_array = false;
     switch( sym->id ) {
-    case SC_TYPEDEF:
-    case SC_CLASS_TEMPLATE:
-    case SC_ENUM:
+    case SYMC_TYPEDEF:
+    case SYMC_CLASS_TEMPLATE:
+    case SYMC_ENUM:
         return;
-    case SC_ACCESS:
+    case SYMC_ACCESS:
         return;
-    case SC_STATIC:
-    case SC_STATIC_FUNCTION_TEMPLATE:
+    case SYMC_STATIC:
+    case SYMC_STATIC_FUNCTION_TEMPLATE:
         flags.static_member = true;
         if( data->is_union ) {
             if( ! SymIsFunction( sym ) ) {
@@ -2399,12 +2399,12 @@ void ClassMember( SCOPE scope, SYMBOL sym )
             }
         }
         break;
-    case SC_AUTO:
-    case SC_EXTERN:
-    case SC_EXTERN_FUNCTION_TEMPLATE:
-    case SC_REGISTER:
+    case SYMC_AUTO:
+    case SYMC_EXTERN:
+    case SYMC_EXTERN_FUNCTION_TEMPLATE:
+    case SYMC_REGISTER:
         CErr1( ERR_INVALID_STG_CLASS_FOR_MEMBER );
-        sym->id = SC_NULL;
+        sym->id = SYMC_NULL;
         break;
     }
     if( SymIsFunction( sym ) ) {
@@ -3226,7 +3226,7 @@ bool ClassAnonymousUnion( DECL_SPEC *dspec )
         if( stg_class != STG_STATIC ) {
             CErr1( ERR_GLOBAL_ANONYMOUS_UNION_MUST_BE_STATIC );
         }
-        sym->id = SC_STATIC;
+        sym->id = SYMC_STATIC;
         emit_init = true;
     } else {
         /*
@@ -3240,7 +3240,7 @@ bool ClassAnonymousUnion( DECL_SPEC *dspec )
             if( stg_class & ~ (STG_STATIC|STG_AUTO) ) {
                 CErr1( ERR_FUNCTION_ANONYMOUS_UNION );
             } else if( stg_class & STG_STATIC ) {
-                sym->id = SC_STATIC;
+                sym->id = SYMC_STATIC;
                 emit_init = true;
             }
         } else if( dspec->stg_class != STG_NULL ) {

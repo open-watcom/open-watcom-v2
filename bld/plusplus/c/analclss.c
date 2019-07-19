@@ -319,7 +319,7 @@ static void initClassFunction(  // START GENERATION OF CLASS FUNCTION
             /* copy constructor or op= */
             alist = fn_type->u.f.args;
             arg = AllocTypedSymbol( alist->type_list[0] );
-            arg->id = SC_AUTO;
+            arg->id = SYMC_AUTO;
             arg->flag |= SYMF_REFERENCED;
             // this special parm name is used by CtorPrologue to identify the
             // special case of compiler-generated copy constructors
@@ -1358,7 +1358,7 @@ static SYMBOL createArrayDtorSymbol( // CREATE ARRAY DTOR SYMBOL
     fn_type = TypePtrVoidFunOfCDtorArg();
     fn_type = MakeCommonCodeData( fn_type );
     sym = AllocTypedSymbol( fn_type );
-    sym->id = SC_MEMBER;
+    sym->id = SYMC_MEMBER;
     sym->flag |= SYMF_INITIALIZED;
     return( ScopeInsert( TypeScope( cl_type ), sym, name ) );
 }

@@ -235,7 +235,7 @@ static TRY_IMPL* tryImpl(       // FIND/ALLOCATE A TRY IMPLEMENTATION
         try_impl = RingCarveAlloc( carveTRY_IMPL, &fun_try_impls );
         try_impl->try_sym = sym;
         AutoRelRegister( try_impl->try_sym, &try_impl->offset_var );
-        try_impl->jmp_sym = CgVarRw( JMPBUF_SIZE, SC_AUTO );
+        try_impl->jmp_sym = CgVarRw( JMPBUF_SIZE, SYMC_AUTO );
         AutoRelRegister( try_impl->jmp_sym, &try_impl->offset_jmpbuf );
     }
     return( try_impl );
@@ -1949,7 +1949,7 @@ static FN_CTL* emit_virtual_file(   // EMIT A VIRTUAL FILE
           { SYMBOL sym;
             sym = ins_value.pvalue;
             if( ( file_ctl->symbol != NULL )
-              &&( sym->id == SC_STATIC )
+              &&( sym->id == SYMC_STATIC )
               &&( file_ctl->u.s.stgen ) ) {
                 flushOverInitialization( file_ctl );
             } else if( CgDeclSkippableConstObj( sym ) ) {
@@ -3148,9 +3148,9 @@ void CgBackEnd(                 // BACK-END CONTROLLER
             BEStart();
             CgBackStatHandlesInit();
             thisSym = AllocSymbol();
-            thisSym->id = SC_AUTO;
+            thisSym->id = SYMC_AUTO;
             cdtorSym = AllocSymbol();
-            cdtorSym->id = SC_AUTO;
+            cdtorSym->id = SYMC_AUTO;
             statics = NULL;
             if( GenSwitches & DBG_DF ) {
                 DwarfDebugInit();

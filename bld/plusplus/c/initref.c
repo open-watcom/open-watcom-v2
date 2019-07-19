@@ -48,9 +48,9 @@ static void zapLifeTime(        // ZAP THE TEMPORARY LIFE-TIME IF REQ'D
 {
     if( node->op == PT_SYMBOL
      && node->u.symcg.symbol == sym
-     && sym->id == SC_AUTO ) {
+     && sym->id == SYMC_AUTO ) {
         sym->id = id;
-        if( id == SC_STATIC ) {
+        if( id == SYMC_STATIC ) {
             DgSymbol( sym );
         } else {
             if( last_dtor_node != NULL
@@ -152,9 +152,9 @@ void InitRefFixup(              // TRAVERSAL FOR REFERENCE INITIALIZATION
     if( inited_temp != NULL
      && last_init_node != NULL ) {
         if( expr->flags & PTF_STATIC_INIT ) {
-            id = SC_STATIC;
+            id = SYMC_STATIC;
         } else {
-            id = SC_AUTO;
+            id = SYMC_AUTO;
         }
         switch( last_init_node->cgop ) {
         case CO_EQUAL :

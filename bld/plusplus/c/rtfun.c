@@ -135,7 +135,7 @@ static SYMBOL rtSymbolCreate(   // CREATE NEW RUN-TIME SYMBOL
     } else {
         sym_type = GetBasicType( TYP_SINT );
     }
-    sym = SymCreate( sym_type, SC_EXTERN, flags, name, GetInternalScope() );
+    sym = SymCreate( sym_type, SYMC_EXTERN, flags, name, GetInternalScope() );
     LinkageSet( sym, "C" );
     return( sym );
 }

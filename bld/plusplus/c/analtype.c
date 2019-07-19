@@ -127,7 +127,7 @@ static TYPE getThisBaseType( SYMBOL sym )
         if( scope != NULL ) {
             class_type = ScopeClass( scope );
             if( class_type != NULL ) {
-                if( sym->id != SC_STATIC ) {
+                if( sym->id != SYMC_STATIC ) {
                     base = class_type;
                 }
             }
@@ -656,7 +656,7 @@ static TYPE augmentWithNear(    // AUGMENT TYPE WITH TF1_NEAR, IF REQ'D
 
 TYPE TypeAutoDefault(           // ADD NEAR QUALIFIER FOR AUTO SYMBOL
     TYPE type,                  // - a type
-    PTREE expr )                // - possible PT_SYMBOL of SC_AUTO
+    PTREE expr )                // - possible PT_SYMBOL of SYMC_AUTO
 {
 #if 0
     if( PtreeOpFlags( expr ) & PTO_RVALUE ) {
@@ -666,7 +666,7 @@ TYPE TypeAutoDefault(           // ADD NEAR QUALIFIER FOR AUTO SYMBOL
     if( expr->op == PT_SYMBOL ) {
 #endif
         SYMBOL sym = expr->u.symcg.symbol;
-        if( sym->id == SC_AUTO ) {
+        if( sym->id == SYMC_AUTO ) {
             type_flag flags;
             TypeGetActualFlags( sym->sym_type, &flags );
             if( 0 == ( flags & TF1_MEM_MODEL ) ) {

@@ -67,7 +67,7 @@ void DbgSuppInit( dsi_control control )
     if( code_sym == NULL ) {
         code_type = MakeSimpleFunction( GetBasicType( TYP_VOID ), NULL );
         code_sym = SymMakeDummy( code_type, &code_name );
-        code_sym->id = SC_STATIC;
+        code_sym->id = SYMC_STATIC;
         code_sym->flag |= SYMF_INITIALIZED;
         code_sym->segid = SEG_CODE;
         code_sym = InsertSymbol( GetFileScope(), code_sym, code_name );
@@ -77,7 +77,7 @@ void DbgSuppInit( dsi_control control )
     if( data_sym == NULL ) {
         data_type = GetBasicType( TYP_CHAR );
         data_sym = SymMakeDummy( data_type, &data_name );
-        data_sym->id = SC_STATIC;
+        data_sym->id = SYMC_STATIC;
         data_sym->flag |= SYMF_INITIALIZED;
         data_sym->segid = SEG_BSS;
         data_sym = InsertSymbol( GetFileScope(), data_sym, data_name );

@@ -135,7 +135,7 @@ bool DeclNoInit( DECL_INFO *dinfo )
     if( sym == NULL ) {
         return( false );
     }
-    if( SymIsTypedef( sym ) || SymIsFunction( sym ) || sym->id == SC_EXTERN ) {
+    if( SymIsTypedef( sym ) || SymIsFunction( sym ) || sym->id == SYMC_EXTERN ) {
         return( false );
     }
     type = sym->sym_type;
@@ -181,7 +181,7 @@ bool DeclNoInit( DECL_INFO *dinfo )
                 return( false );
             }
         }
-        if( sym->id != SC_STATIC && ScopeType( scope, SCOPE_FILE ) ) {
+        if( sym->id != SYMC_STATIC && ScopeType( scope, SCOPE_FILE ) ) {
             CompFlags.external_defn_found = true;
             if( LinkageIsC( sym ) ) {
                 CompFlags.extern_C_defn_found = true;
@@ -235,7 +235,7 @@ bool DeclWithInit( DECL_INFO *dinfo )
         CErr2p( ERR_CANNOT_INIT_AGAIN, sym );
         return( false );
     }
-    if( sym->id == SC_PUBLIC ) {
+    if( sym->id == SYMC_PUBLIC ) {
         CErr2p( ERR_SYM_ALREADY_DEFINED, sym );
         return( false );
     }
@@ -246,7 +246,7 @@ bool DeclWithInit( DECL_INFO *dinfo )
                 return( false );
             }
         }
-        if( sym->id != SC_STATIC ) {
+        if( sym->id != SYMC_STATIC ) {
             CompFlags.external_defn_found = true;
             if( LinkageIsC( sym ) ) {
                 CompFlags.extern_C_defn_found = true;
@@ -285,15 +285,15 @@ bool DeclWithInit( DECL_INFO *dinfo )
 static void handleInlineFunction( SYMBOL sym )
 {
     switch( sym->id ) {
-    case SC_STATIC:
-    case SC_TYPEDEF:
-    case SC_FUNCTION_TEMPLATE:
-    case SC_STATIC_FUNCTION_TEMPLATE:
-    case SC_EXTERN:
-    case SC_EXTERN_FUNCTION_TEMPLATE:
+    case SYMC_STATIC:
+    case SYMC_TYPEDEF:
+    case SYMC_FUNCTION_TEMPLATE:
+    case SYMC_STATIC_FUNCTION_TEMPLATE:
+    case SYMC_EXTERN:
+    case SYMC_EXTERN_FUNCTION_TEMPLATE:
         return;
     }
-    sym->id = SC_STATIC;
+    sym->id = SYMC_STATIC;
 }
 
 void DeclDefaultStorageClass( SCOPE scope, SYMBOL sym )
@@ -302,7 +302,7 @@ void DeclDefaultStorageClass( SCOPE scope, SYMBOL sym )
     TYPE fn_type;
     base_info info;
 
-    if( sym->id == SC_DEFAULT ) {
+    if( sym->id == SYMC_DEFAULT ) {
         return;
     }
     if( scope->id == SCOPE_FILE ) {
@@ -311,26 +311,26 @@ void DeclDefaultStorageClass( SCOPE scope, SYMBOL sym )
             handleInlineFunction( sym );
         }
     }
-    if( sym->id != SC_NULL ) {
+    if( sym->id != SYMC_NULL ) {
         return;
     }
     switch( scope->id ) {
     case SCOPE_CLASS:
-        sym->id = SC_MEMBER;
+        sym->id = SYMC_MEMBER;
         break;
     case SCOPE_FILE:
         baseTypeInfo( sym->sym_type, &info );
         if( info & IS_CONST ) {
             /* default linkage is internal for a const object */
-            sym->id = SC_STATIC;
+            sym->id = SYMC_STATIC;
         } else if( info & IS_DLLIMPORT ) {
             /* default linkage is extern for a __declspec(dllimport) object */
-            sym->id = SC_EXTERN;
+            sym->id = SYMC_EXTERN;
         }
         break;
     case SCOPE_BLOCK:
     case SCOPE_FUNCTION:
-        sym->id = SC_AUTO;
+        sym->id = SYMC_AUTO;
         break;
 #ifndef NDEBUG
     case SCOPE_TEMPLATE_PARM:
@@ -350,8 +350,8 @@ static bool commonCheck( SYMBOL prev, SYMBOL curr, decl_check *control )
 
     if( SymIsStaticMember( prev ) ) {
         switch( curr->id ) {
-        case SC_NULL:
-        case SC_STATIC:
+        case SYMC_NULL:
+        case SYMC_STATIC:
             *control |= DC_REDEFINED;
             return( true );
         }
@@ -359,29 +359,29 @@ static bool commonCheck( SYMBOL prev, SYMBOL curr, decl_check *control )
     scope = SymScope( prev );
     if( ScopeType( scope, SCOPE_FILE ) ) {
         switch( prev->id ) {
-        case SC_EXTERN:
+        case SYMC_EXTERN:
             switch( curr->id ) {
-            case SC_NULL:
+            case SYMC_NULL:
                 if( SymIsInitialized( prev ) ) {
                     *control |= DC_REDEFINED;
                 }
                 /* fall through */
-            case SC_EXTERN:
+            case SYMC_EXTERN:
                 prev->id = curr->id;
                 return( true );
             }
             break;
-        case SC_PUBLIC:
+        case SYMC_PUBLIC:
             switch( curr->id ) {
-            case SC_NULL:
+            case SYMC_NULL:
                 *control |= DC_REDEFINED;
                 /* fall through */
-            case SC_EXTERN:
+            case SYMC_EXTERN:
                 return( true );
             }
             break;
-        case SC_STATIC:
-            if( curr->id == SC_EXTERN ) {
+        case SYMC_STATIC:
+            if( curr->id == SYMC_EXTERN ) {
                 // p.98 ARM (7.1.1)
                 return( true );
             }
@@ -411,57 +411,57 @@ static fn_stg_class_status checkFnStorageClass( SYMBOL prev, SYMBOL curr, decl_c
     if( commonCheck( prev, curr, control ) ) {
         return( FSCS_SAME_FN );
     }
-    if( curr->id == SC_DEFAULT ) {
-        if( prev->id == SC_DEFAULT ) {
+    if( curr->id == SYMC_DEFAULT ) {
+        if( prev->id == SYMC_DEFAULT ) {
             if( SymDefaultBase( curr ) == SymDefaultBase( prev ) ) {
                 return( FSCS_SAME_FN );
             }
         }
         return( FSCS_DIFF_FN );
     }
-    if( prev->id == SC_DEFAULT ) {
+    if( prev->id == SYMC_DEFAULT ) {
         CErr2p( WARN_FN_HITS_ANOTHER_ARG, prev );
         return( FSCS_DIFF_FN );
     }
     switch( curr->id ) {
-    case SC_NULL:
-    case SC_FUNCTION_TEMPLATE:
+    case SYMC_NULL:
+    case SYMC_FUNCTION_TEMPLATE:
         break;
-    case SC_EXTERN:
-        if( prev->id == SC_NULL ) {
-            prev->id = SC_EXTERN;
-        } else if( prev->id != SC_EXTERN ) {
+    case SYMC_EXTERN:
+        if( prev->id == SYMC_NULL ) {
+            prev->id = SYMC_EXTERN;
+        } else if( prev->id != SYMC_EXTERN ) {
             CErr2p( ERR_CONFLICTING_STORAGE_CLASSES, prev );
             return( FSCS_NULL );
         }
         break;
-    case SC_EXTERN_FUNCTION_TEMPLATE:
-        if( prev->id == SC_FUNCTION_TEMPLATE ) {
-            prev->id = SC_EXTERN_FUNCTION_TEMPLATE;
-        } else if( prev->id != SC_EXTERN_FUNCTION_TEMPLATE ) {
+    case SYMC_EXTERN_FUNCTION_TEMPLATE:
+        if( prev->id == SYMC_FUNCTION_TEMPLATE ) {
+            prev->id = SYMC_EXTERN_FUNCTION_TEMPLATE;
+        } else if( prev->id != SYMC_EXTERN_FUNCTION_TEMPLATE ) {
             CErr2p( ERR_CONFLICTING_STORAGE_CLASSES, prev );
             return( FSCS_NULL );
         }
         break;
-    case SC_STATIC:
-        if( prev->id == SC_NULL && CompFlags.extensions_enabled ) {
-            prev->id = SC_STATIC;
-        } else if( prev->id != SC_STATIC ) {
+    case SYMC_STATIC:
+        if( prev->id == SYMC_NULL && CompFlags.extensions_enabled ) {
+            prev->id = SYMC_STATIC;
+        } else if( prev->id != SYMC_STATIC ) {
             CErr2p( ERR_CONFLICTING_STORAGE_CLASSES, prev );
             return( FSCS_NULL );
         }
         break;
-    case SC_STATIC_FUNCTION_TEMPLATE:
-        if( prev->id == SC_FUNCTION_TEMPLATE && CompFlags.extensions_enabled ) {
-            prev->id = SC_STATIC_FUNCTION_TEMPLATE;
-        } else if( prev->id != SC_STATIC_FUNCTION_TEMPLATE ) {
+    case SYMC_STATIC_FUNCTION_TEMPLATE:
+        if( prev->id == SYMC_FUNCTION_TEMPLATE && CompFlags.extensions_enabled ) {
+            prev->id = SYMC_STATIC_FUNCTION_TEMPLATE;
+        } else if( prev->id != SYMC_STATIC_FUNCTION_TEMPLATE ) {
             CErr2p( ERR_CONFLICTING_STORAGE_CLASSES, prev );
             return( FSCS_NULL );
         }
         break;
     default:
         switch( prev->id ) {
-        case SC_DEFAULT:
+        case SYMC_DEFAULT:
             DbgUseless();
             return( FSCS_DIFF_FN );
         default:
@@ -482,12 +482,12 @@ static bool checkVarStorageClass( SYMBOL prev, SYMBOL curr, decl_check *control 
     }
     *control |= DC_REDEFINED;
     switch( curr->id ) {
-    case SC_NULL:
-    case SC_ENUM:
+    case SYMC_NULL:
+    case SYMC_ENUM:
         break;
     default:
         switch( prev->id ) {
-        case SC_ENUM:
+        case SYMC_ENUM:
             break;
         default:
             if( prev->id != curr->id ) {
@@ -719,7 +719,7 @@ static SYMBOL combineFunctions( SYMBOL prev_fn, SYMBOL curr_fn )
         unsigned check_bases : 1;
     } flag;
 
-    if( prev_fn->id == SC_DEFAULT || curr_fn->id == SC_DEFAULT ) {
+    if( prev_fn->id == SYMC_DEFAULT || curr_fn->id == SYMC_DEFAULT ) {
         return( prev_fn );
     }
     prev_type = prev_fn->sym_type;
@@ -798,12 +798,12 @@ static void verifyMainFunction( SYMBOL sym )
     }
 
     switch( sym->id ) {
-    case SC_STATIC:
+    case SYMC_STATIC:
         CErr1( ERR_MAIN_CANNOT_BE_STATIC );
         break;
-    case SC_FUNCTION_TEMPLATE:
-    case SC_EXTERN_FUNCTION_TEMPLATE:
-    case SC_STATIC_FUNCTION_TEMPLATE:
+    case SYMC_FUNCTION_TEMPLATE:
+    case SYMC_EXTERN_FUNCTION_TEMPLATE:
+    case SYMC_STATIC_FUNCTION_TEMPLATE:
         CErr1( ERR_MAIN_CANNOT_BE_FN_TEMPLATE );
         break;
     }
@@ -838,7 +838,7 @@ static void verifyCanBeOverloaded( SYMBOL_NAME sym_name, SYMBOL sym, NAME name )
         CErr2p( ERR_FUNCTION_CANNOT_BE_OVERLOADED, name );
     } else if( name == CppOperatorName( CO_DELETE_ARRAY ) ) {
         CErr2p( ERR_FUNCTION_CANNOT_BE_OVERLOADED, name );
-    } else if( sym->id != SC_DEFAULT ) {
+    } else if( sym->id != SYMC_DEFAULT ) {
         scope = sym_name->containing;
         if( CurrLinkage == CLinkage ) {
             /* new symbol doesn't have linkage set yet but it will be "C" */
@@ -887,10 +887,10 @@ SYMBOL DeclCheck( SYMBOL_NAME sym_name, SYMBOL sym, decl_check *control )
     sym_type = TypedefRemove( sym->sym_type );
     ret_sym = sym;
     switch( sym->id ) {
-    case SC_NAMESPACE:
+    case SYMC_NAMESPACE:
         chk_sym = sym_name->name_type;
         if( chk_sym != NULL ) {
-            DbgAssert( chk_sym->id != SC_NAMESPACE );
+            DbgAssert( chk_sym->id != SYMC_NAMESPACE );
             CErr2p( ERR_NAME_USED_BY_NON_NAMESPACE, chk_sym );
             return( NULL );
         }
@@ -902,10 +902,10 @@ SYMBOL DeclCheck( SYMBOL_NAME sym_name, SYMBOL sym, decl_check *control )
         BrinfDeclNamespace( sym );
         _AddSymToRing( &(sym_name->name_type), sym );
         break;
-    case SC_CLASS_TEMPLATE:
+    case SYMC_CLASS_TEMPLATE:
         chk_sym = sym_name->name_type;
         if( chk_sym != NULL ) {
-            if( chk_sym->id == SC_CLASS_TEMPLATE ) {
+            if( chk_sym->id == SYMC_CLASS_TEMPLATE ) {
                 CErr2p( ERR_CANT_OVERLOAD_CLASS_TEMPLATES, chk_sym );
             } else {
                 CErr2p( ERR_NAME_USED_BY_NON_CLASS_TEMPLATE, chk_sym );
@@ -920,17 +920,17 @@ SYMBOL DeclCheck( SYMBOL_NAME sym_name, SYMBOL sym, decl_check *control )
         BrinfDeclTemplateClass( sym );
         _AddSymToRing( &(sym_name->name_type), sym );
         break;
-    case SC_TYPEDEF:
+    case SYMC_TYPEDEF:
         chk_sym = sym_name->name_type;
         if( chk_sym != NULL ) {
             /* typedef is already present so make sure it redefines itself */
             chk_type = TypedefRemove( chk_sym->sym_type );
             if( sym_type != chk_type ) {
                 switch( chk_sym->id ) {
-                case SC_CLASS_TEMPLATE:
+                case SYMC_CLASS_TEMPLATE:
                     CErr2p( ERR_NAME_USED_BY_CLASS_TEMPLATE, chk_sym );
                     return( NULL );
-                case SC_NAMESPACE:
+                case SYMC_NAMESPACE:
                     CErr2p( ERR_NAME_USED_BY_NAMESPACE, chk_sym );
                     return( NULL );
                 }
@@ -969,13 +969,13 @@ SYMBOL DeclCheck( SYMBOL_NAME sym_name, SYMBOL sym, decl_check *control )
             chk_sym = sym_name->name_type;
             if( chk_sym != NULL ) {
                 switch( chk_sym->id ) {
-                case SC_CLASS_TEMPLATE:
+                case SYMC_CLASS_TEMPLATE:
                     CErr2p( ERR_NAME_USED_BY_CLASS_TEMPLATE, chk_sym );
                     return( NULL );
-                case SC_NAMESPACE:
+                case SYMC_NAMESPACE:
                     CErr2p( ERR_NAME_USED_BY_NAMESPACE, chk_sym );
                     return( NULL );
-                case SC_TYPEDEF:
+                case SYMC_TYPEDEF:
                     if( ElaboratableType( chk_sym->sym_type ) == NULL ) {
                         CErr2p( ERR_PREV_MUST_BE_ELABORATED_TYPEDEF, chk_sym );
                         return( NULL );

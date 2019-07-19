@@ -2189,11 +2189,11 @@ SYMBOL ActualNonOverloadedFunc( // GET SYMBOL FOR ACTUAL NON-OVERLOADED FUNC.
 }
 
 
-bool IsActualOverloadedFunc(            // TEST IF ACTUAL (IGNORE SC_DEFAULT) OVERLOAD
+bool IsActualOverloadedFunc(            // TEST IF ACTUAL (IGNORE SYMC_DEFAULT) OVERLOAD
     SYMBOL sym, SEARCH_RESULT *result ) // - function to be tested
 /**************************************/
 // test if a function has been really overloaded
-// ignore functions with SC_DEFAULT id's
+// ignore functions with SYMC_DEFAULT id's
 {
     bool ok;
 

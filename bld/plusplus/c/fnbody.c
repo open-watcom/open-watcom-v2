@@ -1053,7 +1053,7 @@ static SYMBOL allocTryVar(      // CREATE TRY VARIABLE, IF REQ'D
     try_var = try_block->next->try_var;
     if( try_var == NULL ) {
         try_var = SymCreate( MakeExpandableType( TYP_CHAR )
-                           , SC_AUTO
+                           , SYMC_AUTO
                            , SYMF_REFERENCED | SYMF_ADDR_TAKEN | SYMF_CG_ADDR_TAKEN
                            , NameDummy()
                            , try_block->u.t.defn_scope );
@@ -1286,7 +1286,7 @@ static SYMBOL makeCatchVar(     // CREATE A CATCH VARIABLE
         name = info->id->u.id.name;
     }
     catch_var = SymCreateCurrScope( info->type
-                                  , SC_AUTO
+                                  , SYMC_AUTO
                                   , SYMF_REFERENCED
                                   , name );
     catch_var->flag |= SYMF_ALIAS | SYMF_CATCH_ALIAS;
@@ -2016,12 +2016,12 @@ static void handleDefnChangesToSym( SYMBOL func )
     scope = SymScope( func );
     if( ScopeType( scope, SCOPE_FILE ) ) {
         switch( func->id ) {
-        case SC_EXTERN:
-        case SC_NULL:
+        case SYMC_EXTERN:
+        case SYMC_NULL:
             if( SymIsInline( func ) ) {
-                stg_class = SC_STATIC;
+                stg_class = SYMC_STATIC;
             } else {
-                stg_class = SC_PUBLIC;
+                stg_class = SYMC_PUBLIC;
                 CompFlags.external_defn_found = true;
             }
             func->id = stg_class;

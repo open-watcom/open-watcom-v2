@@ -215,8 +215,8 @@ CNV_RETN ConvertOvFunNode(      // CONVERT FUN (FUN IS OVERLOADED), NO FREE
                 if( ScopeCheckSymbol( result, sym ) ) {
                     retn = CNV_ERR;
                 } else {
-                    DbgAssert( sym->id != SC_DEFAULT );
-                    if( sym->id != SC_DEFAULT ) {
+                    DbgAssert( sym->id != SYMC_DEFAULT );
+                    if( sym->id != SYMC_DEFAULT ) {
                         func->u.symcg.symbol = sym;
                         func->type = sym->sym_type;
                         retn = CNV_OK;

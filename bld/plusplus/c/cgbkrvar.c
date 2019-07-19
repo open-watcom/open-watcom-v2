@@ -41,7 +41,7 @@
 
 static SYMBOL makeCgVar(        // MAKE CODEGEN VARIABLE OF A CERTAIN TYPE
     TYPE type,                  // - type
-    symbol_class id,            // - SC_...
+    symbol_class id,            // - SYMC_...
     NAME name,                  // - name to be used
     symbol_flag flags )         // - flags to be used
 {
@@ -54,7 +54,7 @@ static SYMBOL makeCgVar(        // MAKE CODEGEN VARIABLE OF A CERTAIN TYPE
     if( name == NULL ) {
         name = NameDummy();
     }
-    if( id == SC_AUTO ) {
+    if( id == SYMC_AUTO ) {
         CGAutoDecl( (cg_sym_handle)var, CgTypeSym( var ) );
     } else {
         var = ScopeInsert( GetFileScope(), var, name );
@@ -67,13 +67,13 @@ static SYMBOL makeCgVar(        // MAKE CODEGEN VARIABLE OF A CERTAIN TYPE
 
 SYMBOL CgVarRw(                 // MAKE R/W CODEGEN VARIABLE
     target_size_t size,         // - size
-    symbol_class id )           // - SC_...
+    symbol_class id )           // - SYMC_...
 {
     TYPE type;
     symbol_flag flags;
 
     type = MakeInternalType( size );
-    if( id == SC_AUTO ) {
+    if( id == SYMC_AUTO ) {
         flags = SYMF_CG_ADDR_TAKEN | SYMF_ADDR_TAKEN | SYMF_REFERENCED;
     } else {
         type = MakeCompilerReadWriteData( type );
@@ -89,7 +89,7 @@ SYMBOL CgVarTemp(               // MAKE R/W AUTO TEMPORARY
     TYPE type;
 
     type = MakeInternalType( size );
-    return( makeCgVar( type, SC_AUTO, NULL, SYMF_REFERENCED ) );
+    return( makeCgVar( type, SYMC_AUTO, NULL, SYMF_REFERENCED ) );
 }
 
 
@@ -99,19 +99,19 @@ SYMBOL CgVarTempTyped(          // MAKE R/W AUTO TEMPORARY, FOR cg_type
     TYPE type;
 
     type = TypeFromCgType( cgtype );
-    return( makeCgVar( type, SC_AUTO, NULL, SYMF_REFERENCED ) );
+    return( makeCgVar( type, SYMC_AUTO, NULL, SYMF_REFERENCED ) );
 }
 
 
 SYMBOL CgVarRo(                 // MAKE R/O CODEGEN VARIABLE
     target_size_t size,         // - size of variable
-    symbol_class id,            // - SC_...
+    symbol_class id,            // - SYMC_...
     NAME name )                 // - name or NULL
 {
     TYPE type;                  // - variable type
 
     type = MakeInternalType( size );
-    if( id == SC_STATIC ) {
+    if( id == SYMC_STATIC ) {
         type = MakeCompilerConstData( type );
     } else {
         type = MakeCompilerConstCommonData( type );

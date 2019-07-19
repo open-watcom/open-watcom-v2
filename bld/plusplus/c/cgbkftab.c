@@ -177,8 +177,8 @@ bool FstabSetup(                // SETUP FUNCTION STATE TABLE
             }
 #endif
 //          if( DtmTabular( fctl ) ) {
-                fStabDefn.ro = CgVarRo( 1, SC_STATIC, NULL );
-                fstab.rw = CgVarRw( flag_bytes + CgbkInfo.size_rw_base, SC_AUTO );
+                fStabDefn.ro = CgVarRo( 1, SYMC_STATIC, NULL );
+                fstab.rw = CgVarRw( flag_bytes + CgbkInfo.size_rw_base, SYMC_AUTO );
                 AutoRelRegister( fstab.rw, &rw_offset_fun );
                 if( ! fctl->is_dtor ) {
                     CgFunRegister( fctl, fstab.rw, fStabDefn.ro );

@@ -52,21 +52,21 @@
 #define SymIsFnTemplateMatchable(s) (((s)->flag & SYMF_TEMPLATE_FN) != 0)
 
 #define SymIsAlias(s)       (((s)->flag & SYMF_ALIAS) != 0)
-#define SymIsCatchAlias(s)  ( (s)->id == SC_AUTO && ( (s)->flag & SYMF_CATCH_ALIAS ))
+#define SymIsCatchAlias(s)  ( (s)->id == SYMC_AUTO && ( (s)->flag & SYMF_CATCH_ALIAS ))
 
-#define SymIsTypedef(s)     ( (s)->id == SC_TYPEDEF )
-#define SymIsDefArg(s)      ( (s)->id == SC_DEFAULT )
-#define SymIsEnumeration(s) ( (s)->id == SC_ENUM )
-#define SymIsFunctionTemplateModel(s) ( ( (s)->id == SC_FUNCTION_TEMPLATE ) || ( (s)->id == SC_EXTERN_FUNCTION_TEMPLATE ) || ( (s)->id == SC_STATIC_FUNCTION_TEMPLATE ) )
-#define SymIsClassTemplateModel(s) ( (s)->id == SC_CLASS_TEMPLATE )
-#define SymIsNameSpace(s)   ( (s)->id == SC_NAMESPACE )
+#define SymIsTypedef(s)     ( (s)->id == SYMC_TYPEDEF )
+#define SymIsDefArg(s)      ( (s)->id == SYMC_DEFAULT )
+#define SymIsEnumeration(s) ( (s)->id == SYMC_ENUM )
+#define SymIsFunctionTemplateModel(s) ( ( (s)->id == SYMC_FUNCTION_TEMPLATE ) || ( (s)->id == SYMC_EXTERN_FUNCTION_TEMPLATE ) || ( (s)->id == SYMC_STATIC_FUNCTION_TEMPLATE ) )
+#define SymIsClassTemplateModel(s) ( (s)->id == SYMC_CLASS_TEMPLATE )
+#define SymIsNameSpace(s)   ( (s)->id == SYMC_NAMESPACE )
 
 #define SymFuncReturnType(s) ( SymUnmodifiedType(s)->of )
 #define SymUnmodifiedType(s) ( TypedefModifierRemoveOnly( (s)->sym_type ) )
 #define SymIsEllipsisFunc(s) ( TypeHasEllipsisArg( (s)->sym_type ) )
 #define SymIsEnumAnonymousTypedef(s) ( TypeIsAnonymousEnum( (s)->sym_type ) )
 
-#define SymAddressOf(s) (((s)->id == SC_ADDRESS_ALIAS ) ? (s)->u.alias : NULL )
+#define SymAddressOf(s) (((s)->id == SYMC_ADDRESS_ALIAS ) ? (s)->u.alias : NULL )
 
 #define SymIsComdatFun(s)       ( SymComdatFunInfo((s)) != SCF_NULL )
 #define SymIsGennedComdatFun(s) \

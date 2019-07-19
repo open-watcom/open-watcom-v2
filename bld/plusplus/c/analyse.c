@@ -2655,7 +2655,7 @@ PTREE AnalyseOperator(          // ANALYSE AN OPERATOR
     OPCL index_right;           // - operand index (right)
     OPCL index;                 // - operands index
     OPR_RTN_CODE action_code;   // - code for actions
-    TEMP_TYPE temp_class;       // - SC_... for next temporary
+    TEMP_TYPE temp_class;       // - SYMC_... for next temporary
     OPAC *ap;                   // - actions pointer
     PTREE templ;
     OPAC *opac_memb_ptr_ext;    // - operator-specific analysis string
@@ -3498,9 +3498,9 @@ PTREE AnalyseOperator(          // ANALYSE AN OPERATOR
             }
             if( left->op == PT_SYMBOL ) {
                 sym = left->u.symcg.symbol;
-                if( sym->id == SC_REGISTER ) {
+                if( sym->id == SYMC_REGISTER ) {
                     PTreeWarnExpr( expr, WARN_CANT_TAKE_ADDR_OF_REGISTER );
-                } else if( sym->id == SC_ENUM ) {
+                } else if( sym->id == SYMC_ENUM ) {
                     PTreeErrorExprSymInf( expr, ERR_CANT_TAKE_ADDR_OF_RVALUE, sym );
                     break;
                 }

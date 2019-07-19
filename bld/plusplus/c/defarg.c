@@ -262,7 +262,7 @@ bool AddDefaultArgs(            // ADD DEFAULT ARGUMENTS, AS REQ'D
         /* normal named calls (e.g., foo(1); ) */
         func = func_node->u.symcg.symbol;
     }
-    if( func->id == SC_DEFAULT ) {
+    if( func->id == SYMC_DEFAULT ) {
         args = PTreeRefRight( expr );
         while( *args != NULL ) {
             args = PTreeRefLeft( *args );
@@ -316,7 +316,7 @@ bool AddDefaultArgs(            // ADD DEFAULT ARGUMENTS, AS REQ'D
             args = &defarg_expr->u.subtree[0]; // used if more than one defarg
             func->flag |= SYMF_REFERENCED;
             func = func->thread;
-        } while( func->id == SC_DEFAULT );
+        } while( func->id == SYMC_DEFAULT );
         SymSetNvReferenced( func );
         if( func_node != NULL ) {
             func_node->u.symcg.symbol = func; // put symbol without defargs at start of list

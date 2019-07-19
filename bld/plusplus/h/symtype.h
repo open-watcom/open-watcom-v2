@@ -204,7 +204,7 @@ PCH_struct decl_info {
     SCOPE               friend_scope;               // SCOPE friend should be in
     SYMBOL              sym;                        // declared symbol (NULLable)
     SYMBOL              generic_sym;                // symbol for template <class T>
-    SYMBOL              proto_sym;                  // SC_DEFAULT sym for this parm
+    SYMBOL              proto_sym;                  // SYMC_DEFAULT sym for this parm
     TYPE                list;                       // list of declarator types
     TYPE                type;                       // final declared type
     PTREE               defarg_expr;                // initial/default value (NULLable)
@@ -692,36 +692,36 @@ typedef enum {
 ,   SCOPE_MAX
 } scope_type_t;
 
-#define SC_DEFS \
- SC_DEF( SC_NULL )                      /* not defined                           */\
-,SC_DEF( SC_EXTERN )                    /* external reference                    */\
-,SC_DEF( SC_STATIC )                    /* static definition                     */\
-,SC_DEF( SC_AUTO )                      /* automatic storage                     */\
-,SC_DEF( SC_REGISTER )                  /* register storage                      */\
-,SC_DEF( SC_TYPEDEF )                   /* typedef symbol                        */\
-,SC_DEF( SC_ACCESS )                    /* member access symbol (11.3)           */\
-,SC_DEF( SC_DEFAULT )                   /* represents a default argument value   */\
-,SC_DEF( SC_ENUM )                      /* enumerated constant                   */\
-,SC_DEF( SC_MEMBER )                    /* class member                          */\
-,SC_DEF( SC_PUBLIC )                    /* defined and symbol exported           */\
-,SC_DEF( SC_NAMESPACE )                 /* symbol is a namespace id              */\
-,SC_DEF( SC_CLASS_TEMPLATE )            /* symbol is a class template            */\
-,SC_DEF( SC_FUNCTION_TEMPLATE )         /* symbol is a function template         */\
-,SC_DEF( SC_EXTERN_FUNCTION_TEMPLATE )  /* symbol is an extern function template */\
-,SC_DEF( SC_STATIC_FUNCTION_TEMPLATE )  /* symbol is a static function template  */\
-                                        /* **** used only in Code Generation:    */\
-,SC_DEF( SC_VIRTUAL_FUNCTION )          /* indirect symbol for a virt. fn call   */\
-                                        /* **** only in template instantiation   */\
-,SC_DEF( SC_ADDRESS_ALIAS )             /* symbol use in template instantiations */\
-                                        /* **** used only when writing pchdrs    */\
-,SC_DEF( SC_FREE )                      /* used for precompiled headers          */\
-,SC_DEF( SC_MAX )
+#define SYMC_DEFS \
+ SYMC_DEF( SYMC_NULL )                      /* not defined                           */\
+,SYMC_DEF( SYMC_EXTERN )                    /* external reference                    */\
+,SYMC_DEF( SYMC_STATIC )                    /* static definition                     */\
+,SYMC_DEF( SYMC_AUTO )                      /* automatic storage                     */\
+,SYMC_DEF( SYMC_REGISTER )                  /* register storage                      */\
+,SYMC_DEF( SYMC_TYPEDEF )                   /* typedef symbol                        */\
+,SYMC_DEF( SYMC_ACCESS )                    /* member access symbol (11.3)           */\
+,SYMC_DEF( SYMC_DEFAULT )                   /* represents a default argument value   */\
+,SYMC_DEF( SYMC_ENUM )                      /* enumerated constant                   */\
+,SYMC_DEF( SYMC_MEMBER )                    /* class member                          */\
+,SYMC_DEF( SYMC_PUBLIC )                    /* defined and symbol exported           */\
+,SYMC_DEF( SYMC_NAMESPACE )                 /* symbol is a namespace id              */\
+,SYMC_DEF( SYMC_CLASS_TEMPLATE )            /* symbol is a class template            */\
+,SYMC_DEF( SYMC_FUNCTION_TEMPLATE )         /* symbol is a function template         */\
+,SYMC_DEF( SYMC_EXTERN_FUNCTION_TEMPLATE )  /* symbol is an extern function template */\
+,SYMC_DEF( SYMC_STATIC_FUNCTION_TEMPLATE )  /* symbol is a static function template  */\
+                                            /* **** used only in Code Generation:    */\
+,SYMC_DEF( SYMC_VIRTUAL_FUNCTION )          /* indirect symbol for a virt. fn call   */\
+                                            /* **** only in template instantiation   */\
+,SYMC_DEF( SYMC_ADDRESS_ALIAS )             /* symbol use in template instantiations */\
+                                            /* **** used only when writing pchdrs    */\
+,SYMC_DEF( SYMC_FREE )                      /* used for precompiled headers          */\
+,SYMC_DEF( SYMC_MAX )
 
 
 typedef enum {
-    #define SC_DEF(a) a
-    SC_DEFS
-    #undef SC_DEF
+    #define SYMC_DEF(a) a
+    SYMC_DEFS
+    #undef SYMC_DEF
 } symbol_class;
 
 typedef enum                            // flags for symbol.flag
@@ -814,26 +814,26 @@ PCH_struct symbol {                     // SYMBOL in symbol table
 //  } hdl;
     SYM_TOKEN_LOCN      *locn;          // - location, (dwarf or cg) handle
     union {
-        target_ulong    uval;           // - SC_ENUM -- unsigned value
-        target_long     sval;           // - SC_ENUM -- signed value
-        POOL_CON*       pval;           // - SC_ENUM, const int: - pool value
-        target_offset_t member_offset;  // - SC_MEMBER -- data offset
-        vindex          member_vf_index;// - SC_MEMBER -- virtual function index
-        TEMPLATE_INFO   *tinfo;         // - SC_CLASS_TEMPLATE -- info for it
-        FN_TEMPLATE     *defn;          // - SC_FUNCTION_TEMPLATE -- defn for it
-        PTREE           defarg_info;    // - SC_DEFAULT -- defarg info
+        target_ulong    uval;           // - SYMC_ENUM -- unsigned value
+        target_long     sval;           // - SYMC_ENUM -- signed value
+        POOL_CON*       pval;           // - SYMC_ENUM, const int: - pool value
+        target_offset_t member_offset;  // - SYMC_MEMBER -- data offset
+        vindex          member_vf_index;// - SYMC_MEMBER -- virtual function index
+        TEMPLATE_INFO   *tinfo;         // - SYMC_CLASS_TEMPLATE -- info for it
+        FN_TEMPLATE     *defn;          // - SYMC_FUNCTION_TEMPLATE -- defn for it
+        PTREE           defarg_info;    // - SYMC_DEFAULT -- defarg info
                                         //   use op=PT_TYPE,
                                         //     next is defarg expr
                                         //     scope for temporaries (or NULL)
-        TYPE            udc_type;       // - SC_ACCESS -- extra info for UDCs
+        TYPE            udc_type;       // - SYMC_ACCESS -- extra info for UDCs
         SYMBOL          alias;          // - SYMF_ALIAS -- aliased symbol
-        SYMBOL          virt_fun;       // - SC_VIRTUAL_FUNCTION -- virt. func.
-        unsigned        scalar_order;   // - SC_FUNCTION -- used in dummy scalars
-        SYMBOL          thunk_calls;    // - SC_FUNCTION -- when thunk, orig. function
-        NAME_SPACE      *ns;            // - SC_NAMESPACE -- info for it
+        SYMBOL          virt_fun;       // - SYMC_VIRTUAL_FUNCTION -- virt. func.
+        unsigned        scalar_order;   // - SYMC_FUNCTION -- used in dummy scalars
+        SYMBOL          thunk_calls;    // - SYMC_FUNCTION -- when thunk, orig. function
+        NAME_SPACE      *ns;            // - SYMC_NAMESPACE -- info for it
         SYMBOL          sym;
         TYPE            type;
-        int             sym_offset;     // - SC_AUTO,SC_REGISTER -- fast cgen
+        int             sym_offset;     // - SYMC_AUTO, SYMC_REGISTER -- fast cgen
     } u;
     symbol_flag         flag;           // - flags
     symbol_flag2        flag2;          // - flags2

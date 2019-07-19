@@ -145,7 +145,7 @@ void CallIndirectVirtual(       // MARK INDIRECT CALL AS VIRTUAL
 
     if( is_virtual ) {
         virt_fun = ind_call_stack;
-        virt_fun->id = SC_VIRTUAL_FUNCTION;
+        virt_fun->id = SYMC_VIRTUAL_FUNCTION;
         virt_fun->u.virt_fun = vfunc;
     } else {
         cstk = VstkTop( &stack_calls );

@@ -57,7 +57,7 @@ static SYMBOL defineRoutine     // DEFINE R/T ROUTINE
 
     sym_type = TypeVoidFunOfVoid();
     flags = SYMF_REFERENCED | SYMF_NO_LONGJUMP;
-    sym = SymCreateFileScope( sym_type, SC_EXTERN, flags, name );
+    sym = SymCreateFileScope( sym_type, SYMC_EXTERN, flags, name );
     LinkageSet( sym, "C" );
     return( sym );
 }

@@ -762,7 +762,7 @@ static PTREE resolve_symbols(   // RESOLVE MULTIPLE OVERLOAD DEFINITIONS
             if( next == NULL )
                 break;
             if( next->name == NULL
-             && next->id != SC_MEMBER
+             && next->id != SYMC_MEMBER
              && next->u.scalar_order < ( MAX_FUN_PROTOS - 2 ) ) {
                 if( fun == NULL
                  || fun->u.scalar_order < next->u.scalar_order ) {
@@ -793,7 +793,7 @@ static PTREE resolve_symbols(   // RESOLVE MULTIPLE OVERLOAD DEFINITIONS
         }
       } /* fall through */
     case FNOV_NONAMBIGUOUS :
-        if( fun->id == SC_MEMBER ) {
+        if( fun->id == SYMC_MEMBER ) {
             ExtraRptIncrementCtr( ctrResolveMember );
             if( olinf->expr->cgop == CO_EQUAL
              && olinf->left.class_type ==

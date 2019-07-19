@@ -966,7 +966,7 @@ void DefAddPrototype(           // ADD PROTOTYPE FOR SYMBOL TO .DEF FILE
     if( SymIsFnTemplateMatchable( fn ) ) {
         return;
     }
-    if( fn->id == SC_STATIC ) {
+    if( fn->id == SYMC_STATIC ) {
         return;
     }
     fprintf( DefFile, "//#line \"%s\" %u\n", fileName( fn->locn->tl.src_file ), fn->locn->tl.line );

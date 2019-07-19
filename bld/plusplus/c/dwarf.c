@@ -645,7 +645,7 @@ static bool dwarfClassInfo( TYPE type )
                 }
                 DWLocTrash( Client, dl );
             }
-        } else if( curr->id == SC_ACCESS ) {
+        } else if( curr->id == SYMC_ACCESS ) {
             // fixme: access modifiers ignored for now
         } else {
             DbgStmt( DumpSymbol( curr ) );
@@ -1453,7 +1453,7 @@ static dw_handle dwarfFunctionDefine( SYMBOL sym, CGFILE *file_ctl )
             ctor_or_dtor = 1;
         }
     } else {
-        if( SC_STATIC == SymDefaultBase( sym )->id ) {
+        if( SYMC_STATIC == SymDefaultBase( sym )->id ) {
             flags |= DW_SUB_STATIC;
         }
         class_dh = 0;

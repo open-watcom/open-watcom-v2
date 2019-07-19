@@ -402,7 +402,7 @@ SE* DtorForDelBeg(              // DTORING AREA TO BE DELETED: start
             se_dlt = SeAlloc( dlt1 );
         }
         se_dlt->dlt_1_array.op_del = op_del;
-        var = CgVarRw( TY_POINTER, SC_AUTO );
+        var = CgVarRw( TY_POINTER, SYMC_AUTO );
         if( se_dlt->base.gen ) {
             AutoRelRegister( var, &se_dlt->dlt_1_array.offset );
         }

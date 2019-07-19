@@ -235,14 +235,14 @@ void CgDeclSym(                 // PROCESS SYMBOL IN BLOCK-OPEN SCOPE
         return;
     }
     switch( sym->id ) {
-    case SC_AUTO:
-    case SC_REGISTER:
+    case SYMC_AUTO:
+    case SYMC_REGISTER:
         if( SymIsCatchAlias( sym ) ) {
             if( fctl->debug_info && ( GenSwitches & DBG_LOCALS ) ) {
                 SYMBOL base = SymDeAlias( sym );
                 switch( base->id ) {
-                case SC_AUTO:
-                case SC_REGISTER:
+                case SYMC_AUTO:
+                case SYMC_REGISTER:
                     if( ! SymIsAnonymous( sym ) ) {
                         if( !SymIsTemporary( sym ) ) {
                             if( GenSwitches & DBG_DF ) {
@@ -274,7 +274,7 @@ void CgDeclSym(                 // PROCESS SYMBOL IN BLOCK-OPEN SCOPE
             }
         }
         break;
-    case SC_STATIC:
+    case SYMC_STATIC:
         if( fctl->debug_info
          && ( GenSwitches & DBG_LOCALS ) ) {
             if( ! SymIsAnonymous( sym ) ) {
@@ -290,7 +290,7 @@ void CgDeclSym(                 // PROCESS SYMBOL IN BLOCK-OPEN SCOPE
             }
         }
         break;
-    case SC_TYPEDEF:
+    case SYMC_TYPEDEF:
         if( fctl->debug_info
          && ( GenSwitches & DBG_LOCALS ) ) {
             if( GenSwitches & (DBG_CV | DBG_DF ) ) {

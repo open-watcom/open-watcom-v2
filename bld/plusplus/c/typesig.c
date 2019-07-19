@@ -293,7 +293,7 @@ TYPE_SIG *TypeSigFind(          // FIND TYPE SIGNATURE
                 typesig_type = MakeInternalType( size );
                 typesig_type = MakeCompilerConstCommonData( typesig_type );
                 sym = SymCreateFileScope( typesig_type
-                                        , SC_PUBLIC
+                                        , SYMC_PUBLIC
                                         , SYMF_REFERENCED | SYMF_ADDR_TAKEN
                                         , typesig_name );
                 LinkageSet( sym, "C++" );

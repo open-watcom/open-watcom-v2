@@ -443,9 +443,9 @@ void DumpSymbol(                // DUMP SYMBOL ENTRY
     VBUF vbuf;
 
     static char const *ids[] = {
-        #define SC_DEF(a) #a
-        SC_DEFS
-        #undef SC_DEF
+        #define SYMC_DEF(a) #a
+        SYMC_DEFS
+        #undef SYMC_DEF
     };
 
     if( sym != NULL ) {
@@ -485,10 +485,10 @@ void DumpSymbol(                // DUMP SYMBOL ENTRY
             dumpLocation( &sym->locn->tl );
         }
         switch( sym->id ) {
-        case SC_CLASS_TEMPLATE:
+        case SYMC_CLASS_TEMPLATE:
             DumpTemplateInfo( sym->u.tinfo );
             break;
-        case SC_NAMESPACE:
+        case SYMC_NAMESPACE:
             dumpNameSpaceInfo( sym->u.ns );
             break;
         }

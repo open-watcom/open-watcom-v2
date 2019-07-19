@@ -46,8 +46,8 @@ void DgSymbol( SYMBOL sym )
     if( !SymIsInitialized( sym ) && !SymIsAnonymous( sym ) ) {
         CgFrontDataPtr( IC_DATA_SYMBOL, sym );
     }
-    if( sym->id == SC_NULL || sym->id == SC_EXTERN ) {
-        sym->id = SC_PUBLIC;
+    if( sym->id == SYMC_NULL || sym->id == SYMC_EXTERN ) {
+        sym->id = SYMC_PUBLIC;
     } else if( SymIsStaticMember( sym ) ) {
         sym->flag |= SYMF_INITIALIZED;
     }
@@ -57,8 +57,8 @@ void DgSymbolLabel( SYMBOL sym )
 /******************************/
 // set location to generate data
 {
-    if( sym->id == SC_NULL || sym->id == SC_EXTERN ) {
-        sym->id = SC_PUBLIC;
+    if( sym->id == SYMC_NULL || sym->id == SYMC_EXTERN ) {
+        sym->id = SYMC_PUBLIC;
     }
     CgFrontDataPtr( IC_DATA_LABEL, sym );
 }

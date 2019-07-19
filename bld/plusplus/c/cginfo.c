@@ -230,16 +230,16 @@ static fe_attr basic_attributes(// GET BASIC ATTRIBUTES
     fe_attr attr;               // - attribute
 
     switch( sym->id ) {
-    case SC_EXTERN:
-    case SC_EXTERN_FUNCTION_TEMPLATE:
+    case SYMC_EXTERN:
+    case SYMC_EXTERN_FUNCTION_TEMPLATE:
         attr = FE_STATIC | FE_GLOBAL | FE_IMPORT ;
         break;
-    case SC_PUBLIC:
-    case SC_FUNCTION_TEMPLATE:
+    case SYMC_PUBLIC:
+    case SYMC_FUNCTION_TEMPLATE:
         attr = FE_STATIC | FE_GLOBAL;
         break;
-    case SC_STATIC:
-    case SC_STATIC_FUNCTION_TEMPLATE:
+    case SYMC_STATIC:
+    case SYMC_STATIC_FUNCTION_TEMPLATE:
         attr = FE_STATIC | FE_VISIBLE;
         break;
     default :
@@ -743,7 +743,7 @@ static bool makeFileScopeStaticNear( SYMBOL sym )
     //     (debug info would be wrong because type says far function)
     //   - multiple code segments are not used
     //   - function will not end up as FE_COMMON
-    if( sym->id != SC_STATIC ) {
+    if( sym->id != SYMC_STATIC ) {
         return( false );
     }
     if( ScopeId( SymScope( sym ) ) != SCOPE_FILE ) {
@@ -1461,7 +1461,7 @@ void *FEAuxInfo(                // REQUEST AUXILLIARY INFORMATION
   #ifndef NDEBUG
         DbgNotRetn();
         if( ( PragDbgToggle.extref )
-          &&( sym->id == SC_VIRTUAL_FUNCTION ) ) {
+          &&( sym->id == SYMC_VIRTUAL_FUNCTION ) ) {
             SYMBOL vsym;
             vsym = sym->u.virt_fun;
             printf( "VIRTUAL_FUNC_REFERENCE[%p]: %s"

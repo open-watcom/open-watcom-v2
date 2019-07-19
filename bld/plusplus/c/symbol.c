@@ -44,19 +44,19 @@
 #define stgClassInSet( s, m )   ((( 1 << (s)->id ) & (m)) != 0)
 
 #define SCM_AUTOMATIC   \
-        ( 1 << SC_AUTO )        | \
-        ( 1 << SC_REGISTER )
+        ( 1 << SYMC_AUTO )        | \
+        ( 1 << SYMC_REGISTER )
 
 #define SCM_CONSTANT            \
-        ( 1 << SC_AUTO )        | \
-        ( 1 << SC_REGISTER )    | \
-        ( 1 << SC_NULL )        | \
-        ( 1 << SC_STATIC )      | \
-        ( 1 << SC_EXTERN )
+        ( 1 << SYMC_AUTO )        | \
+        ( 1 << SYMC_REGISTER )    | \
+        ( 1 << SYMC_NULL )        | \
+        ( 1 << SYMC_STATIC )      | \
+        ( 1 << SYMC_EXTERN )
 
 #define SCM_NOT_DATA_OR_FUNC    \
-        ( 1 << SC_TYPEDEF )     | \
-        ( 1 << SC_ACCESS )
+        ( 1 << SYMC_TYPEDEF )     | \
+        ( 1 << SYMC_ACCESS )
 
 #define symIsDataFunction( s )  ( \
         ( ((s)->flag & SYMF_ERROR) == 0 ) && \
@@ -297,7 +297,7 @@ bool SymIsStatic(               // DETERMINE IF SYMBOL IS STATIC
     symbol_class id;
 
     id = SymDefaultBase( sym )->id;
-    return( ( SC_STATIC == id ) || ( SC_STATIC_FUNCTION_TEMPLATE == id ) );
+    return( ( SYMC_STATIC == id ) || ( SYMC_STATIC_FUNCTION_TEMPLATE == id ) );
 }
 
 
@@ -320,7 +320,7 @@ bool SymIsThisMember(           // TEST IF SYMBOL IS DATA/FUNCTION MEMBER
 {
     return SymIsClassMember( sym )
         && ! SymIsStatic( sym )
-        && ( sym->id != SC_ENUM );
+        && ( sym->id != SYMC_ENUM );
 }
 
 
@@ -365,7 +365,7 @@ bool SymIsStaticData(           // TEST IF SYMBOL IS STATIC DATA ELEMENT
             switch( ScopeId( scope ) ) {
             case SCOPE_BLOCK :
             case SCOPE_FILE :
-                if( sym->id == SC_STATIC ) {
+                if( sym->id == SYMC_STATIC ) {
                     ok = true;
                 }
                 break;
@@ -571,7 +571,7 @@ SYMBOL SymAllocReturn(          // ALLOCATE A RETURN SYMBOL
     TYPE type )                 // - symbol's type
 {
     return SymCreate( type
-                    , SC_AUTO
+                    , SYMC_AUTO
                     , SYMF_REFERENCED
                     , CppSpecialName( SPECIAL_NAME_RETURN_VALUE )
                     , scope );
@@ -795,7 +795,7 @@ bool SymIsModuleDtorable(       // TEST IF SYMBOL IS MODULE-DTORABLE
     if( ( NameStr( sym->name->name )[0] != NAME_INTERNAL_PREFIX1 ) && ( ScopeId( scope ) == SCOPE_FILE ) ) {
         ok = true;
     } else {
-        ok = ( sym->id == SC_STATIC );
+        ok = ( sym->id == SYMC_STATIC );
     }
     return( ok );
 }
@@ -951,7 +951,7 @@ SYMBOL SymIsFunctionTemplateInst(// TEST IF SYMBOL WAS GENERATED FROM A FUNCTION
 bool SymIsRegularStaticFunc(    // TEST IF SYMBOL IF NON-MEMBER STATIC FUNC.
     SYMBOL sym )                // - the symbol
 {
-    return ( sym->id == SC_STATIC )
+    return ( sym->id == SYMC_STATIC )
         && SymIsFunction( sym )
         && ! SymIsClassMember( sym );
 }
@@ -976,7 +976,7 @@ bool SymIsExtern(               // SYMBOL IS DEFINED OUTSIDE THIS MODULE
 
     ok = false;
     if( ! SymIsInitialized( sym ) ) {
-        if( sym->id != SC_EXTERN ) {
+        if( sym->id != SYMC_EXTERN ) {
             if( SymIsStaticDataMember( sym ) ) {
                 /* uninitialized static data members are external */
                 ok = true;
@@ -1119,7 +1119,7 @@ SYMBOL SymMarkRefed(            // MARK SYMBOL AS REFERENCED
 
     base = sym;
     if( SymIsFunction( base ) ) {
-        while( base->id == SC_DEFAULT ) {
+        while( base->id == SYMC_DEFAULT ) {
             base = base->thread;
         }
         if( SymIsThunk( base ) ) {
@@ -1143,7 +1143,7 @@ SYMBOL SymCreate(               // CREATE NEW SYMBOL
     SYMBOL sym;                 // - created symbol
     SYMBOL check;               // - inserted symbol
 
-    DbgVerify( id != SC_ACCESS, "SymCreate -- misused" );
+    DbgVerify( id != SYMC_ACCESS, "SymCreate -- misused" );
     sym = symAllocate( type, id, flags );
     check = ScopeInsert( scope, sym, name );
     if( check != sym ) {

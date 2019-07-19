@@ -871,9 +871,9 @@ static SYMBOL segDefineLabel(   // DEFINE LABEL FOR SEGMENT, IF REQ'D
         label = SymMakeDummy( GetBasicType( TYP_CHAR ), &name );
         label->segid = seg->segid;
         if( label->segid == SEG_STACK ) {
-            label->id = SC_AUTO;
+            label->id = SYMC_AUTO;
         } else {
-            label->id = SC_STATIC;
+            label->id = SYMC_STATIC;
             InsertSymbol( GetFileScope(), label, name );
         }
         seg->label = label;
