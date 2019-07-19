@@ -18,6 +18,7 @@ REM
 REM setup DOSBOX
 REM
 set OWDOSBOX=%OWROOT%\travis\dosbox\dosbox.exe
+set SDL_VIDEODRIVER=dummy
 dir %OWROOT%\travis\dosbox
 REM ...
 if "%OWTRAVIS_ENV_DEBUG%" == "1" (

@@ -186,6 +186,7 @@ jobs:
         - export OWTOOLS=CLANG
         - export OWTRAVISJOB=BUILD-2
         - export OWDOSBOX=dosbox
+        - export SDL_VIDEODRIVER=dummy
       install:
         # install DOS Emulator
         - brew install dosbox
@@ -225,6 +226,7 @@ jobs:
         - export OWTOOLS=CLANG
         - export OWTRAVISJOB=BUILD-3
         - export OWDOSBOX=dosbox
+        - export SDL_VIDEODRIVER=dummy
         - export OWDOCQUIET=0
         - export OWVERBOSE=1
       install:
