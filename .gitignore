@@ -165,6 +165,8 @@
 #
 !/bld/trap/**/*.trp/
 #
+/bld/txt/txt/*.txt
+#
 /bld/vi/*/*.cfg
 /bld/vi/*/*.ini
 /bld/vi/*/*.vi

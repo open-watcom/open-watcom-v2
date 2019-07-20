@@ -250,16 +250,15 @@ cdsay .
 # Build installer tools
 [ INCLUDE <OWSRCDIR>/uninstal/builder.ctl ]
 [ INCLUDE <OWSRCDIR>/setupgui/builder.ctl ]
+# Build text documents
+[ INCLUDE <OWSRCDIR>/txt/builder.ctl ]
 
 # only test build for now
 [ INCLUDE <OWSRCDIR>/wgml/builder.ctl ]
 # Build documentation
-set OWTXTDOCBUILD=1
 [ IFDEF <OWDOCBUILD> 1 ]
-    set OWTXTDOCBUILD=
-[ ENDIF ]
 [ INCLUDE <OWDOCSDIR>/builder.ctl ]
-set OWTXTDOCBUILD=
+[ ENDIF ]
 
 [ BLOCK <BLDRULE> docsclean docs webdocs cpwebdocs ]
 #===================================================
