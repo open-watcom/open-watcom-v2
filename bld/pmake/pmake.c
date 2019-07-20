@@ -61,7 +61,6 @@
 #endif
 #define DEFAULT_MAKE_FILE       "makefile"
 #define DEFAULT_PRIORITY        100
-#define ALL_TARGET              "all"
 
 #define COOKIE          "pmake"
 
@@ -90,7 +89,7 @@ static jmp_buf          exit_buff;
 
 static pmake_data       Options;
 static char             Buff[512];
-static char             *CmdLine;
+static const char       *CmdLine;
 static char             saveDirBuff[_MAX_PATH];
 static char             *SaveDir = saveDirBuff;
 
@@ -100,6 +99,15 @@ static char *StringCopy( char *dst, const char *src )
         ++dst;
         ++src;
     }
+    return( dst );
+}
+
+static char *StringCopyLen( char *dst, const char *src, size_t len )
+{
+    while( len-- > 0 ) {
+        *dst++ = *src++;
+    }
+    *dst = '\0';
     return( dst );
 }
 
@@ -488,19 +496,59 @@ static int GetNumber( int default_num )
     return( number );
 }
 
-static char *GetString( void )
+static const char *GetString( size_t *len )
 {
-    char    *start;
+    const char  *start;
 
     SKIP_SPACES( CmdLine );
     if( *CmdLine == '\0' )
         return( NULL );
     start = CmdLine;
     SKIP_NOSPACE( CmdLine );
-    if( *CmdLine != '\0' ) {
-        *CmdLine++ = '\0';
-    }
+    *len = CmdLine - start;
     return( start );
+}
+
+static target_list *GetTargetItem( void )
+{
+    const char      *arg;
+    size_t          len;
+    unsigned        len1;
+    unsigned        i;
+    target_flags    flags;
+    target_list     *curr;
+    char            item[6];
+
+    arg = GetString( &len );
+    len1 = sizeof( item ) - 1;
+    if( len1 > len )
+        len1 = (unsigned)len;
+    for( i = 0; i < len1; i++ ) {
+        item[i] = (char)tolower( (unsigned char)arg[i] );
+    }
+    item[i] = '\0';
+    if( strcmp( item, ".and" ) == 0 ) {
+        flags = TARGET_OPERATOR_AND;
+    } else if( strcmp( item, ".or" ) == 0 ) {
+        flags = TARGET_OPERATOR_OR;
+    } else if( strcmp( item, ".not" ) == 0 ) {
+        flags = TARGET_OPERATOR_NOT;
+    } else if( strcmp( item, "all" ) == 0 ) {
+        flags = TARGET_ALL;
+    } else {
+        flags = TARGET_NOT_USED;
+    }
+    if( flags == TARGET_NOT_USED ) {
+        curr = MAlloc( sizeof( *Options.targ_list ) + len );
+        StringCopyLen( curr->string, arg, len );
+        curr->len = len;
+    } else {
+        curr = MAlloc( sizeof( *Options.targ_list ) - 1 );
+        curr->len = 0;
+    }
+    curr->flags = flags;
+    curr->next = NULL;
+    return( curr );
 }
 
 static void SortDirectories( void )
@@ -541,7 +589,8 @@ static void DoIt( void )
 {
     target_list **owner;
     target_list *curr;
-    char        *arg;
+    const char  *arg;
+    size_t      len;
 
     memset( &Options, 0, sizeof( Options ) );
     Options.levels = INT_MAX;
@@ -569,14 +618,14 @@ static void DoIt( void )
             Options.display = 1;
             break;
         case 'f':
-            arg = GetString();
+            arg = GetString( &len );
             if( arg == NULL ) {
                 Options.want_help = 1;
                 return;
             }
             MFree( Options.makefile );
-            Options.makefile = MAlloc( strlen( arg ) + 1 );
-            StringCopy( Options.makefile, arg );
+            Options.makefile = MAlloc( len + 1 );
+            StringCopyLen( Options.makefile, arg, len );
             break;
         case 'i':
             Options.ignore_errors = 1;
@@ -585,14 +634,14 @@ static void DoIt( void )
             Options.levels = GetNumber( 1 );
             break;
         case 'm':
-            arg = GetString();
+            arg = GetString( &len );
             if( arg == NULL ) {
                 Options.want_help = 1;
                 return;
             }
             MFree( Options.command );
-            Options.command = MAlloc( strlen( arg ) + 1 );
-            StringCopy( Options.command, arg );
+            Options.command = MAlloc( len + 1 );
+            StringCopyLen( Options.command, arg, len );
             break;
         case 'o':
             Options.optimize = 1;
@@ -614,55 +663,22 @@ static void DoIt( void )
     if( !Options.notargets ) {
         owner = &Options.targ_list;
         for( ;; ) {
-            target_flags    flags;
-
             SKIP_SPACES( CmdLine );
             if( *CmdLine == '\0' )
                 break;
-            if( *CmdLine == '-' || *CmdLine == '/' ) {
+            if( CmdLine[0] == '-' || CmdLine[0] == '/' ) {
                 if( CmdLine[1] == '-' || CmdLine[1] == '/' ) {
                     CmdLine += 2;
                 }
                 break;
             }
-            arg = GetString();
-            if( stricmp( arg, ".and" ) == 0 ) {
-                flags = TARGET_OPERATOR_AND;
-            } else if( stricmp( arg, ".or" ) == 0 ) {
-                flags = TARGET_OPERATOR_OR;
-            } else if( stricmp( arg, ".not" ) == 0 ) {
-                flags = TARGET_OPERATOR_NOT;
-            } else if( stricmp( arg, ALL_TARGET ) == 0 ) {
-                flags = TARGET_ALL;
-            } else {
-                flags = TARGET_NOT_USED;
-            }
-            switch( flags ) {
-            case TARGET_OPERATOR_AND:
-            case TARGET_OPERATOR_OR:
-            case TARGET_OPERATOR_NOT:
-            case TARGET_ALL:
-                curr = MAlloc( sizeof( *Options.targ_list ) - 1 );
-                curr->len = 0;
-                break;
-            case TARGET_NOT_USED:
-            default:
-                {
-                    size_t len = strlen( arg );
-                    curr = MAlloc( sizeof( *Options.targ_list ) + len );
-                    StringCopy( curr->string, arg );
-                    curr->len = len;
-                }
-                break;
-            }
-            curr->flags = flags;
-            curr->next = NULL;
+            curr = GetTargetItem();
             *owner = curr;
             owner = &curr->next;
         }
     }
     if( Options.targ_list == NULL ) {
-        Options.targ_list = MAlloc( sizeof( *Options.targ_list ) );
+        Options.targ_list = MAlloc( sizeof( *Options.targ_list ) - 1 );
         Options.targ_list->next = NULL;
         Options.targ_list->flags = TARGET_ALL;
         Options.targ_list->len = 0;
@@ -693,7 +709,7 @@ static void DoIt( void )
     }
 }
 
-pmake_data *PMakeBuild( char *cmd )
+pmake_data *PMakeBuild( const char *cmd )
 {
     void                (*old_sig)( int );
     volatile int        ret;

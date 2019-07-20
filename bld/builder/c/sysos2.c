@@ -45,6 +45,7 @@
 #define INCL_DOSFILEMGR
 #include <os2.h>
 
+
 #define BUFSIZE 256
 
 void SysInit( int argc, char *argv[] )
@@ -88,9 +89,29 @@ static int SysRunCommandPipe( const char *cmd, HFILE *readpipe )
     return( rc );
 }
 
-int SysChdir( char *dir )
+int SysChdir( const char *dir )
 {
-    return SysDosChdir( dir );
+    size_t      len;
+    int         drive;
+
+    if( dir[0] == '\0' )
+        return( 0 );
+    drive = ( dir[1] == ':' ) ? toupper( (unsigned char)dir[0] ) - 'A' + 1 : 0;
+    if( dir[1] != '\0' ) {
+        len = strlen( dir );
+        if( dir[len - 1] == '\\' || dir[len - 1] == '/' ) {
+            if( len > 3 || drive == 0 ) {
+                len--;
+                memcpy( tmp_buf, dir, len );
+                tmp_buf[len] = '\0';
+                dir = tmp_buf;
+            }
+        }
+    }
+    if( drive ) {
+        _chdrive( drive );
+    }
+    return( chdir( dir ) );
 }
 
 int SysRunCommand( const char *cmd )

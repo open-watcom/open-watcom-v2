@@ -435,7 +435,7 @@ static void SubstLine( const char *in, char *out )
     bool        first;
 
     first = true;
-    in = SkipBlanks( in );
+    SKIP_BLANKS( in );
     for( ;; ) {
         switch( *in ) {
         case '^':                       // Escape next byte special meaning
@@ -479,7 +479,8 @@ static void SubstLine( const char *in, char *out )
 
 static char *GetWord( char *p, char **start )
 {
-    for( *start = p = SkipBlanks( p ); *p != '\0'; ++p ) {
+    SKIP_BLANKS( p );
+    for( *start = p; *p != '\0'; ++p ) {
         if( IS_BLANK( *p ) ) {
             *p++ = '\0';
             break;
@@ -616,19 +617,19 @@ static int ProcessCtlFile( const char *name )
             /* a command */
             logit = ( VerbLevel > 0 );
             if( *p == '@' ) {
+                p++;
+                SKIP_BLANKS( p );
                 logit = false;
-                p = SkipBlanks( p + 1 );
             }
             if( IncludeStk->skipping == 0 && IncludeStk->ifdefskipping == 0 ) {
                 if( logit ) {
                     Log( false, "+++<%s>+++\n", p );
                 }
-                strcpy( Line, p );
                 res = RunIt( p, IgnoreErrors, &res_nolog );
                 if( res != 0 ) {
                     if( !res_nolog ) {
                         if( !logit ) {
-                            Log( false, "<%s> => ", Line );
+                            Log( false, "<%s> => ", p );
                         }
                         Log( false, "non-zero return: %d\n", res );
                     }

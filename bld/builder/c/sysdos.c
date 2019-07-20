@@ -33,6 +33,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <string.h>
+#include <ctype.h>
 #include <dos.h>
 #include <process.h>
 #include <direct.h>
@@ -48,9 +49,27 @@ void SysInit( int argc, char *argv[] )
     setenv( "BLD_HOST", "DOS", 1 );
 }
 
-int SysChdir( char *dir )
+int SysChdir( const char *dir )
 {
-    return SysDosChdir( dir );
+    size_t      len;
+    int         drive;
+
+    if( dir[0] == '\0' )
+        return( 0 );
+    drive = ( dir[1] == ':' ) ? toupper( (unsigned char)dir[0] ) - 'A' + 1 : 0;
+    if( dir[1] != '\0' ) {
+        len = strlen( dir );
+        if( ( dir[len - 1] == '\\' || dir[len - 1] == '/' ) && ( len > 3 || drive == 0 ) ) {
+            len--;
+            memcpy( tmp_buf, dir, len );
+            tmp_buf[len] = '\0';
+            dir = tmp_buf;
+        }
+    }
+    if( drive ) {
+        _chdrive( drive );
+    }
+    return( chdir( dir ) );
 }
 
 int SysRunCommand( const char *cmd )

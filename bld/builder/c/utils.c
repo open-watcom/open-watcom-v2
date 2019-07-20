@@ -178,10 +178,10 @@ void MFree( void *p )
 #endif
 }
 
-char *SkipBlanks( const char *p )
+const char *SkipBlanks( const char *p )
 {
     while( IS_BLANK( *p ) ) {
         ++p;
     }
-    return( (char *)p );
+    return( p );
 }

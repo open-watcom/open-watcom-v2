@@ -186,6 +186,40 @@ static void ProcessOptions( char *argv[] )
     }
 }
 
+static int sysChdir( const char *dir )
+{
+    size_t      len;
+#ifndef __UNIX__
+    int         drive;
+#endif
+    char        tmp_buf[_MAX_PATH];
+
+    if( dir[0] == '\0' )
+        return( 0 );
+#ifndef __UNIX__
+    drive = ( dir[1] == ':' ) ? toupper( (unsigned char)dir[0] ) - 'A' + 1 : 0;
+#endif
+    if( dir[1] != '\0' ) {
+        len = strlen( dir );
+#ifdef __UNIX__
+        if( dir[len - 1] == '/' ) {
+#else
+        if( ( dir[len - 1] == '\\' || dir[len - 1] == '/' ) && ( len > 3 || drive == 0 ) ) {
+#endif
+            len--;
+            memcpy( tmp_buf, dir, len );
+            tmp_buf[len] = '\0';
+            dir = tmp_buf;
+        }
+    }
+#ifndef __UNIX__
+    if( drive ) {
+        _chdrive( drive );
+    }
+#endif
+    return( chdir( dir ) );
+}
+
 static void PushInclude( const char *name )
 {
     include     *new;
@@ -195,7 +229,6 @@ static void PushInclude( const char *name )
     char        *fn;
     char        *ext;
     char        dir_name[_MAX_PATH];
-    size_t      len;
 
     new = MAlloc( sizeof( *new ) );
     new->prev = IncludeStk;
@@ -210,14 +243,7 @@ static void PushInclude( const char *name )
     strcpy( new->name, name );
     _splitpath2( name, buff, &drive, &dir, &fn, &ext );
     _makepath( dir_name, drive, dir, NULL, NULL );
-    /* _makepath add trailing path separator
-       it must be removed for chdir          */
-    len = strlen( dir_name );
-    dir = dir_name + len - 1;
-    if( len > 1 && IS_DIR_SEP_END( dir ) ) {
-        *dir = '\0';
-    }
-    if( chdir( dir_name ) != 0 ) {
+    if( sysChdir( dir_name ) != 0 ) {
         Fatal( "Could not chdir to '%s': %s\n", dir_name, strerror( errno ) );
     }
     getcwd( IncludeStk->cwd, sizeof( IncludeStk->cwd ) );
@@ -322,7 +348,7 @@ static void SubstLine( const char *in, char *out )
     bool        first;
 
     first = true;
-    in = SkipBlanks( in );
+    SKIP_BLANKS( in );
     for( ;; ) {
         switch( *in ) {
         case '^':
@@ -366,7 +392,7 @@ static char *FirstWord( char *p )
 {
     char        *start;
 
-    p = SkipBlanks( p );
+    SKIP_BLANKS( p );
     if( *p == '\0' )
         return( NULL );
     start = p;
@@ -517,8 +543,8 @@ static void ProcessLine( const char *line )
     dstvar = DEFVAL( DefDstvar );
     keys = DEFVAL( DefKeys );
 
-    line_copy = MStrdup( line );
-    p = SkipBlanks( line_copy );
+    p = line_copy = MStrdup( line );
+    SKIP_BLANKS( p );
     cmd = strtok( p, "=" );
     do {
         str = strtok( NULL, "\"" );
@@ -607,8 +633,8 @@ static void ProcessDefault( const char *line )
     FreeDefault();
 
     /* Process new defaults (if provided) */
-    line_copy = MStrdup( line );
-    p = SkipBlanks( line_copy );
+    p = line_copy = MStrdup( line );
+    SKIP_BLANKS( p );
     q = strtok( p, "]" );
     q += strlen( q ) - 1;
     while( (q >= p) && ((*q == ' ') || (*q == '\t')) )
@@ -766,14 +792,14 @@ static void ProcessCtlFile( const char *name )
             /* a command */
             logit = ( VerbLevel > 0 );
             if( *p == '@' ) {
+                p++;
+                SKIP_BLANKS( p );
                 logit = false;
-                p = SkipBlanks( p + 1 );
             }
             if( IncludeStk->skipping == 0 && IncludeStk->ifdefskipping == 0 ) {
                 if( logit ) {
                     Log( false, "+++<%s>+++\n", p );
                 }
-                strcpy( Line, p );
                 ProcessLine( p );
                 LogFlush();
             } else if( logit && ( VerbLevel > 1 ) ) {
