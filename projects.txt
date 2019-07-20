@@ -87,6 +87,7 @@ ssl             - expression parser generator for debugger
 techinfo        - utility to check watcom tool versions, etc.
 trap            - trap files - used by debugger
 trmem           - memory tracker utility
+txt             - text documents
 ui              - UI library
 uiforms         -
 version         - DLL Versioning Support
