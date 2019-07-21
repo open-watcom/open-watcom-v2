@@ -11,6 +11,28 @@
 build_proc()
 {
     #
+    # clone GitHub repository WEBDOCS
+    #
+    git clone $GITVERBOSE1 --branch=master https://${GITHUB_TOKEN}@github.com/${OWWEBDOCS_REPO_SLUG}.git $OWWEBDOCS_BUILD_DIR
+    #
+    # compress GitHub repository to hold only a few last builds
+    #
+    cd $OWWEBDOCS_BUILD_DIR
+    depth=`git rev-list HEAD --count`
+    if [ $depth -gt 20 ]; then
+        echo "webdocs.sh - start compression"
+        git checkout --orphan temp1
+        git add $GITVERBOSE2 -A
+        git commit $GITVERBOSE1 -am "Initial commit"
+        git branch $GITVERBOSE1 -D master
+        git branch $GITVERBOSE1 -m master
+        git push $GITVERBOSE1 -f origin master
+        git branch $GITVERBOSE1 --set-upstream-to=origin/master master
+        echo "webdocs.sh - end compression"
+    fi
+    cd $TRAVIS_BUILD_DIR
+
+    #
     # create bootstrap tools directory
     #
     mkdir $OWBINDIR

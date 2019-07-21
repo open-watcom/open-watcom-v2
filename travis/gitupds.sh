@@ -57,27 +57,25 @@ gitupds_proc()
                     fi
                     ;;
                 "WEBDOCS")
-                    if [ "$TRAVIS_OS_NAME" = "linux" ]; then
-                        #
-                        # clone GitHub repository
-                        #
-                        git clone $GITVERBOSE1 --branch=master https://${GITHUB_TOKEN}@github.com/${OWWEBDOCS_REPO_SLUG}.git $OWWEBDOCS_BUILD_DIR
-                        #
-                        # copy OW build to git tree
-                        #
-                        export OWRELROOT=$OWWEBDOCS_BUILD_DIR/docs
-                        cd $OWSRCDIR
-                        builder cpwebdocs
-                        #
-                        # commit updated files to GitHub repository
-                        #
-                        cd $OWTRAVIS_BUILD_DIR
-                        git add $GITVERBOSE2 -f .
-                        git commit $GITVERBOSE1 -m "Travis CI build $TRAVIS_JOB_NUMBER - WEB Documentation"
-                        git push $GITVERBOSE1 -f origin
-                        cd $TRAVIS_BUILD_DIR
-                        echo_msg="gitupds.sh - done"
-                    fi
+                    #
+                    # clone GitHub repository
+                    #
+                    git clone $GITVERBOSE1 --branch=master https://${GITHUB_TOKEN}@github.com/${OWWEBDOCS_REPO_SLUG}.git $OWWEBDOCS_BUILD_DIR
+                    #
+                    # copy OW build to git tree
+                    #
+                    export OWRELROOT=$OWWEBDOCS_BUILD_DIR/docs
+                    cd $OWSRCDIR
+                    builder cpwebdocs
+                    #
+                    # commit updated files to GitHub repository
+                    #
+                    cd $OWWEBDOCS_BUILD_DIR
+                    git add $GITVERBOSE2 -f .
+                    git commit $GITVERBOSE1 -m "Travis CI build $TRAVIS_JOB_NUMBER - WEB Documentation"
+                    git push $GITVERBOSE1 -f origin
+                    cd $TRAVIS_BUILD_DIR
+                    echo_msg="gitupds.sh - done"
                     ;;
                 *)
                     ;;

@@ -22,7 +22,7 @@ gitupdf_proc()
     if [ "$TRAVIS_BRANCH" = "$OWBRANCH" ] || [ "$TRAVIS_BRANCH" = "$OWBRANCH_DOCS" ]; then
         if [ "$TRAVIS_EVENT_TYPE" = "push" ] || [ "$TRAVIS_EVENT_TYPE" = "cron" ]; then
             case "$OWTRAVISJOB" in
-                "BOOTSTRAP" | "BUILD" | "BUILD-1" | "BUILD-2" | "BUILD-3" | "DOCS" | "INST" | "WEBDOCS")
+                "BOOTSTRAP" | "BUILD" | "BUILD-1" | "BUILD-2" | "BUILD-3" | "DOCS" | "INST")
                     #
                     # clone GitHub repository
                     #
@@ -55,6 +55,29 @@ gitupdf_proc()
                     else
                         git commit $GITVERBOSE1 -m "Travis CI build $TRAVIS_JOB_NUMBER (build failure) - log files (Linux)"
                     fi
+                    git push $GITVERBOSE1 -f origin
+                    cd $TRAVIS_BUILD_DIR
+                    echo_msg="gitupdf.sh - done"
+                    ;;
+                "WEBDOCS")
+                    #
+                    # clone GitHub repository
+                    #
+                    git clone $GITVERBOSE1 --branch=master https://${GITHUB_TOKEN}@github.com/${OWWEBDOCS_REPO_SLUG}.git $OWWEBDOCS_BUILD_DIR
+                    #
+                    # copy build log files to git repository tree
+                    #
+                    OWLOGDIR=$OWWEBDOCS_BUILD_DIR/logs
+                    if [ ! -d $OWLOGDIR ]; then 
+                        mkdir -p $OWLOGDIR; 
+                    fi
+                    cp $OWDOCSDIR/*.log $OWLOGDIR/
+                    #
+                    # commit new log files to GitHub repository
+                    #
+                    cd $OWWEBDOCS_BUILD_DIR
+                    git add $GITVERBOSE2 -f .
+                    git commit $GITVERBOSE1 -m "Travis CI build $TRAVIS_JOB_NUMBER (build failure) - log files"
                     git push $GITVERBOSE1 -f origin
                     cd $TRAVIS_BUILD_DIR
                     echo_msg="gitupdf.sh - done"
