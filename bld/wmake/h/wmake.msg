@@ -290,46 +290,7 @@ pick( PRESS_KEY,                "Press any key...",
                                 "どれかキーを押してください..." )
 
 
-/* system error messages */
-pick( SYS_ERR_UNKNOWN,          "Unknown Error", 
-                                "Unknown Error" )
-
-#if defined( __DOS__ )
-
-pick( SYS_ERR_0,                "Error 0",
-                                "エラー 0" )
-pick( SYS_ERR_1,                "No such file or directory",
-                                "ファイルまたはディレクトリがありません" )
-pick( SYS_ERR_2,                "Argument list too big",
-                                "引数リストが長すぎます" )
-pick( SYS_ERR_3,                "Exec format error",
-                                "実行(Exec)フォーマット・エラーです" )
-pick( SYS_ERR_4,                "Bad file number",
-                                "不正なファイル番号です" )
-pick( SYS_ERR_5,                "Not enough memory",
-                                "メモリ不足です" )
-pick( SYS_ERR_6,                "Permission denied",
-                                "アクセス権がありません" )
-pick( SYS_ERR_7,                "File exists",
-                                "ファイルがあります" )
-pick( SYS_ERR_8,                "Cross-device link",
-                                "クロス・デバイス・リンクです" )
-pick( SYS_ERR_9,                "Invalid argument",
-                                "無効な引数です" )
-pick( SYS_ERR_10,               "File table overflow",
-                                "ファイル・テーブルがいっぱいです" )
-pick( SYS_ERR_11,               "Too many open files",
-                                "オープンするファイルが多すぎます" )
-pick( SYS_ERR_12,               "No space left on device",
-                                "ドライブに空き領域が残っていません" )
-pick( SYS_ERR_13,               "Argument too large",
-                                "引数が大きすぎます" )
-pick( SYS_ERR_14,               "Result too large",
-                                "結果が大きすぎます" )
-pick( SYS_ERR_15,               "Resource deadlock would occur",
-                                "リソース・デッド・ロックが起こります" )
-
-#elif defined( __UNIX__ )
+#if defined( __UNIX__ )
 
 /* common signals that cause abnormal termination (cf. sys_siglist) */
 pick( SIG_ERR_0,                "Abnormal termination by signal %d", 
