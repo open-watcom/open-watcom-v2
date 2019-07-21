@@ -462,7 +462,8 @@ static int ProcCopy( const char *cmd, bool test_abit, bool cond_copy, bool ignor
         Log( false, "Missing parameter\n" );
         return( 1 );
     }
-    strcpy( dst, cmd );
+    strncpy( dst, cmd, _MAX_PATH - 1 );
+    dst[_MAX_PATH - 1] = '\0';
     res = BuildList( src, dst, test_abit, cond_copy, &list );
     if( res == 0 && list != NULL ) {
         char    *copy_buff = MAlloc( COPY_BUFF_SIZE );
