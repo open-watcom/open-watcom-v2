@@ -24,6 +24,8 @@ env:
     - OWBINDIR=$OWROOT/build/$OWOBJDIR
     - OWDOCSDIR=$OWROOT/docs
     - CP_OPTS=-Rnv
+    - OWWEBDOCS_REPO_SLUG=open-watcom/open-watcom-v2-webdocs
+    - OWWEBDOCS_BUILD_DIR=${HOME}/build/$OWWEBDOCS_REPO_SLUG
 
 cache:
   directories:

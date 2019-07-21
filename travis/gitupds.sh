@@ -61,11 +61,11 @@ gitupds_proc()
                         #
                         # clone GitHub repository
                         #
-                        git clone $GITVERBOSE1 --branch=master https://${GITHUB_TOKEN}@github.com/${OWTRAVIS_REPO_SLUG}.git $OWTRAVIS_BUILD_DIR
+                        git clone $GITVERBOSE1 --branch=master https://${GITHUB_TOKEN}@github.com/${OWWEBDOCS_REPO_SLUG}.git $OWWEBDOCS_BUILD_DIR
                         #
                         # copy OW build to git tree
                         #
-                        export OWRELROOT=$OWTRAVIS_BUILD_DIR
+                        export OWRELROOT=$OWWEBDOCS_BUILD_DIR
                         cd $OWSRCDIR
                         builder cpwebdocs
                         #
@@ -73,7 +73,7 @@ gitupds_proc()
                         #
                         cd $OWTRAVIS_BUILD_DIR
                         git add $GITVERBOSE2 -f .
-                        git commit $GITVERBOSE1 -m "Travis CI build $TRAVIS_JOB_NUMBER - Documentation"
+                        git commit $GITVERBOSE1 -m "Travis CI build $TRAVIS_JOB_NUMBER - WEB Documentation"
                         git push $GITVERBOSE1 -f origin
                         cd $TRAVIS_BUILD_DIR
                         echo_msg="gitupds.sh - done"
