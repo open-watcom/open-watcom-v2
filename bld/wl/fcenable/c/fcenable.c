@@ -463,7 +463,7 @@ static void ProcFile( const char *fname )
         } else {
             ReplaceExt( bak, ".bob", true );
         }
-        CopyFile( name, bak );
+        CopyFileData( name, bak );
     }
     QRemove( name );
     if( ftype == ENDLIBRARY ) {
@@ -474,8 +474,8 @@ static void ProcFile( const char *fname )
     FileCleanup();
 }
 
-int CopyFile( const char * file1, const char * file2 )
-/****************************************************/
+int CopyFileData( const char * file1, const char * file2 )
+/********************************************************/
 {
     size_t              len;
     struct stat         statblk;

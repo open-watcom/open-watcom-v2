@@ -82,7 +82,7 @@ extern name_list    *SegList;
 extern exclude_list *ExcludeList;
 
 // fcenable.c
-extern int          CopyFile( const char *, const char * );
+extern int          CopyFileData( const char *, const char * );
 extern void         LinkList( void **, void * );
 extern void         FreeList( void * );
 extern void         Warning( const char * );
