@@ -65,7 +65,7 @@ gitupds_proc()
                         #
                         # copy OW build to git tree
                         #
-                        export OWRELROOT=$OWWEBDOCS_BUILD_DIR
+                        export OWRELROOT=$OWWEBDOCS_BUILD_DIR/docs
                         cd $OWSRCDIR
                         builder cpwebdocs
                         #
