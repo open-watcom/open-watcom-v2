@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -199,7 +200,7 @@ char *HelpFindNext( HelpSrchInfo *info )
 }
 #endif
 
-unsigned HelpFindFirst( HelpHdl hdl, char *name, HelpSrchInfo *info )
+unsigned HelpFindFirst( HelpHdl hdl, const char *name, HelpSrchInfo *info )
 {
     unsigned            ret;
     PageIndexEntry      *entry;
@@ -239,7 +240,7 @@ char *HelpGetIndexedTopic( HelpHdl hdl, unsigned index )
     return( stringBlock + entry->name_offset );
 }
 
-unsigned long HelpFindTopicOffset( HelpHdl hdl, char *topic )
+unsigned long HelpFindTopicOffset( HelpHdl hdl, const char *topic )
 {
     unsigned            entry_num;
     PageIndexEntry      *entry;
@@ -381,7 +382,7 @@ void main( int argc, char *argv[] )
         return;
     }
     fp = HelpOpen( argv[1], HELP_OPEN_RDONLY | HELP_OPEN_BINARY );
-    if( fp == -1 ) {
+    if( fp == HELPFP_INVALID ) {
         printf( "Unable to open %s\n", argv[1] );
         return;
     }

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -150,7 +151,7 @@ static bool GetListBoxItem( const void *data_handle, unsigned item, char *buf, u
     return( true );
 }
 
-static void fillListBox( char *name )
+static void fillListBox( const char *name )
 {
     unsigned            index;
 

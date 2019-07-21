@@ -70,7 +70,7 @@ HELPIO long int HelpTell( HelpFp fp )
 HELPIO HelpFp HelpOpen( const char *path, unsigned long mode )
 {
     if( mode != (HELP_OPEN_RDONLY | HELP_OPEN_BINARY) ) {
-        return( -1 );
+        return( HELPFP_INVALID );
     }
     return( (HelpFp)FileOpen( path, OP_READ ) );
 }

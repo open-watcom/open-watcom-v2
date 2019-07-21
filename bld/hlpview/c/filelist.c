@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -90,7 +91,7 @@ static void printDescrip( FileInfo *info)
     strcat( tmp, info->fname );
     SetHelpFileDefExt( tmp, tmp );
     fp = HelpOpen( tmp, HELP_OPEN_RDONLY | HELP_OPEN_BINARY );
-    if( fp != -1 ) {
+    if( fp != HELPFP_INVALID ) {
         hdl = InitHelpSearch( fp );
         buf = GetDescrip( hdl );
         if( buf != NULL ) {
