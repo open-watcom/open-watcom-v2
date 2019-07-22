@@ -286,7 +286,7 @@ static char *CopyStr( const char __far *src, char *dst )
     return( dst );
 }
 
-static char *SearchPath( const char __far *env, const char *file, char *buff, char **pendname )
+static char *doSearchPath( const char __far *env, const char *file, char *buff, char **pendname )
 {
     char        *endname;
     char        *name;
@@ -330,7 +330,7 @@ static char *CheckPath( const char __far *path, char *fullpath, char **endname )
     char        *name;
 
     for( namep = EXTENDER_NAMES; *namep != '\0'; ) {
-        name = SearchPath( path, namep, fullpath, endname );
+        name = doSearchPath( path, namep, fullpath, endname );
         if( *name != '\0' )
             return( name );
         while( *namep++ != '\0' ) {}    // skip to next extender name
@@ -525,7 +525,7 @@ const char *RemoteLink( const char *parms, bool server )
     #else
             help_name = HELPNAME;
     #endif
-            buffp = SearchPath( DOSEnvFind( "PATH" ), help_name, buff, &endhelp );
+            buffp = doSearchPath( DOSEnvFind( "PATH" ), help_name, buff, &endhelp );
             if( *buffp == '\0' ) {
                 _DBG_ExitFunc( "RemoteLink(), unable to find extender help file" );
                 return( TRP_ERR_no_extender );

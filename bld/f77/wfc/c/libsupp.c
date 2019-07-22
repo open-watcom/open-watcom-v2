@@ -66,8 +66,8 @@ static  file_handle FindSrcFile( char *fname ) {
 }
 
 
-static file_handle SearchPath( char *path_list, const char *name )
-//===============================================================
+static file_handle doSearchPath( char *path_list, const char *name )
+//==================================================================
 {
     char        *p;
     file_handle fp;
@@ -104,10 +104,10 @@ file_handle IncSearch( const char *name )
 
     fp = NULL;
     if( IncludePath != NULL ) {
-        fp = SearchPath( IncludePath, name );
+        fp = doSearchPath( IncludePath, name );
     }
     if( fp == NULL && FIncludePath != NULL ) {
-        fp = SearchPath( FIncludePath, name );
+        fp = doSearchPath( FIncludePath, name );
     }
     return( fp );
 }
