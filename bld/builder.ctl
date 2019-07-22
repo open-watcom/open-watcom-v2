@@ -251,7 +251,7 @@ cdsay .
 [ INCLUDE <OWSRCDIR>/uninstal/builder.ctl ]
 [ INCLUDE <OWSRCDIR>/setupgui/builder.ctl ]
 # Build text documents
-[ INCLUDE <OWSRCDIR>/txt/builder.ctl ]
+[ INCLUDE <OWSRCDIR>/docstxt/builder.ctl ]
 
 # only test build for now
 [ INCLUDE <OWSRCDIR>/wgml/builder.ctl ]
