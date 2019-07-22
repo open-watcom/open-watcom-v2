@@ -443,9 +443,9 @@ void DumpSymbol(                // DUMP SYMBOL ENTRY
     VBUF vbuf;
 
     static char const *ids[] = {
-        #define SC_DEF(a) #a
-        SC_DEFS
-        #undef SC_DEF
+        #define SYMC_DEF(a) #a
+        SYMC_DEFS
+        #undef SYMC_DEF
     };
 
     if( sym != NULL ) {
@@ -469,7 +469,7 @@ void DumpSymbol(                // DUMP SYMBOL ENTRY
               , sym->thread
               , sym->sym_type
               , sym->name
-              , ( sym->flag2 & SF2_TOKEN_LOCN ) ? sym->locn->u.cg_handle : 0
+              , ( sym->flag2 & SYMF2_TOKEN_LOCN ) ? sym->locn->u.cg_handle : 0
               , sym->u.tinfo
               , ids[sym->id]
               , sym->flag
@@ -481,14 +481,14 @@ void DumpSymbol(                // DUMP SYMBOL ENTRY
             DumpFullType( sym->sym_type );
         }
         VbufFree( &vbuf );
-        if( sym->flag2 & SF2_TOKEN_LOCN ) {
+        if( sym->flag2 & SYMF2_TOKEN_LOCN ) {
             dumpLocation( &sym->locn->tl );
         }
         switch( sym->id ) {
-        case SC_CLASS_TEMPLATE:
+        case SYMC_CLASS_TEMPLATE:
             DumpTemplateInfo( sym->u.tinfo );
             break;
-        case SC_NAMESPACE:
+        case SYMC_NAMESPACE:
             dumpNameSpaceInfo( sym->u.ns );
             break;
         }
@@ -1460,7 +1460,7 @@ void DbgGenned(                 // INDICATE SYMBOL GENERATED
         VBUF vbuf;
         printf( "Generated: %s\n"
               , DbgSymNameFull( sym, &vbuf ) );
-        if( sym->flag2 & SF2_TOKEN_LOCN ) {
+        if( sym->flag2 & SYMF2_TOKEN_LOCN ) {
             dumpLocation( &sym->locn->tl );
         }
         VbufFree( &vbuf );

@@ -619,7 +619,7 @@ static SYMBOL injectOpDel( NAME name )
 {
     SYMBOL sym;
 
-    sym = SymCreateFileScope( TypeVoidFunOfPtrVoid(), SC_EXTERN, 0, name );
+    sym = SymCreateFileScope( TypeVoidFunOfPtrVoid(), SYMC_EXTERN, 0, name );
     LinkageSet( sym, "C++" );
     return( sym );
 }
@@ -637,7 +637,7 @@ static void injectOpNew( TYPE fn_type, NAME name )
 {
     SYMBOL sym;
 
-    sym = SymCreateFileScope( fn_type, SC_EXTERN, 0, name );
+    sym = SymCreateFileScope( fn_type, SYMC_EXTERN, 0, name );
     LinkageSet( sym, "C++" );
 }
 
@@ -679,7 +679,7 @@ static void injectChipBug( void )
     name = CppSpecialName( SPECIAL_NAME_CHIPBUG );
     type = GetBasicType( TYP_UINT );
     type = MakeModifiedType( type, TF1_NEAR );
-    sym = SymCreateFileScope( type, SC_EXTERN, 0, name );
+    sym = SymCreateFileScope( type, SYMC_EXTERN, 0, name );
     LinkageSet( sym, "C" );
     ChipBugSym = sym;
 }
@@ -692,7 +692,7 @@ static void injectBool( void )
     if( CompFlags.extensions_enabled ) {
         name = NameCreateNoLen( Tokens[T_BOOL] );
         KwDisable( T_BOOL );
-        SymCreateFileScope( GetBasicType( TYP_BOOL ), SC_TYPEDEF, 0, name );
+        SymCreateFileScope( GetBasicType( TYP_BOOL ), SYMC_TYPEDEF, 0, name );
     }
 }
 
@@ -704,7 +704,7 @@ static void injectDwarfAbbrev( void )
 
     name = CppSpecialName( SPECIAL_NAME_DWARF_ABBREV );
     type = GetBasicType( TYP_CHAR );
-    sym = SymCreateFileScope( type, SC_EXTERN, 0, name );
+    sym = SymCreateFileScope( type, SYMC_EXTERN, 0, name );
     LinkageSet( sym, "C" );
     DFAbbrevSym = sym;
 }
@@ -719,12 +719,12 @@ void ScopeCreatePCHDebugSym( void )
     if( CompFlags.pch_debug_info_write ) {
         name = PCHDebugInfoName();
         type = GetBasicType( TYP_CHAR );
-        sym = SymCreateFileScope( type, SC_PUBLIC, 0, name );
+        sym = SymCreateFileScope( type, SYMC_PUBLIC, 0, name );
         PCHDebugSym = sym;
     }else if( CompFlags.pch_debug_info_read ) {
         name = PCHDebugInfoName();
         type = GetBasicType( TYP_CHAR );
-        sym = SymCreateFileScope( type, SC_EXTERN, 0, name );
+        sym = SymCreateFileScope( type, SYMC_EXTERN, 0, name );
         PCHDebugSym = sym;
     }else{
         PCHDebugSym = NULL;
@@ -1162,7 +1162,7 @@ static SCOPE findBlockScope( SCOPE scope )
 
 static void diagnoseSym( SYMBOL sym )
 {
-    if( sym->flag & (SF_REFERENCED | SF_NO_REF_WARN) ) {
+    if( sym->flag & (SYMF_REFERENCED | SYMF_NO_REF_WARN) ) {
         return;
     }
     if( SymIsInline( sym ) ) {
@@ -1171,10 +1171,10 @@ static void diagnoseSym( SYMBOL sym )
     if( SymIsTemporary( sym ) ) {
         return;
     }
-    if( sym->id == SC_DEFAULT ) {
+    if( sym->id == SYMC_DEFAULT ) {
         return;
     }
-    if( SymIsFunction( sym ) && (sym->flag & SF_ADDR_TAKEN) ) {
+    if( SymIsFunction( sym ) && (sym->flag & SYMF_ADDR_TAKEN) ) {
         return;
     }
     if( SymIsAnonymous( sym ) ) {
@@ -1191,8 +1191,8 @@ static void diagnoseSym( SYMBOL sym )
 static void scopeEnsureMemberRefed( SYMBOL sym )
 {
     switch( sym->id ) {
-    case SC_MEMBER:
-    case SC_STATIC:
+    case SYMC_MEMBER:
+    case SYMC_STATIC:
         if( ! GeneratedDefaultFunction( sym ) ) {
             diagnoseSym( sym );
         }
@@ -1225,9 +1225,9 @@ static void diagnoseTypedef( SYMBOL sym )
 static void scopeEnsureRefed( SYMBOL sym )
 {
     switch( sym->id ) {
-    case SC_STATIC:
-    case SC_AUTO:
-    case SC_REGISTER:
+    case SYMC_STATIC:
+    case SYMC_AUTO:
+    case SYMC_REGISTER:
         diagnoseSym( sym );
         break;
     }
@@ -1236,12 +1236,12 @@ static void scopeEnsureRefed( SYMBOL sym )
 static void handleBlockSyms( SYMBOL sym )
 {
     switch( sym->id ) {
-    case SC_TYPEDEF:
+    case SYMC_TYPEDEF:
         diagnoseTypedef( sym );
         break;
-    case SC_STATIC:
-    case SC_AUTO:
-    case SC_REGISTER:
+    case SYMC_STATIC:
+    case SYMC_AUTO:
+    case SYMC_REGISTER:
         diagnoseSym( sym );
         break;
     }
@@ -1250,14 +1250,14 @@ static void handleBlockSyms( SYMBOL sym )
 static void handleFileSyms( SYMBOL sym )
 {
     switch( sym->id ) {
-    case SC_NULL:
+    case SYMC_NULL:
         if( SymIsFunction( sym ) ) {
-            sym->id = SC_EXTERN;
+            sym->id = SYMC_EXTERN;
         }
         break;
-    case SC_STATIC:
+    case SYMC_STATIC:
         if( SymIsFunction( sym ) ) {
-            if( sym->flag & SF_REFERENCED ) {
+            if( sym->flag & SYMF_REFERENCED ) {
                 if( ! SymIsInitialized( sym ) ) {
                     /* Check to see if we have a matching aux entry with code attached */
                     AUX_ENTRY *paux = NULL;
@@ -1265,7 +1265,7 @@ static void handleFileSyms( SYMBOL sym )
                     if( !paux || !paux->info || !paux->info->code ) {
                         if( sym != ModuleInitFuncSym() ) {
                             CErr2p( ERR_FUNCTION_NOT_DEFINED, sym );
-                            sym->id = SC_EXTERN;
+                            sym->id = SYMC_EXTERN;
                         }
                     }
                 }
@@ -1281,9 +1281,9 @@ static void handleFileSyms( SYMBOL sym )
 static void handleUnnamedNameSpaceSyms( SYMBOL sym )
 {
     switch( sym->id ) {
-    case SC_NULL:
-    case SC_PUBLIC:
-        sym->id = SC_STATIC;
+    case SYMC_NULL:
+    case SYMC_PUBLIC:
+        sym->id = SYMC_STATIC;
         break;
     }
     handleFileSyms( sym );
@@ -1686,9 +1686,9 @@ SYMBOL AllocSymbol( void )
     sym->sym_type = NULL;
     sym->name = NULL;
     sym->locn = NULL;
-    sym->flag = SF_NULL;
-    sym->flag2 = SF2_NULL;
-    sym->id = SC_NULL;
+    sym->flag = SYMF_NULL;
+    sym->flag2 = SYMF2_NULL;
+    sym->id = SYMC_NULL;
     sym->segid = SEG_NULL;
     sym->u.tinfo = NULL;
     sym->thread = NULL;
@@ -1825,7 +1825,7 @@ static void addOrdered( SCOPE scope, SYMBOL sym )
 {
     ExtraRptIncrementCtr( syms_defined );
     scope->u.s.dirty = true;
-    if( sym->id == SC_DEFAULT ) {
+    if( sym->id == SYMC_DEFAULT ) {
         return;
     }
     /* based on RING.C algorithms but with a different 'next' */
@@ -2128,7 +2128,7 @@ void ScopeInsertErrorSym( SCOPE scope, PTREE id )
         name = id->u.id.name;
         sym = AllocSymbol();
         sym->sym_type = TypeError;
-        sym->flag |= SF_ERROR;
+        sym->flag |= SYMF_ERROR;
         SymbolLocnDefine( &(id->locn), sym );
         sym_name = scopeInsertName( scope, sym, name );
         _AddSymToRing( &(sym_name->name_syms), sym );
@@ -2252,7 +2252,7 @@ void ScopeAddFriendSym( SCOPE scope, SYMBOL sym )
     RingIterBeg( ScopeFriends( scope ), a_friend ) {
         if( FriendIsSymbol( a_friend ) ) {
             friendly_sym = FriendGetSymbol( a_friend );
-            if( friendly_sym->id == SC_CLASS_TEMPLATE ) {
+            if( friendly_sym->id == SYMC_CLASS_TEMPLATE ) {
                 /* friendly class templates */
                 if( friendly_sym == sym ) {
                     CErr2p( WARN_CLASS_TEMPLATE_FRIEND_REPEATED, sym );
@@ -2893,7 +2893,7 @@ static bool isFriendly( SCOPE check, SCOPE friendly )
             }
         } else {
             sym = FriendGetSymbol( a_friend );
-            if( sym->id == SC_CLASS_TEMPLATE ) {
+            if( sym->id == SYMC_CLASS_TEMPLATE ) {
                 /* friendly class templates */
                 type = ScopeClass( check );
                 if( type != NULL ) {
@@ -2912,7 +2912,7 @@ static bool isFriendly( SCOPE check, SCOPE friendly )
                         return( true );
                     }
                     if( ( curr_sym != NULL )
-                     && ( curr_sym->flag & SF_TEMPLATE_FN )
+                     && ( curr_sym->flag & SYMF_TEMPLATE_FN )
                      && ( sym == curr_sym->u.alias ) ) {
                         return( true );
                     }
@@ -3341,10 +3341,10 @@ static SYMBOL foundUserConv( lookup_walk *data, SYMBOL syms )
 
 static inherit_flag makePerm( symbol_flag flag )
 {
-    if( flag & SF_PRIVATE ) {
+    if( flag & SYMF_PRIVATE ) {
         return( IN_PRIVATE );
     }
-    if( flag & SF_PROTECTED ) {
+    if( flag & SYMF_PROTECTED ) {
         return( IN_PROTECTED );
     }
     return( IN_PUBLIC );
@@ -3360,7 +3360,7 @@ static FNOV_RESULT distinctVirtualFunction( SYMBOL *sym, SYMBOL fun2, NAME name 
     case FNOV_NOT_DISTINCT_RETURN:
     case FNOV_EXACT_MATCH:
         chk_sym = *sym;
-        if( chk_sym->id == SC_DEFAULT ) {
+        if( chk_sym->id == SYMC_DEFAULT ) {
             *sym = NULL;
             check = FNOV_DISTINCT;
         }
@@ -3578,7 +3578,7 @@ static walk_status memberSearch( BASE_STACK *top, void *parm )
         }
     } else {
         syms = sym_name->name_syms;
-        if( syms != NULL && syms->id == SC_ACCESS ) {
+        if( syms != NULL && syms->id == SYMC_ACCESS ) {
             /* this member was an access control; record and keep going */
             top->access_perm = makePerm( syms->flag );
             top->access_changed = syms;
@@ -3905,10 +3905,10 @@ static void differentCopiesAmbiguity( lookup_walk *data )
     }
     if( VariableName( sym_name ) ) {
         sym = sym_name->name_syms;
-        if( sym->id == SC_ENUM ) {
+        if( sym->id == SYMC_ENUM ) {
             return;
         }
-        if( sym->id == SC_STATIC ) {
+        if( sym->id == SYMC_STATIC ) {
             return;
         }
         data->ambiguous = true;
@@ -4016,7 +4016,7 @@ static bool setProtectedAccess( lookup_walk *data, PATH_CAP *cap )
     sym = cap->sym;
     protected_checked = false;
     if( sym != NULL ) {
-        if( sym->flag & SF_PROTECTED ) {
+        if( sym->flag & SYMF_PROTECTED ) {
             protected_checked = true;
             if( protectedPathOK( &access_data ) ) {
                 data->protected_OK = true;
@@ -4030,7 +4030,7 @@ static bool setProtectedAccess( lookup_walk *data, PATH_CAP *cap )
                 syms = sym_name->name_type;
             }
             RingIterBeg( syms, sym ) {
-                if( sym->flag & SF_PROTECTED ) {
+                if( sym->flag & SYMF_PROTECTED ) {
                     protected_checked = true;
                     if( protectedPathOK( &access_data ) ) {
                         data->protected_OK = true;
@@ -4793,7 +4793,7 @@ static void makeClassResult( lookup_walk *data, SEARCH_RESULT *result )
     /* add member offset to result */
     sym = result->sym_name->name_syms;
     if( sym != NULL ) {
-        if( sym->id == SC_MEMBER ) {
+        if( sym->id == SYMC_MEMBER ) {
             result->offset = sym->u.member_offset;
         }
     }
@@ -5454,7 +5454,7 @@ static void scanForVFNs( SYMBOL_NAME sym_name, void *_data )
             /* skip non-virtual functions */
             continue;
         }
-        if( sym->id == SC_DEFAULT ) {
+        if( sym->id == SYMC_DEFAULT ) {
             /* don't involve default args */
             continue;
         }
@@ -5797,7 +5797,7 @@ static void emitIndexMapping( SAVE_MAPPING *mapping )
 
     sym = mapping->sym;
     DgSymbolLabel( sym );
-    sym->flag |= SF_INITIALIZED;
+    sym->flag |= SYMF_INITIALIZED;
     emitOffset( mapping->map_0 * TARGET_UINT );
     from_type = ScopeClass( mapping->from );
     from_info = from_type->u.c.info;
@@ -6594,8 +6594,8 @@ bool ScopeCheckSymbol( SEARCH_RESULT *result, SYMBOL sym )
     located = result->scope;
     if( result->cant_be_auto ) {
         switch( sym->id ) {
-        case SC_AUTO:
-        case SC_REGISTER:
+        case SYMC_AUTO:
+        case SYMC_REGISTER:
             if( DefargBeingCompiled() ) {
                 if( ScopeType( located, SCOPE_FUNCTION ) ) {
                     err_msg = ERR_DEFAULT_ARG_USES_ARG;
@@ -6962,7 +6962,7 @@ SYMBOL ScopeASMUseSymbol( NAME name, bool *uses_auto )
         CErr2p( ERR_UNDECLARED_SYM, name );
         return( NULL );
     }
-    sym->flag |= SF_ADDR_TAKEN | SF_CG_ADDR_TAKEN;
+    sym->flag |= SYMF_ADDR_TAKEN | SYMF_CG_ADDR_TAKEN;
     sym = SymMarkRefed( sym );
     if( SymIsAutomatic( sym ) ) {
         sym->sym_type = MakeForceInMemory( sym->sym_type );
@@ -6977,7 +6977,7 @@ void ScopeASMUsesAuto( void )
     SYMBOL fn_sym;
 
     fn_sym = ScopeFunctionInProgress();
-    fn_sym->flag |= SF_DONT_INLINE;
+    fn_sym->flag |= SYMF_DONT_INLINE;
 }
 
 SYMBOL ScopeASMLookup( NAME name )
@@ -7040,7 +7040,7 @@ SYMBOL ScopeIntrinsic( bool turn_on )
 
 static void changeSymType( SYMBOL sym, TYPE type )
 {
-    if( sym->id == SC_TYPEDEF ) {
+    if( sym->id == SYMC_TYPEDEF ) {
         TypedefReset( sym, type );
     } else {
         sym->sym_type = type;
@@ -7103,7 +7103,7 @@ void ScopeAuxName( const char *id, AUX_INFO *auxinfo )
         fn_type = MakeModifiableFunction( ret_type, arg_type, NULL );
         fn_type->u.f.pragma = auxinfo;
         fn_type = CheckDupType( fn_type );
-        sym = SymCreateAtLocn( fn_type, SC_EXTERN, 0, name, GetFileScope(), NULL );
+        sym = SymCreateAtLocn( fn_type, SYMC_EXTERN, 0, name, GetFileScope(), NULL );
         LinkageSet( sym, "C" );
         return;
     }
@@ -7491,7 +7491,7 @@ static void markFreeSymbol( void *p )
 {
     SYMBOL s = p;
 
-    s->id = SC_FREE;
+    s->id = SYMC_FREE;
 }
 
 static void saveSymbol( void *e, carve_walk_base *d )
@@ -7510,7 +7510,7 @@ static void saveSymbol( void *e, carve_walk_base *d )
     PTREE save_u_defarg_info;
     POOL_CON* save_con;
 
-    if( s->id == SC_FREE ) {
+    if( s->id == SYMC_FREE ) {
         return;
     }
     save_next = s->next;
@@ -7535,41 +7535,41 @@ static void saveSymbol( void *e, carve_walk_base *d )
     save_u_defn = NULL;
     save_u_defarg_info = NULL;
     switch( s->id ) {
-    case SC_NAMESPACE:
+    case SYMC_NAMESPACE:
         save_u_ns = s->u.ns;
         s->u.ns = NameSpaceGetIndex( save_u_ns );
         break;
-    case SC_CLASS_TEMPLATE:
+    case SYMC_CLASS_TEMPLATE:
         save_u_tinfo = s->u.tinfo;
         s->u.tinfo = TemplateClassInfoGetIndex( save_u_tinfo );
         break;
-    case SC_FUNCTION_TEMPLATE:
-    case SC_EXTERN_FUNCTION_TEMPLATE:
-    case SC_STATIC_FUNCTION_TEMPLATE:
+    case SYMC_FUNCTION_TEMPLATE:
+    case SYMC_EXTERN_FUNCTION_TEMPLATE:
+    case SYMC_STATIC_FUNCTION_TEMPLATE:
         save_u_defn = s->u.defn;
         s->u.defn = TemplateFunctionInfoGetIndex( save_u_defn );
         break;
-    case SC_DEFAULT:
+    case SYMC_DEFAULT:
         save_u_defarg_info = s->u.defarg_info;
         s->u.defarg_info = PTreeGetIndex( save_u_defarg_info );
         break;
-    case SC_VIRTUAL_FUNCTION:
-    case SC_ADDRESS_ALIAS:
+    case SYMC_VIRTUAL_FUNCTION:
+    case SYMC_ADDRESS_ALIAS:
         save_u_sym = s->u.sym;
         s->u.sym = SymbolGetIndex( save_u_sym );
         break;
-    case SC_ACCESS:
+    case SYMC_ACCESS:
         save_u_type = s->u.type;
         s->u.type = TypeGetIndex( save_u_type );
         break;
     default:
-        if( s->flag & (SF_ADDR_THUNK | SF_TEMPLATE_FN | SF_ALIAS) ) {
+        if( s->flag & (SYMF_ADDR_THUNK | SYMF_TEMPLATE_FN | SYMF_ALIAS) ) {
             save_u_sym = s->u.sym;
             s->u.sym = SymbolGetIndex( save_u_sym );
-        } else if( s->flag & SF_CONSTANT_INT64 ) {
+        } else if( s->flag & SYMF_CONSTANT_INT64 ) {
             save_con = s->u.pval;
             s->u.pval = ConstantPoolGetIndex( save_con );
-        } else if( (s->flag & SF_ANONYMOUS) && ( s->id != SC_MEMBER ) ) {
+        } else if( (s->flag & SYMF_ANONYMOUS) && ( s->id != SYMC_MEMBER ) ) {
             save_u_sym = s->u.sym;
             s->u.sym = SymbolGetIndex( save_u_sym );
         }
@@ -7582,34 +7582,34 @@ static void saveSymbol( void *e, carve_walk_base *d )
     s->name = save_name;
     s->locn = save_locn;
     switch( s->id ) {
-    case SC_NAMESPACE:
+    case SYMC_NAMESPACE:
         s->u.ns = save_u_ns;
         break;
-    case SC_CLASS_TEMPLATE:
+    case SYMC_CLASS_TEMPLATE:
         s->u.tinfo = save_u_tinfo;
         break;
-    case SC_FUNCTION_TEMPLATE:
-    case SC_EXTERN_FUNCTION_TEMPLATE:
-    case SC_STATIC_FUNCTION_TEMPLATE:
+    case SYMC_FUNCTION_TEMPLATE:
+    case SYMC_EXTERN_FUNCTION_TEMPLATE:
+    case SYMC_STATIC_FUNCTION_TEMPLATE:
         s->u.defn = save_u_defn;
         break;
-    case SC_DEFAULT:
+    case SYMC_DEFAULT:
         s->u.defarg_info = save_u_defarg_info;
         break;
-    case SC_VIRTUAL_FUNCTION:
-    case SC_ADDRESS_ALIAS:
+    case SYMC_VIRTUAL_FUNCTION:
+    case SYMC_ADDRESS_ALIAS:
         s->u.sym = save_u_sym;
         break;
-    case SC_ACCESS:
+    case SYMC_ACCESS:
         s->u.type = save_u_type;
         break;
     default:
-        DbgVerify( SymIsThunk( s ) == ( (s->flag & SF_ADDR_THUNK) != 0 ), "SF_ADDR_THUNK not set properly" );
-        if( s->flag & (SF_ADDR_THUNK | SF_TEMPLATE_FN | SF_ALIAS) ) {
+        DbgVerify( SymIsThunk( s ) == ( (s->flag & SYMF_ADDR_THUNK) != 0 ), "SYMF_ADDR_THUNK not set properly" );
+        if( s->flag & (SYMF_ADDR_THUNK | SYMF_TEMPLATE_FN | SYMF_ALIAS) ) {
             s->u.sym = save_u_sym;
-        } else if( s->flag & SF_CONSTANT_INT64 ) {
+        } else if( s->flag & SYMF_CONSTANT_INT64 ) {
             s->u.pval = save_con;
-        } else if( (s->flag & SF_ANONYMOUS) && ( s->id != SC_MEMBER ) ) {
+        } else if( (s->flag & SYMF_ANONYMOUS) && ( s->id != SYMC_MEMBER ) ) {
             s->u.sym = save_u_sym;
         }
     }
@@ -7811,33 +7811,33 @@ static void readSymbols( void )
         sym->name = SymbolNameMapIndex( sym->name );
         sym->locn = SymTokenLocnMapIndex( sym->locn );
         switch( sym->id ) {
-        case SC_NAMESPACE:
+        case SYMC_NAMESPACE:
             sym->u.ns = NameSpaceMapIndex( sym->u.ns );
             break;
-        case SC_CLASS_TEMPLATE:
+        case SYMC_CLASS_TEMPLATE:
             sym->u.tinfo = TemplateClassInfoMapIndex( sym->u.tinfo );
             break;
-        case SC_FUNCTION_TEMPLATE:
-        case SC_EXTERN_FUNCTION_TEMPLATE:
-        case SC_STATIC_FUNCTION_TEMPLATE:
+        case SYMC_FUNCTION_TEMPLATE:
+        case SYMC_EXTERN_FUNCTION_TEMPLATE:
+        case SYMC_STATIC_FUNCTION_TEMPLATE:
             sym->u.defn = TemplateFunctionInfoMapIndex( sym->u.defn );
             break;
-        case SC_DEFAULT:
+        case SYMC_DEFAULT:
             sym->u.defarg_info = PTreeMapIndex( sym->u.defarg_info );
             break;
-        case SC_VIRTUAL_FUNCTION:
-        case SC_ADDRESS_ALIAS:
+        case SYMC_VIRTUAL_FUNCTION:
+        case SYMC_ADDRESS_ALIAS:
             sym->u.sym = SymbolMapIndex( sym->u.sym );
             break;
-        case SC_ACCESS:
+        case SYMC_ACCESS:
             sym->u.type = TypeMapIndex( sym->u.type );
             break;
         default:
-            if( sym->flag & (SF_ADDR_THUNK | SF_TEMPLATE_FN | SF_ALIAS) ) {
+            if( sym->flag & (SYMF_ADDR_THUNK | SYMF_TEMPLATE_FN | SYMF_ALIAS) ) {
                 sym->u.sym = SymbolMapIndex( sym->u.sym );
-            } else if( sym->flag & SF_CONSTANT_INT64 ) {
+            } else if( sym->flag & SYMF_CONSTANT_INT64 ) {
                 sym->u.pval = ConstantPoolMapIndex( sym->u.pval );
-            } else if( (sym->flag & SF_ANONYMOUS) && ( sym->id != SC_MEMBER ) ) {
+            } else if( (sym->flag & SYMF_ANONYMOUS) && ( sym->id != SYMC_MEMBER ) ) {
                 sym->u.sym = SymbolMapIndex( sym->u.sym );
             }
         }

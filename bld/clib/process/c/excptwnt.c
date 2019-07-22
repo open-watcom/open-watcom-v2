@@ -143,7 +143,7 @@ LONG WINAPI __ReportException( EXCEPTION_POINTERS *rec )
     /*
      * Test to see if there is an active window.
      */
-    if( _my_GetActiveWindow() || ( __NTConsoleOutput() == (HANDLE)-1 )) {
+    if( _my_GetActiveWindow() || ( __NTConsoleOutput() == INVALID_HANDLE_VALUE )) {
         return( EXCEPTION_CONTINUE_SEARCH );
     }
 

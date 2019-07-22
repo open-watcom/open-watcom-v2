@@ -30,9 +30,9 @@
 ****************************************************************************/
 
 
-#define DIALOG_STACK        3010
-#define DIALOG_HISTORY      3011
+#define DIALOG_STACK            3010
+#define DIALOG_HISTORY          3011
 
-#define CTL_STK_YES         100
-#define CTL_STK_NO          101
-#define CTL_STK_CANCEL      102
+#define CTL_STK_YES             100
+#define CTL_STK_NO              101
+#define CTL_STK_CANCEL          102

@@ -3,9 +3,9 @@
             =============================
 
 
-What WHLPCVT Is:
-================
-    WHLPCVT is a program which can be used to convert GML documentation
+What WHPCVT Is:
+===============
+    WHPCVT is a program which can be used to convert GML documentation
     source into OS-dependent online help. This program is just one
     step in the process, as described below:
 
@@ -18,7 +18,7 @@ What WHLPCVT Is:
           features (pictures, specialized hyperlinks, popup definition
           boxes, index lists, etc.).
 
-        - Using the WHLP layouts and macros, format your GML
+        - Using the WHP layouts and macros, format your GML
           book. The result will be an output file representing
           online help in a system independent manner (extension
           'WHP' for WATCOM help).
@@ -51,28 +51,28 @@ The WHP File Format:
     anything else means actual text.
 
 
-    '¥' (180) Include On.
+    '¥' (180/0xB4) Include On.
         - Column 0, no following text. Default at start.
         - Text from the next line and on is to be included in processing.
 
-    '√' (195) Include Off.
+    '√' (195/0xC3) Include Off.
         - Column 0, no following text.
         - Text from the next line and on is to be excluded completely
           until the next '>' character is encountered. Include On/Off
           are not 'stackable'; the next include on always turns
           on processing.
 
-    '˜' (247) Topic Definition.
+    '˜' (247/0xF7) Topic Definition.
         - Column 0.
         - format: ˜<level>˜[¯|ß]<ctx_name>˜<title>[˜<browse_list>[˜<keywords>]]
         - <level> is the heading level of this topic. This is
           used for OS/2 IPF help, as well as in RTF and InfoBench "up"
           buttons. Heading levels can be skipped.
           Valid heading levels are from 0 to 6.
-        - '¯' (248) Popup definition topic. Indicates that the
+        - '¯' (248/0xF8) Popup definition topic. Indicates that the
           <title> should not appear in a non-scrolling region at the
           top of the topic. The title will scroll with the topic text.
-        - 'ß' (167) Normal definition topic (default). Indicates that
+        - 'ß' (167/0xA7) Normal definition topic (default). Indicates that
           the <title> will appear in a non-scrolling region at
           the top of the topic. The title will not scroll
           away as the topic is scrolled.
@@ -88,21 +88,21 @@ The WHP File Format:
           topic belongs to.
         - Topic text may follow immediately, or a topic section.
 
-    '' (127) Hyperlink.
+    '' (127/0x7F) Hyperlink.
         - in text lines, not split across lines.
         - format: <ctx_name><text>
         - <ctx_name> is the help topic context name to which this hyperlink
           should go.
         - <text> is any arbitrary text which represents the hyperlink.
 
-    'Í' (234) Definition popup.
+    'Í' (234/0xEA) Definition popup.
         - in text lines, not split across lines.
         - format: Í<ctx_name>Í<text>Í
         - <ctx_name> is the help topic context name to which this popup
           definition should go.
         - <text> is any arbitrary text which represents the definition link.
 
-    'Ó' (238) Topic Section.
+    'Ó' (238/0xEE) Topic Section.
         - column 0.
         - format: Ó<ctx_name>[Ó<order_nun>]
         - defines a new topic section for <ctx_name>.
@@ -112,7 +112,7 @@ The WHP File Format:
           by its order number (lowest first). Ordered sections come
           after unordered sections. <order_num> can be 0 or greater.
 
-    '“' (210) Unordered List Start.
+    '“' (210/0xD2) Unordered List Start.
          - column 0. No following text.
          - format: “[c]
          - starts an unordered list (with bullets).
@@ -120,7 +120,7 @@ The WHP File Format:
            between list items). Otherwise, spacing is as indicated
            in the definition.
 
-    '»' (200) Order List Start.
+    '»' (200/0xC8) Order List Start.
         - column 0. No following text.
          - format: »[c]
         - starts an ordered and numbered list.
@@ -128,7 +128,7 @@ The WHP File Format:
            between list items). Otherwise, spacing is as indicated
            in the definition.
 
-    '’' (213) Simple List Start.
+    '’' (213/0xD5) Simple List Start.
         - column 0. No following text.
          - format: ’[c]
         - starts a simple list (no bullets).
@@ -136,11 +136,11 @@ The WHP File Format:
            between list items). Otherwise, spacing is as indicated
            in the definition.
 
-    ' ' (202) Definition List Start.
+    ' ' (202/0xCA) Definition List Start.
         - column 0. No following text.
         - starts a definition list.
 
-    'Ã' (204) Definition List Term.
+    'Ã' (204/0xCC) Definition List Term.
         - column 0.
         - format: Ã<term>
         - The text lines after the term are displayed below the term
@@ -148,55 +148,55 @@ The WHP File Format:
         - There is no closer for defn terms since font styling and
           other effects can be inserted.
 
-    'π' (185) Definition Description.
+    'π' (185/0xB9) Definition Description.
         - column 0. Followed by text for the definition description.
         - Starts a definition description.
 
-    '”' (211) List item.
+    '”' (211/0xD3) List item.
         - column 0. Followed by text for the list item.
         - Item for a unordered, ordered or simple list.
         - ALL list types can be nested arbitrarily.
 
-    '‘' (212) Unordered List End.
+    '‘' (212/0xD4) Unordered List End.
         - column 0. No following text.
         - ends an unordered list.
 
-    '…' (201) Order List End.
+    '…' (201/0xC9) Order List End.
         - column 0. No following text.
         - ends an ordered list.
 
-    'À' (203) Definition List End.
+    'À' (203/0xCB) Definition List End.
         - column 0. No Following text.
         - ends a definition list.
 
-    '÷' (214) Simple list End.
+    '÷' (214/0xD6) Simple list End.
         - column 0. No Following text.
         - ends a simple list.
 
-    'Ï' (236) Keyword.
+    'Ï' (236/0xEC) Keyword.
         - in text lines, or on their own lines.
         - format: Ï<keyword>Ï
         - <keyword> is added to the list of keywords for the current topic.
         - If a line is defined containing only keywords, it does not
           generate a blank line.
 
-    'û' (158) Paragraph Reset.
+    'û' (158/0x9E) Paragraph Reset.
         - in text lines.
         - causes the next paragraph to be reset properly. Useful
           for RTF, when boxing and other wierd stuff require a
           paragraph reset to gets things back to normal.
 
-    'ü' (159) Include On and Eat Blank Line.
+    'ü' (159/0x9F) Include On and Eat Blank Line.
         - Column 0.
         - same as Include On, but also eats the next blank line, if any.
 
-    '∞' (176) Bitmap Picture.
+    '∞' (176/0xB0) Bitmap Picture.
         - in text lines.
         - format: ∞i|l|r|c∞<file>∞
         - 'i' is for inline, 'l' for left, 'r' for right, and 'c' for centered.
         - <file> is the name of the bitmap file.
 
-    'Ô' (239) Font Style.
+    'Ô' (239/0xEF) Font Style.
         - in text lines.
         - format: Ô<font_styles>Ô {with ending '' later}
         - <font_styles> is any combination of the following characters:
@@ -205,11 +205,11 @@ The WHP File Format:
           font stylings do NOT nest (this is due the the stupidity of
           OS/2 IPF).
 
-    '' (240) Font Style End.
+    '' (240/0xF0) Font Style End.
         - in text lines.
         - see 'Font Style'.
 
-    'ù' (157) Font Type.
+    'ù' (157/0x9D) Font Type.
         - in text lines.
         - format: ù<facename>ù<point_size>ù
         - valid facenames are recognized by the following subwords:
@@ -217,21 +217,21 @@ The WHP File Format:
         - common point sizes are: 8, 10, 12, 14, 18, 24.
         - the Windows default is Helv 10.
 
-    '€' (219) Box On.
+    '€' (219/0xDB) Box On.
         - column 0. No Following text.
         - turns box mode on
 
-    '˛' (254) Box Off.
+    '˛' (254/0xFE) Box Off.
         - column 0. No Following text.
         - turns box mode off
 
-    '™' (170) Tab example.
+    '™' (170/0xAA) Tab example.
         - format 1: ™<char> [<stops>]*
             - setups up a tabbed example.
         - format 2: ™
             - ends a tabbed example.
 
-    'Ë' (232) File hyperlink.
+    'Ë' (232/0xE8) File hyperlink.
         - in text lines, not split across lines.
         - format: Ë<file_name>Ë<topic_title>Ë<text>Ë
         - <file_name> is the name of help file to jump to.

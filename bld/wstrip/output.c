@@ -128,8 +128,7 @@ void Usage( void )
 
     for( i = MSG_USAGE_FIRST; i <= MSG_USAGE_LAST; i++ ) {
         Msg_Get( i, msg_buffer );
-        printf( msg_buffer );
-        printf( "\n" );
+        printf( "%s\n", msg_buffer );
     }
     Msg_Fini();
     exit( -1 );
@@ -143,7 +142,7 @@ void Fatal( int reason, const char *insert )
     Msg_Get( reason, msg_buffer );
     printf( msg_buffer, insert );
     Msg_Get( MSG_WSTRIP_ABORT, msg_buffer );
-    printf( msg_buffer );
+    printf( "%s", msg_buffer );
     Msg_Fini();
     exit( -1 );
 }

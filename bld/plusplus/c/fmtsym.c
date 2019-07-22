@@ -83,7 +83,7 @@ static void fmtSymFunction( SYMBOL sym, VBUF *prefix, VBUF *suffix, FMT_CONTROL 
     TYPE fn_type;
 
     num_def = 0;
-    for( ; sym->id == SC_DEFAULT; sym = sym->thread ) {
+    for( ; sym->id == SYMC_DEFAULT; sym = sym->thread ) {
         ++num_def;
     }
     fn_type = sym->sym_type;

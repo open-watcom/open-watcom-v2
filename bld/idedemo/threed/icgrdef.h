@@ -40,6 +40,8 @@
 
 */
 
+typedef int rend_cmp_fn(const rend_obj **,const rend_obj **);
+
 extern cgr_err set_up_chart(void);
 extern void finish_up_chart(void);
 extern cgr_err APIENTRY cgr_display_chart(chart_hld , WPI_PRECT ,WPI_PRES ,bool ,bool ,bool );
@@ -247,9 +249,9 @@ extern void pipe_free_all(void );
 extern bool rend_list_init(rend_list *);
 extern void rend_list_add(rend_list *,rend_obj *);
 extern void rend_list_free(rend_list *);
-extern void rend_list_sort(rend_list *,int (*)(const rend_obj **,const rend_obj **));
+extern void rend_list_sort(rend_list *,rend_cmp_fn *);
 extern void rend_list_bin_insert( rend_list *, rend_list_ref, rend_list_ref,
-        rend_obj **, int (*compare) (const rend_obj **, const rend_obj **) );
+        rend_obj **, rend_cmp_fn * );
 extern void rend_list_insert(rend_list *,rend_list_ref *,rend_obj *,bool );
 extern void rend_list_delete(rend_list *,rend_list_ref *);
 extern vector cross_prod(vector ,vector );

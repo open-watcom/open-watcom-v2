@@ -1,0 +1,9 @@
+# txt help section of lang.dat
+
+#-----------------------------------------------------------------------------
+[ DEFAULT type="s" dir="."]
+#-----------------------------------------------------------------------------
+# readme files
+usr="readme.txt"        where="c jc"
+usr="freadme.txt"       where="f77 jf77"
+usr="areadme.txt"       where="ac"

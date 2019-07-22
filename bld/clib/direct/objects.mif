@@ -22,7 +22,6 @@
 !inject mkdiros2.obj                                        o16 o32
 !inject mkdirwnt.obj                     nt nta ntp
 !inject mkdirrd.obj                                                                                 rdu rdk
-!inject ntdirinf.obj                     nt nta ntp
 !inject rmdir.obj    d16 d32                                                w16 w32 osi
 !inject rmdiros2.obj                                        o16 o32
 !inject rmdirwnt.obj                     nt nta ntp
@@ -41,7 +40,6 @@
 !inject umkdrwnt.obj                     nt nta ntp
 !inject umkdros2.obj                                        o16 o32
 !inject umkdr.obj    d16 d32                                                w16 w32
-!inject untdrinf.obj                     nt nta ntp
 !inject urmdrwnt.obj                     nt nta ntp
 !inject urmdros2.obj                                        o16 o32
 !inject urmdr.obj    d16 d32                                                w16 w32

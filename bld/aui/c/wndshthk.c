@@ -32,7 +32,7 @@
 
 #include "_aui.h"
 
-bool    WndShutDownHook()
+bool    WndShutDownHook( void )
 {
     // resize any window hook
     return( true ); //-- return false for no shut down

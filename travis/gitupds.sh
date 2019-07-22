@@ -20,66 +20,66 @@ gitupds_proc()
     echo_msg="gitupds.sh - skipped"
 
     if [ "$TRAVIS_BRANCH" = "$OWBRANCH" ] || [ "$TRAVIS_BRANCH" = "$OWBRANCH_DOCS" ]; then
-        if [ "$TRAVIS_OS_NAME" = "linux" ]; then
-            if [ "$TRAVIS_EVENT_TYPE" = "push" ] || [ "$TRAVIS_EVENT_TYPE" = "cron" ]; then
-                case "$OWTRAVISJOB" in
-                    "BOOTSTRAP")
-                        ;;
-                    "BUILD" | "BUILD-1" | "BUILD-2" | "DOCTRAVIS")
+        if [ "$TRAVIS_EVENT_TYPE" = "push" ] || [ "$TRAVIS_EVENT_TYPE" = "cron" ]; then
+            case "$OWTRAVISJOB" in
+                "CPREL")
+                    if [ "$TRAVIS_OS_NAME" = "linux" ] || [ "$TRAVIS_OS_NAME" = "windows" ]; then
                         #
                         # clone GitHub repository
                         #
-                        git clone $GITVERBOSE1 --branch=$OWBRANCH https://${GITHUB_TOKEN}@github.com/${OWTRAVIS_REPO_SLUG}.git $OWTRAVIS_BUILD_DIR
+                        git clone $GITVERBOSE1 --branch=master https://${GITHUB_TOKEN}@github.com/${OWTRAVIS_REPO_SLUG}.git $OWTRAVIS_BUILD_DIR
                         #
                         # copy OW build to git tree
                         #
-                        export OWRELROOT=$OWTRAVIS_BUILD_DIR
-                        cd $OWSRCDIR
-                        case "$OWTRAVISJOB" in
-                            "BUILD")
-                                builder cprel
-                                ;;
-                            "BUILD-1")
-                                builder cprel1
-                                ;;
-                            "BUILD-2")
-                                builder cprel2
-                                ;;
-                            "DOCTRAVIS")
-                                builder cpdoctrav
-                                ;;
-                            *)
-                                ;;
-                        esac
+                        pwd
+                        if [ "$TRAVIS_OS_NAME" = "linux" ]; then
+                            cp -Rf $OWRELROOT/. $OWTRAVIS_BUILD_DIR/
+                        elif [ "$OWTRAVIS_DEBUG" = "1" ]; then
+                            cp -Rfv $OWRELROOT/binnt64/. $OWTRAVIS_BUILD_DIR/binnt64/
+                        else
+                            cp -Rf $OWRELROOT/binnt64/. $OWTRAVIS_BUILD_DIR/binnt64/
+                        fi
                         #
                         # commit updated files to GitHub repository
                         #
                         cd $OWTRAVIS_BUILD_DIR
+                        pwd
                         git add $GITVERBOSE2 -f .
-                        case "$OWTRAVISJOB" in
-                            "BUILD")
-                                git commit $GITVERBOSE1 -m "Travis CI build $TRAVIS_JOB_NUMBER - OW distribution"
-                                ;;
-                            "BUILD-1")
-                                git commit $GITVERBOSE1 -m "Travis CI build $TRAVIS_JOB_NUMBER - OW distribution 1"
-                                ;;
-                            "BUILD-2")
-                                git commit $GITVERBOSE1 -m "Travis CI build $TRAVIS_JOB_NUMBER - OW distribution 2"
-                                ;;
-                            "DOCTRAVIS")
-                                git commit $GITVERBOSE1 -m "Travis CI build $TRAVIS_JOB_NUMBER - Documentation"
-                                ;;
-                            *)
-                                ;;
-                        esac
+                        if [ "$TRAVIS_OS_NAME" = "linux" ]; then
+                            git commit $GITVERBOSE1 -m "Travis CI build $TRAVIS_JOB_NUMBER - OW distribution"
+                        else
+                            git commit $GITVERBOSE1 -m "Travis CI build $TRAVIS_JOB_NUMBER - OW distribution (Windows 64-bit only)"
+                        fi
                         git push $GITVERBOSE1 -f origin
                         cd $TRAVIS_BUILD_DIR
+                        pwd
                         echo_msg="gitupds.sh - done"
-                        ;;
-                    *)
-                        ;;
-                esac
-            fi
+                    fi
+                    ;;
+                "WEBDOCS")
+                    #
+                    # clone GitHub repository
+                    #
+                    git clone $GITVERBOSE1 --branch=master https://${GITHUB_TOKEN}@github.com/${OWWEBDOCS_REPO_SLUG}.git $OWWEBDOCS_BUILD_DIR
+                    #
+                    # copy OW build to git tree
+                    #
+                    export OWRELROOT=$OWWEBDOCS_BUILD_DIR/docs
+                    cd $OWSRCDIR
+                    builder cpwebdocs
+                    #
+                    # commit updated files to GitHub repository
+                    #
+                    cd $OWWEBDOCS_BUILD_DIR
+                    git add $GITVERBOSE2 -f .
+                    git commit $GITVERBOSE1 -m "Travis CI build $TRAVIS_JOB_NUMBER - WEB Documentation"
+                    git push $GITVERBOSE1 -f origin
+                    cd $TRAVIS_BUILD_DIR
+                    echo_msg="gitupds.sh - done"
+                    ;;
+                *)
+                    ;;
+            esac
         fi
     fi
 

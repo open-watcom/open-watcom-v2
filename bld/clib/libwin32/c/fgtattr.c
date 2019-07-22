@@ -52,19 +52,17 @@
  * nowdays it is very archaic system.
  */
 
-#ifdef __WIDECHAR__
- DWORD __fixed_GetFileAttributesW( LPCWSTR lpFileName )
-#else
- DWORD __fixed_GetFileAttributesA( LPCSTR lpFileName )
-#endif
-/*****************************************************/
+DWORD __fixed_GetFileAttributes( LPCTSTR lpFileName )
+/***************************************************/
 {
     HANDLE              handle;
     WIN32_FIND_DATA     finddata;
 
-    if( WIN32_IS_NT4 ) {
+    if( WIN32_IS_NT4 ) {    /* >= NT4.0 */
         return( GetFileAttributes( lpFileName ) );
     }
+    /* NT3.x or Win95 or Win32s */
+
     /*** Fail if the filename contains a wildcard ***/
     if( __F_NAME(strchr,wcschr)( lpFileName, STRING( '*' ) ) != NULL ||
         __F_NAME(strchr,wcschr)( lpFileName, STRING( '?' ) ) != NULL ) {

@@ -207,41 +207,22 @@
 #define STRING_YES_NO                   195
 #define PRESS_KEY                       196
 
-#define SYS_ERR_UNKNOWN                 197
-
-#define SYS_ERR_0                       198
-#define SYS_ERR_1                       199
-#define SYS_ERR_2                       200
-#define SYS_ERR_3                       201
-#define SYS_ERR_4                       202
-#define SYS_ERR_5                       203
-#define SYS_ERR_6                       204
-#define SYS_ERR_7                       205
-#define SYS_ERR_8                       206
-#define SYS_ERR_9                       207
-#define SYS_ERR_10                      208
-#define SYS_ERR_11                      209
-#define SYS_ERR_12                      210
-#define SYS_ERR_13                      211
-#define SYS_ERR_14                      212
-#define SYS_ERR_15                      213
-
-#define SIG_ERR_0                       214
-#define SIG_ERR_1                       215
-#define SIG_ERR_2                       216
-#define SIG_ERR_3                       217
-#define SIG_ERR_4                       218
-#define SIG_ERR_5                       219
-#define SIG_ERR_6                       220
-#define SIG_ERR_7                       221
-#define SIG_ERR_8                       222
-#define SIG_ERR_9                       223
-#define SIG_ERR_10                      224
-#define SIG_ERR_11                      225
-#define SIG_ERR_12                      226
-#define SIG_ERR_13                      227
-#define SIG_ERR_14                      228
-#define SIG_ERR_15                      229
+#define SIG_ERR_0                       197
+#define SIG_ERR_1                       198
+#define SIG_ERR_2                       199
+#define SIG_ERR_3                       200
+#define SIG_ERR_4                       201
+#define SIG_ERR_5                       202
+#define SIG_ERR_6                       203
+#define SIG_ERR_7                       204
+#define SIG_ERR_8                       205
+#define SIG_ERR_9                       206
+#define SIG_ERR_10                      207
+#define SIG_ERR_11                      208
+#define SIG_ERR_12                      209
+#define SIG_ERR_13                      210
+#define SIG_ERR_14                      211
+#define SIG_ERR_15                      212
 
 #define MSG_USAGE_BASE                  230
 

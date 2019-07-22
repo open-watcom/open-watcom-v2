@@ -104,7 +104,7 @@ static int trivialTypeDef
 {
     int         result = false;
 
-    if( sym->id == SC_TYPEDEF ) {
+    if( sym->id == SYMC_TYPEDEF ) {
         if( sym->sym_type->of->id == TYP_CLASS ) {
             if( sym->sym_type->of->u.c.info->name == sym->name->name ) {
                 result = true;
@@ -137,8 +137,8 @@ static SYMBOL findClassSymbol
                 last = ScopeOrderedLast( parent );
                 for( ; sym != NULL ; sym = ScopeOrderedNext( last, sym ) ) {
                     if( sym->name->name == cltype->u.c.info->name &&
-                        (sym->id == SC_CLASS_TEMPLATE ||
-                         sym->id == SC_TYPEDEF) ) {
+                        (sym->id == SYMC_CLASS_TEMPLATE ||
+                         sym->id == SYMC_TYPEDEF) ) {
                         result = sym;
                         break;
                     }
@@ -421,7 +421,7 @@ static void writeClassMembers   // WRITE BROWSE DEFN FOR MEMBERS
             type_id = writeType( sym->sym_type );
             if( sym->sym_type->id == TYP_FUNCTION ) {
                 sym_type = BRI_SA_Function;
-            } else if( sym->id == SC_TYPEDEF ) {
+            } else if( sym->id == SYMC_TYPEDEF ) {
                 sym_type = BRI_SA_Typedef;
             } else {
                 sym_type = BRI_SA_Variable;

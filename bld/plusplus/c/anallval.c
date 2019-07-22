@@ -374,7 +374,7 @@ static bool analyseBareSymbol(  // ANALYSE AN BARE SYMBOL
     if( SymIsAnError( sym ) ) {
         PTreeErrorNode( expr );
         ok = false;
-    } else if( sym->id == SC_ADDRESS_ALIAS ) {
+    } else if( sym->id == SYMC_ADDRESS_ALIAS ) {
         alias = NodeSymbol( NULL, sym->u.alias, expr->u.symcg.result );
         alias = PTreeCopySrcLocation( alias, expr );
         if( PointerType( sym->sym_type ) != NULL ) {

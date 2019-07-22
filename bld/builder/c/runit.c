@@ -88,6 +88,8 @@ typedef struct dd {
     char        name[1];
 } iolist;
 
+char            tmp_buf[MAX_LINE];
+
 static int      rflag = false;
 static int      fflag = false;
 static int      sflag = true;
@@ -147,28 +149,30 @@ static void LogDir( const char *dir )
     Log( false, "%s %s %s%s\n", eq, tbuff, eq, ( bufflen & 1 ) ? "" : "=" );
 }
 
-static int ProcSet( char *cmd )
+static int ProcSet( const char *cmd )
 {
-    char        *var;
     char        *rep;
+    size_t      len;
 
-    var = cmd;
     rep = strchr( cmd, '=' );
     if( rep == NULL )
         return( 1 );
-    *rep++ = '\0';
+    len = rep - cmd;
+    strncpy( tmp_buf, cmd, len );
+    tmp_buf[len] = '\0';
     /* Our setenv() is extended vs. POSIX, check for blank value is not necessary */
     /* Watcom implementation is non-conforming to POSIX, return value is incorrect in some cases */
+    rep++;
     if( *rep == '\0' ) {
 #if defined( __WATCOMC__ ) && ( __WATCOMC__ < 1300 )
-        setenv( var, NULL, 1 );
+        setenv( tmp_buf, NULL, 1 );
 #else
         /* Delete the environment variable! */
-        unsetenv( var );
+        unsetenv( tmp_buf );
 #endif
         return( 0 );
     }
-    return( setenv( var, rep, 1 ) );
+    return( setenv( tmp_buf, rep, 1 ) );
 }
 
 void ResetArchives( copy_entry *list )
@@ -208,12 +212,11 @@ static copy_entry **add_copy_entry( copy_entry **list, char *src, char *dst )
     return( &entry->next );
 }
 
-static int BuildList( const char *src, char *dst, bool test_abit, bool cond_copy, copy_entry **list )
+static int BuildList( char *src, char *dst, bool test_abit, bool cond_copy, copy_entry **list )
 {
-    char                *end;
+    char                *dst_end;
     char                path_buffer[_MAX_PATH2];
     char                full[_MAX_PATH];
-    char                srcdir[_MAX_PATH];
     char                *drive;
     char                *dir;
     char                *fn;
@@ -228,20 +231,19 @@ static int BuildList( const char *src, char *dst, bool test_abit, bool cond_copy
     char                entry_dst[_MAX_PATH];
 
     *list = NULL;
-    strcpy( srcdir, src );
-    end = &dst[strlen( dst ) - 1];
-    while( IS_BLANK( end[0] ) ) {
-        --end;
+    dst_end = &dst[strlen( dst ) - 1];
+    while( IS_BLANK( dst_end[0] ) ) {
+        --dst_end;
     }
-    end[1] = '\0';
-    if( strpbrk( srcdir, WILD_METAS ) == NULL ) {
+    dst_end[1] = '\0';
+    if( strpbrk( src, WILD_METAS ) == NULL ) {
         /* no wild cards */
-        _fullpath( entry_src, srcdir, sizeof( entry_src ) );
-        switch( *end ) {
+        _fullpath( entry_src, src, sizeof( entry_src ) );
+        switch( *dst_end ) {
         case '\\':
         case '/':
             /* need to append source file name */
-            _splitpath2( srcdir, path_buffer, &drive, &dir, &fn, &ext );
+            _splitpath2( src, path_buffer, &drive, &dir, &fn, &ext );
             _makepath( full, NULL, dst, fn, ext );
             _fullpath( entry_dst, full, sizeof( entry_dst ) );
             break;
@@ -254,26 +256,26 @@ static int BuildList( const char *src, char *dst, bool test_abit, bool cond_copy
         }
         return( 0 );
     }
-    _splitpath2( srcdir, path_buffer, &drive, &dir, &fn, &ext );
+    _splitpath2( src, path_buffer, &drive, &dir, &fn, &ext );
 #ifdef __UNIX__
-    _makepath( srcdir, drive, dir, NULL, NULL );
+    _makepath( src, drive, dir, NULL, NULL );
     _makepath( pattern, NULL, NULL, fn, ext );
-    if( srcdir[0] == '\0' ) {
+    if( src[0] == '\0' ) {
         directory = opendir( "." );
     } else {
-        directory = opendir( srcdir );
+        directory = opendir( src );
     }
 #else
-    directory = opendir( srcdir );
+    directory = opendir( src );
 #endif
     rc = 1;
     if( directory == NULL ) {
         if( !cond_copy ) {
-            Log( false, "Can not open source directory '%s': %s\n", srcdir, strerror( errno ) );
+            Log( false, "Can not open source directory '%s': %s\n", src, strerror( errno ) );
         }
     } else {
 #ifdef __UNIX__
-        char *srcdir_end = srcdir + strlen( srcdir );
+        char *src_end = src + strlen( src );
 #endif
         while( (dent = readdir( directory )) != NULL ) {
             if( ENTRY_INVALID1( dent ) )
@@ -282,8 +284,8 @@ static int BuildList( const char *src, char *dst, bool test_abit, bool cond_copy
 #ifdef __UNIX__
             if( fnmatch( pattern, dent->d_name, FNM_PATHNAME | FNM_NOESCAPE ) == FNM_NOMATCH )
                 continue;
-            strcpy( srcdir_end, dent->d_name );
-            if( chk_is_dir( srcdir ) )
+            strcpy( src_end, dent->d_name );
+            if( chk_is_dir( src ) )
                 continue;
 #else
             if( dent->d_attr & _A_SUBDIR )
@@ -292,7 +294,7 @@ static int BuildList( const char *src, char *dst, bool test_abit, bool cond_copy
             _makepath( full, drive, dir, dent->d_name, NULL );
             _fullpath( entry_src, full, sizeof( entry_src ) );
             strcpy( full, dst );
-            switch( *end ) {
+            switch( *dst_end ) {
             case '\\':
             case '/':
                 strcat( full, dent->d_name );
@@ -438,25 +440,31 @@ static int ProcOneCopy( const char *src, char *dst, bool cond_copy, char *copy_b
     return( 0 );
 }
 
-static int ProcCopy( char *cmd, bool test_abit, bool cond_copy, bool ignore_errors )
+static int ProcCopy( const char *cmd, bool test_abit, bool cond_copy, bool ignore_errors )
 {
-    char        *dst;
+    char        *p;
     copy_entry  *list;
     copy_entry  *next;
     int         res;
+    char        src[_MAX_PATH];
+    char        dst[_MAX_PATH];
 
-    for( dst = cmd; *dst != '\0'; ++dst ) {
-        if( IS_BLANK( *dst ) ) {
-            *dst++ = '\0';
-            dst = SkipBlanks( dst );
+    p = src;
+    for( ; *cmd != '\0'; cmd++ ) {
+        if( IS_BLANK( *cmd ) ) {
+            SKIP_BLANKS( cmd );
             break;
         }
+        *p++ = *cmd;
     }
-    if( *dst == '\0' ) {
+    *p = '\0';
+    if( *cmd == '\0' ) {
         Log( false, "Missing parameter\n" );
         return( 1 );
     }
-    res = BuildList( cmd, dst, test_abit, cond_copy, &list );
+    strncpy( dst, cmd, _MAX_PATH - 1 );
+    dst[_MAX_PATH - 1] = '\0';
+    res = BuildList( src, dst, test_abit, cond_copy, &list );
     if( res == 0 && list != NULL ) {
         char    *copy_buff = MAlloc( COPY_BUFF_SIZE );
         for( ; list != NULL; list = next ) {
@@ -525,7 +533,7 @@ static int DoPMake( pmake_data *data )
     return( rc );
 }
 
-static int ProcPMake( char *cmd, bool ignore_errors )
+static int ProcPMake( const char *cmd, bool ignore_errors )
 {
     pmake_data  *data;
     int         res;
@@ -702,7 +710,7 @@ static int RecursiveRM( const char *dir )
     return( rc );
 }
 
-static char *GetString( const char *cmd, char *buffer )
+static const char *GetString( const char *cmd, char *buffer )
 {
     char        c;
     char        quotechar;
@@ -720,10 +728,10 @@ static char *GetString( const char *cmd, char *buffer )
         *buffer++ = c;
     }
     *buffer = '\0';
-    return( (char *)cmd );
+    return( cmd );
 }
 
-static int ProcRm( char *cmd )
+static int ProcRm( const char *cmd )
 {
     char    buffer[_MAX_PATH];
     int     retval = 0;
@@ -793,51 +801,52 @@ static int ProcRm( char *cmd )
     return( retval );
 }
 
-int RunIt( char *cmd, bool ignore_errors, bool *res_nolog )
+int RunIt( const char *cmd, bool ignore_errors, bool *res_nolog )
 {
     int     res;
 
-    #define BUILTIN( b )        \
-        (strnicmp( cmd, b, sizeof( b ) - 1 ) == 0 && cmd[sizeof(b)-1] == ' ')
+    #define BUILTIN( c, b )     (strnicmp( (c), b, sizeof( b ) - 1 ) == 0 && (c)[sizeof( b ) - 1] == ' ')
+    #define SKIP_CMD( c, b )    SkipBlanks( c + sizeof( b ) )
+
     *res_nolog = false;
-    if( BUILTIN( "CD" ) ) {
-        res = SysChdir( SkipBlanks( cmd + sizeof( "CD" ) ) );
+    if( BUILTIN( cmd, "CD" ) ) {
+        res = SysChdir( SKIP_CMD( cmd, "CD" ) );
         if( res == 0 ) {
             getcwd( IncludeStk->cwd, sizeof( IncludeStk->cwd ) );
         }
-    } else if( BUILTIN( "CDSAY" ) ) {
-        res = SysChdir( SkipBlanks( cmd + sizeof( "CDSAY" ) ) );
+    } else if( BUILTIN( cmd, "CDSAY" ) ) {
+        res = SysChdir( SKIP_CMD( cmd, "CDSAY" ) );
         if( res == 0 ) {
             getcwd( IncludeStk->cwd, sizeof( IncludeStk->cwd ) );
             LogDir( IncludeStk->cwd );
         }
-    } else if( BUILTIN( "SET" ) ) {
-        res = ProcSet( SkipBlanks( cmd + sizeof( "SET" ) ) );
-    } else if( BUILTIN( "ECHO" ) ) {
-        Log( Quiet, "%s\n", SkipBlanks( cmd + sizeof( "ECHO" ) ) );
+    } else if( BUILTIN( cmd, "SET" ) ) {
+        res = ProcSet( SKIP_CMD( cmd, "SET" ) );
+    } else if( BUILTIN( cmd, "ECHO" ) ) {
+        Log( Quiet, "%s\n", SKIP_CMD( cmd, "ECHO" ) );
         res = 0;
-    } else if( BUILTIN( "ERROR" ) ) {
-        Log( Quiet, "%s\n", SkipBlanks( cmd + sizeof( "ERROR" ) ) );
+    } else if( BUILTIN( cmd, "ERROR" ) ) {
+        Log( Quiet, "%s\n", SKIP_CMD( cmd, "ERROR" ) );
         res = 1;
-    } else if( BUILTIN( "COPY" ) ) {
-        res = ProcCopy( SkipBlanks( cmd + sizeof( "COPY" ) ), false, false, ignore_errors );
+    } else if( BUILTIN( cmd, "COPY" ) ) {
+        res = ProcCopy( SKIP_CMD( cmd, "COPY" ), false, false, ignore_errors );
         *res_nolog = true;
-    } else if( BUILTIN( "ACOPY" ) ) {
-        res = ProcCopy( SkipBlanks( cmd + sizeof( "ACOPY" ) ), true, false, ignore_errors );
+    } else if( BUILTIN( cmd, "ACOPY" ) ) {
+        res = ProcCopy( SKIP_CMD( cmd, "ACOPY" ), true, false, ignore_errors );
         *res_nolog = true;
-    } else if( BUILTIN( "CCOPY" ) ) {
-        res = ProcCopy( SkipBlanks( cmd + sizeof( "CCOPY" ) ), false, true, ignore_errors );
+    } else if( BUILTIN( cmd, "CCOPY" ) ) {
+        res = ProcCopy( SKIP_CMD( cmd, "CCOPY" ), false, true, ignore_errors );
         *res_nolog = true;
-    } else if( BUILTIN( "ACCOPY" ) ) {
-        res = ProcCopy( SkipBlanks( cmd + sizeof( "ACCOPY" ) ), true, true, ignore_errors );
+    } else if( BUILTIN( cmd, "ACCOPY" ) ) {
+        res = ProcCopy( SKIP_CMD( cmd, "ACCOPY" ), true, true, ignore_errors );
         *res_nolog = true;
-    } else if( BUILTIN( "MKDIR" ) ) {
-        res = ProcMkdir( SkipBlanks( cmd + sizeof( "MKDIR" ) ) );
-    } else if( BUILTIN( "PMAKE" ) ) {
-        res = ProcPMake( SkipBlanks( cmd + sizeof( "PMAKE" ) ), ignore_errors );
+    } else if( BUILTIN( cmd, "MKDIR" ) ) {
+        res = ProcMkdir( SKIP_CMD( cmd, "MKDIR" ) );
+    } else if( BUILTIN( cmd, "PMAKE" ) ) {
+        res = ProcPMake( SKIP_CMD( cmd, "PMAKE" ), ignore_errors );
         *res_nolog = ignore_errors;
-    } else if( BUILTIN( "RM" ) ) {
-        res = ProcRm( SkipBlanks( cmd + sizeof( "RM" ) ) );
+    } else if( BUILTIN( cmd, "RM" ) ) {
+        res = ProcRm( SKIP_CMD( cmd, "RM" ) );
     } else if( cmd[0] == '!' ) {
         res = SysRunCommand( SkipBlanks( cmd + 1 ) );
     } else {

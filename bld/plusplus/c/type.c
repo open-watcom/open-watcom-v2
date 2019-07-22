@@ -1911,7 +1911,7 @@ static NAME betterAnonEnumName( SYMBOL sym, TYPE typ )
 {
     SYMBOL next = sym->thread;
 
-    if( next->id != SC_ENUM ) {
+    if( next->id != SYMC_ENUM ) {
         return( NULL );
     }
     if( next->sym_type != typ ) {
@@ -2414,7 +2414,7 @@ static DECL_SPEC *checkForClassFriends( DECL_SPEC *dspec, bool decl_done )
         if( sym != NULL ) {
             sym = checkPreviouslyDeclared( sym, name );
         }
-        if( ( sym != NULL ) && ( sym->id != SC_TYPEDEF ) ) {
+        if( ( sym != NULL ) && ( sym->id != SYMC_TYPEDEF ) ) {
             ScopeAddFriendSym( GetCurrScope(), sym );
         } else {
             if( sym != NULL ) {
@@ -3177,19 +3177,19 @@ static void setStorageClass( SYMBOL sym, stg_class_t sc )
     sc &= STG_TYPEDEF|STG_REGISTER|STG_AUTO|STG_EXTERN|STG_STATIC;
     switch( sc ) {
     case STG_TYPEDEF:
-        sym->id = SC_TYPEDEF;
+        sym->id = SYMC_TYPEDEF;
         break;
     case STG_REGISTER:
-        sym->id = SC_REGISTER;
+        sym->id = SYMC_REGISTER;
         break;
     case STG_AUTO:
-        sym->id = SC_AUTO;
+        sym->id = SYMC_AUTO;
         break;
     case STG_EXTERN:
-        sym->id = SC_EXTERN;
+        sym->id = SYMC_EXTERN;
         break;
     case STG_STATIC:
-        sym->id = SC_STATIC;
+        sym->id = SYMC_STATIC;
         break;
     }
 }
@@ -3996,12 +3996,12 @@ DECL_INFO *FinishDeclarator( DECL_SPEC *dspec, DECL_INFO *dinfo )
         sym = AllocSymbol();
         sym->sym_type = prev_type;
         if( prev_type->id == TYP_ERROR ) {
-            sym->flag |= SF_ERROR;
+            sym->flag |= SYMF_ERROR;
         }
         setStorageClass( sym, dspec->stg_class );
         SymbolLocnDefine( &(id_tree->locn), sym );
         if( !PragToggle.unreferenced ) {
-            sym->flag |= SF_NO_REF_WARN;
+            sym->flag |= SYMF_NO_REF_WARN;
         }
         dinfo->sym = sym;
         dinfo->name = id;
@@ -4014,7 +4014,7 @@ DECL_INFO *FinishDeclarator( DECL_SPEC *dspec, DECL_INFO *dinfo )
         } else {
             // (1) make sure there were decl-specs
             // (2) typedef int I, *PI; is common
-            if( ! dspec->is_default && sym->id != SC_TYPEDEF ) {
+            if( ! dspec->is_default && sym->id != SYMC_TYPEDEF ) {
                 SYMBOL prev_sym;
 
                 prev_sym = dspec->prev_sym;
@@ -5632,7 +5632,7 @@ static void noDuplicateNames( DECL_INFO *head, DECL_INFO *check )
             check->name = NameDummy();
             arg_sym = check->sym;
             if( arg_sym != NULL ) {
-                arg_sym->flag |= SF_REFERENCED;
+                arg_sym->flag |= SYMF_REFERENCED;
             }
             return;
         }
@@ -5731,7 +5731,7 @@ static bool defaultArgCantExist( SCOPE scope, DECL_INFO *dinfo, SYMBOL sym )
     decl_sym = tryInsertion( scope, sym, dinfo->name );
     if( decl_sym != sym ) {
         /* declaration returned a previous SYMBOL! */
-        if( decl_sym->id != SC_DEFAULT ) {
+        if( decl_sym->id != SYMC_DEFAULT ) {
             /*
               leaving out the default arg in a call would cause an ambiguity
               with another base symbol of the same name
@@ -5760,7 +5760,7 @@ static SYMBOL defaultArgMustExist( SCOPE scope, DECL_INFO *dinfo, SYMBOL sym )
     decl_sym = tryInsertion( scope, sym, dinfo->name );
     if( decl_sym != sym ) {
         /* declaration returned a previous SYMBOL! */
-        if( decl_sym->id != SC_DEFAULT ) {
+        if( decl_sym->id != SYMC_DEFAULT ) {
             /*
               leaving out the default arg in a call would cause an ambiguity
               with another base symbol of the same name
@@ -5786,7 +5786,7 @@ static SYMBOL defaultArgMustExist( SCOPE scope, DECL_INFO *dinfo, SYMBOL sym )
 /*
     Default argument nomenclature:
 
-        defaultProto    -- SC_DEFAULT sym with same name as function
+        defaultProto    -- SYMC_DEFAULT sym with same name as function
         defaultValue    -- function that is { return expr; }
 */
 static SYMBOL makeDefaultProto( DECL_INFO *dinfo, unsigned num_args, DECL_INFO *parm )
@@ -5803,7 +5803,7 @@ static SYMBOL makeDefaultProto( DECL_INFO *dinfo, unsigned num_args, DECL_INFO *
     base_sym = dinfo->sym;
     base_type = base_sym->sym_type;
     sym = AllocSymbol();
-    sym->id = SC_DEFAULT;
+    sym->id = SYMC_DEFAULT;
     sym->sym_type = functionReduce( base_type, num_args );
     sym->thread = base_sym;
     sym->u.defarg_info = NULL;
@@ -6249,7 +6249,7 @@ static bool quietStaticMember( SYMBOL sym, PTREE id )
         case CO_DELETE:
         case CO_NEW_ARRAY:
         case CO_DELETE_ARRAY:
-            sym->id = SC_STATIC;
+            sym->id = SYMC_STATIC;
             return( true );
         }
     }
@@ -6337,7 +6337,7 @@ void VerifySpecialFunction( SCOPE scope, DECL_INFO *dinfo )
     scope_name = NULL;
     if( is_a_member ) {
         scope_name = SimpleTypeName( scope_type );
-        if( sym->id != SC_STATIC ) {
+        if( sym->id != SYMC_STATIC ) {
             if( ! quietStaticMember( sym, id ) ) {
                 non_static_member = true;
             }
@@ -6654,7 +6654,7 @@ DECL_INFO *InsertDeclInfo( SCOPE insert_scope, DECL_INFO *dinfo )
             }
         } else {
             if( dinfo->fn_defn ) {
-                if( check_sym != NULL && check_sym->id == SC_DEFAULT ) {
+                if( check_sym != NULL && check_sym->id == SYMC_DEFAULT ) {
                     CErr2p( ERR_NOT_A_MEMBER, sym );
                 }
                 if( ! ScopeEnclosed( ScopeNearestNonTemplate( GetCurrScope() ),
@@ -6679,14 +6679,14 @@ DECL_INFO *InsertDeclInfo( SCOPE insert_scope, DECL_INFO *dinfo )
         } else if( ScopeId( scope ) == SCOPE_BLOCK ||
                    ScopeId( scope ) == SCOPE_FUNCTION ) {
             /* handle promotions from local scope to file scope */
-            if( sym->id == SC_EXTERN ) {
+            if( sym->id == SYMC_EXTERN ) {
                 scope = blockScopeExtern();
                 is_block_sym = true;
             } else if( is_a_function ) {
                 switch( sym->id ) {
-                case SC_TYPEDEF:
+                case SYMC_TYPEDEF:
                     break;
-                case SC_NULL:
+                case SYMC_NULL:
                     if( errWithSymLoc( WARN_LOCAL_FN_PROTOTYPE, sym ) & MS_PRINTED ) {
                         CErr2p( INF_FUNCTION_PROTOTYPE, sym->sym_type );
                     }
@@ -6697,14 +6697,14 @@ DECL_INFO *InsertDeclInfo( SCOPE insert_scope, DECL_INFO *dinfo )
                     if( errWithSymLoc( ERR_STATIC_FN_DECL_IN_FUNCTION, sym ) & MS_PRINTED ) {
                         CErr2p( INF_FUNCTION_PROTOTYPE, sym->sym_type );
                     }
-                    sym->id = SC_EXTERN;
+                    sym->id = SYMC_EXTERN;
                     scope = blockScopeExtern();
                     is_block_sym = true;
                 }
             } else {
                 switch( sym->id ) {
-                case SC_TYPEDEF:
-                case SC_STATIC:
+                case SYMC_TYPEDEF:
+                case SYMC_STATIC:
                     break;
                 default:
                     type = TypeGetActualFlags( sym->sym_type, &flags );
@@ -6726,7 +6726,7 @@ DECL_INFO *InsertDeclInfo( SCOPE insert_scope, DECL_INFO *dinfo )
                 }
             }
         } else if( is_a_function && ScopeLocalClass( scope ) ) {
-            if( ! dinfo->fn_defn && sym->id != SC_DEFAULT ) {
+            if( ! dinfo->fn_defn && sym->id != SYMC_DEFAULT ) {
                 errWithSymLoc( WARN_LOCAL_CLASS_FUNCTION, sym );
             }
         }
@@ -6735,17 +6735,17 @@ DECL_INFO *InsertDeclInfo( SCOPE insert_scope, DECL_INFO *dinfo )
          && ( scope->owner.type != NULL )
          && ( dinfo->name == scope->owner.type->u.c.info->name ) ) {
             switch( decl_sym->id ) {
-            case SC_TYPEDEF:
+            case SYMC_TYPEDEF:
                 CErr2p( ERR_TYPEDEF_SAME_NAME_AS_CLASS, dinfo->name );
                 break;
-            case SC_CLASS_TEMPLATE:
+            case SYMC_CLASS_TEMPLATE:
                 CErr2p( ERR_TYPEDEF_SAME_NAME_AS_CLASS, dinfo->name );
                 break;
-            case SC_ENUM:
+            case SYMC_ENUM:
                 CErr2p( ERR_ENUM_SAME_NAME_AS_CLASS, dinfo->name );
                 break;
-            case SC_STATIC:
-            case SC_STATIC_FUNCTION_TEMPLATE:
+            case SYMC_STATIC:
+            case SYMC_STATIC_FUNCTION_TEMPLATE:
                 CErr2p( ERR_STATIC_SAME_NAME_AS_CLASS, dinfo->name );
                 break;
             }
@@ -6759,10 +6759,10 @@ DECL_INFO *InsertDeclInfo( SCOPE insert_scope, DECL_INFO *dinfo )
                     if( ScopeId( scope ) == SCOPE_FILE ) {
                         if( !CompFlags.extensions_enabled ) {
                             /* required by the ANSI C++ draft */
-                            if( check_sym->id == SC_FUNCTION_TEMPLATE ) {
-                                check_sym->id = SC_EXTERN_FUNCTION_TEMPLATE;
+                            if( check_sym->id == SYMC_FUNCTION_TEMPLATE ) {
+                                check_sym->id = SYMC_EXTERN_FUNCTION_TEMPLATE;
                             } else {
-                                check_sym->id = SC_EXTERN;
+                                check_sym->id = SYMC_EXTERN;
                             }
                         }
                     }
@@ -7053,7 +7053,7 @@ SYMBOL MakeTypeidSym( TYPE type )
     typeid_type->u.a.array_size = TypeidSize( len );
     typeid_type = makeCompilerReadWriteCommonData( typeid_type );
     sym = AllocSymbol();
-    sym->id = SC_PUBLIC;
+    sym->id = SYMC_PUBLIC;
     // we don't want this symbol referenced unless we will generate it
     sym->sym_type = typeid_type;
     sym = tryInsertion( GetFileScope(), sym, name );
@@ -7076,8 +7076,8 @@ SYMBOL MakeVATableSym( SCOPE class_scope )
     vatable_type = MakeExpandableType( TYP_UCHAR );
     vatable_type = MakeCompilerConstCommonData( vatable_type );
     sym = AllocSymbol();
-    sym->id = SC_PUBLIC;
-    sym->flag |= SF_REFERENCED;
+    sym->id = SYMC_PUBLIC;
+    sym->flag |= SYMF_REFERENCED;
     sym->sym_type = vatable_type;
     sym = tryInsertion( GetFileScope(), sym, name );
     LinkageSet( sym, "C++" );
@@ -7100,8 +7100,8 @@ SYMBOL MakeVBTableSym( SCOPE scope, vindex num_vbases, target_offset_t delta )
     vbtable_type = MakeArrayOf( num_vbases + 1, vbtable_type );
     vbtable_type = MakeCompilerConstCommonData( vbtable_type );
     sym = AllocSymbol();
-    sym->id = SC_PUBLIC;
-    sym->flag |= SF_REFERENCED;
+    sym->id = SYMC_PUBLIC;
+    sym->flag |= SYMF_REFERENCED;
     sym->sym_type = vbtable_type;
     sym = tryInsertion( GetFileScope(), sym, name );
     LinkageSet( sym, "C++" );
@@ -7128,8 +7128,8 @@ SYMBOL MakeVMTableSym( SCOPE from, SCOPE to, bool *had_to_define )
     vmtable_type = MakeArrayOf( num_vbases + 1, vmtable_type );
     vmtable_type = MakeCompilerConstCommonData( vmtable_type );
     sym = AllocSymbol();
-    sym->id = SC_PUBLIC;
-    sym->flag |= SF_REFERENCED;
+    sym->id = SYMC_PUBLIC;
+    sym->flag |= SYMF_REFERENCED;
     sym->sym_type = vmtable_type;
     sym = tryInsertion( GetFileScope(), sym, name );
     LinkageSet( sym, "C++" );
@@ -7153,8 +7153,8 @@ SYMBOL MakeVFTableSym( SCOPE scope, vindex num_vfns, target_offset_t delta )
     vftable_type = MakeArrayOf( num_vfns + 1, vftable_type );
     vftable_type = MakeCompilerConstCommonData( vftable_type );
     sym = AllocSymbol();
-    sym->id = SC_PUBLIC;
-    sym->flag |= SF_REFERENCED;
+    sym->id = SYMC_PUBLIC;
+    sym->flag |= SYMF_REFERENCED;
     sym->sym_type = vftable_type;
     sym = tryInsertion( GetFileScope(), sym, name );
     LinkageSet( sym, "C++" );
@@ -7181,11 +7181,11 @@ void TypedefUsingDecl( DECL_SPEC *dspec, SYMBOL typedef_sym, TOKEN_LOCN *locn )
         locn = &id_locn;
     } else {
         DbgAssert( locn != NULL );
-        DbgAssert( typedef_sym != NULL && typedef_sym->id == SC_TYPEDEF );
+        DbgAssert( typedef_sym != NULL && typedef_sym->id == SYMC_TYPEDEF );
         type = typedef_sym->sym_type;
         name = typedef_sym->name->name;
     }
-    SymCreateAtLocn( type, SC_TYPEDEF, SF_NULL, name, GetCurrScope(), locn );
+    SymCreateAtLocn( type, SYMC_TYPEDEF, SYMF_NULL, name, GetCurrScope(), locn );
 }
 
 bool TypeHasVirtualBases( TYPE type )
@@ -7403,7 +7403,7 @@ static bool markAllUnused( SCOPE scope, void (*diag)( SYMBOL ) )
     stop = ScopeOrderedStart( scope );
     for( curr = NULL; (curr = ScopeOrderedNext( stop, curr )) != NULL; ) {
         generic_type = TypedefRemove( curr->sym_type );
-        DbgAssert( curr->id == SC_TYPEDEF && generic_type->id == TYP_GENERIC );
+        DbgAssert( curr->id == SYMC_TYPEDEF && generic_type->id == TYP_GENERIC );
         curr_flags = generic_type->flag;
         if( diag != NULL && ( curr_flags & TF1_USED ) == 0 ) {
             (*diag)( curr );
@@ -7566,7 +7566,7 @@ static void checkTemplateClass( PSTK_CTL *stk, TYPE class_type )
     }
     stop = ScopeOrderedStart( parm_scope );
     for( curr = NULL; (curr = ScopeOrderedNext( stop, curr )) != NULL; ) {
-        if( curr->id == SC_TYPEDEF ) {
+        if( curr->id == SYMC_TYPEDEF ) {
             PstkPush( stk, curr->sym_type );
         }
     }
@@ -7738,19 +7738,19 @@ static bool compareClassTypes( TYPE b_type, TYPE u_type,
         u_curr = ScopeOrderedNext( u_stop, u_curr );
         if( b_curr == NULL || u_curr == NULL )
             break;
-        if( b_curr->id == SC_TYPEDEF ) {
+        if( b_curr->id == SYMC_TYPEDEF ) {
             PstkPush( &(data->without_generic),
                       PTreeType( b_curr->sym_type ) );
             u_tree = PTreeType( u_curr->sym_type );
             PstkPush( &(data->with_generic), u_tree );
-        } else if( b_curr->id == SC_STATIC ) {
-            if( u_curr->id == SC_ADDRESS_ALIAS ) {
+        } else if( b_curr->id == SYMC_STATIC ) {
+            if( u_curr->id == SYMC_ADDRESS_ALIAS ) {
                 PstkPush( &(data->without_generic),
                           PTreeIntConstant( b_curr->u.sval,
                                             b_curr->sym_type->id ) );
                 PstkPush( &(data->with_generic),
                           PTreeIdSym( u_curr->u.alias ) );
-            } else if( u_curr->id == SC_STATIC ) {
+            } else if( u_curr->id == SYMC_STATIC ) {
                 if( b_curr->u.sval != u_curr->u.sval ) {
                     return( true );
                 }
@@ -7857,8 +7857,8 @@ static tb_status typesBind( type_bind_info *data, bool is_function )
             if( (*b_top)->op == PT_INT_CONSTANT ) {
                 SYMBOL sym = ScopeYYMember( data->parm_scope, (*u_top)->u.id.name )->name_syms;
 
-                if( ( sym->id == SC_NULL ) && ( sym->u.sval == 0 ) ) {
-                    sym->id = SC_STATIC;
+                if( ( sym->id == SYMC_NULL ) && ( sym->u.sval == 0 ) ) {
+                    sym->id = SYMC_STATIC;
                     DgStoreConstScalar( *b_top, (*b_top)->type, sym );
                 }
 
@@ -7875,12 +7875,12 @@ static tb_status typesBind( type_bind_info *data, bool is_function )
             } else if( (*b_top)->op == PT_ID ) {
                 SYMBOL sym = ScopeYYMember( data->parm_scope, (*u_top)->u.id.name )->name_syms;
 
-                // using SC_NULL here is a bit dirty...
-                if( ( sym->id == SC_NULL ) && ( sym->u.sval == 0 ) ) {
+                // using SYMC_NULL here is a bit dirty...
+                if( ( sym->id == SYMC_NULL ) && ( sym->u.sval == 0 ) ) {
                     sym->u.sval = (target_int)(pointer_int)(*b_top)->u.id.name;
                 }
 
-                if( ( sym->id != SC_NULL ) || ( sym->u.sval != (target_int)(pointer_int)(*b_top)->u.id.name ) ) {
+                if( ( sym->id != SYMC_NULL ) || ( sym->u.sval != (target_int)(pointer_int)(*b_top)->u.id.name ) ) {
                     // already bound to different value
                     PTreeFree( *b_top );
                     PTreeFree( *u_top );
@@ -8232,7 +8232,7 @@ static SYMBOL templateArgTypedef( TYPE type )
 {
     SYMBOL tsym;
 
-    tsym = templateArgSym( SC_TYPEDEF, type );
+    tsym = templateArgSym( SYMC_TYPEDEF, type );
     return( tsym );
 }
 
@@ -8245,7 +8245,7 @@ static void injectTemplateParm( SCOPE scope, PTREE parm, NAME name )
     parm_type = parm->type;
     switch( parm->op ) {
     case PT_INT_CONSTANT:
-        sym = templateArgSym( SC_STATIC, parm_type );
+        sym = templateArgSym( SYMC_STATIC, parm_type );
         DgStoreConstScalar( parm, parm_type, sym );
         break;
     case PT_TYPE:
@@ -8258,7 +8258,7 @@ static void injectTemplateParm( SCOPE scope, PTREE parm, NAME name )
         } else {
             parm_type = addr_sym->sym_type;
         }
-        sym = templateArgSym( SC_ADDRESS_ALIAS, parm_type );
+        sym = templateArgSym( SYMC_ADDRESS_ALIAS, parm_type );
         sym->u.alias = addr_sym;
         break;
     DbgDefault( "template parms are corrupted" );
@@ -8332,7 +8332,7 @@ int BindExplicitTemplateArguments( SCOPE parm_scope, PTREE templ_args )
             if( (typ = GenericType( curr->sym_type )) != NULL ) {
                 ScopeInsert( parm_scope, templateArgTypedef( typ ), name );
             } else if( (typ = IntegralType( curr->sym_type )) != NULL ) {
-                ScopeInsert( parm_scope, templateArgSym( SC_NULL, typ ), name );
+                ScopeInsert( parm_scope, templateArgSym( SYMC_NULL, typ ), name );
             } else {
                 CFatal( "not yet implemented" );
             }
@@ -8378,7 +8378,7 @@ bool BindGenericTypes( SCOPE parm_scope, PTREE parms, PTREE args,
                 } else {
                     curr->sym_type->of = curr->sym_type->of->of;
                 }
-            } else if( curr->id == SC_NULL ) {
+            } else if( curr->id == SYMC_NULL ) {
                 result &= curr->u.sval != 0;
             }
         }

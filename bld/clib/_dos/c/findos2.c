@@ -78,9 +78,10 @@ _WCRTLINK unsigned _dos_findfirst( const char *path, unsigned attr,
 #endif
         APIRET      rc;
         FF_BUFFER   dir_buff;
-        HDIR        handle = DTAXXX_INVALID_HANDLE;
+        HDIR        handle;
         OS_UINT     searchcount;
 
+        handle = HDIR_CREATE;
         searchcount = 1;        /* only one at a time */
         rc = DosFindFirst( (PSZ)path, (PHFILE)&handle, attr,
                 (PVOID)&dir_buff, sizeof( dir_buff ), &searchcount, FF_LEVEL );
@@ -155,6 +156,7 @@ _WCRTLINK unsigned _dos_findclose( struct find_t *buf ) {
 #endif
         if( DTAXXX_HANDLE_OF( buf->reserved ) != DTAXXX_INVALID_HANDLE ) {
             rc = DosFindClose( DTAXXX_HANDLE_OF( buf->reserved ) );
+            DTAXXX_HANDLE_OF( buf->reserved ) = DTAXXX_INVALID_HANDLE;
             if( rc != 0 ) {
                 return( __set_errno_dos_reterr( rc ) );
             }

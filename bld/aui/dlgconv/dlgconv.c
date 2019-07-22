@@ -205,7 +205,8 @@ void PrintDlg(char *sym, gui_ctl_id id, char*name,gui_control_info*ctl,int num_c
     fclose( dlgfile );
 }
 
-main()
+int main( void )
 {
-    Doit
+   Doit
+   return( 0 );
 }

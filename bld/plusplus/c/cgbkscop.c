@@ -62,8 +62,8 @@ typedef struct res_act          RES_ACT;            // resolution actions
 ,USAGE_DEF( SCUSE_DTOR_COMPONENT )  /* - - dtor: component              */
 
 #define RES_DEFS        /* type of resolution                           */ \
- RES_DEF( RES_FN_TH )   /* - function resolved to be SF_LONGJUMP        */ \
-,RES_DEF( RES_FN_NT )   /* - function resolved to be SF_NO_LONGJUMP     */ \
+ RES_DEF( RES_FN_TH )   /* - function resolved to be SYMF_LONGJUMP      */ \
+,RES_DEF( RES_FN_NT )   /* - function resolved to be SYMF_NO_LONGJUMP   */ \
 ,RES_DEF( RES_SC_SG )   /* - scope resolved as STAB_GEN                 */ \
 ,RES_DEF( RES_SC_NG )   /* - scope resolved as ~ STAB_GEN               */
 
@@ -385,9 +385,9 @@ static CALLNODE* makeThrowFun   // FUNCTION BECOMES A THROWING FUNCTION
 
     fun = owner->base.object;
     fun = symDefaultBase( fun );
-    DbgVerify( (fun->flag & SF_NO_LONGJUMP) == 0, "makeThrowFun -- has SF_NO_LONGJUMP" );
-    if( (fun->flag & SF_LONGJUMP) == 0 ) {
-        fun->flag |= SF_LONGJUMP;
+    DbgVerify( (fun->flag & SYMF_NO_LONGJUMP) == 0, "makeThrowFun -- has SYMF_NO_LONGJUMP" );
+    if( (fun->flag & SYMF_LONGJUMP) == 0 ) {
+        fun->flag |= SYMF_LONGJUMP;
         _printAction1( pushActionCaller( owner, RES_FN_TH ), "Function resolved: throwable" );
         CgResolve();
     }
@@ -402,9 +402,9 @@ static CALLNODE* makeNonThrowFun// FUNCTION BECOMES A NON-THROWING FUNCTION
 
     fun = owner->base.object;
     fun = symDefaultBase( fun );
-    DbgVerify( (fun->flag & SF_LONGJUMP) == 0, "makeNonThrowFun -- has SF_LONGJUMP" );
-    if( (fun->flag & SF_NO_LONGJUMP) == 0 ) {
-        fun->flag |= SF_NO_LONGJUMP;
+    DbgVerify( (fun->flag & SYMF_LONGJUMP) == 0, "makeNonThrowFun -- has SYMF_LONGJUMP" );
+    if( (fun->flag & SYMF_NO_LONGJUMP) == 0 ) {
+        fun->flag |= SYMF_NO_LONGJUMP;
         _printAction1( pushActionCaller( owner, RES_FN_NT ), "Function resolved: non-throwable" );
         CgResolve();
     }
@@ -453,7 +453,7 @@ static SCOPE_RES* scopeResolve  // COMPLETE SCOPE RESOLUTION, IF POSSIBLE
                         _printScopeRes( sr, "scope genable, throwable not last" );
                         break;
                     }
-                    if( su->u.fun->flag & SF_LONGJUMP ) {
+                    if( su->u.fun->flag & SYMF_LONGJUMP ) {
                         thrdt = 1;
                     }
                     /* fall through */
@@ -594,8 +594,8 @@ static bool resolveSymbol       // RESOLVE FUNCTION SYMBOL, IF POSSIBLE
         return( true );
     _printFunction( fun, "resolve:" );
     fun = symDefaultBase( fun );
-    if( fun->flag & SF_FN_LONGJUMP ) {
-        _print( (fun->flag & SF_LONGJUMP) ? "throwable\n" : "non-throwable\n" );
+    if( fun->flag & SYMF_FN_LONGJUMP ) {
+        _print( (fun->flag & SYMF_LONGJUMP) ? "throwable\n" : "non-throwable\n" );
         ok = true;
     } else {
         if( SymIsInitialized( fun ) ) {
@@ -606,14 +606,14 @@ static bool resolveSymbol       // RESOLVE FUNCTION SYMBOL, IF POSSIBLE
             TYPE* except_spec = SymFuncArgList( fun )->except_spec;
             if( NULL != except_spec
              && NULL == *except_spec ) {
-                fun->flag |= SF_NO_LONGJUMP;
+                fun->flag |= SYMF_NO_LONGJUMP;
                 _print( "non-throwable with throw()\n" );
                 return( true );
             } else {
                 REPO_REC_FUN* frec = RepoFunRead( fun->name->name );
                 if( NULL == frec ) {
                     _print( "assumed throwable, called not initialized\n" );
-                    fun->flag |= SF_LONGJUMP;
+                    fun->flag |= SYMF_LONGJUMP;
                     ok = true;
                 } else {
                     _print( "deleted: repository has IGN_LONGJUMP\n" );
@@ -674,7 +674,7 @@ static void resolvedCallInScope // PROCESS A RESOLVED CALL FOR A SCOPE
     , SCOPE_RES* sr )           // - scope
 {
     if( ! sr->gen_stab ) {
-        if( called->flag & SF_LONGJUMP ) {
+        if( called->flag & SYMF_LONGJUMP ) {
             if( sr->dtorables > 0 || sr->scope_throw ) {
                 makeScopeGen( sr );
                 _printScopeRes( sr, "throwable call after dtorables" );
@@ -693,7 +693,7 @@ static void resolvedCallInStmt  // PROCESS A RESOLVED CALL FOR A STATEMENT
 {
     called = symDefaultBase( called );
     if( ! sr->gen_stab ) {
-        if( called->flag & SF_LONGJUMP ) {
+        if( called->flag & SYMF_LONGJUMP ) {
             if( sr->dtorables > 0 || sr->scope_throw ) {
                 makeScopeGen( sr );
                 _printScopeRes( sr, "throwable stmt call, dtorables" );
@@ -712,7 +712,7 @@ static void resolvedCtorInStmt  // PROCESS A RESOLVED CTOR CALL FOR A STMT
 {
     called = symDefaultBase( called );
     if( ! sr->gen_stab ) {
-        if( called->flag & SF_LONGJUMP ) {
+        if( called->flag & SYMF_LONGJUMP ) {
             if( sr->dtorables > 1 ) {
                 makeScopeGen( sr );
                 _printScopeRes( sr, "throwable stmt ctor, dtorables" );
@@ -731,9 +731,9 @@ static void resolveCall         // RESOLVE A CALL, IF POSSIBLE
     , CALLNODE* called )        // - NULL or node for unresolved function
 {
     fun = symDefaultBase( fun );
-    if( fun->flag & SF_LONGJUMP ) {
+    if( fun->flag & SYMF_LONGJUMP ) {
         makeThrowFun( caller );
-    } else if( fun->flag & SF_NO_LONGJUMP ) {
+    } else if( fun->flag & SYMF_NO_LONGJUMP ) {
         // do nothing
     } else {
         _printUnrUsage1( addFnUsage( FNUSE_CALL, called, caller ), "unresolved call" );
@@ -766,7 +766,7 @@ void CgResCall                  // ADD: CALL TO RESOLVE
     CALLNODE* called;           // - NULL or node for unresolved function
 
     fun = symDefaultBase( fun );
-    if( resolveSymbol( fun, &called ) && (fun->flag & SF_NO_LONGJUMP) == 0 ) {
+    if( resolveSymbol( fun, &called ) && (fun->flag & SYMF_NO_LONGJUMP) == 0 ) {
         resolveCall( caller, fun, called );
         OpenScopesIterBeg( sr ) {
             if( sr->statement ) {
@@ -790,7 +790,7 @@ static void resolvedDtor        // PROCESS A RESOLVED DTOR
 {
     if( ! sr->gen_stab ) {
         dtor = symDefaultBase( dtor );
-        if( dtor->flag & SF_LONGJUMP ) {
+        if( dtor->flag & SYMF_LONGJUMP ) {
             if( sr->dtor_ct || sr->scope_throw ) {
                 makeScopeGen( sr );
                 _printScopeRes( sr, "dtor made scope genable" );
@@ -824,7 +824,7 @@ static void resolvedDtorBlk     // PROCESS A RESOLVED DTOR IN SCOPE
     , SCOPE_RES* sr )           // - it's scope
 {
     dtor = symDefaultBase( dtor );
-    if( dtor->flag & SF_LONGJUMP ) {
+    if( dtor->flag & SYMF_LONGJUMP ) {
         if( sr->dtor_ct || sr->scope_throw ) {
             makeScopeGen( sr );
             _printScopeRes( sr, "dtor made scope genable" );
@@ -847,7 +847,7 @@ static void resolveDtorBlk      // ADD: DTOR IN SCOPE TO RESOLVE
     if( resolveSymbol( fun, &called ) ) {
         sr = openScopesTop();
         DbgVerify( NULL != sr, "CgResDtorBlk -- no scope" );
-        if( fun->flag & SF_FN_LONGJUMP ) {
+        if( fun->flag & SYMF_FN_LONGJUMP ) {
             resolvedDtorBlk( fun, sr );
             _printUnrUsage1( addScUsage( SCUSE_DTOR_BLK, sr, fun ), "resolved blk dtor" );
         } else {
@@ -884,7 +884,7 @@ static void resolveDtorStmt     // ADD: DTOR IN STATEMENT TO RESOLVE
         sr = openScopesTop();
         DbgVerify( NULL != sr, "CgResDtorStmt -- no scope" );
         DbgVerify( sr->statement, "CgResDtorStmt -- no statement scope" );
-        if( dtor->flag & SF_FN_LONGJUMP ) {
+        if( dtor->flag & SYMF_FN_LONGJUMP ) {
             resolvedDtor( dtor, sr );
             _printUnrUsage1( addScUsage( SCUSE_DTOR_TEMP, sr, dtor ), "resolved stmt dtor" );
         } else {
@@ -933,7 +933,7 @@ static void resolveDtorComponent// ADD: DTOR IN COMPONENT TO RESOLVE
         DbgVerify( NULL != sr, "CgResDtorComponent -- no scope" );
         for( ; sr->statement; sr = sr->enclosing );
 //      DbgVerify( ! sr->statement, "CgResDtorComponent -- statement scope" );
-        if( dtor->flag & SF_FN_LONGJUMP ) {
+        if( dtor->flag & SYMF_FN_LONGJUMP ) {
             resolvedDtor( dtor, sr );
             _printUnrUsage1( addScUsage( SCUSE_DTOR_COMPONENT, sr, dtor ), "resolved component dtor" );
         } else {
@@ -1005,7 +1005,7 @@ static void resolveFunction     // RESOLUTIONS FOR FUNCTION
         switch( fu->type ) {
         DbgDefault( "resolveFunction -- bad resolution code" );
         case FNUSE_CALL :
-            if( fun->flag & SF_LONGJUMP ) {
+            if( fun->flag & SYMF_LONGJUMP ) {
                 makeThrowFun( fu->u.node );
             }
             break;
@@ -1159,7 +1159,7 @@ bool CgResolveNonThrow          // RESOLVE A FUNCTION AS NON-THROW
         SYMBOL fun = node->base.object;
         if( fun != NULL ) {
             fun = symDefaultBase( fun );
-            if( (fun->flag & SF_FN_LONGJUMP) == 0 ) {
+            if( (fun->flag & SYMF_FN_LONGJUMP) == 0 ) {
                 makeNonThrowFun( node );
             }
         }

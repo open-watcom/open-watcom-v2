@@ -230,16 +230,16 @@ static fe_attr basic_attributes(// GET BASIC ATTRIBUTES
     fe_attr attr;               // - attribute
 
     switch( sym->id ) {
-    case SC_EXTERN:
-    case SC_EXTERN_FUNCTION_TEMPLATE:
+    case SYMC_EXTERN:
+    case SYMC_EXTERN_FUNCTION_TEMPLATE:
         attr = FE_STATIC | FE_GLOBAL | FE_IMPORT ;
         break;
-    case SC_PUBLIC:
-    case SC_FUNCTION_TEMPLATE:
+    case SYMC_PUBLIC:
+    case SYMC_FUNCTION_TEMPLATE:
         attr = FE_STATIC | FE_GLOBAL;
         break;
-    case SC_STATIC:
-    case SC_STATIC_FUNCTION_TEMPLATE:
+    case SYMC_STATIC:
+    case SYMC_STATIC_FUNCTION_TEMPLATE:
         attr = FE_STATIC | FE_VISIBLE;
         break;
     default :
@@ -323,7 +323,7 @@ fe_attr FEAttr(                 // GET SYMBOL ATTRIBUTES
         }
     }
     // don't export addressability thunks
-    if( (sym->flag & SF_ADDR_THUNK) == 0 ) {
+    if( (sym->flag & SYMF_ADDR_THUNK) == 0 ) {
         if( mod_flags & (TF1_DLLEXPORT|TF1_DLLIMPORT) ) {
             if( SymIsInitialized( sym ) ) {
                 if( mod_flags & TF1_DLLEXPORT ) {
@@ -339,8 +339,8 @@ fe_attr FEAttr(                 // GET SYMBOL ATTRIBUTES
             }
         }
     }
-    // change to this: if( sym->flag & SF_CG_ADDR_TAKEN ) {
-    if( sym->flag & SF_CG_ADDR_TAKEN ) {
+    // change to this: if( sym->flag & SYMF_CG_ADDR_TAKEN ) {
+    if( sym->flag & SYMF_CG_ADDR_TAKEN ) {
         attr |= FE_ADDR_TAKEN;
     }
     if( SymIsClassMember( sym ) ) {
@@ -351,7 +351,7 @@ fe_attr FEAttr(                 // GET SYMBOL ATTRIBUTES
             attr |= FE_STATIC;
             /* only set FE_GLOBAL if it's not an in-class
          * initialization of a const static member */
-            if( (sym->flag & SF_IN_CLASS_INIT) == 0 ) {
+            if( (sym->flag & SYMF_IN_CLASS_INIT) == 0 ) {
                 attr |= FE_GLOBAL;
             }
         } else {
@@ -743,13 +743,13 @@ static bool makeFileScopeStaticNear( SYMBOL sym )
     //     (debug info would be wrong because type says far function)
     //   - multiple code segments are not used
     //   - function will not end up as FE_COMMON
-    if( sym->id != SC_STATIC ) {
+    if( sym->id != SYMC_STATIC ) {
         return( false );
     }
     if( ScopeId( SymScope( sym ) ) != SCOPE_FILE ) {
         return( false );
     }
-    if( (sym->flag & SF_ADDR_TAKEN) != 0 ) {
+    if( (sym->flag & SYMF_ADDR_TAKEN) != 0 ) {
         // function may be called as a FAR function through a pointer
         return( false );
     }
@@ -833,7 +833,7 @@ static call_class getCallClass( // GET CLASS OF CALL
             }
 #if _INTEL_CPU
             // don't export addressability thunks
-            if( (sym->flag & SF_ADDR_THUNK) == 0 ) {
+            if( (sym->flag & SYMF_ADDR_THUNK) == 0 ) {
                 if( flags & TF1_DLLEXPORT ) {
                     if( fn_flags & TF1_INLINE ) {
                         // may be COMDATed so make sure the calling convention
@@ -867,7 +867,7 @@ static call_class getCallClass( // GET CLASS OF CALL
             }
 #endif
 #if _INTEL_CPU
-            if( sym->flag & SF_FAR16_CALLER ) {
+            if( sym->flag & SYMF_FAR16_CALLER ) {
                 value |= THUNK_PROLOG;
             }
 #endif
@@ -904,9 +904,9 @@ static sym_access getSymAccess( // GET access flag of symbol
 {
     sym_access access;
 
-    if( sym->flag & SF_PRIVATE ) {
+    if( sym->flag & SYMF_PRIVATE ) {
         access = SYM_ACC_PRIVATE;
-    } else if( sym->flag & SF_PROTECTED ) {
+    } else if( sym->flag & SYMF_PROTECTED ) {
         access = SYM_ACC_PROTECTED;
     } else {
         access = SYM_ACC_PUBLIC;
@@ -1461,7 +1461,7 @@ void *FEAuxInfo(                // REQUEST AUXILLIARY INFORMATION
   #ifndef NDEBUG
         DbgNotRetn();
         if( ( PragDbgToggle.extref )
-          &&( sym->id == SC_VIRTUAL_FUNCTION ) ) {
+          &&( sym->id == SYMC_VIRTUAL_FUNCTION ) ) {
             SYMBOL vsym;
             vsym = sym->u.virt_fun;
             printf( "VIRTUAL_FUNC_REFERENCE[%p]: %s"

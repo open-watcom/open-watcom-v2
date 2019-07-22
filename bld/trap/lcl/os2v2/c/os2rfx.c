@@ -47,6 +47,10 @@
 #define TRPH2LH(th)     (HFILE)((th)->handle.u._32[0])
 #define LH2TRPH(th,lh)  (th)->handle.u._32[0]=(unsigned_32)lh;(th)->handle.u._32[1]=0
 
+#define IsDot(p)        ((p)[0] == '.' && (p)[1] == '\0')
+#define IsDotDot(p)     ((p)[0] == '.' && (p)[1] == '.' && (p)[2] == '\0')
+#define IsPathSep(p)    ((p)[0] == '\\' || (p)[0] == '/')
+
 trap_retval ReqRfx_rename( void )
 {
     char                *old_name;
@@ -127,14 +131,14 @@ trap_retval ReqRfx_setcwd( void )
 trap_retval ReqRfx_getfileattr( void )
 {
     FILESTATUS3         info;
-    USHORT              ret_code;
+    USHORT              rc;
     char                *name;
     rfx_getfileattr_ret *ret;
 
     name = GetInPtr( sizeof( rfx_getfileattr_req ) );
     ret = GetOutPtr( 0 );
-    ret_code = DosQueryPathInfo( name, FIL_STANDARD, &info, sizeof( info ) );
-    ret->attribute = (ret_code == 0) ? info.attrFile : (0xffff0000 | ret_code);
+    rc = DosQueryPathInfo( name, FIL_STANDARD, &info, sizeof( info ) );
+    ret->attribute = (rc == 0) ? info.attrFile : (0xffff0000 | rc);
     return( sizeof( *ret ) );
 }
 
@@ -280,13 +284,11 @@ trap_retval ReqRfx_getcwd( void )
     ULONG               len;
     rfx_getcwd_req      *acc;
     rfx_getcwd_ret      *ret;
-    char                *buff;
 
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
-    buff = GetOutPtr( sizeof( *ret ) );
-    len = RFX_NAME_MAX + 1;
-    ret->err = DosQueryCurrentDir( acc->drive, (PBYTE)buff, &len );
+    len = GetTotalSizeOut() - sizeof( *ret );
+    ret->err = DosQueryCurrentDir( acc->drive, (PBYTE)GetOutPtr( sizeof( *ret ) ), &len );
     return( sizeof( *ret ) + len );
 }
 
@@ -425,14 +427,12 @@ trap_retval ReqRfx_nametocanonical( void )
         for( ;; ) {
             if( *p == '\0' )
                 goto done;
-            if( *p == '\\' )
-                break;
-            if( *p == '/' )
+            if( IsPathSep( p ) )
                 break;
             ++p;
         }
-        if( strcmp( p, "." ) == 0 ) {
-        } else if( strcmp( p, ".." ) == 0 ) {
+        if( IsDot( p ) ) {
+        } else if( IsDotDot( p ) ) {
             if( level > 0 ) {
                 while( *fullname != '\\' ) {
                     fullname--;

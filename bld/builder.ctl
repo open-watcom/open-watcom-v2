@@ -128,8 +128,8 @@ cdsay .
 #[ INCLUDE <OWSRCDIR>/wprof/builder.ctl ]
 #[ ENDIF ]
 
-[ BLOCK <1> clean build rel cprel clean1 build1 cprel1 passclean pass ]
-#======================================================================
+[ BLOCK <1> clean build rel cprel clean1 build1 rel1 cprel1 passclean pass ]
+#===========================================================================
 # Build all of Open Watcom using freshly built tools.
 # part 1
 #
@@ -145,8 +145,14 @@ cdsay .
 [ INCLUDE <OWSRCDIR>/clib/builder.ctl ]
 [ INCLUDE <OWSRCDIR>/mathlib/builder.ctl ]
 [ INCLUDE <OWSRCDIR>/cpplib/builder.ctl ]
-[ INCLUDE <OWSRCDIR>/f77/f77lib/builder.ctl ]
 [ INCLUDE <OWSRCDIR>/rtdll/builder.ctl ]
+
+[ BLOCK <1> clean build rel cprel clean2 build2 rel2 cprel2 passclean pass ]
+#===========================================================================
+# Build all of Open Watcom using freshly built tools.
+# part 2
+#
+[ INCLUDE <OWSRCDIR>/f77/f77lib/builder.ctl ]
 [ INCLUDE <OWSRCDIR>/fpuemu/builder.ctl ]
 [ INCLUDE <OWSRCDIR>/omftools/builder.ctl ]
 [ INCLUDE <OWSRCDIR>/graphlib/builder.ctl ]
@@ -176,18 +182,18 @@ cdsay .
 [ INCLUDE <OWSRCDIR>/cg/builder.ctl ]
 [ INCLUDE <OWSRCDIR>/cc/builder.ctl ]
 [ INCLUDE <OWSRCDIR>/plusplus/builder.ctl ]
-
-[ BLOCK <1> clean build rel cprel clean2 build2 cprel2 passclean pass ]
-#======================================================================
-# Build all of Open Watcom using freshly built tools.
-# part 2
-#
 [ INCLUDE <OWSRCDIR>/f77/wfc/builder.ctl ]
 # Resource tools, first Resource compiler
 [ INCLUDE <OWSRCDIR>/rc/builder.ctl ]
 # Continue with SDK tools
 [ INCLUDE <OWSRCDIR>/wpi/builder.ctl ]
 [ INCLUDE <OWSRCDIR>/commonui/builder.ctl ]
+
+[ BLOCK <1> clean build rel cprel clean3 build3 rel3 cprel3 passclean pass ]
+#===========================================================================
+# Build all of Open Watcom using freshly built tools.
+# part 3
+#
 [ INCLUDE <OWSRCDIR>/sdk/builder.ctl ]
 # Now miscellaneous command line tools
 [ INCLUDE <OWSRCDIR>/ndisasm/builder.ctl ]
@@ -254,20 +260,19 @@ cdsay .
 # Build installer tools
 [ INCLUDE <OWSRCDIR>/uninstal/builder.ctl ]
 [ INCLUDE <OWSRCDIR>/setupgui/builder.ctl ]
+# Build text documents
+[ INCLUDE <OWSRCDIR>/docstxt/builder.ctl ]
 
 # only test build for now
 [ IFDEF <OWDOCBUILD> 1 ]
 [ INCLUDE <OWSRCDIR>/wgml/builder.ctl ]
 [ ENDIF ]
 # Build documentation
-set OWTXTDOCBUILD=1
 [ IFDEF <OWDOCBUILD> 1 ]
-    set OWTXTDOCBUILD=
-[ ENDIF ]
 [ INCLUDE <OWDOCSDIR>/builder.ctl ]
-set OWTXTDOCBUILD=
+[ ENDIF ]
 
-[ BLOCK <BLDRULE> docsclean docs doctrav cpdoctrav ]
+[ BLOCK <BLDRULE> docsclean docs webdocs cpwebdocs ]
 #===================================================
 [ INCLUDE <OWDOCSDIR>/builder.ctl ]
 

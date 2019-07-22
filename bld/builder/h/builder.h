@@ -34,10 +34,11 @@
 #include "watcom.h"
 #include "bldutils.h"
 
-extern bool         Quiet;
 
-extern int          RunIt( char *, bool, bool * );
+extern bool         Quiet;
+extern char         tmp_buf[MAX_LINE];
+
+extern int          RunIt( const char *, bool, bool * );
 extern void         SysInit( int argc, char *argv[] );
 extern int          SysRunCommand( const char * );
-extern int          SysChdir( char * );
-extern int          SysDosChdir( char * );
+extern int          SysChdir( const char * );

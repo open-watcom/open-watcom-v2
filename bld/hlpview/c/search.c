@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -31,7 +32,6 @@
 
 #include <stdio.h>
 #include <string.h>
-#include "wio.h"
 #include "watcom.h"
 #include "bool.h"
 #include "index.h"
@@ -44,7 +44,7 @@
 
 #define DEFAULTTOPIC "TABLE OF CONTENTS"
 
-int                     curFile = -1;
+FILE                    *curFile = NULL;
 char                    curPage[HLP_PAGE_SIZE];
 HelpPageHeader          *pageHeader;
 char                    *stringBlock;
@@ -55,7 +55,8 @@ static void loadPage( HelpHdl hdl, unsigned long pagenum )
     unsigned long       offset;
     unsigned            tmp;
 
-    if( curFile == hdl->fp && pageHeader->page_num == pagenum ) return;
+    if( curFile == hdl->fp && pageHeader->page_num == pagenum )
+        return;
     if( hdl->header.ver_maj == 1 ) {
         tmp = sizeof( HelpHeader ) - sizeof( uint_16 );   // no str_size
     } else {
@@ -199,7 +200,7 @@ char *HelpFindNext( HelpSrchInfo *info )
 }
 #endif
 
-unsigned HelpFindFirst( HelpHdl hdl, char *name, HelpSrchInfo *info )
+unsigned HelpFindFirst( HelpHdl hdl, const char *name, HelpSrchInfo *info )
 {
     unsigned            ret;
     PageIndexEntry      *entry;
@@ -239,7 +240,7 @@ char *HelpGetIndexedTopic( HelpHdl hdl, unsigned index )
     return( stringBlock + entry->name_offset );
 }
 
-unsigned long HelpFindTopicOffset( HelpHdl hdl, char *topic )
+unsigned long HelpFindTopicOffset( HelpHdl hdl, const char *topic )
 {
     unsigned            entry_num;
     PageIndexEntry      *entry;
@@ -260,7 +261,7 @@ unsigned long HelpFindTopicOffset( HelpHdl hdl, char *topic )
     }
 }
 
-HelpHdl InitHelpSearch( HelpFp fp )
+HelpHdl InitHelpSearch( FILE *fp )
 {
     HelpHdl     hdl;
     size_t      len;
@@ -368,7 +369,7 @@ void FiniHelpSearch( HelpHdl hdl )
 
 void main( int argc, char *argv[] )
 {
-    HelpFp              fp;
+    FILE                *fp;
     HelpHdl             hdl;
     char                name[_MAX_PATH];
     char                *cur;
@@ -380,8 +381,8 @@ void main( int argc, char *argv[] )
         printf( "exename <help file>\n" );
         return;
     }
-    fp = HelpOpen( argv[1], HELP_OPEN_RDONLY | HELP_OPEN_BINARY );
-    if( fp == -1 ) {
+    fp = HelpOpen( argv[1] );
+    if( fp == NULL ) {
         printf( "Unable to open %s\n", argv[1] );
         return;
     }

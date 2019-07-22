@@ -39,7 +39,7 @@
  * InitHistory -- initialize retrieving of commands
  */
 
-void *WndInitHistory()
+void *WndInitHistory( void )
 {
     save_area   *new;
 

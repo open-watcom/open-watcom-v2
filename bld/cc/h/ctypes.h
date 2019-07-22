@@ -37,9 +37,6 @@
 /* only for long_double */
 #include "xfloat.h"
 
-#define L       I64LO32
-#define H       I64HI32
-
 #define ID_HASH_SIZE            241
 typedef unsigned char   id_hash_idx;
 

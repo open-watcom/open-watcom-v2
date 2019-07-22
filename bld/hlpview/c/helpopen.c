@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,7 +35,6 @@
 #ifndef __UNIX__
     #include <direct.h>
 #endif
-#include "wio.h"
 #include "watcom.h"
 #include "stdui.h"
 #include "help.h"
@@ -44,8 +44,8 @@
 #include "clibext.h"
 
 
-help_file HelpFiles[MAX_HELP_FILES + 1] = {
-    { NULL, 0 }
+help_file_info  HelpFiles[MAX_HELP_FILES + 1] = {
+    { NULL, NULL, 0 }
 };
 
 static HelpSrchPathItem         *srch_List;
@@ -98,7 +98,7 @@ static bool search_for_file( char *fullpath, const char *fname, HelpSrchPathItem
     unsigned    i;
 
     if( where == NULL ) {
-        if( !HelpAccess( fname, HELP_ACCESS_EXIST ) ) {
+        if( !HelpFileAccess( fname ) ) {
             strcpy( fullpath, fname );
             return( true );
         } else {
@@ -106,7 +106,7 @@ static bool search_for_file( char *fullpath, const char *fname, HelpSrchPathItem
         }
     }
     /* check the current working directory */
-    if( !HelpAccess( fname, HELP_ACCESS_EXIST ) ) {
+    if( !HelpFileAccess( fname ) ) {
         HelpGetCWD( fullpath, _MAX_PATH );
         fullpath += strlen( fullpath );
         if( !IS_PATH_SEP( fullpath[-1] ) ) {
@@ -127,7 +127,7 @@ static bool search_for_file( char *fullpath, const char *fname, HelpSrchPathItem
         case SRCHTYPE_PATH:
             strcpy( fullpath, where[i].info );
             strcat( fullpath, fname );
-            if( !HelpAccess( fullpath, HELP_ACCESS_EXIST ) ) {
+            if( !HelpFileAccess( fullpath ) ) {
                 return( true );
             }
             break;
@@ -177,7 +177,7 @@ static int do_init(                 /* INITIALIZATION FOR THE HELP PROCESS     *
         if( search_for_file( fullpath, filename, srchlist ) ) {
             HelpFiles[count].name = HelpMemAlloc( strlen( fullpath ) + 1 );
             strcpy( HelpFiles[count].name, fullpath );
-            HelpFiles[count].f = 0;
+            HelpFiles[count].fp = NULL;
             ++count;
             if( count >= MAX_HELP_FILES ) {
                 break;

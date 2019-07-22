@@ -30,22 +30,22 @@
 ****************************************************************************/
 
 
-#define DIALOG_WIND 3001
+#define DIALOG_WIND             3001
 
-#define CTL_WIND_ASM_SOURCE 103
-#define CTL_WIND_ASM_HEX 106
-#define CTL_WIND_FILE_TAB 115
-#define CTL_WIND_VAR_EXPR 107
-#define CTL_WIND_VAR_CODE 108
-#define CTL_WIND_VAR_INHERIT 109
-#define CTL_WIND_VAR_COMPILER 110
-#define CTL_WIND_VAR_MEMBERS 113
-#define CTL_WIND_VAR_PRIVATE 111
-#define CTL_WIND_VAR_PROTECTED 112
-#define CTL_WIND_VAR_STATIC 114
-#define CTL_WIND_MOD_ALL 120
-#define CTL_WIND_FUNC_TYPED 118
-#define CTL_WIND_GLOB_TYPED 119
-#define CTL_WIND_OK 100
-#define CTL_WIND_DEFAULTS 102
-#define CTL_WIND_CANCEL 101
+#define CTL_WIND_ASM_SOURCE     103
+#define CTL_WIND_ASM_HEX        106
+#define CTL_WIND_FILE_TAB       115
+#define CTL_WIND_VAR_EXPR       107
+#define CTL_WIND_VAR_CODE       108
+#define CTL_WIND_VAR_INHERIT    109
+#define CTL_WIND_VAR_COMPILER   110
+#define CTL_WIND_VAR_MEMBERS    113
+#define CTL_WIND_VAR_PRIVATE    111
+#define CTL_WIND_VAR_PROTECTED  112
+#define CTL_WIND_VAR_STATIC     114
+#define CTL_WIND_MOD_ALL        120
+#define CTL_WIND_FUNC_TYPED     118
+#define CTL_WIND_GLOB_TYPED     119
+#define CTL_WIND_OK             100
+#define CTL_WIND_DEFAULTS       102
+#define CTL_WIND_CANCEL         101

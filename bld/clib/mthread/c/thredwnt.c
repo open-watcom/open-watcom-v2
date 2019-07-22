@@ -32,6 +32,7 @@
 #include "variety.h"
 #include "widechar.h"
 #include <stdlib.h>
+#include <time.h>
 #include <process.h>
 #include <string.h>
 #include <dos.h>
@@ -114,19 +115,20 @@ int __CBeginThread( thread_fn *start_addr, void *stack_bottom,
     DWORD       tid;
     thread_args *td;
     HANDLE      th;
+    int         rc;
 
     stack_bottom = stack_bottom;    /* parameter not used for NT version */
-
+    rc = -1;
     if( __TlsIndex == NO_INDEX ) {
         if( !__NTThreadInit() )
-            return( -1L );
+            return( rc );
         __InitMultipleThread();
     }
 
     td = malloc( sizeof( *td ) );
     if( td == NULL ) {
         _RWD_errno = ENOMEM;
-        return( -1L );
+        return( rc );
     }
 
     stack_size = __ROUND_UP_SIZE_4K( stack_size );
@@ -136,15 +138,15 @@ int __CBeginThread( thread_fn *start_addr, void *stack_bottom,
 
     th = CreateThread( NULL, stack_size, (LPTHREAD_START_ROUTINE)&begin_thread_helper,
                 (LPVOID) td, CREATE_SUSPENDED, &tid );
-    if( th ) {
+    if( th != NULL ) {
         td->thread_handle = th;
         ResumeThread( th );
+        rc = (int)th;
     } else {
         // we didn't create the thread so it isn't going to free this
         free( td );
-        th = (HANDLE)-1L;
     }
-    return( (int)th );
+    return( rc );
 }
 
 void __CEndThread( void )

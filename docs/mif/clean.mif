@@ -35,8 +35,6 @@ clean : .procedure
 
  @if exist *.ch? rm -f *.ch?
 
- @if exist *.txt rm -f *.txt
-
  @if exist tmp rm -rf tmp
 
 !ifeq dotarget htmlhelp

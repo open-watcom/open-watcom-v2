@@ -37,6 +37,7 @@
 #include "builder.h"
 #include "memutils.h"
 
+
 #define BUFSIZE 256
 
 void SysInit( int argc, char *argv[] )
@@ -101,15 +102,20 @@ static int SysRunCommandPipe( const char *cmd, int *readpipe )
     return( 0 );
 }
 
-int SysChdir( char *dir )
+int SysChdir( const char *dir )
 {
-    char        *end;
+    size_t      len;
 
     if( dir[0] == '\0' )
         return( 0 );
-    end = &dir[strlen( dir ) - 1];
-    if( *end == '/' && end > dir ) {
-        *end = '\0';
+    if( dir[1] != '\0' ) {
+        len = strlen( dir );
+        if( dir[len - 1] == '/' ) {
+            len--;
+            memcpy( tmp_buf, dir, len );
+            tmp_buf[len] = '\0';
+            dir = tmp_buf;
+        }
     }
     return( chdir( dir ) );
 }

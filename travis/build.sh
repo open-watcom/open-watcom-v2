@@ -19,21 +19,16 @@ bootutil_proc()
     mkdir $OWOBJDIR
     cd $OWOBJDIR
     rm -f $OWBINDIR/wmake
-    if [ "$TRAVIS_OS_NAME" = "windows" ]; then
-        nmake -f ../nmake clean
-        nmake -f ../nmake
-    else
-        case `uname` in
-            Darwin)
-                make -f ../posmake clean
-                make -f ../posmake TARGETDEF=-D__OSX__
-                ;;
-            *)
-                make -f ../posmake clean
-                make -f ../posmake TARGETDEF=-D__LINUX__
-                ;;
-        esac
-    fi
+    case `uname` in
+        Darwin)
+            make -f ../posmake clean
+            make -f ../posmake TARGETDEF=-D__OSX__
+            ;;
+        *)
+            make -f ../posmake clean
+            make -f ../posmake TARGETDEF=-D__LINUX__
+            ;;
+    esac
     RC=$?
     if [ $RC -eq 0 ]; then
         #
@@ -51,6 +46,7 @@ bootutil_proc()
 
 build_proc()
 {
+    RC=0
     case "$OWTRAVISJOB" in
         "BOOTSTRAP")
             bootutil_proc
@@ -62,56 +58,81 @@ build_proc()
                     builder -q boot
                 fi
                 RC=$?
+                cd $TRAVIS_BUILD_DIR
             fi
             ;;
         "BUILD")
             cd $OWSRCDIR
             if [ "$TRAVIS_EVENT_TYPE" = "pull_request" ]; then
-                builder build
-                RC=$?
+                builder rel
             else
-                builder -q build
-                RC=$?
-                if [ $RC -eq 0 ]; then
-                    export OWRELROOT=$OWROOT/test
-                    builder -q cprel
-                fi
+                builder -q rel
             fi
+            RC=$?
+            cd $TRAVIS_BUILD_DIR
             ;;
         "BUILD-1")
             cd $OWSRCDIR
             if [ "$TRAVIS_EVENT_TYPE" = "pull_request" ]; then
-                builder build1
-                RC=$?
+                builder rel1
             else
-                builder -q build1
-                RC=$?
-                if [ $RC -eq 0 ]; then
-                    export OWRELROOT=$OWROOT/test
-                    builder -q cprel1
-                fi
+                builder -q rel1
             fi
+            RC=$?
+            cd $TRAVIS_BUILD_DIR
             ;;
         "BUILD-2")
             cd $OWSRCDIR
             if [ "$TRAVIS_EVENT_TYPE" = "pull_request" ]; then
-                builder build2
-                RC=$?
+                builder rel2
             else
-                builder -q build2
-                RC=$?
-                if [ $RC -eq 0 ]; then
-                    export OWRELROOT=$OWROOT/test
-                    builder -q cprel2
-                fi
+                builder -q rel2
             fi
+            RC=$?
+            cd $TRAVIS_BUILD_DIR
+            ;;
+        "BUILD-3")
+            cd $OWSRCDIR
+            if [ "$TRAVIS_EVENT_TYPE" = "pull_request" ]; then
+                builder rel3
+            else
+                builder -q rel3
+            fi
+            RC=$?
+            cd $TRAVIS_BUILD_DIR
+            ;;
+        "DOCS")
+            export OWVERBOSE=1
+set -x
+            cd $OWDOCSDIR
+            if [ "$TRAVIS_EVENT_TYPE" = "pull_request" ]; then
+                builder docs
+            else
+                builder -q docs
+            fi
+            RC=$?
+            cd $TRAVIS_BUILD_DIR
+            ;;
+        "INST")
+            export OWVERBOSE=1
+set -x
+            cd $OWDISTRDIR
+            if [ "$TRAVIS_EVENT_TYPE" = "pull_request" ]; then
+                builder build
+            else
+                builder -q build
+            fi
+            RC=$?
+            cd $TRAVIS_BUILD_DIR
             ;;
         *)
-            return 0
             ;;
     esac
-    cd $TRAVIS_BUILD_DIR
     return $RC
 }
 
-build_proc $*
+if [ "$TRAVIS_OS_NAME" = "windows" ]; then
+    cmd.exe /c "travis\winbuild.cmd $*"
+else
+    build_proc $*
+fi

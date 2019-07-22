@@ -196,7 +196,7 @@ static void doTypeidGen( RTTI_TYPEID *r )
     if( ! SymIsReferenced( sym ) || SymIsInitialized( sym ) ) {
         return;
     }
-    sym->flag |= SF_INITIALIZED;
+    sym->flag |= SYMF_INITIALIZED;
     old_segid = BESetSeg( sym->segid );
     CgBackGenLabel( sym );
     DgInitBytes( CgDataPtrSize(), 0 );

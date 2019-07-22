@@ -32,7 +32,7 @@
 
 #include "_aui.h"
 
-void WndMainResized()
+void WndMainResized( void )
 {
     // hook when main window resized
 }

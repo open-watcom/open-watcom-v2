@@ -235,7 +235,7 @@ void EnumDefine( ENUM_DATA *edata )
         sym = SymMakeDummy( enum_type, &enum_typedef_name );
         enum_type->flag |= TF1_UNNAMED;
     }
-    sym->id = SC_TYPEDEF;
+    sym->id = SYMC_TYPEDEF;
     edata->sym = sym;
     SymbolLocnDefine( &(edata->locn), sym );
     sym = InsertSymbol( GetCurrScope(), sym, enum_typedef_name );
@@ -253,7 +253,7 @@ void MakeEnumMember( ENUM_DATA *edata, PTREE id, PTREE val )
 
     /* enter the enumerated constant into the symbol table */
     sym = AllocSymbol();
-    sym->id = SC_ENUM;
+    sym->id = SYMC_ENUM;
     sym->sym_type = edata->type;
     SymbolLocnDefine( &(id->locn), sym );
     sym = InsertSymbol( GetCurrScope(), sym, id->u.id.name );
@@ -302,7 +302,7 @@ void MakeEnumMember( ENUM_DATA *edata, PTREE id, PTREE val )
     SymBindConstant( sym, edata->next_value );
     if( ! edata->next_signed ) {
         // value is not signed negative (to avoid sign extension later on)
-        sym->flag |= SF_ENUM_UINT;
+        sym->flag |= SYMF_ENUM_UINT;
     }
     incr.u._32[I64LO32] = 1;
     incr.u._32[I64HI32] = 0;

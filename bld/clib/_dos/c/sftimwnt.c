@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -30,11 +31,12 @@
 
 
 #include "variety.h"
+#include <time.h>
 #include <dos.h>
 #include <windows.h>
 #include "iomode.h"
-#include "dosftwnt.h"
 #include "seterrno.h"
+#include "ntext.h"
 
 
 _WCRTLINK unsigned _dos_setftime( int hid, unsigned date, unsigned time )

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -30,8 +31,6 @@
 
 #ifndef _DOSTIMET_H
 #define _DOSTIMET_H
-
-#include <time.h>
 
 time_t _timet2dos(time_t x);
 time_t _dos2timet(time_t x);

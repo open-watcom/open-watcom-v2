@@ -158,7 +158,7 @@ a_window        WndFindClass( a_window first, wnd_class wndclass )
     return( NULL );
 }
 
-void WndSetWndMax()
+void WndSetWndMax( void )
 {
     gui_rect    rect;
 

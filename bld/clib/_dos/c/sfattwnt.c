@@ -31,16 +31,16 @@
 
 
 #include "variety.h"
+#include <time.h>
 #include <dos.h>
 #include <windows.h>
+#include "ntext.h"
 #include "seterrno.h"
 
-_WCRTLINK unsigned _dos_setfileattr( const char *path, unsigned attribute )
-{
-    if( attribute == 0 )
-        attribute = FILE_ATTRIBUTE_NORMAL;
 
-    if( !SetFileAttributes( (LPTSTR) path, attribute ) ) {
+_WCRTLINK unsigned _dos_setfileattr( const char *path, unsigned dos_attrib )
+{
+    if( !SetFileAttributes( path, DOS2NTATTR( dos_attrib ) ) ) {
         return( __set_errno_nt_reterr() );
     }
     return( 0 );

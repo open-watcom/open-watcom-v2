@@ -142,7 +142,7 @@ static void typeSigAccessVar(   // ACCESS A DTOR, DEFAULT-CTOR, COPY-CTOR
             }
         } else {
             sym = ClassFunMakeAddressable( sym );
-            sym->flag |= SF_ADDR_TAKEN;
+            sym->flag |= SYMF_ADDR_TAKEN;
             if( (info->acc & TSA_NO_REF) == 0 ) {
                 if( acc_var & info->acc ) {
                     sym = SymMarkRefed( sym );
@@ -293,8 +293,8 @@ TYPE_SIG *TypeSigFind(          // FIND TYPE SIGNATURE
                 typesig_type = MakeInternalType( size );
                 typesig_type = MakeCompilerConstCommonData( typesig_type );
                 sym = SymCreateFileScope( typesig_type
-                                        , SC_PUBLIC
-                                        , SF_REFERENCED | SF_ADDR_TAKEN
+                                        , SYMC_PUBLIC
+                                        , SYMF_REFERENCED | SYMF_ADDR_TAKEN
                                         , typesig_name );
                 LinkageSet( sym, "C++" );
                 CgSegId( sym );

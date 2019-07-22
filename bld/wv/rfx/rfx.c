@@ -437,14 +437,14 @@ static error_handle SetDir( const char *name, object_loc loc )
     }
 }
 
-static error_handle GetDir( int drive, char *name, unsigned len, object_loc loc )
-/*******************************************************************************/
+static error_handle GetDir( int drive, char *name, unsigned max_len, object_loc loc )
+/***********************************************************************************/
 {
     /* drive=0 means current drive A:=1, B:=2, etc. */
     if( loc == LOC_REMOTE ) {
-        return( RemoteGetCwd( drive, name, len ) );
+        return( RemoteGetCwd( drive, name, max_len ) );
     } else {
-        return( LocalGetCwd( drive, name, len ) );
+        return( LocalGetCwd( drive, name, max_len ) );
     }
 }
 
@@ -471,6 +471,16 @@ static long GetAttrs( const char *name, object_loc loc )
         return( RemoteGetFileAttr( name ) );
     } else {
         return( LocalGetFileAttr( name ) );
+    }
+}
+
+static long SetAttrs( const char *name, object_loc loc, long dos_attrib )
+/***********************************************************************/
+{
+    if( loc == LOC_REMOTE ) {
+        return( RemoteSetFileAttr( name, dos_attrib ) );
+    } else {
+        return( LocalSetFileAttr( name, dos_attrib ) );
     }
 }
 
@@ -961,9 +971,7 @@ static void FiniCopy( file_handle fh_src, const char *src_name, object_loc src_l
     SameDate( fh_src, src_loc, fh_dst, dst_loc );
     FileClose( fh_src );
     FileClose( fh_dst );
-    if( dst_loc == LOC_LOCAL ) {
-        LocalSetFileAttr( dst_name, GetAttrs( src_name, src_loc ) );
-    }
+    SetAttrs( dst_name, dst_loc, GetAttrs( src_name, src_loc ) );
     ++FilesCopied;
 }
 

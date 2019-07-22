@@ -128,7 +128,7 @@ typedef enum {
                                        inference rules there are two types
                                        of dependent files*/
 
-} TOKEN_T;
+} MTOKEN_T;
 
 typedef enum {
 
@@ -164,7 +164,7 @@ typedef enum {
     OP_ENDOFSTRING,                /* End of string Character */
     OP_ERROR,                      /* Token returned has error */
 
-} TOKEN_O;
+} MTOKEN_O;
 
 #define MAX_STRING      256
 #define EXIST           "EXIST"
@@ -172,15 +172,15 @@ typedef enum {
 #define DEFINED         "DEFINED"
 
 // Node Definition for the tokens
-typedef struct  TOKEN_OP {
-    TOKEN_O     type;       // Type of Token
+typedef struct  MTOKEN_OP {
+    MTOKEN_O    type;       // Type of Token
     union {
         INT32   number;     // string value
         char    string[MAX_STRING];
     }   data;
-}   TOKEN_TYPE;
+}   MTOKEN_TYPE;
 
-typedef TOKEN_TYPE DATAVALUE;
+typedef MTOKEN_TYPE DATAVALUE;
 
 typedef enum {
     DOT_MIN = -1,
@@ -250,15 +250,15 @@ enum LexMode {
 
 extern void     LexInit( void );
 extern void     LexFini( void );
-extern TOKEN_T  LexToken( enum LexMode mode );
-extern void     LexMaybeFree( TOKEN_T tok );
+extern MTOKEN_T LexToken( enum LexMode mode );
+extern void     LexMaybeFree( MTOKEN_T tok );
 
 /* never call these directly! only call through LexToken() */
-extern TOKEN_T  LexParser( STRM_T );
-extern TOKEN_T  LexPath( STRM_T );
-extern TOKEN_T  LexMacSubst( STRM_T );
-extern TOKEN_T  LexMacDef( STRM_T );
-extern TOKEN_T  LexMSDollar ( STRM_T );
+extern MTOKEN_T LexParser( STRM_T );
+extern MTOKEN_T LexPath( STRM_T );
+extern MTOKEN_T LexMacSubst( STRM_T );
+extern MTOKEN_T LexMacDef( STRM_T );
+extern MTOKEN_T LexMSDollar ( STRM_T );
 
 extern void     GetModifier ( void );
 

@@ -10,7 +10,7 @@ is processed by the GENDEV program
 to create a font definition.
 The resulting definition is referenced on the &WGML. command
 line and by the device definitions.
-:FIG frame = box place = inline.
+:FIG frame=box place=inline.
 &gml.FONT
    <attributes>
    <width block>
@@ -49,7 +49,7 @@ and may be specified more
 that once and in any order.
 If specified, they must follow the font attributes.
 :H3.Attributes of the Font Block
-:FIG frame = box place = inline.
+:FIG frame=box place=inline.
 defined_name     = 'character string'
 member_name      = 'character string'
 font_out_name1   = 'character string'
@@ -63,7 +63,7 @@ char_width       = number
 mono_space_width = YES | NO
 :FIGCAP.Attributes of the FONT Block
 :EFIG.
-:FIG frame = box place = inline.
+:FIG frame=box place=inline.
 defined_name     = 'times-roman'
 member_name      = 'PSTR'
 font_out_name1   = 'Times-Roman'
@@ -204,7 +204,7 @@ The :HP2.width:eHP2.
 block is an optional section of the font block.
 The width block is specified within a font definition
 after the font block attributes.
-:FIG frame = box place = inline.
+:FIG frame=box place=inline.
 &gml.WIDTH.
 font-character  character-width
 &gml.eWIDTH.
@@ -223,7 +223,7 @@ the width block and must be the first
 non-space characters on the line.
 Hexadecimal values in the width block must begin
 with a dollar($) sign.
-:FIG frame = box place = inline.
+:FIG frame=box place=inline.
 &gml.WIDTH.
 1    0
 A   20
@@ -254,7 +254,7 @@ The :HP2.intrans:eHP2.
 block is an optional section of the font block.
 The intrans block is specified within a font definition
 after the font block attributes.
-:FIG frame = box place = inline.
+:FIG frame=box place=inline.
 &gml.INTRANS.
 font-character  input-translation
 &gml.eINTRANS.
@@ -271,7 +271,7 @@ The :HP2.&gml.eintrans:eHP2.
 tag delimits the end of
 the intrans block and must be the first
 non-space characters on the line.
-:FIG frame = box place = inline.
+:FIG frame=box place=inline.
 &gml.INTRANS.
 1     1
 A   $C1
@@ -301,7 +301,7 @@ The :HP2.outtrans:eHP2.
 block is an optional section of the font block.
 The outtrans block is specified within a font definition
 after the font block attributes.
-:FIG frame = box place = inline.
+:FIG frame=box place=inline.
 &gml.OUTTRANS.
 font-character  output-translation
 &gml.eOUTTRANS.
@@ -318,7 +318,7 @@ The :HP2.&gml.eouttrans:eHP2.
 tag delimits the end of
 the outtrans block and must be the first
 non-space characters on the line.
-:FIG frame = box place = inline.
+:FIG frame=box place=inline.
 &gml.OUTTRANS.
 1     1
 A   $C1

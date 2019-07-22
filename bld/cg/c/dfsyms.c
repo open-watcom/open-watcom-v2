@@ -474,7 +474,7 @@ void    DFBegCCU( segment_id code_segid, dw_sym_handle dbg_pch )
 #endif
 
 #ifdef DWARF_CU_REC_NO_PCLO_PCHI
-    /* unused parameters */ (void *)code_segid;
+    /* unused parameters */ (void)code_segid;
 #endif
 
     if( _IsntModel( DBG_LOCALS | DBG_TYPES ) ) {

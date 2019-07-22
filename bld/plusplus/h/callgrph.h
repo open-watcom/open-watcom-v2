@@ -74,7 +74,7 @@ typedef enum                    // SCOPE_STATE
 } SCOPE_STATE;
 
 typedef struct call_info CALL_INFO;
-struct call_info                // CALL_INFO -- SF_LONGJUMP resolution info
+struct call_info                // CALL_INFO -- SYMF_LONGJUMP resolution info
 {   CALL_INFO* next;            // - - next in list
     CALLNODE* caller;           // - - calling node
     SYMBOL callee;              // - - called function
@@ -90,7 +90,7 @@ struct callgraph                                // CALLGRAPH INFORMATION
     int             incr_addrs;                 // - amount to increment addrs
     unsigned        depth;                      // - current call depth
     bool            pruned              : 1;    // - true ==> has been pruned
-    bool            assumed_longjump    : 1;    // - true ==> incomplete SF_LONGJUMP info
+    bool            assumed_longjump    : 1;    // - true ==> incomplete SYMF_LONGJUMP info
     bool            does_longjump       : 1;    // - true ==> does a longjump
     bool            scope_call_opt      : 1;    // - true ==> scope-call optimization enabled
     bool            push_unresolved     : 1;    // - true ==> push unresolved function

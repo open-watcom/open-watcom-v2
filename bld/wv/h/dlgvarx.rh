@@ -30,10 +30,10 @@
 ****************************************************************************/
 
 
-#define DIALOG_VARX 3008
+#define DIALOG_VARX             3008
 
-#define CTL_VARX_START 104
-#define CTL_VARX_END 105
-#define CTL_VARX_OK 100
-#define CTL_VARX_DEFAULTS 102
-#define CTL_VARX_CANCEL 103
+#define CTL_VARX_START          104
+#define CTL_VARX_END            105
+#define CTL_VARX_OK             100
+#define CTL_VARX_DEFAULTS       102
+#define CTL_VARX_CANCEL         103

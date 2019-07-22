@@ -53,45 +53,46 @@
 #define _realloc( ptr, size )   check_realloc( ptr, size )
 
 /**** special characters *****/
-#define CH_EXCLUDE_ON           195
-#define CH_EXCLUDE_OFF          180
-#define CH_CTX_DEF              247
-#define CH_HLINK                127
-#define CH_DFN                  234
-#define CH_TOPIC                238
-#define CH_LIST_START           210
-#define CH_LIST_ITEM            211
-#define CH_DLIST_DESC           185
-#define CH_LIST_END             212
-#define CH_OLIST_START          200
-#define CH_OLIST_END            201
-#define CH_DLIST_START          202
-#define CH_DLIST_END            203
-#define CH_DLIST_TERM           204
-#define CH_CTX_KW               236
-#define CH_SLIST_START          213
-#define CH_SLIST_END            214
-#define CH_TOPIC_LN             167
-#define CH_TOPIC_NOLN           248
-#define CH_PAR_RESET            158
-#define CH_EXCLUDE_OFF_BLANK    159
-#define CH_UP_TOPIC             160
-#define CH_BMP                  176
-#define CH_BOX_ON               219
-#define CH_BOX_OFF              254
-#define CH_FONTSTYLE_START      239
-#define CH_FONTSTYLE_END        240
-#define CH_FONTTYPE             157
-#define CH_TABXMP               170
-#define CH_FLINK                232
-#define CH_BOX_HBAR             196
+#define CH_EXCLUDE_ON           (char)'\xC3'  // 195
+#define CH_EXCLUDE_OFF          (char)'\xB4'  // 180
+#define CH_CTX_DEF              (char)'\xF7'  // 247
+#define CH_HLINK                (char)'\x7F'  // 127
+#define CH_DFN                  (char)'\xEA'  // 234
+#define CH_TOPIC                (char)'\xEE'  // 238
+#define CH_LIST_START           (char)'\xD2'  // 210
+#define CH_LIST_ITEM            (char)'\xD3'  // 211
+#define CH_DLIST_DESC           (char)'\xB9'  // 185
+#define CH_LIST_END             (char)'\xD4'  // 212
+#define CH_OLIST_START          (char)'\xC8'  // 200
+#define CH_OLIST_END            (char)'\xC9'  // 201
+#define CH_DLIST_START          (char)'\xCA'  // 202
+#define CH_DLIST_END            (char)'\xCB'  // 203
+#define CH_DLIST_TERM           (char)'\xCC'  // 204
+#define CH_CTX_KW               (char)'\xEC'  // 236
+#define CH_SLIST_START          (char)'\xD5'  // 213
+#define CH_SLIST_END            (char)'\xD6'  // 214
+#define CH_TOPIC_LN             (char)'\xA7'  // 167
+#define CH_TOPIC_NOLN           (char)'\xF8'  // 248
+#define CH_PAR_RESET            (char)'\x9E'  // 158
+#define CH_EXCLUDE_OFF_BLANK    (char)'\x9F'  // 159
+#define CH_UP_TOPIC             (char)'\xA0'  // 160
+#define CH_BMP                  (char)'\xB0'  // 176
+#define CH_BOX_ON               (char)'\xDB'  // 219
+#define CH_BOX_OFF              (char)'\xFE'  // 254
+#define CH_FONTSTYLE_START      (char)'\xEF'  // 239
+#define CH_FONTSTYLE_END        (char)'\xF0'  // 240
+#define CH_FONTTYPE             (char)'\x9D'  // 157
+#define CH_TABXMP               (char)'\xAA'  // 170
+#define CH_FLINK                (char)'\xE8'  // 232
+#define CH_BOX_HBAR             (char)'\xC4'  // 196
+#define CH_SPACE_NOBREAK        (char)'\xFF'  // 255
 
 /**** a few InfoBench specific chars ****/
 //(defined here 'cause WHPCVT.C needs to know about them )
-#define IB_HLINK_L_CHAR         224
-#define IB_HLINK_R_CHAR         224
-#define IB_BRACE_L_CHAR         '<'
-#define IB_BRACE_R_CHAR         '>'
+#define IB_HLINK_L_CHAR         (char)'\xE0'  // 224
+#define IB_HLINK_R_CHAR         (char)'\xE0'  // 224
+#define IB_BRACE_L_CHAR         (char)'<'
+#define IB_BRACE_R_CHAR         (char)'>'
 
 /**** various file extensions ****/
 #define EXT_INPUT_FILE          ".whp"
@@ -138,8 +139,6 @@ enum {
 
 /**** Typedefs for converter ****/
 
-typedef size_t          allocsize;
-
 typedef struct browse_ctx {
     struct browse_ctx   *next;
     struct ctx_def      *ctx;
@@ -156,7 +155,7 @@ typedef struct section_def {
     bool                blank_order;
     int                 order_num;
     char                *section_text;
-    allocsize           section_size;
+    size_t              section_size;
 } section_def;
 
 typedef struct keyword_def {
@@ -229,68 +228,68 @@ WHPCVT_GBL bool         Do_kw_button;
 WHPCVT_GBL bool         Keep_titles;
 WHPCVT_GBL bool         Break_link;
 WHPCVT_GBL bool         Remove_empty;
-WHPCVT_GBL bool         Real_ipf_font;
 WHPCVT_GBL bool         Keep_link_topics;
-WHPCVT_GBL bool         Exclude_special;
+WHPCVT_GBL bool         Exclude_special_topics;
 
-WHPCVT_GBL unsigned     Right_Margin;
-WHPCVT_GBL unsigned     Text_Indent;
-WHPCVT_GBL int          Hyper_Brace_L;
-WHPCVT_GBL int          Hyper_Brace_R;
+WHPCVT_GBL int          Right_Margin;
+WHPCVT_GBL int          Text_Indent;
 WHPCVT_GBL bool         Do_browse;
 WHPCVT_GBL bool         Do_tc_button;
 WHPCVT_GBL bool         Do_idx_button;
-WHPCVT_GBL char         Header_File[];
-WHPCVT_GBL char         Footer_File[];
 WHPCVT_GBL bool         Tab_xmp;
 WHPCVT_GBL char         Tab_xmp_char;
 
-WHPCVT_GBL char         Help_fname[];
+extern char             Header_File[];
+extern char             Footer_File[];
+extern char             Help_fname[];
 
-WHPCVT_GBL char         Fonttype_roman[];
-WHPCVT_GBL char         Fonttype_symbol[];
-WHPCVT_GBL char         Fonttype_helv[];
-WHPCVT_GBL char         Fonttype_courier[];
+extern const char       Fonttype_roman[];
+extern const char       Fonttype_symbol[];
+extern const char       Fonttype_helv[];
+extern const char       Fonttype_courier[];
 
-WHPCVT_GBL char         *Ipf_title;
+WHPCVT_GBL bool         Ipf_or_Html_Real_font;
+WHPCVT_GBL char         *Ipf_or_Html_title;
 
+WHPCVT_GBL char         IB_Hyper_Brace_L;
+WHPCVT_GBL char         IB_Hyper_Brace_R;
 WHPCVT_GBL char         *IB_def_topic;
 WHPCVT_GBL char         *IB_help_desc;
 
 
 /**** externed functions ****/
-extern void         error_str( char *err_str );
+extern void         error_str( const char *err_str );
 extern void         error( int err, bool line_num );
 extern void         *check_alloc( size_t size );
 extern void         *check_realloc( void *ptr, size_t size );
-extern void         whp_fprintf( FILE *file, char *fmt, ... );
-extern void         whp_fwrite( void *buf, size_t el_size, size_t num_el, FILE *f );
+extern void         whp_fprintf( FILE *file, const char *fmt, ... );
+extern void         whp_fwrite( const char *buf, size_t el_size, size_t num_el, FILE *f );
 extern bool         read_line( void );
-extern size_t       trans_add_char( int ch, section_def *section, allocsize *alloc_size );
-extern size_t       trans_add_str( char *str, section_def *section, allocsize *alloc_size );
-extern size_t       trans_add_nobreak_str( char *str, section_def *section, allocsize *alloc_size );
-extern bool         find_keyword( ctx_def *ctx, char *keyword );
-extern keyword_def  *find_keyword_all( char *keyword );
-extern void         add_ctx_keyword( ctx_def *ctx, char *keyword );
+extern size_t       trans_add_char( char ch, section_def *section, size_t *size );
+extern size_t       trans_add_str( const char *str, section_def *section, size_t *size );
+extern size_t       trans_add_str_nobreak( const char *str, section_def *section, size_t *size );
+extern bool         find_keyword( ctx_def *ctx, const char *keyword );
+extern keyword_def  *find_keyword_all( const char *keyword );
+extern void         add_ctx_keyword( ctx_def *ctx, const char *keyword );
 extern char         *skip_blank( char *ptr );
-extern void         add_link( char *link_name );
-extern ctx_def      *find_ctx( char *ctx_name );
+extern void         add_link( const char *link_name );
+extern ctx_def      *find_ctx( const char *ctx_name );
 extern char         *whole_keyword_line( char *ptr );
 extern bool         is_special_topic( ctx_def *ctx, bool dump_popup );
 
-extern allocsize    rtf_trans_line( section_def *section, allocsize alloc_size );
+extern size_t       rtf_trans_line( section_def *section, size_t size );
 extern void         rtf_output_file( void );
 extern void         rtf_topic_init( void );
-extern allocsize    ipf_trans_line( section_def *section, allocsize alloc_size );
+extern size_t       ipf_trans_line( section_def *section, size_t size );
 extern void         ipf_output_file( void );
 extern void         ipf_topic_init( void );
-extern allocsize    ib_trans_line( section_def *section, allocsize alloc_size );
+extern size_t       ib_trans_line( section_def *section, size_t size );
 extern void         ib_output_file( void );
 extern void         ib_topic_init( void );
-extern allocsize    html_trans_line( section_def *section, allocsize alloc_size );
+extern size_t       html_trans_line( section_def *section, size_t size );
 extern void         html_output_file( void );
 extern void         html_topic_init( void );
-extern allocsize    wiki_trans_line( section_def *section, allocsize alloc_size );
+extern size_t       wiki_trans_line( section_def *section, size_t size );
 extern void         wiki_output_file( void );
 extern void         wiki_topic_init( void );
 

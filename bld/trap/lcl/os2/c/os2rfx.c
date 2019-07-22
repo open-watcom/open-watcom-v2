@@ -45,6 +45,10 @@
 
 #define NIL_DOS_HANDLE  ((HFILE)0xFFFF)
 
+#define IsDot(p)        ((p)[0] == '.' && (p)[1] == '\0')
+#define IsDotDot(p)     ((p)[0] == '.' && (p)[1] == '.' && (p)[2] == '\0')
+#define IsPathSep(p)    ((p)[0] == '\\' || (p)[0] == '/')
+
 trap_retval ReqRfx_rename( void )
 {
     char                    *old_name;
@@ -126,14 +130,14 @@ trap_retval ReqRfx_setcwd( void )
 trap_retval ReqRfx_getfileattr( void )
 {
     USHORT                  attrib;
-    USHORT                  ret_code;
+    USHORT                  rc;
     char                    *name;
     rfx_getfileattr_ret     *ret;
 
     name = GetInPtr( sizeof( rfx_getfileattr_req ) );
     ret = GetOutPtr( 0 );
-    ret_code = DosQFileMode( name, &attrib, 0 );
-    ret->attribute = ( ret_code == 0 ) ? attrib : ( 0xffff0000 | ret_code );
+    rc = DosQFileMode( name, &attrib, 0 );
+    ret->attribute = ( rc == 0 ) ? attrib : ( 0xffff0000 | rc );
     return( sizeof( *ret ) );
 }
 
@@ -250,8 +254,8 @@ static unsigned long mymktime( unsigned time, unsigned date )
     }
     day += ( num_leap_since_1980 * 366
              + ( num_yr_since_1980 - num_leap_since_1980 ) * 365
-             + day_since_jan[month-1] - 1 );
-    return( NM_SEC_1970_1980 + day*86400 + hour*3600 + min*60 + sec );
+             + day_since_jan[month - 1] - 1 );
+    return( NM_SEC_1970_1980 + day * 86400 + hour * 3600 + min * 60 + sec );
 }
 
 trap_retval ReqRfx_getdatetime( void )
@@ -275,7 +279,7 @@ trap_retval ReqRfx_getcwd( void )
 
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
-    len = RFX_NAME_MAX + 1;
+    len = GetTotalSizeOut() - sizeof( *ret );
     ret->err = DosQCurDir( acc->drive, GetOutPtr( sizeof( *ret ) ), &len );
     return( sizeof( *ret ) + len );
 }
@@ -411,13 +415,14 @@ trap_retval ReqRfx_nametocanonical( void )
     p = name;
     for( ;; ) {
         for( ;; ) {
-            if( *p == '\0' ) goto done;
-            if( *p == '\\' ) break;
-            if( *p == '/' ) break;
+            if( *p == '\0' )
+                goto done;
+            if( IsPathSep( p ) )
+                break;
             ++p;
         }
-        if( strcmp( p, "." ) == 0 ) {
-        } else if ( strcmp( p, ".." ) == 0 ) {
+        if( IsDot( p ) ) {
+        } else if( IsDotDot( p ) ) {
             if( level > 0 ) {
                 while( *fullname != '\\' ) {
                     fullname--;

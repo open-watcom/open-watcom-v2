@@ -189,7 +189,7 @@ SYMBOL FnCtlNewCtorPtr(         // GET SYMBOL FOR NEW-CTORED PTR.
 {
     SYMBOL new_ctor_ptr = fctl->new_ctor_ptr;
     if( new_ctor_ptr == NULL ) {
-        new_ctor_ptr = CgVarRw( CgbkInfo.size_data_ptr, SC_AUTO );
+        new_ctor_ptr = CgVarRw( CgbkInfo.size_data_ptr, SYMC_AUTO );
         new_ctor_ptr->sym_type = TypePtrToVoid();
         fctl->new_ctor_ptr = new_ctor_ptr;
     }

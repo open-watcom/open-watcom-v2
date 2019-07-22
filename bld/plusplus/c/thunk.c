@@ -92,18 +92,18 @@ static SYMBOL addrThunkSymbol(  // GET THUNK SYMBOL FROM ORIGINAL
     SYMBOL new_sym;             // - the new symbol
     SCOPE scope;                // - scope for new symbol
     NAME name;                  // - name of new symbol
-    symbol_class thunk_class;   // - SC_.. for thunk
+    symbol_class thunk_class;   // - SYMC_.. for thunk
 
-    thunk_class = SC_NULL;
+    thunk_class = SYMC_NULL;
     switch( classification ) {
     case SPECIAL_NAME_OP_DEL_THUNK :
     case SPECIAL_NAME_OP_DELAR_THUNK :
-        thunk_class = SC_STATIC;
+        thunk_class = SYMC_STATIC;
         break;
     case SPECIAL_NAME_DTOR_THUNK :
     case SPECIAL_NAME_COPY_THUNK :
     case SPECIAL_NAME_CTOR_THUNK :
-        thunk_class = SC_MEMBER;
+        thunk_class = SYMC_MEMBER;
         break;
     DbgDefault( "addrThunkSymbol -- bad classification" );
     }
@@ -114,7 +114,7 @@ static SYMBOL addrThunkSymbol(  // GET THUNK SYMBOL FROM ORIGINAL
         thunk_type = MakeThunkFunction( sym->sym_type );
         new_sym = AllocTypedSymbol( thunk_type );
         new_sym->id = thunk_class;
-        new_sym->flag |= SF_ADDR_THUNK;
+        new_sym->flag |= SYMF_ADDR_THUNK;
         new_sym = ScopeInsert( scope, new_sym, name );
         SymDeriveThrowBits( new_sym, sym );
     }
@@ -161,7 +161,7 @@ static SCOPE thunkPrologue(     // PROLOGUE FOR A SCOPE
     SCOPE arg_scope;            // - scope for arguments
 
     orig = thunk_sym->u.thunk_calls;
-    thunk_sym->flag |= SF_INITIALIZED;
+    thunk_sym->flag |= SYMF_INITIALIZED;
     SetCurrScope (SymScope( thunk_sym ));
     ScopeBeginFunction( thunk_sym );
     arg_scope = GetCurrScope();
@@ -221,7 +221,7 @@ SYMBOL ClassFunMakeAddressable( // MAKE SURE THE FUNCTION CAN BE ADDRESSED
     if( orig_sym == NULL ) {
         return( orig_sym );
     }
-    if( ( orig_sym->id != SC_DEFAULT ) && !TypeHasPragma( orig_sym->sym_type ) ) {
+    if( ( orig_sym->id != SYMC_DEFAULT ) && !TypeHasPragma( orig_sym->sym_type ) ) {
         type_flag flags;
         TypeModFlags( orig_sym->sym_type, &flags );
         if( (flags & TF1_DLLIMPORT) == 0 ) {
@@ -258,11 +258,11 @@ void RtnGenCallBackGenThunk(    // GENERATE THUNK CODE
     PTREE this_arg;             // - "this" argument
     specname classification;    // - classification of thunk
     CGFILE* cgfile;             // - CGFILE for thunk
-    symbol_flag orig_ref;       // - keep original SF_REFERENCED setting
+    symbol_flag orig_ref;       // - keep original SYMF_REFERENCED setting
 
     orig_sym = thunk_sym->u.thunk_calls;
-    if( thunk_sym->flag & SF_REFERENCED ) {
-        orig_sym->flag |= SF_REFERENCED;
+    if( thunk_sym->flag & SYMF_REFERENCED ) {
+        orig_sym->flag |= SYMF_REFERENCED;
     }
     if( SymIsInitialized( thunk_sym ) ) {
         return;
@@ -273,10 +273,10 @@ void RtnGenCallBackGenThunk(    // GENERATE THUNK CODE
     fn_scope = thunkPrologue( thunk_sym, &func_data );
     return_type = SymFuncReturnType( thunk_sym );
     args = thunkArgList( fn_scope );
-    orig_ref = orig_sym->flag & SF_REFERENCED;
+    orig_ref = orig_sym->flag & SYMF_REFERENCED;
     stmt = NodeMakeCall( orig_sym, return_type, args );
     if( ! orig_ref ) {
-        orig_sym->flag &= ~SF_REFERENCED;
+        orig_sym->flag &= ~SYMF_REFERENCED;
     }
     if( !AddDefaultArgs( orig_sym, stmt ) ) {
         return_sym = NULL;

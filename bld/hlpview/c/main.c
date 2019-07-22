@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -54,11 +55,11 @@
 #endif
 
 static HelpSrchPathItem searchList[] = {
-    SRCHTYPE_PATH,      FIRST_SRCH_PATH,// this may be changed when a cross
-                                        // file hyperlink is processed
-    SRCHTYPE_ENV,       "WWINHELP",
-    SRCHTYPE_ENV,       "PATH",
-    SRCHTYPE_EOL,       NULL
+    // this may be changed when a cross file hyperlink is processed
+    { SRCHTYPE_PATH,    FIRST_SRCH_PATH },
+    { SRCHTYPE_ENV,     "WWINHELP" },
+    { SRCHTYPE_ENV,     "PATH" },
+    { SRCHTYPE_EOL,     NULL }
 };
 
 static void showCmdlHelp( char *name )

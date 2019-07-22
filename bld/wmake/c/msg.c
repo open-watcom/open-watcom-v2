@@ -327,16 +327,7 @@ STATIC size_t doFmtStr( char *buff, const char FAR *src, va_list args )
                 dest = strApp( dest, msgbuff );
                 break;
             case 'Z' :
-                if( errno == 0 ) {
-                    MsgGet( SYS_ERR_UNKNOWN, msgbuff );
-                } else {
-#if defined( __DOS__ )
-                    MsgGet( SYS_ERR_0 + errno, msgbuff );
-#else
-                    strcpy( msgbuff, strerror( errno ) );
-#endif
-                }
-                dest = strApp( dest, msgbuff );
+                dest = strApp( dest, strerror( errno ) );
                 break;
             case 'c' :
                 *dest++ = (char)va_arg( args, int );

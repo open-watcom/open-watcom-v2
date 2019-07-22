@@ -31,6 +31,7 @@
 
 
 #include "_cgstd.h"
+#include <time.h>
 #include "coderep.h"
 #include "data.h"
 #include "cgauxinf.h"

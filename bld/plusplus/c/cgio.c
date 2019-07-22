@@ -324,7 +324,7 @@ static bool saveGenData(        // TEST IF GENERATION DATA REQ'D AFTER CLOSE
     func = ctl->symbol;
     return func == NULL
         || func == BRINF_SYMBOL
-        || func->id == SC_DEFAULT;
+        || func->id == SYMC_DEFAULT;
 }
 
 

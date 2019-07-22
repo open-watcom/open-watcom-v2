@@ -20,26 +20,29 @@ gitupdf_proc()
     echo_msg="gitupdf.sh - skipped"
 
     if [ "$TRAVIS_BRANCH" = "$OWBRANCH" ] || [ "$TRAVIS_BRANCH" = "$OWBRANCH_DOCS" ]; then
-        if [ "$TRAVIS_EVENT_TYPE" = "push" ]; then
+        if [ "$TRAVIS_EVENT_TYPE" = "push" ] || [ "$TRAVIS_EVENT_TYPE" = "cron" ]; then
             case "$OWTRAVISJOB" in
-                "BOOTSTRAP" | "BUILD" | "BUILD-1" | "BUILD-2" | "DOCTRAVIS")
+                "BOOTSTRAP" | "BUILD" | "BUILD-1" | "BUILD-2" | "BUILD-3" | "DOCS" | "INST")
                     #
                     # clone GitHub repository
                     #
-                    git clone $GITVERBOSE1 --branch=$OWBRANCH https://${GITHUB_TOKEN}@github.com/${OWTRAVIS_REPO_SLUG}.git $OWTRAVIS_BUILD_DIR
+                    git clone $GITVERBOSE1 --branch=master https://${GITHUB_TOKEN}@github.com/${OWTRAVIS_REPO_SLUG}.git $OWTRAVIS_BUILD_DIR
                     #
                     # copy build log files to git repository tree
                     #
                     if [ "$TRAVIS_OS_NAME" = "osx" ]; then
-                        test -d $OWTRAVIS_BUILD_DIR/logs/osx || mkdir -p $OWTRAVIS_BUILD_DIR/logs/osx
-                        cp $TRAVIS_BUILD_DIR/build/$OWOBJDIR/*.log $OWTRAVIS_BUILD_DIR/logs/osx/
+                        OWLOGDIR=$OWTRAVIS_BUILD_DIR/logs/osx
                     elif [ "$TRAVIS_OS_NAME" = "windows" ]; then
-                        test -d $OWTRAVIS_BUILD_DIR/logs/windows || mkdir -p $OWTRAVIS_BUILD_DIR/logs/windows
-                        cp $TRAVIS_BUILD_DIR/build/$OWOBJDIR/*.log $OWTRAVIS_BUILD_DIR/logs/windows/
+                        OWLOGDIR=$OWTRAVIS_BUILD_DIR/logs/windows
                     else
-                        test -d $OWTRAVIS_BUILD_DIR/logs/linux || mkdir -p $OWTRAVIS_BUILD_DIR/logs/linux
-                        cp $TRAVIS_BUILD_DIR/build/$OWOBJDIR/*.log $OWTRAVIS_BUILD_DIR/logs/linux/
+                        OWLOGDIR=$OWTRAVIS_BUILD_DIR/logs/linux
                     fi
+                    if [ ! -d $OWLOGDIR ]; then 
+                        mkdir -p $OWLOGDIR; 
+                    fi
+                    cp $OWBINDIR/*.log $OWLOGDIR/
+                    cp $OWDOCSDIR/*.log $OWLOGDIR/
+                    cp $OWDISTRDIR/*.log $OWLOGDIR/
                     #
                     # commit new log files to GitHub repository
                     #
@@ -56,11 +59,34 @@ gitupdf_proc()
                     cd $TRAVIS_BUILD_DIR
                     echo_msg="gitupdf.sh - done"
                     ;;
+                "WEBDOCS")
+                    #
+                    # clone GitHub repository
+                    #
+                    git clone $GITVERBOSE1 --branch=master https://${GITHUB_TOKEN}@github.com/${OWWEBDOCS_REPO_SLUG}.git $OWWEBDOCS_BUILD_DIR
+                    #
+                    # copy build log files to git repository tree
+                    #
+                    OWLOGDIR=$OWWEBDOCS_BUILD_DIR/logs
+                    if [ ! -d $OWLOGDIR ]; then 
+                        mkdir -p $OWLOGDIR; 
+                    fi
+                    cp $OWDOCSDIR/*.log $OWLOGDIR/
+                    #
+                    # commit new log files to GitHub repository
+                    #
+                    cd $OWWEBDOCS_BUILD_DIR
+                    git add $GITVERBOSE2 -f .
+                    git commit $GITVERBOSE1 -m "Travis CI build $TRAVIS_JOB_NUMBER (build failure) - log files"
+                    git push $GITVERBOSE1 -f origin
+                    cd $TRAVIS_BUILD_DIR
+                    echo_msg="gitupdf.sh - done"
+                    ;;
                 "TEST")
                     #
                     # clone GitHub repository
                     #
-                    git clone $GITVERBOSE1 --branch=$OWBRANCH https://${GITHUB_TOKEN}@github.com/${OWTRAVIS_REPO_SLUG}.git $OWTRAVIS_BUILD_DIR
+                    git clone $GITVERBOSE1 --branch=master https://${GITHUB_TOKEN}@github.com/${OWTRAVIS_REPO_SLUG}.git $OWTRAVIS_BUILD_DIR
                     #
                     # copy build log files to git repository tree
                     #

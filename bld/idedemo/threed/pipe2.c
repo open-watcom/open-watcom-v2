@@ -82,22 +82,19 @@ static pipe_illum Illum_param;
 static bool All_poly_convex = TRUE;
 
 /* 2D display */
-extern void project_pt(
-/*********************/
-/*to project a point take its x and y coords and map them from [-1,1] to [0,1]*/
-    point   pt,             // 3d point
-    float   *x,             // 2d point
-    float   *y
-) {
+void project_pt( point pt, float *x, float *y )
+/*********************************************/
+/* to project a point take its x and y coords and map them from [-1,1] to [0,1]
+    point   pt          3d point
+    float   *x          2d point  */
+{
     *x = (pt.p[0] + 1.) / 2.;
     *y = (pt.p[1] + 1.) / 2.;
 }
 
-static void draw_projected_poly(
-/******************************/
-    rend_obj *  obj,
-    hls_colour  edge_colour
-) {
+static void draw_projected_poly( rend_obj *obj, hls_colour edge_colour )
+/**********************************************************************/
+{
     wcoord *    pts_2d;         // array of 2d points
     int         num_pts;
     int         curr_pt;
@@ -140,12 +137,10 @@ static void draw_projected_poly(
     _free( pts_2d );
 }
 
-static void draw_projected_obj(
-/*****************************/
-    rend_obj *  obj,
-    hls_colour  base,               // colour on which illum is based
-    hls_colour  illum
-) {
+static void draw_projected_obj( rend_obj *obj, hls_colour base, hls_colour illum )
+/********************************************************************************/
+/*  hls_colour  base      colour on which illum is based */
+{
     point       pt1;
     point       pt2;
     float       x1,y1;
@@ -176,7 +171,7 @@ static void draw_projected_obj(
         _wlineto( x2, y2, FALSE );
         break;
     case REND_OBJ_POLY:
-        draw_projected_poly( obj, base );
+        draw_projected_poly( obj, base );   // colour on which illum is based
         break;
     }
 
@@ -185,11 +180,10 @@ static void draw_projected_obj(
 
 
 /* Lighting model */
-static point calculate_poly_centre(
-/********************************/
+static point calculate_poly_centre( rend_obj *obj )
+/*************************************************/
 /* The centre is the averaged in each coefficient of the points of the poly */
-    rend_obj    *obj
-) {
+{
     point       centre;
     point       curr;
     int         num_pts;
@@ -219,11 +213,9 @@ static point calculate_poly_centre(
     return( centre );
 }
 
-static hls_colour illuminate_poly(
-/********************************/
-    rend_obj    *obj,
-    hls_colour  base
-) {
+static hls_colour illuminate_poly( rend_obj *obj, hls_colour base )
+/*****************************************************************/
+{
     point       centre;
     vector      light_dir;          // from centre of poly to point light source
     float       len;                // norm of light_dir
@@ -261,14 +253,12 @@ static hls_colour illuminate_poly(
         final_col.l = 1.;
     }
 
-
     return( final_col );
 }
 
-extern void draw_illuminated_obj(
-/*******************************/
-    rend_obj    *obj
-) {
+void draw_illuminated_obj( rend_obj *obj )
+/****************************************/
+{
     hls_colour  edge;
     hls_colour  illum;
 
@@ -287,26 +277,23 @@ extern void draw_illuminated_obj(
     draw_projected_obj( obj, edge, illum );
 }
 
-extern void set_poly_convex_info(
-/*******************************/
-    bool        all_poly_convex
-) {
+void set_poly_convex_info( bool all_poly_convex )
+/***********************************************/
+{
     All_poly_convex = all_poly_convex;
 }
 
-extern void set_illumination(
-/***************************/
-    pipe_illum  *illum
-) {
+void set_illumination( pipe_illum *illum )
+/****************************************/
+{
     Illum_param = *illum;
 }
 
 /* Visible surface determination */
 #if 0
-static void compute_extents(
-/**************************/
-    rend_list *     list
-) {
+static void compute_extents( rend_list *list )
+/********************************************/
+{
     rend_list_ref   ref;
     rend_obj *      obj;
 
@@ -320,11 +307,9 @@ static void compute_extents(
 }
 #endif
 
-static int compare_zmin(
-/**********************/
-    const rend_obj **     obj1,
-    const rend_obj **     obj2
-) {
+static int compare_zmin( const rend_obj **obj1, const rend_obj **obj2 )
+/*********************************************************************/
+{
     visible_info *  vis1;
     visible_info *  vis2;
     float           zmin1;
@@ -345,12 +330,9 @@ static int compare_zmin(
 }
 
 #if 0
-static bool extent_overlap(
-/*************************/
-    visible_info *  vis1,
-    visible_info *  vis2,
-    int             component
-) {
+static bool extent_overlap( visible_info *vis1, visible_info *vis2, int component )
+/*********************************************************************************/
+{
     float           min1;
     float           min2;
     float           max1;
@@ -369,11 +351,10 @@ static bool extent_overlap(
             ((vis1)->min.p[i] < (vis2)->max.p[i] && \
              (vis2)->min.p[i] < (vis1)->max.p[i] )
 
-static vector calc_pt_norm(
-/*************************/
-    rend_obj *  obj,            // obj is a point object
-    rend_obj *  other
-) {
+static vector calc_pt_norm( rend_obj *obj, rend_obj *other )
+/**********************************************************/
+/*  rend_obj *obj         obj is a point object */
+{
     vector      norm;
     vector      a;
     point       pt;
@@ -405,11 +386,10 @@ static vector calc_pt_norm(
     return( norm );
 }
 
-static vector calc_line_norm(
-/***************************/
-    rend_obj *  obj,            // a line object
-    rend_obj *  other
-) {
+static vector calc_line_norm( rend_obj *obj, rend_obj *other )
+/************************************************************/
+/*  rend_obj *obj     a line object */
+{
     vector      norm;
     vector      line_vect;
     vector      other_vect;
@@ -469,13 +449,11 @@ static vector calc_line_norm(
     return( norm );
 }
 
-static vector calculate_object_norm(
-/**********************************/
+static vector calculate_object_norm( rend_obj *obj, rend_obj *other )
+/*******************************************************************/
 /* Calculates the normal for the plane of a given object. See */
 /* check_half_space for how this is determined */
-    rend_obj *  obj,
-    rend_obj *  other
-) {
+{
     vector      norm;
 
     switch (_rend_obj_get_type( obj )) {
@@ -506,24 +484,20 @@ typedef unsigned sub_plane_rc;
 #define _get_sub_plane_rc( sign ) (((sign) == 0) ? SUB_PLANE_ZERO : \
                     (((sign) == -1) ? SUB_PLANE_NEG : SUB_PLANE_POS ))
 
-static int sub_pt_in_plane(
-/*************************/
+static int sub_pt_in_plane( point pt, vector norm )
+/*************************************************/
 /* subsitute pt into the plane defined by norm and return the sign of the */
 /* result */
-    point       pt,
-    vector      norm
-) {
+{
     float       result;
 
     result = _dot_prod_vp( norm, pt );
     return( _fuzzy_sign( result, FUZZY_ZERO ) );
 }
 
-static sub_plane_rc sub_line_in_plane(
-/************************************/
-    rend_obj    *obj,
-    vector      norm
-) {
+static sub_plane_rc sub_line_in_plane( rend_obj *obj, vector norm )
+/*****************************************************************/
+{
     int         start_sign;
     int         end_sign;
 
@@ -539,11 +513,9 @@ static sub_plane_rc sub_line_in_plane(
     }
 }
 
-static sub_plane_rc sub_poly_in_plane(
-/************************************/
-    rend_obj    *obj,
-    vector      norm
-) {
+static sub_plane_rc sub_poly_in_plane( rend_obj *obj, vector norm )
+/*****************************************************************/
+{
     int         old_sign;
     int         sign;
     int         curr_pt;
@@ -570,8 +542,8 @@ static sub_plane_rc sub_poly_in_plane(
     return( _get_sub_plane_rc( old_sign ) );
 }
 
-static sub_plane_rc sub_obj_in_plane(
-/***********************************/
+static sub_plane_rc sub_obj_in_plane( rend_obj *obj, vector norm )
+/****************************************************************/
 /*
 Subsitute the points of obj into the plane defined by norm and determine the
 resulting sign. If the sign of all pts is 0 (they all lie in the plane) return
@@ -579,9 +551,7 @@ resulting sign. If the sign of all pts is 0 (they all lie in the plane) return
 return 0. Since norm contains the equation of a plane dot_prod_vp of norm
 and a pt substitutes that pt into the equation.
 */
-    rend_obj *  obj,
-    vector      norm
-) {
+{
     int         sign;
 
     switch (_rend_obj_get_type( obj )) {
@@ -609,10 +579,8 @@ enum {
 };
 typedef unsigned check_half_space_rc;
 
-static check_half_space_rc check_half_space(
-/******************************************/
-    rend_obj *  obj1,
-    rend_obj *  obj2
+static check_half_space_rc check_half_space( rend_obj *obj1, rend_obj *obj2 )
+/***************************************************************************/
 /*
 This procedure checks if obj1 is completly in one of the half spaces of
 the plane of obj2. The plane of obj2 could be any plane that contains obj2
@@ -635,7 +603,7 @@ half space.
 
 NOTE: This implimentation was suggested by exercise 15.6 on p. 718.
 */
-) {
+{
     vector          norm;
     sub_plane_rc    rel1;       /* relationship of obj1 to plane of obj2 */
     int             sign2_z;    /* sign of z-component of norm of obj2 */
@@ -679,38 +647,32 @@ NOTE: This implimentation was suggested by exercise 15.6 on p. 718.
     }
 }
 
-static bool near_half_space(
-/**************************/
+static bool near_half_space( rend_obj *obj1, rend_obj *obj2 )
+/***********************************************************/
 /* This tests whether obj1 is completly in the near half space (as seen by */
 /* the viewer) of the plane of obj2. */
-    rend_obj                *obj1,
-    rend_obj                *obj2
-) {
+{
     check_half_space_rc     rc;
 
     rc = check_half_space( obj1, obj2 );
     return( rc == HALF_SPACE_NEAR || rc == HALF_SPACE_SAME );
 }
 
-static bool far_half_space(
-/*************************/
+static bool far_half_space( rend_obj *obj1, rend_obj *obj2 )
+/**********************************************************/
 /* This tests whether obj1 is completly in the far half space (as seen by */
 /* the viewer) of the plane of obj2. */
-    rend_obj                *obj1,
-    rend_obj                *obj2
-) {
+{
     check_half_space_rc     rc;
 
     rc = check_half_space( obj1, obj2 );
     return( rc == HALF_SPACE_FAR || rc == HALF_SPACE_SAME );
 }
 
-static bool proj_overlap_ln_ln(
-/*****************************/
+static bool proj_overlap_ln_ln( rend_obj *obj1, rend_obj *obj2 )
+/**************************************************************/
 /* Tests whether 2 line objects overlap in their projection into the x-y plane*/
-    rend_obj *  obj1,
-    rend_obj *  obj2
-) {
+{
     point       line1[2];
     point       line2[2];
 
@@ -722,12 +684,10 @@ static bool proj_overlap_ln_ln(
     return( proj_line_intersection( line1, line2 ) );
 }
 
-static bool proj_overlap_ln_poly(
-/*******************************/
+static bool proj_overlap_ln_poly( rend_obj *line, rend_obj *obj_poly )
+/********************************************************************/
 /* Test whether a line and a poly overlap in their projections */
-    rend_obj *  line,
-    rend_obj *  obj_poly
-) {
+{
     point       ln[2];
     point       edge[2];
     int         num_pts;
@@ -751,8 +711,8 @@ static bool proj_overlap_ln_poly(
     return( FALSE );
 }
 
-static bool proj_overlap_poly_poly(
-/*********************************/
+static bool proj_overlap_poly_poly( rend_obj *obj_poly1, rend_obj *obj_poly2 )
+/****************************************************************************/
 /* Test whether the projection into the x-y plane of two polygons overlap */
 /*
     NOTE: This routine does not work the way it is supposed to. What it is
@@ -772,9 +732,7 @@ static bool proj_overlap_poly_poly(
 
     S.Bosnick
 */
-    rend_obj *  obj_poly1,
-    rend_obj *  obj_poly2
-) {
+{
     point       edge1[2];
     point       edge2[2];
     int         num_pts1;
@@ -859,14 +817,12 @@ static bool proj_overlap_poly_poly(
 }
 
 
-static bool proj_overlap(
-/***********************/
+static bool proj_overlap( rend_obj *obj1, rend_obj *obj2 )
+/********************************************************/
 /* Tests whether the projection of obj1 and obj2 into the x-y plane overlaps */
 /* NOTE: This function assumes that extent testing has been performed and */
 /* that the extents do overlap */
-    rend_obj *  obj1,
-    rend_obj *  obj2
-) {
+{
     rend_type   type1;
     rend_type   type2;
 
@@ -906,12 +862,11 @@ static bool proj_overlap(
 }
 
 
-static bool test_for_overlap(
-/***************************/
+static bool test_for_overlap( rend_obj *qobj, rend_obj *pobj )
+/************************************************************/
 /* This function implements tests 1-5 for the depth-sort algorithm. */
-    rend_obj *      qobj,           // p and q refer to names on p. 673
-    rend_obj *      pobj
-) {
+/*  p and q refer to names on p. 673 */
+{
     visible_info *  qvis;
     visible_info *  pvis;
 
@@ -941,14 +896,13 @@ static bool test_for_overlap(
     return( TRUE );
 }
 
-static bool test_for_mtf(
-/************************/
+static bool test_for_mtf( rend_obj *qobj, rend_obj *pobj )
+/********************************************************/
 /* Tests whether it is safe to move qobj to before pobj in the list. */
 /* mtf -- move to front */
 /* This function impliments test 3' and 4' from the depth-sort alogorithm */
-    rend_obj *      qobj,           // p and q refer to names on p. 673
-    rend_obj *      pobj
-) {
+/* p and q refer to names on p. 673 */
+{
     /* test 3' */
     if (far_half_space( qobj, pobj )) {
         return( TRUE );
@@ -960,11 +914,9 @@ static bool test_for_mtf(
     return( FALSE );
 }
 
-static void get_first_unmarked(
-/*****************************/
-    rend_list *     list,
-    rend_list_ref * ref
-) {
+static void get_first_unmarked( rend_list *list, rend_list_ref *ref )
+/*******************************************************************/
+{
     visible_info *  vis;
 
     _rend_list_first( list, ref );
@@ -977,14 +929,11 @@ static void get_first_unmarked(
     }
 }
 
-static void split_object(
-/***********************/
+static void split_object( rend_list *list, rend_obj *obj1, rend_obj *obj2 )
+/*************************************************************************/
 /* Split obj1 by the plane of obj2 and insert the pieces into list in proper */
 /* z-min order after any marked objects. */
-    rend_list *     list,
-    rend_obj *      obj1,
-    rend_obj *      obj2
-) {
+{
     vector          norm;   // plane of obj2
     rend_obj *      p;      // pieces of obj1 in local memory
     rend_obj *      g;      // in pipe memory
@@ -1020,15 +969,11 @@ static void split_object(
     }
 }
 
-static void split_marked_object(
-/******************************/
+static void split_marked_object( rend_list *list, rend_obj *obj1, rend_obj *obj2 )
+/********************************************************************************/
 /* This routine determines which of obj1 or obj2 to split the splits it and */
 /* inserts the pieces into list */
-    rend_list *     list,
-    rend_obj *      obj1,
-    rend_obj *      obj2
-) {
-
+{
     if (check_half_space( obj1, obj2 ) == HALF_SPACE_NONE) {
         split_object( list, obj1, obj2 );
     } else if (check_half_space( obj2, obj1 ) == HALF_SPACE_NONE) {
@@ -1048,11 +993,10 @@ static void split_marked_object(
     }
 }
 
-static void check_overlap(
-/************************/
-    rend_list *     list,
-    rend_list_ref * dref            // reference to the candidate for drawing
-) {
+static void check_overlap( rend_list *list, rend_list_ref *dref )
+/***************************************************************/
+/*  rend_list_ref *dref     reference to the candidate for drawing */
+{
     rend_list_ref   cref;           // reference to the obj to check
     rend_obj *      dobj;
     rend_obj *      cobj;
@@ -1114,10 +1058,9 @@ static void check_overlap(
 
 
 #if 0
-static void unmark_list(
-/**********************/
-    rend_list *     list
-) {
+static void unmark_list( rend_list *list )
+/****************************************/
+{
     rend_list_ref   curr;
     visible_info *  vis;
 
@@ -1134,10 +1077,9 @@ static void unmark_list(
 }
 #endif
 
-static void display_visible_surfaces(
-/***********************************/
-    rend_list *     list
-) {
+static void display_visible_surfaces( rend_list *list )
+/*****************************************************/
+{
     rend_list_ref   curr_ref;       // reference to obj we wish to draw
 
 //  compute_extents( list );
@@ -1151,9 +1093,8 @@ static void display_visible_surfaces(
     }
 }
 
-extern void pipe3d_display(
+void pipe3d_display( void )
 /*************************/
-    void
-) {
+{
     display_visible_surfaces( Pipe3dList );
 }

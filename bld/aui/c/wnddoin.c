@@ -32,7 +32,7 @@
 
 #include "_aui.h"
 
-void WndDoInput()
+void WndDoInput( void )
 {
     // initialization hook
 }

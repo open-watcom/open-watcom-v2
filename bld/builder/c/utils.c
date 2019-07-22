@@ -87,8 +87,9 @@ void Fatal( const char *str, ... )
         va_start( arg, str );
         vfprintf( LogFile, str, arg );
         va_end( arg );
-        fclose( LogFile );
     }
+    CloseLog();
+    MClose();
     exit( 1 );
 }
 
@@ -96,11 +97,11 @@ void Log( bool quiet, const char *str, ... )
 {
     va_list     arg;
 
-    va_start( arg, str );
-
-    if( !quiet )
+    if( !quiet ) {
+        va_start( arg, str );
         vfprintf( stderr, str, arg );
-    va_end( arg );
+        va_end( arg );
+    }
     if( LogFile != NULL ) {
         va_start( arg, str );
         vfprintf( LogFile, str, arg );
@@ -177,10 +178,10 @@ void MFree( void *p )
 #endif
 }
 
-char *SkipBlanks( const char *p )
+const char *SkipBlanks( const char *p )
 {
     while( IS_BLANK( *p ) ) {
         ++p;
     }
-    return( (char *)p );
+    return( p );
 }

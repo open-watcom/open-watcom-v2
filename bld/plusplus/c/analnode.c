@@ -597,7 +597,7 @@ PTREE MakeNodeSymbol(           // MAKE PT_SYMBOL NODE FROM SYMBOL
     sym = SymMarkRefed( sym );
     if( NULL != StructType( sym->sym_type ) ) {
 //        sym->flag |= PTF_MEMORY_EXACT;
-        sym->flag |= SF_ADDR_TAKEN;
+        sym->flag |= SYMF_ADDR_TAKEN;
     }
     return( NodeSymbolNoRef( NULL, sym, NULL ) );
 }
@@ -1795,10 +1795,10 @@ PTREE NodeDtorExpr(             // MARK FOR DTOR'ING AFTER EXPRESSION
     SYMBOL dtor;                // - dtor symbol
 
     if( ( expr->op != PT_ERROR ) && SymRequiresDtoring( sym ) ) {
-        sym->flag |= SF_ADDR_TAKEN;
+        sym->flag |= SYMF_ADDR_TAKEN;
         orig = expr;
         if( ! SymIsModuleDtorable( sym ) ) {
-            sym->flag |= SF_CG_ADDR_TAKEN;
+            sym->flag |= SYMF_CG_ADDR_TAKEN;
             SymScope( sym )->u.s.dtor_reqd = true;
         }
         PTreeExtractLocn( expr, &err_locn );

@@ -2439,7 +2439,7 @@ tiny_ret_t  tiny_call   _TinyDPMISetDescriptor( uint_16 __sel, void __far * );
         _INT_21         \
         _SBB_DX_DX      \
         _RST_DS_SREG    \
-    __parm __caller     [_SREG __dx] [__cl] \
+    __parm __caller     [_SREG __dx] [__cx] \
     __value             [__dx __ax] \
     __modify __exact    [__ax __dx]
 

@@ -82,7 +82,7 @@ void ClearFile(const char *filename)
     printf("cleared file %s\n",filename);
 }
 
-void CopyFile(const char *source, const char *dest)
+static void doCopyFile(const char *source, const char *dest)
 {
     char Buffer[BUFFER_SIZE];
     int numBytes=BUFFER_SIZE+1;
@@ -206,7 +206,7 @@ void ProcessWJDFile(const char *wjdfile, int action)
                 if(0 == stricmp(Source,Target)) {
                     // it's the same file. Do nothing!
                 } else if(action == COPY) {
-                    CopyFile(Source, Target);
+                    doCopyFile(Source, Target);
                 } else if(action == CLEAR) {
                     ClearFile(Target);
                 }

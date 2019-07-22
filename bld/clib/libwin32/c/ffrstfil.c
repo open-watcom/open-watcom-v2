@@ -38,61 +38,58 @@
 #include "libwin32.h"
 #include "osver.h"
 
-HANDLE __lib_FindFirstFileW( LPCWSTR lpFileName,
-                             LPWIN32_FIND_DATAW lpFindFileData )
-/**************************************************************/
+HANDLE __lib_FindFirstFileW( LPCWSTR lpFileName, LPWIN32_FIND_DATAW lpFindFileData )
+/**********************************************************************************/
 {
-    if( WIN32_IS_NT ) {                                 /* NT */
+    char                *mbFileName;
+    HANDLE              osrc;
+    WIN32_FIND_DATAA    mbFindFileData;
+    size_t              cvt;
+    size_t              len;
+
+    if( WIN32_IS_NT ) { /* NT */
         return( FindFirstFileW( lpFileName, lpFindFileData ) );
-    } else {                                            /* Win95 or Win32s */
-        char *              mbFileName;
-        HANDLE              osrc;
-        WIN32_FIND_DATAA    mbFindFileData;
-        size_t              cvt;
-        size_t              len;
-
-        /*** Allocate some memory ***/
-        len = wcslen( lpFileName ) * MB_CUR_MAX + 1;
-        mbFileName = lib_malloc( len );
-        if( mbFileName == NULL ) {
-            return( INVALID_HANDLE_VALUE );
-        }
-
-        /*** Prepare to call the OS ***/
-        cvt = wcstombs( mbFileName, lpFileName, len );
-        if( cvt == (size_t)-1 ) {
-            lib_free( mbFileName );
-            return( INVALID_HANDLE_VALUE );
-        }
-
-        /*** Call the OS ***/
-        osrc = FindFirstFileA( mbFileName, &mbFindFileData );
-        lib_free( mbFileName );
-        if( osrc == INVALID_HANDLE_VALUE ) {
-            return( INVALID_HANDLE_VALUE );
-        }
-
-        /*** Convert the WIN32_FIND_DATAA info to WIN32_FIND_DATAW info ***/
-        lpFindFileData->dwFileAttributes = mbFindFileData.dwFileAttributes;
-        lpFindFileData->ftCreationTime = mbFindFileData.ftCreationTime;
-        lpFindFileData->ftLastAccessTime = mbFindFileData.ftLastAccessTime;
-        lpFindFileData->ftLastWriteTime = mbFindFileData.ftLastWriteTime;
-        lpFindFileData->nFileSizeHigh = mbFindFileData.nFileSizeHigh;
-        lpFindFileData->nFileSizeLow = mbFindFileData.nFileSizeLow;
-        lpFindFileData->dwReserved0 = mbFindFileData.dwReserved0;
-        lpFindFileData->dwReserved1 = mbFindFileData.dwReserved1;
-        cvt = mbstowcs( lpFindFileData->cFileName, mbFindFileData.cFileName,
-                        MAX_PATH );
-        if( cvt == (size_t)-1 ) {
-            return( INVALID_HANDLE_VALUE );
-        }
-        cvt = mbstowcs( lpFindFileData->cAlternateFileName,
-                        mbFindFileData.cAlternateFileName,
-                        MAX_PATH );
-        if( cvt == (size_t)-1 ) {
-            return( INVALID_HANDLE_VALUE );
-        }
-
-        return( osrc );
     }
+    /* Win95 or Win32s */
+
+    /*** Allocate some memory ***/
+    len = wcslen( lpFileName ) * MB_CUR_MAX + 1;
+    mbFileName = lib_malloc( len );
+    if( mbFileName == NULL ) {
+        return( INVALID_HANDLE_VALUE );
+    }
+
+    /*** Prepare to call the OS ***/
+    cvt = wcstombs( mbFileName, lpFileName, len );
+    if( cvt == (size_t)-1 ) {
+        lib_free( mbFileName );
+        return( INVALID_HANDLE_VALUE );
+    }
+
+    /*** Call the OS ***/
+    osrc = __fixed_FindFirstFileA( mbFileName, &mbFindFileData );
+    lib_free( mbFileName );
+    if( osrc == INVALID_HANDLE_VALUE ) {
+        return( INVALID_HANDLE_VALUE );
+    }
+
+    /*** Convert the WIN32_FIND_DATAA info to WIN32_FIND_DATAW info ***/
+    lpFindFileData->dwFileAttributes = mbFindFileData.dwFileAttributes;
+    lpFindFileData->ftCreationTime = mbFindFileData.ftCreationTime;
+    lpFindFileData->ftLastAccessTime = mbFindFileData.ftLastAccessTime;
+    lpFindFileData->ftLastWriteTime = mbFindFileData.ftLastWriteTime;
+    lpFindFileData->nFileSizeHigh = mbFindFileData.nFileSizeHigh;
+    lpFindFileData->nFileSizeLow = mbFindFileData.nFileSizeLow;
+    lpFindFileData->dwReserved0 = mbFindFileData.dwReserved0;
+    lpFindFileData->dwReserved1 = mbFindFileData.dwReserved1;
+    cvt = mbstowcs( lpFindFileData->cFileName, mbFindFileData.cFileName, MAX_PATH );
+    if( cvt == (size_t)-1 ) {
+        return( INVALID_HANDLE_VALUE );
+    }
+    cvt = mbstowcs( lpFindFileData->cAlternateFileName, mbFindFileData.cAlternateFileName, MAX_PATH );
+    if( cvt == (size_t)-1 ) {
+        return( INVALID_HANDLE_VALUE );
+    }
+
+    return( osrc );
 }

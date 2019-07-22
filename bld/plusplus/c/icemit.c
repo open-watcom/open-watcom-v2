@@ -306,7 +306,7 @@ static SYMBOL getAliasDtorSym(  // GET ALIASED DTOR SYMBOL
     SYMBOL sym )                // - original symbol
 {
     sym = SymDeAlias( sym );
-    sym->flag |= SF_ADDR_TAKEN;
+    sym->flag |= SYMF_ADDR_TAKEN;
     return( SymMarkRefed( sym ) );
 }
 

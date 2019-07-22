@@ -37,8 +37,8 @@
 #include <windows.h>
 #include "trpimp.h"
 #include "trpcomm.h"
-#include "timetwnt.h"
-#include "dosftwnt.h"
+#include "libwin32.h"
+#include "ntext.h"
 
 
 #define TRPH2LH(th)     (HANDLE)((th)->handle.u._32[0])
@@ -151,15 +151,15 @@ trap_retval ReqRfx_setcwd( void )
 trap_retval ReqRfx_getfileattr( void )
 {
     HANDLE              h;
-    WIN32_FIND_DATA     ffb;
+    WIN32_FIND_DATA     ffd;
     rfx_getfileattr_ret *ret;
 
     ret = GetOutPtr( 0 );
-    h = FindFirstFile( GetInPtr( sizeof( rfx_getfileattr_req ) ), &ffb );
+    h = __fixed_FindFirstFile( GetInPtr( sizeof( rfx_getfileattr_req ) ), &ffd );
     if( h == INVALID_HANDLE_VALUE ) {
         ret->attribute = (0xffff0000 | GetLastError());
     } else {
-        ret->attribute = ffb.dwFileAttributes;
+        ret->attribute = NT2DOSATTR( ffd.dwFileAttributes );
         FindClose( h );
     }
     return( sizeof( *ret ) );
@@ -176,7 +176,7 @@ trap_retval ReqRfx_setfileattr( void )
     acc = GetInPtr( 0 );
     name = GetInPtr( sizeof( *acc ) );
     ret = GetOutPtr( 0 );
-    ret->err = GetError( SetFileAttributes( name, acc->attribute ) );
+    ret->err = GetError( SetFileAttributes( name, DOS2NTATTR( acc->attribute ) ) );
     return( sizeof( *ret ) );
 }
 
@@ -205,70 +205,6 @@ trap_retval ReqRfx_getfreespace( void )
     if( GetDiskFreeSpace( pname, &sectors_per_cluster, &bytes_per_sector, &avail_clusters, &total_clusters ) )
         ret->size = avail_clusters * sectors_per_cluster * bytes_per_sector;
     return( sizeof( *ret ) );
-}
-
-void __NT_timet_to_filetime( time_t t, FILETIME *ft )
-{
-    ULARGE_INTEGER  ulint;
-
-    ulint.QuadPart = ( t + SEC_TO_UNIX_EPOCH ) * WINDOWS_TICK;
-    ft->dwLowDateTime = ulint.u.LowPart;
-    ft->dwHighDateTime = ulint.u.HighPart;
-}
-
-time_t __NT_filetime_to_timet( const FILETIME *ft )
-{
-    ULARGE_INTEGER  ulint;
-
-    ulint.u.LowPart   =   ft->dwLowDateTime;
-    ulint.u.HighPart  =   ft->dwHighDateTime;
-    return( ulint.QuadPart / WINDOWS_TICK - SEC_TO_UNIX_EPOCH );
-}
-
-static unsigned __DOS2NTAttr( char dos_attribs )
-{
-    unsigned    nt_attribs;
-
-    nt_attribs = FILE_ATTRIBUTE_NORMAL;
-    if( dos_attribs & _A_SYSTEM ) {
-        nt_attribs |= FILE_ATTRIBUTE_SYSTEM;
-    }
-    if( dos_attribs & _A_HIDDEN ) {
-        nt_attribs |= FILE_ATTRIBUTE_HIDDEN;
-    }
-    if( dos_attribs & _A_ARCH ) {
-        nt_attribs |= FILE_ATTRIBUTE_ARCHIVE;
-    }
-    if( dos_attribs & _A_RDONLY ) {
-        nt_attribs |= FILE_ATTRIBUTE_READONLY;
-    }
-    if( dos_attribs & _A_SUBDIR ) {
-        nt_attribs |= FILE_ATTRIBUTE_DIRECTORY;
-    }
-    return( nt_attribs );
-}
-
-static unsigned __NT2DOSAttr( unsigned nt_attribs )
-{
-    unsigned    dos_attribs;
-
-    dos_attribs = 0;
-    if( nt_attribs & FILE_ATTRIBUTE_SYSTEM ) {
-        dos_attribs |= _A_SYSTEM;
-    }
-    if( nt_attribs & FILE_ATTRIBUTE_HIDDEN ) {
-        dos_attribs |= _A_HIDDEN;
-    }
-    if( nt_attribs & FILE_ATTRIBUTE_ARCHIVE ) {
-        dos_attribs |= _A_ARCH;
-    }
-    if( nt_attribs & FILE_ATTRIBUTE_READONLY ) {
-        dos_attribs |= _A_RDONLY;
-    }
-    if( nt_attribs & FILE_ATTRIBUTE_DIRECTORY ) {
-        dos_attribs |= _A_SUBDIR;
-    }
-    return( dos_attribs );
 }
 
 trap_retval ReqRfx_setdatetime( void )
@@ -344,41 +280,21 @@ trap_retval ReqRfx_getcwd( void )
     return( sizeof( *ret ) + strlen( buff ) + 1 );
 }
 
-#define NT_ATTRIBUTES_MASK (FILE_ATTRIBUTE_HIDDEN | FILE_ATTRIBUTE_SYSTEM | FILE_ATTRIBUTE_DIRECTORY)
-
-static bool __NTFindNextFileWithAttr( HANDLE h, unsigned nt_attribs, LPWIN32_FIND_DATA ffb )
-/******************************************************************************************/
-{
-    for( ;; ) {
-        if( ffb->dwFileAttributes == 0 ) {
-            // Win95 seems to return 0 for the attributes sometimes?
-            // In that case, treat as a normal file
-            ffb->dwFileAttributes = FILE_ATTRIBUTE_NORMAL;
-        }
-        if( (nt_attribs | !ffb->dwFileAttributes) & NT_ATTRIBUTES_MASK ) {
-            return( true );
-        }
-        if( !FindNextFile( h, ffb ) ) {
-            return( false );
-        }
-    }
-}
-
-static void makeDTARFX( LPWIN32_FIND_DATA ffb, rfx_find *info, HANDLE h, unsigned nt_attribs )
+static void makeDTARFX( LPWIN32_FIND_DATA ffd, rfx_find *info, HANDLE h, unsigned nt_attribs )
 /********************************************************************************************/
 {
     DTARFX_HANDLE_OF( info ) = (pointer_int)h;
     DTARFX_ATTRIB_OF( info ) = nt_attribs;
-    info->attr = __NT2DOSAttr( ffb->dwFileAttributes );
-    __MakeDOSDT( &ffb->ftLastWriteTime, &info->date, &info->time );
+    info->attr = NT2DOSATTR( ffd->dwFileAttributes );
+    __MakeDOSDT( &ffd->ftLastWriteTime, &info->date, &info->time );
     DTARFX_TIME_OF( info ) = info->time;
     DTARFX_DATE_OF( info ) = info->date;
-    info->size = ffb->nFileSizeLow;
+    info->size = ffd->nFileSizeLow;
 #if RFX_NAME_MAX < MAX_PATH
-    strncpy( info->name, ffb->cFileName, RFX_NAME_MAX );
+    strncpy( info->name, ffd->cFileName, RFX_NAME_MAX );
     info->name[RFX_NAME_MAX] = '\0';
 #else
-    strncpy( info->name, ffb->cFileName, MAX_PATH - 1 );
+    strncpy( info->name, ffd->cFileName, MAX_PATH - 1 );
     info->name[MAX_PATH - 1] = '\0';
 #endif
 }
@@ -388,17 +304,17 @@ trap_retval ReqRfx_findfirst( void )
     rfx_findfirst_req   *acc;
     rfx_findfirst_ret   *ret;
     HANDLE              h;
-    WIN32_FIND_DATA     ffb;
+    WIN32_FIND_DATA     ffd;
     rfx_find            *info;
     unsigned            nt_attribs;
 
     acc = GetInPtr( 0 );
-    nt_attribs = __DOS2NTAttr( acc->attrib );
+    nt_attribs = DOS2NTATTR( acc->attrib );
     ret = GetOutPtr( 0 );
     ret->err = 0;
     info = GetOutPtr( sizeof( *ret ) );
-    h = FindFirstFile( GetInPtr( sizeof( *acc ) ), &ffb );
-    if( h == INVALID_HANDLE_VALUE || !__NTFindNextFileWithAttr( h, nt_attribs, &ffb ) ) {
+    h = __fixed_FindFirstFile( GetInPtr( sizeof( *acc ) ), &ffd );
+    if( h == INVALID_HANDLE_VALUE || !__NTFindNextFileWithAttr( h, nt_attribs, &ffd ) ) {
         ret->err = GetLastError();
         if( h != INVALID_HANDLE_VALUE ) {
             FindClose( h );
@@ -406,13 +322,13 @@ trap_retval ReqRfx_findfirst( void )
         DTARFX_HANDLE_OF( info ) = DTARFX_INVALID_HANDLE;
         return( sizeof( *ret ) );
     }
-    makeDTARFX( &ffb, info, h, nt_attribs );
+    makeDTARFX( &ffd, info, h, nt_attribs );
     return( sizeof( *ret ) + offsetof( rfx_find, name ) + strlen( info->name ) + 1 );
 }
 
 trap_retval ReqRfx_findnext( void )
 {
-    WIN32_FIND_DATA     ffb;
+    WIN32_FIND_DATA     ffd;
     rfx_findnext_ret    *ret;
     rfx_find            *info;
     HANDLE              h;
@@ -427,14 +343,14 @@ trap_retval ReqRfx_findnext( void )
     h = (HANDLE)DTARFX_HANDLE_OF( info );
     nt_attribs = DTARFX_ATTRIB_OF( info );
     info = GetOutPtr( sizeof( *ret ) );
-    if( !FindNextFile( h, &ffb ) || !__NTFindNextFileWithAttr( h, nt_attribs, &ffb ) ) {
+    if( !__fixed_FindNextFile( h, &ffd ) || !__NTFindNextFileWithAttr( h, nt_attribs, &ffd ) ) {
         ret->err = GetLastError();
         FindClose( h );
         DTARFX_HANDLE_OF( info ) = DTARFX_INVALID_HANDLE;
         return( sizeof( *ret ) );
     }
     ret->err = 0;
-    makeDTARFX( &ffb, info, h, nt_attribs );
+    makeDTARFX( &ffd, info, h, nt_attribs );
     return( sizeof( *ret ) + offsetof( rfx_find, name ) + strlen( info->name ) + 1 );
 }
 

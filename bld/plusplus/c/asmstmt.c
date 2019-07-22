@@ -218,7 +218,7 @@ PTREE AsmStmt( void )
         fn_type = MakeModifiableFunction( ret_type, NULL );
         fn_type->u.f.pragma = auxinfo;
         fn_type = CheckDupType( fn_type );
-        sym = SymCreateFileScope( fn_type, SC_NULL, SF_NULL, fn_name );
+        sym = SymCreateFileScope( fn_type, SYMC_NULL, SYMF_NULL, fn_name );
         LinkageSet( sym, "C" );
         expr = genFnCall( fn_name );
     } else {

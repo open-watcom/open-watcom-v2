@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -65,24 +66,24 @@ static int __F_NAME(__sopen,__wsopen)( const CHAR_TYPE *name, unsigned mode, uns
 
     // First try to get the required slot.
     // No point in creating a file only to not use it.  JBS 99/10/26
-    hid = __allocPOSIXHandle( DUMMY_HANDLE );
+    hid = __allocPOSIXHandleDummy();
     if( hid == -1 ) {
         return( -1 );
     }
 
     rwmode = mode & OPENMODE_ACCESS_MASK;
     __GetNTAccessAttr( rwmode, &desired_access, &os_attr );
-    __GetNTShareAttr( share|rwmode, &share_mode );
+    __GetNTShareAttr( share | rwmode, &share_mode );
     fileattr = FILE_ATTRIBUTE_NORMAL;
 
     security.nLength = sizeof( SECURITY_ATTRIBUTES );
     security.lpSecurityDescriptor = NULL;
-    security.bInheritHandle = mode&O_NOINHERIT ? FALSE : TRUE;
+    security.bInheritHandle = ( mode & O_NOINHERIT ) ? FALSE : TRUE;
 
 #ifdef DEFAULT_WINDOWING
     if( _WindowsNewWindow != NULL && !__F_NAME(stricmp,_wcsicmp)( name, CHAR_CONST( "con" ) ) )
     {
-        handle = (HANDLE) __NTGetFakeHandle();
+        handle = __NTGetFakeHandle();
 
         // Now use the slot we got.
         __setOSHandle( hid, handle );   // JBS 99/11/01
@@ -117,12 +118,12 @@ static int __F_NAME(__sopen,__wsopen)( const CHAR_TYPE *name, unsigned mode, uns
         /*** Open the file ***/
         handle = __lib_CreateFile( name, desired_access, share_mode, &security,
                                         exists_disp, fileattr, NULL );
-        if( handle==(HANDLE)-1 ) {
-            if( mode&O_CREAT ) {
+        if( handle == INVALID_HANDLE_VALUE ) {
+            if( mode & O_CREAT ) {
                 handle = __lib_CreateFile( name, desired_access, share_mode, NULL,
                                             create_disp, fileattr, NULL );
             }
-            if( handle == (HANDLE)-1 ) {
+            if( handle == INVALID_HANDLE_VALUE ) {
                 __freePOSIXHandle( hid );
                 return( __set_errno_nt() );
             }
@@ -133,7 +134,7 @@ static int __F_NAME(__sopen,__wsopen)( const CHAR_TYPE *name, unsigned mode, uns
 
         iomode_flags = 0;
 
-        if( isatty(hid) ) {
+        if( isatty( hid ) ) {
             iomode_flags = _ISTTY;
         }
 #ifdef DEFAULT_WINDOWING

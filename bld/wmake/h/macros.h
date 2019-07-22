@@ -46,7 +46,7 @@ extern void         MacroFini( void );
 extern char         *GetMacroValue( const char *name );
 extern char         *WrnGetMacroValue( const char *name );
 extern void         DefMacro( const char *name );
-extern char         *DeMacro( TOKEN_T end );
+extern char         *DeMacro( MTOKEN_T end );
 extern bool         ForceDeMacro( void );
 extern char         *PartDeMacro( bool forceDeMacro );
 extern void         UnDefMacro( const char *name );

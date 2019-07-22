@@ -1015,7 +1015,7 @@ PTREE AnalyseCall(              // ANALYSIS FOR CALL
         if( fn_mod & TF1_FAR16 ) {
             /* we are calling a far16 function */
             caller_sym = ScopeFunctionInProgress();
-            caller_sym->flag |= SF_FAR16_CALLER;
+            caller_sym->flag |= SYMF_FAR16_CALLER;
         }
         left->type = type;
         if( node_this == NULL ) {
@@ -1086,7 +1086,7 @@ PTREE AnalyseCall(              // ANALYSIS FOR CALL
         if( fn_mod & TF1_FAR16 ) {
             /* we are calling a far16 function */
             caller_sym = ScopeFunctionInProgress();
-            caller_sym->flag |= SF_FAR16_CALLER;
+            caller_sym->flag |= SYMF_FAR16_CALLER;
         }
         if( ! TypeHasNumArgs( type, num_args ) ) {
             PTreeErrorExpr( expr, ERR_PARM_COUNT_MISMATCH_POINTER );

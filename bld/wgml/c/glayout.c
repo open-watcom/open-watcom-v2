@@ -63,35 +63,35 @@ void    gml_layout( gml_tag gtag )
     p = scan_start;
     scan_start = scan_stop;
 
-    if( !GlobalFlags.firstpass ) {
-        ProcFlags.layout = true;
+    if( !FlagsGlob.firstpass ) {
+        FlagsProc.layout = true;
 
         /*******************************************************************/
         /*  read and ignore all lines up to :eLAYOUT                       */
         /*******************************************************************/
 
-        while( !ProcFlags.reprocess_line  ) {
+        while( !FlagsProc.reprocess_line  ) {
             eat_lay_sub_tag();
             if( strnicmp( ":elayout", buff2, 8 ) ) {
-                ProcFlags.reprocess_line = false;   // not :elayout, go on
+                FlagsProc.reprocess_line = false;   // not :elayout, go on
             }
         }
         return;
     }
 
-    if( !ProcFlags.lay_specified ) {
-        ProcFlags.lay_specified = true;
+    if( !FlagsProc.lay_specified ) {
+        FlagsProc.lay_specified = true;
         out_msg( "Processing layout\n" );
     }
 
     if( *p == '\0' || *p == '.' ) {
-        if( ProcFlags.layout ) {        // nested layout
+        if( FlagsProc.layout ) {        // nested layout
             err_count++;
             g_err( err_nested_tag, gml_tagname( gtag ) );
             file_mac_info();
             return;
         }
-        ProcFlags.layout = true;
+        FlagsProc.layout = true;
         return;
     } else {
         err_count++;
@@ -113,20 +113,20 @@ void    lay_elayout( lay_tag ltag )
     p = scan_start;
     scan_start = scan_stop;
 
-    if( !GlobalFlags.firstpass ) {
-        ProcFlags.layout = false;
+    if( !FlagsGlob.firstpass ) {
+        FlagsProc.layout = false;
         return;                         // process during first pass only
     }
 
     if( *p == '\0' || *p == '.' ) {
-        if( !ProcFlags.layout ) {       // not in layout processing
+        if( !FlagsProc.layout ) {       // not in layout processing
             err_count++;
             g_err( err_no_lay, &(lay_tagname( ltag )[1]), lay_tagname( ltag ) );
             file_mac_info();
             return;
         }
-        ProcFlags.layout = false;
-        ProcFlags.lay_xxx = el_zero;
+        FlagsProc.layout = false;
+        FlagsProc.lay_xxx = el_zero;
 
         return;
     } else {

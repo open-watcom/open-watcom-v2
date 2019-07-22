@@ -6,16 +6,18 @@ rcstest_autodepends = .AUTODEPEND
 !include defrule.mif
 !include deftarg.mif
 
+!include $(rcsdll_dir)/client.mif
+
 .EXTENSIONS: .res .rc
 
 .c : ..
 
-inc_dirs = -I.. -I"../.."
+inc_dirs = -I.. $(rcsdll_inc_dirs)
 rc_inc_dirs = -I..
 
 objs = test.obj
 
-libs = ../../$(host_os)$(host_cpu)/rcsdll.lib
+libs = $(rcsdll_lib)
 
 test.exe : $(objs) test.res $(libs)
     @%make echo_link

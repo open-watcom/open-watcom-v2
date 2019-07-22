@@ -1034,20 +1034,20 @@ void DataInitFinish( INITIALIZE_DATA *init )
             DgInitDone();
         }
         if( currInit->emit_code ) {
-            sym->flag |= SF_REFERENCED;
+            sym->flag |= SYMF_REFERENCED;
             if( SymIsThreaded( sym ) ) {
                 CErr2p( ERR_THREAD_CODE_REQD, sym );
             }
         } else {
-            sym->flag &= ~SF_REFERENCED;
+            sym->flag &= ~SYMF_REFERENCED;
             if( currInit->const_object ) {
-                sym->flag |= SF_CONST_NO_CODE;
+                sym->flag |= SYMF_CONST_NO_CODE;
             }
         }
         if( currInit->initted ) {
-            sym->flag |= SF_INITIALIZED;
+            sym->flag |= SYMF_INITIALIZED;
         } else {
-            sym->flag &= ~SF_INITIALIZED;
+            sym->flag &= ~SYMF_INITIALIZED;
         }
         switch( currInit->location ) {
         case DL_INTERNAL_AUTO:
@@ -1068,7 +1068,7 @@ void DataInitFinish( INITIALIZE_DATA *init )
             }
             break;
         }
-        sym->flag |= SF_INITIALIZED;
+        sym->flag |= SYMF_INITIALIZED;
         /* must be called after symbol is initialized */
         CgSegIdData( sym, dataInitSegIdControl() );
         dataInitCodeFileClose();
@@ -1748,7 +1748,7 @@ static void mayNeedAutoStaticInitCopy( void )
             currInit->auto_sym = currInit->sym;
             currInit->sym = StaticInitSymbol( currInit->auto_sym );
             dataInitEmitAutoAssign( currInit->auto_sym, currInit->sym );
-            currInit->sym->flag |= SF_INITIALIZED;
+            currInit->sym->flag |= SYMF_INITIALIZED;
             dataInitLabel();
         }
     }

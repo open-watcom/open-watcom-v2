@@ -32,7 +32,7 @@
 
 #include "_aui.h"
 
-bool    WndQueryEndSessionHook()
+bool    WndQueryEndSessionHook( void )
 {
     // Called on WM_QUERYENDSESSION message
     // Decide if it is ok to end session, return true iff it is.

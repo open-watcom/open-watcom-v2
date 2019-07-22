@@ -322,7 +322,7 @@ error_handle RemoteDateTime( sys_handle sh, int *time, int *date, int set )
     return( 0 );
 }
 
-error_handle RemoteGetCwd( int drv, char *where, trap_elen len )
+error_handle RemoteGetCwd( int drv, char *where, trap_elen max_len )
 {
     in_mx_entry             in[1];
     mx_entry                out[2];
@@ -336,7 +336,7 @@ error_handle RemoteGetCwd( int drv, char *where, trap_elen len )
     out[0].ptr = &ret;
     out[0].len = sizeof( ret );
     out[1].ptr = where;
-    out[1].len = len;
+    out[1].len = max_len;
     TrapAccess( 1, in, 2, out );
     return( StashErrCode( ret.err, OP_REMOTE ) );
 }

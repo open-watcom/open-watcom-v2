@@ -1,4 +1,4 @@
-#pmake: nobuild docs os_nt html
+#pmake: nobuild docs os_nt html webdocs
 
 dotarget=html
 

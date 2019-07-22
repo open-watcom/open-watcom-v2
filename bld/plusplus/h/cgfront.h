@@ -1374,7 +1374,7 @@ CTD TypeCommonDerivation(       // GET COMMON TYPE DERIVATION FOR TWO TYPES
 ;
 TYPE TypeAutoDefault(           // ADD NEAR QUALIFIER FOR AUTO SYMBOL
     TYPE type,                  // - a type
-    PTREE expr )                // - possible PT_SYMBOL of SC_AUTO
+    PTREE expr )                // - possible PT_SYMBOL of SYMC_AUTO
 ;
 TYPE TypeConvertFromPcPtr(      // TRANSFORM TYPE AFTER CONVERSION FROM PC PTR
     TYPE type )                 // - pointer type

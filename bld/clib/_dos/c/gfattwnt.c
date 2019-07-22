@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -31,20 +32,24 @@
 
 
 #include "variety.h"
+#include <time.h>
 #include <windows.h>
 #include <dos.h>
+#include "ntext.h"
 #include "seterrno.h"
+#include "libwin32.h"
 
-_WCRTLINK unsigned _dos_getfileattr( const char *path, unsigned *attribute )
+
+_WCRTLINK unsigned _dos_getfileattr( const char *path, unsigned *dos_attrib )
 {
     HANDLE              h;
-    WIN32_FIND_DATA     ffb;
+    WIN32_FIND_DATA     ffd;
 
-    h = FindFirstFile( (LPTSTR)path, &ffb );
+    h = __fixed_FindFirstFile( path, &ffd );
     if( h == INVALID_HANDLE_VALUE ) {
         return( __set_errno_nt_reterr() );
     }
-    *attribute = ffb.dwFileAttributes;
+    *dos_attrib = NT2DOSATTR( ffd.dwFileAttributes );
     FindClose( h );
     return( 0 );
 }

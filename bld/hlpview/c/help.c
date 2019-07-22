@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,7 +34,6 @@
 #include <ctype.h>
 #include <string.h>
 #include <stdio.h>
-#include "wio.h"
 #include "watcom.h"
 #include "stdui.h"
 #include "helpmem.h"
@@ -210,15 +210,15 @@ static int              currentAttr;
 static int              currentColour;
 static bool             ignoreMouseRelease;
 
-static char             curFile[_MAX_PATH];
-static HelpFp           helpFileHdl;
+static char             curFileName[_MAX_PATH];
+static FILE             *helpfile_fp;
 static HelpHdl          helpSearchHdl;
 static VTAB             tabFilter;
 static ui_event         curEvent;
 static ui_event         (*eventMapFn)( ui_event );
 
-static int              CheckHelpBlock( HelpFp help_file, char *topic, char *buffer, long int start );
-static void             replacetopic( char *word );
+static int              CheckHelpBlock( FILE *fp, const char *topic, char *buffer, long int start );
+static void             replacetopic( const char *word );
 static ScanCBfunc       scanCallBack;
 
 
@@ -236,7 +236,7 @@ static void addSearchButton( bool add )
 /*
  * helpGetString
  */
-static char *helpGetString( char *buf, size_t size, HelpFp fp )
+static char *helpGetString( char *buf, size_t size, FILE *fp )
 {
     long int            pos;
     size_t              bytesread;
@@ -260,14 +260,14 @@ static char *helpGetString( char *buf, size_t size, HelpFp fp )
 /*
  * OpenTopicInFile - open a help file and look for a topic
  */
-static int OpenTopicInFile( help_file *fileinfo, char *topic, char *buffer )
+static int OpenTopicInFile( help_file_info *fileinfo, const char *topic, char *buffer )
 {
     long int            start_offset;     /* - starting offset in HELP file        */
     long int            size_left;        /* - size left to search                 */
     int                 next_posn;        /* - contains indicator for next pos'n   */
     unsigned long       topic_pos;
 
-    if( fileinfo->f == -1 )
+    if( fileinfo->fp == NULL )
         return( 0 );
     if( fileinfo->searchhdl != NULL ) {
         /* search by new method */
@@ -275,8 +275,8 @@ static int OpenTopicInFile( help_file *fileinfo, char *topic, char *buffer )
         if( topic_pos == (unsigned long)-1 ) {
             return( 0 );
         } else {
-            HelpSeek( fileinfo->f, topic_pos, HELP_SEEK_SET );
-            if( helpGetString( buffer, BUF_LEN, fileinfo->f ) == NULL ) {
+            HelpSeek( fileinfo->fp, topic_pos, HELP_SEEK_SET );
+            if( helpGetString( buffer, BUF_LEN, fileinfo->fp ) == NULL ) {
                 return( 0 );
             } else {
                 return( 1 );
@@ -285,17 +285,17 @@ static int OpenTopicInFile( help_file *fileinfo, char *topic, char *buffer )
     } else {
         start_offset = 0L;
     }
-    size_left = HelpFileLen( fileinfo->f );
+    size_left = HelpFileLen( fileinfo->fp );
     do {
         size_left = size_left / 2;
         if( size_left <= 8 ) {
-            if( CheckHelpBlock( fileinfo->f, topic, buffer, start_offset ) != 0 ) {
+            if( CheckHelpBlock( fileinfo->fp, topic, buffer, start_offset ) != 0 ) {
                 return( 0 );
             } else {
                 return( 1 );
             }
         }
-        next_posn = CheckHelpBlock( fileinfo->f, topic, buffer, start_offset + size_left );
+        next_posn = CheckHelpBlock( fileinfo->fp, topic, buffer, start_offset + size_left );
         if( next_posn > 0 ) {
             start_offset += size_left;
         }
@@ -334,18 +334,17 @@ static char *scanTopic( char *buf, char **theend )
 /*
  * CheckHelpBlock - see if a topic is in the 2nd half of a block
  */
-static int CheckHelpBlock( HelpFp help_file, char *topic, char *buffer,
-                           long int start )
+static int CheckHelpBlock( FILE *fp, const char *topic, char *buffer, long int start )
 {
     int         retn;
     char        *ftopic;
     char        *end;
     unsigned    len;
 
-    HelpSeek( help_file, start, HELP_SEEK_SET );
+    HelpSeek( fp, start, HELP_SEEK_SET );
     retn = 0;
     do {
-        if( helpGetString( buffer, BUF_LEN, help_file ) == NULL ) {
+        if( helpGetString( buffer, BUF_LEN, fp ) == NULL ) {
             retn = -1;
             break;
         }
@@ -363,14 +362,14 @@ static int CheckHelpBlock( HelpFp help_file, char *topic, char *buffer,
 
 static void help_close( void )
 {
-    help_file *h;
+    help_file_info  *fileinfo;
 
-    for( h = HelpFiles; h->name != NULL; ++h ) {
-        if( h->f != 0 ) {
-            HelpClose( h->f );
-            FiniHelpSearch( h->searchhdl );
-            h->searchhdl = NULL;
-            h->f = 0;
+    for( fileinfo = HelpFiles; fileinfo->name != NULL; ++fileinfo ) {
+        if( fileinfo->fp != NULL ) {
+            HelpClose( fileinfo->fp );
+            FiniHelpSearch( fileinfo->searchhdl );
+            fileinfo->searchhdl = NULL;
+            fileinfo->fp = NULL;
         }
     }
 }
@@ -378,28 +377,28 @@ static void help_close( void )
 /*
  * help_open - open a help file at a topic location
  */
-static help_file *help_open( char *buffer )
+static help_file_info *help_open( char *buffer )
 {
-    help_file   *h;
-    char        *newtopic;
+    help_file_info  *fileinfo;
+    char            *newtopic;
 
-    for( h = HelpFiles; h->name != NULL; ++h ) {
-        if( h->f == 0 ) {
+    for( fileinfo = HelpFiles; fileinfo->name != NULL; fileinfo++ ) {
+        if( fileinfo->fp == NULL ) {
             /* text files screw up ctrl z */
-            h->f = HelpOpen( h->name, HELP_OPEN_RDONLY | HELP_OPEN_BINARY );
-            h->searchhdl = InitHelpSearch( h->f );
+            fileinfo->fp = HelpOpen( fileinfo->name );
+            fileinfo->searchhdl = InitHelpSearch( fileinfo->fp );
         }
         if( helpStack->word[0] == '\0' ) {
-            newtopic = GetDefTopic( h->searchhdl );
+            newtopic = GetDefTopic( fileinfo->searchhdl );
             replacetopic( newtopic );
         }
-        if( OpenTopicInFile( h, helpStack->word, buffer ) ) {
+        if( OpenTopicInFile( fileinfo, helpStack->word, buffer ) ) {
             break;
         }
     }
-    if( h->name == NULL )
+    if( fileinfo->name == NULL )
         return( NULL );
-    return( h );
+    return( fileinfo );
 }
 
 
@@ -513,7 +512,7 @@ static a_tab_field *help_next_field( a_field *fld, a_field *table )
     return( fld );
 }
 
-static void nexttopic( char *word )
+static void nexttopic( const char *word )
 {
     a_hstackent         *h;
     unsigned            len;
@@ -532,7 +531,7 @@ static void nexttopic( char *word )
     h->type = HSTCK_NAME;
     h->cur = 0;
     h->line = 0;
-    strcpy( h->helpfname, curFile );
+    strcpy( h->helpfname, curFileName );
     if( word != NULL ) {
         strcpy( h->word, word );
     }
@@ -553,7 +552,7 @@ static void prevtopic( void )
     free_fields( &helpTab );
 }
 
-static void replacetopic( char *word )
+static void replacetopic( const char *word )
 {
     if( helpStack->next == NULL ) {
         HelpMemFree( helpStack );
@@ -654,7 +653,7 @@ static ui_event hlpwait( VTAB *tab )
         case EV_F8:
         case EV_F4:
             prevtopic();
-            if( strcmp( helpStack->helpfname, curFile ) ) {
+            if( strcmp( helpStack->helpfname, curFileName ) ) {
                 len1 = strlen( helpStack->word );
                 len2 = strlen( helpStack->helpfname );
                 helpCur = HelpMemAlloc( sizeof( a_field ) + len1 + len2 );
@@ -725,7 +724,7 @@ static bool mygetline( void )
 {
     int                 l;
 
-    if( helpGetString( helpInBuf, BUF_LEN, helpFileHdl ) == NULL ) {
+    if( helpGetString( helpInBuf, BUF_LEN, helpfile_fp ) == NULL ) {
         return( false );
     }
     l = strlen( helpInBuf );
@@ -741,7 +740,7 @@ static void clearline( void )
     helpOutBuf[0] = '\0';
 }
 
-static void scanCallBack( TokenType type, Info *info, void *_myinfo )
+static void scanCallBack( HelpTokenType type, Info *info, void *_myinfo )
 {
     TextInfoBlock       *block;
     bool                goofy;
@@ -1004,9 +1003,9 @@ static void seek_line( int line )
     int                 i;
 
     if( line > lastHelpLine ) {
-        HelpSeek( helpFileHdl, topPos + helpPos[lastHelpLine], HELP_SEEK_SET );
+        HelpSeek( helpfile_fp, topPos + helpPos[lastHelpLine], HELP_SEEK_SET );
         for( i = lastHelpLine; ; ++i ) {
-            save_line( i, HelpTell( helpFileHdl ) );
+            save_line( i, HelpTell( helpfile_fp ) );
             if( i == line )
                 break;
             if( !mygetline() || strnicmp( helpInBuf, "::::", 4 ) == 0 ) {
@@ -1015,7 +1014,7 @@ static void seek_line( int line )
             }
         }
     } else if( line >= 0 ) {
-        HelpSeek( helpFileHdl, topPos + helpPos[line], HELP_SEEK_SET );
+        HelpSeek( helpfile_fp, topPos + helpPos[line], HELP_SEEK_SET );
     }
 }
 
@@ -1049,7 +1048,7 @@ static void handleFooter( int *startline, SAREA *use, SAREA *line )
         use->height -= start - use->row;
         line->row = use->row + use->height;
         uivfill( &helpScreen, *line, AT( ATTR_NORMAL ), UiGChar[UI_SBOX_HORIZ_LINE] );
-        topPos = HelpTell( helpFileHdl );
+        topPos = HelpTell( helpfile_fp );
     }
     *startline = start;
 }
@@ -1077,7 +1076,7 @@ static void handleHeader( int *start, SAREA *line )
         line->row = cur;
         uivfill( &helpScreen, *line, AT( ATTR_NORMAL ), UiGChar[UI_SBOX_HORIZ_LINE] );
         cur++;
-        topPos = HelpTell( helpFileHdl );
+        topPos = HelpTell( helpfile_fp );
         if( strnicmp( helpInBuf, ":eh", 3 ) == 0 ) {
             mygetline();
         }
@@ -1127,7 +1126,7 @@ static int scrollHelp( SAREA *use, int lastline, bool changecurr )
     }
     seek_line( start );
     for( ;; ++start ) {
-        save_line( start, HelpTell( helpFileHdl ) );
+        save_line( start, HelpTell( helpfile_fp ) );
         if( !mygetline() || strncmp( helpInBuf, "::::", 4 ) == 0  ) {
             maxLine = start;
             break;
@@ -1184,7 +1183,7 @@ static int dispHelp( char *str, VTAB *tab )
     line.col = 0;
     start = 0;
 
-    topPos = HelpTell( helpFileHdl );
+    topPos = HelpTell( helpfile_fp );
     mygetline();
 
     handleHeader( &start, &line );
@@ -1262,14 +1261,14 @@ static int dispHelp( char *str, VTAB *tab )
 
 static int findhelp( VTAB *tab )
 {
-    help_file   *fileinfo;
-    int         ret;
+    help_file_info  *fileinfo;
+    int             ret;
 
     fileinfo = help_open( helpInBuf );
     if( fileinfo == NULL ) {
         return( HELP_NO_SUBJECT );
     }
-    helpFileHdl = fileinfo->f;
+    helpfile_fp = fileinfo->fp;
     helpSearchHdl = fileinfo->searchhdl;
     ret = dispHelp( helpStack->word, tab );
     /* if a new help file name exists,
@@ -1329,7 +1328,7 @@ static int do_showhelp( char **helptopic, char *filename, ui_event (*rtn)( ui_ev
     eventMapFn = rtn;
     helpTab = NULL;
     helpCur = helpTab;
-    strcpy( curFile, filename );
+    strcpy( curFileName, filename );
     helpInBuf = HelpMemAlloc( BUF_LEN );
     if( helpInBuf == NULL ) {
         HelpMemFree( helpStack );

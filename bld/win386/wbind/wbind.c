@@ -210,7 +210,7 @@ static void errPrintf( char *str, ... )
 
 } /* errPrintf */
 
-static long CopyFile( FILE *in, FILE *out, const char *infile, const char *outfile )
+static long copy_file( FILE *in, FILE *out, const char *infile, const char *outfile )
 {
     size_t      size;
     size_t      len;
@@ -391,7 +391,7 @@ int main( int argc, char *argv[] )
             doError( "Not a bound Open Watcom 32-bit Windows application" );
         }
         fseek( in, exelen, SEEK_SET );
-        CopyFile( in, out, path, rex );
+        copy_file( in, out, path, rex );
         fclose( in );
         fclose( out );
         myPrintf( ".rex file %s created", rex );
@@ -428,7 +428,7 @@ int main( int argc, char *argv[] )
     /*
      * copy extender over
      */
-    CopyFile( in, out, winext, exe );
+    copy_file( in, out, winext, exe );
     fclose( in );
     fclose( out );
 
@@ -493,7 +493,7 @@ int main( int argc, char *argv[] )
     fseek( out, 0, SEEK_END );
     exelen = ftell( out );
 
-    totalsize = CopyFile( in, out, rex, exe );
+    totalsize = copy_file( in, out, rex, exe );
     fclose( in );
 
     /*

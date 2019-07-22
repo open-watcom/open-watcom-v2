@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -94,20 +95,20 @@ static int is_directory( const CHAR_TYPE *name )
 static DIR_TYPE *__F_NAME(___opendir,___wopendir)( const CHAR_TYPE *dirname, DIR_TYPE *dirp )
 /*******************************************************************************************/
 {
-    WIN32_FIND_DATA     ffb;
+    WIN32_FIND_DATA     ffd;
     HANDLE              h;
 
     if( dirp->d_first != _DIR_CLOSED ) {
         FindClose( DTAXXX_HANDLE_OF( dirp->d_dta ) );
         dirp->d_first = _DIR_CLOSED;
     }
-    h = __lib_FindFirstFile( dirname, &ffb );
+    h = __lib_FindFirstFile( dirname, &ffd );
     if( h == INVALID_HANDLE_VALUE ) {
         __set_errno_nt();
         return( NULL );
     }
     DTAXXX_HANDLE_OF( dirp->d_dta ) = h;
-    __GetNTDirInfo( dirp, &ffb );
+    __GetNTDirInfo( dirp, &ffd );
     dirp->d_first = _DIR_ISFIRST;
     return( dirp );
 }

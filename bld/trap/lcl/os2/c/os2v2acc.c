@@ -837,6 +837,7 @@ trap_retval ReqGet_lib_name( void )
     get_lib_name_req    *acc;
     get_lib_name_ret    *ret;
     char                *name;
+    size_t              max_len;
 
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );

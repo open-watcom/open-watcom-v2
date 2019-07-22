@@ -38,6 +38,8 @@
 
 #define IS_BLANK(c) ((c)==' ' || (c)=='\t')
 
+#define SKIP_BLANKS(p)  while( IS_BLANK( *(p) ) ) (p)++
+
 extern FILE         *LogFile;
 
 extern void         Fatal( const char *, ... );
@@ -45,4 +47,4 @@ extern void         Log( bool quiet, const char *, ... );
 extern void         LogFlush( void );
 extern void         OpenLog( const char * );
 extern void         CloseLog( void );
-extern char         *SkipBlanks( const char * );
+extern const char   *SkipBlanks( const char * );

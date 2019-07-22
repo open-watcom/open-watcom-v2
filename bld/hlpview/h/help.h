@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -58,7 +59,7 @@ enum {
 typedef enum {
     HELPLANG_FRENCH,
     HELPLANG_ENGLISH
-}HelpLangType;
+} HelpLangType;
 
 typedef enum {
     SRCHTYPE_ENV,
@@ -73,22 +74,20 @@ typedef struct {
     int         line;
 } ScanInfo;
 
-#include "pushpck1.h"
 typedef struct helpsrch {
     HelpSrchItemType    type;
     char                *info;
 } HelpSrchPathItem;
 
-typedef struct help_file {
+typedef struct help_file_info {
     char                *name;
-    HelpFp              f;
+    FILE                *fp;
     HelpHdl             searchhdl;
-} help_file;
-#include "poppck.h"
+} help_file_info;
 
 #define MAX_HELP_FILES  10
 
-extern help_file HelpFiles[MAX_HELP_FILES + 1];
+extern help_file_info   HelpFiles[MAX_HELP_FILES + 1];
 
 extern int  helpinit( const char **helpfilenames, HelpSrchPathItem *srchlist );
 extern int  help_reinit( const char **helpfilenames );

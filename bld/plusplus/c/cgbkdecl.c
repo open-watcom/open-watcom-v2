@@ -57,7 +57,7 @@ static SYMBOL push_inline_sym(  // PUSH AN INLINE SYMBOL
     sym = VstkPush( &stack_inline_args );
     *sym = *model;
     if( model->locn != NULL ) {
-        sym->flag2 &= ~SF2_CG_HANDLE;
+        sym->flag2 &= ~SYMF2_CG_HANDLE;
         sym->locn = NULL;
         locn = SymbolLocnAlloc( &sym->locn );
         locn->tl = model->locn->tl;
@@ -231,18 +231,18 @@ void CgDeclSym(                 // PROCESS SYMBOL IN BLOCK-OPEN SCOPE
     sym = inlineSymbol( sym );
     fctl = FnCtlTop();
     if( CgRetnOptIsOptVar( fctl, orig ) ) {
-        sym->flag |= SF_RETN_OPT;
+        sym->flag |= SYMF_RETN_OPT;
         return;
     }
     switch( sym->id ) {
-    case SC_AUTO:
-    case SC_REGISTER:
+    case SYMC_AUTO:
+    case SYMC_REGISTER:
         if( SymIsCatchAlias( sym ) ) {
             if( fctl->debug_info && ( GenSwitches & DBG_LOCALS ) ) {
                 SYMBOL base = SymDeAlias( sym );
                 switch( base->id ) {
-                case SC_AUTO:
-                case SC_REGISTER:
+                case SYMC_AUTO:
+                case SYMC_REGISTER:
                     if( ! SymIsAnonymous( sym ) ) {
                         if( !SymIsTemporary( sym ) ) {
                             if( GenSwitches & DBG_DF ) {
@@ -274,7 +274,7 @@ void CgDeclSym(                 // PROCESS SYMBOL IN BLOCK-OPEN SCOPE
             }
         }
         break;
-    case SC_STATIC:
+    case SYMC_STATIC:
         if( fctl->debug_info
          && ( GenSwitches & DBG_LOCALS ) ) {
             if( ! SymIsAnonymous( sym ) ) {
@@ -290,7 +290,7 @@ void CgDeclSym(                 // PROCESS SYMBOL IN BLOCK-OPEN SCOPE
             }
         }
         break;
-    case SC_TYPEDEF:
+    case SYMC_TYPEDEF:
         if( fctl->debug_info
          && ( GenSwitches & DBG_LOCALS ) ) {
             if( GenSwitches & (DBG_CV | DBG_DF ) ) {

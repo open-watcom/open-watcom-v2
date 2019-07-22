@@ -72,7 +72,7 @@ typedef struct {
     target_list *targ_list;
 } pmake_data;
 
-extern pmake_data   *PMakeBuild( char *cmd );
+extern pmake_data   *PMakeBuild( const char *cmd );
 extern void         PMakeCommand( pmake_data *, char * );
 extern void         PMakeCleanup( pmake_data * );
 

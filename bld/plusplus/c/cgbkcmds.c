@@ -109,7 +109,7 @@ static void* stateTableCmdAllocVar( // ALLOCATE STATE-TABLE CMD, SET VAR
     CMD_BASE* cmd;
 
     cmd = stateTableCmdAlloc( allocation, hdr );
-    cmd->sym = CgVarRo( size, SC_STATIC, NULL );
+    cmd->sym = CgVarRo( size, SYMC_STATIC, NULL );
     return( cmd );
 }
 
@@ -117,7 +117,7 @@ static void* stateTableCmdAllocVar( // ALLOCATE STATE-TABLE CMD, SET VAR
 static SYMBOL stateTableCmdName(    // CREATE COMDEF VARIABLE FOR DTOR_CMD
     unsigned index )                // - command index
 {
-    return( CgVarRo( CMD_SIZE + CgbkInfo.size_offset, SC_PUBLIC, CppNameStateTableCmd( index ) ) );
+    return( CgVarRo( CMD_SIZE + CgbkInfo.size_offset, SYMC_PUBLIC, CppNameStateTableCmd( index ) ) );
 }
 
 

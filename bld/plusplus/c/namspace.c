@@ -56,12 +56,12 @@ static SYMBOL injectNameSpaceSym( SYMBOL sym
     if( sym == NULL ) {
         sym = AllocSymbol();
     }
-    sym->id = SC_NAMESPACE;
+    sym->id = SYMC_NAMESPACE;
     sym->u.ns = ns;
     sym->sym_type = MakeNamespaceType();
     SymbolLocnDefine( locn, sym );
     ret_sym = ScopeInsert( scope, sym, name );
-    DbgAssert(( ret_sym == sym )||( ret_sym == NULL )||( ret_sym->id != SC_NAMESPACE ));
+    DbgAssert(( ret_sym == sym )||( ret_sym == NULL )||( ret_sym->id != SYMC_NAMESPACE ));
     return( ret_sym );
 }
 
@@ -392,13 +392,13 @@ void NameSpaceUsingDeclId( PTREE using_id )
         name_syms = sym_name->name_syms;
         if( name_type != NULL ) {
             switch( name_type->id ) {
-            case SC_NAMESPACE:
+            case SYMC_NAMESPACE:
                 nameSpaceUsingDecl( name_type, &id_locn );
                 break;
-            case SC_CLASS_TEMPLATE:
+            case SYMC_CLASS_TEMPLATE:
                 TemplateUsingDecl( name_type, &id_locn );
                 break;
-            case SC_TYPEDEF:
+            case SYMC_TYPEDEF:
                 TypedefUsingDecl( NULL, name_type, &id_locn );
                 break;
             DbgDefault( "unexpected storage class" );
@@ -458,7 +458,7 @@ void NameSpaceUsingDeclTemplateName( PTREE tid )
 //    name_syms = sym_name->name_syms;
     if( name_type != NULL ) {
         switch( name_type->id ) {
-        case SC_CLASS_TEMPLATE:
+        case SYMC_CLASS_TEMPLATE:
             TemplateUsingDecl( name_type, &id_locn );
             break;
         DbgDefault( "unexpected storage class" );

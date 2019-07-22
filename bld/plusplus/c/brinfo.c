@@ -646,7 +646,7 @@ static void typeUsage           // TYPE USAGE
 static void refSymType          // REFERENCE TYPES FOR A DECLARED SYMBOL
     ( SYMBOL sym )              // - the symbol
 {
-    if( sym->flag2 & SF2_TOKEN_LOCN ) {
+    if( sym->flag2 & SYMF2_TOKEN_LOCN ) {
         typeUsage( sym->sym_type, &sym->locn->tl );
     }
 }

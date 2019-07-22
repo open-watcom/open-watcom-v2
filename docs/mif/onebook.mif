@@ -101,7 +101,6 @@ dep_ps = $(hbook).ps
 !ifdef %OWGHOSTSCRIPTPATH
 dep_pdf = $(hbook).pdf
 !endif
-dep_txt = $(hbook).txt
 
 #############################################################
 
@@ -293,15 +292,7 @@ $(hbook).chm : $(hbook).htm $(hbook).h
 .EXTENSIONS: .pdf
 
 $(hbook).pdf : $(hbook).ps
-    $(noecho)set OWDOCS_OLD_PATH=$(%PATH)
-!ifdef __UNIX__
-    $(noecho)set PATH=$(%OWGHOSTSCRIPTPATH):$(%PATH)
-!else
-    $(noecho)set PATH=$(%OWGHOSTSCRIPTPATH);$(%PATH)
-!endif
-    !$(hc_pdf) -r600 $[@ $(hbook).pdf
-    $(noecho)set PATH=$(%OWDOCS_OLD_PATH)
-    $(noecho)set OWDOCS_OLD_PATH=
+    $(hc_pdf) -r600 $[@ $(hbook).pdf
 
 ####################################################
 #
@@ -352,7 +343,8 @@ $(hbook).ps : $(book_objs) $(book_objs_ps) $(proj_objs)
 !ifeq verbose 0
     @echo wgml $@
 !endif
-    -$(WGMLCMD:$(to_os_path))
+    !-$(WGMLCMD:$(to_os_path))
+    $(noecho)echo "WGMLCMD finished"
     @if exist $@ @%erase $@
     @%ren $(wgml_tmpfile) $@
 
@@ -379,21 +371,6 @@ $(hbook).h $(hbook).htm : $(book_objs) $(proj_objs)
 !endif
 !endif
     @%make compile_gml_to_xxx
-
-####################################################
-#
-# make TXT help files
-#
-####################################################
-!else ifeq dotarget txt
-
-.EXTENSIONS: .txt
-
-readme.txt : ../readme.sp
-    wsplice -kC $[@ $@
-
-freadme.txt : ../readme.sp
-    wsplice -kF77 $[@ $@
 
 !endif
 
@@ -587,7 +564,8 @@ compile_gml_to_xxx : .PROCEDURE
 !ifeq verbose 0
     @echo wgml $@
 !endif
-    -$(WGMLCMD:$(to_os_path))
+    !-$(WGMLCMD:$(to_os_path))
+    $(noecho)echo "WGMLCMD finished"
     @if exist $*.ptf @%erase $*.ptf
     @%ren $(wgml_tmpfile) $*.ptf
     @%make prepare_whpcvt_opts
@@ -596,7 +574,8 @@ compile_gml_to_xxx : .PROCEDURE
 !ifeq verbose 0
     @echo wgml $@
 !endif
-    -$(WGMLCMD:$(to_os_path))
+    !-$(WGMLCMD:$(to_os_path))
+    $(noecho)echo "WGMLCMD finished"
     @if exist $*.ptf @%erase $*.ptf
     @%ren $(wgml_tmpfile) $*.ptf
     @if exist $*.mix @%erase $*.mix

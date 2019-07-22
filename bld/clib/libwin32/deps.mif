@@ -1,0 +1,6 @@
+ufffrstf.obj : ../../../c/ufffrstf.c ../../../c/fffrstfi.c
+uffnextf.obj : ../../../c/uffnextf.c ../../../c/ffnextfi.c
+ufgtattr.obj : ../../../c/ufgtattr.c ../../../c/fgtattr.c
+ufnextat.obj : ../../../c/ufnextat.c ../../../c/fnextatt.c
+ugdirinf.obj : ../../../c/ugdirinf.c ../../../c/gdirinfo.c
+ugfindin.obj : ../../../c/ugfindin.c ../../../c/gfindinf.c

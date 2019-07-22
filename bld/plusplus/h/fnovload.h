@@ -292,7 +292,7 @@ FNOV_RESULT OpOverloadedLimitDiag(       // SELECT OVERLOADED OPERATOR
 bool IsOverloadedFunc(          // TEST IF A FUNCTION HAS BEEN OVERLOADED
     SYMBOL sym )                // - symbol
 ;
-bool IsActualOverloadedFunc(    // TEST IF ACTUAL (IGNORE SC_DEFAULT) OVERLOAD
+bool IsActualOverloadedFunc(    // TEST IF ACTUAL (IGNORE SYMC_DEFAULT) OVERLOAD
     SYMBOL sym,                 // - symbol
     SEARCH_RESULT *result )     // - search result
 ;

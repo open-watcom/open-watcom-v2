@@ -355,7 +355,7 @@ void *ExtrefVfunInfo(           // GET INFORMATION FOR VIRTUAL FUN. REFERENCE
     OVFN** orig_funs;           // - originating functions
 
     orig_funs = NULL;
-    if( sym->id == SC_VIRTUAL_FUNCTION ) {
+    if( sym->id == SYMC_VIRTUAL_FUNCTION ) {
         if( CompFlags.virtual_stripping ) {
             orig_funs = startVRing();
             VfnAncestralWalk( sym->u.virt_fun, &extrefVfunRegister, orig_funs );

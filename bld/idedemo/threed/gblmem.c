@@ -46,11 +46,9 @@
 #endif
 #include "wpi.h"
 
-void *gmem_alloc(
-/***************/
-
-    unsigned            size
-) {
+void *gmem_alloc( unsigned size )
+/*******************************/
+{
 #ifdef PLAT_OS2
     return( malloc( (size_t) size ) );
 #else
@@ -70,14 +68,11 @@ void *gmem_alloc(
 #endif
 }
 
-void *gmem_realloc(
-/*****************/
-
-    void                *ptr,
-    unsigned            size
-) {
+void *gmem_realloc( void *ptr, unsigned size )
+/********************************************/
+{
 #ifdef PLAT_OS2
-    return( realloc( ptr, (size_t) size ) );
+    return( realloc( ptr, (size_t)size ) );
 #else
     HGLOBAL             hld;
 
@@ -101,11 +96,9 @@ void *gmem_realloc(
 }
 
 
-void gmem_free(
-/*************/
-
-    void                *mem
-) {
+void gmem_free( void *mem )
+/*************************/
+{
 #ifdef PLAT_OS2
     free( mem );
 #else

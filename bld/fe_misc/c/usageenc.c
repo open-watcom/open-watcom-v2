@@ -47,7 +47,7 @@ void fatal( char *m ) {
 }
 
 
-static void CopyFile(  FILE *ifp, FILE *ofp)
+static void doCopyFile( FILE *ifp, FILE *ofp)
 {
 //put in usage header
 //remove '\n' and replace with nullchar
@@ -96,7 +96,7 @@ int main( int argc, char **argv )
         fatal( "usage: nulline <infile> <outfile>" );
     }
     ProcessOptions( &argv[1] );
-    CopyFile( Opt.in, Opt.out);
+    doCopyFile( Opt.in, Opt.out);
     fclose( Opt.in );
     fclose( Opt.out );
     return( EXIT_SUCCESS );

@@ -195,7 +195,7 @@ static PTREE defaultArgSymError( MSG_NUM msg, PTREE expr, SYMBOL sym )
     PTreeSetErrLoc( expr );
     if( sym != NULL ) {
         CErr2p( msg, sym );
-        sym->flag |= SF_ERROR;
+        sym->flag |= SYMF_ERROR;
     } else {
         CErr1( msg );
     }
@@ -262,7 +262,7 @@ bool AddDefaultArgs(            // ADD DEFAULT ARGUMENTS, AS REQ'D
         /* normal named calls (e.g., foo(1); ) */
         func = func_node->u.symcg.symbol;
     }
-    if( func->id == SC_DEFAULT ) {
+    if( func->id == SYMC_DEFAULT ) {
         args = PTreeRefRight( expr );
         while( *args != NULL ) {
             args = PTreeRefLeft( *args );
@@ -314,9 +314,9 @@ bool AddDefaultArgs(            // ADD DEFAULT ARGUMENTS, AS REQ'D
             defarg_expr = NodeArg( defarg_expr );
             *args = defarg_expr;
             args = &defarg_expr->u.subtree[0]; // used if more than one defarg
-            func->flag |= SF_REFERENCED;
+            func->flag |= SYMF_REFERENCED;
             func = func->thread;
-        } while( func->id == SC_DEFAULT );
+        } while( func->id == SYMC_DEFAULT );
         SymSetNvReferenced( func );
         if( func_node != NULL ) {
             func_node->u.symcg.symbol = func; // put symbol without defargs at start of list

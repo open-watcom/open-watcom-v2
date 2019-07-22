@@ -1,0 +1,4 @@
+rcsdll_inc_dirs = -I"$(rcsdll_dir)"
+!ifndef win386
+rcsdll_lib = $(rcsdll_dir)/$(host_os)$(host_cpu)/rcsdll.lib
+!endif

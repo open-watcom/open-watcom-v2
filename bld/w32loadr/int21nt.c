@@ -43,6 +43,8 @@
 #include "tinyio.h"
 #include "loader.h"
 #include "_dtaxxx.h"
+#include "libwin32.h"
+#include "ntext.h"
 
 
 #define SH_MASK (SH_COMPAT | SH_DENYRW | SH_DENYWR | SH_DENYRD | SH_DENYNO)
@@ -62,68 +64,6 @@ static int              ErrorCode;
 
 static unsigned long    __DTA;
 
-static void __MakeDOSDT( FILETIME *NT_stamp, unsigned short *d, unsigned short *t )
-{
-    FILETIME local_ft;
-
-    FileTimeToLocalFileTime( NT_stamp, &local_ft );
-    FileTimeToDosDateTime( &local_ft, d, t );
-}
-
-static void __FromDOSDT( unsigned short d, unsigned short t, FILETIME *NT_stamp )
-{
-    FILETIME local_ft;
-
-    DosDateTimeToFileTime( d, t, &local_ft );
-    LocalFileTimeToFileTime( &local_ft, NT_stamp );
-}
-
-static char __NT2DOSAttr( unsigned nt_attribs )
-{
-    char        dos_attribs;
-
-    dos_attribs = 0;
-    if( nt_attribs & FILE_ATTRIBUTE_SYSTEM ) {
-        dos_attribs |= _A_SYSTEM;
-    }
-    if( nt_attribs & FILE_ATTRIBUTE_HIDDEN ) {
-        dos_attribs |= _A_HIDDEN;
-    }
-    if( nt_attribs & FILE_ATTRIBUTE_READONLY ) {
-        dos_attribs |= _A_RDONLY;
-    }
-    if( nt_attribs & FILE_ATTRIBUTE_DIRECTORY ) {
-        dos_attribs |= _A_SUBDIR;
-    }
-    if( nt_attribs & FILE_ATTRIBUTE_ARCHIVE ) {
-        dos_attribs |= _A_ARCH;
-    }
-    return( dos_attribs );
-}
-
-static unsigned __DOS2NTAttr( unsigned dos_attribs )
-{
-    unsigned    nt_attribs;
-
-    nt_attribs = FILE_ATTRIBUTE_NORMAL;
-    if( dos_attribs & _A_SYSTEM ) {
-        nt_attribs |= FILE_ATTRIBUTE_SYSTEM;
-    }
-    if( dos_attribs & _A_HIDDEN ) {
-        nt_attribs |= FILE_ATTRIBUTE_HIDDEN;
-    }
-    if( dos_attribs & _A_RDONLY ) {
-        nt_attribs |= FILE_ATTRIBUTE_READONLY;
-    }
-    if( dos_attribs & _A_SUBDIR ) {
-        nt_attribs |= FILE_ATTRIBUTE_DIRECTORY;
-    }
-    if( dos_attribs & _A_ARCH ) {
-        nt_attribs |= FILE_ATTRIBUTE_ARCHIVE;
-    }
-    return( nt_attribs );
-}
-
 static BOOL __open_file( union REGS *r,
                   DWORD access,
                   DWORD share,
@@ -142,7 +82,7 @@ static BOOL __open_file( union REGS *r,
         ErrorCode = E_NOHANDLES;    // indicate no more file handles
         return( FALSE );
     }
-    h = CreateFile( (LPTSTR)r->x.edx, access, share, NULL,
+    h = CreateFile( (LPCSTR)r->x.edx, access, share, NULL,
                         create_disp, fileattr,  NULL );
     if( h == INVALID_HANDLE_VALUE )
         return( FALSE );
@@ -206,7 +146,7 @@ static BOOL __open( union REGS *r )
         share_mode = 0;
     }
     attr = FILE_ATTRIBUTE_NORMAL;
-    return __open_file( r, desired_access, share_mode, create_disp, attr );
+    return( __open_file( r, desired_access, share_mode, create_disp, attr ) );
 }
 
 static BOOL __getch( union REGS *r )
@@ -236,7 +176,7 @@ static BOOL __filedate( union REGS *r )
         if( rc != FALSE ) {
             __MakeDOSDT( &wtime, &r->w.dx, &r->w.cx );
         }
-    } else if( r->h.al == 1 ) {                 /* 01-jun-95 */
+    } else if( r->h.al == 1 ) {
         h = __FileHandleIDs[ r->w.bx ];
         rc = GetFileTime( h, &ctime, &atime, &wtime );
         if( rc != FALSE ) {
@@ -255,56 +195,31 @@ static BOOL __fullpath( union REGS *r )
     BOOL        rc;
     LPTSTR      fp;
 
-    if( strcmp( (char *)r->x.edx, "con" ) == 0 ) {
+    if( strcmp( (const char *)r->x.edx, "con" ) == 0 ) {
         strcpy( (char *)r->x.ebx, "con" );
         return( TRUE );
     }
-    rc = GetFullPathName( (char *)r->x.edx, r->x.ecx, (char *)r->x.ebx, &fp );
+    rc = GetFullPathName( (const char *)r->x.edx, r->x.ecx, (char *)r->x.ebx, &fp );
     return( rc );
-}
-
-static void __GetNTDirInfo( struct find_t *dirp, WIN32_FIND_DATA *ffd )
-{
-    __MakeDOSDT( &ffd->ftLastWriteTime, &dirp->wr_date, &dirp->wr_time );
-    dirp->attrib = __NT2DOSAttr( ffd->dwFileAttributes );
-    dirp->size   = ffd->nFileSizeLow;
-    strncpy( dirp->name, ffd->cFileName, NAME_MAX );
-    dirp->name[NAME_MAX] = '\0';
-}
-
-#define ATTRIBUTES_MASK     (FILE_ATTRIBUTE_SYSTEM | FILE_ATTRIBUTE_HIDDEN | FILE_ATTRIBUTE_DIRECTORY)
-
-static BOOL __NTFindNextFileWithAttr( HANDLE h, DWORD nt_attribs, WIN32_FIND_DATA *ffd )
-{
-    for(;;) {
-        if( ffd->dwFileAttributes == 0 ) {
-            // Win95 seems to return 0 for the attributes sometimes?
-            // In that case, treat as a normal file
-            ffd->dwFileAttributes = FILE_ATTRIBUTE_NORMAL;
-        }
-        if( (nt_attribs | !ffd->dwFileAttributes) & ATTRIBUTES_MASK ) 
-            return( TRUE );
-        if( !FindNextFile( h, ffd ) ) {
-            return( FALSE );
-        }
-    }
 }
 
 static BOOL __findfirst( union REGS *r )
 {
-    BOOL                rc = FALSE;
+    BOOL                rc;
     HANDLE              handle;
-    struct find_t       *buf;
+    struct find_t       *findt;
     WIN32_FIND_DATA     ffd;
-    char                *p;
+    const char          *name;
     unsigned            nt_attribs;
 
-    buf = (struct find_t *)r->x.ebx;
-    handle = FindFirstFile( (LPTSTR)r->x.edx, &ffd );
+    findt = (struct find_t *)r->x.ebx;
+    name = (const char *)r->x.edx;
+    handle = __fixed_FindFirstFile( name, &ffd );
     if( handle == INVALID_HANDLE_VALUE ) {
-        DTAXXX_HANDLE_OF( buf ) = handle;
+        rc = FALSE;
+        DTAXXX_HANDLE_OF( findt->reserved ) = DTAXXX_INVALID_HANDLE;
     } else {
-        nt_attribs = __DOS2NTAttr( r->x.ecx );
+        nt_attribs = DOS2NTATTR( r->x.ecx );
         // 02-aug-95: Another problem: this time compressed files on NT3.51
         // file was backed up so that it doesn't have the archive bit on
         // file is compressed, so it doesn't have the normal bit on
@@ -312,18 +227,16 @@ static BOOL __findfirst( union REGS *r )
         // scan the name to see if it contains any wildcard characters
         // if and only if it contains wildcard chars, check attr
         rc = TRUE;
-        p = (char *)r->x.edx;
-        while( *p != '\0' ) {
-            if( *p == '*' || *p == '?' ) {      // if wildcard character
+        for( ; *name != '\0'; name++ ) {
+            if( *name == '*' || *name == '?' ) {      // if wildcard character
                 rc = __NTFindNextFileWithAttr( handle, nt_attribs, &ffd );
                 break;
             }
-            ++p;
         }
         if( rc == TRUE ) {
-            DTAXXX_HANDLE_OF( buf ) = handle;
-            DTAXXX_ATTR_OF( buf ) = nt_attribs;
-            __GetNTDirInfo( buf, &ffd );
+            DTAXXX_HANDLE_OF( findt->reserved ) = handle;
+            DTAXXX_ATTR_OF( findt->reserved ) = nt_attribs;
+            __GetNTFindInfo( findt, &ffd );
         }
     }
     return( rc );
@@ -331,22 +244,24 @@ static BOOL __findfirst( union REGS *r )
 
 static BOOL __findnext( union REGS *r )
 {
-    BOOL                rc = FALSE;
+    BOOL                rc;
     HANDLE              handle;
-    struct find_t       *buf;
+    struct find_t       *findt;
     WIN32_FIND_DATA     ffd;
 
-    buf = (struct find_t *)r->x.edx;
-    handle = DTAXXX_HANDLE_OF( buf );
-    if( handle != INVALID_HANDLE_VALUE ) {
+    findt = (struct find_t *)r->x.edx;
+    rc = FALSE;
+    if( DTAXXX_HANDLE_OF( findt->reserved ) != DTAXXX_INVALID_HANDLE ) {
+        handle = DTAXXX_HANDLE_OF( findt->reserved );
         if( r->h.al == 0 ) {            /* if FIND_NEXT function */
-            if( FindNextFile( handle, &ffd ) ) {
-                if( __NTFindNextFileWithAttr( handle, DTAXXX_ATTR_OF( buf ), &ffd ) ) {
-                    __GetNTDirInfo( buf, &ffd );
+            if( __fixed_FindNextFile( handle, &ffd ) ) {
+                if( __NTFindNextFileWithAttr( handle, DTAXXX_ATTR_OF( findt->reserved ), &ffd ) ) {
+                    __GetNTFindInfo( findt, &ffd );
                     rc = TRUE;
                 }
             }
         } else {                        /* FIND_CLOSE function */
+            DTAXXX_HANDLE_OF( findt->reserved ) = DTAXXX_INVALID_HANDLE;
             rc = FindClose( handle );
         }
     }
@@ -359,7 +274,7 @@ static BOOL __chmod( union REGS *r )
     LONG        attr;
 
     if( r->h.al == 0 ) {                // get file attributes
-        attr = GetFileAttributes( (LPTSTR) r->x.edx );
+        attr = GetFileAttributes( (LPCSTR)r->x.edx );
         if( attr != -1 ) {
             r->h.cl = attr;
             rc = TRUE;
@@ -441,8 +356,8 @@ unsigned __Int21C( union REGS *r )
         r->h.dl = DateTime.wMilliseconds / 10;
         rc = TRUE;
         break;
-    case DOS_CHDIR:                                     /* 17-may-94 */
-        rc = SetCurrentDirectory( (LPTSTR) r->x.edx );
+    case DOS_CHDIR:
+        rc = SetCurrentDirectory( (LPCSTR)r->x.edx );
         break;
     case DOS_CREAT:
         rc = __create( r );
@@ -451,7 +366,7 @@ unsigned __Int21C( union REGS *r )
         rc = __open( r );
         break;
     case DOS_RENAME:
-        rc = MoveFile( (LPTSTR)r->x.edx, (LPTSTR)r->x.edi );
+        rc = MoveFile( (LPCSTR)r->x.edx, (LPCSTR)r->x.edi );
         break;
     case DOS_CLOSE:
         h = __FileHandleIDs[ r->w.bx ];
@@ -465,15 +380,14 @@ unsigned __Int21C( union REGS *r )
     case DOS_WRITE:
         h = __FileHandleIDs[ r->w.bx ];
         if( r->x.ecx == 0 ) {
-            r->x.eax = 0;                               /* 07-apr-94 */
+            r->x.eax = 0;
             rc = SetEndOfFile( h );
         } else {
-            rc = WriteFile( h, (void *)r->x.edx, r->x.ecx,
-                                (LPDWORD)&r->x.eax, NULL );
+            rc = WriteFile( h, (void *)r->x.edx, r->x.ecx, (LPDWORD)&r->x.eax, NULL );
         }
         break;
     case DOS_UNLINK:                    // delete a file
-        rc = DeleteFile( (LPTSTR)r->x.edx );
+        rc = DeleteFile( (LPCSTR)r->x.edx );
         break;
     case DOS_LSEEK:
         h = __FileHandleIDs[ r->w.bx ];

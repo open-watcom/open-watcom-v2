@@ -51,7 +51,7 @@ _WCRTLINK int dup( int old_hid )
 
     // First try to get the required slot.
     // No point in creating a new handle only to not use it.  JBS 99/11/01
-    hid = __allocPOSIXHandle( DUMMY_HANDLE );
+    hid = __allocPOSIXHandleDummy();
     if( hid == -1 ) {
         return( -1 );
     }

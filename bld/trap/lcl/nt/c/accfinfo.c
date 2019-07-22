@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -35,7 +36,7 @@ trap_retval ReqFileInfo_getdate( void )
 {
     file_info_get_date_req  *req;
     file_info_get_date_ret  *ret;
-    static WIN32_FIND_DATA  ffb;
+    static WIN32_FIND_DATA  ffd;
     char                    *name;
     HANDLE                  h;
     WORD                    md;
@@ -44,13 +45,13 @@ trap_retval ReqFileInfo_getdate( void )
     req = GetInPtr( 0 );
     name = GetInPtr( sizeof( *req ) );
     ret = GetOutPtr( 0 );
-    h = FindFirstFile( name, &ffb );
+    h = FindFirstFile( name, &ffd );
     if( h == INVALID_HANDLE_VALUE ) {
         ret->err = ERROR_FILE_NOT_FOUND;
         return( sizeof( *ret ) );
     }
     FindClose( h );
-    FileTimeToDosDateTime( &ffb.ftLastWriteTime, &md, &mt );
+    FileTimeToDosDateTime( &ffd.ftLastWriteTime, &md, &mt );
     ret->err = 0;
     ret->date = ( md << 16 ) + mt;
     return( sizeof( *ret ) );

@@ -317,7 +317,7 @@ static TREEPTR EnumLeaf( ENUMPTR ep )
         // fall through
     case TYPE_INT:
     case TYPE_LONG:
-        leaf->op.u2.long_value = (signed_32)ep->value.u._32[L];
+        leaf->op.u2.long_value = (signed_32)ep->value.u._32[I64LO32];
         break;
     case TYPE_UCHAR:
     case TYPE_USHORT:
@@ -325,7 +325,7 @@ static TREEPTR EnumLeaf( ENUMPTR ep )
         // fall through
     case TYPE_UINT:
     case TYPE_ULONG:
-        leaf->op.u2.long_value = ep->value.u._32[L];
+        leaf->op.u2.long_value = ep->value.u._32[I64LO32];
         break;
     case TYPE_LONG64:
     case TYPE_ULONG64:

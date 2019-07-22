@@ -184,7 +184,7 @@ bool GetSetScrDialog( void )
     bool        rc;
 
     dlgproc = MakeProcInstance_DLG( SetScrDlgProc, InstanceHandle );
-    rc = DialogBox( InstanceHandle, "SETSCR", root_window_id, dlgproc );
+    rc = ( DialogBox( InstanceHandle, "SETSCR", root_window_id, dlgproc ) != 0 );
     FreeProcInstance_DLG( dlgproc );
 
     // redisplay all files to ensure screen completely correct

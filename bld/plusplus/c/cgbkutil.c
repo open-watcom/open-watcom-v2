@@ -917,8 +917,8 @@ cg_name CgDtorStatic(           // DTOR STATIC OBJECT
         printf( "State Table for static object: %p\n", &dctl.state_table );
     }
 #endif
-    sctl.rw = CgVarRw( CgbkInfo.size_rw_base + CgbkInfo.size_data_ptr, SC_STATIC );
-    dctl.ro = CgVarRo( 1, SC_STATIC, NULL );
+    sctl.rw = CgVarRw( CgbkInfo.size_rw_base + CgbkInfo.size_data_ptr, SYMC_STATIC );
+    dctl.ro = CgVarRo( 1, SYMC_STATIC, NULL );
     se = SeAlloc( DTC_SYM_STATIC );
     se->base.gen = true;
     se->sym_static.sym = sym;

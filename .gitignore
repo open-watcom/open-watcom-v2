@@ -89,6 +89,9 @@
 !/docs/
 !/travis/
 !/travis/dosbox/*
+!/travis/gs927w64/*
+!/travis/hcw/*
+!/travis/hhc/*
 
 !/contrib/**
 
@@ -111,7 +114,6 @@
 /docs/pdf/*
 /docs/ps/*
 /docs/win/*
-/docs/txt/*
 
 ###
 /bld/as/*/*/*_in.y
@@ -161,6 +163,8 @@
 /bld/src/startup/*
 #
 !/bld/trap/**/*.trp/
+#
+/bld/docstxt/docs/*.txt
 #
 /bld/vi/*/*.cfg
 /bld/vi/*/*.ini

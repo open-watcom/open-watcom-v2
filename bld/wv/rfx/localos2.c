@@ -193,6 +193,24 @@ long LocalGetFileAttr( const char *name )
 #endif
 }
 
+error_handle LocalSetFileAttr( const char *name, long attr )
+/**********************************************************/
+{
+#ifdef _M_I86
+    return( StashErrCode( DosSetFileMode( (char *)name, attr, 0 ), OP_LOCAL ) );
+#else
+    FILESTATUS3 fileinfo;
+    APIRET      rc;
+
+    rc = DosQueryPathInfo( name, FIL_STANDARD, &fileinfo, sizeof( fileinfo ) );
+    if( rc == 0 ) {
+        fileinfo.attrFile = attr;
+        rc = DosSetPathInfo( name, FIL_STANDARD, &fileinfo, sizeof( fileinfo ), 0 );
+    }
+    return( StashErrCode( rc, OP_LOCAL ) );
+#endif
+}
+
 long LocalGetFreeSpace( int drv )
 /*******************************/
 {
@@ -259,10 +277,9 @@ error_handle LocalGetCwd( int drive, char *where, unsigned len )
 #endif
 }
 
-static void makeDTARFX( rfx_find *info, FINDBUF *findbuf, HDIR h )
-/****************************************************************/
+static void makeDTARFX( rfx_find *info, FINDBUF *findbuf )
+/********************************************************/
 {
-    DTARFX_HANDLE_OF( info ) = h;
     info->time = DTARFX_TIME_OF( info ) = *(USHORT FAR *)&findbuf->ftimeLastWrite;
     info->date = DTARFX_DATE_OF( info ) = *(USHORT FAR *)&findbuf->fdateLastWrite;
     info->attr = findbuf->attrFile;
@@ -286,8 +303,6 @@ error_handle LocalFindFirst( const char *pattern, rfx_find *info, unsigned info_
 
     /* unused parameters */ (void)info_len;
 
-    (void)info_len;
-
     h = HDIR_CREATE;
 #ifdef _M_I86
     err = DosFindFirst( (char *)pattern, &h, attrib, &findbuf, sizeof( findbuf ), &count, 0 );
@@ -298,7 +313,8 @@ error_handle LocalFindFirst( const char *pattern, rfx_find *info, unsigned info_
         DTARFX_HANDLE_OF( info ) = DTARFX_INVALID_HANDLE;
         return( StashErrCode( err, OP_LOCAL ) );
     }
-    makeDTARFX( info, &findbuf, h );
+    DTARFX_HANDLE_OF( info ) = h;
+    makeDTARFX( info, &findbuf );
     return( 0 );
 }
 
@@ -322,7 +338,7 @@ int LocalFindNext( rfx_find *info, unsigned info_len )
         DTARFX_HANDLE_OF( info ) = DTARFX_INVALID_HANDLE;
         return( -1 );
     }
-    makeDTARFX( info, &findbuf, h );
+    makeDTARFX( info, &findbuf );
     return( 0 );
 }
 
@@ -395,23 +411,4 @@ bool CtrlCHit( void )
 #endif
 
     return( hit );
-}
-
-
-error_handle LocalSetFileAttr( const char *name, long attr )
-/**********************************************************/
-{
-#ifdef _M_I86
-    return( StashErrCode( DosSetFileMode( (char *)name, attr, 0 ), OP_LOCAL ) );
-#else
-    FILESTATUS3 fileinfo;
-    APIRET      rc;
-
-    rc = DosQueryPathInfo( name, FIL_STANDARD, &fileinfo, sizeof( fileinfo ) );
-    if( rc == 0 ) {
-        fileinfo.attrFile = attr;
-        rc = DosSetPathInfo( name, FIL_STANDARD, &fileinfo, sizeof( fileinfo ), 0 );
-    }
-    return( StashErrCode( rc, OP_LOCAL ) );
-#endif
 }

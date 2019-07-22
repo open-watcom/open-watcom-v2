@@ -32,7 +32,7 @@
 
 #include "_aui.h"
 
-void WndStartFreshAll()
+void WndStartFreshAll( void )
 {
     // initialization hook
 }

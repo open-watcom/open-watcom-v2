@@ -56,9 +56,9 @@ static SYMBOL makeTemporary(    // ALLOCATE A TEMPORARY
     TYPE type,                  // - type of temporary
     bool storage )              // - allocate storage if needed
 {
-    SYMBOL sym;                 // - symbol for temporary
-    NAME name;                  // - name for temporary
-    symbol_class id = SC_NULL;  // - class for symbol
+    SYMBOL sym;                     // - symbol for temporary
+    NAME name;                      // - name for temporary
+    symbol_class id = SYMC_NULL;    // - class for symbol
 
 #if 0
     if( ( type->id == TYP_POINTER ) && ( type->flag & TF1_REFERENCE ) ) {
@@ -69,15 +69,15 @@ static SYMBOL makeTemporary(    // ALLOCATE A TEMPORARY
     switch( tempClass ) {
     case TEMP_TYPE_EXPR :
     case TEMP_TYPE_BLOCK :
-        id = SC_AUTO;
+        id = SYMC_AUTO;
         break;
     case TEMP_TYPE_STATIC :
-        id = SC_STATIC;
+        id = SYMC_STATIC;
         break;
     DbgDefault( "makeTemporary -- bad tempClass" );
     }
     sym->id = id;
-    if( id == SC_STATIC ) {
+    if( id == SYMC_STATIC ) {
         ScopeInsert( GetFileScope(), sym, name );
         if( storage ) {
             CgSegIdData( sym, SI_ALL_ZERO );

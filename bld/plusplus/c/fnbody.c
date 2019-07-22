@@ -1053,8 +1053,8 @@ static SYMBOL allocTryVar(      // CREATE TRY VARIABLE, IF REQ'D
     try_var = try_block->next->try_var;
     if( try_var == NULL ) {
         try_var = SymCreate( MakeExpandableType( TYP_CHAR )
-                           , SC_AUTO
-                           , SF_REFERENCED | SF_ADDR_TAKEN | SF_CG_ADDR_TAKEN
+                           , SYMC_AUTO
+                           , SYMF_REFERENCED | SYMF_ADDR_TAKEN | SYMF_CG_ADDR_TAKEN
                            , NameDummy()
                            , try_block->u.t.defn_scope );
         try_block->next->try_var = try_var;
@@ -1286,10 +1286,10 @@ static SYMBOL makeCatchVar(     // CREATE A CATCH VARIABLE
         name = info->id->u.id.name;
     }
     catch_var = SymCreateCurrScope( info->type
-                                  , SC_AUTO
-                                  , SF_REFERENCED
+                                  , SYMC_AUTO
+                                  , SYMF_REFERENCED
                                   , name );
-    catch_var->flag |= SF_ALIAS | SF_CATCH_ALIAS;
+    catch_var->flag |= SYMF_ALIAS | SYMF_CATCH_ALIAS;
     catch_var->u.alias = try_var;
     return( catch_var );
 }
@@ -1692,7 +1692,7 @@ static void doFnStartup( SYMBOL func
     PTREE mem_init;
 
     fdata->fn_scope = GetCurrScope();
-    func->flag |= SF_INITIALIZED;
+    func->flag |= SYMF_INITIALIZED;
     if( flags & FUNC_NO_STACK_CHECK ) {
         /* in case the type was derived from a stack-checked function */
         func->sym_type = RemoveFunctionFlag( func->sym_type, TF1_STACK_CHECK );
@@ -1766,9 +1766,9 @@ static void functionShutdown(   // COMMON SHUT-DOWN FOR ALL COMPILED FUNCTIONS
             FunctionBodyDeadCode();
         }
         if( f->does_throw ) {
-            func->flag |= SF_LONGJUMP;
+            func->flag |= SYMF_LONGJUMP;
         } else if( ! f->can_throw ) {
-            func->flag |= SF_NO_LONGJUMP;
+            func->flag |= SYMF_NO_LONGJUMP;
         }
         if( f->ctor_test ) {
             CgFrontCtorTest();
@@ -2016,12 +2016,12 @@ static void handleDefnChangesToSym( SYMBOL func )
     scope = SymScope( func );
     if( ScopeType( scope, SCOPE_FILE ) ) {
         switch( func->id ) {
-        case SC_EXTERN:
-        case SC_NULL:
+        case SYMC_EXTERN:
+        case SYMC_NULL:
             if( SymIsInline( func ) ) {
-                stg_class = SC_STATIC;
+                stg_class = SYMC_STATIC;
             } else {
-                stg_class = SC_PUBLIC;
+                stg_class = SYMC_PUBLIC;
                 CompFlags.external_defn_found = true;
             }
             func->id = stg_class;
@@ -2081,7 +2081,7 @@ void FunctionBody( DECL_INFO *dinfo )
     CtxFunction( func );
     fn_control = TemplateFunctionControl();
     if( fn_control & TCF_GEN_FUNCTION ) {
-        func->flag |= SF_MUST_GEN;
+        func->flag |= SYMF_MUST_GEN;
     }
     if( SymIsInitialized( func ) ) {
         if( TemplateMemberCanBeIgnored() ) {
@@ -2341,7 +2341,7 @@ ACCESS_ERR** FunctionBodyAccessErrors( // POINT AT HDR OF ACCESS ERRORS
 }
 
 
-// called when throw, longjmp, or function with SF_LONGJUMP encountered
+// called when throw, longjmp, or function with SYMF_LONGJUMP encountered
 //
 PTREE FunctionCouldThrow(       // INDICATE FUNCTION COULD THROW / HAS LONGJUMP
     PTREE expr )                // - expression
@@ -2365,9 +2365,9 @@ PTREE FunctionCalled(           // RECORD A FUNCTION CALL
     symbol_flag called_flag     // - flags for caller
         = SymThrowFlags( called );
 
-    if( called_flag & SF_LONGJUMP ) {
+    if( called_flag & SYMF_LONGJUMP ) {
         expr = FunctionCouldThrow( expr );
-    } else if( (called_flag & SF_NO_LONGJUMP) == 0 ) {
+    } else if( (called_flag & SYMF_NO_LONGJUMP) == 0 ) {
         currFunction->can_throw = true;
     }
     return( expr );

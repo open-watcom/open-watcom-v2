@@ -443,10 +443,10 @@ static lk_result lexCategory( SCOPE scope, PTREE id, lk_control control,
         } else if( sym_name->name_type != NULL ) {
             sym = sym_name->name_type;
             switch( sym->id ) {
-            case SC_CLASS_TEMPLATE:
+            case SYMC_CLASS_TEMPLATE:
                 ExtraRptIncrementCtr( found_template );
                 return( LK_TEMPLATE );
-            case SC_NAMESPACE:
+            case SYMC_NAMESPACE:
                 ExtraRptIncrementCtr( found_namespace );
                 return( LK_NAMESPACE );
             }

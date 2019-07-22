@@ -1,16 +1,16 @@
-CPPFLAGS = -I. -I..\h -I..\..\watcom\h -I..\..\lib_misc\h $(DEFS)
+CPPFLAGS = -I. -I..\h -I..\..\lib_misc\h -I..\..\watcom\h $(DEFS)
 CFLAGS = -nologo -Zi -W4 -WX -MT -Fm -D_CRT_SECURE_NO_WARNINGS -D_CRT_NONSTDC_NO_WARNINGS -wd4244
 DEFS = -DBOOTSTRAP -D__NT__ -D_BLDVER=$(OWBLDVERTOOL) -D_CYEAR=$(OWCYEAR)
 LFLAGS = -link -INCREMENTAL:NO -DEBUG
 
 {..\c}.c.obj :
-        $(CC) -c $(CFLAGS) $(CPPFLAGS) -I. -Fo$@ $<
+        $(CC) -c $(CFLAGS) $(CPPFLAGS) -Fo$@ $<
 
 {..\..\builder\c}.c.obj :
-        $(CC) -c $(CFLAGS) $(CPPFLAGS) -I. -Fo$@ $<
+        $(CC) -c $(CFLAGS) $(CPPFLAGS) -Fo$@ $<
 
 {..\..\watcom\c}.c.obj :
-        $(CC) -c $(CFLAGS) $(CPPFLAGS) -I. -Fo$@ $<
+        $(CC) -c $(CFLAGS) $(CPPFLAGS) -Fo$@ $<
 
 all: $(OWBINDIR)\wmake.exe
 

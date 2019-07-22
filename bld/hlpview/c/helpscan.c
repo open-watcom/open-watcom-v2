@@ -61,7 +61,7 @@ static  unsigned char   specialHyperChars[] = {
     '\0'
 };
 
-static unsigned scanHyperLink( char *line, TokenType *type,
+static unsigned scanHyperLink( char *line, HelpTokenType *type,
                                HyperLinkInfo *info )
 {
     unsigned char       endchar;
@@ -176,7 +176,7 @@ bool ScanLine( char *line, ScanCBfunc *cb, void *info )
 {
     char                *cur;
     Info                tinfo;
-    TokenType           type;
+    HelpTokenType       type;
     bool                newfile;
 
     cur = line;

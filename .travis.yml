@@ -17,13 +17,22 @@ env:
     - OWBRANCH_SF=sourceforge
     - OWTRAVIS_REPO_SLUG=open-watcom/travis-ci-ow-builds
     - OWTRAVIS_BUILD_DIR=${HOME}/build/$OWTRAVIS_REPO_SLUG
+    - OWRELROOT=$OWROOT/test
+    - OWTRAVISDIR=$OWROOT/travis
+    - OWDISTRDIR=$OWROOT/distrib/ow
+    - OWSRCDIR=$OWROOT/bld
+    - OWBINDIR=$OWROOT/build/$OWOBJDIR
+    - OWDOCSDIR=$OWROOT/docs
+    - CP_OPTS=-Rnv
+    - OWWEBDOCS_REPO_SLUG=open-watcom/open-watcom-v2-webdocs
+    - OWWEBDOCS_BUILD_DIR=${HOME}/build/$OWWEBDOCS_REPO_SLUG
 
 cache:
   directories:
     - build/$OWOBJDIR
     - bld/watcom/$OWOBJDIR
     - test
-    - build-1
+    - buildx
 
 before_script:
  # configure Git client
@@ -58,7 +67,7 @@ jobs:
       before_install:
         # stop unwanted services
         - travis/services.sh
-      script: 
+      script:
         # update SF mirror
         - travis/gitusf.sh
         # update GitHub repository if necessary
@@ -75,17 +84,14 @@ jobs:
         - export OWTRAVISJOB=BOOTSTRAP
         - export OWVERBOSE=1
         # clear cache
-        - rm -rf build/$OWOBJDIR/*
-        - rm -rf bld/watcom/$OWOBJDIR/*
-        - rm -rf test/*
-        - rm -rf build-1/*
+        - travis/cacheclr.sh
       install:
         - . ./cmnvars.sh
-      script: 
+      script:
         - travis/build.sh
     - # ...
       name: "Build minimal set of build tools OSX"
-      if: branch = env(OWBRANCH) AND (type = cron OR (type = push AND env(OWTRAVIS_ALL) = 1))
+      if: branch = env(OWBRANCH) AND (type = cron)
       os: osx
       compiler: clang
       before_install:
@@ -96,17 +102,14 @@ jobs:
         - export OWTRAVISJOB=BOOTSTRAP
         - export OWVERBOSE=1
         # clear cache
-        - rm -rf build/$OWOBJDIR/*
-        - rm -rf bld/watcom/$OWOBJDIR/*
-        - rm -rf test/*
-        - rm -rf build-1/*
+        - travis/cacheclr.sh
       install:
         - . ./cmnvars.sh
-      script: 
+      script:
         - travis/build.sh
     - # ...
       name: "Build minimal set of build tools Windows"
-      if: branch = env(OWBRANCH) AND (type = cron OR (type = push AND env(OWTRAVIS_ALL) = 1))
+      if: branch = env(OWBRANCH) AND (type = cron)
       os: windows
       before_install:
         - test -n $CC && unset CC
@@ -117,13 +120,10 @@ jobs:
         - export OWTRAVISJOB=BOOTSTRAP
         - export OWVERBOSE=1
         # clear cache
-        - rm -rf build/$OWOBJDIR/*
-        - rm -rf bld/watcom/$OWOBJDIR/*
-        - rm -rf test/*
-        - rm -rf build-1/*
+        - travis/cacheclr.sh
       install:
-      script: 
-        - cmd.exe /c "travis\winboot.cmd"
+      script:
+        - travis/build.sh
     #################################
     - stage: Build
       name: "OW tools build Linux"
@@ -138,11 +138,13 @@ jobs:
         # install DOS Emulator
         - sudo apt-get install -y dosemu
         - . ./cmnvars.sh
-      script: 
+      script:
         - travis/build.sh
+      before_cache:
+        - travis/cache3.sh save
     - # ...
       name: "OW tools build-1 OSX"
-      if: branch = env(OWBRANCH) AND (type = cron OR (type = push AND env(OWTRAVIS_ALL) = 1))
+      if: branch = env(OWBRANCH) AND (type = cron)
       os: osx
       compiler: clang
       before_install:
@@ -153,13 +155,13 @@ jobs:
         - export OWTRAVISJOB=BUILD-1
       install:
         - . ./cmnvars.sh
-      script: 
+      script:
         - travis/build.sh
-        # save build-1 to cache
-        - cp -Rf $OWSRCDIR/* build-1
+      before_cache:
+        - travis/cache1.sh save
     - # ...
-      name: "OW tools build Windows"
-      if: branch = env(OWBRANCH) AND (type = cron OR (type = push AND env(OWTRAVIS_ALL) = 1))
+      name: "OW tools build-1 Windows"
+      if: branch = env(OWBRANCH) AND (type = cron)
       os: windows
       before_install:
         - test -n $CC && unset CC
@@ -167,15 +169,16 @@ jobs:
         - travis/services.sh
         # set environmet variable
         - export OWTOOLS=VISUALC
-        - export OWTRAVISJOB=BUILD
+        - export OWTRAVISJOB=BUILD-1
       install:
-#        - install dosbox
-      script: 
-        - cmd.exe /c "travis\winbuild.cmd"
+      script:
+        - travis/build.sh
+      before_cache:
+        - travis/cache1.sh save
     #################################
     - stage: Build2
       name: "OW tools build-2 OSX"
-      if: branch = env(OWBRANCH) AND (type = cron OR (type = push AND env(OWTRAVIS_ALL) = 1))
+      if: branch = env(OWBRANCH) AND (type = cron)
       os: osx
       compiler: clang
       before_install:
@@ -183,20 +186,125 @@ jobs:
         - travis/services.sh
         # set environmet variable
         - export OWTOOLS=CLANG
-        - export OWTRAVISJOB=BUILD2
+        - export OWTRAVISJOB=BUILD-2
         - export OWDOSBOX=dosbox
+        - export SDL_VIDEODRIVER=dummy
       install:
         # install DOS Emulator
         - brew install dosbox
         - . ./cmnvars.sh
-      script: 
-        # load build-1 from cache
-        - cp -Rn build-1/* $OWSRCDIR; true
+      script:
+        - travis/cache1.sh load
         - travis/build.sh
+      before_cache:
+        - travis/cache2.sh save
+    - # ...
+      name: "OW tools build-2 Windows"
+      if: branch = env(OWBRANCH) AND (type = cron)
+      os: windows
+      before_install:
+        - test -n $CC && unset CC
+        # stop unwanted services
+        - travis/services.sh
+        # set environmet variable
+        - export OWTOOLS=VISUALC
+        - export OWTRAVISJOB=BUILD-2
+      install:
+      script:
+        - travis/cache1.sh load
+        - travis/build.sh
+      before_cache:
+        - travis/cache2.sh save
+    #################################
+    - stage: Build3
+      name: "OW tools build-3 OSX"
+      if: branch = env(OWBRANCH) AND (type = cron)
+      os: osx
+      compiler: clang
+      before_install:
+        # stop unwanted services
+        - travis/services.sh
+        # set environmet variable
+        - export OWTOOLS=CLANG
+        - export OWTRAVISJOB=BUILD-3
+        - export OWDOSBOX=dosbox
+        - export SDL_VIDEODRIVER=dummy
+        - export OWDOCQUIET=0
+        - export OWVERBOSE=1
+      install:
+        # install DOS Emulator
+        - brew install dosbox
+        - . ./cmnvars.sh
+      script:
+        - travis/cache2.sh load
+        - travis/build.sh
+      before_cache:
+        - travis/cache3.sh save
+    - # ...
+      name: "OW tools build-3 Windows"
+      if: branch = env(OWBRANCH) AND (type = cron)
+      os: windows
+      before_install:
+        - test -n $CC && unset CC
+        # stop unwanted services
+        - travis/services.sh
+        # set environmet variable
+        - export OWTOOLS=VISUALC
+        - export OWTRAVISJOB=BUILD-3
+        - export OWDOCQUIET=0
+        - export OWVERBOSE=1
+      install:
+      script:
+        - travis/cache2.sh load
+        - travis/build.sh
+      before_cache:
+        - travis/cache3.sh save
+    #################################
+    - stage: UpdateBuild
+      name: "Update Build Linux"
+      if: branch = env(OWBRANCH) AND (type = cron OR type = push)
+      before_install:
+        # stop unwanted services
+        - travis/services.sh
+        # set environmet variable
+        - export OWTOOLS=GCC
+        - export OWTRAVISJOB=CPREL
+      install:
+#        - export WATCOM=$OWROOT/test
+        - . ./cmnvars.sh
+      script:
+#        - cp $CP_OPTS $OWROOT/buildx/ $WATCOM/
+        - true
+    - # ...
+      name: "Update Build Windows"
+      if: branch = env(OWBRANCH) AND (type = cron)
+      os: windows
+      before_install:
+        # stop unwanted services
+        - travis/services.sh
+        # set environmet variable
+        - export OWTOOLS=VISUALC
+        - export OWTRAVISJOB=CPREL
+      install:
+        - export WATCOM=$OWROOT/test
+      script:
+#        - cp $CP_OPTS $OWROOT/buildx/ $WATCOM
+        - true
+    #################################
+#    - stage: InitTests
+#      name: "Initialze Tests Environment"
+#      if: branch = env(OWBRANCH) AND (type = cron)
+#      before_install:
+#        # stop unwanted services
+#        - travis/services.sh
+#      install:
+#        - export WATCOM=$OWROOT/test
+#      script:
+#        - cp $CP_OPTS $OWROOT/buildx/ $WATCOM/
     #################################
     - stage: Tests
       name: "Test wasm assembler"
-      if: branch = env(OWBRANCH) AND (type = cron OR (type = push AND env(OWTRAVIS_ALL) = 1))
+      if: branch = env(OWBRANCH) AND (type = cron)
       before_install:
         # stop unwanted services
         - travis/services.sh
@@ -205,16 +313,16 @@ jobs:
         - export OWTRAVISJOB=TEST
         - export OWTRAVISTEST=WASM
       install:
-        - export WATCOM=$TRAVIS_BUILD_DIR/test
+        - export WATCOM=$OWROOT/test
         - export PATH=$WATCOM/binl:$PATH
         - export INCLUDE=$WATCOM/lh
         - unset LIB
         - . ./cmnvars.sh
-      script: 
+      script:
         - travis/test.sh
     - # ...
       name: "Test C compiler"
-      if: branch = env(OWBRANCH) AND (type = cron OR (type = push AND env(OWTRAVIS_ALL) = 1))
+      if: branch = env(OWBRANCH) AND (type = cron)
       before_install:
         # stop unwanted services
         - travis/services.sh
@@ -223,16 +331,16 @@ jobs:
         - export OWTRAVISJOB=TEST
         - export OWTRAVISTEST=C
       install:
-        - export WATCOM=$TRAVIS_BUILD_DIR/test
+        - export WATCOM=$OWROOT/test
         - export PATH=$WATCOM/binl:$PATH
         - export INCLUDE=$WATCOM/lh
         - unset LIB
         - . ./cmnvars.sh
-      script: 
+      script:
         - travis/test.sh
     - # ...
       name: "Test FORTRAN 77 compiler"
-      if: branch = env(OWBRANCH) AND (type = cron OR (type = push AND env(OWTRAVIS_ALL) = 1))
+      if: branch = env(OWBRANCH) AND (type = cron)
       before_install:
         # stop unwanted services
         - travis/services.sh
@@ -241,16 +349,16 @@ jobs:
         - export OWTRAVISJOB=TEST
         - export OWTRAVISTEST=F77
       install:
-        - export WATCOM=$TRAVIS_BUILD_DIR/test
+        - export WATCOM=$OWROOT/test
         - export PATH=$WATCOM/binl:$PATH
         - export INCLUDE=$WATCOM/lh
         - unset LIB
         - . ./cmnvars.sh
-      script: 
+      script:
         - travis/test.sh
     - # ...
       name: "Test C++ compiler"
-      if: branch = env(OWBRANCH) AND (type = cron OR (type = push AND env(OWTRAVIS_ALL) = 1))
+      if: branch = env(OWBRANCH) AND (type = cron)
       before_install:
         # stop unwanted services
         - travis/services.sh
@@ -259,74 +367,104 @@ jobs:
         - export OWTRAVISJOB=TEST
         - export OWTRAVISTEST=CXX
       install:
-        - export WATCOM=$TRAVIS_BUILD_DIR/test
+        - export WATCOM=$OWROOT/test
         - export PATH=$WATCOM/binl:$PATH
         - export INCLUDE=$WATCOM/lh
         - unset LIB
         - . ./cmnvars.sh
-      script: 
+      script:
         - travis/test.sh
     - # ...
       name: "Test C run-time library"
-      if: branch = env(OWBRANCH) AND (type = cron OR (type = push AND env(OWTRAVIS_ALL) = 1))
+      if: branch = env(OWBRANCH) AND (type = cron)
       before_install:
         # set environmet variable
         - export OWTOOLS=WATCOM
         - export OWTRAVISJOB=TEST
         - export OWTRAVISTEST=CRTL
       install:
-        - export WATCOM=$TRAVIS_BUILD_DIR/test
+        - export WATCOM=$OWROOT/test
         - export PATH=$WATCOM/binl:$PATH
         - export INCLUDE=$WATCOM/lh
         - unset LIB
         - . ./cmnvars.sh
-      script: 
+      script:
         - travis/test.sh
     #################################
-    - stage: Finalize
-      name: "Clean build cache Linux"
-      if: branch = env(OWBRANCH)
-      script: 
-        # clear cache
-        - rm -rf build/$OWOBJDIR/*
-        - rm -rf bld/watcom/$OWOBJDIR/*
-        - rm -rf test/*
-        - rm -rf build-1/*
+    - stage: AllDocs
+      name: "Create all Documentation"
+      os: windows
+      if: branch = env(OWBRANCH) AND (type = cron)
+      before_install:
+        - test -n $CC && unset CC
+        # set environmet variable
+        - export OWTOOLS=VISUALC
+        - export OWTRAVISJOB=DOCS
+      install:
+        # Help compilers related variables
+        - export OWGHOSTSCRIPTPATH=$OWTRAVISDIR/gs927w64
+        - export OWWIN95HC=$OWTRAVISDIR/hcw/hcrtf.exe
+        - export OWHHC=$OWTRAVISDIR/hhc/hhc.exe
+        # register all Help Compilers DLL's
+        - travis/regdlls.sh
+      script:
+        - travis/build.sh
+    #################################
+    - stage: Release
+      name: "Create all Installers Linux"
+      if: branch = env(OWBRANCH) AND (type = cron)
+      before_install:
+        - export OWTOOLS=GCC
+        - export OWTRAVISJOB=INST
+      install:
+        - . ./cmnvars.sh
+        - travis/cache3.sh load
+      script:
+        - travis/build.sh
     - # ...
-      name: "Clean build cache OSX"
-      if: branch = env(OWBRANCH) AND (type = cron OR (type = push AND env(OWTRAVIS_ALL) = 1))
+      name: "Create Installer 64-bit Windows"
+      if: branch = env(OWBRANCH) AND (type = cron)
+      os: windows
+      before_install:
+        - export OWTOOLS=VISUALC
+        - export OWTRAVISJOB=INST
+      install:
+        - travis/cache3.sh load
+      script:
+        - travis/build.sh
+    #################################
+    - stage: Finalize
+      name: "Delete build cache Linux"
+      if: branch = env(OWBRANCH)
+      script:
+        - travis/cacheclr.sh
+    - # ...
+      name: "Delete build cache OSX"
+      if: branch = env(OWBRANCH) AND (type = cron)
       os: osx
       compiler: clang
-      script: 
-        # clear cache
-        - rm -rf build/$OWOBJDIR/*
-        - rm -rf bld/watcom/$OWOBJDIR/*
-        - rm -rf test/*
-        - rm -rf build-1/*
+      script:
+        - travis/cacheclr.sh
     - # ...
-      name: "Clean build cache Windows"
-      if: branch = env(OWBRANCH) AND (type = cron OR (type = push AND env(OWTRAVIS_ALL) = 1))
+      name: "Delete build cache Windows"
+      if: branch = env(OWBRANCH) AND (type = cron)
       os: windows
-      script: 
-        # clear cache
-        - rm -rf build/$OWOBJDIR/*
-        - rm -rf bld/watcom/$OWOBJDIR/*
-        - rm -rf test/*
-        - rm -rf build-1/*
+      script:
+        - travis/cacheclr.sh
 
     #################################
-    - stage: InitDocumentation
+    - stage: InitWEBDocumentation
       name: "Initiate Documentation build by Cron"
       if: branch = env(OWBRANCH_DOCS) AND type = cron
       cache: false
-      script: 
+      script:
         - git config remote.origin.pushurl https://${GITHUB_TOKEN}@github.com/${TRAVIS_REPO_SLUG}.git
         - git pull origin $OWBRANCH
         - git checkout -B $OWBRANCH
         - git push origin $OWBRANCH:$OWBRANCH_DOCS
     #################################
-    - stage: Documentation
-      name: "OW Documentation build Linux"
+    - stage: WEBDocumentation
+      name: "OW Documentation for WEB build Linux"
       if: branch = env(OWBRANCH_DOCS) AND type = push
       cache: false
       before_install:
@@ -334,21 +472,21 @@ jobs:
         - travis/services.sh
         # set environmet variable
         - export OWTOOLS=GCC
-        - export OWTRAVISJOB=DOCTRAVIS
+        - export OWTRAVISJOB=WEBDOCS
         - export OWDOCBUILD=1
       install:
         # install DOS Emulator + Ghostscript
         - sudo apt-get install -y dosemu ghostscript
         - export OWGHOSTSCRIPTPATH=$PATH
         - . ./cmnvars.sh
-      script: 
-        - travis/builddoc.sh
+      script:
+        - travis/webdocs.sh
     #################################
     - stage: InitCoverity
       name: "Initiate Coverity Scan by Cron Linux"
       if: branch = env(OWBRANCH_COVERITY) AND type = cron
       cache: false
-      script: 
+      script:
         - git config remote.origin.pushurl https://${GITHUB_TOKEN}@github.com/${TRAVIS_REPO_SLUG}.git
         - git pull origin $OWBRANCH
         - git checkout -B $OWBRANCH
@@ -369,7 +507,7 @@ jobs:
         - sudo apt-get install -y dosemu
         - sudo apt-get install -y curl
         - . ./cmnvars.sh
-      script: 
+      script:
         - travis/covscan.sh
 
 #  coverity_scan:

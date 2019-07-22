@@ -37,44 +37,42 @@
 #include "libwin32.h"
 #include "osver.h"
 
-BOOL __lib_FindNextFileW( HANDLE hFindFile,
-                          LPWIN32_FIND_DATAW lpFindFileData )
-/***********************************************************/
+
+BOOL __lib_FindNextFileW( HANDLE hFindFile, LPWIN32_FIND_DATAW lpFindFileData )
+/*****************************************************************************/
 {
-    if( WIN32_IS_NT ) {                                 /* NT */
+    BOOL                osrc;
+    WIN32_FIND_DATAA    mbFindFileData;
+    size_t              cvt;
+
+    if( WIN32_IS_NT ) {     /* NT */
         return( FindNextFileW( hFindFile, lpFindFileData ) );
-    } else {                                            /* Win95 or Win32s */
-        BOOL                osrc;
-        WIN32_FIND_DATAA    mbFindFileData;
-        size_t              cvt;
-
-        /*** Call the OS ***/
-        osrc = FindNextFileA( hFindFile, &mbFindFileData );
-        if( osrc == FALSE ) {
-            return( FALSE );
-        }
-
-        /*** Convert the WIN32_FIND_DATAA info to WIN32_FIND_DATAW info ***/
-        lpFindFileData->dwFileAttributes = mbFindFileData.dwFileAttributes;
-        lpFindFileData->ftCreationTime = mbFindFileData.ftCreationTime;
-        lpFindFileData->ftLastAccessTime = mbFindFileData.ftLastAccessTime;
-        lpFindFileData->ftLastWriteTime = mbFindFileData.ftLastWriteTime;
-        lpFindFileData->nFileSizeHigh = mbFindFileData.nFileSizeHigh;
-        lpFindFileData->nFileSizeLow = mbFindFileData.nFileSizeLow;
-        lpFindFileData->dwReserved0 = mbFindFileData.dwReserved0;
-        lpFindFileData->dwReserved1 = mbFindFileData.dwReserved1;
-        cvt = mbstowcs( lpFindFileData->cFileName, mbFindFileData.cFileName,
-                        MAX_PATH );
-        if( cvt == (size_t)-1 ) {
-            return( FALSE );
-        }
-        cvt = mbstowcs( lpFindFileData->cAlternateFileName,
-                        mbFindFileData.cAlternateFileName,
-                        MAX_PATH );
-        if( cvt == (size_t)-1 ) {
-            return( FALSE );
-        }
-
-        return( osrc );
     }
+    /* Win95 or Win32s */
+
+    /*** Call the OS ***/
+    osrc = __fixed_FindNextFileA( hFindFile, &mbFindFileData );
+    if( osrc == FALSE ) {
+        return( FALSE );
+    }
+
+    /*** Convert the WIN32_FIND_DATAA info to WIN32_FIND_DATAW info ***/
+    lpFindFileData->dwFileAttributes = mbFindFileData.dwFileAttributes;
+    lpFindFileData->ftCreationTime = mbFindFileData.ftCreationTime;
+    lpFindFileData->ftLastAccessTime = mbFindFileData.ftLastAccessTime;
+    lpFindFileData->ftLastWriteTime = mbFindFileData.ftLastWriteTime;
+    lpFindFileData->nFileSizeHigh = mbFindFileData.nFileSizeHigh;
+    lpFindFileData->nFileSizeLow = mbFindFileData.nFileSizeLow;
+    lpFindFileData->dwReserved0 = mbFindFileData.dwReserved0;
+    lpFindFileData->dwReserved1 = mbFindFileData.dwReserved1;
+    cvt = mbstowcs( lpFindFileData->cFileName, mbFindFileData.cFileName, MAX_PATH );
+    if( cvt == (size_t)-1 ) {
+        return( FALSE );
+    }
+    cvt = mbstowcs( lpFindFileData->cAlternateFileName, mbFindFileData.cAlternateFileName, MAX_PATH );
+    if( cvt == (size_t)-1 ) {
+        return( FALSE );
+    }
+
+    return( osrc );
 }

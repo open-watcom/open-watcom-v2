@@ -46,8 +46,8 @@
 char    *targ_path;
 char    *dep_path;
 
-STATIC TOKEN_T lexLongFilePathName( STRM_T s, TOKEN_T tok )
-/**********************************************************
+STATIC MTOKEN_T lexLongFilePathName( STRM_T s, MTOKEN_T tok )
+/************************************************************
  * This will enable taking in of special filenames
  * it takes long file names or long path names
  */
@@ -100,7 +100,7 @@ STATIC TOKEN_T lexLongFilePathName( STRM_T s, TOKEN_T tok )
 #ifdef __WATCOMC__
 #pragma on (check_stack);
 #endif
-TOKEN_T LexPath( STRM_T s )
+MTOKEN_T LexPath( STRM_T s )
 /*********************************
  * returns: ({filec}*";")+          TOK_PATH
  *          EOL                     TOK_EOL
@@ -220,8 +220,8 @@ TOKEN_T LexPath( STRM_T s )
 #ifdef __WATCOMC__
 #pragma on (check_stack);
 #endif
-STATIC TOKEN_T lexFileName( STRM_T s )
-/*************************************
+STATIC MTOKEN_T lexFileName( STRM_T s )
+/**************************************
  * Now we need two ways of taking file names if the filename needs special
  * characters then use "filename"  this will ignore all the different
  * characters except for the quote which can be specified as \t
@@ -337,8 +337,8 @@ STATIC char *getCurlPath( void )
 #ifdef __WATCOMC__
 #pragma on (check_stack);
 #endif
-STATIC TOKEN_T lexDotName( void )
-/********************************
+STATIC MTOKEN_T lexDotName( void )
+/*********************************
  * Given that the last character was a DOT, input the maximum string
  * possible, and check if it is a TOK_DOTNAME, TOK_SUF, or TOK_SUFSUF
  * Special cases to look for: "."{dirc}; ".."{dirc}; ".."{extc}+;
@@ -356,7 +356,7 @@ STATIC TOKEN_T lexDotName( void )
     unsigned    pos;
     STRM_T      s;
     STRM_T      s2;
-    TOKEN_T     ret;
+    MTOKEN_T    ret;
 
     pos  = 0;
 
@@ -449,8 +449,8 @@ STATIC TOKEN_T lexDotName( void )
 #endif
 
 
-STATIC TOKEN_T lexCmd( void )
-/****************************
+STATIC MTOKEN_T lexCmd( void )
+/*****************************
  * returns: {ws}+?*"\n"         TOK_CMD
  */
 {
@@ -612,7 +612,7 @@ STATIC char *DeMacroDoubleQuote( bool IsDoubleQuote )
 }
 
 
-TOKEN_T LexParser( STRM_T s )
+MTOKEN_T LexParser( STRM_T s )
 /************************************
  * returns: next token for parser
  * remarks: possibly defines a macro

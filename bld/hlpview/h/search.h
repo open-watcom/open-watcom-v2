@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -37,15 +38,13 @@
 #include "stdui.h"
 #include "uidialog.h"
 
-struct HelpHdl{
-    HelpFp      fp;
+typedef struct HelpHdl {
+    FILE        *fp;
     HelpHeader  header;
     uint_16     *itemindex;
     char        *def_topic;
     char        *desc_str;
-};
-
-typedef struct HelpHdl  *HelpHdl;
+} *HelpHdl;
 
 typedef struct {
     HelpHdl             hdl;
@@ -54,18 +53,18 @@ typedef struct {
     unsigned long       offset;
 } HelpSrchInfo;
 
-char *HelpFindNext( HelpSrchInfo *info );
-unsigned HelpFindFirst( HelpHdl hdl, char *name, HelpSrchInfo *info );
-HelpHdl InitHelpSearch( HelpFp fp );
-void FiniHelpSearch( HelpHdl hdl );
-char *HelpFindPrev( HelpSrchInfo *info );
-unsigned long HelpGetOffset( HelpSrchInfo cursor );
-unsigned long HelpFindTopicOffset( HelpHdl hdl, char *topic );
-char *HelpGetIndexedTopic( HelpHdl hdl, unsigned index );
-char *GetDefTopic( HelpHdl hdl );
-char *GetDescrip( HelpHdl hdl );
+extern char             *HelpFindNext( HelpSrchInfo *info );
+extern unsigned         HelpFindFirst( HelpHdl hdl, const char *name, HelpSrchInfo *info );
+extern HelpHdl          InitHelpSearch( FILE *fp );
+extern void             FiniHelpSearch( HelpHdl hdl );
+extern char             *HelpFindPrev( HelpSrchInfo *info );
+extern unsigned long    HelpGetOffset( HelpSrchInfo cursor );
+extern unsigned long    HelpFindTopicOffset( HelpHdl hdl, const char *topic );
+extern char             *HelpGetIndexedTopic( HelpHdl hdl, unsigned index );
+extern char             *GetDefTopic( HelpHdl hdl );
+extern char             *GetDescrip( HelpHdl hdl );
 
-char *HelpSearch( HelpHdl hdl );
-void HelpDialogCallBack( a_dialog *info );
-void SearchDlgFini( void );
+extern char             *HelpSearch( HelpHdl hdl );
+extern void             HelpDialogCallBack( a_dialog *info );
+extern void             SearchDlgFini( void );
 #endif

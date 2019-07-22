@@ -29,6 +29,6 @@
 ****************************************************************************/
 
 
-#define DIALOG_ASYNC_RUN 3012
+#define DIALOG_ASYNC_RUN        3012
 
-#define CTL_ASYNC_STOP  101
+#define CTL_ASYNC_STOP          101

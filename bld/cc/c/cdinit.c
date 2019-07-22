@@ -664,10 +664,10 @@ static FIELDPTR InitBitField( FIELDPTR field )
         if( is64bit ) {
             U32ToU64( bit_value, &tmp );
             U64ShiftL( &tmp, typ->u.f.field_start, &tmp );
-            value64.u._32[L] |= tmp.u._32[L];
-            value64.u._32[H] |= tmp.u._32[H];
+            value64.u._32[I64LO32] |= tmp.u._32[I64LO32];
+            value64.u._32[I64HI32] |= tmp.u._32[I64HI32];
         } else {
-            value64.u._32[L] |= bit_value << typ->u.f.field_start;
+            value64.u._32[I64LO32] |= bit_value << typ->u.f.field_start;
         }
         field = field->next_field;
         if( field == NULL )
@@ -684,7 +684,7 @@ static FIELDPTR InitBitField( FIELDPTR field )
     if( is64bit ) {
         StoreIValue64( dtype, value64 );
     } else {
-        StoreIValue( dtype, value64.u._32[L], size );
+        StoreIValue( dtype, value64.u._32[I64LO32], size );
     }
     if( token == T_LEFT_BRACE ) {
         if( CurToken == T_COMMA )

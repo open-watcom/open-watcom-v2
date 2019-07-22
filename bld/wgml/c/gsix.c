@@ -164,13 +164,13 @@ void    scr_ix( void )
 
     scan_restart = scan_stop;
 
-    if( !(GlobalFlags.index && GlobalFlags.lastpass) ) {
+    if( !(FlagsGlob.index && FlagsGlob.lastpass) ) {
         return;                         // no need to process .ix
     }                                   // no index wanted or not lastpass
     cwcurr[0] = SCR_char;
     lvl = 0;                            // index level
 
-//  if( ProcFlags.page_started ) {
+//  if( FlagsProc.page_started ) {
 //      wkpage = page;
 //  } else {
         wkpage = page + 1;              // not quite clear TBD

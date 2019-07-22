@@ -47,7 +47,8 @@ void *GetInPtr( trap_elen pos )     /* Absolute position */
     entries_left = In_Mx_Num - 1;
     entry = In_Mx_Ptr;
     for( ;; ) {
-        if( entries_left == 0 || pos < entry->len ) break;
+        if( entries_left == 0 || pos < entry->len )
+            break;
         pos -= entry->len;
         ++entry;
         --entries_left;
@@ -63,7 +64,8 @@ void *GetOutPtr( trap_elen pos )    /* Absolute position */
     entries_left = Out_Mx_Num - 1;
     entry = Out_Mx_Ptr;
     for( ;; ) {
-        if( entries_left == 0 || pos < entry->len ) break;
+        if( entries_left == 0 || pos < entry->len )
+            break;
         pos -= entry->len;
         ++entry;
         --entries_left;

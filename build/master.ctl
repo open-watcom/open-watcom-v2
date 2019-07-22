@@ -52,26 +52,26 @@ set BLDRULE=
     set LOGFNAME=btclean
     echo **** BOOTCLEAN rule
 
-[ BLOCK <1> build build1 build2 ]
-#================================
+[ BLOCK <1> build build1 build2 build3 ]
+#=======================================
     set BLDRULE=build
     set LOGFNAME=<1>
     echo **** BUILD rule
 
-[ BLOCK <1> rel pass ]
-#=====================
+[ BLOCK <1> rel rel1 rel2 rel3 pass ]
+#====================================
     set BLDRULE=rel
     set LOGFNAME=<1>
     echo **** REL rule
 
-[ BLOCK <1> clean clean1 clean2 passclean ]
-#==========================================
+[ BLOCK <1> clean clean1 clean2 clean3 passclean ]
+#=================================================
     set BLDRULE=clean
     set LOGFNAME=<1>
     echo **** CLEAN rule
 
-[ BLOCK <1> cprel cprel1 cprel2 ]
-#================================
+[ BLOCK <1> cprel cprel1 cprel2 cprel3 ]
+#=======================================
     set BLDRULE=cprel
     set LOGFNAME=<1>
     # with 'cprel', we want to force the copy to occur
@@ -115,20 +115,20 @@ set BLDRULE=
     set LOGFNAME=doc
     echo **** DOC rule
 
-[ BLOCK <1> doctrav ]
+[ BLOCK <1> webdocs ]
 #======================
-    set BLDRULE=doctrav
-    set LOGFNAME=doctrav
-    echo **** DOCTRAV rule
+    set BLDRULE=webdocs
+    set LOGFNAME=webdocs
+    echo **** WEBDOCS rule
 
-[ BLOCK <1> cpdoctrav ]
+[ BLOCK <1> cpwebdocs ]
 #======================
-    set BLDRULE=cpdoctrav
-    set LOGFNAME=cpdoctrv
-    # with 'cpdoctrav', we want to force the copy to occur
+    set BLDRULE=cpwebdocs
+    set LOGFNAME=cpwebdoc
+    # with 'cpwebdocs', we want to force the copy to occur
     set CPCMD=copy
     set CCCMD=ccopy
-    echo **** CPDOCTRAV rule
+    echo **** CPWEBDOCS rule
 
 [ BLOCK <1> docsclean ]
 #======================

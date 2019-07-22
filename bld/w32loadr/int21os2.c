@@ -120,17 +120,18 @@ static APIRET __findfirst( union REGS *r )
 {
     APIRET      rc;
     FF_BUFFER   dir_buff;
-    HDIR        handle = ~0;
+    HDIR        handle;
     OS_UINT     searchcount;
     struct find_t *buf;
 
+    handle = HDIR_CREATE;
     searchcount = 1;            /* only one at a time */
     rc = DosFindFirst( (PSZ)r->x.edx, (PHFILE)&handle, r->x.ecx,
             (PVOID)&dir_buff, sizeof( dir_buff ), &searchcount, FF_LEVEL );
 
     buf = (struct find_t *)r->x.ebx;
     if( rc != 0  &&  rc != ERROR_EAS_DIDNT_FIT ) {
-        DTAXXX_HANDLE_OF( buf ) = ~0;
+        DTAXXX_HANDLE_OF( buf ) = DTAXXX_INVALID_HANDLE;
         return( rc );
     }
     DTAXXX_HANDLE_OF( buf ) = handle;
@@ -140,23 +141,24 @@ static APIRET __findfirst( union REGS *r )
 
 static APIRET __findnext( union REGS *r )
 {
-    APIRET      rc = 0;
+    APIRET      rc;
     FF_BUFFER   dir_buff;
     HDIR        handle;
     OS_UINT     searchcount;
     struct find_t *buf;
 
     buf = (struct find_t *)r->x.edx;
-    handle = DTAXXX_HANDLE_OF( buf );
-    if( handle != ~0 ) {
+    rc = 0;
+    if( DTAXXX_HANDLE_OF( buf ) != DTAXXX_INVALID_HANDLE ) {
+        handle = DTAXXX_HANDLE_OF( buf );
         if( r->h.al == 0 ) {            /* if FIND_NEXT function */
             searchcount = 1;            /* only one at a time */
-            rc = DosFindNext( handle,
-                (PVOID)&dir_buff, sizeof( dir_buff ), &searchcount );
+            rc = DosFindNext( handle, (PVOID)&dir_buff, sizeof( dir_buff ), &searchcount );
             if( rc == 0 ) {
                 copydir( buf, &dir_buff );      /* copy in other fields */
             }
         } else {                        /* FIND_CLOSE function */
+            DTAXXX_HANDLE_OF( buf ) = DTAXXX_INVALID_HANDLE;
             rc = DosFindClose( handle );
         }
     }
@@ -168,8 +170,7 @@ static APIRET __chmod( union REGS *r )
     APIRET      rc = 0;
     FILESTATUS  fs;
 
-    rc = DosQueryPathInfo( (PSZ)r->x.edx, FIL_STANDARD,
-                                &fs, sizeof( FILESTATUS ) );
+    rc = DosQueryPathInfo( (PSZ)r->x.edx, FIL_STANDARD, &fs, sizeof( FILESTATUS ) );
     if( r->h.al == 0 ) {                // get file attributes
         r->h.cl = fs.attrFile;
     } else if( r->h.al == 1 ) {         // set file attributes

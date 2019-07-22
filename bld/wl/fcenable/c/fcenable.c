@@ -406,6 +406,29 @@ static void DoReplace( void )
     }
 }
 
+static int doCopyFile( const char * file1, const char * file2 )
+/*************************************************************/
+{
+    size_t              len;
+    struct stat         statblk;
+    struct utimbuf      utimebuf;
+
+    remove( file2 );
+    OutFile = NULL;
+    InFile = QOpen( file1, "rb" );
+    OutFile = QOpen( file2, "wb" );
+    while( (len = fread( InputBuffer, 1, MAX_OBJECT_REC_SIZE, InFile )) != 0 ) {
+        fwrite( InputBuffer, 1, len, OutFile );
+    }
+    CloseFiles();
+    if( stat( file1, &statblk ) == 0 ) {
+        utimebuf.actime = statblk.st_atime;
+        utimebuf.modtime = statblk.st_mtime;
+        utime( file2, &utimebuf );
+    }
+    return( OK );
+}
+
 static void ProcFile( const char *fname )
 /***************************************/
 {
@@ -463,7 +486,7 @@ static void ProcFile( const char *fname )
         } else {
             ReplaceExt( bak, ".bob", true );
         }
-        CopyFile( name, bak );
+        doCopyFile( name, bak );
     }
     QRemove( name );
     if( ftype == ENDLIBRARY ) {
@@ -472,29 +495,6 @@ static void ProcFile( const char *fname )
         rename( TEMP_OBJ_NAME, name );
     }
     FileCleanup();
-}
-
-int CopyFile( const char * file1, const char * file2 )
-/****************************************************/
-{
-    size_t              len;
-    struct stat         statblk;
-    struct utimbuf      utimebuf;
-
-    remove( file2 );
-    OutFile = NULL;
-    InFile = QOpen( file1, "rb" );
-    OutFile = QOpen( file2, "wb" );
-    while( (len = fread( InputBuffer, 1, MAX_OBJECT_REC_SIZE, InFile )) != 0 ) {
-        fwrite( InputBuffer, 1, len, OutFile );
-    }
-    CloseFiles();
-    if( stat( file1, &statblk ) == 0 ) {
-        utimebuf.actime = statblk.st_atime;
-        utimebuf.modtime = statblk.st_mtime;
-        utime( file2, &utimebuf );
-    }
-    return( OK );
 }
 
 // these are utility routines used frequently in TDCVT.

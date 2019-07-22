@@ -249,7 +249,7 @@ static void generateOffsetFunc( // GENERATE CODE FOR OFFSET FUNCTION
 
     refed = node->u.symcg.symbol;
     previous_func = CgFrontCurrentFunction();
-    func->flag |= SF_INITIALIZED;
+    func->flag |= SYMF_INITIALIZED;
     stashed_scope = GetCurrScope();
     scope_class = SymScope( func );
     SetCurrScope(scope_class);
@@ -321,8 +321,8 @@ static SYMBOL membPtrOffsetFunc(// GET OFFSET FUNCTION FOR MEMBER
     result = ScopeContainsMember( scope, name );
     if( result == NULL ) {
         tgt = SymCreate( dereferenceFnType( TypeReferenced( src->sym_type ) )
-                       , SC_MEMBER
-                       , SF_REFERENCED
+                       , SYMC_MEMBER
+                       , SYMF_REFERENCED
                        , name
                        , scope );
         generateOffsetFunc( tgt, node );
@@ -963,8 +963,8 @@ CNV_RETN MembPtrAssign(         // ASSIGNMENT/INITIALIZATION OF MEMBER POINTER
                 }
                 if( tgt->op == PT_SYMBOL ) {
                     sym = tgt->u.symcg.symbol;
-                    if( ( sym->id == SC_AUTO )
-                      ||( sym->id == SC_REGISTER ) ) {
+                    if( ( sym->id == SYMC_AUTO )
+                      ||( sym->id == SYMC_REGISTER ) ) {
                         expr = storeMembPtrCon( expr, tgt );
                     } else {
                         expr->u.subtree[0] = NodeReplace( expr->u.subtree[0]

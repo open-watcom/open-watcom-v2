@@ -181,7 +181,7 @@ static TYPE extractTemplateClass( TEMPLATE_CONTEXT *ctx )
     if( sym == NULL ) {
         return( TypeError );
     }
-    DbgAssert( sym->id == SC_TYPEDEF );
+    DbgAssert( sym->id == SYMC_TYPEDEF );
     return( sym->sym_type );
 }
 
@@ -518,7 +518,7 @@ static SYMBOL newTemplateSymbol( TEMPLATE_DATA *data )
 
     tinfo = newTemplateInfo( data );
     sym = AllocSymbol();
-    sym->id = SC_CLASS_TEMPLATE;
+    sym->id = SYMC_CLASS_TEMPLATE;
     sym->u.tinfo = tinfo;
     sym->sym_type = TypeGetCache( TYPC_CLASS_TEMPLATE );
     tinfo->sym = sym;
@@ -534,10 +534,10 @@ void TemplateUsingDecl( SYMBOL sym, TOKEN_LOCN *locn )
 {
     SYMBOL new_sym;
 
-    DbgAssert( sym->id == SC_CLASS_TEMPLATE );
+    DbgAssert( sym->id == SYMC_CLASS_TEMPLATE );
     new_sym = SymCreateAtLocn( sym->sym_type
-                             , SC_CLASS_TEMPLATE
-                             , SF_NULL
+                             , SYMC_CLASS_TEMPLATE
+                             , SYMF_NULL
                              , sym->name->name
                              , GetCurrScope()
                              , locn );
@@ -937,16 +937,16 @@ static TEMPLATE_SPECIALIZATION *mergeClassTemplates( TEMPLATE_DATA *data, SYMBOL
         for( curr = NULL; (curr = ScopeOrderedNext( stop, curr )) != NULL; ) {
             parm = NULL;
             switch( curr->id ) {
-            case SC_TYPEDEF:
+            case SYMC_TYPEDEF:
                 parm = PTreeType( curr->sym_type );
                 break;
 
-            case SC_STATIC:
+            case SYMC_STATIC:
                 parm = PTreeIntConstant( curr->u.uval, TYP_SINT );
                 parm->type = curr->sym_type;
                 break;
 
-            case SC_ADDRESS_ALIAS:
+            case SYMC_ADDRESS_ALIAS:
                 parm = MakeNodeSymbol( curr->u.alias );
                 break;
 
@@ -1084,15 +1084,15 @@ static SYMBOL dupTemplateParm( SYMBOL old_parm )
     sym->sym_type = old_parm->sym_type;
     sym->flag = old_parm->flag;
     switch( old_parm->id ) {
-    case SC_STATIC:
-        if( old_parm->flag & SF_CONSTANT_INT64 ) {
-            sym->flag |= SF_CONSTANT_INT64;
+    case SYMC_STATIC:
+        if( old_parm->flag & SYMF_CONSTANT_INT64 ) {
+            sym->flag |= SYMF_CONSTANT_INT64;
             sym->u.pval = old_parm->u.pval;
         } else {
             sym->u.uval = old_parm->u.uval;
         }
         break;
-    case SC_ADDRESS_ALIAS:
+    case SYMC_ADDRESS_ALIAS:
         sym->u.alias = old_parm->u.alias;
         break;
     }
@@ -1269,12 +1269,12 @@ void TemplateFunctionCheck( SYMBOL sym, DECL_INFO *dinfo )
         CErr1( ERR_NO_VARIABLE_TEMPLATES );
         return;
     }
-    if( sym->id == SC_STATIC ) {
-        sym->id = SC_STATIC_FUNCTION_TEMPLATE;
-    } else if( sym->id == SC_EXTERN ) {
-        sym->id = SC_EXTERN_FUNCTION_TEMPLATE;
+    if( sym->id == SYMC_STATIC ) {
+        sym->id = SYMC_STATIC_FUNCTION_TEMPLATE;
+    } else if( sym->id == SYMC_EXTERN ) {
+        sym->id = SYMC_EXTERN_FUNCTION_TEMPLATE;
     } else {
-        sym->id = SC_FUNCTION_TEMPLATE;
+        sym->id = SYMC_FUNCTION_TEMPLATE;
     }
     sym->sym_type = MakePlusPlusFunction( sym->sym_type );
 }
@@ -1540,14 +1540,14 @@ static SYMBOL buildTemplateFn( TYPE bound_type, SYMBOL sym, DECL_INFO *dinfo,
     symbol_class new_class;
 
     if( ScopeType( SymScope( sym ), SCOPE_CLASS ) ) {
-        new_flags = ( sym->flag & SF_ACCESS );
-        new_class = SC_MEMBER;
+        new_flags = ( sym->flag & SYMF_ACCESS );
+        new_class = SYMC_MEMBER;
     } else {
-        new_flags = ( sym->flag & SF_PLUSPLUS );
-        new_class = SC_PUBLIC;
+        new_flags = ( sym->flag & SYMF_PLUSPLUS );
+        new_class = SYMC_PUBLIC;
     }
     if( SymIsStatic( sym ) ) {
-        new_class = SC_STATIC;
+        new_class = SYMC_STATIC;
     }
 
     inst_scope = ScopeCreate( SCOPE_TEMPLATE_INST );
@@ -1556,7 +1556,7 @@ static SYMBOL buildTemplateFn( TYPE bound_type, SYMBOL sym, DECL_INFO *dinfo,
 
     new_sym = SymCreateAtLocn( bound_type
                              , new_class
-                             , new_flags | SF_TEMPLATE_FN
+                             , new_flags | SYMF_TEMPLATE_FN
                              , sym->name->name
                              , inst_scope
                              , locn );
@@ -1644,18 +1644,18 @@ SYMBOL TemplateFunctionGenerate( SYMBOL sym, arg_list *args,
                     break;
                 }
 
-                if( ( curr1->id == SC_TYPEDEF )
-                 && ( curr2->id == SC_TYPEDEF ) ) {
+                if( ( curr1->id == SYMC_TYPEDEF )
+                 && ( curr2->id == SYMC_TYPEDEF ) ) {
                     if( TypeCompareExclude( curr1->sym_type, curr2->sym_type, TC1_NULL ) ) {
                         continue;
                     }
-                } else if( ( curr1->id == SC_STATIC )
-                        && ( curr2->id == SC_STATIC ) ) {
+                } else if( ( curr1->id == SYMC_STATIC )
+                        && ( curr2->id == SYMC_STATIC ) ) {
                     if( curr1->u.uval == curr2->u.uval ) {
                         continue;
                     }
-                } else if( ( curr1->id == SC_ADDRESS_ALIAS )
-                        && ( curr2->id == SC_ADDRESS_ALIAS ) ) {
+                } else if( ( curr1->id == SYMC_ADDRESS_ALIAS )
+                        && ( curr2->id == SYMC_ADDRESS_ALIAS ) ) {
                     if( curr1->u.alias == curr2->u.alias ) {
                         continue;
                     }
@@ -1777,9 +1777,9 @@ static bool okForTemplateParm( PTREE parm )
     scope = SymScope( sym );
     if( ScopeType( scope, SCOPE_FILE ) ) {
         switch( sym->id ) {
-        case SC_PUBLIC:
-        case SC_EXTERN:
-        case SC_NULL:
+        case SYMC_PUBLIC:
+        case SYMC_EXTERN:
+        case SYMC_NULL:
             return( true );
         }
     }
@@ -2053,7 +2053,7 @@ static PTREE processClassTemplateParms( TEMPLATE_INFO *tinfo, PTREE parms, bool 
                     type = type->of;
                 }
             } else if( parm->op == PT_SYMBOL ) {
-                if( parm->u.symcg.symbol->id == SC_NULL ) {
+                if( parm->u.symcg.symbol->id == SYMC_NULL ) {
                     *is_generic = true;
                 }
             }
@@ -2229,7 +2229,7 @@ static SYMBOL templateArgTypedef( TYPE type )
 {
     SYMBOL tsym;
 
-    tsym = templateArgSym( SC_TYPEDEF, type );
+    tsym = templateArgSym( SYMC_TYPEDEF, type );
     return( tsym );
 }
 
@@ -2242,7 +2242,7 @@ static void injectTemplateParm( SCOPE scope, PTREE parm, NAME name )
     parm_type = parm->type;
     switch( parm->op ) {
     case PT_INT_CONSTANT:
-        sym = templateArgSym( SC_STATIC, parm_type );
+        sym = templateArgSym( SYMC_STATIC, parm_type );
         DgStoreConstScalar( parm, parm_type, sym );
         break;
     case PT_TYPE:
@@ -2255,7 +2255,7 @@ static void injectTemplateParm( SCOPE scope, PTREE parm, NAME name )
         } else {
             parm_type = addr_sym->sym_type;
         }
-        sym = templateArgSym( SC_ADDRESS_ALIAS, parm_type );
+        sym = templateArgSym( SYMC_ADDRESS_ALIAS, parm_type );
         sym->u.alias = addr_sym;
         break;
     DbgDefault( "template parms are corrupted" );
@@ -2617,8 +2617,8 @@ static PTREE fakeUpParm( SYMBOL sym )
 
     parm = NULL;
     switch( sym->id ) {
-    case SC_STATIC:
-        if( sym->flag & SF_CONSTANT_INT64 ) {
+    case SYMC_STATIC:
+        if( sym->flag & SYMF_CONSTANT_INT64 ) {
             parm = PTreeInt64Constant( sym->u.pval->u.int64_constant,
                                        sym->sym_type->id );
         } else {
@@ -2626,7 +2626,7 @@ static PTREE fakeUpParm( SYMBOL sym )
             parm->type = sym->sym_type;
         }
         break;
-    case SC_ADDRESS_ALIAS:
+    case SYMC_ADDRESS_ALIAS:
         parm = MakeNodeSymbol( sym->u.alias );
         if( PointerType( sym->sym_type ) ) {
             parm->type = MakePointerTo( parm->type );
@@ -2650,7 +2650,7 @@ static PTREE fakeUpTemplateParms( SCOPE parm_scope, arg_list *type_args )
     parms = NULL;
     stop = ScopeOrderedStart( parm_scope );
     for( curr = NULL; (curr = ScopeOrderedNext( stop, curr )) != NULL; ) {
-        if( curr->id == SC_TYPEDEF ) {
+        if( curr->id == SYMC_TYPEDEF ) {
             if( curr_type_arg ) {
                 parm = PTreeType( BindTemplateClass( *curr_type_arg, NULL, false ) );
                 ++curr_type_arg;
@@ -3036,7 +3036,7 @@ static void templateFunctionInstantiate( FN_TEMPLATE *fn_templ,
     }
 #endif
 
-    bound_sym->flag |= SF_TEMPLATE_FN;
+    bound_sym->flag |= SYMF_TEMPLATE_FN;
     bound_sym->u.alias = fn_sym;
     save_fn = templateData.translate_fn;
     templateData.translate_fn = bound_sym;
@@ -3070,7 +3070,7 @@ static void processFunctionTemplateInstantiations( void )
         RingIterBeg( curr_defn->instantiations, curr_inst ) {
             sym = SymDefArgBase( curr_inst->bound_sym );
 
-            if( ! curr_inst->processed && ( sym->flag & SF_REFERENCED ) ) {
+            if( ! curr_inst->processed && ( sym->flag & SYMF_REFERENCED ) ) {
                 templateData.keep_going = true;
                 curr_inst->processed = true;
                 templateFunctionInstantiate( curr_defn, curr_inst );
@@ -3145,7 +3145,7 @@ static void processInstantiationMembers( CLASS_INST *instance )
         sym = SymDefArgBase( dinfo->sym );
 
         if( instance->must_process
-         || ( sym->flag & SF_REFERENCED )
+         || ( sym->flag & SYMF_REFERENCED )
          || ( sym->sym_type->flag & TF1_VIRTUAL ) ) {
 
 #ifndef NDEBUG
@@ -3411,7 +3411,7 @@ bool TemplateUnboundSame( TYPE ub1, TYPE ub2 )
         if( ub1_curr == NULL || ub2_curr == NULL )
             break;
         DbgAssert( ub1_curr->id == ub2_curr->id );
-        if( ub1_curr->id != SC_TYPEDEF ) {
+        if( ub1_curr->id != SYMC_TYPEDEF ) {
             if( ! TemplateParmEqual( ub1_curr, ub2_curr ) ) {
                 return( false );
             }

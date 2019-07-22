@@ -264,7 +264,7 @@ int main( int argc, char **argv )
     return( 0 );
 }
 
-static void lineLenCB( TokenType type, Info *info, void *_len )
+static void lineLenCB( HelpTokenType type, Info *info, void *_len )
 {
     TextInfoBlock   *block;
     unsigned        i;
@@ -564,7 +564,7 @@ static void fgetstring( char *buffer, int max_len, FILE *f )
 static char         *nameBuf;
 static unsigned     nameBufLen;
 
-static void checkBufCB( TokenType type, Info *info, void *_node )
+static void checkBufCB( HelpTokenType type, Info *info, void *_node )
 {
     a_helpnode  *node = _node;
 

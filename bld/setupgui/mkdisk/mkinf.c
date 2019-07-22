@@ -1365,8 +1365,8 @@ static void MakeScript( void )
 }
 
 
-char * GetPath( int pos )
-/***********************/
+static char *getPath( int pos )
+/*****************************/
 {
     int                 count;
     PATH_INFO           *curr;
@@ -1389,7 +1389,7 @@ void CreateFileList( FILE *fp )
     char                *path;
 
     for( curr = FileList; curr != NULL; curr = curr->next ) {
-        path = GetPath( curr->path );
+        path = getPath( curr->path );
         for( list = curr->sizes; list != NULL; list = list->next ) {
             if( list->remove )
                 continue;

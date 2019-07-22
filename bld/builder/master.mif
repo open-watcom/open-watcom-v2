@@ -34,9 +34,9 @@ inc_dirs = -I"../h" -I"$(pmake_dir)" -I"$(posix_dir)/h"
 
 .c : ../c;$(pmake_dir);$(posix_dir)/misc;$(watcom_dir)/c;$(trmem_dir)
 
-sys_dos  = sysdoscd.obj sysdos.obj
-sys_nt   = sysdoscd.obj sysnt.obj
-sys_os2  = sysdoscd.obj sysos2.obj
+sys_dos  = sysdos.obj
+sys_nt   = sysnt.obj
+sys_os2  = sysos2.obj
 !ifdef sys_$(host_os)
 sys_objs = $(sys_$(host_os))
 !else

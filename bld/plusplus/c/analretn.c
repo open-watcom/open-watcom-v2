@@ -61,7 +61,7 @@ static PTREE getReturnSym       // MAKE NODE FOR RETURN SYMBOL
     PTREE node;                 // - node for above
 
     sym = SymFunctionReturn();
-    sym->flag |= SF_REFERENCED;
+    sym->flag |= SYMF_REFERENCED;
     node = MakeNodeSymbol( sym );
     return( node );
 }

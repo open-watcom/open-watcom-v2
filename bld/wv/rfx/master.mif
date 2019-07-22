@@ -16,6 +16,7 @@ rfx_autodepends = .AUTODEPEND
 !include $(dig_dir)/trpcli.mif
 
 inc_dirs = -I.. -I"$(wv_dir)/h" -I"$(dig_dir)/h" -I"$(dig_dir)/c"
+inc_dirs_nt = -I"$(clib_dir)/h"
 
 extra_cpp_flags = -DBUILD_RFX
 !ifdef %OWUSE_FILENAME_VERSION
