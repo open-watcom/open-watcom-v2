@@ -114,7 +114,6 @@
 /docs/pdf/*
 /docs/ps/*
 /docs/win/*
-/docs/txt/*
 
 ###
 /bld/as/*/*/*_in.y
@@ -165,7 +164,7 @@
 #
 !/bld/trap/**/*.trp/
 #
-/bld/txt/txt/*.txt
+/bld/docstxt/docs/*.txt
 #
 /bld/vi/*/*.cfg
 /bld/vi/*/*.ini

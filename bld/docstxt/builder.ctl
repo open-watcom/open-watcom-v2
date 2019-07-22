@@ -1,7 +1,7 @@
 # Text Documentation Builder Control file
 # =======================================
 
-set PROJNAME=txt
+set PROJNAME=docstxt
 
 set PROJDIR=<CWD>
 
@@ -17,7 +17,7 @@ cdsay <PROJDIR>
 
 [ BLOCK <BLDRULE> rel cprel ]
 #============================
-    <CCCMD> txt/*.txt       <OWRELROOT>/
+    <CCCMD> docs/*.txt      <OWRELROOT>/
 
 [ BLOCK . . ]
 
