@@ -307,7 +307,7 @@ void CheckMADChange( void )
     }
 }
 
-static size_t NormalizeString( char *p )
+static size_t doNormalizedString( char *p )
 {
 //    char        *start;
     char        *d;
@@ -335,7 +335,7 @@ static size_t NormalizeString( char *p )
 size_t GetMADNormalizedString( mad_string ms, char *buff, size_t buff_len )
 {
     MADCli( String )( ms, buff, buff_len );
-    return( NormalizeString( buff ) );
+    return( doNormalizedString( buff ) );
 }
 
 size_t GetMADTypeNameForCmd( mad_type_handle mth, char *buff, size_t buff_len )
@@ -390,7 +390,7 @@ static walk_result FindTheMad( dig_arch arch, void *d )
         return( WR_STOP );
     }
     MADNameDescription( arch, buff, sizeof( buff ) );
-    NormalizeString( buff );
+    doNormalizedString( buff );
     if( memicmp( buff, fd->name, fd->len ) == 0 ) {
         fd->arch = arch;
         return( WR_STOP );

@@ -54,16 +54,14 @@
 #define WV_SYM( prfx, tk, tm, ts, sc, intrnl, vn, np ) \
     static const WV_SYM_DEF( sizeof( np #vn ) - 1 ) wv ## prfx ## _ ## vn = {  \
         {                                       \
-            { ts, TK_ ## tk, TM_ ## tm },       \
-            SC_ ## sc,                          \
-            { intrnl }                          \
+            { ts, tk, tm }, sc, { intrnl }      \
         },                                      \
         sizeof( np #vn ) - 1,                   \
         { np #vn }                              \
     }
 
 #define INTERNAL_SYM( n, tk, tm, ts ) \
-    WV_SYM( INT, tk, tm, ts, INTERNAL, INTERNAL_ ## n, n, "dbg$" )
+    WV_SYM( INT, tk, tm, ts, SC_INTERNAL, INTERNAL_ ## n, n, "dbg$" )
 
 typedef int     cmp_func( const void *, const void *, size_t );
 
