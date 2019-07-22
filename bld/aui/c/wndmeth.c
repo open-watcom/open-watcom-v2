@@ -148,7 +148,7 @@ typedef struct {
 cache_line CacheLine[NUM_CACHE_ENTRIES];
 int        CacheCurr;
 
-void WndFiniCacheLines()
+void WndFiniCacheLines( void )
 {
     int         i;
 

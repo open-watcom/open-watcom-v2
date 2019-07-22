@@ -32,7 +32,7 @@
 
 #include "_aui.h"
 
-void    WndEndSessionHook()
+void    WndEndSessionHook( void )
 {
     // Called on WM_ENDSESSION message iff we are being instructed to shut down
     // Must perform any critical shutdown work here, before the OS shuts down

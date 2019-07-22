@@ -37,7 +37,7 @@
 
 static  bool    WndIdUsed[NUM_WND_IDS + 1];
 
-int     WndNextId()
+int     WndNextId( void )
 {
     int         i;
 

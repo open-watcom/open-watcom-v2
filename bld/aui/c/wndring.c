@@ -32,7 +32,7 @@
 
 #include "_aui.h"
 
-void Ring()
+void Ring( void )
 {
     // initialization hook
 }
