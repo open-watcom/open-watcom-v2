@@ -39,6 +39,8 @@
 #include "helpio.h"
 #include "search.h"
 
+#include "clibext.h"
+
 
 #define DEFAULTTOPIC "TABLE OF CONTENTS"
 
