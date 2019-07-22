@@ -28,11 +28,12 @@
 *               several options are still ignored                 TBD
 ****************************************************************************/
 
-#include "wio.h"
+
 #include "wgml.h"
 #include "findfile.h"
 
 #include "clibext.h"
+
 
 #define str( a ) # a
 
@@ -209,18 +210,20 @@ static  char    *read_indirect_file( const char * filename )
 {
     char    *   buf;
     char    *   str;
-    int         handle;
-    int         len;
+    FILE    *   fp;
+    size_t      len;
     char        ch;
 
     buf = NULL;
-    handle = open( filename, O_RDONLY | O_BINARY );
-    if( handle != -1 ) {
-        len = filelength( handle );
+    fp = fopen( filename, "rb" );
+    if( fp != NULL ) {
+        fseek( fp, 0, SEEK_END );
+        len = ftell( fp );
+        fseek( fp, 0, SEEK_SET );
         buf = mem_alloc( len + 1 );
-        posix_read( handle, buf, len );
+        fread( buf, 1, len, fp );
         buf[len] = '\0';
-        close( handle );
+        fclose( fp );
         // zip through characters changing \r into ' '
         str = buf;
         while( *str ) {
