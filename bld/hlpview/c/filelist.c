@@ -78,7 +78,7 @@ static void freeFileList( FileList *list )
 static void printDescrip( FileInfo *info)
 {
     char        *buf;
-    HelpFp      fp;
+    FILE        *fp;
     char        tmp[_MAX_PATH];
     HelpHdl     hdl;
 
@@ -90,8 +90,8 @@ static void printDescrip( FileInfo *info)
 #endif
     strcat( tmp, info->fname );
     SetHelpFileDefExt( tmp, tmp );
-    fp = HelpOpen( tmp, HELP_OPEN_RDONLY | HELP_OPEN_BINARY );
-    if( fp != HELPFP_INVALID ) {
+    fp = HelpOpen( tmp );
+    if( fp != NULL ) {
         hdl = InitHelpSearch( fp );
         buf = GetDescrip( hdl );
         if( buf != NULL ) {

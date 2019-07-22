@@ -81,7 +81,7 @@ typedef struct helpsrch {
 
 typedef struct help_file_info {
     char                *name;
-    HelpFp              fp;
+    FILE                *fp;
     HelpHdl             searchhdl;
 } help_file_info;
 

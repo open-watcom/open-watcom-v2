@@ -39,7 +39,7 @@
 #include "uidialog.h"
 
 typedef struct HelpHdl {
-    HelpFp      fp;
+    FILE        *fp;
     HelpHeader  header;
     uint_16     *itemindex;
     char        *def_topic;
@@ -55,7 +55,7 @@ typedef struct {
 
 extern char             *HelpFindNext( HelpSrchInfo *info );
 extern unsigned         HelpFindFirst( HelpHdl hdl, const char *name, HelpSrchInfo *info );
-extern HelpHdl          InitHelpSearch( HelpFp fp );
+extern HelpHdl          InitHelpSearch( FILE *fp );
 extern void             FiniHelpSearch( HelpHdl hdl );
 extern char             *HelpFindPrev( HelpSrchInfo *info );
 extern unsigned long    HelpGetOffset( HelpSrchInfo cursor );

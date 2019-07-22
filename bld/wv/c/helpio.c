@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,57 +37,47 @@
 
 static const seek_method    stream_seek_method[] = { DIO_SEEK_ORG, DIO_SEEK_CUR, DIO_SEEK_END };
 
-HELPIO long int HelpFileLen( HelpFp fp )
+HELPIO long int HelpFileLen( FILE *fp )
 {
     unsigned long   old;
     long            len;
 
-    old = SeekStream( (file_handle)fp, 0, DIO_SEEK_CUR );
-    len = SeekStream( (file_handle)fp, 0, DIO_SEEK_END );
-    SeekStream( (file_handle)fp, old, DIO_SEEK_ORG );
+    old = SeekStream( FP2FH( fp ), 0, DIO_SEEK_CUR );
+    len = SeekStream( FP2FH( fp ), 0, DIO_SEEK_END );
+    SeekStream( FP2FH( fp ), old, DIO_SEEK_ORG );
     return( len );
 }
 
-HELPIO size_t HelpRead( HelpFp fp, void *buf, size_t len )
+HELPIO size_t HelpRead( FILE *fp, void *buf, size_t len )
 {
-    return( ReadStream( (file_handle)fp, buf, len ) );
+    return( ReadStream( FP2FH( fp ), buf, len ) );
 }
 
-HELPIO size_t HelpWrite( HelpFp fp, const char *buf, size_t len )
-{
-    return( WriteStream( (file_handle)fp, buf, len ) );
+HELPIO long int HelpSeek( FILE *fp, long int offset, HelpSeekType where ) {
+
+    return( SeekStream( FP2FH( fp ), offset, stream_seek_method[where] ) );
 }
 
-HELPIO long int HelpSeek( HelpFp fp, long int offset, HelpSeekType where ) {
-
-    return( SeekStream( (file_handle)fp, offset, stream_seek_method[where] ) );
+HELPIO long int HelpTell( FILE *fp )
+{
+    return( SeekStream( FP2FH( fp ), 0, DIO_SEEK_CUR ) );
 }
 
-HELPIO long int HelpTell( HelpFp fp )
+HELPIO FILE *HelpOpen( const char *path )
 {
-    return( SeekStream( (file_handle)fp, 0, DIO_SEEK_CUR ) );
+    return( FH2FP( FileOpen( path, OP_READ ) ) );
 }
 
-HELPIO HelpFp HelpOpen( const char *path, unsigned long mode )
+HELPIO int HelpClose( FILE *fp )
 {
-    if( mode != (HELP_OPEN_RDONLY | HELP_OPEN_BINARY) ) {
-        return( HELPFP_INVALID );
-    }
-    return( (HelpFp)FileOpen( path, OP_READ ) );
-}
-
-HELPIO int HelpClose( HelpFp fp )
-{
-    FileClose( (file_handle)fp );
+    FileClose( FP2FH( fp ) );
     return( 0 );
 }
 
-HELPIO int HelpAccess( const char *path, int mode )
+HELPIO int HelpFileAccess( const char *path )
 {
     file_handle fh;
     int         rc;
-
-    /* unused parameters */ (void)mode;
 
     fh = FileOpen( path, OP_READ );
     rc = -1;

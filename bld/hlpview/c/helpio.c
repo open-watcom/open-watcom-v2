@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -38,99 +39,52 @@
 #include "watcom.h"
 #include "helpio.h"
 
-#include "clibext.h"
-
-
-#if defined(__NETWARE__)
-    /* Symbolic constants for the access() function */
-
-    #define R_OK    4       /*  Test for read permission    */
-    #define W_OK    2       /*  Test for write permission   */
-    #define X_OK    1       /*  Test for execute permission */
-    #define F_OK    0       /*  Test for existence of file  */
-#endif
 
 static int seekTypeConvTable[] = { SEEK_SET, SEEK_CUR, SEEK_END };
 
-HELPIO long int HelpFileLen( HelpFp fp )
+HELPIO long int HelpFileLen( FILE *fp )
 {
-    return( filelength( (int)fp ) );
+    unsigned long   old;
+    long            len;
+
+    old = fseek( fp, 0, SEEK_CUR );
+    len = fseek( fp, 0, SEEK_END );
+    fseek( fp, old, SEEK_SET );
+    return( len );
 }
 
-HELPIO size_t HelpRead( HelpFp fp, void *buf, size_t len )
+HELPIO size_t HelpRead( FILE *fp, void *buf, size_t len )
 {
-    return( posix_read( (int)fp, buf, len ) );
+    return( fread( buf, 1, len, fp ) );
 }
 
-HELPIO size_t HelpWrite( HelpFp fp, const char *buf, size_t len )
+HELPIO long int HelpSeek( FILE *fp, long int offset, HelpSeekType where )
 {
-    return( posix_write( (int)fp, buf, len ) );
+    return( fseek( fp, offset, seekTypeConvTable[where] ) );
 }
 
-HELPIO long int HelpSeek( HelpFp fp, long int offset, HelpSeekType where )
+HELPIO long int HelpTell( FILE *fp )
 {
-    return( lseek( (int)fp, offset, seekTypeConvTable[where] ) );
+    return( ftell( fp ) );
 }
 
-HELPIO long int HelpTell( HelpFp fp )
+HELPIO FILE *HelpOpen( const char *path )
 {
-    return( tell( (int)fp ) );
-}
-
-HELPIO HelpFp HelpOpen( const char *path, unsigned long mode )
-{
-    int         access;
-
-    access = 0;
-    if( mode & HELP_OPEN_RDONLY ) {
-        access |= O_RDONLY;
-    }
-    if( mode & HELP_OPEN_WRONLY ) {
-        access |= O_WRONLY;
-    }
-    if( mode & HELP_OPEN_RDWR ) {
-        access |= O_RDWR;
-    }
-    if( mode & HELP_OPEN_APPEND ) {
-        access |= O_APPEND;
-    }
-    if( mode & HELP_OPEN_TRUNC ) {
-        access |= O_TRUNC;
-    }
-#ifndef __UNIX__
-    if( mode & HELP_OPEN_BINARY ) {
-        access |= O_BINARY;
-    }
-    if( mode & HELP_OPEN_TEXT ) {
-        access |= O_TEXT;
-    }
+#ifdef __UNIX__
+    return( fopen( path, "r" ) );
+#else
+    return( fopen( path, "rb" ) );
 #endif
-    if( mode & HELP_OPEN_CREAT ) {
-        access |= O_CREAT;
-    }
-    if( access & O_CREAT ) {
-        return( (HelpFp)open( path, access, PMODE_RW ) );
-    } else {
-        return( (HelpFp)open( path, access ) );
-    }
 }
 
-HELPIO int HelpClose( HelpFp fp )
+HELPIO int HelpClose( FILE *fp )
 {
-    return( close( (int)fp ) );
+    return( fclose( fp ) );
 }
 
-HELPIO int HelpAccess( const char *path, int mode )
+HELPIO int HelpFileAccess( const char *path )
 {
-    int         mode2;
-
-    mode2 = 0;
-
-    if( mode & HELP_ACCESS_READ ) mode2 |= R_OK;
-    if( mode & HELP_ACCESS_WRITE ) mode2 |= W_OK;
-    if( mode & HELP_ACCESS_EXEC ) mode2 |= X_OK;
-    if( mode & HELP_ACCESS_EXIST ) mode2 |= F_OK;
-    return( access( path, mode2 ) );
+    return( access( path, F_OK ) );
 }
 
 HELPIO char *HelpGetCWD( char *buf, int size )

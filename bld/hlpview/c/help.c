@@ -34,7 +34,6 @@
 #include <ctype.h>
 #include <string.h>
 #include <stdio.h>
-#include "wio.h"
 #include "watcom.h"
 #include "stdui.h"
 #include "helpmem.h"
@@ -211,14 +210,14 @@ static int              currentAttr;
 static int              currentColour;
 static bool             ignoreMouseRelease;
 
-static char             curFile[_MAX_PATH];
-static HelpFp           helpfile_fp;
+static char             curFileName[_MAX_PATH];
+static FILE             *helpfile_fp;
 static HelpHdl          helpSearchHdl;
 static VTAB             tabFilter;
 static ui_event         curEvent;
 static ui_event         (*eventMapFn)( ui_event );
 
-static int              CheckHelpBlock( HelpFp fp, const char *topic, char *buffer, long int start );
+static int              CheckHelpBlock( FILE *fp, const char *topic, char *buffer, long int start );
 static void             replacetopic( const char *word );
 static ScanCBfunc       scanCallBack;
 
@@ -237,7 +236,7 @@ static void addSearchButton( bool add )
 /*
  * helpGetString
  */
-static char *helpGetString( char *buf, size_t size, HelpFp fp )
+static char *helpGetString( char *buf, size_t size, FILE *fp )
 {
     long int            pos;
     size_t              bytesread;
@@ -268,7 +267,7 @@ static int OpenTopicInFile( help_file_info *fileinfo, const char *topic, char *b
     int                 next_posn;        /* - contains indicator for next pos'n   */
     unsigned long       topic_pos;
 
-    if( fileinfo->fp == HELPFP_INVALID )
+    if( fileinfo->fp == NULL )
         return( 0 );
     if( fileinfo->searchhdl != NULL ) {
         /* search by new method */
@@ -335,7 +334,7 @@ static char *scanTopic( char *buf, char **theend )
 /*
  * CheckHelpBlock - see if a topic is in the 2nd half of a block
  */
-static int CheckHelpBlock( HelpFp fp, const char *topic, char *buffer, long int start )
+static int CheckHelpBlock( FILE *fp, const char *topic, char *buffer, long int start )
 {
     int         retn;
     char        *ftopic;
@@ -366,11 +365,11 @@ static void help_close( void )
     help_file_info  *fileinfo;
 
     for( fileinfo = HelpFiles; fileinfo->name != NULL; ++fileinfo ) {
-        if( fileinfo->fp != HELPFP_INVALID ) {
+        if( fileinfo->fp != NULL ) {
             HelpClose( fileinfo->fp );
             FiniHelpSearch( fileinfo->searchhdl );
             fileinfo->searchhdl = NULL;
-            fileinfo->fp = HELPFP_INVALID;
+            fileinfo->fp = NULL;
         }
     }
 }
@@ -384,9 +383,9 @@ static help_file_info *help_open( char *buffer )
     char            *newtopic;
 
     for( fileinfo = HelpFiles; fileinfo->name != NULL; fileinfo++ ) {
-        if( fileinfo->fp == HELPFP_INVALID ) {
+        if( fileinfo->fp == NULL ) {
             /* text files screw up ctrl z */
-            fileinfo->fp = HelpOpen( fileinfo->name, HELP_OPEN_RDONLY | HELP_OPEN_BINARY );
+            fileinfo->fp = HelpOpen( fileinfo->name );
             fileinfo->searchhdl = InitHelpSearch( fileinfo->fp );
         }
         if( helpStack->word[0] == '\0' ) {
@@ -532,7 +531,7 @@ static void nexttopic( const char *word )
     h->type = HSTCK_NAME;
     h->cur = 0;
     h->line = 0;
-    strcpy( h->helpfname, curFile );
+    strcpy( h->helpfname, curFileName );
     if( word != NULL ) {
         strcpy( h->word, word );
     }
@@ -654,7 +653,7 @@ static ui_event hlpwait( VTAB *tab )
         case EV_F8:
         case EV_F4:
             prevtopic();
-            if( strcmp( helpStack->helpfname, curFile ) ) {
+            if( strcmp( helpStack->helpfname, curFileName ) ) {
                 len1 = strlen( helpStack->word );
                 len2 = strlen( helpStack->helpfname );
                 helpCur = HelpMemAlloc( sizeof( a_field ) + len1 + len2 );
@@ -1329,7 +1328,7 @@ static int do_showhelp( char **helptopic, char *filename, ui_event (*rtn)( ui_ev
     eventMapFn = rtn;
     helpTab = NULL;
     helpCur = helpTab;
-    strcpy( curFile, filename );
+    strcpy( curFileName, filename );
     helpInBuf = HelpMemAlloc( BUF_LEN );
     if( helpInBuf == NULL ) {
         HelpMemFree( helpStack );
