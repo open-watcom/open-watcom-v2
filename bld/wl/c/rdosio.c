@@ -173,7 +173,7 @@ size_t QRead( f_handle file, void *buffer, size_t len, const char *name )
     size_t      h;
 
     CheckBreak();
-    h = posix_read( file, buffer, len );
+    h = read( file, buffer, len );
     if( h == IOERROR ) {
         LnkMsg( ERR+MSG_IO_PROBLEM, "12", name, strerror( errno ) );
     }
@@ -191,7 +191,7 @@ size_t QWrite( f_handle file, const void *buffer, size_t len, const char *name )
         return( 0 );
 
     CheckBreak();
-    h = posix_write( file, buffer, len );
+    h = write( file, buffer, len );
     if( name != NULL ) {
         if( h == IOERROR ) {
             LnkMsg( ERR+MSG_IO_PROBLEM, "12", name, strerror( errno ) );

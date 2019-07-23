@@ -91,6 +91,61 @@ sys_handle LocalOpen( const char *name, obj_attrs oattrs )
     return( sh );
 }
 
+#if defined( _MSC_VER ) && defined( _WIN64 )
+static ssize_t  posix_read( int fildes, void *buffer, size_t nbyte )
+{
+    unsigned    read_len;
+    unsigned    amount;
+    size_t      size;
+
+    amount = INT_MAX;
+    size = 0;
+    while( nbyte > 0 ) {
+        if( amount > nbyte )
+            amount = (unsigned)nbyte;
+        read_len = _read( fildes, buffer, amount );
+        if( read_len == (unsigned)-1 ) {
+            return( (ssize_t)-1 );
+        }
+        size += read_len;
+        if( read_len != amount ) {
+            break;
+        }
+        buffer = (char *)buffer + amount;
+        nbyte -= amount;
+    }
+    return( size );
+}
+
+static ssize_t  posix_write( int fildes, void const *buffer, size_t nbyte )
+{
+    unsigned    write_len;
+    unsigned    amount;
+    size_t      size;
+
+    amount = INT_MAX;
+    size = 0;
+    while( nbyte > 0 ) {
+        if( amount > nbyte )
+            amount = (unsigned)nbyte;
+        write_len = _write( fildes, buffer, amount );
+        if( write_len == (unsigned)-1 ) {
+            return( (ssize_t)-1 );
+        }
+        size += write_len;
+        if( write_len != amount ) {
+            break;
+        }
+        buffer = (char *)buffer + amount;
+        nbyte -= amount;
+    }
+    return( size );
+}
+#else
+#define posix_read      read
+#define posix_write     write
+#endif
+
 size_t LocalRead( sys_handle sh, void *ptr, size_t len )
 {
     ssize_t ret;

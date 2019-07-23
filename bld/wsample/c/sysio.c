@@ -45,6 +45,35 @@
     #define O_BINARY 0
 #endif
 
+#if defined( _MSC_VER ) && defined( _WIN64 )
+static ssize_t  posix_write( int fildes, void const *buffer, size_t nbyte )
+{
+    unsigned    write_len;
+    unsigned    amount;
+    size_t      size;
+
+    amount = INT_MAX;
+    size = 0;
+    while( nbyte > 0 ) {
+        if( amount > nbyte )
+            amount = (unsigned)nbyte;
+        write_len = _write( fildes, buffer, amount );
+        if( write_len == (unsigned)-1 ) {
+            return( (ssize_t)-1 );
+        }
+        size += write_len;
+        if( write_len != amount ) {
+            break;
+        }
+        buffer = (char *)buffer + amount;
+        nbyte -= amount;
+    }
+    return( size );
+}
+#else
+#define posix_write     write
+#endif
+
 int SysCreate( const char *name )
 {
     return( open( name, O_BINARY | O_WRONLY | O_TRUNC | O_CREAT,
