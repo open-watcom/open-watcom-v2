@@ -56,7 +56,7 @@ unsigned                code[ NUM_CHARS ];     // the code value for each char
 unsigned long           codesize;
 
 static int              match_position, match_length;
-static int              lson[N + 1], rson[N + 257], dad[N + 1];
+static int              lson[STRBUF_SIZE + 1], rson[STRBUF_SIZE + 1 + 256], dad[STRBUF_SIZE + 1];
 static runlist *        RunList;
 static runlist *        CurrRun;
 static int              LastRunLen;
@@ -106,10 +106,10 @@ static void InitTree( void )  /* Initializing tree */
 {
     int  i;
 
-    for (i = N + 1; i <= N + 256; i++) {
+    for (i = STRBUF_SIZE + 1; i <= STRBUF_SIZE + 256; i++) {
         rson[i] = NIL;            /* root */
     }
-    for (i = 0; i < N; i++) {
+    for (i = 0; i < STRBUF_SIZE; i++) {
         dad[i] = NIL;            /* node */
     }
 }
@@ -123,7 +123,7 @@ static void InsertNode(int r)  /* Inserting node to the tree */
 
     cmp = 1;
     key = &text_buf[r];
-    p = N + 1 + key[0];
+    p = STRBUF_SIZE + 1 + key[0];
     rson[r] = lson[r] = NIL;
     match_length = 0;
     for ( ; ; ) {
@@ -148,7 +148,7 @@ static void InsertNode(int r)  /* Inserting node to the tree */
 #if defined( __WATCOMC__ ) && defined( __386__ )
         i = fastcmp( key + 1, &text_buf[p + 1], &cmp ) + 1;
 #else
-        for (i = 1; i < F; i++) {
+        for (i = 1; i < LAHEAD_SIZE; i++) {
             if( key[i] != text_buf[p + i] ) {
                 cmp = key[i] - text_buf[p + i];
                 break;
@@ -157,13 +157,13 @@ static void InsertNode(int r)  /* Inserting node to the tree */
 #endif
         if (i > THRESHOLD) {
             if (i > match_length) {
-                match_position = ((r - p) & (N - 1)) - 1;
-                if ((match_length = i) >= F) {
+                match_position = ((r - p) & (STRBUF_SIZE - 1)) - 1;
+                if ((match_length = i) >= LAHEAD_SIZE) {
                     break;
                 }
             }
             if (i == match_length) {
-                if ((c = ((r - p) & (N - 1)) - 1) < match_position) {
+                if ((c = ((r - p) & (STRBUF_SIZE - 1)) - 1) < match_position) {
                     match_position = c;
                 }
             }
@@ -572,15 +572,15 @@ static int DoEncode( arccmd *cmd )
     memset( code, 0, NUM_CHARS * sizeof( unsigned ) );
     InitTree();
     s = 0;
-    r = N - F;
+    r = STRBUF_SIZE - LAHEAD_SIZE;
     for (index = s; index < r; index++) {
         text_buf[index] = ' ';
     }
-    for (num = 0; num < F && (c = EncReadByte(),IOStatus == OK); num++) {
+    for (num = 0; num < LAHEAD_SIZE && (c = EncReadByte(),IOStatus == OK); num++) {
         text_buf[r + num] = c;
     }
     if( IOStatus == IO_PROBLEM ) return( -1 );
-    for (index = 1; index <= F; index++) {
+    for (index = 1; index <= LAHEAD_SIZE; index++) {
         InsertNode(r - index);
     }
     InsertNode(r);
@@ -606,17 +606,17 @@ static int DoEncode( arccmd *cmd )
                                                                  index++ ) {
             DeleteNode(s);
             text_buf[s] = c;
-            if (s < F - 1)
-                text_buf[s + N] = c;
-            s = (s + 1) & (N - 1);
-            r = (r + 1) & (N - 1);
+            if (s < LAHEAD_SIZE - 1)
+                text_buf[s + STRBUF_SIZE] = c;
+            s = (s + 1) & (STRBUF_SIZE - 1);
+            r = (r + 1) & (STRBUF_SIZE - 1);
             InsertNode(r);
         }
         if( IOStatus == IO_PROBLEM ) return( -1 );
         while (index++ < last_match_length) {
             DeleteNode(s);
-            s = (s + 1) & (N - 1);
-            r = (r + 1) & (N - 1);
+            s = (s + 1) & (STRBUF_SIZE - 1);
+            r = (r + 1) & (STRBUF_SIZE - 1);
             if (--num) InsertNode(r);
         }
     } while (num > 0);
