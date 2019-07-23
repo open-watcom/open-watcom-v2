@@ -37,21 +37,11 @@
 #include "iedde.h"
 #include "clibint.h"
 
-#include "clibext.h"
-
 
 #ifdef __WATCOMC__
 #ifdef __NT__
     #pragma library( "shell32.lib" )
 #endif
-#endif
-
-#ifdef _WIN64
-#define posix_read  __w64_read
-#define posix_write __w64_write
-#else
-#define posix_read  read
-#define posix_write write
 #endif
 
 #define DDE_OPT     "-DDE"
