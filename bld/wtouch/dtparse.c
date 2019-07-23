@@ -77,10 +77,6 @@ char *      timeFormat;
 char        dateSeparator;
 char *      dateFormat;
 
-/* external function prototypes */
-
-extern void Error( int, char * );
-
 void DoDOption( char *date )
 /*********************************/
 {

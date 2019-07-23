@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -59,3 +60,5 @@ typedef struct {
 #define DEFAULT_DATE_SEPARATOR  '-'
 
 #define MINIMUM_SEC_INCREMENT   2       /* 2 seconds for DOS & OS/2 */
+
+extern void Error( int msgnum, char *p );
