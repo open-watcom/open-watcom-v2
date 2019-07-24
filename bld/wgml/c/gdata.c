@@ -47,9 +47,9 @@
 void init_global_vars( void )
 {
 
-    memset( &FlagsGlob, 0, sizeof( FlagsGlob ) );
-    FlagsGlob.wscript = 1;            // (w)script support + warnings
-    FlagsGlob.warning = 1;
+    memset( &GlobFlags, 0, sizeof( GlobFlags ) );
+    GlobFlags.wscript = 1;            // (w)script support + warnings
+    GlobFlags.warning = 1;
 
     rs_loc              = 0;            // restricted location
 
@@ -193,29 +193,29 @@ void init_global_vars( void )
 }
 
 /***************************************************************************/
-/*  FlagsProc are initialized at each document pass start                  */
+/*  ProcFlags are initialized at each document pass start                  */
 /*  As are at least some system symbols                                    */
 /***************************************************************************/
 
 void init_pass_data( void )
 {
-    bool    flag_save   = FlagsProc.fb_document_done;
-    bool    aa_save     = FlagsProc.has_aa_block;
-    bool    ps_save     = FlagsProc.ps_device;
+    bool    flag_save   = ProcFlags.fb_document_done;
+    bool    aa_save     = ProcFlags.has_aa_block;
+    bool    ps_save     = ProcFlags.ps_device;
 
-    memset( &FlagsProc, 0, sizeof( FlagsProc ) );
-    FlagsProc.fb_document_done = flag_save; // keep value
-    FlagsProc.blanks_allowed = 1;       // blanks during scanning
+    memset( &ProcFlags, 0, sizeof( ProcFlags ) );
+    ProcFlags.fb_document_done = flag_save; // keep value
+    ProcFlags.blanks_allowed = 1;       // blanks during scanning
                                         // i.e. .se var  =    7
                                         // .se var=7  without
-    FlagsProc.concat    = true;         // .co on default
-    FlagsProc.justify   = ju_on;        // .ju on default
-    FlagsProc.doc_sect  = doc_sect_none;// no document section yet
-    FlagsProc.doc_sect_nxt  = doc_sect_none;// no document section yet
-    FlagsProc.frontm_seen  = false;     // FRONTM not yet seen
-    FlagsProc.in_trans  = (in_esc != ' ');// translation wanted
-    FlagsProc.has_aa_block = aa_save;
-    FlagsProc.ps_device = ps_save;
+    ProcFlags.concat    = true;         // .co on default
+    ProcFlags.justify   = ju_on;        // .ju on default
+    ProcFlags.doc_sect  = doc_sect_none;// no document section yet
+    ProcFlags.doc_sect_nxt  = doc_sect_none;// no document section yet
+    ProcFlags.frontm_seen  = false;     // FRONTM not yet seen
+    ProcFlags.in_trans  = (in_esc != ' ');// translation wanted
+    ProcFlags.has_aa_block = aa_save;
+    ProcFlags.ps_device = ps_save;
     layout_work.hx[0].headn = 0;        // reset used header headn numbers
     layout_work.hx[1].headn = 0;
     layout_work.hx[2].headn = 0;

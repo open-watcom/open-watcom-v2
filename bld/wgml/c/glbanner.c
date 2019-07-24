@@ -212,14 +212,14 @@ void    lay_banner( lay_tag ltag )
     p = scan_start;
     cvterr = false;
 
-    if( !FlagsGlob.firstpass ) {
+    if( !GlobFlags.firstpass ) {
         scan_start = scan_stop;
         eat_lay_sub_tag();
         return;                         // process during first pass only
     }
-    if( FlagsProc.lay_xxx != el_banner ) {
-        FlagsProc.lay_xxx = el_banner;
-        FlagsProc.banner = true;
+    if( ProcFlags.lay_xxx != el_banner ) {
+        ProcFlags.lay_xxx = el_banner;
+        ProcFlags.banner = true;
         init_banner_wk( &wk );
     } else {
         if( !strnicmp( ":banner", buff2, sizeof( ":banner" ) ) ) {
@@ -227,10 +227,10 @@ void    lay_banner( lay_tag ltag )
             g_err( err_nested_tag, lay_tagname( ltag ) );
             file_mac_info();
 
-            while( !FlagsProc.reprocess_line  ) {
+            while( !ProcFlags.reprocess_line  ) {
                 eat_lay_sub_tag();
                 if( strnicmp( ":ebanner", buff2, sizeof( ":ebanner" ) ) ) {
-                    FlagsProc.reprocess_line = false;  // not :ebanner, go on
+                    ProcFlags.reprocess_line = false;  // not :ebanner, go on
                 }
             }
             return;
@@ -393,15 +393,15 @@ void    lay_ebanner( lay_tag ltag )
     banner_lay_tag  *   banwk;
     region_lay_tag  *   reg;
 
-    FlagsProc.lay_xxx = el_zero;        // banner no longer active
+    ProcFlags.lay_xxx = el_zero;        // banner no longer active
 
-    if( !FlagsGlob.firstpass ) {
+    if( !GlobFlags.firstpass ) {
         scan_start = scan_stop;
         eat_lay_sub_tag();
         return;                         // process during first pass only
     }
-    if( FlagsProc.banner ) {            // are we inside banner
-        FlagsProc.banner = false;
+    if( ProcFlags.banner ) {            // are we inside banner
+        ProcFlags.banner = false;
 
         lay_banner_end_prepare();       // if not yet done
         if( banner_delete_req ) {       // delete request

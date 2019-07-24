@@ -272,16 +272,16 @@ void    lay_banregion( lay_tag ltag )
     p = scan_start;
     cvterr = false;
 
-    if( !FlagsGlob.firstpass ) {
+    if( !GlobFlags.firstpass ) {
         scan_start = scan_stop;
         eat_lay_sub_tag();
         return;                         // process during first pass only
     }
-    if( FlagsProc.lay_xxx != el_banregion ) {
-        if( FlagsProc.lay_xxx == el_banner ) {
+    if( ProcFlags.lay_xxx != el_banregion ) {
+        if( ProcFlags.lay_xxx == el_banner ) {
             lay_banner_end_prepare();
         }
-        FlagsProc.lay_xxx = el_banregion;
+        ProcFlags.lay_xxx = el_banregion;
 
         init_banregion_wk( &wk );
 
@@ -291,10 +291,10 @@ void    lay_banregion( lay_tag ltag )
             g_err( err_nested_tag, lay_tagname( ltag ) );
             file_mac_info();
 
-            while( !FlagsProc.reprocess_line  ) {
+            while( !ProcFlags.reprocess_line  ) {
                 eat_lay_sub_tag();
                 if( strnicmp( ":ebanregion", buff2, sizeof( ":ebanregion" ) ) ) {
-                    FlagsProc.reprocess_line = false;// not :ebanregion, go on
+                    ProcFlags.reprocess_line = false;// not :ebanregion, go on
                 }
             }
             return;
@@ -407,13 +407,13 @@ void    lay_ebanregion( lay_tag ltag )
     int                 k;
     bool                region_deleted;
 
-    if( !FlagsGlob.firstpass ) {
+    if( !GlobFlags.firstpass ) {
         scan_start = scan_stop;
         eat_lay_sub_tag();
         return;                         // process during first pass only
     }
-    if( FlagsProc.lay_xxx == el_banregion ) {   // :banregion was last tag
-        FlagsProc.lay_xxx = el_ebanregion;
+    if( ProcFlags.lay_xxx == el_banregion ) {   // :banregion was last tag
+        ProcFlags.lay_xxx = el_ebanregion;
 
         prev_reg = NULL;
         reg_ban = NULL;

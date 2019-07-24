@@ -111,13 +111,13 @@ void    lay_default( lay_tag ltag )
     p = scan_start;
     cvterr = false;
 
-    if( !FlagsGlob.firstpass ) {
+    if( !GlobFlags.firstpass ) {
         scan_start = scan_stop;
         eat_lay_sub_tag();
         return;                         // process during first pass only
     }
-    if( FlagsProc.lay_xxx != el_default ) {
-        FlagsProc.lay_xxx = el_default;
+    if( ProcFlags.lay_xxx != el_default ) {
+        ProcFlags.lay_xxx = el_default;
     }
     cc = get_lay_sub_and_value( &l_args );  // get attr with value
     while( cc == pos ) {
@@ -147,7 +147,7 @@ void    lay_default( lay_tag ltag )
                     cvterr = i_char( p, curr, &layout_work.defaults.input_esc );
                     in_esc = layout_work.defaults.input_esc;
                     if( in_esc != ' ' ) {
-                        FlagsProc.in_trans = true;
+                        ProcFlags.in_trans = true;
                     }
                     break;
                 case   e_gutter:

@@ -152,7 +152,7 @@ void    scr_sk( void )
 #if 0
         if( toupper( *p ) == 'C' ) {
             if( skip > 0 ) {
-                FlagsProc.sk_cond = true;   // conditional skip
+                ProcFlags.sk_cond = true;   // conditional skip
             }
         }
 #endif
@@ -164,12 +164,12 @@ void    scr_sk( void )
     }
     skip = skip * spacing_ln;           // apply spacing
     if( skip <= -1 ) {
-        FlagsProc.overprint = true;     // enable overprint
+        ProcFlags.overprint = true;     // enable overprint
     } else {
         if( g_skip > skip ) {           // merge with existing value
             skip = g_skip;
         }
-        FlagsProc.overprint = false;    // disable overprint
+        ProcFlags.overprint = false;    // disable overprint
     }
 
     scr_process_break();
