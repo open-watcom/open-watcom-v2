@@ -345,8 +345,8 @@ $(hbook).ps : $(book_objs) $(book_objs_ps) $(proj_objs)
 !endif
     !-$(WGMLCMD:$(to_os_path))
     $(noecho)echo "WGMLCMD finished"
-    @if exist $@ @%erase $@
-    @%ren $(wgml_tmpfile) $@
+    @if exist $@ $(noecho)%erase $@
+    $(noecho)%ren $(wgml_tmpfile) $@
 
 .bmp: $(book_bmroot)
 .ps: tmp
@@ -571,8 +571,8 @@ compile_gml_to_xxx : .PROCEDURE
 !else
     dir
 !endif
-    @if exist $*.ptf @%erase $*.ptf
-    @%ren $(wgml_tmpfile) $*.ptf
+    @if exist $*.ptf $(noecho)%erase $*.ptf
+    $(noecho)%ren $(wgml_tmpfile) $*.ptf
     @%make prepare_whpcvt_opts
     whpcvt -@ $(whpcvt_optfile) $*.ptf
     @%create $(wgml_sysfile_02)
@@ -586,8 +586,8 @@ compile_gml_to_xxx : .PROCEDURE
 !else
     dir
 !endif
-    @if exist $*.ptf @%erase $*.ptf
-    @%ren $(wgml_tmpfile) $*.ptf
+    @if exist $*.ptf $(noecho)%erase $*.ptf
+    $(noecho)%ren $(wgml_tmpfile) $*.ptf
     @if exist $*.mix @%erase $*.mix
     @%ren $(wgml_sysfile_01) $*.mix
     @if exist $*.h @%erase $*.h
