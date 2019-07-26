@@ -554,8 +554,7 @@ static int process_args( int argc, char *argv[] )
                 }
                 break;
             case ARG_HB:
-                IB_Hyper_Brace_L = IB_BRACE_L_CHAR;
-                IB_Hyper_Brace_R = IB_BRACE_R_CHAR;
+                Hyperlink_Braces = true;
                 break;
             case ARG_BR:
                 Do_browse = true;
@@ -662,8 +661,7 @@ static int valid_args( int argc, char *argv[] )
     Header_File[0] = '\0';
     Footer_File[0] = '\0';
     Text_Indent = 4;
-    IB_Hyper_Brace_L = IB_HLINK_L_CHAR;
-    IB_Hyper_Brace_R = IB_HLINK_R_CHAR;
+    Hyperlink_Braces = false;
     Do_browse = false;
     Do_tc_button = false;
     Do_idx_button = false;

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -88,13 +89,6 @@
 #define WHP_FONTSTYLE_START     (char)'\xEF'  // 239
 #define WHP_FONTSTYLE_END       (char)'\xF0'  // 240
 #define WHP_FONTTYPE            (char)'\x9D'  // 157
-
-/**** a few InfoBench specific chars ****/
-//(defined here 'cause WHPCVT.C needs to know about them )
-#define IB_HLINK_L_CHAR         (char)'\xE0'  // 224
-#define IB_HLINK_R_CHAR         (char)'\xE0'  // 224
-#define IB_BRACE_L_CHAR         (char)'<'
-#define IB_BRACE_R_CHAR         (char)'>'
 
 /**** various file extensions ****/
 #define EXT_INPUT_FILE          ".whp"
@@ -253,8 +247,7 @@ extern const char       Fonttype_courier[];
 WHPCVT_GBL bool         Ipf_or_Html_Real_font;
 WHPCVT_GBL char         *Ipf_or_Html_title;
 
-WHPCVT_GBL char         IB_Hyper_Brace_L;
-WHPCVT_GBL char         IB_Hyper_Brace_R;
+WHPCVT_GBL char         Hyperlink_Braces;
 WHPCVT_GBL char         *IB_def_topic;
 WHPCVT_GBL char         *IB_help_desc;
 
