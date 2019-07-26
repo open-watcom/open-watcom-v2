@@ -625,3 +625,7 @@ void wiki_output_file( void )
         }
     }
 }
+
+void wiki_init_whp( void )
+{
+}

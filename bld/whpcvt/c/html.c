@@ -663,3 +663,7 @@ void html_output_file( void )
     }
     output_end();
 }
+
+void html_init_whp( void )
+{
+}

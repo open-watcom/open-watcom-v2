@@ -750,3 +750,7 @@ void rtf_output_file( void )
     }
     output_end();
 }
+
+void rtf_init_whp( void )
+{
+}

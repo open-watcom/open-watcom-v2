@@ -1155,3 +1155,6 @@ void ib_output_file( void )
     output_end();
 }
 
+void ib_init_whp( void )
+{
+}

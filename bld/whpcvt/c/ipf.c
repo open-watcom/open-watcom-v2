@@ -689,3 +689,7 @@ void ipf_output_file( void )
     }
     output_end();
 }
+
+void ipf_init_whp( void )
+{
+}

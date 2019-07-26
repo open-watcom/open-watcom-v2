@@ -1836,6 +1836,27 @@ static void check_links( void )
     }
 }
 
+static void init_whp( void )
+{
+    switch( Output_type ) {
+    case OUT_RTF:
+        rtf_init_whp();
+        break;
+    case OUT_IPF:
+        ipf_init_whp();
+        break;
+    case OUT_IB:
+        ib_init_whp();
+        break;
+    case OUT_HTML:
+        html_init_whp();
+        break;
+    case OUT_WIKI:
+        wiki_init_whp();
+        break;
+    }
+}
+
 int main( int argc, char *argv[] )
 /********************************/
 {
@@ -1969,6 +1990,8 @@ int main( int argc, char *argv[] )
     if( 0 != setjmp( Jmp_buf ) ) {
         goto error_exit;
     }
+
+    init_whp();
 
     read_whp_file();
 
