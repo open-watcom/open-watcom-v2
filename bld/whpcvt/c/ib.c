@@ -303,7 +303,8 @@ static size_t trans_add_char_wrap( char ch, section_def *section, size_t *size )
 
     // adjust the nearest safe break point if the char we got was a space and
     // is not preceded by a space
-    if( ch == ' ' && section->section_size > 2 && section->section_text[section->section_size - 2] != ' ' ) {
+    if( ch == ' ' && section->section_size > 2
+      && section->section_text[section->section_size - 2] != ' ' ) {
         Wrap_Safe = section->section_size;
         R_Chars = 0;
     }
@@ -794,7 +795,7 @@ size_t ib_trans_line( section_def *section, size_t size )
             if( !Eat_blanks || ch != ' ' ) {
                 Curr_ctx->empty = false;
                 if( Tab_xmp && ch == Tab_xmp_char ) {
-                    size_t      ch_len;
+                    size_t  ch_len;
 
                     indent = ( Curr_indent < 0 ) ? 0 : Curr_indent;
                     // find out how close we are to "col 0" for the current indent
@@ -867,8 +868,8 @@ static void find_browse_pair( ctx_def *ctx, ctx_def **prev, ctx_def **next )
 static void ib_append_line( FILE *outfile, char *infnam )
 /*******************************************************/
 {
-    FILE                        *infile;
-    int                         inchar;
+    FILE            *infile;
+    int             inchar;
 
     if( infnam[0] != '\0' ) {
         infile = fopen( infnam, "rt" );
@@ -903,9 +904,9 @@ static void fake_hlink( FILE *file, char *label )
 static void output_ctx_hdr( ctx_def *ctx )
 /****************************************/
 {
-    ctx_def                     *temp_ctx;
-    ctx_def                     *prev;      // for << button
-    ctx_def                     *next;      // for >> button
+    ctx_def             *temp_ctx;
+    ctx_def             *prev;      // for << button
+    ctx_def             *next;      // for >> button
 
     // output topic name
     whp_fprintf( Out_file, "::::\"" );
@@ -1135,7 +1136,7 @@ static void output_section_ib( section_def *section )
 static void output_ctx_sections( ctx_def *ctx )
 /*********************************************/
 {
-    section_def                 *section;
+    section_def         *section;
 
     for( section = ctx->section_list; section != NULL; section = section->next ) {
         if( section->section_size > 0 ) {

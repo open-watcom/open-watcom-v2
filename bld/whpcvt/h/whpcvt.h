@@ -247,7 +247,7 @@ extern const char       Fonttype_courier[];
 WHPCVT_GBL bool         Ipf_or_Html_Real_font;
 WHPCVT_GBL char         *Ipf_or_Html_title;
 
-WHPCVT_GBL char         Hyperlink_Braces;
+WHPCVT_GBL bool         Hyperlink_Braces;
 WHPCVT_GBL char         *IB_def_topic;
 WHPCVT_GBL char         *IB_help_desc;
 
