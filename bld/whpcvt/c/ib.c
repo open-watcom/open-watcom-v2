@@ -44,7 +44,7 @@ typedef enum {
 
 // We use the escape char a lot...
 #define STR_ESCAPE              "\x1B"
-#define CHR_ESCAPE              (char)'\x1B'
+#define IB_ESCAPE               (char)'\x1B'
 
 // these are for the map_char_ib function
 typedef enum {
@@ -54,17 +54,17 @@ typedef enum {
 } map_char_type;
 
 // internal hyperlink symbol. Gets filtered out at output time
-#define CHR_TEMP_HLINK          (char)'\x7F'
+#define IB_TEMP_HLINK           (char)'\x7F'
 
 // this symbol separates the hyper-link label and topic. Other hyper-link
 // related symbols are in whpcvt.h
-#define CHR_HLINK               (char)'\xE0'
-#define CHR_HLINK_BREAK         (char)'\xE8'
+#define IB_HLINK                (char)'\xE0'
+#define IB_HLINK_BREAK          (char)'\xE8'
 
 #define IB_SPACE_NOBREAK        (char)'\xFF'  // 255
 
 // Some characters we use for graphics
-#define CHR_BULLET              (char)'\x07'
+#define IB_BULLET               (char)'\x07'
 #define BOX_VBAR                (char)'\xB3'
 #define BOX_HBAR                (char)'\xC4'  // 196
 #define BOX_CORNER_TOP_LEFT     (char)'\xDA'
@@ -157,8 +157,8 @@ static void set_compact( char *line )
 // spaces (character 0xFF ). It's currently only used for the labels on
 // hyper-links to ensure that they do not get broken across lines as
 // this is not allowed by the InfoBench grammar.
-static void to_nobreak( char *str )
-/*********************************/
+static void spaces_to_nobreak( char *str )
+/****************************************/
 {
     if( str != NULL ) {
         for( ; *str != '\0'; ++str ) {
@@ -169,7 +169,7 @@ static void to_nobreak( char *str )
     }
 }
 
-/* This function will return CHR_REMOVE if the character is not allowed in
+/* This function will return MAP_REMOVE if the character is not allowed in
  * InfoBench, null if the character is okay. Any other values are prefixes
  * used to escape the character.
  */
@@ -191,9 +191,9 @@ static map_char_type map_char_ib( char ch )
         break;
     // The following characters are special to InfoBench, and there is no
     // way to represent them with the current grammar
-    case CHR_HLINK:
-    case CHR_HLINK_BREAK:
-    case CHR_ESCAPE:
+    case IB_HLINK:
+    case IB_HLINK_BREAK:
+    case IB_ESCAPE:
         map_type = MAP_REMOVE;
         break;
     default:
@@ -216,7 +216,7 @@ static size_t trans_add_char_ib( char ch, section_def *section, size_t *size )
     if( map_type == MAP_REMOVE ) {
         return( 0 );
     } else if( map_type == MAP_ESCAPE ) {
-        len += trans_add_char( CHR_ESCAPE, section, size );
+        len += trans_add_char( IB_ESCAPE, section, size );
     }
     len += trans_add_char( ch, section, size );
     return( len );
@@ -236,7 +236,7 @@ static void str_out_ib( FILE *f, const char *str )
             if( map_type == MAP_REMOVE )
                 continue;
             if( map_type == MAP_ESCAPE ) {
-                whp_fprintf( f, "%c", CHR_ESCAPE );
+                whp_fprintf( f, "%c", IB_ESCAPE );
             }
             whp_fwrite( str, 1, 1, f );
         }
@@ -674,14 +674,14 @@ size_t ib_trans_line( section_def *section, size_t size )
             ptr = ctx_text + strlen( ctx_text ) + 1;
 
             // Definition pop-up's are converted to hyper-links in InfoBench
-            trans_add_char( CHR_TEMP_HLINK , section, &size );
+            trans_add_char( IB_TEMP_HLINK , section, &size );
 
             // Add line number to hyperlink so we can give meaningful errors
             trans_add_str( itoa( Line_num, buf, 10 ), section, &size );
-            trans_add_char( CHR_TEMP_HLINK, section, &size );
+            trans_add_char( IB_TEMP_HLINK, section, &size );
 
             // We don't want links to break as IB doesn't like this...
-            to_nobreak( ctx_text );
+            spaces_to_nobreak( ctx_text );
 
             indent = ( Curr_indent < 0 ) ? 0 : Curr_indent;
             // find out the maximum allowed length for hyper-link text:
@@ -701,13 +701,13 @@ size_t ib_trans_line( section_def *section, size_t size )
                 trans_add_str_wrap( "XX", section, &size );
             }
             trans_add_str_wrap( ctx_text, section, &size );
-            trans_add_char( CHR_HLINK_BREAK , section, &size );
+            trans_add_char( IB_HLINK_BREAK , section, &size );
             trans_add_str( ctx_name, section, &size );
             if( ch == WHP_FLINK ) {
-                trans_add_char( CHR_HLINK_BREAK, section, &size );
+                trans_add_char( IB_HLINK_BREAK, section, &size );
                 trans_add_str( file_name, section, &size );
             }
-            trans_add_char( CHR_TEMP_HLINK , section, &size );
+            trans_add_char( IB_TEMP_HLINK , section, &size );
         } else if( ch == WHP_LIST_ITEM ) {
             if( Curr_list->type != LIST_TYPE_SIMPLE ) {
                 buf[0] = '\0';
@@ -716,7 +716,7 @@ size_t ib_trans_line( section_def *section, size_t size )
                     for( ctr = 0; ctr < Text_Indent; ctr++ ) {
                         strcat( buf, " " );
                     }
-                    buf[Text_Indent / 2 - 1] = CHR_BULLET;
+                    buf[Text_Indent / 2 - 1] = IB_BULLET;
                 } else if( Curr_list->type == LIST_TYPE_ORDERED ) {
                     /* ordered list type */
                     sprintf( buf, "%*d. ", Text_Indent - 2, Curr_list->number );
@@ -916,7 +916,7 @@ static void output_ctx_hdr( ctx_def *ctx )
                 whp_fprintf( Out_file,
                                 "%c" HB_CONTENTS "%cTable of Contents%c ",
                                 IB_Hyper_Brace_L,
-                                CHR_HLINK_BREAK,
+                                IB_HLINK_BREAK,
                                 IB_Hyper_Brace_R );
             } else {
                 fake_hlink( Out_file, HB_CONTENTS );
@@ -928,7 +928,7 @@ static void output_ctx_hdr( ctx_def *ctx )
                 whp_fprintf( Out_file,
                                 "%c" HB_KEYWORDS "%cKeyword Search%c ",
                                 IB_Hyper_Brace_L,
-                                CHR_HLINK_BREAK,
+                                IB_HLINK_BREAK,
                                 IB_Hyper_Brace_R );
             } else {
                 fake_hlink( Out_file, HB_KEYWORDS );
@@ -940,7 +940,7 @@ static void output_ctx_hdr( ctx_def *ctx )
 
             // << browse button
             if( prev != ctx ) {
-                whp_fprintf( Out_file, "%c" HB_PREV "%c", IB_Hyper_Brace_L, CHR_HLINK_BREAK );
+                whp_fprintf( Out_file, "%c" HB_PREV "%c", IB_Hyper_Brace_L, IB_HLINK_BREAK );
                 str_out_ib( Out_file, prev->title );
                 whp_fprintf( Out_file, "%c ", IB_Hyper_Brace_R );
             } else {
@@ -949,7 +949,7 @@ static void output_ctx_hdr( ctx_def *ctx )
 
             // >> browse button (relies on the find_browse_pair above)
             if( next != ctx ) {
-                whp_fprintf( Out_file, "%c" HB_NEXT "%c", IB_Hyper_Brace_L, CHR_HLINK_BREAK );
+                whp_fprintf( Out_file, "%c" HB_NEXT "%c", IB_Hyper_Brace_L, IB_HLINK_BREAK );
                 str_out_ib( Out_file, next->title );
                 whp_fprintf( Out_file, "%c ", IB_Hyper_Brace_R );
             } else {
@@ -962,7 +962,7 @@ static void output_ctx_hdr( ctx_def *ctx )
                 whp_fprintf( Out_file,
                                 "%c" HB_INDEX "%cIndex of Topics%c ",
                                 IB_Hyper_Brace_L,
-                                CHR_HLINK_BREAK,
+                                IB_HLINK_BREAK,
                                 IB_Hyper_Brace_R );
             } else {
                 fake_hlink( Out_file, HB_INDEX );
@@ -988,7 +988,7 @@ static void output_ctx_hdr( ctx_def *ctx )
 
             // spit out up button stuff
             if( temp_ctx != NULL ) {
-                whp_fprintf( Out_file, "%c" HB_UP "%c", IB_Hyper_Brace_L, CHR_HLINK_BREAK );
+                whp_fprintf( Out_file, "%c" HB_UP "%c", IB_Hyper_Brace_L, IB_HLINK_BREAK );
                 str_out_ib( Out_file, temp_ctx->title );
                 whp_fprintf( Out_file, "%c ", IB_Hyper_Brace_R );
             } else {
@@ -1034,7 +1034,7 @@ static void output_section_ib( section_def *section )
     len = 0;
     while( p + len < end ) {
         // stop when we hit a hyper-link
-        if( *(p + len) != CHR_TEMP_HLINK ) {
+        if( *(p + len) != IB_TEMP_HLINK ) {
             len++;
         } else {
             // write out the block of text we've got so far
@@ -1043,7 +1043,7 @@ static void output_section_ib( section_def *section )
 
             // grab the line number
             for( len = 0; ; ++len ) {
-                if( *(p + len) == CHR_TEMP_HLINK ) {
+                if( *(p + len) == IB_TEMP_HLINK ) {
                     break;
                 }
             }
@@ -1053,7 +1053,7 @@ static void output_section_ib( section_def *section )
 
             // find the length of the link label (what the user sees)
             for( len = 0; ; ++len ) {
-                if( *(p + len) == CHR_HLINK_BREAK ) {
+                if( *(p + len) == IB_HLINK_BREAK ) {
                     break;
                 }
             }
@@ -1072,7 +1072,7 @@ static void output_section_ib( section_def *section )
             // find the length of the link context
             for( len = 0; ; ++len ) {
                 ch = *(p + len);
-                if( ch == CHR_TEMP_HLINK || ch == CHR_HLINK_BREAK ) {
+                if( ch == IB_TEMP_HLINK || ch == IB_HLINK_BREAK ) {
                     break;
                 }
             }
@@ -1082,7 +1082,7 @@ static void output_section_ib( section_def *section )
             ctx = find_ctx( topic );
 
             // output the topic name that belongs to the context
-            if( ctx == NULL && ch != CHR_HLINK_BREAK ) {
+            if( ctx == NULL && ch != IB_HLINK_BREAK ) {
                 warning( "Link to nonexistent context", line );
                 printf( "For topic=%s\n", topic );
                 whp_fwrite( label, 1, label_len - 1, Out_file );
@@ -1095,17 +1095,17 @@ static void output_section_ib( section_def *section )
                 } else {
                     str_out_ib( Out_file, topic );
                 }
-                if( ch == CHR_HLINK_BREAK ) {
+                if( ch == IB_HLINK_BREAK ) {
                     /* file link. Get the file name */
                     file = p + len + 1;
                     for( ;; ) {
                         ++len;
-                        if( *(p + len) == CHR_TEMP_HLINK ) {
+                        if( *(p + len) == IB_TEMP_HLINK ) {
                             break;
                         }
                     }
                     *(p + len) = '\0';
-                    whp_fprintf( Out_file, "%c%s", CHR_HLINK_BREAK, file );
+                    whp_fprintf( Out_file, "%c%s", IB_HLINK_BREAK, file );
                 }
                 whp_fwrite( &IB_Hyper_Brace_R, 1, 1, Out_file );
             }
