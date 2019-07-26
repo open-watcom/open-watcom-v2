@@ -252,7 +252,7 @@ size_t html_trans_line( section_def *section, size_t size )
     line_len = 0;
 
     switch( ch ) {
-    case CH_TABXMP:
+    case WHP_TABXMP:
         if( *skip_blank( ptr + 1 ) == '\0' ) {
             Tab_xmp = false;
             trans_add_str( "</xmp>\n", section, &size );
@@ -264,7 +264,7 @@ size_t html_trans_line( section_def *section, size_t size )
             Blank_line_pfx = false;     // remove preceding blanks
         }
         return( size );
-    case CH_BOX_ON:
+    case WHP_BOX_ON:
         /* Table support is the closest thing to boxing in IPF, but it
            doesn't work well with changing fonts on items in the tables
            (the edges don't line up). So we draw long lines at the
@@ -272,48 +272,48 @@ size_t html_trans_line( section_def *section, size_t size )
         draw_line( section, &size );
         Blank_line_pfx = false;
         return( size );
-    case CH_BOX_OFF:
+    case WHP_BOX_OFF:
         draw_line( section, &size );
         Blank_line_sfx = false;
         return( size );
-    case CH_OLIST_START:
+    case WHP_OLIST_START:
         trans_add_list( "<OL>\n", section, &size, ptr );
         Blank_line_pfx = false;
         return( size );
-    case CH_LIST_START:
+    case WHP_LIST_START:
         trans_add_list( "<UL>\n", section, &size, ptr );
         Blank_line_pfx = false;
         return( size );
-    case CH_DLIST_START:
+    case WHP_DLIST_START:
         trans_add_str( "<DL>\n", section, &size );
         Blank_line_pfx = false;
         return( size );
-    case CH_SLIST_START:
+    case WHP_SLIST_START:
         trans_add_list( "<UL>\n", section, &size, ptr );
         Blank_line_pfx = false;
         return( size );
-    case CH_SLIST_END:
+    case WHP_SLIST_END:
         trans_add_str( "</UL>\n", section, &size );
         Blank_line_sfx = false;
         return( size );
-    case CH_OLIST_END:
+    case WHP_OLIST_END:
         trans_add_str( "</OL>\n", section, &size );
         Blank_line_sfx = false;
         return( size );
-    case CH_LIST_END:
+    case WHP_LIST_END:
         trans_add_str( "</UL>\n", section, &size );
         Blank_line_sfx = false;
         return( size );
-    case CH_DLIST_END:
+    case WHP_DLIST_END:
         trans_add_str( "</DL>\n", section, &size );
         Blank_line_sfx = false;
         return( size );
-    case CH_LIST_ITEM:
-    case CH_DLIST_TERM:
+    case WHP_LIST_ITEM:
+    case WHP_DLIST_TERM:
         /* eat blank lines before list items and terms */
         Blank_line_pfx = false;
         break;
-    case CH_CTX_KW:
+    case WHP_CTX_KW:
         ptr = whole_keyword_line( ptr );
         if( ptr == NULL ) {
             return( size );
@@ -358,7 +358,7 @@ size_t html_trans_line( section_def *section, size_t size )
     Blank_line_sfx = true;
 
     ch = *ptr;
-    if( ch != CH_LIST_ITEM && ch != CH_DLIST_TERM && ch != CH_DLIST_DESC && !Tab_xmp ) {
+    if( ch != WHP_LIST_ITEM && ch != WHP_DLIST_TERM && ch != WHP_DLIST_DESC && !Tab_xmp ) {
         /* a .br in front of li and dt would generate extra spaces */
         line_len += trans_add_str( "<BR>", section, &size );
     }
@@ -373,7 +373,7 @@ size_t html_trans_line( section_def *section, size_t size )
             }
             trans_add_char( '\n', section, &size );
             break;
-        } else if( ch == CH_HLINK || ch == CH_DFN ) {
+        } else if( ch == WHP_HLINK || ch == WHP_DFN ) {
             Curr_ctx->empty = false;
             /* there are no popups in IPF, so treat them as links */
             ctx_name = ptr + 1;
@@ -395,7 +395,7 @@ size_t html_trans_line( section_def *section, size_t size )
             ch_len += strlen( ctx_text );
             line_len += trans_add_str( "</A>", section, &size );
             ++ptr;
-        } else if( ch == CH_FLINK ) {
+        } else if( ch == WHP_FLINK ) {
             Curr_ctx->empty = false;
             file_name = strchr( ptr + 1, ch );
             if( file_name == NULL ) {
@@ -421,21 +421,21 @@ size_t html_trans_line( section_def *section, size_t size )
             ch_len += strlen( ctx_text );
             line_len += trans_add_str( "</A>", section, &size );
             ptr = ctx_text + strlen( ctx_text ) + 1;
-        } else if( ch == CH_LIST_ITEM ) {
+        } else if( ch == WHP_LIST_ITEM ) {
             /* list item */
             line_len += trans_add_str( "<LI>", section, &size );
             ptr = skip_blank( ptr + 1 );
-        } else if( ch == CH_DLIST_DESC ) {
+        } else if( ch == WHP_DLIST_DESC ) {
             trans_add_str( "<DD>", section, &size );
             ptr = skip_blank( ptr + 1 );
-        } else if( ch == CH_DLIST_TERM ) {
+        } else if( ch == WHP_DLIST_TERM ) {
             /* definition list term */
             line_len += trans_add_str( "<DT>", section, &size );
             term_fix = true;
             ptr = skip_blank( ptr + 1 );
             Blank_line_sfx = false;
-        } else if( ch == CH_CTX_KW ) {
-            end = strchr( ptr + 1, CH_CTX_KW );
+        } else if( ch == WHP_CTX_KW ) {
+            end = strchr( ptr + 1, WHP_CTX_KW );
             len = end - ptr - 1;
             memcpy( buf, ptr + 1, len );
             buf[len] = '\0';
@@ -447,15 +447,15 @@ size_t html_trans_line( section_def *section, size_t size )
                    This should fix that */
                 ++ptr;
             }
-        } else if( ch == CH_PAR_RESET ) {
+        } else if( ch == WHP_PAR_RESET ) {
             /* this can be ignored for IPF */
             ++ptr;
-        } else if( ch == CH_BMP ) {
+        } else if( ch == WHP_BMP ) {
             Curr_ctx->empty = false;
             ++ptr;
             ch = *ptr;
             ptr += 2;
-            end = strchr( ptr, CH_BMP );
+            end = strchr( ptr, WHP_BMP );
             *end = '\0';
             // convert filenames to lower case
             strlwr( ptr );
@@ -478,9 +478,9 @@ size_t html_trans_line( section_def *section, size_t size )
             }
             line_len += trans_add_str( buf, section, &size );
             ptr = end + 1;
-        } else if( ch == CH_FONTSTYLE_START ) {
+        } else if( ch == WHP_FONTSTYLE_START ) {
             ++ptr;
-            end = strchr( ptr, CH_FONTSTYLE_START );
+            end = strchr( ptr, WHP_FONTSTYLE_START );
             font_idx = 0;
             for( ; ptr != end; ++ptr ) {
                 switch( *ptr ) {
@@ -500,13 +500,13 @@ size_t html_trans_line( section_def *section, size_t size )
             Font_list[Font_list_curr] = font_idx;
             ++Font_list_curr;
             ++ptr;
-        } else if( ch == CH_FONTSTYLE_END ) {
+        } else if( ch == WHP_FONTSTYLE_END ) {
             --Font_list_curr;
             line_len += trans_add_str( Font_end[Font_list[Font_list_curr]], section, &size );
             ++ptr;
-        } else if( ch == CH_FONTTYPE ) {
+        } else if( ch == WHP_FONTTYPE ) {
             ++ptr;
-            end = strchr( ptr, CH_FONTTYPE );
+            end = strchr( ptr, WHP_FONTTYPE );
             *end = '\0';
 
             if( stricmp( ptr, Fonttype_courier ) == 0 ) {
@@ -516,7 +516,7 @@ size_t html_trans_line( section_def *section, size_t size )
                 strcpy( buf, "</TT>" );
             }
             ptr = end + 1;
-            end = strchr( ptr, CH_FONTTYPE );
+            end = strchr( ptr, WHP_FONTTYPE );
             line_len += trans_add_str( buf, section, &size );
             ptr = end + 1;
         } else {

@@ -61,10 +61,12 @@ typedef enum {
 #define CHR_HLINK               (char)'\xE0'
 #define CHR_HLINK_BREAK         (char)'\xE8'
 
+#define IB_SPACE_NOBREAK        (char)'\xFF'  // 255
+
 // Some characters we use for graphics
 #define CHR_BULLET              (char)'\x07'
 #define BOX_VBAR                (char)'\xB3'
-#define BOX_HBAR                CH_BOX_HBAR
+#define BOX_HBAR                (char)'\xC4'  // 196
 #define BOX_CORNER_TOP_LEFT     (char)'\xDA'
 #define BOX_CORNER_TOP_RIGHT    (char)'\xBF'
 #define BOX_CORNER_BOTOM_LEFT   (char)'\xC0'
@@ -161,7 +163,7 @@ static void to_nobreak( char *str )
     if( str != NULL ) {
         for( ; *str != '\0'; ++str ) {
             if( *str == ' ' ) {
-                *str = CH_SPACE_NOBREAK;
+                *str = IB_SPACE_NOBREAK;
             }
         }
     }
@@ -417,16 +419,16 @@ static void new_list( char chtype )
     }
     Curr_list = &Lists[List_level];
     switch( chtype ) {
-    case CH_LIST_START:
+    case WHP_LIST_START:
         type = LIST_TYPE_UNORDERED;
         break;
-    case CH_DLIST_START:
+    case WHP_DLIST_START:
         type = LIST_TYPE_DEFN;
         break;
-    case CH_OLIST_START:
+    case WHP_OLIST_START:
         type = LIST_TYPE_ORDERED;
         break;
-    case CH_SLIST_START:
+    case WHP_SLIST_START:
         type = LIST_TYPE_SIMPLE;
         break;
     default:
@@ -515,11 +517,11 @@ size_t ib_trans_line( section_def *section, size_t size )
     Cursor_X = 0;
     R_Chars = 0;
 
-    if( Blank_line && ( ch != CH_LIST_ITEM || Curr_list->compact != LIST_SPACE_COMPACT ) ) {
+    if( Blank_line && ( ch != WHP_LIST_ITEM || Curr_list->compact != LIST_SPACE_COMPACT ) ) {
         Blank_line = false;
     }
     switch( ch ) {
-    case CH_TABXMP:     // Tabbed-example
+    case WHP_TABXMP:     // Tabbed-example
         if( *skip_blank( ptr + 1 ) == '\0' ) {
             Tab_xmp = false;
         } else {
@@ -527,7 +529,7 @@ size_t ib_trans_line( section_def *section, size_t size )
             Tab_xmp = true;
         }
         return( size );
-    case CH_BOX_ON:     // Box-mode start
+    case WHP_BOX_ON:     // Box-mode start
         // indent properly
         for( ctr = 0; ctr < Curr_indent; ctr++ ) {
             trans_add_char( ' ', section, &size);
@@ -541,7 +543,7 @@ size_t ib_trans_line( section_def *section, size_t size )
         trans_add_char_wrap( '\n', section, &size);
         Box_Mode = true;
         return( size );
-    case CH_BOX_OFF:    // Box-mode end
+    case WHP_BOX_OFF:    // Box-mode end
         for( ctr = 0; ctr < Curr_indent; ctr++ ) {
             trans_add_char( ' ', section, &size);
         }
@@ -553,12 +555,12 @@ size_t ib_trans_line( section_def *section, size_t size )
         Box_Mode = false;
         trans_add_char_wrap( '\n', section, &size );
         return( size );
-    case CH_LIST_START:
-    case CH_DLIST_START:
-    case CH_OLIST_START:
-    case CH_SLIST_START:
+    case WHP_LIST_START:
+    case WHP_DLIST_START:
+    case WHP_OLIST_START:
+    case WHP_SLIST_START:
         indent = Text_Indent;
-        if( ch == CH_SLIST_START ) {
+        if( ch == WHP_SLIST_START ) {
             /* nested simple lists, with no pre-indent. Force an indent */
             if( Curr_list->type != LIST_TYPE_SIMPLE ) {
                 indent = 0;
@@ -567,7 +569,7 @@ size_t ib_trans_line( section_def *section, size_t size )
         new_list( ch );
         set_compact( ptr );
         Curr_indent += indent;
-        if( ch == CH_DLIST_START ) {
+        if( ch == WHP_DLIST_START ) {
             ptr = skip_blank( ptr + 1 );
             if( *ptr != '\0' ) {
                 /* due to a weakness in GML, the definition term must be
@@ -577,16 +579,16 @@ size_t ib_trans_line( section_def *section, size_t size )
             }
         }
         return( size );
-    case CH_LIST_END:
-    case CH_DLIST_END:
-    case CH_OLIST_END:
-    case CH_SLIST_END:
+    case WHP_LIST_END:
+    case WHP_DLIST_END:
+    case WHP_OLIST_END:
+    case WHP_SLIST_END:
         pop_list();
         return( size );
-    case CH_DLIST_TERM:
+    case WHP_DLIST_TERM:
         Curr_indent -= Text_Indent;
         break;
-    case CH_DLIST_DESC:
+    case WHP_DLIST_DESC:
         Curr_indent += Text_Indent;
         if( *skip_blank( ptr + 1 ) == '\0' ) {
             /* no description on this line. Ignore it so that no
@@ -594,7 +596,7 @@ size_t ib_trans_line( section_def *section, size_t size )
             return( size );
         }
         break;
-    case CH_CTX_KW:
+    case WHP_CTX_KW:
         ptr = whole_keyword_line( ptr );
         if( ptr == NULL ) {
             return( size );
@@ -614,7 +616,7 @@ size_t ib_trans_line( section_def *section, size_t size )
 
     // indent properly if the first char is not white-space
     if( ch != '\0' && ch != ' ' && ch != '\t') {
-        ctr = ( ch == CH_LIST_ITEM && !Box_Mode && Curr_list->type != LIST_TYPE_SIMPLE ) ? Text_Indent : 0;
+        ctr = ( ch == WHP_LIST_ITEM && !Box_Mode && Curr_list->type != LIST_TYPE_SIMPLE ) ? Text_Indent : 0;
         for( ; ctr < Curr_indent; ctr++ ) {
             trans_add_char_wrap( ' ', section, &size);
         }
@@ -639,9 +641,9 @@ size_t ib_trans_line( section_def *section, size_t size )
             }
             trans_add_char_wrap( '\n', section, &size );
             break;
-        } else if( ch == CH_HLINK || ch == CH_DFN || ch == CH_FLINK ) {
+        } else if( ch == WHP_HLINK || ch == WHP_DFN || ch == WHP_FLINK ) {
             Curr_ctx->empty = false;
-            if( ch == CH_FLINK ) {
+            if( ch == WHP_FLINK ) {
                 file_name = strchr( ptr + 1, ch );
                 if( file_name == NULL ) {
                     error( ERR_BAD_LINK_DFN, true );
@@ -665,7 +667,7 @@ size_t ib_trans_line( section_def *section, size_t size )
             ctx_text = ctx_name + 1;
             ctx_name = file_name + 1;
             file_name = ptr + 1;
-            if( ch != CH_FLINK ) {
+            if( ch != WHP_FLINK ) {
                 add_link( ctx_name );
             }
 
@@ -701,12 +703,12 @@ size_t ib_trans_line( section_def *section, size_t size )
             trans_add_str_wrap( ctx_text, section, &size );
             trans_add_char( CHR_HLINK_BREAK , section, &size );
             trans_add_str( ctx_name, section, &size );
-            if( ch == CH_FLINK ) {
+            if( ch == WHP_FLINK ) {
                 trans_add_char( CHR_HLINK_BREAK, section, &size );
                 trans_add_str( file_name, section, &size );
             }
             trans_add_char( CHR_TEMP_HLINK , section, &size );
-        } else if( ch == CH_LIST_ITEM ) {
+        } else if( ch == WHP_LIST_ITEM ) {
             if( Curr_list->type != LIST_TYPE_SIMPLE ) {
                 buf[0] = '\0';
                 if( Curr_list->type == LIST_TYPE_UNORDERED ) {
@@ -724,16 +726,16 @@ size_t ib_trans_line( section_def *section, size_t size )
             }
             Eat_blanks = true;
             ptr = skip_blank( ptr + 1 );
-        } else if( ch == CH_DLIST_DESC ) {
+        } else if( ch == WHP_DLIST_DESC ) {
             ptr = skip_blank( ptr + 1 );
-        } else if( ch == CH_DLIST_TERM ) {
+        } else if( ch == WHP_DLIST_TERM ) {
             /* definition list term */
             trans_add_str( STR_BOLD_ON, section, &size );
             Line_postfix = LPOSTFIX_TERM;
             ptr = skip_blank( ptr + 1 );
             Eat_blanks = true;
-        } else if( ch == CH_CTX_KW ) {
-            end = strchr( ptr + 1, CH_CTX_KW );
+        } else if( ch == WHP_CTX_KW ) {
+            end = strchr( ptr + 1, WHP_CTX_KW );
             len = end - ptr - 1;
             memcpy( buf, ptr + 1, len );
             buf[len] = '\0';
@@ -745,15 +747,15 @@ size_t ib_trans_line( section_def *section, size_t size )
                    This should fix that */
                 ++ptr;
             }
-        } else if( ch == CH_PAR_RESET ) {
+        } else if( ch == WHP_PAR_RESET ) {
             // we ignore paragraph resets
             ++ptr;
-        } else if( ch == CH_BMP ) {
+        } else if( ch == WHP_BMP ) {
             // we ignore bitmaps
-            ptr = strchr( ptr + 3, CH_BMP ) + 1;
-        } else if( ch == CH_FONTSTYLE_START ) {
+            ptr = strchr( ptr + 3, WHP_BMP ) + 1;
+        } else if( ch == WHP_FONTSTYLE_START ) {
             ++ptr;
-            end = strchr( ptr, CH_FONTSTYLE_START );
+            end = strchr( ptr, WHP_FONTSTYLE_START );
             for( ; ptr != end; ++ptr ) {
                 switch( *ptr ) {
                 // bold and italic map to bold
@@ -769,13 +771,13 @@ size_t ib_trans_line( section_def *section, size_t size )
                 }
             }
             ++ptr;
-        } else if( ch == CH_FONTSTYLE_END ) {
+        } else if( ch == WHP_FONTSTYLE_END ) {
             // reset style (bold off, underline off)
             trans_add_str( Reset_Style, section, &size );
             ++ptr;
-        } else if( ch == CH_FONTTYPE ) {
+        } else if( ch == WHP_FONTTYPE ) {
             // we basically ignore font type changes
-            ptr = strchr( strchr( ptr + 1 , CH_FONTTYPE ) + 1, CH_FONTTYPE ) + 1;
+            ptr = strchr( strchr( ptr + 1 , WHP_FONTTYPE ) + 1, WHP_FONTTYPE ) + 1;
         } else {
             ++ptr;
             if( !Eat_blanks || ch != ' ' ) {

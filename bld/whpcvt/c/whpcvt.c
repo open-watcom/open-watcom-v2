@@ -769,7 +769,7 @@ bool read_line( void )
             }
 
             ch = (char)c;
-            if( ch == CH_SPACE_NOBREAK ) {
+            if( ch == WHP_SPACE_NOBREAK ) {
                 ch = ' ';        // convert special blanks to regular blanks
             }
             *buf = ch;
@@ -788,14 +788,14 @@ bool read_line( void )
                     }
                 }
                 ch = *Line_buf;
-                if( ch == CH_EXCLUDE_OFF ) {
+                if( ch == WHP_EXCLUDE_OFF ) {
                     Exclude_on = false;
                     break;
-                } else if( ch == CH_EXCLUDE_OFF_BLANK ) {
+                } else if( ch == WHP_EXCLUDE_OFF_BLANK ) {
                     Exclude_on = false;
                     eat_blank = true;
                     break;
-                } else if( ch == CH_EXCLUDE_ON ) {
+                } else if( ch == WHP_EXCLUDE_ON ) {
                     Exclude_on = true;
                     break;
                 } else if( Exclude_on ) {
@@ -821,8 +821,8 @@ char *whole_keyword_line( char *ptr )
        can happen in GML when people use index entries to generate
        keywords, so we have to look for this case */
 
-    for( ; *ptr == CH_CTX_KW; ) {
-        end = strchr( ptr + 1, CH_CTX_KW );
+    for( ; *ptr == WHP_CTX_KW; ) {
+        end = strchr( ptr + 1, WHP_CTX_KW );
         len = end - ptr - 1;
         memcpy( buf, ptr + 1, len );
         buf[len] = '\0';
@@ -862,30 +862,6 @@ size_t trans_add_str( const char *str, section_def *section, size_t *size )
     for( ; *str != '\0'; ++str ) {
         trans_add_char( *str, section, size );
         ++len;
-    }
-
-    return( len );
-}
-
-size_t trans_add_str_nobreak( const char *str, section_def *section, size_t *size )
-/*********************************************************************************/
-{
-    size_t      len;
-
-    len = 0;
-    for( ; *str != '\0'; ++str ) {
-        if( *str != ' ' || Break_link ) {
-            len = trans_add_char( *str, section, size );
-        } else {
-            /* non-breaking space */
-            if( Output_type == OUT_RTF ) {
-                len = trans_add_char( '\\', section, size );
-                len += trans_add_char( '~', section, size );
-            } else {
-                /* IPF and InfoBench do not break alternate spaces */
-                len = trans_add_char( CH_SPACE_NOBREAK, section, size );
-            }
-        }
     }
 
     return( len );
@@ -1042,7 +1018,7 @@ static bool read_topic_text( ctx_def *ctx, bool is_blank, int order_num )
         if( !more_to_do ) {
             break;
         }
-        if( *Line_buf == CH_CTX_DEF || *Line_buf == CH_TOPIC ) {
+        if( *Line_buf == WHP_CTX_DEF || *Line_buf == WHP_TOPIC ) {
             break;
         }
         if( section == NULL ) {
@@ -1250,16 +1226,16 @@ static ctx_def *define_ctx( void )
     char                ch, o_ch;
     int                 i;
 
-    Delim[0] = CH_CTX_DEF;
+    Delim[0] = WHP_CTX_DEF;
     ptr = strtok( Line_buf + 1, Delim );
     head_level = atoi( ptr );
     ctx_name = strtok( NULL, Delim );
 
     title_fmt = TITLE_FMT_DEFAULT;
-    if( *ctx_name == CH_TOPIC_LN ) {
+    if( *ctx_name == WHP_TOPIC_LN ) {
         title_fmt = TITLE_FMT_LINE;
         ++ctx_name;
-    } else if( *ctx_name == CH_TOPIC_NOLN ) {
+    } else if( *ctx_name == WHP_TOPIC_NOLN ) {
         title_fmt = TITLE_FMT_NOLINE;
         ++ctx_name;
     }
@@ -1326,7 +1302,7 @@ static bool read_ctx_topic( void )
     ctx_def             *ctx;
     char                *order_str;
 
-    Delim[0] = CH_TOPIC;
+    Delim[0] = WHP_TOPIC;
     ctx_name = strtok( Line_buf, Delim );
 
     ctx = find_ctx( ctx_name );
@@ -1349,9 +1325,9 @@ static bool read_topic( void )
 /****************************/
 {
     switch( *Line_buf ) {
-    case CH_CTX_DEF:
+    case WHP_CTX_DEF:
         return( read_ctx_def() );
-    case CH_TOPIC:
+    case WHP_TOPIC:
         return( read_ctx_topic() );
     case ' ':
     case '\t':
@@ -1467,11 +1443,11 @@ static void output_idx_file( void )
         if( ch != ch2 ) {
             if( Index_gml_fmt ) {
                 if( ch == 0 ) {
-                    sprintf( pfx, "%c\n:pb.", CH_DLIST_START );
+                    sprintf( pfx, "%c\n:pb.", WHP_DLIST_START );
                 } else {
                     strcpy( pfx, ":p." );
                 }
-                whp_fprintf( Idx_file, "%s%c- %c -\n", pfx, CH_DLIST_TERM, ch2 );
+                whp_fprintf( Idx_file, "%s%c- %c -\n", pfx, WHP_DLIST_TERM, ch2 );
                 new_topic = true;
             } else {
                 whp_fprintf( Idx_file, "- %c -\n", ch2 );
@@ -1481,18 +1457,18 @@ static void output_idx_file( void )
         if( Index_gml_fmt ) {
             whp_fprintf( Idx_file, ":pb." );
             if( new_topic ) {
-                whp_fprintf( Idx_file, "%c", CH_DLIST_DESC );
+                whp_fprintf( Idx_file, "%c", WHP_DLIST_DESC );
                 new_topic = false;
             }
             whp_fprintf( Idx_file, "%c%s%c%s%c\n",
-                CH_HLINK, ctx->ctx_name, CH_HLINK, ctx->title, CH_HLINK );
+                WHP_HLINK, ctx->ctx_name, WHP_HLINK, ctx->title, WHP_HLINK );
         } else {
             whp_fprintf( Idx_file, "    %c%s%c%s%c\n",
-                CH_HLINK, ctx->ctx_name, CH_HLINK, ctx->title, CH_HLINK );
+                WHP_HLINK, ctx->ctx_name, WHP_HLINK, ctx->title, WHP_HLINK );
         }
     }
     if( ch != 0 && Index_gml_fmt ) {
-        whp_fprintf( Idx_file, ":pb.%c\n\n", CH_DLIST_END );
+        whp_fprintf( Idx_file, ":pb.%c\n\n", WHP_DLIST_END );
     }
 }
 
@@ -1549,7 +1525,7 @@ static void output_kw_file( void )
 
     // output header
     whp_fprintf( KW_file, ":H1.%s\n", Gen_titles[GEN_TITLE_KEYWORD][Title_case] );
-    whp_fprintf( KW_file, ":pb.%cc\n", CH_SLIST_START );
+    whp_fprintf( KW_file, ":pb.%cc\n", WHP_SLIST_START );
 
     // count the number of keywords in our list
     for( temp_kw = Keyword_list; temp_kw !=NULL; temp_kw = temp_kw->next )
@@ -1584,12 +1560,12 @@ static void output_kw_file( void )
                 if( !is_special_topic( ctx[0], Dump_popup_k ) ) {
                     whp_fprintf( KW_file,
                                 ":pb.%c:pb.%c%s%c%s%c\n",
-                                CH_LIST_ITEM,
-                                CH_HLINK,
+                                WHP_LIST_ITEM,
+                                WHP_HLINK,
                                 ctx[0]->ctx_name,
-                                CH_HLINK,
+                                WHP_HLINK,
                                 kw[i]->keyword,
-                                CH_HLINK );
+                                WHP_HLINK );
                 }
             } else if( kw[i]->ctx_list_size > 1 ) {
                 // sort the list of contexts by title.
@@ -1603,28 +1579,26 @@ static void output_kw_file( void )
                             whp_fprintf( KW_file,
                                         ":pb.%c:pb.%cb%c%s%c\n"
                                         ":pb.%cc\n",
-
-                                        CH_LIST_ITEM,
-                                        CH_FONTSTYLE_START,
-                                        CH_FONTSTYLE_START,
+                                        WHP_LIST_ITEM,
+                                        WHP_FONTSTYLE_START,
+                                        WHP_FONTSTYLE_START,
                                         kw[i]->keyword,
-                                        CH_FONTSTYLE_END,
-
-                                        CH_SLIST_START );
+                                        WHP_FONTSTYLE_END,
+                                        WHP_SLIST_START );
                             title = true;
                         }
                         whp_fprintf( KW_file, ":pb.%c%c%s%c%s%c\n",
-                                CH_LIST_ITEM,
-                                CH_HLINK,
+                                WHP_LIST_ITEM,
+                                WHP_HLINK,
                                 ctx[ctx_num]->ctx_name,
-                                CH_HLINK,
+                                WHP_HLINK,
                                 ctx[ctx_num]->title,
-                                CH_HLINK );
+                                WHP_HLINK );
                     }
                     // go to the next context on our list
                 }
                 if( title ) {
-                    whp_fprintf( KW_file, ":pb.%c\n", CH_SLIST_END );
+                    whp_fprintf( KW_file, ":pb.%c\n", WHP_SLIST_END );
                 }
             }
         }
@@ -1632,7 +1606,7 @@ static void output_kw_file( void )
     }
 
     // the end
-    whp_fprintf( KW_file, ":pb.%c\n", CH_SLIST_END );
+    whp_fprintf( KW_file, ":pb.%c\n", WHP_SLIST_END );
 }
 
 static void output_blist_file( void )
@@ -1645,7 +1619,7 @@ static void output_blist_file( void )
     char                        *pfx;
 
     whp_fprintf( Blist_file, ":H1.%s\n%c\n",
-                Gen_titles[GEN_TITLE_BROWSE][Title_case], CH_DLIST_START );
+                Gen_titles[GEN_TITLE_BROWSE][Title_case], WHP_DLIST_START );
     pfx = ":pb.";
     for( browse = Browse_list; browse != NULL; browse = browse->next ) {
         for( ctx = Ctx_list; ctx != NULL; ctx = ctx->next ) {
@@ -1660,22 +1634,22 @@ static void output_blist_file( void )
             }
 
             whp_fprintf( Blist_file, "%s%c%cb%c%c%s%c%s%c%c\n",
-                        pfx, CH_DLIST_TERM, CH_FONTSTYLE_START,
-                        CH_FONTSTYLE_START, CH_HLINK, ctx->ctx_name,
-                        CH_HLINK, ctx->title, CH_HLINK, CH_FONTSTYLE_END );
+                        pfx, WHP_DLIST_TERM, WHP_FONTSTYLE_START,
+                        WHP_FONTSTYLE_START, WHP_HLINK, ctx->ctx_name,
+                        WHP_HLINK, ctx->title, WHP_HLINK, WHP_FONTSTYLE_END );
         } else {
-            whp_fprintf( Blist_file, "%s%c%s\n", pfx, CH_DLIST_TERM,
+            whp_fprintf( Blist_file, "%s%c%s\n", pfx, WHP_DLIST_TERM,
                                                     browse->browse_name );
         }
         pfx = ":p.";
 
-        whp_fprintf( Blist_file, ":pb.%c", CH_DLIST_DESC );
+        whp_fprintf( Blist_file, ":pb.%c", WHP_DLIST_DESC );
         for( b_ctx = browse->ctx_list; ; ) {
             b_ctx_next = b_ctx->next;
             if( b_ctx->ctx != ctx && !b_ctx->ctx->empty ) {
-                whp_fprintf( Blist_file, "%c%s%c%s%c", CH_HLINK,
-                                            b_ctx->ctx->ctx_name, CH_HLINK,
-                                            b_ctx->ctx->title, CH_HLINK );
+                whp_fprintf( Blist_file, "%c%s%c%s%c", WHP_HLINK,
+                                            b_ctx->ctx->ctx_name, WHP_HLINK,
+                                            b_ctx->ctx->title, WHP_HLINK );
                 if( b_ctx_next != NULL ) {
                     whp_fprintf( Blist_file, "\n:pb." );
                 }
@@ -1687,7 +1661,7 @@ static void output_blist_file( void )
         }
         whp_fprintf( Blist_file, "\n" );
     }
-    whp_fprintf( Blist_file, ":pb.%c\n\n", CH_DLIST_END );
+    whp_fprintf( Blist_file, ":pb.%c\n\n", WHP_DLIST_END );
 }
 
 static void output_contents_file( void )
@@ -1706,35 +1680,35 @@ static void output_contents_file( void )
         }
         if( ctx->head_level > level ) {
             for( i = level + 1; i <= ctx->head_level; ++i ) {
-                whp_fprintf( Contents_file, ":pb.%cc\n", CH_SLIST_START );
+                whp_fprintf( Contents_file, ":pb.%cc\n", WHP_SLIST_START );
             }
             level = ctx->head_level;
         } else if( ctx->head_level < level ) {
             for( i = ctx->head_level + 1; i <=level; ++i ) {
-                whp_fprintf( Contents_file, ":pb.%c\n", CH_SLIST_END );
+                whp_fprintf( Contents_file, ":pb.%c\n", WHP_SLIST_END );
             }
             level = ctx->head_level;
         }
-        whp_fprintf( Contents_file, ":pb.%c", CH_LIST_ITEM );
+        whp_fprintf( Contents_file, ":pb.%c", WHP_LIST_ITEM );
         if( level <= 1 ) {
             whp_fprintf( Contents_file, ":pb.%chelv%c12%c%cb%c",
-                        CH_FONTTYPE, CH_FONTTYPE, CH_FONTTYPE,
-                        CH_FONTSTYLE_START, CH_FONTSTYLE_START );
+                        WHP_FONTTYPE, WHP_FONTTYPE, WHP_FONTTYPE,
+                        WHP_FONTSTYLE_START, WHP_FONTSTYLE_START );
         }
         if( ctx->empty ) {
             whp_fprintf( Contents_file, "%s", ctx->title );
         } else {
             whp_fprintf( Contents_file, "%c%s%c%s%c",
-                    CH_HLINK, ctx->ctx_name, CH_HLINK, ctx->title, CH_HLINK );
+                    WHP_HLINK, ctx->ctx_name, WHP_HLINK, ctx->title, WHP_HLINK );
         }
         if( level <= 1 ) {
             whp_fprintf( Contents_file, "%c%chelv%c10%c",
-                    CH_FONTSTYLE_END, CH_FONTTYPE, CH_FONTTYPE, CH_FONTTYPE );
+                    WHP_FONTSTYLE_END, WHP_FONTTYPE, WHP_FONTTYPE, WHP_FONTTYPE );
         }
         whp_fprintf( Contents_file, "\n" );
     }
     for( i = -1; i < level; ++i ) {
-        whp_fprintf( Contents_file, ":pb.%c\n", CH_SLIST_END );
+        whp_fprintf( Contents_file, ":pb.%c\n", WHP_SLIST_END );
     }
 
 }
