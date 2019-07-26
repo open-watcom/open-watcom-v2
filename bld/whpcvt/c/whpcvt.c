@@ -1873,6 +1873,11 @@ int main( int argc, char *argv[] )
     char                *slash;
     int                 rc;
 
+#ifndef __WATCOMC__
+    _argc = argc;
+    _argv = argv;
+#endif
+
     rc = -1;
     if( argc < 1 ) {
         print_help();
