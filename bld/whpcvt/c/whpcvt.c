@@ -749,8 +749,9 @@ bool read_line( void )
     eat_blank = false;
     for( ;; ) {
         ++Line_num;
+        printf( "WHPCVT - Process line: %d\n", Line_num );
         for( buf = Line_buf, len = 0;; ++buf ) {
-#if defined __QNX__ || defined __UNIX__
+#if defined( __UNIX__ )
             do {
                 c = fgetc( In_file );
             } while( c == '\r' );
