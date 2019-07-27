@@ -634,7 +634,7 @@ extern void GUICleanup( void );
 extern void GUISetBackgroundColour( gui_colour_set *colour );
 extern void GUIGetDialogColours( gui_colour_set *colours );
 extern void GUISetDialogColours( gui_colour_set *colours );
-extern void GUISetWindowColours( gui_window *wnd, gui_colour_items colours );
+extern void GUISetWindowColours( gui_window *wnd, int num_colours, gui_colour_set *colours );
 extern bool GUISetRGB( gui_colour colour, gui_rgb rgb );
 extern bool GUIGetRGB( gui_colour colour, gui_rgb *rgb );
 extern bool GUIGetWndColour( gui_window *wnd, gui_attr attr, gui_colour_set *colour_set );

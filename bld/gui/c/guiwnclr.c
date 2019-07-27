@@ -73,13 +73,13 @@ static gui_colour_set Default[GUI_NUM_ATTRS] =
 #endif
 };
 
-bool GUISetColours( gui_window *wnd, gui_colour_items colours )
+bool GUISetColours( gui_window *wnd, int num_attrs, gui_colour_set *colours )
 {
-    if( colours.num_items < GUI_NUM_ATTRS ) {
-        colours.num_items = GUI_NUM_ATTRS;
-        colours.colour = Default;
+    if( num_attrs < GUI_NUM_ATTRS ) {
+        num_attrs = GUI_NUM_ATTRS;
+        colours = Default;
     }
-    return( GUIXSetColours( wnd, colours ) );
+    return( GUIXSetColours( wnd, num_attrs, colours ) );
 }
 
 void GUIFreeColours( gui_window *wnd )

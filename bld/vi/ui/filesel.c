@@ -47,7 +47,7 @@ typedef enum {
     MS_EXPOSEUP
 } ms_type;
 
-extern int              CurrentMenuNumber;
+extern ctl_id           CurrentMenuId;
 
 static window_id        fs_select_window_id;
 static window_id        fs_event_window_id;
@@ -226,7 +226,7 @@ static vi_rc displayGenericLines( file *f, list_linenum pagetop, int leftcol,
                 DisplayLineInWindow( fs_select_window_id, j, "~" );
             } else {
                 if( isMenu ) {
-                    if( InvokeMenuHook( CurrentMenuNumber, cl ) == -1 ) {
+                    if( InvokeMenuHook( CurrentMenuId, cl ) == -1 ) {
 //                        disabled = true;
                         if( cl == hi_line ) {
                             wi = &activegreyedmenu_info;
@@ -298,7 +298,7 @@ static bool SelectLineMouseHandler( window_id wid, int win_x, int win_y )
 {
     int     x;
     int     y;
-    ctl_id  menu_id;
+    ctl_id  id;
 
     if( LastMouseEvent != VI_MOUSE_DRAG && LastMouseEvent != VI_MOUSE_PRESS &&
         LastMouseEvent != VI_MOUSE_DCLICK && LastMouseEvent != VI_MOUSE_RELEASE &&
@@ -346,9 +346,9 @@ static bool SelectLineMouseHandler( window_id wid, int win_x, int win_y )
     }
     if( isMenu && EditFlags.Menus && wid == menu_window_id &&
         LastMouseEvent != VI_MOUSE_PRESS_R ) {
-        menu_id = GetMenuIdFromCoord( win_x );
-        if( menu_id != NO_ID ) {
-            rlMenuNum = menu_id - GetCurrentMenuId();
+        id = GetMenuIdFromCoord( win_x );
+        if( id != NO_ID ) {
+            rlMenuNum = id - GetCurrentMenuId();
             if( rlMenuNum != 0 ) {
                 rlMenu = true;
             }
@@ -704,7 +704,7 @@ vi_rc SelectLineInFile( selflinedata *sfd )
                  * no value window, so just return line selected
                  */
                 } else {
-                    if( isMenu && InvokeMenuHook( CurrentMenuNumber, cln ) == -1 ) {
+                    if( isMenu && InvokeMenuHook( CurrentMenuId, cln ) == -1 ) {
                         break;
                     }
                     sfd->sl = cln;

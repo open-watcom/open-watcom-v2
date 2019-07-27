@@ -94,19 +94,19 @@ static bool             Eat_blanks = false;
 static char             *Trans_str = NULL;
 static size_t           Trans_len = 0;
 
-static void trans_add_tabs( section_def *section )
-/************************************************/
+static void trans_add_tabs( section_def *section, size_t *size )
+/**************************************************************/
 {
     int                 tab;
     char                buf[30];
 
-    trans_add_str( "\\pard ", section );
+    trans_add_str( "\\pard ", section, size );
     for( tab = 1; tab <= NUM_TAB_STOPS; ++tab ) {
         sprintf( buf, "\\tx%d ", INDENT_INC * tab );
-        trans_add_str( buf, section );
+        trans_add_str( buf, section, size );
     }
     sprintf( buf, "\\li%d ", Curr_indent );
-    trans_add_str( buf, section );
+    trans_add_str( buf, section, size );
 }
 
 static void set_compact( char *line )
@@ -178,13 +178,13 @@ static char *translate_str_rtf( const char *str, bool do_quotes )
     return( Trans_str );
 }
 
-static size_t trans_add_char_rtf( char ch, section_def *section )
-/***************************************************************/
+static size_t trans_add_char_rtf( char ch, section_def *section, size_t *size )
+/*****************************************************************************/
 {
     char        buf[RTF_TRANS_LEN];
 
     translate_char_rtf( ch, buf, false );
-    return( trans_add_str( buf, section ) );
+    return( trans_add_str( buf, section, size ) );
 }
 
 static void new_list( char chtype )
@@ -228,14 +228,14 @@ static void pop_list( void )
     Curr_list = &Lists[List_level];
 }
 
-static void add_tabxmp( char *tab_line, section_def *section )
-/************************************************************/
+static void add_tabxmp( char *tab_line, section_def *section, size_t *size )
+/**************************************************************************/
 {
     char                *ptr;
     char                buf[50];
     int                 tabcol;
 
-    trans_add_str( "\\pard ", section );
+    trans_add_str( "\\pard ", section, size );
     Tab_xmp_char = *tab_line;
     ptr = strtok( tab_line + 1, " " );
     for( tabcol = 0 ; ptr != NULL; ptr = strtok( NULL, " " ) ) {
@@ -245,9 +245,9 @@ static void add_tabxmp( char *tab_line, section_def *section )
             tabcol = atoi( ptr );
         }
         sprintf( buf, "\\tx%d ", RTF_CHAR_SIZE * tabcol );
-        trans_add_str( buf, section );
+        trans_add_str( buf, section, size );
     }
-    trans_add_char( '\n', section );
+    trans_add_char( '\n', section, size );
 }
 
 void rtf_topic_init( void )
@@ -256,27 +256,27 @@ void rtf_topic_init( void )
     Line_prefix = LPREFIX_NONE;
 }
 
-static size_t trans_add_str_nobreak( const char *str, section_def *section )
-/**************************************************************************/
+static size_t trans_add_str_nobreak( const char *str, section_def *section, size_t *size )
+/****************************************************************************************/
 {
     size_t      len;
 
     len = 0;
     for( ; *str != '\0'; ++str ) {
         if( *str != ' ' || Break_link ) {
-            len = trans_add_char( *str, section );
+            len = trans_add_char( *str, section, size );
         } else {
             /* non-breaking space */
-            len = trans_add_char( '\\', section );
-            len += trans_add_char( '~', section );
+            len = trans_add_char( '\\', section, size );
+            len += trans_add_char( '~', section, size );
         }
     }
 
     return( len );
 }
 
-void rtf_trans_line( section_def *section )
-/*****************************************/
+size_t rtf_trans_line( section_def *section, size_t size )
+/********************************************************/
 {
     char                *ptr;
     char                *end;
@@ -301,16 +301,16 @@ void rtf_trans_line( section_def *section )
             Line_prefix |= LPREFIX_PAR_RESET;
             Tab_xmp = false;
         } else {
-            add_tabxmp( ptr + 1, section );
+            add_tabxmp( ptr + 1, section, &size );
             Tab_xmp = true;
         }
-        return;
+        return( size );
     case WHP_BOX_ON:
         Line_prefix |= LPREFIX_BOX_ON;
-        return;
+        return( size );
     case WHP_BOX_OFF:
         Line_prefix |= LPREFIX_PAR_RESET;
-        return;
+        return( size );
     case WHP_LIST_START:
     case WHP_DLIST_START:
     case WHP_OLIST_START:
@@ -348,7 +348,7 @@ void rtf_trans_line( section_def *section )
                 break;
             }
         }
-        return;
+        return( size );
     case WHP_LIST_END:
     case WHP_DLIST_END:
     case WHP_OLIST_END:
@@ -357,58 +357,58 @@ void rtf_trans_line( section_def *section )
             Line_prefix |= LPREFIX_E_LIST;
         }
         pop_list();
-        return;
+        return( size );
     case WHP_DLIST_DESC:
         if( *skip_blank( ptr + 1 ) == '\0' ) {
             /* no description on this line. Ignore it so that no
                blank line gets generated */
-            return;
+            return( size );
         }
         break;
     case WHP_CTX_KW:
         ptr = whole_keyword_line( ptr );
         if( ptr == NULL ) {
-            return;
+            return( size );
         }
         break;
     }
 
     if( *skip_blank( ptr ) == '\0' && Curr_ctx->empty ) {
         /* skip preceding blank lines */
-        return;
+        return( size );
     }
 
     if( Blank_line ) {
         /* remove '\n' on the end */
         --section->section_size;
     } else {
-        trans_add_str( "\\par ", section );
+        trans_add_str( "\\par ", section, &size );
     }
     if( Line_prefix & LPREFIX_S_LIST ) {
         Line_prefix &= ~LPREFIX_S_LIST;
         sprintf( buf, "\\li%d ", Curr_indent );
-        trans_add_str( buf, section );
+        trans_add_str( buf, section, &size );
     }
     if( Line_prefix & LPREFIX_FIX_FI ) {
         Line_prefix &= ~LPREFIX_FIX_FI;
-        trans_add_str( "\\fi0 ", section );
+        trans_add_str( "\\fi0 ", section, &size );
     }
     if( Line_prefix & LPREFIX_E_LIST ) {
         Line_prefix &= ~LPREFIX_E_LIST;
         sprintf( buf, "\\li%d\\fi0 ", Curr_indent );
-        trans_add_str( buf, section );
+        trans_add_str( buf, section, &size );
     }
     if( Line_prefix & LPREFIX_PAR_RESET ) {
         Line_prefix &= ~LPREFIX_PAR_RESET;
-        trans_add_tabs( section );
+        trans_add_tabs( section, &size );
     }
     if( Line_prefix & LPREFIX_LEFTALIGN ) {
         Line_prefix &= ~LPREFIX_LEFTALIGN;
-        trans_add_str( "\\ql ", section );
+        trans_add_str( "\\ql ", section, &size );
     }
     if( Line_prefix & LPREFIX_BOX_ON ) {
         Line_prefix &= ~LPREFIX_BOX_ON;
-        trans_add_str( "\\box ", section );
+        trans_add_str( "\\box ", section, &size );
     }
 
     Blank_line = true;
@@ -423,12 +423,12 @@ void rtf_trans_line( section_def *section )
                 /* this must go on the end of the current line, otherwise
                    the bolding used on the term screws up the spacing
                    on the next line */
-                trans_add_str( Reset_font_str, section );
+                trans_add_str( Reset_font_str, section, &size );
                 /* we still need to do the indent fixing on the next
                    line, though */
                 Line_prefix |= LPREFIX_FIX_FI;
             }
-            trans_add_char( '\n', section );
+            trans_add_char( '\n', section, &size );
             break;
         } else if( ch == WHP_HLINK || ch == WHP_DFN ) {
             Curr_ctx->empty = false;
@@ -446,21 +446,21 @@ void rtf_trans_line( section_def *section )
             ctx_name = ptr + 1;
             add_link( ctx_name );
             if( ch == WHP_HLINK ) {
-                trans_add_str( "{\\f2\\uldb ", section );
-                trans_add_str_nobreak( translate_str_rtf( ctx_text, false ), section );
-                trans_add_str( "\\v\\f2\\uldb ", section );
-                trans_add_str( ctx_name, section );
-                trans_add_str( "\\v0 ", section );
-                trans_add_str( Reset_font_str, section );
-                trans_add_str( "}", section );
+                trans_add_str( "{\\f2\\uldb ", section, &size );
+                trans_add_str_nobreak( translate_str_rtf( ctx_text, false ), section, &size );
+                trans_add_str( "\\v\\f2\\uldb ", section, &size );
+                trans_add_str( ctx_name, section, &size );
+                trans_add_str( "\\v0 ", section, &size );
+                trans_add_str( Reset_font_str, section, &size );
+                trans_add_str( "}", section, &size );
             } else if( ch == WHP_DFN ) {
-                trans_add_str( "{\\f2\\ul ", section );
-                trans_add_str_nobreak( translate_str_rtf( ctx_text, false ), section );
-                trans_add_str( "\\v\\f2\\ul ", section );
-                trans_add_str( ctx_name, section );
-                trans_add_str( "\\v0 ", section );
-                trans_add_str( Reset_font_str, section );
-                trans_add_str( "}", section );
+                trans_add_str( "{\\f2\\ul ", section, &size );
+                trans_add_str_nobreak( translate_str_rtf( ctx_text, false ), section, &size );
+                trans_add_str( "\\v\\f2\\ul ", section, &size );
+                trans_add_str( ctx_name, section, &size );
+                trans_add_str( "\\v0 ", section, &size );
+                trans_add_str( Reset_font_str, section, &size );
+                trans_add_str( "}", section, &size );
             }
             ptr = ctx_text + strlen( ctx_text ) + 1;
         } else if( ch == WHP_FLINK ) {
@@ -483,15 +483,15 @@ void rtf_trans_line( section_def *section )
             ctx_name = file_name + 1;
             *file_name = '\0';
             file_name = ptr + 1;
-            trans_add_str( "{\\f2\\uldb ", section );
-            trans_add_str_nobreak( translate_str_rtf( ctx_text, false ), section );
-            trans_add_str( "\\v\\f2\\uldb !JumpKeyword( \"", section );
-            trans_add_str( file_name, section );
-            trans_add_str( ".hlp\", \"", section );
-            trans_add_str( translate_str_rtf( ctx_name, true ), section );
-            trans_add_str( "\" );\\v0 ", section );
-            trans_add_str( Reset_font_str, section );
-            trans_add_str( "}", section );
+            trans_add_str( "{\\f2\\uldb ", section, &size );
+            trans_add_str_nobreak( translate_str_rtf( ctx_text, false ), section, &size );
+            trans_add_str( "\\v\\f2\\uldb !JumpKeyword( \"", section, &size );
+            trans_add_str( file_name, section, &size );
+            trans_add_str( ".hlp\", \"", section, &size );
+            trans_add_str( translate_str_rtf( ctx_name, true ), section, &size );
+            trans_add_str( "\" );\\v0 ", section, &size );
+            trans_add_str( Reset_font_str, section, &size );
+            trans_add_str( "}", section, &size );
             ptr = ctx_text + strlen( ctx_text ) + 1;
         } else if( ch == WHP_LIST_ITEM ) {
             if( Curr_list->type != LIST_TYPE_SIMPLE ) {
@@ -502,7 +502,7 @@ void rtf_trans_line( section_def *section )
                     sprintf( buf, "\\f2\\fi-%d\\b %d.\\plain\\f2\\fs20\\tab ", INDENT_INC, Curr_list->number );
                     ++Curr_list->number;
                 }
-                trans_add_str( buf, section );
+                trans_add_str( buf, section, &size );
                 Line_prefix |= LPREFIX_FIX_FI;
             }
             ptr = skip_blank( ptr + 1 );
@@ -513,7 +513,7 @@ void rtf_trans_line( section_def *section )
         } else if( ch == WHP_DLIST_TERM ) {
             /* definition list term */
             sprintf( buf, "\\f2\\fi-%d \\b ", INDENT_INC );
-            trans_add_str( buf, section );
+            trans_add_str( buf, section, &size );
             Line_postfix = LPOSTFIX_TERM;
             ptr = skip_blank( ptr + 1 );
             Eat_blanks = true;
@@ -560,7 +560,7 @@ void rtf_trans_line( section_def *section )
                 sprintf( buf, "\\qc \\{bmc %s\\}", ptr );
                 Line_prefix |= LPREFIX_LEFTALIGN;
             }
-            trans_add_str( buf, section );
+            trans_add_str( buf, section, &size );
             ptr = end + 1;
         } else if( ch == WHP_FONTSTYLE_START ) {
             ++ptr;
@@ -568,22 +568,22 @@ void rtf_trans_line( section_def *section )
             for( ; ptr != end; ++ptr ) {
                 switch( *ptr ) {
                 case 'b':
-                    trans_add_str( "\\b ", section );
+                    trans_add_str( "\\b ", section, &size );
                     break;
                 case 'i':
-                    trans_add_str( "\\i ", section );
+                    trans_add_str( "\\i ", section, &size );
                     break;
                 case 'u':
-                    trans_add_str( "\\ul ", section );
+                    trans_add_str( "\\ul ", section, &size );
                     break;
                 case 's':
-                    trans_add_str( "\\ulw ", section );
+                    trans_add_str( "\\ulw ", section, &size );
                     break;
                 }
             }
             ++ptr;
         } else if( ch == WHP_FONTSTYLE_END ) {
-            trans_add_str( "\\b0 \\i0 \\ul0 \\ulw0 ", section );
+            trans_add_str( "\\b0 \\i0 \\ul0 \\ulw0 ", section, &size );
             ++ptr;
         } else if( ch == WHP_FONTTYPE ) {
             ++ptr;
@@ -598,28 +598,30 @@ void rtf_trans_line( section_def *section )
             } else {
                 strcpy( buf, "\\f2 " );
             }
-            trans_add_str( buf, section );
+            trans_add_str( buf, section, &size );
             ptr = end + 1;
             end = strchr( ptr, WHP_FONTTYPE );
             *end = '\0';
             sprintf( buf, "\\fs%d ", atoi( ptr ) * 2 );
-            trans_add_str( buf, section );
+            trans_add_str( buf, section, &size );
             ptr = end + 1;
         } else {
             ++ptr;
             if( !Eat_blanks || ch != ' ' ) {
                 Curr_ctx->empty = false;
                 if( Tab_xmp && ch == Tab_xmp_char ) {
-                    trans_add_str( "\\tab ", section );
+                    trans_add_str( "\\tab ", section, &size );
                     /* skip blanks after a tab, so that hyperlinks line up */
                     ptr = skip_blank( ptr );
                 } else {
-                    trans_add_char_rtf( ch, section );
+                    trans_add_char_rtf( ch, section, &size );
                 }
                 Eat_blanks = false;
             }
         }
     }
+
+    return( size );
 }
 
 static void print_tab_stops( void )

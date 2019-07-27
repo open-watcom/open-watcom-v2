@@ -546,7 +546,6 @@ static void ChkReference( SYMPTR sym, SYM_NAMEPTR name )
                 typ = sym->sym_type;
                 SKIP_TYPEDEFS( typ );
                 if( sym->attribs.stg_class != SC_STATIC && typ->decl_type != TYPE_ARRAY ) {
-//                if( sym->attribs.stg_class != SC_STATIC ) {
                     CWarn2p( WARN_SYM_NOT_ASSIGNED, ERR_SYM_NOT_ASSIGNED, name );
                 }
             }

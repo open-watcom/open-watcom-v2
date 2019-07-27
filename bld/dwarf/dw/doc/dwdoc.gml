@@ -1,82 +1,84 @@
-:INCLUDE file='LYTCHG'.
-:INCLUDE file='FMTMACRO'.
-:INCLUDE file='GMLMACS'.
-:INCLUDE file='XDEFS'.
-:INCLUDE file='DEFS'.
-.*
-.if &e'&dohelp eq 0 .do begin
-.*
-.* Layout changes specific to this document
-.*
-.* Switch off numbering for heading
-.* Set two-level contents
-.* Set the same page footer text for all pages
-.*
+:set symbol="headtxt0$" value="The DWARF writing library".
+:set symbol="headtxt1$" value="The DWARF writing library".
+:set symbol="headtext$" value="The DWARF writing library".
+:PSC proc='rita'.
+**RTA**wgmlstd.rta
+:ePSC.
 :LAYOUT.
+:HEADING
+threshold = 3
+:PAGE
+        top_margin = '.3i'
+        left_margin = '1.25i'
+        right_margin = '7.25i'
+        depth = '8.5i'
+:DEFAULT
+        justify = no
+:WIDOW
+        threshold = 5
+:FIG
+        font = 4
+:XMP
+        pre_skip = 1
+        font = 4
 :H1
+        pre_top_skip = 2
+        post_skip = 1
         number_form = none
+        page_eject = no
 :H2
+        pre_top_skip = 1
+        pre_skip = 0
+        post_skip = 1
         font = 2
         number_form = none
 :H3
+        pre_top_skip = 1
+        pre_skip = 0
+        post_skip = 1
         font = 1
+        number_font = 3
         number_form = none
+:DT
+        font = 0
+:DD
+        line_left = '1.5i'
+        font = 0
+:DDHD
+        font = 3
+:INDEX
+        columns = 2
 :TOC
         toc_levels = 2
-:BANNER
-        docsect=head1
-        place=botodd
-:BANREGION
-        refnum=1
-        contents="&amp.headtxt1$."
-:eBANREGION
-:eBANNER
-:BANNER
-        docsect=body
-        place=boteven
-:BANREGION
-        refnum=2
-        contents="&amp.headtxt1$."
-:eBANREGION
-:eBANNER
-:BANNER
-        docsect=body
-        place=botodd
-:BANREGION
-        refnum=1
-        contents="&amp.headtxt1$."
-:eBANREGION
-:eBANNER
+:APPENDIX
+        columns = 2
+:SL
+        left_indent = '0.3i'
+        skip = 0
+:OL
+        left_indent = '0.3i'
+        align = '0.3i'
+:UL
+        left_indent = '0.3i'
+        skip = 0
+        align = 1
+:DL
+        left_indent = '0.25i'
+        skip = 0
+        align = '1i'
 :eLAYOUT
-:INCLUDE file='WNOHELP'.
-.do end
-.*
 :GDOC.
-.*
-.if &e'&dohelp eq 0 .do begin
 :FRONTM.
 :TITLEP.
-:TITLE.&company Specification for the DWARF writing Library
+:TITLE.SPECIFICATION FOR THE DWARF WRITING LIBRARY
 :TITLE.Draft #6
-:CMT. :DATE.
+:DATE.
 :eTITLEP.
-:TOC.
-.do end
-.*
 :BODY.
-.*
-:CMT. index is disabled
-.if &e'&dohelp eq 2 .do begin
-:exhelp
-:include file='&book..idx'
-:include file='&book..tbl'
-:include file='&book..kw'
-.do end
-.*
-.chap Debugging Information
+:H0.Debugging Information
 :p.The include file "dw.h" should be included to access the DW library.
 
-.section Data Types
+:H1.Data Types
 :p.The following types are defined in "dwcnf.h" and may be redefined
 if the entire library is to be recompiled.  ("dw.h" automatically
 includes "dwcnf.h".);
@@ -134,7 +136,7 @@ passed to :hp2.CLISeek:ehp2. and returned by :hp2.CLITell:ehp2.
 :DD.A integer type that can hold the all relocation type
 :edl.
 
-.section Initialization and Finalization
+:H1.Initialization and Finalization
 
 :P.In the following functions, unless specified otherwise all strings
 are assumed to be null-terminated.
@@ -154,9 +156,10 @@ a DLL.
 Return an unique client id.  This function will call client functions
 passed to it, so any client function initialization must be done before
 the call to DWInit.
-.code begin
+:XMP.
+:SF font=4.
 typedef struct {
-    void          (*reloc)( dw_sectnum, dw_reloc_type, ... );
+    void          (*reloc)( dw_sectnum, uint, ... );
     void          (*write)( dw_sectnum, const void *, dw_size_t );
     void          (*seek)( dw_sectnum, dw_out_offset, int );
     dw_out_offset (*tell)( dw_sectnum );
@@ -171,7 +174,8 @@ typedef struct {
     jmp_buf       exception_handler;
     dw_funcs      funcs;
 } dw_init_info;
-.code end
+:eSF.
+:eXMP.
 :DL.
 :DTHD.Member
 :DDHD.Description
@@ -256,7 +260,7 @@ After this, until the next :hp2.DWBeginCompileUnit:ehp2., the
 only valid calls are those made to location expression routines
 (or :hp2.DWFini:ehp2.).
 
-.chap Ordering Considerations
+:H0.Ordering Considerations
 :p.In general the DW routines are called in an order that matches the
 order of the declarations during the source program.  The sole exception
 to this are the Macro information routines.  Since it is possible to
@@ -265,7 +269,7 @@ routines can be called before any of the other routines.  That is
 why the macro routines have a separate mechanism for specifying
 file and line number.
 
-.chap Macro Information
+:H0.Macro Information
 :H2.void DWENTRY DWMacStartFile( dw_client cli, dw_linenum line, const char *name );
 :p.Subsequent DWMac calls refer to the named file.
 
@@ -295,7 +299,7 @@ program.
 :H2.void DWENTRY DWMacUse( dw_client cli, dw_linenum line, const char *name );
 :p.Indicate where the macro named :hp2.name:ehp2. is used.
 
-.chap File and Line-Number Management
+:H0.File and Line-Number Management
 
 :H2.void DWENTRY DWSetFile( dw_client cli, const char *file );
 :P.Specifies the current file.
@@ -355,7 +359,7 @@ This reference is attributed to the current scope of debugging information.
 (i.e., if it is done inside a structure, then the structure is considered
 to be the "referencer").
 
-.chap Location Expression Routines
+:H0.Location Expression Routines
 :P.Many functions require a :HP2.dw_loc_handle:eHP2..
 These are handles for expressions that the debugger will evaluate.
 A :HP2.dw_loc_handle:eHP2. can be either a single expression, or a list
@@ -565,7 +569,7 @@ A location expression/list can be created and
 used over and over again until it is
 freed by calling this function.
 
-.chap Typing Information
+:H0.Typing Information
 :p.Unless otherwise noted, calls to these functions emit debugging
 information immediately.  The DWARF format requires that debugging
 information appear in the same order as it does in the source code.
@@ -585,7 +589,6 @@ the declaration occurs at.  This is most commonly 0.
 :DT.uint flags
 :DD.Some routines have additional flags available here; but unless otherwise
 noted, the following are always available:
-:EDL.
 :DL.
 :DTHD.Flag
 :DDHD.Description
@@ -597,6 +600,7 @@ noted, the following are always available:
 :DD.The object has the C++ protected attribute.
 :DT.DW_FLAG_PUBLIC
 :DD.The object has the C++ public attribute.
+:EDL.
 :EDL.
 
 :H2.dw_handle DWENTRY DWFundamental( dw_client cli, char * name, unsigned fund_idx, unsigned size );
@@ -660,7 +664,6 @@ The flag value :hp2.DW_FLAG_DECLARATION:ehp2. is not allowed.
 :DD.The pointed-at type.
 :DT.flags
 :DD.Only the following flags are available:
-:eDL.
 :DL.
 :DTHD.Flags
 :DDHD.Description
@@ -678,6 +681,7 @@ The flag value :hp2.DW_FLAG_DECLARATION:ehp2. is not allowed.
 :dd.A near 32-bit pointer.
 :DT.DW_PTR_TYPE_FAR32
 :dd.A far 32-bit pointer.
+:eDL.
 :eDL.
 
 :H2.dw_handle DWENTRY DWString( dw_client cli, dw_loc_handle string_length, dw_size_t byte_size, const char *name, dw_addr_offset start_scope, uint flags );
@@ -715,7 +719,7 @@ stack before the debugger starts to execute the location description.
 :DD.The type of the member to which this object may point to.
 :eDL.
 
-.section Array Types
+:H1.Array Types
 
 :H2.dw_handle DWENTRY DWBeginArray( dw_client cli, dw_handle elt_type, uint stride_size, const char *name, dw_addr_offset scope, uint flags );
 :P.Begin the declaration of an array. This function call must be followed by
@@ -737,13 +741,15 @@ store an individual element of type :hp2.elt_type:ehp2..);
 be called for each dimension in the order that the dimensions appear in
 the source program.  :hp2.info:ehp2. points to an instance of the following
 structure:
-.code begin
+:XMP.
+:SF font=4.
 typedef struct {
     dw_handle	index_type;
     dw_uconst	lo_data;
     dw_uconst	hi_data;
 } dw_dim_info;
-.code end
+:eSF.
+:eXMP.
 :DL.
 :DTHD.Field
 :DDHD.Description
@@ -763,7 +769,7 @@ high bound of this dimension.
 A sufficient number of calls to :hp2.DWArrayDimension:ehp2. must have been
 made before :hp2.DWEndArray:ehp2. is called.
 
-.section Structure Types
+:H1.Structure Types
 
 :H2.dw_handle DWENTRY DWStruct( dw_client cli, uint kind );
 :P.Create a handle for a structure type that will be defined later.
@@ -865,7 +871,7 @@ bit of the bit field value.
 :p.End the current structure.  Client must ensure proper Begin/End
 matching.
 
-.section Enumeration Types
+:H1.Enumeration Types
 
 :H2.dw_handle DWENTRY DWBeginEnumeration( dw_client cli, dw_size_t byte_size, const char *name, dw_addr_offset scope, uint flags );
 :P.Begin the definition of an enumerated type.	:hp2.byte_size:ehp2. is
@@ -885,7 +891,7 @@ with the name :hp2.name:ehp2. to the current enumeration.
 :p.Finish the current enumeration.
 
 
-.section Subroutine Type Declarations
+:h1.Subroutine Type Declarations
 :p.These function calls deal with declarations of subroutines.	That is,
 their prototypes, or for use in creating function pointers.
 :h2.dw_handle DWENTRY DWBeginSubroutineType( dw_client cli, dw_handle return_type, const char *name, dw_addr_offset scope, uint flags );
@@ -913,7 +919,7 @@ in the source code.  As well, the "address class" set of flags used in
 :h2.void DWENTRY DWEndSubroutineType( dw_client cli );
 :p.The client must ensure that proper Begin/End matching is done.
 
-.section Lexical Blocks
+:h1.Lexical Blocks
 :h2.dw_handle DWENTRY DWBeginLexicalBlock( dw_client cli, dw_loc_handle segment, const char *name );
 :p.Begin a new lexical scope.  :hp2.name:ehp2. may be NULL indicating
 an un-named scope.  Two CLIReloc calls will made, one for
@@ -926,7 +932,7 @@ evaluates to the segment this block is in.
 :p.End a lexical scope.  As usual, the client must ensure that
 Begin/End pairs match.
 
-.section Common Blocks
+:h1.Common Blocks
 :h2.dw_handle DWENTRY DWBeginCommonBlock( dw_client cli, dw_loc_handle loc, dw_loc_handle segment, const char *name, unsigned flag );
 :p.Begin the declarations for the common block named :hp2.name:ehp2. and
 located at :hp2.loc:ehp2..  :hp2.segment:ehp2. if non-null indicates which
@@ -939,7 +945,7 @@ segment the common block is in.  The only flag that is valid for the
 :h2.dw_handle DWENTRY DWIncludeCommonBlock( dw_client cli, dw_handle common_block );
 :p.Used in the subroutine scope that references the common block.
 
-.section Subroutines
+:h1.Subroutines
 :h2.dw_handle DWENTRY DWBeginInlineSubroutine( dw_client cli, dw_handle out_of_line, dw_loc_handle ret_addr, dw_loc_handle segment );
 :p.Begin a definition of a particular instance of an inlined
 subroutine.  :hp2.out_of_line:ehp2. is a handle to the "out of line"
@@ -1111,7 +1117,7 @@ address range is filled in by a CLIReloc for :hp2.DW_W_ARANGE_ADDR:ehp2..
 name that has global scope.  :hp2.hdl:ehp2. is the handle for the debugging
 entry that declares/defines the :hp2.name:ehp2..
 
-.chap Required Client Routines
+:H0.Required Client Routines
 :p.The debugging information has several sections indicated by the
 following enumerated type:
 :DL tsize=22.
@@ -1148,7 +1154,7 @@ source files.
 :DD.Defined for convenience; it is the number of sections.
 :eDL.
 
-.section Performance Considerations
+:H1.Performance Considerations
 :p.The DW library does it's best to try and group CLIWrite operations
 together into one larger CLIWrite, and to try and avoid using CLISeek.
 But the library does not go out of it's way to provide this massaging
@@ -1159,9 +1165,7 @@ at the DWFini stage, and the seek will be to the zero offset.  The
 client might wish to optimize performance for only the DW_DEBUG_INFO
 and the DW_DEBUG_LOC sections.
 
-:P.
-:CMT. .section Client Routines
-:H2.void CLISeek( dw_sectnum section, dw_out_offset offset, int mode );
+:H2.void CLISeek( uint section, long offset, uint mode );
 :P.Repositions the pointer in :hp2.section:ehp2. so that subsequent
 output occurs at the new pointer.
 :DL.
@@ -1176,10 +1180,10 @@ output occurs at the new pointer.
 of :hp2.section:ehp2.
 :edl.
 
-:h2.dw_out_offset CLITell( dw_sectnum section );
+:h2.long CLITell( uint section );
 :P.Return the offset of the next byte to be written to the section.
 
-:h2.void CLIReloc( dw_sectnum section, dw_reloc_type reloc_type, ... );
+:h2.void CLIReloc( uint section, uint reloc_type, ... );
 :p.Even when writing BROWSER information, relocations such as DW_W_LOC_PC
 may be asked for.  This is because the DWARF format requires the presence
 of certain fields to indicate something specific about a record.  For
@@ -1190,7 +1194,6 @@ to be a declaration of the subroutine rather than a definition.
 :dd.The section to write a relocation entry to.
 :dt.reloc_type
 :dd.The type of the relocation, as follows:
-:edl.
 :DL.
 :dt.DW_W_LOW_PC
 :dd.Emit a dw_targ_addr.
@@ -1235,8 +1238,9 @@ compilation unit.
 :dd.Defined for convenience.  This enumerated type starts at 0 and
 goes to DW_W_MAX.
 :eDL.
+:edl.
 
-:H2.void CLIWrite( dw_sectnum section, const void *block, dw_size_t len );
+:H2.void CLIWrite( uint section, const void *block, size_t len );
 :P.Writes out the debugging information.
 :DL.
 :DTHD.Parameter
@@ -1257,9 +1261,7 @@ This function cannot return NULL.
 :H2.void CLIFree( void *blk );
 :P.Free the block pointed by :HP2.blk:eHP2..
 
-.chap Examples
-:H2..
-:P.
+:H0.Examples
 :p.:hp2.This section needs a major rewrite.:ehp2.
 :P.The example below shows what functions should be called in order to
 store the debugging information for this C program.
@@ -1268,9 +1270,9 @@ In this example, for all the CLIWrite() calls, only the section id is
 accurate.
 Also for all DWLineNum() calls, the advances in machine instruction
 address are inaccurate.
-:P.
-.code begin
+:xmp.
 test.c:
+:sf font=4.
 
 1 #include <stdlib.h>
 
@@ -1285,236 +1287,282 @@ test.c:
 7    b := 5;
 8 }
 
-.code end
+:esf.
 Functions called by the client and the DWARF library:
-:P.
-:P.Client:
-:P.
-.code begin
-    cli_id = DWInit( DW_LANG_C89, DW_CM_DEBUGGER, "test.c",
-                     "c:\mydir", 0x123, 1, CLILoc, CLIType,
-                     CLIName, CLIWrite, CLIAlloc, CLIFree );
-.code end
-:P.
-:P.DWARF Library:
-:P.
-.code begin
-    /* Initialize the .debug_line section */
-    CLIWrite( DW_DEBUG_LINE, 0, &info, 20, block );
 
-    /* Initialize the .debug_abbrevs section */
-    CLIWrite( DW_DEBUG_ABBREVS, 0, &info, 50, block );
+Client:
+:sf font=4.
 
-    /* Initialize the .debug_pubnames section */
-    CLIWrite( DW_DEBUG_PUBNAMES, 0, &info, 50, block );
+	cli_id = DWInit( DW_LANG_C89, DW_CM_DEBUGGER, "test.c",
+			 "c:\mydir", 0x123, 1, CLILoc, CLIType,
+			 CLIName, CLIWrite, CLIAlloc, CLIFree );
+:esf.
+:exmp.
 
-    /* Initialize the .debug_aranges section */
-    CLIWrite( DW_DEBUG_ARANGES, 0, &info, 50, block );
+DWARF Library:
 
-    /* Write all strings to the string table */
-    CLIWrite( DW_DEBUG_STR, 0, &info, 17, block );
-.code end
-:P.
-:P.Client:
-:P.
-.code begin
+:xmp.
+:sf font=4.
+	/* Initialize the .debug_line section */
+	CLIWrite( DW_DEBUG_LINE, 0, &info, 20, block );
+
+	/* Initialize the .debug_abbrevs section */
+	CLIWrite( DW_DEBUG_ABBREVS, 0, &info, 50, block );
+
+	/* Initialize the .debug_pubnames section */
+	CLIWrite( DW_DEBUG_PUBNAMES, 0, &info, 50, block );
+
+	/* Initialize the .debug_aranges section */
+	CLIWrite( DW_DEBUG_ARANGES, 0, &info, 50, block );
+
+	/* Write all strings to the string table */
+	CLIWrite( DW_DEBUG_STR, 0, &info, 17, block );
+:esf.
+:exmp.
+
+Client:
+
+:xmp.
+:sf font=4.
 #include <stdlib.h>
 
-    DWLineNum( cli_id, DW_LN_STMT|DW_LN_BLK, 1, 1, 0 );
-    DWIncl( id, "stdlib.h" );
-    ...Function calls for "stdlib.h"...
-    DWInclFini( cli_id );
-.code end
-:P.
-:P.DWARF Library:
-:P.
-.code begin
-    CLIWrite( DW_DEBUG_LINE, 0, &info, 28, block );
-    CLIWrite( DW_DEBUG_INFO, 30, &info, 12, block );
-.code end
-:P.
-:P.Client:
-:P.
-.code begin
+	DWLineNum( cli_id, DW_LN_STMT|DW_LN_BLK, 1, 1, 0 );
+	DWIncl( id, "stdlib.h" );
+	...Function calls for "stdlib.h"...
+	DWInclFini( cli_id );
+
+:esf.
+:exmp.
+DWARF Library:
+:xmp.
+:sf font=4.
+
+	CLIWrite( DW_DEBUG_LINE, 0, &info, 28, block );
+	CLIWrite( DW_DEBUG_INFO, 30, &info, 12, block );
+
+:esf.
+:exmp.
+Client:
+
+:xmp.
+:sf font=4.
 int   a;
 
-    DWLineNum( cli_id, DW_LN_STMT, 1, 1, 4 );
-    a_dw_handle = DWModSym( cli_id, a_cg_handle, DW_SM_VAR,
-                    DW_SM_GLO|DW_SM_FILE, DW_SM_NULL );
-.code end
-:P.
-:P.DWARF Library:
-:P.
-.code begin
-    name = CLIName( a_cg_handle );
-            /* It returns the string "a". */
-    type = CLIType( a_cg_handle );
-            /* It returns DW_FT_INTEGER. */
-    loc = CLILoc( a_cg_handle );
-    CLIWrite( DW_DEBUG_LINE, 0, &info, 28, block );
-    CLIWrite( DW_DEBUG_INFO, 0, &info, 24, block );
-    CLIWrite( DW_DEBUG_PUBNAMES, 0, &info, 12, block );
-.code end
-:P.
-:P.Inside CLILoc():
-:P.
-.code begin
-    loc_id = DWLocInt();
-    DWLocAtom( cli_id, a_cg_handle, DW_LOC_STATIC );
-    /* The actual address will be filled in by the client when
-        the debugging information is written to the object file.*/
-    a_loc_hd = DWLocFini( loc_id );
-    return a_loc_hd;
-.code end
-:P.
-:P.Client:
-:P.
-.code begin
+	DWLineNum( cli_id, DW_LN_STMT, 1, 1, 4 );
+	a_dw_handle = DWModSym( cli_id, a_cg_handle, DW_SM_VAR,
+			DW_SM_GLO|DW_SM_FILE, DW_SM_NULL );
+
+:esf.
+:exmp.
+DWARF Library:
+
+:xmp.
+:sf font=4.
+	name = CLIName( a_cg_handle );
+		/* It returns the string "a". */
+	type = CLIType( a_cg_handle );
+		/* It returns DW_FT_INTEGER. */
+	loc = CLILoc( a_cg_handle );
+	CLIWrite( DW_DEBUG_LINE, 0, &info, 28, block );
+	CLIWrite( DW_DEBUG_INFO, 0, &info, 24, block );
+	CLIWrite( DW_DEBUG_PUBNAMES, 0, &info, 12, block );
+
+:esf.
+:exmp.
+Inside CLILoc():
+
+:xmp.
+:sf font=4.
+	loc_id = DWLocInt();
+	DWLocAtom( cli_id, a_cg_handle, DW_LOC_STATIC );
+	/* The actual address will be filled in by the client when
+	   the debugging information is written to the object file.*/
+	a_loc_hd = DWLocFini( loc_id );
+	return a_loc_hd;
+
+:esf.
+:exmp.
+Client:
+
+:xmp.
+:sf font=4.
 typedef near char NCHAR;
 
-    DWLineNum( cli_id, DW_LN_STMT, 1, 1, 14 );
-    mod_handle = DWMod( cli_id, DW_FT_CHAR, DW_MOD_NEAR );
-    nchar_handle = DWModSym( cli_id, nchar_cg_handle,
+	DWLineNum( cli_id, DW_LN_STMT, 1, 1, 14 );
+	mod_handle = DWMod( cli_id, DW_FT_CHAR, DW_MOD_NEAR );
+	nchar_handle = DWModSym( cli_id, nchar_cg_handle,
 		DW_SM_TYPEDEF, DW_SM_NULL, DW_SM_NULL );
-.code end
-:P.
-:P.DWARF Library:
-:P.
-.code begin
-    name = CLIName( nchar_cg_handle );
-            /* It returns the string "NCHAR". */
-    type = CLIType( nchar_cg_handle );
-            /* It returns mod_handle. */
-    CLIWrite( DW_DEBUG_LINE, 0, &info, 20, block );
-    CLIWrite( DW_DEBUG_INFO, 0, &info, 24, block );
-.code end
-:P.
-:P.Client:
-:P.
-.code begin
+
+:esf.
+:exmp.
+DWARF Library:
+
+:xmp.
+:sf font=4.
+	name = CLIName( nchar_cg_handle );
+		/* It returns the string "NCHAR". */
+	type = CLIType( nchar_cg_handle );
+		/* It returns mod_handle. */
+	CLIWrite( DW_DEBUG_LINE, 0, &info, 20, block );
+	CLIWrite( DW_DEBUG_INFO, 0, &info, 24, block );
+
+:esf.
+:exmp.
+Client:
+:xmp.
+:sf font=4.
+
 void main();
 
-    DWLineNum( cli_id, DW_LN_DEFAULT, 1, 1, 23 );
-    pro_handle = DWBegProc( cli_id, DW_SB_NEAR_CALL, DW_FT_VOID,
-                    ret_loc_hd, DW_LOC_NULL,
-                    DW_SB_GLOBAL_SUB|DW_SB_FUNC_PROTOTYPE );
-.code end
-:P.
-:P.In order to get ret_loc_ad:
-:P.
-.code begin
-    loc_id = DWLocInit();
-    DWLocAtom( cli_id, some_cg_handle, DW_LOC_STATIC );
-            /* Assume that the return address of main() is stored
-                in a symbol with some_cg_handle as its handle.
-                The actual address will be filled in by the
-                client when the debugging information is written
-                to the object file.				     */
-    ret_loc_ad = DWLocFini( cli_id );
-.code end
-:P.
-:P.DWARF Library:
-:P.
-.code begin
-    CLIWrite( DW_DEBUG_LINE, 0, &info, 20, block );
-.code end
-:P.
-:P.Client:
-:P.
-.code begin
+	DWLineNum( cli_id, DW_LN_DEFAULT, 1, 1, 23 );
+	pro_handle = DWBegProc( cli_id, DW_SB_NEAR_CALL, DW_FT_VOID,
+			ret_loc_hd, DW_LOC_NULL,
+			DW_SB_GLOBAL_SUB|DW_SB_FUNC_PROTOTYPE );
+
+:esf.
+:exmp.
+In order to get ret_loc_ad:
+:xmp.
+:sf font=4.
+
+	loc_id = DWLocInit();
+	DWLocAtom( cli_id, some_cg_handle, DW_LOC_STATIC );
+		/* Assume that the return address of main() is stored
+		   in a symbol with some_cg_handle as its handle.
+		   The actual address will be filled in by the
+		   client when the debugging information is written
+		   to the object file.				     */
+	ret_loc_ad = DWLocFini( cli_id );
+
+:esf.
+:exmp.
+DWARF Library:
+
+:xmp.
+:sf font=4.
+	CLIWrite( DW_DEBUG_LINE, 0, &info, 20, block );
+
+:esf.
+:exmp.
+Client:
+
+:xmp.
+:sf font=4.
 {
-    DWLineNum( cli_id, DW_LN_BLK, 1, 1, 0 );
-.code end
-:P.
-:P.DWARF Library:
-:P.
-.code begin
-    CLIWrite( DW_DEBUG_LINE, 0, &info, 24, block );
-.code end
-:P.
-:P.Client:
-:P.
-.code begin
+	DWLineNum( cli_id, DW_LN_BLK, 1, 1, 0 );
+
+:esf.
+:exmp.
+DWARF Library:
+
+:xmp.
+:sf font=4.
+	CLIWrite( DW_DEBUG_LINE, 0, &info, 24, block );
+
+:esf.
+:exmp.
+Client:
+
+:xmp.
+:sf font=4.
 NCHAR b;
 
-    DWLineNum( cli_id, DW_LN_STMT, 1, 1, 10 );
-    b_handle = DWModSym( cli_id, b_cg_handle, DW_SM_VAR,
+	DWLineNum( cli_id, DW_LN_STMT, 1, 1, 10 );
+	b_handle = DWModSym( cli_id, b_cg_handle, DW_SM_VAR,
 			DW_SM_NULL, DW_SM_LOC|DW_SM_ROUT );
-.code end
-:P.
-:P.DWARF Library:
-:P.
-.code begin
-    loc = CLILoc( b_cg_handle );
-    name = CLIName( b_cg_handle );
-            /* It returns the string "b". */
-    type = CLIType( b_cg_handle );
-            /* It returns nchar_handle. */
-    CLIWrite( DW_DEBUG_LINE, 0, &info, 20, block );
-.code end
-:P.
-:P.Inside CLILoc():
-:P.
-.code begin
-    loc_id = DWLocInt();
-    DWLocAtom( cli_id, b_cg_handle, DW_LOC_STACK );
-    /* The offset from stack frame base will be filled in by
-        the client when the debugging information is written
-        to the object file.	 */
-    b_loc_hd = DWLocFini( loc_id );
-    return b_loc_hd;
-.code end
-:P.
-:P.Client:
-:P.
-.code begin
+
+:esf.
+:exmp.
+DWARF Library:
+
+:xmp.
+:sf font=4.
+	loc = CLILoc( b_cg_handle );
+	name = CLIName( b_cg_handle );
+		/* It returns the string "b". */
+	type = CLIType( b_cg_handle );
+		/* It returns nchar_handle. */
+	CLIWrite( DW_DEBUG_LINE, 0, &info, 20, block );
+
+:esf.
+:exmp.
+Inside CLILoc():
+
+:xmp.
+:sf font=4.
+	loc_id = DWLocInt();
+	DWLocAtom( cli_id, b_cg_handle, DW_LOC_STACK );
+	/* The offset from stack frame base will be filled in by
+	   the client when the debugging information is written
+	   to the object file.	 */
+	b_loc_hd = DWLocFini( loc_id );
+	return b_loc_hd;
+
+:esf.
+:exmp.
+Client:
+:xmp.
+:sf font=4.
+
 b := 5;
-    DWLineNum( cli_id, DW_LN_STMT, 1, 4, 14 );
-.code end
-:P.
-:P.DWARF Library:
-:P.
-.code begin
-    CLIWrite( DW_DEBUG_LINE, 0, &info, 24, block );
-.code end
-:P.
-:P.Client:
-:P.
-.code begin
+	DWLineNum( cli_id, DW_LN_STMT, 1, 4, 14 );
+
+:esf.
+:exmp.
+DWARF Library:
+
+:xmp.
+:sf font=4.
+	CLIWrite( DW_DEBUG_LINE, 0, &info, 24, block );
+
+:esf.
+:exmp.
+Client:
+:xmp.
+:sf font=4.
+
 }
-    DWLineNum( cli_id, DW_LN_DEFAULT, 1, 1, 4 );
-    DWEndProc( cli_id, pro_handle );
-    main_handle = DWModSym( cli_id, main_cg_handle, DW_SM_SUB,
+	DWLineNum( cli_id, DW_LN_DEFAULT, 1, 1, 4 );
+	DWEndProc( cli_id, pro_handle );
+	main_handle = DWModSym( cli_id, main_cg_handle, DW_SM_SUB,
 			DW_SM_NULL, DW_SM_NULL );
-.code end
-:P.
-:P.DWARF Library:
-:P.
-.code begin
-    name = CLIName( main_cg_handle );
-            /* It returns the string "main" */
-    type = CLIType( main_cg_handle );
-            /* It returns pro_handle */
-    CLIWrite( DW_DEBUG_LINE, 0, &info, 24, block );
-    CLIWrite( DW_DEBUG_INFO, -50, &info, 86, block );
-    CLIWrite( DW_DEBUG_REF, 0, &info, 12, block );
-    CLIWrite( DW_DEBUG_PUBNAMES, 0, &info, 12, block );
-            /* For the global object "main" */
-.code end
-:P.
-:P.Client:
-:P.
-.code begin
-    DWFini( cli_id );
-.code end
-:P.
-:P.DWARF Library:
-:P.
-.code begin
-    CLIWrite( DW_DEBUG_LINE, 0, &info, 24, block );
-    CLIWrite( DW_DEBUG_INFO, -120, &info, 54, block );
-.code end
-.chap Revision History
+
+:esf.
+:exmp.
+DWARF Library:
+
+:xmp.
+:sf font=4.
+	name = CLIName( main_cg_handle );
+		/* It returns the string "main" */
+	type = CLIType( main_cg_handle );
+		/* It returns pro_handle */
+	CLIWrite( DW_DEBUG_LINE, 0, &info, 24, block );
+	CLIWrite( DW_DEBUG_INFO, -50, &info, 86, block );
+	CLIWrite( DW_DEBUG_REF, 0, &info, 12, block );
+	CLIWrite( DW_DEBUG_PUBNAMES, 0, &info, 12, block );
+		/* For the global object "main" */
+
+:esf.
+:exmp.
+Client:
+:xmp.
+:sf font=4.
+
+	DWFini( cli_id );
+
+:esf.
+:exmp.
+DWARF Library:
+
+:xmp.
+:sf font=4.
+	CLIWrite( DW_DEBUG_LINE, 0, &info, 24, block );
+	CLIWrite( DW_DEBUG_INFO, -120, &info, 54, block );
+:esf.
+:exmp.
+
+:H0.Revision History
 :DL.
 :DTHD.Draft
 :DDHD.Description
@@ -1525,12 +1573,6 @@ draft 5 of dwarf.
 :DD.Changed the arguments to a number of the function calls for use with
 draft 6 of dwarf.
 :edl.
-.*
-.if &e'&dohelp eq 0 .do begin
+
 :BACKM.
-.cd set 2
-:INDEX.
-.do end
-.cd set 1
-.cntents end_of_book
 :eGDOC.

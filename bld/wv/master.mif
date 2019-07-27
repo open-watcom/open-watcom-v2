@@ -95,8 +95,7 @@ extra_c_flags_srcmgt = $(incl_file_opts)__srcmgt.h
 # inc_dirs
 ###########
 inc_dirs = -I. -I"$(wv_dir)/h" -I"$(dig_dir)/h" -I"$(syshdir)" -I"$(hdir)" -Ih -I"$(rdir)/strings"
-inc_dirs += $(aui_inc_dirs) $(gui_inc_dirs) $(ui_inc_dirs) $(ui_extra_inc_dirs)
-inc_dirs += $(hlpview_inc_dirs) $(wpi_inc_dirs) $(commonui_inc_dirs)
+inc_dirs += $(aui_inc_dirs) $(gui_inc_dirs) $(ui_inc_dirs) $(ui_extra_inc_dirs) $(hlpview_inc_dirs) $(wpi_inc_dirs) $(commonui_inc_dirs)
 !ifeq sys_rtdll 1
 !else
 !ifeq sys_windowed 1

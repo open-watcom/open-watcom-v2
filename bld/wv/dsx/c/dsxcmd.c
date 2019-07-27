@@ -137,7 +137,7 @@ void ProcSysOptInit( void )
         ptr = ptr;
     }
 #else
-    ptr = (char *)DPMIGetSegmentBaseAddress( _psp ) + PSP_CMDTAIL_OFF; // +80h
+    ptr = (char *)( (unsigned_8 *)DPMIGetSegmentBaseAddress( _psp ) + PSP_CMDTAIL_OFF );
     ptr[*(unsigned_8 *)ptr + 1] = NULLCHAR;
     cmdStart = (char *)( (unsigned_8 *)ptr + 1 );
 #endif

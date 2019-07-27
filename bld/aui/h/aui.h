@@ -468,7 +468,7 @@ extern void                 WndRowDirty( a_window wnd, wnd_row row );
 extern void                 WndRowDirtyImmed( a_window wnd, wnd_row row );
 extern void                 WndDirty( a_window );
 extern void                 WndDirtyCurr( a_window );
-extern void                 WndSetColours( a_window, gui_colour_items );
+extern void                 WndSetColours( a_window, int, gui_colour_set *);
 extern void                 WndBackGround( gui_colour colour );
 extern void                 WndDirtyRect( a_window wnd, gui_ord x, wnd_row y, gui_ord width, wnd_row height );
 

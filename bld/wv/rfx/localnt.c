@@ -143,7 +143,7 @@ error_handle LocalSetDrv( int drv )
             }
         }
     }
-    return( StashErrCode( SYS_ERR_ERR, OP_LOCAL ) );
+    return( StashErrCode( -1, OP_LOCAL ) );
 }
 
 int LocalGetDrv( void )
@@ -188,7 +188,7 @@ error_handle LocalSetFileAttr( const char *name, long dos_attrib )
 /****************************************************************/
 {
     if( !SetFileAttributes( name, DOS2NTATTR( dos_attrib ) ) ) {
-        return( StashErrCode( SYS_ERR_ERR, OP_LOCAL ) );
+        return( StashErrCode( -1, OP_LOCAL ) );
     }
     return( 0 );
 }

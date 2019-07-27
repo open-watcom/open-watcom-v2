@@ -84,10 +84,8 @@
     #define _OTHER_TO_WIDE(c)           (c)
 #endif
 
-#if defined( __QNX__ ) && !defined( IN_SLIB ) && !defined( SAFE_PRINTF ) && !defined( __WIDECHAR__ )
-#if defined( _M_I86 )
-#else
-#endif
+
+#if defined( __QNX__ ) && defined( _M_I86 ) && !defined( IN_SLIB ) && !defined( __WIDECHAR__ )
 #else
 
 /* forward references */
@@ -99,9 +97,9 @@ static void write_wide_string( FAR_WIDE_STRING str, SPECS *specs, slib_callback_
 static void write_skinny_string( FAR_ASCII_STRING str, SPECS *specs, slib_callback_t *out_putc );
 #endif
 
-#if defined( SAFE_PRINTF )
+#ifdef SAFE_PRINTF
 int __F_NAME(__prtf_s,__wprtf_s)( void __SLIB *dest, const CHAR_TYPE *format, va_list args, const char **msg, slib_callback_t *out_putc )
-#elif defined( IN_SLIB ) && !defined( __WIDECHAR__ )
+#elif defined( IN_SLIB )
 int __F_NAME(__prtf_slib,__wprtf_slib)( void __SLIB *dest, const CHAR_TYPE *format, va_list args, slib_callback_t *out_putc, int ptr_size )
 #else
 int __F_NAME(__prtf,__wprtf)( void __SLIB *dest, const CHAR_TYPE *format, va_list args, slib_callback_t *out_putc )

@@ -145,7 +145,7 @@ static void MemTrackFini()
     if( TrackFile != STDERR_FILENO ) {
         if( lseek( TrackFile, 0, SEEK_END ) != 0 ) {
             PopErrBox( TrackErr );
-        } else if( TRMemPrtList() > 0 ) {
+        } else if( TRMemPrtList() != 0 ) {
             PopErrBox( UnFreed );
         }
         close( TrackFile );
