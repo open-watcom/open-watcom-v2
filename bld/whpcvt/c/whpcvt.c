@@ -125,7 +125,7 @@ enum {
 
 /* global variables */
 
-char Help_fname[100];
+char *Help_fname = NULL;
 char Header_File[100];
 char Footer_File[100];
 
@@ -258,16 +258,16 @@ static const char *Error_list[]={
     "Invalid number of parameters."
 };
 
-static char *Options_file = NULL;
+static char         *Options_file = NULL;
 
-static char *Chk_buf = NULL;
+static char         *Chk_buf = NULL;
 
-static char Output_file_ext[10];
+static char         Output_file_ext[10];
 
-static ctx_def **Ctx_list_end = NULL;
+static ctx_def      **Ctx_list_end = NULL;
 
-static keyword_def *Keyword_list = NULL;
-static int Keyword_id = 1;
+static keyword_def  *Keyword_list = NULL;
+static int          Keyword_id = 1;
 
 static void print_help( void )
 /****************************/
@@ -285,54 +285,57 @@ static void error_quit( void )
     longjmp( Jmp_buf, 1 );
 }
 
-void error_str( const char *err_str )
-/***********************************/
+static void message_str( const char *msg_str )
+/********************************************/
 {
-    printf( "****%s\n", err_str );
-    error_quit();
+    printf( "****%s\n", msg_str );
 }
 
-void error( int err, bool line_num )
-/**********************************/
+void error( int err )
+/*******************/
 {
-    if( line_num ) {
-        printf( "Error in input file on line %d.\n", Line_num );
-    }
-    error_str( Error_list[err] );
+    printf( "Error in input file on line %d.\n", Line_num );
+    message_str( Error_list[err] );
+    error_quit();
 }
 
 #if 0
 static void error_line( int err, int line_num )
 /*********************************************/
 {
-    Line_num = line_num;
-
-    error( err, true );
+    printf( "Error in input file on line %d.\n", line_num );
+    message_str( Error_list[err] );
+    error_quit();
 }
 #endif
 
-static void warning_str( const char *warn_str )
-/*********************************************/
+static void error_err( int err )
+/******************************/
 {
-    printf( "****%s\n", warn_str );
+    message_str( Error_list[err] );
+    error_quit();
 }
 
-static void warning( int err, bool line_num )
-/*******************************************/
+static void warning( int err )
+/****************************/
 {
-    if( line_num ) {
-        printf( "Warning - in input file on line %d.\n", Line_num );
-    }
-    warning_str( Error_list[err] );
+    printf( "Warning - in input file on line %d.\n", Line_num );
+    message_str( Error_list[err] );
 }
 
 static void warning_line( int err, int line_num )
 /***********************************************/
 {
-    Line_num = line_num;
-
-    warning( err, true );
+    printf( "Warning - in input file on line %d.\n", line_num );
+    message_str( Error_list[err] );
 }
+
+void warning_msg( const char *msg, int line_num )
+/***********************************************/
+{
+    printf( "*** WARNING: %s on line %d.\n", msg, line_num );
+}
+
 
 void *check_alloc( size_t size )
 /******************************/
@@ -342,7 +345,7 @@ void *check_alloc( size_t size )
     p = malloc( size );
 
     if( p == NULL && size != 0) {
-        error( ERR_NO_MEMORY, false );
+        error_err( ERR_NO_MEMORY );
     }
 
     return( p );
@@ -354,7 +357,7 @@ void *check_realloc( void *ptr, size_t size )
     ptr = realloc( ptr, size );
 
     if( ptr == NULL && size != 0 ) {
-        error( ERR_NO_MEMORY, false );
+        error_err( ERR_NO_MEMORY );
     }
 
     return( ptr );
@@ -524,7 +527,7 @@ static int process_args( int argc, char *argv[] )
                 if( start_arg < argc && (i = atoi( argv[start_arg] )) >= 0 ) {
                     Right_Margin = i;
                 } else {
-                    error( ERR_BAD_ARGS, false );
+                    error_err( ERR_BAD_ARGS );
                 }
                 break;
             case ARG_TAB:
@@ -532,25 +535,25 @@ static int process_args( int argc, char *argv[] )
                 if( start_arg < argc && (i = atoi( argv[start_arg] )) >= 0 ) {
                     Text_Indent = i;
                 } else {
-                    error( ERR_BAD_ARGS, false );
+                    error_err( ERR_BAD_ARGS );
                 }
                 break;
             case ARG_HD:
                 start_arg++;
                 if( start_arg < argc ) {
-                    strncpy( Header_File, argv[start_arg], 100 );
-                    Header_File[99] = '\0';
+                    strncpy( Header_File, argv[start_arg], sizeof( Header_File ) - 1 );
+                    Header_File[sizeof( Header_File ) - 1] = '\0';
                 } else {
-                    error( ERR_BAD_ARGS, false );
+                    error_err( ERR_BAD_ARGS );
                 }
                 break;
             case ARG_FT:
                 start_arg++;
                 if( start_arg < argc ) {
-                    strncpy( Header_File, argv[start_arg], 100 );
-                    Header_File[99] = '\0';
+                    strncpy( Footer_File, argv[start_arg], sizeof( Footer_File ) - 1 );
+                    Footer_File[sizeof( Footer_File ) - 1] = '\0';
                 } else {
-                    error( ERR_BAD_ARGS, false );
+                    error_err( ERR_BAD_ARGS );
                 }
                 break;
             case ARG_HB:
@@ -571,7 +574,7 @@ static int process_args( int argc, char *argv[] )
                     _new( Ipf_or_Html_title, strlen( argv[start_arg] ) + 1 );
                     strcpy( Ipf_or_Html_title, argv[start_arg] );
                 } else {
-                    error( ERR_BAD_ARGS, false );
+                    error_err( ERR_BAD_ARGS );
                 }
                 break;
             case ARG_MC:
@@ -583,7 +586,7 @@ static int process_args( int argc, char *argv[] )
                     _new( IB_def_topic, strlen( argv[start_arg] ) + 1 );
                     strcpy( IB_def_topic, argv[start_arg] );
                 } else {
-                    error( ERR_BAD_ARGS, false );
+                    error_err( ERR_BAD_ARGS );
                 }
                 break;
             case ARG_DS:
@@ -592,7 +595,7 @@ static int process_args( int argc, char *argv[] )
                     _new( IB_help_desc, strlen( argv[start_arg] ) + 1 );
                     strcpy( IB_help_desc, argv[start_arg] );
                 } else {
-                    error( ERR_BAD_ARGS, false );
+                    error_err( ERR_BAD_ARGS );
                 }
                 break;
             case ARG_OF:
@@ -601,7 +604,7 @@ static int process_args( int argc, char *argv[] )
                     _new( Options_file, strlen( argv[start_arg] ) + 1 );
                     strcpy( Options_file, argv[start_arg] );
                 } else {
-                    error( ERR_BAD_ARGS, false );
+                    error_err( ERR_BAD_ARGS );
                 }
                 break;
             default:
@@ -735,6 +738,24 @@ char *skip_blank( char *ptr )
     return( ptr );
 }
 
+static int read_char( void )
+/**************************/
+{
+    int         c;
+
+#if defined( __UNIX__ )
+    do {
+        c = fgetc( In_file );
+    } while( c == '\r' );
+#else
+    c = fgetc( In_file );
+#endif
+    if( c != EOF && (char)c == WHP_SPACE_NOBREAK ) {
+        c = ' ';    // convert special blanks to regular blanks
+    }
+    return( c );
+}
+
 bool read_line( void )
 /********************/
 {
@@ -747,14 +768,9 @@ bool read_line( void )
     eat_blank = false;
     for( ;; ) {
         ++Line_num;
-        for( buf = Line_buf, len = 0;; ++buf ) {
-#if defined( __UNIX__ )
-            do {
-                c = fgetc( In_file );
-            } while( c == '\r' );
-#else
-            c = fgetc( In_file );
-#endif
+        len = 0;
+        for( buf = Line_buf;; ++buf ) {
+            c = read_char();
             if( c == EOF ) {
                 return( false );
             }
@@ -764,13 +780,7 @@ bool read_line( void )
                 Line_buf = _realloc( Line_buf, Line_buf_size );
                 buf = &Line_buf[len - 1];
             }
-
-            ch = (char)c;
-            if( ch == WHP_SPACE_NOBREAK ) {
-                ch = ' ';        // convert special blanks to regular blanks
-            }
-            *buf = ch;
-
+            *buf = (char)c;
             if( *buf == '\n' ) {
                 if( eat_blank ) {
                     eat_blank = false;
@@ -1242,7 +1252,7 @@ static ctx_def *define_ctx( void )
     if( ctx != NULL && ctx->title != NULL ) {
         if(( head_level != 0 ) && ( ctx->head_level != 0 )) {
             printf( "topic already exists: %s\n", ctx_name );
-            warning( ERR_CTX_EXISTS, true );
+            warning( ERR_CTX_EXISTS );
         }
         for( i = 0; i < strlen( ctx_name ); ++i ) {
             o_ch = ctx_name[i];
@@ -1262,7 +1272,7 @@ static ctx_def *define_ctx( void )
 
     title = strtok( NULL, Delim );
     if( title == NULL ) {
-        error( ERR_NO_TITLE, true );
+        error( ERR_NO_TITLE );
     }
 
     browse_name = strtok( NULL, Delim );
@@ -1387,7 +1397,8 @@ static void sort_ctx_list( void )
         if( ctx->title == NULL ) {
             /* ctx item without a definition */
             sprintf( buf, "The context id '%s' is used but not defined", ctx->ctx_name );
-            error_str( buf );
+            message_str( buf );
+            error_quit();
         }
         for( sort_spot = &sort_list; *sort_spot != NULL; sort_spot = &((*sort_spot)->next) ) {
             if( stricmp( skip_prep( ctx->title ), skip_prep( (*sort_spot)->title ) ) < 0 ) {
@@ -1855,15 +1866,38 @@ static void init_whp( void )
     }
 }
 
+static char *normalize_fname( char *file, const char *name, const char *fext )
+/****************************************************************************/
+{
+    char                *dot;
+    char                *slash;
+    size_t              len;
+
+    len = strlen( name ) + 10;   // add enough space for various file extensions
+    file = realloc( file, len );
+    strcpy( file, name );
+    dot = strrchr( file, '.' );
+#ifdef __UNIX__
+    slash = strrchr( file, '/' );
+#else
+    for( slash = file; (slash = strchr( slash, '/' )) != NULL; slash++ ) {
+        *slash = '\\';
+    }
+    slash = strrchr( file, '\\' );
+#endif
+    if( dot == NULL || ( slash != NULL && dot < slash ) ) {
+        strcat( file, fext );
+    }
+    return( file );
+}
+
 int main( int argc, char *argv[] )
 /********************************/
 {
-    char                file[200];
+    char                *file;
     int                 start_arg;
     void                *start_alloc;
     int                 size;
-    char                *dot;
-    char                *slash;
     int                 rc;
 
 #ifndef __WATCOMC__
@@ -1871,6 +1905,7 @@ int main( int argc, char *argv[] )
     _argv = argv;
 #endif
 
+    file = NULL;
     rc = -1;
     if( argc < 1 ) {
         print_help();
@@ -1896,12 +1931,7 @@ int main( int argc, char *argv[] )
         goto error_exit;
     }
 
-    strcpy( file, argv[start_arg] );
-    dot = strrchr( file, '.' );
-    slash = strrchr( file, '\\' );
-    if( dot == NULL || ( slash != NULL && dot < slash ) ) {
-        strcat( file, EXT_INPUT_FILE );
-    }
+    file = normalize_fname( file, argv[start_arg], EXT_INPUT_FILE );
 
     Line_num = 0;
     In_file = fopen( file, "r" );
@@ -1911,8 +1941,11 @@ int main( int argc, char *argv[] )
     }
 
     /* this is for the RTF 'Up' button support */
-    strcpy( Help_fname, file );
-    strcpy( strrchr( Help_fname, '.' ), EXT_HLP_FILE );
+    if( Output_type == OUT_RTF ) {
+        Help_fname = malloc( strlen( file ) + 10 );
+        strcpy( Help_fname, file );
+        strcpy( strrchr( Help_fname, '.' ), EXT_HLP_FILE );
+    }
 
     if( Do_index ) {
         strcpy( strrchr( file, '.' ), EXT_IDX_FILE );
@@ -1950,7 +1983,6 @@ int main( int argc, char *argv[] )
         }
     }
 
-
     switch( Output_type ) {
     case OUT_RTF:
         strcpy( Output_file_ext, EXT_OUTRTF_FILE );
@@ -1972,12 +2004,7 @@ int main( int argc, char *argv[] )
     if( argc == start_arg + 1 ) {
         strcpy( strrchr( file, '.' ), Output_file_ext );
     } else {
-        strcpy( file, argv[start_arg + 1] );
-        dot = strrchr( file, '.' );
-        slash = strrchr( file, '\\' );
-        if( dot == NULL || ( slash != NULL && dot < slash ) ) {
-            strcat( file, Output_file_ext );
-        }
+        file = normalize_fname( file, argv[start_arg + 1], Output_file_ext );
     }
     Out_file = fopen( file, "w" );
     if( Out_file == NULL ) {
@@ -2079,6 +2106,12 @@ int main( int argc, char *argv[] )
     rc = 0;
 
 error_exit:
+
+    if( Output_type == OUT_RTF ) {
+        free( Help_fname );
+    }
+    free( file );
+
     if( Idx_file != NULL ) {
         fclose( Idx_file );
     }

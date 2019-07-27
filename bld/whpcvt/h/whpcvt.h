@@ -238,7 +238,7 @@ WHPCVT_GBL char         Tab_xmp_char;
 
 extern char             Header_File[];
 extern char             Footer_File[];
-extern char             Help_fname[];
+extern char             *Help_fname;
 
 extern const char       Fonttype_roman[];
 extern const char       Fonttype_symbol[];
@@ -254,8 +254,8 @@ WHPCVT_GBL char         *IB_help_desc;
 
 
 /**** externed functions ****/
-extern void         error_str( const char *err_str );
-extern void         error( int err, bool line_num );
+extern void         error( int err );
+extern void         warning_msg( const char *msg, int line_num );
 extern void         *check_alloc( size_t size );
 extern void         *check_realloc( void *ptr, size_t size );
 extern void         whp_fprintf( FILE *file, const char *fmt, ... );

@@ -194,7 +194,7 @@ static void new_list( char chtype )
 
     ++List_level;
     if( List_level == MAX_LISTS ) {
-        error( ERR_MAX_LISTS, true );
+        error( ERR_MAX_LISTS );
     }
     Curr_list = &Lists[List_level];
     switch( chtype ) {
@@ -434,11 +434,11 @@ void rtf_trans_line( section_def *section )
             Curr_ctx->empty = false;
             ctx_name = strchr( ptr + 1, ch );
             if( ctx_name == NULL ) {
-                error( ERR_BAD_LINK_DFN, true );
+                error( ERR_BAD_LINK_DFN );
             }
             ctx_text = strchr( ctx_name + 1, ch );
             if( ctx_text == NULL ) {
-                error( ERR_BAD_LINK_DFN, true );
+                error( ERR_BAD_LINK_DFN );
             }
             *ctx_text = '\0';
             ctx_text = ctx_name + 1;
@@ -467,15 +467,15 @@ void rtf_trans_line( section_def *section )
             Curr_ctx->empty = false;
             file_name = strchr( ptr + 1, ch );
             if( file_name == NULL ) {
-                error( ERR_BAD_LINK_DFN, true );
+                error( ERR_BAD_LINK_DFN );
             }
             ctx_name = strchr( file_name + 1, ch );
             if( ctx_name == NULL ) {
-                error( ERR_BAD_LINK_DFN, true );
+                error( ERR_BAD_LINK_DFN );
             }
             ctx_text = strchr( ctx_name + 1, ch );
             if( ctx_text == NULL ) {
-                error( ERR_BAD_LINK_DFN, true );
+                error( ERR_BAD_LINK_DFN );
             }
             *ctx_text = '\0';
             ctx_text = ctx_name + 1;

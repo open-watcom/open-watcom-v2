@@ -383,13 +383,13 @@ void wiki_trans_line( section_def *section )
             ctx_name = ptr + 1;
             ptr = strchr( ptr + 1, ch );
             if( ptr == NULL ) {
-                error( ERR_BAD_LINK_DFN, true );
+                error( ERR_BAD_LINK_DFN );
             }
             *ptr = '\0';
             ctx_text = ptr + 1;
             ptr = strchr( ctx_text + 1, ch );
             if( ptr == NULL ) {
-              error( ERR_BAD_LINK_DFN, true );
+                error( ERR_BAD_LINK_DFN );
             }
             *ptr = '\0';
             add_link( ctx_name );
@@ -403,15 +403,15 @@ void wiki_trans_line( section_def *section )
             Curr_ctx->empty = false;
             file_name = strchr( ptr + 1, ch );
             if( file_name == NULL ) {
-                error( ERR_BAD_LINK_DFN, true );
+                error( ERR_BAD_LINK_DFN );
             }
             ctx_name = strchr( file_name + 1, ch );
             if( ctx_name == NULL ) {
-                error( ERR_BAD_LINK_DFN, true );
+                error( ERR_BAD_LINK_DFN );
             }
             ctx_text = strchr( ctx_name + 1, ch );
             if( ctx_text == NULL ) {
-                error( ERR_BAD_LINK_DFN, true );
+                error( ERR_BAD_LINK_DFN );
             }
             *ctx_text = '\0';
             ctx_text = ctx_name + 1;

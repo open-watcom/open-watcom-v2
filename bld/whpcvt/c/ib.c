@@ -140,12 +140,6 @@ static line_postfix     Line_postfix = LPOSTFIX_NONE;
 static char             IB_Hyperlink_L;
 static char             IB_Hyperlink_R;
 
-static void warning( char *msg, unsigned int line )
-/*************************************************/
-{
-    printf( "*** WARNING: %s on line %d.\n", msg, line );
-}
-
 static void set_compact( char *line )
 /***********************************/
 {
@@ -421,7 +415,7 @@ static void new_list( char chtype )
 
     ++List_level;
     if( List_level == MAX_LISTS ) {
-        error( ERR_MAX_LISTS, true );
+        error( ERR_MAX_LISTS );
     }
     Curr_list = &Lists[List_level];
     switch( chtype ) {
@@ -658,7 +652,7 @@ void ib_trans_line( section_def *section )
             if( ch == WHP_FLINK ) {
                 file_name = strchr( ptr + 1, ch );
                 if( file_name == NULL ) {
-                    error( ERR_BAD_LINK_DFN, true );
+                    error( ERR_BAD_LINK_DFN );
                 }
                 *file_name = '\0';
             } else {
@@ -666,13 +660,13 @@ void ib_trans_line( section_def *section )
             }
             ctx_name = strchr( file_name + 1, ch );
             if( ctx_name == NULL ) {
-                error( ERR_BAD_LINK_DFN, true );
+                error( ERR_BAD_LINK_DFN );
             }
             *ctx_name = '\0';
 
             ctx_text = strchr( ctx_name + 1, ch );
             if( ctx_text == NULL ) {
-                error( ERR_BAD_LINK_DFN, true );
+                error( ERR_BAD_LINK_DFN );
             }
             *ctx_text = '\0';
 
@@ -701,7 +695,7 @@ void ib_trans_line( section_def *section )
 
             // if the link name is too long then we warn & truncate it
             if( strlen( ctx_text ) > ctr ) {
-                warning( "Hyperlink name too long", Line_num );
+                warning_msg( "Hyperlink name too long", Line_num );
                 ctx_text[ctr] = '\0';
             }
 
@@ -1030,7 +1024,7 @@ static void output_section_ib( section_def *section )
 {
     size_t              len;
     ctx_def             *ctx;
-    unsigned int        line;
+    int                 line;
     char                *label;
     size_t              label_len;
     char                ch;
@@ -1093,7 +1087,7 @@ static void output_section_ib( section_def *section )
 
             // output the topic name that belongs to the context
             if( ctx == NULL && ch != IB_HLINK_BREAK ) {
-                warning( "Link to nonexistent context", line );
+                warning_msg( "Link to nonexistent context", line );
                 printf( "For topic=%s\n", topic );
                 whp_fwrite( label, 1, label_len - 1, Out_file );
             } else {
