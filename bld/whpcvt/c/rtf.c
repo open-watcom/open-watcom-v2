@@ -291,6 +291,7 @@ void rtf_trans_line( section_def *section )
     /* check for special pre-processing stuff first */
     ptr = Line_buf;
     ch = *ptr;
+    indent = 0;
 
     if( Blank_line && ( ch != WHP_LIST_ITEM || Curr_list->compact != LIST_SPACE_COMPACT ) ) {
         Blank_line = false;

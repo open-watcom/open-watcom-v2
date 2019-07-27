@@ -299,16 +299,6 @@ void error( int err )
     error_quit();
 }
 
-#if 0
-static void error_line( int err, int line_num )
-/*********************************************/
-{
-    printf( "Error in input file on line %d.\n", line_num );
-    message_str( Error_list[err] );
-    error_quit();
-}
-#endif
-
 static void error_err( int err )
 /******************************/
 {
