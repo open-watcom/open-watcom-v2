@@ -839,27 +839,26 @@ char *whole_keyword_line( char *ptr )
     return( ptr );
 }
 
-size_t trans_add_char( char ch, section_def *section, size_t *size )
-/******************************************************************/
+size_t trans_add_char( char ch, section_def *section )
+/****************************************************/
 {
     section->section_size++;
-    if( section->section_size > *size ) {
-        *size += 1024;    // grow by a good, big amount
-        _renew( section->section_text, *size );
+    if( section->section_size > section->allocated_size ) {
+        section->allocated_size += 1024;    // grow by a good, big amount
+        _renew( section->section_text, section->allocated_size );
     }
     section->section_text[section->section_size - 1] = ch;
     return( 1 );
 }
 
-size_t trans_add_str( const char *str, section_def *section, size_t *size )
-/*************************************************************************/
+size_t trans_add_str( const char *str, section_def *section )
+/***********************************************************/
 {
     size_t      len;
 
     len = 0;
     for( ; *str != '\0'; ++str ) {
-        trans_add_char( *str, section, size );
-        ++len;
+        len += trans_add_char( *str, section );
     }
 
     return( len );
@@ -958,22 +957,26 @@ void add_ctx_keyword( ctx_def *ctx, const char *keyword )
 }
 
 
-static size_t trans_line( section_def *section, size_t size )
-/***********************************************************/
+static void trans_line( section_def *section )
+/********************************************/
 {
     switch( Output_type ) {
     case OUT_RTF:
-        return( rtf_trans_line( section, size ) );
+        rtf_trans_line( section );
+        break;
     case OUT_IPF:
-        return( ipf_trans_line( section, size ) );
+        ipf_trans_line( section );
+        break;
     case OUT_IB:
-        return( ib_trans_line( section, size ) );
+        ib_trans_line( section );
+        break;
     case OUT_HTML:
-        return( html_trans_line( section, size ) );
+        html_trans_line( section );
+        break;
     case OUT_WIKI:
-        return( wiki_trans_line( section, size ) );
+        wiki_trans_line( section );
+        break;
     }
-    return( 0 );
 }
 
 static void topic_init( void )
@@ -1006,10 +1009,8 @@ static bool read_topic_text( ctx_def *ctx, bool is_blank, int order_num )
     bool                more_to_do;
     section_def         *section;
     section_def         **ins_section;
-    size_t              sect_size;
 
     section = NULL;
-    sect_size = 0;
     topic_init();
     for( ;; ) {
         more_to_do = read_line();
@@ -1021,11 +1022,10 @@ static bool read_topic_text( ctx_def *ctx, bool is_blank, int order_num )
         }
         if( section == NULL ) {
             _new( section, 1 );
-            section->section_text = NULL;
+            section->allocated_size = 0;
             section->section_size = 0;
-            sect_size = 0;
         }
-        sect_size = trans_line( section, sect_size );
+        trans_line( section );
     }
 
     if( section != NULL ) {

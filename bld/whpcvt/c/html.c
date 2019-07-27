@@ -82,10 +82,10 @@ static size_t       Trans_len = 0;
 static unsigned     Tab_list[MAX_TABS];
 static int          tabs_num = 0;
 
-static void draw_line( section_def *section, size_t *size )
-/*********************************************************/
+static void draw_line( section_def *section )
+/*******************************************/
 {
-    trans_add_str( "<HR>\n", section, size );
+    trans_add_str( "<HR>\n", section );
 }
 
 static size_t translate_char_html( char ch, char next_ch, char *buf )
@@ -147,39 +147,39 @@ static char *translate_str_html( const char *str )
     return( Trans_str );
 }
 
-static size_t trans_add_char_html( char ch, char next_ch, section_def *section, size_t *size )
-/********************************************************************************************/
+static size_t trans_add_char_html( char ch, char next_ch, section_def *section )
+/******************************************************************************/
 {
     char        buf[IPF_TRANS_LEN];
 
     translate_char_html( ch, next_ch, buf );
-    return( trans_add_str( buf, section, size ) );
+    return( trans_add_str( buf, section ) );
 }
 
-static size_t trans_add_str_html( const char *str, section_def *section, size_t *size )
-/*************************************************************************************/
+static size_t trans_add_str_html( const char *str, section_def *section )
+/***********************************************************************/
 {
     size_t      len;
 
     len = 0;
     for( ; *str != '\0'; ++str ) {
-        len += trans_add_char_html( str[0], str[1], section, size );
+        len += trans_add_char_html( str[0], str[1], section );
     }
     return( len );
 }
 
-static size_t trans_add_list( char *list, section_def *section, size_t *size, char *ptr )
-/***************************************************************************************/
+static size_t trans_add_list( char *list, section_def *section, char *ptr )
+/*************************************************************************/
 {
     size_t      len;
 
-    len = trans_add_str( list, section, size );
+    len = trans_add_str( list, section );
     ++ptr;
 #if 0
     if( *ptr == 'c' ) {
-        len += trans_add_str( " compact", section, size );
+        len += trans_add_str( " compact", section );
     }
-    len += trans_add_str( ">\n", section, size );
+    len += trans_add_str( ">\n", section );
 #endif
     return( len );
 }
@@ -203,8 +203,8 @@ static void read_tabs( char *tab_line )
     }
 }
 
-static size_t tab_align( size_t ch_len, section_def *section, size_t *size )
-/**************************************************************************/
+static size_t tab_align( size_t ch_len, section_def *section )
+/************************************************************/
 {
     int         i;
     size_t      len;
@@ -219,7 +219,7 @@ static size_t tab_align( size_t ch_len, section_def *section, size_t *size )
         }
     }
     for( j = len; j > 0; j-- ) {
-        trans_add_str_html( HTML_SPACE, section, size );
+        trans_add_str_html( HTML_SPACE, section );
     }
     return( len );
 }
@@ -229,8 +229,8 @@ void html_topic_init( void )
 {
 }
 
-size_t html_trans_line( section_def *section, size_t size )
-/*********************************************************/
+void html_trans_line( section_def *section )
+/******************************************/
 {
     char                *ptr;
     char                *end;
@@ -255,59 +255,59 @@ size_t html_trans_line( section_def *section, size_t size )
     case WHP_TABXMP:
         if( *skip_blank( ptr + 1 ) == '\0' ) {
             Tab_xmp = false;
-            trans_add_str( "</xmp>\n", section, &size );
+            trans_add_str( "</xmp>\n", section );
             Blank_line_sfx = false;     // remove following blanks
         } else {
             read_tabs( ptr + 1 );
-            trans_add_str( "<xmp>\n", section, &size );
+            trans_add_str( "<xmp>\n", section );
             Tab_xmp = true;
             Blank_line_pfx = false;     // remove preceding blanks
         }
-        return( size );
+        return;
     case WHP_BOX_ON:
         /* Table support is the closest thing to boxing in IPF, but it
            doesn't work well with changing fonts on items in the tables
            (the edges don't line up). So we draw long lines at the
            top and bottom instead */
-        draw_line( section, &size );
+        draw_line( section );
         Blank_line_pfx = false;
-        return( size );
+        return;
     case WHP_BOX_OFF:
-        draw_line( section, &size );
+        draw_line( section );
         Blank_line_sfx = false;
-        return( size );
+        return;
     case WHP_OLIST_START:
-        trans_add_list( "<OL>\n", section, &size, ptr );
+        trans_add_list( "<OL>\n", section, ptr );
         Blank_line_pfx = false;
-        return( size );
+        return;
     case WHP_LIST_START:
-        trans_add_list( "<UL>\n", section, &size, ptr );
+        trans_add_list( "<UL>\n", section, ptr );
         Blank_line_pfx = false;
-        return( size );
+        return;
     case WHP_DLIST_START:
-        trans_add_str( "<DL>\n", section, &size );
+        trans_add_str( "<DL>\n", section );
         Blank_line_pfx = false;
-        return( size );
+        return;
     case WHP_SLIST_START:
-        trans_add_list( "<UL>\n", section, &size, ptr );
+        trans_add_list( "<UL>\n", section, ptr );
         Blank_line_pfx = false;
-        return( size );
+        return;
     case WHP_SLIST_END:
-        trans_add_str( "</UL>\n", section, &size );
+        trans_add_str( "</UL>\n", section );
         Blank_line_sfx = false;
-        return( size );
+        return;
     case WHP_OLIST_END:
-        trans_add_str( "</OL>\n", section, &size );
+        trans_add_str( "</OL>\n", section );
         Blank_line_sfx = false;
-        return( size );
+        return;
     case WHP_LIST_END:
-        trans_add_str( "</UL>\n", section, &size );
+        trans_add_str( "</UL>\n", section );
         Blank_line_sfx = false;
-        return( size );
+        return;
     case WHP_DLIST_END:
-        trans_add_str( "</DL>\n", section, &size );
+        trans_add_str( "</DL>\n", section );
         Blank_line_sfx = false;
-        return( size );
+        return;
     case WHP_LIST_ITEM:
     case WHP_DLIST_TERM:
         /* eat blank lines before list items and terms */
@@ -316,7 +316,7 @@ size_t html_trans_line( section_def *section, size_t size )
     case WHP_CTX_KW:
         ptr = whole_keyword_line( ptr );
         if( ptr == NULL ) {
-            return( size );
+            return;
         }
         break;
     }
@@ -330,7 +330,7 @@ size_t html_trans_line( section_def *section, size_t size )
                must pend the line */
             Blank_line_pfx = true;
         }
-        return( size );
+        return;
     }
 
     /* An explanation of 'Blank_line_pfx': when we hit a blank line,
@@ -342,7 +342,7 @@ size_t html_trans_line( section_def *section, size_t size )
 
     if( Blank_line_pfx ) {
         if( Blank_line_sfx ) {
-            line_len += trans_add_str( "<BR>", section, &size );
+            line_len += trans_add_str( "<BR>", section );
         }
         Blank_line_pfx = false;
     }
@@ -360,7 +360,7 @@ size_t html_trans_line( section_def *section, size_t size )
     ch = *ptr;
     if( ch != WHP_LIST_ITEM && ch != WHP_DLIST_TERM && ch != WHP_DLIST_DESC && !Tab_xmp ) {
         /* a .br in front of li and dt would generate extra spaces */
-        line_len += trans_add_str( "<BR>", section, &size );
+        line_len += trans_add_str( "<BR>", section );
     }
 
     term_fix = false;
@@ -371,7 +371,7 @@ size_t html_trans_line( section_def *section, size_t size )
 //              trans_add_str( "</hp2>", section, &size );
                 term_fix = false;
             }
-            trans_add_char( '\n', section, &size );
+            trans_add_char( '\n', section );
             break;
         } else if( ch == WHP_HLINK || ch == WHP_DFN ) {
             Curr_ctx->empty = false;
@@ -390,10 +390,10 @@ size_t html_trans_line( section_def *section, size_t size )
             *ptr = '\0';
             add_link( ctx_name );
             sprintf( buf, "<A HREF=\"#%s\">", ctx_name );
-            line_len += trans_add_str( buf, section, &size );
-            line_len += trans_add_str_html( ctx_text, section, &size );
+            line_len += trans_add_str( buf, section );
+            line_len += trans_add_str_html( ctx_text, section );
             ch_len += strlen( ctx_text );
-            line_len += trans_add_str( "</A>", section, &size );
+            line_len += trans_add_str( "</A>", section );
             ++ptr;
         } else if( ch == WHP_FLINK ) {
             Curr_ctx->empty = false;
@@ -416,21 +416,21 @@ size_t html_trans_line( section_def *section, size_t size )
             *file_name = '\0';
             file_name = ptr + 1;
             sprintf( buf, "<A HREF=\"#%s\">", ctx_name );
-            line_len += trans_add_str( buf, section, &size );
-            line_len += trans_add_str_html( ctx_text, section, &size );
+            line_len += trans_add_str( buf, section );
+            line_len += trans_add_str_html( ctx_text, section );
             ch_len += strlen( ctx_text );
-            line_len += trans_add_str( "</A>", section, &size );
+            line_len += trans_add_str( "</A>", section );
             ptr = ctx_text + strlen( ctx_text ) + 1;
         } else if( ch == WHP_LIST_ITEM ) {
             /* list item */
-            line_len += trans_add_str( "<LI>", section, &size );
+            line_len += trans_add_str( "<LI>", section );
             ptr = skip_blank( ptr + 1 );
         } else if( ch == WHP_DLIST_DESC ) {
-            trans_add_str( "<DD>", section, &size );
+            trans_add_str( "<DD>", section );
             ptr = skip_blank( ptr + 1 );
         } else if( ch == WHP_DLIST_TERM ) {
             /* definition list term */
-            line_len += trans_add_str( "<DT>", section, &size );
+            line_len += trans_add_str( "<DT>", section );
             term_fix = true;
             ptr = skip_blank( ptr + 1 );
             Blank_line_sfx = false;
@@ -476,7 +476,7 @@ size_t html_trans_line( section_def *section, size_t size )
                 *buf = '\0';
                 break;
             }
-            line_len += trans_add_str( buf, section, &size );
+            line_len += trans_add_str( buf, section );
             ptr = end + 1;
         } else if( ch == WHP_FONTSTYLE_START ) {
             ++ptr;
@@ -496,13 +496,13 @@ size_t html_trans_line( section_def *section, size_t size )
                     break;
                 }
             }
-            line_len += trans_add_str( Font_match[font_idx], section, &size );
+            line_len += trans_add_str( Font_match[font_idx], section );
             Font_list[Font_list_curr] = font_idx;
             ++Font_list_curr;
             ++ptr;
         } else if( ch == WHP_FONTSTYLE_END ) {
             --Font_list_curr;
-            line_len += trans_add_str( Font_end[Font_list[Font_list_curr]], section, &size );
+            line_len += trans_add_str( Font_end[Font_list[Font_list_curr]], section );
             ++ptr;
         } else if( ch == WHP_FONTTYPE ) {
             ++ptr;
@@ -517,13 +517,13 @@ size_t html_trans_line( section_def *section, size_t size )
             }
             ptr = end + 1;
             end = strchr( ptr, WHP_FONTTYPE );
-            line_len += trans_add_str( buf, section, &size );
+            line_len += trans_add_str( buf, section );
             ptr = end + 1;
         } else {
             ++ptr;
             Curr_ctx->empty = false;
             if( Tab_xmp && ch == Tab_xmp_char ) {
-                len = tab_align( ch_len, section, &size );
+                len = tab_align( ch_len, section );
                 ch_len += len;
                 line_len += len * sizeof( HTML_SPACE );
                 ptr = skip_blank( ptr );
@@ -531,20 +531,18 @@ size_t html_trans_line( section_def *section, size_t size )
             if( line_len > 120 && ch == ' ' && !Tab_xmp ) {
                 /* break onto the next line */
                 line_len = 0;
-                trans_add_char( '\n', section, &size );
+                trans_add_char( '\n', section );
                 if( *ptr == ' ' ) {
-                    line_len += trans_add_str( HTML_SPACE, section, &size );
+                    line_len += trans_add_str( HTML_SPACE, section );
                     ++ch_len;
                     ptr++;
                 }
             } else {
-                line_len += trans_add_char_html( ch, *ptr, section, &size );
+                line_len += trans_add_char_html( ch, *ptr, section );
                 ++ch_len;
             }
         }
     }
-
-    return( size );
 }
 
 static void output_hdr( void )
