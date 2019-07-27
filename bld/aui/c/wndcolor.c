@@ -33,29 +33,32 @@
 
 #include "_aui.h"
 
-void WndSetColours( a_window wnd, int num_colours, gui_colour_set *colours )
+void WndSetColours( a_window wnd, gui_colour_items colours )
 {
     gui_colour_set      *main_colours;
-    gui_colour_set      back;
+    gui_colour_set      background_color;
 
-    back = colours[GUI_BACKGROUND];
+    background_color = colours.colour[GUI_BACKGROUND];
     if( wnd == WndMain ) {
         main_colours = GUIGetWindowColours( WndMain->gui );
-        colours[GUI_BACKGROUND] = main_colours[GUI_BACKGROUND];
+        colours.colour[GUI_BACKGROUND] = main_colours[GUI_BACKGROUND];
         GUIMemFree( main_colours );
     }
-    GUISetWindowColours( wnd->gui, num_colours, colours );
-    colours[GUI_BACKGROUND] = back;
+    GUISetWindowColours( wnd->gui, colours );
+    colours.colour[GUI_BACKGROUND] = background_color;
 }
 
 void WndBackGround( gui_colour colour )
 {
-    gui_colour_set      *colours;
+    gui_colour_set      *colour_set;
+    gui_colour_items    colours;
 
-    colours = GUIGetWindowColours( WndMain->gui );
-    colours[GUI_BACKGROUND].fore = colour;
-    colours[GUI_BACKGROUND].back = colour;
-    GUISetWindowColours( WndMain->gui, WND_FIRST_UNUSED, colours );
-    GUIMemFree( colours );
+    colour_set = GUIGetWindowColours( WndMain->gui );
+    colour_set[GUI_BACKGROUND].fore = colour;
+    colour_set[GUI_BACKGROUND].back = colour;
+    colours.num_items = WND_FIRST_UNUSED;
+    colours.colour = colour_set;
+    GUISetWindowColours( WndMain->gui, colours );
+    GUIMemFree( colour_set );
 }
 

@@ -274,21 +274,21 @@ bool GUIGetRGBFromUser( gui_rgb init_rgb, gui_rgb *new_rgb )
 }
 
 /*
- * GUISetColours -- record the colours selected by the application
+ * GUIXSetColours -- record the colours selected by the application
  */
 
-bool GUIXSetColours( gui_window *wnd, int num_attrs, gui_colour_set *colours )
+bool GUIXSetColours( gui_window *wnd, gui_colour_items colours )
 {
     size_t          size;
     gui_colour_set  *attrs;
 
-    if( colours != NULL ) {
-        size = sizeof( gui_colour_set ) * num_attrs;
+    if( colours.colour != NULL ) {
+        size = sizeof( gui_colour_set ) * colours.num_items;
         attrs = (gui_colour_set *)GUIMemAlloc( size );
         if( attrs != NULL ) {
             wnd->attrs = attrs;
-            wnd->num_attrs = num_attrs;
-            memcpy( attrs, colours, size );
+            wnd->num_attrs = colours.num_items;
+            memcpy( attrs, colours.colour, size );
             SetBKBrush( wnd );
             return( true );
         }
@@ -319,12 +319,11 @@ HBRUSH GUIFreeBKBrush( gui_window * wnd )
     return( brush );
 }
 
-void GUISetWindowColours( gui_window *wnd, int num_colours,
-                          gui_colour_set *colours )
+void GUISetWindowColours( gui_window *wnd, gui_colour_items colours )
 {
     GUIFreeColours( wnd );
     GUIFreeBKBrush( wnd );
-    GUISetColours( wnd, num_colours, colours );
+    GUISetColours( wnd, colours );
     GUIWndDirty( wnd );
 }
 

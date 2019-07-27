@@ -23,7 +23,7 @@ support.lib : $(obj_files)
 
 lib: .PROCEDURE
 !ifeq compiler watcom
-	@if exist tmp.clb @erase tmp.clb
+	@if exist tmp.clb @%erase tmp.clb
 	@for %i in ($?) do @%append tmp.clb -+%i
 	wlib -b -q $* @tmp.clb
 !else ifeq compiler ibmc

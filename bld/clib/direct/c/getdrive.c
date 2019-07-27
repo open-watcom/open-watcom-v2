@@ -56,10 +56,13 @@ _WCRTLINK int _getdrive( void )
     DosQCurDisk( &dnum, &ndrv );
     return( (int)dnum );
 #elif defined( __NT__ )
-    char        dir[MAX_PATH];  // [4]
+    char        dir[MAX_PATH];
+    DWORD       rc;
 
-    GetCurrentDirectory( sizeof( dir ), dir );
-    return( tolower( (unsigned char)dir[0] ) - 'a' + 1 );
+    rc = GetCurrentDirectory( sizeof( dir ), dir );
+    if( rc && rc < sizeof( dir ) )
+        return( tolower( (unsigned char)dir[0] ) - 'a' + 1 );
+    return( 0 );
 #elif defined( __RDOS__ ) || defined( __RDOSDEV__ )
     return( RdosGetCurDrive() + 1 );
 #endif

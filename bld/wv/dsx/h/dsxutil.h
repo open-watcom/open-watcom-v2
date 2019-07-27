@@ -33,6 +33,8 @@
 #include "extender.h"
 #include "dpmi.h"
 #include "machtype.h"
+#include "dpmi.h"
+
 
 typedef union {
     addr32_ptr  s;

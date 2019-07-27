@@ -36,6 +36,7 @@
 #include "menu.h"
 #include "win.h"
 
+
 static bool dragThumb;
 
 /*
@@ -47,7 +48,7 @@ vi_rc HandleMouseEvent( void )
     window_id   wid;
     info        *cinfo;
     window      *w;
-    ctl_id      id;
+    ctl_id      menu_id;
     bool        diff_word;
     vi_rc       rc;
 
@@ -171,9 +172,9 @@ vi_rc HandleMouseEvent( void )
             }
         }
         if( EditFlags.Menus && wid == menu_window_id ) {
-            id = GetMenuIdFromCoord( win_x - 1 );
-            if( id != NO_ID ) {
-                return( SetToMenuId( id ) );
+            menu_id = GetMenuIdFromCoord( win_x - 1 );
+            if( menu_id != NO_ID ) {
+                return( SetToMenuId( menu_id ) );
             }
         }
     }

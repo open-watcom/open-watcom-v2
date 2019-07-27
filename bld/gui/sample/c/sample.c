@@ -467,7 +467,6 @@ bool MainWndGUIEventProc( gui_window *gui, gui_event gui_ev, void *param )
     gui_coord           scroll;
     char                *text;
     int                 num;
-    gui_colour_set      *colours;
     gui_point           point;
     char                *fontinfo;
     char                back;
@@ -650,11 +649,17 @@ bool MainWndGUIEventProc( gui_window *gui, gui_event gui_ev, void *param )
             break;
         case MENU_REPLACE_COLOURS :
             if( Child3Wnd != NULL ) {
+                gui_colour_set  *colour_set;
                 num = GUIGetNumWindowColours( Child3Wnd );
-                colours = GUIGetWindowColours( Child3Wnd );
-                GUIMemFree( colours );
+                colour_set = GUIGetWindowColours( Child3Wnd );
+                GUIMemFree( colour_set );
 #if !default_colours
-                GUISetWindowColours( Child3Wnd, GUI_NUM_ATTRS, &ParentColours );
+                {
+                    gui_color_root colours;
+                    colours.num_items = GUI_NUM_ATTRS;
+                    colours.colour = &ParentColours;
+                    GUISetWindowColours( Child3Wnd, colours );
+                }
 #endif
             }
             break;

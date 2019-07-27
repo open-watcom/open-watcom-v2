@@ -92,6 +92,10 @@ static unsigned_8 CoffImportX86Text[] = {
  0xFF,0x25,0x00,0x00,0x00,0x00
 };
 
+static unsigned_8 CoffImportX64Text[] = {
+ 0xFF,0x15,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00
+};
+
 static void InitCoffFile( coff_lib_file *c_file )
 {
     c_file->string_table = _ClientAlloc( c_file->coff_file_hnd, INIT_MAX_SIZE_COFF_STRING_TABLE );
@@ -427,6 +431,12 @@ static int CoffCreateImport( coff_file_handle coff_file_hnd, import_sym *import 
         AddCoffSymSec( &c_file, COFF_IMAGE_COMDAT_SELECT_NODUPLICATES, section_no );
         symbol_text_exportedName = AddCoffSymbol( &c_file, import->exportedName, 0x0, section_no, 0x20, COFF_IMAGE_SYM_CLASS_EXTERNAL, 0 );
         break;
+    case COFF_IMAGE_FILE_MACHINE_AMD64:
+/* .text section header */
+        section_no = AddCoffSection( &c_file, ".text", sizeof( CoffImportX64Text ), 1, COFF_IMAGE_SCN_ALIGN_2BYTES | COFF_IMAGE_SCN_LNK_COMDAT | COFF_IMAGE_SCN_CNT_CODE | COFF_IMAGE_SCN_MEM_READ | COFF_IMAGE_SCN_MEM_EXECUTE );
+        AddCoffSymSec( &c_file, COFF_IMAGE_COMDAT_SELECT_NODUPLICATES, section_no );
+        symbol_text_exportedName = AddCoffSymbol( &c_file, import->exportedName, 0x0, section_no, 0x20, COFF_IMAGE_SYM_CLASS_EXTERNAL, 0 );
+        break;
     default:
         return( ORL_ERROR );
     }
@@ -505,6 +515,12 @@ static int CoffCreateImport( coff_file_handle coff_file_hnd, import_sym *import 
 /* .text relocations records */
         CreateCoffReloc( coff_file_hnd, 0x2, symbol___imp_exportedName, COFF_IMAGE_REL_I386_DIR32 );
         break;
+    case COFF_IMAGE_FILE_MACHINE_AMD64:
+/* .text section data */
+        AddDataImpLib( coff_file_hnd, CoffImportX64Text, sizeof( CoffImportX64Text ) );
+/* .text relocations records */
+        CreateCoffReloc( coff_file_hnd, 0x2, symbol___imp_exportedName, COFF_IMAGE_REL_AMD64_ADDR64 );
+        break;
     }
 
     type = 0;
@@ -527,6 +543,9 @@ static int CoffCreateImport( coff_file_handle coff_file_hnd, import_sym *import 
             break;
         case COFF_IMAGE_FILE_MACHINE_I386:
             type = COFF_IMAGE_REL_I386_DIR32NB;
+            break;
+        case COFF_IMAGE_FILE_MACHINE_AMD64:
+            type = COFF_IMAGE_REL_AMD64_ADDR32NB;
             break;
         }
 /* .idata$5 section data - name */

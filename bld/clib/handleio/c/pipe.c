@@ -32,8 +32,8 @@
 
 
 #include "variety.h"
-#include <fcntl.h>
-#include <io.h>
+//#include <fcntl.h>
+//#include <io.h>
 #include <stdio.h>
 #include <stdlib.h>
 #if defined(__NT__)
@@ -41,6 +41,7 @@
 #elif defined(__OS2__)
     #include <wos2.h>
 #endif
+#include "wio.h"
 #include "rterrno.h"
 #include "fileacc.h"
 #include "iomode.h"
@@ -62,6 +63,8 @@ _WCRTLINK int _pipe( int *phandles, unsigned psize, int textmode )
 #elif defined(__OS2__) && !defined(__386__)
     HFILE               hRead, hWrite;
     USHORT              rc;
+#elif defined(__DOS__)
+    char                tmp_name[FILENAME_MAX + 1];
 #endif
     int                 hReadPosix, hWritePosix;
 
@@ -72,79 +75,91 @@ _WCRTLINK int _pipe( int *phandles, unsigned psize, int textmode )
 //  }
 
     /*** Create the pipes (note that psize==0 ==> use default size) ***/
-    #if defined(__NT__)
-        sa.nLength = sizeof( SECURITY_ATTRIBUTES );
-        sa.lpSecurityDescriptor = NULL;
-        sa.bInheritHandle = (((textmode & O_NOINHERIT)==O_NOINHERIT)?FALSE:TRUE);
-        rc = CreatePipe( &hRead, &hWrite, &sa, psize );
-        if( rc == FALSE ) {
-            return( __set_errno_nt() );
-        }
-    #elif defined(__OS2__)
-        if( psize == 0 )  psize = 4096;
-        #ifdef __386__
-            rc = DosCreatePipe( &hRead, &hWrite, psize );
-        #else
-            rc = DosMakePipe( &hRead, &hWrite, psize );
-        #endif
-        if( rc != NO_ERROR ) {
-            _RWD_errno = ENOMEM;
-            return( -1 );
-        }
-    #endif
+#if defined(__NT__)
+    sa.nLength = sizeof( SECURITY_ATTRIBUTES );
+    sa.lpSecurityDescriptor = NULL;
+    sa.bInheritHandle = (((textmode & O_NOINHERIT)==O_NOINHERIT)?FALSE:TRUE);
+    rc = CreatePipe( &hRead, &hWrite, &sa, psize );
+    if( rc == FALSE ) {
+        return( __set_errno_nt() );
+    }
+#elif defined(__OS2__)
+    if( psize == 0 )
+        psize = 4096;
+  #ifdef __386__
+    rc = DosCreatePipe( &hRead, &hWrite, psize );
+  #else
+    rc = DosMakePipe( &hRead, &hWrite, psize );
+  #endif
+    if( rc != NO_ERROR ) {
+        _RWD_errno = ENOMEM;
+        return( -1 );
+    }
+#elif defined(__DOS__)
+    /* Emulate a pipe using a temporary file.  */
+    /* unused parameters */ (void)psize;
+    if( tmpnam( tmp_name ) == NULL )
+        return( -1 );
+#endif
 
 // removed by JBS - used sa struct instead
-//    /*** Make read handle inheritable ***/
-//    #ifdef __NT__
-//        rc = DuplicateHandle( GetCurrentProcess(), hRead, GetCurrentProcess(),
-//                              &osHandle, 0, TRUE, DUPLICATE_SAME_ACCESS );
-//        if( rc == FALSE ) {
-//            CloseHandle( hRead );
-//            CloseHandle( hWrite );
-//            return( -1 );
-//        }
+///*** Make read handle inheritable ***/
+//#ifdef __NT__
+//    rc = DuplicateHandle( GetCurrentProcess(), hRead, GetCurrentProcess(),
+//                          &osHandle, 0, TRUE, DUPLICATE_SAME_ACCESS );
+//    if( rc == FALSE ) {
 //        CloseHandle( hRead );
-//        hRead = osHandle;
-//    #elif defined(__OS2__)
-//        /* Handle is inheritable by default */
-//    #endif
+//        CloseHandle( hWrite );
+//        return( -1 );
+//    }
+//    CloseHandle( hRead );
+//    hRead = osHandle;
+//#elif defined(__OS2__)
+//    /* Handle is inheritable by default */
+//#endif
 //
 //    /*** Make write handle inheritable ***/
-//    #ifdef __NT__
-//        rc = DuplicateHandle( GetCurrentProcess(), hWrite, GetCurrentProcess(),
-//                              &osHandle, 0, TRUE, DUPLICATE_SAME_ACCESS );
-//        if( rc == FALSE ) {
-//            CloseHandle( hRead );
-//            CloseHandle( hWrite );
-//            return( -1 );
-//        }
+//#ifdef __NT__
+//    rc = DuplicateHandle( GetCurrentProcess(), hWrite, GetCurrentProcess(),
+//                          &osHandle, 0, TRUE, DUPLICATE_SAME_ACCESS );
+//    if( rc == FALSE ) {
+//        CloseHandle( hRead );
 //        CloseHandle( hWrite );
-//        hWrite = osHandle;
-//    #elif defined(__OS2__)
-//        /* Handle is inheritable by default */
-//    #endif
+//        return( -1 );
+//    }
+//    CloseHandle( hWrite );
+//    hWrite = osHandle;
+//#elif defined(__OS2__)
+//    /* Handle is inheritable by default */
+//#endif
 
     /*** Initialize the POSIX-level handles ***/
-    hReadPosix = _hdopen( (int)hRead, textmode|_O_RDONLY );
-    hWritePosix = _hdopen( (int)hWrite, textmode|_O_WRONLY );
+#if defined(__DOS__)
+    /* Emulate a pipe using a temporary file.  */
+    hReadPosix = open( tmp_name, textmode | O_RDONLY /*| O_TEMP*/ );
+    hWritePosix = open( tmp_name, textmode | O_WRONLY /*| O_TEMP*/ );
+#else
+    hReadPosix = _hdopen( (int)hRead, textmode | _O_RDONLY );
+    hWritePosix = _hdopen( (int)hWrite, textmode | _O_WRONLY );
+#endif
     if( hReadPosix == -1  ||  hWritePosix == -1 ) {
         if( hReadPosix != -1 ) {
             close( hReadPosix );
         } else {
-            #if defined(__NT__)
-                CloseHandle( hRead );
-            #elif defined(__OS2__)
-                DosClose( hRead );
-            #endif
+#if defined(__NT__)
+            CloseHandle( hRead );
+#elif defined(__OS2__)
+            DosClose( hRead );
+#endif
         }
         if( hWritePosix != -1 ) {
             close( hWritePosix );
         } else {
-            #if defined(__NT__)
-                CloseHandle( hWrite );
-            #elif defined(__OS2__)
-                DosClose( hWrite );
-            #endif
+#if defined(__NT__)
+            CloseHandle( hWrite );
+#elif defined(__OS2__)
+            DosClose( hWrite );
+#endif
         }
         return( -1 );
     }

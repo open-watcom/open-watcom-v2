@@ -89,19 +89,19 @@ static ATTR MakeAttr( gui_colour fore, gui_colour back )
  * GUIXSetColours -- record the colours wanted
  */
 
-bool GUIXSetColours( gui_window *wnd, int num_attrs, gui_colour_set *colours )
+bool GUIXSetColours( gui_window *wnd, gui_colour_items colours )
 {
     size_t  size;
     int     i;
     ATTR    *attrs;
 
-    size = sizeof( ATTR ) * num_attrs;
+    size = sizeof( ATTR ) * colours.num_items;
     attrs = (ATTR *)GUIMemAlloc( size );
     if( attrs != NULL ) {
         wnd->attrs = attrs;
-        wnd->num_attrs = num_attrs;
-        for( i = 0; i < num_attrs; i++ ) {
-            attrs[i] = MakeAttr( colours[i].fore, colours[i].back );
+        wnd->num_attrs = colours.num_items;
+        for( i = 0; i < colours.num_items; i++ ) {
+            attrs[i] = MakeAttr( colours.colour[i].fore, colours.colour[i].back );
         }
         if( wnd->vbarmenu != NULL ) {
 #if !defined( ISQL_COLOURS )
@@ -136,12 +136,12 @@ ATTR GUIMakeColour( gui_colour fore, gui_colour back )
     return( MakeAttr( fore, back )  );
 }
 
-void GUISetWindowColours( gui_window *wnd, int num_attrs, gui_colour_set *colours )
+void GUISetWindowColours( gui_window *wnd, gui_colour_items colours )
 {
     gui_control *control;
 
     GUIFreeColours( wnd );
-    GUISetColours( wnd, num_attrs, colours );
+    GUISetColours( wnd, colours );
     for( control = wnd->controls; control != NULL; control = control->sibling ) {
         GUIRefreshControl( control->parent, control->id );
     }

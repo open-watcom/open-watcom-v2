@@ -219,7 +219,7 @@ bool WndShutDownHook( void )
         SaveMainWindowPos();
     }
     FiniHelp();
-#if defined( GUI_IS_GUI ) && defined(__OS2__)
+#if defined( GUI_IS_GUI ) && defined( __OS2__ )
     KillProgOvlay(); // must be done before windows are shut down
 #endif
     return( true );

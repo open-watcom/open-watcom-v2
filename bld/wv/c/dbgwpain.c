@@ -350,6 +350,7 @@ void ProcPendingPaint( void )
 {
     gui_colour_set      *set;
     a_window            wnd;
+    gui_colour_items    colours;
 
     if( _IsOff( SW_PENDING_REPAINT ) )
         return;
@@ -367,7 +368,9 @@ void ProcPendingPaint( void )
             set = WndColours;
         }
         WndSetFontInfo( wnd, GetWndFont( wnd ) );
-        WndSetColours( wnd, WndNumColours, set );
+        colours.num_items = WndNumColours;
+        colours.colour = set;
+        WndSetColours( wnd, colours );
     }
 }
 

@@ -64,9 +64,9 @@ typedef struct menu {
     char            str[1];
 } menu;
 
-ctl_id CurrentMenuId;
+int CurrentMenuNumber;
 
-static ctl_id   maxMenuId;
+static ctl_id   menuCnt;
 
 static menu     *menuHead, *menuTail, *currMenu;
 static menu     *windowGadgetMenu;
@@ -323,7 +323,7 @@ vi_rc ViEndMenu( void )
         return( ERR_INVALID_MENU );
     }
     if( currMenu == menuTail ) {
-        maxMenuId++;
+        menuCnt++;
     }
     ch = toupper( currMenu->hi_char._char );
     if( ch >= 'A' && ch <='Z' ) {
@@ -389,7 +389,9 @@ vi_rc DoItemDelete( const char *data )
     char        mname[MAX_STR];
     char        str[MAX_STR];
     menu_item   *cmi, *dmi;
-    int         i, id;
+    int         i;
+    ctl_id      id;
+    ctl_id      menu_id;
     windim      maxwidth;
 
     if( currMenu != NULL ) {
@@ -401,25 +403,26 @@ vi_rc DoItemDelete( const char *data )
         return( ERR_INVALID_MENU );
     }
     data = GetNextWord1( data, str );
-    id = atoi( str );
-    if( id < 0 ) {
+    i = atoi( str );
+    if( i < 0 ) {
         id = cmenu->itemcnt - 1;
-    }
-    if( id >= cmenu->itemcnt ) {
+    } else if( i < cmenu->itemcnt ) {
+        id = i;
+    } else {
         return( ERR_INVALID_MENU );
     }
-    i = 0;
     maxwidth = 0;
     dmi = NULL;
+    menu_id = 0;
     for( cmi = cmenu->itemhead; cmi != NULL; cmi = cmi->next ) {
-        if( i == id ) {
+        if( menu_id == id ) {
             dmi = cmi;
         } else {
             if( maxwidth < cmi->slen ) {
                 maxwidth = cmi->slen;
             }
         }
-        i++;
+        menu_id++;
     }
     if( dmi == NULL ) {
         return( ERR_INVALID_MENU );
@@ -482,7 +485,7 @@ vi_rc DoMenuDelete( const char *data )
     }
     DeleteLLItem( (ss **)&menuHead, (ss **)&menuTail, (ss *)cmenu );
     freeMenu( cmenu );
-    maxMenuId--;
+    menuCnt--;
     InitMenu();
     return( ERR_NO_ERR );
 
@@ -621,19 +624,19 @@ void FiniMenu( void )
 static void lightMenu( ctl_id sel, int ws, bool on )
 {
     char        ch;
-    ctl_id      id;
     int         i;
+    ctl_id      r;
     menu        *cmenu;
     type_style  style;
 
-    if( sel >= maxMenuId ) {
+    if( sel >= menuCnt ) {
         return;
     }
 
     ws++;
 
     cmenu = menuHead;
-    for( id = 0; id < sel; id++ ) {
+    for( r = 0; r < sel; r++ ) {
         cmenu = cmenu->next;
     }
 
@@ -658,21 +661,21 @@ static void lightMenu( ctl_id sel, int ws, bool on )
  */
 static menu *getMenuPtrFromId( ctl_id id )
 {
-    ctl_id      menuid;
+    ctl_id      menu_id;
     menu        *cmenu;
 
-    menuid = 0;
+    menu_id = 0;
     for( cmenu = menuHead; cmenu != NULL; cmenu = cmenu->next ) {
-        if( id == menuid ) {
+        if( id == menu_id ) {
             break;
         }
-        menuid++;
+        menu_id++;
     }
     return( cmenu );
 
 } /* getMenuPtrFromId */
 
-static ctl_id currentID;
+static ctl_id   currentID = 0;
 
 /*
  * processMenu - process selected menu
@@ -691,6 +694,7 @@ static vi_rc processMenu( ctl_id sel, menu *cmenu, windim xpos, windim ypos, win
     windim          diff;
     windim          maxwidth;
     vi_rc           rc;
+    ctl_id          shift;
 
     maxwidth = rmaxwidth;
     if( maxwidth < 0 ) {
@@ -776,7 +780,7 @@ static vi_rc processMenu( ctl_id sel, menu *cmenu, windim xpos, windim ypos, win
         if( xpos < 0 ) {
             lightMenu( sel, ws, true );
         }
-        CurrentMenuId = sel + 1;
+        CurrentMenuNumber = sel + 1;
         rc = SelectItem( &si );
         if( xpos < 0 ) {
             lightMenu( sel, ws, false );
@@ -787,15 +791,19 @@ static vi_rc processMenu( ctl_id sel, menu *cmenu, windim xpos, windim ypos, win
             }
             return( rc );
         }
-        if( allowrl == 0 ) {
+        if( allowrl == 0 )
             break;
+        if( allowrl < 0 ) {
+            shift = -allowrl;
+            if( sel < shift ) {
+                sel = menuCnt - 1;
+            } else {
+                sel -= shift;
+            }
+        } else {
+            sel += allowrl;
         }
-
-        if( allowrl < 0 && sel < -allowrl ) {
-            sel = maxMenuId - 1;
-        }
-        sel += allowrl;
-        if( sel >= maxMenuId ) {
+        if( sel >= menuCnt ) {
             sel = 0;
         }
         if( cmenu->has_file_list ) {
@@ -830,7 +838,7 @@ static vi_rc processMenu( ctl_id sel, menu *cmenu, windim xpos, windim ypos, win
  */
 vi_rc DoMenu( void )
 {
-    ctl_id      id;
+    ctl_id      menu_id;
     ctl_id      sel;
     char        ch;
     menu        *cmenu;
@@ -841,15 +849,15 @@ vi_rc DoMenu( void )
     if( !EditFlags.Menus ) {
         return( ERR_NO_ERR );
     }
-    sel = NO_ID;
     ch = LastEvent - VI_KEY( ALT_A ) + 'A';
-    id = 0;
+    menu_id = 0;
+    sel = NO_ID;
     for( cmenu = menuHead; cmenu != NULL; cmenu = cmenu->next ) {
         if( ch == cmenu->hi_char._char ) {
-            sel = id;
+            sel = menu_id;
             break;
         }
-        id++;
+        menu_id++;
     }
     if( sel == NO_ID ) {
         return( ERR_NO_ERR );
@@ -958,18 +966,18 @@ vi_rc SetToMenuId( ctl_id id )
  */
 ctl_id GetMenuIdFromCoord( int x )
 {
-    ctl_id      id;
+    ctl_id      menu_id;
     int         ws;
     menu        *cmenu;
 
     ws = START_OFFSET;
-    id = 0;
+    menu_id = 0;
     for( cmenu = menuHead; cmenu != NULL; cmenu = cmenu->next ) {
         if( x >= ws && x < ws + cmenu->slen ) {
-            return( id );
+            return( menu_id );
         }
         ws += cmenu->slen + 2;
-        id++;
+        menu_id++;
     }
     return( NO_ID );
 

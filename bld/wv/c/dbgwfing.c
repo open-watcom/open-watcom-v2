@@ -101,20 +101,23 @@ static  bool    FingGetLine( a_window wnd, wnd_row row, wnd_piece piece, wnd_lin
 
 static bool FingWndEventProc( a_window wnd, gui_event gui_ev, void *parm )
 {
-    gui_colour_set      *colours;
+    gui_colour_set      *colour_set;
 
     /* unused parameters */ (void)parm;
 
     switch( gui_ev ) {
     case GUI_INIT_WINDOW:
         if( GUIIsGUI() ) {
-            colours = GUIGetWindowColours( WndGui( wnd ) );
-            colours[GUI_BACKGROUND].fore = GUI_BRIGHT_CYAN;
-            colours[GUI_BACKGROUND].back = GUI_BRIGHT_CYAN;
-            colours[WND_PLAIN].fore = GUI_BLACK;
-            colours[WND_PLAIN].back = GUI_BRIGHT_CYAN;
-            GUISetWindowColours( WndGui( wnd ), WndNumColours, colours );
-            GUIMemFree( colours );
+            gui_colour_items colours;
+            colour_set = GUIGetWindowColours( WndGui( wnd ) );
+            colour_set[GUI_BACKGROUND].fore = GUI_BRIGHT_CYAN;
+            colour_set[GUI_BACKGROUND].back = GUI_BRIGHT_CYAN;
+            colour_set[WND_PLAIN].fore = GUI_BLACK;
+            colour_set[WND_PLAIN].back = GUI_BRIGHT_CYAN;
+            colours.num_items = WndNumColours;
+            colours.colour = colour_set;
+            GUISetWindowColours( WndGui( wnd ), colours );
+            GUIMemFree( colour_set );
         }
         return( true );
     }

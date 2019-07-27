@@ -125,10 +125,11 @@ int __saveregs  xmemneed( size_t size )
 
 
 /*
- * Dynamic Memory management routines
+ * Debugger Dynamic Memory management routines
  */
 
 void *DbgAlloc( size_t size )
+/***************************/
 {
 #ifdef TRMEM
     return( _trmem_alloc( size, _trmem_guess_who(), DbgMemHandle ) );
@@ -138,6 +139,7 @@ void *DbgAlloc( size_t size )
 }
 
 void *DbgMustAlloc( size_t size )
+/*******************************/
 {
     void        *ptr;
 
@@ -152,16 +154,18 @@ void *DbgMustAlloc( size_t size )
     return( ptr );
 }
 
-void *DbgRealloc( void *chunk, size_t size )
+void *DbgRealloc( void *ptr, size_t size )
+/****************************************/
 {
 #ifdef TRMEM
-    return( _trmem_realloc( chunk, size, _trmem_guess_who(), DbgMemHandle ) );
+    return( _trmem_realloc( ptr, size, _trmem_guess_who(), DbgMemHandle ) );
 #else
-    return( realloc( chunk, size ) );
+    return( realloc( ptr, size ) );
 #endif
 }
 
 void DbgFree( void *ptr )
+/***********************/
 {
 #ifdef TRMEM
     _trmem_free( ptr, _trmem_guess_who(), DbgMemHandle );
@@ -172,16 +176,16 @@ void DbgFree( void *ptr )
 
 void *DbgChkAlloc( size_t size, char *error )
 {
-    void *ret;
+    void *ptr;
 
 #ifdef TRMEM
-    ret = _trmem_alloc( size, _trmem_guess_who(), DbgMemHandle );
+    ptr = _trmem_alloc( size, _trmem_guess_who(), DbgMemHandle );
 #else
-    ret = malloc( size );
+    ptr = malloc( size );
 #endif
-    if( ret == NULL )
+    if( ptr == NULL )
         Error( ERR_NONE, error );
-    return( ret );
+    return( ptr );
 }
 
 #if defined( __DOS__ ) || defined( __NOUI__ )
@@ -208,11 +212,11 @@ static void MemExpand( void )
     for( size = MemSize; size > 0; size -= alloced ) {
         if( size < MAX_BLOCK )
             alloced = size;
-#ifdef TRMEM
+  #ifdef TRMEM
         p = _trmem_alloc( alloced, _trmem_guess_who(), DbgMemHandle );
-#else
+  #else
         p = malloc( alloced );
-#endif
+  #endif
         if( p != NULL ) {
             *p = link;
             link = p;
@@ -220,11 +224,11 @@ static void MemExpand( void )
     }
     while( link != NULL ) {
         p = *link;
-#ifdef TRMEM
+  #ifdef TRMEM
         _trmem_free( link, _trmem_guess_who(), DbgMemHandle );
-#else
+  #else
         free( link );
-#endif
+  #endif
         link = p;
     }
 }

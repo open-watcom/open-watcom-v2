@@ -262,7 +262,7 @@ static    hw_reg_set    HWRegValues[] = {
     HW_D( HW_ST6 ), HW_D( HW_ST7 ),
     HW_D( HW_EAX ), HW_D( HW_EBX ), HW_D( HW_ECX ),
     HW_D( HW_EDX ), HW_D( HW_ESI ), HW_D( HW_EDI ),
-    HW_D( HW_BP ), HW_D( HW_SP ),
+    HW_D( HW_BP ),  HW_D( HW_SP ),
     HW_D( HW_FS ),  HW_D( HW_GS )
 };
 

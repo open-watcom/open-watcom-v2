@@ -72,11 +72,10 @@ BOOL MyGetThreadContext( thread_info *ti, MYCONTEXT *pc )
         vc.ContextFlags = VDMCONTEXT_TO_USE;
         rc = pVDMGetThreadContext( &DebugEvent, &vc );
         /*
-         * VDMCONTEXT and CONTEXT are the same on an x86 machine.
-         * If we were ever to try to port this to NT running on a RISC,
-         * they would be different, and this memcpy would be total crap.
+         * VDMCONTEXT and MYCONTEXT are not the same, extended part is fill by 0.
          */
-        memcpy( pc, &vc, sizeof( MYCONTEXT ) );
+        memcpy( pc, &vc, sizeof( VDMCONTEXT ) );
+        memset( pc + sizeof( VDMCONTEXT ), 0, sizeof( MYCONTEXT ) - sizeof( VDMCONTEXT )  );
         /*
          * Sometimes crap is in the high word of EIP, ESP or EBP.  We
          * check if CS or SS is a 32-bit selector, and if they are not,
@@ -134,7 +133,7 @@ BOOL MySetThreadContext( thread_info *ti, MYCONTEXT *pc )
          * If we were ever to try to port this to NT running on a RISC,
          * they would be different, and this memcpy would be total crap.
          */
-        memcpy( &vc, pc, sizeof( MYCONTEXT ) );
+        memcpy( &vc, pc, sizeof( VDMCONTEXT ) );
         vc.ContextFlags = VDMCONTEXT_TO_USE;
         return( pVDMSetThreadContext( &DebugEvent, &vc ) );
 #elif defined( MD_axp ) | defined( MD_ppc )

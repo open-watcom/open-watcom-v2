@@ -44,7 +44,9 @@
 typedef enum {
         CB_NONE                 = 0x00,
         CB_FOR_INS1             = 0x01,
-        CB_FOR_INS2             = 0x02
+        CB_FOR_INS2             = 0x02,
+        CB_CHECK_INS1           = 0x04,
+        CB_CHECK_INS2           = 0x08
 } conflict_bits;
 
 typedef struct  conflict_info {
@@ -164,6 +166,21 @@ static  void    FindAllConflicts( instruction *ins, instruction *other, conflict
     }
 }
 
+static  void    FindAllConflictsRepl( instruction *ins, conflict_bits flags )
+/***************************************************************************/
+{
+    conflict_node       *conf;
+    instruction         *first;
+    instruction         *last;
+
+    for( conf = ConfList; conf != NULL; conf = conf->next_conflict ) {
+        first = conf->ins_range.first;
+        last = conf->ins_range.last;
+        if( ins == first || ins == last ) {
+            AddConfInfo( conf )->flags |= flags;
+        }
+    }
+}
 
 static  void    MakeConflictInfo( instruction *ins1, instruction *ins2 )
 /**********************************************************************/
@@ -174,6 +191,16 @@ static  void    MakeConflictInfo( instruction *ins1, instruction *ins2 )
     ResetConfInfo();
 }
 
+static  void    MakeConflictInfoRepl( instruction *ins1, instruction *ins2 )
+/**************************************************************************/
+{
+    CleanConfInfo();
+    FindAllConflicts( ins1, ins2, CB_FOR_INS1 );
+    FindAllConflicts( ins2, ins1, CB_FOR_INS2 );
+    FindAllConflictsRepl( ins1, CB_FOR_INS1 | CB_CHECK_INS2 );
+    FindAllConflictsRepl( ins2, CB_FOR_INS2 | CB_CHECK_INS1 );
+    ResetConfInfo();
+}
 
 void    PrefixInsRenum( instruction *ins, instruction *pref, bool renum )
 /***********************************************************************/
@@ -398,7 +425,7 @@ void    ReplIns( instruction *ins, instruction *new )
  * It must be fixed in more correct way if somebody ever understand
  * how all this stuff works.
  */
-        MakeConflictInfo( ins, new );
+        MakeConflictInfoRepl( ins, new );
         for( info = ConflictInfo; info->conf != NULL; ++info ) {
             if( info->flags & CB_FOR_INS1 ) {
                 conf = info->conf;
@@ -408,7 +435,7 @@ void    ReplIns( instruction *ins, instruction *new )
                 if( conf->ins_range.last == ins ) {
                     conf->ins_range.last = new;
                 }
-                if( info->flags & CB_FOR_INS2 )
+                if( info->flags & (CB_FOR_INS2 | CB_CHECK_INS2) )
                     continue;
                 if( conf->ins_range.first == new ) {
                     if( blk == NULL )

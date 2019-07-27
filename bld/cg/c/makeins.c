@@ -67,6 +67,7 @@ void    FreeIns( instruction *ins ) {
 */
     instruction         *next;
 
+//#if 1
 #if 0  /* Debugging code for integrity of conflict edges */
     conflict_node       *conf;
 
