@@ -138,71 +138,71 @@ const char Fonttype_courier[] = "courier";
 
 static const char *Help_info[] = {
     "Usage: whpcvt [options] <in_file> [<out_file>]",
-    "   Options for all help file types:",
-    "     -rtf     : generate Windows RTF output",
-    "     -ipf     : generate OS/2 IPF output",
-    "     -ib      : generate DOS InfoBench output",
-    "     -html    : generate HTML output",
-    "     -wiki    : generate wiki output",
-    "     -@ <opt_file> : read more options from <opt_file> after the command line",
-    "     -i       : generate <in_file>.idx file containing index of topics",
-    "     -iw      : generate '.idx' file in WHP format (instead of GML)",
-    "     -b       : generate <in_file>.blt file containing browse lists (GML)",
-    "     -kw      : generate <in_file>.kw file containing keywords (GML)",
-    "     -s       : sort browse lists",
-    "     -h       : generate <in_file>.h topic define-const file",
-    "     -hn      : read old <in_file>.h file to set new ctx numbers",
-    "     -bl      : allow links to break across lines",
-    "     -t       : generate <in_file>.tbl file containing table of contents",
-    "     -e       : remove empty topics (except from table of contents)",
-    "     -lk      : don't remove empty topics which have links to them",
-    "     -kt      : don't add topic titles as search keywords",
-    "     -mc      : use mixed case for generated topic titles (i.e. contents, etc.)",
-    "     -dpt     : don't put popup topics in .tbl file",
-    "     -dpk     : don't put popup topics in .kw file",
-    "     -dpi     : don't put popup topics in .idx file",
-    "     -dpb     : don't put popup topics in .blt file",
+    "  Options for all help file types:",
+    "   -rtf       : generate Windows RTF output",
+    "   -ipf       : generate OS/2 IPF output",
+    "   -ib        : generate DOS InfoBench output",
+    "   -html      : generate HTML output",
+    "   -wiki      : generate wiki output",
+    "   -@ <file>  : read more options from <file> after the command line",
+    "   -i         : generate <in_file>.idx file containing index of topics",
+    "   -iw        : generate '.idx' file in WHP format (instead of GML)",
+    "   -b         : generate <in_file>.blt file containing browse lists (GML)",
+    "   -kw        : generate <in_file>.kw file containing keywords (GML)",
+    "   -s         : sort browse lists",
+    "   -h         : generate <in_file>.h topic define-const file",
+    "   -hn        : read old <in_file>.h file to set new ctx numbers",
+    "   -bl        : allow links to break across lines",
+    "   -t         : generate <in_file>.tbl file containing table of contents",
+    "   -e         : remove empty topics (except from table of contents)",
+    "   -lk        : don't remove empty topics which have links to them",
+    "   -kt        : don't add topic titles as search keywords",
+    "   -mc        : use mixed case for generated topic titles (i.e. contents, etc.)",
+    "   -dpt       : don't put popup topics in .tbl file",
+    "   -dpk       : don't put popup topics in .kw file",
+    "   -dpi       : don't put popup topics in .idx file",
+    "   -dpb       : don't put popup topics in .blt file",
     "",
-    "   Options for Windows RTF format:",
-    "     -hh      : generate <in_file>.hh topic const file for help compiler",
-    "     -up      : enable up topic support",
-    "     -k       : keep titles in nonscrolling region at top",
-    "     -xl      : initial indent for all lists",
-    "     -dl      : initial indent for definition lists",
-    "     -sl      : initial indent for simple lists",
-    "     -ol      : initial indent for ordered lists",
-    "     -ul      : initial indent for unordered lists",
+    "  Options for Windows RTF format:",
+    "   -hh        : generate <in_file>.hh topic const file for help compiler",
+    "   -up        : enable up topic support",
+    "   -k         : keep titles in nonscrolling region at top",
+    "   -xl        : initial indent for all lists",
+    "   -dl        : initial indent for definition lists",
+    "   -sl        : initial indent for simple lists",
+    "   -ol        : initial indent for ordered lists",
+    "   -ul        : initial indent for unordered lists",
     "",
-    "   Options for OS/2 IPF & HTML format:",
-    "     -rf      : use specified font types, not just system and courier",
-    "     -tl \"title\" : sets a title for the help window. Put the title in quotes",
+    "  Options for OS/2 IPF & HTML format:",
+    "   -rf        : use specified font types, not just system and courier",
+    "   -tl \"title\" : sets a title for the help window. Put the title in quotes",
     "",
-    "   Options for OS/2 IPF, HTML & Wiki format:",
-    "     -ex      : exclude special topics",
+    "  Options for OS/2 IPF, HTML & Wiki format:",
+    "   -ex        : exclude special topics",
     "",
-    "   Options for DOS InfoBench format:",
-    "     -rm <n>  : set right margin to column <n>. Defaults to 76",
-    "     -hd <f>  : include first line of file <f> in header",
-    "     -ft <f>  : include first line of file <f> in footer",
-    "     -tab <n> : set tab spacing to <n>. defaults to 4",
-    "     -hb      : turns hyperlink bracing on",
-    "     -up      : enable up topic support",
-    "     -br      : enable browse button support",
-    "     -tc      : enable contents button support",
-    "     -ix      : enable index button support",
-    "     -kb      : enable keyword button support",
-    "     -dt \"topic\" : default topic",
-    "     -ds \"desc\"  : description string for help file",
+    "  Options for DOS InfoBench format:",
+    "   -rm <n>    : set right margin to column <n>. Defaults to 76",
+    "   -hd <file> : include first line of <file> in header",
+    "   -ft <file> : include first line of <file> in footer",
+    "   -tab <n>   : set tab spacing to <n>. defaults to 4",
+    "   -hb        : turns hyperlink bracing on",
+    "   -up        : enable up topic support",
+    "   -br        : enable browse button support",
+    "   -tc        : enable contents button support",
+    "   -ix        : enable index button support",
+    "   -kb        : enable keyword button support",
+    "   -dt \"topic\" : default topic",
+    "   -ds \"desc\"  : description string for help file",
     "",
-    "   You can specify \"-@ <opt_file>\" to put more options in a file",
-    "       - Each option must be on a separate line",
-    "   Default <in_file> extension is .whp",
-    "   Default <out> extension is",
-    "       for RTF:           " EXT_OUTRTF_FILE,
-    "       for OS/2 IPF:      " EXT_OUTIPF_FILE,
-    "       for Dos Infobench: " EXT_OUTIB_FILE,
-    "       for HTML:          " EXT_OUTHTML_FILE,
-    "       for wiki:          " EXT_OUTWIKI_FILE,
+    "  You can specify \"-@ <file>\" to put more options in a <file>",
+    "     - Each option must be on a separate line",
+    "  Default <in_file> extension is .whp",
+    "  Default <out> extension is",
+    "     for RTF:           " EXT_OUTRTF_FILE,
+    "     for OS/2 IPF:      " EXT_OUTIPF_FILE,
+    "     for Dos Infobench: " EXT_OUTIB_FILE,
+    "     for HTML:          " EXT_OUTHTML_FILE,
+    "     for wiki:          " EXT_OUTWIKI_FILE,
     NULL
 };
 
@@ -291,11 +291,23 @@ static void message_str( const char *msg_str )
     printf( "****%s\n", msg_str );
 }
 
+static void message_line( const char *prefix, int line_num )
+/**********************************************************/
+{
+    printf( "%s in input file on line %d.\n", prefix, line_num );
+}
+
+static void error_noexit( int err )
+/*********************************/
+{
+    message_line( "Error", Line_num );
+    message_str( Error_list[err] );
+}
+
 void error( int err )
 /*******************/
 {
-    printf( "Error in input file on line %d.\n", Line_num );
-    message_str( Error_list[err] );
+    error_noexit( err );
     error_quit();
 }
 
@@ -309,14 +321,14 @@ static void error_err( int err )
 static void warning( int err )
 /****************************/
 {
-    printf( "Warning - in input file on line %d.\n", Line_num );
+    message_line( "Warning", Line_num );
     message_str( Error_list[err] );
 }
 
 static void warning_line( int err, int line_num )
 /***********************************************/
 {
-    printf( "Warning - in input file on line %d.\n", line_num );
+    message_line( "Warning", line_num );
     message_str( Error_list[err] );
 }
 
@@ -1337,8 +1349,7 @@ static bool read_topic( void )
         }
         /* fall through */
     default:
-        printf( "Error in input file on line %d.\n", Line_num );
-        printf( "****%s\n", Error_list[ERR_NO_TOPIC] );
+        error_noexit( ERR_NO_TOPIC );
     }
     return( false );
 }

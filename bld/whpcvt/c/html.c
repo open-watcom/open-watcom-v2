@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -41,7 +42,7 @@
 
 #define HTML_SPACE              "&nbsp;"
 
-#define IPF_TRANS_LEN           50
+#define HTML_TRANS_LEN          50
 
 #define MAX_TABS                100     // up to 100 tab stops
 
@@ -123,7 +124,7 @@ static char *translate_str_html( const char *str )
 {
     const char      *t_str;
     size_t          len;
-    char            buf[IPF_TRANS_LEN];
+    char            buf[HTML_TRANS_LEN];
     char            *ptr;
 
     len = 1;
@@ -150,7 +151,7 @@ static char *translate_str_html( const char *str )
 static size_t trans_add_char_html( char ch, char next_ch, section_def *section )
 /******************************************************************************/
 {
-    char        buf[IPF_TRANS_LEN];
+    char        buf[HTML_TRANS_LEN];
 
     translate_char_html( ch, next_ch, buf );
     return( trans_add_str( buf, section ) );

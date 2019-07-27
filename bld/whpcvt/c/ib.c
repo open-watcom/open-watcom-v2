@@ -376,12 +376,12 @@ static size_t trans_add_char_wrap( char ch, section_def *section )
             // before them...
             ctr -= 2;
         }
-        *(section->section_text + ctr) = '\n';
+        section->section_text[ctr] = '\n';
 
         // if we're in Box_Mode then we also add the vertical bars
         if( Box_Mode ) {
-            *(section->section_text + ctr - 1) = BOX_VBAR;
-            *(section->section_text + Wrap_Safe + shift - 2) = BOX_VBAR;
+            section->section_text[ctr - 1] = BOX_VBAR;
+            section->section_text[Wrap_Safe + shift - 2] = BOX_VBAR;
         }
 
         // reset cursor x position
