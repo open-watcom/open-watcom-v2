@@ -747,7 +747,6 @@ bool read_line( void )
     eat_blank = false;
     for( ;; ) {
         ++Line_num;
-        printf( "WHPCVT - Process line: %d\n", Line_num );
         for( buf = Line_buf, len = 0;; ++buf ) {
 #if defined( __UNIX__ )
             do {
@@ -1022,6 +1021,7 @@ static bool read_topic_text( ctx_def *ctx, bool is_blank, int order_num )
         }
         if( section == NULL ) {
             _new( section, 1 );
+            section->section_text = NULL;
             section->allocated_size = 0;
             section->section_size = 0;
         }
