@@ -1945,7 +1945,6 @@ int main( int argc, char *argv[] )
 
     /* This program can be a memory pig, so, to avoid fragmentation,
        do some big allocs to block out the space */
-printf("test 1\n");
     for( size = 10; size > 0; --size ) {
         start_alloc = malloc( size * 1000 * 1024 );
         if( start_alloc != NULL ) {
@@ -1953,24 +1952,20 @@ printf("test 1\n");
             break;
         }
     }
-printf("test 2\n");
 
     argc--;
     argv++;
 
     start_arg = valid_args( argc, argv );
-printf("test 3\n");
     if( start_arg < 0 ) {
         print_help();
         goto error_exit;
     }
 
-printf("test 4\n");
     file = normalize_fname( file, argv[start_arg], EXT_INPUT_FILE );
 
     Line_num = 0;
     In_file = fopen( file, "r" );
-printf("test 5\n");
     if( In_file == NULL ) {
         printf( "Could not open input file: %s\n", file );
         goto error_exit;
@@ -1978,22 +1973,18 @@ printf("test 5\n");
 
     /* this is for the RTF 'Up' button support */
     if( Output_type == OUT_RTF ) {
-printf("test 6\n");
         Help_File = malloc( strlen( file ) + sizeof( EXT_HLP_FILE ) );
         strcpy( Help_File, file );
         strcpy( strrchr( Help_File, '.' ), EXT_HLP_FILE );
-printf("test 7\n");
     }
 
     if( Do_index ) {
-printf("test 8\n");
         strcpy( strrchr( file, '.' ), EXT_IDX_FILE );
         Idx_file = fopen( file, "w" );
         if( Idx_file == NULL ) {
             printf( "Could not open index file: %s\n", file );
             goto error_exit;
         }
-printf("test 9\n");
     }
 
     if( Do_keywords ) {
@@ -2041,34 +2032,27 @@ printf("test 9\n");
         break;
     }
 
-printf("test 10\n");
     if( argc == start_arg + 1 ) {
         strcpy( strrchr( file, '.' ), Output_file_ext );
     } else {
         file = normalize_fname( file, argv[start_arg + 1], Output_file_ext );
     }
-printf("test 11\n");
     Out_file = fopen( file, "w" );
     if( Out_file == NULL ) {
         printf( "Could not open output file: %s\n", file );
         goto error_exit;
     }
 
-printf("test 12\n");
     if( 0 != setjmp( Jmp_buf ) ) {
         goto error_exit;
     }
 
-printf("test 13\n");
     init_whp();
 
-printf("test 14\n");
     read_whp_file();
 
-printf("test 15\n");
     set_browse_numbers();
 
-printf("test 16\n");
     fclose( In_file );
     In_file = NULL;
 
@@ -2082,7 +2066,6 @@ printf("test 16\n");
         }
     }
     set_ctx_ids();
-printf("test 17\n");
 
     if( Do_def ) {
         strcpy( strrchr( file, '.' ), EXT_DEF_FILE );
@@ -2101,10 +2084,8 @@ printf("test 17\n");
             goto error_exit;
         }
     }
-printf("test 18\n");
 
     check_links();
-printf("test 19\n");
 
     switch( Output_type ) {
     case OUT_RTF:
@@ -2133,37 +2114,29 @@ printf("test 19\n");
         wiki_output_file();
         break;
     }
-printf("test 20\n");
     if( Do_contents ) {
         /* do this before sorting the context lists */
         output_contents_file();
     }
-printf("test 21\n");
     sort_ctx_list();
-printf("test 22\n");
     if( Do_index ) {
         output_idx_file();
     }
-printf("test 23\n");
     if( Do_keywords ) {
         output_kw_file();
     }
-printf("test 24\n");
     if( Do_blist ) {
         output_blist_file();
     }
-printf("test 25\n");
     if( Do_def ) {
         output_def_file();
     }
-printf("test 26\n");
     if( Do_hdef ) {
         output_hdef_file();
     }
     rc = 0;
 
 error_exit:
-printf("test 27\n");
 
     if( Header_File != NULL ) {
         free( Header_File );

@@ -343,8 +343,7 @@ $(hbook).ps : $(book_objs) $(book_objs_ps) $(proj_objs)
 !ifeq verbose 0
     @echo wgml $@
 !endif
-    !-$(WGMLCMD:$(to_os_path))
-    $(noecho)echo "WGMLCMD finished"
+    -$(WGMLCMD:$(to_os_path))
     @if exist $@ $(noecho)%erase $@
     $(noecho)%ren $(wgml_tmpfile) $@
 
@@ -564,40 +563,18 @@ compile_gml_to_xxx : .PROCEDURE
 !ifeq verbose 0
     @echo wgml $@
 !endif
-    !-$(WGMLCMD:$(to_os_path))
-    $(noecho)echo "WGMLCMD finished"
-!ifdef __UNIX__
-    ls -l
-!else
-    dir
-!endif
+    -$(WGMLCMD:$(to_os_path))
     @if exist $*.ptf $(noecho)%erase $*.ptf
     $(noecho)%ren $(wgml_tmpfile) $*.ptf
-!ifdef __UNIX__
-    ls -l
-!else
-    dir
-!endif
     @%make prepare_whpcvt_opts
     whpcvt -@ $(whpcvt_optfile) $*.ptf
     @%create $(wgml_sysfile_02)
 !ifeq verbose 0
     @echo wgml $@
 !endif
-    !-$(WGMLCMD:$(to_os_path))
-    $(noecho)echo "WGMLCMD finished"
-!ifdef __UNIX__
-    ls -l
-!else
-    dir
-!endif
+    -$(WGMLCMD:$(to_os_path))
     @if exist $*.ptf $(noecho)%erase $*.ptf
     $(noecho)%ren $(wgml_tmpfile) $*.ptf
-!ifdef __UNIX__
-    ls -l
-!else
-    dir
-!endif
     @if exist $*.mix @%erase $*.mix
     @%ren $(wgml_sysfile_01) $*.mix
     @if exist $*.h @%erase $*.h

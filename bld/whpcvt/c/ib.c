@@ -863,7 +863,7 @@ static void ib_append_line( FILE *outfile, char *infnam )
     FILE            *infile;
     int             inchar;
 
-    if( infnam[0] != '\0' ) {
+    if( infnam != NULL && infnam[0] != '\0' ) {
         infile = fopen( infnam, "rt" );
         if( infile != NULL ) {
             for(;;) {
