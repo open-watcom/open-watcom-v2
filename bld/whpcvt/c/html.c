@@ -230,8 +230,8 @@ void html_topic_init( void )
 {
 }
 
-void html_trans_line( section_def *section )
-/******************************************/
+void html_trans_line( char *line_buf, section_def *section )
+/**********************************************************/
 {
     char                *ptr;
     char                *end;
@@ -246,8 +246,8 @@ void html_trans_line( section_def *section )
     size_t              len;
     char                *file_name;
 
-    /* check for special column 0 stuff first */
-    ptr = Line_buf;
+    /* check for special column 0 pre-processing stuff first */
+    ptr = line_buf;
     ch = *ptr;
     ch_len = 0;
     line_len = 0;

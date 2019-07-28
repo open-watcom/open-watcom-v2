@@ -210,7 +210,6 @@ WHPCVT_GBL FILE         *Hdef_file;
 WHPCVT_GBL FILE         *Contents_file;
 
 WHPCVT_GBL int          Line_num;
-WHPCVT_GBL char         *Line_buf;
 
 WHPCVT_GBL ctx_def      *Ctx_list;
 WHPCVT_GBL ctx_def      *Curr_ctx;
@@ -275,23 +274,23 @@ extern char         *whole_keyword_line( char *ptr );
 extern bool         is_special_topic( ctx_def *ctx, bool dump_popup );
 
 extern void         rtf_init_whp( void );
-extern void         rtf_trans_line( section_def *section );
+extern void         rtf_trans_line( char *line_buf, section_def *section );
 extern void         rtf_output_file( void );
 extern void         rtf_topic_init( void );
 extern void         ipf_init_whp( void );
-extern void         ipf_trans_line( section_def *section );
+extern void         ipf_trans_line( char *line_buf, section_def *section );
 extern void         ipf_output_file( void );
 extern void         ipf_topic_init( void );
 extern void         ib_init_whp( void );
-extern void         ib_trans_line( section_def *section );
+extern void         ib_trans_line( char *line_buf, section_def *section );
 extern void         ib_output_file( void );
 extern void         ib_topic_init( void );
 extern void         html_init_whp( void );
-extern void         html_trans_line( section_def *section );
+extern void         html_trans_line( char *line_buf, section_def *section );
 extern void         html_output_file( void );
 extern void         html_topic_init( void );
 extern void         wiki_init_whp( void );
-extern void         wiki_trans_line( section_def *section );
+extern void         wiki_trans_line( char *line_buf, section_def *section );
 extern void         wiki_output_file( void );
 extern void         wiki_topic_init( void );
 

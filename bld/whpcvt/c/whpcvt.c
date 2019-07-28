@@ -221,7 +221,8 @@ static const char *(Gen_titles[GEN_TITLE_LAST][TITLE_CASE_LAST])={
 
 /* File stuff */
 static jmp_buf          Jmp_buf;
-static size_t           Line_buf_size;
+static size_t           Line_buf_size = 0;
+static char             *Line_buf = NULL;
 
 /* Processing globals */
 static bool             Exclude_on = false;
@@ -451,7 +452,11 @@ static int process_args( int argc, char *argv[] )
     int                 start_arg;
 
     for( start_arg = 0; start_arg < argc; ++start_arg ) {
+#ifdef __UNIX__
+        if( argv[start_arg][0] == '-' ) {
+#else
         if( argv[start_arg][0] == '-' || argv[start_arg][0] == '/' ) {
+#endif
             for( i = 0; Args[i] != NULL; ++i ) {
                 if( stricmp( Args[i], &argv[start_arg][1] ) == 0 ) {
                     break;
@@ -1015,24 +1020,24 @@ void add_ctx_keyword( ctx_def *ctx, const char *keyword )
 }
 
 
-static void trans_line( section_def *section )
-/********************************************/
+static void trans_line( char *line_buf, section_def *section )
+/************************************************************/
 {
     switch( Output_type ) {
     case OUT_RTF:
-        rtf_trans_line( section );
+        rtf_trans_line( line_buf, section );
         break;
     case OUT_IPF:
-        ipf_trans_line( section );
+        ipf_trans_line( line_buf, section );
         break;
     case OUT_IB:
-        ib_trans_line( section );
+        ib_trans_line( line_buf, section );
         break;
     case OUT_HTML:
-        html_trans_line( section );
+        html_trans_line( line_buf, section );
         break;
     case OUT_WIKI:
-        wiki_trans_line( section );
+        wiki_trans_line( line_buf, section );
         break;
     }
 }
@@ -1084,7 +1089,7 @@ static bool read_topic_text( ctx_def *ctx, bool is_blank, int order_num )
             section->allocated_size = 0;
             section->section_size = 0;
         }
-        trans_line( section );
+        trans_line( Line_buf, section );
     }
 
     if( section != NULL ) {

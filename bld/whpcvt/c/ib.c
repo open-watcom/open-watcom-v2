@@ -504,8 +504,8 @@ static void draw_line( section_def *section )
     }
 }
 
-void ib_trans_line( section_def *section )
-/****************************************/
+void ib_trans_line( char *line_buf, section_def *section )
+/********************************************************/
 {
     char                *ptr;
     char                *end;
@@ -518,8 +518,8 @@ void ib_trans_line( section_def *section )
     char                *file_name;
     size_t              len;
 
-    // check for special pre-processing stuff first
-    ptr = Line_buf;
+    /* check for special column 0 pre-processing stuff first */
+    ptr = line_buf;
     ch = *ptr;
 
     // We start at a new line...

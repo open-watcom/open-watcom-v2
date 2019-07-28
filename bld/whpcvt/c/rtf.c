@@ -275,8 +275,8 @@ static size_t trans_add_str_nobreak( const char *str, section_def *section )
     return( len );
 }
 
-void rtf_trans_line( section_def *section )
-/*****************************************/
+void rtf_trans_line( char *line_buf, section_def *section )
+/*********************************************************/
 {
     char                *ptr;
     char                *end;
@@ -288,8 +288,8 @@ void rtf_trans_line( section_def *section )
     char                *file_name;
     size_t              len;
 
-    /* check for special pre-processing stuff first */
-    ptr = Line_buf;
+    /* check for special column 0 pre-processing stuff first */
+    ptr = line_buf;
     ch = *ptr;
     indent = 0;
 
