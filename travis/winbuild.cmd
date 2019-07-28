@@ -11,15 +11,20 @@ call "C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\vcvarsall.bat" amd6
 REM ...
 @echo %OWECHO%
 REM ...
+if "%OWTRAVISJOB%" == "DOCS" (
+    set OWGHOSTSCRIPTPATH=%OWROOT%\travis\gs927w64
+    set OWWIN95HC=%OWROOT%\travis\hcw\hcrtf.exe
+    set OWHHC=%OWROOT%\travis\hhc\hhc.exe
+    REM
+    REM setup DOSBOX
+    REM
+    set OWDOSBOX=%OWROOT%\travis\dosbox\dosbox.exe
+    set SDL_VIDEODRIVER=dummy
+)
+REM ...
 call cmnvars.bat
 REM ...
 @echo %OWECHO%
-REM
-REM setup DOSBOX
-REM
-set OWDOSBOX=%OWROOT%\travis\dosbox\dosbox.exe
-set SDL_VIDEODRIVER=dummy
-dir %OWROOT%\travis\dosbox
 REM ...
 if "%OWTRAVIS_ENV_DEBUG%" == "1" (
     set
@@ -84,6 +89,9 @@ if "%OWTRAVISJOB%" == "BUILD-3" (
     )
 )
 if "%OWTRAVISJOB%" == "DOCS" (
+    REM register all Help Compilers DLL's
+    regsvr32 -u -s itcc.dll
+    regsvr32 -s %OWROOT%\travis\hhc\itcc.dll
     cd %OWDOCSDIR%
     if "%TRAVIS_EVENT_TYPE%" == "pull_request" (
         builder docs

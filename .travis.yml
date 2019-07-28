@@ -400,13 +400,6 @@ jobs:
         # set environmet variable
         - export OWTOOLS=VISUALC
         - export OWTRAVISJOB=DOCS
-      install:
-        # Help compilers related variables
-        - export OWGHOSTSCRIPTPATH=$OWTRAVISDIR/gs927w64
-        - export OWWIN95HC=$OWTRAVISDIR/hcw/hcrtf.exe
-        - export OWHHC=$OWTRAVISDIR/hhc/hhc.exe
-        # register all Help Compilers DLL's
-        - travis/regdlls.sh
       script:
         - travis/build.sh
     #################################
