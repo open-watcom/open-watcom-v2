@@ -125,7 +125,7 @@ enum {
 
 /* global variables */
 
-char *Help_fname = NULL;
+char *Help_File = NULL;
 char Header_File[100];
 char Footer_File[100];
 
@@ -258,7 +258,7 @@ static const char *Error_list[]={
     "Invalid number of parameters."
 };
 
-static char         *Options_file = NULL;
+static char         *Options_File = NULL;
 
 static char         *Chk_buf = NULL;
 
@@ -409,6 +409,31 @@ void whp_fwrite( const char *buf, size_t el_size, size_t num_el, FILE *f )
 {
     check_brace( buf, el_size * num_el );
     fwrite( buf, el_size, num_el, f );
+}
+
+static char *normalize_fname( char *file, const char *name, const char *fext )
+/****************************************************************************/
+{
+    char                *dot;
+    char                *slash;
+    size_t              len;
+
+    len = strlen( name ) + sizeof( Output_file_ext );   // add enough space for various file extensions
+    file = realloc( file, len );
+    strcpy( file, name );
+    dot = strrchr( file, '.' );
+#ifdef __UNIX__
+    slash = strrchr( file, '/' );
+#else
+    for( slash = file; (slash = strchr( slash, '/' )) != NULL; slash++ ) {
+        *slash = '\\';
+    }
+    slash = strrchr( file, '\\' );
+#endif
+    if( dot == NULL || ( slash != NULL && dot < slash ) ) {
+        strcat( file, fext );
+    }
+    return( file );
 }
 
 static int process_args( int argc, char *argv[] )
@@ -603,8 +628,8 @@ static int process_args( int argc, char *argv[] )
             case ARG_OF:
                 ++start_arg;
                 if( start_arg < argc ) {
-                    _new( Options_file, strlen( argv[start_arg] ) + 1 );
-                    strcpy( Options_file, argv[start_arg] );
+                    _new( Options_File, strlen( argv[start_arg] ) + 1 );
+                    strcpy( Options_File, argv[start_arg] );
                 } else {
                     error_err( ERR_BAD_ARGS );
                 }
@@ -717,8 +742,8 @@ static int valid_args( int argc, char *argv[] )
     }
 
     for( ;; ) {
-        if( Options_file != NULL ) {
-            opt_file = fopen( Options_file, "r" );
+        if( Options_File != NULL ) {
+            opt_file = fopen( Options_File, "r" );
             if( opt_file == NULL ) {
                 return( -1 );
             }
@@ -728,10 +753,10 @@ static int valid_args( int argc, char *argv[] )
                 }
             }
             fclose( opt_file );
-            opt_file = fopen( Options_file, "r" );
+            opt_file = fopen( Options_File, "r" );
 
-            free( Options_file );
-            Options_file = NULL;
+            free( Options_File );
+            Options_File = NULL;
 
             _new( argv, argc );
             for( argc = 0;; ++argc ) {
@@ -1889,31 +1914,6 @@ static void init_whp( void )
     }
 }
 
-static char *normalize_fname( char *file, const char *name, const char *fext )
-/****************************************************************************/
-{
-    char                *dot;
-    char                *slash;
-    size_t              len;
-
-    len = strlen( name ) + 10;   // add enough space for various file extensions
-    file = realloc( file, len );
-    strcpy( file, name );
-    dot = strrchr( file, '.' );
-#ifdef __UNIX__
-    slash = strrchr( file, '/' );
-#else
-    for( slash = file; (slash = strchr( slash, '/' )) != NULL; slash++ ) {
-        *slash = '\\';
-    }
-    slash = strrchr( file, '\\' );
-#endif
-    if( dot == NULL || ( slash != NULL && dot < slash ) ) {
-        strcat( file, fext );
-    }
-    return( file );
-}
-
 int main( int argc, char *argv[] )
 /********************************/
 {
@@ -1965,9 +1965,9 @@ int main( int argc, char *argv[] )
 
     /* this is for the RTF 'Up' button support */
     if( Output_type == OUT_RTF ) {
-        Help_fname = malloc( strlen( file ) + 10 );
-        strcpy( Help_fname, file );
-        strcpy( strrchr( Help_fname, '.' ), EXT_HLP_FILE );
+        Help_File = malloc( strlen( file ) + sizeof( EXT_HLP_FILE ) );
+        strcpy( Help_File, file );
+        strcpy( strrchr( Help_File, '.' ), EXT_HLP_FILE );
     }
 
     if( Do_index ) {
@@ -2130,8 +2130,8 @@ int main( int argc, char *argv[] )
 
 error_exit:
 
-    if( Output_type == OUT_RTF ) {
-        free( Help_fname );
+    if( Help_File != NULL ) {
+        free( Help_File );
     }
     free( file );
 

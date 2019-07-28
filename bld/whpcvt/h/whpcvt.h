@@ -240,7 +240,7 @@ WHPCVT_GBL char         Tab_xmp_char;
 
 extern char             Header_File[];
 extern char             Footer_File[];
-extern char             *Help_fname;
+extern char             *Help_File;
 
 extern const char       Fonttype_roman[];
 extern const char       Fonttype_symbol[];

@@ -688,7 +688,7 @@ static void output_ctx_hdr( ctx_def *ctx )
         if( up_ctx == NULL ) {
             whp_fprintf( Out_file, "\"Contents()\") }" );
         } else {
-            whp_fprintf( Out_file, "\"JumpId( `%s\', `%s\')\") }", Help_fname, up_ctx->ctx_name );
+            whp_fprintf( Out_file, "\"JumpId( `%s\', `%s\')\") }", Help_File, up_ctx->ctx_name );
         }
     }
 
