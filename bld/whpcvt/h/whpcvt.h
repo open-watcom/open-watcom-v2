@@ -238,8 +238,8 @@ WHPCVT_GBL bool         Do_idx_button;
 WHPCVT_GBL bool         Tab_xmp;
 WHPCVT_GBL char         Tab_xmp_char;
 
-extern char             Header_File[];
-extern char             Footer_File[];
+extern char             *Header_File;
+extern char             *Footer_File;
 extern char             *Help_File;
 
 extern const char       Fonttype_roman[];

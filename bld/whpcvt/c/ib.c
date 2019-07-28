@@ -910,7 +910,7 @@ static void output_ctx_hdr( ctx_def *ctx )
         || Do_idx_button
         || Do_browse
         || Do_up
-        || Header_File[0] != '\0' ) {
+        || Header_File != NULL && Header_File[0] != '\0' ) {
 
         //beginning of header
         whp_fprintf( Out_file, ":h\n" );
@@ -1006,7 +1006,7 @@ static void output_ctx_hdr( ctx_def *ctx )
         whp_fprintf( Out_file, "\n:eh\n" );
     }
     // append user footer file
-    if( Footer_File[0] != '\0' ) {
+    if( Footer_File != NULL && Footer_File[0] != '\0' ) {
         whp_fprintf( Out_file, ":f\n" );
         ib_append_line( Out_file, Footer_File );
         whp_fprintf( Out_file, "\n:ef\n" );

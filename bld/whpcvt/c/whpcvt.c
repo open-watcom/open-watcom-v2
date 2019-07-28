@@ -125,9 +125,9 @@ enum {
 
 /* global variables */
 
-char *Help_File = NULL;
-char Header_File[100];
-char Footer_File[100];
+char        *Help_File = NULL;
+char        *Header_File = NULL;
+char        *Footer_File = NULL;
 
 const char Fonttype_roman[] = "roman";
 const char Fonttype_symbol[] = "symbol";
@@ -197,7 +197,7 @@ static const char *Help_info[] = {
     "  You can specify \"-@ <file>\" to put more options in a <file>",
     "     - Each option must be on a separate line",
     "  Default <in_file> extension is .whp",
-    "  Default <out> extension is",
+    "  Default <out_file> extension is",
     "     for RTF:           " EXT_OUTRTF_FILE,
     "     for OS/2 IPF:      " EXT_OUTIPF_FILE,
     "     for Dos Infobench: " EXT_OUTIB_FILE,
@@ -418,20 +418,28 @@ static char *normalize_fname( char *file, const char *name, const char *fext )
     char                *slash;
     size_t              len;
 
-    len = strlen( name ) + sizeof( Output_file_ext );   // add enough space for various file extensions
+    if( fext != NULL ) {
+        len = strlen( name ) + sizeof( Output_file_ext );   // add enough space for various file extensions
+    } else {
+        len = strlen( name ) + 1;
+    }
     file = realloc( file, len );
     strcpy( file, name );
-    dot = strrchr( file, '.' );
-#ifdef __UNIX__
-    slash = strrchr( file, '/' );
-#else
+#ifndef __UNIX__
     for( slash = file; (slash = strchr( slash, '/' )) != NULL; slash++ ) {
         *slash = '\\';
     }
-    slash = strrchr( file, '\\' );
 #endif
-    if( dot == NULL || ( slash != NULL && dot < slash ) ) {
-        strcat( file, fext );
+    if( fext != NULL ) {
+#ifdef __UNIX__
+        slash = strrchr( file, '/' );
+#else
+        slash = strrchr( file, '\\' );
+#endif
+        dot = strrchr( file, '.' );
+        if( dot == NULL || ( slash != NULL && dot < slash ) ) {
+            strcat( file, fext );
+        }
     }
     return( file );
 }
@@ -568,8 +576,7 @@ static int process_args( int argc, char *argv[] )
             case ARG_HD:
                 start_arg++;
                 if( start_arg < argc ) {
-                    strncpy( Header_File, argv[start_arg], sizeof( Header_File ) - 1 );
-                    Header_File[sizeof( Header_File ) - 1] = '\0';
+                    Header_File = normalize_fname( Header_File, argv[start_arg], NULL );
                 } else {
                     error_err( ERR_BAD_ARGS );
                 }
@@ -577,8 +584,7 @@ static int process_args( int argc, char *argv[] )
             case ARG_FT:
                 start_arg++;
                 if( start_arg < argc ) {
-                    strncpy( Footer_File, argv[start_arg], sizeof( Footer_File ) - 1 );
-                    Footer_File[sizeof( Footer_File ) - 1] = '\0';
+                    Footer_File = normalize_fname( Footer_File, argv[start_arg], NULL );
                 } else {
                     error_err( ERR_BAD_ARGS );
                 }
@@ -628,8 +634,7 @@ static int process_args( int argc, char *argv[] )
             case ARG_OF:
                 ++start_arg;
                 if( start_arg < argc ) {
-                    _new( Options_File, strlen( argv[start_arg] ) + 1 );
-                    strcpy( Options_File, argv[start_arg] );
+                    Options_File = normalize_fname( Options_File, argv[start_arg], NULL );
                 } else {
                     error_err( ERR_BAD_ARGS );
                 }
@@ -727,8 +732,6 @@ static int valid_args( int argc, char *argv[] )
     Dump_popup_k = false;
 
     Right_Margin = 76;
-    Header_File[0] = '\0';
-    Footer_File[0] = '\0';
     Text_Indent = 4;
     Hyperlink_Braces = false;
     Do_browse = false;
@@ -2130,6 +2133,12 @@ int main( int argc, char *argv[] )
 
 error_exit:
 
+    if( Header_File != NULL ) {
+        free( Header_File );
+    }
+    if( Footer_File != NULL ) {
+        free( Footer_File );
+    }
     if( Help_File != NULL ) {
         free( Help_File );
     }
