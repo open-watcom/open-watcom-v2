@@ -298,7 +298,7 @@ void rtf_trans_line( section_def *section )
     }
     switch( ch ) {
     case WHP_TABXMP:
-        if( *skip_blank( ptr + 1 ) == '\0' ) {
+        if( *skip_blanks( ptr + 1 ) == '\0' ) {
             Line_prefix |= LPREFIX_PAR_RESET;
             Tab_xmp = false;
         } else {
@@ -341,7 +341,7 @@ void rtf_trans_line( section_def *section )
             Line_prefix |= LPREFIX_S_LIST;
         }
         if( ch == WHP_DLIST_START ) {
-            ptr = skip_blank( ptr + 1 );
+            ptr = skip_blanks( ptr + 1 );
             if( *ptr != '\0' ) {
                 /* due to a weakness in GML, the definition term must be
                    allowed on the same line as the definition tag. So
@@ -360,7 +360,7 @@ void rtf_trans_line( section_def *section )
         pop_list();
         return;
     case WHP_DLIST_DESC:
-        if( *skip_blank( ptr + 1 ) == '\0' ) {
+        if( *skip_blanks( ptr + 1 ) == '\0' ) {
             /* no description on this line. Ignore it so that no
                blank line gets generated */
             return;
@@ -374,7 +374,7 @@ void rtf_trans_line( section_def *section )
         break;
     }
 
-    if( *skip_blank( ptr ) == '\0' && Curr_ctx->empty ) {
+    if( *skip_blanks( ptr ) == '\0' && Curr_ctx->empty ) {
         /* skip preceding blank lines */
         return;
     }
@@ -415,7 +415,7 @@ void rtf_trans_line( section_def *section )
     Blank_line = true;
     for( ;; ) {
         ch = *ptr;
-        if( ch != '\0' && ch != ' ' && ch != '\t' ) {
+        if( _is_nonblank( ch ) ) {
             Blank_line = false;
         }
         if( ch == '\0' ) {
@@ -506,17 +506,17 @@ void rtf_trans_line( section_def *section )
                 trans_add_str( buf, section );
                 Line_prefix |= LPREFIX_FIX_FI;
             }
-            ptr = skip_blank( ptr + 1 );
+            ptr = skip_blanks( ptr + 1 );
             Eat_blanks = true;
         } else if( ch == WHP_DLIST_DESC ) {
             /* we don't have to do anything with this for RTF. Ignore it */
-            ptr = skip_blank( ptr + 1 );
+            ptr = skip_blanks( ptr + 1 );
         } else if( ch == WHP_DLIST_TERM ) {
             /* definition list term */
             sprintf( buf, "\\f2\\fi-%d \\b ", INDENT_INC );
             trans_add_str( buf, section );
             Line_postfix = LPOSTFIX_TERM;
-            ptr = skip_blank( ptr + 1 );
+            ptr = skip_blanks( ptr + 1 );
             Eat_blanks = true;
         } else if( ch == WHP_CTX_KW ) {
             end = strchr( ptr + 1, WHP_CTX_KW );
@@ -613,7 +613,7 @@ void rtf_trans_line( section_def *section )
                 if( Tab_xmp && ch == Tab_xmp_char ) {
                     trans_add_str( "\\tab ", section );
                     /* skip blanks after a tab, so that hyperlinks line up */
-                    ptr = skip_blank( ptr );
+                    ptr = skip_blanks( ptr );
                 } else {
                     trans_add_char_rtf( ch, section );
                 }

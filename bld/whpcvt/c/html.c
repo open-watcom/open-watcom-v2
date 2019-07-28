@@ -254,7 +254,7 @@ void html_trans_line( section_def *section )
 
     switch( ch ) {
     case WHP_TABXMP:
-        if( *skip_blank( ptr + 1 ) == '\0' ) {
+        if( *skip_blanks( ptr + 1 ) == '\0' ) {
             Tab_xmp = false;
             trans_add_str( "</xmp>\n", section );
             Blank_line_sfx = false;     // remove following blanks
@@ -322,7 +322,7 @@ void html_trans_line( section_def *section )
         break;
     }
 
-    if( *skip_blank( ptr ) == '\0' ) {
+    if( *skip_blanks( ptr ) == '\0' ) {
         /* ignore blanks lines before the topic starts */
         if( !Curr_ctx->empty ) {
             /* the line is completely blank. This tells us to output
@@ -425,15 +425,15 @@ void html_trans_line( section_def *section )
         } else if( ch == WHP_LIST_ITEM ) {
             /* list item */
             line_len += trans_add_str( "<LI>", section );
-            ptr = skip_blank( ptr + 1 );
+            ptr = skip_blanks( ptr + 1 );
         } else if( ch == WHP_DLIST_DESC ) {
             trans_add_str( "<DD>", section );
-            ptr = skip_blank( ptr + 1 );
+            ptr = skip_blanks( ptr + 1 );
         } else if( ch == WHP_DLIST_TERM ) {
             /* definition list term */
             line_len += trans_add_str( "<DT>", section );
             term_fix = true;
-            ptr = skip_blank( ptr + 1 );
+            ptr = skip_blanks( ptr + 1 );
             Blank_line_sfx = false;
         } else if( ch == WHP_CTX_KW ) {
             end = strchr( ptr + 1, WHP_CTX_KW );
@@ -527,7 +527,7 @@ void html_trans_line( section_def *section )
                 len = tab_align( ch_len, section );
                 ch_len += len;
                 line_len += len * sizeof( HTML_SPACE );
-                ptr = skip_blank( ptr );
+                ptr = skip_blanks( ptr );
             }
             if( line_len > 120 && ch == ' ' && !Tab_xmp ) {
                 /* break onto the next line */

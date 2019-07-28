@@ -620,6 +620,47 @@ static int process_args( int argc, char *argv[] )
     return( start_arg );
 }
 
+char *skip_blanks( char *ptr )
+/****************************/
+{
+    while( *ptr == ' ' || *ptr == '\t' )
+        ptr++;
+    return( ptr );
+}
+
+static char *skip_nonblanks( char *ptr )
+/**************************************/
+{
+    while( _is_nonblank( *ptr ) )
+        ptr++;
+    return( ptr );
+}
+
+static void trim_blanks( char *ptr )
+/**********************************/
+{
+    char    *s;
+    char    *d;
+
+    if( *ptr != '\0' ) {
+        if( _is_nonblank( *ptr ) ) {
+            d = ptr + strlen( ptr );
+        } else {
+            s = skip_blanks( ptr );
+            d = ptr;
+            while( (*d = *s) != '\0' ) {
+                d++;
+                s++;
+            }
+        }
+        while( d-- > ptr ) {
+            if( _is_nonblank( *d ) && *d != '\n' )
+                break;
+            *d = '\0';
+        }
+    }
+}
+
 static int valid_args( int argc, char *argv[] )
 /*********************************************/
 {
@@ -628,8 +669,6 @@ static int valid_args( int argc, char *argv[] )
     char                line[200];
     int                 ret;
     int                 i;
-    size_t              j;
-    char                *x;
 
     Tab_xmp = false;
 
@@ -699,21 +738,9 @@ static int valid_args( int argc, char *argv[] )
                 if( fgets( line, sizeof( line ), opt_file ) == NULL ) {
                     break;
                 }
-                line[sizeof( line ) - 1] = 0;
-                for( x = line, i = 0; i < sizeof( line ) && *x != 0; i++, x++ ) {
-                    if( *x != ' ' && *x != 9 ) {
-                        strcpy( line, x );
-                        break;
-                    }
-                }
-                for( j = strlen( line ), x = line + j - 1; j > 0; j--, x-- ) {
-                    if( *x == '\n' || *x == ' ' || *x == 9 ) {
-                        *x = 0;
-                    } else {
-                        break;
-                    }
-                }
-                _new( argv[argc], j + 1 );
+                line[sizeof( line ) - 1] = '\0';
+                trim_blanks( line );
+                _new( argv[argc], strlen( line ) + 1 );
                 strcpy( argv[argc], line );
             }
             fclose( opt_file );
@@ -730,14 +757,6 @@ static int valid_args( int argc, char *argv[] )
         }
     }
     return( start_arg );
-}
-
-char *skip_blank( char *ptr )
-/***************************/
-{
-    for( ; *ptr == ' ' || *ptr == '\t'; ++ptr );
-
-    return( ptr );
 }
 
 static int read_char( void )
@@ -786,7 +805,7 @@ bool read_line( void )
             if( *buf == '\n' ) {
                 if( eat_blank ) {
                     eat_blank = false;
-                    if( *skip_blank( Line_buf ) == '\n' ) {
+                    if( *skip_blanks( Line_buf ) == '\n' ) {
                         /* the 'exclude off, but eat blank line after' character
                            is used to do 'dummy' figures (to get the the
                            figure numbers right). Since real text has
@@ -1079,14 +1098,14 @@ static char *skip_prep( char *str )
     char                        *end;
     char                        *next;
 
-    for( start = str; *start == ' ' || *start == '\t'; ++start );
-    for( end = start; *end != ' ' && *end != '\t' && *end != '\0'; ++end );
+    start = skip_blanks( str );
+    end = skip_nonblanks( start );
     /* now 'end' points to the terminating char after the first word */
     if( start == end ) {
         /* no first word */
         return( str );
     }
-    for( next = end; *next == ' ' || *next == '\t'; ++next );
+    next = skip_blanks( end );
     if( *next == '\0' ) {
         /* nothing after the first word */
         return( start );
@@ -1165,7 +1184,7 @@ static void add_ctx( ctx_def *ctx, const char *title, char *keywords, const char
         _new( ctx->title, strlen( title ) + 1 );
         strcpy( ctx->title, title );
     }
-    if( keywords != NULL && ctx->keylist == NULL && *skip_blank( keywords ) != '\0' ) {
+    if( keywords != NULL && ctx->keylist == NULL && *skip_blanks( keywords ) != '\0' ) {
         for( ptr = keywords;; ) {
             for( end = ptr; *end != ',' && *end != ';' && *end != '\0'; ++end );
             ch = *end;
@@ -1339,10 +1358,11 @@ static bool read_topic( void )
         return( read_ctx_def() );
     case WHP_TOPIC:
         return( read_ctx_topic() );
+    case '\0':
+        return( read_line() );
     case ' ':
     case '\t':
-    case '\0':
-        if( *skip_blank( Line_buf ) == '\0' ) {
+        if( *skip_blanks( Line_buf ) == '\0' ) {
             /* due to a bug on GML, skip completely blank lines
                between topics, like this */
             return( read_line() );
@@ -1731,6 +1751,7 @@ static void output_def_file( void )
     char                        *buf;
     size_t                      len;
     size_t                      max_len;
+    size_t                      i;
 
     whp_fprintf( Def_file, "/* This file was created by WHPCVT.EXE. DO NOT MODIFY BY HAND! */\n\n" );
 
@@ -1745,8 +1766,9 @@ static void output_def_file( void )
             buf = realloc( buf, len );
             max_len = len;
         }
-        strcpy( buf, ctx->ctx_name );
-        strupr( buf );
+        for( i = 0; i < len; i++ ) {
+            buf[i] = toupper( (unsigned char)ctx->ctx_name[i] );
+        }
         whp_fprintf( Def_file, "#define %s%-50s\t%d\n", HELP_PREFIX, buf, ctx->ctx_id );
     }
     free( buf );

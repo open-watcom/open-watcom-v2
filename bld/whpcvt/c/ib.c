@@ -532,7 +532,7 @@ void ib_trans_line( section_def *section )
     }
     switch( ch ) {
     case WHP_TABXMP:     // Tabbed-example
-        if( *skip_blank( ptr + 1 ) == '\0' ) {
+        if( *skip_blanks( ptr + 1 ) == '\0' ) {
             Tab_xmp = false;
         } else {
             read_tabs( ptr + 1 );
@@ -576,7 +576,7 @@ void ib_trans_line( section_def *section )
         set_compact( ptr );
         Curr_indent += indent;
         if( ch == WHP_DLIST_START ) {
-            ptr = skip_blank( ptr + 1 );
+            ptr = skip_blanks( ptr + 1 );
             if( *ptr != '\0' ) {
                 /* due to a weakness in GML, the definition term must be
                    allowed on the same line as the definition tag. So
@@ -596,7 +596,7 @@ void ib_trans_line( section_def *section )
         break;
     case WHP_DLIST_DESC:
         Curr_indent += Text_Indent;
-        if( *skip_blank( ptr + 1 ) == '\0' ) {
+        if( *skip_blanks( ptr + 1 ) == '\0' ) {
             /* no description on this line. Ignore it so that no
                blank line gets generated */
             return;
@@ -611,7 +611,7 @@ void ib_trans_line( section_def *section )
     }
 
     // skip preceding blank lines
-    if( *skip_blank( ptr ) == '\0' && Curr_ctx->empty ) {
+    if( *skip_blanks( ptr ) == '\0' && Curr_ctx->empty ) {
         return;
     }
 
@@ -621,7 +621,7 @@ void ib_trans_line( section_def *section )
     }
 
     // indent properly if the first char is not white-space
-    if( ch != '\0' && ch != ' ' && ch != '\t') {
+    if( _is_nonblank( ch ) ) {
         ctr = ( ch == WHP_LIST_ITEM && !Box_Mode && Curr_list->type != LIST_TYPE_SIMPLE ) ? Text_Indent : 0;
         for( ; ctr < Curr_indent; ctr++ ) {
             trans_add_char_wrap( ' ', section );
@@ -636,7 +636,7 @@ void ib_trans_line( section_def *section )
     Blank_line = true;
     for( ;; ) {
         ch = *ptr;
-        if( ch != '\0' && ch != ' ' && ch != '\t' ) {
+        if( _is_nonblank( ch ) ) {
             Blank_line = false;
         }
         if( ch == '\0' ) {
@@ -731,14 +731,14 @@ void ib_trans_line( section_def *section )
                 trans_add_str_wrap( buf, section );
             }
             Eat_blanks = true;
-            ptr = skip_blank( ptr + 1 );
+            ptr = skip_blanks( ptr + 1 );
         } else if( ch == WHP_DLIST_DESC ) {
-            ptr = skip_blank( ptr + 1 );
+            ptr = skip_blanks( ptr + 1 );
         } else if( ch == WHP_DLIST_TERM ) {
             /* definition list term */
             trans_add_str( STR_BOLD_ON, section );
             Line_postfix = LPOSTFIX_TERM;
-            ptr = skip_blank( ptr + 1 );
+            ptr = skip_blanks( ptr + 1 );
             Eat_blanks = true;
         } else if( ch == WHP_CTX_KW ) {
             end = strchr( ptr + 1, WHP_CTX_KW );
@@ -795,7 +795,7 @@ void ib_trans_line( section_def *section )
                     // find out how close we are to "col 0" for the current indent
                     ch_len = Cursor_X - indent - ( Box_Mode ? 2 : 0 );
                     tab_align( ch_len, section );
-                    ptr = skip_blank( ptr );
+                    ptr = skip_blanks( ptr );
                 } else {
                     trans_add_char_wrap( ch, section );
                 }
