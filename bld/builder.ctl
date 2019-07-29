@@ -255,14 +255,23 @@ cdsay .
 
 # only test build for now
 [ INCLUDE <OWSRCDIR>/wgml/builder.ctl ]
+
 # Build documentation
 [ IFDEF <OWDOCBUILD> 1 ]
 [ INCLUDE <OWDOCSDIR>/builder.ctl ]
+[ ENDIF ]
+# Build installers
+[ IFDEF <OWDISTRBUILD> 1 ]
+[ INCLUDE <OWDISTRDIR>/ow/builder.ctl ]
 [ ENDIF ]
 
 [ BLOCK <BLDRULE> docsclean docs webdocs cpwebdocs ]
 #===================================================
 [ INCLUDE <OWDOCSDIR>/builder.ctl ]
+
+[ BLOCK <BLDRULE> install missing instclean ]
+#============================================
+[ INCLUDE <OWDISTRDIR>/ow/builder.ctl ]
 
 [ BLOCK <BLDRULE> testclean test cleanlog ]
 #==========================================
