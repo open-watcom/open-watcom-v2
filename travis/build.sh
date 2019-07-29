@@ -47,6 +47,7 @@ bootutil_proc()
 build_proc()
 {
     RC=0
+    cd $OWSRCDIR
     case "$OWTRAVISJOB" in
         "BOOTSTRAP")
             bootutil_proc
@@ -58,76 +59,62 @@ build_proc()
                     builder -q boot
                 fi
                 RC=$?
-                cd $TRAVIS_BUILD_DIR
             fi
             ;;
         "BUILD")
-            cd $OWSRCDIR
             if [ "$TRAVIS_EVENT_TYPE" = "pull_request" ]; then
                 builder rel
             else
                 builder -q rel
             fi
             RC=$?
-            cd $TRAVIS_BUILD_DIR
             ;;
         "BUILD-1")
-            cd $OWSRCDIR
             if [ "$TRAVIS_EVENT_TYPE" = "pull_request" ]; then
                 builder rel1
             else
                 builder -q rel1
             fi
             RC=$?
-            cd $TRAVIS_BUILD_DIR
             ;;
         "BUILD-2")
-            cd $OWSRCDIR
             if [ "$TRAVIS_EVENT_TYPE" = "pull_request" ]; then
                 builder rel2
             else
                 builder -q rel2
             fi
             RC=$?
-            cd $TRAVIS_BUILD_DIR
             ;;
         "BUILD-3")
-            cd $OWSRCDIR
             if [ "$TRAVIS_EVENT_TYPE" = "pull_request" ]; then
                 builder rel3
             else
                 builder -q rel3
             fi
             RC=$?
-            cd $TRAVIS_BUILD_DIR
             ;;
         "DOCS")
             export OWVERBOSE=1
-set -x
-            cd $OWDOCSDIR
             if [ "$TRAVIS_EVENT_TYPE" = "pull_request" ]; then
                 builder docs
             else
                 builder -q docs
             fi
             RC=$?
-            cd $TRAVIS_BUILD_DIR
             ;;
         "INST")
             export OWVERBOSE=1
-set -x
-            cd $OWDISTRDIR
             if [ "$TRAVIS_EVENT_TYPE" = "pull_request" ]; then
-                builder build
+                builder install
             else
-                builder -q build
+                builder -q install
             fi
             RC=$?
-            cd $TRAVIS_BUILD_DIR
             ;;
         *)
             ;;
     esac
+    cd $OWROOT
     return $RC
 }
 

@@ -9,6 +9,7 @@ env:
     - OWROOT=$TRAVIS_BUILD_DIR
     - OWOBJDIR=binbuild
     - OWVERBOSE=0
+    - OWDISTRBUILD=0
     - OWDOCBUILD=0
     - OWDOCQUIET=1
     - OWBRANCH=master
@@ -19,7 +20,7 @@ env:
     - OWTRAVIS_BUILD_DIR=${HOME}/build/$OWTRAVIS_REPO_SLUG
     - OWRELROOT=$OWROOT/test
     - OWTRAVISDIR=$OWROOT/travis
-    - OWDISTRDIR=$OWROOT/distrib/ow
+    - OWDISTRDIR=$OWROOT/distrib
     - OWSRCDIR=$OWROOT/bld
     - OWBINDIR=$OWROOT/build/$OWOBJDIR
     - OWDOCSDIR=$OWROOT/docs

@@ -42,7 +42,7 @@ gitupdf_proc()
                     fi
                     cp $OWBINDIR/*.log $OWLOGDIR/
                     cp $OWDOCSDIR/*.log $OWLOGDIR/
-                    cp $OWDISTRDIR/*.log $OWLOGDIR/
+                    cp $OWDISTRDIR/ow/*.log $OWLOGDIR/
                     #
                     # commit new log files to GitHub repository
                     #

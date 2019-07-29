@@ -92,7 +92,6 @@ if "%OWTRAVISJOB%" == "DOCS" (
     REM register all Help Compilers DLL's
     regsvr32 -u -s itcc.dll
     regsvr32 -s %OWROOT%\travis\hhc\itcc.dll
-    cd %OWDOCSDIR%
     if "%TRAVIS_EVENT_TYPE%" == "pull_request" (
         builder docs
     ) else (
@@ -100,11 +99,10 @@ if "%OWTRAVISJOB%" == "DOCS" (
     )
 )
 if "%OWTRAVISJOB%" == "INST" (
-    cd %OWDISTRDIR%
     if "%TRAVIS_EVENT_TYPE%" == "pull_request" (
-        builder build os_nt cpu_x64
+        builder install os_nt cpu_x64
     ) else (
-        builder -q build os_nt cpu_x64
+        builder -q install os_nt cpu_x64
     )
 )
 set RC=%ERRORLEVEL%
