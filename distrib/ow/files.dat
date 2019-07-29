@@ -55,7 +55,7 @@
 [ INCLUDE <OWSRCDIR>/wipfc/files.dat ]
 [ INCLUDE <OWSRCDIR>/redist/files.dat ]
 [ INCLUDE <OWSRCDIR>/uninstal/files.dat ]
-[ INCLUDE <OWSRCDIR>/txt/files.dat ]
+[ INCLUDE <OWSRCDIR>/docstxt/files.dat ]
 
 # Currently Missing:
 #-------------------------------------
