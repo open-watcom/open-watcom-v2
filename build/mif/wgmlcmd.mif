@@ -111,11 +111,6 @@ prepare_wgml_tmp_batch : .PROCEDURE .EXPLICIT
     @%append $(dos_wgml_tmp_batch) $(noecho)set GMLINC=$(%GMLINC)
     @%append $(dos_wgml_tmp_batch) c:\gml\dos\wgml.exe $(wgml_cmdl_params)
     @%append $(dos_wgml_tmp_batch) exit
-!ifeq bld_os nt
-    type $(dos_wgml_tmp_batch)
-!else
-    cat $(dos_wgml_tmp_batch)
-!endif
 !else
     @%null
 !endif
