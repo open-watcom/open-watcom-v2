@@ -11,15 +11,15 @@ call "C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\vcvarsall.bat" amd6
 REM ...
 @echo %OWECHO%
 REM ...
+REM setup DOSBOX
+REM
+set OWDOSBOX=%OWROOT%\travis\dosbox\dosbox.exe
+set SDL_VIDEODRIVER=dummy
+REM
 if "%OWTRAVISJOB%" == "DOCS" (
     set OWGHOSTSCRIPTPATH=%OWROOT%\travis\gs927w64
     set OWWIN95HC=%OWROOT%\travis\hcw\hcrtf.exe
     set OWHHC=%OWROOT%\travis\hhc\hhc.exe
-    REM
-    REM setup DOSBOX
-    REM
-    set OWDOSBOX=%OWROOT%\travis\dosbox\dosbox.exe
-    set SDL_VIDEODRIVER=dummy
 )
 REM ...
 call cmnvars.bat
