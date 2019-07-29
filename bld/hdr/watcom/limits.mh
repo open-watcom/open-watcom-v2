@@ -191,8 +191,8 @@
 /*
  *  Invariant values
  */
-#define SSIZE_MAX   _POSIX_SSIZE_MAX
-#define SYMLOOP_MAX 32      /* This is bigger than _POSIX_SYMLOOP_MAX */
+#define SSIZE_MAX   2147483647  /* This is bigger than _POSIX_SSIZE_MAX */
+#define SYMLOOP_MAX 32          /* This is bigger than _POSIX_SYMLOOP_MAX */
 
 /*
  *  Posix .2/9 limits.
