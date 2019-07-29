@@ -55,13 +55,13 @@ q
 #    -$(wgml) vi.gml (file nb7x9ps pass 1 cpi 20 stat verb dev term nopause out *.res
 
 vi.hlp: vihelp.src toc vihlp
-    @erase vitoc.hlp
-    @erase toc.hlp
-    @erase toc.ind
-    @erase vitoc.src
-    @erase toc.src
-    @erase vihelp.src
-    @erase links.hlp
+    @%erase vitoc.hlp
+    @%erase toc.hlp
+    @%erase toc.ind
+    @%erase vitoc.src
+    @%erase toc.src
+    @%erase vihelp.src
+    @%erase links.hlp
     @%null
 
 vihelp.src: vi.gml .SYMBOLIC
@@ -90,12 +90,12 @@ toc: .SYMBOLIC
     $(vi) -s tocind.vi t1
     $(vi) -s links.vi vitoc.src
     $(vi) -s toc.vi vitoc.src
-#    erase t1
+#    %erase t1
 
 vihlp: toc .SYMBOLIC
     @copy toc.ind+toc.hlp+links.hlp+index.hlp+vihelp.src t2
     $(vi) -s help.vi t2
-#    erase t2
+#    %erase t2
 #    sorthelp -w 80 -h 25 t1 t2 >sorthelp.out
 #    sorthelp t1
 
