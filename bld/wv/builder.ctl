@@ -55,21 +55,21 @@ set PROJDIR=<CWD>
     <CCCMD> os2/os2386.gui/wv.sym   <OWRELROOT>/binp/wdw.sym
 #    <CCCMD> os2/os2i86/wv.exe       <OWRELROOT>/binp/wd16.exe
 #    <CCCMD> os2/os2i86.gui/wv.exe   <OWRELROOT>/binp/wdw16.exe
-    <CCCMD> win/nt386/wv.exe        <OWRELROOT>/binnt/wd.exe
-    <CCCMD> win/nt386/wv.sym        <OWRELROOT>/binnt/wd.sym
-    <CCCMD> win/nt386.gui/wv.exe    <OWRELROOT>/binnt/wdw.exe
-    <CCCMD> win/nt386.gui/wv.sym    <OWRELROOT>/binnt/wdw.sym
+    <CCCMD> nt/nt386/wv.exe         <OWRELROOT>/binnt/wd.exe
+    <CCCMD> nt/nt386/wv.sym         <OWRELROOT>/binnt/wd.sym
+    <CCCMD> nt/nt386.gui/wv.exe     <OWRELROOT>/binnt/wdw.exe
+    <CCCMD> nt/nt386.gui/wv.sym     <OWRELROOT>/binnt/wdw.sym
     <CCCMD> linux/linux386/wv.exe   <OWRELROOT>/binl/wd
     <CCCMD> linux/linux386/wv.sym   <OWRELROOT>/binl/wd.sym
-    <CCCMD> win/ntaxp/wv.exe        <OWRELROOT>/axpnt/wd.exe
-    <CCCMD> win/ntaxp/wv.sym        <OWRELROOT>/axpnt/wd.sym
-    <CCCMD> win/ntaxp.gui/wv.exe    <OWRELROOT>/axpnt/wdw.exe
-    <CCCMD> win/ntaxp.gui/wv.sym    <OWRELROOT>/axpnt/wdw.sym
+    <CCCMD> nt/ntaxp/wv.exe         <OWRELROOT>/axpnt/wd.exe
+    <CCCMD> nt/ntaxp/wv.sym         <OWRELROOT>/axpnt/wd.sym
+    <CCCMD> nt/ntaxp.gui/wv.exe     <OWRELROOT>/axpnt/wdw.exe
+    <CCCMD> nt/ntaxp.gui/wv.sym     <OWRELROOT>/axpnt/wdw.sym
     <CCCMD> qnx/qnx386/wv.qnx       <OWRELROOT>/qnx/binq/wd
     <CCCMD> qnx/qnx386/wv.sym       <OWRELROOT>/qnx/sym/wd.sym
 
-    <CCCMD> win/ntx64/wv.exe        <OWRELROOT>/binnt64/wd.exe
-    <CCCMD> win/ntx64.gui/wv.exe    <OWRELROOT>/binnt64/wdw.exe
+    <CCCMD> nt/ntx64/wv.exe         <OWRELROOT>/binnt64/wd.exe
+    <CCCMD> nt/ntx64.gui/wv.exe     <OWRELROOT>/binnt64/wdw.exe
     <CCCMD> linux/linuxx64/wv.exe   <OWRELROOT>/binl64/wd
 
 [ BLOCK . . ]
