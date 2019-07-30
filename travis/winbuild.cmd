@@ -99,6 +99,7 @@ if "%OWTRAVISJOB%" == "DOCS" (
     )
 )
 if "%OWTRAVISJOB%" == "INST" (
+    builder missing
     if "%TRAVIS_EVENT_TYPE%" == "pull_request" (
         builder install os_nt cpu_x64
     ) else (
