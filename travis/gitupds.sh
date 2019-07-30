@@ -56,6 +56,8 @@ gitupds_proc()
                         echo_msg="gitupds.sh - done"
                     fi
                     ;;
+                "INIT")
+                    ;;
                 "WEBDOCS")
                     #
                     # clone GitHub repository

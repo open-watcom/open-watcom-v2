@@ -45,19 +45,19 @@ if "%OWTRAVISJOB%" == "BOOTSTRAP" (
     nmake -f ..\nmake clean >>%OWBINDIR%\bootx.log 2>&1
     nmake -f ..\nmake >>%OWBINDIR%\bootx.log 2>&1
     if not errorlevel == 1 (
-	cd %OWSRCDIR%\builder
-	mkdir %OWOBJDIR%
-	cd %OWOBJDIR%
-	%OWBINDIR%\wmake -f ..\binmake clean >>%OWBINDIR%\bootx.log 2>&1
-	%OWBINDIR%\wmake -f ..\binmake bootstrap=1 builder.exe >>%OWBINDIR%\bootx.log 2>&1
-	if not errorlevel == 1 (
-	    cd %OWSRCDIR%
-	    if "%TRAVIS_EVENT_TYPE%" == "pull_request" (
-		builder boot
-	    ) else (
-		builder -q boot
-	    )
-	)
+        cd %OWSRCDIR%\builder
+        mkdir %OWOBJDIR%
+        cd %OWOBJDIR%
+        %OWBINDIR%\wmake -f ..\binmake clean >>%OWBINDIR%\bootx.log 2>&1
+        %OWBINDIR%\wmake -f ..\binmake bootstrap=1 builder.exe >>%OWBINDIR%\bootx.log 2>&1
+        if not errorlevel == 1 (
+            cd %OWSRCDIR%
+            if "%TRAVIS_EVENT_TYPE%" == "pull_request" (
+                builder boot
+            ) else (
+                builder -q boot
+            )
+        )
     )
 )
 if "%OWTRAVISJOB%" == "BUILD" (
