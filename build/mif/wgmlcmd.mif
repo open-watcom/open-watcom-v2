@@ -27,29 +27,18 @@ wgml_tmp_batchfile = wgml.tmp
 dos_gendev_tmp_batch=gendevb.bat
 dos_wgml_tmp_batch=wgmlb.bat
 
-!ifeq bld_os osx
-dosbox_options = -noautoexec -noconsole &
-    -c "config -set cpu core=normal" &
-    -c "config -set joystick joysticktype=none" &
-    -c "config -set mixer nosound=true" &
-    -c "config -set sblaster sbtype=none" &
-    -c "config -set midi mpu401=none" &
-    -c "config -set midi mididevice=none" &
-    -c "config -set speaker pcspeaker=false" &
-    -c "mount c $(docs_dir)" -c "mount d ."
-!else
-dosbox_options = -noautoexec -noconsole &
-    -c "config -set joystick joysticktype=none" &
-    -c "config -set mixer nosound=true" &
-    -c "config -set sblaster sbtype=none" &
-    -c "config -set midi mpu401=none" &
-    -c "config -set midi mididevice=none" &
-    -c "config -set speaker pcspeaker=false" &
-    -c "mount c $(docs_dir)" -c "mount d ."
-!endif
+wgml_subdir = docs\$(dotarget)
+gendev_subdir = testlib
 
-dosbox_wgml_options = -c "mount e $(src_dir)" -c "d:$(dos_wgml_tmp_batch)"
-dosbox_gendev_options = -c "mount e .." -c "d:$(dos_gendev_tmp_batch)"
+dosbox_options = -noautoexec -noconsole &
+    -c "config -set joystick joysticktype=none" &
+    -c "config -set mixer nosound=true" &
+    -c "config -set sblaster sbtype=none" &
+    -c "config -set midi mpu401=none" &
+    -c "config -set midi mididevice=none" &
+    -c "config -set speaker pcspeaker=false"
+
+dosbox_options_osx = -c "config -set cpu core=normal"
 
 dosemu_options = -dumb -quiet -I 'keyboard {layout us}'
 
@@ -65,8 +54,8 @@ GENDEVCMD = $(docs_dir)\gml\os2\gendev $(gendev_cmdl_params)
 
 !else ifdef dosbox
 
-WGMLCMD = $(dosbox) $(dosbox_options) $(dosbox_wgml_options)
-GENDEVCMD = $(dosbox) $(dosbox_options) $(dosbox_gendev_options)
+WGMLCMD = $(dosbox) $(dosbox_options) $(dosbox_options_$(bld_os)) -c "mount c $(%OWROOT)" -c "c:\$(wgml_subdir)\$(dos_wgml_tmp_batch)"
+GENDEVCMD = $(dosbox) $(dosbox_options) $(dosbox_options_$(bld_os)) -c "mount c .." -c "c:\$(gendev_subdir)\$(dos_gendev_tmp_batch)"
 # only DOSBOX use upper cased file name
 wgml_ucase=1
 use_dosemu = dosbox
@@ -106,10 +95,11 @@ prepare_wgml_tmp_batch : .PROCEDURE .EXPLICIT
 # DOSBOX version
 #-------------------------------------------------------
     @%create $(dos_wgml_tmp_batch)
-    @%append $(dos_wgml_tmp_batch) d:
+    @%append $(dos_wgml_tmp_batch) c:
+    @%append $(dos_wgml_tmp_batch) cd \$(wgml_subdir)
     @%append $(dos_wgml_tmp_batch) $(noecho)set GMLLIB=$(%GMLLIB)
     @%append $(dos_wgml_tmp_batch) $(noecho)set GMLINC=$(%GMLINC)
-    @%append $(dos_wgml_tmp_batch) c:\gml\dos\wgml.exe $(wgml_cmdl_params)
+    @%append $(dos_wgml_tmp_batch) c:\docs\gml\dos\wgml.exe $(wgml_cmdl_params)
     @%append $(dos_wgml_tmp_batch) exit
 !else
     @%null
@@ -135,10 +125,12 @@ prepare_gendev_tmp_batch : .PROCEDURE .EXPLICIT
 # DOSBOX version
 #-------------------------------------------------------
     @%create $(dos_gendev_tmp_batch)
-    @%append $(dos_gendev_tmp_batch) d:
+    @%append $(dos_gendev_tmp_batch) mount d $(docs_dir)
+    @%append $(dos_gendev_tmp_batch) c:
+    @%append $(dos_gendev_tmp_batch) cd \$(gendev_subdir)
     @%append $(dos_gendev_tmp_batch) $(noecho)set GMLLIB=$(%GMLLIB)
     @%append $(dos_gendev_tmp_batch) $(noecho)set GMLINC=$(%GMLINC)
-    @%append $(dos_gendev_tmp_batch) c:\gml\dos\gendev.exe $(gendev_cmdl_params)
+    @%append $(dos_gendev_tmp_batch) d:\gml\dos\gendev.exe $(gendev_cmdl_params)
     @%append $(dos_gendev_tmp_batch) exit
 !else
     @%null

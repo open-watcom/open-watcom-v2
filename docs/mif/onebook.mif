@@ -197,19 +197,16 @@ $(hbook).rtf $(hbook).cn1 $(hbook).h $(hbook).hh : $(book_objs) $(proj_objs)
     @%make compile_gml_to_xxx
 
 dos_test_batch=testb.bat
-dosbox_test_options = -c "mount e $(src_dir)" -c "d:$(dos_test_batch)"
-WGMLTESTCMD = $(dosbox) $(dosbox_options) $(dosbox_test_options)
+WGMLTESTCMD = $(dosbox) -noconsole $(dosbox_options) $(dosbox_options_$(bld_os)) -c "mount c $(%OWROOT)" -c "c:\$(wgml_subdir)\$(dos_test_batch)"
 
 test : .symbolic
 !ifeq use_dosemu dosbox
     $(noecho)set OWGMLINC=.;$(whelp_incs);$(gml_lib);$(hlp_incs);$(book_incs);$(gml_incs);
     $(noecho)set GMLLIB=$(gml_lib:/=\)
     $(noecho)set GMLINC=$(%OWGMLINC:/=\)
-    $(noecho)set GMLLIB=$(%GMLLIB:..\=c:\)
-    $(noecho)set GMLINC=$(%GMLINC:..\..\bld\=e:\)
-    $(noecho)set GMLINC=$(%GMLINC:..\=c:\)
     @%create $(dos_test_batch)
-    @%append $(dos_test_batch) d:
+    @%append $(dos_test_batch) c:
+    @%append $(dos_test_batch) cd \$(wgml_subdir)
     @%append $(dos_test_batch) $(noecho)set GMLLIB=$(%GMLLIB)
     @%append $(dos_test_batch) $(noecho)set GMLINC=$(%GMLINC)
     @%append $(dos_test_batch) exit
@@ -450,11 +447,6 @@ prepare_wgml_opts : .PROCEDURE
 #-------------------------------------------------------
     $(noecho)set GMLLIB=$(gml_lib:/=\)
     $(noecho)set GMLINC=$(%OWGMLINC:/=\)
-!ifeq use_dosemu dosbox
-    $(noecho)set GMLLIB=$(%GMLLIB:..\=c:\)
-    $(noecho)set GMLINC=$(%GMLINC:..\..\bld\=e:\)
-    $(noecho)set GMLINC=$(%GMLINC:..\=c:\)
-!endif
     @%make prepare_wgml_tmp_batch
 
 #--------------------------------------
