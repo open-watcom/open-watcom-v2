@@ -30,13 +30,13 @@ dos_wgml_tmp_batch=wgmlb.bat
 wgml_subdir = docs\$(dotarget)
 gendev_subdir = testlib
 
-dosbox_options = -noautoexec -noconsole &
-    -c "config -set joystick joysticktype=none" &
-    -c "config -set mixer nosound=true" &
-    -c "config -set sblaster sbtype=none" &
-    -c "config -set midi mpu401=none" &
-    -c "config -set midi mididevice=none" &
-    -c "config -set speaker pcspeaker=false"
+#dosbox_options = -noautoexec -noconsole &
+#    -c "config -set joystick joysticktype=none" &
+#    -c "config -set mixer nosound=true" &
+#    -c "config -set sblaster sbtype=none" &
+#    -c "config -set midi mpu401=none" &
+#    -c "config -set midi mididevice=none" &
+#    -c "config -set speaker pcspeaker=false"
 
 dosbox_options_osx = -c "config -set cpu core=normal"
 
