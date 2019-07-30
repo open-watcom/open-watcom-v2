@@ -413,7 +413,6 @@ jobs:
         - OWRELROOT=$OWTRAVIS_BUILD_DIR
       install:
         - . ./cmnvars.sh
-        - git clone --depth=1 --branch=master https://${GITHUB_TOKEN}@github.com/${OWTRAVIS_REPO_SLUG}.git $OWTRAVIS_BUILD_DIR
         - travis/cache3.sh load
       script:
         - travis/build.sh
@@ -426,7 +425,6 @@ jobs:
         - export OWTRAVISJOB=INST
         - OWRELROOT=$OWTRAVIS_BUILD_DIR
       install:
-        - git clone --depth=1 --branch=master https://${GITHUB_TOKEN}@github.com/${OWTRAVIS_REPO_SLUG}.git $OWTRAVIS_BUILD_DIR
         - travis/cache3.sh load
       script:
         - travis/build.sh

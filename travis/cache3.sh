@@ -18,6 +18,7 @@ copy_tree3()
 }
 
 if [ "$1" = "load" ]; then
+    git clone --depth=1 --branch=master https://${GITHUB_TOKEN}@github.com/${OWTRAVIS_REPO_SLUG}.git $OWTRAVIS_BUILD_DIR
     echo "load cache" >>$OWBINDIR/cache3.log
     cp $CP_OPTS $OWROOT/buildx/. $OWSRCDIR/ >>$OWBINDIR/cache3.log; true
 fi
