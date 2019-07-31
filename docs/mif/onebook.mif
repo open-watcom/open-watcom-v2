@@ -71,7 +71,7 @@ bmp2eps = bmp2eps
 #
 
 !ifeq header 1
-dep_nt = test $(hbook).h
+dep_nt = $(hbook).h
 !else ifneq hc_nt
 dep_nt = $(hbook).hlp $(hbook).cnt
 !endif
@@ -195,25 +195,6 @@ $(hbook).cnt : $(hbook).cn1
 
 $(hbook).rtf $(hbook).cn1 $(hbook).h $(hbook).hh : $(book_objs) $(proj_objs)
     @%make compile_gml_to_xxx
-
-dos_test_batch=testb.bat
-WGMLTESTCMD = $(dosbox) -noconsole $(dosbox_options) $(dosbox_options_$(bld_os)) -c "mount c $(%OWROOT)" -c "c:\$(wgml_subdir)\$(dos_test_batch)"
-
-test : .symbolic
-!ifeq use_dosemu dosbox
-    $(noecho)set OWGMLINC=.;$(whelp_incs);$(gml_lib);$(hlp_incs);$(book_incs);$(gml_incs);
-    $(noecho)set GMLLIB=$(gml_lib:/=\)
-    $(noecho)set GMLINC=$(%OWGMLINC:/=\)
-    @%create $(dos_test_batch)
-    @%append $(dos_test_batch) c:
-    @%append $(dos_test_batch) cd \$(wgml_subdir)
-    @%append $(dos_test_batch) $(noecho)set GMLLIB=$(%GMLLIB)
-    @%append $(dos_test_batch) $(noecho)set GMLINC=$(%GMLINC)
-    @%append $(dos_test_batch) exit
-    -$(WGMLTESTCMD)
-!else
-    @%null
-!endif
 
 ####################################################
 #

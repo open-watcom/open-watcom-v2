@@ -203,13 +203,8 @@ genall : genall.pcd .symbolic
         @%make gencop
 
 gencop : .procedure
-!ifeq use_dosemu dosbox
-        @set GMLLIB=e:\testlib
-        @set GMLINC=e:\testsrc
-!else
         @set GMLLIB=..\testlib
         @set GMLINC=..\testsrc
-!endif
         %make prepare_gendev_tmp_batch
 !ifeq verbose 0
     	@echo gendev $@
