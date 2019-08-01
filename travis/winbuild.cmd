@@ -36,8 +36,6 @@ if "%OWTRAVIS_ENV_DEBUG%" == "1" (
     )
 )
 REM ...
-%OWDOSBOX% -noautoexec -noconsole -c "DIR" -c "exit"
-%OWDOSBOX% -noautoexec -noconsole -c "mount c %OWROOT%" -c "DIR" -c "exit"
 cd %OWSRCDIR%
 if "%OWTRAVISJOB%" == "BOOTSTRAP" (
     cd wmake
