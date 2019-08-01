@@ -55,8 +55,8 @@ GENDEVCMD = $(docs_dir)\gml\os2\gendev $(gendev_cmdl_params)
 !else ifdef dosbox
 
 !ifeq bld_os nt
-WGMLCMD = cmd.exe /c $(dosbox) -conf $(dosbox_cfg) $(dosbox_options_$(bld_os)) -c "mount c $(%OWROOT)" -c "c:\$(wgml_subdir)\$(dos_wgml_tmp_batch)"
-GENDEVCMD = cmd.exe /c $(dosbox) -conf $(dosbox_cfg) $(dosbox_options_$(bld_os)) -c "mount c .." -c "c:\$(gendev_subdir)\$(dos_gendev_tmp_batch)"
+WGMLCMD = $(%COMSPEC) /c $(dosbox) -conf $(dosbox_cfg) $(dosbox_options_$(bld_os)) -c "mount c $(%OWROOT)" -c "c:\$(wgml_subdir)\$(dos_wgml_tmp_batch)"
+GENDEVCMD = $(%COMSPEC) /c $(dosbox) -conf $(dosbox_cfg) $(dosbox_options_$(bld_os)) -c "mount c .." -c "c:\$(gendev_subdir)\$(dos_gendev_tmp_batch)"
 !else
 WGMLCMD = $(dosbox) -conf $(dosbox_cfg) $(dosbox_options_$(bld_os)) -c "mount c $(%OWROOT)" -c "c:\$(wgml_subdir)\$(dos_wgml_tmp_batch)"
 GENDEVCMD = $(dosbox) -conf $(dosbox_cfg) $(dosbox_options_$(bld_os)) -c "mount c .." -c "c:\$(gendev_subdir)\$(dos_gendev_tmp_batch)"
