@@ -419,8 +419,8 @@ jobs:
         - travis/build.sh
       before_deploy:
         # Set up git user name and tag this commit
-        - git tag -d $TRAVIS_TAG
-        - git push origin --delete $TRAVIS_TAG
+        - git tag -d $TRAVIS_TAG; true
+        - git push origin --delete $TRAVIS_TAG; true
         - git tag -a $TRAVIS_TAG $TRAVIS_COMMIT
       deploy:
         provider: releases
@@ -447,8 +447,8 @@ jobs:
         - travis/build.sh
       before_deploy:
         # Set up git user name and tag this commit
-        - git tag -d $TRAVIS_TAG
-        - git push origin --delete $TRAVIS_TAG
+        - git tag -d $TRAVIS_TAG; true
+        - git push origin --delete $TRAVIS_TAG; true
         - git tag -a $TRAVIS_TAG $TRAVIS_COMMIT
       deploy:
         provider: releases
