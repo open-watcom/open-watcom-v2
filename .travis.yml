@@ -6,6 +6,7 @@ compiler: gcc
 
 env:
   global:
+    - TRAVIS_TAG=Current-build
     - OWROOT=$TRAVIS_BUILD_DIR
     - OWOBJDIR=binbuild
     - OWVERBOSE=0
@@ -416,6 +417,22 @@ jobs:
         - travis/cache3.sh load
       script:
         - travis/build.sh
+      before_deploy:
+        # Set up git user name and tag this commit
+        - git tag -d $TRAVIS_TAG
+        - git push origin --delete $TRAVIS_TAG
+        - git tag -a $TRAVIS_TAG $TRAVIS_COMMIT
+      deploy:
+        provider: releases
+        api_key:
+          secure: dxoNwGFfV1F5AE/GcPR4EBTrC2O6aaZ0HocyhchakacTEqe35KXhF/7GI0qk9ocPDmvaeFr1dv+BOXZeTrsJmUZDQ3GEqnVoXqJK/FAGi3IHhmRDJUGoES1vJMfPv/0m11/DSZYVGPcXBK1Y69ycHj+lhrJtY2stYQiDabyd2BKoQfIU/J0MnNPZpZw6A6QYZjhcDNj85EfdbFBJdR5bkZHxQbJ6uruN37BLhSHeBBMXHInBuyZKnBerLNK90vu40XD8iPXK2yhqZz3RLsyq/IlkbXMzrh2l6P215IyOX0AHkCt16/wy9ckusWn+eoVGK8ecMclei0+T7j8wmQwSfFRcjMcUyBHErLsWseuEoORWV3J0AhUinQxpwmNWrypOWfeuIvT+ilf6baz0ZqaTPBCkOqzijQsEsbSc9ypZKetk1BhmgJyUon6w2vciuWeFXuSYQBAP/Pl+iJg3TDEM5p8NXwisT058szuflXb4dt5wFhtIEYgOnTFp9jsTZKnMIydyQUV5U135DZ0S/M9vIZ4FUjoSXzVbTaT006PeGHZsWlzTm0thyN/rMQAfKSMqgMQysDFlJ1aus+FhjBYqy9OOfPbo9a6+49u8qKbkmDwxZwsTr/lBF1rGiD08yf4XotYP/0sMbfboTRdIQpSYOGlTAdzLzEjXLtF9j7EQaO8=
+#        draft: true
+        on:
+          tags: true
+        overwrite: true
+        skip_cleanup: true
+        file_glob: true
+        file: distrib/ow/bin/open-watcom-*
     - # ...
       name: "Create Installer 64-bit Windows"
       if: branch = env(OWBRANCH) AND (type = cron)
@@ -428,6 +445,22 @@ jobs:
         - travis/cache3.sh load
       script:
         - travis/build.sh
+      before_deploy:
+        # Set up git user name and tag this commit
+        - git tag -d $TRAVIS_TAG
+        - git push origin --delete $TRAVIS_TAG
+        - git tag -a $TRAVIS_TAG $TRAVIS_COMMIT
+      deploy:
+        provider: releases
+        api_key:
+          secure: dxoNwGFfV1F5AE/GcPR4EBTrC2O6aaZ0HocyhchakacTEqe35KXhF/7GI0qk9ocPDmvaeFr1dv+BOXZeTrsJmUZDQ3GEqnVoXqJK/FAGi3IHhmRDJUGoES1vJMfPv/0m11/DSZYVGPcXBK1Y69ycHj+lhrJtY2stYQiDabyd2BKoQfIU/J0MnNPZpZw6A6QYZjhcDNj85EfdbFBJdR5bkZHxQbJ6uruN37BLhSHeBBMXHInBuyZKnBerLNK90vu40XD8iPXK2yhqZz3RLsyq/IlkbXMzrh2l6P215IyOX0AHkCt16/wy9ckusWn+eoVGK8ecMclei0+T7j8wmQwSfFRcjMcUyBHErLsWseuEoORWV3J0AhUinQxpwmNWrypOWfeuIvT+ilf6baz0ZqaTPBCkOqzijQsEsbSc9ypZKetk1BhmgJyUon6w2vciuWeFXuSYQBAP/Pl+iJg3TDEM5p8NXwisT058szuflXb4dt5wFhtIEYgOnTFp9jsTZKnMIydyQUV5U135DZ0S/M9vIZ4FUjoSXzVbTaT006PeGHZsWlzTm0thyN/rMQAfKSMqgMQysDFlJ1aus+FhjBYqy9OOfPbo9a6+49u8qKbkmDwxZwsTr/lBF1rGiD08yf4XotYP/0sMbfboTRdIQpSYOGlTAdzLzEjXLtF9j7EQaO8=
+#        draft: true
+        on:
+          tags: true
+        overwrite: true
+        skip_cleanup: true
+        file_glob: true
+        file: distrib/ow/bin/open-watcom-*
     #################################
     - stage: Finalize
       name: "Delete build cache Linux"
