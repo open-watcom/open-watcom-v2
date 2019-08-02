@@ -26,16 +26,16 @@ gitupdf_proc()
                     #
                     # clone GitHub repository
                     #
-                    git clone $GITVERBOSE1 --branch=master https://${GITHUB_TOKEN}@github.com/${OWTRAVIS_REPO_SLUG}.git $OWTRAVIS_BUILD_DIR
+                    git clone $GITVERBOSE1 --branch=master https://${GITHUB_TOKEN}@github.com/${OWTRAVIS_LOGS_REPO_SLUG}.git $OWTRAVIS_LOGS_DIR
                     #
                     # copy build log files to git repository tree
                     #
                     if [ "$TRAVIS_OS_NAME" = "osx" ]; then
-                        OWLOGDIR=$OWTRAVIS_BUILD_DIR/logs/osx
+                        OWLOGDIR=$OWTRAVIS_LOGS_DIR/logs/osx
                     elif [ "$TRAVIS_OS_NAME" = "windows" ]; then
-                        OWLOGDIR=$OWTRAVIS_BUILD_DIR/logs/windows
+                        OWLOGDIR=$OWTRAVIS_LOGS_DIR/logs/windows
                     else
-                        OWLOGDIR=$OWTRAVIS_BUILD_DIR/logs/linux
+                        OWLOGDIR=$OWTRAVIS_LOGS_DIR/logs/linux
                     fi
                     if [ ! -d $OWLOGDIR ]; then 
                         mkdir -p $OWLOGDIR; 
@@ -46,7 +46,7 @@ gitupdf_proc()
                     #
                     # commit new log files to GitHub repository
                     #
-                    cd $OWTRAVIS_BUILD_DIR
+                    cd $OWTRAVIS_LOGS_DIR
                     git add $GITVERBOSE2 -f .
                     if [ "$TRAVIS_OS_NAME" = "osx" ]; then
                         git commit $GITVERBOSE1 -m "Travis CI build $TRAVIS_JOB_NUMBER (build failure) - log files (OSX)"
@@ -86,35 +86,35 @@ gitupdf_proc()
                     #
                     # clone GitHub repository
                     #
-                    git clone $GITVERBOSE1 --branch=master https://${GITHUB_TOKEN}@github.com/${OWTRAVIS_REPO_SLUG}.git $OWTRAVIS_BUILD_DIR
+                    git clone $GITVERBOSE1 --branch=master https://${GITHUB_TOKEN}@github.com/${OWTRAVIS_LOGS_REPO_SLUG}.git $OWTRAVIS_LOGS_DIR
                     #
                     # copy build log files to git repository tree
                     #
                     case "$OWTRAVISTEST" in
                         "WASM")
-                            test -d $OWTRAVIS_BUILD_DIR/logs/linux/wasmtest || mkdir -p $OWTRAVIS_BUILD_DIR/logs/linux/wasmtest
-                            cp $OWSRCDIR/wasmtest/result.log $OWTRAVIS_BUILD_DIR/logs/linux/wasmtest/
-                            cp $OWSRCDIR/wasmtest/test.log $OWTRAVIS_BUILD_DIR/logs/linux/wasmtest/
+                            test -d $OWTRAVIS_LOGS_DIR/logs/linux/wasmtest || mkdir -p $OWTRAVIS_LOGS_DIR/logs/linux/wasmtest
+                            cp $OWSRCDIR/wasmtest/result.log $OWTRAVIS_LOGS_DIR/logs/linux/wasmtest/
+                            cp $OWSRCDIR/wasmtest/test.log $OWTRAVIS_LOGS_DIR/logs/linux/wasmtest/
                             ;;
                         "C")
-                            test -d $OWTRAVIS_BUILD_DIR/logs/linux/ctest || mkdir -p $OWTRAVIS_BUILD_DIR/logs/linux/ctest
-                            cp $OWSRCDIR/ctest/result.log $OWTRAVIS_BUILD_DIR/logs/linux/ctest/
-                            cp $OWSRCDIR/ctest/test.log $OWTRAVIS_BUILD_DIR/logs/linux/ctest/
+                            test -d $OWTRAVIS_LOGS_DIR/logs/linux/ctest || mkdir -p $OWTRAVIS_LOGS_DIR/logs/linux/ctest
+                            cp $OWSRCDIR/ctest/result.log $OWTRAVIS_LOGS_DIR/logs/linux/ctest/
+                            cp $OWSRCDIR/ctest/test.log $OWTRAVIS_LOGS_DIR/logs/linux/ctest/
                             ;;
                         "CXX")
-                            test -d $OWTRAVIS_BUILD_DIR/logs/linux/plustest || mkdir -p $OWTRAVIS_BUILD_DIR/logs/linux/plustest
-                            cp $OWSRCDIR/plustest/result.log $OWTRAVIS_BUILD_DIR/logs/linux/plustest/
-                            cp $OWSRCDIR/plustest/test.log $OWTRAVIS_BUILD_DIR/logs/linux/plustest/
+                            test -d $OWTRAVIS_LOGS_DIR/logs/linux/plustest || mkdir -p $OWTRAVIS_LOGS_DIR/logs/linux/plustest
+                            cp $OWSRCDIR/plustest/result.log $OWTRAVIS_LOGS_DIR/logs/linux/plustest/
+                            cp $OWSRCDIR/plustest/test.log $OWTRAVIS_LOGS_DIR/logs/linux/plustest/
                             ;;
                         "F77")
-                            test -d $OWTRAVIS_BUILD_DIR/logs/linux/f77test || mkdir -p $OWTRAVIS_BUILD_DIR/logs/linux/f77test
-                            cp $OWSRCDIR/f77test/result.log $OWTRAVIS_BUILD_DIR/logs/linux/f77test/
-                            cp $OWSRCDIR/f77test/test.log $OWTRAVIS_BUILD_DIR/logs/linux/f77test/
+                            test -d $OWTRAVIS_LOGS_DIR/logs/linux/f77test || mkdir -p $OWTRAVIS_LOGS_DIR/logs/linux/f77test
+                            cp $OWSRCDIR/f77test/result.log $OWTRAVIS_LOGS_DIR/logs/linux/f77test/
+                            cp $OWSRCDIR/f77test/test.log $OWTRAVIS_LOGS_DIR/logs/linux/f77test/
                             ;;
                         "CRTL")
-                            test -d $OWTRAVIS_BUILD_DIR/logs/linux/clibtest || mkdir -p $OWTRAVIS_BUILD_DIR/logs/linux/clibtest
-                            cp $OWSRCDIR/clibtest/result.log $OWTRAVIS_BUILD_DIR/logs/linux/clibtest/
-                            cp $OWSRCDIR/clibtest/test.log $OWTRAVIS_BUILD_DIR/logs/linux/clibtest/
+                            test -d $OWTRAVIS_LOGS_DIR/logs/linux/clibtest || mkdir -p $OWTRAVIS_LOGS_DIR/logs/linux/clibtest
+                            cp $OWSRCDIR/clibtest/result.log $OWTRAVIS_LOGS_DIR/logs/linux/clibtest/
+                            cp $OWSRCDIR/clibtest/test.log $OWTRAVIS_LOGS_DIR/logs/linux/clibtest/
                             ;;
                         *)
                             ;;
@@ -122,7 +122,7 @@ gitupdf_proc()
                     #
                     # commit new log files to GitHub repository
                     #
-                    cd $OWTRAVIS_BUILD_DIR
+                    cd $OWTRAVIS_LOGS_DIR
                     git add $GITVERBOSE2 -f .
                     git commit $GITVERBOSE1 -m "Travis CI build $TRAVIS_JOB_NUMBER (test failure) - log files (Linux)"
                     git push $GITVERBOSE1 -f origin

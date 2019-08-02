@@ -4,6 +4,9 @@ sudo: required
 os: linux
 compiler: gcc
 
+git:
+  depth: 3
+
 env:
   global:
     - TRAVIS_TAG=Current-build
@@ -17,8 +20,10 @@ env:
     - OWBRANCH_DOCS=documentation
     - OWBRANCH_COVERITY=coverity_scan
     - OWBRANCH_SF=sourceforge
-    - OWTRAVIS_REPO_SLUG=open-watcom/travis-ci-ow-builds
-    - OWTRAVIS_BUILD_DIR=${HOME}/build/$OWTRAVIS_REPO_SLUG
+    - OWTRAVIS_BUILD_REPO_SLUG=open-watcom/travis-ci-ow-builds
+    - OWTRAVIS_BUILD_DIR=${HOME}/build/$OWTRAVIS_BUILD_REPO_SLUG
+    - OWTRAVIS_LOGS_REPO_SLUG=open-watcom/travis-ci-logs
+    - OWTRAVIS_LOGS_DIR=${HOME}/build/$OWTRAVIS_LOGS_REPO_SLUG
     - OWRELROOT=$OWROOT/test
     - OWTRAVISDIR=$OWROOT/travis
     - OWDISTRDIR=$OWROOT/distrib
@@ -72,8 +77,6 @@ jobs:
       script:
         # update SF mirror
         - travis/gitusf.sh
-        # update GitHub repository if necessary
-        - travis/tinit.sh
     #################################
     - stage: Bootstrap
       name: "Build minimal set of build tools Linux"
@@ -418,17 +421,17 @@ jobs:
       script:
         - travis/build.sh
       before_deploy:
-        # Set up git user name and tag this commit
+        # Set up git tag for github release and commit it
+        - git config remote.origin.pushurl https://${GITHUB_TOKEN}@github.com/${TRAVIS_REPO_SLUG}.git
         - git tag -d $TRAVIS_TAG; true
-        - git push origin --delete $TRAVIS_TAG; true
-        - git tag -a $TRAVIS_TAG $TRAVIS_COMMIT
+        - git tag -a -m "$(date +'%Y-%m-%d %H:%M:%S')" $TRAVIS_TAG $TRAVIS_COMMIT; true
+        - git push origin $TRAVIS_TAG; true
       deploy:
         provider: releases
         api_key:
           secure: dxoNwGFfV1F5AE/GcPR4EBTrC2O6aaZ0HocyhchakacTEqe35KXhF/7GI0qk9ocPDmvaeFr1dv+BOXZeTrsJmUZDQ3GEqnVoXqJK/FAGi3IHhmRDJUGoES1vJMfPv/0m11/DSZYVGPcXBK1Y69ycHj+lhrJtY2stYQiDabyd2BKoQfIU/J0MnNPZpZw6A6QYZjhcDNj85EfdbFBJdR5bkZHxQbJ6uruN37BLhSHeBBMXHInBuyZKnBerLNK90vu40XD8iPXK2yhqZz3RLsyq/IlkbXMzrh2l6P215IyOX0AHkCt16/wy9ckusWn+eoVGK8ecMclei0+T7j8wmQwSfFRcjMcUyBHErLsWseuEoORWV3J0AhUinQxpwmNWrypOWfeuIvT+ilf6baz0ZqaTPBCkOqzijQsEsbSc9ypZKetk1BhmgJyUon6w2vciuWeFXuSYQBAP/Pl+iJg3TDEM5p8NXwisT058szuflXb4dt5wFhtIEYgOnTFp9jsTZKnMIydyQUV5U135DZ0S/M9vIZ4FUjoSXzVbTaT006PeGHZsWlzTm0thyN/rMQAfKSMqgMQysDFlJ1aus+FhjBYqy9OOfPbo9a6+49u8qKbkmDwxZwsTr/lBF1rGiD08yf4XotYP/0sMbfboTRdIQpSYOGlTAdzLzEjXLtF9j7EQaO8=
-#        draft: true
         on:
-          tags: true
+          tags: false
         overwrite: true
         skip_cleanup: true
         file_glob: true
@@ -446,17 +449,17 @@ jobs:
       script:
         - travis/build.sh
       before_deploy:
-        # Set up git user name and tag this commit
+        # Set up git tag for github release and commit it
+        - git config remote.origin.pushurl https://${GITHUB_TOKEN}@github.com/${TRAVIS_REPO_SLUG}.git
         - git tag -d $TRAVIS_TAG; true
-        - git push origin --delete $TRAVIS_TAG; true
-        - git tag -a $TRAVIS_TAG $TRAVIS_COMMIT
+        - git tag -a -m "$(date +'%Y-%m-%d %H:%M:%S')" $TRAVIS_TAG $TRAVIS_COMMIT; true
+        - git push origin $TRAVIS_TAG; true
       deploy:
         provider: releases
         api_key:
           secure: dxoNwGFfV1F5AE/GcPR4EBTrC2O6aaZ0HocyhchakacTEqe35KXhF/7GI0qk9ocPDmvaeFr1dv+BOXZeTrsJmUZDQ3GEqnVoXqJK/FAGi3IHhmRDJUGoES1vJMfPv/0m11/DSZYVGPcXBK1Y69ycHj+lhrJtY2stYQiDabyd2BKoQfIU/J0MnNPZpZw6A6QYZjhcDNj85EfdbFBJdR5bkZHxQbJ6uruN37BLhSHeBBMXHInBuyZKnBerLNK90vu40XD8iPXK2yhqZz3RLsyq/IlkbXMzrh2l6P215IyOX0AHkCt16/wy9ckusWn+eoVGK8ecMclei0+T7j8wmQwSfFRcjMcUyBHErLsWseuEoORWV3J0AhUinQxpwmNWrypOWfeuIvT+ilf6baz0ZqaTPBCkOqzijQsEsbSc9ypZKetk1BhmgJyUon6w2vciuWeFXuSYQBAP/Pl+iJg3TDEM5p8NXwisT058szuflXb4dt5wFhtIEYgOnTFp9jsTZKnMIydyQUV5U135DZ0S/M9vIZ4FUjoSXzVbTaT006PeGHZsWlzTm0thyN/rMQAfKSMqgMQysDFlJ1aus+FhjBYqy9OOfPbo9a6+49u8qKbkmDwxZwsTr/lBF1rGiD08yf4XotYP/0sMbfboTRdIQpSYOGlTAdzLzEjXLtF9j7EQaO8=
-#        draft: true
         on:
-          tags: true
+          tags: false
         overwrite: true
         skip_cleanup: true
         file_glob: true

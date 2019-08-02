@@ -27,15 +27,26 @@ gitupds_proc()
                         #
                         # clone GitHub repository
                         #
-                        git clone $GITVERBOSE1 --branch=master https://${GITHUB_TOKEN}@github.com/${OWTRAVIS_REPO_SLUG}.git $OWTRAVIS_BUILD_DIR
+                        git clone $GITVERBOSE1 --branch=master https://${GITHUB_TOKEN}@github.com/${OWTRAVIS_BUILD_REPO_SLUG}.git $OWTRAVIS_BUILD_DIR
+                        cd $OWTRAVIS_BUILD_DIR
+                        depth=`git rev-list HEAD --count`
+                        if [ $depth -gt 20 ]; then
+                            echo "gitupds.sh - start compression"
+                            git checkout --orphan temp1
+                            git add $GITVERBOSE2 -A
+                            git commit $GITVERBOSE1 -am "Initial commit"
+                            git branch $GITVERBOSE1 -D master
+                            git branch $GITVERBOSE1 -m master
+                            git push $GITVERBOSE1 -f origin master
+                            git branch $GITVERBOSE1 --set-upstream-to=origin/master master
+                            echo "gitupds.sh - end compression"
+                        fi
+                        cd $TRAVIS_BUILD_DIR
                         #
                         # copy OW build to git tree
                         #
-                        pwd
                         if [ "$TRAVIS_OS_NAME" = "linux" ]; then
                             cp -Rf $OWRELROOT/. $OWTRAVIS_BUILD_DIR/
-                        elif [ "$OWTRAVIS_DEBUG" = "1" ]; then
-                            cp -Rfv $OWRELROOT/binnt64/. $OWTRAVIS_BUILD_DIR/binnt64/
                         else
                             cp -Rf $OWRELROOT/binnt64/. $OWTRAVIS_BUILD_DIR/binnt64/
                         fi
@@ -63,6 +74,20 @@ gitupds_proc()
                     # clone GitHub repository
                     #
                     git clone $GITVERBOSE1 --branch=master https://${GITHUB_TOKEN}@github.com/${OWWEBDOCS_REPO_SLUG}.git $OWWEBDOCS_BUILD_DIR
+                    cd $OWWEBDOCS_BUILD_DIR
+                    depth=`git rev-list HEAD --count`
+                    if [ $depth -gt 10 ]; then
+                        echo "gitupds.sh - start compression"
+                        git checkout --orphan temp1
+                        git add $GITVERBOSE2 -A
+                        git commit $GITVERBOSE1 -am "Initial commit"
+                        git branch $GITVERBOSE1 -D master
+                        git branch $GITVERBOSE1 -m master
+                        git push $GITVERBOSE1 -f origin master
+                        git branch $GITVERBOSE1 --set-upstream-to=origin/master master
+                        echo "gitupds.sh - end compression"
+                    fi
+                    cd $TRAVIS_BUILD_DIR
                     #
                     # copy OW build to git tree
                     #
