@@ -27,7 +27,7 @@ gitusf_proc1()
     #
     git config remote.origin.pushurl ssh://${SF_TOKEN1}@git.code.sf.net/p/openwatcom/open-watcom-v2
     if [ "$OWTRAVIS_DEBUG" = "1" ]; then echo "** git checkout"; fi
-    git checkout ${OWBRANCH}
+    git checkout master
     if [ "$OWTRAVIS_DEBUG" = "1" ]; then echo "** git push"; fi
     git push $GITVERBOSE1
     #
