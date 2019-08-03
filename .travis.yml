@@ -39,10 +39,6 @@ cache:
     - $OWROOT/buildx
 
 before_script:
-    # configure Git client
-    - git config --global user.email "openwatcomtravis@gmail.com"
-    - git config --global user.name "Open Watcom Travis"
-    - git config --global push.default simple
     # get environment/cache info if debug is active
     - $OWTRAVISDIR/envinfo.sh
     - $OWTRAVISDIR/cacheinf.sh
@@ -69,6 +65,10 @@ jobs:
         depth: false
       cache: false
       before_install:
+        # configure Git client
+        - git config --global user.email "openwatcomtravis@gmail.com"
+        - git config --global user.name "Open Watcom Travis"
+        - git config --global push.default simple
         # stop unwanted services
         - $OWTRAVISDIR/services.sh
       script:
@@ -78,6 +78,10 @@ jobs:
     - stage: Bootstrap
       name: "Build minimal set of build tools Linux"
       before_install:
+        # configure Git client
+        - git config --global user.email "openwatcomtravis@gmail.com"
+        - git config --global user.name "Open Watcom Travis"
+        - git config --global push.default simple
         # stop unwanted services
         - $OWTRAVISDIR/services.sh
         # set environmet variable
@@ -96,6 +100,10 @@ jobs:
       os: osx
       compiler: clang
       before_install:
+        # configure Git client
+        - git config --global user.email "openwatcomtravis@gmail.com"
+        - git config --global user.name "Open Watcom Travis"
+        - git config --global push.default simple
         # stop unwanted services
 #        - $OWTRAVISDIR/services.sh
         # set environmet variable
@@ -113,6 +121,11 @@ jobs:
       if: type = cron
       os: windows
       before_install:
+        # configure Git client
+        - git config --global user.email "openwatcomtravis@gmail.com"
+        - git config --global user.name "Open Watcom Travis"
+        - git config --global push.default simple
+        #
         - test -n $CC && unset CC
         # stop unwanted services
 #        - $OWTRAVISDIR/services.sh
@@ -129,6 +142,10 @@ jobs:
     - stage: Build
       name: "OW tools build Linux"
       before_install:
+        # configure Git client
+        - git config --global user.email "openwatcomtravis@gmail.com"
+        - git config --global user.name "Open Watcom Travis"
+        - git config --global push.default simple
         # stop unwanted services
 #        - $OWTRAVISDIR/services.sh
         # set environmet variable
@@ -148,6 +165,10 @@ jobs:
       os: osx
       compiler: clang
       before_install:
+        # configure Git client
+        - git config --global user.email "openwatcomtravis@gmail.com"
+        - git config --global user.name "Open Watcom Travis"
+        - git config --global push.default simple
         # stop unwanted services
 #        - $OWTRAVISDIR/services.sh
         # set environmet variable
@@ -164,6 +185,11 @@ jobs:
       if: type = cron
       os: windows
       before_install:
+        # configure Git client
+        - git config --global user.email "openwatcomtravis@gmail.com"
+        - git config --global user.name "Open Watcom Travis"
+        - git config --global push.default simple
+        #
         - test -n $CC && unset CC
         # stop unwanted services
 #        - $OWTRAVISDIR/services.sh
@@ -182,6 +208,10 @@ jobs:
       os: osx
       compiler: clang
       before_install:
+        # configure Git client
+        - git config --global user.email "openwatcomtravis@gmail.com"
+        - git config --global user.name "Open Watcom Travis"
+        - git config --global push.default simple
         # stop unwanted services
 #        - $OWTRAVISDIR/services.sh
         # set environmet variable
@@ -203,6 +233,11 @@ jobs:
       if: type = cron
       os: windows
       before_install:
+        # configure Git client
+        - git config --global user.email "openwatcomtravis@gmail.com"
+        - git config --global user.name "Open Watcom Travis"
+        - git config --global push.default simple
+        #
         - test -n $CC && unset CC
         # stop unwanted services
 #        - $OWTRAVISDIR/services.sh
@@ -222,6 +257,10 @@ jobs:
       os: osx
       compiler: clang
       before_install:
+        # configure Git client
+        - git config --global user.email "openwatcomtravis@gmail.com"
+        - git config --global user.name "Open Watcom Travis"
+        - git config --global push.default simple
         # stop unwanted services
 #        - $OWTRAVISDIR/services.sh
         # set environmet variable
@@ -245,6 +284,10 @@ jobs:
       if: type = cron
       os: windows
       before_install:
+        # configure Git client
+        - git config --global user.email "openwatcomtravis@gmail.com"
+        - git config --global user.name "Open Watcom Travis"
+        - git config --global push.default simple
         - test -n $CC && unset CC
         # stop unwanted services
 #        - $OWTRAVISDIR/services.sh
@@ -264,6 +307,10 @@ jobs:
       name: "Update Build Linux"
       if: type = cron
       before_install:
+        # configure Git client
+        - git config --global user.email "openwatcomtravis@gmail.com"
+        - git config --global user.name "Open Watcom Travis"
+        - git config --global push.default simple
         # stop unwanted services
 #        - $OWTRAVISDIR/services.sh
         # set environmet variable
@@ -280,6 +327,10 @@ jobs:
       if: type = cron
       os: windows
       before_install:
+        # configure Git client
+        - git config --global user.email "openwatcomtravis@gmail.com"
+        - git config --global user.name "Open Watcom Travis"
+        - git config --global push.default simple
         # stop unwanted services
 #        - $OWTRAVISDIR/services.sh
         # set environmet variable
@@ -295,6 +346,10 @@ jobs:
       name: "Test wasm assembler"
       if: type IN (push, cron)
       before_install:
+        # configure Git client
+        - git config --global user.email "openwatcomtravis@gmail.com"
+        - git config --global user.name "Open Watcom Travis"
+        - git config --global push.default simple
         # stop unwanted services
         - $OWTRAVISDIR/services.sh
         # set environmet variable
@@ -313,6 +368,10 @@ jobs:
       name: "Test C compiler"
       if: type IN (push, cron)
       before_install:
+        # configure Git client
+        - git config --global user.email "openwatcomtravis@gmail.com"
+        - git config --global user.name "Open Watcom Travis"
+        - git config --global push.default simple
         # stop unwanted services
         - $OWTRAVISDIR/services.sh
         # set environmet variable
@@ -331,6 +390,10 @@ jobs:
       name: "Test FORTRAN 77 compiler"
       if: type IN (push, cron)
       before_install:
+        # configure Git client
+        - git config --global user.email "openwatcomtravis@gmail.com"
+        - git config --global user.name "Open Watcom Travis"
+        - git config --global push.default simple
         # stop unwanted services
         - $OWTRAVISDIR/services.sh
         # set environmet variable
@@ -349,6 +412,10 @@ jobs:
       name: "Test C++ compiler"
       if: type IN (push, cron)
       before_install:
+        # configure Git client
+        - git config --global user.email "openwatcomtravis@gmail.com"
+        - git config --global user.name "Open Watcom Travis"
+        - git config --global push.default simple
         # stop unwanted services
         - $OWTRAVISDIR/services.sh
         # set environmet variable
@@ -367,6 +434,10 @@ jobs:
       name: "Test C run-time library"
       if: type IN (push, cron)
       before_install:
+        # configure Git client
+        - git config --global user.email "openwatcomtravis@gmail.com"
+        - git config --global user.name "Open Watcom Travis"
+        - git config --global push.default simple
         # set environmet variable
         - export OWTOOLS=WATCOM
         - export OWTRAVISJOB=TEST
@@ -385,6 +456,10 @@ jobs:
       if: type = cron
       os: windows
       before_install:
+        # configure Git client
+        - git config --global user.email "openwatcomtravis@gmail.com"
+        - git config --global user.name "Open Watcom Travis"
+        - git config --global push.default simple
         - test -n $CC && unset CC
         # set environmet variable
         - export OWTOOLS=VISUALC
@@ -396,6 +471,11 @@ jobs:
       name: "Create all Installers Linux"
       if: type = cron
       before_install:
+        # configure Git client
+        - git config --global user.email "openwatcomtravis@gmail.com"
+        - git config --global user.name "Open Watcom Travis"
+        - git config --global push.default simple
+        #
         - export OWTOOLS=GCC
         - export OWTRAVISJOB=INST
         - OWRELROOT=$OWTRAVIS_BUILD_DIR
@@ -406,7 +486,7 @@ jobs:
         - $OWTRAVISDIR/build.sh
       before_deploy:
         # Set up git tag for github release and commit it
-        - git config remote.origin.pushurl https://${GITHUB_TOKEN}@github.com/${TRAVIS_REPO_SLUG}.git
+        - git remote set-url origin https://${GITHUB_TOKEN}@github.com/${TRAVIS_REPO_SLUG}.git
         - git tag -d $TRAVIS_TAG; true
         - git tag -a -m "$(date +'%Y-%m-%d %H:%M:%S')" $TRAVIS_TAG $TRAVIS_COMMIT; true
         - git push origin $TRAVIS_TAG; true
@@ -418,12 +498,17 @@ jobs:
         overwrite: true
         skip_cleanup: true
         file_glob: true
-        file: distrib/ow/bin/open-watcom-*
+        file: $OWDISTRDIR/ow/bin/open-watcom-*
     - # ...
       name: "Create Installer 64-bit Windows"
       if: type = cron
       os: windows
       before_install:
+        # configure Git client
+        - git config --global user.email "openwatcomtravis@gmail.com"
+        - git config --global user.name "Open Watcom Travis"
+        - git config --global push.default simple
+        #
         - export OWTOOLS=VISUALC
         - export OWTRAVISJOB=INST
         - OWRELROOT=$OWTRAVIS_BUILD_DIR
@@ -433,19 +518,24 @@ jobs:
         - $OWTRAVISDIR/build.sh
       before_deploy:
         # Set up git tag for github release and commit it
-        - git config remote.origin.pushurl https://${GITHUB_TOKEN}@github.com/${TRAVIS_REPO_SLUG}.git
+        - git remote set-url origin https://${GITHUB_TOKEN}@github.com/${TRAVIS_REPO_SLUG}.git
         - git tag -d $TRAVIS_TAG; true
         - git tag -a -m "$(date +'%Y-%m-%d %H:%M:%S')" $TRAVIS_TAG $TRAVIS_COMMIT; true
         - git push origin $TRAVIS_TAG; true
       deploy:
         provider: releases
         api_key: ${GITHUB_TOKEN}
+        tag_name: $TRAVIS_TAG
+        target_commitish: $TRAVIS_COMMIT
+        name: $TRAVIS_TAG
         on:
           tags: false
+          repo: ${TRAVIS_REPO_SLUG}
+          all_branches: true
         overwrite: true
         skip_cleanup: true
         file_glob: true
-        file: distrib/ow/bin/open-watcom-*
+        file: $OWDISTRDIR/ow/bin/open-watcom-*
     #################################
     - stage: Finalize
       name: "Delete build cache Linux"
