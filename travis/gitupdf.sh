@@ -19,120 +19,95 @@ gitupdf_proc()
 
     echo_msg="gitupdf.sh - skipped"
 
-    if [ "$TRAVIS_BRANCH" = "$OWBRANCH" ] || [ "$TRAVIS_BRANCH" = "$OWBRANCH_DOCS" ]; then
-        if [ "$TRAVIS_EVENT_TYPE" = "push" ] || [ "$TRAVIS_EVENT_TYPE" = "cron" ]; then
-            case "$OWTRAVISJOB" in
-                "BOOTSTRAP" | "BUILD" | "BUILD-1" | "BUILD-2" | "BUILD-3" | "DOCS" | "INST")
-                    #
-                    # clone GitHub repository
-                    #
-                    git clone $GITVERBOSE1 --branch=master https://${GITHUB_TOKEN}@github.com/${OWTRAVIS_LOGS_REPO_SLUG}.git $OWTRAVIS_LOGS_DIR
-                    #
-                    # copy build log files to git repository tree
-                    #
-                    if [ "$TRAVIS_OS_NAME" = "osx" ]; then
-                        OWLOGDIR=$OWTRAVIS_LOGS_DIR/logs/osx
-                    elif [ "$TRAVIS_OS_NAME" = "windows" ]; then
-                        OWLOGDIR=$OWTRAVIS_LOGS_DIR/logs/windows
-                    else
-                        OWLOGDIR=$OWTRAVIS_LOGS_DIR/logs/linux
-                    fi
-                    if [ ! -d $OWLOGDIR ]; then 
-                        mkdir -p $OWLOGDIR; 
-                    fi
-                    cp $OWBINDIR/*.log $OWLOGDIR/
-                    cp $OWDOCSDIR/*.log $OWLOGDIR/
-                    cp $OWDISTRDIR/ow/*.log $OWLOGDIR/
-                    #
-                    # commit new log files to GitHub repository
-                    #
-                    cd $OWTRAVIS_LOGS_DIR
-                    git add $GITVERBOSE2 -f .
-                    if [ "$TRAVIS_OS_NAME" = "osx" ]; then
-                        git commit $GITVERBOSE1 -m "Travis CI build $TRAVIS_JOB_NUMBER (build failure) - log files (OSX)"
-                    elif [ "$TRAVIS_OS_NAME" = "windows" ]; then
-                        git commit $GITVERBOSE1 -m "Travis CI build $TRAVIS_JOB_NUMBER (build failure) - log files (Windows)"
-                    else
-                        git commit $GITVERBOSE1 -m "Travis CI build $TRAVIS_JOB_NUMBER (build failure) - log files (Linux)"
-                    fi
-                    git push $GITVERBOSE1 -f origin
-                    cd $TRAVIS_BUILD_DIR
-                    echo_msg="gitupdf.sh - done"
-                    ;;
-                "WEBDOCS")
-                    #
-                    # clone GitHub repository
-                    #
-                    git clone $GITVERBOSE1 --branch=master https://${GITHUB_TOKEN}@github.com/${OWWEBDOCS_REPO_SLUG}.git $OWWEBDOCS_BUILD_DIR
-                    #
-                    # copy build log files to git repository tree
-                    #
-                    OWLOGDIR=$OWWEBDOCS_BUILD_DIR/logs
-                    if [ ! -d $OWLOGDIR ]; then 
-                        mkdir -p $OWLOGDIR; 
-                    fi
-                    cp $OWDOCSDIR/*.log $OWLOGDIR/
-                    #
-                    # commit new log files to GitHub repository
-                    #
-                    cd $OWWEBDOCS_BUILD_DIR
-                    git add $GITVERBOSE2 -f .
-                    git commit $GITVERBOSE1 -m "Travis CI build $TRAVIS_JOB_NUMBER (build failure) - log files"
-                    git push $GITVERBOSE1 -f origin
-                    cd $TRAVIS_BUILD_DIR
-                    echo_msg="gitupdf.sh - done"
-                    ;;
-                "TEST")
-                    #
-                    # clone GitHub repository
-                    #
-                    git clone $GITVERBOSE1 --branch=master https://${GITHUB_TOKEN}@github.com/${OWTRAVIS_LOGS_REPO_SLUG}.git $OWTRAVIS_LOGS_DIR
-                    #
-                    # copy build log files to git repository tree
-                    #
-                    case "$OWTRAVISTEST" in
-                        "WASM")
-                            test -d $OWTRAVIS_LOGS_DIR/logs/linux/wasmtest || mkdir -p $OWTRAVIS_LOGS_DIR/logs/linux/wasmtest
-                            cp $OWSRCDIR/wasmtest/result.log $OWTRAVIS_LOGS_DIR/logs/linux/wasmtest/
-                            cp $OWSRCDIR/wasmtest/test.log $OWTRAVIS_LOGS_DIR/logs/linux/wasmtest/
-                            ;;
-                        "C")
-                            test -d $OWTRAVIS_LOGS_DIR/logs/linux/ctest || mkdir -p $OWTRAVIS_LOGS_DIR/logs/linux/ctest
-                            cp $OWSRCDIR/ctest/result.log $OWTRAVIS_LOGS_DIR/logs/linux/ctest/
-                            cp $OWSRCDIR/ctest/test.log $OWTRAVIS_LOGS_DIR/logs/linux/ctest/
-                            ;;
-                        "CXX")
-                            test -d $OWTRAVIS_LOGS_DIR/logs/linux/plustest || mkdir -p $OWTRAVIS_LOGS_DIR/logs/linux/plustest
-                            cp $OWSRCDIR/plustest/result.log $OWTRAVIS_LOGS_DIR/logs/linux/plustest/
-                            cp $OWSRCDIR/plustest/test.log $OWTRAVIS_LOGS_DIR/logs/linux/plustest/
-                            ;;
-                        "F77")
-                            test -d $OWTRAVIS_LOGS_DIR/logs/linux/f77test || mkdir -p $OWTRAVIS_LOGS_DIR/logs/linux/f77test
-                            cp $OWSRCDIR/f77test/result.log $OWTRAVIS_LOGS_DIR/logs/linux/f77test/
-                            cp $OWSRCDIR/f77test/test.log $OWTRAVIS_LOGS_DIR/logs/linux/f77test/
-                            ;;
-                        "CRTL")
-                            test -d $OWTRAVIS_LOGS_DIR/logs/linux/clibtest || mkdir -p $OWTRAVIS_LOGS_DIR/logs/linux/clibtest
-                            cp $OWSRCDIR/clibtest/result.log $OWTRAVIS_LOGS_DIR/logs/linux/clibtest/
-                            cp $OWSRCDIR/clibtest/test.log $OWTRAVIS_LOGS_DIR/logs/linux/clibtest/
-                            ;;
-                        *)
-                            ;;
-                    esac
-                    #
-                    # commit new log files to GitHub repository
-                    #
-                    cd $OWTRAVIS_LOGS_DIR
-                    git add $GITVERBOSE2 -f .
-                    git commit $GITVERBOSE1 -m "Travis CI build $TRAVIS_JOB_NUMBER (test failure) - log files (Linux)"
-                    git push $GITVERBOSE1 -f origin
-                    cd $TRAVIS_BUILD_DIR
-                    echo_msg="gitupdf.sh - done"
-                    ;;
-                *)
-                    ;;
-            esac
-        fi
+    if [ "$TRAVIS_EVENT_TYPE" = "push" ] || [ "$TRAVIS_EVENT_TYPE" = "cron" ]; then
+        case "$OWTRAVISJOB" in
+            "BOOTSTRAP" | "BUILD" | "BUILD-1" | "BUILD-2" | "BUILD-3" | "DOCS" | "INST")
+                #
+                # clone GitHub repository
+                #
+                git clone $GITVERBOSE1 --branch=master https://${GITHUB_TOKEN}@github.com/${OWTRAVIS_LOGS_REPO_SLUG}.git $OWTRAVIS_LOGS_DIR
+                #
+                # copy build log files to git repository tree
+                #
+                if [ "$TRAVIS_OS_NAME" = "osx" ]; then
+                    OWLOGDIR=$OWTRAVIS_LOGS_DIR/logs/osx
+                elif [ "$TRAVIS_OS_NAME" = "windows" ]; then
+                    OWLOGDIR=$OWTRAVIS_LOGS_DIR/logs/windows
+                else
+                    OWLOGDIR=$OWTRAVIS_LOGS_DIR/logs/linux
+                fi
+                if [ ! -d $OWLOGDIR ]; then 
+                    mkdir -p $OWLOGDIR; 
+                fi
+                cp $OWBINDIR/*.log $OWLOGDIR/
+                cp $OWDOCSDIR/*.log $OWLOGDIR/
+                cp $OWDISTRDIR/ow/*.log $OWLOGDIR/
+                #
+                # commit new log files to GitHub repository
+                #
+                cd $OWTRAVIS_LOGS_DIR
+                git add $GITVERBOSE2 -f .
+                if [ "$TRAVIS_OS_NAME" = "osx" ]; then
+                    git commit $GITVERBOSE1 -m "Travis CI build $TRAVIS_JOB_NUMBER (build failure) - log files (OSX)"
+                elif [ "$TRAVIS_OS_NAME" = "windows" ]; then
+                    git commit $GITVERBOSE1 -m "Travis CI build $TRAVIS_JOB_NUMBER (build failure) - log files (Windows)"
+                else
+                    git commit $GITVERBOSE1 -m "Travis CI build $TRAVIS_JOB_NUMBER (build failure) - log files (Linux)"
+                fi
+                git push $GITVERBOSE1 -f origin
+                cd $TRAVIS_BUILD_DIR
+                echo_msg="gitupdf.sh - done"
+                ;;
+            "TEST")
+                #
+                # clone GitHub repository
+                #
+                git clone $GITVERBOSE1 --branch=master https://${GITHUB_TOKEN}@github.com/${OWTRAVIS_LOGS_REPO_SLUG}.git $OWTRAVIS_LOGS_DIR
+                #
+                # copy build log files to git repository tree
+                #
+                case "$OWTRAVISTEST" in
+                    "WASM")
+                        test -d $OWTRAVIS_LOGS_DIR/logs/linux/wasmtest || mkdir -p $OWTRAVIS_LOGS_DIR/logs/linux/wasmtest
+                        cp $OWSRCDIR/wasmtest/result.log $OWTRAVIS_LOGS_DIR/logs/linux/wasmtest/
+                        cp $OWSRCDIR/wasmtest/test.log $OWTRAVIS_LOGS_DIR/logs/linux/wasmtest/
+                        ;;
+                    "C")
+                        test -d $OWTRAVIS_LOGS_DIR/logs/linux/ctest || mkdir -p $OWTRAVIS_LOGS_DIR/logs/linux/ctest
+                        cp $OWSRCDIR/ctest/result.log $OWTRAVIS_LOGS_DIR/logs/linux/ctest/
+                        cp $OWSRCDIR/ctest/test.log $OWTRAVIS_LOGS_DIR/logs/linux/ctest/
+                        ;;
+                    "CXX")
+                        test -d $OWTRAVIS_LOGS_DIR/logs/linux/plustest || mkdir -p $OWTRAVIS_LOGS_DIR/logs/linux/plustest
+                        cp $OWSRCDIR/plustest/result.log $OWTRAVIS_LOGS_DIR/logs/linux/plustest/
+                        cp $OWSRCDIR/plustest/test.log $OWTRAVIS_LOGS_DIR/logs/linux/plustest/
+                        ;;
+                    "F77")
+                        test -d $OWTRAVIS_LOGS_DIR/logs/linux/f77test || mkdir -p $OWTRAVIS_LOGS_DIR/logs/linux/f77test
+                        cp $OWSRCDIR/f77test/result.log $OWTRAVIS_LOGS_DIR/logs/linux/f77test/
+                        cp $OWSRCDIR/f77test/test.log $OWTRAVIS_LOGS_DIR/logs/linux/f77test/
+                        ;;
+                    "CRTL")
+                        test -d $OWTRAVIS_LOGS_DIR/logs/linux/clibtest || mkdir -p $OWTRAVIS_LOGS_DIR/logs/linux/clibtest
+                        cp $OWSRCDIR/clibtest/result.log $OWTRAVIS_LOGS_DIR/logs/linux/clibtest/
+                        cp $OWSRCDIR/clibtest/test.log $OWTRAVIS_LOGS_DIR/logs/linux/clibtest/
+                        ;;
+                    *)
+                        ;;
+                esac
+                #
+                # commit new log files to GitHub repository
+                #
+                cd $OWTRAVIS_LOGS_DIR
+                git add $GITVERBOSE2 -f .
+                git commit $GITVERBOSE1 -m "Travis CI build $TRAVIS_JOB_NUMBER (test failure) - log files (Linux)"
+                git push $GITVERBOSE1 -f origin
+                cd $TRAVIS_BUILD_DIR
+                echo_msg="gitupdf.sh - done"
+                ;;
+            *)
+                ;;
+        esac
     fi
 
     echo "$echo_msg"

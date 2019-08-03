@@ -34,10 +34,10 @@ env:
 
 cache:
   directories:
-    - build/$OWOBJDIR
-    - bld/watcom/$OWOBJDIR
-    - test
-    - buildx
+    - $OWBINDIR
+    - $OWSRCDIR/watcom/$OWOBJDIR
+    - $OWROOT/test
+    - $OWROOT/buildx
 
 before_script:
  # configure Git client
