@@ -9,7 +9,7 @@ branches:
   - master
 
 git:
-  depth: 3
+  depth: 1
 
 env:
   global:
@@ -490,11 +490,13 @@ jobs:
         - export TRAVIS_TAG=Current-build
       before_deploy:
         # Set up git tag for github release and commit it
-        - git remote set-url origin https://${GITHUB_TOKEN}@github.com/${TRAVIS_REPO_SLUG}.git
-        - git tag -d $TRAVIS_TAG; true
-        - git push --delete origin $TRAVIS_TAG; true
-        - git tag -a -m "$(date +'%Y-%m-%d %H:%M:%S')" $TRAVIS_TAG $TRAVIS_COMMIT; true
-        - git push origin $TRAVIS_TAG; true
+        - if [ `git ls-remote --tags . | sed -n -e "s:\([0-9a-z]*\) *refs/tags/Current-build^{}:\1:p"` != $TRAVIS_COMMIT ] then;
+            git remote set-url origin https://${GITHUB_TOKEN}@github.com/${TRAVIS_REPO_SLUG}.git
+            git tag -d $TRAVIS_TAG; true
+            git push --delete origin $TRAVIS_TAG; true
+            git tag -a -m "$(date +'%Y-%m-%d %H:%M:%S')" $TRAVIS_TAG $TRAVIS_COMMIT; true
+            git push origin $TRAVIS_TAG; true
+          fi
       deploy:
         provider: releases
         api_key: ${GITHUB_TOKEN}
@@ -523,6 +525,15 @@ jobs:
       script:
         - $OWTRAVISDIR/build.sh
         - export TRAVIS_TAG=Current-build
+      before_deploy:
+        # Set up git tag for github release and commit it
+        - if [ `git ls-remote --tags . | sed -n -e "s:\([0-9a-z]*\) *refs/tags/Current-build^{}:\1:p"` != $TRAVIS_COMMIT ] then;
+            git remote set-url origin https://${GITHUB_TOKEN}@github.com/${TRAVIS_REPO_SLUG}.git
+            git tag -d $TRAVIS_TAG; true
+            git push --delete origin $TRAVIS_TAG; true
+            git tag -a -m "$(date +'%Y-%m-%d %H:%M:%S')" $TRAVIS_TAG $TRAVIS_COMMIT; true
+            git push origin $TRAVIS_TAG; true
+          fi
       deploy:
         provider: releases
         api_key: ${GITHUB_TOKEN}
