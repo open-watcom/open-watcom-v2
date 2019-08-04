@@ -4,6 +4,10 @@ sudo: required
 os: linux
 compiler: gcc
 
+branches:
+  only:
+  - master
+
 git:
   depth: 3
 
@@ -23,7 +27,6 @@ env:
     - OWBINDIR=$OWROOT/build/$OWOBJDIR
     - OWDOCSDIR=$OWROOT/docs
     #
-    - TRAVIS_TAG=Current-build
     - OWBRANCH_SF=sourceforge
     - OWVERBOSE=0
     - OWDISTRBUILD=0
@@ -484,22 +487,25 @@ jobs:
         - $OWTRAVISDIR/cache3.sh load
       script:
         - $OWTRAVISDIR/build.sh
+        - export TRAVIS_TAG=Current-build
       before_deploy:
         # Set up git tag for github release and commit it
         - git remote set-url origin https://${GITHUB_TOKEN}@github.com/${TRAVIS_REPO_SLUG}.git
         - git tag -d $TRAVIS_TAG; true
+        - git push --delete origin $TRAVIS_TAG; true
         - git tag -a -m "$(date +'%Y-%m-%d %H:%M:%S')" $TRAVIS_TAG $TRAVIS_COMMIT; true
         - git push origin $TRAVIS_TAG; true
       deploy:
         provider: releases
         api_key: ${GITHUB_TOKEN}
         on:
-          tags: false
+          tags: true
         overwrite: true
         skip_cleanup: true
         file_glob: true
         file: $OWDISTRDIR/ow/bin/open-watcom-*
-    - # ...
+    #################################
+    - stage: ReleaseWin64
       name: "Create Installer 64-bit Windows"
       if: type = cron
       os: windows
@@ -516,22 +522,12 @@ jobs:
         - $OWTRAVISDIR/cache3.sh load
       script:
         - $OWTRAVISDIR/build.sh
-      before_deploy:
-        # Set up git tag for github release and commit it
-        - git remote set-url origin https://${GITHUB_TOKEN}@github.com/${TRAVIS_REPO_SLUG}.git
-        - git tag -d $TRAVIS_TAG; true
-        - git tag -a -m "$(date +'%Y-%m-%d %H:%M:%S')" $TRAVIS_TAG $TRAVIS_COMMIT; true
-        - git push origin $TRAVIS_TAG; true
+        - export TRAVIS_TAG=Current-build
       deploy:
         provider: releases
         api_key: ${GITHUB_TOKEN}
-        tag_name: $TRAVIS_TAG
-        target_commitish: $TRAVIS_COMMIT
-        name: $TRAVIS_TAG
         on:
-          tags: false
-          repo: ${TRAVIS_REPO_SLUG}
-          all_branches: true
+          tags: true
         overwrite: true
         skip_cleanup: true
         file_glob: true

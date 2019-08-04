@@ -25,7 +25,7 @@ gitusf_proc1()
     export GIT_ASKPASS=$OWTRAVISDIR/askpass.sh
     export GIT_SSH_COMMAND="setsid ssh"
     #
-    git config remote.origin.pushurl ssh://${SF_TOKEN1}@git.code.sf.net/p/openwatcom/open-watcom-v2
+    git remote set-url --push origin ssh://${SF_TOKEN1}@git.code.sf.net/p/openwatcom/open-watcom-v2
     if [ "$OWTRAVIS_DEBUG" = "1" ]; then echo "** git checkout"; fi
     git checkout master
     if [ "$OWTRAVIS_DEBUG" = "1" ]; then echo "** git push"; fi
