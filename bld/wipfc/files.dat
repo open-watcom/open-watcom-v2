@@ -15,7 +15,7 @@ dir="binl64"    usr="wipfc"     conda="lnx64host"                   keys="lx64"
 #
 usr="nlsconf.txt"
 #
-# WIPFC data files
+# WIPFC SBCS/DBCS data files
 #
 usr="de_DE.nls"
 usr="en_GB.nls"
@@ -28,6 +28,11 @@ usr="entity.txt"
 usr="enti0932.txt"
 usr="enti0934.txt"
 usr="enti0938.txt"
+#
+usr="ibm437.cnv"
+usr="ibm850.cnv"
+usr="ibm852.cnv"
+usr="ibm943.cnv"
 #
 # WIPFC UTF-8 data files
 #
