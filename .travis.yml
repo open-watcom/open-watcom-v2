@@ -82,7 +82,6 @@ jobs:
         - git config --global push.default simple
         # set environmet variable
         - export OWTOOLS=GCC
-        - export OWTRAVISJOB=BOOTSTRAP
         - export OWVERBOSE=1
         # clear cache
         - $OWTRAVISDIR/cacheclr.sh
@@ -102,7 +101,6 @@ jobs:
         - git config --global push.default simple
         # set environmet variable
         - export OWTOOLS=CLANG
-        - export OWTRAVISJOB=BOOTSTRAP
         - export OWVERBOSE=1
         # clear cache
         - $OWTRAVISDIR/cacheclr.sh
@@ -123,7 +121,6 @@ jobs:
         - test -n $CC && unset CC
         # set environmet variable
         - export OWTOOLS=VISUALC
-        - export OWTRAVISJOB=BOOTSTRAP
         - export OWVERBOSE=1
         # clear cache
         - $OWTRAVISDIR/cacheclr.sh
@@ -131,7 +128,7 @@ jobs:
       script:
         - $OWTRAVISDIR/build.sh
     #################################
-    - stage: Build
+    - stage: Build1
       name: "OW tools build Linux"
       before_install:
         # configure Git client
@@ -140,7 +137,6 @@ jobs:
         - git config --global push.default simple
         # set environmet variable
         - export OWTOOLS=GCC
-        - export OWTRAVISJOB=BUILD
       install:
         # install DOS Emulator
         - sudo apt-get install -y dosemu
@@ -161,7 +157,6 @@ jobs:
         - git config --global push.default simple
         # set environmet variable
         - export OWTOOLS=CLANG
-        - export OWTRAVISJOB=BUILD-1
       install:
         - . $OWROOT/cmnvars.sh
       script:
@@ -181,7 +176,6 @@ jobs:
         - test -n $CC && unset CC
         # set environmet variable
         - export OWTOOLS=VISUALC
-        - export OWTRAVISJOB=BUILD-1
       install:
       script:
         - $OWTRAVISDIR/build.sh
@@ -200,7 +194,6 @@ jobs:
         - git config --global push.default simple
         # set environmet variable
         - export OWTOOLS=CLANG
-        - export OWTRAVISJOB=BUILD-2
         - export OWDOSBOX=dosbox
         - export SDL_VIDEODRIVER=dummy
       install:
@@ -225,7 +218,6 @@ jobs:
         - test -n $CC && unset CC
         # set environmet variable
         - export OWTOOLS=VISUALC
-        - export OWTRAVISJOB=BUILD-2
       install:
       script:
         - $OWTRAVISDIR/cache1.sh load
@@ -245,7 +237,6 @@ jobs:
         - git config --global push.default simple
         # set environmet variable
         - export OWTOOLS=CLANG
-        - export OWTRAVISJOB=BUILD-3
         - export OWDOSBOX=dosbox
         - export SDL_VIDEODRIVER=dummy
         - export OWDOCQUIET=0
@@ -271,7 +262,6 @@ jobs:
         - test -n $CC && unset CC
         # set environmet variable
         - export OWTOOLS=VISUALC
-        - export OWTRAVISJOB=BUILD-3
         - export OWDOCQUIET=0
         - export OWVERBOSE=1
       install:
@@ -281,7 +271,7 @@ jobs:
       before_cache:
         - $OWTRAVISDIR/cache3.sh save
     #################################
-    - stage: UpdateBuild
+    - stage: Update build
       name: "Update Build Linux"
       if: type IN (push, cron)
       before_install:
@@ -291,7 +281,6 @@ jobs:
         - git config --global push.default simple
         # set environmet variable
         - export OWTOOLS=GCC
-        - export OWTRAVISJOB=CPREL
       install:
         - . $OWROOT/cmnvars.sh
       script:
@@ -307,7 +296,6 @@ jobs:
         - git config --global push.default simple
         # set environmet variable
         - export OWTOOLS=VISUALC
-        - export OWTRAVISJOB=CPREL
       install:
         - export WATCOM=$OWROOT/test
       script:
@@ -323,7 +311,6 @@ jobs:
         - git config --global push.default simple
         # set environmet variable
         - export OWTOOLS=WATCOM
-        - export OWTRAVISJOB=TEST
         - export OWTRAVISTEST=WASM
       install:
         - export WATCOM=$OWROOT/test
@@ -343,7 +330,6 @@ jobs:
         - git config --global push.default simple
         # set environmet variable
         - export OWTOOLS=WATCOM
-        - export OWTRAVISJOB=TEST
         - export OWTRAVISTEST=C
       install:
         - export WATCOM=$OWROOT/test
@@ -363,7 +349,6 @@ jobs:
         - git config --global push.default simple
         # set environmet variable
         - export OWTOOLS=WATCOM
-        - export OWTRAVISJOB=TEST
         - export OWTRAVISTEST=F77
       install:
         - export WATCOM=$OWROOT/test
@@ -383,7 +368,6 @@ jobs:
         - git config --global push.default simple
         # set environmet variable
         - export OWTOOLS=WATCOM
-        - export OWTRAVISJOB=TEST
         - export OWTRAVISTEST=CXX
       install:
         - export WATCOM=$OWROOT/test
@@ -403,7 +387,6 @@ jobs:
         - git config --global push.default simple
         # set environmet variable
         - export OWTOOLS=WATCOM
-        - export OWTRAVISJOB=TEST
         - export OWTRAVISTEST=CRTL
       install:
         - export WATCOM=$OWROOT/test
@@ -414,7 +397,7 @@ jobs:
       script:
         - $OWTRAVISDIR/test.sh
     #################################
-    - stage: AllDocs
+    - stage: Documentation
       name: "Create all Documentation"
       if: type = cron
       os: windows
@@ -426,7 +409,6 @@ jobs:
         - test -n $CC && unset CC
         # set environmet variable
         - export OWTOOLS=VISUALC
-        - export OWTRAVISJOB=DOCS
       script:
         - $OWTRAVISDIR/build.sh
     #################################
@@ -440,7 +422,6 @@ jobs:
         - git config --global push.default simple
         #
         - export OWTOOLS=GCC
-        - export OWTRAVISJOB=INST
         - OWRELROOT=$OWTRAVIS_BUILD_DIR
       install:
         - . $OWROOT/cmnvars.sh
@@ -467,7 +448,7 @@ jobs:
         file_glob: true
         file: $OWDISTRDIR/ow/bin/open-watcom-*
     #################################
-    - stage: ReleaseWin64
+    - stage: Release windows
       name: "Create Installer 64-bit Windows"
       if: type = cron
       os: windows
@@ -478,7 +459,6 @@ jobs:
         - git config --global push.default simple
         #
         - export OWTOOLS=VISUALC
-        - export OWTRAVISJOB=INST
         - OWRELROOT=$OWTRAVIS_BUILD_DIR
       install:
         - $OWTRAVISDIR/cache3.sh load
@@ -504,7 +484,7 @@ jobs:
         file_glob: true
         file: $OWDISTRDIR/ow/bin/open-watcom-*
     #################################
-    - stage: Finalize
+    - stage: Clear cache
       name: "Delete build cache Linux"
       script:
         - $OWTRAVISDIR/cacheclr.sh

@@ -20,8 +20,8 @@ gitupdf_proc()
     echo_msg="gitupdf.sh - skipped"
 
     if [ "$TRAVIS_EVENT_TYPE" = "push" ] || [ "$TRAVIS_EVENT_TYPE" = "cron" ]; then
-        case "$OWTRAVISJOB" in
-            "BOOTSTRAP" | "BUILD" | "BUILD-1" | "BUILD-2" | "BUILD-3" | "DOCS" | "INST")
+        case "$TRAVIS_BUILD_STAGE_NAME" in
+            "Bootstrap" | "Build1" | "Build2" | "Build3" | "Documentation" | "Release" | "Release windows")
                 #
                 # clone GitHub repository
                 #
@@ -58,7 +58,7 @@ gitupdf_proc()
                 cd $TRAVIS_BUILD_DIR
                 echo_msg="gitupdf.sh - done"
                 ;;
-            "TEST")
+            "Tests")
                 #
                 # clone GitHub repository
                 #
@@ -104,6 +104,8 @@ gitupdf_proc()
                 git push $GITVERBOSE1 -f origin
                 cd $TRAVIS_BUILD_DIR
                 echo_msg="gitupdf.sh - done"
+                ;;
+            "Update build" | "Update build windows")
                 ;;
             *)
                 ;;

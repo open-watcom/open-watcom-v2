@@ -48,8 +48,8 @@ build_proc()
 {
     RC=0
     cd $OWSRCDIR
-    case "$OWTRAVISJOB" in
-        "BOOTSTRAP")
+    case "$TRAVIS_BUILD_STAGE_NAME" in
+        "Bootstrap")
             bootutil_proc
             if [ $RC -eq 0 ]; then
                 cd $OWSRCDIR
@@ -61,23 +61,23 @@ build_proc()
                 RC=$?
             fi
             ;;
-        "BUILD")
-            if [ "$TRAVIS_EVENT_TYPE" = "pull_request" ]; then
-                builder rel
+        "Build1")
+            if [ "$TRAVIS_OS_NAME" = "linux" ]; then
+                if [ "$TRAVIS_EVENT_TYPE" = "pull_request" ]; then
+                    builder rel
+                else
+                    builder -q rel
+                fi
             else
-                builder -q rel
+                if [ "$TRAVIS_EVENT_TYPE" = "pull_request" ]; then
+                    builder rel1
+                else
+                    builder -q rel1
+                fi
             fi
             RC=$?
             ;;
-        "BUILD-1")
-            if [ "$TRAVIS_EVENT_TYPE" = "pull_request" ]; then
-                builder rel1
-            else
-                builder -q rel1
-            fi
-            RC=$?
-            ;;
-        "BUILD-2")
+        "Build2")
             if [ "$TRAVIS_EVENT_TYPE" = "pull_request" ]; then
                 builder rel2
             else
@@ -85,7 +85,7 @@ build_proc()
             fi
             RC=$?
             ;;
-        "BUILD-3")
+        "Build3")
             if [ "$TRAVIS_EVENT_TYPE" = "pull_request" ]; then
                 builder rel3
             else
@@ -93,7 +93,7 @@ build_proc()
             fi
             RC=$?
             ;;
-        "DOCS")
+        "Documentation")
             export OWVERBOSE=1
             if [ "$TRAVIS_EVENT_TYPE" = "pull_request" ]; then
                 builder docs
@@ -102,7 +102,7 @@ build_proc()
             fi
             RC=$?
             ;;
-        "INST")
+        "Release")
             export OWVERBOSE=1
             builder missing
             if [ "$TRAVIS_EVENT_TYPE" = "pull_request" ]; then

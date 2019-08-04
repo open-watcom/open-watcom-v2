@@ -16,7 +16,7 @@ REM
 set OWDOSBOX=%OWROOT%\travis\dosbox\dosbox.exe
 set SDL_VIDEODRIVER=dummy
 REM
-if "%OWTRAVISJOB%" == "DOCS" (
+if "%TRAVIS_BUILD_STAGE_NAME%" == "Documentation" (
     set OWGHOSTSCRIPTPATH=%OWROOT%\travis\gs927w64
     set OWWIN95HC=%OWROOT%\travis\hcw\hcrtf.exe
     set OWHHC=%OWROOT%\travis\hhc\hhc.exe
@@ -37,7 +37,7 @@ if "%OWTRAVIS_ENV_DEBUG%" == "1" (
 )
 REM ...
 cd %OWSRCDIR%
-if "%OWTRAVISJOB%" == "BOOTSTRAP" (
+if "%TRAVIS_BUILD_STAGE_NAME%" == "Bootstrap" (
     cd wmake
     mkdir %OWOBJDIR%
     cd %OWOBJDIR%
@@ -59,35 +59,28 @@ if "%OWTRAVISJOB%" == "BOOTSTRAP" (
         )
     )
 )
-if "%OWTRAVISJOB%" == "BUILD" (
-    if "%TRAVIS_EVENT_TYPE%" == "pull_request" (
-        builder rel
-    ) else (
-        builder -q rel
-    )
-)
-if "%OWTRAVISJOB%" == "BUILD-1" (
+if "%TRAVIS_BUILD_STAGE_NAME%" == "Build1" (
     if "%TRAVIS_EVENT_TYPE%" == "pull_request" (
         builder rel1
     ) else (
         builder -q rel1
     )
 )
-if "%OWTRAVISJOB%" == "BUILD-2" (
+if "%TRAVIS_BUILD_STAGE_NAME%" == "Build2" (
     if "%TRAVIS_EVENT_TYPE%" == "pull_request" (
         builder rel2
     ) else (
         builder -q rel2
     )
 )
-if "%OWTRAVISJOB%" == "BUILD-3" (
+if "%TRAVIS_BUILD_STAGE_NAME%" == "Build3" (
     if "%TRAVIS_EVENT_TYPE%" == "pull_request" (
         builder rel3
     ) else (
         builder -q rel3
     )
 )
-if "%OWTRAVISJOB%" == "DOCS" (
+if "%TRAVIS_BUILD_STAGE_NAME%" == "Documentation" (
     REM register all Help Compilers DLL's
     regsvr32 -u -s itcc.dll
     regsvr32 -s %OWROOT%\travis\hhc\itcc.dll
@@ -97,7 +90,7 @@ if "%OWTRAVISJOB%" == "DOCS" (
         builder -q docs
     )
 )
-if "%OWTRAVISJOB%" == "INST" (
+if "%TRAVIS_BUILD_STAGE_NAME%" == "Release windows" (
     builder missing
     if "%TRAVIS_EVENT_TYPE%" == "pull_request" (
         builder install os_nt cpu_x64

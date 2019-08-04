@@ -20,8 +20,8 @@ gitupds_proc()
     echo_msg="gitupds.sh - skipped"
 
     if [ "$TRAVIS_EVENT_TYPE" = "push" ] || [ "$TRAVIS_EVENT_TYPE" = "cron" ]; then
-        case "$OWTRAVISJOB" in
-            "CPREL")
+        case "$TRAVIS_BUILD_STAGE_NAME" in
+            "Update build" | "Update build windows")
                 if [ "$TRAVIS_OS_NAME" = "linux" ] || [ "$TRAVIS_OS_NAME" = "windows" ]; then
                     #
                     # clone GitHub repository
@@ -66,7 +66,7 @@ gitupds_proc()
                     echo_msg="gitupds.sh - done"
                 fi
                 ;;
-            "INIT")
+            "Release" | "Release windows")
                 ;;
             *)
                 ;;
