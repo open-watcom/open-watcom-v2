@@ -8,9 +8,6 @@ branches:
   only:
   - master
 
-git:
-  depth: 1
-
 env:
   global:
     - OWTRAVIS_BUILD_REPO_SLUG=open-watcom/travis-ci-ow-builds
@@ -61,8 +58,8 @@ jobs:
     - os: windows
   include:
     #################################
-    - stage: Initialize
-      name: "Initialize Travis GitHub repository and mirror master branch commits to SF"
+    - stage: Mirror
+      name: "Mirror master branch commits to SF"
       if: type = push
       git:
         depth: false
@@ -72,8 +69,6 @@ jobs:
         - git config --global user.email "openwatcomtravis@gmail.com"
         - git config --global user.name "Open Watcom Travis"
         - git config --global push.default simple
-        # stop unwanted services
-        - $OWTRAVISDIR/services.sh
       script:
         # update SF mirror
         - $OWTRAVISDIR/gitusf.sh
@@ -85,8 +80,6 @@ jobs:
         - git config --global user.email "openwatcomtravis@gmail.com"
         - git config --global user.name "Open Watcom Travis"
         - git config --global push.default simple
-        # stop unwanted services
-        - $OWTRAVISDIR/services.sh
         # set environmet variable
         - export OWTOOLS=GCC
         - export OWTRAVISJOB=BOOTSTRAP
@@ -107,8 +100,6 @@ jobs:
         - git config --global user.email "openwatcomtravis@gmail.com"
         - git config --global user.name "Open Watcom Travis"
         - git config --global push.default simple
-        # stop unwanted services
-#        - $OWTRAVISDIR/services.sh
         # set environmet variable
         - export OWTOOLS=CLANG
         - export OWTRAVISJOB=BOOTSTRAP
@@ -130,8 +121,6 @@ jobs:
         - git config --global push.default simple
         #
         - test -n $CC && unset CC
-        # stop unwanted services
-#        - $OWTRAVISDIR/services.sh
         # set environmet variable
         - export OWTOOLS=VISUALC
         - export OWTRAVISJOB=BOOTSTRAP
@@ -149,8 +138,6 @@ jobs:
         - git config --global user.email "openwatcomtravis@gmail.com"
         - git config --global user.name "Open Watcom Travis"
         - git config --global push.default simple
-        # stop unwanted services
-#        - $OWTRAVISDIR/services.sh
         # set environmet variable
         - export OWTOOLS=GCC
         - export OWTRAVISJOB=BUILD
@@ -172,8 +159,6 @@ jobs:
         - git config --global user.email "openwatcomtravis@gmail.com"
         - git config --global user.name "Open Watcom Travis"
         - git config --global push.default simple
-        # stop unwanted services
-#        - $OWTRAVISDIR/services.sh
         # set environmet variable
         - export OWTOOLS=CLANG
         - export OWTRAVISJOB=BUILD-1
@@ -194,8 +179,6 @@ jobs:
         - git config --global push.default simple
         #
         - test -n $CC && unset CC
-        # stop unwanted services
-#        - $OWTRAVISDIR/services.sh
         # set environmet variable
         - export OWTOOLS=VISUALC
         - export OWTRAVISJOB=BUILD-1
@@ -215,8 +198,6 @@ jobs:
         - git config --global user.email "openwatcomtravis@gmail.com"
         - git config --global user.name "Open Watcom Travis"
         - git config --global push.default simple
-        # stop unwanted services
-#        - $OWTRAVISDIR/services.sh
         # set environmet variable
         - export OWTOOLS=CLANG
         - export OWTRAVISJOB=BUILD-2
@@ -242,8 +223,6 @@ jobs:
         - git config --global push.default simple
         #
         - test -n $CC && unset CC
-        # stop unwanted services
-#        - $OWTRAVISDIR/services.sh
         # set environmet variable
         - export OWTOOLS=VISUALC
         - export OWTRAVISJOB=BUILD-2
@@ -264,8 +243,6 @@ jobs:
         - git config --global user.email "openwatcomtravis@gmail.com"
         - git config --global user.name "Open Watcom Travis"
         - git config --global push.default simple
-        # stop unwanted services
-#        - $OWTRAVISDIR/services.sh
         # set environmet variable
         - export OWTOOLS=CLANG
         - export OWTRAVISJOB=BUILD-3
@@ -292,8 +269,6 @@ jobs:
         - git config --global user.name "Open Watcom Travis"
         - git config --global push.default simple
         - test -n $CC && unset CC
-        # stop unwanted services
-#        - $OWTRAVISDIR/services.sh
         # set environmet variable
         - export OWTOOLS=VISUALC
         - export OWTRAVISJOB=BUILD-3
@@ -308,22 +283,18 @@ jobs:
     #################################
     - stage: UpdateBuild
       name: "Update Build Linux"
-      if: type = cron
+      if: type IN (push, cron)
       before_install:
         # configure Git client
         - git config --global user.email "openwatcomtravis@gmail.com"
         - git config --global user.name "Open Watcom Travis"
         - git config --global push.default simple
-        # stop unwanted services
-#        - $OWTRAVISDIR/services.sh
         # set environmet variable
         - export OWTOOLS=GCC
         - export OWTRAVISJOB=CPREL
       install:
-#        - export WATCOM=$OWROOT/test
         - . $OWROOT/cmnvars.sh
       script:
-#        - cp $CP_OPTS $OWROOT/buildx/ $WATCOM/
         - true
     - # ...
       name: "Update Build Windows"
@@ -334,15 +305,12 @@ jobs:
         - git config --global user.email "openwatcomtravis@gmail.com"
         - git config --global user.name "Open Watcom Travis"
         - git config --global push.default simple
-        # stop unwanted services
-#        - $OWTRAVISDIR/services.sh
         # set environmet variable
         - export OWTOOLS=VISUALC
         - export OWTRAVISJOB=CPREL
       install:
         - export WATCOM=$OWROOT/test
       script:
-#        - cp $CP_OPTS $OWROOT/buildx/ $WATCOM
         - true
     #################################
     - stage: Tests
@@ -353,8 +321,6 @@ jobs:
         - git config --global user.email "openwatcomtravis@gmail.com"
         - git config --global user.name "Open Watcom Travis"
         - git config --global push.default simple
-        # stop unwanted services
-        - $OWTRAVISDIR/services.sh
         # set environmet variable
         - export OWTOOLS=WATCOM
         - export OWTRAVISJOB=TEST
@@ -375,8 +341,6 @@ jobs:
         - git config --global user.email "openwatcomtravis@gmail.com"
         - git config --global user.name "Open Watcom Travis"
         - git config --global push.default simple
-        # stop unwanted services
-        - $OWTRAVISDIR/services.sh
         # set environmet variable
         - export OWTOOLS=WATCOM
         - export OWTRAVISJOB=TEST
@@ -397,8 +361,6 @@ jobs:
         - git config --global user.email "openwatcomtravis@gmail.com"
         - git config --global user.name "Open Watcom Travis"
         - git config --global push.default simple
-        # stop unwanted services
-        - $OWTRAVISDIR/services.sh
         # set environmet variable
         - export OWTOOLS=WATCOM
         - export OWTRAVISJOB=TEST
@@ -419,8 +381,6 @@ jobs:
         - git config --global user.email "openwatcomtravis@gmail.com"
         - git config --global user.name "Open Watcom Travis"
         - git config --global push.default simple
-        # stop unwanted services
-        - $OWTRAVISDIR/services.sh
         # set environmet variable
         - export OWTOOLS=WATCOM
         - export OWTRAVISJOB=TEST
