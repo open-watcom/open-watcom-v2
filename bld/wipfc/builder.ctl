@@ -29,6 +29,7 @@ set PROJDIR=<CWD>
 #============================
     <CPCMD> helper/*.nls          <OWRELROOT>/wipfc/
     <CPCMD> helper/*.txt          <OWRELROOT>/wipfc/
+    <CPCMD> helper/*.cnv          <OWRELROOT>/wipfc/
 
     <CCCMD> dos386/wipfc.exe      <OWRELROOT>/binw/
     <CCCMD> os2386/wipfc.exe      <OWRELROOT>/binp/
