@@ -119,8 +119,4 @@ build_proc()
     return $RC
 }
 
-if [ "$TRAVIS_OS_NAME" = "windows" ]; then
-    cmd.exe /c "travis\winbuild.cmd $*"
-else
-    build_proc $*
-fi
+build_proc $*

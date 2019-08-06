@@ -126,7 +126,7 @@ jobs:
         - $OWTRAVISDIR/cacheclr.sh
       install:
       script:
-        - $OWTRAVISDIR/build.sh
+        - $OWTRAVISDIR/build.cmd
     #################################
     - stage: Build1
       name: "OW tools build Linux"
@@ -178,7 +178,7 @@ jobs:
         - export OWTOOLS=VISUALC
       install:
       script:
-        - $OWTRAVISDIR/build.sh
+        - $OWTRAVISDIR/build.cmd
       before_cache:
         - $OWTRAVISDIR/cache1.sh save
     #################################
@@ -221,7 +221,7 @@ jobs:
       install:
       script:
         - $OWTRAVISDIR/cache1.sh load
-        - $OWTRAVISDIR/build.sh
+        - $OWTRAVISDIR/build.cmd
       before_cache:
         - $OWTRAVISDIR/cache2.sh save
     #################################
@@ -267,7 +267,7 @@ jobs:
       install:
       script:
         - $OWTRAVISDIR/cache2.sh load
-        - $OWTRAVISDIR/build.sh
+        - $OWTRAVISDIR/build.cmd
       before_cache:
         - $OWTRAVISDIR/cache3.sh save
     #################################
@@ -410,7 +410,7 @@ jobs:
         # set environmet variable
         - export OWTOOLS=VISUALC
       script:
-        - $OWTRAVISDIR/build.sh
+        - $OWTRAVISDIR/build.cmd
     #################################
     - stage: Release
       name: "Create all Installers Linux"
@@ -466,7 +466,7 @@ jobs:
       install:
         - $OWTRAVISDIR/cache3.sh load
       script:
-        - $OWTRAVISDIR/build.sh
+        - $OWTRAVISDIR/build.cmd
         - export TRAVIS_TAG=Current-build
       before_deploy:
         # Set up git tag for github release and commit it
