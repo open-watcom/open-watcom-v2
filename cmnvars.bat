@@ -33,7 +33,7 @@ REM Subdirectory containing distribution sources
 set OWDISTRDIR=%OWROOT%\distrib
 
 REM Set environment variables
-set PATH=%OWBINDIR%;%OWROOT%\build;%OWDEFPATH%;%OWGHOSTSCRIPTPATH%
+set PATH=%OWBINDIR%;%OWROOT%\build;%OWDEFPATH%;%OWGHOSTSCRIPTPATH%;%OWDOSBOXPATH%
 set INCLUDE=%OWDEFINCLUDE%
 set WATCOM=%OWDEFWATCOM%
 
