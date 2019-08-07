@@ -185,15 +185,15 @@ cdsay .
 [ INCLUDE <OWSRCDIR>/f77/wfc/builder.ctl ]
 # Resource tools, first Resource compiler
 [ INCLUDE <OWSRCDIR>/rc/builder.ctl ]
-# Continue with SDK tools
-[ INCLUDE <OWSRCDIR>/wpi/builder.ctl ]
-[ INCLUDE <OWSRCDIR>/commonui/builder.ctl ]
 
 [ BLOCK <1> clean build rel cprel clean3 build3 rel3 cprel3 passclean pass ]
 #===========================================================================
 # Build all of Open Watcom using freshly built tools.
 # part 3
 #
+# Continue with SDK tools
+[ INCLUDE <OWSRCDIR>/wpi/builder.ctl ]
+[ INCLUDE <OWSRCDIR>/commonui/builder.ctl ]
 [ INCLUDE <OWSRCDIR>/sdk/builder.ctl ]
 # Now miscellaneous command line tools
 [ INCLUDE <OWSRCDIR>/ndisasm/builder.ctl ]
@@ -271,10 +271,18 @@ cdsay .
 [ IFDEF <OWDOCBUILD> 1 ]
 [ INCLUDE <OWDOCSDIR>/builder.ctl ]
 [ ENDIF ]
+# Build installers
+[ IFDEF <OWDISTRBUILD> 1 ]
+[ INCLUDE <OWDISTRDIR>/ow/builder.ctl ]
+[ ENDIF ]
 
 [ BLOCK <BLDRULE> docsclean docs webdocs cpwebdocs ]
 #===================================================
 [ INCLUDE <OWDOCSDIR>/builder.ctl ]
+
+[ BLOCK <BLDRULE> install missing instclean ]
+#============================================
+[ INCLUDE <OWDISTRDIR>/ow/builder.ctl ]
 
 [ BLOCK <BLDRULE> testclean test cleanlog ]
 #==========================================

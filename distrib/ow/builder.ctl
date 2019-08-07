@@ -7,11 +7,9 @@ set PROJDIR=<CWD>
 
 [ INCLUDE <OWROOT>/build/prolog.ctl ]
 
-cdsay .
+cdsay <PROJDIR>
 
 echo Installer Build: <1> <2> <3> <4> <5>
-
-[ INCLUDE <OWROOT>/build/defrule.ctl ]
 
 [ BLOCK <1> missing ]
 #====================
@@ -23,8 +21,13 @@ echo Installer Build: <1> <2> <3> <4> <5>
     #########################################################
     wmake -h -f master.mif missing=1
 
-[ BLOCK <1> clean ]
-#==================
+[ BLOCK <BLDRULE> install build rel ]
+#====================================
+    pmake -d build <2> <3> <4> <5> <6> <7> <8> <9> -h
+
+[ BLOCK <BLDRULE> instclean clean ]
+#==================================
+    pmake -d build <2> <3> <4> <5> <6> <7> <8> <9> -h clean
     rm -rf bin
 
 [ BLOCK . . ]

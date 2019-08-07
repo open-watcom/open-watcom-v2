@@ -33,15 +33,12 @@
 #include <stdarg.h>
 #include <string.h>
 #include <stdio.h>
-#include "wio.h"
 #include "common.h"
 #include "myassert.h"
 #include "msg.h"
 #include "aui.h"
 #include "utils.h"
 #include "wpstart.h"
-
-#include "clibext.h"
 
 
 #define MAX_MSG_LEN     200
@@ -89,7 +86,7 @@ STATIC void doErr( char * msg, va_list args )
                 dest += str_len;
             }
         }
-        if( msg_len == MAX_MSG_LEN ) 
+        if( msg_len == MAX_MSG_LEN )
             break;
         ++msg;
     }
@@ -100,7 +97,7 @@ STATIC void doErr( char * msg, va_list args )
         WndDisplayMessage( buff, "Error", GUI_INFORMATION );
     } else {
         *--dest = '\n';
-        posix_write( STDOUT_FILENO, buff, strlen( buff ) );
+        printf( "%s", buff );
     }
 }
 

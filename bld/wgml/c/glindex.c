@@ -155,13 +155,13 @@ void    lay_index( lay_tag ltag )
     p = scan_start;
     cvterr = false;
 
-    if( !FlagsGlob.firstpass ) {
+    if( !GlobFlags.firstpass ) {
         scan_start = scan_stop;
         eat_lay_sub_tag();
         return;                         // process during first pass only
     }
-    if( FlagsProc.lay_xxx != el_index ) {
-        FlagsProc.lay_xxx = el_index;
+    if( ProcFlags.lay_xxx != el_index ) {
+        ProcFlags.lay_xxx = el_index;
     }
     cc = get_lay_sub_and_value( &l_args );  // get att with value
     while( cc == pos ) {

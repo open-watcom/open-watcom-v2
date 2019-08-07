@@ -61,5 +61,4 @@ wipfcdir = $datadir/wipfc
 dist_wipfc_DATA = helper/de_DE.nls helper/en_GB.nls helper/en_US.nls helper/fr_CA.nls \
         helper/fr_FR.nls helper/ja_JA.nls helper/xx_YY.nls helper/enti0932.txt \
         helper/enti0934.txt helper/enti0938.txt helper/entity.txt helper/nlsconf.txt \
-        helper/ibm-437_P100-1995.cnv helper/ibm-850_P100-1995.cnv helper/ibm-852_P100-1995.cnv \
-        helper/ibm-943_P15A-2003.cnv
+        helper/ibm437.cnv helper/ibm850.cnv helper/ibm852.cnv helper/ibm943.cnv

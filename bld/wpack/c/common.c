@@ -40,7 +40,7 @@
 
 int             infile, outfile;
 
-unsigned char   text_buf[N + F - 1];
+unsigned char   text_buf[STRBUF_SIZE + LAHEAD_SIZE - 1];
 
 byte            len[NUM_CHARS];         // the length of the code value
 int             indicies[NUM_CHARS];    // indicies to make len look sorted

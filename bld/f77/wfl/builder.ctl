@@ -44,6 +44,9 @@ set PROJDIR=<CWD>
     <CCCMD> 386/ntx64/wfl386.exe        <OWRELROOT>/binnt64/
     <CCCMD> axp/ntx64/wflaxp.exe        <OWRELROOT>/binnt64/
 
+    <CCCMD> i86/linuxx64/wfl.exe        <OWRELROOT>/binl64/wfl
+    <CCCMD> 386/linuxx64/wfl386.exe     <OWRELROOT>/binl64/wfl386
+
 [ BLOCK . . ]
 
 [ INCLUDE <OWROOT>/build/epilog.ctl ]

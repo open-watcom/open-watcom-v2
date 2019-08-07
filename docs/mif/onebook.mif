@@ -343,10 +343,9 @@ $(hbook).ps : $(book_objs) $(book_objs_ps) $(proj_objs)
 !ifeq verbose 0
     @echo wgml $@
 !endif
-    !-$(WGMLCMD:$(to_os_path))
-    $(noecho)echo "WGMLCMD finished"
-    @if exist $@ @%erase $@
-    @%ren $(wgml_tmpfile) $@
+    -$(WGMLCMD)
+    @if exist $@ $(noecho)%erase $@
+    $(noecho)%ren $(wgml_tmpfile) $@
 
 .bmp: $(book_bmroot)
 .ps: tmp
@@ -429,11 +428,6 @@ prepare_wgml_opts : .PROCEDURE
 #-------------------------------------------------------
     $(noecho)set GMLLIB=$(gml_lib:/=\)
     $(noecho)set GMLINC=$(%OWGMLINC:/=\)
-!ifeq use_dosemu dosbox
-    $(noecho)set GMLLIB=$(%GMLLIB:..\=c:\)
-    $(noecho)set GMLINC=$(%GMLINC:..\..\bld\=e:\)
-    $(noecho)set GMLINC=$(%GMLINC:..\=c:\)
-!endif
     @%make prepare_wgml_tmp_batch
 
 #--------------------------------------
@@ -562,22 +556,24 @@ compile_gml_to_xxx : .PROCEDURE
     $(noecho)set OWGMLINC=.;$(whelp_incs);$(gml_lib);$(hlp_incs);$(book_incs);$(gml_incs);
     @%make prepare_wgml_opts
 !ifeq verbose 0
+!ifeq bld_os nt
+    !set
+    set
+!endif
     @echo wgml $@
 !endif
-    !-$(WGMLCMD:$(to_os_path))
-    $(noecho)echo "WGMLCMD finished"
-    @if exist $*.ptf @%erase $*.ptf
-    @%ren $(wgml_tmpfile) $*.ptf
+    -$(WGMLCMD)
+    @if exist $*.ptf $(noecho)%erase $*.ptf
+    $(noecho)%ren $(wgml_tmpfile) $*.ptf
     @%make prepare_whpcvt_opts
     whpcvt -@ $(whpcvt_optfile) $*.ptf
     @%create $(wgml_sysfile_02)
 !ifeq verbose 0
     @echo wgml $@
 !endif
-    !-$(WGMLCMD:$(to_os_path))
-    $(noecho)echo "WGMLCMD finished"
-    @if exist $*.ptf @%erase $*.ptf
-    @%ren $(wgml_tmpfile) $*.ptf
+    -$(WGMLCMD)
+    @if exist $*.ptf $(noecho)%erase $*.ptf
+    $(noecho)%ren $(wgml_tmpfile) $*.ptf
     @if exist $*.mix @%erase $*.mix
     @%ren $(wgml_sysfile_01) $*.mix
     @if exist $*.h @%erase $*.h

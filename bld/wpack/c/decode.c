@@ -296,10 +296,10 @@ void NoShannonDecode( unsigned long textsize )
     getlen = 0;
     getbuf = 0;
     secondbuf = DecReadByte();
-    for (i = 0; i < N - F; i++) {
+    for (i = 0; i < STRBUF_SIZE - LAHEAD_SIZE; i++) {
         text_buf[i] = ' ';
     }
-    r = N - F;
+    r = STRBUF_SIZE - LAHEAD_SIZE;
     for (count = 0; count < textsize; ) {
         if( getlen == 0 ) {
             getbuf = ((unsigned short)secondbuf << 8) | DecReadByte();
@@ -314,12 +314,12 @@ void NoShannonDecode( unsigned long textsize )
             j = (getbuf >> 9) & 0x3F;
             getlen -= 7;
             getbuf <<= 7;
-            i = (r - DecodePosition() - 1) & (N - 1);
+            i = (r - DecodePosition() - 1) & (STRBUF_SIZE - 1);
             for (k = 0; k < j; k++) {
-                c = text_buf[(i + k) & (N - 1)];
+                c = text_buf[(i + k) & (STRBUF_SIZE - 1)];
                 text_buf[r++] = c;
                 DecWriteByte( c );
-                r &= (N - 1);
+                r &= (STRBUF_SIZE - 1);
             }
             count += j;
         } else {
@@ -328,7 +328,7 @@ void NoShannonDecode( unsigned long textsize )
             getlen -= 9;
             DecWriteByte( c);
             text_buf[r++] = c;
-            r &= (N - 1);
+            r &= (STRBUF_SIZE - 1);
             count++;
         }
     }
@@ -349,10 +349,10 @@ void DoDecode( unsigned long textsize )
     getlen = 0;
     getbuf = 0;
     secondbuf = DecReadByte();
-    for (i = 0; i < N - F; i++) {
+    for (i = 0; i < STRBUF_SIZE - LAHEAD_SIZE; i++) {
         text_buf[i] = ' ';
     }
-    r = N - F;
+    r = STRBUF_SIZE - LAHEAD_SIZE;
     for (count = 0; count < textsize; ) {
         if( getlen < 8 ) {
             getbuf |= (unsigned short)secondbuf << ( 8 - getlen );
@@ -381,16 +381,16 @@ void DoDecode( unsigned long textsize )
         if (c < 256) {
             DecWriteByte( c);
             text_buf[r++] = c;
-            r &= (N - 1);
+            r &= (STRBUF_SIZE - 1);
             count++;
         } else {
-            i = (r - DecodePosition() - 1) & (N - 1);
+            i = (r - DecodePosition() - 1) & (STRBUF_SIZE - 1);
             j = c - 255 + THRESHOLD;
             for (k = 0; k < j; k++) {
-                c = text_buf[(i + k) & (N - 1)];
+                c = text_buf[(i + k) & (STRBUF_SIZE - 1)];
                 text_buf[r++] = c;
                 DecWriteByte( c );
-                r &= (N - 1);
+                r &= (STRBUF_SIZE - 1);
             }
             count += j;
         }

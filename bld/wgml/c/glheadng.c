@@ -93,13 +93,13 @@ void    lay_heading( lay_tag ltag )
 
     p = scan_start;
 
-    if( !FlagsGlob.firstpass ) {
+    if( !GlobFlags.firstpass ) {
         scan_start = scan_stop;
         eat_lay_sub_tag();
         return;                         // process during first pass only
     }
-    if( FlagsProc.lay_xxx != el_heading ) {
-        FlagsProc.lay_xxx = el_heading;
+    if( ProcFlags.lay_xxx != el_heading ) {
+        ProcFlags.lay_xxx = el_heading;
     }
 
     cc = get_lay_sub_and_value( &l_args );  // get att with value

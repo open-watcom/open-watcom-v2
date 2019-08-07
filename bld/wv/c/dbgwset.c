@@ -125,20 +125,20 @@ void InputConf( void )
 
 static char     *KeyNamePieces[] =
 {
-    #define pick( x ) #x,
+    #define pick(e,n) n,
     #include "keynames.h"
     #undef pick
 };
 
 typedef enum {
-    #define pick( x ) x,
+    #define pick(e,n) e,
     #include "keynames.h"
     #undef pick
-    CTRL        = 0x2000,
-    SHIFT       = 0x4000,
-    ALT         = 0x8000,
+    DBG_KEY_CTRL    = 0x2000,
+    DBG_KEY_SHIFT   = 0x4000,
+    DBG_KEY_ALT     = 0x8000,
 } key_desc;
-#define   STATE  (CTRL+ALT+SHIFT)
+#define   DBG_KEY_STATE  (DBG_KEY_CTRL | DBG_KEY_ALT | DBG_KEY_SHIFT)
 
 typedef struct {
     key_desc    desc;
@@ -146,86 +146,86 @@ typedef struct {
 } key_name;
 
 static key_name KeyNames[] = {
-    ENTER,              GUI_KEY_ENTER,
-    ESCAPE,             GUI_KEY_ESCAPE,
-    BACKSPACE,          GUI_KEY_BACKSPACE,
-    TAB,                GUI_KEY_TAB,
-    CTRL+ENTER,         GUI_KEY_CTRL_ENTER,
-    CTRL+BACKSPACE,     GUI_KEY_CTRL_BACKSPACE,
-    CTRL+TAB,           GUI_KEY_CTRL_TAB,
-    ALT+ENTER,          GUI_KEY_ALT_ENTER,
-    ALT+BACKSPACE,      GUI_KEY_ALT_BACKSPACE,
-    ALT+TAB,            GUI_KEY_ALT_TAB,
-    SHIFT+TAB,          GUI_KEY_SHIFT_TAB,
-    INSERT,             GUI_KEY_INSERT,
-    DELETE,             GUI_KEY_DELETE,
-    HOME,               GUI_KEY_HOME,
-    END,                GUI_KEY_END,
-    PAGEUP,             GUI_KEY_PAGEUP,
-    PAGEDOWN,           GUI_KEY_PAGEDOWN,
-    UP,                 GUI_KEY_UP,
-    DOWN,               GUI_KEY_DOWN,
-    LEFT,               GUI_KEY_LEFT,
-    RIGHT,              GUI_KEY_RIGHT,
-    CTRL+INSERT,        GUI_KEY_CTRL_INSERT,
-    CTRL+DELETE,        GUI_KEY_CTRL_DELETE,
-    CTRL+HOME,          GUI_KEY_CTRL_HOME,
-    CTRL+END,           GUI_KEY_CTRL_END,
-    CTRL+PAGEUP,        GUI_KEY_CTRL_PAGEUP,
-    CTRL+PAGEDOWN,      GUI_KEY_CTRL_PAGEDOWN,
-    CTRL+UP,            GUI_KEY_CTRL_UP,
-    CTRL+DOWN,          GUI_KEY_CTRL_DOWN,
-    CTRL+LEFT,          GUI_KEY_CTRL_LEFT,
-    CTRL+RIGHT,         GUI_KEY_CTRL_RIGHT,
-    F1,                 GUI_KEY_F1,
-    F2,                 GUI_KEY_F2,
-    F3,                 GUI_KEY_F3,
-    F4,                 GUI_KEY_F4,
-    F5,                 GUI_KEY_F5,
-    F6,                 GUI_KEY_F6,
-    F7,                 GUI_KEY_F7,
-    F8,                 GUI_KEY_F8,
-    F9,                 GUI_KEY_F9,
-    F10,                GUI_KEY_F10,
-    F11,                GUI_KEY_F11,
-    F12,                GUI_KEY_F12,
-    ALT+F1,             GUI_KEY_ALT_F1,
-    ALT+F2,             GUI_KEY_ALT_F2,
-    ALT+F3,             GUI_KEY_ALT_F3,
-    ALT+F4,             GUI_KEY_ALT_F4,
-    ALT+F5,             GUI_KEY_ALT_F5,
-    ALT+F6,             GUI_KEY_ALT_F6,
-    ALT+F7,             GUI_KEY_ALT_F7,
-    ALT+F8,             GUI_KEY_ALT_F8,
-    ALT+F9,             GUI_KEY_ALT_F9,
-    ALT+F10,            GUI_KEY_ALT_F10,
-    ALT+F11,            GUI_KEY_ALT_F11,
-    ALT+F12,            GUI_KEY_ALT_F12,
-    CTRL+F1,            GUI_KEY_CTRL_F1,
-    CTRL+F2,            GUI_KEY_CTRL_F2,
-    CTRL+F3,            GUI_KEY_CTRL_F3,
-    CTRL+F4,            GUI_KEY_CTRL_F4,
-    CTRL+F5,            GUI_KEY_CTRL_F5,
-    CTRL+F6,            GUI_KEY_CTRL_F6,
-    CTRL+F7,            GUI_KEY_CTRL_F7,
-    CTRL+F8,            GUI_KEY_CTRL_F8,
-    CTRL+F9,            GUI_KEY_CTRL_F9,
-    CTRL+F10,           GUI_KEY_CTRL_F10,
-    CTRL+F11,           GUI_KEY_CTRL_F11,
-    CTRL+F12,           GUI_KEY_CTRL_F12,
-    SHIFT+F1,           GUI_KEY_SHIFT_F1,
-    SHIFT+F2,           GUI_KEY_SHIFT_F2,
-    SHIFT+F3,           GUI_KEY_SHIFT_F3,
-    SHIFT+F4,           GUI_KEY_SHIFT_F4,
-    SHIFT+F5,           GUI_KEY_SHIFT_F5,
-    SHIFT+F6,           GUI_KEY_SHIFT_F6,
-    SHIFT+F7,           GUI_KEY_SHIFT_F7,
-    SHIFT+F8,           GUI_KEY_SHIFT_F8,
-    SHIFT+F9,           GUI_KEY_SHIFT_F9,
-    SHIFT+F10,          GUI_KEY_SHIFT_F10,
-    SHIFT+F11,          GUI_KEY_SHIFT_F11,
-    SHIFT+F12,          GUI_KEY_SHIFT_F12,
-    0,          0
+    DBG_KEY_ENTER,                      GUI_KEY_ENTER,
+    DBG_KEY_ESCAPE,                     GUI_KEY_ESCAPE,
+    DBG_KEY_BACKSPACE,                  GUI_KEY_BACKSPACE,
+    DBG_KEY_TAB,                        GUI_KEY_TAB,
+    DBG_KEY_CTRL + DBG_KEY_ENTER,       GUI_KEY_CTRL_ENTER,
+    DBG_KEY_CTRL + DBG_KEY_BACKSPACE,   GUI_KEY_CTRL_BACKSPACE,
+    DBG_KEY_CTRL + DBG_KEY_TAB,         GUI_KEY_CTRL_TAB,
+    DBG_KEY_ALT + DBG_KEY_ENTER,        GUI_KEY_ALT_ENTER,
+    DBG_KEY_ALT + DBG_KEY_BACKSPACE,    GUI_KEY_ALT_BACKSPACE,
+    DBG_KEY_ALT + DBG_KEY_TAB,          GUI_KEY_ALT_TAB,
+    DBG_KEY_SHIFT + DBG_KEY_TAB,        GUI_KEY_SHIFT_TAB,
+    DBG_KEY_INSERT,                     GUI_KEY_INSERT,
+    DBG_KEY_DELETE,                     GUI_KEY_DELETE,
+    DBG_KEY_HOME,                       GUI_KEY_HOME,
+    DBG_KEY_END,                        GUI_KEY_END,
+    DBG_KEY_PAGEUP,                     GUI_KEY_PAGEUP,
+    DBG_KEY_PAGEDOWN,                   GUI_KEY_PAGEDOWN,
+    DBG_KEY_UP,                         GUI_KEY_UP,
+    DBG_KEY_DOWN,                       GUI_KEY_DOWN,
+    DBG_KEY_LEFT,                       GUI_KEY_LEFT,
+    DBG_KEY_RIGHT,                      GUI_KEY_RIGHT,
+    DBG_KEY_CTRL + DBG_KEY_INSERT,      GUI_KEY_CTRL_INSERT,
+    DBG_KEY_CTRL + DBG_KEY_DELETE,      GUI_KEY_CTRL_DELETE,
+    DBG_KEY_CTRL + DBG_KEY_HOME,        GUI_KEY_CTRL_HOME,
+    DBG_KEY_CTRL + DBG_KEY_END,         GUI_KEY_CTRL_END,
+    DBG_KEY_CTRL + DBG_KEY_PAGEUP,      GUI_KEY_CTRL_PAGEUP,
+    DBG_KEY_CTRL + DBG_KEY_PAGEDOWN,    GUI_KEY_CTRL_PAGEDOWN,
+    DBG_KEY_CTRL + DBG_KEY_UP,          GUI_KEY_CTRL_UP,
+    DBG_KEY_CTRL + DBG_KEY_DOWN,        GUI_KEY_CTRL_DOWN,
+    DBG_KEY_CTRL + DBG_KEY_LEFT,        GUI_KEY_CTRL_LEFT,
+    DBG_KEY_CTRL + DBG_KEY_RIGHT,       GUI_KEY_CTRL_RIGHT,
+    DBG_KEY_F1,                         GUI_KEY_F1,
+    DBG_KEY_F2,                         GUI_KEY_F2,
+    DBG_KEY_F3,                         GUI_KEY_F3,
+    DBG_KEY_F4,                         GUI_KEY_F4,
+    DBG_KEY_F5,                         GUI_KEY_F5,
+    DBG_KEY_F6,                         GUI_KEY_F6,
+    DBG_KEY_F7,                         GUI_KEY_F7,
+    DBG_KEY_F8,                         GUI_KEY_F8,
+    DBG_KEY_F9,                         GUI_KEY_F9,
+    DBG_KEY_F10,                        GUI_KEY_F10,
+    DBG_KEY_F11,                        GUI_KEY_F11,
+    DBG_KEY_F12,                        GUI_KEY_F12,
+    DBG_KEY_ALT + DBG_KEY_F1,           GUI_KEY_ALT_F1,
+    DBG_KEY_ALT + DBG_KEY_F2,           GUI_KEY_ALT_F2,
+    DBG_KEY_ALT + DBG_KEY_F3,           GUI_KEY_ALT_F3,
+    DBG_KEY_ALT + DBG_KEY_F4,           GUI_KEY_ALT_F4,
+    DBG_KEY_ALT + DBG_KEY_F5,           GUI_KEY_ALT_F5,
+    DBG_KEY_ALT + DBG_KEY_F6,           GUI_KEY_ALT_F6,
+    DBG_KEY_ALT + DBG_KEY_F7,           GUI_KEY_ALT_F7,
+    DBG_KEY_ALT + DBG_KEY_F8,           GUI_KEY_ALT_F8,
+    DBG_KEY_ALT + DBG_KEY_F9,           GUI_KEY_ALT_F9,
+    DBG_KEY_ALT + DBG_KEY_F10,          GUI_KEY_ALT_F10,
+    DBG_KEY_ALT + DBG_KEY_F11,          GUI_KEY_ALT_F11,
+    DBG_KEY_ALT + DBG_KEY_F12,          GUI_KEY_ALT_F12,
+    DBG_KEY_CTRL + DBG_KEY_F1,          GUI_KEY_CTRL_F1,
+    DBG_KEY_CTRL + DBG_KEY_F2,          GUI_KEY_CTRL_F2,
+    DBG_KEY_CTRL + DBG_KEY_F3,          GUI_KEY_CTRL_F3,
+    DBG_KEY_CTRL + DBG_KEY_F4,          GUI_KEY_CTRL_F4,
+    DBG_KEY_CTRL + DBG_KEY_F5,          GUI_KEY_CTRL_F5,
+    DBG_KEY_CTRL + DBG_KEY_F6,          GUI_KEY_CTRL_F6,
+    DBG_KEY_CTRL + DBG_KEY_F7,          GUI_KEY_CTRL_F7,
+    DBG_KEY_CTRL + DBG_KEY_F8,          GUI_KEY_CTRL_F8,
+    DBG_KEY_CTRL + DBG_KEY_F9,          GUI_KEY_CTRL_F9,
+    DBG_KEY_CTRL + DBG_KEY_F10,         GUI_KEY_CTRL_F10,
+    DBG_KEY_CTRL + DBG_KEY_F11,         GUI_KEY_CTRL_F11,
+    DBG_KEY_CTRL + DBG_KEY_F12,         GUI_KEY_CTRL_F12,
+    DBG_KEY_SHIFT + DBG_KEY_F1,         GUI_KEY_SHIFT_F1,
+    DBG_KEY_SHIFT + DBG_KEY_F2,         GUI_KEY_SHIFT_F2,
+    DBG_KEY_SHIFT + DBG_KEY_F3,         GUI_KEY_SHIFT_F3,
+    DBG_KEY_SHIFT + DBG_KEY_F4,         GUI_KEY_SHIFT_F4,
+    DBG_KEY_SHIFT + DBG_KEY_F5,         GUI_KEY_SHIFT_F5,
+    DBG_KEY_SHIFT + DBG_KEY_F6,         GUI_KEY_SHIFT_F6,
+    DBG_KEY_SHIFT + DBG_KEY_F7,         GUI_KEY_SHIFT_F7,
+    DBG_KEY_SHIFT + DBG_KEY_F8,         GUI_KEY_SHIFT_F8,
+    DBG_KEY_SHIFT + DBG_KEY_F9,         GUI_KEY_SHIFT_F9,
+    DBG_KEY_SHIFT + DBG_KEY_F10,        GUI_KEY_SHIFT_F10,
+    DBG_KEY_SHIFT + DBG_KEY_F11,        GUI_KEY_SHIFT_F11,
+    DBG_KEY_SHIFT + DBG_KEY_F12,        GUI_KEY_SHIFT_F12,
+    0,                                  0
 };
 
 typedef struct {
@@ -294,9 +294,9 @@ static alt_key_name CtrlKeyNames[] = {
         0,      0
 };
 
-#define STR_CTRL        "CTRL-"
-#define STR_SHIFT       "SHIFT-"
-#define STR_ALT         "ALT-"
+#define STR_DBG_KEY_CTRL    "CTRL-"
+#define STR_DBG_KEY_SHIFT   "SHIFT-"
+#define STR_DBG_KEY_ALT     "ALT-"
 
 char LookUpCtrlKey( gui_key key )
 {
@@ -312,13 +312,13 @@ char LookUpCtrlKey( gui_key key )
 
 static char *AddOn( char *buff, key_desc desc )
 {
-    switch( desc & STATE ) {
-    case CTRL:
-        return( StrCopy( STR_CTRL, buff ) );
-    case SHIFT:
-        return( StrCopy( STR_SHIFT, buff ) );
-    case ALT:
-        return( StrCopy( STR_ALT, buff ) );
+    switch( desc & DBG_KEY_STATE ) {
+    case DBG_KEY_CTRL:
+        return( StrCopy( STR_DBG_KEY_CTRL, buff ) );
+    case DBG_KEY_SHIFT:
+        return( StrCopy( STR_DBG_KEY_SHIFT, buff ) );
+    case DBG_KEY_ALT:
+        return( StrCopy( STR_DBG_KEY_ALT, buff ) );
     default:
         return( buff );
     }
@@ -335,7 +335,7 @@ char *KeyName( gui_key key )
     for( k = KeyNames; k->key != 0; ++k ) {
         if( k->key == key ) {
             p = AddOn( buff, k->desc );
-            StrCopy( KeyNamePieces[k->desc & ~STATE], p );
+            StrCopy( KeyNamePieces[k->desc & ~DBG_KEY_STATE], p );
             return( buff );
         }
     }
@@ -346,7 +346,7 @@ char *KeyName( gui_key key )
     }
     for( alt = CtrlKeyNames; alt->name != 0; ++alt ) {
         if( alt->key == key ) {
-            p = AddOn( buff, CTRL );
+            p = AddOn( buff, DBG_KEY_CTRL );
             *p++ = alt->name;
             *p = NULLCHAR;
             return( buff );
@@ -354,7 +354,7 @@ char *KeyName( gui_key key )
     }
     for( alt = AltKeyNames; alt->name != 0; ++alt ) {
         if( alt->key == key ) {
-            p = AddOn( buff, ALT );
+            p = AddOn( buff, DBG_KEY_ALT );
             *p++ = alt->name;
             *p = NULLCHAR;
             return( buff );
@@ -389,15 +389,15 @@ static gui_key MapKey( const char *start, size_t len )
     if( len == 1 ) {
         return( *start );
     }
-    desc  = StripOff( &start, &len, STR_CTRL,  CTRL );
-    desc |= StripOff( &start, &len, STR_SHIFT, SHIFT );
-    desc |= StripOff( &start, &len, STR_ALT,   ALT );
+    desc  = StripOff( &start, &len, STR_DBG_KEY_CTRL,  DBG_KEY_CTRL );
+    desc |= StripOff( &start, &len, STR_DBG_KEY_SHIFT, DBG_KEY_SHIFT );
+    desc |= StripOff( &start, &len, STR_DBG_KEY_ALT,   DBG_KEY_ALT );
     if( len == 1 ) {
         alt = NULL;
-        if( desc == CTRL ) {
+        if( desc == DBG_KEY_CTRL ) {
             alt = CtrlKeyNames;
         }
-        if( desc == ALT ) {
+        if( desc == DBG_KEY_ALT ) {
             alt = AltKeyNames;
         }
         if( alt != NULL ) {

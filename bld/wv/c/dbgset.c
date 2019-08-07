@@ -736,15 +736,15 @@ static const char AsmSettings[] = {
 };
 
 enum {
-    ASM_SOURCE,
-    ASM_NOSOURCE,
-    ASM_HEX,
-    ASM_DECIMAL,
+    IDX_ASM_SOURCE,
+    IDX_ASM_NOSOURCE,
+    IDX_ASM_HEX,
+    IDX_ASM_DECIMAL,
 };
 
 static window_toggle    AsmToggle[] = {
-    { ASM_SOURCE, ASM_NOSOURCE, SW_ASM_SOURCE },
-    { ASM_HEX, ASM_DECIMAL, SW_ASM_HEX },
+    { IDX_ASM_SOURCE,   IDX_ASM_NOSOURCE,   SW_ASM_SOURCE },
+    { IDX_ASM_HEX,      IDX_ASM_DECIMAL,    SW_ASM_HEX },
 };
 
 static void AsmSet( void )
@@ -797,33 +797,33 @@ static const char VarSettings[] = {
 };
 
 enum {
-    VAR_ENTIRE,
-    VAR_PARTIAL,
-    VAR_CODE,
-    VAR_NOCODE,
-    VAR_INHERIT,
-    VAR_NOINHERIT,
-    VAR_COMPILER,
-    VAR_NOCOMPILER,
-    VAR_PRIVATE,
-    VAR_NOPRIVATE,
-    VAR_PROTECTED,
-    VAR_NOPROTECTED,
-    VAR_STATIC,
-    VAR_NOSTATIC,
-    VAR_MEMBERS,
-    VAR_NOMEMBERS,
+    IDX_VAR_ENTIRE,
+    IDX_VAR_PARTIAL,
+    IDX_VAR_CODE,
+    IDX_VAR_NOCODE,
+    IDX_VAR_INHERIT,
+    IDX_VAR_NOINHERIT,
+    IDX_VAR_COMPILER,
+    IDX_VAR_NOCOMPILER,
+    IDX_VAR_PRIVATE,
+    IDX_VAR_NOPRIVATE,
+    IDX_VAR_PROTECTED,
+    IDX_VAR_NOPROTECTED,
+    IDX_VAR_STATIC,
+    IDX_VAR_NOSTATIC,
+    IDX_VAR_MEMBERS,
+    IDX_VAR_NOMEMBERS,
 };
 
 static window_toggle VarToggle[] = {
-    { VAR_ENTIRE, VAR_PARTIAL, SW_VAR_WHOLE_EXPR },
-    { VAR_CODE, VAR_NOCODE, SW_VAR_SHOW_CODE },
-    { VAR_INHERIT, VAR_NOINHERIT, SW_VAR_SHOW_INHERIT },
-    { VAR_COMPILER, VAR_NOCOMPILER, SW_VAR_SHOW_COMPILER },
-    { VAR_MEMBERS, VAR_NOMEMBERS, SW_VAR_SHOW_MEMBERS },
-    { VAR_PRIVATE, VAR_NOPRIVATE, SW_VAR_SHOW_PRIVATE },
-    { VAR_PROTECTED, VAR_NOPROTECTED, SW_VAR_SHOW_PROTECTED },
-    { VAR_STATIC, VAR_NOSTATIC, SW_VAR_SHOW_STATIC },
+    { IDX_VAR_ENTIRE,       IDX_VAR_PARTIAL,        SW_VAR_WHOLE_EXPR },
+    { IDX_VAR_CODE,         IDX_VAR_NOCODE,         SW_VAR_SHOW_CODE },
+    { IDX_VAR_INHERIT,      IDX_VAR_NOINHERIT,      SW_VAR_SHOW_INHERIT },
+    { IDX_VAR_COMPILER,     IDX_VAR_NOCOMPILER,     SW_VAR_SHOW_COMPILER },
+    { IDX_VAR_MEMBERS,      IDX_VAR_NOMEMBERS,      SW_VAR_SHOW_MEMBERS },
+    { IDX_VAR_PRIVATE,      IDX_VAR_NOPRIVATE,      SW_VAR_SHOW_PRIVATE },
+    { IDX_VAR_PROTECTED,    IDX_VAR_NOPROTECTED,    SW_VAR_SHOW_PROTECTED },
+    { IDX_VAR_STATIC,       IDX_VAR_NOSTATIC,       SW_VAR_SHOW_STATIC },
 };
 
 static void VarSet( void )
@@ -844,12 +844,12 @@ static const char FuncSettings[] = {
 };
 
 enum {
-    FUNC_TYPED,
-    FUNC_ALL,
+    IDX_FUNC_TYPED,
+    IDX_FUNC_ALL,
 };
 
 static window_toggle FuncToggle[] = {
-    { FUNC_TYPED, FUNC_ALL, SW_FUNC_D2_ONLY },
+    { IDX_FUNC_TYPED, IDX_FUNC_ALL, SW_FUNC_D2_ONLY },
 };
 
 static void FuncSet( void )
@@ -865,7 +865,7 @@ static void FuncConf( void )
 
 
 static window_toggle GlobToggle[] = {
-    { FUNC_TYPED, FUNC_ALL, SW_GLOB_D2_ONLY },
+    { IDX_FUNC_TYPED, IDX_FUNC_ALL, SW_GLOB_D2_ONLY },
 };
 
 static void GlobSet( void )
@@ -881,7 +881,7 @@ static void GlobConf( void )
 
 
 static window_toggle ModToggle[] = {
-    { FUNC_ALL, FUNC_TYPED, SW_MOD_ALL_MODULES },
+    { IDX_FUNC_ALL, IDX_FUNC_TYPED, SW_MOD_ALL_MODULES },
 };
 
 static void ModSet( void )

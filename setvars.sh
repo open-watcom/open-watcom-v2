@@ -22,7 +22,7 @@ export OWTOOLS=GCC
 # Build control related variables
 ##################################
 
-# Set this variable to 0/1 to suppress/enable documentation build
+# Set this variable to 1 to enable documentation build
 export OWDOCBUILD=0
 
 # Set this variable to 1 to suppress tools GUI version build
@@ -32,6 +32,9 @@ export OWGUINOBUILD=1
 # Set this variable to list of OW projects to suppress their build
 # Example export OWNOBUILD=ide browser dlgprs
 # export OWNOBUILD=
+
+# Set this variable to 1 to enable build all installers
+export OWDISTRBUILD=0
 
 # Documentation related variables
 ##################################

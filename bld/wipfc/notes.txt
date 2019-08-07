@@ -1,0 +1,22 @@
+Notes about ICU UNICODE convertor files.
+
+For compatibility with DOS 8.3 file name format following files were renamed.
+
+convertors compiled conversion tables in wipfc/helper subdirectory
+
+Original name           DOS 8.3 format
+--------------------------------------
+ibm-437_P100-1995.cnv   ibm437.cnv
+ibm-850_P100-1995.cnv   ibm850.cnv
+ibm-852_P100-1995.cnv   ibm852.cnv
+ibm-943_P15A-2003.cnv   ibm943.cnv
+
+source files for conversion tables in wipfc/icu subdirectory
+
+Original name           DOS 8.3 format
+--------------------------------------
+ibm-437_P100-1995.ucm   ibm437.ucm
+ibm-850_P100-1995.ucm   ibm850.ucm
+ibm-852_P100-1995.ucm   ibm852.ucm
+ibm-943_P130-1999.ucm   ibm943a.ucm
+ibm-943_P15A-2003.ucm   ibm943b.ucm

@@ -125,9 +125,9 @@ enum {
 
 /* global variables */
 
-char Help_fname[100];
-char Header_File[100];
-char Footer_File[100];
+char        *Help_File = NULL;
+char        *Header_File = NULL;
+char        *Footer_File = NULL;
 
 const char Fonttype_roman[] = "roman";
 const char Fonttype_symbol[] = "symbol";
@@ -138,71 +138,71 @@ const char Fonttype_courier[] = "courier";
 
 static const char *Help_info[] = {
     "Usage: whpcvt [options] <in_file> [<out_file>]",
-    "   Options for all help file types:",
-    "     -rtf     : generate Windows RTF output",
-    "     -ipf     : generate OS/2 IPF output",
-    "     -ib      : generate DOS InfoBench output",
-    "     -html    : generate HTML output",
-    "     -wiki    : generate wiki output",
-    "     -@ <opt_file> : read more options from <opt_file> after the command line",
-    "     -i       : generate <in_file>.idx file containing index of topics",
-    "     -iw      : generate '.idx' file in WHP format (instead of GML)",
-    "     -b       : generate <in_file>.blt file containing browse lists (GML)",
-    "     -kw      : generate <in_file>.kw file containing keywords (GML)",
-    "     -s       : sort browse lists",
-    "     -h       : generate <in_file>.h topic define-const file",
-    "     -hn      : read old <in_file>.h file to set new ctx numbers",
-    "     -bl      : allow links to break across lines",
-    "     -t       : generate <in_file>.tbl file containing table of contents",
-    "     -e       : remove empty topics (except from table of contents)",
-    "     -lk      : don't remove empty topics which have links to them",
-    "     -kt      : don't add topic titles as search keywords",
-    "     -mc      : use mixed case for generated topic titles (i.e. contents, etc.)",
-    "     -dpt     : don't put popup topics in .tbl file",
-    "     -dpk     : don't put popup topics in .kw file",
-    "     -dpi     : don't put popup topics in .idx file",
-    "     -dpb     : don't put popup topics in .blt file",
+    "  Options for all help file types:",
+    "   -rtf       : generate Windows RTF output",
+    "   -ipf       : generate OS/2 IPF output",
+    "   -ib        : generate DOS InfoBench output",
+    "   -html      : generate HTML output",
+    "   -wiki      : generate wiki output",
+    "   -@ <file>  : read more options from <file> after the command line",
+    "   -i         : generate <in_file>.idx file containing index of topics",
+    "   -iw        : generate '.idx' file in WHP format (instead of GML)",
+    "   -b         : generate <in_file>.blt file containing browse lists (GML)",
+    "   -kw        : generate <in_file>.kw file containing keywords (GML)",
+    "   -s         : sort browse lists",
+    "   -h         : generate <in_file>.h topic define-const file",
+    "   -hn        : read old <in_file>.h file to set new ctx numbers",
+    "   -bl        : allow links to break across lines",
+    "   -t         : generate <in_file>.tbl file containing table of contents",
+    "   -e         : remove empty topics (except from table of contents)",
+    "   -lk        : don't remove empty topics which have links to them",
+    "   -kt        : don't add topic titles as search keywords",
+    "   -mc        : use mixed case for generated topic titles (i.e. contents, etc.)",
+    "   -dpt       : don't put popup topics in .tbl file",
+    "   -dpk       : don't put popup topics in .kw file",
+    "   -dpi       : don't put popup topics in .idx file",
+    "   -dpb       : don't put popup topics in .blt file",
     "",
-    "   Options for Windows RTF format:",
-    "     -hh      : generate <in_file>.hh topic const file for help compiler",
-    "     -up      : enable up topic support",
-    "     -k       : keep titles in nonscrolling region at top",
-    "     -xl      : initial indent for all lists",
-    "     -dl      : initial indent for definition lists",
-    "     -sl      : initial indent for simple lists",
-    "     -ol      : initial indent for ordered lists",
-    "     -ul      : initial indent for unordered lists",
+    "  Options for Windows RTF format:",
+    "   -hh        : generate <in_file>.hh topic const file for help compiler",
+    "   -up        : enable up topic support",
+    "   -k         : keep titles in nonscrolling region at top",
+    "   -xl        : initial indent for all lists",
+    "   -dl        : initial indent for definition lists",
+    "   -sl        : initial indent for simple lists",
+    "   -ol        : initial indent for ordered lists",
+    "   -ul        : initial indent for unordered lists",
     "",
-    "   Options for OS/2 IPF & HTML format:",
-    "     -rf      : use specified font types, not just system and courier",
-    "     -tl \"title\" : sets a title for the help window. Put the title in quotes",
+    "  Options for OS/2 IPF & HTML format:",
+    "   -rf        : use specified font types, not just system and courier",
+    "   -tl \"title\" : sets a title for the help window. Put the title in quotes",
     "",
-    "   Options for OS/2 IPF, HTML & Wiki format:",
-    "     -ex      : exclude special topics",
+    "  Options for OS/2 IPF, HTML & Wiki format:",
+    "   -ex        : exclude special topics",
     "",
-    "   Options for DOS InfoBench format:",
-    "     -rm <n>  : set right margin to column <n>. Defaults to 76",
-    "     -hd <f>  : include first line of file <f> in header",
-    "     -ft <f>  : include first line of file <f> in footer",
-    "     -tab <n> : set tab spacing to <n>. defaults to 4",
-    "     -hb      : turns hyperlink bracing on",
-    "     -up      : enable up topic support",
-    "     -br      : enable browse button support",
-    "     -tc      : enable contents button support",
-    "     -ix      : enable index button support",
-    "     -kb      : enable keyword button support",
-    "     -dt \"topic\" : default topic",
-    "     -ds \"desc\"  : description string for help file",
+    "  Options for DOS InfoBench format:",
+    "   -rm <n>    : set right margin to column <n>. Defaults to 76",
+    "   -hd <file> : include first line of <file> in header",
+    "   -ft <file> : include first line of <file> in footer",
+    "   -tab <n>   : set tab spacing to <n>. defaults to 4",
+    "   -hb        : turns hyperlink bracing on",
+    "   -up        : enable up topic support",
+    "   -br        : enable browse button support",
+    "   -tc        : enable contents button support",
+    "   -ix        : enable index button support",
+    "   -kb        : enable keyword button support",
+    "   -dt \"topic\" : default topic",
+    "   -ds \"desc\"  : description string for help file",
     "",
-    "   You can specify \"-@ <opt_file>\" to put more options in a file",
-    "       - Each option must be on a separate line",
-    "   Default <in_file> extension is .whp",
-    "   Default <out> extension is",
-    "       for RTF:           " EXT_OUTRTF_FILE,
-    "       for OS/2 IPF:      " EXT_OUTIPF_FILE,
-    "       for Dos Infobench: " EXT_OUTIB_FILE,
-    "       for HTML:          " EXT_OUTHTML_FILE,
-    "       for wiki:          " EXT_OUTWIKI_FILE,
+    "  You can specify \"-@ <file>\" to put more options in a <file>",
+    "     - Each option must be on a separate line",
+    "  Default <in_file> extension is .whp",
+    "  Default <out_file> extension is",
+    "     for RTF:           " EXT_OUTRTF_FILE,
+    "     for OS/2 IPF:      " EXT_OUTIPF_FILE,
+    "     for Dos Infobench: " EXT_OUTIB_FILE,
+    "     for HTML:          " EXT_OUTHTML_FILE,
+    "     for wiki:          " EXT_OUTWIKI_FILE,
     NULL
 };
 
@@ -221,7 +221,8 @@ static const char *(Gen_titles[GEN_TITLE_LAST][TITLE_CASE_LAST])={
 
 /* File stuff */
 static jmp_buf          Jmp_buf;
-static size_t           Line_buf_size;
+static size_t           Line_buf_size = 0;
+static char             *Line_buf = NULL;
 
 /* Processing globals */
 static bool             Exclude_on = false;
@@ -258,16 +259,16 @@ static const char *Error_list[]={
     "Invalid number of parameters."
 };
 
-static char *Options_file = NULL;
+static char         *Options_File = NULL;
 
-static char *Chk_buf = NULL;
+static char         *Chk_buf = NULL;
 
-static char Output_file_ext[10];
+static char         Output_file_ext[10];
 
-static ctx_def **Ctx_list_end = NULL;
+static ctx_def      **Ctx_list_end = NULL;
 
-static keyword_def *Keyword_list = NULL;
-static int Keyword_id = 1;
+static keyword_def  *Keyword_list = NULL;
+static int          Keyword_id = 1;
 
 static void print_help( void )
 /****************************/
@@ -285,54 +286,59 @@ static void error_quit( void )
     longjmp( Jmp_buf, 1 );
 }
 
-void error_str( const char *err_str )
-/***********************************/
+static void message_str( const char *msg_str )
+/********************************************/
 {
-    printf( "****%s\n", err_str );
+    printf( "****%s\n", msg_str );
+}
+
+static void message_line( const char *prefix, int line_num )
+/**********************************************************/
+{
+    printf( "%s in input file on line %d.\n", prefix, line_num );
+}
+
+static void error_noexit( int err )
+/*********************************/
+{
+    message_line( "Error", Line_num );
+    message_str( Error_list[err] );
+}
+
+void error( int err )
+/*******************/
+{
+    error_noexit( err );
     error_quit();
 }
 
-void error( int err, bool line_num )
-/**********************************/
+static void error_err( int err )
+/******************************/
 {
-    if( line_num ) {
-        printf( "Error in input file on line %d.\n", Line_num );
-    }
-    error_str( Error_list[err] );
+    message_str( Error_list[err] );
+    error_quit();
 }
 
-#if 0
-static void error_line( int err, int line_num )
-/*********************************************/
+static void warning( int err )
+/****************************/
 {
-    Line_num = line_num;
-
-    error( err, true );
-}
-#endif
-
-static void warning_str( const char *warn_str )
-/*********************************************/
-{
-    printf( "****%s\n", warn_str );
-}
-
-static void warning( int err, bool line_num )
-/*******************************************/
-{
-    if( line_num ) {
-        printf( "Warning - in input file on line %d.\n", Line_num );
-    }
-    warning_str( Error_list[err] );
+    message_line( "Warning", Line_num );
+    message_str( Error_list[err] );
 }
 
 static void warning_line( int err, int line_num )
 /***********************************************/
 {
-    Line_num = line_num;
-
-    warning( err, true );
+    message_line( "Warning", line_num );
+    message_str( Error_list[err] );
 }
+
+void warning_msg( const char *msg, int line_num )
+/***********************************************/
+{
+    printf( "*** WARNING: %s on line %d.\n", msg, line_num );
+}
+
 
 void *check_alloc( size_t size )
 /******************************/
@@ -342,7 +348,7 @@ void *check_alloc( size_t size )
     p = malloc( size );
 
     if( p == NULL && size != 0) {
-        error( ERR_NO_MEMORY, false );
+        error_err( ERR_NO_MEMORY );
     }
 
     return( p );
@@ -354,7 +360,7 @@ void *check_realloc( void *ptr, size_t size )
     ptr = realloc( ptr, size );
 
     if( ptr == NULL && size != 0 ) {
-        error( ERR_NO_MEMORY, false );
+        error_err( ERR_NO_MEMORY );
     }
 
     return( ptr );
@@ -406,6 +412,39 @@ void whp_fwrite( const char *buf, size_t el_size, size_t num_el, FILE *f )
     fwrite( buf, el_size, num_el, f );
 }
 
+static char *normalize_fname( char *file, const char *name, const char *fext )
+/****************************************************************************/
+{
+    char                *dot;
+    char                *slash;
+    size_t              len;
+
+    if( fext != NULL ) {
+        len = strlen( name ) + sizeof( Output_file_ext );   // add enough space for various file extensions
+    } else {
+        len = strlen( name ) + 1;
+    }
+    file = realloc( file, len );
+    strcpy( file, name );
+#ifndef __UNIX__
+    for( slash = file; (slash = strchr( slash, '/' )) != NULL; slash++ ) {
+        *slash = '\\';
+    }
+#endif
+    if( fext != NULL ) {
+#ifdef __UNIX__
+        slash = strrchr( file, '/' );
+#else
+        slash = strrchr( file, '\\' );
+#endif
+        dot = strrchr( file, '.' );
+        if( dot == NULL || ( slash != NULL && dot < slash ) ) {
+            strcat( file, fext );
+        }
+    }
+    return( file );
+}
+
 static int process_args( int argc, char *argv[] )
 /***********************************************/
 {
@@ -413,7 +452,11 @@ static int process_args( int argc, char *argv[] )
     int                 start_arg;
 
     for( start_arg = 0; start_arg < argc; ++start_arg ) {
+#ifdef __UNIX__
+        if( argv[start_arg][0] == '-' ) {
+#else
         if( argv[start_arg][0] == '-' || argv[start_arg][0] == '/' ) {
+#endif
             for( i = 0; Args[i] != NULL; ++i ) {
                 if( stricmp( Args[i], &argv[start_arg][1] ) == 0 ) {
                     break;
@@ -524,7 +567,7 @@ static int process_args( int argc, char *argv[] )
                 if( start_arg < argc && (i = atoi( argv[start_arg] )) >= 0 ) {
                     Right_Margin = i;
                 } else {
-                    error( ERR_BAD_ARGS, false );
+                    error_err( ERR_BAD_ARGS );
                 }
                 break;
             case ARG_TAB:
@@ -532,30 +575,27 @@ static int process_args( int argc, char *argv[] )
                 if( start_arg < argc && (i = atoi( argv[start_arg] )) >= 0 ) {
                     Text_Indent = i;
                 } else {
-                    error( ERR_BAD_ARGS, false );
+                    error_err( ERR_BAD_ARGS );
                 }
                 break;
             case ARG_HD:
                 start_arg++;
                 if( start_arg < argc ) {
-                    strncpy( Header_File, argv[start_arg], 100 );
-                    Header_File[99] = '\0';
+                    Header_File = normalize_fname( Header_File, argv[start_arg], NULL );
                 } else {
-                    error( ERR_BAD_ARGS, false );
+                    error_err( ERR_BAD_ARGS );
                 }
                 break;
             case ARG_FT:
                 start_arg++;
                 if( start_arg < argc ) {
-                    strncpy( Header_File, argv[start_arg], 100 );
-                    Header_File[99] = '\0';
+                    Footer_File = normalize_fname( Footer_File, argv[start_arg], NULL );
                 } else {
-                    error( ERR_BAD_ARGS, false );
+                    error_err( ERR_BAD_ARGS );
                 }
                 break;
             case ARG_HB:
-                IB_Hyper_Brace_L = IB_BRACE_L_CHAR;
-                IB_Hyper_Brace_R = IB_BRACE_R_CHAR;
+                Hyperlink_Braces = true;
                 break;
             case ARG_BR:
                 Do_browse = true;
@@ -572,7 +612,7 @@ static int process_args( int argc, char *argv[] )
                     _new( Ipf_or_Html_title, strlen( argv[start_arg] ) + 1 );
                     strcpy( Ipf_or_Html_title, argv[start_arg] );
                 } else {
-                    error( ERR_BAD_ARGS, false );
+                    error_err( ERR_BAD_ARGS );
                 }
                 break;
             case ARG_MC:
@@ -584,7 +624,7 @@ static int process_args( int argc, char *argv[] )
                     _new( IB_def_topic, strlen( argv[start_arg] ) + 1 );
                     strcpy( IB_def_topic, argv[start_arg] );
                 } else {
-                    error( ERR_BAD_ARGS, false );
+                    error_err( ERR_BAD_ARGS );
                 }
                 break;
             case ARG_DS:
@@ -593,16 +633,15 @@ static int process_args( int argc, char *argv[] )
                     _new( IB_help_desc, strlen( argv[start_arg] ) + 1 );
                     strcpy( IB_help_desc, argv[start_arg] );
                 } else {
-                    error( ERR_BAD_ARGS, false );
+                    error_err( ERR_BAD_ARGS );
                 }
                 break;
             case ARG_OF:
                 ++start_arg;
                 if( start_arg < argc ) {
-                    _new( Options_file, strlen( argv[start_arg] ) + 1 );
-                    strcpy( Options_file, argv[start_arg] );
+                    Options_File = normalize_fname( Options_File, argv[start_arg], NULL );
                 } else {
-                    error( ERR_BAD_ARGS, false );
+                    error_err( ERR_BAD_ARGS );
                 }
                 break;
             default:
@@ -616,6 +655,47 @@ static int process_args( int argc, char *argv[] )
     return( start_arg );
 }
 
+char *skip_blanks( char *ptr )
+/****************************/
+{
+    while( *ptr == ' ' || *ptr == '\t' )
+        ptr++;
+    return( ptr );
+}
+
+static char *skip_nonblanks( char *ptr )
+/**************************************/
+{
+    while( _is_nonblank( *ptr ) )
+        ptr++;
+    return( ptr );
+}
+
+static void trim_blanks( char *ptr )
+/**********************************/
+{
+    char    *s;
+    char    *d;
+
+    if( *ptr != '\0' ) {
+        if( _is_nonblank( *ptr ) ) {
+            d = ptr + strlen( ptr );
+        } else {
+            s = skip_blanks( ptr );
+            d = ptr;
+            while( (*d = *s) != '\0' ) {
+                d++;
+                s++;
+            }
+        }
+        while( d-- > ptr ) {
+            if( _is_nonblank( *d ) && *d != '\n' )
+                break;
+            *d = '\0';
+        }
+    }
+}
+
 static int valid_args( int argc, char *argv[] )
 /*********************************************/
 {
@@ -624,8 +704,6 @@ static int valid_args( int argc, char *argv[] )
     char                line[200];
     int                 ret;
     int                 i;
-    size_t              j;
-    char                *x;
 
     Tab_xmp = false;
 
@@ -659,11 +737,8 @@ static int valid_args( int argc, char *argv[] )
     Dump_popup_k = false;
 
     Right_Margin = 76;
-    Header_File[0] = '\0';
-    Footer_File[0] = '\0';
     Text_Indent = 4;
-    IB_Hyper_Brace_L = IB_HLINK_L_CHAR;
-    IB_Hyper_Brace_R = IB_HLINK_R_CHAR;
+    Hyperlink_Braces = false;
     Do_browse = false;
     Do_tc_button = false;
     Do_idx_button = false;
@@ -675,8 +750,8 @@ static int valid_args( int argc, char *argv[] )
     }
 
     for( ;; ) {
-        if( Options_file != NULL ) {
-            opt_file = fopen( Options_file, "r" );
+        if( Options_File != NULL ) {
+            opt_file = fopen( Options_File, "r" );
             if( opt_file == NULL ) {
                 return( -1 );
             }
@@ -686,31 +761,19 @@ static int valid_args( int argc, char *argv[] )
                 }
             }
             fclose( opt_file );
-            opt_file = fopen( Options_file, "r" );
+            opt_file = fopen( Options_File, "r" );
 
-            free( Options_file );
-            Options_file = NULL;
+            free( Options_File );
+            Options_File = NULL;
 
             _new( argv, argc );
             for( argc = 0;; ++argc ) {
                 if( fgets( line, sizeof( line ), opt_file ) == NULL ) {
                     break;
                 }
-                line[sizeof( line ) - 1] = 0;
-                for( x = line, i = 0; i < sizeof( line ) && *x != 0; i++, x++ ) {
-                    if( *x != ' ' && *x != 9 ) {
-                        strcpy( line, x );
-                        break;
-                    }
-                }
-                for( j = strlen( line ), x = line + j - 1; j > 0; j--, x-- ) {
-                    if( *x == '\n' || *x == ' ' || *x == 9 ) {
-                        *x = 0;
-                    } else {
-                        break;
-                    }
-                }
-                _new( argv[argc], j + 1 );
+                line[sizeof( line ) - 1] = '\0';
+                trim_blanks( line );
+                _new( argv[argc], strlen( line ) + 1 );
                 strcpy( argv[argc], line );
             }
             fclose( opt_file );
@@ -729,12 +792,23 @@ static int valid_args( int argc, char *argv[] )
     return( start_arg );
 }
 
-char *skip_blank( char *ptr )
-/***************************/
+static int read_char( void )
+/**************************/
 {
-    for( ; *ptr == ' ' || *ptr == '\t'; ++ptr );
+    int         c;
 
-    return( ptr );
+#if defined( __UNIX__ )
+    do {
+        c = fgetc( In_file );
+    } while( c == '\r' );
+#else
+    c = fgetc( In_file );
+#endif
+    if( c == EOF )
+        return( c );
+    if( (char)c == WHP_SPACE_NOBREAK )
+        return( ' ' );  // convert special blanks to regular blanks
+    return( c );
 }
 
 bool read_line( void )
@@ -749,14 +823,9 @@ bool read_line( void )
     eat_blank = false;
     for( ;; ) {
         ++Line_num;
-        for( buf = Line_buf, len = 0;; ++buf ) {
-#if defined __QNX__ || defined __UNIX__
-            do {
-                c = fgetc( In_file );
-            } while( c == '\r' );
-#else
-            c = fgetc( In_file );
-#endif
+        len = 0;
+        for( buf = Line_buf;; ++buf ) {
+            c = read_char();
             if( c == EOF ) {
                 return( false );
             }
@@ -766,17 +835,11 @@ bool read_line( void )
                 Line_buf = _realloc( Line_buf, Line_buf_size );
                 buf = &Line_buf[len - 1];
             }
-
-            ch = (char)c;
-            if( ch == CH_SPACE_NOBREAK ) {
-                ch = ' ';        // convert special blanks to regular blanks
-            }
-            *buf = ch;
-
+            *buf = (char)c;
             if( *buf == '\n' ) {
                 if( eat_blank ) {
                     eat_blank = false;
-                    if( *skip_blank( Line_buf ) == '\n' ) {
+                    if( *skip_blanks( Line_buf ) == '\n' ) {
                         /* the 'exclude off, but eat blank line after' character
                            is used to do 'dummy' figures (to get the the
                            figure numbers right). Since real text has
@@ -787,14 +850,14 @@ bool read_line( void )
                     }
                 }
                 ch = *Line_buf;
-                if( ch == CH_EXCLUDE_OFF ) {
+                if( ch == WHP_EXCLUDE_OFF ) {
                     Exclude_on = false;
                     break;
-                } else if( ch == CH_EXCLUDE_OFF_BLANK ) {
+                } else if( ch == WHP_EXCLUDE_OFF_BLANK ) {
                     Exclude_on = false;
                     eat_blank = true;
                     break;
-                } else if( ch == CH_EXCLUDE_ON ) {
+                } else if( ch == WHP_EXCLUDE_ON ) {
                     Exclude_on = true;
                     break;
                 } else if( Exclude_on ) {
@@ -820,8 +883,8 @@ char *whole_keyword_line( char *ptr )
        can happen in GML when people use index entries to generate
        keywords, so we have to look for this case */
 
-    for( ; *ptr == CH_CTX_KW; ) {
-        end = strchr( ptr + 1, CH_CTX_KW );
+    for( ; *ptr == WHP_CTX_KW; ) {
+        end = strchr( ptr + 1, WHP_CTX_KW );
         len = end - ptr - 1;
         memcpy( buf, ptr + 1, len );
         buf[len] = '\0';
@@ -840,51 +903,26 @@ char *whole_keyword_line( char *ptr )
     return( ptr );
 }
 
-size_t trans_add_char( char ch, section_def *section, size_t *size )
-/******************************************************************/
+size_t trans_add_char( char ch, section_def *section )
+/****************************************************/
 {
     section->section_size++;
-    if( section->section_size > *size ) {
-        *size += 1024;    // grow by a good, big amount
-        _renew( section->section_text, *size );
+    if( section->section_size > section->allocated_size ) {
+        section->allocated_size += 1024;    // grow by a good, big amount
+        _renew( section->section_text, section->allocated_size );
     }
     section->section_text[section->section_size - 1] = ch;
     return( 1 );
 }
 
-size_t trans_add_str( const char *str, section_def *section, size_t *size )
-/*************************************************************************/
+size_t trans_add_str( const char *str, section_def *section )
+/***********************************************************/
 {
     size_t      len;
 
     len = 0;
     for( ; *str != '\0'; ++str ) {
-        trans_add_char( *str, section, size );
-        ++len;
-    }
-
-    return( len );
-}
-
-size_t trans_add_str_nobreak( const char *str, section_def *section, size_t *size )
-/*********************************************************************************/
-{
-    size_t      len;
-
-    len = 0;
-    for( ; *str != '\0'; ++str ) {
-        if( *str != ' ' || Break_link ) {
-            len = trans_add_char( *str, section, size );
-        } else {
-            /* non-breaking space */
-            if( Output_type == OUT_RTF ) {
-                len = trans_add_char( '\\', section, size );
-                len += trans_add_char( '~', section, size );
-            } else {
-                /* IPF and InfoBench do not break alternate spaces */
-                len = trans_add_char( CH_SPACE_NOBREAK, section, size );
-            }
-        }
+        len += trans_add_char( *str, section );
     }
 
     return( len );
@@ -983,22 +1021,26 @@ void add_ctx_keyword( ctx_def *ctx, const char *keyword )
 }
 
 
-static size_t trans_line( section_def *section, size_t size )
-/***********************************************************/
+static void trans_line( char *line_buf, section_def *section )
+/************************************************************/
 {
     switch( Output_type ) {
     case OUT_RTF:
-        return( rtf_trans_line( section, size ) );
+        rtf_trans_line( line_buf, section );
+        break;
     case OUT_IPF:
-        return( ipf_trans_line( section, size ) );
+        ipf_trans_line( line_buf, section );
+        break;
     case OUT_IB:
-        return( ib_trans_line( section, size ) );
+        ib_trans_line( line_buf, section );
+        break;
     case OUT_HTML:
-        return( html_trans_line( section, size ) );
+        html_trans_line( line_buf, section );
+        break;
     case OUT_WIKI:
-        return( wiki_trans_line( section, size ) );
+        wiki_trans_line( line_buf, section );
+        break;
     }
-    return( 0 );
 }
 
 static void topic_init( void )
@@ -1031,26 +1073,24 @@ static bool read_topic_text( ctx_def *ctx, bool is_blank, int order_num )
     bool                more_to_do;
     section_def         *section;
     section_def         **ins_section;
-    size_t              sect_size;
 
     section = NULL;
-    sect_size = 0;
     topic_init();
     for( ;; ) {
         more_to_do = read_line();
         if( !more_to_do ) {
             break;
         }
-        if( *Line_buf == CH_CTX_DEF || *Line_buf == CH_TOPIC ) {
+        if( *Line_buf == WHP_CTX_DEF || *Line_buf == WHP_TOPIC ) {
             break;
         }
         if( section == NULL ) {
             _new( section, 1 );
             section->section_text = NULL;
+            section->allocated_size = 0;
             section->section_size = 0;
-            sect_size = 0;
         }
-        sect_size = trans_line( section, sect_size );
+        trans_line( Line_buf, section );
     }
 
     if( section != NULL ) {
@@ -1092,14 +1132,14 @@ static char *skip_prep( char *str )
     char                        *end;
     char                        *next;
 
-    for( start = str; *start == ' ' || *start == '\t'; ++start );
-    for( end = start; *end != ' ' && *end != '\t' && *end != '\0'; ++end );
+    start = skip_blanks( str );
+    end = skip_nonblanks( start );
     /* now 'end' points to the terminating char after the first word */
     if( start == end ) {
         /* no first word */
         return( str );
     }
-    for( next = end; *next == ' ' || *next == '\t'; ++next );
+    next = skip_blanks( end );
     if( *next == '\0' ) {
         /* nothing after the first word */
         return( start );
@@ -1178,7 +1218,7 @@ static void add_ctx( ctx_def *ctx, const char *title, char *keywords, const char
         _new( ctx->title, strlen( title ) + 1 );
         strcpy( ctx->title, title );
     }
-    if( keywords != NULL && ctx->keylist == NULL && *skip_blank( keywords ) != '\0' ) {
+    if( keywords != NULL && ctx->keylist == NULL && *skip_blanks( keywords ) != '\0' ) {
         for( ptr = keywords;; ) {
             for( end = ptr; *end != ',' && *end != ';' && *end != '\0'; ++end );
             ch = *end;
@@ -1249,16 +1289,16 @@ static ctx_def *define_ctx( void )
     char                ch, o_ch;
     int                 i;
 
-    Delim[0] = CH_CTX_DEF;
+    Delim[0] = WHP_CTX_DEF;
     ptr = strtok( Line_buf + 1, Delim );
     head_level = atoi( ptr );
     ctx_name = strtok( NULL, Delim );
 
     title_fmt = TITLE_FMT_DEFAULT;
-    if( *ctx_name == CH_TOPIC_LN ) {
+    if( *ctx_name == WHP_TOPIC_LN ) {
         title_fmt = TITLE_FMT_LINE;
         ++ctx_name;
-    } else if( *ctx_name == CH_TOPIC_NOLN ) {
+    } else if( *ctx_name == WHP_TOPIC_NOLN ) {
         title_fmt = TITLE_FMT_NOLINE;
         ++ctx_name;
     }
@@ -1267,7 +1307,7 @@ static ctx_def *define_ctx( void )
     if( ctx != NULL && ctx->title != NULL ) {
         if(( head_level != 0 ) && ( ctx->head_level != 0 )) {
             printf( "topic already exists: %s\n", ctx_name );
-            warning( ERR_CTX_EXISTS, true );
+            warning( ERR_CTX_EXISTS );
         }
         for( i = 0; i < strlen( ctx_name ); ++i ) {
             o_ch = ctx_name[i];
@@ -1287,7 +1327,7 @@ static ctx_def *define_ctx( void )
 
     title = strtok( NULL, Delim );
     if( title == NULL ) {
-        error( ERR_NO_TITLE, true );
+        error( ERR_NO_TITLE );
     }
 
     browse_name = strtok( NULL, Delim );
@@ -1325,7 +1365,7 @@ static bool read_ctx_topic( void )
     ctx_def             *ctx;
     char                *order_str;
 
-    Delim[0] = CH_TOPIC;
+    Delim[0] = WHP_TOPIC;
     ctx_name = strtok( Line_buf, Delim );
 
     ctx = find_ctx( ctx_name );
@@ -1348,22 +1388,22 @@ static bool read_topic( void )
 /****************************/
 {
     switch( *Line_buf ) {
-    case CH_CTX_DEF:
+    case WHP_CTX_DEF:
         return( read_ctx_def() );
-    case CH_TOPIC:
+    case WHP_TOPIC:
         return( read_ctx_topic() );
+    case '\0':
+        return( read_line() );
     case ' ':
     case '\t':
-    case '\0':
-        if( *skip_blank( Line_buf ) == '\0' ) {
+        if( *skip_blanks( Line_buf ) == '\0' ) {
             /* due to a bug on GML, skip completely blank lines
                between topics, like this */
             return( read_line() );
         }
         /* fall through */
     default:
-        printf( "Error in input file on line %d.\n", Line_num );
-        printf( "****%s\n", Error_list[ERR_NO_TOPIC] );
+        error_noexit( ERR_NO_TOPIC );
     }
     return( false );
 }
@@ -1412,7 +1452,8 @@ static void sort_ctx_list( void )
         if( ctx->title == NULL ) {
             /* ctx item without a definition */
             sprintf( buf, "The context id '%s' is used but not defined", ctx->ctx_name );
-            error_str( buf );
+            message_str( buf );
+            error_quit();
         }
         for( sort_spot = &sort_list; *sort_spot != NULL; sort_spot = &((*sort_spot)->next) ) {
             if( stricmp( skip_prep( ctx->title ), skip_prep( (*sort_spot)->title ) ) < 0 ) {
@@ -1466,11 +1507,11 @@ static void output_idx_file( void )
         if( ch != ch2 ) {
             if( Index_gml_fmt ) {
                 if( ch == 0 ) {
-                    sprintf( pfx, "%c\n:pb.", CH_DLIST_START );
+                    sprintf( pfx, "%c\n:pb.", WHP_DLIST_START );
                 } else {
                     strcpy( pfx, ":p." );
                 }
-                whp_fprintf( Idx_file, "%s%c- %c -\n", pfx, CH_DLIST_TERM, ch2 );
+                whp_fprintf( Idx_file, "%s%c- %c -\n", pfx, WHP_DLIST_TERM, ch2 );
                 new_topic = true;
             } else {
                 whp_fprintf( Idx_file, "- %c -\n", ch2 );
@@ -1480,18 +1521,18 @@ static void output_idx_file( void )
         if( Index_gml_fmt ) {
             whp_fprintf( Idx_file, ":pb." );
             if( new_topic ) {
-                whp_fprintf( Idx_file, "%c", CH_DLIST_DESC );
+                whp_fprintf( Idx_file, "%c", WHP_DLIST_DESC );
                 new_topic = false;
             }
             whp_fprintf( Idx_file, "%c%s%c%s%c\n",
-                CH_HLINK, ctx->ctx_name, CH_HLINK, ctx->title, CH_HLINK );
+                WHP_HLINK, ctx->ctx_name, WHP_HLINK, ctx->title, WHP_HLINK );
         } else {
             whp_fprintf( Idx_file, "    %c%s%c%s%c\n",
-                CH_HLINK, ctx->ctx_name, CH_HLINK, ctx->title, CH_HLINK );
+                WHP_HLINK, ctx->ctx_name, WHP_HLINK, ctx->title, WHP_HLINK );
         }
     }
     if( ch != 0 && Index_gml_fmt ) {
-        whp_fprintf( Idx_file, ":pb.%c\n\n", CH_DLIST_END );
+        whp_fprintf( Idx_file, ":pb.%c\n\n", WHP_DLIST_END );
     }
 }
 
@@ -1548,7 +1589,7 @@ static void output_kw_file( void )
 
     // output header
     whp_fprintf( KW_file, ":H1.%s\n", Gen_titles[GEN_TITLE_KEYWORD][Title_case] );
-    whp_fprintf( KW_file, ":pb.%cc\n", CH_SLIST_START );
+    whp_fprintf( KW_file, ":pb.%cc\n", WHP_SLIST_START );
 
     // count the number of keywords in our list
     for( temp_kw = Keyword_list; temp_kw !=NULL; temp_kw = temp_kw->next )
@@ -1583,12 +1624,12 @@ static void output_kw_file( void )
                 if( !is_special_topic( ctx[0], Dump_popup_k ) ) {
                     whp_fprintf( KW_file,
                                 ":pb.%c:pb.%c%s%c%s%c\n",
-                                CH_LIST_ITEM,
-                                CH_HLINK,
+                                WHP_LIST_ITEM,
+                                WHP_HLINK,
                                 ctx[0]->ctx_name,
-                                CH_HLINK,
+                                WHP_HLINK,
                                 kw[i]->keyword,
-                                CH_HLINK );
+                                WHP_HLINK );
                 }
             } else if( kw[i]->ctx_list_size > 1 ) {
                 // sort the list of contexts by title.
@@ -1602,28 +1643,26 @@ static void output_kw_file( void )
                             whp_fprintf( KW_file,
                                         ":pb.%c:pb.%cb%c%s%c\n"
                                         ":pb.%cc\n",
-
-                                        CH_LIST_ITEM,
-                                        CH_FONTSTYLE_START,
-                                        CH_FONTSTYLE_START,
+                                        WHP_LIST_ITEM,
+                                        WHP_FONTSTYLE_START,
+                                        WHP_FONTSTYLE_START,
                                         kw[i]->keyword,
-                                        CH_FONTSTYLE_END,
-
-                                        CH_SLIST_START );
+                                        WHP_FONTSTYLE_END,
+                                        WHP_SLIST_START );
                             title = true;
                         }
                         whp_fprintf( KW_file, ":pb.%c%c%s%c%s%c\n",
-                                CH_LIST_ITEM,
-                                CH_HLINK,
+                                WHP_LIST_ITEM,
+                                WHP_HLINK,
                                 ctx[ctx_num]->ctx_name,
-                                CH_HLINK,
+                                WHP_HLINK,
                                 ctx[ctx_num]->title,
-                                CH_HLINK );
+                                WHP_HLINK );
                     }
                     // go to the next context on our list
                 }
                 if( title ) {
-                    whp_fprintf( KW_file, ":pb.%c\n", CH_SLIST_END );
+                    whp_fprintf( KW_file, ":pb.%c\n", WHP_SLIST_END );
                 }
             }
         }
@@ -1631,7 +1670,7 @@ static void output_kw_file( void )
     }
 
     // the end
-    whp_fprintf( KW_file, ":pb.%c\n", CH_SLIST_END );
+    whp_fprintf( KW_file, ":pb.%c\n", WHP_SLIST_END );
 }
 
 static void output_blist_file( void )
@@ -1644,7 +1683,7 @@ static void output_blist_file( void )
     char                        *pfx;
 
     whp_fprintf( Blist_file, ":H1.%s\n%c\n",
-                Gen_titles[GEN_TITLE_BROWSE][Title_case], CH_DLIST_START );
+                Gen_titles[GEN_TITLE_BROWSE][Title_case], WHP_DLIST_START );
     pfx = ":pb.";
     for( browse = Browse_list; browse != NULL; browse = browse->next ) {
         for( ctx = Ctx_list; ctx != NULL; ctx = ctx->next ) {
@@ -1659,22 +1698,22 @@ static void output_blist_file( void )
             }
 
             whp_fprintf( Blist_file, "%s%c%cb%c%c%s%c%s%c%c\n",
-                        pfx, CH_DLIST_TERM, CH_FONTSTYLE_START,
-                        CH_FONTSTYLE_START, CH_HLINK, ctx->ctx_name,
-                        CH_HLINK, ctx->title, CH_HLINK, CH_FONTSTYLE_END );
+                        pfx, WHP_DLIST_TERM, WHP_FONTSTYLE_START,
+                        WHP_FONTSTYLE_START, WHP_HLINK, ctx->ctx_name,
+                        WHP_HLINK, ctx->title, WHP_HLINK, WHP_FONTSTYLE_END );
         } else {
-            whp_fprintf( Blist_file, "%s%c%s\n", pfx, CH_DLIST_TERM,
+            whp_fprintf( Blist_file, "%s%c%s\n", pfx, WHP_DLIST_TERM,
                                                     browse->browse_name );
         }
         pfx = ":p.";
 
-        whp_fprintf( Blist_file, ":pb.%c", CH_DLIST_DESC );
+        whp_fprintf( Blist_file, ":pb.%c", WHP_DLIST_DESC );
         for( b_ctx = browse->ctx_list; ; ) {
             b_ctx_next = b_ctx->next;
             if( b_ctx->ctx != ctx && !b_ctx->ctx->empty ) {
-                whp_fprintf( Blist_file, "%c%s%c%s%c", CH_HLINK,
-                                            b_ctx->ctx->ctx_name, CH_HLINK,
-                                            b_ctx->ctx->title, CH_HLINK );
+                whp_fprintf( Blist_file, "%c%s%c%s%c", WHP_HLINK,
+                                            b_ctx->ctx->ctx_name, WHP_HLINK,
+                                            b_ctx->ctx->title, WHP_HLINK );
                 if( b_ctx_next != NULL ) {
                     whp_fprintf( Blist_file, "\n:pb." );
                 }
@@ -1686,7 +1725,7 @@ static void output_blist_file( void )
         }
         whp_fprintf( Blist_file, "\n" );
     }
-    whp_fprintf( Blist_file, ":pb.%c\n\n", CH_DLIST_END );
+    whp_fprintf( Blist_file, ":pb.%c\n\n", WHP_DLIST_END );
 }
 
 static void output_contents_file( void )
@@ -1705,35 +1744,35 @@ static void output_contents_file( void )
         }
         if( ctx->head_level > level ) {
             for( i = level + 1; i <= ctx->head_level; ++i ) {
-                whp_fprintf( Contents_file, ":pb.%cc\n", CH_SLIST_START );
+                whp_fprintf( Contents_file, ":pb.%cc\n", WHP_SLIST_START );
             }
             level = ctx->head_level;
         } else if( ctx->head_level < level ) {
             for( i = ctx->head_level + 1; i <=level; ++i ) {
-                whp_fprintf( Contents_file, ":pb.%c\n", CH_SLIST_END );
+                whp_fprintf( Contents_file, ":pb.%c\n", WHP_SLIST_END );
             }
             level = ctx->head_level;
         }
-        whp_fprintf( Contents_file, ":pb.%c", CH_LIST_ITEM );
+        whp_fprintf( Contents_file, ":pb.%c", WHP_LIST_ITEM );
         if( level <= 1 ) {
             whp_fprintf( Contents_file, ":pb.%chelv%c12%c%cb%c",
-                        CH_FONTTYPE, CH_FONTTYPE, CH_FONTTYPE,
-                        CH_FONTSTYLE_START, CH_FONTSTYLE_START );
+                        WHP_FONTTYPE, WHP_FONTTYPE, WHP_FONTTYPE,
+                        WHP_FONTSTYLE_START, WHP_FONTSTYLE_START );
         }
         if( ctx->empty ) {
             whp_fprintf( Contents_file, "%s", ctx->title );
         } else {
             whp_fprintf( Contents_file, "%c%s%c%s%c",
-                    CH_HLINK, ctx->ctx_name, CH_HLINK, ctx->title, CH_HLINK );
+                    WHP_HLINK, ctx->ctx_name, WHP_HLINK, ctx->title, WHP_HLINK );
         }
         if( level <= 1 ) {
             whp_fprintf( Contents_file, "%c%chelv%c10%c",
-                    CH_FONTSTYLE_END, CH_FONTTYPE, CH_FONTTYPE, CH_FONTTYPE );
+                    WHP_FONTSTYLE_END, WHP_FONTTYPE, WHP_FONTTYPE, WHP_FONTTYPE );
         }
         whp_fprintf( Contents_file, "\n" );
     }
     for( i = -1; i < level; ++i ) {
-        whp_fprintf( Contents_file, ":pb.%c\n", CH_SLIST_END );
+        whp_fprintf( Contents_file, ":pb.%c\n", WHP_SLIST_END );
     }
 
 }
@@ -1746,6 +1785,7 @@ static void output_def_file( void )
     char                        *buf;
     size_t                      len;
     size_t                      max_len;
+    size_t                      i;
 
     whp_fprintf( Def_file, "/* This file was created by WHPCVT.EXE. DO NOT MODIFY BY HAND! */\n\n" );
 
@@ -1760,8 +1800,9 @@ static void output_def_file( void )
             buf = realloc( buf, len );
             max_len = len;
         }
-        strcpy( buf, ctx->ctx_name );
-        strupr( buf );
+        for( i = 0; i < len; i++ ) {
+            buf[i] = toupper( (unsigned char)ctx->ctx_name[i] );
+        }
         whp_fprintf( Def_file, "#define %s%-50s\t%d\n", HELP_PREFIX, buf, ctx->ctx_id );
     }
     free( buf );
@@ -1861,17 +1902,42 @@ static void check_links( void )
     }
 }
 
+static void init_whp( void )
+{
+    switch( Output_type ) {
+    case OUT_RTF:
+        rtf_init_whp();
+        break;
+    case OUT_IPF:
+        ipf_init_whp();
+        break;
+    case OUT_IB:
+        ib_init_whp();
+        break;
+    case OUT_HTML:
+        html_init_whp();
+        break;
+    case OUT_WIKI:
+        wiki_init_whp();
+        break;
+    }
+}
+
 int main( int argc, char *argv[] )
 /********************************/
 {
-    char                file[200];
+    char                *file;
     int                 start_arg;
     void                *start_alloc;
     int                 size;
-    char                *dot;
-    char                *slash;
     int                 rc;
 
+#ifndef __WATCOMC__
+    _argc = argc;
+    _argv = argv;
+#endif
+
+    file = NULL;
     rc = -1;
     if( argc < 1 ) {
         print_help();
@@ -1897,12 +1963,7 @@ int main( int argc, char *argv[] )
         goto error_exit;
     }
 
-    strcpy( file, argv[start_arg] );
-    dot = strrchr( file, '.' );
-    slash = strrchr( file, '\\' );
-    if( dot == NULL || ( slash != NULL && dot < slash ) ) {
-        strcat( file, EXT_INPUT_FILE );
-    }
+    file = normalize_fname( file, argv[start_arg], EXT_INPUT_FILE );
 
     Line_num = 0;
     In_file = fopen( file, "r" );
@@ -1912,8 +1973,11 @@ int main( int argc, char *argv[] )
     }
 
     /* this is for the RTF 'Up' button support */
-    strcpy( Help_fname, file );
-    strcpy( strrchr( Help_fname, '.' ), EXT_HLP_FILE );
+    if( Output_type == OUT_RTF ) {
+        Help_File = malloc( strlen( file ) + sizeof( EXT_HLP_FILE ) );
+        strcpy( Help_File, file );
+        strcpy( strrchr( Help_File, '.' ), EXT_HLP_FILE );
+    }
 
     if( Do_index ) {
         strcpy( strrchr( file, '.' ), EXT_IDX_FILE );
@@ -1951,7 +2015,6 @@ int main( int argc, char *argv[] )
         }
     }
 
-
     switch( Output_type ) {
     case OUT_RTF:
         strcpy( Output_file_ext, EXT_OUTRTF_FILE );
@@ -1973,12 +2036,7 @@ int main( int argc, char *argv[] )
     if( argc == start_arg + 1 ) {
         strcpy( strrchr( file, '.' ), Output_file_ext );
     } else {
-        strcpy( file, argv[start_arg + 1] );
-        dot = strrchr( file, '.' );
-        slash = strrchr( file, '\\' );
-        if( dot == NULL || ( slash != NULL && dot < slash ) ) {
-            strcat( file, Output_file_ext );
-        }
+        file = normalize_fname( file, argv[start_arg + 1], Output_file_ext );
     }
     Out_file = fopen( file, "w" );
     if( Out_file == NULL ) {
@@ -1989,6 +2047,8 @@ int main( int argc, char *argv[] )
     if( 0 != setjmp( Jmp_buf ) ) {
         goto error_exit;
     }
+
+    init_whp();
 
     read_whp_file();
 
@@ -2078,6 +2138,18 @@ int main( int argc, char *argv[] )
     rc = 0;
 
 error_exit:
+
+    if( Header_File != NULL ) {
+        free( Header_File );
+    }
+    if( Footer_File != NULL ) {
+        free( Footer_File );
+    }
+    if( Help_File != NULL ) {
+        free( Help_File );
+    }
+    free( file );
+
     if( Idx_file != NULL ) {
         fclose( Idx_file );
     }

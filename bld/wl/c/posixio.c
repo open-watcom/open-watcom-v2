@@ -206,8 +206,8 @@ static ssize_t poswrite( int file, const void *buffer, size_t len )
     }
 }
 #else
-#define posread( f, b, l )      posix_read( f, b, l )
-#define poswrite( f, b, l )     posix_write( f, b, l )
+#define posread( f, b, l )      read( f, b, l )
+#define poswrite( f, b, l )     write( f, b, l )
 #endif
 
 

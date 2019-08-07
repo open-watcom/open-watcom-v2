@@ -53,7 +53,7 @@
 
 void g_banner( void )
 {
-    if( !(FlagsGlob.bannerprinted | FlagsGlob.quiet) ) {
+    if( !(GlobFlags.bannerprinted | GlobFlags.quiet) ) {
         out_msg( banner1w( "Script/GML", _WGML_VERSION_ ) CRLF );
         out_msg( banner2 CRLF );
         out_msg( banner3 CRLF );
@@ -61,7 +61,7 @@ void g_banner( void )
         out_msg( "Compiled with WATCOMC " _MACROSTR( __WATCOMC__ )
                  " " __DATE__ " " __TIME__ CRLF );
         mem_banner();
-        FlagsGlob.bannerprinted = 1;
+        GlobFlags.bannerprinted = 1;
     }
 }
 
@@ -386,8 +386,8 @@ bool    get_line( bool display_line )
     char        *   p;
     inp_line    *   pline;
 
-    if( FlagsProc.reprocess_line ) {    // there was an unget
-        FlagsProc.reprocess_line = false;   // only used for :LAYOUT
+    if( ProcFlags.reprocess_line ) {    // there was an unget
+        ProcFlags.reprocess_line = false;   // only used for :LAYOUT
         return( !(input_cbs->fmflags & II_eof) );
     }
     if( input_cbs->hidden_head != NULL ) {  // line was previously split,
@@ -445,7 +445,7 @@ bool    get_line( bool display_line )
                             }
                         }
 #if 1
-                        if( FlagsProc.start_section && !FlagsProc.concat &&
+                        if( ProcFlags.start_section && !ProcFlags.concat &&
                             (*buff2 == '\0') ) {
                             *buff2 = ' ';   // empty line gets 1 blank
                             *(buff2 + 1) = '\0';// requires more testing TBD
@@ -474,8 +474,8 @@ bool    get_line( bool display_line )
     *(buff2 + buff2_lg + 1) = '\0';
     if( input_cbs->fmflags & II_file ) {
         input_cbs->s.f->usedlen = buff2_lg;
-        if( FlagsGlob.research ) {    // research mode
-            if( FlagsProc.researchfile ) {  // for single file
+        if( GlobFlags.research ) {    // research mode
+            if( ProcFlags.researchfile ) {  // for single file
                 if( input_cbs->fmflags & II_research ) {// research active
                     if( research_to < input_cbs->s.f->lineno ) {
                         input_cbs->fmflags &= ~II_research;// end of research range
@@ -495,7 +495,7 @@ bool    get_line( bool display_line )
     }
 
     if( !(input_cbs->fmflags & II_eof) ) {
-        if( display_line && FlagsGlob.firstpass
+        if( display_line && GlobFlags.firstpass
             && input_cbs->fmflags & II_research ) {
             printf( "%s\n", buff2 );
         }

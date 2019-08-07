@@ -28,11 +28,12 @@
 *               several options are still ignored                 TBD
 ****************************************************************************/
 
-#include "wio.h"
+
 #include "wgml.h"
 #include "findfile.h"
 
 #include "clibext.h"
+
 
 #define str( a ) # a
 
@@ -209,18 +210,20 @@ static  char    *read_indirect_file( const char * filename )
 {
     char    *   buf;
     char    *   str;
-    int         handle;
-    int         len;
+    FILE    *   fp;
+    size_t      len;
     char        ch;
 
     buf = NULL;
-    handle = open( filename, O_RDONLY | O_BINARY );
-    if( handle != -1 ) {
-        len = filelength( handle );
+    fp = fopen( filename, "rb" );
+    if( fp != NULL ) {
+        fseek( fp, 0, SEEK_END );
+        len = ftell( fp );
+        fseek( fp, 0, SEEK_SET );
         buf = mem_alloc( len + 1 );
-        posix_read( handle, buf, len );
+        fread( buf, 1, len, fp );
         buf[len] = '\0';
-        close( handle );
+        fclose( fp );
         // zip through characters changing \r into ' '
         str = buf;
         while( *str ) {
@@ -1061,7 +1064,7 @@ static void set_to( option * opt )
 
 static void set_inclist( option * opt )
 {
-    FlagsGlob.inclist = opt->value;
+    GlobFlags.inclist = opt->value;
 }
 
 /***************************************************************************/
@@ -1070,7 +1073,7 @@ static void set_inclist( option * opt )
 
 static void set_index( option * opt )
 {
-    FlagsGlob.index = opt->value;
+    GlobFlags.index = opt->value;
 }
 
 /***************************************************************************/
@@ -1079,7 +1082,7 @@ static void set_index( option * opt )
 
 static void set_stats( option * opt )
 {
-    FlagsGlob.statistics = opt->value;
+    GlobFlags.statistics = opt->value;
 }
 
 
@@ -1171,7 +1174,7 @@ static void set_OPTFile( option * opt )
 
 static void set_quiet( option * opt )
 {
-    FlagsGlob.quiet = opt->value;
+    GlobFlags.quiet = opt->value;
     add_symvar( &global_dict, "$quiet", opt->value ? "ON" : "OFF", no_subscript,
                 predefined );
 
@@ -1190,7 +1193,7 @@ static void set_research( option * opt )
     char        str[256];
 
 
-    FlagsGlob.research = opt->value;
+    GlobFlags.research = opt->value;
 
     if( IS_OPTION_END1( tokennext ) ) {
         str[0] = '\0';
@@ -1201,7 +1204,7 @@ static void set_research( option * opt )
         } else {
             strcpy( str, "too long " );
         }
-        FlagsProc.researchfile = true;  // only one file
+        ProcFlags.researchfile = true;  // only one file
         research_from = 1;
         research_to = LINENO_MAX;
 
@@ -1251,7 +1254,7 @@ static void set_research( option * opt )
 #if 0                  // always set (w)script option, don't allow to disable
 static void set_wscript( option * opt )
 {
-    FlagsGlob.wscript = opt->value;
+    GlobFlags.wscript = opt->value;
 };
 #endif
 

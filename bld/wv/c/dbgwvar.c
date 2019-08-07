@@ -985,7 +985,7 @@ static bool VarDoAll( bool (*rtn)(var_info *, void *), void *cookie )
 {
     var_type    i;
 
-    for( i = 0; i < ArraySize( VarWndClass ); ++i ) {
+    for( i = 0; i < NUM_VAR_TYPE; ++i ) {
         if( VarDoClass( VarWndClass[i], rtn, cookie ) ) {
             return( true );
         }

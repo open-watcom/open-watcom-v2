@@ -208,6 +208,35 @@ bool res_close( FILE *fp )
     return( close( FP2POSIX( fp ) ) != 0 );
 }
 
+#if defined( _MSC_VER ) && defined( _WIN64 )
+static ssize_t  posix_read( int fildes, void *buffer, size_t nbyte )
+{
+    unsigned    read_len;
+    unsigned    amount;
+    size_t      size;
+
+    amount = INT_MAX;
+    size = 0;
+    while( nbyte > 0 ) {
+        if( amount > nbyte )
+            amount = (unsigned)nbyte;
+        read_len = _read( fildes, buffer, amount );
+        if( read_len == (unsigned)-1 ) {
+            return( (ssize_t)-1 );
+        }
+        size += read_len;
+        if( read_len != amount ) {
+            break;
+        }
+        buffer = (char *)buffer + amount;
+        nbyte -= amount;
+    }
+    return( size );
+}
+#else
+#define posix_read      read
+#endif
+
 size_t res_read( FILE *fp, void *buf, size_t len )
 {
     return( posix_read( FP2POSIX( fp ), buf, len ) );

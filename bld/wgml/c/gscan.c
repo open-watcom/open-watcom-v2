@@ -167,7 +167,7 @@ static void scan_gml( void )
     }
     tag_name[i] = '\0';
 
-    if( FlagsGlob.firstpass && cb->fmflags & II_research ) {
+    if( GlobFlags.firstpass && cb->fmflags & II_research ) {
 
         if( taglen != 3 || memcmp( tag_name, "CMT", 3 ) ) {     // quiet for :cmt.
 
@@ -184,7 +184,7 @@ static void scan_gml( void )
         add_GML_tag_research( tag_name );
     }
 
-    if( FlagsProc.layout ) {
+    if( ProcFlags.layout ) {
         ge = NULL;                      // no user tags within :LAYOUT
     } else {
         ge = find_tag( &tag_dict, tag_name );
@@ -239,7 +239,7 @@ static void scan_gml( void )
     if( me != NULL ) {                  // usertag and coresponding macro ok
         processed = process_tag( ge, me );
     } else {
-        if( FlagsProc.layout ) {        // different tags within :LAYOUT
+        if( ProcFlags.layout ) {        // different tags within :LAYOUT
             lay_tag     ltag;
             for( ltag = LAY_TAGMIN; ltag < LAY_TAGMAX; ++ltag ) {
                 if( taglen == lay_tags[ltag].taglen && !memcmp( lay_tags[ltag].tagname, tag_name, taglen ) ) {
@@ -272,7 +272,7 @@ static void scan_gml( void )
             gml_tag     gtag;
             for( gtag = GML_TAGMIN; gtag < GML_TAGMAX; ++gtag ) {
                 if( taglen == gml_tags[gtag].taglen && !memcmp( gml_tags[gtag].tagname, tag_name, taglen ) ) {
-                    if( FlagsGlob.firstpass && gtag == GML_TAG_LAYOUT && FlagsProc.fb_document_done  ) {
+                    if( GlobFlags.firstpass && gtag == GML_TAG_LAYOUT && ProcFlags.fb_document_done  ) {
                         g_err( err_lay_too_late );
                         err_count++;
                         file_mac_info();
@@ -281,10 +281,10 @@ static void scan_gml( void )
                         break;
                     }
 
-                    if( (rs_loc == 0) && !FlagsProc.need_li_lp ) {
+                    if( (rs_loc == 0) && !ProcFlags.need_li_lp ) {
                         // no restrictions: do them all
                         gml_tags[gtag].gmlproc( gtag );
-                    } else if( FlagsProc.need_li_lp &&
+                    } else if( ProcFlags.need_li_lp &&
                             ((gml_tags[gtag].taglocs & li_lp_tag) != 0) ) {
                         // tag is LP or LI
                         gml_tags[gtag].gmlproc( gtag );
@@ -296,7 +296,7 @@ static void scan_gml( void )
                         gml_tags[gtag].gmlproc( gtag );
                     } else {
                         start_doc_sect();   // if not already done
-                        if( FlagsProc.need_li_lp ) {
+                        if( ProcFlags.need_li_lp ) {
                             xx_nest_err( err_no_li_lp );
                         } else {            // rs_loc > 0
                             g_err_tag_rsloc( rs_loc, tok_start );
@@ -402,26 +402,26 @@ static void     scan_script( void )
     } else {
         if( *p == '\'' ) {                  // .'
             p++;
-            FlagsProc.CW_sep_ignore = 1;
+            ProcFlags.CW_sep_ignore = 1;
         } else {
             if( CW_sep_char == '\0') {
-                FlagsProc.CW_sep_ignore = 1;// No separator char no split
+                ProcFlags.CW_sep_ignore = 1;// No separator char no split
             } else{
-                FlagsProc.CW_sep_ignore = 0;
+                ProcFlags.CW_sep_ignore = 0;
             }
             if( *p == SCR_char ) {          // ..
                 p++;
-                FlagsProc.macro_ignore = 1;
+                ProcFlags.macro_ignore = 1;
                 me = NULL;
             } else {
-                FlagsProc.macro_ignore = 0;
+                ProcFlags.macro_ignore = 0;
             }
         }
-        if( FlagsProc.literal ) {       // no macro or split line if literal
-            FlagsProc.CW_sep_ignore = 1;
-            FlagsProc.macro_ignore = 1;
+        if( ProcFlags.literal ) {       // no macro or split line if literal
+            ProcFlags.CW_sep_ignore = 1;
+            ProcFlags.macro_ignore = 1;
         }
-        if( !FlagsProc.CW_sep_ignore ) { // scan line for CW_sep_char
+        if( !ProcFlags.CW_sep_ignore ) { // scan line for CW_sep_char
             char    *   pchar;
 
             pchar = search_separator( buff2, CW_sep_char );
@@ -446,7 +446,7 @@ static void     scan_script( void )
         toklen = pt - token_buf;
 
         if( *p && (*p != ' ') || toklen == 0 ) {// no valid script controlword / macro
-//          if( !FlagsProc.literal ) {   // TBD
+//          if( !ProcFlags.literal ) {   // TBD
 //             cw_err();
 //          }
             scan_start = scan_restart;  // treat as text
@@ -456,7 +456,7 @@ static void     scan_script( void )
         if( toklen >= MAC_NAME_LENGTH ) {
             *(token_buf + MAC_NAME_LENGTH) = '\0';
         }
-        if( !FlagsProc.macro_ignore ) {
+        if( !ProcFlags.macro_ignore ) {
             me = find_macro( macro_dict, token_buf );
         } else {
             me = NULL;
@@ -464,7 +464,7 @@ static void     scan_script( void )
     }
 
     if( me != NULL ) {                  // macro found
-        if( FlagsGlob.firstpass && cb->fmflags & II_research ) {
+        if( GlobFlags.firstpass && cb->fmflags & II_research ) {
             if( cb->fmflags & II_tag_mac ) {
                 printf_research( "L%d    %c%s macro found in macro %s(%d)\n\n",
                                  inc_level, SCR_char, token_buf,
@@ -482,7 +482,7 @@ static void     scan_script( void )
         scan_restart = scan_stop;
     } else {                            // try script controlword
         cwfound = false;
-        if( cb->fmflags & II_research && FlagsGlob.firstpass ) {
+        if( cb->fmflags & II_research && GlobFlags.firstpass ) {
             if( cb->fmflags & II_tag_mac ) {
                 printf_research( "L%d    %c%s CW found in macro %s(%d)\n\n",
                                  inc_level, SCR_char, token_buf,
@@ -500,7 +500,7 @@ static void     scan_script( void )
             for( stag = SCR_TAGMIN; stag < SCR_TAGMAX; ++stag ) {
                 if( !memcmp( scr_tags[stag].tagname, token_buf, SCR_KW_LENGTH ) ) {
 #if 0
-                    if( !FlagsProc.fb_document_done &&
+                    if( !ProcFlags.fb_document_done &&
                           scr_tags[stag].cwflags & cw_o_t ) {
 
                         /***************************************************/
@@ -510,7 +510,7 @@ static void     scan_script( void )
                         do_layout_end_processing();
                     }
 #endif
-                    if( !FlagsProc.layout && (scr_tags[stag].cwflags & cw_o_t) ) {
+                    if( !ProcFlags.layout && (scr_tags[stag].cwflags & cw_o_t) ) {
 
                         /********************************************************/
                         /* this is the first control word which produces output */
@@ -520,7 +520,7 @@ static void     scan_script( void )
 
                         start_doc_sect();
                     }
-                    if( FlagsProc.literal  ) {  // .LI active
+                    if( ProcFlags.literal  ) {  // .LI active
                         if( stag == SCR_TAG_LI ) { // .LI
                             scan_start = p;     // found, process
                             scr_tags[stag].tagproc();
@@ -563,7 +563,7 @@ condcode    test_process( ifcb * cb )
 #ifdef DEBTESTPROC
     int     start_level = cb->if_level;
 
-    if( input_cbs->fmflags & II_research && FlagsGlob.firstpass
+    if( input_cbs->fmflags & II_research && GlobFlags.firstpass
         && cb->if_level ) {
         show_ifcb( "Anf teif", cb );
     }
@@ -598,7 +598,7 @@ condcode    test_process( ifcb * cb )
         }
 
 #ifdef DEBTESTPROC
-        if( input_cbs->fmflags & II_research && FlagsGlob.firstpass
+        if( input_cbs->fmflags & II_research && GlobFlags.firstpass
             && (start_level || cb->if_level) ) {
             char * txt = (cc == pos ? "EX1 pos" : "EX1 no" );
 
@@ -613,7 +613,7 @@ condcode    test_process( ifcb * cb )
         if( cb->if_flags[cb->if_level].ifcwdo ) {   // if  .do
             cc = pos;
 #ifdef DEBTESTPROC
-        if( input_cbs->fmflags & II_research && FlagsGlob.firstpass
+        if( input_cbs->fmflags & II_research && GlobFlags.firstpass
                 && (start_level || cb->if_level) ) {
                 char * txt = (cc == pos ? "Edo pos" : "Edo no" );
 
@@ -689,7 +689,7 @@ condcode    test_process( ifcb * cb )
         err_count++;
     }
 #ifdef DEBTESTPROC
-    if( input_cbs->fmflags & II_research && FlagsGlob.firstpass
+    if( input_cbs->fmflags & II_research && GlobFlags.firstpass
         && (start_level || cb->if_level) ) {
         char * txt = (cc == pos ? "EX3 pos" : "EX3 no" );
 
@@ -751,11 +751,11 @@ void    scan_line( void )
 
     cb         = input_cbs->if_cb;
 
-    if( !FlagsProc.literal ) {
+    if( !ProcFlags.literal ) {
         set_if_then_do( cb );
         cc = test_process( cb );
     } else {
-        if( !FlagsProc.ct ) {           // special for .ct .li construct
+        if( !ProcFlags.ct ) {           // special for .ct .li construct
             if( (t_line != NULL) && (t_line->first != NULL) ) {
                 scr_process_break();
             }
@@ -763,10 +763,10 @@ void    scan_line( void )
         cc = pos;
     }
     if( cc == pos ) {                   // process record
-        if( FlagsProc.scr_cw ) {
+        if( ProcFlags.scr_cw ) {
             scan_script();              // script control line
 
-        } else if( FlagsProc.gml_tag ) {
+        } else if( ProcFlags.gml_tag ) {
             scan_gml();                 // GML tags
 
         }
@@ -778,10 +778,10 @@ void    scan_line( void )
         /*******************************************************************/
 
         if( (*scan_start != '\0') && (scan_start < scan_stop) ) {
-            if( input_cbs->fmflags & II_research && FlagsGlob.firstpass ) {
+            if( input_cbs->fmflags & II_research && GlobFlags.firstpass ) {
                 g_info_lm( inf_text_line, scan_start );
             }
-            if( FlagsProc.layout ) {    // LAYOUT active: process attributes
+            if( ProcFlags.layout ) {    // LAYOUT active: process attributes
                 if( lay_ind != LAY_TAG_NONE ) {
                     lay_tags[lay_ind].layproc( lay_ind );
                 }
@@ -801,8 +801,8 @@ void    scan_line( void )
         /* ensure the line is output                                       */
         /*******************************************************************/
 
-        if( !FlagsProc.layout && (input_cbs->fmflags & II_eol) ) {
-            if( !FlagsProc.concat || FlagsProc.xmp_active ) {
+        if( !ProcFlags.layout && (input_cbs->fmflags & II_eol) ) {
+            if( !ProcFlags.concat || ProcFlags.xmp_active ) {
 
                 /*******************************************************************/
                 /* This fixes a problem found when BX was implemented: when PA is  */
@@ -811,19 +811,19 @@ void    scan_line( void )
                 /* remains to be determined                                        */
                 /*******************************************************************/
 
-                if( FlagsProc.in_bx_box ) {
+                if( ProcFlags.in_bx_box ) {
                     g_cur_h_start = g_page_left_org + g_indent;
                 }
                 scr_process_break();
             }
         }
-    } else if( input_cbs->fmflags & II_research && FlagsGlob.firstpass ) {
+    } else if( input_cbs->fmflags & II_research && GlobFlags.firstpass ) {
         g_info_lm( inf_skip_line );     // show skipped line
     }
-    if( FlagsProc.literal ) {
+    if( ProcFlags.literal ) {
         if( li_cnt < LONG_MAX ) {   // we decrement, do not wait for .li OFF
             if( li_cnt-- <= 0 ) {
-                FlagsProc.literal = false;
+                ProcFlags.literal = false;
             }
         }
         if( input_cbs->fmflags & II_eol ) {

@@ -82,33 +82,17 @@ extern void DoDOption( char * );
 extern void DoTOption( char * );
 extern void WhereAmI( void );
 
-static void writeStr( char *p )
-/*****************************/
-{
-    size_t len;
-
-    len = strlen( p );
-    posix_write( STDOUT_FILENO, p, len );
-}
-
-static void newLine( void )
-/*************************/
-{
-    posix_write( STDOUT_FILENO, "\r\n", 2 );
-}
-
 static void writeMsg( int msgnum, char *p )
 /*****************************************/
 {
     char        msgbuff[MAX_RESOURCE_SIZE];
 
     MsgSubStr( msgnum, msgbuff, p );
-    writeStr( msgbuff );
-    newLine();
+    printf( "%s\n", msgbuff );
 }
 
-extern void Error( int msgnum, char *p )
-/**************************/
+void Error( int msgnum, char *p )
+/*******************************/
 /* routine called by dtparse.c whenever there is an error */
 {
     writeMsg( msgnum, p );
@@ -120,7 +104,7 @@ static void showDateTimeFormat( void )
     char buff[16];
     char *p;
 
-    newLine();
+    printf( "\n" );
     strcpy( buff, dateFormat );
     for( p = buff; *p; ++p ) {
         if( *p == DEFAULT_DATE_SEPARATOR ) {
@@ -158,14 +142,12 @@ static void usage( void )
 
     text = useText;
     while( *text ) {
-        writeStr( *text++ );
-        newLine();
+        printf( "%s\n", *text++ );
     }
     for( i = MSG_USAGE_BASE;; i++ ) {
         MsgGet( i, msgbuff );
         if( ( msgbuff[0] == '.' ) && ( msgbuff[1] == 0 ) ) break;
-        writeStr( msgbuff );
-        newLine();
+        printf( "%s\n", msgbuff );
     }
     showDateTimeFormat();
 }

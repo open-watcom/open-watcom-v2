@@ -22,6 +22,9 @@ export OWSRCDIR=$OWROOT/bld
 # Subdirectory containing documentation sources
 export OWDOCSDIR=$OWROOT/docs
 
+# Subdirectory containing distribution sources
+export OWDISTRDIR=$OWROOT/distrib
+
 # Set environment variables
 # Set up default path information variable
 if [ -z "$OWDEFPATH" ]; then

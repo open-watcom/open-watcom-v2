@@ -30,6 +30,9 @@ set OWSRCDIR=%OWROOT%\bld
 REM Subdirectory containing documentation sources
 set OWDOCSDIR=%OWROOT%\docs
 
+REM Subdirectory containing distribution sources
+set OWDISTRDIR=%OWROOT%\distrib
+
 REM Set environment variables
 set PATH=%OWBINDIR%;%OWROOT%\build;%OWDEFPATH%;%OWGHOSTSCRIPTPATH%
 set INCLUDE=%OWDEFINCLUDE%

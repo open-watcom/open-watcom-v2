@@ -208,13 +208,8 @@ extern int    optind;
 extern int    opterr;
 extern int    optopt;
 
-extern int fnmatch( const char *__pattern, const char *__string, int __flags );
-extern int mkstemp( char *__template );
-
-#ifdef _WIN64
-extern ssize_t  __w64_read( int fildes, void *buffer, size_t nbyte );
-extern ssize_t  __w64_write( int fildes, void const *buffer, size_t nbyte );
-#endif
+extern int    fnmatch( const char *__pattern, const char *__string, int __flags );
+extern int    mkstemp( char *__template );
 
 #endif
 
@@ -230,15 +225,3 @@ extern char   *get_dllname( char *buf, int len );
 #endif
 
 #endif  /* !__WATCOMC__ */
-
-#ifdef _WIN64
-
-#define posix_read      __w64_read
-#define posix_write     __w64_write
-
-#else
-
-#define posix_read      read
-#define posix_write     write
-
-#endif

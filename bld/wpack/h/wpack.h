@@ -65,15 +65,15 @@ typedef unsigned char   byte;
 
 /* LZSS Parameters */
 
-#define N           4096    /* Size of string buffer */
-#define F           60    /* Size of look-ahead buffer */
-#define THRESHOLD   2
-#define NIL         N    /* End of tree's node  */
+#define STRBUF_SIZE     4096        /* Size of string buffer */
+#define LAHEAD_SIZE     60          /* Size of look-ahead buffer */
+#define THRESHOLD       2
+#define NIL             STRBUF_SIZE /* End of tree's node  */
 
 /* Huffman coding parameters */
 
-#define NUM_CHARS   (256 - THRESHOLD + F)
-#define ROOT        0
+#define NUM_CHARS       (256 - THRESHOLD + LAHEAD_SIZE)
+#define ROOT            0
 #define MAX_CODE_BITS   16
 
 // format of the archive header.

@@ -26,6 +26,9 @@ REM Set this variable to list of OW projects to suppress their build
 REM Example set OWNOBUILD=ide browser dlgprs
 REM set OWNOBUILD=
 
+REM Set this variable to 1 to enable build all installers
+set OWDISTRBUILD=0
+
 REM Documentation related variables
 REM ###############################
 

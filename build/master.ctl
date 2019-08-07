@@ -79,10 +79,23 @@ set BLDRULE=
     set CCCMD=ccopy
     echo **** CPREL rule
 
-[ BLOCK <1> install missing ]
-#============================
+[ BLOCK <1> install ]
+#====================
+    set BLDRULE=<1>
     set LOGFNAME=<1>
-    echo **** <1> rule
+    echo **** INSTALL rule
+
+[ BLOCK <1> instclean ]
+#======================
+    set BLDRULE=<1>
+    set LOGFNAME=insclean
+    echo **** INSTCLEAN rule
+
+[ BLOCK <1> missing ]
+#====================
+    set BLDRULE=<1>
+    set LOGFNAME=<1>
+    echo **** INSTALL MISSING rule
 
 [ BLOCK <1> test ]
 #=================

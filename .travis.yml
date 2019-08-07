@@ -4,229 +4,239 @@ sudo: required
 os: linux
 compiler: gcc
 
+branches:
+  only:
+  - master
+
 env:
   global:
+    - OWTRAVIS_BUILD_REPO_SLUG=open-watcom/travis-ci-ow-builds
+    - OWTRAVIS_BUILD_DIR=${HOME}/build/$OWTRAVIS_BUILD_REPO_SLUG
+    - OWTRAVIS_LOGS_REPO_SLUG=open-watcom/travis-ci-logs
+    - OWTRAVIS_LOGS_DIR=${HOME}/build/$OWTRAVIS_LOGS_REPO_SLUG
     - OWROOT=$TRAVIS_BUILD_DIR
+    #
     - OWOBJDIR=binbuild
-    - OWVERBOSE=0
-    - OWDOCBUILD=0
-    - OWDOCQUIET=1
-    - OWBRANCH=master
-    - OWBRANCH_DOCS=documentation
-    - OWBRANCH_COVERITY=coverity_scan
-    - OWBRANCH_SF=sourceforge
-    - OWTRAVIS_REPO_SLUG=open-watcom/travis-ci-ow-builds
-    - OWTRAVIS_BUILD_DIR=${HOME}/build/$OWTRAVIS_REPO_SLUG
     - OWRELROOT=$OWROOT/test
     - OWTRAVISDIR=$OWROOT/travis
-    - OWDISTRDIR=$OWROOT/distrib/ow
+    - OWDISTRDIR=$OWROOT/distrib
     - OWSRCDIR=$OWROOT/bld
     - OWBINDIR=$OWROOT/build/$OWOBJDIR
     - OWDOCSDIR=$OWROOT/docs
+    #
+    - OWBRANCH_SF=sourceforge
+    - OWVERBOSE=0
+    - OWDISTRBUILD=0
+    - OWDOCBUILD=0
+    - OWDOCQUIET=1
     - CP_OPTS=-Rnv
-    - OWWEBDOCS_REPO_SLUG=open-watcom/open-watcom-v2-webdocs
-    - OWWEBDOCS_BUILD_DIR=${HOME}/build/$OWWEBDOCS_REPO_SLUG
 
 cache:
   directories:
-    - build/$OWOBJDIR
-    - bld/watcom/$OWOBJDIR
-    - test
-    - buildx
+    - $OWBINDIR
+    - $OWSRCDIR/watcom/$OWOBJDIR
+    - $OWROOT/test
+    - $OWROOT/buildx
 
 before_script:
- # configure Git client
- - git config --global user.email "travis@travis-ci.org"
- - git config --global user.name "Travis CI"
- - git config --global push.default simple
- # get environment/cache info if debug is active
- - travis/envinfo.sh
- - travis/cacheinf.sh
+    # get environment/cache info if debug is active
+    - $OWTRAVISDIR/envinfo.sh
+    - $OWTRAVISDIR/cacheinf.sh
 
 after_failure:
- # after failure transfer log files back to GitHub repository
- - travis/cacheinf.sh
- - travis/gitupdf.sh
+    # after failure transfer log files back to GitHub repository
+    - $OWTRAVISDIR/cacheinf.sh
+    - $OWTRAVISDIR/gitupdf.sh
 
 after_success:
- # after success transfer OW build to GitHub repository
- - travis/cacheinf.sh
- - travis/gitupds.sh
+    # after success transfer OW build to GitHub repository
+    - $OWTRAVISDIR/cacheinf.sh
+    - $OWTRAVISDIR/gitupds.sh
 
 jobs:
   allow_failures:
     - os: windows
   include:
     #################################
-    - stage: Initialize
-      name: "Initialize Travis GitHub repository and mirror master branch commits to SF"
-      if: branch = env(OWBRANCH) AND type IN (push, cron)
+    - stage: Mirror
+      name: "Mirror master branch commits to SF"
+      if: type = push
       git:
         depth: false
       cache: false
       before_install:
-        # stop unwanted services
-        - travis/services.sh
+        # configure Git client
+        - git config --global user.email "openwatcomtravis@gmail.com"
+        - git config --global user.name "Open Watcom Travis"
+        - git config --global push.default simple
       script:
         # update SF mirror
-        - travis/gitusf.sh
-        # update GitHub repository if necessary
-        - travis/tinit.sh
+        - $OWTRAVISDIR/gitusf.sh
     #################################
     - stage: Bootstrap
       name: "Build minimal set of build tools Linux"
-      if: branch = env(OWBRANCH)
       before_install:
-        # stop unwanted services
-        - travis/services.sh
+        # configure Git client
+        - git config --global user.email "openwatcomtravis@gmail.com"
+        - git config --global user.name "Open Watcom Travis"
+        - git config --global push.default simple
         # set environmet variable
         - export OWTOOLS=GCC
-        - export OWTRAVISJOB=BOOTSTRAP
         - export OWVERBOSE=1
         # clear cache
-        - travis/cacheclr.sh
+        - $OWTRAVISDIR/cacheclr.sh
       install:
-        - . ./cmnvars.sh
+        - . $OWROOT/cmnvars.sh
       script:
-        - travis/build.sh
+        - $OWTRAVISDIR/build.sh
     - # ...
       name: "Build minimal set of build tools OSX"
-      if: branch = env(OWBRANCH) AND (type = cron)
+      if: type = cron
       os: osx
       compiler: clang
       before_install:
-        # stop unwanted services
-        - travis/services.sh
+        # configure Git client
+        - git config --global user.email "openwatcomtravis@gmail.com"
+        - git config --global user.name "Open Watcom Travis"
+        - git config --global push.default simple
         # set environmet variable
         - export OWTOOLS=CLANG
-        - export OWTRAVISJOB=BOOTSTRAP
         - export OWVERBOSE=1
         # clear cache
-        - travis/cacheclr.sh
+        - $OWTRAVISDIR/cacheclr.sh
       install:
-        - . ./cmnvars.sh
+        - . $OWROOT/cmnvars.sh
       script:
-        - travis/build.sh
+        - $OWTRAVISDIR/build.sh
     - # ...
       name: "Build minimal set of build tools Windows"
-      if: branch = env(OWBRANCH) AND (type = cron)
+      if: type = cron
       os: windows
       before_install:
+        # configure Git client
+        - git config --global user.email "openwatcomtravis@gmail.com"
+        - git config --global user.name "Open Watcom Travis"
+        - git config --global push.default simple
+        #
         - test -n $CC && unset CC
-        # stop unwanted services
-        - travis/services.sh
         # set environmet variable
         - export OWTOOLS=VISUALC
-        - export OWTRAVISJOB=BOOTSTRAP
         - export OWVERBOSE=1
         # clear cache
-        - travis/cacheclr.sh
+        - $OWTRAVISDIR/cacheclr.sh
       install:
       script:
-        - travis/build.sh
+        - $OWTRAVISDIR/build.cmd
     #################################
-    - stage: Build
+    - stage: Build1
       name: "OW tools build Linux"
-      if: branch = env(OWBRANCH)
       before_install:
-        # stop unwanted services
-        - travis/services.sh
+        # configure Git client
+        - git config --global user.email "openwatcomtravis@gmail.com"
+        - git config --global user.name "Open Watcom Travis"
+        - git config --global push.default simple
         # set environmet variable
         - export OWTOOLS=GCC
-        - export OWTRAVISJOB=BUILD
       install:
         # install DOS Emulator
         - sudo apt-get install -y dosemu
-        - . ./cmnvars.sh
+        - . $OWROOT/cmnvars.sh
       script:
-        - travis/build.sh
+        - $OWTRAVISDIR/build.sh
       before_cache:
-        - travis/cache3.sh save
+        - $OWTRAVISDIR/cache3.sh save
     - # ...
       name: "OW tools build-1 OSX"
-      if: branch = env(OWBRANCH) AND (type = cron)
+      if: type = cron
       os: osx
       compiler: clang
       before_install:
-        # stop unwanted services
-        - travis/services.sh
+        # configure Git client
+        - git config --global user.email "openwatcomtravis@gmail.com"
+        - git config --global user.name "Open Watcom Travis"
+        - git config --global push.default simple
         # set environmet variable
         - export OWTOOLS=CLANG
-        - export OWTRAVISJOB=BUILD-1
       install:
-        - . ./cmnvars.sh
+        - . $OWROOT/cmnvars.sh
       script:
-        - travis/build.sh
+        - $OWTRAVISDIR/build.sh
       before_cache:
-        - travis/cache1.sh save
+        - $OWTRAVISDIR/cache1.sh save
     - # ...
       name: "OW tools build-1 Windows"
-      if: branch = env(OWBRANCH) AND (type = cron)
+      if: type = cron
       os: windows
       before_install:
+        # configure Git client
+        - git config --global user.email "openwatcomtravis@gmail.com"
+        - git config --global user.name "Open Watcom Travis"
+        - git config --global push.default simple
+        #
         - test -n $CC && unset CC
-        # stop unwanted services
-        - travis/services.sh
         # set environmet variable
         - export OWTOOLS=VISUALC
-        - export OWTRAVISJOB=BUILD-1
       install:
       script:
-        - travis/build.sh
+        - $OWTRAVISDIR/build.cmd
       before_cache:
-        - travis/cache1.sh save
+        - $OWTRAVISDIR/cache1.sh save
     #################################
     - stage: Build2
       name: "OW tools build-2 OSX"
-      if: branch = env(OWBRANCH) AND (type = cron)
+      if: type = cron
       os: osx
       compiler: clang
       before_install:
-        # stop unwanted services
-        - travis/services.sh
+        # configure Git client
+        - git config --global user.email "openwatcomtravis@gmail.com"
+        - git config --global user.name "Open Watcom Travis"
+        - git config --global push.default simple
         # set environmet variable
         - export OWTOOLS=CLANG
-        - export OWTRAVISJOB=BUILD-2
         - export OWDOSBOX=dosbox
         - export SDL_VIDEODRIVER=dummy
       install:
         # install DOS Emulator
         - brew install dosbox
-        - . ./cmnvars.sh
+        - . $OWROOT/cmnvars.sh
       script:
-        - travis/cache1.sh load
-        - travis/build.sh
+        - $OWTRAVISDIR/cache1.sh load
+        - $OWTRAVISDIR/build.sh
       before_cache:
-        - travis/cache2.sh save
+        - $OWTRAVISDIR/cache2.sh save
     - # ...
       name: "OW tools build-2 Windows"
-      if: branch = env(OWBRANCH) AND (type = cron)
+      if: type = cron
       os: windows
       before_install:
+        # configure Git client
+        - git config --global user.email "openwatcomtravis@gmail.com"
+        - git config --global user.name "Open Watcom Travis"
+        - git config --global push.default simple
+        #
         - test -n $CC && unset CC
-        # stop unwanted services
-        - travis/services.sh
         # set environmet variable
         - export OWTOOLS=VISUALC
-        - export OWTRAVISJOB=BUILD-2
       install:
       script:
-        - travis/cache1.sh load
-        - travis/build.sh
+        - $OWTRAVISDIR/cache1.sh load
+        - $OWTRAVISDIR/build.cmd
       before_cache:
-        - travis/cache2.sh save
+        - $OWTRAVISDIR/cache2.sh save
     #################################
     - stage: Build3
       name: "OW tools build-3 OSX"
-      if: branch = env(OWBRANCH) AND (type = cron)
+      if: type = cron
       os: osx
       compiler: clang
       before_install:
-        # stop unwanted services
-        - travis/services.sh
+        # configure Git client
+        - git config --global user.email "openwatcomtravis@gmail.com"
+        - git config --global user.name "Open Watcom Travis"
+        - git config --global push.default simple
         # set environmet variable
         - export OWTOOLS=CLANG
-        - export OWTRAVISJOB=BUILD-3
         - export OWDOSBOX=dosbox
         - export SDL_VIDEODRIVER=dummy
         - export OWDOCQUIET=0
@@ -234,287 +244,267 @@ jobs:
       install:
         # install DOS Emulator
         - brew install dosbox
-        - . ./cmnvars.sh
+        - . $OWROOT/cmnvars.sh
       script:
-        - travis/cache2.sh load
-        - travis/build.sh
+        - $OWTRAVISDIR/cache2.sh load
+        - $OWTRAVISDIR/build.sh
       before_cache:
-        - travis/cache3.sh save
+        - $OWTRAVISDIR/cache3.sh save
     - # ...
       name: "OW tools build-3 Windows"
-      if: branch = env(OWBRANCH) AND (type = cron)
+      if: type = cron
       os: windows
       before_install:
+        # configure Git client
+        - git config --global user.email "openwatcomtravis@gmail.com"
+        - git config --global user.name "Open Watcom Travis"
+        - git config --global push.default simple
         - test -n $CC && unset CC
-        # stop unwanted services
-        - travis/services.sh
         # set environmet variable
         - export OWTOOLS=VISUALC
-        - export OWTRAVISJOB=BUILD-3
         - export OWDOCQUIET=0
         - export OWVERBOSE=1
       install:
       script:
-        - travis/cache2.sh load
-        - travis/build.sh
+        - $OWTRAVISDIR/cache2.sh load
+        - $OWTRAVISDIR/build.cmd
       before_cache:
-        - travis/cache3.sh save
+        - $OWTRAVISDIR/cache3.sh save
     #################################
-    - stage: UpdateBuild
+    - stage: Update build
       name: "Update Build Linux"
-      if: branch = env(OWBRANCH) AND (type = cron OR type = push)
+      if: type IN (push, cron)
       before_install:
-        # stop unwanted services
-        - travis/services.sh
+        # configure Git client
+        - git config --global user.email "openwatcomtravis@gmail.com"
+        - git config --global user.name "Open Watcom Travis"
+        - git config --global push.default simple
         # set environmet variable
         - export OWTOOLS=GCC
-        - export OWTRAVISJOB=CPREL
       install:
-#        - export WATCOM=$OWROOT/test
-        - . ./cmnvars.sh
+        - . $OWROOT/cmnvars.sh
       script:
-#        - cp $CP_OPTS $OWROOT/buildx/ $WATCOM/
         - true
     - # ...
       name: "Update Build Windows"
-      if: branch = env(OWBRANCH) AND (type = cron)
+      if: type = cron
       os: windows
       before_install:
-        # stop unwanted services
-        - travis/services.sh
+        # configure Git client
+        - git config --global user.email "openwatcomtravis@gmail.com"
+        - git config --global user.name "Open Watcom Travis"
+        - git config --global push.default simple
         # set environmet variable
         - export OWTOOLS=VISUALC
-        - export OWTRAVISJOB=CPREL
       install:
         - export WATCOM=$OWROOT/test
       script:
-#        - cp $CP_OPTS $OWROOT/buildx/ $WATCOM
         - true
-    #################################
-#    - stage: InitTests
-#      name: "Initialze Tests Environment"
-#      if: branch = env(OWBRANCH) AND (type = cron)
-#      before_install:
-#        # stop unwanted services
-#        - travis/services.sh
-#      install:
-#        - export WATCOM=$OWROOT/test
-#      script:
-#        - cp $CP_OPTS $OWROOT/buildx/ $WATCOM/
     #################################
     - stage: Tests
       name: "Test wasm assembler"
-      if: branch = env(OWBRANCH) AND (type = cron)
+      if: type IN (push, cron)
       before_install:
-        # stop unwanted services
-        - travis/services.sh
+        # configure Git client
+        - git config --global user.email "openwatcomtravis@gmail.com"
+        - git config --global user.name "Open Watcom Travis"
+        - git config --global push.default simple
         # set environmet variable
         - export OWTOOLS=WATCOM
-        - export OWTRAVISJOB=TEST
         - export OWTRAVISTEST=WASM
       install:
         - export WATCOM=$OWROOT/test
         - export PATH=$WATCOM/binl:$PATH
         - export INCLUDE=$WATCOM/lh
         - unset LIB
-        - . ./cmnvars.sh
+        - . $OWROOT/cmnvars.sh
       script:
-        - travis/test.sh
+        - $OWTRAVISDIR/test.sh
     - # ...
       name: "Test C compiler"
-      if: branch = env(OWBRANCH) AND (type = cron)
+      if: type IN (push, cron)
       before_install:
-        # stop unwanted services
-        - travis/services.sh
+        # configure Git client
+        - git config --global user.email "openwatcomtravis@gmail.com"
+        - git config --global user.name "Open Watcom Travis"
+        - git config --global push.default simple
         # set environmet variable
         - export OWTOOLS=WATCOM
-        - export OWTRAVISJOB=TEST
         - export OWTRAVISTEST=C
       install:
         - export WATCOM=$OWROOT/test
         - export PATH=$WATCOM/binl:$PATH
         - export INCLUDE=$WATCOM/lh
         - unset LIB
-        - . ./cmnvars.sh
+        - . $OWROOT/cmnvars.sh
       script:
-        - travis/test.sh
+        - $OWTRAVISDIR/test.sh
     - # ...
       name: "Test FORTRAN 77 compiler"
-      if: branch = env(OWBRANCH) AND (type = cron)
+      if: type IN (push, cron)
       before_install:
-        # stop unwanted services
-        - travis/services.sh
+        # configure Git client
+        - git config --global user.email "openwatcomtravis@gmail.com"
+        - git config --global user.name "Open Watcom Travis"
+        - git config --global push.default simple
         # set environmet variable
         - export OWTOOLS=WATCOM
-        - export OWTRAVISJOB=TEST
         - export OWTRAVISTEST=F77
       install:
         - export WATCOM=$OWROOT/test
         - export PATH=$WATCOM/binl:$PATH
         - export INCLUDE=$WATCOM/lh
         - unset LIB
-        - . ./cmnvars.sh
+        - . $OWROOT/cmnvars.sh
       script:
-        - travis/test.sh
+        - $OWTRAVISDIR/test.sh
     - # ...
       name: "Test C++ compiler"
-      if: branch = env(OWBRANCH) AND (type = cron)
+      if: type IN (push, cron)
       before_install:
-        # stop unwanted services
-        - travis/services.sh
+        # configure Git client
+        - git config --global user.email "openwatcomtravis@gmail.com"
+        - git config --global user.name "Open Watcom Travis"
+        - git config --global push.default simple
         # set environmet variable
         - export OWTOOLS=WATCOM
-        - export OWTRAVISJOB=TEST
         - export OWTRAVISTEST=CXX
       install:
         - export WATCOM=$OWROOT/test
         - export PATH=$WATCOM/binl:$PATH
         - export INCLUDE=$WATCOM/lh
         - unset LIB
-        - . ./cmnvars.sh
+        - . $OWROOT/cmnvars.sh
       script:
-        - travis/test.sh
+        - $OWTRAVISDIR/test.sh
     - # ...
       name: "Test C run-time library"
-      if: branch = env(OWBRANCH) AND (type = cron)
+      if: type IN (push, cron)
       before_install:
+        # configure Git client
+        - git config --global user.email "openwatcomtravis@gmail.com"
+        - git config --global user.name "Open Watcom Travis"
+        - git config --global push.default simple
         # set environmet variable
         - export OWTOOLS=WATCOM
-        - export OWTRAVISJOB=TEST
         - export OWTRAVISTEST=CRTL
       install:
         - export WATCOM=$OWROOT/test
         - export PATH=$WATCOM/binl:$PATH
         - export INCLUDE=$WATCOM/lh
         - unset LIB
-        - . ./cmnvars.sh
+        - . $OWROOT/cmnvars.sh
       script:
-        - travis/test.sh
+        - $OWTRAVISDIR/test.sh
     #################################
-    - stage: AllDocs
+    - stage: Documentation
       name: "Create all Documentation"
+      if: type = cron
       os: windows
-      if: branch = env(OWBRANCH) AND (type = cron)
       before_install:
+        # configure Git client
+        - git config --global user.email "openwatcomtravis@gmail.com"
+        - git config --global user.name "Open Watcom Travis"
+        - git config --global push.default simple
         - test -n $CC && unset CC
         # set environmet variable
         - export OWTOOLS=VISUALC
-        - export OWTRAVISJOB=DOCS
-      install:
-        # Help compilers related variables
-        - export OWGHOSTSCRIPTPATH=$OWTRAVISDIR/gs927w64
-        - export OWWIN95HC=$OWTRAVISDIR/hcw/hcrtf.exe
-        - export OWHHC=$OWTRAVISDIR/hhc/hhc.exe
-        # register all Help Compilers DLL's
-        - travis/regdlls.sh
       script:
-        - travis/build.sh
+        - $OWTRAVISDIR/build.cmd
     #################################
     - stage: Release
       name: "Create all Installers Linux"
-      if: branch = env(OWBRANCH) AND (type = cron)
+      if: type = cron
       before_install:
+        # configure Git client
+        - git config --global user.email "openwatcomtravis@gmail.com"
+        - git config --global user.name "Open Watcom Travis"
+        - git config --global push.default simple
+        #
         - export OWTOOLS=GCC
-        - export OWTRAVISJOB=INST
+        - OWRELROOT=$OWTRAVIS_BUILD_DIR
       install:
-        - . ./cmnvars.sh
-        - travis/cache3.sh load
+        - . $OWROOT/cmnvars.sh
+        - $OWTRAVISDIR/cache3.sh load
       script:
-        - travis/build.sh
-    - # ...
+        - $OWTRAVISDIR/build.sh
+        - export TRAVIS_TAG=Current-build
+      before_deploy:
+        # Set up git tag for github release and commit it
+        - export OWTMP=`git ls-remote --tags . | sed -n -e "s:\([0-9a-z]*\) *refs/tags/Current-build^{}:\1:p"`; true;
+        - echo "${OWTMP}"
+        - echo "${TRAVIS_COMMIT}"
+        - if [ ! "$OWTMP" = "$TRAVIS_COMMIT" ]; then
+            git remote set-url origin https://${GITHUB_TOKEN}@github.com/${TRAVIS_REPO_SLUG}.git;
+            git tag -d $TRAVIS_TAG; true;
+            git push --delete origin $TRAVIS_TAG; true;
+            git tag -a -m "$(date +'%Y-%m-%d %H:%M:%S')" $TRAVIS_TAG $TRAVIS_COMMIT; true;
+            git push origin $TRAVIS_TAG; true;
+          fi
+      deploy:
+        provider: releases
+        api_key: ${GITHUB_TOKEN}
+        on:
+          tags: true
+        overwrite: true
+        skip_cleanup: true
+        file_glob: true
+        file: $OWDISTRDIR/ow/bin/open-watcom-*
+    #################################
+    - stage: Release windows
       name: "Create Installer 64-bit Windows"
-      if: branch = env(OWBRANCH) AND (type = cron)
+      if: type = cron
       os: windows
       before_install:
+        # configure Git client
+        - git config --global user.email "openwatcomtravis@gmail.com"
+        - git config --global user.name "Open Watcom Travis"
+        - git config --global push.default simple
+        #
         - export OWTOOLS=VISUALC
-        - export OWTRAVISJOB=INST
+        - OWRELROOT=$OWTRAVIS_BUILD_DIR
       install:
-        - travis/cache3.sh load
+        - $OWTRAVISDIR/cache3.sh load
       script:
-        - travis/build.sh
+        - $OWTRAVISDIR/build.cmd
+        - export TRAVIS_TAG=Current-build
+      before_deploy:
+        # Set up git tag for github release and commit it
+        - export OWTMP=`git ls-remote --tags . | sed -n -e "s:\([0-9a-z]*\) *refs/tags/Current-build^{}:\1:p"`; true;
+        - echo "${OWTMP}"
+        - echo "${TRAVIS_COMMIT}"
+        - if [ ! "$OWTMP" = "$TRAVIS_COMMIT" ]; then
+            git remote set-url origin https://${GITHUB_TOKEN}@github.com/${TRAVIS_REPO_SLUG}.git;
+            git tag -d $TRAVIS_TAG; true;
+            git push --delete origin $TRAVIS_TAG; true;
+            git tag -a -m "$(date +'%Y-%m-%d %H:%M:%S')" $TRAVIS_TAG $TRAVIS_COMMIT; true;
+            git push origin $TRAVIS_TAG; true;
+          fi
+      deploy:
+        provider: releases
+        api_key: ${GITHUB_TOKEN}
+        on:
+          tags: true
+        overwrite: true
+        skip_cleanup: true
+        file_glob: true
+        file: $OWDISTRDIR/ow/bin/open-watcom-*
     #################################
-    - stage: Finalize
+    - stage: Clear cache
       name: "Delete build cache Linux"
-      if: branch = env(OWBRANCH)
       script:
-        - travis/cacheclr.sh
+        - $OWTRAVISDIR/cacheclr.sh
     - # ...
       name: "Delete build cache OSX"
-      if: branch = env(OWBRANCH) AND (type = cron)
+      if: type = cron
       os: osx
       compiler: clang
       script:
-        - travis/cacheclr.sh
+        - $OWTRAVISDIR/cacheclr.sh
     - # ...
       name: "Delete build cache Windows"
-      if: branch = env(OWBRANCH) AND (type = cron)
+      if: type = cron
       os: windows
       script:
-        - travis/cacheclr.sh
-
+        - $OWTRAVISDIR/cacheclr.sh
     #################################
-    - stage: InitWEBDocumentation
-      name: "Initiate Documentation build by Cron"
-      if: branch = env(OWBRANCH_DOCS) AND type = cron
-      cache: false
-      script:
-        - git config remote.origin.pushurl https://${GITHUB_TOKEN}@github.com/${TRAVIS_REPO_SLUG}.git
-        - git pull origin $OWBRANCH
-        - git checkout -B $OWBRANCH
-        - git push origin $OWBRANCH:$OWBRANCH_DOCS
-    #################################
-    - stage: WEBDocumentation
-      name: "OW Documentation for WEB build Linux"
-      if: branch = env(OWBRANCH_DOCS) AND type = push
-      cache: false
-      before_install:
-        # stop unwanted services
-        - travis/services.sh
-        # set environmet variable
-        - export OWTOOLS=GCC
-        - export OWTRAVISJOB=WEBDOCS
-        - export OWDOCBUILD=1
-      install:
-        # install DOS Emulator + Ghostscript
-        - sudo apt-get install -y dosemu ghostscript
-        - export OWGHOSTSCRIPTPATH=$PATH
-        - . ./cmnvars.sh
-      script:
-        - travis/webdocs.sh
-    #################################
-    - stage: InitCoverity
-      name: "Initiate Coverity Scan by Cron Linux"
-      if: branch = env(OWBRANCH_COVERITY) AND type = cron
-      cache: false
-      script:
-        - git config remote.origin.pushurl https://${GITHUB_TOKEN}@github.com/${TRAVIS_REPO_SLUG}.git
-        - git pull origin $OWBRANCH
-        - git checkout -B $OWBRANCH
-        - git push origin $OWBRANCH:$OWBRANCH_COVERITY
-    #################################
-    - stage: Coverity
-      name: "Initiate Coverity Scan Linux"
-      if: branch = env(OWBRANCH_COVERITY) AND type = push
-      cache: false
-      before_install:
-        # stop unwanted services
-        - travis/services.sh
-        # set environmet variable
-        - export OWTOOLS=GCC
-        - export OWTRAVISJOB=BUILD
-      install:
-        # install DOS Emulator
-        - sudo apt-get install -y dosemu
-        - sudo apt-get install -y curl
-        - . ./cmnvars.sh
-      script:
-        - travis/covscan.sh
-
-#  coverity_scan:
-#    project:
-#      name: "$TRAVIS_REPO_SLUG"
-#      description: "Build submitted via Travis CI"
-#    notification_email:    "malak.jiri@gmail.com"
-#    build_command_prepend:
-#    build_command:         "travis/build.sh scan"
-#    branch_pattern:        coverity_scan
