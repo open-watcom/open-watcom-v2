@@ -30,11 +30,11 @@ gitupdf_proc()
                 # copy build log files to git repository tree
                 #
                 if [ "$TRAVIS_OS_NAME" = "osx" ]; then
-                    OWLOGDIR=$OWTRAVIS_LOGS_DIR/logs/osx
+                    OWLOGDIR=$OWTRAVIS_LOGS_DIR/osx
                 elif [ "$TRAVIS_OS_NAME" = "windows" ]; then
-                    OWLOGDIR=$OWTRAVIS_LOGS_DIR/logs/windows
+                    OWLOGDIR=$OWTRAVIS_LOGS_DIR/windows
                 else
-                    OWLOGDIR=$OWTRAVIS_LOGS_DIR/logs/linux
+                    OWLOGDIR=$OWTRAVIS_LOGS_DIR/linux
                 fi
                 if [ ! -d $OWLOGDIR ]; then 
                     mkdir -p $OWLOGDIR; 
@@ -68,29 +68,29 @@ gitupdf_proc()
                 #
                 case "$OWTRAVISTEST" in
                     "WASM")
-                        test -d $OWTRAVIS_LOGS_DIR/logs/linux/wasmtest || mkdir -p $OWTRAVIS_LOGS_DIR/logs/linux/wasmtest
-                        cp $OWSRCDIR/wasmtest/result.log $OWTRAVIS_LOGS_DIR/logs/linux/wasmtest/
-                        cp $OWSRCDIR/wasmtest/test.log $OWTRAVIS_LOGS_DIR/logs/linux/wasmtest/
+                        test -d $OWTRAVIS_LOGS_DIR/linux/wasmtest || mkdir -p $OWTRAVIS_LOGS_DIR/linux/wasmtest
+                        cp $OWSRCDIR/wasmtest/result.log $OWTRAVIS_LOGS_DIR/linux/wasmtest/
+                        cp $OWSRCDIR/wasmtest/test.log $OWTRAVIS_LOGS_DIR/linux/wasmtest/
                         ;;
                     "C")
-                        test -d $OWTRAVIS_LOGS_DIR/logs/linux/ctest || mkdir -p $OWTRAVIS_LOGS_DIR/logs/linux/ctest
-                        cp $OWSRCDIR/ctest/result.log $OWTRAVIS_LOGS_DIR/logs/linux/ctest/
-                        cp $OWSRCDIR/ctest/test.log $OWTRAVIS_LOGS_DIR/logs/linux/ctest/
+                        test -d $OWTRAVIS_LOGS_DIR/linux/ctest || mkdir -p $OWTRAVIS_LOGS_DIR/linux/ctest
+                        cp $OWSRCDIR/ctest/result.log $OWTRAVIS_LOGS_DIR/linux/ctest/
+                        cp $OWSRCDIR/ctest/test.log $OWTRAVIS_LOGS_DIR/linux/ctest/
                         ;;
                     "CXX")
-                        test -d $OWTRAVIS_LOGS_DIR/logs/linux/plustest || mkdir -p $OWTRAVIS_LOGS_DIR/logs/linux/plustest
-                        cp $OWSRCDIR/plustest/result.log $OWTRAVIS_LOGS_DIR/logs/linux/plustest/
-                        cp $OWSRCDIR/plustest/test.log $OWTRAVIS_LOGS_DIR/logs/linux/plustest/
+                        test -d $OWTRAVIS_LOGS_DIR/linux/plustest || mkdir -p $OWTRAVIS_LOGS_DIR/linux/plustest
+                        cp $OWSRCDIR/plustest/result.log $OWTRAVIS_LOGS_DIR/linux/plustest/
+                        cp $OWSRCDIR/plustest/test.log $OWTRAVIS_LOGS_DIR/linux/plustest/
                         ;;
                     "F77")
-                        test -d $OWTRAVIS_LOGS_DIR/logs/linux/f77test || mkdir -p $OWTRAVIS_LOGS_DIR/logs/linux/f77test
-                        cp $OWSRCDIR/f77test/result.log $OWTRAVIS_LOGS_DIR/logs/linux/f77test/
-                        cp $OWSRCDIR/f77test/test.log $OWTRAVIS_LOGS_DIR/logs/linux/f77test/
+                        test -d $OWTRAVIS_LOGS_DIR/linux/f77test || mkdir -p $OWTRAVIS_LOGS_DIR/linux/f77test
+                        cp $OWSRCDIR/f77test/result.log $OWTRAVIS_LOGS_DIR/linux/f77test/
+                        cp $OWSRCDIR/f77test/test.log $OWTRAVIS_LOGS_DIR/linux/f77test/
                         ;;
                     "CRTL")
-                        test -d $OWTRAVIS_LOGS_DIR/logs/linux/clibtest || mkdir -p $OWTRAVIS_LOGS_DIR/logs/linux/clibtest
-                        cp $OWSRCDIR/clibtest/result.log $OWTRAVIS_LOGS_DIR/logs/linux/clibtest/
-                        cp $OWSRCDIR/clibtest/test.log $OWTRAVIS_LOGS_DIR/logs/linux/clibtest/
+                        test -d $OWTRAVIS_LOGS_DIR/linux/clibtest || mkdir -p $OWTRAVIS_LOGS_DIR/linux/clibtest
+                        cp $OWSRCDIR/clibtest/result.log $OWTRAVIS_LOGS_DIR/linux/clibtest/
+                        cp $OWSRCDIR/clibtest/test.log $OWTRAVIS_LOGS_DIR/linux/clibtest/
                         ;;
                     *)
                         ;;
