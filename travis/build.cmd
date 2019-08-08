@@ -28,7 +28,7 @@ REM ...
 @echo %OWECHO%
 REM ...
 if "%OWTRAVIS_ENV_DEBUG%" == "1" (
-    set
+REM    set
 ) else (
     if "%OWTRAVIS_DEBUG%" == "1" (
         echo INCLUDE="%INCLUDE%"
