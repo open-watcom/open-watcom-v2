@@ -53,7 +53,6 @@ gitupds_proc()
                     # commit updated files to GitHub repository
                     #
                     cd $OWTRAVIS_BUILD_DIR
-                    pwd
                     git add $GITVERBOSE2 -f .
                     if [ "$TRAVIS_OS_NAME" = "linux" ]; then
                         git commit $GITVERBOSE1 -m "Travis CI build $TRAVIS_JOB_NUMBER - OW distribution"
@@ -62,7 +61,6 @@ gitupds_proc()
                     fi
                     git push $GITVERBOSE1 -f origin
                     cd $TRAVIS_BUILD_DIR
-                    pwd
                     echo_msg="gitupds.sh - done"
                 fi
                 ;;

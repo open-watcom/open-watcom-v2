@@ -41,16 +41,13 @@ cache:
 before_script:
     # get environment/cache info if debug is active
     - $OWTRAVISDIR/envinfo.sh
-    - $OWTRAVISDIR/cacheinf.sh
 
 after_failure:
     # after failure transfer log files back to GitHub repository
-    - $OWTRAVISDIR/cacheinf.sh
     - $OWTRAVISDIR/gitupdf.sh
 
 after_success:
     # after success transfer OW build to GitHub repository
-    - $OWTRAVISDIR/cacheinf.sh
     - $OWTRAVISDIR/gitupds.sh
 
 jobs:
@@ -432,8 +429,6 @@ jobs:
       before_deploy:
         # Set up git tag for github release and commit it
         - export OWTMP=`git ls-remote --tags . | sed -n -e "s:\([0-9a-z]*\) *refs/tags/Current-build^{}:\1:p"`; true;
-        - echo "${OWTMP}"
-        - echo "${TRAVIS_COMMIT}"
         - if [ ! "$OWTMP" = "$TRAVIS_COMMIT" ]; then
             git remote set-url origin https://${GITHUB_TOKEN}@github.com/${TRAVIS_REPO_SLUG}.git;
             git tag -d $TRAVIS_TAG; true;
@@ -476,8 +471,6 @@ jobs:
       before_deploy:
         # Set up git tag for github release and commit it
         - export OWTMP=`git ls-remote --tags . | sed -n -e "s:\([0-9a-z]*\) *refs/tags/Current-build^{}:\1:p"`; true;
-        - echo "${OWTMP}"
-        - echo "${TRAVIS_COMMIT}"
         - if [ ! "$OWTMP" = "$TRAVIS_COMMIT" ]; then
             git remote set-url origin https://${GITHUB_TOKEN}@github.com/${TRAVIS_REPO_SLUG}.git;
             git tag -d $TRAVIS_TAG; true;
