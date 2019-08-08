@@ -438,7 +438,7 @@ jobs:
             git remote set-url origin https://${GITHUB_TOKEN}@github.com/${TRAVIS_REPO_SLUG}.git;
             git tag -d $TRAVIS_TAG; true;
             git push --delete origin $TRAVIS_TAG; true;
-            export OWTAGSTAMP=$(date +'%Y-%m-%d %H:%M:%S')
+            export OWTAGSTAMP=$(date +'%Y-%m-%d %H:%M:%S'); true;
             git tag -a -m "$OWTAGSTAMP" $TRAVIS_TAG $TRAVIS_COMMIT; true;
             git push origin $TRAVIS_TAG; true;
           else
@@ -482,7 +482,7 @@ jobs:
             git remote set-url origin https://${GITHUB_TOKEN}@github.com/${TRAVIS_REPO_SLUG}.git;
             git tag -d $TRAVIS_TAG; true;
             git push --delete origin $TRAVIS_TAG; true;
-            export OWTAGSTAMP=$(date +'%Y-%m-%d %H:%M:%S')
+            export OWTAGSTAMP=$(date +'%Y-%m-%d %H:%M:%S'); true;
             git tag -a -m "$OWTAGSTAMP" $TRAVIS_TAG $TRAVIS_COMMIT; true;
             git push origin $TRAVIS_TAG; true;
           else
