@@ -105,11 +105,7 @@ build_proc()
         "Release")
             export OWVERBOSE=1
             builder missing
-            if [ "$TRAVIS_EVENT_TYPE" = "pull_request" ]; then
-                builder install
-            else
-                builder -q install
-            fi
+            builder install
             RC=$?
             ;;
         *)

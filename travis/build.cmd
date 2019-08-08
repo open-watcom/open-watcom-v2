@@ -93,11 +93,7 @@ if "%TRAVIS_BUILD_STAGE_NAME%" == "Documentation" (
 )
 if "%TRAVIS_BUILD_STAGE_NAME%" == "Release windows" (
     builder missing
-    if "%TRAVIS_EVENT_TYPE%" == "pull_request" (
-        builder install os_nt cpu_x64
-    ) else (
-        builder -q install os_nt cpu_x64
-    )
+    builder install os_nt cpu_x64
 )
 set RC=%ERRORLEVEL%
 REM sleep 3

@@ -438,14 +438,19 @@ jobs:
             git remote set-url origin https://${GITHUB_TOKEN}@github.com/${TRAVIS_REPO_SLUG}.git;
             git tag -d $TRAVIS_TAG; true;
             git push --delete origin $TRAVIS_TAG; true;
-            git tag -a -m "$(date +'%Y-%m-%d %H:%M:%S')" $TRAVIS_TAG $TRAVIS_COMMIT; true;
+            export OWTAGSTAMP=$(date +'%Y-%m-%d %H:%M:%S')
+            git tag -a -m "$OWTAGSTAMP" $TRAVIS_TAG $TRAVIS_COMMIT; true;
             git push origin $TRAVIS_TAG; true;
+          else
+            export OWTAGSTAMP=`git tag -l --format='%(contents)' $TRAVIS_TAG`; true;
           fi
       deploy:
         provider: releases
         api_key: ${GITHUB_TOKEN}
         on:
           tags: true
+        body: "Latest build of Open Watcom V2 installers - ${OWTAGSTAMP}."
+        prerelease: true
         overwrite: true
         skip_cleanup: true
         file_glob: true
@@ -477,14 +482,19 @@ jobs:
             git remote set-url origin https://${GITHUB_TOKEN}@github.com/${TRAVIS_REPO_SLUG}.git;
             git tag -d $TRAVIS_TAG; true;
             git push --delete origin $TRAVIS_TAG; true;
-            git tag -a -m "$(date +'%Y-%m-%d %H:%M:%S')" $TRAVIS_TAG $TRAVIS_COMMIT; true;
+            export OWTAGSTAMP=$(date +'%Y-%m-%d %H:%M:%S')
+            git tag -a -m "$OWTAGSTAMP" $TRAVIS_TAG $TRAVIS_COMMIT; true;
             git push origin $TRAVIS_TAG; true;
+          else
+            export OWTAGSTAMP=`git tag -l --format='%(contents)' $TRAVIS_TAG`; true;
           fi
       deploy:
         provider: releases
         api_key: ${GITHUB_TOKEN}
         on:
           tags: true
+        body: "Latest build of Open Watcom V2 installers - ${OWTAGSTAMP}."
+        prerelease: true
         overwrite: true
         skip_cleanup: true
         file_glob: true
