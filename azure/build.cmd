@@ -32,6 +32,7 @@ echo INCLUDE="%INCLUDE%"
 echo LIB="%LIB%"
 echo LIBPATH="%LIBPATH%"
 REM ...
+mkdir %OWBINDIR%
 cd %OWSRCDIR%
 if "%OWAZURE_STAGE_NAME%" == "Bootstrap" (
     cd wmake
