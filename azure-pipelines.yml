@@ -11,7 +11,7 @@ jobs:
   pool:
     vmImage: 'vs2017-win2016'
   variables:
-    owazuredir: $env:OWROOT\azure
+    owazuredir: $(OWROOT)\azure
     owtools: VISUALC
   steps:
     - script: $(owazuredir)\build.cmd
