@@ -22,14 +22,14 @@ jobs:
       env: {OWSTAGE_NAME: Build}
     - script: $(owazuredir)\build.cmd
       displayName: "Update Build"
-      env: {OWSTAGE_NAME:Update Build}
+      env: {OWSTAGE_NAME: Update Build}
     - script: $(owazuredir)\build.cmd
       displayName: "Tests"
-      env: {OWSTAGE_NAME:Tests}
+      env: {OWSTAGE_NAME: Tests}
     - script: $(owazuredir)\build.cmd
       displayName: "Documentation"
-      env: {OWSTAGE_NAME:Documentation}
+      env: {OWSTAGE_NAME: Documentation}
     - script: $(owazuredir)\build.cmd
       displayName: "Release"
-      env: {OWSTAGE_NAME:Release}
+      env: {OWSTAGE_NAME: Release}
     - script: set
