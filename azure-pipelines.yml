@@ -18,20 +18,20 @@ jobs:
   steps:
     - script: azure\build.cmd
       displayName: Bootstrap
-      env: {OWSTAGE_NAME: Bootstrap}
+      env: {OWAZURE_STAGE_NAME: Bootstrap}
     - script: azure\build.cmd
       displayName: "Build"
-      env: {OWSTAGE_NAME: Build}
+      env: {OWAZURE_STAGE_NAME: Build}
     - script: azure\build.cmd
       displayName: "Update Build"
-      env: {OWSTAGE_NAME: Update Build}
+      env: {OWAZURE_STAGE_NAME: Update Build}
     - script: azure\build.cmd
       displayName: "Tests"
-      env: {OWSTAGE_NAME: Tests}
+      env: {OWAZURE_STAGE_NAME: Tests}
     - script: azure\build.cmd
       displayName: "Documentation"
-      env: {OWSTAGE_NAME: Documentation}
+      env: {OWAZURE_STAGE_NAME: Documentation}
     - script: azure\build.cmd
       displayName: "Release"
-      env: {OWSTAGE_NAME: Release}
+      env: {OWAZURE_STAGE_NAME: Release}
     - script: set
