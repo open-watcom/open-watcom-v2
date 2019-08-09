@@ -11,15 +11,15 @@ jobs:
   pool:
     vmImage: 'vs2017-win2016'
   variables:
-    owazuredir=$env:OWROOT\azure
-    owtools=VISUALC
+    owazuredir: $env:%OWROOT%\azure
+    owtools: VISUALC
   steps:
     - script: $(owazuredir)\build.cmd
       displayName: Bootstrap
       env: {OWSTAGE_NAME: Bootstrap}
     - script: $(owazuredir)\build.cmd
       displayName: "Build"
-      env: {OWSTAGE_NAME:Build}
+      env: {OWSTAGE_NAME: Build}
     - script: $(owazuredir)\build.cmd
       displayName: "Update Build"
       env: {OWSTAGE_NAME:Update Build}
