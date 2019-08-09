@@ -16,7 +16,7 @@ jobs:
     owazuredir: env:BUILD_SOURCEDIRECTORY\azure
     owtools: VISUALC
   steps:
-    - script: echo BUILD_SOURCEDIRECTORY=$(BUILD_SOURCEDIRECTORY)
+    - script: echo BUILD_SOURCEDIRECTORY=env:BUILD_SOURCEDIRECTORY
     - script: $(owazuredir)\build.cmd
       displayName: Bootstrap
       env: {OWSTAGE_NAME: Bootstrap}
