@@ -7,7 +7,7 @@ trigger:
 - master
 
 jobs:
-- job: "All-in-one"
+- job: "All_in_one"
   pool:
     vmImage: 'vs2017-win2016'
   steps:
