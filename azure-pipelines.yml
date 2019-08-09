@@ -6,35 +6,45 @@
 trigger:
 - master
 
-pool:
-  vmImage: 'vs2017-win2016'
 jobs:
 - job: "Bootstrap"
+  pool:
+    vmImage: 'vs2017-win2016'
   steps:
   - script: echo Hello, world!
 
 - job: "Build"
   dependsOn: "Bootstrap"
+  pool:
+    vmImage: 'vs2017-win2016'
   steps:
   - script: echo Add other tasks to build, test, and deploy your project.
 
 - job: "Update Build"
   dependsOn: "Build"
+  pool:
+    vmImage: 'vs2017-win2016'
   steps:
   - script: echo Update Build!
 
 - job: "Tests"
   dependsOn: "Update Build"
+  pool:
+    vmImage: 'vs2017-win2016'
   steps:
   - script: echo Tests!
 
 - job: "Documentation"
   dependsOn: "Tests"
+  pool:
+    vmImage: 'vs2017-win2016'
   steps:
   - script: echo Build Documentation!
 
 - job: "Release"
   dependsOn: "Documentation"
+  pool:
+    vmImage: 'vs2017-win2016'
   steps:
   - script: echo Build 64-bit Windows installer!
 
