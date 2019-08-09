@@ -7,13 +7,42 @@ trigger:
 - master
 
 pool:
-  vmImage: 'ubuntu-latest'
+  vmImage: 'vs2017-win2016'
+jobs:
+- job: "Bootstrap"
+  steps:
+  - script: echo Hello, world!
+    displayName: 'Run a one-line script'
 
-steps:
-- script: echo Hello, world!
-  displayName: 'Run a one-line script'
-
-- script: |
+- job: "Build"
+  steps:
+  - script: |
     echo Add other tasks to build, test, and deploy your project.
     echo See https://aka.ms/yaml
-  displayName: 'Run a multi-line script'
+    displayName: 'Run a multi-line script'
+
+- job: "Update Build"
+  steps:
+  - script: echo Update Build!
+    displayName: 'Update Build on Github'
+
+- job: "Update Build"
+  steps:
+  - script: echo Update Build!
+    displayName: 'Update Build on Github'
+
+- job: "Tests"
+  steps:
+  - script: echo Tests!
+    displayName: 'Update Build on Github'
+
+- job: "Documentation"
+  steps:
+  - script: echo Build Documentation!
+    displayName: 'Build Documentation and pass to Github'
+
+- job: "Release"
+  steps:
+  - script: echo Build 64-bit Windows installer!
+    displayName: 'Update Build on Github'
+
