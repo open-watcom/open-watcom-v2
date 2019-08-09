@@ -10,17 +10,26 @@ jobs:
 - job: "All_in_one"
   pool:
     vmImage: 'vs2017-win2016'
+  variables:
+    owazuredir=$env:OWROOT\azure
+    owtools=VISUALC
   steps:
-    - script: echo Hello, world!
+    - script: $owazuredir\build.cmd
       displayName: Bootstrap
-    - script: echo Add other tasks to build, test, and deploy your project.
+      env: OWSTAGE_NAME:Bootstrap
+    - script: $owazuredir\build.cmd
       displayName: "Build"
-    - script: echo Update Build!
+      env: OWSTAGE_NAME:Build
+    - script: $owazuredir\build.cmd
       displayName: "Update Build"
-    - script: echo Tests!
+      env: OWSTAGE_NAME:Update Build
+    - script: $owazuredir\build.cmd
       displayName: "Tests"
-    - script: echo Build Documentation!
+      env: OWSTAGE_NAME:Tests
+    - script: $owazuredir\build.cmd
       displayName: "Documentation"
-    - script: echo Build 64-bit Windows installer!
+      env: OWSTAGE_NAME:Documentation
+    - script: $owazuredir\build.cmd
       displayName: "Release"
+      env: OWSTAGE_NAME:Release
     - script: set
