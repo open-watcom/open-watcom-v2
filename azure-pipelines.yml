@@ -14,8 +14,8 @@ jobs:
     vmImage: 'vs2017-win2016'
   variables:
     owtools: VISUALC
+    owazure_debug: 1
   steps:
-    - script: set
     - script: azure\build.cmd
       displayName: Bootstrap
       env: {OWSTAGE_NAME: Bootstrap}
