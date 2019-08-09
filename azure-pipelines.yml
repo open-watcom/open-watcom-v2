@@ -6,6 +6,8 @@
 trigger:
 - master
 
+variables: {System.Debug: true}
+
 jobs:
 - job: "All_in_one"
   pool:
