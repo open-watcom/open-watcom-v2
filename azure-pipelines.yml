@@ -20,7 +20,7 @@ jobs:
   steps:
   - script: echo Add other tasks to build, test, and deploy your project.
 
-- job: "Update Build"
+- job: "Update_Build"
   dependsOn: "Build"
   pool:
     vmImage: 'vs2017-win2016'
@@ -28,7 +28,7 @@ jobs:
   - script: echo Update Build!
 
 - job: "Tests"
-  dependsOn: "Update Build"
+  dependsOn: "Update_Build"
   pool:
     vmImage: 'vs2017-win2016'
   steps:
