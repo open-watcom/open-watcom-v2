@@ -13,11 +13,12 @@ jobs:
   pool:
     vmImage: 'vs2017-win2016'
   variables:
-    owazuredir: ^%BUILD_SOURCEDIRECTORY^%\azure
+    owazuredir: $(Build.SourceDirectory)\azure
     owtools: VISUALC
   steps:
     - script: set
-    - script: echo BUILD_SOURCEDIRECTORY=^%BUILD_SOURCEDIRECTORY^%
+    - script: echo BUILD_SOURCEDIRECTORY=$(Build.SourceDirectory)
+    - script: echo BUILD_SOURCEDIRECTORY=$(Build.Source.Directory)
     - script: $(owazuredir)\build.cmd
       displayName: Bootstrap
       env: {OWSTAGE_NAME: Bootstrap}
