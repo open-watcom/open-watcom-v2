@@ -7,44 +7,19 @@ trigger:
 - master
 
 jobs:
-- job: "Bootstrap"
+- job: "All-in-one"
   pool:
     vmImage: 'vs2017-win2016'
   steps:
-  - script: echo Hello, world!
-
-- job: "Build"
-  dependsOn: "Bootstrap"
-  pool:
-    vmImage: 'vs2017-win2016'
-  steps:
-  - script: echo Add other tasks to build, test, and deploy your project.
-
-- job: "Update_Build"
-  dependsOn: "Build"
-  pool:
-    vmImage: 'vs2017-win2016'
-  steps:
-  - script: echo Update Build!
-
-- job: "Tests"
-  dependsOn: "Update_Build"
-  pool:
-    vmImage: 'vs2017-win2016'
-  steps:
-  - script: echo Tests!
-
-- job: "Documentation"
-  dependsOn: "Tests"
-  pool:
-    vmImage: 'vs2017-win2016'
-  steps:
-  - script: echo Build Documentation!
-
-- job: "Release"
-  dependsOn: "Documentation"
-  pool:
-    vmImage: 'vs2017-win2016'
-  steps:
-  - script: echo Build 64-bit Windows installer!
-
+    - script: echo Hello, world!
+      displayName: Bootstrap
+    - script: echo Add other tasks to build, test, and deploy your project.
+      displayName: "Build"
+    - script: echo Update Build!
+      displayName: "Update Build"
+    - script: echo Tests!
+      displayName: "Tests"
+    - script: echo Build Documentation!
+      displayName: "Documentation"
+    - script: echo Build 64-bit Windows installer!
+      displayName: "Release"
