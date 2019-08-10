@@ -25,28 +25,27 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  CLIB internal NT extension function prototypes.
 *
 ****************************************************************************/
 
 
-#include "variety.h"
-#include "widechar.h"
-#include <string.h>
-#include <direct.h>
-#include <windows.h>
-#include "ntext.h"
-#include "ntinfo.h"
-#include "_dtaxxx.h"
+#ifndef __NTINFO_INCLUDED__
+#define __NTINFO_INCLUDED__
 
+extern void     __GetNTDirInfoA( struct dirent *dirp, LPWIN32_FIND_DATAA ffd );
+extern void     __GetNTFindInfoA( struct find_t *findt, LPWIN32_FIND_DATAA ffd );
+#ifdef __WATCOMC__
+extern void     __GetNTDirInfoW( struct _wdirent *dirp, LPWIN32_FIND_DATAW ffd );
+extern void     __GetNTFindInfoW( struct _wfind_t *findt, LPWIN32_FIND_DATAW ffd );
+#endif
 
-void __GetNTDirInfo( DIR_TYPE *dirp, LPWIN32_FIND_DATA ffd )
-{
-    DTAXXX_TSTAMP_OF( dirp->d_dta ) = __NT_filetime_to_timet( &ffd->ftLastWriteTime );
-    __MakeDOSDT( &ffd->ftLastWriteTime, &dirp->d_date, &dirp->d_time );
-    dirp->d_attr = NT2DOSATTR( ffd->dwFileAttributes );
-    dirp->d_size = ffd->nFileSizeLow;
-    __F_NAME(strncpy,wcsncpy)( dirp->d_name, ffd->cFileName, NAME_MAX );
-    dirp->d_name[NAME_MAX] = 0;
-}
+#ifdef __WIDECHAR__
+#define __GetNTDirInfo              __GetNTDirInfoW
+#define __GetNTFindInfo             __GetNTFindInfoW
+#else
+#define __GetNTDirInfo              __GetNTDirInfoA
+#define __GetNTFindInfo             __GetNTFindInfoA
+#endif
+
+#endif

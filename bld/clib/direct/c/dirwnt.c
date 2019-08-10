@@ -43,7 +43,7 @@
 #include "rtdata.h"
 #include "strdup.h"
 #include "libwin32.h"
-#include "ntext.h"
+#include "ntinfo.h"
 #include "seterrno.h"
 #include "_direct.h"
 #include "_dtaxxx.h"
