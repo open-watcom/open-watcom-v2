@@ -43,20 +43,22 @@ mkdir %OWOBJDIR%
 cd %OWOBJDIR%
 nmake -f ..\nmake clean >>%OWBINDIR%\bootx.log 2>&1
 nmake -f ..\nmake >>%OWBINDIR%\bootx.log 2>&1
+cd %OWSRCDIR%
 REM ...
 REM Bootstrap pre-build builder
 REM ...
 if not errorlevel == 1 (
-    cd %OWSRCDIR%\builder
+    cd builder
     mkdir %OWOBJDIR%
     cd %OWOBJDIR%
     %OWBINDIR%\wmake -f ..\binmake clean >>%OWBINDIR%\bootx.log 2>&1
     %OWBINDIR%\wmake -f ..\binmake bootstrap=1 builder.exe >>%OWBINDIR%\bootx.log 2>&1
-    if not errorlevel == 1 (
+    set RC=%ERRORLEVEL%
+    cd %OWSRCDIR%
+    if not %RC% == 1 (
 REM ...
 REM Bootstrap
 REM ...
-	cd %OWSRCDIR%
 	builder -q boot
     )
 )
@@ -98,6 +100,7 @@ cd %OWSRCDIR%\clibtest
 builder -q -i testclean
 builder -q -i test
 cat result.log
+cd %OWSRCDIR%
 REM ...
 REM Documentation
 REM ...
