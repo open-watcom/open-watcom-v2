@@ -85,7 +85,7 @@ jobs:
       install:
         - . $OWROOT/cmnvars.sh
       script:
-        - $OWTRAVISDIR/build.sh
+        - $OWTRAVISDIR/buildx.sh
     - # ...
       name: "Build minimal set of build tools OSX"
       if: type = cron
@@ -104,7 +104,7 @@ jobs:
       install:
         - . $OWROOT/cmnvars.sh
       script:
-        - $OWTRAVISDIR/build.sh
+        - $OWTRAVISDIR/buildx.sh
     - # ...
       name: "Build minimal set of build tools Windows"
       if: type = cron
@@ -123,7 +123,7 @@ jobs:
         - $OWTRAVISDIR/cacheclr.sh
       install:
       script:
-        - $OWTRAVISDIR/build.cmd
+        - $OWTRAVISDIR/buildx.cmd
     #################################
     - stage: Build1
       name: "OW tools build Linux"
@@ -139,7 +139,7 @@ jobs:
         - sudo apt-get install -y dosemu
         - . $OWROOT/cmnvars.sh
       script:
-        - $OWTRAVISDIR/build.sh
+        - $OWTRAVISDIR/buildx.sh
       before_cache:
         - $OWTRAVISDIR/cache3.sh save
     - # ...
@@ -157,7 +157,7 @@ jobs:
       install:
         - . $OWROOT/cmnvars.sh
       script:
-        - $OWTRAVISDIR/build.sh
+        - $OWTRAVISDIR/buildx.sh
       before_cache:
         - $OWTRAVISDIR/cache1.sh save
     - # ...
@@ -175,7 +175,7 @@ jobs:
         - export OWTOOLS=VISUALC
       install:
       script:
-        - $OWTRAVISDIR/build.cmd
+        - $OWTRAVISDIR/buildx.cmd
       before_cache:
         - $OWTRAVISDIR/cache1.sh save
     #################################
@@ -199,7 +199,7 @@ jobs:
         - . $OWROOT/cmnvars.sh
       script:
         - $OWTRAVISDIR/cache1.sh load
-        - $OWTRAVISDIR/build.sh
+        - $OWTRAVISDIR/buildx.sh
       before_cache:
         - $OWTRAVISDIR/cache2.sh save
     - # ...
@@ -218,7 +218,7 @@ jobs:
       install:
       script:
         - $OWTRAVISDIR/cache1.sh load
-        - $OWTRAVISDIR/build.cmd
+        - $OWTRAVISDIR/buildx.cmd
       before_cache:
         - $OWTRAVISDIR/cache2.sh save
     #################################
@@ -244,7 +244,7 @@ jobs:
         - . $OWROOT/cmnvars.sh
       script:
         - $OWTRAVISDIR/cache2.sh load
-        - $OWTRAVISDIR/build.sh
+        - $OWTRAVISDIR/buildx.sh
       before_cache:
         - $OWTRAVISDIR/cache3.sh save
     - # ...
@@ -264,7 +264,7 @@ jobs:
       install:
       script:
         - $OWTRAVISDIR/cache2.sh load
-        - $OWTRAVISDIR/build.cmd
+        - $OWTRAVISDIR/buildx.cmd
       before_cache:
         - $OWTRAVISDIR/cache3.sh save
     #################################
@@ -407,7 +407,7 @@ jobs:
         # set environmet variable
         - export OWTOOLS=VISUALC
       script:
-        - $OWTRAVISDIR/build.cmd
+        - $OWTRAVISDIR/buildx.cmd
     #################################
     - stage: Release
       name: "Create all Installers Linux"
@@ -424,7 +424,7 @@ jobs:
         - . $OWROOT/cmnvars.sh
         - $OWTRAVISDIR/cache3.sh load
       script:
-        - $OWTRAVISDIR/build.sh
+        - $OWTRAVISDIR/buildx.sh
         - export TRAVIS_TAG=Current-build
       before_deploy:
         # Set up git tag for github release and commit it
@@ -466,7 +466,7 @@ jobs:
       install:
         - $OWTRAVISDIR/cache3.sh load
       script:
-        - $OWTRAVISDIR/build.cmd
+        - $OWTRAVISDIR/buildx.cmd
         - export TRAVIS_TAG=Current-build
       before_deploy:
         # Set up git tag for github release and commit it
