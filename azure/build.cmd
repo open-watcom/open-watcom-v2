@@ -82,23 +82,23 @@ set LIB=
 REM ...
 cd %OWSRCDIR%\wasmtest
 builder -q -i testclean
-builder -q -i test
+builder -i test
 cat result.log
 cd %OWSRCDIR%\ctest
 builder -q -i testclean
-builder -q -i test
+builder -i test
 cat result.log
 cd %OWSRCDIR%\f77test
 builder -q -i testclean
-builder -q -i test
+builder -i test
 cat result.log
 cd %OWSRCDIR%\plustest
 builder -q -i testclean
-builder -q -i test
+builder -i test
 cat result.log
 cd %OWSRCDIR%\clibtest
 builder -q -i testclean
-builder -q -i test
+builder -i test
 cat result.log
 cd %OWSRCDIR%
 REM ...
@@ -116,7 +116,7 @@ REM register all Help Compilers DLL's
 regsvr32 -u -s itcc.dll
 regsvr32 -s %OWROOT%\travis\hhc\itcc.dll
 REM ...
-builder -q docs
+builder docs
 set RC=%ERRORLEVEL%
 REM ...
 REM Release

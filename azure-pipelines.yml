@@ -6,14 +6,71 @@
 trigger:
 - master
 
-variables: {System.Debug: true}
+variables: {System.Debug: true, owazure_debug: 1}
 
-jobs:
-- job: "All_in_one"
-  timeoutInMinutes: 120
-  pool:
-    vmImage: 'vs2017-win2016'
-  variables:
-    owazure_debug: 1
-  steps:
-    - script: azure\build.cmd
+stages:
+  - stage: boot
+    displayName: "Bootstrap"
+    jobs:
+      - job: Linux
+        pool:
+          vmImage: 'ubuntu-latest'
+      - job: Windows
+        pool:
+          vmImage: 'vs2017-win2016'
+      - job: OSX
+        pool:
+          vmImage: 'macOS-latest'
+  - stage: build
+    displayName: "Build"
+    jobs:
+      - job: Linux
+        pool:
+          vmImage: 'ubuntu-latest'
+      - job: Windows
+        timeoutInMinutes: 120
+        pool:
+          vmImage: 'vs2017-win2016'
+      - job: OSX
+        timeoutInMinutes: 120
+        pool:
+          vmImage: 'macOS-latest'
+  - stage: update
+    displayName: "Update Build"
+    jobs:
+      - job: Linux
+        pool:
+          vmImage: 'ubuntu-latest'
+      - job: Windows
+        pool:
+          vmImage: 'vs2017-win2016'
+  - stage: tests
+    displayName: "Tests"
+    jobs:
+      - job: Linux
+        pool:
+          vmImage: 'ubuntu-latest'
+      - job: Windows
+        pool:
+          vmImage: 'vs2017-win2016'
+  - stage: docs
+    displayName: "Documentation Build"
+    jobs:
+      - job: Windows
+        timeoutInMinutes: 120
+        pool:
+          vmImage: 'vs2017-win2016'
+  - stage: instal
+    displayName: "Build Installers"
+    jobs:
+      - job: Linux
+        pool:
+          vmImage: 'ubuntu-latest'
+      - job: Windows
+        pool:
+          vmImage: 'vs2017-win2016'
+  - stage: release
+    displayName: "Make Release on GitHub"
+      - job: Linux
+        pool:
+          vmImage: 'ubuntu-latest'
