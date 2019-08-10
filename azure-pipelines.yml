@@ -26,8 +26,30 @@ jobs:
       displayName: "Update Build"
       env: {OWAZURE_STAGE_NAME: Update Build}
     - script: azure\build.cmd
-      displayName: "Tests"
+      displayName: "Test wasm assembler"
       env: {OWAZURE_STAGE_NAME: Tests}
+      env: {OWTOOLS: WATCOM}
+      env: {OWAZURETEST: WASM}
+    - script: azure\build.cmd
+      displayName: "Test C compiler"
+      env: {OWAZURE_STAGE_NAME: Tests}
+      env: {OWTOOLS: WATCOM}
+      env: {OWAZURETEST: C}
+    - script: azure\build.cmd
+      displayName: "Test FORTRAN 77 compiler"
+      env: {OWAZURE_STAGE_NAME: Tests}
+      env: {OWTOOLS: WATCOM}
+      env: {OWAZURETEST: F77}
+    - script: azure\build.cmd
+      displayName: "Test C++ compiler"
+      env: {OWAZURE_STAGE_NAME: Tests}
+      env: {OWTOOLS: WATCOM}
+      env: {OWAZURETEST: CXX}
+    - script: azure\build.cmd
+      displayName: "Test C run-time library"
+      env: {OWAZURE_STAGE_NAME: Tests}
+      env: {OWTOOLS: WATCOM}
+      env: {OWAZURETEST: CRTL}
     - script: azure\build.cmd
       displayName: "Documentation"
       env: {OWAZURE_STAGE_NAME: Documentation}
