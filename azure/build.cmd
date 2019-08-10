@@ -33,40 +33,49 @@ if "%OWDEBUG%" == "1" (
     echo LIBPATH="%LIBPATH%"
 )
 REM ...
-cd %OWSRCDIR%
+set RC=0
 if "%OWAZURE_STAGE_NAME%" == "boot" (
+    cd %OWSRCDIR%
     cd wmake
     mkdir %OWOBJDIR%
     cd %OWOBJDIR%
     nmake -f ..\nmake clean >>%OWBINDIR%\bootx.log 2>&1
     nmake -f ..\nmake >>%OWBINDIR%\bootx.log 2>&1
+    set RC=%ERRORLEVEL%
     cd %OWSRCDIR%
-    if not errorlevel == 1 (
+    if not %RC% == 1 (
         cd builder
         mkdir %OWOBJDIR%
         cd %OWOBJDIR%
         %OWBINDIR%\wmake -f ..\binmake clean >>%OWBINDIR%\bootx.log 2>&1
         %OWBINDIR%\wmake -f ..\binmake bootstrap=1 builder.exe >>%OWBINDIR%\bootx.log 2>&1
-	cd %OWSRCDIR%
-        if not errorlevel == 1 (
-	    builder boot
+        set RC=%ERRORLEVEL%
+        cd %OWSRCDIR%
+        if not %RC% == 1 (
+            builder boot
         )
     )
 )
 if "%OWAZURE_STAGE_NAME%" == "build" (
     builder rel
+    set RC=%ERRORLEVEL%
+)
+if "%OWAZURE_STAGE_NAME%" == "tests" (
+rem    builder rel
+rem    set RC=%ERRORLEVEL%
 )
 if "%OWAZURE_STAGE_NAME%" == "docs" (
     REM register all Help Compilers DLL's
     regsvr32 -u -s itcc.dll
     regsvr32 -s %OWROOT%\travis\hhc\itcc.dll
     builder docs
+    set RC=%ERRORLEVEL%
 )
 if "%OWAZURE_STAGE_NAME%" == "inst" (
     builder missing
     builder install os_nt cpu_x64
+    set RC=%ERRORLEVEL%
 )
-set RC=%ERRORLEVEL%
 REM sleep 3
 ping -n 3 127.0.0.1 >NUL
 exit %RC%
