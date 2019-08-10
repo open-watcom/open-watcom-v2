@@ -30,10 +30,9 @@ stages:
         variables:
           owobjdir: binnt
         steps:
-        - script: echo "owobjdir=$(owobjdir)"
         - script: azure/build.cmd
           displayName: "Bootstrap"
-          env: {OWAZURE_STAGE_NAME: boot, OWDEBUG: $(owdebug)}
+          env: {OWAZURE_STAGE_NAME: boot, OWOBJDIR: $(owobjdir), OWTOOLS: VISUALC, OWDEBUG: $(owdebug)}
         - task: PublishPipelineArtifact@1
           displayName: "Save Cache"
           inputs: {artifactName: $(owobjdir), targetPath: build/$(owobjdir)}
@@ -43,7 +42,6 @@ stages:
         variables:
           owobjdir: binosx
         steps:
-        - script: echo "owobjdir=$(owobjdir)"
         - bash: azure/build.sh
           displayName: "Bootstrap"
           env: {OWAZURE_STAGE_NAME: boot, OWOBJDIR: $(owobjdir), OWTOOLS: CLANG, OWDEBUG: $(owdebug)}
@@ -77,7 +75,7 @@ stages:
           inputs: {buildType: 'current', artifactName: $(owobjdir), targetPath: build/$(owobjdir)}
         - script: azure/build.cmd
           displayName: "Build"
-          env: {OWAZURE_STAGE_NAME: build, OWDEBUG: $(owdebug)}
+          env: {OWAZURE_STAGE_NAME: build, OWOBJDIR: $(owobjdir), OWTOOLS: VISUALC, OWDEBUG: $(owdebug)}
       - job: OSX
         timeoutInMinutes: 120
         pool:
