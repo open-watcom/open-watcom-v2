@@ -17,14 +17,23 @@ stages:
           vmImage: 'ubuntu-latest'
         variables:
           group: linux
+        steps:
+        - task: PublishPipelineArtifact@1
+          inputs: {artifactName: $(owbindir), targetPath: build/$(owbindir)}
       - job: Windows
         pool:
           vmImage: 'vs2017-win2016'
         variables:
           group: windows
+        steps:
+        - task: PublishPipelineArtifact@1
+          inputs: {artifactName: $(owbindir), targetPath: build/$(owbindir)}
       - job: OSX
         pool:
           vmImage: 'macOS-latest'
+        steps:
+        - task: PublishPipelineArtifact@1
+          inputs: {artifactName: $(owbindir), targetPath: build/$(owbindir)}
   - stage: build
     displayName: "Build"
     jobs:
@@ -33,16 +42,25 @@ stages:
           vmImage: 'ubuntu-latest'
         variables:
           group: linux
+        steps:
+        - task: DownloadPipelineArtifact@2
+          inputs: {buildType: 'current', artifactName: $(owbindir), targetPath: build/$(owbindir)}
       - job: Windows
         timeoutInMinutes: 120
         pool:
           vmImage: 'vs2017-win2016'
         variables:
           group: windows
+        steps:
+        - task: DownloadPipelineArtifact@2
+          inputs: {buildType: 'current', artifactName: $(owbindir), targetPath: build/$(owbindir)}
       - job: OSX
         timeoutInMinutes: 120
         pool:
           vmImage: 'macOS-latest'
+        steps:
+        - task: DownloadPipelineArtifact@2
+          inputs: {buildType: 'current', artifactName: $(owbindir), targetPath: build/$(owbindir)}
   - stage: update
     displayName: "Update Build"
     jobs:
@@ -51,11 +69,17 @@ stages:
           vmImage: 'ubuntu-latest'
         variables:
           group: linux
+        steps:
+        - task: DownloadPipelineArtifact@2
+          inputs: {buildType: 'current', artifactName: $(owbindir), targetPath: build/$(owbindir)}
       - job: Windows
         pool:
           vmImage: 'vs2017-win2016'
         variables:
           group: windows
+        steps:
+        - task: DownloadPipelineArtifact@2
+          inputs: {buildType: 'current', artifactName: $(owbindir), targetPath: build/$(owbindir)}
   - stage: tests
     displayName: "Tests"
     jobs:
@@ -86,11 +110,17 @@ stages:
           vmImage: 'ubuntu-latest'
         variables:
           group: linux
+        steps:
+        - task: DownloadPipelineArtifact@2
+          inputs: {buildType: 'current', artifactName: $(owbindir), targetPath: build/$(owbindir)}
       - job: Windows
         pool:
           vmImage: 'vs2017-win2016'
         variables:
           group: windows
+        steps:
+        - task: DownloadPipelineArtifact@2
+          inputs: {buildType: 'current', artifactName: $(owbindir), targetPath: build/$(owbindir)}
   - stage: release
     displayName: "Make Release on GitHub"
     jobs:
