@@ -48,7 +48,11 @@ bootutil_proc()
 build_proc()
 {
     RC=0
-    export OWROOT=$(realpath `pwd`)
+    if [ `uname` = linux ]; then
+        export OWROOT=$(realpath `pwd`)
+    else
+        export OWROOT=`pwd`
+    fi
     . ./cmnvars.sh
     cd $OWSRCDIR
     case "$OWAZURE_STAGE_NAME" in
