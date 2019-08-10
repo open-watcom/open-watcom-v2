@@ -51,32 +51,10 @@ if "%OWAZURE_STAGE_NAME%" == "boot" (
         %OWBINDIR%\wmake -f ..\binmake bootstrap=1 builder.exe >>%OWBINDIR%\bootx.log 2>&1
         set RC=%ERRORLEVEL%
         cd %OWSRCDIR%
-rem        if not %RC% == 1 (
-rem            builder -i -v boot
-rem        )
+        if not %RC% == 1 (
+           builder -i -v boot
+        )
     )
 )
-REM if "%OWAZURE_STAGE_NAME%" == "build" (
-REM     builder rel
-REM     set RC=%ERRORLEVEL%
-REM )
-rem if "%OWAZURE_STAGE_NAME%" == "tests" (
-rem    builder rel
-rem    set RC=%ERRORLEVEL%
-rem )
-REM if "%OWAZURE_STAGE_NAME%" == "docs" (
-    REM register all Help Compilers DLL's
-REM     regsvr32 -u -s itcc.dll
-REM     regsvr32 -s %OWROOT%\travis\hhc\itcc.dll
-REM     builder docs
-REM     set RC=%ERRORLEVEL%
-REM )
-REM if "%OWAZURE_STAGE_NAME%" == "inst" (
-REM     builder missing
-REM     builder install os_nt cpu_x64
-REM     set RC=%ERRORLEVEL%
-REM )
 cd %OWROOT%
-REM sleep 3
-rem ping -n 3 127.0.0.1 >NUL
 exit %RC%
