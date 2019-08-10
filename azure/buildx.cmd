@@ -51,19 +51,19 @@ if "%OWAZURE_STAGE_NAME%" == "boot" (
         %OWBINDIR%\wmake -f ..\binmake bootstrap=1 builder.exe >>%OWBINDIR%\bootx.log 2>&1
         set RC=%ERRORLEVEL%
         cd %OWSRCDIR%
-        if not %RC% == 1 (
-            builder -i -v boot
-        )
+rem        if not %RC% == 1 (
+rem            builder -i -v boot
+rem        )
     )
 )
 if "%OWAZURE_STAGE_NAME%" == "build" (
     builder rel
     set RC=%ERRORLEVEL%
 )
-if "%OWAZURE_STAGE_NAME%" == "tests" (
+rem if "%OWAZURE_STAGE_NAME%" == "tests" (
 rem    builder rel
 rem    set RC=%ERRORLEVEL%
-)
+rem )
 if "%OWAZURE_STAGE_NAME%" == "docs" (
     REM register all Help Compilers DLL's
     regsvr32 -u -s itcc.dll
