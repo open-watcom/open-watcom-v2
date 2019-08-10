@@ -24,7 +24,7 @@ if "%OWAZURE_STAGE_NAME%" == "Documentation" (
 )
 if "%OWAZURE_STAGE_NAME%" == "Tests" (
     set WATCOM=%OWROOT%\test
-    set PATH=%WATCOM%\binnt;$PATH
+    set PATH=%WATCOM%\binnt;%WATCOM%\binw;%PATH%
     set INCLUDE=%WATCOM%\h;%WATCOM%\h\nt
     set LIB=
 )
@@ -56,10 +56,11 @@ if "%OWAZURE_STAGE_NAME%" == "Bootstrap" (
         %OWBINDIR%\wmake -f ..\binmake bootstrap=1 builder.exe >>%OWBINDIR%\bootx.log 2>&1
         if not errorlevel == 1 (
             cd %OWSRCDIR%
-	    builder -q boot
+            builder -q boot
         )
     )
     set RC=%ERRORLEVEL%
+    echo %RC%
 )
 if "%OWAZURE_STAGE_NAME%" == "Build" (
     builder -q rel
@@ -105,7 +106,7 @@ if "%OWAZURE_STAGE_NAME%" == "Documentation" (
     builder -q docs
     set RC=%ERRORLEVEL%
 )
-if "%OWAZURE_STAGE_NAME%" == "Release windows" (
+if "%OWAZURE_STAGE_NAME%" == "Release" (
     builder missing
     builder install os_nt cpu_x64
     set RC=%ERRORLEVEL%
