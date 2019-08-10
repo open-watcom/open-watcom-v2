@@ -1,6 +1,6 @@
 # Master Open Watcom Builder Control file
 # =======================================
-
+echo on
 set PROJDIR=<OWBINDIR>
 
 [ INCLUDE <OWROOT>/build/master.ctl ]
