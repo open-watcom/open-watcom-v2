@@ -56,5 +56,6 @@ if "%OWAZURE_STAGE_NAME%" == "boot" (
         )
     )
 )
+type %OWBINDIR%\bootx.log
 cd %OWROOT%
 exit %RC%
