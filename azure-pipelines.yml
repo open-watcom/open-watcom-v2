@@ -109,7 +109,7 @@ stages:
         steps:
         - task: DownloadPipelineArtifact@2
           displayName: "Load Cache"
-          inputs: {buildType: 'current', artifactName: $(owobjdir), targetPath: build/$(owobjdir)}
+          inputs: {buildType: 'current', artifactName: $(owobjdir), targetPath: build\$(owobjdir)}
   - stage: tests
     displayName: "Tests"
     jobs:
@@ -152,7 +152,7 @@ stages:
         steps:
         - task: DownloadPipelineArtifact@2
           displayName: "Load Cache"
-          inputs: {buildType: 'current', artifactName: $(owobjdir), targetPath: build/$(owobjdir)}
+          inputs: {buildType: 'current', artifactName: $(owobjdir), targetPath: build\$(owobjdir)}
   - stage: release
     displayName: "Make Release on GitHub"
     jobs:
