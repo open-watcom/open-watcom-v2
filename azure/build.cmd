@@ -28,6 +28,9 @@ if "%OWAZURE_STAGE_NAME%" == "Tests" (
     set INCLUDE=%WATCOM%\h;%WATCOM%\h\nt
     set LIB=
 )
+if "%OWAZURE_STAGE_NAME%" == "Bootstrap" (
+    mkdir %OWBINDIR%
+)
 REM ...
 call cmnvars.bat
 set
@@ -38,9 +41,9 @@ echo INCLUDE="%INCLUDE%"
 echo LIB="%LIB%"
 echo LIBPATH="%LIBPATH%"
 REM ...
+set RC=0
+cd %OWSRCDIR%
 if "%OWAZURE_STAGE_NAME%" == "Bootstrap" (
-    mkdir %OWBINDIR%
-    cd %OWSRCDIR%
     cd wmake
     mkdir %OWOBJDIR%
     cd %OWOBJDIR%
@@ -57,38 +60,43 @@ if "%OWAZURE_STAGE_NAME%" == "Bootstrap" (
 	    builder -q boot
         )
     )
+    set RC=%ERRORLEVEL%
 )
-cd %OWSRCDIR%
 if "%OWAZURE_STAGE_NAME%" == "Build" (
     builder -q rel
+    set RC=%ERRORLEVEL%
 )
 if "%OWAZURE_STAGE_NAME%" == "Build1" (
     builder -q rel1
+    set RC=%ERRORLEVEL%
 )
 if "%OWAZURE_STAGE_NAME%" == "Build2" (
     builder -q rel2
+    set RC=%ERRORLEVEL%
 )
 if "%OWAZURE_STAGE_NAME%" == "Build3" (
     builder -q rel3
+    set RC=%ERRORLEVEL%
 )
 if "%OWAZURE_STAGE_NAME%" == "Tests" (
     if "%OWAZURETEST%" == "WASM" (
-	cd %OWSRCDIR%\wasmtest
+        cd %OWSRCDIR%\wasmtest
     }
     if "%OWAZURETEST%" == "C" (
-	cd %OWSRCDIR%\ctest
+        cd %OWSRCDIR%\ctest
     }
     if "%OWAZURETEST%" == "F77" (
-	cd %OWSRCDIR%\f77test
+        cd %OWSRCDIR%\f77test
     }
     if "%OWAZURETEST%" == "CXX" (
-	cd %OWSRCDIR%\plustest
+        cd %OWSRCDIR%\plustest
     }
     if "%OWAZURETEST%" == "CRTL" (
-	cd %OWSRCDIR%\clibtest
+        cd %OWSRCDIR%\clibtest
     }
     builder -q -i testclean
     builder -q -i test
+    set RC=%ERRORLEVEL%
     cat result.log
 )
 if "%OWAZURE_STAGE_NAME%" == "Documentation" (
@@ -96,11 +104,12 @@ if "%OWAZURE_STAGE_NAME%" == "Documentation" (
     regsvr32 -u -s itcc.dll
     regsvr32 -s %OWROOT%\travis\hhc\itcc.dll
     builder -q docs
+    set RC=%ERRORLEVEL%
 )
 if "%OWAZURE_STAGE_NAME%" == "Release windows" (
     builder missing
     builder install os_nt cpu_x64
+    set RC=%ERRORLEVEL%
 )
-set RC=%ERRORLEVEL%
 cd %OWROOT%
 exit %RC%
