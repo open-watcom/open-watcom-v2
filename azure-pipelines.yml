@@ -56,4 +56,3 @@ jobs:
     - script: azure\build.cmd
       displayName: "Release"
       env: {OWAZURE_STAGE_NAME: Release}
-    - script: set

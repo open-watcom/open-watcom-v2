@@ -28,18 +28,17 @@ if "%OWAZURE_STAGE_NAME%" == "Tests" (
     set INCLUDE=%WATCOM%\h;%WATCOM%\h\nt
     set LIB=
 )
-if "%OWAZURE_STAGE_NAME%" == "Bootstrap" (
-    mkdir %OWBINDIR%
-)
 REM ...
 call cmnvars.bat
-set
 REM ...
 @echo %OWECHO%
 REM ...
-echo INCLUDE="%INCLUDE%"
-echo LIB="%LIB%"
-echo LIBPATH="%LIBPATH%"
+if "%OWAZURE_STAGE_NAME%" == "Bootstrap" (
+    mkdir %OWBINDIR%
+)
+@echo INCLUDE="%INCLUDE%"
+@echo LIB="%LIB%"
+@echo LIBPATH="%LIBPATH%"
 REM ...
 set RC=0
 cd %OWSRCDIR%
