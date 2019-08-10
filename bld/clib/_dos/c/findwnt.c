@@ -39,6 +39,7 @@
 #include <windows.h>
 #include "rtdata.h"
 #include "ntext.h"
+#include "ntinfo.h"
 #include "_dtaxxx.h"
 #include "seterrno.h"
 #include "libwin32.h"
