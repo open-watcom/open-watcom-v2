@@ -3,7 +3,7 @@
 # Add steps that build, run tests, deploy, and more:
 # https://aka.ms/yaml
 
-variables: {System.Debug: true}
+variables: {System.Debug: true, owdebug: 1}
 
 trigger:
 - master
@@ -16,9 +16,8 @@ stages:
         pool:
           vmImage: 'ubuntu-latest'
         variables:
-          group: linux
+          owobjdir: binlnx
         steps:
-        - script: echo "owobjdir=$(owobjdir)"
         - bash: azure/build.sh
           displayName: "Bootstrap"
           env: {OWAZURE_STAGE_NAME: boot, OWOBJDIR: $(owobjdir), OWTOOLS: GCC, OWDEBUG: $(owdebug)}
@@ -29,7 +28,7 @@ stages:
         pool:
           vmImage: 'vs2017-win2016'
         variables:
-          group: windows
+          owobjdir: binnt
         steps:
         - script: echo "owobjdir=$(owobjdir)"
         - script: azure/build.cmd
@@ -41,6 +40,8 @@ stages:
       - job: OSX
         pool:
           vmImage: 'macOS-latest'
+        variables:
+          owobjdir: binosx
         steps:
         - script: echo "owobjdir=$(owobjdir)"
         - bash: azure/build.sh
@@ -56,7 +57,7 @@ stages:
         pool:
           vmImage: 'ubuntu-latest'
         variables:
-          group: linux
+          owobjdir: binlnx
         steps:
         - task: DownloadPipelineArtifact@2
           displayName: "Load Cache"
@@ -69,7 +70,7 @@ stages:
         pool:
           vmImage: 'vs2017-win2016'
         variables:
-          group: windows
+          owobjdir: binnt
         steps:
         - task: DownloadPipelineArtifact@2
           displayName: "Load Cache"
@@ -81,6 +82,8 @@ stages:
         timeoutInMinutes: 120
         pool:
           vmImage: 'macOS-latest'
+        variables:
+          owobjdir: binosx
         steps:
         - task: DownloadPipelineArtifact@2
           displayName: "Load Cache"
@@ -95,7 +98,7 @@ stages:
         pool:
           vmImage: 'ubuntu-latest'
         variables:
-          group: linux
+          owobjdir: binlnx
         steps:
         - task: DownloadPipelineArtifact@2
           displayName: "Load Cache"
@@ -104,7 +107,7 @@ stages:
         pool:
           vmImage: 'vs2017-win2016'
         variables:
-          group: windows
+          owobjdir: binnt
         steps:
         - task: DownloadPipelineArtifact@2
           displayName: "Load Cache"
@@ -116,12 +119,12 @@ stages:
         pool:
           vmImage: 'ubuntu-latest'
         variables:
-          group: linux
+          owobjdir: binlnx
       - job: Windows
         pool:
           vmImage: 'vs2017-win2016'
         variables:
-          group: windows
+          owobjdir: binnt
   - stage: docs
     displayName: "Documentation Build"
     jobs:
@@ -130,7 +133,7 @@ stages:
         pool:
           vmImage: 'vs2017-win2016'
         variables:
-          group: windows
+          owobjdir: binnt
   - stage: instal
     displayName: "Build Installers"
     jobs:
@@ -138,7 +141,7 @@ stages:
         pool:
           vmImage: 'ubuntu-latest'
         variables:
-          group: linux
+          owobjdir: binlnx
         steps:
         - task: DownloadPipelineArtifact@2
           displayName: "Load Cache"
@@ -147,7 +150,7 @@ stages:
         pool:
           vmImage: 'vs2017-win2016'
         variables:
-          group: windows
+          owobjdir: binnt
         steps:
         - task: DownloadPipelineArtifact@2
           displayName: "Load Cache"
@@ -159,4 +162,4 @@ stages:
         pool:
           vmImage: 'ubuntu-latest'
         variables:
-          group: linux
+          owobjdir: binlnx
