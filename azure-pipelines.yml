@@ -18,7 +18,7 @@ stages:
         steps:
         - bash: azure/build.sh
           displayName: "Bootstrap"
-          env: {OWAZURE_STAGE_NAME: $(stage), OWDEBUG: $(owdebug)}
+          env: {OWAZURE_STAGE_NAME: boot, OWDEBUG: $(owdebug)}
         - task: PublishPipelineArtifact@1
           inputs: {artifactName: $(owbindir), targetPath: build/$(owbindir)}
       - job: Windows
@@ -29,7 +29,7 @@ stages:
         steps:
         - script: azure/build.cmd
           displayName: "Bootstrap"
-          env: {OWAZURE_STAGE_NAME: $(stage), OWDEBUG: $(owdebug)}
+          env: {OWAZURE_STAGE_NAME: boot, OWDEBUG: $(owdebug)}
         - task: PublishPipelineArtifact@1
           inputs: {artifactName: $(owbindir), targetPath: build/$(owbindir)}
       - job: OSX
@@ -38,7 +38,7 @@ stages:
         steps:
         - bash: azure/build.sh
           displayName: "Bootstrap"
-          env: {OWAZURE_STAGE_NAME: $(stage), OWDEBUG: $(owdebug)}
+          env: {OWAZURE_STAGE_NAME: boot, OWDEBUG: $(owdebug)}
         - task: PublishPipelineArtifact@1
           inputs: {artifactName: $(owbindir), targetPath: build/$(owbindir)}
   - stage: build
@@ -54,7 +54,7 @@ stages:
           inputs: {buildType: 'current', artifactName: $(owbindir), targetPath: build/$(owbindir)}
         - bash: azure/build.sh
           displayName: "Build"
-          env: {OWAZURE_STAGE_NAME: $(stage), OWDEBUG: $(owdebug)}
+          env: {OWAZURE_STAGE_NAME: build, OWDEBUG: $(owdebug)}
       - job: Windows
         timeoutInMinutes: 120
         pool:
@@ -66,7 +66,7 @@ stages:
           inputs: {buildType: 'current', artifactName: $(owbindir), targetPath: build/$(owbindir)}
         - script: azure/build.cmd
           displayName: "Build"
-          env: {OWAZURE_STAGE_NAME: $(stage), OWDEBUG: $(owdebug)}
+          env: {OWAZURE_STAGE_NAME: build, OWDEBUG: $(owdebug)}
       - job: OSX
         timeoutInMinutes: 120
         pool:
@@ -76,7 +76,7 @@ stages:
           inputs: {buildType: 'current', artifactName: $(owbindir), targetPath: build/$(owbindir)}
         - bash: azure/build.sh
           displayName: "Build"
-          env: {OWAZURE_STAGE_NAME: $(stage), OWDEBUG: $(owdebug)}
+          env: {OWAZURE_STAGE_NAME: build, OWDEBUG: $(owdebug)}
   - stage: update
     displayName: "Update Build"
     jobs:
