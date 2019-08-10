@@ -13,18 +13,20 @@ jobs:
   pool:
     vmImage: 'vs2017-win2016'
   variables:
-    owtools: VISUALC
     owazure_debug: 1
   steps:
     - script: azure\build.cmd
       displayName: Bootstrap
-      env: {OWAZURE_STAGE_NAME: Bootstrap}
+      env: {OWAZURE_STAGE_NAME: Bootstrap,
+            OWTOOLS: VISUALC}
     - script: azure\build.cmd
       displayName: "Build"
-      env: {OWAZURE_STAGE_NAME: Build}
+      env: {OWAZURE_STAGE_NAME: Build,
+            OWTOOLS: VISUALC}
     - script: azure\build.cmd
       displayName: "Update Build"
-      env: {OWAZURE_STAGE_NAME: Update Build}
+      env: {OWAZURE_STAGE_NAME: Update Build,
+            OWTOOLS: VISUALC}
     - script: azure\build.cmd
       displayName: "Test wasm assembler"
       env: {OWAZURE_STAGE_NAME: Tests,
@@ -52,7 +54,9 @@ jobs:
             OWAZURETEST: CRTL}
     - script: azure\build.cmd
       displayName: "Documentation"
-      env: {OWAZURE_STAGE_NAME: Documentation}
+      env: {OWAZURE_STAGE_NAME: Documentation,
+            OWTOOLS: VISUALC}
     - script: azure\build.cmd
       displayName: "Release"
-      env: {OWAZURE_STAGE_NAME: Release}
+      env: {OWAZURE_STAGE_NAME: Release,
+            OWTOOLS: VISUALC}
