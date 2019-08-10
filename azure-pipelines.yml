@@ -6,8 +6,6 @@
 trigger:
 - master
 
-variables: {System.Debug: true, owazure_debug: 1}
-
 stages:
   - stage: boot
     displayName: "Bootstrap"
@@ -18,6 +16,9 @@ stages:
         variables:
           group: linux
         steps:
+        - bash: azure/build.sh
+          displayName: "Bootstrap"
+          env: {OWAZURE_STAGE_NAME: $(stage), OWDEBUG: $(owdebug)}
         - task: PublishPipelineArtifact@1
           inputs: {artifactName: $(owbindir), targetPath: build/$(owbindir)}
       - job: Windows
@@ -26,12 +27,18 @@ stages:
         variables:
           group: windows
         steps:
+        - script: azure/build.cmd
+          displayName: "Bootstrap"
+          env: {OWAZURE_STAGE_NAME: $(stage), OWDEBUG: $(owdebug)}
         - task: PublishPipelineArtifact@1
           inputs: {artifactName: $(owbindir), targetPath: build/$(owbindir)}
       - job: OSX
         pool:
           vmImage: 'macOS-latest'
         steps:
+        - bash: azure/build.sh
+          displayName: "Bootstrap"
+          env: {OWAZURE_STAGE_NAME: $(stage), OWDEBUG: $(owdebug)}
         - task: PublishPipelineArtifact@1
           inputs: {artifactName: $(owbindir), targetPath: build/$(owbindir)}
   - stage: build
@@ -45,6 +52,9 @@ stages:
         steps:
         - task: DownloadPipelineArtifact@2
           inputs: {buildType: 'current', artifactName: $(owbindir), targetPath: build/$(owbindir)}
+        - bash: azure/build.sh
+          displayName: "Build"
+          env: {OWAZURE_STAGE_NAME: $(stage), OWDEBUG: $(owdebug)}
       - job: Windows
         timeoutInMinutes: 120
         pool:
@@ -54,6 +64,9 @@ stages:
         steps:
         - task: DownloadPipelineArtifact@2
           inputs: {buildType: 'current', artifactName: $(owbindir), targetPath: build/$(owbindir)}
+        - script: azure/build.cmd
+          displayName: "Build"
+          env: {OWAZURE_STAGE_NAME: $(stage), OWDEBUG: $(owdebug)}
       - job: OSX
         timeoutInMinutes: 120
         pool:
@@ -61,6 +74,9 @@ stages:
         steps:
         - task: DownloadPipelineArtifact@2
           inputs: {buildType: 'current', artifactName: $(owbindir), targetPath: build/$(owbindir)}
+        - bash: azure/build.sh
+          displayName: "Build"
+          env: {OWAZURE_STAGE_NAME: $(stage), OWDEBUG: $(owdebug)}
   - stage: update
     displayName: "Update Build"
     jobs:
