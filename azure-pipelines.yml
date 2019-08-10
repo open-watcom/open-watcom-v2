@@ -16,6 +16,8 @@ stages:
         variables:
           group: linux
         steps:
+        - bash: ./cmnvars.sh
+          env: {OWBINDIR: $(owbindir)}
         - bash: azure/build.sh
           displayName: "Bootstrap"
           env: {OWAZURE_STAGE_NAME: boot, OWDEBUG: $(owdebug)}
@@ -36,6 +38,8 @@ stages:
         pool:
           vmImage: 'macOS-latest'
         steps:
+        - bash: ./cmnvars.sh
+          env: {OWBINDIR: $(owbindir)}
         - bash: azure/build.sh
           displayName: "Bootstrap"
           env: {OWAZURE_STAGE_NAME: boot, OWDEBUG: $(owdebug)}
@@ -52,6 +56,8 @@ stages:
         steps:
         - task: DownloadPipelineArtifact@2
           inputs: {buildType: 'current', artifactName: $(owbindir), targetPath: build/$(owbindir)}
+        - bash: ./cmnvars.sh
+          env: {OWBINDIR: $(owbindir)}
         - bash: azure/build.sh
           displayName: "Build"
           env: {OWAZURE_STAGE_NAME: build, OWDEBUG: $(owdebug)}
@@ -74,6 +80,8 @@ stages:
         steps:
         - task: DownloadPipelineArtifact@2
           inputs: {buildType: 'current', artifactName: $(owbindir), targetPath: build/$(owbindir)}
+        - bash: ./cmnvars.sh
+          env: {OWBINDIR: $(owbindir)}
         - bash: azure/build.sh
           displayName: "Build"
           env: {OWAZURE_STAGE_NAME: build, OWDEBUG: $(owdebug)}
