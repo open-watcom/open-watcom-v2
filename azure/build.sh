@@ -7,6 +7,7 @@
 #   - POSIX tools
 #   - correct setup for all OW build environment variables
 #
+set -x
 
 bootutil_proc()
 {
