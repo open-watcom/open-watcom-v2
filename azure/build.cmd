@@ -99,6 +99,8 @@ if "%OWAZURE_STAGE_NAME%" == "Tests" (
     set RC=%ERRORLEVEL%
     cat result.log
 )
+if "%OWAZURE_STAGE_NAME%" == "Update Build" (
+)
 if "%OWAZURE_STAGE_NAME%" == "Documentation" (
     REM register all Help Compilers DLL's
     regsvr32 -u -s itcc.dll
