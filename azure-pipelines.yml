@@ -3,6 +3,8 @@
 # Add steps that build, run tests, deploy, and more:
 # https://aka.ms/yaml
 
+variables: {System.Debug: true}
+
 trigger:
 - master
 
@@ -17,12 +19,13 @@ stages:
           group: linux
         steps:
         - bash: ./cmnvars.sh
-          env: {OWBINDIR: $(owbindir)}
+          env: {OWOBJDIR: $(owobjdir), OWTOOLS: GCC}
         - bash: azure/build.sh
           displayName: "Bootstrap"
           env: {OWAZURE_STAGE_NAME: boot, OWDEBUG: $(owdebug)}
         - task: PublishPipelineArtifact@1
-          inputs: {artifactName: $(owbindir), targetPath: build/$(owbindir)}
+          displayName: "Save Cache"
+          inputs: {artifactName: $(owobjdir), targetPath: build/$(owobjdir)}
       - job: Windows
         pool:
           vmImage: 'vs2017-win2016'
@@ -33,18 +36,20 @@ stages:
           displayName: "Bootstrap"
           env: {OWAZURE_STAGE_NAME: boot, OWDEBUG: $(owdebug)}
         - task: PublishPipelineArtifact@1
-          inputs: {artifactName: $(owbindir), targetPath: build/$(owbindir)}
+          displayName: "Save Cache"
+          inputs: {artifactName: $(owobjdir), targetPath: build/$(owobjdir)}
       - job: OSX
         pool:
           vmImage: 'macOS-latest'
         steps:
         - bash: ./cmnvars.sh
-          env: {OWBINDIR: $(owbindir)}
+          env: {OWOBJDIR: $(owobjdir)}
         - bash: azure/build.sh
           displayName: "Bootstrap"
-          env: {OWAZURE_STAGE_NAME: boot, OWDEBUG: $(owdebug)}
+          env: {OWAZURE_STAGE_NAME: boot, OWDEBUG: $(owdebug), OWTOOLS: CLANG}
         - task: PublishPipelineArtifact@1
-          inputs: {artifactName: $(owbindir), targetPath: build/$(owbindir)}
+          displayName: "Save Cache"
+          inputs: {artifactName: $(owobjdir), targetPath: build/$(owobjdir)}
   - stage: build
     displayName: "Build"
     jobs:
@@ -55,9 +60,10 @@ stages:
           group: linux
         steps:
         - task: DownloadPipelineArtifact@2
-          inputs: {buildType: 'current', artifactName: $(owbindir), targetPath: build/$(owbindir)}
+          displayName: "Load Cache"
+          inputs: {buildType: 'current', artifactName: $(owobjdir), targetPath: build/$(owobjdir)}
         - bash: ./cmnvars.sh
-          env: {OWBINDIR: $(owbindir)}
+          env: {OWOBJDIR: $(owobjdir), OWTOOLS: GCC}
         - bash: azure/build.sh
           displayName: "Build"
           env: {OWAZURE_STAGE_NAME: build, OWDEBUG: $(owdebug)}
@@ -69,7 +75,8 @@ stages:
           group: windows
         steps:
         - task: DownloadPipelineArtifact@2
-          inputs: {buildType: 'current', artifactName: $(owbindir), targetPath: build/$(owbindir)}
+          displayName: "Load Cache"
+          inputs: {buildType: 'current', artifactName: $(owobjdir), targetPath: build/$(owobjdir)}
         - script: azure/build.cmd
           displayName: "Build"
           env: {OWAZURE_STAGE_NAME: build, OWDEBUG: $(owdebug)}
@@ -79,9 +86,10 @@ stages:
           vmImage: 'macOS-latest'
         steps:
         - task: DownloadPipelineArtifact@2
-          inputs: {buildType: 'current', artifactName: $(owbindir), targetPath: build/$(owbindir)}
+          displayName: "Load Cache"
+          inputs: {buildType: 'current', artifactName: $(owobjdir), targetPath: build/$(owobjdir)}
         - bash: ./cmnvars.sh
-          env: {OWBINDIR: $(owbindir)}
+          env: {OWOBJDIR: $(owobjdir), OWTOOLS: CLANG}
         - bash: azure/build.sh
           displayName: "Build"
           env: {OWAZURE_STAGE_NAME: build, OWDEBUG: $(owdebug)}
@@ -95,7 +103,8 @@ stages:
           group: linux
         steps:
         - task: DownloadPipelineArtifact@2
-          inputs: {buildType: 'current', artifactName: $(owbindir), targetPath: build/$(owbindir)}
+          displayName: "Load Cache"
+          inputs: {buildType: 'current', artifactName: $(owobjdir), targetPath: build/$(owobjdir)}
       - job: Windows
         pool:
           vmImage: 'vs2017-win2016'
@@ -103,7 +112,8 @@ stages:
           group: windows
         steps:
         - task: DownloadPipelineArtifact@2
-          inputs: {buildType: 'current', artifactName: $(owbindir), targetPath: build/$(owbindir)}
+          displayName: "Load Cache"
+          inputs: {buildType: 'current', artifactName: $(owobjdir), targetPath: build/$(owobjdir)}
   - stage: tests
     displayName: "Tests"
     jobs:
@@ -136,7 +146,8 @@ stages:
           group: linux
         steps:
         - task: DownloadPipelineArtifact@2
-          inputs: {buildType: 'current', artifactName: $(owbindir), targetPath: build/$(owbindir)}
+          displayName: "Load Cache"
+          inputs: {buildType: 'current', artifactName: $(owobjdir), targetPath: build/$(owobjdir)}
       - job: Windows
         pool:
           vmImage: 'vs2017-win2016'
@@ -144,7 +155,8 @@ stages:
           group: windows
         steps:
         - task: DownloadPipelineArtifact@2
-          inputs: {buildType: 'current', artifactName: $(owbindir), targetPath: build/$(owbindir)}
+          displayName: "Load Cache"
+          inputs: {buildType: 'current', artifactName: $(owobjdir), targetPath: build/$(owobjdir)}
   - stage: release
     displayName: "Make Release on GitHub"
     jobs:
