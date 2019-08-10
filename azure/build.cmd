@@ -52,7 +52,7 @@ if "%OWAZURE_STAGE_NAME%" == "boot" (
         set RC=%ERRORLEVEL%
         cd %OWSRCDIR%
         if not %RC% == 1 (
-            builder boot
+            builder -v boot
         )
     )
 )
