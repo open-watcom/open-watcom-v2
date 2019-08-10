@@ -30,7 +30,10 @@ stages:
         variables:
           owobjdir: binnt
         steps:
-        - script: azure\buildx.cmd
+        - task: BatchScript@1
+          inputs:
+          filename: azure\buildx.cmd
+#        - script: azure\buildx.cmd
           displayName: "Bootstrap"
           env: {OWAZURE_STAGE_NAME: boot, OWOBJDIR: $(owobjdir), OWTOOLS: VISUALC, OWDEBUG: $(owdebug)}
         - task: PublishPipelineArtifact@1
