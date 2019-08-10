@@ -71,6 +71,7 @@ stages:
           vmImage: 'vs2017-win2016'
   - stage: release
     displayName: "Make Release on GitHub"
+    jobs:
       - job: Linux
         pool:
           vmImage: 'ubuntu-latest'
