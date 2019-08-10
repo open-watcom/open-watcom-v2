@@ -18,12 +18,9 @@ stages:
         variables:
           group: linux
         steps:
-        - bash: export OWROOT=$(realpath `pwd`)
-        - bash: ./cmnvars.sh
-          env: {OWOBJDIR: $(owobjdir), OWTOOLS: GCC}
         - bash: azure/build.sh
           displayName: "Bootstrap"
-          env: {OWAZURE_STAGE_NAME: boot, OWDEBUG: $(owdebug)}
+          env: {OWAZURE_STAGE_NAME: boot, OWOBJDIR: $(owobjdir), OWTOOLS: GCC, OWDEBUG: $(owdebug)}
         - task: PublishPipelineArtifact@1
           displayName: "Save Cache"
           inputs: {artifactName: $(owobjdir), targetPath: build/$(owobjdir)}
@@ -43,12 +40,9 @@ stages:
         pool:
           vmImage: 'macOS-latest'
         steps:
-        - bash: export OWROOT=$(realpath `pwd`)
-        - bash: ./cmnvars.sh
-          env: {OWOBJDIR: $(owobjdir)}
         - bash: azure/build.sh
           displayName: "Bootstrap"
-          env: {OWAZURE_STAGE_NAME: boot, OWDEBUG: $(owdebug), OWTOOLS: CLANG}
+          env: {OWAZURE_STAGE_NAME: boot, OWOBJDIR: $(owobjdir), OWTOOLS: CLANG, OWDEBUG: $(owdebug)}
         - task: PublishPipelineArtifact@1
           displayName: "Save Cache"
           inputs: {artifactName: $(owobjdir), targetPath: build/$(owobjdir)}
@@ -64,12 +58,9 @@ stages:
         - task: DownloadPipelineArtifact@2
           displayName: "Load Cache"
           inputs: {buildType: 'current', artifactName: $(owobjdir), targetPath: build/$(owobjdir)}
-        - bash: export OWROOT=$(realpath `pwd`)
-        - bash: ./cmnvars.sh
-          env: {OWOBJDIR: $(owobjdir), OWTOOLS: GCC}
         - bash: azure/build.sh
           displayName: "Build"
-          env: {OWAZURE_STAGE_NAME: build, OWDEBUG: $(owdebug)}
+          env: {OWAZURE_STAGE_NAME: build, OWOBJDIR: $(owobjdir), OWTOOLS: GCC, OWDEBUG: $(owdebug)}
       - job: Windows
         timeoutInMinutes: 120
         pool:
@@ -91,12 +82,9 @@ stages:
         - task: DownloadPipelineArtifact@2
           displayName: "Load Cache"
           inputs: {buildType: 'current', artifactName: $(owobjdir), targetPath: build/$(owobjdir)}
-        - bash: export OWROOT=$(realpath `pwd`)
-        - bash: ./cmnvars.sh
-          env: {OWOBJDIR: $(owobjdir), OWTOOLS: CLANG}
         - bash: azure/build.sh
           displayName: "Build"
-          env: {OWAZURE_STAGE_NAME: build, OWDEBUG: $(owdebug)}
+          env: {OWAZURE_STAGE_NAME: build, OWOBJDIR: $(owobjdir), OWTOOLS: CLANG, OWDEBUG: $(owdebug)}
   - stage: update
     displayName: "Update Build"
     jobs:
