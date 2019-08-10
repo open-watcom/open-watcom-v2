@@ -18,6 +18,7 @@ stages:
         variables:
           group: linux
         steps:
+        - script: echo "owobjdir=$(owobjdir)"
         - bash: azure/build.sh
           displayName: "Bootstrap"
           env: {OWAZURE_STAGE_NAME: boot, OWOBJDIR: $(owobjdir), OWTOOLS: GCC, OWDEBUG: $(owdebug)}
@@ -30,6 +31,7 @@ stages:
         variables:
           group: windows
         steps:
+        - script: echo "owobjdir=$(owobjdir)"
         - script: azure/build.cmd
           displayName: "Bootstrap"
           env: {OWAZURE_STAGE_NAME: boot, OWDEBUG: $(owdebug)}
@@ -40,6 +42,7 @@ stages:
         pool:
           vmImage: 'macOS-latest'
         steps:
+        - script: echo "owobjdir=$(owobjdir)"
         - bash: azure/build.sh
           displayName: "Bootstrap"
           env: {OWAZURE_STAGE_NAME: boot, OWOBJDIR: $(owobjdir), OWTOOLS: CLANG, OWDEBUG: $(owdebug)}
