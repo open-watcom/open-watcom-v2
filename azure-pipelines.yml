@@ -30,12 +30,12 @@ stages:
         variables:
           owobjdir: binnt
         steps:
-        - script: azure/build.cmd
+        - script: azure\build.cmd
           displayName: "Bootstrap"
           env: {OWAZURE_STAGE_NAME: boot, OWOBJDIR: $(owobjdir), OWTOOLS: VISUALC, OWDEBUG: $(owdebug)}
         - task: PublishPipelineArtifact@1
           displayName: "Save Cache"
-          inputs: {artifactName: $(owobjdir), targetPath: build/$(owobjdir)}
+          inputs: {artifactName: $(owobjdir), targetPath: build\$(owobjdir)}
       - job: OSX
         pool:
           vmImage: 'macOS-latest'
@@ -72,8 +72,8 @@ stages:
         steps:
         - task: DownloadPipelineArtifact@2
           displayName: "Load Cache"
-          inputs: {buildType: 'current', artifactName: $(owobjdir), targetPath: build/$(owobjdir)}
-        - script: azure/build.cmd
+          inputs: {buildType: 'current', artifactName: $(owobjdir), targetPath: build\$(owobjdir)}
+        - script: azure\build.cmd
           displayName: "Build"
           env: {OWAZURE_STAGE_NAME: build, OWOBJDIR: $(owobjdir), OWTOOLS: VISUALC, OWDEBUG: $(owdebug)}
       - job: OSX

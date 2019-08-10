@@ -76,6 +76,7 @@ if "%OWAZURE_STAGE_NAME%" == "inst" (
     builder install os_nt cpu_x64
     set RC=%ERRORLEVEL%
 )
+cd %OWROOT%
 REM sleep 3
 ping -n 3 127.0.0.1 >NUL
 exit %RC%
