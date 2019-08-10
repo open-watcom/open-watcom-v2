@@ -34,6 +34,7 @@ if "%OWDEBUG%" == "1" (
 )
 REM ...
 set RC=0
+mkdir %OWBINDIR%
 if "%OWAZURE_STAGE_NAME%" == "boot" (
     cd %OWSRCDIR%
     cd wmake
