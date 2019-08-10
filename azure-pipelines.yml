@@ -10,6 +10,7 @@ variables: {System.Debug: true}
 
 jobs:
 - job: "All_in_one"
+  timeoutInMinutes: 120
   pool:
     vmImage: 'vs2017-win2016'
   variables:
