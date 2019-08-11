@@ -21,9 +21,8 @@ stages:
     jobs:
       - job: Linux
         variables: 
-          template: azure/var-lnx.yml
-        variables: 
           owimage: 'Hosted Ubuntu 1604'
+          template: azure/var-lnx.yml
         pool: {name: '$(owimage)'}
         steps:
         - script: azure/buildx.sh
