@@ -22,8 +22,11 @@ stages:
           displayName: "Bootstrap"
           env: {OWAZURE_STAGE_NAME: boot, OWOBJDIR: $(owobjdir), OWTOOLS: GCC, OWDEBUG: $(owdebug)}
         - task: PublishPipelineArtifact@1
-          displayName: "Save Cache"
+          displayName: "Save Artifact $(owobjdir)"
           inputs: {artifactName: $(owobjdir), targetPath: build/$(owobjdir)}
+        - task: PublishPipelineArtifact@1
+          displayName: "Save Artifact watcom"
+          inputs: {artifactName: watcom, targetPath: bld/watcom/$(owobjdir)}
       - job: Windows
         pool:
           vmImage: 'vs2017-win2016'
@@ -36,8 +39,11 @@ stages:
           displayName: "Bootstrap"
           env: {OWAZURE_STAGE_NAME: boot, OWOBJDIR: $(owobjdir), OWTOOLS: VISUALC, OWDEBUG: $(owdebug)}
         - task: PublishPipelineArtifact@1
-          displayName: "Save Cache"
-          inputs: {artifactName: $(owobjdir), targetPath: build\$(owobjdir)}
+          displayName: "Save Artifact $(owobjdir)"
+          inputs: {artifactName: $(owobjdir), targetPath: build/$(owobjdir)}
+        - task: PublishPipelineArtifact@1
+          displayName: "Save Artifact watcom"
+          inputs: {artifactName: watcom, targetPath: bld/watcom/$(owobjdir)}
       - job: OSX
         pool:
           vmImage: 'macOS-latest'
@@ -48,8 +54,11 @@ stages:
           displayName: "Bootstrap"
           env: {OWAZURE_STAGE_NAME: boot, OWOBJDIR: $(owobjdir), OWTOOLS: CLANG, OWDEBUG: $(owdebug)}
         - task: PublishPipelineArtifact@1
-          displayName: "Save Cache"
+          displayName: "Save Artifact $(owobjdir)"
           inputs: {artifactName: $(owobjdir), targetPath: build/$(owobjdir)}
+        - task: PublishPipelineArtifact@1
+          displayName: "Save Artifact watcom"
+          inputs: {artifactName: watcom, targetPath: bld/watcom/$(owobjdir)}
   - stage: build
     displayName: "Build"
     jobs:
@@ -60,9 +69,12 @@ stages:
           owobjdir: binlnx
         steps:
         - task: DownloadPipelineArtifact@2
-          displayName: "Load Cache"
+          displayName: "Load Artifact $(owobjdir)"
           inputs: {buildType: 'current', artifactName: $(owobjdir), targetPath: build/$(owobjdir)}
         - bash: chmod +x build/$(owobjdir)/*
+        - task: DownloadPipelineArtifact@2
+          displayName: "Load Artifact watcom"
+          inputs: {buildType: 'current', artifactName: watcom, targetPath: bld/watcom/$(owobjdir)}
         - bash: azure/buildx.sh
           displayName: "Build"
           env: {OWAZURE_STAGE_NAME: build, OWOBJDIR: $(owobjdir), OWTOOLS: GCC, OWDEBUG: $(owdebug)}
@@ -74,9 +86,12 @@ stages:
           owobjdir: binnt
         steps:
         - task: DownloadPipelineArtifact@2
-          displayName: "Load Cache"
-          inputs: {buildType: 'current', artifactName: $(owobjdir), targetPath: build\$(owobjdir)}
+          displayName: "Load Artifact $(owobjdir)"
+          inputs: {buildType: 'current', artifactName: $(owobjdir), targetPath: build/$(owobjdir)}
         - bash: chmod +x build/$(owobjdir)/*
+        - task: DownloadPipelineArtifact@2
+          displayName: "Load Artifact watcom"
+          inputs: {buildType: 'current', artifactName: watcom, targetPath: bld/watcom/$(owobjdir)}
         - script: azure\buildx.cmd
           displayName: "Build"
           env: {OWAZURE_STAGE_NAME: build, OWOBJDIR: $(owobjdir), OWTOOLS: VISUALC, OWDEBUG: $(owdebug)}
@@ -88,9 +103,12 @@ stages:
           owobjdir: binosx
         steps:
         - task: DownloadPipelineArtifact@2
-          displayName: "Load Cache"
+          displayName: "Load Artifact $(owobjdir)"
           inputs: {buildType: 'current', artifactName: $(owobjdir), targetPath: build/$(owobjdir)}
         - bash: chmod +x build/$(owobjdir)/*
+        - task: DownloadPipelineArtifact@2
+          displayName: "Load Artifact watcom"
+          inputs: {buildType: 'current', artifactName: watcom, targetPath: bld/watcom/$(owobjdir)}
         - bash: azure/buildx.sh
           displayName: "Build"
           env: {OWAZURE_STAGE_NAME: build, OWOBJDIR: $(owobjdir), OWTOOLS: CLANG, OWDEBUG: $(owdebug)}
@@ -104,9 +122,12 @@ stages:
           owobjdir: binlnx
         steps:
         - task: DownloadPipelineArtifact@2
-          displayName: "Load Cache"
+          displayName: "Load Artifact $(owobjdir)"
           inputs: {buildType: 'current', artifactName: $(owobjdir), targetPath: build/$(owobjdir)}
         - bash: chmod +x build/$(owobjdir)/*
+        - task: DownloadPipelineArtifact@2
+          displayName: "Load Artifact watcom"
+          inputs: {buildType: 'current', artifactName: watcom, targetPath: bld/watcom/$(owobjdir)}
       - job: Windows
         pool:
           vmImage: 'vs2017-win2016'
@@ -114,9 +135,12 @@ stages:
           owobjdir: binnt
         steps:
         - task: DownloadPipelineArtifact@2
-          displayName: "Load Cache"
-          inputs: {buildType: 'current', artifactName: $(owobjdir), targetPath: build\$(owobjdir)}
+          displayName: "Load Artifact $(owobjdir)"
+          inputs: {buildType: 'current', artifactName: $(owobjdir), targetPath: build/$(owobjdir)}
         - bash: chmod +x build/$(owobjdir)/*
+        - task: DownloadPipelineArtifact@2
+          displayName: "Load Artifact watcom"
+          inputs: {buildType: 'current', artifactName: watcom, targetPath: bld/watcom/$(owobjdir)}
   - stage: tests
     displayName: "Tests"
     jobs:
@@ -152,9 +176,12 @@ stages:
           owobjdir: binlnx
         steps:
         - task: DownloadPipelineArtifact@2
-          displayName: "Load Cache"
+          displayName: "Load Artifact $(owobjdir)"
           inputs: {buildType: 'current', artifactName: $(owobjdir), targetPath: build/$(owobjdir)}
         - bash: chmod +x build/$(owobjdir)/*
+        - task: DownloadPipelineArtifact@2
+          displayName: "Load Artifact watcom"
+          inputs: {buildType: 'current', artifactName: watcom, targetPath: bld/watcom/$(owobjdir)}
         - script: azure\buildx.sh
           displayName: "Build Installers"
           env: {OWAZURE_STAGE_NAME: inst, OWOBJDIR: $(owobjdir), OWTOOLS: VISUALC, OWDEBUG: $(owdebug)}
@@ -165,9 +192,12 @@ stages:
           owobjdir: binnt
         steps:
         - task: DownloadPipelineArtifact@2
-          displayName: "Load Cache"
-          inputs: {buildType: 'current', artifactName: $(owobjdir), targetPath: build\$(owobjdir)}
+          displayName: "Load Artifact $(owobjdir)"
+          inputs: {buildType: 'current', artifactName: $(owobjdir), targetPath: build/$(owobjdir)}
         - bash: chmod +x build/$(owobjdir)/*
+        - task: DownloadPipelineArtifact@2
+          displayName: "Load Artifact watcom"
+          inputs: {buildType: 'current', artifactName: watcom, targetPath: bld/watcom/$(owobjdir)}
         - script: azure\buildx.cmd
           displayName: "Build Installers"
           env: {OWAZURE_STAGE_NAME: inst, OWOBJDIR: $(owobjdir), OWTOOLS: VISUALC, OWDEBUG: $(owdebug)}
