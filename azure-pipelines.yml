@@ -62,7 +62,7 @@ stages:
         - script: sudo apt-get install -y dosbox
         - script: azure/buildx.sh
           displayName: "Build"
-          env: {OWAZURE_STAGE_NAME: build, OWOBJDIR: $(owobjdir), OWTOOLS: GCC, OWDEBUG: $(owdebug), OWDOSBOX: dosbox}
+          env: {OWAZURE_STAGE_NAME: build, OWOBJDIR: $(owobjdir), OWTOOLS: GCC, OWDEBUG: $(owdebug)}
         - template: azure/relsave.yml
       - job: Windows
         timeoutInMinutes: 120
@@ -87,7 +87,7 @@ stages:
         - script: brew install dosbox
         - script: azure/buildx.sh
           displayName: "Build"
-          env: {OWAZURE_STAGE_NAME: build, OWOBJDIR: $(owobjdir), OWTOOLS: CLANG, OWDEBUG: $(owdebug), OWDOSBOX: dosbox}
+          env: {OWAZURE_STAGE_NAME: build, OWOBJDIR: $(owobjdir), OWTOOLS: CLANG, OWDEBUG: $(owdebug)}
   - stage: tests
     displayName: "Tests"
     jobs:
@@ -119,9 +119,16 @@ stages:
         - script: azure/buildx.cmd
           displayName: "Documentation Build"
           env: {OWAZURE_STAGE_NAME: docs, OWOBJDIR: $(owobjdir), OWTOOLS: VISUALC, OWDEBUG: $(owdebug)}
+        - template: relload.yml
+          parameters: 
+            relVersion: binlnx
+        - template: relload.yml
+          parameters: 
+            relVersion: binnt
+        # complete OW release artifact
         - template: azure/relsave.yml
           parameters: 
-            relVersion: docs
+            relVersion: relall
   - stage: instal
     displayName: "Build Installers"
     jobs:
@@ -132,11 +139,14 @@ stages:
           owobjdir: binlnx
         steps:
         - template: azure/artiflod.yml
-        - template: azure/relall.yml
         - template: azure/install.yml
+        - template: azure/relload.yml
+          parameters:
+            relVersion: relall
         - script: azure/buildx.sh
           displayName: "Build Installers"
           env: {OWAZURE_STAGE_NAME: inst, OWOBJDIR: $(owobjdir), OWTOOLS: VISUALC, OWDEBUG: $(owdebug)}
+        - template: azure/distsave.yml
       - job: Windows
         pool:
           vmImage: 'vs2017-win2016'
@@ -144,11 +154,14 @@ stages:
           owobjdir: binnt
         steps:
         - template: azure/artiflod.yml
-        - template: azure/relall.yml
         - template: azure/install.yml
+        - template: azure/relload.yml
+          parameters: 
+            relVersion: relall
         - script: azure/buildx.cmd
           displayName: "Build Installers"
           env: {OWAZURE_STAGE_NAME: inst, OWOBJDIR: $(owobjdir), OWTOOLS: VISUALC, OWDEBUG: $(owdebug)}
+        - template: azure/distsave.yml
   - stage: release
     displayName: "Make Release on GitHub"
     jobs:
@@ -159,6 +172,15 @@ stages:
           owobjdir: binlnx
         steps:
         - template: azure/artiflod.yml
+        - template: azure/distload.yml
+          parameters: 
+            relVersion: binlnx
+        - template: azure/distload.yml
+          parameters: 
+            relVersion: binnt
+        - template: azure/distsave.yml
+          parameters: 
+            relVersion: distall
 #        - task: GitHubRelease@0
 #          inputs:
 #            gitHubConnection: 

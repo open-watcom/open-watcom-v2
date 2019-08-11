@@ -53,6 +53,7 @@ build_proc()
     else
         export OWROOT=`pwd`
     fi
+    export OWDOSBOX=dosbox
     export SDL_VIDEODRIVER=dummy
     export SDL_AUDIODRIVER=disk
     export SDL_DISKAUDIOFILE=/dev/null

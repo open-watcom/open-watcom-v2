@@ -1,0 +1,9 @@
+parameters:
+  relVersion: '$(owobjdir)'
+
+steps:
+    - task: PublishPipelineArtifact@1
+      displayName: Save Artifact distrib-${{ parameters.relVersion }}
+      inputs: 
+        artifactName: distrib-${{ parameters.relVersion }}
+        targetPath: distrib/ow/bin
