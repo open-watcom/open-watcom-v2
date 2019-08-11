@@ -1,4 +1,4 @@
 steps:
     - task: PublishPipelineArtifact@1
       displayName: "Save Release"
-      inputs: {artifactName: reease targetPath: rel}
+      inputs: {artifactName: release, targetPath: rel}
