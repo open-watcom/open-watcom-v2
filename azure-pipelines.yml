@@ -119,10 +119,10 @@ stages:
         - script: azure/buildx.cmd
           displayName: "Documentation Build"
           env: {OWAZURE_STAGE_NAME: docs, OWOBJDIR: $(owobjdir), OWTOOLS: VISUALC, OWDEBUG: $(owdebug)}
-        - template: relload.yml
+        - template: azure/relload.yml
           parameters: 
             relVersion: binlnx
-        - template: relload.yml
+        - template: azure/relload.yml
           parameters: 
             relVersion: binnt
         # complete OW release artifact
