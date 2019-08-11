@@ -8,4 +8,4 @@ steps:
         buildType: 'current'
         artifactName: bld-setupgui-${{ parameters.relVersion }}
         targetPath: bld/setupgui
-        pattern: */*setup.exe
+        pattern: '*/*setup.exe'
