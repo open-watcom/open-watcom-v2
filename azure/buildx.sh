@@ -53,6 +53,9 @@ build_proc()
     else
         export OWROOT=`pwd`
     fi
+    export SDL_VIDEODRIVER=dummy
+    export SDL_AUDIODRIVER=disk
+    export SDL_DISKAUDIOFILE=/dev/null
     . ./cmnvars.sh
     cd $OWSRCDIR
     case "$OWAZURE_STAGE_NAME" in
