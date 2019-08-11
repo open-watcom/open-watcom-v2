@@ -65,6 +65,7 @@ stages:
         - task: DownloadPipelineArtifact@2
           displayName: "Load Cache"
           inputs: {buildType: 'current', artifactName: $(owobjdir), targetPath: build/$(owobjdir)}
+        - bash: chmod +x build/$(owobjdir)/*
         - bash: ls -l build/$(owobjdir)
         - bash: azure/buildx.sh
           displayName: "Build"
@@ -79,6 +80,7 @@ stages:
         - task: DownloadPipelineArtifact@2
           displayName: "Load Cache"
           inputs: {buildType: 'current', artifactName: $(owobjdir), targetPath: build\$(owobjdir)}
+        - bash: chmod +x build/$(owobjdir)/*
         - bash: ls -l build/$(owobjdir)
         - script: azure\buildx.cmd
           displayName: "Build"
@@ -93,6 +95,7 @@ stages:
         - task: DownloadPipelineArtifact@2
           displayName: "Load Cache"
           inputs: {buildType: 'current', artifactName: $(owobjdir), targetPath: build/$(owobjdir)}
+        - bash: chmod +x build/$(owobjdir)/*
         - bash: ls -l build/$(owobjdir)
         - bash: azure/buildx.sh
           displayName: "Build"
