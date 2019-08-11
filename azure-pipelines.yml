@@ -19,19 +19,31 @@ stages:
   - stage: boot
     displayName: "Bootstrap"
     jobs:
-      - template: azure/os-linux.yml
+      - job: Linux
+        variables:
+          template: azure/var-lnx.yml
+        pool:
+          vmImage: $(owimage)
         steps:
         - script: azure/buildx.sh
           displayName: "Bootstrap"
           env: {OWAZURE_STAGE_NAME: boot, OWOBJDIR: $(owobjdir), OWTOOLS: GCC, OWDEBUG: $(owdebug)}
         - template: azure/artifsav.yml
-      - template: azure/os-win.yml
+      - job: Windows
+        variables:
+          template: azure/var-win.yml
+        pool:
+          vmImage: $(owimage)
         steps:
         - script: azure/buildx.cmd
           displayName: "Bootstrap"
           env: {OWAZURE_STAGE_NAME: boot, OWOBJDIR: $(owobjdir), OWTOOLS: VISUALC, OWDEBUG: $(owdebug)}
         - template: azure/artifsav.yml
-      - template: azure/os-osx.yml
+      - job: OSX
+        variables:
+          template: azure/var-osx.yml
+        pool:
+          vmImage: $(owimage)
         steps:
         - script: azure/buildx.sh
           displayName: "Bootstrap"
@@ -40,7 +52,11 @@ stages:
   - stage: build
     displayName: "Build"
     jobs:
-      - template: azure/os-linux.yml
+      - job: Linux
+        variables:
+          template: azure/var-lnx.yml
+        pool:
+          vmImage: $(owimage)
         steps:
         - template: azure/artiflod.yml
         - script: sudo apt-get install -y dosbox
@@ -49,7 +65,11 @@ stages:
           displayName: "Build"
           env: {OWAZURE_STAGE_NAME: build, OWOBJDIR: $(owobjdir), OWTOOLS: GCC, OWDEBUG: $(owdebug)}
         - template: azure/relsave.yml
-      - template: azure/os-win.yml
+      - job: Windows
+        variables:
+          template: azure/var-win.yml
+        pool:
+          vmImage: $(owimage)
         timeoutInMinutes: 120
         steps:
         - template: azure/artiflod.yml
@@ -57,7 +77,11 @@ stages:
           displayName: "Build"
           env: {OWAZURE_STAGE_NAME: build, OWOBJDIR: $(owobjdir), OWTOOLS: VISUALC, OWDEBUG: $(owdebug)}
         - template: azure/relsave.yml
-      - template: azure/os-osx.yml
+      - job: OSX
+        variables:
+          template: azure/var-osx.yml
+        pool:
+          vmImage: $(owimage)
         steps:
         - template: azure/artiflod.yml
         - script: brew install dosbox
@@ -68,16 +92,28 @@ stages:
   - stage: tests
     displayName: "Tests"
     jobs:
-      - template: azure/os-linux.yml
+      - job: Linux
+        variables:
+          template: azure/var-lnx.yml
+        pool:
+          vmImage: $(owimage)
         steps:
         - template: azure/artiflod.yml
-      - template: azure/os-win.yml
+      - job: Windows
+        variables:
+          template: azure/var-win.yml
+        pool:
+          vmImage: $(owimage)
         steps:
         - template: azure/artiflod.yml
   - stage: docs
     displayName: "Documentation Build"
     jobs:
-      - template: azure/os-win.yml
+      - job: Windows
+        variables:
+          template: azure/var-win.yml
+        pool:
+          vmImage: $(owimage)
         timeoutInMinutes: 180
         steps:
         - template: azure/artiflod.yml
@@ -97,7 +133,11 @@ stages:
   - stage: instal
     displayName: "Build Installers"
     jobs:
-      - template: azure/os-linux.yml
+      - job: Linux
+        variables:
+          template: azure/var-lnx.yml
+        pool:
+          vmImage: $(owimage)
         steps:
         - template: azure/artiflod.yml
         - template: azure/install.yml
@@ -108,7 +148,11 @@ stages:
           displayName: "Build Installers"
           env: {OWAZURE_STAGE_NAME: inst, OWOBJDIR: $(owobjdir), OWTOOLS: VISUALC, OWDEBUG: $(owdebug)}
         - template: azure/distsave.yml
-      - template: azure/os-win.yml
+      - job: Windows
+        variables:
+          template: azure/var-win.yml
+        pool:
+          vmImage: $(owimage)
         steps:
         - template: azure/artiflod.yml
         - template: azure/install.yml
@@ -122,7 +166,11 @@ stages:
   - stage: release
     displayName: "Make Release on GitHub"
     jobs:
-      - template: azure/os-linux.yml
+      - job: Linux
+        variables:
+          template: azure/var-lnx.yml
+        pool:
+          vmImage: $(owimage)
         steps:
         - template: azure/artiflod.yml
         - template: azure/distload.yml
