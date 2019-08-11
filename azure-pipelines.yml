@@ -25,7 +25,7 @@ stages:
         variables:
           owobjdir: binlnx
         steps:
-        - bash: azure/buildx.sh
+        - script: azure/buildx.sh
           displayName: "Bootstrap"
           env: {OWAZURE_STAGE_NAME: boot, OWOBJDIR: $(owobjdir), OWTOOLS: GCC, OWDEBUG: $(owdebug)}
         - template: azure/artifsav.yml
@@ -35,9 +35,7 @@ stages:
         variables:
           owobjdir: binnt
         steps:
-        - task: BatchScript@1
-          inputs: {filename: azure\buildx.cmd}
-#        - script: azure\buildx.cmd
+        - script: azure/buildx.cmd
           displayName: "Bootstrap"
           env: {OWAZURE_STAGE_NAME: boot, OWOBJDIR: $(owobjdir), OWTOOLS: VISUALC, OWDEBUG: $(owdebug)}
         - template: azure/artifsav.yml
@@ -47,7 +45,7 @@ stages:
         variables:
           owobjdir: binosx
         steps:
-        - bash: azure/buildx.sh
+        - script: azure/buildx.sh
           displayName: "Bootstrap"
           env: {OWAZURE_STAGE_NAME: boot, OWOBJDIR: $(owobjdir), OWTOOLS: CLANG, OWDEBUG: $(owdebug)}
         - template: azure/artifsav.yml
@@ -61,8 +59,8 @@ stages:
           owobjdir: binlnx
         steps:
         - template: azure/artiflod.yml
-        - bash: sudo apt-get install -y dosemu
-        - bash: azure/buildx.sh
+        - script: sudo apt-get install -y dosemu
+        - script: azure/buildx.sh
           displayName: "Build"
           env: {OWAZURE_STAGE_NAME: build, OWOBJDIR: $(owobjdir), OWTOOLS: GCC, OWDEBUG: $(owdebug)}
       - job: Windows
@@ -73,7 +71,7 @@ stages:
           owobjdir: binnt
         steps:
         - template: azure/artiflod.yml
-        - script: azure\buildx.cmd
+        - script: azure/buildx.cmd
           displayName: "Build"
           env: {OWAZURE_STAGE_NAME: build, OWOBJDIR: $(owobjdir), OWTOOLS: VISUALC, OWDEBUG: $(owdebug)}
       - job: OSX
@@ -84,8 +82,8 @@ stages:
           owobjdir: binosx
         steps:
         - template: azure/artiflod.yml
-        - bash: brew install dosbox
-        - bash: azure/buildx.sh
+        - script: brew install dosbox
+        - script: azure/buildx.sh
           displayName: "Build"
           env: {OWAZURE_STAGE_NAME: build, OWOBJDIR: $(owobjdir), OWTOOLS: CLANG, OWDEBUG: $(owdebug), OWDOSBOX: dosbox, SDL_VIDEODRIVER: dummy}
   - stage: update
@@ -141,7 +139,7 @@ stages:
           owobjdir: binlnx
         steps:
         - template: azure/artiflod.yml
-        - script: azure\buildx.sh
+        - script: azure/buildx.sh
           displayName: "Build Installers"
           env: {OWAZURE_STAGE_NAME: inst, OWOBJDIR: $(owobjdir), OWTOOLS: VISUALC, OWDEBUG: $(owdebug)}
       - job: Windows
@@ -151,7 +149,7 @@ stages:
           owobjdir: binnt
         steps:
         - template: azure/artiflod.yml
-        - script: azure\buildx.cmd
+        - script: azure/buildx.cmd
           displayName: "Build Installers"
           env: {OWAZURE_STAGE_NAME: inst, OWOBJDIR: $(owobjdir), OWTOOLS: VISUALC, OWDEBUG: $(owdebug)}
   - stage: release
