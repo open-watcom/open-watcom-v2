@@ -1,6 +1,0 @@
-jobs:
-  - job: OSX
-    pool:
-      vmImage: 'macOS-latest'
-    variables:
-      owobjdir: binosx

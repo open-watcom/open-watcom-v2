@@ -1,0 +1,3 @@
+variables:
+    owobjdir: binlnx
+    owimage: 'ubuntu-latest'
