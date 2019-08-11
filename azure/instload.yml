@@ -1,0 +1,8 @@
+parameters:
+  relVersion: '$(owobjdir)'
+
+steps:
+    - task: DownloadPipelineArtifact@2
+      displayName: "Load Artifacts bld-setupgui-${{ parameters.relVersion }}"
+      inputs: {buildType: 'current', artifactName: bld-setupgui-${{ parameters.relVersion }}, targetPath: bld/setupgui}
+

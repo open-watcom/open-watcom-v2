@@ -1,4 +1,7 @@
+parameters:
+  relVersion: '$(owobjdir)'
+
 steps:
     - task: PublishPipelineArtifact@1
-      displayName: "Save Release"
-      inputs: {artifactName: release, targetPath: rel}
+      displayName: "Save Release rel-${{ parameters.relVersion }}"
+      inputs: {artifactName: ${{ parameters.relVersion }}, targetPath: rel}

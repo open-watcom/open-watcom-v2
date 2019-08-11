@@ -1,0 +1,7 @@
+parameters:
+  relVersion: '$(owobjdir)'
+
+steps:
+    - task: PublishPipelineArtifact@1
+      displayName: "Save Artifacts bld-setupgui-${{ parameters.relVersion }}"
+      inputs: {artifactName: bld-setupgui-${{ parameters.relVersion }}, targetPath: bld/setupgui}

@@ -88,17 +88,6 @@ stages:
         - script: azure/buildx.sh
           displayName: "Build"
           env: {OWAZURE_STAGE_NAME: build, OWOBJDIR: $(owobjdir), OWTOOLS: CLANG, OWDEBUG: $(owdebug), OWDOSBOX: dosbox}
-  - stage: update
-    displayName: "Update Build"
-    jobs:
-      - job: Linux
-        pool:
-          vmImage: 'ubuntu-latest'
-        variables:
-          owobjdir: binlnx
-        steps:
-        - template: azure/artiflod.yml
-        - template: azure/relload.yml
   - stage: tests
     displayName: "Tests"
     jobs:
@@ -107,11 +96,15 @@ stages:
           vmImage: 'ubuntu-latest'
         variables:
           owobjdir: binlnx
+        steps:
+        - template: azure/artiflod.yml
       - job: Windows
         pool:
           vmImage: 'vs2017-win2016'
         variables:
           owobjdir: binnt
+        steps:
+        - template: azure/artiflod.yml
   - stage: docs
     displayName: "Documentation Build"
     jobs:
@@ -122,9 +115,13 @@ stages:
         variables:
           owobjdir: binnt
         steps:
+        - template: azure/artiflod.yml
         - script: azure/buildx.cmd
           displayName: "Documentation Build"
           env: {OWAZURE_STAGE_NAME: docs, OWOBJDIR: $(owobjdir), OWTOOLS: VISUALC, OWDEBUG: $(owdebug)}
+        - template: azure/relsave.yml
+          parameters: 
+            relVersion: docs
   - stage: instal
     displayName: "Build Installers"
     jobs:
@@ -135,6 +132,8 @@ stages:
           owobjdir: binlnx
         steps:
         - template: azure/artiflod.yml
+        - template: azure/relall.yml
+        - template: azure/install.yml
         - script: azure/buildx.sh
           displayName: "Build Installers"
           env: {OWAZURE_STAGE_NAME: inst, OWOBJDIR: $(owobjdir), OWTOOLS: VISUALC, OWDEBUG: $(owdebug)}
@@ -145,6 +144,8 @@ stages:
           owobjdir: binnt
         steps:
         - template: azure/artiflod.yml
+        - template: azure/relall.yml
+        - template: azure/install.yml
         - script: azure/buildx.cmd
           displayName: "Build Installers"
           env: {OWAZURE_STAGE_NAME: inst, OWOBJDIR: $(owobjdir), OWTOOLS: VISUALC, OWDEBUG: $(owdebug)}
@@ -156,3 +157,25 @@ stages:
           vmImage: 'ubuntu-latest'
         variables:
           owobjdir: binlnx
+        steps:
+        - template: azure/artiflod.yml
+#        - task: GitHubRelease@0
+#          inputs:
+#            gitHubConnection: 
+#            repositoryName: '$(Build.Repository.Name)' 
+#            action: 'create' # Options: create, edit, delete
+#            target: 'Current-build' # Required when action == Create || Action == Edit
+#            tagSource: 'auto' # Required when action == Create# Options: auto, manual
+#            #tagPattern: # Optional
+#            #tag: # Required when action == Edit || Action == Delete || TagSource == Manual
+#            #title: # Optional
+#            #releaseNotesSource: 'file' # Optional. Options: file, input
+#            #releaseNotesFile: # Optional
+#            #releaseNotes: # Optional
+#            assets: 'distrib/ow/bin/*' # Optional
+#            assetUploadMode: 'replace' # Optional. Options: delete, replace
+#            isDraft: false # Optional
+#            isPreRelease: true # Optional
+#            #addChangeLog: true # Optional
+#            #compareWith: 'lastFullRelease' # Required when addChangeLog == True. Options: lastFullRelease, lastRelease, lastReleaseByTag
+#            #releaseTag: # Required when compareWith == LastReleaseByTag

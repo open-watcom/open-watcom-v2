@@ -1,0 +1,7 @@
+steps:
+    - template: azure/instload.yml
+      parameters: 
+        relVersion: binlnx
+    - template: azure/instload.yml
+      parameters: 
+        relVersion: binnt
