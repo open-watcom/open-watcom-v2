@@ -1,0 +1,5 @@
+steps:
+    - task: DownloadPipelineArtifact@2
+      displayName: "Load Release"
+      inputs: {buildType: 'current', artifactName: release, targetPath: rel}
+
