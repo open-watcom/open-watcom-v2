@@ -3,7 +3,7 @@ parameters:
 
 steps:
     - task: PublishPipelineArtifact@1
-      displayName: ${{ "Save Release rel-parameters.relVersion" }}
+      displayName: ${{ "Save Artifact rel-parameters.relVersion" }}
       inputs: 
         artifactName: ${{ parameters.relVersion }}
         targetPath: rel

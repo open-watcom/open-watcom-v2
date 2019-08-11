@@ -3,7 +3,7 @@ parameters:
 
 steps:
     - task: DownloadPipelineArtifact@2
-      displayName: ${{ "Load Release rel-parameters.relVersion" }}
+      displayName: ${{ "Load Artifact rel-parameters.relVersion" }}
       inputs: 
         buildType: 'current'
         artifactName: ${{ rel-parameters.relVersion }}
