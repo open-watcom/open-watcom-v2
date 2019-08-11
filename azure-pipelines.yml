@@ -25,8 +25,8 @@ stages:
           displayName: "Save Artifact $(owobjdir)"
           inputs: {artifactName: $(owobjdir), targetPath: build/$(owobjdir)}
         - task: PublishPipelineArtifact@1
-          displayName: "Save Artifact watcom/$(owobjdir)"
-          inputs: {artifactName: watcom/$(owobjdir), targetPath: bld/watcom/$(owobjdir)}
+          displayName: "Save Artifact watcom-$(owobjdir)"
+          inputs: {artifactName: watcom-$(owobjdir), targetPath: bld/watcom/$(owobjdir)}
       - job: Windows
         pool:
           vmImage: 'vs2017-win2016'
@@ -42,8 +42,8 @@ stages:
           displayName: "Save Artifact $(owobjdir)"
           inputs: {artifactName: $(owobjdir), targetPath: build/$(owobjdir)}
         - task: PublishPipelineArtifact@1
-          displayName: "Save Artifact watcom/$(owobjdir)"
-          inputs: {artifactName: watcom/$(owobjdir), targetPath: bld/watcom/$(owobjdir)}
+          displayName: "Save Artifact watcom-$(owobjdir)"
+          inputs: {artifactName: watcom-$(owobjdir), targetPath: bld/watcom/$(owobjdir)}
       - job: OSX
         pool:
           vmImage: 'macOS-latest'
@@ -57,8 +57,8 @@ stages:
           displayName: "Save Artifact $(owobjdir)"
           inputs: {artifactName: $(owobjdir), targetPath: build/$(owobjdir)}
         - task: PublishPipelineArtifact@1
-          displayName: "Save Artifact watcom/$(owobjdir)"
-          inputs: {artifactName: watcom/$(owobjdir), targetPath: bld/watcom/$(owobjdir)}
+          displayName: "Save Artifact watcom-$(owobjdir)"
+          inputs: {artifactName: watcom-$(owobjdir), targetPath: bld/watcom/$(owobjdir)}
   - stage: build
     displayName: "Build"
     jobs:
@@ -73,8 +73,8 @@ stages:
           inputs: {buildType: 'current', artifactName: $(owobjdir), targetPath: build/$(owobjdir)}
         - bash: chmod +x build/$(owobjdir)/*
         - task: DownloadPipelineArtifact@2
-          displayName: "Load Artifact watcom/$(owobjdir)"
-          inputs: {buildType: 'current', artifactName: watcom/$(owobjdir), targetPath: bld/watcom/$(owobjdir)}
+          displayName: "Load Artifact watcom-$(owobjdir)"
+          inputs: {buildType: 'current', artifactName: watcom-$(owobjdir), targetPath: bld/watcom/$(owobjdir)}
         - bash: azure/buildx.sh
           displayName: "Build"
           env: {OWAZURE_STAGE_NAME: build, OWOBJDIR: $(owobjdir), OWTOOLS: GCC, OWDEBUG: $(owdebug)}
@@ -90,8 +90,8 @@ stages:
           inputs: {buildType: 'current', artifactName: $(owobjdir), targetPath: build/$(owobjdir)}
         - bash: chmod +x build/$(owobjdir)/*
         - task: DownloadPipelineArtifact@2
-          displayName: "Load Artifact watcom/$(owobjdir)"
-          inputs: {buildType: 'current', artifactName: watcom/$(owobjdir), targetPath: bld/watcom/$(owobjdir)}
+          displayName: "Load Artifact watcom-$(owobjdir)"
+          inputs: {buildType: 'current', artifactName: watcom-$(owobjdir), targetPath: bld/watcom/$(owobjdir)}
         - script: azure\buildx.cmd
           displayName: "Build"
           env: {OWAZURE_STAGE_NAME: build, OWOBJDIR: $(owobjdir), OWTOOLS: VISUALC, OWDEBUG: $(owdebug)}
@@ -107,8 +107,8 @@ stages:
           inputs: {buildType: 'current', artifactName: $(owobjdir), targetPath: build/$(owobjdir)}
         - bash: chmod +x build/$(owobjdir)/*
         - task: DownloadPipelineArtifact@2
-          displayName: "Load Artifact watcom/$(owobjdir)"
-          inputs: {buildType: 'current', artifactName: watcom/$(owobjdir), targetPath: bld/watcom/$(owobjdir)}
+          displayName: "Load Artifact watcom-$(owobjdir)"
+          inputs: {buildType: 'current', artifactName: watcom-$(owobjdir), targetPath: bld/watcom/$(owobjdir)}
         - bash: azure/buildx.sh
           displayName: "Build"
           env: {OWAZURE_STAGE_NAME: build, OWOBJDIR: $(owobjdir), OWTOOLS: CLANG, OWDEBUG: $(owdebug)}
@@ -126,8 +126,8 @@ stages:
           inputs: {buildType: 'current', artifactName: $(owobjdir), targetPath: build/$(owobjdir)}
         - bash: chmod +x build/$(owobjdir)/*
         - task: DownloadPipelineArtifact@2
-          displayName: "Load Artifact watcom/$(owobjdir)"
-          inputs: {buildType: 'current', artifactName: watcom/$(owobjdir), targetPath: bld/watcom/$(owobjdir)}
+          displayName: "Load Artifact watcom-$(owobjdir)"
+          inputs: {buildType: 'current', artifactName: watcom-$(owobjdir), targetPath: bld/watcom/$(owobjdir)}
       - job: Windows
         pool:
           vmImage: 'vs2017-win2016'
@@ -139,8 +139,8 @@ stages:
           inputs: {buildType: 'current', artifactName: $(owobjdir), targetPath: build/$(owobjdir)}
         - bash: chmod +x build/$(owobjdir)/*
         - task: DownloadPipelineArtifact@2
-          displayName: "Load Artifact watcom/$(owobjdir)"
-          inputs: {buildType: 'current', artifactName: watcom/$(owobjdir), targetPath: bld/watcom/$(owobjdir)}
+          displayName: "Load Artifact watcom-$(owobjdir)"
+          inputs: {buildType: 'current', artifactName: watcom-$(owobjdir), targetPath: bld/watcom/$(owobjdir)}
   - stage: tests
     displayName: "Tests"
     jobs:
@@ -181,8 +181,8 @@ stages:
           inputs: {buildType: 'current', artifactName: $(owobjdir), targetPath: build/$(owobjdir)}
         - bash: chmod +x build/$(owobjdir)/*
         - task: DownloadPipelineArtifact@2
-          displayName: "Load Artifact watcom/$(owobjdir)"
-          inputs: {buildType: 'current', artifactName: watcom/$(owobjdir), targetPath: bld/watcom/$(owobjdir)}
+          displayName: "Load Artifact watcom-$(owobjdir)"
+          inputs: {buildType: 'current', artifactName: watcom-$(owobjdir), targetPath: bld/watcom/$(owobjdir)}
         - script: azure\buildx.sh
           displayName: "Build Installers"
           env: {OWAZURE_STAGE_NAME: inst, OWOBJDIR: $(owobjdir), OWTOOLS: VISUALC, OWDEBUG: $(owdebug)}
@@ -197,8 +197,8 @@ stages:
           inputs: {buildType: 'current', artifactName: $(owobjdir), targetPath: build/$(owobjdir)}
         - bash: chmod +x build/$(owobjdir)/*
         - task: DownloadPipelineArtifact@2
-          displayName: "Load Artifact watcom/$(owobjdir)"
-          inputs: {buildType: 'current', artifactName: watcom/$(owobjdir), targetPath: bld/watcom/$(owobjdir)}
+          displayName: "Load Artifact watcom-$(owobjdir)"
+          inputs: {buildType: 'current', artifactName: watcom-$(owobjdir), targetPath: bld/watcom/$(owobjdir)}
         - script: azure\buildx.cmd
           displayName: "Build Installers"
           env: {OWAZURE_STAGE_NAME: inst, OWOBJDIR: $(owobjdir), OWTOOLS: VISUALC, OWDEBUG: $(owdebug)}
