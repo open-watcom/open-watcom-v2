@@ -1,10 +1,10 @@
 steps:
-    - template: azure/relload.yml
+    - template: relload.yml
       parameters: 
         relVersion: binlnx
-    - template: azure/relload.yml
+    - template: relload.yml
       parameters: 
         relVersion: binnt
-    - template: azure/relload.yml
+    - template: relload.yml
       parameters: 
         relVersion: docs
