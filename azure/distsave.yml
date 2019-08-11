@@ -2,6 +2,7 @@ parameters:
   relVersion: '$(owobjdir)'
 
 steps:
+    - script: if [ -d distrib/ow/bin ]; then mkdir distrib/ow/bin; fi
     - task: PublishPipelineArtifact@1
       displayName: Save Artifact distrib-${{ parameters.relVersion }}
       inputs: 

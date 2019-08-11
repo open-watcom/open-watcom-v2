@@ -1,0 +1,6 @@
+jobs:
+  - job: Linux
+    pool:
+      vmImage: 'ubuntu-latest'
+    variables:
+      owobjdir: binlnx

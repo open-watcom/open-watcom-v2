@@ -3,6 +3,7 @@ steps:
       displayName: "Load Artifact build-$(owobjdir)"
       inputs: {buildType: 'current', artifactName: build-$(owobjdir), targetPath: build/$(owobjdir)}
     - bash: chmod +x build/$(owobjdir)/*
+      displayName: "Fix Artifact Files Executable Flag"
     - task: DownloadPipelineArtifact@2
       displayName: "Load Artifact bld-watcom-$(owobjdir)"
       inputs: {buildType: 'current', artifactName: bld-watcom-$(owobjdir), targetPath: bld/watcom/$(owobjdir)}
