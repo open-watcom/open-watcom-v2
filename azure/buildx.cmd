@@ -79,6 +79,4 @@ if "%OWAZURE_STAGE_NAME%" == "inst" (
     set RC=%ERRORLEVEL%
 )
 cd %OWROOT%
-REM sleep 3
-rem ping -n 3 127.0.0.1 >NUL
 exit %RC%

@@ -63,6 +63,7 @@ stages:
         - script: azure/buildx.sh
           displayName: "Build"
           env: {OWAZURE_STAGE_NAME: build, OWOBJDIR: $(owobjdir), OWTOOLS: GCC, OWDEBUG: $(owdebug), OWDOSBOX: dosbox, SDL_VIDEODRIVER: dummy}
+        - template: azure/relsave.yml
       - job: Windows
         timeoutInMinutes: 120
         pool:
@@ -74,6 +75,7 @@ stages:
         - script: azure/buildx.cmd
           displayName: "Build"
           env: {OWAZURE_STAGE_NAME: build, OWOBJDIR: $(owobjdir), OWTOOLS: VISUALC, OWDEBUG: $(owdebug)}
+        - template: azure/relsave.yml
       - job: OSX
         timeoutInMinutes: 120
         pool:
@@ -96,13 +98,7 @@ stages:
           owobjdir: binlnx
         steps:
         - template: azure/artiflod.yml
-      - job: Windows
-        pool:
-          vmImage: 'vs2017-win2016'
-        variables:
-          owobjdir: binnt
-        steps:
-        - template: azure/artiflod.yml
+        - template: azure/relload.yml
   - stage: tests
     displayName: "Tests"
     jobs:
