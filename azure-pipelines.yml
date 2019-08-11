@@ -22,7 +22,7 @@ stages:
       - job: Linux
         variables: 
           template: azure/var-lnx.yml
-        pool: {name: 'ubuntu-latest'}
+        pool: {name: 'Hosted Ubuntu 1604'}
         steps:
         - script: azure/buildx.sh
           displayName: "Bootstrap"
