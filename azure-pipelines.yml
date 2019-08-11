@@ -62,7 +62,7 @@ stages:
         - script: sudo apt-get install -y dosbox
         - script: azure/buildx.sh
           displayName: "Build"
-          env: {OWAZURE_STAGE_NAME: build, OWOBJDIR: $(owobjdir), OWTOOLS: GCC, OWDEBUG: $(owdebug), OWDOSBOX: dosbox, SDL_VIDEODRIVER: dummy}
+          env: {OWAZURE_STAGE_NAME: build, OWOBJDIR: $(owobjdir), OWTOOLS: GCC, OWDEBUG: $(owdebug), OWDOSBOX: dosbox}
         - template: azure/relsave.yml
       - job: Windows
         timeoutInMinutes: 120
@@ -87,7 +87,7 @@ stages:
         - script: brew install dosbox
         - script: azure/buildx.sh
           displayName: "Build"
-          env: {OWAZURE_STAGE_NAME: build, OWOBJDIR: $(owobjdir), OWTOOLS: CLANG, OWDEBUG: $(owdebug), OWDOSBOX: dosbox, SDL_VIDEODRIVER: dummy}
+          env: {OWAZURE_STAGE_NAME: build, OWOBJDIR: $(owobjdir), OWTOOLS: CLANG, OWDEBUG: $(owdebug), OWDOSBOX: dosbox}
   - stage: update
     displayName: "Update Build"
     jobs:
