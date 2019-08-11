@@ -22,8 +22,7 @@ stages:
       - job: Linux
         variables:
           template: azure/var-lnx.yml
-        pool:
-          vmImage: $(owimage)
+        pool: {vmImage: $(owimage)}
         steps:
         - script: azure/buildx.sh
           displayName: "Bootstrap"
@@ -32,8 +31,7 @@ stages:
       - job: Windows
         variables:
           template: azure/var-win.yml
-        pool:
-          vmImage: $(owimage)
+        pool: {vmImage: $(owimage)}
         steps:
         - script: azure/buildx.cmd
           displayName: "Bootstrap"
@@ -42,8 +40,7 @@ stages:
       - job: OSX
         variables:
           template: azure/var-osx.yml
-        pool:
-          vmImage: $(owimage)
+        pool: {vmImage: $(owimage)}
         steps:
         - script: azure/buildx.sh
           displayName: "Bootstrap"
@@ -55,8 +52,7 @@ stages:
       - job: Linux
         variables:
           template: azure/var-lnx.yml
-        pool:
-          vmImage: $(owimage)
+        pool: {vmImage: $(owimage)}
         steps:
         - template: azure/artiflod.yml
         - script: sudo apt-get install -y dosbox
@@ -68,8 +64,7 @@ stages:
       - job: Windows
         variables:
           template: azure/var-win.yml
-        pool:
-          vmImage: $(owimage)
+        pool: {vmImage: $(owimage)}
         timeoutInMinutes: 120
         steps:
         - template: azure/artiflod.yml
@@ -80,8 +75,7 @@ stages:
       - job: OSX
         variables:
           template: azure/var-osx.yml
-        pool:
-          vmImage: $(owimage)
+        pool: {vmImage: $(owimage)}
         steps:
         - template: azure/artiflod.yml
         - script: brew install dosbox
@@ -95,15 +89,13 @@ stages:
       - job: Linux
         variables:
           template: azure/var-lnx.yml
-        pool:
-          vmImage: $(owimage)
+        pool: {vmImage: $(owimage)}
         steps:
         - template: azure/artiflod.yml
       - job: Windows
         variables:
           template: azure/var-win.yml
-        pool:
-          vmImage: $(owimage)
+        pool: {vmImage: $(owimage)}
         steps:
         - template: azure/artiflod.yml
   - stage: docs
@@ -112,8 +104,7 @@ stages:
       - job: Windows
         variables:
           template: azure/var-win.yml
-        pool:
-          vmImage: $(owimage)
+        pool: {vmImage: $(owimage)}
         timeoutInMinutes: 180
         steps:
         - template: azure/artiflod.yml
@@ -121,23 +112,19 @@ stages:
           displayName: "Documentation Build"
           env: {OWAZURE_STAGE_NAME: docs, OWOBJDIR: $(owobjdir), OWTOOLS: VISUALC}
         - template: azure/relload.yml
-          parameters: 
-            relVersion: binlnx
+          parameters: {relVersion: binlnx}
         - template: azure/relload.yml
-          parameters: 
-            relVersion: binnt
+          parameters: {relVersion: binnt}
         # complete OW release artifact
         - template: azure/relsave.yml
-          parameters: 
-            relVersion: relall
+          parameters: {relVersion: relall}
   - stage: instal
     displayName: "Build Installers"
     jobs:
       - job: Linux
         variables:
           template: azure/var-lnx.yml
-        pool:
-          vmImage: $(owimage)
+        pool: {vmImage: $(owimage)}
         steps:
         - template: azure/artiflod.yml
         - template: azure/install.yml
@@ -151,8 +138,7 @@ stages:
       - job: Windows
         variables:
           template: azure/var-win.yml
-        pool:
-          vmImage: $(owimage)
+        pool: {vmImage: $(owimage)}
         steps:
         - template: azure/artiflod.yml
         - template: azure/install.yml
@@ -169,8 +155,7 @@ stages:
       - job: Linux
         variables:
           template: azure/var-lnx.yml
-        pool:
-          vmImage: $(owimage)
+        pool: {vmImage: $(owimage)}
         steps:
         - template: azure/artiflod.yml
         - template: azure/distload.yml
