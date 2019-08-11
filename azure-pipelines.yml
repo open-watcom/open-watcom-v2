@@ -24,7 +24,6 @@ stages:
         - task: PublishPipelineArtifact@1
           displayName: "Save Cache"
           inputs: {artifactName: $(owobjdir), targetPath: build/$(owobjdir)}
-        - bash: ls -l build/$(owobjdir)
       - job: Windows
         pool:
           vmImage: 'vs2017-win2016'
@@ -39,7 +38,6 @@ stages:
         - task: PublishPipelineArtifact@1
           displayName: "Save Cache"
           inputs: {artifactName: $(owobjdir), targetPath: build\$(owobjdir)}
-        - bash: ls -l build/$(owobjdir)
       - job: OSX
         pool:
           vmImage: 'macOS-latest'
@@ -52,7 +50,6 @@ stages:
         - task: PublishPipelineArtifact@1
           displayName: "Save Cache"
           inputs: {artifactName: $(owobjdir), targetPath: build/$(owobjdir)}
-        - bash: ls -l build/$(owobjdir)
   - stage: build
     displayName: "Build"
     jobs:
@@ -66,7 +63,6 @@ stages:
           displayName: "Load Cache"
           inputs: {buildType: 'current', artifactName: $(owobjdir), targetPath: build/$(owobjdir)}
         - bash: chmod +x build/$(owobjdir)/*
-        - bash: ls -l build/$(owobjdir)
         - bash: azure/buildx.sh
           displayName: "Build"
           env: {OWAZURE_STAGE_NAME: build, OWOBJDIR: $(owobjdir), OWTOOLS: GCC, OWDEBUG: $(owdebug)}
@@ -81,7 +77,6 @@ stages:
           displayName: "Load Cache"
           inputs: {buildType: 'current', artifactName: $(owobjdir), targetPath: build\$(owobjdir)}
         - bash: chmod +x build/$(owobjdir)/*
-        - bash: ls -l build/$(owobjdir)
         - script: azure\buildx.cmd
           displayName: "Build"
           env: {OWAZURE_STAGE_NAME: build, OWOBJDIR: $(owobjdir), OWTOOLS: VISUALC, OWDEBUG: $(owdebug)}
@@ -96,7 +91,6 @@ stages:
           displayName: "Load Cache"
           inputs: {buildType: 'current', artifactName: $(owobjdir), targetPath: build/$(owobjdir)}
         - bash: chmod +x build/$(owobjdir)/*
-        - bash: ls -l build/$(owobjdir)
         - bash: azure/buildx.sh
           displayName: "Build"
           env: {OWAZURE_STAGE_NAME: build, OWOBJDIR: $(owobjdir), OWTOOLS: CLANG, OWDEBUG: $(owdebug)}
@@ -112,6 +106,7 @@ stages:
         - task: DownloadPipelineArtifact@2
           displayName: "Load Cache"
           inputs: {buildType: 'current', artifactName: $(owobjdir), targetPath: build/$(owobjdir)}
+        - bash: chmod +x build/$(owobjdir)/*
       - job: Windows
         pool:
           vmImage: 'vs2017-win2016'
@@ -121,6 +116,7 @@ stages:
         - task: DownloadPipelineArtifact@2
           displayName: "Load Cache"
           inputs: {buildType: 'current', artifactName: $(owobjdir), targetPath: build\$(owobjdir)}
+        - bash: chmod +x build/$(owobjdir)/*
   - stage: tests
     displayName: "Tests"
     jobs:
@@ -143,6 +139,9 @@ stages:
           vmImage: 'vs2017-win2016'
         variables:
           owobjdir: binnt
+        - script: azure\buildx.cmd
+          displayName: "Documentation Build"
+          env: {OWAZURE_STAGE_NAME: docs, OWOBJDIR: $(owobjdir), OWTOOLS: VISUALC, OWDEBUG: $(owdebug)}
   - stage: instal
     displayName: "Build Installers"
     jobs:
@@ -155,6 +154,10 @@ stages:
         - task: DownloadPipelineArtifact@2
           displayName: "Load Cache"
           inputs: {buildType: 'current', artifactName: $(owobjdir), targetPath: build/$(owobjdir)}
+        - bash: chmod +x build/$(owobjdir)/*
+        - script: azure\buildx.sh
+          displayName: "Build Installers"
+          env: {OWAZURE_STAGE_NAME: inst, OWOBJDIR: $(owobjdir), OWTOOLS: VISUALC, OWDEBUG: $(owdebug)}
       - job: Windows
         pool:
           vmImage: 'vs2017-win2016'
@@ -164,6 +167,10 @@ stages:
         - task: DownloadPipelineArtifact@2
           displayName: "Load Cache"
           inputs: {buildType: 'current', artifactName: $(owobjdir), targetPath: build\$(owobjdir)}
+        - bash: chmod +x build/$(owobjdir)/*
+        - script: azure\buildx.cmd
+          displayName: "Build Installers"
+          env: {OWAZURE_STAGE_NAME: inst, OWOBJDIR: $(owobjdir), OWTOOLS: VISUALC, OWDEBUG: $(owdebug)}
   - stage: release
     displayName: "Make Release on GitHub"
     jobs:

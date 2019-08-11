@@ -34,6 +34,7 @@ if "%OWDEBUG%" == "1" (
 )
 REM ...
 set RC=0
+cd %OWSRCDIR%
 if "%OWAZURE_STAGE_NAME%" == "boot" (
     mkdir %OWBINDIR%
     cd %OWSRCDIR%
