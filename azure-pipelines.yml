@@ -59,7 +59,7 @@ stages:
           owobjdir: binlnx
         steps:
         - template: azure/artiflod.yml
-        - script: sudo apt-get install -y dosemu
+        - script: sudo apt-get install -y dosemu2
         - script: azure/buildx.sh
           displayName: "Build"
           env: {OWAZURE_STAGE_NAME: build, OWOBJDIR: $(owobjdir), OWTOOLS: GCC, OWDEBUG: $(owdebug)}
