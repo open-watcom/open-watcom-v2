@@ -157,24 +157,24 @@ stages:
         pool:
           vmImage: ${{ variables.owimage }}
         timeoutInMinutes: 180
+        strategy:
+          matrix:
+            DOS:
+              target: dos
+            Html:
+              target: htmlhelp
+            NT:
+              target: nt
+            OS2:
+              target: os2
+            PDF:
+              target: pdf
+            WIN:
+              target: win
+        steps:
         - template: azure/artiflod.yml
           parameters:
             owobjdir: ${{ variables.owobjdir }}
-        strategy:
-        matrix:
-        DOS:
-          target: dos
-        Html:
-          target: htmlhelp
-        NT:
-          target: nt
-        OS2:
-          target: os2
-        PDF:
-          target: pdf
-        WIN:
-          target: win
-        steps:
         - script: azure/buildx.cmd
           displayName: "Documentation Build"
           env:
