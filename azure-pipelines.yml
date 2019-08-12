@@ -113,6 +113,7 @@ stages:
         - template: azure/var-osx.yml
         pool:
           vmImage: ${{ variables.owimage }}
+        timeoutInMinutes: 120
         steps:
         - template: azure/artiflod.yml
           parameters:
@@ -156,7 +157,6 @@ stages:
         - template: azure/var-win.yml
         pool:
           vmImage: ${{ variables.owimage }}
-        timeoutInMinutes: 180
         strategy:
           matrix:
             DOS:
