@@ -67,6 +67,7 @@ stages:
             owobjdir: ${{ variables.owobjdir }}
   - stage: build
     displayName: "Build"
+    dependsOn: boot
     jobs:
       - job: Linux
         variables:
@@ -126,6 +127,7 @@ stages:
             OWTOOLS: CLANG
   - stage: tests
     displayName: "Tests"
+    dependsOn: build
     jobs:
       - job: Linux
         variables:
@@ -147,6 +149,7 @@ stages:
             owobjdir: ${{ variables.owobjdir }}
   - stage: docs
     displayName: "Documentation Build"
+    dependsOn: boot
     jobs:
       - job: Windows
         variables:
@@ -173,6 +176,8 @@ stages:
           parameters: {owobjdir: binall}
   - stage: instal
     displayName: "Build Installers"
+    dependsOn: docs
+    dependsOn: tests
     jobs:
       - job: Linux
         variables:
