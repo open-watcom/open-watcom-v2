@@ -1,7 +1,0 @@
-steps:
-    - template: instload.yml
-      parameters: 
-        owobjdir: binlnx
-    - template: instload.yml
-      parameters: 
-        owobjdir: binnt

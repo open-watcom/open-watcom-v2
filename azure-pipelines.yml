@@ -89,6 +89,9 @@ stages:
         - template: azure/relsave.yml
           parameters:
             owobjdir: ${{ variables.owobjdir }}
+        - template: azure/instsave.yml
+          parameters:
+            owobjdir: ${{ variables.owobjdir }}
       - job: Windows
         variables:
         - template: azure/var-win.yml
@@ -106,6 +109,9 @@ stages:
             OWOBJDIR: ${{ variables.owobjdir }}
             OWTOOLS: VISUALC
         - template: azure/relsave.yml
+          parameters:
+            owobjdir: ${{ variables.owobjdir }}
+        - template: azure/instsave.yml
           parameters:
             owobjdir: ${{ variables.owobjdir }}
       - job: OSX
@@ -230,7 +236,12 @@ stages:
         - template: azure/artiflod.yml
           parameters:
             owobjdir: ${{ variables.owobjdir }}
-        - template: azure/install.yml
+        - template: azure/instload.yml
+          parameters: 
+            owobjdir: binlnx
+        - template: azure/instload.yml
+          parameters: 
+            owobjdir: binnt
         - template: azure/relload.yml
           parameters:
             owobjdir: binall
@@ -252,7 +263,12 @@ stages:
         - template: azure/artiflod.yml
           parameters:
             owobjdir: ${{ variables.owobjdir }}
-        - template: azure/install.yml
+        - template: azure/instload.yml
+          parameters: 
+            owobjdir: binlnx
+        - template: azure/instload.yml
+          parameters: 
+            owobjdir: binnt
         - template: azure/relload.yml
           parameters: 
             owobjdir: binall
