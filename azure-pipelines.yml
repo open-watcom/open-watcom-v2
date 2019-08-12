@@ -151,24 +151,39 @@ stages:
     displayName: "Documentation Build"
     dependsOn: boot
     jobs:
-      - job: Windows
+      - job: Documentation
         variables:
         - template: azure/var-win.yml
         pool:
           vmImage: ${{ variables.owimage }}
         timeoutInMinutes: 180
-        steps:
         - template: azure/artiflod.yml
           parameters:
             owobjdir: ${{ variables.owobjdir }}
+        strategy:
+        matrix:
+        DOS:
+          target: dos
+        Html:
+          target: htmlhelp
+        NT:
+          target: nt
+        OS2:
+          target: os2
+        PDF:
+          target: pdf
+        WIN:
+          target: win
+        steps:
         - script: azure/buildx.cmd
           displayName: "Documentation Build"
           env:
             OWAZURE_STAGE_NAME: docs
+            OWDOCTARGET: $(target)
             OWOBJDIR: ${{ variables.owobjdir }}
             OWTOOLS: VISUALC
         - template: azure/relsave.yml
-          parameters: {owobjdir: bindocs}
+          parameters: {owobjdir: doc$(target)}
   - stage: update
     displayName: "Consolidate Build"
     dependsOn: 
@@ -181,12 +196,24 @@ stages:
         pool:
           vmImage: ${{ variables.owimage }}
         steps:
+        # consolidate binaries
         - template: azure/relload.yml
           parameters: {owobjdir: binlnx}
         - template: azure/relload.yml
           parameters: {owobjdir: binnt}
+        # consolidate documentation
         - template: azure/relload.yml
-          parameters: {owobjdir: bindocs}
+          parameters: {owobjdir: docdos}
+        - template: azure/relload.yml
+          parameters: {owobjdir: dochtmlhelp}
+        - template: azure/relload.yml
+          parameters: {owobjdir: docnt}
+        - template: azure/relload.yml
+          parameters: {owobjdir: docos2}
+        - template: azure/relload.yml
+          parameters: {owobjdir: docpdf}
+        - template: azure/relload.yml
+          parameters: {owobjdir: docwin}
         # complete OW release artifact
         - template: azure/relsave.yml
           parameters: {owobjdir: binall}

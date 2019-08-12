@@ -72,7 +72,7 @@ if "%OWAZURE_STAGE_NAME%" == "docs" (
     REM register all Help Compilers DLL's
     regsvr32 -u -s itcc.dll
     regsvr32 -s %OWROOT%\travis\hhc\itcc.dll
-    builder docs
+    builder docs %OWDOCTARGET%
     set RC=%ERRORLEVEL%
 )
 if "%OWAZURE_STAGE_NAME%" == "inst" (
