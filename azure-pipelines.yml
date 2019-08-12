@@ -250,7 +250,7 @@ stages:
           env:
             OWAZURE_STAGE_NAME: inst
             OWOBJDIR: ${{ variables.owobjdir }}
-            OWTOOLS: VISUALC
+            OWTOOLS: GCC
         - template: azure/distsave.yml
           parameters:
             owobjdir: ${{ variables.owobjdir }}
