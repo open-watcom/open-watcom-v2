@@ -1,7 +1,9 @@
+parameters:
+  owobjdir: ' '
 steps:
     - task: PublishPipelineArtifact@1
-      displayName: "Save Artifact build-$(owobjdir)"
-      inputs: {artifactName: build-$(owobjdir), targetPath: build/$(owobjdir)}
+      displayName: Save Artifact build-${{ parameters.owobjdir }}
+      inputs: {artifactName: build-${{ parameters.owobjdir }}, targetPath: build/${{ parameters.owobjdir }}}
     - task: PublishPipelineArtifact@1
-      displayName: "Save Artifact bld-watcom-$(owobjdir)"
-      inputs: {artifactName: bld-watcom-$(owobjdir), targetPath: bld/watcom/$(owobjdir)}
+      displayName: Save Artifact bld-watcom-${{ parameters.owobjdir }}
+      inputs: {artifactName: bld-watcom-${{ parameters.owobjdir }}, targetPath: bld/watcom/${{ parameters.owobjdir }}}
