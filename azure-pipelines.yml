@@ -5,9 +5,9 @@
 
 variables: 
   System.Debug: true
-  linux_pool: 'Hosted Ubuntu 1604'
-  osx_pool: 'Hosted macOS'
-  win_pool: 'Hosted VS2017'
+  linux_image: 'ubuntu-latest'
+  osx_image: 'macOS-latest'
+  win_image: 'vs2017-win2016'
 
 schedules:
 - cron: "0 1 * * *"
@@ -25,7 +25,7 @@ stages:
     jobs:
       - job: Linux
         variables: {owobjdir: binlnx}
-        pool: {name: $(linux_pool)}
+        pool: {vmImage: $(linux_image)}
         steps:
         - script: azure/buildx.sh
           displayName: "Bootstrap"
@@ -33,7 +33,7 @@ stages:
         - template: azure/artifsav.yml
       - job: Windows
         variables: {owobjdir: binnt}
-        pool: {name: $(win_pool)}
+        pool: {vmImage: $(win_image)}
         steps:
         - script: azure/buildx.cmd
           displayName: "Bootstrap"
@@ -41,7 +41,7 @@ stages:
         - template: azure/artifsav.yml
       - job: OSX
         variables: {owobjdir: binosx}
-        pool: {name: $(osx_pool)}
+        pool: {vmImage: $(osx_image)}
         steps:
         - script: azure/buildx.sh
           displayName: "Bootstrap"
@@ -52,7 +52,7 @@ stages:
     jobs:
       - job: Linux
         variables: {owobjdir: binlnx}
-        pool: {name: $(linux_pool)}
+        pool: {vmImage: $(linux_image)}
         steps:
         - template: azure/artiflod.yml
         - script: sudo apt-get install -y dosbox
@@ -63,7 +63,7 @@ stages:
         - template: azure/relsave.yml
       - job: Windows
         variables: {owobjdir: binnt}
-        pool: {name: $(win_pool)}
+        pool: {vmImage: $(win_image)}
         timeoutInMinutes: 120
         steps:
         - template: azure/artiflod.yml
@@ -73,7 +73,7 @@ stages:
         - template: azure/relsave.yml
       - job: OSX
         variables: {owobjdir: binosx}
-        pool: {name: $(osx_pool)}
+        pool: {vmImage: $(osx_image)}
         steps:
         - template: azure/artiflod.yml
         - script: brew install dosbox
@@ -86,12 +86,12 @@ stages:
     jobs:
       - job: Linux
         variables: {owobjdir: binlnx}
-        pool: {name: $(linux_pool)}
+        pool: {vmImage: $(linux_image)}
         steps:
         - template: azure/artiflod.yml
       - job: Windows
         variables: {owobjdir: binnt}
-        pool: {name: $(win_pool)}
+        pool: {vmImage: $(win_image)}
         steps:
         - template: azure/artiflod.yml
   - stage: docs
@@ -99,7 +99,7 @@ stages:
     jobs:
       - job: Windows
         variables: {owobjdir: binnt}
-        pool: {name: $(win_pool)}
+        pool: {vmImage: $(win_image)}
         timeoutInMinutes: 180
         steps:
         - template: azure/artiflod.yml
@@ -118,7 +118,7 @@ stages:
     jobs:
       - job: Linux
         variables: {owobjdir: binlnx}
-        pool: {name: $(linux_pool)}
+        pool: {vmImage: $(linux_image)}
         steps:
         - template: azure/artiflod.yml
         - template: azure/install.yml
@@ -131,7 +131,7 @@ stages:
         - template: azure/distsave.yml
       - job: Windows
         variables: {owobjdir: binnt}
-        pool: {name: $(win_pool)}
+        pool: {vmImage: $(win_image)}
         steps:
         - template: azure/artiflod.yml
         - template: azure/install.yml
@@ -147,7 +147,7 @@ stages:
     jobs:
       - job: Linux
         variables: {owobjdir: binlnx}
-        pool: {name: $(linux_pool)}
+        pool: {vmImage: $(linux_image)}
         steps:
         - template: azure/artiflod.yml
         - template: azure/distload.yml
