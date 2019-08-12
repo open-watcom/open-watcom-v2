@@ -1,4 +1,4 @@
-#pmake: build guitool docs os_win
+#pmake: build guitool docs os_win win
 
 dotarget=win
 
