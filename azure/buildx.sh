@@ -77,7 +77,7 @@ build_proc()
             builder docs
             RC=$?
             ;;
-        "instal")
+        "inst")
             export OWVERBOSE=1
             builder missing
             builder install
