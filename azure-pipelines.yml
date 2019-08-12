@@ -176,8 +176,9 @@ stages:
           parameters: {owobjdir: binall}
   - stage: instal
     displayName: "Build Installers"
-    dependsOn: docs
-    dependsOn: tests
+    dependsOn: 
+    - tests
+    - docs
     jobs:
       - job: Linux
         variables:
