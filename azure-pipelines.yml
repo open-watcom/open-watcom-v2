@@ -3,7 +3,11 @@
 # Add steps that build, run tests, deploy, and more:
 # https://aka.ms/yaml
 
-variables: {System.Debug: true}
+variables: 
+  System.Debug: true
+  linux_pool: 'Hosted Ubuntu 1604'
+  osx_pool: 'Hosted macOS'
+  win_pool: 'Hosted VS2017'
 
 schedules:
 - cron: "0 1 * * *"
@@ -14,11 +18,6 @@ schedules:
 
 trigger:
 - master
-
-variables:
-  linux_pool: 'Hosted Ubuntu 1604'
-  osx_pool: 'Hosted macOS'
-  win_pool: 'Hosted VS2017'
 
 stages:
   - stage: boot
