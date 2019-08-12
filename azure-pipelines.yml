@@ -26,33 +26,48 @@ stages:
       - job: Linux
         variables:
         - template: azure/var-lnx.yml
-        pool: {vmImage: ${{ variables.owimage }}}
+        pool:
+          vmImage: ${{ variables.owimage }}
         steps:
         - script: azure/buildx.sh
           displayName: "Bootstrap"
-          env: {OWAZURE_STAGE_NAME: boot, OWOBJDIR: ${{ variables.owobjdir }}, OWTOOLS: GCC}
+          env:
+            OWAZURE_STAGE_NAME: boot
+            OWOBJDIR: ${{ variables.owobjdir }}
+            OWTOOLS: GCC
         - template: azure/artifsav.yml
-          parameters: {owobjdir: ver${{ variables.owobjdir }}}
+          parameters:
+            owobjdir: ver${{ variables.owobjdir }}
       - job: Windows
         variables:
         - template: azure/var-win.yml
-        pool: {vmImage: ${{ variables.owimage }}}
+        pool:
+          vmImage: ${{ variables.owimage }}
         steps:
         - script: azure/buildx.cmd
           displayName: "Bootstrap"
-          env: {OWAZURE_STAGE_NAME: boot, OWOBJDIR: ${{ variables.owobjdir }}, OWTOOLS: VISUALC}
+          env:
+            OWAZURE_STAGE_NAME: boot
+            OWOBJDIR: ${{ variables.owobjdir }}
+            OWTOOLS: VISUALC
         - template: azure/artifsav.yml
-          parameters: {owobjdir: ver${{ variables.owobjdir }}}
+          parameters:
+            owobjdir: ver${{ variables.owobjdir }}
       - job: OSX
         variables:
         - template: azure/var-osx.yml
-        pool: {vmImage: ${{ variables.owimage }}}
+        pool:
+          vmImage: ${{ variables.owimage }}
         steps:
         - script: azure/buildx.sh
           displayName: "Bootstrap"
-          env: {OWAZURE_STAGE_NAME: boot, OWOBJDIR: ${{ variables.owobjdir }}, OWTOOLS: CLANG}
+          env:
+            OWAZURE_STAGE_NAME: boot
+            OWOBJDIR: ${{ variables.owobjdir }}
+            OWTOOLS: CLANG
         - template: azure/artifsav.yml
-          parameters: {owobjdir: ver${{ variables.owobjdir }}}
+          parameters:
+            owobjdir: ver${{ variables.owobjdir }}
   - stage: build
     displayName: "Build"
     jobs:
