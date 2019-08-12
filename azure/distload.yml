@@ -1,11 +1,11 @@
 parameters:
-  relVersion: '$(owobjdir)'
+  owobjdir: ' '
 
 steps:
     - task: DownloadPipelineArtifact@2
-      displayName: Load Artifact distrib-${{ parameters.relVersion }}
+      displayName: Load Artifact distrib-${{ parameters.owobjdir }}
       inputs: 
         buildType: 'current'
-        artifactName: distrib-${{ parameters.relVersion }}
+        artifactName: distrib-${{ parameters.owobjdir }}
         targetPath: distrib/ow/bin
 

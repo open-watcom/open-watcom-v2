@@ -1,7 +1,7 @@
 steps:
     - template: instload.yml
       parameters: 
-        relVersion: binlnx
+        owobjdir: binlnx
     - template: instload.yml
       parameters: 
-        relVersion: binnt
+        owobjdir: binnt

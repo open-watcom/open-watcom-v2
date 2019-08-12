@@ -1,10 +1,10 @@
 parameters:
-  relVersion: '$(owobjdir)'
+  owobjdir: ' '
 
 steps:
     - script: if [ -d distrib/ow/bin ]; then mkdir distrib/ow/bin; fi
     - task: PublishPipelineArtifact@1
-      displayName: Save Artifact distrib-${{ parameters.relVersion }}
+      displayName: Save Artifact distrib-${{ parameters.owobjdir }}
       inputs: 
-        artifactName: distrib-${{ parameters.relVersion }}
+        artifactName: distrib-${{ parameters.owobjdir }}
         targetPath: distrib/ow/bin

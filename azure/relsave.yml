@@ -1,9 +1,9 @@
 parameters:
-  relVersion: '$(owobjdir)'
+  owobjdir: ' '
 
 steps:
     - task: PublishPipelineArtifact@1
-      displayName: Save Artifact rel-${{ parameters.relVersion }}
+      displayName: Save Artifact rel-${{ parameters.owobjdir }}
       inputs: 
-        artifactName: rel-${{ parameters.relVersion }}
+        artifactName: rel-${{ parameters.owobjdir }}
         targetPath: rel
