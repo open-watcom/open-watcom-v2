@@ -5,9 +5,6 @@
 
 variables: 
   System.Debug: true
-  linux_image: 'ubuntu-latest'
-  osx_image: 'macOS-latest'
-  win_image: 'vs2017-win2016'
 
 schedules:
 - cron: "0 1 * * *"
@@ -111,8 +108,10 @@ stages:
           parameters:
             owobjdir: ${{ variables.owobjdir }}
       - job: OSX
-        variables: {owobjdir: binosx}
-        pool: {vmImage: $(osx_image)}
+        variables:
+        - template: azure/var-osx.yml
+        pool:
+          vmImage: ${{ variables.owimage }}
         steps:
         - template: azure/artiflod.yml
           parameters:
@@ -121,7 +120,10 @@ stages:
           displayName: "Install DOSBOX"
         - script: azure/buildx.sh
           displayName: "Build"
-          env: {OWAZURE_STAGE_NAME: build, OWOBJDIR: $(owobjdir), OWTOOLS: CLANG}
+          env:
+            OWAZURE_STAGE_NAME: build
+            OWOBJDIR: ${{ variables.owobjdir }}
+            OWTOOLS: CLANG
   - stage: tests
     displayName: "Tests"
     jobs:
@@ -182,8 +184,6 @@ stages:
           parameters:
             owobjdir: ${{ variables.owobjdir }}
         - template: azure/install.yml
-          parameters:
-            owobjdir: ${{ variables.owobjdir }}
         - template: azure/relload.yml
           parameters:
             owobjdir: binall
@@ -206,8 +206,6 @@ stages:
           parameters:
             owobjdir: ${{ variables.owobjdir }}
         - template: azure/install.yml
-          parameters:
-            owobjdir: ${{ variables.owobjdir }}
         - template: azure/relload.yml
           parameters: 
             owobjdir: binall
