@@ -167,18 +167,32 @@ stages:
             OWAZURE_STAGE_NAME: docs
             OWOBJDIR: ${{ variables.owobjdir }}
             OWTOOLS: VISUALC
+        - template: azure/relsave.yml
+          parameters: {owobjdir: bindocs}
+  - stage: update
+    displayName: "Consolidate Build"
+    dependsOn: 
+      - docs
+      - tests
+    jobs:
+      - job: Linux
+        variables:
+        - template: azure/var-lnx.yml
+        pool:
+          vmImage: ${{ variables.owimage }}
+        steps:
         - template: azure/relload.yml
           parameters: {owobjdir: binlnx}
         - template: azure/relload.yml
           parameters: {owobjdir: binnt}
+        - template: azure/relload.yml
+          parameters: {owobjdir: bindocs}
         # complete OW release artifact
         - template: azure/relsave.yml
           parameters: {owobjdir: binall}
   - stage: instal
     displayName: "Build Installers"
-    dependsOn: 
-    - tests
-    - docs
+    dependsOn: update
     jobs:
       - job: Linux
         variables:
