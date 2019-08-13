@@ -47,7 +47,6 @@ stages:
         pool:
           vmImage: $(owimage)
         steps:
-        - script: echo $(owarch)..$(owobjdir)
         - script: azure/$(owscript)
           displayName: "Bootstrap"
           env:
@@ -65,21 +64,22 @@ stages:
           matrix:
             Linux:
               owarch: lnx
+              owobjdir: binlnx
               owimage: ${{ variables.owimage_lnx }}
               owtools: GCC
               owscript: buildx.sh
             Windows:
               owarch: nt
+              owobjdir: binnt
               owimage: ${{ variables.owimage_nt }}
               owtools: VISUALC
               owscript: buildx.cmd
             OSX:
               owarch: osx
+              owobjdir: binosx
               owimage: ${{ variables.owimage_osx }}
               owtools: CLANG
               owscript: buildx.sh
-        variables:
-          owobjdir: $[ bin$(owarch) ]
         pool:
           vmImage: $(owimage)
         timeoutInMinutes: 120
@@ -111,16 +111,16 @@ stages:
           matrix:
             Linux:
               owarch: lnx
+              owobjdir: binlnx
               owimage: ${{ variables.owimage_lnx }}
               owtools: GCC
               owscript: buildx.sh
             Windows:
               owarch: nt
+              owobjdir: binnt
               owimage: ${{ variables.owimage_nt }}
               owtools: VISUALC
               owscript: buildx.cmd
-        variables:
-          owobjdir: bin${{ variables.owarch }}
         pool:
           vmImage: $(owimage)
         steps:
@@ -135,16 +135,22 @@ stages:
           matrix:
             DOS:
               target: dos
+              doctarget: docdos
             Html:
               target: htmlhelp
+              doctarget: dochtml
             NT:
               target: nt
+              doctarget: docnt
             OS2:
               target: os2
+              doctarget: docos2
             PDF:
               target: pdf
+              doctarget: docpdf
             WIN:
               target: win
+              doctarget: docwin
         pool:
           vmImage: $(owimage_nt)
         steps:
@@ -158,7 +164,7 @@ stages:
             OWOBJDIR: binnt
             OWTOOLS: VISUALC
         - template: azure/relsave.yml
-          parameters: {owobjdir: doc$(target)}
+          parameters: {owobjdir: $(doctarget)}
   - stage: update
     displayName: "Consolidate Build"
     dependsOn: 
@@ -178,7 +184,7 @@ stages:
         - template: azure/relload.yml
           parameters: {owobjdir: docdos}
         - template: azure/relload.yml
-          parameters: {owobjdir: dochtmlhelp}
+          parameters: {owobjdir: dochtml}
         - template: azure/relload.yml
           parameters: {owobjdir: docnt}
         - template: azure/relload.yml
@@ -199,16 +205,16 @@ stages:
           matrix:
             Linux:
               owarch: lnx
+              owobjdir: binlnx
               owimage: ${{ variables.owimage_lnx }}
               owtools: GCC
               owscript: buildx.sh
             Windows:
               owarch: nt
+              owobjdir: binnt
               owimage: ${{ variables.owimage_nt }}
               owtools: VISUALC
               owscript: buildx.cmd
-        variables:
-          owobjdir: bin$(owarch)
         pool:
           vmImage: $(owimage)
         steps:
