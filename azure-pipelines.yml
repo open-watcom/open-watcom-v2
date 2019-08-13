@@ -28,21 +28,22 @@ stages:
           matrix:
             Linux:
               owarch: lnx
+              owobjdir: bin${{ variables.owarch }}
               owimage: ${{ variables.owimage_lnx }}
               owtools: GCC
               owscript: buildx.sh
             Windows:
               owarch: nt
+              owobjdir: bin${{ variables.owarch }}
               owimage: ${{ variables.owimage_nt }}
               owtools: VISUALC
               owscript: buildx.cmd
             OSX:
               owarch: osx
+              owobjdir: bin${{ variables.owarch }}
               owimage: ${{ variables.owimage_osx }}
               owtools: CLANG
               owscript: buildx.sh
-        variables:
-          owobjdir: ${{ 'bin' }}$(owarch)
         pool:
           vmImage: $(owimage)
         steps:
