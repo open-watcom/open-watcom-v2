@@ -5,6 +5,9 @@
 
 variables: 
   System.Debug: true
+  owimage_lnx: 'ubuntu-latest'
+  owimage_nt: 'vs2017-win2016'
+  owimage_osx: 'macOS-latest'
 
 schedules:
 - cron: "0 1 * * *"
@@ -25,17 +28,17 @@ stages:
           matrix:
             Linux:
               owobjdir: binlnx
-              owimage: 'ubuntu-latest'
+              owimage: $(owimage_lnx)
               owtools: GCC
               owscript: buildx.sh
             Windows:
               owobjdir: binnt
-              owimage: 'vs2017-win2016'
+              owimage: $(owimage_nt)
               owtools: VISUALC
               owscript: buildx.cmd
             OSX:
               owobjdir: binosx
-              owimage: 'macOS-latest'
+              owimage: $(owimage_osx)
               owtools: CLANG
               owscript: buildx.sh
         pool:
@@ -58,18 +61,18 @@ stages:
         strategy:
           matrix:
             Linux:
-              owobjdir: binlnx
-              owimage: 'ubuntu-latest'
+              owarch: lnx
+              owimage: $(owimage_lnx)
               owtools: GCC
               owscript: buildx.sh
             Windows:
-              owobjdir: binnt
-              owimage: 'vs2017-win2016'
+              owarch: nt
+              owimage: $(owimage_nt)
               owtools: VISUALC
               owscript: buildx.cmd
             OSX:
-              owobjdir: binosx
-              owimage: 'macOS-latest'
+              owarch: osx
+              owimage: $(owimage_osx)
               owtools: CLANG
               owscript: buildx.sh
         pool:
@@ -78,25 +81,25 @@ stages:
         steps:
         - template: azure/artiflod.yml
           parameters:
-            owobjdir: $(owobjdir)
-        - script: sudo apt-get install -y dosbox
-          displayName: "Install DOSBOX"
-          condition: eq( variables['Agent.OS'], 'Linux' )
-        - script: brew install dosbox
-          displayName: "Install DOSBOX"
-          condition: eq( variables['Agent.OS'], 'Darwin' )
+            owobjdir: bin$(owarch)
+        - if eq( $(owarch), 'lnx' ):
+          - script: sudo apt-get install -y dosbox
+            displayName: "Install DOSBOX"
+        - if eq( $(owarch), 'osx' ):
+          - script: brew install dosbox
+            displayName: "Install DOSBOX"
         - script: azure/$(owscript)
           displayName: "Build"
           env: 
             OWAZURE_STAGE_NAME: build
-            OWOBJDIR: $(owobjdir)
+            OWOBJDIR: bin$(owarch)
             OWTOOLS: $(owtools)
         - template: azure/relsave.yml
           parameters:
-            owobjdir: $(owobjdir)
+            owobjdir: bin$(owarch)
         - template: azure/instsave.yml
           parameters:
-            owobjdir: $(owobjdir)
+            owobjdir: bin$(owarch)
   - stage: tests
     displayName: "Tests"
     dependsOn: build
@@ -162,10 +165,8 @@ stages:
       - tests
     jobs:
       - job: Linux
-        variables:
-        - template: azure/var-lnx.yml
         pool:
-          vmImage: ${{ variables.owimage }}
+          vmImage: $(owimage_lnx)
         steps:
         # consolidate binaries
         - template: azure/relload.yml
@@ -197,12 +198,12 @@ stages:
           matrix:
             Linux:
               owobjdir: binlnx
-              owimage: 'ubuntu-latest'
+              owimage: $(owimage_lnx)
               owtools: GCC
               owscript: buildx.sh
             Windows:
               owobjdir: binnt
-              owimage: 'vs2017-win2016'
+              owimage: $(owimage_nt)
               owtools: VISUALC
               owscript: buildx.cmd
         pool:
@@ -233,14 +234,12 @@ stages:
     displayName: "Make Release on GitHub"
     jobs:
       - job: Linux
-        variables:
-        - template: azure/var-lnx.yml
         pool:
-          vmImage: ${{ variables.owimage }}
+          vmImage: $(owimage_lnx)
         steps:
         - template: azure/artiflod.yml
           parameters:
-            owobjdir: ${{ variables.owobjdir }}
+            owobjdir: binlnx
         - template: azure/distload.yml
           parameters: 
             owobjdir: binlnx
