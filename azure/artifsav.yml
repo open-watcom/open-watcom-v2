@@ -3,7 +3,7 @@ parameters:
 
 steps:
     - task: PublishPipelineArtifact@1
-      displayName: "Save Artifact build-${{ ${{ parameters.owobjdir }} }}"
+      displayName: "Save Artifact build-$[ ${{ parameters.owobjdir }} ]"
       inputs: 
         artifactName: build-${{ parameters.owobjdir }}
         targetPath: build/${{ parameters.owobjdir }}
