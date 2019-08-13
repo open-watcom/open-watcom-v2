@@ -27,20 +27,22 @@ stages:
         strategy:
           matrix:
             Linux:
-              owobjdir: binlnx
+              owarch: lnx
               owimage: ${{ variables.owimage_lnx }}
               owtools: GCC
               owscript: buildx.sh
             Windows:
-              owobjdir: binnt
+              owarch: nt
               owimage: ${{ variables.owimage_nt }}
               owtools: VISUALC
               owscript: buildx.cmd
             OSX:
-              owobjdir: binosx
+              owarch: osx
               owimage: ${{ variables.owimage_osx }}
               owtools: CLANG
               owscript: buildx.sh
+        variables:
+          owobjdir: bin${{ variables.owarch }}
         pool:
           vmImage: $(owimage)
         steps:
@@ -51,8 +53,7 @@ stages:
             OWOBJDIR: $(owobjdir)
             OWTOOLS: $(owtools)
         - template: azure/artifsav.yml
-          parameters:
-            owobjdir: $(owobjdir)
+          parameters: {owobjdir: $(owobjdir)}
   - stage: build
     displayName: "Build"
     dependsOn: boot
@@ -75,13 +76,14 @@ stages:
               owimage: ${{ variables.owimage_osx }}
               owtools: CLANG
               owscript: buildx.sh
+        variables:
+          owobjdir: bin${{ variables.owarch }}
         pool:
           vmImage: $(owimage)
         timeoutInMinutes: 120
         steps:
         - template: azure/artiflod.yml
-          parameters:
-            owobjdir: bin$(owarch)
+          parameters: {owobjdir: $(owobjdir)}
         - script: sudo apt-get install -y dosbox
           displayName: "Install DOSBOX Linux"
           condition: in( $(owarch), 'lnx' )
@@ -92,36 +94,36 @@ stages:
           displayName: "Build"
           env: 
             OWAZURE_STAGE_NAME: build
-            OWOBJDIR: bin$(owarch)
+            OWOBJDIR: $(owobjdir)
             OWTOOLS: $(owtools)
         - template: azure/relsave.yml
-          parameters:
-            owobjdir: bin$(owarch)
+          parameters: {owobjdir: $(owobjdir)}
         - template: azure/instsave.yml
-          parameters:
-            owobjdir: bin$(owarch)
+          parameters: {owobjdir: $(owobjdir)}
   - stage: tests
     displayName: "Tests"
     dependsOn: build
     jobs:
       - job: Linux
+        strategy:
+          matrix:
+            Linux:
+              owarch: lnx
+              owimage: ${{ variables.owimage_lnx }}
+              owtools: GCC
+              owscript: buildx.sh
+            Windows:
+              owarch: nt
+              owimage: ${{ variables.owimage_nt }}
+              owtools: VISUALC
+              owscript: buildx.cmd
         variables:
-        - template: azure/var-lnx.yml
+          owobjdir: bin${{ variables.owarch }}
         pool:
-          vmImage: ${{ variables.owimage }}
+          vmImage: $(owimage)
         steps:
         - template: azure/artiflod.yml
-          parameters:
-            owobjdir: ${{ variables.owobjdir }}
-      - job: Windows
-        variables:
-        - template: azure/var-win.yml
-        pool:
-          vmImage: ${{ variables.owimage }}
-        steps:
-        - template: azure/artiflod.yml
-          parameters:
-            owobjdir: ${{ variables.owobjdir }}
+          parameters: {owobjdir: $(owobjdir)}
   - stage: docs
     displayName: "Documentation Build"
     dependsOn: boot
@@ -145,8 +147,7 @@ stages:
           vmImage: $(owimage_nt)
         steps:
         - template: azure/artiflod.yml
-          parameters:
-            owobjdir: binnt
+          parameters: {owobjdir: binnt}
         - script: azure/buildx.cmd
           displayName: "Documentation Build"
           env:
@@ -210,17 +211,13 @@ stages:
           vmImage: $(owimage)
         steps:
         - template: azure/artiflod.yml
-          parameters:
-            owobjdir: $(owobjdir)
+          parameters: {owobjdir: $(owobjdir)}
         - template: azure/instload.yml
-          parameters: 
-            owobjdir: binlnx
+          parameters: {owobjdir: binlnx}
         - template: azure/instload.yml
-          parameters: 
-            owobjdir: binnt
+          parameters: {owobjdir: binnt}
         - template: azure/relload.yml
-          parameters:
-            owobjdir: binall
+          parameters: {owobjdir: binall}
         - script: azure/$(owscript)
           displayName: "Build Installers"
           env:
@@ -228,8 +225,7 @@ stages:
             OWOBJDIR: $(owobjdir)
             OWTOOLS: $(owtools)
         - template: azure/distsave.yml
-          parameters:
-            owobjdir: $(owobjdir)
+          parameters: {owobjdir: $(owobjdir)}
   - stage: release
     displayName: "Make Release on GitHub"
     jobs:
@@ -238,17 +234,13 @@ stages:
           vmImage: $(owimage_lnx)
         steps:
         - template: azure/artiflod.yml
-          parameters:
-            owobjdir: binlnx
+          parameters: {owobjdir: binlnx}
         - template: azure/distload.yml
-          parameters: 
-            owobjdir: binlnx
+          parameters: {owobjdir: binlnx}
         - template: azure/distload.yml
-          parameters: 
-            owobjdir: binnt
+          parameters: {owobjdir: binnt}
         - template: azure/distsave.yml
-          parameters: 
-            owobjdir: binall
+          parameters: {owobjdir: binall}
 #        - task: GitHubRelease@0
 #          inputs:
 #            gitHubConnection: 
