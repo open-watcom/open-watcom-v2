@@ -46,7 +46,7 @@ stages:
         pool:
           vmImage: $(owimage)
         steps:
-        - script: echo $(owobjdir)
+        - script: echo $(owarch)..$(owobjdir)
         - script: azure/$(owscript)
           displayName: "Bootstrap"
           env:
