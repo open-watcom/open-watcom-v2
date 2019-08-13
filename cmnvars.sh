@@ -4,7 +4,6 @@
 # *****************************************************************
 # NOTE: All scripts to set the environment must call this script at
 #       the end.
-set -x
 
 # Set the version numbers
 export OWBLDVER=20

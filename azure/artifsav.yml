@@ -1,5 +1,6 @@
 parameters:
-  owobjdir: ' '
+  owobjdir: ''
+
 steps:
     - task: PublishPipelineArtifact@1
       displayName: Save Artifact build-${{ parameters.owobjdir }}

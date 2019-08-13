@@ -1,5 +1,5 @@
 parameters:
-  owobjdir: ' '
+  owobjdir: ''
 
 steps:
     - task: PublishPipelineArtifact@1
