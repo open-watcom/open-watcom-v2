@@ -82,12 +82,12 @@ stages:
         - template: azure/artiflod.yml
           parameters:
             owobjdir: bin$(owarch)
-        - if eq( $(owarch), 'lnx' ):
-          - script: sudo apt-get install -y dosbox
-            displayName: "Install DOSBOX"
-        - if eq( $(owarch), 'osx' ):
-          - script: brew install dosbox
-            displayName: "Install DOSBOX"
+        - script: sudo apt-get install -y dosbox
+          displayName: "Install DOSBOX Linux"
+          condition: in( $(owarch), 'lnx' )
+        - script: brew install dosbox
+          displayName: "Install DOSBOX OSX"
+          condition: in( $(owarch), 'osx' )
         - script: azure/$(owscript)
           displayName: "Build"
           env: 
@@ -141,20 +141,18 @@ stages:
               target: pdf
             WIN:
               target: win
-        variables:
-        - template: azure/var-win.yml
         pool:
-          vmImage: ${{ variables.owimage }}
+          vmImage: $(owimage_nt)
         steps:
         - template: azure/artiflod.yml
           parameters:
-            owobjdir: ${{ variables.owobjdir }}
+            owobjdir: binnt
         - script: azure/buildx.cmd
           displayName: "Documentation Build"
           env:
             OWAZURE_STAGE_NAME: docs
             OWDOCTARGET: $(target)
-            OWOBJDIR: ${{ variables.owobjdir }}
+            OWOBJDIR: binnt
             OWTOOLS: VISUALC
         - template: azure/relsave.yml
           parameters: {owobjdir: doc$(target)}
