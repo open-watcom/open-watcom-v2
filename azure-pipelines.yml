@@ -55,6 +55,8 @@ stages:
             OWTOOLS: $(owtools)
         - template: azure/artifsav.yml
           parameters: {owobjdir: $(owobjdir)}
+        - bash: cp license.txt $(Build.ArtifactStagingDirectory)
+          condition: in( variables.owarch, 'lnx' )
         - script: echo $(Build.ArtifactStagingDirectory)
         - bash: ls -l $(Build.ArtifactStagingDirectory)
           condition: in( variables.owarch, 'lnx' )
