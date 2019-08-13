@@ -20,9 +20,20 @@ stages:
   - stage: boot
     displayName: "Bootstrap"
     jobs:
-      - job: Linux
+      - job: Bootstrap
+        strategy:
+          matrix:
+            Linux:
+              arch: lnx
+              owtools: GCC
+            Windows:
+              arch: nt
+              owtools: VISUALC
+            OSX:
+              arch: osx
+              owtools: CLANG
         variables:
-        - template: azure/var-lnx.yml
+        - template: azure/var-$(arch).yml
         pool:
           vmImage: ${{ variables.owimage }}
         steps:
@@ -31,37 +42,7 @@ stages:
           env:
             OWAZURE_STAGE_NAME: boot
             OWOBJDIR: ${{ variables.owobjdir }}
-            OWTOOLS: GCC
-        - template: azure/artifsav.yml
-          parameters:
-            owobjdir: ${{ variables.owobjdir }}
-      - job: Windows
-        variables:
-        - template: azure/var-win.yml
-        pool:
-          vmImage: ${{ variables.owimage }}
-        steps:
-        - script: azure/buildx.cmd
-          displayName: "Bootstrap"
-          env:
-            OWAZURE_STAGE_NAME: boot
-            OWOBJDIR: ${{ variables.owobjdir }}
-            OWTOOLS: VISUALC
-        - template: azure/artifsav.yml
-          parameters:
-            owobjdir: ${{ variables.owobjdir }}
-      - job: OSX
-        variables:
-        - template: azure/var-osx.yml
-        pool:
-          vmImage: ${{ variables.owimage }}
-        steps:
-        - script: azure/buildx.sh
-          displayName: "Bootstrap"
-          env:
-            OWAZURE_STAGE_NAME: boot
-            OWOBJDIR: ${{ variables.owobjdir }}
-            OWTOOLS: CLANG
+            OWTOOLS: $(owtools)
         - template: azure/artifsav.yml
           parameters:
             owobjdir: ${{ variables.owobjdir }}
@@ -69,69 +50,48 @@ stages:
     displayName: "Build"
     dependsOn: boot
     jobs:
-      - job: Linux
+      - job: Build
+        strategy:
+          matrix:
+            Linux:
+              arch: lnx
+              owtools: GCC
+              owscript: buildx.sh
+            Windows:
+              arch: nt
+              owtools: VISUALC
+              owscript: buildx.cmd
+            OSX:
+              arch: osx
+              owtools: CLANG
+              owscript: buildx.sh
         variables:
-        - template: azure/var-lnx.yml
+        - template: azure/var-$(arch).yml
         pool:
           vmImage: ${{ variables.owimage }}
+        timeoutInMinutes: 120
         steps:
         - template: azure/artiflod.yml
           parameters:
             owobjdir: ${{ variables.owobjdir }}
         - script: sudo apt-get install -y dosbox
           displayName: "Install DOSBOX"
-        - script: azure/buildx.sh
+          condition: eq( variables['Agent.OS'], 'Linux' )
+        - script: brew install dosbox
+          displayName: "Install DOSBOX"
+          condition: eq( variables['Agent.OS'], 'Darwin' )
+        - script: azure/$(owscript)
           displayName: "Build"
           env: 
             OWAZURE_STAGE_NAME: build
             OWOBJDIR: ${{ variables.owobjdir }}
-            OWTOOLS: GCC
+            OWTOOLS: $(owtools)
         - template: azure/relsave.yml
           parameters:
             owobjdir: ${{ variables.owobjdir }}
         - template: azure/instsave.yml
           parameters:
             owobjdir: ${{ variables.owobjdir }}
-      - job: Windows
-        variables:
-        - template: azure/var-win.yml
-        pool:
-          vmImage: ${{ variables.owimage }}
-        timeoutInMinutes: 120
-        steps:
-        - template: azure/artiflod.yml
-          parameters:
-            owobjdir: ${{ variables.owobjdir }}
-        - script: azure/buildx.cmd
-          displayName: "Build"
-          env:
-            OWAZURE_STAGE_NAME: build
-            OWOBJDIR: ${{ variables.owobjdir }}
-            OWTOOLS: VISUALC
-        - template: azure/relsave.yml
-          parameters:
-            owobjdir: ${{ variables.owobjdir }}
-        - template: azure/instsave.yml
-          parameters:
-            owobjdir: ${{ variables.owobjdir }}
-      - job: OSX
-        variables:
-        - template: azure/var-osx.yml
-        pool:
-          vmImage: ${{ variables.owimage }}
-        timeoutInMinutes: 120
-        steps:
-        - template: azure/artiflod.yml
-          parameters:
-            owobjdir: ${{ variables.owobjdir }}
-        - script: brew install dosbox
-          displayName: "Install DOSBOX"
-        - script: azure/buildx.sh
-          displayName: "Build"
-          env:
-            OWAZURE_STAGE_NAME: build
-            OWOBJDIR: ${{ variables.owobjdir }}
-            OWTOOLS: CLANG
   - stage: tests
     displayName: "Tests"
     dependsOn: build
@@ -159,10 +119,6 @@ stages:
     dependsOn: boot
     jobs:
       - job: Documentation
-        variables:
-        - template: azure/var-win.yml
-        pool:
-          vmImage: ${{ variables.owimage }}
         strategy:
           matrix:
             DOS:
@@ -177,6 +133,10 @@ stages:
               target: pdf
             WIN:
               target: win
+        variables:
+        - template: azure/var-win.yml
+        pool:
+          vmImage: ${{ variables.owimage }}
         steps:
         - template: azure/artiflod.yml
           parameters:
@@ -227,9 +187,19 @@ stages:
     displayName: "Build Installers"
     dependsOn: update
     jobs:
-      - job: Linux
+      - job: installer
+        strategy:
+          matrix:
+            Linux:
+              arch: lnx
+              owtools: GCC
+              owscript: buildx.sh
+            Windows:
+              arch: nt
+              owtools: VISUALC
+              owscript: buildx.cmd
         variables:
-        - template: azure/var-lnx.yml
+        - template: azure/var-$(arch).yml
         pool:
           vmImage: ${{ variables.owimage }}
         steps:
@@ -245,39 +215,12 @@ stages:
         - template: azure/relload.yml
           parameters:
             owobjdir: binall
-        - script: azure/buildx.sh
+        - script: azure/$(owscript)
           displayName: "Build Installers"
           env:
             OWAZURE_STAGE_NAME: inst
             OWOBJDIR: ${{ variables.owobjdir }}
-            OWTOOLS: GCC
-        - template: azure/distsave.yml
-          parameters:
-            owobjdir: ${{ variables.owobjdir }}
-      - job: Windows
-        variables:
-        - template: azure/var-win.yml
-        pool:
-          vmImage: ${{ variables.owimage }}
-        steps:
-        - template: azure/artiflod.yml
-          parameters:
-            owobjdir: ${{ variables.owobjdir }}
-        - template: azure/instload.yml
-          parameters: 
-            owobjdir: binlnx
-        - template: azure/instload.yml
-          parameters: 
-            owobjdir: binnt
-        - template: azure/relload.yml
-          parameters: 
-            owobjdir: binall
-        - script: azure/buildx.cmd
-          displayName: "Build Installers"
-          env:
-            OWAZURE_STAGE_NAME: inst
-            OWOBJDIR: ${{ variables.owobjdir }}
-            OWTOOLS: VISUALC
+            OWTOOLS: $(owtools)
         - template: azure/distsave.yml
           parameters:
             owobjdir: ${{ variables.owobjdir }}
