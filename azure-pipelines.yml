@@ -8,6 +8,15 @@ variables:
   owimage_lnx: 'ubuntu-latest'
   owimage_nt: 'vs2017-win2016'
   owimage_osx: 'macOS-latest'
+  owobjdir_lnx: binlnx
+  owobjdir_nt: binnt
+  owobjdir_osx: binosx
+  owtools_lnx: GCC
+  owtools_nt: VISUALC
+  owtools_osx: CLANG
+  owscript_lnx: buildx.sh
+  owscript_nt: buildx.cmd
+  owscript_osx: buildx.sh
 
 schedules:
 - cron: "0 1 * * *"
@@ -28,22 +37,22 @@ stages:
           matrix:
             Linux:
               owarch: lnx
-              owobjdir: binlnx
+              owobjdir: ${{ variables.owobjdir_lnx }}
               owimage: ${{ variables.owimage_lnx }}
-              owtools: GCC
-              owscript: buildx.sh
+              owtools: ${{ variables.owtools_lnx }}
+              owscript: ${{ variables.owscript_lnx }}
             Windows:
               owarch: nt
-              owobjdir: binnt
+              owobjdir: ${{ variables.owobjdir_nt }}
               owimage: ${{ variables.owimage_nt }}
-              owtools: VISUALC
-              owscript: buildx.cmd
+              owtools: ${{ variables.owtools_nt }}
+              owscript: ${{ variables.owscript_nt }}
             OSX:
               owarch: osx
-              owobjdir: binosx
+              owobjdir: ${{ variables.owobjdir_osx }}
               owimage: ${{ variables.owimage_osx }}
-              owtools: CLANG
-              owscript: buildx.sh
+              owtools: ${{ variables.owtools_osx }}
+              owscript: ${{ variables.owscript_osx }}
         pool:
           vmImage: $(owimage)
         steps:
@@ -64,22 +73,22 @@ stages:
           matrix:
             Linux:
               owarch: lnx
-              owobjdir: binlnx
+              owobjdir: ${{ variables.owobjdir_lnx }}
               owimage: ${{ variables.owimage_lnx }}
-              owtools: GCC
-              owscript: buildx.sh
+              owtools: ${{ variables.owtools_lnx }}
+              owscript: ${{ variables.owscript_lnx }}
             Windows:
               owarch: nt
-              owobjdir: binnt
+              owobjdir: ${{ variables.owobjdir_nt }}
               owimage: ${{ variables.owimage_nt }}
-              owtools: VISUALC
-              owscript: buildx.cmd
+              owtools: ${{ variables.owtools_nt }}
+              owscript: ${{ variables.owscript_nt }}
             OSX:
               owarch: osx
-              owobjdir: binosx
+              owobjdir: ${{ variables.owobjdir_osx }}
               owimage: ${{ variables.owimage_osx }}
-              owtools: CLANG
-              owscript: buildx.sh
+              owtools: ${{ variables.owtools_osx }}
+              owscript: ${{ variables.owscript_osx }}
         pool:
           vmImage: $(owimage)
         timeoutInMinutes: 120
@@ -110,15 +119,17 @@ stages:
         strategy:
           matrix:
             Linux:
-              owobjdir: binlnx
+              owarch: lnx
+              owobjdir: ${{ variables.owobjdir_lnx }}
               owimage: ${{ variables.owimage_lnx }}
-              owtools: GCC
-              owscript: buildx.sh
+              owtools: ${{ variables.owtools_lnx }}
+              owscript: ${{ variables.owscript_lnx }}
             Windows:
-              owobjdir: binnt
+              owarch: nt
+              owobjdir: ${{ variables.owobjdir_nt }}
               owimage: ${{ variables.owimage_nt }}
-              owtools: VISUALC
-              owscript: buildx.cmd
+              owtools: ${{ variables.owtools_nt }}
+              owscript: ${{ variables.owscript_nt }}
         pool:
           vmImage: $(owimage)
         steps:
@@ -202,15 +213,17 @@ stages:
         strategy:
           matrix:
             Linux:
-              owobjdir: binlnx
+              owarch: lnx
+              owobjdir: ${{ variables.owobjdir_lnx }}
               owimage: ${{ variables.owimage_lnx }}
-              owtools: GCC
-              owscript: buildx.sh
+              owtools: ${{ variables.owtools_lnx }}
+              owscript: ${{ variables.owscript_lnx }}
             Windows:
-              owobjdir: binnt
+              owarch: nt
+              owobjdir: ${{ variables.owobjdir_nt }}
               owimage: ${{ variables.owimage_nt }}
-              owtools: VISUALC
-              owscript: buildx.cmd
+              owtools: ${{ variables.owtools_nt }}
+              owscript: ${{ variables.owscript_nt }}
         pool:
           vmImage: $(owimage)
         steps:
