@@ -42,7 +42,7 @@ stages:
               owtools: CLANG
               owscript: buildx.sh
         variables:
-          owobjdir: bin$(owarch)
+          owobjdir: ${{ 'bin' }}$(owarch)
         pool:
           vmImage: $(owimage)
         steps:
