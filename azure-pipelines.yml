@@ -28,17 +28,17 @@ stages:
           matrix:
             Linux:
               owobjdir: binlnx
-              owimage: $(owimage_lnx)
+              owimage: 'ubuntu-latest'
               owtools: GCC
               owscript: buildx.sh
             Windows:
               owobjdir: binnt
-              owimage: $(owimage_nt)
+              owimage: 'vs2017-win2016'
               owtools: VISUALC
               owscript: buildx.cmd
             OSX:
               owobjdir: binosx
-              owimage: $(owimage_osx)
+              owimage: 'macOS-latest'
               owtools: CLANG
               owscript: buildx.sh
         pool:
@@ -62,17 +62,17 @@ stages:
           matrix:
             Linux:
               owarch: lnx
-              owimage: $(owimage_lnx)
+              owimage: 'ubuntu-latest'
               owtools: GCC
               owscript: buildx.sh
             Windows:
               owarch: nt
-              owimage: $(owimage_nt)
+              owimage: 'vs2017-win2016'
               owtools: VISUALC
               owscript: buildx.cmd
             OSX:
               owarch: osx
-              owimage: $(owimage_osx)
+              owimage: 'macOS-latest'
               owtools: CLANG
               owscript: buildx.sh
         pool:
@@ -196,12 +196,12 @@ stages:
           matrix:
             Linux:
               owobjdir: binlnx
-              owimage: $(owimage_lnx)
+              owimage: 'ubuntu-latest'
               owtools: GCC
               owscript: buildx.sh
             Windows:
               owobjdir: binnt
-              owimage: $(owimage_nt)
+              owimage: 'vs2017-win2016'
               owtools: VISUALC
               owscript: buildx.cmd
         pool:
