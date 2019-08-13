@@ -17,6 +17,9 @@ variables:
   owscript_lnx: buildx.sh
   owscript_nt:  buildx.cmd
   owscript_osx: buildx.sh
+  owarch_lnx: lnx
+  owarch_nt:  nt
+  owarch_osx: osx
 
 schedules:
 - cron: "0 1 * * *"
@@ -36,19 +39,19 @@ stages:
         strategy:
           matrix:
             Linux:
-              owarch: lnx
+              owarch: ${{ variables.owarch_lnx }}
               owobjdir: ${{ variables.owobjdir_lnx }}
               owimage: ${{ variables.owimage_lnx }}
               owtools: ${{ variables.owtools_lnx }}
               owscript: ${{ variables.owscript_lnx }}
             Windows:
-              owarch: nt
+              owarch: ${{ variables.owarch_nt }}
               owobjdir: ${{ variables.owobjdir_nt }}
               owimage: ${{ variables.owimage_nt }}
               owtools: ${{ variables.owtools_nt }}
               owscript: ${{ variables.owscript_nt }}
             OSX:
-              owarch: osx
+              owarch: ${{ variables.owarch_osx }}
               owobjdir: ${{ variables.owobjdir_osx }}
               owimage: ${{ variables.owimage_osx }}
               owtools: ${{ variables.owtools_osx }}
@@ -72,19 +75,19 @@ stages:
         strategy:
           matrix:
             Linux:
-              owarch: lnx
+              owarch: ${{ variables.owarch_lnx }}
               owobjdir: ${{ variables.owobjdir_lnx }}
               owimage: ${{ variables.owimage_lnx }}
               owtools: ${{ variables.owtools_lnx }}
               owscript: ${{ variables.owscript_lnx }}
             Windows:
-              owarch: nt
+              owarch: ${{ variables.owarch_nt }}
               owobjdir: ${{ variables.owobjdir_nt }}
               owimage: ${{ variables.owimage_nt }}
               owtools: ${{ variables.owtools_nt }}
               owscript: ${{ variables.owscript_nt }}
             OSX:
-              owarch: osx
+              owarch: ${{ variables.owarch_osx }}
               owobjdir: ${{ variables.owobjdir_osx }}
               owimage: ${{ variables.owimage_osx }}
               owtools: ${{ variables.owtools_osx }}
@@ -97,10 +100,10 @@ stages:
           parameters: {owobjdir: $(owobjdir)}
         - script: sudo apt-get install -y dosbox
           displayName: "Install DOSBOX Linux"
-          condition: in( variables.owarch, 'lnx' )
+          condition: in( variables.owarch, variables.owarch_lnx )
         - script: brew install dosbox
           displayName: "Install DOSBOX OSX"
-          condition: in( variables.owarch, 'osx' )
+          condition: in( variables.owarch, variables.owarch_osx )
         - script: azure/$(owscript)
           displayName: "Build"
           env: 
@@ -119,13 +122,13 @@ stages:
         strategy:
           matrix:
             Linux:
-              owarch: lnx
+              owarch: ${{ variables.owarch_lnx }}
               owobjdir: ${{ variables.owobjdir_lnx }}
               owimage: ${{ variables.owimage_lnx }}
               owtools: ${{ variables.owtools_lnx }}
               owscript: ${{ variables.owscript_lnx }}
             Windows:
-              owarch: nt
+              owarch: ${{ variables.owarch_nt }}
               owobjdir: ${{ variables.owobjdir_nt }}
               owimage: ${{ variables.owimage_nt }}
               owtools: ${{ variables.owtools_nt }}
@@ -164,13 +167,13 @@ stages:
           vmImage: $(owimage_nt)
         steps:
         - template: azure/artiflod.yml
-          parameters: {owobjdir: binnt}
-        - script: azure/buildx.cmd
+          parameters: {owobjdir: $(owobjdir_nt)}
+        - script: azure/$(owscript_nt)
           displayName: "Documentation Build"
           env:
             OWAZURE_STAGE_NAME: docs
             OWDOCTARGET: $(target)
-            OWOBJDIR: binnt
+            OWOBJDIR: $(owobjdir_nt)
             OWTOOLS: VISUALC
         - template: azure/relsave.yml
           parameters: {owobjdir: $(doctarget)}
@@ -186,9 +189,9 @@ stages:
         steps:
         # consolidate binaries
         - template: azure/relload.yml
-          parameters: {owobjdir: binlnx}
+          parameters: {owobjdir: $(owobjdir_lnx)}
         - template: azure/relload.yml
-          parameters: {owobjdir: binnt}
+          parameters: {owobjdir: $(owobjdir_nt)}
         # consolidate documentation
         - template: azure/relload.yml
           parameters: {owobjdir: docdos}
@@ -213,13 +216,13 @@ stages:
         strategy:
           matrix:
             Linux:
-              owarch: lnx
+              owarch: ${{ variables.owarch_lnx }}
               owobjdir: ${{ variables.owobjdir_lnx }}
               owimage: ${{ variables.owimage_lnx }}
               owtools: ${{ variables.owtools_lnx }}
               owscript: ${{ variables.owscript_lnx }}
             Windows:
-              owarch: nt
+              owarch: ${{ variables.owarch_nt }}
               owobjdir: ${{ variables.owobjdir_nt }}
               owimage: ${{ variables.owimage_nt }}
               owtools: ${{ variables.owtools_nt }}
@@ -230,9 +233,9 @@ stages:
         - template: azure/artiflod.yml
           parameters: {owobjdir: $(owobjdir)}
         - template: azure/instload.yml
-          parameters: {owobjdir: binlnx}
+          parameters: {owobjdir: $(owobjdir_lnx)}
         - template: azure/instload.yml
-          parameters: {owobjdir: binnt}
+          parameters: {owobjdir: $(owobjdir_nt)}
         - template: azure/relload.yml
           parameters: {owobjdir: binall}
         - script: azure/$(owscript)
@@ -251,11 +254,11 @@ stages:
           vmImage: $(owimage_lnx)
         steps:
         - template: azure/artiflod.yml
-          parameters: {owobjdir: binlnx}
+          parameters: {owobjdir: $(owobjdir_lnx)}
         - template: azure/distload.yml
-          parameters: {owobjdir: binlnx}
+          parameters: {owobjdir: $(owobjdir_lnx)}
         - template: azure/distload.yml
-          parameters: {owobjdir: binnt}
+          parameters: {owobjdir: $(owobjdir_nt)}
         - template: azure/distsave.yml
           parameters: {owobjdir: binall}
 #        - task: GitHubRelease@0
