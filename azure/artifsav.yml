@@ -3,12 +3,12 @@ parameters:
 
 steps:
     - task: PublishPipelineArtifact@1
-      displayName: Save Artifact build-${{ parameters.owobjdir }}
+      displayName: $[ Save Artifact build-${{ parameters.owobjdir }} ]
       inputs: 
         artifactName: build-${{ parameters.owobjdir }}
         targetPath: build/${{ parameters.owobjdir }}
     - task: PublishPipelineArtifact@1
-      displayName: Save Artifact bld-watcom-${{ parameters.owobjdir }}
+      displayName: $[ Save Artifact bld-watcom-${{ parameters.owobjdir }} ]
       inputs:
         artifactName: bld-watcom-${{ parameters.owobjdir }}
         targetPath: bld/watcom/${{ parameters.owobjdir }}
