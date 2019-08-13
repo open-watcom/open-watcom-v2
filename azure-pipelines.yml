@@ -86,10 +86,10 @@ stages:
           parameters: {owobjdir: $(owobjdir)}
         - script: sudo apt-get install -y dosbox
           displayName: "Install DOSBOX Linux"
-          condition: in( ${{ variables.owarch }}, 'lnx' )
+          condition: in( '$(owarch)', 'lnx' )
         - script: brew install dosbox
           displayName: "Install DOSBOX OSX"
-          condition: in( ${{ variables.owarch }}, 'osx' )
+          condition: in( '$(owarch)', 'osx' )
         - script: azure/$(owscript)
           displayName: "Build"
           env: 
