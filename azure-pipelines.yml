@@ -6,16 +6,16 @@
 variables: 
   System.Debug: true
   owimage_lnx: 'ubuntu-latest'
-  owimage_nt: 'vs2017-win2016'
+  owimage_nt:  'vs2017-win2016'
   owimage_osx: 'macOS-latest'
   owobjdir_lnx: binlnx
-  owobjdir_nt: binnt
+  owobjdir_nt:  binnt
   owobjdir_osx: binosx
   owtools_lnx: GCC
-  owtools_nt: VISUALC
+  owtools_nt:  VISUALC
   owtools_osx: CLANG
   owscript_lnx: buildx.sh
-  owscript_nt: buildx.cmd
+  owscript_nt:  buildx.cmd
   owscript_osx: buildx.sh
 
 schedules:
