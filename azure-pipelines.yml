@@ -42,7 +42,7 @@ stages:
               owtools: CLANG
               owscript: buildx.sh
         variables:
-          owobjdir: $[ bin$(owarch) ]
+          owobjdir: bin$(owarch)
         pool:
           vmImage: $(owimage)
         steps:
@@ -77,7 +77,7 @@ stages:
               owtools: CLANG
               owscript: buildx.sh
         variables:
-          owobjdir: $[ bin$(owarch) ]
+          owobjdir: bin$(owarch)
         pool:
           vmImage: $(owimage)
         timeoutInMinutes: 120
@@ -118,7 +118,7 @@ stages:
               owtools: VISUALC
               owscript: buildx.cmd
         variables:
-          owobjdir: $[ bin$(owarch) ]
+          owobjdir: bin$(owarch)
         pool:
           vmImage: $(owimage)
         steps:
@@ -206,7 +206,7 @@ stages:
               owtools: VISUALC
               owscript: buildx.cmd
         variables:
-          owobjdir: $[ bin$(owarch) ]
+          owobjdir: bin$(owarch)
         pool:
           vmImage: $(owimage)
         steps:
