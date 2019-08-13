@@ -57,7 +57,7 @@ stages:
           parameters: {owobjdir: $(owobjdir)}
         - script: echo $(Build.ArtifactStagingDirectory)
         - bash: ls -l $(Build.ArtifactStagingDirectory)
-          condition: in( '$[ variables.owarch ]', 'lnx' )
+          condition: in( variables.owarch, 'lnx' )
   - stage: build
     displayName: "Build"
     dependsOn: boot
@@ -89,15 +89,15 @@ stages:
         steps:
         - script: echo $(Build.ArtifactStagingDirectory)
         - bash: ls -l $(Build.ArtifactStagingDirectory)
-          condition: in( '${{ variables.owarch }}', 'lnx' )
+          condition: in( variables.owarch, 'lnx' )
         - template: azure/artiflod.yml
           parameters: {owobjdir: $(owobjdir)}
         - script: sudo apt-get install -y dosbox
           displayName: "Install DOSBOX Linux"
-          condition: in( '$[ variables.owarch ]', 'lnx' )
+          condition: in( variables.owarch, 'lnx' )
         - script: brew install dosbox
           displayName: "Install DOSBOX OSX"
-          condition: in( '$[ variables.owarch ]', 'osx' )
+          condition: in( variables.owarch, 'osx' )
         - script: azure/$(owscript)
           displayName: "Build"
           env: 

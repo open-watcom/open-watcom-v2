@@ -48,7 +48,7 @@ bootutil_proc()
 build_proc()
 {
     RC=0
-    if [ `uname` = linux ]; then
+    if [ `uname` = Linux ]; then
         export OWROOT=$(realpath `pwd`)
     else
         export OWROOT=`pwd`
