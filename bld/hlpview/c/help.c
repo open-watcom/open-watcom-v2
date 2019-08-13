@@ -322,7 +322,7 @@ static char *scanTopic( char *buf, char **theend )
         while( *topic == ' ' )
             topic++;
         end = topic;
-        while( *end != ' ' && *end != '\n' && end != '\0' ) {
+        while( *end != ' ' && *end != '\n' && *end != '\0' ) {
             end++;
         }
     }
