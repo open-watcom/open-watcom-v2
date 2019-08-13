@@ -33,12 +33,12 @@ stages:
               owscript: buildx.sh
             Windows:
               owobjdir: binnt
-              owimage: 'vs2017-win2016'
+              owimage: ${{ variables.owimage_nt }}
               owtools: VISUALC
               owscript: buildx.cmd
             OSX:
               owobjdir: binosx
-              owimage: 'macOS-latest'
+              owimage: ${{ variables.owimage_osx }}
               owtools: CLANG
               owscript: buildx.sh
         pool:
@@ -62,17 +62,17 @@ stages:
           matrix:
             Linux:
               owarch: lnx
-              owimage: 'ubuntu-latest'
+              owimage: ${{ variables.owimage_lnx }}
               owtools: GCC
               owscript: buildx.sh
             Windows:
               owarch: nt
-              owimage: 'vs2017-win2016'
+              owimage: ${{ variables.owimage_nt }}
               owtools: VISUALC
               owscript: buildx.cmd
             OSX:
               owarch: osx
-              owimage: 'macOS-latest'
+              owimage: ${{ variables.owimage_osx }}
               owtools: CLANG
               owscript: buildx.sh
         pool:
@@ -195,21 +195,23 @@ stages:
         strategy:
           matrix:
             Linux:
-              owobjdir: binlnx
-              owimage: 'ubuntu-latest'
+              owarch: lnx
+              owobjdir: bin$(owarch)
+              owimage: ${{ variables.owimage_lnx }}
               owtools: GCC
               owscript: buildx.sh
             Windows:
-              owobjdir: binnt
-              owimage: 'vs2017-win2016'
+              owarch: nt
+              owobjdir: bin$(owarch)
+              owimage: ${{ variables.owimage_nt }}
               owtools: VISUALC
               owscript: buildx.cmd
         pool:
-          vmImage: $(owimage)
+          vmImage: ${{ variables.owimage_$(owarch) }}
         steps:
         - template: azure/artiflod.yml
           parameters:
-            owobjdir: $(owobjdir)
+            owobjdir: bin$(owarch)
         - template: azure/instload.yml
           parameters: 
             owobjdir: binlnx
@@ -223,11 +225,11 @@ stages:
           displayName: "Build Installers"
           env:
             OWAZURE_STAGE_NAME: inst
-            OWOBJDIR: $(owobjdir)
+            OWOBJDIR: bin$(owarch)
             OWTOOLS: $(owtools)
         - template: azure/distsave.yml
           parameters:
-            owobjdir: $(owobjdir)
+            owobjdir: bin$(owarch)
   - stage: release
     displayName: "Make Release on GitHub"
     jobs:
