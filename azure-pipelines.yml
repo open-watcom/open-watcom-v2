@@ -27,19 +27,16 @@ stages:
         strategy:
           matrix:
             Linux:
-              owarch: lnx
               owobjdir: binlnx
               owimage: ${{ variables.owimage_lnx }}
               owtools: GCC
               owscript: buildx.sh
             Windows:
-              owarch: nt
               owobjdir: binnt
               owimage: ${{ variables.owimage_nt }}
               owtools: VISUALC
               owscript: buildx.cmd
             OSX:
-              owarch: osx
               owobjdir: binosx
               owimage: ${{ variables.owimage_osx }}
               owtools: CLANG
@@ -110,13 +107,11 @@ stages:
         strategy:
           matrix:
             Linux:
-              owarch: lnx
               owobjdir: binlnx
               owimage: ${{ variables.owimage_lnx }}
               owtools: GCC
               owscript: buildx.sh
             Windows:
-              owarch: nt
               owobjdir: binnt
               owimage: ${{ variables.owimage_nt }}
               owtools: VISUALC
@@ -204,13 +199,11 @@ stages:
         strategy:
           matrix:
             Linux:
-              owarch: lnx
               owobjdir: binlnx
               owimage: ${{ variables.owimage_lnx }}
               owtools: GCC
               owscript: buildx.sh
             Windows:
-              owarch: nt
               owobjdir: binnt
               owimage: ${{ variables.owimage_nt }}
               owtools: VISUALC
