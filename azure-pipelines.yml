@@ -207,7 +207,7 @@ stages:
               owscript: buildx.cmd
         pool:
           vmImage: $(owimage)
-       steps:
+        steps:
         - template: azure/artiflod.yml
           parameters:
             owobjdir: $(owobjdir)
