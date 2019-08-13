@@ -43,10 +43,12 @@ stages:
               owscript: buildx.sh
         variables:
           owobjdir: bin$[ variables.owarch ]
+          owobjdir1: bin$(owarch)
+          owobjdir2: bin${{variables.owarch}}
         pool:
           vmImage: $(owimage)
         steps:
-        - script: echo $(owarch)..$(owobjdir)
+        - script: echo $(owarch)..$(owobjdir)..$(owobjdir1)..$(owobjdir2)
         - script: azure/$(owscript)
           displayName: "Bootstrap"
           env:
