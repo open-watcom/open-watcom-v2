@@ -28,7 +28,7 @@ stages:
           matrix:
             Linux:
               owobjdir: binlnx
-              owimage: variables.owimage_lnx
+              owimage: ${{ variables.owimage_lnx }}
               owtools: GCC
               owscript: buildx.sh
             Windows:
