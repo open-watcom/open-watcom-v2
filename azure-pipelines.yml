@@ -16,32 +16,28 @@ schedules:
 trigger:
 - master
 
-strategy:
-  matrix:
-    Linux:
-      owarch: lnx
-      owobjdir: binlnx
-      owimage: 'ubuntu-latest'
-      owtools: GCC
-      owscript: buildx.sh
-    Windows:
-      owarch: nt
-      owobjdir: binnt
-      owimage: 'vs2017-win2016'
-      owtools: VISUALC
-      owscript: buildx.cmd
-    OSX:
-      owarch: osx
-      owobjdir: binosx
-      owimage: 'macOS-latest'
-      owtools: CLANG
-      owscript: buildx.sh
-
 stages:
   - stage: boot
     displayName: "Bootstrap"
     jobs:
       - job: Bootstrap
+        strategy:
+          matrix:
+            Linux:
+              owobjdir: binlnx
+              owimage: 'ubuntu-latest'
+              owtools: GCC
+              owscript: buildx.sh
+            Windows:
+              owobjdir: binnt
+              owimage: 'vs2017-win2016'
+              owtools: VISUALC
+              owscript: buildx.cmd
+            OSX:
+              owobjdir: binosx
+              owimage: 'macOS-latest'
+              owtools: CLANG
+              owscript: buildx.sh
         pool:
           vmImage: $(owimage)
         steps:
@@ -59,6 +55,23 @@ stages:
     dependsOn: boot
     jobs:
       - job: Build
+        strategy:
+          matrix:
+            Linux:
+              owobjdir: binlnx
+              owimage: 'ubuntu-latest'
+              owtools: GCC
+              owscript: buildx.sh
+            Windows:
+              owobjdir: binnt
+              owimage: 'vs2017-win2016'
+              owtools: VISUALC
+              owscript: buildx.cmd
+            OSX:
+              owobjdir: binosx
+              owimage: 'macOS-latest'
+              owtools: CLANG
+              owscript: buildx.sh
         pool:
           vmImage: $(owimage)
         timeoutInMinutes: 120
@@ -87,7 +100,6 @@ stages:
   - stage: tests
     displayName: "Tests"
     dependsOn: build
-    condition: in( $(owarch), 'lnx', 'nt' )
     jobs:
       - job: Linux
         variables:
@@ -110,7 +122,6 @@ stages:
   - stage: docs
     displayName: "Documentation Build"
     dependsOn: boot
-    condition: in( $(owarch), 'nt' )
     jobs:
       - job: Documentation
         strategy:
@@ -146,7 +157,6 @@ stages:
           parameters: {owobjdir: doc$(target)}
   - stage: update
     displayName: "Consolidate Build"
-    condition: in( $(owarch), 'lnx' )
     dependsOn: 
       - docs
       - tests
@@ -181,9 +191,20 @@ stages:
   - stage: instal
     displayName: "Build Installers"
     dependsOn: update
-    condition: in( $(owarch), 'lnx', 'nt' )
     jobs:
       - job: installer
+        strategy:
+          matrix:
+            Linux:
+              owobjdir: binlnx
+              owimage: 'ubuntu-latest'
+              owtools: GCC
+              owscript: buildx.sh
+            Windows:
+              owobjdir: binnt
+              owimage: 'vs2017-win2016'
+              owtools: VISUALC
+              owscript: buildx.cmd
         pool:
           vmImage: $(owimage)
         steps:
@@ -210,7 +231,6 @@ stages:
             owobjdir: $(owobjdir)
   - stage: release
     displayName: "Make Release on GitHub"
-    condition: in( $(owarch), 'lnx' )
     jobs:
       - job: Linux
         variables:
