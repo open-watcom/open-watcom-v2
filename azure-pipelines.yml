@@ -207,7 +207,7 @@ stages:
               owtools: VISUALC
               owscript: buildx.cmd
         pool:
-          vmImage: ${{ variables.owimage_$(owarch) }}
+          vmImage: ${{ variables.owimage_${{ variables.owarch }} }}
         steps:
         - template: azure/artiflod.yml
           parameters:
