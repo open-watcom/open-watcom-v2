@@ -118,7 +118,7 @@ stages:
               owtools: VISUALC
               owscript: buildx.cmd
         variables:
-          owobjdir: bin$[ $(owarch) ]
+          owobjdir: bin$[ variables.owarch ]
         pool:
           vmImage: $(owimage)
         steps:
