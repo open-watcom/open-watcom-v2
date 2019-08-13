@@ -28,19 +28,19 @@ stages:
           matrix:
             Linux:
               owarch: lnx
-              owobjdir: bin${{ variables.owarch }}
+              owobjdir: binlnx
               owimage: ${{ variables.owimage_lnx }}
               owtools: GCC
               owscript: buildx.sh
             Windows:
               owarch: nt
-              owobjdir: bin${{ variables.owarch }}
+              owobjdir: binnt
               owimage: ${{ variables.owimage_nt }}
               owtools: VISUALC
               owscript: buildx.cmd
             OSX:
               owarch: osx
-              owobjdir: bin${{ variables.owarch }}
+              owobjdir: binosx
               owimage: ${{ variables.owimage_osx }}
               owtools: CLANG
               owscript: buildx.sh
