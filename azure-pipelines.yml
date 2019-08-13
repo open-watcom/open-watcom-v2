@@ -52,6 +52,8 @@ stages:
             OWTOOLS: $(owtools)
         - template: azure/artifsav.yml
           parameters: {owobjdir: $(owobjdir)}
+        - script: echo $(Build.ArtifactStagingDirectory)
+        - bash: ls -l $(Build.ArtifactStagingDirectory)
   - stage: build
     displayName: "Build"
     dependsOn: boot
@@ -81,6 +83,8 @@ stages:
           vmImage: $(owimage)
         timeoutInMinutes: 120
         steps:
+        - script: echo $(Build.ArtifactStagingDirectory)
+        - bash: ls -l $(Build.ArtifactStagingDirectory)
         - template: azure/artiflod.yml
           parameters: {owobjdir: $(owobjdir)}
         - script: sudo apt-get install -y dosbox
