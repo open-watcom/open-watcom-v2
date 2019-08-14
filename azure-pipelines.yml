@@ -163,6 +163,8 @@ stages:
             WIN:
               target: win
               doctarget: docwin
+        variables:
+          owobjdir: ${{ variables.owobjdir_nt }}
         pool:
           vmImage: $(owimage_nt)
         steps:
