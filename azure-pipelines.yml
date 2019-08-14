@@ -32,8 +32,10 @@ trigger:
 - master
 
 stages:
+  - stage: start
   - stage: build
     displayName: "Build"
+    dependsOn: start
     jobs:
       - job: Build
         strategy:
@@ -110,6 +112,7 @@ stages:
           parameters: {owobjdir: $(owobjdir)}
   - stage: docs
     displayName: "Documentation Build"
+    dependsOn: start
     jobs:
       - job: Documentation
         strategy:
