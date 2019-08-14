@@ -123,6 +123,8 @@ stages:
   - stage: tests
     displayName: "Tests"
     dependsOn: build
+    condition:
+      and(succeeded(), in(variables['Build.Reason'], 'IndividualCI', 'BatchedCI', 'Schedule'))
     jobs:
       - job: Linux
         strategy:
@@ -147,6 +149,8 @@ stages:
   - stage: docs
     displayName: "Documentation Build"
     dependsOn: boot
+    condition:
+      and(succeeded(), in(variables['Build.Reason'], 'IndividualCI', 'BatchedCI', 'Schedule'))
     jobs:
       - job: Documentation
         strategy:
@@ -221,6 +225,8 @@ stages:
   - stage: instal
     displayName: "Build Installers"
     dependsOn: update
+    condition:
+      and(succeeded(), in(variables['Build.Reason'], 'IndividualCI', 'BatchedCI', 'Schedule'))
     jobs:
       - job: installer
         strategy:
@@ -258,6 +264,8 @@ stages:
           parameters: {owobjdir: $(owobjdir)}
   - stage: release
     displayName: "Make Release on GitHub"
+    condition:
+      and(succeeded(), in(variables['Build.Reason'], 'IndividualCI', 'BatchedCI', 'Schedule'))
     jobs:
       - job: Linux
         variables:
