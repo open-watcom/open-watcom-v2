@@ -129,6 +129,7 @@ int __saveregs  xmemneed( size_t size )
  */
 
 void *DbgAlloc( size_t size )
+/***************************/
 {
 #ifdef TRMEM
     return( _trmem_alloc( size, _trmem_guess_who(), DbgMemHandle ) );
