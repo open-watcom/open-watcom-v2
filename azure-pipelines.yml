@@ -184,6 +184,8 @@ stages:
       - tests
     jobs:
       - job: Linux
+        variables:
+          owobjdir: ${{ variables.owobjdir_lnx }}
         pool:
           vmImage: $(owimage_lnx)
         steps:
@@ -250,6 +252,8 @@ stages:
     displayName: "Make Release on GitHub"
     jobs:
       - job: Linux
+        variables:
+          owobjdir: ${{ variables.owobjdir_lnx }}
         pool:
           vmImage: $(owimage_lnx)
         steps:
