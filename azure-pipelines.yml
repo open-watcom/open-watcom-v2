@@ -80,23 +80,24 @@ stages:
               owimage:  ${{ variables.owimage_lnx }}
               owtools:  ${{ variables.owtools_lnx }}
               owscript: ${{ variables.owscript_lnx }}
-              timeoutInMinutes: 60
+              owtimeout: 60
             Windows:
               owarch:   ${{ variables.owarch_nt }}
               owobjdir: ${{ variables.owobjdir_nt }}
               owimage:  ${{ variables.owimage_nt }}
               owtools:  ${{ variables.owtools_nt }}
               owscript: ${{ variables.owscript_nt }}
-              timeoutInMinutes: 90
+              owtimeout: 90
             OSX:
               owarch:   ${{ variables.owarch_osx }}
               owobjdir: ${{ variables.owobjdir_osx }}
               owimage:  ${{ variables.owimage_osx }}
               owtools:  ${{ variables.owtools_osx }}
               owscript: ${{ variables.owscript_osx }}
-              timeoutInMinutes: 90
+              owtimeout: 90
         pool:
           vmImage: $(owimage)
+        timeoutInMinutes: $(owtimeout)
         steps:
         - template: azure/artiflod.yml
           parameters: {owobjdir: $(owobjdir)}
