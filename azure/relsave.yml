@@ -7,3 +7,4 @@ steps:
       inputs: 
         artifactName: rel-${{ parameters.owobjdir }}
         targetPath: rel
+      condition: in( variables.owarch, variables.owarch_lnx, variables.owarch_nt )
