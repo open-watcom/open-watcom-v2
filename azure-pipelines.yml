@@ -33,7 +33,7 @@ trigger:
 
 pr:
   branches:
-    exclude: 
+    include: 
     - master
 
 stages:
