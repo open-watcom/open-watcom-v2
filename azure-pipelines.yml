@@ -82,10 +82,8 @@ stages:
             OWTOOLS: $(owtools)
         - template: azure/relsave.yml
           parameters: {owobjdir: $(owobjdir)}
-          condition: in( variables.owarch, variables.owarch_lnx, variables.owarch_nt )
         - template: azure/instsave.yml
           parameters: {owobjdir: $(owobjdir)}
-          condition: in( variables.owarch, variables.owarch_lnx, variables.owarch_nt )
   - stage: tests
     displayName: "Tests"
     dependsOn: build
