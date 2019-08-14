@@ -97,7 +97,7 @@ stages:
               owtimeout: 90
         pool:
           vmImage: $(owimage)
-        timeoutInMinutes: ${{ variables.owtimeout }}
+        timeoutInMinutes: variables.owtimeout
         steps:
         - template: azure/artiflod.yml
           parameters: {owobjdir: $(owobjdir)}
