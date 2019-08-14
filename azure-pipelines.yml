@@ -32,44 +32,8 @@ trigger:
 - master
 
 stages:
-  - stage: boot
-    displayName: "Bootstrap"
-    jobs:
-      - job: Bootstrap
-        strategy:
-          matrix:
-            Linux:
-              owarch:   ${{ variables.owarch_lnx }}
-              owobjdir: ${{ variables.owobjdir_lnx }}
-              owimage:  ${{ variables.owimage_lnx }}
-              owtools:  ${{ variables.owtools_lnx }}
-              owscript: ${{ variables.owscript_lnx }}
-            Windows:
-              owarch:   ${{ variables.owarch_nt }}
-              owobjdir: ${{ variables.owobjdir_nt }}
-              owimage:  ${{ variables.owimage_nt }}
-              owtools:  ${{ variables.owtools_nt }}
-              owscript: ${{ variables.owscript_nt }}
-            OSX:
-              owarch:   ${{ variables.owarch_osx }}
-              owobjdir: ${{ variables.owobjdir_osx }}
-              owimage:  ${{ variables.owimage_osx }}
-              owtools:  ${{ variables.owtools_osx }}
-              owscript: ${{ variables.owscript_osx }}
-        pool:
-          vmImage: $(owimage)
-        steps:
-        - script: azure/$(owscript)
-          displayName: "Bootstrap"
-          env:
-            OWAZURE_STAGE_NAME: boot
-            OWOBJDIR: $(owobjdir)
-            OWTOOLS: $(owtools)
-        - template: azure/artifsav.yml
-          parameters: {owobjdir: $(owobjdir)}
   - stage: build
     displayName: "Build"
-    dependsOn: boot
     jobs:
       - job: Build
         strategy:
@@ -96,14 +60,20 @@ stages:
           vmImage: $(owimage)
         timeoutInMinutes: 90
         steps:
-        - template: azure/artiflod.yml
-          parameters: {owobjdir: $(owobjdir)}
         - script: sudo apt-get install -y dosbox
           displayName: "Install DOSBOX Linux"
           condition: in( variables.owarch, variables.owarch_lnx )
         - script: brew install dosbox
           displayName: "Install DOSBOX OSX"
           condition: in( variables.owarch, variables.owarch_osx )
+        - script: azure/$(owscript)
+          displayName: "Bootstrap"
+          env:
+            OWAZURE_STAGE_NAME: boot
+            OWOBJDIR: $(owobjdir)
+            OWTOOLS: $(owtools)
+        - template: azure/artifsav.yml
+          parameters: {owobjdir: $(owobjdir)}
         - script: azure/$(owscript)
           displayName: "Build"
           env: 
@@ -112,8 +82,10 @@ stages:
             OWTOOLS: $(owtools)
         - template: azure/relsave.yml
           parameters: {owobjdir: $(owobjdir)}
+          condition: in( variables.owarch, variables.owarch_lnx, variables.owarch_nt )
         - template: azure/instsave.yml
           parameters: {owobjdir: $(owobjdir)}
+          condition: in( variables.owarch, variables.owarch_lnx, variables.owarch_nt )
   - stage: tests
     displayName: "Tests"
     dependsOn: build
@@ -140,7 +112,6 @@ stages:
           parameters: {owobjdir: $(owobjdir)}
   - stage: docs
     displayName: "Documentation Build"
-    dependsOn: boot
     jobs:
       - job: Documentation
         strategy:
