@@ -33,6 +33,8 @@ trigger:
 
 stages:
   - stage: start
+    jobs:
+      - job:
   - stage: build
     displayName: "Build"
     dependsOn: start
