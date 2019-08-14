@@ -5,21 +5,21 @@
 
 variables: 
   System.Debug: true
-  owimage_lnx: 'ubuntu-latest'
-  owimage_nt:  'vs2017-win2016'
-  owimage_osx: 'macOS-latest'
+  owimage_lnx:  'ubuntu-latest'
+  owimage_nt:   'vs2017-win2016'
+  owimage_osx:  'macOS-latest'
   owobjdir_lnx: binlnx
   owobjdir_nt:  binnt
   owobjdir_osx: binosx
-  owtools_lnx: GCC
-  owtools_nt:  VISUALC
-  owtools_osx: CLANG
+  owtools_lnx:  GCC
+  owtools_nt:   VISUALC
+  owtools_osx:  CLANG
   owscript_lnx: buildx.sh
   owscript_nt:  buildx.cmd
   owscript_osx: buildx.sh
-  owarch_lnx: lnx
-  owarch_nt:  nt
-  owarch_osx: osx
+  owarch_lnx:   lnx
+  owarch_nt:    nt
+  owarch_osx:   osx
 
 schedules:
 - cron: "0 1 * * *"
@@ -39,22 +39,22 @@ stages:
         strategy:
           matrix:
             Linux:
-              owarch: ${{ variables.owarch_lnx }}
+              owarch:   ${{ variables.owarch_lnx }}
               owobjdir: ${{ variables.owobjdir_lnx }}
-              owimage: ${{ variables.owimage_lnx }}
-              owtools: ${{ variables.owtools_lnx }}
+              owimage:  ${{ variables.owimage_lnx }}
+              owtools:  ${{ variables.owtools_lnx }}
               owscript: ${{ variables.owscript_lnx }}
             Windows:
-              owarch: ${{ variables.owarch_nt }}
+              owarch:   ${{ variables.owarch_nt }}
               owobjdir: ${{ variables.owobjdir_nt }}
-              owimage: ${{ variables.owimage_nt }}
-              owtools: ${{ variables.owtools_nt }}
+              owimage:  ${{ variables.owimage_nt }}
+              owtools:  ${{ variables.owtools_nt }}
               owscript: ${{ variables.owscript_nt }}
             OSX:
-              owarch: ${{ variables.owarch_osx }}
+              owarch:   ${{ variables.owarch_osx }}
               owobjdir: ${{ variables.owobjdir_osx }}
-              owimage: ${{ variables.owimage_osx }}
-              owtools: ${{ variables.owtools_osx }}
+              owimage:  ${{ variables.owimage_osx }}
+              owtools:  ${{ variables.owtools_osx }}
               owscript: ${{ variables.owscript_osx }}
         pool:
           vmImage: $(owimage)
@@ -75,24 +75,24 @@ stages:
         strategy:
           matrix:
             Linux:
-              owarch: ${{ variables.owarch_lnx }}
+              owarch:   ${{ variables.owarch_lnx }}
               owobjdir: ${{ variables.owobjdir_lnx }}
-              owimage: ${{ variables.owimage_lnx }}
-              owtools: ${{ variables.owtools_lnx }}
+              owimage:  ${{ variables.owimage_lnx }}
+              owtools:  ${{ variables.owtools_lnx }}
               owscript: ${{ variables.owscript_lnx }}
               timeoutInMinutes: 60
             Windows:
-              owarch: ${{ variables.owarch_nt }}
+              owarch:   ${{ variables.owarch_nt }}
               owobjdir: ${{ variables.owobjdir_nt }}
-              owimage: ${{ variables.owimage_nt }}
-              owtools: ${{ variables.owtools_nt }}
+              owimage:  ${{ variables.owimage_nt }}
+              owtools:  ${{ variables.owtools_nt }}
               owscript: ${{ variables.owscript_nt }}
               timeoutInMinutes: 90
             OSX:
-              owarch: ${{ variables.owarch_osx }}
+              owarch:   ${{ variables.owarch_osx }}
               owobjdir: ${{ variables.owobjdir_osx }}
-              owimage: ${{ variables.owimage_osx }}
-              owtools: ${{ variables.owtools_osx }}
+              owimage:  ${{ variables.owimage_osx }}
+              owtools:  ${{ variables.owtools_osx }}
               owscript: ${{ variables.owscript_osx }}
               timeoutInMinutes: 90
         pool:
@@ -124,16 +124,16 @@ stages:
         strategy:
           matrix:
             Linux:
-              owarch: ${{ variables.owarch_lnx }}
+              owarch:   ${{ variables.owarch_lnx }}
               owobjdir: ${{ variables.owobjdir_lnx }}
-              owimage: ${{ variables.owimage_lnx }}
-              owtools: ${{ variables.owtools_lnx }}
+              owimage:  ${{ variables.owimage_lnx }}
+              owtools:  ${{ variables.owtools_lnx }}
               owscript: ${{ variables.owscript_lnx }}
             Windows:
-              owarch: ${{ variables.owarch_nt }}
+              owarch:   ${{ variables.owarch_nt }}
               owobjdir: ${{ variables.owobjdir_nt }}
-              owimage: ${{ variables.owimage_nt }}
-              owtools: ${{ variables.owtools_nt }}
+              owimage:  ${{ variables.owimage_nt }}
+              owtools:  ${{ variables.owtools_nt }}
               owscript: ${{ variables.owscript_nt }}
         pool:
           vmImage: $(owimage)
@@ -218,16 +218,16 @@ stages:
         strategy:
           matrix:
             Linux:
-              owarch: ${{ variables.owarch_lnx }}
+              owarch:   ${{ variables.owarch_lnx }}
               owobjdir: ${{ variables.owobjdir_lnx }}
-              owimage: ${{ variables.owimage_lnx }}
-              owtools: ${{ variables.owtools_lnx }}
+              owimage:  ${{ variables.owimage_lnx }}
+              owtools:  ${{ variables.owtools_lnx }}
               owscript: ${{ variables.owscript_lnx }}
             Windows:
-              owarch: ${{ variables.owarch_nt }}
+              owarch:   ${{ variables.owarch_nt }}
               owobjdir: ${{ variables.owobjdir_nt }}
-              owimage: ${{ variables.owimage_nt }}
-              owtools: ${{ variables.owtools_nt }}
+              owimage:  ${{ variables.owimage_nt }}
+              owtools:  ${{ variables.owtools_nt }}
               owscript: ${{ variables.owscript_nt }}
         pool:
           vmImage: $(owimage)
