@@ -10,4 +10,4 @@ steps:
       condition: >
         and(succeeded(), 
           in(variables['Build.Reason'], 'IndividualCI', 'BatchedCI', 'Schedule'), 
-          in( variables.owarch, variables.owarch_lnx, variables.owarch_nt ))
+          in(variables.owarch, variables.owarch_lnx, variables.owarch_nt))

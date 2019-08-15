@@ -155,6 +155,8 @@ stages:
       in(variables['Build.Reason'], 'IndividualCI', 'BatchedCI', 'Schedule'))
     jobs:
       - job: Documentation
+        variables:
+          owarch: $(owarch_nt)
         strategy:
           matrix:
             DOS:
@@ -175,8 +177,6 @@ stages:
             WIN:
               target: win
               doctarget: docwin
-        variables:
-          owobjdir: $(owobjdir_nt)
         pool:
           vmImage: $(owimage_nt)
         steps:
@@ -199,7 +199,7 @@ stages:
     jobs:
       - job: Linux
         variables:
-          owobjdir: $(owobjdir_lnx)
+          owarch: $(owarch_lnx)
         pool:
           vmImage: $(owimage_lnx)
         steps:
@@ -273,7 +273,7 @@ stages:
     jobs:
       - job: Linux
         variables:
-          owobjdir: $(owobjdir_lnx)
+          owarch: $(owarch_lnx)
         pool:
           vmImage: $(owimage_lnx)
         steps:
