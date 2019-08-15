@@ -1,5 +1,5 @@
 parameters:
-  owobjdir: ${{ variables.owobjdir }}
+  owobjdir: variables.owobjdir
 
 steps:
     - task: PublishPipelineArtifact@1
