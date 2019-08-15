@@ -121,9 +121,9 @@ stages:
     dependsOn: build
     condition: >
       and(succeeded(), 
-      in(variables['Build.Reason'], 'IndividualCI', 'BatchedCI', 'Schedule'))
+        in(variables['Build.Reason'], 'IndividualCI', 'BatchedCI', 'Schedule'))
     jobs:
-      - job: Linux
+      - job: Tests
         strategy:
           matrix:
             Linux:
@@ -147,12 +147,13 @@ stages:
     dependsOn: boot
     condition: >
       and(succeeded(), 
-      in(variables['Build.Reason'], 'IndividualCI', 'BatchedCI', 'Schedule'))
+        in(variables['Build.Reason'], 'IndividualCI', 'BatchedCI', 'Schedule'))
     jobs:
       - job: Documentation
         variables:
           owarch: $(owarch_nt)
           owobjdir: ${{ variables.owobjdir_nt }}
+          owtools: ${{ variables.owtools_nt }}
         strategy:
           matrix:
             DOS:
@@ -183,7 +184,7 @@ stages:
             OWAZURE_STAGE_NAME: docs
             OWDOCTARGET: $(target)
             OWOBJDIR: $(owobjdir)
-            OWTOOLS: VISUALC
+            OWTOOLS: $(owtools)
         - template: azure/relsave.yml
           parameters: {owobjdir: $(doctarget)}
   - stage: update
@@ -191,8 +192,12 @@ stages:
     dependsOn: 
       - docs
       - tests
+    condition: >
+      and(succeeded(), 
+        in(variables['Build.Reason'], 'IndividualCI', 'BatchedCI', 'Schedule'))
     jobs:
-      - job: Linux
+      - job: update
+        displayName: "Consolidate Build"
         variables:
           owarch: $(owarch_lnx)
         pool:
@@ -224,9 +229,10 @@ stages:
     dependsOn: update
     condition: >
       and(succeeded(), 
-      in(variables['Build.Reason'], 'IndividualCI', 'BatchedCI', 'Schedule'))
+        in(variables['Build.Reason'], 'IndividualCI', 'BatchedCI', 'Schedule'))
     jobs:
-      - job: installer
+      - job: instal
+        displayName: "Build Installer"
         strategy:
           matrix:
             Linux:
@@ -260,9 +266,10 @@ stages:
         - template: azure/distsave.yml
   - stage: release
     displayName: "Make Release on GitHub"
+    dependsOn: instal
     condition: >
       and(succeeded(), 
-      in(variables['Build.Reason'], 'IndividualCI', 'BatchedCI', 'Schedule'))
+        in(variables['Build.Reason'], 'IndividualCI', 'BatchedCI', 'Schedule'))
     jobs:
       - job: Linux
         variables:
