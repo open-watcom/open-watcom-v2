@@ -152,7 +152,7 @@ stages:
       - job: Documentation
         variables:
           owarch: $(owarch_nt)
-          owobjdir: $(owobjdir_nt)
+          owobjdir: ${{ variables.owobjdir_nt }}
         strategy:
           matrix:
             DOS:
@@ -182,7 +182,7 @@ stages:
           env:
             OWAZURE_STAGE_NAME: docs
             OWDOCTARGET: $(target)
-            OWOBJDIR: $(owobjdir_nt)
+            OWOBJDIR: $(owobjdir)
             OWTOOLS: VISUALC
         - template: azure/relsave.yml
           parameters: {owobjdir: $(doctarget)}
