@@ -188,7 +188,7 @@ stages:
         - template: azure/relsave.yml
           parameters: {owobjdir: $(doctarget)}
   - stage: update
-    displayName: "Consolidate Build"
+    displayName: "Build Consolidation"
     dependsOn: 
       - docs
       - tests
@@ -197,7 +197,7 @@ stages:
         in(variables['Build.Reason'], 'IndividualCI', 'BatchedCI', 'Schedule'))
     jobs:
       - job: update
-        displayName: "Consolidate Build"
+        displayName: "Build Consolidation"
         variables:
           owarch: $(owarch_lnx)
         pool:
@@ -225,14 +225,14 @@ stages:
         - template: azure/relsave.yml
           parameters: {owobjdir: binall}
   - stage: instal
-    displayName: "Build Installers"
+    displayName: "Installers Build"
     dependsOn: update
     condition: >
       and(succeeded(), 
         in(variables['Build.Reason'], 'IndividualCI', 'BatchedCI', 'Schedule'))
     jobs:
       - job: instal
-        displayName: "Build Installer"
+        displayName: "Installers Build"
         strategy:
           matrix:
             Linux:
@@ -265,13 +265,14 @@ stages:
             OWTOOLS: $(owtools)
         - template: azure/distsave.yml
   - stage: release
-    displayName: "Make Release on GitHub"
+    displayName: "GitHub Release"
     dependsOn: instal
     condition: >
       and(succeeded(), 
         in(variables['Build.Reason'], 'IndividualCI', 'BatchedCI', 'Schedule'))
     jobs:
-      - job: Linux
+      - job: release
+        displayName: "GitHub Release"
         variables:
           owarch: $(owarch_lnx)
         pool:
