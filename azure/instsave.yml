@@ -7,4 +7,7 @@ steps:
       inputs: 
         artifactName: bld-setupgui-${{ parameters.owobjdir }}
         targetPath: bld/setupgui
-      condition: in( variables.owarch, variables.owarch_lnx, variables.owarch_nt )
+      condition: >
+        and(succeeded(), 
+          in(variables['Build.Reason'], 'IndividualCI', 'BatchedCI', 'Schedule'), 
+          in( variables.owarch, variables.owarch_lnx, variables.owarch_nt ))
