@@ -174,7 +174,7 @@ stages:
               target: win
               doctarget: docwin
         variables:
-          owobjdir: ${{ variables.owobjdir_nt }}
+          owobjdir: $(owobjdir_nt)
         pool:
           vmImage: $(owimage_nt)
         steps:
@@ -197,7 +197,7 @@ stages:
     jobs:
       - job: Linux
         variables:
-          owobjdir: ${{ variables.owobjdir_lnx }}
+          owobjdir: $(owobjdir_lnx)
         pool:
           vmImage: $(owimage_lnx)
         steps:
@@ -269,7 +269,7 @@ stages:
     jobs:
       - job: Linux
         variables:
-          owobjdir: ${{ variables.owobjdir_lnx }}
+          owobjdir: $(owobjdir_lnx)
         pool:
           vmImage: $(owimage_lnx)
         steps:
