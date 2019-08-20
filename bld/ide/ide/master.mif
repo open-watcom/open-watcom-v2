@@ -114,10 +114,6 @@ $(doc_path_$(host_os)) : .SYMBOLIC
     $(noecho)cd $@
 
 $(ide_h_$(host_os)): $(doc_path_$(host_os)) .ALWAYS
-!ifeq verbose 0
     $(noecho)wmake -h -f ../mif/onebook.mif hbook=ide header=1 dotarget=$(host_os)
-!else
-    $(noecho)wmake -h -sn -f ../mif/onebook.mif hbook=ide header=1 dotarget=$(host_os)
-!endif
     $(noecho)cd $(curr_dir)
 !endif

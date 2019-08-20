@@ -4,7 +4,7 @@ all: .SYMBOLIC $(books)
     @%null
 
 $(books) : .SYMBOLIC
-    @wmake -h -sn -f ../mif/onebook.mif hbook=$@ dotarget=$(dotarget) header=$(header) $(%OW_BOOK_CLEAN)
+    @wmake -h -f ../mif/onebook.mif hbook=$@ dotarget=$(dotarget) header=$(header) $(%OW_BOOK_CLEAN)
 
 clean: set_clean .SYMBOLIC $(books)
     @set OW_BOOK_CLEAN=
