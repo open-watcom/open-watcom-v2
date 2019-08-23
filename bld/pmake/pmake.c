@@ -668,7 +668,7 @@ static void DoIt( void )
                 CmdLine += 2;
                 break;
             }
-            if( CmdLine[0] == '-' || CmdLine[0] == '/' || CmdLine[0] == '\0' ) {
+            if( CmdLine[0] == '-' || CmdLine[0] == '/' || CmdLine[0] == '\0' )
                 break;
             curr = GetTargetItem();
             *owner = curr;
