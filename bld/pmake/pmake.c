@@ -602,14 +602,14 @@ static void DoIt( void )
     /* gather options */
     for( ;; ) {
         SKIP_SPACES( CmdLine );
-        if( *CmdLine != '-' && *CmdLine != '/' )
-            break;
-        ++CmdLine;
-        if( *CmdLine == '-' || *CmdLine == '/' ) {
-            ++CmdLine;
+        if( CmdLine[0] == '-' && CmdLine[1] == '-' ) {
+            CmdLine += 2;
             Options.notargets = 1;
             break;
         }
+        if( *CmdLine != '-' && *CmdLine != '/' )
+            break;
+        ++CmdLine;
         switch( *CmdLine++ ) {
         case 'b':
             Options.batch = 1;
@@ -664,14 +664,12 @@ static void DoIt( void )
         owner = &Options.targ_list;
         for( ;; ) {
             SKIP_SPACES( CmdLine );
-            if( *CmdLine == '\0' )
-                break;
-            if( CmdLine[0] == '-' || CmdLine[0] == '/' ) {
-                if( CmdLine[1] == '-' || CmdLine[1] == '/' ) {
-                    CmdLine += 2;
-                }
+            if( CmdLine[0] == '-' && CmdLine[1] == '-' ) {
+                CmdLine += 2;
                 break;
             }
+            if( CmdLine[0] == '-' || CmdLine[0] == '/' || CmdLine[0] == '\0' ) {
+                break;
             curr = GetTargetItem();
             *owner = curr;
             owner = &curr->next;
