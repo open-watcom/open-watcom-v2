@@ -265,8 +265,8 @@ cdsay .
 [ INCLUDE <OWDISTRDIR>/ow/builder.ctl ]
 [ ENDIF ]
 
-[ BLOCK <BLDRULE> docsclean docs webdocs cpwebdocs ]
-#===================================================
+[ BLOCK <BLDRULE> docsclean docs ]
+#=================================
 [ INCLUDE <OWDOCSDIR>/builder.ctl ]
 
 [ BLOCK <BLDRULE> install missing instclean ]

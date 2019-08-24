@@ -1,43 +1,43 @@
-# help type         dos  html  htmlhelp  nt  os2  pdf  ps  win webdocs
-# distributed       yes  no    yes       yes yes  yes  no  yes no    
-#======================================================================
-!inject c_readme    dos  html  htmlhelp  nt  os2  pdf  ps  win webdocs
+# help type         dos  html  htmlhelp  nt  os2  pdf  ps  win wikihtml wikipdf
+# distributed       yes  no    yes       yes yes  yes  no  yes no       no
+#==============================================================================
+!inject c_readme    dos  html  htmlhelp  nt  os2  pdf  ps  win wikihtml wikipdf
 !inject cbooks                           nt
-!inject cgdoc                                                  webdocs
-!inject cguide      dos  html  htmlhelp  nt  os2  pdf  ps  win webdocs
+!inject cgdoc                                                  wikihtml wikipdf
+!inject cguide      dos  html  htmlhelp  nt  os2  pdf  ps  win wikihtml wikipdf
 !inject cguideq
 !inject clbtst
-!inject clib        dos  html  htmlhelp  nt  os2  pdf  ps  win webdocs
+!inject clib        dos  html  htmlhelp  nt  os2  pdf  ps  win wikihtml wikipdf
 !inject clib_fox
 !inject clib_nec
 !inject clibnt
 !inject clibqnx
-!inject clr         dos  html  htmlhelp  nt  os2  pdf  ps  win webdocs
+!inject clr         dos  html  htmlhelp  nt  os2  pdf  ps  win wikihtml wikipdf
 !inject clslib
-!inject cpplib      dos  html  htmlhelp  nt  os2  pdf  ps  win webdocs
-!inject ctools      dos  html  htmlhelp  nt  os2  pdf  ps  win webdocs
-!inject cw          dos  html  htmlhelp  nt  os2  pdf  ps      webdocs
+!inject cpplib      dos  html  htmlhelp  nt  os2  pdf  ps  win wikihtml wikipdf
+!inject ctools      dos  html  htmlhelp  nt  os2  pdf  ps  win wikihtml wikipdf
+!inject cw          dos  html  htmlhelp  nt  os2  pdf  ps      wikihtml wikipdf
 !inject ddespy           html  htmlhelp  nt                win
-!inject devguide                                               webdocs
+!inject devguide                                               wikihtml wikipdf
 !inject drnt             html  htmlhelp  nt                win
 !inject drwatcom         html  htmlhelp  nt                win
-!inject dwdoc                                                  webdocs
+!inject dwdoc                                                  wikihtml wikipdf
 !inject ebooks                           nt
 !inject editor           html  htmlhelp  nt                win
-!inject f77graph    dos  html  htmlhelp  nt  os2  pdf  ps  win webdocs
-!inject f77lr       dos  html  htmlhelp  nt  os2  pdf  ps  win webdocs
-!inject f_readme    dos  html  htmlhelp  nt  os2  pdf  ps  win webdocs
+!inject f77graph    dos  html  htmlhelp  nt  os2  pdf  ps  win wikihtml wikipdf
+!inject f77lr       dos  html  htmlhelp  nt  os2  pdf  ps  win wikihtml wikipdf
+!inject f_readme    dos  html  htmlhelp  nt  os2  pdf  ps  win wikihtml wikipdf
 !inject fbooks                           nt
 !inject fmedidoc
-!inject fpguide     dos  html  htmlhelp  nt  os2  pdf  ps  win webdocs
-!inject ftools      dos  html  htmlhelp  nt  os2  pdf  ps  win webdocs
-!inject fuguide     dos  html  htmlhelp  nt  os2  pdf  ps  win webdocs
-!inject guitool          html                     pdf  ps      webdocs
+!inject fpguide     dos  html  htmlhelp  nt  os2  pdf  ps  win wikihtml wikipdf
+!inject ftools      dos  html  htmlhelp  nt  os2  pdf  ps  win wikihtml wikipdf
+!inject fuguide     dos  html  htmlhelp  nt  os2  pdf  ps  win wikihtml wikipdf
+!inject guitool          html                     pdf  ps      wikihtml wikipdf
 !inject heapwalk         html  htmlhelp  nt                win
 !inject ide              html  htmlhelp  nt  os2           win
-!inject lguide      dos  html  htmlhelp  nt  os2  pdf  ps  win webdocs
-!inject owstl                                                  webdocs
-!inject pguide      dos  html  htmlhelp  nt  os2  pdf  ps  win webdocs
+!inject lguide      dos  html  htmlhelp  nt  os2  pdf  ps  win wikihtml wikipdf
+!inject owstl                                                  wikihtml wikipdf
+!inject pguide      dos  html  htmlhelp  nt  os2  pdf  ps  win wikihtml wikipdf
 !inject resacc           html  htmlhelp  nt                win
 !inject rescomp     dos  html  htmlhelp  nt  os2           win
 !inject resdlg           html  htmlhelp  nt                win
@@ -46,13 +46,13 @@
 !inject resmnu           html  htmlhelp  nt                win
 !inject resstr           html  htmlhelp  nt                win
 !inject spy              html  htmlhelp  nt                win
-!inject trap                                      pdf  ps      webdocs
-!inject vi          dos  html  htmlhelp  nt  os2  pdf  ps  win webdocs
+!inject trap                                      pdf  ps      wikihtml wikipdf
+!inject vi          dos  html  htmlhelp  nt  os2  pdf  ps  win wikihtml wikipdf
 !inject wasaxp
 !inject wbrw             html  htmlhelp  nt  os2           win
 !inject wccerrs     dos  html  htmlhelp  nt  os2           win
-!inject wd          dos  html  htmlhelp  nt  os2  pdf  ps  win webdocs
-!inject wddoc                                                  webdocs
+!inject wd          dos  html  htmlhelp  nt  os2  pdf  ps  win wikihtml wikipdf
+!inject wddoc                                                  wikihtml wikipdf
 !inject wfcerrs     dos  html  htmlhelp  nt  os2           win
 !inject wjcerrs
 !inject wlnkerrs         html  htmlhelp  nt                win
@@ -63,8 +63,8 @@
 !inject zoom             html  htmlhelp  nt                win
 !inject cmix        dos                      os2           win           # depends on zoom, etc.
 !inject fmix        dos                      os2           win           # depends on zoom, etc.
-!inject wgmlref                                   pdf  ps      webdocs
-!inject wipfc       dos  html  htmlhelp  nt  os2  pdf  ps  win webdocs
+!inject wgmlref                                   pdf  ps      wikihtml wikipdf
+!inject wipfc       dos  html  htmlhelp  nt  os2  pdf  ps  win wikihtml wikipdf
 
 #
 # check configuration macros

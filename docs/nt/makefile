@@ -1,4 +1,4 @@
-#pmake: build guitool docs os_nt
+#pmake: build guitool docs os_nt docnt
 
 dotarget=nt
 

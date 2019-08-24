@@ -1,4 +1,4 @@
-#pmake: nobuild docs ps pdf docpdf
+#pmake: nobuild docs docps
 
 dotarget=ps
 
