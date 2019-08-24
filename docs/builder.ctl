@@ -26,10 +26,10 @@ cdsay <PROJDIR>
 
 [ BLOCK <BLDRULE> docs rel cprel ]
 #=================================
-    <CPCMD> dos/*.ihp       <OWRELROOT>/binw/
-    <CPCMD> win/*.hlp       <OWRELROOT>/binw/
-    <CPCMD> os2/*.inf       <OWRELROOT>/binp/help/
-    <CPCMD> os2/*.hlp       <OWRELROOT>/binp/help/
+    <CCCMD> dos/*.ihp       <OWRELROOT>/binw/
+    <CCCMD> win/*.hlp       <OWRELROOT>/binw/
+    <CCCMD> os2/*.inf       <OWRELROOT>/binp/help/
+    <CCCMD> os2/*.hlp       <OWRELROOT>/binp/help/
     <CCCMD> nt/*.hlp        <OWRELROOT>/binnt/
     <CCCMD> nt/*.cnt        <OWRELROOT>/binnt/
     <CCCMD> htmlhelp/*.chm  <OWRELROOT>/binnt/help/
