@@ -94,6 +94,15 @@ prepare_wgml_tmp_batch : .PROCEDURE .EXPLICIT
 #-------------------------------------------------------
 # DOSBOX version
 #-------------------------------------------------------
+!ifdef __UNIX__
+    $(noecho)export SDL_VIDEODRIVER=dummy
+    $(noecho)export SDL_AUDIODRIVER=disk
+    $(noecho)export SDL_DISKAUDIOFILE=/dev/null
+!else
+    $(noecho)set SDL_VIDEODRIVER=dummy
+    $(noecho)set SDL_AUDIODRIVER=disk
+    $(noecho)set SDL_DISKAUDIOFILE=NUL
+!endif
     @%create $(dos_wgml_tmp_batch)
     @%append $(dos_wgml_tmp_batch) c:
     @%append $(dos_wgml_tmp_batch) cd \$(wgml_subdir)
@@ -124,6 +133,15 @@ prepare_gendev_tmp_batch : .PROCEDURE .EXPLICIT
 #-------------------------------------------------------
 # DOSBOX version
 #-------------------------------------------------------
+!ifdef __UNIX__
+    $(noecho)export SDL_VIDEODRIVER=dummy
+    $(noecho)export SDL_AUDIODRIVER=disk
+    $(noecho)export SDL_DISKAUDIOFILE=/dev/null
+!else
+    $(noecho)set SDL_VIDEODRIVER=dummy
+    $(noecho)set SDL_AUDIODRIVER=disk
+    $(noecho)set SDL_DISKAUDIOFILE=NUL
+!endif
     @%create $(dos_gendev_tmp_batch)
     @%append $(dos_gendev_tmp_batch) mount d $(docs_dir)
     @%append $(dos_gendev_tmp_batch) c:
