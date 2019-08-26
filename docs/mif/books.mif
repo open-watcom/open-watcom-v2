@@ -21,7 +21,7 @@
 !inject devguide                                               wikihtml wikipdf
 !inject drnt             html  htmlhelp  nt                win
 !inject drwatcom         html  htmlhelp  nt                win
-!inject dwdoc                                                  wikihtml wikipdf
+!inject dwdoc                                                           wikipdf
 !inject ebooks                           nt
 !inject editor           html  htmlhelp  nt                win
 !inject f77graph    dos  html  htmlhelp  nt  os2  pdf  ps  win wikihtml wikipdf
@@ -61,9 +61,9 @@
 !inject wprof       dos  html  htmlhelp  nt  os2           win
 !inject wrcerrs          html  htmlhelp  nt                win
 !inject zoom             html  htmlhelp  nt                win
-!inject cmix        dos                      os2           win           # depends on zoom, etc.
-!inject fmix        dos                      os2           win           # depends on zoom, etc.
-!inject wgmlref                                   pdf  ps      wikihtml wikipdf
+!inject cmix        dos                      os2           win                  # depends on zoom, etc.
+!inject fmix        dos                      os2           win                  # depends on zoom, etc.
+!inject wgmlref                                   pdf  ps               wikipdf
 !inject wipfc       dos  html  htmlhelp  nt  os2  pdf  ps  win wikihtml wikipdf
 
 #
