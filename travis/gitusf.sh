@@ -17,7 +17,7 @@ gitusf_proc1()
         GITVERBOSE2=
     fi
 
-    # git ssh setup
+    # git connection setup
     export GIT_ASKPASS=$OWTRAVISDIR/askpass.sh
     export SSH_PASSWORD=${SF_TOKEN2}
     #
