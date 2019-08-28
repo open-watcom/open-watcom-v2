@@ -18,14 +18,10 @@ gitusf_proc1()
     fi
 
     # git ssh setup
-    ssh-keyscan git.code.sf.net >> ~/.ssh/known_hosts
-    export DISPLAY=:0
-    export SSH_PASSWORD=${SF_TOKEN2}
-    export SSH_ASKPASS=$OWTRAVISDIR/askpass.sh
     export GIT_ASKPASS=$OWTRAVISDIR/askpass.sh
-    export GIT_SSH_COMMAND="setsid ssh"
+    export SSH_PASSWORD=${SF_TOKEN2}
     #
-    git remote set-url --push origin ssh://${SF_TOKEN1}@git.code.sf.net/p/openwatcom/open-watcom-v2
+    git remote set-url --push origin https://${SF_TOKEN1}@git.code.sf.net/p/openwatcom/open-watcom-v2
     if [ "$OWTRAVIS_DEBUG" = "1" ]; then echo "** git checkout"; fi
     git checkout master
     if [ "$OWTRAVIS_DEBUG" = "1" ]; then echo "** git push"; fi
