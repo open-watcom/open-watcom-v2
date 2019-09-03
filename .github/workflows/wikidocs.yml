@@ -1,0 +1,168 @@
+name: WikiDocs
+
+on: [push]
+
+jobs:
+  boot:
+    name: Build Tools
+    runs-on: windows-latest
+    steps:
+    - name: OW Repo clone
+      uses: actions/checkout@v1
+    - name: Build Bootstrap Tools
+      run: |
+          call "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" amd64
+          set OWROOT=%GITHUB_WORKSPACE%
+          call %OWROOT%\cmnvars.bat
+          mkdir %OWBINDIR%
+          REM build OW wmake
+          mkdir %OWSRCDIR%\wmake\%OWOBJDIR%
+          cd %OWSRCDIR%\wmake\%OWOBJDIR%
+          nmake -f ..\nmake
+          REM build OW builder
+          mkdir %OWSRCDIR%\builder\%OWOBJDIR%
+          cd %OWSRCDIR%\builder\%OWOBJDIR%
+          %OWBINDIR%\wmake -f ..\binmake bootstrap=1 builder.exe
+          REM build OW tools
+          cd %OWSRCDIR%\watcom
+          builder boot
+          cd %OWSRCDIR%\builder
+          builder boot
+          cd %OWSRCDIR%\whpcvt
+          builder boot
+          cd %OWSRCDIR%\bmp2eps
+          builder boot
+          cd %OWROOT%
+      env:
+        OWTOOLS: VISUALC
+    - name: Save Build Tools Artifact
+      uses: actions/upload-artifact@master
+      with:
+        name: boot
+        path: build\binbuild
+  wikihtml:
+    name: Wiki Html Documentation
+    needs: boot
+    runs-on: windows-latest
+    steps:
+    - name: OW Repo clone
+      uses: actions/checkout@v1
+    - name: Create Build Tools subdirectory
+      run: mkdir build\binbuild
+    - name: Load Build Tools Artifact
+      uses: actions/download-artifact@master
+      with:
+        name: boot
+        path: build\binbuild
+    - name: Build Wiki Documentation
+      run: |
+          call "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" amd64
+          set OWROOT=%GITHUB_WORKSPACE%
+          set OWCIBIN=%OWROOT%\ci\bin64
+          set OWDOSBOXPATH=%OWCIBIN%
+          set OWGHOSTSCRIPTPATH=%OWCIBIN%
+          set OWWIN95HC=%OWCIBIN%\hcrtf.exe
+          set OWHHC=%OWCIBIN%\hhc.exe
+          call %OWROOT%\cmnvars.bat
+          REM Build Wiki Documentation
+          cd %OWSRCDIR%
+          builder -i docs wikihtml .and wikihtml .or -- -- docset=wikihtml -i
+          cd %OWROOT%
+          mkdir artifact
+          copy docs\html\*.bmp artifact\
+          copy docs\html\*.htm artifact\
+          ren artifact\*.htm *.html
+      env:
+        OWTOOLS: VISUALC
+        OWDOSBOX: dosbox.exe
+        SDL_VIDEODRIVER: dummy
+        SDL_AUDIODRIVER: disk
+        SDL_DISKAUDIOFILE: NUL
+    - name: Save Html Documentation Artifact
+      uses: actions/upload-artifact@master
+      with:
+        name: wikihtml
+        path: artifact
+  wikipdf:
+    name: Wiki PDF Documentation
+    needs: boot
+    runs-on: windows-latest
+    steps:
+    - name: OW Repo clone
+      uses: actions/checkout@v1
+    - name: Create Build Tools subdirectory
+      run: mkdir build\binbuild
+    - name: Load Build Tools Artifact
+      uses: actions/download-artifact@master
+      with:
+        name: boot
+        path: build\binbuild
+    - name: Build Wiki Documentation
+      run: |
+          call "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" amd64
+          set OWROOT=%GITHUB_WORKSPACE%
+          set OWCIBIN=%OWROOT%\ci\bin64
+          set OWDOSBOXPATH=%OWCIBIN%
+          set OWGHOSTSCRIPTPATH=%OWCIBIN%
+          set OWWIN95HC=%OWCIBIN%\hcrtf.exe
+          set OWHHC=%OWCIBIN%\hhc.exe
+          call %OWROOT%\cmnvars.bat
+          REM Build Wiki Documentation
+          cd %OWSRCDIR%
+          builder -i docs wikipdf .and wikipdf .or -- -- docset=wikipdf -i
+          cd %OWROOT%
+          mkdir artifact
+          copy docs\pdf\*.pdf artifact\
+      env:
+        OWTOOLS: VISUALC
+        OWDOSBOX: dosbox
+        SDL_VIDEODRIVER: dummy
+        SDL_AUDIODRIVER: disk
+        SDL_DISKAUDIOFILE: NUL
+    - name: Save PDF Documentation Artifact
+      uses: actions/upload-artifact@master
+      with:
+        name: wikipdf
+        path: artifact
+  wikiupdate:
+    name: Wiki Documentation Update
+    needs: [wikihtml, wikipdf]
+    runs-on: windows-latest
+    steps:
+    - name: Setup Git User
+      run: |
+        git config --global user.email "openwatcomazure@gmail.com"
+        git config --global user.name "Open Watcom Azure"
+    - name: Wiki Repo clone
+      run: |
+        git clone -v --depth=1 --branch=master %OWWIKIPROTO%%OWGHTOKEN%@%OWWIKIHOST%/%OWWIKIPROJ%.git .
+      env:
+        OWGHTOKEN: ${{ secrets.OWGHTOKEN }}
+        OWWIKIPROTO: https://
+        OWWIKIHOST: github.com
+        OWWIKIPROJ: jmalak/open-watcom-v2-webdocs
+    - name: Create docs subdirectory
+      run: if not exist docs\* mkdir docs
+    - name: Load Html Documentation Artifact
+      uses: actions/download-artifact@master
+      with:
+        name: wikihtml
+        path: artifact
+    - name: Copy artifact to docs subdirectory
+      run: copy /Y artifact\*.* docs\
+    - name: Load PDF Documentation Artifact
+      uses: actions/download-artifact@master
+      with:
+        name: wikipdf
+        path: artifact
+    - name: Copy artifact to docs subdirectory
+      run: copy /Y artifact\*.* docs\
+    - name: Delete artifact subdirectory
+      run: |
+        del /F /Q artifact\*.*
+        rmdir artifact
+    - name: Wiki Repo Update
+      run: |
+        git add -v -f .
+        git commit -v -m "GitHub Workflow build"
+        git push -v
