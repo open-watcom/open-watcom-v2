@@ -139,12 +139,10 @@ jobs:
         git config --global user.name "Open Watcom Azure"
     - name: Wiki Repo clone
       run: |
-        git clone -v --depth=1 --branch=master %OWWIKIPROTO%%OWGHTOKEN%@%OWWIKIHOST%/%OWWIKIPROJ%.git .
+        git clone -v --depth=1 --branch=master https://%OWGHTOKEN%@github.com/%OWWIKIPROJ%.git .
       env:
         OWGHTOKEN: ${{ secrets.OWGHTOKEN }}
-        OWWIKIPROTO: https://
-        OWWIKIHOST: github.com
-        OWWIKIPROJ: jmalak/open-watcom-v2-webdocs
+        OWWIKIPROJ: open-watcom/open-watcom-v2-webdocs
     - name: Create docs subdirectory
       run: if not exist docs\* mkdir docs
     - name: Load Html Documentation Artifact
