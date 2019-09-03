@@ -28,14 +28,14 @@ jobs:
       - checkout: none
       - template: gituser.yml
       - ${{ if eq(parameters.arch, 'nt') }}:
-        - script: git clone $(owgitverbose) --depth=1 --branch=master https://%OWGHTOKEN%@$(owwikihost)/$(owwikiproject).git $(owroot)
+        - script: git clone $(owgitverbose) --depth=1 --branch=master https://%OWGHTOKEN%@github.com/$(owwikiproject).git $(owroot)
           displayName: "Wiki Docs clone"
           env:
             OWGHTOKEN: $(owghtoken)
         - script: if not exist $(owwikipath)\* mkdir $(owwikipath)
           displayName: "Create docs subdirectory"
       - ${{ if in(parameters.arch, 'lnx', 'osx') }}:
-        - script: git clone $(owgitverbose) --depth=1 --branch=master https://$OWGHTOKEN@$(owwikihost)/$(owwikiproject).git $(owroot)
+        - script: git clone $(owgitverbose) --depth=1 --branch=master https://$OWGHTOKEN@github.com/$(owwikiproject).git $(owroot)
           displayName: "Wiki Docs clone"
           env:
             OWGHTOKEN: $(owghtoken)

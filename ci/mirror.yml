@@ -6,7 +6,6 @@ jobs:
   - job: mirror
     displayName: "${{ parameters.title }}"
     variables:
-      owsfproject:  openwatcom/open-watcom-v2-test
       ${{ if eq(parameters.arch, 'lnx') }}:
         owaskpass:  $(Pipeline.Workspace)/askpass.sh
       ${{ if eq(parameters.arch, 'nt') }}:
@@ -33,9 +32,8 @@ jobs:
       displayName: "GitHub Checkout"
     - script: |
         mkdir ~/.ssh
-        ssh-keyscan $(owsfhost) > ~/.ssh/known_hosts
-        git remote $(owgitverbose) set-url --push origin ssh://$OWSFUSER@$(owsfhost)/p/$(owsfproject)
-        git push $(owgitverbose)
+        ssh-keyscan git.code.sf.net > ~/.ssh/known_hosts
+        git push $(owgitverbose) ssh://$OWSFUSER@git.code.sf.net/p/$(owsfproject)
       displayName: "Mirror to SF"
       env:
         SSH_PASSWORD:    $(owsftoken2)
