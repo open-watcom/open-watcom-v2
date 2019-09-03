@@ -32,6 +32,8 @@ stages:
     displayName: "Start"
     jobs:
       - job: start
+        pool:
+          vmImage: $(owimage_lnx)
         steps:
         - checkout: none
   - stage: bootosx
