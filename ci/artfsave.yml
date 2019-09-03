@@ -1,0 +1,38 @@
+parameters:
+  arch:         ''
+  path:         ''
+  artifname:    ''
+
+steps:
+    - ${{ if eq(parameters.arch, 'nt') }}:
+      - task: ArchiveFiles@2
+        displayName: Create Artifact Archive ${{ parameters.artifname }}
+        inputs:
+          rootFolderOrFile: $(owroot)\${{ parameters.path }}
+          includeRootFolder: false
+          archiveType: 'tar'
+          archiveFile: $(Pipeline.Workspace)\$(owartifactfile)
+          replaceExistingArchive: true
+      - task: PublishPipelineArtifact@1
+        displayName: Save Archive ${{ parameters.artifname }}
+        inputs: 
+          artifactName: ${{ parameters.artifname }}
+          path:         $(Pipeline.Workspace)\$(owartifactfile)
+      - script: del $(Pipeline.Workspace)\$(owartifactfile)
+        displayName: Remove Artifact Archive
+    - ${{ if in(parameters.arch, 'lnx', 'osx') }}:
+      - task: ArchiveFiles@2
+        displayName: Create Artifact Archive ${{ parameters.artifname }}
+        inputs:
+          rootFolderOrFile: $(owroot)/${{ parameters.path }}
+          includeRootFolder: false
+          archiveType: 'tar'
+          archiveFile: $(Pipeline.Workspace)/$(owartifactfile)
+          replaceExistingArchive: true
+      - task: PublishPipelineArtifact@1
+        displayName: Save Archive ${{ parameters.artifname }}
+        inputs: 
+          artifactName: ${{ parameters.artifname }}
+          path:         $(Pipeline.Workspace)/$(owartifactfile)
+      - script: rm -f $(Pipeline.Workspace)/$(owartifactfile)
+        displayName: Remove Artifact Archive

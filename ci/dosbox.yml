@@ -1,0 +1,17 @@
+parameters:
+  arch: ''
+
+steps:
+  - ${{ if eq(parameters.arch, 'lnx') }}:
+    - script: |
+        for i in {1..10}
+        do
+          sudo apt-get install -y dosbox
+          if [ $? = 0 ]; then
+            break
+          fi
+        done
+      displayName: "Install DOSBOX"
+  - ${{ if eq(parameters.arch, 'osx') }}:
+    - script: brew install dosbox
+      displayName: "Install DOSBOX"

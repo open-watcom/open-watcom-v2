@@ -82,8 +82,11 @@
 *ytab.*
 
 /*/
+!.github/
 !/bld/
 !/build/
+!/ci/
+!/ci/bin64/*
 !/contrib/
 !/distrib/
 !/docs/

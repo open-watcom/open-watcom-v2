@@ -1,0 +1,29 @@
+parameters:
+  arch:         ''
+  path:         ''
+  artifname:    ''
+
+steps:
+    - task: DownloadPipelineArtifact@2
+      displayName: Load Artifact ${{ parameters.artifname }}
+      inputs: 
+        artifactName: ${{ parameters.artifname }}
+        downloadPath: $(Pipeline.Workspace)
+    - ${{ if eq(parameters.arch, 'nt') }}:
+      - script: |
+          7z x $(Pipeline.Workspace)\$(owartifactfile) *.tar
+          7z x $(owartifactfile7z) -aoa -o$(owroot)\${{ parameters.path }}
+        displayName: 7-ZIP Extract Artifact ${{ parameters.artifname }}
+      - script: del $(owartifactfile7z)
+        displayName: 7-ZIP Remove tar file
+      - script: del $(Pipeline.Workspace)\$(owartifactfile)
+        displayName: Remove Artifact Archive
+    - ${{ if in(parameters.arch, 'lnx', 'osx') }}:
+      - task: ExtractFiles@1
+        displayName: TAR Extract Artifact ${{ parameters.artifname }}
+        inputs:
+          archiveFilePatterns: $(Pipeline.Workspace)/$(owartifactfile)
+          destinationFolder: $(owroot)/${{ parameters.path }}
+          cleanDestinationFolder: false
+      - script: rm -f $(Pipeline.Workspace)/$(owartifactfile)
+        displayName: Remove Artifact Archive

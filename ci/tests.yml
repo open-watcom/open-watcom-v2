@@ -1,0 +1,28 @@
+parameters:
+  arch:     ''
+  title:    ''
+
+jobs:
+  - job: tests${{ parameters.arch }}
+    displayName: "${{ parameters.title }}"
+    variables:
+      ${{ if eq(parameters.arch, 'lnx') }}:
+        owtools:        $(owtools_lnx)
+        owscript:       $(owscript_lnx)
+      ${{ if eq(parameters.arch, 'nt') }}:
+        owtools:        $(owtools_nt)
+        owscript:       $(owscript_nt)
+    pool:
+      ${{ if eq(parameters.arch, 'lnx') }}:
+        vmImage: $(owimage_lnx)
+      ${{ if eq(parameters.arch, 'nt') }}:
+        vmImage: $(owimage_nt)
+    steps:
+    - template: artfload.yml
+      parameters:
+        arch:       ${{ parameters.arch }}
+        ${{ if eq(parameters.arch, 'nt') }}:
+          path:     build\$(owobjdir)
+        ${{ if in(parameters.arch, 'lnx', 'osx') }}:
+          path:     build/$(owobjdir)
+        artifname:  build-${{ parameters.arch }}
