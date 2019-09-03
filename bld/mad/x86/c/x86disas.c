@@ -162,7 +162,7 @@ size_t MADIMPENTRY( DisasmFormat )( mad_disasm_data *dd, mad_disasm_piece dp, ma
         op = NULL;
         olen = 0;
     }
-    ff = DFF_ASM | DFF_FPU_EMU;
+    ff = DFF_ASM;
     if( MADState->disasm_state & DT_UPPER )
         ff |= DFF_INS_UP | DFF_REG_UP;
     if( MADState->disasm_state & DT_INSIDE )
