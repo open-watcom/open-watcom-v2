@@ -65,7 +65,6 @@ void DoCode( mad_disasm_data *dd, int big )
 {
     DisDecodeInit( &DH, &dd->ins );
     dd->addr = DbgAddr;
-    dd->ins.flags.u.x86 = DIF_X86_NONE;
     if( big ) {
         dd->ins.flags.u.x86 = DIF_X86_USE32_FLAGS;
     }
@@ -163,7 +162,7 @@ size_t MADIMPENTRY( DisasmFormat )( mad_disasm_data *dd, mad_disasm_piece dp, ma
         op = NULL;
         olen = 0;
     }
-    ff = DFF_ASM;
+    ff = DFF_ASM | DFF_FPU_EMU;
     if( MADState->disasm_state & DT_UPPER )
         ff |= DFF_INS_UP | DFF_REG_UP;
     if( MADState->disasm_state & DT_INSIDE )
