@@ -1,3 +1,8 @@
+# Mirroring OW open-watcom-v2 repository to SourceForge
+#
+# set secrets OWSFTOKEN1 - SSH user name
+#             OWSFTOKEN2 - SSH password
+
 name: Mirror
 
 on: [push]

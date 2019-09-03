@@ -1,3 +1,7 @@
+# Mirroring OW open-watcom-v2 repository to SourceForge
+#
+# set secret OWGHTOKEN - https 'user name:password'
+
 name: WikiDocs
 
 on: [push]
