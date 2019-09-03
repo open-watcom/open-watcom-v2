@@ -66,7 +66,11 @@ common_cppflags_386 = -D__386__
 common_cppflags_x64 =
 
 common_cppflags_nt_386  = -D__NT_386__
+!ifdef bootstrap
 common_cppflags_nt_x64  = -D__NT_X64__
+!else
+common_cppflags_nt_x64  = -D__NT_X64__ -D_WIN32_WINNT=_WIN32_WINNT_WIN7
+!endif
 
 # common release/debug options
 !ifdef __INTEL_TOOLS__
@@ -115,8 +119,13 @@ ext_lib_shared = .dll
 # extra objects for linking via cl
 cl_extra_objs_gen =
 cl_extra_objs_dll =
+!ifdef bootstrap
 cl_extra_libs_gen = $(watcom_dir)/$(bin_subdir)/clibext.lib
 cl_extra_libs_dll = $(watcom_dir)/$(bin_subdir)/clibexts.lib
+!else
+cl_extra_libs_gen = $(watcom_dir)/ntx64/clibext.lib
+cl_extra_libs_dll = $(watcom_dir)/ntx64/clibexts.lib
+!endif
 
 !ifeq sys_dll 1
 cl_extra_objs = $(cl_extra_objs_dll)

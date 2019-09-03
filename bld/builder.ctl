@@ -134,6 +134,8 @@ cdsay .
 # NB: Again, the order is significant.
 # At the beginning, assume to have compilers/assemblers/librarian/linker
 # running on the host platform, but not necessarily anything else.
+# If necessary, build clibext library (64-bit)
+[ INCLUDE <OWSRCDIR>/watcom/builder.ctl ]
 # Start with language and API headers
 [ INCLUDE <OWSRCDIR>/hdr/builder.ctl ]
 [ INCLUDE <OWSRCDIR>/os2api/builder.ctl ]
