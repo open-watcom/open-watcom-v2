@@ -441,8 +441,7 @@ typedef enum {
     DFF_PSEUDO                  = 0x01<<3,
     DFF_SYMBOLIC_REG            = 0x01<<4,
     DFF_ALT_INDEXING            = 0x01<<5,
-    DFF_UNIX                    = 0x01<<6,
-    DFF_DONE
+    DFF_UNIX                    = 0x01<<6
 } dis_format_flags;
 
 typedef enum {
