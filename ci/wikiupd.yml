@@ -8,7 +8,6 @@ jobs:
     continueOnError: true
     variables:
       owwiki_depth:         10
-      owwikiproject:        jmalak/open-watcom-v2-webdocs
       ${{ if eq(parameters.arch, 'lnx') }}:
         owtools:            $(owtools_lnx)
         owscript:           $(owscript_lnx)
