@@ -9,13 +9,6 @@ schedules:
     include:
     - master
 
-resources:
-  repositories:
-  - repository: wikidocsgit
-    type: GitHub
-    name: open-watcom/open-watcom-v2-webdocs
-    endpoint: open-watcom-v2-wikidocs
-
 variables: 
   owroot:           $(Build.SourcesDirectory)
   owobjdir:         binbuild
