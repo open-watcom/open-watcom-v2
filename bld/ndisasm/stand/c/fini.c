@@ -189,6 +189,6 @@ void Fini( void )
     FreeHashTables();
     CloseFiles();
     MemPrtList();
-    MemClose();
     MsgFini();
+    MemClose();
 }

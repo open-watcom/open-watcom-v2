@@ -809,11 +809,12 @@ return_val Init( void )
 
     relocSections.first = NULL;
     relocSections.last = NULL;
+
+    MemOpen();
     if( !MsgInit() ) {
         // MsgInit does its own error message printing
         return( RC_ERROR );
     }
-    MemOpen();
 
     error = HandleArgs();
     if( error != RC_OKAY ) {
