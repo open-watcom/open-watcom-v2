@@ -285,25 +285,26 @@ typedef enum {
 #if DISCPU & DISCPU_x86
 typedef enum {
     DIF_X86_NONE        = 0,
-    DIF_X86_CS          = 0x0001,
-    DIF_X86_DS          = 0x0002,
-    DIF_X86_ES          = 0x0004,
-    DIF_X86_FS          = 0x0008,
-    DIF_X86_GS          = 0x0010,
-    DIF_X86_SS          = 0x0020,
-    DIF_X86_LOCK        = 0x0040,
-    DIF_X86_REPE        = 0x0080,
-    DIF_X86_REPNE       = 0x0100,
-    DIF_X86_FWAIT       = 0x0200,
-    DIF_X86_OPND_SIZE   = 0x0400,
-    DIF_X86_ADDR_SIZE   = 0x0800,
-    DIF_X86_EMU_INT     = 0x1000,       /* not a prefix */
+    DIF_X86_CS          = 0x00000001,
+    DIF_X86_DS          = 0x00000002,
+    DIF_X86_ES          = 0x00000004,
+    DIF_X86_FS          = 0x00000008,
+    DIF_X86_GS          = 0x00000010,
+    DIF_X86_SS          = 0x00000020,
+    DIF_X86_LOCK        = 0x00000040,
+    DIF_X86_REPE        = 0x00000080,
+    DIF_X86_REPNE       = 0x00000100,
+    DIF_X86_FWAIT       = 0x00000200,
+    DIF_X86_OPND_SIZE   = 0x00000400,
+    DIF_X86_ADDR_SIZE   = 0x00000800,
     // Current Operating Mode
     // Use32 Operands
-    DIF_X86_OPND_LONG   = 0x2000,       /* not a prefix */
+    DIF_X86_OPND_LONG   = 0x00001000,   /* not a prefix */
     // Use32 Address
-    DIF_X86_ADDR_LONG   = 0x4000,       /* not a prefix */
-    DIF_X86_FP_INS      = 0x8000,       /* not a prefix */
+    DIF_X86_ADDR_LONG   = 0x00002000,   /* not a prefix */
+    DIF_X86_FPU_INS     = 0x00004000,   /* not a prefix */
+    DIF_X86_FPU_EMU     = 0x00008000,   /* not a prefix */
+    DIF_X86_EMU_INT     = 0x00010000,   /* not a prefix */
     DIF_X86_USE16_FLAGS = 0,
     DIF_X86_USE32_FLAGS = DIF_X86_OPND_LONG|DIF_X86_ADDR_LONG,
 } dis_inst_flags_x86;

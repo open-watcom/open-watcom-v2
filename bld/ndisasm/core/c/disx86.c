@@ -2840,7 +2840,7 @@ dis_handler_return X86FType3( dis_handle *h, void *d, dis_dec_ins *ins )
     code.full = ins->opcode;
     ins->size += 2;
     ins->num_ops = 0;
-    ins->flags.u.x86 |= DIF_X86_FP_INS;
+    ins->flags.u.x86 |= DIF_X86_FPU_INS;
 
     // If the POP bit is set change the instruction to the pop instruction
     if( code.type3.p ) {
@@ -2900,7 +2900,7 @@ dis_handler_return X86FType3B( dis_handle *h, void *d, dis_dec_ins *ins )
 
     ins->size += 2;
     ins->num_ops = 0;
-    ins->flags.u.x86 |= DIF_X86_FP_INS;
+    ins->flags.u.x86 |= DIF_X86_FPU_INS;
     X86FGetST( code.type3.st, ins );
     return( DHR_DONE );
 }
@@ -2917,7 +2917,7 @@ dis_handler_return X86FType3C( dis_handle *h, void *d, dis_dec_ins *ins )
     code.full = ins->opcode;
     ins->size += 2;
     ins->num_ops = 0;
-    ins->flags.u.x86 |= DIF_X86_FP_INS;
+    ins->flags.u.x86 |= DIF_X86_FPU_INS;
     X86FGetST( RM_0, ins );
     X86FGetST( code.type3.st, ins );
     return( DHR_DONE );
@@ -2936,7 +2936,7 @@ dis_handler_return X86FType2( dis_handle *h, void *d, dis_dec_ins *ins )
     /* unused parameters */ (void)h;
 
     code.full = ins->opcode;
-    ins->flags.u.x86 |= DIF_X86_FP_INS;
+    ins->flags.u.x86 |= DIF_X86_FPU_INS;
     ins->num_ops = 0;
     ins->size += 2;
 
@@ -2957,7 +2957,7 @@ dis_handler_return X86FTypeFSTSWAX( dis_handle *h, void *d, dis_dec_ins *ins )
     ins->size += 2;
     ins->num_ops = 0;
 
-    ins->flags.u.x86 |= DIF_X86_FP_INS;
+    ins->flags.u.x86 |= DIF_X86_FPU_INS;
     if( ins->flags.u.x86 & DIF_X86_FWAIT ) {
         ins->type = DI_X86_fstsw2;
     }
@@ -2977,7 +2977,7 @@ dis_handler_return X86FType4( dis_handle *h, void *d, dis_dec_ins *ins )
     ins->size += 2;
     ins->num_ops = 0;
 
-    ins->flags.u.x86 |= DIF_X86_FP_INS;
+    ins->flags.u.x86 |= DIF_X86_FPU_INS;
     if( ins->flags.u.x86 & DIF_X86_FWAIT ) {
         switch( ins->type ) {
         /* Instructions with FWAIT names */
@@ -3011,7 +3011,7 @@ dis_handler_return X86FType1( dis_handle *h, void *d, dis_dec_ins *ins )
 
     ins->size += 2;
     ins->num_ops = 0;
-    ins->flags.u.x86 |= DIF_X86_FP_INS;
+    ins->flags.u.x86 |= DIF_X86_FPU_INS;
     code.full = ins->opcode;
 
     switch( ins->type ) {
@@ -3087,7 +3087,7 @@ dis_handler_return X86FTypeEnv( dis_handle *h, void *d, dis_dec_ins *ins )
     ins->num_ops = 0;
 
     code.full = ins->opcode;
-    ins->flags.u.x86 |= DIF_X86_FP_INS;
+    ins->flags.u.x86 |= DIF_X86_FPU_INS;
 
     if( code.type1.mod == MOD_3 ) {
         return ( DHR_INVALID );
