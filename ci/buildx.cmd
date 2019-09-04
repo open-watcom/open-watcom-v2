@@ -1,7 +1,7 @@
 @set OWECHO=off
 @if "%OWDEBUG%" == "1" set OWECHO=on
 @echo %OWECHO%
-SETLOCAL EnableExtensions
+SETLOCAL EnableDelayedExpansion
 REM Script to build the Open Watcom bootstrap tools
 REM By Microsoft Visual Studio
 REM ...
@@ -37,37 +37,37 @@ if "%OWBUILD_STAGE%" == "boot" (
     mkdir %OWSRCDIR%\wmake\%OWOBJDIR%
     cd %OWSRCDIR%\wmake\%OWOBJDIR%
     nmake -f ..\nmake
-    set RC=%ERRORLEVEL%
+    set RC=!ERRORLEVEL!
     if not %RC% == 1 (
     	mkdir %OWSRCDIR%\builder\%OWOBJDIR%
     	cd %OWSRCDIR%\builder\%OWOBJDIR%
         %OWBINDIR%\wmake -f ..\binmake bootstrap=1 builder.exe
-        set RC=%ERRORLEVEL%
+        set RC=!ERRORLEVEL!
         if not %RC% == 1 (
             cd %OWSRCDIR%
             builder boot
-            set RC=%ERRORLEVEL%
+            set RC=!ERRORLEVEL!
         )
     )
 )
 if "%OWBUILD_STAGE%" == "build" (
     builder rel
-    set RC=%ERRORLEVEL%
+    set RC=!ERRORLEVEL!
 )
 if "%OWBUILD_STAGE%" == "tests" (
 REM    builder test %OWTESTTARGET%
-REM    set RC=%ERRORLEVEL%
+REM    set RC=!ERRORLEVEL!
 )
 if "%OWBUILD_STAGE%" == "docs" (
     REM register all Help Compilers DLL's
     regsvr32 -u -s itcc.dll
     regsvr32 -s %OWCIBIN%\itcc.dll
     builder docs %OWDOCTARGET%
-    set RC=%ERRORLEVEL%
+    set RC=!ERRORLEVEL!
 )
 if "%OWBUILD_STAGE%" == "inst" (
     builder install os_nt cpu_x64
-    set RC=%ERRORLEVEL%
+    set RC=!ERRORLEVEL!
 )
 cd %OWROOT%
 exit %RC%
