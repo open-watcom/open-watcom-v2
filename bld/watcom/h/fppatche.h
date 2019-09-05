@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -30,12 +31,11 @@
 
 
 //        enum        name     alt_name
-pick_fp( FPP_NONE,   NULL,     NULL )
-pick_fp( FPP_WAIT,   "FIWRQQ", NULL )
-pick_fp( FPP_NORMAL, "FIDRQQ", NULL )
-pick_fp( FPP_ES,     "FIERQQ", NULL )
-pick_fp( FPP_CS,     "FICRQQ", "FJCRQQ" )
-pick_fp( FPP_SS,     "FISRQQ", "FJSRQQ" )
-pick_fp( FPP_DS,     "FIARQQ", "FJARQQ" )
-pick_fp( FPP_FS,     "FIFRQQ", "FJFRQQ" )
-pick_fp( FPP_GS,     "FIGRQQ", "FJGRQQ" )
+pick_fp( FPP_WAIT,   "FIWRQQ", NULL )       // int 3Dh
+pick_fp( FPP_NORMAL, "FIDRQQ", NULL )       // int 34-3Bh
+pick_fp( FPP_ES,     "FIERQQ", NULL )       // int 3Ch
+pick_fp( FPP_CS,     "FICRQQ", "FJCRQQ" )   // int 3Ch
+pick_fp( FPP_SS,     "FISRQQ", "FJSRQQ" )   // int 3Ch
+pick_fp( FPP_DS,     "FIARQQ", "FJARQQ" )   // int 3Ch
+pick_fp( FPP_FS,     "FIFRQQ", "FJFRQQ" )   // int 3Ch
+pick_fp( FPP_GS,     "FIGRQQ", "FJGRQQ" )   // int 3Ch

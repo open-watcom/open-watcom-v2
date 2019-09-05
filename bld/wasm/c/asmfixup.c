@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -418,41 +419,37 @@ bool AddFPPatchAndFixups( fp_patches patch )
 #if defined( _STANDALONE_ )
     const char  *patch_name;
 
-    if( FPPatchName[patch] != NULL ) {
-        patch_name = FPPatchName[patch];
-        if( MakeFpFixup( patch_name ) )
-            return( RC_ERROR );
-        if( patch == FPP_WAIT ) {
-            AsmCodeByte( OP_NOP );
-        } else {
-            AsmCodeByte( OP_WAIT );
-            patch_name = FPPatchAltName[patch];
-            if( patch_name != NULL ) {
-                return( MakeFpFixup( patch_name ) );
-            }
+    patch_name = FPPatchName[patch];
+    if( MakeFpFixup( patch_name ) )
+        return( RC_ERROR );
+    if( patch == FPP_WAIT ) {
+        AsmCodeByte( OP_NOP );
+    } else {
+        AsmCodeByte( OP_WAIT );
+        patch_name = FPPatchAltName[patch];
+        if( patch_name != NULL ) {
+            return( MakeFpFixup( patch_name ) );
         }
     }
 #else
     struct asmfixup     *fixup;
 
-    if( patch != FPP_NONE ) {
-        fixup = AsmAlloc( sizeof( struct asmfixup ) );
-        if( fixup == NULL ) {
-            return( RC_ERROR );
-        }
-        fixup->next = FixupHead;
-        FixupHead = fixup;
-        fixup->external = 0;
-        fixup->fixup_loc = AsmCodeAddress;
-        fixup->name = NULL;
-        fixup->u_fppatch = patch;
-        fixup->fixup_type = FIX_FPPATCH;
-        fixup->fixup_option = OPTJ_NONE;
-        if( patch == FPP_WAIT ) {
-            AsmCodeByte( OP_NOP );
-        } else {
-            AsmCodeByte( OP_WAIT );
-        }
+    fixup = AsmAlloc( sizeof( struct asmfixup ) );
+    if( fixup == NULL ) {
+        return( RC_ERROR );
+    }
+    fixup->next = FixupHead;
+    FixupHead = fixup;
+    fixup->external = 0;
+    fixup->fixup_loc = AsmCodeAddress;
+    fixup->name = NULL;
+    fixup->u_fppatch = patch;
+    fixup->fixup_type = FIX_FPPATCH;
+    fixup->fixup_option = OPTJ_NONE;
+    if( patch == FPP_WAIT ) {
+        AsmCodeByte( OP_NOP );
+    } else {
+        AsmCodeByte( OP_WAIT );
     }
 #endif
     return( RC_OK );
