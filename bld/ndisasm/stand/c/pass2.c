@@ -636,6 +636,9 @@ num_errors DoPass2( section_ptr section, unsigned_8 *contents, dis_sec_size size
     } else {
         is_intel = IsIntelx86();
     }
+    if( is_intel ) {
+        flags.u.x86 |= DIF_X86_FPU_EMU;
+    }
     is32bit = ( size >= 0x10000 );
     for( data.loop = 0; data.loop < size; data.loop += decoded.size ) {
 

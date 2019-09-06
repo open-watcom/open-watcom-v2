@@ -141,6 +141,9 @@ return_val DoPass1( orl_sec_handle shnd, unsigned_8 *contents, dis_sec_size size
     } else {
         is_intel = IsIntelx86();
     }
+    if( is_intel ) {
+        flags.u.x86 |= DIF_X86_FPU_EMU;
+    }
 
     for( loop = 0; loop < size; loop += decoded.size ) {
         // skip data in code segment
