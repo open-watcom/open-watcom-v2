@@ -30,6 +30,7 @@ if "%OWDEBUG%" == "1" (
     echo LIBPATH="%LIBPATH%"
 )
 REM ...
+set OWVERBOSE=1
 set RC=0
 cd %OWSRCDIR%
 if "%OWBUILD_STAGE%" == "boot" (

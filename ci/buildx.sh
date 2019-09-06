@@ -43,6 +43,7 @@ bootutil_proc()
 
 build_proc()
 {
+    export OWVERBOSE=1
     RC=0
     export OWDOSBOX=dosbox
     export OWGHOSTSCRIPTPATH=:
