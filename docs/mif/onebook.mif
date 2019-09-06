@@ -249,7 +249,7 @@ $(hbook).ib $(hbook).h : $(book_objs) $(proj_objs)
 $(hbook).chm : $(hbook).htm $(hbook).h
     @if not exist $(hbook) mkdir $(hbook)
 !ifdef book_bmroot
-    cp -f $(book_bmroot)/*.bmp $(hbook)/ > $(nulldevice)
+    $(noecho)cp -f $(book_bmroot)/*.bmp $(hbook)/ > $(nulldevice)
 !endif
     cp -f $(hbook).h $(hbook)/$(hbook).h > $(nulldevice)
     awk -f ../splithtm.awk -v dir=$(hbook) $(hbook).htm
@@ -366,7 +366,7 @@ $(hbook).ps : $(book_objs) $(book_objs_ps) $(proj_objs)
 $(hbook).h $(hbook).htm : $(book_objs) $(proj_objs)
 !ifneq dotarget htmlhelp
 !ifdef book_bmroot
-    cp -f $(book_bmroot)/*.bmp . > $(nulldevice)
+    $(noecho)cp -f $(book_bmroot)/*.bmp . > $(nulldevice)
 !endif
 !endif
     @%make compile_gml_to_xxx
