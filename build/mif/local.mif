@@ -66,11 +66,7 @@ common_cppflags_386 = -D__386__
 common_cppflags_x64 =
 
 common_cppflags_nt_386  = -D__NT_386__
-!ifdef bootstrap
 common_cppflags_nt_x64  = -D__NT_X64__
-!else
-common_cppflags_nt_x64  = -D__NT_X64__ -D_WIN32_WINNT=_WIN32_WINNT_WIN7
-!endif
 
 # common release/debug options
 !ifdef __INTEL_TOOLS__
@@ -119,13 +115,8 @@ ext_lib_shared = .dll
 # extra objects for linking via cl
 cl_extra_objs_gen =
 cl_extra_objs_dll =
-!ifdef bootstrap
-cl_extra_libs_gen = $(watcom_dir)/$(bin_subdir)/clibext.lib
-cl_extra_libs_dll = $(watcom_dir)/$(bin_subdir)/clibexts.lib
-!else
 cl_extra_libs_gen = $(watcom_dir)/ntx64/clibext.lib
 cl_extra_libs_dll = $(watcom_dir)/ntx64/clibexts.lib
-!endif
 
 !ifeq sys_dll 1
 cl_extra_objs = $(cl_extra_objs_dll)
@@ -149,6 +140,20 @@ bcl  = $(noecho)cl -nologo
 blib = $(noecho)lib -nologo
 !endif
 
+# extra objects for linking via cl
+bld_cl_extra_objs_gen =
+bld_cl_extra_objs_dll =
+bld_cl_extra_libs_gen = $(watcom_dir)/$(bin_subdir)/clibext.lib
+bld_cl_extra_libs_dll = $(watcom_dir)/$(bin_subdir)/clibexts.lib
+
+!ifeq sys_dll 1
+bld_cl_extra_objs = $(bld_cl_extra_objs_dll)
+bld_cl_extra_libs = $(bld_cl_extra_libs_dll)
+!else
+bld_cl_extra_objs = $(bld_cl_extra_objs_gen)
+bld_cl_extra_libs = $(bld_cl_extra_libs_gen)
+!endif
+
 bld_cc_sys = -D_CRT_SECURE_NO_WARNINGS -D_CRT_NONSTDC_NO_WARNINGS
 bld_cl_sys =
 
@@ -169,7 +174,7 @@ bld_ldflags  =  -link -nologo &
     $(bld_extra_ldflags) $(bld_ldflags_$(proj_type))
 
 # options for linking via cl
-bld_clflags  = $(bld_cppflags) $(common_cflags) $(common_flags) -Fe$@ $(cl_extra_libs_gen) $(bld_ldflags1)
+bld_clflags  = $(bld_cppflags) $(common_cflags) $(common_flags) -Fe$@ $(bld_cl_extra_libs_gen) $(bld_ldflags1)
 
 bld_libflags = -out:$^@
 
@@ -191,7 +196,7 @@ cppflags_nt  = $(common_cppflags) $(common_cppflags_nt)
 cppflags_osi = $(common_cppflags) $(common_cppflags_$(host_os))
 
 cppflags_386 = $(common_cppflags_386) $(common_cppflags_$(host_os)_386)
-cppflags_x64 = $(common_cppflags_x64) $(common_cppflags_$(host_os)_x64)
+cppflags_x64 = $(common_cppflags_x64) $(common_cppflags_$(host_os)_x64) -D_WIN32_WINNT=_WIN32_WINNT_WIN7
 
 c_flags   =
 cxx_flags = -EHsc
@@ -356,6 +361,19 @@ bcxx = g++ -pipe -c
 bcl  = $(noecho)gcc -pipe
 !endif
 
+bld_cl_extra_objs_gen =
+bld_cl_extra_objs_dll =
+bld_cl_extra_libs_gen = $(watcom_dir)/$(bin_subdir)/clibext.lib
+bld_cl_extra_libs_dll = $(watcom_dir)/$(bin_subdir)/clibexts.lib
+
+!ifeq sys_dll 1
+bld_cl_extra_objs = $(bld_cl_extra_objs_dll)
+bld_cl_extra_libs = $(bld_cl_extra_libs_dll)
+!else
+bld_cl_extra_objs = $(bld_cl_extra_objs_gen)
+bld_cl_extra_libs = $(bld_cl_extra_libs_gen)
+!endif
+
 blib = $(noecho)ar
 
 bld_cc_sys = -fno-asm -fno-common -fsigned-char
@@ -399,7 +417,7 @@ bld_ldflags1 = $(common_ldflags) -Wl,-Map,$^&.map
 bld_ldflags  = $(bld_extra_ldflags) $(bld_ldflags_$(proj_type))
 
 # options for linking via cl
-bld_clflags  = $(bld_cppflags) $(common_cflags) $(common_flags) -o $@ $(cl_extra_libs_gen) $(bld_ldflags1)
+bld_clflags  = $(bld_cppflags) $(common_cflags) $(common_flags) -o $@ $(bld_cl_extra_libs_gen) $(bld_ldflags1)
 
 bld_libflags = crs $^@
 
