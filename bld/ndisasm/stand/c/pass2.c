@@ -578,31 +578,6 @@ static void processDataInCode( section_ptr section, unsigned_8 *contents, struct
     data->loop = offset;
 }
 
-static ref_entry processFpuEmulatorFixup( ref_entry r_entry, dis_sec_offset loop, const char **pfixup )
-{
-    const char  *fpu_fixup;
-
-    if( r_entry != NULL && r_entry->offset == loop ) {
-        fpu_fixup = SkipRef( r_entry );
-        if( fpu_fixup != NULL ) {
-            r_entry = r_entry->next;
-            // there can be second fixup per instruction with 1 byte offset
-            // it must be skipped too, displayed is first only
-            // first one is significant, second one is segment override only
-            if( r_entry != NULL && SkipRef( r_entry ) != NULL && ( r_entry->offset == loop + 1 ) ) {
-                r_entry = r_entry->next;
-            }
-            if( (Options & PRINT_FPU_EMU_FIXUP) == 0 ) {
-                fpu_fixup = NULL;
-            }
-        }
-    } else {
-        fpu_fixup = NULL;
-    }
-    *pfixup = fpu_fixup;
-    return( r_entry );
-}
-
 num_errors DoPass2( section_ptr section, unsigned_8 *contents, dis_sec_size size,
                     label_list sec_label_list, ref_list sec_ref_list )
 // perform pass 2 on one section
@@ -683,7 +658,7 @@ num_errors DoPass2( section_ptr section, unsigned_8 *contents, dis_sec_size size
                 break;
             }
         }
-        data.r_entry = processFpuEmulatorFixup( data.r_entry, data.loop, &FPU_fixup );
+        data.r_entry = ProcessFpuEmulatorFixup( data.r_entry, data.loop, &FPU_fixup );
         if( data.r_entry != NULL && ( data.r_entry->offset == data.loop ) ) {
             if( is_intel || IsDataReloc( data.r_entry ) ) {
                 // we just skip the data
@@ -698,6 +673,9 @@ num_errors DoPass2( section_ptr section, unsigned_8 *contents, dis_sec_size size
         }
         DisDecodeInit( &DHnd, &decoded );
         decoded.flags.u.all |= flags.u.all;
+        if( FPU_fixup == NULL ) {
+            decoded.flags.u.all &= ~DIF_X86_FPU_EMU;
+        }
         sds.offs = data.loop;
         DisDecode( &DHnd, &sds, &decoded );
         if( sec_label_list ) {
@@ -717,7 +695,7 @@ num_errors DoPass2( section_ptr section, unsigned_8 *contents, dis_sec_size size
             }
         }
         DisFormat( &DHnd, &data, &decoded, DFormat, name, sizeof( name ), ops, sizeof( ops ) );
-        if( FPU_fixup != NULL ) {
+        if( FPU_fixup != NULL && (Options & PRINT_FPU_EMU_FIXUP) ) {
             if( (DFormat & DFF_ASM) == 0 ) {
                 BufferAlignToTab( PREFIX_SIZE_TABS );
             }

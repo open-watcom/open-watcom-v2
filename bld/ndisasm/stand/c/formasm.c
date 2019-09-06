@@ -899,3 +899,25 @@ const char *SkipRef( ref_entry r_entry )
     }
     return( NULL );
 }
+
+ref_entry ProcessFpuEmulatorFixup( ref_entry r_entry, dis_sec_offset loop, const char **pfixup )
+{
+    const char  *fpu_fixup;
+
+    if( r_entry != NULL && r_entry->offset == loop ) {
+        fpu_fixup = SkipRef( r_entry );
+        if( fpu_fixup != NULL ) {
+            r_entry = r_entry->next;
+            // there can be second fixup per instruction with 1 byte offset
+            // it must be skipped too, displayed is first only
+            // first one is significant, second one is segment override only
+            if( r_entry != NULL && SkipRef( r_entry ) != NULL && ( r_entry->offset == loop + 1 ) ) {
+                r_entry = r_entry->next;
+            }
+        }
+    } else {
+        fpu_fixup = NULL;
+    }
+    *pfixup = fpu_fixup;
+    return( r_entry );
+}

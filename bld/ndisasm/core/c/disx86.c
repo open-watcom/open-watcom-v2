@@ -1739,7 +1739,7 @@ dis_handler_return X86Imm_8( dis_handle *h, void *d, dis_dec_ins *ins )
 
             char intno = GetUByte( d, ins->size );
 
-            if( ( intno >= 0x34 ) && ( intno <= 0x3D ) ) {
+            if( (ins->flags.u.x86 & DIF_X86_FPU_EMU) && ( intno >= 0x34 ) && ( intno <= 0x3D ) ) {
                 ins->flags.u.x86 |= DIF_X86_EMU_INT;
                 ins->op[ MAX_NUM_OPERANDS - 1 ].value.s._32[I64LO32] = intno;
                 ins->op[ MAX_NUM_OPERANDS - 1 ].type = DO_IMMED;
