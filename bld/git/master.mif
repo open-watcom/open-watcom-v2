@@ -5,16 +5,7 @@ watcom_autodepends = .autodepend
 name = $(proj_name)
 
 !include cproj.mif
-!include defrule.mif
 !include deftarg.mif
 
-objs = $(name).obj
-
-.c: ../c
-
-$(name).exe : $(objs) $(__MAKEFILES__)
-!ifndef __WATCOM_TOOLS__
-        $(cl) $(clflags) $(objs) $(ldflags)
-!else
-        $(linker) name $@ $(lflags) file {$(objs)}
-!endif
+$(name).exe : ../c/$(name).c $(__MAKEFILES__)
+    $(bld_cl) $[@ $(bld_clflags) $(bld_ldflags)
