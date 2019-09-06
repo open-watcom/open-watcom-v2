@@ -273,5 +273,5 @@ osinflnx_postopts =-3
 
 no_truncate_object_code=1
 
-extra_clib_c_flags = $(build_cppflags)
-extra_clib_a_flags = $(build_cppflags)
+extra_clib_c_flags = $(bldver_cppflags)
+extra_clib_a_flags = $(bldver_cppflags)

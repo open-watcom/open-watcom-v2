@@ -53,5 +53,5 @@ objsuffix=files
 !include ../../../../objlist.mif
 objsuffix=
 
-extra_clib_c_flags = $(build_cppflags)
-extra_clib_a_flags = $(build_cppflags)
+extra_clib_c_flags = $(bldver_cppflags)
+extra_clib_a_flags = $(bldver_cppflags)

@@ -154,7 +154,7 @@ bld_cl_sys =
 
 bld_incs = $(bld_extra_incs) -I"$(watcom_dir)/h"
 
-bld_cppflags = $(build_cppflags) $(common_cppflags) $(common_cppflags_$(bld_os)) $(common_cppflags_$(bld_cpu)) $(common_cppflags_$(bld_os)_$(bld_cpu))
+bld_cppflags = $(bldver_cppflags) $(common_cppflags) $(common_cppflags_$(bld_os)) $(common_cppflags_$(bld_cpu)) $(common_cppflags_$(bld_os)_$(bld_cpu))
 
 bld_cflags   = $(common_cflags) $(common_flags) -Fo$@
 
@@ -363,7 +363,7 @@ bld_cl_sys =
 
 bld_incs = $(bld_extra_incs) -I"$(watcom_dir)/h"
 
-bld_cppflags = $(build_cppflags) $(common_cppflags) $(common_cppflags_$(bld_os)) $(common_cppflags_$(bld_cpu)) $(common_cppflags_$(bld_os)_$(bld_cpu))
+bld_cppflags = $(bldver_cppflags) $(common_cppflags) $(common_cppflags_$(bld_os)) $(common_cppflags_$(bld_cpu)) $(common_cppflags_$(bld_os)_$(bld_cpu))
 
 bld_cflags   = $(common_cflags) $(common_flags) -o $@
 
