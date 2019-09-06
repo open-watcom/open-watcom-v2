@@ -168,7 +168,7 @@ bld_cxx_flags = -EHsc
 
 bld_ldflags1 = $(common_ldflags) -Fm
 
-bld_ldflags  =  -link -nologo &
+bld_ldflags  =  $(bld_cl_extra_libs_gen) -link -nologo &
     -MAPINFO:EXPORTS -INCREMENTAL:NO -DEFAULTLIB:user32.lib -DEFAULTLIB:ole32.lib &
     -DEFAULTLIB:advapi32.lib -DEFAULTLIB:shell32.lib -DEFAULTLIB:gdi32.lib -DEFAULTLIB:comdlg32.lib &
     $(bld_extra_ldflags) $(bld_ldflags_$(proj_type))
