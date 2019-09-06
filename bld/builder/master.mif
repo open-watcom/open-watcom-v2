@@ -68,7 +68,9 @@ wgrep.exe :   $(wgrep_objs)
 
 builder.exe : $(builder_objs) $(__MAKEFILES__)
     @%make echo_link
-!ifndef __WATCOM_TOOLS__
+!ifdef bootstrap
+    $(bld_cl) $(bld_clflags) $(builder_objs) $(bld_ldflags)
+!else ifndef __WATCOM_TOOLS__
     $(cl) $(clflags) $(builder_objs) $(ldflags)
 !else
     $(linker) name $@ $(lflags) file {$(builder_objs)}

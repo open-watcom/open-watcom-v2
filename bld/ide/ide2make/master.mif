@@ -22,7 +22,9 @@ libs = $(idelib_lib) $(wclass_lib)
 
 $(proj_name).exe : $(objs) $(libs) $(__MAKEFILES__)
     @%make echo_link
-!ifndef __WATCOM_TOOLS__
+!ifdef bootstrap
+    $(bld_cl) $(bld_clflags) $(objs) $(libs) $(bld_ldflags)
+!else ifndef __WATCOM_TOOLS__
     $(cl) $(clflags) $(objs) $(libs) $(ldflags)
 !else
     $(linker) name $^@ $(lflags) file {$(objs)} lib {$(libs)}

@@ -1,6 +1,8 @@
 .obj.exe :
     @%make echo_link
-!ifndef __WATCOM_TOOLS__
+!ifdef bootstrap
+    $(bld_cl) $(bld_clflags) $< $(bld_ldflags)
+!else ifndef __WATCOM_TOOLS__
     $(cl) $(clflags) $< $(ldflags)
 !else
     $(linker) name $@ $(lflags) file {$<}
