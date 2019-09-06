@@ -31,14 +31,6 @@ jobs:
       parameters:
         arch:       ${{ parameters.arch }}
         ${{ if eq(parameters.arch, 'nt') }}:
-          path:     bld\watcom\$(owobjdir)
-        ${{ if in(parameters.arch, 'lnx', 'osx') }}:
-          path:     bld/watcom/$(owobjdir)
-        artifname:  bld-watcom-${{ parameters.arch }}
-    - template: artfload.yml
-      parameters:
-        arch:       ${{ parameters.arch }}
-        ${{ if eq(parameters.arch, 'nt') }}:
           path:     bld\setupgui
         ${{ if in(parameters.arch, 'lnx', 'osx') }}:
           path:     bld/setupgui
