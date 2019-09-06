@@ -352,9 +352,12 @@ dis_handler_return AXPIEEEConvert( dis_handle *h, void *d, dis_dec_ins *ins )
 dis_handler_return AXPVAXOperate( dis_handle *h, void *d, dis_dec_ins *ins )
 {
     AXPFPOperate( h, d, ins );
-    if( !(ins->opcode & (1UL << (7+5))) ) ins->flags.u.axp |= DIF_AXP_C;
-    if(   ins->opcode & (1UL << (8+5))  ) ins->flags.u.axp |= DIF_AXP_U;
-    if(   ins->opcode & (1UL << (10+5)) ) ins->flags.u.axp |= DIF_AXP_S;
+    if( !(ins->opcode & (1UL << (7 + 5))) )
+        ins->flags.u.axp |= DIF_AXP_C;
+    if( ins->opcode & (1UL << (8 + 5))  )
+        ins->flags.u.axp |= DIF_AXP_U;
+    if( ins->opcode & (1UL << (10 + 5)) )
+        ins->flags.u.axp |= DIF_AXP_S;
     return( DHR_DONE );
 }
 
@@ -369,9 +372,12 @@ dis_handler_return AXPVAXConvert( dis_handle *h, void *d, dis_dec_ins *ins )
     ins->op[0].base = code.fp_operate.rb + DR_AXP_f0;
     ins->op[1].type = DO_REG;
     ins->op[1].base = code.fp_operate.rc + DR_AXP_f0;
-    if( !(ins->opcode & (1UL << (7+5))) ) ins->flags.u.axp |= DIF_AXP_C;
-    if(   ins->opcode & (1UL << (8+5))  ) ins->flags.u.axp |= DIF_AXP_V;
-    if(   ins->opcode & (1UL << (10+5)) ) ins->flags.u.axp |= DIF_AXP_S;
+    if( !(ins->opcode & (1UL << (7 + 5))) )
+        ins->flags.u.axp |= DIF_AXP_C;
+    if( ins->opcode & (1UL << (8 + 5))  )
+        ins->flags.u.axp |= DIF_AXP_V;
+    if( ins->opcode & (1UL << (10 + 5)) )
+        ins->flags.u.axp |= DIF_AXP_S;
     return( DHR_DONE );
 }
 
@@ -547,13 +553,20 @@ static size_t AXPFlagHook( dis_handle *h, void *d, dis_dec_ins *ins,
     p = name;
     if( ins->flags.u.axp != DIF_AXP_NONE ) {
         *p++ = '/';
-        if( ins->flags.u.axp & DIF_AXP_C ) *p++ = 'c';
-        if( ins->flags.u.axp & DIF_AXP_D ) *p++ = 'd';
-        if( ins->flags.u.axp & DIF_AXP_I ) *p++ = 'i';
-        if( ins->flags.u.axp & DIF_AXP_M ) *p++ = 'm';
-        if( ins->flags.u.axp & DIF_AXP_S ) *p++ = 's';
-        if( ins->flags.u.axp & DIF_AXP_U ) *p++ = 'u';
-        if( ins->flags.u.axp & DIF_AXP_V ) *p++ = 'v';
+        if( ins->flags.u.axp & DIF_AXP_C )
+            *p++ = 'c';
+        if( ins->flags.u.axp & DIF_AXP_D )
+            *p++ = 'd';
+        if( ins->flags.u.axp & DIF_AXP_I )
+            *p++ = 'i';
+        if( ins->flags.u.axp & DIF_AXP_M )
+            *p++ = 'm';
+        if( ins->flags.u.axp & DIF_AXP_S )
+            *p++ = 's';
+        if( ins->flags.u.axp & DIF_AXP_U )
+            *p++ = 'u';
+        if( ins->flags.u.axp & DIF_AXP_V )
+            *p++ = 'v';
         *p = '\0';
     }
     return( p - name );

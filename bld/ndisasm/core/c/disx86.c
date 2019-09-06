@@ -237,7 +237,8 @@ dis_handler_return X86PrefixFwait( dis_handle *h, void *d, dis_dec_ins *ins )
 
     for( ;; ) {
         code = GetUByte( d, instruct_size );
-        if( ( code & 0xf8 ) == 0xd8 ) break;
+        if( ( code & 0xf8 ) == 0xd8 )
+            break;
         // Look Ahead for Prefixes
         switch( code ) {
         case 0x67:
@@ -699,7 +700,7 @@ static void X86GetModRM_S( WBIT w, MOD mod, RM rm, void * d,
 
     switch( mod ) {
     case MOD_0:
-        if(rm == RM_6) {
+        if( rm == RM_6 ) {
             ins->op[oper].base = DR_NONE;
             ins->op[oper].op_position = ins->size;
             ins->op[oper].value.s._32[I64LO32] = GetUShort( d, ins->size );
@@ -935,13 +936,20 @@ static void X86XMMGetModRM( WBIT w, MOD mod, RM rm, void * d,
 
 static dis_ref_type X86RegRefType( dis_register reg )
 {
-    if( reg <= DR_X86_bl ) return( DRT_X86_BYTE );
-    if( reg <= DR_X86_di ) return( DRT_X86_WORD );
-    if( reg <= DR_X86_edi ) return( DRT_X86_DWORD );
-    if( reg <= DR_X86_st7 ) return( DRT_X86_TBYTE );
-    if( reg <= DR_X86_mm7 ) return( DRT_X86_MM64 );
-    if( reg <= DR_X86_xmm7 ) return( DRT_X86_XMM128 );
-    if( reg <= DR_X86_dr7 ) return( DRT_X86_DWORD );
+    if( reg <= DR_X86_bl )
+        return( DRT_X86_BYTE );
+    if( reg <= DR_X86_di )
+        return( DRT_X86_WORD );
+    if( reg <= DR_X86_edi )
+        return( DRT_X86_DWORD );
+    if( reg <= DR_X86_st7 )
+        return( DRT_X86_TBYTE );
+    if( reg <= DR_X86_mm7 )
+        return( DRT_X86_MM64 );
+    if( reg <= DR_X86_xmm7 )
+        return( DRT_X86_XMM128 );
+    if( reg <= DR_X86_dr7 )
+        return( DRT_X86_DWORD );
     return( DRT_X86_WORD );
 }
 
@@ -3837,11 +3845,16 @@ static dis_ref_type GetRefType( dis_dec_ins *ins, unsigned op )
     switch( ins->op[op].type & DO_MASK ) {
     case DO_REG:
         reg = ins->op[op].base;
-        if(                      reg <= DR_X86_bl ) return( DRT_X86_BYTE );
-        if( reg >= DR_X86_ax  && reg <= DR_X86_di ) return( DRT_X86_WORD );
-        if( reg >= DR_X86_eax && reg <= DR_X86_edi ) return( DRT_X86_DWORD );
-        if( reg >= DR_X86_cr0 && reg <= DR_X86_dr7 ) return( DRT_X86_DWORD );
-        if( reg >= DR_X86_es  && reg <= DR_X86_gs ) return( DRT_X86_WORD );
+        if( reg <= DR_X86_bl )
+            return( DRT_X86_BYTE );
+        if( reg >= DR_X86_ax  && reg <= DR_X86_di )
+            return( DRT_X86_WORD );
+        if( reg >= DR_X86_eax && reg <= DR_X86_edi )
+            return( DRT_X86_DWORD );
+        if( reg >= DR_X86_cr0 && reg <= DR_X86_dr7 )
+            return( DRT_X86_DWORD );
+        if( reg >= DR_X86_es  && reg <= DR_X86_gs )
+            return( DRT_X86_WORD );
         break;
     case DO_MEMORY_ABS:
         return( ins->op[op].ref_type );
@@ -3937,7 +3950,9 @@ static size_t UnixMangleName( dis_dec_ins *ins, char *p, size_t len )
     default:
         for( i = 0; i < ins->num_ops; ++i ) {
             ref_type = GetRefType( ins, i );
-            if( ref_type != DRT_NONE ) break;
+            if( ref_type != DRT_NONE ) {
+                break;
+            }
         }
         break;
     }
@@ -3956,16 +3971,19 @@ static size_t X86InsHook( dis_handle *h, void *d, dis_dec_ins *ins,
 
     /* unused parameters */ (void)h; (void)d;
 
-    if( name == NULL ) name = temp_buff;
+    if( name == NULL )
+        name = temp_buff;
     p = name;
     if( ins->flags.u.x86 & DIF_X86_LOCK ) {
         p += DisGetString( DisInstructionTable[DI_X86_lock_pr].name, p, false );
-        if( flags & DFF_UNIX ) *p++ = ';';
+        if( flags & DFF_UNIX )
+            *p++ = ';';
         *p++ = ' ';
     }
     if( ins->flags.u.x86 & DIF_X86_REPNE ) {
         p += DisGetString( DisInstructionTable[DI_X86_repne_pr].name, p, false );
-        if( flags & DFF_UNIX ) *p++ = ';';
+        if( flags & DFF_UNIX )
+            *p++ = ';';
         *p++ = ' ';
     }
     if( ins->flags.u.x86 & DIF_X86_REPE ) {
@@ -3978,7 +3996,8 @@ static size_t X86InsHook( dis_handle *h, void *d, dis_dec_ins *ins,
             p += DisGetString( DisInstructionTable[DI_X86_rep_pr].name, p, false );
             break;
         }
-        if( flags & DFF_UNIX ) *p++ = ';';
+        if( flags & DFF_UNIX )
+            *p++ = ';';
         *p++ = ' ';
     }
     len = DisGetString( DisInstructionTable[ins->type].name, p, false );
@@ -4237,7 +4256,8 @@ static size_t X86OpHook( dis_handle *h, void *d, dis_dec_ins *ins,
                 break;
             }
             ins_flags.u.x86 &= ~SEGOVER;
-            if( flags & DFF_UNIX ) *p++ = '%';
+            if( flags & DFF_UNIX )
+                *p++ = '%';
             if( flags & DFF_REG_UP ) {
                 *p++ = (char)toupper( over );
                 *p++= 'S';

@@ -63,7 +63,8 @@ externs CreateExterns( ref_list list ) {
     externs             sec_externs;
 
     sec_externs = (externs) MemAlloc( sizeof( externs_struct ) );
-    if( !sec_externs) return( NULL );
+    if( !sec_externs )
+        return( NULL );
     memset( sec_externs, 0, sizeof( externs_struct ) );
     sec_externs->number = 0;
     for( entry = list->first; entry != NULL; entry = entry->next ) {
