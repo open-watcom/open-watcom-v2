@@ -341,6 +341,7 @@ dis_return DisFormat( dis_handle *h, void *d, dis_dec_ins *ins_p,
         }
         if( p != opers )
             *p++ = ' ';
+        ins.flags = ins_p->flags;
         len = h->d->post_op_hook( h, d, &ins, flags, i, p, end - p );
         if( len ) {
             p += len;
