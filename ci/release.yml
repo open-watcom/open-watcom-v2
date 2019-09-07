@@ -51,7 +51,7 @@ jobs:
     - script: |
         if [ ! "$OWGITSTAMP" = "$BUILD_SOURCEVERSION" ]; then
           git tag $(owgitverbose) -d $OWTAG
-          git push $(owgitverbose) --delete origin $OWTAG
+          git push --delete origin $OWTAG
           git tag $(owgitverbose) -a -m "$OWTAGSTAMP" $OWTAG $BUILD_SOURCEVERSION
           git push $(owgitverbose) origin $OWTAG
         else
