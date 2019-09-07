@@ -92,19 +92,6 @@ static const char   *DefKeys   = NULL;
 static const char   * const blank = "";
 
 
-static void filenameOS( char *name )
-{
-    if( name != NULL ) {
-#ifdef __UNIX__
-        while( (name = strchr( name, '\\' )) != NULL ) {
-#else
-        while( (name = strchr( name, '/' )) != NULL ) {
-#endif
-            *name = DIR_SEP;
-        }
-    }
-}
-
 static void AddToList( const char *name, ctl_file **owner )
 {
     ctl_file    *curr;
@@ -251,7 +238,13 @@ static void PushInclude( const char *name )
     new->lineno = 0;
     IncludeStk = new;
     strcpy( new->name, name );
-    filenameOS( new->name );
+#ifdef __UNIX__
+    for( dir = new->name; (dir = strchr( dir, '\\' )) != NULL; ) {
+#else
+    for( dir = new->name; (dir = strchr( dir, '/' )) != NULL; ) {
+#endif
+        *dir = DIR_SEP;
+    }
     new->fp = fopen( new->name, "rb" );
     if( new->fp == NULL ) {
         Fatal( "Could not open '%s': %s\n", new->name, strerror( errno ) );

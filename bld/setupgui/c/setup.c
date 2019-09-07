@@ -355,9 +355,9 @@ void GUImain( void )
             VbufFree( &drive );
             VbufFree( &current_dir );
             VbufFree( &new_inf );
-            FileFini();
             FreeDefaultDialogs();
             FreeAllStructs();
+            FileFini();
             StatusFini();
         }
         FreeDirParams();

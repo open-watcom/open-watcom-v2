@@ -130,28 +130,6 @@ static LIST                 *Include = NULL;
 static const char           MksetupInf[] = "mksetup.inf";
 
 
-static void filenameOS( char *name )
-{
-    if( name != NULL ) {
-#ifdef __UNIX__
-        while( (name = strchr( name, '\\' )) != NULL ) {
-#else
-        while( (name = strchr( name, '/' )) != NULL ) {
-#endif
-            *name = DIR_SEP;
-        }
-    }
-}
-
-static void filenameNormalize( char *name )
-{
-    if( name != NULL ) {
-        while( (name = strchr( name, '\\' )) != NULL ) {
-            *name = '/';
-        }
-    }
-}
-
 static void ConcatDirElem( char *dir, const char *elem )
 /******************************************************/
 {
@@ -418,6 +396,9 @@ int AddPathTree( char *path, int target )
     if( path == NULL )
         return( -1 );
     parent = AddPath( ".", target, -1 );
+    for( p = path; (p = strchr( p, '\\' )) != NULL; ) {
+        *p = '/';
+    }
     p = strchr( path, '/' );
     while( p != NULL ) {
         *p = '\0';
@@ -532,7 +513,13 @@ bool AddFile( char *path, char *old_path, char type, char redist, char *file, co
         }
         ConcatDirElem( src, file );
     }
-    filenameOS( src );
+#ifdef __UNIX__
+    for( p = src; (p = strchr( p, '\\' )) != NULL; ) {
+#else
+    for( p = src; (p = strchr( p, '/' )) != NULL; ) {
+#endif
+        *p = DIR_SEP;
+    }
     remove = ( stricmp( cond, "false" ) == 0 );
     if( remove ) {
         act_size = 0;
@@ -606,13 +593,11 @@ bool AddFile( char *path, char *old_path, char type, char redist, char *file, co
     }
 
     // handle sub-directories in path before full path
-    filenameNormalize( path );
     path_dir = AddPathTree( path, target );
-    filenameNormalize( old_path );
-    old_path_dir = AddPathTree( old_path, target );
     if( path_dir == 0 ) {
         return( false );
     }
+    old_path_dir = AddPathTree( old_path, target );
     p = file;
 #ifndef __UNIX__
     if( p[0] != '\0' && p[1] == ':' ) {

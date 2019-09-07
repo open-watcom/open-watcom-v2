@@ -1738,14 +1738,26 @@ static bool ProcLine( char *line, pass_type pass )
         next = NextToken( line, '=' );
         if( stricmp( line, "DefPMGroup" ) == 0 ) {
             line = next; next = NextToken( line, ',' );
+            if( SetupInfo.pm_group_file != NULL ) {
+                GUIMemFree( SetupInfo.pm_group_file );
+                SetupInfo.pm_group_file = NULL;
+            }
             SetupInfo.pm_group_file = GUIStrDup( line, NULL );
             line = next; next = NextToken( line, ',' );
+            if( SetupInfo.pm_group_name != NULL ) {
+                GUIMemFree( SetupInfo.pm_group_name );
+                SetupInfo.pm_group_name = NULL;
+            }
             SetupInfo.pm_group_name = GUIStrDup( line, NULL );
             num = SetupInfo.all_pm_groups.num;
             if( !BumpArray( &SetupInfo.all_pm_groups ) )
                 return( false );
             AllPMGroups[num].group_name = GUIStrDup( line, NULL );
             AllPMGroups[num].group_file = GUIStrDup( SetupInfo.pm_group_file, NULL );
+            if( SetupInfo.pm_group_iconfile != NULL ) {
+                GUIMemFree( SetupInfo.pm_group_iconfile );
+                SetupInfo.pm_group_iconfile = NULL;
+            }
             SetupInfo.pm_group_iconfile = GUIStrDup( next, NULL );
         } else {
             if( line[0] == '$' ) {
@@ -3372,9 +3384,18 @@ bool SimCalcTargetSpaceNeeded( void )
 static void FreeSetupInfoVal( void )
 /**********************************/
 {
-    GUIMemFree( SetupInfo.pm_group_file );
-    GUIMemFree( SetupInfo.pm_group_name );
-    GUIMemFree( SetupInfo.pm_group_iconfile );
+    if( SetupInfo.pm_group_file != NULL ) {
+        GUIMemFree( SetupInfo.pm_group_file );
+        SetupInfo.pm_group_file = NULL;
+    }
+    if( SetupInfo.pm_group_name != NULL ) {
+        GUIMemFree( SetupInfo.pm_group_name );
+        SetupInfo.pm_group_name = NULL;
+    }
+    if( SetupInfo.pm_group_iconfile != NULL ) {
+        GUIMemFree( SetupInfo.pm_group_iconfile );
+        SetupInfo.pm_group_iconfile = NULL;
+    }
 }
 
 
@@ -3383,13 +3404,15 @@ static void FreeTargetVal( void )
 {
     int i;
 
-    for( i = 0; i < SetupInfo.target.num; i++ ) {
-        GUIMemFree( TargetInfo[i].name );
-        GUIMemFree( TargetInfo[i].temp_disk );
+    if( TargetInfo != NULL ) {
+        for( i = 0; i < SetupInfo.target.num; i++ ) {
+            GUIMemFree( TargetInfo[i].name );
+            GUIMemFree( TargetInfo[i].temp_disk );
+        }
+        GUIMemFree( TargetInfo );
+        TargetInfo = NULL;
+        SetupInfo.target.num = 0;
     }
-    GUIMemFree( TargetInfo );
-    TargetInfo = NULL;
-    SetupInfo.target.num = 0;
 }
 
 
@@ -3397,12 +3420,15 @@ static void FreeDirInfo( void )
 /*****************************/
 {
     int i;
-    for( i = 0; i < SetupInfo.dirs.num; i++ ) {
-        GUIMemFree( DirInfo[i].desc );
+
+    if( DirInfo != NULL ) {
+        for( i = 0; i < SetupInfo.dirs.num; i++ ) {
+            GUIMemFree( DirInfo[i].desc );
+        }
+        GUIMemFree( DirInfo );
+        DirInfo = NULL;
+        SetupInfo.dirs.num = 0;
     }
-    GUIMemFree( DirInfo );
-    DirInfo = NULL;
-    SetupInfo.dirs.num = 0;
 }
 
 
@@ -3476,13 +3502,15 @@ static void FreeSpawnInfo( void )
 {
     int i;
 
-    for( i = 0; i < SetupInfo.spawn.num; i++ ) {
-        GUIMemFree( SpawnInfo[i].command );
-        GUIMemFree( SpawnInfo[i].condition );
+    if( SpawnInfo != NULL ) {
+        for( i = 0; i < SetupInfo.spawn.num; i++ ) {
+            GUIMemFree( SpawnInfo[i].command );
+            GUIMemFree( SpawnInfo[i].condition );
+        }
+        GUIMemFree( SpawnInfo );
+        SpawnInfo = NULL;
+        SetupInfo.spawn.num = 0;
     }
-    GUIMemFree( SpawnInfo );
-    SpawnInfo = NULL;
-    SetupInfo.spawn.num = 0;
 }
 
 
@@ -3491,12 +3519,14 @@ static void FreeDeleteInfo( void )
 {
     int i;
 
-    for( i = 0; i < SetupInfo.delete.num; i++ ) {
-        GUIMemFree( DeleteInfo[i].name );
+    if( DeleteInfo != NULL ) {
+        for( i = 0; i < SetupInfo.delete.num; i++ ) {
+            GUIMemFree( DeleteInfo[i].name );
+        }
+        GUIMemFree( DeleteInfo );
+        DeleteInfo = NULL;
+        SetupInfo.delete.num = 0;
     }
-    GUIMemFree( DeleteInfo );
-    DeleteInfo = NULL;
-    SetupInfo.delete.num = 0;
 }
 
 
@@ -3505,16 +3535,18 @@ static void FreePMInfo( void )
 {
     int i;
 
-    for( i = 0; i < SetupInfo.pm_files.num; i++ ) {
-        GUIMemFree( PMInfo[i].desc );
-        GUIMemFree( PMInfo[i].filename );
-        GUIMemFree( PMInfo[i].parameters );
-        GUIMemFree( PMInfo[i].iconfile );
-        GUIMemFree( PMInfo[i].condition );
+    if( PMInfo != NULL ) {
+        for( i = 0; i < SetupInfo.pm_files.num; i++ ) {
+            GUIMemFree( PMInfo[i].desc );
+            GUIMemFree( PMInfo[i].filename );
+            GUIMemFree( PMInfo[i].parameters );
+            GUIMemFree( PMInfo[i].iconfile );
+            GUIMemFree( PMInfo[i].condition );
+        }
+        GUIMemFree( PMInfo );
+        PMInfo = NULL;
+        SetupInfo.pm_files.num = 0;
     }
-    GUIMemFree( PMInfo );
-    PMInfo = NULL;
-    SetupInfo.pm_files.num = 0;
 }
 
 
@@ -3523,17 +3555,19 @@ static void FreeProfileInfo( void )
 {
     int i;
 
-    for( i = 0; i < SetupInfo.profile.num; i++ ) {
-        GUIMemFree( ProfileInfo[i].hive_name );
-        GUIMemFree( ProfileInfo[i].app_name );
-        GUIMemFree( ProfileInfo[i].key_name );
-        GUIMemFree( ProfileInfo[i].value );
-        GUIMemFree( ProfileInfo[i].file_name );
-        GUIMemFree( ProfileInfo[i].condition );
+    if( ProfileInfo != NULL ) {
+        for( i = 0; i < SetupInfo.profile.num; i++ ) {
+            GUIMemFree( ProfileInfo[i].hive_name );
+            GUIMemFree( ProfileInfo[i].app_name );
+            GUIMemFree( ProfileInfo[i].key_name );
+            GUIMemFree( ProfileInfo[i].value );
+            GUIMemFree( ProfileInfo[i].file_name );
+            GUIMemFree( ProfileInfo[i].condition );
+        }
+        GUIMemFree( ProfileInfo );
+        ProfileInfo = NULL;
+        SetupInfo.profile.num = 0;
     }
-    GUIMemFree( ProfileInfo );
-    ProfileInfo = NULL;
-    SetupInfo.profile.num = 0;
 }
 
 
