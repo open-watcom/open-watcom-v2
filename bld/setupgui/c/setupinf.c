@@ -343,6 +343,15 @@ static bool BumpDlgArrays( DIALOG_INFO *dlg )
     return( BumpArray( &dlg->controls ) && BumpArray( &dlg->controls_ext ) );
 }
 
+#ifndef __UNIX__
+static void toBackSlash( char *name )
+{
+    while( (name = strchr( name, '/' )) != NULL ) {
+        *name = '\\';
+    }
+}
+#endif
+
 /**********************************************************************/
 /*                   EXPRESSION EVALUTORS                             */
 /**********************************************************************/
@@ -1762,6 +1771,9 @@ static bool ProcLine( char *line, pass_type pass )
         if( DirInfo[num].parent != -1 ) {
             DirInfo[num].parent--;
         }
+#ifndef __UNIX__
+        toBackSlash( DirInfo[num].desc );
+#endif
         break;
     case RS_FILES:
         {

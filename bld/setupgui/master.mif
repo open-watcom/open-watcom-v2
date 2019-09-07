@@ -271,7 +271,9 @@ jcsetup.exe : jcsetup.res $(version_res_exe_$(host_os)_$(host_cpu)) setup.exe $(
 jfsetup.exe : jfsetup.res $(version_res_exe_$(host_os)_$(host_cpu)) setup.exe $(__MAKEFILES__)
 
 .res.exe :
+!ifdef __WATCOM_TOOLS__
     cp setup.sym $^&.sym
+!endif
 !ifdef win386
     cp setup.exe $^&.rex
     @%make bind_win386_add_res

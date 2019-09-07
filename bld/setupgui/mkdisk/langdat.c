@@ -91,6 +91,18 @@ static const char   *DefKeys   = NULL;
 
 static const char   * const blank = "";
 
+
+static void filenameOS( char *name )
+{
+#ifdef __UNIX__
+    while( (name = strchr( name, '\\' )) != NULL ) {
+#else
+    while( (name = strchr( name, '/' )) != NULL ) {
+#endif
+        *name = DIR_SEP;
+    }
+}
+
 static void AddToList( const char *name, ctl_file **owner )
 {
     ctl_file    *curr;
@@ -204,7 +216,7 @@ static int sysChdir( const char *dir )
 #ifdef __UNIX__
         if( dir[len - 1] == '/' ) {
 #else
-        if( ( dir[len - 1] == '\\' || dir[len - 1] == '/' ) && ( len > 3 || drive == 0 ) ) {
+        if( ( dir[len - 1] == '\\' ) && ( len > 3 || drive == 0 ) ) {
 #endif
             len--;
             memcpy( tmp_buf, dir, len );
@@ -236,12 +248,13 @@ static void PushInclude( const char *name )
     new->ifdefskipping = 0;
     new->lineno = 0;
     IncludeStk = new;
-    new->fp = fopen( name, "rb" );
-    if( new->fp == NULL ) {
-        Fatal( "Could not open '%s': %s\n", name, strerror( errno ) );
-    }
     strcpy( new->name, name );
-    _splitpath2( name, buff, &drive, &dir, &fn, &ext );
+    filenameOS( new->name );
+    new->fp = fopen( new->name, "rb" );
+    if( new->fp == NULL ) {
+        Fatal( "Could not open '%s': %s\n", new->name, strerror( errno ) );
+    }
+    _splitpath2( new->name, buff, &drive, &dir, &fn, &ext );
     _makepath( dir_name, drive, dir, NULL, NULL );
     if( sysChdir( dir_name ) != 0 ) {
         Fatal( "Could not chdir to '%s': %s\n", dir_name, strerror( errno ) );
@@ -865,11 +878,7 @@ int main( int argc, char *argv[] )
         if( p == NULL )
             p = DEFCTLNAME;
         if( !SearchUpDirs( p, Line ) ) {
-#ifdef __WATCOMC__
             _searchenv( p, "PATH", Line );
-#else
-            Line[0] = '\0';
-#endif
             if( Line[0] == '\0' ) {
                 MClose();
                 Fatal( "Can not find '%s'\n", p );
