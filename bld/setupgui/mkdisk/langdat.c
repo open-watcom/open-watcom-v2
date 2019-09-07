@@ -94,12 +94,14 @@ static const char   * const blank = "";
 
 static void filenameOS( char *name )
 {
+    if( name != NULL ) {
 #ifdef __UNIX__
-    while( (name = strchr( name, '\\' )) != NULL ) {
+        while( (name = strchr( name, '\\' )) != NULL ) {
 #else
-    while( (name = strchr( name, '/' )) != NULL ) {
+        while( (name = strchr( name, '/' )) != NULL ) {
 #endif
-        *name = DIR_SEP;
+            *name = DIR_SEP;
+        }
     }
 }
 
