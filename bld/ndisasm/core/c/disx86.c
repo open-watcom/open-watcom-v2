@@ -4380,20 +4380,36 @@ static void X86PreprocHook( dis_handle *h, void *d, dis_dec_ins *ins )
 
 static size_t X86PostOpHook( dis_handle *h, void *d, dis_dec_ins *ins,
         dis_format_flags flags, unsigned op_num, char *op_buff, size_t buff_len )
-/**********************************************************************/
+/*******************************************************************************/
 {
-    size_t      len = 0;
+    size_t      len;
 
     /* unused parameters */ (void)h; (void)op_num;
 
     if( ins->flags.u.x86 & DIF_X86_EMU_INT ) {
-        len = sizeof( EMU_INT ) - 1;
-        memcpy( op_buff, EMU_INT, len );
-        op_buff[len] = 0;
-        if( flags & DFF_INS_UP )
-            strupr( op_buff );
-        len += DisCliValueString( d, ins, MAX_NUM_OPERANDS - 1, op_buff + len, buff_len - len );
+    } else if( ins->flags.u.x86 & DIF_X86_FPU_EMU ) {
+        if( (ins->opcode & 0xFFFF) == 0x9B90 ) {
+            ins->op[ MAX_NUM_OPERANDS - 1 ].value.s._32[I64LO32] = 0x3D;
+        } else if( (ins->flags.u.x86 & DIF_X86_FWAIT) && (ins->flags.u.x86 & DIF_X86_FPU_INS) ) {
+            if( X86SegmentOverride( ins ) ) {
+                ins->op[ MAX_NUM_OPERANDS - 1 ].value.s._32[I64LO32] = 0x3C;
+            } else {
+                ins->op[ MAX_NUM_OPERANDS - 1 ].value.s._32[I64LO32] = (ins->opcode & 0xFF) - 0xA4;
+            }
+        } else {
+            return( 0 );
+        }
+        ins->op[ MAX_NUM_OPERANDS - 1 ].type = DO_IMMED;
+        ins->op[ MAX_NUM_OPERANDS - 1 ].ref_type = DRT_X86_BYTE;
+    } else {
+        return( 0 );
     }
+    len = sizeof( EMU_INT ) - 1;
+    memcpy( op_buff, EMU_INT, len );
+    op_buff[len] = 0;
+    if( flags & DFF_INS_UP )
+        strupr( op_buff );
+    len += DisCliValueString( d, ins, MAX_NUM_OPERANDS - 1, op_buff + len, buff_len - len );
     return( len );
 }
 
