@@ -237,7 +237,7 @@ gui_ctl_id set_dlg_push_button( vhandle var_handle, const char *text,
     }
     p = TrimQuote( p );
     if( p != str ) {
-        p = GUIStrDup( p );
+        p = GUIStrDup( p, NULL );
         GUIMemFree( str );
     }
     control->text = p;
