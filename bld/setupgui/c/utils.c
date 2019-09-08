@@ -1186,7 +1186,7 @@ bool CheckUpgrade( void )
     }
 #endif
     return_state = DoDialog( "UpgradeNotQualified" );
-    return( return_state != DLG_CAN && return_state != DLG_DONE );
+    return( return_state != DLG_CANCEL && return_state != DLG_DONE );
 }
 
 static void free_disks( char **disks, int max_targs )
@@ -2396,7 +2396,7 @@ bool PromptUser( const VBUF *name, const char *dlg, const char *skip, const char
     if( !GetVariableBoolVal( skip ) ) {
         for( ;; ) {
             return_state = DoDialog( dlg );
-            if( return_state != DLG_DONE && return_state != DLG_CAN )
+            if( return_state != DLG_DONE && return_state != DLG_CANCEL )
                 break;
             if( MsgBox( NULL, "IDS_QUERYABORT", GUI_YES_NO ) == GUI_RET_YES ) {
                 CancelSetup = true;

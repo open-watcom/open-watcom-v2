@@ -182,10 +182,10 @@ dlg_state DoDialogWithParent( gui_window *parent, const char *name )
 
     dlg = FindDialogByName( name );
     if( dlg == NULL ) {
-        return( DLG_CAN );
+        return( DLG_CANCEL );
     }
     return_state = DoDialogByPointer( parent, dlg );
-    if( return_state == DLG_CAN ) {
+    if( return_state == DLG_CANCEL ) {
         // This block is a kludgy hack which allows a dialog to
         // return DLG_DONE when the ESC key is pressed, if it has a
         // DONE button rather than a CANCEL button.

@@ -332,7 +332,7 @@ dlg_state IdToDlgState( gui_ctl_id id )
     case CTL_DONE:
         return( DLG_DONE );
     }
-    return( DLG_CAN );
+    return( DLG_CANCEL );
 }
 
 static void UpdateControlVisibility( gui_window *gui, a_dialog_header *curr_dialog, bool init )
@@ -624,7 +624,7 @@ static bool GenericGUIEventProc( gui_window *gui, gui_event gui_ev, void *param 
             return( true );
         case CTL_CANCEL:
             GUICloseDialog( gui );
-            result->state = DLG_CAN;
+            result->state = DLG_CANCEL;
             return( true );
         case CTL_DONE:
             GUICloseDialog( gui );
@@ -653,7 +653,7 @@ static bool GenericGUIEventProc( gui_window *gui, gui_event gui_ev, void *param 
                             GUISetChecked( gui, VH2ID( child->any_check ), GUI_CHECKED );
                             CheckChildChecks( child );
                             return_state = DoDialogByPointer( gui, child );
-                            if( return_state != DLG_CAN &&
+                            if( return_state != DLG_CANCEL &&
                                 return_state != DLG_DONE ) {
                                 CheckAnyCheck( gui, child );
                             } else {
@@ -872,10 +872,10 @@ dlg_state GenericDialog( gui_window *parent, a_dialog_header *curr_dialog )
     int                 height;
 
     if( curr_dialog == NULL ) {
-        return( DLG_CAN );
+        return( DLG_CANCEL );
     }
     AdjustDialogControls( curr_dialog );
-    result.state = DLG_CAN;
+    result.state = DLG_CANCEL;
     result.current_dialog = curr_dialog;
     VbufInit( &title );
     if( curr_dialog->title != NULL ) {

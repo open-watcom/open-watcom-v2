@@ -224,7 +224,7 @@ static bool DoMainLoop( dlg_state *state )
             GUIWndDirty( NULL );
             StatusCancelled();
         }
-        if( *state == DLG_CAN ) {
+        if( *state == DLG_CANCEL ) {
             if( MsgBox( NULL, "IDS_QUERYABORT", GUI_YES_NO ) == GUI_RET_YES ) {
                 CancelSetup = true;
                 break;

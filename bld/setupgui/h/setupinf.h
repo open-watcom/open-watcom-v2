@@ -75,7 +75,7 @@ typedef enum {
 } VBL_TYPE;
 
 typedef enum {
-    DLG_CAN,
+    DLG_CANCEL,
     DLG_NEXT,
     DLG_PREV,
     DLG_START,
