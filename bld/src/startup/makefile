@@ -1,4 +1,4 @@
-#pmake: build
+#pmake: build os_dos os_win os_nt os_rdos os_os2 os_linux cpu_i86 cpu_386
 
 proj_name = src
 
