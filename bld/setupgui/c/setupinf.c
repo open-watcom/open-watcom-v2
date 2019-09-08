@@ -168,8 +168,8 @@ typedef enum {
 } read_state;
 
 typedef struct dialog_parser_info { // structure used when parsing a dialog
-    array_info          controls;
-    array_info          controls_ext;
+    array_info          controls_array;
+    array_info          controls_ext_array;
     int                 num_push_buttons;
     int                 num_variables;
     int                 num_radio_buttons;
@@ -334,13 +334,13 @@ static void InitAutoSetValues( void );
 
 static void InitDlgArrays( DIALOG_PARSER_INFO *parse_dlg )
 {
-    InitArray( (void **)&parse_dlg->curr_dialog->controls, sizeof( gui_control_info ), &parse_dlg->controls );
-    InitArray( (void **)&parse_dlg->curr_dialog->controls_ext, sizeof( control_info_ext ), &parse_dlg->controls_ext );
+    InitArray( (void **)&parse_dlg->curr_dialog->controls, sizeof( gui_control_info ), &parse_dlg->controls_array );
+    InitArray( (void **)&parse_dlg->curr_dialog->controls_ext, sizeof( control_info_ext ), &parse_dlg->controls_ext_array );
 }
 
 static bool BumpDlgArrays( DIALOG_PARSER_INFO *parse_dlg )
 {
-    return( BumpArray( &parse_dlg->controls ) && BumpArray( &parse_dlg->controls_ext ) );
+    return( BumpArray( &parse_dlg->controls_array ) && BumpArray( &parse_dlg->controls_ext_array ) );
 }
 
 #ifndef __UNIX__
@@ -870,7 +870,7 @@ static bool dialog_static( char *next, DIALOG_PARSER_INFO *parse_dlg )
             AddInstallName( &text );
             len = VbufLen( &text );
         }
-        set_dlg_dynamstring( parse_dlg->curr_dialog->controls, parse_dlg->controls.num - 1,
+        set_dlg_dynamstring( parse_dlg->curr_dialog->controls, parse_dlg->controls_array.num - 1,
             VbufString( &text ), VarGetId( var_handle ), parse_dlg->col_num, parse_dlg->row_num, parse_dlg->col_num + len );
         if( len > 0 ) {
             if( parse_dlg->max_width < parse_dlg->col_num + len ) {
@@ -1041,7 +1041,7 @@ static bool dialog_textwindow( char *next, DIALOG_PARSER_INFO *parse_dlg, bool l
             parse_dlg->curr_dialog->controls_ext[parse_dlg->curr_dialog->num_controls].pVisibilityConds = GUIStrDup( line, NULL );
             // dummy_var allows control to have an id - used by dynamic visibility feature
             var_handle = MakeDummyVar();
-            set_dlg_textwindow( parse_dlg->curr_dialog->controls, parse_dlg->controls.num - 1,
+            set_dlg_textwindow( parse_dlg->curr_dialog->controls, parse_dlg->controls_array.num - 1,
                 text, VarGetId( var_handle ), C0, parse_dlg->row_num, parse_dlg->max_width + 2,
                 rows, GUI_VSCROLL );
             parse_dlg->curr_dialog->rows += rows;
@@ -1092,7 +1092,7 @@ static bool dialog_dynamic( char *next, DIALOG_PARSER_INFO *parse_dlg )
             parse_dlg->max_width = len;
         if( parse_dlg->max_width < 60 )
             parse_dlg->max_width = 60;
-        set_dlg_dynamstring( parse_dlg->curr_dialog->controls, parse_dlg->controls.num - 1,
+        set_dlg_dynamstring( parse_dlg->curr_dialog->controls, parse_dlg->controls_array.num - 1,
                              text, VarGetId( var_handle ), C0, parse_dlg->row_num,
                              C0 + parse_dlg->max_width );
     } else {
@@ -1125,7 +1125,7 @@ static bool dialog_pushbutton( char *next, DIALOG_PARSER_INFO *parse_dlg )
         }
         var_handle = GetVariableByName( line_start );
         id = set_dlg_push_button( var_handle, line_start, parse_dlg->curr_dialog->controls,
-                                  parse_dlg->controls.num - 1, parse_dlg->row_num,
+                                  parse_dlg->controls_array.num - 1, parse_dlg->row_num,
                                   parse_dlg->num_push_buttons, W / BW - 1, W, BW );
         if( def_ret ) {
             parse_dlg->curr_dialog->ret_val = IdToDlgState( id );
@@ -1223,11 +1223,11 @@ static bool dialog_edit_button( char *next, DIALOG_PARSER_INFO *parse_dlg )
         var_handle_2 = MakeDummyVar();
         SetVariableByHandle( var_handle_2, dialog_name );
         set_dlg_push_button( var_handle_2, button_text, parse_dlg->curr_dialog->controls,
-                             parse_dlg->controls.num - 1, parse_dlg->row_num, 4, 4, W, BW );
+                             parse_dlg->controls_array.num - 1, parse_dlg->row_num, 4, 4, W, BW );
         BumpDlgArrays( parse_dlg );
         // condition for visibility (dynamic)
         parse_dlg->curr_dialog->controls_ext[parse_dlg->curr_dialog->num_controls + 1].pVisibilityConds = GUIStrDup( line, NULL );
-        set_dlg_edit( parse_dlg->curr_dialog->controls, parse_dlg->controls.num - 1, VbufString( &buff ),
+        set_dlg_edit( parse_dlg->curr_dialog->controls, parse_dlg->controls_array.num - 1, VbufString( &buff ),
                       VarGetId( var_handle ), C0, parse_dlg->row_num, C0 + BW - 1 );
         if( VbufLen( &buff ) > 0 ) {
             BumpDlgArrays( parse_dlg );
@@ -1235,7 +1235,7 @@ static bool dialog_edit_button( char *next, DIALOG_PARSER_INFO *parse_dlg )
             parse_dlg->curr_dialog->controls_ext[parse_dlg->curr_dialog->num_controls + 2].pVisibilityConds = GUIStrDup( line, NULL );
             // dummy_var allows control to have an id - used by dynamic visibility feature
             var_handle = MakeDummyVar();
-            set_dlg_dynamstring( parse_dlg->curr_dialog->controls, parse_dlg->controls.num - 1, VbufString( &buff ),
+            set_dlg_dynamstring( parse_dlg->curr_dialog->controls, parse_dlg->controls_array.num - 1, VbufString( &buff ),
                                  VarGetId( var_handle ), C0, parse_dlg->row_num, C0 + VbufLen( &buff ) );
         }
         if( parse_dlg->max_width < 2 * VbufLen( &buff ) ) {
@@ -1276,7 +1276,7 @@ static bool dialog_other_button( char *next, DIALOG_PARSER_INFO *parse_dlg )
         var_handle = MakeDummyVar();
         SetVariableByHandle( var_handle, dialog_name );
         set_dlg_push_button( var_handle, button_text, parse_dlg->curr_dialog->controls,
-                             parse_dlg->controls.num - 1, parse_dlg->row_num, 4, 4, W, BW );
+                             parse_dlg->controls_array.num - 1, parse_dlg->row_num, 4, 4, W, BW );
         // condition for visibility (dynamic)
         parse_dlg->curr_dialog->controls_ext[parse_dlg->curr_dialog->num_controls].pVisibilityConds = GUIStrDup( line, NULL );
         if( text != NULL ) {
@@ -1350,7 +1350,7 @@ static bool dialog_radiobutton( char *next, DIALOG_PARSER_INFO *parse_dlg )
         line = next; next = NextToken( line, ',' );
         // condition for visibility (dynamic)
         parse_dlg->curr_dialog->controls_ext[parse_dlg->curr_dialog->num_controls].pVisibilityConds = GUIStrDup( line, NULL );
-        set_dlg_radio( parse_dlg->curr_dialog->controls, parse_dlg->controls.num - 1,
+        set_dlg_radio( parse_dlg->curr_dialog->controls, parse_dlg->controls_array.num - 1,
                        parse_dlg->num_radio_buttons, text, VarGetId( var_handle ), C0, parse_dlg->row_num, C0 + len );
         if( parse_dlg->max_width < len ) {
             parse_dlg->max_width = len;
@@ -1407,7 +1407,7 @@ static bool dialog_checkbox( char *next, DIALOG_PARSER_INFO *parse_dlg, bool det
         line = next; next = NextToken( line, ',' );
         // condition for visibility (dynamic)
         parse_dlg->curr_dialog->controls_ext[parse_dlg->curr_dialog->num_controls].pVisibilityConds = GUIStrDup( line, NULL );
-        set_dlg_check( parse_dlg->curr_dialog->controls, parse_dlg->controls.num - 1, text,
+        set_dlg_check( parse_dlg->curr_dialog->controls, parse_dlg->controls_array.num - 1, text,
                        VarGetId( var_handle ), parse_dlg->col_num, parse_dlg->row_num,
                        parse_dlg->col_num + len );
         if( parse_dlg->col_num == C0 ) {
@@ -1427,7 +1427,7 @@ static bool dialog_checkbox( char *next, DIALOG_PARSER_INFO *parse_dlg, bool det
             BumpDlgArrays( parse_dlg );
             parse_dlg->curr_dialog->controls_ext[parse_dlg->curr_dialog->num_controls + 1].pVisibilityConds = GUIStrDup( line, NULL );
             set_dlg_push_button( dlg_var_handle, button_text, parse_dlg->curr_dialog->controls,
-                                 parse_dlg->controls.num - 1, parse_dlg->row_num, 4, 4, W, BW );
+                                 parse_dlg->controls_array.num - 1, parse_dlg->row_num, 4, 4, W, BW );
         }
     } else {
         rc = false;
@@ -1513,7 +1513,7 @@ static bool dialog_editcontrol( char *next, DIALOG_PARSER_INFO *parse_dlg )
         line = next; next = NextToken( line, ',' );
         // condition for visibility (dynamic)
         parse_dlg->curr_dialog->controls_ext[parse_dlg->curr_dialog->num_controls].pVisibilityConds = GUIStrDup( line, NULL );
-        set_dlg_edit( parse_dlg->curr_dialog->controls, parse_dlg->controls.num - 1,
+        set_dlg_edit( parse_dlg->curr_dialog->controls, parse_dlg->controls_array.num - 1,
                       VbufString( &buff ), VarGetId( var_handle ), C0, parse_dlg->row_num, C0 + W - 1 );
         if( VbufLen( &buff ) > 0 ) {
             BumpDlgArrays( parse_dlg );
@@ -1521,7 +1521,7 @@ static bool dialog_editcontrol( char *next, DIALOG_PARSER_INFO *parse_dlg )
             parse_dlg->curr_dialog->controls_ext[parse_dlg->curr_dialog->num_controls + 1].pVisibilityConds = GUIStrDup( line, NULL );
             // dummy_var allows control to have an id - used by dynamic visibility feature
             var_handle = MakeDummyVar();
-            set_dlg_dynamstring( parse_dlg->curr_dialog->controls, parse_dlg->controls.num - 1, VbufString( &buff ),
+            set_dlg_dynamstring( parse_dlg->curr_dialog->controls, parse_dlg->controls_array.num - 1, VbufString( &buff ),
                                  VarGetId( var_handle ), C0, parse_dlg->row_num, C0 + VbufLen( &buff ) );
         }
         if( parse_dlg->max_width < 2 * VbufLen( &buff ) ) {
@@ -1720,7 +1720,7 @@ static bool ProcLine( char *line, pass_type pass )
                     // in case this was the last control, set some values
                     parse_dlg.curr_dialog->pVariables[parse_dlg.num_variables] = NO_VAR;
                     parse_dlg.curr_dialog->pConditions[parse_dlg.num_variables] = NULL;
-                    parse_dlg.curr_dialog->num_controls = parse_dlg.controls.num;
+                    parse_dlg.curr_dialog->num_controls = parse_dlg.controls_array.num;
                     parse_dlg.curr_dialog->num_push_buttons = parse_dlg.num_push_buttons;
                     parse_dlg.curr_dialog->rows = parse_dlg.row_num  + HEIGHT_BORDER;
                     if( parse_dlg.num_push_buttons != 0 ) {
@@ -1728,8 +1728,8 @@ static bool ProcLine( char *line, pass_type pass )
                     }
                     parse_dlg.curr_dialog->cols = parse_dlg.max_width + WIDTH_BORDER;
                 } else {
-                    parse_dlg.controls.num--;
-                    parse_dlg.controls_ext.num--;
+                    parse_dlg.controls_array.num--;
+                    parse_dlg.controls_ext_array.num--;
                 }
             }
         }
