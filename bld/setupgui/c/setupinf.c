@@ -374,7 +374,6 @@ static tree_node *BuildExprTree( const char *str )
     int                 stack_top;
     tree_node           *stack[16];
     char                *str2;
-    char                *p;
     tree_node           *tree;
 
     #define STACK_SIZE  ( sizeof( stack ) / sizeof( *stack ) )
@@ -404,13 +403,13 @@ static tree_node *BuildExprTree( const char *str )
         } else if( token[0] == '!' ) { // not top value
             stack[stack_top] = TreeNode( OP_NOT, stack[stack_top], NULL );
         } else if( token[0] == '?' ) {  // check for file existence
-            p = GUIStrDup( token + 1, NULL );
             ++stack_top;
             if( stack_top > STACK_SIZE - 1 ) {
                 GUIDisplayMessage( MainWnd, "Expression stack overflow!", "Setup script", GUI_OK );
                 stack_top = STACK_SIZE - 1;
             } else {
-                stack[stack_top] = TreeNode( OP_EXIST, p, NULL );
+                token = GUIStrDup( token + 1, NULL );
+                stack[stack_top] = TreeNode( OP_EXIST, token, NULL );
             }
         } else {                // push current value
             ++stack_top;
