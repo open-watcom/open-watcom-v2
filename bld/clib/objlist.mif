@@ -1,9 +1,3 @@
-objs_generic_086  = $(g16)
-objs_generic_286  = $(g16)
-objs_generic_386  = $(g32)
-objs_generic_axp  = $(ga)
-objs_generic_ppc  = $(gp)
-objs_generic_mps  = $(gm)
 objs_kanji_086    = $(k16)
 objs_kanji_386    = $(k32)
 objs_msdos_086    = $(d16)
@@ -36,12 +30,6 @@ objfiles = $+ $(objs_$(system)_$(processor)) $-
 objs = $+ $(objs_$(system)_$(processor)) $-
 !endif
 
-objs_generic_086  =
-objs_generic_286  =
-objs_generic_386  =
-objs_generic_axp  =
-objs_generic_ppc  =
-objs_generic_mps  =
 objs_kanji_086    =
 objs_kanji_386    =
 objs_msdos_086    =
@@ -71,8 +59,6 @@ objs_rdosdev_386  =
 d16 =
 d32 =
 dpm =
-g16 =
-g32 =
 k16 =
 k32 =
 nc  =
@@ -94,4 +80,3 @@ lpc =
 lmp =
 rdu =
 rdk =
-

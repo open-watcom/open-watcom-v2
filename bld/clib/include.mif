@@ -2,7 +2,6 @@ include_default = -I"../../../h" -I"$(clib_dir)/h"
 include_watcom  = -I"$(watcom_dir)/h" -I"$(lib_misc_dir)/h" -I"$(comp_cfg_dir)/h"
 
 # include_c_(system)
-include_c_generic  = -I"$(hdr_dir)/dos"
 include_c_kanji    = -I"$(hdr_dir)/dos"
 include_c_msdos    = -I"$(hdr_dir)/dos"
 include_c_nw_clib  = -I"$(nwoss_dir)/common/h" -I"$(hdr_dir)/dos"
@@ -26,7 +25,6 @@ include_c_rdosdev  = -I"$(hdr_dir)/rdos"
 include_c_path = $(include_default) $(include_c_$(system)) $(include_watcom)
 
 # include_a_(system)
-include_a_generic  =
 include_a_kanji    =
 include_a_msdos    =
 include_a_nw_clib  =

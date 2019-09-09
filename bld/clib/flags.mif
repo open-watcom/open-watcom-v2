@@ -65,7 +65,6 @@ sw_c_common += -bm
 sw_c_bigcode  = -nt=_TEXT
 sw_c_bigdata  = -zu
 
-sw_c_386_ms_generic = -r
 sw_c_386_ms_msdos   = -r
 sw_c_386_ms_qnx     = -r
 sw_c_386_ms_osi     = -r
@@ -107,9 +106,6 @@ sw_c_ppc = $(sw_c_fi_nonx86)
 sw_c_mps = $(sw_c_fi_nonx86)
 
 # sw_c_(system)_(processor)
-sw_c_generic_086  = -oax
-sw_c_generic_286  = -oax
-sw_c_generic_386  = -oaxt
 sw_c_msdos_086    = -oax
 sw_c_msdos_286    = -oax
 sw_c_msdos_386    = -oaxt
@@ -135,7 +131,6 @@ sw_c_linux_ppc    = -oaxt
 sw_c_linux_mps    = -oaxt -eoe
 
 # sw_c_(system)
-sw_c_generic    = -bt=dos
 sw_c_msdos      = -bt=dos
 sw_c_nw_clib    = -bt=netware
 sw_c_nw_clibl   = -bt=netware
@@ -208,9 +203,6 @@ sw_a_ppc =
 sw_a_mps =
 
 # sw_a_(system)_(processor)
-sw_a_generic_086  =
-sw_a_generic_286  =
-sw_a_generic_386  =
 sw_a_msdos_086    =
 sw_a_msdos_286    =
 sw_a_msdos_386    =
@@ -236,7 +228,6 @@ sw_a_linux_ppc    =
 sw_a_linux_mps    =
 
 # sw_a_(system)
-sw_a_generic    = -bt=dos
 sw_a_msdos      = -bt=dos
 sw_a_nw_clib    = -bt=netware -D_NETWARE_CLIB -D__MT__
 sw_a_nw_clibl   = -bt=netware -D_NETWARE_CLIB -D__MT__ -D_THIN_LIB
