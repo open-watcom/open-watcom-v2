@@ -418,6 +418,7 @@ headers = &
         ddk/usbioctl.h       &
         ddk/usbiodef.h       &
         ddk/usbscan.h        &
+        ddk/usbspec.h        &
         ddk/usbuser.h        &
         ddk/video.h          &
         ddk/videoagp.h       &

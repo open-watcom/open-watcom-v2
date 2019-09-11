@@ -11,7 +11,7 @@
 
 :include cpluspro.sp
 
-/* USB I/O control indices */
+/* Kernel USB IOCTL codes for use with DEVICE_TYPE_USB */
 #define USB_SUBMIT_URB                          0
 #define USB_RESET_PORT                          1
 #define USB_GET_ROOTHUB_PDO                     3
@@ -34,6 +34,13 @@
 #define USB_REQ_GLOBAL_SUSPEND                  273
 #define USB_REQ_GLOBAL_RESUME                   274
 #define USB_GET_HUB_CONFIG_INFO                 275
+
+/* Kernel mode IOCTL codes for use with DEVICE_TYPE_USBEX */
+#define USB_REGISTER_COMPOSITE_DEVICE           0
+#define USB_UNREGISTER_COMPOSITE_DEVICE         1
+#define USB_REQUEST_REMOTE_WAKE_NOTIFICATION    2
+
+/* User mode IOCTL codes for IRP_MJ_DEVICE_CONTROL */
 #define HCD_GET_STATS_1                         255
 #define HCD_DIAGNOSTIC_MODE_ON                  256
 #define HCD_DIAGNOSTIC_MODE_OFF                 257
@@ -44,19 +51,23 @@
 #define HCD_ENABLE_PORT                         269
 #define HCD_USER_REQUEST                        270
 #define HCD_TRACE_READ_REQUEST                  275
-#define USB_GET_NODE_INFORMATION                258
-#define USB_GET_NODE_CONNECTION_INFORMATION     259
-#define USB_GET_DESCRIPTOR_FROM_NODE_CONNECTION 260
-#define USB_GET_NODE_CONNECTION_NAME            261
-#define USB_DIAG_IGNORE_HUBS_ON                 262
-#define USB_DIAG_IGNORE_HUBS_OFF                263
-#define USB_GET_NODE_CONNECTION_DRIVERKEY_NAME  264
-#define USB_GET_HUB_CAPABILITIES                271
-#define USB_GET_NODE_CONNECTION_ATTRIBUTES      272
-#define USB_HUB_CYCLE_PORT                      273
-#define USB_GET_NODE_CONNECTION_INFORMATION_EX  274
-#define USB_RESET_HUB                           275
-#define USB_GET_HUB_CAPABILITIES_EX             276
+
+#define USB_GET_NODE_INFORMATION                  258
+#define USB_GET_NODE_CONNECTION_INFORMATION       259
+#define USB_GET_DESCRIPTOR_FROM_NODE_CONNECTION   260
+#define USB_GET_NODE_CONNECTION_NAME              261
+#define USB_DIAG_IGNORE_HUBS_ON                   262
+#define USB_DIAG_IGNORE_HUBS_OFF                  263
+#define USB_GET_NODE_CONNECTION_DRIVERKEY_NAME    264
+#define USB_GET_HUB_CAPABILITIES                  271
+#define USB_GET_NODE_CONNECTION_ATTRIBUTES        272
+#define USB_HUB_CYCLE_PORT                        273
+#define USB_GET_NODE_CONNECTION_INFORMATION_EX    274
+#define USB_RESET_HUB                             275
+#define USB_GET_HUB_CAPABILITIES_EX               276
+#define USB_GET_HUB_INFORMATION_EX                277
+#define USB_GET_PORT_CONNECTOR_PROPERTIES         278
+#define USB_GET_NODE_CONNECTION_INFORMATION_EX_V2 279
 
 /* USB GUIDs */
 DEFINE_GUID(GUID_DEVINTERFACE_USB_HUB,    0xF18A0E88, 0xC30C, 0x11D0, 0x88, 0x15, 0x00, 0xA0, 0xC9, 0x06, 0xBE, 0xD8);
