@@ -284,6 +284,7 @@ size_t HandleAReference( dis_value value, int ins_size, ref_flags flags,
             /* fall through */
         case ORL_RELOC_TYPE_WORD_16:
         case ORL_RELOC_TYPE_WORD_32:
+        case ORL_RELOC_TYPE_WORD_32_NB:
         case ORL_RELOC_TYPE_WORD_64:
             if( ( r_entry->label->type != LTYP_GROUP ) && (flags & RFLAG_IS_IMMED) && IsMasmOutput() ) {
                 referenceString( r_entry, sec_size, "offset ", "offset ", "", buff, flags );
