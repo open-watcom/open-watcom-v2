@@ -24,7 +24,7 @@ jobs:
       run: |
           mkdir ~/.ssh
           ssh-keyscan git.code.sf.net > ~/.ssh/known_hosts
-          git push -f ssh://$OWSFUSER@git.code.sf.net/p/openwatcom/open-watcom-v2
+          git push -v ssh://$OWSFUSER@git.code.sf.net/p/openwatcom/open-watcom-v2
       env:
         OWSFUSER:     ${{ secrets.OWSFTOKEN1 }}
         SSH_PASSWORD: ${{ secrets.OWSFTOKEN2 }}
