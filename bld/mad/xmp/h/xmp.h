@@ -33,6 +33,7 @@
 #include <stdio.h>
 #include <string.h>
 #include "madimp.h"
+#include "dis.h"
 
 #define NUM_REG_SET     1
 
@@ -44,6 +45,7 @@ struct imp_mad_state_data {
 struct mad_disasm_data {
     address             addr;
     mad_radix           radix;
+    dis_dec_ins         ins;
 };
 
 struct mad_trace_data {

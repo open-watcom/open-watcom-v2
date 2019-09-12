@@ -180,9 +180,7 @@ size_t MADIMPENTRY( DisasmFormat )( mad_disasm_data *dd, mad_disasm_piece dp, ma
 
 unsigned MADIMPENTRY( DisasmInsSize )( mad_disasm_data *dd )
 {
-    /* unused parameters */ (void)dd;
-
-    return( sizeof( unsigned_32 ) );
+    return( dd->ins.size );
 }
 
 mad_status MADIMPENTRY( DisasmInsUndoable )( mad_disasm_data *dd )

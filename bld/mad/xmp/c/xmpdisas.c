@@ -87,8 +87,7 @@ unsigned MADIMPENTRY( DisasmFormat )( mad_disasm_data *dd, mad_disasm_piece dp, 
 */
 unsigned MADIMPENTRY( DisasmInsSize )( mad_disasm_data *dd )
 {
-    //NYI:
-    return( 0 );
+    return( dd->ins.size );
 }
 
 /*
