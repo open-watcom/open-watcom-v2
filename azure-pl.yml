@@ -212,6 +212,7 @@ stages:
     displayName: "Wiki Docs Build"
     dependsOn:
       - bootnt
+    condition: false
     jobs:
       - template: ci/wikibld.yml
         parameters:
@@ -237,10 +238,11 @@ stages:
     dependsOn:
       - start
     condition: >
-      and(
-        succeeded(), 
-        in( variables['Build.Reason'], 'IndividualCI', 'BatchedCI', 'Manual' )
-      )
+      false
+      #and(
+      #  succeeded(), 
+      #  in( variables['Build.Reason'], 'IndividualCI', 'BatchedCI', 'Manual' )
+      #)
     jobs:
       - template: ci/mirror.yml
         parameters:
