@@ -239,10 +239,10 @@ stages:
       - start
     condition: >
       false
-      #and(
-      #  succeeded(), 
-      #  in( variables['Build.Reason'], 'IndividualCI', 'BatchedCI', 'Manual' )
-      #)
+    #  and(
+    #    succeeded(), 
+    #    in( variables['Build.Reason'], 'IndividualCI', 'BatchedCI', 'Manual' )
+    #  )
     jobs:
       - template: ci/mirror.yml
         parameters:
