@@ -1796,6 +1796,7 @@ dis_handler_return X64Reg_8( dis_handle *h, void *d , dis_dec_ins *ins )
     code_8      code;
     REGWIDTH    rw = RW_64BIT;
     unsigned    oper;
+    RM          reg;
 
     /* unused parameters */ (void)h; (void)d;
 
@@ -1807,9 +1808,14 @@ dis_handler_return X64Reg_8( dis_handle *h, void *d , dis_dec_ins *ins )
         rw = RW_16BIT;
     }
 
+    reg = code.type2.reg;
+    if( DIF_X64_REX_B & ins->flags.u.x64 ) {
+        reg += X64_EXTENDED_REG_OFFSET;
+    }
+
     switch( ins->type ) {
     case DI_X64_xchg2:
-        if( code.type2.reg == REG_RAX ) {
+        if( reg == REG_RAX ) {
 //            if( ins->flags.u.x64 & DIF_X64_REPE ) {
 //                ins->type = DI_X64_pause;
 //                ins->flags.u.x64 &= ~DIF_X64_REPE;
@@ -1818,7 +1824,7 @@ dis_handler_return X64Reg_8( dis_handle *h, void *d , dis_dec_ins *ins )
 //            }
         } else {
             X64GetReg( RW_DEFAULT, REG_RAX, ins );
-            X64GetReg( RW_DEFAULT, code.type2.reg, ins );
+            X64GetReg( RW_DEFAULT, reg, ins );
         }
         return( DHR_DONE );
 
@@ -1833,7 +1839,7 @@ dis_handler_return X64Reg_8( dis_handle *h, void *d , dis_dec_ins *ins )
         break;
     }
 
-    X64GetReg( rw, code.type2.reg, ins );
+    X64GetReg( rw, reg, ins );
 
     switch( ins->type ) {
     case DI_X64_pop:
