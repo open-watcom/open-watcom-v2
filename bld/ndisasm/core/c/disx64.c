@@ -37,28 +37,24 @@
 #include "disx64.h"
 
 
-typedef struct {
-    typedef union {
-        unsigned_8  full;
-        struct {
-            unsigned_8  base  : 3;
-            unsigned_8  index : 3;
-            unsigned_8  scale : 2;
-        } s;
-    } u;
+typedef union {
+    unsigned_8  full;
+    struct {
+        unsigned_8  base  : 3;
+        unsigned_8  index : 3;
+        unsigned_8  scale : 2;
+    } split;
 } SIB;
 
-typedef struct {
-    typedef union {
-        unsigned_8  full;
-        struct{
-            unsigned_8  b  : 1;
-            unsigned_8  x  : 1;
-            unsigned_8  r  : 1;
-            unsigned_8  w  : 1;
-            unsigned_8  pr : 4;
-        } s;
-    } u;
+typedef union {
+    unsigned_8  full;
+    struct{
+        unsigned_8  b  : 1;
+        unsigned_8  x  : 1;
+        unsigned_8  r  : 1;
+        unsigned_8  w  : 1;
+        unsigned_8  pr : 4;
+    } split;
 } REX;
 
 //#define PREFIX_MASK ( DIF_X64_REPNE | DIF_X64_REPE | DIF_X64_OPND_SIZE | DIF_X64_REX_B | DIF_X64_REX_R | DIF_X64_REX_W | DIF_X64_REX_X )
@@ -284,11 +280,11 @@ dis_handler_return X64PrefixRex( dis_handle *h, void *d, dis_dec_ins *ins )
  * Extended Register Override
  */
 {
-    REX     rex;
+    REX     rex_pr;
 
     /* unused parameters */ (void)h;
 
-    rex.u.full = GetUByte( d, ins->size );
+    rex_pr.full = GetUByte( d, ins->size );
     ins->size += 1;
 
 
@@ -296,21 +292,21 @@ dis_handler_return X64PrefixRex( dis_handle *h, void *d, dis_dec_ins *ins )
     ins->flags.u.x64 &= ~( DIF_X64_REX_B | DIF_X64_REX_X | DIF_X64_REX_R | DIF_X64_REX_W | DIF_X64_PEX_PR );
 
     // REX.B is an extension to the ModRM's SIB base field
-    if( rex.u.s.b )
+    if( rex_pr.split.b )
         ins->flags.u.x64 |= DIF_X64_REX_B;
 
     // REX.X is an extension to the ModRM's SIB index field
-    if( rex.u.s.x )
+    if( rex_pr.split.x )
         ins->flags.u.x64 |= DIF_X64_REX_X;
 
     // REX.R is an extension to the ModRM's Register field
-    if( rex.u.s.r )
+    if( rex_pr.split.r )
         ins->flags.u.x64 |= DIF_X64_REX_R;
 
     // REX.W is an operand size prefix (like 66h)
     //  if 1 then use 64-Bit operand size
     //  if 0 then use default operand size
-    if( rex.u.s.w )
+    if( rex_pr.split.w )
         ins->flags.u.x64 |= DIF_X64_REX_W;
 
     // Flag REX prefix, sometime useful...
@@ -787,13 +783,13 @@ static void X64GetModRM( REGWIDTH rw, MOD mod, REGWIDTH rw_rm, RM rm, void *d,
     // for rm == REG_RSP/REG_R12 SIB byte is required
     if( ( rw == RW_64BIT || rw == RW_32BIT ) && ( rm == REG_RSP || rm == REG_R12 ) ) {
         if( mod != MOD_3 ) {
-            sib.u.full = GetUByte( d, ins->size );
+            sib.full = GetUByte( d, ins->size );
             ins->size += 1;
             // base and index fixup is in X64GetSIB
-            X64GetSIB( rw, sib.u.s.scale, sib.u.s.base, sib.u.s.index, ins, oper );
+            X64GetSIB( rw, sib.split.scale, sib.split.base, sib.split.index, ins, oper );
             if( mod == MOD_0 ) {
                 // I can use REG_RBP here because base is not fixed up
-                if( sib.u.s.base == REG_RBP ) {
+                if( sib.split.base == REG_RBP ) {
                     /*ins->op[oper].base = DR_NONE;
                     ins->op[oper].op_position = ins->size;
                     ins->op[oper].value.s._32[I64LO32] = GetULong( d, ins->size );
@@ -1099,7 +1095,7 @@ static void X64GetRelVal_8( void *d, dis_dec_ins *ins )
     ins->op[oper].type = DO_RELATIVE;
     ins->op[oper].value.s._32[I64LO32] = GetSByte( d, ins->size );
     ins->size += 1;
-//    ins->op[oper].value.s._32[I64LO32] += ins->size;
+    ins->op[oper].value.s._32[I64LO32] += ins->size;
 }
 
 static void X64GetRelVal( void *d, dis_dec_ins *ins )
@@ -1114,7 +1110,7 @@ static void X64GetRelVal( void *d, dis_dec_ins *ins )
     ins->op[oper].type = DO_RELATIVE;
     ins->op[oper].value.s._32[I64LO32] = GetULong( d, ins->size );
     ins->size += 4;
-//    ins->op[oper].value.s._32[I64LO32] += ins->size;
+    ins->op[oper].value.s._32[I64LO32] += ins->size;
 }
 
 /*=====================================================================*/
@@ -1912,7 +1908,6 @@ dis_handler_return X64JmpCC_8( dis_handle *h, void *d, dis_dec_ins *ins )
     rw_reg = X64AddressingMode( ins );
 
     X64GetRelVal_8( d, ins );
-    ins->op[0].value.s._32[I64LO32] += ins->size;
     switch( ins->type ) {
     case DI_X64_jcxz:
         if( rw_reg == RW_32BIT ) {
@@ -2204,8 +2199,6 @@ dis_handler_return X64RegModRM_16B( dis_handle *h, void *d, dis_dec_ins *ins )
         }
     }
 
-    if( DIF_X64_REX_W & ins->flags.u.x64 ) {
-    }
     X64GetRegModRM_B( D_REG_RM, code.type1.mod, code.type1.rm, code.type1.reg, d, ins );
 
     switch( ins->type ) {
@@ -2347,7 +2340,6 @@ dis_handler_return X64JmpCC_16( dis_handle *h, void *d, dis_dec_ins *ins )
     ins->size += 2;
     ins->num_ops = 0;
     X64GetRelVal( d, ins );
-    ins->op[0].value.s._32[I64LO32] += ins->size;
     return( DHR_DONE );
 }
 
