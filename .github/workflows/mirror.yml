@@ -31,4 +31,3 @@ jobs:
         SSH_ASKPASS:     ~/askpass.sh
         DISPLAY:         :0
         GIT_SSH_COMMAND: "setsid ssh"
-
