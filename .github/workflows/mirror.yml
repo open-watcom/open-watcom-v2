@@ -19,10 +19,11 @@ jobs:
     - name: Prepare askpass script
       run: |
         echo "#!/bin/sh" > ~/askpass.sh
-        echo "echo \"\$SSH_PASSWORD\"" > ~/askpass.sh
+        echo "echo \"\$SSH_PASSWORD\"" >> ~/askpass.sh
         chmod +x ~/askpass.sh
     - name: Mirror to SourceForge
       run: |
+          set -x
           mkdir ~/.ssh
           ssh-keyscan git.code.sf.net > ~/.ssh/known_hosts
           git push -v ssh://$OWSFUSER@git.code.sf.net/p/openwatcom/open-watcom-v2
