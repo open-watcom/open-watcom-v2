@@ -142,7 +142,7 @@ jobs:
         git clone -v --depth=1 --branch=master https://%OWGHTOKEN%@github.com/%OWWIKIPROJ%.git .
       env:
         OWGHTOKEN: ${{ secrets.OWGHTOKEN }}
-        OWWIKIPROJ: open-watcom/open-watcom-v2-webdocs
+        OWWIKIPROJ: open-watcom/open-watcom-v2-wikidocs
     - name: Create docs subdirectory
       run: if not exist docs\* mkdir docs
     - name: Load Html Documentation Artifact
