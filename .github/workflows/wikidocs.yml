@@ -6,6 +6,8 @@ name: WikiDocs
 
 on:
   push:
+    branch:
+      - master
     paths:
       - 'docs/*'
       - 'bld/cg/doc/*'
