@@ -4,7 +4,13 @@
 
 name: WikiDocs
 
-on: [push]
+on:
+  push:
+    paths:
+      - 'docs/*'
+      - 'bld/cg/doc/*'
+      - 'bld/dwarf/dw/doc/*'
+      - 'bld/wv/doc/*'
 
 jobs:
   boot:
