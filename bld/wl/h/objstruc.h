@@ -443,6 +443,7 @@ enum {
     COMBINE_INVALID     = 0,
     COMBINE_ADD         = 1,
     COMBINE_COMMON      = 2,
+    COMBINE_STACK       = 3,
 };
 
 #define IS_DBG_DWARF( x ) ((x)->dbgtype >= DWARF_DEBUG_INFO)

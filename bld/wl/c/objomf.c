@@ -660,6 +660,8 @@ static void ProcSegDef( void )
         sdata->combine = COMBINE_INVALID;
     } else if( comb == COMB_COMMON ) {
         sdata->combine = COMBINE_COMMON;
+    } else if( comb == COMB_STACK ) {
+        sdata->combine = COMBINE_STACK;
     } else {
         sdata->combine = COMBINE_ADD;
     }

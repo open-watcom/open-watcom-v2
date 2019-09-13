@@ -631,7 +631,7 @@ static void AddToLeader( seg_leader *seg, segdata *sdata )
             RingAppend( &seg->pieces, sdata );
             first->length = length;
         }
-    } else {    // it must be COMBINE_ADD
+    } else {    // it must be COMBINE_ADD or COMBINE_STACK
         RingAppend( &seg->pieces, sdata );
     }
     Ring2Append( &CurrMod->segs, sdata );

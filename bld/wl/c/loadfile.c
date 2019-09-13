@@ -273,10 +273,19 @@ static seg_leader *FindStack( section *sect )
 /*******************************************/
 {
     class_entry *class;
+    seg_leader  *seg;
 
     for( class = sect->classlist; class != NULL; class = class->next_class ) {
         if( class->flags & CLASS_STACK ) {
             return( RingFirst( class->segs ) );
+        }
+    }
+    seg = NULL;
+    for( class = sect->classlist; class != NULL; class = class->next_class ) {
+        while( (seg = RingStep( class->segs, seg )) != NULL ) {
+            if( seg->combine == COMBINE_STACK ) {
+                return( seg );
+            }
         }
     }
     return( NULL );
