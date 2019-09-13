@@ -73,14 +73,12 @@ void AutoGroup( void )
     NumberNonAutos();
 }
 
-static offset SetSegType( seg_leader *seg )
-/*****************************************/
+static offset GetSegGroupPackLimit( seg_leader *seg )
+/***************************************************/
 // set packlimit if necessary.
 {
     offset      limit;
 
-    if( seg == NULL )
-        return( 0xFFFF );
     if( seg->info & SEG_CODE ) {
         if( LinkFlags & LF_PACKCODE_FLAG ) {
             return( PackCodeLimit );
@@ -186,7 +184,7 @@ static void AutoGroupSect( section *sec )
             PackSegs( seg, 1 );
         } else {
             if( packstart == NULL ) {
-                limit = SetSegType( seg );
+                limit = GetSegGroupPackLimit( seg );
                 packstart = seg;
             }
             align_size = CAlign( size, seg->align );
@@ -204,7 +202,7 @@ static void AutoGroupSect( section *sec )
                     size = seg->size;
                 }
                 lastseg = false;
-                limit = SetSegType( seg );
+                limit = GetSegGroupPackLimit( seg );
             } else {
                 size = new_size;
                 ++num_segs;
