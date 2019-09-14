@@ -126,7 +126,7 @@ f_handle QOpenR( const char *name )
     h = DoOpen( name, O_RDONLY, false );
     if( h != -1 )
         return( h );
-    LnkMsg( FTL+MSG_CANT_OPEN, "12", name, strerror( errno )  );
+    LnkMsg( FTL+MSG_CANT_OPEN, "12", name, strerror( errno ) );
     return( NIL_FHANDLE );
 }
 

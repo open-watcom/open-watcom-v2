@@ -692,14 +692,14 @@ size_t IncSaveRelocs( void *_save )
         target.u.ptr = save->u.fixup.target;
         datasize = CalcFixupSize( fixtype );
         if( fixtype & FIX_ADDEND_ZERO ) {
-            PutInfoNulls( LastSegData->u1.vm_ptr + save->u.fixup.off, datasize  );
+            PutInfoNulls( LastSegData->u1.vm_ptr + save->u.fixup.off, datasize );
         } else {
             if( FRAME_HAS_DATA( FIX_GET_FRAME( fixtype ) ) ) {
                 data = (char *)save + sizeof( fixupf_t );
             } else {
                 data = (char *)save + sizeof( fixup_t );
             }
-            PutInfo( LastSegData->u1.vm_ptr + save->u.fixup.off, data, datasize  );
+            PutInfo( LastSegData->u1.vm_ptr + save->u.fixup.off, data, datasize );
         }
         TraceFixup( fixtype, &target );
     }

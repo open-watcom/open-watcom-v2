@@ -604,7 +604,7 @@ void WriteMapLines( void )
         }
 
         if( p - input >= length ) {
-            _LnkFree( opcode_lengths  );
+            _LnkFree( opcode_lengths );
             _LnkFree( input );
             return;
         }
@@ -612,7 +612,7 @@ void WriteMapLines( void )
         while( *p != 0 ) {
             p += strlen( (char *)p ) + 1;
             if( p - input >= length ) {
-                _LnkFree( opcode_lengths  );
+                _LnkFree( opcode_lengths );
                 _LnkFree( input );
                 return;
             }
@@ -627,7 +627,7 @@ void WriteMapLines( void )
             p = SkipLEB128( p );
             p = SkipLEB128( p );
             if( p - input >= length ) {
-                _LnkFree( opcode_lengths  );
+                _LnkFree( opcode_lengths );
                 _LnkFree( input );
                 return;
             }
@@ -737,7 +737,7 @@ void WriteMapLines( void )
             }
         }
         WriteMapNL( 1 );
-        _LnkFree( opcode_lengths  );
+        _LnkFree( opcode_lengths );
     }
     _LnkFree( input );
 }

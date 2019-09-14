@@ -416,7 +416,7 @@ static unsigned long WriteGroupLoadHex( group_entry *group )
     file_loc = PosLoad();
     info.offs = GROUP_SECTION_DELTA( group );
     // If group is a copy group, substitute source group(s) here
-    if( class->flags & CLASS_COPY  ) {
+    if( class->flags & CLASS_COPY ) {
         info.lastgrp = NULL; // so it will use the first group
         RingLookup( class->DupClass->segs->group->leaders, WriteHexCopyGroups, &info );
     } else {

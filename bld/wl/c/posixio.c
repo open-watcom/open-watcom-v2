@@ -115,7 +115,7 @@ f_handle QOpenR( const char *name )
     h = DoOpen( name, O_RDONLY, false );
     if( h != -1 )
         return( h );
-    LnkMsg( FTL+MSG_CANT_OPEN, "12", name, strerror( errno )  );
+    LnkMsg( FTL+MSG_CANT_OPEN, "12", name, strerror( errno ) );
     return( NIL_FHANDLE );
 }
 
@@ -302,9 +302,9 @@ unsigned long QFileSize( f_handle file )
 
     CheckBreak();
     size = 0;
-    curpos = lseek( file, 0L, SEEK_CUR  );
+    curpos = lseek( file, 0L, SEEK_CUR );
     if( curpos != -1L ) {
-        size = lseek( file, 0L, SEEK_END  );
+        size = lseek( file, 0L, SEEK_END );
         if( size == -1L ) {
             size = 0;
         }

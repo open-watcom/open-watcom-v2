@@ -1256,7 +1256,7 @@ static void SortSegments( void )
             if( foundgroup ) {
                 prev = NULL;
                 foundmatch = false;
-                for( comp = NULL; (comp = RingStep( newlist, comp )) != NULL;  ) {
+                for( comp = NULL; (comp = RingStep( newlist, comp )) != NULL; ) {
                     complen = strcspn( comp->segname.u.ptr, "$" );
                     if( ( complen == currlen )
                         && ( memcmp( comp->segname.u.ptr, curr->segname.u.ptr, complen ) == 0 ) ) {
