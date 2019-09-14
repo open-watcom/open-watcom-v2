@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -187,7 +188,7 @@ static void AddUpSegData( void *_sdata )
         sdata->a.delta = CAlign( leader->size, sdata->align );
         leader->size = sdata->a.delta + sdata->length;
     }
-    if( sdata->align > leader->align ) {
+    if( leader->align < sdata->align ) {
         leader->align = sdata->align;
     }
 }
