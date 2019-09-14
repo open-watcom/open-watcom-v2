@@ -43,10 +43,12 @@ resfile = wresui.res
 
 $(name).exe : msg.gh $(resfile) $(objs) $(libs) $(version_res_exe_$(host_os)_$(host_cpu)) $(__MAKEFILES__)
     @%make echo_link
-!ifdef bootstrap
+!ifndef __WATCOM_TOOLS__
+! ifdef bootstrap
     $(bld_cl) $(bld_clflags) $(objs) $(libs) $(bld_ldflags)
-!else ifndef __WATCOM_TOOLS__
+! else
     $(cl) $(clflags) $(objs) $(libs) $(ldflags)
+! endif
 !else
     $(linker) name $^@ $(lflags) file { $(objs) }
 !endif

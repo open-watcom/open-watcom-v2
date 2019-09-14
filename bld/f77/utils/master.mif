@@ -10,10 +10,12 @@ errsrc_autodepends = .autodepend
 
 errsrc.exe : errsrc.obj $(__MAKEFILES__)
     @%make echo_link
-!ifdef bootstrap
+!ifndef __WATCOM_TOOLS__
+! ifdef bootstrap
     $(bld_cl) $(bld_clflags) errsrc.obj $(bld_ldflags)
-!else ifndef __WATCOM_TOOLS__
+! else
     $(cl) $(clflags) errsrc.obj $(ldflags)
+! endif
 !else
     $(linker) name $@ $(lflags) file {errsrc.obj}
 !endif

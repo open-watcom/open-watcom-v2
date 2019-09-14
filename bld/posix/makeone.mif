@@ -26,12 +26,13 @@ libs = $(libdir)/posix.lib
 #       define the main target
 #
 $(name).exe: $(objs) $(libs) $(__MAKEFILES__)
-!ifdef bootstrap
+!ifndef __WATCOM_TOOLS__
     @%make echo_link
+! ifdef bootstrap
     $(bld_cl) $(bld_clflags) $(objs) $(libs) $(bld_ldflags)
-!else ifndef __WATCOM_TOOLS__
-    @%make echo_link
+! else
     $(cl) $(clflags) $(objs) $(libs) $(ldflags)
+! endif
 !else
     $(noecho)%create $^&.lnk
     @%append $^&.lnk name $@

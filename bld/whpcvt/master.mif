@@ -22,10 +22,12 @@ objs =  whpcvt.obj  &
         html.obj
 
 $(proj_name).exe : $(objs) $(__MAKEFILES__)
-!ifdef bootstrap
+!ifndef __WATCOM_TOOLS__
+! ifdef bootstrap
         $(bld_cl) $(bld_clflags) $(objs) $(bld_ldflags)
-!else ifndef __WATCOM_TOOLS__
+! else
         $(cl) $(clflags) $(objs) $(ldflags)
+! endif
 !else
         $(linker) name $@ $(lflags) file {$(objs)}
 !endif

@@ -186,10 +186,12 @@ all : $(all_as) .symbolic
 
 $(name).exe : msg.gh $(as_objs) $(libs) wresui.res $(version_res_exe_$(host_os)_$(host_cpu)) $(osildr) $(__MAKEFILES__)
     @%make echo_link
-!ifdef bootstrap
+!ifndef __WATCOM_TOOLS__
+! ifdef bootstrap
     $(bld_cl) $(bld_clflags) $(as_objs) $(libs) $(bld_ldflags)
-!else ifndef __WATCOM_TOOLS__
+! else
     $(cl) $(clflags) $(as_objs) $(libs) $(ldflags)
+! endif
 !else
     $(linker) name $(lname) $(lflags) file {$(as_objs)} lib {$(libs)}
     @%make bind_osildr
