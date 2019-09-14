@@ -684,16 +684,22 @@ static void DwarfGenAddrAdd( segdata *sdata, offset delta, offset size,
         if( FmtData.type & MK_SEGMENTED ) {
             tuple->s.v2.length = size;
             tup_size = sizeof( segmented_arange_tuple );
-            if( (sdata->u.leader->class->flags & CLASS_STACK)
-              || ( sdata->u.leader->combine == COMBINE_STACK ) ) {
+            if( sdata->u.leader->class->flags & CLASS_STACK ) {
                 tuple->s.v2.length = StackSize;
+            } else if( sdata->u.leader->combine == COMBINE_STACK ) {
+                if( (LinkState & LS_DOSSEG_FLAG) == 0 ) {
+                    tuple->s.v2.length = StackSize;
+                }
             }
         } else {
             tuple->f.length = size;
             tup_size = sizeof( flat_arange_tuple );
-            if( (sdata->u.leader->class->flags & CLASS_STACK)
-              || ( sdata->u.leader->combine == COMBINE_STACK ) ) {
+            if( sdata->u.leader->class->flags & CLASS_STACK ) {
                 tuple->f.length = StackSize;
+            } else if( sdata->u.leader->combine == COMBINE_STACK ) {
+                if( (LinkState & LS_DOSSEG_FLAG) == 0 ) {
+                    tuple->f.length = StackSize;
+                }
             }
         }
         PutInfo( mod->d.d->arange.u.vm_ptr, tuple, tup_size );

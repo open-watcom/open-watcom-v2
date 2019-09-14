@@ -270,7 +270,9 @@ void DBIAddrInfoScan( seg_leader *seg,
         if( seg->class->flags & (CLASS_STACK | CLASS_IDATA) )
             return;
         if( seg->combine == COMBINE_STACK ) {
-            return;
+            if( (LinkState & LS_DOSSEG_FLAG) == 0 ) {
+                return;
+            }
         }
     }
     prev = RingStep( seg->pieces, NULL );
