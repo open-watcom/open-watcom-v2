@@ -184,7 +184,9 @@ static void AddUpSegData( void *_sdata )
         }
     } else {
         sdata->a.delta = CAlign( leader->size, sdata->align );
-        leader->size = sdata->a.delta + sdata->length;
+        if( sdata->length > 0 ) {
+            leader->size = sdata->a.delta + sdata->length;
+        }
     }
     if( leader->align < sdata->align ) {
         leader->align = sdata->align;
