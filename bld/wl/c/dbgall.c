@@ -266,8 +266,13 @@ void DBIAddrInfoScan( seg_leader *seg,
 
     if( IS_DBG_INFO( seg ) )
         return;
-    if( (seg->class->flags & (CLASS_STACK | CLASS_IDATA)) && ( FmtData.dll || (FmtData.type & MK_PE) ) )
-        return;
+    if( FmtData.dll || (FmtData.type & MK_PE) ) {
+        if( seg->class->flags & (CLASS_STACK | CLASS_IDATA) )
+            return;
+        if( seg->combine == COMBINE_STACK ) {
+            return;
+        }
+    }
     prev = RingStep( seg->pieces, NULL );
     for( ;; ) {
         if( prev == NULL )
