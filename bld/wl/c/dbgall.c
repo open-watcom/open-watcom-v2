@@ -283,7 +283,7 @@ void DBIAddrInfoScan( seg_leader *seg,
     }
     initfn( prev, cookie );
     size = 0;
-    for( curr = RingStep( seg->pieces, prev ); curr != NULL; curr = RingStep( seg->pieces, curr ) ) {
+    for( curr = prev; (curr = RingStep( seg->pieces, curr )) != NULL;  ) {
         if( !curr->isdead ) {
             size += curr->a.delta - prev->a.delta;
             isnewmod = ( ( curr->o.mod != prev->o.mod ) && ( size != 0 ) );

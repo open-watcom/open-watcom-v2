@@ -297,8 +297,7 @@ void WriteSegs( section *sect )
         count = 0;
         for( class = sect->classlist; class != NULL; class = class->next_class ) {
             if( (class->flags & CLASS_DEBUG_INFO) == 0 ) {
-                seg = NULL;
-                while( (seg = RingStep( class->segs, seg )) != NULL ) {
+                for( seg = NULL; (seg = RingStep( class->segs, seg )) != NULL; ) {
                     segs[count].idx = count;
                     segs[count].seg = seg;
                     count++;

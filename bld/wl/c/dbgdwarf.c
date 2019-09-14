@@ -768,8 +768,7 @@ static unsigned_32 WriteELFSections( unsigned_32 file_off, unsigned_32 curr_off,
     unsigned_32 addsize;
 
     if( DBIClass != NULL ) {
-        for( seg = (seg_leader *)RingStep( DBIClass->segs, NULL ); seg != NULL;
-          seg = (seg_leader *)RingStep( DBIClass->segs, seg ) ) {
+        for( seg = NULL; (seg = RingStep( DBIClass->segs, seg )) != NULL; ) {
             addsize = 0;
             addidx = seg->dbgtype - DWARF_DEBUG_INFO;
             if( addidx < SECT_NUM_SECTIONS ) {

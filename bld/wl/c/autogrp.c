@@ -127,7 +127,7 @@ static seg_leader *GetNextSeg( section *sec, seg_leader *seg )
     } else {
         class = seg->class;
     }
-    for( seg = RingStep( class->segs, seg ); seg == NULL; seg = RingStep( class->segs, seg ) ) {
+    while( (seg = RingStep( class->segs, seg )) == NULL ) {
         for( class = class->next_class; class != NULL; class = class->next_class ) {
             if( (class->flags & CLASS_DEBUG_INFO) == 0 ) {
                  break;
