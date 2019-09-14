@@ -280,11 +280,13 @@ static seg_leader *FindStack( section *sect )
             return( RingFirst( class->segs ) );
         }
     }
-    seg = NULL;
-    for( class = sect->classlist; class != NULL; class = class->next_class ) {
-        while( (seg = RingStep( class->segs, seg )) != NULL ) {
-            if( seg->combine == COMBINE_STACK ) {
-                return( seg );
+    if( (LinkState & LS_DOSSEG_FLAG) == 0 ) {
+        seg = NULL;
+        for( class = sect->classlist; class != NULL; class = class->next_class ) {
+            while( (seg = RingStep( class->segs, seg )) != NULL ) {
+                if( seg->combine == COMBINE_STACK ) {
+                    return( seg );
+                }
             }
         }
     }
