@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -109,7 +110,7 @@ typedef struct os2_reloc_item {
             unsigned_16     modref_idx; /*      in 'module_name'.dll     */
             unsigned_16     impnam_off; /*      with res_name table      */
         } name;
-        unsigned_32     fltpt;          // floating point fixup value
+        unsigned_32     fltpt;          // floating point patch value
     } put;
 } os2_reloc_item;
 

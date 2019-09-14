@@ -186,13 +186,13 @@ static  lname_cache     *NameCache;
 static  lname_cache     *NameCacheDumped;
 
 static char *FPPatchName[] = {
-    #define pick_fp(enum,name,alt_name,win,alt_win,qnx,alt_qnx) name,
+    #define pick_fp(enum,name,alt_name,win,alt_win,others,alt_others) name,
     #include "fppatche.h"
     #undef pick_fp
 };
 
 static char *FPPatchAltName[] = {
-    #define pick_fp(enum,name,alt_name,win,alt_win,qnx,alt_qnx) alt_name,
+    #define pick_fp(enum,name,alt_name,win,alt_win,others,alt_others) alt_name,
     #include "fppatche.h"
     #undef pick_fp
 };

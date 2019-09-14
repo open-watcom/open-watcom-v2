@@ -71,7 +71,7 @@ typedef unsigned long long      call_class;
 #define BYTE_SEQ_OFF    unsigned
 
 typedef enum {
-    #define pick_fp(enum,name,alt_name,win,alt_win,qnx,alt_qnx) FIX_ ## enum,
+    #define pick_fp(enum,name,alt_name,win,alt_win,others,alt_others) FIX_ ## enum,
     #include "fppatche.h"
     #undef pick_fp
     FIX_SYM_OFFSET,     /* followed by a long */

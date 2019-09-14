@@ -31,7 +31,7 @@
 
 
 //                                          WLINK
-//        enum        name     alt_name     win         alt_win     qnx         alt_qnx
+//        enum        name     alt_name     win         alt_win     others      alt_others
 pick_fp( FPP_WAIT,   "FIWRQQ", NULL,        6,          FPP_IGNORE, 1,          FPP_IGNORE  )   // int 3Dh
 pick_fp( FPP_NORMAL, "FIDRQQ", NULL,        5,          FPP_IGNORE, 2,          FPP_IGNORE  )   // int 34-3Bh
 pick_fp( FPP_ES,     "FIERQQ", NULL,        4,          FPP_IGNORE, 3,          FPP_IGNORE  )   // int 3Ch

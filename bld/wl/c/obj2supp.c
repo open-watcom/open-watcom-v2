@@ -77,7 +77,7 @@ typedef struct {
     targ_addr       loc_addr;
     targ_addr       tgt_addr;
     fix_type        type;
-    ffix_type       ffix;
+    fix_fpp_type    fpp_type;
     bool            additive    : 1;
     bool            done        : 1;
     bool            imported    : 1;
@@ -436,6 +436,7 @@ static void BuildReloc( save_fixup *save, target_spec *target, frame_spec *frame
     fix.type = fixtype;
     fix.loc_addr = CurrRec.addr;
     fix.loc_addr.off += off;
+    fix.fpp_type = FPP_NONE;
 
     if( target->type == FIX_TARGET_EXT ) {
         if( target->u.sym->info & SYM_TRACE ) {
@@ -445,7 +446,7 @@ static void BuildReloc( save_fixup *save, target_spec *target, frame_spec *frame
             ProcUndefined( target->u.sym );
             return;
         }
-        fix.ffix = GET_SYM_FFIX( target->u.sym );
+        fix.fpp_type = GET_SYM_FPP( target->u.sym );
         if( IS_SYM_IMPORTED( target->u.sym ) ) {
             if( FRAME_HAS_DATA( frame->type ) && ( target->u.sym != frame->u.sym ) ) {
                 if( FmtData.type & (MK_NOVELL | MK_OS2_FLAT | MK_PE) ) {
@@ -473,7 +474,7 @@ static void BuildReloc( save_fixup *save, target_spec *target, frame_spec *frame
         }
     }
     if( !fix.imported ) {
-        if( fix.ffix == FFIX_NOT_A_FLOAT ) {
+        if( fix.fpp_type == FPP_NONE ) {
             ConvertToFrame( &fix.tgt_addr, faddr.seg, ( (fixtype & (FIX_OFFSET_8 | FIX_OFFSET_16)) != 0 ) );
         } else {
             fix.tgt_addr.seg = faddr.seg;
@@ -838,7 +839,7 @@ static void MakeQNXFloatReloc( fix_relo_data *fix )
     if( FmtData.u.qnx.gen_seg_relocs ) {
         InitReloc( &breloc );
         breloc.isfloat = true;
-        breloc.item.qnx.reloc_offset = fix->loc_addr.off | ( (unsigned_32)fix->ffix << 28 );
+        breloc.item.qnx.reloc_offset = fix->loc_addr.off | ( (unsigned_32)fix->fpp_type << 28 );
         breloc.item.qnx.segment = ToQNXIndex( fix->loc_addr.seg );
         DumpReloc( &breloc );
     }
@@ -855,7 +856,7 @@ static void MakeWindowsFloatReloc( fix_relo_data *fix )
     os2item->addr_type = MapOS2FixType( fix->type );
     os2item->reloc_offset = fix->loc_addr.off - CurrRec.seg->u.leader->group->grp_addr.off;
     os2item->reloc_type = OSFIXUP | ADDITIVE;
-    os2item->put.fltpt = fix->ffix;
+    os2item->put.fltpt = fix->fpp_type;
     DumpReloc( &breloc );
 }
 
@@ -906,8 +907,8 @@ static bool CheckSpecials( fix_relo_data *fix, target_spec *target )
             return( false );
 #endif
     }
-    if( (FmtData.type & (MK_QNX | MK_WINDOWS)) && ( fix->ffix != FFIX_NOT_A_FLOAT ) ) {
-        if( fix->ffix != FFIX_IGNORE ) {
+    if( (FmtData.type & (MK_QNX | MK_WINDOWS)) && ( fix->fpp_type != FPP_NONE ) ) {
+        if( fix->fpp_type != FPP_IGNORE ) {
             if( FmtData.type & MK_QNX ) {
                 MakeQNXFloatReloc( fix );
             } else {

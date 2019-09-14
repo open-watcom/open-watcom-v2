@@ -84,10 +84,10 @@ recognized_struct RecognizedName[] = {
 };
 
 static const char * const intelSkipRefList[] = {
-    #define pick_fp(enum,name,alt_name,win,alt_win,qnx,alt_qnx) name,
+    #define pick_fp(enum,name,alt_name,win,alt_win,others,alt_others) name,
     #include "fppatche.h"
     #undef pick_fp
-    #define pick_fp(enum,name,alt_name,win,alt_win,qnx,alt_qnx) alt_name,
+    #define pick_fp(enum,name,alt_name,win,alt_win,others,alt_others) alt_name,
     #include "fppatche.h"
     #undef pick_fp
 };

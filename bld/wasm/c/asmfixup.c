@@ -51,13 +51,13 @@ struct asmfixup         *InsFixups[OPND_MAX];
 #if defined( _STANDALONE_ )
 
 static const char * const FPPatchName[] = {
-    #define pick_fp(enum,name,alt_name,win,alt_win,qnx,alt_qnx) name,
+    #define pick_fp(enum,name,alt_name,win,alt_win,others,alt_others) name,
     #include "fppatche.h"
     #undef pick_fp
 };
 
 static const char * const FPPatchAltName[] = {
-    #define pick_fp(enum,name,alt_name,win,alt_win,qnx,alt_qnx) alt_name,
+    #define pick_fp(enum,name,alt_name,win,alt_win,others,alt_others) alt_name,
     #include "fppatche.h"
     #undef pick_fp
 };

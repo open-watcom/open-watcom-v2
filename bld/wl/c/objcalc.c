@@ -93,14 +93,14 @@ typedef struct {
 
 
 static struct {
-    char        *name;
-    ffix_type   win_idx;
-    ffix_type   qnx_idx;
+    char            *name;
+    fix_fpp_type    win_fpp;
+    fix_fpp_type    fpp;
 } FloatNames[] = {
-    #define pick_fp(enum,name,alt_name,win,alt_win,qnx,alt_qnx) {name, win, qnx},
+    #define pick_fp(enum,name,alt_name,win,alt_win,others,alt_others) {name, win, others},
     #include "fppatche.h"
     #undef pick_fp
-    #define pick_fp(enum,name,alt_name,win,alt_win,qnx,alt_qnx) {alt_name, alt_win, alt_qnx},
+    #define pick_fp(enum,name,alt_name,win,alt_win,others,alt_others) {alt_name, alt_win, alt_others},
     #include "fppatche.h"
     #undef pick_fp
 };
@@ -538,24 +538,22 @@ void ConvertToFrame( targ_addr *addr, segment frame, bool check_16bit )
 
 static void FindFloatSyms( void )
 /*******************************/
-// this finds the floating point fixup symbols and marks them.
+// this finds the floating point patch symbols and marks them.
 {
     int         index;
     symbol      *sym;
 
     for( sym = HeadSym; sym != NULL; sym = sym->link ) {
-        SET_SYM_FFIX( sym, FFIX_NOT_A_FLOAT );
+        SET_SYM_FPP( sym, FPP_NONE );
     }
     for( index = 0; index < ( sizeof( FloatNames ) / sizeof( FloatNames[0] ) ); index++ ) {
         if( FloatNames[index].name != NULL ) {
             sym = FindISymbol( FloatNames[index].name );
             if( sym != NULL ) {
-                if( FmtData.type & MK_QNX ) {
-                    SET_SYM_FFIX( sym, FloatNames[index].qnx_idx );
-                } else if( FmtData.type & MK_WINDOWS ) {
-                    SET_SYM_FFIX( sym, FloatNames[index].win_idx );
+                if( FmtData.type & MK_WINDOWS ) {
+                    SET_SYM_FPP( sym, FloatNames[index].win_fpp );
                 } else {
-                    SET_SYM_FFIX( sym, FFIX_IGNORE );
+                    SET_SYM_FPP( sym, FloatNames[index].fpp );
                 }
             }
         }

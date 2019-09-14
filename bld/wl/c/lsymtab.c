@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -1106,7 +1107,7 @@ void ReportUndefined( void )
     unsigned    level;
 
     for( sym = HeadSym; sym != NULL; sym = sym->link ) {
-        sym->info &= ~SYM_CLEAR_ON_P2;
+        sym->info &= ~SYM_CLEAR_ON_P2;  // reset also floatin-point patch flags
         if( (sym->info & (SYM_DEFINED | SYM_IS_ALTDEF)) == 0 )  {
             if( LinkFlags & LF_UNDEFS_ARE_OK ) {
                 level = WRN;
