@@ -92,11 +92,11 @@ typedef struct {
 } pubdefinfo;
 
 
-static struct {
-    char            *name;
+static const struct {
+    const char      *name;
     fix_fpp_type    win_fpp;
     fix_fpp_type    fpp;
-} FloatNames[] = {
+} FloatPatches[] = {
     #define pick_fp(enum,name,alt_name,win,alt_win,others,alt_others) {name, win, others},
     #include "fppatche.h"
     #undef pick_fp
@@ -546,14 +546,14 @@ static void FindFloatSyms( void )
     for( sym = HeadSym; sym != NULL; sym = sym->link ) {
         SET_SYM_FPP( sym, FPP_NONE );
     }
-    for( index = 0; index < ( sizeof( FloatNames ) / sizeof( FloatNames[0] ) ); index++ ) {
-        if( FloatNames[index].name != NULL ) {
-            sym = FindISymbol( FloatNames[index].name );
+    for( index = 0; index < ( sizeof( FloatPatches ) / sizeof( FloatPatches[0] ) ); index++ ) {
+        if( FloatPatches[index].name != NULL ) {
+            sym = FindISymbol( FloatPatches[index].name );
             if( sym != NULL ) {
                 if( FmtData.type & MK_WINDOWS ) {
-                    SET_SYM_FPP( sym, FloatNames[index].win_fpp );
+                    SET_SYM_FPP( sym, FloatPatches[index].win_fpp );
                 } else {
-                    SET_SYM_FPP( sym, FloatNames[index].fpp );
+                    SET_SYM_FPP( sym, FloatPatches[index].fpp );
                 }
             }
         }

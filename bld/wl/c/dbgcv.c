@@ -507,10 +507,10 @@ void CVGenLines( lineinfo *info )
         LineInfo.range.start = adjust;
         LineInfo.range.end = adjust + seg->length;
     } else {
-        if( adjust < LineInfo.range.start ) {
+        if( LineInfo.range.start > adjust ) {
             LineInfo.range.start = adjust;
         }
-        if( adjust + seg->length > LineInfo.range.end ) {
+        if( LineInfo.range.end < adjust + seg->length ) {
             LineInfo.range.end = adjust + seg->length;
         }
     }
