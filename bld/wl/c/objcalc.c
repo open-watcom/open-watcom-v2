@@ -94,17 +94,15 @@ typedef struct {
 
 static struct {
     char        *name;
-    ffix_type   idx;
+    ffix_type   win_idx;
+    ffix_type   qnx_idx;
 } FloatNames[] = {
-    { "FIWRQQ", FFIX_WR_SYMBOL },
-    { "FIDRQQ", FFIX_DR_SYMBOL },
-    { "FIERQQ", FFIX_ES_OVERRIDE },
-    { "FICRQQ", FFIX_CS_OVERRIDE },
-    { "FISRQQ", FFIX_SS_OVERRIDE },
-    { "FIARQQ", FFIX_DS_OVERRIDE },
-    { "FJCRQQ", FFIX_IGNORE },
-    { "FJSRQQ", FFIX_IGNORE },
-    { "FJARQQ", FFIX_IGNORE }
+    #define pick_fp(enum,name,alt_name,win,alt_win,qnx,alt_qnx) {name, win, qnx},
+    #include "fppatche.h"
+    #undef pick_fp
+    #define pick_fp(enum,name,alt_name,win,alt_win,qnx,alt_qnx) {alt_name, alt_win, alt_qnx},
+    #include "fppatche.h"
+    #undef pick_fp
 };
 
 
@@ -549,9 +547,17 @@ static void FindFloatSyms( void )
         SET_SYM_FFIX( sym, FFIX_NOT_A_FLOAT );
     }
     for( index = 0; index < ( sizeof( FloatNames ) / sizeof( FloatNames[0] ) ); index++ ) {
-        sym = FindISymbol( FloatNames[index].name );
-        if( sym != NULL ) {
-            SET_SYM_FFIX( sym, FloatNames[index].idx );
+        if( FloatNames[index].name != NULL ) {
+            sym = FindISymbol( FloatNames[index].name );
+            if( sym != NULL ) {
+                if( FmtData.type & MK_QNX ) {
+                    SET_SYM_FFIX( sym, FloatNames[index].qnx_idx );
+                } else if( FmtData.type & MK_WINDOWS ) {
+                    SET_SYM_FFIX( sym, FloatNames[index].win_idx );
+                } else {
+                    SET_SYM_FFIX( sym, FFIX_IGNORE );
+                }
+            }
         }
     }
 }

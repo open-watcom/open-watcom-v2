@@ -30,12 +30,13 @@
 ****************************************************************************/
 
 
-//        enum        name     alt_name
-pick_fp( FPP_WAIT,   "FIWRQQ", NULL )       // int 3Dh
-pick_fp( FPP_NORMAL, "FIDRQQ", NULL )       // int 34-3Bh
-pick_fp( FPP_ES,     "FIERQQ", NULL )       // int 3Ch
-pick_fp( FPP_CS,     "FICRQQ", "FJCRQQ" )   // int 3Ch
-pick_fp( FPP_SS,     "FISRQQ", "FJSRQQ" )   // int 3Ch
-pick_fp( FPP_DS,     "FIARQQ", "FJARQQ" )   // int 3Ch
-pick_fp( FPP_FS,     "FIFRQQ", "FJFRQQ" )   // int 3Ch
-pick_fp( FPP_GS,     "FIGRQQ", "FJGRQQ" )   // int 3Ch
+//                                          WLINK
+//        enum        name     alt_name     win         alt_win     qnx         alt_qnx
+pick_fp( FPP_WAIT,   "FIWRQQ", NULL,        6,          FPP_IGNORE, 1,          FPP_IGNORE  )   // int 3Dh
+pick_fp( FPP_NORMAL, "FIDRQQ", NULL,        5,          FPP_IGNORE, 2,          FPP_IGNORE  )   // int 34-3Bh
+pick_fp( FPP_ES,     "FIERQQ", NULL,        4,          FPP_IGNORE, 3,          FPP_IGNORE  )   // int 3Ch
+pick_fp( FPP_CS,     "FICRQQ", "FJCRQQ",    3,          FPP_IGNORE, 4,          FPP_IGNORE  )   // int 3Ch
+pick_fp( FPP_SS,     "FISRQQ", "FJSRQQ",    2,          FPP_IGNORE, 5,          FPP_IGNORE  )   // int 3Ch
+pick_fp( FPP_DS,     "FIARQQ", "FJARQQ",    1,          FPP_IGNORE, 6,          FPP_IGNORE  )   // int 3Ch
+pick_fp( FPP_FS,     "FIFRQQ", "FJFRQQ",    FPP_IGNORE, FPP_IGNORE, FPP_IGNORE, FPP_IGNORE  )   // int 3Ch
+pick_fp( FPP_GS,     "FIGRQQ", "FJGRQQ",    FPP_IGNORE, FPP_IGNORE, FPP_IGNORE, FPP_IGNORE  )   // int 3Ch

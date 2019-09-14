@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -117,24 +118,6 @@ typedef struct {
     bool            isqnxlinear : 1;
     reloc_item      item;
 } base_reloc;
-
-#define WIN_FFIX_DS_OVERRIDE    1       // FIARQQ
-#define WIN_FFIX_SS_OVERRIDE    2       // FISRQQ
-#define WIN_FFIX_CS_OVERRIDE    3       // FICRQQ
-#define WIN_FFIX_ES_OVERRIDE    4       // FIERQQ
-#define WIN_FFIX_DR_SYMBOL      5       // FIDRQQ
-#define WIN_FFIX_WR_SYMBOL      6       // FIWRQQ
-
-static byte WinFFixMap[] = {
-    0,                          // none
-    WIN_FFIX_WR_SYMBOL,         // FIWRQQ
-    WIN_FFIX_DR_SYMBOL,         // FIDRQQ
-    WIN_FFIX_ES_OVERRIDE,       // FIERQQ
-    WIN_FFIX_CS_OVERRIDE,       // FICRQQ
-    WIN_FFIX_SS_OVERRIDE,       // FISRQQ
-    WIN_FFIX_DS_OVERRIDE,       // FIARQQ
-    0                           // ignore
-};
 
 static offset           LastOptimized;  // offset last optimized.
 static fix_type         LastOptType;
@@ -872,7 +855,7 @@ static void MakeWindowsFloatReloc( fix_relo_data *fix )
     os2item->addr_type = MapOS2FixType( fix->type );
     os2item->reloc_offset = fix->loc_addr.off - CurrRec.seg->u.leader->group->grp_addr.off;
     os2item->reloc_type = OSFIXUP | ADDITIVE;
-    os2item->put.fltpt = WinFFixMap[fix->ffix];
+    os2item->put.fltpt = fix->ffix;
     DumpReloc( &breloc );
 }
 

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -137,6 +138,8 @@ typedef enum {
     FFIX_DS_OVERRIDE,
     FFIX_IGNORE,          // an overlapping fixup symbol.
 } ffix_type;
+
+#define FPP_IGNORE      FFIX_IGNORE
 
 // some handy macros for checking and setting symbol type bits
 

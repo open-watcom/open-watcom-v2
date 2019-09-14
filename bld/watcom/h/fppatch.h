@@ -32,7 +32,7 @@
 
 typedef enum {
     FPP_NONE = -1,
-    #define pick_fp(enum,name,alt_name) enum,
+    #define pick_fp(enum,name,alt_name,win,alt_win,qnx,alt_qnx) enum,
     #include "fppatche.h"
     #undef pick_fp
     FPP_NUMBER_OF_TYPES
