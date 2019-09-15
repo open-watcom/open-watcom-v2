@@ -975,7 +975,7 @@ static bool WriteSegData( void *_sdata, void *_info )
     unsigned long   newpos;
     unsigned long   oldpos;
 
-    if( !sdata->isuninit && !sdata->isdead && ( ( sdata->length > 0 ) || (FmtData.type & MK_END_PAD) ) ) {
+    if( !sdata->isuninit && !sdata->isdead && ( sdata->length > 0 ) ) {
         newpos = info->seg_start + sdata->a.delta;
         if( info->repos ) {
             SeekLoad( newpos );
