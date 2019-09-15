@@ -94,7 +94,7 @@ char *utoa( unsigned value, char *buffer, int radix )
         ++q;
         value = quot;
     } while( value != 0 );
-    while( (*p++ = (char)*--q) )
+    while( (*p++ = (char)*--q) != '\0' )
         ;
     return( buffer );
 }
@@ -135,7 +135,7 @@ char *ultoa( unsigned long value, char *buffer, int radix )
         *q = __Alphabet[rem];
         ++q;
     } while( value != 0 );
-    while( (*p++ = (char)*--q) )
+    while( (*p++ = (char)*--q) != '\0' )
         ;
     return( buffer );
 }
@@ -190,15 +190,16 @@ char *ltoa( long value, char *buffer, int radix )
 static void copypart( char *buf, const char *p, int len, int maxlen )
 {
     if( buf != NULL ) {
-        if( len > maxlen ) len = maxlen;
-            #ifdef __UNIX__
-                memcpy( buf, p, len );
-                buf[len] = '\0';
-            #else
-                len = _mbsnccnt( p, len );          /* # chars in len bytes */
-                _mbsncpy( buf, p, len );            /* copy the chars */
-                buf[_mbsnbcnt( buf, len )] = '\0';
-            #endif
+        if( len > maxlen )
+            len = maxlen;
+#ifdef __UNIX__
+        memcpy( buf, p, len );
+        buf[len] = '\0';
+#else
+        len = _mbsnccnt( p, len );          /* # chars in len bytes */
+        _mbsncpy( buf, p, len );            /* copy the chars */
+        buf[_mbsnbcnt( buf, len )] = '\0';
+#endif
     }
 }
 
@@ -236,35 +237,37 @@ void _splitpath( const char *path,
     if( path[0] == PC  &&  path[1] == PC ) {
         path += 2;
         for( ;; ) {
-            if( *path == '\0' ) break;
-            if( *path == PC ) break;
-            if( *path == '.' ) break;
-                #ifdef __UNIX__
-                    path++;
-                #else
-                    path = _mbsinc( path );
-                #endif
+            if( *path == '\0' )
+                break;
+            if( *path == PC )
+                break;
+            if( *path == '.' )
+                break;
+  #ifdef __UNIX__
+            path++;
+  #else
+            path = _mbsinc( path );
+  #endif
         }
     }
     copypart( drive, startp, path - startp, _MAX_NODE );
 
 #elif defined(__NETWARE__)
 
-        #ifdef __UNIX__
-            ptr = strchr( path, ':' );
-        #else
-            ptr = _mbschr( path, ':' );
-        #endif
+  #ifdef __UNIX__
+    ptr = strchr( path, ':' );
+  #else
+    ptr = _mbschr( path, ':' );
+  #endif
     if( ptr != NULL ) {
         if( drive != NULL ) {
-            copypart( drive, path, ptr - path + 1, _MAX_SERVER +
-                      _MAX_VOLUME + 1 );
+            copypart( drive, path, ptr - path + 1, _MAX_SERVER + _MAX_VOLUME + 1 );
         }
-            #ifdef __UNIX__
-                path = ptr + 1;
-            #else
-                path = _mbsinc( ptr );
-            #endif
+  #ifdef __UNIX__
+        path = ptr + 1;
+  #else
+        path = _mbsinc( ptr );
+  #endif
     } else if( drive != NULL ) {
         *drive = '\0';
     }
@@ -292,22 +295,23 @@ void _splitpath( const char *path,
     startp = path;
 
     for(;;) {           /* 07-jul-91 DJG -- save *path in ch for speed */
-        if( *path == '\0' )  break;
-            #ifdef __UNIX__
-                ch = *path;
-            #else
-                ch = _mbsnextc( path );
-            #endif
+        if( *path == '\0' )
+            break;
+  #ifdef __UNIX__
+        ch = *path;
+  #else
+        ch = _mbsnextc( path );
+  #endif
         if( ch == '.' ) {
             dotp = path;
             ++path;
             continue;
         }
-            #ifdef __UNIX__
-                path++;
-            #else
-                path = _mbsinc( path );
-            #endif
+  #ifdef __UNIX__
+        path++;
+  #else
+        path = _mbsinc( path );
+  #endif
 #if defined(__UNIX__)
         if( ch == PC ) {
 #else /* DOS, OS/2, Windows, Netware */
@@ -318,7 +322,8 @@ void _splitpath( const char *path,
         }
     }
     copypart( dir, startp, fnamep - startp, _MAX_DIR - 1 );
-    if( dotp == NULL ) dotp = path;
+    if( dotp == NULL )
+        dotp = path;
     copypart( fname, fnamep, dotp - fnamep, _MAX_FNAME - 1 );
     copypart( ext,   dotp,   path - dotp,   _MAX_EXT - 1);
 }
@@ -352,11 +357,11 @@ static unsigned char *pcopy( unsigned char **pdst, unsigned char *dst, const uns
 
     size_t    len;
 
-    if( pdst == NULL ) return( dst );
+    if( pdst == NULL )
+        return( dst );
     *pdst = dst;
     len = e_src - b_src;
-    if( len >= _MAX_PATH2 )
-    {
+    if( len >= _MAX_PATH2 ) {
         len = _MAX_PATH2 - 1;
     }
 #ifdef __UNIX__
@@ -385,40 +390,35 @@ void  _splitpath2( char const *inp, char *outp, char **drive, char **path, char 
 
     /* process node/drive/UNC specification */
     startp = (const unsigned char *)inp;
-    #ifdef __UNIX__
-        if( inp[0] == PC  &&  inp[1] == PC )
-    #else
-        if( (inp[0] == PC || inp[0] == ALT_PC)
-         && (inp[1] == PC || inp[1] == ALT_PC) )
-    #endif
-    {
+#ifdef __UNIX__
+    if( inp[0] == PC  &&  inp[1] == PC ) {
+#else
+    if( (inp[0] == PC || inp[0] == ALT_PC)
+     && (inp[1] == PC || inp[1] == ALT_PC) ) {
+#endif
         inp += 2;
-        for( ;; )
-        {
+        for( ;; ) {
             if( *inp == '\0' )
                 break;
             if( *inp == PC )
                 break;
-            #ifndef __UNIX__
-                if( *inp == ALT_PC )
-                    break;
-            #endif
+#ifndef __UNIX__
+            if( *inp == ALT_PC )
+                break;
+#endif
             if( *inp == '.' )
                 break;
-                #ifdef __UNIX__
-                    inp++;
-                #else
-                    inp = (const char *)_mbsinc( (const unsigned char *)inp );
-                #endif
+#ifdef __UNIX__
+            inp++;
+#else
+            inp = (const char *)_mbsinc( (const unsigned char *)inp );
+#endif
         }
         outp = (char *)pcopy( (unsigned char **)drive, (unsigned char *)outp, startp, (const unsigned char *)inp );
 #if !defined(__UNIX__)
     /* process drive specification */
-    }
-    else if( inp[0] != '\0' && inp[1] == ':' )
-    {
-        if( drive != NULL )
-        {
+    } else if( inp[0] != '\0' && inp[1] == ':' ) {
+        if( drive != NULL ) {
             *drive = outp;
             outp[0] = inp[0];
             outp[1] = ':';
@@ -427,9 +427,7 @@ void  _splitpath2( char const *inp, char *outp, char **drive, char **path, char 
         }
         inp += 2;
 #endif
-    }
-    else if( drive != NULL )
-    {
+    } else if( drive != NULL ) {
         *drive = outp;
         *outp = '\0';
         ++outp;
@@ -442,32 +440,28 @@ void  _splitpath2( char const *inp, char *outp, char **drive, char **path, char 
     fnamep = (const unsigned char *)inp;
     startp = (const unsigned char *)inp;
 
-    for(;;)
-    {
-            #ifdef __UNIX__
-                ch = *inp;
-            #else
-                ch = _mbsnextc( (const unsigned char *)inp );
-            #endif
+    for(;;) {
+#ifdef __UNIX__
+        ch = *inp;
+#else
+        ch = _mbsnextc( (const unsigned char *)inp );
+#endif
         if( ch == 0 )
             break;
-        if( ch == '.' )
-        {
+        if( ch == '.' ) {
             dotp = (const unsigned char *)inp;
             ++inp;
             continue;
         }
-            #ifdef __UNIX__
-                inp++;
-            #else
-                inp = (const char *)_mbsinc( (const unsigned char *)inp );
-            #endif
+#ifdef __UNIX__
+        inp++;
+#else
+        inp = (const char *)_mbsinc( (const unsigned char *)inp );
+#endif
 #if defined(__UNIX__)
-        if( ch == PC )
-        {
+        if( ch == PC ) {
 #else /* DOS, OS/2, Windows */
-        if( ch == PC  ||  ch == ALT_PC )
-        {
+        if( ch == PC  ||  ch == ALT_PC ) {
 #endif
             fnamep = (const unsigned char *)inp;
             dotp = NULL;
@@ -503,11 +497,11 @@ void  _splitpath2( char const *inp, char *outp, char **drive, char **path, char 
 /* create full Unix style path name from the components */
 
 void _makepath(
-        char           *path,
-        const char  *node,
-        const char  *dir,
-        const char  *fname,
-        const char  *ext )
+    char        *path,
+    const char  *node,
+    const char  *dir,
+    const char  *fname,
+    const char  *ext )
 {
     *path = '\0';
 
@@ -517,10 +511,11 @@ void _makepath(
             path = strchr( path, '\0' );
 
             /* if node did not end in '/' then put in a provisional one */
-            if( path[-1] == PC )
+            if( path[-1] == PC ) {
                 path--;
-            else
+            } else {
                 *path = PC;
+            }
         }
     }
     if( dir != NULL ) {
@@ -528,31 +523,37 @@ void _makepath(
             /*  if dir does not start with a '/' and we had a node then
                     stick in a separator
             */
-            if( (*dir != PC) && (*path == PC) ) path++;
+            if( (*dir != PC) && (*path == PC) )
+                path++;
 
             strcpy( path, dir );
             path = strchr( path, '\0' );
 
             /* if dir did not end in '/' then put in a provisional one */
-            if( path[-1] == PC )
+            if( path[-1] == PC ) {
                 path--;
-            else
+            } else {
                 *path = PC;
+            }
         }
     }
 
     if( fname != NULL ) {
-        if( (*fname != PC) && (*path == PC) ) path++;
+        if( (*fname != PC) && (*path == PC) )
+            path++;
 
         strcpy( path, fname );
         path = strchr( path, '\0' );
 
     } else {
-        if( *path == PC ) path++;
+        if( *path == PC ) {
+            path++;
+        }
     }
     if( ext != NULL ) {
         if( *ext != '\0' ) {
-            if( *ext != '.' )  *path++ = '.';
+            if( *ext != '.' )
+                *path++ = '.';
             strcpy( path, ext );
             path = strchr( path, '\0' );
         }
@@ -570,7 +571,8 @@ void _makepath(
 static char pickup( char c, char *pc_of_choice )
 {
     if( c == PC || c == ALT_PC ) {
-        if( *pc_of_choice == '\0' ) *pc_of_choice = c;
+        if( *pc_of_choice == '\0' )
+            *pc_of_choice = c;
         c = *pc_of_choice;
     }
     return( c );
@@ -598,7 +600,8 @@ extern void _makepath( char *path, const char *volume,
                 *path++ = pickup( *dir++, &first_pc );
             } while( *dir != '\0' );
             /* if no path separator was specified then pick a default */
-            if( first_pc == '\0' ) first_pc = PC;
+            if( first_pc == '\0' )
+                first_pc = PC;
             /* if dir did not end in path sep then put in a provisional one */
             if( path[-1] == first_pc ) {
                 path--;
@@ -608,18 +611,26 @@ extern void _makepath( char *path, const char *volume,
         }
     }
     /* if no path separator was specified thus far then pick a default */
-    if( first_pc == '\0' ) first_pc = PC;
+    if( first_pc == '\0' )
+        first_pc = PC;
     if( fname != NULL ) {
-        if( (pickup( *fname, &first_pc ) != first_pc)
-            && (*path == first_pc) ) path++;
-        while( *fname != '\0' ) *path++ = pickup( *fname++, &first_pc );
+        if( (pickup( *fname, &first_pc ) != first_pc) && (*path == first_pc) )
+            path++;
+        while( *fname != '\0' ) {
+            *path++ = pickup( *fname++, &first_pc );
+        }
     } else {
-        if( *path == first_pc ) path++;
+        if( *path == first_pc ) {
+            path++;
+        }
     }
     if( ext != NULL ) {
         if( *ext != '\0' ) {
-            if( *ext != '.' )  *path++ = '.';
-            while( *ext != '\0' ) *path++ = *ext++;
+            if( *ext != '.' )
+                *path++ = '.';
+            while( *ext != '\0' ) {
+                *path++ = *ext++;
+            }
         }
     }
     *path = '\0';
@@ -635,7 +646,8 @@ extern void _makepath( char *path, const char *volume,
 static unsigned pickup( unsigned c, unsigned *pc_of_choice )
 {
     if( c == PC || c == ALT_PC ) {
-        if( *pc_of_choice == '\0' ) *pc_of_choice = c;
+        if( *pc_of_choice == '\0' )
+            *pc_of_choice = c;
         c = *pc_of_choice;
     }
     return( c );
@@ -665,40 +677,44 @@ void _makepath( char *path, const char *drive,
     if( dir != NULL ) {
         if( *dir != '\0' ) {
             do {
-                    ch = pickup( _mbsnextc( dir ), &first_pc );
-                    _mbvtop( ch, path );
-                    path[_mbclen( path )] = '\0';
-                    path = _mbsinc( path );
-                    dir = _mbsinc( dir );
+                ch = pickup( _mbsnextc( dir ), &first_pc );
+                _mbvtop( ch, path );
+                path[_mbclen( path )] = '\0';
+                path = _mbsinc( path );
+                dir = _mbsinc( dir );
             } while( *dir != '\0' );
             /* if no path separator was specified then pick a default */
-            if( first_pc == '\0' ) first_pc = PC;
+            if( first_pc == '\0' )
+                first_pc = PC;
             /* if dir did not end in '/' then put in a provisional one */
-                if( *(_mbsdec( pathstart, path )) == first_pc )
-                    path--;
-                else
-                    *path = first_pc;
+            if( *(_mbsdec( pathstart, path )) == first_pc ) {
+                path--;
+            } else {
+                *path = first_pc;
+            }
         }
     }
 
     /* if no path separator was specified thus far then pick a default */
-    if( first_pc == '\0' ) first_pc = PC;
+    if( first_pc == '\0' )
+        first_pc = PC;
     if( fname != NULL ) {
-            ch = _mbsnextc( fname );
-            if( pickup( ch, &first_pc ) != first_pc && *path == first_pc )
-                path++;
+        ch = _mbsnextc( fname );
+        if( pickup( ch, &first_pc ) != first_pc && *path == first_pc )
+            path++;
 
-        while (*fname != '\0')
-        {
+        while( *fname != '\0' ) {
         //do {
-                ch = pickup( _mbsnextc( fname ), &first_pc );
-                _mbvtop( ch, path );
-                path[_mbclen( path )] = '\0';
-                path = _mbsinc( path );
-                fname = _mbsinc( fname );
+            ch = pickup( _mbsnextc( fname ), &first_pc );
+            _mbvtop( ch, path );
+            path[_mbclen( path )] = '\0';
+            path = _mbsinc( path );
+            fname = _mbsinc( fname );
         } //while( *fname != '\0' );
     } else {
-        if( *path == first_pc ) path++;
+        if( *path == first_pc ) {
+            path++;
+        }
     }
     if( ext != NULL ) {
         if( *ext != '\0' ) {
@@ -792,10 +808,9 @@ char *_sys_fullpath( char *buff, const char *path, size_t size )
     APIRET      rc;
     char        root[4];    /* SBCS: room for drive, ':', '\\', and null */
 
-    if (isalpha( path[0] ) && ( path[1] == ':' )
-            && ( path[2] == '\\' ) )
-    {
+    if (isalpha( path[0] ) && ( path[1] == ':' ) && ( path[2] == '\\' ) ) {
         int i;
+
         i = strlen( path );
         _WILL_FIT(i);
         strcpy( buff, path );
@@ -872,7 +887,8 @@ char *_sys_fullpath( char *buff, const char *path, size_t size )
             *(q++) = '/';
         }
         for(;;) {
-            if( p[0] == '\0' ) break;
+            if( p[0] == '\0' )
+                break;
             if( p[0] != '.' ) {
                 _WILL_FIT( 1 );
                 *(q++) = *(p++);
@@ -887,7 +903,8 @@ char *_sys_fullpath( char *buff, const char *path, size_t size )
                 ++p;
                 continue;
             }
-            if( p[0] == '\0' ) break;
+            if( p[0] == '\0' )
+                break;
             if( p[0] == '.' && _IS_SLASH( p[1] ) ) {
                 /* go up a directory for a "../" */
                 p += 2;
@@ -899,7 +916,8 @@ char *_sys_fullpath( char *buff, const char *path, size_t size )
                     if( q < buff ) {
                         return( NULL );
                     }
-                    if( _IS_SLASH( *q ) ) break;
+                    if( _IS_SLASH( *q ) )
+                        break;
                     --q;
                 }
                 ++q;
@@ -917,11 +935,11 @@ char *_sys_fullpath( char *buff, const char *path, size_t size )
     }
     return( buff );
 #else
-    const char *   p;
-    char *         q;
-    size_t              len;
-    unsigned            path_drive_idx;
-    char                curr_dir[_MAX_PATH];
+    const char      *p;
+    char            *q;
+    size_t          len;
+    unsigned        path_drive_idx;
+    char            curr_dir[_MAX_PATH];
 
     p = path;
     q = buff;
@@ -978,7 +996,8 @@ char *_sys_fullpath( char *buff, const char *path, size_t size )
             *(q++) = '\\';
         }
         for(;;) {
-            if( p[0] == '\0' ) break;
+            if( p[0] == '\0' )
+                break;
             if( p[0] != '.' ) {
                 _WILL_FIT( 1 );
                 *(q++) = *(p++);
@@ -993,7 +1012,8 @@ char *_sys_fullpath( char *buff, const char *path, size_t size )
                 ++p;
                 continue;
             }
-            if( p[0] == '\0' ) break;
+            if( p[0] == '\0' )
+                break;
             if( p[0] == '.' ) {  /* .. */
                 ++p;
                 if( _IS_SLASH( p[0] ) ){ /* "../" */
@@ -1007,7 +1027,8 @@ char *_sys_fullpath( char *buff, const char *path, size_t size )
                     if( q < buff ) {
                         return( NULL );
                     }
-                    if( _IS_SLASH( *q ) ) break;
+                    if( _IS_SLASH( *q ) )
+                        break;
                     if( *q == ':' ) {
                         ++q;
                         *q = '\\';
@@ -1029,7 +1050,7 @@ char *_sys_fullpath( char *buff, const char *path, size_t size )
         strcpy( q, p );
     }
     /* force to all backslashes */
-    for( q = buff; *q; ++q ) {
+    for( q = buff; *q != '\0'; ++q ) {
         if( *q == '/' ) {
             *q = '\\';
         }
@@ -1046,7 +1067,8 @@ char *_fullpath( char *buff, const char *path, size_t size )
     if( buff == NULL ) {
         size = _MAX_PATH;
         ptr = malloc( size );
-        if( ptr == NULL ) __set_errno( ENOMEM );
+        if( ptr == NULL )
+            __set_errno( ENOMEM );
         buff = ptr;
     }
     if( buff != NULL ) {
@@ -1057,7 +1079,9 @@ char *_fullpath( char *buff, const char *path, size_t size )
             buff = _sys_fullpath( buff, path, size );
         }
         if( buff == NULL ) {
-            if( ptr != NULL ) free( ptr );
+            if( ptr != NULL ) {
+                free( ptr );
+            }
         }
     }
     return buff;
@@ -1069,18 +1093,17 @@ char *_fullpath( char *buff, const char *path, size_t size )
 *
 ****************************************************************************/
 
- char *strlwr( char *str ) {
-    char    *p;
+char *strlwr( char *str )
+{
+    char            *p;
     unsigned char   c;
 
-    p = str;
-    while( (c = *p) ) {
+    for( p = str; (c = *p) != '\0'; p++ ) {
         c -= 'A';
         if( c <= 'Z' - 'A' ) {
             c += 'a';
             *p = c;
         }
-        ++p;
     }
     return( str );
 }
@@ -1090,18 +1113,17 @@ char *_fullpath( char *buff, const char *path, size_t size )
 *
 ****************************************************************************/
 
- char *strupr( char *str ) {
-    char    *p;
+char *strupr( char *str )
+{
+    char            *p;
     unsigned char   c;
 
-    p = str;
-    while( (c = *p) ) {
+    for( p = str; (c = *p) != '\0'; p++ ) {
         c -= 'a';
         if( c <= 'z' - 'a' ) {
             c += 'A';
             *p = c;
         }
-        ++p;
     }
     return( str );
 }
@@ -1114,23 +1136,26 @@ char *_fullpath( char *buff, const char *path, size_t size )
 ****************************************************************************/
 
 int memicmp( const void *in_s1, const void *in_s2, size_t len )
-    {
-        const unsigned char *   s1 = (const unsigned char *)in_s1;
-        const unsigned char *   s2 = (const unsigned char *)in_s2;
-        unsigned char           c1;
-        unsigned char           c2;
+{
+    const unsigned char *   s1 = (const unsigned char *)in_s1;
+    const unsigned char *   s2 = (const unsigned char *)in_s2;
+    unsigned char           c1;
+    unsigned char           c2;
 
-        for( ; len; --len )  {
-            c1 = *s1;
-            c2 = *s2;
-            if( c1 >= 'A'  &&  c1 <= 'Z' )  c1 += 'a' - 'A';
-            if( c2 >= 'A'  &&  c2 <= 'Z' )  c2 += 'a' - 'A';
-            if( c1 != c2 ) return( c1 - c2 );
-            ++s1;
-            ++s2;
-        }
-        return( 0 );    /* both operands are equal */
+    for( ; len; --len ) {
+        c1 = *s1;
+        c2 = *s2;
+        if( c1 >= 'A'  &&  c1 <= 'Z' )
+            c1 += 'a' - 'A';
+        if( c2 >= 'A'  &&  c2 <= 'Z' )
+            c2 += 'a' - 'A';
+        if( c1 != c2 )
+            return( c1 - c2 );
+        ++s1;
+        ++s2;
     }
+    return( 0 );    /* both operands are equal */
+}
 
 /****************************************************************************
 *
@@ -1151,15 +1176,16 @@ off_t tell( int handle )
 ****************************************************************************/
 
 char *strnset( char *str, int c, size_t len )
-    {
-        char *p;
+{
+    char *p;
 
-        for( p = str; len; --len ) {
-            if( *p == '\0' ) break;
-            *p++ = (char)c;
-        }
-        return( str );
+    for( p = str; len; --len ) {
+        if( *p == '\0' )
+            break;
+        *p++ = (char)c;
     }
+    return( str );
+}
 
 /****************************************************************************
 *
@@ -1168,23 +1194,25 @@ char *strnset( char *str, int c, size_t len )
 *
 ****************************************************************************/
 
-char *strrev( char *str ) {  /* reverse characters in string */
-        char       *p1;
-        char       *p2;
-        char       c1;
-        char       c2;
+char *strrev( char *str )
+/* reverse characters in string */
+{
+    char       *p1;
+    char       *p2;
+    char       c1;
+    char       c2;
 
-        p1 = str;
-        p2 = p1 + strlen( p1 ) - 1;
-        while( p1 < p2 ) {
-            c1 = *p1;
-            c2 = *p2;
-            *p1 = c2;
-            *p2 = c1;
-            ++p1;
-            --p2;
-        }
-        return( str );
+    p1 = str;
+    p2 = p1 + strlen( p1 ) - 1;
+    while( p1 < p2 ) {
+        c1 = *p1;
+        c2 = *p2;
+        *p1 = c2;
+        *p2 = c1;
+        ++p1;
+        --p2;
+    }
+    return( str );
 }
 
 /****************************************************************************
@@ -1195,11 +1223,10 @@ char *strrev( char *str ) {  /* reverse characters in string */
 
 long filelength( int handle )
 {
-    long                current_posn, file_len;
+    long        current_posn, file_len;
 
     current_posn = lseek( handle, 0L, SEEK_CUR );
-    if( current_posn == -1L )
-    {
+    if( current_posn == -1L ) {
         return( -1L );
     }
     file_len = lseek( handle, 0L, SEEK_END );
@@ -1279,7 +1306,8 @@ char *_cmdname( char *name )
 {
     image_info info;
     int32 cookie;
-    while ( get_next_image_info( 0, &cookie, &info ) == B_OK) {
+
+    while( get_next_image_info( 0, &cookie, &info ) == B_OK ) {
         if ( info.type != B_APP_IMAGE )
             continue;
         return( strcpy( name, info.name ) );
@@ -1290,8 +1318,11 @@ char *_cmdname( char *name )
 
 char *_cmdname( char *name )
 {
-    int save_errno = errno;
-    int result = readlink( "/proc/self/exe", name, PATH_MAX );
+    int save_errno;
+    int result;
+
+    save_errno = errno;
+    result = readlink( "/proc/self/exe", name, PATH_MAX );
     if( result == -1 ) {
         /* try another way for BSD */
         result = readlink( "/proc/curproc/file", name, PATH_MAX );
@@ -1356,14 +1387,14 @@ int _bgetcmd( char *buffer, int len )
     cmd = GetCommandLine();
     if( *cmd == '"' ) {
         cmd++;
-        while( *cmd && *cmd != '"' ) {
+        while( *cmd != '\0' && *cmd != '"' ) {
             cmd++;
         }
-        if( *cmd ) {
+        if( *cmd != '\0' ) {
             cmd++;
         }
     } else {
-        while( *cmd && *cmd != ' ' && *cmd != '\t' ) {
+        while( *cmd != '\0' && *cmd != ' ' && *cmd != '\t' ) {
             ++cmd;
         }
     }
@@ -1371,10 +1402,10 @@ int _bgetcmd( char *buffer, int len )
     while( *cmd == ' ' || *cmd == '\t' )
         ++cmd;
 
-    for( cmdlen = 0, tmp = cmd; *tmp; ++tmp, ++cmdlen )
+    for( cmdlen = 0, tmp = cmd; *tmp != '\0'; ++tmp, ++cmdlen )
         ;
 
-    if( !buffer || (len <= 0) )
+    if( ( buffer == NULL ) || ( len <= 0 ) )
         return( cmdlen );
 
     len--;
@@ -1384,7 +1415,7 @@ int _bgetcmd( char *buffer, int len )
         *buffer++ = *cmd++;
         --len;
     }
-    buffer[len] = '\0';
+    *buffer = '\0';
 
     return( cmdlen );
 }
@@ -1407,7 +1438,7 @@ int (_bgetcmd)( char *buffer, int len )
     char    **argv = &_argv[1];
     int     need_quotes;
 
-    if( (buffer != NULL) && (len > 0) ) {
+    if( ( buffer != NULL ) && ( len > 0 ) ) {
         p = buffer;
         --len;          // reserve space for terminating NULL byte
     } else {
@@ -1522,11 +1553,11 @@ int spawnlp( int mode, const char *path, const char *cmd, ... )
 #ifndef _MSC_VER
 
 #if defined(__UNIX__)
-        #define PATH_SEPARATOR '/'
-        #define LIST_SEPARATOR ':'
+    #define PATH_SEPARATOR '/'
+    #define LIST_SEPARATOR ':'
 #else
-        #define PATH_SEPARATOR '\\'
-        #define LIST_SEPARATOR ';'
+    #define PATH_SEPARATOR '\\'
+    #define LIST_SEPARATOR ';'
 #endif
 
 void _searchenv( const char *name, const char *env_var, char *buffer )
@@ -1570,21 +1601,23 @@ void _searchenv( const char *name, const char *env_var, char *buffer )
     penv = getenv( env_var );
     if( penv != NULL ) {
         for( ;; ) {
-            if( *penv == '\0' ) break;
+            if( *penv == '\0' )
+                break;
             p = buffer;
-            len = 0;                                /* JBS 04/1/06 */
-            while( *penv ) {
-                if( *penv == LIST_SEPARATOR ) break;
+            len = 0;
+            while( *penv != '\0' ) {
+                if( *penv == LIST_SEPARATOR )
+                    break;
                 if( *penv != '"' ) {
                     if( len < (_MAX_PATH-1) ) {
-                        *p++ = *penv; /* JBS 00/9/29 */
+                        *p++ = *penv;
                         len++;
                     }
                 }
                 penv++;
             }
             /* check for zero-length prefix which represents CWD */
-            if( p != buffer ) {                    /* JBS 90/3/30 */
+            if( p != buffer ) {
                 if( p[-1] != PATH_SEPARATOR
 #ifndef __UNIX__
                     && p[-1] != '/'
@@ -1597,7 +1630,7 @@ void _searchenv( const char *name, const char *env_var, char *buffer )
                     }
                 }
                 *p = '\0';
-                len += strlen( name );/* JBS 04/12/23 */
+                len += strlen( name );
                 if( len < _MAX_PATH ) {
                     strcat( p, name );
                     /* check to see if file exists */
@@ -1607,7 +1640,8 @@ void _searchenv( const char *name, const char *env_var, char *buffer )
                     }
                 }
             }
-            if( *penv == '\0' ) break;
+            if( *penv == '\0' )
+                break;
             ++penv;
         }
     }
@@ -1730,7 +1764,7 @@ static const char *cclass_match( const char *patt, int c )
         invert = 1;
         ++patt;
     }
-    while( *patt ) {
+    while( *patt != '\0' ) {
         if( *patt == ']' )
             return( ok ^ invert ? patt + 1 : NULL );
 
@@ -1788,16 +1822,16 @@ int   fnmatch( const char *patt, const char *s, int flags )
     while( (c = icase( *patt++, flags )) != '\0' ) {
         switch( c ) {
         case '?':
-            if( flags & FNM_PATHNAME && IS_PATH_SEP( *s ) )
+            if( (flags & FNM_PATHNAME) && IS_PATH_SEP( *s ) )
                 return( FNM_NOMATCH );
-            if( flags & FNM_PERIOD && *s == '.' && s == start )
+            if( (flags & FNM_PERIOD) && *s == '.' && s == start )
                 return( FNM_NOMATCH );
             ++s;
             break;
         case '[':
-            if( flags & FNM_PATHNAME && IS_PATH_SEP( *s ) )
+            if( (flags & FNM_PATHNAME) && IS_PATH_SEP( *s ) )
                 return( FNM_NOMATCH );
-            if( flags & FNM_PERIOD && *s == '.' && s == start )
+            if( (flags & FNM_PERIOD) && *s == '.' && s == start )
                 return( FNM_NOMATCH );
             patt = cclass_match( patt, *s );
             if( patt == NULL )
@@ -1807,20 +1841,21 @@ int   fnmatch( const char *patt, const char *s, int flags )
         case '*':
             if( *s == '\0' )
                 return( 0 );
-            if( flags & FNM_PATHNAME && ( *patt == '/' ) ) {
-                while( *s && !IS_PATH_SEP( *s ) )
+            if( (flags & FNM_PATHNAME) && ( *patt == '/' ) ) {
+                while( *s != '\0' && !IS_PATH_SEP( *s ) )
                     ++s;
                 break;
             }
-            if( flags & FNM_PERIOD && *s == '.' && s == start )
+            if( (flags & FNM_PERIOD) && *s == '.' && s == start )
                 return( FNM_NOMATCH );
             if( *patt == '\0' ) {
                 /* Shortcut - don't examine every remaining character. */
                 if( flags & FNM_PATHNAME ) {
-                    if( flags & FNM_LEADING_DIR || !strchr( s, '/' ) )
+                    if( (flags & FNM_LEADING_DIR) || strchr( s, '/' ) == NULL ) {
                         return( 0 );
-                    else
+                    } else {
                         return( FNM_NOMATCH );
+                    }
                 } else {
                     return( 0 );
                 }
@@ -1828,7 +1863,7 @@ int   fnmatch( const char *patt, const char *s, int flags )
             while( (cl = icase( *s, flags )) != '\0' ) {
                 if( !fnmatch( patt, s, flags & ~FNM_PERIOD ) )
                     return( 0 );
-                if( flags & FNM_PATHNAME && IS_PATH_SEP( cl ) ) {
+                if( (flags & FNM_PATHNAME) && IS_PATH_SEP( cl ) ) {
                     start = s + 1;
                     break;
                 }
@@ -1836,7 +1871,7 @@ int   fnmatch( const char *patt, const char *s, int flags )
             }
             return( FNM_NOMATCH );
         case '\\':
-            if( !( flags & FNM_NOESCAPE ) ) {
+            if( (flags & FNM_NOESCAPE) == 0 ) {
                 c = icase( *patt++, flags );
             }
             /* Fall through */
@@ -1845,16 +1880,17 @@ int   fnmatch( const char *patt, const char *s, int flags )
                 start = s + 1;
             cl = icase( *s++, flags );
 #ifndef __UNIX__
-            if( flags & FNM_PATHNAME && cl == '\\' )
+            if( (flags & FNM_PATHNAME) && cl == '\\' )
                 cl = '/';
 #endif
-            if( c != cl )
+            if( c != cl ) {
                 return( FNM_NOMATCH );
+            }
         }
     }
-    if( flags & FNM_LEADING_DIR && IS_PATH_SEP( *s ) )
+    if( (flags & FNM_LEADING_DIR) && IS_PATH_SEP( *s ) )
         return( 0 );
-    return( *s ? FNM_NOMATCH : 0 );
+    return( *s != '\0' ? FNM_NOMATCH : 0 );
 }
 
 #endif
@@ -2205,7 +2241,7 @@ unsigned _dos_open( const char *name, unsigned mode, HANDLE *h )
     rwmode = mode & OPENMODE_ACCESS_MASK;
 
     __GetNTAccessAttr( rwmode, &desired_access, &nt_attrib );
-    __GetNTShareAttr( mode & (OPENMODE_SHARE_MASK|OPENMODE_ACCESS_MASK), &share_mode );
+    __GetNTShareAttr( mode & (OPENMODE_SHARE_MASK | OPENMODE_ACCESS_MASK), &share_mode );
     handle = CreateFile( name, desired_access, share_mode, 0, OPEN_EXISTING, nt_attrib, NULL );
     if( handle == INVALID_HANDLE_VALUE ) {
         __set_errno( ENOENT );
