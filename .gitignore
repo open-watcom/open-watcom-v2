@@ -86,15 +86,10 @@
 !/bld/
 !/build/
 !/ci/
-!/ci/bin64/*
+!/ci/ntx64/*
 !/contrib/
 !/distrib/
 !/docs/
-!/travis/
-!/travis/dosbox/*
-!/travis/gs927w64/*
-!/travis/hcw/*
-!/travis/hhc/*
 
 !/contrib/**
 

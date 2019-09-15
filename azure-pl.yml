@@ -25,7 +25,7 @@ variables:
   owscript_osx:     ci/buildx.sh
   owartifactfile:   owartifact.tar.gz
   owartifactfile7z: owartifact.tar
-  owcibin:          $(owroot)\ci\bin64
+  owcibin:          $(owroot)\ci\ntx64
 
 stages:
   - stage: start
