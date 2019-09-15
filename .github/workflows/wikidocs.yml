@@ -70,7 +70,7 @@ jobs:
       run: |
           call "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" amd64
           set OWROOT=%GITHUB_WORKSPACE%
-          set OWCIBIN=%OWROOT%\ci\bin64
+          set OWCIBIN=%OWROOT%\ci\ntx64
           set OWDOSBOXPATH=%OWCIBIN%
           set OWGHOSTSCRIPTPATH=%OWCIBIN%
           set OWWIN95HC=%OWCIBIN%\hcrtf.exe
@@ -113,7 +113,7 @@ jobs:
       run: |
           call "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" amd64
           set OWROOT=%GITHUB_WORKSPACE%
-          set OWCIBIN=%OWROOT%\ci\bin64
+          set OWCIBIN=%OWROOT%\ci\ntx64
           set OWDOSBOXPATH=%OWCIBIN%
           set OWGHOSTSCRIPTPATH=%OWCIBIN%
           set OWWIN95HC=%OWCIBIN%\hcrtf.exe
