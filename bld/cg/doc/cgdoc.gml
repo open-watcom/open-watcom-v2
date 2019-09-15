@@ -1550,7 +1550,7 @@ case_label = BENewLabel();
 CGControl( O_LABEL, NULL, case_label );
 CGSelCase( sel_handle, case_label, case_value );
 
-   ... generate code associated with "case_value"  here.
+   ... generate code associated with "case_value" here.
 
 CGControl( O_GOTO, NULL, end_label ); // or else, fall through
 other_label = BENewLabel();
@@ -1631,7 +1631,7 @@ switch code, so lo and hi must have the same sign.
 .*
 :I1.CGSelect
 :I1.control flow
-:P.Add the select  expression to a select statement and generate code.
+:P.Add the select expression to a select statement and generate code.
 This must be the last routine called for a given select statement.
 It invalidates the sel_handle.
 :DL.
@@ -3131,7 +3131,7 @@ hw_reg_set low16( hw_reg_set reg )
     HW_CTurnOn( low, HW_CX );
     HW_CTurnOn( low, HW_DX );
     if( HW_Ovlap( reg, low ) ) {
-    HW_OnlyOn( reg, low );
+        HW_OnlyOn( reg, low );
     }
 }
 :eXMP.
@@ -3164,7 +3164,8 @@ hopelessly confused.
 handle = NULL;
 for( ;; ) {
     handle = FEAuxInfo( handle, NEXT_IMPORT );
-    if( handle == NULL ) break;
+    if( handle == NULL )
+        break;
     do_something( FEAuxInfo( handle, IMPORT_NAME ) );
 }
 :eXMP.
@@ -3173,7 +3174,8 @@ for( ;; ) {
 segment = 0;
 for( ;; ) {
     segment = FEAuxInfo( segment, FREE_SEGMENT );
-    if( segment == NULL ) break;
+    if( segment == NULL )
+        break;
     segment_size = *(short *)MK_FP( segment, 0 ) * 16;
     this_is_my_memory_now( MK_FP( segment, 0 ), segment_size );
 }
