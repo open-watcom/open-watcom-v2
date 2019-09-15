@@ -903,8 +903,8 @@ void AddLibPathsToEndList( const char *path_list )
     }
 }
 
-void ExecSystem( char *name )
-/**********************************/
+void ExecSystem( const char *name )
+/*********************************/
 /* run a system block with the given name (only called once!)
  * (this is called after the parser has already been stopped */
 {

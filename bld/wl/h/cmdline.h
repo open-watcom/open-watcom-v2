@@ -54,7 +54,7 @@ extern bool             HintFormat( exe_format );
 extern void             DecideFormat( void );
 extern void             FreeFormatStuff( void );
 extern void             AddCommentLib( const char *, size_t, lib_priority );
-extern void             ExecSystem( char * );
+extern void             ExecSystem( const char * );
 extern void             PruneSystemList( void );
 extern void             BurnSystemList( void );
 extern void             AddLibPaths( const char *, size_t, bool );

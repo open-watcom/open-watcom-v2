@@ -968,8 +968,8 @@ bool ProcNewSegment( void )
     return( true );
 }
 
-sysblock *FindSysBlock( char *name )
-/******************************************/
+sysblock *FindSysBlock( const char *name )
+/****************************************/
 {
     sysblock    *sys;
 
@@ -981,8 +981,8 @@ sysblock *FindSysBlock( char *name )
     return( NULL );
 }
 
-static sysblock *FindSystemBlock( char *name )
-/*********************************************/
+static sysblock *FindSystemBlock( const char *name )
+/**************************************************/
 {
     sysblock    *sys;
     sysblock    *tmpblk;

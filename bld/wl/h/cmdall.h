@@ -138,4 +138,4 @@ extern bool     ProcOrdSegCopy( void );
 extern bool     ProcOrdSegNoEmit( void );
 extern void     ResetCmdAll( void );
 
-extern sysblock *       FindSysBlock( char * );
+extern sysblock *FindSysBlock( const char * );

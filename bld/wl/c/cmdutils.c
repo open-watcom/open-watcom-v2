@@ -160,18 +160,18 @@ bool ProcArgListEx( bool (*rtn)( void ), tokcontrol ctrl, cmdfilelist *resetpoin
             }
             if( CheckFence() ) {
                 break;
-            } else if( !GetTokenEx( SEP_NO, ctrl ,resetpoint, &bfilereset ) ) {
+            } else if( !GetTokenEx( SEP_NO, ctrl, resetpoint, &bfilereset ) ) {
                 LnkMsg( LOC+LINE+ERR+MSG_BAD_CURLY_LIST, NULL );
                 break;
             }
         }
     } else {
-        if( resetpoint && bfilereset )
+        if( resetpoint != NULL && bfilereset )
             return( true );
         if( !GetTokenEx( SEP_NO, ctrl, resetpoint, &bfilereset ) )
             return( false );
         do {
-            if( resetpoint && bfilereset )
+            if( resetpoint != NULL && bfilereset )
                 return( true );
             if( !WildCard( rtn, ctrl ) ) {
                 return( false );
@@ -618,7 +618,7 @@ bool GetTokenEx( sep_type req, tokcontrol ctrl, cmdfilelist *resetpoint, bool *p
                 Token.next = Token.this;        /* re-process last token */
             }
             Token.quoted = false;
-            if( resetpoint && (CmdFile == resetpoint) ) {
+            if( resetpoint != NULL && (CmdFile == resetpoint) ) {
                 if( *Token.next == ',' )
                     break;
                 if( pbreset != NULL )
