@@ -1108,23 +1108,6 @@ void RestoreCmdLine( void )
     memcpy( &Token, &CmdFile->token, sizeof( tok ) ); // restore old state.
 }
 
-bool IsSystemBlock( void )
-/************************/
-// Are we in a system block?
-{
-    cmdfilelist     *temp;
-
-    if( Token.how == SYSTEM )
-        return( true );
-
-    for( temp = CmdFile; temp != NULL; temp = temp->prev ) {
-        if( temp->token.how == SYSTEM ) {
-            return( true );
-        }
-    }
-    return( false );
-}
-
 void BurnUtils( void )
 /********************/
 // Burn data structures used in command utils.
@@ -1155,6 +1138,23 @@ void BurnUtils( void )
         _LnkFree( CmdFile );
     }
     Token.how = BUFFERED;       // so error message stuff reports right name
+}
+
+bool IsSystemBlock( void )
+/************************/
+// Are we in a system block?
+{
+    cmdfilelist     *temp;
+
+    if( Token.how == SYSTEM )
+        return( true );
+
+    for( temp = CmdFile; temp != NULL; temp = temp->prev ) {
+        if( temp->token.how == SYSTEM ) {
+            return( true );
+        }
+    }
+    return( false );
 }
 
 outfilelist *NewOutFile( char *filename )
