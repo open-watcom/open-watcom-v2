@@ -230,8 +230,7 @@ void DoCmdFile( char *fname )
         file = FindPath( namelnk, NULL );
     }
     if( file != NIL_FHANDLE ) {
-        fname = ChkStrDup( namelnk );
-        SetCommandFile( file, fname );
+        SetCommandFile( file, namelnk );
     }
     if( Spawn( DoCmdParse ) ) {
         Ignite();

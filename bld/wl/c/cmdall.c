@@ -1042,12 +1042,12 @@ bool ProcSystem( void )
         }
         *prev = sys->next;
         _LnkFree( sys->name );
-        _LnkFree( sysname );
         _LnkFree( sys );
     } else {
         RestoreParser();
         NewCommandSource( sysname, sys->commands, SYSTEM );
     }
+    _LnkFree( sysname );
     return( true );
 }
 

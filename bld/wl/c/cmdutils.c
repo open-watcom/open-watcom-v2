@@ -406,7 +406,6 @@ static void ExpandEnvVariable( void )
     env = GetEnvString( envname );
     if( env == NULL ) {
         LnkMsg( LOC+LINE+WRN+MSG_ENV_NOT_FOUND, "s", envname );
-        _LnkFree( envname );
     } else {
         envlen = strlen( env );
         if( !IS_WHITESPACE( Token.next ) ) {
@@ -420,6 +419,7 @@ static void ExpandEnvVariable( void )
         }
         NewCommandSource( envname, buff, ENVIRONMENT );
     }
+    _LnkFree( envname );
 }
 
 static bool CheckFence( void )
@@ -702,14 +702,15 @@ void RestoreParser( void )
     memcpy( &Token, &CmdFile->token, sizeof( tok ) ); // restore old state.
 }
 
-void NewCommandSource( char *name, char *buff, method how )
-/*********************************************************/
+void NewCommandSource( const char *name, char *buff, method how )
+/***************************************************************/
 /* start reading from a new command source, and save the old one */
 {
     cmdfilelist     *newfile;
 
     _ChkAlloc( newfile, sizeof( cmdfilelist ) );
     newfile->file = STDIN_HANDLE;
+    newfile->symprefix = NULL;
     if( CmdFile != NULL ) {     /* save current state */
         memcpy( &CmdFile->token, &Token, sizeof( tok ) );
         newfile->next = CmdFile->next;
@@ -724,9 +725,13 @@ void NewCommandSource( char *name, char *buff, method how )
         newfile->prev->next = newfile;
     }
     CmdFile = newfile;
-    CmdFile->name = name;
-    CmdFile->token.buff = buff;     /* make sure token is freed */
-    CmdFile->token.how = how;       /* but only if it needs to be */
+    if( name != NULL ) {
+        newfile->name = ChkStrDup( name );
+    } else {
+        newfile->name = NULL;
+    }
+    newfile->token.buff = buff;     /* make sure token is freed */
+    newfile->token.how = how;       /* but only if it needs to be */
     Token.buff = buff;
     Token.next = Token.buff;
     Token.where = MIDST;
@@ -737,8 +742,8 @@ void NewCommandSource( char *name, char *buff, method how )
     Token.quoted = false;
 }
 
-void SetCommandFile( f_handle file, char *fname )
-/***********************************************/
+void SetCommandFile( f_handle file, const char *fname )
+/*****************************************************/
 /* read input from given file */
 {
     unsigned long   long_size;
@@ -793,11 +798,11 @@ static void StartNewFile( void )
             _LnkFree( fname );
             Suicide();
         }
-        return;
     } else {
         SetCommandFile( file, fname );
+        DEBUG(( DBG_OLD, "processing command file %s", fname ));
     }
-    DEBUG(( DBG_OLD, "processing command file %s", CmdFile->name ));
+    _LnkFree( fname );
 }
 
 void EatWhite( void )

@@ -146,6 +146,7 @@ static bool GetWlibImports( void )
     fname = FileName( Token.this, Token.len, E_LBC, false );
     handle = QOpenR( fname );
     SetCommandFile( handle, fname );
+    _LnkFree( fname );
     Token.locked = true;      /* make sure only this file parsed */
     while( GetToken( SEP_SPACE, TOK_NORMAL ) ) {
         if( Token.len <= 2 )
