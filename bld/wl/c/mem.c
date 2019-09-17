@@ -54,10 +54,6 @@
     unsigned LastChanceSeg;
 #endif
 
-#ifdef _INT_DEBUG
-    static  int     Chunks;
-#endif
-
 #ifdef TRMEM
 #include "ideentry.h"
 
@@ -85,9 +81,6 @@ void LnkMemInit( void )
     /* allocate some memory we can give back to the system if it runs low */
     LastChanceSeg = qnx_segment_alloc( 65000 );
 #endif
-#ifdef _INT_DEBUG
-    Chunks = 0;
-#endif
 #ifdef TRMEM
     TrHdl = _trmem_open( malloc, free, realloc, NULL, NULL, PrintLine,
             _TRMEM_ALLOC_SIZE_0 | _TRMEM_REALLOC_SIZE_0 | _TRMEM_REALLOC_NULL |
@@ -99,11 +92,6 @@ void LnkMemInit( void )
 void LnkMemFini( void )
 /*********************/
 {
-#ifdef _INT_DEBUG
-    if( Chunks != 0 ) {
-        DEBUG( (DBG_ALWAYS, "%d Chunks unfreed", Chunks ) );
-    }
-#endif
 #ifdef TRMEM
     PrintAllMem();
     _trmem_close( TrHdl );
@@ -128,11 +116,10 @@ void *LAlloc( size_t size )
             memset( p, 0, size );
             break;
         }
-        if( !FreeUpMemory() ) break;
+        if( !FreeUpMemory() ) {
+            break;
+        }
     }
-#ifdef _INT_DEBUG
-    if( p != NULL ) ++Chunks;
-#endif
     return( p );
 }
 
@@ -170,9 +157,9 @@ void *ChkLAlloc( size_t size )
 void *wres_alloc( size_t size )
 {
 #ifdef TRMEM
-        return( _trmem_alloc( size, _trmem_guess_who(), TrHdl ) );
+    return( _trmem_alloc( size, _trmem_guess_who(), TrHdl ) );
 #else
-        return( malloc( size ) );
+    return( malloc( size ) );
 #endif
 }
 
@@ -180,14 +167,12 @@ void *wres_alloc( size_t size )
 void LFree( void *p )
 /**************************/
 {
-    if( p == NULL ) return;
+    if( p == NULL )
+        return;
 #ifdef TRMEM
     _trmem_free( p, _trmem_guess_who(), TrHdl );
 #else
     free( p );
-#endif
-#ifdef _INT_DEBUG
-    --Chunks;
 #endif
 }
 
@@ -221,7 +206,8 @@ void *LnkRealloc( void *src, size_t size )
 #else
         dest = realloc( src, size );
 #endif
-        if( dest != NULL ) break;
+        if( dest != NULL )
+            break;
         if( !CacheRelease() && !SwapOutVirt() && !SwapOutRelocs() ) {
             LnkMsg( FTL + MSG_NO_DYN_MEM, NULL );       // see note 1 below
         }

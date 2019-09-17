@@ -1072,7 +1072,7 @@ static void deleteCmdFile( cmdfilelist *cmdfile, bool burn )
 
     file = cmdfile->file;
     if( burn ) {
-        if( file > STDIN_HANDLE ) {
+        if( file != NIL_FHANDLE && file != STDIN_HANDLE ) {
             QClose( file, cmdfile->name );
         }
         switch( cmdfile->token.how ) {
@@ -1089,7 +1089,7 @@ static void deleteCmdFile( cmdfilelist *cmdfile, bool burn )
             break;
         default:
             _LnkFree( Token.buff );
-            if( file > STDIN_HANDLE ) {
+            if( file != NIL_FHANDLE && file != STDIN_HANDLE ) {
                 QClose( file, cmdfile->name );
             }
             break;
