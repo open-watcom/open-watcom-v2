@@ -64,12 +64,6 @@ static  char    *DefExt[] = {
     #undef pick1
 };
 
-static bool     CheckFence( void );
-static bool     MakeToken( tokcontrol, sep_type );
-static void     GetNewLine( void );
-static void     BackupParser( void );
-static void     StartNewFile( void );
-
 static bool WildCard( bool (*rtn)( void ), tokcontrol ctrl )
 /**********************************************************/
 {
@@ -143,9 +137,21 @@ static bool WildCard( bool (*rtn)( void ), tokcontrol ctrl )
 #endif
 }
 
-bool ProcArgList( bool (*rtn)( void ), tokcontrol ctrl )
+static bool CheckFence( void )
+/****************************/
+/* check for a "fence", and skip it if it is there */
 {
-    return( ProcArgListEx( rtn, ctrl ,NULL ) );
+    if( Token.thumb ) {
+        if( Token.quoted )
+            return( false );   /* no fence inside quotes */
+        if( *Token.this == '}' ) {
+            Token.this++;
+            return( true );
+        }
+    } else {
+        return( GetToken( SEP_RCURLY, TOK_NORMAL ) );
+    }
+    return( false );
 }
 
 bool ProcArgListEx( bool (*rtn)( void ), tokcontrol ctrl, cmdfilelist *resetpoint )
@@ -179,6 +185,11 @@ bool ProcArgListEx( bool (*rtn)( void ), tokcontrol ctrl, cmdfilelist *resetpoin
         } while( GetTokenEx( SEP_COMMA, ctrl, resetpoint, &bfilereset ) );
     }
     return( true );
+}
+
+bool ProcArgList( bool (*rtn)( void ), tokcontrol ctrl )
+{
+    return( ProcArgListEx( rtn, ctrl ,NULL ) );
 }
 
 bool ProcOne( parse_entry *entry, sep_type req, bool suicide )
@@ -387,430 +398,6 @@ char *totext( void )
         GetToken( SEP_NO, TOK_INCLUDE_DOT );
     }
     return( tostring() );
-}
-
-static void ExpandEnvVariable( void )
-/***********************************/
-/* parse the specified environment variable & deal with it */
-{
-    char        *envname;
-    const char  *env;
-    char        *buff;
-    size_t      envlen;
-
-    Token.next++;
-    if( !MakeToken( TOK_INCLUDE_DOT, SEP_PERCENT ) ) {
-        LnkMsg( LOC+LINE+FTL+MSG_ENV_NAME_INCORRECT, NULL );
-    }
-    envname = tostring();
-    env = GetEnvString( envname );
-    if( env == NULL ) {
-        LnkMsg( LOC+LINE+WRN+MSG_ENV_NOT_FOUND, "s", envname );
-    } else {
-        envlen = strlen( env );
-        if( !IS_WHITESPACE( Token.next ) ) {
-            MakeToken( TOK_INCLUDE_DOT, SEP_SPACE );
-            _ChkAlloc( buff, envlen + Token.len + 1);
-            memcpy( buff, env, envlen );
-            memcpy( buff + envlen, Token.this, Token.len );
-            buff[Token.len + envlen] = '\0';
-        } else {
-            buff = ChkToString( env, envlen );
-        }
-        NewCommandSource( envname, buff, ENVIRONMENT );
-    }
-    _LnkFree( envname );
-}
-
-static bool CheckFence( void )
-/****************************/
-/* check for a "fence", and skip it if it is there */
-{
-    if( Token.thumb ) {
-        if( Token.quoted )
-            return( false );   /* no fence inside quotes */
-        if( *Token.this == '}' ) {
-            Token.this++;
-            return( true );
-        }
-    } else {
-        return( GetToken( SEP_RCURLY, TOK_NORMAL ) );
-    }
-    return( false );
-}
-
-bool GetToken( sep_type req, tokcontrol ctrl )
-{
-    return( GetTokenEx( req, ctrl, NULL, NULL ) );
-}
-
-bool GetTokenEx( sep_type req, tokcontrol ctrl, cmdfilelist *resetpoint, bool *pbreset )
-/**************************************************************************************/
-/* return true if no problem */
-/* return false if problem   */
-{
-    char    hmm;
-    bool    ret;
-    bool    need_sep;
-
-    if( Token.thumb ) {
-        Token.thumb = false;
-        if( Token.quoted )
-            return( true );
-        Token.next = Token.this;        /* re-process last token */
-    }
-    need_sep = true;
-    for( ;; ) {                         /* finite state machine */
-
-        /*
-        //  carl.young
-        //  We had a situation where an input file (in this case a Novell
-        //  import or export file) does not have the consistent format
-        //  expected from this FSM code. If the skipToNext flag is set,
-        //  then we just skip to the next token and return rather than
-        //  reporting an error.
-        //  For reference the import files looked like:
-        //      (PREFIX)
-        //          symbol1,
-        //          symbol2,
-        //          symbolnm1,
-        //          symboln
-        //
-        //  Note the missing comma separator after the prefix token. The
-        //  prefix token(s) may also appear anywhere in the file.
-        */
-
-        if( Token.skipToNext && (req == SEP_COMMA) ) {
-            Token.skipToNext = false;
-            need_sep = false;
-        }
-
-        switch( Token.where ) {
-        case MIDST:
-            EatWhite();
-            hmm = *Token.next;
-            switch( hmm ) {
-            case CTRLZ:
-                Token.where = ENDOFFILE;
-                break;
-            case '\0':
-                if( Token.how == BUFFERED
-                 || Token.how == ENVIRONMENT
-                 || Token.how == SYSTEM ) {
-                    Token.where = ENDOFFILE;
-                    break;
-                }
-                /* fall through */
-            case '\n':
-                if( Token.how == BUFFERED
-                 || Token.how == ENVIRONMENT
-                 || Token.how == SYSTEM ) {
-                    Token.next++;               // just skip this.
-                } else if( Token.how == COMMANDLINE ) {
-                    Token.where = ENDOFCMD;
-                } else {
-                    Token.where = ENDOFLINE;
-                }
-                Token.line++;
-                break;
-            case '@':
-                if( req != SEP_SPACE ) {
-                    Token.next++;
-                    GetToken( SEP_NO, TOK_INCLUDE_DOT|TOK_IS_FILENAME );
-                    StartNewFile();
-                    break;
-                }
-                Token.next--;   /* make a token out of this */
-                ret = MakeToken( ctrl, req );
-                Token.quoted = false;
-                return( ret );
-            case '#':
-                Token.where = ENDOFLINE;            /* begin comment */
-                Token.line++;
-                break;
-            case '^':
-                if( req != SEP_SPACE ) {    /* if not storing system blocks */
-                    Token.next++;
-                    BackupParser();
-                    break;
-                }
-                Token.next--;   /* make a token out of this */
-                ret = MakeToken( ctrl, req );
-                Token.quoted = false;
-                return( ret );
-            case '%':
-                if( req != SEP_SPACE ) {
-                    ExpandEnvVariable();
-                    break;
-                }
-                /* fall through */
-            default:
-                if( need_sep ) {
-                    Token.quoted = false;
-                    switch( req ) {
-                    case SEP_NO:
-                        if( hmm == ',' || hmm == '=' )
-                            return( false );
-                        break;
-                    case SEP_COMMA:
-                        if(hmm != ',' )
-                            return( false);
-                        Token.next++;
-                        break;
-                    case SEP_EQUALS:
-                        if( hmm != '=' )
-                            return( false );
-                        Token.next++;
-                        break;
-                    case SEP_PERIOD:
-                    case SEP_DOT_EXT:
-                        if( hmm != '.' )
-                            return( false );
-                        Token.next++;
-                        break;
-                    case SEP_PAREN:
-                        if( hmm != '(' )
-                            return( false );
-                        Token.next++;
-                        break;
-                    case SEP_LCURLY:
-                        if( hmm != '{' )
-                            return( false );
-                        Token.next++;
-                        break;
-                    case SEP_QUOTE:
-                        if( hmm != '\'' )
-                            return( false );
-                        Token.next++;
-                        Token.quoted = true;
-                        break;
-                    case SEP_RCURLY:
-                        if( hmm != '}' )
-                            return( false );
-                        Token.next++;
-                        return( true );
-                    case SEP_END:
-                        return( false );
-                    }
-                    need_sep = false;
-                    EatWhite();
-                } else {                /*  must have good separator here */
-                    if( hmm == '\'' && req != SEP_PAREN && req != SEP_SPACE ) {
-                        req = SEP_QUOTE;   /* token has been quoted */
-                        Token.next++;      /* don't include the quote */
-                        Token.quoted = true;
-                    }
-                    ret = MakeToken( ctrl, req );
-                    return( ret );
-                }
-                break;
-            }
-            break;
-        case ENDOFLINE:
-            GetNewLine();
-            break;
-        case ENDOFFILE:
-            if( Token.locked )
-                return( false );
-            RestoreCmdLine();
-            if( Token.thumb ) {
-                Token.thumb = false;
-                Token.next = Token.this;        /* re-process last token */
-            }
-            Token.quoted = false;
-            if( resetpoint != NULL && (CmdFile == resetpoint) ) {
-                if( *Token.next == ',' )
-                    break;
-                if( pbreset != NULL )
-                    *pbreset = true;            /* Show we have hit a file end-point for a directive */
-                return( false );
-            }
-            break;
-        case ENDOFCMD:
-            if( CmdFile->next != NULL ) {
-                RestoreParser();
-                break;
-            }
-            Token.quoted = false;
-            ret = ( req == SEP_END );
-            return( ret );
-        }
-    }
-}
-
-static void OutPutPrompt( const char *str )
-/*****************************************/
-{
-    if( QIsDevice( CmdFile->file ) ) {
-        WriteStdOut( str );
-    }
-}
-
-static void GetNewLine( void )
-/****************************/
-{
-    if( Token.how == BUFFERED || Token.how == ENVIRONMENT || Token.how == SYSTEM ) {
-        Token.where = MIDST;
-        //go until next line found;
-        for( ; *Token.next != '\n'; Token.next++ ) {
-            if( *Token.next == '\0' || *Token.next == CTRLZ ) {
-                Token.where = ENDOFFILE;
-                break;
-            }
-        }
-        Token.next++;
-    } else if( Token.how == NONBUFFERED ) {
-        if( QReadStr( CmdFile->file, Token.buff, MAX_REC, CmdFile->name ) ) {
-            Token.where = ENDOFFILE;
-        } else {
-            Token.where = MIDST;
-        }
-        Token.next = Token.buff;
-    } else {               // interactive.
-        OutPutPrompt( _LinkerPrompt );
-        Token.how = INTERACTIVE;
-        if( QReadStr( STDIN_HANDLE, Token.buff, MAX_REC, "console" ) ) {
-            Token.where = ENDOFCMD;
-        } else {
-            Token.where = MIDST;
-        }
-        Token.next = Token.buff;
-    }
-}
-
-static void BackupParser( void )
-/******************************/
-/* move the parser temporarily back to a previous input source */
-{
-    if( CmdFile->prev == NULL ) {
-        LnkMsg( LOC+LINE+WRN + MSG_NO_PREVIOUS_INPUT, NULL );
-        return;
-    }
-    memcpy( &CmdFile->token, &Token, sizeof( tok ) );   // save current state
-    CmdFile = CmdFile->prev;
-    memcpy( &Token, &CmdFile->token, sizeof( tok ) ); // restore old state.
-}
-
-void RestoreParser( void )
-/************************/
-/* return the parser to the previous command state */
-{
-    if( CmdFile->next == NULL )
-        return;
-    memcpy( &CmdFile->token, &Token, sizeof( tok ) );  /* save current state */
-    CmdFile = CmdFile->next;
-    memcpy( &Token, &CmdFile->token, sizeof( tok ) ); // restore old state.
-}
-
-void NewCommandSource( const char *name, char *buff, method how )
-/***************************************************************/
-/* start reading from a new command source, and save the old one */
-{
-    cmdfilelist     *newfile;
-
-    _ChkAlloc( newfile, sizeof( cmdfilelist ) );
-    newfile->file = STDIN_HANDLE;
-    newfile->symprefix = NULL;
-    if( CmdFile != NULL ) {     /* save current state */
-        memcpy( &CmdFile->token, &Token, sizeof( tok ) );
-        newfile->next = CmdFile->next;
-        if( newfile->next != NULL ) {
-            newfile->next->prev = newfile;
-        }
-    } else {
-        newfile->next = NULL;
-    }
-    newfile->prev = CmdFile;
-    if( newfile->prev != NULL ) {
-        newfile->prev->next = newfile;
-    }
-    CmdFile = newfile;
-    if( name != NULL ) {
-        newfile->name = ChkStrDup( name );
-    } else {
-        newfile->name = NULL;
-    }
-    newfile->token.buff = buff;     /* make sure token is freed */
-    newfile->token.how = how;       /* but only if it needs to be */
-    Token.buff = buff;
-    Token.next = Token.buff;
-    Token.where = MIDST;
-    Token.line = 1;
-    Token.how = how;
-    Token.thumb = false;
-    Token.locked = false;
-    Token.quoted = false;
-}
-
-void SetCommandFile( f_handle file, const char *fname )
-/*****************************************************/
-/* read input from given file */
-{
-    unsigned long   long_size;
-    char            *buff;
-
-    if( QIsDevice( file ) ) {
-        long_size = 0x10000;
-    } else {
-        long_size = QFileSize( file );
-    }
-    buff = NULL;
-    if( long_size < 0x10000 - 16 - 1 ) {       // if can alloc a chunk big enough
-        size_t  size = (size_t)long_size;
-
-        _LnkAlloc( buff, size + 1 );
-        if( buff != NULL ) {
-            size = QRead( file, buff, size, fname );
-            if( size == IOERROR )
-                size = 0;
-            buff[size] = '\0';
-            NewCommandSource( fname, buff, BUFFERED );
-        }
-    }
-    if( buff == NULL ) {  // if couldn't buffer for some reason.
-        _ChkAlloc( buff, MAX_REC + 1 ); // have to have at least this much RAM
-        NewCommandSource( fname, buff, NONBUFFERED );
-        Token.where = ENDOFLINE;
-        Token.line++;
-    }
-    CmdFile->file = file;
-}
-
-static void StartNewFile( void )
-/******************************/
-{
-    char        *fname;
-    const char  *envstring;
-    char        *buff;
-    f_handle    file;
-
-    fname = FileName( Token.this, Token.len, E_COMMAND, false );
-    file = QObjOpen( fname );
-    if( file == NIL_FHANDLE ) {
-        _LnkFree( fname );
-        fname = tostring();
-        envstring = GetEnvString( fname );
-        if( envstring != NULL ) {
-            buff = ChkStrDup( envstring );
-            NewCommandSource( fname, buff, ENVIRONMENT );
-        } else {
-            LnkMsg( LOC+LINE+ERR+MSG_CANT_OPEN_NO_REASON, "s", fname );
-            _LnkFree( fname );
-            Suicide();
-        }
-    } else {
-        SetCommandFile( file, fname );
-        DEBUG(( DBG_OLD, "processing command file %s", fname ));
-    }
-    _LnkFree( fname );
-}
-
-void EatWhite( void )
-/*******************/
-{
-    while( IS_WHITESPACE( Token.next ) ) {
-        Token.next++;
-    }
 }
 
 static int ParseNumber( char *str, int radix )
@@ -1027,6 +614,412 @@ static bool MakeToken( tokcontrol ctrl, sep_type separator )
     return( true );
 }
 
+static void ExpandEnvVariable( void )
+/***********************************/
+/* parse the specified environment variable & deal with it */
+{
+    char        *envname;
+    const char  *env;
+    char        *buff;
+    size_t      envlen;
+
+    Token.next++;
+    if( !MakeToken( TOK_INCLUDE_DOT, SEP_PERCENT ) ) {
+        LnkMsg( LOC+LINE+FTL+MSG_ENV_NAME_INCORRECT, NULL );
+    }
+    envname = tostring();
+    env = GetEnvString( envname );
+    if( env == NULL ) {
+        LnkMsg( LOC+LINE+WRN+MSG_ENV_NOT_FOUND, "s", envname );
+    } else {
+        envlen = strlen( env );
+        if( !IS_WHITESPACE( Token.next ) ) {
+            MakeToken( TOK_INCLUDE_DOT, SEP_SPACE );
+            _ChkAlloc( buff, envlen + Token.len + 1);
+            memcpy( buff, env, envlen );
+            memcpy( buff + envlen, Token.this, Token.len );
+            buff[Token.len + envlen] = '\0';
+        } else {
+            buff = ChkToString( env, envlen );
+        }
+        NewCommandSource( envname, buff, ENVIRONMENT );
+    }
+    _LnkFree( envname );
+}
+
+static void OutPutPrompt( const char *str )
+/*****************************************/
+{
+    if( QIsDevice( CmdFile->file ) ) {
+        WriteStdOut( str );
+    }
+}
+
+static void GetNewLine( void )
+/****************************/
+{
+    if( Token.how == BUFFERED || Token.how == ENVIRONMENT || Token.how == SYSTEM ) {
+        Token.where = MIDST;
+        //go until next line found;
+        for( ; *Token.next != '\n'; Token.next++ ) {
+            if( *Token.next == '\0' || *Token.next == CTRLZ ) {
+                Token.where = ENDOFFILE;
+                break;
+            }
+        }
+        Token.next++;
+    } else if( Token.how == NONBUFFERED ) {
+        if( QReadStr( CmdFile->file, Token.buff, MAX_REC, CmdFile->name ) ) {
+            Token.where = ENDOFFILE;
+        } else {
+            Token.where = MIDST;
+        }
+        Token.next = Token.buff;
+    } else {               // interactive.
+        OutPutPrompt( _LinkerPrompt );
+        Token.how = INTERACTIVE;
+        if( QReadStr( STDIN_HANDLE, Token.buff, MAX_REC, "console" ) ) {
+            Token.where = ENDOFCMD;
+        } else {
+            Token.where = MIDST;
+        }
+        Token.next = Token.buff;
+    }
+}
+
+static void StartNewFile( void )
+/******************************/
+{
+    char        *fname;
+    const char  *envstring;
+    char        *buff;
+    f_handle    file;
+
+    fname = FileName( Token.this, Token.len, E_COMMAND, false );
+    file = QObjOpen( fname );
+    if( file == NIL_FHANDLE ) {
+        _LnkFree( fname );
+        fname = tostring();
+        envstring = GetEnvString( fname );
+        if( envstring != NULL ) {
+            buff = ChkStrDup( envstring );
+            NewCommandSource( fname, buff, ENVIRONMENT );
+        } else {
+            LnkMsg( LOC+LINE+ERR+MSG_CANT_OPEN_NO_REASON, "s", fname );
+            _LnkFree( fname );
+            Suicide();
+        }
+    } else {
+        SetCommandFile( file, fname );
+        DEBUG(( DBG_OLD, "processing command file %s", fname ));
+    }
+    _LnkFree( fname );
+}
+
+static void BackupParser( void )
+/******************************/
+/* move the parser temporarily back to a previous input source */
+{
+    if( CmdFile->prev == NULL ) {
+        LnkMsg( LOC+LINE+WRN + MSG_NO_PREVIOUS_INPUT, NULL );
+        return;
+    }
+    memcpy( &CmdFile->token, &Token, sizeof( tok ) );   // save current state
+    CmdFile = CmdFile->prev;
+    memcpy( &Token, &CmdFile->token, sizeof( tok ) ); // restore old state.
+}
+
+void RestoreParser( void )
+/************************/
+/* return the parser to the previous command state */
+{
+    if( CmdFile->next == NULL )
+        return;
+    memcpy( &CmdFile->token, &Token, sizeof( tok ) );  /* save current state */
+    CmdFile = CmdFile->next;
+    memcpy( &Token, &CmdFile->token, sizeof( tok ) ); // restore old state.
+}
+
+bool GetTokenEx( sep_type req, tokcontrol ctrl, cmdfilelist *resetpoint, bool *pbreset )
+/**************************************************************************************/
+/* return true if no problem */
+/* return false if problem   */
+{
+    char    hmm;
+    bool    ret;
+    bool    need_sep;
+
+    if( Token.thumb ) {
+        Token.thumb = false;
+        if( Token.quoted )
+            return( true );
+        Token.next = Token.this;        /* re-process last token */
+    }
+    need_sep = true;
+    for( ;; ) {                         /* finite state machine */
+
+        /*
+        //  carl.young
+        //  We had a situation where an input file (in this case a Novell
+        //  import or export file) does not have the consistent format
+        //  expected from this FSM code. If the skipToNext flag is set,
+        //  then we just skip to the next token and return rather than
+        //  reporting an error.
+        //  For reference the import files looked like:
+        //      (PREFIX)
+        //          symbol1,
+        //          symbol2,
+        //          symbolnm1,
+        //          symboln
+        //
+        //  Note the missing comma separator after the prefix token. The
+        //  prefix token(s) may also appear anywhere in the file.
+        */
+
+        if( Token.skipToNext && (req == SEP_COMMA) ) {
+            Token.skipToNext = false;
+            need_sep = false;
+        }
+
+        switch( Token.where ) {
+        case MIDST:
+            EatWhite();
+            hmm = *Token.next;
+            switch( hmm ) {
+            case CTRLZ:
+                Token.where = ENDOFFILE;
+                break;
+            case '\0':
+                if( Token.how == BUFFERED
+                 || Token.how == ENVIRONMENT
+                 || Token.how == SYSTEM ) {
+                    Token.where = ENDOFFILE;
+                    break;
+                }
+                /* fall through */
+            case '\n':
+                if( Token.how == BUFFERED
+                 || Token.how == ENVIRONMENT
+                 || Token.how == SYSTEM ) {
+                    Token.next++;               // just skip this.
+                } else if( Token.how == COMMANDLINE ) {
+                    Token.where = ENDOFCMD;
+                } else {
+                    Token.where = ENDOFLINE;
+                }
+                Token.line++;
+                break;
+            case '@':
+                if( req != SEP_SPACE ) {
+                    Token.next++;
+                    GetToken( SEP_NO, TOK_INCLUDE_DOT|TOK_IS_FILENAME );
+                    StartNewFile();
+                    break;
+                }
+                Token.next--;   /* make a token out of this */
+                ret = MakeToken( ctrl, req );
+                Token.quoted = false;
+                return( ret );
+            case '#':
+                Token.where = ENDOFLINE;            /* begin comment */
+                Token.line++;
+                break;
+            case '^':
+                if( req != SEP_SPACE ) {    /* if not storing system blocks */
+                    Token.next++;
+                    BackupParser();
+                    break;
+                }
+                Token.next--;   /* make a token out of this */
+                ret = MakeToken( ctrl, req );
+                Token.quoted = false;
+                return( ret );
+            case '%':
+                if( req != SEP_SPACE ) {
+                    ExpandEnvVariable();
+                    break;
+                }
+                /* fall through */
+            default:
+                if( need_sep ) {
+                    Token.quoted = false;
+                    switch( req ) {
+                    case SEP_NO:
+                        if( hmm == ',' || hmm == '=' )
+                            return( false );
+                        break;
+                    case SEP_COMMA:
+                        if(hmm != ',' )
+                            return( false);
+                        Token.next++;
+                        break;
+                    case SEP_EQUALS:
+                        if( hmm != '=' )
+                            return( false );
+                        Token.next++;
+                        break;
+                    case SEP_PERIOD:
+                    case SEP_DOT_EXT:
+                        if( hmm != '.' )
+                            return( false );
+                        Token.next++;
+                        break;
+                    case SEP_PAREN:
+                        if( hmm != '(' )
+                            return( false );
+                        Token.next++;
+                        break;
+                    case SEP_LCURLY:
+                        if( hmm != '{' )
+                            return( false );
+                        Token.next++;
+                        break;
+                    case SEP_QUOTE:
+                        if( hmm != '\'' )
+                            return( false );
+                        Token.next++;
+                        Token.quoted = true;
+                        break;
+                    case SEP_RCURLY:
+                        if( hmm != '}' )
+                            return( false );
+                        Token.next++;
+                        return( true );
+                    case SEP_END:
+                        return( false );
+                    }
+                    need_sep = false;
+                    EatWhite();
+                } else {                /*  must have good separator here */
+                    if( hmm == '\'' && req != SEP_PAREN && req != SEP_SPACE ) {
+                        req = SEP_QUOTE;   /* token has been quoted */
+                        Token.next++;      /* don't include the quote */
+                        Token.quoted = true;
+                    }
+                    ret = MakeToken( ctrl, req );
+                    return( ret );
+                }
+                break;
+            }
+            break;
+        case ENDOFLINE:
+            GetNewLine();
+            break;
+        case ENDOFFILE:
+            if( Token.locked )
+                return( false );
+            RestoreCmdLine();
+            if( Token.thumb ) {
+                Token.thumb = false;
+                Token.next = Token.this;        /* re-process last token */
+            }
+            Token.quoted = false;
+            if( resetpoint != NULL && (CmdFile == resetpoint) ) {
+                if( *Token.next == ',' )
+                    break;
+                if( pbreset != NULL )
+                    *pbreset = true;            /* Show we have hit a file end-point for a directive */
+                return( false );
+            }
+            break;
+        case ENDOFCMD:
+            if( CmdFile->next != NULL ) {
+                RestoreParser();
+                break;
+            }
+            Token.quoted = false;
+            ret = ( req == SEP_END );
+            return( ret );
+        }
+    }
+}
+
+bool GetToken( sep_type req, tokcontrol ctrl )
+{
+    return( GetTokenEx( req, ctrl, NULL, NULL ) );
+}
+
+void NewCommandSource( const char *name, char *buff, method how )
+/***************************************************************/
+/* start reading from a new command source, and save the old one */
+{
+    cmdfilelist     *newfile;
+
+    _ChkAlloc( newfile, sizeof( cmdfilelist ) );
+    newfile->file = STDIN_HANDLE;
+    newfile->symprefix = NULL;
+    if( CmdFile != NULL ) {     /* save current state */
+        memcpy( &CmdFile->token, &Token, sizeof( tok ) );
+        newfile->next = CmdFile->next;
+        if( newfile->next != NULL ) {
+            newfile->next->prev = newfile;
+        }
+    } else {
+        newfile->next = NULL;
+    }
+    newfile->prev = CmdFile;
+    if( newfile->prev != NULL ) {
+        newfile->prev->next = newfile;
+    }
+    CmdFile = newfile;
+    if( name != NULL ) {
+        newfile->name = ChkStrDup( name );
+    } else {
+        newfile->name = NULL;
+    }
+    newfile->token.buff = buff;     /* make sure token is freed */
+    newfile->token.how = how;       /* but only if it needs to be */
+    Token.buff = buff;
+    Token.next = Token.buff;
+    Token.where = MIDST;
+    Token.line = 1;
+    Token.how = how;
+    Token.thumb = false;
+    Token.locked = false;
+    Token.quoted = false;
+}
+
+void SetCommandFile( f_handle file, const char *fname )
+/*****************************************************/
+/* read input from given file */
+{
+    unsigned long   long_size;
+    char            *buff;
+
+    if( QIsDevice( file ) ) {
+        long_size = 0x10000;
+    } else {
+        long_size = QFileSize( file );
+    }
+    buff = NULL;
+    if( long_size < 0x10000 - 16 - 1 ) {       // if can alloc a chunk big enough
+        size_t  size = (size_t)long_size;
+
+        _LnkAlloc( buff, size + 1 );
+        if( buff != NULL ) {
+            size = QRead( file, buff, size, fname );
+            if( size == IOERROR )
+                size = 0;
+            buff[size] = '\0';
+            NewCommandSource( fname, buff, BUFFERED );
+        }
+    }
+    if( buff == NULL ) {  // if couldn't buffer for some reason.
+        _ChkAlloc( buff, MAX_REC + 1 ); // have to have at least this much RAM
+        NewCommandSource( fname, buff, NONBUFFERED );
+        Token.where = ENDOFLINE;
+        Token.line++;
+    }
+    CmdFile->file = file;
+}
+
+void EatWhite( void )
+/*******************/
+{
+    while( IS_WHITESPACE( Token.next ) ) {
+        Token.next++;
+    }
+}
 
 char *FileName( const char *buff, size_t len, file_defext etype, bool force )
 /***************************************************************************/
