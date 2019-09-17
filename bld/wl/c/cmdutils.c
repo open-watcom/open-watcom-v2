@@ -1066,6 +1066,44 @@ char *FileName( const char *buff, size_t len, file_defext etype, bool force )
     return( ptr );
 }
 
+static void deleteCmdFile( cmdfilelist *cmdfile, bool burn )
+{
+    f_handle    file;
+
+    file = cmdfile->file;
+    if( burn ) {
+        if( file > STDIN_HANDLE ) {
+            QClose( file, cmdfile->name );
+        }
+        switch( cmdfile->token.how ) {
+        case ENVIRONMENT:
+        case SYSTEM:
+            break;
+        default:
+            _LnkFree( cmdfile->token.buff );
+            break;
+        }
+    } else {
+        switch( Token.how ) {
+        case SYSTEM:
+            break;
+        default:
+            _LnkFree( Token.buff );
+            if( file > STDIN_HANDLE ) {
+                QClose( file, cmdfile->name );
+            }
+            break;
+        }
+    }
+    if( cmdfile->symprefix != NULL ) {
+        _LnkFree( cmdfile->symprefix );
+    }
+    if( cmdfile->name != NULL ) {
+        _LnkFree( cmdfile->name );
+    }
+    _LnkFree( cmdfile );
+}
+
 void RestoreCmdLine( void )
 /*************************/
 // Restore a saved command line.
@@ -1076,61 +1114,34 @@ void RestoreCmdLine( void )
         Token.where = ENDOFCMD;
         return;
     }
-    switch( Token.how ) {
-    case SYSTEM:
-        break;
-    default:
-        _LnkFree( Token.buff );
-        if( CmdFile->file > STDIN_HANDLE ) {
-            QClose( CmdFile->file, CmdFile->name );
-        }
-        break;
+    // remove current cmdfile from linked list
+    temp = CmdFile;
+    CmdFile = CmdFile->prev;
+    CmdFile->next = temp->next;
+    if( CmdFile->next != NULL ) {
+        CmdFile->next->prev = CmdFile;
     }
-    if( CmdFile->symprefix != NULL ) {
-        _LnkFree( CmdFile->symprefix );
-        CmdFile->symprefix = NULL;
-    }
-    _LnkFree( CmdFile->name );
-    temp = CmdFile->prev;
-    temp->next = CmdFile->next;
-    if( temp->next != NULL ) {
-        temp->next->prev = temp;
-    }
-    _LnkFree( CmdFile );
-    CmdFile = temp;
-    memcpy( &Token, &CmdFile->token, sizeof( tok ) ); // restore old state.
+    // delete removed cmdfile
+    deleteCmdFile( temp, false );
+    // restore old state
+    memcpy( &Token, &CmdFile->token, sizeof( tok ) );
 }
 
 void BurnUtils( void )
 /********************/
 // Burn data structures used in command utils.
 {
-    void        *prev;
+    cmdfilelist     *temp;
 
     if( CmdFile->next != NULL ) {
         LnkMsg( LOC+LINE+ERR+MSG_NO_INPUT_LEFT, NULL );
     }
-    for( ; CmdFile != NULL; CmdFile = prev ) {
-        prev = CmdFile->prev;
-        if( CmdFile->file > STDIN_HANDLE ) {
-            QClose( CmdFile->file, CmdFile->name );
-        }
-        if( CmdFile->symprefix != NULL ) {
-            _LnkFree( CmdFile->symprefix );
-            CmdFile->symprefix = NULL;
-        }
-        _LnkFree( CmdFile->name );
-        switch( CmdFile->token.how ) {
-        case ENVIRONMENT:
-        case SYSTEM:
-            break;
-        default:
-            _LnkFree( CmdFile->token.buff );
-            break;
-        }
-        _LnkFree( CmdFile );
+    while( (temp = CmdFile) != NULL ) {
+        CmdFile = CmdFile->prev;
+        deleteCmdFile( temp, true );
     }
-    Token.how = BUFFERED;       // so error message stuff reports right name
+    // so error message stuff reports right name
+    Token.how = BUFFERED;
 }
 
 bool IsSystemBlock( void )
