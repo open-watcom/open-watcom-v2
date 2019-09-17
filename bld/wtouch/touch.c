@@ -140,13 +140,13 @@ static void usage( void )
     char msgbuff[MAX_RESOURCE_SIZE];
     int  i;
 
-    text = useText;
-    while( *text ) {
-        printf( "%s\n", *text++ );
+    for( text = useText; *text != NULL; text++ ) {
+        printf( "%s\n", *text );
     }
     for( i = MSG_USAGE_BASE;; i++ ) {
         MsgGet( i, msgbuff );
-        if( ( msgbuff[0] == '.' ) && ( msgbuff[1] == 0 ) ) break;
+        if( ( msgbuff[0] == '.' ) && ( msgbuff[1] == 0 ) )
+            break;
         printf( "%s\n", msgbuff );
     }
     showDateTimeFormat();
