@@ -914,7 +914,8 @@ void ExecSystem( const char *name )
         NewCommandSource( NULL, NULL, ENVIRONMENT ); // the "command line"
         Token.where = ENDOFCMD;     // nothing on this command line
         NewCommandSource( sys->name, sys->commands, SYSTEM ); // input file
-        sys->name = NULL;
+        _LnkFree( sys->name );
+        sys->name = ChkStrDup( "" );
         while( !GetToken( SEP_END, TOK_INCLUDE_DOT ) ) {
             if( !ProcOne( SysDirectives, SEP_NO, false ) ) {
                 LnkMsg( LOC+LINE+WRN+MSG_ERROR_IN_SYSTEM_BLOCK, NULL );

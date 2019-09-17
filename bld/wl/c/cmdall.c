@@ -1033,19 +1033,18 @@ bool ProcSystem( void )
     sys = FindSystemBlock( sysname );
     if( sys == NULL ) {
         LnkMsg( LOC+LINE+WRN+MSG_SYSTEM_UNDEFINED, "s", sysname );
-        _LnkFree( sysname );
-        return( true );
-    }
-    if( dodelete ) {
-        for( prev = &SysBlocks; *prev != sys; ) {
-            prev = &((*prev)->next);
-        }
-        *prev = sys->next;
-        _LnkFree( sys->name );
-        _LnkFree( sys );
     } else {
-        RestoreParser();
-        NewCommandSource( sysname, sys->commands, SYSTEM );
+        if( dodelete ) {
+            for( prev = &SysBlocks; *prev != sys; ) {
+                prev = &((*prev)->next);
+            }
+            *prev = sys->next;
+            _LnkFree( sys->name );
+            _LnkFree( sys );
+        } else {
+            RestoreParser();
+            NewCommandSource( sysname, sys->commands, SYSTEM );
+        }
     }
     _LnkFree( sysname );
     return( true );
@@ -1060,8 +1059,8 @@ static void CopyBlocks( void *copyp, const char *data, size_t size )
     *copyptr += size;
 }
 
-static void GetCommandBlock( sysblock **hdr, char *name, parse_entry *endtab )
-/****************************************************************************/
+static void GetCommandBlock( sysblock **hdr, const char *name, parse_entry *endtab )
+/**********************************************************************************/
 {
     char        *copyptr;
     sysblock    *sys;
@@ -1077,10 +1076,10 @@ static void GetCommandBlock( sysblock **hdr, char *name, parse_entry *endtab )
     }
     AddCharStringTable( &strtab, '\0' );
     _ChkAlloc( copyptr, GetStringTableSize( &strtab ) );
-    sys = (sysblock *) copyptr;
+    sys = (sysblock *)copyptr;
     WriteStringTable( &strtab, CopyBlocks, &copyptr );
     FiniStringTable( &strtab );
-    sys->name = name;
+    sys->name = ChkStrDup( name );
     LinkList( hdr, sys );
 }
 
@@ -1106,6 +1105,7 @@ bool ProcSysBegin( void )
     } else {
         GetCommandBlock( &SysBlocks, sysname, SysEndOptions );
     }
+    _LnkFree( sysname );
     return( true );
 }
 
@@ -1120,7 +1120,7 @@ bool ProcStartLink( void )
 /*******************************/
 /* save up list of commands to process later */
 {
-    GetCommandBlock( &LinkCommands, NULL, EndLinkOpt );
+    GetCommandBlock( &LinkCommands, "", EndLinkOpt );
     return( true );
 }
 
