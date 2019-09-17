@@ -658,7 +658,10 @@ static void OutPutPrompt( const char *str )
 static void GetNewLine( void )
 /****************************/
 {
-    if( Token.how == BUFFERED || Token.how == ENVIRONMENT || Token.how == SYSTEM ) {
+    switch( Token.how ) {
+    case BUFFERED:
+    case ENVIRONMENT:
+    case SYSTEM:
         Token.where = MIDST;
         //go until next line found;
         for( ; *Token.next != '\n'; Token.next++ ) {
@@ -668,14 +671,16 @@ static void GetNewLine( void )
             }
         }
         Token.next++;
-    } else if( Token.how == NONBUFFERED ) {
+        break;
+    case NONBUFFERED:
         if( QReadStr( CmdFile->file, Token.buff, MAX_REC, CmdFile->name ) ) {
             Token.where = ENDOFFILE;
         } else {
             Token.where = MIDST;
         }
         Token.next = Token.buff;
-    } else {               // interactive.
+        break;
+    default:    /* interactive prompt with entry */
         OutPutPrompt( _LinkerPrompt );
         Token.how = INTERACTIVE;
         if( QReadStr( STDIN_HANDLE, Token.buff, MAX_REC, "console" ) ) {
@@ -684,6 +689,7 @@ static void GetNewLine( void )
             Token.where = MIDST;
         }
         Token.next = Token.buff;
+        break;
     }
 }
 
