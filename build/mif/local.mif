@@ -342,8 +342,13 @@ ext_lib_shared = .so
 # extra objects for linking via cl
 cl_extra_objs_gen =
 cl_extra_objs_dll =
+!ifeq bld_cpu x64
+cl_extra_libs_gen = $(watcom_dir)/linuxx64/clibext.lib
+cl_extra_libs_dll = $(watcom_dir)/linuxx64/clibexts.lib
+!else
 cl_extra_libs_gen = $(watcom_dir)/$(bin_subdir)/clibext.lib
 cl_extra_libs_dll = $(watcom_dir)/$(bin_subdir)/clibexts.lib
+!endif
 
 !ifeq sys_dll 1
 cl_extra_objs = $(cl_extra_objs_dll)
@@ -448,7 +453,11 @@ cppflags_osi    = $(common_cppflags) $(common_cppflags_$(host_os))
 cppflags_386    = $(common_cppflags_386) $(common_cppflags_$(host_os)_386)
 cppflags_ppc    = $(common_cppflags_ppc) $(common_cppflags_$(host_os)_ppc)
 cppflags_mps    = $(common_cppflags_mps) $(common_cppflags_$(host_os)_mps)
+!ifdef bootstrap
 cppflags_x64    = $(common_cppflags_x64) $(common_cppflags_$(host_os)_x64)
+!else
+cppflags_x64    = $(common_cppflags_x64) $(common_cppflags_$(host_os)_x64) -mtune=generic
+!endif
 cppflags_arm    = $(common_cppflags_arm) $(common_cppflags_$(host_os)_arm)
 
 c_flags   =
