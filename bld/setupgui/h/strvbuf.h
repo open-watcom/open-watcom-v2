@@ -181,7 +181,7 @@ void VbufTruncWhite(            // TRUNCATE TRAILING WHITESPACE FROM vbuf->buf
 void VbufAddDirSep(             // TERMINATE A VBUF AS PATH BY DIR_SEP
     VBUF *vbuf )                // - VBUF structure
 ;
-void VbufRemDirSep(             // REMOVE DIR_SEP FROM A VBUF END
+void VbufRemEndDirSep(          // REMOVE DIR_SEP FROM A VBUF END
     VBUF *vbuf )                // - VBUF structure
 ;
 void VbufMakepath(              // SET A FILE PATH NAME TO VBUF

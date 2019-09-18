@@ -234,7 +234,7 @@ static bool DoMainLoop( dlg_state *state )
             break;
         } else if( *state == DLG_NEXT && stricmp( diag_list[i], "DstDir" ) == 0 ) {
             VbufSetStr( &temp, GetVariableStrVal( "DstDir" ) );
-            VbufRemDirSep( &temp );
+            VbufRemEndDirSep( &temp );
             SetVariableByName_vbuf( "DstDir", &temp );
         }
         if( got_disk_sizes ) {
@@ -344,7 +344,7 @@ void GUImain( void )
                     VbufMakepath( &inf_name, &drive, &dir, &new_inf, NULL );
                     VbufSplitpath( &inf_name, &drive, &dir, NULL, NULL );
                     VbufMakepath( &src_path, &drive, &dir, NULL, NULL );
-                    VbufRemDirSep( &src_path );
+                    VbufRemEndDirSep( &src_path );
                 }
                 FreeDefaultDialogs();
                 FreeAllStructs();

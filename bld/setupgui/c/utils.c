@@ -2626,7 +2626,7 @@ bool GetDirParams( int argc, char **argv, VBUF *inf_name, VBUF *src_path, VBUF *
         VbufSplitpath( inf_name, &drive, &dir, NULL, NULL );
         VbufMakepath( src_path, &drive, &dir, NULL, NULL );
     }
-    VbufRemDirSep( src_path );
+    VbufRemEndDirSep( src_path );
     VbufFree( &dir );
     VbufFree( &drive );
     return( true );

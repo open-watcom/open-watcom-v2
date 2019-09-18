@@ -443,7 +443,7 @@ void VbufAddDirSep(             // TERMINATE A VBUF AS PATH BY DIR_SEP
     }
 }
 
-void VbufRemDirSep(             // REMOVE DIR_SEP FROM A VBUF AS PATH
+void VbufRemEndDirSep(          // REMOVE DIR_SEP FROM A VBUF AS PATH
     VBUF *vbuf )                // - VBUF structure
 {
     size_t  len;
