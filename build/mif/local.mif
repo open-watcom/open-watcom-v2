@@ -331,7 +331,11 @@ common_clflags_lib_shared = -shared
 
 # Target specific options
 target_cflags_386   =
+!ifdef bootstrap
+target_cflags_x64   =
+!else
 target_cflags_x64   = -march=core2
+!endif
 target_cflags_ppc   =
 target_cflags_mps   =
 target_cflags_arm   =
@@ -453,11 +457,7 @@ cppflags_osi    = $(common_cppflags) $(common_cppflags_$(host_os))
 cppflags_386    = $(common_cppflags_386) $(common_cppflags_$(host_os)_386)
 cppflags_ppc    = $(common_cppflags_ppc) $(common_cppflags_$(host_os)_ppc)
 cppflags_mps    = $(common_cppflags_mps) $(common_cppflags_$(host_os)_mps)
-!ifdef bootstrap
 cppflags_x64    = $(common_cppflags_x64) $(common_cppflags_$(host_os)_x64)
-!else
-cppflags_x64    = $(common_cppflags_x64) $(common_cppflags_$(host_os)_x64) -mtune=generic
-!endif
 cppflags_arm    = $(common_cppflags_arm) $(common_cppflags_$(host_os)_arm)
 
 c_flags   =
