@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -405,18 +406,16 @@ IDEBool IDEAPI IDEPassInitInfo( IDEDllHdl hdl, IDEInitInfo *info )
         GlobalCompFlags.ignore_environment = true;
         GlobalCompFlags.ignore_current_dir = true;
     }
-    if( info->ver >= 2 ) {
-        if( info->cmd_line_has_files ) {
-            GlobalCompFlags.ide_cmd_line_has_files = true;
+    if( info->cmd_line_has_files ) {
+        GlobalCompFlags.ide_cmd_line_has_files = true;
+    }
+    if( info->ver > 2 ) {
+        if( info->console_output ) {
+            GlobalCompFlags.ide_console_output = true;
         }
-        if( info->ver >= 3 ) {
-            if( info->console_output ) {
-                GlobalCompFlags.ide_console_output = true;
-            }
-            if( info->ver >= 4 ) {
-                if( info->progress_messages ) {
-                    GlobalCompFlags.progress_messages = true;
-                }
+        if( info->ver > 3 ) {
+            if( info->progress_messages ) {
+                GlobalCompFlags.progress_messages = true;
             }
         }
     }

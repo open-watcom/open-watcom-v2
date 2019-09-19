@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,8 +34,8 @@
 #include <stdio.h>
 #include <stdarg.h>
 #if defined( __WATCOMC__ ) || !defined( __UNIX__ )
-	#include <malloc.h>            /* necessary for _heapshrink() */
-#include <process.h>
+    #include <malloc.h>            /* necessary for _heapshrink() */
+    #include <process.h>
 #endif
 #include "global.h"
 #include "errprt.h"
@@ -361,7 +362,7 @@ IDEBool IDEAPI IDEPassInitInfo( IDEDllHdl hdl, IDEInitInfo *info )
 {
     /* unused parameters */ (void)hdl;
 
-    if( info == NULL || info->ver < 2 ) {
+    if( info->ver < 2 ) {
         return( true );
     }
     if( info->ignore_env ) {
@@ -371,11 +372,11 @@ IDEBool IDEAPI IDEPassInitInfo( IDEDllHdl hdl, IDEInitInfo *info )
     if( info->cmd_line_has_files ) {
 //        CompFlags.ide_cmd_line = true;
     }
-    if( info->ver >= 3 ) {
+    if( info->ver > 2 ) {
         if( info->console_output ) {
             console_tty = true;
         }
-        if( info->ver >= 4 ) {
+        if( info->ver > 3 ) {
             if( info->progress_messages ) {
 //                CompFlags.progress_messages = true;
             }
