@@ -347,8 +347,8 @@ ext_lib_shared = .so
 cl_extra_objs_gen =
 cl_extra_objs_dll =
 !ifeq bld_cpu x64
-cl_extra_libs_gen = $(watcom_dir)/linuxx64/clibext.lib
-cl_extra_libs_dll = $(watcom_dir)/linuxx64/clibexts.lib
+cl_extra_libs_gen = $(watcom_dir)/$(host_os)x64/clibext.lib
+cl_extra_libs_dll = $(watcom_dir)/$(host_os)x64/clibexts.lib
 !else
 cl_extra_libs_gen = $(watcom_dir)/$(bin_subdir)/clibext.lib
 cl_extra_libs_dll = $(watcom_dir)/$(bin_subdir)/clibexts.lib
