@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -55,7 +55,7 @@ static void blankarea( SAREA area, ATTR attr )
 void UIAPI uiblankattr( ATTR attr )
 /**********************************/
 {
-    blankarea( UIData->blank.area, attr );
+    blankarea( UIData->blank_window.area, attr );
 }
 
 
@@ -69,5 +69,5 @@ void UIAPI uiblankarea( SAREA area )
 void UIAPI uiblankscreen( void )
 /*******************************/
 {
-    blankarea( UIData->blank.area, 0x07 );
+    blankarea( UIData->blank_window.area, 0x07 );
 }

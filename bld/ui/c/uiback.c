@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -55,7 +55,7 @@ static void backfill( SAREA area, void *dummy )
     /* unused parameters */ (void)dummy;
 
     for( row = area.row; row < area.row + area.height; ++row ) {
-        uibcopy( &UIData->blank.buffer, row, area.col,
+        uibcopy( &UIData->blank_window.buffer, row, area.col,
                &UIData->screen, row, area.col, area.width );
     }
 }
@@ -67,7 +67,7 @@ void uirestorebackground( void )
 
     hold = UIData->attrs[ATTR_NORMAL];
     UIData->attrs[ATTR_NORMAL] = 0x07;
-    uidirty( UIData->blank.area );
+    uidirty( UIData->blank_window.area );
     uirefresh();
     UIData->attrs[ATTR_NORMAL] = hold;
 }
@@ -76,21 +76,21 @@ void uirestorebackground( void )
 void intern openbackground( void )
 /********************************/
 {
-    UIData->blank.area.row = 0;
-    UIData->blank.area.col = 0;
-    UIData->blank.area.height = UIData->height;
-    UIData->blank.area.width = UIData->width;
-    UIData->blank.priority = P_BACKGROUND;
-    UIData->blank.update_proc = backblank;
-    UIData->blank.parm = (void *)0xbb;// NULL is reserved for CGUI screens!
-    openwindow( &UIData->blank );
+    UIData->blank_window.area.row = 0;
+    UIData->blank_window.area.col = 0;
+    UIData->blank_window.area.height = UIData->height;
+    UIData->blank_window.area.width = UIData->width;
+    UIData->blank_window.priority = P_BACKGROUND;
+    UIData->blank_window.update_proc = backblank;
+    UIData->blank_window.parm = (void *)0xbb;// NULL is reserved for CGUI screens!
+    openwindow( &UIData->blank_window );
 }
 
 
 void intern closebackground( void )
 /*********************************/
 {
-    closewindow( &UIData->blank );
+    closewindow( &UIData->blank_window );
 }
 
 
@@ -99,16 +99,16 @@ BUFFER * UIAPI uibackgroundbuffer( void )
 {
     bool    ok;
 
-    if( UIData->blank.buffer.origin != NULL ) {
+    if( UIData->blank_window.buffer.origin != NULL ) {
         ok = true;
     } else {
-        ok = balloc( &UIData->blank.buffer, UIData->height, UIData->width );
+        ok = balloc( &UIData->blank_window.buffer, UIData->height, UIData->width );
     }
     if( ok ) {
-        UIData->blank.update_proc = backfill;
-        UIData->blank.parm = (void *)0xbb;// NULL is reserved for CGUI screens!
-        //UIData->blank.parm = NULL;       // ... just put in any old value
-        return( &UIData->blank.buffer );
+        UIData->blank_window.update_proc = backfill;
+        UIData->blank_window.parm = (void *)0xbb;   // NULL is reserved for CGUI screens!
+        //UIData->blank_window.parm = NULL;           // ... just put in any old value
+        return( &UIData->blank_window.buffer );
     }
     return( NULL );
 }
@@ -116,12 +116,12 @@ BUFFER * UIAPI uibackgroundbuffer( void )
 bool UIAPI uiremovebackground( void )
 /***********************************/
 {
-    if( UIData->blank.buffer.origin != NULL ) {
-        bfree( &UIData->blank.buffer );
-        UIData->blank.buffer.origin = NULL;
+    if( UIData->blank_window.buffer.origin != NULL ) {
+        bfree( &UIData->blank_window.buffer );
+        UIData->blank_window.buffer.origin = NULL;
     }
-    UIData->blank.update_proc = backblank;
-    UIData->blank.parm = &UIData->attrs[ATTR_NORMAL];
+    UIData->blank_window.update_proc = backblank;
+    UIData->blank_window.parm = &UIData->attrs[ATTR_NORMAL];
     return( true );
 }
 

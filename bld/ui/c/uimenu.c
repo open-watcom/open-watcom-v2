@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -314,19 +314,19 @@ void uidrawmenu( UIMENUITEM *menuitems, DESCMENU *desc, int curritem )
     permit_refresh();
 }
 
-void UIAPI uiclosepopup( UI_WINDOW *window )
+void UIAPI uiclosepopup( UI_WINDOW *wptr )
 {
-    closewindow( window );
-    window->update_proc = NULL;
+    closewindow( wptr );
+    wptr->update_proc = NULL;
 }
 
-void UIAPI uiopenpopup( DESCMENU *desc, UI_WINDOW *window )
+void UIAPI uiopenpopup( DESCMENU *desc, UI_WINDOW *wptr )
 {
-    window->area = desc->area;
-    window->priority = P_DIALOGUE;
-    window->update_proc = NULL;
-    window->parm = NULL;
-    openwindow( window );
+    wptr->area = desc->area;
+    wptr->priority = P_DIALOGUE;
+    wptr->update_proc = NULL;
+    wptr->parm = NULL;
+    openwindow( wptr );
 }
 
 static bool process_menuchar( int ch, int *pmenu )

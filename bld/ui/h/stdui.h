@@ -622,7 +622,7 @@ typedef struct monitor {
     CURSORORD       cursor_row;         /* cursor row                       */
     CURSORORD       cursor_col;         /* cursor column                    */
     CURSOR_TYPE     cursor_type;        /* cursor type                      */
-    UI_WINDOW       blank;              /* blank window                     */
+    UI_WINDOW       blank_window;       /* blank window                     */
     BUFFER          screen;             /* screen                           */
     unsigned        mouse_speed;        /* mouse speed factor               */
     unsigned short  old_shift;          /* status of shift keys             */

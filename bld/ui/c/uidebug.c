@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,19 +34,19 @@
 #include "uidef.h"
 #include "uidebug.h"
 
-static UI_WINDOW * BadWindow = NULL;
+static UI_WINDOW *BadWindow = NULL;
 
-static void bad_window( UI_WINDOW * wnd )
-/************************************/
+static void bad_window( UI_WINDOW *wptr )
+/***************************************/
 {
-    BadWindow = wnd;
+    BadWindow = wptr;
 }
 
 void intern uicheckuidata( void )
 /*******************************/
 {
-    UI_WINDOW * curr;
-    UI_WINDOW * prev;
+    UI_WINDOW *curr;
+    UI_WINDOW *prev;
 
     if( UIData->area_head == NULL || UIData->area_tail == NULL ) {
         if( UIData->area_head != NULL || UIData->area_tail != NULL ) {
