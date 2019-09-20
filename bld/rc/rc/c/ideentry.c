@@ -53,6 +53,8 @@
 
 #define PRINTF_BUF_SIZE         2048
 
+#define IDEFN(x)        IdeCbs->x
+
 extern void InitGlobs( void );
 extern void FiniGlobs( void );
 extern void RCmain( void );
@@ -136,7 +138,7 @@ int RcMsgFprintf( OutPutInfo *info, const char *format, ... )
         if( *end == '\n' ) {
             *end = '\0';
             setPrintInfo( &msginfo, info, start );
-            IdeCbs->PrintWithInfo( IdeHdl, &msginfo );
+            IDEFN( PrintWithInfo )( IdeHdl, &msginfo );
             start = end + 1;
         } else if( *end == '\0' ) {
             len = strlen( start );
@@ -155,7 +157,7 @@ const char *RcGetEnv( const char *name )
     const char  *val;
 
     if( IdeCbs != NULL && !initInfo->ignore_env ) {
-        if( !IdeCbs->GetInfo( IdeHdl, IDE_GET_ENV_VAR, (IDEGetInfoWParam)name, (IDEGetInfoLParam)&val ) ) {
+        if( !IDEFN( GetInfo )( IdeHdl, IDE_GET_ENV_VAR, (IDEGetInfoWParam)name, (IDEGetInfoLParam)&val ) ) {
             return( val );
         }
     }
@@ -280,6 +282,7 @@ static int RCMainLine( const char *opts, int argc, char **argv )
     bool        pass1;
     int         i;
     int         rc;
+    char        *p;
 
     rc = 1;
     curBufPos = formatBuffer;
@@ -301,13 +304,15 @@ static int RCMainLine( const char *opts, int argc, char **argv )
                         break;
                     }
                 }
-                if( initInfo != NULL && initInfo->ver > 1 && initInfo->cmd_line_has_files ) {
-                    if( !IdeCbs->GetInfo( IdeHdl, IDE_GET_SOURCE_FILE, 0, (IDEGetInfoLParam)( infile + 1 ) ) ) {
+                if( initInfo != NULL && initInfo->ver > 1 && !initInfo->cmd_line_has_files ) {
+                    p = infile + 1;
+                    if( !IDEFN( GetInfo )( IdeHdl, IDE_GET_SOURCE_FILE, (IDEGetInfoWParam)NULL, (IDEGetInfoLParam)&p ) ) {
                         infile[0] = '\"';
                         strcat( infile, "\"" );
                         argv[argc++] = infile;
                     }
-                    if( !IdeCbs->GetInfo( IdeHdl, IDE_GET_TARGET_FILE, 0, (IDEGetInfoLParam)( outfile + 5 ) ) ) {
+                    p = outfile + 5;
+                    if( !IDEFN( GetInfo )( IdeHdl, IDE_GET_TARGET_FILE, (IDEGetInfoWParam)NULL, (IDEGetInfoLParam)&p ) ) {
                         if( pass1 ) {
                             strcpy( outfile, "-fo=\"" );
                         } else {
@@ -370,7 +375,7 @@ IDEBool IDEAPI IDEPassInitInfo( IDEDllHdl hdl, IDEInitInfo *info )
         IgnoreCWD = true;
     }
     if( info->cmd_line_has_files ) {
-//        CompFlags.ide_cmd_line = true;
+//        CompFlags.ide_cmd_line_has_files = true;
     }
     if( info->ver > 2 ) {
         if( info->console_output ) {

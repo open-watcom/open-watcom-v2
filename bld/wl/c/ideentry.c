@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -46,6 +47,8 @@
 #include "clibext.h"
 
 #define PREFIX_SIZE 8
+
+#define IDEFN(x)        IdeCbs->x
 
 typedef struct {
     IDEInfoType type;
@@ -100,7 +103,7 @@ void WriteStdOut( const char *str )
 {
     CheckBreak();
     if( IdeCbs != NULL ) {
-        IdeCbs->PrintWithCRLF( IdeHdl, str );
+        IDEFN( PrintWithCRLF )( IdeHdl, str );
     }
 }
 
@@ -108,7 +111,7 @@ void WriteStdOutNL( void )
 /*******************************/
 {
     if( IdeCbs != NULL ) {
-        IdeCbs->PrintWithCRLF( IdeHdl, "\n" );
+        IDEFN( PrintWithCRLF )( IdeHdl, "\n" );
     }
 }
 
@@ -129,7 +132,7 @@ void WriteStdOutInfo( const char *str, unsigned level, const char *symbol )
         if( symbol != NULL ) {
             IdeMsgSetLnkSymbol( &info, symbol );
         }
-        IdeCbs->PrintWithInfo( IdeHdl, &info );
+        IDEFN( PrintWithInfo )( IdeHdl, &info );
     }
 }
 
@@ -140,7 +143,7 @@ char * GetEnvString( char *envname )
 
     if( IdeCbs == NULL || InitInfo.ignore_env )
         return( NULL );
-    IdeCbs->GetInfo( IdeHdl, IDE_GET_ENV_VAR, (IDEGetInfoWParam)envname, (IDEGetInfoLParam)&retval );
+    IDEFN( GetInfo )( IdeHdl, IDE_GET_ENV_VAR, (IDEGetInfoWParam)envname, (IDEGetInfoLParam)&retval );
     return( retval );
 }
 
@@ -150,33 +153,25 @@ bool IsStdOutConsole( void )
     return InitInfo.console_output;
 }
 
-static bool GetAddtlCommand( IDEInfoType cmd, char *buf )
-/*******************************************************/
-{
-    /* unused parameters */ (void)cmd; (void)buf;
-
-    return false;
-#if 0
-    if( InitInfo.cmd_line_has_files ) return false;
-    return !IdeCbs->GetInfo( IdeHdl, cmd, NULL, (IDEGetInfoLParam)&buf );
-#endif
-}
-
 void GetExtraCommands( void )
 /***************************/
 {
     extra_cmd_info const    *cmd;
     char                    buff[_MAX_PATH + PREFIX_SIZE];
+    char                    *p;
 
-    for( cmd = ExtraCmds; cmd->prefix[0] != '\0'; ++cmd ) {
-        for( ;; ) {
-            memcpy( buff, cmd->prefix, PREFIX_SIZE );
-            if( !GetAddtlCommand( cmd->type, buff + PREFIX_SIZE ) )
-                break;
-            if( DoBuffCmdParse( buff ) )
-                break;
-            if( !cmd->retry ) {
-                break;
+    if( !InitInfo.cmd_line_has_files ) {
+        for( cmd = ExtraCmds; cmd->prefix[0] != '\0'; ++cmd ) {
+            for( ;; ) {
+                memcpy( buff, cmd->prefix, PREFIX_SIZE );
+                p = buff + PREFIX_SIZE;
+                if( IDEFN( GetInfo )( IdeHdl, cmd->type, (IDEGetInfoWParam)NULL, (IDEGetInfoLParam)&p ) )
+                    break;
+                if( DoBuffCmdParse( buff ) )
+                    break;
+                if( !cmd->retry ) {
+                    break;
+                }
             }
         }
     }

@@ -48,7 +48,7 @@
 #include "clibext.h"
 
 
-#define IDEFN(x)        (*IdeCbs->x)
+#define IDEFN(x)        IdeCbs->x
 
 static   IDECBHdl       IdeHdl;      // - handle for this instantiation
 static   IDECallBacks   *IdeCbs;       // - call backs into IDE
@@ -267,12 +267,15 @@ static int heap_size( struct heap_stat *stat ) {
 
 static void getFrontEndArgv( char **argv, char *infile, char *outfile )
 {
+    char    *p;
+
     if( !GlobalCompFlags.ide_cmd_line_has_files ) {
         infile[0] = '\0';
-        IDEFN( GetInfo )( IdeHdl, IDE_GET_SOURCE_FILE, 0, (IDEGetInfoLParam)infile );
+        IDEFN( GetInfo )( IdeHdl, IDE_GET_SOURCE_FILE, (IDEGetInfoWParam)NULL, (IDEGetInfoLParam)&infile );
         *argv++ = infile;
         outfile[0] = '\0';
-        if( !IDEFN( GetInfo )( IdeHdl, IDE_GET_TARGET_FILE, 0, (IDEGetInfoLParam)(outfile + 4) ) ) {
+        p = outfile + 4;
+        if( !IDEFN( GetInfo )( IdeHdl, IDE_GET_TARGET_FILE, (IDEGetInfoWParam)NULL, (IDEGetInfoLParam)&p ) ) {
             outfile[0] = '-';
             outfile[1] = 'f';
             outfile[2] = 'o';
