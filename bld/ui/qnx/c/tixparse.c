@@ -57,7 +57,7 @@
 
 extern struct _console_ctrl *UIConCtrl;
 
-char            ti_char_map[256];
+char            ti_char_map[256][MB_MAP_MAX];
 
 static tix_status init_tix_scanner( const char *termname )
 {
@@ -109,8 +109,8 @@ tix_status ti_read_tix( const char *termname )
 
     memset( _ti_alt_map, 0, sizeof( _ti_alt_map ) );
 
-    for( i = 0; i < sizeof( ti_char_map ); i++ )
-        ti_char_map[i] = i;
+    for( i = 0; i < sizeof( ti_char_map ) / sizeof( ti_char_map[0] ); i++ )
+        ti_char_map[i][0] = i;
 
     ret = init_tix_scanner( termname );
     switch( ret ) {

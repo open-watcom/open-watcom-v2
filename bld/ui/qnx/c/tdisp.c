@@ -1210,11 +1210,11 @@ QNXDebugPrintf2("cursor address %d,%d\n",j,i);
 #define TI_SLURPCHAR( __ch )  \
 {                             \
     unsigned char __c = __ch; \
-    if( rcount != 0 && ( rchar != ti_char_map[__c] || ralt != ti_alt_map_chk( __c ) ) ) \
+    if( rcount != 0 && ( rchar != ti_char_map[__c][0] || ralt != ti_alt_map_chk( __c ) ) ) \
         TI_DUMPCHARS();       \
     rcol = (rcount == 0) ? j : rcol; \
     rcount++;                 \
-    rchar = ti_char_map[__c]; \
+    rchar = ti_char_map[__c][0]; \
     ralt = ti_alt_map_chk( __c ); \
 }
 
