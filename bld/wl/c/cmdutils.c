@@ -680,9 +680,13 @@ static void GetNewLine( void )
         }
         Token.next = Token.buff;
         break;
-    default:    /* interactive prompt with entry */
-        OutPutPrompt( _LinkerPrompt );
+    default:
+    case COMMANDLINE:
         Token.how = INTERACTIVE;
+        /* fall through */
+    case INTERACTIVE:
+        /* interactive prompt with entry */
+        OutPutPrompt( _LinkerPrompt );
         if( QReadStr( STDIN_HANDLE, Token.buff, MAX_REC, "console" ) ) {
             Token.where = ENDOFCMD;
         } else {
@@ -1076,30 +1080,22 @@ static void deleteCmdFile( cmdfilelist *cmdfile, bool burn )
 {
     f_handle    file;
 
-    file = cmdfile->file;
-    if( burn ) {
-        if( file != NIL_FHANDLE && file != STDIN_HANDLE ) {
-            QClose( file, cmdfile->name );
-        }
-        switch( cmdfile->token.how ) {
-        case ENVIRONMENT:
-        case SYSTEM:
+    switch( cmdfile->token.how ) {
+    case SYSTEM:
+        break;
+    case ENVIRONMENT:
+        if( burn )
             break;
-        default:
+        /* fall through */
+    default:
+        if( cmdfile->token.buff != NULL ) {
             _LnkFree( cmdfile->token.buff );
-            break;
         }
-    } else {
-        switch( Token.how ) {
-        case SYSTEM:
-            break;
-        default:
-            _LnkFree( Token.buff );
-            if( file != NIL_FHANDLE && file != STDIN_HANDLE ) {
-                QClose( file, cmdfile->name );
-            }
-            break;
-        }
+        break;
+    }
+    file = cmdfile->file;
+    if( file != NIL_FHANDLE && file != STDIN_HANDLE ) {
+        QClose( file, cmdfile->name );
     }
     if( cmdfile->symprefix != NULL ) {
         _LnkFree( cmdfile->symprefix );
