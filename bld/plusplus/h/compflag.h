@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -80,7 +81,7 @@ typedef struct comp_flags {
     bool    batch_file_eof                  : 1;    // EOF on the batch file
     bool    batch_file_continue             : 1;    // continue on errors
     bool    in_pragma                       : 1;    // scanning in a #pragma
-    bool    ide_cmd_line                    : 1;    // ide command line ok as is
+    bool    ide_cmd_line_has_files          : 1;    // ide command line ok as is
     bool    ide_console_output              : 1;    // ide doing output to console
     bool    use_macro_tokens                : 1;    // macro expansion is token source
     bool    log_note_msgs                   : 1;    // on ==> NOTE_MSGs to error file
@@ -229,44 +230,4 @@ typedef struct comp_flags {
         )
 #endif
 
-typedef enum                            // DTM -- destruction method
-{   DTM_DIRECT                          // - direct calls
-,   DTM_DIRECT_TABLE                    // - direct calls + table
-,   DTM_DIRECT_SMALL                    // - direct calls + smallness
-,   DTM_TABLE                           // - table
-,   DTM_TABLE_SMALL                     // - table + smallness
-,   DTM_COUNT                           // number of methods
-} DT_METHOD;
-
-typedef struct                          // DLL_DATA -- data for DLL
-{   void (*print_str)( char const* );   // - print: string
-    void (*print_chr)( char );          // - print: character
-    void (*print_line)( char const* );  // - print: line
-    char *cmd_line;                     // - command line
-    int argc;                           // - argc/argv command line
-    char **argv;
-} DLL_DATA;
-
-#include <pushpck4.h>
-typedef struct comp_info {              // Compiler information
-    TYPE        ptr_diff_near;          // - type from near ptr subtraction
-    TYPE        ptr_diff_far;           // - type from far ptr subtraction
-    TYPE        ptr_diff_far16;         // - type from far16 ptr subtraction
-    TYPE        ptr_diff_huge;          // - type from huge ptr subtraction
-    uint_8      init_priority;          // - initialization priority
-    DT_METHOD   dt_method;              // - destruction method
-    DT_METHOD   dt_method_speced;       // - specified destruction method
-    unsigned    :0;                     // - alignment
-    DLL_DATA*   dll_data;               // - data for DLL
-    void*       exit_jmpbuf;            // - jmpbuf for DLL exit
-    void*       idehdl;                 // - IDE handle
-    void*       idecbs;                 // - IDE call backs
-    int         compfile_max;           // - max # files to compile
-    int         compfile_cur;           // - current # of file to compile
-    void*       primary_srcfile;        // - SRCFILE for primary file
-    unsigned    fc_file_line;           // - line # in -fc file
-    char*       pch_buff_cursor;        // - PCH read: buffer cursor
-    char*       pch_buff_end;           // - PCH read: end of buffer
-} comp_info;
-#include <poppck.h>
 #endif

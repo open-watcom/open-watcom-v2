@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,6 +37,7 @@
 #include "cgdata.h"
 #include "codegen.h"
 #include "pragdefn.h"
+#include "compinfo.h"
 #ifdef __OSI__
  #include "ostype.h"
 #endif

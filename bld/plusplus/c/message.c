@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -278,11 +279,11 @@ static void ideDisplay          // DISPLAY USING IDE INTERFACE
     }
     if( goes_in_err_file ) {
         if( ! ( CompFlags.eq_switch_used && CompFlags.ide_console_output ) ) {
-            IDEFN(PrintWithInfo)( CompInfo.idehdl, &inf );
+            IDEFN( PrintWithInfo )( CompInfo.idehdl, &inf );
         }
         idePrt( CompInfo.idehdl, &inf );
     } else {
-        IDEFN(PrintWithInfo)( CompInfo.idehdl, &inf );
+        IDEFN( PrintWithInfo )( CompInfo.idehdl, &inf );
     }
 }
 

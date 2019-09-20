@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -79,6 +80,15 @@
 #define BITARR_OFFS(x)      ((x) / 8)
 #define BITARR_MASK(x)      (1 << ((x) & 7))
 #define NOT_BITARR_MASK(x)  (255 - (x))
+
+typedef enum                            // DTM -- destruction method
+{   DTM_DIRECT                          // - direct calls
+,   DTM_DIRECT_TABLE                    // - direct calls + table
+,   DTM_DIRECT_SMALL                    // - direct calls + smallness
+,   DTM_TABLE                           // - table
+,   DTM_TABLE_SMALL                     // - table + smallness
+,   DTM_COUNT                           // number of methods
+} DT_METHOD;
 
 typedef struct idname {
     struct idname       *next;
@@ -247,12 +257,5 @@ typedef enum {
 global int          WngLevel;       // - warning severity level
 global unsigned     TargetSystem;   // - target system
 global COMP_FLAGS   CompFlags;      // - compiler flags
-global comp_info    CompInfo;       // - compiler information
 global void         *Environment;   // - var for Suicide()
 global int          ErrLimit;       // - error limit
-
-int WppCompile(                 // MAIN-LINE (DLL)
-    DLL_DATA* dll_data,         // - data for DLL
-    char *input,                // - input file name argv string
-    char *output )              // - output file name argv string
-;

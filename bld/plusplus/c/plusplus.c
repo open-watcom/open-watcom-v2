@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -59,6 +60,7 @@
 #include "autodep.h"
 #include "swchar.h"
 #include "ialias.h"
+#include "ideentry.h"
 #ifndef NDEBUG
 #include "pragdefn.h"
 #include "enterdb.h"
@@ -424,11 +426,11 @@ static int doCCompile(          // COMPILE C++ PROGRAM
 static void initCompFlags( void )
 {
     struct {
-        bool    ignore_environment : 1;
-        bool    ignore_current_dir : 1;
-        bool    ide_cmd_line       : 1;
-        bool    ide_console_output : 1;
-        bool    dll_active         : 1;
+        bool    ignore_environment      : 1;
+        bool    ignore_current_dir      : 1;
+        bool    ide_cmd_line_has_files  : 1;
+        bool    ide_console_output      : 1;
+        bool    dll_active              : 1;
     } xfer_flags;
 
     #define __save_flag( x ) xfer_flags.x = CompFlags.x;
@@ -436,13 +438,13 @@ static void initCompFlags( void )
 
     __save_flag( ignore_environment );
     __save_flag( ignore_current_dir );
-    __save_flag( ide_cmd_line );
+    __save_flag( ide_cmd_line_has_files );
     __save_flag( ide_console_output );
     __save_flag( dll_active );
     memset( &CompFlags, 0, sizeof( CompFlags ) );
     __restore_flag( ignore_environment );
     __restore_flag( ignore_current_dir );
-    __restore_flag( ide_cmd_line );
+    __restore_flag( ide_cmd_line_has_files );
     __restore_flag( ide_console_output );
     __restore_flag( dll_active );
     CompFlags.dll_subsequent = true;
