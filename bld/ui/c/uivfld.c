@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -156,6 +157,12 @@ ui_event UIAPI uivfieldedit( VSCREEN *vptr, VFIELDEDIT *header )
     VBUFFER            buffer;
     SAREA              area;
 
+    buffer.content = NULL;
+    buffer.length = 0;
+    buffer.index = 0;
+    buffer.insert = false;
+    buffer.dirty = false;
+    buffer.auto_clear = false;
     if( header->reset ) {
         header->reset = false;
         header->prevfield = NULL;

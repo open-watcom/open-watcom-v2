@@ -34,8 +34,8 @@
 #include "uidef.h"
 
 
-static void backblank( SAREA area, void *dummy )
-/**********************************************/
+static void backblank_update_fn( SAREA area, void *dummy )
+/********************************************************/
 {
     uisize      row;
 
@@ -47,8 +47,8 @@ static void backblank( SAREA area, void *dummy )
 }
 
 
-static void backfill( SAREA area, void *dummy )
-/*********************************************/
+static void backfill_update_fn( SAREA area, void *dummy )
+/*******************************************************/
 {
     uisize      row;
 
@@ -81,7 +81,7 @@ void intern openbackground( void )
     UIData->blank_window.area.height = UIData->height;
     UIData->blank_window.area.width = UIData->width;
     UIData->blank_window.priority = P_BACKGROUND;
-    UIData->blank_window.update_proc = backblank;
+    UIData->blank_window.update_proc = backblank_update_fn;
     UIData->blank_window.parm = (void *)0xbb;// NULL is reserved for CGUI screens!
     openwindow( &UIData->blank_window );
 }
@@ -105,7 +105,7 @@ BUFFER * UIAPI uibackgroundbuffer( void )
         ok = balloc( &UIData->blank_window.buffer, UIData->height, UIData->width );
     }
     if( ok ) {
-        UIData->blank_window.update_proc = backfill;
+        UIData->blank_window.update_proc = backfill_update_fn;
         UIData->blank_window.parm = (void *)0xbb;   // NULL is reserved for CGUI screens!
         //UIData->blank_window.parm = NULL;           // ... just put in any old value
         return( &UIData->blank_window.buffer );
@@ -120,7 +120,7 @@ bool UIAPI uiremovebackground( void )
         bfree( &UIData->blank_window.buffer );
         UIData->blank_window.buffer.origin = NULL;
     }
-    UIData->blank_window.update_proc = backblank;
+    UIData->blank_window.update_proc = backblank_update_fn;
     UIData->blank_window.parm = &UIData->attrs[ATTR_NORMAL];
     return( true );
 }

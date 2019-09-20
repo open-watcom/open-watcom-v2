@@ -762,8 +762,8 @@ void UIAPI uimenutitlebar( void )
     permit_refresh();
 }
 
-static void drawbar( SAREA area, void *dummy )
-/********************************************/
+static void drawbar_update_fn( SAREA area, void *dummy )
+/******************************************************/
 {
     /* unused parameters */ (void)dummy;
 
@@ -882,7 +882,7 @@ VBARMENU * UIAPI uimenubar( VBARMENU *bar )
         BarWin.area.height = uimenuheight();
         BarWin.area.width = UIData->width;
         BarWin.priority = P_MENU;
-        BarWin.update_proc = drawbar;
+        BarWin.update_proc = drawbar_update_fn;
         BarWin.parm = NULL;
         openwindow( &BarWin );
         InitMenuPopupPending = false;

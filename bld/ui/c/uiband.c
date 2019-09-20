@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -39,7 +40,7 @@ static SAREA            BandArea;
 static ATTR             Attr;
 
 
-static void drawband( SAREA area, void *dummy )
+static void drawband_update_fn( SAREA area, void *dummy )
 {
     /* unused parameters */ (void)area; (void)dummy;
 
@@ -56,7 +57,7 @@ void UIAPI uibandinit( SAREA start, ATTR attr )
     start.height = 0;
     BandWnd.area = start;
     BandWnd.priority = P_UNBUFFERED;
-    BandWnd.update_proc = drawband;
+    BandWnd.update_proc = drawband_update_fn;
     BandWnd.parm = NULL;
     openwindow( &BandWnd );
     BandWnd.dirty_area = BandArea;

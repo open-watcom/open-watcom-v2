@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -39,8 +39,8 @@
 #include "clibext.h"
 
 
-static void update( SAREA area, void *_vptr )
-/*******************************************/
+static void vscreen_update_fn( SAREA area, void *_vptr )
+/******************************************************/
 {
     int             row;
     int             vrow;
@@ -61,7 +61,6 @@ VSCREEN* UIAPI uivopen( VSCREEN *vptr )
     const char              *box;
     ATTR                    attr;
     int                     priority;
-    update_func             updatertn;
     bool                    okbuffer;
     uisize                  len;
     ORD                     col;
@@ -98,15 +97,17 @@ VSCREEN* UIAPI uivopen( VSCREEN *vptr )
         priority = P_UNBUFFERED;
         bfake( &(vptr->window.buffer), area.row, area.col );
         okbuffer = true;
-        updatertn = NULL;
     } else {
         okbuffer = balloc( &(vptr->window.buffer), area.height, area.width );
-        updatertn = update;
     }
     if( okbuffer ) {
+        if( flags & V_UNBUFFERED ) {
+            vptr->window.update_proc = NULL;
+        } else {
+            vptr->window.update_proc = vscreen_update_fn;
+        }
         vptr->window.area = area;
         vptr->window.priority = priority;
-        vptr->window.update_proc = updatertn;
         vptr->window.parm = vptr;
         covered = openwindow( &(vptr->window) );
         vptr->flags = flags;

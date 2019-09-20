@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -309,7 +310,7 @@ static maction getmouseregion( a_list *list, int *row, int *col )
 
     uimousepos( box->vs, row, col );
 
-    if( *row - box->area.row >= uilistsize( list ) ) {
+    if( *row >= box->area.row + uilistsize( list ) ) {
         return( R_UNS );
     }
     if( *row >= box->area.height + box->area.row ) {
@@ -462,7 +463,7 @@ ui_event uilistbox( ui_event ui_ev, a_list *list, bool permanent )
         break;
     case EV_CURSOR_DOWN :
         if( box->row < listsize - 1 ) {
-            if( box->row - box->line == box->area.height - 1 && box->line < maxline ) {
+            if( box->row == box->line + box->area.height - 1 && box->line < maxline ) {
                 ++box->line;
             }
             ++box->row;
@@ -481,7 +482,7 @@ ui_event uilistbox( ui_event ui_ev, a_list *list, bool permanent )
         break;
     case EV_PAGE_UP :
         if( box->row == box->line ) {
-            if( box->line < ( box->area.height - 1 ) ) {
+            if( box->line + 1 < box->area.height ) {
                 box->line = 0;
             } else {
                 box->line -= ( box->area.height - 1 );

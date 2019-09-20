@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -37,7 +37,7 @@
 
 
 void intern dividearea( SAREA area, SAREA centre, SAREA areas[5] )
-/******************************************************************/
+/****************************************************************/
 /*
         This diagram shows the general case for the overlap of two
         areas. If there is only a partial overlap, areas 1 to 4 may
