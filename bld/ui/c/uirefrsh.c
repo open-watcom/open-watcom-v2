@@ -57,7 +57,7 @@ static void _dorefresh( update_area *total, SAREA area, UI_WINDOW *wptr, UI_WIND
 
     if( cover == NULL ) {
         start = area.row * UIData->width + area.col;
-        end = start + ( area.height - 1 ) * UIData->width + ( area.width - 1 );
+        end = start + ( area.height - 1 ) * UIData->width + area.width;
         if( total->start > start )
             total->start = start;
         if( total->end < end )
@@ -90,7 +90,7 @@ void UIAPI  uirefresh( void )
 
     _uicheckuidata();
 
-    total.start = (unsigned)-1;
+    total.start = 0;
     total.end = 0;
     for( wptr = UIData->area_tail; wptr != NULL; wptr = wptr->prev ) {
         if( wptr->dirty_area.height > 0 ) {
@@ -98,9 +98,9 @@ void UIAPI  uirefresh( void )
             wptr->dirty_area.height = 0;
         }
     }
-    if( total.start <= total.end ) {
+    if( total.start < total.end ) {
         start = total.start / UIData->width;
-        end = total.end / UIData->width;
+        end = ( total.end - 1 ) / UIData->width;
         area.row = start;
         area.col = 0;
         area.height = end - start + 1;
