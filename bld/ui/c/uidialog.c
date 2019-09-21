@@ -144,7 +144,7 @@ static void print_field( VSCREEN *vs, VFIELD *field, bool current )
     ATTR                attr;
     ATTR                hotattr;
     char                ctrlbuf[CTRL_BUF_LEN + 1];
-    unsigned            ctrlbuf_len = 0;
+    unsigned            ctrlbuf_len;
     a_check             *check = NULL;
     a_radio             *radio = NULL;
     a_list              *list;
@@ -161,6 +161,7 @@ static void print_field( VSCREEN *vs, VFIELD *field, bool current )
     area = &field->area;
     use_hottext = false;
     memset( ctrlbuf, '\0', CTRL_BUF_LEN + 1 );
+    ctrlbuf_len = 0;
 
     attr = UIData->attrs[( current ) ? ATTR_CURR_EDIT : ATTR_EDIT];
 
@@ -175,9 +176,9 @@ static void print_field( VSCREEN *vs, VFIELD *field, bool current )
         return;
     case FLD_TEXT :
         attr = UIData->attrs[ATTR_NORMAL];
-        uivtextput( vs, area->row, area->col, attr, field->u.str, area->width );
-        uirefresh();
-        return;
+        strcpy( ctrlbuf, field->u.str );
+        ctrlbuf_len = strlen( ctrlbuf );
+        break;
     case FLD_LABEL :
         attr = UIData->attrs[ATTR_NORMAL];
         strcpy( ctrlbuf, field->u.str );
@@ -199,9 +200,8 @@ static void print_field( VSCREEN *vs, VFIELD *field, bool current )
             } else {
                 strncpy( ctrlbuf, edit->buffer, ctrlbuf_len );
             }
-        } else {
-            ctrlbuf_len = 0;
         }
+        ctrlbuf[ctrlbuf_len] = '\0';
         break;
     case FLD_COMBOBOX :
         combo = field->u.combo;
@@ -212,27 +212,24 @@ static void print_field( VSCREEN *vs, VFIELD *field, bool current )
             ctrlbuf[0] = UiGChar[UI_ARROW_DOWN];
             uivtextput( vs, area->row, area->col + area->width + 1,
                         UIData->attrs[ATTR_SCROLL_ICON], ctrlbuf, 1 );
-            ctrlbuf[0] = '\0';
         }
         if( edit->buffer != NULL ) {
             ctrlbuf_len = edit->length;
             if( ctrlbuf_len > CTRL_BUF_LEN )
                 ctrlbuf_len = CTRL_BUF_LEN;
             strncpy( ctrlbuf, edit->buffer, ctrlbuf_len );
-        } else {
-            ctrlbuf_len = 0;
         }
+        ctrlbuf[ctrlbuf_len] = '\0';
         if( list->box == NULL && combo->perm ) {
             c_area = *area;
             c_area.row += vs->area.row + 2;
             c_area.col += vs->area.col + 1;
             c_vs = uiopen( &c_area, NULL, V_DIALOGUE | V_LISTBOX );
-            if( c_vs == NULL ) {
-                break;
+            if( c_vs != NULL ) {
+                c_area.row = 0;
+                c_area.col = 0;
+                list->box = uibeglistbox( c_vs, &c_area, list );
             }
-            c_area.row = 0;
-            c_area.col = 0;
-            list->box = uibeglistbox( c_vs, &c_area, list );
         }
         break;
     case FLD_PULLDOWN :
@@ -240,7 +237,6 @@ static void print_field( VSCREEN *vs, VFIELD *field, bool current )
         ctrlbuf[0] = UiGChar[UI_ARROW_DOWN];
         uivtextput( vs, area->row, area->col + area->width,
                     UIData->attrs[ATTR_SCROLL_ICON], ctrlbuf, 1 );
-        ctrlbuf[0] = '\0';
         fn_get = list->get;
         if( fn_get == NULL )
             fn_get = uigetlistelement;
@@ -281,7 +277,8 @@ static void print_field( VSCREEN *vs, VFIELD *field, bool current )
         ctrlbuf[2] = CHECKBOX_CHAR( RIGHT );
         ctrlbuf[3] = ' ';
 
-        strncat( ctrlbuf, check->str, CTRL_BUF_LEN - 4 );
+        strncpy( ctrlbuf + 4, check->str, CTRL_BUF_LEN - 4 );
+        ctrlbuf[CTRL_BUF_LEN] = '\0';
         break;
     case FLD_RADIO:
         /* ctrlbuf must be null terminated for this case */
@@ -298,7 +295,8 @@ static void print_field( VSCREEN *vs, VFIELD *field, bool current )
         ctrlbuf[2] = RADIO_CHAR( RIGHT );
         ctrlbuf[3] = ' ';
 
-        strncat( ctrlbuf, radio->str, CTRL_BUF_LEN - 4 );
+        strncpy( ctrlbuf + 4, radio->str, CTRL_BUF_LEN - 4 );
+        ctrlbuf[CTRL_BUF_LEN] = '\0';
         break;
     }
     if( use_hottext ) {
