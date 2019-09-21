@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,20 +35,20 @@
 #include "uimenu.h"
 
 
-ui_event UIAPI uivget( VSCREEN *vptr )
-/************************************/
+ui_event UIAPI uivget( VSCREEN *vs )
+/**********************************/
 {
-    Event = menuevent( vptr );
+    Event = menuevent( vs );
     return( saveevent() );
 }
 
 
-ui_event UIAPI uivgetevent( VSCREEN *vptr )
-/*****************************************/
+ui_event UIAPI uivgetevent( VSCREEN *vs )
+/***************************************/
 {
     ui_event       ui_ev;
 
-    ui_ev = uivget( vptr );
+    ui_ev = uivget( vs );
 //    switch( ui_ev ) {
 //    case EV_NO_EVENT:
 //    case EV_SINK:

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,14 +34,14 @@
 #include "uidef.h"
 
 
-void UIAPI uivmoveblock( VSCREEN *vptr, SAREA area, int drow, int dcol )
-/***********************************************************************/
+void UIAPI uivmoveblock( VSCREEN *vs, SAREA area, int drow, int dcol )
+/********************************************************************/
 {
     BUFFER          *bptr;
     ORD             row;
 
-    okopen( vptr );
-    bptr = &(vptr->window.buffer);
+    okopen( vs );
+    bptr = &(vs->window.buffer);
     if( area.row + drow < 0 ) {
         area.height += area.row + drow;
         area.row = -drow;
@@ -49,13 +50,13 @@ void UIAPI uivmoveblock( VSCREEN *vptr, SAREA area, int drow, int dcol )
         area.width += area.col + dcol;
         area.col = -dcol;
     }
-    if( area.row + area.height + drow > vptr->area.height ) {
-        area.height = vptr->area.height - area.row - drow;
+    if( area.row + area.height + drow > vs->area.height ) {
+        area.height = vs->area.height - area.row - drow;
     }
-    if( area.col + area.width + dcol > vptr->area.width ) {
-        area.width = vptr->area.width - area.col - dcol;
+    if( area.col + area.width + dcol > vs->area.width ) {
+        area.width = vs->area.width - area.col - dcol;
     }
-    oksubarea( area, vptr->area );
+    oksubarea( area, vs->area );
     if( drow > 0 ) {
         for( row = area.height + area.row; row > area.row;  ) {
             --row;
@@ -68,5 +69,5 @@ void UIAPI uivmoveblock( VSCREEN *vptr, SAREA area, int drow, int dcol )
     }
     area.row += drow;
     area.col += dcol;
-    uivdirty( vptr, area );
+    uivdirty( vs, area );
 }

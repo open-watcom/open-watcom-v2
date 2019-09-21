@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -255,8 +255,8 @@ static void print_field( VSCREEN *vs, VFIELD *field, bool current )
         list = field->u.list;
         if( list->box == NULL ) {
             c_area = *area;
-            c_area.row += ((VSCREEN *)vs)->area.row;
-            c_area.col += ((VSCREEN *)vs)->area.col;
+            c_area.row += vs->area.row;
+            c_area.col += vs->area.col;
             c_vs = uiopen( &c_area, NULL, V_DIALOGUE | V_LISTBOX );
             if( c_vs == NULL ) {
                 break;
@@ -933,9 +933,9 @@ static ui_event uitabkey( ui_event ui_ev, a_dialog *ui_dlg_info )
         {
             a_combo_box         *combo;
             a_list              *list;
-            VSCREEN             *mousevs;
+            VSCREEN             *mouse_vs;
 
-            mousevs = uivmousepos( ui_dlg_info->vs, &row, &col );
+            mouse_vs = uivmousepos( ui_dlg_info->vs, &row, &col );
             for( fld = ui_dlg_info->first; fld != NULL; fld = nextfield( fld ) ) {
                 list = NULL;
                 area = fld->area;
@@ -953,9 +953,9 @@ static ui_event uitabkey( ui_event ui_ev, a_dialog *ui_dlg_info )
                     combo = fld->u.combo;
                     list = &combo->list;
                 }
-                if( mousevs != ui_dlg_info->vs ) {
+                if( mouse_vs != ui_dlg_info->vs ) {
                     if( list != NULL && list->box != NULL ) {
-                        if( list->box->vs == mousevs ) {
+                        if( list->box->vs == mouse_vs ) {
                             break;
                         }
                     }

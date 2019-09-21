@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,15 +34,15 @@
 #include "uidef.h"
 
 
-void UIAPI uivfill( VSCREEN *vptr, SAREA area, ATTR attr, char ch )
-/*****************************************************************/
+void UIAPI uivfill( VSCREEN *vs, SAREA area, ATTR attr, char ch )
+/***************************************************************/
 {
     uisize      row;
 
-    okopen( vptr );
-    oksubarea( area, vptr->area );
+    okopen( vs );
+    oksubarea( area, vs->area );
     for( row = area.row; row < area.row + area.height; ++row ) {
-        bfill( &(vptr->window.buffer), row, area.col, attr, ch, area.width );
+        bfill( &(vs->window.buffer), row, area.col, attr, ch, area.width );
     }
-    uivdirty( vptr, area );
+    uivdirty( vs, area );
 }

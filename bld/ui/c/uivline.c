@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -52,8 +52,8 @@ ui_event LineEvents[] = {
 };
 
 
-static void echoline( VSCREEN *vptr, VEDITLINE *editline )
-/********************************************************/
+static void echoline( VSCREEN *vs, VEDITLINE *editline )
+/******************************************************/
 {
     SAREA       area;
     unsigned    start;
@@ -64,7 +64,7 @@ static void echoline( VSCREEN *vptr, VEDITLINE *editline )
         area.col = editline->col;
         area.height = 1;
         area.width = editline->fldlen;
-        uivfill( vptr, area, editline->attr, ' ' );
+        uivfill( vs, area, editline->attr, ' ' );
         for( trim = editline->length; trim > editline->index; --trim ) {
             if( editline->buffer[trim - 1] != ' ' ) {
                 break;
@@ -73,9 +73,9 @@ static void echoline( VSCREEN *vptr, VEDITLINE *editline )
         area.width = editline->fldlen;
         if( area.width > trim - editline->scroll )
             area.width = trim - editline->scroll;
-        uivfill( vptr, area, editline->attr, '*' );
+        uivfill( vs, area, editline->attr, '*' );
     } else {
-        uitextfield( vptr, editline->row, editline->col, editline->fldlen,
+        uitextfield( vs, editline->row, editline->col, editline->fldlen,
             editline->attr,
             editline->buffer + editline->scroll,
             editline->length - editline->scroll );
@@ -100,14 +100,14 @@ static void echoline( VSCREEN *vptr, VEDITLINE *editline )
             if( area.width + area.col > editline->col + editline->fldlen ) {
                 area.width = editline->fldlen + editline->col - area.col;
             }
-            uivattribute( vptr, area, editline->mark_attr );
+            uivattribute( vs, area, editline->mark_attr );
         }
     }
 }
 
 
-ui_event UIAPI uiveditevent( VSCREEN *vptr, VEDITLINE *editline, ui_event ui_ev )
-/*******************************************************************************/
+ui_event UIAPI uiveditevent( VSCREEN *vs, VEDITLINE *editline, ui_event ui_ev )
+/*****************************************************************************/
 {
     int                     scroll;
     bool                    scrollable;
@@ -116,19 +116,19 @@ ui_event UIAPI uiveditevent( VSCREEN *vptr, VEDITLINE *editline, ui_event ui_ev 
 
 
     if( editline->update ) {
-        if( vptr->cursor_type == C_OFF ) {
-            vptr->cursor_type = C_NORMAL;
+        if( vs->cursor_type == C_OFF ) {
+            vs->cursor_type = C_NORMAL;
         }
         uipadblanks( editline->buffer, editline->length );
-        vptr->cursor_row = editline->row;
+        vs->cursor_row = editline->row;
         scroll = editline->scroll;
         if( scroll > editline->index )
             scroll = editline->index;
         if( scroll < (int)( editline->index - editline->fldlen + 1 ) )
             scroll = editline->index - editline->fldlen + 1;
         editline->scroll = scroll;
-        vptr->cursor_col = editline->col + editline->index - editline->scroll;
-        echoline( vptr, editline );
+        vs->cursor_col = editline->col + editline->index - editline->scroll;
+        echoline( vs, editline );
 //      uirefresh();                    not needed for QNX or DOS ??? jimg
         editline->update = false;
     }
@@ -139,14 +139,14 @@ ui_event UIAPI uiveditevent( VSCREEN *vptr, VEDITLINE *editline, ui_event ui_ev 
             buffer.content = editline->buffer;
             buffer.length = editline->length;
             buffer.index = editline->index;
-            buffer.insert = ( vptr->cursor_type == C_INSERT );
+            buffer.insert = ( vs->cursor_type == C_INSERT );
             buffer.dirty = false;
             buffer.auto_clear = editline->auto_clear;
             ui_ev = uieditevent( ui_ev, &buffer );
             editline->auto_clear = buffer.auto_clear;
             editline->dirty |= buffer.dirty;
             editline->index = buffer.index;
-            vptr->cursor_type = ( buffer.insert ) ? C_INSERT : C_NORMAL ;
+            vs->cursor_type = ( buffer.insert ) ? C_INSERT : C_NORMAL ;
             if( scrollable ) {
                 scroll = editline->scroll;
                 if( scroll > editline->index )
@@ -157,10 +157,10 @@ ui_event UIAPI uiveditevent( VSCREEN *vptr, VEDITLINE *editline, ui_event ui_ev 
             } else {
                 scroll = 0;
             }
-            vptr->cursor_col = editline->col + editline->index - scroll;
+            vs->cursor_col = editline->col + editline->index - scroll;
             if( ( scroll != editline->scroll ) || buffer.dirty ) {
                 editline->scroll = scroll;
-                echoline( vptr, editline );
+                echoline( vs, editline );
             }
             if( ( editline->index == editline->length ) ||
                 ( *(editline->buffer + editline->length - 1) != ' ' ) ) {
@@ -177,23 +177,23 @@ ui_event UIAPI uiveditevent( VSCREEN *vptr, VEDITLINE *editline, ui_event ui_ev 
 }
 
 
-ui_event UIAPI uiveditline( VSCREEN *vptr, VEDITLINE *editline )
-/**************************************************************/
+ui_event UIAPI uiveditline( VSCREEN *vs, VEDITLINE *editline )
+/************************************************************/
 {
     ui_event        ui_ev;
 
     uipushlist( LineEvents );
-    ui_ev = uivgetevent( vptr );
+    ui_ev = uivgetevent( vs );
     uipoplist( /* LineEvents */ );
-    ui_ev = uiveditevent( vptr, editline, ui_ev );
+    ui_ev = uiveditevent( vs, editline, ui_ev );
     return( ui_ev );
 }
 
-bool UIAPI uiveditinit( VSCREEN *vptr, VEDITLINE *editline, char *buffer,
+bool UIAPI uiveditinit( VSCREEN *vs, VEDITLINE *editline, char *buffer,
                              unsigned bufflen, ORD row, ORD col, unsigned len )
 /*****************************************************************************/
 {
-    /* unused parameters */ (void)vptr;
+    /* unused parameters */ (void)vs;
 
     editline->index = 0;
     editline->dirty = false;
@@ -210,10 +210,10 @@ bool UIAPI uiveditinit( VSCREEN *vptr, VEDITLINE *editline, char *buffer,
     return( true );
 }
 
-bool UIAPI uiveditfini( VSCREEN *vptr, VEDITLINE *editline )
+bool UIAPI uiveditfini( VSCREEN *vs, VEDITLINE *editline )
 /***********************************************************/
 {
-    /* unused parameters */ (void)vptr; (void)editline;
+    /* unused parameters */ (void)vs; (void)editline;
 
     return( true );
 }

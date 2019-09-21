@@ -55,8 +55,7 @@ static void backfill_update_fn( SAREA area, void *dummy )
     /* unused parameters */ (void)dummy;
 
     for( row = area.row; row < area.row + area.height; ++row ) {
-        uibcopy( &UIData->blank_window.buffer, row, area.col,
-               &UIData->screen, row, area.col, area.width );
+        uibcopy( &UIData->blank_window.buffer, row, area.col, &UIData->screen, row, area.col, area.width );
     }
 }
 

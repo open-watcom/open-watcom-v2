@@ -51,35 +51,35 @@ VSCREEN* intern findvscreen( ORD row, ORD col )
 }
 
 
-void UIAPI uivdirty( VSCREEN *vptr, SAREA area )
-/**********************************************/
+void UIAPI uivdirty( VSCREEN *vs, SAREA area )
+/********************************************/
 {
-    area.row += vptr->area.row;
-    area.col += vptr->area.col;
-    dirtyarea( &(vptr->window), area );
+    area.row += vs->area.row;
+    area.col += vs->area.col;
+    dirtyarea( &(vs->window), area );
 }
 
 
-void UIAPI uivsetactive( VSCREEN *vptr )
-/**************************************/
+void UIAPI uivsetactive( VSCREEN *vs )
+/************************************/
 {
-    okopen( vptr );
-    if( ( vptr->flags & V_PASSIVE ) == 0 ) {
-        frontwindow( &(vptr->window ) );
+    okopen( vs );
+    if( ( vs->flags & V_PASSIVE ) == 0 ) {
+        frontwindow( &(vs->window ) );
     }
 }
 
 
-void UIAPI uivsetcursor( VSCREEN *vptr )
-/**************************************/
+void UIAPI uivsetcursor( VSCREEN *vs )
+/************************************/
 {
     CURSORORD       crow;
     CURSORORD       ccol;
 
-    if( vptr != NULL ) {
-        crow = vptr->area.row + vptr->cursor_row;
-        ccol = vptr->area.col + vptr->cursor_col;
-        uisetcursor( crow, ccol, vptr->cursor_type, CATTR_VOFF );
+    if( vs != NULL ) {
+        crow = vs->area.row + vs->cursor_row;
+        ccol = vs->area.col + vs->cursor_col;
+        uisetcursor( crow, ccol, vs->cursor_type, CATTR_VOFF );
     } else {
         uioffcursor();
     }

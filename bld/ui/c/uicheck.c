@@ -86,10 +86,10 @@ void intern okline( ORD row, ORD col, uisize len, SAREA area )
 }
 
 
-void intern okopen( VSCREEN *vptr )
-/*********************************/
+void intern okopen( VSCREEN *vs )
+/*******************************/
 {
-    if( !(vptr->open) ) {
+    if( !(vs->open) ) {
         uibarf();
     }
 }

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,32 +36,32 @@
 #include "uidef.h"
 
 
-void UIAPI uiunprotect( VSCREEN *vptr )
-/**************************************/
+void UIAPI uiunprotect( VSCREEN *vs )
+/***********************************/
 {
-    if( ISPROTECTED( vptr->flags ) && ISFRAMED( vptr->flags ) ) {
-        vptr->area.row -= 1;
-        vptr->area.col -= 1;
-        vptr->area.height += 2;
-        vptr->area.width += 2;
-        vptr->flags |= V_UNFRAMED;
-        vptr->flags |= V_UNPROTECTED;
-        bunframe( &(vptr->window.buffer) );
+    if( ISPROTECTED( vs->flags ) && ISFRAMED( vs->flags ) ) {
+        vs->area.row -= 1;
+        vs->area.col -= 1;
+        vs->area.height += 2;
+        vs->area.width += 2;
+        vs->flags |= V_UNFRAMED;
+        vs->flags |= V_UNPROTECTED;
+        bunframe( &(vs->window.buffer) );
     }
 }
 
 
-void UIAPI uiprotect( VSCREEN *vptr )
-/************************************/
+void UIAPI uiprotect( VSCREEN *vs )
+/*********************************/
 {
-    if( vptr->flags & V_UNPROTECTED ) {
-        vptr->area.row += 1;
-        vptr->area.col += 1;
-        vptr->area.height -= 2;
-        vptr->area.width -= 2;
-        vptr->flags &= ~V_UNFRAMED;
-        vptr->flags &= ~V_UNPROTECTED;
-        bframe( &(vptr->window.buffer) );
+    if( vs->flags & V_UNPROTECTED ) {
+        vs->area.row += 1;
+        vs->area.col += 1;
+        vs->area.height -= 2;
+        vs->area.width -= 2;
+        vs->flags &= ~V_UNFRAMED;
+        vs->flags &= ~V_UNPROTECTED;
+        bframe( &(vs->window.buffer) );
     }
 }
 

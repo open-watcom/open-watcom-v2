@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -52,15 +53,15 @@ ui_event intern saveevent( void )
 }
 
 
-ui_event intern getprime( VSCREEN *vptr )
-/***************************************/
+ui_event intern getprime( VSCREEN *vs )
+/*************************************/
 {
     _uicheckuidata();
     if( Event <= EV_NO_EVENT ) {
-        if( vptr != NULL ) {
-//            uivsetactive( vptr );
+        if( vs != NULL ) {
+//            uivsetactive( vs );
         }
-        uivsetcursor( vptr );
+        uivsetcursor( vs );
         uidoneevent();
         Event = uiget();
         uistartevent();
@@ -69,20 +70,20 @@ ui_event intern getprime( VSCREEN *vptr )
 }
 
 
-ui_event UIAPI uivgetprime( VSCREEN *vptr )
-/*****************************************/
+ui_event UIAPI uivgetprime( VSCREEN *vs )
+/***************************************/
 {
-    getprime( vptr );
+    getprime( vs );
     return( saveevent() );
 }
 
 
-ui_event UIAPI uivgetprimevent( VSCREEN *vptr )
-/*********************************************/
+ui_event UIAPI uivgetprimevent( VSCREEN *vs )
+/*******************************************/
 {
     ui_event        ui_ev;
 
-    ui_ev = uivgetprime( vptr );
+    ui_ev = uivgetprime( vs );
 //    switch( ui_ev ) {
 //    case EV_NO_EVENT:
 //    case EV_SINK:

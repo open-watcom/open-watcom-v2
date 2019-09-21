@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -35,7 +36,7 @@
 
 typedef struct a_ui_edit {
     char                    *edit_buffer;
-    VSCREEN                 *edit_screen;
+    VSCREEN                 *edit_vs;
     VEDITLINE               edit_eline;
     unsigned                edit_maxlen;
     struct a_ui_edit        *next;

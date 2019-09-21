@@ -263,7 +263,7 @@ a_list_info *uibeglistbox( VSCREEN *vs, SAREA *area, a_list *list )
 
     maxline = uilistsize( list );
 
-    box->gadget.win = box->vs;          // Initialize gadget
+    box->gadget.vs = box->vs;          // Initialize gadget
     box->gadget.dir = VERTICAL;
     box->gadget.anchor = box->area.col + box->area.width + 1;
     box->gadget.start = box->area.row + 1;

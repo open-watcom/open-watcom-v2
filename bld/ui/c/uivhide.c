@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -32,24 +33,24 @@
 
 #include "uidef.h"
 
-bool UIAPI uivhide( VSCREEN *vptr )
-/*********************************/
+bool UIAPI uivhide( VSCREEN *vs )
+/*******************************/
 {
-    if( vptr->open && !(vptr->flags & V_HIDDEN) ) {
-        closewindow( &(vptr->window) );
-        vptr->flags |= V_HIDDEN;
+    if( vs->open && !(vs->flags & V_HIDDEN) ) {
+        closewindow( &(vs->window) );
+        vs->flags |= V_HIDDEN;
         return( true );
     }
     return( false );
 }
 
 
-bool UIAPI uivshow( VSCREEN *vptr )
-/*********************************/
+bool UIAPI uivshow( VSCREEN *vs )
+/*******************************/
 {
-    if( vptr->flags & V_HIDDEN ) {
-        openwindow( &(vptr->window) );
-        vptr->flags &= ~V_HIDDEN;
+    if( vs->flags & V_HIDDEN ) {
+        openwindow( &(vs->window) );
+        vs->flags &= ~V_HIDDEN;
         return( true );
     }
     return( false );

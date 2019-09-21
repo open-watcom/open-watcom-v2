@@ -39,38 +39,37 @@
 #include "clibext.h"
 
 
-static void window_update_fn( SAREA area, void *_vptr )
-/*****************************************************/
+static void window_update_fn( SAREA area, void *_vs )
+/***************************************************/
 {
     int             row;
     int             vrow;
     int             vcol;
-    VSCREEN         *vptr = (VSCREEN *)_vptr;
+    VSCREEN         *vs = (VSCREEN *)_vs;
 
     for( row = area.row; row < area.row + area.height; ++row ) {
-        vrow = row - (int)vptr->area.row;
-        vcol = (int)area.col - (int)vptr->area.col;
-        uibcopy( &(vptr->window.buffer), vrow, vcol, &UIData->screen, row, area.col, area.width );
+        vrow = row - (int)vs->area.row;
+        vcol = (int)area.col - (int)vs->area.col;
+        uibcopy( &(vs->window.buffer), vrow, vcol, &UIData->screen, row, area.col, area.width );
     }
 }
 
 
-VSCREEN* UIAPI uivopen( VSCREEN *vptr )
-/*************************************/
+VSCREEN* UIAPI uivopen( VSCREEN *vs )
+/***********************************/
 {
     const char              *box;
     ATTR                    attr;
     int                     priority;
-    bool                    okbuffer;
     uisize                  len;
     ORD                     col;
     screen_flags            flags;
     bool                    covered;
     SAREA                   area;
 
-    okarea( vptr->area );
-    flags = vptr->flags;
-    area = vptr->area;
+    okarea( vs->area );
+    flags = vs->flags;
+    area = vs->area;
     if( flags & V_DIALOGUE ) {
         if( flags & V_LISTBOX ) {
             box = SBOX_CHARS();
@@ -95,84 +94,83 @@ VSCREEN* UIAPI uivopen( VSCREEN *vptr )
     }
     if( flags & V_UNBUFFERED ) {
         priority = P_UNBUFFERED;
-        bfake( &(vptr->window.buffer), area.row, area.col );
-        okbuffer = true;
+        bfake( &(vs->window.buffer), area.row, area.col );
     } else {
-        okbuffer = balloc( &(vptr->window.buffer), area.height, area.width );
+        balloc( &(vs->window.buffer), area.height, area.width );
     }
-    if( okbuffer ) {
+    if( vs->window.buffer.origin != NULL ) {
         if( flags & V_UNBUFFERED ) {
-            vptr->window.update_func = NULL;
+            vs->window.update_func = NULL;
         } else {
-            vptr->window.update_func = window_update_fn;
+            vs->window.update_func = window_update_fn;
         }
-        vptr->window.area = area;
-        vptr->window.priority = priority;
-        vptr->window.parm = vptr;
-        covered = openwindow( &(vptr->window) );
-        vptr->flags = flags;
+        vs->window.area = area;
+        vs->window.priority = priority;
+        vs->window.parm = vs;
+        covered = openwindow( &(vs->window) );
+        vs->flags = flags;
         if( ISFRAMED( flags ) ) {
             area.row = 0;
             area.col = 0;
-            drawbox( &(vptr->window.buffer), area, box, attr, false );
-            if( vptr->title != NULL ) {
+            drawbox( &(vs->window.buffer), area, box, attr, false );
+            if( vs->title != NULL ) {
 #if 0
 do not delete this stuff
                 col = 0;
                 len = area.width;
-                bstring( &(vptr->window.buffer), 0, col,
+                bstring( &(vs->window.buffer), 0, col,
                          UIData->attrs[ATTR_CURR_SELECT_DIAL], " ", len );
-                len = strlen( vptr->name );
+                len = strlen( vs->name );
                 if( len > area.width )
                     len = area.width;
                 col = ( area.width - len ) / 2;
-                bstring( &(vptr->window.buffer), 0, col,
-                         UIData->attrs[ATTR_CURR_SELECT_DIAL], vptr->name, len );
+                bstring( &(vs->window.buffer), 0, col,
+                         UIData->attrs[ATTR_CURR_SELECT_DIAL], vs->name, len );
 #else
-                len = strlen( vptr->title );
+                len = strlen( vs->title );
                 if( len > area.width )
                     len = area.width;
                 col = ( area.width - len ) / 2;
-                bstring( &(vptr->window.buffer), 0, col, attr, vptr->title, len );
+                bstring( &(vs->window.buffer), 0, col, attr, vs->title, len );
 #endif
             }
-            bframe( &(vptr->window.buffer) );
+            bframe( &(vs->window.buffer) );
         }
-        area = vptr->area;
+        area = vs->area;
         area.row = 0;
         area.col = 0;
-        vptr->open = true;
-        uivfill( vptr, area, UIData->attrs[ATTR_NORMAL], ' ' );
-        uivsetcursor( vptr );
+        vs->open = true;
+        uivfill( vs, area, UIData->attrs[ATTR_NORMAL], ' ' );
+        uivsetcursor( vs );
 
-        return( vptr );
+        return( vs );
     }
     return( NULL );
 }
 
 
-void UIAPI uivclose( VSCREEN *vptr )
-/***********************************/
+void UIAPI uivclose( VSCREEN *vs )
+/********************************/
 {
-    if( vptr->open ) {
-        closewindow( &(vptr->window) );
-        if( ISBUFFERED( vptr->flags ) ) {
-            if( ISFRAMED( vptr->flags ) ) {
-                bunframe( &(vptr->window.buffer) );
+    if( vs->open ) {
+        closewindow( &(vs->window) );
+        if( ISBUFFERED( vs->flags ) ) {
+            if( ISFRAMED( vs->flags ) ) {
+                bunframe( &(vs->window.buffer) );
             }
-            bfree( &(vptr->window.buffer) );
+            bfree( &(vs->window.buffer) );
         }
-        vptr->open = false;
+        vs->open = false;
     }
 }
 
 /*
- * uivresize -- change vptr to have new SAREA, coping all screen data that
+ * uivresize -- change VSCREEN to have new SAREA, coping all screen data that
  *              persists instead of losing the data
  */
 
-VSCREEN * UIAPI uivresize( VSCREEN *vptr, SAREA new )
-/****************************************************/
+VSCREEN * UIAPI uivresize( VSCREEN *vs, SAREA new )
+/*************************************************/
 {
     BUFFER      old_buff;
     int         i;
@@ -181,15 +179,15 @@ VSCREEN * UIAPI uivresize( VSCREEN *vptr, SAREA new )
     int         min_width;
     int         min_height;
 
-    wptr = &(vptr->window);
-    if( vptr->open ) {
+    wptr = &(vs->window);
+    if( vs->open ) {
         closewindow( wptr );
     }
     memcpy( &old_buff, &(wptr->buffer), sizeof( BUFFER ) );
-    old = vptr->area;
+    old = vs->area;
     if( balloc( &(wptr->buffer), new.height, new.width ) ) {
-        vptr->area = new;
-        if( ISFRAMED( vptr->flags ) ) {
+        vs->area = new;
+        if( ISFRAMED( vs->flags ) ) {
             (new.row)--;
             (new.col)--;
             (new.height) += 2;
@@ -197,7 +195,7 @@ VSCREEN * UIAPI uivresize( VSCREEN *vptr, SAREA new )
             okarea( new );
         }
         wptr->area = new;
-        okarea( vptr->area );
+        okarea( vs->area );
         min_width = new.width;
         if( min_width > old.width )
             min_width = old.width;
@@ -209,28 +207,28 @@ VSCREEN * UIAPI uivresize( VSCREEN *vptr, SAREA new )
         }
         bfree( &old_buff );
         openwindow( wptr );
-        return( vptr );
+        return( vs );
     } else {
-        memcpy( &(vptr->window.buffer), &old_buff, sizeof( BUFFER ) );
-        vptr->area = old;
+        memcpy( &(vs->window.buffer), &old_buff, sizeof( BUFFER ) );
+        vs->area = old;
         wptr->area = old;
         openwindow( wptr );
         return( NULL );
     }
 }
 
-void UIAPI uivmove( VSCREEN *vptr, ORD row, ORD col )
-/****************************************************/
+void UIAPI uivmove( VSCREEN *vs, ORD row, ORD col )
+/*************************************************/
 {
     int         rdiff;
     int         cdiff;
     UI_WINDOW   *wptr;
 
-    rdiff = (int)row - (int)vptr->area.row;
-    cdiff = (int)col - (int)vptr->area.col;
-    vptr->area.row = row;
-    vptr->area.col = col;
-    okarea( vptr->area );
-    wptr = &(vptr->window);
+    rdiff = (int)row - (int)vs->area.row;
+    cdiff = (int)col - (int)vs->area.col;
+    vs->area.row = row;
+    vs->area.col = col;
+    okarea( vs->area );
+    wptr = &(vs->window);
     movewindow( wptr, rdiff + wptr->area.row, cdiff + wptr->area.col );
 }

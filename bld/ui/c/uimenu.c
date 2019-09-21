@@ -404,8 +404,8 @@ static ui_event createpopup( DESCMENU *desc, ui_event *new_ui_ev )
 }
 
 
-static ui_event process_menuevent( VSCREEN *vptr, ui_event ui_ev )
-/****************************************************************/
+static ui_event process_menuevent( VSCREEN *vs, ui_event ui_ev )
+/**************************************************************/
 {
     int         i;
     int         oldmenu = NO_SELECT;
@@ -423,7 +423,7 @@ static ui_event process_menuevent( VSCREEN *vptr, ui_event ui_ev )
         /* this allows alt numeric keypad stuff to not activate the menus */
         Menu->altpressed = false;
     }
-    if( !isdialogue( vptr ) ) {
+    if( !isdialogue( vs ) ) {
         desc = &Describe[Menu->currmenu];
         new_ui_ev = EV_NO_EVENT; /* Moved here from "else" case below */
         if( Menu->popuppending ) {
@@ -633,8 +633,8 @@ ui_event uigeteventfrompos( ORD row, ORD col )
 }
 #endif
 
-ui_event intern menuevent( VSCREEN *vptr )
-/****************************************/
+ui_event intern menuevent( VSCREEN *vs )
+/**************************************/
 {
     ui_event        new_ui_ev;
     ui_event        ui_ev;
@@ -651,8 +651,8 @@ ui_event intern menuevent( VSCREEN *vptr )
     if( new_ui_ev == EV_NO_EVENT ) {
         if( uimenuson() && !uimenuisdisabled() ) {
             uipushlist( menu_list );
-            if( !Menu->active || isdialogue( vptr ) ) {
-                ui_ev = getprime( vptr );
+            if( !Menu->active || isdialogue( vs ) ) {
+                ui_ev = getprime( vs );
             } else {
                 ui_ev = getprime( NULL );
             }
@@ -676,11 +676,11 @@ ui_event intern menuevent( VSCREEN *vptr )
                 Menu->caps = false;
                 break;
             default:
-                new_ui_ev = process_menuevent( vptr, ui_ev );
+                new_ui_ev = process_menuevent( vs, ui_ev );
             }
             uipoplist( /* menu_list */ );
         } else {
-            new_ui_ev = getprime( vptr );
+            new_ui_ev = getprime( vs );
         }
     }
 

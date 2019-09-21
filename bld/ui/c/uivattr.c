@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,21 +34,21 @@
 #include "uidef.h"
 
 
-void UIAPI uivattribute( VSCREEN *vptr, SAREA area, ATTR attr )
-/*************************************************************/
+void UIAPI uivattribute( VSCREEN *vs, SAREA area, ATTR attr )
+/***********************************************************/
 {
-    okopen( vptr );
-    oksubarea( area, vptr->area );
-    battribute( &(vptr->window.buffer), area.row, area.col, area.height, area.width, attr );
-    uivdirty( vptr, area );
+    okopen( vs );
+    oksubarea( area, vs->area );
+    battribute( &(vs->window.buffer), area.row, area.col, area.height, area.width, attr );
+    uivdirty( vs, area );
 }
 
 
-void UIAPI uivattrflip( VSCREEN *vptr, SAREA area )
-/*************************************************/
+void UIAPI uivattrflip( VSCREEN *vs, SAREA area )
+/***********************************************/
 {
-    okopen( vptr );
-    oksubarea( area, vptr->area );
-    battrflip( &(vptr->window.buffer), area.row, area.col, area.height, area.width );
-    uivdirty( vptr, area );
+    okopen( vs );
+    oksubarea( area, vs->area );
+    battrflip( &(vs->window.buffer), area.row, area.col, area.height, area.width );
+    uivdirty( vs, area );
 }
