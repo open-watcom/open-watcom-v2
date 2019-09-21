@@ -34,7 +34,7 @@
 #include "guisdef.h"
 #include "guiscale.h"
 
-static gui_rect scale_data[NUM_SYSTEMS];
+static gui_rect scale_data[NUM_COORD_SYSTEMS];
 
 /*
  * GUISetScale -- Set the user defined scale
@@ -79,7 +79,7 @@ void GUIGetScreen( gui_rect * rect )
  * GUIConvert -- convert a gui_coord from one coordinate system to another
  */
 
-bool GUIConvert( gui_systems from, gui_systems to, gui_coord *coord,
+bool GUIConvert( gui_coord_systems from, gui_coord_systems to, gui_coord *coord,
                  bool rel )
 {
     if( !rel ) {
@@ -99,8 +99,7 @@ bool GUIConvert( gui_systems from, gui_systems to, gui_coord *coord,
  * GUIConvertRect -- convert a rect from one coordinate system to another
  */
 
-bool GUIConvertRect( gui_systems from, gui_systems to, gui_rect * rect,
-                     bool rel )
+bool GUIConvertRect( gui_coord_systems from, gui_coord_systems to, gui_rect * rect, bool rel )
 {
     if( !GUIConvert( from, to, (gui_coord *)rect, rel ) ) {
         return( false );
@@ -112,7 +111,7 @@ bool GUIConvertRect( gui_systems from, gui_systems to, gui_rect * rect,
  * GUIConvertPoint -- convert a point from one coordinate system to another
  */
 
-void GUIConvertPoint( gui_systems from, gui_systems to, gui_point * point )
+void GUIConvertPoint( gui_coord_systems from, gui_coord_systems to, gui_point * point )
 {
     point->x = GUIMulDiv( point->x, scale_data[to].width, scale_data[from].width );
     point->y = GUIMulDiv( point->y, scale_data[to].height, scale_data[from].height );
