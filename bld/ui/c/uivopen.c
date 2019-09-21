@@ -39,8 +39,8 @@
 #include "clibext.h"
 
 
-static void vscreen_update_fn( SAREA area, void *_vptr )
-/******************************************************/
+static void window_update_fn( SAREA area, void *_vptr )
+/*****************************************************/
 {
     int             row;
     int             vrow;
@@ -102,9 +102,9 @@ VSCREEN* UIAPI uivopen( VSCREEN *vptr )
     }
     if( okbuffer ) {
         if( flags & V_UNBUFFERED ) {
-            vptr->window.update_proc = NULL;
+            vptr->window.update_func = NULL;
         } else {
-            vptr->window.update_proc = vscreen_update_fn;
+            vptr->window.update_func = window_update_fn;
         }
         vptr->window.area = area;
         vptr->window.priority = priority;

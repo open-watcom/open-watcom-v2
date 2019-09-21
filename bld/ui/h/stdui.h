@@ -580,13 +580,13 @@ typedef struct image_hld {
     LP_VOID             hld;
 } IMAGE_HLD;
 
-typedef void            (_FAR *update_func)(SAREA, void *);
+typedef void            (_FAR *window_update_func)(SAREA, void *);
 
 typedef struct ui_window {
     SAREA               area;
     SAREA               dirty_area;
     int                 priority;
-    update_func         update_proc;
+    window_update_func  update_func;
     void                _FARD *parm;
     struct ui_window    _FARD *next;
     struct ui_window    _FARD *prev;
