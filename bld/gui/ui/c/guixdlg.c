@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -237,7 +238,7 @@ bool GUIInsertDialog( gui_window *wnd )
             return( false );
         }
         memset( ui_dlg_info, 0, sizeof( a_dialog ) );
-        ui_dlg_info->vs = &wnd->screen;
+        ui_dlg_info->vs = &wnd->vs;
         if( InsertDialog( wnd, ui_dlg_info, 0, NULL, false ) ) {
             dlg_node = GUIGetDlgByWnd( wnd );
             if( dlg_node != NULL ) {
@@ -836,9 +837,9 @@ bool GUIXCreateDialog( gui_create_info *dlg_info, gui_window *wnd,
         return( false );
     }
     colours_set = GUISetDialColours();
-    ui_dlg_info = uibegdialog( title, fields, wnd->screen.area.height,
-                             wnd->screen.area.width, wnd->screen.area.row,
-                             wnd->screen.area.col );
+    ui_dlg_info = uibegdialog( title, fields, wnd->vs.area.height,
+                             wnd->vs.area.width, wnd->vs.area.row,
+                             wnd->vs.area.col );
     if( ui_dlg_info == NULL ) {
         GUIFreeDialog( ui_dlg_info, fields, title, colours_set );
         return( false );
@@ -924,7 +925,7 @@ bool GUIGetDlgRect( gui_window *wnd, SAREA *area )
         if( ui_dlg_info != NULL ) {
             uigetdialogarea( ui_dlg_info, area );
         } else {
-            COPYAREA( wnd->screen.area, *area );
+            COPYAREA( wnd->vs.area, *area );
         }
         GUIAdjustDialogArea( area, +1 );
         return( true );

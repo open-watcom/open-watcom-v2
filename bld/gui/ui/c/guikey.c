@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -59,8 +60,8 @@ bool GUIProcessAltMenuEvent( ui_event ui_ev )
             wnd = GUICurrWnd;
         }
         if( ( wnd != NULL ) && (wnd->style & GUI_VISIBLE) ) {
-            point.x = wnd->screen.area.col;
-            point.y = wnd->screen.area.row;
+            point.x = wnd->vs.area.col;
+            point.y = wnd->vs.area.row;
             GUICreatePopup( wnd, &point );
             return( true );
         }

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -63,11 +64,11 @@ void GUIBringToFront( gui_window * wnd )
         GUIFrontOfList( GUICurrWnd );
     }
     if( GUIIsOpen( GUICurrWnd ) ) {
-        uivsetactive( &GUICurrWnd->screen );
+        uivsetactive( &GUICurrWnd->vs );
     }
     for( curr = GUICurrWnd->child; curr != NULL; curr = curr->sibling ) {
         if( GUIIsOpen( curr ) ) {
-            uivsetactive( &curr->screen );
+            uivsetactive( &curr->vs );
         }
     }
     if( change ) {

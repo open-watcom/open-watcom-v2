@@ -110,7 +110,7 @@ static VSCREEN helpScreen = {
 };
 
 static a_gadget         vGadget = {
-    NULL,                       /* window */
+    NULL,                       /* virtual screen */
     VERTICAL,                   /* direction */
     0,                          /* anchor position */
     0,                          /* start of bar */
@@ -1092,7 +1092,7 @@ static void setupScrollBar( SAREA *use )
     vGadget.start = use->row + 1;
     vGadget.end = vGadget.start + use->height - 1;
     vGadget.anchor = helpScreen.area.width + 1;
-    vGadget.win = &helpScreen;
+    vGadget.vs = &helpScreen;
     vGadget.total_size = helpLines;
     vGadget.page_size = use->height;
     vGadget.pos = 0;

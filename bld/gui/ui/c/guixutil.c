@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2018-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2018-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -75,7 +75,7 @@ bool GUISetupStruct( gui_window *wnd, gui_create_info *dlg_info, bool dialog )
     if( !GUIJustSetWindowText( wnd, dlg_info->title ) ) {
         return( false );
     }
-    if( !GUISetArea( &wnd->screen.area, &dlg_info->rect, dlg_info->parent, true, dialog ) ) {
+    if( !GUISetArea( &wnd->vs.area, &dlg_info->rect, dlg_info->parent, true, dialog ) ) {
         return( false );
     }
     GUISetUseWnd( wnd );
@@ -92,7 +92,7 @@ bool GUISetupStruct( gui_window *wnd, gui_create_info *dlg_info, bool dialog )
         }
     }
     if( wnd->style & GUI_CURSOR ) {
-        wnd->screen.cursor_type = C_NORMAL;
+        wnd->vs.cursor_type = C_NORMAL;
         GUISetCursor( wnd );
     }
     return( GUISetColours( wnd, dlg_info->colours.num_items, dlg_info->colours.colour ) );
@@ -114,7 +114,7 @@ bool GUISetRedraw( gui_window *wnd, bool redraw )
 
 bool GUIIsOpen( gui_window *wnd )
 {
-    return( wnd->screen.open );
+    return( wnd->vs.open );
 }
 
 void GUISetUseArea( gui_window *wnd, SAREA *area, SAREA *use )
@@ -139,7 +139,7 @@ void GUISetUseArea( gui_window *wnd, SAREA *area, SAREA *use )
 
 void GUISetUseWnd( gui_window *wnd )
 {
-    GUISetUseArea( wnd, &wnd->screen.area, &wnd->use );
+    GUISetUseArea( wnd, &wnd->vs.area, &wnd->use );
 }
 
 bool GUIPtInRect( SAREA *area, ORD row, ORD col )
@@ -203,7 +203,7 @@ void GUIGetSAREA( gui_window *wnd, SAREA *area )
     if( GUI_IS_DIALOG( wnd ) ) {
         GUIGetDlgRect( wnd, area );
     } else {
-        COPYAREA( wnd->screen.area, *area );
+        COPYAREA( wnd->vs.area, *area );
     }
 }
 
@@ -359,12 +359,12 @@ bool GUIJustSetWindowText( gui_window *wnd, const char *title )
     new_title = GUIStrDup( title, &ok );
     if( !ok )
         return( false );
-    if( wnd->screen.dynamic_title ) {
-        GUIMemFree( (void *)wnd->screen.title );
+    if( wnd->vs.dynamic_title ) {
+        GUIMemFree( (void *)wnd->vs.title );
     } else {
-        wnd->screen.dynamic_title = true;
+        wnd->vs.dynamic_title = true;
     }
-    wnd->screen.title = new_title;
+    wnd->vs.title = new_title;
     return( true );
 }
 
@@ -425,9 +425,9 @@ bool GUISetCursor( gui_window *wnd )
 {
     if( wnd->style & GUI_CURSOR ) {
         if( GUI_WND_MINIMIZED( wnd ) ) {
-            uinocursor( &wnd->screen );
+            uinocursor( &wnd->vs );
         } else {
-            uicursor( &wnd->screen, wnd->screen.cursor_row, wnd->screen.cursor_col, wnd->screen.cursor_type );
+            uicursor( &wnd->vs, wnd->vs.cursor_row, wnd->vs.cursor_col, wnd->vs.cursor_type );
             return( true );
         }
     }
@@ -503,17 +503,17 @@ void GUIFreeWindowMemory( gui_window *wnd, bool from_parent, bool dialog )
     GUIFreeHint( wnd );
     GUIMemFree( wnd->icon_name );
     if( !dialog ) {
-        uivshow( &wnd->screen );
-        wnd->screen.open = true;
-        uivclose( &wnd->screen );
+        uivshow( &wnd->vs );
+        wnd->vs.open = true;
+        uivclose( &wnd->vs );
     }
     if( GUICurrWnd == wnd ) {
         GUICurrWnd = NULL;
     }
-    if( wnd->screen.dynamic_title ) {
-        GUIMemFree( (void *)wnd->screen.title );
-        wnd->screen.title = NULL;
-        wnd->screen.dynamic_title = false;
+    if( wnd->vs.dynamic_title ) {
+        GUIMemFree( (void *)wnd->vs.title );
+        wnd->vs.title = NULL;
+        wnd->vs.dynamic_title = false;
     }
     GUIFreeColours( wnd );
     GUIMemFree( wnd );

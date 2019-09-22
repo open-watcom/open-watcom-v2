@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -125,8 +126,8 @@ static bool ValidMaxRestore( gui_window *wnd, ORD wnd_row, ORD wnd_col )
 {
     return( (wnd->style & GUI_MAXIMIZE) &&
             GUI_RESIZE_GADGETS_USEABLE( wnd ) &&
-            ( wnd_col >= wnd->screen.area.width - MAXOFFSET - 1 ) &&
-            ( wnd_col <= wnd->screen.area.width - MAXOFFSET + 1 ) &&
+            ( wnd_col >= wnd->vs.area.width - MAXOFFSET - 1 ) &&
+            ( wnd_col <= wnd->vs.area.width - MAXOFFSET + 1 ) &&
             ( wnd_row == ( wnd->use.row - 1 ) ) );
 }
 
@@ -134,8 +135,8 @@ static bool ValidMin( gui_window *wnd, ORD wnd_row, ORD wnd_col )
 {
     return( (wnd->style & GUI_MINIMIZE) &&
             GUI_RESIZE_GADGETS_USEABLE( wnd ) &&
-            ( wnd_col >= wnd->screen.area.width - MINOFFSET - 1 ) &&
-            ( wnd_col <= wnd->screen.area.width - MINOFFSET + 1 ) &&
+            ( wnd_col >= wnd->vs.area.width - MINOFFSET - 1 ) &&
+            ( wnd_col <= wnd->vs.area.width - MINOFFSET + 1 ) &&
             ( wnd_row == ( wnd->use.row - 1 ) ) );
 }
 
@@ -157,8 +158,8 @@ static void ProcessMouseReleaseDrag( ui_event ui_ev, gui_event gui_ev, ORD row, 
         return;
     }
 
-    wnd_row = row - GUIMouseWnd->screen.area.row;
-    wnd_col = col - GUIMouseWnd->screen.area.col;
+    wnd_row = row - GUIMouseWnd->vs.area.row;
+    wnd_col = col - GUIMouseWnd->vs.area.col;
     switch( MouseState ) {
     case MOUSE_RESTORE_START :
         if( ValidMaxRestore( GUIMouseWnd, wnd_row, wnd_col ) && ( gui_ev == GUI_LBUTTONUP ) ) {
@@ -223,8 +224,8 @@ ui_event GUICreatePopup( gui_window *wnd, gui_coord *point )
     ui_event    ui_ev;
     gui_point   gpoint;
 
-    gpoint.x = point->x - wnd->screen.area.col;
-    gpoint.y = point->y - (wnd->screen.area.row - 1);
+    gpoint.x = point->x - wnd->vs.area.col;
+    gpoint.y = point->y - (wnd->vs.area.row - 1);
     uipushlist( NULL );
     uipushlist( GUIInternalEvents );
     uipushlist( GUIUserEvents );
@@ -296,14 +297,14 @@ static void ProcessMousePress( ui_event ui_ev, gui_event gui_ev, ORD row, ORD co
     if( (GUICurrWnd->style & GUI_VISIBLE) == 0 ) {
         return;
     }
-    wnd_row = row - GUICurrWnd->screen.area.row;
-    wnd_col = col - GUICurrWnd->screen.area.col;
+    wnd_row = row - GUICurrWnd->vs.area.row;
+    wnd_col = col - GUICurrWnd->vs.area.col;
     if( wnd_row < GUICurrWnd->use.row ) {
         use_gadgets = ( !new_curr_wnd || (GUIGetWindowStyles() & (GUI_INACT_GADGETS | GUI_INACT_SAME)) );
         if( use_gadgets && GUI_HAS_CLOSER( GUICurrWnd ) &&
             ( wnd_col >= CLOSER_COL - 1 ) && ( wnd_col <= CLOSER_COL + 1 ) ) {
             if( ( GUICurrWnd->menu != NULL ) && ( ui_ev == EV_MOUSE_PRESS ) ) {
-                point.x = GUICurrWnd->screen.area.col;
+                point.x = GUICurrWnd->vs.area.col;
                 ui_ev = GUICreatePopup( GUICurrWnd, &point );
             }
             if( (GUICurrWnd->style & GUI_CLOSEABLE) && (ui_ev == EV_MOUSE_DCLICK) ) {
@@ -320,7 +321,7 @@ static void ProcessMousePress( ui_event ui_ev, gui_event gui_ev, ORD row, ORD co
         } else if( use_gadgets && ValidMin( GUICurrWnd, wnd_row, wnd_col ) && ( ui_ev == EV_MOUSE_PRESS ) ) {
             MouseState = MOUSE_MIN_START;
         } else if( (GUICurrWnd->style & GUI_RESIZEABLE) && (ui_ev == EV_MOUSE_PRESS) &&
-                   ( ( wnd_col == 0) || (wnd_col == GUICurrWnd->screen.area.width - 1) ) ) {
+                   ( ( wnd_col == 0) || (wnd_col == GUICurrWnd->vs.area.width - 1) ) ) {
             dir = RESIZE_UP;
         } else if( ( ui_ev == EV_MOUSE_DCLICK ) || ( ui_ev == EV_MOUSE_PRESS ) ) {
             if( GUIStartMoveResize( GUICurrWnd, row, col, RESIZE_NONE ) ) {
@@ -331,8 +332,8 @@ static void ProcessMousePress( ui_event ui_ev, gui_event gui_ev, ORD row, ORD co
         MouseState = MOUSE_CLIENT;
         sendPointGUIEvent( GUICurrWnd, gui_ev, &point );
     } else if( (GUICurrWnd->style & GUI_RESIZEABLE) && ( ui_ev == EV_MOUSE_PRESS ) &&
-               ( wnd_row == GUICurrWnd->screen.area.height - 1 ) &&
-               ( ( wnd_col == 0 ) || ( wnd_col == GUICurrWnd->screen.area.width - 1 ) ) ) {
+               ( wnd_row == GUICurrWnd->vs.area.height - 1 ) &&
+               ( ( wnd_col == 0 ) || ( wnd_col == GUICurrWnd->vs.area.width - 1 ) ) ) {
         dir = RESIZE_DOWN;
     }
     if( dir != RESIZE_NONE ) {
@@ -564,7 +565,7 @@ bool GUIProcessEvent( ui_event ui_ev )
     gui_ctl_id  id;
     gui_window  *menu_window;
     bool        new_curr_wnd;
-    VSCREEN     *screen;
+    VSCREEN     *vs;
 
     // this is processed before all others and signals the end for all
     // GUI UI windows ( unconditional )
@@ -577,9 +578,9 @@ bool GUIProcessEvent( ui_event ui_ev )
     ui_ev = CheckPrevEvent( ui_ev );
     wnd = NULL;
     if( uimouseinstalled() ) {
-        screen = uivmousepos( NULL, &row, &col );
-        if( screen != NULL && (screen->flags & V_GUI_WINDOW) ) {
-            wnd = (gui_window *)((char *)screen - offsetof( gui_window, screen ));
+        vs = uivmousepos( NULL, &row, &col );
+        if( vs != NULL && (vs->flags & V_GUI_WINDOW) ) {
+            wnd = (gui_window *)((char *)vs - offsetof( gui_window, vs ));
         }
     }
     if( GUIDoKeyboardMoveResize( ui_ev ) ) {

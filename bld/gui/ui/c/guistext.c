@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -57,10 +58,10 @@ bool GUISetWindowText( gui_window *wnd, const char *title )
 
 size_t GUIGetWindowTextLength( gui_window *wnd )
 {
-    if( wnd->screen.title == NULL ) {
+    if( wnd->vs.title == NULL ) {
         return( 0 );
     } else {
-        return( strlen( wnd->screen.title ) );
+        return( strlen( wnd->vs.title ) );
     }
 }
 
@@ -75,14 +76,14 @@ size_t GUIGetWindowText( gui_window *wnd, char *buff, size_t buff_len )
 
     if( buff_len == 0 )
         return( 0 );
-    if( wnd->screen.title == NULL ) {
+    if( wnd->vs.title == NULL ) {
         buff_len = 0;
     } else {
         --buff_len;       // reserve space for null character on the end
-        len = strlen( wnd->screen.title );
+        len = strlen( wnd->vs.title );
         if( buff_len > len  )
             buff_len = len;
-        memcpy( buff, wnd->screen.title, buff_len );
+        memcpy( buff, wnd->vs.title, buff_len );
     }
     buff[buff_len] = '\0';
     return( buff_len );

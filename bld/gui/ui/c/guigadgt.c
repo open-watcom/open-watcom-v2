@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -112,7 +113,7 @@ void GUISetShowGadget( p_gadget gadget, bool show, bool set, int pos )
     ATTR        scroll_icon;
     gui_window  *wnd;
 
-    wnd = (gui_window *)(gadget->win);
+    wnd = (gui_window *)(gadget->vs);
     if( set ) {
         uisetgadgetnodraw( gadget, pos );
     }
@@ -191,7 +192,7 @@ bool GUICreateGadget( gui_window *wnd, a_gadget_direction dir,
         return( false );
     }
     *gadget_ptr = gadget;
-    gadget->win = &wnd->screen;
+    gadget->vs = &wnd->vs;
     gadget->dir = dir;
     GUIInitGadget( gadget, start, length, anchor );
     gadget->total_size = gadget->page_size;

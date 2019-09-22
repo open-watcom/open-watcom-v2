@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -122,10 +123,10 @@ static bool DrawRect( gui_window *wnd, gui_rect *rect, gui_attr attr,
     area.height = coord.y;
     if( AdjustRect( wnd, &area ) ) {
         if( fill ) {
-            uivfill( &wnd->screen, area, WNDATTR( wnd, attr ), draw_char );
+            uivfill( &wnd->vs, area, WNDATTR( wnd, attr ), draw_char );
         }
         if( outline ) {
-            uidrawbox( &wnd->screen, &area, WNDATTR( wnd, attr ), NULL );
+            uidrawbox( &wnd->vs, &area, WNDATTR( wnd, attr ), NULL );
         }
     }
     return( true );
@@ -176,7 +177,7 @@ bool GUIDrawLine( gui_window *wnd, gui_point *start, gui_point *end,
         }
     }
     if( AdjustRect( wnd, &area ) ) {
-        uivfill( &wnd->screen, area, WNDATTR( wnd, attr ), to_use );
+        uivfill( &wnd->vs, area, WNDATTR( wnd, attr ), to_use );
     }
     return( true );
 }

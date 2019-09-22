@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -49,14 +50,14 @@ static void UnMinimize( gui_window *wnd )
 {
     gui_window  *child;
 
-    uivsetactive( &wnd->screen );
+    uivsetactive( &wnd->vs );
     if( wnd->flags & NEEDS_RESIZE_REDRAW ) {
         GUIWndDirty( wnd );
     }
     for( child = wnd->child; child != NULL; child = child->sibling ) {
-        uivshow( &child->screen );
-        child->screen.open = true;
-        uivsetactive( &child->screen );
+        uivshow( &child->vs );
+        child->vs.open = true;
+        uivsetactive( &child->vs );
     }
 }
 
@@ -143,11 +144,11 @@ void GUICheckResizeAreaForChildren( gui_window *wnd, SAREA *area,
     }
 
     GUISetUseArea( wnd, area, &use );
-    use.row += wnd->screen.area.row;
-    use.col += wnd->screen.area.col;
+    use.row += wnd->vs.area.row;
+    use.col += wnd->vs.area.col;
     COPYAREA( use, old_use );
     for( child_wnd = wnd->child; child_wnd != NULL; child_wnd = child_wnd->sibling ) {
-        child = &child_wnd->screen.area;
+        child = &child_wnd->vs.area;
         CheckChildResize( child, &use, dir );
     }
     if( use.row != old_use.row ) {
@@ -172,8 +173,8 @@ void GUICheckResizeAreaForParent( gui_window *wnd, SAREA *area,
 
     if( wnd->parent != NULL ) {
         COPYAREA( wnd->parent->use, parent );
-        parent.row += wnd->parent->screen.area.row;
-        parent.col += wnd->parent->screen.area.col;
+        parent.row += wnd->parent->vs.area.row;
+        parent.col += wnd->parent->vs.area.col;
         if( dir & RESIZE_RIGHT ) {
             if( ( area->col + area->width ) > ( parent.col + parent.width ) ) {
                 area->width = parent.col + parent.width - area->col;
@@ -237,9 +238,9 @@ static bool SizeWnd( gui_window *wnd, SAREA *area, gui_flags flag,
         GUICheckResizeAreaForChildren( wnd, &new, dir );
     }
     GUICheckResizeAreaForParent( wnd, &new, dir );
-    row_diff = new.row - wnd->screen.area.row;
-    col_diff = new.col - wnd->screen.area.col;
-    if( uivresize( &wnd->screen, new ) == NULL ) {
+    row_diff = new.row - wnd->vs.area.row;
+    col_diff = new.col - wnd->vs.area.col;
+    if( uivresize( &wnd->vs, new ) == NULL ) {
         return( false );
     }
     GUISetUseWnd( wnd );
@@ -265,7 +266,7 @@ static bool SizeWnd( gui_window *wnd, SAREA *area, gui_flags flag,
     wnd->flags |= flag;
     wnd->flags |= DONT_SEND_PAINT+NEEDS_RESIZE_REDRAW;
     if( was_minimized ) {
-        uivsetactive( &wnd->screen );
+        uivsetactive( &wnd->vs );
         GUIWholeWndDirty( wnd );
     } else {
         wnd->flags |= NON_CLIENT_INVALID;
@@ -284,8 +285,8 @@ static bool SizeWnd( gui_window *wnd, SAREA *area, gui_flags flag,
     } else {
         if( flag == MINIMIZED ) {
             for( child = wnd->child; child != NULL; child = child->sibling ) {
-                uivhide( &child->screen );
-                child->screen.open = false;
+                uivhide( &child->vs );
+                child->vs.open = false;
             }
         }
         RedrawResize( wnd, &save );
@@ -302,23 +303,23 @@ void GUICheckMove( gui_window *wnd, int *row_diff, int *col_diff )
 
     if( wnd->parent != NULL ) {
         COPYAREA( wnd->parent->use, parent );
-        parent.row += wnd->parent->screen.area.row;
-        parent.col += wnd->parent->screen.area.col;
-        if( ( wnd->screen.area.row + *row_diff + wnd->screen.area.height ) >
+        parent.row += wnd->parent->vs.area.row;
+        parent.col += wnd->parent->vs.area.col;
+        if( ( wnd->vs.area.row + *row_diff + wnd->vs.area.height ) >
             ( parent.row + parent.height ) ) {
             *row_diff = parent.row + parent.height -
-                       wnd->screen.area.row - wnd->screen.area.height;
+                       wnd->vs.area.row - wnd->vs.area.height;
         }
-        if( ( wnd->screen.area.col + *col_diff + wnd->screen.area.width ) >
+        if( ( wnd->vs.area.col + *col_diff + wnd->vs.area.width ) >
             ( parent.col + parent.width ) ) {
             *col_diff = parent.col + parent.width -
-                       wnd->screen.area.col - wnd->screen.area.width;
+                       wnd->vs.area.col - wnd->vs.area.width;
         }
-        if( ( wnd->screen.area.row + *row_diff ) < parent.row ) {
-            *row_diff = parent.row - wnd->screen.area.row;
+        if( ( wnd->vs.area.row + *row_diff ) < parent.row ) {
+            *row_diff = parent.row - wnd->vs.area.row;
         }
-        if( ( wnd->screen.area.col + *col_diff ) < parent.col ) {
-            *col_diff = parent.col - wnd->screen.area.col;
+        if( ( wnd->vs.area.col + *col_diff ) < parent.col ) {
+            *col_diff = parent.col - wnd->vs.area.col;
         }
     }
 }
@@ -328,8 +329,8 @@ static void MoveWnd( gui_window *wnd, int row_diff, int col_diff )
     gui_window  *curr;
 
     GUICheckMove( wnd, &row_diff, &col_diff );
-    uivmove( &wnd->screen, (ORD)( row_diff + (int)wnd->screen.area.row),
-             (ORD)(col_diff + (int)wnd->screen.area.col ) );
+    uivmove( &wnd->vs, (ORD)( row_diff + (int)wnd->vs.area.row),
+             (ORD)(col_diff + (int)wnd->vs.area.col ) );
     GUISetUseWnd( wnd );
     GUIEVENT( wnd, GUI_MOVE, NULL );
     if( !GUI_WND_MINIMIZED( wnd ) ) {
@@ -423,15 +424,15 @@ bool GUIWndMoveSize( gui_window *wnd, SAREA *new, gui_flags flag,
 
     GUICheckArea( new, dir );
     /* if the window has been resized */
-    if( ( new->height != wnd->screen.area.height ) ||
-        ( new->width != wnd->screen.area.width  ) || ( flag == MINIMIZED ) ) {
+    if( ( new->height != wnd->vs.area.height ) ||
+        ( new->width != wnd->vs.area.width  ) || ( flag == MINIMIZED ) ) {
         return( SizeWnd( wnd, new, flag, dir ) );
     } else {
         /* if the window has been moved but not resized */
-        if( ( new->row != wnd->screen.area.row ) ||
-            ( new->col != wnd->screen.area.col ) ) {
-            MoveWnd( wnd, new->row - (int)wnd->screen.area.row,
-                     new->col - (int)wnd->screen.area.col );
+        if( ( new->row != wnd->vs.area.row ) ||
+            ( new->col != wnd->vs.area.col ) ) {
+            MoveWnd( wnd, new->row - (int)wnd->vs.area.row,
+                     new->col - (int)wnd->vs.area.col );
             wnd->flags |= flag;
         } else {
             if( flag != NONE ) {
@@ -450,8 +451,8 @@ static void CalcIconsDim( gui_window *parent, int *icons_per_row,
         GUIGetScreenArea( bound );
     } else {
         COPYAREA( parent->use, *bound );
-        bound->row += parent->screen.area.row;
-        bound->col += parent->screen.area.col;
+        bound->row += parent->vs.area.row;
+        bound->col += parent->vs.area.col;
     }
     *icons_per_row = ( bound->width + 1 ) / ( MIN_WIDTH + 1 );
     *max_rows = ( bound->height + 1 ) / ( MIN_HEIGHT + 1 );
@@ -493,7 +494,7 @@ static bool IconPosUsed( gui_window *curr, int num, gui_window *parent )
     SAREA       new;
 
     GUICalcIconArea( num, parent, &new );
-    return( GUIOverlap( &new, &curr->screen.area ) );
+    return( GUIOverlap( &new, &curr->vs.area ) );
 }
 
 static void GetIconPos( gui_window *parent, SAREA *new )
@@ -541,8 +542,8 @@ static void InitMaxArea( gui_window *parent, SAREA *new )
         GUIGetScreenArea( new );
     } else {
         COPYAREA( parent->use, *new );
-        new->row += parent->screen.area.row;
-        new->col += parent->screen.area.col;
+        new->row += parent->vs.area.row;
+        new->col += parent->vs.area.col;
     }
 }
 
@@ -550,8 +551,8 @@ static void SetPrevArea( SAREA *area, gui_window *wnd )
 {
     COPYAREA( *area, wnd->prev_area );
     if( wnd->parent != NULL ) {
-        wnd->prev_area.row -= wnd->parent->screen.area.row;
-        wnd->prev_area.col -= wnd->parent->screen.area.col;
+        wnd->prev_area.row -= wnd->parent->vs.area.row;
+        wnd->prev_area.col -= wnd->parent->vs.area.col;
     }
 }
 
@@ -567,8 +568,8 @@ void GUIZoomWnd( gui_window *wnd, gui_create_styles action )
         /* return to previous size */
         new = wnd->prev_area;
         if( wnd->parent != NULL ) {
-            new.row += wnd->parent->screen.area.row;
-            new.col += wnd->parent->screen.area.col;
+            new.row += wnd->parent->vs.area.row;
+            new.col += wnd->parent->vs.area.col;
         }
         old = wnd->flags;
         if( GUIWndMoveSize( wnd, &new, NONE, RESIZE_DOWN | RESIZE_RIGHT ) ) {
@@ -590,7 +591,7 @@ void GUIZoomWnd( gui_window *wnd, gui_create_styles action )
         /* make fullsized or minimized */
         if( !minmax ) {
             /* record restore area if not already minimized or maxmized */
-            SetPrevArea( &wnd->screen.area, wnd );
+            SetPrevArea( &wnd->vs.area, wnd );
         }
         if( action == GUI_MAXIMIZE ) {
             InitMaxArea( wnd->parent, &new );
@@ -628,7 +629,7 @@ bool GUIResizeWindow( gui_window *wnd, gui_rect *rect )
         GUIScreenToScaleR( &newsize );
         GUIEVENT( wnd, GUI_RESIZE, &newsize );
     } else {
-        hidden = uivshow( &wnd->screen );
+        hidden = uivshow( &wnd->vs );
 #ifdef HELL_FREEZES_OVER
         if( ret ) {
             ret = GUIWndMoveSize( wnd, &area, GUI_NONE, RESIZE_DOWN | RESIZE_RIGHT );
@@ -637,7 +638,7 @@ bool GUIResizeWindow( gui_window *wnd, gui_rect *rect )
         ret = GUIWndMoveSize( wnd, &area, GUI_NONE, RESIZE_DOWN | RESIZE_RIGHT );
 #endif
         if( hidden ) {
-            uivhide( &wnd->screen );
+            uivhide( &wnd->vs );
         }
     }
     return( ret );
@@ -662,8 +663,8 @@ bool GUIGetRestoredSize( gui_window *wnd, gui_rect *rect )
 
     COPYAREA( wnd->prev_area, pos );
     if( wnd->parent != NULL ) {
-        pos.row += wnd->parent->screen.area.row;
-        pos.col += wnd->parent->screen.area.col;
+        pos.row += wnd->parent->vs.area.row;
+        pos.col += wnd->parent->vs.area.col;
     }
     return ( GUIScreenToScaleRect( &pos, rect ) );
 }
@@ -684,12 +685,12 @@ void GUIMaximizeWindow( gui_window * wnd )
 
 void GUIHideWindow( gui_window *wnd )
 {
-    uivhide( &wnd->screen );
+    uivhide( &wnd->vs );
 }
 
 bool GUIIsWindowVisible( gui_window *wnd )
 {
-    return( ( wnd->screen.flags & V_HIDDEN ) == 0 );
+    return( ( wnd->vs.flags & V_HIDDEN ) == 0 );
 }
 
 void GUIRestoreWindow( gui_window * wnd )
