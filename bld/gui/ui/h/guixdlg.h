@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -56,7 +57,7 @@ extern bool         GUIDeleteField( gui_window *wnd, gui_ctl_id id );
 extern a_list       *GUIGetList( VFIELD *field );
 extern gui_ctl_id   GUIGetControlId( gui_window *wnd, VFIELD *field );
 extern ui_event     GUIProcessControlNotify( ui_event ui_ev, a_dialog *ui_dlg_info, gui_window *wnd );
-extern void         GUIFreeDialog( a_dialog *ui_dlg_info, VFIELD *fields, char *title, bool colours_set );
+extern void         GUIFreeDialog( a_dialog *ui_dlg_info, VFIELD *fields, char *title, bool colours_set, bool dialog );
 extern bool         GUIGetDlgRect( gui_window *wnd, SAREA *area );
 
 #endif

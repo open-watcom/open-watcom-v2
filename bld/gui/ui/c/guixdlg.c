@@ -821,7 +821,7 @@ bool GUIXCreateDialog( gui_create_info *dlg_info, gui_window *wnd,
     for( i = 0; i < num_controls; i++ ) {
         uiyield();
         if( !GUIDoAddControl( &controls_info[i], wnd, &fields[i] ) ) {
-            GUIFreeDialog( ui_dlg_info, fields, title, colours_set );
+            GUIFreeDialog( ui_dlg_info, fields, title, colours_set, true );
             return( false );
         } else {
             if( ( focus == NULL ) && (controls_info[i].style & GUI_STYLE_CONTROL_FOCUS) ) {
@@ -833,7 +833,7 @@ bool GUIXCreateDialog( gui_create_info *dlg_info, gui_window *wnd,
     fields[num_controls].typ = FLD_NONE;    /* mark end of list, last item must be FLD_NONE typ */
     title = GUIStrDup( dlg_info->title, &ok );
     if( !ok ) {
-        GUIFreeDialog( ui_dlg_info, fields, title, colours_set );
+        GUIFreeDialog( ui_dlg_info, fields, title, colours_set, true );
         return( false );
     }
     colours_set = GUISetDialColours();
@@ -841,14 +841,14 @@ bool GUIXCreateDialog( gui_create_info *dlg_info, gui_window *wnd,
                              wnd->vs.area.width, wnd->vs.area.row,
                              wnd->vs.area.col );
     if( ui_dlg_info == NULL ) {
-        GUIFreeDialog( ui_dlg_info, fields, title, colours_set );
+        GUIFreeDialog( ui_dlg_info, fields, title, colours_set, true );
         return( false );
     }
     if( focus != NULL ) {
         uidialogsetcurr( ui_dlg_info, focus );
     }
     if( !InsertDialog( wnd, ui_dlg_info, num_controls, title, colours_set ) ) {
-        GUIFreeDialog( ui_dlg_info, fields, title, colours_set );
+        GUIFreeDialog( ui_dlg_info, fields, title, colours_set, true );
         return( false );
     }
     for( i = 0; i < num_controls; i++ ) {
@@ -877,11 +877,15 @@ bool GUIXCreateDialog( gui_create_info *dlg_info, gui_window *wnd,
     return( true );
 }
 
-void GUIFreeDialog( a_dialog *ui_dlg_info, VFIELD *fields, char *title, bool colours_set )
+void GUIFreeDialog( a_dialog *ui_dlg_info, VFIELD *fields, char *title, bool colours_set, bool dialog )
 {
     if( ui_dlg_info != NULL ) {
         GUIDeleteDialog( ui_dlg_info );
-        uienddialog( ui_dlg_info );
+        if( dialog ) {
+            uienddialog( ui_dlg_info );
+        } else {
+            uifreedialog( ui_dlg_info );
+        }
     }
     if( colours_set ) {
         GUIResetDialColours();

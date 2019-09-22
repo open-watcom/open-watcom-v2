@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -41,11 +42,11 @@ struct gui_control {
     int                 index;
 };
 
-extern ui_event GUIProcessControlEvent( gui_window *wnd, ui_event ui_ev, gui_ord row, gui_ord col );
-extern gui_control *GUIGetControl( gui_window *wnd, gui_ctl_id id );
-extern gui_control *GUIGetControlByIndex( gui_window *wnd, int index );
-extern void GUIFreeAllControls( gui_window *wnd );
-extern gui_control *GUIInsertControl( gui_window *wnd, gui_control_info *ctl_info, int index );
-extern void GUIResizeControls( gui_window *wnd, int row_diff, int col_diff );
+extern ui_event     GUIProcessControlEvent( gui_window *wnd, ui_event ui_ev, gui_ord row, gui_ord col );
+extern gui_control  *GUIGetControl( gui_window *wnd, gui_ctl_id id );
+extern gui_control  *GUIGetControlByIndex( gui_window *wnd, int index );
+extern void         GUIFreeAllControls( gui_window *wnd, bool dialog );
+extern gui_control  *GUIInsertControl( gui_window *wnd, gui_control_info *ctl_info, int index );
+extern void         GUIResizeControls( gui_window *wnd, int row_diff, int col_diff );
 
 #endif // _GUICONTR_H_

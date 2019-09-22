@@ -483,7 +483,7 @@ void GUIFreeWindowMemory( gui_window *wnd, bool from_parent, bool dialog )
     if( !dialog && !from_parent && ( front != NULL ) ) {
         GUIBringToFront( front );
     }
-    GUIFreeAllControls( wnd );
+    GUIFreeAllControls( wnd, dialog );
     for( curr_child = wnd->child; curr_child != NULL; curr_child = next_child ) {
         next_child = curr_child->sibling;
         if( curr_child != NULL ) {

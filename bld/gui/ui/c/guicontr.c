@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -179,7 +180,7 @@ bool GUIDeleteControl( gui_window *wnd, gui_ctl_id id )
     return( false );
 }
 
-void GUIFreeAllControls( gui_window *wnd )
+void GUIFreeAllControls( gui_window *wnd, bool dialog )
 {
     gui_control *control;
     gui_control *next;
@@ -192,7 +193,7 @@ void GUIFreeAllControls( gui_window *wnd )
     wnd->controls = NULL;
     dlg_node = GUIGetDlgByWnd( wnd );
     if( dlg_node != NULL ) {
-        GUIFreeDialog( dlg_node->ui_dlg_info, dlg_node->ui_dlg_info->fields, dlg_node->name, dlg_node->colours_set );
+        GUIFreeDialog( dlg_node->ui_dlg_info, dlg_node->ui_dlg_info->fields, dlg_node->name, dlg_node->colours_set, dialog );
     }
 }
 
