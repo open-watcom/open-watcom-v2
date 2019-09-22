@@ -40,9 +40,7 @@ void intern dirtyarea( UI_WINDOW *wptr, SAREA area )
 {
     int diff;
 
-    if( (int)wptr->dirty_area.height <= 0 ) {
-        wptr->dirty_area = area;
-    } else {
+    if( wptr->dirty_area.height > 0 ) {
         diff = (int)wptr->dirty_area.row - (int)area.row;
         if( diff > 0 ) {
             wptr->dirty_area.height += diff;
@@ -63,6 +61,8 @@ void intern dirtyarea( UI_WINDOW *wptr, SAREA area )
         if( diff > 0 ) {
             wptr->dirty_area.width += diff;
         }
+    } else {
+        wptr->dirty_area = area;
     }
 }
 
