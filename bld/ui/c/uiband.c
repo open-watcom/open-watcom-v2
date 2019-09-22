@@ -47,15 +47,15 @@ static void drawband_update_fn( SAREA area, void *dummy )
     drawbox( &UIData->screen, BandArea, SBOX_CHARS(), Attr, false );
 }
 
-void UIAPI uibandinit( SAREA start, ATTR attr )
+void UIAPI uibandinit( SAREA area, ATTR attr )
 {
     Attr = attr;
-    start.width++;
-    start.height++;
-    BandArea = start;
-    start.width = 0;
-    start.height = 0;
-    BandWnd.area = start;
+    area.width++;
+    area.height++;
+    BandArea = area;
+    area.width = 0;
+    area.height = 0;
+    BandWnd.area = area;
     BandWnd.priority = P_UNBUFFERED;
     BandWnd.update_func = drawband_update_fn;
     BandWnd.parm = NULL;
@@ -64,13 +64,13 @@ void UIAPI uibandinit( SAREA start, ATTR attr )
 }
 
 
-void UIAPI uibandmove( SAREA new )
+void UIAPI uibandmove( SAREA area )
 {
-    new.width++;
-    new.height++;
+    area.width++;
+    area.height++;
     uidirty( BandArea );
-    BandArea = new;
-    uidirty( new );
+    BandArea = area;
+    uidirty( area );
     BandWnd.dirty_area = BandArea;
 }
 

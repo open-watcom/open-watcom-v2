@@ -170,13 +170,13 @@ void UIAPI uivclose( VSCREEN *vs )
  *              persists instead of losing the data
  */
 
-VSCREEN * UIAPI uivresize( VSCREEN *vs, SAREA new )
-/*************************************************/
+VSCREEN * UIAPI uivresize( VSCREEN *vs, SAREA new_area )
+/******************************************************/
 {
     BUFFER      old_buff;
     int         i;
     UI_WINDOW   *wptr;
-    SAREA       old;
+    SAREA       old_area;
     int         min_width;
     int         min_height;
 
@@ -185,24 +185,24 @@ VSCREEN * UIAPI uivresize( VSCREEN *vs, SAREA new )
         closewindow( wptr );
     }
     memcpy( &old_buff, &(wptr->buffer), sizeof( BUFFER ) );
-    old = vs->area;
-    if( balloc( &(wptr->buffer), new.height, new.width ) ) {
-        vs->area = new;
+    old_area = vs->area;
+    if( balloc( &(wptr->buffer), new_area.height, new_area.width ) ) {
+        vs->area = new_area;
         if( ISFRAMED( vs->flags ) ) {
-            (new.row)--;
-            (new.col)--;
-            (new.height) += 2;
-            (new.width) += 2;
-            okarea( new );
+            (new_area.row)--;
+            (new_area.col)--;
+            (new_area.height) += 2;
+            (new_area.width) += 2;
+            okarea( new_area );
         }
-        wptr->area = new;
+        wptr->area = new_area;
         okarea( vs->area );
-        min_width = new.width;
-        if( min_width > old.width )
-            min_width = old.width;
-        min_height = new.height;
-        if( min_height > old.height )
-            min_height = old.height;
+        min_width = new_area.width;
+        if( min_width > old_area.width )
+            min_width = old_area.width;
+        min_height = new_area.height;
+        if( min_height > old_area.height )
+            min_height = old_area.height;
         for( i = 0; i < min_height; i++ ) {
             uibcopy( &(old_buff), i, 0, &(wptr->buffer), i, 0, min_width );
         }
@@ -211,8 +211,8 @@ VSCREEN * UIAPI uivresize( VSCREEN *vs, SAREA new )
         return( vs );
     } else {
         memcpy( &(vs->window.buffer), &old_buff, sizeof( BUFFER ) );
-        vs->area = old;
-        wptr->area = old;
+        vs->area = old_area;
+        wptr->area = old_area;
         openwindow( wptr );
         return( NULL );
     }

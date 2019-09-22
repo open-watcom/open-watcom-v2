@@ -55,13 +55,13 @@ static void within( SAREA inside, SAREA outside )
 void intern okarea( SAREA area )
 /******************************/
 {
-    SAREA           scr;
+    SAREA           screen_area;
 
-    scr.row = 0;
-    scr.col = 0;
-    scr.height = UIData->height;
-    scr.width = UIData->width;
-    within( area, scr );
+    screen_area.row = 0;
+    screen_area.col = 0;
+    screen_area.height = UIData->height;
+    screen_area.width = UIData->width;
+    within( area, screen_area );
 }
 
 
@@ -76,13 +76,13 @@ void intern oksubarea( SAREA inside, SAREA outside )
 void intern okline( ORD row, ORD col, uisize len, SAREA area )
 /************************************************************/
 {
-    SAREA       line;
+    SAREA       line_area;
 
-    line.row = row;
-    line.col = col;
-    line.height = 1;
-    line.width = len;
-    oksubarea( line, area );
+    line_area.row = row;
+    line_area.col = col;
+    line_area.height = 1;
+    line_area.width = len;
+    oksubarea( line_area, area );
 }
 
 

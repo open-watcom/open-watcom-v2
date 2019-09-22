@@ -94,15 +94,15 @@ static ui_event doget( bool update )
     }
     ReturnIdle = 1;
     if( ui_ev == EV_REDRAW_SCREEN ) {
-        SAREA   screen;
+        SAREA   area;
 
-        screen.row = 0;
-        screen.col = 0;
-        screen.height = UIData->height;
-        screen.width = UIData->width;
-        uidirty( screen );
+        area.row = 0;
+        area.col = 0;
+        area.height = UIData->height;
+        area.width = UIData->width;
+        uidirty( area );
         UserForcedTermRefresh = true;
-        physupdate( &screen );
+        physupdate( &area );
     }
     return( ui_ev );
 }
