@@ -63,7 +63,7 @@
 #include "utils.h"
 #include "setupio.h"
 #include "iopath.h"
-#include "guistat.h"
+#include "guistats.h"
 
 #include "clibext.h"
 

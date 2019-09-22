@@ -247,7 +247,7 @@ void VbufSetPathExt(            // SET A FILE EXTENSION FOR FILE PATH IN VBUF
 // libzip functions (setupio.c)
 #define zip_open_vbuf(n,f,e)        zip_open(VbufString(n), f, e)
 
-// status window functions (guistat.c)
+// status window functions (guistats.c)
 #define StatusLinesVbuf(m,p)        StatusLines(m, VbufString(p))
 
 // message box functions (utils.c)

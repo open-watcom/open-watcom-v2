@@ -50,7 +50,7 @@
 #include "guidlg.h"
 #include "dlgbutn.h"
 #include "guiutil.h"
-#include "guistat.h"
+#include "guistats.h"
 #include "setupinf.h"
 #include "genvbl.h"
 #include "gendlg.h"

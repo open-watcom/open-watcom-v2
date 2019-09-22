@@ -36,7 +36,7 @@ objs = &
     setup.obj       &
     setupfil.obj    &
     setupinf.obj    &
-    guistat.obj     &
+    guistats.obj    &
     dlggen.obj      &
     guiutils.obj    &
     guictrl.obj     &

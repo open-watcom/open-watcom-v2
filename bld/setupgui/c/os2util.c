@@ -37,7 +37,7 @@
 #include "setup.h"
 #include "setupwpi.h"
 #include "setupinf.h"
-#include "guistat.h"
+#include "guistats.h"
 
 
 static HOBJECT create_group( const VBUF *group, const VBUF *groupfile, const VBUF *iconfile )

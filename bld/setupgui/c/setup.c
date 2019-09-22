@@ -43,7 +43,7 @@
 #include "genvbl.h"
 #include "utils.h"
 #include "guiutil.h"
-#include "guistat.h"
+#include "guistats.h"
 #include "guiutils.h"
 
 #include "clibext.h"

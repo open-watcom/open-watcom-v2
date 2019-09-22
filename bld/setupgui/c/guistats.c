@@ -48,7 +48,7 @@
     #include "stdui.h"
     #include "uigchar.h"
 #endif
-#include "guistat.h"
+#include "guistats.h"
 
 #include "clibext.h"
 
