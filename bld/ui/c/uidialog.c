@@ -175,15 +175,17 @@ static void print_field( VSCREEN *vs, VFIELD *field, bool current )
         uidisplayhotspot( vs, field );
         return;
     case FLD_TEXT :
-        attr = UIData->attrs[ATTR_NORMAL];
-        strcpy( ctrlbuf, field->u.str );
-        ctrlbuf_len = strlen( ctrlbuf );
-        break;
     case FLD_LABEL :
         attr = UIData->attrs[ATTR_NORMAL];
-        strcpy( ctrlbuf, field->u.str );
-        strcat( ctrlbuf, ":" );
+        strncpy( ctrlbuf, field->u.str, CTRL_BUF_LEN );
+        ctrlbuf[CTRL_BUF_LEN] = '\0';
         ctrlbuf_len = strlen( ctrlbuf );
+        if( field->typ == FLD_LABEL ) {
+            if( ctrlbuf_len < CTRL_BUF_LEN ) {
+                ctrlbuf[ctrlbuf_len++] = ':';
+                ctrlbuf[ctrlbuf_len] = '\0';
+            }
+        }
         break;
     case FLD_FRAME :
         uidrawbox( vs, area, UIData->attrs[ATTR_NORMAL], field->u.str );

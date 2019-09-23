@@ -44,21 +44,21 @@ void intern bframe( BUFFER *bptr )
 }
 
 
-bool intern balloc( BUFFER *bptr, uisize rows, uisize cols )
-/**********************************************************/
-{
-    bptr->increment = cols;
-    bptr->origin = faralloc( rows * cols );
-    return( bptr->origin != NULL );
-}
-
-
 void intern bunframe( BUFFER *bptr )
 /********************************/
 {
     /* this must be called before bfree for all framed buffers */
 
     bptr->origin -= bptr->increment + 1;
+}
+
+
+bool intern balloc( BUFFER *bptr, uisize rows, uisize cols )
+/**********************************************************/
+{
+    bptr->increment = cols;
+    bptr->origin = faralloc( rows * cols );
+    return( bptr->origin != NULL );
 }
 
 
