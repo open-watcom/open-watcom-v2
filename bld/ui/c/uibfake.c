@@ -34,7 +34,7 @@
 #include "uidef.h"
 
 
-void intern bfake( BUFFER *bptr, ORD row, ORD col )
+void intern bfake( BUFFER *bptr, int row, int col )
 /*************************************************/
 {
     bptr->increment = UIData->width;

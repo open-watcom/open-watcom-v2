@@ -35,7 +35,7 @@
 #include "uifar.h"
 
 
-void intern bpixel( BUFFER *bptr, ORD row, ORD col, ATTR attr, char ch )
+void intern bpixel( BUFFER *bptr, int row, int col, ATTR attr, char ch )
 /**********************************************************************/
 {
     LP_PIXEL    dst;

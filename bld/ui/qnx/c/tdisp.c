@@ -1134,7 +1134,7 @@ static int td_refresh( bool must )
 /********************************/
 {
     int             i;
-    unsigned        incr;
+    int             incr;
     LP_PIXEL        bufp, sbufp;
 
     must |= UserForcedTermRefresh;
@@ -1225,7 +1225,7 @@ static void update_shadow( void )
 /*******************************/
 {
     LP_PIXEL    bufp, sbufp;    // buffer and shadow buffer
-    unsigned    incr = UIData->screen.increment;
+    int         incr = UIData->screen.increment;
 
     // make sure cursor is back where it belongs
     ti_hwcursor();
@@ -1249,7 +1249,7 @@ static int ti_refresh( bool must )
 /********************************/
 {
     int         i;
-    unsigned    incr;               // chars per line
+    int         incr;               // chars per line
     LP_PIXEL    bufp, sbufp;        // buffer and shadow buffer
     LP_PIXEL    pos;                // the address of the current char
     LP_PIXEL    blankStart;         // start of spaces to eos and then complete

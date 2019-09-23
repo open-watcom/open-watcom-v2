@@ -93,9 +93,9 @@ extern void             intern battribute( BUFFER *, int, int, uisize, uisize, A
 extern void             intern uibcopy( BUFFER *, int, int, BUFFER *, int, int, uisize );
 extern void             intern bframe( struct buffer * );
 extern void             intern bfree( struct buffer * );
-extern void             intern bfake( BUFFER *, ORD, ORD );
+extern void             intern bfake( BUFFER *, int, int );
 extern void             intern bfill( BUFFER *, int, int, ATTR, char, uisize );
-extern void             intern bpixel( BUFFER *, ORD, ORD, ATTR, char );
+extern void             intern bpixel( BUFFER *, int, int, ATTR, char );
 extern void             intern braw( BUFFER *, int, int, LP_PIXEL, uisize );
 extern void             intern bstring( BUFFER *, int, int, ATTR, LPC_STRING, uisize );
 extern void             intern bunframe( struct buffer * );
