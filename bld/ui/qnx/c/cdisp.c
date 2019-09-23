@@ -91,36 +91,35 @@ static bool setupscrnbuff( void )
     int                 rows;
     int                 cols;
     LP_PIXEL            scrn;
-    size_t              size;
-    size_t              i;
+    unsigned            size;
+    unsigned            i;
 
     if( console_size( UIConCtrl, UIConsole, 0, 0, &rows, &cols ) != 0 ) {
         return( false );
     }
     UIData->width = cols;
     UIData->height = rows;
-    size = UIData->width * UIData->height * sizeof( PIXEL );
+    size = UIData->width * UIData->height;
     scrn = UIData->screen.origin;
     {
 #ifdef _M_I86
         unsigned    seg;
 
         if( scrn == NULL ) {
-            seg = qnx_segment_alloc( size );
+            seg = qnx_segment_alloc( size * sizeof( PIXEL ) );
         } else {
-            seg = qnx_segment_realloc( FP_SEG( scrn ), size );
+            seg = qnx_segment_realloc( FP_SEG( scrn ), size * sizeof( PIXEL ) );
         }
         if( seg == -1 )
             return( false );
         scrn = MK_FP( seg, 0 );
 #else
-        scrn = uirealloc( scrn, size );
+        scrn = uirealloc( scrn, size * sizeof( PIXEL ) );
         if( scrn == NULL ) {
             return( false );
         }
 #endif
     }
-    size /= sizeof( PIXEL );
     for( i = 0; i < size; ++i ) {
         scrn[i].ch = ' ';       /* a space with normal attributes */
         scrn[i].attr = 7;       /* a space with normal attributes */

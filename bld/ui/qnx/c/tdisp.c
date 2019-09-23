@@ -763,8 +763,8 @@ static bool setupscrnbuff( uisize srows, uisize scols )
 /*****************************************************/
 {
     LP_PIXEL    scrn;
-    size_t      size;
-    size_t      i;
+    unsigned    size;
+    unsigned    i;
     int         rows;
     int         cols;
 
@@ -793,24 +793,24 @@ static bool setupscrnbuff( uisize srows, uisize scols )
     UIData->height = rows;
     UIData->cursor_type = C_NORMAL;
 
-    size = UIData->width * UIData->height * sizeof( PIXEL );
+    size = UIData->width * UIData->height;
     scrn = UIData->screen.origin;
     {
 #ifdef _M_I86
         unsigned        seg;
 
         if( scrn == NULL ) {
-            seg = qnx_segment_alloc( size );
+            seg = qnx_segment_alloc( size * sizeof( PIXEL ) );
         } else {
-            seg = qnx_segment_realloc( FP_SEG( scrn ), size );
+            seg = qnx_segment_realloc( FP_SEG( scrn ), size * sizeof( PIXEL ) );
         }
         if( seg == -1 )
             return( false );
         scrn = MK_FP( seg, 0 );
         if( shadow == NULL ) {
-            seg = qnx_segment_alloc( size );
+            seg = qnx_segment_alloc( size * sizeof( PIXEL ) );
         } else {
-            seg = qnx_segment_realloc( FP_SEG( shadow ), size );
+            seg = qnx_segment_realloc( FP_SEG( shadow ), size * sizeof( PIXEL ) );
         }
         if( seg == -1 ) {
             qnx_segment_free( FP_SEG( scrn ) );
@@ -818,17 +818,16 @@ static bool setupscrnbuff( uisize srows, uisize scols )
         }
         shadow = MK_FP( seg, 0 );
 #else
-        scrn = uirealloc( scrn, size );
+        scrn = uirealloc( scrn, size * sizeof( PIXEL ) );
         if( scrn == NULL )
             return( false );
-        if( (shadow = uirealloc( shadow, size )) == NULL ) {
+        if( (shadow = uirealloc( shadow, size * sizeof( PIXEL ) )) == NULL ) {
             uifree( scrn );
             return( false );
         }
 #endif
     }
     save_cursor_type = -1; /* C_NORMAL; */
-    size /= sizeof( PIXEL );
     for( i = 0; i < size; ++i ) {
         scrn[i].ch = ' ';       /* a space with normal attributes */
         scrn[i].attr = 7;       /* a space with normal attributes */

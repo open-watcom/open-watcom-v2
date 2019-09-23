@@ -758,8 +758,8 @@ static bool setupscrnbuff( uisize srows, uisize scols )
 /*****************************************************/
 {
     LP_PIXEL            scrn;
-    size_t              size;
-    size_t              i;
+    unsigned            size;
+    unsigned            i;
     struct winsize      wsize;
     int                 rows, cols;
 
@@ -796,20 +796,19 @@ static bool setupscrnbuff( uisize srows, uisize scols )
     UIData->height = rows;
     UIData->cursor_type = C_NORMAL;
 
-    size = UIData->width * UIData->height * sizeof( PIXEL );
+    size = UIData->width * UIData->height;
     scrn = UIData->screen.origin;
 
-    scrn = uirealloc( scrn, size );
+    scrn = uirealloc( scrn, size * sizeof( PIXEL ) );
     if( scrn == NULL )
         return( false );
-    shadow = uirealloc( shadow, size );
+    shadow = uirealloc( shadow, size * sizeof( PIXEL ) );
     if( shadow == NULL ) {
         uifree( scrn );
         return( false );
     }
 
     save_cursor_type = -1; /* C_NORMAL; */
-    size /= sizeof( PIXEL );
     for( i = 0; i < size; ++i ) {
         scrn[i].ch = ' ';       /* a space with normal attributes */
         scrn[i].attr = 7;       /* a space with normal attributes */
