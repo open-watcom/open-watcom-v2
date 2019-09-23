@@ -93,7 +93,7 @@ static bool             ConstantOnly;
 
 static bool             mem2code( unsigned char, asm_token, asm_token, asm_sym * );
 
-asm_tok                 AsmBuffer[MAX_TOKEN];  // buffer to store token
+asm_tok                 AsmBuffer[MAX_TOKEN + 1];   // buffer to store token
 
 #if defined( _STANDALONE_ )
 

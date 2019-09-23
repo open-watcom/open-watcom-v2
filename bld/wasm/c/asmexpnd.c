@@ -76,9 +76,10 @@ void AddTokens( asm_tok *buffer, token_idx start, token_idx count )
         }
         break;
     default:
-        for( i = Token_Count; i >= start; i-- ) {
+        for( i = Token_Count; i > start; i-- ) {
             buffer[i + count] = buffer[i];
         }
+        buffer[i + count] = buffer[i];
         break;
     }
     Token_Count += count;

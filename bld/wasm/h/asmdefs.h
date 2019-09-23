@@ -102,7 +102,7 @@
 #endif
 
 /* global variables */
-extern asm_tok          AsmBuffer[MAX_TOKEN];
+extern asm_tok          AsmBuffer[MAX_TOKEN + 1];
 extern struct asm_code  *Code;
 extern struct asm_sym   *Frame;
 extern char             Parse_Pass;     // phase of parsing

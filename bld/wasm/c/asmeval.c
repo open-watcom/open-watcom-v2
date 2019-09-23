@@ -42,11 +42,11 @@
 static struct {
     token_idx           idx;
     bool                close_bracket;
-} TakeOut[ MAX_TOKEN ];
+} TakeOut[MAX_TOKEN + 1];
 
 static token_idx        TokCnt;
 
-static asm_tok          Store[ MAX_TOKEN ];
+static asm_tok          Store[MAX_TOKEN + 1];
 
 static int              op_sq_bracket_level;
 static bool             error_msg;
