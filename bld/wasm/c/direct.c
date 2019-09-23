@@ -31,6 +31,9 @@
 
 #include "asmglob.h"
 #include <ctype.h>
+#if defined( __WATCOMC__ ) && defined( DEBUG_OUT )
+	#include <malloc.h>
+#endif
 #include "asmalloc.h"
 #include "directiv.h"
 #include "queues.h"
