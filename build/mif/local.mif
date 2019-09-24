@@ -343,7 +343,7 @@ common_ldflags = $(common_ldflags_dbg)
 !ifdef bootstrap
 common_cflags_exe  =
 common_clflags_exe =
-!else if host_os osx
+!else ifeq host_os osx
 common_cflags_exe  =
 common_clflags_exe =
 !else
