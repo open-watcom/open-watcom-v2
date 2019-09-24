@@ -76,7 +76,7 @@ static bool isElse( const char *start )
         && ( start[1] == 'l' || start[1] == 'L' )
         && ( start[2] == 's' || start[2] == 'S' )
         && ( start[3] == 'e' || start[3] == 'E' )
-        && ( start[4] == '\0' ) );
+        && ( start[4] == '\0' || isspace( start[4] ) );
 }
 
 static bool isIf( const char *start )
