@@ -124,8 +124,13 @@ ext_lib_shared = .dll
 # extra objects for linking via cl
 cl_extra_objs_gen =
 cl_extra_objs_dll =
-cl_extra_libs_gen = $(watcom_dir)/ntx64/clibext.lib
-cl_extra_libs_dll = $(watcom_dir)/ntx64/clibexts.lib
+!ifeq bld_cpu x64
+cl_extra_libs_gen = $(watcom_dir)/$(host_os)x64/clibext.lib
+cl_extra_libs_dll = $(watcom_dir)/$(host_os)x64/clibexts.lib
+!else
+cl_extra_libs_gen = $(watcom_dir)/$(bin_subdir)/clibext.lib
+cl_extra_libs_dll = $(watcom_dir)/$(bin_subdir)/clibexts.lib
+!endif
 
 !ifeq sys_dll 1
 cl_extra_objs = $(cl_extra_objs_dll)
