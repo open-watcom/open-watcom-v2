@@ -101,6 +101,15 @@ common_ldflags = $(common_ldflags_rel)
 common_ldflags = $(common_ldflags_dbg)
 !endif
 
+# Options for building Executable
+!ifdef bootstrap
+common_cflags_exe  =
+common_clflags_exe =
+!else
+common_cflags_exe  =
+common_clflags_exe =
+!endif
+
 # Options for building DLLs
 common_cflags_lib_shared  = -LD
 common_clflags_lib_shared = -MT -LD
@@ -205,7 +214,7 @@ cppflags_x64 = $(common_cppflags_x64) $(common_cppflags_$(host_os)_x64) -D_WIN32
 c_flags   =
 cxx_flags = -EHsc
 
-cflags_gen  = $(bld_cc_sys) $(common_cflags) $(target_cflags_$(bld_cpu)) $(common_flags) -Fo$@
+cflags_gen  = $(bld_cc_sys) $(common_cflags) $(target_cflags_$(bld_cpu)) $(common_flags) $(common_cflags_exe) -Fo$@
 cflags_dll  = $(bld_cc_sys) $(common_cflags) $(target_cflags_$(bld_cpu)) $(common_flags) $(common_cflags_lib_shared) -Fo$@
 cflags_wind = $(cflags_gen)
 
@@ -229,7 +238,7 @@ ldflags = $(ldflags_gen)
 !endif
 
 # options for linking by cl
-clflags_gen  = $(bld_cl_sys) $(common_flags) -Fe$@ $(ldflags1)
+clflags_gen  = $(bld_cl_sys) $(common_flags) $(common_clflags_exe) -Fe$@ $(ldflags1)
 clflags_dll  = $(bld_cl_sys) $(common_flags) $(common_clflags_lib_shared) -Fe$@ $(ldflags1)
 clflags_wind = $(clflags_gen)
 
@@ -325,6 +334,15 @@ common_ldflags = $(common_ldflags_rel)
 common_ldflags = $(common_ldflags_dbg)
 !endif
 
+# Options for building Executable
+!ifdef bootstrap
+common_cflags_exe  =
+common_clflags_exe =
+!else
+common_cflags_exe  = -static
+common_clflags_exe = -static
+!endif
+
 # Options for building DLLs
 common_cflags_lib_shared  = -fPIC
 common_clflags_lib_shared = -shared
@@ -334,7 +352,7 @@ target_cflags_386   =
 !ifdef bootstrap
 target_cflags_x64   =
 !else
-target_cflags_x64   = -march=core2
+target_cflags_x64   = -march=core2 -msse2
 !endif
 target_cflags_ppc   =
 target_cflags_mps   =
@@ -463,7 +481,7 @@ cppflags_arm    = $(common_cppflags_arm) $(common_cppflags_$(host_os)_arm)
 c_flags   =
 cxx_flags = -std=c++98
 
-cflags_gen  = $(bld_cc_sys) $(common_cflags) $(target_cflags_$(bld_cpu)) $(common_flags) -o $@
+cflags_gen  = $(bld_cc_sys) $(common_cflags) $(target_cflags_$(bld_cpu)) $(common_flags) $(common_cflags_exe) -o $@
 cflags_dll  = $(bld_cc_sys) $(common_cflags) $(target_cflags_$(bld_cpu)) $(common_flags) $(common_cflags_lib_shared) -o $@
 cflags_wind = $(cflags_gen)
 
@@ -487,7 +505,7 @@ ldflags = $(ldflags_gen)
 !endif
 
 # options for single source utility compilations
-clflags_gen  = $(bld_cl_sys) $(common_flags) -o $@ $(ldflags1)
+clflags_gen  = $(common_clflags_exe) $(bld_cl_sys) $(common_flags) -o $@ $(ldflags1)
 clflags_dll  = $(common_clflags_lib_shared) $(bld_cl_sys) $(common_flags) -o $@ $(ldflags1)
 clflags_wind = $(clflags_gen)
 
