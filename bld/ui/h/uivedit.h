@@ -34,8 +34,8 @@
 #define _UIVEDIT_H
 
 typedef struct veditline {
-    ORD             row;
-    ORD             col;            /* position of field on vscreen     */
+    ORD             row;            /* position of field on vscreen     */
+    ORD             col;            /* ...                              */
     unsigned        fldlen;         /* length of field on vscreen       */
     int             scroll;         /* index of first visible character */
     unsigned        length;         /* length of buffer                 */

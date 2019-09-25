@@ -35,8 +35,8 @@
 
 typedef struct vfield_edit {
     struct vfield_edit  _FARD *link;    /* next vfield on the vscreen      */
-    ORD                 row;
-    ORD                 col;            /* position of vfield on vscreen   */
+    ORD                 row;            /* position of vfield on vscreen   */
+    ORD                 col;            /* ...                             */
     unsigned            length;         /* length of field on vscreen      */
 } VFIELD_EDIT;
 
