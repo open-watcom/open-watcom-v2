@@ -28,11 +28,11 @@ export OWDISTRDIR=$OWROOT/distrib
 # Set environment variables
 # Set up default path information variable
 if [ -z "$OWDEFPATH" ]; then
-    export OWDEFPATH=$PATH:
+    export OWDEFPATH="$PATH":
     if [ -n "$INCLUDE" ]; then export OWDEFINCLUDE=$INCLUDE; fi
     if [ -n "$WATCOM" ]; then export OWDEFWATCOM=$WATCOM; fi
 fi
-export PATH=$OWBINDIR:$OWROOT/build:$OWDEFPATH
+export PATH="$OWBINDIR:$OWROOT/build:$OWDEFPATH"
 if [ -n "$OWDEFINCLUDE" ]; then export INCLUDE=$OWDEFINCLUDE; fi
 if [ -n "$OWDEFWATCOM" ]; then export WATCOM=$OWDEFWATCOM; fi
 
