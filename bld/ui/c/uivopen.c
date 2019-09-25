@@ -101,11 +101,10 @@ VSCREEN* UIAPI uivopen( VSCREEN *vs )
     if( vs->window.buffer.origin != NULL ) {
         if( flags & V_UNBUFFERED ) {
             vs->window.update_func = NULL;
-            vs->window.parm = NULL;
         } else {
             vs->window.update_func = vs_update_fn;
-            vs->window.parm = vs;
         }
+        vs->window.update_parm = vs;
         vs->window.area = area;
         vs->window.priority = priority;
         covered = openwindow( &(vs->window) );

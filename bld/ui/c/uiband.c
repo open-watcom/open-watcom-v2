@@ -58,7 +58,7 @@ void UIAPI uibandinit( SAREA area, ATTR attr )
     BandWnd.area = area;
     BandWnd.priority = P_UNBUFFERED;
     BandWnd.update_func = drawband_update_fn;
-    BandWnd.parm = NULL;
+    BandWnd.update_parm = NULL;
     openwindow( &BandWnd );
     BandWnd.dirty_area = BandArea;
 }

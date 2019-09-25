@@ -325,7 +325,7 @@ void UIAPI uiopenpopup( DESCMENU *desc, UI_WINDOW *wptr )
     wptr->area = desc->area;
     wptr->priority = P_DIALOGUE;
     wptr->update_func = NULL;
-    wptr->parm = NULL;
+    wptr->update_parm = NULL;
     openwindow( wptr );
 }
 
@@ -883,7 +883,7 @@ VBARMENU * UIAPI uimenubar( VBARMENU *bar )
         BarWin.area.width = UIData->width;
         BarWin.priority = P_MENU;
         BarWin.update_func = drawbar_update_fn;
-        BarWin.parm = NULL;
+        BarWin.update_parm = NULL;
         openwindow( &BarWin );
         InitMenuPopupPending = false;
     }

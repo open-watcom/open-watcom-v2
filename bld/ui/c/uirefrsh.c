@@ -63,7 +63,7 @@ static void _dorefresh( update_area *total, SAREA area, UI_WINDOW *wptr, UI_WIND
         if( total->end < end )
             total->end = end;
         if( wptr->update_func != NULL ) {
-            (*wptr->update_func)( area, wptr->parm );
+            (*wptr->update_func)( area, wptr->update_parm );
         }
     } else {
         dividearea( area, cover->area, areas );

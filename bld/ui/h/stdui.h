@@ -573,13 +573,6 @@ typedef struct buffer {
     int         increment;
 } BUFFER;
 
-typedef struct image_hld {
-    struct image_hld    __FAR *next_hld;
-    SAREA               area;
-    int                 kill_image;
-    LP_VOID             hld;
-} IMAGE_HLD;
-
 typedef void            (_FAR *window_update_func)(SAREA, void *);
 
 typedef struct ui_window {
@@ -587,7 +580,7 @@ typedef struct ui_window {
     SAREA               dirty_area;
     int                 priority;
     window_update_func  update_func;
-    void                _FARD *parm;
+    void                _FARD *update_parm;
     struct ui_window    _FARD *next;
     struct ui_window    _FARD *prev;
     BUFFER              buffer;

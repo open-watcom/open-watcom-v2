@@ -43,7 +43,7 @@ VSCREEN* intern findvscreen( ORD row, ORD col )
     for( wptr = UIData->area_head; wptr != &UIData->blank_window; wptr = wptr->next ) {
         if( ( row >= wptr->area.row ) && ( row < wptr->area.row + wptr->area.height ) ) {
             if( ( col >= wptr->area.col ) && ( col < wptr->area.col + wptr->area.width ) ) {
-                return( wptr->parm );
+                return( wptr->update_parm );
             }
         }
     }
