@@ -303,10 +303,24 @@ static orl_return ExportCallback( const char *name, void *dummy )
 static orl_return EntryCallback( const char *name, void *dummy )
 /**************************************************************/
 {
+    char    *coff_symbol_name;
+
     /* unused parameters */ (void)dummy;
 
     if( !StartInfo.user_specd ) {
-        SetStartSym( name );
+        if( (ObjFormat & FMT_COFF) && (LinkState & LS_HAVE_I86_CODE) ) {
+            /* simple hack for 32-bit MS COFF module to get real startup symbol name
+             * entry directive contains unmangled symbol name
+             * prepend undrescore should be OK
+             */
+            _ChkAlloc( coff_symbol_name, strlen( name ) + 2 );
+            coff_symbol_name[0] = '_';
+            strcpy( coff_symbol_name + 1, name );
+            SetStartSym( coff_symbol_name );
+            _LnkFree( coff_symbol_name );
+        } else {
+            SetStartSym( name );
+        }
     }
     return( ORL_OKAY );
 }
