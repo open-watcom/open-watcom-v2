@@ -183,7 +183,8 @@ VSCREEN * UIAPI uivresize( VSCREEN *vs, SAREA new_area )
     if( vs->open ) {
         closewindow( wptr );
     }
-    memcpy( &old_buff, &(wptr->buffer), sizeof( BUFFER ) );
+    old_buff.origin = wptr->buffer.origin;
+    old_buff.increment = wptr->buffer.increment;
     old_area = vs->area;
     if( balloc( &(wptr->buffer), new_area.height, new_area.width ) ) {
         vs->area = new_area;
@@ -209,7 +210,8 @@ VSCREEN * UIAPI uivresize( VSCREEN *vs, SAREA new_area )
         openwindow( wptr );
         return( vs );
     } else {
-        memcpy( &(vs->window.buffer), &old_buff, sizeof( BUFFER ) );
+        wptr->window.buffer.origin = old_buff.origin;
+        wptr->window.buffer.increment = old_buff.increment;
         vs->area = old_area;
         wptr->area = old_area;
         openwindow( wptr );

@@ -473,13 +473,14 @@ typedef unsigned char   ORD;
 
 #endif
 
+typedef unsigned short  uisize;
+typedef signed short    uiord;
+
 typedef unsigned short  MOUSEORD;
 typedef unsigned long   MOUSETIME;
 
 typedef signed short    CURSORORD;
 #define CURSOR_INVALID  ((CURSORORD)-1)
-
-typedef unsigned short  uisize;
 
 typedef struct sarea {
     ORD             row;

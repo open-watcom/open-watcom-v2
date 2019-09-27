@@ -45,7 +45,7 @@ void intern bframe( BUFFER *bptr )
 
 
 void intern bunframe( BUFFER *bptr )
-/********************************/
+/**********************************/
 {
     /* this must be called before bfree for all framed buffers */
 
