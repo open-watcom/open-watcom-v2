@@ -81,6 +81,21 @@ stages:
         parameters:
           arch:     lnx
           title:    Tests Linux
+  - stage: lastbuild
+    displayName: "Last CI build"
+    dependsOn:
+      - testslnx
+      - testsnt
+      - docsnt
+    condition: >
+      and(
+        succeeded(), 
+        in( variables['Build.Reason'], 'IndividualCI', 'BatchedCI' )
+      )
+    jobs:
+      - template: ci/lastbld.yml
+        parameters:
+          title:    Last CI Build
   - stage: installnx
     displayName: "Installers Build Linux"
     dependsOn:

@@ -1,0 +1,100 @@
+parameters:
+  title:    ''
+
+jobs:
+  - job: lastbuild
+    displayName: "${{ parameters.title }}"
+    variables:
+      owtools:          $(owtools_lnx)
+      owscript:         $(owscript_lnx)
+      owbuild.stage:    inst
+      owtag:            Last-CI-build
+    pool:
+      vmImage:      $(owimage_lnx)
+    steps:
+    - template: gituser.yml
+    - checkout: self
+      persistCredentials: true
+    # consolidate binaries
+    - template: artfload.yml
+      parameters:
+        arch:       'lnx'
+        path:       rel
+        artifname:  rel-nt
+    - template: artfload.yml
+      parameters:
+        arch:       'lnx'
+        path:       rel
+        artifname:  rel-lnx
+    # consolidate documentation
+    - template: docload.yml
+      parameters:
+        arch:       'lnx'
+        doctype:    docdos
+    - template: docload.yml
+      parameters:
+        arch:       'lnx'
+        doctype:    dochtml
+    - template: docload.yml
+      parameters:
+        arch:       'lnx'
+        doctype:    docnt
+    - template: docload.yml
+      parameters:
+        arch:       'lnx'
+        doctype:    docos2
+    - template: docload.yml
+      parameters:
+        arch:       'lnx'
+        doctype:    docpdf
+    - template: docload.yml
+      parameters:
+        arch:       'lnx'
+        doctype:    docwin
+    # create full binary archive
+    - task: ArchiveFiles@2
+      inputs:
+        rootFolderOrFile: '$(owroot)/rel'
+        includeRootFolder: false
+        archiveType: 'tar'
+        archiveFile: '$(owroot)/ow-snapshot.tar.gz'
+        replaceExistingArchive: true
+    - bash: echo "##vso[task.setvariable variable=owtagstamp;]`date +'%Y-%m-%d %H:%M:%S'`"
+      displayName: "Get current timestamp"
+    - bash: echo "##vso[task.setvariable variable=owgitstamp;]`git ls-remote --tags . | sed -n -e \"s:\([0-9a-z]*\) *refs/tags/${{ variables.owtag }}^{}:\1:p\"`"
+      displayName: "Get 'Last-CI-build' tag commit"
+    - script: |
+        if [ ! "$OWGITSTAMP" = "$BUILD_SOURCEVERSION" ]; then
+          git tag -d $OWTAG
+          git push --delete origin $OWTAG
+          git tag -a -m "$OWTAGSTAMP" $OWTAG $BUILD_SOURCEVERSION
+          git push $(owgitverbose) origin $OWTAG
+        else
+          echo "##vso[task.setvariable variable=owtagstamp;]`git tag -l --format='%(contents)' $OWTAG`"
+        fi
+      displayName: "Recreate 'Last-CI-build' tag"
+    - task: GitHubRelease@0
+      name: releasedel
+      displayName: "Delete Release"
+      continueOnError: true
+      inputs:
+        gitHubConnection: 'open-watcom-v2-releases'
+        action: 'delete'
+        tag: '$(owtag)'
+    - task: GitHubRelease@0
+      name: releaseadd
+      displayName: "Add Release"
+      condition: succeededOrFailed()
+      inputs:
+        gitHubConnection: 'open-watcom-v2-releases'
+        repositoryName: '$(Build.Repository.Name)'
+        action: 'create'
+        target: '$(Build.SourceVersion)'
+        tagSource: 'manual'
+        tag: '$(owtag)'
+        title: '$(owtag)'
+        releaseNotesSource: 'input'
+        releaseNotes: 'Last updated $(owtagstamp)'
+        assets: $(owroot)/ow-snapshot.tar.gz
+        isPreRelease: true
+        addChangeLog: false
