@@ -652,6 +652,8 @@ static bool isdir( struct dirent *dent, char *path )
 {
     struct stat stats;
 
+    /* unused parameters */ (void)path;
+
     // FIXME: implement a "_stat2()" equivalent.
     //_stat2( path, dent->d_name, &stats );
     stat( dent->d_name, &stats );
@@ -663,6 +665,8 @@ static bool isrdonly( struct dirent *dent, char *path )
     unsigned    bit;
     uid_t       user;
     struct stat stats;
+
+    /* unused parameters */ (void)path;
 
     user = geteuid();
     if( user == 0 ) {

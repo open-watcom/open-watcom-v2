@@ -79,7 +79,7 @@ bool GUIGetCursorPos( gui_window *wnd, gui_point *point )
     return( true );
 }
 
-bool GUIGetCursorType( gui_window *wnd, gui_char_cursor *cursor )
+bool GUIGetCursorType( gui_window *wnd, gui_cursor_type *cursor )
 {
     if( (wnd->style & GUI_CURSOR) == 0 || ( cursor == NULL ) ) {
         return( false );
@@ -100,7 +100,7 @@ bool GUIGetCursorType( gui_window *wnd, gui_char_cursor *cursor )
     return( true );
 }
 
-bool GUISetCursorType( gui_window *wnd, gui_char_cursor cursor )
+bool GUISetCursorType( gui_window *wnd, gui_cursor_type cursor )
 {
     CURSOR_TYPE type;
 

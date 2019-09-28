@@ -140,6 +140,8 @@ char DrawingChars[DRAW_LAST];
 void GUIInitDrawingChars( bool dbcs )
 {
 #ifdef __LINUX__
+    /* unused parameters */ (void)dbcs;
+
     #define pick( a,b,c,d,e ) DrawingChars[DRAW_##a] = e;
     #include "_guidraw.h"
     #undef pick

@@ -46,11 +46,15 @@ static void UICALLBACK uitimer( void )
 
 void GUIStartTimer( gui_window *wnd, gui_timer_id id, int msec )
 {
+    /* unused parameters */ (void)wnd; (void)id;
+
     rdos_uitimer( uitimer, msec );
 }
 
 void GUIStopTimer( gui_window *wnd, gui_timer_id id )
 {
+    /* unused parameters */ (void)wnd; (void)id;
+
     rdos_uitimer( NULL, 0 );
 }
 

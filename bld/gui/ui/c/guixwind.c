@@ -197,9 +197,7 @@ int GUIXMain( int argc, char * argv[] )
 
 void GUIXSetupWnd( gui_window *wnd )
 {
-    wnd->vs.event = EV_NO_EVENT;
-    wnd->vs.flags = V_UNFRAMED | V_GUI_WINDOW;
-    wnd->vs.cursor_type = C_OFF;
+    uiscreeninit( &wnd->vs, NULL, V_GUIWINDOW );
     wnd->flags = CHECK_CHILDREN_ON_RESIZE;
     wnd->background = ' ';
 }
@@ -214,8 +212,7 @@ bool GUISetBackgroundChar( gui_window *wnd, char background )
  * GUIXCreateWindow - create a UI window
  */
 
-bool GUIXCreateWindow( gui_window *wnd, gui_create_info *dlg_info,
-                       gui_window *parent )
+bool GUIXCreateWindow( gui_window *wnd, gui_create_info *dlg_info, gui_window *parent )
 {
     if( parent != NULL ) {
         wnd->sibling = parent->child;

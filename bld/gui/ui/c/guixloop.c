@@ -579,7 +579,7 @@ bool GUIProcessEvent( ui_event ui_ev )
     wnd = NULL;
     if( uimouseinstalled() ) {
         vs = uivmousepos( NULL, &row, &col );
-        if( vs != NULL && (vs->flags & V_GUI_WINDOW) ) {
+        if( vs != NULL && ISGUIWINDOW( vs ) ) {
             wnd = (gui_window *)((char *)vs - offsetof( gui_window, vs ));
         }
     }

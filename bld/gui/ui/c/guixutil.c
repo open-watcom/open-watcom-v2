@@ -92,8 +92,7 @@ bool GUISetupStruct( gui_window *wnd, gui_create_info *dlg_info, bool dialog )
         }
     }
     if( wnd->style & GUI_CURSOR ) {
-        wnd->vs.cursor_type = C_NORMAL;
-        GUISetCursor( wnd );
+        GUISetCursorType( wnd, GUI_NORMAL_CURSOR );
     }
     return( GUISetColours( wnd, dlg_info->colours.num_items, dlg_info->colours.colour ) );
 }
