@@ -224,8 +224,8 @@ static void my_console_write(
     unsigned                offset,
     LP_STRING               buf,
     int                     nbytes,
-    int                     row,
-    int                     col,
+    CURSORORD               crow,
+    CURSORORD               ccol,
     int                     type )
 {
         struct _mxfer_entry sx[2];
@@ -238,8 +238,8 @@ static void my_console_write(
         msg.write.type = _CONSOLE_WRITE;
         msg.write.handle = cc->handle;
         msg.write.console = console;
-        msg.write.curs_row = row;
-        msg.write.curs_col = col;
+        msg.write.curs_row = crow;
+        msg.write.curs_col = ccol;
         msg.write.curs_type = type;
         msg.write.offset = offset;
         msg.write.nbytes = nbytes;
@@ -292,13 +292,13 @@ static int cd_update( SAREA *area )
 {
     unsigned short  offset; /* pixel offset into buffer to begin update at */
     unsigned short  count;  /* number of pixels to update */
-    int             row;
-    int             col;
+    CURSORORD       crow;
+    CURSORORD       ccol;
     int             type;
     int             i;
 
-    row = UIData->cursor_row;
-    col = UIData->cursor_col;
+    crow = UIData->cursor_row;
+    ccol = UIData->cursor_col;
     switch( UIData->cursor_type ) {
     case C_OFF:     type = CURSOR_OFF;          break;
     case C_NORMAL:  type = CURSOR_UNDERLINE;    break;
@@ -307,14 +307,14 @@ static int cd_update( SAREA *area )
     if( area == NULL ) {
         my_console_write( UIConCtrl, UIConsole, 0,
                         (LP_STRING)UIData->screen.origin, 0,
-                        row, col, type );
+                        crow, ccol, type );
     } else {
         count = area->width * sizeof( PIXEL );
         for( i = area->row; i < ( area->row + area->height ); i++ ) {
             offset = ( i * UIData->width + area->col ) * sizeof( PIXEL );
             my_console_write( UIConCtrl, UIConsole, offset,
                             (LP_STRING)UIData->screen.origin + offset, count,
-                            row, col, type );
+                            crow, ccol, type );
         }
     }
     return( 0 );
