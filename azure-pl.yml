@@ -3,7 +3,7 @@
 # https://aka.ms/yaml
 
 schedules:
-- cron: "10 1 * * *"
+- cron: "7 0 * * *"
   displayName: "Daily midnight build"
   branches:
     include:
