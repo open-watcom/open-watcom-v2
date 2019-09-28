@@ -160,6 +160,8 @@ static void TryOne( int type, char *test, const char *init, const char *input )
     MOUSEORD    row;
     MOUSEORD    col;
 
+    /* unused parameters */ (void)test;
+
     MouseType = type;
     uimouseforceoff();
     uiwrite( init );

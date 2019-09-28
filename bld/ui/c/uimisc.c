@@ -35,6 +35,26 @@
 #include "uidef.h"
 #include "uimenu.h"
 
+void UIAPI uiscreeninit( VSCREEN *vs, SAREA *area, screen_flags flags )
+/*********************************************************************/
+{
+    vs->event = EV_NO_EVENT;
+    vs->flags = flags;
+    vs->cursor_col = 0;
+    vs->cursor_row = 0;
+    vs->cursor_type = C_OFF;
+    vs->title = NULL;
+    vs->dynamic_title = false;
+    if( area == NULL ) {
+        vs->area.row = 0;
+        vs->area.col = 0;
+        vs->area.height = 0;
+        vs->area.width = 0;
+    } else {
+        vs->area = *area;
+    }
+}
+
 VSCREEN * intern uiopen( SAREA *area, const char *title, screen_flags flags )
 /***************************************************************************/
 {
@@ -44,14 +64,7 @@ VSCREEN * intern uiopen( SAREA *area, const char *title, screen_flags flags )
     if( vs == NULL ) {
         return( vs );
     }
-    vs->event = EV_NO_EVENT;
-    vs->area = *area;
-    vs->flags = flags;
-    vs->cursor_col = 0;
-    vs->cursor_row = 0;
-    vs->cursor_type = C_OFF;
-    vs->title = NULL;
-    vs->dynamic_title = false;
+    uiscreeninit( vs, area, flags );
     if( title != NULL ) {
         unsigned    len;
         char        *str;
@@ -92,14 +105,14 @@ void uicntrtext( VSCREEN *vs, SAREA *area, ATTR attr, unsigned field_len, const 
     }
 }
 
-void uinocursor( VSCREEN *vs )
-/****************************/
+void UIAPI uinocursor( VSCREEN *vs )
+/**********************************/
 {
     vs->cursor_type = C_OFF;
 }
 
-void uicursor( VSCREEN *vs, CURSORORD crow, CURSORORD ccol, CURSOR_TYPE ctype )
-/*****************************************************************************/
+void UIAPI uicursor( VSCREEN *vs, CURSORORD crow, CURSORORD ccol, CURSOR_TYPE ctype )
+/***********************************************************************************/
 {
     vs->cursor_type = ctype;
     vs->cursor_row = crow;

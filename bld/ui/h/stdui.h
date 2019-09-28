@@ -347,6 +347,9 @@ typedef enum {
 #define ISBUFFERED(f)   (((f) & V_UNBUFFERED) == 0)
 #define ISPROTECTED(f)  (((f) & V_UNPROTECTED) == 0)
 
+#define V_GUIWINDOW     (V_UNFRAMED | V_GUI_WINDOW)
+#define ISGUIWINDOW(f)  (((f)->flags & V_GUI_WINDOW) != 0)
+
 typedef struct ui_event_list {
     int         num_lists;
     ui_event    _FARD *events[MAX_EVENT_LISTS];
@@ -717,6 +720,7 @@ extern void             UIAPI uisetmouse( MOUSEORD, MOUSEORD );
 extern void             UIAPI uisetmouseposn( ORD, ORD );
 extern SAREA            * UIAPI uisetscreenarea( SAREA *, bool, bool );
 extern void             UIAPI uisetsnow( bool );
+extern void             UIAPI uiscreeninit( VSCREEN *vs, SAREA *area, screen_flags flags );
 extern void             UIAPI uispawnend( void );
 extern void             UIAPI uispawnstart( void );
 extern bool             UIAPI uistart( void );

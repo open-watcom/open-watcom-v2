@@ -41,5 +41,7 @@ void intern vertretrace( void )
 
 bool intern issnow( BUFFER *bptr )
 {
+    /* unused parameters */ (void)bptr;
+
     return( false );
 }

@@ -757,7 +757,6 @@ static MONITOR ui_data = {
 
 
 static  LP_PIXEL    shadow;
-static  int         save_cursor_type;
 
 static bool setupscrnbuff( uisize srows, uisize scols )
 /*****************************************************/
@@ -827,7 +826,6 @@ static bool setupscrnbuff( uisize srows, uisize scols )
         }
 #endif
     }
-    save_cursor_type = -1; /* C_NORMAL; */
     for( i = 0; i < size; ++i ) {
         scrn[i].ch = ' ';       /* a space with normal attributes */
         scrn[i].attr = 7;       /* a space with normal attributes */
