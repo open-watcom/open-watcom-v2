@@ -47,20 +47,8 @@ static void backblank_update_fn( SAREA area, void *dummy )
 }
 
 
-static void backfill_update_fn( SAREA area, void *dummy )
-/*******************************************************/
-{
-    uisize      row;
-
-    /* unused parameters */ (void)dummy;
-
-    for( row = area.row; row < area.row + area.height; ++row ) {
-        uibcopy( &UIData->blank_window.buffer, row, area.col, &UIData->screen, row, area.col, area.width );
-    }
-}
-
-void uirestorebackground( void )
-/******************************/
+void UIAPI uirestorebackground( void )
+/************************************/
 {
     ATTR        hold;
 
@@ -90,50 +78,4 @@ void intern closebackground( void )
 /*********************************/
 {
     closewindow( &UIData->blank_window );
-}
-
-
-BUFFER * UIAPI uibackgroundbuffer( void )
-/***************************************/
-{
-    bool    ok;
-
-    if( UIData->blank_window.buffer.origin != NULL ) {
-        ok = true;
-    } else {
-        ok = balloc( &UIData->blank_window.buffer, UIData->height, UIData->width );
-    }
-    if( ok ) {
-        UIData->blank_window.update_func = backfill_update_fn;
-        UIData->blank_window.update_parm = NULL;
-        return( &UIData->blank_window.buffer );
-    }
-    return( NULL );
-}
-
-bool UIAPI uiremovebackground( void )
-/***********************************/
-{
-    if( UIData->blank_window.buffer.origin != NULL ) {
-        bfree( &UIData->blank_window.buffer );
-        UIData->blank_window.buffer.origin = NULL;
-    }
-    UIData->blank_window.update_func = backblank_update_fn;
-    UIData->blank_window.update_parm = NULL;
-    return( true );
-}
-
-bool UIAPI uikeepbackground( void )
-/*********************************/
-{
-    uisize      row;
-    BUFFER      *buff;
-
-    buff = uibackgroundbuffer();
-    if( buff != NULL ) {
-        for( row = 0; row < UIData->height; row++ ) {
-            uibcopy( &UIData->screen, row, 0, buff, row, 0, UIData->width );
-        }
-    }
-    return( buff != NULL );
 }

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -53,11 +54,11 @@ void intern bunframe( BUFFER *bptr )
 }
 
 
-bool intern balloc( BUFFER *bptr, uisize rows, uisize cols )
-/**********************************************************/
+bool intern balloc( BUFFER *bptr, uisize height, uisize width )
+/*************************************************************/
 {
-    bptr->increment = cols;
-    bptr->origin = faralloc( rows * cols );
+    bptr->increment = width;
+    bptr->origin = faralloc( height * width );
     return( bptr->origin != NULL );
 }
 

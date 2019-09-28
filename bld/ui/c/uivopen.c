@@ -174,19 +174,17 @@ VSCREEN * UIAPI uivresize( VSCREEN *vs, SAREA new_area )
 {
     BUFFER      old_buff;
     int         i;
-    UI_WINDOW   *wptr;
     SAREA       old_area;
     int         min_width;
     int         min_height;
 
-    wptr = &(vs->window);
     if( vs->open ) {
-        closewindow( wptr );
+        closewindow( &(vs->window) );
     }
-    old_buff.origin = wptr->buffer.origin;
-    old_buff.increment = wptr->buffer.increment;
+    old_buff.origin = vs->window.buffer.origin;
+    old_buff.increment = vs->window.buffer.increment;
     old_area = vs->area;
-    if( balloc( &(wptr->buffer), new_area.height, new_area.width ) ) {
+    if( balloc( &(vs->window.buffer), new_area.height, new_area.width ) ) {
         vs->area = new_area;
         if( ISFRAMED( vs->flags ) ) {
             (new_area.row)--;
@@ -195,7 +193,7 @@ VSCREEN * UIAPI uivresize( VSCREEN *vs, SAREA new_area )
             (new_area.width) += 2;
             okarea( new_area );
         }
-        wptr->area = new_area;
+        vs->window.area = new_area;
         okarea( vs->area );
         min_width = new_area.width;
         if( min_width > old_area.width )
@@ -204,17 +202,17 @@ VSCREEN * UIAPI uivresize( VSCREEN *vs, SAREA new_area )
         if( min_height > old_area.height )
             min_height = old_area.height;
         for( i = 0; i < min_height; i++ ) {
-            uibcopy( &(old_buff), i, 0, &(wptr->buffer), i, 0, min_width );
+            uibcopy( &(old_buff), i, 0, &(vs->window.buffer), i, 0, min_width );
         }
         bfree( &old_buff );
-        openwindow( wptr );
+        openwindow( &(vs->window) );
         return( vs );
     } else {
-        wptr->window.buffer.origin = old_buff.origin;
-        wptr->window.buffer.increment = old_buff.increment;
+        vs->window.buffer.origin = old_buff.origin;
+        vs->window.buffer.increment = old_buff.increment;
         vs->area = old_area;
-        wptr->area = old_area;
-        openwindow( wptr );
+        vs->window.area = old_area;
+        openwindow( &(vs->window) );
         return( NULL );
     }
 }
@@ -224,13 +222,11 @@ void UIAPI uivmove( VSCREEN *vs, ORD row, ORD col )
 {
     int         rdiff;
     int         cdiff;
-    UI_WINDOW   *wptr;
 
     rdiff = (int)row - (int)vs->area.row;
     cdiff = (int)col - (int)vs->area.col;
     vs->area.row = row;
     vs->area.col = col;
     okarea( vs->area );
-    wptr = &(vs->window);
-    movewindow( wptr, rdiff + wptr->area.row, cdiff + wptr->area.col );
+    movewindow( &(vs->window), rdiff + vs->window.area.row, cdiff + vs->window.area.col );
 }
