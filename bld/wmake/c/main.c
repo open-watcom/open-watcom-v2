@@ -663,7 +663,12 @@ void ExitOK( void )
 int main( int argc, char **argv )
 /*********************************************/
 {
-    assert( argv[argc] == NULL );       /* part of ANSI standard */
+#if defined( __WATCOMC__ )
+
+    /* unused parameters */ (void)argc;
+
+#endif
+
 #ifndef __WATCOMC__
     _argv = argv;
     _argc = argc;

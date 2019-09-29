@@ -322,6 +322,7 @@ void ReleaseInfo( virt_mem stg )
 /*************************************/
 // can't prematurely release, but no big deal
 {
+    /* unused parameters */ (void)stg;
 }
 
 bool SwapOutVirt( void )

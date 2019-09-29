@@ -1825,6 +1825,10 @@ STATIC bool hasMetas( const char *cmd )
             return( true );
         }
     }
+#else
+
+    /* unused parameters */ (void)cmd;
+
 #endif
     return( false );
 }
