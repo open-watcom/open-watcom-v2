@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-*    Portions Copyright (c) 2014 Open Watcom contributors. 
+*    Portions Copyright (c) 2014 Open Watcom contributors.
 *    All Rights Reserved.
 *
 *  ========================================================================
@@ -37,11 +37,15 @@ _WMRTDATA extern const double   __d_posqnan;
 
 _WMRTLINK float nanf(const char *ignored)
 {
+    /* unused parameters */ (void)ignored;
+
     return __f_posqnan;
 }
 
 _WMRTLINK double nan(const char *ignored)
 {
+    /* unused parameters */ (void)ignored;
+
     return __d_posqnan;
 }
 
@@ -55,7 +59,10 @@ _WMRTLINK long double nanl(const char *ignored)
 _WMRTLINK double nanl(const char *ignored)
 #endif
 {
-#ifdef _LONG_DOUBLE_ 
+#ifdef _LONG_DOUBLE_
+
+    /* unused parameters */ (void)ignored;
+
 #ifdef _M_IX86
     return __ld_posqnan;
 #else
