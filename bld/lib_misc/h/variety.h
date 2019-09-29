@@ -49,6 +49,14 @@
 // specialized data reference macro
 #define _HUGEDATA       _WCDATA
 
+#ifndef _WCI86FAR
+#define _WCI86FAR
+#endif
+
+#ifndef _WCI86NEAR
+#define _WCI86NEAR
+#endif
+
 // memory model macros
 #if defined(__SMALL__)
     #define __SMALL_DATA__
