@@ -92,10 +92,11 @@ void __far __pascal _clib_intrf( int inter_no, union REGPACK __far *regs )
  * bit application
  */
 
-unsigned __far __pascal _clib_dos_findfirst( char __far *__path,unsigned __attr,
-                                struct find_t __far *__buf )
+unsigned __far __pascal _clib_dos_findfirst( char __far *__path, unsigned __attr, struct find_t __far *__buf )
 {
 #if 1
+    /* unused parameters */ (void)__path; (void)__attr; (void)__buf;
+
     return 0;
 #else
     char                        *path;
@@ -118,6 +119,8 @@ unsigned __far __pascal _clib_dos_findfirst( char __far *__path,unsigned __attr,
 unsigned __far __pascal _clib_dos_findnext( struct find_t __far *__buf )
 {
 #if 1
+    /* unused parameters */ (void)__buf;
+
     return 0;
 #else
     STATIC struct find_t        buf;
