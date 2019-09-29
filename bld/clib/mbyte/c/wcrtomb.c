@@ -49,6 +49,8 @@ _WCRTLINK int _NEARFAR(wcrtomb,_fwcrtomb)( char _FFAR *s, wchar_t wc, mbstate_t 
 {
     int                 rc;
 
+    /* unused parameters */ (void)ps;
+
     /*** Check the simple cases ***/
     if( s == NULL )  return( 0 );           /* always in initial state */
 

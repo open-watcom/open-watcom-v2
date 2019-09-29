@@ -370,6 +370,10 @@ _WCRTLINK unsigned _dos_findclose( struct find_t *fdta )
             return( 0 );
         return( __set_errno_dos_reterr( TINY_INFO( rc ) ) );
     }
+#elif !defined( __OSI__ )
+
+    /* unused parameters */ (void)fdta;
+
 #endif
 #ifdef __OSI__
     return( __dos_find_close_dta( fdta ) );

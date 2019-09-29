@@ -48,18 +48,28 @@ _WCRTLINK int connect(int sockfd, const struct sockaddr *serv_addr, socklen_t ad
 {
 #if defined( __LINUX__ )
     unsigned long args[3];
+
     args[0] = (unsigned long)sockfd;
     args[1] = (unsigned long)serv_addr;
     args[2] = (unsigned long)addrlen;
     return( __socketcall( SYS_CONNECT, args ) );
 #elif defined( __RDOS__ )
-    struct sockaddr_in *in = (struct sockaddr_in *)serv_addr;
-    if( RdosIsIpv4Socket( sockfd ) )
-        if( RdosConnectIpv4Socket( sockfd, in->sin_addr.s_addr, htons( in->sin_port ) ) )
+    struct sockaddr_in *in;
+
+    /* unused parameters */ (void)addrlen;
+
+    in = (struct sockaddr_in *)serv_addr;
+    if( RdosIsIpv4Socket( sockfd ) ) {
+        if( RdosConnectIpv4Socket( sockfd, in->sin_addr.s_addr, htons( in->sin_port ) ) ) {
             return( 0 );
+        }
+    }
     _RWD_errno = ENOTSOCK;
     return( -1 );
 #else
+
+    /* unused parameters */ (void)sockfd; (void)serv_addr; (void)addrlen;
+
     return( -1 );
 #endif
 }

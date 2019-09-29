@@ -32,7 +32,10 @@
 #include "variety.h"
 #include "rtdata.h"
 
-static void _do_nothing( _87state *st ) {}
+static void _do_nothing( _87state *st )
+{
+    /* unused parameters */ (void)st;
+}
 
 void (*_RWD_Save8087)(_87state *) = _do_nothing;
 void (*_RWD_Rest8087)(_87state *) = _do_nothing;

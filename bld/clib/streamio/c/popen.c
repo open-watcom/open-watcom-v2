@@ -192,6 +192,8 @@ static int connect_pipe( FILE *fp, const CHAR_TYPE *command, int *handles,
     HFILE               oldHandle;
 #endif
 
+    /* unused parameters */ (void)textOrBinary;
+
     if( !readOrWrite ) {
         /*** Change the standard input handle for process inheritance ***/
 #if defined( __NT__ )

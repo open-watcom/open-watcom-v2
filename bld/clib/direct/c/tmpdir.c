@@ -43,6 +43,9 @@
 static char *try_one( char *p, char *buff )
 {
 #ifdef __LINUX__
+
+    /* unused parameters */ (void)p; (void)buff;
+
     // TODO: Needs Linux POSIX library!
     return NULL;
 #else

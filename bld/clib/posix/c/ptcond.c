@@ -44,7 +44,9 @@
 
 _WCRTLINK int pthread_cond_init(pthread_cond_t *__cond, const pthread_condattr_t *__attr)
 {
-int res;
+    int res;
+
+    /* unused parameters */ (void)__attr;
 
     if( __cond == NULL )
         return( EINVAL );
@@ -52,31 +54,31 @@ int res;
     res = sem_init( &__cond->wait_block, 0, 0 );
     if(res != 0)
         return( res );
-        
+
     res = sem_init( &__cond->clear_block, 0, 1 );
     if(res != 0)
         return( res );
 
     __cond->waiters = 0;
 
-    return( 0 );   
+    return( 0 );
 }
 
 _WCRTLINK int pthread_cond_destroy(pthread_cond_t *__cond)
 {
     if( __cond == NULL )
         return( EINVAL );
-    
+
     __cond->waiters = 0;
-    
+
     sem_destroy( &__cond->wait_block );
     sem_destroy( &__cond->clear_block );
-    
-    return( 0 );   
+
+    return( 0 );
 }
 
-_WCRTLINK int pthread_cond_timedwait(pthread_cond_t *__cond, 
-                                     pthread_mutex_t *__mutex, 
+_WCRTLINK int pthread_cond_timedwait(pthread_cond_t *__cond,
+                                     pthread_mutex_t *__mutex,
                                      const struct timespec *abstime)
 {
 int res;
@@ -90,17 +92,17 @@ int res;
     res = sem_timedwait( &__cond->wait_block, abstime );
 
     __atomic_decrement(&__cond->waiters);
-    
+
     sem_wait( &__cond->clear_block );
     sched_yield();
     sem_post( &__cond->clear_block );
 
-    pthread_mutex_lock( __mutex );    
-    
+    pthread_mutex_lock( __mutex );
+
     return( res );
 }
 
-_WCRTLINK int pthread_cond_wait(pthread_cond_t *__cond, 
+_WCRTLINK int pthread_cond_wait(pthread_cond_t *__cond,
                                 pthread_mutex_t *__mutex)
 {
 int res;
@@ -115,7 +117,7 @@ int res;
 
     __atomic_decrement(&__cond->waiters);
 
-    pthread_mutex_lock( __mutex ); 
+    pthread_mutex_lock( __mutex );
 
     return( res );
 }
@@ -126,7 +128,7 @@ int ret;
 int waiters;
 
     sem_wait( &__cond->clear_block );
-    
+
     ret = 0;
     if( __cond->waiters > 0 ) {
         waiters = __cond->waiters;
@@ -135,18 +137,18 @@ int waiters;
             sched_yield( );
         }
     }
-    
+
     sem_post( &__cond->clear_block );
-    
+
     return ret;
 }
 
 _WCRTLINK int pthread_cond_broadcast(pthread_cond_t *__cond)
 {
 int waiters;
-    
+
     sem_wait( &__cond->clear_block );
-    
+
     while(__cond->waiters > 0) {
         waiters = __cond->waiters;
         sem_post( &__cond->wait_block );
@@ -154,7 +156,7 @@ int waiters;
             sched_yield( );
         }
     }
-    
+
     sem_post( &__cond->clear_block );
     return( 0 );
 }

@@ -207,10 +207,10 @@ _WCRTLINK int _CrtDbgReport( int reporttype, const char *filename,
                              const char *format, ... )
 /******************************************************************/
 {
-    #ifdef __NT__
-        DWORD           byteswritten;
-        BOOL            osrc;
-    #endif
+#ifdef __NT__
+    DWORD           byteswritten;
+    BOOL            osrc;
+#endif
     char                usermsg[MAX_MSG_LEN] = { 0 };
     char                linemsg[MAX_MSG_LEN] = { 0 };
     char                outmsg[MAX_MSG_LEN] = { 0 };
@@ -218,6 +218,8 @@ _WCRTLINK int _CrtDbgReport( int reporttype, const char *filename,
     size_t              len;
     int                 retval = 0;
     int                 rc;
+
+    /* unused parameters */ (void)modulename;
 
     /*** Ensure reporttype is valid ***/
     if( reporttype < _CRT_WARN  ||  reporttype > _CRT_ASSERT ) {
@@ -267,15 +269,18 @@ _WCRTLINK int _CrtDbgReport( int reporttype, const char *filename,
     /*** Handle _CRTDBG_MODE_FILE ***/
     if( __DbgReportModes[reporttype] & _CRTDBG_MODE_FILE ) {
         if( __DbgReportFiles[reporttype] != _CRTDBG_INVALID_HFILE ) {
-            #ifdef __NT__
-                osrc = WriteFile( __DbgReportFiles[reporttype], outmsg,
-                                  strlen( outmsg ), &byteswritten, NULL );
-                if( osrc == FALSE )  retval = -1;
-            #else
-                rc = write( __DbgReportFiles[reporttype], outmsg,
-                            strlen( outmsg ) );
-                if( rc == -1 )  retval = -1;
-            #endif
+#ifdef __NT__
+            osrc = WriteFile( __DbgReportFiles[reporttype], outmsg,
+                              strlen( outmsg ), &byteswritten, NULL );
+            if( osrc == FALSE ) {
+                retval = -1;
+            }
+#else
+            rc = write( __DbgReportFiles[reporttype], outmsg, strlen( outmsg ) );
+            if( rc == -1 ) {
+                retval = -1;
+            }
+#endif
         }
     }
 
@@ -285,7 +290,7 @@ _WCRTLINK int _CrtDbgReport( int reporttype, const char *filename,
         size_t          len;
 
         len = sizeof( DEBUGGER_MESSAGE_COMMAND ) + strlen( outmsg ) + 1;
-        buff = (char*) lib_malloc( len );
+        buff = (char *)lib_malloc( len );
         if( buff != NULL ) {
             sprintf( buff, DEBUGGER_MESSAGE_FORMAT, outmsg );
             PassDebuggerAMessage( buff );
@@ -297,13 +302,13 @@ _WCRTLINK int _CrtDbgReport( int reporttype, const char *filename,
 
     /*** Handle _CRTDBG_MODE_WNDW ***/
     if( __DbgReportModes[reporttype] & _CRTDBG_MODE_WNDW ) {
-        #if defined(__NT__) || defined(__WINDOWS__) || defined(__OS2__)
-            rc = window_report( reporttype, filename, linenumber, modulename,
-                                usermsg );
-            if( rc != 0 )  retval = rc;
-        #else
-            retval = -1;
-        #endif
+#if defined(__NT__) || defined(__WINDOWS__) || defined(__OS2__)
+        rc = window_report( reporttype, filename, linenumber, modulename, usermsg );
+        if( rc != 0 )
+            retval = rc;
+#else
+        retval = -1;
+#endif
     }
 
     return( retval );

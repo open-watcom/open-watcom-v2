@@ -192,6 +192,12 @@ static FILE *__F_NAME(__doopen,__wdoopen)( const CHAR_TYPE *name,
     int open_mode;
     int p_mode;
 
+#ifdef __NETWARE__
+
+    /* unused parameters */ (void)extflags;
+
+#endif
+
     SetupTGCSandNCS( RETURN_ARG( FILE *, 0 ) );     /* for NW386 */
 
     /* we need the mode character to indicate if the original */

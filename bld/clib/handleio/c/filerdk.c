@@ -66,7 +66,7 @@ int handle_count;
 
 static struct TKernelSection handle_section;
 
-static rdos_handle_type *AllocHandleObj( )
+static rdos_handle_type *AllocHandleObj( void )
 {
     rdos_handle_type *h;
 
@@ -100,7 +100,7 @@ static void GrowHandleArr( void )
 
     for( i = 0; i < handle_count; i++ )
         new_ptr[i] = handle_ptr[i];
-    
+
     for( i = handle_count; i < new_count; i++ )
         new_ptr[i] = 0;
 
@@ -108,7 +108,7 @@ static void GrowHandleArr( void )
     handle_ptr = new_ptr;
     handle_count = new_count;
 }
-    
+
 static int AllocHandleEntry( rdos_handle_type *obj )
 {
     int i;
@@ -128,11 +128,11 @@ static int AllocHandleEntry( rdos_handle_type *obj )
 
     return( i );
 }
-    
+
 static rdos_handle_type *FreeHandleEntry( int handle )
 {
     rdos_handle_type *obj = 0;
-    
+
     RdosEnterKernelSection( &handle_section );
 
     if( handle >= 0 && handle < handle_count ) {
@@ -146,18 +146,18 @@ static rdos_handle_type *FreeHandleEntry( int handle )
 
     return( obj );
 }
-    
+
 static int ReplaceHandleEntry( int handle, rdos_handle_type *new_obj )
 {
     int                 ok = 0;
     rdos_handle_type   *obj = 0;
-    
+
     RdosEnterKernelSection( &handle_section );
 
     if( handle >= 0 && handle < handle_count ) {
         if( handle_ptr[handle] )
             obj = handle_ptr[handle];
-            
+
         handle_ptr[handle] = new_obj;
         ok = 1;
     }
@@ -169,19 +169,19 @@ static int ReplaceHandleEntry( int handle, rdos_handle_type *new_obj )
 
     return ( ok );
 }
-    
+
 static int GetHandle( int handle )
 {
     int rdos_handle = -1;
 
     RdosEnterKernelSection( &handle_section );
-    
+
     if( handle >= 0 && handle < handle_count ) {
         if( handle_ptr[handle] ) {
             rdos_handle = handle_ptr[handle]->rdos_handle;
         }
     }
-    
+
     RdosLeaveKernelSection( &handle_section );
 
     return( rdos_handle );
@@ -198,7 +198,7 @@ static long GetHandlePos( int handle )
             pos = handle_ptr[handle]->pos;
         }
     }
-    
+
     RdosLeaveKernelSection( &handle_section );
 
     return( pos );
@@ -213,7 +213,7 @@ static void SetHandlePos( int handle, long pos )
             handle_ptr[handle]->pos = pos;
         }
     }
-    
+
     RdosLeaveKernelSection( &handle_section );
 }
 
@@ -230,20 +230,21 @@ static void InitHandle( void )
 
 }
 
-_WCRTLINK int unlink( const CHAR_TYPE *filename ) 
+_WCRTLINK int unlink( const CHAR_TYPE *filename )
 {
     __ptr_check( filename, 0 );
 
-    if( RdosDeleteFile( filename ) )
+    if( RdosDeleteFile( filename ) ) {
         return( 0 );
-    else
-        return( -1 );  
+    } else {
+        return( -1 );
+    }
 }
 
 unsigned __GetIOMode( int handle )
 {
     unsigned mode = 0;
-    
+
     RdosEnterKernelSection( &handle_section );
 
     if( handle >= 0 && handle < handle_count )
@@ -291,7 +292,7 @@ static int open_base( const CHAR_TYPE *name, int mode )
     unsigned            iomode_flags;
     int                 rwmode;
 
-    rwmode = mode & OPENMODE_ACCESS_MASK;    
+    rwmode = mode & OPENMODE_ACCESS_MASK;
     iomode_flags = 0;
     if( mode == O_RDWR )                iomode_flags |= _READ | _WRITE;
     if( rwmode == O_RDONLY)             iomode_flags |= _READ;
@@ -302,7 +303,7 @@ static int open_base( const CHAR_TYPE *name, int mode )
 
     rdos_handle = RdosOpenKernelFile( name, mode );
     if( rdos_handle ) {
-        obj = AllocHandleObj( name );
+        obj = AllocHandleObj();
         if( obj ) {
             obj->rdos_handle = rdos_handle;
             obj->mode = iomode_flags;
@@ -317,7 +318,7 @@ static int open_base( const CHAR_TYPE *name, int mode )
 _WCRTLINK int creat( const CHAR_TYPE *name, mode_t pmode )
 {
     unsigned mode;
-    
+
     mode = O_CREAT | O_TRUNC;
     if( (pmode & S_IWRITE) && (pmode & S_IREAD) ) {
         mode |= O_RDWR;
@@ -336,7 +337,7 @@ _WCRTLINK int open( const CHAR_TYPE *name, int mode, ... )
 {
     int                 permission;
     va_list             args;
-    
+
     va_start( args, mode );
     permission = va_arg( args, int );
     va_end( args );
@@ -381,13 +382,14 @@ _WCRTLINK int dup( int handle )
 
     if( obj )
         obj->ref_count++;
-    
+
     RdosLeaveKernelSection( &handle_section );
 
-    if( obj )
+    if( obj ) {
         return( AllocHandleEntry( obj ) );
-    else
+    } else {
         return( -1 );
+    }
 }
 
 _WCRTLINK int dup2( int handle1, int handle2 )
@@ -402,7 +404,7 @@ _WCRTLINK int dup2( int handle1, int handle2 )
 
     while( handle2 >= handle_count )
         GrowHandleArr( );
-        
+
     RdosEnterKernelSection( &handle_section );
 
     if( handle1 >= 0 && handle1 < handle_count )
@@ -411,14 +413,15 @@ _WCRTLINK int dup2( int handle1, int handle2 )
 
     if( obj )
         obj->ref_count++;
-    
+
     RdosLeaveKernelSection( &handle_section );
 
     if( obj ) {
-        if( ReplaceHandleEntry( handle2, obj ) )
+        if( ReplaceHandleEntry( handle2, obj ) ) {
             return( handle2 );
-        else
+        } else {
             obj->ref_count--;
+        }
     }
 
     return( -1 );
@@ -432,12 +435,14 @@ _WCRTLINK int eof( int handle )
     rdos_handle = GetHandle( handle );
     if( rdos_handle > 0 ) {
         pos = GetHandlePos( handle );
-        if( RdosGetCFileSize( rdos_handle ) == pos )
+        if( RdosGetCFileSize( rdos_handle ) == pos ) {
             return( 1 );
-        else
+        } else {
             return( 0 );
-    } else
+        }
+    } else {
         return( -1 );
+    }
 }
 
 _WCRTLINK long filelength( int handle )
@@ -445,10 +450,11 @@ _WCRTLINK long filelength( int handle )
     int         rdos_handle;
 
     rdos_handle = GetHandle( handle );
-    if( rdos_handle > 0 )
+    if( rdos_handle > 0 ) {
         return( RdosGetCFileSize( rdos_handle ) );
-    else
+    } else {
         return( -1 );
+    }
 }
 
 _WCRTLINK int chsize( int handle, long size )
@@ -492,8 +498,8 @@ _WCRTLINK int fstat( int handle, struct stat *buf )
         buf->st_rdev = buf->st_dev;
 
         RdosGetCFileTime( rdos_handle, &msb, &lsb );
-        RdosDecodeMsbTics( msb, 
-                           &tm.tm_year, 
+        RdosDecodeMsbTics( msb,
+                           &tm.tm_year,
                            &tm.tm_mon,
                            &tm.tm_mday,
                            &tm.tm_hour );
@@ -503,13 +509,13 @@ _WCRTLINK int fstat( int handle, struct stat *buf )
                            &tm.tm_sec,
                            &ms,
                            &us );
-                           
+
         tm.tm_year -= 1900;
         tm.tm_mon--;
         tm.tm_isdst = -1;
         tm.tm_wday = -1;
         tm.tm_yday = -1;
-    
+
         buf->st_mtime = mktime( &tm );
         buf->st_atime = buf->st_ctime = buf->st_mtime;
         buf->st_size = filelength( handle );
@@ -557,7 +563,7 @@ _WCRTLINK off_t lseek( int handle, off_t offset, int origin )
         case SEEK_SET:
             SetHandlePos( handle, offset );
             break;
-            
+
         case SEEK_CUR:
             pos = GetHandlePos( handle );
             pos += offset;
@@ -570,7 +576,7 @@ _WCRTLINK off_t lseek( int handle, off_t offset, int origin )
             SetHandlePos( handle, pos );
             break;
         }
-        return( GetHandlePos( handle ) );            
+        return( GetHandlePos( handle ) );
     } else
         return( -1 );
 }

@@ -43,5 +43,7 @@ _WCRTLINK int pthread_getconcurrency(void)
 
 _WCRTLINK int pthread_setconcurrency(int new_level)
 {
+    /* unused parameters */ (void)new_level;
+
     return( ENOSYS );
 }

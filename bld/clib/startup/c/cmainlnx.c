@@ -35,7 +35,7 @@
 #include <string.h>
 #include "rtdata.h"
 #include "rtstack.h"
-#include "exitwmsg.h"
+//#include "exitwmsg.h"
 #include "initfini.h"
 #include "initarg.h"
 #include "osmain.h"

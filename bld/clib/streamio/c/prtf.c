@@ -117,6 +117,12 @@ int __F_NAME(__prtf,__wprtf)( void __SLIB *dest, const CHAR_TYPE *format, va_lis
     const CHAR_TYPE     *ctl;
     SPECS               specs;
 
+#if !defined( SAFE_PRINTF ) && defined( IN_SLIB )
+
+    /* unused parameters */ (void)ptr_size;
+
+#endif
+
     specs._dest = dest;
     specs._flags = 0;
     specs._version = SPECS_VERSION;
@@ -459,6 +465,9 @@ static int far_strlen( FAR_STRING s, int precision )
 static int far_other_strlen( FAR_STRING s, int precision )
 {
 #if defined( __RDOS__ ) || defined( __RDOSDEV__ )
+
+    /* unused parameters */ (void)s; (void)precision;
+
     return( 0 );  // RDOS doesn't support unicode
 #else
     int                 len = 0;
@@ -727,6 +736,8 @@ static FAR_STRING formstring( CHAR_TYPE *buffer, my_va_list *pargs,
 #if !defined( __WIDECHAR__ ) && defined( USE_MBCS_TRANSLATION )
     int                     bytes;
 #endif
+
+    /* unused parameters */ (void)null_string;
 
     arg = buffer;
 

@@ -47,19 +47,29 @@ _WCRTLINK int bind( int sockfd, const struct sockaddr *my_addr, socklen_t addrle
 {
 #if defined( __LINUX__ )
     unsigned long args[3];
+
     args[0] = (unsigned long)sockfd;
     args[1] = (unsigned long)my_addr;
     args[2] = (unsigned long)addrlen;
     return( __socketcall( SYS_BIND, args ) );
 #elif defined( __RDOS__ )
-    struct sockaddr_in *in = (struct sockaddr_in *)my_addr;
-    if( RdosIsIpv4Socket( sockfd ) )
-        if( RdosBindIpv4Socket( sockfd, htons( in->sin_port ) ) )
+    struct sockaddr_in *in;
+
+    /* unused parameters */ (void)addrlen;
+
+    in = (struct sockaddr_in *)my_addr;
+    if( RdosIsIpv4Socket( sockfd ) ) {
+        if( RdosBindIpv4Socket( sockfd, htons( in->sin_port ) ) ) {
             return( 0 );
-        
+        }
+    }
+
     _RWD_errno = ENOTSOCK;
     return( -1 );
 #else
+
+    /* unused parameters */ (void)sockfd; (void)my_addr; (void)addrlen;
+
     return( - 1 );
 #endif
 }

@@ -44,14 +44,21 @@ _WCRTLINK int send(int s, const void *msg, size_t len, int flags)
 {
 #if defined( __LINUX__ )
     unsigned long args[4];
+
     args[0] = (unsigned long)s;
     args[1] = (unsigned long)msg;
     args[2] = (unsigned long)len;
     args[3] = (unsigned long)flags;
     return( __socketcall( SYS_SEND, args ) );
 #elif defined( __RDOS__ )
+
+    /* unused parameters */ (void)flags;
+
     return( RdosWriteHandle( s, msg, len ) );
 #else
+
+    /* unused parameters */ (void)s; (void)msg; (void)len; (void)flags;
+
     return( -1 );
 #endif
 }

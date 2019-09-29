@@ -64,15 +64,9 @@
 #endif
 
 typedef void (*pfn)(void);
-#ifdef _M_I86
 typedef void (_WCI86FAR * _WCI86FAR fpfn)(void);
 typedef void (_WCI86NEAR * _WCI86NEAR npfn)(void);
 typedef struct rt_init _WCI86NEAR   *struct_rt_init_ptr;
-#else
-typedef void (* fpfn)(void);
-typedef void (* npfn)(void);
-typedef struct rt_init              *struct_rt_init_ptr;
-#endif
 
 #if defined( _M_I86 )
     extern void save_dx( void );

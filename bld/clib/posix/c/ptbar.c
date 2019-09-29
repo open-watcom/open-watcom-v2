@@ -40,9 +40,10 @@
 
 
 _WCRTLINK int pthread_barrier_init( pthread_barrier_t *__barrier,
-                                    const pthread_barrierattr_t *__attr, 
+                                    const pthread_barrierattr_t *__attr,
                                     unsigned __count )
 {
+    /* unused parameters */ (void)__attr;
 
     if(__barrier == NULL)
         return( EINVAL );
@@ -51,7 +52,7 @@ _WCRTLINK int pthread_barrier_init( pthread_barrier_t *__barrier,
     if(__barrier->access == NULL)
         return( ENOMEM );
     pthread_mutex_init(__barrier->access, NULL);
-    
+
     __barrier->cond = (pthread_cond_t *)malloc(sizeof(pthread_cond_t));
     if(__barrier->cond == NULL) {
         free((void *)__barrier->access);
@@ -74,19 +75,19 @@ int res;
         pthread_mutex_unlock(__barrier->access);
         return( EBUSY );
     }
-    
+
     res = pthread_cond_destroy(__barrier->cond);
     if(res != 0) {
         pthread_mutex_unlock(__barrier->access);
         return( res );
     }
-    
+
     pthread_mutex_unlock(__barrier->access);
     pthread_mutex_destroy(__barrier->access);
-    
+
     free((void *)__barrier->access);
     free((void *)__barrier->cond);
-    
+
     return( 0 );
 }
 
@@ -95,11 +96,11 @@ _WCRTLINK int pthread_barrier_wait(pthread_barrier_t *__barrier)
 int ret;
 
     pthread_mutex_lock(__barrier->access);
-    
+
     ret = 0;
-    
+
     __barrier->count++;
-    
+
     if(__barrier->count >= __barrier->limit) {
         pthread_cond_broadcast(__barrier->cond);
         __barrier->count = 0;
@@ -107,8 +108,8 @@ int ret;
     } else {
         pthread_cond_wait(__barrier->cond, __barrier->access);
     }
-    
+
     pthread_mutex_unlock(__barrier->access);
-    
+
     return( ret );
 }

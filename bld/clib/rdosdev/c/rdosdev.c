@@ -50,28 +50,28 @@ typedef struct RdosSpawnParam
     TRdosPtr48 options;
 } TRdosSpawnParam;
 
-int RdosCarryToBool();
+int RdosCarryToBool( void );
 
 #pragma aux RdosCarryToBool = \
         CarryToBool \
     __value [__eax]
 
-void RdosBlitBase();
+void RdosBlitBase( void );
 
 #pragma aux RdosBlitBase = \
     CallGate_blit;
 
-void RdosDrawMaskBase();
+void RdosDrawMaskBase( void );
 
 #pragma aux RdosDrawMaskBase = \
     CallGate_draw_mask;
 
-void RdosGetBitmapInfoBase();
+void RdosGetBitmapInfoBase( void );
 
 #pragma aux RdosGetBitmapInfoBase = \
     CallGate_get_bitmap_info;
 
-void RdosReadDirBase();
+void RdosReadDirBase( void );
 
 #pragma aux RdosReadDirBase = \
     CallGate_read_dir;

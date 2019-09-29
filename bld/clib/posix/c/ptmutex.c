@@ -51,18 +51,18 @@ _WCRTLINK int pthread_mutex_init(pthread_mutex_t *__mutex, const pthread_mutexat
 {
     if(__mutex == NULL)
         return( EINVAL );
-    
+
     if(sem_init(&__mutex->mutex, 0, 1) != 0) {
         return( _RWD_errno );
     }
 
     __mutex->owner = (pid_t)MUTEX_STATUS_READY;
     __mutex->type = PTHREAD_MUTEX_DEFAULT;
-    
+
     if(__attr != NULL)
         __mutex->type = __attr->type;
-    
-    return( 0 );   
+
+    return( 0 );
 }
 
 _WCRTLINK int pthread_mutex_destroy(pthread_mutex_t *__mutex)
@@ -75,12 +75,12 @@ int res;
         return( res );
 
     __atomic_compare_and_swap( &__mutex->owner, gettid(), MUTEX_STATUS_DESTROYED );
-    
+
     /* Need to release the mutex semaphore now */
     sem_post(&__mutex->mutex);
     if(sem_destroy(&__mutex->mutex) != 0)
         return( _RWD_errno );
-    
+
     return( 0 );
 }
 
@@ -92,19 +92,18 @@ static int __pthread_check_lock_type(pthread_mutex_t *__mutex)
 int ret;
 
     ret = LOCK_PROCEED;
-    
-    if(__mutex->owner == MUTEX_STATUS_READY)
+
+    if(__mutex->owner == MUTEX_STATUS_READY) {
         ret = LOCK_PROCEED;
-    else if(__mutex->owner == gettid()) {
-    
+    } else if(__mutex->owner == gettid()) {
         /* For a "normal" mutex, proceed with deadlock... */
-        if(__mutex->type == PTHREAD_MUTEX_NORMAL)
+        if(__mutex->type == PTHREAD_MUTEX_NORMAL) {
             ret = LOCK_PROCEED;
-        
-        else if(__mutex->type == PTHREAD_MUTEX_ERRORCHECK)
+        } else if(__mutex->type == PTHREAD_MUTEX_ERRORCHECK) {
             ret = LOCK_ERROR_OWNED;
-    }    
-    
+        }
+    }
+
     return( ret );
 }
 
@@ -119,9 +118,9 @@ int ret;
         sem_wait(&__mutex->mutex);
         __atomic_compare_and_swap( &__mutex->owner, -1, gettid());
         ret = 0;
-    } else 
+    } else {
         ret = EBUSY;
-
+    }
     return( ret );
 }
 
@@ -129,25 +128,25 @@ _WCRTLINK int pthread_mutex_lock(pthread_mutex_t *__mutex)
 {
 int ret;
 int res;
-    
+
     if(__mutex == NULL || __mutex->owner == MUTEX_STATUS_DESTROYED)
         return( EINVAL );
-    
+
     ret = -1;
-    
+
     res = __pthread_check_lock_type(__mutex);
     if(res == LOCK_ERROR_OWNED)
         return( EDEADLK );
-        
+
     if(sem_wait(&__mutex->mutex) == 0) {
-        
+
         res = __atomic_compare_and_swap( &__mutex->owner, MUTEX_STATUS_READY, gettid());
-        if(res == 0)
+        if(res == 0) {
             ret = EPERM;
-                
-        else
+        } else {
             ret = 0;
-    } 
+        }
+    }
 
     return( ret );
 }
@@ -158,23 +157,21 @@ int ret;
 
     if(__mutex == NULL || __mutex->owner == MUTEX_STATUS_DESTROYED)
         return( EINVAL );
-    
+
     ret = -1;
-        
+
     if(__mutex->owner == MUTEX_STATUS_READY) {
         return EPERM;
     }
-    
+
     if(__mutex->owner == gettid()) {
         if(!__atomic_compare_and_swap( &__mutex->owner, gettid(), MUTEX_STATUS_READY))
-            return( EPERM ); 
+            return( EPERM );
         ret = 0;
-        
         sem_post(&__mutex->mutex);
-
-    } else 
+    } else {
         ret = EPERM;
-    
+    }
     return( ret );
 }
 
@@ -186,23 +183,27 @@ int __pthread_mutex_mylock(pthread_mutex_t *__mutex)
         return( EINVAL );
 
     ret = -1;
-    if(__mutex->owner == gettid()) 
+    if(__mutex->owner == gettid()) {
         ret = 0;
-    else if(__mutex->owner != MUTEX_STATUS_READY)
+    } else if(__mutex->owner != MUTEX_STATUS_READY) {
         ret = -1;
-    else
+    } else {
         ret = EPERM;
+    }
 
-    
     return( ret );
 }
 
 _WCRTLINK int pthread_mutex_setprioceiling(pthread_mutex_t *__mutex, int __prioceiling, int *__old_ceiling)
 {
+    /* unused parameters */ (void)__mutex; (void)__prioceiling; (void)__old_ceiling;
+
     return( ENOSYS );
 }
 
 _WCRTLINK int pthread_mutex_getprioceiling(const pthread_mutex_t *__mutex, int *__prioceiling)
 {
+    /* unused parameters */ (void)__mutex; (void)__prioceiling;
+
     return( ENOSYS );
 }

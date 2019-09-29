@@ -114,10 +114,14 @@ int __LibCAddThread( thread_data *tdata )
 void __LibCRemoveThread( int close_handle )
 /*****************************************/
 {
-    thread_data *tdata = NULL;
+    thread_data *tdata;
+    int         ccode;
+
+    /* unused parameters */ (void)close_handle;
 
     if( __NXSlotID != NO_INDEX ) {
-        int ccode = NXKeyGetValue( __NXSlotID, (void **)&tdata );
+        tdata = NULL;
+        ccode = NXKeyGetValue( __NXSlotID, (void **)&tdata );
         if( 0 != ccode ) {
             return;
         }
@@ -202,6 +206,8 @@ int __CBeginThread(
 {
     begin_thread_data   data;
     int                 error;
+
+    /* unused parameters */ (void)stack_size;
 
     if( __NXSlotID == NO_INDEX ) {
         __InitMultipleThread();

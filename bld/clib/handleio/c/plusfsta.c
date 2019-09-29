@@ -57,35 +57,44 @@
 
 _WCRTLINK int __plusplus_fstat( int handle, int *pios_mode )
 {
-    int flags;
-    int ios_mode = 0;
+    int ios_mode;
 
 #if defined(__NETWARE__)
-    handle=handle;
-    flags=flags;
+
+    /* unused parameters */ (void)handle;
+
     // make a guess
-    ios_mode |= __in | __out | __text;
+    ios_mode = __in | __out | __text;
 #elif defined(__UNIX__)
-    if( (flags = fcntl( handle, F_GETFL )) == -1 ) {
+    int flags;
+
+    flags = fcntl( handle, F_GETFL );
+    if( flags == -1 ) {
         return( -1 );
     }
+    ios_mode = 0;
     if( flags & O_APPEND ) {
-        ios_mode |= __append;
+        ios_mode = __append;
     }
     if( (flags & O_ACCMODE) == O_RDONLY ) {
         ios_mode |= __in;
     } else if( (flags & O_ACCMODE) == O_WRONLY ) {
         ios_mode |= __out;
     } else {
-        ios_mode |= __in|__out;
+        ios_mode |= __in | __out;
     }
 #elif __RDOS__
-    flags = 0;
-    ios_mode |= __in | __out | __text;
+
+    /* unused parameters */ (void)handle;
+
+    ios_mode = __in | __out | __text;
 #else
+    int flags;
+
     flags = __GetIOMode( handle );
+    ios_mode = 0;
     if( flags & _APPEND ) {
-        ios_mode |= __append;
+        ios_mode = __append;
     }
     if( flags & _READ ) {
         ios_mode |= __in;

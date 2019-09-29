@@ -61,6 +61,8 @@ static void __SLIB_CALLBACK buf_putc( SPECS __SLIB *specs, OUTC_PARM op_char )
 static slib_callback_t buf_count_putc; // setup calling convention
 static void __SLIB_CALLBACK buf_count_putc( SPECS __SLIB *specs, OUTC_PARM op_char )
 {
+    /* unused parameters */ (void)op_char;
+
     specs->_output_count++;
 }
 

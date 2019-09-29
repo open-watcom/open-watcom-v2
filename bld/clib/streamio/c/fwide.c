@@ -41,15 +41,22 @@ _WCRTLINK int fwide( FILE *fp, int mode )
 {
     int     new_mode;
 
+#if defined( __NETWARE__ )
+
+    /* unused parameters */ (void)mode;
+
+#endif
+
     _ValidFile( fp, EOF );
     _AccessFile( fp );
 
 #if !defined( __NETWARE__ )
     /* Set orientation if possible */
-    if( mode > 0 && _FP_ORIENTATION(fp) == _NOT_ORIENTED )
+    if( mode > 0 && _FP_ORIENTATION(fp) == _NOT_ORIENTED ) {
         _FP_ORIENTATION(fp) = _WIDE_ORIENTED;
-    else if( mode < 0 && _FP_ORIENTATION(fp) == _NOT_ORIENTED )
+    } else if( mode < 0 && _FP_ORIENTATION(fp) == _NOT_ORIENTED ) {
         _FP_ORIENTATION(fp) = _BYTE_ORIENTED;
+    }
 
     /* Find out what the current orientation is */
     new_mode = _FP_ORIENTATION(fp) == _WIDE_ORIENTED ?

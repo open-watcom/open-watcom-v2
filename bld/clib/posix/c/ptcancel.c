@@ -54,6 +54,8 @@
 
 static void __thread_handle_cancellation( int signal )
 {
+    /* unused parameters */ (void)signal;
+
     pthread_exit( PTHREAD_CANCELED );
     // never return
 }

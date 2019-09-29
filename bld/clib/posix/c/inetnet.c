@@ -57,31 +57,27 @@ again:
      * The 4.4BSD version of this file also accepts 'x__' as a hexa
      * number.  I don't think this is correct.  -- Uli
      */
-    if( *__cp == '0' )
-    {
-        if( *++__cp == 'x' || *__cp == 'X' )
+    if( *__cp == '0' ) {
+        if( *++__cp == 'x' || *__cp == 'X' ) {
             base = 16, __cp++;
-        else 
+        } else {
             base = 8;
+        }
     }
-    while( ( c = *__cp ) != 0 )
-    {
-        if( isdigit( c ) )
-        {
+    while( ( c = *__cp ) != 0 ) {
+        if( isdigit( c ) ) {
             val = (val * base) + (c - '0');
             __cp++;
             continue;
         }
-        if( base == 16 && isxdigit( c ) )
-        {
+        if( base == 16 && isxdigit( c ) ) {
             val = (val << 4) + (c + 10 - (islower(c) ? 'a' : 'A'));
             __cp++;
             continue;
         }
         break;
     }
-    if( *__cp == '.' )
-    {
+    if( *__cp == '.' ) {
         if( pp >= parts + 4 )
             return( INADDR_NONE );
 
@@ -97,8 +93,7 @@ again:
     if (n > 4)
         return( INADDR_NONE );
 
-    for( val = 0, i = 0; i < n; i++ )
-    {
+    for( val = 0, i = 0; i < n; i++ ) {
         val <<= 8;
         val |= parts[i] & 0xff;
     }

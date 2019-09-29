@@ -47,6 +47,7 @@ _WCRTLINK int listen(int s, int backlog)
 {
 #if defined( __LINUX__ )
     unsigned long args[2];
+
     args[0] = (unsigned long)s;
     args[1] = (unsigned long)backlog;
     return( __socketcall( SYS_LISTEN, args ) );
@@ -56,6 +57,9 @@ _WCRTLINK int listen(int s, int backlog)
     _RWD_errno = ENOTSOCK;
     return( -1 );
 #else
+
+    /* unused parameters */ (void)s; (void)backlog;
+
     return( -1 );
 #endif
 }

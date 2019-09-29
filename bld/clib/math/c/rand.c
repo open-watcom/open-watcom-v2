@@ -81,5 +81,9 @@ _WCRTLINK void srand( unsigned int seed )
     if( randptr != NULL ) {
         *randptr = seed;
     }
+#else
+
+    /* unused parameters */ (void)seed;
+
 #endif
 }

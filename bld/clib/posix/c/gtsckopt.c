@@ -35,7 +35,7 @@
 #include <sys/socket.h>
 
 #if defined( __LINUX__ )
-#include "linuxsys.h"
+    #include "linuxsys.h"
 #endif
 
 _WCRTLINK int getsockopt( int s, int level, int optname, void *optval, socklen_t *optlen )
@@ -50,8 +50,14 @@ _WCRTLINK int getsockopt( int s, int level, int optname, void *optval, socklen_t
     args[4] = (u_long)optlen;
     return( __socketcall( SYS_GETSOCKOPT, args ) );
 #elif defined( __RDOS__ )
+
+    /* unused parameters */ (void)s; (void)level; (void)optname; (void)optval; (void)optlen;
+
     return( -1 );
 #else
+
+    /* unused parameters */ (void)s; (void)level; (void)optname; (void)optval; (void)optlen;
+
     return( -1 );
 #endif
 }

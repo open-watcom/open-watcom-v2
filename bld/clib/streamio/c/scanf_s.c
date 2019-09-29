@@ -53,6 +53,8 @@ static INTCHAR_TYPE cget_stdin( PTR_SCNF_SPECS specs )
 
 static void uncget_stdin( INTCHAR_TYPE c, PTR_SCNF_SPECS specs )
 {
+    /* unused parameters */ (void)specs;
+
     __F_NAME(ungetc,ungetwc)( c, stdin );
 }
 

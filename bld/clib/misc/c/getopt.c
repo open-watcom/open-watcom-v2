@@ -59,6 +59,8 @@ _WCRTLINK int getopt( int argc, char * const argv[], const char *optstring )
     char        *ptr;
     char        *curr_arg;
 
+    /* unused parameters */ (void)argc;
+
     optarg = NULL;
     curr_arg = argv[optind];
     if( curr_arg == NULL ) {

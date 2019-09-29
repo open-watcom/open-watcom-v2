@@ -50,36 +50,27 @@ _WCRTLINK char *nl_langinfo(int __item)
 
     ret = NULL;
 
-    if(__item == CODESET)
+    if(__item == CODESET) {
         ret = BASE_CODESET;
-
-    else if(__item >= CURRENCY_OFFSET)
+    } else if(__item >= CURRENCY_OFFSET) {
         ret = __langinfo_array_get(__item - CURRENCY_OFFSET, __li_currency);
-
-    else if(__item >= YESNO_OFFSET)
+    } else if(__item >= YESNO_OFFSET) {
         ret = __langinfo_array_get(__item - YESNO_OFFSET, __li_yesno);
-
-    else if(__item >= NUMBER_OFFSET)
+    } else if(__item >= NUMBER_OFFSET) {
         ret = __langinfo_array_get(__item - NUMBER_OFFSET, __li_number);
-
-    else if(__item >= ERA_OFFSET)
+    } else if(__item >= ERA_OFFSET) {
         ret = __langinfo_array_get(__item - ERA_OFFSET, __li_era);
-
-    else if(__item >= ABMON_OFFSET)
+    } else if(__item >= ABMON_OFFSET) {
         ret = __langinfo_array_get(__item - ABMON_OFFSET, __li_abmon);
-
-    else if(__item >= MON_OFFSET)
+    } else if(__item >= MON_OFFSET) {
         ret = __langinfo_array_get(__item - MON_OFFSET, __li_mon);
-
-    else if(__item >= ABDAY_OFFSET)
+    } else if(__item >= ABDAY_OFFSET) {
         ret = __langinfo_array_get(__item - ABDAY_OFFSET, __li_abday);
-
-    else if(__item >= DAY_OFFSET)
+    } else if(__item >= DAY_OFFSET) {
         ret = __langinfo_array_get(__item - DAY_OFFSET, __li_day);
-
-    else if(__item >= FMT_OFFSET)
+    } else if(__item >= FMT_OFFSET) {
         ret = __langinfo_array_get(__item - FMT_OFFSET, __li_fmt);
-
+    }
     /* POSIX says unsupported args should return empty strings */
     if( ret == NULL )
         ret = "";

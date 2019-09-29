@@ -37,11 +37,11 @@
 #include "_ptint.h"
 
 
-_WCRTLINK pthread_t pthread_self( )
+_WCRTLINK pthread_t pthread_self( void )
 {
-pthread_t ret;
+    pthread_t ret;
 
-    ret = __get_current_thread( );
+    ret = __get_current_thread();
     if(ret == (pthread_t)-1)
         ret = (pthread_t)gettid();
 

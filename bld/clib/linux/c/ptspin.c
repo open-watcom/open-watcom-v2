@@ -45,6 +45,8 @@
 
 _WCRTLINK int pthread_spin_init(pthread_spinlock_t *__lock, int __ignored_pshared)
 {
+    /* unused parameters */ (void)__ignored_pshared;
+
     if(__lock == NULL)
         return( EINVAL );
 

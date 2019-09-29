@@ -45,13 +45,13 @@ int ret;
 pthread_key_t res;
 
     res = __register_pkey(__destructor);
-    if(res < 0) 
+    if(res < 0) {
         ret = _RWD_errno;
-    else {
+    } else {
         ret = 0;
         *__key = res;
     }
-    return( ret );   
+    return( ret );
 }
 
 _WCRTLINK int pthread_key_delete(pthread_key_t __key)
@@ -60,11 +60,11 @@ int ret;
 
     ret = 0;
 
-    if(__valid_pkey_id(__key) == 0) 
+    if(__valid_pkey_id(__key) == 0) {
         __destroy_pkey(__key);
-    else
+    } else {
         ret = EINVAL;
-        
+    }
     return( ret );
 }
 
@@ -72,11 +72,11 @@ _WCRTLINK int pthread_setspecific(pthread_key_t __key, void *__value)
 {
 int ret;
 
-    if(__valid_pkey_id(__key) == 0) 
+    if(__valid_pkey_id(__key) == 0) {
         ret = __set_pkey_value(__key, __value);
-    else
+    } else {
         ret = EINVAL;
-    
+    }
     return( ret );
 }
 

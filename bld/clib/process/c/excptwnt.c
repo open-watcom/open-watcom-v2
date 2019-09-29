@@ -336,11 +336,7 @@ int __cdecl __ExceptionFilter( LPEXCEPTION_RECORD ex,
     EXCEPTION_POINTERS rec;
     LONG         rv;
 
-    /*
-     * unused parms
-     */
-    dispatch_context  = dispatch_context;
-    establisher_frame = establisher_frame;
+    /* unused parameters */ (void)dispatch_context; (void)establisher_frame;
 
     /*
      * Test some conditions we can immediately resolve.

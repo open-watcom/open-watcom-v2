@@ -41,11 +41,15 @@
 
 _WCRTLINK int pthread_condattr_init(pthread_condattr_t *__attr)
 {
+    /* unused parameters */ (void)__attr;
+
     return( 0 );
 }
 
 _WCRTLINK int pthread_condattr_destroy(pthread_condattr_t *__attr)
 {
+    /* unused parameters */ (void)__attr;
+
     return( 0 );
 }
 

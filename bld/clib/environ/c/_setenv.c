@@ -89,10 +89,14 @@ static int __F_NAME(addenv,waddenv)( int index, const CHAR_TYPE *name, const CHA
 int __F_NAME(__setenv,__wsetenv)( const CHAR_TYPE *name, const CHAR_TYPE *newvalue, int overwrite )
 {
 #ifdef __NETWARE__
-    name = name; newvalue = newvalue; overwrite = overwrite;
+
+    /* unused parameters */ (void)name; (void)newvalue; (void)overwrite;
+
     return( -1 );
 #else
     int     rc;
+
+    /* unused parameters */ (void)overwrite;
 
   #ifdef __WIDECHAR__
     if( _RWD_wenviron == NULL ) {

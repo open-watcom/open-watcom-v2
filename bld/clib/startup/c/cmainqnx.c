@@ -78,7 +78,7 @@ struct  _proc_spawn     *__cmd;         /* address of spawn msg */
 char                    *__near __env_mask;
 int (__far * (__far *__f))();           /* Shared library jump table    */
 extern  void __user_init( void );
-#define __user_init() ((int(__far *)()) __f[1])()
+#define __user_init() ((int(__far *)(void)) __f[1])()
 #endif
 
 static void _WCI86FAR __null_FPE_rtn( int fpe_type )
@@ -223,7 +223,7 @@ static char __far *CALLBACK _s_EFG_printf(
     return( (*__EFG_printf)( (char *)buffer, (struct my_va_list *)args, (void *)specs ) );
 }
 
-static void setup_slib()
+static void setup_slib( void )
 {
     __f = __MAGIC.sptrs[0];         /* Set pointer to slib function table   */
     __MAGIC.malloc = &_s_malloc;    /* Pointers to slib callback routines   */

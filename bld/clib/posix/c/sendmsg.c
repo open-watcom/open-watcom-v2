@@ -41,11 +41,15 @@ _WCRTLINK int sendmsg( int s, const struct msghdr *msg, int flags )
 {
 #if defined( __LINUX__ )
     unsigned long args[3];
+
     args[0] = (unsigned long)s;
     args[1] = (unsigned long)msg;
     args[2] = (unsigned long)flags;
     return( __socketcall( SYS_SENDMSG, args ) );
 #else
+
+    /* unused parameters */ (void)s; (void)msg; (void)flags;
+
     return( -1 );
 #endif
 }
