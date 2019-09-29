@@ -52,17 +52,19 @@ HANDLE          LocalDiscard( HANDLE h ) {
 }
 
 
-HANDLE          LockData( HANDLE dummy ) {
-//========================================
+HANDLE          LockData( HANDLE dummy )
+//======================================
+{
+    /* unused parameters */ (void)dummy;
 
-    dummy=dummy;
     return( LockSegment( 0xffff ) );
 }
 
 
-HANDLE          UnLockData( HANDLE dummy ) {
-//==========================================
+HANDLE          UnLockData( HANDLE dummy )
+//========================================
+{
+    /* unused parameters */ (void)dummy;
 
-    dummy=dummy;
     return( UnLockSegment( 0xffff ) );
 }

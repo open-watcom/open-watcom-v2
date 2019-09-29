@@ -246,8 +246,10 @@ static  void    _handler IOvFlHandler( void ) {
 }
 #endif
 
-static  void    AbnormalTerm( int dummy ) {
-//==============================
+static  void    AbnormalTerm( int dummy )
+//=======================================
+{
+    /* unused parameters */ (void)dummy;
 
     RTErr( CP_TERMINATE );
 }

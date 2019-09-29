@@ -36,13 +36,14 @@
 #include "rfmterr.h"
 
 
-void    _R_FError( int err_code ) {
-//=================================
-
+void    _R_FError( int err_code )
+//===============================
+{
     RTErr( err_code );
 }
 
-void    _R_FExtension( int dummy ) {
-//=======================
-
+void    _R_FExtension( int dummy )
+//================================
+{
+    /* unused parameters */ (void)dummy;
 }

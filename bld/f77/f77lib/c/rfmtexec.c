@@ -49,12 +49,14 @@ static  void    FmtPrepOp( void );
 static  void    FmtIOType( void );
 static  void    ExecCode( void );
 
-static  void   R_FEH( uint dummy1 , char dummy2 ) {
-//======================
-
+static  void   R_FEH( uint dummy1 , char dummy2 )
+//===============================================
+{
     ftnfile     *fcb;
     uint        len;
     char PGM    *str;
+
+    /* unused parameters */ (void)dummy1; (void)dummy2;
 
     fcb = IOCB->fileinfo;
     if( IOCB->flags & IOF_OUTPT ) {
@@ -73,8 +75,10 @@ static  void   R_FEH( uint dummy1 , char dummy2 ) {
 }
 
 
-static  void    R_FESlash( uint rep_spec, char dummy2 ) {
-//==========================================
+static  void    R_FESlash( uint rep_spec, char dummy2 )
+//=====================================================
+{
+    /* unused parameters */ (void)dummy2;
 
     for(;;) {
         R_NewRec();
@@ -84,10 +88,12 @@ static  void    R_FESlash( uint rep_spec, char dummy2 ) {
 }
 
 
-static  void    R_FEX( uint dummy1 , char dummy2 ) {
-//=======================
-
+static  void    R_FEX( uint dummy1 , char dummy2 )
+//================================================
+{
     ftnfile     *fcb;
+
+    /* unused parameters */ (void)dummy1; (void)dummy2;
 
     fcb = IOCB->fileinfo;
     fcb->col += IOCB->fmtptr->fmt4.fld1;
@@ -95,8 +101,10 @@ static  void    R_FEX( uint dummy1 , char dummy2 ) {
 }
 
 
-static  void    R_FEI( uint rep, char dummy2 ) {
-//=================================
+static  void    R_FEI( uint rep, char dummy2 )
+//============================================
+{
+    /* unused parameters */ (void)dummy2;
 
     for(;;) {
         if( IOCB->typ == PT_NOTYPE ) {
@@ -119,8 +127,10 @@ static  void    R_FEI( uint rep, char dummy2 ) {
 }
 
 
-static  void    R_FEColon( uint dummy1 , char dummy2 ) {
-//===========================
+static  void    R_FEColon( uint dummy1 , char dummy2 )
+//====================================================
+{
+    /* unused parameters */ (void)dummy1; (void)dummy2;
 
     if( IOCB->typ == PT_NOTYPE ) {
         IOCB->flags |= IOF_FMTDONE;
@@ -129,8 +139,10 @@ static  void    R_FEColon( uint dummy1 , char dummy2 ) {
 }
 
 
-static  void    R_FEA( uint rep , char dummy2) {
-//=================================
+static  void    R_FEA( uint rep , char dummy2)
+//============================================
+{
+    /* unused parameters */ (void)dummy2;
 
     for(;;) {
         if( IOCB->typ == PT_NOTYPE ) {
@@ -151,10 +163,12 @@ static  void    R_FEA( uint rep , char dummy2) {
 }
 
 
-static  void    R_FET( uint dummy1 , char dummy2 ) {
-//=======================
-
+static  void    R_FET( uint dummy1 , char dummy2 )
+//================================================
+{
     ftnfile     *fcb;
+
+    /* unused parameters */ (void)dummy1; (void)dummy2;
 
     fcb = IOCB->fileinfo;
     fcb->col = IOCB->fmtptr->fmt4.fld1 - sizeof( char );
@@ -162,11 +176,13 @@ static  void    R_FET( uint dummy1 , char dummy2 ) {
 }
 
 
-static  void    R_FETL( uint dummy1 , char dummy2 ) {
-//========================
-
+static  void    R_FETL( uint dummy1 , char dummy2 )
+//=================================================
+{
     ftnfile     *fcb;
     uint        offset;
+
+    /* unused parameters */ (void)dummy1; (void)dummy2;
 
     fcb = IOCB->fileinfo;
     offset = IOCB->fmtptr->fmt4.fld1;
@@ -179,10 +195,12 @@ static  void    R_FETL( uint dummy1 , char dummy2 ) {
 }
 
 
-static  void    R_FETR( uint dummy1 , char dummy2 ) {
-//========================
-
+static  void    R_FETR( uint dummy1 , char dummy2 )
+//=================================================
+{
     ftnfile     *fcb;
+
+    /* unused parameters */ (void)dummy1; (void)dummy2;
 
     fcb = IOCB->fileinfo;
     fcb->col += IOCB->fmtptr->fmt4.fld1;
@@ -190,48 +208,60 @@ static  void    R_FETR( uint dummy1 , char dummy2 ) {
 }
 
 
-static  void    R_FES( uint dummy1 , char dummy2 ) {
-//=======================
+static  void    R_FES( uint dummy1 , char dummy2 )
+//================================================
+{
+    /* unused parameters */ (void)dummy1; (void)dummy2;
 
     IOCB->flags &= ~IOF_PLUS;
     IOCB->fmtptr = (fmt_desc PGM *)((fmt PGM *)IOCB->fmtptr + 1);
 }
 
 
-static  void    R_FESP( uint dummy1 , char dummy2 ) {
-//========================
+static  void    R_FESP( uint dummy1 , char dummy2 )
+//=================================================
+{
+    /* unused parameters */ (void)dummy1; (void)dummy2;
 
     IOCB->flags |= IOF_PLUS;
     IOCB->fmtptr = (fmt_desc PGM *)((fmt PGM *)IOCB->fmtptr + 1);
 }
 
 
-static  void    R_FESS( uint dummy1 , char dummy2 ) {
-//========================
+static  void    R_FESS( uint dummy1 , char dummy2 )
+//=================================================
+{
+    /* unused parameters */ (void)dummy1; (void)dummy2;
 
     IOCB->flags &= ~IOF_PLUS;
     IOCB->fmtptr = (fmt_desc PGM *)((fmt PGM *)IOCB->fmtptr + 1);
 }
 
 
-static  void    R_FEBN( uint dummy1 , char dummy2 ) {
-//========================
+static  void    R_FEBN( uint dummy1 , char dummy2 )
+//=================================================
+{
+    /* unused parameters */ (void)dummy1; (void)dummy2;
 
     IOCB->fileinfo->blanks = BLANK_NULL;
     IOCB->fmtptr = (fmt_desc PGM *)((fmt PGM *)IOCB->fmtptr + 1);
 }
 
 
-static  void    R_FEBZ( uint dummy1 , char dummy2 ) {
-//========================
+static  void    R_FEBZ( uint dummy1 , char dummy2 )
+//=================================================
+{
+    /* unused parameters */ (void)dummy1; (void)dummy2;
 
     IOCB->fileinfo->blanks = BLANK_ZERO;
     IOCB->fmtptr = (fmt_desc PGM *)((fmt PGM *)IOCB->fmtptr + 1);
 }
 
 
-static  void    R_FEL( uint rep, char dummy2 ) {
-//=================================
+static  void    R_FEL( uint rep, char dummy2 )
+//============================================
+{
+    /* unused parameters */ (void)dummy2;
 
     for(;;) {
         if( IOCB->typ == PT_NOTYPE ) {
@@ -254,8 +284,10 @@ static  void    R_FEL( uint rep, char dummy2 ) {
 }
 
 
-static  void    R_FEF( uint rep, char dummy2 ) {
-//=================================
+static  void    R_FEF( uint rep, char dummy2 )
+//============================================
+{
+    /* unused parameters */ (void)dummy2;
 
     for(;;) {
         if( IOCB->typ == PT_NOTYPE ) {
@@ -278,8 +310,10 @@ static  void    R_FEF( uint rep, char dummy2 ) {
 }
 
 
-static  void    R_FED( uint rep, char dummy2 ) {
-//=================================
+static  void    R_FED( uint rep, char dummy2 )
+//============================================
+{
+    /* unused parameters */ (void)dummy2;
 
     for(;;) {
         if( IOCB->typ == PT_NOTYPE ) {
@@ -302,8 +336,10 @@ static  void    R_FED( uint rep, char dummy2 ) {
 }
 
 
-static  void    R_FEQ( uint rep, char dummy2 ) {
-//==============================================
+static  void    R_FEQ( uint rep, char dummy2 )
+//============================================
+{
+    /* unused parameters */ (void)dummy2;
 
     for(;;) {
         if( IOCB->typ == PT_NOTYPE ) {
@@ -350,8 +386,10 @@ static  void    R_FEE( uint rep, char ch ) {
 }
 
 
-static  void    R_FEG( uint rep, char dummy2 ) {
-//=================================
+static  void    R_FEG( uint rep, char dummy2 )
+//============================================
+{
+    /* unused parameters */ (void)dummy2;
 
     for(;;) {
         if( IOCB->typ == PT_NOTYPE ) {
@@ -374,18 +412,22 @@ static  void    R_FEG( uint rep, char dummy2 ) {
 }
 
 
-static  void    R_FEP( uint dummy1 , char dummy2 ) {
-//=======================
+static  void    R_FEP( uint dummy1 , char dummy2 )
+//================================================
+{
+    /* unused parameters */ (void)dummy1; (void)dummy2;
 
     IOCB->scale = IOCB->fmtptr->fmt4.fld1;
     IOCB->fmtptr = (fmt_desc PGM *)((fmt4 PGM *)IOCB->fmtptr + 1);
 }
 
 
-static  void    R_FELParen( uint rep_spec, char dummy2 ) {
-//===========================================
-
+static  void    R_FELParen( uint rep_spec, char dummy2 )
+//======================================================
+{
     fmt_desc PGM *revert;
+
+    /* unused parameters */ (void)dummy2;
 
     IOCB->fmtptr = (fmt_desc PGM *)((fmt PGM *)IOCB->fmtptr + 1);
     revert = IOCB->fmtptr;
@@ -403,17 +445,21 @@ static  void    R_FELParen( uint rep_spec, char dummy2 ) {
 }
 
 
-static  void    R_FERParen( uint dummy1 , char dummy2 ) {
-//============================
+static  void    R_FERParen( uint dummy1 , char dummy2 )
+//=====================================================
+{
+    /* unused parameters */ (void)dummy1; (void)dummy2;
 
     IOCB->fmtptr = (fmt_desc PGM *)((fmt PGM *)IOCB->fmtptr + 1);
 }
 
 
-static  void    R_FEnd( uint dummy1 , char dummy2 ) {
-//========================
-
+static  void    R_FEnd( uint dummy1 , char dummy2 )
+//=================================================
+{
     int         revert;
+
+    /* unused parameters */ (void)dummy1; (void)dummy2;
 
     if( IOCB->typ != PT_NOTYPE ) {
         if( ( IOCB->flags & IOF_FMTREP ) == 0 ) {
@@ -421,8 +467,7 @@ static  void    R_FEnd( uint dummy1 , char dummy2 ) {
         }
         IOCB->flags &= ~IOF_FMTREP;
         revert = IOCB->fmtptr->fmt4.fld1;
-        IOCB->fmtptr = (fmt_desc PGM *)((char PGM *)IOCB->fmtptr -
-                                                    revert + sizeof( fmt ));
+        IOCB->fmtptr = (fmt_desc PGM *)((char PGM *)IOCB->fmtptr - revert + sizeof( fmt ));
         R_NewRec();
     } else {
         IOCB->flags |= IOF_FMTDONE;
@@ -430,8 +475,10 @@ static  void    R_FEnd( uint dummy1 , char dummy2 ) {
 }
 
 
-static  void    R_FEZ( uint rep, char dummy2 ) {
-//=================================
+static  void    R_FEZ( uint rep, char dummy2 )
+//============================================
+{
+    /* unused parameters */ (void)dummy2;
 
     for(;;) {
         if( IOCB->typ == PT_NOTYPE ) {
@@ -453,8 +500,10 @@ static  void    R_FEZ( uint rep, char dummy2 ) {
 }
 
 
-static  void    R_FEM( uint dummy1 , char dummy2 ) {
-//=======================
+static  void    R_FEM( uint dummy1 , char dummy2 )
+//================================================
+{
+    /* unused parameters */ (void)dummy1; (void)dummy2;
 
     if( IOCB->flags & IOF_OUTPT ) {
         IOCB->flags |= IOF_NOCR;
@@ -492,35 +541,35 @@ static  void    FmtIOType( void ) {
 
 
 static  const void (* const __FAR FmtExec[])( uint , char ) = {
-        &R_FEA,
-        &R_FEBN,
-        &R_FEBZ,
-        &R_FED,
-        &R_FEE,
-        &R_FEE,
-        &R_FEF,
-        &R_FEG,
-        &R_FEH,
-        &R_FEI,
-        &R_FEL,
-        &R_FEP,
-        &R_FES,
-        &R_FESP,
-        &R_FESS,
-        &R_FET,
-        &R_FETL,
-        &R_FETR,
-        &R_FEX,
-        &R_FEColon,
-        &R_FELParen,
-        &R_FERParen,
-        &R_FESlash,
-        &R_FEM,
-        &R_FEZ,
-        &R_FEnd,
-        NULL,
-        &R_FEE,
-        &R_FEQ
+    &R_FEA,
+    &R_FEBN,
+    &R_FEBZ,
+    &R_FED,
+    &R_FEE,
+    &R_FEE,
+    &R_FEF,
+    &R_FEG,
+    &R_FEH,
+    &R_FEI,
+    &R_FEL,
+    &R_FEP,
+    &R_FES,
+    &R_FESP,
+    &R_FESS,
+    &R_FET,
+    &R_FETL,
+    &R_FETR,
+    &R_FEX,
+    &R_FEColon,
+    &R_FELParen,
+    &R_FERParen,
+    &R_FESlash,
+    &R_FEM,
+    &R_FEZ,
+    &R_FEnd,
+    NULL,
+    &R_FEE,
+    &R_FEQ
 };
 
 
