@@ -404,7 +404,7 @@ cflags_dll_os2  = -bd
 
 c_flags          =$(watcom_common_cflags)
 !ifdef newowtools
-c_flags          += -za99
+c_flags          +=-za99
 !endif
 
 cxx_flags        = $(watcom_common_cxxflags)-fzh -fzs $(extra_cxx_flags) $(extra_cxx_flags_$(host_cpu)) $(extra_cxx_flags_$(host_os))
