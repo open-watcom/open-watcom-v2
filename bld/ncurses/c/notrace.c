@@ -38,6 +38,7 @@
 #include <curses_p.h>
 
 NCURSES_EXPORT(void)
-trace(const unsigned int tracelevel GCC_UNUSED)
+trace(const unsigned int tracelevel)
 {
+    /* unused parameters */ (void)tracelevel;
 }
