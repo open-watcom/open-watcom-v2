@@ -210,12 +210,15 @@ static void incTouchTime( void )
 }
 
 static void incFilesOwnTime( char *full_name, struct dirent *dir, struct utimbuf *stamp )
-/**********************************************************************/
+/***************************************************************************************/
 {
     time_t      ftime;
     struct tm  *ptime;
 
     /* unused parameters */ (void)full_name;
+#if defined( __UNIX__ ) && !defined( __QNX__ )
+    /* unused parameters */ (void)dir;
+#endif
 
     /* check for the case of only specifying '/i' with nothing else */
     if( ! TouchFlags.increment_time ) {

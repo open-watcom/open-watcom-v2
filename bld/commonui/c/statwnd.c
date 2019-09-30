@@ -340,6 +340,9 @@ bool StatusWndInit( WPI_INST hinstance, statushook hook, int extra, HCURSOR hDef
 {
     bool        rc;
 #ifdef __OS2_PM__
+
+    /* unused parameters */ (void)hDefaultCursor;
+
     /* OS/2 PM version of the initialization */
 
     colorButtonFace = CLR_PALEGRAY;
@@ -801,6 +804,10 @@ int StatusWndGetHeight( statwnd *sw )
     if( IsCommCtrlLoaded() ) {
         return( sw->wndHeight );
     }
+#else
+
+    /* unused parameters */ (void)sw;
+
 #endif
     return( 0 );
 }

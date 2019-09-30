@@ -361,6 +361,8 @@ IDEBool IDEAPI IDERunYourSelfArgv   // COMPILE A PROGRAM
     char                **argv;
     int                 ret;
 
+    /* unused parameters */ (void)hdl;
+
     TBreak();   // clear any pending IDEStopRunning's
     *fatal_error = false;
     FatalEnv = &env;

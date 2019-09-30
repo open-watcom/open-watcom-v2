@@ -293,6 +293,8 @@ static MEPTR grabTokens(            // SAVE TOKENS IN A MACRO DEFINITION
     TOKEN prev_token;
     TOKEN prev_non_ws_token;
 
+    /* unused parameters */ (void)name_len;
+
     // MacroReallocOverflow was called for the name of the macro + mentry already
     mentry = (MEPTR)MacroOffset;
     DbgAssert( ( MacroReallocOverflow( mlen, 0 ), MacroOffset == (void *)mentry ) );
