@@ -175,17 +175,7 @@
 !inject wstrwwna.obj                nta ntp
 !inject wstrwwnt.obj             nt
 !inject xiyi.obj     d16 d32		    nvc ncl nvl nll o16     q16 q32 w16 w32 osi                 rdk
-!inject xmsg.obj     d16 d32
-!inject xmsglnx.obj									l32 lpc lmp
-!inject xmsgnov.obj			    nvc ncl nvl nll
-!inject xmsgo16.obj					    o16
-!inject xmsgo32.obj						o32
-!inject xmsgosi.obj								    osi
-!inject xmsgqnx.obj						    q16 q32
-!inject xmsgwin.obj							    w16 w32
-!inject xmsgwnt.obj              nt nta ntp
-!inject xmsgrdu.obj										    rdu
-!inject xmsgrdk.obj											rdk
+!inject xmsg.obj     d16 d32     nt nta ntp nvc ncl nvl nll o16 o32 q16 q32 w16 w32 osi l32 lpc lmp rdu rdk
 !inject ___argc.obj  d16 d32     nt nta ntp                 o16 o32         w16 w32 osi             rdu rdk
 !inject ___wargc.obj             nt nta ntp                     o32
 
