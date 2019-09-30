@@ -169,10 +169,13 @@ void main( int argc, char *argv[] )
     CmdLine *           cmdLine;
     int                 itemsParsed;
 
-#ifndef __WATCOMC__
+#if !defined( __WATCOMC__ )
     _argc = argc;
     _argv = argv;
+#else
+    /* unused parameters */ (void)argc; (void)argv;
 #endif
+
     /*** Initialize ***/
     SetBannerFuncError( BannerMessage );
     cmdLine = InitCmdLine( LIB_NUM_SECTIONS );

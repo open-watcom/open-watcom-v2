@@ -52,20 +52,9 @@ static char *StringTable[] = {
     #include "incltext.gh"
 };
 
-
-bool Msg_Init( void )
-{
-    return( true );
-}
-
 static bool Msg_Get( int resourceid, char *buffer )
 {
     strcpy( buffer, StringTable[resourceid] );
-    return( true );
-}
-
-bool Msg_Fini( void )
-{
     return( true );
 }
 
@@ -130,7 +119,9 @@ void Usage( void )
         Msg_Get( i, msg_buffer );
         printf( "%s\n", msg_buffer );
     }
+#if !defined( INCL_MSGTEXT )
     Msg_Fini();
+#endif
     exit( -1 );
 }
 
@@ -143,6 +134,8 @@ void Fatal( int reason, const char *insert )
     printf( msg_buffer, insert );
     Msg_Get( MSG_WSTRIP_ABORT, msg_buffer );
     printf( "%s", msg_buffer );
+#if !defined( INCL_MSGTEXT )
     Msg_Fini();
+#endif
     exit( -1 );
 }

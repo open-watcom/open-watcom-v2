@@ -1150,10 +1150,13 @@ int  main( int argc, char **argv )
     const char  *p;
     char        *cmd;           /* command line parameters  */
 
-#ifndef __WATCOMC__
+#if !defined( __WATCOMC__ )
     _argc = argc;
     _argv = argv;
+#else
+    /* unused parameters */ (void)argc; (void)argv;
 #endif
+
 #ifndef __UNIX__
     alt_switch_char = _dos_switch_char();
 #endif

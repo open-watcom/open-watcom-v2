@@ -68,17 +68,13 @@ int main( int argc, char *argv[] )  // MAIN-LINE FOR DLL DRIVER
     char *p;
 #endif
 
-#ifndef __UNIX__
-  #if defined( __WATCOMC__ )
-
-    /* unused parameters */ (void)argc;
-
-  #endif
-#endif
-#ifndef __WATCOMC__
-    _argv = argv;
+#if !defined( __WATCOMC__ )
     _argc = argc;
+    _argv = argv;
+#elif !defined( __UNIX__ )
+    /* unused parameters */ (void)argc;
 #endif
+
 #ifndef __UNIX__
     len = _bgetcmd( NULL, 0 ) + 1;
     cmd_line = malloc( len );

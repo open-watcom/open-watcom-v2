@@ -166,6 +166,10 @@ void FormatDirToFile( file *cfile, bool add_drives )
     int             c;
 #endif
 
+#ifdef __UNIX__
+    /* unused parameters */ (void)add_drives;
+#endif
+
     if( cfile->fcbs.head != NULL ) {
         if( cfile->fcbs.head->nullfcb ) {
             FreeEntireFcb( cfile->fcbs.head );

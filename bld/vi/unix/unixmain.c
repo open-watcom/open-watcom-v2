@@ -41,10 +41,11 @@ int main( int argc, char *argv[] )
 {
     static char buffer[FILENAME_MAX];
 
-    /* unused parameters */ (void)argc;
-#ifndef __WATCOMC__
+#if !defined( __WATCOMC__ )
     _argc = argc;
     _argv = argv;
+#else
+    /* unused parameters */ (void)argc; (void)argv;
 #endif
 
     InitMem();

@@ -41,12 +41,15 @@
 void main( int argc, char *argv[] )
 {
     char buffer[PATH_MAX];
+
 #if !defined( __WATCOMC__ )
-    _argv = argv;
     _argc = argc;
+    _argv = argv;
+#else
+    /* unused parameters */ (void)argc; (void)argv;
 #endif
+
     InitMem();
-    argc = argc;
     EXEName = _cmdname( buffer );
     EditFlags.HasSystemMouse = true;
     VarAddGlobalStr( "OS", "nt" );

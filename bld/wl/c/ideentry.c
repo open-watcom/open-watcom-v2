@@ -242,12 +242,15 @@ IDEBool IDEAPI IDERunYourSelf( IDEDllHdl hdl, const char * opts, IDEBool *fatale
 IDEBool IDEAPI IDERunYourSelfArgv( IDEDllHdl hdl, int argc, char **argv, IDEBool *fatalerr )
 /******************************************************************************************/
 {
-    /* unused parameters */ (void)hdl; (void)argc; (void)argv;
+    /* unused parameters */ (void)hdl;
 
-#ifndef __WATCOMC__
-    _argv = argv;
+#if !defined( __WATCOMC__ )
     _argc = argc;
+    _argv = argv;
+#else
+    /* unused parameters */ (void)argc; (void)argv;
 #endif
+
     LinkMainLine( NULL );
     *fatalerr = (LinkState & LS_LINK_ERROR) != 0;
     return( *fatalerr );

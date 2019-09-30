@@ -57,11 +57,11 @@ static char const   HlpExt[] = ".hlp";
 
 int main( int argc, char *argv[] )
 {
-#ifndef __WATCOMC__
-    _argv = argv;
+#if !defined( __WATCOMC__ )
     _argc = argc;
+    _argv = argv;
 #else
-    argv = argv;
+    /* unused parameters */ (void)argv;
 #endif
 
     if( argc < 2 || argc > 3 ) {

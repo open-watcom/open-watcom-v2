@@ -251,6 +251,7 @@ int main( void )
     _argv = argv;
     _argc = argc;
 #endif
+
     MOpen();
     getcmd( CmdBuff );
     data = PMakeBuild( CmdBuff );

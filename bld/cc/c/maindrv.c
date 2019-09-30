@@ -60,16 +60,16 @@ int main( int argc, char* argv[] ) {
 #endif
     int     retcode;                 // - return code
 
-#ifndef __WATCOMC__
+#if !defined( __WATCOMC__ )
     _argc = argc;
     _argv = argv;
+#elif !defined( __UNIX__ )
+    /* unused parameters */ (void)argc; (void)argv;
 #endif
+
     IdeDrvInit( &info, DLL_NAME_STR, NULL );
     retcode = IDEDRV_ERR_RUN_FATAL;
-
 #ifndef __UNIX__
-    argc = argc;
-    argv = argv;
     cmdline = NULL;
     cmdlen = _bgetcmd( NULL, 0 );
     if( cmdlen != 0 ) {

@@ -38,10 +38,12 @@
 void main( int argc, char *argv[] )
 {
     static char buffer[PATH_MAX];
-    argc = argc;
-#ifndef __WATCOMC__
+
+#if !defined( __WATCOMC__ )
     _argc = argc;
     _argv = argv;
+#else
+    /* unused parameters */ (void)argc; (void)argv;
 #endif
 
     InitMem();

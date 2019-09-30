@@ -39,11 +39,22 @@
 
 extern int      PageCnt;
 
-void    BIOSGetColorPalette( void *a ) {}
-uint_32 BIOSGetColorRegister( unsigned short a ) { return( 0 ); }
+void    BIOSGetColorPalette( void *a )
+{
+    /* unused parameters */ (void)a;
+}
+uint_32 BIOSGetColorRegister( unsigned short a )
+{
+    /* unused parameters */ (void)a;
+
+    return( 0 );
+}
 void    BIOSSetNoBlinkAttr( void ) {}
 void    BIOSSetBlinkAttr( void ) {}
-void    BIOSSetColorRegister( unsigned short reg, unsigned char r, unsigned char g, unsigned char b ) {}
+void    BIOSSetColorRegister( unsigned short reg, unsigned char r, unsigned char g, unsigned char b )
+{
+    /* unused parameters */ (void)reg; (void)r; (void)g; (void)b;
+}
 
 void    BIOSSetCursor( unsigned char page, unsigned char row, unsigned char col )
 {

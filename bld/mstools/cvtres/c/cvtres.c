@@ -171,10 +171,13 @@ void main( int argc, char *argv[] )
     int                 itemsParsed;
     int                 rc = CVTRES_NOACTION;
 
-#ifndef __WATCOMC__
+#if !defined( __WATCOMC__ )
     _argc = argc;
     _argv = argv;
+#else
+    /* unused parameters */ (void)argc; (void)argv;
 #endif
+
     /*** Initialize ***/
     SetBannerFuncError( BannerMessage );
     SetDefaultFile( TYPE_RES_FILE, "res" );

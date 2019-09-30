@@ -50,6 +50,8 @@ static int compare( const void *p1, const void *p2 )
 static bool skipEntry( struct dirent *dire )
 {
 #ifdef __UNIX__
+    /* unused parameters */ (void)dire;
+
     return( false );
 #else
     return( (dire->d_attr & _A_VOLID) != 0 );

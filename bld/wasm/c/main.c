@@ -1194,12 +1194,12 @@ static void do_fini_stuff( void )
 int main( int argc, char **argv )
 /*******************************/
 {
-    /* unused parameters */ (void)argc;
-
-#ifndef __WATCOMC__
-    _argv = argv;
+  #if !defined( __WATCOMC__ )
     _argc = argc;
-#endif
+    _argv = argv;
+  #else
+    /* unused parameters */ (void)argc;
+  #endif
 
 #else
 

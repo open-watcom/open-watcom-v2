@@ -424,6 +424,7 @@ IDEBool IDEAPI IDERunYourSelfArgv( IDEDllHdl hdl, int argc, char **argv, IDEBool
     _argc = argc;
     _argv = argv;
 #endif
+
     StopInvoked = false;
     if( fatalerr != NULL )
         *fatalerr = false;

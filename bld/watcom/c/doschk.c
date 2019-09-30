@@ -64,6 +64,10 @@ static tiny_handle_t    fileHandle = TINY_HANDLE_NULL;
 
 static void XcleanUp( where_parm where )
 {
+#if !defined( USE_XMEM )
+    /* unused parameters */ (void)where;
+#endif
+
 #if defined( USE_XMEM )
     if( where == ON_DISK ) {
 #endif
@@ -79,6 +83,10 @@ static void XcleanUp( where_parm where )
 
 static bool XchkOpen( where_parm where, char *f_buff )
 {
+#if !defined( USE_XMEM )
+    /* unused parameters */ (void)where;
+#endif
+
 #if defined( USE_XMEM )
     if( where == ON_DISK ) {
 #endif
@@ -94,6 +102,10 @@ static bool XchkOpen( where_parm where, char *f_buff )
 
 static void XchkClose( where_parm where )
 {
+#if !defined( USE_XMEM )
+    /* unused parameters */ (void)where;
+#endif
+
 #if defined( USE_XMEM )
     if( where == ON_DISK ) {
 #endif
@@ -108,6 +120,10 @@ static bool XchkWrite( where_parm where, __segment buff, unsigned *size )
 {
     tiny_ret_t      rc;
     unsigned        bytes;
+
+#if !defined( USE_XMEM )
+    /* unused parameters */ (void)where;
+#endif
 
 #if defined( USE_XMEM )
     if( where == ON_DISK ) {
@@ -128,6 +144,10 @@ static bool XchkWrite( where_parm where, __segment buff, unsigned *size )
 static bool XchkRead( where_parm where, __segment *buff )
 {
     tiny_ret_t      rc;
+
+#if !defined( USE_XMEM )
+    /* unused parameters */ (void)where;
+#endif
 
 #if defined( USE_XMEM )
     if( where == ON_DISK ) {

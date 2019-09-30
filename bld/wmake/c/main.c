@@ -661,18 +661,15 @@ void ExitOK( void )
 }
 
 int main( int argc, char **argv )
-/*********************************************/
+/*******************************/
 {
-#if defined( __WATCOMC__ )
-
-    /* unused parameters */ (void)argc;
-
-#endif
-
-#ifndef __WATCOMC__
-    _argv = argv;
+#if !defined( __WATCOMC__ )
     _argc = argc;
+    _argv = argv;
+#else
+    /* unused parameters */ (void)argc;
 #endif
+
     InitSignals();
     InitHardErr();
     init( (const char **)argv );        /* initialize, process cmdline */

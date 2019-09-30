@@ -66,7 +66,11 @@ typedef HANDLE (CALLBACK *PFNLI)( HINSTANCE, LPCSTR, UINT, int, int, UINT );
  */
 void UpdateFileTypeIcon( HWND hwnd, const char *filename )
 {
-#ifdef __NT__
+#ifndef __NT__
+
+    /* unused parameters */ (void)hwnd; (void)filename;
+
+#else
     const char  *extension;
     int         i;
     HICON       hicon = NULL;

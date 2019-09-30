@@ -1028,11 +1028,11 @@ int main( int argc, char *argv[] )
     label_list          sec_label_list;
     hash_key            h_key;
 
-#if defined( __WATCOMC__ )
-    /* unused parameters */ (void)argc; (void)argv;
-#else
-    _argv = argv;
+#if !defined( __WATCOMC__ )
     _argc = argc;
+    _argv = argv;
+#else
+    /* unused parameters */ (void)argc; (void)argv;
 #endif
 
     error = Init();

@@ -87,6 +87,9 @@ static file_type        fileType = TYPE_NONE;
 static bool skipEntry( struct dirent *dire )
 {
 #ifdef __UNIX__
+
+    /* unused parameters */ (void)dire;
+
     return( false );
 #else
     return( (dire->d_attr & _A_VOLID) != 0 );
