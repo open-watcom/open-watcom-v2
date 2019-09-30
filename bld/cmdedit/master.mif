@@ -40,7 +40,7 @@ extra_a_flags_os2 = -D_OS=_OS2
 .asm: ..
 .c: ..
 
-common_cflags = -w8-we-x-wpx-xx-zam-j
+common_cflags = $(watcom_common_cflags)-w8-j-we-x-wpx-xx-zam
 
 .c.obj:
     @%make echo_cc

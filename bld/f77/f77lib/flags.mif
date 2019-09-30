@@ -22,7 +22,7 @@ f77lib_cpp_flags += $(f77lib_cpp_$(system)) $(f77lib_cpp_$(system)_$(processor))
 ##########################
 # C COMPILER SETINGS
 ######
-sw_c_common = -za99-we-w8-zl-x-xx-zam-j-wpx
+sw_c_common = $(watcom_common_cflags)-w8-j-za99-we-zl-x-xx-zam-wpx
 #sw_c_common = -za99-wx-w8 -wce=307 -wce=308 -wce=309 -zl-x-xx-zam
 !ifdef __UNIX__
 sw_c_common += -fo=.obj

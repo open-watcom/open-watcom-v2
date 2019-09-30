@@ -1,4 +1,4 @@
-sw_c_common = -za99-w8-we-x-xx-zam-oax-zl-wpx
+sw_c_common = $(watcom_common_cflags)-w8-j-za99-we-x-xx-zam-oax-zl-wpx
 !ifdef __UNIX__
 sw_c_common += -fo=.obj
 !endif
