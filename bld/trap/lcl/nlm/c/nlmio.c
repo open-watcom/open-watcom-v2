@@ -50,6 +50,9 @@
 #include "bits.h"
 #include "nlmio.h"
 
+
+typedef LONG file_fn( LONG, LONG, LONG, LONG, BYTE *, LONG, LONG, LONG, LONG, BYTE, LONG *, LONG *, void ** );
+
 extern LONG ConvertPathString(
                 LONG stationNumber,
                 BYTE base,
@@ -58,7 +61,6 @@ extern LONG ConvertPathString(
                 LONG *pathBase,
                 BYTE *pathString,
                 LONG *pathCount);
-
 
 #define FIRST_HANDLE    5
 
@@ -146,7 +148,7 @@ static long ReadDOS( long handle, long pos, void *buffer, long requested )
 }
 
 
-static long OpenServer( LONG (*routine)(), char *name,
+static long OpenServer( file_fn *routine, char *name,
                  LONG *handle, LONG attr, LONG privs )
 {
    LONG volumeNumber, pathBase, pathCount, entryNumber;
@@ -163,7 +165,7 @@ static long OpenServer( LONG (*routine)(), char *name,
       return (-1);
 
    /* Attempt to open the command file */
-   return( routine(0, 1, volumeNumber, pathBase, pathString, pathCount, 0,
+   return( routine( 0, 1, volumeNumber, pathBase, pathString, pathCount, 0,
          attr, privs, PrimaryDataStream, handle, &entryNumber,
          &Entry ) );
 }

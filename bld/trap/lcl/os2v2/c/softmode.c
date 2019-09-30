@@ -101,6 +101,8 @@ static  HEV             BeginThreadSem = NULLHANDLE;
 
 static BOOL APIENTRY CallHookProc(HMQ hmqCurrent, HMQ hmqCreated, PID pid, TID tid, SHORT hookType, PFN hookProc)
 {
+    /* unused parameters */ (void)hmqCurrent; (void)hmqCreated; (void)pid; (void)tid; (void)hookType; (void)hookProc;
+
     // Returning TRUE will stop PM from trying to call hooks. We could try to be clever
     // and decide which hooks are safe to call and which are not. For now just don't call any.
     return TRUE;

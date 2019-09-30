@@ -193,6 +193,10 @@ static void APIENTRY Reader( ULONG arg )
     OS_UINT     read;
     int         new_index;
 
+#ifndef _M_I86
+    /* unused parameters */ (void)arg;
+#endif
+
     OverRun = false;
     for( ;; ) {
         if( DosRead( ComPort, &data, 1, &read ) )

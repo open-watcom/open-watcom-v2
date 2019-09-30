@@ -110,6 +110,8 @@ int main( int argc, char **argv )
 #ifndef __WATCOMC__
     _argc = argc;
     _argv = argv;
+#else
+    /* unused parameters */ (void)argc; (void)argv;
 #endif
 
     Initialize();

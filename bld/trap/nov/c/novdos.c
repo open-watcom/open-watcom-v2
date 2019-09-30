@@ -24,7 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  DOS NetWare IPX link core.
+* Description:  DOS/16-bit Windows NetWare IPX link core.
 *
 ****************************************************************************/
 
@@ -40,9 +40,15 @@
 
 #include "ipxstuff.h"
 
+
+#ifdef __WINDOWS__
+DWORD           IPXTaskID;
+FARPROC         IPXFuncs[IPX_MAX_FUNCS];
+#endif
+
 #ifdef DEBUG
 
-void putstring( char __far *str )
+static void putstring( char __far *str )
 {
     unsigned bytes;
     extern unsigned _dos_write( int handle, void __far *buffer, unsigned count, unsigned *bytes );
@@ -55,7 +61,7 @@ void putstring( char __far *str )
 
 static char hexbuff[80];
 
-char * hex( unsigned long num )
+static char * hex( unsigned long num )
 {
     char *p;
 
@@ -72,38 +78,38 @@ char * hex( unsigned long num )
     return( p );
 }
 
-void puthex( unsigned long x )
+static void puthex( unsigned long x )
 {
 
     putstring( hex( x ) );
 }
 
-void put1( unsigned char *c )
+static void put1( unsigned char *c )
 {
-    if( *c < 0x10 ) putstring( "0" );
+    if( *c < 0x10 )
+        putstring( "0" );
     puthex( *c );
 }
 
-void put2( unsigned char *c )
+static void put2( unsigned char *c )
 {
     put1( c );
     put1( c+1 );
 }
 
-void put4( unsigned char *c )
+static void put4( unsigned char *c )
 {
     put2( c );
     put2( c+2 );
 }
 
-void put6( unsigned char *c )
+static void put6( unsigned char *c )
 {
     put4( c );
     put2( c+4 );
 }
 
-
-void putnetaddr( SPXHeader *l ) {
+static void putnetaddr( SPXHeader *l ) {
 
     putstring( " source" );
     putstring( " net " );
@@ -122,7 +128,7 @@ void putnetaddr( SPXHeader *l ) {
     putstring( "\r\n" );
 }
 
-void putconnstatus( WORD conn )
+static void putconnstatus( WORD conn )
 {
     CSB stat;
 
@@ -179,13 +185,6 @@ char            ServDummy;
 
 typedef void    (__far *ESRAddr)();
 
-#ifdef __WINDOWS__
-DWORD           IPXTaskID;
-typedef int     (WINAPI *NOVWINAPI)();
-NOVWINAPI       IPXFuncs[ IPX_MAX_FUNCS ];
-extern          void SetLinkName( char* );
-#endif
-
 ESRAddr         SAPBroadESRAddr;
 ESRAddr         SAPWaitESRAddr;
 ESRAddr         ServRespESRAddr;
@@ -219,7 +218,9 @@ static void Delay( unsigned timeout )
     start = _IPXGetIntervalMarker();
     for( ;; ) {
         _IPXRelinquishControl();
-        if( (_IPXGetIntervalMarker() - start) >= timeout ) break;
+        if( (_IPXGetIntervalMarker() - start) >= timeout ) {
+            break;
+        }
     }
 }
 
@@ -234,7 +235,8 @@ static char WaitTimeout( ECB *ecb, unsigned timeout, int can )
             return( ecb->completionCode == 0 );
         }
         if( (_IPXGetIntervalMarker() - start) >= timeout ) {
-            if( can ) _IPXCancelEvent( ecb );
+            if( can )
+                _IPXCancelEvent( ecb );
             return( 0 );
         }
     }
@@ -255,6 +257,7 @@ static trap_retval DoRemoteGet( void *data, trap_elen len )
     trap_elen   got;
     int         p;
 
+    putconnstatus( Connection );
     len = len;
     recvd = 0;
     for( ;; ) {
@@ -287,6 +290,8 @@ static trap_retval DoRemoteGet( void *data, trap_elen len )
 
 static trap_retval DoRemotePut( void *data, trap_elen len )
 {
+    putconnstatus( Connection );
+
     _INITECB( SendECB, SendHead, 2, SPX );
     SendHead.connectControl |= 0x10;
     SendHead.length = _SWAPINT( sizeof( SendHead ) + len );
@@ -450,7 +455,7 @@ static char InitServer( void )
 
 static char FindPartner( void )
 {
-    static char RepBuff[132];
+    static unsigned char RepBuff[132];
 
 #ifdef __WINDOWS__
     {
@@ -465,9 +470,10 @@ static char FindPartner( void )
                                          "NET_ADDRESS",
                                          1,
                                          RepBuff,
-                                         (void *)&moresegments,
-                                         (void *)&propertyflags );
-        if( binderyerror != 0 ) return( 0 );
+                                         &moresegments,
+                                         &propertyflags );
+        if( binderyerror != 0 )
+            return( 0 );
         AssignArray( ServHead.destination, RepBuff[0] );
     }
 #else
@@ -497,22 +503,23 @@ static char FindPartner( void )
         ACC_WORD( ReqBuff[0] ) = i + (sizeof( "NET_ADDRESS" ) - 2);
         ACC_WORD( RepBuff[0] ) = 130;
 putstring( "read prop\r\n" );
-        if( ReadPropertyValue( &ReqBuff, &RepBuff ) != 0 ) return( 0 );
+        if( ReadPropertyValue( &ReqBuff, &RepBuff ) != 0 )
+            return( 0 );
 putstring( "assgn array\r\n" );
         AssignArray( ServHead.destination, RepBuff[2] );
     }
 #endif
 putstring( "lcl targ\r\n" );
-    if( _IPXGetLocalTarget( &ServHead.destination.network.a[0],
-                           &ServECB.immediateAddress.a[0],
-                            (WORD *)&RepBuff ) != 0 ) return( 0 );
+    if( _IPXGetLocalTarget( &ServHead.destination.network.a[0], &ServECB.immediateAddress.a[0], (WORD *)RepBuff ) != 0 )
+        return( 0 );
     RespECB.fragmentDescriptor[1].address = &PartnerSPXSocket;
     _IPXListenForPacket( &RespECB );
 putstring( "send p\r\n" );
     _IPXSendPacket( &ServECB );
     WaitOn( ServECB );
 putstring( "wait for\r\n" );
-    if( !WaitTimeout( &RespECB, MAX_PARTNER_WAIT, 1 ) ) return( 0 );
+    if( !WaitTimeout( &RespECB, MAX_PARTNER_WAIT, 1 ) )
+        return( 0 );
 putstring( "got one\r\n" );
     SendHead.destination = RespHead.source;
     SendHead.destination.socket = PartnerSPXSocket;
@@ -528,7 +535,7 @@ const char *RemoteLink( const char *parms, bool server )
     BYTE        major_ver,minor_ver;
     WORD        max_conn,avail_conn;
 
-    #ifdef __WINDOWS__
+#ifdef __WINDOWS__
     {
         HINSTANCE       ipxspx;
         HINSTANCE       netapi;
@@ -538,12 +545,15 @@ const char *RemoteLink( const char *parms, bool server )
         netware = GetModuleHandle( "NETWARE.DRV" );
         ipxspx = LoadLibrary( "NWIPXSPX.DLL" );
         netapi = LoadLibrary( "NWCALLS.DLL" );
-        if( (UINT)ipxspx < 32 ) return( TRP_ERR_IPX_SPX_not_present );
-        if( (UINT)netapi < 32 ) return( TRP_ERR_Netware_API_not_present );
-        if( netware == NULL ) return( TRP_ERR_NETWAREDRV_not_present );
-#define str( x ) #x
-#define GetAddr( hdl, x ) IPXFuncs[x] = (NOVWINAPI)GetProcAddress( hdl, str( x ) )
-#define GetIPXAddr( x ) GetAddr( ipxspx, x )
+        if( (UINT)ipxspx < 32 )
+            return( TRP_ERR_IPX_SPX_not_present );
+        if( (UINT)netapi < 32 )
+            return( TRP_ERR_Netware_API_not_present );
+        if( netware == NULL )
+            return( TRP_ERR_NETWAREDRV_not_present );
+    #define str( x ) #x
+    #define GetAddr( hdl, x ) IPXFuncs[FN_##x] = GetProcAddress( hdl, str( x ) )
+    #define GetIPXAddr( x ) GetAddr( ipxspx, x )
         GetAddr( netapi, NWReadPropertyValue );
         GetIPXAddr( IPXInitialize );
         GetIPXAddr( IPXSPXDeinit );
@@ -566,11 +576,11 @@ const char *RemoteLink( const char *parms, bool server )
         GetIPXAddr( SPXSendSequencedPacket );
         GetIPXAddr( SPXTerminateConnection );
         IPXTaskID = 0x00000000L;
-        if( IPXInitialize( (DWORD __far *)&IPXTaskID, 20, 576 ) != 0 ) {
+        if( IPXInitialize( &IPXTaskID, 20, 576 ) != 0 ) {
             return( TRP_ERR_IPX_not_initialized );
         }
     }
-    #endif
+#endif
     server = server;
     if( *parms == '\0' )
         parms = DefLinkName;
@@ -616,7 +626,8 @@ void RemoteUnLink( void )
 #ifdef SERVER
     _IPXCancelEvent( &ServECB );
     _IPXCancelEvent( &RespECB );
-    if( SAPECB.inUseFlag != 0 ) _IPXCancelEvent( &SAPECB );
+    if( SAPECB.inUseFlag != 0 )
+        _IPXCancelEvent( &SAPECB );
     /* shutdown notification */
     SAPHead.intermediateNetworks = _SWAPINT( 0x10 );
     SAPECB.ESRAddress = NULL;

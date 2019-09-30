@@ -47,6 +47,7 @@
 #include "trperr.h"
 #include "packet.h"
 
+
 #define FOREVER                 0x7FFFFFFF
 
 #define _IPX_ASSIGNADDR( a, b ) \

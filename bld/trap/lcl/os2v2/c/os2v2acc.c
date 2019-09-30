@@ -1430,6 +1430,8 @@ static ULONG _System BreakHandler( PEXCEPTIONREPORTRECORD       pExRec,
                             PCONTEXTRECORD               pCtxRec,
                             PVOID                        args )
 {
+    /* unused parameters */ (void)pRegRec; (void)pCtxRec; (void)args;
+
     switch( pExRec->ExceptionNum ) {
         case XCPT_SIGNAL: {
             switch( pExRec->ExceptionInfo[0] ) {
