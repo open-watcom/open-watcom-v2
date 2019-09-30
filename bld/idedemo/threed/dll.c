@@ -69,6 +69,7 @@ int main( void )
 {
     return( 1 );
 }
+
 #elif defined(__WINDOWS_NT__) || defined( __NT__ )
 
 #include <stddef.h>
