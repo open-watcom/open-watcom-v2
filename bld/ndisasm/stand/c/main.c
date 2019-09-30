@@ -1028,7 +1028,9 @@ int main( int argc, char *argv[] )
     label_list          sec_label_list;
     hash_key            h_key;
 
-#if !defined( __WATCOMC__ )
+#if defined( __WATCOMC__ )
+    /* unused parameters */ (void)argc; (void)argv;
+#else
     _argv = argv;
     _argc = argc;
 #endif

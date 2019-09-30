@@ -185,8 +185,8 @@ void InitGlobalVars( void )
     MsgFlags                = NULL; /* Bit mask of disabled messages */
     MacSegList              = NULL; /* pointer to list of macro segments */
     LoopDepth               = 0;    /* current nesting of loop constructs */
-    HeadLibs                = 0;    /* list of library search records */
-    AliasHead               = 0;    /* list of symbol alias records */
+    HeadLibs                = NULL; /* list of library search records */
+    AliasHead               = NULL; /* list of symbol alias records */
     CurFuncHandle           = SYM_NULL; /* sym_handle for current function */
     LastFuncOutOfMem        = NULL; /* cinfo: */
     HashFreeList            = NULL; /* list of available hash entries */

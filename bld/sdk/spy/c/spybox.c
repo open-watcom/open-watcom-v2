@@ -426,6 +426,12 @@ char *LogSpyBoxLine( bool listview, HWND list, int line )
 {
     static char     str[256];
 
+#ifndef __NT__
+
+    /* unused parameters */ (void)listview;
+
+#endif
+
     str[0] = '\0';
 #ifdef __NT__
     if( listview ) {

@@ -177,6 +177,12 @@ unsigned DIGCLIENTRY( MachineData )( address addr, dig_info_type info_type,
                         dig_elen out_size, void *out )
 {
 #if defined( _M_IX86 )
+    /* unused parameters */ (void)addr; (void)info_type; (void)in_size; (void)in; (void)out_size;
+#else
+    /* unused parameters */ (void)addr; (void)info_type; (void)in_size; (void)in; (void)out_size; (void)out;
+#endif
+
+#if defined( _M_IX86 )
     enum x86_addr_characteristics   *a_char;
 
     switch( SysConfig.arch ) {
