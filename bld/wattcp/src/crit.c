@@ -88,9 +88,10 @@
 
 #elif defined (__WATCOMC__) && (DOSX == 0)  /* Watcom real-mode target */
   #pragma argsused
-  static int _far int24_isr (unsigned dev_err, unsigned err_code,
-                             unsigned _far *devhdr)
+  static int _far int24_isr (unsigned dev_err, unsigned err_code, unsigned _far *devhdr)
   {
+    /* unused parameters */ (void)dev_err; (void)err_code; (void)devhdr;
+
     return (_HARDERR_FAIL);
   }
 
