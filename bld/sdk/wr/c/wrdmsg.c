@@ -71,12 +71,12 @@ void WRDialogMsgFini( void )
 
 void WRRegisterDialog( HWND hdlg )
 {
-    WRInsertObject( &WRDialogList, (void *)hdlg );
+    WRInsertObject( &WRDialogList, hdlg );
 }
 
 void WRUnregisterDialog( HWND hdlg )
 {
-    ListRemoveElt( &WRDialogList, (void *)hdlg );
+    WRRemoveObject( &WRDialogList, hdlg );
 }
 
 int WRAPI WRIsWRDialogMsg( MSG *msg )
@@ -85,7 +85,7 @@ int WRAPI WRIsWRDialogMsg( MSG *msg )
     LIST        *item;
 
     for( item = WRDialogList; item != NULL ; item = ListNext( item ) ) {
-        hdlg = (HWND)ListElement( item );
+        hdlg = ListElement( item );
         if( hdlg != (HWND)NULL && IsDialogMessage( hdlg, msg ) ) {
             return( TRUE );
         }

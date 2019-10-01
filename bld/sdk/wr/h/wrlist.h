@@ -37,7 +37,7 @@
 /* type definitions                                                         */
 /****************************************************************************/
 typedef struct list {
-    void        *elt;
+    HWND        hdlg;
     struct list *next;
     struct list *prev;
 } LIST;
@@ -45,22 +45,20 @@ typedef struct list {
 /****************************************************************************/
 /* function prototypes                                                      */
 /****************************************************************************/
-extern void WRInsertObject( LIST **, void *);
-extern void WRListLastElt( LIST *, LIST **);
-extern int  WRListConcat( LIST **, LIST *, uint_32 );
+extern void WRInsertObject( LIST **, HWND );
+extern void WRRemoveObject( LIST **, HWND );
 extern LIST *WRListCopy( LIST * );
-
-extern void *ListElement( LIST * );
+extern void ListLastElt( LIST *, LIST ** );
+extern HWND ListElement( LIST * );
 extern void ListFree( LIST * );
 extern LIST *ListNext( LIST * );
 extern LIST *ListPrev( LIST * );
-extern void ListAddElt( LIST **, void * );
-extern void ListRemoveElt( LIST **, void * );
+extern void ListAddElt( LIST **, HWND );
 extern LIST *ListConsume( LIST * );
-extern LIST *ListFindElt( LIST *, void * );
+extern LIST *ListFindElt( LIST *, HWND );
 extern LIST *ListCopy( LIST * );
 extern int  ListCount( LIST * );
-extern void ListInsertElt( LIST *, void * );
+extern void ListInsertElt( LIST *, HWND );
 extern void ListMerge( LIST **, LIST * );
 
 #endif
