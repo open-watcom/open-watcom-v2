@@ -51,6 +51,8 @@
 
 #define ROUNDUP( size, word )   (((size)+((word)-1)) & ~((word)-1))
 
+#define CONST_NEAR_STRING(s)    ((const char _NEAR *)(long)(s))
+
 typedef enum {
     DRIVE_TYPE_NONE,
     DRIVE_TYPE_IS_REMOVABLE,

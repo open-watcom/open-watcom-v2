@@ -36,45 +36,45 @@
 
 
 const char _NEAR * _NEAR InternalCommands[] = {
-    (const char _NEAR *)"BREAK",
-    (const char _NEAR *)"CALL",
-    (const char _NEAR *)"CD",
-    (const char _NEAR *)"CHDIR",
-    (const char _NEAR *)"CLS",
-    (const char _NEAR *)"COMMAND",
-    (const char _NEAR *)"COPY",
-    (const char _NEAR *)"CTTY",
-    (const char _NEAR *)"DATE",
-    (const char _NEAR *)"DEL",
-    (const char _NEAR *)"DIR",
-    (const char _NEAR *)"ECHO",
-    (const char _NEAR *)"ERASE",
-    (const char _NEAR *)"FOR",
-    (const char _NEAR *)"IF",
-    (const char _NEAR *)"MD",
-    (const char _NEAR *)"MKDIR",
-    (const char _NEAR *)"PATH",
-    (const char _NEAR *)"PAUSE",
-    (const char _NEAR *)"PROMPT",
-    (const char _NEAR *)"RD",
-    (const char _NEAR *)"REM",
-    (const char _NEAR *)"REN",
-    (const char _NEAR *)"RENAME",
-    (const char _NEAR *)"RMDIR",
-    (const char _NEAR *)"SET",
-    (const char _NEAR *)"TIME",
-    (const char _NEAR *)"TYPE",
-    (const char _NEAR *)"VER",
-    (const char _NEAR *)"VERIFY",
-    (const char _NEAR *)"VOL"
+    CONST_NEAR_STRING( "BREAK" ),
+    CONST_NEAR_STRING( "CALL" ),
+    CONST_NEAR_STRING( "CD" ),
+    CONST_NEAR_STRING( "CHDIR" ),
+    CONST_NEAR_STRING( "CLS" ),
+    CONST_NEAR_STRING( "COMMAND" ),
+    CONST_NEAR_STRING( "COPY" ),
+    CONST_NEAR_STRING( "CTTY" ),
+    CONST_NEAR_STRING( "DATE" ),
+    CONST_NEAR_STRING( "DEL" ),
+    CONST_NEAR_STRING( "DIR" ),
+    CONST_NEAR_STRING( "ECHO" ),
+    CONST_NEAR_STRING( "ERASE" ),
+    CONST_NEAR_STRING( "FOR" ),
+    CONST_NEAR_STRING( "IF" ),
+    CONST_NEAR_STRING( "MD" ),
+    CONST_NEAR_STRING( "MKDIR" ),
+    CONST_NEAR_STRING( "PATH" ),
+    CONST_NEAR_STRING( "PAUSE" ),
+    CONST_NEAR_STRING( "PROMPT" ),
+    CONST_NEAR_STRING( "RD" ),
+    CONST_NEAR_STRING( "REM" ),
+    CONST_NEAR_STRING( "REN" ),
+    CONST_NEAR_STRING( "RENAME" ),
+    CONST_NEAR_STRING( "RMDIR" ),
+    CONST_NEAR_STRING( "SET" ),
+    CONST_NEAR_STRING( "TIME" ),
+    CONST_NEAR_STRING( "TYPE" ),
+    CONST_NEAR_STRING( "VER" ),
+    CONST_NEAR_STRING( "VERIFY" ),
+    CONST_NEAR_STRING( "VOL" )
 };
 
 int InternalCommandCount = sizeof( InternalCommands ) / sizeof( InternalCommands[0] );
 
 const char _NEAR * _NEAR ExeExtensions[] = {
-    (const char _NEAR *)".bat",
-    (const char _NEAR *)".com",
-    (const char _NEAR *)".exe"
+    CONST_NEAR_STRING( ".bat" ),
+    CONST_NEAR_STRING( ".com" ),
+    CONST_NEAR_STRING( ".exe" )
 };
 
 int ExeExtensionCount = sizeof( ExeExtensions ) / sizeof( ExeExtensions[0] );

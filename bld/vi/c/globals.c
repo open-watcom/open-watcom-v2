@@ -48,8 +48,8 @@ const char          _NEAR SingleBlank[] = " ";
 const char          _NEAR SingleSlash[] = "/";
 const char          _NEAR SingleQuote[] = "\"";
 const char _NEAR    * _NEAR BoolStr[] = {
-    (const char _NEAR *)"FALSE",
-    (const char _NEAR *)"TRUE"
+    CONST_NEAR_STRING( "FALSE" ),
+    CONST_NEAR_STRING( "TRUE" )
 };
 const char          _NEAR SpinData[] = { '-', '\\', '|', '/' };
 
