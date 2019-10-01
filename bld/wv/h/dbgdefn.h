@@ -42,15 +42,6 @@
 #define GETI8(x)        (*(signed char *)(x))
 #define GETWORD(x)      (GETU8((x)) + ( GETU8((x + 1)) << 8 ))
 
-/* file handles conversion macros */
-#if defined( _WIN64 )
-#define FH2FP(fh)       ((FILE *)(unsigned __int64)((fh) + 1))
-#define FP2FH(fp)       ((file_handle)((unsigned __int64)(fp)) - 1)
-#else
-#define FH2FP(fh)       ((FILE *)(unsigned long)((fh) + 1))
-#define FP2FH(fp)       ((file_handle)((unsigned long)(fp)) - 1)
-#endif
-
 #define FH2SYSH(sh,fh)  (sh).u._32[0]=fh;(sh).u._32[1]=0
 
 /* Handles */
