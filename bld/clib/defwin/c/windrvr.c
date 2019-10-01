@@ -230,7 +230,7 @@ static long MainWindowProc( HWND hwnd, UINT message, WPARAM wparam, LPARAM lpara
 /*
  * _MainDriver - main message driver for the editor
  */
-long CALLBACK _MainDriver( HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam )
+LRESULT CALLBACK _MainDriver( HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam )
 {
     PAINTSTRUCT ps;
     HDC         dc;

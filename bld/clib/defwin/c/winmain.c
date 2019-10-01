@@ -49,6 +49,12 @@ char    __init_default_win;
 
 #ifdef DEFAULT_WINDOWING
 
+#if defined( __WINDOWS_386__ )
+	#define TO_LPVOID(f)	((LPVOID)(long)(f))
+#else
+	#define TO_LPVOID(f)	((LPVOID)(f))
+#endif
+
 static char *mainClass;
 extern char __WinTitleBar[20];          /* Text for window title bar */
 
@@ -171,7 +177,7 @@ static BOOL firstInstance( HANDLE inst)
      * register window classes
      */
     wc.style = 0;
-    wc.lpfnWndProc = (LPVOID) _MainDriver;
+    wc.lpfnWndProc = TO_LPVOID( _MainDriver );
     wc.cbClsExtra = 0;
     wc.cbWndExtra = 0;
     wc.hInstance = inst;
@@ -186,7 +192,7 @@ static BOOL firstInstance( HANDLE inst)
         return( FALSE );
 
     wc.style = 0;
-    wc.lpfnWndProc = (LPVOID) _MainDriver;
+    wc.lpfnWndProc = TO_LPVOID( _MainDriver );
     wc.cbClsExtra = 0;
     wc.cbWndExtra = 0;
     wc.hInstance = inst;
