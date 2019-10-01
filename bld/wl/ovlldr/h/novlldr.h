@@ -101,7 +101,7 @@ extern  unsigned_16     _CODE_BASED __OVLSTARTPARA__;
     14-jun-91 DJG
 */
 
-#define OVL_ACCESSES( __o )     (*(unsigned_8 _CODE_BASED *)&__o->flags_anc)
+#define OVL_ACCESSES( __o )     (*(unsigned_8 _CODE_BASED *)(long)&__o->flags_anc)
 
 /********************* memory management info *****************************/
 
