@@ -644,6 +644,8 @@ static search_result DoLookupSym( imp_image_handle *iih, symbol_source ss, void 
     const wv_sym_entry  *se;
     const mad_reg_info  *ri;
 
+    /* unused parameters */ (void)lc;
+
     if( li->type != ST_NONE )
         return( SR_NONE );
     if( li->scope.start != NULL )
