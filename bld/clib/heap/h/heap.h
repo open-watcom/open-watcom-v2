@@ -44,12 +44,14 @@
 #define __DOS_EXT__
 #endif
 
+#define FAR2NEAR(t,f)   ((t __near *)(long)(f))
+
 #define BLK2CPTR(f)     ((unsigned)((unsigned)(f) + TAG_SIZE))
 #define CPTR2BLK(p)     ((unsigned)((unsigned)(p) - TAG_SIZE))
 
 #if defined( __DOS_EXT__ )
-#define DPMI2BLK(h)    ((heapblk_nptr)(h + 1))
-#define BLK2DPMI(h)    (((dpmi_hdr *)h) - 1)
+#define DPMI2BLK(h)     ((heapblk_nptr)(h + 1))
+#define BLK2DPMI(h)     (((dpmi_hdr *)h) - 1)
 #endif
 
 #define TAG_SIZE        (sizeof( tag ))

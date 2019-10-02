@@ -53,7 +53,7 @@ _WCRTLINK void_fptr _fexpand( void_fptr cstg, size_t req_size )
 
     seg = FP_SEG( cstg );
     if( seg == _DGroup() ) {
-        tmp = _nexpand( (void_nptr)cstg, req_size );
+        tmp = _nexpand( FAR2NEAR( void, cstg ), req_size );
         if( tmp == NULL ) {
             return( NULL );
         }

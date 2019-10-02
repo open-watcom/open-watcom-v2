@@ -97,7 +97,7 @@ void_bptr __MemAllocator( unsigned req_size, heap_bptr heap )
                     }
                     pcur = pcur->next.nptr;             // advance to next entry
                                                         // if back at start
-                    if( pcur == (FREELIST)&(HEAP()->freehead) ) {
+                    if( pcur == (FREELIST)FAR2NEAR( void, &(HEAP()->freehead) ) ) {
                         HEAP()->largest_blk = largest;  // update largest
                         return( cstg );                 // return 0
                     }
@@ -218,7 +218,7 @@ void __MemFree( void_bptr cstg, heap_bptr heap )
                         break;                          // proceed to coalesce code
                     }
                                                         // get end of free list
-                    pnext = (FREELIST)&(HEAP()->freehead);
+                    pnext = (FREELIST)FAR2NEAR( void, &(HEAP()->freehead) );
                     pprev = pnext->prev.nptr;
                     if( pfree > pprev ) {               // where is pfree?
                                                         // pfree is at end of list

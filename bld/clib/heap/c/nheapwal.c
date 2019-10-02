@@ -55,7 +55,7 @@ int __NHeapWalk( struct _heapinfo *entry, heapblk_nptr heap )
     if( heap == NULL ) {
         return( _HEAPEMPTY );
     }
-    frl = (freelist_nptr)(entry->_pentry);
+    frl = FAR2NEAR( void, entry->_pentry );
     if( frl == NULL ) {
         frl = FIRST_FRL( heap );
     } else {    /* advance to next entry */

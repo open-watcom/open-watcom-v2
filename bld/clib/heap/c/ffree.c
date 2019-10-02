@@ -56,7 +56,7 @@ _WCRTLINK void _ffree( void_fptr cstg )
         return;
     }
     if( seg == _DGroup() ) {
-        _nfree( (void_nptr)cstg );
+        _nfree( FAR2NEAR( void, cstg ) );
         return;
     }
     _AccessFHeap();
