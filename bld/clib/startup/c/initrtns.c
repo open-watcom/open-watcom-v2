@@ -39,6 +39,8 @@
 #define PFAR  ((__type_rtp)1)
 #define PDONE ((__type_rtp)2)
 
+#define FAR2I86NEAR(t,f)   ((t _WCI86NEAR *)(long)(f))
+
 #if ( COMP_CFG_COFF == 1 ) || defined(__AXP__) || defined(__PPC__) || defined(__MIPS__)
     // following is an attempt to drop the need for an assembler
     // segment definitions file
@@ -177,15 +179,15 @@ void __InitRtns( unsigned limit )
             __type_rtp working_limit;
             struct_rt_init_ptr  pcur;
 
-            pcur = (struct_rt_init_ptr)&_Start_XI;
-            pnext = (struct_rt_init_ptr)&_End_XI;
+            pcur = FAR2I86NEAR( struct rt_init, &_Start_XI );
+            pnext = FAR2I86NEAR( struct rt_init, &_End_XI );
             working_limit = local_limit;
 #if defined(COMP_CFG_COFF)
             pcur++;
 #endif
 
             // walk list of routines
-            while( pcur < (struct_rt_init_ptr)&_End_XI ) {
+            while( pcur < FAR2I86NEAR( struct rt_init, &_End_XI ) ) {
                 // if this one hasn't been called
                 if( pcur->rtn_type != PDONE ) {
                     // if the priority is better than best so far
@@ -200,7 +202,7 @@ void __InitRtns( unsigned limit )
             }
             // check to see if all done, if we didn't find any
             // candidates then we can return
-            if( pnext == (struct_rt_init_ptr)&_End_XI ) {
+            if( pnext == FAR2I86NEAR( struct rt_init, &_End_XI ) ) {
                 break;
             }
         }
@@ -249,15 +251,15 @@ void __FiniRtns( unsigned min_limit, unsigned max_limit )
             __type_rtp working_limit;
             struct_rt_init_ptr  pcur;
 
-            pcur = (struct_rt_init_ptr)&_Start_YI;
-            pnext = (struct_rt_init_ptr)&_End_YI;
+            pcur = FAR2I86NEAR( struct rt_init, &_Start_YI );
+            pnext = FAR2I86NEAR( struct rt_init, &_End_YI );
             working_limit = local_min_limit;
 #if defined(COMP_CFG_COFF)
             pcur++;
 #endif
 
             // walk list of routines
-            while( pcur < (struct_rt_init_ptr)&_End_YI ) {
+            while( pcur < FAR2I86NEAR( struct rt_init, &_End_YI ) ) {
                 // if this one hasn't been called
                 if( pcur->rtn_type != PDONE ) {
                     // if the priority is better than best so far
@@ -272,7 +274,7 @@ void __FiniRtns( unsigned min_limit, unsigned max_limit )
             }
             // check to see if all done, if we didn't find any
             // candidates then we can return
-            if( pnext == (struct_rt_init_ptr)&_End_YI ) {
+            if( pnext == FAR2I86NEAR( struct rt_init, &_End_YI ) ) {
                 break;
             }
         }

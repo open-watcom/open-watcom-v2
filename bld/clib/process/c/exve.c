@@ -57,6 +57,7 @@
 
 #define _swap(i)        (((i&0xff) << 8)|((i&0xff00) >> 8))
 
+#define FAR2I86NEAR(t,f)    ((t _WCI86NEAR *)(long)(f))
 
 #pragma on(check_stack);
 
@@ -290,7 +291,7 @@ _WCRTLINK int execve( path, argv, envp )
     __ccmdline( pgmname, (const char * const *)argvv, cmdline, 0 );
     if( doalloc( para, envseg, envpara ) )
         save_file_handles();
-    _doexec( (char _WCI86NEAR *)pgmname, (char _WCI86NEAR *)cmdline, isexe, exe.ss, exe.sp, exe.cs, exe.ip );
+    _doexec( FAR2I86NEAR( char, pgmname ), FAR2I86NEAR( char, cmdline ), isexe, exe.ss, exe.sp, exe.cs, exe.ip );
 
     free( _envptr );
     free( argvv );
