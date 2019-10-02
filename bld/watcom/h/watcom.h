@@ -124,8 +124,10 @@ typedef struct {
 typedef unsigned_64     signed_64;
 
 #if defined( _WIN64 )
+typedef __int64             pointer_int;
 typedef unsigned __int64    pointer_uint;
 #else
+typedef long                pointer_int;
 typedef unsigned long       pointer_uint;
 #endif
 
